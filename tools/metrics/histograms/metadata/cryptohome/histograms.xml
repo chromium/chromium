@@ -459,21 +459,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram base="true" name="Cryptohome.LECredential"
-    enum="CryptohomeLECredError" expires_after="2023-01-22">
-<!-- Name completed by histogram_suffixes name="LECredentialOps" -->
-
-  <owner>pmalani@chromium.org</owner>
-  <owner>apronin@chromium.org</owner>
-  <owner>mnissler@chromium.org</owner>
-  <owner>allenwebb@chromium.org</owner>
-  <owner>cros-hwsec+uma@chromium.org</owner>
-  <summary>
-    Events related to Low Entropy (LE) credential management. These are logged
-    every time an operation involving a LE credential is performed.
-  </summary>
-</histogram>
-
 <histogram name="Cryptohome.LECredential.LogReplayEntryCount" units="count"
     expires_after="2023-08-19">
   <owner>hcyang@google.com</owner>
@@ -487,6 +472,61 @@ chromium-metrics-reviews@google.com.
     authentication and credential management operations), and attempts to use
     the LogReplay command to sync server state again.
   </summary>
+</histogram>
+
+<histogram name="Cryptohome.LECredential.Replay.{ReplayType}"
+    enum="CryptohomeLEReplayError" expires_after="2023-08-25">
+  <owner>hcyang@google.com</owner>
+  <owner>cros-hwsec+uma@chromium.org</owner>
+  <summary>
+    Results of LogReplay events, which happen every time the client loses sync
+    with the server (might happen during authentication and credential
+    management operations). Categorized into 2 replay types, depends on whether
+    all of the log entries were used for replay, as this will result in
+    different error distributions. These are logged every time the client loses
+    sync with the server (might happen during authentication and credential
+    management operations), and attempts to use the LogReplay command to sync
+    server state again.
+  </summary>
+  <token key="ReplayType">
+    <variant name="Full"/>
+    <variant name="Normal"/>
+  </token>
+</histogram>
+
+<histogram name="Cryptohome.LECredential.{Operation}{Action}"
+    enum="CryptohomeLECredError" expires_after="2023-01-22">
+  <owner>pmalani@chromium.org</owner>
+  <owner>apronin@chromium.org</owner>
+  <owner>mnissler@chromium.org</owner>
+  <owner>allenwebb@chromium.org</owner>
+  <owner>cros-hwsec+uma@chromium.org</owner>
+  <summary>
+    Events related to Low Entropy (LE) credential management. Specifically, the
+    result of the {Action} action when doing the {Operation} LE operation. These
+    are logged every time an operation involving a LE credential (during
+    authentication and credential managerment actions) is performed.
+  </summary>
+  <token key="Operation">
+    <variant name="Check"/>
+    <variant name="GetDelayInSeconds"/>
+    <variant name="Insert"/>
+    <variant name="Remove"/>
+    <variant name="Reset"/>
+    <variant name="ResetTree"/>
+    <variant name="Sync"/>
+    <variant name="SyncOutcome"/>
+  </token>
+  <token key="Action">
+    <variant name=""/>
+    <variant name=".Backend"/>
+    <variant name=".BackendGetLog"/>
+    <variant name=".BackendRecoverInsert"/>
+    <variant name=".BackendReplayLog"/>
+    <variant name=".BackendReplayLogForFullReplay"/>
+    <variant name=".LoadFromDisk"/>
+    <variant name=".SaveToDisk"/>
+  </token>
 </histogram>
 
 <histogram name="Cryptohome.LegacyCodePathUsage.{Location}"

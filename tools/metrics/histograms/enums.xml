@@ -23108,6 +23108,17 @@ metrics consent we also won't be able to send UMA metrics. -->
   <int value="9" label="LE Locked"/>
 </enum>
 
+<enum name="CryptohomeLEReplayError">
+  <summary>
+    The result when a Low Entropy LogReplay operation was performed.
+  </summary>
+  <int value="0" label="Success"/>
+  <int value="1" label="Invalid log entry type"/>
+  <int value="2" label="Individual operation error"/>
+  <int value="3" label="Hash mismatch after replay"/>
+  <int value="4" label="Failed to remove leaf inserted during replay"/>
+</enum>
+
 <enum name="CryptohomeLoginDiskCleanupProgress">
   <int value="0" label="(unused)">Unused</int>
   <int value="1" label="Whole User Profiles cleaned above target">

@@ -3475,31 +3475,6 @@ chromium-metrics-reviews@google.com.
       name="PasswordManager.LeakDetection.DialogDismissalReason"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="LECredentialOps" separator=".">
-  <suffix name="Check" label=""/>
-  <suffix name="Insert" label=""/>
-  <suffix name="Remove" label=""/>
-  <suffix name="Reset" label=""/>
-  <suffix name="ResetTree" label=""/>
-  <suffix name="Sync" label=""/>
-  <suffix name="SyncOutcome" label=""/>
-  <affected-histogram name="Cryptohome.LECredential"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="LECredentialOpsActions" separator=".">
-  <suffix name="Backend" label=""/>
-  <suffix name="BackendGetLog" label=""/>
-  <suffix name="BackendReplayLog" label=""/>
-  <suffix name="LoadFromDisk" label=""/>
-  <suffix name="SaveToDisk" label=""/>
-  <affected-histogram name="Cryptohome.LECredential.Check"/>
-  <affected-histogram name="Cryptohome.LECredential.Insert"/>
-  <affected-histogram name="Cryptohome.LECredential.Remove"/>
-  <affected-histogram name="Cryptohome.LECredential.Reset"/>
-  <affected-histogram name="Cryptohome.LECredential.ResetTree"/>
-  <affected-histogram name="Cryptohome.LECredential.Sync"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="LevelDBBFEMethods" separator=".">
   <owner>cmumford@chromium.org</owner>
   <suffix name="CreateDir" label="ChromiumEnv::CreateDir"/>
