@@ -64,6 +64,7 @@ namespace views {
 class DesktopWindowTreeHost;
 class NativeWidget;
 class NonClientFrameView;
+class SublevelManager;
 class TooltipManager;
 class View;
 class WidgetDelegate;
@@ -274,8 +275,15 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
 
     Activatable activatable = Activatable::kDefault;
 
-    // The class of window and its overall z-order.
+    // The class of window and its overall z-order level. This level is visible
+    // to other applications in the system. A value other than `kNormal` will
+    // create an "always on top" widget.
     absl::optional<ui::ZOrderLevel> z_order;
+
+    // The z-order sublevel that is invisible to other applications in the
+    // system. Widgets of the same `z_order` are stacked in the order specified
+    // by their sub-levels.
+    int sublevel = 0;
 
     bool visible_on_all_workspaces = false;
 
@@ -721,6 +729,14 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   // Gets the z-order of the widget. This only applies to top-level widgets.
   ui::ZOrderLevel GetZOrderLevel() const;
 
+  // Sets the z-order sublevel of the widget. This applies to both top-level
+  // and non top-level widgets.
+  void SetZOrderSublevel(int sublevel);
+
+  // Gets the z-order sublevel of the widget. This applies to both top-level
+  // and non top-level widgets.
+  int GetZOrderSublevel() const;
+
   // Sets the widget to be visible on all work spaces.
   void SetVisibleOnAllWorkspaces(bool always_visible);
 
@@ -805,6 +821,9 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
 
   // Returns the ui::InputMethod for this widget.
   ui::InputMethod* GetInputMethod();
+
+  // Returns the SublevelManager for this widget.
+  SublevelManager* GetSublevelManager();
 
   // Starts a drag operation for the specified view. This blocks until the drag
   // operation completes. |view| can be NULL.
@@ -1234,6 +1253,10 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   // WARNING: RootView's destructor calls into the FocusManager. As such, this
   // must be destroyed AFTER root_view_. This is enforced in DestroyRootView().
   std::unique_ptr<FocusManager> focus_manager_;
+
+  // The sublevel manager that ensures that the children are stacked in the
+  // order specified by their InitParams::sublevel.
+  std::unique_ptr<SublevelManager> sublevel_manager_;
 
   // Valid for the lifetime of RunShellDrag(), indicates the view the drag
   // started from.

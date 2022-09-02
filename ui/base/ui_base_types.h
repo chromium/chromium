@@ -69,10 +69,12 @@ enum ModalType {
   MODAL_TYPE_SYSTEM = 3   // Window is modal to all other windows.
 };
 
-// The class of window and its overall z-order. Not all platforms provide this
-// level of z-order granularity. For such platforms, which only provide a
+// The class of window and its overall z-order. Only the Mac provides this
+// level of z-order granularity. For other platforms, which only provide a
 // distinction between "normal" and "always on top" windows, any of the values
-// here that aren't |kNormal| are treated equally as "always on top".
+// here that aren't `kNormal` are treated equally as "always on top".
+// TODO(crbug.com/1358586): For non-desktop widgets on Linux and Windows,
+// this z-order currently does not have any effect.
 enum class ZOrderLevel {
   // The default level for windows.
   kNormal = 0,

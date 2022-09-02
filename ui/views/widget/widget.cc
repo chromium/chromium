@@ -37,9 +37,11 @@
 #include "ui/views/focus/focus_manager_factory.h"
 #include "ui/views/focus/widget_focus_manager.h"
 #include "ui/views/views_delegate.h"
+#include "ui/views/views_features.h"
 #include "ui/views/widget/any_widget_observer_singleton.h"
 #include "ui/views/widget/native_widget_private.h"
 #include "ui/views/widget/root_view.h"
+#include "ui/views/widget/sublevel_manager.h"
 #include "ui/views/widget/tooltip_manager.h"
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/views/widget/widget_deletion_observer.h"
@@ -376,9 +378,16 @@ void Widget::Init(InitParams params) {
     params.delegate->WidgetInitializing(this);
 
   ownership_ = params.ownership;
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   background_elevation_ = params.background_elevation;
 #endif
+
+  if (base::FeatureList::IsEnabled(features::kWidgetLayering)) {
+    sublevel_manager_ =
+        std::make_unique<SublevelManager>(this, params.sublevel);
+  }
+
   native_widget_ = CreateNativeWidget(params, this)->AsNativeWidgetPrivate();
   root_view_.reset(CreateRootView());
 
@@ -424,6 +433,11 @@ void Widget::Init(InitParams params) {
   } else if (delegate) {
     SetContentsView(delegate->TransferOwnershipOfContentsView());
     SetInitialBoundsForFramelessWindow(bounds);
+  }
+
+  if (base::FeatureList::IsEnabled(features::kWidgetLayering)) {
+    if (parent_)
+      parent_->GetSublevelManager()->TrackChildWidget(this);
   }
 
   native_theme_observation_.Observe(GetNativeTheme());
@@ -734,6 +748,10 @@ void Widget::Show() {
   } else {
     native_widget_->Show(preferred_show_state, gfx::Rect());
   }
+
+  if (base::FeatureList::IsEnabled(features::kWidgetLayering))
+    sublevel_manager_->EnsureOwnerSublevel();
+
   internal::AnyWidgetObserverSingleton::GetInstance()->OnAnyWidgetShown(this);
 }
 
@@ -775,6 +793,14 @@ void Widget::SetZOrderLevel(ui::ZOrderLevel order) {
 
 ui::ZOrderLevel Widget::GetZOrderLevel() const {
   return native_widget_->GetZOrderLevel();
+}
+
+void Widget::SetZOrderSublevel(int sublevel) {
+  sublevel_manager_->SetSublevel(sublevel);
+}
+
+int Widget::GetZOrderSublevel() const {
+  return sublevel_manager_->GetSublevel();
 }
 
 void Widget::SetVisibleOnAllWorkspaces(bool always_visible) {
@@ -898,6 +924,10 @@ ui::InputMethod* Widget::GetInputMethod() {
     return (toplevel && toplevel != this) ? toplevel->GetInputMethod()
                                           : nullptr;
   }
+}
+
+SublevelManager* Widget::GetSublevelManager() {
+  return sublevel_manager_.get();
 }
 
 void Widget::RunShellDrag(View* view,
