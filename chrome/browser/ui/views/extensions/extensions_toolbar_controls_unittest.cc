@@ -165,9 +165,10 @@ TEST_F(ExtensionsToolbarControlsUnitTest,
   web_contents_tester->NavigateAndCommit(url_b);
   EXPECT_TRUE(IsSiteAccessButtonVisible());
 
-  // TODO(crbug.com/1304959): Remove the only extension that requests access to
-  // the current site to verify no extension has access to the current
-  // site. Uninstall extension in unit tests is flaky.
+  // Remove the only extension that has access to the current site.
+  UninstallExtension(extension_all_urls->id());
+  LayoutContainerIfNecessary();
+  EXPECT_FALSE(IsSiteAccessButtonVisible());
 }
 
 TEST_F(ExtensionsToolbarControlsUnitTest,
@@ -295,9 +296,10 @@ TEST_F(ExtensionsToolbarControlsUnitTest,
       request_access_button()->GetText(),
       l10n_util::GetStringFUTF16Int(IDS_EXTENSIONS_REQUEST_ACCESS_BUTTON, 1));
 
-  // TODO(crbug.com/1304959): Remove the only extension that requests access to
-  // the current site to verify no extension should have access to the current
-  // site. Uninstall extension in unit tests is flaky.
+  // Remove the only extension that requests access to the current site.
+  UninstallExtension(extension_all_urls->id());
+  LayoutContainerIfNecessary();
+  EXPECT_FALSE(IsSiteAccessButtonVisible());
 }
 
 // TODO(crbug.com/3671898): Add a test that checks the correct dialog is open
