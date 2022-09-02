@@ -24,9 +24,6 @@ class CrosWindow : public ScriptWrappable {
 
   void Trace(Visitor*) const override;
 
-  // Sets the CrosWindowInfoPtr to `window_info_ptr`.
-  void Update(mojom::blink::CrosWindowInfoPtr window_info_ptr);
-
   String id();
 
   String title();

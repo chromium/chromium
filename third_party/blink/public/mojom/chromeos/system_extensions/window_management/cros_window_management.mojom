@@ -150,6 +150,6 @@ interface CrosWindowManagementObserver {
   // modifier.
   DispatchAcceleratorEvent(AcceleratorEvent event);
 
-  // Notify the renderer that a window has been closed.
-  DispatchWindowClosedEvent(CrosWindowInfo window);
+  // Notify the renderer that it should dispatch a window closed event.
+  DispatchWindowClosedEvent(mojo_base.mojom.UnguessableToken window_id);
 };
