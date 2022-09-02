@@ -29,12 +29,13 @@
       "is_asan": true,
       "is_component_build": false,
       "is_debug": true,
+      "swift_toolchain_path": "",
       "symbol_level": 1,
       "target_cpu": "x64",
       "target_environment": "catalyst",
       "target_os": "ios",
-      "use_libfuzzer": true,
-      "use_remoteexec": true
+      "use_goma": true,
+      "use_libfuzzer": true
     }
   },
   "ios-device": {
@@ -49,7 +50,7 @@
       "target_cpu": "arm64",
       "target_environment": "device",
       "target_os": "ios",
-      "use_remoteexec": true
+      "use_goma": true
     }
   },
   "ios-device (reclient shadow)": {
