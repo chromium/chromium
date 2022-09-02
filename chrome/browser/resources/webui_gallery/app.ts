@@ -80,6 +80,11 @@ export class WebuiGalleryAppElement extends PolymerElement {
               src: 'cr_tab_box/cr_tab_box_demo.html',
             },
             {
+              name: 'Tabs, Polymer',
+              path: 'tabs2',
+              src: 'cr_tabs/cr_tabs_demo.html',
+            },
+            {
               name: 'Toggles',
               path: 'toggles',
               src: 'cr_toggle_demo.html',

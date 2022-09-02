@@ -70,6 +70,7 @@ generate_grd("build_grd") {
     "demos/cr_radio_demo.html",
     "demos/cr_slider/cr_slider_demo.html",
     "demos/cr_tab_box/cr_tab_box_demo.html",
+    "demos/cr_tabs/cr_tabs_demo.html",
     "demos/cr_tree/cr_tree_demo.html",
     "demos/cr_toggle_demo.html",
     "webui_gallery.html",
