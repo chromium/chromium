@@ -238,6 +238,10 @@ void StartBorealisVm::StartBorealisWithExternalDisk(
     request.set_enable_big_gl(true);
   }
   request.set_name(context->vm_name());
+  if (base::FeatureList::IsEnabled(
+          chromeos::features::kBorealisStorageBallooning)) {
+    request.set_storage_ballooning(true);
+  }
 
   vm_tools::concierge::DiskImage* disk_image = request.add_disks();
   disk_image->set_path(context->disk_path().AsUTF8Unsafe());
