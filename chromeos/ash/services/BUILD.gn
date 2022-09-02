@@ -17,9 +17,12 @@ assert(is_chromeos_ash)
 source_set("unit_tests") {
   testonly = true
   deps = [
+    "//chromeos/ash/services/assistant:tests",
     "//chromeos/ash/services/bluetooth_config:unit_tests",
     "//chromeos/ash/services/cros_healthd/private/cpp:unit_tests",
     "//chromeos/ash/services/cros_healthd/public/cpp:unit_tests",
+    "//chromeos/ash/services/federated/public/cpp:unit_tests",
+    "//chromeos/services/machine_learning/public/cpp:ash_unit_tests",
   ]
 
   if (enable_cros_libassistant) {
