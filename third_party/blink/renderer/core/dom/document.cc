@@ -8777,6 +8777,8 @@ Document::PaintPreviewScope::PaintPreviewScope(Document& document,
     : document_(document) {
   document_.paint_preview_ = state;
   document_.GetDisplayLockDocumentState().NotifyPrintingOrPreviewChanged();
+  if (auto* ds_controller = DeferredShapingController::From(document_))
+    ds_controller->ReshapeAllDeferred(ReshapeReason::kPrinting);
 }
 
 Document::PaintPreviewScope::~PaintPreviewScope() {
