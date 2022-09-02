@@ -1719,6 +1719,7 @@ export class DirectoryModel extends EventTarget {
       chrome.fileManagerPrivate.IOTaskType.EMPTY_TRASH,
       chrome.fileManagerPrivate.IOTaskType.MOVE,
       chrome.fileManagerPrivate.IOTaskType.RESTORE,
+      chrome.fileManagerPrivate.IOTaskType.RESTORE_TO_DESTINATION,
       chrome.fileManagerPrivate.IOTaskType.TRASH,
     ]);
     /** @type {!Set<?VolumeManagerCommon.RootType>} */

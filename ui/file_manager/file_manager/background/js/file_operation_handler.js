@@ -396,6 +396,7 @@ export class FileOperationHandler {
             case util.FileOperationType.DELETE:
               return str('DELETE_ERROR');
             case util.FileOperationType.RESTORE:
+            case util.FileOperationType.RESTORE_TO_DESTINATION:
               return str('RESTORE_FROM_TRASH_ERROR');
             default:
               console.warn(
@@ -414,6 +415,7 @@ export class FileOperationHandler {
             case util.FileOperationType.DELETE:
               return str('DELETE_ERROR');
             case util.FileOperationType.RESTORE:
+            case util.FileOperationType.RESTORE_TO_DESTINATION:
               return str('RESTORE_FROM_TRASH_ERROR');
             default:
               console.warn(
@@ -433,6 +435,7 @@ export class FileOperationHandler {
         case util.FileOperationType.DELETE:
           return strf('DELETE_FILE_NAME', name);
         case util.FileOperationType.RESTORE:
+        case util.FileOperationType.RESTORE_TO_DESTINATION:
           return strf('RESTORE_FROM_TRASH_FILE_NAME', name);
         default:
           console.warn(
@@ -451,6 +454,7 @@ export class FileOperationHandler {
         case util.FileOperationType.DELETE:
           return strf('DELETE_ITEMS_REMAINING', remainNumber);
         case util.FileOperationType.RESTORE:
+        case util.FileOperationType.RESTORE_TO_DESTINATION:
           return strf('RESTORE_FROM_TRASH_ITEMS_REMAINING', remainNumber);
         default:
           console.warn(
@@ -512,6 +516,8 @@ function getTypeFromIOTaskType_(type) {
       return ProgressItemType.MOVE;
     case chrome.fileManagerPrivate.IOTaskType.RESTORE:
       return ProgressItemType.RESTORE;
+    case chrome.fileManagerPrivate.IOTaskType.RESTORE_TO_DESTINATION:
+      return ProgressItemType.RESTORE_TO_DESTINATION;
     case chrome.fileManagerPrivate.IOTaskType.TRASH:
       return ProgressItemType.TRASH;
     case chrome.fileManagerPrivate.IOTaskType.ZIP:
@@ -547,6 +553,7 @@ function getMessageFromProgressEvent_(event) {
       case chrome.fileManagerPrivate.IOTaskType.DELETE:
         return str('DELETE_ERROR');
       case chrome.fileManagerPrivate.IOTaskType.RESTORE:
+      case chrome.fileManagerPrivate.IOTaskType.RESTORE_TO_DESTINATION:
         return str('RESTORE_FROM_TRASH_ERROR');
       case chrome.fileManagerPrivate.IOTaskType.TRASH:
         return str('TRASH_UNEXPECTED_ERROR');

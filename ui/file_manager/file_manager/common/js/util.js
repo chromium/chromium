@@ -349,6 +349,7 @@ util.FileOperationType = {
   DELETE: 'DELETE',
   MOVE: 'MOVE',
   RESTORE: 'RESTORE',
+  RESTORE_TO_DESTINATION: 'RESTORE_TO_DESTINATION',
   ZIP: 'ZIP',
 };
 Object.freeze(util.FileOperationType);

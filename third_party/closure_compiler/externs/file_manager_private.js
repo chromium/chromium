@@ -324,6 +324,7 @@ chrome.fileManagerPrivate.IOTaskType = {
   EXTRACT: 'extract',
   MOVE: 'move',
   RESTORE: 'restore',
+  RESTORE_TO_DESTINATION: 'restore_to_destination',
   TRASH: 'trash',
   ZIP: 'zip',
 };

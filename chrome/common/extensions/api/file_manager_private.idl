@@ -365,6 +365,7 @@ enum IOTaskType {
   extract,
   move,
   restore,
+  restore_to_destination,
   trash,
   zip
 };
