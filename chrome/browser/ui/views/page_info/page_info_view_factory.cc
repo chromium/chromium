@@ -475,3 +475,22 @@ const ui::ImageModel PageInfoViewFactory::GetBlockingThirdPartyCookiesIcon() {
   return ui::ImageModel::FromVectorIcon(kEyeCrossedIcon, ui::kColorIcon,
                                         GetIconSize());
 }
+
+// static
+const ui::ImageModel PageInfoViewFactory::GetEnforcedCookieControlsIcon(
+    CookieControlsEnforcement enforcement) {
+  switch (enforcement) {
+    case CookieControlsEnforcement::kEnforcedByExtension:
+      return ui::ImageModel::FromVectorIcon(vector_icons::kExtensionIcon,
+                                            ui::kColorIcon, GetIconSize());
+    case CookieControlsEnforcement::kEnforcedByPolicy:
+      return ui::ImageModel::FromVectorIcon(vector_icons::kBusinessIcon,
+                                            ui::kColorIcon, GetIconSize());
+    case CookieControlsEnforcement::kEnforcedByCookieSetting:
+      return ui::ImageModel::FromVectorIcon(vector_icons::kSettingsIcon,
+                                            ui::kColorIcon, GetIconSize());
+    case CookieControlsEnforcement::kNoEnforcement:
+      NOTREACHED();
+      return ui::ImageModel();
+  }
+}

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PAGE_INFO_PAGE_INFO_COOKIES_CONTENT_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_PAGE_INFO_PAGE_INFO_COOKIES_CONTENT_VIEW_H_
 
+#include "chrome/browser/ui/views/accessibility/non_accessible_image_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_hover_button.h"
 #include "chrome/browser/ui/views/page_info/page_info_row_view.h"
 #include "components/page_info/page_info_ui.h"
@@ -36,6 +37,11 @@ class PageInfoCookiesContentView : public views::View, public PageInfoUI {
 
   void UpdateBlockingThirdPartyCookiesToggle(bool are_cookies_blocked);
 
+  // Creates the child view of |blocking_third_party_cookies_row_| which is
+  // either toggle or icon depending on the |enforcement|.
+  void InitBlockingThirdPartyCookiesToggleOrIcon(
+      CookieControlsEnforcement enforcement);
+
   // Ensures the blocked sites information UI is present, with placeholder
   // information if necessary.
   void InitBlockingThirdPartyCookiesRow();
@@ -60,8 +66,12 @@ class PageInfoCookiesContentView : public views::View, public PageInfoUI {
   // The Label which is a subtitle of |blocking_third_party_cookies_row|.
   raw_ptr<views::Label> blocking_third_party_cookies_subtitle_label_ = nullptr;
 
-  // The toggle on |blocking_third_party_cookies_row|.
+  // The toggle on |blocking_third_party_cookies_row| when state is managed by
+  // the user.
   raw_ptr<views::ToggleButton> blocking_third_party_cookies_toggle_ = nullptr;
+
+  // The icon on |blocking_third_party_cookies_row| when state is enforced.
+  raw_ptr<NonAccessibleImageView> enforced_icon_ = nullptr;
 
   // The button that displays First-Party-Set information with a link to
   // 'All sites' settings page.

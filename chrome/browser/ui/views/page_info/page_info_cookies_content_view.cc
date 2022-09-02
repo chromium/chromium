@@ -139,7 +139,9 @@ void PageInfoCookiesContentView::SetCookieInfo(
   // skip creating the buttons and just update the texts.
   if (show_cookies_block_control) {
     InitBlockingThirdPartyCookiesRow();
-    UpdateBlockingThirdPartyCookiesToggle(are_cookies_blocked);
+    InitBlockingThirdPartyCookiesToggleOrIcon(cookie_info.enforcement);
+    if (blocking_third_party_cookies_toggle_)
+      UpdateBlockingThirdPartyCookiesToggle(are_cookies_blocked);
 
     if (are_cookies_blocked) {
       const auto blocked_sites_count_message_id =
@@ -185,14 +187,65 @@ void PageInfoCookiesContentView::UpdateBlockingThirdPartyCookiesToggle(
   blocking_third_party_cookies_toggle_->SetIsOn(are_cookies_blocked);
 }
 
+void PageInfoCookiesContentView::InitBlockingThirdPartyCookiesToggleOrIcon(
+    CookieControlsEnforcement enforcement) {
+  if (enforced_icon_ || blocking_third_party_cookies_toggle_)
+    return;
+
+  // The row needs to be initiated before with
+  // |InitBlockingThirdPartyCookiesRow| because we're adding subview to it.
+  DCHECK(blocking_third_party_cookies_row_);
+
+  // TODO(crbug.com/1346305): Add correct tooltips when known.
+  int tooltip_id = 0;
+  bool enforced = false;
+  switch (enforcement) {
+    case CookieControlsEnforcement::kEnforcedByExtension:
+      tooltip_id = IDS_PAGE_INFO_PERMISSION_MANAGED_BY_EXTENSION;
+      enforced = true;
+      break;
+    case CookieControlsEnforcement::kEnforcedByPolicy:
+      tooltip_id = IDS_PAGE_INFO_PERMISSION_MANAGED_BY_POLICY;
+      enforced = true;
+      break;
+    case CookieControlsEnforcement::kEnforcedByCookieSetting:
+      // TODO(crbug.com/1346305): Add what should happen when it's managed by
+      // cookies settings.
+      tooltip_id =
+          IDS_PAGE_INFO_BLOCK_THIRD_PARTY_COOKIES_MANAGED_BY_SETTINGS_TOOLTIP;
+      enforced = true;
+      break;
+    case CookieControlsEnforcement::kNoEnforcement:
+      break;
+  }
+
+  if (enforced) {
+    enforced_icon_ = blocking_third_party_cookies_row_->AddControl(
+        std::make_unique<NonAccessibleImageView>());
+    enforced_icon_->SetImage(
+        PageInfoViewFactory::GetEnforcedCookieControlsIcon(enforcement));
+    enforced_icon_->SetTooltipText(l10n_util::GetStringUTF16(tooltip_id));
+  } else {
+    const auto tooltip = l10n_util::GetStringUTF16(
+        IDS_PAGE_INFO_BLOCK_THIRD_PARTY_COOKIES_TOGGLE_TOOLTIP);
+    blocking_third_party_cookies_toggle_ =
+        blocking_third_party_cookies_row_->AddControl(
+            std::make_unique<views::ToggleButton>(base::BindRepeating(
+                &PageInfoCookiesContentView::OnToggleButtonPressed,
+                base::Unretained(this))));
+    blocking_third_party_cookies_toggle_->SetAccessibleName(tooltip);
+    blocking_third_party_cookies_toggle_->SetPreferredSize(gfx::Size(
+        blocking_third_party_cookies_toggle_->GetPreferredSize().width(),
+        blocking_third_party_cookies_row_->GetFirstLineHeight()));
+  }
+}
+
 void PageInfoCookiesContentView::InitBlockingThirdPartyCookiesRow() {
   if (blocking_third_party_cookies_row_)
     return;
 
   const auto title =
       l10n_util::GetStringUTF16(IDS_PAGE_INFO_BLOCK_THIRD_PARTY_COOKIES_TITLE);
-  const auto tooltip = l10n_util::GetStringUTF16(
-      IDS_PAGE_INFO_BLOCK_THIRD_PARTY_COOKIES_TOGGLE_TOOLTIP);
   const auto icon = PageInfoViewFactory::GetBlockingThirdPartyCookiesIcon();
 
   blocking_third_party_cookies_row_ =
@@ -206,16 +259,6 @@ void PageInfoCookiesContentView::InitBlockingThirdPartyCookiesRow() {
   blocking_third_party_cookies_subtitle_label_ =
       blocking_third_party_cookies_row_->AddSecondaryLabel(u"");
   blocking_third_party_cookies_subtitle_label_->SetVisible(false);
-
-  blocking_third_party_cookies_toggle_ =
-      blocking_third_party_cookies_row_->AddControl(
-          std::make_unique<views::ToggleButton>(base::BindRepeating(
-              &PageInfoCookiesContentView::OnToggleButtonPressed,
-              base::Unretained(this))));
-  blocking_third_party_cookies_toggle_->SetAccessibleName(tooltip);
-  blocking_third_party_cookies_toggle_->SetPreferredSize(gfx::Size(
-      blocking_third_party_cookies_toggle_->GetPreferredSize().width(),
-      blocking_third_party_cookies_row_->GetFirstLineHeight()));
 }
 
 void PageInfoCookiesContentView::OnToggleButtonPressed() {

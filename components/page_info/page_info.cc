@@ -380,10 +380,10 @@ void PageInfo::OnStatusChanged(CookieControlsStatus status,
                                int allowed_cookies,
                                int blocked_cookies) {
 #if !BUILDFLAG(IS_ANDROID)
-  // TODO(crbug.com/1346305): React to enforcement.
   if (base::FeatureList::IsEnabled(page_info::kPageInfoCookiesSubpage)) {
-    if (status != status_) {
+    if (status != status_ || enforcement != enforcement_) {
       status_ = status;
+      enforcement_ = enforcement;
       PresentSiteData(base::DoNothing());
     }
   }
@@ -1203,7 +1203,7 @@ void PageInfo::PresentSiteDataInternal(base::OnceClosure done) {
 #endif
     }
     cookies_info.status = status_;
-
+    cookies_info.enforcement = enforcement_;
     ui_->SetCookieInfo(cookies_info);
   } else {
     CookieInfoList cookie_info_list;

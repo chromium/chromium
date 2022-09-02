@@ -112,6 +112,11 @@ class PageInfoViewFactory {
   static const ui::ImageModel GetManagedPermissionIcon(
       const PageInfo::PermissionInfo& info);
 
+  // Returns the icon for third party cookies control in a state not managed
+  // by the user.
+  static const ui::ImageModel GetEnforcedCookieControlsIcon(
+      CookieControlsEnforcement enforcement);
+
   // Returns the icon for 'About this site' button.
   static const ui::ImageModel GetAboutThisSiteIcon();
 

@@ -489,6 +489,9 @@ class PageInfo : private content_settings::CookieControlsView {
 
   CookieControlsStatus status_ = CookieControlsStatus::kUninitialized;
 
+  CookieControlsEnforcement enforcement_ =
+      CookieControlsEnforcement::kNoEnforcement;
+
   base::WeakPtrFactory<PageInfo> weak_factory_{this};
 };
 
