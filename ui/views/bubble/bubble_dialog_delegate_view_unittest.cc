@@ -618,7 +618,8 @@ TEST_F(BubbleDialogDelegateViewTest, CustomTitle) {
 
   bubble_delegate->show_close_button();
   bubble_frame->ResetWindowControls();
-  bubble_frame->Layout();
+  bubble_frame->InvalidateLayout();
+  RunScheduledLayout(bubble_frame);
 
   Button* close_button = bubble_frame->GetCloseButtonForTesting();
   // Title moves over for the close button.
