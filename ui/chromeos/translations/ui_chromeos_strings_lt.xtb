@@ -263,6 +263,7 @@
 <translation id="3280987981688031357">Vinilo plokštelė</translation>
 <translation id="3290356915286466215">Neapsaugota</translation>
 <translation id="3291218047831493686">SIM užrakto nustatymus galite pakeisti prisijungę prie šio tinklo</translation>
+<translation id="3293023191599135697">WEP tinklai nepalaikomi</translation>
 <translation id="3295357220137379386">Įrenginys užimtas</translation>
 <translation id="3296763833017966289">Gruzinų</translation>
 <translation id="3307875152560779385">Ukrainiečių k.</translation>
@@ -353,6 +354,7 @@
 <translation id="4092890906744441904">Airių k.</translation>
 <translation id="4124935795427217608">Vienaragis</translation>
 <translation id="4159731583141908892">Perkelta: <ph name="FILE_NAME" />.</translation>
+<translation id="4176286497474237543">Ištuštinti šiukšliadėžę dabar</translation>
 <translation id="4186579485882418952">Įgalinti prieigą neprisijungus</translation>
 <translation id="4193154014135846272">„Google“ dokumentas</translation>
 <translation id="4197674956721858839">„Zip“ archyvo failų pasirinkimas</translation>
@@ -660,6 +662,7 @@
 <translation id="6643016212128521049">Išvalyti</translation>
 <translation id="6650726141019353908">Rožinis drugelis</translation>
 <translation id="6657585470893396449">Slaptažodis</translation>
+<translation id="6658865850469097484">Šiukšliadėžėje ilgiau nei 30 dienų prabuvę failai bus ištrinti automatiškai.</translation>
 <translation id="6673674183150363784">Prancūzų k. (Prancūzija) su „Bépo“ klaviatūra</translation>
 <translation id="6710022688720561421">Robotas</translation>
 <translation id="6710213216561001401">Ankstesnė</translation>

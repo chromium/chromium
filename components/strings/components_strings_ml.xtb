@@ -157,6 +157,7 @@
 <translation id="1348198688976932919">നിങ്ങൾ പോകുന്ന സൈറ്റിൽ അപകടകരമായ ആപ്പുകൾ ഉണ്ട്</translation>
 <translation id="1348779747280417563">പേര് സ്ഥിരീകരിക്കുക</translation>
 <translation id="1354976809542763843">ഹോം ഫിനാൻസിംഗ്</translation>
+<translation id="1355158069018170842">ടാബുകളിൽ വിലക്കുറവ് കാണിക്കുക</translation>
 <translation id="1355301061807280185">ജോലികൾ</translation>
 <translation id="1355754231781595724">വാഹന, ഗതാഗത സുരക്ഷ</translation>
 <translation id="1357195169723583938">അടുത്തിടെ ഉപകരണം ഉപയോഗിച്ചവരും ഉപയോഗിച്ച സമയവും</translation>
@@ -466,6 +467,7 @@
 <translation id="2153609454945889823">Google Play Services for AR ഇൻസ്റ്റാൾ ചെയ്യണോ?</translation>
 <translation id="2154054054215849342">നിങ്ങളുടെ ഡൊമെയ്‌നിന് വേണ്ടി സമന്വയം ലഭ്യമല്ല</translation>
 <translation id="2154484045852737596">കാർഡ് എഡിറ്റ് ചെയ്യുക</translation>
+<translation id="2157640075051554492">നിരക്ക് ട്രാക്ക് ചെയ്യലുമായി ബന്ധപ്പെട്ട അറിയിപ്പുകൾ</translation>
 <translation id="2161656808144014275">വാചകം</translation>
 <translation id="2162510787844374618">നിങ്ങളുടെ ബാങ്കുമായി ബന്ധപ്പെടുന്നു...</translation>
 <translation id="2162620598375156287"><ph name="SOURCE_WEBSITE" /> -ൽ ഇപ്പോൾ <ph name="CURRENT_PRICE" />-ന് ലഭ്യം</translation>
@@ -1002,6 +1004,7 @@
 <translation id="3633738897356909127">'Chrome അപ്ഡേറ്റ് ചെയ്യുക' ബട്ടൺ, നിങ്ങളുടെ Chrome ക്രമീകരണത്തിൽ Chrome അപ്ഡേറ്റ് ചെയ്യാൻ 'Enter' അമർത്തുക</translation>
 <translation id="3634530185120165534">ട്രേ 5</translation>
 <translation id="3634567936866541746">വഞ്ചനാപരമായ സൈറ്റിൽ നിങ്ങൾ ഇപ്പോൾ പാസ്‍വേഡ് നൽകി. അക്കൗണ്ടുകൾ സുരക്ഷിതമാക്കാൻ, നിങ്ങളുടെ സംരക്ഷിച്ച പാസ്‌വേഡുകൾ ഇപ്പോൾ തന്നെ പരിശോധിക്കാൻ Chrome നിർദ്ദേശിക്കുന്നു.</translation>
+<translation id="3637033245385760976">Chrome അറിയിപ്പുകൾ ഓണായിരിക്കണം. <ph name="NOTIFICATION_SETTINGS" /> എന്നതിൽ നിങ്ങൾക്ക് അവ ഓണാക്കാം</translation>
 <translation id="3637662659967048211">Google അക്കൗണ്ടിൽ സംരക്ഷിക്കുക</translation>
 <translation id="3640766068866876100">സൂചിക-4x6-Ext</translation>
 <translation id="3642638418806704195">ആപ്പ്:</translation>
@@ -1424,6 +1427,7 @@
 <translation id="4785376858512657294">Google അക്കൗണ്ട് മാനേജ് ചെയ്യുക</translation>
 <translation id="4785689107224900852">ഈ ടാബിലേക്ക് സ്വിച്ച് ചെയ്യുക</translation>
 <translation id="4786804728079074733">വോളിബോൾ</translation>
+<translation id="4789704664580239421">നിങ്ങളുടെ തുറന്നിരിക്കുന്ന ടാബുകളിൽ വിലക്കുറവുമായി ബന്ധപ്പെട്ട അറിയിപ്പുകൾ ദൃശ്യമാകും</translation>
 <translation id="4791134497475588553">Linux ആപ്പുകൾ ഇൻസ്‌റ്റാൾ ചെയ്‌ത് അവസാനം ഉപയോഗിച്ചത് എപ്പോൾ</translation>
 <translation id="4792686369684665359">നിങ്ങൾ സമർപ്പിക്കാൻ പോകുന്ന വിവരങ്ങൾ സുരക്ഷിതമല്ല</translation>
 <translation id="4796594887379589189">ജോബ് അക്കൗണ്ട് ഐഡി</translation>
@@ -1789,6 +1793,7 @@
 <translation id="5730040223043577876">മറ്റ് സൈറ്റുകളിൽ നിങ്ങളുടെ പാസ്‌വേഡ് പുനരുപയോഗിച്ചിട്ടുണ്ടെങ്കിൽ, അത് പുനഃസജ്ജീകരിക്കാൻ Chrome ശുപാർശ ചെയ്യുന്നു.</translation>
 <translation id="5736165827969430182">ലോഹങ്ങളും ഖനനവും</translation>
 <translation id="5737183892635480227">{NUM_CARDS,plural, =1{നിങ്ങളുടെ Google അക്കൗണ്ടിൽ കാർഡ് സംരക്ഷിക്കുക}other{നിങ്ങളുടെ Google അക്കൗണ്ടിൽ കാർഡുകൾ സംരക്ഷിക്കുക}}</translation>
+<translation id="5738385766833540397">നിങ്ങൾ ട്രാക്ക് ചെയ്യുന്ന ഉൽപ്പന്നങ്ങളുടെ വിലക്കുറവുമായി ബന്ധപ്പെട്ട അറിയിപ്പുകൾ ലഭിക്കുന്ന രീതി മാനേജ് ചെയ്യുക</translation>
 <translation id="5743638595296120378">വാഹന ഷോപ്പിംഗ്</translation>
 <translation id="5743898850056428078">മോട്ടോർസൈക്കിൾ റേസിംഗ്</translation>
 <translation id="5745733273847572235">നിങ്ങളുടെ ലൊക്കേഷൻ ആവശ്യപ്പെടാം</translation>
@@ -1798,6 +1803,7 @@
 <translation id="5759751709240058861">ക്യാമറ ഉപയോഗിക്കുകയും ചലിപ്പിക്കുകയും ചെയ്യുക</translation>
 <translation id="5763042198335101085">ശരിയായ ഇമെയിൽ വിലാസം നൽകുക</translation>
 <translation id="5764725887548570807">ഒറിജിൻ ഫോർമാറ്റ് അസാധുവാണ്.</translation>
+<translation id="5764920692828389743"><ph name="EMAIL_ADDRESS" /> എന്ന വിലാസത്തിലേക്ക് അയയ്ക്കുക</translation>
 <translation id="5765072501007116331">ഡെലിവറി രീതികളും ആവശ്യകതകളും കാണാൻ ഒരു വിലാസം തിരഞ്ഞെടുക്കുക</translation>
 <translation id="57689295674415555">വെർച്വൽ കാർഡ് നമ്പർ പൂരിപ്പിച്ചിട്ടില്ലേ?</translation>
 <translation id="5776313857861697733">മുൻഗണന</translation>
@@ -1888,6 +1894,7 @@
 <translation id="6017850046339264347"><ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> എന്നതിലുള്ള അക്രമികൾ, മറ്റെന്തെങ്കിലുമാണെന്ന വ്യാജേന തെറ്റിദ്ധരിപ്പിക്കുന്ന ആപ്പുകൾ ഇൻസ്‌റ്റാൾ ചെയ്യാം അല്ലെങ്കിൽ ഡാറ്റ ശേഖരിച്ച് നിങ്ങളെ ട്രാക്കുചെയ്യാൻ ഉപയോഗിക്കാം. <ph name="BEGIN_LEARN_MORE_LINK" />കൂടുതലറിയുക<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="6025416945513303461"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /> (സമന്വയിപ്പിച്ചത്)</translation>
 <translation id="6027201098523975773">ഒരു പേര് നൽകുക</translation>
+<translation id="6028591542479806248">മൊബൈൽ, ഇമെയിൽ അറിയിപ്പുകൾ മാനേജ് ചെയ്യുക</translation>
 <translation id="603068602130820122">വലതുവശത്ത് ഇരട്ട സ്‌റ്റേപ്പിൾ ചെയ്യുക</translation>
 <translation id="6032524144326295339">മെയിൽബോക്സ് 2</translation>
 <translation id="6032955021262906325">ഇടതുവശത്ത് ബൈൻഡ് ചെയ്യുക</translation>
@@ -2806,6 +2813,7 @@
 <translation id="8559762987265718583">നിങ്ങളുടെ ഉപകരണത്തിന്റെ തീയതിയും സമയവും (<ph name="DATE_AND_TIME" />) തെറ്റായതിനാൽ <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> എന്നതിലേക്കുള്ള സ്വകാര്യ കണക്ഷൻ സ്ഥാപിക്കാനാവില്ല.</translation>
 <translation id="8564182942834072828">വെവ്വേറെ ഡോക്യുമെന്റുകൾ/ക്രമത്തിലല്ലാത്ത പകർപ്പുകൾ</translation>
 <translation id="8564985650692024650">മറ്റ് സൈറ്റുകളിൽ നിങ്ങൾ <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> പാസ്‌വേഡ് പുനരുപയോഗിച്ചിട്ടുണ്ടെങ്കിൽ, അത് റീസെറ്റ് ചെയ്യാൻ Chromium ശുപാർ‌ശ ചെയ്യുന്നു.</translation>
+<translation id="8573969211731659953">വിലക്കുറവുമായി ബന്ധപ്പെട്ട അറിയിപ്പുകൾ ഓണാണ്. <ph name="NOTIFICATION_SETTINGS" /> എന്നതിൽ നിങ്ങൾക്കിത് മാറ്റാം</translation>
 <translation id="8576310925653847813">ഹോം തീയറ്റർ സംവിധാനങ്ങൾ</translation>
 <translation id="8577348305244205642">വെർച്വൽ കാർഡ് ലഭ്യമല്ല</translation>
 <translation id="858637041960032120">ഫോണ്‍ നമ്പര്‍ ചേര്‍ക്കുക</translation>

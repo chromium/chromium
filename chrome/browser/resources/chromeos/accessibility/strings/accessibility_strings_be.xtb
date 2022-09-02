@@ -226,6 +226,7 @@
 <translation id="2497706219848005458">Зялёна-жоўты</translation>
 <translation id="2523609930580546572">Дапаможнік па ChromeVox</translation>
 <translation id="2525706221823668172">Спалучэнні клавіш у Chromebook</translation>
+<translation id="2543973100702367007">Каб <ph name="LABEL" />, націсніце двойчы</translation>
 <translation id="2553108862507765288">граматычная памылка</translation>
 <translation id="2556326187583116255">Каб спыніць зачытванне тэксту ўголас, дакраніцеся да экрана двума пальцамі</translation>
 <translation id="2573256689920773241">Асноўныя спосабы навігацыі</translation>
@@ -1115,6 +1116,7 @@
 <translation id="8693391540059827073">Мая любімая пара года</translation>
 <translation id="8696284982970258155">Зімовая дыня</translation>
 <translation id="8697111817566059991">{COUNT,plural, =1{вертыкальная лінія}one{# вертыкальная лінія}few{# вертыкальныя лініі}many{# вертыкальных ліній}other{# вертыкальнай лініі}}</translation>
+<translation id="8733397807344284494">Каб <ph name="LABEL" />, націсніце Пошук + Прабел</translation>
 <translation id="8741370088760768424">Падказка: каб актываваць бягучы аб'ект, націсніце Пошук + Прабел.</translation>
 <translation id="8743786158317878347">увод структураванага змесціва, напрыклад табліц</translation>
 <translation id="8746846427395705317">перайсці да папярэдняга слова</translation>

@@ -502,9 +502,9 @@
 <translation id="5253070652067921974">ਇਸ ਵੱਲੋਂ ਬਣਾਈ ਗਈ</translation>
 <translation id="5257456363153333584">ਡ੍ਰੈਗਨਫਲਾਈ</translation>
 <translation id="5262311848634918433"><ph name="MARKUP_1" />ਕਿਤੋਂ ਵੀ ਫ਼ਾਈਲਾਂ 'ਤੇ ਪਹੁੰਚ ਕਰੋ, ਭਾਵੇਂ ਆਫ਼ਲਾਈਨ ਹੋਵੋ।<ph name="MARKUP_2" />
-    Google ਡਰਾਈਵ ਵਿੱਚ ਫ਼ਾਈਲਾਂ ਅੱਪ ਟੂ ਡੇਟ ਹੁੰਦੀਆਂ ਹਨ ਅਤੇ ਕਿਸੇ ਵੀ ਡੀਵਾਈਸ ਤੋਂ ਉਪਲਬਧ ਹੁੰਦੀਆਂ ਹਨ।<ph name="MARKUP_3" />
+    Google Drive ਵਿੱਚ ਫ਼ਾਈਲਾਂ ਅੱਪ ਟੂ ਡੇਟ ਹੁੰਦੀਆਂ ਹਨ ਅਤੇ ਕਿਸੇ ਵੀ ਡੀਵਾਈਸ ਤੋਂ ਉਪਲਬਧ ਹੁੰਦੀਆਂ ਹਨ।<ph name="MARKUP_3" />
     <ph name="MARKUP_4" />ਆਪਣੀਆਂ ਫ਼ਾਈਲਾਂ ਸੁਰੱਖਿਅਤ ਰੱਖੋ<ph name="MARKUP_5" />
-    ਤੁਹਾਡੇ ਡੀਵਾਈਸ ਨਾਲ ਕੁਝ ਵੀ ਵਾਪਰਨ 'ਤੇ, ਤੁਹਾਡੀਆਂ ਫ਼ਾਈਲਾਂ 'Google ਡਰਾਈਵ' ਵਿੱਚ ਸੁਰੱਖਿਅਤ ਢੰਗ ਨਾਲ ਸਟੋਰ ਰਹਿੰਦੀਆਂ ਹਨ।<ph name="MARKUP_6" />
+    ਤੁਹਾਡੇ ਡੀਵਾਈਸ ਨਾਲ ਕੁਝ ਵੀ ਵਾਪਰਨ 'ਤੇ, ਤੁਹਾਡੀਆਂ ਫ਼ਾਈਲਾਂ Google Drive ਵਿੱਚ ਸੁਰੱਖਿਅਤ ਢੰਗ ਨਾਲ ਸਟੋਰ ਰਹਿੰਦੀਆਂ ਹਨ।<ph name="MARKUP_6" />
     <ph name="MARKUP_7" />ਇੱਕੋ ਥਾਂ ਵਿੱਚ ਫ਼ਾਈਲਾਂ ਨੂੰ ਹੋਰਾਂ ਨਾਲ<ph name="MARKUP_8" />
     ਸਾਂਝਾ ਕਰੋ, ਬਣਾਓ, ਅਤੇ ਉਹਨਾਂ 'ਤੇ ਸਹਿਯੋਗ ਦਿਓ।<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">Google Drive ਤੋਂ ਰਿਕਵਰ ਕੀਤੀਆਂ ਫਾਈਲਾਂ</translation>
@@ -516,7 +516,7 @@
 <translation id="5323213332664049067">ਲਾਤੀਨੀ ਅਮਰੀਕੀ</translation>
 <translation id="5330145655348521461">ਇਹ ਫਾਈਲਾਂ ਇੱਕ ਵੱਖਰੇ ਡੈਸਕਟਾਪ ਤੇ ਖੁੱਲ੍ਹੀਆਂ ਹੋਈਆਂ ਹਨ। ਇਸਨੂੰ ਦੇਖਣ ਲਈ <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) 'ਤੇ ਹਲਚਲ ਕਰੋ।</translation>
 <translation id="5330512191124428349">ਜਾਣਕਾਰੀ ਪ੍ਰਾਪਤ ਕਰੋ</translation>
-<translation id="5335458522276292100"><ph name="BEGIN_LINK" />Google ਡਰਾਈਵ<ph name="END_LINK" /> 'ਤੇ <ph name="FILE_COUNT" /> ਦਾ ਬੈਕਅੱਪ ਲਿਆ ਜਾ ਰਿਹਾ ਹੈ</translation>
+<translation id="5335458522276292100"><ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /> 'ਤੇ <ph name="FILE_COUNT" /> ਦਾ ਬੈਕਅੱਪ ਲਿਆ ਜਾ ਰਿਹਾ ਹੈ</translation>
 <translation id="535792325654997756">ਬਿੱਲੀਆਂ ਨਾਲ ਵਿਅਕਤੀ</translation>
 <translation id="5358764674931277">ਫ੍ਰੇਮ ਰੇਟ</translation>
 <translation id="5363339716524495120">ਇਨਪੁੱਟ ਭਾਸ਼ਾ ਚੀਨੀ ਹੈ</translation>
@@ -737,7 +737,7 @@
 <translation id="7248671827512403053">ਐਪਲੀਕੇਸ਼ਨ</translation>
 <translation id="7256405249507348194">ਬੇਪਛਾਣ ਗੜਬੜ: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">ਉਪਲਬਧ ਸੇਵਾਵਾਂ</translation>
-<translation id="7283041136720745563">ਤੁਹਾਡਾ Google ਡਰਾਈਵ ਕੋਟਾ ਜ਼ਿਆਦਾ ਵੱਡਾ ਨਹੀਂ ਹੈ।</translation>
+<translation id="7283041136720745563">ਤੁਹਾਡਾ Google Drive ਕੋਟਾ ਜ਼ਿਆਦਾ ਵੱਡਾ ਨਹੀਂ ਹੈ।</translation>
 <translation id="7294063083760278948">ਤੇਲਗੂ ਲਿਪੀਅੰਤਰਨ</translation>
 <translation id="7295662345261934369">ਹੋਰਾਂ ਨਾਲ ਸਾਂਝਾ ਕਰੋ</translation>
 <translation id="7297443947353982503">ਵਰਤੋਂਕਾਰ ਨਾਮ/ਪਾਸਵਰਡ ਗਲਤ ਹੈ ਜਾਂ EAP-ਪ੍ਰਮਾਣਿਕਤਾ ਅਸਫ਼ਲ ਹੋ ਗਈ</translation>
@@ -757,7 +757,7 @@
 <translation id="7486315294984620427">Parallels Desktop ਵਿੱਚ ਫ਼ਾਈਲਾਂ ਨੂੰ ਪਾਉਣ ਲਈ, ਫ਼ਾਈਲ ਦਾ Windows ਫ਼ਾਈਲਾਂ 'ਤੇ ਕਾਪੀ ਕਰਨਾ ਲਾਜ਼ਮੀ ਹੈ।</translation>
 <translation id="7489215562877293245"><ph name="FILE_COUNT" /> ਮਿਲੀਆਂ
     <ph name="LINE_BREAK1" />
-    <ph name="BEGIN_LINK" />Google ਡਰਾਈਵ<ph name="END_LINK" /> ਵਿੱਚ ਬੈਕਅੱਪ ਲੈਣ ਲਈ ਤਿਆਰ</translation>
+    <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /> ਵਿੱਚ ਬੈਕਅੱਪ ਲੈਣ ਲਈ ਤਿਆਰ</translation>
 <translation id="749452993132003881">ਹਿਰਾਗਾਨਾ</translation>
 <translation id="7495372004724182530">ਮਲਿਆਲਮ ਧੁਨੀਆਤਮਿਕ</translation>
 <translation id="7505167922889582512">ਲੁਕਾਈਆਂ ਫਾਈਲਾਂ ਦਿਖਾਓ</translation>

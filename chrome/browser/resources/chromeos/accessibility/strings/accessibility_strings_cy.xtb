@@ -226,6 +226,7 @@
 <translation id="2497706219848005458">Melyn Gwyrdd</translation>
 <translation id="2523609930580546572">Tiwtorial ChromeVox</translation>
 <translation id="2525706221823668172">Llwybrau byr bysellfwrdd Chromebook</translation>
+<translation id="2543973100702367007">Tapiwch ddwywaith i <ph name="LABEL" /></translation>
 <translation id="2553108862507765288">camgymeriad gramadegol</translation>
 <translation id="2556326187583116255">Tapiwch gyda 2 fys i atal unrhyw leferydd presennol</translation>
 <translation id="2573256689920773241">Llywio sylfaenol</translation>
@@ -1115,6 +1116,7 @@
 <translation id="8693391540059827073">Fy hoff dymor</translation>
 <translation id="8696284982970258155">Gwyrdd golau</translation>
 <translation id="8697111817566059991">{COUNT,plural, =1{pibell}zero{# pibell fertigol}two{# bibell fertigol}few{# pibell fertigol}many{# phibell fertigol}other{# pibell fertigol}}</translation>
+<translation id="8733397807344284494">Pwyswch Search+Space i <ph name="LABEL" /></translation>
 <translation id="8741370088760768424">Awgrym: Pwyswch Search + Space i weithredu'r eitem bresennol.</translation>
 <translation id="8743786158317878347">dechrau cynnwys strwythuredig, megis tablau</translation>
 <translation id="8746846427395705317">symudwch i'r gair blaenorol</translation>

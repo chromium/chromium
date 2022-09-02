@@ -2684,6 +2684,17 @@ Perilaku ini sama dengan <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_KEEP_EXISTING_DA
 <translation id="3727675072430693164">Jika kebijakan disetel ke Aktif, perangkat yang terdaftar akan melaporkan statistik hardware untuk komponen SoC.
 
       Jika kebijakan disetel ke Nonaktif atau tidak disetel, perangkat yang terdaftar tidak akan melaporkan statistik.</translation>
+<translation id="372853200788846114">Jika kebijakan disetel ke Aktif, <ph name="PRODUCT_OS_NAME" /> akan meminta sandi kepada pengguna untuk membuka kunci perangkat saat perangkat ditangguhkan atau penutupnya ditutup.
+
+      Perangkat akan dikunci saat penutupnya ditutup kecuali jika perangkat dipasang ke dok (menggunakan monitor eksternal).  Dalam kasus semacam itu, perangkat tidak akan dikunci saat penutupnya ditutup, tetapi akan dikunci jika monitor eksternal dilepas dan penutup masih tertutup.
+
+      Hingga <ph name="PRODUCT_OS_NAME" /> M106, kebijakan ini hanya akan mengunci perangkat saat perangkat ditangguhkan.  Mulai M106 dan seterusnya, kebijakan ini akan mengunci perangkat saat perangkat ditangguhkan atau penutupnya ditutup.
+
+      Dengan menyetel kebijakan ini ke benar (true) dan <ph name="LID_CLOSE_ACTION_POLICY_NAME" /> ke <ph name="LID_CLOSE_ACTION_ENUM_DO_NOTHING" />, perangkat akan dikunci saat penutupnya ditutup, tetapi hanya akan ditangguhkan jika dan saat dikonfigurasi untuk melakukannya di <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" />.
+
+      Jika kebijakan disetel ke Nonaktif, pengguna tidak akan dimintai sandi untuk membuka kunci perangkat.
+
+      Jika kebijakan tidak disetel, pengguna dapat memilih apakah akan dimintai sandi untuk membuka kunci perangkat.</translation>
 <translation id="3729937245044939404">Kebijakan ini tidak digunakan lagi di M70. Sebagai gantinya, gunakan <ph name="AUTOFILL_ADDRESS_ENABLED_POLICY_NAME" /> dan <ph name="AUTOFILL_CREDIT_CARD_ENABLED_POLICY_NAME" />.
 
       Mengaktifkan fitur Isi Otomatis <ph name="PRODUCT_NAME" /> dan mengizinkan pengguna untuk melengkapi formulir web secara otomatis menggunakan informasi yang tersimpan sebelumnya, seperti alamat atau informasi kartu kredit.

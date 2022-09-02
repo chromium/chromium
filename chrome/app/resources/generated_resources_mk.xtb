@@ -718,6 +718,7 @@
 <translation id="16620462294541761">Не може да се провери вашата лозинка. Обидете се повторно.</translation>
 <translation id="166278006618318542">Алгоритам на јавен клуч на субјект</translation>
 <translation id="1662801900924515589"><ph name="APP" /> е инсталирана</translation>
+<translation id="1665328953287874063">Користете лозинка или PIN за да го отклучувате вашиот <ph name="DEVICE_TYPE" /></translation>
 <translation id="1666232093776384142">Оневозможете ја заштитата на пристапот до податоци за перфиферните уреди</translation>
 <translation id="1667842670298352129">Слушнете конкретен текст прочитан на глас. Прво изберете ја иконата „Изберете за говор“ најдолу на екранот, а потоа нагласете го текстот. Можете да користите кратенка од тастатурата: нагласете го текстот, а потоа притиснете Search + S.</translation>
 <translation id="1668435968811469751">Регистрирајте рачно</translation>
@@ -1365,6 +1366,7 @@
 <translation id="2251218783371366160">Отвори со прикажувач на систем</translation>
 <translation id="225163402930830576">Освежи мрежи</translation>
 <translation id="2251809247798634662">Нов прозорец „Инкогнито“</translation>
+<translation id="2252017960592955005">Заштита од прегледување (Бета)</translation>
 <translation id="225240747099314620">Овозможете идентификатори за заштитена содржина (може да биде потребно да се рестартира компјутерот)</translation>
 <translation id="2255077166240162850">Уредов беше заклучен за друг домен или режим.</translation>
 <translation id="2255317897038918278">Временско означување на Microsoft</translation>
@@ -1851,6 +1853,7 @@
 <translation id="2691385045260836588">Модел</translation>
 <translation id="2691440343905273290">Изменете ги поставките за внесување</translation>
 <translation id="2693176596243495071">Упс!  Настана непозната грешка. Обидете се повторно подоцна. Ако и понатаму се соочувате со истиот проблем, контактирајте со вашиот администратор.</translation>
+<translation id="2698147581454716013">Ова е уред од група и не може да се регистрира со надградба за киоск или уред за сигнализација.</translation>
 <translation id="2699911226086014512">Операцијата за PIN не успеа со код <ph name="RETRIES" />.</translation>
 <translation id="2701330563083355633">Споделено од <ph name="DEVICE_NAME" /></translation>
 <translation id="2701737434167469065">Најавете се, <ph name="EMAIL" /></translation>
@@ -1929,6 +1932,7 @@
 <translation id="2757338480560142065">Погрижете се лозинката што ја зачувувате да се совпаѓа со лозинката за <ph name="WEBSITE" /></translation>
 <translation id="2762441749940182211">Камерата е блокирана</translation>
 <translation id="2764786626780673772">Детали за VPN</translation>
+<translation id="2764920001292228569">Внесете име на профил</translation>
 <translation id="2765100602267695013">Контактирајте со мобилниот оператор</translation>
 <translation id="2765217105034171413">Мало</translation>
 <translation id="2766006623206032690">З&amp;алепи и оди</translation>
@@ -3298,6 +3302,7 @@
 <translation id="4065876735068446555">Мрежата што ја користите (<ph name="NETWORK_ID" />) може да бара да ја посетите страницата за најавување.</translation>
 <translation id="4066207411788646768">Проверете ја врската за да ги видите достапните печатачи во мрежата</translation>
 <translation id="4066945815577305767">Истечено време на лозинките</translation>
+<translation id="4067839975993712852">Означи ја тековната картичка како прочитана</translation>
 <translation id="4068776064906523561">Зачувани отпечатоци</translation>
 <translation id="407173827865827707">На клик</translation>
 <translation id="4072701974556190758">Лозинката ќе се зачува во вашата сметка на Google, <ph name="ACCOUNT" />. Нема да треба да ја помните.</translation>
@@ -4715,7 +4720,6 @@
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{PIN-кодот мора да содржи најмалку еден знак}one{PIN-кодот мора да содржи најмалку # знак}other{PIN-кодот мора да содржи најмалку # знака}}</translation>
 <translation id="5474859849784484111"><ph name="MANAGER" /> бара веднаш да се поврзете на Wi-Fi и да преземете ажурирање. Може да го преземете и преку врска со ограничен интернет (може да ви се наплати).</translation>
 <translation id="5481273127572794904">Не им е дозволено автоматски да преземаат повеќе датотеки</translation>
-<translation id="5481755802440890178">Избраното не може да се преведе во моментов</translation>
 <translation id="5481941284378890518">Додај печатачи во близина</translation>
 <translation id="5483785310822538350">Отповикај го пристапот до датотеката и уредот</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> бара да направите бекап на вашите податоци и да го вратите овој <ph name="DEVICE_TYPE" /> денес. <ph name="LINK_BEGIN" />Погледнете ги деталите<ph name="LINK_END" />}one{<ph name="MANAGER" /> бара да направите бекап на вашите податоци и да го вратите овој <ph name="DEVICE_TYPE" /> во рок од {NUM_DAYS} ден.<ph name="LINK_BEGIN" />Погледнете ги деталите<ph name="LINK_END" />}other{<ph name="MANAGER" /> бара да направите бекап на вашите податоци и да го вратите овој <ph name="DEVICE_TYPE" /> во рок од {NUM_DAYS} дена.<ph name="LINK_BEGIN" />Погледнете ги деталите<ph name="LINK_END" />}}</translation>
@@ -4916,7 +4920,6 @@
 <translation id="5657667036353380798">Надворешната наставка бара верзија на Chrome <ph name="MINIMUM_CHROME_VERSION" /> или поголема за да се инсталира.</translation>
 <translation id="5658415415603568799">За дополнителна безбедност, Smart Lock ќе побара да ја внесете вашата лозинка по 20 часа.</translation>
 <translation id="5659593005791499971">Е-пошта</translation>
-<translation id="5659833766619490117">Страницава не може да се преведе</translation>
 <translation id="5662513737565158057">Променете го начинот на работа на апликациите на Linux.</translation>
 <translation id="5667293444945855280">Злонамерен софтвер</translation>
 <translation id="5667546120811588575">Се поставува Google Play…</translation>
@@ -5782,6 +5785,7 @@
 <translation id="6508248480704296122">Поврзанo со <ph name="NAME_PH" /></translation>
 <translation id="6508261954199872201">Апликација: <ph name="APP_NAME" /></translation>
 <translation id="6509207748479174212">Дозвола за аудио-визуелни содржини</translation>
+<translation id="6511827214781912955">Размислете да ја избришете <ph name="FILENAME" /> за да не можат другите луѓе кои го користат уредов да ги гледаат вашите лозинки</translation>
 <translation id="6513247462497316522">Google Chrome ќе користи мобилен интернет ако не сте поврзани на друга мрежа.</translation>
 <translation id="6514010653036109809">Достапен уред:</translation>
 <translation id="6514565641373682518">Оваа страница го оневозможи курсорот на глушецот.</translation>
@@ -6065,6 +6069,7 @@
 <translation id="6781978626986383437">Бекапот на Linux е откажан</translation>
 <translation id="6782067259631821405">Погрешен PIN</translation>
 <translation id="6784523122863989144">Профилот е поддржан</translation>
+<translation id="6785739405821760313">Се прикажуваат зачуваните работни површини. Притиснете Tab за навигација.</translation>
 <translation id="6785872064505734160">„Помошникот на Google“ во Chrome може да извршува дејства за вас на веб-сајтовите</translation>
 <translation id="6786747875388722282">Наставки</translation>
 <translation id="6787097042755590313">Друга картичка</translation>
@@ -6522,6 +6527,7 @@
 <translation id="7222204278952406003">Chrome е вашиот стандарден прелистувач</translation>
 <translation id="7222232353993864120">Адреса на е-пошта</translation>
 <translation id="7222235798733126207">Ограничено споделување меѓу сајтовите</translation>
+<translation id="7225082563376899794">Користи Windows Hello при пополнувањето лозинки</translation>
 <translation id="7225179976675429563">Недостасува тип мрежа</translation>
 <translation id="7227458944009118910">Апликациите наведени подолу може да ракуваат и со линкови за протоколи. Другите апликации ќе побараат дозвола.</translation>
 <translation id="7228523857728654909">Заклучување на екранот и најавување</translation>
@@ -6563,6 +6569,7 @@
 <translation id="7258192266780953209">Трансформации</translation>
 <translation id="7258225044283673131">Апликацијата не одговара. Изберете „Затвори присилно“ за да ја затворите.</translation>
 <translation id="7260186537988033909">Регистрацијата на киоск и уред за сигнализација е завршена</translation>
+<translation id="7261851165551049223">Користи TouchID при пополнувањето лозинки</translation>
 <translation id="7262004276116528033">Хост на услугата за најавување е <ph name="SAML_DOMAIN" /></translation>
 <translation id="7264695323040866038">Секогаш да се користи апликацијата <ph name="APP" /> за отворање поддржани веб-линкови?</translation>
 <translation id="7267044199012331848">Не може да се инсталира виртуелната машина. Обидете се повторно или контактирајте со администраторот. Код за грешка: <ph name="ERROR_CODE" />.</translation>
@@ -6649,6 +6656,7 @@
 <translation id="7358338787722390626">Затворете го пребарувањето на страничната табла</translation>
 <translation id="735994578317267253">Преземете ги вашите апликации, поставки и друго на кој било уред со ChromeOS</translation>
 <translation id="7360233684753165754"><ph name="PAGE_NUMBER" /> страници на <ph name="PRINTER_NAME" /></translation>
+<translation id="7360257054721917104">Се прикажуваат зачуваните работни површини и шаблони. Притиснете Tab за навигација.</translation>
 <translation id="7361297102842600584">Кликнете за да го активирате приклучокот <ph name="PLUGIN_NAME" /></translation>
 <translation id="7362387053578559123">Сајтовите може да прашуваат за да се поврзат со уреди со Bluetooth</translation>
 <translation id="7363349185727752629">Упатство за вашите опции за приватноста</translation>
@@ -7302,6 +7310,7 @@
 <translation id="7953669802889559161">Методи за внесување</translation>
 <translation id="7953955868932471628">Управувај со кратенките</translation>
 <translation id="7955105108888461311">Побарај лично</translation>
+<translation id="7955177647836564772">Ако е вклучена Smart Lock, а вашиот телефон е отклучен, тогаш нема потреба да внесувате лозинка или PIN</translation>
 <translation id="7956373551960864128">Вашите зачувани печатачи</translation>
 <translation id="7957074856830851026">Прегледување податоци за уредот, како што е неговиот сериски број и ID на средство</translation>
 <translation id="7959074893852789871">Датотеката содржеше повеќе сертификати, од кои некои не беа увезени:</translation>
@@ -7559,6 +7568,7 @@
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Вашите уреди<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195027750202970175">Големина на диск</translation>
 <translation id="8195191503358432289">Додајте лозинка</translation>
+<translation id="8197673340773315084">Додајте име или етикета, на пр., „Работен“ или „Личен“</translation>
 <translation id="8198456017687137612">Картичка за емитување</translation>
 <translation id="8199300056570174101">Својства на уредот и мрежата (услугата)</translation>
 <translation id="8200772114523450471">Продолжи</translation>
@@ -7659,6 +7669,7 @@
 <translation id="8284279544186306258">сите локации на <ph name="WEBSITE_1" /></translation>
 <translation id="8284326494547611709">Титлови</translation>
 <translation id="8286036467436129157">Најави се</translation>
+<translation id="828642162569365647">Оваа лозинка или PIN ги штити вашите податоци на овој <ph name="DEVICE_TYPE" /> и сите податоци до кои пристапувате од вашиот телефон. Ќе треба да отклучувате секој пат кога вашиот <ph name="DEVICE_TYPE" /> ќе се разбуди од режим во мирување.</translation>
 <translation id="8287902281644548111">Пребарувајте по повик/URL на API</translation>
 <translation id="8288032458496410887">Деинсталирајте ја <ph name="APP" />…</translation>
 <translation id="8289128870594824098">Големина на диск</translation>

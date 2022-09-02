@@ -263,6 +263,7 @@
 <translation id="3280987981688031357">Вінілавая пласцінка</translation>
 <translation id="3290356915286466215">Не абаронена</translation>
 <translation id="3291218047831493686">Каб змяніць налады блакіроўкі SIM-карты, падключыцеся да гэтай сеткі</translation>
+<translation id="3293023191599135697">Сеткі WEP не падтрымліваюцца</translation>
 <translation id="3295357220137379386">Прылада занятая</translation>
 <translation id="3296763833017966289">Грузінская</translation>
 <translation id="3307875152560779385">Украінская</translation>
@@ -353,6 +354,7 @@
 <translation id="4092890906744441904">Ірландская</translation>
 <translation id="4124935795427217608">Аднарог</translation>
 <translation id="4159731583141908892">Элемент "<ph name="FILE_NAME" />" перамешчаны.</translation>
+<translation id="4176286497474237543">Ачысціць сметніцу</translation>
 <translation id="4186579485882418952">Уключыць пазасеткавы рэжым</translation>
 <translation id="4193154014135846272">Дакумент Google</translation>
 <translation id="4197674956721858839">Архіваваць выбранае ў файл ZIP</translation>
@@ -659,6 +661,7 @@
 <translation id="6643016212128521049">Ачысціць</translation>
 <translation id="6650726141019353908">Ружовы матылёк</translation>
 <translation id="6657585470893396449">Пароль</translation>
+<translation id="6658865850469097484">Файлы, якія знаходзяцца ў сметніцы больш за 30 дзён, будуць аўтаматычна выдаляцца.</translation>
 <translation id="6673674183150363784">Французская (Францыя) з раскладкай Bépo</translation>
 <translation id="6710022688720561421">Робат</translation>
 <translation id="6710213216561001401">Назад</translation>

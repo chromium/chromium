@@ -157,6 +157,7 @@
 <translation id="1348198688976932919">தளத்தில் ஆபத்தான ஆப்ஸ் உள்ளன</translation>
 <translation id="1348779747280417563">பெயரை உறுதிப்படுத்தவும்</translation>
 <translation id="1354976809542763843">வீட்டுக் கடன்</translation>
+<translation id="1355158069018170842">விலை குறைவது தொடர்பான விழிப்பூட்டல்களைப் பக்கங்களில் காட்டு</translation>
 <translation id="1355301061807280185">வேலைகள்</translation>
 <translation id="1355754231781595724">வாகனம் &amp; போக்குவரத்துப் பாதுகாப்பு</translation>
 <translation id="1357195169723583938">சமீபத்தில் சாதனத்தை யார், எப்போது பயன்படுத்தியது</translation>
@@ -466,6 +467,7 @@
 <translation id="2153609454945889823">Google Play Services for ARரை நிறுவ வேண்டுமா?</translation>
 <translation id="2154054054215849342">உங்கள் டொமைனுக்கு ஒத்திசைத்தல் சேவை முடக்கப்பட்டுள்ளது</translation>
 <translation id="2154484045852737596">கார்டைத் திருத்தவும்</translation>
+<translation id="2157640075051554492">விலைக் கண்காணிப்பு அறிவிப்புகள்</translation>
 <translation id="2161656808144014275">உரை</translation>
 <translation id="2162510787844374618">உங்கள் பேங்க்கைத் தொடர்புகொள்கிறது...</translation>
 <translation id="2162620598375156287"><ph name="SOURCE_WEBSITE" /> தளத்தில் தற்போதைய விலை: <ph name="CURRENT_PRICE" /></translation>
@@ -999,6 +1001,7 @@
 <translation id="3633738897356909127">’Chromeமைப் புதுப்பி’ பட்டன், Chrome அமைப்புகளில் Chromeமைப் புதுப்பிக்க Enter விசையை அழுத்துங்கள்</translation>
 <translation id="3634530185120165534">தட்டு 5</translation>
 <translation id="3634567936866541746">ஏமாற்றக்கூடிய தளத்தில் கடவுச்சொல்லை உள்ளிட்டுள்ளீர்கள். உங்கள் கணக்குகளைப் பாதுகாக்க, நீங்கள் சேமித்துள்ள கடவுச்சொற்களைச் சரிபார்க்குமாறு Chrome பரிந்துரைக்கிறது.</translation>
+<translation id="3637033245385760976">Chrome அறிவிப்புகள் இயக்கப்பட்டிருக்க வேண்டும். <ph name="NOTIFICATION_SETTINGS" /> என்பதற்குச் சென்று அவற்றை இயக்கலாம்</translation>
 <translation id="3637662659967048211">Google கணக்கில் சேமித்தல்</translation>
 <translation id="3640766068866876100">Index-4x6-Ext</translation>
 <translation id="3642638418806704195">ஆப்ஸ்:</translation>
@@ -1421,6 +1424,7 @@
 <translation id="4785376858512657294">Google கணக்கை நிர்வகியுங்கள்</translation>
 <translation id="4785689107224900852">இந்தத் தாவலுக்கு மாற்றும்</translation>
 <translation id="4786804728079074733">கைப்பந்து</translation>
+<translation id="4789704664580239421">விலை குறைவது தொடர்பான விழிப்பூட்டல்கள் திறந்துள்ள பக்கங்களில் காட்டப்படும்</translation>
 <translation id="4791134497475588553">Linux ஆப்ஸ் எப்போது நிறுவப்பட்டன, எப்போது கடைசியாகப் பயன்படுத்தப்பட்டன போன்றவற்றைப் பார்க்கலாம்</translation>
 <translation id="4792686369684665359">நீங்கள் சமர்ப்பிக்கவிருக்கும் தகவல்கள் பாதுகாப்பாக இல்லை</translation>
 <translation id="4796594887379589189">பணிக் கணக்கு ஐடி</translation>
@@ -1786,6 +1790,7 @@
 <translation id="5730040223043577876">பிற தளங்களில் உங்கள் கடவுச்சொல்லை மீண்டும் பயன்படுத்தினால், அதை மீட்டமைக்கும்படி Chrome பரிந்துரைக்கிறது.</translation>
 <translation id="5736165827969430182">உலோகங்கள் &amp; சுரங்கம்</translation>
 <translation id="5737183892635480227">{NUM_CARDS,plural, =1{உங்கள் Google கணக்கில் கார்டைச் சேமியுங்கள்}other{உங்கள் Google கணக்கில் கார்டுகளைச் சேமியுங்கள்}}</translation>
+<translation id="5738385766833540397">நீங்கள் கண்காணிக்கும் தயாரிப்புகளின் விலை குறைவது தொடர்பான விழிப்பூட்டல்களை எதில் பெற வேண்டும் என்பதை நிர்வகிக்கலாம்</translation>
 <translation id="5743638595296120378">வாகன ஷாப்பிங்</translation>
 <translation id="5743898850056428078">மோட்டர்சைக்கிள் பந்தயம்</translation>
 <translation id="5745733273847572235">எனது இருப்பிடத் தகவலைப் பயன்படுத்த அனுமதி கேட்க வேண்டும்</translation>
@@ -1795,6 +1800,7 @@
 <translation id="5759751709240058861">உங்கள் கேமராவைப் பயன்படுத்துவது &amp; நகர்த்துவது</translation>
 <translation id="5763042198335101085">சரியான மின்னஞ்சல் முகவரியை உள்ளிடவும்</translation>
 <translation id="5764725887548570807">ஆரிஜின் வடிவம் தவறு.</translation>
+<translation id="5764920692828389743"><ph name="EMAIL_ADDRESS" /> என்ற மின்னஞ்சல் முகவரிக்கு அனுப்பும்</translation>
 <translation id="5765072501007116331">டெலிவரி முறைகளையும் தேவைகளையும் பார்க்க, முகவரியைத் தேர்ந்தெடுக்கவும்</translation>
 <translation id="57689295674415555">விர்ச்சுவல் கார்டு எண் நிரப்பப்படவில்லையா?</translation>
 <translation id="5776313857861697733">முன்னுரிமை</translation>
@@ -1885,6 +1891,7 @@
 <translation id="6017850046339264347"><ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> எனும் தளத்தில் உள்ள தீங்கிழைப்பவர்கள், ஏமாற்றக்கூடிய ஆப்ஸை (இவை வேறு ஏதோவொன்றைப் போல போலியாகத் தோற்றமளிக்கும் அல்லது உங்களை டிராக் செய்வதற்குப் பயன்படுத்தக்கூடிய தரவைச் சேகரிக்கும்) நிறுவலாம். <ph name="BEGIN_LEARN_MORE_LINK" />மேலும் அறிக<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="6025416945513303461"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /> (ஒத்திசைக்கப்பட்டன)</translation>
 <translation id="6027201098523975773">பெயரை உள்ளிடவும்</translation>
+<translation id="6028591542479806248">மொபைல் மற்றும் மின்னஞ்சல் அறிவிப்புகளை நிர்வகிக்கலாம்</translation>
 <translation id="603068602130820122">டூயல் ஸ்டேப்பில் ரைட்</translation>
 <translation id="6032524144326295339">அஞ்சல் பெட்டி 2</translation>
 <translation id="6032955021262906325">பைண்டு லெஃப்ட்</translation>
@@ -2804,6 +2811,7 @@
 <translation id="8559762987265718583">உங்கள் சாதனத்தின் தேதி மற்றும் நேரம் (<ph name="DATE_AND_TIME" />) தவறாக உள்ளதால் <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> க்கான தனிப்பட்ட இணைப்பை ஏற்படுத்த முடியவில்லை.</translation>
 <translation id="8564182942834072828">தனித்தனி ஆவணங்கள்/தொகுக்கப்படாத நகல்கள்</translation>
 <translation id="8564985650692024650">பிற தளங்களில் உங்கள் <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> கடவுச்சொல்லை மீண்டும் பயன்படுத்தினால், அதை மீட்டமைக்கும்படி Chromium பரிந்துரைக்கிறது.</translation>
+<translation id="8573969211731659953">விலை குறைவது தொடர்பான விழிப்பூட்டல்கள் இயக்கப்பட்டுள்ளன. இதை <ph name="NOTIFICATION_SETTINGS" /> என்பதற்குச் சென்று மாற்றலாம்</translation>
 <translation id="8576310925653847813">ஹோம் தியேட்டர் சிஸ்டங்கள்</translation>
 <translation id="8577348305244205642">விர்ச்சுவல் கார்டு கிடைக்கவில்லை</translation>
 <translation id="858637041960032120">ஃபோன் எண்ணைச் சேர்</translation>

@@ -313,6 +313,7 @@
 <translation id="3689865792480713551"><ph name="ACTIVITY_DESCRIPTION" /> रद्द करें.</translation>
 <translation id="3690128548376345212"><ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /> का नेटवर्क <ph name="NETWORK_INDEX" />, चालू नहीं किया गया, <ph name="CONNECTION_STATUS" />, सिग्नल की क्षमता <ph name="SIGNAL_STRENGTH" />%, जानकारी</translation>
 <translation id="3691184985318546178">सिंहला</translation>
+<translation id="3722341589402358578">कोई गड़बड़ी हुई. कुछ आइटम ट्रैश में शायद न भेजे गए हों.</translation>
 <translation id="3726463242007121105">यह डिवाइस नहीं खोला जा सकता क्‍योंकि इसका फ़ाइल सिस्‍टम समर्थित नहीं है.</translation>
 <translation id="3727148787322499904">यह सेटिंग बदलने से सभी शेयर नेटवर्क प्रभावित होंगे</translation>
 <translation id="3737576078404241332">साइडबार से हटाएं</translation>
@@ -353,6 +354,7 @@
 <translation id="4092890906744441904">आयरिश</translation>
 <translation id="4124935795427217608">यूनिकॉर्न</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> को भेज दिया गया.</translation>
+<translation id="4176286497474237543">ट्रैश अभी खाली करें</translation>
 <translation id="4186579485882418952">ऑफ़लाइन मोड चालू करें</translation>
 <translation id="4193154014135846272">Google दस्‍तावेज़</translation>
 <translation id="4197674956721858839">ज़िप चुनें</translation>
@@ -660,6 +662,7 @@
 <translation id="6643016212128521049">साफ़ करें</translation>
 <translation id="6650726141019353908">गुलाबी तितली</translation>
 <translation id="6657585470893396449">पासवर्ड</translation>
+<translation id="6658865850469097484">ट्रैश फ़ोल्डर में मौजूद फ़ाइलों को 30 दिनों के बाद, अपने-आप मिटा दिया जाएगा.</translation>
 <translation id="6673674183150363784">बेपो कीबोर्ड के साथ फ़्रेंच (फ़्रांस)</translation>
 <translation id="6710022688720561421">रोबॉट</translation>
 <translation id="6710213216561001401">पिछला</translation>

@@ -226,6 +226,7 @@
 <translation id="2497706219848005458">Կանաչադեղին</translation>
 <translation id="2523609930580546572">ChromeVox-ի ուղեցույց</translation>
 <translation id="2525706221823668172">Chromebook-ի ստեղնային դյուրանցումներ</translation>
+<translation id="2543973100702367007">Կրկնակի հպեք՝ <ph name="LABEL" />ու համար</translation>
 <translation id="2553108862507765288">քերականական սխալ</translation>
 <translation id="2556326187583116255">Տեքստի հնչեցումն անջատելու համար երկու մատով հպեք էկրանին։</translation>
 <translation id="2573256689920773241">Հիմնական նավիգացիա</translation>
@@ -1115,6 +1116,7 @@
 <translation id="8693391540059827073">Տարվա իմ սիրած եղանակը</translation>
 <translation id="8696284982970258155">Նեկտարագույն</translation>
 <translation id="8697111817566059991">{COUNT,plural, =1{գծիկ}one{# ուղղաձիգ գծիկ}other{# ուղղաձիգ գծիկ}}</translation>
+<translation id="8733397807344284494">Սեղմեք «Որոնում» + բացատ՝ <ph name="LABEL" />ու համար</translation>
 <translation id="8741370088760768424">Հուշում․ սեղմեք «Որոնում» + բացատ՝ ընթացիկ տարրն ակտիվացնելու համար։</translation>
 <translation id="8743786158317878347">մուտքագրել կառուցվածքավորված բովանդակություն, օրինակ՝ աղյուսակ</translation>
 <translation id="8746846427395705317">անցնել նախորդ բառին</translation>

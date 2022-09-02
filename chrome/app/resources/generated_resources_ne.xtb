@@ -4693,7 +4693,6 @@
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{PIN कम्तीमा पनि एक वर्णको हुनु पर्छ}other{PIN कम्तीमा पनि # वर्णको हुनु पर्छ}}</translation>
 <translation id="5474859849784484111"><ph name="MANAGER" /> का अनुसार तपाईंले अहिले नै Wi-Fi मार्फत अपडेट डाउनलोड गर्नु पर्ने हुन्छ। अथवा, डेटाको सीमा तोकिएको इन्टरनेटबाट डाउनलोड गर्नुहोस् (शुल्क लाग्न सक्छ)।</translation>
 <translation id="5481273127572794904">धेरै फाइलहरू स्वतः डाउनलोड गर्न अनुमति नदिइएका साइटहरू</translation>
-<translation id="5481755802440890178">तपाईंले चयन गरेको पाठ अहिले अनुवाद गर्न मिल्दैन</translation>
 <translation id="5481941284378890518">नजिकैका प्रिन्टरहरू थप्नुहोस्</translation>
 <translation id="5483785310822538350">फाइल र यन्त्र पहुँच बदर गर्नुहोस्</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> का अनुसार तपाईंले आजै आफ्ना डेटा ब्याकअप गरी यो <ph name="DEVICE_TYPE" /> फिर्ता गर्नु पर्ने हुन्छ। <ph name="LINK_BEGIN" />विवरणहरू हेर्नुहोस्<ph name="LINK_END" />}other{<ph name="MANAGER" /> का अनुसार तपाईंले {NUM_DAYS} दिनभित्र आफ्ना डेटा ब्याकअप गरी यो <ph name="DEVICE_TYPE" /> फिर्ता गर्नु पर्ने हुन्छ। <ph name="LINK_BEGIN" />विवरणहरू हेर्नुहोस्<ph name="LINK_END" />}}</translation>
@@ -4894,7 +4893,6 @@
 <translation id="5657667036353380798">बाह्य विस्तारलाई chrome संस्करण <ph name="MINIMUM_CHROME_VERSION" /> वा ठुलो स्थापित भएको हुन आवश्यक छ।</translation>
 <translation id="5658415415603568799">अतिरिक्त सुरक्षाका खातिर Smart Lock ले तपाईंलाई २० घन्टापछि आफ्नो पासवर्ड प्रविष्ट गर्न लगाउन सक्छ।</translation>
 <translation id="5659593005791499971">इमेल</translation>
-<translation id="5659833766619490117">यस पृष्ठलाई अनुवाद गर्न सकिएन</translation>
 <translation id="5662513737565158057">Linux एपहरूले काम गर्ने तरिका परिवर्तन गर्नुहोस्।</translation>
 <translation id="5667293444945855280">मालवेयर</translation>
 <translation id="5667546120811588575">Google Play सेटअप गरिँदै छ…</translation>
@@ -6497,6 +6495,7 @@
 <translation id="7222204278952406003">Chrome तपाईंको डिफल्ट ब्राउजर हो</translation>
 <translation id="7222232353993864120">इमेल ठेगाना</translation>
 <translation id="7222235798733126207">साइटहरूका बिचमा सीमित जानकारीको आदानप्रदान</translation>
+<translation id="7225082563376899794">पासवर्ड भर्दा Windows Hello प्रयोग गर्नुहोस्</translation>
 <translation id="7225179976675429563">नेटवर्क प्रकार छैन</translation>
 <translation id="7227458944009118910">तल सूचीबद्ध गरिएका एपहरूले प्रोटोकल लिंक पनि खोल्न सक्छन्। अन्य एपहरूले भने ती लिंक खोल्ने अनुमति माग्ने छन्।</translation>
 <translation id="7228523857728654909">स्क्रिन लक तथा साइन इन</translation>
@@ -6538,6 +6537,7 @@
 <translation id="7258192266780953209">रूपान्तरणहरू</translation>
 <translation id="7258225044283673131">यो एपले प्रतिक्रिया जनाइरहेको छैन। एप बन्द गर्न "बलपूर्वक बन्द गर्नुहोस्" चयन गर्नुहोस्।</translation>
 <translation id="7260186537988033909">किओस्क र साइनेज डिभाइस दर्ता गर्ने प्रक्रिया पूरा भयो</translation>
+<translation id="7261851165551049223">पासवर्ड भर्दा TouchID प्रयोग गर्नुहोस्</translation>
 <translation id="7262004276116528033">यो साइन इन सेवा <ph name="SAML_DOMAIN" /> द्वारा होस्ट गरिन्छ</translation>
 <translation id="7264695323040866038">खोल्न मिल्ने वेब लिंकहरू खोल्न सधैँ <ph name="APP" /> प्रयोग गर्ने हो?</translation>
 <translation id="7267044199012331848">भर्चुअल मेसिन इन्स्टल गर्न सकिएन। कृपया फेरि प्रयास गर्नुहोस् वा आफ्ना एड्मिनसँग सम्पर्क गर्नुहोस्। त्रुटिको कोड: <ph name="ERROR_CODE" />।</translation>

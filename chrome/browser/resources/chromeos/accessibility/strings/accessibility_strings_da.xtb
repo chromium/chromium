@@ -226,6 +226,7 @@
 <translation id="2497706219848005458">Grøngul</translation>
 <translation id="2523609930580546572">ChromeVox-selvstudie</translation>
 <translation id="2525706221823668172">Tastaturgenveje på Chromebook</translation>
+<translation id="2543973100702367007">Tryk to gange for at <ph name="LABEL" /></translation>
 <translation id="2553108862507765288">grammatisk fejl</translation>
 <translation id="2556326187583116255">Tryk med to fingre for at stoppe igangværende oplæsning</translation>
 <translation id="2573256689920773241">Grundlæggende navigation</translation>
@@ -1115,6 +1116,7 @@
 <translation id="8693391540059827073">Min foretrukne årstid</translation>
 <translation id="8696284982970258155">Honningmelon</translation>
 <translation id="8697111817566059991">{COUNT,plural, =1{streg}one{# lodrette streger}other{# lodrette streger}}</translation>
+<translation id="8733397807344284494">Tryk på søgetasten+mellemrumstasten for at <ph name="LABEL" /></translation>
 <translation id="8741370088760768424">Tip! Tryk på søgetasten+mellemrumstasten for at aktivere det aktuelle element.</translation>
 <translation id="8743786158317878347">angiv struktureret indhold, f.eks. tabeller</translation>
 <translation id="8746846427395705317">gå til det forrige ord</translation>

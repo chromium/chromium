@@ -2689,6 +2689,17 @@ Este comportamiento es el mismo que el de <ph name="POLICY_VALUE_PRIMARY_ACCOUNT
 <translation id="3727675072430693164">Si se habilita la política, los dispositivos registrados enviarán estadísticas de hardware sobre componentes SoC.
 
       Si se inhabilita la política o no se establece, los dispositivos registrados no enviarán estadísticas.</translation>
+<translation id="372853200788846114">Si se habilita esta política, <ph name="PRODUCT_OS_NAME" /> solicitará a los usuarios una contraseña para desbloquear el dispositivo después de suspenderlo o de cerrar la tapa.
+
+      Los dispositivos se bloquean al cerrar la tapa, salvo si están conectados a una base (usando un monitor externo).  En ese caso, el dispositivo no se bloqueará cuando se cierre la tapa, pero sí se bloqueará si se quita el monitor externo y la tapa sigue cerrada.
+
+      Hasta la versión M106 de <ph name="PRODUCT_OS_NAME" />, esta política bloqueaba el dispositivo solo al suspenderlo.  A partir de la versión M106, esta política bloqueará el dispositivo al suspenderlo o al cerrar la tapa.
+
+      Si se le asigna el valor true a esta política y el valor <ph name="LID_CLOSE_ACTION_ENUM_DO_NOTHING" /> a <ph name="LID_CLOSE_ACTION_POLICY_NAME" />, los dispositivos se bloquearán cuando se cierre la tapa, pero solo se suspenderán si se ha configurado este comportamiento en <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" />.
+
+      Si se inhabilita la política, no se solicitará a los usuarios una contraseña para desbloquear el dispositivo.
+
+      Si no se establece esta política, el usuario podrá elegir si quiere que se le pida una contraseña para desbloquear el dispositivo.</translation>
 <translation id="3729937245044939404">Esta política está obsoleta en M70. Utiliza <ph name="AUTOFILL_ADDRESS_ENABLED_POLICY_NAME" /> y <ph name="AUTOFILL_CREDIT_CARD_ENABLED_POLICY_NAME" /> en su lugar.
 
       Habilita la función Autocompletar de <ph name="PRODUCT_NAME" /> y permite que los usuarios rellenen formularios web automáticamente con información almacenada anteriormente, como una dirección o una tarjeta de crédito.

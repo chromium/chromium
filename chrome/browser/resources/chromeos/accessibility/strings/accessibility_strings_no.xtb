@@ -226,6 +226,7 @@ For å åpne Chrome-menyen, trykk på Alt+F.</translation>
 <translation id="2497706219848005458">Grønngul</translation>
 <translation id="2523609930580546572">ChromeVox-veiledning</translation>
 <translation id="2525706221823668172">Hurtigtaster på Chromebook</translation>
+<translation id="2543973100702367007">Dobbelttrykk for å <ph name="LABEL" /></translation>
 <translation id="2553108862507765288">grammatical mistake</translation>
 <translation id="2556326187583116255">Trykk med to fingre for å stoppe eventuell høytlesning som pågår</translation>
 <translation id="2573256689920773241">Generell navigering</translation>
@@ -1115,6 +1116,7 @@ For å åpne Chrome-menyen, trykk på Alt+F.</translation>
 <translation id="8693391540059827073">Favorittsesongen min</translation>
 <translation id="8696284982970258155">Honningmelon</translation>
 <translation id="8697111817566059991">{COUNT,plural, =1{loddrett strek}other{# loddrette streker}}</translation>
+<translation id="8733397807344284494">Trykk på Søk + mellomrom for å <ph name="LABEL" /></translation>
 <translation id="8741370088760768424">Tips: Trykk på søketasten + mellomrom for å aktivere det gjeldende elementet.</translation>
 <translation id="8743786158317878347">åpne strukturert innhold, for eksempel tabeller</translation>
 <translation id="8746846427395705317">gå til forrige ord</translation>

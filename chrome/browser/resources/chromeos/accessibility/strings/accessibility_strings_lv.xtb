@@ -226,6 +226,7 @@
 <translation id="2497706219848005458">Zaļdzeltena</translation>
 <translation id="2523609930580546572">ChromeVox mācības</translation>
 <translation id="2525706221823668172">Īsinājumtaustiņi Chromebook datorā</translation>
+<translation id="2543973100702367007">Veiciet dubultskārienu, lai izpildītu šādu darbību: <ph name="LABEL" /></translation>
 <translation id="2553108862507765288">gramatikas kļūda</translation>
 <translation id="2556326187583116255">Pieskarieties ar diviem pirkstiem, lai apturētu pašreizējo runas izvadi.</translation>
 <translation id="2573256689920773241">Navigācijas pamatiespējas</translation>
@@ -1115,6 +1116,7 @@
 <translation id="8693391540059827073">Mans mīļākais gadalaiks</translation>
 <translation id="8696284982970258155">Melones zaļa</translation>
 <translation id="8697111817566059991">{COUNT,plural, =1{vertikālā svītra}zero{# vertikālo svītru}one{# vertikālā svītra}other{# vertikālās svītras}}</translation>
+<translation id="8733397807344284494">Nospiediet meklēšanas taustiņu un atstarpes taustiņu, lai izpildītu šādu darbību: <ph name="LABEL" /></translation>
 <translation id="8741370088760768424">Norāde: nospiediet meklēšanas taustiņu un atstarpes taustiņu, lai aktivizētu pašreizējo elementu.</translation>
 <translation id="8743786158317878347">ievadīt strukturētu saturu, piemēram, tabulas</translation>
 <translation id="8746846427395705317">pāriet uz iepriekšējo vārdu</translation>

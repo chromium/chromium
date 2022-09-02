@@ -226,6 +226,7 @@ Chrome ब्राउज़र मेन्यू खोलने के लि
 <translation id="2497706219848005458">पीला-हरा</translation>
 <translation id="2523609930580546572">ChromeVox ट्यूटोरियल</translation>
 <translation id="2525706221823668172">Chromebook कीबोर्ड शॉर्टकट</translation>
+<translation id="2543973100702367007"><ph name="LABEL" /> के लिए दो बार टैप करें</translation>
 <translation id="2553108862507765288">व्याकरण की गलती</translation>
 <translation id="2556326187583116255">ChromeVox को बोलने से रोकने के लिए, दो उंगलियों से टैप करें</translation>
 <translation id="2573256689920773241">बेसिक नेविगेशन</translation>
@@ -1114,6 +1115,7 @@ Chrome ब्राउज़र मेन्यू खोलने के लि
 <translation id="8693391540059827073">मेरा पसंदीदा मौसम</translation>
 <translation id="8696284982970258155">खरबूजा</translation>
 <translation id="8697111817566059991">{COUNT,plural, =1{पाइप}one{# लम्बवत पाइप}other{# लम्बवत पाइप}}</translation>
+<translation id="8733397807344284494"><ph name="LABEL" /> के लिए Search+Space दबाएं</translation>
 <translation id="8741370088760768424">ध्यान दें: मौजूदा आइटम को चालू करने के लिए, खोज बटन और स्पेसबार दबाएं.</translation>
 <translation id="8743786158317878347">संरचित सामग्री, जैसे तालिकाएं डालें</translation>
 <translation id="8746846427395705317">पिछले शब्द पर जाएं</translation>

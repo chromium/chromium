@@ -227,6 +227,7 @@
 <translation id="2497706219848005458">أصفر مخضر</translation>
 <translation id="2523609930580546572">‏برنامج ChromeVox التعليمي</translation>
 <translation id="2525706221823668172">‏اختصارات لوحة المفاتيح لـ Chromebook</translation>
+<translation id="2543973100702367007">انقر مرّتين لتتمكّن من <ph name="LABEL" />.</translation>
 <translation id="2553108862507765288">خطأ نحوي</translation>
 <translation id="2556326187583116255">انقر بإصبعين لإيقاف الكلام.</translation>
 <translation id="2573256689920773241">التنقُّل الأساسي</translation>
@@ -1115,6 +1116,7 @@
 <translation id="8693391540059827073">الفصل المفضَّل لديّ</translation>
 <translation id="8696284982970258155">شمّامي</translation>
 <translation id="8697111817566059991">{COUNT,plural, =1{شريط رأسي واحد}zero{# vertical pipes}two{شريطان رأسيان (#)}few{# أشرطة رأسية}many{# شريطًا رأسيًا}other{# من الأشرطة الرأسية}}</translation>
+<translation id="8733397807344284494">اضغط على مفتاح البحث + مفتاح المسافة لتتمكّن من <ph name="LABEL" />.</translation>
 <translation id="8741370088760768424">معلومة: اضغط على مفتاح البحث + مفتاح المسافة لتنشيط العنصر الحالي.</translation>
 <translation id="8743786158317878347">دخول إلى المحتوى المنظم، مثل الجداول</translation>
 <translation id="8746846427395705317">الانتقال إلى الكلمة السابقة</translation>

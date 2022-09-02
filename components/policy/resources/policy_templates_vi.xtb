@@ -1777,6 +1777,54 @@ Khi chính sách này được đặt thành false hoặc không được địn
 
       Khi bạn đặt chính sách này thành tắt, trình xem PDF sẽ không thể chú thích trong tệp PDF.</translation>
 <translation id="2769952903507981510">Định cấu hình tên miền bắt buộc cho máy chủ truy cập từ xa</translation>
+<translation id="2772650717382565415">Khi bạn đặt chính sách này, hệ thống sẽ chỉ định một danh sách ứng dụng web tự động cài đặt mà không cần sự can thiệp của người dùng, cũng như chỉ định những người dùng không thể gỡ cài đặt hay tắt đi.
+
+      Mỗi mục trong danh sách của chính sách này là một đối tượng chứa một thành phần bắt buộc:
+      <ph name="URL_LABEL" /> (URL của ứng dụng web sẽ cài đặt)
+
+      và 6 thành phần không bắt buộc:
+      – <ph name="DEFAULT_LAUNCH_CONTAINER_LABEL" />
+      (chỉ định cách mở ứng dụng web – mặc định là một thẻ mới)
+
+      – <ph name="CREATE_DESKTOP_SHORTCUT_LABEL" />
+      (chọn Bật nếu bạn muốn tạo lối tắt trên màn hình <ph name="LINUX_OS_NAME" /> và
+      <ph name="MS_WIN_NAME" />).
+
+      – <ph name="FALLBACK_APP_NAME_LABEL" />
+      (Kể từ <ph name="PRODUCT_NAME" /> phiên bản 90,
+      bạn có thể ghi đè tên ứng dụng nếu tên đó không phải là một
+      Ứng dụng web tiến bộ (PWA) hoặc ghi đè tên ứng dụng tạm thời
+      được cài đặt nếu tên đó là một Ứng dụng web tiến bộ nhưng cần xác thực trước khi
+      hoàn tất quá trình cài đặt. Nếu hệ thống cung cấp cả chính sách
+      <ph name="CUSTOM_NAME_LABEL" /> và
+      <ph name="FALLBACK_APP_NAME_LABEL" />,
+      thì chính sách thứ hai sẽ bị bỏ qua.)
+
+      – <ph name="OVERRIDE_APP_NAME_LABEL" />
+      (Kể từ <ph name="PRODUCT_NAME" />
+      phiên bản 99, bạn có thể ghi đè vĩnh viễn tên ứng dụng cho tất cả ứng dụng
+web và Ứng dụng web tiến bộ. Hiện chỉ được hỗ trợ trên
+      <ph name="PRODUCT_OS_NAME" />.)
+
+      – <ph name="CUSTOM_ICON_LABEL" />
+      (Kể từ <ph name="PRODUCT_NAME" />
+      phiên bản 99, bạn có thể ghi đè biểu tượng ứng dụng của các ứng dụng đã cài đặt. Các
+      biểu tượng phải là hình vuông, có kích thước tối đa 1 MB và thuộc một trong các định dạng
+      sau: jpeg, png, gif, webp, ico. Giá trị băm phải là hàm băm SHA256
+      của tệp biểu tượng. Hiện chỉ được hỗ trợ trên
+      <ph name="PRODUCT_OS_NAME" />.)
+
+      – <ph name="INSTALL_AS_SHORTCUT_LABEL" />
+      (Kể từ <ph name="PRODUCT_NAME" />
+      phiên bản 107). Nếu bạn bật chính sách, <ph name="URL_LABEL" />
+      cụ thể sẽ được cài đặt dưới dạng lối tắt, như thể được thực hiện thông qua tuỳ chọn "Tạo lối tắt..."
+      trong GUI (Giao diện người dùng đồ hoạ) của trình duyệt dành cho máy tính.
+      Lưu ý rằng khi được cài đặt dưới dạng lối tắt, nhãn URL này sẽ không được cập nhật nếu
+      tệp kê khai trong <ph name="URL_LABEL" /> thay đổi.
+      Nếu bạn tắt hoặc không đặt chính sách, ứng dụng web tại
+      <ph name="URL_LABEL" /> cụ thể sẽ được cài đặt bình thường.
+
+      Xem <ph name="PINNED_LAUNCHER_APPS_POLICY_NAME" /> để biết cách ghim ứng dụng vào kệ <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="2772955711376920612">Nếu bạn bật chính sách này, đồng thời đặt <ph name="DEVICE_POWER_PEAK_SHIFT_BATTERY_THRESHOLD_POLICY_NAME" /> và <ph name="DEVICE_POWER_PEAK_SHIFT_DAY_CONFIG_POLICY_NAME" />, thì hệ thống sẽ luôn bật chế độ chuyển đổi nguồn điện vào giờ cao điểm nếu được hỗ trợ trên thiết bị. Chính sách quản lý nguồn điện khi chuyển đổi vào giờ cao điểm là một chính sách tiết kiệm điện năng giúp giảm thiểu việc sử dụng dòng điện xoay chiều trong những thời điểm có mức sử dụng cao điểm. Bạn có thể đặt thời gian bắt đầu và thời gian kết thúc để chạy trong chế độ chuyển đổi nguồn điện vào giờ cao điểm cho từng ngày trong tuần. Thiết bị sẽ chạy bằng pin (ngay cả khi được kết nối với dòng điện xoay chiều) trong những thời điểm này miễn là pin ở trên ngưỡng được chỉ định. Sau thời gian kết thúc chỉ định, thiết bị sẽ chạy bằng dòng điện xoay chiều (nếu được kết nối) nhưng sẽ không sạc pin. Thiết bị sẽ hoạt động bình thường trở lại bằng dòng điện xoay chiều và sạc lại pin sau thời gian bắt đầu sạc được chỉ định.
 
       Nếu bạn tắt chính sách này, thiết bị sẽ luôn tắt chế độ chuyển đổi nguồn điện vào giờ cao điểm.

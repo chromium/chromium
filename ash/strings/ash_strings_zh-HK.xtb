@@ -508,7 +508,7 @@
 <translation id="3922427723338465344">{0,plural, =1{在 1 分鐘內將裝置回復為先前的版本}other{在 # 分鐘內將裝置回復為先前的版本}}</translation>
 <translation id="3923494859158167397">未設定流動網絡</translation>
 <translation id="3925540965556789199"><ph name="DATE" />，正在載入活動。</translation>
-<translation id="392627956579011934">必須重新啟動才能安裝語音檔案。</translation>
+<translation id="392627956579011934">需要重新啟動才能安裝語音檔案。</translation>
 <translation id="3932043219784172185">未連接任何裝置</translation>
 <translation id="3934456833412894880">自動調節充電速度功能已開啟。裝置電量會維持在 80% 以延長電池壽命，並在您需要時將電池完全充滿。</translation>
 <translation id="3943857333388298514">貼上</translation>
