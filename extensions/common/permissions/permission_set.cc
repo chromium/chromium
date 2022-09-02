@@ -160,7 +160,7 @@ bool PermissionSet::HasAPIPermission(const std::string& permission_name) const {
 }
 
 bool PermissionSet::CheckAPIPermission(APIPermissionID permission) const {
-  return CheckAPIPermissionWithParam(permission, NULL);
+  return CheckAPIPermissionWithParam(permission, nullptr);
 }
 
 bool PermissionSet::CheckAPIPermissionWithParam(

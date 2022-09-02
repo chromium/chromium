@@ -234,7 +234,7 @@ std::set<scoped_refptr<DevicePermissionEntry>> GetDevicePermissionEntries(
     ExtensionPrefs* prefs,
     const std::string& extension_id) {
   std::set<scoped_refptr<DevicePermissionEntry>> result;
-  const base::ListValue* devices = NULL;
+  const base::ListValue* devices = nullptr;
   if (!prefs->ReadPrefAsList(extension_id, kDevices, &devices)) {
     return result;
   }
@@ -635,7 +635,7 @@ DevicePermissions* DevicePermissionsManager::GetInternal(
     return it->second;
   }
 
-  return NULL;
+  return nullptr;
 }
 
 void DevicePermissionsManager::RemoveEntryByDeviceGUID(

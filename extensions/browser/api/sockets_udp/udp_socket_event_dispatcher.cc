@@ -85,7 +85,7 @@ void UDPSocketEventDispatcher::StartReceive(const ReceiveParams& params) {
 
   ResumableUDPSocket* socket =
       params.sockets->Get(params.extension_id, params.socket_id);
-  if (socket == NULL) {
+  if (socket == nullptr) {
     // This can happen if the socket is closed while our callback is active.
     return;
   }

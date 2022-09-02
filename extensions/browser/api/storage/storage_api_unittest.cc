@@ -88,7 +88,7 @@ class StorageApiUnittest : public ApiUnitTest {
         base::StringPrintf("[\"local\", \"%s\"]", key.c_str()));
     if (!result.get())
       return testing::AssertionFailure() << "No result";
-    base::DictionaryValue* dict = NULL;
+    base::DictionaryValue* dict = nullptr;
     if (!result->GetAsDictionary(&dict))
       return testing::AssertionFailure() << result.get()
                                          << " was not a dictionary.";

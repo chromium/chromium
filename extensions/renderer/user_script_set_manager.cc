@@ -72,7 +72,7 @@ void UserScriptSetManager::GetAllActiveExtensionIds(
 UserScriptSet* UserScriptSetManager::GetScriptsByHostID(
     const mojom::HostID& host_id) {
   UserScriptSetMap::const_iterator it = scripts_.find(host_id);
-  return it != scripts_.end() ? it->second.get() : NULL;
+  return it != scripts_.end() ? it->second.get() : nullptr;
 }
 
 void UserScriptSetManager::OnUpdateUserScripts(

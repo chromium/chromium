@@ -186,7 +186,7 @@ void AlarmManager::GetAlarmWhenReady(const std::string& name,
 void AlarmManager::GetAllAlarmsWhenReady(GetAllAlarmsCallback callback,
                                          const std::string& extension_id) {
   auto list = alarms_.find(extension_id);
-  std::move(callback).Run(list != alarms_.end() ? &list->second : NULL);
+  std::move(callback).Run(list != alarms_.end() ? &list->second : nullptr);
 }
 
 void AlarmManager::RemoveAlarmWhenReady(const std::string& name,

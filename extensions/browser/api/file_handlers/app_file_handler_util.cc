@@ -296,13 +296,13 @@ const apps::FileHandlerInfo* FileHandlerForId(const Extension& app,
                                               const std::string& handler_id) {
   const FileHandlersInfo* file_handlers = FileHandlers::GetFileHandlers(&app);
   if (!file_handlers)
-    return NULL;
+    return nullptr;
 
   for (auto i = file_handlers->cbegin(); i != file_handlers->cend(); i++) {
     if (i->id == handler_id)
       return &*i;
   }
-  return NULL;
+  return nullptr;
 }
 
 std::vector<FileHandlerMatch> FindFileHandlerMatchesForEntries(

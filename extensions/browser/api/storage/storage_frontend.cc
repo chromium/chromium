@@ -113,7 +113,7 @@ ValueStoreCache* StorageFrontend::GetValueStoreCache(
   auto it = caches_.find(settings_namespace);
   if (it != caches_.end())
     return it->second;
-  return NULL;
+  return nullptr;
 }
 
 bool StorageFrontend::IsStorageEnabled(

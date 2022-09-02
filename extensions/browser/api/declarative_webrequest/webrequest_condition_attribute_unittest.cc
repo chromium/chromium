@@ -198,7 +198,7 @@ TEST(WebRequestConditionAttributeTest, Stages) {
                                              &single_stage_list,
                                              &error));
     EXPECT_EQ("", error);
-    ASSERT_TRUE(one_stage_attributes.back().get() != NULL);
+    ASSERT_TRUE(one_stage_attributes.back().get() != nullptr);
   }
 
   WebRequestInfo request_info(WebRequestInfoInitParams{});
@@ -355,7 +355,7 @@ TEST(WebRequestConditionAttributeTest, RequestHeaders) {
   EXPECT_TRUE(result);
 
   // Third set of test data, corner case -- empty disjunction.
-  GetArrayAsVector(NULL, NULL, 0u, &tests);
+  GetArrayAsVector(nullptr, nullptr, 0u, &tests);
   // Positive filter, failing (no test to pass).
   MatchAndCheck(tests, keys::kRequestHeadersKey, stage, request_info, &result);
   EXPECT_FALSE(result);
@@ -366,7 +366,7 @@ TEST(WebRequestConditionAttributeTest, RequestHeaders) {
 
   // Fourth set of test data, corner case -- empty conjunction.
   const size_t kEmptyConjunctionSizes[] = { 0u };
-  GetArrayAsVector(NULL, kEmptyConjunctionSizes, 1u, &tests);
+  GetArrayAsVector(nullptr, kEmptyConjunctionSizes, 1u, &tests);
   // Positive filter, passing (trivial test).
   MatchAndCheck(tests, keys::kRequestHeadersKey, stage, request_info, &result);
   EXPECT_TRUE(result);

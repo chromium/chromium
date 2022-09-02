@@ -48,7 +48,7 @@ TEST_F(CommandsManifestTest, CommandManifestSimple) {
 
   const Command* browser_action =
       CommandsInfo::GetBrowserActionCommand(extension.get());
-  ASSERT_TRUE(NULL != browser_action);
+  ASSERT_TRUE(nullptr != browser_action);
   ASSERT_STREQ("_execute_browser_action",
                browser_action->command_name().c_str());
   ASSERT_STREQ("", base::UTF16ToASCII(browser_action->description()).c_str());
@@ -56,7 +56,7 @@ TEST_F(CommandsManifestTest, CommandManifestSimple) {
 
   const Command* page_action =
       CommandsInfo::GetPageActionCommand(extension.get());
-  ASSERT_TRUE(NULL != page_action);
+  ASSERT_TRUE(nullptr != page_action);
   ASSERT_STREQ("_execute_page_action", page_action->command_name().c_str());
   ASSERT_STREQ("", base::UTF16ToASCII(page_action->description()).c_str());
   ASSERT_EQ(ctrl_f, page_action->accelerator());
@@ -89,7 +89,7 @@ TEST_F(CommandsManifestTest, BrowserActionSynthesizesCommand) {
   // should get a command assigned to it.
   const extensions::Command* command =
       CommandsInfo::GetBrowserActionCommand(extension.get());
-  ASSERT_TRUE(command != NULL);
+  ASSERT_TRUE(command != nullptr);
   ASSERT_EQ(ui::VKEY_UNKNOWN, command->accelerator().key_code());
 }
 

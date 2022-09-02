@@ -275,13 +275,13 @@ TEST(SocketPermissionTest, Value) {
   value.Append("tcp-connect:*.example.com:80");
   value.Append("udp-bind::8080");
   value.Append("udp-send-to::8888");
-  ASSERT_TRUE(permission1->FromValue(&value, NULL, NULL));
+  ASSERT_TRUE(permission1->FromValue(&value, nullptr, nullptr));
 
   EXPECT_FALSE(permission1->Equal(permission2.get()));
 
   std::unique_ptr<base::Value> vtmp(permission1->ToValue());
   ASSERT_TRUE(vtmp);
-  ASSERT_TRUE(permission2->FromValue(vtmp.get(), NULL, NULL));
+  ASSERT_TRUE(permission2->FromValue(vtmp.get(), nullptr, nullptr));
   EXPECT_TRUE(permission1->Equal(permission2.get()));
 }
 

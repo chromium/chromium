@@ -719,7 +719,7 @@ std::set<std::string> EventRouter::GetRegisteredEvents(
     const std::string& extension_id,
     RegisteredEventType type) const {
   std::set<std::string> events;
-  const ListValue* events_value = NULL;
+  const ListValue* events_value = nullptr;
 
   const char* pref_key = type == RegisteredEventType::kLazy
                              ? kRegisteredLazyEvents

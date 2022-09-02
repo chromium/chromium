@@ -1462,7 +1462,7 @@ void MergeCookiesInOnHeadersReceivedResponses(
     return;
 
   // Only create a copy if we really want to modify the response headers.
-  if (override_response_headers->get() == NULL) {
+  if (override_response_headers->get() == nullptr) {
     *override_response_headers = base::MakeRefCounted<net::HttpResponseHeaders>(
         original_response_headers->raw_headers());
   }
@@ -1605,7 +1605,7 @@ void MergeOnHeadersReceivedResponses(
   MergeRedirectUrlOfResponses(request.url, deltas, &new_url, ignored_actions);
   if (new_url.is_valid()) {
     // Only create a copy if we really want to modify the response headers.
-    if (override_response_headers->get() == NULL) {
+    if (override_response_headers->get() == nullptr) {
       *override_response_headers =
           base::MakeRefCounted<net::HttpResponseHeaders>(
               original_response_headers->raw_headers());

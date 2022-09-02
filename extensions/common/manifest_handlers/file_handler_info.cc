@@ -46,7 +46,7 @@ const FileHandlersInfo* FileHandlers::GetFileHandlers(
     const Extension* extension) {
   FileHandlers* info = static_cast<FileHandlers*>(
       extension->GetManifestData(keys::kFileHandlers));
-  return info ? &info->file_handlers : NULL;
+  return info ? &info->file_handlers : nullptr;
 }
 
 FileHandlersParser::FileHandlersParser() {

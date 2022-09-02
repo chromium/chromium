@@ -38,7 +38,7 @@ ManifestPermission* BluetoothManifestHandler::CreateInitialRequiredPermission(
   BluetoothManifestData* data = BluetoothManifestData::Get(extension);
   if (data)
     return data->permission()->Clone().release();
-  return NULL;
+  return nullptr;
 }
 
 base::span<const char* const> BluetoothManifestHandler::Keys() const {

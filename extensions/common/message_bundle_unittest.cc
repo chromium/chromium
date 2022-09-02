@@ -169,7 +169,7 @@ TEST_F(MessageBundleTest, ReservedMessagesCount) {
 
 TEST_F(MessageBundleTest, InitEmptyDictionaries) {
   CreateMessageBundle();
-  EXPECT_TRUE(handler_.get() != NULL);
+  EXPECT_TRUE(handler_.get() != nullptr);
   EXPECT_EQ(0U + ReservedMessagesCount(), handler_->size());
   CheckReservedMessages(handler_.get());
 }
@@ -178,7 +178,7 @@ TEST_F(MessageBundleTest, InitGoodDefaultDict) {
   catalogs_.push_back(std::move(CreateGoodDictionary()->GetDict()));
   CreateMessageBundle();
 
-  EXPECT_TRUE(handler_.get() != NULL);
+  EXPECT_TRUE(handler_.get() != nullptr);
   EXPECT_EQ(3U + ReservedMessagesCount(), handler_->size());
 
   EXPECT_EQ("message1 A B", handler_->GetL10nMessage("n1"));
@@ -202,7 +202,7 @@ TEST_F(MessageBundleTest, InitAppDictConsultedFirst) {
 
   CreateMessageBundle();
 
-  EXPECT_TRUE(handler_.get() != NULL);
+  EXPECT_TRUE(handler_.get() != nullptr);
   EXPECT_EQ(3U + ReservedMessagesCount(), handler_->size());
 
   EXPECT_EQ("message1 B A", handler_->GetL10nMessage("n1"));
@@ -217,46 +217,46 @@ TEST_F(MessageBundleTest, InitBadAppDict) {
 
   std::string error = CreateMessageBundle();
 
-  EXPECT_TRUE(handler_.get() == NULL);
+  EXPECT_TRUE(handler_.get() == nullptr);
   EXPECT_EQ("Name of a key \"n 5\" is invalid. Only ASCII [a-z], "
             "[A-Z], [0-9] and \"_\" are allowed.", error);
 
   catalogs_[0] = std::move(CreateBadDictionary(NAME_NOT_A_TREE)->GetDict());
   handler_.reset(MessageBundle::Create(catalogs_, &error));
-  EXPECT_TRUE(handler_.get() == NULL);
+  EXPECT_TRUE(handler_.get() == nullptr);
   EXPECT_EQ("Not a valid tree for key n4.", error);
 
   catalogs_[0] = std::move(CreateBadDictionary(EMPTY_NAME_TREE)->GetDict());
   handler_.reset(MessageBundle::Create(catalogs_, &error));
-  EXPECT_TRUE(handler_.get() == NULL);
+  EXPECT_TRUE(handler_.get() == nullptr);
   EXPECT_EQ("There is no \"message\" element for key n4.", error);
 
   catalogs_[0] = std::move(CreateBadDictionary(MISSING_MESSAGE)->GetDict());
   handler_.reset(MessageBundle::Create(catalogs_, &error));
-  EXPECT_TRUE(handler_.get() == NULL);
+  EXPECT_TRUE(handler_.get() == nullptr);
   EXPECT_EQ("There is no \"message\" element for key n1.", error);
 
   catalogs_[0] =
       std::move(CreateBadDictionary(PLACEHOLDER_NOT_A_TREE)->GetDict());
   handler_.reset(MessageBundle::Create(catalogs_, &error));
-  EXPECT_TRUE(handler_.get() == NULL);
+  EXPECT_TRUE(handler_.get() == nullptr);
   EXPECT_EQ("Not a valid \"placeholders\" element for key n1.", error);
 
   catalogs_[0] =
       std::move(CreateBadDictionary(EMPTY_PLACEHOLDER_TREE)->GetDict());
   handler_.reset(MessageBundle::Create(catalogs_, &error));
-  EXPECT_TRUE(handler_.get() == NULL);
+  EXPECT_TRUE(handler_.get() == nullptr);
   EXPECT_EQ("Variable $a$ used but not defined.", error);
 
   catalogs_[0] = std::move(CreateBadDictionary(CONTENT_MISSING)->GetDict());
   handler_.reset(MessageBundle::Create(catalogs_, &error));
-  EXPECT_TRUE(handler_.get() == NULL);
+  EXPECT_TRUE(handler_.get() == nullptr);
   EXPECT_EQ("Invalid \"content\" element for key n1.", error);
 
   catalogs_[0] = std::move(
       CreateBadDictionary(MESSAGE_PLACEHOLDER_DOESNT_MATCH)->GetDict());
   handler_.reset(MessageBundle::Create(catalogs_, &error));
-  EXPECT_TRUE(handler_.get() == NULL);
+  EXPECT_TRUE(handler_.get() == nullptr);
   EXPECT_EQ("Variable $a$ used but not defined.", error);
 }
 
@@ -268,7 +268,7 @@ TEST_F(MessageBundleTest, ReservedMessagesOverrideDeveloperMessages) {
 
   std::string error = CreateMessageBundle();
 
-  EXPECT_TRUE(handler_.get() == NULL);
+  EXPECT_TRUE(handler_.get() == nullptr);
   std::string expected_error = ErrorUtils::FormatErrorMessage(
       errors::kReservedMessageFound, MessageBundle::kUILocaleKey);
   EXPECT_EQ(expected_error, error);
@@ -277,7 +277,7 @@ TEST_F(MessageBundleTest, ReservedMessagesOverrideDeveloperMessages) {
 TEST_F(MessageBundleTest, AppendReservedMessagesForLTR) {
   CreateMessageBundle();
 
-  ASSERT_TRUE(handler_.get() != NULL);
+  ASSERT_TRUE(handler_.get() != nullptr);
   ClearDictionary();
   ASSERT_TRUE(AppendReservedMessages("en_US"));
 
@@ -296,7 +296,7 @@ TEST_F(MessageBundleTest, AppendReservedMessagesForLTR) {
 TEST_F(MessageBundleTest, AppendReservedMessagesForRTL) {
   CreateMessageBundle();
 
-  ASSERT_TRUE(handler_.get() != NULL);
+  ASSERT_TRUE(handler_.get() != nullptr);
   ClearDictionary();
   ASSERT_TRUE(AppendReservedMessages("he"));
 

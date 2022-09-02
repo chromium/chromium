@@ -23,7 +23,7 @@ const AudioDevice* GetDevice(const AudioDeviceList& devices, uint64_t node_id) {
     if (it->id == node_id)
       return &(*it);
   }
-  return NULL;
+  return nullptr;
 }
 
 }  // namespace

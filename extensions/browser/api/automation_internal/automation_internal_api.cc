@@ -329,7 +329,7 @@ ExtensionFunction::ResponseAction AutomationInternalEnableTabFunction::Run() {
   using api::automation_internal::EnableTab::Params;
   std::unique_ptr<Params> params(Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
-  content::WebContents* contents = NULL;
+  content::WebContents* contents = nullptr;
   AutomationInternalApiDelegate* automation_api_delegate =
       ExtensionsAPIClient::Get()->GetAutomationInternalApiDelegate();
   int tab_id = -1;

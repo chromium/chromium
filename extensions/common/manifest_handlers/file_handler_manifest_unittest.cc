@@ -45,7 +45,7 @@ TEST_F(FileHandlersManifestTest, ValidFileHandlers) {
   ASSERT_TRUE(extension.get());
   const FileHandlersInfo* handlers =
       FileHandlers::GetFileHandlers(extension.get());
-  ASSERT_TRUE(handlers != NULL);
+  ASSERT_TRUE(handlers != nullptr);
   ASSERT_EQ(3U, handlers->size());
 
   apps::FileHandlerInfo handler = handlers->at(0);
@@ -79,7 +79,7 @@ TEST_F(FileHandlersManifestTest, NotPlatformApp) {
   ASSERT_TRUE(extension.get());
   const FileHandlersInfo* handlers =
       FileHandlers::GetFileHandlers(extension.get());
-  ASSERT_TRUE(handlers == NULL);
+  ASSERT_TRUE(handlers == nullptr);
 }
 
 }  // namespace extensions

@@ -247,21 +247,21 @@ std::unique_ptr<base::Value> SocketsManifestPermission::ToValue() const {
   if (sockets.udp->bind->as_strings->size() == 0 &&
       sockets.udp->send->as_strings->size() == 0 &&
       sockets.udp->multicast_membership->as_strings->size() == 0) {
-    sockets.udp.reset(NULL);
+    sockets.udp.reset();
   }
 
   sockets.tcp = std::make_unique<Sockets::Tcp>();
   SetHostPatterns(
       sockets.tcp->connect, this, SocketPermissionRequest::TCP_CONNECT);
   if (sockets.tcp->connect->as_strings->size() == 0) {
-    sockets.tcp.reset(NULL);
+    sockets.tcp.reset();
   }
 
   sockets.tcp_server = std::make_unique<Sockets::TcpServer>();
   SetHostPatterns(
       sockets.tcp_server->listen, this, SocketPermissionRequest::TCP_LISTEN);
   if (sockets.tcp_server->listen->as_strings->size() == 0) {
-    sockets.tcp_server.reset(NULL);
+    sockets.tcp_server.reset();
   }
 
   return std::unique_ptr<base::Value>(sockets.ToValue().release());

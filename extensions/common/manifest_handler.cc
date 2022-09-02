@@ -21,7 +21,7 @@ namespace {
 
 static base::LazyInstance<ManifestHandlerRegistry>::DestructorAtExit
     g_registry = LAZY_INSTANCE_INITIALIZER;
-static ManifestHandlerRegistry* g_registry_override = NULL;
+static ManifestHandlerRegistry* g_registry_override = nullptr;
 
 }  // namespace
 
@@ -50,12 +50,12 @@ const std::vector<std::string> ManifestHandler::PrerequisiteKeys() const {
 }
 
 ManifestPermission* ManifestHandler::CreatePermission() {
-  return NULL;
+  return nullptr;
 }
 
 ManifestPermission* ManifestHandler::CreateInitialRequiredPermission(
     const Extension* extension) {
-  return NULL;
+  return nullptr;
 }
 
 // static
@@ -172,7 +172,7 @@ ManifestPermission* ManifestHandlerRegistry::CreatePermission(
     const std::string& name) {
   ManifestHandlerMap::const_iterator it = handlers_.find(name);
   if (it == handlers_.end())
-    return NULL;
+    return nullptr;
 
   return it->second->CreatePermission();
 }
@@ -203,7 +203,7 @@ ManifestHandlerRegistry* ManifestHandlerRegistry::SetForTesting(
   if (new_registry != g_registry.Pointer())
     g_registry_override = new_registry;
   else
-    g_registry_override = NULL;
+    g_registry_override = nullptr;
   return old_registry;
 }
 

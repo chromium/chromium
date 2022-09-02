@@ -124,12 +124,12 @@ AppWindow* AppWindowRegistry::GetAppWindowForNativeWindow(
       return *i;
   }
 
-  return NULL;
+  return nullptr;
 }
 
 AppWindow* AppWindowRegistry::GetCurrentAppWindowForApp(
     const std::string& app_id) const {
-  AppWindow* result = NULL;
+  AppWindow* result = nullptr;
   for (auto i = app_windows_.cbegin(); i != app_windows_.cend(); ++i) {
     if ((*i)->extension_id() == app_id) {
       result = *i;
@@ -144,7 +144,7 @@ AppWindow* AppWindowRegistry::GetCurrentAppWindowForApp(
 AppWindow* AppWindowRegistry::GetAppWindowForAppAndKey(
     const std::string& app_id,
     const std::string& window_key) const {
-  AppWindow* result = NULL;
+  AppWindow* result = nullptr;
   for (auto i = app_windows_.cbegin(); i != app_windows_.cend(); ++i) {
     if ((*i)->extension_id() == app_id && (*i)->window_key() == window_key) {
       result = *i;

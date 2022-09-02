@@ -103,7 +103,7 @@ bool CheckBoundsConflict(const absl::optional<int>& inner_property,
     std::vector<std::string> subst;
     subst.push_back(property_name);
     *error = base::ReplaceStringPlaceholders(
-        app_window_constants::kConflictingBoundsOptions, subst, NULL);
+        app_window_constants::kConflictingBoundsOptions, subst, nullptr);
     return false;
   }
 

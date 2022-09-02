@@ -152,7 +152,7 @@ IN_PROC_BROWSER_TEST_F(BluetoothApiTest, GetAdapterState) {
 
   std::unique_ptr<base::Value> result(utils::RunFunctionAndReturnSingleResult(
       get_adapter_state.get(), "[]", browser()));
-  ASSERT_TRUE(result.get() != NULL);
+  ASSERT_TRUE(result.get() != nullptr);
   api::bluetooth::AdapterState state;
   ASSERT_TRUE(api::bluetooth::AdapterState::Populate(*result, &state));
 
@@ -382,7 +382,7 @@ IN_PROC_BROWSER_TEST_F(BluetoothApiTest, GetDevice) {
       .WillOnce(testing::Return(device1_.get()));
   EXPECT_CALL(*mock_adapter_, GetDevice(device2_->GetAddress()))
       .Times(1)
-      .WillRepeatedly(testing::Return(static_cast<BluetoothDevice*>(NULL)));
+      .WillRepeatedly(testing::Return(static_cast<BluetoothDevice*>(nullptr)));
 
   // Load and wait for setup
   ExtensionTestMessageListener listener("ready", ReplyBehavior::kWillReply);

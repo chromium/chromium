@@ -84,7 +84,7 @@ bool ShellExtensionsBrowserClient::HasOffTheRecordContext(
 BrowserContext* ShellExtensionsBrowserClient::GetOffTheRecordContext(
     BrowserContext* context) {
   // app_shell only supports a single context.
-  return NULL;
+  return nullptr;
 }
 
 BrowserContext* ShellExtensionsBrowserClient::GetOriginalContext(
@@ -176,7 +176,7 @@ void ShellExtensionsBrowserClient::GetEarlyExtensionPrefsObservers(
 
 ProcessManagerDelegate*
 ShellExtensionsBrowserClient::GetProcessManagerDelegate() const {
-  return NULL;
+  return nullptr;
 }
 
 std::unique_ptr<ExtensionHostDelegate>
@@ -234,7 +234,7 @@ ShellExtensionsBrowserClient::CreateRuntimeAPIDelegate(
 
 const ComponentExtensionResourceManager*
 ShellExtensionsBrowserClient::GetComponentExtensionResourceManager() {
-  return NULL;
+  return nullptr;
 }
 
 void ShellExtensionsBrowserClient::BroadcastEventToRenderers(

@@ -48,13 +48,13 @@ class ExtensionSettingsQuotaTest : public testing::Test {
     ASSERT_EQ(256u, validate_sizes.size());
   }
 
-  void TearDown() override { ASSERT_TRUE(storage_.get() != NULL); }
+  void TearDown() override { ASSERT_TRUE(storage_.get() != nullptr); }
 
  protected:
   // Creates |storage_|.  Must only be called once.
   void CreateStorage(
       size_t quota_bytes, size_t quota_bytes_per_item, size_t max_items) {
-    ASSERT_TRUE(storage_.get() == NULL);
+    ASSERT_TRUE(storage_.get() == nullptr);
     SettingsStorageQuotaEnforcer::Limits limits =
         { quota_bytes, quota_bytes_per_item, max_items };
     storage_ = std::make_unique<SettingsStorageQuotaEnforcer>(

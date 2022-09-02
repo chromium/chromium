@@ -29,7 +29,7 @@ StorageInfoProvider::~StorageInfoProvider() {
 
 void StorageInfoProvider::InitializeForTesting(
     scoped_refptr<StorageInfoProvider> provider) {
-  DCHECK(provider.get() != NULL);
+  DCHECK(provider.get() != nullptr);
   provider_.Get() = provider;
 }
 
@@ -90,7 +90,7 @@ double StorageInfoProvider::GetStorageFreeSpaceFromTransientIdAsync(
 
 // static
 StorageInfoProvider* StorageInfoProvider::Get() {
-  if (provider_.Get().get() == NULL)
+  if (provider_.Get().get() == nullptr)
     provider_.Get() = new StorageInfoProvider();
   return provider_.Get().get();
 }

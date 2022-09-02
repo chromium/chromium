@@ -11,7 +11,7 @@
 namespace extensions {
 namespace {
 
-DesktopController* g_instance = NULL;
+DesktopController* g_instance = nullptr;
 
 }  // namespace
 
@@ -27,7 +27,7 @@ DesktopController::DesktopController() {
 
 DesktopController::~DesktopController() {
   DCHECK(g_instance);
-  g_instance = NULL;
+  g_instance = nullptr;
 }
 
 }  // namespace extensions

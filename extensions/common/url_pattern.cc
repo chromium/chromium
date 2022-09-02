@@ -451,7 +451,7 @@ bool URLPattern::MatchesURL(const GURL& test) const {
 
 bool URLPattern::MatchesSecurityOrigin(const GURL& test) const {
   const GURL* test_url = &test;
-  bool has_inner_url = test.inner_url() != NULL;
+  bool has_inner_url = test.inner_url() != nullptr;
 
   if (has_inner_url) {
     if (!test.SchemeIsFileSystem())

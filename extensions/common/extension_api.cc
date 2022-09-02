@@ -61,7 +61,7 @@ const base::Value::Dict* FindListItem(const base::Value::List& list,
       return item;
   }
 
-  return NULL;
+  return nullptr;
 }
 
 const base::Value::Dict* GetSchemaChild(const base::Value::Dict& schema_node,
@@ -76,7 +76,7 @@ const base::Value::Dict* GetSchemaChild(const base::Value::Dict& schema_node,
       return child_node;
   }
 
-  return NULL;
+  return nullptr;
 }
 
 struct ExtensionAPIStatic {
@@ -88,7 +88,7 @@ base::LazyInstance<ExtensionAPIStatic>::Leaky g_extension_api_static =
     LAZY_INSTANCE_INITIALIZER;
 
 // May override |g_extension_api_static| for a test.
-ExtensionAPI* g_shared_instance_for_test = NULL;
+ExtensionAPI* g_shared_instance_for_test = nullptr;
 
 }  // namespace
 
@@ -258,7 +258,7 @@ const Feature* ExtensionAPI::GetFeatureDependency(
 
   auto provider = dependency_providers_.find(feature_type);
   if (provider == dependency_providers_.end())
-    return NULL;
+    return nullptr;
 
   const Feature* feature = provider->second->GetFeature(feature_name);
   // Try getting the feature for the parent API, if this was a child.

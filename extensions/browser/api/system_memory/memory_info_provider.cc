@@ -22,7 +22,7 @@ MemoryInfoProvider::~MemoryInfoProvider() {
 
 void MemoryInfoProvider::InitializeForTesting(
     scoped_refptr<MemoryInfoProvider> provider) {
-  DCHECK(provider.get() != NULL);
+  DCHECK(provider.get() != nullptr);
   provider_.Get() = provider;
 }
 
@@ -35,7 +35,7 @@ bool MemoryInfoProvider::QueryInfo() {
 
 // static
 MemoryInfoProvider* MemoryInfoProvider::Get() {
-  if (provider_.Get().get() == NULL)
+  if (provider_.Get().get() == nullptr)
     provider_.Get() = new MemoryInfoProvider();
   return provider_.Get().get();
 }

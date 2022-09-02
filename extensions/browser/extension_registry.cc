@@ -144,7 +144,7 @@ const Extension* ExtensionRegistry::GetExtensionById(const std::string& id,
     if (extension)
       return extension;
   }
-  return NULL;
+  return nullptr;
 }
 
 const Extension* ExtensionRegistry::GetInstalledExtension(

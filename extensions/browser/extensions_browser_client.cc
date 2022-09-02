@@ -19,7 +19,7 @@ namespace extensions {
 
 namespace {
 
-ExtensionsBrowserClient* g_extension_browser_client = NULL;
+ExtensionsBrowserClient* g_extension_browser_client = nullptr;
 
 }  // namespace
 

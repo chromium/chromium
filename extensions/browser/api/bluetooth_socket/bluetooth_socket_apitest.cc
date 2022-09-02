@@ -80,7 +80,7 @@ IN_PROC_BROWSER_TEST_F(BluetoothSocketApiTest, DISABLED_Connect) {
   EXPECT_CALL(*mock_adapter_, GetDevice(mock_device1_->GetAddress()))
       .WillRepeatedly(testing::Return(mock_device1_.get()));
   EXPECT_CALL(*mock_adapter_, GetDevice(std::string("aa:aa:aa:aa:aa:aa")))
-      .WillOnce(testing::Return(static_cast<BluetoothDevice*>(NULL)));
+      .WillOnce(testing::Return(static_cast<BluetoothDevice*>(nullptr)));
 
   // Return a mock socket object as a successful result to the connect() call.
   BluetoothUUID service_uuid("8e3ad063-db38-4289-aa8f-b30e4223cf40");

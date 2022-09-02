@@ -112,7 +112,7 @@ const Extension* ExtensionSet::GetExtensionOrAppByURL(const GURL& url,
 
 const Extension* ExtensionSet::GetAppByURL(const GURL& url) const {
   const Extension* extension = GetExtensionOrAppByURL(url);
-  return (extension && extension->is_app()) ? extension : NULL;
+  return (extension && extension->is_app()) ? extension : nullptr;
 }
 
 const Extension* ExtensionSet::GetHostedAppByURL(const GURL& url) const {
@@ -121,7 +121,7 @@ const Extension* ExtensionSet::GetHostedAppByURL(const GURL& url) const {
       return iter->second.get();
   }
 
-  return NULL;
+  return nullptr;
 }
 
 const Extension* ExtensionSet::GetHostedAppByOverlappingWebExtent(
@@ -131,7 +131,7 @@ const Extension* ExtensionSet::GetHostedAppByOverlappingWebExtent(
       return iter->second.get();
   }
 
-  return NULL;
+  return nullptr;
 }
 
 bool ExtensionSet::InSameExtent(const GURL& old_url,

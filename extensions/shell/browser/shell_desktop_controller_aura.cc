@@ -163,7 +163,7 @@ ShellDesktopControllerAura::~ShellDesktopControllerAura() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   chromeos::PowerManagerClient::Get()->RemoveObserver(this);
 #endif
-  extensions::AppWindowClient::Set(NULL);
+  extensions::AppWindowClient::Set(nullptr);
 }
 
 void ShellDesktopControllerAura::PreMainMessageLoopRun() {

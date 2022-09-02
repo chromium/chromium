@@ -518,7 +518,7 @@ void ModuleSystem::SetLazyField(v8::Local<v8::Object> object,
                      ToV8StringUnsafe(GetIsolate(), module_field.c_str()));
   auto maybe = object->SetAccessor(
       context, ToV8StringUnsafe(GetIsolate(), field.c_str()),
-      &ModuleSystem::LazyFieldGetter, NULL, parameters);
+      &ModuleSystem::LazyFieldGetter, nullptr, parameters);
   CHECK(v8_helpers::IsTrue(maybe));
 }
 

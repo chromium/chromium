@@ -61,13 +61,13 @@ content::WebContents* AppWebContentsHelper::OpenURLFromTab(
         base::StringPrintf(
             "Can't open same-window link to \"%s\"; try target=\"_blank\".",
             params.url.spec().c_str()));
-    return NULL;
+    return nullptr;
   }
 
   // These dispositions aren't really navigations.
   if (disposition == WindowOpenDisposition::SAVE_TO_DISK ||
       disposition == WindowOpenDisposition::IGNORE_ACTION)
-    return NULL;
+    return nullptr;
 
   content::WebContents* contents =
       app_delegate_->OpenURLFromTab(browser_context_, web_contents_, params);

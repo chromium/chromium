@@ -85,7 +85,7 @@ void ExtensionsTestSuite::Initialize() {
 }
 
 void ExtensionsTestSuite::Shutdown() {
-  extensions::ExtensionsClient::Set(NULL);
+  extensions::ExtensionsClient::Set(nullptr);
   client_.reset();
 
   ui::ResourceBundle::CleanupSharedInstance();

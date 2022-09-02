@@ -60,7 +60,7 @@ const ContentVerifierIOData::ExtensionData* ContentVerifierIOData::GetData(
   if (found != data_map_.end())
     return found->second.get();
   else
-    return NULL;
+    return nullptr;
 }
 
 }  // namespace extensions

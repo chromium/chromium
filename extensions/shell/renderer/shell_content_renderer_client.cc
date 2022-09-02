@@ -74,7 +74,7 @@ blink::WebPlugin* ShellContentRendererClient::CreatePluginReplacement(
     content::RenderFrame* render_frame,
     const base::FilePath& plugin_path) {
   // Don't provide a custom "failed to load" plugin.
-  return NULL;
+  return nullptr;
 }
 
 void ShellContentRendererClient::WillSendRequest(

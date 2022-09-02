@@ -34,12 +34,12 @@ TEST(WebRequestUploadDataPresenterTest, ParsedData) {
   // Real output.
   std::unique_ptr<ParsedDataPresenter> parsed_data_presenter(
       ParsedDataPresenter::CreateForTests());
-  ASSERT_TRUE(parsed_data_presenter.get() != NULL);
+  ASSERT_TRUE(parsed_data_presenter.get() != nullptr);
   parsed_data_presenter->FeedBytes(
       base::StringPiece(element.bytes(), element.length()));
   EXPECT_TRUE(parsed_data_presenter->Succeeded());
   std::unique_ptr<base::Value> result = parsed_data_presenter->Result();
-  ASSERT_TRUE(result.get() != NULL);
+  ASSERT_TRUE(result.get() != nullptr);
 
   EXPECT_EQ(*result, expected_form);
 }

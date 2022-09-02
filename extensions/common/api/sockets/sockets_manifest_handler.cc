@@ -38,7 +38,7 @@ ManifestPermission* SocketsManifestHandler::CreateInitialRequiredPermission(
   SocketsManifestData* data = SocketsManifestData::Get(extension);
   if (data)
     return data->permission()->Clone().release();
-  return NULL;
+  return nullptr;
 }
 
 base::span<const char* const> SocketsManifestHandler::Keys() const {

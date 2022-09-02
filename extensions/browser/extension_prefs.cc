@@ -716,7 +716,7 @@ bool ExtensionPrefs::ReadPrefAsList(const std::string& extension_id,
                                     base::StringPiece pref_key,
                                     const base::ListValue** out_value) const {
   const base::DictionaryValue* ext = GetExtensionPref(extension_id);
-  const base::ListValue* out = NULL;
+  const base::ListValue* out = nullptr;
   if (!ext || !ext->GetList(pref_key, &out))
     return false;
   if (out_value)
@@ -754,14 +754,14 @@ const base::Value::Dict* ExtensionPrefs::ReadPrefAsDict(
 
 bool ExtensionPrefs::HasPrefForExtension(
     const std::string& extension_id) const {
-  return GetExtensionPref(extension_id) != NULL;
+  return GetExtensionPref(extension_id) != nullptr;
 }
 
 bool ExtensionPrefs::ReadPrefAsURLPatternSet(const std::string& extension_id,
                                              base::StringPiece pref_key,
                                              URLPatternSet* result,
                                              int valid_schemes) const {
-  const base::ListValue* value = NULL;
+  const base::ListValue* value = nullptr;
   if (!ReadPrefAsList(extension_id, pref_key, &value))
     return false;
   const base::DictionaryValue* extension = GetExtensionPref(extension_id);
@@ -774,7 +774,7 @@ bool ExtensionPrefs::ReadPrefAsURLPatternSet(const std::string& extension_id,
   }
 
   bool allow_file_access = AllowFileAccess(extension_id);
-  return result->Populate(*value, valid_schemes, allow_file_access, NULL);
+  return result->Populate(*value, valid_schemes, allow_file_access, nullptr);
 }
 
 void ExtensionPrefs::SetExtensionPrefURLPatternSet(
@@ -802,24 +802,24 @@ std::unique_ptr<PermissionSet> ExtensionPrefs::ReadPrefAsPermissionSet(
   // Retrieve the API permissions. Please refer SetExtensionPrefPermissionSet()
   // for api_values format.
   APIPermissionSet apis;
-  const base::ListValue* api_values = NULL;
+  const base::ListValue* api_values = nullptr;
   std::string api_pref = JoinPrefs({pref_key, kPrefAPIs});
   if (ReadPrefAsList(extension_id, api_pref, &api_values)) {
     APIPermissionSet::ParseFromJSON(api_values,
                                     APIPermissionSet::kAllowInternalPermissions,
-                                    &apis, NULL, NULL);
+                                    &apis, nullptr, nullptr);
   }
 
   // Retrieve the Manifest Keys permissions. Please refer to
   // |SetExtensionPrefPermissionSet| for manifest_permissions_values format.
   ManifestPermissionSet manifest_permissions;
-  const base::ListValue* manifest_permissions_values = NULL;
+  const base::ListValue* manifest_permissions_values = nullptr;
   std::string manifest_permission_pref =
       JoinPrefs({pref_key, kPrefManifestPermissions});
   if (ReadPrefAsList(extension_id, manifest_permission_pref,
                      &manifest_permissions_values)) {
     ManifestPermissionSet::ParseFromJSON(
-        manifest_permissions_values, &manifest_permissions, NULL, NULL);
+        manifest_permissions_values, &manifest_permissions, nullptr, nullptr);
   }
 
   // Retrieve the explicit host permissions.
@@ -1733,7 +1733,7 @@ int ExtensionPrefs::GetCreationFlags(const std::string& extension_id) const {
 int ExtensionPrefs::GetDelayedInstallCreationFlags(
     const std::string& extension_id) const {
   int creation_flags = Extension::NO_FLAGS;
-  const base::DictionaryValue* delayed_info = NULL;
+  const base::DictionaryValue* delayed_info = nullptr;
   if (ReadPrefAsDictionary(extension_id, kDelayedInstallInfo, &delayed_info)) {
     if (absl::optional<int> flags =
             delayed_info->FindIntKey(kPrefCreationFlags)) {

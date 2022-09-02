@@ -55,7 +55,7 @@ class BluetoothEventRouterTest : public ExtensionsTest {
   void TearDown() override {
     // It's important to destroy the router before the browser context keyed
     // services so it removes itself as an ExtensionRegistry observer.
-    router_.reset(NULL);
+    router_.reset();
     ExtensionsTest::TearDown();
   }
 

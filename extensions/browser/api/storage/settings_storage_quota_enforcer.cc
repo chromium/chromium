@@ -45,7 +45,7 @@ void Allocate(
 }
 
 ValueStore::Status QuotaExceededError(Resource resource) {
-  const char* name = NULL;
+  const char* name = nullptr;
   switch (resource) {
     case QUOTA_BYTES:
       name = "QUOTA_BYTES";

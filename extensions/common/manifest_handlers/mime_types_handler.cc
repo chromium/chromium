@@ -127,7 +127,7 @@ MimeTypesHandler* MimeTypesHandler::GetHandler(
       extension->GetManifestData(keys::kMimeTypesHandler));
   if (info)
     return &info->handler_;
-  return NULL;
+  return nullptr;
 }
 
 MimeTypesHandlerParser::MimeTypesHandlerParser() {

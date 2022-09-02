@@ -17,12 +17,14 @@ namespace extensions {
 class AppViewGuestDelegate;
 
 namespace {
-ExtensionsAPIClient* g_instance = NULL;
+ExtensionsAPIClient* g_instance = nullptr;
 }  // namespace
 
 ExtensionsAPIClient::ExtensionsAPIClient() { g_instance = this; }
 
-ExtensionsAPIClient::~ExtensionsAPIClient() { g_instance = NULL; }
+ExtensionsAPIClient::~ExtensionsAPIClient() {
+  g_instance = nullptr;
+}
 
 // static
 ExtensionsAPIClient* ExtensionsAPIClient::Get() { return g_instance; }
@@ -64,13 +66,13 @@ void ExtensionsAPIClient::ClearActionCount(content::BrowserContext* context,
                                            const Extension& extension) {}
 
 AppViewGuestDelegate* ExtensionsAPIClient::CreateAppViewGuestDelegate() const {
-  return NULL;
+  return nullptr;
 }
 
 ExtensionOptionsGuestDelegate*
 ExtensionsAPIClient::CreateExtensionOptionsGuestDelegate(
     ExtensionOptionsGuest* guest) const {
-  return NULL;
+  return nullptr;
 }
 
 std::unique_ptr<guest_view::GuestViewManagerDelegate>
@@ -87,7 +89,7 @@ ExtensionsAPIClient::CreateMimeHandlerViewGuestDelegate(
 
 WebViewGuestDelegate* ExtensionsAPIClient::CreateWebViewGuestDelegate(
     WebViewGuest* web_view_guest) const {
-  return NULL;
+  return nullptr;
 }
 
 WebViewPermissionHelperDelegate* ExtensionsAPIClient::

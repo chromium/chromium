@@ -60,7 +60,7 @@ MessageBundle* MessageBundle::Create(const CatalogVector& locale_catalogs,
                                      std::string* error) {
   std::unique_ptr<MessageBundle> message_bundle(new MessageBundle);
   if (!message_bundle->Init(locale_catalogs, error))
-    return NULL;
+    return nullptr;
 
   return message_bundle.release();
 }

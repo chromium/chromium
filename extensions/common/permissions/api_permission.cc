@@ -44,7 +44,7 @@ class SimpleAPIPermission : public APIPermission {
   bool FromValue(const base::Value* value,
                  std::string* /*error*/,
                  std::vector<std::string>* /*unhandled_permissions*/) override {
-    return (value == NULL);
+    return (value == nullptr);
   }
 
   std::unique_ptr<base::Value> ToValue() const override { return nullptr; }

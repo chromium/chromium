@@ -46,7 +46,7 @@ content::WebContents* ShellAppDelegate::OpenURLFromTab(
     content::WebContents* source,
     const content::OpenURLParams& params) {
   NOTIMPLEMENTED();
-  return NULL;
+  return nullptr;
 }
 
 void ShellAppDelegate::AddNewContents(

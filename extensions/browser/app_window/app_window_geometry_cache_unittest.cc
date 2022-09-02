@@ -138,7 +138,8 @@ std::string AppWindowGeometryCacheTest::AddExtensionWithPrefs(
 // Test getting geometry from an empty store.
 TEST_F(AppWindowGeometryCacheTest, GetGeometryEmptyStore) {
   const std::string extension_id = AddExtensionWithPrefs("ext1");
-  ASSERT_FALSE(cache_->GetGeometry(extension_id, kWindowId, NULL, NULL, NULL));
+  ASSERT_FALSE(
+      cache_->GetGeometry(extension_id, kWindowId, nullptr, nullptr, nullptr));
 }
 
 // Test getting geometry for an unknown extension.
@@ -150,7 +151,8 @@ TEST_F(AppWindowGeometryCacheTest, GetGeometryUnkownExtension) {
                               gfx::Rect(4, 5, 31, 43),
                               gfx::Rect(0, 0, 1600, 900),
                               ui::SHOW_STATE_NORMAL);
-  ASSERT_FALSE(cache_->GetGeometry(extension_id2, kWindowId, NULL, NULL, NULL));
+  ASSERT_FALSE(
+      cache_->GetGeometry(extension_id2, kWindowId, nullptr, nullptr, nullptr));
 }
 
 // Test getting geometry for an unknown window in a known extension.
@@ -161,7 +163,8 @@ TEST_F(AppWindowGeometryCacheTest, GetGeometryUnkownWindow) {
                               gfx::Rect(4, 5, 31, 43),
                               gfx::Rect(0, 0, 1600, 900),
                               ui::SHOW_STATE_NORMAL);
-  ASSERT_FALSE(cache_->GetGeometry(extension_id, kWindowId2, NULL, NULL, NULL));
+  ASSERT_FALSE(
+      cache_->GetGeometry(extension_id, kWindowId2, nullptr, nullptr, nullptr));
 }
 
 // Test that loading geometry, screen_bounds and state from the store works
@@ -374,11 +377,13 @@ TEST_F(AppWindowGeometryCacheTest, MaxWindows) {
   }
 
   // The first added window should no longer have cached geometry.
-  EXPECT_FALSE(cache_->GetGeometry(extension_id, "window_0", NULL, NULL, NULL));
+  EXPECT_FALSE(
+      cache_->GetGeometry(extension_id, "window_0", nullptr, nullptr, nullptr));
   // All other windows should still exist.
   for (size_t i = 1; i < AppWindowGeometryCache::kMaxCachedWindows + 1; ++i) {
     std::string window_id = "window_" + base::NumberToString(i);
-    EXPECT_TRUE(cache_->GetGeometry(extension_id, window_id, NULL, NULL, NULL));
+    EXPECT_TRUE(cache_->GetGeometry(extension_id, window_id, nullptr, nullptr,
+                                    nullptr));
   }
 }
 

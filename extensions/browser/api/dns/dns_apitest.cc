@@ -65,7 +65,7 @@ IN_PROC_BROWSER_TEST_F(DnsApiTest, DnsResolveIPLiteral) {
 
   std::unique_ptr<base::Value> result(RunFunctionAndReturnSingleResult(
       resolve_function.get(), "[\"127.0.0.1\"]", browser_context()));
-  base::DictionaryValue* dict = NULL;
+  base::DictionaryValue* dict = nullptr;
   ASSERT_TRUE(result->GetAsDictionary(&dict));
 
   EXPECT_EQ(net::OK, dict->FindIntKey("resultCode"));
@@ -88,7 +88,7 @@ IN_PROC_BROWSER_TEST_F(DnsApiTest, DnsResolveHostname) {
   std::string function_arguments = base::StringPrintf(R"(["%s"])", kHostname);
   std::unique_ptr<base::Value> result(RunFunctionAndReturnSingleResult(
       resolve_function.get(), function_arguments, browser_context()));
-  base::DictionaryValue* dict = NULL;
+  base::DictionaryValue* dict = nullptr;
   ASSERT_TRUE(result->GetAsDictionary(&dict));
 
   EXPECT_EQ(net::OK, dict->FindIntKey("resultCode"));

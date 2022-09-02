@@ -274,7 +274,7 @@ content::RenderFrame* ScriptContext::GetRenderFrame() const {
   DCHECK(thread_checker_.CalledOnValidThread());
   if (web_frame_)
     return content::RenderFrame::FromWebFrame(web_frame_);
-  return NULL;
+  return nullptr;
 }
 
 void ScriptContext::SafeCallFunction(const v8::Local<v8::Function>& function,
@@ -339,7 +339,7 @@ Feature::Availability ScriptContext::GetAvailability(
   const Extension* extension = extension_.get();
   if (extension && extension->is_hosted_app() &&
       (api_name == "runtime.connect" || api_name == "runtime.sendMessage")) {
-    extension = NULL;
+    extension = nullptr;
   }
   return ExtensionAPI::GetSharedInstance()->IsAvailable(
       api_name, extension, context_type_, url(), check_alias,

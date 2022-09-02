@@ -34,14 +34,14 @@ const Command* CommandsInfo::GetBrowserActionCommand(
     const Extension* extension) {
   auto* info =
       static_cast<CommandsInfo*>(extension->GetManifestData(keys::kCommands));
-  return info ? info->browser_action_command.get() : NULL;
+  return info ? info->browser_action_command.get() : nullptr;
 }
 
 // static
 const Command* CommandsInfo::GetPageActionCommand(const Extension* extension) {
   auto* info =
       static_cast<CommandsInfo*>(extension->GetManifestData(keys::kCommands));
-  return info ? info->page_action_command.get() : NULL;
+  return info ? info->page_action_command.get() : nullptr;
 }
 
 // static
@@ -55,7 +55,7 @@ const Command* CommandsInfo::GetActionCommand(const Extension* extension) {
 const CommandMap* CommandsInfo::GetNamedCommands(const Extension* extension) {
   auto* info =
       static_cast<CommandsInfo*>(extension->GetManifestData(keys::kCommands));
-  return info ? &info->named_commands : NULL;
+  return info ? &info->named_commands : nullptr;
 }
 
 CommandsHandler::CommandsHandler() = default;
@@ -69,7 +69,7 @@ bool CommandsHandler::Parse(Extension* extension, std::u16string* error) {
     return true;
   }
 
-  const base::DictionaryValue* dict = NULL;
+  const base::DictionaryValue* dict = nullptr;
   if (!extension->manifest()->GetDictionary(keys::kCommands, &dict)) {
     *error = manifest_errors::kInvalidCommandsKey;
     return false;
@@ -83,7 +83,7 @@ bool CommandsHandler::Parse(Extension* extension, std::u16string* error) {
        iter.Advance()) {
     ++command_index;
 
-    const base::DictionaryValue* command = NULL;
+    const base::DictionaryValue* command = nullptr;
     if (!iter.value().GetAsDictionary(&command)) {
       *error = ErrorUtils::FormatErrorMessageUTF16(
           manifest_errors::kInvalidKeyBindingDictionary,

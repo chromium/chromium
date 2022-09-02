@@ -202,7 +202,7 @@ void PassFileInfoToUIThread(FileInfoOptCallback callback,
                             const base::File::Info& info) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
   std::unique_ptr<base::File::Info> file_info(
-      result == base::File::FILE_OK ? new base::File::Info(info) : NULL);
+      result == base::File::FILE_OK ? new base::File::Info(info) : nullptr);
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), std::move(file_info)));
 }

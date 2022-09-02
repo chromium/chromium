@@ -110,7 +110,7 @@ PermissionIDSet AutomationManifestPermission::GetPermissions() const {
 bool AutomationManifestPermission::FromValue(const base::Value* value) {
   std::u16string error;
   automation_info_.reset(
-      AutomationInfo::FromValue(*value, NULL /* install_warnings */, &error)
+      AutomationInfo::FromValue(*value, nullptr /* install_warnings */, &error)
           .release());
   return error.empty();
 }
@@ -207,7 +207,7 @@ ManifestPermission* AutomationHandler::CreateInitialRequiredPermission(
         base::WrapUnique(new const AutomationInfo(info->desktop, info->matches,
                                                   info->interact)));
   }
-  return NULL;
+  return nullptr;
 }
 
 // static

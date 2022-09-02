@@ -20,7 +20,7 @@ namespace extensions {
 
 namespace {
 
-ExtensionsClient* g_client = NULL;
+ExtensionsClient* g_client = nullptr;
 
 }  // namespace
 

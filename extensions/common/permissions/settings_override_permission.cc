@@ -32,7 +32,7 @@ PermissionIDSet SettingsOverrideAPIPermission::GetPermissions() const {
 
 bool SettingsOverrideAPIPermission::Check(
     const APIPermission::CheckParam* param) const {
-  return (param == NULL);
+  return (param == nullptr);
 }
 
 bool SettingsOverrideAPIPermission::Contains(const APIPermission* rhs) const {

@@ -56,7 +56,7 @@ std::string QuotaService::Assess(const std::string& extension_id,
   if (heuristics.empty())
     return std::string();  // No heuristic implies no limit.
 
-  QuotaLimitHeuristic* failed_heuristic = NULL;
+  QuotaLimitHeuristic* failed_heuristic = nullptr;
   for (const auto& heuristic : heuristics) {
     // Apply heuristic to each item (bucket).
     if (!heuristic->ApplyToArgs(args, event_time)) {
