@@ -142,9 +142,7 @@ bool BluetoothDeviceFloss::IsConnectable() const {
 }
 
 bool BluetoothDeviceFloss::IsConnecting() const {
-  NOTIMPLEMENTED();
-
-  return false;
+  return num_connecting_calls_ > 0;
 }
 
 device::BluetoothDevice::UUIDSet BluetoothDeviceFloss::GetUUIDs() const {
@@ -203,6 +201,9 @@ void BluetoothDeviceFloss::Connect(
     ConnectCallback callback) {
   BLUETOOTH_LOG(EVENT) << "Connecting to " << address_;
 
+  if (num_connecting_calls_++ == 0)
+    adapter_->NotifyDeviceChanged(this);
+
   // To simulate BlueZ API behavior, we don't reply the callback as soon as
   // Floss CreateBond API returns, but rather we trigger the callback later
   // after pairing is done and profiles are connected.
@@ -254,6 +255,7 @@ void BluetoothDeviceFloss::RejectPairing() {
 void BluetoothDeviceFloss::CancelPairing() {
   FlossDBusManager::Get()->GetAdapterClient()->CancelBondProcess(
       base::DoNothing(), AsFlossDeviceId());
+  TriggerConnectCallback(BluetoothDevice::ConnectErrorCode::ERROR_UNKNOWN);
 }
 
 void BluetoothDeviceFloss::Disconnect(base::OnceClosure callback,
@@ -461,6 +463,7 @@ void BluetoothDeviceFloss::OnConnectAllEnabledProfiles(DBusResult<Void> ret) {
     // TODO(b/202874707): Design a proper new errors for Floss.
     if (pending_callback_on_connect_profiles_)
       TriggerConnectCallback(BluetoothDevice::ConnectErrorCode::ERROR_UNKNOWN);
+    return;
   }
 
   TriggerConnectCallback(absl::nullopt);
@@ -468,6 +471,11 @@ void BluetoothDeviceFloss::OnConnectAllEnabledProfiles(DBusResult<Void> ret) {
 
 void BluetoothDeviceFloss::TriggerConnectCallback(
     absl::optional<BluetoothDevice::ConnectErrorCode> error_code) {
+  if (--num_connecting_calls_ == 0)
+    adapter_->NotifyDeviceChanged(this);
+
+  DCHECK(num_connecting_calls_ >= 0);
+
   if (pending_callback_on_connect_profiles_) {
     std::move(*pending_callback_on_connect_profiles_).Run(error_code);
     pending_callback_on_connect_profiles_ = absl::nullopt;

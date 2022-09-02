@@ -172,6 +172,9 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceFloss
   // This is used for determining if the device is paired.
   uint32_t connection_state_ = 0;
 
+  // Number of ongoing calls to Connect().
+  int num_connecting_calls_ = 0;
+
   // UI thread task runner and socket thread used to create sockets.
   scoped_refptr<base::SequencedTaskRunner> ui_task_runner_;
   scoped_refptr<device::BluetoothSocketThread> socket_thread_;

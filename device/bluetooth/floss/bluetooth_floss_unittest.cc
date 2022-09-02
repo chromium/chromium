@@ -134,6 +134,7 @@ TEST_F(BluetoothFlossTest, PairJustWorks) {
       adapter_->GetDevice(FakeFlossAdapterClient::kJustWorksAddress);
   ASSERT_TRUE(device != nullptr);
   ASSERT_FALSE(device->IsPaired());
+  ASSERT_FALSE(device->IsConnecting());
 
   StrictMock<MockPairingDelegate> pairing_delegate;
   base::RunLoop run_loop;
@@ -144,8 +145,10 @@ TEST_F(BluetoothFlossTest, PairJustWorks) {
             EXPECT_FALSE(error.has_value());
             run_loop.Quit();
           }));
+  ASSERT_TRUE(device->IsConnecting());
   run_loop.Run();
 
+  ASSERT_FALSE(device->IsConnecting());
   EXPECT_TRUE(device->IsPaired());
 }
 
