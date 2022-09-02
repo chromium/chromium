@@ -12,7 +12,9 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.robolectric.Shadows.shadowOf;
 
+import static org.chromium.chrome.browser.ui.fast_checkout.FastCheckoutProperties.CREDIT_CARD_MODEL_LIST;
 import static org.chromium.chrome.browser.ui.fast_checkout.FastCheckoutProperties.DETAIL_SCREEN_BACK_CLICK_HANDLER;
 import static org.chromium.chrome.browser.ui.fast_checkout.FastCheckoutProperties.DETAIL_SCREEN_MODEL_LIST;
 import static org.chromium.chrome.browser.ui.fast_checkout.FastCheckoutProperties.DETAIL_SCREEN_SETTINGS_CLICK_HANDLER;
@@ -20,6 +22,7 @@ import static org.chromium.chrome.browser.ui.fast_checkout.FastCheckoutPropertie
 
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.appcompat.widget.Toolbar;
@@ -44,7 +47,9 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.ui.fast_checkout.FastCheckoutProperties.DetailItemType;
 import org.chromium.chrome.browser.ui.fast_checkout.data.FastCheckoutAutofillProfile;
+import org.chromium.chrome.browser.ui.fast_checkout.data.FastCheckoutCreditCard;
 import org.chromium.chrome.browser.ui.fast_checkout.detail_screen.AutofillProfileItemProperties;
+import org.chromium.chrome.browser.ui.fast_checkout.detail_screen.CreditCardItemProperties;
 import org.chromium.chrome.browser.ui.fast_checkout.detail_screen.DetailScreenCoordinator;
 import org.chromium.chrome.browser.ui.fast_checkout.detail_screen.FooterItemProperties;
 import org.chromium.ui.base.TestActivity;
@@ -85,6 +90,19 @@ public class FastCheckoutDetailScreenViewTest {
                     /*guid=*/"555", /*name=*/"Jane Doe", /*streetAddress=*/"Sunset Blvd. 456",
                     /*city=*/"Los Angeles", /*postalCode=*/"99999", /*email=*/"doe.jane@gmail.com",
                     /*phoneNumber=*/"+1-345-333-319");
+
+    private static final FastCheckoutCreditCard sSampleCard1 =
+            FastCheckoutTestUtils.createDetailedCreditCard(/*guid=*/"123",
+                    /*origin=*/"https://example.com", /*name=*/"John Moe", /*number=*/"75675675656",
+                    /*obfuscatedNumber=*/"5656", /*month=*/"05", /*year=*/"2031",
+                    /*issuerIconString=*/"visaCC");
+
+    private static final FastCheckoutCreditCard sSampleCard2 =
+            FastCheckoutTestUtils.createDetailedCreditCard(/*guid=*/"154",
+                    /*origin=*/"https://example.fr", /*name=*/"Jane Doe",
+                    /*number=*/"4564565541234",
+                    /*obfuscatedNumber*/ "1234", /*month=*/"10", /*year=*/"2025",
+                    /*issuerIconString=*/"dinersCC");
 
     @Before
     public void setUp() {
@@ -201,6 +219,46 @@ public class FastCheckoutDetailScreenViewTest {
 
     @Test
     @SmallTest
+    public void testRecyclerViewBindsCreditCardDataToItemView() {
+        ModelList models = mModel.get(CREDIT_CARD_MODEL_LIST);
+        FastCheckoutCreditCard sampleCardNoName =
+                FastCheckoutTestUtils.createDetailedCreditCard(/*guid=*/"123",
+                        /*origin=*/"https://example.at", /*name=*/"", /*number=*/"23423423432",
+                        /*obfuscatedNumber=*/"34326", /*month=*/"05", /*year=*/"2035",
+                        /*issuerIconString=*/"visaCC");
+
+        models.add(new ListItem(DetailItemType.CREDIT_CARD,
+                CreditCardItemProperties.create(sSampleCard1, /*isSelected=*/false,
+                        /*onClickListener=*/() -> {})));
+        models.add(new ListItem(DetailItemType.CREDIT_CARD,
+                CreditCardItemProperties.create(sSampleCard2, /*isSelected=*/true,
+                        /*onClickListener=*/() -> {})));
+        models.add(new ListItem(DetailItemType.CREDIT_CARD,
+                CreditCardItemProperties.create(sampleCardNoName, /*isSelected=*/false,
+                        /*onClickListener=*/() -> {})));
+        mModel.set(DETAIL_SCREEN_MODEL_LIST, models);
+
+        // Check that the sheet is populated properly.
+        ShadowLooper.shadowMainLooper().idle();
+        assertThat(getListItems().getChildCount(), is(3));
+
+        assertThatCreditCardItemLayoutIsCorrectAt(0, sSampleCard1, /*isSelected=*/false);
+        assertThatCreditCardItemLayoutIsCorrectAt(1, sSampleCard2, /*isSelected=*/true);
+        assertThatCreditCardItemLayoutIsCorrectAt(2, sampleCardNoName, /*isSelected=*/false);
+
+        // Update the selection.
+        models.get(0).model.set(CreditCardItemProperties.IS_SELECTED, true);
+        models.get(1).model.set(CreditCardItemProperties.IS_SELECTED, false);
+
+        ShadowLooper.shadowMainLooper().idle();
+
+        assertThatCreditCardItemLayoutIsCorrectAt(0, sSampleCard1, /*isSelected=*/true);
+        assertThatCreditCardItemLayoutIsCorrectAt(1, sSampleCard2, /*isSelected=*/false);
+        assertThatCreditCardItemLayoutIsCorrectAt(2, sampleCardNoName, /*isSelected=*/false);
+    }
+
+    @Test
+    @SmallTest
     public void testRecyclerViewHandlesFooterItemCorrectly() {
         Runnable callback = mock(Runnable.class);
 
@@ -210,7 +268,7 @@ public class FastCheckoutDetailScreenViewTest {
                         /*onClickListener=*/() -> { Assert.fail(); })));
         models.add(new ListItem(DetailItemType.FOOTER,
                 FooterItemProperties.create(
-                        /*label=*/R.string.fast_checkout_detail_screen_add_new_text,
+                        /*label=*/R.string.fast_checkout_detail_screen_add_autofill_profile_text,
                         /*onClickHandler=*/callback)));
         mModel.set(DETAIL_SCREEN_MODEL_LIST, models);
 
@@ -221,7 +279,7 @@ public class FastCheckoutDetailScreenViewTest {
         // Check that the correct text is set for the footer item.
         assertThat(getTextFromListItemWithId(1, R.id.fast_checkout_add_new_item_label),
                 equalTo(mView.getContext().getResources().getString(
-                        R.string.fast_checkout_detail_screen_add_new_text)));
+                        R.string.fast_checkout_detail_screen_add_autofill_profile_text)));
 
         // Check that clicks are handled properly.
         getListItemAt(1).performClick();
@@ -243,7 +301,7 @@ public class FastCheckoutDetailScreenViewTest {
         return textView.getText().toString();
     }
 
-    /** Asserts that the layout of the profile item at given index is correct. */
+    /** Asserts that the layout of the profile item at the given index is correct. */
     private void assertThatProfileItemLayoutIsCorrectAt(
             int index, FastCheckoutAutofillProfile profile, boolean isSelected) {
         assertThat(getTextFromListItemWithId(index, R.id.fast_checkout_autofill_profile_item_name),
@@ -266,5 +324,36 @@ public class FastCheckoutDetailScreenViewTest {
         View icon = getListItemAt(index).findViewById(
                 R.id.fast_checkout_autofill_profile_item_selected_icon);
         assertThat(icon.getVisibility(), is(isSelected ? View.VISIBLE : View.GONE));
+    }
+
+    /** Asserts that the layout of the credit card item at the given index is correct. */
+    private void assertThatCreditCardItemLayoutIsCorrectAt(
+            int index, FastCheckoutCreditCard card, boolean isSelected) {
+        assertThat(getTextFromListItemWithId(index, R.id.fast_checkout_credit_card_item_number),
+                equalTo(card.getObfuscatedNumber()));
+
+        // The name row should get hidden if the name is empty.
+        TextView nameView =
+                getListItemAt(index).findViewById(R.id.fast_checkout_credit_card_item_name);
+        if (card.getName().isEmpty()) {
+            assertThat(nameView.getVisibility(), is(View.INVISIBLE));
+        } else {
+            assertThat(nameView.getVisibility(), is(View.VISIBLE));
+            assertThat(nameView.getText().toString(), equalTo(card.getName()));
+        }
+
+        assertThat(getTextFromListItemWithId(
+                           index, R.id.fast_checkout_credit_card_item_expiration_date),
+                equalTo(card.getMonth() + "/" + card.getYear()));
+
+        View icon = getListItemAt(index).findViewById(
+                R.id.fast_checkout_credit_card_item_selected_icon);
+        assertThat(icon.getVisibility(), is(isSelected ? View.VISIBLE : View.GONE));
+
+        // Check that the icon is the correct one.
+        ImageView paymentIcon =
+                getListItemAt(index).findViewById(R.id.fast_checkout_credit_card_icon);
+        assertThat(shadowOf(paymentIcon.getDrawable()).getCreatedFromResId(),
+                is(card.getIssuerIconDrawableId()));
     }
 }

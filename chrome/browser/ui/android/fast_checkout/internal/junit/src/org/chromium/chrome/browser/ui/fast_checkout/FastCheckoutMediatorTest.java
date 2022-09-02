@@ -129,14 +129,24 @@ public class FastCheckoutMediatorTest {
     @Test
     public void testSetCurrentScreenUpdatesModel() {
         mMediator.setCurrentScreen(ScreenType.AUTOFILL_PROFILE_SCREEN);
-
-        // Test that all relevant model entries got updated.
         assertThat(mModel.get(CURRENT_SCREEN), is(ScreenType.AUTOFILL_PROFILE_SCREEN));
         assertThat(mModel.get(DETAIL_SCREEN_TITLE),
                 is(R.string.fast_checkout_autofill_profile_sheet_title));
         assertThat(mModel.get(DETAIL_SCREEN_SETTINGS_MENU_TITLE),
                 is(R.string.fast_checkout_autofill_profile_settings_button_description));
         assertThat(mModel.get(DETAIL_SCREEN_MODEL_LIST), is(mModel.get(PROFILE_MODEL_LIST)));
+
+        assertNotNull(mModel.get(DETAIL_SCREEN_SETTINGS_CLICK_HANDLER));
+        assertThat(mModel.get(DETAIL_SCREEN_SETTINGS_CLICK_HANDLER),
+                instanceOf(OnMenuItemClickListener.class));
+
+        mMediator.setCurrentScreen(ScreenType.CREDIT_CARD_SCREEN);
+        assertThat(mModel.get(CURRENT_SCREEN), is(ScreenType.CREDIT_CARD_SCREEN));
+        assertThat(mModel.get(DETAIL_SCREEN_TITLE),
+                is(R.string.fast_checkout_credit_card_sheet_title));
+        assertThat(mModel.get(DETAIL_SCREEN_SETTINGS_MENU_TITLE),
+                is(R.string.fast_checkout_credit_card_settings_button_description));
+        assertThat(mModel.get(DETAIL_SCREEN_MODEL_LIST), is(mModel.get(CREDIT_CARD_MODEL_LIST)));
 
         assertNotNull(mModel.get(DETAIL_SCREEN_SETTINGS_CLICK_HANDLER));
         assertThat(mModel.get(DETAIL_SCREEN_SETTINGS_CLICK_HANDLER),

@@ -64,6 +64,8 @@ public class DetailScreenViewBinder {
         } else if (propertyKey == DETAIL_SCREEN_MODEL_LIST) {
             SimpleRecyclerViewAdapter adapter =
                     new SimpleRecyclerViewAdapter(model.get(DETAIL_SCREEN_MODEL_LIST));
+            adapter.registerType(DetailItemType.CREDIT_CARD, CreditCardItemViewBinder::create,
+                    CreditCardItemViewBinder::bind);
             adapter.registerType(DetailItemType.FOOTER, FooterItemViewBinder::create,
                     FooterItemViewBinder::bind);
             adapter.registerType(DetailItemType.PROFILE, AutofillProfileItemViewBinder::create,

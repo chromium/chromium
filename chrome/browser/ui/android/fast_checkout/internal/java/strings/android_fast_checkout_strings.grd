@@ -203,14 +203,23 @@
       <message name="IDS_FAST_CHECKOUT_BACK_TO_HOME_SCREEN_ICON_DESCRIPTION" desc="Acessibility string describing the back icon on the autofill profile and credit card detail sheets.">
         Go back
       </message>
-      <message name="IDS_FAST_CHECKOUT_DETAIL_SCREEN_ADD_NEW_TEXT" desc="The text appearing on the element to add a new Autofill profile on the Autofill profile sheet.">
+      <message name="IDS_FAST_CHECKOUT_DETAIL_SCREEN_ADD_AUTOFILL_PROFILE_TEXT" desc="The text appearing on the element to add a new Autofill profile on the detail sheet.">
         Add new address
+      </message>
+      <message name="IDS_FAST_CHECKOUT_DETAIL_SCREEN_ADD_CREDIT_CARD_TEXT" desc="The text appearing on the element to add a new credit card on the detail sheet.">
+        Add new credit card
       </message>
       <message name="IDS_FAST_CHECKOUT_AUTOFILL_PROFILE_SHEET_TITLE" desc="Header of the autofill profile selection sheet.">
         Shipping address
       </message>
       <message name="IDS_FAST_CHECKOUT_AUTOFILL_PROFILE_SETTINGS_BUTTON_DESCRIPTION" desc="Accessibility string describing the icon to open Autofill profile settings.">
         Open Autofill profile settings
+      </message>
+      <message name="IDS_FAST_CHECKOUT_CREDIT_CARD_SHEET_TITLE" desc="Header of the credit card selection sheet.">
+        Payment methods
+      </message>
+      <message name="IDS_FAST_CHECKOUT_CREDIT_CARD_SETTINGS_BUTTON_DESCRIPTION" desc="Accessibility string describing the icon to open credit card settings.">
+        Open credit card settings
       </message>
     </messages>
   </release>

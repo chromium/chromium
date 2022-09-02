@@ -29,14 +29,24 @@ class FastCheckoutTestUtils {
                 /*postalCode=*/"", email, /*phoneNumber=*/"");
     }
 
-    /** Creates a simple {@link FastCheckoutCreditCard}.  */
-    static FastCheckoutCreditCard createDummyCreditCard(String guid, String origin, String number) {
+    /** Creates a detailed {@link FastCheckoutCreditCard}.  */
+    static FastCheckoutCreditCard createDetailedCreditCard(String guid, String origin, String name,
+            String number, String obfuscatedNumber, String month, String year,
+            String issuerIconString) {
         return new FastCheckoutCreditCard(guid, origin, /* isLocal= */ true,
-                /* isCached= */ true, "John Doe", number, "1111", "12", "2050", "visa",
-                /* billingAddressId= */ "", /* billingAddressId= */ "john",
+                /* isCached= */ true, name, number, obfuscatedNumber, month, year,
+                /* basicCardIssuerNetwork= */ "visa", issuerIconString,
+                /* billingAddressId= */ "john",
                 /* serverId= */ "", /* instrumentId= */ 0, /* nickname= */ "",
                 /* cardArtUrl= */ null,
                 /* virtualCardEnrollmentState= */ VirtualCardEnrollmentState.UNSPECIFIED,
                 /* productDescription= */ "");
+    }
+
+    /** Creates a simple {@link FastCheckoutCreditCard}.  */
+    static FastCheckoutCreditCard createDummyCreditCard(String guid, String origin, String number) {
+        return createDetailedCreditCard(guid, origin, /* name= */ "John Doe", number,
+                /* obfuscatedNumber= */ "1111", /* month= */ "12", /* year= */ "2050",
+                /* issuerIconString= */ "visaCC");
     }
 }

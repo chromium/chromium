@@ -103,7 +103,7 @@ public class FastCheckoutMediator {
 
             @Override
             public void onShowCreditCardList() {
-                // TODO(crbug.com/1334642): Show credit cards list screen.
+                setCurrentScreen(FastCheckoutProperties.ScreenType.CREDIT_CARD_SCREEN);
             }
         };
     }
@@ -202,7 +202,7 @@ public class FastCheckoutMediator {
         // Add the footer item.
         profileItems.add(new ListItem(DetailItemType.FOOTER,
                 FooterItemProperties.create(
-                        /*label=*/R.string.fast_checkout_detail_screen_add_new_text,
+                        /*label=*/R.string.fast_checkout_detail_screen_add_autofill_profile_text,
                         /*onClickHandler=*/() -> mDelegate.openAutofillProfileSettings())));
 
         setSelectedAutofillProfile(newSelection);
@@ -269,7 +269,7 @@ public class FastCheckoutMediator {
         // Add the footer item.
         cardItems.add(new ListItem(DetailItemType.FOOTER,
                 FooterItemProperties.create(
-                        /*label=*/R.string.fast_checkout_detail_screen_add_new_text,
+                        /*label=*/R.string.fast_checkout_detail_screen_add_credit_card_text,
                         /*onClickHandler=*/() -> mDelegate.openCreditCardSettings())));
 
         setSelectedCreditCard(newSelection);
@@ -318,9 +318,12 @@ public class FastCheckoutMediator {
             mModel.set(FastCheckoutProperties.DETAIL_SCREEN_MODEL_LIST,
                     mModel.get(FastCheckoutProperties.PROFILE_MODEL_LIST));
         } else if (screenType == ScreenType.CREDIT_CARD_SCREEN) {
+            mModel.set(FastCheckoutProperties.DETAIL_SCREEN_TITLE,
+                    R.string.fast_checkout_credit_card_sheet_title);
+            mModel.set(FastCheckoutProperties.DETAIL_SCREEN_SETTINGS_MENU_TITLE,
+                    R.string.fast_checkout_credit_card_settings_button_description);
             mModel.set(FastCheckoutProperties.DETAIL_SCREEN_SETTINGS_CLICK_HANDLER,
                     createSettingsOnClickListener(() -> mDelegate.openCreditCardSettings()));
-            // TODO(crbug.com/1355310): Set title, etc.
             mModel.set(FastCheckoutProperties.DETAIL_SCREEN_MODEL_LIST,
                     mModel.get(FastCheckoutProperties.CREDIT_CARD_MODEL_LIST));
         }

@@ -9,11 +9,12 @@
     <dimen name="fast_checkout_address_icon">20dp</dimen>
     <dimen name="fast_checkout_address_icon_margin_horizontal">18dp</dimen>
     <dimen name="fast_checkout_address_item_email_margin_top">8dp</dimen>
-    <dimen name="fast_checkout_product_icon_height">32dp</dimen>
-    <dimen name="fast_checkout_credit_card_icon_width">32dp</dimen>
+    <dimen name="fast_checkout_credit_card_icon_margin_horizontal">12dp</dimen>
     <dimen name="fast_checkout_credit_card_icon_height">20dp</dimen>
+    <dimen name="fast_checkout_credit_card_icon_width">32dp</dimen>
     <dimen name="fast_checkout_inner_corner_radius">4dp</dimen>
     <dimen name="fast_checkout_outer_corner_radius">16dp</dimen>
+    <dimen name="fast_checkout_product_icon_height">32dp</dimen>
 
     <!-- Home sheet dimensions. -->
     <dimen name="fast_checkout_home_sheet_items_spacing">24dp</dimen>
