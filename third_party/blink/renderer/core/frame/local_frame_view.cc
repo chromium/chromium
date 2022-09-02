@@ -4734,8 +4734,6 @@ void LocalFrameView::OnFirstContentfulPaint() {
 
   if (frame_->IsLocalRoot())
     EnsureUkmAggregator().DidReachFirstContentfulPaint();
-
-  GetLayoutView()->GetDeferredShapingController().OnFirstContentfulPaint();
 }
 
 void LocalFrameView::RegisterForLifecycleNotifications(

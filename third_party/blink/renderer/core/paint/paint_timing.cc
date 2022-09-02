@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
+#include "third_party/blink/renderer/core/layout/deferred_shaping_controller.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/loader/interactive_detector.h"
 #include "third_party/blink/renderer/core/loader/progress_tracker.h"
@@ -356,6 +357,11 @@ void PaintTiming::SetFirstContentfulPaintPresentation(base::TimeTicks stamp) {
     PerformanceTiming* timing = performance->timing();
     base::TimeDelta fcp = stamp - timing->NavigationStartAsMonotonicTime();
     coordinator->OnFirstContentfulPaint(fcp);
+  }
+
+  if (auto* ds_controller =
+          DeferredShapingController::From(*GetSupplementable())) {
+    ds_controller->OnFirstContentfulPaint();
   }
 }
 
