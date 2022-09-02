@@ -32,6 +32,7 @@
 #include "base/no_destructor.h"
 #include "base/stl_util.h"
 #include "base/timer/mock_timer.h"
+#include "base/types/optional_util.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -154,7 +155,7 @@ class DeviceSyncCryptAuthMetadataSyncerImplTest
     metadata_syncer_->SyncMetadata(
         GetRequestContext(),
         *GetLocalDeviceForTest().better_together_device_metadata,
-        base::OptionalOrNullptr(initial_group_key_),
+        base::OptionalToPtr(initial_group_key_),
         base::BindOnce(
             &DeviceSyncCryptAuthMetadataSyncerImplTest::OnMetadataSyncComplete,
             base::Unretained(this)));
