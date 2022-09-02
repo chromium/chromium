@@ -16,7 +16,6 @@ group("polymer3_elements") {
     ":app_downloading_module",
     ":app_launch_splash_module",
     ":assistant_optin_module",
-    ":autolaunch_module",
     ":consolidated_consent_module",
     ":device_disabled_module",
     ":enable_kiosk_module",
@@ -58,7 +57,7 @@ js_type_check("closure_compile_local") {
     ":arc_terms_of_service",
 
     #":assistant_optin.m",
-    ":autolaunch.m",
+    ":autolaunch",
     ":consolidated_consent.m",
     ":device_disabled.m",
     ":enable_kiosk.m",
@@ -164,8 +163,8 @@ js_library("assistant_optin.m") {
   extra_deps = [ ":assistant_optin_module" ]
 }
 
-js_library("autolaunch.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/autolaunch.m.js" ]
+js_library("autolaunch") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/autolaunch.js" ]
   deps = [
     "../../components/behaviors:login_screen_behavior.m",
     "../../components/behaviors:oobe_dialog_host_behavior.m",
@@ -173,7 +172,7 @@ js_library("autolaunch.m") {
     "../../components/buttons:oobe_text_button.m",
     "../../components/dialogs:oobe_adaptive_dialog.m",
   ]
-  extra_deps = [ ":autolaunch_module" ]
+  extra_deps = [ ":web_components" ]
 }
 
 js_library("consolidated_consent.m") {
@@ -685,14 +684,6 @@ polymer_modulizer("assistant_optin") {
   namespace_rewrites = oobe_namespace_rewrites
 }
 
-polymer_modulizer("autolaunch") {
-  js_file = "autolaunch.js"
-  html_file = "autolaunch.html"
-  html_type = "dom-module"
-  auto_imports = oobe_auto_imports
-  namespace_rewrites = oobe_namespace_rewrites
-}
-
 polymer_modulizer("consolidated_consent") {
   js_file = "consolidated_consent.js"
   html_file = "consolidated_consent.html"
@@ -874,6 +865,7 @@ html_to_js("web_components") {
   js_files = [
     "adb_sideloading.js",
     "arc_terms_of_service.js",
+    "autolaunch.js",
     "gesture_navigation.js",
     "managed_terms_of_service.js",
     "marketing_opt_in.js",
