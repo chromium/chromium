@@ -16,6 +16,7 @@
 #include "base/files/file_path.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/system/sys_info.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
@@ -89,7 +90,8 @@ CopyOrMoveIOTask::CopyOrMoveIOTask(
     bool show_notification)
     : IOTask(show_notification),
       profile_(profile),
-      file_system_context_(file_system_context) {
+      file_system_context_(file_system_context),
+      source_sizes_(source_urls.size()) {
   DCHECK(type == OperationType::kCopy || type == OperationType::kMove);
   progress_.state = State::kQueued;
   progress_.type = type;
@@ -100,8 +102,6 @@ CopyOrMoveIOTask::CopyOrMoveIOTask(
   for (const auto& url : source_urls) {
     progress_.sources.emplace_back(url, absl::nullopt);
   }
-
-  source_sizes_.reserve(source_urls.size());
 }
 
 CopyOrMoveIOTask::CopyOrMoveIOTask(
@@ -208,7 +208,9 @@ void CopyOrMoveIOTask::Execute(IOTask::ProgressCallback progress_callback,
   }
   progress_.state = State::kInProgress;
 
-  GetFileSize(0);
+  for (int i = 0; i < progress_.sources.size(); i++) {
+    GetFileSize(i);
+  }
 }
 
 void CopyOrMoveIOTask::Cancel() {
@@ -219,6 +221,7 @@ void CopyOrMoveIOTask::Cancel() {
 // Calls the completion callback for the task. |progress_| should not be
 // accessed after calling this.
 void CopyOrMoveIOTask::Complete(State state) {
+  completed_ = true;
   progress_.state = state;
   base::SequencedTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
@@ -233,6 +236,15 @@ void CopyOrMoveIOTask::GetFileSize(size_t idx) {
   const base::FilePath& source = progress_.sources[idx].url.path();
   const base::FilePath& destination = progress_.destination_folder.path();
 
+  auto getFileMetadataCallback = base::BindOnce(
+      &GetFileMetadataOnIOThread, file_system_context_,
+      progress_.sources[idx].url,
+      storage::FileSystemOperation::GET_METADATA_FIELD_SIZE |
+          storage::FileSystemOperation::GET_METADATA_FIELD_TOTAL_SIZE,
+      google_apis::CreateRelayCallback(
+          base::BindOnce(&CopyOrMoveIOTask::GotFileSize,
+                         weak_ptr_factory_.GetWeakPtr(), idx)));
+
   if (file_manager::util::IsDriveLocalPath(profile_, source) &&
       file_manager::file_tasks::IsOfficeFile(source) &&
       !file_manager::util::IsDriveLocalPath(profile_, destination)) {
@@ -245,18 +257,19 @@ void CopyOrMoveIOTask::GetFileSize(size_t idx) {
           file_manager::file_tasks::kUseOutsideDriveMetricName,
           file_manager::file_tasks::OfficeFilesUseOutsideDriveHook::MOVE);
     }
+    auto* drive_service = drive::util::GetIntegrationServiceByProfile(profile_);
+    if (drive_service) {
+      drive_service->ForceReSyncFile(
+          source,
+          base::BindPostTask(content::GetIOThreadTaskRunner({}),
+                             std::move(getFileMetadataCallback), FROM_HERE));
+      return;
+    }
+    // If there is no Drive connection, we should continue as normal.
   }
 
   content::GetIOThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          &GetFileMetadataOnIOThread, file_system_context_,
-          progress_.sources[idx].url,
-          storage::FileSystemOperation::GET_METADATA_FIELD_SIZE |
-              storage::FileSystemOperation::GET_METADATA_FIELD_TOTAL_SIZE,
-          google_apis::CreateRelayCallback(
-              base::BindOnce(&CopyOrMoveIOTask::GotFileSize,
-                             weak_ptr_factory_.GetWeakPtr(), idx))));
+      FROM_HERE, std::move(getFileMetadataCallback));
 }
 
 // Helper function to GetFileSize() that is called when the metadata for a file
@@ -264,6 +277,12 @@ void CopyOrMoveIOTask::GetFileSize(size_t idx) {
 void CopyOrMoveIOTask::GotFileSize(size_t idx,
                                    base::File::Error error,
                                    const base::File::Info& file_info) {
+  if (completed_) {
+    // If Complete() has been called (e.g. due to an error), |progress_| is no
+    // longer valid, so return immediately.
+    return;
+  }
+
   DCHECK(idx < progress_.sources.size());
   if (error != base::File::FILE_OK) {
     progress_.sources[idx].error = error;
@@ -271,23 +290,25 @@ void CopyOrMoveIOTask::GotFileSize(size_t idx,
     return;
   }
 
+  DCHECK(files_preprocessed_ < progress_.sources.size());
+  files_preprocessed_++;
   progress_.total_bytes += file_info.size;
-  source_sizes_.push_back(file_info.size);
-  if (idx < progress_.sources.size() - 1) {
-    GetFileSize(idx + 1);
+  source_sizes_[idx] = file_info.size;
+  if (files_preprocessed_ < progress_.sources.size()) {
+    return;
+  }
+
+  speedometer_.SetTotalBytes(progress_.total_bytes);
+  if (util::IsNonNativeFileSystemType(progress_.destination_folder.type())) {
+    // Destination is a virtual filesystem, so skip checking free space.
+    GenerateDestinationURL(0);
   } else {
-    speedometer_.SetTotalBytes(progress_.total_bytes);
-    if (util::IsNonNativeFileSystemType(progress_.destination_folder.type())) {
-      // Destination is a virtual filesystem, so skip checking free space.
-      GenerateDestinationURL(0);
-    } else {
-      base::ThreadPool::PostTaskAndReplyWithResult(
-          FROM_HERE, {base::MayBlock()},
-          base::BindOnce(&base::SysInfo::AmountOfFreeDiskSpace,
-                         progress_.destination_folder.path()),
-          base::BindOnce(&CopyOrMoveIOTask::GotFreeDiskSpace,
-                         weak_ptr_factory_.GetWeakPtr()));
-    }
+    base::ThreadPool::PostTaskAndReplyWithResult(
+        FROM_HERE, {base::MayBlock()},
+        base::BindOnce(&base::SysInfo::AmountOfFreeDiskSpace,
+                       progress_.destination_folder.path()),
+        base::BindOnce(&CopyOrMoveIOTask::GotFreeDiskSpace,
+                       weak_ptr_factory_.GetWeakPtr()));
   }
 }
 

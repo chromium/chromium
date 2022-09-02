@@ -241,6 +241,44 @@ testcase.zipCreateFileDrive = async () => {
 };
 
 /**
+ * Tests creating a ZIP file containing an Office file on Drive.
+ */
+testcase.zipCreateFileDriveOffice = async () => {
+  // Open Files app on Drive containing ENTRIES.photos and ENTRIES.docxFile.
+  const appId = await setupAndWaitUntilReady(
+      RootPath.DRIVE, [], [ENTRIES.photos, ENTRIES.docxFile]);
+
+  // Select the files.
+  await remoteCall.waitAndClickElement(
+      appId, `#file-list [file-name="${ENTRIES.photos.nameText}"]`);
+  await remoteCall.waitAndClickElement(
+      appId, `#file-list [file-name="${ENTRIES.docxFile.nameText}"]`,
+      {shift: true});
+
+  // Right-click the selected file.
+  chrome.test.assertTrue(
+      !!await remoteCall.callRemoteTestUtil(
+          'fakeMouseRightClick', appId, ['.table-row[selected]']),
+      'fakeMouseRightClick failed');
+
+  // Check: the context menu should appear.
+  await remoteCall.waitForElement(appId, '#file-context-menu:not([hidden])');
+
+  // Click the 'Zip selection' menu command.
+  const zip = '[command="#zip-selection"]';
+  chrome.test.assertTrue(
+      !!await remoteCall.callRemoteTestUtil('fakeMouseClick', appId, [zip]),
+      'fakeMouseClick failed');
+
+  // Check: a zip file should be created.
+  await remoteCall.waitForElement(
+      appId, '#file-list [file-name="Archive.zip"]');
+
+  // Check: a zip time histogram value should have been recorded.
+  await expectHistogramTotalCount(ZipCreationTimeHistogramName, 1);
+};
+
+/**
  * Tests creating a ZIP file on a removable USB volume.
  */
 testcase.zipCreateFileUsb = async () => {

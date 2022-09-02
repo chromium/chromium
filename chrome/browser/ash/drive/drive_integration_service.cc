@@ -15,6 +15,7 @@
 #include "base/callback_helpers.h"
 #include "base/containers/adapters.h"
 #include "base/files/file_enumerator.h"
+#include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/hash/md5.h"
 #include "base/logging.h"
@@ -23,6 +24,7 @@
 #include "base/system/sys_info.h"
 #include "base/task/task_runner_util.h"
 #include "base/task/thread_pool.h"
+#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -1395,6 +1397,20 @@ void DriveIntegrationService::PollHostedFilePinStates() {
   if (GetDriveFsInterface()) {
     GetDriveFsInterface()->PollHostedFilePinStates();
   }
+}
+
+void DriveIntegrationService::ForceReSyncFile(const base::FilePath& local_path,
+                                              base::OnceClosure callback) {
+  base::FilePath drive_path;
+  if (!IsMounted() || !GetDriveFsInterface() ||
+      !GetRelativeDrivePath(local_path, &drive_path)) {
+    std::move(callback).Run();
+    return;
+  }
+
+  // TODO(b/234921400): Replace this with a call to DriveFS once implemented.
+  base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE,
+                                                   std::move(callback));
 }
 
 //===================== DriveIntegrationServiceFactory =======================

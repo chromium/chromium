@@ -85,6 +85,9 @@ class CopyOrMoveIOTask : public IOTask {
   Profile* profile_;
   scoped_refptr<storage::FileSystemContext> file_system_context_;
 
+  bool completed_ = false;
+  int files_preprocessed_ = 0;
+
   // Stores the size of each source so we know what to increment the progress
   // bytes by for each copy or move completion.
   std::vector<int64_t> source_sizes_;

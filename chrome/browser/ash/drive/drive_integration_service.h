@@ -267,6 +267,10 @@ class DriveIntegrationService : public KeyedService,
   // Returns whether mirroring is enabled.
   bool IsMirroringEnabled();
 
+  // Requests Drive to resync the office file at |local_path| from the cloud.
+  void ForceReSyncFile(const base::FilePath& local_path,
+                       base::OnceClosure callback);
+
  private:
   enum State {
     NOT_INITIALIZED,

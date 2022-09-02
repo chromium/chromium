@@ -460,6 +460,7 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
                       TestCase("zipCreateFileDownloads"),
                       TestCase("zipCreateFileDownloads").InGuestMode(),
                       TestCase("zipCreateFileDrive"),
+                      TestCase("zipCreateFileDriveOffice"),
                       TestCase("zipCreateFileUsb"),
                       TestCase("zipExtractA11y").ExtractArchive(),
                       TestCase("zipExtractCheckContent").ExtractArchive(),
@@ -820,6 +821,7 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
     FilesAppBrowserTest,
     ::testing::Values(
         TestCase("transferFromDriveToDownloads"),
+        TestCase("transferOfficeFileFromDriveToDownloads"),
         TestCase("transferFromDownloadsToMyFiles"),
         TestCase("transferFromDownloadsToMyFilesMove"),
         TestCase("transferFromDownloadsToDrive"),

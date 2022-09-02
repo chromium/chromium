@@ -18,6 +18,8 @@
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_url.h"
 
+class Profile;
+
 namespace file_manager {
 namespace io_task {
 
@@ -29,6 +31,7 @@ class ZipIOTask : public IOTask {
   // used as the filename of the archive. Otherwise 'Archive.zip' will be used.
   ZipIOTask(std::vector<storage::FileSystemURL> source_urls,
             storage::FileSystemURL parent_folder,
+            Profile* profile,
             scoped_refptr<storage::FileSystemContext> file_system_context,
             bool show_notification = true);
   ~ZipIOTask() override;
@@ -40,12 +43,16 @@ class ZipIOTask : public IOTask {
 
  private:
   void Complete(State state);
+  void OnFilePreprocessed();
   void GenerateZipNameAfterGotTotalBytes(int64_t total_bytes);
   void ZipItems(base::FileErrorOr<storage::FileSystemURL> dest_result);
   void OnZipProgress();
   void OnZipComplete();
 
+  Profile* profile_;
   scoped_refptr<storage::FileSystemContext> file_system_context_;
+
+  int files_preprocessed_ = 0;
 
   // The directory containing the files to zip.
   base::FilePath source_dir_;

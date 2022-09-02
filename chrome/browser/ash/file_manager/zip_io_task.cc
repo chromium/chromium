@@ -20,9 +20,11 @@
 #include "base/system/sys_info.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/thread_pool.h"
+#include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/drive/file_system_util.h"
 #include "chrome/browser/ash/file_manager/file_tasks.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
+#include "chrome/browser/ash/file_manager/filesystem_api_util.h"
 #include "chrome/browser/ash/file_manager/io_task.h"
 #include "chrome/browser/chromeos/fileapi/file_system_backend.h"
 #include "chrome/browser/file_util_service.h"
@@ -45,13 +47,6 @@ int64_t ComputeSize(base::FilePath src_dir,
   for (const base::FilePath& relative_path : src_files) {
     const base::FilePath absolute_path = src_dir.Append(relative_path);
 
-    if (drive::util::IsUnderDriveMountPoint(absolute_path) &&
-        file_manager::file_tasks::IsOfficeFile(absolute_path)) {
-      UMA_HISTOGRAM_ENUMERATION(
-          file_manager::file_tasks::kUseOutsideDriveMetricName,
-          file_manager::file_tasks::OfficeFilesUseOutsideDriveHook::ZIP);
-    }
-
     if (base::GetFileInfo(absolute_path, &info))
       total_bytes += info.is_directory
                          ? base::ComputeDirectorySize(absolute_path)
@@ -66,9 +61,12 @@ int64_t ComputeSize(base::FilePath src_dir,
 ZipIOTask::ZipIOTask(
     std::vector<storage::FileSystemURL> source_urls,
     storage::FileSystemURL parent_folder,
+    Profile* profile,
     scoped_refptr<storage::FileSystemContext> file_system_context,
     bool show_notification)
-    : IOTask(show_notification), file_system_context_(file_system_context) {
+    : IOTask(show_notification),
+      profile_(profile),
+      file_system_context_(file_system_context) {
   progress_.state = State::kQueued;
   progress_.type = OperationType::kZip;
   progress_.destination_folder = std::move(parent_folder);
@@ -127,6 +125,30 @@ void ZipIOTask::Execute(IOTask::ProgressCallback progress_callback,
       return;
     }
     source_relative_paths_.push_back(std::move(relative_path));
+
+    if (file_manager::util::IsDriveLocalPath(profile_, absolute_path) &&
+        file_manager::file_tasks::IsOfficeFile(absolute_path)) {
+      UMA_HISTOGRAM_ENUMERATION(
+          file_manager::file_tasks::kUseOutsideDriveMetricName,
+          file_manager::file_tasks::OfficeFilesUseOutsideDriveHook::ZIP);
+      auto* drive_service =
+          drive::util::GetIntegrationServiceByProfile(profile_);
+      if (drive_service) {
+        drive_service->ForceReSyncFile(
+            absolute_path, base::BindOnce(&ZipIOTask::OnFilePreprocessed,
+                                          weak_ptr_factory_.GetWeakPtr()));
+        continue;
+      }
+    }
+    OnFilePreprocessed();
+  }
+}
+
+void ZipIOTask::OnFilePreprocessed() {
+  DCHECK(files_preprocessed_ < progress_.sources.size());
+  files_preprocessed_++;
+  if (files_preprocessed_ < progress_.sources.size()) {
+    return;
   }
 
   base::ThreadPool::PostTaskAndReplyWithResult(

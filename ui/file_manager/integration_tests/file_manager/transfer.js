@@ -144,6 +144,7 @@ async function transferBetweenVolumes(transferInfo) {
       BASIC_DRIVE_ENTRY_SET.concat([
         ENTRIES.sharedDirectory,
         ENTRIES.sharedDirectoryFile,
+        ENTRIES.docxFile,
       ]);
 
   // Open files app.
@@ -245,6 +246,7 @@ const TRANSFER_LOCATIONS = {
     volumeName: 'drive',
     initialEntries: BASIC_DRIVE_ENTRY_SET.concat([
       ENTRIES.sharedDirectory,
+      ENTRIES.docxFile,
     ]),
   }),
 
@@ -342,6 +344,17 @@ Object.freeze(TRANSFER_LOCATIONS);
 testcase.transferFromDriveToDownloads = () => {
   return transferBetweenVolumes(new TransferInfo({
     fileToTransfer: ENTRIES.hello,
+    source: TRANSFER_LOCATIONS.drive,
+    destination: TRANSFER_LOCATIONS.downloads,
+  }));
+};
+
+/**
+ * Tests copying an office file from Drive to Downloads.
+ */
+testcase.transferOfficeFileFromDriveToDownloads = () => {
+  return transferBetweenVolumes(new TransferInfo({
+    fileToTransfer: ENTRIES.docxFile,
     source: TRANSFER_LOCATIONS.drive,
     destination: TRANSFER_LOCATIONS.downloads,
   }));

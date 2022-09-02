@@ -1808,7 +1808,7 @@ FileManagerPrivateInternalStartIOTaskFunction::Run() {
       break;
     case file_manager::io_task::OperationType::kZip:
       task = std::make_unique<file_manager::io_task::ZipIOTask>(
-          std::move(source_urls), std::move(destination_folder_url),
+          std::move(source_urls), std::move(destination_folder_url), profile,
           file_system_context, show_notification);
       break;
     case file_manager::io_task::OperationType::kDelete:
