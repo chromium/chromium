@@ -109,6 +109,7 @@ class CORE_EXPORT DeferredShapingController
   void ReshapeDeferredForHeight(const LayoutObject& object);
   void OnFirstContentfulPaint();
   void OnResizeFrame();
+  void OnFocus(const Element& element);
 
  private:
   size_t ReshapeAllDeferredInternal();

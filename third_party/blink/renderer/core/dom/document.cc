@@ -2703,8 +2703,10 @@ void Document::EnsurePaintLocationDataValidForNode(
   if (!node->InActiveDocument())
     return;
 
-  DeferredShapingController::From(*this)->ReshapeDeferred(
-      ReshapeReason::kGeometryApi, *node);
+  if (reason == DocumentUpdateReason::kJavaScript) {
+    DeferredShapingController::From(*this)->ReshapeDeferred(
+        ReshapeReason::kGeometryApi, *node);
+  }
 
   DisplayLockUtilities::ScopedForcedUpdate scoped_update_forced(
       node, DisplayLockContext::ForcedPhase::kLayout);

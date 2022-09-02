@@ -193,4 +193,22 @@ void DeferredShapingController::OnResizeFrame() {
                            << " elements by resizing";
 }
 
+void DeferredShapingController::OnFocus(const Element& element) {
+  if (!RuntimeEnabledFeatures::DeferredShapingEnabled())
+    return;
+  // If the element is in the viewport, we don't need to reshape deferred
+  // elements.
+  if (const LayoutBox* box = element.GetLayoutBox()) {
+    if (box->EverHadLayout()) {
+      gfx::RectF rect =
+          element.GetBoundingClientRectNoLifecycleUpdateNoAdjustment();
+      // We don't take into account of scroll offset intentionally. Scrolled
+      // viewport might contain deferred elements.
+      if (rect.y() < box->View()->ViewHeight())
+        return;
+    }
+  }
+  ReshapeAllDeferred(ReshapeReason::kFocus);
+}
+
 }  // namespace blink

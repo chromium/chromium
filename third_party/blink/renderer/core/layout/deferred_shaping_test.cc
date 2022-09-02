@@ -575,4 +575,21 @@ TEST_F(DeferredShapingTest, ResizeFrame) {
   EXPECT_TRUE(IsDefer("target2"));
 }
 
+TEST_F(DeferredShapingTest, OnFocus) {
+  SetBodyInnerHTML(R"HTML(
+      <div id="target1" tabindex="1">IFC</div>
+      <div style="height:600px"></div>
+      <div id="target2" tabindex="1">IFC</div>
+      )HTML");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(IsDefer("target1"));
+  EXPECT_TRUE(IsDefer("target2"));
+
+  GetElementById("target1")->Focus();
+  EXPECT_TRUE(IsDefer("target2"));
+
+  GetElementById("target2")->Focus();
+  EXPECT_FALSE(IsDefer("target2"));
+}
+
 }  // namespace blink
