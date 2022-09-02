@@ -9,8 +9,11 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/lazy_instance.h"
 #include "base/location.h"
+#include "base/metrics/metrics_hashes.h"
+#include "base/rand_util.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "base/trace_event/base_tracing.h"
@@ -39,6 +42,16 @@ void RecordComputedActionSince(const std::string& action,
 }
 
 void RecordComputedActionAt(const std::string& action, TimeTicks action_time) {
+  // This is used to detect two unknown user actions (see crbug.com/1346741),
+  // and will be deleted soon.
+  // Only report 1 out 250 events to make sure a reasonable amount of crash
+  // reports are created.
+  uint64_t hashed_action = base::HashMetricName(action) & 0x7fffffff;
+  if (hashed_action == 73600854 || hashed_action == 1198301198) {
+    if (base::RandInt(0, 249) == 0) {
+      base::debug::DumpWithoutCrashing();
+    }
+  }
   TRACE_EVENT_INSTANT1("ui", "UserEvent", TRACE_EVENT_SCOPE_GLOBAL, "action",
                        action);
   if (!g_task_runner.Get()) {
