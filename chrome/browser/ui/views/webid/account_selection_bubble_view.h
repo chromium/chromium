@@ -22,6 +22,10 @@ class Label;
 class MdTextButton;
 }  // namespace views
 
+namespace {
+class IdpImageView;
+}  // namespace
+
 // Bubble dialog that is used in the FedCM flow. It creates a dialog with an
 // account chooser for the user, and it changes the content of that dialog as
 // user moves through the FedCM flow steps.
@@ -61,35 +65,47 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView,
 
   // AccountSelectionBubbleViewInterface:
   void ShowAccountPicker(
-      const std::vector<IdentityProviderDisplayData>& idp_data,
+      const std::vector<IdentityProviderDisplayData>& idp_data_list,
       bool show_back_button) override;
   void ShowVerifyingSheet(const content::IdentityRequestAccount& account,
                           const IdentityProviderDisplayData& idp_data) override;
+
+  void ShowSingleAccountConfirmDialog(
+      const std::u16string& rp_for_display,
+      const content::IdentityRequestAccount& account,
+      const IdentityProviderDisplayData& idp_data) override;
+
   void ShowFailureDialog(const std::u16string& rp_for_display,
                          const std::u16string& idp_for_display) override;
+
+  // Populates `idp_images` when an IDP image has been fetched.
+  void AddIdpImage(const GURL& image_url, gfx::ImageSkia idp_image);
 
  private:
   gfx::Rect GetBubbleBounds() override;
 
   // Returns a View containing the logo of the identity provider and the title
-  // of the bubble, properly formatted.
-  std::unique_ptr<views::View> CreateHeaderView(const std::u16string& title);
+  // of the bubble, properly formatted. Creates the `header_icon_view_` if
+  // `has_idp_icon` is true.
+  std::unique_ptr<views::View> CreateHeaderView(const std::u16string& title,
+                                                bool has_idp_icon);
 
   // Returns a View containing the account chooser, i.e. everything that goes
   // below the horizontal separator on the initial FedCM bubble.
   std::unique_ptr<views::View> CreateAccountChooser(
-      const std::vector<IdentityProviderDisplayData>& idp_data);
+      const std::vector<IdentityProviderDisplayData>& idp_data_list);
 
   // Returns a View for single account chooser. It contains the account
   // information, disclosure text and a button for the user to confirm the
   // selection. The size of the `idp_data.accounts` vector must be 1.
   std::unique_ptr<views::View> CreateSingleAccountChooser(
-      const IdentityProviderDisplayData& idp_data);
+      const IdentityProviderDisplayData& idp_data,
+      const content::IdentityRequestAccount& account);
 
   // Returns a View for multiple account chooser. It contains the info for each
   // account in a button, so the user can pick an account.
   std::unique_ptr<views::View> CreateMultipleAccountChooser(
-      const std::vector<IdentityProviderDisplayData>& idp_data);
+      const std::vector<IdentityProviderDisplayData>& idp_data_list);
 
   // Creates a row containing the IDP icon as well as the IDP ETLD+1. Used in
   // the multi IDP scenario, when the user is selecting from multiple accounts.
@@ -106,12 +122,9 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView,
       const IdentityProviderDisplayData& idp_data,
       bool should_hover);
 
-  // Called when the brand icon image has beend downloaded.
-  void OnBrandImageFetched(const gfx::Image& image,
-                           const image_fetcher::RequestMetadata& metadata);
-
   // Updates the header title, the header icon visibility and the header back
-  // button visibiltiy.
+  // button visibiltiy. `idp_metadata` is not null when we need to set a header
+  // image based on the IDP.
   void UpdateHeader(const content::IdentityProviderMetadata& idp_metadata,
                     const std::u16string title,
                     bool show_back_button);
@@ -119,7 +132,7 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView,
   // Sets the brand views::ImageView visibility and image. Initiates the
   // download of the brand icon if necessary.
   void ConfigureIdpBrandImageView(
-      views::ImageView* image_view,
+      IdpImageView* image_view,
       const content::IdentityProviderMetadata& idp_metadata);
 
   // Removes all children except for `header_view_`.
@@ -131,9 +144,10 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView,
   // The accessible title.
   std::u16string accessible_title_;
 
-  // The image for the IDP icon. Stored so that it can be reused upon pressing
-  // the back button after choosing an account on the multi IDP chooser.
-  gfx::ImageSkia idp_image_;
+  // The images for the IDP icons. Stored so that they can be reused upon
+  // pressing the back button after choosing an account on the multi IDP
+  // chooser.
+  base::flat_map<GURL, gfx::ImageSkia> idp_images_;
 
   // Whether the dialog has been populated via either ShowAccountPicker() or
   // ShowVerifyingSheet().
@@ -143,10 +157,7 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView,
   raw_ptr<views::View> header_view_ = nullptr;
 
   // View containing the header IDP icon, if one needs to be used.
-  raw_ptr<views::ImageView> header_icon_view_ = nullptr;
-
-  // View containing the IDP icon if the icon is used in the account chooser.
-  raw_ptr<views::ImageView> multi_idp_icon_view_ = nullptr;
+  raw_ptr<IdpImageView> header_icon_view_ = nullptr;
 
   // View containing the back button.
   raw_ptr<views::ImageButton> back_button_ = nullptr;

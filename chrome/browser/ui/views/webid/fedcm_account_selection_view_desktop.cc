@@ -58,10 +58,10 @@ void FedCmAccountSelectionView::Show(
 
   size_t accounts_size = 0u;
   for (const auto& identity_provider : identity_provider_data) {
-    idp_data_.emplace_back(base::UTF8ToUTF16(identity_provider.idp_for_display),
-                           identity_provider.idp_metadata,
-                           identity_provider.client_id_data,
-                           identity_provider.accounts);
+    idp_data_list_.emplace_back(
+        base::UTF8ToUTF16(identity_provider.idp_for_display),
+        identity_provider.idp_metadata, identity_provider.client_id_data,
+        identity_provider.accounts);
     accounts_size += identity_provider.accounts.size();
   }
   state_ = accounts_size == 1u ? State::PERMISSION : State::ACCOUNT_PICKER;
@@ -71,10 +71,10 @@ void FedCmAccountSelectionView::Show(
           ? absl::make_optional<std::u16string>(
                 base::UTF8ToUTF16(identity_provider_data[0].idp_for_display))
           : absl::nullopt;
+  rp_for_display_ = base::UTF8ToUTF16(rp_etld_plus_one);
   bubble_widget_ =
-      CreateBubble(browser, base::UTF8ToUTF16(rp_etld_plus_one), idp_title)
-          ->GetWeakPtr();
-  GetBubbleView()->ShowAccountPicker(idp_data_,
+      CreateBubble(browser, rp_for_display_, idp_title)->GetWeakPtr();
+  GetBubbleView()->ShowAccountPicker(idp_data_list_,
                                      /*show_back_button=*/false);
   bubble_widget_->Show();
   bubble_widget_->AddObserver(this);
@@ -174,17 +174,8 @@ void FedCmAccountSelectionView::OnAccountSelected(
     GetBubbleView()->ShowVerifyingSheet(account, idp_data);
     return;
   }
-
-  // TODO(crbug.com/1351137): we need a new method for this, to avoid copying a
-  // lot of data.
-  std::vector<IdentityProviderDisplayData> single_idp_data;
-  std::vector<content::IdentityRequestAccount> single_account_vector;
-  single_account_vector.emplace_back(account);
-  single_idp_data.emplace_back(idp_data.idp_etld_plus_one_,
-                               idp_data.idp_metadata_, idp_data.client_data_,
-                               single_account_vector);
-  GetBubbleView()->ShowAccountPicker(single_idp_data,
-                                     /*show_back_button=*/true);
+  GetBubbleView()->ShowSingleAccountConfirmDialog(rp_for_display_, account,
+                                                  idp_data);
 }
 
 void FedCmAccountSelectionView::OnLinkClicked(const GURL& url) {
@@ -199,7 +190,7 @@ void FedCmAccountSelectionView::OnLinkClicked(const GURL& url) {
 
 void FedCmAccountSelectionView::OnBackButtonClicked() {
   state_ = State::ACCOUNT_PICKER;
-  GetBubbleView()->ShowAccountPicker(idp_data_,
+  GetBubbleView()->ShowAccountPicker(idp_data_list_,
                                      /*show_back_button=*/false);
 }
 

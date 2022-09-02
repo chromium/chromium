@@ -35,13 +35,13 @@ class TestBubbleView : public AccountSelectionBubbleViewInterface {
   TestBubbleView& operator=(const TestBubbleView&) = delete;
 
   void ShowAccountPicker(
-      const std::vector<IdentityProviderDisplayData>& idp_data,
+      const std::vector<IdentityProviderDisplayData>& idp_data_list,
       bool show_back_button) override {
     show_back_button_ = show_back_button;
     show_verifying_sheet_ = false;
 
     account_ids_.clear();
-    for (content::IdentityRequestAccount account : idp_data[0].accounts_)
+    for (content::IdentityRequestAccount account : idp_data_list[0].accounts_)
       account_ids_.push_back(account.id);
   }
 
@@ -49,6 +49,15 @@ class TestBubbleView : public AccountSelectionBubbleViewInterface {
       const content::IdentityRequestAccount& account,
       const IdentityProviderDisplayData& idp_data) override {
     show_verifying_sheet_ = true;
+    account_ids_ = {account.id};
+  }
+
+  void ShowSingleAccountConfirmDialog(
+      const std::u16string& rp_for_display,
+      const content::IdentityRequestAccount& account,
+      const IdentityProviderDisplayData& idp_data) override {
+    show_back_button_ = true;
+    show_verifying_sheet_ = false;
     account_ids_ = {account.id};
   }
 

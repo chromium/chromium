@@ -98,7 +98,9 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   void OnDismiss(
       content::IdentityRequestDialogController::DismissReason dismiss_reason);
 
-  std::vector<IdentityProviderDisplayData> idp_data_;
+  std::vector<IdentityProviderDisplayData> idp_data_list_;
+
+  std::u16string rp_for_display_;
 
   State state_{State::ACCOUNT_PICKER};
 

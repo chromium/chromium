@@ -138,9 +138,9 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase {
   }
 
   void CreateMultiIdpAccountPicker(
-      const std::vector<IdentityProviderDisplayData>& idp_data) {
+      const std::vector<IdentityProviderDisplayData>& idp_data_list) {
     CreateAccountSelectionBubble(/*exclude_title=*/true);
-    dialog_->ShowAccountPicker(idp_data,
+    dialog_->ShowAccountPicker(idp_data_list,
                                /*show_back_button=*/false);
   }
 
@@ -288,24 +288,29 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase {
               views::BoxLayout::Orientation::kVertical);
     std::vector<views::View*> accounts = contents->children();
 
+    size_t accounts_index = 0;
     if (expect_idp_row) {
       EXPECT_LT(0u, accounts.size());
-      CheckIdpRow(accounts[0u]);
-      accounts.erase(accounts.begin());
+      CheckIdpRow(accounts[0u], u"idp-example.com");
+      ++accounts_index;
     }
 
     // Check the text shown.
-    CheckAccountRows(accounts, kAccountSuffixes);
+    CheckAccountRows(accounts, kAccountSuffixes, accounts_index);
+    EXPECT_EQ(accounts_index, accounts.size());
   }
 
+  // Checks the account rows starting at `accounts[accounts_index]`. Updates
+  // `accounts_index` to the first unused index in `accounts`, or to
+  // `accounts.size()` if done.
   void CheckAccountRows(const std::vector<views::View*>& accounts,
-                        const std::vector<std::string>& account_suffixes) {
-    size_t account_index = 0;
+                        const std::vector<std::string>& account_suffixes,
+                        size_t& accounts_index) {
     EXPECT_GE(accounts.size(), account_suffixes.size());
     for (size_t i = 0; i < std::size(account_suffixes); ++i) {
-      ASSERT_STREQ("HoverButton", accounts[account_index]->GetClassName());
+      ASSERT_STREQ("HoverButton", accounts[accounts_index]->GetClassName());
       HoverButton* account_row =
-          static_cast<HoverButton*>(accounts[account_index++]);
+          static_cast<HoverButton*>(accounts[accounts_index++]);
       ASSERT_TRUE(account_row);
       EXPECT_EQ(GetAccountButtonTitle(account_row),
                 base::UTF8ToUTF16(kNameBase + account_suffixes[i]));
@@ -323,14 +328,15 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase {
     }
   }
 
-  void CheckIdpRow(views::View* idp_account) {
+  void CheckIdpRow(views::View* idp_account,
+                   const std::u16string& expected_idp) {
     // Order: Brand icon, title.
     EXPECT_THAT(GetChildClassNames(idp_account),
                 testing::ElementsAre("ImageView", "Label"));
 
     views::Label* title_view =
         static_cast<views::Label*>(idp_account->children()[1]);
-    EXPECT_EQ(title_view->GetText(), u"idp-example.com");
+    EXPECT_EQ(title_view->GetText(), expected_idp);
   }
 
   void SetUp() override {
@@ -469,10 +475,10 @@ TEST_F(AccountSelectionBubbleViewTest, Verifying) {
   CheckAccountRow(row_container->children()[0], kAccountSuffix);
 }
 
-class MultipleIDPAccountSelectionBubbleViewTest
+class MultipleIdpAccountSelectionBubbleViewTest
     : public AccountSelectionBubbleViewTest {
  public:
-  MultipleIDPAccountSelectionBubbleViewTest() = default;
+  MultipleIdpAccountSelectionBubbleViewTest() = default;
 
  protected:
   void SetUp() override {
@@ -486,28 +492,30 @@ class MultipleIDPAccountSelectionBubbleViewTest
 };
 
 // Tests that the single account case is the same with
-// features::kFedCmMultipleIdentityProviders enabled.
-TEST_F(MultipleIDPAccountSelectionBubbleViewTest, SingleAccount) {
-  TestSingleAccount(kTitleSignIn,
-                    /*expect_idp_brand_icon_in_header=*/false);
+// features::kFedCmMultipleIdentityProviders enabled. See
+// AccountSelectionBubbleViewTest's SingleAccount test.
+TEST_F(MultipleIdpAccountSelectionBubbleViewTest, SingleAccount) {
+  TestSingleAccount(kTitleSignIn, /*expect_idp_brand_icon_in_header=*/true);
 }
 
-// Tests that the logo is not visible with
-// features::kFedCmMultipleIdentityProviders enabled but only one IDP.
-TEST_F(MultipleIDPAccountSelectionBubbleViewTest, MultipleAccountsSingleIdp) {
+// Tests that when there is multiple accounts but only one IDP, the UI is
+// exactly the same with features::kFedCmMultipleIdentityProviders enabled (see
+// AccountSelectionBubbleViewTest's MultipleAccounts test).
+TEST_F(MultipleIdpAccountSelectionBubbleViewTest, MultipleAccountsSingleIdp) {
   TestMultipleAccounts(kTitleSignIn,
-                       /*expect_idp_brand_icon_in_header=*/false,
-                       /*expect_idp_row=*/true);
+                       /*expect_idp_brand_icon_in_header=*/true,
+                       /*expect_idp_row=*/false);
 }
 
 // Tests that the logo is visible with features::kFedCmMultipleIdentityProviders
 // enabled and multiple IDPs.
-TEST_F(MultipleIDPAccountSelectionBubbleViewTest,
+TEST_F(MultipleIdpAccountSelectionBubbleViewTest,
        MultipleAccountsMultipleIdps) {
+  const std::vector<std::string> kAccountSuffixes1 = {"1", "2"};
+  const std::vector<std::string> kAccountSuffixes2 = {"3", "4"};
   std::vector<IdentityProviderDisplayData> idp_data;
   std::vector<Account> accounts_first_idp = CreateTestIdentityRequestAccounts(
-      /*account_suffixes=*/{"1"},
-      content::IdentityRequestAccount::LoginState::kSignUp);
+      kAccountSuffixes1, content::IdentityRequestAccount::LoginState::kSignUp);
   idp_data.emplace_back(kIdpETLDPlusOne, content::IdentityProviderMetadata(),
                         CreateTestClientIdData(kTermsOfServiceUrl),
                         accounts_first_idp);
@@ -515,7 +523,7 @@ TEST_F(MultipleIDPAccountSelectionBubbleViewTest,
       u"idp2.com", content::IdentityProviderMetadata(),
       CreateTestClientIdData("https://tos-2.com"),
       CreateTestIdentityRequestAccounts(
-          /*account_suffixes=*/{"2"},
+          kAccountSuffixes2,
           content::IdentityRequestAccount::LoginState::kSignUp));
   CreateMultiIdpAccountPicker(idp_data);
 
@@ -523,4 +531,29 @@ TEST_F(MultipleIDPAccountSelectionBubbleViewTest,
   ASSERT_EQ(children.size(), 3u);
   PerformHeaderChecks(children[0], kTitleSignInWithoutIdp,
                       /*expect_idp_brand_icon_in_header=*/false);
+
+  views::ScrollView* scroller = static_cast<views::ScrollView*>(children[2]);
+  ASSERT_FALSE(scroller->children().empty());
+  views::View* wrapper = scroller->children()[0];
+  ASSERT_FALSE(wrapper->children().empty());
+  views::View* contents = wrapper->children()[0];
+
+  views::BoxLayout* layout_manager =
+      static_cast<views::BoxLayout*>(contents->GetLayoutManager());
+  EXPECT_TRUE(layout_manager);
+  EXPECT_EQ(layout_manager->GetOrientation(),
+            views::BoxLayout::Orientation::kVertical);
+  std::vector<views::View*> accounts = contents->children();
+
+  // There should be 6 rows: 3 for the first IDP, 3 for the second.
+  EXPECT_EQ(6u, accounts.size());
+
+  // Check the first IDP.
+  CheckIdpRow(accounts[0u], u"idp-example.com");
+  size_t accounts_index = 1;
+  CheckAccountRows(accounts, kAccountSuffixes1, accounts_index);
+
+  // Check the second IDP.
+  CheckIdpRow(accounts[accounts_index++], u"idp2.com");
+  CheckAccountRows(accounts, kAccountSuffixes2, accounts_index);
 }

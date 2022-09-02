@@ -277,6 +277,54 @@ class AccountImageView : public views::ImageView {
   base::WeakPtrFactory<AccountImageView> weak_ptr_factory_{this};
 };
 
+// Wrapper around ImageViews for IDP icons. Used to ensure that the fetch
+// callback is not run when the ImageView has been deleted.
+class IdpImageView : public views::ImageView {
+ public:
+  explicit IdpImageView(AccountSelectionBubbleView* bubble_view)
+      : bubble_view_(bubble_view) {}
+
+  IdpImageView(const IdpImageView&) = delete;
+  IdpImageView& operator=(const IdpImageView&) = delete;
+  ~IdpImageView() override = default;
+
+  // Fetch image and set it on IdpImageView.
+  void FetchImage(const GURL& icon_url,
+                  image_fetcher::ImageFetcher& image_fetcher) {
+    image_fetcher::ImageFetcherParams params(kTrafficAnnotation,
+                                             kImageFetcherUmaClient);
+    image_fetcher.FetchImage(
+        icon_url,
+        base::BindOnce(&IdpImageView::OnImageFetched,
+                       weak_ptr_factory_.GetWeakPtr(), icon_url),
+        std::move(params));
+  }
+
+ private:
+  void OnImageFetched(const GURL& image_url,
+                      const gfx::Image& image,
+                      const image_fetcher::RequestMetadata& metadata) {
+    if (image.Width() != image.Height() ||
+        image.Width() < AccountSelectionView::GetBrandIconMinimumSize()) {
+      return;
+    }
+    gfx::ImageSkia idp_image =
+        gfx::CanvasImageSource::MakeImageSkia<CircleCroppedImageSkiaSource>(
+            image.AsImageSkia(),
+            image.Width() *
+                FedCmAccountSelectionView::kMaskableWebIconSafeZoneRatio,
+            kDesiredIdpIconSize);
+    SetImage(idp_image);
+    bubble_view_->AddIdpImage(image_url, idp_image);
+  }
+
+  // The AccountSelectionBubbleView outlives IdpImageView so it is safe to store
+  // a raw pointer to it.
+  base::raw_ptr<AccountSelectionBubbleView> bubble_view_;
+
+  base::WeakPtrFactory<IdpImageView> weak_ptr_factory_{this};
+};
+
 void SendAccessibilityEvent(views::Widget* widget,
                             std::u16string announcement) {
   if (!widget)
@@ -291,14 +339,6 @@ void SendAccessibilityEvent(views::Widget* widget,
   if (!announcement.empty())
     root_view->GetViewAccessibility().AnnounceText(announcement);
 #endif
-}
-
-bool IsMultiIdpEnabled() {
-  // TODO(crbug.com/1351137): add check so that the multi IDP is only enabled
-  // when we truly receive accounts from more than one IDP and the feature flag
-  // is enabled, instead of just when the feature flag is enabled.
-  return base::FeatureList::IsEnabled(
-      features::kFedCmMultipleIdentityProviders);
 }
 
 // Selects string for disclosure text based on passed-in `privacy_policy_url`
@@ -345,6 +385,11 @@ AccountSelectionBubbleView::AccountSelectionBubbleView(
   SetShowCloseButton(false);
   set_close_on_deactivate(false);
 
+  // If `idp_title` is absl::nullopt, we are going to show multi-IDP UI. DCHECK
+  // that we do not get to this when the flag is disabled.
+  DCHECK(
+      idp_title.has_value() ||
+      base::FeatureList::IsEnabled(features::kFedCmMultipleIdentityProviders));
   accessible_title_ =
       idp_title.has_value()
           ? l10n_util::GetStringFUTF16(
@@ -358,21 +403,25 @@ AccountSelectionBubbleView::AccountSelectionBubbleView(
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical, gfx::Insets(),
       kTopBottomPadding));
-  header_view_ = AddChildView(CreateHeaderView(accessible_title_));
+  header_view_ = AddChildView(CreateHeaderView(
+      accessible_title_, /*has_idp_icon=*/idp_title.has_value()));
 }
 
 AccountSelectionBubbleView::~AccountSelectionBubbleView() = default;
 
 void AccountSelectionBubbleView::ShowAccountPicker(
-    const std::vector<IdentityProviderDisplayData>& idp_data,
+    const std::vector<IdentityProviderDisplayData>& idp_data_list,
     bool show_back_button) {
-  // TODO(crbug.com/1351137): use more than the first vector item to support
-  // multiple idps.
-  UpdateHeader(idp_data[0].idp_metadata_, accessible_title_, show_back_button);
+  // If there are multiple IDPs, then the content::IdentityProviderMetadata
+  // passed will be unused since there will be no `header_icon_view_`.
+  // Therefore, it is fine to pass the first one into UpdateHeader().
+  DCHECK(idp_data_list.size() == 1u || !header_icon_view_);
+  UpdateHeader(idp_data_list[0].idp_metadata_, accessible_title_,
+               show_back_button);
 
   RemoveNonHeaderChildViews();
   AddChildView(std::make_unique<views::Separator>());
-  AddChildView(CreateAccountChooser(idp_data));
+  AddChildView(CreateAccountChooser(idp_data_list));
   SizeToContents();
   PreferredSizeChanged();
 
@@ -415,6 +464,32 @@ void AccountSelectionBubbleView::ShowVerifyingSheet(
   has_sheet_ = true;
 }
 
+void AccountSelectionBubbleView::ShowSingleAccountConfirmDialog(
+    const std::u16string& rp_for_display,
+    const content::IdentityRequestAccount& account,
+    const IdentityProviderDisplayData& idp_data) {
+  std::u16string title =
+      l10n_util::GetStringFUTF16(IDS_ACCOUNT_SELECTION_SHEET_TITLE_EXPLICIT,
+                                 rp_for_display, idp_data.idp_etld_plus_one_);
+  UpdateHeader(idp_data.idp_metadata_, title, true);
+
+  RemoveNonHeaderChildViews();
+  AddChildView(std::make_unique<views::Separator>());
+  AddChildView(CreateSingleAccountChooser(idp_data, account));
+  SizeToContents();
+  PreferredSizeChanged();
+
+  if (has_sheet_) {
+    // Focusing `continue_button_` without screen reader on makes the UI look
+    // awkward, so we only want to do so when screen reader is enabled.
+    if (accessibility_state_utils::IsScreenReaderEnabled() && continue_button_)
+      continue_button_->RequestFocus();
+    SendAccessibilityEvent(GetWidget(), std::u16string());
+  }
+
+  has_sheet_ = true;
+}
+
 void AccountSelectionBubbleView::ShowFailureDialog(
     const std::u16string& rp_for_display,
     const std::u16string& idp_for_display) {
@@ -424,6 +499,11 @@ void AccountSelectionBubbleView::ShowFailureDialog(
 
   SizeToContents();
   PreferredSizeChanged();
+}
+
+void AccountSelectionBubbleView::AddIdpImage(const GURL& image_url,
+                                             gfx::ImageSkia image) {
+  idp_images_[image_url] = image;
 }
 
 gfx::Rect AccountSelectionBubbleView::GetBubbleBounds() {
@@ -458,16 +538,17 @@ gfx::Rect AccountSelectionBubbleView::GetBubbleBounds() {
 }
 
 std::unique_ptr<views::View> AccountSelectionBubbleView::CreateHeaderView(
-    const std::u16string& title) {
+    const std::u16string& title,
+    bool has_idp_icon) {
   auto header = std::make_unique<views::View>();
   // Do not use a top margin as it has already been set in the bubble.
   header->SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetInteriorMargin(gfx::Insets::TLBR(
           0, kLeftRightPadding, kVerticalSpacing, kLeftRightPadding));
 
-  // Add the icon.
-  if (!IsMultiIdpEnabled()) {
-    auto image_view = std::make_unique<views::ImageView>();
+  // Add the space for the icon.
+  if (has_idp_icon) {
+    auto image_view = std::make_unique<IdpImageView>(this);
     image_view->SetImageSize(
         gfx::Size(kDesiredIdpIconSize, kDesiredIdpIconSize));
     image_view->SetProperty(views::kMarginsKey,
@@ -520,21 +601,22 @@ std::unique_ptr<views::View> AccountSelectionBubbleView::CreateHeaderView(
 }
 
 std::unique_ptr<views::View> AccountSelectionBubbleView::CreateAccountChooser(
-    const std::vector<IdentityProviderDisplayData>& idp_data) {
-  if (idp_data.size() == 1u && idp_data[0].accounts_.size() == 1u) {
-    return CreateSingleAccountChooser(idp_data[0]);
+    const std::vector<IdentityProviderDisplayData>& idp_data_list) {
+  if (idp_data_list.size() == 1u && idp_data_list[0].accounts_.size() == 1u) {
+    return CreateSingleAccountChooser(idp_data_list[0],
+                                      idp_data_list[0].accounts_[0]);
   }
-  return CreateMultipleAccountChooser(idp_data);
+  return CreateMultipleAccountChooser(idp_data_list);
 }
 
 std::unique_ptr<views::View>
 AccountSelectionBubbleView::CreateSingleAccountChooser(
-    const IdentityProviderDisplayData& idp_data) {
+    const IdentityProviderDisplayData& idp_data,
+    const content::IdentityRequestAccount& account) {
   auto row = std::make_unique<views::View>();
   row->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical,
       gfx::Insets::VH(0, kLeftRightPadding), kVerticalSpacing));
-  const content::IdentityRequestAccount& account = idp_data.accounts_[0];
   row->AddChildView(
       CreateAccountRow(account, idp_data, /*should_hover=*/false));
 
@@ -614,7 +696,7 @@ AccountSelectionBubbleView::CreateSingleAccountChooser(
 
 std::unique_ptr<views::View>
 AccountSelectionBubbleView::CreateMultipleAccountChooser(
-    const std::vector<IdentityProviderDisplayData>& idp_data) {
+    const std::vector<IdentityProviderDisplayData>& idp_data_list) {
   auto scroll_view = std::make_unique<views::ScrollView>();
   scroll_view->SetHorizontalScrollBarMode(
       views::ScrollView::ScrollBarMode::kDisabled);
@@ -622,21 +704,31 @@ AccountSelectionBubbleView::CreateMultipleAccountChooser(
       scroll_view->SetContents(std::make_unique<views::View>());
   row->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
-  // TODO(crbug.com/1351137): handle multiple IDPs instead of just using the
-  // first index from `idp_data`.
-  if (IsMultiIdpEnabled()) {
-    row->AddChildView(CreateIdpHeaderRowForMultiIdp(
-        idp_data[0].idp_etld_plus_one_, idp_data[0].idp_metadata_));
+  bool is_multi_idp = idp_data_list.size() > 1u;
+  size_t num_rows = 0;
+  for (const auto& idp_data : idp_data_list) {
+    if (is_multi_idp) {
+      row->AddChildView(CreateIdpHeaderRowForMultiIdp(
+          idp_data.idp_etld_plus_one_, idp_data.idp_metadata_));
+      ++num_rows;
+    }
+    for (const auto& account : idp_data.accounts_) {
+      row->AddChildView(
+          CreateAccountRow(account, idp_data, /*should_hover=*/true));
+    }
+    num_rows += idp_data.accounts_.size();
   }
-  for (const auto& account : idp_data[0].accounts_)
-    row->AddChildView(
-        CreateAccountRow(account, idp_data[0], /*should_hover=*/true));
   // The maximum height that the multi-account-picker can have. This value was
   // chosen so that if there are more than two accounts, the picker will show up
-  // as a scrollbar showing 2 accounts plus half of the third one.
-  const int per_account_size =
-      row->GetPreferredSize().height() / idp_data[0].accounts_.size();
-  scroll_view->ClipHeightTo(0, static_cast<int>(per_account_size * 2.5));
+  // as a scrollbar showing 2 accounts plus half of the third one. Note that
+  // this is an estimate if there are multiple IDPs, as IDP rows are not the
+  // same height. That said, calling GetPreferredSize() is expensive so we are
+  // ok with this estimate. And in this case, we prefer to use 3.5 as there will
+  // be at least one IDP row at the beginning.
+  float num_visible_rows = is_multi_idp ? 3.5f : 2.5f;
+  const int per_account_size = row->GetPreferredSize().height() / num_rows;
+  scroll_view->ClipHeightTo(
+      0, static_cast<int>(per_account_size * num_visible_rows));
   return scroll_view;
 }
 
@@ -649,12 +741,12 @@ AccountSelectionBubbleView::CreateIdpHeaderRowForMultiIdp(
       ->SetInteriorMargin(
           gfx::Insets::TLBR(0, kLeftRightPadding, 0, kLeftRightPadding));
 
-  auto image_view = std::make_unique<views::ImageView>();
+  auto image_view = std::make_unique<IdpImageView>(this);
   image_view->SetImageSize(gfx::Size(kDesiredIdpIconSize, kDesiredIdpIconSize));
   image_view->SetProperty(views::kMarginsKey,
                           gfx::Insets().set_right(kLeftRightPadding));
-  multi_idp_icon_view_ = header->AddChildView(std::move(image_view));
-  ConfigureIdpBrandImageView(multi_idp_icon_view_, idp_metadata);
+  IdpImageView* idp_icon_view = header->AddChildView(std::move(image_view));
+  ConfigureIdpBrandImageView(idp_icon_view, idp_metadata);
 
   header->AddChildView(std::make_unique<views::Label>(
       idp_for_display, views::style::CONTEXT_DIALOG_BODY_TEXT,
@@ -712,32 +804,6 @@ std::unique_ptr<views::View> AccountSelectionBubbleView::CreateAccountRow(
   return row;
 }
 
-void AccountSelectionBubbleView::OnBrandImageFetched(
-    const gfx::Image& image,
-    const image_fetcher::RequestMetadata& metadata) {
-  if (!header_icon_view_ && !multi_idp_icon_view_)
-    return;
-
-  if (image.Width() != image.Height() ||
-      image.Width() < AccountSelectionView::GetBrandIconMinimumSize()) {
-    return;
-  }
-  idp_image_ =
-      gfx::CanvasImageSource::MakeImageSkia<CircleCroppedImageSkiaSource>(
-          image.AsImageSkia(),
-          image.Width() *
-              FedCmAccountSelectionView::kMaskableWebIconSafeZoneRatio,
-          kDesiredIdpIconSize);
-  if (header_icon_view_) {
-    DCHECK(!IsMultiIdpEnabled());
-    header_icon_view_->SetImage(idp_image_);
-  }
-  if (multi_idp_icon_view_) {
-    DCHECK(IsMultiIdpEnabled());
-    multi_idp_icon_view_->SetImage(idp_image_);
-  }
-}
-
 void AccountSelectionBubbleView::UpdateHeader(
     const content::IdentityProviderMetadata& idp_metadata,
     const std::u16string title,
@@ -753,7 +819,7 @@ void AccountSelectionBubbleView::UpdateHeader(
 }
 
 void AccountSelectionBubbleView::ConfigureIdpBrandImageView(
-    views::ImageView* image_view,
+    IdpImageView* image_view,
     const content::IdentityProviderMetadata& idp_metadata) {
   // Show placeholder brand icon prior to brand icon being fetched so that
   // header text wrapping does not change when brand icon is fetched.
@@ -762,8 +828,9 @@ void AccountSelectionBubbleView::ConfigureIdpBrandImageView(
   if (!has_idp_icon)
     return;
 
-  if (!idp_image_.isNull()) {
-    image_view->SetImage(idp_image_);
+  auto it = idp_images_.find(idp_metadata.brand_icon_url);
+  if (it != idp_images_.end()) {
+    image_view->SetImage(it->second);
     return;
   }
 
@@ -773,13 +840,7 @@ void AccountSelectionBubbleView::ConfigureIdpBrandImageView(
 
   fetched_icons_.insert(idp_metadata.brand_icon_url);
 
-  image_fetcher::ImageFetcherParams params(kTrafficAnnotation,
-                                           kImageFetcherUmaClient);
-  image_fetcher_->FetchImage(
-      idp_metadata.brand_icon_url,
-      base::BindOnce(&AccountSelectionBubbleView::OnBrandImageFetched,
-                     weak_ptr_factory_.GetWeakPtr()),
-      std::move(params));
+  image_view->FetchImage(idp_metadata.brand_icon_url, *image_fetcher_);
 }
 
 void AccountSelectionBubbleView::RemoveNonHeaderChildViews() {
@@ -791,7 +852,6 @@ void AccountSelectionBubbleView::RemoveNonHeaderChildViews() {
     }
   }
 
-  multi_idp_icon_view_ = nullptr;
   continue_button_ = nullptr;
 }
 
