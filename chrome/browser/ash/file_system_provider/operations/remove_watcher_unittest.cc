@@ -56,7 +56,8 @@ TEST_F(FileSystemProviderOperationsRemoveWatcherTest, Execute) {
   util::StatusCallbackLog callback_log;
 
   RemoveWatcher remove_watcher(
-      NULL, file_system_info_, base::FilePath(kEntryPath), true /* recursive */,
+      nullptr, file_system_info_, base::FilePath(kEntryPath),
+      true /* recursive */,
       base::BindOnce(&util::LogStatusCallback, &callback_log));
   remove_watcher.SetDispatchEventImplForTesting(
       base::BindRepeating(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,
@@ -89,7 +90,8 @@ TEST_F(FileSystemProviderOperationsRemoveWatcherTest, Execute_NoListener) {
   util::StatusCallbackLog callback_log;
 
   RemoveWatcher remove_watcher(
-      NULL, file_system_info_, base::FilePath(kEntryPath), true /* recursive */,
+      nullptr, file_system_info_, base::FilePath(kEntryPath),
+      true /* recursive */,
       base::BindOnce(&util::LogStatusCallback, &callback_log));
   remove_watcher.SetDispatchEventImplForTesting(
       base::BindRepeating(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,
@@ -103,7 +105,8 @@ TEST_F(FileSystemProviderOperationsRemoveWatcherTest, OnSuccess) {
   util::StatusCallbackLog callback_log;
 
   RemoveWatcher remove_watcher(
-      NULL, file_system_info_, base::FilePath(kEntryPath), true /* recursive */,
+      nullptr, file_system_info_, base::FilePath(kEntryPath),
+      true /* recursive */,
       base::BindOnce(&util::LogStatusCallback, &callback_log));
   remove_watcher.SetDispatchEventImplForTesting(
       base::BindRepeating(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,
@@ -122,7 +125,8 @@ TEST_F(FileSystemProviderOperationsRemoveWatcherTest, OnError) {
   util::StatusCallbackLog callback_log;
 
   RemoveWatcher remove_watcher(
-      NULL, file_system_info_, base::FilePath(kEntryPath), true /* recursive */,
+      nullptr, file_system_info_, base::FilePath(kEntryPath),
+      true /* recursive */,
       base::BindOnce(&util::LogStatusCallback, &callback_log));
   remove_watcher.SetDispatchEventImplForTesting(
       base::BindRepeating(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,

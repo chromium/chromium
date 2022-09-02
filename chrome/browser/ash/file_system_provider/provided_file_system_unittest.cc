@@ -56,7 +56,7 @@ const base::FilePath::CharType kFilePath[] =
 class FakeEventRouter : public extensions::EventRouter {
  public:
   FakeEventRouter(Profile* profile, ProvidedFileSystemInterface* file_system)
-      : EventRouter(profile, NULL),
+      : EventRouter(profile, nullptr),
         file_system_(file_system),
         reply_result_(base::File::FILE_OK) {}
 
@@ -254,18 +254,16 @@ class FileSystemProviderProvidedFileSystemTest : public testing::Test {
         profile_.get(), provided_file_system_.get());
     event_router_->AddEventListener(extensions::api::file_system_provider::
                                         OnAddWatcherRequested::kEventName,
-                                    NULL,
-                                    kExtensionId);
+                                    nullptr, kExtensionId);
     event_router_->AddEventListener(extensions::api::file_system_provider::
                                         OnRemoveWatcherRequested::kEventName,
-                                    NULL,
-                                    kExtensionId);
+                                    nullptr, kExtensionId);
     event_router_->AddEventListener(
         extensions::api::file_system_provider::OnOpenFileRequested::kEventName,
-        NULL, kExtensionId);
+        nullptr, kExtensionId);
     event_router_->AddEventListener(
         extensions::api::file_system_provider::OnCloseFileRequested::kEventName,
-        NULL, kExtensionId);
+        nullptr, kExtensionId);
     provided_file_system_->SetEventRouterForTesting(event_router_.get());
     provided_file_system_->SetNotificationManagerForTesting(
         base::WrapUnique(new StubNotificationManager));

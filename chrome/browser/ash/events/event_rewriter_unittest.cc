@@ -4554,7 +4554,7 @@ TEST_F(EventRewriterAshTest, ScrollEventDispatchImpl) {
 
 class StickyKeysOverlayTest : public EventRewriterAshTest {
  public:
-  StickyKeysOverlayTest() : overlay_(NULL) {}
+  StickyKeysOverlayTest() : overlay_(nullptr) {}
 
   ~StickyKeysOverlayTest() override {}
 

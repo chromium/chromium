@@ -63,7 +63,7 @@ void CreateWallpaperDirectory(const base::FilePath& wallpaper_dir,
                               bool* success) {
   DCHECK(success);
 
-  *success = CreateDirectoryAndGetError(wallpaper_dir, NULL);
+  *success = CreateDirectoryAndGetError(wallpaper_dir, nullptr);
   if (!*success) {
     NOTREACHED() << "Failed to create directory '" << wallpaper_dir.value()
                  << "'";

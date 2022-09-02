@@ -216,7 +216,7 @@ TEST_F(FileSystemProviderMountPathUtilTest, Parser_IsolatedURL) {
   const storage::IsolatedContext::ScopedFSHandle isolated_file_system =
       isolated_context->RegisterFileSystemForPath(
           storage::kFileSystemTypeProvided, url.filesystem_id(), url.path(),
-          NULL);
+          nullptr);
 
   const base::FilePath isolated_virtual_path =
       isolated_context->CreateVirtualRootPath(isolated_file_system.id())

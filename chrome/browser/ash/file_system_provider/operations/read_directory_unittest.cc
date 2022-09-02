@@ -125,7 +125,7 @@ TEST_F(FileSystemProviderOperationsReadDirectoryTest, Execute) {
   CallbackLogger callback_logger;
 
   ReadDirectory read_directory(
-      NULL, file_system_info_, base::FilePath(kDirectoryPath),
+      nullptr, file_system_info_, base::FilePath(kDirectoryPath),
       base::BindRepeating(&CallbackLogger::OnReadDirectory,
                           base::Unretained(&callback_logger)));
   read_directory.SetDispatchEventImplForTesting(
@@ -158,7 +158,7 @@ TEST_F(FileSystemProviderOperationsReadDirectoryTest, Execute_NoListener) {
   CallbackLogger callback_logger;
 
   ReadDirectory read_directory(
-      NULL, file_system_info_, base::FilePath(kDirectoryPath),
+      nullptr, file_system_info_, base::FilePath(kDirectoryPath),
       base::BindRepeating(&CallbackLogger::OnReadDirectory,
                           base::Unretained(&callback_logger)));
   read_directory.SetDispatchEventImplForTesting(
@@ -173,7 +173,7 @@ TEST_F(FileSystemProviderOperationsReadDirectoryTest, OnSuccess) {
   CallbackLogger callback_logger;
 
   ReadDirectory read_directory(
-      NULL, file_system_info_, base::FilePath(kDirectoryPath),
+      nullptr, file_system_info_, base::FilePath(kDirectoryPath),
       base::BindRepeating(&CallbackLogger::OnReadDirectory,
                           base::Unretained(&callback_logger)));
   read_directory.SetDispatchEventImplForTesting(
@@ -220,7 +220,7 @@ TEST_F(FileSystemProviderOperationsReadDirectoryTest,
   CallbackLogger callback_logger;
 
   ReadDirectory read_directory(
-      NULL, file_system_info_, base::FilePath(kDirectoryPath),
+      nullptr, file_system_info_, base::FilePath(kDirectoryPath),
       base::BindRepeating(&CallbackLogger::OnReadDirectory,
                           base::Unretained(&callback_logger)));
   read_directory.SetDispatchEventImplForTesting(
@@ -263,7 +263,7 @@ TEST_F(FileSystemProviderOperationsReadDirectoryTest, OnError) {
   CallbackLogger callback_logger;
 
   ReadDirectory read_directory(
-      NULL, file_system_info_, base::FilePath(kDirectoryPath),
+      nullptr, file_system_info_, base::FilePath(kDirectoryPath),
       base::BindRepeating(&CallbackLogger::OnReadDirectory,
                           base::Unretained(&callback_logger)));
   read_directory.SetDispatchEventImplForTesting(

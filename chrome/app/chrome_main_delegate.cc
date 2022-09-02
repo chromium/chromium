@@ -438,7 +438,7 @@ void SIGTERMProfilingShutdown(int signal) {
   struct sigaction sigact;
   memset(&sigact, 0, sizeof(sigact));
   sigact.sa_handler = SIG_DFL;
-  CHECK_EQ(sigaction(SIGTERM, &sigact, NULL), 0);
+  CHECK_EQ(sigaction(SIGTERM, &sigact, nullptr), 0);
   raise(signal);
 }
 
@@ -447,7 +447,7 @@ void SetUpProfilingShutdownHandler() {
   sigact.sa_handler = SIGTERMProfilingShutdown;
   sigact.sa_flags = SA_RESETHAND;
   sigemptyset(&sigact.sa_mask);
-  CHECK_EQ(sigaction(SIGTERM, &sigact, NULL), 0);
+  CHECK_EQ(sigaction(SIGTERM, &sigact, nullptr), 0);
 }
 #endif  // !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_ANDROID)
 
@@ -1355,7 +1355,7 @@ void ChromeMainDelegate::PreSandboxStartup() {
 #else
     const std::string loaded_locale =
         ui::ResourceBundle::InitSharedInstanceWithLocale(
-            locale, NULL, ui::ResourceBundle::LOAD_COMMON_RESOURCES);
+            locale, nullptr, ui::ResourceBundle::LOAD_COMMON_RESOURCES);
 
     base::FilePath resources_pack_path;
     base::PathService::Get(chrome::FILE_RESOURCES_PACK, &resources_pack_path);

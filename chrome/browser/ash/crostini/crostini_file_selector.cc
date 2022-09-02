@@ -60,7 +60,7 @@ void CrostiniFileSelector::SelectFile(
       l10n_util::GetStringUTF16(
           IDS_SETTINGS_CROSTINI_FILE_SELECTOR_DIALOG_TITLE),
       downloads_path, &file_type_info, 0, FILE_PATH_LITERAL(""),
-      GetBrowserWindow(), NULL);
+      GetBrowserWindow(), nullptr);
 }
 
 gfx::NativeWindow CrostiniFileSelector::GetBrowserWindow() {

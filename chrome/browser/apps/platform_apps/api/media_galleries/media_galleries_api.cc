@@ -232,8 +232,8 @@ class SelectDirectoryDialog : public ui::SelectFileDialog::Listener,
     select_file_dialog_->SelectFile(
         ui::SelectFileDialog::SELECT_FOLDER,
         l10n_util::GetStringUTF16(IDS_MEDIA_GALLERIES_DIALOG_ADD_GALLERY_TITLE),
-        default_path, NULL, 0, base::FilePath::StringType(),
-        platform_util::GetTopLevel(web_contents_->GetNativeView()), NULL);
+        default_path, nullptr, 0, base::FilePath::StringType(),
+        platform_util::GetTopLevel(web_contents_->GetNativeView()), nullptr);
   }
 
   // ui::SelectFileDialog::Listener implementation.

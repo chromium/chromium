@@ -250,7 +250,7 @@ const char* GetBoolPrefNameForApiProperty(const char* api_name) {
       return kPreferencesMap[i].preference_name;
   }
 
-  return NULL;
+  return nullptr;
 }
 
 std::unique_ptr<base::Value> GetValue(const std::string& property_name) {

@@ -228,7 +228,7 @@ TEST_F(FileSystemProviderOperationsGetMetadataTest, Execute) {
   CallbackLogger callback_logger;
 
   GetMetadata get_metadata(
-      NULL, file_system_info_, base::FilePath(kDirectoryPath),
+      nullptr, file_system_info_, base::FilePath(kDirectoryPath),
       ProvidedFileSystemInterface::METADATA_FIELD_THUMBNAIL,
       base::BindOnce(&CallbackLogger::OnGetMetadata,
                      base::Unretained(&callback_logger)));
@@ -263,7 +263,7 @@ TEST_F(FileSystemProviderOperationsGetMetadataTest, Execute_NoListener) {
   CallbackLogger callback_logger;
 
   GetMetadata get_metadata(
-      NULL, file_system_info_, base::FilePath(kDirectoryPath),
+      nullptr, file_system_info_, base::FilePath(kDirectoryPath),
       ProvidedFileSystemInterface::METADATA_FIELD_THUMBNAIL,
       base::BindOnce(&CallbackLogger::OnGetMetadata,
                      base::Unretained(&callback_logger)));
@@ -279,7 +279,7 @@ TEST_F(FileSystemProviderOperationsGetMetadataTest, OnSuccess) {
   CallbackLogger callback_logger;
 
   GetMetadata get_metadata(
-      NULL, file_system_info_, base::FilePath(kDirectoryPath),
+      nullptr, file_system_info_, base::FilePath(kDirectoryPath),
       ProvidedFileSystemInterface::METADATA_FIELD_IS_DIRECTORY |
           ProvidedFileSystemInterface::METADATA_FIELD_NAME |
           ProvidedFileSystemInterface::METADATA_FIELD_SIZE |
@@ -339,7 +339,7 @@ TEST_F(FileSystemProviderOperationsGetMetadataTest, OnSuccess_InvalidMetadata) {
   CallbackLogger callback_logger;
 
   GetMetadata get_metadata(
-      NULL, file_system_info_, base::FilePath(kDirectoryPath),
+      nullptr, file_system_info_, base::FilePath(kDirectoryPath),
       ProvidedFileSystemInterface::METADATA_FIELD_IS_DIRECTORY |
           ProvidedFileSystemInterface::METADATA_FIELD_NAME |
           ProvidedFileSystemInterface::METADATA_FIELD_SIZE |
@@ -393,7 +393,7 @@ TEST_F(FileSystemProviderOperationsGetMetadataTest, OnError) {
   CallbackLogger callback_logger;
 
   GetMetadata get_metadata(
-      NULL, file_system_info_, base::FilePath(kDirectoryPath),
+      nullptr, file_system_info_, base::FilePath(kDirectoryPath),
       ProvidedFileSystemInterface::METADATA_FIELD_THUMBNAIL,
       base::BindOnce(&CallbackLogger::OnGetMetadata,
                      base::Unretained(&callback_logger)));

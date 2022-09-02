@@ -58,7 +58,7 @@ base::FilePath GetMountPath(Profile* profile,
       user_manager::UserManager::IsInitialized()
           ? ProfileHelper::Get()->GetUserByProfile(
                 profile->GetOriginalProfile())
-          : NULL;
+          : nullptr;
   const std::string safe_file_system_id = EscapeFileSystemId(file_system_id);
   const std::string username_suffix = user ? user->username_hash() : "";
   return base::FilePath(kProvidedMountPointRoot)
@@ -83,8 +83,7 @@ bool IsFileSystemProviderLocalPath(const base::FilePath& local_path) {
 }
 
 FileSystemURLParser::FileSystemURLParser(const storage::FileSystemURL& url)
-    : url_(url), file_system_(NULL) {
-}
+    : url_(url), file_system_(nullptr) {}
 
 FileSystemURLParser::~FileSystemURLParser() {
 }
@@ -154,8 +153,7 @@ bool FileSystemURLParser::Parse() {
 
 LocalPathParser::LocalPathParser(Profile* profile,
                                  const base::FilePath& local_path)
-    : profile_(profile), local_path_(local_path), file_system_(NULL) {
-}
+    : profile_(profile), local_path_(local_path), file_system_(nullptr) {}
 
 LocalPathParser::~LocalPathParser() {
 }

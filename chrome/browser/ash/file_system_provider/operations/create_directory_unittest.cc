@@ -59,7 +59,7 @@ TEST_F(FileSystemProviderOperationsCreateDirectoryTest, Execute) {
   util::StatusCallbackLog callback_log;
 
   CreateDirectory create_directory(
-      NULL, file_system_info_, base::FilePath(kDirectoryPath),
+      nullptr, file_system_info_, base::FilePath(kDirectoryPath),
       true /* recursive */,
       base::BindOnce(&util::LogStatusCallback, &callback_log));
   create_directory.SetDispatchEventImplForTesting(
@@ -93,7 +93,7 @@ TEST_F(FileSystemProviderOperationsCreateDirectoryTest, Execute_NoListener) {
   util::StatusCallbackLog callback_log;
 
   CreateDirectory create_directory(
-      NULL, file_system_info_, base::FilePath(kDirectoryPath),
+      nullptr, file_system_info_, base::FilePath(kDirectoryPath),
       true /* recursive */,
       base::BindOnce(&util::LogStatusCallback, &callback_log));
   create_directory.SetDispatchEventImplForTesting(
@@ -113,7 +113,7 @@ TEST_F(FileSystemProviderOperationsCreateDirectoryTest, Execute_ReadOnly) {
       true /* watchable */, extensions::SOURCE_FILE, IconSet());
 
   CreateDirectory create_directory(
-      NULL, read_only_file_system_info, base::FilePath(kDirectoryPath),
+      nullptr, read_only_file_system_info, base::FilePath(kDirectoryPath),
       true /* recursive */,
       base::BindOnce(&util::LogStatusCallback, &callback_log));
   create_directory.SetDispatchEventImplForTesting(
@@ -128,7 +128,7 @@ TEST_F(FileSystemProviderOperationsCreateDirectoryTest, OnSuccess) {
   util::StatusCallbackLog callback_log;
 
   CreateDirectory create_directory(
-      NULL, file_system_info_, base::FilePath(kDirectoryPath),
+      nullptr, file_system_info_, base::FilePath(kDirectoryPath),
       true /* recursive */,
       base::BindOnce(&util::LogStatusCallback, &callback_log));
   create_directory.SetDispatchEventImplForTesting(
@@ -148,7 +148,7 @@ TEST_F(FileSystemProviderOperationsCreateDirectoryTest, OnError) {
   util::StatusCallbackLog callback_log;
 
   CreateDirectory create_directory(
-      NULL, file_system_info_, base::FilePath(kDirectoryPath),
+      nullptr, file_system_info_, base::FilePath(kDirectoryPath),
       true /* recursive */,
       base::BindOnce(&util::LogStatusCallback, &callback_log));
   create_directory.SetDispatchEventImplForTesting(

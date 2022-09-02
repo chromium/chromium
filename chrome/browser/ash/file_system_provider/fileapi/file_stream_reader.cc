@@ -103,7 +103,7 @@ class FileStreamReader::OperationRunner
     if (!file_system_.get()) {
       content::GetIOThreadTaskRunner({})->PostTask(
           FROM_HERE, base::BindOnce(std::move(callback),
-                                    base::WrapUnique<EntryMetadata>(NULL),
+                                    base::WrapUnique<EntryMetadata>(nullptr),
                                     base::File::FILE_ERROR_ABORT));
       return;
     }

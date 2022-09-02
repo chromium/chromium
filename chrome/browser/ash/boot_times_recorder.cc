@@ -50,7 +50,7 @@ RenderWidgetHost* GetRenderWidgetHost(NavigationController* tab) {
     if (render_widget_host_view)
       return render_widget_host_view->GetRenderWidgetHost();
   }
-  return NULL;
+  return nullptr;
 }
 
 const std::string GetTabUrl(RenderWidgetHost* rwh) {

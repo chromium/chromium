@@ -95,7 +95,7 @@ const FakeEntry* FakeProvidedFileSystem::GetEntry(
     const base::FilePath& entry_path) const {
   const Entries::const_iterator entry_it = entries_.find(entry_path);
   if (entry_it == entries_.end())
-    return NULL;
+    return nullptr;
 
   return entry_it->second.get();
 }
@@ -396,7 +396,7 @@ const ProvidedFileSystemInfo& FakeProvidedFileSystem::GetFileSystemInfo()
 
 RequestManager* FakeProvidedFileSystem::GetRequestManager() {
   NOTREACHED();
-  return NULL;
+  return nullptr;
 }
 
 Watchers* FakeProvidedFileSystem::GetWatchers() {

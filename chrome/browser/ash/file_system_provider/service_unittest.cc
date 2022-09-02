@@ -88,7 +88,7 @@ scoped_refptr<extensions::Extension> CreateFakeExtension(
 
 class FileSystemProviderServiceTest : public testing::Test {
  protected:
-  FileSystemProviderServiceTest() : profile_(NULL) {}
+  FileSystemProviderServiceTest() : profile_(nullptr) {}
 
   ~FileSystemProviderServiceTest() override {}
 

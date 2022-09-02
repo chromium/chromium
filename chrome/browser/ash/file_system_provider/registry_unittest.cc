@@ -95,7 +95,7 @@ void RememberFakeFileSystem(TestingProfile* profile,
 
 class FileSystemProviderRegistryTest : public testing::Test {
  protected:
-  FileSystemProviderRegistryTest() : profile_(NULL) {}
+  FileSystemProviderRegistryTest() : profile_(nullptr) {}
 
   ~FileSystemProviderRegistryTest() override {}
 

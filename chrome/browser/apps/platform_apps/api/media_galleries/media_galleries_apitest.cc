@@ -129,7 +129,7 @@ class MediaGalleriesPlatformAppBrowserTest : public PlatformAppBrowserTest {
     if (!base::CopyFile(common_js_path, inject_js_path))
       return false;
 
-    const char* custom_arg = NULL;
+    const char* custom_arg = nullptr;
     std::string json_string;
     if (!custom_arg_value.empty()) {
       base::JSONWriter::Write(custom_arg_value, &json_string);
@@ -306,7 +306,7 @@ IN_PROC_BROWSER_TEST_F(MediaGalleriesPlatformAppPpapiTest, SendFilesystem) {
 #endif
 IN_PROC_BROWSER_TEST_F(MediaGalleriesPlatformAppBrowserTest,
                        MAYBE_MediaGalleriesNoAccess) {
-  MakeSingleFakeGallery(NULL);
+  MakeSingleFakeGallery(nullptr);
 
   base::Value::List custom_args;
   custom_args.Append(num_galleries() + 1);
@@ -327,7 +327,7 @@ IN_PROC_BROWSER_TEST_F(MediaGalleriesPlatformAppBrowserTest,
 IN_PROC_BROWSER_TEST_F(MediaGalleriesPlatformAppBrowserTest,
                        MediaGalleriesRead) {
   RemoveAllGalleries();
-  MakeSingleFakeGallery(NULL);
+  MakeSingleFakeGallery(nullptr);
   base::Value::List custom_args;
   custom_args.Append(test_jpg_size());
 
@@ -345,13 +345,13 @@ IN_PROC_BROWSER_TEST_F(MediaGalleriesPlatformAppBrowserTest,
 IN_PROC_BROWSER_TEST_F(MediaGalleriesPlatformAppBrowserTest,
                        MAYBE_MediaGalleriesCopyTo) {
   RemoveAllGalleries();
-  MakeSingleFakeGallery(NULL);
+  MakeSingleFakeGallery(nullptr);
   ASSERT_TRUE(RunMediaGalleriesTest("copy_to_access")) << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(MediaGalleriesPlatformAppBrowserTest,
                        MediaGalleriesDelete) {
-  MakeSingleFakeGallery(NULL);
+  MakeSingleFakeGallery(nullptr);
   base::Value::List custom_args;
   custom_args.Append(num_galleries() + 1);
   ASSERT_TRUE(RunMediaGalleriesTestWithArg("delete_access", custom_args))
@@ -386,7 +386,7 @@ IN_PROC_BROWSER_TEST_F(MediaGalleriesPlatformAppBrowserTest, ToURL) {
 
 IN_PROC_BROWSER_TEST_F(MediaGalleriesPlatformAppBrowserTest, GetMetadata) {
   RemoveAllGalleries();
-  MakeSingleFakeGallery(NULL);
+  MakeSingleFakeGallery(nullptr);
 
   AddFileToSingleFakeGallery(media::GetTestDataFilePath("90rotation.mp4"));
   AddFileToSingleFakeGallery(media::GetTestDataFilePath("id3_png_test.mp3"));

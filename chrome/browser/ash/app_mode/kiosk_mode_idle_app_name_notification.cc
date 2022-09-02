@@ -33,7 +33,7 @@ const int kMessageVisibilityTimeMs = 3000;
 const int kMessageAnimationTimeMs = 200;
 
 // Our global instance of the Kiosk mode message.
-KioskModeIdleAppNameNotification* g_kiosk_mode_idle_app_message = NULL;
+KioskModeIdleAppNameNotification* g_kiosk_mode_idle_app_message = nullptr;
 
 }  // namespace
 
@@ -47,7 +47,7 @@ void KioskModeIdleAppNameNotification::Initialize() {
 void KioskModeIdleAppNameNotification::Shutdown() {
   if (g_kiosk_mode_idle_app_message) {
     delete g_kiosk_mode_idle_app_message;
-    g_kiosk_mode_idle_app_message = NULL;
+    g_kiosk_mode_idle_app_message = nullptr;
   }
 }
 

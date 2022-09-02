@@ -52,7 +52,7 @@ TEST_F(FileSystemProviderOperationsUnmountTest, Execute) {
   util::LoggingDispatchEventImpl dispatcher(true /* dispatch_reply */);
   util::StatusCallbackLog callback_log;
 
-  Unmount unmount(NULL, file_system_info_,
+  Unmount unmount(nullptr, file_system_info_,
                   base::BindOnce(&util::LogStatusCallback, &callback_log));
   unmount.SetDispatchEventImplForTesting(
       base::BindRepeating(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,
@@ -81,7 +81,7 @@ TEST_F(FileSystemProviderOperationsUnmountTest, Execute_NoListener) {
   util::LoggingDispatchEventImpl dispatcher(false /* dispatch_reply */);
   util::StatusCallbackLog callback_log;
 
-  Unmount unmount(NULL, file_system_info_,
+  Unmount unmount(nullptr, file_system_info_,
                   base::BindOnce(&util::LogStatusCallback, &callback_log));
   unmount.SetDispatchEventImplForTesting(
       base::BindRepeating(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,
@@ -97,7 +97,7 @@ TEST_F(FileSystemProviderOperationsUnmountTest, OnSuccess) {
   util::LoggingDispatchEventImpl dispatcher(true /* dispatch_reply */);
   util::StatusCallbackLog callback_log;
 
-  Unmount unmount(NULL, file_system_info_,
+  Unmount unmount(nullptr, file_system_info_,
                   base::BindOnce(&util::LogStatusCallback, &callback_log));
   unmount.SetDispatchEventImplForTesting(
       base::BindRepeating(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,
@@ -116,7 +116,7 @@ TEST_F(FileSystemProviderOperationsUnmountTest, OnError) {
   util::LoggingDispatchEventImpl dispatcher(true /* dispatch_reply */);
   util::StatusCallbackLog callback_log;
 
-  Unmount unmount(NULL, file_system_info_,
+  Unmount unmount(nullptr, file_system_info_,
                   base::BindOnce(&util::LogStatusCallback, &callback_log));
   unmount.SetDispatchEventImplForTesting(
       base::BindRepeating(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,

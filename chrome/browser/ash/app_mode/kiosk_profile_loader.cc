@@ -180,7 +180,7 @@ void KioskProfileLoader::ReportLaunchResult(KioskAppLaunchError::Error error) {
 
 void KioskProfileLoader::OnAuthSuccess(const UserContext& user_context) {
   // LoginPerformer will delete itself.
-  login_performer_->set_delegate(NULL);
+  login_performer_->set_delegate(nullptr);
   std::ignore = login_performer_.release();
 
   failed_mount_attempts_ = 0;

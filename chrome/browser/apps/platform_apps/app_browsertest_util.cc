@@ -98,7 +98,7 @@ AppWindow* PlatformAppBrowserTest::GetFirstAppWindowForBrowser(
   if (iter != app_windows.end())
     return *iter;
 
-  return NULL;
+  return nullptr;
 }
 
 const Extension* PlatformAppBrowserTest::LoadAndLaunchPlatformApp(
@@ -180,7 +180,7 @@ WebContents* PlatformAppBrowserTest::GetFirstAppWindowWebContents() {
   if (window)
     return window->web_contents();
 
-  return NULL;
+  return nullptr;
 }
 
 AppWindow* PlatformAppBrowserTest::GetFirstAppWindow() {
@@ -198,7 +198,7 @@ AppWindow* PlatformAppBrowserTest::GetFirstAppWindowForApp(
   if (iter != app_windows.end())
     return *iter;
 
-  return NULL;
+  return nullptr;
 }
 
 size_t PlatformAppBrowserTest::RunGetWindowsFunctionForExtension(

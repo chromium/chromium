@@ -68,9 +68,9 @@ class KioskAppUpdateServiceTest
       public system::AutomaticRebootManagerObserver {
  public:
   KioskAppUpdateServiceTest()
-      : app_(NULL),
-        update_service_(NULL),
-        automatic_reboot_manager_(NULL) {}
+      : app_(nullptr),
+        update_service_(nullptr),
+        automatic_reboot_manager_(nullptr) {}
   KioskAppUpdateServiceTest(const KioskAppUpdateServiceTest&) = delete;
   KioskAppUpdateServiceTest& operator=(const KioskAppUpdateServiceTest&) =
       delete;

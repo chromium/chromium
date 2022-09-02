@@ -57,7 +57,7 @@ TEST_F(FileSystemProviderOperationsCreateFileTest, Execute) {
   util::StatusCallbackLog callback_log;
 
   CreateFile create_file(
-      NULL, file_system_info_, base::FilePath(kFilePath),
+      nullptr, file_system_info_, base::FilePath(kFilePath),
       base::BindOnce(&util::LogStatusCallback, &callback_log));
   create_file.SetDispatchEventImplForTesting(
       base::BindRepeating(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,
@@ -89,7 +89,7 @@ TEST_F(FileSystemProviderOperationsCreateFileTest, Execute_NoListener) {
   util::StatusCallbackLog callback_log;
 
   CreateFile create_file(
-      NULL, file_system_info_, base::FilePath(kFilePath),
+      nullptr, file_system_info_, base::FilePath(kFilePath),
       base::BindOnce(&util::LogStatusCallback, &callback_log));
   create_file.SetDispatchEventImplForTesting(
       base::BindRepeating(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,
@@ -108,7 +108,7 @@ TEST_F(FileSystemProviderOperationsCreateFileTest, Execute_ReadOnly) {
       true /* watchable */, extensions::SOURCE_FILE, IconSet());
 
   CreateFile create_file(
-      NULL, read_only_file_system_info, base::FilePath(kFilePath),
+      nullptr, read_only_file_system_info, base::FilePath(kFilePath),
       base::BindOnce(&util::LogStatusCallback, &callback_log));
   create_file.SetDispatchEventImplForTesting(
       base::BindRepeating(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,
@@ -122,7 +122,7 @@ TEST_F(FileSystemProviderOperationsCreateFileTest, OnSuccess) {
   util::StatusCallbackLog callback_log;
 
   CreateFile create_file(
-      NULL, file_system_info_, base::FilePath(kFilePath),
+      nullptr, file_system_info_, base::FilePath(kFilePath),
       base::BindOnce(&util::LogStatusCallback, &callback_log));
   create_file.SetDispatchEventImplForTesting(
       base::BindRepeating(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,
@@ -141,7 +141,7 @@ TEST_F(FileSystemProviderOperationsCreateFileTest, OnError) {
   util::StatusCallbackLog callback_log;
 
   CreateFile create_file(
-      NULL, file_system_info_, base::FilePath(kFilePath),
+      nullptr, file_system_info_, base::FilePath(kFilePath),
       base::BindOnce(&util::LogStatusCallback, &callback_log));
   create_file.SetDispatchEventImplForTesting(
       base::BindRepeating(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,

@@ -314,7 +314,7 @@ AccessibilityStatusEventDetails::AccessibilityStatusEventDetails(
 
 // static
 void AccessibilityManager::Initialize() {
-  CHECK(g_accessibility_manager == NULL);
+  CHECK(g_accessibility_manager == nullptr);
   g_accessibility_manager = new AccessibilityManager();
 }
 
@@ -322,7 +322,7 @@ void AccessibilityManager::Initialize() {
 void AccessibilityManager::Shutdown() {
   CHECK(g_accessibility_manager);
   delete g_accessibility_manager;
-  g_accessibility_manager = NULL;
+  g_accessibility_manager = nullptr;
 }
 
 // static
@@ -1431,7 +1431,7 @@ void AccessibilityManager::SetProfile(Profile* profile) {
     profile_observation_.Observe(profile);
   }
 
-  bool had_profile = (profile_ != NULL);
+  bool had_profile = (profile_ != nullptr);
   profile_ = profile;
 
   if (!had_profile && profile)

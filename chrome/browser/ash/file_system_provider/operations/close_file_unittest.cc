@@ -54,7 +54,7 @@ TEST_F(FileSystemProviderOperationsCloseFileTest, Execute) {
   util::LoggingDispatchEventImpl dispatcher(true /* dispatch_reply */);
   util::StatusCallbackLog callback_log;
 
-  CloseFile close_file(NULL, file_system_info_, kOpenRequestId,
+  CloseFile close_file(nullptr, file_system_info_, kOpenRequestId,
                        base::BindOnce(&util::LogStatusCallback, &callback_log));
   close_file.SetDispatchEventImplForTesting(
       base::BindRepeating(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,
@@ -84,7 +84,7 @@ TEST_F(FileSystemProviderOperationsCloseFileTest, Execute_NoListener) {
   util::LoggingDispatchEventImpl dispatcher(false /* dispatch_reply */);
   util::StatusCallbackLog callback_log;
 
-  CloseFile close_file(NULL, file_system_info_, kOpenRequestId,
+  CloseFile close_file(nullptr, file_system_info_, kOpenRequestId,
                        base::BindOnce(&util::LogStatusCallback, &callback_log));
   close_file.SetDispatchEventImplForTesting(
       base::BindRepeating(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,
@@ -97,7 +97,7 @@ TEST_F(FileSystemProviderOperationsCloseFileTest, OnSuccess) {
   util::LoggingDispatchEventImpl dispatcher(true /* dispatch_reply */);
   util::StatusCallbackLog callback_log;
 
-  CloseFile close_file(NULL, file_system_info_, kOpenRequestId,
+  CloseFile close_file(nullptr, file_system_info_, kOpenRequestId,
                        base::BindOnce(&util::LogStatusCallback, &callback_log));
   close_file.SetDispatchEventImplForTesting(
       base::BindRepeating(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,
@@ -115,7 +115,7 @@ TEST_F(FileSystemProviderOperationsCloseFileTest, OnError) {
   util::LoggingDispatchEventImpl dispatcher(true /* dispatch_reply */);
   util::StatusCallbackLog callback_log;
 
-  CloseFile close_file(NULL, file_system_info_, kOpenRequestId,
+  CloseFile close_file(nullptr, file_system_info_, kOpenRequestId,
                        base::BindOnce(&util::LogStatusCallback, &callback_log));
   close_file.SetDispatchEventImplForTesting(
       base::BindRepeating(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,

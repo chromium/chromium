@@ -37,7 +37,7 @@ AppWindow* AppWindowRegistryUtil::GetAppWindowForNativeWindowAnyProfile(
       return app_window;
   }
 
-  return NULL;
+  return nullptr;
 }
 
 // static

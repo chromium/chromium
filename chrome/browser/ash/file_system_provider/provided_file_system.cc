@@ -195,7 +195,7 @@ AbortCallback ProvidedFileSystem::GetMetadata(const base::FilePath& entry_path,
                         std::move(split_callback.first)));
   if (!request_id) {
     std::move(split_callback.second)
-        .Run(base::WrapUnique<EntryMetadata>(NULL),
+        .Run(base::WrapUnique<EntryMetadata>(nullptr),
              base::File::FILE_ERROR_SECURITY);
     return AbortCallback();
   }

@@ -292,7 +292,7 @@ class WebViewInteractiveTest : public extensions::PlatformAppBrowserTest {
   void TestHelper(const std::string& test_name,
                   const std::string& app_location,
                   TestServer test_server) {
-    content::WebContents* embedder_web_contents = NULL;
+    content::WebContents* embedder_web_contents = nullptr;
     std::unique_ptr<ExtensionTestMessageListener> done_listener(RunAppHelper(
         test_name, app_location, test_server, &embedder_web_contents));
 
@@ -718,7 +718,7 @@ IN_PROC_BROWSER_TEST_F(WebViewFocusInteractiveTest, Focus_FocusTakeFocus) {
 
 IN_PROC_BROWSER_TEST_F(WebViewFocusInteractiveTest,
                        MAYBE_Focus_FocusTracksEmbedder) {
-  content::WebContents* embedder_web_contents = NULL;
+  content::WebContents* embedder_web_contents = nullptr;
 
   std::unique_ptr<ExtensionTestMessageListener> done_listener(
       RunAppHelper("testFocusTracksEmbedder", "web_view/focus", NO_TEST_SERVER,
@@ -741,7 +741,7 @@ IN_PROC_BROWSER_TEST_F(WebViewFocusInteractiveTest,
 }
 
 IN_PROC_BROWSER_TEST_F(WebViewFocusInteractiveTest, Focus_AdvanceFocus) {
-  content::WebContents* embedder_web_contents = NULL;
+  content::WebContents* embedder_web_contents = nullptr;
 
   {
     std::unique_ptr<ExtensionTestMessageListener> done_listener(
@@ -1126,7 +1126,7 @@ IN_PROC_BROWSER_TEST_F(WebViewFocusInteractiveTest, Focus_FocusRestored) {
 #define MAYBE_Focus_InputMethod Focus_InputMethod
 #endif
 IN_PROC_BROWSER_TEST_F(WebViewInteractiveTest, MAYBE_Focus_InputMethod) {
-  content::WebContents* embedder_web_contents = NULL;
+  content::WebContents* embedder_web_contents = nullptr;
   std::unique_ptr<ExtensionTestMessageListener> done_listener(
       RunAppHelper("testInputMethod", "web_view/focus", NO_TEST_SERVER,
                    &embedder_web_contents));

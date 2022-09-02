@@ -38,7 +38,7 @@ void GetFileInfoOnUIThread(
     ProvidedFileSystemInterface::GetMetadataCallback callback) {
   util::FileSystemURLParser parser(url);
   if (!parser.Parse()) {
-    std::move(callback).Run(base::WrapUnique<EntryMetadata>(NULL),
+    std::move(callback).Run(base::WrapUnique<EntryMetadata>(nullptr),
                             base::File::FILE_ERROR_INVALID_OPERATION);
     return;
   }

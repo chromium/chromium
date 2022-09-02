@@ -52,7 +52,7 @@ AppInstaller::~AppInstaller() {}
 
 bool AppInstaller::CheckRequestorAlive() const {
   // The tab may have gone away - cancel installation in that case.
-  return web_contents_ != NULL;
+  return web_contents_ != nullptr;
 }
 
 std::unique_ptr<ExtensionInstallPrompt::Prompt>
