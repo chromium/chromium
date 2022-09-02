@@ -18,18 +18,18 @@ namespace web {
 class WebState;
 }
 
-// true if |url| can be loaded in an incognito tab.
+// true if `url` can be loaded in an incognito tab.
 bool IsURLAllowedInIncognito(const GURL& url);
 
-// Loads |url| in |web_state|, performing any necessary updates to
-// |browser_state|. It is an error to pass a value of GURL that doesn't have a
+// Loads `url` in `web_state`, performing any necessary updates to
+// `browser_state`. It is an error to pass a value of GURL that doesn't have a
 // javascript: scheme.
 void LoadJavaScriptURL(const GURL& url,
                        ChromeBrowserState* browser_state,
                        web::WebState* web_state);
 
-// Restores the closed tab identified by |session_id|, using |disposition|,
-// into |browser_state|.
+// Restores the closed tab identified by `session_id`, using `disposition`,
+// into `browser`.
 void RestoreTab(const SessionID session_id,
                 WindowOpenDisposition disposition,
                 Browser* browser);

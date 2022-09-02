@@ -16,13 +16,13 @@ class TestSceneUrlLoadingService : public SceneUrlLoadingService {
   TestSceneUrlLoadingService();
   ~TestSceneUrlLoadingService() override {}
 
-  // Opens a url based on |command| in a new tab.
+  // Stores `params` in the instance variables.
   void LoadUrlInNewTab(const UrlLoadParams& params) override;
 
   // Returns the current browser.
   Browser* GetCurrentBrowser() override;
 
-  // These are the last parameters passed to |LoadUrlInNewTab|.
+  // These are the last parameters passed to `LoadUrlInNewTab`.
   UrlLoadParams last_params_;
   int load_new_tab_call_count_ = 0;
 

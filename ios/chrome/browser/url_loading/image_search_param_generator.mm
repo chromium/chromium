@@ -75,7 +75,7 @@ ImageSearchParamGenerator::LoadParamsForResizedImageData(
   }
   search_args.image_thumbnail_content = byte_string;
 
-  // Generate the URL and populate |post_content| with the content type and
+  // Generate the URL and populate `post_content` with the content type and
   // HTTP body for the request.
   TemplateURLRef::PostContent post_content;
   GURL result(default_url->image_url_ref().ReplaceSearchTerms(

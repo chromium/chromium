@@ -332,7 +332,7 @@ void UrlLoadingBrowserAgent::LoadUrlInNewTab(const UrlLoadParams& params) {
        params.in_incognito != active_browser_state->IsOffTheRecord())) {
     // When sending a load request that switches modes, ensure the tab
     // ends up appended to the end of the model, not just next to what is
-    // currently selected in the other mode. This is done with the |append_to|
+    // currently selected in the other mode. This is done with the `append_to`
     // parameter.
     UrlLoadParams scene_params = params;
     scene_params.append_to = kLastTab;

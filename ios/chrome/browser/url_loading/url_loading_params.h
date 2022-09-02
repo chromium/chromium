@@ -11,7 +11,7 @@
 #include "ui/base/window_open_disposition.h"
 
 // Enum of ways of changing loading behavior, that can be passed around
-// opaquely, and set by using |UrlLoadParams::LoadStrategy|.
+// opaquely, and set by using `UrlLoadParams::LoadStrategy`.
 enum class UrlLoadStrategy {
   NORMAL = 0,
 
@@ -52,35 +52,35 @@ struct UrlLoadParams {
   web::NavigationManager::WebLoadParams web_params;
 
   // The disposition of the URL being opened. Defaults to
-  // |WindowOpenDisposition::NEW_FOREGROUND_TAB|.
+  // `WindowOpenDisposition::NEW_FOREGROUND_TAB`.
   WindowOpenDisposition disposition;
 
-  // Whether this requests opening in incognito or not. Defaults to |false|.
+  // Whether this requests opening in incognito or not. Defaults to `false`.
   bool in_incognito;
 
-  // Location where the new tab should be opened. Defaults to |kLastTab|.
+  // Location where the new tab should be opened. Defaults to `kLastTab`.
   OpenPosition append_to;
 
-  // Specific index where tab should be opened if |append_to| is
-  // |kSpecifiedIndex|
+  // Specific index where tab should be opened if `append_to` is
+  // `kSpecifiedIndex`
   int insertion_index;
 
   // Origin point of the action triggering this command, in main window
-  // coordinates. Defaults to |CGPointZero|.
+  // coordinates. Defaults to `CGPointZero`.
   CGPoint origin_point;
 
   // Whether or not this URL command comes from a chrome context (e.g.,
-  // settings), as opposed to a web page context. Defaults to |false|.
+  // settings), as opposed to a web page context. Defaults to `false`.
   bool from_chrome;
 
   // Whether the new tab command was initiated by the user (e.g. by tapping the
   // new tab button in the tools menu) or not (e.g. opening a new tab via a
-  // Javascript action). Defaults to |true|. Only used when the |web_params.url|
+  // Javascript action). Defaults to `true`. Only used when the `web_params.url`
   // isn't valid.
   bool user_initiated;
 
   // Whether the new tab command should also trigger the omnibox to be focused.
-  // Only used when the |web_params.url| isn't valid. Defaults to |false|.
+  // Only used when the `web_params.url` isn't valid. Defaults to `false`.
   bool should_focus_omnibox;
 
   // Whether the new tab should inherit opener.
