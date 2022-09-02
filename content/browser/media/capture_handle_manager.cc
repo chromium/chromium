@@ -5,6 +5,7 @@
 #include "content/browser/media/capture_handle_manager.h"
 
 #include "base/memory/ptr_util.h"
+#include "base/ranges/algorithm.h"
 #include "content/browser/renderer_host/render_frame_host_delegate.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/browser_context.h"
@@ -33,11 +34,11 @@ media::mojom::CaptureHandlePtr CreateCaptureHandle(
 
   const url::Origin& capturer_origin = capturer->GetLastCommittedOrigin();
   if (!capture_handle_config.all_origins_permitted &&
-      std::none_of(capture_handle_config.permitted_origins.begin(),
-                   capture_handle_config.permitted_origins.end(),
-                   [capturer_origin](const url::Origin& permitted_origin) {
-                     return capturer_origin.IsSameOriginWith(permitted_origin);
-                   })) {
+      base::ranges::none_of(
+          capture_handle_config.permitted_origins,
+          [capturer_origin](const url::Origin& permitted_origin) {
+            return capturer_origin.IsSameOriginWith(permitted_origin);
+          })) {
     return nullptr;
   }
 

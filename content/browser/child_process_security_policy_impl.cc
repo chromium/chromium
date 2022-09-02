@@ -4,7 +4,6 @@
 
 #include "content/browser/child_process_security_policy_impl.h"
 
-#include <algorithm>
 #include <tuple>
 #include <utility>
 
@@ -19,6 +18,7 @@
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -1249,10 +1249,10 @@ bool ChildProcessSecurityPolicyImpl::CanReadFile(int child_id,
 bool ChildProcessSecurityPolicyImpl::CanReadAllFiles(
     int child_id,
     const std::vector<base::FilePath>& files) {
-  return std::all_of(files.begin(), files.end(),
-                     [this, child_id](const base::FilePath& file) {
-                       return CanReadFile(child_id, file);
-                     });
+  return base::ranges::all_of(files,
+                              [this, child_id](const base::FilePath& file) {
+                                return CanReadFile(child_id, file);
+                              });
 }
 
 bool ChildProcessSecurityPolicyImpl::CanReadRequestBody(

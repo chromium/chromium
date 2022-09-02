@@ -4,12 +4,12 @@
 
 #include "content/browser/generic_sensor/sensor_provider_proxy_impl.h"
 
-#include <algorithm>
 #include <utility>
 #include <vector>
 
 #include "base/bind.h"
 #include "base/no_destructor.h"
+#include "base/ranges/algorithm.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/device_service.h"
@@ -146,10 +146,10 @@ SensorTypeToPermissionsPolicyFeatures(SensorType type) {
 bool SensorProviderProxyImpl::CheckFeaturePolicies(SensorType type) const {
   const std::vector<blink::mojom::PermissionsPolicyFeature>& features =
       SensorTypeToPermissionsPolicyFeatures(type);
-  return std::all_of(features.begin(), features.end(),
-                     [this](blink::mojom::PermissionsPolicyFeature feature) {
-                       return render_frame_host().IsFeatureEnabled(feature);
-                     });
+  return base::ranges::all_of(
+      features, [this](blink::mojom::PermissionsPolicyFeature feature) {
+        return render_frame_host().IsFeatureEnabled(feature);
+      });
 }
 
 void SensorProviderProxyImpl::OnConnectionError() {

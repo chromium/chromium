@@ -14,6 +14,7 @@
 #include "base/feature_list.h"
 #include "base/json/json_writer.h"
 #include "base/memory/raw_ptr.h"
+#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -3840,7 +3841,7 @@ TEST_F(BidderWorkletTest, BasicV8Debug) {
 
   // Should not see scriptParsed before resume.
   std::list<TestChannel::Event> events1 = channel1->TakeAllEvents();
-  EXPECT_TRUE(std::none_of(events1.begin(), events1.end(), is_script_parsed));
+  EXPECT_TRUE(base::ranges::none_of(events1, is_script_parsed));
 
   // Unpause execution for #1.
   load_script_run_loop_ = std::make_unique<base::RunLoop>();
@@ -3864,7 +3865,7 @@ TEST_F(BidderWorkletTest, BasicV8Debug) {
 
   // There shouldn't be a parsed notification on channel 2, however.
   std::list<TestChannel::Event> events2 = channel2->TakeAllEvents();
-  EXPECT_TRUE(std::none_of(events2.begin(), events2.end(), is_script_parsed));
+  EXPECT_TRUE(base::ranges::none_of(events2, is_script_parsed));
 
   // Unpause execution for #2.
   load_script_run_loop_ = std::make_unique<base::RunLoop>();
@@ -3893,8 +3894,8 @@ TEST_F(BidderWorkletTest, BasicV8Debug) {
   // No other scriptParsed events should be on either channel.
   events1 = channel1->TakeAllEvents();
   events2 = channel2->TakeAllEvents();
-  EXPECT_TRUE(std::none_of(events1.begin(), events1.end(), is_script_parsed));
-  EXPECT_TRUE(std::none_of(events2.begin(), events2.end(), is_script_parsed));
+  EXPECT_TRUE(base::ranges::none_of(events1, is_script_parsed));
+  EXPECT_TRUE(base::ranges::none_of(events2, is_script_parsed));
 }
 
 TEST_F(BidderWorkletTest, ParseErrorV8Debug) {

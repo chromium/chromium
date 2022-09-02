@@ -6,7 +6,6 @@
 
 #include <stddef.h>
 
-#include <algorithm>
 #include <cmath>
 #include <memory>
 #include <string>
@@ -36,6 +35,7 @@
 #include "base/no_destructor.h"
 #include "base/observer_list.h"
 #include "base/process/process.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -354,20 +354,6 @@ bool AreValidRegisterProtocolHandlerArguments(
 void RecordMaxFrameCountUMA(size_t max_frame_count) {
   UMA_HISTOGRAM_COUNTS_10000("Navigation.MainFrame.MaxFrameCount",
                              max_frame_count);
-}
-
-// Returns whether the condition provided applies to any inner contents.
-// This check is not recursive (however, the predicate provided may itself
-// recurse each contents' own inner contents).
-//
-// For example, if this is used to aggregate state from inner contents to outer
-// contents, then that propagation will gather transitive descendants without
-// need for this helper to do so. In fact, in such cases recursing on inner
-// contents here would make that operation quadratic rather than linear.
-template <typename Functor>
-bool AnyInnerWebContents(WebContents* web_contents, const Functor& f) {
-  const auto& inner_contents = web_contents->GetInnerWebContents();
-  return std::any_of(inner_contents.begin(), inner_contents.end(), f);
 }
 
 // Returns the set of all WebContentses that are reachable from |web_contents|
@@ -2267,14 +2253,17 @@ void WebContentsImpl::OnAudioStateChanged() {
   // state.
   //
   // Note that guests may not be attached as inner contents, and so may need to
-  // be checked separately.
+  // be checked separately.  This intentionally does not do a recursive search,
+  // since the state is aggregated in each inner WebContents and reflects that
+  // whole subtree.
   bool is_currently_audible =
       audio_stream_monitor_.IsCurrentlyAudible() ||
       (browser_plugin_embedder_ &&
        browser_plugin_embedder_->AreAnyGuestsCurrentlyAudible()) ||
-      AnyInnerWebContents(this, [](WebContents* inner_contents) {
-        return inner_contents->IsCurrentlyAudible();
-      });
+      base::ranges::any_of(GetInnerWebContents(),
+                           [](WebContents* inner_contents) {
+                             return inner_contents->IsCurrentlyAudible();
+                           });
   OPTIONAL_TRACE_EVENT2("content", "WebContentsImpl::OnAudioStateChanged",
                         "is_currently_audible", is_currently_audible,
                         "was_audible", is_currently_audible_);
@@ -3450,11 +3439,10 @@ bool WebContentsImpl::CanEnterFullscreenMode(
   // the screen, or that it was downstream from a WebContents when UI was
   // blocked. Therefore, disqualify it from fullscreen if it or any upstream
   // WebContents has an active blocker.
-  auto openers = GetAllOpeningWebContents(this);
-  return std::all_of(openers.begin(), openers.end(),
-                     [](auto* opener) {
-                       return opener->fullscreen_blocker_count_ == 0;
-                     }) &&
+  return base::ranges::all_of(GetAllOpeningWebContents(this),
+                              [](auto* opener) {
+                                return opener->fullscreen_blocker_count_ == 0;
+                              }) &&
          delegate_->CanEnterFullscreenModeForTab(requesting_frame, options);
 }
 

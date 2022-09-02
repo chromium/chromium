@@ -4,7 +4,6 @@
 
 #include "content/browser/webauth/authenticator_impl.h"
 
-#include <algorithm>
 #include <list>
 #include <memory>
 #include <string>
@@ -15,6 +14,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/compiler_specific.h"
+#include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/files/file.h"
 #include "base/json/json_reader.h"
@@ -22,6 +22,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/rand_util.h"
+#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -4168,8 +4169,8 @@ TEST_F(AuthenticatorImplTest, AllowListWithOnlyOversizedCredentialIds) {
     const auto& allow_list_history =
         virtual_device_factory_->mutable_state()->allow_list_history;
     // No empty allow-list requests should have been made.
-    EXPECT_TRUE(std::none_of(
-        allow_list_history.cbegin(), allow_list_history.cend(),
+    EXPECT_TRUE(base::ranges::none_of(
+        allow_list_history,
         [](const std::vector<device::PublicKeyCredentialDescriptor>&
                allow_list) { return allow_list.empty(); }));
   }
@@ -7351,12 +7352,10 @@ class ResidentKeyTestAuthenticatorRequestDelegate
       EXPECT_EQ(info.has_platform_authenticator_credential,
                 device::FidoRequestHandlerBase::RecognizedCredential::
                     kHasRecognizedCredential);
-      EXPECT_TRUE(std::any_of(
-          info.recognized_platform_authenticator_credentials.begin(),
-          info.recognized_platform_authenticator_credentials.end(),
-          [&](const device::DiscoverableCredentialMetadata& credential) {
-            return credential.cred_id == *config_.preselected_credential_id;
-          }));
+      EXPECT_TRUE(
+          base::Contains(info.recognized_platform_authenticator_credentials,
+                         *config_.preselected_credential_id,
+                         &device::DiscoverableCredentialMetadata::cred_id));
       std::move(account_preselected_callback_)
           .Run(*config_.preselected_credential_id);
       request_callback_.Run(*config_.preselected_authenticator_id);

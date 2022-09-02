@@ -10,7 +10,6 @@
 
 #include "content/browser/bluetooth/web_bluetooth_service_impl.h"
 
-#include <algorithm>
 #include <memory>
 #include <utility>
 
@@ -20,6 +19,7 @@
 #include "base/containers/cxx20_erase.h"
 #include "base/containers/queue.h"
 #include "base/memory/raw_ptr.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -466,8 +466,7 @@ bool HasValidFilter(
     return false;
   }
 
-  return !filters->empty() &&
-         std::all_of(filters->begin(), filters->end(), IsValidFilter);
+  return !filters->empty() && base::ranges::all_of(*filters, IsValidFilter);
 }
 
 // Struct that holds the result of a cache query.

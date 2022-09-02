@@ -16,6 +16,7 @@
 #include "base/debug/dump_without_crashing.h"
 #include "base/lazy_instance.h"
 #include "base/memory/ptr_util.h"
+#include "base/ranges/algorithm.h"
 #include "base/trace_event/optional_trace_event.h"
 #include "base/trace_event/typed_macros.h"
 #include "base/unguessable_token.h"
@@ -147,9 +148,9 @@ FrameTree::NodeIterator::NodeIterator(
 FrameTree::NodeIterator FrameTree::NodeRange::begin() {
   // We shouldn't be attempting a frame tree traversal while the tree is
   // being constructed or destructed.
-  DCHECK(std::all_of(
-      starting_nodes_.begin(), starting_nodes_.end(),
-      [](FrameTreeNode* ftn) { return ftn->current_frame_host(); }));
+  DCHECK(base::ranges::all_of(starting_nodes_, [](FrameTreeNode* ftn) {
+    return ftn->current_frame_host();
+  }));
 
   return NodeIterator(starting_nodes_, root_of_subtree_to_skip_,
                       should_descend_into_inner_trees_);

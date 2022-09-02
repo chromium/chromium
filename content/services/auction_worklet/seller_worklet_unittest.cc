@@ -12,6 +12,7 @@
 #include "base/bind.h"
 #include "base/containers/flat_map.h"
 #include "base/feature_list.h"
+#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/waitable_event.h"
@@ -2606,7 +2607,7 @@ TEST_F(SellerWorkletTest, BasicV8Debug) {
 
   // Should not see scriptParsed before resume.
   std::list<TestChannel::Event> events1 = channel1->TakeAllEvents();
-  EXPECT_TRUE(std::none_of(events1.begin(), events1.end(), is_script_parsed));
+  EXPECT_TRUE(base::ranges::none_of(events1, is_script_parsed));
 
   // Unpause execution for #1.
   EXPECT_FALSE(run_loop1.AnyQuitCalled());
@@ -2625,7 +2626,7 @@ TEST_F(SellerWorkletTest, BasicV8Debug) {
 
   // There shouldn't be a parsed notification on channel 2, however.
   std::list<TestChannel::Event> events2 = channel2->TakeAllEvents();
-  EXPECT_TRUE(std::none_of(events2.begin(), events2.end(), is_script_parsed));
+  EXPECT_TRUE(base::ranges::none_of(events2, is_script_parsed));
 
   // Unpause execution for #2.
   EXPECT_FALSE(run_loop2.AnyQuitCalled());
@@ -2649,8 +2650,8 @@ TEST_F(SellerWorkletTest, BasicV8Debug) {
   // No other scriptParsed events should be on either channel.
   events1 = channel1->TakeAllEvents();
   events2 = channel2->TakeAllEvents();
-  EXPECT_TRUE(std::none_of(events1.begin(), events1.end(), is_script_parsed));
-  EXPECT_TRUE(std::none_of(events2.begin(), events2.end(), is_script_parsed));
+  EXPECT_TRUE(base::ranges::none_of(events1, is_script_parsed));
+  EXPECT_TRUE(base::ranges::none_of(events2, is_script_parsed));
 }
 
 TEST_F(SellerWorkletTest, ParseErrorV8Debug) {

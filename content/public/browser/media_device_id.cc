@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 #include "content/public/browser/media_device_id.h"
 
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "content/browser/browser_main_loop.h"
@@ -60,7 +61,7 @@ bool IsValidDeviceId(const std::string& device_id) {
   if (device_id.length() != hash_size)
     return false;
 
-  return std::all_of(device_id.cbegin(), device_id.cend(), [](const char& c) {
+  return base::ranges::all_of(device_id, [](const char& c) {
     return base::IsAsciiLower(c) || base::IsAsciiDigit(c);
   });
 }

@@ -14,6 +14,7 @@
 
 #include "base/callback_helpers.h"
 #include "base/check.h"
+#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/json/json_writer.h"
@@ -8953,19 +8954,15 @@ TEST_F(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
     const Result& res = RunAuctionAndWait(kSellerUrl, std::move(bidders));
 
     double highest_scoring_other_bid = 0.0;
-    if (std::any_of(res.report_urls.begin(), res.report_urls.end(),
-                    [](const auto& url) {
-                      return url.spec() ==
-                             "https://reporting.example.com/"
-                             "highestScoringOtherBid=1,bid=3";
-                    })) {
+    if (base::Contains(
+            res.report_urls,
+            "https://reporting.example.com/highestScoringOtherBid=1,bid=3",
+            &GURL::spec)) {
       highest_scoring_other_bid = 1;
-    } else if (std::any_of(res.report_urls.begin(), res.report_urls.end(),
-                           [](const auto& url) {
-                             return url.spec() ==
-                                    "https://reporting.example.com/"
-                                    "highestScoringOtherBid=2,bid=3";
-                           })) {
+    } else if (base::Contains(res.report_urls,
+                              "https://reporting.example.com/"
+                              "highestScoringOtherBid=2,bid=3",
+                              &GURL::spec)) {
       highest_scoring_other_bid = 2;
     }
 
@@ -9135,19 +9132,15 @@ TEST_F(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
     EXPECT_EQ(2u, res.debug_win_report_urls.size());
     EXPECT_EQ(2u, res.report_urls.size());
     double highest_scoring_other_bid = 0.0;
-    if (std::any_of(res.report_urls.begin(), res.report_urls.end(),
-                    [](const auto& url) {
-                      return url.spec() ==
-                             "https://reporting.example.com/"
-                             "highestScoringOtherBid=1,bid=3";
-                    })) {
+    if (base::Contains(
+            res.report_urls,
+            "https://reporting.example.com/highestScoringOtherBid=1,bid=3",
+            &GURL::spec)) {
       highest_scoring_other_bid = 1;
-    } else if (std::any_of(res.report_urls.begin(), res.report_urls.end(),
-                           [](const auto& url) {
-                             return url.spec() ==
-                                    "https://reporting.example.com/"
-                                    "highestScoringOtherBid=2,bid=3";
-                           })) {
+    } else if (base::Contains(res.report_urls,
+                              "https://reporting.example.com/"
+                              "highestScoringOtherBid=2,bid=3",
+                              &GURL::spec)) {
       highest_scoring_other_bid = 2;
     }
 

@@ -7,7 +7,6 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include <algorithm>
 #include <cctype>
 #include <list>
 #include <memory>
@@ -16,10 +15,12 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
+#include "base/containers/contains.h"
 #include "base/lazy_instance.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/rand_util.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -491,21 +492,15 @@ bool ChangeSourceSupported(const MediaStreamDevices& devices) {
     return false;  // Killswitch engaged.
   }
 
-  if (!std::any_of(devices.cbegin(), devices.cend(),
-                   [](const MediaStreamDevice& device) {
-                     return device.type ==
-                            MediaStreamType::DISPLAY_VIDEO_CAPTURE;
-                   })) {
+  if (!base::Contains(devices, MediaStreamType::DISPLAY_VIDEO_CAPTURE,
+                      &MediaStreamDevice::type)) {
     return false;  // Not an API call that supports share-this-tab-instead.
   }
 
   if (!base::FeatureList::IsEnabled(
           media::kShareThisTabInsteadButtonGetDisplayMediaAudio) &&
-      std::any_of(devices.cbegin(), devices.cend(),
-                  [](const MediaStreamDevice& device) {
-                    return device.type ==
-                           MediaStreamType::DISPLAY_AUDIO_CAPTURE;
-                  })) {
+      base::Contains(devices, MediaStreamType::DISPLAY_AUDIO_CAPTURE,
+                     &MediaStreamDevice::type)) {
     // The user chose to capture audio, but the killswitch against
     // share-this-tab-instead with audio is engaged.
     return false;
@@ -3103,12 +3098,12 @@ void MediaStreamManager::HandleAccessRequestResponse(
     return;
   }
 
-  DCHECK(std::all_of(stream_devices_set.stream_devices.cbegin(),
-                     stream_devices_set.stream_devices.cend(),
-                     [](const blink::mojom::StreamDevicesPtr& stream_devices) {
-                       return stream_devices->audio_device.has_value() ||
-                              stream_devices->video_device.has_value();
-                     }));
+  DCHECK(base::ranges::all_of(
+      stream_devices_set.stream_devices,
+      [](const blink::mojom::StreamDevicesPtr& stream_devices) {
+        return stream_devices->audio_device.has_value() ||
+               stream_devices->video_device.has_value();
+      }));
 
   if (request->request_type() == blink::MEDIA_DEVICE_UPDATE) {
     HandleChangeSourceRequestResponse(label, request, stream_devices_set);

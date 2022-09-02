@@ -4,7 +4,6 @@
 
 #include "content/browser/hyphenation/hyphenation_impl.h"
 
-#include <algorithm>
 #include <map>
 #include <utility>
 
@@ -13,6 +12,7 @@
 #include "base/files/file_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/thread_pool.h"
@@ -51,7 +51,7 @@ struct Dictionaries {
 };
 
 bool IsValidLocale(const std::string& locale) {
-  return std::all_of(locale.cbegin(), locale.cend(), [](const char ch) {
+  return base::ranges::all_of(locale, [](const char ch) {
     return base::IsAsciiAlpha(ch) || base::IsAsciiDigit(ch) || ch == '-';
   });
 }

@@ -4,7 +4,6 @@
 
 #include "content/browser/media/session/media_session_impl.h"
 
-#include <algorithm>
 #include <memory>
 #include <utility>
 
@@ -1760,11 +1759,10 @@ std::string MediaSessionImpl::GetSharedAudioOutputDeviceId() const {
 
   auto& first = normal_players_.begin()->first;
   const auto& first_id = first.observer->GetAudioOutputSinkId(first.player_id);
-  if (std::all_of(normal_players_.cbegin(), normal_players_.cend(),
-                  [&first_id](const auto& player) {
-                    return player.first.observer->GetAudioOutputSinkId(
-                               player.first.player_id) == first_id;
-                  })) {
+  if (base::ranges::all_of(normal_players_, [&first_id](const auto& player) {
+        return player.first.observer->GetAudioOutputSinkId(
+                   player.first.player_id) == first_id;
+      })) {
     return first_id;
   }
 
