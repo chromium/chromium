@@ -12,100 +12,81 @@
 #error "This file requires ARC support."
 #endif
 
-namespace {
-
-// Constructs a WebStateListRemovingIndexes::Storage from a
-// std::vector<int>, sorting it and removing duplicates.
-WebStateListRemovingIndexes::Storage StorageFromVector(
-    std::vector<int> indexes) {
-  std::sort(indexes.begin(), indexes.end());
-  indexes.erase(std::unique(indexes.begin(), indexes.end()), indexes.end());
-
-  if (indexes.empty())
-    return WebStateListRemovingIndexes::Empty{};
-
-  if (indexes.size() == 1)
-    return indexes[0];
-
-  return indexes;
+int WebStateListRemovingIndexes::EmptyStorage::Count() const {
+  return 0;
 }
 
-// Constructs a WebStateListRemovingIndexes::Storage from a
-// std::initializer_list<int>.
-WebStateListRemovingIndexes::Storage StorageFromInitializerList(
-    std::initializer_list<int> indexes) {
-  if (indexes.size() == 0)
-    return WebStateListRemovingIndexes::Empty{};
-
-  if (indexes.size() == 1)
-    return *indexes.begin();
-
-  // Use the vector overload.
-  return StorageFromVector(std::vector<int>(std::move(indexes)));
+bool WebStateListRemovingIndexes::EmptyStorage::ContainsIndex(int index) const {
+  return false;
 }
 
-// Visitor implementing WebStateListRemovingIndexes::count().
-struct CountVisitor {
-  using Empty = WebStateListRemovingIndexes::Empty;
+int WebStateListRemovingIndexes::EmptyStorage::IndexAfterRemoval(
+    int index) const {
+  return index;
+}
 
-  int operator()(const Empty&) const { return 0; }
+WebStateListRemovingIndexes::OneIndexStorage::OneIndexStorage(int index)
+    : index_(index) {}
 
-  int operator()(const int& index) const { return 1; }
+int WebStateListRemovingIndexes::OneIndexStorage::Count() const {
+  return 1;
+}
 
-  int operator()(const std::vector<int>& indexes) const {
-    return static_cast<int>(indexes.size());
-  }
-};
+bool WebStateListRemovingIndexes::OneIndexStorage::ContainsIndex(
+    int index) const {
+  return index == index_;
+}
 
-// Visitor implementing WebStateListRemovingIndexes::Contains(int).
-struct ContainsVisitor {
-  using Empty = WebStateListRemovingIndexes::Empty;
-
-  explicit ContainsVisitor(int index) : index_(index) {}
-
-  bool operator()(const Empty&) const { return false; }
-
-  bool operator()(const int& index) const { return index_ == index; }
-
-  bool operator()(const std::vector<int>& indexes) const {
-    return std::binary_search(indexes.begin(), indexes.end(), index_);
-  }
-
-  const int index_;
-};
-
-// Visitor implementing WebStateListRemovingIndexes::IndexAfterRemoval(int).
-struct IndexAfterRemovalVisitor {
-  using Empty = WebStateListRemovingIndexes::Empty;
-
-  explicit IndexAfterRemovalVisitor(int index) : index_(index) {}
-
-  int operator()(const Empty&) const { return index_; }
-
-  int operator()(const int& index) const {
-    if (index_ == index)
-      return WebStateList::kInvalidIndex;
-
-    if (index_ > index)
-      return index_ - 1;
-
-    return index_;
-  }
-
-  int operator()(const std::vector<int>& indexes) const {
-    const auto lower_bound =
-        std::lower_bound(indexes.begin(), indexes.end(), index_);
-
-    if (lower_bound == indexes.end() || *lower_bound != index_)
-      return index_ - std::distance(indexes.begin(), lower_bound);
-
+int WebStateListRemovingIndexes::OneIndexStorage::IndexAfterRemoval(
+    int index) const {
+  if (index == index_)
     return WebStateList::kInvalidIndex;
-  }
 
-  const int index_;
-};
+  if (index > index_)
+    return index - 1;
 
-}  // anonymous namespace
+  return index;
+}
+
+WebStateListRemovingIndexes::VectorStorage::VectorStorage(
+    std::vector<int> indexes)
+    : indexes_(std::move(indexes)) {}
+
+WebStateListRemovingIndexes::VectorStorage::~VectorStorage() = default;
+
+WebStateListRemovingIndexes::VectorStorage::VectorStorage(
+    const VectorStorage&) = default;
+
+WebStateListRemovingIndexes::VectorStorage&
+WebStateListRemovingIndexes::VectorStorage::operator=(const VectorStorage&) =
+    default;
+
+WebStateListRemovingIndexes::VectorStorage::VectorStorage(VectorStorage&&) =
+    default;
+
+WebStateListRemovingIndexes::VectorStorage&
+WebStateListRemovingIndexes::VectorStorage::operator=(VectorStorage&&) =
+    default;
+
+int WebStateListRemovingIndexes::VectorStorage::Count() const {
+  return indexes_.size();
+}
+
+bool WebStateListRemovingIndexes::VectorStorage::ContainsIndex(
+    int index) const {
+  return std::binary_search(indexes_.begin(), indexes_.end(), index);
+}
+
+int WebStateListRemovingIndexes::VectorStorage::IndexAfterRemoval(
+    int index) const {
+  const auto lower_bound =
+      std::lower_bound(indexes_.begin(), indexes_.end(), index);
+
+  if (lower_bound == indexes_.end() || *lower_bound != index)
+    return index - std::distance(indexes_.begin(), lower_bound);
+
+  return WebStateList::kInvalidIndex;
+}
 
 WebStateListRemovingIndexes::WebStateListRemovingIndexes(
     std::vector<int> indexes)
@@ -130,13 +111,45 @@ WebStateListRemovingIndexes& WebStateListRemovingIndexes::operator=(
 WebStateListRemovingIndexes::~WebStateListRemovingIndexes() = default;
 
 int WebStateListRemovingIndexes::count() const {
-  return absl::visit(CountVisitor(), removing_);
+  return absl::visit([](const auto& storage) { return storage.Count(); },
+                     removing_);
 }
 
 bool WebStateListRemovingIndexes::Contains(int index) const {
-  return absl::visit(ContainsVisitor(index), removing_);
+  return absl::visit(
+      [index](const auto& storage) { return storage.ContainsIndex(index); },
+      removing_);
 }
 
 int WebStateListRemovingIndexes::IndexAfterRemoval(int index) const {
-  return absl::visit(IndexAfterRemovalVisitor(index), removing_);
+  return absl::visit(
+      [index](const auto& storage) { return storage.IndexAfterRemoval(index); },
+      removing_);
+}
+
+WebStateListRemovingIndexes::Storage
+WebStateListRemovingIndexes::StorageFromVector(std::vector<int> indexes) {
+  std::sort(indexes.begin(), indexes.end());
+  indexes.erase(std::unique(indexes.begin(), indexes.end()), indexes.end());
+
+  if (indexes.empty())
+    return EmptyStorage();
+
+  if (indexes.size() == 1)
+    return OneIndexStorage(indexes[0]);
+
+  return VectorStorage(indexes);
+}
+
+WebStateListRemovingIndexes::Storage
+WebStateListRemovingIndexes::StorageFromInitializerList(
+    std::initializer_list<int> indexes) {
+  if (indexes.size() == 0)
+    return EmptyStorage();
+
+  if (indexes.size() == 1)
+    return OneIndexStorage(*indexes.begin());
+
+  // Use the vector overload.
+  return StorageFromVector(std::vector<int>(std::move(indexes)));
 }
