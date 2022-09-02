@@ -126,7 +126,6 @@
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_form_element.h"
 #include "third_party/blink/public/web/web_frame_owner_properties.h"
-#include "third_party/blink/public/web/web_history_entry.h"
 #include "third_party/blink/public/web/web_history_item.h"
 #include "third_party/blink/public/web/web_input_element.h"
 #include "third_party/blink/public/web/web_local_frame_client.h"
@@ -3069,7 +3068,7 @@ void WebLocalFrameImpl::UpdateCurrentHistoryItem() {
 }
 
 PageState WebLocalFrameImpl::CurrentHistoryItemToPageState() {
-  return SingleHistoryItemToPageState(current_history_item_);
+  return current_history_item_.ToPageState();
 }
 
 void WebLocalFrameImpl::ScrollFocusedEditableElementIntoView() {

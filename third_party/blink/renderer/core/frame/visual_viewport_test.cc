@@ -901,13 +901,10 @@ TEST_P(VisualViewportTest, TestRestoredFromHistoryItem) {
 
   RegisterMockedHttpURLLoad("200-by-300.html");
 
-  WebHistoryItem item;
-  item.Initialize();
-  WebURL destination_url(
-      url_test_helpers::ToKURL(base_url_ + "200-by-300.html"));
-  item.SetURLString(destination_url.GetString());
-  item.SetVisualViewportScrollOffset(gfx::PointF(100, 120));
-  item.SetPageScaleFactor(2);
+  HistoryItem* item = MakeGarbageCollected<HistoryItem>();
+  item->SetURL(url_test_helpers::ToKURL(base_url_ + "200-by-300.html"));
+  item->SetVisualViewportScrollOffset(ScrollOffset(100, 120));
+  item->SetPageScaleFactor(2);
 
   frame_test_helpers::LoadHistoryItem(WebView()->MainFrameImpl(), item,
                                       mojom::FetchCacheMode::kDefault);
@@ -928,16 +925,14 @@ TEST_P(VisualViewportTest, TestRestoredFromLegacyHistoryItem) {
 
   RegisterMockedHttpURLLoad("200-by-300-viewport.html");
 
-  WebHistoryItem item;
-  item.Initialize();
-  WebURL destination_url(
+  HistoryItem* item = MakeGarbageCollected<HistoryItem>();
+  item->SetURL(
       url_test_helpers::ToKURL(base_url_ + "200-by-300-viewport.html"));
-  item.SetURLString(destination_url.GetString());
   // (-1, -1) will be used if the HistoryItem is an older version prior to
   // having visual viewport scroll offset.
-  item.SetVisualViewportScrollOffset(gfx::PointF(-1, -1));
-  item.SetScrollOffset(gfx::Point(120, 180));
-  item.SetPageScaleFactor(2);
+  item->SetVisualViewportScrollOffset(ScrollOffset(-1, -1));
+  item->SetScrollOffset(ScrollOffset(120, 180));
+  item->SetPageScaleFactor(2);
 
   frame_test_helpers::LoadHistoryItem(WebView()->MainFrameImpl(), item,
                                       mojom::FetchCacheMode::kDefault);

@@ -31,104 +31,53 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_HISTORY_ITEM_H_
 #define THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_HISTORY_ITEM_H_
 
-#include "services/network/public/mojom/referrer_policy.mojom-shared.h"
-#include "third_party/blink/public/mojom/page_state/page_state.mojom-shared.h"
+#include "third_party/blink/public/mojom/navigation/navigation_api_history_entry_arrays.mojom-forward.h"
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_private_ptr.h"
-#include "third_party/blink/public/platform/web_scroll_anchor_data.h"
 #include "third_party/blink/public/platform/web_string.h"
-
-namespace gfx {
-class PointF;
-}  // namespace gfx
 
 namespace blink {
 
 class HistoryItem;
+class PageState;
 class WebHTTPBody;
-class WebString;
-class WebSerializedScriptValue;
 template <typename T>
 class WebVector;
 
-// Represents a frame-level navigation entry in session history.  A
-// WebHistoryItem is a node in a tree.
+// Represents a frame-level navigation entry in session history.
 //
 // Copying a WebHistoryItem is cheap.
 //
 class WebHistoryItem {
  public:
   ~WebHistoryItem() { Reset(); }
-
   WebHistoryItem() = default;
+  BLINK_EXPORT explicit WebHistoryItem(const PageState& page_state);
   WebHistoryItem(const WebHistoryItem& h) { Assign(h); }
   WebHistoryItem& operator=(const WebHistoryItem& h) {
     Assign(h);
     return *this;
   }
 
-  BLINK_EXPORT void Initialize();
-  BLINK_EXPORT void Reset();
-  BLINK_EXPORT void Assign(const WebHistoryItem&);
+  // The navigation API uses partially-initialized items for non-current
+  // entries via this constructor.
+  BLINK_EXPORT WebHistoryItem(const WebString& url,
+                              const WebString& navigation_api_key,
+                              const WebString& navigation_api_id,
+                              int64_t item_sequence_number,
+                              int64_t document_sequence_number,
+                              const WebString& navigation_api_state);
+
+  BLINK_EXPORT PageState ToPageState();
 
   bool IsNull() const { return private_.IsNull(); }
 
-  BLINK_EXPORT WebString UrlString() const;
-  BLINK_EXPORT void SetURLString(const WebString&);
-
-  BLINK_EXPORT WebString GetReferrer() const;
-  BLINK_EXPORT network::mojom::ReferrerPolicy GetReferrerPolicy() const;
-  BLINK_EXPORT void SetReferrer(const WebString&);
-  BLINK_EXPORT void SetReferrerPolicy(network::mojom::ReferrerPolicy);
-
-  BLINK_EXPORT const WebString& Target() const;
   BLINK_EXPORT void SetTarget(const WebString&);
 
-  BLINK_EXPORT gfx::PointF VisualViewportScrollOffset() const;
-  BLINK_EXPORT void SetVisualViewportScrollOffset(const gfx::PointF&);
-
-  BLINK_EXPORT gfx::Point GetScrollOffset() const;
-  BLINK_EXPORT void SetScrollOffset(const gfx::Point&);
-
-  BLINK_EXPORT float PageScaleFactor() const;
-  BLINK_EXPORT void SetPageScaleFactor(float);
-
-  BLINK_EXPORT WebVector<WebString> GetDocumentState() const;
-  BLINK_EXPORT void SetDocumentState(const WebVector<WebString>&);
-
   BLINK_EXPORT int64_t ItemSequenceNumber() const;
-  BLINK_EXPORT void SetItemSequenceNumber(int64_t);
-
   BLINK_EXPORT int64_t DocumentSequenceNumber() const;
-  BLINK_EXPORT void SetDocumentSequenceNumber(int64_t);
-
-  BLINK_EXPORT mojom::ScrollRestorationType ScrollRestorationType() const;
-  BLINK_EXPORT void SetScrollRestorationType(mojom::ScrollRestorationType);
-
-  BLINK_EXPORT WebSerializedScriptValue StateObject() const;
-  BLINK_EXPORT void SetStateObject(const WebSerializedScriptValue&);
-
-  BLINK_EXPORT WebString HttpContentType() const;
-  BLINK_EXPORT void SetHTTPContentType(const WebString&);
-
   BLINK_EXPORT WebHTTPBody HttpBody() const;
-  BLINK_EXPORT void SetHttpBody(const WebHTTPBody&);
-
-  BLINK_EXPORT WebVector<WebString> GetReferencedFilePaths() const;
-
-  BLINK_EXPORT bool DidSaveScrollOrScaleState() const;
-
-  BLINK_EXPORT ScrollAnchorData GetScrollAnchorData() const;
-  BLINK_EXPORT void SetScrollAnchorData(const ScrollAnchorData&);
-
   BLINK_EXPORT WebString GetNavigationApiKey() const;
-  BLINK_EXPORT void SetNavigationApiKey(const WebString&);
-
-  BLINK_EXPORT WebString GetNavigationApiId() const;
-  BLINK_EXPORT void SetNavigationApiId(const WebString&);
-
-  BLINK_EXPORT WebSerializedScriptValue GetNavigationApiState() const;
-  BLINK_EXPORT void SetNavigationApiState(const WebSerializedScriptValue&);
 
 #if INSIDE_BLINK
   BLINK_EXPORT WebHistoryItem(HistoryItem*);
@@ -137,6 +86,10 @@ class WebHistoryItem {
 #endif
 
  private:
+  BLINK_EXPORT void Reset();
+  BLINK_EXPORT void Assign(const WebHistoryItem&);
+  WebVector<WebString> GetReferencedFilePaths() const;
+
   WebPrivatePtr<HistoryItem> private_;
   // TODO(dcheng): Remove this, since unique name is no longer a Blink concept.
   WebString target_;

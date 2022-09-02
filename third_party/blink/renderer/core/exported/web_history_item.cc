@@ -30,8 +30,11 @@
 
 #include "third_party/blink/public/web/web_history_item.h"
 
+#include "third_party/blink/public/common/page_state/page_state.h"
+#include "third_party/blink/public/common/page_state/page_state_serialization.h"
 #include "third_party/blink/public/platform/web_http_body.h"
 #include "third_party/blink/public/platform/web_string.h"
+#include "third_party/blink/public/platform/web_url_request_util.h"
 #include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/public/web/web_serialized_script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value.h"
@@ -45,8 +48,171 @@
 
 namespace blink {
 
-void WebHistoryItem::Initialize() {
+namespace {
+
+WebVector<absl::optional<std::u16string>> ToOptionalString16Vector(
+    const WebVector<WebString>& input,
+    WebVector<absl::optional<std::u16string>> output) {
+  output.reserve(output.size() + input.size());
+  for (const auto& i : input)
+    output.emplace_back(WebString::ToOptionalString16(i));
+  return output;
+}
+
+}  // namespace
+
+WebHistoryItem::WebHistoryItem(const PageState& page_state) {
+  ExplodedPageState exploded_page_state;
+  if (!DecodePageState(page_state.ToEncodedData(), &exploded_page_state))
+    return;
+  const ExplodedFrameState& state = exploded_page_state.top;
+
   private_ = MakeGarbageCollected<HistoryItem>();
+  private_->SetURLString(WebString::FromUTF16(state.url_string));
+  private_->SetReferrer(WebString::FromUTF16(state.referrer));
+  private_->SetReferrerPolicy(state.referrer_policy);
+  SetTarget(WebString::FromUTF16(state.target));
+  if (state.state_object) {
+    private_->SetStateObject(SerializedScriptValue::Create(
+        WebString::FromUTF16(*state.state_object)));
+  }
+
+  Vector<String> document_state;
+  for (auto& ds : state.document_state)
+    document_state.push_back(WebString::FromUTF16(ds));
+  private_->SetDocumentState(document_state);
+
+  private_->SetScrollRestorationType(state.scroll_restoration_type);
+
+  if (state.did_save_scroll_or_scale_state) {
+    // TODO(crbug.com/1274078): Are these conversions from blink scroll offset
+    // to gfx::PointF and gfx::Point correct?
+    private_->SetVisualViewportScrollOffset(
+        state.visual_viewport_scroll_offset.OffsetFromOrigin());
+    private_->SetScrollOffset(
+        ScrollOffset(state.scroll_offset.OffsetFromOrigin()));
+    private_->SetPageScaleFactor(state.page_scale_factor);
+  }
+
+  // These values are generated at WebHistoryItem construction time, and we
+  // only want to override those new values with old values if the old values
+  // are defined.  A value of 0 means undefined in this context.
+  if (state.item_sequence_number)
+    private_->SetItemSequenceNumber(state.item_sequence_number);
+  if (state.document_sequence_number)
+    private_->SetDocumentSequenceNumber(state.document_sequence_number);
+  if (state.navigation_api_key) {
+    private_->SetNavigationApiKey(
+        WebString::FromUTF16(state.navigation_api_key));
+  }
+  if (state.navigation_api_id)
+    private_->SetNavigationApiId(WebString::FromUTF16(state.navigation_api_id));
+
+  if (state.navigation_api_state) {
+    private_->SetNavigationApiState(SerializedScriptValue::Create(
+        WebString::FromUTF16(*state.navigation_api_state)));
+  }
+
+  private_->SetFormContentType(
+      WebString::FromUTF16(state.http_body.http_content_type));
+  if (state.http_body.request_body) {
+    private_->SetFormData(
+        blink::GetWebHTTPBodyForRequestBody(*state.http_body.request_body));
+  }
+
+  private_->SetScrollAnchorData(
+      {WebString::FromUTF16(state.scroll_anchor_selector),
+       state.scroll_anchor_offset, state.scroll_anchor_simhash});
+}
+
+WebHistoryItem::WebHistoryItem(const WebString& url,
+                               const WebString& navigation_api_key,
+                               const WebString& navigation_api_id,
+                               int64_t item_sequence_number,
+                               int64_t document_sequence_number,
+                               const WebString& navigation_api_state) {
+  private_ = MakeGarbageCollected<HistoryItem>();
+  private_->SetURLString(url);
+  private_->SetNavigationApiKey(navigation_api_key);
+  private_->SetNavigationApiId(navigation_api_id);
+  private_->SetItemSequenceNumber(item_sequence_number);
+  private_->SetDocumentSequenceNumber(document_sequence_number);
+  if (!navigation_api_state.IsNull()) {
+    private_->SetNavigationApiState(
+        SerializedScriptValue::Create(navigation_api_state));
+  }
+}
+
+PageState WebHistoryItem::ToPageState() {
+  ExplodedPageState state;
+  state.referenced_files =
+      ToOptionalString16Vector(GetReferencedFilePaths(),
+                               std::move(state.referenced_files))
+          .ReleaseVector();
+
+  state.top.url_string = WebString::ToOptionalString16(private_->UrlString());
+  state.top.referrer = WebString::ToOptionalString16(private_->GetReferrer());
+  state.top.referrer_policy = private_->GetReferrerPolicy();
+  state.top.target = WebString::ToOptionalString16(target_);
+  if (private_->StateObject()) {
+    state.top.state_object =
+        WebString::ToOptionalString16(private_->StateObject()->ToWireString());
+  }
+  state.top.scroll_restoration_type = private_->ScrollRestorationType();
+
+  if (const auto& scroll_and_view_state = private_->GetViewState()) {
+    // TODO(crbug.com/1274078): Are these conversions from blink scroll offset
+    // to gfx::PointF and gfx::Point correct?
+    state.top.visual_viewport_scroll_offset = gfx::PointAtOffsetFromOrigin(
+        scroll_and_view_state->visual_viewport_scroll_offset_);
+    state.top.scroll_offset = gfx::ToFlooredPoint(
+        gfx::PointAtOffsetFromOrigin(scroll_and_view_state->scroll_offset_));
+    state.top.page_scale_factor = scroll_and_view_state->page_scale_factor_;
+    state.top.did_save_scroll_or_scale_state = true;
+  } else {
+    state.top.visual_viewport_scroll_offset = gfx::PointF();
+    state.top.scroll_offset = gfx::Point();
+    state.top.page_scale_factor = 0;
+    state.top.did_save_scroll_or_scale_state = false;
+  }
+
+  state.top.item_sequence_number = ItemSequenceNumber();
+  state.top.document_sequence_number = DocumentSequenceNumber();
+
+  state.top.document_state =
+      ToOptionalString16Vector(private_->GetDocumentState(),
+                               std::move(state.top.document_state))
+          .ReleaseVector();
+
+  state.top.http_body.http_content_type =
+      WebString::ToOptionalString16(private_->FormContentType());
+  const WebHTTPBody& http_body = HttpBody();
+  if (!http_body.IsNull()) {
+    state.top.http_body.request_body =
+        blink::GetRequestBodyForWebHTTPBody(http_body);
+    state.top.http_body.contains_passwords = http_body.ContainsPasswordData();
+  }
+
+  ScrollAnchorData anchor;
+  if (private_->GetViewState())
+    anchor = private_->GetViewState()->scroll_anchor_data_;
+  state.top.scroll_anchor_selector =
+      WebString::ToOptionalString16(anchor.selector_);
+  state.top.scroll_anchor_offset = anchor.offset_;
+  state.top.scroll_anchor_simhash = anchor.simhash_;
+
+  state.top.navigation_api_key =
+      WebString::ToOptionalString16(private_->GetNavigationApiKey());
+  state.top.navigation_api_id =
+      WebString::ToOptionalString16(private_->GetNavigationApiId());
+  if (private_->GetNavigationApiState()) {
+    state.top.navigation_api_state = WebString::ToOptionalString16(
+        private_->GetNavigationApiState()->ToWireString());
+  }
+
+  std::string encoded_data;
+  EncodePageState(state, &encoded_data);
+  return PageState::CreateFromEncodedData(encoded_data);
 }
 
 void WebHistoryItem::Reset() {
@@ -59,144 +225,20 @@ void WebHistoryItem::Assign(const WebHistoryItem& other) {
   target_ = other.target_;
 }
 
-WebString WebHistoryItem::UrlString() const {
-  return private_->UrlString();
-}
-
-void WebHistoryItem::SetURLString(const WebString& url) {
-  private_->SetURLString(KURL(url).GetString());
-}
-
-WebString WebHistoryItem::GetReferrer() const {
-  return private_->GetReferrer();
-}
-
-network::mojom::ReferrerPolicy WebHistoryItem::GetReferrerPolicy() const {
-  return private_->GetReferrerPolicy();
-}
-
-void WebHistoryItem::SetReferrer(const WebString& referrer) {
-  private_->SetReferrer(referrer);
-}
-
-void WebHistoryItem::SetReferrerPolicy(
-    network::mojom::ReferrerPolicy referrer_policy) {
-  private_->SetReferrerPolicy(referrer_policy);
-}
-
-const WebString& WebHistoryItem::Target() const {
-  return target_;
-}
-
 void WebHistoryItem::SetTarget(const WebString& target) {
   target_ = target;
-}
-
-gfx::PointF WebHistoryItem::VisualViewportScrollOffset() const {
-  const auto& scroll_and_view_state = private_->GetViewState();
-  if (!scroll_and_view_state)
-    return gfx::PointF();
-
-  // TODO(crbug.com/1274078): Is this conversion from blink scroll offset to
-  // gfx::PointF correct?
-  return gfx::PointAtOffsetFromOrigin(
-      scroll_and_view_state->visual_viewport_scroll_offset_);
-}
-
-void WebHistoryItem::SetVisualViewportScrollOffset(
-    const gfx::PointF& scroll_offset) {
-  // TODO(crbug.com/1274078): Is this conversion from gfx::PointF to blink
-  // scroll offset correct?
-  private_->SetVisualViewportScrollOffset(scroll_offset.OffsetFromOrigin());
-}
-
-gfx::Point WebHistoryItem::GetScrollOffset() const {
-  const auto& scroll_and_view_state = private_->GetViewState();
-  if (!scroll_and_view_state)
-    return gfx::Point();
-
-  // TODO(crbug.com/1274078): Is this conversion from blink scroll offset to
-  // gfx::Point correct?
-  return gfx::ToFlooredPoint(
-      gfx::PointAtOffsetFromOrigin(scroll_and_view_state->scroll_offset_));
-}
-
-void WebHistoryItem::SetScrollOffset(const gfx::Point& scroll_offset) {
-  // TODO(crbug.com/1274078): Is this conversion from gfx::Point to blink
-  // scroll offset correct?
-  private_->SetScrollOffset(ScrollOffset(scroll_offset.OffsetFromOrigin()));
-}
-
-float WebHistoryItem::PageScaleFactor() const {
-  const auto& scroll_and_view_state = private_->GetViewState();
-  return scroll_and_view_state ? scroll_and_view_state->page_scale_factor_ : 0;
-}
-
-void WebHistoryItem::SetPageScaleFactor(float scale) {
-  private_->SetPageScaleFactor(scale);
-}
-
-WebVector<WebString> WebHistoryItem::GetDocumentState() const {
-  return private_->GetDocumentState();
-}
-
-void WebHistoryItem::SetDocumentState(const WebVector<WebString>& state) {
-  // FIXME: would be nice to avoid the intermediate copy
-  Vector<String> ds;
-  for (size_t i = 0; i < state.size(); ++i)
-    ds.push_back(state[i]);
-  private_->SetDocumentState(ds);
 }
 
 int64_t WebHistoryItem::ItemSequenceNumber() const {
   return private_->ItemSequenceNumber();
 }
 
-void WebHistoryItem::SetItemSequenceNumber(int64_t item_sequence_number) {
-  private_->SetItemSequenceNumber(item_sequence_number);
-}
-
 int64_t WebHistoryItem::DocumentSequenceNumber() const {
   return private_->DocumentSequenceNumber();
 }
 
-void WebHistoryItem::SetDocumentSequenceNumber(
-    int64_t document_sequence_number) {
-  private_->SetDocumentSequenceNumber(document_sequence_number);
-}
-
-mojom::blink::ScrollRestorationType WebHistoryItem::ScrollRestorationType()
-    const {
-  return private_->ScrollRestorationType();
-}
-
-void WebHistoryItem::SetScrollRestorationType(
-    mojom::blink::ScrollRestorationType type) {
-  private_->SetScrollRestorationType(type);
-}
-
-WebSerializedScriptValue WebHistoryItem::StateObject() const {
-  return WebSerializedScriptValue(private_->StateObject());
-}
-
-void WebHistoryItem::SetStateObject(const WebSerializedScriptValue& object) {
-  private_->SetStateObject(object);
-}
-
-WebString WebHistoryItem::HttpContentType() const {
-  return private_->FormContentType();
-}
-
-void WebHistoryItem::SetHTTPContentType(const WebString& http_content_type) {
-  private_->SetFormContentType(http_content_type);
-}
-
 WebHTTPBody WebHistoryItem::HttpBody() const {
   return WebHTTPBody(private_->FormData());
-}
-
-void WebHistoryItem::SetHttpBody(const WebHTTPBody& http_body) {
-  private_->SetFormData(http_body);
 }
 
 WebVector<WebString> WebHistoryItem::GetReferencedFilePaths() const {
@@ -220,46 +262,8 @@ WebVector<WebString> WebHistoryItem::GetReferencedFilePaths() const {
   return results;
 }
 
-bool WebHistoryItem::DidSaveScrollOrScaleState() const {
-  return private_->GetViewState().has_value();
-}
-
-ScrollAnchorData WebHistoryItem::GetScrollAnchorData() const {
-  if (private_->GetViewState()) {
-    return private_->GetViewState()->scroll_anchor_data_;
-  }
-
-  return ScrollAnchorData();
-}
-
-void WebHistoryItem::SetScrollAnchorData(
-    const struct ScrollAnchorData& scroll_anchor_data) {
-  private_->SetScrollAnchorData(scroll_anchor_data);
-}
-
 WebString WebHistoryItem::GetNavigationApiKey() const {
   return private_->GetNavigationApiKey();
-}
-
-void WebHistoryItem::SetNavigationApiKey(const WebString& key) {
-  private_->SetNavigationApiKey(key);
-}
-
-WebString WebHistoryItem::GetNavigationApiId() const {
-  return private_->GetNavigationApiId();
-}
-
-void WebHistoryItem::SetNavigationApiId(const WebString& id) {
-  private_->SetNavigationApiId(id);
-}
-
-WebSerializedScriptValue WebHistoryItem::GetNavigationApiState() const {
-  return WebSerializedScriptValue(private_->GetNavigationApiState());
-}
-
-void WebHistoryItem::SetNavigationApiState(
-    const WebSerializedScriptValue& state) {
-  private_->SetNavigationApiState(state);
 }
 
 WebHistoryItem::WebHistoryItem(HistoryItem* item) : private_(item) {}

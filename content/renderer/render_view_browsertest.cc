@@ -91,7 +91,6 @@
 #include "third_party/blink/public/web/web_document_loader.h"
 #include "third_party/blink/public/web/web_frame_widget.h"
 #include "third_party/blink/public/web/web_history_commit_type.h"
-#include "third_party/blink/public/web/web_history_entry.h"
 #include "third_party/blink/public/web/web_history_item.h"
 #include "third_party/blink/public/web/web_input_method_controller.h"
 #include "third_party/blink/public/web/web_local_frame.h"
@@ -716,9 +715,8 @@ TEST_F(RenderViewImplTest, OnNavigationHttpPost) {
 
   // Check post data sent to browser matches
   EXPECT_TRUE(last_commit_params->page_state.IsValid());
-  std::unique_ptr<blink::WebHistoryEntry> entry =
-      PageStateToHistoryEntry(last_commit_params->page_state);
-  blink::WebHTTPBody body = entry->root().HttpBody();
+  blink::WebHTTPBody body =
+      blink::WebHistoryItem(last_commit_params->page_state).HttpBody();
   blink::WebHTTPBody::Element element;
   bool successful = body.ElementAt(0, element);
   EXPECT_TRUE(successful);

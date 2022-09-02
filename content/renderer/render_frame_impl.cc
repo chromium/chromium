@@ -210,7 +210,6 @@
 #include "third_party/blink/public/web/web_frame_owner_properties.h"
 #include "third_party/blink/public/web/web_frame_serializer.h"
 #include "third_party/blink/public/web/web_frame_widget.h"
-#include "third_party/blink/public/web/web_history_entry.h"
 #include "third_party/blink/public/web/web_input_method_controller.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_navigation_control.h"
@@ -945,18 +944,10 @@ blink::WebNavigationTimings BuildNavigationTimings(
 
 WebHistoryItem NavigationApiHistoryEntryPtrToWebHistoryItem(
     const blink::mojom::NavigationApiHistoryEntry& entry) {
-  WebHistoryItem item;
-  item.Initialize();
-  item.SetNavigationApiKey(WebString::FromUTF16(entry.key));
-  item.SetNavigationApiId(WebString::FromUTF16(entry.id));
-  item.SetURLString(WebString::FromUTF16(entry.url));
-  item.SetItemSequenceNumber(entry.item_sequence_number);
-  item.SetDocumentSequenceNumber(entry.document_sequence_number);
-  if (entry.state) {
-    item.SetNavigationApiState(WebSerializedScriptValue::FromString(
-        WebString::FromUTF16(entry.state)));
-  }
-  return item;
+  return WebHistoryItem(
+      WebString::FromUTF16(entry.url), WebString::FromUTF16(entry.key),
+      WebString::FromUTF16(entry.id), entry.item_sequence_number,
+      entry.document_sequence_number, WebString::FromUTF16(entry.state));
 }
 
 // Fills navigation data sent by the browser to a blink understandable
@@ -2957,17 +2948,16 @@ void RenderFrameImpl::CommitFailedNavigation(
   // Make sure we never show errors in view source mode.
   frame_->EnableViewSourceMode(false);
 
-  std::unique_ptr<blink::WebHistoryEntry> history_entry;
   auto page_state =
       blink::PageState::CreateFromEncodedData(commit_params->page_state);
   if (page_state.IsValid())
-    history_entry = PageStateToHistoryEntry(page_state);
-  if (history_entry) {
+    navigation_params->history_item = WebHistoryItem(page_state);
+  if (!navigation_params->history_item.IsNull()) {
     navigation_params->frame_load_type = WebFrameLoadType::kBackForward;
-    navigation_params->history_item = history_entry->root();
   } else if (common_params->should_replace_current_entry) {
     navigation_params->frame_load_type = WebFrameLoadType::kReplaceCurrentItem;
   }
+
   navigation_params->service_worker_network_provider =
       ServiceWorkerNetworkProviderForFrame::CreateInvalidInstance();
   FillMiscNavigationParams(*common_params, *commit_params,
@@ -4876,16 +4866,15 @@ blink::mojom::CommitResult RenderFrameImpl::PrepareForHistoryNavigationCommit(
              blink::mojom::NavigationType::HISTORY_DIFFERENT_DOCUMENT ||
          navigation_type == blink::mojom::NavigationType::RESTORE ||
          navigation_type == blink::mojom::NavigationType::RESTORE_WITH_POST);
-  std::unique_ptr<blink::WebHistoryEntry> entry = PageStateToHistoryEntry(
+  *item_for_history_navigation = WebHistoryItem(
       blink::PageState::CreateFromEncodedData(commit_params.page_state));
-  if (!entry)
+  if (item_for_history_navigation->IsNull())
     return blink::mojom::CommitResult::Aborted;
 
   // The browser process sends a single WebHistoryItem for this frame.
   // TODO(creis): Change PageState to FrameState.  In the meantime, we
   // store the relevant frame's WebHistoryItem in the root of the
   // PageState.
-  *item_for_history_navigation = entry->root();
   *load_type = blink::WebFrameLoadType::kBackForward;
 
   // Keep track of which subframes the browser process has history items

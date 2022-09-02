@@ -44,7 +44,6 @@ class Local;
 namespace blink {
 
 class SerializedScriptValue;
-class WebString;
 
 // FIXME: Should this class be in platform?
 class WebSerializedScriptValue {
@@ -58,9 +57,6 @@ class WebSerializedScriptValue {
     return *this;
   }
 
-  // Creates a serialized script value from its wire format data.
-  BLINK_EXPORT static WebSerializedScriptValue FromString(const WebString&);
-
   BLINK_EXPORT static WebSerializedScriptValue Serialize(v8::Isolate*,
                                                          v8::Local<v8::Value>);
 
@@ -71,9 +67,6 @@ class WebSerializedScriptValue {
   BLINK_EXPORT void Assign(const WebSerializedScriptValue&);
 
   bool IsNull() const { return private_.IsNull(); }
-
-  // Returns a string representation of the WebSerializedScriptValue.
-  BLINK_EXPORT WebString ToString() const;
 
   // Convert the serialized value to a parsed v8 value.
   BLINK_EXPORT v8::Local<v8::Value> Deserialize(v8::Isolate*);
