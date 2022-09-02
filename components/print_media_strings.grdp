@@ -202,8 +202,8 @@
       Kaku2 (Envelope)
     </message>
     <message name="PRINT_PREVIEW_MEDIA_JPN_OUFUKU_148X200MM"
-             desc="In Title Case: Media size shown to user in print preview for media ``Postcard)''">
-      Postcard)
+             desc="In Title Case: Media size shown to user in print preview for media ``Oufuku Hagaki (Postcard)''">
+      Oufuku Hagaki (Postcard)
     </message>
     <message name="PRINT_PREVIEW_MEDIA_JPN_YOU4_105X235MM"
              desc="In Title Case: Media size shown to user in print preview for media ``You4 (Envelope)''">
