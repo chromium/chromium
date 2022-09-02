@@ -9,30 +9,16 @@
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
 #include "ui/events/event.h"
+#include "ui/events/event_target.h"
 #include "ui/wm/core/coordinate_conversion.h"
 
 namespace ash {
 
 namespace {
 
-// The dimensions of the region that can activate the multitask menu.
-constexpr int kActivateRegionWidth = 300;
-constexpr int kActivateRegionHeight = 100;
-
-// Return true if `point` is in the region that can activate the multitask menu.
-bool ActivateRegionHitTest(aura::Window* window,
-                           const gfx::Point& point_in_screen) {
-  const gfx::Rect bounds_in_screen = window->GetBoundsInScreen();
-  const gfx::Rect multitask_menu_activate_region(
-      bounds_in_screen.CenterPoint().x() - kActivateRegionWidth / 2,
-      bounds_in_screen.y(), kActivateRegionWidth, kActivateRegionHeight);
-  return multitask_menu_activate_region.Contains(point_in_screen);
-}
-
-bool IsVerticalGestureScroll(const ui::GestureEvent& event) {
-  return std::fabs(event.details().scroll_y_hint()) >
-         std::fabs(event.details().scroll_x_hint());
-}
+// The dimensions of the area that can activate the multitask menu.
+constexpr int kTargetAreaWidth = 510;
+constexpr int kTargetAreaHeight = 113;
 
 }  // namespace
 
@@ -47,58 +33,81 @@ TabletModeMultitaskMenuEventHandler::~TabletModeMultitaskMenuEventHandler() {
 void TabletModeMultitaskMenuEventHandler::OnGestureEvent(
     ui::GestureEvent* event) {
   aura::Window* active_window = window_util::GetActiveWindow();
-  if (!active_window ||
-      !active_window->Contains(static_cast<aura::Window*>(event->target())) ||
-      !WindowState::Get(active_window)->CanMaximize()) {
+  if (!multitask_menu_ &&
+      (!active_window ||
+       !active_window->Contains(static_cast<aura::Window*>(event->target())) ||
+       !WindowState::Get(active_window)->CanMaximize())) {
     return;
   }
 
   switch (event->type()) {
     case ui::ET_GESTURE_SCROLL_BEGIN: {
+      // Only vertical scrolls can open the menu.
+      if (std::fabs(event->details().scroll_y_hint()) <=
+          std::fabs(event->details().scroll_x_hint())) {
+        break;
+      }
+
       gfx::Point screen_location = event->location();
       wm::ConvertPointToScreen(active_window, &screen_location);
-      // Only consider vertical scrolls in the activate region.
-      if (ActivateRegionHitTest(active_window, screen_location) &&
-          IsVerticalGestureScroll(*event)) {
-        // Start showing the menu if swipe down.
-        if (event->details().scroll_y_hint() > 0) {
-          swipe_down_started_ = true;
-          event->SetHandled();
-        } else {
-          // TODO(crbug.com/1349918): Start hide animation.
-        }
-      }
-      break;
-    }
-    case ui::ET_GESTURE_SCROLL_UPDATE:
-      if (swipe_down_started_) {
-        // TODO(crbug.com/1349918): Update show/hide animation.
+      float y_delta = event->details().scroll_y_hint();
+      if (multitask_menu_ && y_delta < 0.f &&
+          multitask_menu_->multitask_menu_widget()
+              ->GetWindowBoundsInScreen()
+              .Contains(screen_location)) {
+        // If menu is open, we should close on a swipe up.
+        is_drag_down_.emplace(false);
+        event->SetHandled();
+      } else if (!multitask_menu_ && y_delta > 0.f &&
+                 gfx::Rect(
+                     active_window->GetBoundsInScreen().CenterPoint().x() -
+                         kTargetAreaWidth / 2,
+                     0, kTargetAreaWidth, kTargetAreaHeight)
+                     .Contains(screen_location)) {
+        // Otherwise, we should show the menu on a swipe.
+        is_drag_down_.emplace(true);
         event->SetHandled();
       }
       break;
+    }
+    case ui::ET_SCROLL_FLING_START:
+      if (event->details().velocity_y() > event->details().velocity_x()) {
+        is_drag_down_.emplace(event->details().velocity_y() > 0);
+      }
+      break;
+    case ui::ET_GESTURE_SCROLL_UPDATE: {
+      if (is_drag_down_) {
+        is_drag_down_.emplace(event->details().scroll_y() > 0);
+        event->SetHandled();
+      }
+      break;
+    }
     case ui::ET_GESTURE_SWIPE: {
       // If a touch is released at high velocity, the scroll gesture
       // is "converted" to a swipe gesture. ET_GESTURE_END is still
       // sent after, and ET_GESTURE_SCROLL_END is sometimes sent after this.
-      if (event->details().swipe_down()) {
-        swipe_down_started_ = true;
+      if (event->details().swipe_down() || event->details().swipe_up()) {
+        is_drag_down_.emplace(event->details().swipe_down());
         event->SetHandled();
       }
       break;
     }
     case ui::ET_GESTURE_SCROLL_END:
+    case ui::ET_GESTURE_TYPE_END:
     case ui::ET_GESTURE_END:
-      if (swipe_down_started_) {
-        ShowMultitaskMenu(active_window);
+      if (is_drag_down_.has_value()) {
+        if (is_drag_down_.value()) {
+          ShowMultitaskMenu(active_window);
+        } else {
+          CloseMultitaskMenu();
+        }
         event->SetHandled();
-        swipe_down_started_ = false;
+        is_drag_down_.reset();
       }
       break;
     default:
       break;
   }
-  // TODO(crbug.com/1349918): Hide multitask menu on swipe up and touches
-  // outside the menu bounds.
 }
 
 void TabletModeMultitaskMenuEventHandler::ShowMultitaskMenu(

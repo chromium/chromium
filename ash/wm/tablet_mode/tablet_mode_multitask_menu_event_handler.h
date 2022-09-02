@@ -5,6 +5,7 @@
 #ifndef ASH_WM_TABLET_MODE_TABLET_MODE_MULTITASK_MENU_EVENT_HANDLER_H_
 #define ASH_WM_TABLET_MODE_TABLET_MODE_MULTITASK_MENU_EVENT_HANDLER_H_
 
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/window_observer.h"
 #include "ui/events/event_handler.h"
 
@@ -33,15 +34,13 @@ class TabletModeMultitaskMenuEventHandler : public ui::EventHandler {
   }
 
  private:
-  // TODO(crbug.com/1349534): Override touch events on windows underneath.
-
   void ShowMultitaskMenu(aura::Window* active_window);
 
   std::unique_ptr<TabletModeMultitaskMenu> multitask_menu_;
 
-  // True if a swipe down gesture that can trigger the multitask menu was
-  // started.
-  bool swipe_down_started_ = false;
+  // Used to show or hide the multitask menu. Null if no drag is in
+  // progress.
+  absl::optional<bool> is_drag_down_;
 };
 
 }  // namespace ash

@@ -39,7 +39,7 @@ class ASH_EXPORT TabletModeMultitaskMenu : aura::WindowObserver {
 
   aura::Window* window() { return window_; }
 
-  views::Widget* multitask_menu_widget_for_testing() {
+  views::Widget* multitask_menu_widget() {
     return multitask_menu_widget_.get();
   }
 
