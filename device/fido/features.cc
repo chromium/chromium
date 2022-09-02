@@ -43,4 +43,8 @@ extern const base::Feature kWebAuthnNewDiscoverableCredentialsUi{
     "WebAuthenticationNewDiscoverableCredentialsUi",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
+extern const base::Feature kWebAuthnNoEmptyDisplayNameCBOR{
+    "WebAuthenticationNoEmptyDisplayNameCBOR",
+    base::FEATURE_ENABLED_BY_DEFAULT};
+
 }  // namespace device

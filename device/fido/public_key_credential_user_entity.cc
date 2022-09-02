@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "device/fido/features.h"
 #include "device/fido/fido_constants.h"
 
 namespace device {
@@ -85,8 +86,13 @@ cbor::Value AsCBOR(const PublicKeyCredentialUserEntity& user) {
   user_map.emplace(kEntityIdMapKey, user.id);
   if (user.name)
     user_map.emplace(kEntityNameMapKey, *user.name);
-  if (user.display_name)
+  // Empty display names result in CTAP1_ERR_INVALID_LENGTH on some security
+  // keys.
+  if (user.display_name &&
+      (!base::FeatureList::IsEnabled(kWebAuthnNoEmptyDisplayNameCBOR) ||
+       !user.display_name->empty())) {
     user_map.emplace(kDisplayNameMapKey, *user.display_name);
+  }
   return cbor::Value(std::move(user_map));
 }
 

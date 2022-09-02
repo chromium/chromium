@@ -51,6 +51,10 @@ extern const base::Feature kWebAuthPasskeysUI;
 COMPONENT_EXPORT(DEVICE_FIDO)
 extern const base::Feature kWebAuthnNewDiscoverableCredentialsUi;
 
+// Don't send empty displayName values to security keys when creating
+// credentials.
+extern const base::Feature kWebAuthnNoEmptyDisplayNameCBOR;
+
 }  // namespace device
 
 #endif  // DEVICE_FIDO_FEATURES_H_

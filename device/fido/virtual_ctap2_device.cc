@@ -1377,6 +1377,12 @@ absl::optional<CtapDeviceResponseCode> VirtualCtap2Device::OnMakeCredential(
       return CtapDeviceResponseCode::kCtap2ErrKeyStoreFull;
     }
 
+    // Simulate some security keys that return an error if user.displayName is
+    // empty.
+    if (request.user.display_name && request.user.display_name->empty()) {
+      return CtapDeviceResponseCode::kCtap1ErrInvalidLength;
+    }
+
     registration.is_resident = true;
     registration.user = request.user;
     registration.rp = request.rp;

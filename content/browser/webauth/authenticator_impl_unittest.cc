@@ -7581,6 +7581,18 @@ TEST_F(ResidentKeyAuthenticatorImplTest, StorageFull) {
             AuthenticatorStatus::NOT_ALLOWED_ERROR);
 }
 
+TEST_F(ResidentKeyAuthenticatorImplTest, MakeCredentialEmptyFields) {
+  PublicKeyCredentialCreationOptionsPtr options = make_credential_options();
+  // This value is perfectly legal, but our VirtualCtap2Device simulates
+  // some security keys in rejecting empty values. CBOR serialisation should
+  // omit these values rather than send empty ones.
+  options->user.display_name = "";
+
+  MakeCredentialResult result = AuthenticatorMakeCredential(std::move(options));
+
+  EXPECT_EQ(AuthenticatorStatus::SUCCESS, result.status);
+}
+
 TEST_F(ResidentKeyAuthenticatorImplTest, GetAssertionSingleNoPII) {
   ASSERT_TRUE(virtual_device_factory_->mutable_state()->InjectResidentKey(
       /*credential_id=*/{{4, 3, 2, 1}}, kTestRelyingPartyId,
