@@ -246,6 +246,24 @@ void PowerMetricsReporter::OnBatteryAndAggregatedProcessMetricsSampled(
   auto battery_discharge = GetBatteryDischargeDuringInterval(
       previous_battery_state, new_battery_state, interval_duration);
 
+#if BUILDFLAG(IS_WIN)
+  // Report battery max capacity. We suspect that the max capacity is 100 for a
+  // significant portion of clients on Windows, which doesn't provide sufficient
+  // granularity (the battery typically discharges by less than 1% per 2
+  // minutes). This histogram will allow us to validate the hypothesis.
+  if (new_battery_state.has_value()) {
+    CHECK_EQ(new_battery_state->full_charged_capacity.has_value(),
+             new_battery_state->charge_unit.has_value());
+    if (new_battery_state->full_charged_capacity.has_value() &&
+        new_battery_state->charge_unit.value() ==
+            base::BatteryLevelProvider::BatteryLevelUnit::kMWh) {
+      base::UmaHistogramCounts10000(
+          "Power.BatteryMaxCapacity",
+          new_battery_state->full_charged_capacity.value());
+    }
+  }
+#endif
+
   ReportMetrics(interval_duration, aggregated_process_metrics,
                 battery_discharge);
 }
