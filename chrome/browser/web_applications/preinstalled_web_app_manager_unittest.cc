@@ -26,9 +26,10 @@
 #include "chrome/browser/web_applications/preinstalled_app_install_features.h"
 #include "chrome/browser/web_applications/preinstalled_web_app_config_utils.h"
 #include "chrome/browser/web_applications/preinstalled_web_apps/preinstalled_web_apps.h"
+#include "chrome/browser/web_applications/test/fake_web_app_provider.h"
+#include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
-#include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
@@ -114,8 +115,10 @@ class PreinstalledWebAppManagerTest : public testing::Test,
     scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
 
-  std::vector<ExternalInstallOptions> LoadApps(base::StringPiece test_dir,
-                                               Profile* profile = nullptr) {
+  std::vector<ExternalInstallOptions> LoadApps(
+      base::StringPiece test_dir,
+      Profile* profile = nullptr,
+      bool disable_default_apps = false) {
     std::unique_ptr<TestingProfile> testing_profile;
     if (!profile) {
 #if BUILDFLAG(IS_CHROMEOS)
@@ -129,22 +132,26 @@ class PreinstalledWebAppManagerTest : public testing::Test,
     base::FilePath config_dir = GetConfigDir(test_dir);
     SetPreinstalledWebAppConfigDirForTesting(&config_dir);
 
-    auto preinstalled_web_app_manager =
-        std::make_unique<PreinstalledWebAppManager>(profile);
+    if (profile_ != profile) {
+      provider_ = FakeWebAppProvider::Get(profile);
+      provider_->SetDefaultFakeSubsystems();
+      test::AwaitStartWebAppProviderAndSubsystems(profile);
+      profile_ = profile;
+    }
 
-    auto* provider = WebAppProvider::GetForWebApps(profile);
-    DCHECK(provider);
-    preinstalled_web_app_manager->SetSubsystems(
-        &provider->registrar(), &provider->ui_manager(),
-        &provider->externally_managed_app_manager());
+    if (!disable_default_apps) {
+      base::CommandLine::ForCurrentProcess()->RemoveSwitch(
+          switches::kDisableDefaultApps);
+    }
 
     std::vector<ExternalInstallOptions> result;
     base::RunLoop run_loop;
-    preinstalled_web_app_manager->LoadForTesting(base::BindLambdaForTesting(
-        [&](std::vector<ExternalInstallOptions> install_options_list) {
-          result = std::move(install_options_list);
-          run_loop.Quit();
-        }));
+    provider_->preinstalled_web_app_manager().LoadForTesting(
+        base::BindLambdaForTesting(
+            [&](std::vector<ExternalInstallOptions> install_options_list) {
+              result = std::move(install_options_list);
+              run_loop.Quit();
+            }));
     run_loop.Run();
 
     SetPreinstalledWebAppConfigDirForTesting(nullptr);
@@ -259,6 +266,8 @@ class PreinstalledWebAppManagerTest : public testing::Test,
 
   base::test::ScopedCommandLine command_line_;
 #endif
+  raw_ptr<FakeWebAppProvider> provider_ = nullptr;
+  raw_ptr<Profile> profile_ = nullptr;
 
   base::test::ScopedFeatureList scoped_feature_list_;
   // To support context of browser threads.
@@ -593,7 +602,10 @@ class DisabledPreinstalledWebAppManagerTest
 };
 
 TEST_P(DisabledPreinstalledWebAppManagerTest, LoadConfigsWhileDisabled) {
-  EXPECT_EQ(LoadApps(kGoodJsonTestDir).size(), 0u);
+  EXPECT_EQ(LoadApps(kGoodJsonTestDir, /*profile=*/nullptr,
+                     /*disable_default_apps=*/true)
+                .size(),
+            0u);
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

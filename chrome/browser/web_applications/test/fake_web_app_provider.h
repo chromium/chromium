@@ -35,6 +35,7 @@ class WebAppRegistrarMutable;
 class WebAppSyncBridge;
 class WebAppUiManager;
 class WebAppCommandManager;
+class PreinstalledWebAppManager;
 
 class FakeWebAppProvider : public WebAppProvider {
  public:
@@ -81,6 +82,8 @@ class FakeWebAppProvider : public WebAppProvider {
   void SetWebAppPolicyManager(
       std::unique_ptr<WebAppPolicyManager> web_app_policy_manager);
   void SetCommandManager(std::unique_ptr<WebAppCommandManager> command_manager);
+  void SetPreinstalledWebAppManager(
+      std::unique_ptr<PreinstalledWebAppManager> preinstalled_web_app_manager);
 
   // These getters can be called at any time: no
   // WebAppProvider::CheckIsConnected() check performed. See
@@ -98,6 +101,16 @@ class FakeWebAppProvider : public WebAppProvider {
 
   // Create and set default fake subsystems.
   void SetDefaultFakeSubsystems();
+
+  // Used to verify shutting down of WebAppUiManager.
+  void ShutDownUiManagerForTesting();
+
+  // Shut down subsystems one by one if they are still running.
+  // This needs to be done because of functions like
+  // ShutDownUiManagerForTesting() which can shut down
+  // specific subsystems from tests, and still call
+  // FakeWebAppProvider::Shutdown() as part of test teardown.
+  void Shutdown() override;
 
   syncer::MockModelTypeChangeProcessor& processor() { return mock_processor_; }
 

@@ -12,9 +12,12 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/web_applications/os_integration/web_app_file_handler_registration.h"
 #include "chrome/browser/web_applications/test/fake_web_app_file_handler_manager.h"
-#include "chrome/browser/web_applications/test/fake_web_app_registry_controller.h"
+#include "chrome/browser/web_applications/test/fake_web_app_provider.h"
+#include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
+#include "chrome/browser/web_applications/web_app_registry_update.h"
+#include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "components/services/app_service/public/cpp/file_handler.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -166,33 +169,36 @@ class WebAppFileHandlerManagerTest : public WebAppTest {
   void SetUp() override {
     WebAppTest::SetUp();
 
-    fake_registry_controller_ =
-        std::make_unique<FakeWebAppRegistryController>();
-    fake_registry_controller_->SetUp(profile());
+    provider_ = FakeWebAppProvider::Get(profile());
+    provider_->SetDefaultFakeSubsystems();
+    test::AwaitStartWebAppProviderAndSubsystems(profile());
 
+    // This is not a WebAppProvider subsystem, so this can be
+    // set after the WebAppProvider has been initialized.
     file_handler_manager_ =
         std::make_unique<FakeWebAppFileHandlerManager>(profile());
-    file_handler_manager_->SetSubsystems(&controller().sync_bridge());
-
-    controller().Init();
+    file_handler_manager_->SetSubsystems(&sync_bridge());
 
     auto web_app = test::CreateWebApp();
     app_id_ = web_app->app_id();
-    controller().RegisterApp(std::move(web_app));
+    {
+      ScopedRegistryUpdate update(&sync_bridge());
+      update->CreateApp(std::move(web_app));
+    }
   }
 
   FakeWebAppFileHandlerManager& file_handler_manager() {
     return *file_handler_manager_;
   }
 
-  FakeWebAppRegistryController& controller() {
-    return *fake_registry_controller_;
-  }
+  WebAppProvider& provider() { return *provider_; }
+
+  WebAppSyncBridge& sync_bridge() { return provider_->sync_bridge(); }
 
   const AppId& app_id() const { return app_id_; }
 
  private:
-  std::unique_ptr<FakeWebAppRegistryController> fake_registry_controller_;
+  raw_ptr<FakeWebAppProvider> provider_;
   std::unique_ptr<FakeWebAppFileHandlerManager> file_handler_manager_;
 
   base::test::ScopedFeatureList features_;

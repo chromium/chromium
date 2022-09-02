@@ -12,6 +12,7 @@
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -450,7 +451,13 @@ TEST_F(PlatformNotificationServiceTest_WebAppNotificationIconAndTitle,
   provider->GetRegistrarMutable().registry().emplace(app_id,
                                                      std::move(web_app));
 
-  IconManagerStartAndAwaitFaviconMonochrome(icon_manager, app_id);
+  base::RunLoop run_loop;
+  icon_manager.SetFaviconMonochromeReadCallbackForTesting(
+      base::BindLambdaForTesting(
+          [&](const web_app::AppId& cached_app_id) { run_loop.Quit(); }));
+  icon_manager.Start();
+  run_loop.Run();
+
   provider->Start();
 
   absl::optional<PlatformNotificationServiceImpl::WebAppIconAndTitle>

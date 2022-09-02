@@ -272,30 +272,6 @@ void IconManagerWriteGeneratedIcons(
   run_loop.Run();
 }
 
-void IconManagerStartAndAwaitFaviconAny(WebAppIconManager& icon_manager,
-                                        const AppId& app_id) {
-  base::RunLoop run_loop;
-  icon_manager.SetFaviconReadCallbackForTesting(
-      base::BindLambdaForTesting([&](const AppId& cached_app_id) {
-        DCHECK_EQ(cached_app_id, app_id);
-        run_loop.Quit();
-      }));
-  icon_manager.Start();
-  run_loop.Run();
-}
-
-void IconManagerStartAndAwaitFaviconMonochrome(WebAppIconManager& icon_manager,
-                                               const AppId& app_id) {
-  base::RunLoop run_loop;
-  icon_manager.SetFaviconMonochromeReadCallbackForTesting(
-      base::BindLambdaForTesting([&](const AppId& cached_app_id) {
-        DCHECK_EQ(cached_app_id, app_id);
-        run_loop.Quit();
-      }));
-  icon_manager.Start();
-  run_loop.Run();
-}
-
 SkColor IconManagerReadAppIconPixel(WebAppIconManager& icon_manager,
                                     const AppId& app_id,
                                     SquareSizePx size_px,

@@ -6,7 +6,6 @@
 
 #include <array>
 #include <memory>
-#include <set>
 #include <utility>
 
 #include "base/bind.h"
@@ -28,11 +27,11 @@
 #include "chrome/browser/web_applications/test/fake_install_finalizer.h"
 #include "chrome/browser/web_applications/test/fake_os_integration_manager.h"
 #include "chrome/browser/web_applications/test/fake_web_app_database_factory.h"
-#include "chrome/browser/web_applications/test/fake_web_app_registry_controller.h"
+#include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/fake_web_app_ui_manager.h"
-#include "chrome/browser/web_applications/test/test_file_utils.h"
 #include "chrome/browser/web_applications/test/test_web_app_url_loader.h"
 #include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
+#include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
@@ -47,6 +46,7 @@
 #include "chrome/browser/web_applications/web_app_install_params.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_features.h"
@@ -84,34 +84,21 @@ class WebAppInstallTaskTest : public WebAppTest {
   void SetUp() override {
     WebAppTest::SetUp();
 
-    fake_registry_controller_ =
-        std::make_unique<FakeWebAppRegistryController>();
-    fake_registry_controller_->SetUp(profile());
+    provider_ = web_app::FakeWebAppProvider::Get(profile());
+    provider_->SetDefaultFakeSubsystems();
 
-    install_manager_ = std::make_unique<WebAppInstallManager>(profile());
+    auto install_manager = std::make_unique<WebAppInstallManager>(profile());
+    install_manager_ = install_manager.get();
+    provider_->SetInstallManager(std::move(install_manager));
 
-    file_utils_ = base::MakeRefCounted<TestFileUtils>();
-    icon_manager_ = std::make_unique<WebAppIconManager>(profile(), file_utils_);
+    auto install_finalizer =
+        std::make_unique<WebAppInstallFinalizer>(profile());
+    install_finalizer_ = install_finalizer.get();
+    provider_->SetInstallFinalizer(std::move(install_finalizer));
 
-    policy_manager_ = std::make_unique<WebAppPolicyManager>(profile());
-
-    ui_manager_ = std::make_unique<FakeWebAppUiManager>();
-
-    install_finalizer_ = std::make_unique<WebAppInstallFinalizer>(profile());
-
-    icon_manager_->SetSubsystems(&registrar(), &install_manager());
-
-    install_finalizer_->SetSubsystems(
-        &install_manager(), &registrar(), ui_manager_.get(),
-        &fake_registry_controller_->sync_bridge(),
-        &fake_os_integration_manager(), icon_manager_.get(),
-        policy_manager_.get(),
-        &fake_registry_controller_->translation_manager(),
-        &fake_registry_controller_->command_manager());
+    test::AwaitStartWebAppProviderAndSubsystems(profile());
 
     url_loader_ = std::make_unique<TestWebAppUrlLoader>();
-    controller().Init();
-    install_finalizer_->Start();
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     arc_test_.SetUp(profile());
@@ -140,13 +127,8 @@ class WebAppInstallTaskTest : public WebAppTest {
 #endif
     url_loader_.reset();
     install_task_.reset();
-    install_finalizer_.reset();
-    ui_manager_.reset();
-    policy_manager_.reset();
-    icon_manager_.reset();
-
-    fake_registry_controller_.reset();
-    install_manager_.reset();
+    fake_install_finalizer_.reset();
+    provider_->Shutdown();
 
     WebAppTest::TearDown();
   }
@@ -187,11 +169,11 @@ class WebAppInstallTaskTest : public WebAppTest {
   }
 
   void SetInstallFinalizerForTesting() {
-    auto fake_install_finalizer = std::make_unique<FakeInstallFinalizer>();
-    fake_install_finalizer_ = fake_install_finalizer.get();
-    install_finalizer_ = std::move(fake_install_finalizer);
+    fake_install_finalizer_ = std::make_unique<FakeInstallFinalizer>();
+    install_finalizer_ = fake_install_finalizer_.get();
     if (install_task_)
-      install_task_->SetInstallFinalizerForTesting(fake_install_finalizer_);
+      install_task_->SetInstallFinalizerForTesting(
+          fake_install_finalizer_.get());
   }
 
   void CreateDefaultDataToRetrieve(const GURL& url, const GURL& scope) {
@@ -313,13 +295,12 @@ class WebAppInstallTaskTest : public WebAppTest {
 
  protected:
   WebAppInstallTask& install_task() { return *install_task_; }
-  FakeWebAppRegistryController& controller() {
-    return *fake_registry_controller_;
-  }
+  FakeWebAppProvider& provider() { return *provider_; }
 
-  WebAppRegistrar& registrar() { return controller().registrar(); }
+  WebAppRegistrar& registrar() { return provider().registrar(); }
   FakeOsIntegrationManager& fake_os_integration_manager() {
-    return controller().os_integration_manager();
+    return static_cast<FakeOsIntegrationManager&>(
+        provider().os_integration_manager());
   }
   TestWebAppUrlLoader& url_loader() { return *url_loader_; }
   FakeDataRetriever& data_retriever() {
@@ -329,15 +310,10 @@ class WebAppInstallTaskTest : public WebAppTest {
 
   WebAppInstallManager& install_manager() const { return *install_manager_; }
 
-  std::unique_ptr<WebAppInstallManager> install_manager_;
-  std::unique_ptr<WebAppIconManager> icon_manager_;
-  std::unique_ptr<WebAppPolicyManager> policy_manager_;
   std::unique_ptr<WebAppInstallTask> install_task_;
-  std::unique_ptr<FakeWebAppUiManager> ui_manager_;
-  std::unique_ptr<WebAppInstallFinalizer> install_finalizer_;
-  scoped_refptr<TestFileUtils> file_utils_;
 
   // Owned by install_task_:
+  raw_ptr<WebAppInstallFinalizer> install_finalizer_;
   raw_ptr<FakeDataRetriever> data_retriever_ = nullptr;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -351,9 +327,11 @@ class WebAppInstallTaskTest : public WebAppTest {
   }
 
  private:
-  std::unique_ptr<FakeWebAppRegistryController> fake_registry_controller_;
+  raw_ptr<FakeWebAppProvider> provider_;
+  raw_ptr<WebAppInstallManager> install_manager_;
+
   std::unique_ptr<TestWebAppUrlLoader> url_loader_;
-  raw_ptr<FakeInstallFinalizer> fake_install_finalizer_ = nullptr;
+  std::unique_ptr<FakeInstallFinalizer> fake_install_finalizer_;
   base::HistogramTester histogram_tester_;
 };
 
@@ -963,7 +941,7 @@ TEST_F(WebAppInstallTaskWithRunOnOsLoginTest,
 
   test::SetWebAppSettingsListPref(profile(),
                                   kWebAppSettingWithDefaultConfiguration);
-  controller().policy_manager().RefreshPolicySettingsForTesting();
+  provider().policy_manager().RefreshPolicySettingsForTesting();
 
   base::RunLoop run_loop;
   bool callback_called = false;

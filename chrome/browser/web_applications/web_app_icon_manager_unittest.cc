@@ -18,9 +18,10 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/web_applications/test/fake_web_app_database_factory.h"
-#include "chrome/browser/web_applications/test/fake_web_app_registry_controller.h"
+#include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/test_file_utils.h"
 #include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
+#include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
@@ -55,17 +56,20 @@ class WebAppIconManagerTest : public WebAppTest {
   void SetUp() override {
     WebAppTest::SetUp();
 
-    fake_registry_controller_ =
-        std::make_unique<FakeWebAppRegistryController>();
-    fake_registry_controller_->SetUp(profile());
+    provider_ = FakeWebAppProvider::Get(profile());
+    provider_->SetDefaultFakeSubsystems();
 
-    install_manager_ = std::make_unique<WebAppInstallManager>(profile());
+    auto install_manager = std::make_unique<WebAppInstallManager>(profile());
+    install_manager_ = install_manager.get();
+    provider_->SetInstallManager(std::move(install_manager));
 
     file_utils_ = base::MakeRefCounted<TestFileUtils>();
-    icon_manager_ = std::make_unique<WebAppIconManager>(profile(), file_utils_);
-    icon_manager_->SetSubsystems(&registrar(), &install_manager());
+    auto icon_manager =
+        std::make_unique<WebAppIconManager>(profile(), file_utils_);
+    icon_manager_ = icon_manager.get();
+    provider_->SetIconManager(std::move(icon_manager));
 
-    controller().Init();
+    test::AwaitStartWebAppProviderAndSubsystems(profile());
   }
 
  protected:
@@ -96,7 +100,7 @@ class WebAppIconManagerTest : public WebAppTest {
     }
 
     base::RunLoop run_loop;
-    icon_manager_->WriteData(app_id, {}, std::move(shortcuts_menu_icons), {},
+    icon_manager().WriteData(app_id, {}, std::move(shortcuts_menu_icons), {},
                              base::BindLambdaForTesting([&](bool success) {
                                EXPECT_TRUE(success);
                                run_loop.Quit();
@@ -237,13 +241,49 @@ class WebAppIconManagerTest : public WebAppTest {
     return ReadIconAndResize(app_id, IconPurpose::ANY, desired_icon_size);
   }
 
-  FakeWebAppRegistryController& controller() {
-    return *fake_registry_controller_;
+  void AddAppToRegistry(std::unique_ptr<WebApp> web_app) {
+    ScopedRegistryUpdate update(&sync_bridge());
+    update->CreateApp(std::move(web_app));
   }
 
-  WebAppRegistrar& registrar() { return controller().registrar(); }
+  FakeWebAppProvider& provider() { return *provider_; }
+
+  // Read favicons on web_app installation and await
+  // WebAppIconManager::favicon_read_callback_ synchronously.
+  void AwaitReadFaviconOnAddingWebApp(std::unique_ptr<WebApp> web_app) {
+    const AppId& app_id = web_app->app_id();
+    base::RunLoop run_loop;
+    icon_manager().SetFaviconReadCallbackForTesting(
+        base::BindLambdaForTesting([&](const AppId& cached_app_id) {
+          EXPECT_EQ(cached_app_id, app_id);
+          run_loop.Quit();
+        }));
+
+    AddAppToRegistry(std::move(web_app));
+    install_manager().NotifyWebAppInstalled(app_id);
+    run_loop.Run();
+  }
+
+  // Read Monochrome favicons on web_app installation and await
+  // WebAppIconManager::favicon_monochrome_read_callback_ synchronously.
+  void AwaitReadFaviconMonochromeOnAddingWebApp(
+      std::unique_ptr<WebApp> web_app) {
+    const AppId& app_id = web_app->app_id();
+    base::RunLoop run_loop;
+    icon_manager().SetFaviconMonochromeReadCallbackForTesting(
+        base::BindLambdaForTesting([&](const AppId& cached_app_id) {
+          EXPECT_EQ(cached_app_id, app_id);
+          run_loop.Quit();
+        }));
+
+    AddAppToRegistry(std::move(web_app));
+    install_manager().NotifyWebAppInstalled(app_id);
+    run_loop.Run();
+  }
+
+  WebAppRegistrar& registrar() { return provider().registrar(); }
   WebAppInstallManager& install_manager() { return *install_manager_; }
-  WebAppSyncBridge& sync_bridge() { return controller().sync_bridge(); }
+  WebAppSyncBridge& sync_bridge() { return provider().sync_bridge(); }
   WebAppIconManager& icon_manager() { return *icon_manager_; }
   TestFileUtils& file_utils() {
     DCHECK(file_utils_);
@@ -251,9 +291,10 @@ class WebAppIconManagerTest : public WebAppTest {
   }
 
  private:
-  std::unique_ptr<FakeWebAppRegistryController> fake_registry_controller_;
-  std::unique_ptr<WebAppIconManager> icon_manager_;
-  std::unique_ptr<WebAppInstallManager> install_manager_;
+  raw_ptr<FakeWebAppProvider> provider_;
+  raw_ptr<WebAppInstallManager> install_manager_;
+  raw_ptr<WebAppIconManager> icon_manager_;
+
   scoped_refptr<TestFileUtils> file_utils_;
 };
 
@@ -268,7 +309,7 @@ TEST_F(WebAppIconManagerTest, WriteAndReadIcons_AnyOnly) {
 
   web_app->SetDownloadedIconSizes(IconPurpose::ANY, sizes_px);
 
-  controller().RegisterApp(std::move(web_app));
+  AddAppToRegistry(std::move(web_app));
 
   EXPECT_TRUE(icon_manager().HasIcons(app_id, IconPurpose::ANY, sizes_px));
   {
@@ -308,7 +349,7 @@ TEST_F(WebAppIconManagerTest, WriteAndReadIcons_MaskableOnly) {
 
   web_app->SetDownloadedIconSizes(IconPurpose::MASKABLE, sizes_px);
 
-  controller().RegisterApp(std::move(web_app));
+  AddAppToRegistry(std::move(web_app));
 
   EXPECT_FALSE(icon_manager().HasIcons(app_id, IconPurpose::ANY, sizes_px));
   EXPECT_TRUE(icon_manager().HasIcons(app_id, IconPurpose::MASKABLE, sizes_px));
@@ -347,7 +388,7 @@ TEST_F(WebAppIconManagerTest, WriteAndReadIcons_MonochromeOnly) {
 
   web_app->SetDownloadedIconSizes(IconPurpose::MONOCHROME, sizes_px);
 
-  controller().RegisterApp(std::move(web_app));
+  AddAppToRegistry(std::move(web_app));
 
   EXPECT_FALSE(icon_manager().HasIcons(app_id, IconPurpose::ANY, sizes_px));
   EXPECT_FALSE(
@@ -391,7 +432,7 @@ TEST_F(WebAppIconManagerTest, WriteAndReadIcons_AnyAndMaskable) {
   web_app->SetDownloadedIconSizes(IconPurpose::ANY, sizes_px);
   web_app->SetDownloadedIconSizes(IconPurpose::MASKABLE, sizes_px);
 
-  controller().RegisterApp(std::move(web_app));
+  AddAppToRegistry(std::move(web_app));
 
   EXPECT_TRUE(icon_manager().HasIcons(app_id, IconPurpose::ANY, sizes_px));
   {
@@ -459,7 +500,7 @@ TEST_F(WebAppIconManagerTest, WriteAndReadIcons_AnyAndMonochrome) {
   web_app->SetDownloadedIconSizes(IconPurpose::ANY, sizes_px_any);
   web_app->SetDownloadedIconSizes(IconPurpose::MONOCHROME, sizes_px_monochrome);
 
-  controller().RegisterApp(std::move(web_app));
+  AddAppToRegistry(std::move(web_app));
 
   EXPECT_TRUE(icon_manager().HasIcons(app_id, IconPurpose::ANY, sizes_px_any));
   EXPECT_FALSE(icon_manager().HasIcons(app_id, IconPurpose::MASKABLE,
@@ -528,7 +569,7 @@ TEST_F(WebAppIconManagerTest, OverwriteIcons) {
     web_app->SetDownloadedIconSizes(IconPurpose::MASKABLE, std::move(sizes_px));
   }
 
-  controller().RegisterApp(std::move(web_app));
+  AddAppToRegistry(std::move(web_app));
 
   // k64 and k48 sizes to be overwritten. Skip k32 size and add new k96 size.
   const std::vector<int> overwritten_sizes_px{icon_size::k48, icon_size::k64,
@@ -551,7 +592,7 @@ TEST_F(WebAppIconManagerTest, OverwriteIcons) {
 
     run_loop.Run();
 
-    ScopedRegistryUpdate update(&controller().sync_bridge());
+    ScopedRegistryUpdate update(&sync_bridge());
     update->UpdateApp(app_id)->SetDownloadedIconSizes(IconPurpose::ANY,
                                                       overwritten_sizes_px);
     update->UpdateApp(app_id)->SetDownloadedIconSizes(IconPurpose::MASKABLE,
@@ -620,7 +661,7 @@ TEST_F(WebAppIconManagerTest, ReadAllIcons_AnyOnly) {
 
   web_app->SetDownloadedIconSizes(IconPurpose::ANY, sizes_px);
 
-  controller().RegisterApp(std::move(web_app));
+  AddAppToRegistry(std::move(web_app));
   {
     base::RunLoop run_loop;
 
@@ -651,7 +692,7 @@ TEST_F(WebAppIconManagerTest, ReadAllIcons_AnyAndMaskable) {
   web_app->SetDownloadedIconSizes(IconPurpose::ANY, sizes_px);
   web_app->SetDownloadedIconSizes(IconPurpose::MASKABLE, sizes_px);
 
-  controller().RegisterApp(std::move(web_app));
+  AddAppToRegistry(std::move(web_app));
   {
     base::RunLoop run_loop;
 
@@ -684,7 +725,7 @@ TEST_F(WebAppIconManagerTest, ReadShortcutsMenuIconsFailed) {
                                               /*sizes_monochrome=*/{},
                                               /*num_menu_items=*/10));
 
-  controller().RegisterApp(std::move(web_app));
+  AddAppToRegistry(std::move(web_app));
 
   // Request shortcuts menu icons which don't exist on disk.
   ShortcutsMenuIconBitmaps shortcuts_menu_icons_map =
@@ -727,7 +768,7 @@ TEST_F(WebAppIconManagerTest, WriteAndReadAllShortcutsMenuIcons) {
       CreateDownloadedShortcutsMenuIconsSizes(
           sizes_any, sizes_maskable, sizes_monochrome, num_menu_items));
 
-  controller().RegisterApp(std::move(web_app));
+  AddAppToRegistry(std::move(web_app));
 
   ShortcutsMenuIconBitmaps shortcuts_menu_icons_map =
       ReadAllShortcutsMenuIcons(app_id);
@@ -778,7 +819,7 @@ TEST_F(WebAppIconManagerTest, WriteNonProductIconsEmptyMaps) {
 
   web_app->SetDownloadedShortcutsMenuIconsSizes(std::vector<IconSizes>{});
 
-  controller().RegisterApp(std::move(web_app));
+  AddAppToRegistry(std::move(web_app));
 
   base::RunLoop run_loop;
   icon_manager().WriteData(app_id, {}, {}, {},
@@ -802,7 +843,7 @@ TEST_F(WebAppIconManagerTest, WriteOtherIconsToDisk) {
   auto web_app = test::CreateWebApp();
   const AppId app_id = web_app->app_id();
 
-  controller().RegisterApp(std::move(web_app));
+  AddAppToRegistry(std::move(web_app));
 
   IconsMap other_icons;
   const GURL example_gurl("https://example.com/image.png");
@@ -831,7 +872,7 @@ TEST_F(WebAppIconManagerTest, ReadIconsFailed) {
   // Set icon meta-info but don't write bitmap to disk.
   web_app->SetDownloadedIconSizes(IconPurpose::ANY, icon_sizes_px);
 
-  controller().RegisterApp(std::move(web_app));
+  AddAppToRegistry(std::move(web_app));
 
   EXPECT_FALSE(
       icon_manager().HasIcons(app_id, IconPurpose::ANY, {icon_size::k96}));
@@ -866,7 +907,7 @@ TEST_F(WebAppIconManagerTest, FindExact) {
 
   web_app->SetDownloadedIconSizes(IconPurpose::ANY, sizes_px);
 
-  controller().RegisterApp(std::move(web_app));
+  AddAppToRegistry(std::move(web_app));
 
   EXPECT_FALSE(icon_manager().HasIcons(app_id, IconPurpose::ANY, {40}));
   EXPECT_FALSE(icon_manager().HasIcons(app_id, IconPurpose::MASKABLE, {20}));
@@ -910,7 +951,7 @@ TEST_F(WebAppIconManagerTest, FindSmallest) {
   // Pretend we only have one size of maskable icon.
   web_app->SetDownloadedIconSizes(IconPurpose::MASKABLE, {20});
 
-  controller().RegisterApp(std::move(web_app));
+  AddAppToRegistry(std::move(web_app));
 
   EXPECT_FALSE(icon_manager().HasSmallestIcon(app_id, {IconPurpose::ANY}, 70));
   EXPECT_EQ(absl::nullopt,
@@ -1051,7 +1092,7 @@ TEST_F(WebAppIconManagerTest, ReadSmallestCompressedIcon_Success_AnyOnly) {
 
   web_app->SetDownloadedIconSizes(IconPurpose::ANY, sizes_px);
 
-  controller().RegisterApp(std::move(web_app));
+  AddAppToRegistry(std::move(web_app));
 
   {
     PurposeAndData result =
@@ -1089,7 +1130,7 @@ TEST_F(WebAppIconManagerTest, ReadSmallestCompressedIcon_Success) {
   web_app->SetDownloadedIconSizes(IconPurpose::ANY, {size_smaller});
   web_app->SetDownloadedIconSizes(IconPurpose::MASKABLE, {size_larger});
 
-  controller().RegisterApp(std::move(web_app));
+  AddAppToRegistry(std::move(web_app));
 
   {
     PurposeAndData result =
@@ -1149,7 +1190,7 @@ TEST_F(WebAppIconManagerTest, ReadSmallestCompressedIcon_Failure) {
   web_app->SetDownloadedIconSizes(IconPurpose::ANY, sizes_px);
   web_app->SetDownloadedIconSizes(IconPurpose::MASKABLE, sizes_px);
 
-  controller().RegisterApp(std::move(web_app));
+  AddAppToRegistry(std::move(web_app));
 
   {
     PurposeAndData result =
@@ -1186,7 +1227,7 @@ TEST_F(WebAppIconManagerTest, ReadIconAndResize_Success_AnyOnly) {
 
   web_app->SetDownloadedIconSizes(IconPurpose::ANY, sizes_px);
 
-  controller().RegisterApp(std::move(web_app));
+  AddAppToRegistry(std::move(web_app));
 
   for (size_t i = 0; i < sizes_px.size(); ++i)
     EXPECT_EQ(colors[i], ReadIconAndResize(app_id, sizes_px[i]));
@@ -1226,7 +1267,7 @@ TEST_F(WebAppIconManagerTest, ReadIconAndResize_Success_AnyAndMaskable) {
   web_app->SetDownloadedIconSizes(IconPurpose::ANY, sizes_px);
   web_app->SetDownloadedIconSizes(IconPurpose::MASKABLE, sizes_px);
 
-  controller().RegisterApp(std::move(web_app));
+  AddAppToRegistry(std::move(web_app));
 
   for (size_t i = 0; i < sizes_px.size(); ++i) {
     EXPECT_EQ(colors[i],
@@ -1262,7 +1303,7 @@ TEST_F(WebAppIconManagerTest, ReadIconAndResize_Failure) {
   web_app->SetDownloadedIconSizes(IconPurpose::MASKABLE,
                                   {icon_size::k32, icon_size::k64});
 
-  controller().RegisterApp(std::move(web_app));
+  AddAppToRegistry(std::move(web_app));
 
   {
     base::RunLoop run_loop;
@@ -1299,9 +1340,7 @@ TEST_F(WebAppIconManagerTest, CacheExistingAppFavicon) {
 
   web_app->SetDownloadedIconSizes(IconPurpose::ANY, sizes_px);
 
-  controller().RegisterApp(std::move(web_app));
-
-  IconManagerStartAndAwaitFaviconAny(icon_manager(), app_id);
+  AwaitReadFaviconOnAddingWebApp(std::move(web_app));
 
   SkBitmap bitmap = icon_manager().GetFavicon(app_id);
   EXPECT_FALSE(bitmap.empty());
@@ -1323,9 +1362,7 @@ TEST_F(WebAppIconManagerTest, CacheAppFaviconWithResize) {
 
   web_app->SetDownloadedIconSizes(IconPurpose::ANY, sizes_px);
 
-  controller().RegisterApp(std::move(web_app));
-
-  IconManagerStartAndAwaitFaviconAny(icon_manager(), app_id);
+  AwaitReadFaviconOnAddingWebApp(std::move(web_app));
 
   SkBitmap bitmap = icon_manager().GetFavicon(app_id);
   EXPECT_FALSE(bitmap.empty());
@@ -1336,8 +1373,6 @@ TEST_F(WebAppIconManagerTest, CacheAppFaviconWithResize) {
 }
 
 TEST_F(WebAppIconManagerTest, CacheNewAppFavicon) {
-  icon_manager().Start();
-
   auto web_app = test::CreateWebApp();
   const AppId app_id = web_app->app_id();
 
@@ -1348,17 +1383,7 @@ TEST_F(WebAppIconManagerTest, CacheNewAppFavicon) {
 
   web_app->SetDownloadedIconSizes(IconPurpose::ANY, sizes_px);
 
-  base::RunLoop run_loop;
-  icon_manager().SetFaviconReadCallbackForTesting(
-      base::BindLambdaForTesting([&](const AppId& cached_app_id) {
-        EXPECT_EQ(cached_app_id, app_id);
-        run_loop.Quit();
-      }));
-
-  controller().RegisterApp(std::move(web_app));
-  install_manager().NotifyWebAppInstalled(app_id);
-
-  run_loop.Run();
+  AwaitReadFaviconOnAddingWebApp(std::move(web_app));
 
   SkBitmap bitmap = icon_manager().GetFavicon(app_id);
   EXPECT_FALSE(bitmap.empty());
@@ -1385,9 +1410,7 @@ TEST_F(WebAppIconManagerTest, CacheAppFavicon_UiScaleFactors_NoMissingIcons) {
 
   web_app->SetDownloadedIconSizes(IconPurpose::ANY, sizes_px);
 
-  controller().RegisterApp(std::move(web_app));
-
-  IconManagerStartAndAwaitFaviconAny(icon_manager(), app_id);
+  AwaitReadFaviconOnAddingWebApp(std::move(web_app));
 
   gfx::ImageSkia image_skia = icon_manager().GetFaviconImageSkia(app_id);
   ASSERT_FALSE(image_skia.isNull());
@@ -1429,9 +1452,7 @@ TEST_F(WebAppIconManagerTest, CacheAppFavicon_UiScaleFactors_DownsizingIcons) {
 
   web_app->SetDownloadedIconSizes(IconPurpose::ANY, sizes_px);
 
-  controller().RegisterApp(std::move(web_app));
-
-  IconManagerStartAndAwaitFaviconAny(icon_manager(), app_id);
+  AwaitReadFaviconOnAddingWebApp(std::move(web_app));
 
   gfx::ImageSkia image_skia = icon_manager().GetFaviconImageSkia(app_id);
   ASSERT_FALSE(image_skia.isNull());
@@ -1456,9 +1477,8 @@ TEST_F(WebAppIconManagerTest, CacheAppFavicon_UiScaleFactors_NoIcons) {
 
   std::unique_ptr<WebApp> web_app = test::CreateWebApp();
   const AppId app_id = web_app->app_id();
-  controller().RegisterApp(std::move(web_app));
 
-  IconManagerStartAndAwaitFaviconAny(icon_manager(), app_id);
+  AwaitReadFaviconOnAddingWebApp(std::move(web_app));
 
   gfx::ImageSkia image_skia = icon_manager().GetFaviconImageSkia(app_id);
   EXPECT_TRUE(image_skia.isNull());
@@ -1478,9 +1498,7 @@ TEST_F(WebAppIconManagerTest, CacheAppFavicon_UiScaleFactors_NoMatchSmaller) {
       {{IconPurpose::ANY, sizes_px, /*colors=*/{SK_ColorRED}}});
   web_app->SetDownloadedIconSizes(IconPurpose::ANY, sizes_px);
 
-  controller().RegisterApp(std::move(web_app));
-
-  IconManagerStartAndAwaitFaviconAny(icon_manager(), app_id);
+  AwaitReadFaviconOnAddingWebApp(std::move(web_app));
 
   gfx::ImageSkia image_skia = icon_manager().GetFaviconImageSkia(app_id);
   EXPECT_TRUE(image_skia.isNull());
@@ -1501,9 +1519,7 @@ TEST_F(WebAppIconManagerTest,
       {{IconPurpose::ANY, sizes_px, /*colors=*/{SK_ColorLTGRAY}}});
   web_app->SetDownloadedIconSizes(IconPurpose::ANY, sizes_px);
 
-  controller().RegisterApp(std::move(web_app));
-
-  IconManagerStartAndAwaitFaviconAny(icon_manager(), app_id);
+  AwaitReadFaviconOnAddingWebApp(std::move(web_app));
 
   gfx::ImageSkia image_skia = icon_manager().GetFaviconImageSkia(app_id);
   ASSERT_FALSE(image_skia.isNull());
@@ -1537,9 +1553,7 @@ TEST_F(WebAppIconManagerTest,
       {{IconPurpose::ANY, sizes_px, /*colors=*/{SK_ColorDKGRAY}}});
   web_app->SetDownloadedIconSizes(IconPurpose::ANY, sizes_px);
 
-  controller().RegisterApp(std::move(web_app));
-
-  IconManagerStartAndAwaitFaviconAny(icon_manager(), app_id);
+  AwaitReadFaviconOnAddingWebApp(std::move(web_app));
 
   gfx::ImageSkia image_skia = icon_manager().GetFaviconImageSkia(app_id);
   ASSERT_FALSE(image_skia.isNull());
@@ -1580,9 +1594,7 @@ TEST_F(WebAppIconManagerTest_NotificationIconAndTitle,
 
   web_app->SetDownloadedIconSizes(IconPurpose::MONOCHROME, sizes_px);
 
-  controller().RegisterApp(std::move(web_app));
-
-  IconManagerStartAndAwaitFaviconMonochrome(icon_manager(), app_id);
+  AwaitReadFaviconMonochromeOnAddingWebApp(std::move(web_app));
 
   gfx::ImageSkia monochrome_image = icon_manager().GetMonochromeFavicon(app_id);
   ASSERT_FALSE(monochrome_image.isNull());
@@ -1611,8 +1623,6 @@ TEST_F(WebAppIconManagerTest_NotificationIconAndTitle,
   ui::test::ScopedSetSupportedResourceScaleFactors scoped_scale_factors(
       {ui::k200Percent, ui::k300Percent});
 
-  icon_manager().Start();
-
   std::unique_ptr<WebApp> web_app = test::CreateWebApp();
   web_app->SetThemeColor(absl::make_optional(SK_ColorGREEN));
 
@@ -1625,17 +1635,7 @@ TEST_F(WebAppIconManagerTest_NotificationIconAndTitle,
                                  {{IconPurpose::MONOCHROME, sizes_px, colors}});
   web_app->SetDownloadedIconSizes(IconPurpose::MONOCHROME, sizes_px);
 
-  base::RunLoop run_loop;
-  icon_manager().SetFaviconMonochromeReadCallbackForTesting(
-      base::BindLambdaForTesting([&](const AppId& cached_app_id) {
-        EXPECT_EQ(cached_app_id, app_id);
-        run_loop.Quit();
-      }));
-
-  controller().RegisterApp(std::move(web_app));
-  install_manager().NotifyWebAppInstalled(app_id);
-
-  run_loop.Run();
+  AwaitReadFaviconMonochromeOnAddingWebApp(std::move(web_app));
 
   gfx::ImageSkia monochrome_image = icon_manager().GetMonochromeFavicon(app_id);
   ASSERT_FALSE(monochrome_image.isNull());
@@ -1671,9 +1671,7 @@ TEST_F(WebAppIconManagerTest_NotificationIconAndTitle,
                                  {{IconPurpose::MONOCHROME, sizes_px, colors}});
   web_app->SetDownloadedIconSizes(IconPurpose::MONOCHROME, sizes_px);
 
-  controller().RegisterApp(std::move(web_app));
-
-  IconManagerStartAndAwaitFaviconMonochrome(icon_manager(), app_id);
+  AwaitReadFaviconMonochromeOnAddingWebApp(std::move(web_app));
 
   gfx::ImageSkia monochrome_image = icon_manager().GetMonochromeFavicon(app_id);
   ASSERT_FALSE(monochrome_image.isNull());
@@ -1696,9 +1694,7 @@ TEST_F(WebAppIconManagerTest_NotificationIconAndTitle,
 
   std::unique_ptr<WebApp> web_app = test::CreateWebApp();
   const AppId app_id = web_app->app_id();
-  controller().RegisterApp(std::move(web_app));
-
-  IconManagerStartAndAwaitFaviconMonochrome(icon_manager(), app_id);
+  AwaitReadFaviconMonochromeOnAddingWebApp(std::move(web_app));
 
   gfx::ImageSkia monochrome_image = icon_manager().GetMonochromeFavicon(app_id);
   EXPECT_TRUE(monochrome_image.isNull());

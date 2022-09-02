@@ -23,11 +23,12 @@
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
 #include "chrome/browser/web_applications/test/fake_data_retriever.h"
 #include "chrome/browser/web_applications/test/fake_web_app_database_factory.h"
-#include "chrome/browser/web_applications/test/fake_web_app_registry_controller.h"
+#include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/fake_web_app_ui_manager.h"
 #include "chrome/browser/web_applications/test/test_file_utils.h"
 #include "chrome/browser/web_applications/test/test_web_app_url_loader.h"
 #include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
+#include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_sync_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
@@ -44,6 +45,7 @@
 #include "chrome/browser/web_applications/web_app_install_task.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/test/base/testing_profile.h"
@@ -102,40 +104,45 @@ class WebAppInstallManagerTest
   void SetUp() override {
     WebAppTest::SetUp();
 
-    fake_registry_controller_ =
-        std::make_unique<FakeWebAppRegistryController>();
-    fake_registry_controller_->SetUp(profile());
+    provider_ = web_app::FakeWebAppProvider::Get(profile());
+    provider_->SetDefaultFakeSubsystems();
 
     file_utils_ = base::MakeRefCounted<TestFileUtils>();
-    icon_manager_ = std::make_unique<WebAppIconManager>(profile(), file_utils_);
+    auto icon_manager =
+        std::make_unique<WebAppIconManager>(profile(), file_utils_);
+    icon_manager_ = icon_manager.get();
 
-    policy_manager_ = std::make_unique<WebAppPolicyManager>(profile());
+    auto install_finalizer =
+        std::make_unique<WebAppInstallFinalizer>(profile());
+    install_finalizer_ = install_finalizer.get();
 
-    install_finalizer_ = std::make_unique<WebAppInstallFinalizer>(profile());
+    auto install_manager = std::make_unique<WebAppInstallManager>(profile());
+    install_manager_ = install_manager.get();
 
-    install_manager_ = std::make_unique<WebAppInstallManager>(profile());
-    install_manager_->SetSubsystems(
-        &registrar(), &controller().os_integration_manager(),
-        &fake_registry_controller_->command_manager(), install_finalizer_.get(),
-        icon_manager_.get(), &fake_registry_controller_->sync_bridge(),
-        &fake_registry_controller_->translation_manager());
+    // These are needed to set up the WebAppSyncBridge for testing.
+    auto command_manager = std::make_unique<WebAppCommandManager>(profile());
+    auto registrar = std::make_unique<WebAppRegistrarMutable>(profile());
+    registrar_ = registrar.get();
+    auto sync_bridge = std::make_unique<WebAppSyncBridge>(registrar.get());
+    auto database_factory = std::make_unique<FakeWebAppDatabaseFactory>();
+    sync_bridge->SetSubsystems(database_factory.get(), install_manager_,
+                               command_manager.get());
 
     auto test_url_loader = std::make_unique<TestWebAppUrlLoader>();
-
     test_url_loader_ = test_url_loader.get();
     install_manager_->SetUrlLoaderForTesting(std::move(test_url_loader));
 
-    ui_manager_ = std::make_unique<FakeWebAppUiManager>();
+    provider_->SetIconManager(std::move(icon_manager));
+    provider_->SetInstallFinalizer(std::move(install_finalizer));
+    provider_->SetInstallManager(std::move(install_manager));
+    provider_->SetCommandManager(std::move(command_manager));
+    provider_->SetRegistrar(std::move(registrar));
+    provider_->SetDatabaseFactory(std::move(database_factory));
+    provider_->SetSyncBridge(std::move(sync_bridge));
 
-    icon_manager_->SetSubsystems(&registrar(), &install_manager());
+    test::AwaitStartWebAppProviderAndSubsystems(profile());
 
-    install_finalizer_->SetSubsystems(
-        &install_manager(), &registrar(), ui_manager_.get(),
-        &fake_registry_controller_->sync_bridge(),
-        &fake_registry_controller_->os_integration_manager(),
-        icon_manager_.get(), policy_manager_.get(),
-        &fake_registry_controller_->translation_manager(),
-        &fake_registry_controller_->command_manager());
+    provider_->sync_bridge().set_disable_checks_for_testing(true);
   }
 
   void TearDown() override {
@@ -143,9 +150,9 @@ class WebAppInstallManagerTest
     WebAppTest::TearDown();
   }
 
-  WebAppRegistrar& registrar() { return controller().registrar(); }
+  WebAppRegistrar& registrar() const { return *registrar_; }
   WebAppCommandManager& command_manager() {
-    return fake_registry_controller_->command_manager();
+    return provider_->command_manager();
   }
   WebAppInstallManager& install_manager() { return *install_manager_; }
   WebAppInstallFinalizer& finalizer() { return *install_finalizer_; }
@@ -155,9 +162,7 @@ class WebAppInstallManagerTest
     DCHECK(file_utils_);
     return *file_utils_;
   }
-  FakeWebAppRegistryController& controller() {
-    return *fake_registry_controller_;
-  }
+  FakeWebAppProvider& provider() { return *provider_; }
 
   std::unique_ptr<WebApp> CreateWebAppFromSyncAndPendingInstallation(
       const GURL& start_url,
@@ -182,35 +187,13 @@ class WebAppInstallManagerTest
     return web_app;
   }
 
-  void InitEmptyRegistrar() {
-    controller().Init();
-    install_finalizer_->Start();
-    install_manager_->Start();
-  }
-
-  std::set<AppId> InitRegistrarWithRegistry(const Registry& registry) {
-    std::set<AppId> app_ids;
-    for (auto& kv : registry)
-      app_ids.insert(kv.second->app_id());
-
-    controller().database_factory().WriteRegistry(registry);
-
-    controller().Init();
-    install_finalizer_->Start();
-    install_manager_->Start();
-
-    return app_ids;
-  }
-
   AppId InitRegistrarWithApp(std::unique_ptr<WebApp> app) {
     DCHECK(registrar().is_empty());
-
-    AppId app_id = app->app_id();
-
-    Registry registry;
-    registry.emplace(app_id, std::move(app));
-
-    InitRegistrarWithRegistry(registry);
+    const AppId& app_id = app->app_id();
+    {
+      ScopedRegistryUpdate update(&provider().sync_bridge());
+      update->CreateApp(std::move(app));
+    }
     return app_id;
   }
 
@@ -287,8 +270,7 @@ class WebAppInstallManagerTest
   int GetNumFullyInstalledApps() const {
     int num_apps = 0;
 
-    for ([[maybe_unused]] const WebApp& app :
-         fake_registry_controller_->registrar().GetApps()) {
+    for ([[maybe_unused]] const WebApp& app : registrar().GetApps()) {
       ++num_apps;
     }
 
@@ -297,7 +279,7 @@ class WebAppInstallManagerTest
 
   webapps::UninstallResultCode UninstallPolicyWebAppByUrl(const GURL& app_url) {
     absl::optional<AppId> app_id =
-        fake_registry_controller_->registrar().LookupExternalAppId(app_url);
+        provider().registrar().LookupExternalAppId(app_url);
     if (!app_id.has_value()) {
       return webapps::UninstallResultCode::kNoAppToUninstall;
     }
@@ -311,10 +293,9 @@ class WebAppInstallManagerTest
           result = code;
           run_loop.Quit();
         }),
-        profile(), &fake_registry_controller_->os_integration_manager(),
-        &fake_registry_controller_->sync_bridge(), &icon_manager(),
-        &registrar(), &install_manager(),
-        &fake_registry_controller_->translation_manager());
+        profile(), &provider().os_integration_manager(),
+        &provider().sync_bridge(), &icon_manager(), &registrar(),
+        &install_manager(), &provider().translation_manager());
     uninstall_command->SetRemoveManagementTypeCallbackForTesting(
         base::BindLambdaForTesting([&](const AppId& app_id) {
           // On removing the policy source, the web app can now be user
@@ -337,10 +318,9 @@ class WebAppInstallManagerTest
           result = code;
           run_loop.Quit();
         }),
-        profile(), &fake_registry_controller_->os_integration_manager(),
-        &fake_registry_controller_->sync_bridge(), &icon_manager(),
-        &registrar(), &install_manager(),
-        &fake_registry_controller_->translation_manager());
+        profile(), &provider().os_integration_manager(),
+        &provider().sync_bridge(), &icon_manager(), &registrar(),
+        &install_manager(), &provider().translation_manager());
     command_manager().ScheduleCommand(std::move(uninstall_command));
     run_loop.Run();
     return result;
@@ -362,23 +342,7 @@ class WebAppInstallManagerTest
   }
 
   void DestroyManagers() {
-    if (ui_manager_)
-      ui_manager_->Shutdown();
-    if (install_manager_)
-      install_manager_->Shutdown();
-    if (icon_manager_)
-      icon_manager_->Shutdown();
-    if (install_finalizer_)
-      install_finalizer_->Shutdown();
-    if (fake_registry_controller_)
-      fake_registry_controller_->DestroySubsystems();
-
-    ui_manager_.reset();
-    policy_manager_.reset();
-    icon_manager_.reset();
-    fake_registry_controller_.reset();
-    install_finalizer_.reset();
-    install_manager_.reset();
+    provider().Shutdown();
     test_url_loader_ = nullptr;
     file_utils_ = nullptr;
   }
@@ -396,15 +360,13 @@ class WebAppInstallManagerTest
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 
-  std::unique_ptr<FakeWebAppRegistryController> fake_registry_controller_;
-  std::unique_ptr<WebAppIconManager> icon_manager_;
-  std::unique_ptr<WebAppPolicyManager> policy_manager_;
-  std::unique_ptr<WebAppInstallManager> install_manager_;
-  std::unique_ptr<WebAppInstallFinalizer> install_finalizer_;
-  std::unique_ptr<FakeWebAppUiManager> ui_manager_;
-
-  // A weak ptr. The original is owned by install_manager_.
   raw_ptr<TestWebAppUrlLoader> test_url_loader_ = nullptr;
+  raw_ptr<FakeWebAppProvider> provider_;
+  raw_ptr<WebAppIconManager> icon_manager_;
+  raw_ptr<WebAppInstallManager> install_manager_;
+  raw_ptr<WebAppInstallFinalizer> install_finalizer_;
+  raw_ptr<WebAppRegistrar> registrar_;
+
   scoped_refptr<TestFileUtils> file_utils_;
 };
 
@@ -442,27 +404,17 @@ TEST_P(WebAppInstallManagerTest_SyncOnly,
       }));
 
   base::RunLoop run_loop;
-  controller().SetUninstallFromSyncDelegate(base::BindLambdaForTesting(
-      [&](const std::vector<AppId>& apps_to_uninstall,
-          SyncInstallDelegate::RepeatingUninstallCallback callback) {
-        ASSERT_FALSE(apps_to_uninstall.empty());
-        EXPECT_EQ(apps_to_uninstall[0], app_id);
-        event_order.push_back(Event::kUninstallFromSync);
-        install_manager().UninstallFromSync(
-            std::move(apps_to_uninstall),
-            base::BindLambdaForTesting(
-                [&, callback](const AppId& uninstalled_app_id,
-                              webapps::UninstallResultCode code) {
-                  EXPECT_EQ(uninstalled_app_id, app_id);
-                  EXPECT_EQ(code, webapps::UninstallResultCode::kSuccess);
-                  event_order.push_back(Event::kUninstallFromSync_Callback);
-                  run_loop.Quit();
-                  callback.Run(uninstalled_app_id, code);
-                }));
+  install_manager().SetUninstallCallbackForTesting(base::BindLambdaForTesting(
+      [&](const AppId& uninstalled_app_id, webapps::UninstallResultCode code) {
+        EXPECT_EQ(uninstalled_app_id, app_id);
+        EXPECT_EQ(code, webapps::UninstallResultCode::kSuccess);
+        event_order.push_back(Event::kUninstallFromSync_Callback);
+        run_loop.Quit();
       }));
 
   // The sync server sends a change to delete the app.
-  sync_bridge_test_utils::DeleteApps(controller().sync_bridge(), {app_id});
+  sync_bridge_test_utils::DeleteApps(provider().sync_bridge(), {app_id});
+  event_order.push_back(Event::kUninstallFromSync);
   run_loop.Run();
 
   const std::vector<Event> expected_event_order{
@@ -503,27 +455,17 @@ TEST_P(WebAppInstallManagerTest_SyncOnly,
       }));
 
   base::RunLoop run_loop;
-  controller().SetUninstallFromSyncDelegate(base::BindLambdaForTesting(
-      [&](const std::vector<AppId>& apps_to_uninstall,
-          SyncInstallDelegate::RepeatingUninstallCallback callback) {
-        ASSERT_FALSE(apps_to_uninstall.empty());
-        EXPECT_EQ(apps_to_uninstall[0], app_id);
-        event_order.push_back(Event::kUninstallFromSync);
-        install_manager().UninstallFromSync(
-            std::move(apps_to_uninstall),
-            base::BindLambdaForTesting(
-                [&, callback](const AppId& uninstalled_app_id,
-                              webapps::UninstallResultCode code) {
-                  EXPECT_EQ(uninstalled_app_id, app_id);
-                  EXPECT_EQ(code, webapps::UninstallResultCode::kSuccess);
-                  event_order.push_back(Event::kUninstallFromSync_Callback);
-                  run_loop.Quit();
-                  callback.Run(uninstalled_app_id, code);
-                }));
+  install_manager().SetUninstallCallbackForTesting(base::BindLambdaForTesting(
+      [&](const AppId& uninstalled_app_id, webapps::UninstallResultCode code) {
+        EXPECT_EQ(uninstalled_app_id, app_id);
+        EXPECT_EQ(code, webapps::UninstallResultCode::kSuccess);
+        event_order.push_back(Event::kUninstallFromSync_Callback);
+        run_loop.Quit();
       }));
 
   // The sync server sends a change to delete the app.
-  sync_bridge_test_utils::DeleteApps(controller().sync_bridge(), {app_id});
+  sync_bridge_test_utils::DeleteApps(provider().sync_bridge(), {app_id});
+  event_order.push_back(Event::kUninstallFromSync);
   run_loop.Run();
 
   const std::vector<Event> expected_event_order{
@@ -543,7 +485,7 @@ TEST_P(WebAppInstallManagerTest_SyncOnly,
   const GURL external_app_url("https://example.com/path/policy");
 
   InitRegistrarWithApp(std::move(policy_and_user_app));
-  test::AddInstallUrlData(profile()->GetPrefs(), &controller().sync_bridge(),
+  test::AddInstallUrlData(profile()->GetPrefs(), &provider().sync_bridge(),
                           app_id, external_app_url,
                           ExternalInstallSource::kExternalPolicy);
 
@@ -580,7 +522,7 @@ TEST_P(WebAppInstallManagerTest_SyncOnly,
   const GURL external_app_url("https://example.com/path/policy");
 
   InitRegistrarWithApp(std::move(policy_and_user_app));
-  test::AddInstallUrlData(profile()->GetPrefs(), &controller().sync_bridge(),
+  test::AddInstallUrlData(profile()->GetPrefs(), &provider().sync_bridge(),
                           app_id, external_app_url,
                           ExternalInstallSource::kExternalPolicy);
 
@@ -618,7 +560,7 @@ TEST_P(WebAppInstallManagerTest_SyncOnly, DefaultAndUser_UninstallWebApp) {
   const GURL external_app_url("https://example.com/path/default");
 
   InitRegistrarWithApp(std::move(default_and_user_app));
-  test::AddInstallUrlData(profile()->GetPrefs(), &controller().sync_bridge(),
+  test::AddInstallUrlData(profile()->GetPrefs(), &provider().sync_bridge(),
                           app_id, external_app_url,
                           ExternalInstallSource::kExternalDefault);
 
@@ -660,7 +602,7 @@ TEST_P(WebAppInstallManagerTest_SyncOnly,
   const GURL external_app_url("https://example.com/path/default");
 
   InitRegistrarWithApp(std::move(default_and_user_app));
-  test::AddInstallUrlData(profile()->GetPrefs(), &controller().sync_bridge(),
+  test::AddInstallUrlData(profile()->GetPrefs(), &provider().sync_bridge(),
                           app_id, external_app_url,
                           ExternalInstallSource::kExternalDefault);
 
@@ -690,8 +632,6 @@ TEST_P(WebAppInstallManagerTest_SyncOnly,
 }
 
 TEST_P(WebAppInstallManagerTest, TaskQueueWebContentsReadyRace) {
-  InitEmptyRegistrar();
-
   std::unique_ptr<WebAppInstallTask> task_a = CreateDummyTask();
   WebAppInstallTask* task_a_ptr = task_a.get();
   std::unique_ptr<WebAppInstallTask> task_b = CreateDummyTask();
@@ -731,24 +671,8 @@ TEST_P(WebAppInstallManagerTest, TaskQueueWebContentsReadyRace) {
   EXPECT_FALSE(task_c_started);
 }
 
-TEST_P(WebAppInstallManagerTest, DefaultNotActivelyInstalled) {
-  std::unique_ptr<WebApp> default_app = test::CreateWebApp(
-      GURL("https://example.com/path"), WebAppManagement::kDefault);
-  default_app->SetDisplayMode(DisplayMode::kStandalone);
-  default_app->SetUserDisplayMode(UserDisplayMode::kBrowser);
-
-  const AppId app_id = default_app->app_id();
-  const GURL external_app_url("https://example.com/path/default");
-
-  InitRegistrarWithApp(std::move(default_app));
-
-  EXPECT_FALSE(registrar().IsActivelyInstalled(app_id));
-}
-
 TEST_P(WebAppInstallManagerTest_SyncOnly,
        InstallWebAppFromWebAppStoreThenInstallFromSync) {
-  InitEmptyRegistrar();
-
   const GURL start_url("https://example.com/path");
   const AppId app_id = GenerateAppId(/*manifest_id=*/absl::nullopt, start_url);
 
@@ -820,7 +744,7 @@ TEST_P(WebAppInstallManagerTest_SyncOnly,
 
     std::vector<std::unique_ptr<WebApp>> add_synced_apps_data;
     add_synced_apps_data.push_back(std::move(synced_specifics_data));
-    sync_bridge_test_utils::AddApps(controller().sync_bridge(),
+    sync_bridge_test_utils::AddApps(provider().sync_bridge(),
                                     add_synced_apps_data);
     // No apps installs should be triggered.
     EXPECT_THAT(registrar().GetAppsFromSyncAndPendingInstallation(),
@@ -871,8 +795,6 @@ TEST_P(WebAppInstallManagerTest_SyncOnly, InstallSubApp) {
   const GURL second_install_url{"https://example.com/sub/second_app"};
   const AppId second_app_id =
       GenerateAppId(/*manifest_id=*/absl::nullopt, second_install_url);
-
-  InitEmptyRegistrar();
 
   // Install a sub-app and verify a bunch of things.
   InstallResult result = InstallSubApp(parent_app_id, install_url);

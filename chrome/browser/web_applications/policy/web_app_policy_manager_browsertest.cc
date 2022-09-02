@@ -13,7 +13,6 @@
 #include "chrome/browser/web_applications/commands/install_from_info_command.h"
 #include "chrome/browser/web_applications/externally_installed_web_app_prefs.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_constants.h"
-#include "chrome/browser/web_applications/test/fake_web_app_registry_controller.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
@@ -99,12 +98,6 @@ class WebAppPolicyManagerBrowserTest
     InProcessBrowserTest::SetUpOnMainThread();
     externally_installed_app_prefs_ =
         std::make_unique<ExternallyInstalledWebAppPrefs>(profile()->GetPrefs());
-    fake_registry_controller_ =
-        std::make_unique<FakeWebAppRegistryController>();
-
-    controller().SetUp(profile());
-
-    controller().Init();
   }
 
   void TearDown() override {
@@ -114,9 +107,6 @@ class WebAppPolicyManagerBrowserTest
   }
 
   Profile* profile() { return browser()->profile(); }
-  FakeWebAppRegistryController& controller() {
-    return *fake_registry_controller_;
-  }
 
   content::WebContents* web_contents() const {
     return browser()->tab_strip_model()->GetActiveWebContents();
@@ -143,7 +133,6 @@ class WebAppPolicyManagerBrowserTest
   std::unique_ptr<ExternallyInstalledWebAppPrefs>
       externally_installed_app_prefs_;
 
-  std::unique_ptr<FakeWebAppRegistryController> fake_registry_controller_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 

@@ -15,8 +15,10 @@
 #include "base/one_shot_event.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/externally_managed_app_manager.h"
+#include "chrome/browser/web_applications/manifest_update_manager.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
+#include "chrome/browser/web_applications/preinstalled_web_app_manager.h"
 #include "chrome/browser/web_applications/test/fake_externally_managed_app_manager.h"
 #include "chrome/browser/web_applications/test/fake_os_integration_manager.h"
 #include "chrome/browser/web_applications/test/fake_web_app_database_factory.h"
@@ -156,6 +158,12 @@ void FakeWebAppProvider::SetCommandManager(
   command_manager_ = std::move(command_manager);
 }
 
+void FakeWebAppProvider::SetPreinstalledWebAppManager(
+    std::unique_ptr<PreinstalledWebAppManager> preinstalled_web_app_manager) {
+  CheckNotStarted();
+  preinstalled_web_app_manager_ = std::move(preinstalled_web_app_manager);
+}
+
 WebAppRegistrarMutable& FakeWebAppProvider::GetRegistrarMutable() const {
   DCHECK(registrar_);
   return *static_cast<WebAppRegistrarMutable*>(registrar_.get());
@@ -215,8 +223,35 @@ void FakeWebAppProvider::SetDefaultFakeSubsystems() {
 
   SetCommandManager(std::make_unique<WebAppCommandManager>(profile_));
 
+  SetPreinstalledWebAppManager(
+      std::make_unique<PreinstalledWebAppManager>(profile_));
+
   ON_CALL(processor(), IsTrackingMetadata())
       .WillByDefault(testing::Return(true));
+}
+
+void FakeWebAppProvider::ShutDownUiManagerForTesting() {
+  ui_manager_.reset();
+}
+
+void FakeWebAppProvider::Shutdown() {
+  if (command_manager_)
+    command_manager_->Shutdown();
+  if (ui_manager_)
+    ui_manager_->Shutdown();
+  if (externally_managed_app_manager_)
+    externally_managed_app_manager_->Shutdown();
+  if (manifest_update_manager_)
+    manifest_update_manager_->Shutdown();
+  if (install_manager_)
+    install_manager_->Shutdown();
+  if (icon_manager_)
+    icon_manager_->Shutdown();
+  if (install_finalizer_)
+    install_finalizer_->Shutdown();
+  if (registrar_)
+    registrar_->Shutdown();
+  is_registry_ready_ = false;
 }
 
 void FakeWebAppProvider::CheckNotStarted() const {

@@ -17,13 +17,16 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/web_applications/externally_installed_web_app_prefs.h"
 #include "chrome/browser/web_applications/test/fake_externally_managed_app_manager.h"
-#include "chrome/browser/web_applications/test/fake_web_app_registry_controller.h"
+#include "chrome/browser/web_applications/test/fake_web_app_provider.h"
+#include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/browser/web_applications/web_app_registry_update.h"
+#include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/common/chrome_features.h"
 #include "components/webapps/browser/install_result_code.h"
 
@@ -47,17 +50,13 @@ class ExternallyManagedAppManagerTest
  protected:
   void SetUp() override {
     WebAppTest::SetUp();
-    fake_registry_controller_ =
-        std::make_unique<FakeWebAppRegistryController>();
-    controller().SetUp(profile());
+    provider_ = web_app::FakeWebAppProvider::Get(profile());
+    provider_->SetDefaultFakeSubsystems();
+    web_app::test::AwaitStartWebAppProviderAndSubsystems(profile());
 
     externally_installed_app_prefs_ =
         std::make_unique<ExternallyInstalledWebAppPrefs>(profile()->GetPrefs());
-    externally_managed_app_manager_ =
-        std::make_unique<FakeExternallyManagedAppManager>(profile());
 
-    externally_managed_app_manager().SetSubsystems(&app_registrar(), nullptr,
-                                                   nullptr, nullptr, nullptr);
     externally_managed_app_manager().SetHandleInstallRequestCallback(
         base::BindLambdaForTesting(
             [this](const ExternalInstallOptions& install_options)
@@ -69,7 +68,10 @@ class ExternallyManagedAppManagerTest
                     test::CreateWebApp(install_url, WebAppManagement::kDefault);
                 web_app->AddInstallURLToManagementExternalConfigMap(
                     WebAppManagement::kDefault, install_url);
-                controller().RegisterApp(std::move(web_app));
+                {
+                  ScopedRegistryUpdate update(&provider().sync_bridge());
+                  update->CreateApp(std::move(web_app));
+                }
 
                 externally_installed_app_prefs().Insert(
                     install_url,
@@ -86,19 +88,16 @@ class ExternallyManagedAppManagerTest
                    ExternalInstallSource install_source) -> bool {
               absl::optional<AppId> app_id =
                   app_registrar().LookupExternalAppId(app_url);
-              if (app_id) {
-                controller().UnregisterApp(*app_id);
+              if (app_id.has_value()) {
+                ScopedRegistryUpdate update(&provider().sync_bridge());
+                update->DeleteApp(app_id.value());
                 deduped_uninstall_count_++;
               }
               return true;
             }));
-
-    controller().Init();
   }
 
-  void DestroyExternallyManagedAppManager() {
-    externally_managed_app_manager_.reset();
-  }
+  void ForceSystemShutdown() { provider_->Shutdown(); }
 
   void Sync(const std::vector<GURL>& urls) {
     ResetCounts();
@@ -146,29 +145,27 @@ class ExternallyManagedAppManagerTest
     deduped_uninstall_count_ = 0;
   }
 
-  FakeWebAppRegistryController& controller() {
-    return *fake_registry_controller_;
-  }
+  WebAppProvider& provider() { return *provider_; }
 
-  WebAppRegistrar& app_registrar() { return controller().registrar(); }
+  WebAppRegistrar& app_registrar() { return provider().registrar(); }
 
   ExternallyInstalledWebAppPrefs& externally_installed_app_prefs() {
     return *externally_installed_app_prefs_;
   }
 
   FakeExternallyManagedAppManager& externally_managed_app_manager() {
-    return *externally_managed_app_manager_;
+    return static_cast<FakeExternallyManagedAppManager&>(
+        provider().externally_managed_app_manager());
   }
 
  private:
   int deduped_install_count_ = 0;
   int deduped_uninstall_count_ = 0;
 
-  std::unique_ptr<FakeWebAppRegistryController> fake_registry_controller_;
+  raw_ptr<FakeWebAppProvider> provider_;
+
   std::unique_ptr<ExternallyInstalledWebAppPrefs>
       externally_installed_app_prefs_;
-  std::unique_ptr<FakeExternallyManagedAppManager>
-      externally_managed_app_manager_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
@@ -189,7 +186,7 @@ TEST_P(ExternallyManagedAppManagerTest, DestroyDuringInstallInSynchronize) {
       // ExternallyManagedAppManager gives no guarantees about whether its
       // pending callbacks will be run or not when it gets destroyed.
       base::DoNothing());
-  DestroyExternallyManagedAppManager();
+  ForceSystemShutdown();
   base::RunLoop().RunUntilIdle();
 }
 
@@ -220,7 +217,7 @@ TEST_P(ExternallyManagedAppManagerTest, DestroyDuringUninstallInSynchronize) {
       // ExternallyManagedAppManager gives no guarantees about whether its
       // pending callbacks will be run or not when it gets destroyed.
       base::DoNothing());
-  DestroyExternallyManagedAppManager();
+  ForceSystemShutdown();
   base::RunLoop().RunUntilIdle();
 }
 
