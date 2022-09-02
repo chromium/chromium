@@ -702,7 +702,7 @@ extern const char kForceBrowserDataBackwardMigration[] =
 
 // Run move migration instead of copy. Passed with
 // `kBrowserDataMigrationForUser`.
-const char kBrowserDataMigrationMoveMode[] = "browser-data-migration-move-mode";
+const char kBrowserDataMigrationMode[] = "browser-data-migration-mode";
 
 // Force skip or force migration. Should only be used for testing.
 const char kForceBrowserDataMigrationForTesting[] =

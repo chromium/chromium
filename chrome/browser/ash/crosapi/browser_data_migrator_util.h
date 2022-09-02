@@ -245,6 +245,10 @@ constexpr const char* const kStateStorePaths[] = {
 constexpr char kStorageFilePath[] = "Storage";
 constexpr char kStorageExtFilePath[] = "ext";
 
+// Values used for the kBrowserDataMigrationMode flag.
+constexpr char kCopySwitchValue[] = "copy";  // Corresponds to kCopy.
+constexpr char kMoveSwitchValue[] = "move";  // Corresponds to KMove.
+
 // The type of LevelDB schema.
 enum class LevelDBType {
   kLocalStorage = 0,

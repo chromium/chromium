@@ -343,11 +343,16 @@ bool BrowserDataMigratorImpl::RestartToMigrate(
           crosapi::browser_util::MigrationMode::kMove ||
       MoveMigrator::ResumeRequired(local_state, user_id_hash);
 
+  std::string mode = browser_data_migrator_util::kCopySwitchValue;
+  if (is_move) {
+    mode = browser_data_migrator_util::kMoveSwitchValue;
+  }
+
   // TODO(crbug.com/1277848): Once `BrowserDataMigrator` stabilises, remove
   // this log message.
   LOG(WARNING) << "Making a dbus method call to session_manager";
   bool success = SessionManagerClient::Get()->RequestBrowserDataMigration(
-      cryptohome::CreateAccountIdentifierFromAccountId(account_id), is_move);
+      cryptohome::CreateAccountIdentifierFromAccountId(account_id), mode);
 
   // TODO(crbug.com/1261730): Add an UMA.
   if (!success) {

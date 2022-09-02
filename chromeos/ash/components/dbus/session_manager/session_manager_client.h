@@ -269,7 +269,7 @@ class COMPONENT_EXPORT(SESSION_MANAGER) SessionManagerClient {
   // false otherwise.
   virtual bool RequestBrowserDataMigration(
       const cryptohome::AccountIdentifier& cryptohome_id,
-      const bool is_move) = 0;
+      const std::string& mode) = 0;
 
   // Map that is used to describe the set of active user sessions where |key|
   // is cryptohome id and |value| is user_id_hash.

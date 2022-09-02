@@ -113,9 +113,12 @@ IN_PROC_BROWSER_TEST_F(BrowserDataMigratorCopyMigrateOnSignIn,
   EXPECT_TRUE(
       FakeSessionManagerClient::Get()->request_browser_data_migration_called());
   // Migration should be triggered in copy mode and not move mode.
-  EXPECT_FALSE(FakeSessionManagerClient::Get()
-                   ->request_browser_data_migration_for_move_called());
-}
+  EXPECT_TRUE(FakeSessionManagerClient::Get()
+                  ->request_browser_data_migration_mode_called());
+  EXPECT_EQ(FakeSessionManagerClient::Get()
+                ->request_browser_data_migration_mode_value(),
+            "copy");
+};
 
 class BrowserDataMigratorMoveMigrateOnSignInByPolicy
     : public BrowserDataMigratorOnSignIn {
@@ -161,8 +164,11 @@ IN_PROC_BROWSER_TEST_F(BrowserDataMigratorMoveMigrateOnSignInByPolicy,
   EXPECT_TRUE(
       FakeSessionManagerClient::Get()->request_browser_data_migration_called());
   EXPECT_TRUE(FakeSessionManagerClient::Get()
-                  ->request_browser_data_migration_for_move_called());
-}
+                  ->request_browser_data_migration_mode_called());
+  EXPECT_EQ(FakeSessionManagerClient::Get()
+                ->request_browser_data_migration_mode_value(),
+            "move");
+};
 
 class BrowserDataMigratorMoveMigrateOnSignInByFeature
     : public BrowserDataMigratorOnSignIn {
@@ -200,8 +206,11 @@ IN_PROC_BROWSER_TEST_F(BrowserDataMigratorMoveMigrateOnSignInByFeature,
   EXPECT_TRUE(
       FakeSessionManagerClient::Get()->request_browser_data_migration_called());
   EXPECT_TRUE(FakeSessionManagerClient::Get()
-                  ->request_browser_data_migration_for_move_called());
-}
+                  ->request_browser_data_migration_mode_called());
+  EXPECT_EQ(FakeSessionManagerClient::Get()
+                ->request_browser_data_migration_mode_value(),
+            "move");
+};
 
 class BrowserDataMigratorResumeOnSignIn : public BrowserDataMigratorOnSignIn,
                                           public LocalStateMixin::Delegate {
@@ -241,7 +250,10 @@ IN_PROC_BROWSER_TEST_F(BrowserDataMigratorResumeOnSignIn, ForceResumeOnLogin) {
   EXPECT_TRUE(
       FakeSessionManagerClient::Get()->request_browser_data_migration_called());
   EXPECT_TRUE(FakeSessionManagerClient::Get()
-                  ->request_browser_data_migration_for_move_called());
+                  ->request_browser_data_migration_mode_called());
+  EXPECT_EQ(FakeSessionManagerClient::Get()
+                ->request_browser_data_migration_mode_value(),
+            "move");
 }
 
 // Used to test whether migration gets triggered upon restart in session.
@@ -327,7 +339,10 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(
       FakeSessionManagerClient::Get()->request_browser_data_migration_called());
   EXPECT_TRUE(FakeSessionManagerClient::Get()
-                  ->request_browser_data_migration_for_move_called());
+                  ->request_browser_data_migration_mode_called());
+  EXPECT_EQ(FakeSessionManagerClient::Get()
+                ->request_browser_data_migration_mode_value(),
+            "move");
 }
 
 class BrowserDataMigratorMoveMigrateOnRestartInSessionByPolicy
@@ -363,7 +378,10 @@ IN_PROC_BROWSER_TEST_F(BrowserDataMigratorMoveMigrateOnRestartInSessionByPolicy,
   EXPECT_TRUE(
       FakeSessionManagerClient::Get()->request_browser_data_migration_called());
   EXPECT_TRUE(FakeSessionManagerClient::Get()
-                  ->request_browser_data_migration_for_move_called());
+                  ->request_browser_data_migration_mode_called());
+  EXPECT_EQ(FakeSessionManagerClient::Get()
+                ->request_browser_data_migration_mode_value(),
+            "move");
 }
 
 class BrowserDataMigratorResumeRestartInSession
@@ -394,7 +412,10 @@ IN_PROC_BROWSER_TEST_F(BrowserDataMigratorResumeRestartInSession,
   EXPECT_TRUE(
       FakeSessionManagerClient::Get()->request_browser_data_migration_called());
   EXPECT_TRUE(FakeSessionManagerClient::Get()
-                  ->request_browser_data_migration_for_move_called());
+                  ->request_browser_data_migration_mode_called());
+  EXPECT_EQ(FakeSessionManagerClient::Get()
+                ->request_browser_data_migration_mode_value(),
+            "move");
 }
 
 }  // namespace ash

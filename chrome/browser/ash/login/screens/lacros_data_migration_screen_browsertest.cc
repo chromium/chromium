@@ -97,6 +97,13 @@ class LacrosDataMigrationScreenTest : public OobeBaseTest {
     OobeBaseTest::SetUpOnMainThread();
   }
 
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    OobeBaseTest::SetUpCommandLine(command_line);
+
+    command_line->AppendSwitchASCII(switches::kBrowserDataMigrationMode,
+                                    "copy");
+  }
+
   bool is_attempt_restart_called() const { return is_attempt_restart_called_; }
 
  protected:

@@ -7,6 +7,7 @@
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
 #include "base/path_service.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/task/bind_post_task.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -83,15 +84,15 @@ void LacrosDataMigrationScreen::ShowImpl() {
         base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
             switches::kBrowserDataMigrationForUser);
 
+    DCHECK(!user_id_hash.empty()) << "user_id_hash should not be empty.";
     if (user_id_hash.empty()) {
-      LOG(ERROR) << "Colud not retrieve user_id_hash from switch "
+      LOG(ERROR) << "Could not retrieve user_id_hash from switch "
                  << switches::kBrowserDataMigrationForUser
                  << ". Aborting migration.";
 
       attempt_restart_.Run();
       return;
     }
-    DCHECK(!user_id_hash.empty()) << "user_id_hash should not be empty.";
 
     base::FilePath user_data_dir;
     if (!base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir)) {
@@ -115,10 +116,33 @@ void LacrosDataMigrationScreen::ShowImpl() {
         g_browser_process->local_state());
   }
 
-  auto mode = base::CommandLine::ForCurrentProcess()->HasSwitch(
-                  switches::kBrowserDataMigrationMoveMode)
-                  ? crosapi::browser_util::MigrationMode::kMove
-                  : crosapi::browser_util::MigrationMode::kCopy;
+  auto mode_str = base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+      switches::kBrowserDataMigrationMode);
+
+  DCHECK(!mode_str.empty()) << "mode should not be empty.";
+  if (mode_str.empty()) {
+    LOG(ERROR) << "Could not retrieve migration mode from switch "
+               << switches::kBrowserDataMigrationMode
+               << ". Aborting migration.";
+
+    attempt_restart_.Run();
+    return;
+  }
+
+  crosapi::browser_util::MigrationMode mode;
+  if (mode_str == browser_data_migrator_util::kCopySwitchValue) {
+    mode = crosapi::browser_util::MigrationMode::kCopy;
+  } else if (mode_str == browser_data_migrator_util::kMoveSwitchValue) {
+    mode = crosapi::browser_util::MigrationMode::kMove;
+  } else {
+    NOTREACHED() << "Unsupported mode";
+
+    LOG(ERROR) << "Unsupported mode " << switches::kBrowserDataMigrationMode
+               << " = " << mode_str << ". Aborting migration.";
+
+    attempt_restart_.Run();
+    return;
+  }
 
   migrator_->Migrate(mode,
                      base::BindOnce(&LacrosDataMigrationScreen::OnMigrated,

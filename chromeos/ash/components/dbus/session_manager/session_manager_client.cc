@@ -443,13 +443,13 @@ class SessionManagerClientImpl : public SessionManagerClient {
 
   bool RequestBrowserDataMigration(
       const cryptohome::AccountIdentifier& cryptohome_id,
-      const bool is_move) override {
+      const std::string& mode) override {
     dbus::MethodCall method_call(
         login_manager::kSessionManagerInterface,
         login_manager::kSessionManagerStartBrowserDataMigration);
     dbus::MessageWriter writer(&method_call);
     writer.AppendString(cryptohome_id.account_id());
-    writer.AppendBool(is_move);
+    writer.AppendString(mode);
     dbus::ScopedDBusError error;
     std::unique_ptr<dbus::Response> response =
         blocking_method_caller_->CallMethodAndBlockWithError(&method_call,

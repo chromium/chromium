@@ -112,7 +112,7 @@ class COMPONENT_EXPORT(SESSION_MANAGER) FakeSessionManagerClient
   void NotifyLockScreenDismissed() override;
   bool RequestBrowserDataMigration(
       const cryptohome::AccountIdentifier& cryptohome_id,
-      const bool is_move) override;
+      const std::string& mode) override;
   void RetrieveActiveSessions(ActiveSessionsCallback callback) override;
   void RetrieveDevicePolicy(RetrievePolicyCallback callback) override;
   RetrievePolicyResponseType BlockingRetrieveDevicePolicy(
@@ -347,8 +347,12 @@ class COMPONENT_EXPORT(SESSION_MANAGER) FakeSessionManagerClient
     return request_browser_data_migration_called_;
   }
 
-  bool request_browser_data_migration_for_move_called() const {
-    return request_browser_data_migration_for_move_called_;
+  bool request_browser_data_migration_mode_called() const {
+    return request_browser_data_migration_mode_called_;
+  }
+
+  const std::string& request_browser_data_migration_mode_value() const {
+    return request_browser_data_migration_mode_value_;
   }
 
  private:
@@ -426,7 +430,8 @@ class COMPONENT_EXPORT(SESSION_MANAGER) FakeSessionManagerClient
   std::string login_password_;
 
   bool request_browser_data_migration_called_ = false;
-  bool request_browser_data_migration_for_move_called_ = false;
+  bool request_browser_data_migration_mode_called_ = false;
+  std::string request_browser_data_migration_mode_value_ = "invalid";
 
   // Contains last request passed to StartArcMiniContainer
   login_manager::StartArcMiniContainerRequest
