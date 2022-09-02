@@ -57,6 +57,14 @@ template("html_to_wrapper") {
       ]
     }
 
+    if (defined(invoker.scheme)) {
+      assert(invoker.scheme == "chrome" || invoker.scheme == "relative")
+      args += [
+        "--scheme",
+        invoker.scheme,
+      ]
+    }
+
     if (defined(invoker.use_js) && invoker.use_js) {
       args += [ "--use_js" ]
     }

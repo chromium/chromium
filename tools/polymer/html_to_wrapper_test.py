@@ -23,7 +23,7 @@ class HtmlToWrapperTest(unittest.TestCase):
 
   def _read_out_file(self, file_name):
     assert self._out_folder
-    with open(os.path.join(self._out_folder, file_name), 'rb') as f:
+    with open(os.path.join(self._out_folder, file_name), 'r') as f:
       return f.read()
 
   def _run_test(self,
@@ -32,7 +32,8 @@ class HtmlToWrapperTest(unittest.TestCase):
                 wrapper_file_expected,
                 template=None,
                 minify=False,
-                use_js=False):
+                use_js=False,
+                scheme=None):
     assert not self._out_folder
     self._out_folder = tempfile.mkdtemp(dir=_HERE_DIR)
     args = [
@@ -50,11 +51,14 @@ class HtmlToWrapperTest(unittest.TestCase):
     if use_js:
       args.append('--use_js')
 
+    if scheme:
+      args += ['--scheme', scheme]
+
     html_to_wrapper.main(args)
 
     actual_wrapper = self._read_out_file(wrapper_file)
     with open(os.path.join(_HERE_DIR, 'tests', wrapper_file_expected),
-              'rb') as f:
+              'r') as f:
       expected_wrapper = f.read()
     self.assertMultiLineEqual(str(expected_wrapper), str(actual_wrapper))
 
@@ -84,6 +88,18 @@ class HtmlToWrapperTest(unittest.TestCase):
                    'html_to_wrapper/foo.html.js',
                    'html_to_wrapper/foo_expected.html.ts',
                    use_js=True)
+
+  def testHtmlToWrapperSchemeRelative(self):
+    self._run_test('html_to_wrapper/foo.html',
+                   'html_to_wrapper/foo.html.ts',
+                   'html_to_wrapper/foo_relative_expected.html.ts',
+                   scheme='relative')
+
+  def testHtmlToWrapperSchemeChrome(self):
+    self._run_test('html_to_wrapper/foo.html',
+                   'html_to_wrapper/foo.html.ts',
+                   'html_to_wrapper/foo_expected.html.ts',
+                   scheme='chrome')
 
 
 if __name__ == '__main__':

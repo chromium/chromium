@@ -33,21 +33,21 @@ sys.path.append(path.join(_SRC_PATH, 'third_party', 'node'))
 import node
 
 # Template for non-Polymer elements.
-_NON_POLYMER_ELEMENT_TEMPLATE = """import {getTrustedHTML} from \'chrome://resources/js/static_types.js\';
+_NON_POLYMER_ELEMENT_TEMPLATE = """import {getTrustedHTML} from '%(scheme)s//resources/js/static_types.js';
 export function getTemplate() {
-  return getTrustedHTML`<!--_html_template_start_-->%s<!--_html_template_end_-->`;
+  return getTrustedHTML`<!--_html_template_start_-->%(content)s<!--_html_template_end_-->`;
 }"""
 
 # Template for Polymer elements.
-_ELEMENT_TEMPLATE = """import {html} from \'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js\';
+_ELEMENT_TEMPLATE = """import {html} from '%(scheme)s//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 export function getTemplate() {
-  return html`<!--_html_template_start_-->%s<!--_html_template_end_-->`;
+  return html`<!--_html_template_start_-->%(content)s<!--_html_template_end_-->`;
 }"""
 
-_ICONS_TEMPLATE = """import 'chrome://resources/polymer/v3_0/iron-iconset-svg/iron-iconset-svg.js';
-import {html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+_ICONS_TEMPLATE = """import '%(scheme)s//resources/polymer/v3_0/iron-iconset-svg/iron-iconset-svg.js';
+import {html} from '%(scheme)s//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-const template = html`%s`;
+const template = html`%(content)s`;
 document.head.appendChild(template.content);
 """
 
@@ -62,6 +62,9 @@ def main(argv):
   parser.add_argument('--template',
                       choices=['polymer', 'native'],
                       default='polymer')
+  parser.add_argument('--scheme',
+                      choices=['chrome', 'relative'],
+                      default='chrome')
 
   args = parser.parse_args(argv)
 
@@ -113,7 +116,10 @@ def main(argv):
       if filename == 'icons.html' or filename.endswith('_icons.html'):
         template = _ICONS_TEMPLATE
 
-      wrapper = template % html_content
+      wrapper = template % {
+          'content': html_content,
+          'scheme': 'chrome:' if args.scheme == 'chrome' else '',
+      }
 
       out_folder_for_file = path.join(out_folder, path.dirname(in_file))
       makedirs(out_folder_for_file, exist_ok=True)
