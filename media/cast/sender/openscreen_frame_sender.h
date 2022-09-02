@@ -15,7 +15,6 @@
 #include "media/cast/cast_environment.h"
 #include "media/cast/net/cast_transport.h"
 #include "media/cast/net/rtcp/rtcp_defines.h"
-#include "media/cast/sender/congestion_control.h"
 #include "media/cast/sender/frame_sender.h"
 
 #include "third_party/openscreen/src/cast/streaming/sender.h"
@@ -40,7 +39,8 @@ class OpenscreenFrameSender : public FrameSender,
   OpenscreenFrameSender(scoped_refptr<CastEnvironment> cast_environment,
                         const FrameSenderConfig& config,
                         openscreen::cast::Sender* sender,
-                        Client& client);
+                        Client& client,
+                        FrameSender::GetSuggestedVideoBitrateCB get_bitrate_cb);
   ~OpenscreenFrameSender() override;
 
   // FrameSender overrides.
@@ -96,15 +96,14 @@ class OpenscreenFrameSender : public FrameSender,
   // The frame sender client.
   Client& client_;
 
+  // The method for getting the recommended bitrate.
+  GetSuggestedVideoBitrateCB get_bitrate_cb_;
+
   // Max encoded frames generated per second.
   double max_frame_rate_;
 
   // Whether this is an audio or video frame sender.
   const bool is_audio_;
-
-  // The congestion control manages frame statistics and helps make decisions
-  // about what bitrate we encode the next frame at.
-  std::unique_ptr<CongestionControl> congestion_control_;
 
   // The target playout delay, may fluctuate between the min and max delays.
   base::TimeDelta target_playout_delay_;

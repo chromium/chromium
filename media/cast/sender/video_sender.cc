@@ -95,7 +95,7 @@ VideoSender::VideoSender(
     const CreateVideoEncodeAcceleratorCallback& create_vea_cb,
     CastTransport* const transport_sender,
     PlayoutDelayChangeCB playout_delay_change_cb,
-    media::VideoCaptureFeedbackCB feedback_callback)
+    media::VideoCaptureFeedbackCB feedback_cb)
     : VideoSender(cast_environment,
                   video_config,
                   std::move(status_change_cb),
@@ -105,7 +105,7 @@ VideoSender::VideoSender(
                                       transport_sender,
                                       *this),
                   std::move(playout_delay_change_cb),
-                  std::move(feedback_callback)) {}
+                  std::move(feedback_cb)) {}
 
 VideoSender::VideoSender(
     scoped_refptr<CastEnvironment> cast_environment,
@@ -114,15 +114,19 @@ VideoSender::VideoSender(
     const CreateVideoEncodeAcceleratorCallback& create_vea_cb,
     openscreen::cast::Sender* sender,
     PlayoutDelayChangeCB playout_delay_change_cb,
-    media::VideoCaptureFeedbackCB feedback_callback)
-    : VideoSender(
-          cast_environment,
-          video_config,
-          std::move(status_change_cb),
-          std::move(create_vea_cb),
-          FrameSender::Create(cast_environment, video_config, sender, *this),
-          std::move(playout_delay_change_cb),
-          std::move(feedback_callback)) {
+    media::VideoCaptureFeedbackCB feedback_cb,
+    FrameSender::GetSuggestedVideoBitrateCB get_bitrate_cb)
+    : VideoSender(cast_environment,
+                  video_config,
+                  std::move(status_change_cb),
+                  std::move(create_vea_cb),
+                  FrameSender::Create(cast_environment,
+                                      video_config,
+                                      sender,
+                                      *this,
+                                      std::move(get_bitrate_cb)),
+                  std::move(playout_delay_change_cb),
+                  std::move(feedback_cb)) {
   DCHECK(base::FeatureList::IsEnabled(kOpenscreenCastStreamingSession));
 }
 

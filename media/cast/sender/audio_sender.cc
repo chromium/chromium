@@ -104,6 +104,10 @@ base::TimeDelta AudioSender::GetTargetPlayoutDelay() const {
   return frame_sender_->GetTargetPlayoutDelay();
 }
 
+int AudioSender::GetEncoderBitrate() const {
+  return audio_encoder_->GetBitrate();
+}
+
 base::WeakPtr<AudioSender> AudioSender::AsWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }

@@ -104,6 +104,10 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) AudioRtpStream
 
   void SetTargetPlayoutDelay(base::TimeDelta playout_delay);
 
+  // Get the real time encoder bitrate usage. Note that not all encoders support
+  // changing the bitrate in realtime.
+  int GetEncoderBitrate() const;
+
  private:
   const std::unique_ptr<media::cast::AudioSender> audio_sender_;
   const base::WeakPtr<RtpStreamClient> client_;

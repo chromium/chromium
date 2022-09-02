@@ -31,9 +31,10 @@ std::unique_ptr<FrameSender> FrameSender::Create(
     scoped_refptr<CastEnvironment> cast_environment,
     const FrameSenderConfig& config,
     openscreen::cast::Sender* sender,
-    Client& client) {
-  return std::make_unique<OpenscreenFrameSender>(cast_environment, config,
-                                                 sender, client);
+    Client& client,
+    FrameSender::GetSuggestedVideoBitrateCB get_bitrate_cb) {
+  return std::make_unique<OpenscreenFrameSender>(
+      cast_environment, config, sender, client, std::move(get_bitrate_cb));
 }
 
 // Convenience macro used in logging statements throughout this file.
@@ -45,23 +46,14 @@ OpenscreenFrameSender::OpenscreenFrameSender(
     scoped_refptr<CastEnvironment> cast_environment,
     const FrameSenderConfig& config,
     openscreen::cast::Sender* sender,
-    Client& client)
+    Client& client,
+    FrameSender::GetSuggestedVideoBitrateCB get_bitrate_cb)
     : cast_environment_(cast_environment),
       sender_(sender),
       client_(client),
+      get_bitrate_cb_(std::move(get_bitrate_cb)),
       max_frame_rate_(config.max_frame_rate),
       is_audio_(config.rtp_payload_type <= RtpPayloadType::AUDIO_LAST),
-      // We only use the adaptive control for software video encoding.
-      congestion_control_(
-          (!config.use_external_encoder && !is_audio_)
-              ? NewAdaptiveCongestionControl(cast_environment->Clock(),
-                                             config.max_bitrate,
-                                             config.min_bitrate,
-                                             max_frame_rate_)
-              : NewFixedCongestionControl(
-                    (config.min_bitrate + config.max_bitrate) / 2)
-
-              ),
       min_playout_delay_(config.min_playout_delay),
       max_playout_delay_(config.max_playout_delay) {
   DCHECK_GT(sender_->config().rtp_timebase, 0);
@@ -102,7 +94,6 @@ void OpenscreenFrameSender::SetTargetPlayoutDelay(
                     << new_target_playout_delay.InMilliseconds() << " ms.";
   target_playout_delay_ = new_target_playout_delay;
   send_target_playout_delay_ = true;
-  congestion_control_->UpdateTargetPlayoutDelay(target_playout_delay_);
 }
 
 base::TimeDelta OpenscreenFrameSender::GetTargetPlayoutDelay() const {
@@ -127,11 +118,14 @@ void OpenscreenFrameSender::RecordLatestFrameTimestamps(
 }
 
 base::TimeDelta OpenscreenFrameSender::GetInFlightMediaDuration() const {
-  const base::TimeDelta encoder_duration = client_.GetEncoderBacklogDuration();
-  const RtpTimeTicks newest_timestamp =
-      GetRecordedRtpTimestamp(last_sent_frame_id_);
-  return encoder_duration +
-         ToTimeDelta(sender_->GetInFlightMediaDuration(newest_timestamp));
+  base::TimeDelta duration = client_.GetEncoderBacklogDuration();
+  if (!last_sent_frame_id_.is_null()) {
+    const RtpTimeTicks newest_timestamp =
+        GetRecordedRtpTimestamp(last_sent_frame_id_);
+    duration +=
+        ToTimeDelta(sender_->GetInFlightMediaDuration(newest_timestamp));
+  }
+  return duration;
 }
 
 RtpTimeTicks OpenscreenFrameSender::GetRecordedRtpTimestamp(
@@ -149,7 +143,9 @@ int OpenscreenFrameSender::GetUnacknowledgedFrameCount() const {
 
 int OpenscreenFrameSender::GetSuggestedBitrate(base::TimeTicks playout_time,
                                                base::TimeDelta playout_delay) {
-  return congestion_control_->GetBitrate(playout_time, playout_delay);
+  // Currently only used by the video sender.
+  DCHECK(!is_audio_);
+  return get_bitrate_cb_.Run();
 }
 
 double OpenscreenFrameSender::MaxFrameRate() const {
@@ -193,7 +189,9 @@ void OpenscreenFrameSender::EnqueueFrame(
   VLOG_WITH_SSRC(2) << "About to send another frame: last_sent="
                     << last_sent_frame_id_;
 
-  const FrameId frame_id = encoded_frame->frame_id;
+  // We don't use the `FrameId` given to us by the encoder since the Open Screen
+  // Sender requires us to use the result of `GetNextFrameId`.
+  const FrameId frame_id = sender_->GetNextFrameId();
   last_send_time_ = cast_environment_->Clock()->NowTicks();
 
   DCHECK(frame_id > last_sent_frame_id_) << "enqueued frames out of order.";
@@ -227,9 +225,6 @@ void OpenscreenFrameSender::EnqueueFrame(
                          TRACE_EVENT_SCOPE_THREAD, "rtp_timestamp",
                          encoded_frame->rtp_timestamp.lower_32_bits());
   }
-
-  congestion_control_->WillSendFrameToTransport(
-      frame_id, encoded_frame->data.size(), last_send_time_);
 
   if (send_target_playout_delay_) {
     encoded_frame->new_playout_delay_ms =

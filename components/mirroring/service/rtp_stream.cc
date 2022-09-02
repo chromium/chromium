@@ -114,4 +114,8 @@ void AudioRtpStream::SetTargetPlayoutDelay(base::TimeDelta playout_delay) {
   audio_sender_->SetTargetPlayoutDelay(playout_delay);
 }
 
+int AudioRtpStream::GetEncoderBitrate() const {
+  return audio_sender_->GetEncoderBitrate();
+}
+
 }  // namespace mirroring

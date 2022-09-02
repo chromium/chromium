@@ -62,7 +62,8 @@ class VideoSender : public FrameSender::Client {
               const CreateVideoEncodeAcceleratorCallback& create_vea_cb,
               openscreen::cast::Sender* sender,
               PlayoutDelayChangeCB playout_delay_change_cb,
-              media::VideoCaptureFeedbackCB feedback_callback);
+              media::VideoCaptureFeedbackCB feedback_cb,
+              FrameSender::GetSuggestedVideoBitrateCB get_bitrate_cb);
 
   VideoSender(const VideoSender&) = delete;
   VideoSender& operator=(const VideoSender&) = delete;

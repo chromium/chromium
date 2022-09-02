@@ -44,7 +44,7 @@ class AudioEncoder {
 
   int GetSamplesPerFrame() const;
   base::TimeDelta GetFrameDuration() const;
-
+  int GetBitrate() const;
   void InsertAudio(std::unique_ptr<AudioBus> audio_bus,
                    base::TimeTicks recorded_time);
 

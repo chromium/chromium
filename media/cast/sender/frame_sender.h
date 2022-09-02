@@ -59,12 +59,18 @@ class FrameSender {
       CastTransport* const transport_sender,
       Client& client);
 
+  // NOTE: currently only used by the VideoSender.
+  // TODO(https://crbug.com/1316434): cleanup bitrate calculations when libcast
+  // has successfully launched.
+  using GetSuggestedVideoBitrateCB = base::RepeatingCallback<int()>;
+
   // Method of creating a frame sender using an openscreen::cast::Sender.
   static std::unique_ptr<FrameSender> Create(
       scoped_refptr<CastEnvironment> cast_environment,
       const FrameSenderConfig& config,
       openscreen::cast::Sender* sender,
-      Client& client);
+      Client& client,
+      GetSuggestedVideoBitrateCB get_bitrate_cb = GetSuggestedVideoBitrateCB());
 
   FrameSender();
   FrameSender(FrameSender&&) = delete;
