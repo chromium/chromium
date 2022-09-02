@@ -42,4 +42,7 @@ specific_include_rules = {
   ".*chromeos\.cc": [
     "+ui/ozone/public",
   ],
+  ".*wayland.*\.(h|cc)": [
+    "+third_party/wayland-protocols",
+  ],
 }
