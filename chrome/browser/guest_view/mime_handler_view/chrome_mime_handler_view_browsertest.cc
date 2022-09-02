@@ -594,7 +594,7 @@ IN_PROC_BROWSER_TEST_F(ChromeMimeHandlerViewTest, DoNotLoadInSandboxedFrame) {
   // Therefore, it suffices to wait for one GuestView to be created, then remove
   // the non-sandboxed frame, and ensue there are no GuestViews left.
   if (guest_view_manager->num_guests_created() == 0)
-    ASSERT_TRUE(guest_view_manager->DeprecatedWaitForNextGuestCreated());
+    ASSERT_TRUE(GetGuestViewManager()->WaitForNextGuestViewCreated());
   ASSERT_EQ(1U, guest_view_manager->num_guests_created());
 
   // Remove the non-sandboxed frame.
