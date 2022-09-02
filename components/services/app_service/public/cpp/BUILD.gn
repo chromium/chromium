@@ -51,6 +51,8 @@ component("app_types") {
     "app_launch_util.h",
     "app_types.cc",
     "app_types.h",
+    "capability_access.cc",
+    "capability_access.h",
     "features.cc",
     "features.h",
     "intent_filter.cc",
