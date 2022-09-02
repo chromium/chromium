@@ -278,10 +278,6 @@ void FullscreenController::ExitFullscreenModeForTab(WebContents* web_contents) {
   if (was_browser_fullscreen)
     exclusive_access_context->UpdateUIForTabFullscreen();
 
-  // This is only a change between Browser and Tab fullscreen. We generate
-  // a fullscreen notification now because there is no window change.
-  PostFullscreenChangeNotification();
-
   // For Tab Fullscreen -> Browser Fullscreen, enter browser fullscreen on the
   // display that originated the browser fullscreen prior to the tab fullscreen.
   // crbug.com/1313606.
@@ -290,7 +286,14 @@ void FullscreenController::ExitFullscreenModeForTab(WebContents* web_contents) {
       display_id_prior_to_tab_fullscreen_ != GetDisplayId(*web_contents)) {
     EnterFullscreenModeInternal(BROWSER, nullptr,
                                 display_id_prior_to_tab_fullscreen_);
+    return;
   }
+
+  // Notify observers now, when reverting from Tab fullscreen to Browser
+  // fullscreen on the same display. Exiting fullscreen, or reverting to Browser
+  // fullscreen on another display, triggers additional controller logic above,
+  // which will notify observers when appropriate.
+  PostFullscreenChangeNotification();
 }
 
 void FullscreenController::FullscreenTabOpeningPopup(
