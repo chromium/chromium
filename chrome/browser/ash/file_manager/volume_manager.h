@@ -448,7 +448,7 @@ class VolumeManager : public KeyedService,
 
   // For testing purposes, adds a volume info pointing to |path|, with TESTING
   // type. Assumes that the mount point is already registered.
-  void AddVolumeForTesting(base::FilePath path,
+  bool AddVolumeForTesting(base::FilePath path,
                            VolumeType volume_type,
                            ash::DeviceType device_type,
                            bool read_only,
@@ -459,7 +459,7 @@ class VolumeManager : public KeyedService,
                            bool watchable = false);
 
   // For testing purposes, adds the volume info to the volume manager.
-  void AddVolumeForTesting(std::unique_ptr<Volume> volume);
+  bool AddVolumeForTesting(std::unique_ptr<Volume> volume);
 
   void RemoveVolumeForTesting(
       const base::FilePath& path,
@@ -585,18 +585,23 @@ class VolumeManager : public KeyedService,
   void OnStorageMonitorInitialized();
   void DoAttachMtpStorage(const storage_monitor::StorageInfo& info,
                           device::mojom::MtpStorageInfoPtr mtp_storage_info);
-  void DoMountEvent(ash::MountError error_code, std::unique_ptr<Volume> volume);
 
+  // Adds |volume| to the set |mounted_volumes_| if |error_code| is |kNone|.
+  // Returns true if the volume was actually added, ie if |error_code| is
+  // |kNone| and there was no previous volume with the same ID.
+  bool DoMountEvent(std::unique_ptr<Volume> volume,
+                    ash::MountError error_code = ash::MountError::kNone);
+
+  // Removes the Volume at position |it| if |error_code| is |kNone|.
+  // Precondition: it != mounted_volumes_.end()
   void DoUnmountEvent(Volumes::const_iterator it,
                       ash::MountError error_code = ash::MountError::kNone);
 
+  // Removes the Volume with the given ID if |error_code| is |kNone|.
   void DoUnmountEvent(base::StringPiece volume_id,
-                      ash::MountError error_code = ash::MountError::kNone) {
-    const Volumes::const_iterator it = mounted_volumes_.find(volume_id);
-    if (it != mounted_volumes_.end())
-      DoUnmountEvent(it, error_code);
-  }
+                      ash::MountError error_code = ash::MountError::kNone);
 
+  // Removes the Volume with the same ID as |volume| if |error_code| is |kNone|.
   void DoUnmountEvent(const Volume& volume,
                       ash::MountError error_code = ash::MountError::kNone) {
     DoUnmountEvent(volume.volume_id(), error_code);
