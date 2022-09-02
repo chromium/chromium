@@ -112,7 +112,8 @@ def ShouldUseAbslOptional(type_):
 
   if type_.property_type in (PropertyType.BOOLEAN,
                              PropertyType.DOUBLE,
-                             PropertyType.INTEGER):
+                             PropertyType.INTEGER,
+                             PropertyType.STRING):
     return True
 
   return False

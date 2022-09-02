@@ -30,9 +30,7 @@ namespace unchecked {
 telemetry_api::CpuCStateInfo UncheckedConvertPtr(
     telemetry_service::ProbeCpuCStateInfoPtr input) {
   telemetry_api::CpuCStateInfo result;
-  if (input->name.has_value()) {
-    result.name = std::make_unique<std::string>(input->name.value());
-  }
+  result.name = input->name;
   if (input->time_in_state_since_last_boot_us) {
     result.time_in_state_since_last_boot_us =
         input->time_in_state_since_last_boot_us->value;
@@ -64,10 +62,7 @@ telemetry_api::LogicalCpuInfo UncheckedConvertPtr(
 telemetry_api::PhysicalCpuInfo UncheckedConvertPtr(
     telemetry_service::ProbePhysicalCpuInfoPtr input) {
   telemetry_api::PhysicalCpuInfo result;
-  if (input->model_name.has_value()) {
-    result.model_name =
-        std::make_unique<std::string>(input->model_name.value());
-  }
+  result.model_name = input->model_name;
   result.logical_cpus = ConvertPtrVector<telemetry_api::LogicalCpuInfo>(
       std::move(input->logical_cpus));
   return result;
@@ -76,22 +71,10 @@ telemetry_api::PhysicalCpuInfo UncheckedConvertPtr(
 telemetry_api::BatteryInfo UncheckedConvertPtr(
     telemetry_service::ProbeBatteryInfoPtr input) {
   telemetry_api::BatteryInfo result;
-  if (input->vendor.has_value()) {
-    result.vendor =
-        std::make_unique<std::string>(std::move(input->vendor.value()));
-  }
-  if (input->model_name.has_value()) {
-    result.model_name =
-        std::make_unique<std::string>(std::move(input->model_name.value()));
-  }
-  if (input->technology.has_value()) {
-    result.technology =
-        std::make_unique<std::string>(std::move(input->technology.value()));
-  }
-  if (input->status.has_value()) {
-    result.status =
-        std::make_unique<std::string>(std::move(input->status.value()));
-  }
+  result.vendor = std::move(input->vendor);
+  result.model_name = std::move(input->model_name);
+  result.technology = std::move(input->technology);
+  result.status = std::move(input->status);
   if (input->cycle_count) {
     result.cycle_count = input->cycle_count->value;
   }
@@ -116,10 +99,7 @@ telemetry_api::BatteryInfo UncheckedConvertPtr(
   if (input->temperature) {
     result.temperature = input->temperature->value;
   }
-  if (input->manufacture_date.has_value()) {
-    result.manufacture_date =
-        std::make_unique<std::string>(input->manufacture_date.value());
-  }
+  result.manufacture_date = std::move(input->manufacture_date);
 
   return result;
 }
@@ -128,25 +108,10 @@ telemetry_api::OsVersionInfo UncheckedConvertPtr(
     telemetry_service::ProbeOsVersionPtr input) {
   telemetry_api::OsVersionInfo result;
 
-  if (input->release_milestone) {
-    result.release_milestone =
-        std::make_unique<std::string>(input->release_milestone.value());
-  }
-
-  if (input->build_number) {
-    result.build_number =
-        std::make_unique<std::string>(input->build_number.value());
-  }
-
-  if (input->patch_number) {
-    result.patch_number =
-        std::make_unique<std::string>(input->patch_number.value());
-  }
-
-  if (input->release_channel) {
-    result.release_channel =
-        std::make_unique<std::string>(input->release_channel.value());
-  }
+  result.release_milestone = input->release_milestone;
+  result.build_number = input->build_number;
+  result.patch_number = input->patch_number;
+  result.release_channel = input->release_channel;
 
   return result;
 }

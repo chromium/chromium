@@ -42,7 +42,7 @@ AcceptOption BuildAcceptOption(const std::string& description,
   AcceptOption option;
 
   if (!description.empty())
-    option.description = std::make_unique<std::string>(description);
+    option.description = description;
 
   if (!mime_types.empty()) {
     option.mime_types =
@@ -161,21 +161,21 @@ TEST(FileSystemApiUnitTest, FileSystemChooseEntryFunctionFileTypeInfoTest) {
 }
 
 TEST(FileSystemApiUnitTest, FileSystemChooseEntryFunctionSuggestionTest) {
-  std::string opt_name;
+  absl::optional<std::string> opt_name;
   base::FilePath suggested_name;
   base::FilePath::StringType suggested_extension;
 
   opt_name = std::string("normal_path.txt");
-  FileSystemChooseEntryFunction::BuildSuggestion(&opt_name, &suggested_name,
-      &suggested_extension);
+  FileSystemChooseEntryFunction::BuildSuggestion(opt_name, &suggested_name,
+                                                 &suggested_extension);
   EXPECT_FALSE(suggested_name.IsAbsolute());
   EXPECT_EQ(suggested_name.MaybeAsASCII(), "normal_path.txt");
   EXPECT_EQ(suggested_extension, ToStringType("txt"));
 
   // We should provide just the basename, i.e., "path".
   opt_name = std::string("/a/bad/path");
-  FileSystemChooseEntryFunction::BuildSuggestion(&opt_name, &suggested_name,
-      &suggested_extension);
+  FileSystemChooseEntryFunction::BuildSuggestion(opt_name, &suggested_name,
+                                                 &suggested_extension);
   EXPECT_FALSE(suggested_name.IsAbsolute());
   EXPECT_EQ(suggested_name.MaybeAsASCII(), "path");
   EXPECT_TRUE(suggested_extension.empty());
@@ -184,8 +184,8 @@ TEST(FileSystemApiUnitTest, FileSystemChooseEntryFunctionSuggestionTest) {
   // TODO(thorogood): Fix this test on Windows.
   // Filter out absolute paths with no basename.
   opt_name = std::string("/");
-  FileSystemChooseEntryFunction::BuildSuggestion(&opt_name, &suggested_name,
-      &suggested_extension);
+  FileSystemChooseEntryFunction::BuildSuggestion(opt_name, &suggested_name,
+                                                 &suggested_extension);
   EXPECT_FALSE(suggested_name.IsAbsolute());
   EXPECT_TRUE(suggested_name.MaybeAsASCII().empty());
   EXPECT_TRUE(suggested_extension.empty());

@@ -685,7 +685,7 @@ ExtensionFunction::ResponseAction TerminalPrivateOpenWindowFunction::Run() {
   auto& data = params->data;
   if (data) {
     if (data->url) {
-      url = data->url.get();
+      url = &*data->url;
     }
     if (data->as_tab) {
       as_tab = *data->as_tab;

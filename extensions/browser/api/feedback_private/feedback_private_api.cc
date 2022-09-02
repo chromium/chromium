@@ -220,10 +220,9 @@ std::unique_ptr<FeedbackInfo> FeedbackPrivateAPI::CreateFeedbackInfo(
   auto info = std::make_unique<FeedbackInfo>();
 
   info->description = description_template;
-  info->description_placeholder =
-      std::make_unique<std::string>(description_placeholder_text);
-  info->category_tag = std::make_unique<std::string>(category_tag);
-  info->page_url = std::make_unique<std::string>(page_url.spec());
+  info->description_placeholder = description_placeholder_text;
+  info->category_tag = category_tag;
+  info->page_url = page_url.spec();
   info->system_information = std::make_unique<SystemInformationList>();
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   info->from_assistant = from_assistant;

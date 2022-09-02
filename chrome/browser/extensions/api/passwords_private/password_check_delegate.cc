@@ -83,9 +83,8 @@ using State = password_manager::BulkLeakCheckService::State;
 constexpr char kPasswordCheckScriptsCacheStateUmaKey[] =
     "PasswordManager.BulkCheck.ScriptsCacheState";
 
-std::unique_ptr<std::string> GetChangePasswordUrl(const GURL& url) {
-  return std::make_unique<std::string>(
-      password_manager::CreateChangePasswordUrl(url).spec());
+std::string GetChangePasswordUrl(const GURL& url) {
+  return password_manager::CreateChangePasswordUrl(url).spec();
 }
 
 }  // namespace
@@ -477,7 +476,7 @@ PasswordCheckDelegate::GetPasswordCheckStatus() const {
                last_completed_weak_check_);
   if (!last_check_completed.is_null()) {
     result.elapsed_time_since_last_check =
-        std::make_unique<std::string>(FormatElapsedTime(last_check_completed));
+        FormatElapsedTime(last_check_completed);
   }
 
   State state = bulk_leak_check_service_adapter_.GetBulkLeakCheckState();

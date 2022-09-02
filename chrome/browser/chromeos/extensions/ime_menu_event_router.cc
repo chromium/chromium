@@ -74,7 +74,7 @@ void ExtensionImeMenuEventRouter::ImeMenuItemsChanged(
   for (const auto& item : items) {
     input_method_private::MenuItem menu_item;
     menu_item.id = item.id;
-    menu_item.label = std::make_unique<std::string>(item.label);
+    menu_item.label = item.label;
     switch (item.style) {
       case input_method::InputMethodManager::MENU_ITEM_STYLE_CHECK:
         menu_item.style = input_method_private::ParseMenuItemStyle("check");

@@ -405,8 +405,7 @@ void SafeBrowsingPrivateEventRouter::OnSecurityInterstitialShown(
   params.url = url.spec();
   params.reason = reason;
   if (net_error_code < 0) {
-    params.net_error_code =
-        std::make_unique<std::string>(base::NumberToString(net_error_code));
+    params.net_error_code = base::NumberToString(net_error_code);
   }
   params.user_name = GetProfileUserName();
 
@@ -454,8 +453,7 @@ void SafeBrowsingPrivateEventRouter::OnSecurityInterstitialProceeded(
   params.url = url.spec();
   params.reason = reason;
   if (net_error_code < 0) {
-    params.net_error_code =
-        std::make_unique<std::string>(base::NumberToString(net_error_code));
+    params.net_error_code = base::NumberToString(net_error_code);
   }
   params.user_name = GetProfileUserName();
 

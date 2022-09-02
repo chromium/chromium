@@ -158,8 +158,7 @@ void TestPasswordsPrivateDelegate::RequestCredentialDetails(
     content::WebContents* web_contents) {
   api::passwords_private::PasswordUiEntry entry = CreateEntry(42);
   if (plaintext_password_.has_value()) {
-    entry.password = std::make_unique<std::string>(
-        base::UTF16ToUTF8(plaintext_password_.value()));
+    entry.password = base::UTF16ToUTF8(plaintext_password_.value());
     std::move(callback).Run(std::move(entry));
   } else {
     std::move(callback).Run(std::move(absl::nullopt));
@@ -224,8 +223,7 @@ TestPasswordsPrivateDelegate::GetCompromisedCredentials() {
   credential.urls.link = "https://example.com";
   credential.urls.signon_realm = "https://example.com";
   credential.is_android_credential = false;
-  credential.change_password_url =
-      std::make_unique<std::string>("https://example.com/change-password");
+  credential.change_password_url = "https://example.com/change-password";
   credential.compromised_info =
       std::make_unique<api::passwords_private::CompromisedInfo>();
   // Mar 03 2020 12:00:00 UTC
@@ -248,8 +246,7 @@ TestPasswordsPrivateDelegate::GetWeakCredentials() {
   credential.urls.shown = "example.com";
   credential.urls.link = "https://example.com";
   credential.is_android_credential = false;
-  credential.change_password_url =
-      std::make_unique<std::string>("https://example.com/change-password");
+  credential.change_password_url = "https://example.com/change-password";
   credential.stored_in = api::passwords_private::PASSWORD_STORE_SET_DEVICE;
   std::vector<api::passwords_private::PasswordUiEntry> credentials;
   credentials.push_back(std::move(credential));
@@ -305,10 +302,8 @@ TestPasswordsPrivateDelegate::GetPasswordCheckStatus() {
   status.state = api::passwords_private::PASSWORD_CHECK_STATE_RUNNING;
   status.already_processed = 5;
   status.remaining_in_queue = 10;
-  status.elapsed_time_since_last_check =
-      std::make_unique<std::string>(base::UTF16ToUTF8(
-          TimeFormat::Simple(TimeFormat::FORMAT_ELAPSED,
-                             TimeFormat::LENGTH_SHORT, base::Minutes(5))));
+  status.elapsed_time_since_last_check = base::UTF16ToUTF8(TimeFormat::Simple(
+      TimeFormat::FORMAT_ELAPSED, TimeFormat::LENGTH_SHORT, base::Minutes(5)));
   return status;
 }
 

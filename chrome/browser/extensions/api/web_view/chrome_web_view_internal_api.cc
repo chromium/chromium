@@ -33,7 +33,7 @@ ChromeWebViewInternalContextMenusCreateFunction::Run() {
           GetSenderWebContents()->GetPrimaryMainFrame()->GetProcess()->GetID(),
           params->instance_id));
 
-  if (params->create_properties.id.get()) {
+  if (params->create_properties.id) {
     id.string_uid = *params->create_properties.id;
   } else {
     // The Generated Id is added by web_view_internal_custom_bindings.js.

@@ -1046,9 +1046,8 @@ void FileManagerPrivateInternalGetLinuxPackageInfoFunction::
 
   result.name = linux_package_info.name;
   result.version = linux_package_info.version;
-  result.summary = std::make_unique<std::string>(linux_package_info.summary);
-  result.description =
-      std::make_unique<std::string>(linux_package_info.description);
+  result.summary = linux_package_info.summary;
+  result.description = linux_package_info.description;
 
   Respond(ArgumentList(extensions::api::file_manager_private_internal::
                            GetLinuxPackageInfo::Results::Create(result)));
@@ -1145,7 +1144,7 @@ void FileManagerPrivateInternalGetCustomActionsFunction::OnCompleted(
   for (const auto& action : actions) {
     Action item;
     item.id = action.id;
-    item.title = std::make_unique<std::string>(action.title);
+    item.title = action.title;
     items.push_back(std::move(item));
   }
 

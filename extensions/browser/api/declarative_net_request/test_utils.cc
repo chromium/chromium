@@ -435,9 +435,7 @@ dnr_api::ModifyHeaderInfo CreateModifyHeaderInfo(
 
   header_info.operation = operation;
   header_info.header = header;
-
-  if (value)
-    header_info.value = std::make_unique<std::string>(*value);
+  header_info.value = value;
 
   return header_info;
 }

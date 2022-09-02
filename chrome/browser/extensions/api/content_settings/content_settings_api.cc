@@ -130,7 +130,7 @@ ContentSettingsContentSettingGetFunction::Run() {
   }
 
   GURL secondary_url(primary_url);
-  if (params->details.secondary_url.get()) {
+  if (params->details.secondary_url) {
     secondary_url = GURL(*params->details.secondary_url);
     if (!secondary_url.is_valid()) {
       return RespondNow(
@@ -196,7 +196,7 @@ ContentSettingsContentSettingSetFunction::Run() {
     return RespondNow(Error(primary_error));
 
   ContentSettingsPattern secondary_pattern = ContentSettingsPattern::Wildcard();
-  if (params->details.secondary_pattern.get()) {
+  if (params->details.secondary_pattern) {
     std::string secondary_error;
     secondary_pattern = content_settings_helpers::ParseExtensionPattern(
         *params->details.secondary_pattern, &secondary_error);

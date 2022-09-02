@@ -378,30 +378,19 @@ EnterpriseReportingPrivateGetDeviceInfoFunction::ToDeviceInfo(
     const enterprise_signals::DeviceInfo& device_signals) {
   api::enterprise_reporting_private::DeviceInfo device_info;
 
-  device_info.os_name = std::move(device_signals.os_name);
-  device_info.os_version = std::move(device_signals.os_version);
-  device_info.security_patch_level =
-      std::move(device_signals.security_patch_level);
-  device_info.device_host_name = std::move(device_signals.device_host_name);
-  device_info.device_model = std::move(device_signals.device_model);
-  device_info.serial_number = std::move(device_signals.serial_number);
+  device_info.os_name = device_signals.os_name;
+  device_info.os_version = device_signals.os_version;
+  device_info.security_patch_level = device_signals.security_patch_level;
+  device_info.device_host_name = device_signals.device_host_name;
+  device_info.device_model = device_signals.device_model;
+  device_info.serial_number = device_signals.serial_number;
   device_info.screen_lock_secured =
       ToInfoSettingValue(device_signals.screen_lock_secured);
   device_info.disk_encrypted =
       ToInfoSettingValue(device_signals.disk_encrypted);
-  device_info.mac_addresses = std::move(device_signals.mac_addresses);
-  if (device_signals.windows_machine_domain.has_value()) {
-    device_info.windows_machine_domain = std::make_unique<std::string>(
-        device_signals.windows_machine_domain.value());
-  } else {
-    device_info.windows_machine_domain = nullptr;
-  }
-  if (device_signals.windows_user_domain.has_value()) {
-    device_info.windows_user_domain = std::make_unique<std::string>(
-        device_signals.windows_user_domain.value());
-  } else {
-    device_info.windows_user_domain = nullptr;
-  }
+  device_info.mac_addresses = device_signals.mac_addresses;
+  device_info.windows_machine_domain = device_signals.windows_machine_domain;
+  device_info.windows_user_domain = device_signals.windows_user_domain;
   if (device_signals.secure_boot_enabled.has_value()) {
     device_info.secure_boot_enabled =
         ToInfoSettingValue(device_signals.secure_boot_enabled.value());

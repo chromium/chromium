@@ -177,7 +177,7 @@ class FileSystemChooseEntryFunction : public FileSystemEntryFunction {
       const base::FilePath::StringType& suggested_extension,
       const AcceptOptions* accepts,
       const absl::optional<bool>& accepts_all_types);
-  static void BuildSuggestion(const std::string* opt_name,
+  static void BuildSuggestion(const absl::optional<std::string>& opt_name,
                               base::FilePath* suggested_name,
                               base::FilePath::StringType* suggested_extension);
 

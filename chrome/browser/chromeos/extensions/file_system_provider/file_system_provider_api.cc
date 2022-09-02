@@ -58,7 +58,7 @@ api::file_system_provider::FileSystemInfo ConvertFileSystemInfoMojomToExtension(
     watcher_item.entry_path = watcher->entry_path.value();
     watcher_item.recursive = watcher->recursive;
     if (!watcher->last_tag.empty()) {
-      watcher_item.last_tag = std::make_unique<std::string>(watcher->last_tag);
+      watcher_item.last_tag = watcher->last_tag;
     }
     item.watchers.push_back(std::move(watcher_item));
   }

@@ -507,7 +507,7 @@ void CertificateProviderRequestPinFunction::OnInputReceived(
     // TODO(crbug.com/1046860): Remove logging after stabilizing the feature.
     LOG(WARNING) << "PIN request succeeded";
     api::certificate_provider::PinResponseDetails details;
-    details.user_input = std::make_unique<std::string>(value);
+    details.user_input = value;
     create_results.Append(base::Value::FromUniquePtrValue(details.ToValue()));
   } else {
     // TODO(crbug.com/1046860): Remove logging after stabilizing the feature.

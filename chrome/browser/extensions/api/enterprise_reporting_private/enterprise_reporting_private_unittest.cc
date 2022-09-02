@@ -1423,8 +1423,7 @@ TEST_F(EnterpriseReportingPrivateGetFileSystemInfoTest, Success) {
             fake_file_item.file_path.AsUTF8Unsafe());
   EXPECT_EQ(parsed_file_system_signal->presence,
             enterprise_reporting_private::PRESENCE_VALUE_FOUND);
-  EXPECT_EQ(*parsed_file_system_signal->sha256_hash.get(),
-            "c29tZSBoYXNoZWQgdmFsdWU");
+  EXPECT_EQ(*parsed_file_system_signal->sha256_hash, "c29tZSBoYXNoZWQgdmFsdWU");
 
   histogram_tester_.ExpectUniqueSample(
       "Enterprise.DeviceSignals.Collection.Success", signal_name(), 1);

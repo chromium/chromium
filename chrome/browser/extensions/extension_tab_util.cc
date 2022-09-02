@@ -459,21 +459,17 @@ std::unique_ptr<api::tabs::Tab> ExtensionTabUtil::CreateTabObject(
   tab_object->width = contents_size.width();
   tab_object->height = contents_size.height();
 
-  tab_object->url =
-      std::make_unique<std::string>(contents->GetLastCommittedURL().spec());
+  tab_object->url = contents->GetLastCommittedURL().spec();
   NavigationEntry* pending_entry = contents->GetController().GetPendingEntry();
   if (pending_entry) {
-    tab_object->pending_url =
-        std::make_unique<std::string>(pending_entry->GetVirtualURL().spec());
+    tab_object->pending_url = pending_entry->GetVirtualURL().spec();
   }
-  tab_object->title =
-      std::make_unique<std::string>(base::UTF16ToUTF8(contents->GetTitle()));
+  tab_object->title = base::UTF16ToUTF8(contents->GetTitle());
   // TODO(tjudkins) This should probably use the LastCommittedEntry() for
   // consistency.
   NavigationEntry* visible_entry = contents->GetController().GetVisibleEntry();
   if (visible_entry && visible_entry->GetFavicon().valid) {
-    tab_object->fav_icon_url =
-        std::make_unique<std::string>(visible_entry->GetFavicon().url.spec());
+    tab_object->fav_icon_url = visible_entry->GetFavicon().url.spec();
   }
   if (tab_strip) {
     WebContents* opener = tab_strip->GetOpenerOfWebContentsAt(tab_index);
@@ -574,8 +570,8 @@ std::unique_ptr<api::tabs::MutedInfo> ExtensionTabUtil::CreateMutedInfo(
       break;
     case TabMutedReason::EXTENSION:
       info->reason = api::tabs::MUTED_INFO_REASON_EXTENSION;
-      info->extension_id = std::make_unique<std::string>(
-          LastMuteMetadata::FromWebContents(contents)->extension_id);
+      info->extension_id =
+          LastMuteMetadata::FromWebContents(contents)->extension_id;
       DCHECK(!info->extension_id->empty());
       break;
   }
@@ -625,8 +621,7 @@ void ExtensionTabUtil::ScrubTabForExtension(
       tab->fav_icon_url.reset();
       break;
     case kScrubTabUrlToOrigin:
-      tab->url = std::make_unique<std::string>(
-          GURL(*tab->url).DeprecatedGetOriginAsURL().spec());
+      tab->url = GURL(*tab->url).DeprecatedGetOriginAsURL().spec();
       break;
     case kDontScrubTab:
       break;
@@ -639,8 +634,8 @@ void ExtensionTabUtil::ScrubTabForExtension(
         tab->pending_url.reset();
         break;
       case kScrubTabUrlToOrigin:
-        tab->pending_url = std::make_unique<std::string>(
-            GURL(*tab->pending_url).DeprecatedGetOriginAsURL().spec());
+        tab->pending_url =
+            GURL(*tab->pending_url).DeprecatedGetOriginAsURL().spec();
         break;
       case kDontScrubTab:
         break;

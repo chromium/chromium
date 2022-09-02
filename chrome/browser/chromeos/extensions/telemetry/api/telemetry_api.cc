@@ -63,12 +63,10 @@ void OsTelemetryGetBatteryInfoFunction::OnResult(
   auto& battery_info = ptr->battery_result->get_battery_info();
 
   // Protect accessing the serial number by a permission.
-  std::unique_ptr<std::string> serial_number;
+  absl::optional<std::string> serial_number;
   if (extension()->permissions_data()->HasAPIPermission(
-          extensions::mojom::APIPermissionID::kChromeOSTelemetrySerialNumber) &&
-      battery_info->serial_number.has_value()) {
-    serial_number = std::make_unique<std::string>(
-        std::move(battery_info->serial_number.value()));
+          extensions::mojom::APIPermissionID::kChromeOSTelemetrySerialNumber)) {
+    serial_number = std::move(battery_info->serial_number);
   }
 
   api::os_telemetry::BatteryInfo result =
@@ -184,8 +182,7 @@ void OsTelemetryGetOemDataFunction::OnResult(
   }
 
   api::os_telemetry::OemData result;
-  result.oem_data =
-      std::make_unique<std::string>(std::move(ptr->oem_data.value()));
+  result.oem_data = std::move(ptr->oem_data);
 
   Respond(ArgumentList(api::os_telemetry::GetOemData::Results::Create(result)));
 }
@@ -283,25 +280,14 @@ void OsTelemetryGetVpdInfoFunction::OnResult(
   api::os_telemetry::VpdInfo result;
 
   const auto& vpd_info = ptr->vpd_result->get_vpd_info();
-  if (vpd_info->first_power_date.has_value()) {
-    result.activate_date =
-        std::make_unique<std::string>(vpd_info->first_power_date.value());
-  }
-  if (vpd_info->model_name.has_value()) {
-    result.model_name =
-        std::make_unique<std::string>(vpd_info->model_name.value());
-  }
-  if (vpd_info->sku_number.has_value()) {
-    result.sku_number =
-        std::make_unique<std::string>(vpd_info->sku_number.value());
-  }
+  result.activate_date = vpd_info->first_power_date;
+  result.model_name = vpd_info->model_name;
+  result.sku_number = vpd_info->sku_number;
 
   // Protect accessing the serial number by a permission.
   if (extension()->permissions_data()->HasAPIPermission(
-          extensions::mojom::APIPermissionID::kChromeOSTelemetrySerialNumber) &&
-      vpd_info->serial_number.has_value()) {
-    result.serial_number =
-        std::make_unique<std::string>(vpd_info->serial_number.value());
+          extensions::mojom::APIPermissionID::kChromeOSTelemetrySerialNumber)) {
+    result.serial_number = vpd_info->serial_number;
   }
 
   Respond(ArgumentList(api::os_telemetry::GetVpdInfo::Results::Create(result)));

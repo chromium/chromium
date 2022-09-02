@@ -193,7 +193,7 @@ bool ValidatePairingResponseOptions(
     const device::BluetoothDevice* device,
     const bt_private::SetPairingResponseOptions& options) {
   bool response = options.response != bt_private::PAIRING_RESPONSE_NONE;
-  bool pincode = options.pincode != nullptr;
+  bool pincode = options.pincode.has_value();
   bool passkey = options.passkey.has_value();
 
   if (!response && !pincode && !passkey)
@@ -247,7 +247,7 @@ void BluetoothPrivateSetAdapterStateFunction::DoWork(
   const bt_private::NewAdapterState& new_state = params_->adapter_state;
 
   // These properties are not owned.
-  std::string* name = new_state.name.get();
+  const auto& name = new_state.name;
   const auto& powered = new_state.powered;
   const auto& discoverable = new_state.discoverable;
 
@@ -371,7 +371,7 @@ void BluetoothPrivateSetPairingResponseFunction::DoWork(
     return;
   }
 
-  if (options.pincode.get()) {
+  if (options.pincode) {
     device->SetPinCode(*options.pincode);
   } else if (options.passkey) {
     device->SetPasskey(*options.passkey);
@@ -520,7 +520,7 @@ void BluetoothPrivateSetDiscoveryFilterFunction::DoWork(
         std::make_unique<device::BluetoothDiscoveryFilter>(transport);
 
     if (df_param.uuids.get()) {
-      if (df_param.uuids->as_string.get()) {
+      if (df_param.uuids->as_string) {
         device::BluetoothDiscoveryFilter::DeviceInfoFilter device_filter;
         device_filter.uuids.insert(
             device::BluetoothUUID(*df_param.uuids->as_string));

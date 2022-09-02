@@ -403,7 +403,7 @@ std::string RulesRegistry::CheckAndFillInOptionalRules(
   // First we insert all rules with existing identifier, so that generated
   // identifiers cannot collide with identifiers passed by the caller.
   for (const auto& rule : *rules) {
-    if (rule.id.get()) {
+    if (rule.id) {
       std::string id = *(rule.id);
       if (!IsUniqueId(extension_id, id)) {
         RemoveUsedRuleIdentifiers(extension_id, rollback_log);
@@ -415,8 +415,8 @@ std::string RulesRegistry::CheckAndFillInOptionalRules(
   // Now we generate IDs in case they were not specified in the rules. This
   // cannot fail so we do not need to keep track of a rollback log.
   for (auto& rule : *rules) {
-    if (!rule.id.get()) {
-      rule.id = std::make_unique<std::string>(GenerateUniqueId(extension_id));
+    if (!rule.id) {
+      rule.id = GenerateUniqueId(extension_id);
       used_rule_identifiers_[extension_id].insert(*(rule.id));
     }
   }

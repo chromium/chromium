@@ -140,7 +140,7 @@ ExtensionFunction::ResponseAction TabGroupsQueryFunction::Run() {
         continue;
       }
 
-      if (params->query_info.title.get() &&
+      if (params->query_info.title &&
           !base::MatchPattern(visual_data->title(),
                               base::UTF8ToUTF16(*params->query_info.title))) {
         continue;
@@ -187,7 +187,7 @@ ExtensionFunction::ResponseAction TabGroupsUpdateFunction::Run() {
     color = tab_groups_util::ColorToColorId(params->update_properties.color);
 
   std::u16string title = visual_data->title();
-  if (params->update_properties.title.get())
+  if (params->update_properties.title)
     title = base::UTF8ToUTF16(*params->update_properties.title);
 
   TabStripModel* tab_strip_model =

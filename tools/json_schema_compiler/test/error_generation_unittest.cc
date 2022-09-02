@@ -246,7 +246,7 @@ TEST(JsonSchemaCompilerErrorTest, ErrorOnOptionalFailure) {
     EXPECT_FALSE(errors::OptionalTestType::Populate(*value, &out, &error));
     EXPECT_TRUE(EqualsUtf16("'string': expected string, got integer",
         error));
-    EXPECT_EQ(NULL, out.string.get());
+    EXPECT_FALSE(out.string);
   }
 }
 

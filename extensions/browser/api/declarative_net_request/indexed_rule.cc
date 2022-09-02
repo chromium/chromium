@@ -49,7 +49,7 @@ class UrlFilterParser {
 
   // This sets the |url_pattern_type|, |anchor_left|, |anchor_right| and
   // |url_pattern| fields on the |indexed_rule_|.
-  static void Parse(std::unique_ptr<std::string> url_filter,
+  static void Parse(absl::optional<std::string> url_filter,
                     IndexedRule* indexed_rule) {
     DCHECK(indexed_rule);
     UrlFilterParser(url_filter ? std::move(*url_filter) : std::string(),
@@ -292,7 +292,7 @@ bool IsRedirectUrlRelative(const std::string& redirect_url) {
   return !redirect_url.empty() && redirect_url[0] == '/';
 }
 
-bool IsValidTransformScheme(const std::unique_ptr<std::string>& scheme) {
+bool IsValidTransformScheme(const absl::optional<std::string>& scheme) {
   if (!scheme)
     return true;
 
@@ -303,7 +303,7 @@ bool IsValidTransformScheme(const std::unique_ptr<std::string>& scheme) {
   return false;
 }
 
-bool IsValidPort(const std::unique_ptr<std::string>& port) {
+bool IsValidPort(const absl::optional<std::string>& port) {
   if (!port || port->empty())
     return true;
 
@@ -311,7 +311,7 @@ bool IsValidPort(const std::unique_ptr<std::string>& port) {
   return base::StringToUint(*port, &port_num) && port_num <= 65535;
 }
 
-bool IsEmptyOrStartsWith(const std::unique_ptr<std::string>& str,
+bool IsEmptyOrStartsWith(const absl::optional<std::string>& str,
                          char starts_with) {
   return !str || str->empty() || str->at(0) == starts_with;
 }

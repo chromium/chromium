@@ -36,7 +36,7 @@ void InsertRule(scoped_refptr<extensions::RulesRegistry> registry,
                 const std::string& id) {
   std::vector<extensions::api::events::Rule> add_rules;
   add_rules.emplace_back();
-  add_rules[0].id = std::make_unique<std::string>(id);
+  add_rules[0].id = id;
   std::string error = registry->AddRules(kExtensionId, std::move(add_rules));
   EXPECT_TRUE(error.empty());
 }

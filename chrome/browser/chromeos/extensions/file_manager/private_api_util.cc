@@ -203,8 +203,7 @@ void ContinueGetSelectedFileInfoWithDriveFsMetadata(
   GetSelectedFileInfoInternal(profile, std::move(params));
 }
 
-std::unique_ptr<std::string> GetShareUrlFromAlternateUrl(
-    const GURL& alternate_url) {
+std::string GetShareUrlFromAlternateUrl(const GURL& alternate_url) {
   // Set |share_url| to a modified version of |alternate_url| that opens the
   // sharing dialog for files and folders (add ?userstoinvite="" to the URL).
   GURL::Replacements replacements;
@@ -213,8 +212,7 @@ std::unique_ptr<std::string> GetShareUrlFromAlternateUrl(
       "userstoinvite=%22%22";
   replacements.SetQueryStr(new_query);
 
-  return std::make_unique<std::string>(
-      alternate_url.ReplaceComponents(replacements).spec());
+  return alternate_url.ReplaceComponents(replacements).spec();
 }
 
 extensions::api::file_manager_private::VmType VmTypeToJs(
@@ -331,16 +329,13 @@ void SingleEntryPropertiesGetterForDriveFs::OnGetFileInfo(
         metadata->last_viewed_by_me_time.ToJsTime();
   }
   if (!metadata->content_mime_type.empty()) {
-    properties_->content_mime_type =
-        std::make_unique<std::string>(metadata->content_mime_type);
+    properties_->content_mime_type = metadata->content_mime_type;
   }
   if (!metadata->custom_icon_url.empty()) {
-    properties_->custom_icon_url =
-        std::make_unique<std::string>(std::move(metadata->custom_icon_url));
+    properties_->custom_icon_url = std::move(metadata->custom_icon_url);
   }
   if (!metadata->alternate_url.empty()) {
-    properties_->alternate_url =
-        std::make_unique<std::string>(std::move(metadata->alternate_url));
+    properties_->alternate_url = std::move(metadata->alternate_url);
     properties_->share_url =
         GetShareUrlFromAlternateUrl(GURL(*properties_->alternate_url));
   }
@@ -364,10 +359,9 @@ void SingleEntryPropertiesGetterForDriveFs::OnGetFileInfo(
       metadata->can_pin == drivefs::mojom::FileMetadata::CanPinStatus::kOk;
 
   if (drivefs::IsAFile(metadata->type)) {
-    properties_->thumbnail_url = std::make_unique<std::string>(
-        base::StrCat({"drivefs:", file_system_url_.ToGURL().spec()}));
-    properties_->cropped_thumbnail_url =
-        std::make_unique<std::string>(*properties_->thumbnail_url);
+    properties_->thumbnail_url =
+        base::StrCat({"drivefs:", file_system_url_.ToGURL().spec()});
+    properties_->cropped_thumbnail_url = *properties_->thumbnail_url;
   }
 
   if (metadata->folder_feature) {
@@ -396,12 +390,10 @@ void FillIconSet(file_manager_private::IconSet* output,
   DCHECK(output);
   using ash::file_system_provider::IconSet;
   if (input.HasIcon(IconSet::IconSize::SIZE_16x16)) {
-    output->icon16x16_url = std::make_unique<std::string>(
-        input.GetIcon(IconSet::IconSize::SIZE_16x16).spec());
+    output->icon16x16_url = input.GetIcon(IconSet::IconSize::SIZE_16x16).spec();
   }
   if (input.HasIcon(IconSet::IconSize::SIZE_32x32)) {
-    output->icon32x32_url = std::make_unique<std::string>(
-        input.GetIcon(IconSet::IconSize::SIZE_32x32).spec());
+    output->icon32x32_url = input.GetIcon(IconSet::IconSize::SIZE_32x32).spec();
   }
 }
 
@@ -419,12 +411,10 @@ void VolumeToVolumeMetadata(
   volume_metadata->profile.is_current_profile = true;
 
   if (!volume.source_path().empty()) {
-    volume_metadata->source_path =
-        std::make_unique<std::string>(volume.source_path().AsUTF8Unsafe());
+    volume_metadata->source_path = volume.source_path().AsUTF8Unsafe();
   }
   if (!volume.remote_mount_path().empty()) {
-    volume_metadata->remote_mount_path =
-        std::make_unique<std::string>(volume.remote_mount_path().value());
+    volume_metadata->remote_mount_path = volume.remote_mount_path().value();
   }
 
   switch (volume.source()) {
@@ -450,20 +440,15 @@ void VolumeToVolumeMetadata(
   volume_metadata->watchable = volume.watchable();
 
   if (volume.type() == VOLUME_TYPE_PROVIDED) {
-    volume_metadata->provider_id =
-        std::make_unique<std::string>(volume.provider_id().ToString());
-    volume_metadata->file_system_id =
-        std::make_unique<std::string>(volume.file_system_id());
+    volume_metadata->provider_id = volume.provider_id().ToString();
+    volume_metadata->file_system_id = volume.file_system_id();
   }
 
   FillIconSet(&volume_metadata->icon_set, volume.icon_set());
 
-  volume_metadata->volume_label =
-      std::make_unique<std::string>(volume.volume_label());
-  volume_metadata->disk_file_system_type =
-      std::make_unique<std::string>(volume.file_system_type());
-  volume_metadata->drive_label =
-      std::make_unique<std::string>(volume.drive_label());
+  volume_metadata->volume_label = volume.volume_label();
+  volume_metadata->disk_file_system_type = volume.file_system_type();
+  volume_metadata->drive_label = volume.drive_label();
 
   switch (volume.type()) {
     case VOLUME_TYPE_GOOGLE_DRIVE:
@@ -543,8 +528,7 @@ void VolumeToVolumeMetadata(
         volume_metadata->device_type = file_manager_private::DEVICE_TYPE_MOBILE;
         break;
     }
-    volume_metadata->device_path = std::make_unique<std::string>(
-        volume.storage_device_path().AsUTF8Unsafe());
+    volume_metadata->device_path = volume.storage_device_path().AsUTF8Unsafe();
     volume_metadata->is_parent_device = volume.is_parent();
   } else {
     volume_metadata->device_type =

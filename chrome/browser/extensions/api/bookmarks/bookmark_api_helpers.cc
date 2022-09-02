@@ -63,15 +63,13 @@ void PopulateBookmarkTreeNode(
 
   const BookmarkNode* parent = node->parent();
   if (parent) {
-    out_bookmark_tree_node->parent_id =
-        std::make_unique<std::string>(base::NumberToString(parent->id()));
+    out_bookmark_tree_node->parent_id = base::NumberToString(parent->id());
     out_bookmark_tree_node->index =
         static_cast<int>(parent->GetIndexOf(node).value());
   }
 
   if (!node->is_folder()) {
-    out_bookmark_tree_node->url =
-        std::make_unique<std::string>(node->url().spec());
+    out_bookmark_tree_node->url = node->url().spec();
   } else {
     // Javascript Date wants milliseconds since the epoch, ToDoubleT is seconds.
     base::Time t = node->date_folder_modified();

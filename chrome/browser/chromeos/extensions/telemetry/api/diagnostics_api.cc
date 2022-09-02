@@ -104,8 +104,7 @@ void OsDiagnosticsGetRoutineUpdateFunction::OnResult(
   result.progress_percent = ptr->progress_percent;
 
   if (ptr->output.has_value() && !ptr->output.value().empty()) {
-    result.output =
-        std::make_unique<std::string>(std::move(ptr->output.value()));
+    result.output = std::move(ptr->output);
   }
 
   switch (ptr->routine_update_union->which()) {
@@ -169,18 +168,13 @@ void OsDiagnosticsRunAcPowerRoutineFunction::RunIfAllowed() {
     return;
   }
 
-  absl::optional<std::string> expected_power_type = absl::nullopt;
-  if (params->request.expected_power_type) {
-    expected_power_type = *params->request.expected_power_type.get();
-  }
-
   auto cb =
       base::BindOnce(&DiagnosticsApiRunRoutineFunctionBase::OnResult, this);
 
   GetRemoteService()->RunAcPowerRoutine(
       converters::ConvertAcPowerStatusRoutineType(
           params->request.expected_status),
-      expected_power_type, std::move(cb));
+      params->request.expected_power_type, std::move(cb));
 }
 
 // OsDiagnosticsRunBatteryCapacityRoutineFunction ------------------------------

@@ -876,9 +876,9 @@ int GetMouseEventFlags(api::autotest_private::MouseButton button) {
 // false if optional display id is given but in bad format. Otherwise returns
 // true and fills |display_id| with either the primary display id when the
 // optional arg is not given or the parsed display id out of the arg
-bool GetDisplayIdFromOptionalArg(const std::unique_ptr<std::string>& arg,
+bool GetDisplayIdFromOptionalArg(const absl::optional<std::string>& arg,
                                  int64_t* display_id) {
-  if (arg.get() && !arg->empty()) {
+  if (arg && !arg->empty()) {
     return base::StringToInt64(*arg, display_id);
   }
 
@@ -4428,8 +4428,7 @@ AutotestPrivateGetAppWindowListFunction::Run() {
         static_cast<int>(ash::AppType::ARC_APP)) {
       std::string* package_name = window->GetProperty(ash::kArcPackageNameKey);
       if (package_name) {
-        window_info.arc_package_name =
-            std::make_unique<std::string>(*package_name);
+        window_info.arc_package_name = *package_name;
       } else {
         LOG(ERROR) << "The package name for window " << window->GetTitle()
                    << " (ID: " << window->GetId()
@@ -4439,12 +4438,11 @@ AutotestPrivateGetAppWindowListFunction::Run() {
     std::string* full_restore_window_app_id =
         window->GetProperty(app_restore::kAppIdKey);
     if (full_restore_window_app_id) {
-      window_info.full_restore_window_app_id =
-          std::make_unique<std::string>(*full_restore_window_app_id);
+      window_info.full_restore_window_app_id = *full_restore_window_app_id;
     }
     std::string* app_id = window->GetProperty(ash::kAppIDKey);
     if (app_id)
-      window_info.app_id = std::make_unique<std::string>(*app_id);
+      window_info.app_id = *app_id;
 
     auto* widget = views::Widget::GetWidgetForNativeWindow(window);
     // Frame information

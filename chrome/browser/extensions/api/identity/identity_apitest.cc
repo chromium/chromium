@@ -903,7 +903,7 @@ class GetAuthTokenFunctionTest
     OAuth2Info& oauth2_info =
         const_cast<OAuth2Info&>(OAuth2ManifestHandler::GetOAuth2Info(*ext));
     if ((fields_to_set & CLIENT_ID) != 0)
-      oauth2_info.client_id = std::make_unique<std::string>("client1");
+      oauth2_info.client_id = "client1";
     if ((fields_to_set & SCOPES) != 0) {
       oauth2_info.scopes.push_back("scope1");
       oauth2_info.scopes.push_back("scope2");
@@ -995,7 +995,7 @@ class GetAuthTokenFunctionTest
         api::identity::GetAuthTokenResult::FromValue(*result_value);
     ASSERT_TRUE(result);
 
-    EXPECT_NE(nullptr, result->token);
+    EXPECT_TRUE(result->token);
     *access_token = *result->token;
     EXPECT_NE(nullptr, result->granted_scopes);
     std::set<std::string> granted_scopes_map(result->granted_scopes->begin(),
@@ -1018,7 +1018,7 @@ class GetAuthTokenFunctionTest
         api::identity::GetAuthTokenResult::FromValue(result_value);
     ASSERT_TRUE(result);
 
-    ASSERT_NE(nullptr, result->token);
+    ASSERT_TRUE(result->token);
     *access_token = *result->token;
     ASSERT_NE(nullptr, result->granted_scopes);
     std::set<std::string> granted_scopes_map(result->granted_scopes->begin(),

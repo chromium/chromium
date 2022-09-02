@@ -65,12 +65,12 @@ std::vector<dnr_api::ModifyHeaderInfo> ToVector(
       case flat::HeaderOperation_append:
         header_info.operation = dnr_api::HEADER_OPERATION_APPEND;
         DCHECK(flat_value);
-        header_info.value = std::make_unique<std::string>(ToString(flat_value));
+        header_info.value = ToString(flat_value);
         break;
       case flat::HeaderOperation_set:
         header_info.operation = dnr_api::HEADER_OPERATION_SET;
         DCHECK(flat_value);
-        header_info.value = std::make_unique<std::string>(ToString(flat_value));
+        header_info.value = ToString(flat_value);
         break;
       case flat::HeaderOperation_remove:
         header_info.operation = dnr_api::HEADER_OPERATION_REMOVE;

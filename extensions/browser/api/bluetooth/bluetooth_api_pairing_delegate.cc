@@ -58,7 +58,7 @@ void BluetoothApiPairingDelegate::DisplayPinCode(
   bt_private::PairingEvent event;
   PopulatePairingEvent(
       device, bt_private::PAIRING_EVENT_TYPE_DISPLAYPINCODE, &event);
-  event.pincode = std::make_unique<std::string>(pincode);
+  event.pincode = pincode;
   DispatchPairingEvent(event);
 }
 

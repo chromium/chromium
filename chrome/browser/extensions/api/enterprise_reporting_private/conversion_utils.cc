@@ -113,8 +113,7 @@ absl::optional<ParsedSignalsError> ConvertFileSystemInfoResponse(
     response.presence = ConvertPresenceValue(file_system_item.presence);
 
     if (file_system_item.sha256_hash) {
-      response.sha256_hash = std::make_unique<std::string>(
-          EncodeHash(file_system_item.sha256_hash.value()));
+      response.sha256_hash = EncodeHash(*file_system_item.sha256_hash);
     }
 
     if (file_system_item.executable_metadata) {
@@ -124,19 +123,13 @@ absl::optional<ParsedSignalsError> ConvertFileSystemInfoResponse(
       response.is_running = executable_metadata.is_running;
 
       if (executable_metadata.public_key_sha256) {
-        response.public_key_sha256 = std::make_unique<std::string>(
-            EncodeHash(executable_metadata.public_key_sha256.value()));
+        response.public_key_sha256 =
+            EncodeHash(*executable_metadata.public_key_sha256);
       }
 
-      if (executable_metadata.product_name) {
-        response.product_name = std::make_unique<std::string>(
-            executable_metadata.product_name.value());
-      }
+      response.product_name = executable_metadata.product_name;
 
-      if (executable_metadata.version) {
-        response.version =
-            std::make_unique<std::string>(executable_metadata.version.value());
-      }
+      response.version = executable_metadata.version;
     }
 
     api_responses.push_back(std::move(response));

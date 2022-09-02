@@ -74,7 +74,7 @@ void PasswordsPrivateEventRouter::OnPasswordsExportProgress(
     const std::string& folder_name) {
   api::passwords_private::PasswordExportProgress params;
   params.status = status;
-  params.folder_name = std::make_unique<std::string>(std::move(folder_name));
+  params.folder_name = std::move(folder_name);
 
   base::Value::List event_value;
   event_value.Append(base::Value::FromUniquePtrValue(params.ToValue()));

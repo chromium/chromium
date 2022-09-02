@@ -91,15 +91,13 @@ api::tabs::Tab CreateTabModelHelper(
   const GURL& url = current_navigation.virtual_url();
   std::string title = base::UTF16ToUTF8(current_navigation.title());
 
-  tab_struct.session_id = std::make_unique<std::string>(session_id);
-  tab_struct.url = std::make_unique<std::string>(url.spec());
-  tab_struct.fav_icon_url =
-      std::make_unique<std::string>(current_navigation.favicon_url().spec());
+  tab_struct.session_id = session_id;
+  tab_struct.url = url.spec();
+  tab_struct.fav_icon_url = current_navigation.favicon_url().spec();
   if (!title.empty()) {
-    tab_struct.title = std::make_unique<std::string>(title);
+    tab_struct.title = title;
   } else {
-    tab_struct.title = std::make_unique<std::string>(
-        base::UTF16ToUTF8(url_formatter::FormatUrl(url)));
+    tab_struct.title = base::UTF16ToUTF8(url_formatter::FormatUrl(url));
   }
   tab_struct.index = index;
   tab_struct.pinned = pinned;
@@ -119,7 +117,7 @@ std::unique_ptr<api::windows::Window> CreateWindowModelHelper(
     const api::windows::WindowState& state) {
   std::unique_ptr<api::windows::Window> window_struct(new api::windows::Window);
   window_struct->tabs = std::move(tabs);
-  window_struct->session_id = std::make_unique<std::string>(session_id);
+  window_struct->session_id = session_id;
   window_struct->incognito = false;
   window_struct->always_on_top = false;
   window_struct->focused = false;

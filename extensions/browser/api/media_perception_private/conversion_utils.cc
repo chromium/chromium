@@ -15,8 +15,7 @@ std::unique_ptr<Metadata> MetadataProtoToIdl(const mri::Metadata& metadata) {
   std::unique_ptr<Metadata> metadata_result = std::make_unique<Metadata>();
   if (metadata.has_visual_experience_controller_version()) {
     metadata_result->visual_experience_controller_version =
-        std::make_unique<std::string>(
-            metadata.visual_experience_controller_version());
+        metadata.visual_experience_controller_version();
   }
 
   return metadata_result;
@@ -340,7 +339,7 @@ Entity EntityProtoToIdl(const mri::Entity& entity) {
     entity_result.depth = DistanceProtoToIdl(entity.depth());
 
   if (entity.has_label())
-    entity_result.entity_label = std::make_unique<std::string>(entity.label());
+    entity_result.entity_label = entity.label();
 
   return entity_result;
 }
@@ -350,8 +349,7 @@ PacketLatency PacketLatencyProtoToIdl(
   PacketLatency packet_latency_result;
 
   if (packet_latency.has_label()) {
-    packet_latency_result.packet_label =
-        std::make_unique<std::string>(packet_latency.label());
+    packet_latency_result.packet_label = packet_latency.label();
   }
 
   if (packet_latency.has_latency_usec()) {
@@ -573,8 +571,7 @@ base::Value NamedTemplateArgumentValueProtoToValue(
 bool NamedTemplateArgumentProtoToIdl(
     const mri::State::NamedTemplateArgument named_template_argument_proto,
     NamedTemplateArgument* named_template_argument) {
-  named_template_argument->name =
-      std::make_unique<std::string>(named_template_argument_proto.name());
+  named_template_argument->name = named_template_argument_proto.name();
 
   base::Value value =
       NamedTemplateArgumentValueProtoToValue(named_template_argument_proto);
@@ -689,12 +686,10 @@ State StateProtoToIdl(const mri::State& state) {
     state_result.status = StateStatusProtoToIdl(state);
   }
   if (state.has_device_context()) {
-    state_result.device_context =
-        std::make_unique<std::string>(state.device_context());
+    state_result.device_context = state.device_context();
   }
   if (state.has_configuration()) {
-    state_result.configuration =
-        std::make_unique<std::string>(state.configuration());
+    state_result.configuration = state.configuration();
   }
   if (state.has_whiteboard())
     state_result.whiteboard = WhiteboardProtoToIdl(state.whiteboard());

@@ -133,11 +133,11 @@ TEST_F(FileSystemProviderOperationsGetMetadataTest, ValidateIDLEntryMetadata) {
   // Correct metadata for non-root.
   {
     EntryMetadata metadata;
-    metadata.name = std::make_unique<std::string>(kValidFileName);
+    metadata.name = kValidFileName;
     metadata.modification_time = std::make_unique<ModificationTime>();
     metadata.modification_time->additional_properties.SetString(
         "value", "invalid-date-time");  // Invalid modification time is OK.
-    metadata.thumbnail = std::make_unique<std::string>(kValidThumbnailUrl);
+    metadata.thumbnail = kValidThumbnailUrl;
     EXPECT_TRUE(ValidateIDLEntryMetadata(
         metadata,
         ProvidedFileSystemInterface::METADATA_FIELD_NAME |
@@ -149,7 +149,7 @@ TEST_F(FileSystemProviderOperationsGetMetadataTest, ValidateIDLEntryMetadata) {
   // Correct metadata for non-root (without thumbnail).
   {
     EntryMetadata metadata;
-    metadata.name = std::make_unique<std::string>(kValidFileName);
+    metadata.name = kValidFileName;
     metadata.modification_time = std::make_unique<ModificationTime>();
     metadata.modification_time->additional_properties.SetString(
         "value", "invalid-date-time");  // Invalid modification time is OK.
@@ -164,7 +164,7 @@ TEST_F(FileSystemProviderOperationsGetMetadataTest, ValidateIDLEntryMetadata) {
   // Correct metadata for root.
   {
     EntryMetadata metadata;
-    metadata.name = std::make_unique<std::string>();
+    metadata.name.emplace();
     metadata.modification_time = std::make_unique<ModificationTime>();
     metadata.modification_time->additional_properties.SetString(
         "value", "invalid-date-time");  // Invalid modification time is OK.
@@ -179,7 +179,7 @@ TEST_F(FileSystemProviderOperationsGetMetadataTest, ValidateIDLEntryMetadata) {
   // Invalid characters in the name.
   {
     EntryMetadata metadata;
-    metadata.name = std::make_unique<std::string>("hello/world");
+    metadata.name = "hello/world";
     EXPECT_FALSE(ValidateIDLEntryMetadata(
         metadata, ProvidedFileSystemInterface::METADATA_FIELD_NAME,
         false /* root_path */));
@@ -188,7 +188,7 @@ TEST_F(FileSystemProviderOperationsGetMetadataTest, ValidateIDLEntryMetadata) {
   // Empty name for non-root.
   {
     EntryMetadata metadata;
-    metadata.name = std::make_unique<std::string>();
+    metadata.name.emplace();
     EXPECT_FALSE(ValidateIDLEntryMetadata(
         metadata, ProvidedFileSystemInterface::METADATA_FIELD_NAME,
         false /* root_path */));
@@ -205,7 +205,7 @@ TEST_F(FileSystemProviderOperationsGetMetadataTest, ValidateIDLEntryMetadata) {
   // Invalid thumbnail.
   {
     EntryMetadata metadata;
-    metadata.thumbnail = std::make_unique<std::string>("http://invalid-scheme");
+    metadata.thumbnail = "http://invalid-scheme";
     EXPECT_FALSE(ValidateIDLEntryMetadata(
         metadata, ProvidedFileSystemInterface::METADATA_FIELD_THUMBNAIL,
         false /* root_path */));
@@ -214,7 +214,7 @@ TEST_F(FileSystemProviderOperationsGetMetadataTest, ValidateIDLEntryMetadata) {
   // Empty string for thumbnail.
   {
     EntryMetadata metadata;
-    metadata.thumbnail = std::make_unique<std::string>();
+    metadata.thumbnail.emplace();
     EXPECT_FALSE(ValidateIDLEntryMetadata(
         metadata, ProvidedFileSystemInterface::METADATA_FIELD_THUMBNAIL,
         false /* root_path */));

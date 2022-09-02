@@ -182,7 +182,7 @@ std::unique_ptr<api::printing::SubmitJob::Params> ConstructSubmitJobParams(
     const std::string& title,
     const std::string& ticket,
     const std::string& content_type,
-    std::unique_ptr<std::string> document_blob_uuid) {
+    absl::optional<std::string> document_blob_uuid) {
   api::printing::SubmitJobRequest request;
   request.job.printer_id = printer_id;
   request.job.title = title;
@@ -336,9 +336,8 @@ class PrintingAPIHandlerUnittest : public testing::Test {
     // Create Blob with given data.
     std::unique_ptr<content::BlobHandle> blob = CreateMemoryBackedBlob(
         testing_profile_, kPdfExample, /*content_type=*/"");
-    auto params = ConstructSubmitJobParams(
-        kPrinterId, /*title=*/"", kCjt, "application/pdf",
-        std::make_unique<std::string>(blob->GetUUID()));
+    auto params = ConstructSubmitJobParams(kPrinterId, /*title=*/"", kCjt,
+                                           "application/pdf", blob->GetUUID());
     ASSERT_TRUE(params);
 
     base::RunLoop run_loop;
@@ -401,7 +400,7 @@ class PrintingAPIHandlerUnittest : public testing::Test {
 
   void OnJobSubmitted(base::RepeatingClosure run_loop_closure,
                       absl::optional<api::printing::SubmitJobStatus> status,
-                      std::unique_ptr<std::string> job_id,
+                      absl::optional<std::string> job_id,
                       absl::optional<std::string> error) {
     submit_job_status_ = status;
     job_id_ = std::move(job_id);
@@ -438,7 +437,7 @@ class PrintingAPIHandlerUnittest : public testing::Test {
   std::unique_ptr<PrintingAPIHandler> printing_api_handler_;
   scoped_refptr<const Extension> extension_;
   absl::optional<api::printing::SubmitJobStatus> submit_job_status_;
-  std::unique_ptr<std::string> job_id_;
+  absl::optional<std::string> job_id_;
   absl::optional<base::Value> capabilities_;
   absl::optional<api::printing::PrinterStatus> printer_status_;
   absl::optional<std::string> error_;
@@ -685,7 +684,7 @@ TEST_F(PrintingAPIHandlerUnittest, SubmitJob_UnsupportedContentType) {
 
   auto params =
       ConstructSubmitJobParams(kPrinterId, /*title=*/"", kCjt, "image/jpeg",
-                               /*document_blob_uuid=*/nullptr);
+                               /*document_blob_uuid=*/absl::nullopt);
   ASSERT_TRUE(params);
 
   base::RunLoop run_loop;
@@ -711,7 +710,7 @@ TEST_F(PrintingAPIHandlerUnittest, SubmitJob_InvalidPrintTicket) {
 
   auto params = ConstructSubmitJobParams(kPrinterId, /*title=*/"",
                                          kIncompleteCjt, "application/pdf",
-                                         /*document_blob_uuid=*/nullptr);
+                                         /*document_blob_uuid=*/absl::nullopt);
   ASSERT_TRUE(params);
 
   base::RunLoop run_loop;
@@ -732,7 +731,7 @@ TEST_F(PrintingAPIHandlerUnittest, SubmitJob_InvalidPrintTicket) {
 TEST_F(PrintingAPIHandlerUnittest, SubmitJob_InvalidPrinterId) {
   auto params = ConstructSubmitJobParams(kPrinterId, /*title=*/"", kCjt,
                                          "application/pdf",
-                                         /*document_blob_uuid=*/nullptr);
+                                         /*document_blob_uuid=*/absl::nullopt);
   ASSERT_TRUE(params);
 
   base::RunLoop run_loop;
@@ -756,7 +755,7 @@ TEST_F(PrintingAPIHandlerUnittest, SubmitJob_PrinterUnavailable) {
 
   auto params = ConstructSubmitJobParams(kPrinterId, /*title=*/"", kCjt,
                                          "application/pdf",
-                                         /*document_blob_uuid=*/nullptr);
+                                         /*document_blob_uuid=*/absl::nullopt);
   ASSERT_TRUE(params);
 
   base::RunLoop run_loop;
@@ -782,7 +781,7 @@ TEST_F(PrintingAPIHandlerUnittest, SubmitJob_UnsupportedTicket) {
 
   auto params = ConstructSubmitJobParams(kPrinterId, /*title=*/"", kCjt,
                                          "application/pdf",
-                                         /*document_blob_uuid=*/nullptr);
+                                         /*document_blob_uuid=*/absl::nullopt);
   ASSERT_TRUE(params);
 
   base::RunLoop run_loop;
@@ -807,9 +806,8 @@ TEST_F(PrintingAPIHandlerUnittest, SubmitJob_InvalidData) {
   caps->capabilities = ConstructPrinterCapabilities();
   SetCaps(kPrinterId, std::move(caps));
 
-  auto params = ConstructSubmitJobParams(
-      kPrinterId, /*title=*/"", kCjt, "application/pdf",
-      std::make_unique<std::string>("invalid_uuid"));
+  auto params = ConstructSubmitJobParams(kPrinterId, /*title=*/"", kCjt,
+                                         "application/pdf", "invalid_uuid");
   ASSERT_TRUE(params);
 
   base::RunLoop run_loop;
@@ -837,9 +835,8 @@ TEST_F(PrintingAPIHandlerUnittest, SubmitJob_PrintingFailed) {
   // Create Blob with given data.
   std::unique_ptr<content::BlobHandle> blob = CreateMemoryBackedBlob(
       testing_profile_, kPdfExample, /*content_type=*/"");
-  auto params = ConstructSubmitJobParams(
-      kPrinterId, /*title=*/"", kCjt, "application/pdf",
-      std::make_unique<std::string>(blob->GetUUID()));
+  auto params = ConstructSubmitJobParams(kPrinterId, /*title=*/"", kCjt,
+                                         "application/pdf", blob->GetUUID());
   ASSERT_TRUE(params);
 
   base::RunLoop run_loop;

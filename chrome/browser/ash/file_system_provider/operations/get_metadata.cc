@@ -65,15 +65,15 @@ bool ConvertRequestValueToFileInfo(std::unique_ptr<RequestValue> value,
   }
 
   if (fields & ProvidedFileSystemInterface::METADATA_FIELD_MIME_TYPE &&
-      params->metadata.mime_type.get()) {
+      params->metadata.mime_type) {
     output->mime_type =
-        std::make_unique<std::string>(*params->metadata.mime_type.get());
+        std::make_unique<std::string>(*params->metadata.mime_type);
   }
 
   if (fields & ProvidedFileSystemInterface::METADATA_FIELD_THUMBNAIL &&
-      params->metadata.thumbnail.get()) {
+      params->metadata.thumbnail) {
     output->thumbnail =
-        std::make_unique<std::string>(*params->metadata.thumbnail.get());
+        std::make_unique<std::string>(*params->metadata.thumbnail);
   }
 
   return true;
@@ -93,7 +93,7 @@ bool ValidateIDLEntryMetadata(
   }
 
   if (fields & ProvidedFileSystemInterface::METADATA_FIELD_NAME &&
-      (!metadata.name.get() || !ValidateName(*metadata.name, root_entry))) {
+      (!metadata.name || !ValidateName(*metadata.name, root_entry))) {
     return false;
   }
 
@@ -117,13 +117,13 @@ bool ValidateIDLEntryMetadata(
   // accepted. Note, that there is a warning in custom bindings for it.
 
   if (fields & ProvidedFileSystemInterface::METADATA_FIELD_THUMBNAIL &&
-      metadata.thumbnail.get()) {
+      metadata.thumbnail) {
     // Sanity check for the thumbnail format. Note, that another, more
     // granural check is done in custom bindings. Note, this is an extra check
     // only for the security reasons.
     const std::string expected_prefix = "data:";
     std::string thumbnail_prefix =
-        metadata.thumbnail.get()->substr(0, expected_prefix.size());
+        metadata.thumbnail->substr(0, expected_prefix.size());
     std::transform(thumbnail_prefix.begin(),
                    thumbnail_prefix.end(),
                    thumbnail_prefix.begin(),

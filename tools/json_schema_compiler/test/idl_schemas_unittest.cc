@@ -97,7 +97,7 @@ TEST(IdlCompiler, OptionalArguments) {
   std::unique_ptr<Function8::Params> f8_params =
       Function8::Params::Create(list);
   EXPECT_EQ(8, f8_params->arg1);
-  EXPECT_EQ(nullptr, f8_params->arg2.get());
+  EXPECT_FALSE(f8_params->arg2.has_value());
   list.Append("foo");
   f8_params = Function8::Params::Create(list);
   EXPECT_EQ(8, f8_params->arg1);

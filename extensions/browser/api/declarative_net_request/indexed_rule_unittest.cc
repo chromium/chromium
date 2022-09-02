@@ -35,7 +35,7 @@ GURL GetBaseURL() {
 
 std::unique_ptr<dnr_api::Redirect> MakeRedirectUrl(const char* redirect_url) {
   auto redirect = std::make_unique<dnr_api::Redirect>();
-  redirect->url = std::make_unique<std::string>(redirect_url);
+  redirect->url = redirect_url;
   return redirect;
 }
 
@@ -43,7 +43,7 @@ dnr_api::Rule CreateGenericParsedRule() {
   dnr_api::Rule rule;
   rule.priority = kMinValidPriority;
   rule.id = kMinValidID;
-  rule.condition.url_filter = std::make_unique<std::string>("filter");
+  rule.condition.url_filter = "filter";
   rule.action.type = dnr_api::RULE_ACTION_TYPE_BLOCK;
   return rule;
 }
@@ -227,7 +227,7 @@ TEST_F(IndexedRuleTest, ResourceTypesParsing) {
 
 TEST_F(IndexedRuleTest, UrlFilterParsing) {
   struct {
-    std::unique_ptr<std::string> input_url_filter;
+    absl::optional<std::string> input_url_filter;
 
     // Only valid if |expected_result| is SUCCESS.
     const flat_rule::UrlPatternType expected_url_pattern_type;
@@ -237,50 +237,48 @@ TEST_F(IndexedRuleTest, UrlFilterParsing) {
 
     const ParseResult expected_result;
   } cases[] = {
-      {nullptr, flat_rule::UrlPatternType_SUBSTRING, flat_rule::AnchorType_NONE,
-       flat_rule::AnchorType_NONE, "", ParseResult::SUCCESS},
-      {std::make_unique<std::string>(""), flat_rule::UrlPatternType_SUBSTRING,
+      {absl::nullopt, flat_rule::UrlPatternType_SUBSTRING,
        flat_rule::AnchorType_NONE, flat_rule::AnchorType_NONE, "",
-       ParseResult::ERROR_EMPTY_URL_FILTER},
-      {std::make_unique<std::string>("|"), flat_rule::UrlPatternType_SUBSTRING,
-       flat_rule::AnchorType_BOUNDARY, flat_rule::AnchorType_NONE, "",
        ParseResult::SUCCESS},
-      {std::make_unique<std::string>("||"), flat_rule::UrlPatternType_SUBSTRING,
+      {"", flat_rule::UrlPatternType_SUBSTRING, flat_rule::AnchorType_NONE,
+       flat_rule::AnchorType_NONE, "", ParseResult::ERROR_EMPTY_URL_FILTER},
+      {"|", flat_rule::UrlPatternType_SUBSTRING, flat_rule::AnchorType_BOUNDARY,
+       flat_rule::AnchorType_NONE, "", ParseResult::SUCCESS},
+      {"||", flat_rule::UrlPatternType_SUBSTRING,
        flat_rule::AnchorType_SUBDOMAIN, flat_rule::AnchorType_NONE, "",
        ParseResult::SUCCESS},
-      {std::make_unique<std::string>("|||"),
-       flat_rule::UrlPatternType_SUBSTRING, flat_rule::AnchorType_SUBDOMAIN,
-       flat_rule::AnchorType_BOUNDARY, "", ParseResult::SUCCESS},
-      {std::make_unique<std::string>("|*|||"),
-       flat_rule::UrlPatternType_WILDCARDED, flat_rule::AnchorType_BOUNDARY,
-       flat_rule::AnchorType_BOUNDARY, "*||", ParseResult::SUCCESS},
-      {std::make_unique<std::string>("|xyz|"),
-       flat_rule::UrlPatternType_SUBSTRING, flat_rule::AnchorType_BOUNDARY,
-       flat_rule::AnchorType_BOUNDARY, "xyz", ParseResult::SUCCESS},
-      {std::make_unique<std::string>("||x^yz"),
-       flat_rule::UrlPatternType_WILDCARDED, flat_rule::AnchorType_SUBDOMAIN,
-       flat_rule::AnchorType_NONE, "x^yz", ParseResult::SUCCESS},
-      {std::make_unique<std::string>("||xyz|"),
-       flat_rule::UrlPatternType_SUBSTRING, flat_rule::AnchorType_SUBDOMAIN,
-       flat_rule::AnchorType_BOUNDARY, "xyz", ParseResult::SUCCESS},
-      {std::make_unique<std::string>("x*y|z"),
-       flat_rule::UrlPatternType_WILDCARDED, flat_rule::AnchorType_NONE,
-       flat_rule::AnchorType_NONE, "x*y|z", ParseResult::SUCCESS},
-      {std::make_unique<std::string>("**^"),
-       flat_rule::UrlPatternType_WILDCARDED, flat_rule::AnchorType_NONE,
+      {"|||", flat_rule::UrlPatternType_SUBSTRING,
+       flat_rule::AnchorType_SUBDOMAIN, flat_rule::AnchorType_BOUNDARY, "",
+       ParseResult::SUCCESS},
+      {"|*|||", flat_rule::UrlPatternType_WILDCARDED,
+       flat_rule::AnchorType_BOUNDARY, flat_rule::AnchorType_BOUNDARY, "*||",
+       ParseResult::SUCCESS},
+      {"|xyz|", flat_rule::UrlPatternType_SUBSTRING,
+       flat_rule::AnchorType_BOUNDARY, flat_rule::AnchorType_BOUNDARY, "xyz",
+       ParseResult::SUCCESS},
+      {"||x^yz", flat_rule::UrlPatternType_WILDCARDED,
+       flat_rule::AnchorType_SUBDOMAIN, flat_rule::AnchorType_NONE, "x^yz",
+       ParseResult::SUCCESS},
+      {"||xyz|", flat_rule::UrlPatternType_SUBSTRING,
+       flat_rule::AnchorType_SUBDOMAIN, flat_rule::AnchorType_BOUNDARY, "xyz",
+       ParseResult::SUCCESS},
+      {"x*y|z", flat_rule::UrlPatternType_WILDCARDED,
+       flat_rule::AnchorType_NONE, flat_rule::AnchorType_NONE, "x*y|z",
+       ParseResult::SUCCESS},
+      {"**^", flat_rule::UrlPatternType_WILDCARDED, flat_rule::AnchorType_NONE,
        flat_rule::AnchorType_NONE, "**^", ParseResult::SUCCESS},
-      {std::make_unique<std::string>("||google.com"),
-       flat_rule::UrlPatternType_SUBSTRING, flat_rule::AnchorType_SUBDOMAIN,
-       flat_rule::AnchorType_NONE, "google.com", ParseResult::SUCCESS},
+      {"||google.com", flat_rule::UrlPatternType_SUBSTRING,
+       flat_rule::AnchorType_SUBDOMAIN, flat_rule::AnchorType_NONE,
+       "google.com", ParseResult::SUCCESS},
       // Url pattern with non-ascii characters -ⱴase.com.
-      {std::make_unique<std::string>(base::WideToUTF8(L"\x2c74"
-                                                      L"ase.com")),
+      {base::WideToUTF8(L"\x2c74"
+                        L"ase.com"),
        flat_rule::UrlPatternType_SUBSTRING, flat_rule::AnchorType_NONE,
        flat_rule::AnchorType_NONE, "", ParseResult::ERROR_NON_ASCII_URL_FILTER},
       // Url pattern starting with the domain anchor followed by a wildcard.
-      {std::make_unique<std::string>("||*xyz"),
-       flat_rule::UrlPatternType_WILDCARDED, flat_rule::AnchorType_SUBDOMAIN,
-       flat_rule::AnchorType_NONE, "", ParseResult::ERROR_INVALID_URL_FILTER}};
+      {"||*xyz", flat_rule::UrlPatternType_WILDCARDED,
+       flat_rule::AnchorType_SUBDOMAIN, flat_rule::AnchorType_NONE, "",
+       ParseResult::ERROR_INVALID_URL_FILTER}};
 
   for (size_t i = 0; i < std::size(cases); ++i) {
     SCOPED_TRACE(base::StringPrintf("Testing case[%" PRIuS "]", i));
@@ -317,7 +315,7 @@ TEST_F(IndexedRuleTest, CaseInsensitiveLowerCased) {
 
   for (auto& test_case : test_cases) {
     dnr_api::Rule rule = CreateGenericParsedRule();
-    rule.condition.url_filter = std::make_unique<std::string>(kPattern);
+    rule.condition.url_filter = kPattern;
     rule.condition.is_url_filter_case_sensitive =
         std::move(test_case.is_url_filter_case_sensitive);
     IndexedRule indexed_rule;
@@ -687,8 +685,7 @@ TEST_F(IndexedRuleTest, RegexFilterParsing) {
     SCOPED_TRACE(test_case.regex_filter);
     dnr_api::Rule rule = CreateGenericParsedRule();
     rule.condition.url_filter.reset();
-    rule.condition.regex_filter =
-        std::make_unique<std::string>(test_case.regex_filter);
+    rule.condition.regex_filter = test_case.regex_filter;
 
     IndexedRule indexed_rule;
     ParseResult result = IndexedRule::CreateIndexedRule(
@@ -705,8 +702,8 @@ TEST_F(IndexedRuleTest, RegexFilterParsing) {
 
 TEST_F(IndexedRuleTest, MultipleFiltersSpecified) {
   dnr_api::Rule rule = CreateGenericParsedRule();
-  rule.condition.url_filter = std::make_unique<std::string>("google");
-  rule.condition.regex_filter = std::make_unique<std::string>("example");
+  rule.condition.url_filter = "google";
+  rule.condition.regex_filter = "example";
 
   IndexedRule indexed_rule;
   ParseResult result = IndexedRule::CreateIndexedRule(
@@ -746,15 +743,13 @@ TEST_F(IndexedRuleTest, RegexSubstitutionParsing) {
     dnr_api::Rule rule = CreateGenericParsedRule();
     rule.condition.url_filter.reset();
     if (test_case.regex_filter) {
-      rule.condition.regex_filter =
-          std::make_unique<std::string>(test_case.regex_filter);
+      rule.condition.regex_filter = test_case.regex_filter;
     }
 
     rule.priority = kMinValidPriority;
     rule.action.type = dnr_api::RULE_ACTION_TYPE_REDIRECT;
     rule.action.redirect = std::make_unique<dnr_api::Redirect>();
-    rule.action.redirect->regex_substitution =
-        std::make_unique<std::string>(test_case.regex_substitution);
+    rule.action.redirect->regex_substitution = test_case.regex_substitution;
 
     IndexedRule indexed_rule;
     ParseResult result = IndexedRule::CreateIndexedRule(
@@ -776,16 +771,15 @@ TEST_F(IndexedRuleTest, MultipleRedirectKeys) {
   dnr_api::Rule rule = CreateGenericParsedRule();
   rule.priority = kMinValidPriority;
   rule.condition.url_filter.reset();
-  rule.condition.regex_filter = std::make_unique<std::string>("\\.*");
+  rule.condition.regex_filter = "\\.*";
   rule.action.type = dnr_api::RULE_ACTION_TYPE_REDIRECT;
   rule.action.redirect = std::make_unique<dnr_api::Redirect>();
 
   dnr_api::Redirect& redirect = *rule.action.redirect;
-  redirect.url = std::make_unique<std::string>("http://google.com");
-  redirect.regex_substitution =
-      std::make_unique<std::string>("http://example.com");
+  redirect.url = "http://google.com";
+  redirect.regex_substitution = "http://example.com";
   redirect.transform = std::make_unique<dnr_api::URLTransform>();
-  redirect.transform->scheme = std::make_unique<std::string>("https");
+  redirect.transform->scheme = "https";
 
   IndexedRule indexed_rule;
   ParseResult result = IndexedRule::CreateIndexedRule(

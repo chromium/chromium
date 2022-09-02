@@ -234,7 +234,7 @@ void SerialConnection::Open(api::SerialPortManager* port_manager,
 
   if (options.persistent)
     set_persistent(*options.persistent);
-  if (options.name.get())
+  if (options.name)
     set_name(*options.name);
   if (options.buffer_size)
     set_buffer_size(*options.buffer_size);
@@ -437,7 +437,7 @@ void SerialConnection::Configure(const api::serial::ConnectionOptions& options,
   DCHECK(serial_port_);
   if (options.persistent)
     set_persistent(*options.persistent);
-  if (options.name.get())
+  if (options.name)
     set_name(*options.name);
   if (options.buffer_size)
     set_buffer_size(*options.buffer_size);

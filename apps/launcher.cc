@@ -217,7 +217,7 @@ class PlatformAppPathLauncher
         std::make_unique<app_runtime::LaunchData>();
     launch_data->action_data = std::move(action_data_);
     if (!handler_id_.empty())
-      launch_data->id = std::make_unique<std::string>(handler_id_);
+      launch_data->id = handler_id_;
 
     AppRuntimeEventRouter::DispatchOnLaunchedEvent(
         context_, app, launch_source_, std::move(launch_data));
@@ -410,7 +410,7 @@ void LaunchPlatformAppWithCommandLineAndLaunchId(
     std::unique_ptr<app_runtime::LaunchData> launch_data =
         std::make_unique<app_runtime::LaunchData>();
     if (!launch_id.empty())
-      launch_data->id = std::make_unique<std::string>(launch_id);
+      launch_data->id = launch_id;
     AppRuntimeEventRouter::DispatchOnLaunchedEvent(context, app, source,
                                                    std::move(launch_data));
     return;

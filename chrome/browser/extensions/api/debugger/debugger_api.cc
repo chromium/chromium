@@ -82,10 +82,8 @@ namespace {
 
 void CopyDebuggee(Debuggee* dst, const Debuggee& src) {
   dst->tab_id = src.tab_id;
-  if (src.extension_id)
-    dst->extension_id = std::make_unique<std::string>(*src.extension_id);
-  if (src.target_id)
-    dst->target_id = std::make_unique<std::string>(*src.target_id);
+  dst->extension_id = src.extension_id;
+  dst->target_id = src.target_id;
 }
 
 bool ExtensionMayAttachToTargetProfile(Profile* extension_profile,

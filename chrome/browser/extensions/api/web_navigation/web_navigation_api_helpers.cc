@@ -79,8 +79,8 @@ std::unique_ptr<Event> CreateOnBeforeNavigateEvent(
   // Only set the parentDocumentId value if we have a parent.
   if (content::RenderFrameHost* parent_frame_host =
           navigation_handle->GetParentFrameOrOuterDocument()) {
-    details.parent_document_id = std::make_unique<std::string>(
-        ExtensionApiFrameIdMap::GetDocumentId(parent_frame_host).ToString());
+    details.parent_document_id =
+        ExtensionApiFrameIdMap::GetDocumentId(parent_frame_host).ToString();
   }
   details.frame_type = ExtensionApiFrameIdMap::GetFrameType(navigation_handle);
   details.document_lifecycle =
@@ -188,8 +188,8 @@ void DispatchOnDOMContentLoaded(content::WebContents* web_contents,
   // Only set the parentDocumentId value if we have a parent.
   if (content::RenderFrameHost* parent_frame_host =
           frame_host->GetParentOrOuterDocument()) {
-    details.parent_document_id = std::make_unique<std::string>(
-        ExtensionApiFrameIdMap::GetDocumentId(parent_frame_host).ToString());
+    details.parent_document_id =
+        ExtensionApiFrameIdMap::GetDocumentId(parent_frame_host).ToString();
   }
   details.frame_type = ExtensionApiFrameIdMap::GetFrameType(frame_host);
   details.document_lifecycle =
@@ -220,8 +220,8 @@ void DispatchOnCompleted(content::WebContents* web_contents,
   // Only set the parentDocumentId value if we have a parent.
   if (content::RenderFrameHost* parent_frame_host =
           frame_host->GetParentOrOuterDocument()) {
-    details.parent_document_id = std::make_unique<std::string>(
-        ExtensionApiFrameIdMap::GetDocumentId(parent_frame_host).ToString());
+    details.parent_document_id =
+        ExtensionApiFrameIdMap::GetDocumentId(parent_frame_host).ToString();
   }
   details.frame_type = ExtensionApiFrameIdMap::GetFrameType(frame_host);
   details.document_lifecycle =
@@ -291,8 +291,8 @@ void DispatchOnErrorOccurred(content::WebContents* web_contents,
   // Only set the parentDocumentId value if we have a parent.
   if (content::RenderFrameHost* parent_frame_host =
           frame_host->GetParentOrOuterDocument()) {
-    details.parent_document_id = std::make_unique<std::string>(
-        ExtensionApiFrameIdMap::GetDocumentId(parent_frame_host).ToString());
+    details.parent_document_id =
+        ExtensionApiFrameIdMap::GetDocumentId(parent_frame_host).ToString();
   }
   details.frame_type = ExtensionApiFrameIdMap::GetFrameType(frame_host);
   details.document_lifecycle =
@@ -325,8 +325,8 @@ void DispatchOnErrorOccurred(content::NavigationHandle* navigation_handle) {
   // Only set the parentDocumentId value if we have a parent.
   if (content::RenderFrameHost* parent_frame_host =
           navigation_handle->GetParentFrameOrOuterDocument()) {
-    details.parent_document_id = std::make_unique<std::string>(
-        ExtensionApiFrameIdMap::GetDocumentId(parent_frame_host).ToString());
+    details.parent_document_id =
+        ExtensionApiFrameIdMap::GetDocumentId(parent_frame_host).ToString();
   }
   details.frame_type = ExtensionApiFrameIdMap::GetFrameType(navigation_handle);
   details.document_lifecycle =

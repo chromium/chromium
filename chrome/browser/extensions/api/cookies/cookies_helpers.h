@@ -82,7 +82,7 @@ GURL GetURLFromCanonicalCookie(
 // and are allowed by extension host permissions.
 void AppendMatchingCookiesFromCookieListToVector(
     const net::CookieList& all_cookies,
-    const api::cookies::GetAll::Params::Details* details,
+    api::cookies::GetAll::Params::Details* details,
     const Extension* extension,
     std::vector<api::cookies::Cookie>* match_vector);
 
@@ -90,7 +90,7 @@ void AppendMatchingCookiesFromCookieListToVector(
 // results).
 void AppendMatchingCookiesFromCookieAccessResultListToVector(
     const net::CookieAccessResultList& all_cookies_with_access_result,
-    const api::cookies::GetAll::Params::Details* details,
+    api::cookies::GetAll::Params::Details* details,
     const Extension* extension,
     std::vector<api::cookies::Cookie>* match_vector);
 
@@ -109,7 +109,7 @@ class MatchFilter {
   // Takes the details dictionary argument given by the user as input.
   // This class does not take ownership of the lifetime of the Details
   // object.
-  explicit MatchFilter(const api::cookies::GetAll::Params::Details* details);
+  explicit MatchFilter(api::cookies::GetAll::Params::Details* details);
 
   // Returns true if the given cookie matches the properties in the match
   // filter.
@@ -125,7 +125,7 @@ class MatchFilter {
   // 'foo.bar.com', '.foo.bar.com', and 'baz.foo.bar.com'.
   bool MatchesDomain(const std::string& domain);
 
-  raw_ptr<const api::cookies::GetAll::Params::Details> details_;
+  raw_ptr<api::cookies::GetAll::Params::Details> details_;
 };
 
 }  // namespace cookies_helpers

@@ -1105,9 +1105,7 @@ ExtensionFunction::ResponseAction TabsQueryFunction::Run() {
     }
   }
 
-  std::string title;
-  if (params->query_info.title.get())
-    title = *params->query_info.title;
+  std::string title = params->query_info.title.value_or(std::string());
 
   int window_id = extension_misc::kUnknownWindowId;
   if (params->query_info.window_id)
@@ -1501,7 +1499,7 @@ ExtensionFunction::ResponseAction TabsUpdateFunction::Run() {
   // -favIconUrl
 
   // Navigate the tab to a new location if the url is different.
-  if (params->update_properties.url.get()) {
+  if (params->update_properties.url) {
     std::string updated_url = *params->update_properties.url;
     if (browser->profile()->IsIncognitoProfile() &&
         !IsURLAllowedInIncognito(GURL(updated_url), browser->profile())) {

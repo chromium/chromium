@@ -117,12 +117,11 @@ CreateNodeDataElementFromBookmarkNode(const BookmarkNode& node) {
   bookmark_manager_private::BookmarkNodeDataElement element;
   // Add id and parentId so we can associate the data with existing nodes on the
   // client side.
-  element.id = std::make_unique<std::string>(base::NumberToString(node.id()));
-  element.parent_id =
-      std::make_unique<std::string>(base::NumberToString(node.parent()->id()));
+  element.id = base::NumberToString(node.id());
+  element.parent_id = base::NumberToString(node.parent()->id());
 
   if (node.is_url())
-    element.url = std::make_unique<std::string>(node.url().spec());
+    element.url = node.url().spec();
 
   element.title = base::UTF16ToUTF8(node.GetTitle());
   for (const auto& child : node.children()) {
@@ -141,7 +140,7 @@ bookmark_manager_private::BookmarkNodeDataElement CreateApiNodeDataElement(
   bookmark_manager_private::BookmarkNodeDataElement node_element;
 
   if (element.is_url)
-    node_element.url = std::make_unique<std::string>(element.url.spec());
+    node_element.url = element.url.spec();
   node_element.title = base::UTF16ToUTF8(element.title);
   for (size_t i = 0; i < element.children.size(); ++i) {
     node_element.children.push_back(

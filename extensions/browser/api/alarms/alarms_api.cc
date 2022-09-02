@@ -94,8 +94,7 @@ ExtensionFunction::ResponseAction AlarmsCreateFunction::Run() {
   std::unique_ptr<alarms::Create::Params> params(
       alarms::Create::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
-  const std::string& alarm_name =
-      params->name.get() ? *params->name : kDefaultAlarmName;
+  const std::string& alarm_name = params->name.value_or(kDefaultAlarmName);
   std::vector<std::string> warnings;
   std::string error;
   if (!ValidateAlarmCreateInfo(alarm_name, params->alarm_info, extension(),
@@ -132,7 +131,7 @@ ExtensionFunction::ResponseAction AlarmsGetFunction::Run() {
       alarms::Get::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
-  std::string name = params->name.get() ? *params->name : kDefaultAlarmName;
+  std::string name = params->name.value_or(kDefaultAlarmName);
   AlarmManager::Get(browser_context())
       ->GetAlarm(extension_id(), name,
                  base::BindOnce(&AlarmsGetFunction::Callback, this, name));
@@ -172,7 +171,7 @@ ExtensionFunction::ResponseAction AlarmsClearFunction::Run() {
       alarms::Clear::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
-  std::string name = params->name.get() ? *params->name : kDefaultAlarmName;
+  std::string name = params->name.value_or(kDefaultAlarmName);
   AlarmManager::Get(browser_context())
       ->RemoveAlarm(extension_id(), name,
                     base::BindOnce(&AlarmsClearFunction::Callback, this, name));

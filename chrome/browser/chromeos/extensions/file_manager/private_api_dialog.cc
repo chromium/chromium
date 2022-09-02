@@ -248,8 +248,7 @@ void FileManagerPrivateGetAndroidPickerAppsFunction::OnIconsLoaded(
         handler->package_name, handler->activity_name));
     if (it != icons->end()) {
       app.icon_set = std::make_unique<api::file_manager_private::IconSet>();
-      app.icon_set->icon32x32_url =
-          std::make_unique<std::string>(it->second.icon16_dataurl->data.spec());
+      app.icon_set->icon32x32_url = it->second.icon16_dataurl->data.spec();
     }
     results.push_back(std::move(app));
   }

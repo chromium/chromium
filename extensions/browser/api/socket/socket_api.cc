@@ -797,16 +797,14 @@ ExtensionFunction::ResponseAction SocketGetInfoFunction::Work() {
   // that it should be closed locally.
   net::IPEndPoint peerAddress;
   if (socket->GetPeerAddress(&peerAddress)) {
-    info.peer_address =
-        std::make_unique<std::string>(peerAddress.ToStringWithoutPort());
+    info.peer_address = peerAddress.ToStringWithoutPort();
     info.peer_port = peerAddress.port();
   }
 
   // Grab the local address as known by the OS.
   net::IPEndPoint localAddress;
   if (socket->GetLocalAddress(&localAddress)) {
-    info.local_address =
-        std::make_unique<std::string>(localAddress.ToStringWithoutPort());
+    info.local_address = localAddress.ToStringWithoutPort();
     info.local_port = localAddress.port();
   }
 

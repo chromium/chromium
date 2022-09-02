@@ -318,8 +318,8 @@ AudioDeviceInfo AudioServiceImpl::ToAudioDeviceInfo(const AudioDevice& device) {
       device.is_input
           ? cras_audio_handler_->GetInputGainPercentForDevice(device.id)
           : cras_audio_handler_->GetOutputVolumePercentForDevice(device.id);
-  info.stable_device_id = std::make_unique<std::string>(
-      id_calculator_->GetStableDeviceId(device.stable_device_id));
+  info.stable_device_id =
+      id_calculator_->GetStableDeviceId(device.stable_device_id);
 
   return info;
 }

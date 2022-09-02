@@ -14,13 +14,6 @@
 namespace {
 
 template <class T>
-void SetValueScopedPtr(T value, std::unique_ptr<T>* destination) {
-  DCHECK(destination);
-  if (value >= 0)
-    destination->reset(new T(value));
-}
-
-template <class T>
 void SetValueOptional(T value, absl::optional<T>* destination) {
   DCHECK(destination);
   if (value >= 0)
@@ -28,11 +21,11 @@ void SetValueOptional(T value, absl::optional<T>* destination) {
 }
 
 template <>
-void SetValueScopedPtr(std::string value,
-                       std::unique_ptr<std::string>* destination) {
+void SetValueOptional(std::string value,
+                      absl::optional<std::string>* destination) {
   DCHECK(destination);
   if (!value.empty())
-    *destination = std::make_unique<std::string>(std::move(value));
+    *destination = std::move(value);
 }
 
 void ChangeAudioMimePrefixToVideo(std::string* mime_type) {
@@ -65,14 +58,14 @@ std::unique_ptr<base::DictionaryValue> MojoMediaMetadataToValue(
 
   SetValueOptional(metadata->duration, &media_metadata.duration);
   SetValueOptional(metadata->rotation, &media_metadata.rotation);
-  SetValueScopedPtr(std::move(metadata->artist), &media_metadata.artist);
-  SetValueScopedPtr(std::move(metadata->album), &media_metadata.album);
-  SetValueScopedPtr(std::move(metadata->comment), &media_metadata.comment);
-  SetValueScopedPtr(std::move(metadata->copyright), &media_metadata.copyright);
+  SetValueOptional(std::move(metadata->artist), &media_metadata.artist);
+  SetValueOptional(std::move(metadata->album), &media_metadata.album);
+  SetValueOptional(std::move(metadata->comment), &media_metadata.comment);
+  SetValueOptional(std::move(metadata->copyright), &media_metadata.copyright);
   SetValueOptional(metadata->disc, &media_metadata.disc);
-  SetValueScopedPtr(std::move(metadata->genre), &media_metadata.genre);
-  SetValueScopedPtr(std::move(metadata->language), &media_metadata.language);
-  SetValueScopedPtr(std::move(metadata->title), &media_metadata.title);
+  SetValueOptional(std::move(metadata->genre), &media_metadata.genre);
+  SetValueOptional(std::move(metadata->language), &media_metadata.language);
+  SetValueOptional(std::move(metadata->title), &media_metadata.title);
   SetValueOptional(metadata->track, &media_metadata.track);
 
   for (const chrome::mojom::MediaStreamInfoPtr& info : metadata->raw_tags) {

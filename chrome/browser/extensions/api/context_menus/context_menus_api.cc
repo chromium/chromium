@@ -36,7 +36,7 @@ ExtensionFunction::ResponseAction ContextMenusCreateFunction::Run() {
       api::context_menus::Create::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
-  if (params->create_properties.id.get()) {
+  if (params->create_properties.id) {
     id.string_uid = *params->create_properties.id;
   } else {
     if (BackgroundInfo::HasLazyContext(extension()))

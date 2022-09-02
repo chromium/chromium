@@ -77,7 +77,7 @@ class RulesRegistryWithCacheTest : public testing::Test {
                       TestRulesRegistry* registry) {
     std::vector<api::events::Rule> add_rules;
     add_rules.emplace_back();
-    add_rules[0].id = std::make_unique<std::string>(rule_id);
+    add_rules[0].id = rule_id;
     return registry->AddRules(extension_id, std::move(add_rules));
   }
 
@@ -194,7 +194,7 @@ TEST_F(RulesRegistryWithCacheTest, GetRules) {
   std::vector<const api::events::Rule*> gotten_rules;
   registry_->GetRules(extension1_->id(), rules_to_get, &gotten_rules);
   ASSERT_EQ(1u, gotten_rules.size());
-  ASSERT_TRUE(gotten_rules[0]->id.get());
+  ASSERT_TRUE(gotten_rules[0]->id);
   EXPECT_EQ(kRuleId, *(gotten_rules[0]->id));
 }
 
@@ -208,8 +208,8 @@ TEST_F(RulesRegistryWithCacheTest, GetAllRules) {
   std::vector<const api::events::Rule*> gotten_rules;
   registry_->GetAllRules(extension1_->id(), &gotten_rules);
   EXPECT_EQ(2u, gotten_rules.size());
-  ASSERT_TRUE(gotten_rules[0]->id.get());
-  ASSERT_TRUE(gotten_rules[1]->id.get());
+  ASSERT_TRUE(gotten_rules[0]->id);
+  ASSERT_TRUE(gotten_rules[1]->id);
   EXPECT_TRUE((kRuleId == *(gotten_rules[0]->id) &&
                kRule2Id == *(gotten_rules[1]->id)) ||
               (kRuleId == *(gotten_rules[1]->id) &&

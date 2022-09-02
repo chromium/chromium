@@ -190,10 +190,7 @@ api::audio::AudioDeviceInfo ConvertAudioDeviceInfoFromMojom(
   result.device_name = info->deviceName;
   result.is_active = info->isActive;
   result.level = info->level;
-  if (info->stableDeviceId) {
-    result.stable_device_id =
-        std::make_unique<std::string>(*(info->stableDeviceId));
-  }
+  result.stable_device_id = info->stableDeviceId;
   return result;
 }
 

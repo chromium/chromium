@@ -108,11 +108,10 @@ management::ExtensionInfo CreateExtensionInfo(
   info.offline_enabled = OfflineEnabledInfo::IsOfflineEnabled(&extension);
   info.version = extension.VersionString();
   if (!extension.version_name().empty())
-    info.version_name = std::make_unique<std::string>(extension.version_name());
+    info.version_name = extension.version_name();
   info.description = extension.description();
   info.options_url = OptionsPageInfo::GetOptionsPage(&extension).spec();
-  info.homepage_url = std::make_unique<std::string>(
-      ManifestURL::GetHomepageURL(&extension).spec());
+  info.homepage_url = ManifestURL::GetHomepageURL(&extension).spec();
   info.may_disable =
       !system->management_policy()->MustRemainEnabled(&extension, nullptr);
   info.is_app = extension.is_app();
@@ -149,11 +148,10 @@ management::ExtensionInfo CreateExtensionInfo(
   }
   const GURL update_url = delegate->GetEffectiveUpdateURL(extension, context);
   if (!update_url.is_empty())
-    info.update_url = std::make_unique<std::string>(update_url.spec());
+    info.update_url = update_url.spec();
 
   if (extension.is_app()) {
-    info.app_launch_url = std::make_unique<std::string>(
-        delegate->GetFullLaunchURL(&extension).spec());
+    info.app_launch_url = delegate->GetFullLaunchURL(&extension).spec();
   }
 
   const ExtensionIconSet::IconMap& icons =

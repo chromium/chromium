@@ -98,7 +98,7 @@ TEST(JsonSchemaCompilerSimpleTest, OptionalStringParamsCreate) {
     std::unique_ptr<simple_api::OptionalString::Params> params(
         simple_api::OptionalString::Params::Create(params_value));
     EXPECT_TRUE(params.get());
-    EXPECT_FALSE(params->str.get());
+    EXPECT_FALSE(params->str);
   }
   {
     base::Value::List params_value;
@@ -106,7 +106,7 @@ TEST(JsonSchemaCompilerSimpleTest, OptionalStringParamsCreate) {
     std::unique_ptr<simple_api::OptionalString::Params> params(
         simple_api::OptionalString::Params::Create(params_value));
     EXPECT_TRUE(params.get());
-    EXPECT_TRUE(params->str.get());
+    EXPECT_TRUE(params->str);
     EXPECT_EQ("asdf", *params->str);
   }
 }
@@ -118,7 +118,7 @@ TEST(JsonSchemaCompilerSimpleTest, OptionalParamsTakingNull) {
     std::unique_ptr<simple_api::OptionalString::Params> params(
         simple_api::OptionalString::Params::Create(params_value));
     EXPECT_TRUE(params.get());
-    EXPECT_FALSE(params->str.get());
+    EXPECT_FALSE(params->str);
   }
 }
 
@@ -140,7 +140,7 @@ TEST(JsonSchemaCompilerSimpleTest, OptionalBeforeRequired) {
     std::unique_ptr<simple_api::OptionalBeforeRequired::Params> params(
         simple_api::OptionalBeforeRequired::Params::Create(params_value));
     EXPECT_TRUE(params.get());
-    EXPECT_FALSE(params->first.get());
+    EXPECT_FALSE(params->first);
     EXPECT_EQ("asdf", params->second);
   }
 }

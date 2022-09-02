@@ -108,6 +108,7 @@ using signin::IdentityTestEnvironment;
 using ::testing::AllOf;
 using ::testing::AtLeast;
 using ::testing::ElementsAre;
+using ::testing::Eq;
 using ::testing::Field;
 using ::testing::IsEmpty;
 using ::testing::IsNull;
@@ -255,11 +256,6 @@ auto ExpectWeakCredential(
     const std::string& detailed_origin,
     const absl::optional<std::string>& change_password_url,
     const std::u16string& username) {
-  auto change_password_url_field_matcher =
-      change_password_url.has_value()
-          ? Field(&PasswordUiEntry::change_password_url,
-                  Pointee(change_password_url.value()))
-          : Field(&PasswordUiEntry::change_password_url, IsNull());
   return AllOf(Field(&PasswordUiEntry::username, base::UTF16ToASCII(username)),
                Field(&PasswordUiEntry::urls,
                      ExpectUrls(formatted_origin, detailed_origin)));
@@ -277,8 +273,9 @@ auto ExpectCompromisedCredential(
   auto change_password_url_field_matcher =
       change_password_url.has_value()
           ? Field(&PasswordUiEntry::change_password_url,
-                  Pointee(change_password_url.value()))
-          : Field(&PasswordUiEntry::change_password_url, IsNull());
+                  change_password_url.value())
+          : Field(&PasswordUiEntry::change_password_url,
+                  testing::Eq(absl::nullopt));
   return AllOf(Field(&PasswordUiEntry::username, base::UTF16ToASCII(username)),
                change_password_url_field_matcher,
                Field(&PasswordUiEntry::urls,
@@ -1080,7 +1077,7 @@ TEST_F(PasswordCheckDelegateTest,
 // treated as no completed run yet.
 TEST_F(PasswordCheckDelegateTest, LastTimePasswordCheckCompletedNotSet) {
   PasswordCheckStatus status = delegate().GetPasswordCheckStatus();
-  EXPECT_THAT(status.elapsed_time_since_last_check, IsNull());
+  EXPECT_FALSE(status.elapsed_time_since_last_check);
 }
 
 // Checks that a non-default kLastTimePasswordCheckCompleted pref value is
@@ -1092,7 +1089,7 @@ TEST_F(PasswordCheckDelegateTest, LastTimePasswordCheckCompletedIsSet) {
 
   PasswordCheckStatus status = delegate().GetPasswordCheckStatus();
   EXPECT_THAT(status.elapsed_time_since_last_check,
-              Pointee(std::string("5 minutes ago")));
+              Eq(std::string("5 minutes ago")));
 }
 
 // Checks that a transition into the idle state after starting a check results
@@ -1104,7 +1101,7 @@ TEST_F(PasswordCheckDelegateTest, LastTimePasswordCheckCompletedReset) {
   service()->set_state_and_notify(BulkLeakCheckService::State::kIdle);
   PasswordCheckStatus status = delegate().GetPasswordCheckStatus();
   EXPECT_THAT(status.elapsed_time_since_last_check,
-              Pointee(std::string("Just now")));
+              Eq(std::string("Just now")));
 }
 
 // Checks that processing a credential by the leak check updates the progress
@@ -1217,8 +1214,8 @@ TEST_F(PasswordCheckDelegateTest, WellKnownChangePasswordUrl_androidrealm) {
 
   RunUntilIdle();
 
-  EXPECT_EQ(delegate().GetCompromisedCredentials().at(0).change_password_url,
-            nullptr);
+  EXPECT_FALSE(
+      delegate().GetCompromisedCredentials().at(0).change_password_url);
   EXPECT_EQ(
       GURL(*delegate().GetCompromisedCredentials().at(1).change_password_url)
           .path(),

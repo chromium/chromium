@@ -163,8 +163,7 @@ CreatePasswordUiEntryFromCredentialUiEntry(
   entry.username = base::UTF16ToUTF8(credential.username);
   // TODO(crbug.com/1345899): Fill the note field after authentication in
   // OnRequestCredentialDetailsAuthResult
-  entry.note =
-      std::make_unique<std::string>(base::UTF16ToUTF8(credential.note.value));
+  entry.note = base::UTF16ToUTF8(credential.note.value);
   entry.id = id;
   entry.stored_in = extensions::StoreSetFromCredential(credential);
   entry.is_android_credential =
@@ -175,9 +174,8 @@ CreatePasswordUiEntryFromCredentialUiEntry(
             credential.federation_origin,
             url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC);
 
-    entry.federation_text =
-        std::make_unique<std::string>(l10n_util::GetStringFUTF8(
-            IDS_PASSWORDS_VIA_FEDERATION, formatted_origin));
+    entry.federation_text = l10n_util::GetStringFUTF8(
+        IDS_PASSWORDS_VIA_FEDERATION, formatted_origin);
   }
   return entry;
 }
@@ -781,8 +779,7 @@ void PasswordsPrivateDelegateImpl::OnRequestCredentialDetailsAuthResult(
 
   api::passwords_private::PasswordUiEntry password_ui_entry =
       CreatePasswordUiEntryFromCredentialUiEntry(id, *credential);
-  password_ui_entry.password =
-      std::make_unique<std::string>(base::UTF16ToUTF8(credential->password));
+  password_ui_entry.password = base::UTF16ToUTF8(credential->password);
   std::move(callback).Run(std::move(password_ui_entry));
 
   EmitHistogramsForCredentialAccess(

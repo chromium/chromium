@@ -42,7 +42,7 @@ namespace {
 
 void AppendCookieToVectorIfMatchAndHasHostPermission(
     const net::CanonicalCookie cookie,
-    const GetAll::Params::Details* details,
+    GetAll::Params::Details* details,
     const Extension* extension,
     std::vector<Cookie>* match_vector) {
   // Ignore any cookie whose domain doesn't match the extension's
@@ -176,7 +176,7 @@ GURL GetURLFromCanonicalCookie(const net::CanonicalCookie& cookie) {
 
 void AppendMatchingCookiesFromCookieListToVector(
     const net::CookieList& all_cookies,
-    const GetAll::Params::Details* details,
+    GetAll::Params::Details* details,
     const Extension* extension,
     std::vector<Cookie>* match_vector) {
   for (const net::CanonicalCookie& cookie : all_cookies) {
@@ -187,7 +187,7 @@ void AppendMatchingCookiesFromCookieListToVector(
 
 void AppendMatchingCookiesFromCookieAccessResultListToVector(
     const net::CookieAccessResultList& all_cookies_with_access_result,
-    const GetAll::Params::Details* details,
+    GetAll::Params::Details* details,
     const Extension* extension,
     std::vector<Cookie>* match_vector) {
   for (const net::CookieWithAccessResult& cookie_with_access_result :
@@ -207,20 +207,19 @@ void AppendToTabIdList(Browser* browser, base::ListValue* tab_ids) {
   }
 }
 
-MatchFilter::MatchFilter(const GetAll::Params::Details* details)
-    : details_(details) {
+MatchFilter::MatchFilter(GetAll::Params::Details* details) : details_(details) {
   DCHECK(details_);
 }
 
 bool MatchFilter::MatchesCookie(
     const net::CanonicalCookie& cookie) {
-  if (details_->name.get() && *details_->name != cookie.Name())
+  if (details_->name && *details_->name != cookie.Name())
     return false;
 
   if (!MatchesDomain(cookie.Domain()))
     return false;
 
-  if (details_->path.get() && *details_->path != cookie.Path())
+  if (details_->path && *details_->path != cookie.Path())
     return false;
 
   if (details_->secure && *details_->secure != cookie.IsSecure())
@@ -233,7 +232,7 @@ bool MatchFilter::MatchesCookie(
 }
 
 bool MatchFilter::MatchesDomain(const std::string& domain) {
-  if (!details_->domain.get())
+  if (!details_->domain)
     return true;
 
   // Add a leading '.' character to the filter domain if it doesn't exist.

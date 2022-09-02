@@ -45,8 +45,7 @@ std::unique_ptr<api::tab_groups::TabGroup> CreateTabGroupObject(
   tab_group_object->id = GetGroupId(id);
   tab_group_object->collapsed = visual_data.is_collapsed();
   tab_group_object->color = ColorIdToColor(visual_data.color());
-  tab_group_object->title =
-      std::make_unique<std::string>(base::UTF16ToUTF8(visual_data.title()));
+  tab_group_object->title = base::UTF16ToUTF8(visual_data.title());
   tab_group_object->window_id = GetWindowIdOfGroup(id);
 
   return tab_group_object;

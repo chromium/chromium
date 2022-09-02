@@ -56,7 +56,6 @@ using ::testing::_;
 using ::testing::Eq;
 using ::testing::IsNull;
 using ::testing::Ne;
-using ::testing::Pointee;
 using ::testing::Return;
 using ::testing::SizeIs;
 using ::testing::StrictMock;
@@ -383,13 +382,13 @@ TEST_F(PasswordsPrivateDelegateImplTest, AddPassword) {
   api::passwords_private::PasswordUiEntry expected_entry1;
   expected_entry1.urls.link = "https://example1.com/";
   expected_entry1.username = "username1";
-  expected_entry1.note = std::make_unique<std::string>();
+  expected_entry1.note.emplace();
   expected_entry1.stored_in =
       api::passwords_private::PASSWORD_STORE_SET_ACCOUNT;
   api::passwords_private::PasswordUiEntry expected_entry2;
   expected_entry2.urls.link = "http://example2.com/login";
   expected_entry2.username = "";
-  expected_entry2.note = std::make_unique<std::string>("note");
+  expected_entry2.note = "note";
   expected_entry2.stored_in = api::passwords_private::PASSWORD_STORE_SET_DEVICE;
   EXPECT_CALL(callback,
               Run(testing::UnorderedElementsAre(
@@ -475,7 +474,7 @@ TEST_F(PasswordsPrivateDelegateImplTest, ChangeSavedPassword) {
   EXPECT_CALL(callback, Run(SizeIs(1)))
       .WillOnce([](const PasswordsPrivateDelegate::UiEntries& passwords) {
         EXPECT_EQ("new_user", passwords[0].username);
-        EXPECT_THAT(passwords[0].note, Pointee(Eq("")));
+        EXPECT_THAT(passwords[0].note, Eq(""));
       });
   delegate.GetSavedPasswordsList(callback.Get());
 }
@@ -502,7 +501,7 @@ TEST_F(PasswordsPrivateDelegateImplTest, ChangeSavedPasswordWithNote) {
         EXPECT_EQ(sample_form.username_value,
                   base::UTF8ToUTF16(passwords[0].username));
         EXPECT_THAT(passwords[0].note,
-                    Pointee(Eq(base::UTF16ToUTF8(sample_form.notes[1].value))));
+                    Eq(base::UTF16ToUTF8(sample_form.notes[1].value)));
       });
   delegate.GetSavedPasswordsList(callback.Get());
   int sample_form_id = delegate.GetIdForCredential(
@@ -511,7 +510,7 @@ TEST_F(PasswordsPrivateDelegateImplTest, ChangeSavedPasswordWithNote) {
   api::passwords_private::ChangeSavedPasswordParams params;
   params.password = "new_pass";
   params.username = "new_user";
-  params.note = std::make_unique<std::string>("new note");
+  params.note = "new note";
 
   sample_form.password_value = u"new_pass";
   sample_form.username_value = u"new_user";
@@ -529,7 +528,7 @@ TEST_F(PasswordsPrivateDelegateImplTest, ChangeSavedPasswordWithNote) {
   EXPECT_CALL(callback, Run(SizeIs(1)))
       .WillOnce([](const PasswordsPrivateDelegate::UiEntries& passwords) {
         EXPECT_EQ("new_user", passwords[0].username);
-        EXPECT_THAT(passwords[0].note, Pointee(Eq("new note")));
+        EXPECT_THAT(passwords[0].note, Eq("new note"));
       });
   delegate.GetSavedPasswordsList(callback.Get());
 }
@@ -755,7 +754,7 @@ TEST_F(PasswordsPrivateDelegateImplTest,
   EXPECT_CALL(password_callback, Run)
       .WillOnce(
           [&](absl::optional<api::passwords_private::PasswordUiEntry> entry) {
-            EXPECT_THAT(entry->password, Pointee(Eq("test")));
+            EXPECT_THAT(entry->password, Eq("test"));
             EXPECT_THAT(entry->username, Eq("test@gmail.com"));
           });
 
@@ -958,7 +957,7 @@ TEST_F(PasswordsPrivateDelegateImplTest, AndroidCredential) {
   expected_entry.urls.link =
       "https://play.google.com/store/apps/details?id=example.com";
   expected_entry.username = "test@gmail.com";
-  expected_entry.note = std::make_unique<std::string>();
+  expected_entry.note.emplace();
   expected_entry.is_android_credential = true;
   expected_entry.stored_in = api::passwords_private::PASSWORD_STORE_SET_DEVICE;
   EXPECT_CALL(callback, Run(testing::ElementsAre(PasswordUiEntryDataEquals(

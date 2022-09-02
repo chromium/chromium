@@ -66,9 +66,8 @@ HistoryItem GetHistoryItem(const history::URLRow& row) {
   HistoryItem history_item;
 
   history_item.id = base::NumberToString(row.id());
-  history_item.url = std::make_unique<std::string>(row.url().spec());
-  history_item.title =
-      std::make_unique<std::string>(base::UTF16ToUTF8(row.title()));
+  history_item.url = row.url().spec();
+  history_item.title = base::UTF16ToUTF8(row.title());
   history_item.last_visit_time = MilliSecondsFromTime(row.last_visit());
   history_item.typed_count = row.typed_count();
   history_item.visit_count = row.visit_count();

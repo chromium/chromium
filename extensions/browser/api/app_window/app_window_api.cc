@@ -168,7 +168,7 @@ ExtensionFunction::ResponseAction AppWindowCreateFunction::Run() {
   AppWindow::CreateParams create_params;
   app_window::CreateWindowOptions* options = params->options.get();
   if (options) {
-    if (options->id.get()) {
+    if (options->id) {
       // TODO(mek): use URL if no id specified?
       // Limit length of id to 256 characters.
       if (options->id->length() > 256)
@@ -339,14 +339,14 @@ ExtensionFunction::ResponseAction AppWindowCreateFunction::Run() {
       }
     }
 
-    if (options->icon.get()) {
+    if (options->icon) {
       // First, check if the window icon URL is a valid global URL.
-      create_params.window_icon_url = GURL(*options->icon.get());
+      create_params.window_icon_url = GURL(*options->icon);
 
       // If the URL is not global, check for a valid extension local URL.
       if (!create_params.window_icon_url.is_valid()) {
         create_params.window_icon_url =
-            extension()->GetResourceURL(*options->icon.get());
+            extension()->GetResourceURL(*options->icon);
       }
     }
 
@@ -582,7 +582,7 @@ bool AppWindowCreateFunction::GetFrameOptions(
     create_params->frame =
         GetFrameFromString(*options.frame->as_frame_options->type);
 
-  if (options.frame->as_frame_options->color.get()) {
+  if (options.frame->as_frame_options->color) {
     if (create_params->frame != AppWindow::FRAME_CHROME) {
       *error = app_window_constants::kColorWithFrameNone;
       return false;
@@ -597,7 +597,7 @@ bool AppWindowCreateFunction::GetFrameOptions(
     create_params->has_frame_color = true;
     create_params->inactive_frame_color = create_params->active_frame_color;
 
-    if (options.frame->as_frame_options->inactive_color.get()) {
+    if (options.frame->as_frame_options->inactive_color) {
       if (!content::ParseHexColorString(
               *options.frame->as_frame_options->inactive_color,
               &create_params->inactive_frame_color)) {
@@ -609,7 +609,7 @@ bool AppWindowCreateFunction::GetFrameOptions(
     return true;
   }
 
-  if (options.frame->as_frame_options->inactive_color.get()) {
+  if (options.frame->as_frame_options->inactive_color) {
     *error = app_window_constants::kInactiveColorWithoutColor;
     return false;
   }

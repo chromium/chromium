@@ -201,7 +201,7 @@ TEST(AudioServiceUtilsTest, ConvertAudioDeviceInfoToMojom) {
   input.device_name = test_device_name;
   input.is_active = test_is_active;
   input.level = test_level;
-  input.stable_device_id = std::make_unique<std::string>(test_stable_device_id);
+  input.stable_device_id = test_stable_device_id;
 
   auto result = ConvertAudioDeviceInfoToMojom(input);
   ASSERT_TRUE(result);

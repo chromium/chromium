@@ -239,7 +239,7 @@ bool NotificationsApiFunction::CreateNotification(
 
   // Then, handle any optional data that's been provided.
   message_center::RichNotificationData optional_fields;
-  if (options->app_icon_mask_url.get()) {
+  if (options->app_icon_mask_url) {
     gfx::Image small_icon_mask;
     if (!NotificationBitmapToGfxImage(
             image_scale, bitmap_sizes.app_icon_mask_size,
@@ -560,7 +560,7 @@ NotificationsCreateFunction::RunNotificationsApi() {
 
   const std::string extension_id(extension_->id());
   std::string notification_id;
-  if (params_->notification_id.get() && !params_->notification_id->empty()) {
+  if (params_->notification_id && !params_->notification_id->empty()) {
     // If the caller provided a notificationId, use that.
     notification_id = *params_->notification_id;
   } else {

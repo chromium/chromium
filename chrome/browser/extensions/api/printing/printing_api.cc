@@ -41,7 +41,7 @@ ExtensionFunction::ResponseAction PrintingSubmitJobFunction::Run() {
 
 void PrintingSubmitJobFunction::OnPrintJobSubmitted(
     absl::optional<api::printing::SubmitJobStatus> status,
-    std::unique_ptr<std::string> job_id,
+    absl::optional<std::string> job_id,
     absl::optional<std::string> error) {
   if (error.has_value()) {
     Respond(Error(error.value()));

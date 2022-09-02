@@ -111,7 +111,7 @@ bool CreateMenuItem(const PropertyWithEnumT& create_properties,
 
   // Title.
   std::string title;
-  if (create_properties.title.get())
+  if (create_properties.title)
     title = *create_properties.title;
 
   MenuItem::Type type = GetType(create_properties.type, MenuItem::NORMAL);
@@ -189,7 +189,7 @@ bool UpdateMenuItem(const PropertyWithEnumT& update_properties,
   }
 
   // Title.
-  if (update_properties.title.get()) {
+  if (update_properties.title) {
     std::string title(*update_properties.title);
     if (title.empty() && item->type() != MenuItem::SEPARATOR) {
       *error = kTitleNeededError;

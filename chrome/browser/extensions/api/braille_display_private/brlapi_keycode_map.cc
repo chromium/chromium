@@ -53,14 +53,13 @@ void MapKeySym(brlapi_keyCode_t code, KeyEvent* event) {
     base_icu::UChar32 code_point = key_sym & ~BRLAPI_KEY_SYM_UNICODE;
     if (!base::IsValidCharacter(code_point))
       return;
-    event->standard_key_char = std::make_unique<std::string>();
-    base::WriteUnicodeCharacter(code_point, event->standard_key_char.get());
+    event->standard_key_char.emplace();
+    base::WriteUnicodeCharacter(code_point, &*event->standard_key_char);
   } else if (key_sym >= kMinFunctionKey && key_sym <= kMaxFunctionKey) {
     // Function keys are 0-based here, so we need to add one to get e.g.
     // 'F1' for the first key.
     int function_key_number = key_sym - kMinFunctionKey + 1;
-    event->standard_key_code = std::make_unique<std::string>(
-        base::StringPrintf("F%d", function_key_number));
+    event->standard_key_code = base::StringPrintf("F%d", function_key_number);
   } else {
     // Explicitly map the keys that brlapi provides.
     const char* code_string;
@@ -110,7 +109,7 @@ void MapKeySym(brlapi_keyCode_t code, KeyEvent* event) {
       default:
         return;
     }
-    event->standard_key_code = std::make_unique<std::string>(code_string);
+    event->standard_key_code = code_string;
   }
   MapModifierFlags(code, event);
   event->command = KEY_COMMAND_STANDARD_KEY;

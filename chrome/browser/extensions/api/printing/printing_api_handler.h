@@ -54,7 +54,7 @@ class PrintingAPIHandler : public BrowserContextKeyedAPI,
  public:
   using SubmitJobCallback = base::OnceCallback<void(
       absl::optional<api::printing::SubmitJobStatus> status,
-      std::unique_ptr<std::string> job_id,
+      absl::optional<std::string> job_id,
       absl::optional<std::string> error)>;
   using GetPrintersCallback =
       base::OnceCallback<void(std::vector<api::printing::Printer>)>;

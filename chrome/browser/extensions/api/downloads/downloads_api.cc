@@ -1045,7 +1045,7 @@ ExtensionFunction::ResponseAction DownloadsDownloadFunction::Run() {
           render_frame_host() ? render_frame_host()->GetRoutingID() : -1,
           traffic_annotation));
   base::FilePath creator_suggested_filename;
-  if (options.filename.get()) {
+  if (options.filename) {
     // Strip "%" character as it affects environment variables.
     std::string filename;
     base::ReplaceChars(*options.filename, "%", "_", &filename);
@@ -1078,7 +1078,7 @@ ExtensionFunction::ResponseAction DownloadsDownloadFunction::Run() {
   std::string method_string = downloads::ToString(options.method);
   if (!method_string.empty())
     download_params->set_method(method_string);
-  if (options.body.get()) {
+  if (options.body) {
     download_params->set_post_body(
         network::ResourceRequestBody::CreateFromBytes(options.body->data(),
                                                       options.body->size()));

@@ -84,26 +84,19 @@ void SerialGetDevicesFunction::OnGotDevices(
   for (const auto& device : devices) {
     extensions::api::serial::DeviceInfo info;
     info.path = device->path.AsUTF8Unsafe();
-    if (device->has_vendor_id)
-      info.vendor_id = device->vendor_id;
-    if (device->has_product_id)
-      info.product_id = device->product_id;
-    if (device->display_name)
-      info.display_name = std::make_unique<std::string>(*device->display_name);
+    info.vendor_id = device->vendor_id;
+    info.product_id = device->product_id;
+    info.display_name = device->display_name;
     results.push_back(std::move(info));
 
 #if BUILDFLAG(IS_MAC)
     if (device->alternate_path) {
       extensions::api::serial::DeviceInfo alternate_info;
       alternate_info.path = device->alternate_path->AsUTF8Unsafe();
-      if (device->has_vendor_id)
-        alternate_info.vendor_id = device->vendor_id;
-      if (device->has_product_id)
-        alternate_info.product_id = device->product_id;
-      if (device->display_name) {
-        alternate_info.display_name =
-            std::make_unique<std::string>(*device->display_name);
-      }
+      alternate_info.vendor_id = device->vendor_id;
+      alternate_info.product_id = device->product_id;
+      alternate_info.display_name = device->display_name;
+
       results.push_back(std::move(alternate_info));
     }
 #endif  // BUILDFLAG(IS_MAC)

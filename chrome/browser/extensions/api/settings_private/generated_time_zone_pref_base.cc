@@ -47,8 +47,8 @@ void GeneratedTimeZonePrefBase::UpdateTimeZonePrefControlledBy(
   } else if (!profile_->IsSameOrParent(
                  ProfileManager::GetPrimaryUserProfile())) {
     out_pref->controlled_by = settings_api::CONTROLLED_BY_PRIMARY_USER;
-    out_pref->controlled_by_name = std::make_unique<std::string>(
-        user_manager::UserManager::Get()->GetPrimaryUser()->GetDisplayEmail());
+    out_pref->controlled_by_name =
+        user_manager::UserManager::Get()->GetPrimaryUser()->GetDisplayEmail();
     out_pref->enforcement = settings_api::ENFORCEMENT_ENFORCED;
   }
   // Time zone settings can be policy-bound (for all users), or primary-user

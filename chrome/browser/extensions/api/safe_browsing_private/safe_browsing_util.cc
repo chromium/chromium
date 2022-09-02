@@ -21,8 +21,7 @@ safe_browsing_private::ReferrerChainEntry ReferrerToReferrerChainEntry(
   // Add all referrer chain entry fields to the entry.
   entry.url = referrer.url();
   if (referrer.has_main_frame_url()) {
-    entry.main_frame_url =
-        std::make_unique<std::string>(referrer.main_frame_url());
+    entry.main_frame_url = referrer.main_frame_url();
   }
   // This url type value is deprecated and should not be used.
   DCHECK_NE(
@@ -59,11 +58,10 @@ safe_browsing_private::ReferrerChainEntry ReferrerToReferrerChainEntry(
       entry.ip_addresses->emplace_back(ip_address);
   }
   if (referrer.has_referrer_url()) {
-    entry.referrer_url = std::make_unique<std::string>(referrer.referrer_url());
+    entry.referrer_url = referrer.referrer_url();
   }
   if (referrer.has_referrer_main_frame_url()) {
-    entry.referrer_main_frame_url =
-        std::make_unique<std::string>(referrer.referrer_main_frame_url());
+    entry.referrer_main_frame_url = referrer.referrer_main_frame_url();
   }
   if (referrer.has_is_retargeting())
     entry.is_retargeting = referrer.is_retargeting();
@@ -76,7 +74,7 @@ safe_browsing_private::ReferrerChainEntry ReferrerToReferrerChainEntry(
     entry.server_redirect_chain->reserve(referrer.server_redirect_chain_size());
     for (const auto& server_redirect : referrer.server_redirect_chain()) {
       safe_browsing_private::ServerRedirect result;
-      result.url = std::make_unique<std::string>(server_redirect.url());
+      result.url = server_redirect.url();
       entry.server_redirect_chain->emplace_back(std::move(result));
     }
   }

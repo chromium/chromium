@@ -536,8 +536,8 @@ ExtensionFunction::ResponseAction WebNavigationGetFrameFunction::Run() {
   // Only set the parentDocumentId value if we have a parent.
   if (content::RenderFrameHost* parent_frame_host =
           render_frame_host->GetParentOrOuterDocument()) {
-    frame_details.parent_document_id = std::make_unique<std::string>(
-        ExtensionApiFrameIdMap::GetDocumentId(parent_frame_host).ToString());
+    frame_details.parent_document_id =
+        ExtensionApiFrameIdMap::GetDocumentId(parent_frame_host).ToString();
   }
   frame_details.frame_type =
       ExtensionApiFrameIdMap::GetFrameType(render_frame_host);
@@ -604,9 +604,9 @@ ExtensionFunction::ResponseAction WebNavigationGetAllFramesFunction::Run() {
             // Only set the parentDocumentId value if we have a parent.
             if (content::RenderFrameHost* parent_frame_host =
                     render_frame_host->GetParentOrOuterDocument()) {
-              frame.parent_document_id = std::make_unique<std::string>(
+              frame.parent_document_id =
                   ExtensionApiFrameIdMap::GetDocumentId(parent_frame_host)
-                      .ToString());
+                      .ToString();
             }
             frame.frame_type =
                 ExtensionApiFrameIdMap::GetFrameType(render_frame_host);

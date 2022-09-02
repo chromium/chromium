@@ -131,7 +131,7 @@ TEST(JsonSchemaCompilerChoicesTest, PopulateChoiceType) {
   EXPECT_FALSE(out.integers.as_integers.get());
   EXPECT_EQ(4, *out.integers.as_integer);
 
-  EXPECT_FALSE(out.strings->as_string.get());
+  EXPECT_FALSE(out.strings->as_string);
   ASSERT_TRUE(out.strings->as_strings.get());
   EXPECT_EQ(strings, *out.strings->as_strings);
 }

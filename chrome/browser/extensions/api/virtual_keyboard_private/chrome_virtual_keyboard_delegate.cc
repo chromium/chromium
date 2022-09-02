@@ -500,12 +500,10 @@ void ChromeVirtualKeyboardDelegate::OnGetHistoryValuesAfterItemsUpdated(
   for (auto& item : updated_items.GetListDeprecated()) {
     keyboard_api::ClipboardItem clipboard_item;
     if (item.FindKey("imageData")) {
-      clipboard_item.image_data =
-          std::make_unique<std::string>(item.FindKey("imageData")->GetString());
+      clipboard_item.image_data = item.FindKey("imageData")->GetString();
     }
     if (item.FindKey("textData")) {
-      clipboard_item.text_data =
-          std::make_unique<std::string>(item.FindKey("textData")->GetString());
+      clipboard_item.text_data = item.FindKey("textData")->GetString();
     }
     if (item.FindKey("idToken")) {
       clipboard_item.id = item.FindKey("idToken")->GetString();

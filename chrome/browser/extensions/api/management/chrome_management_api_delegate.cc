@@ -307,8 +307,7 @@ class ChromeAppForLinkDelegate : public extensions::AppForLinkDelegate {
         extensions::api::management::EXTENSION_INSTALL_TYPE_OTHER;
     info.is_app = true;
     info.type = extensions::api::management::EXTENSION_TYPE_HOSTED_APP;
-    info.app_launch_url =
-        std::make_unique<std::string>(registrar.GetAppStartUrl(app_id).spec());
+    info.app_launch_url = registrar.GetAppStartUrl(app_id).spec();
 
     info.icons =
         std::make_unique<std::vector<extensions::api::management::IconInfo>>();

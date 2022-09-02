@@ -75,7 +75,7 @@ FlatOffset<flat::UrlTransform> BuildTransformOffset(
     flatbuffers::FlatBufferBuilder* builder,
     const dnr_api::URLTransform& transform) {
   auto create_string_offset =
-      [builder](const std::unique_ptr<std::string>& str) {
+      [builder](const absl::optional<std::string>& str) {
         if (!str)
           return FlatStringOffset();
 
@@ -83,7 +83,7 @@ FlatOffset<flat::UrlTransform> BuildTransformOffset(
       };
 
   auto skip_separator_and_create_string_offset =
-      [builder](const std::unique_ptr<std::string>& str, char separator) {
+      [builder](const absl::optional<std::string>& str, char separator) {
         if (!str)
           return FlatStringOffset();
 
@@ -93,7 +93,7 @@ FlatOffset<flat::UrlTransform> BuildTransformOffset(
         return builder->CreateSharedString(str->c_str() + 1, str->length() - 1);
       };
 
-  auto should_clear_component = [](const std::unique_ptr<std::string>& str) {
+  auto should_clear_component = [](const absl::optional<std::string>& str) {
     return str && str->empty();
   };
 

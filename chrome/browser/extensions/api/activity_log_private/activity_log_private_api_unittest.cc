@@ -39,10 +39,10 @@ TEST_F(ActivityLogApiUnitTest, ConvertChromeApiAction) {
   ExtensionActivity result = action->ConvertToExtensionActivity();
   ASSERT_EQ(api::activity_log_private::EXTENSION_ACTIVITY_TYPE_API_CALL,
             result.activity_type);
-  ASSERT_EQ(kExtensionId, *(result.extension_id.get()));
-  ASSERT_EQ(kApiCall, *(result.api_call.get()));
-  ASSERT_EQ(kArgs, *(result.args.get()));
-  ASSERT_EQ(NULL, result.activity_id.get());
+  ASSERT_EQ(kExtensionId, *result.extension_id);
+  ASSERT_EQ(kApiCall, *result.api_call);
+  ASSERT_EQ(kArgs, *result.args);
+  EXPECT_FALSE(result.activity_id);
 }
 
 TEST_F(ActivityLogApiUnitTest, ConvertDomAction) {
@@ -61,11 +61,11 @@ TEST_F(ActivityLogApiUnitTest, ConvertDomAction) {
                               DomActionType::INSERTED);
   action->mutable_other().Set(activity_log_constants::kActionPrerender, false);
   ExtensionActivity result = action->ConvertToExtensionActivity();
-  ASSERT_EQ(kExtensionId, *(result.extension_id.get()));
-  ASSERT_EQ("http://www.google.com/", *(result.page_url.get()));
-  ASSERT_EQ("Title", *(result.page_title.get()));
-  ASSERT_EQ(kApiCall, *(result.api_call.get()));
-  ASSERT_EQ(kArgs, *(result.args.get()));
+  ASSERT_EQ(kExtensionId, *result.extension_id);
+  ASSERT_EQ("http://www.google.com/", *result.page_url);
+  ASSERT_EQ("Title", *result.page_title);
+  ASSERT_EQ(kApiCall, *result.api_call);
+  ASSERT_EQ(kArgs, *result.args);
   std::unique_ptr<ExtensionActivity::Other> other(std::move(result.other));
   ASSERT_EQ(api::activity_log_private::EXTENSION_ACTIVITY_DOM_VERB_INSERTED,
             other->dom_verb);

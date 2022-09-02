@@ -193,16 +193,14 @@ class SingleEntryPropertiesGetterForFileSystemProvider {
             api::file_manager_private::ENTRY_PROPERTY_NAME_CONTENTMIMETYPE) !=
             names_.end() &&
         metadata->mime_type.get()) {
-      properties_->content_mime_type =
-          std::make_unique<std::string>(*metadata->mime_type);
+      properties_->content_mime_type = *metadata->mime_type;
     }
 
     if (names_.find(
             api::file_manager_private::ENTRY_PROPERTY_NAME_THUMBNAILURL) !=
             names_.end() &&
         metadata->thumbnail.get()) {
-      properties_->thumbnail_url =
-          std::make_unique<std::string>(*metadata->thumbnail);
+      properties_->thumbnail_url = *metadata->thumbnail;
     }
 
     CompleteGetEntryProperties(base::File::FILE_OK);
@@ -521,8 +519,8 @@ void FileManagerPrivateInternalGetEntryPropertiesFunction::
   DCHECK(0 <= processed_count_ && processed_count_ < properties_list_.size());
 
   if (error == base::File::FILE_OK) {
-    properties->external_file_url = std::make_unique<std::string>(
-        chromeos::FileSystemURLToExternalFileURL(url).spec());
+    properties->external_file_url =
+        chromeos::FileSystemURLToExternalFileURL(url).spec();
   }
   properties_list_[index] = std::move(*properties);
 

@@ -354,15 +354,14 @@ class ImeObserverChromeOS
 
     // For legacy reasons, we still put a |requestID| into the keyData, even
     // though there is already a |requestID| argument in OnKeyEvent.
-    keyboard_event.request_id = std::make_unique<std::string>(request_id);
+    keyboard_event.request_id = request_id;
 
     // If the given key event is from VK, it means the key event was simulated.
     // Sets the |extension_id| value so that the IME extension can ignore it.
     auto* properties = event.properties();
     if (properties &&
         properties->find(ui::kPropertyFromVK) != properties->end())
-      keyboard_event.extension_id =
-          std::make_unique<std::string>(extension_id_);
+      keyboard_event.extension_id = extension_id_;
 
     keyboard_event.key = GetKeyFromEvent(event);
     keyboard_event.code = event.code() == ui::DomCode::NONE
@@ -492,8 +491,7 @@ class ImeObserverChromeOS
       // TODO(b/163645900): Add app type later.
       ash::input_method::TextFieldContextualInfo info;
       ash::input_method::GetTextFieldAppTypeAndKey(info);
-      private_api_input_context.app_key =
-          std::make_unique<std::string>(info.app_key);
+      private_api_input_context.app_key = info.app_key;
 
       auto args(
           input_method_private::OnFocus::Create(private_api_input_context));

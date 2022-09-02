@@ -226,9 +226,9 @@ private_api::Certificate GetCertDictionary(
   api_cert.hardware_backed = cert.hardware_backed;
   api_cert.device_wide = cert.device_wide;
   if (!cert.pem.empty())
-    api_cert.pem = std::make_unique<std::string>(cert.pem);
+    api_cert.pem = cert.pem;
   if (!cert.pkcs11_id.empty())
-    api_cert.pkcs11_id = std::make_unique<std::string>(cert.pkcs11_id);
+    api_cert.pkcs11_id = cert.pkcs11_id;
   return api_cert;
 }
 

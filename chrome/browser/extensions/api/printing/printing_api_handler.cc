@@ -185,8 +185,8 @@ void PrintingAPIHandler::OnPrintJobSubmitted(
     if (!error)
       status = api::printing::SUBMIT_JOB_STATUS_USER_REJECTED;
     base::SequencedTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE,
-        base::BindOnce(std::move(callback), status, nullptr, std::move(error)));
+        FROM_HERE, base::BindOnce(std::move(callback), status, absl::nullopt,
+                                  std::move(error)));
     return;
   }
 
@@ -201,7 +201,7 @@ void PrintingAPIHandler::OnPrintJobSubmitted(
   base::SequencedTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback), api::printing::SUBMIT_JOB_STATUS_OK,
-                     std::make_unique<std::string>(cups_id), absl::nullopt));
+                     cups_id, absl::nullopt));
 
   DCHECK(!base::Contains(print_jobs_, cups_id));
   print_jobs_[cups_id] =

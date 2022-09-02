@@ -48,7 +48,7 @@ SocketInfo CreateSocketInfo(int socket_id, BluetoothApiSocket* socket) {
   // to the system.
   socket_info.socket_id = socket_id;
   if (socket->name()) {
-    socket_info.name = std::make_unique<std::string>(*socket->name());
+    socket_info.name = *socket->name();
   }
   socket_info.persistent = socket->persistent();
   if (socket->buffer_size() > 0) {
@@ -58,18 +58,16 @@ SocketInfo CreateSocketInfo(int socket_id, BluetoothApiSocket* socket) {
   socket_info.connected = socket->IsConnected();
 
   if (socket->IsConnected()) {
-    socket_info.address =
-        std::make_unique<std::string>(socket->device_address());
+    socket_info.address = socket->device_address();
   }
-  socket_info.uuid =
-      std::make_unique<std::string>(socket->uuid().canonical_value());
+  socket_info.uuid = socket->uuid().canonical_value();
 
   return socket_info;
 }
 
 void SetSocketProperties(BluetoothApiSocket* socket,
                          SocketProperties* properties) {
-  if (properties->name.get()) {
+  if (properties->name) {
     socket->set_name(*properties->name);
   }
   if (properties->persistent) {

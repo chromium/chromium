@@ -64,8 +64,7 @@ void DnsResolveFunction::OnComplete(
   resolve_info.result_code = resolve_error_info.error;
   if (result == net::OK) {
     DCHECK(resolved_addresses.has_value() && !resolved_addresses->empty());
-    resolve_info.address = std::make_unique<std::string>(
-        resolved_addresses->front().ToStringWithoutPort());
+    resolve_info.address = resolved_addresses->front().ToStringWithoutPort();
   }
 
   Respond(ArgumentList(Resolve::Results::Create(resolve_info)));

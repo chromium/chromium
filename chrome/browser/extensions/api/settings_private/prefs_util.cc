@@ -1007,11 +1007,10 @@ std::unique_ptr<settings_api::PrefObject> PrefsUtil::GetPref(
     pref_object->controlled_by =
         settings_api::ControlledBy::CONTROLLED_BY_PRIMARY_USER;
     pref_object->enforcement = settings_api::Enforcement::ENFORCEMENT_ENFORCED;
-    pref_object->controlled_by_name =
-        std::make_unique<std::string>(user_manager::UserManager::Get()
+    pref_object->controlled_by_name = user_manager::UserManager::Get()
                                           ->GetPrimaryUser()
                                           ->GetAccountId()
-                                          .GetUserEmail());
+                                          .GetUserEmail();
     return pref_object;
   }
 #endif
@@ -1051,8 +1050,8 @@ std::unique_ptr<settings_api::PrefObject> PrefsUtil::GetPref(
     pref_object->controlled_by =
         settings_api::ControlledBy::CONTROLLED_BY_OWNER;
     pref_object->enforcement = settings_api::Enforcement::ENFORCEMENT_ENFORCED;
-    pref_object->controlled_by_name = std::make_unique<std::string>(
-        user_manager::UserManager::Get()->GetOwnerAccountId().GetUserEmail());
+    pref_object->controlled_by_name =
+        user_manager::UserManager::Get()->GetOwnerAccountId().GetUserEmail();
     return pref_object;
   }
 
@@ -1079,9 +1078,8 @@ std::unique_ptr<settings_api::PrefObject> PrefsUtil::GetPref(
     pref_object->controlled_by =
         settings_api::ControlledBy::CONTROLLED_BY_EXTENSION;
     pref_object->enforcement = settings_api::Enforcement::ENFORCEMENT_ENFORCED;
-    pref_object->extension_id = std::make_unique<std::string>(extension->id());
-    pref_object->controlled_by_name =
-        std::make_unique<std::string>(extension->name());
+    pref_object->extension_id = extension->id();
+    pref_object->controlled_by_name = extension->name();
     bool can_be_disabled =
         !ExtensionSystem::Get(profile_)->management_policy()->MustRemainEnabled(
             extension, nullptr);

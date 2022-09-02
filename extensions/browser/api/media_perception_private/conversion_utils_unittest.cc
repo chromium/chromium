@@ -57,7 +57,7 @@ void InitializeVideoStreamParam(media_perception::VideoStreamParam& param,
                                 int width,
                                 int height,
                                 int frame_rate) {
-  param.id = std::make_unique<std::string>(id);
+  param.id = id;
   param.width = width;
   param.height = height;
   param.frame_rate = frame_rate;
@@ -591,13 +591,11 @@ TEST(MediaPerceptionConversionUtilsTest, StateProtoToIdl) {
             kNumericalTemplateArgumentName);
   EXPECT_NEAR(*state_result.named_template_arguments->at(0).value->as_number,
               kNumericalTemplateArgumentValue, kDoubleTolerance);
-  EXPECT_EQ(state_result.named_template_arguments->at(0).value->as_string,
-            nullptr);
+  EXPECT_FALSE(state_result.named_template_arguments->at(0).value->as_string);
 
   // Empty.
   EXPECT_EQ(*state_result.named_template_arguments->at(1).name, "");
-  EXPECT_EQ(state_result.named_template_arguments->at(1).value->as_string,
-            nullptr);
+  EXPECT_FALSE(state_result.named_template_arguments->at(1).value->as_string);
   EXPECT_THAT(state_result.named_template_arguments->at(1).value->as_number,
               Eq(absl::nullopt));
 
@@ -633,7 +631,7 @@ TEST(MediaPerceptionConversionUtilsTest, StateIdlToProto) {
   EXPECT_FALSE(state_proto.has_device_context());
 
   state.status = media_perception::STATUS_RUNNING;
-  state.configuration = std::make_unique<std::string>(kTestConfiguration);
+  state.configuration = kTestConfiguration;
   state.whiteboard = std::make_unique<media_perception::Whiteboard>();
   state.whiteboard->top_left =
       MakePointIdl(kWhiteboardTopLeftX, kWhiteboardTopLeftY);
@@ -659,8 +657,7 @@ TEST(MediaPerceptionConversionUtilsTest, StateIdlToProto) {
       std::make_unique<std::vector<media_perception::NamedTemplateArgument>>(
           kNamedTemplateArgumentsSize);
 
-  state.named_template_arguments->at(0).name =
-      std::make_unique<std::string>(kNumericalTemplateArgumentName);
+  state.named_template_arguments->at(0).name = kNumericalTemplateArgumentName;
 
   state.named_template_arguments->at(0).value =
       std::make_unique<media_perception::NamedTemplateArgument::Value>();
@@ -668,8 +665,7 @@ TEST(MediaPerceptionConversionUtilsTest, StateIdlToProto) {
       base::Value(kNumericalTemplateArgumentValue),
       state.named_template_arguments->at(0).value.get());
 
-  state.named_template_arguments->at(2).name =
-      std::make_unique<std::string>(kStringTemplateArgumentName);
+  state.named_template_arguments->at(2).name = kStringTemplateArgumentName;
   state.named_template_arguments->at(2).value =
       std::make_unique<media_perception::NamedTemplateArgument::Value>();
   media_perception::NamedTemplateArgument::Value::Populate(
@@ -722,7 +718,7 @@ TEST(MediaPerceptionConversionUtilsTest, StateIdlToProto) {
             kStringTemplateArgumentValue);
 
   state.status = media_perception::STATUS_SUSPENDED;
-  state.device_context = std::make_unique<std::string>(kTestDeviceContext);
+  state.device_context = kTestDeviceContext;
   state_proto = StateIdlToProto(state);
   EXPECT_EQ(state_proto.status(), mri::State::SUSPENDED);
   EXPECT_EQ(state_proto.device_context(), kTestDeviceContext);

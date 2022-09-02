@@ -956,23 +956,22 @@ class _Generator(object):
                 type_.name,
                 self._util_cc_helper.GetValueTypeString('%%(src_var)s')))))
       if is_ptr:
-        c.Append('%(dst_var)s.reset();')
+        if cpp_util.ShouldUseAbslOptional(underlying_type):
+          c.Append('%(dst_var)s = absl::nullopt;')
+        else:
+          c.Append('%(dst_var)s.reset();')
       c.Append('return %(failure_value)s;')
       (c.Eblock('}'))
       if is_ptr:
-        if is_string_or_function:
+        if cpp_util.ShouldUseAbslOptional(underlying_type):
+          c.Append('%(dst_var)s = *temp;')
+        elif is_string_or_function:
           c.Append('%(dst_var)s = std::make_unique<%(cpp_type)s>(*temp);')
-        elif cpp_util.ShouldUseAbslOptional(underlying_type):
-          c.Append('%(dst_var)s = ' +
-            'temp.value();')
         else:
           c.Append('%(dst_var)s = ' +
             'std::make_unique<%(cpp_type)s>(temp.value());')
       else:
-        if is_string_or_function:
-          c.Append('%(dst_var)s = *temp;')
-        else:
-          c.Append('%(dst_var)s = temp.value();')
+        c.Append('%(dst_var)s = *temp;')
     elif underlying_type.property_type == PropertyType.OBJECT:
       if is_ptr:
         (c.Sblock('if (!%(src_var)s.is_dict()) {')

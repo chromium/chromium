@@ -133,7 +133,7 @@ class WebRequestRulesRegistryTest : public testing::Test {
     action_dict.SetStringKey(keys::kInstanceTypeKey, keys::kCancelRequestType);
 
     api::events::Rule rule;
-    rule.id = std::make_unique<std::string>(kRuleId1);
+    rule.id = kRuleId1;
     rule.priority = 100;
     rule.actions.push_back(action_dict.CreateDeepCopy());
     http_condition_dict->Set(keys2::kSchemesKey, std::move(scheme_http));
@@ -154,7 +154,7 @@ class WebRequestRulesRegistryTest : public testing::Test {
     action_dict.SetStringKey(keys::kInstanceTypeKey, keys::kCancelRequestType);
 
     api::events::Rule rule;
-    rule.id = std::make_unique<std::string>(kRuleId2);
+    rule.id = kRuleId2;
     rule.priority = 100;
     rule.actions.push_back(action_dict.CreateDeepCopy());
     rule.conditions.push_back(condition_dict.CreateDeepCopy());
@@ -172,7 +172,7 @@ class WebRequestRulesRegistryTest : public testing::Test {
     action_dict.SetStringKey(keys::kRedirectUrlKey, destination);
 
     api::events::Rule rule;
-    rule.id = std::make_unique<std::string>(kRuleId3);
+    rule.id = kRuleId3;
     rule.priority = 100;
     rule.actions.push_back(action_dict.CreateDeepCopy());
     rule.conditions.push_back(condition_dict.CreateDeepCopy());
@@ -194,7 +194,7 @@ class WebRequestRulesRegistryTest : public testing::Test {
     action_dict.SetIntKey(keys::kLowerPriorityThanKey, 150);
 
     api::events::Rule rule;
-    rule.id = std::make_unique<std::string>(kRuleId4);
+    rule.id = kRuleId4;
     rule.priority = 200;
     rule.actions.push_back(action_dict.CreateDeepCopy());
     rule.conditions.push_back(condition_dict.CreateDeepCopy());
@@ -223,7 +223,7 @@ class WebRequestRulesRegistryTest : public testing::Test {
     action_dict.SetStringKey(keys::kInstanceTypeKey, keys::kCancelRequestType);
 
     api::events::Rule rule;
-    rule.id = std::make_unique<std::string>(rule_id);
+    rule.id = rule_id;
     rule.priority = 1;
     rule.actions.push_back(action_dict.CreateDeepCopy());
     for (auto it = attributes.cbegin(); it != attributes.cend(); ++it)

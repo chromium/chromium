@@ -56,7 +56,7 @@ MediaPerceptionPrivateSetStateFunction::Run() {
   // Check that device context is only provided with SetState RUNNING.
   if (params->state.status !=
           extensions::api::media_perception_private::STATUS_RUNNING &&
-      params->state.device_context.get() != nullptr) {
+      params->state.device_context) {
     return RespondNow(
         Error("Only provide deviceContext with SetState RUNNING."));
   }

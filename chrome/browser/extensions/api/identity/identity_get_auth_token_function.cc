@@ -302,7 +302,7 @@ void IdentityGetAuthTokenFunction::CompleteFunctionWithResult(
   RecordFunctionResult(IdentityGetAuthTokenError(), remote_consent_approved_);
 
   api::identity::GetAuthTokenResult result;
-  result.token = std::make_unique<std::string>(access_token);
+  result.token = access_token;
   result.granted_scopes = std::make_unique<std::vector<std::string>>(
       granted_scopes.begin(), granted_scopes.end());
 

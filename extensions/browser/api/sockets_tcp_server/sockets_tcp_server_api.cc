@@ -35,7 +35,7 @@ SocketInfo CreateSocketInfo(int socket_id, ResumableTCPServerSocket* socket) {
   // to the system.
   socket_info.socket_id = socket_id;
   if (!socket->name().empty()) {
-    socket_info.name = std::make_unique<std::string>(socket->name());
+    socket_info.name = socket->name();
   }
   socket_info.persistent = socket->persistent();
   socket_info.paused = socket->paused();
@@ -43,8 +43,7 @@ SocketInfo CreateSocketInfo(int socket_id, ResumableTCPServerSocket* socket) {
   // Grab the local address as known by the OS.
   net::IPEndPoint localAddress;
   if (socket->GetLocalAddress(&localAddress)) {
-    socket_info.local_address =
-        std::make_unique<std::string>(localAddress.ToStringWithoutPort());
+    socket_info.local_address = localAddress.ToStringWithoutPort();
     socket_info.local_port = localAddress.port();
   }
 
@@ -53,7 +52,7 @@ SocketInfo CreateSocketInfo(int socket_id, ResumableTCPServerSocket* socket) {
 
 void SetSocketProperties(ResumableTCPServerSocket* socket,
                          SocketProperties* properties) {
-  if (properties->name.get()) {
+  if (properties->name) {
     socket->set_name(*properties->name);
   }
   if (properties->persistent) {
