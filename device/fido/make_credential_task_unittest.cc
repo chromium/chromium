@@ -97,8 +97,7 @@ TEST_F(FidoMakeCredentialTaskTest, TestRegisterSuccessWithFake) {
   ASSERT_TRUE(make_credential_callback_receiver().value());
   EXPECT_EQ(32u, make_credential_callback_receiver()
                      .value()
-                     ->attestation_object()
-                     .GetCredentialId()
+                     ->attestation_object.GetCredentialId()
                      .size());
 }
 

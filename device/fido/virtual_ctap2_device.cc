@@ -182,7 +182,7 @@ std::vector<uint8_t> ConstructMakeCredentialResponse(
   make_credential_response.enterprise_attestation_returned =
       enterprise_attestation_requested;
   if (large_blob_key) {
-    make_credential_response.set_large_blob_key(*large_blob_key);
+    make_credential_response.large_blob_key = *large_blob_key;
   }
   make_credential_response.device_public_key_signature =
       std::move(dpk_signature);

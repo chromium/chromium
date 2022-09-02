@@ -91,8 +91,7 @@ TEST_F(U2fRegisterOperationTest, TestRegisterSuccess) {
   ASSERT_TRUE(register_callback_receiver().value());
   EXPECT_THAT(register_callback_receiver()
                   .value()
-                  ->attestation_object()
-                  .GetCredentialId(),
+                  ->attestation_object.GetCredentialId(),
               ::testing::ElementsAreArray(test_data::kU2fSignKeyHandle));
 }
 
@@ -112,8 +111,7 @@ TEST_F(U2fRegisterOperationTest, TestRegisterSuccessWithFake) {
   ASSERT_TRUE(register_callback_receiver().value());
   EXPECT_EQ(32ul, register_callback_receiver()
                       .value()
-                      ->attestation_object()
-                      .GetCredentialId()
+                      ->attestation_object.GetCredentialId()
                       .size());
 }
 
@@ -145,8 +143,7 @@ TEST_F(U2fRegisterOperationTest, TestDelayedSuccess) {
   ASSERT_TRUE(register_callback_receiver().value());
   EXPECT_THAT(register_callback_receiver()
                   .value()
-                  ->attestation_object()
-                  .GetCredentialId(),
+                  ->attestation_object.GetCredentialId(),
               ::testing::ElementsAreArray(test_data::kU2fSignKeyHandle));
 }
 
@@ -193,8 +190,7 @@ TEST_F(U2fRegisterOperationTest, TestRegistrationWithExclusionList) {
             register_callback_receiver().status());
   EXPECT_THAT(register_callback_receiver()
                   .value()
-                  ->attestation_object()
-                  .GetCredentialId(),
+                  ->attestation_object.GetCredentialId(),
               ::testing::ElementsAreArray(test_data::kU2fSignKeyHandle));
 }
 
@@ -276,7 +272,7 @@ TEST_F(U2fRegisterOperationTest, TestIndividualAttestation) {
 
     EXPECT_EQ(CtapDeviceResponseCode::kSuccess, cb.status());
     ASSERT_TRUE(cb.value());
-    EXPECT_THAT(cb.value()->attestation_object().GetCredentialId(),
+    EXPECT_THAT(cb.value()->attestation_object.GetCredentialId(),
                 ::testing::ElementsAreArray(test_data::kU2fSignKeyHandle));
   }
 }

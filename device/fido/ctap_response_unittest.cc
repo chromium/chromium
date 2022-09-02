@@ -500,7 +500,7 @@ TEST(CTAPResponseTest, TestReadMakeCredentialResponse) {
       certificate.GetArray()[0].GetBytestring(),
       ::testing::ElementsAreArray(test_data::kCtap2MakeCredentialCertificate));
   EXPECT_THAT(
-      make_credential_response->attestation_object().GetCredentialId(),
+      make_credential_response->attestation_object.GetCredentialId(),
       ::testing::ElementsAreArray(test_data::kCtap2MakeCredentialCredentialId));
 }
 
@@ -509,7 +509,7 @@ TEST(CTAPResponseTest, TestMakeCredentialNoneAttestationResponse) {
       FidoTransportProtocol::kUsbHumanInterfaceDevice,
       DecodeCBOR(test_data::kTestMakeCredentialResponse));
   ASSERT_TRUE(make_credential_response);
-  make_credential_response->EraseAttestationStatement(
+  make_credential_response->attestation_object.EraseAttestationStatement(
       AttestationObject::AAGUID::kErase);
   EXPECT_THAT(make_credential_response->GetCBOREncodedAttestationObject(),
               ::testing::ElementsAreArray(test_data::kNoneAttestationResponse));
@@ -543,7 +543,7 @@ TEST(CTAPResponseTest, TestParseRegisterResponseData) {
           test_data::kApplicationParameter,
           test_data::kTestU2fRegisterResponse);
   ASSERT_TRUE(response);
-  EXPECT_THAT(response->attestation_object().GetCredentialId(),
+  EXPECT_THAT(response->attestation_object.GetCredentialId(),
               ::testing::ElementsAreArray(test_data::kU2fSignKeyHandle));
   EXPECT_EQ(GetTestAttestationObjectBytes(),
             response->GetCBOREncodedAttestationObject());

@@ -343,7 +343,7 @@ bool ResponseValid(const FidoAuthenticator& authenticator,
   }
 
   const absl::optional<cbor::Value>& extensions =
-      response.attestation_object().authenticator_data().extensions();
+      response.attestation_object.authenticator_data().extensions();
   if (extensions && !ValidateResponseExtensions(request, options, authenticator,
                                                 *extensions)) {
     FIDO_LOG(ERROR) << "Invalid extensions block: "
@@ -370,7 +370,7 @@ bool ResponseValid(const FidoAuthenticator& authenticator,
     return false;
   }
 
-  if (request.large_blob_key && !response.large_blob_key()) {
+  if (request.large_blob_key && !response.large_blob_key) {
     FIDO_LOG(ERROR) << "Large blob key requested but not returned";
     return false;
   }

@@ -165,7 +165,7 @@ TEST_F(VirtualCtap2DeviceTest, AttestationCertificateIsValid) {
   ASSERT_TRUE(response);
 
   const AttestationStatement& attestation =
-      response->attestation_object().attestation_statement();
+      response->attestation_object.attestation_statement();
 
   EXPECT_FALSE(attestation.IsSelfAttestation());
   EXPECT_FALSE(

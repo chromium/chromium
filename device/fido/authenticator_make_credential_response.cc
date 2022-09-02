@@ -63,10 +63,10 @@ AuthenticatorMakeCredentialResponse::CreateFromU2fRegisterResponse(
 }
 
 AuthenticatorMakeCredentialResponse::AuthenticatorMakeCredentialResponse(
-    absl::optional<FidoTransportProtocol> transport_used,
-    AttestationObject attestation_object)
-    : attestation_object_(std::move(attestation_object)),
-      transport_used_(transport_used) {}
+    absl::optional<FidoTransportProtocol> in_transport_used,
+    AttestationObject in_attestation_object)
+    : attestation_object(std::move(in_attestation_object)),
+      transport_used(in_transport_used) {}
 
 AuthenticatorMakeCredentialResponse::AuthenticatorMakeCredentialResponse(
     AuthenticatorMakeCredentialResponse&& that) = default;
@@ -80,29 +80,14 @@ AuthenticatorMakeCredentialResponse::~AuthenticatorMakeCredentialResponse() =
 
 std::vector<uint8_t>
 AuthenticatorMakeCredentialResponse::GetCBOREncodedAttestationObject() const {
-  return cbor::Writer::Write(AsCBOR(attestation_object_))
+  return cbor::Writer::Write(AsCBOR(attestation_object))
       .value_or(std::vector<uint8_t>());
-}
-
-void AuthenticatorMakeCredentialResponse::EraseAttestationStatement(
-    AttestationObject::AAGUID erase_aaguid) {
-  attestation_object_.EraseAttestationStatement(erase_aaguid);
-}
-
-bool AuthenticatorMakeCredentialResponse::IsSelfAttestation() {
-  return attestation_object_.IsSelfAttestation();
-}
-
-bool AuthenticatorMakeCredentialResponse::
-    IsAttestationCertificateInappropriatelyIdentifying() {
-  return attestation_object_
-      .IsAttestationCertificateInappropriatelyIdentifying();
 }
 
 absl::optional<device::DevicePublicKeyOutput>
 AuthenticatorMakeCredentialResponse::GetDevicePublicKeyResponse() const {
   const absl::optional<cbor::Value>& maybe_extensions =
-      attestation_object_.authenticator_data().extensions();
+      attestation_object.authenticator_data().extensions();
   if (!maybe_extensions) {
     return absl::nullopt;
   }
@@ -121,17 +106,12 @@ AuthenticatorMakeCredentialResponse::GetDevicePublicKeyResponse() const {
 
 const std::array<uint8_t, kRpIdHashLength>&
 AuthenticatorMakeCredentialResponse::GetRpIdHash() const {
-  return attestation_object_.rp_id_hash();
-}
-
-void AuthenticatorMakeCredentialResponse::set_large_blob_key(
-    const base::span<const uint8_t, kLargeBlobKeyLength> large_blob_key) {
-  large_blob_key_ = fido_parsing_utils::Materialize(large_blob_key);
+  return attestation_object.rp_id_hash();
 }
 
 std::vector<uint8_t> AsCTAPStyleCBORBytes(
     const AuthenticatorMakeCredentialResponse& response) {
-  const AttestationObject& object = response.attestation_object();
+  const AttestationObject& object = response.attestation_object;
   cbor::Value::MapValue map;
   map.emplace(1, object.attestation_statement().format_name());
   map.emplace(2, object.authenticator_data().SerializeToByteArray());
@@ -139,8 +119,8 @@ std::vector<uint8_t> AsCTAPStyleCBORBytes(
   if (response.enterprise_attestation_returned) {
     map.emplace(4, true);
   }
-  if (response.large_blob_key()) {
-    map.emplace(5, cbor::Value(*response.large_blob_key()));
+  if (response.large_blob_key) {
+    map.emplace(5, cbor::Value(*response.large_blob_key));
   }
   if (response.device_public_key_signature.has_value()) {
     cbor::Value::MapValue unsigned_extension_outputs;

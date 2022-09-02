@@ -22,6 +22,7 @@
 #include "device/fido/authenticator_supported_options.h"
 #include "device/fido/features.h"
 #include "device/fido/fido_constants.h"
+#include "device/fido/fido_parsing_utils.h"
 #include "device/fido/fido_transport_protocol.h"
 #include "device/fido/opaque_attestation_statement.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -111,7 +112,7 @@ ReadCTAPMakeCredentialResponse(FidoTransportProtocol transport_used,
         it->second.GetBytestring().size() != kLargeBlobKeyLength) {
       return absl::nullopt;
     }
-    response.set_large_blob_key(
+    response.large_blob_key = fido_parsing_utils::Materialize(
         base::make_span<kLargeBlobKeyLength>(it->second.GetBytestring()));
   }
 
