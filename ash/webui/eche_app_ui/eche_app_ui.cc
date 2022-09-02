@@ -81,10 +81,9 @@ EcheAppUI::EcheAppUI(content::WebUI* web_ui,
   const url::Origin untrusted_eche_app_origin =
       url::Origin::Create(GURL(kChromeUIEcheAppGuestURL));
   for (const auto& permission : {
-           ContentSettingsType::COOKIES,
-           ContentSettingsType::JAVASCRIPT,
-           ContentSettingsType::IMAGES,
-           ContentSettingsType::SOUND,
+           ContentSettingsType::COOKIES, ContentSettingsType::JAVASCRIPT,
+           ContentSettingsType::IMAGES, ContentSettingsType::SOUND,
+           ContentSettingsType::AUTOPLAY,  // To start audio w/o interaction
        }) {
     webui_allowlist->RegisterAutoGrantedPermission(untrusted_eche_app_origin,
                                                    permission);
