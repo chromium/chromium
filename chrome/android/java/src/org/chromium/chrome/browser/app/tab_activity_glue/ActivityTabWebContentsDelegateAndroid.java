@@ -190,8 +190,10 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
                 RecordUserAction.record("LinkNavigationOpenedInForegroundTab");
             } else if (disposition == WindowOpenDisposition.NEW_POPUP) {
                 PolicyAuditor auditor = AppHooks.get().getPolicyAuditor();
-                auditor.notifyAuditEvent(ContextUtils.getApplicationContext(),
-                        AuditEvent.OPEN_POPUP_URL_SUCCESS, url.getSpec(), "");
+                if (auditor != null) {
+                    auditor.notifyAuditEvent(ContextUtils.getApplicationContext(),
+                            AuditEvent.OPEN_POPUP_URL_SUCCESS, url.getSpec(), "");
+                }
             }
         }
 

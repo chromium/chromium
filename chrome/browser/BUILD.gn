@@ -2776,6 +2776,8 @@ static_library("browser") {
       "android/partner_browser_customizations.h",
       "android/permissions/permission_settings_bridge.cc",
       "android/policy/policy_auditor.cc",
+      "android/policy/policy_auditor_bridge.cc",
+      "android/policy/policy_auditor_bridge.h",
       "android/preferences/about_settings_bridge.cc",
       "android/preferences/autofill/autofill_payment_methods_delegate.cc",
       "android/preferences/autofill/autofill_payment_methods_delegate.h",

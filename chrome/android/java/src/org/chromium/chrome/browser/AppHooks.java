@@ -203,8 +203,7 @@ public abstract class AppHooks {
      * Only applicable when the user has a policy active, that is tracking the activity.
      */
     public PolicyAuditor getPolicyAuditor() {
-        // This class has a protected constructor to prevent accidental instantiation.
-        return new PolicyAuditor() {};
+        return null;
     }
 
     public void registerPolicyProviders(CombinedPolicyProvider combinedProvider) {
