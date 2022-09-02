@@ -2805,8 +2805,11 @@ void NGBlockLayoutAlgorithm::PropagateBaselineFromBlockChild(
   // Set the last baseline only if required.
   if (ConstraintSpace().BaselineAlgorithmType() !=
       NGBaselineAlgorithmType::kFirstLine) {
-    if (auto last_baseline = fragment.Baseline())
+    // TODO(ikilpatrick): Select baseline depending on type.
+    if (auto last_baseline = fragment.LastBaseline())
       container_builder_.SetLastBaseline(block_offset + *last_baseline);
+    else if (auto first_baseline = fragment.FirstBaseline())
+      container_builder_.SetLastBaseline(block_offset + *first_baseline);
   }
 }
 

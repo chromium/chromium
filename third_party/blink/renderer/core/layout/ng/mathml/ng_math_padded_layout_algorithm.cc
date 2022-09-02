@@ -84,7 +84,7 @@ const NGLayoutResult* NGMathPaddedLayoutAlgorithm::Layout() {
     NGBoxFragment fragment(ConstraintSpace().GetWritingDirection(),
                            content_fragment);
     content_ascent = content_margins.block_start +
-                     fragment.Baseline().value_or(fragment.BlockSize());
+                     fragment.FirstBaseline().value_or(fragment.BlockSize());
     content_descent =
         fragment.BlockSize() + content_margins.BlockSum() - content_ascent;
   }

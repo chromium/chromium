@@ -296,7 +296,8 @@ const NGLayoutResult* NGMathUnderOverLayoutAlgorithm::Layout() {
   NGBoxFragment base_fragment(
       ConstraintSpace().GetWritingDirection(),
       To<NGPhysicalBoxFragment>(base_layout_result->PhysicalFragment()));
-  LayoutUnit base_ascent = base_fragment.BaselineOrSynthesize(baseline_type);
+  LayoutUnit base_ascent =
+      base_fragment.FirstBaselineOrSynthesize(baseline_type);
 
   // All children are positioned centered relative to the container (and
   // therefore centered relative to themselves).
@@ -327,7 +328,7 @@ const NGLayoutResult* NGMathUnderOverLayoutAlgorithm::Layout() {
       }
     } else {
       LayoutUnit over_ascent =
-          over_fragment.BaselineOrSynthesize(baseline_type);
+          over_fragment.FirstBaselineOrSynthesize(baseline_type);
       ascent += std::max(over_fragment.BlockSize() + parameters.over_gap_min,
                          over_ascent + parameters.over_shift_min);
     }
@@ -362,7 +363,7 @@ const NGLayoutResult* NGMathUnderOverLayoutAlgorithm::Layout() {
         descent += parameters.under_gap_min;
     } else {
       LayoutUnit under_ascent =
-          under_fragment.BaselineOrSynthesize(baseline_type);
+          under_fragment.FirstBaselineOrSynthesize(baseline_type);
       descent += std::max(parameters.under_gap_min,
                           parameters.under_shift_min - under_ascent);
     }

@@ -106,8 +106,8 @@ const NGLayoutResult* NGTableSectionLayoutAlgorithm::Layout() {
         To<NGPhysicalBoxFragment>(row_result->PhysicalFragment()));
 
     if (!section_baseline) {
-      DCHECK(fragment.Baseline());
-      section_baseline = fragment.Baseline();
+      DCHECK(fragment.FirstBaseline());
+      section_baseline = fragment.FirstBaseline();
     }
     container_builder_.AddResult(*row_result, offset);
     offset.block_offset += fragment.BlockSize();

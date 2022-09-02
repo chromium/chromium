@@ -91,8 +91,8 @@ const NGLayoutResult* NGMathRadicalLayoutAlgorithm::Layout() {
         ComputeMarginsFor(constraint_space, base.Style(), ConstraintSpace());
     NGBoxFragment fragment(ConstraintSpace().GetWritingDirection(),
                            base_fragment);
-    base_ascent =
-        base_margins.block_start + fragment.BaselineOrSynthesize(baseline_type);
+    base_ascent = base_margins.block_start +
+                  fragment.FirstBaselineOrSynthesize(baseline_type);
     base_descent = fragment.BlockSize() + base_margins.BlockSum() - base_ascent;
   }
   if (index) {
@@ -109,7 +109,7 @@ const NGLayoutResult* NGMathRadicalLayoutAlgorithm::Layout() {
                            index_fragment);
     index_inline_size = fragment.InlineSize() + index_margins.InlineSum();
     index_ascent = index_margins.block_start +
-                   fragment.BaselineOrSynthesize(baseline_type);
+                   fragment.FirstBaselineOrSynthesize(baseline_type);
     index_descent =
         fragment.BlockSize() + index_margins.BlockSum() - index_ascent;
     horizontal = GetRadicalHorizontalParameters(Style());

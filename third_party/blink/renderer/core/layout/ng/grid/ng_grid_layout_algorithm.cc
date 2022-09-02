@@ -864,7 +864,7 @@ const NGLayoutResult* LayoutGridItemForMeasure(
 LayoutUnit NGGridLayoutAlgorithm::GetLogicalBaseline(
     const NGBoxFragment& baseline_fragment,
     BaselineGroup baseline_group) const {
-  return baseline_fragment.BaselineOrSynthesize(Style().GetFontBaseline());
+  return baseline_fragment.FirstBaselineOrSynthesize(Style().GetFontBaseline());
 }
 
 LayoutUnit NGGridLayoutAlgorithm::ContributionSizeForGridItem(
@@ -1376,9 +1376,10 @@ void NGGridLayoutAlgorithm::CalculateAlignmentBaselines(
         baseline_writing_direction,
         To<NGPhysicalBoxFragment>(result->PhysicalFragment()));
 
-    grid_item.SetAlignmentFallback(track_direction, Style(),
-                                   /* has_synthesized_baseline */
-                                   !baseline_fragment.Baseline().has_value());
+    grid_item.SetAlignmentFallback(
+        track_direction, Style(),
+        /* has_synthesized_baseline */
+        !baseline_fragment.FirstBaseline().has_value());
 
     LayoutUnit baseline =
         ComputeMarginsFor(space, item_style, baseline_writing_direction)
@@ -2821,7 +2822,7 @@ class BaselineAccumulator {
     };
 
     const LayoutUnit baseline =
-        block_offset + fragment.BaselineOrSynthesize(font_baseline_);
+        block_offset + fragment.FirstBaselineOrSynthesize(font_baseline_);
     if (grid_item.IsBaselineSpecifiedForDirection(kForRows)) {
       if (!alignment_baseline_ ||
           IsBeforeInGridOrder(grid_item.resolved_position,

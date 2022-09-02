@@ -68,7 +68,7 @@ void NGMathRowLayoutAlgorithm::LayoutRowItems(
           NGBoxFragment fragment(
               ConstraintSpace().GetWritingDirection(),
               To<NGPhysicalBoxFragment>(result->PhysicalFragment()));
-          LayoutUnit ascent = fragment.BaselineOrSynthesize(baseline_type);
+          LayoutUnit ascent = fragment.FirstBaselineOrSynthesize(baseline_type);
           stretch_sizes.ascent = std::max(stretch_sizes.ascent, ascent),
           stretch_sizes.descent =
               std::max(stretch_sizes.descent, fragment.BlockSize() - ascent);
@@ -159,7 +159,7 @@ void NGMathRowLayoutAlgorithm::LayoutRowItems(
     inline_offset += margins.inline_start;
 
     LayoutUnit ascent =
-        margins.block_start + fragment.BaselineOrSynthesize(baseline_type);
+        margins.block_start + fragment.FirstBaselineOrSynthesize(baseline_type);
     *max_row_block_baseline = std::max(*max_row_block_baseline, ascent);
 
     // TODO(crbug.com/1125136): take into account italic correction.

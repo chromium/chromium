@@ -181,13 +181,13 @@ const NGLayoutResult* NGMathFractionLayoutAlgorithm::Layout() {
 
   const LayoutUnit numerator_ascent =
       numerator_margins.block_start +
-      numerator_fragment.BaselineOrSynthesize(baseline_type);
+      numerator_fragment.FirstBaselineOrSynthesize(baseline_type);
   const LayoutUnit numerator_descent = numerator_fragment.BlockSize() +
                                        numerator_margins.BlockSum() -
                                        numerator_ascent;
   const LayoutUnit denominator_ascent =
       denominator_margins.block_start +
-      denominator_fragment.BaselineOrSynthesize(baseline_type);
+      denominator_fragment.FirstBaselineOrSynthesize(baseline_type);
   const LayoutUnit denominator_descent = denominator_fragment.BlockSize() +
                                          denominator_margins.BlockSum() -
                                          denominator_ascent;

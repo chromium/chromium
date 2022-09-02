@@ -143,8 +143,8 @@ void CustomLayoutWorkTask::RunLayoutFragmentTask(
                          To<NGPhysicalBoxFragment>(result->PhysicalFragment()));
 
   resolver_->Resolve(MakeGarbageCollected<CustomLayoutFragment>(
-      child_, token_, std::move(result), fragment.Size(), fragment.Baseline(),
-      resolver_->GetScriptState()->GetIsolate()));
+      child_, token_, std::move(result), fragment.Size(),
+      fragment.FirstBaseline(), resolver_->GetScriptState()->GetIsolate()));
 }
 
 void CustomLayoutWorkTask::RunIntrinsicSizesTask(

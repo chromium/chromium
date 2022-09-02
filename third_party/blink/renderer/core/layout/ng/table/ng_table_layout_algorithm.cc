@@ -1277,7 +1277,7 @@ const NGLayoutResult* NGTableLayoutAlgorithm::GenerateFragment(
         To<NGPhysicalBoxFragment>(child_result->PhysicalFragment());
     NGBoxFragment fragment(table_writing_direction, physical_fragment);
     if (child.IsTableSection() && !table_baseline) {
-      if (const auto& section_baseline = fragment.Baseline())
+      if (const auto& section_baseline = fragment.FirstBaseline())
         table_baseline = *section_baseline + child_block_offset;
     }
 

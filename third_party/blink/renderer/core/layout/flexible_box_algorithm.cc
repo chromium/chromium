@@ -174,7 +174,8 @@ LayoutUnit FlexItem::MarginBoxAscent() const {
          NGBoxFragment(
              algorithm_->StyleRef().GetWritingDirection(),
              To<NGPhysicalBoxFragment>(layout_result_->PhysicalFragment()))
-             .BaselineOrSynthesize(algorithm_->StyleRef().GetFontBaseline());
+             .FirstBaselineOrSynthesize(
+                 algorithm_->StyleRef().GetFontBaseline());
 }
 
 LayoutUnit FlexItem::AvailableAlignmentSpace() const {

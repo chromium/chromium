@@ -15,11 +15,15 @@ FontHeight NGBoxFragment::BaselineMetrics(const NGLineBoxStrut& margins,
                                           FontBaseline baseline_type) const {
   // For checkbox and radio controls, we always use the border edge instead of
   // the margin edge.
-  if (physical_fragment_.Style().IsCheckboxOrRadioPart()) {
+  if (physical_fragment_.Style().IsCheckboxOrRadioPart())
     return FontHeight(margins.line_over + BlockSize(), margins.line_under);
-  }
 
-  if (const absl::optional<LayoutUnit> baseline = Baseline()) {
+  // TODO(ikilpatrick): Select baseline based on type.
+  absl::optional<LayoutUnit> baseline = LastBaseline();
+  if (!baseline)
+    baseline = FirstBaseline();
+
+  if (baseline) {
     FontHeight metrics = writing_direction_.IsFlippedLines()
                              ? FontHeight(BlockSize() - *baseline, *baseline)
                              : FontHeight(*baseline, BlockSize() - *baseline);

@@ -42,29 +42,12 @@ class CORE_EXPORT NGBoxFragment final : public NGFragment {
     return BlockSize() / 2;
   }
 
-  // Returns the baseline for this fragment wrt. the parent writing mode. Will
-  // return a null baseline if:
-  //  - The fragment has no baseline.
-  //  - The writing modes differ.
-  absl::optional<LayoutUnit> Baseline() const {
+  absl::optional<LayoutUnit> LastBaseline() const {
     if (writing_direction_.GetWritingMode() !=
         physical_fragment_.Style().GetWritingMode())
       return absl::nullopt;
 
-    if (auto last_baseline = PhysicalBoxFragment().LastBaseline())
-      return last_baseline;
-
-    return PhysicalBoxFragment().FirstBaseline();
-  }
-
-  LayoutUnit BaselineOrSynthesize(FontBaseline baseline_type) const {
-    if (auto baseline = Baseline())
-      return *baseline;
-
-    if (baseline_type == kAlphabeticBaseline)
-      return writing_direction_.IsFlippedLines() ? LayoutUnit() : BlockSize();
-
-    return BlockSize() / 2;
+    return PhysicalBoxFragment().LastBaseline();
   }
 
   // Compute baseline metrics (ascent/descent) for this box.

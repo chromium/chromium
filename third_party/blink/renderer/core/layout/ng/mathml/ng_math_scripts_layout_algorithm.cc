@@ -279,7 +279,7 @@ NGMathScriptsLayoutAlgorithm::LayoutAndGetMetrics(NGBlockNode child) const {
   child_and_metrics.margins =
       ComputeMarginsFor(constraint_space, child.Style(), ConstraintSpace());
   child_and_metrics.ascent =
-      fragment.BaselineOrSynthesize(Style().GetFontBaseline());
+      fragment.FirstBaselineOrSynthesize(Style().GetFontBaseline());
   child_and_metrics.descent = fragment.BlockSize() - child_and_metrics.ascent +
                               child_and_metrics.margins.block_end;
   child_and_metrics.ascent += child_and_metrics.margins.block_start;
