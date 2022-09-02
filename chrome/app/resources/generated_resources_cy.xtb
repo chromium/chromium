@@ -1019,6 +1019,7 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i apiau yn berthnasol i'
 <translation id="1925017091976104802">Pwyswch <ph name="MODIFIER_KEY_DESCRIPTION" /> i ludo</translation>
 <translation id="1925021887439448749">Rhowch gyfeiriad gwe personol</translation>
 <translation id="1925124445985510535">Cynhaliwyd gwiriad diogelwch am <ph name="TIME" /></translation>
+<translation id="192564025059434655">Ni fydd hen fersiynau o apiau Chrome yn agor ar Windows ar ôl Rhagfyr 2022. Gallwch wirio a oes fersiwn newydd ar gael.</translation>
 <translation id="1926339101652878330">Mae'r gosodiadau hyn yn cael eu rheoli gan bolisi menter. Cysylltwch â'ch gweinyddwr am ragor o wybodaeth.</translation>
 <translation id="1927632033341042996">Bys <ph name="NEW_FINGER_NUMBER" /></translation>
 <translation id="192817607445937251">PIN clo sgrîn</translation>
@@ -2522,6 +2523,7 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="3348131053948466246">Awgrymir Emoji. Pwyswch i fyny neu i lawr i lywio ac Enter i fewnosod.</translation>
 <translation id="3349933790966648062">Ôl-troed Cof</translation>
 <translation id="3353786022389205125">Trowch "Dangos clo sgrîn wrth ailgychwyn ar ôl cysgu" ymlaen a rhowch gynnig arall arni</translation>
+<translation id="3354768182971982851">Ni fydd hen fersiynau o apiau Chrome yn agor ar ddyfeisiau Mac ar ôl Rhagfyr 2022. Gallwch wirio a oes fersiwn newydd ar gael.</translation>
 <translation id="3354972872297836698">Ni fu modd paru i'r ddyfais <ph name="DEVICE_NAME" />; dewiswch ddyfais i roi cynnig arall arni</translation>
 <translation id="3355936511340229503">Gwall wrth gysylltu</translation>
 <translation id="3356469410714175391">(Galluogwyd y cerdyn rhithwir)</translation>
@@ -3127,6 +3129,7 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="3918972485393593704">Adrodd y manylion i Google</translation>
 <translation id="3919145445993746351">I gael eich estyniadau ar eich holl gyfrifiaduron, trowch gysoni ymlaen</translation>
 <translation id="3919229493046408863">Diffodd cael hysbysiad pan fydd dyfeisiau gerllaw</translation>
+<translation id="3919262972282962508">Ni fydd hen fersiynau o Apiau Chrome yn agor ar ddyfeisiau Mac ar ôl Rhagfyr 2022. Cysylltwch â'ch gweinyddwr i ddiweddaru i fersiwn newydd neu dynnu'r ap hwn.</translation>
 <translation id="3919798653937160644">Ni fydd tudalennau rydych yn edrych arnynt yn y ffenestr hon yn ymddangos yn yr hanes pori ac ni fyddant yn gadael olion eraill, megis cwcis, ar y cyfrifiadur ar ôl i chi gau pob ffenestr Gwestai sydd ar agor. Fodd bynnag, bydd unrhyw ffeiliau y byddwch yn eu lawrlwytho yn cael eu cadw.</translation>
 <translation id="3920504717067627103">Polisïau Tystysgrif</translation>
 <translation id="3920909973552939961">Ni chaniateir gosod trinyddion taliadau</translation>
@@ -5623,6 +5626,7 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="6374077068638737855">Iceweasel</translation>
 <translation id="6374469231428023295">Rhoi cynnig arall arni</translation>
 <translation id="6374635887697228982">Cael gostyngiadau?</translation>
+<translation id="637642201764944055">Ni fydd hen fersiynau o Apiau Chrome yn agor ar ddyfeisiau Linux ar ôl Rhagfyr 2022. Cysylltwch â'ch gweinyddwr i ddiweddaru i fersiwn newydd neu dynnu'r ap hwn.</translation>
 <translation id="6377268785556383139">1 canlyniad ar gyfer <ph name="SEARCH_TEXT" /></translation>
 <translation id="6378392501584240055">Agor yn rhwydweithiau Wi-Fi</translation>
 <translation id="6380143666419481200">Derbyn a pharhau</translation>
@@ -6109,6 +6113,7 @@ Mae gennych # cyfrinair arall sydd wedi'u darganfod. Mae Rheolwr Cyfrineiriau Go
 <translation id="6826872289184051766">Dilysu drwy USB</translation>
 <translation id="6827121912381363404">Caniatáu i bob estyniad ddarllen a newid <ph name="PERMITTED_SITE" /></translation>
 <translation id="6827517233063803343">Bydd eich apiau a'ch gosodiadau yn cysoni ar draws pob dyfais ChromeOS lle rydych wedi mewngofnodi gyda'ch cyfrif Google. Ar gyfer dewisiadau cysoni porwr, ewch i <ph name="LINK_BEGIN" />osodiadau Chrome<ph name="LINK_END" />.</translation>
+<translation id="6827767090350758381">Ni fydd hen fersiynau o Apiau Chrome yn agor ar Windows ar ôl Rhagfyr 2022. Cysylltwch â'ch gweinyddwr i ddiweddaru i fersiwn newydd neu dynnu'r ap hwn.</translation>
 <translation id="6828153365543658583">Cyfyngu mewngofnodi i'r defnyddwyr canlynol:</translation>
 <translation id="6828182567531805778">Rhowch eich cyfrinymadrodd i gysoni'ch data</translation>
 <translation id="682871081149631693">QuickFix</translation>
@@ -7961,6 +7966,7 @@ Cadwch eich ffeil allwedd mewn man diogel. Bydd ei hangen arnoch i greu fersiyna
 <translation id="863109444997383731">Bydd gwefannau yn cael eu rhwystro rhag gofyn am ddangos hysbysiadau i chi. Os yw gwefan yn gofyn am hysbysiadau, bydd dangosydd rhwystro yn ymddangos yn y bar cyfeiriad.</translation>
 <translation id="8632104508818855045">Yn Flaenorol, Gwnaethoch Ddewis Peidio â Chaniatáu Unrhyw Estyniadau ar <ph name="ORIGIN" /></translation>
 <translation id="8633025649649592204">Gweithgarwch diweddar</translation>
+<translation id="8633979878370972178">Ni fydd hen fersiynau o apiau Chrome yn agor ar ddyfeisiau Linux ar ôl Rhagfyr 2022. Gallwch wirio a oes fersiwn newydd ar gael.</translation>
 <translation id="8634348081024879304">Ni fyddwch yn gallu defnyddio eich cerdyn rhithwir gyda Google Pay mwyach. <ph name="BEGIN_LINK" />Dysgu rhagor am gardiau rhithwir<ph name="END_LINK" /></translation>
 <translation id="8635628933471165173">Wrthi'n ail-lwytho...</translation>
 <translation id="8636284842992792762">Wrthi'n cychwyn estyniadau...</translation>
