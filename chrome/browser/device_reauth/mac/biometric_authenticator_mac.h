@@ -41,6 +41,9 @@ class BiometricAuthenticatorMac : public ChromeBiometricAuthenticatorCommon {
   // box with that information will appear on the screen and the `message` will
   // be displayed there) using his touchId or if it's not setUp default one with
   // password will appear.
+  // Always use CanAuthenticate() before using this method, and if it fails use
+  // password_manager_util_mac::AuthenticateUser() instead, until
+  // crbug.com/1358442 is fixed.
   void AuthenticateWithMessage(device_reauth::BiometricAuthRequester requester,
                                const std::u16string& message,
                                AuthenticateCallback callback) override;
