@@ -53,6 +53,7 @@
 #include "third_party/blink/renderer/core/paint/find_paint_offset_needing_update.h"
 #include "third_party/blink/renderer/core/paint/find_properties_needing_update.h"
 #include "third_party/blink/renderer/core/paint/object_paint_properties.h"
+#include "third_party/blink/renderer/core/paint/old_cull_rect_updater.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/paint/paint_property_tree_printer.h"
@@ -4239,7 +4240,19 @@ void PaintPropertyTreeBuilder::DirectlyUpdateTransformMatrix(
 
   PaintPropertiesChangeInfo properties_changed;
   properties_changed.transform_changed = effective_change_type;
-  CullRectUpdater::PaintPropertiesChanged(object, properties_changed);
+
+  if (RuntimeEnabledFeatures::ScrollUpdateOptimizationsEnabled()) {
+    CullRectUpdater::PaintPropertiesChanged(object, properties_changed);
+  } else {
+    DCHECK(box.Layer());
+    DCHECK(box.HasSelfPaintingLayer());
+    gfx::Vector2dF old_scroll_offset;
+    if (const auto* scroll_translation = properties->ScrollTranslation()) {
+      old_scroll_offset = scroll_translation->Translation2D();
+    }
+    OldCullRectUpdater::PaintPropertiesChanged(
+        object, *box.Layer(), properties_changed, old_scroll_offset);
+  }
 }
 
 void PaintPropertyTreeBuilder::IssueInvalidationsAfterUpdate() {
@@ -4309,7 +4322,13 @@ void PaintPropertyTreeBuilder::IssueInvalidationsAfterUpdate() {
     }
   }
 
-  CullRectUpdater::PaintPropertiesChanged(object_, properties_changed_);
+  if (RuntimeEnabledFeatures::ScrollUpdateOptimizationsEnabled()) {
+    CullRectUpdater::PaintPropertiesChanged(object_, properties_changed_);
+  } else {
+    OldCullRectUpdater::PaintPropertiesChanged(
+        object_, *context_.painting_layer, properties_changed_,
+        context_.old_scroll_offset);
+  }
 }
 
 bool PaintPropertyTreeBuilder::CanDoDeferredTransformNodeUpdate(

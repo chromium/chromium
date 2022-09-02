@@ -28,7 +28,11 @@ class CullRectUpdaterTest : public PaintControllerPaintTest {
   }
 };
 
-INSTANTIATE_PAINT_TEST_SUITE_P(CullRectUpdaterTest);
+INSTANTIATE_TEST_SUITE_P(All,
+                         CullRectUpdaterTest,
+                         ::testing::Values(kScrollUpdateOptimizations |
+                                               kScrollUnification,
+                                           kScrollUpdateOptimizations));
 
 TEST_P(CullRectUpdaterTest, SimpleCullRect) {
   SetBodyInnerHTML(R"HTML(
@@ -495,16 +499,9 @@ TEST_P(CullRectUpdaterTest, ContentsCullRectCoveringWholeContentsRect) {
 
   scroller->scrollTo(0, 2800);
   UpdateAllLifecyclePhasesForTest();
-  if (RuntimeEnabledFeatures::ScrollUpdateOptimizationsEnabled()) {
-    // Cull rects are not updated with a small scroll delta.
-    EXPECT_EQ(gfx::Rect(0, 0, 600, 6900),
-              GetContentsCullRect("scroller").Rect());
-    EXPECT_EQ(gfx::Rect(-4000, -7000, 8600, 6900), GetCullRect("child").Rect());
-  } else {
-    EXPECT_EQ(gfx::Rect(0, 0, 600, 7020),
-              GetContentsCullRect("scroller").Rect());
-    EXPECT_EQ(gfx::Rect(-4000, -7000, 8600, 7020), GetCullRect("child").Rect());
-  }
+  // Cull rects are not updated with a small scroll delta.
+  EXPECT_EQ(gfx::Rect(0, 0, 600, 6900), GetContentsCullRect("scroller").Rect());
+  EXPECT_EQ(gfx::Rect(-4000, -7000, 8600, 6900), GetCullRect("child").Rect());
 
   scroller->scrollTo(0, 3100);
   UpdateAllLifecyclePhasesForTest();
@@ -673,7 +670,11 @@ class CullRectUpdateOnPaintPropertyChangeTest : public CullRectUpdaterTest {
   )HTML";
 };
 
-INSTANTIATE_PAINT_TEST_SUITE_P(CullRectUpdateOnPaintPropertyChangeTest);
+INSTANTIATE_TEST_SUITE_P(All,
+                         CullRectUpdateOnPaintPropertyChangeTest,
+                         ::testing::Values(kScrollUpdateOptimizations |
+                                               kScrollUnification,
+                                           kScrollUpdateOptimizations));
 
 TEST_P(CullRectUpdateOnPaintPropertyChangeTest, Opacity) {
   TestTargetChange("opacity: 0.2", "opacity: 0.8", false, false, false);
@@ -744,8 +745,7 @@ TEST_P(CullRectUpdateOnPaintPropertyChangeTest, ScrollContentsSizeChange) {
 
 TEST_P(CullRectUpdateOnPaintPropertyChangeTest, SmallContentsScroll) {
   // TODO(wangxianzhu): Optimize for scrollers with small contents.
-  bool needs_cull_rect_update =
-      !RuntimeEnabledFeatures::ScrollUpdateOptimizationsEnabled();
+  bool needs_cull_rect_update = false;
   TestTargetScroll(ScrollOffset(), ScrollOffset(100, 200), false,
                    needs_cull_rect_update, false);
   TestTargetScroll(ScrollOffset(100, 200), ScrollOffset(1000, 1000), false,
@@ -759,8 +759,7 @@ TEST_P(CullRectUpdateOnPaintPropertyChangeTest,
   html_ = html_ + "<style>#child { width: 10000px; height: 10000px; }</style>";
   // Scroll offset changes that are small or won't expose new contents don't
   // need cull rect update when ScrollUpdateOptimizationsEnabled.
-  bool needs_cull_rect_update =
-      !RuntimeEnabledFeatures::ScrollUpdateOptimizationsEnabled();
+  bool needs_cull_rect_update = false;
   TestTargetScroll(ScrollOffset(), ScrollOffset(200, 200), false,
                    needs_cull_rect_update, false);
   TestTargetScroll(ScrollOffset(200, 200), ScrollOffset(), false,

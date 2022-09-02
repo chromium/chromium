@@ -128,7 +128,9 @@ void PaintPropertyTreeBuilderTest::SetUp() {
 
 INSTANTIATE_TEST_SUITE_P(All,
                          PaintPropertyTreeBuilderTest,
-                         ::testing::Values(0, kUnderInvalidationChecking));
+                         ::testing::Values(0,
+                                           kUnderInvalidationChecking,
+                                           kScrollUpdateOptimizations));
 
 TEST_P(PaintPropertyTreeBuilderTest, FixedPosition) {
   LoadTestData("fixed-position.html");

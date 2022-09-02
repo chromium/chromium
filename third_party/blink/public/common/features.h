@@ -894,10 +894,6 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
 BLINK_COMMON_EXPORT extern const base::Feature
     kWebRtcThreadsUseResourceEfficientType;
 
-// If enabled, CullRectUpdater will simulate the old behavior before
-// crrev.com/1033837, for comparison with the new behavior.
-BLINK_COMMON_EXPORT extern const base::Feature kOldCullRectUpdater;
-
 // If enabled, fine-grained UMA metrics for IntersectionObserver will only be
 // collected on 10% of animation frames.
 BLINK_COMMON_EXPORT extern const base::Feature kThrottleIntersectionObserverUMA;
