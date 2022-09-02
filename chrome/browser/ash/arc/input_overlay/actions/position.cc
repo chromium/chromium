@@ -108,6 +108,16 @@ Position::Position(const Position&) = default;
 Position& Position::operator=(const Position&) = default;
 Position::~Position() = default;
 
+// static
+std::unique_ptr<Position> Position::ConvertFromProto(
+    const PositionProto& proto) {
+  DCHECK_EQ(proto.anchor_to_target().size(), 2);
+  auto position = std::make_unique<Position>(PositionType::kDefault);
+  position->set_anchor_to_target(
+      gfx::Vector2dF(proto.anchor_to_target()[0], proto.anchor_to_target()[1]));
+  return position;
+}
+
 bool Position::ParseFromJson(const base::Value& value) {
   switch (position_type_) {
     case PositionType::kDefault:
@@ -233,6 +243,13 @@ void Position::Normalize(const gfx::Point& point,
   x_on_y_.reset();
   y_on_x_.reset();
   aspect_ratio_.reset();
+}
+
+std::unique_ptr<PositionProto> Position::ConvertToProto() {
+  auto proto = std::make_unique<PositionProto>();
+  proto->add_anchor_to_target(anchor_to_target_.x());
+  proto->add_anchor_to_target(anchor_to_target_.y());
+  return proto;
 }
 
 bool Position::operator==(const Position& other) const {

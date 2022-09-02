@@ -40,11 +40,19 @@ message InputElementProto {
   optional MouseAction mouse_action = 3;
 }
 
+message PositionProto {
+  // Anchor to target with x and y values.
+  repeated float anchor_to_target = 1;
+}
+
 message ActionProto {
   // Action ID. Each action has a unique ID within the game/app.
   required uint32 id = 1;
   // Input Element. Customized input binding for this action.
-  required InputElementProto input_element = 2;
+  optional InputElementProto input_element = 2;
+  // Customized Positions for this action. Now it only saves one position. Use
+  // keyword |repeated| for future expansion.
+  repeated PositionProto positions = 3;
 }
 
 message AppDataProto {

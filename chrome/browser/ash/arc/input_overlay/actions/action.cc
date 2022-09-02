@@ -281,6 +281,13 @@ void Action::PrepareToBindPosition(const gfx::Point& new_touch_center) {
                                touch_injector_->content_bounds());
 }
 
+void Action::PrepareToBindPosition(std::unique_ptr<Position> position) {
+  if (pending_position_)
+    pending_position_.reset();
+  // Now it only supports changing the first touch position.
+  pending_position_ = std::move(position);
+}
+
 void Action::RestoreToDefault() {
   DCHECK(action_view_);
   bool restored = false;
@@ -426,13 +433,25 @@ void Action::PostUnbindInputProcess() {
 }
 
 std::unique_ptr<ActionProto> Action::ConvertToProtoIfCustomized() {
-  if (*original_input_ == *current_input_)
+  if (*original_input_ == *current_input_ &&
+      (!beta_ || original_positions_ == current_positions_)) {
     return nullptr;
+  }
 
   auto proto = std::make_unique<ActionProto>();
   proto->set_id(id_);
-  proto->set_allocated_input_element(
-      current_input_->ConvertToProto().release());
+  if (*original_input_ != *current_input_) {
+    proto->set_allocated_input_element(
+        current_input_->ConvertToProto().release());
+  }
+
+  if (beta_ && original_positions_ != current_positions_) {
+    // Now only supports changing and saving the first touch position.
+    auto pos_proto = current_positions_[0].ConvertToProto();
+    *proto->add_positions() = *pos_proto;
+    pos_proto.reset();
+  }
+
   return proto;
 }
 

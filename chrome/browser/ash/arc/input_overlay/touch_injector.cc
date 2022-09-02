@@ -150,6 +150,7 @@ TouchInjector::~TouchInjector() {
 }
 
 void TouchInjector::ParseActions(const base::Value& root) {
+  DCHECK(actions_.empty());
   if (enable_mouse_lock_)
     ParseMouseLock(root);
 
@@ -211,6 +212,12 @@ void TouchInjector::OnInputBindingChange(
   target_action->PrepareToBindInput(std::move(input_element));
 }
 
+void TouchInjector::OnPositionBingingChange(
+    Action* target_action,
+    std::unique_ptr<Position> position) {
+  target_action->PrepareToBindPosition(std::move(position));
+}
+
 void TouchInjector::OnApplyPendingBinding() {
   for (auto& action : actions_)
     action->BindPending();
@@ -245,10 +252,19 @@ void TouchInjector::OnProtoDataAvailable(AppDataProto& proto) {
     DCHECK(action);
     if (!action)
       return;
-    auto input_element =
-        InputElement::ConvertFromProto(action_proto.input_element());
-    DCHECK(input_element);
-    OnInputBindingChange(action, std::move(input_element));
+
+    if (action_proto.has_input_element()) {
+      auto input_element =
+          InputElement::ConvertFromProto(action_proto.input_element());
+      DCHECK(input_element);
+      OnInputBindingChange(action, std::move(input_element));
+    }
+
+    if (beta_ && !action_proto.positions().empty()) {
+      auto position = Position::ConvertFromProto(action_proto.positions()[0]);
+      DCHECK(position);
+      OnPositionBingingChange(action, std::move(position));
+    }
   }
   OnApplyPendingBinding();
 }
@@ -652,14 +668,20 @@ Action* TouchInjector::GetActionById(int id) {
   return nullptr;
 }
 
-void TouchInjector::OnSaveProtoFile() {
+std::unique_ptr<AppDataProto> TouchInjector::ConvertToProto() {
   auto app_data_proto = std::make_unique<AppDataProto>();
   for (auto& action : actions_) {
     auto customized_proto = action->ConvertToProtoIfCustomized();
     if (customized_proto)
       *app_data_proto->add_actions() = *customized_proto;
+    customized_proto.reset();
   }
   AddMenuStateToProto(*app_data_proto);
+  return app_data_proto;
+}
+
+void TouchInjector::OnSaveProtoFile() {
+  auto app_data_proto = ConvertToProto();
   std::string package_name(*GetPackageName());
   save_file_callback_.Run(std::move(app_data_proto), package_name);
 }

@@ -7,6 +7,7 @@
 #include "base/json/json_reader.h"
 #include "base/logging.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/geometry/test/geometry_util.h"
 
 namespace arc {
 namespace input_overlay {
@@ -522,6 +523,22 @@ TEST(PositionTest, TestPositionEquality) {
   EXPECT_EQ(*pos1, *pos2);
   pos3->Normalize(gfx::Point(10, 20), gfx::RectF(100, 150));
   EXPECT_EQ(*pos1, *pos3);
+}
+
+TEST(PositionTest, TestProtoConversion) {
+  auto pos = std::make_unique<Position>(PositionType::kDefault);
+  auto json_value = base::JSONReader::ReadAndReturnValueWithError(kValidJson);
+  EXPECT_TRUE(json_value.has_value());
+  EXPECT_TRUE(json_value->is_dict());
+  pos->ParseFromJson(*json_value);
+  auto proto = pos->ConvertToProto();
+  EXPECT_FALSE(proto->anchor_to_target().empty());
+  EXPECT_EQ(proto->anchor_to_target().size(), 2);
+  EXPECT_FLOAT_EQ(proto->anchor_to_target()[0], 0.5);
+  EXPECT_FLOAT_EQ(proto->anchor_to_target()[1], 0.5);
+  auto deserialized = Position::ConvertFromProto(*proto);
+  EXPECT_VECTOR2DF_EQ(deserialized->anchor_to_target(),
+                      gfx::Vector2dF(0.5, 0.5));
 }
 
 }  // namespace input_overlay
