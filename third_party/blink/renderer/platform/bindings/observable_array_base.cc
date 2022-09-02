@@ -24,12 +24,22 @@ v8::MaybeLocal<v8::Object> ObservableArrayBase::GetProxyHandlerObject(
     ScriptState* script_state) {
   v8::Local<v8::FunctionTemplate> v8_function_template =
       GetProxyHandlerFunctionTemplate(script_state);
+  v8::Local<v8::Context> v8_context = script_state->GetContext();
   v8::Local<v8::Function> v8_function;
-  if (!v8_function_template->GetFunction(script_state->GetContext())
-           .ToLocal(&v8_function)) {
+  if (!v8_function_template->GetFunction(v8_context).ToLocal(&v8_function)) {
     return {};
   }
-  return v8_function->NewInstance(script_state->GetContext());
+  v8::Local<v8::Object> v8_object;
+  if (!v8_function->NewInstance(v8_context).ToLocal(&v8_object)) {
+    return {};
+  }
+  bool did_set_prototype = false;
+  if (!v8_object->SetPrototype(v8_context, v8::Null(script_state->GetIsolate()))
+           .To(&did_set_prototype)) {
+    return {};
+  }
+  CHECK(did_set_prototype);
+  return v8_object;
 }
 
 void ObservableArrayBase::Trace(Visitor* visitor) const {
