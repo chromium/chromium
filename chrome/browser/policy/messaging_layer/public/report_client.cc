@@ -327,24 +327,17 @@ void ReportingClient::DeliverAsyncStartUploader(
              ReportingClient* instance) {
             if (!instance->upload_provider_) {
               // If non-missived uploading is enabled, it will need upload
-              // provider, In case of missived Uploader will be provided by
+              // provider. In case of missived Uploader will be provided by
               // EncryptedReportingServiceProvider so it does not need to be
               // enabled here.
-              if (StorageSelector::is_uploader_required() &&
-                  !StorageSelector::is_use_missive()) {
-                DCHECK(!instance->upload_provider_)
-                    << "Upload provider already recorded";
-                instance->upload_provider_ = instance->GetDefaultUploadProvider(
-                    base::BindRepeating(&StorageModuleInterface::ReportSuccess,
-                                        instance->storage()),
-                    base::BindRepeating(
-                        &StorageModuleInterface::UpdateEncryptionKey,
-                        instance->storage()));
-              } else {
+              if (!StorageSelector::is_uploader_required() ||
+                  StorageSelector::is_use_missive()) {
                 std::move(start_uploader_cb)
                     .Run(Status(error::UNAVAILABLE, "Uploader not available"));
                 return;
               }
+              instance->upload_provider_ =
+                  instance->CreateLocalUploadProvider();
             }
             auto uploader = Uploader::Create(
                 /*need_encryption_key=*/(
@@ -366,12 +359,24 @@ void ReportingClient::DeliverAsyncStartUploader(
           reason, std::move(start_uploader_cb), base::Unretained(this)));
 }
 
+// static
 std::unique_ptr<EncryptedReportingUploadProvider>
-ReportingClient::GetDefaultUploadProvider(
-    UploadClient::ReportSuccessfulUploadCallback report_successful_upload_cb,
-    UploadClient::EncryptionKeyAttachedCallback encryption_key_attached_cb) {
+ReportingClient::CreateLocalUploadProvider() {
+  // Note: load storage() inside the callbacks, because at this moment storage()
+  // may be not yet created and stored in the client.
   return std::make_unique<EncryptedReportingUploadProvider>(
-      report_successful_upload_cb, encryption_key_attached_cb);
+      base::BindPostTask(
+          sequenced_task_runner(),
+          base::BindRepeating(
+              [](SequenceInformation sequence_information, bool force) {
+                GetInstance()->storage()->ReportSuccess(
+                    std::move(sequence_information), force);
+              })),
+      base::BindPostTask(
+          sequenced_task_runner(),
+          base::BindRepeating([](SignedEncryptionInfo signed_encryption_key) {
+            GetInstance()->storage()->UpdateEncryptionKey(
+                std::move(signed_encryption_key));
+          })));
 }
-
 }  // namespace reporting

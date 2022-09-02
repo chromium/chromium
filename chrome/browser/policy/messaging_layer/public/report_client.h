@@ -75,10 +75,8 @@ class ReportingClient : public ReportQueueProvider {
       UploaderInterface::UploadReason reason,
       UploaderInterface::UploaderInterfaceResultCb start_uploader_cb);
 
-  // Returns default upload provider for the client.
-  std::unique_ptr<EncryptedReportingUploadProvider> GetDefaultUploadProvider(
-      UploadClient::ReportSuccessfulUploadCallback report_successful_upload_cb,
-      UploadClient::EncryptionKeyAttachedCallback encryption_key_attached_cb);
+  // Returns upload provider for the client in case of local storage.
+  std::unique_ptr<EncryptedReportingUploadProvider> CreateLocalUploadProvider();
 
   // Configures the report queue config with an appropriate DM token after its
   // retrieval for downstream processing, and triggers the corresponding
