@@ -22,7 +22,6 @@
 #import "ios/chrome/browser/policy/enterprise_policy_test_helper.h"
 #include "ios/chrome/browser/policy_url_blocking/policy_url_blocking_service.h"
 #include "ios/chrome/browser/reading_list/reading_list_model_factory.h"
-#import "ios/chrome/browser/u2f/u2f_tab_helper.h"
 #import "ios/web/common/features.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
@@ -103,7 +102,6 @@ class AppLauncherTabHelperTest : public PlatformTest {
       : browser_state_(TestChromeBrowserState::Builder().Build()),
         abuse_detector_([[FakeAppLauncherAbuseDetector alloc] init]) {
     AppLauncherTabHelper::CreateForWebState(&web_state_, abuse_detector_);
-    U2FTabHelper::CreateForWebState(&web_state_);
     // Allow is the default policy for this test.
     abuse_detector_.policy = ExternalAppLaunchPolicyAllow;
     auto navigation_manager = std::make_unique<FakeNavigationManager>();
@@ -419,51 +417,6 @@ TEST_F(AppLauncherTabHelperTest, MAYBE_TelUrls) {
                                       /*target_frame_is_cross_origin=*/false,
                                       /*has_user_gesture=*/false));
   EXPECT_EQ(1U, delegate_.app_launch_count());
-}
-
-// Tests that URLs with U2F schemes are handled correctly.
-// This test is using https://chromeiostesting-dot-u2fdemo.appspot.com URL which
-// is a URL allowed for the purpose of testing, but the test doesn't send any
-// requests to the server.
-// TODO(crbug.com/1172516): The test fails on device.
-#if TARGET_IPHONE_SIMULATOR
-#define MAYBE_U2FUrls U2FUrls
-#else
-#define MAYBE_U2FUrls DISABLED_U2FUrls
-#endif
-TEST_F(AppLauncherTabHelperTest, MAYBE_U2FUrls) {
-  std::unique_ptr<web::NavigationItem> item = web::NavigationItem::Create();
-
-  // "u2f-x-callback" scheme should only be created by the browser. External
-  // URLs with that scheme should be blocked to prevent malicious sites from
-  // bypassing the browser origin/security check for u2f schemes.
-  item->SetURL(GURL("https://chromeiostesting-dot-u2fdemo.appspot.com"));
-  navigation_manager_->SetLastCommittedItem(item.get());
-  EXPECT_FALSE(TestShouldAllowRequest(@"u2f-x-callback://chromium.test",
-                                      /*target_frame_is_main=*/true,
-                                      /*target_frame_is_cross_origin=*/false,
-                                      /*has_user_gesture=*/false));
-  EXPECT_EQ(0U, delegate_.app_launch_count());
-
-  // Source URL is not trusted, so u2f scheme should not be allowed.
-  item->SetURL(GURL("https://chromium.test"));
-  navigation_manager_->SetLastCommittedItem(item.get());
-  EXPECT_FALSE(TestShouldAllowRequest(@"u2f://chromium.test",
-                                      /*target_frame_is_main=*/true,
-                                      /*target_frame_is_cross_origin=*/false,
-                                      /*has_user_gesture=*/false));
-  EXPECT_EQ(0U, delegate_.app_launch_count());
-
-  // Source URL is trusted, so u2f scheme should be allowed and an external app
-  // is launched via URL with u2f-x-callback scheme.
-  item->SetURL(GURL("https://chromeiostesting-dot-u2fdemo.appspot.com"));
-  navigation_manager_->SetLastCommittedItem(item.get());
-  EXPECT_FALSE(TestShouldAllowRequest(@"u2f://chromium.test",
-                                      /*target_frame_is_main=*/true,
-                                      /*target_frame_is_cross_origin=*/false,
-                                      /*has_user_gesture=*/false));
-  EXPECT_EQ(1U, delegate_.app_launch_count());
-  EXPECT_TRUE(delegate_.last_launched_app_url().SchemeIs("u2f-x-callback"));
 }
 
 // Tests that URLs with Chrome Bundle schemes are blocked on iframes.

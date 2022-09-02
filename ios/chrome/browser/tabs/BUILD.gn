@@ -96,7 +96,6 @@ source_set("tabs_internal") {
     "//ios/chrome/browser/store_kit",
     "//ios/chrome/browser/sync",
     "//ios/chrome/browser/translate",
-    "//ios/chrome/browser/u2f",
     "//ios/chrome/browser/ui:feature_flags",
     "//ios/chrome/browser/ui/download:features",
     "//ios/chrome/browser/voice",

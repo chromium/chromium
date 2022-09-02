@@ -17,7 +17,6 @@
 #import "ios/chrome/browser/policy_url_blocking/policy_url_blocking_service.h"
 #import "ios/chrome/browser/policy_url_blocking/policy_url_blocking_util.h"
 #include "ios/chrome/browser/reading_list/reading_list_model_factory.h"
-#import "ios/chrome/browser/u2f/u2f_tab_helper.h"
 #import "ios/web/common/url_scheme_util.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"
@@ -36,12 +35,6 @@ bool IsValidAppUrl(const GURL& app_url) {
     return false;
 
   if (!app_url.has_scheme())
-    return false;
-
-  // If the url is a direct FIDO U2F x-callback call, consider it as invalid, to
-  // prevent pages from spoofing requests with different origins.
-  // See https://crbug.com/897329#c2 for details on how U2F works.
-  if (app_url.SchemeIs("u2f-x-callback"))
     return false;
 
   // Block attempts to open this application's settings in the native system
@@ -213,23 +206,6 @@ void AppLauncherTabHelper::ShouldAllowRequest(
   if (!IsValidAppUrl(request_url)) {
     return std::move(callback).Run(
         web::WebStatePolicyDecider::PolicyDecision::Cancel());
-  }
-
-  // If this is a Universal 2nd Factor (U2F) call, the origin needs to be
-  // checked to make sure it's secure and then update the `request_url` with
-  // the generated x-callback GURL based on x-callback-url specs.
-  if (request_url.SchemeIs("u2f")) {
-    GURL origin = web_state_->GetNavigationManager()
-                      ->GetLastCommittedItem()
-                      ->GetURL()
-                      .DeprecatedGetOriginAsURL();
-    U2FTabHelper* u2f_helper = U2FTabHelper::FromWebState(web_state_);
-    request_url = u2f_helper->GetXCallbackUrl(request_url, origin);
-    // If the URL was rejected by the U2F handler, `request_url` will be empty.
-    if (!request_url.is_valid()) {
-      return std::move(callback).Run(
-          web::WebStatePolicyDecider::PolicyDecision::Cancel());
-    }
   }
 
   GURL last_committed_url = web_state_->GetLastCommittedURL();

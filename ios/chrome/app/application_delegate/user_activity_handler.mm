@@ -30,7 +30,6 @@
 #include "ios/chrome/browser/metrics/first_user_action_recorder.h"
 #import "ios/chrome/browser/policy/policy_util.h"
 #include "ios/chrome/browser/search_engines/template_url_service_factory.h"
-#import "ios/chrome/browser/u2f/u2f_tab_helper.h"
 #import "ios/chrome/browser/ui/main/browser_interface_provider.h"
 #import "ios/chrome/browser/ui/main/connection_information.h"
 #import "ios/chrome/browser/url_loading/image_search_param_generator.h"
@@ -99,9 +98,6 @@ NSArray* CompatibleModeForActivityType(NSString* activityType) {
 + (BOOL)handleShortcutItem:(UIApplicationShortcutItem*)shortcutItem
      connectionInformation:(id<ConnectionInformation>)connectionInformation
                  initStage:(InitStage)initStage;
-// Routes Universal 2nd Factor (U2F) callback to the correct Tab.
-+ (void)routeU2FURL:(const GURL&)URL
-       browserState:(ChromeBrowserState*)browserState;
 @end
 
 @implementation UserActivityHandler
@@ -498,75 +494,65 @@ NSArray* CompatibleModeForActivityType(NSString* activityType) {
     return;
   }
 
-  // Check if it's an U2F call. If so, route it to correct tab.
-  // If not, open or reuse tab in main BVC.
-  if (U2FTabHelper::IsU2FUrl(externalURL)) {
-    [UserActivityHandler routeU2FURL:externalURL browserState:browserState];
-    // It's OK to clear startup parameters here because routeU2FURL works
-    // synchronously.
-    [connectionInformation setStartupParameters:nil];
+  // TODO(crbug.com/935019): Exacly the same copy of this code is present in
+  // +[URLOpener
+  // openURL:applicationActive:options:tabOpener:startupInformation:]
+
+  // The app is already active so the applicationDidBecomeActive: method
+  // will never be called. Open the requested URL after all modal UIs have
+  // been dismissed. `_startupParameters` must be retained until all deferred
+  // modal UIs are dismissed and tab opened (or Incognito interstitial shown)
+  // with requested URL.
+  ApplicationModeForTabOpening targetMode =
+      [[connectionInformation startupParameters] applicationMode];
+  GURL URL;
+  GURL virtualURL;
+  GURL completeURL = connectionInformation.startupParameters.completeURL;
+  if (completeURL.SchemeIsFile()) {
+    // External URL will be loaded by WebState, which expects `completeURL`.
+    // Omnibox however suppose to display `externalURL`, which is used as
+    // virtual URL.
+    URL = completeURL;
+    virtualURL = externalURL;
   } else {
-    // TODO(crbug.com/935019): Exacly the same copy of this code is present in
-    // +[URLOpener
-    // openURL:applicationActive:options:tabOpener:startupInformation:]
-
-    // The app is already active so the applicationDidBecomeActive: method
-    // will never be called. Open the requested URL after all modal UIs have
-    // been dismissed. `_startupParameters` must be retained until all deferred
-    // modal UIs are dismissed and tab opened (or Incognito interstitial shown)
-    // with requested URL.
-    ApplicationModeForTabOpening targetMode =
-        [[connectionInformation startupParameters] applicationMode];
-    GURL URL;
-    GURL virtualURL;
-    GURL completeURL = connectionInformation.startupParameters.completeURL;
-    if (completeURL.SchemeIsFile()) {
-      // External URL will be loaded by WebState, which expects `completeURL`.
-      // Omnibox however suppose to display `externalURL`, which is used as
-      // virtual URL.
-      URL = completeURL;
-      virtualURL = externalURL;
-    } else {
-      URL = externalURL;
-    }
-    UrlLoadParams params = UrlLoadParams::InNewTab(URL, virtualURL);
-
-    if (connectionInformation.startupParameters.imageSearchData) {
-      TemplateURLService* templateURLService =
-          ios::TemplateURLServiceFactory::GetForBrowserState(browserState);
-
-      NSData* imageData =
-          connectionInformation.startupParameters.imageSearchData;
-      web::NavigationManager::WebLoadParams webLoadParams =
-          ImageSearchParamGenerator::LoadParamsForImageData(imageData, GURL(),
-                                                            templateURLService);
-
-      params.web_params = webLoadParams;
-    } else if (connectionInformation.startupParameters.textQuery) {
-      NSString* query = connectionInformation.startupParameters.textQuery;
-
-      GURL result = [self generateResultGURLFromSearchQuery:query
-                                               browserState:browserState];
-      params.web_params.url = result;
-    }
-
-    if (![[connectionInformation startupParameters] launchInIncognito] &&
-        [tabOpener URLIsOpenedInRegularMode:params.web_params.url]) {
-      // Record metric.
-    }
-
-    [tabOpener
-        dismissModalsAndMaybeOpenSelectedTabInMode:targetMode
-                                 withUrlLoadParams:params
-                                    dismissOmnibox:[[connectionInformation
-                                                       startupParameters]
-                                                       postOpeningAction] !=
-                                                   FOCUS_OMNIBOX
-                                        completion:^{
-                                          [connectionInformation
-                                              setStartupParameters:nil];
-                                        }];
+    URL = externalURL;
   }
+  UrlLoadParams params = UrlLoadParams::InNewTab(URL, virtualURL);
+
+  if (connectionInformation.startupParameters.imageSearchData) {
+    TemplateURLService* templateURLService =
+        ios::TemplateURLServiceFactory::GetForBrowserState(browserState);
+
+    NSData* imageData = connectionInformation.startupParameters.imageSearchData;
+    web::NavigationManager::WebLoadParams webLoadParams =
+        ImageSearchParamGenerator::LoadParamsForImageData(imageData, GURL(),
+                                                          templateURLService);
+
+    params.web_params = webLoadParams;
+  } else if (connectionInformation.startupParameters.textQuery) {
+    NSString* query = connectionInformation.startupParameters.textQuery;
+
+    GURL result = [self generateResultGURLFromSearchQuery:query
+                                             browserState:browserState];
+    params.web_params.url = result;
+  }
+
+  if (![[connectionInformation startupParameters] launchInIncognito] &&
+      [tabOpener URLIsOpenedInRegularMode:params.web_params.url]) {
+    // Record metric.
+  }
+
+  [tabOpener
+      dismissModalsAndMaybeOpenSelectedTabInMode:targetMode
+                               withUrlLoadParams:params
+                                  dismissOmnibox:[[connectionInformation
+                                                     startupParameters]
+                                                     postOpeningAction] !=
+                                                 FOCUS_OMNIBOX
+                                      completion:^{
+                                        [connectionInformation
+                                            setStartupParameters:nil];
+                                      }];
 }
 
 + (BOOL)canProceedWithUserActivity:(NSUserActivity*)userActivity
@@ -627,37 +613,6 @@ NSArray* CompatibleModeForActivityType(NSString* activityType) {
 
   NOTREACHED();
   return NO;
-}
-
-+ (void)routeU2FURL:(const GURL&)URL
-       browserState:(ChromeBrowserState*)browserState {
-  DCHECK(browserState);
-  // Retrieve the designated TabID from U2F URL.
-  NSString* tabID = U2FTabHelper::GetTabIdFromU2FUrl(URL);
-  if (!tabID) {
-    return;
-  }
-
-  // Iterate through regular Browser and OTR Browser to find the corresponding
-  // tab.
-  BrowserList* browserList =
-      BrowserListFactory::GetForBrowserState(browserState);
-  std::set<Browser*> regularBrowsers = browserList->AllRegularBrowsers();
-  std::set<Browser*> otrBrowsers = browserList->AllIncognitoBrowsers();
-  std::set<Browser*> browsers(regularBrowsers);
-  browsers.insert(otrBrowsers.begin(), otrBrowsers.end());
-
-  for (Browser* browser : browsers) {
-    WebStateList* webStateList = browser->GetWebStateList();
-    for (int index = 0; index < webStateList->count(); ++index) {
-      web::WebState* webState = webStateList->GetWebStateAt(index);
-      NSString* currentTabID = webState->GetStableIdentifier();
-      if ([currentTabID isEqualToString:tabID]) {
-        U2FTabHelper::FromWebState(webState)->EvaluateU2FResult(URL);
-        return;
-      }
-    }
-  }
 }
 
 @end

@@ -74,7 +74,6 @@
 #import "ios/chrome/browser/store_kit/store_kit_tab_helper.h"
 #import "ios/chrome/browser/sync/ios_chrome_synced_tab_delegate.h"
 #import "ios/chrome/browser/translate/chrome_ios_translate_client.h"
-#import "ios/chrome/browser/u2f/u2f_tab_helper.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/voice/voice_search_navigations_tab_helper.h"
 #import "ios/chrome/browser/web/annotations/annotations_tab_helper.h"
@@ -119,7 +118,6 @@ void AttachTabHelpers(web::WebState* web_state, bool for_prerender) {
   InfoBarManagerImpl::CreateForWebState(web_state);
   BlockedPopupTabHelper::CreateForWebState(web_state);
   FindTabHelper::CreateForWebState(web_state);
-  U2FTabHelper::CreateForWebState(web_state);
   StoreKitTabHelper::CreateForWebState(web_state);
   ITunesUrlsHandlerTabHelper::CreateForWebState(web_state);
   HistoryTabHelper::CreateForWebState(web_state);

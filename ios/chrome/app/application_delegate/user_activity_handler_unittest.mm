@@ -31,7 +31,6 @@
 #import "ios/chrome/browser/main/browser_list.h"
 #import "ios/chrome/browser/main/browser_list_factory.h"
 #import "ios/chrome/browser/main/test_browser.h"
-#import "ios/chrome/browser/u2f/u2f_tab_helper.h"
 #import "ios/chrome/browser/ui/main/connection_information.h"
 #import "ios/chrome/browser/ui/main/test/fake_connection_information.h"
 #import "ios/chrome/browser/ui/main/test/stub_browser_interface_provider.h"
@@ -59,26 +58,6 @@
 @interface NSUserActivity (IntentsTesting)
 @property(readwrite, nullable, NS_NONATOMIC_IOSONLY) INInteraction* interaction;
 @end
-
-// Substitutes U2FTabHelper for testing.
-class FakeU2FTabHelper : public U2FTabHelper {
- public:
-  static void CreateForWebState(web::WebState* web_state) {
-    web_state->SetUserData(U2FTabHelper::UserDataKey(),
-                           base::WrapUnique(new FakeU2FTabHelper(web_state)));
-  }
-
-  FakeU2FTabHelper(const FakeU2FTabHelper&) = delete;
-  FakeU2FTabHelper& operator=(const FakeU2FTabHelper&) = delete;
-
-  void EvaluateU2FResult(const GURL& url) override { url_ = url; }
-
-  const GURL& url() const { return url_; }
-
- private:
-  FakeU2FTabHelper(web::WebState* web_state) : U2FTabHelper(web_state) {}
-  GURL url_;
-};
 
 #pragma mark - Test class.
 
@@ -119,11 +98,6 @@ class UserActivityHandlerTest : public base::test::WithFeatureOverride,
 
   void resetHandleStartupParametersHasBeenCalled() {
     handle_startup_parameters_has_been_called_ = NO;
-  }
-
-  FakeU2FTabHelper* GetU2FTabHelperForWebState(web::WebState* web_state) {
-    return static_cast<FakeU2FTabHelper*>(
-        U2FTabHelper::FromWebState(web_state));
   }
 
   NSString* GetTabIdForWebState(web::WebState* web_state) {
@@ -776,116 +750,6 @@ TEST_P(UserActivityHandlerTest, HandleStartupParamsWithExternalFile) {
   EXPECT_EQ(externalURL, tabOpener.urlLoadParams.web_params.virtual_url);
   EXPECT_EQ(ApplicationModeForTabOpening::INCOGNITO,
             [tabOpener applicationMode]);
-}
-
-// Tests that handleStartupParameters with a non-U2F url opens a new tab.
-TEST_P(UserActivityHandlerTest, HandleStartupParamsNonU2F) {
-  // Setup.
-  GURL gurl("http://www.google.com");
-
-  AppStartupParameters* startupParams =
-      [[AppStartupParameters alloc] initWithExternalURL:gurl completeURL:gurl];
-  [startupParams setLaunchInIncognito:YES];
-
-  id startupInformationMock =
-      [OCMockObject mockForProtocol:@protocol(StartupInformation)];
-
-  id connectionInformationMock =
-      [OCMockObject mockForProtocol:@protocol(ConnectionInformation)];
-  [[[connectionInformationMock stub] andReturn:startupParams]
-      startupParameters];
-  [[[connectionInformationMock expect] andReturnValue:@NO]
-      startupParametersAreBeingHandled];
-  [[connectionInformationMock expect] setStartupParametersAreBeingHandled:YES];
-  [[connectionInformationMock expect] setStartupParameters:nil];
-
-  MockTabOpener* tabOpener = [[MockTabOpener alloc] init];
-
-  // The test will fail is a method of this object is called.
-  //  id interfaceProviderMock =
-  //      [OCMockObject mockForProtocol:@protocol(BrowserInterfaceProvider)];
-
-  // Action.
-  [UserActivityHandler
-      handleStartupParametersWithTabOpener:tabOpener
-                     connectionInformation:connectionInformationMock
-                        startupInformation:startupInformationMock
-                              browserState:GetInterfaceProvider()
-                                               .currentInterface.browserState
-                                 initStage:InitStageFinal];
-  [tabOpener completionBlock]();
-
-  // Tests.
-  EXPECT_OCMOCK_VERIFY(startupInformationMock);
-  EXPECT_EQ(gurl, tabOpener.urlLoadParams.web_params.url);
-  EXPECT_TRUE(tabOpener.urlLoadParams.web_params.virtual_url.is_empty());
-  EXPECT_EQ(ApplicationModeForTabOpening::INCOGNITO,
-            [tabOpener applicationMode]);
-}
-
-// Tests that handleStartupParameters with a U2F url opens in the correct tab.
-TEST_P(UserActivityHandlerTest, HandleStartupParamsU2F) {
-  // Setup.
-  base::test::TaskEnvironment task_enviroment_;
-
-  std::unique_ptr<ChromeBrowserState> browser_state =
-      TestChromeBrowserState::Builder().Build();
-
-  auto web_state = std::make_unique<web::FakeWebState>();
-  FakeU2FTabHelper::CreateForWebState(web_state.get());
-  web::WebState* web_state_ptr = web_state.get();
-
-  std::unique_ptr<Browser> browser =
-      std::make_unique<TestBrowser>(browser_state.get());
-  browser->GetWebStateList()->InsertWebState(
-      0, std::move(web_state), WebStateList::INSERT_NO_FLAGS, WebStateOpener());
-
-  BrowserList* browser_list =
-      BrowserListFactory::GetForBrowserState(browser_state.get());
-  browser_list->AddBrowser(browser.get());
-
-  std::string urlRepresentation = base::StringPrintf(
-      "chromium://u2f-callback?isU2F=1&tabID=%s",
-      base::SysNSStringToUTF8(GetTabIdForWebState(web_state_ptr)).c_str());
-
-  GURL gurl(urlRepresentation);
-  AppStartupParameters* startupParams =
-      [[AppStartupParameters alloc] initWithExternalURL:gurl completeURL:gurl];
-  [startupParams setLaunchInIncognito:YES];
-
-  id startupInformationMock =
-      [OCMockObject mockForProtocol:@protocol(StartupInformation)];
-  id connectionInformationMock =
-      [OCMockObject mockForProtocol:@protocol(ConnectionInformation)];
-  [[[connectionInformationMock stub] andReturn:startupParams]
-      startupParameters];
-  [[[connectionInformationMock expect] andReturnValue:@NO]
-      startupParametersAreBeingHandled];
-  [[connectionInformationMock expect] setStartupParametersAreBeingHandled:YES];
-  [[connectionInformationMock expect] setStartupParameters:nil];
-
-  StubBrowserInterfaceProvider* interfaceProvider =
-      [[StubBrowserInterfaceProvider alloc] init];
-  interfaceProvider.mainInterface.browserState = browser_state.get();
-  interfaceProvider.incognitoInterface.browserState =
-      browser_state->GetOffTheRecordChromeBrowserState();
-
-  MockTabOpener* tabOpener = [[MockTabOpener alloc] init];
-
-  // Action.
-  [UserActivityHandler
-      handleStartupParametersWithTabOpener:tabOpener
-                     connectionInformation:connectionInformationMock
-                        startupInformation:startupInformationMock
-                              browserState:interfaceProvider.currentInterface
-                                               .browserState
-                                 initStage:InitStageFinal];
-
-  // Tests.
-  EXPECT_OCMOCK_VERIFY(startupInformationMock);
-  EXPECT_EQ(gurl, GetU2FTabHelperForWebState(web_state_ptr)->url());
-  EXPECT_TRUE(tabOpener.urlLoadParams.web_params.url.is_empty());
-  EXPECT_TRUE(tabOpener.urlLoadParams.web_params.virtual_url.is_empty());
 }
 
 // Tests that performActionForShortcutItem set startupParameters accordingly to
