@@ -232,7 +232,14 @@ class BluetoothAdapterMacTest : public testing::Test {
 
 // Test if private IOBluetooth APIs are callable on all supported macOS
 // versions.
-TEST_F(BluetoothAdapterMacTest, IOBluetoothPrivateAPIs) {
+// TODO(crbug.com/1344137): This test is flaky on all Mac builders and timing
+// out frequently on Mac11.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_IOBluetoothPrivateAPIs DISABLED_IOBluetoothPrivateAPIs
+#else
+#define MAYBE_IOBluetoothPrivateAPIs IOBluetoothPrivateAPIs
+#endif
+TEST_F(BluetoothAdapterMacTest, MAYBE_IOBluetoothPrivateAPIs) {
   // Obtain current power state, toggle it, and reset it to it's original value.
   int previous_state = IOBluetoothPreferenceGetControllerPowerState();
   IOBluetoothPreferenceSetControllerPowerState(!previous_state);
