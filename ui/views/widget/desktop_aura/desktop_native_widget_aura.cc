@@ -331,13 +331,6 @@ DesktopNativeWidgetAura* DesktopNativeWidgetAura::ForWindow(
   return window->GetProperty(kDesktopNativeWidgetAuraKey);
 }
 
-void DesktopNativeWidgetAura::SetDesktopWindowTreeHost(
-    std::unique_ptr<DesktopWindowTreeHost> desktop_window_tree_host) {
-  DCHECK(!desktop_window_tree_host_);
-  desktop_window_tree_host_ = desktop_window_tree_host.get();
-  host_.reset(desktop_window_tree_host.release()->AsWindowTreeHost());
-}
-
 void DesktopNativeWidgetAura::OnHostClosed() {
   // Don't invoke Widget::OnNativeWidgetDestroying(), its done by
   // DesktopWindowTreeHost.

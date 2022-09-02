@@ -75,11 +75,6 @@ class VIEWS_EXPORT DesktopNativeWidgetAura
   // window.
   static DesktopNativeWidgetAura* ForWindow(aura::Window* window);
 
-  // Used to explicitly set a DesktopWindowTreeHost. Must be called before
-  // InitNativeWidget().
-  void SetDesktopWindowTreeHost(
-      std::unique_ptr<DesktopWindowTreeHost> desktop_window_tree_host);
-
   // Called by our DesktopWindowTreeHost after it has deleted native resources;
   // this is the signal that we should start our shutdown.
   virtual void OnHostClosed();
