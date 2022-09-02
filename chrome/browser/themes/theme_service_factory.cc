@@ -100,9 +100,8 @@ void ThemeServiceFactory::RegisterProfilePrefs(
 #if BUILDFLAG(IS_LINUX)
   default_system_theme = ui::GetDefaultSystemTheme();
 #endif
-  registry->RegisterBooleanPref(
-      prefs::kUsesSystemTheme,
-      default_system_theme != ui::SystemTheme::kDefault);
+  registry->RegisterIntegerPref(prefs::kSystemTheme,
+                                static_cast<int>(default_system_theme));
 #endif
   registry->RegisterFilePathPref(prefs::kCurrentThemePackFilename,
                                  base::FilePath());

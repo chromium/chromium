@@ -1251,7 +1251,8 @@ const char kUseAshProxy[] = "lacros.proxy.use_ash_proxy";
 // of lacros-chrome is complete.
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 // Linux specific preference on whether we should match the system theme.
-const char kUsesSystemTheme[] = "extensions.theme.use_system";
+const char kUsesSystemThemeDeprecated[] = "extensions.theme.use_system";
+const char kSystemTheme[] = "extensions.theme.system_theme";
 #endif
 const char kCurrentThemePackFilename[] = "extensions.theme.pack";
 const char kCurrentThemeID[] = "extensions.theme.id";

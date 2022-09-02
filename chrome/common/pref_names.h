@@ -394,7 +394,9 @@ extern const char kUseAshProxy[];
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
-extern const char kUsesSystemTheme[];
+// TODO(https://crbug.com/1317782): Remove in M110.
+extern const char kUsesSystemThemeDeprecated[];
+extern const char kSystemTheme[];
 #endif
 extern const char kCurrentThemePackFilename[];
 extern const char kCurrentThemeID[];

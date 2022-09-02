@@ -473,6 +473,10 @@
 #include "chrome/browser/sessions/session_service_log.h"
 #endif
 
+#if BUILDFLAG(IS_LINUX)
+#include "ui/color/system_theme.h"
+#endif
+
 namespace {
 
 // Please keep the list of deprecated prefs in chronological order. i.e. Add to
@@ -992,6 +996,11 @@ void RegisterProfilePrefsForMigration(
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
   // Deprecated 08/2022.
   registry->RegisterIntegerPref(kProfileAvatarTutorialShown, 0);
+#endif
+
+#if BUILDFLAG(IS_LINUX)
+  // Deprecated 08/2022.
+  registry->RegisterBooleanPref(prefs::kUsesSystemThemeDeprecated, false);
 #endif
 }
 
@@ -1946,6 +1955,19 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
   // Added 08/2022.
   profile_prefs->ClearPref(kProfileAvatarTutorialShown);
+#endif
+
+#if BUILDFLAG(IS_LINUX)
+  // Added 08/2022.
+  if (profile_prefs->HasPrefPath(prefs::kUsesSystemThemeDeprecated)) {
+    auto migrated_theme =
+        profile_prefs->GetBoolean(prefs::kUsesSystemThemeDeprecated)
+            ? ui::SystemTheme::kGtk
+            : ui::SystemTheme::kDefault;
+    profile_prefs->SetInteger(prefs::kSystemTheme,
+                              static_cast<int>(migrated_theme));
+  }
+  profile_prefs->ClearPref(prefs::kUsesSystemThemeDeprecated);
 #endif
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.

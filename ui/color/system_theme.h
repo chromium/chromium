@@ -9,6 +9,7 @@
 
 namespace ui {
 
+// Don't change the order or value of these entries as they are stored in prefs.
 enum class SystemTheme {
   // Classic theme, used in the default or users' chosen theme.
   kDefault = 0,

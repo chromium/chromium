@@ -19,6 +19,19 @@
 
 namespace {
 
+ui::SystemTheme ValidateSystemTheme(ui::SystemTheme system_theme) {
+  switch (system_theme) {
+    case ui::SystemTheme::kDefault:
+#if BUILDFLAG(IS_LINUX)
+    case ui::SystemTheme::kGtk:
+    case ui::SystemTheme::kQt:
+#endif
+      return system_theme;
+    default:
+      return ui::SystemTheme::kDefault;
+  }
+}
+
 class SystemThemeLinux : public CustomThemeSupplier {
  public:
   SystemThemeLinux(PrefService* pref_service, ui::SystemTheme system_theme);
@@ -50,13 +63,15 @@ SystemThemeLinux::SystemThemeLinux(PrefService* pref_service,
       system_theme_(system_theme) {}
 
 void SystemThemeLinux::StartUsingTheme() {
-  pref_service_->SetBoolean(prefs::kUsesSystemTheme, true);
+  pref_service_->SetInteger(prefs::kSystemTheme,
+                            static_cast<int>(system_theme_));
   // Have the former theme notify its observers of change.
   ui::NativeTheme::GetInstanceForNativeUi()->NotifyOnNativeThemeUpdated();
 }
 
 void SystemThemeLinux::StopUsingTheme() {
-  pref_service_->SetBoolean(prefs::kUsesSystemTheme, false);
+  pref_service_->SetInteger(prefs::kSystemTheme,
+                            static_cast<int>(ui::SystemTheme::kDefault));
   // Have the former theme notify its observers of change.
   if (auto* linux_ui = ui::GetLinuxUi(system_theme_))
     linux_ui->GetNativeTheme()->NotifyOnNativeThemeUpdated();
@@ -142,21 +157,18 @@ void ThemeServiceAuraLinux::FixInconsistentPreferencesIfNeeded() {
   // When using the system theme, the theme ID should match the default. Give
   // precedence to the non-default theme specified.
   if (GetThemeID() != ThemeHelper::kDefaultThemeID &&
-      prefs->GetBoolean(prefs::kUsesSystemTheme)) {
-    prefs->SetBoolean(prefs::kUsesSystemTheme, false);
+      prefs->GetInteger(prefs::kSystemTheme) !=
+          static_cast<int>(ui::SystemTheme::kDefault)) {
+    prefs->SetInteger(prefs::kSystemTheme,
+                      static_cast<int>(ui::SystemTheme::kDefault));
   }
 }
 
 // static
 ui::SystemTheme ThemeServiceAuraLinux::GetSystemThemeForProfile(
     const Profile* profile) {
-#if BUILDFLAG(IS_LINUX)
-  // TODO(https://crbug.com/1317782): Add QT theme preference.
-  bool use_system_theme =
-      !profile || (!profile->IsChild() &&
-                   profile->GetPrefs()->GetBoolean(prefs::kUsesSystemTheme));
-  if (use_system_theme)
-    return ui::SystemTheme::kGtk;
-#endif
-  return ui::SystemTheme::kDefault;
+  if (!profile || profile->IsChild())
+    return ui::SystemTheme::kDefault;
+  return ValidateSystemTheme(static_cast<ui::SystemTheme>(
+      profile->GetPrefs()->GetInteger(prefs::kSystemTheme)));
 }
