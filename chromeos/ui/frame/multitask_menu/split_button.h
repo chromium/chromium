@@ -73,7 +73,8 @@ class SplitButtonView : public views::BoxLayoutView {
 
   SplitButton* primary_button_;
   SplitButton* secondary_button_;
-  SplitButton::SplitButtonType type_;
+  const SplitButton::SplitButtonType type_;
+
   SkColor border_color_ = kMultitaskButtonDefaultColor;
   SkColor fill_color_ = SK_ColorTRANSPARENT;
 };

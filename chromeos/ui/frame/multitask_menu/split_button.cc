@@ -128,7 +128,16 @@ void SplitButtonView::OnButtonHovered() {
 }
 
 void SplitButtonView::OnPaint(gfx::Canvas* canvas) {
-  gfx::Rect bounds = GetContentsBounds();
+  gfx::RectF bounds(GetLocalBounds());
+
+  cc::PaintFlags fill_flags;
+  fill_flags.setStyle(cc::PaintFlags::kFill_Style);
+  fill_flags.setColor(fill_color_);
+  canvas->DrawRoundRect(bounds, kMultitaskBaseButtonBorderRadius, fill_flags);
+
+  // Inset by half the stroke width, otherwise half of the stroke will be out of
+  // bounds.
+  bounds.Inset(kButtonBorderSize / 2.f);
 
   cc::PaintFlags border_flags;
   border_flags.setAntiAlias(true);
@@ -136,11 +145,6 @@ void SplitButtonView::OnPaint(gfx::Canvas* canvas) {
   border_flags.setColor(border_color_);
   border_flags.setStrokeWidth(kButtonBorderSize);
   canvas->DrawRoundRect(bounds, kMultitaskBaseButtonBorderRadius, border_flags);
-
-  cc::PaintFlags fill_flags;
-  fill_flags.setStyle(cc::PaintFlags::kFill_Style);
-  fill_flags.setColor(fill_color_);
-  canvas->DrawRoundRect(bounds, kMultitaskBaseButtonBorderRadius, fill_flags);
 }
 
 void SplitButtonView::OnThemeChanged() {

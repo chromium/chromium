@@ -49,7 +49,6 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) MultitaskMenu
   // Hides the currently-showing MultitaskMenu.
   void HideBubble();
 
-  views::Widget* bubble_widget_for_testing() { return bubble_widget_.get(); }
   MultitaskMenuView* multitask_menu_view_for_testing() {
     return multitask_menu_view_.get();
   }

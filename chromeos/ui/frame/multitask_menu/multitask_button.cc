@@ -42,9 +42,11 @@ MultitaskBaseButton::MultitaskBaseButton(PressedCallback callback,
 }
 
 void MultitaskBaseButton::PaintButtonContents(gfx::Canvas* canvas) {
-  cc::PaintFlags border_flags;
-  SkColor fill_color;
+  cc::PaintFlags fill_flags;
+  fill_flags.setAntiAlias(true);
+  fill_flags.setStyle(cc::PaintFlags::kFill_Style);
 
+  cc::PaintFlags border_flags;
   border_flags.setAntiAlias(true);
   border_flags.setStyle(cc::PaintFlags::kStroke_Style);
 
@@ -52,31 +54,31 @@ void MultitaskBaseButton::PaintButtonContents(gfx::Canvas* canvas) {
   pattern_flags.setAntiAlias(true);
   pattern_flags.setStyle(cc::PaintFlags::kFill_Style);
 
-  cc::PaintFlags fill_flags;
-  fill_flags.setStyle(cc::PaintFlags::kFill_Style);
-
   if (GetState() == Button::STATE_HOVERED) {
+    fill_flags.setColor(kMultitaskButtonViewHoverColor);
     border_flags.setColor(kMultitaskButtonPrimaryHoverColor);
     pattern_flags.setColor(gfx::kGoogleBlue600);
-    fill_color = kMultitaskButtonViewHoverColor;
   } else if (GetState() == Button::STATE_DISABLED) {
+    fill_flags.setColor(kMultitaskButtonViewHoverColor);
     border_flags.setColor(kMultitaskButtonDisabledColor);
     pattern_flags.setColor(kMultitaskButtonDisabledColor);
-    fill_color = kMultitaskButtonViewHoverColor;
   } else {
+    fill_flags.setColor(SK_ColorTRANSPARENT);
     border_flags.setColor(kMultitaskButtonDefaultColor);
     pattern_flags.setColor(kMultitaskButtonDefaultColor);
-    fill_color = SK_ColorTRANSPARENT;
   }
 
-  // Draw a border on the background circle.
+  canvas->DrawRoundRect(gfx::RectF(GetLocalBounds()),
+                        kMultitaskBaseButtonBorderRadius, fill_flags);
+
+  // Draw a border on the background circle. Inset by half the stroke width,
+  // otherwise half of the stroke will be out of bounds.
+  gfx::RectF border_bounds(GetLocalBounds());
+  border_bounds.Inset(kButtonBorderSize / 2.f);
   border_flags.setStrokeWidth(kButtonBorderSize);
-  canvas->DrawRoundRect(GetLocalBounds(), kMultitaskBaseButtonBorderRadius,
+  canvas->DrawRoundRect(border_bounds, kMultitaskBaseButtonBorderRadius,
                         border_flags);
 
-  fill_flags.setColor(fill_color);
-  canvas->DrawRoundRect(GetLocalBounds(), kMultitaskBaseButtonBorderRadius,
-                        fill_flags);
   gfx::Rect bounds;
   if (is_portrait_mode_) {
     bounds = type_ == Type::kFloat ? kFloatPatternPortraitBounds
@@ -86,7 +88,7 @@ void MultitaskBaseButton::PaintButtonContents(gfx::Canvas* canvas) {
                                    : kFullPatternLandscapeBounds;
   }
 
-  canvas->DrawRoundRect(bounds, kButtonCornerRadius, pattern_flags);
+  canvas->DrawRoundRect(gfx::RectF(bounds), kButtonCornerRadius, pattern_flags);
 }
 
 void MultitaskBaseButton::OnThemeChanged() {
