@@ -89,6 +89,27 @@ def _package_dmg(paths, config):
     return dmg_path
 
 
+def _package_zip(paths, config):
+    """Packages an Updater application bundle into a ZIP.
+
+    Args:
+        paths: A |model.Paths| object.
+        config: The |config.CodeSignConfig| object.
+
+    Returns:
+        A path to the produced ZIP file.
+    """
+    zip_path = os.path.join(paths.output,
+                            '{}.zip'.format(config.packaging_basename))
+    prep_dir = os.path.join(paths.work, 'zip_prep')
+    commands.make_dir(prep_dir)
+    commands.copy_files(os.path.join(paths.work, config.app_dir), prep_dir)
+    commands.copy_files('{}/chrome/updater/.install'.format(paths.input),
+                        prep_dir)
+    commands.zip(zip_path, prep_dir)
+    return zip_path
+
+
 def sign_all(orig_paths,
              config,
              disable_packaging=False,
@@ -142,10 +163,10 @@ def sign_all(orig_paths,
         # Package.
         commands.move_file(os.path.join(notary_paths.work, "UpdaterSetup"),
                            orig_paths.output)
-        dmg_path = _package_and_sign_dmg(
-            orig_paths.replace_work(
-                os.path.join(notary_paths.work, config.packaging_basename)),
-            config)
+        package_paths = orig_paths.replace_work(
+            os.path.join(notary_paths.work, config.packaging_basename))
+        _package_zip(package_paths, config)
+        dmg_path = _package_and_sign_dmg(package_paths, config)
 
         # Notarize the package, then staple.
         if notarization.should_wait():

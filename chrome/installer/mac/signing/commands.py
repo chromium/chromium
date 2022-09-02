@@ -70,6 +70,12 @@ def read_file(path):
         return f.read()
 
 
+def zip(out, path):
+    shutil.move(
+        shutil.make_archive('{}.zip.tmp'.format(os.path.basename(out)), 'zip',
+                            path), out)
+
+
 def set_executable(path):
     """Makes the file at the specified path executable.
 

@@ -162,6 +162,15 @@ class TestCommands(unittest.TestCase):
         data2_read = commands.read_file(path)
         self.assertEqual(data2, data2_read)
 
+    def test_zip(self):
+        content_path = os.path.join(self.tempdir, 'zipfile', 'file.txt')
+        output_path = os.path.join(self.tempdir, 'out.zip')
+        os.mkdir(os.path.dirname(content_path))
+        commands.write_file(content_path, 'moon')
+        self.assertFalse(commands.file_exists(output_path))
+        commands.zip(output_path, os.path.dirname(content_path))
+        self.assertTrue(commands.file_exists(output_path))
+
     def test_run_command(self):
         path = os.path.join(self.tempdir, 'touch.txt')
         self.assertFalse(commands.file_exists(path))
