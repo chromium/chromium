@@ -274,7 +274,7 @@ xsltAddUseAttrSetList(xsltUseAttrSetPtr list, const xmlChar *ncname,
  * Returns the newly allocated xsltAttrSetPtr or NULL in case of error.
  */
 static xsltAttrSetPtr
-xsltNewAttrSet() {
+xsltNewAttrSet(void) {
     xsltAttrSetPtr cur;
 
     cur = (xsltAttrSetPtr) xmlMalloc(sizeof(xsltAttrSet));

@@ -94,7 +94,7 @@ exsltCryptoHex2Bin (const unsigned char *hex, int hexlen,
 	else if (tmp >= 'a' && tmp <= 'f')
 	    lo = 10 + (tmp - 'a');
 
-	result = (unsigned char) (hi << 4);
+	result = hi << 4;
 	result += lo;
 	bin[j++] = result;
     }

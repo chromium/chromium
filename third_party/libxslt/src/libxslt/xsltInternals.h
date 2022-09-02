@@ -1786,6 +1786,8 @@ struct _xsltTransformContext {
     int maxTemplateVars;
     unsigned long opLimit;
     unsigned long opCount;
+    int sourceDocDirty;
+    unsigned long currentId; /* For generate-id() */
 };
 
 /**
@@ -1915,7 +1917,7 @@ XSLTPUBFUN int XSLTCALL
 			xsltFlagRVTs(
 						 xsltTransformContextPtr ctxt,
 						 xmlXPathObjectPtr obj,
-						 void *val);
+						 int val);
 XSLTPUBFUN void XSLTCALL
 			xsltFreeRVTs		(xsltTransformContextPtr ctxt);
 XSLTPUBFUN void XSLTCALL

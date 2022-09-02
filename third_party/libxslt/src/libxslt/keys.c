@@ -834,24 +834,7 @@ fprintf(stderr, "xsltInitCtxtKey %s : %d\n", keyDef->name, ctxt->keyInitLevel);
 		*/
 		xmlXPathNodeSetAdd(keylist, cur);
 	    }
-	    switch (cur->type) {
-		case XML_ELEMENT_NODE:
-		case XML_TEXT_NODE:
-		case XML_CDATA_SECTION_NODE:
-		case XML_PI_NODE:
-		case XML_COMMENT_NODE:
-		    cur->psvi = keyDef;
-		    break;
-		case XML_ATTRIBUTE_NODE:
-		    ((xmlAttrPtr) cur)->psvi = keyDef;
-		    break;
-		case XML_DOCUMENT_NODE:
-		case XML_HTML_DOCUMENT_NODE:
-		    ((xmlDocPtr) cur)->psvi = keyDef;
-		    break;
-		default:
-		    break;
-	    }
+            xsltSetSourceNodeFlags(ctxt, cur, XSLT_SOURCE_NODE_HAS_KEY);
 	    xmlFree(str);
 	    str = NULL;
 

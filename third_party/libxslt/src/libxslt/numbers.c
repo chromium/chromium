@@ -183,7 +183,7 @@ xsltNumberFormatDecimal(xmlBufferPtr buffer,
 	        i = -1;
 		break;
 	    }
-	    *(--pointer) = (xmlChar)val;
+	    *(--pointer) = val;
 	}
 	else {
 	/*

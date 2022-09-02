@@ -2283,7 +2283,6 @@ xsltGetTemplate(xsltTransformContextPtr ctxt, xmlNodePtr node,
     const xmlChar *name = NULL;
     xsltCompMatchPtr list = NULL;
     float priority;
-    int keyed = 0;
 
     if ((ctxt == NULL) || (node == NULL))
 	return(NULL);
@@ -2361,37 +2360,25 @@ xsltGetTemplate(xsltTransformContextPtr ctxt, xmlNodePtr node,
 		    list = curstyle->rootMatch;
 		else
 		    list = curstyle->elemMatch;
-		if (node->psvi != NULL) keyed = 1;
 		break;
 	    case XML_ATTRIBUTE_NODE: {
-	        xmlAttrPtr attr;
-
 		list = curstyle->attrMatch;
-		attr = (xmlAttrPtr) node;
-		if (attr->psvi != NULL) keyed = 1;
 		break;
 	    }
 	    case XML_PI_NODE:
 		list = curstyle->piMatch;
-		if (node->psvi != NULL) keyed = 1;
 		break;
 	    case XML_DOCUMENT_NODE:
 	    case XML_HTML_DOCUMENT_NODE: {
-	        xmlDocPtr doc;
-
 		list = curstyle->rootMatch;
-		doc = (xmlDocPtr) node;
-		if (doc->psvi != NULL) keyed = 1;
 		break;
 	    }
 	    case XML_TEXT_NODE:
 	    case XML_CDATA_SECTION_NODE:
 		list = curstyle->textMatch;
-		if (node->psvi != NULL) keyed = 1;
 		break;
 	    case XML_COMMENT_NODE:
 		list = curstyle->commentMatch;
-		if (node->psvi != NULL) keyed = 1;
 		break;
 	    case XML_ENTITY_REF_NODE:
 	    case XML_ENTITY_NODE:
@@ -2461,7 +2448,7 @@ xsltGetTemplate(xsltTransformContextPtr ctxt, xmlNodePtr node,
 	}
 
 keyed_match:
-	if (keyed) {
+        if (xsltGetSourceNodeFlags(node) & XSLT_SOURCE_NODE_HAS_KEY) {
 	    list = curstyle->keyMatch;
 	    while ((list != NULL) &&
                    ((ret == NULL) ||
@@ -2489,27 +2476,7 @@ keyed_match:
 	    if (xsltComputeAllKeys(ctxt, node) == -1)
 		goto error;
 
-	    switch (node->type) {
-		case XML_ELEMENT_NODE:
-		    if (node->psvi != NULL) keyed = 1;
-		    break;
-		case XML_ATTRIBUTE_NODE:
-		    if (((xmlAttrPtr) node)->psvi != NULL) keyed = 1;
-		    break;
-		case XML_TEXT_NODE:
-		case XML_CDATA_SECTION_NODE:
-		case XML_COMMENT_NODE:
-		case XML_PI_NODE:
-		    if (node->psvi != NULL) keyed = 1;
-		    break;
-		case XML_DOCUMENT_NODE:
-		case XML_HTML_DOCUMENT_NODE:
-		    if (((xmlDocPtr) node)->psvi != NULL) keyed = 1;
-		    break;
-		default:
-		    break;
-	    }
-	    if (keyed)
+            if (xsltGetSourceNodeFlags(node) & XSLT_SOURCE_NODE_HAS_KEY)
 		goto keyed_match;
 	}
 	if (ret != NULL)
