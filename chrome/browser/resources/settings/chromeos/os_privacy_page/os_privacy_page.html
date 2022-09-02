@@ -73,14 +73,16 @@
       <div class="hr"></div>
     </template>
 </if>
-    <settings-toggle-button
-        id="suggested-content"
-        pref="{{prefs.settings.suggested_content_enabled}}"
-        label="$i18n{enableSuggestedContent}"
-        sub-label="$i18n{enableSuggestedContentDesc}"
-        learn-more-url="$i18n{suggestedContentLearnMoreURL}">
-    </settings-toggle-button>
-    <div class="hr"></div>
+    <template is="dom-if" if="[[!showPrivacyHub_]]" restamp>
+      <settings-toggle-button
+          id="suggested-content"
+          pref="{{prefs.settings.suggested_content_enabled}}"
+          label="$i18n{enableSuggestedContent}"
+          sub-label="$i18n{enableSuggestedContentDesc}"
+          learn-more-url="$i18n{suggestedContentLearnMoreURL}">
+      </settings-toggle-button>
+      <div class="hr"></div>
+    </template>
     <settings-toggle-button
         id="enableVerifiedAccess"
         pref="{{

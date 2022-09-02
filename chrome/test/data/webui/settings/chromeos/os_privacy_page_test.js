@@ -146,7 +146,25 @@ suite('PrivacyPageTests', function() {
     return (el !== null) && (el.style.display !== 'none');
   }
 
+  test(
+      'Suggested content, hidden when privacy hub feature flag is enabled',
+      async () => {
+        loadTimeData.overrideValues({
+          showPrivacyHub: true,
+        });
+
+        privacyPage = document.createElement('os-settings-privacy-page');
+        document.body.appendChild(privacyPage);
+        flush();
+
+        assertFalse(elementExists('#suggested-content'));
+      });
+
   test('Suggested content, pref disabled', async () => {
+    loadTimeData.overrideValues({
+      showPrivacyHub: false,
+    });
+
     privacyPage = document.createElement('os-settings-privacy-page');
     document.body.appendChild(privacyPage);
     flush();
@@ -158,6 +176,10 @@ suite('PrivacyPageTests', function() {
   });
 
   test('Suggested content, pref enabled', async () => {
+    loadTimeData.overrideValues({
+      showPrivacyHub: false,
+    });
+
     // Update the backing pref to enabled.
     privacyPage.prefs = {
       'settings': {

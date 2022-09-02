@@ -6,6 +6,7 @@ import '../../chai.js';
 
 import {PrivacyHubBrowserProxyImpl} from 'chrome://os-settings/chromeos/lazy_load.js';
 import {Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
+import {assert} from 'chrome://resources/js/assert.m.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
@@ -224,5 +225,34 @@ suite('PrivacyHubSubpageTests', function() {
         /^\s*All microphones disabled by devices hardware switch\s*$/,
         'The sublabel should contain the hint about the microphone hardware ' +
             'switch being active.');
+  });
+
+  test('Suggested content, pref disabled', async () => {
+    privacyHubSubpage = document.createElement('settings-privacy-hub-page');
+    document.body.appendChild(privacyHubSubpage);
+    flush();
+
+    // The default state of the pref is disabled.
+    const suggestedContent = assert(
+        privacyHubSubpage.shadowRoot.querySelector('#suggested-content'));
+    assertFalse(suggestedContent.checked);
+  });
+
+  test('Suggested content, pref enabled', async () => {
+    // Update the backing pref to enabled.
+    privacyHubSubpage.prefs = {
+      'settings': {
+        'suggested_content_enabled': {
+          value: true,
+        },
+      },
+    };
+
+    flush();
+
+    // The checkbox reflects the updated pref state.
+    const suggestedContent = assert(
+        privacyHubSubpage.shadowRoot.querySelector('#suggested-content'));
+    assertTrue(suggestedContent.checked);
   });
 });
