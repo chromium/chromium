@@ -624,6 +624,7 @@ crbug.com/1294071 [ android-pie android-shield-android-tv ] conformance/glsl/bug
 # Flakily returning RGBA(0,0,0,0) for all pixels
 crbug.com/1295386 [ android android-shield-android-tv ] conformance/textures/video/tex-2d-luminance_alpha-luminance_alpha-unsigned_byte.html [ Failure ]
 crbug.com/1295386 [ android android-shield-android-tv ] conformance/textures/video/tex-2d-rgba-rgba-unsigned_short_5_5_5_1.html [ Failure ]
+crbug.com/1357064 [ android android-shield-android-tv no-passthrough ] conformance/rendering/blending.html [ Failure ]
 
 # Pixel 4
 crbug.com/1175223 [ android android-pixel-4 angle-opengles passthrough ] conformance/extensions/angle-instanced-arrays-out-of-bounds.html [ Failure ]
@@ -655,7 +656,7 @@ crbug.com/1288590 [ android android-pixel-6 ] conformance/misc/shader-precision-
 # This can be re-added once the general Android suppression due to DrDc (crbug.com/1289303) is removed.
 # crbug.com/1288595 [ android android-pixel-6 passthrough ] conformance/canvas/render-after-resize-test.html [ Failure ]
 crbug.com/1288603 [ android android-pixel-6 passthrough angle-opengles ] conformance/extensions/angle-instanced-arrays-out-of-bounds.html [ Failure ]
-
+crbug.com/1357064 [ android android-pixel-6 no-passthrough ] conformance/rendering/blending.html [ Failure ]
 
 # Misc failures
 crbug.com/angleproject/2988 [ android angle-opengles ] conformance/context/context-size-change.html [ Failure ]
@@ -717,6 +718,8 @@ crbug.com/1185344 [ linux display-server-wayland intel angle-disabled ] WebglExt
 
 # Failures on validating command decoder only; won't fix.
 crbug.com/angleproject/5038 [ linux intel display-server-wayland no-passthrough ] conformance/extensions/ext-color-buffer-half-float.html [ Failure ]
+
+crbug.com/1357064 [ linux intel display-server-wayland no-passthrough ] conformance/rendering/blending.html [ Failure ]
 
 # Flaky tests on Android Nexus 5
 crbug.com/1341423 [ android android-nexus-5 no-passthrough ] conformance/rendering/draw-webgl-to-canvas-2d-repeatedly.html [ RetryOnFailure ]
