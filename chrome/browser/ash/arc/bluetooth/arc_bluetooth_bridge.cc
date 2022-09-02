@@ -260,7 +260,7 @@ template <class RemoteGattAttribute>
 arc::mojom::BluetoothGattDBElementPtr CreateGattDBElement(
     const arc::mojom::BluetoothGattDBAttributeType type,
     const RemoteGattAttribute* attribute) {
-  absl::optional<int16_t> id =
+  absl::optional<uint16_t> id =
       ConvertGattIdentifierToId(attribute->GetIdentifier());
   if (!id)
     return nullptr;
@@ -269,8 +269,10 @@ arc::mojom::BluetoothGattDBElementPtr CreateGattDBElement(
       arc::mojom::BluetoothGattDBElement::New();
   element->type = type;
   element->uuid = attribute->GetUUID();
-  element->id = element->attribute_handle = element->start_handle =
+  element->element_id = element->attribute_handle = element->start_handle =
       element->end_handle = *id;
+  // TODO(b/191129417) remove once ARC++ handles new field
+  element->deprecated_id = *id;
   element->properties = 0;
   return element;
 }
@@ -820,13 +822,13 @@ void ArcBluetoothBridge::GattCharacteristicValueChanged(
   if (!btle_instance)
     return;
 
-  const absl::optional<int16_t> char_inst_id =
+  const absl::optional<uint16_t> char_inst_id =
       ConvertGattIdentifierToId(characteristic->GetIdentifier());
   if (!char_inst_id)
     return;
 
   BluetoothRemoteGattService* service = characteristic->GetService();
-  const absl::optional<int16_t> service_inst_id =
+  const absl::optional<uint16_t> service_inst_id =
       ConvertGattIdentifierToId(service->GetIdentifier());
   if (!service_inst_id)
     return;
@@ -838,11 +840,15 @@ void ArcBluetoothBridge::GattCharacteristicValueChanged(
       mojom::BluetoothGattServiceID::New();
   service_id->is_primary = service->IsPrimary();
   service_id->id = mojom::BluetoothGattID::New();
-  service_id->id->inst_id = *service_inst_id;
+  service_id->id->instance_id = *service_inst_id;
+  // TODO(b/191129417) remove once ARC++ handles new field
+  service_id->id->deprecated_inst_id = *service_inst_id;
   service_id->id->uuid = service->GetUUID();
 
   mojom::BluetoothGattIDPtr char_id = mojom::BluetoothGattID::New();
-  char_id->inst_id = *char_inst_id;
+  char_id->instance_id = *char_inst_id;
+  // TODO(b/191129417) remove once ARC++ handles new field
+  char_id->deprecated_inst_id = *char_inst_id;
   char_id->uuid = characteristic->GetUUID();
 
   btle_instance->OnGattNotify(std::move(address), std::move(service_id),
@@ -1599,12 +1605,12 @@ void ArcBluetoothBridge::GetGattDB(mojom::BluetoothAddressPtr remote_addr) {
     const auto& characteristics = service->GetCharacteristics();
     if (characteristics.size() > 0) {
       const auto& descriptors = characteristics.back()->GetDescriptors();
-      const absl::optional<int16_t> start_handle =
+      const absl::optional<uint16_t> start_handle =
           ConvertGattIdentifierToId(characteristics.front()->GetIdentifier());
       if (!start_handle)
         continue;
 
-      const absl::optional<int16_t> end_handle = ConvertGattIdentifierToId(
+      const absl::optional<uint16_t> end_handle = ConvertGattIdentifierToId(
           descriptors.size() > 0 ? descriptors.back()->GetIdentifier()
                                  : characteristics.back()->GetIdentifier());
       if (!end_handle)

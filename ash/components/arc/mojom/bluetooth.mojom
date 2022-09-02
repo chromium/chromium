@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Next MinVersion: 19
+// Next MinVersion: 20
 
 module arc.mojom;
 
@@ -153,7 +153,9 @@ enum BluetoothGattStatus {
 // https://source.android.com/devices/halref/structbtgatt__gatt__id__t.html
 struct BluetoothGattID {
   BluetoothUUID uuid;
-  uint8 inst_id;
+  uint8 deprecated_inst_id;
+  // Diverges from above spec since ARC++ uses 16-bit handles in this field.
+  [MinVersion=19] uint16 instance_id;
 };
 
 // Copy from Android API
@@ -228,7 +230,7 @@ enum BluetoothGattDBAttributeType {
 };
 
 struct BluetoothGattDBElement {
-  uint8 id;
+  uint8 deprecated_id;
   BluetoothUUID uuid;
   BluetoothGattDBAttributeType type;
   uint16 attribute_handle;
@@ -246,6 +248,9 @@ struct BluetoothGattDBElement {
    * the characteristic.
    */
   uint8 properties;
+
+  // Attribute IDs are stored in this field; it must be 16-bits wide.
+  [MinVersion=19] uint16 element_id;
 };
 
 // Bluetooth SDP types
