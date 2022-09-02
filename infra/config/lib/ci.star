@@ -287,6 +287,7 @@ ci = struct(
     # CONSTANTS
     DEFAULT_EXECUTABLE = "recipe:chromium",
     DEFAULT_EXECUTION_TIMEOUT = 3 * time.hour,
+    DEFAULT_FYI_PRIORITY = 35,
     DEFAULT_POOL = "luci.chromium.ci",
     DEFAULT_SERVICE_ACCOUNT = "chromium-ci-builder@chops-service-accounts.iam.gserviceaccount.com",
 

@@ -17,6 +17,7 @@ ci.defaults.set(
     execution_timeout = 10 * time.hour,
     goma_backend = goma.backend.RBE_PROD,
     pool = ci.DEFAULT_POOL,
+    priority = ci.DEFAULT_FYI_PRIORITY,
     service_account = ci.DEFAULT_SERVICE_ACCOUNT,
 )
 
