@@ -169,19 +169,12 @@ static const CGFloat kDisabledOpacity = (CGFloat)0.40;
 
 #pragma mark - public methods
 
-- (void)animateHighlight {
-  [self addAnimationHighlightToAnimator];
-  [self.cellAnimator startAnimation];
-}
-
 - (void)setInitialDirection:(DisclosureDirection)direction {
   [self rotateToDirection:direction animate:NO];
 }
 
-- (void)animateHighlightAndRotateToDirection:(DisclosureDirection)direction {
-  [self addAnimationHighlightToAnimator];
+- (void)rotateToDirection:(DisclosureDirection)direction {
   [self rotateToDirection:direction animate:YES];
-  [self.cellAnimator startAnimation];
 }
 
 #pragma mark - properties
@@ -201,20 +194,6 @@ static const CGFloat kDisabledOpacity = (CGFloat)0.40;
 }
 
 #pragma mark - internal methods
-
-- (void)addAnimationHighlightToAnimator {
-  UIColor* originalBackgroundColor = self.cellDefaultBackgroundColor;
-  self.cellAnimator = [[UIViewPropertyAnimator alloc]
-      initWithDuration:kTableViewCellSelectionAnimationDuration
-                 curve:UIViewAnimationCurveLinear
-            animations:^{
-              self.contentView.backgroundColor = self.highlightColor;
-            }];
-  __weak TableViewDisclosureHeaderFooterView* weakSelf = self;
-  [self.cellAnimator addCompletion:^(UIViewAnimatingPosition finalPosition) {
-    weakSelf.contentView.backgroundColor = originalBackgroundColor;
-  }];
-}
 
 // When view is being initialized, it has not been added to the hierarchy yet.
 // So, in order to set the initial direction, a non-animation transform is
@@ -243,10 +222,14 @@ static const CGFloat kDisabledOpacity = (CGFloat)0.40;
 
     if (animate) {
       __weak TableViewDisclosureHeaderFooterView* weakSelf = self;
-      [self.cellAnimator addAnimations:^{
-        weakSelf.disclosureImageView.transform =
-            CGAffineTransformRotate(CGAffineTransformIdentity, angle);
-      }];
+      self.cellAnimator = [[UIViewPropertyAnimator alloc]
+          initWithDuration:kTableViewCellSelectionAnimationDuration
+                     curve:UIViewAnimationCurveLinear
+                animations:^{
+                  weakSelf.disclosureImageView.transform =
+                      CGAffineTransformRotate(CGAffineTransformIdentity, angle);
+                }];
+      [self.cellAnimator startAnimation];
     } else {
       self.disclosureImageView.transform =
           CGAffineTransformRotate(CGAffineTransformIdentity, angle);

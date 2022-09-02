@@ -2078,9 +2078,6 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_RECENT_TABS_HIDE_MENU_OPTION" desc="Context menu option to remove a foreign session. [Length: 15em] [iOS only]">
         Hide for now
       </message>
-      <message name="IDS_IOS_RECENT_TABS_OPEN_ALL_MENU_OPTION" desc="Context menu option to open all tabs from a foreign session. [Length: 15em] [iOS only]">
-        Open all
-      </message>
       <message name="IDS_IOS_RECENT_TABS_OTHER_DEVICES" desc="The name of the section informing the user on how to view tabs from other devices.[Length: 25em]">
         Other Devices
       </message>

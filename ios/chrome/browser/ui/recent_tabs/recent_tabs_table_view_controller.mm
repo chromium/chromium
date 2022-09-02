@@ -37,7 +37,6 @@
 #include "ios/chrome/browser/sync/sync_service_factory.h"
 #import "ios/chrome/browser/tabs_search/tabs_search_service.h"
 #import "ios/chrome/browser/tabs_search/tabs_search_service_factory.h"
-#import "ios/chrome/browser/ui/alert_coordinator/action_sheet_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_configurator.h"
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_consumer.h"
 #import "ios/chrome/browser/ui/authentication/cells/table_view_signin_promo_item.h"
@@ -168,8 +167,6 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
 @property(nonatomic, assign) sessions::TabRestoreService* tabRestoreService;
 // The sync state.
 @property(nonatomic, assign) SessionsSyncUserState sessionState;
-// Handles displaying the context menu for all form factors.
-@property(nonatomic, strong) ActionSheetCoordinator* contextMenuCoordinator;
 @property(nonatomic, strong) SigninPromoViewMediator* signinPromoViewMediator;
 // The browser state used for many operations, derived from the one provided by
 // `self.browser`.
@@ -1057,7 +1054,6 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
 }
 
 - (void)dismissModals {
-  [self.contextMenuCoordinator stop];
   [self.signinPromoViewMediator disconnect];
   self.signinPromoViewMediator = nil;
   ios::provider::DismissModalsForTableView(self.tableView);
@@ -1612,7 +1608,7 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
       DisclosureDirection direction =
           collapsed ? DisclosureDirectionTrailing : DisclosureDirectionDown;
 
-      [disclosureHeaderView animateHighlightAndRotateToDirection:direction];
+      [disclosureHeaderView rotateToDirection:direction];
       disclosureItem.collapsed = collapsed;
     }
   }
@@ -1650,84 +1646,6 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
   };
 
   [self.tableView performBatchUpdates:tableUpdates completion:nil];
-}
-
-#pragma mark - Long press and context menus
-
-- (void)handleLongPress:(UILongPressGestureRecognizer*)sender {
-  if (sender.state != UIGestureRecognizerStateBegan)
-    return;
-
-  // Do not handle the long press and present the context menu if the recent
-  // tabs UI is not visible.
-  if (!self.viewLoaded || !self.view.window || self.presentedViewController)
-    return;
-
-  UIView* headerTapped = sender.view;
-  NSInteger tappedHeaderSectionIdentifier = headerTapped.tag;
-  NSInteger sectionIdentifier = tappedHeaderSectionIdentifier;
-  // Only handle LongPress for SessionHeaders.
-  if (![self isSessionSectionIdentifier:sectionIdentifier])
-    return;
-
-  // Highlight the section header being long pressed.
-  NSInteger section = [self.tableViewModel
-      sectionForSectionIdentifier:tappedHeaderSectionIdentifier];
-  ListItem* headerItem = [self.tableViewModel headerForSectionIndex:section];
-  UITableViewHeaderFooterView* headerView =
-      [self.tableView headerViewForSection:section];
-  if (headerItem.type == ItemTypeRecentlyClosedHeader ||
-      headerItem.type == ItemTypeSessionHeader) {
-    TableViewDisclosureHeaderFooterView* textHeaderView =
-        base::mac::ObjCCastStrict<TableViewDisclosureHeaderFooterView>(
-            headerView);
-    [textHeaderView animateHighlight];
-  }
-
-  // Get view coordinates in local space.
-  CGPoint viewCoordinate = [sender locationInView:self.tableView];
-  // Present sheet/popover using controller that is added to view hierarchy.
-  self.contextMenuCoordinator = [[ActionSheetCoordinator alloc]
-      initWithBaseViewController:self
-                         browser:self.browser
-                           title:nil
-                         message:nil
-                            rect:CGRectMake(viewCoordinate.x, viewCoordinate.y,
-                                            1.0, 1.0)
-                            view:self.tableView];
-
-  // Fill the sheet/popover with buttons.
-  __weak RecentTabsTableViewController* weakSelf = self;
-
-  // "Open all tabs" button.
-  NSString* openAllButtonLabel =
-      l10n_util::GetNSString(IDS_IOS_RECENT_TABS_OPEN_ALL_MENU_OPTION);
-  [self.contextMenuCoordinator
-      addItemWithTitle:openAllButtonLabel
-                action:^{
-                  [weakSelf
-                      openTabsFromSessionSectionIdentifier:sectionIdentifier];
-                }
-                 style:UIAlertActionStyleDefault];
-
-  // "Hide for now" button.
-  NSString* hideButtonLabel =
-      l10n_util::GetNSString(IDS_IOS_RECENT_TABS_HIDE_MENU_OPTION);
-  [self.contextMenuCoordinator
-      addItemWithTitle:hideButtonLabel
-                action:^{
-                  [weakSelf removeSessionAtTableSectionWithIdentifier:
-                                sectionIdentifier];
-                }
-                 style:UIAlertActionStyleDefault];
-
-  [self.contextMenuCoordinator start];
-}
-
-- (void)openTabsFromSessionSectionIdentifier:(NSInteger)sectionIdentifier {
-  synced_sessions::DistantSession const* session =
-      [self sessionForTableSectionWithIdentifier:sectionIdentifier];
-  [self.presentationDelegate openAllTabsFromSession:session];
 }
 
 #pragma mark - SigninPromoViewConsumer

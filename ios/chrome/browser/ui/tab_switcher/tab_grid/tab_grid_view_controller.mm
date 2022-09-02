@@ -1255,7 +1255,6 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   // The styler must be set before the view controller is loaded.
   ChromeTableViewStyler* styler = [[ChromeTableViewStyler alloc] init];
   styler.tableViewBackgroundColor = [UIColor colorNamed:kGridBackgroundColor];
-  styler.cellHighlightColor = [UIColor colorNamed:kTableViewRowHighlightColor];
   self.remoteTabsViewController.overrideUserInterfaceStyle =
       UIUserInterfaceStyleDark;
   self.remoteTabsViewController.styler = styler;

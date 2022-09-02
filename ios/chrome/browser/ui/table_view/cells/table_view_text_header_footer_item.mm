@@ -36,22 +36,13 @@
   header.subtitleLabel.text = self.subtitleText;
   header.accessibilityLabel = self.text;
   header.isAccessibilityElement = YES;
-  if (styler.cellHighlightColor)
-    header.highlightColor = styler.cellHighlightColor;
 }
 
 @end
 
 #pragma mark - TableViewTextHeaderFooter
 
-@interface TableViewTextHeaderFooterView ()
-// Animator that handles all cell animations.
-@property(strong, nonatomic) UIViewPropertyAnimator* cellAnimator;
-@end
-
 @implementation TableViewTextHeaderFooterView
-@synthesize cellAnimator = _cellAnimator;
-@synthesize highlightColor = _highlightColor;
 @synthesize subtitleLabel = _subtitleLabel;
 @synthesize textLabel = _textLabel;
 
@@ -128,27 +119,6 @@
     ]];
   }
   return self;
-}
-
-- (void)animateHighlight {
-  UIColor* originalBackgroundColor = self.contentView.backgroundColor;
-  self.cellAnimator = [[UIViewPropertyAnimator alloc]
-      initWithDuration:kTableViewCellSelectionAnimationDuration
-                 curve:UIViewAnimationCurveLinear
-            animations:^{
-              self.contentView.backgroundColor = self.highlightColor;
-            }];
-  __weak TableViewTextHeaderFooterView* weakSelf = self;
-  [self.cellAnimator addCompletion:^(UIViewAnimatingPosition finalPosition) {
-    weakSelf.contentView.backgroundColor = originalBackgroundColor;
-  }];
-  [self.cellAnimator startAnimation];
-}
-
-- (void)prepareForReuse {
-  [super prepareForReuse];
-  if (self.cellAnimator.isRunning)
-    [self.cellAnimator stopAnimation:YES];
 }
 
 @end
