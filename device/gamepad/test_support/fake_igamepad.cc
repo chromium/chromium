@@ -40,7 +40,7 @@ HRESULT WINAPI FakeIGamepad::put_Vibration(
 HRESULT WINAPI FakeIGamepad::GetCurrentReading(
     ABI::Windows::Gaming::Input::GamepadReading* gamepad_reading) {
   if (FakeWinrtWgiEnvironment::GetError() ==
-      ErrorCode::kErrorWgiGamepadGetCurrentReadingFailed) {
+      WgiTestErrorCode::kErrorWgiGamepadGetCurrentReadingFailed) {
     return E_FAIL;
   }
   gamepad_reading->Buttons = fake_gamepad_reading_.Buttons;
@@ -57,7 +57,7 @@ HRESULT WINAPI FakeIGamepad::GetButtonLabel(
     ABI::Windows::Gaming::Input::GamepadButtons button,
     ABI::Windows::Gaming::Input::GameControllerButtonLabel* value) {
   if (FakeWinrtWgiEnvironment::GetError() ==
-      ErrorCode::kErrorWgiGamepadGetButtonLabelFailed) {
+      WgiTestErrorCode::kErrorWgiGamepadGetButtonLabelFailed) {
     return E_FAIL;
   }
   // We only need to simulate this functionality for paddle buttons.

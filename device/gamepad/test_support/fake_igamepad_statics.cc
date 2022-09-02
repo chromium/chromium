@@ -31,7 +31,7 @@ HRESULT WINAPI FakeIGamepadStatics::add_GamepadAdded(
         ABI::Windows::Gaming::Input::Gamepad*>* event_handler,
     EventRegistrationToken* token) {
   if (FakeWinrtWgiEnvironment::GetError() ==
-      ErrorCode::kGamepadAddGamepadAddedFailed) {
+      WgiTestErrorCode::kGamepadAddGamepadAddedFailed) {
     return E_FAIL;
   }
 
@@ -51,7 +51,7 @@ HRESULT WINAPI FakeIGamepadStatics::add_GamepadRemoved(
         ABI::Windows::Gaming::Input::Gamepad*>* event_handler,
     EventRegistrationToken* token) {
   if (FakeWinrtWgiEnvironment::GetError() ==
-      ErrorCode::kGamepadAddGamepadRemovedFailed) {
+      WgiTestErrorCode::kGamepadAddGamepadRemovedFailed) {
     return E_FAIL;
   }
 
@@ -69,7 +69,7 @@ HRESULT WINAPI FakeIGamepadStatics::add_GamepadRemoved(
 HRESULT WINAPI
 FakeIGamepadStatics::remove_GamepadAdded(EventRegistrationToken token) {
   if (FakeWinrtWgiEnvironment::GetError() ==
-      ErrorCode::kGamepadRemoveGamepadAddedFailed) {
+      WgiTestErrorCode::kGamepadRemoveGamepadAddedFailed) {
     return E_FAIL;
   }
   size_t items_removed = base::EraseIf(
@@ -83,7 +83,7 @@ FakeIGamepadStatics::remove_GamepadAdded(EventRegistrationToken token) {
 HRESULT WINAPI
 FakeIGamepadStatics::remove_GamepadRemoved(EventRegistrationToken token) {
   if (FakeWinrtWgiEnvironment::GetError() ==
-      ErrorCode::kGamepadRemoveGamepadRemovedFailed) {
+      WgiTestErrorCode::kGamepadRemoveGamepadRemovedFailed) {
     return E_FAIL;
   }
   size_t items_removed = base::EraseIf(
@@ -140,7 +140,7 @@ HRESULT FakeIGamepadStatics::FromGameController(
     ABI::Windows::Gaming::Input::IGameController* gameController,
     ABI::Windows::Gaming::Input::IRawGameController** value) {
   if (FakeWinrtWgiEnvironment::GetError() ==
-      ErrorCode::kErrorWgiRawGameControllerFromGameControllerFailed) {
+      WgiTestErrorCode::kErrorWgiRawGameControllerFromGameControllerFailed) {
     return E_FAIL;
   }
 

@@ -27,7 +27,7 @@ HRESULT FakeWinrtWgiEnvironment::FakeRoGetActivationFactory(
 
   if (class_id_hstring.Get() == RuntimeClass_Windows_Gaming_Input_Gamepad) {
     if (FakeWinrtWgiEnvironment::GetError() ==
-        ErrorCode::kErrorWgiGamepadActivateFailed) {
+        WgiTestErrorCode::kErrorWgiGamepadActivateFailed) {
       hr = E_FAIL;
     } else {
       Microsoft::WRL::ComPtr<ABI::Windows::Gaming::Input::IGamepadStatics>
@@ -40,7 +40,7 @@ HRESULT FakeWinrtWgiEnvironment::FakeRoGetActivationFactory(
   else if (class_id_hstring.Get() ==
            RuntimeClass_Windows_Gaming_Input_RawGameController) {
     if (FakeWinrtWgiEnvironment::GetError() ==
-        ErrorCode::kErrorWgiRawGameControllerActivateFailed) {
+        WgiTestErrorCode::kErrorWgiRawGameControllerActivateFailed) {
       hr = E_FAIL;
     } else {
       Microsoft::WRL::ComPtr<
@@ -65,9 +65,9 @@ HRESULT FakeWinrtWgiEnvironment::FakeRoGetActivationFactory(
 }
 
 // static
-ErrorCode FakeWinrtWgiEnvironment::s_error_code_ = ErrorCode::kOk;
+WgiTestErrorCode FakeWinrtWgiEnvironment::s_error_code_ = WgiTestErrorCode::kOk;
 
-FakeWinrtWgiEnvironment::FakeWinrtWgiEnvironment(ErrorCode error_code) {
+FakeWinrtWgiEnvironment::FakeWinrtWgiEnvironment(WgiTestErrorCode error_code) {
   s_error_code_ = error_code;
   WgiDataFetcherWin::OverrideActivationFactoryFunctionForTesting(
       base::BindLambdaForTesting([]() {
@@ -77,12 +77,12 @@ FakeWinrtWgiEnvironment::FakeWinrtWgiEnvironment(ErrorCode error_code) {
 
 FakeWinrtWgiEnvironment::~FakeWinrtWgiEnvironment() = default;
 
-void FakeWinrtWgiEnvironment::SimulateError(ErrorCode error_code) {
+void FakeWinrtWgiEnvironment::SimulateError(WgiTestErrorCode error_code) {
   s_error_code_ = error_code;
 }
 
 // static
-ErrorCode FakeWinrtWgiEnvironment::GetError() {
+WgiTestErrorCode FakeWinrtWgiEnvironment::GetError() {
   return s_error_code_;
 }
 

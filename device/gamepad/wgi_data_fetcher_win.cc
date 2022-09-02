@@ -4,6 +4,8 @@
 
 #include "device/gamepad/wgi_data_fetcher_win.h"
 
+#include <XInput.h>
+#include <stddef.h>
 #include <stdint.h>
 #include <wrl/event.h>
 
@@ -184,6 +186,8 @@ WgiDataFetcherWin::WgiDataFetcherWin() {
   } else {
     get_activation_factory_function_ = &base::win::RoGetActivationFactory;
   }
+
+  xinput_data_fetcher_ = std::make_unique<XInputDataFetcherWin>();
 }
 
 WgiDataFetcherWin::~WgiDataFetcherWin() {
@@ -242,7 +246,7 @@ void WgiDataFetcherWin::OnAddedToProvider() {
     UnregisterEventHandlers();
     return;
   }
-
+  xinput_data_fetcher_->InitializeForWgiDataFetcher();
   initialization_state_ = InitializationState::kInitialized;
 }
 
@@ -310,10 +314,18 @@ void WgiDataFetcherWin::OnGamepadRemoved(
 
 void WgiDataFetcherWin::GetGamepadData(bool devices_changed_hint) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // Store a pointer to the WGI PadState with the lowest index, so that we can
+  // redirect any detected meta button presses to it.
+  PadState* lowest_index_wgi_pad_state = nullptr;
   for (const auto& map_entry : devices_) {
     PadState* state = GetPadState(map_entry.first);
     if (!state)
       continue;
+
+    // Check the PadState index and store it.
+    if (!lowest_index_wgi_pad_state ||
+        state->pad_index < lowest_index_wgi_pad_state->pad_index)
+      lowest_index_wgi_pad_state = state;
 
     ABI::Windows::Gaming::Input::GamepadReading reading;
     Microsoft::WRL::ComPtr<ABI::Windows::Gaming::Input::IGamepad> gamepad =
@@ -323,12 +335,7 @@ void WgiDataFetcherWin::GetGamepadData(bool devices_changed_hint) {
 
     Gamepad& pad = state->data;
     pad.timestamp = CurrentTimeInMicroseconds();
-    const uint32_t num_paddles = GetPaddleNumber(gamepad);
-    if (num_paddles == 0) {
-      pad.buttons_length = BUTTON_INDEX_COUNT - 1;  // No meta.
-    } else {
-      pad.buttons_length = BUTTON_INDEX_COUNT + num_paddles;
-    }
+    pad.buttons_length = BUTTON_INDEX_COUNT + GetPaddleNumber(gamepad);
 
     static constexpr struct {
       int button_index;
@@ -395,6 +402,18 @@ void WgiDataFetcherWin::GetGamepadData(bool devices_changed_hint) {
     pad.axes[AXIS_INDEX_LEFT_STICK_Y] = reading.LeftThumbstickY * -1.0f;
     pad.axes[AXIS_INDEX_RIGHT_STICK_X] = reading.RightThumbstickX;
     pad.axes[AXIS_INDEX_RIGHT_STICK_Y] = reading.RightThumbstickY * -1.0f;
+  }
+
+  // We should only call the XInput functions if there are WGI gamepads added.
+  // Only the lowest-index WGI gamepad should receive the meta input. Also, the
+  // XInput meta input should be received even if there is an error while
+  // getting the WGI reading.
+  if (lowest_index_wgi_pad_state) {
+    bool is_meta_pressed = xinput_data_fetcher_->IsAnyMetaButtonPressed();
+    lowest_index_wgi_pad_state->data.buttons[BUTTON_INDEX_META].pressed =
+        is_meta_pressed;
+    lowest_index_wgi_pad_state->data.buttons[BUTTON_INDEX_META].value =
+        is_meta_pressed ? 1.f : 0.f;
   }
 }
 

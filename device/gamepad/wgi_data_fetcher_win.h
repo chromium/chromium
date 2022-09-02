@@ -20,6 +20,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "device/gamepad/public/mojom/gamepad.mojom.h"
 #include "device/gamepad/wgi_gamepad_device.h"
+#include "device/gamepad/xinput_data_fetcher_win.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
@@ -87,6 +88,10 @@ class DEVICE_GAMEPAD_EXPORT WgiDataFetcherWin final
   // on gamepad polling thread.
   void OnGamepadRemoved(IInspectable* /* sender */,
                         ABI::Windows::Gaming::Input::IGamepad* gamepad);
+
+  // WgiDataFetcherWin has its own instance of XInputDataFetcherWin to query for
+  // the meta button state.
+  std::unique_ptr<XInputDataFetcherWin> xinput_data_fetcher_;
 
   static ActivationFactoryFunctionCallback&
   GetActivationFactoryFunctionCallback();

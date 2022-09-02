@@ -8,24 +8,9 @@
 #include <hstring.h>
 
 #include "base/win/windows_types.h"
+#include "device/gamepad/test_support/wgi_test_error_code.h"
 
 namespace device {
-
-enum class ErrorCode {
-  kOk,
-  kErrorWgiGamepadActivateFailed,
-  kErrorWgiGamepadGetCurrentReadingFailed,
-  kErrorWgiGamepadGetButtonLabelFailed,
-  kErrorWgiRawGameControllerActivateFailed,
-  kErrorWgiRawGameControllerFromGameControllerFailed,
-  kErrorWgiRawGameControllerGetDisplayNameFailed,
-  kErrorWgiRawGameControllerGetHardwareProductIdFailed,
-  kErrorWgiRawGameControllerGetHardwareVendorIdFailed,
-  kGamepadAddGamepadAddedFailed,
-  kGamepadAddGamepadRemovedFailed,
-  kGamepadRemoveGamepadAddedFailed,
-  kGamepadRemoveGamepadRemovedFailed
-};
 
 // Overrides the WinRT WGI OS APIs used by the helper functions in
 // device/gamepad/wgi_data_fetcher_win.h. Also, it is used by the fake classes
@@ -37,21 +22,21 @@ class FakeWinrtWgiEnvironment final {
                                             const IID& iid,
                                             void** out_factory);
 
-  FakeWinrtWgiEnvironment(ErrorCode error_code);
+  FakeWinrtWgiEnvironment(WgiTestErrorCode error_code);
   FakeWinrtWgiEnvironment(const FakeWinrtWgiEnvironment&) = delete;
   FakeWinrtWgiEnvironment& operator=(const FakeWinrtWgiEnvironment&) = delete;
   ~FakeWinrtWgiEnvironment();
 
   // Injects errors in the fake implementation of the WinRT WGI APIs.
-  void SimulateError(ErrorCode error_code);
+  void SimulateError(WgiTestErrorCode error_code);
 
   // Used by the fake WinRT WGI APIs to determine when to generate errors.
-  static ErrorCode GetError();
+  static WgiTestErrorCode GetError();
 
  private:
   // The errors the fake WinRT WGI APIs should simulate. Set to |kOk| to succeed
   // without error.
-  static ErrorCode s_error_code_;
+  static WgiTestErrorCode s_error_code_;
 };
 
 }  // namespace device

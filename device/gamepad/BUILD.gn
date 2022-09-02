@@ -189,6 +189,7 @@ static_library("test_helpers") {
       "test_support/fake_iraw_game_controller.h",
       "test_support/fake_winrt_wgi_environment.cc",
       "test_support/fake_winrt_wgi_environment.h",
+      "test_support/wgi_test_error_code.h",
     ]
   }
 }

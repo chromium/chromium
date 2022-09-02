@@ -46,6 +46,9 @@ struct PadState {
   PadState();
   ~PadState();
 
+  // Index of the slot occupied by this gamepad.
+  int pad_index;
+
   // Which data fetcher provided this gamepad's data.
   GamepadSource source;
   // Data fetcher-specific identifier for this gamepad.
