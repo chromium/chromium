@@ -6,44 +6,14 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "content/browser/renderer_host/pending_beacon_service.h"
-#include "content/public/browser/browser_context.h"
-#include "content/public/browser/browser_thread.h"
-#include "content/public/browser/permission_controller.h"
-#include "content/public/browser/permission_result.h"
 #include "content/public/browser/render_frame_host.h"
 #include "services/network/public/cpp/cors/cors.h"
 #include "services/network/public/cpp/data_element.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
-#include "third_party/blink/public/common/permissions/permission_utils.h"
 
 namespace content {
-namespace {
-
-// Returns true if `host` has the Background Sync permission granted for current
-// document.
-bool IsBackgroundSyncGranted(RenderFrameHost* host) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(host);
-
-  auto* permission_controller =
-      host->GetBrowserContext()->GetPermissionController();
-  DCHECK(permission_controller);
-
-  // Cannot use `PermissionController::GetPermissionStatusForCurrentDocument()`
-  // as `host` might not have all its states available when in PendingBeaconHost
-  // dtor even if it's still alive (See `DocumentUserData::render_frame_host()`)
-  // Specifically, it will crash on Android when the controller requests a
-  // RenderViewHost.
-  return permission_controller
-             ->GetPermissionResultForOriginWithoutContext(
-                 blink::PermissionType::BACKGROUND_SYNC,
-                 host->GetLastCommittedOrigin())
-             .status == blink::mojom::PermissionStatus::GRANTED;
-}
-
-}  // namespace
 
 PendingBeaconHost::PendingBeaconHost(
     RenderFrameHost* rfh,
@@ -67,13 +37,7 @@ void PendingBeaconHost::CreateBeacon(
 }
 
 PendingBeaconHost::~PendingBeaconHost() {
-  // The blink::Document is about to destroy.
-  // Checks if it has Background Sync granted before sending out the rest of
-  // beacons.
-  // https://github.com/WICG/unload-beacon#privacy
-  if (IsBackgroundSyncGranted(&render_frame_host())) {
-    Send(beacons_);
-  }
+  service_->SendBeacons(beacons_, shared_url_factory_.get());
 }
 
 void PendingBeaconHost::DeleteBeacon(Beacon* beacon) {
@@ -96,12 +60,7 @@ void PendingBeaconHost::SendBeacon(Beacon* beacon) {
   beacons_.erase(iter);
   std::vector<std::unique_ptr<Beacon>> to_send;
   to_send.emplace_back(std::move(beacon_ptr));
-  Send(to_send);
-}
-
-void PendingBeaconHost::Send(
-    const std::vector<std::unique_ptr<Beacon>>& beacons) {
-  service_->SendBeacons(beacons, shared_url_factory_.get());
+  service_->SendBeacons(to_send, shared_url_factory_.get());
 }
 
 void PendingBeaconHost::SetReceiver(

@@ -115,10 +115,9 @@ function generateSetBeaconURL(uuid, options) {
 
 async function poll(f, expected) {
   const interval = 100;  // milliseconds.
-  const maxSteps = 30
-  for (let i = 0; i < maxSteps; i++) {
+  for (let i = 0; i < 30; i++) {
     const result = await f();
-    if (expected(result, /*isFinal=*/ i == maxSteps - 1)) {
+    if (expected(result)) {
       return result;
     }
     await new Promise(resolve => setTimeout(resolve, interval));
@@ -141,11 +140,7 @@ async function expectBeacon(uuid, options) {
             {cache: 'no-store'});
         return await res.json();
       },
-      (res, isFinal) => {
-        if (expectedCount === 0) {
-          // Waits for maximum time to prove that no beacon was sent.
-          return res.data.length == expectedCount && isFinal;
-        }
+      (res) => {
         return res.data.length == expectedCount;
       });
   if (!options || !options.data) {
