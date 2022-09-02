@@ -10495,6 +10495,32 @@
             ]
         }
     ],
+    "V8WasmLazyCompilation": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "WebAssemblyLazyCompilation"
+                    ]
+                },
+                {
+                    "name": "Control",
+                    "disable_features": [
+                        "WebAssemblyLazyCompilation"
+                    ]
+                }
+            ]
+        }
+    ],
     "VaapiVp8TemporalLayerEncoding": [
         {
             "platforms": [
