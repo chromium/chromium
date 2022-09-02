@@ -15,7 +15,7 @@
 
 namespace partition_alloc::internal {
 
-using FreeSlotBitmapCellType = uintptr_t;
+using FreeSlotBitmapCellType = uint64_t;
 constexpr size_t kFreeSlotBitmapBitsPerCell =
     sizeof(FreeSlotBitmapCellType) * CHAR_BIT;
 constexpr size_t kFreeSlotBitmapOffsetMask = kFreeSlotBitmapBitsPerCell - 1;
