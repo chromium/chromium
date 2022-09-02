@@ -12,20 +12,17 @@
 
 #include "base/bind.h"
 #include "base/check.h"
-#include "base/containers/contains.h"
-#include "base/feature_list.h"
-#include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/profiler/module_cache.h"
 #include "base/rand_util.h"
 #include "base/sampling_heap_profiler/sampling_heap_profiler.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
-#include "base/strings/string_split.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "components/heap_profiling/in_process/heap_profiler_parameters.h"
 #include "components/metrics/call_stack_profile_builder.h"
 #include "components/metrics/call_stack_profile_params.h"
 #include "components/services/heap_profiling/public/cpp/merge_samples.h"
@@ -43,60 +40,6 @@ ProfilingEnabled g_profiling_enabled = ProfilingEnabled::kNoController;
 
 using ProcessType = metrics::CallStackProfileParams::Process;
 
-// Platform-specific parameter defaults.
-
-#if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
-// Average 1M bytes per sample.
-constexpr int kDefaultSamplingRateBytes = 1'000'000;
-
-// Default on iOS is equal to mean value of up process time. Android is
-// more similar to iOS than to Desktop.
-constexpr int kDefaultCollectionIntervalInMinutes = 30;
-#else
-// Average 10M bytes per sample.
-constexpr int kDefaultSamplingRateBytes = 10'000'000;
-
-// Default on desktop is once per day.
-constexpr int kDefaultCollectionIntervalInMinutes = 24 * 60;
-#endif
-
-// Semicolon-separated list of process names to support. (More convenient than
-// commas, which must be url-escaped in the --enable-features command line.)
-constexpr base::FeatureParam<std::string> kSupportedProcesses{
-    &HeapProfilerController::kHeapProfilerReporting, "supported-processes",
-    "browser"};
-
-// Sets the chance that this client will report heap samples through a metrics
-// provider if it's on the stable channel.
-constexpr base::FeatureParam<double> kStableProbability {
-  &HeapProfilerController::kHeapProfilerReporting, "stable-probability",
-#if BUILDFLAG(IS_ANDROID)
-      // With stable-probability 0.01 we get about 4x as many records as before
-      // https://crrev.com/c/3309878 landed in 98.0.4742.0. This is too high a
-      // volume to process.
-      0.0025
-#else
-      0.01
-#endif
-};
-
-// Sets the chance that this client will report heap samples through a metrics
-// provider if it's on a non-stable channel.
-constexpr base::FeatureParam<double> kNonStableProbability{
-    &HeapProfilerController::kHeapProfilerReporting, "nonstable-probability",
-    0.5};
-
-// Sets heap sampling interval in bytes.
-constexpr base::FeatureParam<int> kSamplingRateBytes{
-    &HeapProfilerController::kHeapProfilerReporting, "sampling-rate",
-    kDefaultSamplingRateBytes};
-
-// Sets the interval between snapshots.
-constexpr base::FeatureParam<int> kCollectionIntervalMinutes{
-    &HeapProfilerController::kHeapProfilerReporting,
-    "heap-profiler-collection-interval-minutes",
-    kDefaultCollectionIntervalInMinutes};
-
 base::TimeDelta RandomInterval(base::TimeDelta mean) {
   // Time intervals between profile collections form a Poisson stream with
   // given mean interval.
@@ -108,24 +51,19 @@ base::TimeDelta RandomInterval(base::TimeDelta mean) {
   return -std::log(rnd) * mean;
 }
 
-// Returns the string to use in the kSupportedProcesses feature for
-// `process_type`, or nullptr if the process is not supported..
-const char* ProcessParamString(ProcessType process_type) {
+// Returns true iff `process_type` is handled by ProcessHistogramName.
+bool HasProcessHistogramName(ProcessType process_type) {
   switch (process_type) {
     case ProcessType::kBrowser:
-      return "browser";
     case ProcessType::kRenderer:
-      return "renderer";
     case ProcessType::kGpu:
-      return "gpu";
     case ProcessType::kUtility:
-      return "utility";
     case ProcessType::kNetworkService:
-      return "networkService";
+      return true;
     case ProcessType::kUnknown:
     default:
-      // Profiler hasn't been tested in these process types.
-      return nullptr;
+      // Profiler should not be enabled for these process types.
+      return false;
   }
 }
 
@@ -155,23 +93,13 @@ std::string ProcessHistogramName(base::StringPiece base_name,
 
 ProfilingEnabled DecideIfCollectionIsEnabled(version_info::Channel channel,
                                              ProcessType process_type) {
-  if (!base::FeatureList::IsEnabled(
-          HeapProfilerController::kHeapProfilerReporting)) {
-    return ProfilingEnabled::kDisabled;
-  }
-  const char* process_string = ProcessParamString(process_type);
-  if (!process_string) {
-    // This process type is never supported.
-    return ProfilingEnabled::kDisabled;
-  }
-  const std::vector<std::string> supported_processes =
-      base::SplitString(kSupportedProcesses.Get(), ";", base::TRIM_WHITESPACE,
-                        base::SPLIT_WANT_NONEMPTY);
-  if (!base::Contains(supported_processes, process_string))
+  heap_profiling::HeapProfilerParameters params =
+      heap_profiling::GetHeapProfilerParametersForProcess(process_type);
+  if (!params.is_supported)
     return ProfilingEnabled::kDisabled;
   const double probability = (channel == version_info::Channel::STABLE)
-                                 ? kStableProbability.Get()
-                                 : kNonStableProbability.Get();
+                                 ? params.stable_probability
+                                 : params.nonstable_probability;
   if (base::RandDouble() >= probability)
     return ProfilingEnabled::kDisabled;
   return ProfilingEnabled::kEnabled;
@@ -209,9 +137,6 @@ void RecordUmaSnapshotInterval(base::TimeDelta interval,
 }
 
 }  // namespace
-
-constexpr base::Feature HeapProfilerController::kHeapProfilerReporting{
-    "HeapProfilerReporting", base::FEATURE_ENABLED_BY_DEFAULT};
 
 HeapProfilerController::SnapshotParams::SnapshotParams(
     base::TimeDelta mean_interval,
@@ -260,8 +185,8 @@ void HeapProfilerController::StartIfEnabled() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   const bool profiling_enabled =
       g_profiling_enabled == ProfilingEnabled::kEnabled;
-  // Only supported processes are assigned a param string.
-  if (ProcessParamString(process_type_)) {
+  // Only supported processes are assigned a patterned histogram.
+  if (HasProcessHistogramName(process_type_)) {
     constexpr char kEnabledHistogramName[] = "HeapProfiling.InProcess.Enabled";
     base::UmaHistogramBoolean(
         ProcessHistogramName(kEnabledHistogramName, process_type_),
@@ -271,14 +196,16 @@ void HeapProfilerController::StartIfEnabled() {
   }
   if (!profiling_enabled)
     return;
-  int sampling_rate_bytes = kSamplingRateBytes.Get();
-  if (sampling_rate_bytes > 0)
-    base::SamplingHeapProfiler::Get()->SetSamplingInterval(sampling_rate_bytes);
+  heap_profiling::HeapProfilerParameters profiler_params =
+      heap_profiling::GetHeapProfilerParametersForProcess(process_type_);
+  if (profiler_params.sampling_rate_bytes > 0) {
+    base::SamplingHeapProfiler::Get()->SetSamplingInterval(
+        profiler_params.sampling_rate_bytes);
+  }
   base::SamplingHeapProfiler::Get()->Start();
-  const int interval = kCollectionIntervalMinutes.Get();
-  DCHECK_GT(interval, 0);
+  DCHECK(profiler_params.collection_interval.is_positive());
   SnapshotParams params(
-      /*mean_interval=*/base::Minutes(interval),
+      profiler_params.collection_interval,
       /*use_random_interval=*/!suppress_randomness_for_testing_, stopped_,
       process_type_, creation_time_);
   ScheduleNextSnapshot(std::move(params));

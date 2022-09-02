@@ -11,6 +11,8 @@ source_set("in_process") {
     sources = [
       "heap_profiler_controller.cc",
       "heap_profiler_controller.h",
+      "heap_profiler_parameters.cc",
+      "heap_profiler_parameters.h",
     ]
 
     deps = [

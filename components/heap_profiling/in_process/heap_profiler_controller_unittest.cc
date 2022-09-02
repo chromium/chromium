@@ -21,6 +21,7 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "components/heap_profiling/in_process/heap_profiler_parameters.h"
 #include "components/metrics/call_stack_profile_builder.h"
 #include "components/metrics/call_stack_profile_params.h"
 #include "components/metrics/public/mojom/call_stack_profile_collector.mojom.h"
@@ -113,7 +114,7 @@ class HeapProfilerControllerTest : public ::testing::Test {
     // threads are started.
     if (feature_enabled) {
       feature_list_.InitAndEnableFeatureWithParameters(
-          HeapProfilerController::kHeapProfilerReporting,
+          kHeapProfilerReporting,
           {
               {"stable-probability", base::NumberToString(stable_probability)},
               {"nonstable-probability",
@@ -122,8 +123,7 @@ class HeapProfilerControllerTest : public ::testing::Test {
               {"supported-processes", supported_processes},
           });
     } else {
-      feature_list_.InitAndDisableFeature(
-          HeapProfilerController::kHeapProfilerReporting);
+      feature_list_.InitAndDisableFeature(kHeapProfilerReporting);
       // Set the sampling rate manually since there's no param to read.
       base::SamplingHeapProfiler::Get()->SetSamplingInterval(kSamplingRate);
     }

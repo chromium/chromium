@@ -8,7 +8,6 @@
 #include <map>
 #include <vector>
 
-#include "base/feature_list.h"
 #include "base/memory/ref_counted.h"
 #include "base/sampling_heap_profiler/sampling_heap_profiler.h"
 #include "base/sequence_checker.h"
@@ -73,14 +72,6 @@ class HeapProfilerController {
 
   // Merges samples that have identical stack traces, excluding total and size.
   static SampleMap MergeSamples(const std::vector<Sample>& samples);
-
-  // If this is disabled, the client will not collect heap profiles. If it is
-  // enabled, the client may enable the sampling heap profiler (with probability
-  // based on the "stable-probability" parameter if the client is on the stable
-  // channel, or the "nonstable-probability" parameter otherwise). Sampled heap
-  // profiles will then be reported through the metrics service iff metrics
-  // reporting is enabled.
-  static const base::Feature kHeapProfilerReporting;
 
   // Uses the exact parameter values for the sampling interval and time between
   // samples, instead of a distribution around those values. This must be called
