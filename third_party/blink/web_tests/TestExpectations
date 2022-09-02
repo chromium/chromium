@@ -434,7 +434,7 @@ crbug.com/1095540 [ Mac ] virtual/threaded-prefer-compositing/fast/scrolling/res
 crbug.com/841567 [ Debug Mac11 ] virtual/threaded-prefer-compositing/fast/scrolling/same-page-navigate.html [ Failure Pass ]
 crbug.com/1279758 [ Win10.20h2 ] virtual/threaded-prefer-compositing/fast/scrolling/scroll-animation-on-by-default.html [ Failure Pass ]
 crbug.com/1279758 [ Mac ] virtual/threaded-prefer-compositing/fast/scrolling/scroll-animation-on-by-default.html [ Failure Pass ]
-crbug.com/1058244 [ Mac ] virtual/threaded-prefer-compositing/fast/scrolling/scrollbars/scrollbar-rtl-manipulation.html [ Failure Pass ]
+crbug.com/1058244 [ Mac ] virtual/threaded-prefer-compositing/fast/scrolling/scrollbars/scrollbar-rtl-manipulation.html [ Failure Pass Timeout ]
 crbug.com/1058244 [ Win ] virtual/threaded-prefer-compositing/fast/scrolling/scrollbars/scrollbar-rtl-manipulation.html [ Failure Pass ]
 
 crbug.com/915926 fast/events/touch/multi-touch-user-gesture.html [ Failure Pass ]
@@ -6862,7 +6862,7 @@ crbug.com/1358051 external/wpt/longtask-timing/containerTypes.html [ Failure Pas
 # TODO(crbug.com/1358147): Re-enable this test
 virtual/plz-dedicated-worker/external/wpt/resource-timing/no-entries-for-cross-origin-css-fetched-memory-cache.sub.html [ Skip ]
 
-# Disable step failure trigger flaky tests   
+# Disable step failure trigger flaky tests
 crbug.com/1351571 [ Mac12-arm64 ] http/tests/devtools/persistence/automapping-bind-committed-network-sourcecode.js [ Failure Pass Timeout ]
 crbug.com/1358333 [ Mac10.15 ] external/wpt/webmessaging/event.origin.sub.htm [ Failure Pass ]
 
