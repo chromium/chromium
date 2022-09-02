@@ -22,8 +22,8 @@ copy("copy_audio") {
 }
 
 copy("copy_mojo") {
-  deps = [ "//chrome/browser/ui/webui/chromeos/audio:mojo_bindings_webui_js" ]
-  sources = [ "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/chromeos/audio/audio.mojom-webui.js" ]
+  deps = [ "//chrome/browser/ui/webui/ash/audio:mojo_bindings_webui_js" ]
+  sources = [ "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/ash/audio/audio.mojom-webui.js" ]
   outputs = [ "$target_gen_dir/{{source_file_part}}" ]
 }
 

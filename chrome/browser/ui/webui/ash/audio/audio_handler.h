@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_CHROMEOS_AUDIO_AUDIO_HANDLER_H_
-#define CHROME_BROWSER_UI_WEBUI_CHROMEOS_AUDIO_AUDIO_HANDLER_H_
+#ifndef CHROME_BROWSER_UI_WEBUI_ASH_AUDIO_AUDIO_HANDLER_H_
+#define CHROME_BROWSER_UI_WEBUI_ASH_AUDIO_AUDIO_HANDLER_H_
 
 #include <tuple>
 
 #include "base/scoped_observation.h"
-#include "chrome/browser/ui/webui/chromeos/audio/audio.mojom.h"
+#include "chrome/browser/ui/webui/ash/audio/audio.mojom.h"
 #include "chromeos/ash/components/audio/audio_device.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -16,10 +16,10 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
-namespace chromeos {
+namespace ash {
 
 class AudioHandler : public audio::mojom::PageHandler,
-                     public ash::CrasAudioHandler::AudioObserver {
+                     public CrasAudioHandler::AudioObserver {
  public:
   AudioHandler(mojo::PendingReceiver<audio::mojom::PageHandler> receiver,
                mojo::PendingRemote<audio::mojom::Page> page);
@@ -56,14 +56,13 @@ class AudioHandler : public audio::mojom::PageHandler,
  private:
   void UpdateAudioDeviceInfo();
 
-  base::ScopedObservation<ash::CrasAudioHandler,
+  base::ScopedObservation<CrasAudioHandler,
                           AudioObserver,
-                          &ash::CrasAudioHandler::AddAudioObserver,
-                          &ash::CrasAudioHandler::RemoveAudioObserver>
+                          &CrasAudioHandler::AddAudioObserver,
+                          &CrasAudioHandler::RemoveAudioObserver>
       observation_{this};
 
-  audio::mojom::DeviceDataPtr CreateDeviceData(
-      const ash::AudioDevice* item) const;
+  audio::mojom::DeviceDataPtr CreateDeviceData(const AudioDevice* item) const;
 
   std::tuple<int, bool> GetDeviceVolGain(uint64_t id, bool is_input) const;
 
@@ -71,6 +70,6 @@ class AudioHandler : public audio::mojom::PageHandler,
   mojo::Receiver<audio::mojom::PageHandler> receiver_;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-#endif  // CHROME_BROWSER_UI_WEBUI_CHROMEOS_AUDIO_AUDIO_HANDLER_H_
+#endif  // CHROME_BROWSER_UI_WEBUI_ASH_AUDIO_AUDIO_HANDLER_H_

@@ -9,9 +9,9 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/chrome_pages.h"
-#include "chrome/browser/ui/webui/chromeos/audio/audio_handler.h"
+#include "chrome/browser/ui/webui/ash/audio/audio_handler.h"
 
-namespace chromeos {
+namespace ash {
 
 AudioHandler::AudioHandler(
     mojo::PendingReceiver<audio::mojom::PageHandler> receiver,
@@ -134,4 +134,4 @@ std::tuple<int, bool> AudioHandler::GetDeviceVolGain(uint64_t id,
   }
 }
 
-}  // namespace chromeos
+}  // namespace ash

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/chromeos/audio/audio_ui.h"
+#include "chrome/browser/ui/webui/ash/audio/audio_ui.h"
 
 #include <memory>
 #include <utility>
@@ -16,7 +16,7 @@
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 
-namespace chromeos {
+namespace ash {
 
 AudioUI::AudioUI(content::WebUI* web_ui) : ui::MojoWebUIController(web_ui) {
   // Set up the chrome://audio source.
@@ -49,4 +49,4 @@ void AudioUI::CreatePageHandler(
       std::make_unique<AudioHandler>(std::move(receiver), std::move(page));
 }
 
-}  // namespace chromeos
+}  // namespace ash

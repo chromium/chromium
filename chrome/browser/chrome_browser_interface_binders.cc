@@ -251,8 +251,8 @@
 #include "chrome/browser/speech/cros_speech_recognition_service_factory.h"
 #include "chrome/browser/ui/webui/ash/add_supervision/add_supervision.mojom.h"
 #include "chrome/browser/ui/webui/ash/add_supervision/add_supervision_ui.h"
-#include "chrome/browser/ui/webui/chromeos/audio/audio.mojom.h"
-#include "chrome/browser/ui/webui/chromeos/audio/audio_ui.h"
+#include "chrome/browser/ui/webui/ash/audio/audio.mojom.h"
+#include "chrome/browser/ui/webui/ash/audio/audio_ui.h"
 #include "chrome/browser/ui/webui/chromeos/bluetooth_pairing_dialog.h"
 #include "chrome/browser/ui/webui/chromeos/cloud_upload/cloud_upload.mojom.h"
 #include "chrome/browser/ui/webui/chromeos/cloud_upload/cloud_upload_ui.h"
@@ -1238,7 +1238,7 @@ void PopulateChromeWebUIFrameBinders(
   }
 
   RegisterWebUIControllerInterfaceBinder<audio::mojom::PageHandlerFactory,
-                                         chromeos::AudioUI>(map);
+                                         ash::AudioUI>(map);
 
   if (ash::features::IsFirmwareUpdaterAppEnabled()) {
     RegisterWebUIControllerInterfaceBinder<
