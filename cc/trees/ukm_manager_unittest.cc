@@ -150,20 +150,24 @@ class UkmManagerTest : public testing::Test {
 
   std::unique_ptr<EventMetrics> CreateScrollBeginEventMetrics() {
     base::TimeTicks event_time = AdvanceNowByMs(10);
+    base::TimeTicks arrived_in_browser_main_timestamp = AdvanceNowByMs(5);
     AdvanceNowByMs(10);
     return SetupEventMetrics(ScrollEventMetrics::CreateForTesting(
         ui::ET_GESTURE_SCROLL_BEGIN, ui::ScrollInputType::kWheel,
-        /*is_inertial=*/false, event_time, &test_tick_clock_));
+        /*is_inertial=*/false, event_time, arrived_in_browser_main_timestamp,
+        &test_tick_clock_));
   }
 
   std::unique_ptr<EventMetrics> CreateScrollUpdateEventMetrics(
       bool is_inertial,
       ScrollUpdateEventMetrics::ScrollUpdateType scroll_update_type) {
     base::TimeTicks event_time = AdvanceNowByMs(10);
+    base::TimeTicks arrived_in_browser_main_timestamp = AdvanceNowByMs(5);
     AdvanceNowByMs(10);
     return SetupEventMetrics(ScrollUpdateEventMetrics::CreateForTesting(
         ui::ET_GESTURE_SCROLL_UPDATE, ui::ScrollInputType::kWheel, is_inertial,
-        scroll_update_type, /*delta=*/10.0f, event_time, &test_tick_clock_));
+        scroll_update_type, /*delta=*/10.0f, event_time,
+        arrived_in_browser_main_timestamp, &test_tick_clock_));
   }
 
   struct DispatchTimestamps {

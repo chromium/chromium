@@ -293,9 +293,26 @@ void UkmManager::RecordEventLatencyUKM(
           (end_timestamp - dispatch_timestamp).InMicroseconds();
       switch (dispatch_stage) {
         case EventMetrics::DispatchStage::kGenerated:
+          switch (end_stage) {
+            case EventMetrics::DispatchStage::kArrivedInBrowserMain:
+              // Will build the `GenerationToRendererCompositor` metric on the
+              // `kArrivedInBrowserMain` stage.
+              break;
+            case EventMetrics::DispatchStage::kArrivedInRendererCompositor:
+              builder.SetGenerationToRendererCompositor(dispatch_latency);
+              break;
+            default:
+              NOTREACHED();
+              break;
+          }
+          break;
+        case EventMetrics::DispatchStage::kArrivedInBrowserMain:
           DCHECK_EQ(end_stage,
                     EventMetrics::DispatchStage::kArrivedInRendererCompositor);
-          builder.SetGenerationToRendererCompositor(dispatch_latency);
+          // TODO(b/224960731): Add new UKM metrics and then split kGenerated
+          // with kArrivedInBrowserMain breakdown.
+          builder.SetGenerationToRendererCompositor(
+              (end_timestamp - generated_timestamp).InMicroseconds());
           break;
         case EventMetrics::DispatchStage::kArrivedInRendererCompositor:
           switch (end_stage) {

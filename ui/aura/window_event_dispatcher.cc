@@ -93,8 +93,7 @@ WindowEventDispatcher::ObserverNotifier::~ObserverNotifier() {
 // WindowEventDispatcher, public:
 
 WindowEventDispatcher::WindowEventDispatcher(WindowTreeHost* host)
-    : host_(host),
-      event_targeter_(std::make_unique<WindowTargeter>()) {
+    : host_(host), event_targeter_(std::make_unique<WindowTargeter>()) {
   Env::GetInstance()->gesture_recognizer()->AddGestureEventHelper(this);
   Env::GetInstance()->AddObserver(this);
 }
@@ -1096,7 +1095,7 @@ WindowEventDispatcher::CreateScropedMetricsMonitorForEvent(
             ? ui::ScrollInputType::kTouchscreen
             : ui::ScrollInputType::kWheel;
     if (gesture->type() == ui::ET_GESTURE_SCROLL_UPDATE) {
-      metrics = cc::ScrollUpdateEventMetrics::Create(
+      metrics = cc::ScrollUpdateEventMetrics::CreateForBrowser(
           ui::ET_GESTURE_SCROLL_UPDATE, input_type, /*is_inertial=*/false,
           has_seen_gesture_scroll_update_after_begin_
               ? cc::ScrollUpdateEventMetrics::ScrollUpdateType::kContinued
@@ -1104,9 +1103,9 @@ WindowEventDispatcher::CreateScropedMetricsMonitorForEvent(
           gesture->details().scroll_y(), gesture->time_stamp());
       has_seen_gesture_scroll_update_after_begin_ = true;
     } else if (gesture->IsScrollGestureEvent()) {
-      metrics = cc::ScrollEventMetrics::Create(gesture->type(), input_type,
-                                               /*is_inertial=*/false,
-                                               gesture->time_stamp());
+      metrics = cc::ScrollEventMetrics::CreateForBrowser(
+          gesture->type(), input_type,
+          /*is_inertial=*/false, gesture->time_stamp());
       if (gesture->type() == ui::ET_GESTURE_SCROLL_BEGIN)
         has_seen_gesture_scroll_update_after_begin_ = false;
     } else {

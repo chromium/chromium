@@ -9279,12 +9279,15 @@ class LayerTreeHostTestEventsMetrics : public LayerTreeHostTest {
     tick_clock.Advance(base::Microseconds(10));
     base::TimeTicks event_time = tick_clock.NowTicks();
     tick_clock.Advance(base::Microseconds(10));
+    base::TimeTicks arrived_in_browser_main_timestamp = tick_clock.NowTicks();
+    tick_clock.Advance(base::Microseconds(10));
     std::unique_ptr<EventMetrics> metrics =
         ScrollUpdateEventMetrics::CreateForTesting(
             ui::ET_GESTURE_SCROLL_UPDATE, ui::ScrollInputType::kWheel,
             /*is_inertial=*/false,
             ScrollUpdateEventMetrics::ScrollUpdateType::kContinued,
-            /*delta=*/10.0f, event_time, &tick_clock);
+            /*delta=*/10.0f, event_time, arrived_in_browser_main_timestamp,
+            &tick_clock);
     DCHECK_NE(metrics, nullptr);
     {
       tick_clock.Advance(base::Microseconds(10));

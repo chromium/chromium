@@ -260,20 +260,24 @@ class CompositorFrameReportingControllerTest : public testing::Test {
 
   std::unique_ptr<EventMetrics> CreateScrollBeginEventMetrics() {
     const base::TimeTicks event_time = AdvanceNowByMs(10);
+    const base::TimeTicks arrived_in_browser_main_timestamp = AdvanceNowByMs(3);
     AdvanceNowByMs(10);
     return SetupEventMetrics(ScrollEventMetrics::CreateForTesting(
         ui::ET_GESTURE_SCROLL_BEGIN, ui::ScrollInputType::kWheel,
-        /*is_inertial=*/false, event_time, &test_tick_clock_));
+        /*is_inertial=*/false, event_time, arrived_in_browser_main_timestamp,
+        &test_tick_clock_));
   }
 
   std::unique_ptr<EventMetrics> CreateScrollUpdateEventMetrics(
       bool is_inertial,
       ScrollUpdateEventMetrics::ScrollUpdateType scroll_update_type) {
     const base::TimeTicks event_time = AdvanceNowByMs(10);
+    const base::TimeTicks arrived_in_browser_main_timestamp = AdvanceNowByMs(3);
     AdvanceNowByMs(10);
     return SetupEventMetrics(ScrollUpdateEventMetrics::CreateForTesting(
         ui::ET_GESTURE_SCROLL_UPDATE, ui::ScrollInputType::kWheel, is_inertial,
-        scroll_update_type, /*delta=*/10.0f, event_time, &test_tick_clock_));
+        scroll_update_type, /*delta=*/10.0f, event_time,
+        arrived_in_browser_main_timestamp, &test_tick_clock_));
   }
 
   std::unique_ptr<EventMetrics> CreatePinchEventMetrics(

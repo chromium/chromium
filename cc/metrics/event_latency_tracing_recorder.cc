@@ -61,9 +61,19 @@ const char* EventLatencyTracingRecorder::GetDispatchBreakdownName(
     EventMetrics::DispatchStage end_stage) {
   switch (start_stage) {
     case EventMetrics::DispatchStage::kGenerated:
+      switch (end_stage) {
+        case EventMetrics::DispatchStage::kArrivedInBrowserMain:
+          return "GenerationToBrowserMain";
+        case EventMetrics::DispatchStage::kArrivedInRendererCompositor:
+          return "GenerationToRendererCompositor";
+        default:
+          NOTREACHED();
+          return "";
+      }
+    case EventMetrics::DispatchStage::kArrivedInBrowserMain:
       DCHECK_EQ(end_stage,
                 EventMetrics::DispatchStage::kArrivedInRendererCompositor);
-      return "GenerationToRendererCompositor";
+      return "BrowserMainToRendererCompositor";
     case EventMetrics::DispatchStage::kArrivedInRendererCompositor:
       switch (end_stage) {
         case EventMetrics::DispatchStage::kRendererCompositorStarted:

@@ -594,6 +594,21 @@ void WidgetInputHandlerManager::DispatchEvent(
         static_cast<const WebGestureEvent&>(event->Event());
     const bool is_inertial = gesture_event.InertialPhase() ==
                              WebGestureEvent::InertialPhaseState::kMomentum;
+
+    // TODO(b/224960731): It is not recommended to use LatencyInfo. So we need
+    // to create a separate field with "arrived_in_browser_main" timestamp in
+    // WebInputEvent and use it here.
+    base::TimeTicks arrived_in_browser_main_timestamp;
+    event->latency_info().FindLatency(
+        ui::LatencyComponentType::INPUT_EVENT_LATENCY_BEGIN_RWH_COMPONENT,
+        &(arrived_in_browser_main_timestamp));
+    // TODO(b/224960731): Fix tests and add
+    // `DCHECK(!arrived_in_browser_main_timestamp.is_null())`.
+    //  We expect that `INPUT_EVENT_LATENCY_BEGIN_RWH_COMPONENT` is always
+    //  found, but there are a lot of tests where this component is not set.
+    //  Currently EventMetrics knows how to handle null timestamp, so we
+    //  don't process it here.
+
     if (gesture_event.GetType() == WebInputEvent::Type::kGestureScrollUpdate) {
       metrics = cc::ScrollUpdateEventMetrics::Create(
           gesture_event.GetTypeAsUiEventType(),
@@ -601,13 +616,14 @@ void WidgetInputHandlerManager::DispatchEvent(
           has_seen_first_gesture_scroll_update_after_begin_
               ? cc::ScrollUpdateEventMetrics::ScrollUpdateType::kContinued
               : cc::ScrollUpdateEventMetrics::ScrollUpdateType::kStarted,
-          gesture_event.data.scroll_update.delta_y, event->Event().TimeStamp());
+          gesture_event.data.scroll_update.delta_y, event->Event().TimeStamp(),
+          arrived_in_browser_main_timestamp);
       has_seen_first_gesture_scroll_update_after_begin_ = true;
     } else {
       metrics = cc::ScrollEventMetrics::Create(
           gesture_event.GetTypeAsUiEventType(),
           gesture_event.GetScrollInputType(), is_inertial,
-          event->Event().TimeStamp());
+          event->Event().TimeStamp(), arrived_in_browser_main_timestamp);
       has_seen_first_gesture_scroll_update_after_begin_ = false;
     }
   } else if (WebInputEvent::IsPinchGestureEventType(event->Event().GetType())) {

@@ -92,10 +92,14 @@ class CompositorFrameReporterTest : public testing::Test {
       const std::vector<int>& stage_durations) {
     if (metrics) {
       int num_stages = stage_durations.size();
-      // Start indexing from 1 because the 0th index held duration from
+      int max_num_stages =
+          static_cast<int>(EventMetrics::DispatchStage::kMaxValue) + 1;
+      CHECK(num_stages <= max_num_stages)
+          << num_stages << " > " << max_num_stages;
+      // Start indexing from 2 because the 0th index held duration from
       // kGenerated to kArrivedInRendererCompositor, which was already used in
       // when the EventMetrics was created.
-      for (int i = 1; i < num_stages; i++) {
+      for (int i = 2; i < num_stages; i++) {
         if (stage_durations[i] >= 0) {
           AdvanceNowByUs(stage_durations[i]);
           metrics->SetDispatchStageTimestamp(
@@ -122,34 +126,47 @@ class CompositorFrameReporterTest : public testing::Test {
       bool is_inertial,
       ScrollUpdateEventMetrics::ScrollUpdateType scroll_update_type,
       const std::vector<int>& stage_durations) {
-    DCHECK_GT((int)stage_durations.size(), 0);
+    CHECK_GE((int)stage_durations.size(), 2);
+
     const base::TimeTicks event_time = AdvanceNowByUs(3);
-    AdvanceNowByUs(stage_durations[0]);
+
+    // kGenerated -> kArrivedInBrowserMain
+    int begin_rwh_latency_ms = stage_durations[0];
+    const base::TimeTicks arrived_in_browser_main_timestamp =
+        AdvanceNowByUs(begin_rwh_latency_ms);
+
+    // kArrivedInBrowserMain -> kArrivedInRendererCompositor
+    AdvanceNowByUs(stage_durations[1]);
+
     // Creates a kGestureScrollUpdate event.
     return SetupEventMetricsWithDispatchTimes(
         ScrollUpdateEventMetrics::CreateForTesting(
             ui::ET_GESTURE_SCROLL_UPDATE, ui::ScrollInputType::kWheel,
             is_inertial, scroll_update_type, /*delta=*/10.0f, event_time,
-            &test_tick_clock_),
+            arrived_in_browser_main_timestamp, &test_tick_clock_),
         stage_durations);
   }
 
   std::unique_ptr<EventMetrics> CreateScrollBeginMetrics() {
     const base::TimeTicks event_time = AdvanceNowByUs(3);
+    const base::TimeTicks arrived_in_browser_main_timestamp = AdvanceNowByUs(2);
     AdvanceNowByUs(3);
     return SetupEventMetrics(ScrollEventMetrics::CreateForTesting(
         ui::ET_GESTURE_SCROLL_BEGIN, ui::ScrollInputType::kWheel,
-        /*is_inertial=*/false, event_time, &test_tick_clock_));
+        /*is_inertial=*/false, event_time, arrived_in_browser_main_timestamp,
+        &test_tick_clock_));
   }
 
   std::unique_ptr<EventMetrics> CreateScrollUpdateEventMetrics(
       bool is_inertial,
       ScrollUpdateEventMetrics::ScrollUpdateType scroll_update_type) {
     const base::TimeTicks event_time = AdvanceNowByUs(3);
+    const base::TimeTicks arrived_in_browser_main_timestamp = AdvanceNowByUs(2);
     AdvanceNowByUs(3);
     return SetupEventMetrics(ScrollUpdateEventMetrics::CreateForTesting(
         ui::ET_GESTURE_SCROLL_UPDATE, ui::ScrollInputType::kWheel, is_inertial,
-        scroll_update_type, /*delta=*/10.0f, event_time, &test_tick_clock_));
+        scroll_update_type, /*delta=*/10.0f, event_time,
+        arrived_in_browser_main_timestamp, &test_tick_clock_));
   }
 
   std::unique_ptr<EventMetrics> CreatePinchEventMetrics(
@@ -1467,7 +1484,13 @@ TEST_F(CompositorFrameReporterTest, StageLatencyMultiplePrediction) {
 // Tests that when a frame is presented to the user, event latency predictions
 // are reported properly.
 TEST_F(CompositorFrameReporterTest, EventLatencyDispatchPredictions) {
-  std::vector<int> dispatch_times = {300, 300, 300, 300, 300};
+  std::vector<int> dispatch_times = {
+      /*[kGenerated, kArrivedInBrowserMain]=*/300,
+      /*[kArrivedInBrowserMain, kArrivedInRendererCompositor]=*/300,
+      /*[kArrivedInRendererCompositor, kRendererCompositorStarted]=*/300,
+      /*[kRendererCompositorStarted, kRendererCompositorFinished]=*/300,
+      /*[kRendererCompositorFinished, kRendererMainStarted]=*/300,
+      /*[kRendererMainStarted, kRendererMainFinished]=*/300};
   std::unique_ptr<EventMetrics> event_metrics_ptrs[] = {
       CreateScrollUpdateEventMetricsWithDispatchTimes(
           false, ScrollUpdateEventMetrics::ScrollUpdateType::kContinued,
@@ -1494,9 +1517,14 @@ TEST_F(CompositorFrameReporterTest, EventLatencyDispatchPredictions) {
   std::vector<base::TimeDelta> expected_predictions1(kNumDispatchStages,
                                                      base::Microseconds(-1));
   IntToTimeDeltaVector(expected_predictions1,
-                       std::vector<int>{300, 300, 300, 300, 300});
+                       std::vector<int>{/*kArrivedInBrowserMain=*/300,
+                                        /*kArrivedInRendererCompositor=*/300,
+                                        /*kRendererCompositorStarted=*/300,
+                                        /*kRendererCompositorFinished=*/300,
+                                        /*kRendererMainStarted=*/300,
+                                        /*kRendererMainFinished=*/300});
   base::TimeDelta expected_transition1 = base::Microseconds(300);
-  base::TimeDelta expected_total1 = base::Microseconds(2100);
+  base::TimeDelta expected_total1 = base::Microseconds(2400);
   CompositorFrameReporter::EventLatencyInfo actual_predictions1 =
       CompositorFrameReporter::EventLatencyInfo(kNumDispatchStages,
                                                 kNumOfCompositorStages);
@@ -1507,14 +1535,14 @@ TEST_F(CompositorFrameReporterTest, EventLatencyDispatchPredictions) {
   std::vector<base::TimeDelta> expected_predictions2(kNumDispatchStages,
                                                      base::Microseconds(-1));
   IntToTimeDeltaVector(expected_predictions2,
-                       std::vector<int>{262, 300, 412, 225, 450});
+                       std::vector<int>{262, 262, 300, 412, 225, 450});
   base::TimeDelta expected_transition2 = base::Microseconds(390);
-  base::TimeDelta expected_total2 = base::Microseconds(2339);
+  base::TimeDelta expected_total2 = base::Microseconds(2601);
   CompositorFrameReporter::EventLatencyInfo actual_predictions2 =
       CompositorFrameReporter::EventLatencyInfo(kNumDispatchStages,
                                                 kNumOfCompositorStages);
   IntToTimeDeltaVector(actual_predictions2.dispatch_durations,
-                       std::vector<int>{250, 300, 450, 200, 500});
+                       std::vector<int>{250, 250, 300, 450, 200, 500});
   actual_predictions2.transition_duration = base::Microseconds(420);
   pipeline_reporter_->CalculateEventLatencyPrediction(
       actual_predictions2, kLatencyPredictionDeviationThreshold);
@@ -1523,14 +1551,14 @@ TEST_F(CompositorFrameReporterTest, EventLatencyDispatchPredictions) {
   std::vector<base::TimeDelta> expected_predictions3(kNumDispatchStages,
                                                      base::Microseconds(-1));
   IntToTimeDeltaVector(expected_predictions3,
-                       std::vector<int>{375, 450, 300, 300, 300});
+                       std::vector<int>{300, 375, 450, 300, 300, 300});
   base::TimeDelta expected_transition3 = base::Microseconds(270);
-  base::TimeDelta expected_total3 = base::Microseconds(2295);
+  base::TimeDelta expected_total3 = base::Microseconds(2595);
   CompositorFrameReporter::EventLatencyInfo actual_predictions3 =
       CompositorFrameReporter::EventLatencyInfo(kNumDispatchStages,
                                                 kNumOfCompositorStages);
   IntToTimeDeltaVector(actual_predictions3.dispatch_durations,
-                       std::vector<int>{400, 500, 300, -1, -1});
+                       std::vector<int>{-1, 400, 500, 300, -1, -1});
   actual_predictions3.transition_duration = base::Microseconds(260);
   pipeline_reporter_->CalculateEventLatencyPrediction(
       actual_predictions3, kLatencyPredictionDeviationThreshold);
@@ -1557,9 +1585,15 @@ TEST_F(CompositorFrameReporterTest, EventLatencyDispatchPredictions) {
 // the user, event latency predictions are reported properly.
 TEST_F(CompositorFrameReporterTest,
        EventLatencyDispatchPredictionsWithMissingStages) {
-  // Invalid EventLatency stage durations will cause program to crash,
-  // validity checked in event_latency_tracing_recorder.cc.
-  std::vector<int> dispatch_times = {400, 600, 700, -1, -1};
+  // Invalid EventLatency stage durations will cause program to crash, validity
+  // checked in event_latency_tracing_recorder.cc.
+  std::vector<int> dispatch_times = {
+      /*[kGenerated, kArrivedInBrowserMain]=*/200,
+      /*[kArrivedInBrowserMain, kArrivedInRendererCompositor]=*/400,
+      /*[kArrivedInRendererCompositor, kRendererCompositorStarted]=*/600,
+      /*[kRendererCompositorStarted, kRendererCompositorFinished]=*/700,
+      /*[kRendererCompositorFinished, kRendererMainStarted]=*/-1,
+      /*[kRendererMainStarted, kRendererMainFinished]=*/-1};
   std::unique_ptr<EventMetrics> event_metrics_ptrs[] = {
       CreateScrollUpdateEventMetricsWithDispatchTimes(
           false, ScrollUpdateEventMetrics::ScrollUpdateType::kContinued,
@@ -1586,9 +1620,9 @@ TEST_F(CompositorFrameReporterTest,
   std::vector<base::TimeDelta> expected_predictions1(kNumDispatchStages,
                                                      base::Microseconds(-1));
   IntToTimeDeltaVector(expected_predictions1,
-                       std::vector<int>{400, 600, 700, -1, -1});
+                       std::vector<int>{200, 400, 600, 700, -1, -1});
   base::TimeDelta expected_transition1 = base::Microseconds(470);
-  base::TimeDelta expected_total1 = base::Microseconds(2470);
+  base::TimeDelta expected_total1 = base::Microseconds(2670);
   CompositorFrameReporter::EventLatencyInfo actual_predictions1 =
       CompositorFrameReporter::EventLatencyInfo(kNumDispatchStages,
                                                 kNumOfCompositorStages);
@@ -1599,14 +1633,14 @@ TEST_F(CompositorFrameReporterTest,
   std::vector<base::TimeDelta> expected_predictions2(kNumDispatchStages,
                                                      base::Microseconds(-1));
   IntToTimeDeltaVector(expected_predictions2,
-                       std::vector<int>{250, 375, 475, 200, 500});
+                       std::vector<int>{125, 250, 375, 475, 200, 500});
   base::TimeDelta expected_transition2 = base::Microseconds(402);
-  base::TimeDelta expected_total2 = base::Microseconds(2502);
+  base::TimeDelta expected_total2 = base::Microseconds(2627);
   CompositorFrameReporter::EventLatencyInfo actual_predictions2 =
       CompositorFrameReporter::EventLatencyInfo(kNumDispatchStages,
                                                 kNumOfCompositorStages);
   IntToTimeDeltaVector(actual_predictions2.dispatch_durations,
-                       std::vector<int>{200, 300, 400, 200, 500});
+                       std::vector<int>{100, 200, 300, 400, 200, 500});
   actual_predictions2.transition_duration = base::Microseconds(380);
   pipeline_reporter_->CalculateEventLatencyPrediction(
       actual_predictions2, kLatencyPredictionDeviationThreshold);
@@ -1615,14 +1649,14 @@ TEST_F(CompositorFrameReporterTest,
   std::vector<base::TimeDelta> expected_predictions3(kNumDispatchStages,
                                                      base::Microseconds(-1));
   IntToTimeDeltaVector(expected_predictions3,
-                       std::vector<int>{400, 525, 745, -1, -1});
+                       std::vector<int>{143, 400, 525, 745, -1, -1});
   base::TimeDelta expected_transition3 = base::Microseconds(492);
-  base::TimeDelta expected_total3 = base::Microseconds(2462);
+  base::TimeDelta expected_total3 = base::Microseconds(2605);
   CompositorFrameReporter::EventLatencyInfo actual_predictions3 =
       CompositorFrameReporter::EventLatencyInfo(kNumDispatchStages,
                                                 kNumOfCompositorStages);
   IntToTimeDeltaVector(actual_predictions3.dispatch_durations,
-                       std::vector<int>{400, 500, 760, -1, -1});
+                       std::vector<int>{125, 400, 500, 760, -1, -1});
   actual_predictions3.transition_duration = base::Microseconds(500);
   pipeline_reporter_->CalculateEventLatencyPrediction(
       actual_predictions3, kLatencyPredictionDeviationThreshold);
@@ -1648,7 +1682,14 @@ TEST_F(CompositorFrameReporterTest,
 // Tests that when a frame is presented to the user, event latency predictions
 // are reported properly.
 TEST_F(CompositorFrameReporterTest, EventLatencyCompositorPredictions) {
-  std::vector<int> dispatch_times = {300, 300, 300, 300, 300};
+  std::vector<int> dispatch_times = {
+      /*[kGenerated, kArrivedInBrowserMain]=*/300,
+      /*[kArrivedInBrowserMain, kArrivedInRendererCompositor]=*/300,
+      /*[kArrivedInRendererCompositor, kRendererCompositorStarted]=*/300,
+      /*[kRendererCompositorStarted, kRendererCompositorFinished]=*/300,
+      /*[kRendererCompositorFinished, kRendererMainStarted]=*/300,
+      /*[kRendererMainStarted, kRendererMainFinished]=*/300};
+
   std::unique_ptr<EventMetrics> event_metrics_ptrs[] = {
       CreateScrollUpdateEventMetricsWithDispatchTimes(
           false, ScrollUpdateEventMetrics::ScrollUpdateType::kContinued,
@@ -1688,13 +1729,18 @@ TEST_F(CompositorFrameReporterTest, EventLatencyCompositorPredictions) {
   std::vector<base::TimeDelta> expected_dispatch1(kNumDispatchStages,
                                                   base::Microseconds(-1));
   IntToTimeDeltaVector(expected_dispatch1,
-                       std::vector<int>{300, 300, 300, 300, 300});
+                       std::vector<int>{/*kArrivedInBrowserMain=*/300,
+                                        /*kArrivedInRendererCompositor=*/300,
+                                        /*kRendererCompositorStarted=*/300,
+                                        /*kRendererCompositorFinished=*/300,
+                                        /*kRendererMainStarted=*/300,
+                                        /*kRendererMainFinished=*/300});
   base::TimeDelta expected_transition1 = base::Microseconds(300);
   std::vector<base::TimeDelta> expected_compositor1(kNumOfCompositorStages,
                                                     base::Microseconds(-1));
   IntToTimeDeltaVector(expected_compositor1,
                        std::vector<int>{300, -1, -1, -1, -1, 300, 300});
-  base::TimeDelta expected_total1 = base::Microseconds(2700);
+  base::TimeDelta expected_total1 = base::Microseconds(3000);
   CompositorFrameReporter::EventLatencyInfo actual_predictions1 =
       CompositorFrameReporter::EventLatencyInfo(kNumDispatchStages,
                                                 kNumOfCompositorStages);
@@ -1705,18 +1751,18 @@ TEST_F(CompositorFrameReporterTest, EventLatencyCompositorPredictions) {
   std::vector<base::TimeDelta> expected_dispatch2(kNumDispatchStages,
                                                   base::Microseconds(-1));
   IntToTimeDeltaVector(expected_dispatch2,
-                       std::vector<int>{262, 300, 412, 225, 450});
+                       std::vector<int>{262, 262, 300, 412, 225, 450});
   base::TimeDelta expected_transition2 = base::Microseconds(390);
   std::vector<base::TimeDelta> expected_compositor2(kNumOfCompositorStages,
                                                     base::Microseconds(-1));
   IntToTimeDeltaVector(expected_compositor2,
                        std::vector<int>{465, 500, 90, 720, 410, 742, 390});
-  base::TimeDelta expected_total2 = base::Microseconds(5356);
+  base::TimeDelta expected_total2 = base::Microseconds(5618);
   CompositorFrameReporter::EventLatencyInfo actual_predictions2 =
       CompositorFrameReporter::EventLatencyInfo(kNumDispatchStages,
                                                 kNumOfCompositorStages);
   IntToTimeDeltaVector(actual_predictions2.dispatch_durations,
-                       std::vector<int>{250, 300, 450, 200, 500});
+                       std::vector<int>{250, 250, 300, 450, 200, 500});
   actual_predictions2.transition_duration = base::Microseconds(420);
   IntToTimeDeltaVector(actual_predictions2.compositor_durations,
                        std::vector<int>{520, 500, 90, 720, 410, 890, 420});
@@ -1727,18 +1773,18 @@ TEST_F(CompositorFrameReporterTest, EventLatencyCompositorPredictions) {
   std::vector<base::TimeDelta> expected_dispatch3(kNumDispatchStages,
                                                   base::Microseconds(-1));
   IntToTimeDeltaVector(expected_dispatch3,
-                       std::vector<int>{375, 450, 300, 300, 300});
+                       std::vector<int>{375, 375, 450, 300, 300, 300});
   base::TimeDelta expected_transition3 = base::Microseconds(270);
   std::vector<base::TimeDelta> expected_compositor3(kNumOfCompositorStages,
                                                     base::Microseconds(-1));
   IntToTimeDeltaVector(expected_compositor3,
                        std::vector<int>{300, 500, -1, -1, 410, 742, 390});
-  base::TimeDelta expected_total3 = base::Microseconds(4337);
+  base::TimeDelta expected_total3 = base::Microseconds(4712);
   CompositorFrameReporter::EventLatencyInfo actual_predictions3 =
       CompositorFrameReporter::EventLatencyInfo(kNumDispatchStages,
                                                 kNumOfCompositorStages);
   IntToTimeDeltaVector(actual_predictions3.dispatch_durations,
-                       std::vector<int>{400, 500, 300, -1, -1});
+                       std::vector<int>{400, 400, 500, 300, -1, -1});
   actual_predictions3.transition_duration = base::Microseconds(260);
   IntToTimeDeltaVector(actual_predictions3.compositor_durations,
                        std::vector<int>{-1, 500, -1, -1, 410, 890, 420});
@@ -1771,7 +1817,13 @@ TEST_F(CompositorFrameReporterTest, EventLatencyCompositorPredictions) {
 // Tests that when a frame is presented to the user, event latency predictions
 // are reported properly for filtered EventTypes.
 TEST_F(CompositorFrameReporterTest, EventLatencyMultipleEventTypePredictions) {
-  std::vector<int> dispatch_times = {300, 300, 300, 300, 300};
+  std::vector<int> dispatch_times = {
+      /*[kGenerated, kArrivedInBrowserMain]=*/300,
+      /*[kArrivedInBrowserMain, kArrivedInRendererCompositor]=*/300,
+      /*[kArrivedInRendererCompositor, kRendererCompositorStarted]=*/300,
+      /*[kRendererCompositorStarted, kRendererCompositorFinished]=*/300,
+      /*[kRendererCompositorFinished, kRendererMainStarted]=*/300,
+      /*[kRendererMainStarted, kRendererMainFinished]=*/300};
   // The prediction should only be updated with the ScrollUpdateType event,
   // other EventType metrics should be ignored.
   std::unique_ptr<EventMetrics> event_metrics_ptrs[] = {
@@ -1820,7 +1872,12 @@ TEST_F(CompositorFrameReporterTest, EventLatencyMultipleEventTypePredictions) {
   std::vector<base::TimeDelta> expected_dispatch1(kNumDispatchStages,
                                                   base::Microseconds(-1));
   IntToTimeDeltaVector(expected_dispatch1,
-                       std::vector<int>{300, 300, 300, 300, 300});
+                       std::vector<int>{/*kArrivedInBrowserMain=*/300,
+                                        /*kArrivedInRendererCompositor=*/300,
+                                        /*kRendererCompositorStarted=*/300,
+                                        /*kRendererCompositorFinished=*/300,
+                                        /*kRendererMainStarted=*/300,
+                                        /*kRendererMainFinished=*/300});
   base::TimeDelta expected_transition1 =
       base::Microseconds(300) + kTouchEventTransition;
   std::vector<base::TimeDelta> expected_compositor1(kNumOfCompositorStages,
@@ -1828,7 +1885,7 @@ TEST_F(CompositorFrameReporterTest, EventLatencyMultipleEventTypePredictions) {
   IntToTimeDeltaVector(expected_compositor1,
                        std::vector<int>{300, -1, -1, -1, -1, 300, 300});
   base::TimeDelta expected_total1 =
-      base::Microseconds(2700) + kTouchEventTransition;
+      base::Microseconds(3000) + kTouchEventTransition;
   CompositorFrameReporter::EventLatencyInfo actual_predictions1 =
       CompositorFrameReporter::EventLatencyInfo(kNumDispatchStages,
                                                 kNumOfCompositorStages);
@@ -1839,18 +1896,18 @@ TEST_F(CompositorFrameReporterTest, EventLatencyMultipleEventTypePredictions) {
   std::vector<base::TimeDelta> expected_dispatch2(kNumDispatchStages,
                                                   base::Microseconds(-1));
   IntToTimeDeltaVector(expected_dispatch2,
-                       std::vector<int>{262, 300, 412, 225, 450});
+                       std::vector<int>{262, 262, 300, 412, 225, 450});
   base::TimeDelta expected_transition2 = base::Microseconds(393);
   std::vector<base::TimeDelta> expected_compositor2(kNumOfCompositorStages,
                                                     base::Microseconds(-1));
   IntToTimeDeltaVector(expected_compositor2,
                        std::vector<int>{465, 500, 90, 720, 410, 742, 390});
-  base::TimeDelta expected_total2 = base::Microseconds(5359);
+  base::TimeDelta expected_total2 = base::Microseconds(5621);
   CompositorFrameReporter::EventLatencyInfo actual_predictions2 =
       CompositorFrameReporter::EventLatencyInfo(kNumDispatchStages,
                                                 kNumOfCompositorStages);
   IntToTimeDeltaVector(actual_predictions2.dispatch_durations,
-                       std::vector<int>{250, 300, 450, 200, 500});
+                       std::vector<int>{250, 250, 300, 450, 200, 500});
   actual_predictions2.transition_duration = base::Microseconds(420);
   IntToTimeDeltaVector(actual_predictions2.compositor_durations,
                        std::vector<int>{520, 500, 90, 720, 410, 890, 420});
@@ -1878,7 +1935,13 @@ TEST_F(CompositorFrameReporterTest, EventLatencyMultipleEventTypePredictions) {
 // Tests that when a frame is presented to the user, high latency attribution
 // for EventLatency is reported properly for filtered EventTypes.
 TEST_F(CompositorFrameReporterTest, EventLatencyAttributionPredictions) {
-  std::vector<int> dispatch_times = {300, 300, 300, 50000, 300};
+  std::vector<int> dispatch_times = {
+      /*[kGenerated, kArrivedInBrowserMain]=*/300,
+      /*[kArrivedInBrowserMain, kArrivedInRendererCompositor]=*/300,
+      /*[kArrivedInRendererCompositor, kRendererCompositorStarted]=*/300,
+      /*[kRendererCompositorStarted, kRendererCompositorFinished]=*/300,
+      /*[kRendererCompositorFinished, kRendererMainStarted]=*/50000,
+      /*[kRendererMainStarted, kRendererMainFinished]=*/300};
   // The prediction should only be updated with the ScrollUpdateType event,
   // other EventType metrics should be ignored.
   std::unique_ptr<EventMetrics> event_metrics_ptrs[] = {
@@ -1921,11 +1984,11 @@ TEST_F(CompositorFrameReporterTest, EventLatencyAttributionPredictions) {
       CompositorFrameReporter::EventLatencyInfo(kNumDispatchStages,
                                                 kNumOfCompositorStages);
   IntToTimeDeltaVector(expected_predictions1.dispatch_durations,
-                       std::vector<int>{300, 300, 300, 50000, 300});
+                       std::vector<int>{300, 300, 300, 300, 50000, 300});
   expected_predictions1.transition_duration = base::Microseconds(300);
   IntToTimeDeltaVector(expected_predictions1.compositor_durations,
                        std::vector<int>{300, -1, -1, -1, -1, 50000, 300});
-  expected_predictions1.total_duration = base::Microseconds(102100);
+  expected_predictions1.total_duration = base::Microseconds(102400);
 
   CompositorFrameReporter::EventLatencyInfo actual_predictions1 =
       CompositorFrameReporter::EventLatencyInfo(kNumDispatchStages,
@@ -1944,21 +2007,21 @@ TEST_F(CompositorFrameReporterTest, EventLatencyAttributionPredictions) {
       CompositorFrameReporter::EventLatencyInfo(kNumDispatchStages,
                                                 kNumOfCompositorStages);
   IntToTimeDeltaVector(expected_predictions2.dispatch_durations,
-                       std::vector<int>{300, 300, 300, 12725, 300});
+                       std::vector<int>{300, 300, 300, 300, 12725, 300});
   expected_predictions2.transition_duration = base::Microseconds(300);
   IntToTimeDeltaVector(expected_predictions2.compositor_durations,
                        std::vector<int>{300, -1, -1, -1, -1, 50000, 300});
-  expected_predictions2.total_duration = base::Microseconds(64825);
+  expected_predictions2.total_duration = base::Microseconds(65125);
 
   CompositorFrameReporter::EventLatencyInfo actual_predictions2 =
       CompositorFrameReporter::EventLatencyInfo(kNumDispatchStages,
                                                 kNumOfCompositorStages);
   IntToTimeDeltaVector(actual_predictions2.dispatch_durations,
-                       std::vector<int>{300, 300, 300, 300, 300});
+                       std::vector<int>{300, 300, 300, 300, 300, 300});
   actual_predictions2.transition_duration = base::Microseconds(300);
   IntToTimeDeltaVector(actual_predictions2.compositor_durations,
                        std::vector<int>{300, -1, -1, -1, -1, 50000, 300});
-  actual_predictions2.total_duration = base::Microseconds(52400);
+  actual_predictions2.total_duration = base::Microseconds(5200);
   pipeline_reporter_->CalculateEventLatencyPrediction(
       actual_predictions2, kLatencyPredictionDeviationThreshold);
 
@@ -1972,17 +2035,17 @@ TEST_F(CompositorFrameReporterTest, EventLatencyAttributionPredictions) {
       CompositorFrameReporter::EventLatencyInfo(kNumDispatchStages,
                                                 kNumOfCompositorStages);
   IntToTimeDeltaVector(expected_predictions3.dispatch_durations,
-                       std::vector<int>{300, 300, 300, 12725, 300});
+                       std::vector<int>{300, 300, 300, 300, 12725, 300});
   expected_predictions3.transition_duration = base::Microseconds(300);
   IntToTimeDeltaVector(expected_predictions3.compositor_durations,
                        std::vector<int>{300, -1, -1, -1, -1, 12725, 300});
-  expected_predictions3.total_duration = base::Microseconds(27550);
+  expected_predictions3.total_duration = base::Microseconds(27850);
 
   CompositorFrameReporter::EventLatencyInfo actual_predictions3 =
       CompositorFrameReporter::EventLatencyInfo(kNumDispatchStages,
                                                 kNumOfCompositorStages);
   IntToTimeDeltaVector(actual_predictions3.dispatch_durations,
-                       std::vector<int>{300, 300, 300, 300, 300});
+                       std::vector<int>{300, 300, 300, 300, 300, 300});
   actual_predictions3.transition_duration = base::Microseconds(300);
   IntToTimeDeltaVector(actual_predictions3.compositor_durations,
                        std::vector<int>{300, -1, -1, -1, -1, 300, 300});
@@ -2001,16 +2064,21 @@ TEST_F(CompositorFrameReporterTest, EventLatencyAttributionPredictions) {
               actual_predictions1.dispatch_durations[i]);
     EXPECT_EQ(expected_predictions2.dispatch_durations[i],
               actual_predictions2.dispatch_durations[i]);
+    ;
     EXPECT_EQ(expected_predictions3.dispatch_durations[i],
               actual_predictions3.dispatch_durations[i]);
+    ;
   }
   for (int i = 0; i < kNumOfCompositorStages; i++) {
     EXPECT_EQ(expected_predictions1.compositor_durations[i],
               actual_predictions1.compositor_durations[i]);
+    ;
     EXPECT_EQ(expected_predictions2.compositor_durations[i],
               actual_predictions2.compositor_durations[i]);
+    ;
     EXPECT_EQ(expected_predictions3.compositor_durations[i],
               actual_predictions3.compositor_durations[i]);
+    ;
   }
   EXPECT_EQ(expected_predictions1.transition_duration,
             actual_predictions1.transition_duration);
@@ -2031,7 +2099,14 @@ TEST_F(CompositorFrameReporterTest, EventLatencyAttributionPredictions) {
 // Tests that when a frame is presented to the user, high latency attribution
 // for EventLatency is reported properly for filtered EventTypes.
 TEST_F(CompositorFrameReporterTest, EventLatencyAttributionChangePredictions) {
-  std::vector<int> dispatch_times = {40000, -1, -1, 300, 50000};
+  std::vector<int> dispatch_times = {
+      /*[kGenerated, kArrivedInBrowserMain]=*/40000,
+      /*[kArrivedInBrowserMain, kArrivedInRendererCompositor]=*/150,
+      /*[kArrivedInRendererCompositor, kRendererCompositorStarted]=*/-1,
+      /*[kRendererCompositorStarted, kRendererCompositorFinished]=*/-1,
+      /*[kRendererCompositorFinished, kRendererMainStarted]=*/150,
+      /*[kRendererMainStarted, kRendererMainFinished]=*/50000};
+
   // The prediction should only be updated with the ScrollUpdateType event,
   // other EventType metrics should be ignored.
   std::unique_ptr<EventMetrics> event_metrics_ptrs[] = {
@@ -2074,29 +2149,29 @@ TEST_F(CompositorFrameReporterTest, EventLatencyAttributionChangePredictions) {
       CompositorFrameReporter::EventLatencyInfo(kNumDispatchStages,
                                                 kNumOfCompositorStages);
   IntToTimeDeltaVector(expected_predictions1.dispatch_durations,
-                       std::vector<int>{10300, -1, -1, 300, 42500});
+                       std::vector<int>{10300, 262, -1, -1, 262, 42500});
   expected_predictions1.transition_duration = base::Microseconds(300);
   IntToTimeDeltaVector(expected_predictions1.compositor_durations,
                        std::vector<int>{300, -1, -1, -1, -1, 15200, 300});
-  expected_predictions1.total_duration = base::Microseconds(69200);
+  expected_predictions1.total_duration = base::Microseconds(69424);
 
   CompositorFrameReporter::EventLatencyInfo actual_predictions1 =
       CompositorFrameReporter::EventLatencyInfo(kNumDispatchStages,
                                                 kNumOfCompositorStages);
   IntToTimeDeltaVector(actual_predictions1.dispatch_durations,
-                       std::vector<int>{400, -1, -1, 300, 40000});
+                       std::vector<int>{400, 300, -1, -1, 300, 40000});
   actual_predictions1.transition_duration = base::Microseconds(300);
   IntToTimeDeltaVector(actual_predictions1.compositor_durations,
                        std::vector<int>{300, -1, -1, -1, -1, 3600, 300});
-  actual_predictions1.total_duration = base::Microseconds(45200);
+  actual_predictions1.total_duration = base::Microseconds(45500);
   pipeline_reporter_->CalculateEventLatencyPrediction(
       actual_predictions1, kLatencyPredictionDeviationThreshold);
 
   std::unique_ptr<EventMetrics>& event_metrics =
       pipeline_reporter_->events_metrics_for_testing()[0];
   std::vector<std::string> attribution = event_metrics->GetHighLatencyStages();
-  EXPECT_EQ(2, (int)attribution.size());
-  EXPECT_EQ("GenerationToRendererCompositor", attribution[0]);
+  EXPECT_EQ(2, static_cast<int>(attribution.size()));
+  EXPECT_EQ("GenerationToBrowserMain", attribution[0]);
   EXPECT_EQ("EndActivateToSubmitCompositorFrame", attribution[1]);
   event_metrics->ClearHighLatencyStagesForTesting();
 
@@ -2105,18 +2180,18 @@ TEST_F(CompositorFrameReporterTest, EventLatencyAttributionChangePredictions) {
       CompositorFrameReporter::EventLatencyInfo(kNumDispatchStages,
                                                 kNumOfCompositorStages);
   IntToTimeDeltaVector(expected_predictions2.dispatch_durations,
-                       std::vector<int>{10225, -1, -1, 300, 12725});
+                       std::vector<int>{10225, 262, -1, -1, 262, 12725});
   expected_predictions2.transition_duration = base::Microseconds(300);
 
   IntToTimeDeltaVector(expected_predictions2.compositor_durations,
                        std::vector<int>{300, -1, -1, -1, -1, 12725, 300});
-  expected_predictions2.total_duration = base::Microseconds(36875);
+  expected_predictions2.total_duration = base::Microseconds(37099);
 
   CompositorFrameReporter::EventLatencyInfo actual_predictions2 =
       CompositorFrameReporter::EventLatencyInfo(kNumDispatchStages,
                                                 kNumOfCompositorStages);
   IntToTimeDeltaVector(actual_predictions2.dispatch_durations,
-                       std::vector<int>{300, -1, -1, 300, 300});
+                       std::vector<int>{300, 300, -1, -1, 300, 300});
   actual_predictions2.transition_duration = base::Microseconds(300);
   IntToTimeDeltaVector(actual_predictions2.compositor_durations,
                        std::vector<int>{300, -1, -1, -1, -1, 300, 300});

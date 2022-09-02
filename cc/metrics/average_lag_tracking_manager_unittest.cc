@@ -58,14 +58,15 @@ class AverageLagTrackingManagerTest : public testing::Test {
     int events_count = gpu_swap_times[0] / scroll_rate;
     EventMetricsSet events;
     base::TimeTicks event_time = MillisecondsToTimeTicks(scroll_rate);
+    base::TimeDelta time_to_rwh = base::Milliseconds(1);
     events.main_event_metrics.push_back(PrepareScrollUpdateEvent(
         ScrollUpdateEventMetrics::ScrollUpdateType::kStarted, event_time,
-        scroll_delta));
+        event_time + time_to_rwh, scroll_delta));
     for (int i = 1; i < events_count; i++) {
       event_time += base::Milliseconds(scroll_rate);
       events.main_event_metrics.push_back(PrepareScrollUpdateEvent(
           ScrollUpdateEventMetrics::ScrollUpdateType::kContinued, event_time,
-          scroll_delta));
+          event_time + time_to_rwh, scroll_delta));
     }
     average_lag_tracking_manager_.CollectScrollEventsFromFrame(0, events);
 
@@ -78,7 +79,7 @@ class AverageLagTrackingManagerTest : public testing::Test {
         event_time += base::Milliseconds(scroll_rate);
         events.main_event_metrics.push_back(PrepareScrollUpdateEvent(
             ScrollUpdateEventMetrics::ScrollUpdateType::kContinued, event_time,
-            scroll_delta));
+            event_time + time_to_rwh, scroll_delta));
       }
       average_lag_tracking_manager_.CollectScrollEventsFromFrame(frame, events);
     }
@@ -88,11 +89,13 @@ class AverageLagTrackingManagerTest : public testing::Test {
   std::unique_ptr<ScrollUpdateEventMetrics> PrepareScrollUpdateEvent(
       ScrollUpdateEventMetrics::ScrollUpdateType scroll_update_type,
       base::TimeTicks event_time,
+      base::TimeTicks arrived_in_browser_main_timestamp,
       float delta) {
     const bool kScrollIsNotInertial = false;
     return ScrollUpdateEventMetrics::Create(
         ui::ET_GESTURE_SCROLL_UPDATE, ui::ScrollInputType::kTouchscreen,
-        kScrollIsNotInertial, scroll_update_type, delta, event_time);
+        kScrollIsNotInertial, scroll_update_type, delta, event_time,
+        arrived_in_browser_main_timestamp);
   }
 
   AverageLagTrackingManager average_lag_tracking_manager_;
@@ -108,18 +111,21 @@ TEST_F(AverageLagTrackingManagerTest, OneSecondInterval) {
   const float scroll_delta = 10.0f;
 
   base::TimeTicks event_time = MillisecondsToTimeTicks(5);
+  base::TimeTicks arrived_in_browser_main_timestamp =
+      MillisecondsToTimeTicks(7);
   base::TimeTicks gpu_swap_time = MillisecondsToTimeTicks(10);
   base::TimeTicks presentation_time = MillisecondsToTimeTicks(13);
   int frame_id = 1;
 
   // ScrollBegin
-  event_time += base::Milliseconds(10);         // 15ms
-  gpu_swap_time += base::Milliseconds(10);      // 20ms
-  presentation_time += base::Milliseconds(10);  // 23ms
+  event_time += base::Milliseconds(10);                         // 15ms
+  arrived_in_browser_main_timestamp += base::Milliseconds(10);  // 17ms
+  gpu_swap_time += base::Milliseconds(10);                      // 20ms
+  presentation_time += base::Milliseconds(10);                  // 23ms
   EventMetricsSet events;
   events.main_event_metrics.push_back(PrepareScrollUpdateEvent(
       ScrollUpdateEventMetrics::ScrollUpdateType::kStarted, event_time,
-      scroll_delta));
+      arrived_in_browser_main_timestamp, scroll_delta));
   average_lag_tracking_manager_.CollectScrollEventsFromFrame(frame_id, events);
   average_lag_tracking_manager_.DidPresentCompositorFrame(
       frame_id, PrepareFrameDetails(gpu_swap_time, presentation_time));
@@ -129,6 +135,7 @@ TEST_F(AverageLagTrackingManagerTest, OneSecondInterval) {
   const int kUpdates = 101;
   for (int i = 0; i < kUpdates; i++) {
     event_time += base::Milliseconds(10);
+    arrived_in_browser_main_timestamp += base::Milliseconds(10);
     gpu_swap_time += base::Milliseconds(10);
     presentation_time += base::Milliseconds(10);
     // First 50 has positive delta, others negative delta.
@@ -137,7 +144,7 @@ TEST_F(AverageLagTrackingManagerTest, OneSecondInterval) {
     events.main_event_metrics.clear();
     events.main_event_metrics.push_back(PrepareScrollUpdateEvent(
         ScrollUpdateEventMetrics::ScrollUpdateType::kContinued, event_time,
-        sign * scroll_delta));
+        arrived_in_browser_main_timestamp, sign * scroll_delta));
     average_lag_tracking_manager_.CollectScrollEventsFromFrame(frame_id,
                                                                events);
     average_lag_tracking_manager_.DidPresentCompositorFrame(
@@ -148,6 +155,7 @@ TEST_F(AverageLagTrackingManagerTest, OneSecondInterval) {
   // at 1020ms. The last event_time that finish this report should be later than
   // 1020ms.
   EXPECT_EQ(event_time, MillisecondsToTimeTicks(1025));
+  EXPECT_EQ(arrived_in_browser_main_timestamp, MillisecondsToTimeTicks(1027));
   EXPECT_EQ(gpu_swap_time, MillisecondsToTimeTicks(1030));
   EXPECT_EQ(presentation_time, MillisecondsToTimeTicks(1033));
 
@@ -215,6 +223,7 @@ TEST_F(AverageLagTrackingManagerTest, OutOfOrderPresentationFeedback) {
   const float scroll_delta = 100.0f;
 
   std::vector<int> event_times = {500, 1500, 2500, 3500};
+  std::vector<int> arrived_in_browser_main_timestamps = {700, 1700, 2700, 3700};
   std::vector<int> gpu_swap_times = {900, 1900, 2900, 3900};
   std::vector<int> presentation_times = {1000, 2000, 3000, 4000};
 
@@ -224,7 +233,9 @@ TEST_F(AverageLagTrackingManagerTest, OutOfOrderPresentationFeedback) {
   EventMetricsSet events;
   events.main_event_metrics.push_back(PrepareScrollUpdateEvent(
       ScrollUpdateEventMetrics::ScrollUpdateType::kStarted,
-      MillisecondsToTimeTicks(event_times[0]), scroll_delta));
+      MillisecondsToTimeTicks(event_times[0]),
+      MillisecondsToTimeTicks(arrived_in_browser_main_timestamps[0]),
+      scroll_delta));
   average_lag_tracking_manager_.CollectScrollEventsFromFrame(0, events);
   average_lag_tracking_manager_.DidPresentCompositorFrame(
       0, PrepareFrameDetails(MillisecondsToTimeTicks(gpu_swap_times[0]),
@@ -240,7 +251,9 @@ TEST_F(AverageLagTrackingManagerTest, OutOfOrderPresentationFeedback) {
   events.main_event_metrics.clear();
   events.main_event_metrics.push_back(PrepareScrollUpdateEvent(
       ScrollUpdateEventMetrics::ScrollUpdateType::kContinued,
-      MillisecondsToTimeTicks(event_times[1]), scroll_delta));
+      MillisecondsToTimeTicks(event_times[1]),
+      MillisecondsToTimeTicks(arrived_in_browser_main_timestamps[1]),
+      scroll_delta));
   average_lag_tracking_manager_.CollectScrollEventsFromFrame(1, events);
   histogram_tester.ExpectTotalCount(
       "Event.Latency.ScrollBegin.Touch.AverageLagPresentation", 0);
@@ -253,7 +266,9 @@ TEST_F(AverageLagTrackingManagerTest, OutOfOrderPresentationFeedback) {
   events.main_event_metrics.clear();
   events.main_event_metrics.push_back(PrepareScrollUpdateEvent(
       ScrollUpdateEventMetrics::ScrollUpdateType::kContinued,
-      MillisecondsToTimeTicks(event_times[2]), scroll_delta));
+      MillisecondsToTimeTicks(event_times[2]),
+      MillisecondsToTimeTicks(arrived_in_browser_main_timestamps[2]),
+      scroll_delta));
   average_lag_tracking_manager_.CollectScrollEventsFromFrame(2, events);
   average_lag_tracking_manager_.DidPresentCompositorFrame(
       2, PrepareFailedFrameDetails());
@@ -279,7 +294,9 @@ TEST_F(AverageLagTrackingManagerTest, OutOfOrderPresentationFeedback) {
   // frame 1 should be reported.
   events.main_event_metrics.push_back(PrepareScrollUpdateEvent(
       ScrollUpdateEventMetrics::ScrollUpdateType::kContinued,
-      MillisecondsToTimeTicks(event_times[3]), scroll_delta));
+      MillisecondsToTimeTicks(event_times[3]),
+      MillisecondsToTimeTicks(arrived_in_browser_main_timestamps[3]),
+      scroll_delta));
   average_lag_tracking_manager_.CollectScrollEventsFromFrame(3, events);
   average_lag_tracking_manager_.DidPresentCompositorFrame(
       3, PrepareFrameDetails(MillisecondsToTimeTicks(gpu_swap_times[3]),

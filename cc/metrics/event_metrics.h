@@ -66,6 +66,7 @@ class CC_EXPORT EventMetrics {
   // Stages of event dispatch in different processes/threads.
   enum class DispatchStage {
     kGenerated,
+    kArrivedInBrowserMain,
     kArrivedInRendererCompositor,
     kRendererCompositorStarted,
     kRendererCompositorFinished,
@@ -152,6 +153,11 @@ class CC_EXPORT EventMetrics {
                base::TimeTicks timestamp,
                const base::TickClock* tick_clock);
 
+  EventMetrics(EventType type,
+               base::TimeTicks timestamp,
+               base::TimeTicks arrived_in_browser_main_timestamp,
+               const base::TickClock* tick_clock);
+
   // Creates a clone of `other` that might be used in creating `EventMetrics`
   // objects for some injected events. Since this object itself does not
   // directly correspond to an event, it won't be used in recording trace
@@ -213,7 +219,20 @@ class CC_EXPORT ScrollEventMetrics : public EventMetrics {
   // Returns a new instance if the event is of a type we are interested in.
   // Otherwise, returns `nullptr`. Should only be used for scroll events other
   // than scroll-update.
+  //
+  // TODO(b/224960731): Fix tests and stop supporting the case when
+  // `arrived_in_browser_main_timestamp` is null.
   static std::unique_ptr<ScrollEventMetrics> Create(
+      ui::EventType type,
+      ui::ScrollInputType input_type,
+      bool is_inertial,
+      base::TimeTicks timestamp,
+      base::TimeTicks arrived_in_browser_main_timestamp);
+
+  // Prefer to use `Create()` above. This method is used only by the Browser
+  // process which have own breakdowns.
+  // Similar to `Create()` above but doesn't set kArrivedInBrowserMain.
+  static std::unique_ptr<ScrollEventMetrics> CreateForBrowser(
       ui::EventType type,
       ui::ScrollInputType input_type,
       bool is_inertial,
@@ -226,6 +245,7 @@ class CC_EXPORT ScrollEventMetrics : public EventMetrics {
       ui::ScrollInputType input_type,
       bool is_inertial,
       base::TimeTicks timestamp,
+      base::TimeTicks arrived_in_browser_main_timestamp,
       const base::TickClock* tick_clock);
 
   // Used to create an instance for an event generated based on an existing
@@ -257,6 +277,7 @@ class CC_EXPORT ScrollEventMetrics : public EventMetrics {
   ScrollEventMetrics(EventType type,
                      ScrollType scroll_type,
                      base::TimeTicks timestamp,
+                     base::TimeTicks arrived_in_browser_main_timestamp,
                      const base::TickClock* tick_clock);
   ScrollEventMetrics(const ScrollEventMetrics&);
 
@@ -266,6 +287,7 @@ class CC_EXPORT ScrollEventMetrics : public EventMetrics {
       ui::ScrollInputType input_type,
       bool is_inertial,
       base::TimeTicks timestamp,
+      base::TimeTicks arrived_in_browser_main_timestamp,
       const base::TickClock* tick_clock);
 
   // Type of the input device for the event.
@@ -284,7 +306,22 @@ class CC_EXPORT ScrollUpdateEventMetrics : public ScrollEventMetrics {
 
   // Returns a new instance if the event is of a type we are interested in.
   // Otherwise, returns `nullptr`. Should only be used for scroll-update events.
+  //
+  // TODO(b/224960731): Fix tests and stop supporting the case when
+  // `arrived_in_browser_main_timestamp` is null.
   static std::unique_ptr<ScrollUpdateEventMetrics> Create(
+      ui::EventType type,
+      ui::ScrollInputType input_type,
+      bool is_inertial,
+      ScrollUpdateType scroll_update_type,
+      float delta,
+      base::TimeTicks timestamp,
+      base::TimeTicks arrived_in_browser_main_timestamp);
+
+  // Prefer to use `Create()` above. This method is used only by the Browser
+  // process which have own breakdowns.
+  // Similar to `Create()` above but doesn't set kArrivedInBrowserMain.
+  static std::unique_ptr<ScrollUpdateEventMetrics> CreateForBrowser(
       ui::EventType type,
       ui::ScrollInputType input_type,
       bool is_inertial,
@@ -301,6 +338,7 @@ class CC_EXPORT ScrollUpdateEventMetrics : public ScrollEventMetrics {
       ScrollUpdateType scroll_update_type,
       float delta,
       base::TimeTicks timestamp,
+      base::TimeTicks arrived_in_browser_main_timestamp,
       const base::TickClock* tick_clock);
 
   // Used to create an instance for an event generated based on an existing
@@ -342,6 +380,7 @@ class CC_EXPORT ScrollUpdateEventMetrics : public ScrollEventMetrics {
                            ScrollUpdateType scroll_update_type,
                            float delta,
                            base::TimeTicks timestamp,
+                           base::TimeTicks arrived_in_browser_main_timestamp,
                            const base::TickClock* tick_clock);
   ScrollUpdateEventMetrics(const ScrollUpdateEventMetrics&);
 
@@ -353,6 +392,7 @@ class CC_EXPORT ScrollUpdateEventMetrics : public ScrollEventMetrics {
       ScrollUpdateType scroll_update_type,
       float delta,
       base::TimeTicks timestamp,
+      base::TimeTicks arrived_in_browser_main_timestamp,
       const base::TickClock* tick_clock);
 
   float delta_;
