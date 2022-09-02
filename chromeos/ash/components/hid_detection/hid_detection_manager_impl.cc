@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/components/hid_detection/hid_detection_manager_impl.h"
+#include "chromeos/ash/components/hid_detection/hid_detection_manager_impl.h"
 
-#include "ash/components/hid_detection/bluetooth_hid_detector_impl.h"
-#include "ash/components/hid_detection/hid_detection_utils.h"
 #include "base/containers/contains.h"
 #include "base/no_destructor.h"
+#include "chromeos/ash/components/hid_detection/bluetooth_hid_detector_impl.h"
+#include "chromeos/ash/components/hid_detection/hid_detection_utils.h"
 #include "components/device_event_log/device_event_log.h"
 
 namespace ash::hid_detection {

@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_COMPONENTS_HID_DETECTION_BLUETOOTH_HID_DETECTOR_IMPL_H_
-#define ASH_COMPONENTS_HID_DETECTION_BLUETOOTH_HID_DETECTOR_IMPL_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_HID_DETECTION_BLUETOOTH_HID_DETECTOR_IMPL_H_
+#define CHROMEOS_ASH_COMPONENTS_HID_DETECTION_BLUETOOTH_HID_DETECTOR_IMPL_H_
 
-#include "ash/components/hid_detection/bluetooth_hid_detector.h"
+#include "chromeos/ash/components/hid_detection/bluetooth_hid_detector.h"
 
 #include "base/containers/flat_set.h"
 #include "base/containers/queue.h"
@@ -171,4 +171,4 @@ class BluetoothHidDetectorImpl
 
 }  // namespace ash::hid_detection
 
-#endif  // ASH_COMPONENTS_HID_DETECTION_BLUETOOTH_HID_DETECTOR_IMPL_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_HID_DETECTION_BLUETOOTH_HID_DETECTOR_IMPL_H_

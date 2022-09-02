@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_COMPONENTS_HID_DETECTION_HID_DETECTION_MANAGER_H_
-#define ASH_COMPONENTS_HID_DETECTION_HID_DETECTION_MANAGER_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_HID_DETECTION_HID_DETECTION_MANAGER_H_
+#define CHROMEOS_ASH_COMPONENTS_HID_DETECTION_HID_DETECTION_MANAGER_H_
 
 #include "base/callback.h"
 
-#include "ash/components/hid_detection/bluetooth_hid_detector.h"
+#include "chromeos/ash/components/hid_detection/bluetooth_hid_detector.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::hid_detection {
@@ -113,4 +113,4 @@ class HidDetectionManager {
 
 }  // namespace ash::hid_detection
 
-#endif  // ASH_COMPONENTS_HID_DETECTION_HID_DETECTION_MANAGER_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_HID_DETECTION_HID_DETECTION_MANAGER_H_

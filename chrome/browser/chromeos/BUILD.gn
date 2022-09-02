@@ -88,7 +88,6 @@ source_set("chromeos") {
     "//ash/components/arc/media_session",
     "//ash/components/arc/mojom",
     "//ash/components/fwupd",
-    "//ash/components/hid_detection:hid_detection",
     "//ash/components/login/auth",
     "//ash/components/login/session",
     "//ash/components/multidevice",
@@ -321,6 +320,7 @@ source_set("chromeos") {
     "//chromeos/ash/components/feature_usage",
     "//chromeos/ash/components/geolocation",
     "//chromeos/ash/components/hibernate:buildflags",
+    "//chromeos/ash/components/hid_detection",
     "//chromeos/ash/components/install_attributes",
     "//chromeos/ash/components/language/language_packs",
     "//chromeos/ash/components/language/public/mojom",
@@ -2397,11 +2397,11 @@ source_set("chromeos") {
       "../ash/chromebox_for_meetings/service_adaptor.h",
     ]
     deps += [
-      "//ash/components/hid_detection:hid_detection",
       "//ash/services/chromebox_for_meetings/public/cpp",
       "//ash/services/chromebox_for_meetings/public/mojom",
       "//chromeos/ash/components/chromebox_for_meetings",
       "//chromeos/ash/components/dbus/chromebox_for_meetings",
+      "//chromeos/ash/components/hid_detection",
       "//components/reporting/client:report_queue",
       "//components/reporting/client:report_queue_configuration",
       "//components/reporting/client:report_queue_provider",

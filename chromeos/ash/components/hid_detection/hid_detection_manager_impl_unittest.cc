@@ -2,20 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/components/hid_detection/hid_detection_manager_impl.h"
+#include "chromeos/ash/components/hid_detection/hid_detection_manager_impl.h"
 
-#include "ash/components/hid_detection/bluetooth_hid_detector.h"
-#include "ash/components/hid_detection/fake_bluetooth_hid_detector.h"
-#include "ash/components/hid_detection/hid_detection_utils.h"
 #include "ash/constants/ash_features.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "chromeos/ash/components/hid_detection/bluetooth_hid_detector.h"
+#include "chromeos/ash/components/hid_detection/fake_bluetooth_hid_detector.h"
+#include "chromeos/ash/components/hid_detection/hid_detection_utils.h"
 #include "services/device/public/cpp/hid/fake_input_service_linux.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash::hid_detection {
+
 namespace {
 
 using BluetoothHidMetadata = BluetoothHidDetector::BluetoothHidMetadata;

@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_COMPONENTS_HID_DETECTION_HID_DETECTION_MANAGER_IMPL_H_
-#define ASH_COMPONENTS_HID_DETECTION_HID_DETECTION_MANAGER_IMPL_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_HID_DETECTION_HID_DETECTION_MANAGER_IMPL_H_
+#define CHROMEOS_ASH_COMPONENTS_HID_DETECTION_HID_DETECTION_MANAGER_IMPL_H_
 
-#include "ash/components/hid_detection/hid_detection_manager.h"
+#include "chromeos/ash/components/hid_detection/hid_detection_manager.h"
 
-#include "ash/components/hid_detection/bluetooth_hid_detector.h"
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "chromeos/ash/components/hid_detection/bluetooth_hid_detector.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -114,4 +114,4 @@ class HidDetectionManagerImpl : public HidDetectionManager,
 
 }  // namespace ash::hid_detection
 
-#endif  // ASH_COMPONENTS_HID_DETECTION_HID_DETECTION_MANAGER_IMPL_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_HID_DETECTION_HID_DETECTION_MANAGER_IMPL_H_

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/components/hid_detection/bluetooth_hid_detector_impl.h"
+#include "chromeos/ash/components/hid_detection/bluetooth_hid_detector_impl.h"
 #include "ash/public/cpp/bluetooth_config_service.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/device_event_log/device_event_log.h"

@@ -24,7 +24,6 @@ test("ash_components_unittests") {
     "//ash/components/arc/mojom:unit_tests",
     "//ash/components/arc/session:unit_tests",
     "//ash/components/fwupd:unit_tests",
-    "//ash/components/hid_detection:unit_tests",
     "//ash/components/login/auth:unit_tests",
     "//ash/components/login/hibernate:unit_tests",
     "//ash/components/login/session:unit_tests",

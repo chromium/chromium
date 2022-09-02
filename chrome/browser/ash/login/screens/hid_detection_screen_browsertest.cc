@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/components/hid_detection/bluetooth_hid_detector.h"
-#include "ash/components/hid_detection/fake_hid_detection_manager.h"
-#include "ash/components/hid_detection/hid_detection_manager.h"
-#include "ash/components/hid_detection/hid_detection_utils.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "base/bind.h"
@@ -31,6 +27,10 @@
 #include "chrome/browser/ui/webui/chromeos/login/hid_detection_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/network_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/welcome_screen_handler.h"
+#include "chromeos/ash/components/hid_detection/bluetooth_hid_detector.h"
+#include "chromeos/ash/components/hid_detection/fake_hid_detection_manager.h"
+#include "chromeos/ash/components/hid_detection/hid_detection_manager.h"
+#include "chromeos/ash/components/hid_detection/hid_detection_utils.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_launcher.h"
 #include "device/bluetooth/test/mock_bluetooth_device.h"

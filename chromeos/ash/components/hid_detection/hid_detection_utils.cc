@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/components/hid_detection/hid_detection_utils.h"
+#include "chromeos/ash/components/hid_detection/hid_detection_utils.h"
 
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"

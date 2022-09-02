@@ -7,8 +7,6 @@
 #include <memory>
 #include <utility>
 
-#include "ash/components/hid_detection/hid_detection_manager_impl.h"
-#include "ash/components/hid_detection/hid_detection_utils.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "base/bind.h"
@@ -25,6 +23,8 @@
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ui/webui/chromeos/login/hid_detection_screen_handler.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/ash/components/hid_detection/hid_detection_manager_impl.h"
+#include "chromeos/ash/components/hid_detection/hid_detection_utils.h"
 #include "chromeos/constants/devicetype.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/device_service.h"

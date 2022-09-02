@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_COMPONENTS_HID_DETECTION_FAKE_HID_DETECTION_MANAGER_H_
-#define ASH_COMPONENTS_HID_DETECTION_FAKE_HID_DETECTION_MANAGER_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_HID_DETECTION_FAKE_HID_DETECTION_MANAGER_H_
+#define CHROMEOS_ASH_COMPONENTS_HID_DETECTION_FAKE_HID_DETECTION_MANAGER_H_
 
-#include "ash/components/hid_detection/hid_detection_manager.h"
+#include "chromeos/ash/components/hid_detection/hid_detection_manager.h"
 
 #include "base/callback.h"
 
@@ -43,4 +43,4 @@ class FakeHidDetectionManager : public HidDetectionManager {
 
 }  // namespace ash::hid_detection
 
-#endif  // ASH_COMPONENTS_HID_DETECTION_FAKE_HID_DETECTION_MANAGER_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_HID_DETECTION_FAKE_HID_DETECTION_MANAGER_H_
