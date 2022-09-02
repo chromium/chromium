@@ -141,14 +141,6 @@ class HeapProfilerControllerTest : public ::testing::Test {
         ResetChildCallStackProfileCollectorForTesting();
   }
 
-#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE) && defined(ARCH_CPU_ARM64)
-  void SetUp() override {
-    // TODO(crbug.com/1297724): The heap profiler is never started on these
-    // platforms so there is nothing to test.
-    GTEST_SKIP();
-  }
-#endif
-
   void StartHeapProfiling(version_info::Channel channel,
                           ProcessType process_type,
                           ProfileCollectorCallback collector_callback) {

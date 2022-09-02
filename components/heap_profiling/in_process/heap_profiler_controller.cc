@@ -62,18 +62,18 @@ constexpr int kDefaultCollectionIntervalInMinutes = 24 * 60;
 
 // Semicolon-separated list of process names to support. (More convenient than
 // commas, which must be url-escaped in the --enable-features command line.)
-[[maybe_unused]] constexpr base::FeatureParam<std::string> kSupportedProcesses{
+constexpr base::FeatureParam<std::string> kSupportedProcesses{
     &HeapProfilerController::kHeapProfilerReporting, "supported-processes",
     "browser"};
 
 // Sets the chance that this client will report heap samples through a metrics
 // provider if it's on the stable channel.
-[[maybe_unused]] constexpr base::FeatureParam<double> kStableProbability {
+constexpr base::FeatureParam<double> kStableProbability {
   &HeapProfilerController::kHeapProfilerReporting, "stable-probability",
 #if BUILDFLAG(IS_ANDROID)
       // With stable-probability 0.01 we get about 4x as many records as before
-      // https://crrev.com/c/3309878 landed in 98.0.4742.0, even with ARM64
-      // disabled. This is too high a volume to process.
+      // https://crrev.com/c/3309878 landed in 98.0.4742.0. This is too high a
+      // volume to process.
       0.0025
 #else
       0.01
@@ -82,7 +82,7 @@ constexpr int kDefaultCollectionIntervalInMinutes = 24 * 60;
 
 // Sets the chance that this client will report heap samples through a metrics
 // provider if it's on a non-stable channel.
-[[maybe_unused]] constexpr base::FeatureParam<double> kNonStableProbability{
+constexpr base::FeatureParam<double> kNonStableProbability{
     &HeapProfilerController::kHeapProfilerReporting, "nonstable-probability",
     0.5};
 
@@ -155,12 +155,6 @@ std::string ProcessHistogramName(base::StringPiece base_name,
 
 ProfilingEnabled DecideIfCollectionIsEnabled(version_info::Channel channel,
                                              ProcessType process_type) {
-#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE) && defined(ARCH_CPU_ARM64)
-  // TODO(crbug.com/1297724): Remove this early return after validating that
-  // there are no crashes in ModuleCache::CreateModuleForAddress on ARM64. Also
-  // re-enable the tests in heap_profiler_controller_unittests.cc.
-  return ProfilingEnabled::kDisabled;
-#else
   if (!base::FeatureList::IsEnabled(
           HeapProfilerController::kHeapProfilerReporting)) {
     return ProfilingEnabled::kDisabled;
@@ -181,7 +175,6 @@ ProfilingEnabled DecideIfCollectionIsEnabled(version_info::Channel channel,
   if (base::RandDouble() >= probability)
     return ProfilingEnabled::kDisabled;
   return ProfilingEnabled::kEnabled;
-#endif
 }
 
 // Records a time histogram for the `interval` between snapshots, using the
