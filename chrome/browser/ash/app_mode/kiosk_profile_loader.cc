@@ -21,6 +21,7 @@
 #include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
 #include "chrome/browser/ash/login/auth/chrome_login_performer.h"
+#include "chrome/browser/ash/login/session/user_session_manager.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
@@ -188,7 +189,7 @@ void KioskProfileLoader::OnAuthSuccess(const UserContext& user_context) {
       user_context, UserSessionManager::StartSessionType::kPrimary,
       false,  // has_auth_cookies
       false,  // Start session for user.
-      this);
+      AsWeakPtr());
 }
 
 void KioskProfileLoader::OnAuthFailure(const AuthFailure& error) {
@@ -224,10 +225,6 @@ void KioskProfileLoader::OnOldEncryptionDetected(
 
 void KioskProfileLoader::OnProfilePrepared(Profile* profile,
                                            bool browser_launched) {
-  // This object could be deleted any time after successfully reporting
-  // a profile load, so invalidate the delegate now.
-  UserSessionManager::GetInstance()->DelegateDeleted(this);
-
   delegate_->OnProfileLoaded(profile);
   ReportLaunchResult(KioskAppLaunchError::Error::kNone);
 }

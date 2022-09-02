@@ -534,12 +534,7 @@ void ExistingUserController::Observe(
 ////////////////////////////////////////////////////////////////////////////////
 // ExistingUserController, private:
 
-ExistingUserController::~ExistingUserController() {
-  if (browser_shutdown::IsTryingToQuit() || chrome::IsAttemptingShutdown())
-    return;
-  CHECK(UserSessionManager::GetInstance());
-  UserSessionManager::GetInstance()->DelegateDeleted(this);
-}
+ExistingUserController::~ExistingUserController() = default;
 
 ////////////////////////////////////////////////////////////////////////////////
 // ExistingUserController, LoginDisplay::Delegate implementation:
@@ -966,7 +961,7 @@ void ExistingUserController::ContinueAuthSuccessAfterResumeAttempt(
   UserSessionManager::GetInstance()->StartSession(
       user_context, start_session_type, has_auth_cookies,
       false,  // Start session for user.
-      this);
+      AsWeakPtr());
 
   // Update user's displayed email.
   if (!display_email_.empty()) {

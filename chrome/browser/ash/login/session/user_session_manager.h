@@ -70,7 +70,8 @@ namespace test {
 class UserSessionManagerTestApi;
 }  // namespace test
 
-class UserSessionManagerDelegate {
+class UserSessionManagerDelegate
+    : public base::SupportsWeakPtr<UserSessionManagerDelegate> {
  public:
   // Called after profile is loaded and prepared for the session.
   // `browser_launched` will be true is browser has been launched, otherwise
@@ -106,7 +107,6 @@ class UserAuthenticatorObserver : public base::CheckedObserver {
 class UserSessionManager
     : public OAuth2LoginManager::Observer,
       public network::NetworkConnectionTracker::NetworkConnectionObserver,
-      public base::SupportsWeakPtr<UserSessionManager>,
       public UserSessionManagerDelegate,
       public user_manager::UserManager::UserSessionStateObserver,
       public user_manager::UserManager::Observer {
@@ -194,10 +194,7 @@ class UserSessionManager
                     StartSessionType start_session_type,
                     bool has_auth_cookies,
                     bool has_active_session,
-                    UserSessionManagerDelegate* delegate);
-
-  // Invalidates `delegate`, which was passed to StartSession method call.
-  void DelegateDeleted(UserSessionManagerDelegate* delegate);
+                    base::WeakPtr<UserSessionManagerDelegate> delegate);
 
   // Perform additional actions once system wide notification
   // "UserLoggedIn" has been sent.
@@ -357,6 +354,8 @@ class UserSessionManager
   // if a notification for the help app has not yet been shown in the current
   // milestone.
   void MaybeShowHelpAppDiscoverNotification(Profile* profile);
+
+  base::WeakPtr<UserSessionManager> GetUserSessionManagerAsWeakPtr();
 
  protected:
   // Protected for testability reasons.
@@ -549,7 +548,7 @@ class UserSessionManager
   HelpAppNotificationController* GetHelpAppNotificationController(
       Profile* profile);
 
-  UserSessionManagerDelegate* delegate_;
+  base::WeakPtr<UserSessionManagerDelegate> delegate_;
 
   // Used to listen to network changes.
   network::NetworkConnectionTracker* network_connection_tracker_;

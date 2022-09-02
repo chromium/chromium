@@ -569,7 +569,7 @@ UserSessionManager::UserSessionManager()
   user_manager::UserManager::Get()->AddObserver(this);
   content::GetNetworkConnectionTrackerFromUIThread(
       base::BindOnce(&UserSessionManager::SetNetworkConnectionTracker,
-                     weak_factory_.GetWeakPtr()));
+                     GetUserSessionManagerAsWeakPtr()));
   // TODO(crbug/1341307): Remove the log after the feature settles in Stable.
   LOG(WARNING) << "UseAuthsessionAuthentication experiment is "
                << (base::FeatureList::IsEnabled(
@@ -716,17 +716,18 @@ scoped_refptr<Authenticator> UserSessionManager::CreateAuthenticator(
   return authenticator_;
 }
 
-void UserSessionManager::StartSession(const UserContext& user_context,
-                                      StartSessionType start_session_type,
-                                      bool has_auth_cookies,
-                                      bool has_active_session,
-                                      UserSessionManagerDelegate* delegate) {
+void UserSessionManager::StartSession(
+    const UserContext& user_context,
+    StartSessionType start_session_type,
+    bool has_auth_cookies,
+    bool has_active_session,
+    base::WeakPtr<UserSessionManagerDelegate> delegate) {
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(kEventCategoryChromeOS, kEventStartSession,
                                     TRACE_ID_LOCAL(this));
 
   easy_unlock_key_ops_finished_ = false;
 
-  delegate_ = delegate;
+  delegate_ = std::move(delegate);
   start_session_type_ = start_session_type;
 
   VLOG(1) << "Starting user session.";
@@ -746,12 +747,7 @@ void UserSessionManager::StartSession(const UserContext& user_context,
       kEventCategoryChromeOS, kEventPrePrepareProfile, TRACE_ID_LOCAL(this));
   InitDemoSessionIfNeeded(base::BindOnce(
       &UserSessionManager::UpdateArcFileSystemCompatibilityAndPrepareProfile,
-      AsWeakPtr()));
-}
-
-void UserSessionManager::DelegateDeleted(UserSessionManagerDelegate* delegate) {
-  if (delegate_ == delegate)
-    delegate_ = nullptr;
+      GetUserSessionManagerAsWeakPtr()));
 }
 
 void UserSessionManager::PerformPostUserLoggedInActions() {
@@ -801,8 +797,9 @@ void UserSessionManager::RestoreAuthenticationSession(Profile* user_profile) {
 
 void UserSessionManager::RestoreActiveSessions() {
   user_sessions_restore_in_progress_ = true;
-  SessionManagerClient::Get()->RetrieveActiveSessions(base::BindOnce(
-      &UserSessionManager::OnRestoreActiveSessions, AsWeakPtr()));
+  SessionManagerClient::Get()->RetrieveActiveSessions(
+      base::BindOnce(&UserSessionManager::OnRestoreActiveSessions,
+                     GetUserSessionManagerAsWeakPtr()));
 }
 
 bool UserSessionManager::UserSessionsRestored() const {
@@ -1255,7 +1252,8 @@ void UserSessionManager::VoteForSavingLoginPassword(
     // session.
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE, base::BindOnce(&UserSessionManager::LoadShillProfile,
-                                  AsWeakPtr(), user_context_.GetAccountId()));
+                                  GetUserSessionManagerAsWeakPtr(),
+                                  user_context_.GetAccountId()));
   }
 
   // Prevent this code from being called twice from two services or else the
@@ -1296,7 +1294,7 @@ void UserSessionManager::UpdateArcFileSystemCompatibilityAndPrepareProfile() {
       user_context_.GetAccountId(),
       ProfileHelper::GetProfilePathByUserIdHash(user_context_.GetUserIDHash()),
       base::BindOnce(&UserSessionManager::InitializeAccountManager,
-                     AsWeakPtr()));
+                     GetUserSessionManagerAsWeakPtr()));
 }
 
 void UserSessionManager::InitializeAccountManager() {
@@ -1306,7 +1304,8 @@ void UserSessionManager::InitializeAccountManager() {
   if (ProfileHelper::IsRegularProfilePath(profile_path)) {
     ash::InitializeAccountManager(
         profile_path,
-        base::BindOnce(&UserSessionManager::PrepareProfile, AsWeakPtr(),
+        base::BindOnce(&UserSessionManager::PrepareProfile,
+                       GetUserSessionManagerAsWeakPtr(),
                        profile_path) /* initialization_callback */);
   } else {
     PrepareProfile(profile_path);
@@ -1333,7 +1332,7 @@ void UserSessionManager::PrepareProfile(const base::FilePath& profile_path) {
             // this profile.
             self->UserProfileInitialized(profile, user_context.GetAccountId());
           },
-          AsWeakPtr(), user_context_),
+          GetUserSessionManagerAsWeakPtr(), user_context_),
       /*created_callback=*/
       base::BindOnce(
           [](base::WeakPtr<UserSessionManager> self,
@@ -1343,7 +1342,7 @@ void UserSessionManager::PrepareProfile(const base::FilePath& profile_path) {
             // promo resources.
             self->InitProfilePreferences(profile, user_context);
           },
-          AsWeakPtr(), user_context_));
+          GetUserSessionManagerAsWeakPtr(), user_context_));
 }
 
 void UserSessionManager::InitProfilePreferences(
@@ -1482,7 +1481,7 @@ void UserSessionManager::InitProfilePreferences(
           std::make_unique<DeviceAccountGaiaTokenObserver>(
               account_manager, user->GetAccountId(),
               base::BindRepeating(&UserSessionManager::UpdateTokenHandle,
-                                  weak_factory_.GetWeakPtr(), profile));
+                                  GetUserSessionManagerAsWeakPtr(), profile));
       auto it = token_observers_.find(profile);
       if (it == token_observers_.end()) {
         token_observers_.emplace(profile,
@@ -1595,13 +1594,13 @@ void UserSessionManager::UserProfileInitialized(Profile* profile,
           transfer_saml_auth_cookies_on_subsequent_login,
           base::BindOnce(
               &UserSessionManager::CompleteProfileCreateAfterAuthTransfer,
-              AsWeakPtr(), profile));
+              GetUserSessionManagerAsWeakPtr(), profile));
     } else {
       base::ThreadTaskRunnerHandle::Get()->PostTask(
           FROM_HERE,
           base::BindOnce(
               &UserSessionManager::CompleteProfileCreateAfterAuthTransfer,
-              AsWeakPtr(), profile));
+              GetUserSessionManagerAsWeakPtr(), profile));
     }
     return;
   }
@@ -1715,7 +1714,7 @@ void UserSessionManager::FinalizePrepareProfile(Profile* profile) {
         DCHECK(child_policy_observer_);
         child_policy_observer_->NotifyWhenPolicyReady(
             base::BindOnce(&UserSessionManager::OnChildPolicyReady,
-                           weak_factory_.GetWeakPtr()),
+                           GetUserSessionManagerAsWeakPtr()),
             kWaitForChildPolicyTimeout);
         return;
       }
@@ -1753,7 +1752,7 @@ void UserSessionManager::InitializeBrowser(Profile* profile) {
             profile->GetPrefs(), GetActivityTimeBeforeOnboardingSurvey(),
             base::BindOnce(
                 &UserSessionManager::OnUserEligibleForOnboardingSurvey,
-                weak_factory_.GetWeakPtr(), profile));
+                GetUserSessionManagerAsWeakPtr(), profile));
   }
 }
 
@@ -1777,7 +1776,7 @@ bool UserSessionManager::MaybeStartNewUserOnboarding(Profile* profile) {
       ChildAccountServiceFactory::GetForProfile(profile);
   child_service->AddChildStatusReceivedCallback(
       base::BindOnce(&UserSessionManager::ChildAccountStatusReceivedCallback,
-                     weak_factory_.GetWeakPtr(), profile));
+                     GetUserSessionManagerAsWeakPtr(), profile));
 
   PrefService* prefs = profile->GetPrefs();
   prefs->SetTime(prefs::kOobeOnboardingTime, base::Time::Now());
@@ -1848,7 +1847,7 @@ bool UserSessionManager::InitializeUserSession(Profile* profile) {
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&UserSessionManager::StopChildStatusObserving,
-                     weak_factory_.GetWeakPtr(), profile),
+                     GetUserSessionManagerAsWeakPtr(), profile),
       kFlagsFetchingLoginTimeout);
 
   user_manager::UserManager* user_manager = user_manager::UserManager::Get();
@@ -1965,7 +1964,7 @@ void UserSessionManager::NotifyUserProfileLoaded(
         token_handle_fetcher_->FillForNewUser(
             user_context_.GetAccessToken(),
             base::BindOnce(&UserSessionManager::OnTokenHandleObtained,
-                           weak_factory_.GetWeakPtr()));
+                           GetUserSessionManagerAsWeakPtr()));
       } else {
         // Existing user.
         UpdateTokenHandle(profile, user->GetAccountId());
@@ -2107,7 +2106,7 @@ void UserSessionManager::RestorePendingUserSessions() {
     StartSession(user_context, StartSessionType::kSecondaryAfterCrash,
                  false,  // has_auth_cookies
                  true,   // has_active_session, this is restart after crash
-                 this);
+                 AsWeakPtr());
   } else {
     RestorePendingUserSessions();
   }
@@ -2174,7 +2173,8 @@ void UserSessionManager::UpdateEasyUnlockKeys(const UserContext& user_context) {
   key_manager->RefreshKeys(
       user_context, *device_list,
       base::BindOnce(&UserSessionManager::OnEasyUnlockKeyOpsFinished,
-                     AsWeakPtr(), user_context.GetAccountId()));
+                     GetUserSessionManagerAsWeakPtr(),
+                     user_context.GetAccountId()));
 }
 
 void UserSessionManager::OnEasyUnlockKeyOpsFinished(const AccountId& account_id,
@@ -2262,9 +2262,10 @@ void UserSessionManager::DoBrowserLaunchInternal(Profile* profile,
 
   if (!locale_pref_checked) {
     RespectLocalePreferenceWrapper(
-        profile, base::BindRepeating(
-                     &UserSessionManager::DoBrowserLaunchInternal, AsWeakPtr(),
-                     profile, /*locale_pref_checked=*/true));
+        profile,
+        base::BindRepeating(&UserSessionManager::DoBrowserLaunchInternal,
+                            GetUserSessionManagerAsWeakPtr(), profile,
+                            /*locale_pref_checked=*/true));
     return;
   }
 
@@ -2499,6 +2500,11 @@ void UserSessionManager::MaybeShowHelpAppReleaseNotesNotification(
       ->MaybeShowReleaseNotesNotification();
 }
 
+base::WeakPtr<UserSessionManager>
+UserSessionManager::GetUserSessionManagerAsWeakPtr() {
+  return weak_factory_.GetWeakPtr();
+}
+
 void UserSessionManager::MaybeShowHelpAppDiscoverNotification(
     Profile* profile) {
   if (!ProfileHelper::IsPrimaryProfile(profile))
@@ -2528,7 +2534,7 @@ void UserSessionManager::UpdateTokenHandle(Profile* const profile,
       token_handle_util_.get(), account_id);
   token_handle_fetcher_->BackfillToken(
       profile, base::BindOnce(&UserSessionManager::OnTokenHandleObtained,
-                              weak_factory_.GetWeakPtr()));
+                              GetUserSessionManagerAsWeakPtr()));
   token_handle_backfill_tried_for_testing_ = true;
 }
 
