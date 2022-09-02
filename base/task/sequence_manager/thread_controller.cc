@@ -237,14 +237,14 @@ void ThreadController::RunLevelTracker::RunLevel::UpdateState(
 
   // Change of state.
   if (is_active) {
-    TRACE_EVENT_BEGIN("base", "ThreadController active", lazy_now.Now());
+    TRACE_EVENT_BEGIN("base", "ThreadController active");
     // Overriding the annotation from the previous RunLevel is intentional. Only
     // the top RunLevel is ever updated, which holds the relevant state.
     thread_controller_sample_metadata_.Set(
         static_cast<int64_t>(++thread_controller_active_id_));
   } else {
     thread_controller_sample_metadata_.Remove();
-    TRACE_EVENT_END("base", lazy_now.Now());
+    TRACE_EVENT_END("base");
     // TODO(crbug.com/1021571): Remove this once fixed.
     PERFETTO_INTERNAL_ADD_EMPTY_EVENT();
   }
