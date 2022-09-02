@@ -43,18 +43,10 @@ DesktopMediaPickerFactoryImpl::CreateMediaList(
     const std::vector<DesktopMediaList::Type>& types,
     content::WebContents* web_contents,
     DesktopMediaList::WebContentsFilter includable_web_contents_filter) {
-  // We'll be including Windows if we are either directly asked to build a list
-  // for them, or if we're using pipewire and building a list for the Screen,
-  // since PipeWire then also includes the Windows.
-  const bool will_include_windows =
-      base::Contains(types, DesktopMediaList::Type::kWindow) ||
-      (content::desktop_capture::CanUsePipeWire() &&
-       base::Contains(types, DesktopMediaList::Type::kScreen));
-
   // If we're supposed to include Tabs, but aren't including Windows (either
   // directly or indirectly), then we need to add Chrome App Windows back in.
   const bool add_chrome_app_windows =
-      !will_include_windows &&
+      !base::Contains(types, DesktopMediaList::Type::kWindow) &&
       base::Contains(types, DesktopMediaList::Type::kWebContents);
   // Keep same order as the input |sources| and avoid duplicates.
   std::vector<std::unique_ptr<DesktopMediaList>> source_lists;

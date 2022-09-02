@@ -327,14 +327,6 @@ void DisplayMediaAccessHandler::ProcessQueuedPickerRequest(
 
   capture_policy::FilterMediaList(media_types, capture_level);
 
-  // Avoid offering window-capture as a separate source, since PipeWire's
-  // content-picker will offer both screen and window sources.
-  // See crbug.com/1157006.
-  if (content::desktop_capture::CanUsePipeWire() &&
-      base::Contains(media_types, DesktopMediaList::Type::kScreen)) {
-    base::Erase(media_types, DesktopMediaList::Type::kWindow);
-  }
-
   auto includable_web_contents_filter =
       capture_policy::GetIncludableWebContentsFilter(request_origin,
                                                      capture_level);

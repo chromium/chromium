@@ -146,14 +146,6 @@ DesktopCaptureChooseDesktopMediaFunctionBase::Execute(
         std::move(includable_web_contents_filter), web_contents);
   }
 
-  // Avoid offering window-capture as a separate source, since PipeWire's
-  // content-picker will offer both screen and window sources.
-  // See crbug.com/1157006.
-  if (content::desktop_capture::CanUsePipeWire() &&
-      base::Contains(media_types, DesktopMediaList::Type::kScreen)) {
-    base::Erase(media_types, DesktopMediaList::Type::kWindow);
-  }
-
   DesktopMediaPickerController::DoneCallback callback = base::BindOnce(
       &DesktopCaptureChooseDesktopMediaFunctionBase::OnPickerDialogResults,
       this, origin, render_frame_host->GetGlobalId());
