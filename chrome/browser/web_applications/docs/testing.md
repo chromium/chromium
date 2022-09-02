@@ -11,10 +11,6 @@ When creating features in this system, it will probably involve creating a mixtu
 
 Please read [Testing In Chromium](../../../../docs/testing/testing_in_chromium.md) for general guidance on writing tests in chromium.
 
-## Future Improvements
-
-* Allow easy population of a [`FakeWebAppProvider`](../test/fake_web_app_provider.h) from a [`FakeWebAppRegistryController`](../fake_web_app_registry_controller.h).
-
 ## Terminology
 
 ### `Fake*` or `Test*` classes
@@ -44,11 +40,15 @@ Unit tests usually rely on "faking" or "mocking" out dependencies to allow one s
 This allows a unittest to create a part of the WebAppProvider system that uses all mocked or faked dependencies, allowing easy testing.
 
 
-### Tool: `FakeWebAppRegistryController`
+### Tool: `FakeWebAppProvider`
 
-The [`FakeWebAppRegistryController`](../test/fake_web_app_registry_controller.h) is basically a fake version of the WebAppProvider system, without using the [`WebAppProvider`](../web_app_provider.h) root class. This works well as long as none of the parts of the system are using [`WebAppProvider::Get`](https://source.chromium.org/search?q=WebAppProvider::Get), as this uses they `KeyedService` functionality on the `Profile` object, and the `FakeWebAppRegistryController` doesn't register itself with any of that.
+The [`FakeWebAppProvider`](../test/fake_web_app_provider.h) is basically a fake version of the WebAppProvider system, that uses the  [`WebAppProvider`](../web_app_provider.h) root class to set up subsystems and can be used to selectively set fake subsystems or shut them
+down on a per-demand basis to test system shutdown use-cases.
 
-`FakeWebAppRegistryController::database_factory()` is special: it allows you to programmatically create some LevelDB state (an offline registry snapshot) before any subsystem starts. This is useful to customize inputs and preconditions in unit tests. To do this, or for examples, see [`TestWebAppDatabaseFactory::WriteProtos`](https://source.chromium.org/search?q=TestWebAppDatabaseFactory::WriteProtos) and [`TestWebAppDatabaseFactory::WriteRegistry`](https://source.chromium.org/search?q=TestWebAppDatabaseFactory::WriteRegistry).
+Sometimes it may not be required to write/modify tests using the FakeWebAppProvider, especially if testing requires a state where
+the sync_bridge has not started yet. To that end, only the required dependencies for the [`WebAppRegistrar`](../web_app_registrar.h),
+[`WebAppSyncBridge`](../web_app_sync_bridge.h) and the [`FakeWebAppDatabaseFactory`](../test/fake_web_app_database_factory.h) is enough.
+See [`WebAppSyncBridgeUnitTest`](../web_app_sync_bridge_unittest.cc) for more info on how this can be done.
 
 ### Common issues & solutions
 
@@ -70,8 +70,6 @@ A good example set of browser tests is in [`web_app_browsertest.cc`](../../ui/we
 The [`FakeWebAppProvider`](../test/fake_web_app_provider.h) is a nifty way to mock out pieces of the WebAppProvider system for a browser test. To use it, you put a [`FakeWebAppProviderCreator`](../test/fake_web_app_provider.h) in your test class, and give it a callback to create a `WebAppProvider` given a `Profile`. This allows you to create a [`FakeWebAppProvider`](../test/fake_web_app_provider.h) instead of the regular `WebAppProvider`, swapping out any part of the system.
 
 This means that all of the users of [`WebAppProvider::Get`](https://source.chromium.org/search?q=WebAppProvider::Get), [`WebAppProvider::GetForWebContents`](https://source.chromium.org/search?q=WebAppProvider::Get) (etc) will be talking to the `FakeWebAppProvider` that the test created. This is perfect for a browsertest, as it runs the full browser.
-
-The other difference between this and the [`FakeWebAppRegistryController`](#tool-testwebappregistrycontroller) above is that this, without any changes (and as long as the user calls `Start()`), will run the normal production `WebAppProvider` system. This means changes are written to disk, the OS integrations are triggered, etc.
 
 ## Integration tests
 Due to the complexity of the WebApp feature space, a special testing framework was created to help list, minimize, and test all critical user journeys. See the [README.md here](../../ui/views/web_apps/README.md) about how to write these.

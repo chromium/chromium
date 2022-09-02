@@ -441,8 +441,6 @@ source_set("web_applications_test_support") {
     "test/fake_web_app_origin_association_manager.h",
     "test/fake_web_app_provider.cc",
     "test/fake_web_app_provider.h",
-    "test/fake_web_app_registry_controller.cc",
-    "test/fake_web_app_registry_controller.h",
     "test/fake_web_app_ui_manager.cc",
     "test/fake_web_app_ui_manager.h",
     "test/mock_data_retriever.cc",
