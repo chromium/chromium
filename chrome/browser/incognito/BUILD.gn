@@ -12,6 +12,7 @@ android_library("java") {
     "android/java/src/org/chromium/chrome/browser/incognito/IncognitoUtils.java",
     "android/java/src/org/chromium/chrome/browser/incognito/reauth/FullScreenIncognitoReauthCoordinator.java",
     "android/java/src/org/chromium/chrome/browser/incognito/reauth/IncognitoReauthController.java",
+    "android/java/src/org/chromium/chrome/browser/incognito/reauth/IncognitoReauthControllerImpl.java",
     "android/java/src/org/chromium/chrome/browser/incognito/reauth/IncognitoReauthCoordinator.java",
     "android/java/src/org/chromium/chrome/browser/incognito/reauth/IncognitoReauthCoordinatorBase.java",
     "android/java/src/org/chromium/chrome/browser/incognito/reauth/IncognitoReauthCoordinatorFactory.java",
@@ -113,7 +114,7 @@ android_library("incognito_java_tests") {
 robolectric_library("incognito_junit_tests") {
   sources = [
     "android/java/src/org/chromium/chrome/browser/incognito/reauth/FullScreenIncognitoReauthCoordinatorTest.java",
-    "android/java/src/org/chromium/chrome/browser/incognito/reauth/IncognitoReauthControllerTest.java",
+    "android/java/src/org/chromium/chrome/browser/incognito/reauth/IncognitoReauthControllerImplTest.java",
     "android/java/src/org/chromium/chrome/browser/incognito/reauth/IncognitoReauthCoordinatorFactoryTest.java",
     "android/java/src/org/chromium/chrome/browser/incognito/reauth/IncognitoReauthDialogTest.java",
     "android/java/src/org/chromium/chrome/browser/incognito/reauth/IncognitoReauthManagerTest.java",

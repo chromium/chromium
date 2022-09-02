@@ -70,6 +70,7 @@ import org.chromium.chrome.browser.history_clusters.HistoryClustersDelegate;
 import org.chromium.chrome.browser.identity_disc.IdentityDiscController;
 import org.chromium.chrome.browser.image_descriptions.ImageDescriptionsController;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthController;
+import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthControllerImpl;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthCoordinatorFactory;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthManager;
 import org.chromium.chrome.browser.layouts.LayoutManager;
@@ -218,8 +219,8 @@ public class RootUiCoordinator
      */
     private @Nullable IncognitoReauthController mIncognitoReauthController;
     /**
-     * An {@link OneshotSupplierImpl} of the {@link IncognitoReauthController} that can be used by
-     * clients to check to see if a re-auth is being shown or not.
+     * An {@link OneshotSupplierImpl} of the {@link IncognitoReauthController} that can be used
+     * by clients to check to see if a re-auth is being shown or not.
      */
     private OneshotSupplierImpl<IncognitoReauthController>
             mIncognitoReauthControllerOneshotSupplier = new OneshotSupplierImpl<>();
@@ -811,11 +812,11 @@ public class RootUiCoordinator
                 getIncognitoReauthCoordinatorFactory();
         assert incognitoReauthCoordinatorFactory
                 != null : "Sub-classes need to provide a valid factory instance.";
-        IncognitoReauthController incognitoReauthController =
-                new IncognitoReauthController(mTabModelSelectorSupplier.get(),
+        mIncognitoReauthController =
+                new IncognitoReauthControllerImpl(mTabModelSelectorSupplier.get(),
                         mActivityLifecycleDispatcher, mLayoutStateProviderOneShotSupplier,
                         mProfileSupplier, incognitoReauthCoordinatorFactory);
-        mIncognitoReauthControllerOneshotSupplier.set(incognitoReauthController);
+        mIncognitoReauthControllerOneshotSupplier.set(mIncognitoReauthController);
     }
 
     /**

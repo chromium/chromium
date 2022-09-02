@@ -19,7 +19,7 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.crypto.CipherFactory;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthController;
+import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthControllerImpl;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthManager;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.NativeInitObserver;
@@ -180,7 +180,7 @@ public class IncognitoRestoreAppLaunchDrawBlocker {
 
         if (!CipherFactory.getInstance().restoreFromBundle(mSavedInstanceState)) return false;
         boolean isReauthPending = mSavedInstanceState.getBoolean(
-                IncognitoReauthController.KEY_IS_INCOGNITO_REAUTH_PENDING, false);
+                IncognitoReauthControllerImpl.KEY_IS_INCOGNITO_REAUTH_PENDING, false);
         // There were no Incognito tabs before the Activity got destroyed. So we don't need to block
         // draw here.
         if (!isReauthPending) return false;

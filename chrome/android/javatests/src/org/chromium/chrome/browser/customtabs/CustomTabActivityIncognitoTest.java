@@ -69,6 +69,7 @@ import org.chromium.chrome.browser.incognito.IncognitoDataTestUtils;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthController;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthManager;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthSettingUtils;
+import org.chromium.chrome.browser.lifecycle.StartStopWithNativeObserver;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuItemProperties;
@@ -584,8 +585,10 @@ public class CustomTabActivityIncognitoTest {
                             .get();
 
             // Fake Chrome going background and coming back to foreground.
-            incognitoReauthController.onStopWithNative();
-            incognitoReauthController.onStartWithNative();
+            StartStopWithNativeObserver observer =
+                    (StartStopWithNativeObserver) incognitoReauthController;
+            observer.onStopWithNative();
+            observer.onStartWithNative();
 
             assertTrue("Re-auth screen should be shown.",
                     incognitoReauthController.isReauthPageShowing());

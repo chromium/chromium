@@ -51,11 +51,11 @@ import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.user_prefs.UserPrefsJni;
 
 /**
- * Unit tests for {@link IncognitoReauthController}.
+ * Unit tests for {@link IncognitoReauthControllerImpl}.
  */
 @RunWith(BaseRobolectricTestRunner.class)
 @LooperMode(LooperMode.Mode.LEGACY)
-public class IncognitoReauthControllerTest {
+public class IncognitoReauthControllerImplTest {
     @Rule
     public JniMocker mJniMocker = new JniMocker();
 
@@ -87,7 +87,7 @@ public class IncognitoReauthControllerTest {
     @Captor
     ArgumentCaptor<IncognitoTabModelObserver> mIncognitoTabModelObserverCaptor;
 
-    private IncognitoReauthController mIncognitoReauthController;
+    private IncognitoReauthControllerImpl mIncognitoReauthController;
     private OneshotSupplierImpl<LayoutStateProvider> mLayoutStateProviderOneshotSupplier;
     private ObservableSupplierImpl<Profile> mProfileObservableSupplier;
 
@@ -154,7 +154,7 @@ public class IncognitoReauthControllerTest {
         mLayoutStateProviderOneshotSupplier.set(mLayoutStateProviderMock);
         mProfileObservableSupplier = new ObservableSupplierImpl<>();
 
-        mIncognitoReauthController = new IncognitoReauthController(mTabModelSelectorMock,
+        mIncognitoReauthController = new IncognitoReauthControllerImpl(mTabModelSelectorMock,
                 mActivityLifecycleDispatcherMock, mLayoutStateProviderOneshotSupplier,
                 mProfileObservableSupplier, mIncognitoReauthCoordinatorFactoryMock);
         mProfileObservableSupplier.set(mProfileMock);
