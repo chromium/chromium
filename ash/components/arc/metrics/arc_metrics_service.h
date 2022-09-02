@@ -62,7 +62,7 @@ class ArcMetricsService : public KeyedService,
                           public mojom::MetricsHost,
                           public ui::GamepadObserver {
  public:
-  using HistogramNamer =
+  using HistogramNamerCallback =
       base::RepeatingCallback<std::string(const std::string& base_name)>;
 
   class AppKillObserver : public base::CheckedObserver {
@@ -110,7 +110,7 @@ class ArcMetricsService : public KeyedService,
 
   // Sets the histogram namer. Required to not have a dependency on browser
   // codebase.
-  void SetHistogramNamer(HistogramNamer histogram_namer);
+  void SetHistogramNamerCallback(HistogramNamerCallback histogram_namer_cb);
 
   // Implementations for ConnectionObserver<mojom::ProcessInstance>.
   void OnProcessConnectionReady();
@@ -347,7 +347,7 @@ class ArcMetricsService : public KeyedService,
 
   // A function that appends a suffix to the base of a histogram name based on
   // the current user profile.
-  HistogramNamer histogram_namer_;
+  HistogramNamerCallback histogram_namer_cb_;
 
   std::string user_id_hash_;
 

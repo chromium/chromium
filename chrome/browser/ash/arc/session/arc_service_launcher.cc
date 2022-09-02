@@ -263,7 +263,7 @@ void ArcServiceLauncher::OnPrimaryUserProfilePrepared(Profile* profile) {
   ArcMediaSessionBridge::GetForBrowserContext(profile);
   {
     auto* metrics_service = ArcMetricsService::GetForBrowserContext(profile);
-    metrics_service->SetHistogramNamer(
+    metrics_service->SetHistogramNamerCallback(
         base::BindRepeating([](const std::string& base_name) {
           return GetHistogramNameByUserTypeForPrimaryProfile(base_name);
         }));

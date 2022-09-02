@@ -80,7 +80,7 @@ class ArcSettingsServiceTest : public BrowserWithTestWindowTest {
     arc::StabilityMetricsManager::Initialize(&local_state_);
 
     ArcMetricsService::GetForBrowserContextForTesting(profile())
-        ->SetHistogramNamer(
+        ->SetHistogramNamerCallback(
             base::BindRepeating([](const std::string& base_name) {
               return arc::GetHistogramNameByUserTypeForPrimaryProfile(
                   base_name);
