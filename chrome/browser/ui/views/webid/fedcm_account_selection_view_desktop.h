@@ -81,7 +81,8 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   void OnWidgetDestroying(views::Widget* widget) override;
 
   // AccountSelectionBubbleView::Observer:
-  void OnAccountSelected(const std::string& account_id) override;
+  void OnAccountSelected(const Account& account,
+                         const IdentityProviderDisplayData& idp_data) override;
   void OnLinkClicked(const GURL& url) override;
   void OnBackButtonClicked() override;
   void OnCloseButtonClicked() override;

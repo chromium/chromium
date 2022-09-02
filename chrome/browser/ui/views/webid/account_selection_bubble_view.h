@@ -33,9 +33,12 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView,
    public:
     // Called when the user either selects the account from the multi-account
     // chooser or clicks the "continue" button.
-    // Takes `account_id` as a parameter in order to avoid copying
-    // content::IdentityRequestAccount.
-    virtual void OnAccountSelected(const std::string& account_id) = 0;
+    // Takes `account` as well as `idp_data` since passing `account_id` is
+    // insufficient in the multiple IDP case. The caller should pass a cref, as
+    // these objects are owned by the observer.
+    virtual void OnAccountSelected(
+        const content::IdentityRequestAccount& account,
+        const IdentityProviderDisplayData& idp_data) = 0;
 
     // Called when the user clicks "privacy policy" or "terms of service" link.
     virtual void OnLinkClicked(const GURL& url) = 0;
@@ -60,9 +63,8 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView,
   void ShowAccountPicker(
       const std::vector<IdentityProviderDisplayData>& idp_data,
       bool show_back_button) override;
-  void ShowVerifyingSheet(
-      const content::IdentityRequestAccount& account,
-      const content::IdentityProviderMetadata& idp_metadata) override;
+  void ShowVerifyingSheet(const content::IdentityRequestAccount& account,
+                          const IdentityProviderDisplayData& idp_data) override;
   void ShowFailureDialog(const std::u16string& rp_for_display,
                          const std::u16string& idp_for_display) override;
 
@@ -76,26 +78,18 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView,
   // Returns a View containing the account chooser, i.e. everything that goes
   // below the horizontal separator on the initial FedCM bubble.
   std::unique_ptr<views::View> CreateAccountChooser(
-      const std::u16string& idp_for_display,
-      base::span<const content::IdentityRequestAccount> accounts,
-      const content::IdentityProviderMetadata& idp_metadata,
-      const content::ClientIdData& client_data);
+      const std::vector<IdentityProviderDisplayData>& idp_data);
 
   // Returns a View for single account chooser. It contains the account
   // information, disclosure text and a button for the user to confirm the
-  // selection.
+  // selection. The size of the `idp_data.accounts` vector must be 1.
   std::unique_ptr<views::View> CreateSingleAccountChooser(
-      const std::u16string& idp_for_display,
-      const content::IdentityRequestAccount& account,
-      const content::IdentityProviderMetadata& idp_metadata,
-      const content::ClientIdData& client_data);
+      const IdentityProviderDisplayData& idp_data);
 
   // Returns a View for multiple account chooser. It contains the info for each
   // account in a button, so the user can pick an account.
   std::unique_ptr<views::View> CreateMultipleAccountChooser(
-      const std::u16string& idp_for_display,
-      base::span<const content::IdentityRequestAccount> accounts,
-      const content::IdentityProviderMetadata& idp_metadata);
+      const std::vector<IdentityProviderDisplayData>& idp_data);
 
   // Creates a row containing the IDP icon as well as the IDP ETLD+1. Used in
   // the multi IDP scenario, when the user is selecting from multiple accounts.
@@ -109,6 +103,7 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView,
   // not.
   std::unique_ptr<views::View> CreateAccountRow(
       const content::IdentityRequestAccount& account,
+      const IdentityProviderDisplayData& idp_data,
       bool should_hover);
 
   // Called when the brand icon image has beend downloaded.

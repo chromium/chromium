@@ -11,7 +11,6 @@
 #include "chrome/browser/ui/views/webid/identity_provider_display_data.h"
 
 namespace content {
-struct IdentityProviderMetadata;
 struct IdentityRequestAccount;
 }  // namespace content
 
@@ -28,7 +27,7 @@ class AccountSelectionBubbleViewInterface {
   // Updates the FedCM bubble to show the "verifying" sheet.
   virtual void ShowVerifyingSheet(
       const content::IdentityRequestAccount& account,
-      const content::IdentityProviderMetadata& idp_metadata) = 0;
+      const IdentityProviderDisplayData& idp_data) = 0;
 
   // Updates the FedCM bubble to show the "failure" sheet.
   virtual void ShowFailureDialog(const std::u16string& rp_for_display,

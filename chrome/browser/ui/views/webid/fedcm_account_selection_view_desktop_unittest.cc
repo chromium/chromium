@@ -47,7 +47,7 @@ class TestBubbleView : public AccountSelectionBubbleViewInterface {
 
   void ShowVerifyingSheet(
       const content::IdentityRequestAccount& account,
-      const content::IdentityProviderMetadata& idp_metadata) override {
+      const IdentityProviderDisplayData& idp_data) override {
     show_verifying_sheet_ = true;
     account_ids_ = {account.id};
   }
@@ -130,15 +130,22 @@ class FedCmAccountSelectionViewDesktopTest : public ChromeViewsTestBase {
     bubble_view_ = std::make_unique<TestBubbleView>();
   }
 
-  std::unique_ptr<TestFedCmAccountSelectionView> CreateAndShow(
+  IdentityProviderDisplayData CreateIdentityProviderDisplayData(
       const std::vector<std::pair<std::string, LoginState>>& account_infos) {
-    auto controller = std::make_unique<TestFedCmAccountSelectionView>(
-        delegate_.get(), widget_.get(), bubble_view_.get());
     std::vector<content::IdentityRequestAccount> accounts;
     for (const auto& account_info : account_infos) {
       accounts.emplace_back(account_info.first, "", "", "", GURL::EmptyGURL(),
                             account_info.second);
     }
+    return IdentityProviderDisplayData(u"", content::IdentityProviderMetadata(),
+                                       content::ClientIdData(GURL(), GURL()),
+                                       std::move(accounts));
+  }
+
+  std::unique_ptr<TestFedCmAccountSelectionView> CreateAndShow(
+      const std::vector<content::IdentityRequestAccount>& accounts) {
+    auto controller = std::make_unique<TestFedCmAccountSelectionView>(
+        delegate_.get(), widget_.get(), bubble_view_.get());
     controller->Show(
         kRpEtldPlusOne,
         {{kIdpEtldPlusOne, accounts, content::IdentityProviderMetadata(),
@@ -161,8 +168,11 @@ class FedCmAccountSelectionViewDesktopTest : public ChromeViewsTestBase {
 
 TEST_F(FedCmAccountSelectionViewDesktopTest, SingleAccountFlow) {
   const char kAccountId[] = "account_id";
+  IdentityProviderDisplayData idp_data =
+      CreateIdentityProviderDisplayData({{kAccountId, LoginState::kSignUp}});
+  const std::vector<Account>& accounts = idp_data.accounts_;
   std::unique_ptr<TestFedCmAccountSelectionView> controller =
-      CreateAndShow({{kAccountId, LoginState::kSignUp}});
+      CreateAndShow(accounts);
   AccountSelectionBubbleView::Observer* observer =
       static_cast<AccountSelectionBubbleView::Observer*>(controller.get());
 
@@ -170,7 +180,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest, SingleAccountFlow) {
   EXPECT_FALSE(bubble_view_->show_verifying_sheet_);
   EXPECT_THAT(bubble_view_->account_ids_, testing::ElementsAre(kAccountId));
 
-  observer->OnAccountSelected(kAccountId);
+  observer->OnAccountSelected(accounts[0], idp_data);
   EXPECT_TRUE(bubble_view_->show_verifying_sheet_);
   EXPECT_THAT(bubble_view_->account_ids_, testing::ElementsAre(kAccountId));
 }
@@ -178,8 +188,11 @@ TEST_F(FedCmAccountSelectionViewDesktopTest, SingleAccountFlow) {
 TEST_F(FedCmAccountSelectionViewDesktopTest, MultipleAccountFlowReturning) {
   const char kAccountId1[] = "account_id1";
   const char kAccountId2[] = "account_id2";
-  std::unique_ptr<TestFedCmAccountSelectionView> controller = CreateAndShow(
+  IdentityProviderDisplayData idp_data = CreateIdentityProviderDisplayData(
       {{kAccountId1, LoginState::kSignIn}, {kAccountId2, LoginState::kSignIn}});
+  const std::vector<Account>& accounts = idp_data.accounts_;
+  std::unique_ptr<TestFedCmAccountSelectionView> controller =
+      CreateAndShow(accounts);
   AccountSelectionBubbleView::Observer* observer =
       static_cast<AccountSelectionBubbleView::Observer*>(controller.get());
 
@@ -188,7 +201,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest, MultipleAccountFlowReturning) {
   EXPECT_THAT(bubble_view_->account_ids_,
               testing::ElementsAre(kAccountId1, kAccountId2));
 
-  observer->OnAccountSelected(kAccountId1);
+  observer->OnAccountSelected(accounts[0], idp_data);
   EXPECT_TRUE(bubble_view_->show_verifying_sheet_);
   EXPECT_THAT(bubble_view_->account_ids_, testing::ElementsAre(kAccountId1));
 }
@@ -196,8 +209,13 @@ TEST_F(FedCmAccountSelectionViewDesktopTest, MultipleAccountFlowReturning) {
 TEST_F(FedCmAccountSelectionViewDesktopTest, MultipleAccountFlowBack) {
   const char kAccountId1[] = "account_id1";
   const char kAccountId2[] = "account_id2";
-  std::unique_ptr<TestFedCmAccountSelectionView> controller = CreateAndShow(
-      {{kAccountId1, LoginState::kSignUp}, {kAccountId2, LoginState::kSignUp}});
+  IdentityProviderDisplayData idp_data = CreateIdentityProviderDisplayData({
+      {kAccountId1, LoginState::kSignUp},
+      {kAccountId2, LoginState::kSignUp},
+  });
+  const std::vector<Account>& accounts = idp_data.accounts_;
+  std::unique_ptr<TestFedCmAccountSelectionView> controller =
+      CreateAndShow(accounts);
   AccountSelectionBubbleView::Observer* observer =
       static_cast<AccountSelectionBubbleView::Observer*>(controller.get());
 
@@ -206,7 +224,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest, MultipleAccountFlowBack) {
   EXPECT_THAT(bubble_view_->account_ids_,
               testing::ElementsAre(kAccountId1, kAccountId2));
 
-  observer->OnAccountSelected(kAccountId1);
+  observer->OnAccountSelected(accounts[0], idp_data);
   EXPECT_TRUE(bubble_view_->show_back_button_);
   EXPECT_FALSE(bubble_view_->show_verifying_sheet_);
   EXPECT_THAT(bubble_view_->account_ids_, testing::ElementsAre(kAccountId1));
@@ -217,12 +235,12 @@ TEST_F(FedCmAccountSelectionViewDesktopTest, MultipleAccountFlowBack) {
   EXPECT_THAT(bubble_view_->account_ids_,
               testing::ElementsAre(kAccountId1, kAccountId2));
 
-  observer->OnAccountSelected(kAccountId2);
+  observer->OnAccountSelected(accounts[1], idp_data);
   EXPECT_TRUE(bubble_view_->show_back_button_);
   EXPECT_FALSE(bubble_view_->show_verifying_sheet_);
   EXPECT_THAT(bubble_view_->account_ids_, testing::ElementsAre(kAccountId2));
 
-  observer->OnAccountSelected(kAccountId2);
+  observer->OnAccountSelected(accounts[1], idp_data);
   EXPECT_TRUE(bubble_view_->show_verifying_sheet_);
   EXPECT_THAT(bubble_view_->account_ids_, testing::ElementsAre(kAccountId2));
 }

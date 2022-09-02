@@ -452,9 +452,12 @@ TEST_F(AccountSelectionBubbleViewTest, Verifying) {
   const std::string kAccountSuffix = "suffix";
   content::IdentityRequestAccount account = CreateTestIdentityRequestAccount(
       kAccountSuffix, content::IdentityRequestAccount::LoginState::kSignIn);
+  IdentityProviderDisplayData idp_data(
+      kIdpETLDPlusOne, content::IdentityProviderMetadata(),
+      content::ClientIdData(GURL(), GURL()), {account});
 
   CreateAccountSelectionBubble();
-  dialog_->ShowVerifyingSheet(account, content::IdentityProviderMetadata());
+  dialog_->ShowVerifyingSheet(account, idp_data);
 
   const std::vector<views::View*> children = dialog()->children();
   ASSERT_EQ(children.size(), 3u);

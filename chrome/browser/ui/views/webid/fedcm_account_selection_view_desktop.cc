@@ -161,26 +161,17 @@ void FedCmAccountSelectionView::OnWidgetDestroying(views::Widget* widget) {
 }
 
 void FedCmAccountSelectionView::OnAccountSelected(
-    const std::string& account_id) {
-  // TODO(crbug.com/1351137): use more than the first vector item to support
-  // multiple idps.
-  const std::vector<Account>& account_list = idp_data_[0].accounts_;
-  auto account_list_it = std::find_if(
-      account_list.begin(), account_list.end(),
-      [&account_id](const content::IdentityRequestAccount& account) {
-        return account.id == account_id;
-      });
-  DCHECK(account_list_it != account_list.end());
+    const Account& account,
+    const IdentityProviderDisplayData& idp_data) {
   state_ = (state_ == State::ACCOUNT_PICKER &&
-            account_list_it->login_state == Account::LoginState::kSignUp)
+            account.login_state == Account::LoginState::kSignUp)
                ? State::PERMISSION
                : State::VERIFYING;
   if (state_ == State::VERIFYING) {
     notify_delegate_of_dismiss_ = false;
-    delegate_->OnAccountSelected(*account_list_it);
+    delegate_->OnAccountSelected(account);
 
-    GetBubbleView()->ShowVerifyingSheet(*account_list_it,
-                                        idp_data_[0].idp_metadata_);
+    GetBubbleView()->ShowVerifyingSheet(account, idp_data);
     return;
   }
 
@@ -188,10 +179,10 @@ void FedCmAccountSelectionView::OnAccountSelected(
   // lot of data.
   std::vector<IdentityProviderDisplayData> single_idp_data;
   std::vector<content::IdentityRequestAccount> single_account_vector;
-  single_account_vector.emplace_back(*account_list_it);
-  single_idp_data.emplace_back(
-      idp_data_[0].idp_etld_plus_one_, idp_data_[0].idp_metadata_,
-      idp_data_[0].client_data_, single_account_vector);
+  single_account_vector.emplace_back(account);
+  single_idp_data.emplace_back(idp_data.idp_etld_plus_one_,
+                               idp_data.idp_metadata_, idp_data.client_data_,
+                               single_account_vector);
   GetBubbleView()->ShowAccountPicker(single_idp_data,
                                      /*show_back_button=*/true);
 }
