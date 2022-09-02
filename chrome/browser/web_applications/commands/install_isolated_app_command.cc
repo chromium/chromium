@@ -57,7 +57,7 @@ absl::optional<std::string> UTF16ToUTF8(base::StringPiece16 src) {
 }  // namespace
 
 InstallIsolatedAppCommand::InstallIsolatedAppCommand(
-    base::StringPiece url,
+    const GURL& url,
     WebAppUrlLoader& url_loader,
     WebAppInstallFinalizer& install_finalizer,
     base::OnceCallback<void(base::expected<InstallIsolatedAppCommandSuccess,
@@ -71,6 +71,7 @@ InstallIsolatedAppCommand::InstallIsolatedAppCommand(
       data_retriever_(std::make_unique<WebAppDataRetriever>()) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
 
+  DCHECK(url_.is_valid());
   DCHECK(!callback.is_null());
 
   callback_ =
@@ -94,20 +95,11 @@ Lock& InstallIsolatedAppCommand::lock() const {
 
 void InstallIsolatedAppCommand::Start() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  auto url = GURL{url_};
-  if (!url.is_valid()) {
-    ReportFailure(base::StrCat({"Invalid application URL: ", url_}));
-    return;
-  }
-
-  LoadUrl(url);
+  LoadUrl();
 }
 
-void InstallIsolatedAppCommand::LoadUrl(GURL url) {
-  DCHECK(url.is_valid());
-
-  url_loader_.LoadUrl(url, shared_web_contents(),
+void InstallIsolatedAppCommand::LoadUrl() {
+  url_loader_.LoadUrl(url_, shared_web_contents(),
                       WebAppUrlLoader::UrlComparison::kIgnoreQueryParamsAndRef,
                       base::BindOnce(&InstallIsolatedAppCommand::OnLoadUrl,
                                      weak_factory_.GetWeakPtr()));
@@ -180,12 +172,12 @@ InstallIsolatedAppCommand::CreateInstallInfoFromManifest(
 
   info.manifest_id = "";
 
-  GURL origin = GURL{url_}.Resolve("/");
-  if (manifest.scope != origin) {
+  url::Origin origin = url::Origin::Create(url_);
+  if (manifest.scope != origin.GetURL()) {
     return base::unexpected{
         base::StrCat({"Scope should resolve to the origin. scope: ",
                       manifest.scope.possibly_invalid_spec(),
-                      ", origin: ", origin.possibly_invalid_spec()})};
+                      ", origin: ", origin.Serialize()})};
   }
 
   return info;

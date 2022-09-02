@@ -15,6 +15,7 @@
 #include "base/test/task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
 
 namespace web_app {
 namespace {
@@ -38,36 +39,44 @@ class InstallIsolatedAppFromCommandLineFlag : public ::testing::Test {
 TEST_F(InstallIsolatedAppFromCommandLineFlag, InstallsAppFromCommandLineFlag) {
   EXPECT_THAT(GetAppsToInstallFromCommandLine(
                   CreateDefaultCommandLine("http://example.com")),
-              UnorderedElementsAre(Eq("http://example.com")));
+              UnorderedElementsAre(Eq(GURL("http://example.com"))));
 }
 
 TEST_F(InstallIsolatedAppFromCommandLineFlag,
        InstallsDifferentAppFromCommandLineFlag) {
   EXPECT_THAT(GetAppsToInstallFromCommandLine(
                   CreateDefaultCommandLine("http://different-example.com")),
-              UnorderedElementsAre(Eq("http://different-example.com")));
+              UnorderedElementsAre(Eq(GURL("http://different-example.com"))));
 }
 
 TEST_F(InstallIsolatedAppFromCommandLineFlag,
        InstallsMultipleCommaSeparatedAppsFromCommandLineFlag) {
   EXPECT_THAT(GetAppsToInstallFromCommandLine(CreateDefaultCommandLine(
                   "http://app.com,http://app2.com,http://app3.com")),
-              UnorderedElementsAre(Eq("http://app.com"), Eq("http://app2.com"),
-                                   Eq("http://app3.com")));
+              UnorderedElementsAre(Eq(GURL("http://app.com")),
+                                   Eq(GURL("http://app2.com")),
+                                   Eq(GURL("http://app3.com"))));
 }
 
 TEST_F(InstallIsolatedAppFromCommandLineFlag, RemoveWhitespacesBetweenAppUrls) {
-  EXPECT_THAT(
-      GetAppsToInstallFromCommandLine(
-          CreateDefaultCommandLine("  http://app.com  ,  http://app2.com")),
-      UnorderedElementsAre(Eq("http://app.com"), Eq("http://app2.com")));
+  EXPECT_THAT(GetAppsToInstallFromCommandLine(CreateDefaultCommandLine(
+                  "  http://app.com  ,  http://app2.com")),
+              UnorderedElementsAre(Eq(GURL("http://app.com")),
+                                   Eq(GURL("http://app2.com"))));
 }
 
 TEST_F(InstallIsolatedAppFromCommandLineFlag, RemoveEmptyUrls) {
-  EXPECT_THAT(
-      GetAppsToInstallFromCommandLine(CreateDefaultCommandLine(
-          ",  ,http://app.com  ,,,, http://app2.com,,")),
-      UnorderedElementsAre(Eq("http://app.com"), Eq("http://app2.com")));
+  EXPECT_THAT(GetAppsToInstallFromCommandLine(CreateDefaultCommandLine(
+                  ",  ,http://app.com  ,,,, http://app2.com,,")),
+              UnorderedElementsAre(Eq(GURL("http://app.com")),
+                                   Eq(GURL("http://app2.com"))));
+}
+
+TEST_F(InstallIsolatedAppFromCommandLineFlag, RemoveInvalidUrls) {
+  EXPECT_THAT(GetAppsToInstallFromCommandLine(CreateDefaultCommandLine(
+                  "badurl,http://app.com,badurl2,http://app2.com,badurl3")),
+              UnorderedElementsAre(Eq(GURL("http://app.com")),
+                                   Eq(GURL("http://app2.com"))));
 }
 
 TEST_F(InstallIsolatedAppFromCommandLineFlag,

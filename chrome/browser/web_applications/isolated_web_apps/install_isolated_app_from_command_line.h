@@ -12,11 +12,12 @@ namespace base {
 class CommandLine;
 }
 
+class GURL;
 class Profile;
 
 namespace web_app {
 
-std::vector<std::string> GetAppsToInstallFromCommandLine(
+std::vector<GURL> GetAppsToInstallFromCommandLine(
     const base::CommandLine& command_line);
 
 void MaybeInstallAppFromCommandLine(const base::CommandLine& command_line,

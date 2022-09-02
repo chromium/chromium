@@ -19,12 +19,13 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_url_loader.h"
 #include "chrome/common/chrome_switches.h"
+#include "url/gurl.h"
 
 namespace web_app {
 
 namespace {
 
-base::RepeatingCallback<void(base::StringPiece url)>
+base::RepeatingCallback<void(GURL url)>
 CreateProductionInstallApplicationFromUrl(Profile& profile) {
   WebAppProvider* provider = WebAppProvider::GetForWebApps(&profile);
 
@@ -37,11 +38,11 @@ CreateProductionInstallApplicationFromUrl(Profile& profile) {
   }
 
   return base::BindRepeating(
-      [](WebAppProvider& provider, base::StringPiece url) {
+      [](WebAppProvider& provider, GURL url) {
         provider.on_registry_ready().Post(
             FROM_HERE,
             base::BindOnce(
-                [](WebAppProvider& provider, base::StringPiece url) {
+                [](WebAppProvider& provider, GURL url) {
                   std::unique_ptr<WebAppUrlLoader> url_loader =
                       std::make_unique<WebAppUrlLoader>();
 
@@ -68,26 +69,36 @@ CreateProductionInstallApplicationFromUrl(Profile& profile) {
                           url, url_loader_ref, provider.install_finalizer(),
                           std::move(callback)));
                 },
-                std::ref(provider), std::string(url)));
+                std::ref(provider), url));
       },
       std::ref(*provider));
 }
 
 }  // namespace
 
-std::vector<std::string> GetAppsToInstallFromCommandLine(
+std::vector<GURL> GetAppsToInstallFromCommandLine(
     const base::CommandLine& command_line) {
-  return base::SplitString(
+  std::vector<std::string> switch_values = base::SplitString(
       command_line.GetSwitchValueASCII(switches::kInstallIsolatedAppsAtStartup),
       ",", base::WhitespaceHandling::TRIM_WHITESPACE,
       base::SplitResult::SPLIT_WANT_NONEMPTY);
+
+  std::vector<GURL> app_urls;
+  for (const std::string& switch_value : switch_values) {
+    GURL app_url{switch_value};
+    if (app_url.is_valid()) {
+      app_urls.push_back(app_url);
+    } else {
+      LOG(ERROR) << "Invalid application URL: \"" << switch_value << "\"";
+    }
+  }
+  return app_urls;
 }
 
 void MaybeInstallAppFromCommandLine(
     const base::CommandLine& command_line,
-    base::RepeatingCallback<void(base::StringPiece url)>
-        install_application_from_url) {
-  for (const std::string& url : GetAppsToInstallFromCommandLine(command_line)) {
+    base::RepeatingCallback<void(GURL url)> install_application_from_url) {
+  for (const GURL& url : GetAppsToInstallFromCommandLine(command_line)) {
     install_application_from_url.Run(url);
   }
 }

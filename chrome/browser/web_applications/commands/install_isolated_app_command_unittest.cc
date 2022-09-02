@@ -131,7 +131,7 @@ class InstallIsolatedAppCommandTest : public ::testing::Test {
                                              InstallIsolatedAppCommandError>)>
           callback) {
     return std::make_unique<InstallIsolatedAppCommand>(
-        url, *url_loader_, *install_finalizer_, std::move(callback));
+        GURL(url), *url_loader_, *install_finalizer_, std::move(callback));
   }
 
   void ScheduleCommand(std::unique_ptr<WebAppCommand> command) {
@@ -753,22 +753,6 @@ TEST_F(InstallIsolatedAppCommandMetricsTest,
 
   EXPECT_THAT(histogram_tester.GetAllSamples("WebApp.Install.Result"),
               BucketsAre(base::Bucket(true, 1)));
-}
-
-// It is impossible to pass invalid url to |GenerateAppId| since it DCHECKs.
-// TODO(kuragin): Replace constructor with factory function to make the
-// validation testable.
-TEST_F(InstallIsolatedAppCommandMetricsTest,
-       DISABLED_ReportFailureWhenURLIsInvalid) {
-  SetPrepareForLoadResultLoaded();
-
-  base::HistogramTester histogram_tester;
-
-  EXPECT_THAT(ExecuteCommand("some definetely invalid url"),
-              IsInstallationError());
-
-  EXPECT_THAT(histogram_tester.GetAllSamples("WebApp.Install.Result"),
-              BucketsAre(base::Bucket(false, 1)));
 }
 
 TEST_F(InstallIsolatedAppCommandMetricsTest, ReportErrorWhenUrlLoaderFails) {
