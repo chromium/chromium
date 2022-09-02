@@ -629,7 +629,7 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
 #endif
 
 #if BUILDFLAG(ENABLE_PRINTING)
-  printing::InitializePrinting(web_contents);
+  printing::InitializePrintingForWebContents(web_contents);
 #endif
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)

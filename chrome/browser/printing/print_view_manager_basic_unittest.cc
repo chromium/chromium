@@ -21,7 +21,7 @@ class PrintViewManagerBasicTest : public ChromeRenderViewHostTestHarness {
  protected:
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
-    InitializePrinting(web_contents());
+    InitializePrintingForWebContents(web_contents());
     content::RenderFrameHostTester::For(main_rfh())
         ->InitializeRenderFrameIfNeeded();
   }

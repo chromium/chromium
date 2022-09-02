@@ -223,7 +223,7 @@ void ChromeAppDelegate::InitWebContents(content::WebContents* web_contents) {
   favicon::CreateContentFaviconDriverForWebContents(web_contents);
 
 #if BUILDFLAG(ENABLE_PRINTING)
-  printing::InitializePrinting(web_contents);
+  printing::InitializePrintingForWebContents(web_contents);
 #endif
 
   apps::AudioFocusWebContentsObserver::CreateForWebContents(web_contents);

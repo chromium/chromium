@@ -120,7 +120,7 @@ void ChromeExtensionsAPIClient::AttachWebContentsHelpers(
     content::WebContents* web_contents) const {
   favicon::CreateContentFaviconDriverForWebContents(web_contents);
 #if BUILDFLAG(ENABLE_PRINTING)
-  printing::InitializePrinting(web_contents);
+  printing::InitializePrintingForWebContents(web_contents);
 #endif
 #if BUILDFLAG(ENABLE_PDF)
   pdf::PDFWebContentsHelper::CreateForWebContentsWithClient(
