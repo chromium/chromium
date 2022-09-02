@@ -28,6 +28,14 @@ class PromosManager {
   // Returns the next promo for display, if any.
   absl::optional<promos_manager::Promo> NextPromoForDisplay() const;
 
+  // Registers `promo` for continuous display, and persists registration status
+  // across app launches.
+  void RegisterPromoForContinuousDisplay(promos_manager::Promo promo);
+
+  // Registers `promo` for single (one-time) display, and persists registration
+  // status across app launches.
+  void RegisterPromoForSingleDisplay(promos_manager::Promo promo);
+
   // Initialize the Promos Manager by restoring state from Prefs. Must be called
   // after creation and before any other operation.
   void Init();
@@ -182,6 +190,24 @@ class PromosManager {
                            ReturnsBlankActivePromosForBlankPrefs);
   FRIEND_TEST_ALL_PREFIXES(PromosManagerTest,
                            ReturnsActivePromosAndSkipsMalformedData);
+  FRIEND_TEST_ALL_PREFIXES(PromosManagerTest,
+                           RegistersPromoForContinuousDisplay);
+  FRIEND_TEST_ALL_PREFIXES(
+      PromosManagerTest,
+      RegistersPromoForContinuousDisplayForEmptyActivePromos);
+  FRIEND_TEST_ALL_PREFIXES(PromosManagerTest,
+                           RegistersAlreadyRegisteredPromoForContinuousDisplay);
+  FRIEND_TEST_ALL_PREFIXES(
+      PromosManagerTest,
+      RegistersAlreadyRegisteredPromoForContinuousDisplayForEmptyActivePromos);
+  FRIEND_TEST_ALL_PREFIXES(PromosManagerTest, RegistersPromoForSingleDisplay);
+  FRIEND_TEST_ALL_PREFIXES(PromosManagerTest,
+                           RegistersPromoForSingleDisplayForEmptyActivePromos);
+  FRIEND_TEST_ALL_PREFIXES(PromosManagerTest,
+                           RegistersAlreadyRegisteredPromoForSingleDisplay);
+  FRIEND_TEST_ALL_PREFIXES(
+      PromosManagerTest,
+      RegistersAlreadyRegisteredPromoForSingleDisplayForEmptyActivePromos);
 };
 
 #endif  // IOS_CHROME_BROWSER_PROMOS_MANAGER_PROMOS_MANAGER_H_

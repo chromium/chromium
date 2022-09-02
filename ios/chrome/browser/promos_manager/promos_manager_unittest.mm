@@ -636,3 +636,260 @@ TEST_F(PromosManagerTest, ReturnsActivePromosAndSkipsMalformedData) {
 
   EXPECT_EQ(expected, promos_manager_->ActivePromos(promos));
 }
+
+// Tests PromosManager::RegisterPromoForContinuousDisplay() correctly registers
+// a promo for continuous display by writing the promo's name to the pref
+// `kIosPromosManagerActivePromos`.
+TEST_F(PromosManagerTest, RegistersPromoForContinuousDisplay) {
+  CreatePromosManager();
+  EXPECT_TRUE(
+      local_state_->GetValueList(prefs::kIosPromosManagerActivePromos).empty());
+
+  // Initial active promos state.
+  promos_manager_->RegisterPromoForContinuousDisplay(
+      promos_manager::Promo::CredentialProviderExtension);
+  promos_manager_->RegisterPromoForContinuousDisplay(
+      promos_manager::Promo::AppStoreRating);
+  EXPECT_EQ(
+      local_state_->GetValueList(prefs::kIosPromosManagerActivePromos).size(),
+      (size_t)2);
+
+  // Register new promo.
+  promos_manager_->RegisterPromoForContinuousDisplay(
+      promos_manager::Promo::DefaultBrowser);
+
+  EXPECT_EQ(
+      local_state_->GetValueList(prefs::kIosPromosManagerActivePromos).size(),
+      (size_t)3);
+  EXPECT_EQ(local_state_->GetValueList(prefs::kIosPromosManagerActivePromos)[0],
+            promos_manager::NameForPromo(
+                promos_manager::Promo::CredentialProviderExtension));
+  EXPECT_EQ(
+      local_state_->GetValueList(prefs::kIosPromosManagerActivePromos)[1],
+      promos_manager::NameForPromo(promos_manager::Promo::AppStoreRating));
+  EXPECT_EQ(
+      local_state_->GetValueList(prefs::kIosPromosManagerActivePromos)[2],
+      promos_manager::NameForPromo(promos_manager::Promo::DefaultBrowser));
+}
+
+// Tests PromosManager::RegisterPromoForContinuousDisplay() correctly registers
+// a promo—for the very first time—for continuous display by writing the
+// promo's name to the pref `kIosPromosManagerActivePromos`.
+TEST_F(PromosManagerTest,
+       RegistersPromoForContinuousDisplayForEmptyActivePromos) {
+  CreatePromosManager();
+  EXPECT_TRUE(
+      local_state_->GetValueList(prefs::kIosPromosManagerActivePromos).empty());
+
+  promos_manager_->RegisterPromoForContinuousDisplay(
+      promos_manager::Promo::DefaultBrowser);
+
+  EXPECT_EQ(
+      local_state_->GetValueList(prefs::kIosPromosManagerActivePromos).size(),
+      (size_t)1);
+  EXPECT_EQ(
+      local_state_->GetValueList(prefs::kIosPromosManagerActivePromos)[0],
+      promos_manager::NameForPromo(promos_manager::Promo::DefaultBrowser));
+}
+
+// Tests PromosManager::RegisterPromoForContinuousDisplay() correctly registers
+// an already-registered promo for continuous display by first erasing, and then
+// re-writing, the promo's name to the pref `kIosPromosManagerActivePromos`;
+// tests no duplicate entries are created.
+TEST_F(PromosManagerTest, RegistersAlreadyRegisteredPromoForContinuousDisplay) {
+  CreatePromosManager();
+  EXPECT_TRUE(
+      local_state_->GetValueList(prefs::kIosPromosManagerActivePromos).empty());
+
+  // Initial active promos state.
+  promos_manager_->RegisterPromoForContinuousDisplay(
+      promos_manager::Promo::CredentialProviderExtension);
+  promos_manager_->RegisterPromoForContinuousDisplay(
+      promos_manager::Promo::AppStoreRating);
+  EXPECT_EQ(
+      local_state_->GetValueList(prefs::kIosPromosManagerActivePromos).size(),
+      (size_t)2);
+
+  // Register existing promo.
+  promos_manager_->RegisterPromoForContinuousDisplay(
+      promos_manager::Promo::CredentialProviderExtension);
+
+  EXPECT_EQ(
+      local_state_->GetValueList(prefs::kIosPromosManagerActivePromos).size(),
+      (size_t)2);
+  EXPECT_EQ(
+      local_state_->GetValueList(prefs::kIosPromosManagerActivePromos)[0],
+      promos_manager::NameForPromo(promos_manager::Promo::AppStoreRating));
+  EXPECT_EQ(local_state_->GetValueList(prefs::kIosPromosManagerActivePromos)[1],
+            promos_manager::NameForPromo(
+                promos_manager::Promo::CredentialProviderExtension));
+}
+
+// Tests PromosManager::RegisterPromoForContinuousDisplay() correctly registers
+// an already-registered promo for continuous display—for the very first time—by
+// first erasing, and then re-writing, the promo's name to the pref
+// `kIosPromosManagerActivePromos`; tests no duplicate entries are created.
+TEST_F(
+    PromosManagerTest,
+    RegistersAlreadyRegisteredPromoForContinuousDisplayForEmptyActivePromos) {
+  CreatePromosManager();
+  EXPECT_TRUE(
+      local_state_->GetValueList(prefs::kIosPromosManagerActivePromos).empty());
+
+  // Initial active promos state.
+  promos_manager_->RegisterPromoForContinuousDisplay(
+      promos_manager::Promo::CredentialProviderExtension);
+
+  // Register existing promo.
+  promos_manager_->RegisterPromoForContinuousDisplay(
+      promos_manager::Promo::CredentialProviderExtension);
+
+  EXPECT_EQ(
+      local_state_->GetValueList(prefs::kIosPromosManagerActivePromos).size(),
+      (size_t)1);
+  EXPECT_EQ(local_state_->GetValueList(prefs::kIosPromosManagerActivePromos)[0],
+            promos_manager::NameForPromo(
+                promos_manager::Promo::CredentialProviderExtension));
+}
+
+// Tests PromosManager::RegisterPromoForSingleDisplay() correctly registers
+// a promo for single display by writing the promo's name to the pref
+// `kIosPromosManagerSingleDisplayActivePromos`.
+TEST_F(PromosManagerTest, RegistersPromoForSingleDisplay) {
+  CreatePromosManager();
+  EXPECT_TRUE(
+      local_state_
+          ->GetValueList(prefs::kIosPromosManagerSingleDisplayActivePromos)
+          .empty());
+
+  // Initial active promos state.
+  promos_manager_->RegisterPromoForSingleDisplay(
+      promos_manager::Promo::CredentialProviderExtension);
+  promos_manager_->RegisterPromoForSingleDisplay(
+      promos_manager::Promo::AppStoreRating);
+  EXPECT_EQ(
+      local_state_
+          ->GetValueList(prefs::kIosPromosManagerSingleDisplayActivePromos)
+          .size(),
+      (size_t)2);
+
+  // Register new promo.
+  promos_manager_->RegisterPromoForSingleDisplay(
+      promos_manager::Promo::DefaultBrowser);
+
+  EXPECT_EQ(
+      local_state_
+          ->GetValueList(prefs::kIosPromosManagerSingleDisplayActivePromos)
+          .size(),
+      (size_t)3);
+  EXPECT_EQ(local_state_->GetValueList(
+                prefs::kIosPromosManagerSingleDisplayActivePromos)[0],
+            promos_manager::NameForPromo(
+                promos_manager::Promo::CredentialProviderExtension));
+  EXPECT_EQ(
+      local_state_->GetValueList(
+          prefs::kIosPromosManagerSingleDisplayActivePromos)[1],
+      promos_manager::NameForPromo(promos_manager::Promo::AppStoreRating));
+  EXPECT_EQ(
+      local_state_->GetValueList(
+          prefs::kIosPromosManagerSingleDisplayActivePromos)[2],
+      promos_manager::NameForPromo(promos_manager::Promo::DefaultBrowser));
+}
+
+// Tests PromosManager::RegisterPromoForSingleDisplay() correctly registers
+// a promo for single display—for the very first time—by writing the promo's
+// name to the pref `kIosPromosManagerSingleDisplayActivePromos`.
+TEST_F(PromosManagerTest, RegistersPromoForSingleDisplayForEmptyActivePromos) {
+  CreatePromosManager();
+  EXPECT_TRUE(
+      local_state_
+          ->GetValueList(prefs::kIosPromosManagerSingleDisplayActivePromos)
+          .empty());
+
+  promos_manager_->RegisterPromoForSingleDisplay(
+      promos_manager::Promo::DefaultBrowser);
+
+  EXPECT_EQ(
+      local_state_
+          ->GetValueList(prefs::kIosPromosManagerSingleDisplayActivePromos)
+          .size(),
+      (size_t)1);
+  EXPECT_EQ(
+      local_state_->GetValueList(
+          prefs::kIosPromosManagerSingleDisplayActivePromos)[0],
+      promos_manager::NameForPromo(promos_manager::Promo::DefaultBrowser));
+}
+
+// Tests PromosManager::RegisterPromoForSingleDisplay() correctly registers
+// an already-registered promo for single display by first erasing, and then
+// re-writing, the promo's name to the pref
+// `kIosPromosManagerSingleDisplayActivePromos`; tests no duplicate entries are
+// created.
+TEST_F(PromosManagerTest, RegistersAlreadyRegisteredPromoForSingleDisplay) {
+  CreatePromosManager();
+  EXPECT_TRUE(
+      local_state_
+          ->GetValueList(prefs::kIosPromosManagerSingleDisplayActivePromos)
+          .empty());
+
+  // Initial active promos state.
+  promos_manager_->RegisterPromoForSingleDisplay(
+      promos_manager::Promo::CredentialProviderExtension);
+  promos_manager_->RegisterPromoForSingleDisplay(
+      promos_manager::Promo::AppStoreRating);
+  EXPECT_EQ(
+      local_state_
+          ->GetValueList(prefs::kIosPromosManagerSingleDisplayActivePromos)
+          .size(),
+      (size_t)2);
+
+  // Register existing promo.
+  promos_manager_->RegisterPromoForSingleDisplay(
+      promos_manager::Promo::CredentialProviderExtension);
+
+  EXPECT_EQ(
+      local_state_
+          ->GetValueList(prefs::kIosPromosManagerSingleDisplayActivePromos)
+          .size(),
+      (size_t)2);
+  EXPECT_EQ(
+      local_state_->GetValueList(
+          prefs::kIosPromosManagerSingleDisplayActivePromos)[0],
+      promos_manager::NameForPromo(promos_manager::Promo::AppStoreRating));
+  EXPECT_EQ(local_state_->GetValueList(
+                prefs::kIosPromosManagerSingleDisplayActivePromos)[1],
+            promos_manager::NameForPromo(
+                promos_manager::Promo::CredentialProviderExtension));
+}
+
+// Tests PromosManager::RegisterPromoForSingleDisplay() correctly registers
+// an already-registered promo for single display—for the very first time—by
+// first erasing, and then re-writing, the promo's name to the pref
+// `kIosPromosManagerSingleDisplayActivePromos`; tests no duplicate entries are
+// created.
+TEST_F(PromosManagerTest,
+       RegistersAlreadyRegisteredPromoForSingleDisplayForEmptyActivePromos) {
+  CreatePromosManager();
+  EXPECT_TRUE(
+      local_state_
+          ->GetValueList(prefs::kIosPromosManagerSingleDisplayActivePromos)
+          .empty());
+
+  // Initial active promos state.
+  promos_manager_->RegisterPromoForSingleDisplay(
+      promos_manager::Promo::CredentialProviderExtension);
+
+  // Register existing promo.
+  promos_manager_->RegisterPromoForSingleDisplay(
+      promos_manager::Promo::CredentialProviderExtension);
+
+  EXPECT_EQ(
+      local_state_
+          ->GetValueList(prefs::kIosPromosManagerSingleDisplayActivePromos)
+          .size(),
+      (size_t)1);
+  EXPECT_EQ(local_state_->GetValueList(
+                prefs::kIosPromosManagerSingleDisplayActivePromos)[0],
+            promos_manager::NameForPromo(
+                promos_manager::Promo::CredentialProviderExtension));
+}
