@@ -21,6 +21,13 @@
     }
   }
 
+  /* Transition required to ensure focus highlight after button press.
+   * See crbug/1358900.
+   */
+  reading-list-item:first-of-type:last-of-type {
+    transition: background 100ms;
+  }
+
   #readingListList {
     margin-block-start: 8px;
     max-height: none;
