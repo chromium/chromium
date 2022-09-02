@@ -19,6 +19,7 @@
 #include "base/time/time.h"
 #include "components/google/core/common/google_util.h"
 #include "components/history/core/browser/history_backend.h"
+#include "components/history/core/browser/history_types.h"
 #include "components/history/core/browser/url_database.h"
 #include "sql/statement.h"
 #include "sql/transaction.h"
@@ -168,7 +169,11 @@ bool VisitDatabase::InitVisitTable() {
             "originator_cache_guid TEXT,"
             "originator_visit_id INTEGER,"
             "originator_from_visit INTEGER,"
-            "originator_opener_visit INTEGER)"))
+            "originator_opener_visit INTEGER,"
+            // Set to true for visits known to Chrome Sync, which can be:
+            //  1. Remote visits that have been synced to the local machine.
+            //  2. Local visits that have been sent to Sync.
+            "is_known_to_sync BOOLEAN DEFAULT FALSE NOT NULL)"))
       return false;
   }
 
@@ -238,6 +243,7 @@ void VisitDatabase::FillVisitRow(sql::Statement& statement, VisitRow* visit) {
   visit->originator_visit_id = statement.ColumnInt64(10);
   visit->originator_referring_visit = statement.ColumnInt64(11);
   visit->originator_opener_visit = statement.ColumnInt64(12);
+  visit->is_known_to_sync = statement.ColumnBool(13);
 }
 
 // static
@@ -299,8 +305,8 @@ VisitID VisitDatabase::AddVisit(VisitRow* visit, VisitSource source) {
       "(url, visit_time, from_visit, transition, segment_id, "
       "visit_duration, incremented_omnibox_typed_score, opener_visit,"
       "originator_cache_guid,originator_visit_id,originator_from_visit,"
-      "originator_opener_visit) "
-      "VALUES (?,?,?,?,?,?,?,?,?,?,?,?)"));
+      "originator_opener_visit,is_known_to_sync) "
+      "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)"));
   // Although some columns are NULLable, we never write NULL. We write 0 or ""
   // instead for simplicity. See the CREATE TABLE comments for details.
   statement.BindInt64(0, visit->url_id);
@@ -315,6 +321,7 @@ VisitID VisitDatabase::AddVisit(VisitRow* visit, VisitSource source) {
   statement.BindInt64(9, visit->originator_visit_id);
   statement.BindInt64(10, visit->originator_referring_visit);
   statement.BindInt64(11, visit->originator_opener_visit);
+  statement.BindBool(12, visit->is_known_to_sync);
 
   if (!statement.Run()) {
     DVLOG(0) << "Failed to execute visit insert statement:  "
@@ -439,7 +446,7 @@ bool VisitDatabase::UpdateVisitRow(const VisitRow& visit) {
       "UPDATE visits SET "
       "url=?,visit_time=?,from_visit=?,transition=?,segment_id=?,"
       "visit_duration=?,incremented_omnibox_typed_score=?,opener_visit=?,"
-      "originator_cache_guid=?,originator_visit_id=? "
+      "originator_cache_guid=?,originator_visit_id=?,is_known_to_sync=? "
       "WHERE id=?"));
   // Although some columns are NULLable, we never write NULL. We write 0 or ""
   // instead for simplicity. See the CREATE TABLE comments for details.
@@ -453,7 +460,8 @@ bool VisitDatabase::UpdateVisitRow(const VisitRow& visit) {
   statement.BindInt64(7, visit.opener_visit);
   statement.BindString(8, visit.originator_cache_guid);
   statement.BindInt64(9, visit.originator_visit_id);
-  statement.BindInt64(10, visit.visit_id);
+  statement.BindInt64(10, visit.is_known_to_sync);
+  statement.BindInt64(11, visit.visit_id);
 
   return statement.Run();
 }
@@ -1273,6 +1281,30 @@ bool VisitDatabase::GetAllVisitedURLRowidsForMigrationToVersion40(
     visited_url_rowids_sorted->push_back(statement.ColumnInt64(0));
   }
   return statement.Succeeded();
+}
+
+bool VisitDatabase::MigrateVisitsAddIsKnownToSyncColumn() {
+  if (!GetDB().DoesTableExist("visits")) {
+    NOTREACHED() << " Visits table should exist before migration";
+    return false;
+  }
+
+  if (!GetDB().DoesColumnExist("visits", "is_known_to_sync")) {
+    if (!GetDB().Execute("ALTER TABLE visits "
+                         "ADD COLUMN is_known_to_sync "
+                         "BOOLEAN DEFAULT FALSE NOT NULL")) {
+      return false;
+    }
+
+    // Note we specifically DO NOT update the existing visits that have
+    // `visit_source` == `SOURCE_SYNCED` to have `is_known_to_sync` set to true.
+    //
+    // This is because we don't know if the user has subsequently turned off
+    // Sync, and we only want to flag this on for visits that are CURRENTLY
+    // known to Sync and associated with the current user.
+  }
+
+  return true;
 }
 
 }  // namespace history

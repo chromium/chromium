@@ -2828,6 +2828,33 @@ TEST_F(HistoryBackendDBTest, MigrateAnnotationsAddColumnsForSync) {
   }
 }
 
+TEST_F(HistoryBackendDBTest, MigrateVisitsAddIsKnownToSyncColumn) {
+  ASSERT_NO_FATAL_FAILURE(CreateDBVersion(58));
+
+  // Open the old version of the DB and make sure the new columns don't exist
+  // yet. Also add some visits marked as from SYNC in the old style.
+  {
+    sql::Database db;
+    ASSERT_TRUE(db.Open(history_dir_.Append(kHistoryFilename)));
+    ASSERT_FALSE(db.DoesColumnExist("visits", "is_known_to_sync"));
+  }
+
+  // Re-open the db, triggering migration.
+  CreateBackendAndDatabase();
+
+  // The version should have been updated.
+  ASSERT_GE(HistoryDatabase::GetCurrentVersion(), 59);
+
+  DeleteBackend();
+
+  // Open the db manually again and make sure the new columns exist.
+  {
+    sql::Database db;
+    ASSERT_TRUE(db.Open(history_dir_.Append(kHistoryFilename)));
+    EXPECT_TRUE(db.DoesColumnExist("visits", "is_known_to_sync"));
+  }
+}
+
 // ^^^ NEW MIGRATION TESTS GO HERE ^^^
 
 // Preparation for the next DB migration: This test verifies that the test DB

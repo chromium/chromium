@@ -34,7 +34,8 @@ bool IsVisitInfoEqual(const VisitRow& a, const VisitRow& b) {
          ui::PageTransitionTypeIncludingQualifiersIs(a.transition,
                                                      b.transition) &&
          a.originator_cache_guid == b.originator_cache_guid &&
-         a.originator_visit_id == b.originator_visit_id;
+         a.originator_visit_id == b.originator_visit_id &&
+         a.is_known_to_sync == b.is_known_to_sync;
 }
 
 }  // namespace

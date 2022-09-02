@@ -150,6 +150,11 @@ class VisitRow {
   VisitID originator_referring_visit = kInvalidVisitID;
   VisitID originator_opener_visit = kInvalidVisitID;
 
+  // Set to true for visits known to Chrome Sync, which can be:
+  //  1. Remote visits that have been synced to the local machine.
+  //  2. Local visits that have been sent to Sync.
+  bool is_known_to_sync = false;
+
   // We allow the implicit copy constructor and operator=.
 };
 
