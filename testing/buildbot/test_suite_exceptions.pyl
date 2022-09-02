@@ -1177,6 +1177,12 @@
           '--strip-chrome',
         ],
       },
+      'chromeos-eve-chrome': {
+        'swarming': {
+          # Increased timeout to 2 hours due to shard timeout.
+          'hard_timeout': 7200,
+        }
+      },
       # TODO(crbug.com/1141234): Move out of experimental if/when the bots are
       # stable.
       'chromeos-jacuzzi-chrome': {
