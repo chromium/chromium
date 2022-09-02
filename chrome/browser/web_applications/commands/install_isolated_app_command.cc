@@ -30,6 +30,7 @@
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app_url_loader.h"
+#include "chrome/browser/web_applications/web_app_utils.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -256,8 +257,33 @@ void InstallIsolatedAppCommand::OnFinalizeInstall(
 }
 
 void InstallIsolatedAppCommand::DownloadIcons(WebAppInstallInfo install_info) {
-  // TODO(kuragin): Find a way to test icons downloading and relationship with
-  // icon population in the web app install info. Implement icons downloading.
+  base::flat_set<GURL> icon_urls = GetValidIconUrlsToDownload(install_info);
+
+  if (!icon_urls.empty()) {
+    data_retriever_->GetIcons(
+        shared_web_contents(), std::move(icon_urls),
+        /*skip_page_favicons=*/true,
+        base::BindOnce(&InstallIsolatedAppCommand::OnGetIcons,
+                       weak_factory_.GetWeakPtr(), std::move(install_info)));
+  } else {
+    FinalizeInstall(install_info);
+  }
+}
+
+void InstallIsolatedAppCommand::OnGetIcons(
+    WebAppInstallInfo install_info,
+    IconsDownloadedResult result,
+    std::map<GURL, std::vector<SkBitmap>> icons_map,
+    std::map<GURL, int /*http_status_code*/> unused_icons_http_results) {
+  if (result != IconsDownloadedResult::kCompleted) {
+    ReportFailure(base::StrCat({"Error during icon downloading: ",
+                                IconsDownloadedResultToString(result)}));
+    return;
+  }
+
+  PopulateProductIcons(&install_info, &icons_map);
+  PopulateOtherIcons(&install_info, icons_map);
+
   FinalizeInstall(install_info);
 }
 

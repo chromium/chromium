@@ -80,6 +80,10 @@ class InstallIsolatedAppCommand : public WebAppCommand {
   void ReportSuccess();
 
   void DownloadIcons(WebAppInstallInfo install_info);
+  void OnGetIcons(WebAppInstallInfo install_info,
+                  IconsDownloadedResult result,
+                  std::map<GURL, std::vector<SkBitmap>> icons_map,
+                  std::map<GURL, int /*http_status_code*/> icons_http_results);
 
   void LoadUrl(GURL url);
   void OnLoadUrl(WebAppUrlLoaderResult result);

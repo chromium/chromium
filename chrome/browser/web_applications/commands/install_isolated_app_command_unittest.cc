@@ -37,10 +37,12 @@
 #include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/test/browser_task_environment.h"
+#include "net/http/http_status_code.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-shared.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "url/gurl.h"
 
 namespace web_app {
@@ -51,6 +53,7 @@ using ::base::test::IsNotNullCallback;
 using ::base::test::RunOnceCallback;
 using ::testing::_;
 using ::testing::AllOf;
+using ::testing::Contains;
 using ::testing::Eq;
 using ::testing::Field;
 using ::testing::HasSubstr;
@@ -595,6 +598,144 @@ TEST_F(InstallIsolatedAppCommandManifestTest,
 
   EXPECT_THAT(install_finalizer().web_app_info(),
               Pointee(Field(&WebAppInstallInfo::title, IsEmpty())));
+}
+
+class InstallIsolatedAppCommandManifestIconsTest
+    : public InstallIsolatedAppCommandManifestTest {
+ protected:
+  static constexpr base::StringPiece kSomeTestApplicationUrl =
+      "http://manifest-test-url.com";
+  void SetUp() override {
+    InstallIsolatedAppCommandManifestTest::SetUp();
+
+    SetPrepareForLoadResultLoaded();
+    ExpectLoadedForURL(kSomeTestApplicationUrl);
+  }
+
+  blink::mojom::ManifestPtr CreateManifest() const {
+    return CreateDefaultManifest(kSomeTestApplicationUrl);
+  }
+
+  std::unique_ptr<MockDataRetriever> CreateFakeDataRetriever(
+      blink::mojom::ManifestPtr manifest) const {
+    std::unique_ptr<MockDataRetriever> fake_data_retriever =
+        std::make_unique<NiceMock<MockDataRetriever>>();
+
+    EXPECT_CALL(*fake_data_retriever, GetWebAppInstallInfo).Times(0);
+
+    ON_CALL(*fake_data_retriever,
+            CheckInstallabilityAndRetrieveManifest(_, _, IsNotNullCallback()))
+        .WillByDefault(RunOnceCallback<2>(
+            /*manifest=*/manifest.Clone(),
+            /*manifest_url=*/CreateDefaultManifestURL(kSomeTestApplicationUrl),
+            /*valid_manifest_for_web_app=*/true,
+            /*is_installable=*/true));
+
+    return fake_data_retriever;
+  }
+};
+
+constexpr int kImageSize = 96;
+
+SkBitmap CreateTestBitmap(SkColor color) {
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(kImageSize, kImageSize);
+  bitmap.eraseColor(color);
+  return bitmap;
+}
+
+blink::Manifest::ImageResource CreateImageResource(GURL image_src) {
+  blink::Manifest::ImageResource image;
+  image.type = u"image/png";
+  image.sizes.push_back(gfx::Size{kImageSize, kImageSize});
+  image.purpose = {
+      blink::mojom::ManifestImageResource_Purpose::ANY,
+  };
+  image.src = image_src;
+  return image;
+}
+
+TEST_F(InstallIsolatedAppCommandManifestIconsTest, ManifestIconIsDownloaded) {
+  blink::mojom::ManifestPtr manifest = CreateManifest();
+
+  manifest->icons = {
+      CreateImageResource(GURL{"http://test-icon-url.com/icon.png"})};
+
+  std::unique_ptr<MockDataRetriever> fake_data_retriever =
+      CreateFakeDataRetriever(manifest.Clone());
+
+  ON_CALL(*fake_data_retriever,
+          CheckInstallabilityAndRetrieveManifest(_, _, IsNotNullCallback()))
+      .WillByDefault(RunOnceCallback<2>(
+          /*manifest=*/manifest.Clone(),
+          /*manifest_url=*/CreateDefaultManifestURL(kSomeTestApplicationUrl),
+          /*valid_manifest_for_web_app=*/true,
+          /*is_installable=*/true));
+
+  std::map<GURL, std::vector<SkBitmap>> icons = {{
+      GURL{"http://test-icon-url.com/icon.png"},
+      {CreateTestBitmap(SK_ColorRED)},
+  }};
+
+  using HttpStatusCode = int;
+  std::map<GURL, HttpStatusCode> http_result = {
+      {GURL{"http://test-icon-url.com/icon.png"}, net::HttpStatusCode::HTTP_OK},
+  };
+
+  EXPECT_CALL(
+      *fake_data_retriever,
+      GetIcons(_,
+               UnorderedElementsAre(GURL{"http://test-icon-url.com/icon.png"}),
+               /*skip_page_favicons=*/true, IsNotNullCallback()))
+      .WillOnce(RunOnceCallback<3>(IconsDownloadedResult::kCompleted,
+                                   std::move(icons), http_result));
+
+  EXPECT_THAT(
+      ExecuteCommand(kSomeTestApplicationUrl, std::move(fake_data_retriever)),
+      IsInstallationOk());
+
+  EXPECT_THAT(
+      install_finalizer().web_app_info(),
+      Pointee(ResultOf(
+          [](const WebAppInstallInfo& info) { return info.icon_bitmaps.any; },
+          Contains(Pair(_, ResultOf(
+                               [](const SkBitmap& bitmap) {
+                                 return bitmap.getColor(0, 0);
+                               },
+                               SK_ColorRED))))));
+}
+
+TEST_F(InstallIsolatedAppCommandManifestIconsTest,
+       InstallationFailsWhenIconDownloadingFails) {
+  blink::mojom::ManifestPtr manifest = CreateManifest();
+
+  manifest->icons = {
+      CreateImageResource(GURL{"http://test-icon-url.com/icon.png"})};
+
+  std::unique_ptr<MockDataRetriever> fake_data_retriever =
+      CreateFakeDataRetriever(manifest.Clone());
+
+  ON_CALL(*fake_data_retriever,
+          CheckInstallabilityAndRetrieveManifest(_, _, IsNotNullCallback()))
+      .WillByDefault(RunOnceCallback<2>(
+          /*manifest=*/manifest.Clone(),
+          /*manifest_url=*/CreateDefaultManifestURL(kSomeTestApplicationUrl),
+          /*valid_manifest_for_web_app=*/true,
+          /*is_installable=*/true));
+
+  std::map<GURL, std::vector<SkBitmap>> icons = {};
+
+  using HttpStatusCode = int;
+  std::map<GURL, HttpStatusCode> http_result = {};
+
+  EXPECT_CALL(*fake_data_retriever, GetIcons(_, _, _, IsNotNullCallback()))
+      .WillOnce(RunOnceCallback<3>(IconsDownloadedResult::kAbortedDueToFailure,
+                                   std::move(icons), http_result));
+
+  EXPECT_THAT(
+      ExecuteCommand(kSomeTestApplicationUrl, std::move(fake_data_retriever)),
+      IsInstallationError(
+          HasSubstr("Error during icon downloading: AbortedDueToFailure")));
 }
 
 using InstallIsolatedAppCommandMetricsTest = InstallIsolatedAppCommandTest;
