@@ -1475,7 +1475,9 @@ IN_PROC_BROWSER_TEST_F(ChromeSitePerProcessTest, JSPrintDuringSwap) {
 // This test verifies that an OOPIF created in a tab on a secondary display
 // doesn't initialize its device scale factor based on the primary display.
 // Note: This test could probably be expanded to run on all ASH platforms.
-IN_PROC_BROWSER_TEST_F(ChromeSitePerProcessTest, TestInitialDSFForOOPIF) {
+// Disabled due to flakiness. https://crbug.com/1359423
+IN_PROC_BROWSER_TEST_F(ChromeSitePerProcessTest,
+                       DISABLED_TestInitialDSFForOOPIF) {
   // Spec for a two-display system, where the primary display has non-unit
   // device scale factor, but the secondary has unit device scale factor.
   // Note: this test could really work with any two scale factors, so long as
