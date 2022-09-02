@@ -38,7 +38,7 @@ import org.chromium.base.supplier.BooleanSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.layouts.LayoutType;
-import org.chromium.chrome.browser.logo.LogoLoadHelper;
+import org.chromium.chrome.browser.logo.LogoCoordinator;
 import org.chromium.chrome.browser.logo.LogoView;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
@@ -76,6 +76,7 @@ class StartSurfaceToolbarMediator {
     private final ObservableSupplier<Profile> mProfileSupplier;
     private final Callback<LoadUrlParams> mLogoClickedCallback;
     private final boolean mIsRefactorEnabled;
+    private final boolean mShouldFetchDoodle;
 
     private TabModelSelector mTabModelSelector;
     private TabCountProvider mTabCountProvider;
@@ -89,7 +90,7 @@ class StartSurfaceToolbarMediator {
     private CallbackController mCallbackController = new CallbackController();
     private float mNonIncognitoHomepageTranslationY;
 
-    private LogoLoadHelper mLogoLoadHelper;
+    private LogoCoordinator mLogoCoordinator;
     private LogoView mLogoView;
 
     private Animator mAlphaAnimator;
@@ -103,7 +104,8 @@ class StartSurfaceToolbarMediator {
             boolean isTabGroupsAndroidContinuationEnabled,
             BooleanSupplier isIncognitoModeEnabledSupplier,
             ObservableSupplier<Profile> profileSupplier,
-            Callback<LoadUrlParams> logoClickedCallback, boolean isRefactorEnabled) {
+            Callback<LoadUrlParams> logoClickedCallback, boolean isRefactorEnabled,
+            boolean shouldFetchDoodle) {
         mPropertyModel = model;
         mStartSurfaceState = StartSurfaceState.NOT_SHOWN;
         mShowIdentityIPHCallback = showIdentityIPHCallback;
@@ -116,6 +118,7 @@ class StartSurfaceToolbarMediator {
         mProfileSupplier = profileSupplier;
         mLogoClickedCallback = logoClickedCallback;
         mDefaultSearchEngineHasLogo = true;
+        mShouldFetchDoodle = shouldFetchDoodle;
         identityDiscStateSupplier.addObserver((canShowHint) -> {
             // If the identity disc wants to be hidden and is hidden, there's nothing we need to do.
             if (!canShowHint && !mPropertyModel.get(IDENTITY_DISC_IS_VISIBLE)) return;
@@ -162,9 +165,9 @@ class StartSurfaceToolbarMediator {
             mLogoView.destroy();
             mLogoView = null;
         }
-        if (mLogoLoadHelper != null) {
-            mLogoLoadHelper.destroy();
-            mLogoLoadHelper = null;
+        if (mLogoCoordinator != null) {
+            mLogoCoordinator.destroy();
+            mLogoCoordinator = null;
         }
         if (mCallbackController != null) {
             mCallbackController.destroy();
@@ -195,7 +198,7 @@ class StartSurfaceToolbarMediator {
     void onDefaultSearchEngineChanged() {
         mDefaultSearchEngineHasLogo =
                 TemplateUrlServiceFactory.get().doesDefaultSearchEngineHaveLogo();
-        if (mLogoLoadHelper != null) mLogoLoadHelper.onDefaultSearchEngineChanged();
+        if (mLogoCoordinator != null) mLogoCoordinator.onDefaultSearchEngineChanged();
         updateLogoVisibility();
     }
 
@@ -329,7 +332,8 @@ class StartSurfaceToolbarMediator {
      */
     void onLogoViewReady(LogoView logoView) {
         mLogoView = logoView;
-        mLogoLoadHelper = new LogoLoadHelper(mProfileSupplier, mLogoClickedCallback, logoView);
+        mLogoCoordinator = new LogoCoordinator(
+                mProfileSupplier, mLogoClickedCallback, logoView, mShouldFetchDoodle);
     }
 
     private void setStartSurfaceToolbarVisibility(
@@ -376,8 +380,8 @@ class StartSurfaceToolbarMediator {
     }
 
     private void updateLogoVisibility() {
-        if (mLogoLoadHelper != null) {
-            mLogoLoadHelper.maybeLoadSearchProviderLogoOnHomepage(isOnHomepage(),
+        if (mLogoCoordinator != null) {
+            mLogoCoordinator.maybeLoadSearchProviderLogoOnHomepage(isOnHomepage(),
                     isOnATab() || isOnGridTabSwitcher()
                             || mStartSurfaceState == StartSurfaceState.DISABLED);
         }

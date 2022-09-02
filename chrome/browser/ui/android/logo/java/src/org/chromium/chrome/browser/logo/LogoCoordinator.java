@@ -14,13 +14,12 @@ import org.chromium.chrome.browser.logo.LogoBridge.Logo;
 import org.chromium.chrome.browser.logo.LogoBridge.LogoObserver;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
-import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 import org.chromium.content_public.browser.LoadUrlParams;
 
 /**
  * Helper used to fetch and load logo image for Start surface.
  */
-public class LogoLoadHelper {
+public class LogoCoordinator {
     private final ObservableSupplier<Profile> mProfileSupplier;
     private final Callback<LoadUrlParams> mLogoClickedCallback;
     private final LogoView mLogoView;
@@ -28,6 +27,7 @@ public class LogoLoadHelper {
     private CallbackController mCallbackController = new CallbackController();
     private LogoDelegateImpl mLogoDelegate;
     private boolean mHasLogoLoadedForCurrentSearchEngine;
+    private boolean mShouldFetchDoodle;
 
     /**
      * Creates a LogoLoadHelper object.
@@ -35,12 +35,15 @@ public class LogoLoadHelper {
      * @param profileSupplier Supplies the currently applicable profile.
      * @param logoClickedCallback Supplies the StartSurface's parent tab.
      * @param logoView The view that shows the search provider logo.
+     * @param shouldFetchDoodle Whether to fetch doodle if there is.
      */
-    public LogoLoadHelper(ObservableSupplier<Profile> profileSupplier,
-            Callback<LoadUrlParams> logoClickedCallback, LogoView logoView) {
+    public LogoCoordinator(ObservableSupplier<Profile> profileSupplier,
+            Callback<LoadUrlParams> logoClickedCallback, LogoView logoView,
+            boolean shouldFetchDoodle) {
         mProfileSupplier = profileSupplier;
         mLogoClickedCallback = logoClickedCallback;
         mLogoView = logoView;
+        mShouldFetchDoodle = shouldFetchDoodle;
     }
 
     /**
@@ -120,8 +123,7 @@ public class LogoLoadHelper {
 
         // If default search engine is google and doodle is not supported, doesn't bother to fetch
         // logo image.
-        if (TemplateUrlServiceFactory.get().isDefaultSearchEngineGoogle()
-                && !StartSurfaceConfiguration.IS_DOODLE_SUPPORTED.getValue()) {
+        if (TemplateUrlServiceFactory.get().isDefaultSearchEngineGoogle() && !mShouldFetchDoodle) {
             return;
         }
 
@@ -140,6 +142,11 @@ public class LogoLoadHelper {
             @Override
             public void onCachedLogoRevalidated() {}
         });
+    }
+
+    @VisibleForTesting
+    void setShouldFetchDoodleForTesting(boolean shouldFetchDoodle) {
+        mShouldFetchDoodle = shouldFetchDoodle;
     }
 
     @VisibleForTesting

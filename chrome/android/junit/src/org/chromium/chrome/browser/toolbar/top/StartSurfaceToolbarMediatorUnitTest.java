@@ -509,7 +509,7 @@ public class StartSurfaceToolbarMediatorUnitTest {
                 ()
                         -> false,
                 /*profileSupplier=*/null, /*logoClickedCallback=*/null,
-                /*isRefactorEnabled=*/false);
+                /*isRefactorEnabled=*/false, /*shouldFetchDoodle=*/false);
 
         mMediator.setTabModelSelector(mTabModelSelector);
         verify(mTabModelSelector).addObserver(mTabModelSelectorObserver.capture());

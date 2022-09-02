@@ -34,17 +34,16 @@ import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactoryJni;
-import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 /**
- * Unit tests for the {@link LogoLoadHelper}.
+ * Unit tests for the {@link LogoCoordinator}.
  */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-public class LogoLoadHelperUnitTest {
+public class LogoCoordinatorUnitTest {
     @Rule
     public JniMocker mJniMocker = new JniMocker();
 
@@ -73,7 +72,7 @@ public class LogoLoadHelperUnitTest {
     Callback<LoadUrlParams> mLogoClickedCallback;
 
     private Context mContext;
-    private LogoLoadHelper mLogoLoadHelper;
+    private LogoCoordinator mLogoCoordinator;
     private ObservableSupplierImpl<Profile> mProfileSupplier;
 
     @Before
@@ -82,8 +81,9 @@ public class LogoLoadHelperUnitTest {
 
         mProfileSupplier = new ObservableSupplierImpl<>();
         mContext = ApplicationProvider.getApplicationContext();
-        mLogoLoadHelper = new LogoLoadHelper(mProfileSupplier, mLogoClickedCallback, mLogoView);
-        mLogoLoadHelper.setLogoDelegateForTesting(mLogoDelegate);
+        mLogoCoordinator = new LogoCoordinator(
+                mProfileSupplier, mLogoClickedCallback, mLogoView, /*shouldFetchDoodle=*/false);
+        mLogoCoordinator.setLogoDelegateForTesting(mLogoDelegate);
 
         doReturn(false).when(mMockProfile1).isOffTheRecord();
         doReturn(true).when(mMockProfile2).isOffTheRecord();
@@ -110,9 +110,9 @@ public class LogoLoadHelperUnitTest {
     @Test
     public void testDSEChangedOnRegularProfileAndGoogleIsDSE() {
         doReturn(true).when(mTemplateUrlService).isDefaultSearchEngineGoogle();
-        StartSurfaceConfiguration.IS_DOODLE_SUPPORTED.setForTesting(true);
+        mLogoCoordinator.setShouldFetchDoodleForTesting(true);
 
-        mLogoLoadHelper.onDefaultSearchEngineChanged();
+        mLogoCoordinator.onDefaultSearchEngineChanged();
 
         Assert.assertNotNull(LogoView.getDefaultGoogleLogo(mContext));
         verify(mLogoDelegate, times(1)).getSearchProviderLogo(any());
@@ -122,7 +122,7 @@ public class LogoLoadHelperUnitTest {
     public void testDSEChangedOnRegularProfileAndGoogleIsNotDSE() {
         doReturn(false).when(mTemplateUrlService).isDefaultSearchEngineGoogle();
 
-        mLogoLoadHelper.onDefaultSearchEngineChanged();
+        mLogoCoordinator.onDefaultSearchEngineChanged();
 
         Assert.assertNull(LogoView.getDefaultGoogleLogo(mContext));
         verify(mLogoDelegate, times(1)).getSearchProviderLogo(any());
@@ -132,7 +132,7 @@ public class LogoLoadHelperUnitTest {
     public void testDSEChangedOnRegularProfileAndDoesNotHaveLogo() {
         when(mTemplateUrlService.doesDefaultSearchEngineHaveLogo()).thenReturn(false);
 
-        mLogoLoadHelper.onDefaultSearchEngineChanged();
+        mLogoCoordinator.onDefaultSearchEngineChanged();
 
         verify(mLogoDelegate, times(0)).getSearchProviderLogo(any());
     }
@@ -141,17 +141,17 @@ public class LogoLoadHelperUnitTest {
     public void testDSEChangedWithIncognitoProfile() {
         mProfileSupplier.set(mMockProfile2);
 
-        mLogoLoadHelper.onDefaultSearchEngineChanged();
+        mLogoCoordinator.onDefaultSearchEngineChanged();
 
         verify(mLogoDelegate, times(0)).getSearchProviderLogo(any());
     }
 
     @Test
     public void testLoadLogoOnStartSurfaceHomepageWhenLogoNotLoaded() {
-        mLogoLoadHelper.setHasLogoLoadedForCurrentSearchEngineForTesting(false);
+        mLogoCoordinator.setHasLogoLoadedForCurrentSearchEngineForTesting(false);
         doReturn(false).when(mTemplateUrlService).isDefaultSearchEngineGoogle();
 
-        mLogoLoadHelper.maybeLoadSearchProviderLogoOnHomepage(
+        mLogoCoordinator.maybeLoadSearchProviderLogoOnHomepage(
                 /*isStartSurfaceShown*/ true, /*isStartSurfaceHidden*/ false);
 
         verify(mLogoDelegate, times(1)).getSearchProviderLogo(any());
@@ -159,10 +159,10 @@ public class LogoLoadHelperUnitTest {
 
     @Test
     public void testLoadLogoOnStartSurfaceHomepageWhenLogoHasLoaded() {
-        mLogoLoadHelper.setHasLogoLoadedForCurrentSearchEngineForTesting(true);
+        mLogoCoordinator.setHasLogoLoadedForCurrentSearchEngineForTesting(true);
         doReturn(false).when(mTemplateUrlService).isDefaultSearchEngineGoogle();
 
-        mLogoLoadHelper.maybeLoadSearchProviderLogoOnHomepage(
+        mLogoCoordinator.maybeLoadSearchProviderLogoOnHomepage(
                 /*isStartSurfaceShown*/ true, /*isStartSurfaceHidden*/ false);
 
         verify(mLogoDelegate, times(0)).getSearchProviderLogo(any());

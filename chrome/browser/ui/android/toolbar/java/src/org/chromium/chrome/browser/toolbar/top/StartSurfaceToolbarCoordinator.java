@@ -98,7 +98,7 @@ public class StartSurfaceToolbarCoordinator {
                 StartSurfaceConfiguration.TAB_COUNT_BUTTON_ON_START_SURFACE.getValue(),
                 isTabToGtsFadeAnimationEnabled, isTabGroupsAndroidContinuationEnabled,
                 isIncognitoModeEnabledSupplier, profileSupplier, logoClickedCallback,
-                isRefactorEnabled);
+                isRefactorEnabled, StartSurfaceConfiguration.IS_DOODLE_SUPPORTED.getValue());
 
         mThemeColorProvider = provider;
         mMenuButtonCoordinator = menuButtonCoordinator;
