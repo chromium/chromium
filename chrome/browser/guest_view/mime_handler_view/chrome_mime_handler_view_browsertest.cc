@@ -318,8 +318,7 @@ IN_PROC_BROWSER_TEST_F(ChromeMimeHandlerViewTest,
 // renderer (for context see https://crbug.com/930803).
 IN_PROC_BROWSER_TEST_F(ChromeMimeHandlerViewTest, EmbedderFrameRemovedNoCrash) {
   RunTest("test_iframe_basic.html");
-  auto* guest_view = GuestViewBase::FromWebContents(
-      GetGuestViewManager()->DeprecatedWaitForSingleGuestCreated());
+  auto* guest_view = GetGuestViewManager()->WaitForSingleGuestViewCreated();
   ASSERT_TRUE(guest_view);
   int32_t element_instance_id = guest_view->element_instance_id();
   auto* embedder_web_contents = GetEmbedderWebContents();
