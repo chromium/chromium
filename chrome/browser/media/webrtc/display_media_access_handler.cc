@@ -12,6 +12,7 @@
 #include "base/callback.h"
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
+#include "base/feature_list.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/bad_message.h"
@@ -52,6 +53,13 @@ std::u16string GetApplicationTitle(content::WebContents* web_contents) {
       web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin(),
       url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC);
 }
+
+// When navigator.mediaDevices.getDisplayMedia() is called, a media picker
+// is shown to the user, offering a selection of possible sources.
+// If this feature is enabled, the order is: tabs / windows / screens
+// If this feature is disabled, the order is: screens / windows / tabs
+const base::Feature kNewGetDisplayMediaPickerOrder CONSTINIT{
+    "NewGetDisplayMediaPickerOrder", base::FEATURE_ENABLED_BY_DEFAULT};
 
 }  // namespace
 
@@ -297,11 +305,17 @@ void DisplayMediaAccessHandler::ProcessQueuedPickerRequest(
                    DesktopMediaList::Type::kWebContents,
                    DesktopMediaList::Type::kWindow,
                    DesktopMediaList::Type::kScreen};
-  } else if (content::desktop_capture::CanUsePipeWire()) {
-    // In order to prevent the PipeWire picker from appearing immediately
+  } else if (base::FeatureList::IsEnabled(kNewGetDisplayMediaPickerOrder) ||
+             content::desktop_capture::CanUsePipeWire()) {
+    // 1. The new order is tabs-windows-screens, and is applied so long as the
+    // killswitch is not engaged.
+    //
+    // 2. In order to prevent the PipeWire picker from appearing immediately
     // (because we start with the first item in the list selected and show the
     // PipeWire picker when we select a DesktopMediaList::Type it controls),
     // ensure that we initially select "kWebContents".
+    // The killswitch to revert to the old behavior does not affect PipeWire,
+    // as PipeWire has always used the new order.
     media_types = {DesktopMediaList::Type::kWebContents,
                    DesktopMediaList::Type::kWindow,
                    DesktopMediaList::Type::kScreen};
