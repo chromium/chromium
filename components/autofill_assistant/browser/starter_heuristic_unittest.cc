@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/autofill_assistant/browser/starter_heuristic.h"
+#include <memory>
 
 #include "base/containers/flat_set.h"
 #include "base/memory/ref_counted.h"
@@ -58,7 +59,9 @@ class StarterHeuristicTest : public testing::Test {
  protected:
   content::BrowserTaskEnvironment task_environment_;
   content::TestBrowserContext context_;
-  FakeStarterPlatformDelegate fake_platform_delegate_;
+  FakeStarterPlatformDelegate fake_platform_delegate_ =
+      FakeStarterPlatformDelegate(
+          std::make_unique<FakeCommonDependencies>(nullptr));
 
  private:
   std::unique_ptr<base::test::ScopedFeatureList> scoped_feature_list_;

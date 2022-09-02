@@ -47,7 +47,9 @@ class LegacyStarterHeuristicConfigTest : public testing::Test {
 
   content::BrowserTaskEnvironment task_environment_;
   content::TestBrowserContext context_;
-  FakeStarterPlatformDelegate fake_platform_delegate_;
+  FakeStarterPlatformDelegate fake_platform_delegate_ =
+      FakeStarterPlatformDelegate(std::make_unique<FakeCommonDependencies>(
+          /*identity_manager=*/nullptr));
 
  private:
   std::unique_ptr<base::test::ScopedFeatureList> scoped_feature_list_;
@@ -429,12 +431,12 @@ TEST_F(LegacyStarterHeuristicConfigTest, DisabledIfMsbbOff) {
       /* disabled_features = */ {});
   LegacyStarterHeuristicConfig config;
 
-  fake_platform_delegate_.fake_common_dependencies_.msbb_enabled_ = false;
+  fake_platform_delegate_.fake_common_dependencies_->msbb_enabled_ = false;
   EXPECT_THAT(config.GetConditionSetsForClientState(&fake_platform_delegate_,
                                                     &context_),
               IsEmpty());
 
-  fake_platform_delegate_.fake_common_dependencies_.msbb_enabled_ = true;
+  fake_platform_delegate_.fake_common_dependencies_->msbb_enabled_ = true;
   EXPECT_THAT(config.GetConditionSetsForClientState(&fake_platform_delegate_,
                                                     &context_),
               SizeIs(1));

@@ -54,6 +54,9 @@ class CommonDependenciesChrome : public CommonDependencies {
   signin::IdentityManager* GetIdentityManager(
       content::BrowserContext* browser_context) const override;
 
+  consent_auditor::ConsentAuditor* GetConsentAuditor(
+      content::BrowserContext* browser_context) const override;
+
   version_info::Channel GetChannel() const override;
 
   bool GetMakeSearchesAndBrowsingBetterEnabled(

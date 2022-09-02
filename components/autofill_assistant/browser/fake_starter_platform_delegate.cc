@@ -7,7 +7,9 @@
 
 namespace autofill_assistant {
 
-FakeStarterPlatformDelegate::FakeStarterPlatformDelegate() = default;
+FakeStarterPlatformDelegate::FakeStarterPlatformDelegate(
+    std::unique_ptr<FakeCommonDependencies> fake_common_dependencies)
+    : fake_common_dependencies_(std::move(fake_common_dependencies)) {}
 FakeStarterPlatformDelegate::~FakeStarterPlatformDelegate() = default;
 
 std::unique_ptr<TriggerScriptCoordinator::UiDelegate>
@@ -136,7 +138,7 @@ bool FakeStarterPlatformDelegate::IsAttached() {
 
 const FakeCommonDependencies*
 FakeStarterPlatformDelegate::GetCommonDependencies() const {
-  return &fake_common_dependencies_;
+  return fake_common_dependencies_.get();
 }
 
 const PlatformDependencies*

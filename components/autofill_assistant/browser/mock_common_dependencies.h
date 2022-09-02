@@ -9,6 +9,10 @@
 #include "components/autofill_assistant/browser/common_dependencies.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
+namespace consent_auditor {
+class ConsentAuditor;
+}  // namespace consent_auditor
+
 namespace autofill_assistant {
 
 class MockCommonDependencies : public CommonDependencies {
@@ -49,6 +53,10 @@ class MockCommonDependencies : public CommonDependencies {
   MOCK_METHOD(bool, IsWebLayer, (), (const override));
   MOCK_METHOD(signin::IdentityManager*,
               GetIdentityManager,
+              (content::BrowserContext*),
+              (const override));
+  MOCK_METHOD(consent_auditor::ConsentAuditor*,
+              GetConsentAuditor,
               (content::BrowserContext*),
               (const override));
   MOCK_METHOD(version_info::Channel, GetChannel, (), (const override));

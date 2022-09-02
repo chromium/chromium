@@ -25,6 +25,10 @@ namespace signin {
 class IdentityManager;
 }  // namespace signin
 
+namespace consent_auditor {
+class ConsentAuditor;
+}  // namespace consent_auditor
+
 namespace version_info {
 enum class Channel;
 }  // namespace version_info
@@ -70,6 +74,9 @@ class CommonDependencies {
   virtual bool IsWebLayer() const = 0;
 
   virtual signin::IdentityManager* GetIdentityManager(
+      content::BrowserContext* browser_context) const = 0;
+
+  virtual consent_auditor::ConsentAuditor* GetConsentAuditor(
       content::BrowserContext* browser_context) const = 0;
 
   virtual version_info::Channel GetChannel() const = 0;

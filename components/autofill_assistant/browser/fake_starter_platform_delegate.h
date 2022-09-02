@@ -17,7 +17,8 @@ namespace autofill_assistant {
 
 class FakeStarterPlatformDelegate : public StarterPlatformDelegate {
  public:
-  FakeStarterPlatformDelegate();
+  explicit FakeStarterPlatformDelegate(
+      std::unique_ptr<FakeCommonDependencies> fake_common_dependencies);
   ~FakeStarterPlatformDelegate() override;
 
   // Implements StarterPlatformDelegate:
@@ -63,7 +64,7 @@ class FakeStarterPlatformDelegate : public StarterPlatformDelegate {
   base::WeakPtr<StarterPlatformDelegate> GetWeakPtr() override;
 
   // Intentionally public to give tests direct access.
-  FakeCommonDependencies fake_common_dependencies_;
+  std::unique_ptr<FakeCommonDependencies> fake_common_dependencies_;
   FakePlatformDependencies fake_platform_dependencies_;
   std::unique_ptr<TriggerScriptCoordinator::UiDelegate>
       trigger_script_ui_delegate_;

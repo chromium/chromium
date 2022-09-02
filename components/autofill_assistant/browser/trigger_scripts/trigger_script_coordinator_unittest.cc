@@ -154,7 +154,9 @@ class TriggerScriptCoordinatorTest : public testing::Test {
       std::unique_ptr<TriggerContext> trigger_context,
       absl::optional<TriggerScriptProto> trigger_script)>>
       mock_callback_;
-  FakeStarterPlatformDelegate fake_platform_delegate_;
+  FakeStarterPlatformDelegate fake_platform_delegate_ =
+      FakeStarterPlatformDelegate(std::make_unique<FakeCommonDependencies>(
+          /*identity_manager=*/nullptr));
   raw_ptr<NiceMock<MockTriggerScriptUiDelegate>> mock_ui_delegate_;
   std::unique_ptr<TriggerScriptCoordinator> coordinator_;
   raw_ptr<NiceMock<MockStaticTriggerConditions>>
@@ -208,8 +210,8 @@ TEST_F(TriggerScriptCoordinatorTest, StartSendsOnlyApprovedFields) {
         EXPECT_THAT(request.client_context(), Eq(expected_client_context));
       });
 
-  fake_platform_delegate_.fake_common_dependencies_.locale_.assign("fr-CH");
-  fake_platform_delegate_.fake_common_dependencies_.country_code_.assign("CH");
+  fake_platform_delegate_.fake_common_dependencies_->locale_.assign("fr-CH");
+  fake_platform_delegate_.fake_common_dependencies_->country_code_.assign("CH");
   coordinator_->Start(GURL(kFakeDeepLink),
                       std::make_unique<TriggerContext>(
                           /* params = */ std::make_unique<ScriptParameters>(
@@ -267,7 +269,7 @@ TEST_F(TriggerScriptCoordinatorTest,
   // Disable MSBB and enable the feature that allows fetching by hash prefix
   auto feature_list = CreateScopedFeatureList(
       kAutofillAssistantGetTriggerScriptsByHashPrefix, true);
-  fake_platform_delegate_.fake_common_dependencies_.msbb_enabled_ = false;
+  fake_platform_delegate_.fake_common_dependencies_->msbb_enabled_ = false;
 
   EXPECT_CALL(*mock_request_sender_,
               OnSendRequest(GURL(kFakeServerUrl), _, _,
@@ -313,7 +315,7 @@ TEST_F(TriggerScriptCoordinatorTest, UseRegularGetTriggerScriptsIfMsbbEnabled) {
   auto feature_list = CreateScopedFeatureList(
       kAutofillAssistantGetTriggerScriptsByHashPrefix, true);
   // MSBB is also enabled
-  fake_platform_delegate_.fake_common_dependencies_.msbb_enabled_ = true;
+  fake_platform_delegate_.fake_common_dependencies_->msbb_enabled_ = true;
   // so make sure that we use the GetTriggerScripts endpoint
   EXPECT_CALL(
       *mock_request_sender_,
@@ -1806,7 +1808,7 @@ TEST_P(TriggerScriptCoordinatorParameterizedTest,
   // Disable MSBB and enable the feature that allows fetching by hash prefix
   auto feature_list = CreateScopedFeatureList(
       kAutofillAssistantGetTriggerScriptsByHashPrefix, true);
-  fake_platform_delegate_.fake_common_dependencies_.msbb_enabled_ = false;
+  fake_platform_delegate_.fake_common_dependencies_->msbb_enabled_ = false;
 
   // Create the GetTriggerScriptsByHashPrefixProtoResponse
   GetTriggerScriptsByHashPrefixResponseProto response;

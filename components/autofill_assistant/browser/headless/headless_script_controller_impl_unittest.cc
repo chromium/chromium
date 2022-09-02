@@ -24,6 +24,7 @@
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill_assistant/browser/cud_condition.pb.h"
 #include "components/autofill_assistant/browser/device_context.h"
+#include "components/autofill_assistant/browser/fake_common_dependencies.h"
 #include "components/autofill_assistant/browser/fake_script_executor_ui_delegate.h"
 #include "components/autofill_assistant/browser/fake_starter_platform_delegate.h"
 #include "components/autofill_assistant/browser/features.h"
@@ -200,7 +201,9 @@ class HeadlessScriptControllerImplTest : public testing::Test {
   base::MockCallback<
       base::OnceCallback<void(HeadlessScriptController::ScriptResult)>>
       mock_script_ended_callback_;
-  FakeStarterPlatformDelegate fake_platform_delegate_;
+  FakeStarterPlatformDelegate fake_platform_delegate_ =
+      FakeStarterPlatformDelegate(std::make_unique<FakeCommonDependencies>(
+          /*identity_manager=*/nullptr));
   std::unique_ptr<MockRuntimeManager> mock_runtime_manager_;
   std::unique_ptr<Starter> starter_;
   std::unique_ptr<HeadlessScriptControllerImpl> headless_script_controller_;

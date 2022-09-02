@@ -6,13 +6,19 @@
 #define COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_FAKE_COMMON_DEPENDENCIES_H_
 
 #include "components/autofill_assistant/browser/common_dependencies.h"
+#include "components/consent_auditor/consent_auditor.h"
+#include "components/consent_auditor/fake_consent_auditor.h"
 #include "components/version_info/channel.h"
+
+namespace signin {
+class IdentityManager;
+}  // namespace signin
 
 namespace autofill_assistant {
 
 class FakeCommonDependencies : public CommonDependencies {
  public:
-  FakeCommonDependencies();
+  explicit FakeCommonDependencies(signin::IdentityManager* identity_manager);
   ~FakeCommonDependencies() override;
 
   // From CommonDependencies:
@@ -35,6 +41,8 @@ class FakeCommonDependencies : public CommonDependencies {
   bool IsWebLayer() const override;
   signin::IdentityManager* GetIdentityManager(
       content::BrowserContext* browser_context) const override;
+  consent_auditor::ConsentAuditor* GetConsentAuditor(
+      content::BrowserContext* browser_context) const override;
   version_info::Channel GetChannel() const override;
   bool GetMakeSearchesAndBrowsingBetterEnabled(
       content::BrowserContext* browser_context) const override;
@@ -51,6 +59,9 @@ class FakeCommonDependencies : public CommonDependencies {
   version_info::Channel channel_ = version_info::Channel::UNKNOWN;
   bool msbb_enabled_ = true;
   bool uma_enabled_ = true;
+  const raw_ptr<signin::IdentityManager> identity_manager_ = nullptr;
+  std::unique_ptr<consent_auditor::FakeConsentAuditor> consent_auditor_ =
+      std::make_unique<consent_auditor::FakeConsentAuditor>();
 };
 
 }  // namespace autofill_assistant

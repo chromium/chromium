@@ -18,6 +18,10 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
 
+namespace consent_auditor {
+class ConsentAuditor;
+}  // namespace consent_auditor
+
 namespace weblayer {
 
 // Interface for platform delegates that provide platform-dependent features
@@ -56,6 +60,8 @@ class WebLayerDependencies : public ::autofill_assistant::DependenciesAndroid,
       content::BrowserContext* browser_context) const override;
   bool IsWebLayer() const override;
   signin::IdentityManager* GetIdentityManager(
+      content::BrowserContext* browser_context) const override;
+  consent_auditor::ConsentAuditor* GetConsentAuditor(
       content::BrowserContext* browser_context) const override;
   version_info::Channel GetChannel() const override;
 

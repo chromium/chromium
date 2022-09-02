@@ -6,7 +6,9 @@
 
 namespace autofill_assistant {
 
-FakeCommonDependencies::FakeCommonDependencies() = default;
+FakeCommonDependencies::FakeCommonDependencies(
+    signin::IdentityManager* identity_manager)
+    : identity_manager_(identity_manager) {}
 FakeCommonDependencies::~FakeCommonDependencies() = default;
 
 std::unique_ptr<AssistantFieldTrialUtil>
@@ -60,7 +62,12 @@ bool FakeCommonDependencies::IsWebLayer() const {
 
 signin::IdentityManager* FakeCommonDependencies::GetIdentityManager(
     content::BrowserContext* browser_context) const {
-  return nullptr;
+  return identity_manager_;
+}
+
+consent_auditor::ConsentAuditor* FakeCommonDependencies::GetConsentAuditor(
+    content::BrowserContext* browser_context) const {
+  return consent_auditor_.get();
 }
 
 version_info::Channel FakeCommonDependencies::GetChannel() const {

@@ -18,6 +18,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/tick_clock.h"
+#include "components/autofill_assistant/browser/fake_common_dependencies.h"
 #include "components/autofill_assistant/browser/fake_starter_platform_delegate.h"
 #include "components/autofill_assistant/browser/features.h"
 #include "components/autofill_assistant/browser/mock_assistant_field_trial_util.h"
@@ -31,6 +32,8 @@
 #include "components/autofill_assistant/browser/trigger_scripts/mock_trigger_script_ui_delegate.h"
 #include "components/autofill_assistant/browser/trigger_scripts/trigger_script_coordinator.h"
 #include "components/autofill_assistant/browser/ukm_test_util.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/ukm/content/source_url_recorder.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/test/browser_task_environment.h"
@@ -256,7 +259,14 @@ class StarterTest : public testing::Test {
   NiceMock<MockWebsiteLoginManager> mock_website_login_manager_;
   // Only set while a trigger script is running.
   raw_ptr<TriggerScriptCoordinator> trigger_script_coordinator_ = nullptr;
-  FakeStarterPlatformDelegate fake_platform_delegate_;
+
+  signin::IdentityTestEnvironment identity_test_environment;
+  signin::IdentityManager* identity_manager_ =
+      identity_test_environment.identity_manager();
+  FakeStarterPlatformDelegate fake_platform_delegate_ =
+      FakeStarterPlatformDelegate(
+          std::make_unique<FakeCommonDependencies>(identity_manager_));
+
   ukm::TestAutoSetUkmRecorder ukm_recorder_;
   MockRuntimeManager mock_runtime_manager_;
   std::unique_ptr<Starter> starter_;
@@ -590,7 +600,7 @@ TEST_F(StarterTest, RegularStartupFailsIfOnboardingRejected) {
 
 TEST_F(StarterTest, RpcTriggerScriptFailsIfMsbbIsDisabled) {
   SetupPlatformDelegateForReturningUser();
-  fake_platform_delegate_.fake_common_dependencies_.msbb_enabled_ = false;
+  fake_platform_delegate_.fake_common_dependencies_->msbb_enabled_ = false;
   base::flat_map<std::string, std::string> script_parameters = {
       {"ENABLED", "true"},
       {"START_IMMEDIATELY", "false"},
@@ -970,7 +980,7 @@ TEST_F(StarterTest, ImplicitStartupOnSupportedDomainWithoutLogin) {
   auto scoped_feature_list = std::make_unique<base::test::ScopedFeatureList>();
   scoped_feature_list->InitAndEnableFeature(
       features::kAutofillAssistantInCCTTriggering);
-  fake_platform_delegate_.fake_common_dependencies_.msbb_enabled_ = true;
+  fake_platform_delegate_.fake_common_dependencies_->msbb_enabled_ = true;
   fake_platform_delegate_.proactive_help_enabled_ = true;
   fake_platform_delegate_.is_logged_in_ = false;
   fake_platform_delegate_.is_web_layer_ = false;
@@ -1078,7 +1088,7 @@ TEST_F(StarterTest, DoNotStartImplicitlyIfNotLoggedInForWebLayer) {
   auto scoped_feature_list = std::make_unique<base::test::ScopedFeatureList>();
   scoped_feature_list->InitAndEnableFeature(
       features::kAutofillAssistantInCCTTriggering);
-  fake_platform_delegate_.fake_common_dependencies_.msbb_enabled_ = true;
+  fake_platform_delegate_.fake_common_dependencies_->msbb_enabled_ = true;
   fake_platform_delegate_.proactive_help_enabled_ = true;
   fake_platform_delegate_.is_logged_in_ = false;
   fake_platform_delegate_.is_web_layer_ = true;
@@ -1096,7 +1106,7 @@ TEST_F(StarterTest, ImplicitStartupOnSupportedDomainWithLoginForWebLayer) {
   auto scoped_feature_list = std::make_unique<base::test::ScopedFeatureList>();
   scoped_feature_list->InitAndEnableFeature(
       features::kAutofillAssistantInCCTTriggering);
-  fake_platform_delegate_.fake_common_dependencies_.msbb_enabled_ = true;
+  fake_platform_delegate_.fake_common_dependencies_->msbb_enabled_ = true;
   fake_platform_delegate_.proactive_help_enabled_ = true;
   fake_platform_delegate_.is_logged_in_ = true;
   fake_platform_delegate_.is_web_layer_ = true;
@@ -1830,8 +1840,13 @@ TEST(MultipleStarterTest, HeuristicUsedByMultipleInstances) {
   content::RenderViewHostTestEnabler rvh_test_enabler;
   content::TestBrowserContext browser_context;
   ukm::TestAutoSetUkmRecorder ukm_recorder;
-  FakeStarterPlatformDelegate fake_platform_delegate_01;
-  FakeStarterPlatformDelegate fake_platform_delegate_02;
+  FakeStarterPlatformDelegate fake_platform_delegate_01 =
+      FakeStarterPlatformDelegate(std::make_unique<FakeCommonDependencies>(
+          /*identity_manager=*/nullptr));
+  ;
+  FakeStarterPlatformDelegate fake_platform_delegate_02 =
+      FakeStarterPlatformDelegate(std::make_unique<FakeCommonDependencies>(
+          /*identity_manager=*/nullptr));
   MockRuntimeManager mock_runtime_manager;
 
   auto web_contents_01 = content::WebContentsTester::CreateTestWebContents(
@@ -2019,7 +2034,9 @@ TEST(MultipleIntentStarterTest, ImplicitTriggeringSendsFirstLegacyIntent) {
   content::RenderViewHostTestEnabler rvh_test_enabler;
   content::TestBrowserContext browser_context;
   ukm::TestAutoSetUkmRecorder ukm_recorder;
-  FakeStarterPlatformDelegate fake_platform_delegate;
+  FakeStarterPlatformDelegate fake_platform_delegate =
+      FakeStarterPlatformDelegate(std::make_unique<FakeCommonDependencies>(
+          /*identity_manager=*/nullptr));
   MockRuntimeManager mock_runtime_manager;
 
   auto web_contents = content::WebContentsTester::CreateTestWebContents(

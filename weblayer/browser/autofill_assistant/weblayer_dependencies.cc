@@ -144,6 +144,11 @@ signin::IdentityManager* WebLayerDependencies::GetIdentityManager(
   return nullptr;
 }
 
+consent_auditor::ConsentAuditor* WebLayerDependencies::GetConsentAuditor(
+    content::BrowserContext* browser_context) const {
+  return nullptr;
+}
+
 version_info::Channel WebLayerDependencies::GetChannel() const {
   return version_info::android::GetChannel();
 }
