@@ -74,6 +74,13 @@ source_set("hid") {
       "hid_service_mac.h",
     ]
   }
+
+  if (is_fuchsia) {
+    sources += [
+      "hid_service_fuchsia.cc",
+      "hid_service_fuchsia.h",
+    ]
+  }
 }
 
 fuzzer_test("hid_report_descriptor_fuzzer") {

@@ -23,6 +23,8 @@
 #include "services/device/hid/hid_service_mac.h"
 #elif BUILDFLAG(IS_WIN)
 #include "services/device/hid/hid_service_win.h"
+#elif BUILDFLAG(IS_FUCHSIA)
+#include "services/device/hid/hid_service_fuchsia.h"
 #endif
 
 namespace device {
@@ -61,11 +63,13 @@ constexpr base::TaskTraits HidService::kBlockingTaskTraits;
 // static
 std::unique_ptr<HidService> HidService::Create() {
 #if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && defined(USE_UDEV)
-  return base::WrapUnique(new HidServiceLinux());
+  return std::make_unique<HidServiceLinux>();
 #elif BUILDFLAG(IS_MAC)
-  return base::WrapUnique(new HidServiceMac());
+  return std::make_unique<HidServiceMac>();
 #elif BUILDFLAG(IS_WIN)
-  return base::WrapUnique(new HidServiceWin());
+  return std::make_unique<HidServiceWin>();
+#elif BUILDFLAG(IS_FUCHSIA)
+  return std::make_unique<HidServiceFuchsia>();
 #else
   return nullptr;
 #endif
