@@ -108,6 +108,7 @@ class CORE_EXPORT TextTrack : public EventTargetWithInlineData,
   DEFINE_ATTRIBUTE_EVENT_LISTENER(cuechange, kCuechange)
 
   TextTrackType TrackType() const { return track_type_; }
+  const AtomicString& Language() const { return language_; }
 
   int TrackIndex();
   void InvalidateTrackIndex();

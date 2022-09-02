@@ -41,7 +41,7 @@ class CORE_EXPORT SpeechSynthesisBase : public GarbageCollectedMixin {
   static SpeechSynthesisBase* Create(LocalDOMWindow& window);
 
   // Overridden in speech_synthesis.cc.
-  virtual void Speak(const String& text) = 0;
+  virtual void Speak(const String& text, const String& lang) = 0;
   virtual void Cancel() = 0;
   virtual void Pause() = 0;
   virtual void Resume() = 0;

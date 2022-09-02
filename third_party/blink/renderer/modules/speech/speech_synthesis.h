@@ -66,7 +66,7 @@ class MODULES_EXPORT SpeechSynthesis final
   bool paused() const;
 
   // SpeechSynthesisBase
-  void Speak(const String&) override;
+  void Speak(const String&, const String&) override;
   void Cancel() override;
   void Pause() override;
   void Resume() override;

@@ -145,11 +145,12 @@ bool SpeechSynthesis::paused() const {
   return is_paused_;
 }
 
-void SpeechSynthesis::Speak(const String& text) {
+void SpeechSynthesis::Speak(const String& text, const String& lang) {
   ScriptState* script_state =
       ToScriptStateForMainWorld(GetSupplementable()->GetFrame());
   SpeechSynthesisUtterance* utterance =
       SpeechSynthesisUtterance::Create(GetSupplementable(), text);
+  utterance->setLang(lang);
   speak(script_state, utterance);
 }
 

@@ -750,7 +750,7 @@ void VTTCue::RemoveDisplayTree(RemovalNotification removal_notification) {
 void VTTCue::OnEnter(HTMLMediaElement& video) {
   if (!track()->IsSpokenKind())
     return;
-  video.SpeechSynthesis()->Speak(text_);
+  video.SpeechSynthesis()->Speak(text_, track()->Language());
 }
 
 void VTTCue::OnExit(HTMLMediaElement& video) {
