@@ -10,7 +10,10 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_storage_usage_details.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/dom/dom_time_stamp.h"
+#include "third_party/blink/renderer/core/fetch/global_fetch.h"
 #include "third_party/blink/renderer/core/frame/navigator.h"
+#include "third_party/blink/renderer/modules/cache_storage/cache_storage.h"
+#include "third_party/blink/renderer/modules/cache_storage/global_cache_storage.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_factory.h"
 #include "third_party/blink/renderer/modules/locks/lock_manager.h"
 
@@ -151,6 +154,20 @@ LockManager* StorageBucket::locks() {
   return lock_manager_;
 }
 
+CacheStorage* StorageBucket::caches(ExceptionState& exception_state) {
+  if (!caches_ && GlobalCacheStorage::CanCreateCacheStorage(
+                      GetExecutionContext(), exception_state)) {
+    mojo::PendingRemote<mojom::blink::CacheStorage> cache_storage;
+    // TODO(estade): bind using `remote_`.
+    caches_ = MakeGarbageCollected<CacheStorage>(
+        GetExecutionContext(),
+        GlobalFetch::ScopedFetcher::From(*navigator_base_),
+        std::move(cache_storage));
+  }
+
+  return caches_;
+}
+
 bool StorageBucket::HasPendingActivity() const {
   return GetExecutionContext();
 }
@@ -159,6 +176,7 @@ void StorageBucket::Trace(Visitor* visitor) const {
   visitor->Trace(idb_factory_);
   visitor->Trace(lock_manager_);
   visitor->Trace(navigator_base_);
+  visitor->Trace(caches_);
   ScriptWrappable::Trace(visitor);
   ExecutionContextLifecycleObserver::Trace(visitor);
 }

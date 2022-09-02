@@ -19,6 +19,7 @@
 
 namespace blink {
 
+class CacheStorage;
 class IDBFactory;
 class LockManager;
 class ScriptState;
@@ -42,6 +43,7 @@ class StorageBucket final : public ScriptWrappable,
   ScriptPromise expires(ScriptState*);
   IDBFactory* indexedDB();
   LockManager* locks();
+  CacheStorage* caches(ExceptionState&);
 
   // ActiveScriptWrappable
   bool HasPendingActivity() const final;
@@ -76,6 +78,7 @@ class StorageBucket final : public ScriptWrappable,
 
   Member<IDBFactory> idb_factory_;
   Member<LockManager> lock_manager_;
+  Member<CacheStorage> caches_;
   Member<NavigatorBase> navigator_base_;
 };
 

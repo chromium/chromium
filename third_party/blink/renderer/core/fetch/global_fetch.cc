@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/fetch/global_fetch.h"
 
 #include "third_party/blink/renderer/bindings/core/v8/v8_request_init.h"
+#include "third_party/blink/renderer/core/execution_context/navigator_base.h"
 #include "third_party/blink/renderer/core/fetch/fetch_manager.h"
 #include "third_party/blink/renderer/core/fetch/request.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -116,6 +117,12 @@ GlobalFetch::ScopedFetcher* GlobalFetch::ScopedFetcher::From(
     WorkerGlobalScope& worker) {
   return GlobalFetchImpl<WorkerGlobalScope>::From(worker,
                                                   worker.GetExecutionContext());
+}
+
+GlobalFetch::ScopedFetcher* GlobalFetch::ScopedFetcher::From(
+    NavigatorBase& navigator) {
+  return GlobalFetchImpl<NavigatorBase>::From(navigator,
+                                              navigator.GetExecutionContext());
 }
 
 void GlobalFetch::ScopedFetcher::Trace(Visitor* visitor) const {}

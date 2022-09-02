@@ -11,6 +11,7 @@ namespace blink {
 
 class CacheStorage;
 class ExceptionState;
+class ExecutionContext;
 class LocalDOMWindow;
 class WorkerGlobalScope;
 
@@ -18,6 +19,8 @@ class GlobalCacheStorage {
   STATIC_ONLY(GlobalCacheStorage);
 
  public:
+  static bool CanCreateCacheStorage(ExecutionContext*, ExceptionState&);
+
   static CacheStorage* caches(LocalDOMWindow&, ExceptionState&);
   static CacheStorage* caches(WorkerGlobalScope&, ExceptionState&);
 };

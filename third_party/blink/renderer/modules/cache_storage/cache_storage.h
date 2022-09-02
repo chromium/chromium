@@ -29,6 +29,9 @@ class CacheStorage final : public ScriptWrappable,
 
  public:
   CacheStorage(ExecutionContext*, GlobalFetch::ScopedFetcher*);
+  CacheStorage(ExecutionContext*,
+               GlobalFetch::ScopedFetcher*,
+               mojo::PendingRemote<mojom::blink::CacheStorage>);
 
   CacheStorage(const CacheStorage&) = delete;
   CacheStorage& operator=(const CacheStorage&) = delete;
@@ -85,7 +88,7 @@ class CacheStorage final : public ScriptWrappable,
 
   HeapMojoRemote<mojom::blink::CacheStorage> cache_storage_remote_;
   absl::optional<bool> allowed_;
-  bool ever_used_;
+  bool ever_used_ = false;
 };
 
 }  // namespace blink

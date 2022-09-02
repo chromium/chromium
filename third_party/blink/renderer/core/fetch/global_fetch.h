@@ -12,8 +12,9 @@
 
 namespace blink {
 
-class LocalDOMWindow;
 class ExceptionState;
+class LocalDOMWindow;
+class NavigatorBase;
 class RequestInit;
 class ScriptState;
 class WorkerGlobalScope;
@@ -37,6 +38,7 @@ class CORE_EXPORT GlobalFetch {
 
     static ScopedFetcher* From(LocalDOMWindow&);
     static ScopedFetcher* From(WorkerGlobalScope&);
+    static ScopedFetcher* From(NavigatorBase& navigator);
 
     void Trace(Visitor*) const override;
   };

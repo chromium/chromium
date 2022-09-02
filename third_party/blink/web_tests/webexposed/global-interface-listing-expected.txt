@@ -8756,6 +8756,7 @@ interface Storage
     method setItem
 interface StorageBucket
     attribute @@toStringTag
+    getter caches
     getter indexedDB
     getter locks
     method constructor

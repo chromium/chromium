@@ -539,7 +539,7 @@ class Cache::BarrierCallbackForPutComplete final
   const int64_t trace_id_;
 };
 
-// Used to handle the ScopedFetcher::Fetch promise in AddAllImpl.
+// Used to handle the GlobalFetch::ScopedFetcher::Fetch promise in AddAllImpl.
 // TODO(nhiroki): Unfortunately, we have to go through V8 to wait for the fetch
 // promise. It should be better to achieve this only within C++ world.
 class Cache::FetchHandler final : public ScriptFunction::Callable {

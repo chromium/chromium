@@ -536,25 +536,30 @@ void CacheStorage::MatchImplHelper(
 
 CacheStorage::CacheStorage(ExecutionContext* context,
                            GlobalFetch::ScopedFetcher* fetcher)
+    : CacheStorage(context, fetcher, {}) {}
+
+CacheStorage::CacheStorage(
+    ExecutionContext* context,
+    GlobalFetch::ScopedFetcher* fetcher,
+    mojo::PendingRemote<mojom::blink::CacheStorage> pending_remote)
     : ExecutionContextClient(context),
       scoped_fetcher_(fetcher),
       blob_client_list_(MakeGarbageCollected<CacheStorageBlobClientList>()),
-      cache_storage_remote_(context),
-      ever_used_(false) {
+      cache_storage_remote_(context) {
   // See https://bit.ly/2S0zRAS for task types.
   scoped_refptr<base::SingleThreadTaskRunner> task_runner =
       context->GetTaskRunner(blink::TaskType::kMiscPlatformAPI);
 
-  // Service workers may already have a CacheStoragePtr provided as an
-  // optimization.
-  if (auto* service_worker = DynamicTo<ServiceWorkerGlobalScope>(context)) {
+  if (pending_remote) {
+    cache_storage_remote_.Bind(std::move(pending_remote), task_runner);
+  } else if (auto* service_worker =
+                 DynamicTo<ServiceWorkerGlobalScope>(context)) {
+    // Service workers may already have a CacheStoragePtr provided as an
+    // optimization.
     mojo::PendingRemote<mojom::blink::CacheStorage> info =
         service_worker->TakeCacheStorage();
-    if (info) {
-      cache_storage_remote_.reset();
+    if (info)
       cache_storage_remote_.Bind(std::move(info), task_runner);
-      return;
-    }
   }
 
   // Otherwise wait for MaybeInit() to bind a new mojo connection.
