@@ -62,11 +62,6 @@ void ChromeClassTester::CheckTag(TagDecl* tag) {
     if (IsIgnoredType(base_name))
       return;
 
-    // We ignore all classes that end with "Matcher" because they're probably
-    // GMock artifacts.
-    if (!options_.check_gmock_objects && ends_with(base_name, "Matcher"))
-      return;
-
     CheckChromeClass(location_type, location, record);
   }
 }

@@ -10,7 +10,6 @@ namespace chrome_checker {
 struct Options {
   bool check_base_classes = false;
   bool check_ipc = false;
-  bool check_gmock_objects = false;
   bool check_layout_object_methods = false;
   bool raw_ref_template_as_trivial_member = false;
 };

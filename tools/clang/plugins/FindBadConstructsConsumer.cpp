@@ -523,8 +523,6 @@ void FindBadConstructsConsumer::CheckVirtualMethods(
     CXXRecordDecl* record,
     bool warn_on_inline_bodies) {
   if (IsGmockObject(record)) {
-    if (!options_.check_gmock_objects)
-      return;
     warn_on_inline_bodies = false;
   }
 
