@@ -8,48 +8,48 @@
 // TODO(crbug/657632): Remove this file if Mojo adds support for nullable
 // primitives.
 
-// NOTE: This mojom should be kept in sync with the copy in Chromium's repo in
-// src/platform2/diagnostics/mojom/public/nullable_primitives.mojom.
+// NOTE: This mojom should be kept in sync with the copy in Chromium OS's repo
+// in src/plaform2/diagnostics/mojom/public/nullable_primitives.mojom.
 
 module ash.cros_healthd.mojom;
 
 // Optional uint8 field.
-[Stable, RenamedFrom="chromeos.cros_healthd.mojom.NullableUint8"]
+[Stable]
 struct NullableUint8 {
   // The value of the uint8.
   uint8 value;
 };
 
 // Optional int16 field.
-[Stable, RenamedFrom="chromeos.cros_healthd.mojom.NullableInt16"]
+[Stable]
 struct NullableInt16 {
   // The value of the int16.
   int16 value;
 };
 
 // Optional uint16 field.
-[Stable, RenamedFrom="chromeos.cros_healthd.mojom.NullableUint16"]
+[Stable]
 struct NullableUint16 {
   // The value of the uint16.
   uint16 value;
 };
 
 // Optional uint32 field.
-[Stable, RenamedFrom="chromeos.cros_healthd.mojom.NullableUint32"]
+[Stable]
 struct NullableUint32 {
   // The value of the uint32.
   uint32 value;
 };
 
 // Optional uint64 field.
-[Stable, RenamedFrom="chromeos.cros_healthd.mojom.NullableUint64"]
+[Stable]
 struct NullableUint64 {
   // The value of the uint64.
   uint64 value;
 };
 
 // Optional double field.
-[Stable, RenamedFrom="chromeos.cros_healthd.mojom.NullableDouble"]
+[Stable]
 struct NullableDouble {
   // The value of the double.
   double value;

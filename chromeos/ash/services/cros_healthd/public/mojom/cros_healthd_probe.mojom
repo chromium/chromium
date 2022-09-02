@@ -16,7 +16,7 @@ import "chromeos/services/network_health/public/mojom/network_health.mojom";
 // An enumeration of CPU architectures.
 //
 // NextMinVersion: 1, NextIndex: 4
-[Stable, Extensible, RenamedFrom="chromeos.cros_healthd.mojom.CpuArchitectureEnum"]
+[Stable, Extensible]
 enum CpuArchitectureEnum {
   [Default] kUnknown = 0,
   kX86_64 = 1,
@@ -27,7 +27,7 @@ enum CpuArchitectureEnum {
 // An enumeration of each category of information that cros_healthd can report.
 //
 // NextMinVersion: 2, NextIndex: 21
-[Stable, Extensible, RenamedFrom="chromeos.cros_healthd.mojom.ProbeCategoryEnum"]
+[Stable, Extensible]
 enum ProbeCategoryEnum {
   [Default] kUnknown = 16,
   kBattery = 0,
@@ -56,7 +56,7 @@ enum ProbeCategoryEnum {
 // probing telemetry information.
 //
 // NextMinVersion: 1, NextIndex: 5
-[Stable, Extensible, RenamedFrom="chromeos.cros_healthd.mojom.ErrorType"]
+[Stable, Extensible]
 enum ErrorType {
   [Default] kUnknown = 4,
   // An error reading a system file.
@@ -72,7 +72,7 @@ enum ErrorType {
 // Structure that contains error information for a telemetry probe.
 //
 // NextMinVersion: 1, NextIndex: 2
-[Stable, RenamedFrom="chromeos.cros_healthd.mojom.ProbeError"]
+[Stable]
 struct ProbeError {
   // The type of error that occurred.
   ErrorType type@0;
@@ -84,7 +84,7 @@ struct ProbeError {
 // An enumeration of states a process can be in.
 //
 // NextMinVersion: 2, NextIndex: 9
-[Stable, Extensible, RenamedFrom="chromeos.cros_healthd.mojom.ProcessState"]
+[Stable, Extensible]
 enum ProcessState {
   [Default] kUnknown = 7,
   // The process is running.
@@ -107,7 +107,7 @@ enum ProcessState {
 
 // Process probe result. Can either be populated with the ProcessInfo or an
 // error retrieving the information.
-[Stable, RenamedFrom="chromeos.cros_healthd.mojom.ProcessResult"]
+[Stable]
 union ProcessResult {
   // Valid ProcessInfo.
   ProcessInfo process_info;
@@ -118,7 +118,7 @@ union ProcessResult {
 // Information related to a particular process.
 //
 // NextMinVersion: 3, NextIndex: 21
-[Stable, RenamedFrom="chromeos.cros_healthd.mojom.ProcessInfo"]
+[Stable]
 struct ProcessInfo {
   // Command which started the process.
   string command@0;
@@ -178,7 +178,7 @@ struct ProcessInfo {
 
 // Battery probe result. Can either be populated with the BatteryInfo or an
 // error retrieving the information.
-[Stable, RenamedFrom="chromeos.cros_healthd.mojom.BatteryResult"]
+[Stable]
 union BatteryResult {
   // Valid BatteryInfo. Null value if a battery is not present.
   BatteryInfo? battery_info;
@@ -189,7 +189,7 @@ union BatteryResult {
 // Information related to the main battery.
 //
 // NextMinVersion: 1, NextIndex: 14
-[Stable, RenamedFrom="chromeos.cros_healthd.mojom.BatteryInfo"]
+[Stable]
 struct BatteryInfo {
   // TODO(https://crbug.com/979245): Update "smart" cycle count.
   int64 cycle_count@0;
@@ -227,7 +227,7 @@ struct BatteryInfo {
 
 // Non-removable block device probe result. Can either be populated with the
 // NonRemovableBlockDeviceInfo or an error retrieving the information.
-[Stable, RenamedFrom="chromeos.cros_healthd.mojom.NonRemovableBlockDeviceResult"]
+[Stable]
 union NonRemovableBlockDeviceResult {
   // Valid NonRemovableBlockDeviceInfo.
   array<NonRemovableBlockDeviceInfo> block_device_info;
@@ -242,7 +242,7 @@ union NonRemovableBlockDeviceResult {
 // The manufacturer of the block device.
 //
 // NextMinVersion: 3, NextIndex: 5
-[Stable, Extensible, RenamedFrom="chromeos.cros_healthd.mojom.BlockDeviceVendor"]
+[Stable, Extensible]
 union BlockDeviceVendor {
   uint32 nvme_subsystem_vendor@0;
   uint16 emmc_oemid@1;
@@ -254,7 +254,7 @@ union BlockDeviceVendor {
 // The manufacturer-specific product identifier.
 //
 // NextMinVersion: 2, NextIndex: 4
-[Stable, Extensible, RenamedFrom="chromeos.cros_healthd.mojom.BlockDeviceProduct"]
+[Stable, Extensible]
 union BlockDeviceProduct {
   uint32 nvme_subsystem_device@0;
   uint64 emmc_pnm@1;
@@ -265,7 +265,7 @@ union BlockDeviceProduct {
 // The revision of the device's hardware.
 //
 // NextMinVersion: 2, NextIndex: 4
-[Stable, Extensible, RenamedFrom="chromeos.cros_healthd.mojom.BlockDeviceRevision"]
+[Stable, Extensible]
 union BlockDeviceRevision {
   uint8 nvme_pcie_rev@0;
   uint8 emmc_prv@1;
@@ -276,7 +276,7 @@ union BlockDeviceRevision {
 // The revision of the device's firmware.
 //
 // NextMinVersion: 3, NextIndex: 5
-[Stable, Extensible, RenamedFrom="chromeos.cros_healthd.mojom.BlockDeviceFirmware"]
+[Stable, Extensible]
 union BlockDeviceFirmware {
   uint64 nvme_firmware_rev@0;
   uint64 emmc_fwrev@1;
@@ -288,7 +288,7 @@ union BlockDeviceFirmware {
 // Purpose of the storage device.
 //
 // NextMinVersion: 1, NextIndex: 3
-[Stable, Extensible, RenamedFrom="chromeos.cros_healthd.mojom.StorageDevicePurpose"]
+[Stable, Extensible]
 enum StorageDevicePurpose {
   [Default] kUnknown = 0,
   kBootDevice = 1,
@@ -298,7 +298,7 @@ enum StorageDevicePurpose {
 // Information related to a specific non-removable block device.
 //
 // NextMinVersion: 1, NextIndex: 17
-[Stable, RenamedFrom="chromeos.cros_healthd.mojom.NonRemovableBlockDeviceInfo"]
+[Stable]
 struct NonRemovableBlockDeviceInfo {
   // IO statistics
 
@@ -350,7 +350,7 @@ struct NonRemovableBlockDeviceInfo {
 
 // CPU probe result. Can either be populated with the CpuInfo or an error
 // retrieving the information.
-[Stable, RenamedFrom="chromeos.cros_healthd.mojom.CpuResult"]
+[Stable]
 union CpuResult {
   // Valid CpuInfo.
   CpuInfo cpu_info;
@@ -361,7 +361,7 @@ union CpuResult {
 // Information about the device's CPUs.
 //
 // NextMinVersion: 2, NextIndex: 7
-[Stable, RenamedFrom="chromeos.cros_healthd.mojom.CpuInfo"]
+[Stable]
 struct CpuInfo {
   // Number of total threads available.
   uint32 num_total_threads@0;
@@ -385,10 +385,10 @@ struct CpuInfo {
 // Information related to virtualization.
 //
 // NextMinVersion: 1, NextIndex: 3
-[Stable, RenamedFrom="chromeos.cros_healthd.mojom.VirtualizationInfo"]
+[Stable]
 struct VirtualizationInfo {
   // The possible states of Simultaneous multithreading(SMT) control.
-  [Stable, Extensible, RenamedFrom="chromeos.cros_healthd.mojom.SMTControl"]
+  [Stable, Extensible]
   enum SMTControl {
     // This is required for backwards compatibility, should not be used.
     [Default] kUnmappedEnumField,
@@ -417,10 +417,10 @@ struct VirtualizationInfo {
 // Information related to CPU Vulnerabilities.
 //
 // NextMinVersion: 1, NextIndex: 2
-[Stable, RenamedFrom="chromeos.cros_healthd.mojom.VulnerabilityInfo"]
+[Stable]
 struct VulnerabilityInfo {
   // The status of the vulnerability.
-  [Stable, Extensible, RenamedFrom="chromeos.cros_healthd.mojom.Status"]
+  [Stable, Extensible]
   enum Status {
     // This is required for backwards compatibility, should not be used.
     [Default] kUnmappedEnumField,
@@ -444,7 +444,7 @@ struct VulnerabilityInfo {
 // Information related to Keylocker.
 //
 // NextMinVersion: 1, NextIndex: 1
-[Stable, RenamedFrom="chromeos.cros_healthd.mojom.KeylockerInfo"]
+[Stable]
 struct KeylockerInfo {
   // Has Keylocker been configured or not.
   bool keylocker_configured@0;
@@ -453,7 +453,7 @@ struct KeylockerInfo {
 // Information related to a particular physical CPU.
 //
 // NextMinVersion: 2, NextIndex: 4
-[Stable, RenamedFrom="chromeos.cros_healthd.mojom.PhysicalCpuInfo"]
+[Stable]
 struct PhysicalCpuInfo {
   // The CPU model name, if available.
   // For Arm devices, we will return SoC model instead.
@@ -470,10 +470,10 @@ struct PhysicalCpuInfo {
 // Information related to virtualization status of a cpu.
 //
 // NextMinVersion: 1, NextIndex: 3
-[Stable, RenamedFrom="chromeos.cros_healthd.mojom.CpuVirtualizationInfo"]
+[Stable]
 struct CpuVirtualizationInfo {
   // The type of cpu hardware virtualization.
-  [Stable, Extensible, RenamedFrom="chromeos.cros_healthd.mojom.Type"]
+  [Stable, Extensible]
   enum Type {
     // This is required for backwards compatibility, should not be used.
     [Default] kUnmappedEnumField,
@@ -495,7 +495,7 @@ struct CpuVirtualizationInfo {
 // Information related to a particular logical CPU.
 //
 // NextMinVersion: 1, NextIndex: 7
-[Stable, RenamedFrom="chromeos.cros_healthd.mojom.LogicalCpuInfo"]
+[Stable]
 struct LogicalCpuInfo {
   // The max CPU clock speed in kHz.
   uint32 max_clock_speed_khz@0;
@@ -519,7 +519,7 @@ struct LogicalCpuInfo {
 // Information about a CPU's C-states.
 //
 // NextMinVersion: 1, NextIndex: 2
-[Stable, RenamedFrom="chromeos.cros_healthd.mojom.CpuCStateInfo"]
+[Stable]
 struct CpuCStateInfo {
   // Name of the state.
   string name@0;
@@ -530,7 +530,7 @@ struct CpuCStateInfo {
 // Information about a single CPU temperature channel.
 //
 // NextMinVersion: 1, NextIndex: 2
-[Stable, RenamedFrom="chromeos.cros_healthd.mojom.CpuTemperatureChannel"]
+[Stable]
 struct CpuTemperatureChannel {
   // Temperature channel label, if found on the device.
   string? label@0;
@@ -540,7 +540,7 @@ struct CpuTemperatureChannel {
 
 // Timezone probe result. Can either be populated with the TimezoneInfo or an
 // error retrieving the information.
-[Stable, RenamedFrom="chromeos.cros_healthd.mojom.TimezoneResult"]
+[Stable]
 union TimezoneResult {
   // Valid TimezoneInfo.
   TimezoneInfo timezone_info;
@@ -551,7 +551,7 @@ union TimezoneResult {
 // Timezone information.
 //
 // NextMinVersion: 1, NextIndex: 2
-[Stable, RenamedFrom="chromeos.cros_healthd.mojom.TimezoneInfo"]
+[Stable]
 struct TimezoneInfo {
   // The timezone of the device in POSIX standard.
   string posix@0;
@@ -561,7 +561,7 @@ struct TimezoneInfo {
 
 // Memory probe result. Can either be populated with the MemoryInfo or an
 // error retrieving the information.
-[Stable, RenamedFrom="chromeos.cros_healthd.mojom.MemoryResult"]
+[Stable]
 union MemoryResult {
   // Valid MemoryInfo.
   MemoryInfo memory_info;
@@ -572,7 +572,7 @@ union MemoryResult {
 // Memory information.
 //
 // NextMinVersion: 2, NextIndex: 5
-[Stable, RenamedFrom="chromeos.cros_healthd.mojom.MemoryInfo"]
+[Stable]
 struct MemoryInfo {
   // Total memory, in KiB.
   uint32 total_memory_kib@0;
@@ -587,7 +587,7 @@ struct MemoryInfo {
 };
 
 // NextMinVersion: 1, NextIndex: 4
-[Stable, RenamedFrom="chromeos.cros_healthd.mojom.MemoryEncryptionInfo"]
+[Stable]
 struct MemoryEncryptionInfo {
   // Memory encryption state.
   EncryptionState encryption_state@0;
@@ -601,7 +601,7 @@ struct MemoryEncryptionInfo {
 
 // Memory encryption states.
 // NextMinVersion: 1, NextIndex: 4
-[Stable, Extensible, RenamedFrom="chromeos.cros_healthd.mojom.EncryptionState"]
+[Stable, Extensible]
 enum EncryptionState {
   [Default] kUnknown = 0,
   kEncryptionDisabled = 1,
@@ -611,7 +611,7 @@ enum EncryptionState {
 
 // Crypto algorithm.
 // NextMinVersion: 1, NextIndex: 3
-[Stable, Extensible, RenamedFrom="chromeos.cros_healthd.mojom.CryptoAlgorithm"]
+[Stable, Extensible]
 enum CryptoAlgorithm {
   [Default] kUnknown = 0,
   kAesXts128 = 1,
@@ -620,7 +620,7 @@ enum CryptoAlgorithm {
 
 // Backlight probe result. Can either be populated with the BacklightInfo or an
 // error retrieving the information.
-[Stable, RenamedFrom="chromeos.cros_healthd.mojom.BacklightResult"]
+[Stable]
 union BacklightResult {
   // Valid BacklightInfo.
   array<BacklightInfo> backlight_info;
@@ -631,7 +631,7 @@ union BacklightResult {
 // Backlight information.
 //
 // NextMinVersion: 1, NextIndex: 3
-[Stable, RenamedFrom="chromeos.cros_healthd.mojom.BacklightInfo"]
+[Stable]
 struct BacklightInfo {
   // Path to this backlight on the system. Useful if the caller needs to
   // correlate with other information.
@@ -644,7 +644,7 @@ struct BacklightInfo {
 
 // Fan probe result. Can either be populated with the FanInfo or an error
 // retrieving the information
-[Stable, RenamedFrom="chromeos.cros_healthd.mojom.FanResult"]
+[Stable]
 union FanResult {
   // A list of valid FanInfo.
   array<FanInfo> fan_info;
@@ -655,7 +655,7 @@ union FanResult {
 // Fan information.
 //
 // NextMinVersion: 1, NextIndex: 1
-[Stable, RenamedFrom="chromeos.cros_healthd.mojom.FanInfo"]
+[Stable]
 struct FanInfo {
   // Fan speed in RPM.
   uint32 speed_rpm@0;
@@ -663,7 +663,7 @@ struct FanInfo {
 
 // Stateful partition probe result. Can either be populated with a valid
 // StatefulPartitionInfo or an error retrieving the information.
-[Stable, RenamedFrom="chromeos.cros_healthd.mojom.StatefulPartitionResult"]
+[Stable]
 union StatefulPartitionResult {
   // A valid StatefulPartitionInfo.
   StatefulPartitionInfo partition_info;
@@ -674,7 +674,7 @@ union StatefulPartitionResult {
 // Stateful partition info
 //
 // NextMinVersion: 1, NextIndex: 4
-[Stable, RenamedFrom="chromeos.cros_healthd.mojom.StatefulPartitionInfo"]
+[Stable]
 struct StatefulPartitionInfo {
   // Available space for user data storage in the device in bytes.
   uint64 available_space@0;
@@ -688,7 +688,7 @@ struct StatefulPartitionInfo {
 
 // Bluetooth probe result. Can either be populated with the BluetoothAdapterInfo
 // or an error retrieving the information.
-[Stable, RenamedFrom="chromeos.cros_healthd.mojom.BluetoothResult"]
+[Stable]
 union BluetoothResult {
   // Valid BluetoothAdapterInfo.
   array<BluetoothAdapterInfo> bluetooth_adapter_info;
@@ -699,7 +699,7 @@ union BluetoothResult {
 // Information related to one of a device's Bluetooth adapters.
 //
 // NextMinVersion: 3, NextIndex: 11
-[Stable, RenamedFrom="chromeos.cros_healthd.mojom.BluetoothAdapterInfo"]
+[Stable]
 struct BluetoothAdapterInfo {
   // The name of the adapter.
   string name@0;
@@ -729,7 +729,7 @@ struct BluetoothAdapterInfo {
 // Information related to one of a adapter's Bluetooth connected devices.
 //
 // NextMinVersion: 2, NextIndex: 9
-[Stable, RenamedFrom="chromeos.cros_healthd.mojom.BluetoothDeviceInfo"]
+[Stable]
 struct BluetoothDeviceInfo {
   // The MAC address of the device.
   string address@0;
@@ -754,7 +754,7 @@ struct BluetoothDeviceInfo {
 // An enumeration of type in Bluetooth device info.
 //
 // NextMinVersion: 1, NextIndex: 5
-[Stable, Extensible, RenamedFrom="chromeos.cros_healthd.mojom.BluetoothDeviceType"]
+[Stable, Extensible]
 enum BluetoothDeviceType {
   // An enum value not defined in this version of the enum definition.
   [Default] kUnmappedEnumField = 0,
@@ -771,7 +771,7 @@ enum BluetoothDeviceType {
 // Supported Capabilities related information.
 //
 // NextMinVersion: 1, NextIndex: 4
-[Stable, RenamedFrom="chromeos.cros_healthd.mojom.SupportedCapabilities"]
+[Stable]
 struct SupportedCapabilities {
   // Max advertising data length.
   uint8 max_adv_len@0;
@@ -784,12 +784,12 @@ struct SupportedCapabilities {
 };
 
 // System probe result. DEPRECATED.
-[Stable, RenamedFrom="chromeos.cros_healthd.mojom.DEPRECATE_SystemResult"]
+[Stable]
 union DEPRECATE_SystemResult { ProbeError error; };
 
 // System probe result. Can either be populated with the SystemInfo or an error
 // retrieving the information.
-[Stable, RenamedFrom="chromeos.cros_healthd.mojom.SystemResult"]
+[Stable]
 union SystemResult {
   // Valid SystemInfo.
   SystemInfo system_info;
@@ -800,7 +800,7 @@ union SystemResult {
 // System Information.
 //
 // NextMinVersion: 1, NextIndex: 3
-[Stable, RenamedFrom="chromeos.cros_healthd.mojom.SystemInfo"]
+[Stable]
 struct SystemInfo {
   // The info related to the OS.
   OsInfo os_info@0;
@@ -814,7 +814,7 @@ struct SystemInfo {
 // The OS information.
 //
 // NextMinVersion: 2, NextIndex: 5
-[Stable, RenamedFrom="chromeos.cros_healthd.mojom.OsInfo"]
+[Stable]
 struct OsInfo {
   // Google code name for the given model. While it is OK to use this string for
   // human-display purposes (such as in a debug log or help dialog), or for a
@@ -836,7 +836,7 @@ struct OsInfo {
 // (e.g. "87.13544.59.0") into its parts:
 //
 // NextMinVersion: 1, NextIndex: 4
-[Stable, RenamedFrom="chromeos.cros_healthd.mojom.OsVersion"]
+[Stable]
 struct OsVersion {
   // The OS version release milestone (e.g. "87").
   string release_milestone@0;
@@ -851,7 +851,7 @@ struct OsVersion {
 // The boot mode of the current os.
 //
 // NextMinVersion: 1, NextIndex: 5
-[Stable, Extensible, RenamedFrom="chromeos.cros_healthd.mojom.BootMode"]
+[Stable, Extensible]
 enum BootMode {
   [Default] kUnknown = 0,
   // Boot with ChromeOS firmware.
@@ -871,7 +871,7 @@ enum BootMode {
 // exist in some situation. (e.g. in a early stage device)
 //
 // NextMinVersion: 1, NextIndex: 6
-[Stable, RenamedFrom="chromeos.cros_healthd.mojom.VpdInfo"]
+[Stable]
 struct VpdInfo {
   // A unique identifier of the device. (Required RO VPD field)
   string? serial_number@0;
@@ -894,7 +894,7 @@ struct VpdInfo {
 // to identify the hardware.
 //
 // NextMinVersion: 1, NextIndex: 11
-[Stable, RenamedFrom="chromeos.cros_healthd.mojom.DmiInfo"]
+[Stable]
 struct DmiInfo {
   // The BIOS vendor.
   string? bios_vendor@0;
@@ -924,7 +924,7 @@ struct DmiInfo {
 
 // Network probe result. Can either be populated with the NetworkHealthSnapshot
 // or an error retrieving the information.
-[Stable, RenamedFrom="chromeos.cros_healthd.mojom.NetworkResult"]
+[Stable]
 union NetworkResult {
   // Valid NetworkHealthSnapshot.
   chromeos.network_health.mojom.NetworkHealthState network_health;
@@ -932,7 +932,7 @@ union NetworkResult {
   ProbeError error;
 };
 
-[Stable, RenamedFrom="chromeos.cros_healthd.mojom.NetworkInterfaceResult"]
+[Stable]
 union NetworkInterfaceResult {
   // Valid network interfaces.
   array<NetworkInterfaceInfo> network_interface_info;
@@ -942,14 +942,14 @@ union NetworkInterfaceResult {
 
 // Will expand to beyond wireless interface.
 // NextMinVersion: 1, NextIndex: 1
-[Stable, RenamedFrom="chromeos.cros_healthd.mojom.NetworkInterfaceInfo"]
+[Stable]
 union NetworkInterfaceInfo {
   // Wireless interfaces.
   WirelessInterfaceInfo wireless_interface_info@0;
 };
 
 // NextMinVersion: 1, NextIndex: 3
-[Stable, RenamedFrom="chromeos.cros_healthd.mojom.WirelessInterfaceInfo"]
+[Stable]
 struct WirelessInterfaceInfo {
   // Interface name.
   string interface_name@0;
@@ -960,7 +960,7 @@ struct WirelessInterfaceInfo {
 };
 
 // NextMinVersion: 1, NextIndex: 7
-[Stable, RenamedFrom="chromeos.cros_healthd.mojom.WirelessLinkInfo"]
+[Stable]
 struct WirelessLinkInfo {
   // Access point address.
   string access_point_address_str@0;
@@ -980,7 +980,7 @@ struct WirelessLinkInfo {
 
 // Audio probe result. Can either be populated with the AudioInfo or an
 // error retrieving the information.
-[Stable, RenamedFrom="chromeos.cros_healthd.mojom.AudioResult"]
+[Stable]
 union AudioResult {
   // Valid AudioInfo.
   AudioInfo audio_info;
@@ -991,7 +991,7 @@ union AudioResult {
 // Audio information.
 //
 // NextMinVersion: 1, NextIndex: 8
-[Stable, RenamedFrom="chromeos.cros_healthd.mojom.AudioInfo"]
+[Stable]
 struct AudioInfo {
   // Is active output device mute or not.
   bool output_mute@0;
@@ -1012,7 +1012,7 @@ struct AudioInfo {
 };
 
 // Audio hardware probe result.
-[Stable, RenamedFrom="chromeos.cros_healthd.mojom.AudioHardwareResult"]
+[Stable]
 union AudioHardwareResult {
   // Valid AudioHardwareInfo.
   AudioHardwareInfo audio_hardware_info;
@@ -1023,7 +1023,7 @@ union AudioHardwareResult {
 // Audio hardware information.
 //
 // NextMinVersion: 1, NextIndex: 2
-[Stable, RenamedFrom="chromeos.cros_healthd.mojom.AudioHardwareInfo"]
+[Stable]
 struct AudioHardwareInfo {
   // Audio cards information.
   array<AudioCard> audio_cards@0;
@@ -1032,7 +1032,7 @@ struct AudioHardwareInfo {
 // Audio card information.
 //
 // NextMinVersion: 1, NextIndex: 3
-[Stable, RenamedFrom="chromeos.cros_healthd.mojom.AudioCard"]
+[Stable]
 struct AudioCard {
   // The id used by ALSA(Advanced Linux Sound Architecture).
   string alsa_id@0;
@@ -1046,7 +1046,7 @@ struct AudioCard {
 // HD-Audio codec information.
 //
 // NextMinVersion: 1, NextIndex: 2
-[Stable, RenamedFrom="chromeos.cros_healthd.mojom.HDAudioCodec"]
+[Stable]
 struct HDAudioCodec {
   // The name. E.g. "ATI R6xx HDMI".
   string name@0;
@@ -1055,7 +1055,7 @@ struct HDAudioCodec {
 };
 
 // Boot performance result.
-[Stable, RenamedFrom="chromeos.cros_healthd.mojom.BootPerformanceResult"]
+[Stable]
 union BootPerformanceResult {
   // Valid BootPerformanceInfo.
   BootPerformanceInfo boot_performance_info;
@@ -1066,7 +1066,7 @@ union BootPerformanceResult {
 // Boot performance information.
 //
 // NextMinVersion: 1, NextIndex: 5
-[Stable, RenamedFrom="chromeos.cros_healthd.mojom.BootPerformanceInfo"]
+[Stable]
 struct BootPerformanceInfo {
   // Total time since power on to login screen prompt.
   double boot_up_seconds@0;
@@ -1084,7 +1084,7 @@ struct BootPerformanceInfo {
 
 // Bus probe result. Can either be populated with the BusDevice or an error
 // retrieving the information.
-[Stable, RenamedFrom="chromeos.cros_healthd.mojom.BusResult"]
+[Stable]
 union BusResult {
   // Valid BusDevice.
   array<BusDevice> bus_devices;
@@ -1096,7 +1096,7 @@ union BusResult {
 // use.
 //
 // NextMinVersion: 1, NextIndex: 7
-[Stable, Extensible, RenamedFrom="chromeos.cros_healthd.mojom.BusDeviceClass"]
+[Stable, Extensible]
 enum BusDeviceClass {
   // For the devices which cannot be classified.
   [Default] kOthers = 0,
@@ -1111,7 +1111,7 @@ enum BusDeviceClass {
 // The bus device info.
 //
 // NextMinVersion: 1, NextIndex: 4
-[Stable, RenamedFrom="chromeos.cros_healthd.mojom.BusDevice"]
+[Stable]
 struct BusDevice {
   // The vendor / product name of the device. These are extracted from the
   // databases on the system and should only be used for showing / logging.
@@ -1127,7 +1127,7 @@ struct BusDevice {
 // The info related to specific bus type.
 //
 // NextMinVersion: 2
-[Stable, Extensible, RenamedFrom="chromeos.cros_healthd.mojom.BusInfo"]
+[Stable, Extensible]
 union BusInfo {
   // The info related to pci.
   PciBusInfo pci_bus_info;
@@ -1143,7 +1143,7 @@ union BusInfo {
 // The info related to pci.
 //
 // NextMinVersion: 1, NextIndex: 6
-[Stable, RenamedFrom="chromeos.cros_healthd.mojom.PciBusInfo"]
+[Stable]
 struct PciBusInfo {
   // These fields can be used to classify / identify the pci devices. See the
   // pci.ids database for the values. (https://github.com/gentoo/hwids)
@@ -1161,7 +1161,7 @@ struct PciBusInfo {
 // The info related to usb.
 //
 // NextMinVersion: 2, NextIndex: 7
-[Stable, RenamedFrom="chromeos.cros_healthd.mojom.UsbBusInfo"]
+[Stable]
 struct UsbBusInfo {
   // These fields can be used to classify / identify the usb devices. See the
   // usb.ids database for the values. (https://github.com/gentoo/hwids)
@@ -1182,7 +1182,7 @@ struct UsbBusInfo {
 // The info related to firmware version obtained from fwupd.
 //
 // NextMinVersion: 1, NextIndex: 2
-[Stable, RenamedFrom="chromeos.cros_healthd.mojom.FwupdFirmwareVersionInfo"]
+[Stable]
 struct FwupdFirmwareVersionInfo {
   // The string form of the firmware version.
   string version@0;
@@ -1194,7 +1194,7 @@ struct FwupdFirmwareVersionInfo {
 // repo for the values. (https://github.com/fwupd/fwupd)
 //
 // NextMinVersion: 1, NextIndex: 14
-[Stable, Extensible, RenamedFrom="chromeos.cros_healthd.mojom.FwupdVersionFormat"]
+[Stable, Extensible]
 enum FwupdVersionFormat {
   // An enum value not defined in this version of the enum definition.
   [Default] kUnmappedEnumField = 0,
@@ -1229,7 +1229,7 @@ enum FwupdVersionFormat {
 // The info related to usb interfaces.
 //
 // NextMinVersion: 1, NextIndex: 5
-[Stable, RenamedFrom="chromeos.cros_healthd.mojom.UsbBusInterfaceInfo"]
+[Stable]
 struct UsbBusInterfaceInfo {
   // The zero-based number (index) of the interface.
   uint8 interface_number@0;
@@ -1246,7 +1246,7 @@ struct UsbBusInterfaceInfo {
 
 // TPM probe result. Can either be populated with the TpmInfo or an error
 // retrieving the information.
-[Stable, RenamedFrom="chromeos.cros_healthd.mojom.TpmResult"]
+[Stable]
 union TpmResult {
   // Valid TpmInfo.
   TpmInfo tpm_info;
@@ -1257,7 +1257,7 @@ union TpmResult {
 // Information of the Trusted Platform Module(TPM).
 //
 // NextMinVersion: 1, NextIndex: 6
-[Stable, RenamedFrom="chromeos.cros_healthd.mojom.TpmInfo"]
+[Stable]
 struct TpmInfo {
   // TPM version related information.
   TpmVersion version@0;
@@ -1278,7 +1278,7 @@ struct TpmInfo {
 // The version of Google security chip(GSC).
 //
 // NextMinVersion: 1, NextIndex: 3
-[Stable, Extensible, RenamedFrom="chromeos.cros_healthd.mojom.TpmGSCVersion"]
+[Stable, Extensible]
 enum TpmGSCVersion {
   // For the devices which cannot be classified.
   [Default] kNotGSC = 0,
@@ -1291,7 +1291,7 @@ enum TpmGSCVersion {
 // TPM version related information.
 //
 // NextMinVersion: 1, NextIndex: 7
-[Stable, RenamedFrom="chromeos.cros_healthd.mojom.TpmVersion"]
+[Stable]
 struct TpmVersion {
   // GSC version.
   TpmGSCVersion gsc_version@0;
@@ -1314,7 +1314,7 @@ struct TpmVersion {
 // TPM status related information.
 //
 // NextMinVersion: 1, NextIndex: 3
-[Stable, RenamedFrom="chromeos.cros_healthd.mojom.TpmStatus"]
+[Stable]
 struct TpmStatus {
   // Whether a TPM is enabled on the system.
   bool enabled@0;
@@ -1327,7 +1327,7 @@ struct TpmStatus {
 // TPM dictionary attack (DA) related information.
 //
 // NextMinVersion: 1, NextIndex: 4
-[Stable, RenamedFrom="chromeos.cros_healthd.mojom.TpmDictionaryAttack"]
+[Stable]
 struct TpmDictionaryAttack {
   // The current dictionary attack counter value.
   uint32 counter@0;
@@ -1342,7 +1342,7 @@ struct TpmDictionaryAttack {
 // TPM attestation related information.
 //
 // NextMinVersion: 1, NextIndex: 2
-[Stable, RenamedFrom="chromeos.cros_healthd.mojom.TpmAttestation"]
+[Stable]
 struct TpmAttestation {
   // Is prepared for enrollment? True if prepared for *any* CA.
   bool prepared_for_enrollment@0;
@@ -1353,7 +1353,7 @@ struct TpmAttestation {
 // TPM supported features information.
 //
 // NextMinVersion: 1, NextIndex: 4
-[Stable, RenamedFrom="chromeos.cros_healthd.mojom.TpmSupportedFeatures"]
+[Stable]
 struct TpmSupportedFeatures {
   // Whether the u2f is supported or not.
   bool support_u2f@0;
@@ -1367,7 +1367,7 @@ struct TpmSupportedFeatures {
 
 // Graphics probe result. Can either be populated with the GraphicsInfo or an
 // error retrieving the information.
-[Stable, RenamedFrom="chromeos.cros_healthd.mojom.GraphicsResult"]
+[Stable]
 union GraphicsResult {
   // Valid GraphicsInfo.
   GraphicsInfo graphics_info;
@@ -1378,7 +1378,7 @@ union GraphicsResult {
 // Graphics information.
 //
 // NextMinVersion: 1, NextIndex: 2
-[Stable, RenamedFrom="chromeos.cros_healthd.mojom.GraphicsInfo"]
+[Stable]
 struct GraphicsInfo {
   // OpenGL | ES information.
   GLESInfo gles_info@0;
@@ -1387,7 +1387,7 @@ struct GraphicsInfo {
 };
 
 // NextMinVersion: 1, NextIndex: 5
-[Stable, RenamedFrom="chromeos.cros_healthd.mojom.GLESInfo"]
+[Stable]
 struct GLESInfo {
   // GL version.
   string version@0;
@@ -1402,7 +1402,7 @@ struct GLESInfo {
 };
 
 // NextMinVersion: 1, NextIndex: 4
-[Stable, RenamedFrom="chromeos.cros_healthd.mojom.EGLInfo"]
+[Stable]
 struct EGLInfo {
   // EGL version.
   string version@0;
@@ -1415,7 +1415,7 @@ struct EGLInfo {
 };
 
 // Display result.
-[Stable, RenamedFrom="chromeos.cros_healthd.mojom.DisplayResult"]
+[Stable]
 union DisplayResult {
   // Valid DisplayInfo.
   DisplayInfo display_info;
@@ -1426,7 +1426,7 @@ union DisplayResult {
 // Display information.
 //
 // NextMinVersion: 2, NextIndex: 2
-[Stable, RenamedFrom="chromeos.cros_healthd.mojom.DisplayInfo"]
+[Stable]
 struct DisplayInfo {
   // Embedded display info.
   EmbeddedDisplayInfo edp_info@0;
@@ -1435,7 +1435,7 @@ struct DisplayInfo {
 };
 
 // NextMinVersion: 3, NextIndex: 15
-[Stable, RenamedFrom="chromeos.cros_healthd.mojom.EmbeddedDisplayInfo"]
+[Stable]
 struct EmbeddedDisplayInfo {
   // Privacy screen is supported or not.
   bool privacy_screen_supported@0;
@@ -1470,7 +1470,7 @@ struct EmbeddedDisplayInfo {
 };
 
 // NextMinVersion: 2, NextIndex: 13
-[Stable, RenamedFrom="chromeos.cros_healthd.mojom.ExternalDisplayInfo"]
+[Stable]
 struct ExternalDisplayInfo {
   // Display width in millimeters.
   NullableUint32? display_width@0;
@@ -1503,7 +1503,7 @@ struct ExternalDisplayInfo {
 // An enumeration of display input type.
 //
 // NextMinVersion: 1, NextIndex: 3
-[Stable, Extensible, RenamedFrom="chromeos.cros_healthd.mojom.DisplayInputType"]
+[Stable, Extensible]
 enum DisplayInputType {
   // An enum value not defined in this version of the enum definition.
   [Default] kUnmappedEnumField = 0,
@@ -1516,7 +1516,7 @@ enum DisplayInputType {
 // Information related to a Thunderbolt device.
 //
 // NextMinVersion: 1, NextIndex: 8
-[Stable, RenamedFrom="chromeos.cros_healthd.mojom.ThunderboltBusInterfaceInfo"]
+[Stable]
 struct ThunderboltBusInterfaceInfo {
   // Vendor name of connected device interface.
   string vendor_name@0;
@@ -1537,7 +1537,7 @@ struct ThunderboltBusInterfaceInfo {
 };
 
 // NextMinVersion: 1, NextIndex: 6
-[Stable, Extensible, RenamedFrom="chromeos.cros_healthd.mojom.ThunderboltSecurityLevel"]
+[Stable, Extensible]
 enum ThunderboltSecurityLevel {
   [Default] kNone = 0,
   kUserLevel = 1,
@@ -1548,7 +1548,7 @@ enum ThunderboltSecurityLevel {
 };
 
 // NextMinVersion: 1, NextIndex: 2
-[Stable, RenamedFrom="chromeos.cros_healthd.mojom.ThunderboltBusInfo"]
+[Stable]
 struct ThunderboltBusInfo {
   // Security level none, user, secure, dponly.
   ThunderboltSecurityLevel security_level@0;
@@ -1557,7 +1557,7 @@ struct ThunderboltBusInfo {
 };
 
 // Input result.
-[Stable, RenamedFrom="chromeos.cros_healthd.mojom.InputResult"]
+[Stable]
 union InputResult {
   // Valid InputInfo.
   InputInfo input_info;
@@ -1568,7 +1568,7 @@ union InputResult {
 // Input software and hardware information.
 //
 // NextMinVersion: 1, NextIndex: 2
-[Stable, RenamedFrom="chromeos.cros_healthd.mojom.InputInfo"]
+[Stable]
 struct InputInfo {
   // The touchpad library name used by the input stack.
   string touchpad_library_name@0;
@@ -1579,7 +1579,7 @@ struct InputInfo {
 // Data of a touch screen device.
 //
 // NextMinVersion: 1, NextIndex: 4
-[Stable, RenamedFrom="chromeos.cros_healthd.mojom.TouchscreenDevice"]
+[Stable]
 struct TouchscreenDevice {
   // The input device of this touchscreen.
   InputDevice input_device@0;
@@ -1594,13 +1594,13 @@ struct TouchscreenDevice {
 // Data of a input device.
 //
 // NextMinVersion: 1, NextIndex: 4
-[Stable, RenamedFrom="chromeos.cros_healthd.mojom.InputDevice"]
+[Stable]
 struct InputDevice {
   // Name of the device.
   string name@0;
 
   // The connection type of the input device.
-  [Stable, Extensible, RenamedFrom="chromeos.cros_healthd.mojom.ConnectionType"]
+  [Stable, Extensible]
   enum ConnectionType {
     // For mojo backward compatibility.
     [Default] kUnmappedEnumField,
@@ -1633,7 +1633,7 @@ struct InputDevice {
 // to fetch that information, but was unable to.
 //
 // NextMinVersion: 5, NextIndex: 21
-[Stable, RenamedFrom="chromeos.cros_healthd.mojom.TelemetryInfo"]
+[Stable]
 struct TelemetryInfo {
   // Information about the device's main battery. Only present when kBattery was
   // included in the categories input to ProbeTelemetryInfo.
