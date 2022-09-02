@@ -103,6 +103,7 @@ class MixerInput {
   ~MixerInput();
 
   void Initialize();
+  void Destroy();
   void SetFilterGroup(FilterGroup* filter_group);
 
   void SetPostProcessorConfig(const std::string& name,

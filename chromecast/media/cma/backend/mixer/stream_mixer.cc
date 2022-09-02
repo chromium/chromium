@@ -796,15 +796,26 @@ void StreamMixer::RemoveInputOnThread(MixerInput::Source* input_source) {
 
   AUDIO_LOG(INFO) << "Remove input " << input_source;
 
+  std::unique_ptr<MixerInput> input;
   auto it = inputs_.find(input_source);
   if (it != inputs_.end()) {
     for (auto& redirector : audio_output_redirectors_) {
       redirector.second->RemoveInput(it->second.get());
     }
+    input = std::move(it->second);
     inputs_.erase(it);
+  } else {
+    it = ignored_inputs_.find(input_source);
+    if (it != ignored_inputs_.end()) {
+      input = std::move(it->second);
+      ignored_inputs_.erase(it);
+    }
   }
 
-  ignored_inputs_.erase(input_source);
+  if (input) {
+    input->Destroy();
+    io_task_runner_->DeleteSoon(FROM_HERE, std::move(input));
+  }
   UpdateStreamCountsOnThread();
 
   if (inputs_.empty()) {

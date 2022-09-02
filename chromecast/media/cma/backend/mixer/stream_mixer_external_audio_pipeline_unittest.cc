@@ -118,7 +118,6 @@ class ExternalAudioPipelineTest : public ::testing::Test {
   testing::FakeExternalAudioPipelineSupport* const
       external_audio_pipeline_support_;
 
- private:
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::TaskEnvironment::MainThreadType::IO};
 };
@@ -230,6 +229,7 @@ TEST_F(ExternalAudioPipelineTest, ExternalAudioPipelineLoopbackData) {
   mixer_->RemoveInput(&input);
 
   RunLoopForMixer();
+  task_environment_.RunUntilIdle();
 }
 
 }  // namespace

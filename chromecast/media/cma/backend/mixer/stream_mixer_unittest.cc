@@ -527,7 +527,6 @@ TEST_F(StreamMixerTest, RemoveInput) {
   }
 
   EXPECT_CALL(*mock_output_, Start(kTestSamplesPerSecond, _)).Times(1);
-  EXPECT_CALL(*mock_output_, Stop()).Times(0);
 
   for (size_t i = 0; i < inputs.size(); ++i) {
     EXPECT_CALL(*inputs[i], InitializeAudioPlayback(_, _)).Times(1);
@@ -542,6 +541,7 @@ TEST_F(StreamMixerTest, RemoveInput) {
   }
 
   WaitForMixer();
+  task_environment_.RunUntilIdle();
 }
 
 TEST_F(StreamMixerTest, WriteFrames) {

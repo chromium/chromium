@@ -20,7 +20,7 @@ namespace logging {
 
 namespace {
 constexpr int kBufferSize = 256;
-constexpr int kMaxBuffers = 16;
+constexpr int kMaxBuffers = 32;
 }  // namespace
 
 class AudioLogMessage::StreamBuf : public std::streambuf {
