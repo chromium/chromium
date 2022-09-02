@@ -29,6 +29,7 @@
 #include "base/strings/sys_string_conversions.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
+#include "base/win/windows_version.h"
 #include "chrome/installer/util/lzma_util.h"
 #include "chrome/installer/util/util_constants.h"
 #include "chrome/updater/constants.h"
@@ -287,6 +288,10 @@ ProcessExitResult HandleRunElevated(const base::CommandLine& command_line) {
 ProcessExitResult WMain(HMODULE module) {
   CHECK(EnableSecureDllLoading());
   EnableProcessHeapMetadataProtection();
+
+  if (base::win::GetVersion() < base::win::Version::WIN7) {
+    return ProcessExitResult(UNSUPPORTED_WINDOWS_VERSION);
+  }
 
   CommandString cmd_line_args;
   ProcessExitResult args_result = BuildCommandLineArguments(
