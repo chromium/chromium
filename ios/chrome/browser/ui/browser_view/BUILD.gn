@@ -213,6 +213,7 @@ source_set("browser_view") {
     "//ios/third_party/webkit",
     "//ios/web",
     "//ios/web/public",
+    "//ios/web/public/deprecated",
     "//ios/web/public/deprecated:deprecated_web_util",
     "//services/metrics/public/cpp:ukm_builders",
     "//ui/base",

@@ -468,6 +468,12 @@
 
 #pragma mark - JavaScript Utilities (EG2)
 
+// Executes JavaScript on current WebState, and waits for either the completion
+// or timeout. If execution does not complete within a timeout or JavaScript
+// exception is thrown, returns an NSError indicating why the operation failed,
+// otherwise returns object representing execution result.
++ (id)executeJavaScript:(NSString*)javaScript error:(NSError**)error;
+
 // Executes JavaScript through the WebState's WebFrame and waits for either the
 // completion or timeout. If execution does not complete within a timeout or
 // JavaScript exception is thrown, |success| is NO.
