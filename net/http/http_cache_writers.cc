@@ -615,8 +615,10 @@ void HttpCache::Writers::OnDataReceived(int result) {
     // Invoke entry processing.
     DCHECK(ContainsOnlyIdleWriters());
     TransactionSet make_readers;
-    for (auto& writer : all_writers_)
+    for (auto& writer : all_writers_) {
+      writer.first->set_being_removed_as_writer(true);
       make_readers.insert(writer.first);
+    }
     all_writers_.clear();
     SetCacheCallback(true, make_readers);
     return;

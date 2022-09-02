@@ -2533,6 +2533,8 @@ int HttpCache::Transaction::DoCacheReadDataComplete(int result) {
   SCOPED_CRASH_KEY_BOOL(
       "net", "has called DoneWithEntry",
       has_called_done_with_entry_since_last_do_cache_read_data_);
+  SCOPED_CRASH_KEY_BOOL("net", "being_removed_as_writer",
+                        being_removed_as_writer_);
 
   const char* writers_done_writing_to_entry_history = "N/A.";
   if (entry_) {

@@ -229,6 +229,10 @@ class NET_EXPORT_PRIVATE HttpCache::Transaction : public HttpTransaction {
   void WriteModeTransactionAboutToBecomeReader(
       WriteModeTransactionAboutToBecomeReaderCaller caller);
 
+  void set_being_removed_as_writer(bool value) {
+    being_removed_as_writer_ = value;
+  }
+
   // True if the passed checksum calculated from the response matches the
   // expected value from the HttpRequestInfo. Consumes `checksum`.
   bool ResponseChecksumMatches(
@@ -816,6 +820,7 @@ class NET_EXPORT_PRIVATE HttpCache::Transaction : public HttpTransaction {
       write_mode_transaction_about_to_become_reader_caller_ =
           WriteModeTransactionAboutToBecomeReaderCaller::kNone;
   bool has_called_done_with_entry_since_last_do_cache_read_data_ = false;
+  bool being_removed_as_writer_ = false;
 
   base::WeakPtrFactory<Transaction> weak_factory_{this};
 };

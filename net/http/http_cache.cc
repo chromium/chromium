@@ -1007,6 +1007,7 @@ void HttpCache::WritersDoneWritingToEntry(ActiveEntry* entry,
       reader->WriteModeTransactionAboutToBecomeReader(
           WriteModeTransactionAboutToBecomeReaderCaller::
               kWritersDoneWritingToEntry);
+      reader->set_being_removed_as_writer(false);
       entry->readers.insert(reader);
     }
     // Reset writers here so that WriteModeTransactionAboutToBecomeReader can
