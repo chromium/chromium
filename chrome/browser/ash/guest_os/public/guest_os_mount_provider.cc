@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/guest_os/public/guest_os_mount_provider.h"
+
 #include <memory>
 
 #include "base/bind.h"
@@ -31,21 +32,31 @@ class ScopedVolume {
       base::FilePath remote_path,
       const ash::disks::DiskMountManager::MountPoint& mount_info,
       VmType vm_type)
-      : profile_(profile), mount_label_(mount_label), vm_type_(vm_type) {
-    base::FilePath mount_path = base::FilePath(mount_info.mount_path);
+      : profile_(profile),
+        mount_label_(std::move(mount_label)),
+        display_name_(std::move(display_name)),
+        mount_path_(mount_info.mount_path),
+        remote_path_(std::move(remote_path)),
+        vm_type_(vm_type) {
     if (!storage::ExternalMountPoints::GetSystemInstance()->RegisterFileSystem(
             mount_label_, storage::kFileSystemTypeLocal,
-            storage::FileSystemMountOption(), mount_path)) {
+            storage::FileSystemMountOption(), mount_path_)) {
       // We don't revoke the filesystem on unmount and this call fails if a
       // filesystem of the same name already exists, so ignore errors.
       // TODO(crbug/1293229): This follows the logic of existing code, but we
       // can probably change it to revoke the filesystem on unmount.
     }
+    AddVolumeForProfile(profile);
+  }
 
-    auto* vmgr = file_manager::VolumeManager::Get(profile_);
+  // Adds the volume to the VolumeManager for `profile`. Since Incognito
+  // profiles have their own volume managers the same mount might be added to
+  // multiple profiles.
+  void AddVolumeForProfile(Profile* profile) {
+    auto* vmgr = file_manager::VolumeManager::Get(profile);
     if (vmgr) {
-      // vmgr is null in unit tests.
-      vmgr->AddSftpGuestOsVolume(display_name, mount_path, remote_path,
+      // vmgr may be null in unit tests.
+      vmgr->AddSftpGuestOsVolume(display_name_, mount_path_, remote_path_,
                                  vm_type_);
     }
   }
@@ -74,7 +85,10 @@ class ScopedVolume {
 
   Profile* profile_;
   std::string mount_label_;
-  VmType vm_type_;
+  const std::string display_name_;
+  const base::FilePath mount_path_;
+  const base::FilePath remote_path_;
+  const VmType vm_type_;
 };
 
 class GuestOsMountProviderInner : public CachedCallback<ScopedVolume, bool> {
@@ -87,10 +101,13 @@ class GuestOsMountProviderInner : public CachedCallback<ScopedVolume, bool> {
       base::RepeatingCallback<void(GuestOsMountProvider::PrepareCallback)>
           prepare)
       : profile_(profile),
-        display_name_(display_name),
-        container_id_(container_id),
+        display_name_(std::move(display_name)),
+        container_id_(std::move(container_id)),
         vm_type_(vm_type),
-        prepare_(prepare) {}
+        prepare_(std::move(prepare)) {
+    // This profile should be the user's primary profile, not an incognito one.
+    DCHECK(!profile->IsOffTheRecord());
+  }
 
   // Mount.
   void Build(RealCallback callback) override {
@@ -146,19 +163,21 @@ class GuestOsMountProviderInner : public CachedCallback<ScopedVolume, bool> {
   }
 
   Profile* profile_;
-  std::string display_name_;
-  guest_os::GuestId container_id_;
+  const std::string display_name_;
+  const guest_os::GuestId container_id_;
   std::string mount_label_;
-  VmType vm_type_;
+  const VmType vm_type_;
   // Callback to prepare the VM for mounting.
-  base::RepeatingCallback<void(GuestOsMountProvider::PrepareCallback)> prepare_;
+  const base::RepeatingCallback<void(GuestOsMountProvider::PrepareCallback)>
+      prepare_;
 
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.
   base::WeakPtrFactory<GuestOsMountProviderInner> weak_ptr_factory_{this};
 };
 
-void GuestOsMountProvider::Mount(base::OnceCallback<void(bool)> callback) {
+void GuestOsMountProvider::Mount(Profile* target_profile,
+                                 base::OnceCallback<void(bool)> callback) {
   if (!callback_) {
     callback_ = std::make_unique<GuestOsMountProviderInner>(
         profile(), DisplayName(), GuestId(), vm_type(),
@@ -166,11 +185,14 @@ void GuestOsMountProvider::Mount(base::OnceCallback<void(bool)> callback) {
                             weak_ptr_factory_.GetWeakPtr()));
   }
   callback_->Get(base::BindOnce(
-      [](base::OnceCallback<void(bool)> callback,
+      [](base::OnceCallback<void(bool)> callback, Profile* target_profile,
          guest_os::GuestOsMountProviderInner::Result result) {
+        if (result) {
+          result.Value()->AddVolumeForProfile(target_profile);
+        }
         std::move(callback).Run(!!result);
       },
-      std::move(callback)));
+      std::move(callback), target_profile));
 }
 
 void GuestOsMountProvider::Unmount() {

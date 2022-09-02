@@ -54,8 +54,9 @@ ExtensionFunction::ResponseAction FileManagerPrivateMountGuestFunction::Run() {
     LOG(ERROR) << error;
     return RespondNow(Error(error));
   }
-  provider->Mount(base::BindOnce(
-      &FileManagerPrivateMountGuestFunction::MountCallback, this));
+  provider->Mount(
+      profile, base::BindOnce(
+                   &FileManagerPrivateMountGuestFunction::MountCallback, this));
   return RespondLater();
 }
 

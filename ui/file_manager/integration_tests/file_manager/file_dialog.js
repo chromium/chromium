@@ -891,3 +891,67 @@ testcase.openMultiFileDialogSelectAllEnabled = async () => {
       '#gear-menu ' +
           'cr-menu-item[command="#select-all"]:not([disabled]):not([hidden])');
 };
+
+/**
+ * Tests open file dialog on a GuestOS volume. Check that the placeholder is
+ * shown in the dialog and that clicking on it mounts the volume. We don't
+ * bother actually opening a file since once it's mounted it works like any
+ * other local FUSE volume.
+ */
+testcase.openFileDialogGuestOs = async () => {
+  // Register a fake GuestOs guest.
+  const _ = await sendTestMessage({
+    name: 'registerMountableGuest',
+    displayName: 'Bluejohn',
+    canMount: true,
+    vmType: 'bruschetta',
+  });
+
+  // Open the open file dialog.
+  await openEntryChoosingWindow({type: 'openFile'});
+
+  // Wait for the dialog to be fully loaded.
+  const appId = await remoteCall.waitForWindow('dialog#');
+  await remoteCall.waitForElement(appId, '#file-list');
+  await remoteCall.waitFor('isFileManagerLoaded', appId, true);
+
+  // Click the Guest OS placeholder.
+  await remoteCall.waitAndClickElement(
+      appId, `#directory-tree [root-type-icon="bruschetta"]`);
+
+  // Wait for the actual volume to appear.
+  await remoteCall.waitForElement(
+      appId, '#directory-tree [volume-type-icon=bruschetta]');
+};
+
+/**
+ * Tests save file dialog on a GuestOS volume. Check that the placeholder is
+ * shown in the dialog and that clicking on it mounts the volume. We don't
+ * bother actually saving a file since once it's mounted it works like any other
+ * local FUSE volume.
+ */
+testcase.saveFileDialogGuestOs = async () => {
+  // Register a fake GuestOs guest.
+  const _ = await sendTestMessage({
+    name: 'registerMountableGuest',
+    displayName: 'Bluejohn',
+    canMount: true,
+    vmType: 'bruschetta',
+  });
+
+  // Open the save file dialog.
+  await openEntryChoosingWindow({type: 'saveFile'});
+
+  // Wait for the dialog to be fully loaded.
+  const appId = await remoteCall.waitForWindow('dialog#');
+  await remoteCall.waitForElement(appId, '#file-list');
+  await remoteCall.waitFor('isFileManagerLoaded', appId, true);
+
+  // Click the Guest OS placeholder.
+  await remoteCall.waitAndClickElement(
+      appId, `#directory-tree [root-type-icon="bruschetta"]`);
+
+  // Wait for the actual volume to appear.
+  await remoteCall.waitForElement(
+      appId, '#directory-tree [volume-type-icon=bruschetta]');
+};

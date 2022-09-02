@@ -3154,7 +3154,8 @@ bool FileManagerBrowserTestBase::HandleGuestOsCommands(
     auto* registry = guest_os::GuestOsService::GetForProfile(profile())
                          ->MountProviderRegistry();
     auto id = registry->Register(std::make_unique<MockGuestOsMountProvider>(
-        profile(), *displayName, vmType ? *vmType : "bruschetta"));
+        profile()->GetOriginalProfile(), *displayName,
+        vmType ? *vmType : "bruschetta"));
     MockGuestOsMountProvider* ptr =
         reinterpret_cast<MockGuestOsMountProvider*>(registry->Get(id));
     ptr->cid_ = id;
