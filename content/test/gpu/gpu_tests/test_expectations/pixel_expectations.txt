@@ -326,6 +326,14 @@ crbug.com/1302427 [ fuchsia-board-qemu-x64 ] Pixel_CanvasLowLatencyWebGLAlphaFal
 # Flaky blank output on ChromeOS
 crbug.com/1278991 [ chromeos chromeos-board-amd64-generic renderer-skia-gl ] Pixel_OffscreenCanvasWebGLDefault [ RetryOnFailure ]
 
+# Consistently produces bad images
+crbug.com/1359118 [ chromeos chromeos-board-amd64-generic ] Pixel_CanvasLowLatencyWebGLAlphaFalse [ Failure ]
+crbug.com/1359118 [ chromeos chromeos-board-kevin ] Pixel_CanvasLowLatencyWebGL [ Failure ]
+crbug.com/1359118 [ chromeos chromeos-board-kevin ] Pixel_CanvasLowLatencyWebGLAlphaFalse [ Failure ]
+crbug.com/1359118 [ chromeos chromeos-board-kevin ] Pixel_CanvasLowLatencyWebGLDrawImage [ Failure ]
+crbug.com/1359118 [ chromeos chromeos-board-kevin ] Pixel_CanvasLowLatencyWebGLOccluded [ Failure ]
+crbug.com/1359118 [ chromeos chromeos-board-kevin ] Pixel_CanvasLowLatencyWebGLRoundedCorners [ Failure ]
+
 # Flakes on Mac dual-GPU
 crbug.com/1069339 [ mojave amd-0x6821 ] Pixel_OffscreenCanvasIBRCWebGLHighPerfWorker [ RetryOnFailure ]  # finder:disable-stale Very low flake rate (1 in 1k+ builds)
 
