@@ -1,0 +1,26 @@
+caption: Allow the enhanced network text-to-speech voices in Select-to-speak
+default: true
+desc: |-
+  Allow the enhanced network text-to-speech voices in Select-to-speak accessibility feature. These voices send text to Google's servers to synthesize natural-sounding speech.
+
+            If this policy is set to false, the enhanced network text-to-speech voices feature in Select-to-speak will always be disabled.
+
+            If this policy is set to true or unset, the enhanced network text-to-speech voices feature in Select-to-speak can be enabled or disabled by the user.
+example_value: true
+features:
+  can_be_recommended: true
+  dynamic_refresh: true
+  per_profile: true
+items:
+- caption: Allow enhanced network text-to-speech voices when using Select-to-Speak
+  value: true
+- caption: Disallow enhanced network text-to-speech voices when using Select-to-Speak
+  value: false
+owners:
+- file://ui/accessibility/OWNERS
+schema:
+  type: boolean
+supported_on:
+- chrome_os:94-
+tags: []
+type: main

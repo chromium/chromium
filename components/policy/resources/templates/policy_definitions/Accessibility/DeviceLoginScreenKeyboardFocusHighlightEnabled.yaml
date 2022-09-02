@@ -1,0 +1,26 @@
+caption: Enable the keyboard focus highlighting accessibility feature
+desc: |-
+  Enable the keyboard focus highlighting accessibility feature on the login screen.
+
+            This feature is responsible for highlighting the object that is focused by the keyboard.
+
+            If this policy is set to enabled, the keyboard focus highlighting will always be enabled.
+
+            If this policy is set to disabled, the keyboard focus highlighting will always be disabled.
+
+            If you set this policy, users cannot change or override it.
+
+            If this policy is left unset, the keyboard focus highlighting is disabled initially but can be enabled by the user anytime.
+device_only: true
+example_value: true
+features:
+  can_be_recommended: true
+  dynamic_refresh: true
+owners:
+- amraboelkher@chromium.org
+schema:
+  type: boolean
+supported_on:
+- chrome_os:79-
+tags: []
+type: main
