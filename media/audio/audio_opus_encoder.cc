@@ -46,9 +46,8 @@ AudioParameters CreateInputParams(const AudioEncoder::Options& options) {
                                 kOpusPreferredBufferDurationMs /
                                 base::Time::kMillisecondsPerSecond;
   AudioParameters result(media::AudioParameters::AUDIO_PCM_LINEAR,
-                         media::CHANNEL_LAYOUT_DISCRETE, options.sample_rate,
-                         frames_per_buffer);
-  result.set_channels_for_discrete(options.channels);
+                         {media::CHANNEL_LAYOUT_DISCRETE, options.channels},
+                         options.sample_rate, frames_per_buffer);
   return result;
 }
 
@@ -68,9 +67,10 @@ AudioParameters CreateOpusCompatibleParams(const AudioParameters& params) {
   const int frames_per_buffer = used_rate * kOpusPreferredBufferDurationMs /
                                 base::Time::kMillisecondsPerSecond;
 
-  AudioParameters result(AudioParameters::AUDIO_PCM_LOW_LATENCY,
-                         GuessChannelLayout(std::min(params.channels(), 2)),
-                         used_rate, frames_per_buffer);
+  AudioParameters result(
+      AudioParameters::AUDIO_PCM_LOW_LATENCY,
+      ChannelLayoutConfig::Guess(std::min(params.channels(), 2)), used_rate,
+      frames_per_buffer);
   return result;
 }
 

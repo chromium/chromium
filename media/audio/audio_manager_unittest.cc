@@ -283,7 +283,7 @@ class AudioManagerTest : public ::testing::Test {
  public:
   void HandleDefaultDeviceIDsTest() {
     AudioParameters params(AudioParameters::AUDIO_PCM_LOW_LATENCY,
-                           CHANNEL_LAYOUT_STEREO, 48000, 2048);
+                           ChannelLayoutConfig::Stereo(), 48000, 2048);
 
     // Create a stream with the default device id "".
     AudioOutputStream* stream =
@@ -345,7 +345,8 @@ class AudioManagerTest : public ::testing::Test {
   }
 
   AudioParameters GetPreferredOutputStreamParameters(
-      ChannelLayout channel_layout, int32_t user_buffer_size = 0) {
+      const ChannelLayoutConfig& channel_layout_config,
+      int32_t user_buffer_size = 0) {
     // Generated AudioParameters should follow the same rule as in
     // AudioManagerCras::GetPreferredOutputStreamParameters().
     int sample_rate = kDefaultSampleRate;
@@ -353,8 +354,8 @@ class AudioManagerTest : public ::testing::Test {
     if (buffer_size == 0)  // Not user-provided.
       cras_audio_handler_->GetDefaultOutputBufferSize(&buffer_size);
     return AudioParameters(
-        AudioParameters::AUDIO_PCM_LOW_LATENCY, channel_layout, sample_rate,
-        buffer_size,
+        AudioParameters::AUDIO_PCM_LOW_LATENCY, channel_layout_config,
+        sample_rate, buffer_size,
         AudioParameters::HardwareCapabilities(limits::kMinAudioBufferSize,
                                               limits::kMaxAudioBufferSize));
   }
@@ -590,18 +591,18 @@ TEST_F(AudioManagerTest, CheckOutputStreamParametersCras) {
   // should be reflected to the specific output device.
   params = device_info_accessor_->GetOutputStreamParameters(
       base::NumberToString(kJabraSpeaker1Id));
-  golden_params = GetPreferredOutputStreamParameters(
-      ChannelLayout::CHANNEL_LAYOUT_STEREO);
+  golden_params =
+      GetPreferredOutputStreamParameters(ChannelLayoutConfig::Stereo());
   EXPECT_TRUE(params.Equals(golden_params));
   params = device_info_accessor_->GetOutputStreamParameters(
       base::NumberToString(kJabraSpeaker2Id));
   golden_params = GetPreferredOutputStreamParameters(
-      ChannelLayout::CHANNEL_LAYOUT_5_1);
+      ChannelLayoutConfig::FromLayout<ChannelLayout::CHANNEL_LAYOUT_5_1>());
   EXPECT_TRUE(params.Equals(golden_params));
   params = device_info_accessor_->GetOutputStreamParameters(
       base::NumberToString(kHDMIOutputId));
   golden_params = GetPreferredOutputStreamParameters(
-      ChannelLayout::CHANNEL_LAYOUT_7_1);
+      ChannelLayoutConfig::FromLayout<ChannelLayout::CHANNEL_LAYOUT_7_1>());
   EXPECT_TRUE(params.Equals(golden_params));
 
   // Set user-provided audio buffer size by command line, then check the buffer
@@ -619,26 +620,30 @@ TEST_F(AudioManagerTest, CheckOutputStreamParametersCras) {
   params = device_info_accessor_->GetOutputStreamParameters(
       AudioDeviceDescription::kDefaultDeviceId);
   golden_params = GetPreferredOutputStreamParameters(
-      ChannelLayout::CHANNEL_LAYOUT_STEREO, 2048);
+      ChannelLayoutConfig::FromLayout<ChannelLayout::CHANNEL_LAYOUT_STEREO>(),
+      2048);
   EXPECT_TRUE(params.Equals(golden_params));
   SetActiveOutputNode(kJabraSpeaker2Id);
   params = device_info_accessor_->GetOutputStreamParameters(
       AudioDeviceDescription::kDefaultDeviceId);
   golden_params = GetPreferredOutputStreamParameters(
-      ChannelLayout::CHANNEL_LAYOUT_5_1, 2048);
+      ChannelLayoutConfig::FromLayout<ChannelLayout::CHANNEL_LAYOUT_5_1>(),
+      2048);
   EXPECT_TRUE(params.Equals(golden_params));
   SetActiveOutputNode(kHDMIOutputId);
   params = device_info_accessor_->GetOutputStreamParameters(
       AudioDeviceDescription::kDefaultDeviceId);
   golden_params = GetPreferredOutputStreamParameters(
-      ChannelLayout::CHANNEL_LAYOUT_7_1, 2048);
+      ChannelLayoutConfig::FromLayout<ChannelLayout::CHANNEL_LAYOUT_7_1>(),
+      2048);
   EXPECT_TRUE(params.Equals(golden_params));
 
   // Check non-default device again.
   params = device_info_accessor_->GetOutputStreamParameters(
       base::NumberToString(kJabraSpeaker1Id));
   golden_params = GetPreferredOutputStreamParameters(
-      ChannelLayout::CHANNEL_LAYOUT_STEREO, 2048);
+      ChannelLayoutConfig::FromLayout<ChannelLayout::CHANNEL_LAYOUT_STEREO>(),
+      2048);
   EXPECT_TRUE(params.Equals(golden_params));
 }
 

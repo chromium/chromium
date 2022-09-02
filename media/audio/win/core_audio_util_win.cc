@@ -25,6 +25,7 @@
 #include "base/win/windows_version.h"
 #include "media/audio/audio_device_description.h"
 #include "media/audio/audio_features.h"
+#include "media/base/channel_layout.h"
 #include "media/base/media_switches.h"
 #include "media/base/win/mf_helpers.h"
 
@@ -564,14 +565,8 @@ HRESULT GetPreferredAudioParametersInternal(IAudioClient* client,
 
   // Retrieve the current channel configuration (e.g. CHANNEL_LAYOUT_STEREO).
   ChannelLayout channel_layout = GetChannelLayout(format);
-
-  AudioParameters audio_params(
-      AudioParameters::AUDIO_PCM_LOW_LATENCY, channel_layout, sample_rate,
-      frames_per_buffer,
-      AudioParameters::HardwareCapabilities(min_frames_per_buffer,
-                                            max_frames_per_buffer));
-
-  if (audio_params.channel_layout() == CHANNEL_LAYOUT_DISCRETE) {
+  int channels = ChannelLayoutToChannelCount(channel_layout);
+  if (channel_layout == CHANNEL_LAYOUT_DISCRETE) {
     if (!is_output_device) {
       // Set the number of channels explicitly to two for input devices if
       // the channel layout is discrete to ensure that the parameters are valid
@@ -580,7 +575,7 @@ HRESULT GetPreferredAudioParametersInternal(IAudioClient* client,
       // input stream implementation instead.
       // See crbug.com/868026 for examples where this approach is needed.
       DVLOG(1) << "Forcing number of channels to 2 for CHANNEL_LAYOUT_DISCRETE";
-      audio_params.set_channels_for_discrete(2);
+      channels = 2;
     } else {
       // Some output devices return CHANNEL_LAYOUT_DISCRETE. Keep this channel
       // format but update the number of channels with the correct value. The
@@ -588,9 +583,16 @@ HRESULT GetPreferredAudioParametersInternal(IAudioClient* client,
       // See crbug.com/957886 for more details.
       DVLOG(1) << "Setting number of channels to " << format->nChannels
                << " for CHANNEL_LAYOUT_DISCRETE";
-      audio_params.set_channels_for_discrete(format->nChannels);
+      channels = format->nChannels;
     }
   }
+
+  AudioParameters audio_params(
+      AudioParameters::AUDIO_PCM_LOW_LATENCY, {channel_layout, channels},
+      sample_rate, frames_per_buffer,
+      AudioParameters::HardwareCapabilities(min_frames_per_buffer,
+                                            max_frames_per_buffer));
+
   DVLOG(1) << audio_params.AsHumanReadableString();
   DCHECK(audio_params.IsValid());
   *params = audio_params;
@@ -1086,7 +1088,7 @@ HRESULT CoreAudioUtil::GetPreferredAudioParameters(const std::string& device_id,
       params->channel_layout() != CHANNEL_LAYOUT_DISCRETE) {
     DLOG(WARNING)
         << "Replacing existing audio parameter with predefined version";
-    params->Reset(params->format(), CHANNEL_LAYOUT_STEREO,
+    params->Reset(params->format(), media::ChannelLayoutConfig::Stereo(),
                   params->sample_rate(), params->frames_per_buffer());
   }
 

@@ -22,7 +22,8 @@ absl::optional<AudioParameters> TryToFixChannels(
   // better to report a valid value if this is the only problem.
   if (params.channels() > limits::kMaxChannels) {
     DCHECK(params.channel_layout() == CHANNEL_LAYOUT_DISCRETE);
-    params_copy.set_channels_for_discrete(limits::kMaxChannels);
+    params_copy.SetChannelLayoutConfig(CHANNEL_LAYOUT_DISCRETE,
+                                       limits::kMaxChannels);
   }
 
   return params_copy.IsValid() ? params_copy

@@ -827,7 +827,7 @@ TEST_F(AudioAndroidOutputTest,
        DISABLED_StartOutputStreamCallbacksNonDefaultParameters) {
   GetDefaultOutputStreamParametersOnAudioThread();
   AudioParameters params(audio_output_parameters().format(),
-                         CHANNEL_LAYOUT_MONO,
+                         ChannelLayoutConfig::Mono(),
                          audio_output_parameters().sample_rate(),
                          audio_output_parameters().sample_rate() / 100);
   StartOutputStreamCallbacks(params);

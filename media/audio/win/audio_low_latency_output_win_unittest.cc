@@ -204,11 +204,8 @@ class AudioOutputStreamWrapper {
 
  private:
   AudioOutputStream* CreateOutputStream() {
-    AudioParameters params(format_, channel_layout_, sample_rate_,
+    AudioParameters params(format_, {channel_layout_, channels_}, sample_rate_,
                            samples_per_packet_);
-    if (channel_layout_ == CHANNEL_LAYOUT_DISCRETE) {
-      params.set_channels_for_discrete(channels_);
-    }
     DVLOG(1) << params.AsHumanReadableString();
     AudioOutputStream* aos = audio_man_->MakeAudioOutputStream(
         params, std::string(), AudioManager::LogCallback());

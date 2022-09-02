@@ -609,14 +609,14 @@ AudioParameters AudioManagerMac::GetInputStreamParameters(
   if (device == kAudioObjectUnknown) {
     DLOG(ERROR) << "Invalid device " << device_id;
     return AudioParameters(AudioParameters::AUDIO_PCM_LOW_LATENCY,
-                           CHANNEL_LAYOUT_STEREO, kFallbackSampleRate,
+                           ChannelLayoutConfig::Stereo(), kFallbackSampleRate,
                            ChooseBufferSize(true, kFallbackSampleRate));
   }
 
   int channels = 0;
-  ChannelLayout channel_layout = CHANNEL_LAYOUT_STEREO;
+  ChannelLayoutConfig channel_layout_config = ChannelLayoutConfig::Stereo();
   if (GetDeviceChannels(device, AUElement::INPUT, &channels) && channels <= 2) {
-    channel_layout = GuessChannelLayout(channels);
+    channel_layout_config = ChannelLayoutConfig::Guess(channels);
   } else {
     DLOG(ERROR) << "Failed to get the device channels, use stereo as default "
                 << "for device " << device_id;
@@ -633,8 +633,8 @@ AudioParameters AudioManagerMac::GetInputStreamParameters(
 
   // TODO(grunell): query the native channel layout for the specific device.
   AudioParameters params(
-      AudioParameters::AUDIO_PCM_LOW_LATENCY, channel_layout, sample_rate,
-      buffer_size,
+      AudioParameters::AUDIO_PCM_LOW_LATENCY, channel_layout_config,
+      sample_rate, buffer_size,
       AudioParameters::HardwareCapabilities(
           GetMinAudioBufferSizeMacOS(limits::kMinAudioBufferSize, sample_rate),
           limits::kMaxAudioBufferSize));
@@ -828,7 +828,8 @@ AudioParameters AudioManagerMac::GetPreferredOutputStreamParameters(
     return input_params.IsValid()
                ? input_params
                : AudioParameters(AudioParameters::AUDIO_PCM_LOW_LATENCY,
-                                 CHANNEL_LAYOUT_STEREO, kFallbackSampleRate,
+                                 ChannelLayoutConfig::Stereo(),
+                                 kFallbackSampleRate,
                                  ChooseBufferSize(false, kFallbackSampleRate));
   }
 
@@ -873,13 +874,12 @@ AudioParameters AudioManagerMac::GetPreferredOutputStreamParameters(
   }
 
   AudioParameters params(
-      AudioParameters::AUDIO_PCM_LOW_LATENCY, channel_layout,
+      AudioParameters::AUDIO_PCM_LOW_LATENCY, {channel_layout, output_channels},
       hardware_sample_rate, buffer_size,
       AudioParameters::HardwareCapabilities(
           GetMinAudioBufferSizeMacOS(limits::kMinAudioBufferSize,
                                      hardware_sample_rate),
           limits::kMaxAudioBufferSize));
-  params.set_channels_for_discrete(output_channels);
   return params;
 }
 

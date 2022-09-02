@@ -123,7 +123,7 @@ class AudioOutputDeviceTest : public testing::Test {
 AudioOutputDeviceTest::AudioOutputDeviceTest()
     : device_status_(OUTPUT_DEVICE_STATUS_ERROR_INTERNAL) {
   default_audio_parameters_.Reset(AudioParameters::AUDIO_PCM_LINEAR,
-                                  CHANNEL_LAYOUT_STEREO, 48000, 1024);
+                                  ChannelLayoutConfig::Stereo(), 48000, 1024);
   SetDevice(kDefaultDeviceId);
 }
 

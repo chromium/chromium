@@ -144,7 +144,7 @@ class MacAudioInputTest : public testing::Test {
     int samples_per_packet = fs / 100;
     AudioInputStream* ais = audio_manager_->MakeAudioInputStream(
         AudioParameters(AudioParameters::AUDIO_PCM_LOW_LATENCY,
-                        CHANNEL_LAYOUT_STEREO, fs, samples_per_packet),
+                        ChannelLayoutConfig::Stereo(), fs, samples_per_packet),
         AudioDeviceDescription::kDefaultDeviceId,
         base::BindRepeating(&MacAudioInputTest::OnLogMessage,
                             base::Unretained(this)));
@@ -154,12 +154,13 @@ class MacAudioInputTest : public testing::Test {
 
   // Convenience method which creates an AudioInputStream object with a
   // specified channel layout.
-  AudioInputStream* CreateAudioInputStream(ChannelLayout channel_layout) {
+  AudioInputStream* CreateAudioInputStream(
+      ChannelLayoutConfig channel_layout_config) {
     int fs = static_cast<int>(AUAudioInputStream::HardwareSampleRate());
     int samples_per_packet = fs / 100;
     AudioInputStream* ais = audio_manager_->MakeAudioInputStream(
-        AudioParameters(AudioParameters::AUDIO_PCM_LOW_LATENCY, channel_layout,
-                        fs, samples_per_packet),
+        AudioParameters(AudioParameters::AUDIO_PCM_LOW_LATENCY,
+                        channel_layout_config, fs, samples_per_packet),
         AudioDeviceDescription::kDefaultDeviceId,
         base::BindRepeating(&MacAudioInputTest::OnLogMessage,
                             base::Unretained(this)));
@@ -217,7 +218,7 @@ TEST_F(MacAudioInputTest, AUAudioInputStreamVerifyMonoRecording) {
   int count = 0;
 
   // Create an audio input stream which records in mono.
-  AudioInputStream* ais = CreateAudioInputStream(CHANNEL_LAYOUT_MONO);
+  AudioInputStream* ais = CreateAudioInputStream(ChannelLayoutConfig::Mono());
   EXPECT_EQ(ais->Open(), AudioInputStream::OpenOutcome::kSuccess);
 
   MockAudioInputCallback sink;
@@ -246,7 +247,7 @@ TEST_F(MacAudioInputTest, AUAudioInputStreamVerifyStereoRecording) {
   int count = 0;
 
   // Create an audio input stream which records in stereo.
-  AudioInputStream* ais = CreateAudioInputStream(CHANNEL_LAYOUT_STEREO);
+  AudioInputStream* ais = CreateAudioInputStream(ChannelLayoutConfig::Stereo());
   EXPECT_EQ(ais->Open(), AudioInputStream::OpenOutcome::kSuccess);
 
   MockAudioInputCallback sink;

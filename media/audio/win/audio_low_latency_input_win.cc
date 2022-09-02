@@ -1464,10 +1464,12 @@ void WASAPIAudioInputStream::SetupConverterAndStoreFormatInfo() {
   double new_frames_per_buffer =
       input_format_.Format.nSamplesPerSec / buffer_ratio;
 
-  const auto input_layout = GuessChannelLayout(input_format_.Format.nChannels);
-  DCHECK_NE(CHANNEL_LAYOUT_UNSUPPORTED, input_layout);
-  const auto output_layout = GuessChannelLayout(output_format_.nChannels);
-  DCHECK_NE(CHANNEL_LAYOUT_UNSUPPORTED, output_layout);
+  const auto input_layout =
+      ChannelLayoutConfig::Guess(input_format_.Format.nChannels);
+  DCHECK_NE(CHANNEL_LAYOUT_UNSUPPORTED, input_layout.channel_layout());
+  const auto output_layout =
+      ChannelLayoutConfig::Guess(output_format_.nChannels);
+  DCHECK_NE(CHANNEL_LAYOUT_UNSUPPORTED, output_layout.channel_layout());
 
   const AudioParameters input(AudioParameters::AUDIO_PCM_LOW_LATENCY,
                               input_layout, input_format_.Format.nSamplesPerSec,

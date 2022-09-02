@@ -112,7 +112,7 @@ class MEDIA_EXPORT AudioManagerAndroid : public AudioManagerBase {
   int GetOptimalOutputFrameSize(int sample_rate, int channels);
   AudioParameters GetAudioFormatsSupportedBySinkDevice(
       const std::string& output_device_id,
-      ChannelLayout channel_layout,
+      const ChannelLayoutConfig& channel_layout_config,
       int sample_rate,
       int buffer_size);
 

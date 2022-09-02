@@ -183,9 +183,9 @@ AudioParameters AudioManagerWin::GetInputStreamParameters(
     // unavailable device. We should track down those code paths (it is likely
     // that they actually don't need a real device but depend on the audio
     // code path somehow for a configuration - e.g. tab capture).
-    parameters =
-        AudioParameters(AudioParameters::AUDIO_PCM_LINEAR,
-                        CHANNEL_LAYOUT_STEREO, 48000, kFallbackBufferSize);
+    parameters = AudioParameters(AudioParameters::AUDIO_PCM_LINEAR,
+                                 ChannelLayoutConfig::Stereo(), 48000,
+                                 kFallbackBufferSize);
   }
 
   int user_buffer_size = GetUserBufferSize();
@@ -290,8 +290,7 @@ AudioParameters AudioManagerWin::GetPreferredOutputStreamParameters(
     const std::string& output_device_id,
     const AudioParameters& input_params) {
   const base::CommandLine* cmd_line = base::CommandLine::ForCurrentProcess();
-  int channels = 0;
-  ChannelLayout channel_layout = CHANNEL_LAYOUT_STEREO;
+  ChannelLayoutConfig channel_layout_config = ChannelLayoutConfig::Stereo();
   int sample_rate = 48000;
   int buffer_size = kFallbackBufferSize;
   int effects = AudioParameters::NO_EFFECTS;
@@ -309,7 +308,7 @@ AudioParameters AudioManagerWin::GetPreferredOutputStreamParameters(
     sample_rate = 48000;
     buffer_size = 256;
     if (input_params.IsValid())
-      channel_layout = input_params.channel_layout();
+      channel_layout_config = input_params.channel_layout_config();
   } else {
     AudioParameters params;
     HRESULT hr = CoreAudioUtil::GetPreferredAudioParameters(
@@ -329,9 +328,8 @@ AudioParameters AudioManagerWin::GetPreferredOutputStreamParameters(
     DVLOG(1) << params.AsHumanReadableString();
     DCHECK(params.IsValid());
 
-    channels = params.channels();
+    channel_layout_config = params.channel_layout_config();
     buffer_size = params.frames_per_buffer();
-    channel_layout = params.channel_layout();
     sample_rate = params.sample_rate();
     effects = params.effects();
 
@@ -347,12 +345,13 @@ AudioParameters AudioManagerWin::GetPreferredOutputStreamParameters(
     // have a valid channel layout yet, try to use the input layout.  See bugs
     // http://crbug.com/259165 and http://crbug.com/311906 for more details.
     if (cmd_line->HasSwitch(switches::kTrySupportedChannelLayouts) ||
-        channel_layout == CHANNEL_LAYOUT_UNSUPPORTED) {
+        channel_layout_config.channel_layout() == CHANNEL_LAYOUT_UNSUPPORTED) {
       // Check if it is possible to open up at the specified input channel
       // layout but avoid checking if the specified layout is the same as the
       // hardware (preferred) layout. We do this extra check to avoid the
       // CoreAudioUtil::IsChannelLayoutSupported() overhead in most cases.
-      if (input_params.channel_layout() != channel_layout) {
+      if (input_params.channel_layout() !=
+          channel_layout_config.channel_layout()) {
         // TODO(henrika): Internally, IsChannelLayoutSupported does many of the
         // operations that have already been done such as opening up a client
         // and fetching the WAVEFORMATPCMEX format.  Ideally we should only do
@@ -363,9 +362,10 @@ AudioParameters AudioManagerWin::GetPreferredOutputStreamParameters(
                 input_params.channel_layout())) {
           // Open up using the same channel layout as the source if it is
           // supported by the hardware.
-          channel_layout = input_params.channel_layout();
+          channel_layout_config = input_params.channel_layout_config();
           DVLOG(1) << "Hardware channel layout is not used; using same layout"
-                   << " as the source instead (" << channel_layout << ")";
+                   << " as the source instead ("
+                   << channel_layout_config.channel_layout() << ")";
         }
       }
     }
@@ -385,13 +385,10 @@ AudioParameters AudioManagerWin::GetPreferredOutputStreamParameters(
     buffer_size = user_buffer_size;
 
   AudioParameters params(
-      AudioParameters::AUDIO_PCM_LOW_LATENCY, channel_layout, sample_rate,
-      buffer_size,
+      AudioParameters::AUDIO_PCM_LOW_LATENCY, channel_layout_config,
+      sample_rate, buffer_size,
       AudioParameters::HardwareCapabilities(min_buffer_size, max_buffer_size));
   params.set_effects(effects);
-  if (channel_layout == CHANNEL_LAYOUT_DISCRETE) {
-    params.set_channels_for_discrete(channels);
-  }
   DCHECK(params.IsValid());
   return params;
 }

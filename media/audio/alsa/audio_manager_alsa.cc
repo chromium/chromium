@@ -73,7 +73,7 @@ AudioParameters AudioManagerAlsa::GetInputStreamParameters(
   static const int kDefaultInputBufferSize = 1024;
 
   return AudioParameters(AudioParameters::AUDIO_PCM_LOW_LATENCY,
-                         CHANNEL_LAYOUT_STEREO, kDefaultSampleRate,
+                         ChannelLayoutConfig::Stereo(), kDefaultSampleRate,
                          kDefaultInputBufferSize);
 }
 
@@ -272,7 +272,7 @@ AudioParameters AudioManagerAlsa::GetPreferredOutputStreamParameters(
   // TODO(tommi): Support |output_device_id|.
   DLOG_IF(ERROR, !output_device_id.empty()) << "Not implemented!";
   static const int kDefaultOutputBufferSize = 2048;
-  ChannelLayout channel_layout = CHANNEL_LAYOUT_STEREO;
+  ChannelLayoutConfig channel_layout_config = ChannelLayoutConfig::Stereo();
   int sample_rate = kDefaultSampleRate;
   int buffer_size = kDefaultOutputBufferSize;
   if (input_params.IsValid()) {
@@ -282,7 +282,7 @@ AudioParameters AudioManagerAlsa::GetPreferredOutputStreamParameters(
     // TODO(dalecurtis): This should include bits per channel and channel layout
     // eventually.
     sample_rate = input_params.sample_rate();
-    channel_layout = input_params.channel_layout();
+    channel_layout_config = input_params.channel_layout_config();
     buffer_size = std::min(input_params.frames_per_buffer(), buffer_size);
   }
 
@@ -290,8 +290,8 @@ AudioParameters AudioManagerAlsa::GetPreferredOutputStreamParameters(
   if (user_buffer_size)
     buffer_size = user_buffer_size;
 
-  return AudioParameters(AudioParameters::AUDIO_PCM_LOW_LATENCY, channel_layout,
-                         sample_rate, buffer_size);
+  return AudioParameters(AudioParameters::AUDIO_PCM_LOW_LATENCY,
+                         channel_layout_config, sample_rate, buffer_size);
 }
 
 AudioOutputStream* AudioManagerAlsa::MakeOutputStream(

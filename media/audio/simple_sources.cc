@@ -199,7 +199,7 @@ void FileSource::LoadWavFile(const base::FilePath& path_to_wav_file) {
   // of it at a time and not the whole thing (like 10 ms at a time).
   AudioParameters file_audio_slice(
       AudioParameters::AUDIO_PCM_LOW_LATENCY,
-      GuessChannelLayout(wav_audio_handler_->num_channels()),
+      ChannelLayoutConfig::Guess(wav_audio_handler_->num_channels()),
       wav_audio_handler_->sample_rate(), params_.frames_per_buffer());
 
   file_audio_converter_ =

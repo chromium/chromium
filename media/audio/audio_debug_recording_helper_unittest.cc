@@ -212,7 +212,7 @@ TEST_F(AudioDebugRecordingHelperTest, OnData) {
   // AudioBus, the other parameters are ignored.
   const int number_of_frames = 100;
   const AudioParameters params(AudioParameters::AUDIO_PCM_LINEAR,
-                               ChannelLayout::CHANNEL_LAYOUT_STEREO, 0,
+                               ChannelLayoutConfig::Stereo(), 0,
                                number_of_frames);
 
   // Setup some data.

@@ -127,7 +127,7 @@ AudioParameters AudioManagerPulse::GetInputStreamParameters(
   const int buffer_size =
       user_buffer_size ? user_buffer_size : kDefaultInputBufferSize;
   return AudioParameters(AudioParameters::AUDIO_PCM_LOW_LATENCY,
-                         CHANNEL_LAYOUT_STEREO,
+                         ChannelLayoutConfig::Stereo(),
                          native_input_sample_rate_ ? native_input_sample_rate_
                                                    : kDefaultSampleRate,
                          buffer_size);
@@ -221,15 +221,15 @@ AudioParameters AudioManagerPulse::GetPreferredOutputStreamParameters(
   UpdateNativeAudioHardwareInfo();
   int sample_rate = native_input_sample_rate_ ? native_input_sample_rate_
                                               : kDefaultSampleRate;
-  ChannelLayout channel_layout =
-      GuessChannelLayout(native_channel_count_ ? native_channel_count_ : 2);
+  ChannelLayoutConfig channel_layout_config = ChannelLayoutConfig::Guess(
+      native_channel_count_ ? native_channel_count_ : 2);
 
   if (input_params.IsValid()) {
     // Use the system's output channel count for the DISCRETE layout. This is to
     // avoid a crash due to the lack of support on the multi-channel beyond 8 in
     // the PulseAudio layer.
     if (input_params.channel_layout() != CHANNEL_LAYOUT_DISCRETE)
-      channel_layout = input_params.channel_layout();
+      channel_layout_config = input_params.channel_layout_config();
 
     buffer_size =
         std::min(kMaximumOutputBufferSize,
@@ -240,8 +240,8 @@ AudioParameters AudioManagerPulse::GetPreferredOutputStreamParameters(
   if (user_buffer_size)
     buffer_size = user_buffer_size;
 
-  return AudioParameters(AudioParameters::AUDIO_PCM_LOW_LATENCY, channel_layout,
-                         sample_rate, buffer_size);
+  return AudioParameters(AudioParameters::AUDIO_PCM_LOW_LATENCY,
+                         channel_layout_config, sample_rate, buffer_size);
 }
 
 AudioOutputStream* AudioManagerPulse::MakeOutputStream(

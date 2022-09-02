@@ -385,11 +385,11 @@ AudioParameters AudioManagerChromeOS::GetPreferredOutputStreamParameters(
     const AudioParameters& input_params) {
   DCHECK(GetTaskRunner()->BelongsToCurrentThread());
 
-  ChannelLayout channel_layout = CHANNEL_LAYOUT_STEREO;
+  ChannelLayoutConfig channel_layout_config = ChannelLayoutConfig::Stereo();
   int sample_rate = kDefaultSampleRate;
   int buffer_size = GetUserBufferSize();
   if (input_params.IsValid()) {
-    channel_layout = input_params.channel_layout();
+    channel_layout_config = input_params.channel_layout_config();
     sample_rate = input_params.sample_rate();
     if (!buffer_size)  // Not user-provided.
       buffer_size =
@@ -397,8 +397,8 @@ AudioParameters AudioManagerChromeOS::GetPreferredOutputStreamParameters(
                    std::max(static_cast<int>(limits::kMinAudioBufferSize),
                             input_params.frames_per_buffer()));
     return AudioParameters(
-        AudioParameters::AUDIO_PCM_LOW_LATENCY, channel_layout, sample_rate,
-        buffer_size,
+        AudioParameters::AUDIO_PCM_LOW_LATENCY, channel_layout_config,
+        sample_rate, buffer_size,
         AudioParameters::HardwareCapabilities(limits::kMinAudioBufferSize,
                                               limits::kMaxAudioBufferSize));
   }
@@ -418,11 +418,12 @@ AudioParameters AudioManagerChromeOS::GetPreferredOutputStreamParameters(
     GetAudioDevices(&devices);
     const AudioDevice* device = GetDeviceFromId(devices, preferred_device_id);
     if (device && device->is_input == false) {
-      channel_layout =
-          GuessChannelLayout(static_cast<int>(device->max_supported_channels));
+      channel_layout_config = ChannelLayoutConfig::Guess(
+          static_cast<int>(device->max_supported_channels));
       // Fall-back to old fashion: always fixed to STEREO layout.
-      if (channel_layout == CHANNEL_LAYOUT_UNSUPPORTED) {
-        channel_layout = CHANNEL_LAYOUT_STEREO;
+      if (channel_layout_config.channel_layout() ==
+          CHANNEL_LAYOUT_UNSUPPORTED) {
+        channel_layout_config = ChannelLayoutConfig::Stereo();
       }
     }
   }
@@ -431,8 +432,8 @@ AudioParameters AudioManagerChromeOS::GetPreferredOutputStreamParameters(
     buffer_size = GetDefaultOutputBufferSizePerBoard();
 
   return AudioParameters(
-      AudioParameters::AUDIO_PCM_LOW_LATENCY, channel_layout, sample_rate,
-      buffer_size,
+      AudioParameters::AUDIO_PCM_LOW_LATENCY, channel_layout_config,
+      sample_rate, buffer_size,
       AudioParameters::HardwareCapabilities(limits::kMinAudioBufferSize,
                                             limits::kMaxAudioBufferSize));
 }
@@ -585,7 +586,7 @@ AudioParameters AudioManagerChromeOS::GetStreamParametersForSystem(
     int user_buffer_size,
     const AudioManagerChromeOS::SystemAudioProcessingInfo& system_apm_info) {
   AudioParameters params(
-      AudioParameters::AUDIO_PCM_LOW_LATENCY, CHANNEL_LAYOUT_STEREO,
+      AudioParameters::AUDIO_PCM_LOW_LATENCY, ChannelLayoutConfig::Stereo(),
       kDefaultSampleRate, user_buffer_size,
       AudioParameters::HardwareCapabilities(limits::kMinAudioBufferSize,
                                             limits::kMaxAudioBufferSize));
