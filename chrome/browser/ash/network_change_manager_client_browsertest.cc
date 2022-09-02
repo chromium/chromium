@@ -112,8 +112,6 @@ class NetworkChangeManagerClientBrowserTest : public InProcessBrowserTest {
  public:
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
-    service_client_ = ShillServiceClient::Get()->GetTestInterface();
-    service_client_->ClearServices();
 
     // Make sure everyone thinks we have an ethernet connection.
     NetObserver().WaitForConnectionType(
@@ -122,9 +120,9 @@ class NetworkChangeManagerClientBrowserTest : public InProcessBrowserTest {
         network::mojom::ConnectionType::CONNECTION_ETHERNET);
 
     // Wait for all services to be removed.
+    service_client_ = ShillServiceClient::Get()->GetTestInterface();
+    service_client_->ClearServices();
     base::RunLoop().RunUntilIdle();
-    // TODO(b/229673213): Remove log once flakiness is fixed.
-    LOG(INFO) << "Setup Main thread completed";
   }
 
   ShillServiceClient::TestInterface* service_client() {
@@ -138,14 +136,10 @@ class NetworkChangeManagerClientBrowserTest : public InProcessBrowserTest {
 // Tests that network changes from shill are received by both the
 // NetworkChangeNotifier and NetworkConnectionTracker.
 IN_PROC_BROWSER_TEST_F(NetworkChangeManagerClientBrowserTest,
-                       DISABLED_ReceiveNotifications) {
-  // TODO(b/229673213): Remove log once flakiness is fixed.
-  LOG(INFO) << "ReceiveNotifications test start";
+                       ReceiveNotifications) {
   NetObserver net_observer;
   NetworkServiceObserver network_service_observer;
 
-  // TODO(b/229673213): Remove log once flakiness is fixed.
-  LOG(INFO) << "ReceiveNotificationsTEST: Add service test start";
   service_client()->AddService("wifi", "wifi", "wifi", shill::kTypeWifi,
                                shill::kStateOnline, true);
 

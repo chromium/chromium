@@ -463,10 +463,11 @@ void FakeShillManagerClient::ConfigureServiceForProfile(
     const base::Value& properties,
     chromeos::ObjectPathCallback callback,
     ErrorCallback error_callback) {
-  std::string profile_property;
-  GetString(properties, shill::kProfileProperty, &profile_property);
-  CHECK(profile_property == profile_path.value());
-  ConfigureService(properties, std::move(callback), std::move(error_callback));
+  base::Value properties_copy = properties.Clone();
+  properties_copy.GetDict().Set(shill::kProfileProperty,
+                                base::Value(profile_path.value()));
+  ConfigureService(properties_copy, std::move(callback),
+                   std::move(error_callback));
 }
 
 void FakeShillManagerClient::GetService(const base::Value& properties,
@@ -653,7 +654,7 @@ void FakeShillManagerClient::SetTechnologyEnabled(const std::string& type,
   CallNotifyObserversPropertyChanged(shill::kEnabledTechnologiesProperty);
   base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE, std::move(callback));
   // May affect available services.
-  SortManagerServices(true);
+  SortManagerServices(/*notify=*/true);
 }
 
 void FakeShillManagerClient::AddGeoNetwork(const std::string& technology,
@@ -688,7 +689,7 @@ void FakeShillManagerClient::AddManagerService(const std::string& service_path,
   VLOG(2) << "AddManagerService: " << service_path;
   AppendIfNotPresent(GetListProperty(shill::kServiceCompleteListProperty),
                      base::Value(service_path));
-  SortManagerServices(false);
+  SortManagerServices(/*notify=*/false);
   if (notify_observers)
     CallNotifyObserversPropertyChanged(shill::kServiceCompleteListProperty);
 }
@@ -706,6 +707,7 @@ void FakeShillManagerClient::ClearManagerServices() {
   VLOG(1) << "ClearManagerServices";
   GetListProperty(shill::kServiceCompleteListProperty).clear();
   CallNotifyObserversPropertyChanged(shill::kServiceCompleteListProperty);
+  SortManagerServices(/*notify=*/true);
 }
 
 void FakeShillManagerClient::ServiceStateChanged(
@@ -723,25 +725,19 @@ void FakeShillManagerClient::SortManagerServices(bool notify) {
   VLOG(1) << "SortManagerServices";
 
   // ServiceCompleteList contains string path values for each service.
-  base::Value* complete_path_list =
-      stub_properties_.FindListKey(shill::kServiceCompleteListProperty);
-  if (!complete_path_list || complete_path_list->GetListDeprecated().empty())
-    return;
-  base::Value prev_complete_path_list = complete_path_list->Clone();
+  base::Value::List& complete_path_list =
+      GetListProperty(shill::kServiceCompleteListProperty);
+  base::Value::List prev_complete_path_list = complete_path_list.Clone();
 
-  base::Value* visible_services =
-      stub_properties_.FindListKey(shill::kServicesProperty);
-  if (!visible_services) {
-    visible_services = stub_properties_.SetKey(
-        shill::kServicesProperty, base::Value(base::Value::Type::LIST));
-  }
+  base::Value::List& visible_services =
+      GetListProperty(shill::kServicesProperty);
 
   // Networks for disabled services get appended to the end without sorting.
   std::vector<std::string> disabled_path_list;
 
   // Build a list of dictionaries for each service in the list.
   std::vector<base::Value> complete_dict_list;
-  for (const base::Value& value : complete_path_list->GetListDeprecated()) {
+  for (const base::Value& value : complete_path_list) {
     std::string service_path = value.GetString();
     const base::Value* properties =
         ShillServiceClient::Get()->GetTestInterface()->GetServiceProperties(
@@ -762,38 +758,37 @@ void FakeShillManagerClient::SortManagerServices(bool notify) {
     complete_dict_list.emplace_back(std::move(properties_copy));
   }
 
-  if (complete_dict_list.empty())
-    return;
-
   // Sort the service list using the same logic as Shill's Service::Compare.
   std::sort(complete_dict_list.begin(), complete_dict_list.end(),
             CompareNetworks);
 
   // Rebuild |complete_path_list| and |visible_services| with the new sort
   // order.
-  complete_path_list->ClearList();
-  visible_services->ClearList();
+  complete_path_list.clear();
+  visible_services.clear();
   for (const base::Value& dict : complete_dict_list) {
     std::string service_path = GetStringValue(dict, kPathKey);
-    complete_path_list->Append(base::Value(service_path));
+    complete_path_list.Append(base::Value(service_path));
     if (dict.FindBoolKey(shill::kVisibleProperty).value_or(false))
-      visible_services->Append(base::Value(service_path));
+      visible_services.Append(base::Value(service_path));
   }
   // Append disabled networks to the end of the complete path list.
   for (const std::string& path : disabled_path_list)
-    complete_path_list->Append(base::Value(path));
+    complete_path_list.Append(base::Value(path));
 
   // Notify observers if the order changed.
-  if (notify && *complete_path_list != prev_complete_path_list)
+  if (notify && complete_path_list != prev_complete_path_list)
     CallNotifyObserversPropertyChanged(shill::kServiceCompleteListProperty);
 
   // Set the first connected service as the Default service. Note:
   // |new_default_service| may be empty indicating no default network.
   std::string new_default_service;
-  const base::Value& default_network = complete_dict_list[0];
-  if (IsConnectedState(
-          GetStringValue(default_network, shill::kStateProperty))) {
-    new_default_service = GetStringValue(default_network, kPathKey);
+  if (!complete_dict_list.empty()) {
+    const base::Value& default_network = complete_dict_list[0];
+    if (IsConnectedState(
+            GetStringValue(default_network, shill::kStateProperty))) {
+      new_default_service = GetStringValue(default_network, kPathKey);
+    }
   }
   if (default_service_ != new_default_service) {
     default_service_ = new_default_service;
@@ -1147,7 +1142,7 @@ void FakeShillManagerClient::SetupDefaultEnvironment() {
   }
   shill_device_property_map_.clear();
 
-  SortManagerServices(true);
+  SortManagerServices(/*notify=*/true);
 }
 
 // Private methods
