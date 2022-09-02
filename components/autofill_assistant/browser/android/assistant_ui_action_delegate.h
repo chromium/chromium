@@ -21,6 +21,7 @@ class AssistantUiActionDelegate : public ExternalActionDelegate {
 
   void OnActionRequested(
       const external::Action& action_info,
+      bool is_interrupt,
       base::OnceCallback<void(ExternalActionDelegate::DomUpdateCallback)>
           start_dom_checks_callback,
       base::OnceCallback<void(const external::Result& result)>

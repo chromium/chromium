@@ -17,6 +17,7 @@ AssistantUiActionDelegate::~AssistantUiActionDelegate() = default;
 
 void AssistantUiActionDelegate::OnActionRequested(
     const external::Action& action,
+    bool is_interrupt,
     base::OnceCallback<void(DomUpdateCallback)> start_dom_checks_callback,
     base::OnceCallback<void(const external::Result& result)>
         end_action_callback) {

@@ -293,8 +293,9 @@ TEST_F(ApcExternalActionDelegateTest, ReceiveInvalidAction) {
   // DOM checks are never started.
   EXPECT_CALL(start_dom_checks_callback, Run).Times(0);
 
-  action_delegate()->OnActionRequested(
-      empty_action, start_dom_checks_callback.Get(), result_callback.Get());
+  action_delegate()->OnActionRequested(empty_action, /* is_interrupt= */ false,
+                                       start_dom_checks_callback.Get(),
+                                       result_callback.Get());
   EXPECT_TRUE(result.has_success());
   EXPECT_FALSE(result.success());
   EXPECT_FALSE(result.has_result_info());
@@ -320,6 +321,7 @@ TEST_F(ApcExternalActionDelegateTest, ReceiveBasePromptAction_FromViewClick) {
   autofill_assistant::password_change::BasePromptSpecification proto =
       CreateBasePrompt();
   action_delegate()->OnActionRequested(CreateAction(proto),
+                                       /* is_interrupt= */ false,
                                        start_dom_checks_callback.Get(),
                                        result_callback.Get());
 
@@ -379,6 +381,7 @@ TEST_F(ApcExternalActionDelegateTest,
   autofill_assistant::password_change::BasePromptSpecification proto =
       CreateBasePrompt();
   action_delegate()->OnActionRequested(CreateAction(proto),
+                                       /* is_interrupt= */ false,
                                        start_dom_checks_callback.Get(),
                                        result_callback.Get());
 
@@ -433,6 +436,7 @@ TEST_F(ApcExternalActionDelegateTest,
   autofill_assistant::password_change::BasePromptSpecification proto =
       CreateBasePrompt();
   action_delegate()->OnActionRequested(CreateAction(proto),
+                                       /* is_interrupt= */ false,
                                        start_dom_checks_callback.Get(),
                                        result_callback.Get());
 
@@ -470,6 +474,7 @@ TEST_F(ApcExternalActionDelegateTest,
   // Remove the output key.
   proto.clear_output_key();
   action_delegate()->OnActionRequested(CreateAction(proto),
+                                       /* is_interrupt= */ false,
                                        start_dom_checks_callback.Get(),
                                        result_callback.Get());
 
@@ -516,6 +521,7 @@ TEST_F(ApcExternalActionDelegateTest,
   autofill_assistant::password_change::UseGeneratedPasswordPromptSpecification
       proto = CreateUseGeneratedPasswordPrompt();
   action_delegate()->OnActionRequested(CreateAction(proto),
+                                       /* is_interrupt= */ false,
                                        start_dom_checks_callback.Get(),
                                        result_callback.Get());
 
@@ -576,6 +582,7 @@ TEST_F(ApcExternalActionDelegateTest,
       proto = CreateUseGeneratedPasswordPrompt();
   // Remove the output key.
   action_delegate()->OnActionRequested(CreateAction(proto),
+                                       /* is_interrupt= */ false,
                                        start_dom_checks_callback.Get(),
                                        result_callback.Get());
 
@@ -633,7 +640,8 @@ TEST_F(ApcExternalActionDelegateTest, ReceiveUpdateSidePanelAction) {
 
   action_delegate()->OnActionRequested(
       CreateAction(update_side_panel_specification),
-      start_dom_checks_callback.Get(), result_callback.Get());
+      /* is_interrupt= */ false, start_dom_checks_callback.Get(),
+      result_callback.Get());
 
   EXPECT_TRUE(result.success());
 }

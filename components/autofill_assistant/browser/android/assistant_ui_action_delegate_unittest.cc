@@ -35,6 +35,7 @@ class AssistantUiActionDelegateTest : public testing::Test {
     external::Action external_action;
     *external_action.mutable_info()->mutable_assistant_ui_action() = action;
     delegate_.OnActionRequested(external_action,
+                                /* is_interrupt= */ false,
                                 start_dom_checks_callback_.Get(),
                                 end_action_callback_.Get());
   }

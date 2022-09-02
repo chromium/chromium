@@ -181,6 +181,7 @@ bool FakeScriptExecutorUiDelegate::SupportsExternalActions() {
 
 void FakeScriptExecutorUiDelegate::ExecuteExternalAction(
     const external::Action& external_action,
+    bool is_interrupt,
     base::OnceCallback<void(ExternalActionDelegate::DomUpdateCallback)>
         start_dom_checks_callback,
     base::OnceCallback<void(const external::Result& result)>

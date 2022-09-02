@@ -16,6 +16,7 @@ bool HeadlessUiController::SupportsExternalActions() {
 
 void HeadlessUiController::ExecuteExternalAction(
     const external::Action& external_action,
+    bool is_interrupt,
     base::OnceCallback<void(ExternalActionDelegate::DomUpdateCallback)>
         start_dom_checks_callback,
     base::OnceCallback<void(const external::Result& result)>
@@ -23,7 +24,7 @@ void HeadlessUiController::ExecuteExternalAction(
   DCHECK(action_extension_delegate_);
 
   action_extension_delegate_->OnActionRequested(
-      external_action, std::move(start_dom_checks_callback),
+      external_action, is_interrupt, std::move(start_dom_checks_callback),
       std::move(end_action_callback));
 }
 

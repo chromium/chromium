@@ -75,7 +75,8 @@ ScriptExecutor::ScriptExecutor(
     ScriptExecutor::Listener* listener,
     const std::vector<std::unique_ptr<Script>>* ordered_interrupts,
     ScriptExecutorDelegate* delegate,
-    ScriptExecutorUiDelegate* ui_delegate)
+    ScriptExecutorUiDelegate* ui_delegate,
+    bool is_interrupt_executor)
     : script_path_(script_path),
       additional_context_(std::move(additional_context)),
       last_global_payload_(global_payload),
@@ -86,7 +87,8 @@ ScriptExecutor::ScriptExecutor(
       ui_delegate_(ui_delegate),
       ordered_interrupts_(ordered_interrupts),
       element_store_(
-          std::make_unique<ElementStore>(delegate->GetWebContents())) {
+          std::make_unique<ElementStore>(delegate->GetWebContents())),
+      is_interrupt_executor_(is_interrupt_executor) {
   DCHECK(delegate_);
   DCHECK(ui_delegate_);
   DCHECK(ordered_interrupts_);
@@ -1182,7 +1184,7 @@ void ScriptExecutor::RequestExternalAction(
   external::Action action;
   *action.mutable_info() = external_action.info();
   ui_delegate_->ExecuteExternalAction(
-      action, std::move(start_dom_checks_callback),
+      action, is_interrupt_executor_, std::move(start_dom_checks_callback),
       base::BindOnce(&ScriptExecutor::OnExternalActionFinished,
                      weak_ptr_factory_.GetWeakPtr(), external_action, prompt,
                      std::move(end_action_callback)));

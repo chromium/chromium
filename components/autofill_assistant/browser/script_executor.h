@@ -76,7 +76,8 @@ class ScriptExecutor : public ActionDelegate,
                  ScriptExecutor::Listener* listener,
                  const std::vector<std::unique_ptr<Script>>* ordered_interrupts,
                  ScriptExecutorDelegate* delegate,
-                 ScriptExecutorUiDelegate* ui_delegate);
+                 ScriptExecutorUiDelegate* ui_delegate,
+                 bool is_interrupt_executor);
 
   ScriptExecutor(const ScriptExecutor&) = delete;
   ScriptExecutor& operator=(const ScriptExecutor&) = delete;
@@ -448,6 +449,9 @@ class ScriptExecutor : public ActionDelegate,
 
   uint64_t run_id_ = 0;
   std::string report_token_;
+
+  // Whether this instance is executing an interrupt script or not.
+  bool is_interrupt_executor_;
 
   base::WeakPtrFactory<ScriptExecutor> weak_ptr_factory_{this};
 };

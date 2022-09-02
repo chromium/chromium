@@ -51,6 +51,7 @@ ApcExternalActionDelegate::~ApcExternalActionDelegate() = default;
 
 void ApcExternalActionDelegate::OnActionRequested(
     const autofill_assistant::external::Action& action,
+    bool is_interrupt,
     base::OnceCallback<void(DomUpdateCallback)> start_dom_checks_callback,
     base::OnceCallback<void(const autofill_assistant::external::Result& result)>
         end_action_callback) {

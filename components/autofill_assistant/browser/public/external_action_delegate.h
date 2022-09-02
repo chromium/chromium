@@ -20,13 +20,20 @@ class ExternalActionDelegate {
       base::RepeatingCallback<void(const external::ElementConditionsUpdate&)>;
 
   virtual ~ExternalActionDelegate() = default;
+
   // Called when the script reaches an external action.
   // The |start_dom_checks_callback| can optionally be called to start the DOM
   // checks. This will allow interrupts to trigger (if the action itself allows
   // them). Calling |end_action_callback| will end the external action and
   // resume the execution of the rest of the script.
+  // If |is_interrupt| is true, this action is part of an interrupt script.
+  //
+  // Note that if an ExternalAction allows interrupts, it's possible to receive
+  // an |OnActionRequested| call before the |end_action_callback| for the
+  // previous action has been called.
   virtual void OnActionRequested(
       const external::Action& action_info,
+      bool is_interrupt,
       base::OnceCallback<void(DomUpdateCallback)> start_dom_checks_callback,
       base::OnceCallback<void(const external::Result&)>
           end_action_callback) = 0;

@@ -77,7 +77,8 @@ class ScriptExecutorTest : public testing::Test,
         /* global_payload= */ "initial global payload",
         /* script_payload= */ "initial payload",
         /* listener= */ this, &ordered_interrupts_,
-        /* delegate= */ &delegate_, /* ui_delegate= */ &ui_delegate_);
+        /* delegate= */ &delegate_, /* ui_delegate= */ &ui_delegate_,
+        /* is_interrupt_executor= */ false);
 
     test_util::MockFindAnyElement(mock_web_controller_);
   }

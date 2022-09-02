@@ -170,16 +170,24 @@ class HeadlessScriptControllerImplTest : public testing::Test {
                                      ServiceRequestSender::ResponseInfo{}));
   }
 
-  static SupportedScriptProto* AddRunnableScript(
+  static SupportedScriptProto* AddInterrupt(
       SupportsScriptResponseProto* response,
       const std::string& name_and_path,
-      bool direct_action = true) {
+      const std::string& precondition) {
+    SupportedScriptProto* script = AddRunnableScript(response, name_and_path);
+    script->mutable_presentation()->set_interrupt(true);
+    *script->mutable_presentation()
+         ->mutable_precondition()
+         ->mutable_element_condition()
+         ->mutable_match() = ToSelectorProto(precondition);
+    return script;
+  }
+
+  static SupportedScriptProto* AddRunnableScript(
+      SupportsScriptResponseProto* response,
+      const std::string& name_and_path) {
     SupportedScriptProto* script = response->add_scripts();
     script->set_path(name_and_path);
-    if (direct_action) {
-      script->mutable_presentation()->mutable_direct_action()->add_names(
-          name_and_path);
-    }
     return script;
   }
 
@@ -229,7 +237,7 @@ TEST_F(HeadlessScriptControllerImplTest, StartFailsIfNoScriptsAvailable) {
 
 TEST_F(HeadlessScriptControllerImplTest, SuccessfulRun) {
   SupportsScriptResponseProto script_response;
-  auto* script = AddRunnableScript(&script_response, "script");
+  SupportedScriptProto* script = AddRunnableScript(&script_response, "script");
   script->mutable_presentation()->set_autostart(true);
   SetupScripts(script_response);
 
@@ -246,7 +254,7 @@ TEST_F(HeadlessScriptControllerImplTest, SuccessfulRun) {
 
 TEST_F(HeadlessScriptControllerImplTest, ScriptWithExternalActionSucceeds) {
   SupportsScriptResponseProto script_response;
-  auto* script = AddRunnableScript(&script_response, "script");
+  SupportedScriptProto* script = AddRunnableScript(&script_response, "script");
   script->mutable_presentation()->set_autostart(true);
   SetupScripts(script_response);
 
@@ -265,7 +273,7 @@ TEST_F(HeadlessScriptControllerImplTest, ScriptWithExternalActionSucceeds) {
   result.set_success(true);
   result.mutable_result_info();
   EXPECT_CALL(*mock_external_action_delegate_, OnActionRequested)
-      .WillOnce(RunOnceCallback<2>(result));
+      .WillOnce(RunOnceCallback<3>(result));
 
   SetupActionsForScript("script", script_actions);
 
@@ -284,7 +292,7 @@ TEST_F(HeadlessScriptControllerImplTest, ScriptWithExternalActionSucceeds) {
 TEST_F(HeadlessScriptControllerImplTest,
        ReportMainActionFailureOnExternalActionFailure) {
   SupportsScriptResponseProto script_response;
-  auto* script = AddRunnableScript(&script_response, "script");
+  SupportedScriptProto* script = AddRunnableScript(&script_response, "script");
   script->mutable_presentation()->set_autostart(true);
   SetupScripts(script_response);
 
@@ -298,7 +306,7 @@ TEST_F(HeadlessScriptControllerImplTest,
   result.set_success(false);
   result.mutable_result_info();
   EXPECT_CALL(*mock_external_action_delegate_, OnActionRequested)
-      .WillOnce(RunOnceCallback<2>(result));
+      .WillOnce(RunOnceCallback<3>(result));
 
   // An action failing causes all following actions to be ignored, so we need to
   // put the stop action in the following roundtrip.
@@ -328,7 +336,7 @@ TEST_F(HeadlessScriptControllerImplTest,
 TEST_F(HeadlessScriptControllerImplTest,
        ExternalActionEndingDuringDomUpdateSuccessfullyEndsMainAction) {
   SupportsScriptResponseProto script_response;
-  auto* script = AddRunnableScript(&script_response, "script");
+  SupportedScriptProto* script = AddRunnableScript(&script_response, "script");
   script->mutable_presentation()->set_autostart(true);
   SetupScripts(script_response);
 
@@ -341,10 +349,8 @@ TEST_F(HeadlessScriptControllerImplTest,
   *condition->mutable_element_condition()->mutable_match() =
       ToSelectorProto("#element");
   EXPECT_CALL(*mock_web_controller_, FindElement(Selector({"#element"}), _, _))
-      .WillRepeatedly(WithArgs<2>([](auto&& callback) {
-        std::move(callback).Run(OkClientStatus(),
-                                std::make_unique<ElementFinderResult>());
-      }));
+      .WillRepeatedly(RunOnceCallback<2>(
+          OkClientStatus(), std::make_unique<ElementFinderResult>()));
   script_actions.add_actions()->mutable_stop();
 
   base::MockCallback<
@@ -355,7 +361,7 @@ TEST_F(HeadlessScriptControllerImplTest,
   // right away.
   EXPECT_CALL(*mock_external_action_delegate_, OnActionRequested)
       .WillOnce([&stored_end_action_callback, &dom_updates_callback](
-                    const external::Action& action_info,
+                    const external::Action& action_info, bool is_interrupt,
                     base::OnceCallback<void(
                         ExternalActionDelegate::DomUpdateCallback)>
                         start_dom_checks_callback,
@@ -392,6 +398,109 @@ TEST_F(HeadlessScriptControllerImplTest,
       {"START_IMMEDIATELY", "true"},
       {"ORIGINAL_DEEPLINK", kExampleDeeplink}};
   Start(params, /* expect_success= */ true);
+  ASSERT_THAT(processed_actions_capture, SizeIs(2));
+  EXPECT_EQ(processed_actions_capture[0].status(), ACTION_APPLIED);
+  EXPECT_EQ(processed_actions_capture[1].status(), ACTION_APPLIED);
+  EXPECT_TRUE(
+      processed_actions_capture[0].external_action_result().has_result_info());
+}
+
+TEST_F(HeadlessScriptControllerImplTest,
+       ExternalActionInInterruptScriptCorrectlyNotifiedAsInterrupt) {
+  SupportsScriptResponseProto script_response;
+  SupportedScriptProto* script = AddRunnableScript(&script_response, "script");
+  script->mutable_presentation()->set_autostart(true);
+
+  ActionsResponseProto script_actions;
+  auto* external_action =
+      script_actions.add_actions()->mutable_external_action();
+  external_action->mutable_info();
+  external_action->set_allow_interrupt(true);
+  script_actions.add_actions()->mutable_stop();
+
+  AddInterrupt(&script_response, "interrupt", "#element");
+  EXPECT_CALL(*mock_web_controller_, FindElement(Selector({"#element"}), _, _))
+      .WillOnce(RunOnceCallback<2>(OkClientStatus(),
+                                   std::make_unique<ElementFinderResult>()));
+
+  ActionsResponseProto interrupt_actions;
+  interrupt_actions.add_actions()->mutable_external_action()->mutable_info();
+
+  SetupScripts(script_response);
+  SetupActionsForScript("script", script_actions);
+  SetupActionsForScript("interrupt", interrupt_actions);
+
+  base::MockCallback<
+      base::RepeatingCallback<void(const external::ElementConditionsUpdate&)>>
+      dom_updates_callback;
+  base::OnceCallback<void(const external::Result&)> stored_end_action_callback;
+  external::Result result;
+  result.set_success(true);
+  result.mutable_result_info();
+  // The main ExternalAction is called first. We don't end it right away to give
+  // time to the interrupt to trigger
+  EXPECT_CALL(*mock_external_action_delegate_, OnActionRequested)
+      .WillOnce([&stored_end_action_callback, &dom_updates_callback](
+                    const external::Action& action_info, bool is_interrupt,
+                    base::OnceCallback<void(
+                        ExternalActionDelegate::DomUpdateCallback)>
+                        start_dom_checks_callback,
+                    base::OnceCallback<void(const external::Result&)>
+                        end_action_callback) {
+        EXPECT_FALSE(is_interrupt);
+        stored_end_action_callback = std::move(end_action_callback);
+        std::move(start_dom_checks_callback).Run(dom_updates_callback.Get());
+      })
+      // The interrupt ExternalAction is then called. We end it right away.
+      .WillOnce([&result](const external::Action& action_info,
+                          bool is_interrupt,
+                          base::OnceCallback<void(
+                              ExternalActionDelegate::DomUpdateCallback)>
+                              start_dom_checks_callback,
+                          base::OnceCallback<void(const external::Result&)>
+                              end_action_callback) {
+        EXPECT_TRUE(is_interrupt);
+
+        std::move(end_action_callback).Run(result);
+      });
+  // No element check specified so no update should be sent.
+  EXPECT_CALL(dom_updates_callback, Run).Times(0);
+
+  EXPECT_CALL(*mock_external_action_delegate_, OnInterruptStarted).Times(1);
+
+  // Once the interrupt script is finished, we finish the main action. This just
+  // simulates the action finishing at some point after the end of the
+  // interrupt.
+  EXPECT_CALL(*mock_external_action_delegate_, OnInterruptFinished)
+      .WillOnce([&result, &stored_end_action_callback]() {
+        std::move(stored_end_action_callback).Run(result);
+      });
+
+  std::vector<ProcessedActionProto> interrupt_processed_actions_capture;
+  std::vector<ProcessedActionProto> processed_actions_capture;
+  EXPECT_CALL(*mock_service_, GetNextActions)
+      .WillOnce(DoAll(SaveArg<3>(&interrupt_processed_actions_capture),
+                      RunOnceCallback<6>(net::HTTP_OK, "",
+                                         ServiceRequestSender::ResponseInfo{})))
+      .WillOnce(
+          DoAll(SaveArg<3>(&processed_actions_capture),
+                RunOnceCallback<6>(net::HTTP_OK, "",
+                                   ServiceRequestSender::ResponseInfo{})));
+
+  base::flat_map<std::string, std::string> params = {
+      {"ENABLED", "true"},
+      {"START_IMMEDIATELY", "true"},
+      {"ORIGINAL_DEEPLINK", kExampleDeeplink}};
+  Start(params, /* expect_success= */ true);
+
+  // Check on the interrupt's result
+  ASSERT_THAT(interrupt_processed_actions_capture, SizeIs(1));
+  EXPECT_EQ(interrupt_processed_actions_capture[0].status(), ACTION_APPLIED);
+  EXPECT_TRUE(interrupt_processed_actions_capture[0]
+                  .external_action_result()
+                  .has_result_info());
+
+  // Check on the main script's result
   ASSERT_THAT(processed_actions_capture, SizeIs(2));
   EXPECT_EQ(processed_actions_capture[0].status(), ACTION_APPLIED);
   EXPECT_EQ(processed_actions_capture[1].status(), ACTION_APPLIED);

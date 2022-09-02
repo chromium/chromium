@@ -82,7 +82,8 @@ class ScriptExecutorBrowserTest : public BaseBrowserTest {
         /* global_payload= */ "",
         /* script_payload= */ "",
         /* listener= */ nullptr, &ordered_interrupts_,
-        &fake_script_executor_delegate_, &fake_script_executor_ui_delegate_);
+        &fake_script_executor_delegate_, &fake_script_executor_ui_delegate_,
+        /* is_interrupt_executor= */ false);
 
     script_executor_->Run(
         &user_data_, executor_callback_.Get().Then(run_loop.QuitClosure()));
