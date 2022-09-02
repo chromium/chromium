@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import '//resources/cr_components/chromeos/quick_unlock/setup_pin_keyboard.m.js';
+import '//resources/cr_components/chromeos/quick_unlock/setup_pin_keyboard.js';
 import '//resources/cr_elements/cr_input/cr_input.js';
 import '//resources/cr_elements/cr_shared_style.css.js';
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
@@ -14,7 +14,7 @@ import '../../components/buttons/oobe_back_button.m.js';
 import '../../components/buttons/oobe_next_button.m.js';
 import '../../components/buttons/oobe_text_button.m.js';
 
-import {recordLockScreenProgress} from '//resources/cr_components/chromeos/quick_unlock/lock_screen_constants.m.js';
+import {recordLockScreenProgress} from '//resources/cr_components/chromeos/quick_unlock/lock_screen_constants.js';
 import {assert, assertNotReached} from '//resources/js/assert.m.js';
 import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
 import {dom, html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';

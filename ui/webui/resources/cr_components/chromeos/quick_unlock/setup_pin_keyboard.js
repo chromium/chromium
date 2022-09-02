@@ -10,11 +10,20 @@
  *
  */
 
+import 'chrome://resources/cr_elements/shared_vars_css.m.js';
+import './pin_keyboard.js';
+
+import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
+import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
+import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {LockScreenProgress} from './lock_screen_constants.js';
+
 /**
  * Keep in sync with the string keys provided by settings.
  * @enum {string}
  */
-/* #export */ const MessageType = {
+export const MessageType = {
   TOO_SHORT: 'configurePinTooShort',
   TOO_LONG: 'configurePinTooLong',
   TOO_WEAK: 'configurePinWeakPin',
@@ -23,12 +32,13 @@
 };
 
 /** @enum {string} */
-/* #export */ const ProblemType = {
+export const ProblemType = {
   WARNING: 'warning',
   ERROR: 'error',
 };
 
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'setup-pin-keyboard',
 
   behaviors: [I18nBehavior],
@@ -92,7 +102,7 @@ Polymer({
     /**
      * writeUma is a function that handles writing uma stats.
      *
-     * @type {function(settings.LockScreenProgress)}
+     * @type {function(LockScreenProgress)}
      */
     writeUma: {
       type: Object,
@@ -338,7 +348,7 @@ Polymer({
       this.onPinChange_(new CustomEvent(
           'pin-change', {detail: {pin: this.pinKeyboardValue_}}));
       this.$.pinKeyboard.focusInput();
-      this.writeUma(settings.LockScreenProgress.ENTER_PIN);
+      this.writeUma(LockScreenProgress.ENTER_PIN);
       return;
     }
     // onPinSubmit gets called if the user hits enter on the PIN keyboard.
@@ -357,7 +367,7 @@ Polymer({
     this.setModes.call(
         null, [chrome.quickUnlockPrivate.QuickUnlockMode.PIN],
         [this.pinKeyboardValue_], this.onSetModesCompleted_.bind(this));
-    this.writeUma(settings.LockScreenProgress.CONFIRM_PIN);
+    this.writeUma(LockScreenProgress.CONFIRM_PIN);
   },
 
   /**

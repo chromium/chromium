@@ -1,11 +1,3 @@
-<link rel="import" href="../../../html/polymer.html">
-
-<link rel="import" href="lock_screen_constants.html">
-<link rel="import" href="../../../cr_elements/shared_vars_css.html">
-<link rel="import" href="../../../html/assert.html">
-<link rel="import" href="../../../html/i18n_behavior.html">
-<link rel="import" href="pin_keyboard.html">
-
 <!--
 
 This module is a "pin setup" keyboard + pin display element.
@@ -39,48 +31,43 @@ Where:
 
 -->
 
-<dom-module id="setup-pin-keyboard">
-  <template>
-    <style include="settings-shared">
-      .error {
-        color: var(--cros-text-color-alert);
-        display: inline-block;
-      }
+<style include="settings-shared">
+  .error {
+    color: var(--cros-text-color-alert);
+    display: inline-block;
+  }
 
-      .warning {
-        color: var(--cr-secondary-text-color);
-      }
+  .warning {
+    color: var(--cr-secondary-text-color);
+  }
 
-      #problemDiv {
-        align-items: center;
-        display: flex;
-        flex-direction: row;
-        font-size: 10px;
-        height: 32px;
-        min-height: 0;
-        padding-bottom: 8px;
-      }
+  #problemDiv {
+    align-items: center;
+    display: flex;
+    flex-direction: row;
+    font-size: 10px;
+    height: 32px;
+    min-height: 0;
+    padding-bottom: 8px;
+  }
 
-      /* Hide this using visibility: hidden instead of hidden so that the
-         dialog does not resize when there are no problems to display. */
-      #problemDiv[invisible] {
-        visibility: hidden;
-      }
-    </style>
-    <pin-keyboard id="pinKeyboard" on-pin-change="onPinChange_"
-        on-submit="onPinSubmit_" value="{{pinKeyboardValue_}}"
-        has-error="[[hasError_(problemMessageId_, problemClass_)]]"
-        disabled="[[isSetModesCallPending_]]"
-        enable-placeholder="[[enablePlaceholder]]">
-      <!-- Warning/error; only shown if title is hidden. -->
-      <div id="problemDiv" class$="[[problemClass_]]"
-          invisible$="[[!problemMessageId_]]" problem>
-        <span aria-live="assertive">
-          [[formatProblemMessage_(locale, problemMessageId_,
-                problemMessageParameters_)]]
-        </span>
-      </div>
-    </pin-keyboard>
-  </template>
-  <script src="setup_pin_keyboard.js"></script>
-</dom-module>
+  /* Hide this using visibility: hidden instead of hidden so that the
+      dialog does not resize when there are no problems to display. */
+  #problemDiv[invisible] {
+    visibility: hidden;
+  }
+</style>
+<pin-keyboard id="pinKeyboard" on-pin-change="onPinChange_"
+    on-submit="onPinSubmit_" value="{{pinKeyboardValue_}}"
+    has-error="[[hasError_(problemMessageId_, problemClass_)]]"
+    disabled="[[isSetModesCallPending_]]"
+    enable-placeholder="[[enablePlaceholder]]">
+  <!-- Warning/error; only shown if title is hidden. -->
+  <div id="problemDiv" class$="[[problemClass_]]"
+      invisible$="[[!problemMessageId_]]" problem>
+    <span aria-live="assertive">
+      [[formatProblemMessage_(locale, problemMessageId_,
+            problemMessageParameters_)]]
+    </span>
+  </div>
+</pin-keyboard>

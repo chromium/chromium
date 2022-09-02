@@ -27,7 +27,7 @@ import '../../settings_shared.css.js';
 import '../../settings_vars.css.js';
 import '../multidevice_page/multidevice_smartlock_item.js';
 
-import {LockScreenProgress, recordLockScreenProgress} from 'chrome://resources/cr_components/chromeos/quick_unlock/lock_screen_constants.m.js';
+import {LockScreenProgress, recordLockScreenProgress} from 'chrome://resources/cr_components/chromeos/quick_unlock/lock_screen_constants.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.js';
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';

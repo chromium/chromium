@@ -1,272 +1,255 @@
-<link rel="import" href="../../../html/polymer.html">
+<style include="cr-shared-style">
+  /**
+    * It's important that buttons are square (have same height and width) so
+    * paper-ripple looks nice
+    */
+  :host {
+    --pin-button-horizontal-margin: 12px;
+    --pin-button-size: 48px;
+    outline: none;
+  }
 
-<link rel="import" href="../../../cr_elements/cr_button/cr_button.html">
-<link rel="import" href="../../../cr_elements/cr_icon_button/cr_icon_button.html">
-<link rel="import" href="../../../cr_elements/cr_input/cr_input.html">
-<link rel="import" href="../../../cr_elements/icons.html">
-<link rel="import" href="../../../cr_elements/shared_vars_css.html">
-<link rel="import" href="../../../html/i18n_behavior.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-styles/color.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
-<link rel="import" href="pin_keyboard_icon.html">
+  #root {
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+  }
 
-<dom-module id="pin-keyboard">
-  <template>
-    <style include="cr-shared-style">
-      /**
-       * It's important that buttons are square (have same height and width) so
-       * paper-ripple looks nice
-       */
-      :host {
-        --pin-button-horizontal-margin: 12px;
-        --pin-button-size: 48px;
-        outline: none;
-      }
+  #rowsContainer {
+    direction: ltr;
+    display: flex;
+    flex-direction: column;
+  }
 
-      #root {
-        align-items: center;
-        display: flex;
-        flex-direction: column;
-        min-height: 0;
-      }
+  .row {
+    align-items: center;
+    display: flex;
+    flex-direction: row;
+    margin-bottom: 8px;
+    min-height: 0;
+  }
 
-      #rowsContainer {
-        direction: ltr;
-        display: flex;
-        flex-direction: column;
-      }
+  :host([enable-password]) #pinInputDiv {
+    display: none;
+  }
 
-      .row {
-        align-items: center;
-        display: flex;
-        flex-direction: row;
-        margin-bottom: 8px;
-        min-height: 0;
-      }
+  .bottom-row {
+    margin-bottom: 0;
+  }
 
-      :host([enable-password]) #pinInputDiv {
-        display: none;
-      }
+  #backspaceButton {
+    --cr-icon-button-fill-color: var(--pin-keyboard-backspace-color,
+                                      var(--cros-icon-color-primary));
+    --cr-icon-button-size: 48px;
+    --cr-icon-button-transition: none;
+    height: var(--pin-button-size);
+    margin: 0 var(--pin-button-horizontal-margin);
+    opacity: var(--pin-keyboard-backspace-opacity, --dark-primary-opacity);
+    width: var(--pin-button-size);
+  }
 
-      .bottom-row {
-        margin-bottom: 0;
-      }
+  #backspaceButton[disabled] {
+    opacity: 0.34;
+  }
 
-      #backspaceButton {
-        --cr-icon-button-fill-color: var(--pin-keyboard-backspace-color,
-                                         var(--cros-icon-color-primary));
-        --cr-icon-button-size: 48px;
-        --cr-icon-button-transition: none;
-        height: var(--pin-button-size);
-        margin: 0 var(--pin-button-horizontal-margin);
-        opacity: var(--pin-keyboard-backspace-opacity, --dark-primary-opacity);
-        width: var(--pin-button-size);
-      }
+  .digit-button {
+    align-items: center;
+    border: 0;
+    box-shadow: none;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    font-weight: 400;
+    height: var(--pin-button-size);
+    margin: 0 var(--pin-button-horizontal-margin);
+    min-height: 0;
+    min-width: 0;
+    opacity: 0.87;
+    padding: 0;
+    width: var(--pin-button-size);
 
-      #backspaceButton[disabled] {
-        opacity: 0.34;
-      }
+    --ink-color: var(--cros-ripple-color);
+    --paper-ripple-opacity: 1;
+  }
 
-      .digit-button {
-        align-items: center;
-        border: 0;
-        box-shadow: none;
-        box-sizing: border-box;
-        display: flex;
-        flex-direction: column;
-        font-weight: 400;
-        height: var(--pin-button-size);
-        margin: 0 var(--pin-button-horizontal-margin);
-        min-height: 0;
-        min-width: 0;
-        opacity: 0.87;
-        padding: 0;
-        width: var(--pin-button-size);
+  :host-context(.focus-outline-visible) .digit-button:focus {
+    font-weight: 500;
+  }
 
-        --ink-color: var(--cros-ripple-color);
-        --paper-ripple-opacity: 1;
-      }
+  .digit-button inner-text {
+    font-family: 'Roboto';
+  }
 
-      :host-context(.focus-outline-visible) .digit-button:focus {
-        font-weight: 500;
-      }
+  /* TODO(https://crbug.com/1307255): Figure out how to use variables of the
+                                      cr-button component to add hovering
+                                      effect */
+  cr-button {
+    background-color: var(--cros-icon-button-background-color);
+    border-radius: 50%;
+  }
 
-      .digit-button inner-text {
-        font-family: 'Roboto';
-      }
+  cr-button:hover {
+    background-color: var(--cros-highlight-color-focus);
+  }
 
-      /* TODO(https://crbug.com/1307255): Figure out how to use variables of the
-                                          cr-button component to add hovering
-                                          effect */
-      cr-button {
-        background-color: var(--cros-icon-button-background-color);
-        border-radius: 50%;
-      }
+  cr-icon-button {
+    background-color: var(--cros-icon-button-background-color);
+    border-radius: 50%;
+  }
 
-      cr-button:hover {
-        background-color: var(--cros-highlight-color-focus);
-      }
+  cr-icon-button:hover {
+    background-color: var(--cros-highlight-color-focus);
+  }
 
-      cr-icon-button {
-        background-color: var(--cros-icon-button-background-color);
-        border-radius: 50%;
-      }
+  inner-text.letter {
+    color: var(--pin-keyboard-letter-color,
+                var(--cros-text-color-secondary));
+    font-size: 12px;
+  }
 
-      cr-icon-button:hover {
-        background-color: var(--cros-highlight-color-focus);
-      }
+  /**
+    * This is needed to align button "1" without text similar to the
+    * buttons with text
+    */
+  inner-text.letter.empty {
+    visibility: hidden;
+  }
 
-      inner-text.letter {
-        color: var(--pin-keyboard-letter-color,
-                   var(--cros-text-color-secondary));
-        font-size: 12px;
-      }
+  .number {
+    color: var(--pin-keyboard-number-color, var(--cros-text-color-primary));
+    font-size: 20px;
+  }
 
-      /**
-       * This is needed to align button "1" without text similar to the
-       * buttons with text
-       */
-      inner-text.letter.empty {
-        visibility: hidden;
-      }
+  #pinInput::part(input) {
+    font-size: 18px;
+  }
 
-      .number {
-        color: var(--pin-keyboard-number-color, var(--cros-text-color-primary));
-        font-size: 20px;
-      }
+  #pinInput {
+    --cr-input-error-display: none;
+    --cr-input-letter-spacing: var(--pin-keyboard-input-letter-spacing,
+                                    18px);
+    --cr-input-padding-end: 0;
+    --cr-input-padding-start: 0;
+    --cr-search-field-placeholder-color:
+        var(--cros-textfield-input-color-disabled);
+    background-color: var(--cros-textfield-background-color);
+    border: 0;
+    box-sizing: border-box;
+    color: var(--cros-textfield-input-color);
+    font-face: Roboto-Regular;
+    font-size: 13px;
+    left: 0;
+    opacity: var(--dark-secondary-opacity);
+    outline: 0;
+    position: relative;
+    text-align: center;
+    width: 200px;
 
-      #pinInput::part(input) {
-        font-size: 18px;
-      }
+    @apply --pin-keyboard-pin-input-style;
+  }
 
-      #pinInput {
-        --cr-input-error-display: none;
-        --cr-input-letter-spacing: var(--pin-keyboard-input-letter-spacing,
-                                       18px);
-        --cr-input-padding-end: 0;
-        --cr-input-padding-start: 0;
-        --cr-search-field-placeholder-color:
-            var(--cros-textfield-input-color-disabled);
-        background-color: var(--cros-textfield-background-color);
-        border: 0;
-        box-sizing: border-box;
-        color: var(--cros-textfield-input-color);
-        font-face: Roboto-Regular;
-        font-size: 13px;
-        left: 0;
-        opacity: var(--dark-secondary-opacity);
-        outline: 0;
-        position: relative;
-        text-align: center;
-        width: 200px;
+  #pinInput[make-contrast] {
+    opacity: var(--dark-primary-opacity);
+  }
 
-        @apply --pin-keyboard-pin-input-style;
-      }
+  #pinInput[is-input-rtl] {
+    direction: rtl;
+  }
 
-      #pinInput[make-contrast] {
-        opacity: var(--dark-primary-opacity);
-      }
+  /* Ensure that all children of cr-button do not consume events. This
+    * simplifies the event handler code. */
+  cr-button * {
+    pointer-events: none;
+  }
+</style>
 
-      #pinInput[is-input-rtl] {
-        direction: rtl;
-      }
-
-      /* Ensure that all children of cr-button do not consume events. This
-       * simplifies the event handler code. */
-      cr-button * {
-        pointer-events: none;
-      }
-    </style>
-
-    <div id="root" on-click="onRootTap_">
-      <div id="pinInputDiv">
-        <cr-input id="pinInput" type="password" value="{{value}}"
-            is-input-rtl$="[[isInputRtl_(value)]]" aria-label="[[ariaLabel]]"
-            make-contrast$="[[hasInputOrFocus_(value, focused_)]]"
-            invalid="[[hasError]]"
-            placeholder="[[getInputPlaceholder_(enablePassword,
-                enablePlaceholder)]]" inputmode="none"
-            on-keydown="onInputKeyDown_" force-underline="true"
-            disabled="[[disabled]]">
-        </cr-input>
-        <slot select="[problem]"></slot>
-      </div>
-      <div id="rowsContainer">
-        <div class="row">
-          <cr-button class="digit-button" on-click="onNumberTap_" value="1"
-              id="digitButton1" disabled="[[disabled]]" circle-ripple
-              custom-tab-index="-1">
-            <inner-text class="number">[[i18n('pinKeyboard1')]]</inner-text>
-          </cr-button>
-          <cr-button class="digit-button" on-click="onNumberTap_" value="2"
-              id="digitButton2" disabled="[[disabled]]" circle-ripple
-              custom-tab-index="-1">
-            <inner-text class="number">[[i18n('pinKeyboard2')]]</inner-text>
-          </cr-button>
-          <cr-button class="digit-button" on-click="onNumberTap_" value="3"
-              id="digitButton3" disabled="[[disabled]]" circle-ripple
-              custom-tab-index="-1">
-            <inner-text class="number">[[i18n('pinKeyboard3')]]</inner-text>
-          </cr-button>
-        </div>
-        <div class="row">
-          <cr-button class="digit-button" on-click="onNumberTap_" value="4"
-              id="digitButton4" disabled="[[disabled]]" circle-ripple
-              custom-tab-index="-1">
-            <inner-text class="number">[[i18n('pinKeyboard4')]]</inner-text>
-          </cr-button>
-          <cr-button class="digit-button" on-click="onNumberTap_" value="5"
-              id="digitButton5" disabled="[[disabled]]" circle-ripple
-              custom-tab-index="-1">
-            <inner-text class="number">[[i18n('pinKeyboard5')]]</inner-text>
-          </cr-button>
-          <cr-button class="digit-button" on-click="onNumberTap_" value="6"
-              id="digitButton6" disabled="[[disabled]]" circle-ripple
-              custom-tab-index="-1">
-            <inner-text class="number">[[i18n('pinKeyboard6')]]</inner-text>
-          </cr-button>
-        </div>
-        <div class="row">
-          <cr-button class="digit-button" on-click="onNumberTap_" value="7"
-              id="digitButton7" disabled="[[disabled]]" circle-ripple
-              custom-tab-index="-1">
-            <inner-text class="number">[[i18n('pinKeyboard7')]]</inner-text>
-          </cr-button>
-          <cr-button class="digit-button" on-click="onNumberTap_" value="8"
-              id="digitButton8" disabled="[[disabled]]" circle-ripple
-              custom-tab-index="-1">
-            <inner-text class="number">[[i18n('pinKeyboard8')]]</inner-text>
-          </cr-button>
-          <cr-button class="digit-button" on-click="onNumberTap_" value="9"
-              id="digitButton9" disabled="[[disabled]]" circle-ripple
-              custom-tab-index="-1">
-            <inner-text class="number">[[i18n('pinKeyboard9')]]</inner-text>
-          </cr-button>
-        </div>
-        <div class="row bottom-row">
-          <cr-icon-button id="backspaceButton"
-              disabled$="[[!hasInput_(value)]]"
-              iron-icon="pin-keyboard:backspace"
-              on-click="onBackspaceTap_"
-              on-pointerdown="onBackspacePointerDown_"
-              on-pointerout="clearAndReset_"
-              on-pointerup="onBackspacePointerUp_"
-              on-contextmenu="onBackspaceContextMenu_"
-              title="[[i18n('pinKeyboardDeleteAccessibleName')]]"
-              custom-tab-index="-1">
-          </cr-icon-button>
-          <cr-button class="digit-button" on-click="onNumberTap_" value="0"
-              id="digitButton0" disabled="[[disabled]]" circle-ripple
-              custom-tab-index="-1">
-            <inner-text class="number">[[i18n('pinKeyboard0')]]</inner-text>
-          </cr-button>
-          <div class="digit-button"></div>
-        </div>
-      </div>
+<div id="root" on-click="onRootTap_">
+  <div id="pinInputDiv">
+    <cr-input id="pinInput" type="password" value="{{value}}"
+        is-input-rtl$="[[isInputRtl_(value)]]" aria-label="[[ariaLabel]]"
+        make-contrast$="[[hasInputOrFocus_(value, focused_)]]"
+        invalid="[[hasError]]"
+        placeholder="[[getInputPlaceholder_(enablePassword,
+            enablePlaceholder)]]" inputmode="none"
+        on-keydown="onInputKeyDown_" force-underline="true"
+        disabled="[[disabled]]">
+    </cr-input>
+    <slot select="[problem]"></slot>
+  </div>
+  <div id="rowsContainer">
+    <div class="row">
+      <cr-button class="digit-button" on-click="onNumberTap_" value="1"
+          id="digitButton1" disabled="[[disabled]]" circle-ripple
+          custom-tab-index="-1">
+        <inner-text class="number">[[i18n('pinKeyboard1')]]</inner-text>
+      </cr-button>
+      <cr-button class="digit-button" on-click="onNumberTap_" value="2"
+          id="digitButton2" disabled="[[disabled]]" circle-ripple
+          custom-tab-index="-1">
+        <inner-text class="number">[[i18n('pinKeyboard2')]]</inner-text>
+      </cr-button>
+      <cr-button class="digit-button" on-click="onNumberTap_" value="3"
+          id="digitButton3" disabled="[[disabled]]" circle-ripple
+          custom-tab-index="-1">
+        <inner-text class="number">[[i18n('pinKeyboard3')]]</inner-text>
+      </cr-button>
     </div>
-  </template>
-  <script src="pin_keyboard.js"></script>
-</dom-module>
+    <div class="row">
+      <cr-button class="digit-button" on-click="onNumberTap_" value="4"
+          id="digitButton4" disabled="[[disabled]]" circle-ripple
+          custom-tab-index="-1">
+        <inner-text class="number">[[i18n('pinKeyboard4')]]</inner-text>
+      </cr-button>
+      <cr-button class="digit-button" on-click="onNumberTap_" value="5"
+          id="digitButton5" disabled="[[disabled]]" circle-ripple
+          custom-tab-index="-1">
+        <inner-text class="number">[[i18n('pinKeyboard5')]]</inner-text>
+      </cr-button>
+      <cr-button class="digit-button" on-click="onNumberTap_" value="6"
+          id="digitButton6" disabled="[[disabled]]" circle-ripple
+          custom-tab-index="-1">
+        <inner-text class="number">[[i18n('pinKeyboard6')]]</inner-text>
+      </cr-button>
+    </div>
+    <div class="row">
+      <cr-button class="digit-button" on-click="onNumberTap_" value="7"
+          id="digitButton7" disabled="[[disabled]]" circle-ripple
+          custom-tab-index="-1">
+        <inner-text class="number">[[i18n('pinKeyboard7')]]</inner-text>
+      </cr-button>
+      <cr-button class="digit-button" on-click="onNumberTap_" value="8"
+          id="digitButton8" disabled="[[disabled]]" circle-ripple
+          custom-tab-index="-1">
+        <inner-text class="number">[[i18n('pinKeyboard8')]]</inner-text>
+      </cr-button>
+      <cr-button class="digit-button" on-click="onNumberTap_" value="9"
+          id="digitButton9" disabled="[[disabled]]" circle-ripple
+          custom-tab-index="-1">
+        <inner-text class="number">[[i18n('pinKeyboard9')]]</inner-text>
+      </cr-button>
+    </div>
+    <div class="row bottom-row">
+      <cr-icon-button id="backspaceButton"
+          disabled$="[[!hasInput_(value)]]"
+          iron-icon="pin-keyboard:backspace"
+          on-click="onBackspaceTap_"
+          on-pointerdown="onBackspacePointerDown_"
+          on-pointerout="clearAndReset_"
+          on-pointerup="onBackspacePointerUp_"
+          on-contextmenu="onBackspaceContextMenu_"
+          title="[[i18n('pinKeyboardDeleteAccessibleName')]]"
+          custom-tab-index="-1">
+      </cr-icon-button>
+      <cr-button class="digit-button" on-click="onNumberTap_" value="0"
+          id="digitButton0" disabled="[[disabled]]" circle-ripple
+          custom-tab-index="-1">
+        <inner-text class="number">[[i18n('pinKeyboard0')]]</inner-text>
+      </cr-button>
+      <div class="digit-button"></div>
+    </div>
+  </div>
+</div>
 
 <!-- TODO(crbug.com/603217): Use i18n instead of string literals. Figure out
                              what i18n to use for keypad, ie, does 1 ABC make

@@ -95,6 +95,7 @@ preprocess_if_expr("preprocess_src") {
     "chromeos/bluetooth/cros_bluetooth_config.js",
     "chromeos/network_health/mojo_interface_provider.js",
     "chromeos/network_health/network_diagnostics_types.js",
+    "chromeos/quick_unlock/lock_screen_constants.js",
     "chromeos/smb_shares/smb_browser_proxy.js",
   ]
 }
@@ -188,10 +189,9 @@ if (is_chromeos_ash) {
       "chromeos/network/network_siminfo.m.js",
       "chromeos/network/onc_mojo.m.js",
       "chromeos/network/sim_lock_dialogs.m.js",
-      "chromeos/quick_unlock/lock_screen_constants.m.js",
-      "chromeos/quick_unlock/pin_keyboard_icon.m.js",
-      "chromeos/quick_unlock/pin_keyboard.m.js",
-      "chromeos/quick_unlock/setup_pin_keyboard.m.js",
+      "chromeos/quick_unlock/pin_keyboard_icon.js",
+      "chromeos/quick_unlock/pin_keyboard.js",
+      "chromeos/quick_unlock/setup_pin_keyboard.js",
       "chromeos/smb_shares/add_smb_share_dialog.js",
       "chromeos/traffic_counters/traffic_counters.js",
     ]

@@ -90,7 +90,7 @@ js_library("lock_screen") {
     "../multidevice_page:multidevice_smartlock_item",
     "//chromeos/ash/services/auth_factor_config/public/mojom:mojom_webui_js",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_components/chromeos/quick_unlock:lock_screen_constants.m",
+    "//ui/webui/resources/cr_components/chromeos/quick_unlock:lock_screen_constants",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:i18n_behavior.m",
     "//ui/webui/resources/js:load_time_data.m",
@@ -105,7 +105,7 @@ js_library("lock_screen_password_prompt_dialog") {
   deps = [
     ":lock_state_behavior",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_components/chromeos/quick_unlock:lock_screen_constants.m",
+    "//ui/webui/resources/cr_components/chromeos/quick_unlock:lock_screen_constants",
   ]
 }
 
@@ -135,7 +135,7 @@ js_library("os_people_page") {
     "../..:router",
     "//ash/webui/common/resources/cr_picture:png",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_components/chromeos/quick_unlock:lock_screen_constants.m",
+    "//ui/webui/resources/cr_components/chromeos/quick_unlock:lock_screen_constants",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:i18n_behavior.m",
     "//ui/webui/resources/js:icon",
@@ -190,7 +190,7 @@ js_library("setup_pin_dialog") {
     ":lock_screen_password_prompt_dialog",
     "../..:router",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_components/chromeos/quick_unlock:setup_pin_keyboard.m",
+    "//ui/webui/resources/cr_components/chromeos/quick_unlock:setup_pin_keyboard",
     "//ui/webui/resources/js:i18n_behavior.m",
   ]
 }

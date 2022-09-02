@@ -18,7 +18,7 @@
  */
 import '../../controls/password_prompt_dialog.js';
 
-import {LockScreenProgress, recordLockScreenProgress} from 'chrome://resources/cr_components/chromeos/quick_unlock/lock_screen_constants.m.js';
+import {LockScreenProgress, recordLockScreenProgress} from 'chrome://resources/cr_components/chromeos/quick_unlock/lock_screen_constants.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {LockStateBehavior, LockStateBehaviorInterface} from './lock_state_behavior.js';

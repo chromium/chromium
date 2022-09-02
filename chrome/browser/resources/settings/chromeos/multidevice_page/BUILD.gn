@@ -236,7 +236,7 @@ js_library("multidevice_screen_lock_subpage") {
     "../os_people_page:lock_screen_password_prompt_dialog",
     "../os_people_page:lock_state_behavior",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_components/chromeos/quick_unlock:lock_screen_constants.m",
+    "//ui/webui/resources/cr_components/chromeos/quick_unlock:lock_screen_constants",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:i18n_behavior.m",
     "//ui/webui/resources/js:load_time_data.m",
