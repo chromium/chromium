@@ -1627,6 +1627,72 @@ static bool ParseLCHOrOKLCHParameters(CSSParserTokenRange& range,
   return args.AtEnd();
 }
 
+// https://www.w3.org/TR/css-color-4/#funcdef-color
+static bool ParseColorFunctionParameters(CSSParserTokenRange& range,
+                                         const CSSParserContext& context,
+                                         Color& result) {
+  DCHECK(range.Peek().FunctionId() == CSSValueID::kColor);
+  CSSParserTokenRange args = ConsumeFunction(range);
+  // First argument is the colorspace
+  CSSValueID color_space_id_ = args.ConsumeIncludingWhitespace().Id();
+  Color::ColorFunctionSpace color_space;
+  switch (color_space_id_) {
+    case CSSValueID::kSRGB:
+      color_space = Color::ColorFunctionSpace::kSRGB;
+      break;
+    case CSSValueID::kRec2020:
+      color_space = Color::ColorFunctionSpace::kRec2020;
+      break;
+    case CSSValueID::kSRGBLinear:
+      color_space = Color::ColorFunctionSpace::kSRGBLinear;
+      break;
+    case CSSValueID::kDisplayP3:
+      color_space = Color::ColorFunctionSpace::kDisplayP3;
+      break;
+    case CSSValueID::kA98Rgb:
+      color_space = Color::ColorFunctionSpace::kA98RGB;
+      break;
+    case CSSValueID::kProphotoRgb:
+      color_space = Color::ColorFunctionSpace::kProPhotoRGB;
+      break;
+    case CSSValueID::kXyzD50:
+      color_space = Color::ColorFunctionSpace::kXYZD50;
+      break;
+    case CSSValueID::kXyz:
+    case CSSValueID::kXyzD65:
+      color_space = Color::ColorFunctionSpace::kXYZD65;
+      break;
+    default:
+      return false;
+  }
+
+  double params[3] = {0.0, 0.0, 0.0};
+  CSSPrimitiveValue* value;
+  for (double& param : params) {
+    value = ConsumeNumber(args, context, CSSPrimitiveValue::ValueRange::kAll);
+    if (value)
+      param = value->GetDoubleValue();
+  }
+
+  // If present, consume the alpha value.
+  double alpha = 1.0;
+  if (ConsumeSlashIncludingWhitespace(args)) {
+    if (!ConsumeNumberRaw(args, context, alpha)) {
+      CSSPrimitiveValue* alpha_percent =
+          ConsumePercent(args, context, CSSPrimitiveValue::ValueRange::kAll);
+      if (!alpha_percent)
+        return false;
+      else
+        alpha = alpha_percent->GetDoubleValue() / 100.0;
+    }
+    alpha = ClampTo<double>(alpha, 0.0, 1.0);
+  }
+
+  result = Color::FromColorFunction(color_space, params[0], params[1],
+                                    params[2], alpha);
+  return args.AtEnd();
+}
+
 static bool ParseHexColor(CSSParserTokenRange& range,
                           Color& result,
                           bool accept_quirky_colors) {
@@ -1663,9 +1729,9 @@ static bool ParseHexColor(CSSParserTokenRange& range,
   return true;
 }
 
-static bool ParseColorFunction(CSSParserTokenRange& range,
-                               const CSSParserContext& context,
-                               Color& result) {
+static bool ParseFunctionalSyntaxColor(CSSParserTokenRange& range,
+                                       const CSSParserContext& context,
+                                       Color& result) {
   CSSParserTokenRange color_range = range;
   switch (range.Peek().FunctionId()) {
     case CSSValueID::kRgb:
@@ -1692,6 +1758,11 @@ static bool ParseColorFunction(CSSParserTokenRange& range,
     case CSSValueID::kOklch:
       if (!RuntimeEnabledFeatures::CSSColor4Enabled() ||
           !ParseLCHOrOKLCHParameters(color_range, context, result))
+        return false;
+      break;
+    case CSSValueID::kColor:
+      if (!RuntimeEnabledFeatures::CSSColor4Enabled() ||
+          !ParseColorFunctionParameters(color_range, context, result))
         return false;
       break;
     default:
@@ -1834,7 +1905,7 @@ CSSValue* ConsumeColor(CSSParserTokenRange& range,
   }
   Color color = Color::kTransparent;
   if (!ParseHexColor(range, color, accept_quirky_colors) &&
-      !ParseColorFunction(range, context, color)) {
+      !ParseFunctionalSyntaxColor(range, context, color)) {
     return ConsumeInternalLightDark(ConsumeColor, range, context,
                                     accept_quirky_colors, allowed_keywords);
   }

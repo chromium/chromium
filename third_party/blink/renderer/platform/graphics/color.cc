@@ -28,7 +28,6 @@
 #include "base/notreached.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
-#include "third_party/blink/renderer/platform/wtf/decimal.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_view.h"
@@ -457,6 +456,28 @@ bool Color::SetFromString(const String& name) {
   return ParseHexColor(name.Characters16() + 1, name.length() - 1, *this);
 }
 
+static String ColorFunctionSpaceToString(
+    Color::ColorFunctionSpace color_space) {
+  switch (color_space) {
+    case Color::ColorFunctionSpace::kSRGB:
+      return "srgb";
+    case Color::ColorFunctionSpace::kSRGBLinear:
+      return "srgb-linear";
+    case Color::ColorFunctionSpace::kDisplayP3:
+      return "display-p3";
+    case Color::ColorFunctionSpace::kA98RGB:
+      return "a98-rgb";
+    case Color::ColorFunctionSpace::kProPhotoRGB:
+      return "prophoto-rgb";
+    case Color::ColorFunctionSpace::kRec2020:
+      return "rec2020";
+    case Color::ColorFunctionSpace::kXYZD50:
+      return "xyz-d50";
+    case Color::ColorFunctionSpace::kXYZD65:
+      return "xyz-d65";
+  }
+}
+
 String Color::SerializeAsCanvasColor() const {
   if (serialization_type_ == SerializationType::kRGB && !HasAlpha())
     return String::Format("#%02x%02x%02x", Red(), Green(), Blue());
@@ -521,9 +542,22 @@ String Color::SerializeAsCSSColor() const {
       result.Append(")");
       return result.ToString();
 
-    // TODO(https://crbug.com/1333988): Implement CSS Color level 4
-    // serialization.
     case SerializationType::kColor:
+      result.Append("color(");
+      result.Append(ColorFunctionSpaceToString(color_function_space_));
+      result.Append(" ");
+      result.AppendNumber(param0_);
+      result.Append(" ");
+      result.AppendNumber(param1_);
+      result.Append(" ");
+      result.AppendNumber(param2_);
+      if (alpha_ != 1.0) {
+        result.Append(" / ");
+        result.AppendNumber(alpha_);
+      }
+      result.Append(")");
+      return result.ToString();
+
     default:
       NOTIMPLEMENTED();
       return "rgb(0, 0, 0)";

@@ -95,7 +95,6 @@ class PLATFORM_EXPORT Color {
     kA98RGB,
     kProPhotoRGB,
     kRec2020,
-    kXYZ,
     kXYZD50,
     kXYZD65,
   };

@@ -1,9 +1,9 @@
 This is a testharness.js-based test.
-Found 1068 tests; 7 PASS, 1061 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 1068 tests; 14 PASS, 1054 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS e.style['background-image'] = "linear-gradient(30deg, red, blue)" should set the property value
 PASS e.style['background-image'] = "linear-gradient(to right bottom, red, blue)" should set the property value
-FAIL e.style['background-image'] = "linear-gradient(30deg, color(srgb 1 0 0), blue)" should set the property value assert_not_equals: property should be set got disallowed value ""
-FAIL e.style['background-image'] = "linear-gradient(to right bottom, color(srgb 1 0 0), blue)" should set the property value assert_not_equals: property should be set got disallowed value ""
+PASS e.style['background-image'] = "linear-gradient(30deg, color(srgb 1 0 0), blue)" should set the property value
+PASS e.style['background-image'] = "linear-gradient(to right bottom, color(srgb 1 0 0), blue)" should set the property value
 FAIL e.style['background-image'] = "linear-gradient(in lab, red, blue)" should set the property value assert_not_equals: property should be set got disallowed value ""
 FAIL e.style['background-image'] = "linear-gradient(30deg in lab, red, blue)" should set the property value assert_not_equals: property should be set got disallowed value ""
 FAIL e.style['background-image'] = "linear-gradient(in lab 30deg, red, blue)" should set the property value assert_not_equals: property should be set got disallowed value ""
@@ -317,9 +317,9 @@ FAIL e.style['background-image'] = "linear-gradient(in oklch specified hue to ri
 PASS e.style['background-image'] = "radial-gradient(50px, red, blue)" should set the property value
 PASS e.style['background-image'] = "radial-gradient(ellipse 50% 40em, red, blue)" should set the property value
 PASS e.style['background-image'] = "radial-gradient(at right center, red, blue)" should set the property value
-FAIL e.style['background-image'] = "radial-gradient(50px, color(srgb 1 0 0), blue)" should set the property value assert_not_equals: property should be set got disallowed value ""
-FAIL e.style['background-image'] = "radial-gradient(ellipse 50% 40em, color(srgb 1 0 0), blue)" should set the property value assert_not_equals: property should be set got disallowed value ""
-FAIL e.style['background-image'] = "radial-gradient(at right center, color(srgb 1 0 0), blue)" should set the property value assert_not_equals: property should be set got disallowed value ""
+PASS e.style['background-image'] = "radial-gradient(50px, color(srgb 1 0 0), blue)" should set the property value
+PASS e.style['background-image'] = "radial-gradient(ellipse 50% 40em, color(srgb 1 0 0), blue)" should set the property value
+PASS e.style['background-image'] = "radial-gradient(at right center, color(srgb 1 0 0), blue)" should set the property value
 FAIL e.style['background-image'] = "radial-gradient(in lab, red, blue)" should set the property value assert_not_equals: property should be set got disallowed value ""
 FAIL e.style['background-image'] = "radial-gradient(50px in lab, red, blue)" should set the property value assert_not_equals: property should be set got disallowed value ""
 FAIL e.style['background-image'] = "radial-gradient(in lab 50px, red, blue)" should set the property value assert_not_equals: property should be set got disallowed value ""
@@ -756,8 +756,8 @@ FAIL e.style['background-image'] = "radial-gradient(at right center in oklch spe
 FAIL e.style['background-image'] = "radial-gradient(in oklch specified hue at right center, color(srgb 1 0 0), blue)" should set the property value assert_not_equals: property should be set got disallowed value ""
 PASS e.style['background-image'] = "conic-gradient(from 30deg, red, blue)" should set the property value
 PASS e.style['background-image'] = "conic-gradient(at left 10px top 50em, red, blue)" should set the property value
-FAIL e.style['background-image'] = "conic-gradient(from 30deg, color(srgb 1 0 0), blue)" should set the property value assert_not_equals: property should be set got disallowed value ""
-FAIL e.style['background-image'] = "conic-gradient(at left 10px top 50em, color(srgb 1 0 0), blue)" should set the property value assert_not_equals: property should be set got disallowed value ""
+PASS e.style['background-image'] = "conic-gradient(from 30deg, color(srgb 1 0 0), blue)" should set the property value
+PASS e.style['background-image'] = "conic-gradient(at left 10px top 50em, color(srgb 1 0 0), blue)" should set the property value
 FAIL e.style['background-image'] = "conic-gradient(in lab, red, blue)" should set the property value assert_not_equals: property should be set got disallowed value ""
 FAIL e.style['background-image'] = "conic-gradient(from 30deg in lab, red, blue)" should set the property value assert_not_equals: property should be set got disallowed value ""
 FAIL e.style['background-image'] = "conic-gradient(in lab from 30deg, red, blue)" should set the property value assert_not_equals: property should be set got disallowed value ""

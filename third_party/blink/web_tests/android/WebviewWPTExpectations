@@ -824,7 +824,6 @@ crbug.com/1050754 external/wpt/css/css-color-adjust/rendering/dark-color-scheme/
 crbug.com/1050754 external/wpt/css/css-color/animation/color-composition.html [ Failure Pass ]
 crbug.com/1050754 external/wpt/css/css-color/animation/color-interpolation.html [ Failure Pass ]
 crbug.com/1050754 external/wpt/css/css-color/animation/opacity-interpolation.html [ Failure Pass ]
-crbug.com/1050754 external/wpt/css/css-color/color-function-parsing.html [ Failure Pass ]
 crbug.com/1050754 external/wpt/css/css-conditional/idlharness.html [ Failure Pass ]
 crbug.com/1050754 external/wpt/css/css-contain/contain-size-grid-003.html [ Failure ]
 crbug.com/1050754 external/wpt/css/css-content/inheritance.html [ Failure Pass ]

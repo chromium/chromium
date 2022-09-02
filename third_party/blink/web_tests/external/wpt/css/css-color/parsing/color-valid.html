@@ -85,7 +85,7 @@ test_valid_value("color", "hwb(none 100% 50% / none)", "rgba(170, 170, 170, 0)")
 test_valid_value("color", "hwb(0 100% 50% / 0)", "rgba(170, 170, 170, 0)");
 
 
-for (const colorSpace of [ "srgb", "srgb-linear", "a98-rgb", "rec2020", "prophoto-rgb" ]) {
+for (const colorSpace of [ "srgb", "srgb-linear", "a98-rgb", "rec2020", "prophoto-rgb", "display-p3" ]) {
     test_valid_value("color", `color(${colorSpace} 0% 0% 0%)`, `color(${colorSpace} 0 0 0)`);
     test_valid_value("color", `color(${colorSpace} 10% 10% 10%)`, `color(${colorSpace} 0.1 0.1 0.1)`);
     test_valid_value("color", `color(${colorSpace} .2 .2 25%)`, `color(${colorSpace} 0.2 0.2 0.25)`);

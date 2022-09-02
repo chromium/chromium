@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 407 tests; 112 PASS, 295 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 407 tests; 230 PASS, 177 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Property color value 'currentcolor'
 PASS Property color value 'transparent'
 PASS Property color value 'red'
@@ -75,30 +75,30 @@ PASS Property color value 'hwb(0 100% 50% / 0)'
 FAIL Property color value 'color(srgb 0% 0% 0%)' assert_true: 'color(srgb 0% 0% 0%)' is a supported value for color. expected true got false
 FAIL Property color value 'color(srgb 10% 10% 10%)' assert_true: 'color(srgb 10% 10% 10%)' is a supported value for color. expected true got false
 FAIL Property color value 'color(srgb .2 .2 25%)' assert_true: 'color(srgb .2 .2 25%)' is a supported value for color. expected true got false
-FAIL Property color value 'color(srgb 0 0 0 / 1)' assert_true: 'color(srgb 0 0 0 / 1)' is a supported value for color. expected true got false
+PASS Property color value 'color(srgb 0 0 0 / 1)'
 FAIL Property color value 'color(srgb 0% 0 0 / 0.5)' assert_true: 'color(srgb 0% 0 0 / 0.5)' is a supported value for color. expected true got false
 FAIL Property color value 'color(srgb 20% 0 10/0.5)' assert_true: 'color(srgb 20% 0 10/0.5)' is a supported value for color. expected true got false
 FAIL Property color value 'color(srgb 20% 0 10/50%)' assert_true: 'color(srgb 20% 0 10/50%)' is a supported value for color. expected true got false
 FAIL Property color value 'color(srgb 400% 0 10/50%)' assert_true: 'color(srgb 400% 0 10/50%)' is a supported value for color. expected true got false
 FAIL Property color value 'color(srgb 50% -160 160)' assert_true: 'color(srgb 50% -160 160)' is a supported value for color. expected true got false
 FAIL Property color value 'color(srgb 50% -200 200)' assert_true: 'color(srgb 50% -200 200)' is a supported value for color. expected true got false
-FAIL Property color value 'color(srgb 0 0 0 / -10%)' assert_true: 'color(srgb 0 0 0 / -10%)' is a supported value for color. expected true got false
-FAIL Property color value 'color(srgb 0 0 0 / 110%)' assert_true: 'color(srgb 0 0 0 / 110%)' is a supported value for color. expected true got false
-FAIL Property color value 'color(srgb 0 0 0 / 300%)' assert_true: 'color(srgb 0 0 0 / 300%)' is a supported value for color. expected true got false
+PASS Property color value 'color(srgb 0 0 0 / -10%)'
+PASS Property color value 'color(srgb 0 0 0 / 110%)'
+PASS Property color value 'color(srgb 0 0 0 / 300%)'
 FAIL Property color value 'color(srgb 50% -200)' assert_true: 'color(srgb 50% -200)' is a supported value for color. expected true got false
 FAIL Property color value 'color(srgb 50%)' assert_true: 'color(srgb 50%)' is a supported value for color. expected true got false
-FAIL Property color value 'color(srgb)' assert_true: 'color(srgb)' is a supported value for color. expected true got false
+PASS Property color value 'color(srgb)'
 FAIL Property color value 'color(srgb 50% -200 / 0.5)' assert_true: 'color(srgb 50% -200 / 0.5)' is a supported value for color. expected true got false
 FAIL Property color value 'color(srgb 50% / 0.5)' assert_true: 'color(srgb 50% / 0.5)' is a supported value for color. expected true got false
-FAIL Property color value 'color(srgb / 0.5)' assert_true: 'color(srgb / 0.5)' is a supported value for color. expected true got false
-FAIL Property color value 'color(srgb 200 200 200)' assert_true: 'color(srgb 200 200 200)' is a supported value for color. expected true got false
-FAIL Property color value 'color(srgb 200 200 200 / 200)' assert_true: 'color(srgb 200 200 200 / 200)' is a supported value for color. expected true got false
-FAIL Property color value 'color(srgb -200 -200 -200)' assert_true: 'color(srgb -200 -200 -200)' is a supported value for color. expected true got false
-FAIL Property color value 'color(srgb -200 -200 -200 / -200)' assert_true: 'color(srgb -200 -200 -200 / -200)' is a supported value for color. expected true got false
+PASS Property color value 'color(srgb / 0.5)'
+PASS Property color value 'color(srgb 200 200 200)'
+PASS Property color value 'color(srgb 200 200 200 / 200)'
+PASS Property color value 'color(srgb -200 -200 -200)'
+PASS Property color value 'color(srgb -200 -200 -200 / -200)'
 FAIL Property color value 'color(srgb 200% 200% 200%)' assert_true: 'color(srgb 200% 200% 200%)' is a supported value for color. expected true got false
 FAIL Property color value 'color(srgb 200% 200% 200% / 200%)' assert_true: 'color(srgb 200% 200% 200% / 200%)' is a supported value for color. expected true got false
 FAIL Property color value 'color(srgb -200% -200% -200% / -200%)' assert_true: 'color(srgb -200% -200% -200% / -200%)' is a supported value for color. expected true got false
-FAIL Property color value 'color(srgb calc(0.5 + 1) calc(0.5 - 1) calc(0.5) / calc(-0.5 + 1))' assert_true: 'color(srgb calc(0.5 + 1) calc(0.5 - 1) calc(0.5) / calc(-0.5 + 1))' is a supported value for color. expected true got false
+PASS Property color value 'color(srgb calc(0.5 + 1) calc(0.5 - 1) calc(0.5) / calc(-0.5 + 1))'
 FAIL Property color value 'color(srgb calc(50% * 3) calc(-150% / 3) calc(50%) / calc(-50% * 3))' assert_true: 'color(srgb calc(50% * 3) calc(-150% / 3) calc(50%) / calc(-50% * 3))' is a supported value for color. expected true got false
 FAIL Property color value 'color(srgb none none none / none)' assert_true: 'color(srgb none none none / none)' is a supported value for color. expected true got false
 FAIL Property color value 'color(srgb none none none)' assert_true: 'color(srgb none none none)' is a supported value for color. expected true got false
@@ -108,30 +108,30 @@ FAIL Property color value 'color(srgb 0 0 0 / none)' assert_true: 'color(srgb 0 
 FAIL Property color value 'color(srgb-linear 0% 0% 0%)' assert_true: 'color(srgb-linear 0% 0% 0%)' is a supported value for color. expected true got false
 FAIL Property color value 'color(srgb-linear 10% 10% 10%)' assert_true: 'color(srgb-linear 10% 10% 10%)' is a supported value for color. expected true got false
 FAIL Property color value 'color(srgb-linear .2 .2 25%)' assert_true: 'color(srgb-linear .2 .2 25%)' is a supported value for color. expected true got false
-FAIL Property color value 'color(srgb-linear 0 0 0 / 1)' assert_true: 'color(srgb-linear 0 0 0 / 1)' is a supported value for color. expected true got false
+PASS Property color value 'color(srgb-linear 0 0 0 / 1)'
 FAIL Property color value 'color(srgb-linear 0% 0 0 / 0.5)' assert_true: 'color(srgb-linear 0% 0 0 / 0.5)' is a supported value for color. expected true got false
 FAIL Property color value 'color(srgb-linear 20% 0 10/0.5)' assert_true: 'color(srgb-linear 20% 0 10/0.5)' is a supported value for color. expected true got false
 FAIL Property color value 'color(srgb-linear 20% 0 10/50%)' assert_true: 'color(srgb-linear 20% 0 10/50%)' is a supported value for color. expected true got false
 FAIL Property color value 'color(srgb-linear 400% 0 10/50%)' assert_true: 'color(srgb-linear 400% 0 10/50%)' is a supported value for color. expected true got false
 FAIL Property color value 'color(srgb-linear 50% -160 160)' assert_true: 'color(srgb-linear 50% -160 160)' is a supported value for color. expected true got false
 FAIL Property color value 'color(srgb-linear 50% -200 200)' assert_true: 'color(srgb-linear 50% -200 200)' is a supported value for color. expected true got false
-FAIL Property color value 'color(srgb-linear 0 0 0 / -10%)' assert_true: 'color(srgb-linear 0 0 0 / -10%)' is a supported value for color. expected true got false
-FAIL Property color value 'color(srgb-linear 0 0 0 / 110%)' assert_true: 'color(srgb-linear 0 0 0 / 110%)' is a supported value for color. expected true got false
-FAIL Property color value 'color(srgb-linear 0 0 0 / 300%)' assert_true: 'color(srgb-linear 0 0 0 / 300%)' is a supported value for color. expected true got false
+PASS Property color value 'color(srgb-linear 0 0 0 / -10%)'
+PASS Property color value 'color(srgb-linear 0 0 0 / 110%)'
+PASS Property color value 'color(srgb-linear 0 0 0 / 300%)'
 FAIL Property color value 'color(srgb-linear 50% -200)' assert_true: 'color(srgb-linear 50% -200)' is a supported value for color. expected true got false
 FAIL Property color value 'color(srgb-linear 50%)' assert_true: 'color(srgb-linear 50%)' is a supported value for color. expected true got false
-FAIL Property color value 'color(srgb-linear)' assert_true: 'color(srgb-linear)' is a supported value for color. expected true got false
+PASS Property color value 'color(srgb-linear)'
 FAIL Property color value 'color(srgb-linear 50% -200 / 0.5)' assert_true: 'color(srgb-linear 50% -200 / 0.5)' is a supported value for color. expected true got false
 FAIL Property color value 'color(srgb-linear 50% / 0.5)' assert_true: 'color(srgb-linear 50% / 0.5)' is a supported value for color. expected true got false
-FAIL Property color value 'color(srgb-linear / 0.5)' assert_true: 'color(srgb-linear / 0.5)' is a supported value for color. expected true got false
-FAIL Property color value 'color(srgb-linear 200 200 200)' assert_true: 'color(srgb-linear 200 200 200)' is a supported value for color. expected true got false
-FAIL Property color value 'color(srgb-linear 200 200 200 / 200)' assert_true: 'color(srgb-linear 200 200 200 / 200)' is a supported value for color. expected true got false
-FAIL Property color value 'color(srgb-linear -200 -200 -200)' assert_true: 'color(srgb-linear -200 -200 -200)' is a supported value for color. expected true got false
-FAIL Property color value 'color(srgb-linear -200 -200 -200 / -200)' assert_true: 'color(srgb-linear -200 -200 -200 / -200)' is a supported value for color. expected true got false
+PASS Property color value 'color(srgb-linear / 0.5)'
+PASS Property color value 'color(srgb-linear 200 200 200)'
+PASS Property color value 'color(srgb-linear 200 200 200 / 200)'
+PASS Property color value 'color(srgb-linear -200 -200 -200)'
+PASS Property color value 'color(srgb-linear -200 -200 -200 / -200)'
 FAIL Property color value 'color(srgb-linear 200% 200% 200%)' assert_true: 'color(srgb-linear 200% 200% 200%)' is a supported value for color. expected true got false
 FAIL Property color value 'color(srgb-linear 200% 200% 200% / 200%)' assert_true: 'color(srgb-linear 200% 200% 200% / 200%)' is a supported value for color. expected true got false
 FAIL Property color value 'color(srgb-linear -200% -200% -200% / -200%)' assert_true: 'color(srgb-linear -200% -200% -200% / -200%)' is a supported value for color. expected true got false
-FAIL Property color value 'color(srgb-linear calc(0.5 + 1) calc(0.5 - 1) calc(0.5) / calc(-0.5 + 1))' assert_true: 'color(srgb-linear calc(0.5 + 1) calc(0.5 - 1) calc(0.5) / calc(-0.5 + 1))' is a supported value for color. expected true got false
+PASS Property color value 'color(srgb-linear calc(0.5 + 1) calc(0.5 - 1) calc(0.5) / calc(-0.5 + 1))'
 FAIL Property color value 'color(srgb-linear calc(50% * 3) calc(-150% / 3) calc(50%) / calc(-50% * 3))' assert_true: 'color(srgb-linear calc(50% * 3) calc(-150% / 3) calc(50%) / calc(-50% * 3))' is a supported value for color. expected true got false
 FAIL Property color value 'color(srgb-linear none none none / none)' assert_true: 'color(srgb-linear none none none / none)' is a supported value for color. expected true got false
 FAIL Property color value 'color(srgb-linear none none none)' assert_true: 'color(srgb-linear none none none)' is a supported value for color. expected true got false
@@ -141,30 +141,30 @@ FAIL Property color value 'color(srgb-linear 0 0 0 / none)' assert_true: 'color(
 FAIL Property color value 'color(a98-rgb 0% 0% 0%)' assert_true: 'color(a98-rgb 0% 0% 0%)' is a supported value for color. expected true got false
 FAIL Property color value 'color(a98-rgb 10% 10% 10%)' assert_true: 'color(a98-rgb 10% 10% 10%)' is a supported value for color. expected true got false
 FAIL Property color value 'color(a98-rgb .2 .2 25%)' assert_true: 'color(a98-rgb .2 .2 25%)' is a supported value for color. expected true got false
-FAIL Property color value 'color(a98-rgb 0 0 0 / 1)' assert_true: 'color(a98-rgb 0 0 0 / 1)' is a supported value for color. expected true got false
+PASS Property color value 'color(a98-rgb 0 0 0 / 1)'
 FAIL Property color value 'color(a98-rgb 0% 0 0 / 0.5)' assert_true: 'color(a98-rgb 0% 0 0 / 0.5)' is a supported value for color. expected true got false
 FAIL Property color value 'color(a98-rgb 20% 0 10/0.5)' assert_true: 'color(a98-rgb 20% 0 10/0.5)' is a supported value for color. expected true got false
 FAIL Property color value 'color(a98-rgb 20% 0 10/50%)' assert_true: 'color(a98-rgb 20% 0 10/50%)' is a supported value for color. expected true got false
 FAIL Property color value 'color(a98-rgb 400% 0 10/50%)' assert_true: 'color(a98-rgb 400% 0 10/50%)' is a supported value for color. expected true got false
 FAIL Property color value 'color(a98-rgb 50% -160 160)' assert_true: 'color(a98-rgb 50% -160 160)' is a supported value for color. expected true got false
 FAIL Property color value 'color(a98-rgb 50% -200 200)' assert_true: 'color(a98-rgb 50% -200 200)' is a supported value for color. expected true got false
-FAIL Property color value 'color(a98-rgb 0 0 0 / -10%)' assert_true: 'color(a98-rgb 0 0 0 / -10%)' is a supported value for color. expected true got false
-FAIL Property color value 'color(a98-rgb 0 0 0 / 110%)' assert_true: 'color(a98-rgb 0 0 0 / 110%)' is a supported value for color. expected true got false
-FAIL Property color value 'color(a98-rgb 0 0 0 / 300%)' assert_true: 'color(a98-rgb 0 0 0 / 300%)' is a supported value for color. expected true got false
+PASS Property color value 'color(a98-rgb 0 0 0 / -10%)'
+PASS Property color value 'color(a98-rgb 0 0 0 / 110%)'
+PASS Property color value 'color(a98-rgb 0 0 0 / 300%)'
 FAIL Property color value 'color(a98-rgb 50% -200)' assert_true: 'color(a98-rgb 50% -200)' is a supported value for color. expected true got false
 FAIL Property color value 'color(a98-rgb 50%)' assert_true: 'color(a98-rgb 50%)' is a supported value for color. expected true got false
-FAIL Property color value 'color(a98-rgb)' assert_true: 'color(a98-rgb)' is a supported value for color. expected true got false
+PASS Property color value 'color(a98-rgb)'
 FAIL Property color value 'color(a98-rgb 50% -200 / 0.5)' assert_true: 'color(a98-rgb 50% -200 / 0.5)' is a supported value for color. expected true got false
 FAIL Property color value 'color(a98-rgb 50% / 0.5)' assert_true: 'color(a98-rgb 50% / 0.5)' is a supported value for color. expected true got false
-FAIL Property color value 'color(a98-rgb / 0.5)' assert_true: 'color(a98-rgb / 0.5)' is a supported value for color. expected true got false
-FAIL Property color value 'color(a98-rgb 200 200 200)' assert_true: 'color(a98-rgb 200 200 200)' is a supported value for color. expected true got false
-FAIL Property color value 'color(a98-rgb 200 200 200 / 200)' assert_true: 'color(a98-rgb 200 200 200 / 200)' is a supported value for color. expected true got false
-FAIL Property color value 'color(a98-rgb -200 -200 -200)' assert_true: 'color(a98-rgb -200 -200 -200)' is a supported value for color. expected true got false
-FAIL Property color value 'color(a98-rgb -200 -200 -200 / -200)' assert_true: 'color(a98-rgb -200 -200 -200 / -200)' is a supported value for color. expected true got false
+PASS Property color value 'color(a98-rgb / 0.5)'
+PASS Property color value 'color(a98-rgb 200 200 200)'
+PASS Property color value 'color(a98-rgb 200 200 200 / 200)'
+PASS Property color value 'color(a98-rgb -200 -200 -200)'
+PASS Property color value 'color(a98-rgb -200 -200 -200 / -200)'
 FAIL Property color value 'color(a98-rgb 200% 200% 200%)' assert_true: 'color(a98-rgb 200% 200% 200%)' is a supported value for color. expected true got false
 FAIL Property color value 'color(a98-rgb 200% 200% 200% / 200%)' assert_true: 'color(a98-rgb 200% 200% 200% / 200%)' is a supported value for color. expected true got false
 FAIL Property color value 'color(a98-rgb -200% -200% -200% / -200%)' assert_true: 'color(a98-rgb -200% -200% -200% / -200%)' is a supported value for color. expected true got false
-FAIL Property color value 'color(a98-rgb calc(0.5 + 1) calc(0.5 - 1) calc(0.5) / calc(-0.5 + 1))' assert_true: 'color(a98-rgb calc(0.5 + 1) calc(0.5 - 1) calc(0.5) / calc(-0.5 + 1))' is a supported value for color. expected true got false
+PASS Property color value 'color(a98-rgb calc(0.5 + 1) calc(0.5 - 1) calc(0.5) / calc(-0.5 + 1))'
 FAIL Property color value 'color(a98-rgb calc(50% * 3) calc(-150% / 3) calc(50%) / calc(-50% * 3))' assert_true: 'color(a98-rgb calc(50% * 3) calc(-150% / 3) calc(50%) / calc(-50% * 3))' is a supported value for color. expected true got false
 FAIL Property color value 'color(a98-rgb none none none / none)' assert_true: 'color(a98-rgb none none none / none)' is a supported value for color. expected true got false
 FAIL Property color value 'color(a98-rgb none none none)' assert_true: 'color(a98-rgb none none none)' is a supported value for color. expected true got false
@@ -174,30 +174,30 @@ FAIL Property color value 'color(a98-rgb 0 0 0 / none)' assert_true: 'color(a98-
 FAIL Property color value 'color(rec2020 0% 0% 0%)' assert_true: 'color(rec2020 0% 0% 0%)' is a supported value for color. expected true got false
 FAIL Property color value 'color(rec2020 10% 10% 10%)' assert_true: 'color(rec2020 10% 10% 10%)' is a supported value for color. expected true got false
 FAIL Property color value 'color(rec2020 .2 .2 25%)' assert_true: 'color(rec2020 .2 .2 25%)' is a supported value for color. expected true got false
-FAIL Property color value 'color(rec2020 0 0 0 / 1)' assert_true: 'color(rec2020 0 0 0 / 1)' is a supported value for color. expected true got false
+PASS Property color value 'color(rec2020 0 0 0 / 1)'
 FAIL Property color value 'color(rec2020 0% 0 0 / 0.5)' assert_true: 'color(rec2020 0% 0 0 / 0.5)' is a supported value for color. expected true got false
 FAIL Property color value 'color(rec2020 20% 0 10/0.5)' assert_true: 'color(rec2020 20% 0 10/0.5)' is a supported value for color. expected true got false
 FAIL Property color value 'color(rec2020 20% 0 10/50%)' assert_true: 'color(rec2020 20% 0 10/50%)' is a supported value for color. expected true got false
 FAIL Property color value 'color(rec2020 400% 0 10/50%)' assert_true: 'color(rec2020 400% 0 10/50%)' is a supported value for color. expected true got false
 FAIL Property color value 'color(rec2020 50% -160 160)' assert_true: 'color(rec2020 50% -160 160)' is a supported value for color. expected true got false
 FAIL Property color value 'color(rec2020 50% -200 200)' assert_true: 'color(rec2020 50% -200 200)' is a supported value for color. expected true got false
-FAIL Property color value 'color(rec2020 0 0 0 / -10%)' assert_true: 'color(rec2020 0 0 0 / -10%)' is a supported value for color. expected true got false
-FAIL Property color value 'color(rec2020 0 0 0 / 110%)' assert_true: 'color(rec2020 0 0 0 / 110%)' is a supported value for color. expected true got false
-FAIL Property color value 'color(rec2020 0 0 0 / 300%)' assert_true: 'color(rec2020 0 0 0 / 300%)' is a supported value for color. expected true got false
+PASS Property color value 'color(rec2020 0 0 0 / -10%)'
+PASS Property color value 'color(rec2020 0 0 0 / 110%)'
+PASS Property color value 'color(rec2020 0 0 0 / 300%)'
 FAIL Property color value 'color(rec2020 50% -200)' assert_true: 'color(rec2020 50% -200)' is a supported value for color. expected true got false
 FAIL Property color value 'color(rec2020 50%)' assert_true: 'color(rec2020 50%)' is a supported value for color. expected true got false
-FAIL Property color value 'color(rec2020)' assert_true: 'color(rec2020)' is a supported value for color. expected true got false
+PASS Property color value 'color(rec2020)'
 FAIL Property color value 'color(rec2020 50% -200 / 0.5)' assert_true: 'color(rec2020 50% -200 / 0.5)' is a supported value for color. expected true got false
 FAIL Property color value 'color(rec2020 50% / 0.5)' assert_true: 'color(rec2020 50% / 0.5)' is a supported value for color. expected true got false
-FAIL Property color value 'color(rec2020 / 0.5)' assert_true: 'color(rec2020 / 0.5)' is a supported value for color. expected true got false
-FAIL Property color value 'color(rec2020 200 200 200)' assert_true: 'color(rec2020 200 200 200)' is a supported value for color. expected true got false
-FAIL Property color value 'color(rec2020 200 200 200 / 200)' assert_true: 'color(rec2020 200 200 200 / 200)' is a supported value for color. expected true got false
-FAIL Property color value 'color(rec2020 -200 -200 -200)' assert_true: 'color(rec2020 -200 -200 -200)' is a supported value for color. expected true got false
-FAIL Property color value 'color(rec2020 -200 -200 -200 / -200)' assert_true: 'color(rec2020 -200 -200 -200 / -200)' is a supported value for color. expected true got false
+PASS Property color value 'color(rec2020 / 0.5)'
+PASS Property color value 'color(rec2020 200 200 200)'
+PASS Property color value 'color(rec2020 200 200 200 / 200)'
+PASS Property color value 'color(rec2020 -200 -200 -200)'
+PASS Property color value 'color(rec2020 -200 -200 -200 / -200)'
 FAIL Property color value 'color(rec2020 200% 200% 200%)' assert_true: 'color(rec2020 200% 200% 200%)' is a supported value for color. expected true got false
 FAIL Property color value 'color(rec2020 200% 200% 200% / 200%)' assert_true: 'color(rec2020 200% 200% 200% / 200%)' is a supported value for color. expected true got false
 FAIL Property color value 'color(rec2020 -200% -200% -200% / -200%)' assert_true: 'color(rec2020 -200% -200% -200% / -200%)' is a supported value for color. expected true got false
-FAIL Property color value 'color(rec2020 calc(0.5 + 1) calc(0.5 - 1) calc(0.5) / calc(-0.5 + 1))' assert_true: 'color(rec2020 calc(0.5 + 1) calc(0.5 - 1) calc(0.5) / calc(-0.5 + 1))' is a supported value for color. expected true got false
+PASS Property color value 'color(rec2020 calc(0.5 + 1) calc(0.5 - 1) calc(0.5) / calc(-0.5 + 1))'
 FAIL Property color value 'color(rec2020 calc(50% * 3) calc(-150% / 3) calc(50%) / calc(-50% * 3))' assert_true: 'color(rec2020 calc(50% * 3) calc(-150% / 3) calc(50%) / calc(-50% * 3))' is a supported value for color. expected true got false
 FAIL Property color value 'color(rec2020 none none none / none)' assert_true: 'color(rec2020 none none none / none)' is a supported value for color. expected true got false
 FAIL Property color value 'color(rec2020 none none none)' assert_true: 'color(rec2020 none none none)' is a supported value for color. expected true got false
@@ -207,109 +207,109 @@ FAIL Property color value 'color(rec2020 0 0 0 / none)' assert_true: 'color(rec2
 FAIL Property color value 'color(prophoto-rgb 0% 0% 0%)' assert_true: 'color(prophoto-rgb 0% 0% 0%)' is a supported value for color. expected true got false
 FAIL Property color value 'color(prophoto-rgb 10% 10% 10%)' assert_true: 'color(prophoto-rgb 10% 10% 10%)' is a supported value for color. expected true got false
 FAIL Property color value 'color(prophoto-rgb .2 .2 25%)' assert_true: 'color(prophoto-rgb .2 .2 25%)' is a supported value for color. expected true got false
-FAIL Property color value 'color(prophoto-rgb 0 0 0 / 1)' assert_true: 'color(prophoto-rgb 0 0 0 / 1)' is a supported value for color. expected true got false
+PASS Property color value 'color(prophoto-rgb 0 0 0 / 1)'
 FAIL Property color value 'color(prophoto-rgb 0% 0 0 / 0.5)' assert_true: 'color(prophoto-rgb 0% 0 0 / 0.5)' is a supported value for color. expected true got false
 FAIL Property color value 'color(prophoto-rgb 20% 0 10/0.5)' assert_true: 'color(prophoto-rgb 20% 0 10/0.5)' is a supported value for color. expected true got false
 FAIL Property color value 'color(prophoto-rgb 20% 0 10/50%)' assert_true: 'color(prophoto-rgb 20% 0 10/50%)' is a supported value for color. expected true got false
 FAIL Property color value 'color(prophoto-rgb 400% 0 10/50%)' assert_true: 'color(prophoto-rgb 400% 0 10/50%)' is a supported value for color. expected true got false
 FAIL Property color value 'color(prophoto-rgb 50% -160 160)' assert_true: 'color(prophoto-rgb 50% -160 160)' is a supported value for color. expected true got false
 FAIL Property color value 'color(prophoto-rgb 50% -200 200)' assert_true: 'color(prophoto-rgb 50% -200 200)' is a supported value for color. expected true got false
-FAIL Property color value 'color(prophoto-rgb 0 0 0 / -10%)' assert_true: 'color(prophoto-rgb 0 0 0 / -10%)' is a supported value for color. expected true got false
-FAIL Property color value 'color(prophoto-rgb 0 0 0 / 110%)' assert_true: 'color(prophoto-rgb 0 0 0 / 110%)' is a supported value for color. expected true got false
-FAIL Property color value 'color(prophoto-rgb 0 0 0 / 300%)' assert_true: 'color(prophoto-rgb 0 0 0 / 300%)' is a supported value for color. expected true got false
+PASS Property color value 'color(prophoto-rgb 0 0 0 / -10%)'
+PASS Property color value 'color(prophoto-rgb 0 0 0 / 110%)'
+PASS Property color value 'color(prophoto-rgb 0 0 0 / 300%)'
 FAIL Property color value 'color(prophoto-rgb 50% -200)' assert_true: 'color(prophoto-rgb 50% -200)' is a supported value for color. expected true got false
 FAIL Property color value 'color(prophoto-rgb 50%)' assert_true: 'color(prophoto-rgb 50%)' is a supported value for color. expected true got false
-FAIL Property color value 'color(prophoto-rgb)' assert_true: 'color(prophoto-rgb)' is a supported value for color. expected true got false
+PASS Property color value 'color(prophoto-rgb)'
 FAIL Property color value 'color(prophoto-rgb 50% -200 / 0.5)' assert_true: 'color(prophoto-rgb 50% -200 / 0.5)' is a supported value for color. expected true got false
 FAIL Property color value 'color(prophoto-rgb 50% / 0.5)' assert_true: 'color(prophoto-rgb 50% / 0.5)' is a supported value for color. expected true got false
-FAIL Property color value 'color(prophoto-rgb / 0.5)' assert_true: 'color(prophoto-rgb / 0.5)' is a supported value for color. expected true got false
-FAIL Property color value 'color(prophoto-rgb 200 200 200)' assert_true: 'color(prophoto-rgb 200 200 200)' is a supported value for color. expected true got false
-FAIL Property color value 'color(prophoto-rgb 200 200 200 / 200)' assert_true: 'color(prophoto-rgb 200 200 200 / 200)' is a supported value for color. expected true got false
-FAIL Property color value 'color(prophoto-rgb -200 -200 -200)' assert_true: 'color(prophoto-rgb -200 -200 -200)' is a supported value for color. expected true got false
-FAIL Property color value 'color(prophoto-rgb -200 -200 -200 / -200)' assert_true: 'color(prophoto-rgb -200 -200 -200 / -200)' is a supported value for color. expected true got false
+PASS Property color value 'color(prophoto-rgb / 0.5)'
+PASS Property color value 'color(prophoto-rgb 200 200 200)'
+PASS Property color value 'color(prophoto-rgb 200 200 200 / 200)'
+PASS Property color value 'color(prophoto-rgb -200 -200 -200)'
+PASS Property color value 'color(prophoto-rgb -200 -200 -200 / -200)'
 FAIL Property color value 'color(prophoto-rgb 200% 200% 200%)' assert_true: 'color(prophoto-rgb 200% 200% 200%)' is a supported value for color. expected true got false
 FAIL Property color value 'color(prophoto-rgb 200% 200% 200% / 200%)' assert_true: 'color(prophoto-rgb 200% 200% 200% / 200%)' is a supported value for color. expected true got false
 FAIL Property color value 'color(prophoto-rgb -200% -200% -200% / -200%)' assert_true: 'color(prophoto-rgb -200% -200% -200% / -200%)' is a supported value for color. expected true got false
-FAIL Property color value 'color(prophoto-rgb calc(0.5 + 1) calc(0.5 - 1) calc(0.5) / calc(-0.5 + 1))' assert_true: 'color(prophoto-rgb calc(0.5 + 1) calc(0.5 - 1) calc(0.5) / calc(-0.5 + 1))' is a supported value for color. expected true got false
+PASS Property color value 'color(prophoto-rgb calc(0.5 + 1) calc(0.5 - 1) calc(0.5) / calc(-0.5 + 1))'
 FAIL Property color value 'color(prophoto-rgb calc(50% * 3) calc(-150% / 3) calc(50%) / calc(-50% * 3))' assert_true: 'color(prophoto-rgb calc(50% * 3) calc(-150% / 3) calc(50%) / calc(-50% * 3))' is a supported value for color. expected true got false
 FAIL Property color value 'color(prophoto-rgb none none none / none)' assert_true: 'color(prophoto-rgb none none none / none)' is a supported value for color. expected true got false
 FAIL Property color value 'color(prophoto-rgb none none none)' assert_true: 'color(prophoto-rgb none none none)' is a supported value for color. expected true got false
 FAIL Property color value 'color(prophoto-rgb 10% none none / none)' assert_true: 'color(prophoto-rgb 10% none none / none)' is a supported value for color. expected true got false
 FAIL Property color value 'color(prophoto-rgb none none none / 0.5)' assert_true: 'color(prophoto-rgb none none none / 0.5)' is a supported value for color. expected true got false
 FAIL Property color value 'color(prophoto-rgb 0 0 0 / none)' assert_true: 'color(prophoto-rgb 0 0 0 / none)' is a supported value for color. expected true got false
-FAIL Property color value 'color(xyz 0 0 0)' assert_true: 'color(xyz 0 0 0)' is a supported value for color. expected true got false
-FAIL Property color value 'color(xyz 0 0 0 / 1)' assert_true: 'color(xyz 0 0 0 / 1)' is a supported value for color. expected true got false
-FAIL Property color value 'color(xyz 1 1 1)' assert_true: 'color(xyz 1 1 1)' is a supported value for color. expected true got false
-FAIL Property color value 'color(xyz 1 1 1 / 1)' assert_true: 'color(xyz 1 1 1 / 1)' is a supported value for color. expected true got false
-FAIL Property color value 'color(xyz -1 -1 -1)' assert_true: 'color(xyz -1 -1 -1)' is a supported value for color. expected true got false
-FAIL Property color value 'color(xyz 0.1 0.1 0.1)' assert_true: 'color(xyz 0.1 0.1 0.1)' is a supported value for color. expected true got false
-FAIL Property color value 'color(xyz 10 10 10)' assert_true: 'color(xyz 10 10 10)' is a supported value for color. expected true got false
-FAIL Property color value 'color(xyz .2 .2 .25)' assert_true: 'color(xyz .2 .2 .25)' is a supported value for color. expected true got false
-FAIL Property color value 'color(xyz 0 0 0 / 0.5)' assert_true: 'color(xyz 0 0 0 / 0.5)' is a supported value for color. expected true got false
-FAIL Property color value 'color(xyz .20 0 10/0.5)' assert_true: 'color(xyz .20 0 10/0.5)' is a supported value for color. expected true got false
-FAIL Property color value 'color(xyz .20 0 10/50%)' assert_true: 'color(xyz .20 0 10/50%)' is a supported value for color. expected true got false
-FAIL Property color value 'color(xyz 0 0 0 / -10%)' assert_true: 'color(xyz 0 0 0 / -10%)' is a supported value for color. expected true got false
-FAIL Property color value 'color(xyz 0 0 0 / 110%)' assert_true: 'color(xyz 0 0 0 / 110%)' is a supported value for color. expected true got false
-FAIL Property color value 'color(xyz 0 0 0 / 300%)' assert_true: 'color(xyz 0 0 0 / 300%)' is a supported value for color. expected true got false
-FAIL Property color value 'color(xyz 1 1)' assert_true: 'color(xyz 1 1)' is a supported value for color. expected true got false
-FAIL Property color value 'color(xyz 1)' assert_true: 'color(xyz 1)' is a supported value for color. expected true got false
-FAIL Property color value 'color(xyz)' assert_true: 'color(xyz)' is a supported value for color. expected true got false
-FAIL Property color value 'color(xyz 1 1 / .5)' assert_true: 'color(xyz 1 1 / .5)' is a supported value for color. expected true got false
-FAIL Property color value 'color(xyz 1 / 0.5)' assert_true: 'color(xyz 1 / 0.5)' is a supported value for color. expected true got false
-FAIL Property color value 'color(xyz / 50%)' assert_true: 'color(xyz / 50%)' is a supported value for color. expected true got false
-FAIL Property color value 'color(xyz calc(0.5 + 1) calc(0.5 - 1) calc(0.5) / calc(-0.5 + 1))' assert_true: 'color(xyz calc(0.5 + 1) calc(0.5 - 1) calc(0.5) / calc(-0.5 + 1))' is a supported value for color. expected true got false
+PASS Property color value 'color(xyz 0 0 0)'
+PASS Property color value 'color(xyz 0 0 0 / 1)'
+PASS Property color value 'color(xyz 1 1 1)'
+PASS Property color value 'color(xyz 1 1 1 / 1)'
+PASS Property color value 'color(xyz -1 -1 -1)'
+PASS Property color value 'color(xyz 0.1 0.1 0.1)'
+PASS Property color value 'color(xyz 10 10 10)'
+PASS Property color value 'color(xyz .2 .2 .25)'
+PASS Property color value 'color(xyz 0 0 0 / 0.5)'
+PASS Property color value 'color(xyz .20 0 10/0.5)'
+PASS Property color value 'color(xyz .20 0 10/50%)'
+PASS Property color value 'color(xyz 0 0 0 / -10%)'
+PASS Property color value 'color(xyz 0 0 0 / 110%)'
+PASS Property color value 'color(xyz 0 0 0 / 300%)'
+PASS Property color value 'color(xyz 1 1)'
+PASS Property color value 'color(xyz 1)'
+PASS Property color value 'color(xyz)'
+PASS Property color value 'color(xyz 1 1 / .5)'
+PASS Property color value 'color(xyz 1 / 0.5)'
+PASS Property color value 'color(xyz / 50%)'
+PASS Property color value 'color(xyz calc(0.5 + 1) calc(0.5 - 1) calc(0.5) / calc(-0.5 + 1))'
 FAIL Property color value 'color(xyz none none none / none)' assert_true: 'color(xyz none none none / none)' is a supported value for color. expected true got false
 FAIL Property color value 'color(xyz none none none)' assert_true: 'color(xyz none none none)' is a supported value for color. expected true got false
 FAIL Property color value 'color(xyz 0.2 none none / none)' assert_true: 'color(xyz 0.2 none none / none)' is a supported value for color. expected true got false
 FAIL Property color value 'color(xyz none none none / 0.5)' assert_true: 'color(xyz none none none / 0.5)' is a supported value for color. expected true got false
 FAIL Property color value 'color(xyz 0 0 0 / none)' assert_true: 'color(xyz 0 0 0 / none)' is a supported value for color. expected true got false
-FAIL Property color value 'color(xyz-d50 0 0 0)' assert_true: 'color(xyz-d50 0 0 0)' is a supported value for color. expected true got false
-FAIL Property color value 'color(xyz-d50 0 0 0 / 1)' assert_true: 'color(xyz-d50 0 0 0 / 1)' is a supported value for color. expected true got false
-FAIL Property color value 'color(xyz-d50 1 1 1)' assert_true: 'color(xyz-d50 1 1 1)' is a supported value for color. expected true got false
-FAIL Property color value 'color(xyz-d50 1 1 1 / 1)' assert_true: 'color(xyz-d50 1 1 1 / 1)' is a supported value for color. expected true got false
-FAIL Property color value 'color(xyz-d50 -1 -1 -1)' assert_true: 'color(xyz-d50 -1 -1 -1)' is a supported value for color. expected true got false
-FAIL Property color value 'color(xyz-d50 0.1 0.1 0.1)' assert_true: 'color(xyz-d50 0.1 0.1 0.1)' is a supported value for color. expected true got false
-FAIL Property color value 'color(xyz-d50 10 10 10)' assert_true: 'color(xyz-d50 10 10 10)' is a supported value for color. expected true got false
-FAIL Property color value 'color(xyz-d50 .2 .2 .25)' assert_true: 'color(xyz-d50 .2 .2 .25)' is a supported value for color. expected true got false
-FAIL Property color value 'color(xyz-d50 0 0 0 / 0.5)' assert_true: 'color(xyz-d50 0 0 0 / 0.5)' is a supported value for color. expected true got false
-FAIL Property color value 'color(xyz-d50 .20 0 10/0.5)' assert_true: 'color(xyz-d50 .20 0 10/0.5)' is a supported value for color. expected true got false
-FAIL Property color value 'color(xyz-d50 .20 0 10/50%)' assert_true: 'color(xyz-d50 .20 0 10/50%)' is a supported value for color. expected true got false
-FAIL Property color value 'color(xyz-d50 0 0 0 / -10%)' assert_true: 'color(xyz-d50 0 0 0 / -10%)' is a supported value for color. expected true got false
-FAIL Property color value 'color(xyz-d50 0 0 0 / 110%)' assert_true: 'color(xyz-d50 0 0 0 / 110%)' is a supported value for color. expected true got false
-FAIL Property color value 'color(xyz-d50 0 0 0 / 300%)' assert_true: 'color(xyz-d50 0 0 0 / 300%)' is a supported value for color. expected true got false
-FAIL Property color value 'color(xyz-d50 1 1)' assert_true: 'color(xyz-d50 1 1)' is a supported value for color. expected true got false
-FAIL Property color value 'color(xyz-d50 1)' assert_true: 'color(xyz-d50 1)' is a supported value for color. expected true got false
-FAIL Property color value 'color(xyz-d50)' assert_true: 'color(xyz-d50)' is a supported value for color. expected true got false
-FAIL Property color value 'color(xyz-d50 1 1 / .5)' assert_true: 'color(xyz-d50 1 1 / .5)' is a supported value for color. expected true got false
-FAIL Property color value 'color(xyz-d50 1 / 0.5)' assert_true: 'color(xyz-d50 1 / 0.5)' is a supported value for color. expected true got false
-FAIL Property color value 'color(xyz-d50 / 50%)' assert_true: 'color(xyz-d50 / 50%)' is a supported value for color. expected true got false
-FAIL Property color value 'color(xyz-d50 calc(0.5 + 1) calc(0.5 - 1) calc(0.5) / calc(-0.5 + 1))' assert_true: 'color(xyz-d50 calc(0.5 + 1) calc(0.5 - 1) calc(0.5) / calc(-0.5 + 1))' is a supported value for color. expected true got false
+PASS Property color value 'color(xyz-d50 0 0 0)'
+PASS Property color value 'color(xyz-d50 0 0 0 / 1)'
+PASS Property color value 'color(xyz-d50 1 1 1)'
+PASS Property color value 'color(xyz-d50 1 1 1 / 1)'
+PASS Property color value 'color(xyz-d50 -1 -1 -1)'
+PASS Property color value 'color(xyz-d50 0.1 0.1 0.1)'
+PASS Property color value 'color(xyz-d50 10 10 10)'
+PASS Property color value 'color(xyz-d50 .2 .2 .25)'
+PASS Property color value 'color(xyz-d50 0 0 0 / 0.5)'
+PASS Property color value 'color(xyz-d50 .20 0 10/0.5)'
+PASS Property color value 'color(xyz-d50 .20 0 10/50%)'
+PASS Property color value 'color(xyz-d50 0 0 0 / -10%)'
+PASS Property color value 'color(xyz-d50 0 0 0 / 110%)'
+PASS Property color value 'color(xyz-d50 0 0 0 / 300%)'
+PASS Property color value 'color(xyz-d50 1 1)'
+PASS Property color value 'color(xyz-d50 1)'
+PASS Property color value 'color(xyz-d50)'
+PASS Property color value 'color(xyz-d50 1 1 / .5)'
+PASS Property color value 'color(xyz-d50 1 / 0.5)'
+PASS Property color value 'color(xyz-d50 / 50%)'
+PASS Property color value 'color(xyz-d50 calc(0.5 + 1) calc(0.5 - 1) calc(0.5) / calc(-0.5 + 1))'
 FAIL Property color value 'color(xyz-d50 none none none / none)' assert_true: 'color(xyz-d50 none none none / none)' is a supported value for color. expected true got false
 FAIL Property color value 'color(xyz-d50 none none none)' assert_true: 'color(xyz-d50 none none none)' is a supported value for color. expected true got false
 FAIL Property color value 'color(xyz-d50 0.2 none none / none)' assert_true: 'color(xyz-d50 0.2 none none / none)' is a supported value for color. expected true got false
 FAIL Property color value 'color(xyz-d50 none none none / 0.5)' assert_true: 'color(xyz-d50 none none none / 0.5)' is a supported value for color. expected true got false
 FAIL Property color value 'color(xyz-d50 0 0 0 / none)' assert_true: 'color(xyz-d50 0 0 0 / none)' is a supported value for color. expected true got false
-FAIL Property color value 'color(xyz-d65 0 0 0)' assert_true: 'color(xyz-d65 0 0 0)' is a supported value for color. expected true got false
-FAIL Property color value 'color(xyz-d65 0 0 0 / 1)' assert_true: 'color(xyz-d65 0 0 0 / 1)' is a supported value for color. expected true got false
-FAIL Property color value 'color(xyz-d65 1 1 1)' assert_true: 'color(xyz-d65 1 1 1)' is a supported value for color. expected true got false
-FAIL Property color value 'color(xyz-d65 1 1 1 / 1)' assert_true: 'color(xyz-d65 1 1 1 / 1)' is a supported value for color. expected true got false
-FAIL Property color value 'color(xyz-d65 -1 -1 -1)' assert_true: 'color(xyz-d65 -1 -1 -1)' is a supported value for color. expected true got false
-FAIL Property color value 'color(xyz-d65 0.1 0.1 0.1)' assert_true: 'color(xyz-d65 0.1 0.1 0.1)' is a supported value for color. expected true got false
-FAIL Property color value 'color(xyz-d65 10 10 10)' assert_true: 'color(xyz-d65 10 10 10)' is a supported value for color. expected true got false
-FAIL Property color value 'color(xyz-d65 .2 .2 .25)' assert_true: 'color(xyz-d65 .2 .2 .25)' is a supported value for color. expected true got false
-FAIL Property color value 'color(xyz-d65 0 0 0 / 0.5)' assert_true: 'color(xyz-d65 0 0 0 / 0.5)' is a supported value for color. expected true got false
-FAIL Property color value 'color(xyz-d65 .20 0 10/0.5)' assert_true: 'color(xyz-d65 .20 0 10/0.5)' is a supported value for color. expected true got false
-FAIL Property color value 'color(xyz-d65 .20 0 10/50%)' assert_true: 'color(xyz-d65 .20 0 10/50%)' is a supported value for color. expected true got false
-FAIL Property color value 'color(xyz-d65 0 0 0 / -10%)' assert_true: 'color(xyz-d65 0 0 0 / -10%)' is a supported value for color. expected true got false
-FAIL Property color value 'color(xyz-d65 0 0 0 / 110%)' assert_true: 'color(xyz-d65 0 0 0 / 110%)' is a supported value for color. expected true got false
-FAIL Property color value 'color(xyz-d65 0 0 0 / 300%)' assert_true: 'color(xyz-d65 0 0 0 / 300%)' is a supported value for color. expected true got false
-FAIL Property color value 'color(xyz-d65 1 1)' assert_true: 'color(xyz-d65 1 1)' is a supported value for color. expected true got false
-FAIL Property color value 'color(xyz-d65 1)' assert_true: 'color(xyz-d65 1)' is a supported value for color. expected true got false
-FAIL Property color value 'color(xyz-d65)' assert_true: 'color(xyz-d65)' is a supported value for color. expected true got false
-FAIL Property color value 'color(xyz-d65 1 1 / .5)' assert_true: 'color(xyz-d65 1 1 / .5)' is a supported value for color. expected true got false
-FAIL Property color value 'color(xyz-d65 1 / 0.5)' assert_true: 'color(xyz-d65 1 / 0.5)' is a supported value for color. expected true got false
-FAIL Property color value 'color(xyz-d65 / 50%)' assert_true: 'color(xyz-d65 / 50%)' is a supported value for color. expected true got false
-FAIL Property color value 'color(xyz-d65 calc(0.5 + 1) calc(0.5 - 1) calc(0.5) / calc(-0.5 + 1))' assert_true: 'color(xyz-d65 calc(0.5 + 1) calc(0.5 - 1) calc(0.5) / calc(-0.5 + 1))' is a supported value for color. expected true got false
+PASS Property color value 'color(xyz-d65 0 0 0)'
+PASS Property color value 'color(xyz-d65 0 0 0 / 1)'
+PASS Property color value 'color(xyz-d65 1 1 1)'
+PASS Property color value 'color(xyz-d65 1 1 1 / 1)'
+PASS Property color value 'color(xyz-d65 -1 -1 -1)'
+PASS Property color value 'color(xyz-d65 0.1 0.1 0.1)'
+PASS Property color value 'color(xyz-d65 10 10 10)'
+PASS Property color value 'color(xyz-d65 .2 .2 .25)'
+PASS Property color value 'color(xyz-d65 0 0 0 / 0.5)'
+PASS Property color value 'color(xyz-d65 .20 0 10/0.5)'
+PASS Property color value 'color(xyz-d65 .20 0 10/50%)'
+PASS Property color value 'color(xyz-d65 0 0 0 / -10%)'
+PASS Property color value 'color(xyz-d65 0 0 0 / 110%)'
+PASS Property color value 'color(xyz-d65 0 0 0 / 300%)'
+PASS Property color value 'color(xyz-d65 1 1)'
+PASS Property color value 'color(xyz-d65 1)'
+PASS Property color value 'color(xyz-d65)'
+PASS Property color value 'color(xyz-d65 1 1 / .5)'
+PASS Property color value 'color(xyz-d65 1 / 0.5)'
+PASS Property color value 'color(xyz-d65 / 50%)'
+PASS Property color value 'color(xyz-d65 calc(0.5 + 1) calc(0.5 - 1) calc(0.5) / calc(-0.5 + 1))'
 FAIL Property color value 'color(xyz-d65 none none none / none)' assert_true: 'color(xyz-d65 none none none / none)' is a supported value for color. expected true got false
 FAIL Property color value 'color(xyz-d65 none none none)' assert_true: 'color(xyz-d65 none none none)' is a supported value for color. expected true got false
 FAIL Property color value 'color(xyz-d65 0.2 none none / none)' assert_true: 'color(xyz-d65 0.2 none none / none)' is a supported value for color. expected true got false

@@ -31,10 +31,6 @@
     testColorFunction("Display P3 color", "color(display-p3 0.6 0.7 0.8)", "color(display-p3 0.6 0.7 0.8)");
     testColorFunction("Different case for Display P3", "color(dIspLaY-P3 0.6 0.7 0.8)", "color(display-p3 0.6 0.7 0.8)");
 
-    testColorFunction("sRGB color with negative component should clamp to 0", "color(srgb -0.25 0.5 0.75)", "color(srgb 0 0.5 0.75)");
-    testColorFunction("sRGB color with component > 1 should clamp", "color(srgb 0.25 1.5 0.75)", "color(srgb 0.25 1 0.75)");
-    testColorFunction("Display P3 color with negative component should clamp to 0", "color(display-p3 0.5 -199 0.75)", "color(display-p3 0.5 0 0.75)");
-    testColorFunction("Display P3 color with component > 1 should clamp", "color(display-p3 184 1.00001 2347329746587)", "color(display-p3 1 1 1)");
     testColorFunction("Alpha > 1 should clamp", "color(srgb 0.1 0.2 0.3 / 1.9)", "color(srgb 0.1 0.2 0.3)");
     testColorFunction("Negative alpha should clamp", "color(srgb 1 1 1 / -0.2)", "color(srgb 1 1 1 / 0)");
 

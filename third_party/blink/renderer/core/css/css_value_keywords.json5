@@ -1294,7 +1294,19 @@
     "oklab",
     "lch",
     "oklch",
+    // "color",
     "-internal-light-dark",
+
+    // color spaces
+    // "srgb", included in color-interpolation
+    // "rec2020", included in color-gamut
+    "srgb-linear",
+    "display-p3",
+    "a98-rgb",
+    "prophoto-rgb",
+    "xyz",
+    "xyz-d50",
+    "xyz-d65",
 
     // transform
     "matrix",
