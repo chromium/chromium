@@ -254,19 +254,26 @@ void ReadAnythingAppController::OnAXTreeDistilled(
   if (!tree_->Unserialize(snapshot))
     NOTREACHED() << tree_->error();
 
-  // Store state about the selection for easy access later.
-  selection_ = tree_->GetUnignoredSelection();
-  has_selection_ = selection_.anchor_object_id != ui::kInvalidAXNodeID &&
-                   selection_.focus_object_id != ui::kInvalidAXNodeID;
+  // Store state about the selection for easy access later. Selection state
+  // comes from the tree data rather than AXPosition, as AXPosition requires
+  // a valid and registered AXTreeID, which exists only when accessibility is
+  // enabled. As Read Anything does not enable accessibility, it is not able to
+  // use AXPosition.
+  const ui::AXTreeData tree_data = snapshot.tree_data;
+  has_selection_ = snapshot.has_tree_data &&
+                   tree_data.sel_anchor_object_id != ui::kInvalidAXNodeID &&
+                   tree_data.sel_focus_object_id != ui::kInvalidAXNodeID;
   if (has_selection_) {
-    ui::AXNode* anchor_node = GetAXNode(selection_.anchor_object_id);
-    ui::AXNode* focus_node = GetAXNode(selection_.focus_object_id);
-    start_node_ = selection_.is_backward ? focus_node : anchor_node;
-    end_node_ = selection_.is_backward ? anchor_node : focus_node;
-    start_offset_ = selection_.is_backward ? selection_.focus_offset
-                                           : selection_.anchor_offset;
-    end_offset_ = selection_.is_backward ? selection_.anchor_offset
-                                         : selection_.focus_offset;
+    ui::AXNode* anchor_node = GetAXNode(tree_data.sel_anchor_object_id);
+    DCHECK(anchor_node);
+    ui::AXNode* focus_node = GetAXNode(tree_data.sel_focus_object_id);
+    DCHECK(focus_node);
+    start_node_ = tree_data.sel_is_backward ? focus_node : anchor_node;
+    end_node_ = tree_data.sel_is_backward ? anchor_node : focus_node;
+    start_offset_ = tree_data.sel_is_backward ? tree_data.sel_focus_offset
+                                              : tree_data.sel_anchor_offset;
+    end_offset_ = tree_data.sel_is_backward ? tree_data.sel_anchor_offset
+                                            : tree_data.sel_focus_offset;
 
     // Store the lowest common ancestor between the start and end nodes as
     // the selection node ID. This is the lowest node in the tree which entirely

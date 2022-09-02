@@ -15,7 +15,6 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/ax_node_id_forward.h"
-#include "ui/accessibility/ax_selection.h"
 #include "ui/accessibility/ax_tree_update_forward.h"
 
 namespace content {
@@ -125,7 +124,6 @@ class ReadAnythingAppController
   std::unique_ptr<ui::AXTree> tree_;
   std::vector<ui::AXNodeID> content_node_ids_;
   std::vector<ui::AXNodeID> selection_node_ids_;
-  ui::AXSelection selection_;
   bool has_selection_ = false;
   ui::AXNode* start_node_ = nullptr;
   ui::AXNode* end_node_ = nullptr;
