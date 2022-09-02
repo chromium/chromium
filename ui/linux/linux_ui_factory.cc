@@ -43,6 +43,8 @@ LinuxUi* GetGtkUi() {
 }
 
 std::unique_ptr<LinuxUi> CreateQtUi() {
+  if (!base::FeatureList::IsEnabled(kAllowQt))
+    return nullptr;
 #if BUILDFLAG(USE_QT)
   auto qt_ui = qt::CreateQtUi(GetGtkUi());
   if (qt_ui->Initialize())
@@ -60,6 +62,8 @@ LinuxUi* GetQtUi() {
 }
 
 }  // namespace
+
+const base::Feature kAllowQt{"AllowQt", base::FEATURE_DISABLED_BY_DEFAULT};
 
 LinuxUi* GetDefaultLinuxUi() {
   std::unique_ptr<base::Environment> env = base::Environment::Create();
