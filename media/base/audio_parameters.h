@@ -127,11 +127,6 @@ class MEDIA_SHMEM_EXPORT ChannelLayoutConfig {
     return ChannelLayoutConfig(layout, ChannelLayoutToChannelCount(layout));
   }
 
-  // For |CHANNEL_LAYOUT_DISCRETE|, we have to explicitly set the number of
-  // channels, so we need to use the normal constructor.
-  template <>
-  ChannelLayoutConfig FromLayout<CHANNEL_LAYOUT_DISCRETE>() = delete;
-
   static ChannelLayoutConfig Mono();
 
   static ChannelLayoutConfig Stereo();
@@ -146,6 +141,12 @@ class MEDIA_SHMEM_EXPORT ChannelLayoutConfig {
   ChannelLayout channel_layout_;  // Order of surround sound channels.
   int channels_;                  // Number of channels.
 };
+
+// For |CHANNEL_LAYOUT_DISCRETE|, we have to explicitly set the number of
+// channels, so we need to use the normal constructor.
+template <>
+ChannelLayoutConfig ChannelLayoutConfig::FromLayout<CHANNEL_LAYOUT_DISCRETE>() =
+    delete;
 
 class MEDIA_SHMEM_EXPORT AudioParameters {
  public:
