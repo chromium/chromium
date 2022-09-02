@@ -1263,9 +1263,8 @@ struct FuzzTraits<media::AudioParameters> {
       return false;
     media::AudioParameters params(
         static_cast<media::AudioParameters::Format>(format),
-        static_cast<media::ChannelLayout>(channel_layout), sample_rate,
-        frames_per_buffer);
-    params.set_channels_for_discrete(channels);
+        {static_cast<media::ChannelLayout>(channel_layout), channels},
+        sample_rate, frames_per_buffer);
     params.set_effects(effects);
     *p = params;
     return true;
