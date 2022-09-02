@@ -137,6 +137,13 @@ AX_BASE_EXPORT extern const base::Feature
 AX_BASE_EXPORT bool
 AreExperimentalAccessibilityColorEnhancementSettingsEnabled();
 
+// Enables AccessibilitySelectToSpeakPrefsMigration.
+AX_BASE_EXPORT extern const base::Feature
+    kAccessibilitySelectToSpeakPrefsMigration;
+
+// Returns true if AccessibilitySelectToSpeakPrefsMigration enabled.
+AX_BASE_EXPORT bool IsAccessibilitySelectToSpeakPrefsMigrationEnabled();
+
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Enables Get Image Descriptions to augment existing images labels,

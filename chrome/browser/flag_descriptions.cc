@@ -1052,6 +1052,12 @@ const char kExperimentalAccessibilityColorEnhancementSettingsDescription[] =
     "This option enables the experimental Accessibility color enhancement "
     "settings found in the OS Accessibility settings.";
 
+const char kAccessibilitySelectToSpeakPrefsMigrationName[] =
+    "Select-to-Speak Prefs Migration";
+const char kAccessibilitySelectToSpeakPrefsMigrationDescription[] =
+    "This option enables Select-to-Speak prefs migration from extension local "
+    "storage to Chrome prefs.";
+
 const char kPostQuantumCECPQ2Name[] = "TLS Post-Quantum Confidentiality";
 const char kPostQuantumCECPQ2Description[] =
     "This option enables a post-quantum (i.e. resistent to quantum computers) "

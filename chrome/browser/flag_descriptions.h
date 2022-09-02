@@ -605,6 +605,9 @@ extern const char kExperimentalAccessibilityColorEnhancementSettingsName[];
 extern const char
     kExperimentalAccessibilityColorEnhancementSettingsDescription[];
 
+extern const char kAccessibilitySelectToSpeakPrefsMigrationName[];
+extern const char kAccessibilitySelectToSpeakPrefsMigrationDescription[];
+
 extern const char kPostQuantumCECPQ2Name[];
 extern const char kPostQuantumCECPQ2Description[];
 

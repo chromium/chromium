@@ -166,6 +166,15 @@ bool AreExperimentalAccessibilityColorEnhancementSettingsEnabled() {
   return base::FeatureList::IsEnabled(
       ::features::kExperimentalAccessibilityColorEnhancementSettings);
 }
+
+const base::Feature kAccessibilitySelectToSpeakPrefsMigration{
+    "AccessibilitySelectToSpeakPrefsMigration",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
+bool IsAccessibilitySelectToSpeakPrefsMigrationEnabled() {
+  return base::FeatureList::IsEnabled(
+      ::features::kAccessibilitySelectToSpeakPrefsMigration);
+}
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 const base::Feature kAugmentExistingImageLabels{

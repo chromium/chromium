@@ -6726,6 +6726,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAccessibilityServiceName,
      flag_descriptions::kAccessibilityServiceDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(features::kAccessibilityService)},
+
+    {"enable-accessibility-select-to-speak-prefs-migration",
+     flag_descriptions::kAccessibilitySelectToSpeakPrefsMigrationName,
+     flag_descriptions::kAccessibilitySelectToSpeakPrefsMigrationDescription,
+     kOsCrOS,
+     FEATURE_VALUE_TYPE(features::kAccessibilitySelectToSpeakPrefsMigration)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
     {"enable-fenced-frames", flag_descriptions::kEnableFencedFramesName,
