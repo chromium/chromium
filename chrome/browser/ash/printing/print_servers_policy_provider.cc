@@ -28,7 +28,12 @@ PrintServersPolicyProvider::PrintServersPolicyProvider(
   device_policy_provider_->AddObserver(this);
 }
 
-PrintServersPolicyProvider::~PrintServersPolicyProvider() = default;
+PrintServersPolicyProvider::~PrintServersPolicyProvider() {
+  if (device_policy_provider_)
+    device_policy_provider_->RemoveObserver(this);
+  if (user_policy_provider_)
+    user_policy_provider_->RemoveObserver(this);
+}
 
 // static
 std::unique_ptr<PrintServersPolicyProvider> PrintServersPolicyProvider::Create(
