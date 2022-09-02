@@ -261,16 +261,6 @@ SkColor AshColorProvider::GetContentLayerColor(ContentLayerType type) const {
   }
 }
 
-SkColor AshColorProvider::GetActiveDialogTitleBarColor() const {
-  return cros_styles::ResolveColor(cros_styles::ColorName::kDialogTitleBarColor,
-                                   IsDarkModeEnabled());
-}
-
-SkColor AshColorProvider::GetInactiveDialogTitleBarColor() const {
-  // TODO(wenbojie): Use a different inactive color in future.
-  return GetActiveDialogTitleBarColor();
-}
-
 std::pair<SkColor, float> AshColorProvider::GetInkDropBaseColorAndOpacity(
     SkColor background_color) const {
   if (background_color == gfx::kPlaceholderColor)

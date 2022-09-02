@@ -8,9 +8,8 @@
 #include <memory>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
 #include "ash/frame/header_view.h"
-#include "ash/public/cpp/style/color_provider.h"
-#include "ash/public/cpp/style/scoped_light_mode_as_default.h"
 #include "ash/public/cpp/tablet_mode_observer.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
@@ -32,6 +31,7 @@
 #include "ui/base/hit_test.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/size.h"
@@ -502,19 +502,22 @@ void NonClientFrameViewAsh::PaintAsActiveChanged() {
 }
 
 void NonClientFrameViewAsh::UpdateDefaultFrameColors() {
-  auto* color_provider = ash::ColorProvider::Get();
   aura::Window* frame_window = frame_->GetNativeWindow();
   if (!frame_window->GetProperty(kTrackDefaultFrameColors))
     return;
 
-  // Use scoped light mode to ensure we use light mode colors when the
-  // DarkLightMode feature is disabled. Do this because color mode is DARK by
-  // default when it is disabled currently (see crbug.com/1291354).
-  ash::ScopedLightModeAsDefault scoped_light_mode_as_default;
-  frame_window->SetProperty(kFrameActiveColorKey,
-                            color_provider->GetActiveDialogTitleBarColor());
-  frame_window->SetProperty(kFrameInactiveColorKey,
-                            color_provider->GetInactiveDialogTitleBarColor());
+  // Use the light mode colors when the DarkLightMode feature is disabled. Do
+  // this because we use dark mode colors by default when the feature is
+  // disabled currently (see crbug.com/1291354).
+  const bool is_dark_light_enabled = features::IsDarkLightModeEnabled();
+  auto* color_provider = frame_->GetColorProvider();
+  const SkColor dialog_title_bar_color =
+      is_dark_light_enabled
+          ? color_provider->GetColor(cros_tokens::kDialogTitleBarColor)
+          : color_provider->GetColor(cros_tokens::kDialogTitleBarColorLight);
+
+  frame_window->SetProperty(kFrameActiveColorKey, dialog_title_bar_color);
+  frame_window->SetProperty(kFrameInactiveColorKey, dialog_title_bar_color);
 }
 
 BEGIN_METADATA(NonClientFrameViewAsh, views::NonClientFrameView)
