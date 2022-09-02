@@ -28,11 +28,13 @@
 #include "components/viz/common/quads/compositor_render_pass_draw_quad.h"
 #include "components/viz/common/quads/draw_quad.h"
 #include "components/viz/common/quads/solid_color_draw_quad.h"
+#include "components/viz/common/resources/platform_color.h"
 #include "components/viz/common/viz_utils.h"
 #include "components/viz/service/display/bsp_tree.h"
 #include "components/viz/service/display/bsp_walk_action.h"
 #include "components/viz/service/display/output_surface.h"
 #include "components/viz/service/display/skia_output_surface.h"
+#include "gpu/command_buffer/common/capabilities.h"
 #include "media/base/video_util.h"
 #include "ui/gfx/geometry/quad_f.h"
 #include "ui/gfx/geometry/rect_conversions.h"
@@ -202,10 +204,15 @@ void DirectRenderer::DecideRenderPassAllocationsForFrame(
     }
     gfx::Size size = pass->output_rect.size();
     // We should not change the buffer size for the root render pass.
+    // The requirement is used for non-root render pass only.
     if (!is_root) {
       size = CalculateTextureSizeForRenderPass(pass.get());
     }
-    render_passes_in_frame[pass->id] = {size, pass->generate_mipmap};
+    auto color_space = RenderPassColorSpace(pass.get());
+    auto format = GetColorSpaceResourceFormat(color_space);
+
+    render_passes_in_frame[pass->id] = {size, pass->generate_mipmap, format,
+                                        color_space};
   }
   UMA_HISTOGRAM_COUNTS_1000(
       "Compositing.Display.FlattenedRenderPassCount",
@@ -256,6 +263,11 @@ void DirectRenderer::DrawFrame(
   current_frame()->root_damage_rect.Intersect(gfx::Rect(device_viewport_size));
   current_frame()->device_viewport_size = device_viewport_size;
   current_frame()->display_color_spaces = display_color_spaces;
+
+  // DecideRenderPassAllocationsForFrame needs
+  // current_frame()->display_color_spaces to decide the color space
+  // of each render pass.
+  DecideRenderPassAllocationsForFrame(*render_passes_in_draw_order);
 
   output_surface_->SetNeedsMeasureNextDrawLatency();
   BeginDrawingFrame();
@@ -768,8 +780,12 @@ void DirectRenderer::UseRenderPass(const AggregatedRenderPass* render_pass) {
                  enlarge_pass_texture_amount_.height());
   }
 
-  AllocateRenderPassResourceIfNeeded(render_pass->id,
-                                     {size, render_pass->generate_mipmap});
+  auto color_space = CurrentRenderPassColorSpace();
+  auto format = GetColorSpaceResourceFormat(color_space);
+
+  AllocateRenderPassResourceIfNeeded(
+      render_pass->id,
+      {size, render_pass->generate_mipmap, format, color_space});
 
   // TODO(crbug.com/582554): This change applies only when Vulkan is enabled and
   // it will be removed once SkiaRenderer has complete support for Vulkan.
@@ -1031,14 +1047,37 @@ gfx::ColorSpace DirectRenderer::RootRenderPassColorSpace() const {
       current_frame()->root_render_pass->has_transparent_background);
 }
 
-gfx::ColorSpace DirectRenderer::CurrentRenderPassColorSpace() const {
-  if (current_frame()->current_render_pass ==
-      current_frame()->root_render_pass) {
+gfx::ColorSpace DirectRenderer::RenderPassColorSpace(
+    const AggregatedRenderPass* render_pass) const {
+  if (render_pass == current_frame()->root_render_pass) {
     return RootRenderPassColorSpace();
   }
   return current_frame()->display_color_spaces.GetCompositingColorSpace(
-      current_frame()->current_render_pass->has_transparent_background,
-      current_frame()->current_render_pass->content_color_usage);
+      render_pass->has_transparent_background,
+      render_pass->content_color_usage);
+}
+
+gfx::ColorSpace DirectRenderer::CurrentRenderPassColorSpace() const {
+  return RenderPassColorSpace(current_frame()->current_render_pass);
+}
+
+ResourceFormat DirectRenderer::GetColorSpaceResourceFormat(
+    gfx::ColorSpace color_space) const {
+  // TODO(penghuang): check supported format correctly.
+  gpu::Capabilities caps;
+  caps.texture_format_bgra8888 = true;
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // TODO(crbug.com/1317015): add support RGBA_F16 in LaCrOS.
+  auto format = color_space.IsHDR()
+                    ? RGBA_1010102
+                    : PlatformColor::BestSupportedTextureFormat(caps);
+#else
+  auto format = color_space.IsHDR()
+                    ? RGBA_F16
+                    : PlatformColor::BestSupportedTextureFormat(caps);
+#endif
+  return format;
 }
 
 DelegatedInkPointRendererBase* DirectRenderer::GetDelegatedInkPointRenderer(

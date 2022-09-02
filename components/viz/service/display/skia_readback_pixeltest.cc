@@ -307,7 +307,6 @@ class SkiaReadbackPixelTest : public cc::PixelTest {
       SurfaceDamageRectList surface_damage_rect_list;
       pass_list.push_back(std::move(pass));
 
-      renderer_->DecideRenderPassAllocationsForFrame(pass_list);
       renderer_->DrawFrame(
           &pass_list, 1.0f, gfx::Size(bitmap.width(), bitmap.height()),
           gfx::DisplayColorSpaces(), std::move(surface_damage_rect_list));

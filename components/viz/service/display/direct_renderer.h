@@ -198,6 +198,8 @@ class VIZ_SERVICE_EXPORT DirectRenderer {
   struct RenderPassRequirements {
     gfx::Size size;
     bool generate_mipmap = false;
+    ResourceFormat format;
+    gfx::ColorSpace color_space;
   };
 
   static gfx::RectF QuadVertexRect();
@@ -306,6 +308,9 @@ class VIZ_SERVICE_EXPORT DirectRenderer {
   float CurrentFrameSDRWhiteLevel() const;
   gfx::ColorSpace RootRenderPassColorSpace() const;
   gfx::ColorSpace CurrentRenderPassColorSpace() const;
+  gfx::ColorSpace RenderPassColorSpace(
+      const AggregatedRenderPass* render_pass) const;
+  ResourceFormat GetColorSpaceResourceFormat(gfx::ColorSpace color_space) const;
   // Return the SkColorSpace for rendering to the current render pass. Unlike
   // CurrentRenderPassColorSpace, this color space has the value of
   // CurrentFrameSDRWhiteLevel incorporated into it.

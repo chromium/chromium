@@ -413,8 +413,6 @@ TEST_F(SoftwareRendererTest, ShouldClearRootRenderPass) {
                         gfx::Transform(), cc::FilterOperations());
   cc::AddQuad(root_clear_pass, gfx::Rect(viewport_size), SkColors::kGreen);
 
-  renderer()->DecideRenderPassAllocationsForFrame(list);
-
   std::unique_ptr<SkBitmap> output =
       DrawAndCopyOutput(&list, device_scale_factor, viewport_size);
   EXPECT_EQ(viewport_size.width(), output->info().width());
@@ -435,8 +433,6 @@ TEST_F(SoftwareRendererTest, ShouldClearRootRenderPass) {
       cc::AddRenderPass(&list, root_smaller_pass_id, gfx::Rect(viewport_size),
                         gfx::Transform(), cc::FilterOperations());
   cc::AddQuad(root_smaller_pass, smaller_rect, SkColors::kMagenta);
-
-  renderer()->DecideRenderPassAllocationsForFrame(list);
 
   output = DrawAndCopyOutput(&list, device_scale_factor, viewport_size);
   EXPECT_EQ(viewport_size.width(), output->info().width());
@@ -479,8 +475,6 @@ TEST_F(SoftwareRendererTest, RenderPassVisibleRect) {
   // Interior pass quad has smaller visible rect.
   gfx::Rect interior_visible_rect(30, 30, 40, 40);
   root_clear_pass->quad_list.front()->visible_rect = interior_visible_rect;
-
-  renderer()->DecideRenderPassAllocationsForFrame(list);
 
   std::unique_ptr<SkBitmap> output =
       DrawAndCopyOutput(&list, device_scale_factor, viewport_size);
@@ -545,8 +539,6 @@ TEST_F(SoftwareRendererTest, ClipRoundRect) {
     inner_quad->SetNew(shared_quad_state, inner_rect, inner_rect,
                        SkColors::kRed, false);
   }
-
-  renderer()->DecideRenderPassAllocationsForFrame(list);
 
   std::unique_ptr<SkBitmap> output =
       DrawAndCopyOutput(&list, device_scale_factor, viewport_size);
@@ -619,7 +611,6 @@ TEST_F(SoftwareRendererTest, PartialSwap) {
     // partial swap is enabled.
     root_pass->damage_rect = gfx::Rect(viewport_size);
 
-    renderer()->DecideRenderPassAllocationsForFrame(list);
     renderer()->DrawFrame(&list, device_scale_factor, viewport_size,
                           gfx::DisplayColorSpaces(),
                           std::move(surface_damage_rect_list));
@@ -637,7 +628,6 @@ TEST_F(SoftwareRendererTest, PartialSwap) {
     // partial swap is enabled.
     root_pass->damage_rect = gfx::Rect(2, 2, 3, 3);
 
-    renderer()->DecideRenderPassAllocationsForFrame(list);
     renderer()->DrawFrame(&list, device_scale_factor, viewport_size,
                           gfx::DisplayColorSpaces(),
                           std::move(surface_damage_rect_list));

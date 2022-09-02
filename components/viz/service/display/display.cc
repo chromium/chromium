@@ -824,7 +824,6 @@ bool Display::DrawAndSwap(const DrawAndSwapParams& params) {
     }
 
     draw_timer.emplace();
-    renderer_->DecideRenderPassAllocationsForFrame(frame.render_pass_list);
     overlay_processor_->SetFrameSequenceNumber(frame_sequence_number_);
     overlay_processor_->SetIsVideoCaptureEnabled(frame.video_capture_enabled);
     overlay_processor_->SetIsPageFullscreen(frame.page_fullscreen_mode);
