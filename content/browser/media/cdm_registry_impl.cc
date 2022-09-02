@@ -130,6 +130,7 @@ GetHardwareSecureCapabilityOverriddenFromCommandLine() {
   std::vector<media::AudioCodec> audio_codecs;
   media::CdmCapability::VideoCodecMap video_codecs;
   const media::VideoCodecInfo kAllProfiles;
+  const media::VideoCodecInfo kAllProfilesNoClearLead = {{}, false};
   for (const auto& codec : overridden_codecs) {
     if (codec == "vp8")
       video_codecs.emplace(media::VideoCodec::kVP8, kAllProfiles);
@@ -141,6 +142,17 @@ GetHardwareSecureCapabilityOverriddenFromCommandLine() {
       video_codecs.emplace(media::VideoCodec::kHEVC, kAllProfiles);
     else if (codec == "dolbyvision")
       video_codecs.emplace(media::VideoCodec::kDolbyVision, kAllProfiles);
+    else if (codec == "vp8-no-clearlead")
+      video_codecs.emplace(media::VideoCodec::kVP8, kAllProfilesNoClearLead);
+    else if (codec == "vp9-no-clearlead")
+      video_codecs.emplace(media::VideoCodec::kVP9, kAllProfilesNoClearLead);
+    else if (codec == "avc1-no-clearlead")
+      video_codecs.emplace(media::VideoCodec::kH264, kAllProfilesNoClearLead);
+    else if (codec == "hevc-no-clearlead")
+      video_codecs.emplace(media::VideoCodec::kHEVC, kAllProfilesNoClearLead);
+    else if (codec == "dolbyvision-no-clearlead")
+      video_codecs.emplace(media::VideoCodec::kDolbyVision,
+                           kAllProfilesNoClearLead);
     else if (codec == "mp4a")
       audio_codecs.push_back(media::AudioCodec::kAAC);
     else if (codec == "vorbis")
