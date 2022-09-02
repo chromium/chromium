@@ -64,6 +64,34 @@ TEST_F(ClustererTest, ClusterTwoVisitsTiedByReferringVisit) {
                                       testing::VisitResult(2, 1.0))));
 }
 
+TEST_F(ClustererTest, ClusterTwoVisitsTiedByOpenerVisitOverReferrer) {
+  std::vector<history::ClusterVisit> visits;
+
+  history::AnnotatedVisit visit = testing::CreateDefaultAnnotatedVisit(
+      1, GURL("https://google.com/"), base::Time::FromTimeT(1));
+  visits.push_back(testing::CreateClusterVisit(visit));
+
+  // Visit2's referrer is visit 5 and are close together. Have the visit IDs be
+  // misordered to ensure that the visits are sorted by visit time rather than
+  // by ID.
+  history::AnnotatedVisit visit5 = testing::CreateDefaultAnnotatedVisit(
+      5, GURL("https://google.com/somepage"), base::Time::FromTimeT(2));
+  visits.push_back(testing::CreateClusterVisit(visit5));
+
+  history::AnnotatedVisit visit2 = testing::CreateDefaultAnnotatedVisit(
+      2, GURL("https://google.com/next"), base::Time::FromTimeT(3));
+  visit2.referring_visit_of_redirect_chain_start = 1;
+  visit2.opener_visit_of_redirect_chain_start = 5;
+  visits.push_back(testing::CreateClusterVisit(visit2));
+
+  std::vector<history::Cluster> result_clusters =
+      CreateInitialClustersFromVisits(visits);
+  EXPECT_THAT(testing::ToVisitResults(result_clusters),
+              ElementsAre(ElementsAre(testing::VisitResult(1, 1.0)),
+                          ElementsAre(testing::VisitResult(5, 1.0),
+                                      testing::VisitResult(2, 1.0))));
+}
+
 TEST_F(ClustererTest, ClusterTwoVisitsTiedByOpenerVisit) {
   std::vector<history::ClusterVisit> visits;
 

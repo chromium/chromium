@@ -62,15 +62,24 @@ std::vector<history::Cluster> Clusterer::CreateInitialClustersFromVisits(
   for (const auto& visit : *visits) {
     const auto& visit_url = visit.normalized_url;
     absl::optional<size_t> cluster_idx;
-    history::VisitID previous_visit_id =
-        (visit.annotated_visit.referring_visit_of_redirect_chain_start != 0)
-            ? visit.annotated_visit.referring_visit_of_redirect_chain_start
-            : visit.annotated_visit.opener_visit_of_redirect_chain_start;
-    if (previous_visit_id != 0) {
-      // See if we have clustered the referring visit.
-      auto it = visit_id_to_cluster_map.find(previous_visit_id);
-      if (it != visit_id_to_cluster_map.end()) {
-        cluster_idx = it->second;
+    std::vector<history::VisitID> previous_visit_ids_to_check;
+    if (visit.annotated_visit.opener_visit_of_redirect_chain_start != 0) {
+      previous_visit_ids_to_check.push_back(
+          visit.annotated_visit.opener_visit_of_redirect_chain_start);
+    }
+    if (visit.annotated_visit.referring_visit_of_redirect_chain_start != 0) {
+      previous_visit_ids_to_check.push_back(
+          visit.annotated_visit.referring_visit_of_redirect_chain_start);
+    }
+    if (!previous_visit_ids_to_check.empty()) {
+      // See if we have clustered any of the previous visits with opener taking
+      // precedence.
+      for (history::VisitID previous_visit_id : previous_visit_ids_to_check) {
+        auto it = visit_id_to_cluster_map.find(previous_visit_id);
+        if (it != visit_id_to_cluster_map.end()) {
+          cluster_idx = it->second;
+          break;
+        }
       }
     } else {
       // See if we have clustered the URL. (forward-back, reload, etc.)
