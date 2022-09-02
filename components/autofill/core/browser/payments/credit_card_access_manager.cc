@@ -502,10 +502,8 @@ void CreditCardAccessManager::Authenticate() {
       std::vector<CardUnmaskChallengeOption> options =
           virtual_card_unmask_response_details_.card_unmask_challenge_options;
       auto card_unmask_challenge_options_it =
-          std::find_if(options.begin(), options.end(),
-                       [&](const CardUnmaskChallengeOption& option) {
-                         return option.id == selected_challenge_option_id_;
-                       });
+          base::ranges::find(options, selected_challenge_option_id_,
+                             &CardUnmaskChallengeOption::id);
       if (card_unmask_challenge_options_it == options.end()) {
         NOTREACHED();
         accessor_->OnCreditCardFetched(CreditCardFetchResult::kTransientError);

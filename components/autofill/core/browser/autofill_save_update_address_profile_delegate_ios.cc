@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/containers/contains.h"
 #include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/types/optional_util.h"
@@ -83,11 +84,8 @@ std::u16string AutofillSaveUpdateAddressProfileDelegateIOS::GetSubtitle() {
   DCHECK(original_profile_);
   std::vector<ProfileValueDifference> differences =
       GetProfileDifferenceForUi(original_profile_.value(), profile_, locale_);
-  bool address_updated =
-      std::find_if(differences.begin(), differences.end(),
-                   [](const ProfileValueDifference& diff) {
-                     return diff.type == ADDRESS_HOME_ADDRESS;
-                   }) != differences.end();
+  bool address_updated = base::Contains(differences, ADDRESS_HOME_ADDRESS,
+                                        &ProfileValueDifference::type);
   return GetProfileDescription(
       original_profile_.value(), locale_,
       /*include_address_and_contacts=*/!address_updated);

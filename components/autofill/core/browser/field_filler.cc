@@ -10,6 +10,7 @@
 #include "base/feature_list.h"
 #include "base/i18n/case_conversion.h"
 #include "base/i18n/string_search.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -115,27 +116,17 @@ bool SetSelectControlValueSubstringMatch(const std::u16string& value,
 bool SetSelectControlValueTokenMatch(const std::u16string& value,
                                      FormFieldData* field,
                                      std::string* failure_to_fill) {
-  std::vector<std::u16string> tokenized;
+  const auto tokenize = [](const std::u16string& str) {
+    return base::SplitString(str, base::kWhitespaceASCIIAs16,
+                             base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+  };
   l10n::CaseInsensitiveCompare compare;
+  const auto equals_value = [&](const std::u16string& rhs) {
+    return compare.StringsEqual(value, rhs);
+  };
   for (const SelectOption& option : field->options) {
-    tokenized =
-        base::SplitString(option.value, base::kWhitespaceASCIIAs16,
-                          base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-    if (std::find_if(tokenized.begin(), tokenized.end(),
-                     [&compare, value](std::u16string& rhs) {
-                       return compare.StringsEqual(value, rhs);
-                     }) != tokenized.end()) {
-      field->value = option.value;
-      return true;
-    }
-
-    tokenized =
-        base::SplitString(option.content, base::kWhitespaceASCIIAs16,
-                          base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-    if (std::find_if(tokenized.begin(), tokenized.end(),
-                     [&compare, value](std::u16string& rhs) {
-                       return compare.StringsEqual(value, rhs);
-                     }) != tokenized.end()) {
+    if (base::ranges::any_of(tokenize(option.value), equals_value) ||
+        base::ranges::any_of(tokenize(option.content), equals_value)) {
       field->value = option.value;
       return true;
     }

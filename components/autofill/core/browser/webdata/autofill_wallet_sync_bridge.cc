@@ -10,6 +10,7 @@
 #include "base/callback_helpers.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/autofill_profile_sync_util.h"
@@ -546,11 +547,8 @@ void AutofillWalletSyncBridge::LogVirtualCardMetadataChanges(
     const std::vector<CreditCard>& new_data) {
   for (const CreditCard& new_card : new_data) {
     // Try to find the old card with same server id.
-    auto old_data_iterator =
-        std::find_if(old_data.begin(), old_data.end(),
-                     [&new_card](const std::unique_ptr<CreditCard>& old_card) {
-                       return new_card.server_id() == old_card->server_id();
-                     });
+    auto old_data_iterator = base::ranges::find(old_data, new_card.server_id(),
+                                                &CreditCard::server_id);
 
     // No existing card with the same ID found.
     if (old_data_iterator == old_data.end()) {

@@ -4,10 +4,10 @@
 
 #include "components/autofill/core/browser/autofill_data_util.h"
 
-#include <algorithm>
 #include <iterator>
 #include <vector>
 
+#include "base/containers/contains.h"
 #include "base/i18n/char_iterator.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
@@ -494,12 +494,8 @@ const char* GetIssuerNetworkForBasicCardIssuerNetwork(
 
 bool IsValidBasicCardIssuerNetwork(
     const std::string& basic_card_issuer_network) {
-  auto* it = std::find_if(
-      std::begin(kPaymentRequestData), std::end(kPaymentRequestData),
-      [basic_card_issuer_network](const auto& data) {
-        return data.basic_card_issuer_network == basic_card_issuer_network;
-      });
-  return it != std::end(kPaymentRequestData);
+  return base::Contains(kPaymentRequestData, basic_card_issuer_network,
+                        &PaymentRequestData::basic_card_issuer_network);
 }
 
 bool IsValidCountryCode(const std::string& country_code) {

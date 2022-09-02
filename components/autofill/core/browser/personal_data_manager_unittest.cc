@@ -6,7 +6,6 @@
 
 #include <stddef.h>
 
-#include <algorithm>
 #include <list>
 #include <map>
 #include <memory>
@@ -18,6 +17,7 @@
 #include "base/containers/contains.h"
 #include "base/guid.h"
 #include "base/memory/raw_ptr.h"
+#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -4737,71 +4737,55 @@ TEST_F(PersonalDataManagerTest, CreateDataForTest) {
   const base::Time deletion_threshold = AutofillClock::Now() - base::Days(395);
 
   // Verify that there was a valid address created.
+  const auto profile_to_name = [this](const AutofillProfile* p) {
+    return p->GetInfo(NAME_FULL, this->personal_data_->app_locale());
+  };
   {
-    auto it = std::find_if(
-        addresses.begin(), addresses.end(), [this](const AutofillProfile* p) {
-          return p->GetInfo(NAME_FULL, this->personal_data_->app_locale()) ==
-                 u"John McTester";
-        });
+    auto it = base::ranges::find(addresses, u"John McTester", profile_to_name);
     ASSERT_TRUE(it != addresses.end());
     EXPECT_GT((*it)->use_date(), disused_threshold);
   }
 
   // Verify that there was a disused address created.
   {
-    auto it = std::find_if(
-        addresses.begin(), addresses.end(), [this](const AutofillProfile* p) {
-          return p->GetInfo(NAME_FULL, this->personal_data_->app_locale()) ==
-                 u"Polly Disused";
-        });
+    auto it = base::ranges::find(addresses, u"Polly Disused", profile_to_name);
     ASSERT_TRUE(it != addresses.end());
     EXPECT_LT((*it)->use_date(), disused_threshold);
   }
 
   // Verify that there was a disused deletable address created.
   {
-    auto it = std::find_if(
-        addresses.begin(), addresses.end(), [this](const AutofillProfile* p) {
-          return p->GetInfo(NAME_FULL, this->personal_data_->app_locale()) ==
-                 u"Polly Deletable";
-        });
+    auto it =
+        base::ranges::find(addresses, u"Polly Deletable", profile_to_name);
     ASSERT_TRUE(it != addresses.end());
     EXPECT_LT((*it)->use_date(), deletion_threshold);
     EXPECT_FALSE((*it)->IsVerified());
   }
 
   // Verify that there was a valid credit card created.
+  const auto profile_to_cc_name = [this](const CreditCard* cc) {
+    return cc->GetInfo(CREDIT_CARD_NAME_FULL,
+                       this->personal_data_->app_locale());
+  };
   {
-    auto it = std::find_if(
-        credit_cards.begin(), credit_cards.end(), [this](const CreditCard* cc) {
-          return cc->GetInfo(CREDIT_CARD_NAME_FULL,
-                             this->personal_data_->app_locale()) ==
-                 u"Alice Testerson";
-        });
+    auto it = base::ranges::find(credit_cards, u"Alice Testerson",
+                                 profile_to_cc_name);
     ASSERT_TRUE(it != credit_cards.end());
     EXPECT_GT((*it)->use_date(), disused_threshold);
   }
 
   // Verify that there was a disused credit card created.
   {
-    auto it = std::find_if(
-        credit_cards.begin(), credit_cards.end(), [this](const CreditCard* cc) {
-          return cc->GetInfo(CREDIT_CARD_NAME_FULL,
-                             this->personal_data_->app_locale()) ==
-                 u"Bob Disused";
-        });
+    auto it =
+        base::ranges::find(credit_cards, u"Bob Disused", profile_to_cc_name);
     ASSERT_TRUE(it != credit_cards.end());
     EXPECT_LT((*it)->use_date(), disused_threshold);
   }
 
   // Verify that there was a disused deletable credit card created.
   {
-    auto it = std::find_if(
-        credit_cards.begin(), credit_cards.end(), [this](const CreditCard* cc) {
-          return cc->GetInfo(CREDIT_CARD_NAME_FULL,
-                             this->personal_data_->app_locale()) ==
-                 u"Charlie Deletable";
-        });
+    auto it = base::ranges::find(credit_cards, u"Charlie Deletable",
+                                 profile_to_cc_name);
     ASSERT_TRUE(it != credit_cards.end());
     EXPECT_LT((*it)->use_date(), deletion_threshold);
     EXPECT_TRUE((*it)->IsExpired(deletion_threshold));
