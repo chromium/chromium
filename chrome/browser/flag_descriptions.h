@@ -3152,6 +3152,9 @@ extern const char kImeAssistMultiWordExpandedDescription[];
 extern const char kImeAssistMultiWordLacrosSupportName[];
 extern const char kImeAssistMultiWordLacrosSupportDescription[];
 
+extern const char kImeTrayHideVoiceButtonName[];
+extern const char kImeTrayHideVoiceButtonDescription[];
+
 extern const char kLacrosProfileMigrationForAnyUserName[];
 extern const char kLacrosProfileMigrationForAnyUserDescription[];
 

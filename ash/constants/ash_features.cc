@@ -958,6 +958,11 @@ const base::Feature kImeSystemEmojiPickerSearchExtension{
 const base::Feature kImeStylusHandwriting{"StylusHandwriting",
                                           base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Controls whether to hide voice button in IME tray if accessibility mic icon
+// is already shown in the shelf.
+const base::Feature kImeTrayHideVoiceButton{"ImeTrayHideVoiceButton",
+                                            base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables improved keyboard shortcuts for activating desks at specified indices
 // and toggling whether a window is assigned to all desks.
 const base::Feature kImprovedDesksKeyboardShortcuts{

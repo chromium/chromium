@@ -388,6 +388,8 @@ extern const base::Feature kHotspot;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kVirtualKeyboardNewHeader;
 COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const base::Feature kImeTrayHideVoiceButton;
+COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kImeOptionsInSettings;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kImeRuleConfig;
 COMPONENT_EXPORT(ASH_CONSTANTS)

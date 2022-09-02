@@ -5510,6 +5510,11 @@ const char kImeAssistPersonalInfoName[] = "Enable assistive personal info";
 const char kImeAssistPersonalInfoDescription[] =
     "Enable auto-complete suggestions on personal infomation for native IME.";
 
+const char kImeTrayHideVoiceButtonName[] =
+    "Hides redudant voice button in IME tray";
+const char kImeTrayHideVoiceButtonDescription[] =
+    "Hides voice button in IME tray when mic icon is shown in the shelf";
+
 const char kVirtualKeyboardNewHeaderName[] =
     "Enable new header for virtual keyboard";
 const char kVirtualKeyboardNewHeaderDescription[] =
