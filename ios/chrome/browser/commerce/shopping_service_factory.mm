@@ -47,6 +47,7 @@ ShoppingServiceFactory::ShoppingServiceFactory()
           BrowserStateDependencyManager::GetInstance()) {
   DependsOn(ios::BookmarkModelFactory::GetInstance());
   DependsOn(OptimizationGuideServiceFactory::GetInstance());
+  DependsOn(IdentityManagerFactory::GetInstance());
 }
 
 std::unique_ptr<KeyedService> ShoppingServiceFactory::BuildServiceInstanceFor(
