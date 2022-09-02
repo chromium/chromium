@@ -7126,11 +7126,14 @@ PseudoElement* Element::GetNestedPseudoElement(
   if (!IsTransitionPseudoElement(pseudo_id))
     return GetPseudoElement(pseudo_id, document_transition_tag);
 
+  // The transition pseudos can currently only exist on the document element.
+  if (!IsDocumentElement())
+    return nullptr;
+
   // This traverses the pseudo element hierarchy generated in
   // RecalcTransitionPseudoTreeStyle to query nested ::page-transition-container
   // ::page-transition-image-wrapper and
   // ::page-transition-{incoming,outgoing}-image pseudo elements.
-  DCHECK_EQ(this, GetDocument().documentElement());
   auto* transition_pseudo = GetPseudoElement(kPseudoIdPageTransition);
   if (!transition_pseudo || pseudo_id == kPseudoIdPageTransition)
     return transition_pseudo;

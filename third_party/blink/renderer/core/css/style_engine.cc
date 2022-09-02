@@ -1857,8 +1857,7 @@ void StyleEngine::EnsureUAStyleForTransitionPseudos() {
   // here. This is done externally by the code which invalidates this style
   // sheet.
   auto* document_transition =
-      DocumentTransitionSupplement::FromIfExists(GetDocument())
-          ->GetTransition();
+      DocumentTransitionSupplement::From(GetDocument())->GetTransition();
   auto* style_sheet_contents =
       CSSDefaultStyleSheets::ParseUASheet(document_transition->UAStyleSheet());
   ua_document_transition_style_ = MakeGarbageCollected<RuleSet>();
