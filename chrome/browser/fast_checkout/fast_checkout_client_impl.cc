@@ -26,31 +26,26 @@ constexpr char kTrue[] = "true";
 constexpr char kCaller[] = "7";  // run was started from within Chromium
 constexpr char kSource[] = "1";  // run was started organically
 
-std::vector<autofill::CreditCard*> GetValidCreditCardsToSuggest(
+std::vector<autofill::CreditCard*> GetValidCreditCards(
     autofill::PersonalDataManager* pdm) {
   // TODO(crbug.com/1334642): Check on autofill_client whether server credit
   // cards are supported.
-  std::vector<autofill::CreditCard*> cards_to_suggest =
-      pdm->GetCreditCardsToSuggest(true);
-  base::EraseIf(cards_to_suggest, [](const autofill::CreditCard* card) {
-    return !card->IsCompleteValidCard();
-  });
-
-  return cards_to_suggest;
+  std::vector<autofill::CreditCard*> cards = pdm->GetCreditCardsToSuggest(true);
+  base::EraseIf(cards,
+                base::not_fn(&autofill::CreditCard::IsCompleteValidCard));
+  return cards;
 }
 
-std::vector<autofill::AutofillProfile*> GetValidAddressProfilesToSuggest(
+std::vector<autofill::AutofillProfile*> GetValidAddressProfiles(
     autofill::PersonalDataManager* pdm) {
   // Trigger only if there is at least 1 complete address profile on file.
-  std::vector<autofill::AutofillProfile*> profiles_to_suggest =
+  std::vector<autofill::AutofillProfile*> profiles =
       pdm->GetProfilesToSuggest();
 
-  base::EraseIf(profiles_to_suggest,
-                [&pdm](const autofill::AutofillProfile* profile) {
-                  return !fast_checkout::IsCompleteAddressProfile(
-                      profile, pdm->app_locale());
-                });
-  return profiles_to_suggest;
+  base::EraseIf(profiles, [&pdm](const autofill::AutofillProfile* profile) {
+    return !fast_checkout::IsCompleteAddressProfile(profile, pdm->app_locale());
+  });
+  return profiles;
 }
 
 }  // namespace
@@ -73,8 +68,8 @@ bool FastCheckoutClientImpl::Start(
   autofill::PersonalDataManager* pdm = GetPersonalDataManager();
   DCHECK(pdm);
   // Trigger only if there is at least 1 complete valid credit card on file.
-  if (GetValidCreditCardsToSuggest(pdm).empty() ||
-      GetValidAddressProfilesToSuggest(pdm).empty()) {
+  if (GetValidCreditCards(pdm).empty() ||
+      GetValidAddressProfiles(pdm).empty()) {
     // TODO(crbug.com/1334642): Add to metric that tracks reasons why FC was not
     // shown.
     return false;
@@ -127,8 +122,18 @@ void FastCheckoutClientImpl::OnOnboardingCompletedSuccessfully() {
 
 void FastCheckoutClientImpl::ShowFastCheckoutUI() {
   autofill::PersonalDataManager* pdm = GetPersonalDataManager();
-  fast_checkout_controller_->Show(GetValidAddressProfilesToSuggest(pdm),
-                                  GetValidCreditCardsToSuggest(pdm));
+
+  std::vector<autofill::AutofillProfile*> profiles_to_suggest =
+      pdm->GetProfilesToSuggest();
+
+  std::vector<autofill::CreditCard*> cards_to_suggest =
+      pdm->GetCreditCardsToSuggest(true);
+  // Do not offer cards with empty number.
+  base::EraseIf(cards_to_suggest, [](const autofill::CreditCard* card) {
+    return card->GetRawInfo(autofill::CREDIT_CARD_NUMBER).empty();
+  });
+
+  fast_checkout_controller_->Show(profiles_to_suggest, cards_to_suggest);
 }
 
 void FastCheckoutClientImpl::OnRunComplete(
@@ -203,8 +208,8 @@ void FastCheckoutClientImpl::OnPersonalDataChanged() {
   }
 
   autofill::PersonalDataManager* pdm = GetPersonalDataManager();
-  if (GetValidCreditCardsToSuggest(pdm).empty() ||
-      GetValidAddressProfilesToSuggest(pdm).empty()) {
+  if (GetValidCreditCards(pdm).empty() ||
+      GetValidAddressProfiles(pdm).empty()) {
     Stop();
   } else {
     ShowFastCheckoutUI();

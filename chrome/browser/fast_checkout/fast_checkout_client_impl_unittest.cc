@@ -4,6 +4,7 @@
 
 #include "chrome/browser/fast_checkout/fast_checkout_client_impl.h"
 
+#include "base/guid.h"
 #include "base/test/gmock_move_support.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
@@ -28,11 +29,24 @@ using ::testing::Return;
 using ::testing::UnorderedElementsAre;
 
 namespace {
+
+CreditCard GetEmptyCreditCard() {
+  CreditCard credit_card(base::GenerateGUID(), "");
+  autofill::test::SetCreditCardInfo(&credit_card, /*name_on_card=*/"",
+                                    /*card_number=*/"",
+                                    autofill::test::NextMonth().c_str(),
+                                    autofill::test::NextYear().c_str(), "1");
+  return credit_card;
+}
+
 constexpr char kUrl[] = "https://www.example.com";
-const AutofillProfile profile1 = autofill::test::GetFullProfile();
-const AutofillProfile profile2 = autofill::test::GetFullProfile2();
-const CreditCard credit_card1 = autofill::test::GetCreditCard();
-const CreditCard credit_card2 = autofill::test::GetCreditCard2();
+const AutofillProfile kProfile1 = autofill::test::GetFullProfile();
+const AutofillProfile kProfile2 = autofill::test::GetFullProfile2();
+const AutofillProfile kIncompleteProfile =
+    autofill::test::GetIncompleteProfile1();
+const CreditCard kCreditCard1 = autofill::test::GetCreditCard();
+const CreditCard kCreditCard2 = autofill::test::GetCreditCard2();
+const CreditCard kEmptyCreditCard = GetEmptyCreditCard();
 
 std::unique_ptr<KeyedService> BuildTestPersonalDataManager(
     content::BrowserContext* context) {
@@ -41,15 +55,14 @@ std::unique_ptr<KeyedService> BuildTestPersonalDataManager(
   personal_data_manager->SetAutofillProfileEnabled(true);
   personal_data_manager->SetAutofillCreditCardEnabled(true);
   personal_data_manager->SetAutofillWalletImportEnabled(true);
-  personal_data_manager->AddProfile(profile1);
-  personal_data_manager->AddProfile(profile2);
-  personal_data_manager->AddProfile(autofill::test::GetIncompleteProfile1());
+  personal_data_manager->AddProfile(kProfile1);
+  personal_data_manager->AddProfile(kProfile2);
   // Add incomplete autofill profile, should not be shown on the sheet.
-  personal_data_manager->AddCreditCard(credit_card1);
-  personal_data_manager->AddCreditCard(credit_card2);
-  // Add incomplete credit card, should not be shown on the sheet.
-  personal_data_manager->AddCreditCard(
-      autofill::test::GetIncompleteCreditCard());
+  personal_data_manager->AddProfile(kIncompleteProfile);
+  personal_data_manager->AddCreditCard(kCreditCard1);
+  personal_data_manager->AddCreditCard(kCreditCard2);
+  // Add empty credit card, should not be shown on the sheet.
+  personal_data_manager->AddCreditCard(kEmptyCreditCard);
   return personal_data_manager;
 }
 
@@ -300,8 +313,9 @@ TEST_F(FastCheckoutClientImplTest, Start_FeatureEnabled_RunsSuccessfully) {
   // Expect bottomsheet to show up.
   EXPECT_CALL(
       *fast_checkout_controller(),
-      Show(UnorderedElementsAre(Pointee(profile1), Pointee(profile2)),
-           UnorderedElementsAre(Pointee(credit_card1), Pointee(credit_card2))));
+      Show(UnorderedElementsAre(Pointee(kProfile1), Pointee(kProfile2),
+                                Pointee(kIncompleteProfile)),
+           UnorderedElementsAre(Pointee(kCreditCard1), Pointee(kCreditCard2))));
 
   // Starting the run successfully.
   EXPECT_TRUE(fast_checkout_client()->Start(delegate(), GURL(kUrl)));
@@ -467,8 +481,9 @@ TEST_F(FastCheckoutClientImplTest,
 
   EXPECT_CALL(
       *fast_checkout_controller(),
-      Show(UnorderedElementsAre(Pointee(profile1), Pointee(profile2)),
-           UnorderedElementsAre(Pointee(credit_card1), Pointee(credit_card2))));
+      Show(UnorderedElementsAre(Pointee(kProfile1), Pointee(kProfile2),
+                                Pointee(kIncompleteProfile)),
+           UnorderedElementsAre(Pointee(kCreditCard1), Pointee(kCreditCard2))));
 
   // Starting the run successfully.
   EXPECT_TRUE(fast_checkout_client()->Start(delegate(), GURL(kUrl)));
@@ -484,12 +499,13 @@ TEST_F(FastCheckoutClientImplTest,
 
   // Expect bottomsheet to display the updated info.
   EXPECT_CALL(*fast_checkout_controller(),
-              Show(UnorderedElementsAre(Pointee(profile1), Pointee(profile2)),
-                   UnorderedElementsAre(Pointee(credit_card1))));
+              Show(UnorderedElementsAre(Pointee(kProfile1), Pointee(kProfile2),
+                                        Pointee(kIncompleteProfile)),
+                   UnorderedElementsAre(Pointee(kCreditCard1))));
 
   // User removes all valid credit cards and adds a valid card.
   personal_data_manager()->ClearCreditCards();
-  personal_data_manager()->AddCreditCard(credit_card1);
+  personal_data_manager()->AddCreditCard(kCreditCard1);
 
   // `FastCheckoutClient` is still running.
   EXPECT_TRUE(fast_checkout_client()->IsRunning());
