@@ -27,6 +27,9 @@
 
 #include <numeric>
 
+#include "base/containers/contains.h"
+#include "base/ranges/algorithm.h"
+
 namespace blink {
 
 FilterOperations::FilterOperations() = default;
@@ -55,9 +58,8 @@ bool FilterOperations::CanInterpolateWith(const FilterOperations& other) const {
   auto can_interpolate = [](FilterOperation* operation) {
     return FilterOperation::CanInterpolate(operation->GetType());
   };
-  if (!std::all_of(Operations().begin(), Operations().end(), can_interpolate) ||
-      !std::all_of(other.Operations().begin(), other.Operations().end(),
-                   can_interpolate)) {
+  if (!base::ranges::all_of(Operations(), can_interpolate) ||
+      !base::ranges::all_of(other.Operations(), can_interpolate)) {
     return false;
   }
 
@@ -80,23 +82,20 @@ gfx::RectF FilterOperations::MapRect(const gfx::RectF& rect) const {
 }
 
 bool FilterOperations::HasFilterThatAffectsOpacity() const {
-  return std::any_of(
-      operations_.begin(), operations_.end(),
-      [](const auto& operation) { return operation->AffectsOpacity(); });
+  return base::ranges::any_of(operations_, [](const auto& operation) {
+    return operation->AffectsOpacity();
+  });
 }
 
 bool FilterOperations::HasFilterThatMovesPixels() const {
-  return std::any_of(
-      operations_.begin(), operations_.end(),
-      [](const auto& operation) { return operation->MovesPixels(); });
+  return base::ranges::any_of(operations_, [](const auto& operation) {
+    return operation->MovesPixels();
+  });
 }
 
 bool FilterOperations::HasReferenceFilter() const {
-  return std::any_of(operations_.begin(), operations_.end(),
-                     [](const auto& operation) {
-                       return operation->GetType() ==
-                              FilterOperation::OperationType::kReference;
-                     });
+  return base::Contains(operations_, FilterOperation::OperationType::kReference,
+                        &FilterOperation::GetType);
 }
 
 void FilterOperations::AddClient(SVGResourceClient& client) const {

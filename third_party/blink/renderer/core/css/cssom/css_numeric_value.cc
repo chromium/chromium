@@ -6,6 +6,7 @@
 
 #include <numeric>
 
+#include "base/ranges/algorithm.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_css_numeric_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_cssnumericvalue_double.h"
 #include "third_party/blink/renderer/core/css/css_math_expression_node.h"
@@ -407,8 +408,7 @@ CSSMathSum* CSSNumericValue::toSum(const Vector<String>& unit_strings,
     result.push_back(CSSUnitValue::Create(total_value, target_unit));
   }
 
-  if (std::any_of(values.begin(), values.end(),
-                  [](const auto& v) { return v; })) {
+  if (base::ranges::any_of(values, [](const auto& v) { return v; })) {
     exception_state.ThrowTypeError(
         "There were leftover terms that were not converted");
     return nullptr;
@@ -531,8 +531,8 @@ bool CSSNumericValue::equals(
     const HeapVector<Member<V8CSSNumberish>>& numberishes
 ) {
   CSSNumericValueVector values = CSSNumberishesToNumericValues(numberishes);
-  return std::all_of(values.begin(), values.end(),
-                     [this](const auto& v) { return this->Equals(*v); });
+  return base::ranges::all_of(
+      values, [this](const auto& v) { return this->Equals(*v); });
 }
 
 String CSSNumericValue::toString() const {

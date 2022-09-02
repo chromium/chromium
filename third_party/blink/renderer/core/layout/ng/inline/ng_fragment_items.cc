@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_fragment_items.h"
 
+#include "base/ranges/algorithm.h"
 #include "third_party/blink/renderer/core/layout/layout_block.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_fragment_items_builder.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_cursor.h"
@@ -434,11 +435,10 @@ void NGFragmentItems::DirtyFirstItem(const LayoutBlockFlow& container) {
 // static
 void NGFragmentItems::DirtyLinesFromNeedsLayout(
     const LayoutBlockFlow& container) {
-  DCHECK(std::any_of(container.PhysicalFragments().begin(),
-                     container.PhysicalFragments().end(),
-                     [](const NGPhysicalBoxFragment& fragment) {
-                       return fragment.HasItems();
-                     }));
+  DCHECK(base::ranges::any_of(container.PhysicalFragments(),
+                              [](const NGPhysicalBoxFragment& fragment) {
+                                return fragment.HasItems();
+                              }));
 
   // Mark dirty for the first top-level child that has |NeedsLayout|.
   //

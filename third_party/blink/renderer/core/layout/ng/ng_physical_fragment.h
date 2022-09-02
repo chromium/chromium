@@ -516,8 +516,7 @@ class CORE_EXPORT NGPhysicalFragment
     PostLayoutChildLinkList(wtf_size_t count, const NGLink* buffer)
         : count_(count), buffer_(buffer) {}
 
-    class ConstIterator
-        : public std::iterator<std::input_iterator_tag, NGLink> {
+    class ConstIterator {
       STACK_ALLOCATED();
 
      public:
@@ -539,6 +538,11 @@ class CORE_EXPORT NGPhysicalFragment
         ++current_;
         SkipInvalidAndSetPostLayout();
         return *this;
+      }
+      ConstIterator operator++(int) {
+        ConstIterator copy = *this;
+        ++*this;
+        return copy;
       }
       bool operator==(const ConstIterator& other) const {
         return current_ == other.current_;

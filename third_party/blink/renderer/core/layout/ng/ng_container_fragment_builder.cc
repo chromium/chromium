@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/layout/ng/ng_container_fragment_builder.h"
 
+#include "base/containers/contains.h"
 #include "third_party/blink/renderer/core/layout/ng/exclusions/ng_exclusion_space.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_physical_line_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_absolute_utils.h"
@@ -414,11 +415,8 @@ void NGContainerFragmentBuilder::PropagateOOFPositionedInfo(
     static_position.offset += adjusted_offset;
 
     // |oof_positioned_candidates_| should not have duplicated entries.
-    DCHECK(std::none_of(
-        oof_positioned_candidates_.begin(), oof_positioned_candidates_.end(),
-        [&node](const NGLogicalOutOfFlowPositionedNode& oof_node) {
-          return oof_node.Node() == node;
-        }));
+    DCHECK(!base::Contains(oof_positioned_candidates_, node,
+                           &NGLogicalOutOfFlowPositionedNode::Node));
     oof_positioned_candidates_.emplace_back(node, static_position,
                                             new_inline_container);
   }

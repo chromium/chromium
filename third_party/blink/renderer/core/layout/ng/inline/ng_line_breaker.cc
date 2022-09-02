@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_line_breaker.h"
 
 #include "base/containers/adapters.h"
+#include "base/ranges/algorithm.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/layout_ng_text_combine.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_bidi_paragraph.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_break_token.h"
@@ -2537,10 +2538,10 @@ void NGLineBreaker::HandleOverflow(NGLineInfo* line_info) {
   }
 
   // No break opportunities. Break at the earliest break opportunity.
-  DCHECK(std::all_of(item_results->begin(), item_results->end(),
-                     [](const NGInlineItemResult& item_result) {
-                       return !item_result.can_break_after;
-                     }));
+  DCHECK(base::ranges::all_of(*item_results,
+                              [](const NGInlineItemResult& item_result) {
+                                return !item_result.can_break_after;
+                              }));
   state_ = LineBreakState::kOverflow;
 }
 

@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
 
+#include "base/ranges/algorithm.h"
 #include "third_party/blink/renderer/core/dom/document_lifecycle.h"
 #include "third_party/blink/renderer/core/html/shadow/shadow_element_utils.h"
 #include "third_party/blink/renderer/core/layout/geometry/writing_mode_converter.h"
@@ -777,11 +778,10 @@ void NGPhysicalFragment::AddOutlineRectsForNormalChildren(
       // Don't add |Children()|. If |this| has |NGFragmentItems|, children are
       // either line box, which we already handled in items, or OOF, which we
       // should ignore.
-      DCHECK(std::all_of(PostLayoutChildren().begin(),
-                         PostLayoutChildren().end(), [](const NGLink& child) {
-                           return child->IsLineBox() ||
-                                  child->IsOutOfFlowPositioned();
-                         }));
+      DCHECK(
+          base::ranges::all_of(PostLayoutChildren(), [](const NGLink& child) {
+            return child->IsLineBox() || child->IsOutOfFlowPositioned();
+          }));
       return;
     }
   }

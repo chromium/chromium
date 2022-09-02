@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/layout/ng/svg/ng_svg_text_layout_algorithm.h"
 
+#include "base/containers/contains.h"
 #include "base/trace_event/trace_event.h"
 #include "third_party/blink/renderer/core/layout/ng/svg/resolved_text_layout_attributes_iterator.h"
 #include "third_party/blink/renderer/core/layout/ng/svg/svg_inline_node_data.h"
@@ -345,11 +346,8 @@ void NGSvgTextLayoutAlgorithm::ResolveTextLength(
       // 2.4.6.2. If the "middle" flag for result[k] is not true and k is not a
       // character in a resolved descendant node other than the first character
       // then shift = shift + small-delta.
-      if (!info.middle &&
-          (std::any_of(resolved_descendant_node_starts.begin(),
-                       resolved_descendant_node_starts.end(),
-                       [k](auto offset) { return offset == k; }) ||
-           !info.text_length_resolved))
+      if (!info.middle && (base::Contains(resolved_descendant_node_starts, k) ||
+                           !info.text_length_resolved))
         shift += character_delta;
       info.text_length_resolved = true;
     }

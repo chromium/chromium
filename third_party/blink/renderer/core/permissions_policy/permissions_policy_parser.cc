@@ -3,10 +3,10 @@
 
 #include "third_party/blink/renderer/core/permissions_policy/permissions_policy_parser.h"
 
-#include <algorithm>
+#include <bitset>
 #include <utility>
 
-#include <bitset>
+#include "base/containers/contains.h"
 #include "base/metrics/histogram_macros.h"
 #include "net/http/structured_headers.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-blink.h"
@@ -650,10 +650,8 @@ ParsedPermissionsPolicy PermissionsPolicyParser::ParsePermissionsPolicyForTest(
 
 bool IsFeatureDeclared(mojom::blink::PermissionsPolicyFeature feature,
                        const ParsedPermissionsPolicy& policy) {
-  return std::any_of(policy.begin(), policy.end(),
-                     [feature](const auto& declaration) {
-                       return declaration.feature == feature;
-                     });
+  return base::Contains(policy, feature,
+                        &ParsedPermissionsPolicyDeclaration::feature);
 }
 
 bool RemoveFeatureIfPresent(mojom::blink::PermissionsPolicyFeature feature,

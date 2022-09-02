@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/editing/ime/edit_context.h"
 
+#include "base/containers/contains.h"
 #include "base/trace_event/trace_event.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_vector.h"
@@ -751,10 +752,8 @@ void EditContext::ExtendSelectionAndDelete(int before, int after) {
 }
 
 void EditContext::AttachElement(Element* element_to_attach) {
-  if (std::any_of(attached_elements_.begin(), attached_elements_.end(),
-                  [element_to_attach](const auto& element) {
-                    return element.Get() == element_to_attach;
-                  }))
+  if (base::Contains(attached_elements_, element_to_attach,
+                     &Member<Element>::Get))
     return;
 
   attached_elements_.push_back(element_to_attach);

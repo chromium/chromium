@@ -1279,7 +1279,15 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
 
       const NGPhysicalBoxFragment& operator*() const;
 
-      void operator++() { ++iterator_; }
+      Iterator& operator++() {
+        ++iterator_;
+        return *this;
+      }
+      Iterator operator++(int) {
+        Iterator copy = *this;
+        ++*this;
+        return copy;
+      }
 
       bool operator==(const Iterator& other) const {
         return iterator_ == other.iterator_;
