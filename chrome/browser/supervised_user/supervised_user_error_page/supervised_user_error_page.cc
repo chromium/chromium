@@ -144,6 +144,9 @@ std::string BuildHtml(bool allow_access_requests,
   strings.Set(
       "localApprovalsButton",
       l10n_util::GetStringUTF8(IDS_BLOCK_INTERSTITIAL_ASK_IN_PERSON_BUTTON));
+  strings.Set("localApprovalsRemoteRequestSentButton",
+              l10n_util::GetStringUTF8(
+                  IDS_BLOCK_INTERSTITIAL_ASK_IN_PERSON_INSTEAD_BUTTON));
   strings.Set("showDetailsLink",
               l10n_util::GetStringUTF8(IDS_BLOCK_INTERSTITIAL_SHOW_DETAILS));
   strings.Set("hideDetailsLink",

@@ -75,8 +75,8 @@ function initialize() {
             makeImageSet(secondAvatarURL1x, secondAvatarURL2x);
       }
       $('second-custodian-name').textContent = secondCustodianName;
-      $('second-custodian-email').textContent = loadTimeData.getString(
-          'secondCustodianEmail');
+      $('second-custodian-email').textContent =
+          loadTimeData.getString('secondCustodianEmail');
     }
   }
 
@@ -139,11 +139,8 @@ function initialize() {
  *     frame.
  */
 function setRequestStatus(isSuccessful, isMainFrame) {
-  console.log('setRequestStatus(' + isSuccessful +')');
+  console.log('setRequestStatus(' + isSuccessful + ')');
   requestCreated(isSuccessful, isMainFrame);
-  if (isSuccessful) {
-    $('back-button').focus();
-  }
 }
 
 /**
@@ -164,15 +161,26 @@ function requestCreated(isSuccessful, isMainFrame) {
   }
   showDetails = false;
   updateDetails();
-  $('back-button').onclick = function(event) {
-    sendCommand('back');
-  };
   if (isSuccessful) {
     $('request-failed-message').hidden = true;
     $('request-sent-message').hidden = false;
-    $('back-button').hidden = !isMainFrame;
     $('remote-approvals-button').hidden = true;
     $('show-details-link').hidden = true;
+    if (localWebApprovalsEnabled) {
+      $('local-approvals-button').hidden = true;
+      $('local-approvals-remote-request-sent-button').hidden = false;
+      $('local-approvals-remote-request-sent-button').onclick = function(
+          event) {
+        sendCommand('requestUrlAccessLocal');
+      };
+      $('local-approvals-remote-request-sent-button').focus();
+    } else {
+      $('back-button').hidden = !isMainFrame;
+      $('back-button').onclick = function(event) {
+        sendCommand('back');
+      };
+      $('back-button').focus();
+    }
     if (interstitialRefreshEnabled) {
       $('request-sent-description').hidden = false;
       $('local-approvals-button').classList.add('secondary-button');
