@@ -40,7 +40,7 @@ AutocompleteMatch CreateMatch(std::u16string contents,
 class HistoryClustersProviderTest : public testing::Test,
                                     public AutocompleteProviderListener {
  public:
-  HistoryClustersProviderTest() {
+  void SetUp() override {
     config_.is_journeys_enabled_no_locale_check = true;
     config_.omnibox_history_cluster_provider = true;
     history_clusters::SetConfigForTesting(config_);
@@ -94,6 +94,21 @@ class HistoryClustersProviderTest : public testing::Test,
   void OnProviderUpdate(bool updated_matches,
                         const AutocompleteProvider* provider) override {
     on_provider_update_calls_.push_back(updated_matches);
+  }
+
+  void VerifyFeatureTriggered(bool expected) {
+    auto* triggered_feature_service =
+        autocomplete_provider_client_->GetOmniboxTriggeredFeatureService();
+    OmniboxTriggeredFeatureService::Features triggered_features;
+    triggered_feature_service->RecordToLogs(&triggered_features);
+    triggered_feature_service->ResetSession();
+    if (expected) {
+      ASSERT_TRUE(!triggered_features.empty());
+      EXPECT_EQ(
+          *triggered_features.begin(),
+          OmniboxTriggeredFeatureService::Feature::kHistoryClusterSuggestion);
+    } else
+      EXPECT_TRUE(triggered_features.empty());
   }
 
   // Tracks `OnProviderUpdate()` invocations.
@@ -393,23 +408,7 @@ TEST_F(HistoryClustersProviderTest, SearchIntent_HighScoringNav) {
   EXPECT_THAT(on_provider_update_calls_, testing::ElementsAre(true));
 }
 
-// TODO(crbug.com/1356807) Disabled for race condition in reading the config.
-TEST_F(HistoryClustersProviderTest, DISABLED_Counterfactual) {
-  const auto verify_feature_triggered = [&](bool expected) {
-    auto* triggered_feature_service =
-        autocomplete_provider_client_->GetOmniboxTriggeredFeatureService();
-    OmniboxTriggeredFeatureService::Features triggered_features;
-    triggered_feature_service->RecordToLogs(&triggered_features);
-    triggered_feature_service->ResetSession();
-    if (expected) {
-      ASSERT_TRUE(!triggered_features.empty());
-      EXPECT_EQ(
-          *triggered_features.begin(),
-          OmniboxTriggeredFeatureService::Feature::kHistoryClusterSuggestion);
-    } else
-      EXPECT_TRUE(triggered_features.empty());
-  };
-
+TEST_F(HistoryClustersProviderTest, Counterfactual_Disabled) {
   AutocompleteInput input;
   input.set_omit_asynchronous_matches(false);
 
@@ -417,19 +416,38 @@ TEST_F(HistoryClustersProviderTest, DISABLED_Counterfactual) {
   search_provider_->done_ = true;
   provider_->Start(input, false);
   EXPECT_TRUE(provider_->matches().empty());
-  verify_feature_triggered(false);
+  VerifyFeatureTriggered(false);
 
   // When there are matches, should log the feature triggered.
   search_provider_->matches_ = {CreateMatch(u"keyword")};
   provider_->Start(input, false);
   EXPECT_FALSE(provider_->matches().empty());
-  verify_feature_triggered(true);
+  VerifyFeatureTriggered(true);
+}
 
-  // When the CF param is true and there are matches, should (a) log the feature
-  // triggered and (b) hide the matches.
-  config_.omnibox_history_cluster_provider_counterfactual = true;
-  history_clusters::SetConfigForTesting(config_);
+class HistoryClustersProviderCounterfactualTest
+    : public HistoryClustersProviderTest {
+ public:
+  void SetUp() override {
+    config_.omnibox_history_cluster_provider_counterfactual = true;
+    HistoryClustersProviderTest::SetUp();
+  }
+};
+
+TEST_F(HistoryClustersProviderCounterfactualTest, Counterfactual_Enabled) {
+  AutocompleteInput input;
+  input.set_omit_asynchronous_matches(false);
+
+  // When there are no matches, should not log the feature triggered.
+  search_provider_->done_ = true;
   provider_->Start(input, false);
   EXPECT_TRUE(provider_->matches().empty());
-  verify_feature_triggered(true);
+  VerifyFeatureTriggered(false);
+
+  // When there are matches, should (a) log the feature triggered and (b) hide
+  // the matches.
+  search_provider_->matches_ = {CreateMatch(u"keyword")};
+  provider_->Start(input, false);
+  EXPECT_TRUE(provider_->matches().empty());
+  VerifyFeatureTriggered(true);
 }
