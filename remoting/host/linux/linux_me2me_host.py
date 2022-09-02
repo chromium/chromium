@@ -852,21 +852,9 @@ class WaylandDesktop(Desktop):
     return True
 
   def _gnome_shell_cmd(self):
-    wayland_desktop_sizes = os.environ.get(
-      WAYLAND_DESKTOP_SIZES_ENV, DEFAULT_WAYLAND_DESKTOP_SIZES)
     gnome_shell_cmd = [
       "gnome-shell", "--wayland", "--headless", "--wayland-display",
       self._wayland_socket, "--no-x11", "--replace"]
-    try:
-      for resolution in wayland_desktop_sizes.strip().split(","):
-        width, height = re.split("x|X", resolution.strip())
-        gnome_shell_cmd.extend(["--virtual-monitor", "%sx%s" %
-                               (width.strip(), height.strip())])
-    except Exception as exc:
-      logging.error("Expected one or more comma separated resolutions in "
-                    "width1xheight1[,width2xheight2] format, got: %s" %
-                    wayland_desktop_sizes)
-      raise exc
     return gnome_shell_cmd
 
   def _launch_server(self, *args, **kwargs):
