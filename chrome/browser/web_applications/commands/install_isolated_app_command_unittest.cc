@@ -101,6 +101,15 @@ std::unique_ptr<MockDataRetriever> CreateDefaultDataRetriever(
           /*valid_manifest_for_web_app=*/true,
           /*is_installable=*/true));
 
+  std::map<GURL, std::vector<SkBitmap>> icons = {};
+
+  using HttpStatusCode = int;
+  std::map<GURL, HttpStatusCode> http_result = {};
+
+  ON_CALL(*fake_data_retriever, GetIcons(_, _, _, IsNotNullCallback()))
+      .WillByDefault(RunOnceCallback<3>(IconsDownloadedResult::kCompleted,
+                                        std::move(icons), http_result));
+
   return fake_data_retriever;
 }
 
@@ -189,7 +198,7 @@ class InstallIsolatedAppCommandTest : public ::testing::Test {
     ExpectLoadedForURL(application_url);
 
     std::unique_ptr<MockDataRetriever> fake_data_retriever =
-        std::make_unique<NiceMock<MockDataRetriever>>();
+        CreateDefaultDataRetriever(application_url);
 
     ON_CALL(*fake_data_retriever,
             CheckInstallabilityAndRetrieveManifest(_, _, IsNotNullCallback()))
@@ -197,6 +206,7 @@ class InstallIsolatedAppCommandTest : public ::testing::Test {
             manifest.Clone(), CreateDefaultManifestURL(application_url),
             /*valid_manifest_for_web_app=*/true,
             /*is_installable=*/true));
+
     return ExecuteCommand(application_url, std::move(fake_data_retriever));
   }
 
@@ -246,7 +256,13 @@ MATCHER_P(IsUnexpectedValue, error_matcher, "") {
 }
 
 MATCHER(IsInstallationOk, "") {
-  return ExplainMatchResult(IsExpectedValue(_), arg, result_listener);
+  bool result = ExplainMatchResult(IsExpectedValue(_), arg, result_listener);
+  if (!result) {
+    DCHECK(!arg.has_value());
+    *result_listener << ", error: " << arg.error();
+  }
+
+  return result;
 }
 
 MATCHER_P(IsInstallationError, message_matcher, "") {
@@ -262,6 +278,31 @@ MATCHER_P(IsInstallationError, message_matcher, "") {
 
 MATCHER(IsInstallationError, "") {
   return ExplainMatchResult(IsUnexpectedValue(_), arg, result_listener);
+}
+
+TEST_F(InstallIsolatedAppCommandTest,
+       ServiceWorkerIsNotRequiredForInstallation) {
+  SetPrepareForLoadResultLoaded();
+
+  ExpectLoadedForURL("http://test-url-example.com");
+
+  std::unique_ptr<MockDataRetriever> fake_data_retriever =
+      CreateDefaultDataRetriever("http://test-url-example.com");
+
+  EXPECT_CALL(
+      *fake_data_retriever,
+      CheckInstallabilityAndRetrieveManifest(
+          _, /*bypass_service_worker_check=*/IsTrue(), IsNotNullCallback()))
+      .WillOnce(RunOnceCallback<2>(
+          /*manifest=*/CreateDefaultManifest("http://test-url-example.com"),
+          /*manifest_url=*/
+          CreateDefaultManifestURL("http://test-url-example.com"),
+          /*valid_manifest_for_web_app=*/true,
+          /*is_installable=*/true));
+
+  EXPECT_THAT(ExecuteCommand("http://test-url-example.com",
+                             std::move(fake_data_retriever)),
+              IsInstallationOk());
 }
 
 TEST_F(InstallIsolatedAppCommandTest, CommandCanBeExecutedSuccesfully) {
@@ -401,7 +442,7 @@ TEST_F(InstallIsolatedAppCommandTest,
   ExpectLoadedForURL("http://test-url-example.com");
 
   std::unique_ptr<MockDataRetriever> fake_data_retriever =
-      std::make_unique<NiceMock<MockDataRetriever>>();
+      CreateDefaultDataRetriever("http://test-url-example.com");
 
   ON_CALL(*fake_data_retriever,
           CheckInstallabilityAndRetrieveManifest(_, _, IsNotNullCallback()))
@@ -437,7 +478,7 @@ TEST_F(InstallIsolatedAppCommandTest,
   ExpectLoadedForURL("http://test-url-example.com");
 
   std::unique_ptr<MockDataRetriever> fake_data_retriever =
-      std::make_unique<NiceMock<MockDataRetriever>>();
+      CreateDefaultDataRetriever("http://test-url-example.com");
 
   ON_CALL(*fake_data_retriever,
           CheckInstallabilityAndRetrieveManifest(_, _, IsNotNullCallback()))
@@ -619,7 +660,7 @@ class InstallIsolatedAppCommandManifestIconsTest
   std::unique_ptr<MockDataRetriever> CreateFakeDataRetriever(
       blink::mojom::ManifestPtr manifest) const {
     std::unique_ptr<MockDataRetriever> fake_data_retriever =
-        std::make_unique<NiceMock<MockDataRetriever>>();
+        CreateDefaultDataRetriever(kSomeTestApplicationUrl);
 
     EXPECT_CALL(*fake_data_retriever, GetWebAppInstallInfo).Times(0);
 
@@ -776,7 +817,7 @@ TEST_F(InstallIsolatedAppCommandMetricsTest,
   ExpectLoadedForURL("http://test-url-example.com");
 
   std::unique_ptr<MockDataRetriever> fake_data_retriever =
-      std::make_unique<NiceMock<MockDataRetriever>>();
+      CreateDefaultDataRetriever("http://test-url-example.com");
 
   ON_CALL(*fake_data_retriever,
           CheckInstallabilityAndRetrieveManifest(_, _, IsNotNullCallback()))
@@ -803,7 +844,7 @@ TEST_F(InstallIsolatedAppCommandMetricsTest, ReportFailureWhenManifestIsNull) {
   ExpectLoadedForURL("http://test-url-example.com");
 
   std::unique_ptr<MockDataRetriever> fake_data_retriever =
-      std::make_unique<NiceMock<MockDataRetriever>>();
+      CreateDefaultDataRetriever("http://test-url-example.com");
 
   ON_CALL(*fake_data_retriever,
           CheckInstallabilityAndRetrieveManifest(_, _, IsNotNullCallback()))

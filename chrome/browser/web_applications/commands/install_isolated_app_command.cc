@@ -118,18 +118,9 @@ void InstallIsolatedAppCommand::OnLoadUrl(WebAppUrlLoaderResult result) {
 }
 
 void InstallIsolatedAppCommand::CheckInstallabilityAndRetrieveManifest() {
-  // TODO(kuragin): Fix order of calls to the data retrieve.
-  //
-  // The order should be:
-  //  1. |GetWebAppInstallInfo|
-  //  2. |CheckInstallabilityAndRetrieveManifest|
-  //  3. |GetIcons|
-  //
-  // See install from sync command unit-test for details:
-  // https://crsrc.org/c/chrome/browser/web_applications/commands/install_from_sync_command_unittest.cc;l=333;drc=ddce2fc4e67fd4500d29cbe5f4993b3fb8e4e2ba
   data_retriever_->CheckInstallabilityAndRetrieveManifest(
       shared_web_contents(),
-      /*bypass_service_worker_check=*/false,
+      /*bypass_service_worker_check=*/true,
       base::BindOnce(
           &InstallIsolatedAppCommand::OnCheckInstallabilityAndRetrieveManifest,
           weak_factory_.GetWeakPtr()));
@@ -250,16 +241,11 @@ void InstallIsolatedAppCommand::OnFinalizeInstall(
 
 void InstallIsolatedAppCommand::DownloadIcons(WebAppInstallInfo install_info) {
   base::flat_set<GURL> icon_urls = GetValidIconUrlsToDownload(install_info);
-
-  if (!icon_urls.empty()) {
-    data_retriever_->GetIcons(
-        shared_web_contents(), std::move(icon_urls),
-        /*skip_page_favicons=*/true,
-        base::BindOnce(&InstallIsolatedAppCommand::OnGetIcons,
-                       weak_factory_.GetWeakPtr(), std::move(install_info)));
-  } else {
-    FinalizeInstall(install_info);
-  }
+  data_retriever_->GetIcons(
+      shared_web_contents(), std::move(icon_urls),
+      /*skip_page_favicons=*/true,
+      base::BindOnce(&InstallIsolatedAppCommand::OnGetIcons,
+                     weak_factory_.GetWeakPtr(), std::move(install_info)));
 }
 
 void InstallIsolatedAppCommand::OnGetIcons(
