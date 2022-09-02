@@ -183,7 +183,7 @@ class EasyUnlockAuthAttemptUnlockTest : public testing::Test {
   }
 
   void TearDown() override {
-    proximity_auth::ScreenlockBridge::Get()->SetLockHandler(NULL);
+    proximity_auth::ScreenlockBridge::Get()->SetLockHandler(nullptr);
     auth_attempt_.reset();
   }
 
@@ -318,7 +318,7 @@ class EasyUnlockAuthAttemptSigninTest : public testing::Test {
   }
 
   void TearDown() override {
-    proximity_auth::ScreenlockBridge::Get()->SetLockHandler(NULL);
+    proximity_auth::ScreenlockBridge::Get()->SetLockHandler(nullptr);
     auth_attempt_.reset();
   }
 

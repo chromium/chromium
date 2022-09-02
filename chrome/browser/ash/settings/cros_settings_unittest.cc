@@ -132,7 +132,7 @@ class CrosSettingsTest : public testing::Test {
 
   bool IsAllowlisted(const std::string& username) {
     return CrosSettings::Get()->FindEmailInList(kAccountsPrefUsers, username,
-                                                NULL);
+                                                nullptr);
   }
 
   bool IsUserAllowed(const std::string& username,

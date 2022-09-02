@@ -230,8 +230,8 @@ class UserCloudPolicyManagerAshTest
       manager_->RemoveObserver(&observer_);
       manager_->Shutdown();
     }
-    signin_profile_ = NULL;
-    profile_ = NULL;
+    signin_profile_ = nullptr;
+    profile_ = nullptr;
     identity_test_env_profile_adaptor_.reset();
     profile_manager_->DeleteTestingProfile(chrome::kInitialProfile);
     test_system_shared_loader_factory_->Detach();

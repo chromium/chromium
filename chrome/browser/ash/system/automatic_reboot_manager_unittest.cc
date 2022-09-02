@@ -369,7 +369,7 @@ void AutomaticRebootManagerBasicTest::TearDown() {
 
   chromeos::PowerManagerClient::Shutdown();
   UpdateEngineClient::Shutdown();
-  TestingBrowserProcess::GetGlobal()->SetLocalState(NULL);
+  TestingBrowserProcess::GetGlobal()->SetLocalState(nullptr);
 }
 
 void AutomaticRebootManagerBasicTest::SetUpdateRebootNeededUptime(
@@ -712,7 +712,7 @@ TEST_F(AutomaticRebootManagerBasicTest, UserActivityResetsIdleTimer) {
     FastForwardBy(base::Seconds(50), false);
 
     // Simulate user activity.
-    automatic_reboot_manager_->OnUserActivity(NULL);
+    automatic_reboot_manager_->OnUserActivity(nullptr);
   }
 
   // Fast forward the uptime by 60 seconds without simulating user activity.
@@ -1666,7 +1666,7 @@ TEST_P(AutomaticRebootManagerTest, PolicyAfterUpdateInGracePeriod) {
   FastForwardBy(base::Hours(6), false);
 
   // Simulate user activity.
-  automatic_reboot_manager_->OnUserActivity(NULL);
+  automatic_reboot_manager_->OnUserActivity(nullptr);
 
   // Enable automatic reboot after an update has been applied. Verify that a
   // reboot is requested but the device does not reboot immediately.
@@ -1705,7 +1705,7 @@ TEST_P(AutomaticRebootManagerTest, PolicyAfterUpdateAfterGracePeriod) {
   FastForwardBy(base::Days(10) - base::Hours(6), false);
 
   // Simulate user activity.
-  automatic_reboot_manager_->OnUserActivity(NULL);
+  automatic_reboot_manager_->OnUserActivity(nullptr);
 
   // Enable automatic rebooting after an update has been applied. Verify that
   // a reboot is requested and unless a non-kiosk-app session is in progress,

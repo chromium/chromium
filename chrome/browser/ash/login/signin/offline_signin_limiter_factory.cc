@@ -12,7 +12,7 @@
 
 namespace ash {
 
-base::Clock* OfflineSigninLimiterFactory::clock_for_testing_ = NULL;
+base::Clock* OfflineSigninLimiterFactory::clock_for_testing_ = nullptr;
 
 // static
 OfflineSigninLimiterFactory* OfflineSigninLimiterFactory::GetInstance() {

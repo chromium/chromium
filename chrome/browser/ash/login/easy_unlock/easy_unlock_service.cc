@@ -58,7 +58,7 @@ namespace ash {
 namespace {
 
 PrefService* GetLocalState() {
-  return g_browser_process ? g_browser_process->local_state() : NULL;
+  return g_browser_process ? g_browser_process->local_state() : nullptr;
 }
 
 void RecordAuthResultFailure(

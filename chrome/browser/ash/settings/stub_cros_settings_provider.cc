@@ -33,7 +33,7 @@ const base::Value* StubCrosSettingsProvider::Get(
   const base::Value* value;
   if (values_.GetValue(path, &value))
     return value;
-  return NULL;
+  return nullptr;
 }
 
 CrosSettingsProvider::TrustedStatus

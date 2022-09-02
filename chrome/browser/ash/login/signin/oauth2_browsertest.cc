@@ -926,7 +926,7 @@ class MergeSessionTest : public OAuth2Test,
         extensions::ProcessManager::Get(GetProfile());
     extensions::ExtensionHost* host =
         manager->GetBackgroundHostForExtension(extension_id);
-    if (host == NULL) {
+    if (host == nullptr) {
       ADD_FAILURE() << "Extension " << extension_id
                     << " has no background page.";
       return;
@@ -958,7 +958,7 @@ class MergeSessionTest : public OAuth2Test,
         extensions::ProcessManager::Get(GetProfile());
     extensions::ExtensionHost* host =
         manager->GetBackgroundHostForExtension(extension_id);
-    if (host == NULL) {
+    if (host == nullptr) {
       ADD_FAILURE() << "Extension " << extension_id
                     << " has no background page.";
       return;

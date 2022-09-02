@@ -62,7 +62,7 @@ CloudExternalDataPolicyObserver::PolicyServiceObserver::PolicyServiceObserver(
     : parent_(parent), user_id_(user_id), policy_service_(policy_service) {
   policy_service_->AddObserver(POLICY_DOMAIN_CHROME, this);
 
-  if (!IsDeviceLocalAccountUser(user_id, NULL)) {
+  if (!IsDeviceLocalAccountUser(user_id, nullptr)) {
     // Notify |parent_| if the external data reference for |user_id_| is set
     // during login. This is omitted for device-local accounts because their
     // policy is available before login and the external data reference will
@@ -205,7 +205,7 @@ void CloudExternalDataPolicyObserver::OnPolicyUpdated(
         device_local_account_entries_.find(user_id);
     if (it != device_local_account_entries_.end()) {
       device_local_account_entries_.erase(it);
-      HandleExternalDataPolicyUpdate(user_id, NULL);
+      HandleExternalDataPolicyUpdate(user_id, nullptr);
     }
     return;
   }
@@ -250,7 +250,7 @@ void CloudExternalDataPolicyObserver::RetrieveDeviceLocalAccounts() {
       // When a device-local account whose external data reference was set is
       // removed, emit a notification that the external data reference has been
       // cleared.
-      HandleExternalDataPolicyUpdate(user_id, NULL);
+      HandleExternalDataPolicyUpdate(user_id, nullptr);
     } else {
       ++it;
     }

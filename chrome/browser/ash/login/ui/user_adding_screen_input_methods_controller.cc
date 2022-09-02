@@ -10,7 +10,7 @@ namespace ash {
 
 UserAddingScreenInputMethodsController::UserAddingScreenInputMethodsController(
     UserAddingScreen* screen)
-    : screen_(screen), active_user_on_show_(NULL) {
+    : screen_(screen), active_user_on_show_(nullptr) {
   screen_->AddObserver(this);
 }
 

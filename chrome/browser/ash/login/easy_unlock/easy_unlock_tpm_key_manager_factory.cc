@@ -18,7 +18,7 @@ namespace ash {
 namespace {
 
 PrefService* GetLocalState() {
-  return g_browser_process ? g_browser_process->local_state() : NULL;
+  return g_browser_process ? g_browser_process->local_state() : nullptr;
 }
 
 }  // namespace
@@ -43,10 +43,10 @@ EasyUnlockTpmKeyManager* EasyUnlockTpmKeyManagerFactory::GetForUser(
       user_manager->FindUser(user_manager::known_user::GetAccountId(
           user_id, std::string() /* id */, AccountType::UNKNOWN));
   if (!user)
-    return NULL;
+    return nullptr;
   Profile* profile = ProfileHelper::Get()->GetProfileByUser(user);
   if (!profile)
-    return NULL;
+    return nullptr;
   return EasyUnlockTpmKeyManagerFactory::Get(profile);
 }
 
@@ -60,7 +60,7 @@ EasyUnlockTpmKeyManagerFactory::~EasyUnlockTpmKeyManagerFactory() {}
 KeyedService* EasyUnlockTpmKeyManagerFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
-  const user_manager::User* user = NULL;
+  const user_manager::User* user = nullptr;
   if (ProfileHelper::IsRegularProfile(profile))
     user = ProfileHelper::Get()->GetUserByProfile(profile);
   else if (!ProfileHelper::IsSigninProfile(profile))

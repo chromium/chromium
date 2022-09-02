@@ -366,7 +366,7 @@ Profile* ProfileHelperImpl::GetProfileByUser(const user_manager::User* user) {
   }
 
   if (!user->is_profile_created())
-    return NULL;
+    return nullptr;
 
   Profile* profile = Profile::FromBrowserContext(
       browser_context_helper_->delegate()->GetBrowserContextByPath(
@@ -438,7 +438,7 @@ const user_manager::User* ProfileHelperImpl::GetUserByProfile(
                  browser_context_helper_->GetBrowserContextPathByUserIdHash(
                      active_user->username_hash()) == profile->GetPath()
              ? active_user
-             : NULL;
+             : nullptr;
 }
 
 user_manager::User* ProfileHelperImpl::GetUserByProfile(

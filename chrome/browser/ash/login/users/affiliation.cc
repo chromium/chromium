@@ -67,7 +67,7 @@ bool IsUserAffiliated(const AffiliationIDSet& user_affiliation_ids,
     return false;
   }
 
-  if (policy::IsDeviceLocalAccountUser(email, NULL)) {
+  if (policy::IsDeviceLocalAccountUser(email, nullptr)) {
     return true;
   }
 

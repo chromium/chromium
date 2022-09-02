@@ -1248,7 +1248,8 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, ExtensionCacheImplTest) {
   extension_install_observer.Wait();
 
   // Verify that the extension was kept in the local cache.
-  EXPECT_TRUE(cache_impl.GetExtension(kGoodExtensionID, hash, NULL, NULL));
+  EXPECT_TRUE(
+      cache_impl.GetExtension(kGoodExtensionID, hash, nullptr, nullptr));
 
   {
     base::ScopedAllowBlockingForTesting allow_blocking;
@@ -1498,9 +1499,9 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, LastWindowClosedLogoutReminder) {
   ASSERT_TRUE(browser_window);
   run_loop_ = std::make_unique<base::RunLoop>();
   browser_window->Close();
-  browser_window = NULL;
+  browser_window = nullptr;
   run_loop_->Run();
-  browser = NULL;
+  browser = nullptr;
   EXPECT_TRUE(browser_list->empty());
 
   // Verify that the logout confirmation dialog is not showing because an app
@@ -1531,9 +1532,9 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, LastWindowClosedLogoutReminder) {
   ASSERT_TRUE(browser_window);
   run_loop_ = std::make_unique<base::RunLoop>();
   browser_window->Close();
-  browser_window = NULL;
+  browser_window = nullptr;
   run_loop_->Run();
-  first_browser = NULL;
+  first_browser = nullptr;
   EXPECT_EQ(1U, browser_list->size());
 
   // Verify that the logout confirmation dialog is not showing because a browser
@@ -1545,9 +1546,9 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, LastWindowClosedLogoutReminder) {
   ASSERT_TRUE(browser_window);
   run_loop_ = std::make_unique<base::RunLoop>();
   browser_window->Close();
-  browser_window = NULL;
+  browser_window = nullptr;
   run_loop_->Run();
-  second_browser = NULL;
+  second_browser = nullptr;
   EXPECT_TRUE(browser_list->empty());
 
   // Verify that the logout confirmation dialog is showing.
@@ -1568,9 +1569,9 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, LastWindowClosedLogoutReminder) {
   ASSERT_TRUE(browser_window);
   run_loop_ = std::make_unique<base::RunLoop>();
   browser_window->Close();
-  browser_window = NULL;
+  browser_window = nullptr;
   run_loop_->Run();
-  browser = NULL;
+  browser = nullptr;
   EXPECT_TRUE(browser_list->empty());
 
   // Verify that the logout confirmation dialog is showing again.

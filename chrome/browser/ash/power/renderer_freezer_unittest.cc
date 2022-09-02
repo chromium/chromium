@@ -245,7 +245,7 @@ class RendererFreezerTestWithExtensions : public RendererFreezerTest {
   void TearDown() override {
     extensions::ExtensionSystem::Get(profile_)->Shutdown();
 
-    profile_ = NULL;
+    profile_ = nullptr;
 
     profile_manager_->DeleteAllTestingProfiles();
 

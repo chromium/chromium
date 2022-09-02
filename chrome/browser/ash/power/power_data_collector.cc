@@ -12,7 +12,7 @@ namespace ash {
 
 namespace {
 // The global PowerDataCollector instance.
-PowerDataCollector* g_power_data_collector = NULL;
+PowerDataCollector* g_power_data_collector = nullptr;
 }  // namespace
 
 const int PowerDataCollector::kSampleTimeLimitSec = 24 * 60 * 60;
@@ -22,13 +22,13 @@ void PowerDataCollector::Initialize() {
   // Check that power data collector is initialized only after the
   // PowerManagerClient is initialized.
   CHECK(chromeos::PowerManagerClient::Get());
-  CHECK(g_power_data_collector == NULL);
+  CHECK(g_power_data_collector == nullptr);
   g_power_data_collector = new PowerDataCollector(true);
 }
 
 void PowerDataCollector::InitializeForTesting() {
   CHECK(chromeos::PowerManagerClient::Get());
-  CHECK(g_power_data_collector == NULL);
+  CHECK(g_power_data_collector == nullptr);
   g_power_data_collector = new PowerDataCollector(false);
 }
 
@@ -37,7 +37,7 @@ void PowerDataCollector::Shutdown() {
   // Shutdown only if initialized.
   CHECK(g_power_data_collector);
   delete g_power_data_collector;
-  g_power_data_collector = NULL;
+  g_power_data_collector = nullptr;
 }
 
 // static

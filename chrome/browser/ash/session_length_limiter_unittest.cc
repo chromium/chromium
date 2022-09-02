@@ -119,9 +119,7 @@ class SessionLengthLimiterTest : public testing::Test {
 };
 
 SessionLengthLimiterTest::SessionLengthLimiterTest()
-    : user_activity_seen_(false),
-      delegate_(NULL) {
-}
+    : user_activity_seen_(false), delegate_(nullptr) {}
 
 void SessionLengthLimiterTest::SetUp() {
   TestingBrowserProcess::GetGlobal()->SetLocalState(&local_state_);
@@ -134,7 +132,7 @@ void SessionLengthLimiterTest::SetUp() {
 void SessionLengthLimiterTest::TearDown() {
   wall_clock_forwarder_.reset();
   session_length_limiter_.reset();
-  TestingBrowserProcess::GetGlobal()->SetLocalState(NULL);
+  TestingBrowserProcess::GetGlobal()->SetLocalState(nullptr);
 }
 
 void SessionLengthLimiterTest::SetSessionUserActivitySeenPref(
@@ -200,7 +198,7 @@ void SessionLengthLimiterTest::SetWaitForInitialUserActivityPref(
 
 void SessionLengthLimiterTest::SimulateUserActivity() {
   if (session_length_limiter_)
-    session_length_limiter_->OnUserActivity(NULL);
+    session_length_limiter_->OnUserActivity(nullptr);
   UpdateSessionStartTimeIfWaitingForUserActivity();
   user_activity_seen_ = true;
 }
@@ -241,7 +239,7 @@ void SessionLengthLimiterTest::CreateSessionLengthLimiter(
 
 void SessionLengthLimiterTest::DestroySessionLengthLimiter() {
   session_length_limiter_.reset();
-  delegate_ = NULL;
+  delegate_ = nullptr;
 }
 
 // Verifies that when not instructed to wait for initial user activity, the

@@ -77,13 +77,13 @@ policy::CloudPolicyStore* GetStoreForUser(const user_manager::User* user) {
   Profile* profile = ProfileHelper::Get()->GetProfileByUser(user);
   if (!profile) {
     ADD_FAILURE();
-    return NULL;
+    return nullptr;
   }
   policy::UserCloudPolicyManagerAsh* policy_manager =
       profile->GetUserCloudPolicyManagerAsh();
   if (!policy_manager) {
     ADD_FAILURE();
-    return NULL;
+    return nullptr;
   }
   return policy_manager->core()->store();
 }

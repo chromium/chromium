@@ -140,7 +140,7 @@ class LoginScreenDefaultPolicyInSessionBrowsertest
 
 LoginScreenDefaultPolicyBrowsertestBase::
     LoginScreenDefaultPolicyBrowsertestBase()
-    : login_profile_(NULL) {}
+    : login_profile_(nullptr) {}
 
 LoginScreenDefaultPolicyBrowsertestBase::
     ~LoginScreenDefaultPolicyBrowsertestBase() {}

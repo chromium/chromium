@@ -152,7 +152,7 @@ TEST_F(MobileActivatorTest, OTANoNetworkConnection) {
   // Make sure if we don't have a network connection, the mobile activator
   // connects to the network.
   EXPECT_CALL(mobile_activator_, GetDefaultNetwork())
-      .WillRepeatedly(Return(static_cast<NetworkState*>(NULL)));
+      .WillRepeatedly(Return(static_cast<NetworkState*>(nullptr)));
   EXPECT_CALL(mobile_activator_, ConnectNetwork(&cellular_network_));
   set_connection_state(shill::kStateIdle);
   set_network_activation_type(shill::kActivationTypeOTA);

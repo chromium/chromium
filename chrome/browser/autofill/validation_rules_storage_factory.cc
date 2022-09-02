@@ -32,7 +32,7 @@ ValidationRulesStorageFactory::ValidationRulesStorageFactory() {
 
   json_pref_store_ = new JsonPrefStore(
       user_data_dir.Append(FILE_PATH_LITERAL("Address Validation Rules")));
-  json_pref_store_->ReadPrefsAsync(NULL);
+  json_pref_store_->ReadPrefsAsync(nullptr);
 }
 
 ValidationRulesStorageFactory::~ValidationRulesStorageFactory() {}

@@ -122,7 +122,7 @@ void LocaleChangeGuard::Check() {
   }
 
   PrefService* prefs = profile_->GetPrefs();
-  if (prefs == NULL) {
+  if (prefs == nullptr) {
     NOTREACHED();
     return;
   }
@@ -189,7 +189,7 @@ void LocaleChangeGuard::AcceptLocaleChange() {
   if (reverted_)
     return;
   PrefService* prefs = profile_->GetPrefs();
-  if (prefs == NULL) {
+  if (prefs == nullptr) {
     NOTREACHED();
     return;
   }

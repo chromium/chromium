@@ -296,7 +296,7 @@ class SmartLockStateHandlerTest : public testing::Test {
   }
 
   void TearDown() override {
-    proximity_auth::ScreenlockBridge::Get()->SetLockHandler(NULL);
+    proximity_auth::ScreenlockBridge::Get()->SetLockHandler(nullptr);
     lock_handler_.reset();
     state_handler_.reset();
   }
@@ -484,7 +484,7 @@ TEST_F(SmartLockStateHandlerTest, StatePreservedWhenScreenUnlocks) {
             lock_handler_->GetAuthType(account_id_));
   ASSERT_TRUE(lock_handler_->HasCustomIcon());
 
-  proximity_auth::ScreenlockBridge::Get()->SetLockHandler(NULL);
+  proximity_auth::ScreenlockBridge::Get()->SetLockHandler(nullptr);
   lock_handler_ = std::make_unique<TestLockHandler>(account_id_);
   EXPECT_EQ(0u, lock_handler_->GetAndResetShowIconCount());
   proximity_auth::ScreenlockBridge::Get()->SetLockHandler(lock_handler_.get());
@@ -503,7 +503,7 @@ TEST_F(SmartLockStateHandlerTest, StateChangeWhileScreenUnlocked) {
             lock_handler_->GetAuthType(account_id_));
   ASSERT_TRUE(lock_handler_->HasCustomIcon());
 
-  proximity_auth::ScreenlockBridge::Get()->SetLockHandler(NULL);
+  proximity_auth::ScreenlockBridge::Get()->SetLockHandler(nullptr);
   lock_handler_ = std::make_unique<TestLockHandler>(account_id_);
   EXPECT_EQ(0u, lock_handler_->GetAndResetShowIconCount());
 
@@ -628,7 +628,7 @@ TEST_F(SmartLockStateHandlerTest,
 
   state_handler_->SetHardlockState(SmartLockStateHandler::NO_HARDLOCK);
 
-  proximity_auth::ScreenlockBridge::Get()->SetLockHandler(NULL);
+  proximity_auth::ScreenlockBridge::Get()->SetLockHandler(nullptr);
   lock_handler_ = std::make_unique<TestLockHandler>(account_id_);
   EXPECT_EQ(0u, lock_handler_->GetAndResetShowIconCount());
   proximity_auth::ScreenlockBridge::Get()->SetLockHandler(lock_handler_.get());
@@ -638,7 +638,7 @@ TEST_F(SmartLockStateHandlerTest,
   EXPECT_EQ(2u, lock_handler_->GetAndResetShowIconCount());
   EXPECT_TRUE(lock_handler_->HasCustomIcon());
 
-  proximity_auth::ScreenlockBridge::Get()->SetLockHandler(NULL);
+  proximity_auth::ScreenlockBridge::Get()->SetLockHandler(nullptr);
   lock_handler_ = std::make_unique<TestLockHandler>(account_id_);
   EXPECT_EQ(0u, lock_handler_->GetAndResetShowIconCount());
   proximity_auth::ScreenlockBridge::Get()->SetLockHandler(lock_handler_.get());
@@ -662,7 +662,7 @@ TEST_F(SmartLockStateHandlerTest, HardlockStatePersistsOverUnlocks) {
   state_handler_->SetHardlockState(SmartLockStateHandler::USER_HARDLOCK);
   EXPECT_EQ(2u, lock_handler_->GetAndResetShowIconCount());
 
-  proximity_auth::ScreenlockBridge::Get()->SetLockHandler(NULL);
+  proximity_auth::ScreenlockBridge::Get()->SetLockHandler(nullptr);
   lock_handler_ = std::make_unique<TestLockHandler>(account_id_);
   EXPECT_EQ(0u, lock_handler_->GetAndResetShowIconCount());
   proximity_auth::ScreenlockBridge::Get()->SetLockHandler(lock_handler_.get());

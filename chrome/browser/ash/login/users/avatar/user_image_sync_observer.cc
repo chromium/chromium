@@ -38,7 +38,7 @@ bool IsIndexSupported(int index) {
 
 UserImageSyncObserver::UserImageSyncObserver(const user_manager::User* user)
     : user_(user),
-      prefs_(NULL),
+      prefs_(nullptr),
       is_synced_(false),
       local_image_changed_(false) {
   user_manager::UserManager::Get()->AddObserver(this);

@@ -185,7 +185,7 @@ class DeviceCloudPolicyManagerAshTest
 
   ~DeviceCloudPolicyManagerAshTest() override {
     session_manager_client_.RemoveObserver(this);
-    chromeos::system::StatisticsProvider::SetTestProvider(NULL);
+    chromeos::system::StatisticsProvider::SetTestProvider(nullptr);
   }
 
   virtual bool ShouldRegisterWithCert() const { return false; }

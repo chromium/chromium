@@ -75,7 +75,7 @@ void UserImageFileSelector::SelectFile(
   select_file_dialog_->SelectFile(
       ui::SelectFileDialog::SELECT_OPEN_FILE,
       l10n_util::GetStringUTF16(IDS_DOWNLOAD_TITLE), downloads_path,
-      &file_type_info, 0, FILE_PATH_LITERAL(""), GetBrowserWindow(), NULL);
+      &file_type_info, 0, FILE_PATH_LITERAL(""), GetBrowserWindow(), nullptr);
 }
 
 gfx::NativeWindow UserImageFileSelector::GetBrowserWindow() {

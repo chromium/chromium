@@ -176,7 +176,7 @@ history::URLDatabase* ChromeAutocompleteProviderClient::GetInMemoryDatabase() {
 
   // This method is called in unit test contexts where the HistoryService isn't
   // loaded.
-  return history_service ? history_service->InMemoryDatabase() : NULL;
+  return history_service ? history_service->InMemoryDatabase() : nullptr;
 }
 
 InMemoryURLIndex* ChromeAutocompleteProviderClient::GetInMemoryURLIndex() {

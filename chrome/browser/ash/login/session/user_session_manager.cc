@@ -689,11 +689,11 @@ scoped_refptr<Authenticator> UserSessionManager::CreateAuthenticator(
   // Screen locker needs new Authenticator instance each time.
   if (ScreenLocker::default_screen_locker()) {
     if (authenticator_.get())
-      authenticator_->SetConsumer(NULL);
+      authenticator_->SetConsumer(nullptr);
     authenticator_.reset();
   }
 
-  if (authenticator_.get() == NULL) {
+  if (authenticator_.get() == nullptr) {
     if (injected_authenticator_builder_) {
       authenticator_ = injected_authenticator_builder_->Create(consumer);
     } else if (base::FeatureList::IsEnabled(
@@ -873,7 +873,7 @@ bool UserSessionManager::RespectLocalePreference(
     locale_util::SwitchLanguageCallback callback) const {
   // TODO(alemate): http://crbug.com/288941 : Respect preferred language list in
   // the Google user profile.
-  if (g_browser_process == NULL)
+  if (g_browser_process == nullptr)
     return false;
 
   user_manager::UserManager* user_manager = user_manager::UserManager::Get();
@@ -888,7 +888,7 @@ bool UserSessionManager::RespectLocalePreference(
     return false;
 
   PrefService* prefs = profile->GetPrefs();
-  if (prefs == NULL)
+  if (prefs == nullptr)
     return false;
 
   std::string pref_locale;
@@ -927,7 +927,7 @@ bool UserSessionManager::RespectLocalePreference(
   VLOG(1) << "RespectLocalePreference: "
           << "app_locale='" << pref_app_locale << "', "
           << "bkup_locale='" << pref_bkup_locale << "', "
-          << (account_locale != NULL
+          << (account_locale != nullptr
                   ? (std::string("account_locale='") + (*account_locale) +
                      "'. ")
                   : (std::string("account_locale - unused. ")))

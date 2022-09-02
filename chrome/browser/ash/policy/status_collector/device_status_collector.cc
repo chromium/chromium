@@ -2962,7 +2962,7 @@ bool DeviceStatusCollector::IsReportingActivityTimes() const {
     return false;
   }
   std::string user_email = GetUserForActivityReporting();
-  return !user_email.empty() && !IsDeviceLocalAccountUser(user_email, NULL);
+  return !user_email.empty() && !IsDeviceLocalAccountUser(user_email, nullptr);
 }
 bool DeviceStatusCollector::IsReportingNetworkData() const {
   return report_network_configuration_ || report_network_status_;
@@ -2981,7 +2981,7 @@ bool DeviceStatusCollector::IsReportingUsers() const {
     return false;
   }
   std::string user_email = GetUserForActivityReporting();
-  return !user_email.empty() && !IsDeviceLocalAccountUser(user_email, NULL);
+  return !user_email.empty() && !IsDeviceLocalAccountUser(user_email, nullptr);
 }
 bool DeviceStatusCollector::IsReportingCrashReportInfo() const {
   return report_crash_report_info_ && stat_reporting_pref_;

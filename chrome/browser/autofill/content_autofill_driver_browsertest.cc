@@ -88,7 +88,7 @@ class ContentAutofillDriverBrowserTest : public InProcessBrowserTest,
         std::make_unique<testing::NiceMock<MockAutofillClient>>();
     content::WebContents* web_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
-    ASSERT_TRUE(web_contents != NULL);
+    ASSERT_TRUE(web_contents != nullptr);
     Observe(web_contents);
     prefs::RegisterProfilePrefs(autofill_client().GetPrefRegistry());
 

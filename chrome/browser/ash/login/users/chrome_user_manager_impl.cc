@@ -31,6 +31,7 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -278,7 +279,7 @@ ChromeUserManagerImpl::ChromeUserManagerImpl()
                             ? base::ThreadTaskRunnerHandle::Get()
                             : nullptr),
       cros_settings_(CrosSettings::Get()),
-      device_local_account_policy_service_(NULL),
+      device_local_account_policy_service_(nullptr),
       supervised_user_manager_(new SupervisedUserManagerImpl(this)) {
   UpdateNumberOfUsers();
 
@@ -680,7 +681,7 @@ const std::string& ChromeUserManagerImpl::GetApplicationLocale() const {
 }
 
 PrefService* ChromeUserManagerImpl::GetLocalState() const {
-  return g_browser_process ? g_browser_process->local_state() : NULL;
+  return g_browser_process ? g_browser_process->local_state() : nullptr;
 }
 
 bool ChromeUserManagerImpl::IsEnterpriseManaged() const {
@@ -869,17 +870,13 @@ void ChromeUserManagerImpl::KioskAppLoggedIn(user_manager::User* user) {
   // device-local account list here to extract the kiosk_app_id.
   const std::vector<policy::DeviceLocalAccount> device_local_accounts =
       policy::GetDeviceLocalAccounts(cros_settings_);
-  const policy::DeviceLocalAccount* account = NULL;
-  for (std::vector<policy::DeviceLocalAccount>::const_iterator it =
-           device_local_accounts.begin();
-       it != device_local_accounts.end(); ++it) {
-    if (it->user_id == kiosk_app_account_id.GetUserEmail()) {
-      account = &*it;
-      break;
-    }
-  }
+  const auto account = base::ranges::find_if(
+      device_local_accounts,
+      [&kiosk_app_account_id](const policy::DeviceLocalAccount& account) {
+        return account.user_id == kiosk_app_account_id.GetUserEmail();
+      });
   std::string kiosk_app_id;
-  if (account) {
+  if (account != device_local_accounts.end()) {
     kiosk_app_id = account->kiosk_app_id;
   } else {
     LOG(ERROR) << "Logged into nonexistent kiosk-app account: "
@@ -1227,7 +1224,7 @@ void ChromeUserManagerImpl::UpdateNumberOfUsers() {
 void ChromeUserManagerImpl::UpdateUserTimeZoneRefresher(Profile* profile) {
   const user_manager::User* user =
       ProfileHelper::Get()->GetUserByProfile(profile);
-  if (user == NULL)
+  if (user == nullptr)
     return;
 
   // In Multi-Profile mode only primary user settings are in effect.

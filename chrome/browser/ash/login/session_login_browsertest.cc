@@ -79,16 +79,16 @@ IN_PROC_BROWSER_TEST_F(BrowserLoginTest, BrowserActive) {
 
   Browser* browser =
       chrome::FindAnyBrowser(ProfileManager::GetActiveUserProfile(), false);
-  EXPECT_TRUE(browser != NULL);
+  EXPECT_TRUE(browser != nullptr);
   EXPECT_TRUE(browser->window()->IsActive());
 
   gfx::NativeWindow window = browser->window()->GetNativeWindow();
   views::Widget* widget = views::Widget::GetWidgetForNativeWindow(window);
   views::FocusManager* focus_manager = widget->GetFocusManager();
-  EXPECT_TRUE(focus_manager != NULL);
+  EXPECT_TRUE(focus_manager != nullptr);
 
   const views::View* focused_view = focus_manager->GetFocusedView();
-  EXPECT_TRUE(focused_view != NULL);
+  EXPECT_TRUE(focused_view != nullptr);
   EXPECT_EQ(VIEW_ID_OMNIBOX, focused_view->GetID());
 }
 

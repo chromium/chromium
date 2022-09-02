@@ -216,7 +216,7 @@ void MobileActivator::OnPortalLoaded(bool success) {
 void MobileActivator::HandlePortalLoaded(bool success) {
   const NetworkState* network = GetNetworkState(service_path_);
   if (!network) {
-    ChangeState(NULL, PlanActivationState::kError,
+    ChangeState(nullptr, PlanActivationState::kError,
                 ActivationError::kNoCellularService);
     return;
   }
@@ -234,7 +234,7 @@ void MobileActivator::HandlePortalLoaded(bool success) {
 
       payment_reconnect_count_++;
       if (payment_reconnect_count_ > kMaxPortalReconnectCount) {
-        ChangeState(NULL, PlanActivationState::kError,
+        ChangeState(nullptr, PlanActivationState::kError,
                     ActivationError::kNoCellularService);
         return;
       }
@@ -269,7 +269,7 @@ void MobileActivator::StartActivation() {
     } else {
       error = ActivationError::kNoCellularService;
     }
-    ChangeState(NULL, PlanActivationState::kError, error);
+    ChangeState(nullptr, PlanActivationState::kError, error);
     return;
   }
 

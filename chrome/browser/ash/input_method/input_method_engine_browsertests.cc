@@ -129,7 +129,7 @@ class InputMethodEngineBrowserTest
             test_data_dir_.AppendASCII(extension_name));
     }
     NOTREACHED();
-    return NULL;
+    return nullptr;
   }
 
   const extensions::Extension* extension_;

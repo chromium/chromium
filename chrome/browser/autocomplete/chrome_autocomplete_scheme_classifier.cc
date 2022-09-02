@@ -67,7 +67,7 @@ ChromeAutocompleteSchemeClassifier::GetInputTypeForScheme(
   // can be handled by web pages/apps.
   custom_handlers::ProtocolHandlerRegistry* registry =
       profile_ ? ProtocolHandlerRegistryFactory::GetForBrowserContext(profile_)
-               : NULL;
+               : nullptr;
   if (registry && registry->IsHandledProtocol(scheme))
     return metrics::OmniboxInputType::URL;
 

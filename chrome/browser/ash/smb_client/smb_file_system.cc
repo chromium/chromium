@@ -169,7 +169,7 @@ SmbFileSystem::GetFileSystemInfo() const {
 
 file_system_provider::RequestManager* SmbFileSystem::GetRequestManager() {
   NOTREACHED();
-  return NULL;
+  return nullptr;
 }
 
 file_system_provider::Watchers* SmbFileSystem::GetWatchers() {

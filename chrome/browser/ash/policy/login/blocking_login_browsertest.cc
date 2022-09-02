@@ -90,7 +90,7 @@ class BlockingLoginTest
       public content::NotificationObserver,
       public testing::WithParamInterface<BlockingLoginTestParam> {
  public:
-  BlockingLoginTest() : profile_added_(NULL) {}
+  BlockingLoginTest() : profile_added_(nullptr) {}
 
   BlockingLoginTest(const BlockingLoginTest&) = delete;
   BlockingLoginTest& operator=(const BlockingLoginTest&) = delete;

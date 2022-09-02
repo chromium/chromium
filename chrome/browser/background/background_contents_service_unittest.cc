@@ -235,7 +235,7 @@ TEST_F(BackgroundContentsServiceTest, TestApplicationIDLinkage) {
   TestingProfile profile;
   BackgroundContentsService service(&profile, command_line_.get());
 
-  EXPECT_EQ(NULL, service.GetAppBackgroundContents("appid"));
+  EXPECT_EQ(nullptr, service.GetAppBackgroundContents("appid"));
   MockBackgroundContents* contents =
       AddToService(std::make_unique<MockBackgroundContents>(&service, "appid"));
   MockBackgroundContents* contents2 = AddToService(

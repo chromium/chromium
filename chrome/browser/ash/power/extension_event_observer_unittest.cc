@@ -70,7 +70,7 @@ class ExtensionEventObserverTest : public ChromeRenderViewHostTestHarness {
 
   void TearDown() override {
     extension_event_observer_.reset();
-    profile_ = NULL;
+    profile_ = nullptr;
     profile_manager_->DeleteAllTestingProfiles();
     profile_manager_.reset();
     chromeos::PowerManagerClient::Shutdown();
