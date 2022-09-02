@@ -9,7 +9,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-class AppCapabilityAccessCacheTest
+class AppCapabilityAccessCacheMojomTest
     : public testing::Test,
       public apps::AppCapabilityAccessCache::Observer {
  protected:
@@ -75,16 +75,16 @@ class AppCapabilityAccessCacheTest
 // observer.OnCapabilityAccessUpdate calls
 // app_capability_access.OnCapabilityAccesses which calls
 // observer.OnCapabilityAccessUpdate.
-class CapabilityAccessRecursiveObserver
+class CapabilityAccessRecursiveObserverMojom
     : public apps::AppCapabilityAccessCache::Observer {
  public:
-  explicit CapabilityAccessRecursiveObserver(
+  explicit CapabilityAccessRecursiveObserverMojom(
       apps::AppCapabilityAccessCache* cache)
       : cache_(cache) {
     Observe(cache);
   }
 
-  ~CapabilityAccessRecursiveObserver() override = default;
+  ~CapabilityAccessRecursiveObserverMojom() override = default;
 
   void PrepareForOnCapabilityAccesses(
       int expected_num_apps,
@@ -198,7 +198,7 @@ class CapabilityAccessRecursiveObserver
   std::vector<apps::mojom::CapabilityAccessPtr> super_recursive_accesses_;
 };
 
-TEST_F(AppCapabilityAccessCacheTest, ForEachApp) {
+TEST_F(AppCapabilityAccessCacheMojomTest, ForEachApp) {
   std::vector<apps::mojom::CapabilityAccessPtr> deltas;
   apps::AppCapabilityAccessCache cache;
   cache.SetAccountId(account_id());
@@ -262,7 +262,7 @@ TEST_F(AppCapabilityAccessCacheTest, ForEachApp) {
   EXPECT_FALSE(found_e);
 }
 
-TEST_F(AppCapabilityAccessCacheTest, Observer) {
+TEST_F(AppCapabilityAccessCacheMojomTest, Observer) {
   std::vector<apps::mojom::CapabilityAccessPtr> deltas;
   apps::AppCapabilityAccessCache cache;
   cache.SetAccountId(account_id());
@@ -313,11 +313,11 @@ TEST_F(AppCapabilityAccessCacheTest, Observer) {
   EXPECT_EQ(0u, accessing_microphone_apps_.size());
 }
 
-TEST_F(AppCapabilityAccessCacheTest, Recursive) {
+TEST_F(AppCapabilityAccessCacheMojomTest, Recursive) {
   std::vector<apps::mojom::CapabilityAccessPtr> deltas;
   apps::AppCapabilityAccessCache cache;
   cache.SetAccountId(account_id());
-  CapabilityAccessRecursiveObserver observer(&cache);
+  CapabilityAccessRecursiveObserverMojom observer(&cache);
 
   observer.PrepareForOnCapabilityAccesses(2);
   deltas.clear();
@@ -353,11 +353,11 @@ TEST_F(AppCapabilityAccessCacheTest, Recursive) {
             observer.accessing_microphone_apps());
 }
 
-TEST_F(AppCapabilityAccessCacheTest, SuperRecursive) {
+TEST_F(AppCapabilityAccessCacheMojomTest, SuperRecursive) {
   std::vector<apps::mojom::CapabilityAccessPtr> deltas;
   apps::AppCapabilityAccessCache cache;
   cache.SetAccountId(account_id());
-  CapabilityAccessRecursiveObserver observer(&cache);
+  CapabilityAccessRecursiveObserverMojom observer(&cache);
 
   // Set up a series of OnCapabilityAccesses to be called during
   // observer.OnCapabilityAccessUpdate:
