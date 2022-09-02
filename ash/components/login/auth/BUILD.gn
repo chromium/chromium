@@ -78,6 +78,8 @@ component("auth") {
     "mount_performer.h",
     "password_visibility_utils.cc",
     "password_visibility_utils.h",
+    "recovery/service_constants.cc",
+    "recovery/service_constants.h",
     "safe_mode_delegate.h",
     "stub_authenticator.cc",
     "stub_authenticator.h",
