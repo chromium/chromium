@@ -1,0 +1,14 @@
+{
+  "short_name": "Password Manager",
+  "name": "Password Manager",
+  "icons": [
+    {
+      "src": "chrome://theme/current-channel-logo",
+      "type": "image/png",
+      "sizes": "32x32"
+    }
+  ],
+  "start_url": "/?source=pwa",
+  "display": "standalone",
+  "scope": "chrome://password-manager/"
+}

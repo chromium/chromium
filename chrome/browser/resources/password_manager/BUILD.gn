@@ -6,7 +6,10 @@ import("//chrome/browser/resources/tools/build_webui.gni")
 
 build_webui("build") {
   grd_prefix = "password_manager"
-  static_files = [ "password_manager.html" ]
+  static_files = [
+    "password_manager.html",
+    "manifest.webmanifest",
+  ]
   web_component_files = [
     "password_manager_app.ts",
     "side_bar.ts",
