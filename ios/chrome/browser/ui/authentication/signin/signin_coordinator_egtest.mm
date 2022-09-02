@@ -228,6 +228,49 @@ void ExpectSyncConsentHistogram(
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
 }
 
+// Tests that signing out from an unsupervised account without clearing data
+// and then signing in to a supervised account performs a local data clearing
+// on sign-in.
+- (void)testSwitchToSupervisedUser {
+  // Add a fake supervised identity to the device.
+  FakeChromeIdentity* fakeSupervisedIdentity =
+      [FakeChromeIdentity fakeIdentity1];
+  SetParentalControlsCapabilityForIdentity(fakeSupervisedIdentity);
+
+  // Add a fake identity to the device.
+  FakeChromeIdentity* fakeIdentity = [FakeChromeIdentity fakeIdentity2];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+
+  // Sign in with fake identity.
+  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
+
+  // Add a bookmark after sync is initialized.
+  [ChromeEarlGrey waitForSyncInitialized:YES syncTimeout:kSyncOperationTimeout];
+  [ChromeEarlGrey waitForBookmarksToFinishLoading];
+  [BookmarkEarlGrey setupStandardBookmarks];
+
+  // Sign out with option to keep local data.
+  [SigninEarlGreyUI
+      signOutWithConfirmationChoice:SignOutConfirmationChoiceKeepData];
+
+  // Sign in with fake supervised identity.
+  [SigninEarlGreyUI signinWithFakeIdentity:fakeSupervisedIdentity];
+
+  // Verify bookmarks are cleared.
+  [BookmarkEarlGreyUI openBookmarks];
+  ConditionBlock condition = ^{
+    NSError* error = nil;
+    [[EarlGrey selectElementWithMatcher:grey_text(l10n_util::GetNSString(
+                                            IDS_IOS_BOOKMARK_EMPTY_TITLE))]
+        assertWithMatcher:grey_notVisible()
+                    error:&error];
+    return error == nil;
+  };
+  GREYAssert(base::test::ios::WaitUntilConditionOrTimeout(
+                 base::test::ios::kWaitForUIElementTimeout, condition),
+             @"Waiting for bookmarks to be cleared");
+}
+
 // Tests that signing out a supervised user account with the keep local data
 // option is honored.
 - (void)testSignOutWithKeepDataForSupervisedUser {
