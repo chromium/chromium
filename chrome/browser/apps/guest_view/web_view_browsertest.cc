@@ -5899,19 +5899,19 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessWebViewTest, NavigateToAboutBlank) {
 
   // Load an app with a <webview> guest that starts at a data: URL.
   LoadAppWithGuest("web_view/simple");
-  content::WebContents* guest = GetGuestWebContents();
-  ASSERT_TRUE(guest);
+  ASSERT_TRUE(GetGuestRenderFrameHost());
   scoped_refptr<content::SiteInstance> first_instance =
-      guest->GetPrimaryMainFrame()->GetSiteInstance();
+      GetGuestRenderFrameHost()->GetSiteInstance();
   EXPECT_TRUE(first_instance->IsGuest());
   EXPECT_TRUE(first_instance->GetProcess()->IsForGuestsOnly());
 
   // Ask <webview> to navigate itself to about:blank.  This should stay in the
   // same SiteInstance.
   const GURL blank_url(url::kAboutBlankURL);
-  EXPECT_TRUE(content::NavigateToURLFromRenderer(guest, blank_url));
+  EXPECT_TRUE(
+      content::NavigateToURLFromRenderer(GetGuestRenderFrameHost(), blank_url));
   scoped_refptr<content::SiteInstance> second_instance =
-      guest->GetPrimaryMainFrame()->GetSiteInstance();
+      GetGuestRenderFrameHost()->GetSiteInstance();
   EXPECT_EQ(first_instance, second_instance);
 
   // Navigate <webview> away to another page.  This should swap
@@ -5919,8 +5919,9 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessWebViewTest, NavigateToAboutBlank) {
   const GURL second_url =
       embedded_test_server()->GetURL("b.test", "/title1.html");
   EXPECT_TRUE(BrowserInitNavigationToUrl(GetGuestView(), second_url));
+  ASSERT_TRUE(GetGuestRenderFrameHost());
   scoped_refptr<content::SiteInstance> third_instance =
-      guest->GetPrimaryMainFrame()->GetSiteInstance();
+      GetGuestRenderFrameHost()->GetSiteInstance();
   EXPECT_TRUE(third_instance->IsGuest());
   EXPECT_TRUE(third_instance->GetProcess()->IsForGuestsOnly());
   EXPECT_NE(first_instance, third_instance);
@@ -5934,14 +5935,15 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessWebViewTest, NavigateToAboutBlank) {
   // stay in the same SiteInstance.
   content::WebContents* embedder = GetEmbedderWebContents();
   {
-    content::TestNavigationObserver load_observer(guest);
+    content::TestFrameNavigationObserver load_observer(
+        GetGuestRenderFrameHost());
     EXPECT_TRUE(ExecuteScript(
         embedder,
         "document.querySelector('webview').src = '" + blank_url.spec() + "';"));
     load_observer.Wait();
   }
   scoped_refptr<content::SiteInstance> fourth_instance =
-      guest->GetPrimaryMainFrame()->GetSiteInstance();
+      GetGuestRenderFrameHost()->GetSiteInstance();
   EXPECT_EQ(fourth_instance, third_instance);
 }
 
