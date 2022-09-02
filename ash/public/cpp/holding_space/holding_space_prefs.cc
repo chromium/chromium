@@ -11,13 +11,16 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 
-namespace ash {
-namespace holding_space_prefs {
+namespace ash::holding_space_prefs {
 
 namespace {
 
 // Boolean preference storing if holding space previews are enabled.
 constexpr char kPreviewsEnabled[] = "ash.holding_space.previews_enabled";
+
+// Boolean preference storing if holding space suggestions is expanded.
+constexpr char kSuggestionsExpanded[] =
+    "ash.holding_space.suggestions_expanded";
 
 // Time preference storing when an item was first added to holding space.
 constexpr char kTimeOfFirstAdd[] = "ash.holding_space.time_of_first_add";
@@ -43,6 +46,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   // Boolean prefs.
   registry->RegisterBooleanPref(
       kPreviewsEnabled, !features::IsHoldingSpacePredictabilityEnabled());
+  registry->RegisterBooleanPref(kSuggestionsExpanded, true);
 
   // Time prefs.
   const base::Time unix_epoch = base::Time::UnixEpoch();
@@ -67,6 +71,11 @@ void AddPreviewsEnabledChangedCallback(PrefChangeRegistrar* registrar,
   registrar->Add(kPreviewsEnabled, std::move(callback));
 }
 
+void AddSuggestionsExpandedChangedCallback(PrefChangeRegistrar* registrar,
+                                           base::RepeatingClosure callback) {
+  registrar->Add(kSuggestionsExpanded, std::move(callback));
+}
+
 void AddTimeOfFirstAddChangedCallback(PrefChangeRegistrar* registrar,
                                       base::RepeatingClosure callback) {
   registrar->Add(kTimeOfFirstAdd, std::move(callback));
@@ -78,6 +87,14 @@ bool IsPreviewsEnabled(PrefService* prefs) {
 
 void SetPreviewsEnabled(PrefService* prefs, bool enabled) {
   prefs->SetBoolean(kPreviewsEnabled, enabled);
+}
+
+bool IsSuggestionsExpanded(PrefService* prefs) {
+  return prefs->GetBoolean(kSuggestionsExpanded);
+}
+
+void SetSuggestionsExpanded(PrefService* prefs, bool expanded) {
+  prefs->SetBoolean(kSuggestionsExpanded, expanded);
 }
 
 absl::optional<base::Time> GetTimeOfFirstAdd(PrefService* prefs) {
@@ -158,5 +175,4 @@ bool MarkTimeOfFirstFilesAppChipPress(PrefService* prefs) {
   return false;
 }
 
-}  // namespace holding_space_prefs
-}  // namespace ash
+}  // namespace ash::holding_space_prefs

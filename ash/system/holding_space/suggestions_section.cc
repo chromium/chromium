@@ -9,13 +9,17 @@
 #include "ash/bubble/bubble_utils.h"
 #include "ash/bubble/simple_grid_layout.h"
 #include "ash/public/cpp/holding_space/holding_space_constants.h"
+#include "ash/public/cpp/holding_space/holding_space_prefs.h"
 #include "ash/resources/vector_icons/vector_icons.h"
+#include "ash/session/session_controller_impl.h"
+#include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/holding_space/holding_space_item_chip_view.h"
 #include "ash/system/holding_space/holding_space_util.h"
 #include "base/bind.h"
 #include "base/i18n/rtl.h"
+#include "components/prefs/pref_change_registrar.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -82,6 +86,17 @@ class Header : public views::Button {
             },
             base::Unretained(chevron_))));
     views::FocusRing::Get(this)->SetColorId(ui::kColorAshFocusRing);
+
+    auto* prefs = Shell::Get()->session_controller()->GetActivePrefService();
+    pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
+    pref_change_registrar_->Init(prefs);
+
+    // NOTE: The binding of this callback is scoped to `pref_change_registrar_`,
+    // which is owned by `this`, so it is safe to bind with an unretained raw
+    // pointer.
+    holding_space_prefs::AddSuggestionsExpandedChangedCallback(
+        pref_change_registrar_.get(),
+        base::BindRepeating(&Header::UpdateChevron, base::Unretained(this)));
   }
 
  private:
@@ -94,13 +109,15 @@ class Header : public views::Button {
   void OnPressed() {
     // TODO(crbug/1358547): Record toggling the suggestions section's expanded
     // state in a histogram.
-    expanded_ = !expanded_;
-    UpdateChevron();
+    auto* prefs = Shell::Get()->session_controller()->GetActivePrefService();
+    holding_space_prefs::SetSuggestionsExpanded(
+        prefs, !holding_space_prefs::IsSuggestionsExpanded(prefs));
   }
 
   // Sets the header's `chevron_` icon to the correct color (based on theme) and
   // orientation (based on whether the `section_` is `expanded_`).
   void UpdateChevron() {
+    auto* prefs = Shell::Get()->session_controller()->GetActivePrefService();
     chevron_->SetImage(gfx::ImageSkiaOperations::CreateRotatedImage(
         gfx::CreateVectorIcon(
             kChevronRightIcon, kHoldingSpaceSectionChevronIconSize,
@@ -110,17 +127,18 @@ class Header : public views::Button {
         // `kChevronUpIcon` or `kChevronDownIcon`, which both have different
         // internal padding and therefore appear as a different size than the
         // downloads section's chevron.
-        expanded_ ? SkBitmapOperations::ROTATION_270_CW
-                  : SkBitmapOperations::ROTATION_90_CW));
+        holding_space_prefs::IsSuggestionsExpanded(prefs)
+            ? SkBitmapOperations::ROTATION_270_CW
+            : SkBitmapOperations::ROTATION_90_CW));
   }
 
   // Owned by view hierarchy.
   views::ImageView* chevron_ = nullptr;
 
-  // Determines the orientation of `chevron_`.
-  // TODO(crbug/1358331): Update this comment when expanded state also affects
-  // whether suggestions are shown.
-  bool expanded_ = true;
+  // The user can expand and collapse the suggestions section by activating the
+  // section header. This registrar is associated with the active user pref
+  // service and notifies the header of changes to the user's preference.
+  std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
 };
 
 }  // namespace

@@ -1143,7 +1143,7 @@ TEST_P(HoldingSpaceTrayTest, PlaceholderHiddenAfterFilesAppChipPressed) {
 
 // User should be able to expand and collapse the suggestions section by
 // pressing the enter key on the suggestions section header.
-TEST_P(HoldingSpaceTrayTest, EnterKeyTogglesSuggestionsShown) {
+TEST_P(HoldingSpaceTrayTest, EnterKeyTogglesSuggestionsExpanded) {
   StartSession();
 
   // Add a suggested item.
@@ -1160,8 +1160,12 @@ TEST_P(HoldingSpaceTrayTest, EnterKeyTogglesSuggestionsShown) {
   ASSERT_TRUE(suggestions_section_header);
   EXPECT_TRUE(PressTabUntilFocused(suggestions_section_header));
 
-  // Cache expected icons in preparation for verifying that the section header's
-  // chevron icon flips to indicate the section's expanded state.
+  // Cache `prefs` and expected chevron icons in preparation for verifying that
+  // activating the section header toggles whether the section is expanded.
+  AccountId account_id = AccountId::FromUserEmail(kTestUser);
+  auto* prefs = GetSessionControllerClient()->GetUserPrefService(account_id);
+  ASSERT_TRUE(prefs);
+
   const auto chevron_expanded_skia =
       gfx::ImageSkiaOperations::CreateRotatedImage(
           gfx::CreateVectorIcon(
@@ -1178,7 +1182,8 @@ TEST_P(HoldingSpaceTrayTest, EnterKeyTogglesSuggestionsShown) {
                   AshColorProvider::ContentLayerType::kIconColorSecondary)),
           SkBitmapOperations::ROTATION_90_CW);
 
-  // Verify that the section starts out in an expanded state.
+  // Verify that the section starts out expanded.
+  EXPECT_TRUE(holding_space_prefs::IsSuggestionsExpanded(prefs));
   EXPECT_TRUE(gfx::BitmapsAreEqual(
       *test_api()->GetSuggestionsSectionChevronIcon()->GetImage().bitmap(),
       *chevron_expanded_skia.bitmap()));
@@ -1186,7 +1191,8 @@ TEST_P(HoldingSpaceTrayTest, EnterKeyTogglesSuggestionsShown) {
   // Press ENTER and expect an attempt to collapse the suggestions section.
   PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN);
 
-  // Verify that the section is in a collapsed state.
+  // Verify that the section is not expanded.
+  EXPECT_FALSE(holding_space_prefs::IsSuggestionsExpanded(prefs));
   EXPECT_TRUE(gfx::BitmapsAreEqual(
       *test_api()->GetSuggestionsSectionChevronIcon()->GetImage().bitmap(),
       *chevron_collapsed_skia.bitmap()));
@@ -1194,7 +1200,8 @@ TEST_P(HoldingSpaceTrayTest, EnterKeyTogglesSuggestionsShown) {
   // Press ENTER and expect an attempt to expand the section.
   PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN);
 
-  // Verify that the section is in an expanded state.
+  // Verify that the section is expanded.
+  EXPECT_TRUE(holding_space_prefs::IsSuggestionsExpanded(prefs));
   EXPECT_TRUE(gfx::BitmapsAreEqual(
       *test_api()->GetSuggestionsSectionChevronIcon()->GetImage().bitmap(),
       *chevron_expanded_skia.bitmap()));

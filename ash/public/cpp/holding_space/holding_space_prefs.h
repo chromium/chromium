@@ -17,8 +17,7 @@ namespace base {
 class Time;
 }  // namespace base
 
-namespace ash {
-namespace holding_space_prefs {
+namespace ash::holding_space_prefs {
 
 // Registers holding space profile preferences to `registry`.
 ASH_PUBLIC_EXPORT void RegisterProfilePrefs(PrefRegistrySimple* registry);
@@ -28,6 +27,12 @@ ASH_PUBLIC_EXPORT void ResetProfilePrefsForTesting(PrefService* prefs);
 
 // Adds `callback` to `registrar` to be invoked on changes to previews enabled.
 ASH_PUBLIC_EXPORT void AddPreviewsEnabledChangedCallback(
+    PrefChangeRegistrar* registrar,
+    base::RepeatingClosure callback);
+
+// Adds `callback` to `registrar` to be invoked on changes to whether the
+// suggestions section should be expanded.
+ASH_PUBLIC_EXPORT void AddSuggestionsExpandedChangedCallback(
     PrefChangeRegistrar* registrar,
     base::RepeatingClosure callback);
 
@@ -41,6 +46,13 @@ ASH_PUBLIC_EXPORT bool IsPreviewsEnabled(PrefService* prefs);
 
 // Sets whether previews are `enabled`.
 ASH_PUBLIC_EXPORT void SetPreviewsEnabled(PrefService* prefs, bool enabled);
+
+// Returns whether suggestions are expanded.
+ASH_PUBLIC_EXPORT bool IsSuggestionsExpanded(PrefService* prefs);
+
+// Sets whether suggestions are `expanded`.
+ASH_PUBLIC_EXPORT void SetSuggestionsExpanded(PrefService* prefs,
+                                              bool expanded);
 
 // Returns the time when a holding space item was first added. Note that if the
 // time of first add is unmarked, `absl::nullopt` is returned.
@@ -89,7 +101,6 @@ ASH_PUBLIC_EXPORT absl::optional<base::Time> GetTimeOfFirstFilesAppChipPress(
 // previously marked, this no-ops and returns false.
 ASH_PUBLIC_EXPORT bool MarkTimeOfFirstFilesAppChipPress(PrefService* prefs);
 
-}  // namespace holding_space_prefs
-}  // namespace ash
+}  // namespace ash::holding_space_prefs
 
 #endif  // ASH_PUBLIC_CPP_HOLDING_SPACE_HOLDING_SPACE_PREFS_H_
