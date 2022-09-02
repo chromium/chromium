@@ -66,8 +66,15 @@ class AutofillDriverIOS : public AutofillDriver {
   void SendFieldsEligibleForManualFillingToRenderer(
       const std::vector<FieldGlobalId>& fields) override;
 
+  AutofillClient* client() { return client_; }
+
+  void set_autofill_manager_for_testing(
+      std::unique_ptr<BrowserAutofillManager> browser_autofill_manager) {
+    browser_autofill_manager_ = std::move(browser_autofill_manager);
+  }
+
   BrowserAutofillManager* autofill_manager() {
-    return &browser_autofill_manager_;
+    return browser_autofill_manager_.get();
   }
 
   void RendererShouldFillFieldWithValue(const FieldGlobalId& field,
@@ -108,9 +115,12 @@ class AutofillDriverIOS : public AutofillDriver {
   // been enabled and the forms have been extracted).
   bool processed_ = false;
 
+  // The embedder's AutofillClient instance.
+  AutofillClient* client_;
+
   // BrowserAutofillManager instance via which this object drives the shared
   // Autofill code.
-  BrowserAutofillManager browser_autofill_manager_;
+  std::unique_ptr<BrowserAutofillManager> browser_autofill_manager_;
 };
 
 }  // namespace autofill

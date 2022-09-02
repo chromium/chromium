@@ -54,10 +54,12 @@ AutofillDriverIOS::AutofillDriverIOS(
     AutofillManager::EnableDownloadManager enable_download_manager)
     : web_state_(web_state),
       bridge_(bridge),
-      browser_autofill_manager_(this,
-                                client,
-                                app_locale,
-                                enable_download_manager) {
+      client_(client),
+      browser_autofill_manager_(
+          std::make_unique<BrowserAutofillManager>(this,
+                                                   client,
+                                                   app_locale,
+                                                   enable_download_manager)) {
   web_frame_id_ = web::GetWebFrameId(web_frame);
 }
 
@@ -118,7 +120,7 @@ std::vector<FieldGlobalId> AutofillDriverIOS::FillOrPreviewForm(
 
 void AutofillDriverIOS::HandleParsedForms(const std::vector<FormData>& forms) {
   const std::map<FormGlobalId, std::unique_ptr<FormStructure>>& map =
-      browser_autofill_manager_.form_structures();
+      browser_autofill_manager_->form_structures();
   std::vector<FormStructure*> form_structures;
   form_structures.reserve(forms.size());
   for (const FormData& form : forms) {

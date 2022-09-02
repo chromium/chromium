@@ -96,6 +96,7 @@ source_set("test_support") {
     "fake_autofill_agent.h",
     "fake_autofill_agent.mm",
     "ios_test_event_waiter.h",
+    "test_autofill_manager_injector.h",
   ]
   public_deps = [ ":browser" ]
   deps = [

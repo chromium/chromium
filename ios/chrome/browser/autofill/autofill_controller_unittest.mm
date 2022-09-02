@@ -19,12 +19,14 @@
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
+#import "components/autofill/core/browser/test_autofill_manager_waiter.h"
 #include "components/autofill/core/browser/webdata/autofill_entry.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_features.h"
 #import "components/autofill/ios/browser/autofill_agent.h"
 #include "components/autofill/ios/browser/autofill_driver_ios.h"
 #import "components/autofill/ios/browser/form_suggestion.h"
+#import "components/autofill/ios/browser/test_autofill_manager_injector.h"
 #include "components/autofill/ios/form_util/unique_id_data_tab_helper.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
 #include "components/infobars/core/infobar.h"
@@ -140,6 +142,10 @@ static NSString* kNoCreditCardFormHtml =
 NSString* const kCreditCardAutofocusFormHtml =
     @"<form><input type=\"text\" autofocus autocomplete=\"cc-number\"></form>";
 
+using ::testing::AssertionFailure;
+using ::testing::AssertionResult;
+using ::testing::AssertionSuccess;
+
 // FAIL if a field with the supplied `name` and `fieldType` is not present on
 // the `form`.
 void CheckField(const FormStructure& form,
@@ -214,6 +220,22 @@ class AutofillControllerTest : public PlatformTest {
   ~AutofillControllerTest() override {}
 
  protected:
+  class TestAutofillManager : public BrowserAutofillManager {
+   public:
+    TestAutofillManager(AutofillDriverIOS* driver, AutofillClient* client)
+        : BrowserAutofillManager(driver,
+                                 client,
+                                 "en-US",
+                                 EnableDownloadManager(false)) {}
+
+    TestAutofillManagerWaiter& waiter() { return waiter_; }
+
+   private:
+    TestAutofillManagerWaiter waiter_{
+        *this,
+        {&AutofillManager::Observer::OnAfterFormsSeen}};
+  };
+
   void SetUp() override;
   void TearDown() override;
 
@@ -226,10 +248,6 @@ class AutofillControllerTest : public PlatformTest {
   // If `wait_for_trigger` is yes, wait for the call to
   // `retrieveSuggestionsForForm` to avoid considering a former call.
   void WaitForSuggestionRetrieval(BOOL wait_for_trigger);
-
-  // Blocks until `expected_size` forms have been fetched.
-  [[nodiscard]] bool WaitForFormFetched(BrowserAutofillManager* manager,
-                                        size_t expected_number_of_forms);
 
   // Loads the page and wait until the initial form processing has been done.
   // This processing must find `expected_size` forms.
@@ -268,6 +286,9 @@ class AutofillControllerTest : public PlatformTest {
   std::unique_ptr<autofill::ChromeAutofillClientIOS> autofill_client_;
 
   AutofillAgent* autofill_agent_;
+
+  std::unique_ptr<TestAutofillManagerInjector<TestAutofillManager>>
+      autofill_manager_injector_;
 
   // Retrieves suggestions according to form events.
   TestSuggestionController* suggestion_controller_;
@@ -319,6 +340,10 @@ void AutofillControllerTest::SetUp() {
       web_state(), autofill_client_.get(), /*autofill_agent=*/nil, locale,
       autofill::AutofillManager::EnableDownloadManager(false));
 
+  autofill_manager_injector_ =
+      std::make_unique<TestAutofillManagerInjector<TestAutofillManager>>(
+          web_state());
+
   accessory_mediator_ =
       [[FormInputAccessoryMediator alloc] initWithConsumer:nil
                                                    handler:nil
@@ -356,25 +381,14 @@ void AutofillControllerTest::WaitForSuggestionRetrieval(BOOL wait_for_trigger) {
   });
 }
 
-bool AutofillControllerTest::WaitForFormFetched(
-    BrowserAutofillManager* manager,
-    size_t expected_number_of_forms) {
-  return base::test::ios::WaitUntilConditionOrTimeout(
-      base::test::ios::kWaitForPageLoadTimeout, ^bool {
-        return manager->form_structures().size() == expected_number_of_forms;
-      });
-}
-
 bool AutofillControllerTest::LoadHtmlAndWaitForFormFetched(
     NSString* html,
     size_t expected_number_of_forms) {
   web::test::LoadHtml(html, web_state());
-  web::WebFrame* main_frame =
-      web_state()->GetWebFramesManager()->GetMainWebFrame();
-  BrowserAutofillManager* autofill_manager =
-      AutofillDriverIOS::FromWebStateAndWebFrame(web_state(), main_frame)
-          ->autofill_manager();
-  return WaitForFormFetched(autofill_manager, expected_number_of_forms);
+  TestAutofillManager* autofill_manager =
+      autofill_manager_injector_->GetForMainFrame();
+  return autofill_manager->waiter().Wait(1) &&
+         autofill_manager->form_structures().size() == expected_number_of_forms;
 }
 
 void AutofillControllerTest::ExpectMetric(const std::string& histogram_name,
