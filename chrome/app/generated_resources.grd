@@ -10356,10 +10356,10 @@ Please help our engineers fix this problem. Tell us what happened right before y
           Translated
         </message>
         <message name="IDS_PARTIAL_TRANSLATE_BUBBLE_COULD_NOT_TRANSLATE_TITLE" desc="Title text for the partial translate bubble label when the text selection could not be translated. This is also announced to the screenreader.">
-          The selection could not be translated at this time
+          This selection couldn't be translated
         </message>
         <message name="IDS_TRANSLATE_BUBBLE_COULD_NOT_TRANSLATE_TITLE" desc="Title text for the translate bubble label when the page could not be translated. This is also announced to the screenreader.">
-          This page could not be translated
+          This page couldn't be translated
         </message>
         <message name="IDS_TRANSLATE_BUBBLE_SOURCE_LANG_COMBOBOX_ACCNAME" desc="Accessible name for the source language selection combobox.">
           Choose the page language to translate from
