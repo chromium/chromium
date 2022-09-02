@@ -10,14 +10,11 @@
 #include <utility>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
-#include "base/files/file_util.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/logging.h"
-#include "base/path_service.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/types/expected.h"
@@ -69,11 +66,25 @@ absl::optional<net::SchemefulSite> Canonicalize(base::StringPiece origin_string,
   return site;
 }
 
+// Struct to hold metadata describing a particular "subset" during parsing.
+struct SubsetDescriptor {
+  std::string field_name;
+  net::SiteType site_type;
+  bool keep_indices;
+};
+
 const char kFirstPartySetPrimaryField[] = "primary";
 const char kFirstPartySetAssociatedSitesField[] = "associatedSites";
+const char kFirstPartySetServiceSitesField[] = "serviceSites";
 const char kCCTLDsField[] = "ccTLDs";
 const char kFirstPartySetPolicyReplacementsField[] = "replacements";
 const char kFirstPartySetPolicyAdditionsField[] = "additions";
+
+bool IsSingletonSet(const std::vector<SetsMap::value_type>& set_entries,
+                    const Aliases& aliases) {
+  // There's no point in having a set with only one site and no aliases.
+  return set_entries.size() + aliases.size() < 2;
+}
 
 // Parses a single base::Value into a net::SchemefulSite, and verifies that it
 // is not already included in this set or any other.
@@ -165,6 +176,43 @@ base::expected<Aliases, ParseError> ParseCctlds(
   return aliases;
 }
 
+// Parses a given optional subset, ensuring that it is disjoint from all other
+// subsets in this set, and from all other sets that have previously been
+// parsed.
+absl::optional<ParseError> ParseSubset(
+    const base::Value::Dict& set_declaration,
+    const net::SchemefulSite& primary,
+    bool keep_indices,
+    const SubsetDescriptor& descriptor,
+    const base::flat_set<net::SchemefulSite>& other_sets_sites,
+    std::vector<std::pair<net::SchemefulSite, net::FirstPartySetEntry>>&
+        set_entries) {
+  const base::Value* field_value = set_declaration.Find(descriptor.field_name);
+  if (!field_value)
+    return absl::nullopt;
+  if (!field_value->is_list())
+    return ParseError::kInvalidType;
+
+  // Add each site to our mapping (after validating).
+  uint32_t index = 0;
+  for (const auto& item : field_value->GetList()) {
+    base::expected<net::SchemefulSite, ParseError> site_or_error =
+        ParseSiteAndValidate(item, set_entries, other_sets_sites);
+    if (!site_or_error.has_value())
+      return site_or_error.error();
+    set_entries.emplace_back(
+        site_or_error.value(),
+        net::FirstPartySetEntry(
+            primary, descriptor.site_type,
+            keep_indices && descriptor.keep_indices
+                ? absl::make_optional(net::FirstPartySetEntry::SiteIndex(index))
+                : absl::nullopt));
+    ++index;
+  }
+
+  return absl::nullopt;
+}
+
 // Validates a single First-Party Set and parses it into a SingleSet.
 // Note that this is intended for use *only* on sets that were received via the
 // Component Updater or from enterprise policy, so this does not check
@@ -205,32 +253,24 @@ base::expected<SetsAndAliases, ParseError> ParseSet(
           {{primary, net::FirstPartySetEntry(primary, net::SiteType::kPrimary,
                                              absl::nullopt)}});
 
-  // Confirm that the associatedSites field is present, and is an array of
-  // strings.
-  const base::Value::List* maybe_associated_sites_list =
-      set_declaration.FindList(kFirstPartySetAssociatedSitesField);
-  if (!maybe_associated_sites_list)
-    return base::unexpected(ParseError::kInvalidType);
-
-  if (maybe_associated_sites_list->empty())
-    return base::unexpected(ParseError::kSingletonSet);
-
-  // Add each associated site to our mapping (after validating).
-  uint32_t index = 0;
-  for (const auto& item : *maybe_associated_sites_list) {
-    base::expected<net::SchemefulSite, ParseError> site_or_error =
-        ParseSiteAndValidate(item, set_entries, elements);
-    if (!site_or_error.has_value()) {
-      return base::unexpected(site_or_error.error());
+  for (const SubsetDescriptor& descriptor : {
+           SubsetDescriptor{
+               .field_name = kFirstPartySetAssociatedSitesField,
+              .site_type = net::SiteType::kAssociated,
+              .keep_indices = true,
+           },
+           {
+               .field_name = kFirstPartySetServiceSitesField,
+              .site_type = net::SiteType::kService,
+              .keep_indices = false,
+           },
+       }) {
+    if (absl::optional<ParseError> error =
+            ParseSubset(set_declaration, primary, keep_indices, descriptor,
+                        elements, set_entries);
+        error.has_value()) {
+      return base::unexpected(error.value());
     }
-    set_entries.emplace_back(
-        site_or_error.value(),
-        net::FirstPartySetEntry(
-            primary, net::SiteType::kAssociated,
-            keep_indices
-                ? absl::make_optional(net::FirstPartySetEntry::SiteIndex(index))
-                : absl::nullopt));
-    ++index;
   }
 
   const base::expected<Aliases, ParseError> aliases_or_error =
@@ -239,6 +279,9 @@ base::expected<SetsAndAliases, ParseError> ParseSet(
     return base::unexpected(aliases_or_error.error());
 
   const Aliases& aliases = aliases_or_error.value();
+
+  if (IsSingletonSet(set_entries, aliases))
+    return base::unexpected(ParseError::kSingletonSet);
 
   for (const std::pair<net::SchemefulSite, net::FirstPartySetEntry>&
            site_and_entry : set_entries) {

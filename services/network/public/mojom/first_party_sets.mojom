@@ -16,6 +16,7 @@ struct SiteIndex {
 enum SiteType {
   kPrimary,
   kAssociated,
+  kService,
 };
 
 // This struct should match //net/first_party_sets/first_party_set_entry.h.

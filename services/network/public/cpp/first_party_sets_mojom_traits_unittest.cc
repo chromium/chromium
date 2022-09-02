@@ -27,8 +27,11 @@ TEST(FirstPartySetsTraitsTest, Roundtrips_SiteIndex) {
 }
 
 TEST(FirstPartySetsTraitsTest, Roundtrips_SiteType) {
-  for (net::SiteType site_type :
-       {net::SiteType::kPrimary, net::SiteType::kAssociated}) {
+  for (net::SiteType site_type : {
+           net::SiteType::kPrimary,
+           net::SiteType::kAssociated,
+           net::SiteType::kService,
+       }) {
     net::SiteType roundtrip;
     ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::SiteType>(
         site_type, roundtrip));

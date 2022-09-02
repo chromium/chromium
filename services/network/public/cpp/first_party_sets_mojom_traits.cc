@@ -34,6 +34,9 @@ bool EnumTraits<network::mojom::SiteType, net::SiteType>::FromMojom(
     case network::mojom::SiteType::kAssociated:
       *out = net::SiteType::kAssociated;
       return true;
+    case network::mojom::SiteType::kService:
+      *out = net::SiteType::kService;
+      return true;
   }
   return false;
 }
@@ -46,6 +49,8 @@ EnumTraits<network::mojom::SiteType, net::SiteType>::ToMojom(
       return network::mojom::SiteType::kPrimary;
     case net::SiteType::kAssociated:
       return network::mojom::SiteType::kAssociated;
+    case net::SiteType::kService:
+      return network::mojom::SiteType::kService;
   }
   NOTREACHED();
   return network::mojom::SiteType::kPrimary;

@@ -17,6 +17,9 @@ enum class SiteType {
   // The First-Party Set declaration listed this site as an associated site in
   // the set.
   kAssociated,
+  // The First-Party Set declaration listed this site as a service site in the
+  // set.
+  kService,
 };
 
 // This class bundles together metadata associated with an entry in a

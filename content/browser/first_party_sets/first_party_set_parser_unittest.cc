@@ -56,7 +56,7 @@ TEST(FirstPartySetParser, RejectsSingletonSet) {
   EXPECT_THAT(ParseSets(input), Pair(IsEmpty(), IsEmpty()));
 }
 
-TEST(FirstPartySetParser, AcceptsMinimal) {
+TEST(FirstPartySetParser, AcceptsMinimal_Associated) {
   const std::string input =
       R"({"primary": "https://example.test", "associatedSites": ["https://aaaa.test"]})";
 
@@ -73,6 +73,55 @@ TEST(FirstPartySetParser, AcceptsMinimal) {
                         net::SchemefulSite(GURL("https://example.test")),
                         net::SiteType::kAssociated, 0))),
            IsEmpty()));
+}
+
+TEST(FirstPartySetParser, AcceptsMinimal_Service) {
+  std::istringstream stream(
+      R"({"primary": "https://example.test", "serviceSites": ["https://aaaa.test"]})");
+  EXPECT_THAT(
+      FirstPartySetParser::ParseSetsFromStream(stream),
+      Pair(UnorderedElementsAre(
+               Pair(SerializesTo("https://example.test"),
+                    net::FirstPartySetEntry(
+                        net::SchemefulSite(GURL("https://example.test")),
+                        net::SiteType::kPrimary, absl::nullopt)),
+               Pair(SerializesTo("https://aaaa.test"),
+                    net::FirstPartySetEntry(
+                        net::SchemefulSite(GURL("https://example.test")),
+                        net::SiteType::kService, absl::nullopt))),
+           IsEmpty()));
+}
+
+TEST(FirstPartySetParser, AcceptsMinimal_AllSubsets_WithCcTLDs) {
+  net::SchemefulSite example(GURL("https://example.test"));
+  net::SchemefulSite example_cctld(GURL("https://example.cctld"));
+  net::SchemefulSite a(GURL("https://a.test"));
+  net::SchemefulSite a_cctld(GURL("https://a.cctld"));
+  net::SchemefulSite b(GURL("https://b.test"));
+  net::SchemefulSite b_cctld(GURL("https://b.cctld"));
+
+  std::istringstream stream(
+      R"({"primary": "https://example.test",)"
+      R"("associatedSites": ["https://a.test"],)"
+      R"("serviceSites": ["https://b.test"],)"
+      R"("ccTLDs": {)"
+      R"("https://example.test": ["https://example.cctld"],)"
+      R"("https://a.test": ["https://a.cctld"],)"
+      R"("https://b.test": ["https://b.cctld"])"
+      R"(})"
+      R"(})");
+  EXPECT_THAT(
+      FirstPartySetParser::ParseSetsFromStream(stream),
+      Pair(UnorderedElementsAre(
+               Pair(example,
+                    net::FirstPartySetEntry(example, net::SiteType::kPrimary,
+                                            absl::nullopt)),
+               Pair(a, net::FirstPartySetEntry(example,
+                                               net::SiteType::kAssociated, 0)),
+               Pair(b, net::FirstPartySetEntry(example, net::SiteType::kService,
+                                               absl::nullopt))),
+           UnorderedElementsAre(Pair(example_cctld, example), Pair(a_cctld, a),
+                                Pair(b_cctld, b))));
 }
 
 TEST(FirstPartySetParser, RejectsMissingPrimary) {
@@ -652,27 +701,6 @@ TEST(FirstPartySets_ParseSetsFromEnterprisePolicyTest,
                 "replacements": [
                   {
                     "associatedSites": ["https://associatedsite1.test"]
-                  }
-                ],
-                "additions": []
-              }
-            )")
-                                 .value();
-  EXPECT_THAT(
-      FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value.GetDict())
-          .error(),
-      FirstPartySetParser::PolicyParsingError(
-          {FirstPartySetParser::ParseError::kInvalidType,
-           FirstPartySetParser::PolicySetType::kReplacement, 0}));
-}
-
-TEST(FirstPartySets_ParseSetsFromEnterprisePolicyTest,
-     InvalidTypeError_MissingAssociatedSites) {
-  base::Value policy_value = base::JSONReader::Read(R"(
-              {
-                "replacements": [
-                  {
-                    "primary": "https://primary1.test"
                   }
                 ],
                 "additions": []
