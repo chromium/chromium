@@ -20,7 +20,10 @@ std::string GetDebugJSONForVisits(
   for (auto& visit : visits) {
     base::Value::Dict debug_visit;
     debug_visit.Set("visitId", static_cast<int>(visit.visit_row.visit_id));
-    debug_visit.Set("url", visit.url_row.url().spec());
+    debug_visit.Set(
+        "url", visit.content_annotations.search_normalized_url.is_empty()
+                   ? visit.url_row.url().spec()
+                   : visit.content_annotations.search_normalized_url.spec());
     debug_visit.Set("title", visit.url_row.title());
     debug_visit.Set(
         "foreground_time_secs",
