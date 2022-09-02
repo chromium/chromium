@@ -299,6 +299,12 @@ const char kEnableFullscreenAPIName[] = "Enable Fullscreen API";
 const char kEnableFullscreenAPIDescription[] =
     "Enable the Fullscreen API for web content (iOS 16.0+).";
 
+const char kEnableGroupingForPasswordManagerName[] =
+    "Enable password grouping for the Password Manager";
+const char kEnableGroupingForPasswordManagerDescription[] =
+    "Group passwords into the same affiliated group in the Password Manager "
+    "for the Saved Passwords section";
+
 const char kEnableOpenInDownloadName[] = "Enable Open In download";
 const char kEnableOpenInDownloadDescription[] =
     "Enable new download for Open In menu (iOS 14.5+).";

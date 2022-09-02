@@ -32,6 +32,7 @@ extern const base::Feature kBiometricTouchToFill;
 extern const base::Feature kDetectFormSubmissionOnFormClear;
 extern const base::Feature kForceEnablePasswordDomainCapabilities;
 extern const base::Feature kEnableFaviconForPasswords;
+extern const base::Feature kEnableGroupingForPasswordManager;
 extern const base::Feature kEnableOverwritingPlaceholderUsernames;
 extern const base::Feature kEnablePasswordsAccountStorage;
 extern const base::Feature KEnablePasswordGenerationForClearTextFields;

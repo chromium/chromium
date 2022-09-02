@@ -47,6 +47,11 @@ const base::Feature kForceEnablePasswordDomainCapabilities = {
 const base::Feature kEnableFaviconForPasswords{
     "EnableFaviconForPasswords", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables password grouping in Password Manager.
+// TODO(crbug.com/1359392): Remove once launched.
+const base::Feature kEnableGroupingForPasswordManager{
+    "EnableGroupingForPasswordManager", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables the overwriting of prefilled username fields if the server predicted
 // the field to contain a placeholder value.
 const base::Feature kEnableOverwritingPlaceholderUsernames{

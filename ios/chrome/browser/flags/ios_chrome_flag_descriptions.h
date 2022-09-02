@@ -275,6 +275,11 @@ extern const char kEnableFREUIModuleIOSDescription[];
 extern const char kEnableFullscreenAPIName[];
 extern const char kEnableFullscreenAPIDescription[];
 
+// Title and description for the flag to enable password grouping for the
+// Password Manager.
+extern const char kEnableGroupingForPasswordManagerName[];
+extern const char kEnableGroupingForPasswordManagerDescription[];
+
 // Title and description for the flag to enable open in download
 extern const char kEnableOpenInDownloadName[];
 extern const char kEnableOpenInDownloadDescription[];
