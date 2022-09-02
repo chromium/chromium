@@ -320,7 +320,7 @@ int SelectDisclosureTextResourceId(const GURL& privacy_policy_url,
 
 AccountSelectionBubbleView::AccountSelectionBubbleView(
     const std::u16string& rp_for_display,
-    const std::u16string& idp_for_display,
+    const absl::optional<std::u16string>& idp_title,
     views::View* anchor_view,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     Observer* observer)
@@ -346,13 +346,13 @@ AccountSelectionBubbleView::AccountSelectionBubbleView(
   set_close_on_deactivate(false);
 
   accessible_title_ =
-      IsMultiIdpEnabled()
+      idp_title.has_value()
           ? l10n_util::GetStringFUTF16(
-                IDS_MULTI_IDP_ACCOUNT_SELECTION_SHEET_TITLE_EXPLICIT,
-                rp_for_display)
-          : l10n_util::GetStringFUTF16(
                 IDS_ACCOUNT_SELECTION_SHEET_TITLE_EXPLICIT, rp_for_display,
-                idp_for_display);
+                idp_title.value())
+          : l10n_util::GetStringFUTF16(
+                IDS_MULTI_IDP_ACCOUNT_SELECTION_SHEET_TITLE_EXPLICIT,
+                rp_for_display);
   SetAccessibleTitle(accessible_title_);
 
   SetLayoutManager(std::make_unique<views::BoxLayout>(
@@ -364,17 +364,17 @@ AccountSelectionBubbleView::AccountSelectionBubbleView(
 AccountSelectionBubbleView::~AccountSelectionBubbleView() = default;
 
 void AccountSelectionBubbleView::ShowAccountPicker(
-    const std::u16string& idp_for_display,
-    bool show_back_button,
-    base::span<const content::IdentityRequestAccount> accounts,
-    const content::IdentityProviderMetadata& idp_metadata,
-    const content::ClientIdData& client_data) {
-  UpdateHeader(idp_metadata, accessible_title_, show_back_button);
+    const std::vector<IdentityProviderDisplayData>& idp_data,
+    bool show_back_button) {
+  // TODO(crbug.com/1351137): use more than the first vector item to support
+  // multiple idps.
+  UpdateHeader(idp_data[0].idp_metadata_, accessible_title_, show_back_button);
 
   RemoveNonHeaderChildViews();
   AddChildView(std::make_unique<views::Separator>());
-  AddChildView(CreateAccountChooser(idp_for_display, accounts, idp_metadata,
-                                    client_data));
+  AddChildView(CreateAccountChooser(
+      idp_data[0].idp_etld_plus_one_, idp_data[0].accounts_,
+      idp_data[0].idp_metadata_, idp_data[0].client_data_));
   SizeToContents();
   PreferredSizeChanged();
 

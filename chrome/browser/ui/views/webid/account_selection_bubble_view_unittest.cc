@@ -13,6 +13,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/views/hover_button.h"
 #include "chrome/browser/ui/views/webid/fake_delegate.h"
+#include "chrome/browser/ui/views/webid/identity_provider_display_data.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "content/public/browser/web_contents.h"
@@ -105,7 +106,7 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase {
   AccountSelectionBubbleViewTest() = default;
 
  protected:
-  void CreateAccountSelectionBubble() {
+  void CreateAccountSelectionBubble(bool exclude_title = false) {
     views::Widget::InitParams params =
         CreateParams(views::Widget::InitParams::TYPE_WINDOW);
     params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
@@ -114,21 +115,33 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase {
     anchor_widget_->Init(std::move(params));
     anchor_widget_->Show();
 
+    absl::optional<std::u16string> title =
+        exclude_title ? absl::nullopt
+                      : absl::make_optional<std::u16string>(kIdpETLDPlusOne);
     dialog_ = new AccountSelectionBubbleView(
-        kRpETLDPlusOne, kIdpETLDPlusOne, anchor_widget_->GetContentsView(),
+        kRpETLDPlusOne, title, anchor_widget_->GetContentsView(),
         shared_url_loader_factory(), /*observer=*/nullptr);
     views::BubbleDialogDelegateView::CreateBubble(dialog_)->Show();
   }
 
   void CreateBubbleWithAccountPicker(
       bool show_back_button,
-      base::span<const content::IdentityRequestAccount> accounts,
+      const std::vector<content::IdentityRequestAccount>& accounts,
       const std::string& terms_of_service_url) {
     CreateAccountSelectionBubble();
-    dialog_->ShowAccountPicker(kIdpETLDPlusOne,
-                               /*show_back_button=*/show_back_button, accounts,
-                               content::IdentityProviderMetadata(),
-                               CreateTestClientIdData(terms_of_service_url));
+    std::vector<IdentityProviderDisplayData> idp_data;
+    idp_data.emplace_back(kIdpETLDPlusOne, content::IdentityProviderMetadata(),
+                          CreateTestClientIdData(terms_of_service_url),
+                          accounts);
+    dialog_->ShowAccountPicker(idp_data,
+                               /*show_back_button=*/show_back_button);
+  }
+
+  void CreateMultiIdpAccountPicker(
+      const std::vector<IdentityProviderDisplayData>& idp_data) {
+    CreateAccountSelectionBubble(/*exclude_title=*/true);
+    dialog_->ShowAccountPicker(idp_data,
+                               /*show_back_button=*/false);
   }
 
   void CheckAccountRow(views::View* row, const std::string& account_suffix) {
@@ -288,7 +301,7 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase {
   void CheckAccountRows(const std::vector<views::View*>& accounts,
                         const std::vector<std::string>& account_suffixes) {
     size_t account_index = 0;
-    EXPECT_EQ(accounts.size(), account_suffixes.size());
+    EXPECT_GE(accounts.size(), account_suffixes.size());
     for (size_t i = 0; i < std::size(account_suffixes); ++i) {
       ASSERT_STREQ("HoverButton", accounts[account_index]->GetClassName());
       HoverButton* account_row =
@@ -472,14 +485,39 @@ class MultipleIDPAccountSelectionBubbleViewTest
 // Tests that the single account case is the same with
 // features::kFedCmMultipleIdentityProviders enabled.
 TEST_F(MultipleIDPAccountSelectionBubbleViewTest, SingleAccount) {
-  TestSingleAccount(kTitleSignInWithoutIdp,
+  TestSingleAccount(kTitleSignIn,
                     /*expect_idp_brand_icon_in_header=*/false);
 }
 
-// Tests that the logo is visible with features::kFedCmMultipleIdentityProviders
-// enabled.
-TEST_F(MultipleIDPAccountSelectionBubbleViewTest, MultipleAccounts) {
-  TestMultipleAccounts(kTitleSignInWithoutIdp,
+// Tests that the logo is not visible with
+// features::kFedCmMultipleIdentityProviders enabled but only one IDP.
+TEST_F(MultipleIDPAccountSelectionBubbleViewTest, MultipleAccountsSingleIdp) {
+  TestMultipleAccounts(kTitleSignIn,
                        /*expect_idp_brand_icon_in_header=*/false,
                        /*expect_idp_row=*/true);
+}
+
+// Tests that the logo is visible with features::kFedCmMultipleIdentityProviders
+// enabled and multiple IDPs.
+TEST_F(MultipleIDPAccountSelectionBubbleViewTest,
+       MultipleAccountsMultipleIdps) {
+  std::vector<IdentityProviderDisplayData> idp_data;
+  std::vector<Account> accounts_first_idp = CreateTestIdentityRequestAccounts(
+      /*account_suffixes=*/{"1"},
+      content::IdentityRequestAccount::LoginState::kSignUp);
+  idp_data.emplace_back(kIdpETLDPlusOne, content::IdentityProviderMetadata(),
+                        CreateTestClientIdData(kTermsOfServiceUrl),
+                        accounts_first_idp);
+  idp_data.emplace_back(
+      u"idp2.com", content::IdentityProviderMetadata(),
+      CreateTestClientIdData("https://tos-2.com"),
+      CreateTestIdentityRequestAccounts(
+          /*account_suffixes=*/{"2"},
+          content::IdentityRequestAccount::LoginState::kSignUp));
+  CreateMultiIdpAccountPicker(idp_data);
+
+  std::vector<views::View*> children = dialog()->children();
+  ASSERT_EQ(children.size(), 3u);
+  PerformHeaderChecks(children[0], kTitleSignInWithoutIdp,
+                      /*expect_idp_brand_icon_in_header=*/false);
 }

@@ -50,7 +50,7 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView,
   METADATA_HEADER(AccountSelectionBubbleView);
   AccountSelectionBubbleView(
       const std::u16string& rp_for_display,
-      const std::u16string& idp_for_display,
+      const absl::optional<std::u16string>& idp_title,
       views::View* anchor_view,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       Observer* observer);
@@ -58,11 +58,8 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView,
 
   // AccountSelectionBubbleViewInterface:
   void ShowAccountPicker(
-      const std::u16string& idp_for_display,
-      bool show_back_button,
-      base::span<const content::IdentityRequestAccount> accounts,
-      const content::IdentityProviderMetadata& idp_metadata,
-      const content::ClientIdData& client_data) override;
+      const std::vector<IdentityProviderDisplayData>& idp_data,
+      bool show_back_button) override;
   void ShowVerifyingSheet(
       const content::IdentityRequestAccount& account,
       const content::IdentityProviderMetadata& idp_metadata) override;

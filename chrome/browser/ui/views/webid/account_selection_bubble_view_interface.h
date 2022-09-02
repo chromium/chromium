@@ -6,11 +6,11 @@
 #define CHROME_BROWSER_UI_VIEWS_WEBID_ACCOUNT_SELECTION_BUBBLE_VIEW_INTERFACE_H_
 
 #include <string>
+#include <vector>
 
-#include "base/containers/span.h"
+#include "chrome/browser/ui/views/webid/identity_provider_display_data.h"
 
 namespace content {
-struct ClientIdData;
 struct IdentityProviderMetadata;
 struct IdentityRequestAccount;
 }  // namespace content
@@ -22,11 +22,8 @@ class AccountSelectionBubbleViewInterface {
 
   // Updates the FedCM bubble to show the "account picker" sheet.
   virtual void ShowAccountPicker(
-      const std::u16string& idp_for_display,
-      bool show_back_button,
-      base::span<const content::IdentityRequestAccount> accounts,
-      const content::IdentityProviderMetadata& idp_metadata,
-      const content::ClientIdData& client_data) = 0;
+      const std::vector<IdentityProviderDisplayData>& idp_data,
+      bool show_back_button) = 0;
 
   // Updates the FedCM bubble to show the "verifying" sheet.
   virtual void ShowVerifyingSheet(

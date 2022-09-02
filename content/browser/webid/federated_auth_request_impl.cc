@@ -407,6 +407,14 @@ void FederatedAuthRequestImpl::RequestToken(
     std::move(callback).Run(RequestTokenStatus::kError, "");
     return;
   }
+  // It should not be possible to receive multiple IDPs when the
+  // `kFedCmMultipleIdentityProviders` flag is disabled. But such a message
+  // could be received from a compromised renderer.
+  if (idp_ptrs.size() > 1u && !base::FeatureList::IsEnabled(
+                                  features::kFedCmMultipleIdentityProviders)) {
+    std::move(callback).Run(RequestTokenStatus::kError, "");
+    return;
+  }
 
   for (const auto& idp : idp_ptrs) {
     if (!idp) {

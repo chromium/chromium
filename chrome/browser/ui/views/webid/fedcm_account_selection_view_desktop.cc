@@ -56,26 +56,26 @@ void FedCmAccountSelectionView::Show(
   if (browser)
     browser->tab_strip_model()->AddObserver(this);
 
-  // TODO(crbug.com/1351137): Temporarily support only the first IDP, extend to
-  // support multiple IDPs.
-  idp_etld_plus_one_ =
-      base::UTF8ToUTF16(identity_provider_data[0].idp_for_display);
-  idp_metadata_ = identity_provider_data[0].idp_metadata;
-  client_data_ = std::make_unique<content::ClientIdData>(
-      identity_provider_data[0].client_id_data);
-  account_list_ = std::vector<content::IdentityRequestAccount>(
-      identity_provider_data[0].accounts.begin(),
-      identity_provider_data[0].accounts.end());
-  state_ =
-      (account_list_.size() == 1u) ? State::PERMISSION : State::ACCOUNT_PICKER;
+  size_t accounts_size = 0u;
+  for (const auto& identity_provider : identity_provider_data) {
+    idp_data_.emplace_back(base::UTF8ToUTF16(identity_provider.idp_for_display),
+                           identity_provider.idp_metadata,
+                           identity_provider.client_id_data,
+                           identity_provider.accounts);
+    accounts_size += identity_provider.accounts.size();
+  }
+  state_ = accounts_size == 1u ? State::PERMISSION : State::ACCOUNT_PICKER;
 
-  bubble_widget_ = CreateBubble(browser, base::UTF8ToUTF16(rp_etld_plus_one),
-                                idp_etld_plus_one_)
-                       ->GetWeakPtr();
-  GetBubbleView()->ShowAccountPicker(idp_etld_plus_one_,
-                                     /*show_back_button=*/false, account_list_,
-                                     idp_metadata_,
-                                     identity_provider_data[0].client_id_data);
+  absl::optional<std::u16string> idp_title =
+      identity_provider_data.size() == 1u
+          ? absl::make_optional<std::u16string>(
+                base::UTF8ToUTF16(identity_provider_data[0].idp_for_display))
+          : absl::nullopt;
+  bubble_widget_ =
+      CreateBubble(browser, base::UTF8ToUTF16(rp_etld_plus_one), idp_title)
+          ->GetWeakPtr();
+  GetBubbleView()->ShowAccountPicker(idp_data_,
+                                     /*show_back_button=*/false);
   bubble_widget_->Show();
   bubble_widget_->AddObserver(this);
 }
@@ -134,13 +134,12 @@ void FedCmAccountSelectionView::OnTabStripModelChanged(
 views::Widget* FedCmAccountSelectionView::CreateBubble(
     Browser* browser,
     const std::u16string& rp_etld_plus_one,
-    const std::u16string& idp_etld_plus_one) {
+    const absl::optional<std::u16string>& idp_title) {
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
   views::View* anchor_view = browser_view->contents_web_view();
 
   return views::BubbleDialogDelegateView::CreateBubble(
-      new AccountSelectionBubbleView(rp_etld_plus_one, idp_etld_plus_one,
-                                     anchor_view,
+      new AccountSelectionBubbleView(rp_etld_plus_one, idp_title, anchor_view,
                                      SystemNetworkContextManager::GetInstance()
                                          ->GetSharedURLLoaderFactory(),
                                      this));
@@ -163,13 +162,15 @@ void FedCmAccountSelectionView::OnWidgetDestroying(views::Widget* widget) {
 
 void FedCmAccountSelectionView::OnAccountSelected(
     const std::string& account_id) {
+  // TODO(crbug.com/1351137): use more than the first vector item to support
+  // multiple idps.
+  const std::vector<Account>& account_list = idp_data_[0].accounts_;
   auto account_list_it = std::find_if(
-      account_list_.begin(), account_list_.end(),
+      account_list.begin(), account_list.end(),
       [&account_id](const content::IdentityRequestAccount& account) {
         return account.id == account_id;
       });
-  DCHECK(account_list_it != account_list_.end());
-
+  DCHECK(account_list_it != account_list.end());
   state_ = (state_ == State::ACCOUNT_PICKER &&
             account_list_it->login_state == Account::LoginState::kSignUp)
                ? State::PERMISSION
@@ -178,15 +179,21 @@ void FedCmAccountSelectionView::OnAccountSelected(
     notify_delegate_of_dismiss_ = false;
     delegate_->OnAccountSelected(*account_list_it);
 
-    GetBubbleView()->ShowVerifyingSheet(*account_list_it, idp_metadata_);
+    GetBubbleView()->ShowVerifyingSheet(*account_list_it,
+                                        idp_data_[0].idp_metadata_);
     return;
   }
 
-  GetBubbleView()->ShowAccountPicker(
-      idp_etld_plus_one_,
-      /*show_back_button=*/true,
-      std::vector<content::IdentityRequestAccount>({*account_list_it}),
-      idp_metadata_, *client_data_);
+  // TODO(crbug.com/1351137): we need a new method for this, to avoid copying a
+  // lot of data.
+  std::vector<IdentityProviderDisplayData> single_idp_data;
+  std::vector<content::IdentityRequestAccount> single_account_vector;
+  single_account_vector.emplace_back(*account_list_it);
+  single_idp_data.emplace_back(
+      idp_data_[0].idp_etld_plus_one_, idp_data_[0].idp_metadata_,
+      idp_data_[0].client_data_, single_account_vector);
+  GetBubbleView()->ShowAccountPicker(single_idp_data,
+                                     /*show_back_button=*/true);
 }
 
 void FedCmAccountSelectionView::OnLinkClicked(const GURL& url) {
@@ -201,9 +208,8 @@ void FedCmAccountSelectionView::OnLinkClicked(const GURL& url) {
 
 void FedCmAccountSelectionView::OnBackButtonClicked() {
   state_ = State::ACCOUNT_PICKER;
-  GetBubbleView()->ShowAccountPicker(idp_etld_plus_one_,
-                                     /*show_back_button=*/false, account_list_,
-                                     idp_metadata_, *client_data_);
+  GetBubbleView()->ShowAccountPicker(idp_data_,
+                                     /*show_back_button=*/false);
 }
 
 void FedCmAccountSelectionView::OnCloseButtonClicked() {

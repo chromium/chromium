@@ -2205,4 +2205,23 @@ TEST_F(FederatedAuthRequestImplTest,
   RunAuthTest(kDefaultRequestParameters, expectations, configuration);
 }
 
+// Tests that multiple IDPs provided results in an error if the
+// `kFedCmMultipleIdentityProviders` flag is disabled.
+TEST_F(FederatedAuthRequestImplTest, MultiIdpError) {
+  base::test::ScopedFeatureList list;
+  list.InitAndDisableFeature(features::kFedCmMultipleIdentityProviders);
+
+  RequestExpectations request_multiple_idps = {RequestTokenStatus::kError,
+                                               absl::nullopt, 0};
+
+  IdentityProviderParameters identity_provider{"https://idp1.com", kClientId,
+                                               kNonce};
+  IdentityProviderParameters other_identity_provider{"https://idp2.com",
+                                                     kClientId, kNonce};
+  RequestParameters parameters{std::vector<IdentityProviderParameters>{
+                                   identity_provider, other_identity_provider},
+                               /*prefer_auto_sign_in=*/false};
+  RunAuthTest(parameters, request_multiple_idps, kConfigurationValid);
+}
+
 }  // namespace content
