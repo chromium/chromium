@@ -190,7 +190,9 @@ const MetricReportingSettingData memory_info_settings = {
     ::ash::kReportDeviceMemoryInfo, false, "", 0};
 const MetricReportingSettingData bus_info_settings = {
     ::ash::kReportDeviceSecurityStatus, false, "", 0};
-const MetricReportingSettingData input_info_settings = {
+// This is used for testing both the InputInfo and DisplayInfo, grouping them
+// together since the collection is done using the same policy.
+const MetricReportingSettingData graphics_info_settings = {
     ::ash::kReportDeviceGraphicsStatus, false, "", 0};
 const MetricReportingSettingData network_telemetry_settings = {
     ::ash::kReportDeviceNetworkStatus, true,
@@ -203,6 +205,9 @@ const MetricReportingSettingData audio_metric_settings = {
     ::ash::kReportDeviceAudioStatusCheckingRateMs, 1};
 const MetricReportingSettingData peripheral_metric_settings = {
     ::ash::kReportDevicePeripherals, false, "", 0};
+const MetricReportingSettingData displays_telemetry_settings = {
+    ::ash::kReportDeviceGraphicsStatus, false, ::ash::kReportUploadFrequency,
+    1};
 
 struct MetricReportingManagerTestCase {
   std::string test_name;
@@ -441,12 +446,12 @@ INSTANTIATE_TEST_SUITE_P(
           /*is_affiliated=*/true, bus_info_settings,
           /*expected_count_before_login=*/1,
           /*expected_count_after_login=*/1},
-         {"InputInfo",
+         {"GraphicsInfo",
           /*enabled_features=*/{},
           /*disabled_features=*/{},
-          /*is_affiliated=*/true, input_info_settings,
-          /*expected_count_before_login=*/1,
-          /*expected_count_after_login=*/1}}),
+          /*is_affiliated=*/true, graphics_info_settings,
+          /*expected_count_before_login=*/2,
+          /*expected_count_after_login=*/2}}),
     [](const testing::TestParamInfo<MetricReportingManagerInfoTest::ParamType>&
            info) { return info.param.test_name; });
 
@@ -731,6 +736,16 @@ INSTANTIATE_TEST_SUITE_P(
          {"AudioTelemetry_Default", /*enabled_features=*/{},
           /*disabled_features=*/{},
           /*is_affiliated=*/true, audio_metric_settings,
+          /*expected_count_before_login=*/0,
+          /*expected_count_after_login=*/1},
+         {"DisplaysTelemetry_Unaffiliated", /*enabled_features=*/{},
+          /*disabled_features=*/{},
+          /*is_affiliated=*/false, displays_telemetry_settings,
+          /*expected_count_before_login=*/0,
+          /*expected_count_after_login=*/0},
+         {"DisplaysTelemetry_Default", /*enabled_features=*/{},
+          /*disabled_features=*/{},
+          /*is_affiliated=*/true, displays_telemetry_settings,
           /*expected_count_before_login=*/0,
           /*expected_count_after_login=*/1}}),
     [](const testing::TestParamInfo<

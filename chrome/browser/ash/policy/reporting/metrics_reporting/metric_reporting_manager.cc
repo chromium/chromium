@@ -42,6 +42,7 @@ constexpr char kSamplerBootPerformance[] = "boot_performance";
 constexpr char kSamplerHttpsLatency[] = "https_latency";
 constexpr char kSamplerNetworkTelemetry[] = "network_telemetry";
 constexpr char kSamplerPeripheralTelemetry[] = "peripheral_telemetry";
+constexpr char kSamplerDisplaysTelemetry[] = "displays_telemetry";
 
 }  // namespace
 
@@ -195,6 +196,10 @@ void MetricReportingManager::DelayedInit() {
       ::ash::cros_healthd::mojom::ProbeCategoryEnum::kInput,
       ::ash::kReportDeviceGraphicsStatus,
       /*default_value=*/false);
+  CreateCrosHealthdInfoCollector(
+      ::ash::cros_healthd::mojom::ProbeCategoryEnum::kDisplay,
+      ::ash::kReportDeviceGraphicsStatus,
+      /*default_value=*/false);
 
   // Network health info.
   // ReportDeviceNetworkConfiguration policy is enabled by default, so set its
@@ -257,6 +262,14 @@ void MetricReportingManager::InitTelemetrySamplersOnAffiliatedLogin() {
       std::move(peripheral_telemetry_sampler),
       /*enable_setting_path=*/::ash::kReportDevicePeripherals,
       metrics::kReportDevicePeripheralsDefaultValue);
+  auto displays_telemetry_sampler = std::make_unique<CrosHealthdMetricSampler>(
+      ash::cros_healthd::mojom::ProbeCategoryEnum::kDisplay,
+      CrosHealthdMetricSampler::MetricType::kTelemetry);
+  InitTelemetryConfiguredSampler(
+      /*sampler_name=*/kSamplerDisplaysTelemetry,
+      std::move(displays_telemetry_sampler),
+      /*enable_setting_path=*/::ash::kReportDeviceGraphicsStatus,
+      metrics::kReportDeviceGraphicsStatusDefaultValue);
 }
 
 void MetricReportingManager::DelayedInitOnAffiliatedLogin(Profile* profile) {
@@ -266,6 +279,7 @@ void MetricReportingManager::DelayedInitOnAffiliatedLogin(Profile* profile) {
 
   InitNetworkCollectors(profile);
   InitAudioCollectors();
+  InitDisplayCollectors();
 
   initial_upload_timer_.Start(FROM_HERE, delegate_->GetInitialUploadDelay(),
                               this, &MetricReportingManager::UploadTelemetry);
@@ -467,5 +481,13 @@ void MetricReportingManager::InitPeripheralsCollectors() {
   InitOneShotTelemetryCollector(
       kSamplerPeripheralTelemetry,
       peripheral_events_and_telemetry_report_queue_.get());
+}
+
+void MetricReportingManager::InitDisplayCollectors() {
+  InitPeriodicCollector(kSamplerDisplaysTelemetry,
+                        telemetry_report_queue_.get(),
+                        ::ash::kReportUploadFrequency,
+                        metrics::GetDefaultCollectionRate(
+                            metrics::kDefaultGraphicsTelemetryCollectionRate));
 }
 }  // namespace reporting

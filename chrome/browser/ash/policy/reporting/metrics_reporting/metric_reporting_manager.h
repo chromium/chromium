@@ -150,6 +150,8 @@ class MetricReportingManager : public policy::ManagedSessionService::Observer,
 
   void InitPeripheralsCollectors();
 
+  void InitDisplayCollectors();
+
   CrosReportingSettings reporting_settings_;
 
   SEQUENCE_CHECKER(sequence_checker_);
