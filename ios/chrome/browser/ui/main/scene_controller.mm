@@ -315,8 +315,6 @@ bool IsSigninForcedByPolicy() {
     [_sceneState addAgent:[[StartSurfaceSceneAgent alloc] init]];
     [_sceneState addAgent:[[SessionSavingSceneAgent alloc] init]];
     [_sceneState addAgent:[[LayoutGuideSceneAgent alloc] init]];
-    if (IsFullscreenPromosManagerEnabled())
-      [_sceneState addAgent:[[PromosManagerSceneAgent alloc] init]];
   }
   return self;
 }
@@ -942,6 +940,9 @@ bool IsSigninForcedByPolicy() {
   // Make sure the geolocation controller is created to observe permission
   // events.
   [GeolocationLogger sharedInstance];
+
+  if (IsFullscreenPromosManagerEnabled())
+    [self.sceneState addAgent:[[PromosManagerSceneAgent alloc] init]];
 }
 
 // Determines the mode (normal or incognito) the initial UI should be in.
