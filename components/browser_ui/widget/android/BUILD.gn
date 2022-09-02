@@ -8,6 +8,7 @@ android_library("java") {
   sources = [
     "java/src/org/chromium/components/browser_ui/widget/AlwaysDismissedDialog.java",
     "java/src/org/chromium/components/browser_ui/widget/BoundedLinearLayout.java",
+    "java/src/org/chromium/components/browser_ui/widget/CheckBoxWithDescription.java",
     "java/src/org/chromium/components/browser_ui/widget/ClipDrawableProgressBar.java",
     "java/src/org/chromium/components/browser_ui/widget/CompositeTouchDelegate.java",
     "java/src/org/chromium/components/browser_ui/widget/ContextMenuDialog.java",
@@ -237,6 +238,7 @@ android_resources("java_resources") {
     "java/res/drawable/tile_view_highlight_plain.xml",
     "java/res/layout/app_menu_divider.xml",
     "java/res/layout/app_menu_layout.xml",
+    "java/res/layout/checkbox_with_description.xml",
     "java/res/layout/date_divided_adapter_header_view_holder.xml",
     "java/res/layout/dialog_control_description.xml",
     "java/res/layout/divider_preference.xml",
@@ -307,6 +309,7 @@ android_library("unit_device_javatests") {
   testonly = true
 
   sources = [
+    "java/src/org/chromium/components/browser_ui/widget/CheckBoxWithDescriptionTest.java",
     "java/src/org/chromium/components/browser_ui/widget/DualControlLayoutTest.java",
     "java/src/org/chromium/components/browser_ui/widget/MoreProgressButtonTest.java",
     "java/src/org/chromium/components/browser_ui/widget/PromoDialogRenderTest.java",

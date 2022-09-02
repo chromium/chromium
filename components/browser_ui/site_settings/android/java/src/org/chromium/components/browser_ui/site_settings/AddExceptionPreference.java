@@ -19,7 +19,6 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -32,6 +31,7 @@ import androidx.preference.PreferenceViewHolder;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
+import org.chromium.components.browser_ui.widget.CheckBoxWithDescription;
 import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 
@@ -125,11 +125,13 @@ public class AddExceptionPreference
                 (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View view = inflater.inflate(R.layout.add_site_dialog, null);
         final EditText input = (EditText) view.findViewById(R.id.site);
-        final CheckBox checkBox = (CheckBox) view.findViewById(R.id.add_site_dialog_checkbox);
+        final CheckBoxWithDescription checkBox =
+                (CheckBoxWithDescription) view.findViewById(R.id.add_site_dialog_checkbox);
 
         if (mCategory.getType() == SiteSettingsCategory.Type.COOKIES) {
             checkBox.setVisibility(View.VISIBLE);
-            checkBox.setText(R.string.website_settings_third_party_cookies_exception_label);
+            checkBox.setPrimaryText(getContext().getString(
+                    R.string.website_settings_third_party_cookies_exception_label));
         } else if (mCategory.getType() == SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE) {
             // Default to domain level setting for Request Desktop Site.
             checkBox.setChecked(true);
@@ -137,7 +139,10 @@ public class AddExceptionPreference
                         ContentFeatureList.REQUEST_DESKTOP_SITE_EXCEPTIONS,
                         PARAM_SUBDOMAIN_SETTINGS, false)) {
                 checkBox.setVisibility(View.VISIBLE);
-                checkBox.setText(R.string.website_settings_domain_desktop_site_exception_checkbox);
+                checkBox.setPrimaryText(getContext().getString(
+                        R.string.website_settings_domain_desktop_site_exception_checkbox_primary));
+                checkBox.setDescriptionText(getContext().getString(
+                        R.string.website_settings_domain_desktop_site_exception_checkbox_description));
             }
         }
 
