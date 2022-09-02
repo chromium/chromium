@@ -18,10 +18,12 @@
 #include "build/build_config.h"
 #include "mojo/core/connection_params.h"
 #include "mojo/core/platform_handle_in_transit.h"
+#include "mojo/public/cpp/platform/platform_channel_endpoint.h"
+#include "mojo/public/cpp/platform/platform_channel_server_endpoint.h"
 #include "mojo/public/cpp/platform/platform_handle.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 
-namespace mojo {
-namespace core {
+namespace mojo::core {
 
 const size_t kChannelMessageAlignment = 8;
 
@@ -313,9 +315,11 @@ class MOJO_SYSTEM_IMPL_EXPORT Channel
   // header, and the Channel is no longer responsible for encoding or decoding
   // any metadata about transmitted PlatformHandles, since the ipcz driver takes
   // care of that.
+  using Endpoint =
+      absl::variant<PlatformChannelEndpoint, PlatformChannelServerEndpoint>;
   static scoped_refptr<Channel> CreateForIpczDriver(
       Delegate* delegate,
-      PlatformChannelEndpoint endpoint,
+      Endpoint endpoint,
       scoped_refptr<base::SingleThreadTaskRunner> io_task_runner);
 
   Channel(const Channel&) = delete;
@@ -481,7 +485,6 @@ class MOJO_SYSTEM_IMPL_EXPORT Channel
   base::Process remote_process_;
 };
 
-}  // namespace core
-}  // namespace mojo
+}  // namespace mojo::core
 
 #endif  // MOJO_CORE_CHANNEL_H_

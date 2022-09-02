@@ -10,24 +10,38 @@
 #include "base/containers/span.h"
 #include "base/strings/string_piece.h"
 #include "base/synchronization/waitable_event.h"
+#include "build/build_config.h"
 #include "mojo/core/ipcz_api.h"
 #include "mojo/core/ipcz_driver/transport.h"
+#include "mojo/core/test/mojo_test_base.h"
+#include "mojo/public/c/system/invitation.h"
 #include "mojo/public/c/system/thunks.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
 #include "mojo/public/cpp/platform/platform_handle.h"
+#include "mojo/public/cpp/system/platform_handle.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace mojo::core {
 namespace {
 
+struct InvitationDetails {
+  MojoPlatformProcessHandle process;
+  MojoPlatformHandle handle;
+  MojoInvitationTransportEndpoint endpoint;
+};
+
 // Basic smoke tests for the Mojo Core API as implemented over ipcz.
-class CoreIpczTest : public testing::Test {
+class CoreIpczTest : public test::MojoTestBase {
  public:
   const MojoSystemThunks2& mojo() const { return *mojo_; }
   const IpczAPI& ipcz() const { return GetIpczAPI(); }
   IpczHandle node() const { return GetIpczNode(); }
 
-  CoreIpczTest() { CHECK(InitializeIpczNodeForProcess({.is_broker = true})); }
+  CoreIpczTest() : CoreIpczTest(/*is_broker=*/true) {}
+
+  enum { kForClient };
+  explicit CoreIpczTest(decltype(kForClient))
+      : CoreIpczTest(/*is_broker=*/false) {}
 
   ~CoreIpczTest() override { DestroyIpczNodeForProcess(); }
 
@@ -71,7 +85,96 @@ class CoreIpczTest : public testing::Test {
     return details;
   }
 
+  static void CreateAndShareInvitationTransport(MojoHandle pipe,
+                                                const base::Process& process,
+                                                InvitationDetails& details) {
+    PlatformChannel channel;
+    MojoHandle handle_for_client =
+        WrapPlatformHandle(channel.TakeRemoteEndpoint().TakePlatformHandle())
+            .release()
+            .value();
+    WriteMessageWithHandles(pipe, "", &handle_for_client, 1);
+
+    details.process.struct_size = sizeof(details.process);
+#if BUILDFLAG(IS_WIN)
+    details.process.value =
+        static_cast<uint64_t>(reinterpret_cast<uintptr_t>(process.Handle()));
+#else
+    details.process.value = static_cast<uint64_t>(process.Handle());
+#endif
+
+    details.handle.struct_size = sizeof(details.handle);
+    PlatformHandle::ToMojoPlatformHandle(
+        channel.TakeLocalEndpoint().TakePlatformHandle(), &details.handle);
+    details.endpoint = {
+        .struct_size = sizeof(details.endpoint),
+        .type = MOJO_INVITATION_TRANSPORT_TYPE_CHANNEL,
+        .num_platform_handles = 1,
+        .platform_handles = &details.handle,
+    };
+  }
+
+  static void ReceiveInvitationTransport(MojoHandle pipe,
+                                         InvitationDetails& details) {
+    MojoHandle handle;
+    ReadMessageWithHandles(pipe, &handle, 1);
+
+    details.handle.struct_size = sizeof(details.handle);
+    PlatformHandle::ToMojoPlatformHandle(
+        UnwrapPlatformHandle(ScopedHandle(Handle(handle))), &details.handle);
+    details.endpoint = {
+        .struct_size = sizeof(details.endpoint),
+        .type = MOJO_INVITATION_TRANSPORT_TYPE_CHANNEL,
+        .num_platform_handles = 1,
+        .platform_handles = &details.handle,
+    };
+  }
+
+  void WriteToMessagePipe(MojoHandle pipe, base::StringPiece contents) {
+    MojoMessageHandle message = CreateMessage(contents);
+    EXPECT_EQ(MOJO_RESULT_OK, mojo().WriteMessage(pipe, message, nullptr));
+  }
+
+  std::string ReadFromMessagePipe(MojoHandle pipe) {
+    base::WaitableEvent ready;
+    MojoHandle trap;
+    auto handler = +[](const MojoTrapEvent* event) {
+      if (event->result == MOJO_RESULT_OK) {
+        reinterpret_cast<base::WaitableEvent*>(event->trigger_context)
+            ->Signal();
+      }
+    };
+    EXPECT_EQ(MOJO_RESULT_OK, mojo().CreateTrap(handler, nullptr, &trap));
+    EXPECT_EQ(MOJO_RESULT_OK,
+              mojo().AddTrigger(trap, pipe, MOJO_HANDLE_SIGNAL_READABLE,
+                                MOJO_TRIGGER_CONDITION_SIGNALS_SATISFIED,
+                                reinterpret_cast<uintptr_t>(&ready), nullptr));
+    const MojoResult result = mojo().ArmTrap(trap, nullptr, nullptr, nullptr);
+    if (result == MOJO_RESULT_OK) {
+      ready.Wait();
+    }
+    EXPECT_EQ(MOJO_RESULT_OK, mojo().Close(trap));
+
+    MojoMessageHandle message;
+    EXPECT_EQ(MOJO_RESULT_OK, mojo().ReadMessage(pipe, nullptr, &message));
+    EXPECT_NE(MOJO_MESSAGE_HANDLE_INVALID, message);
+
+    void* buffer;
+    uint32_t buffer_size;
+    EXPECT_EQ(MOJO_RESULT_OK,
+              mojo().GetMessageData(message, nullptr, &buffer, &buffer_size,
+                                    nullptr, nullptr));
+
+    std::string contents(static_cast<char*>(buffer), buffer_size);
+    EXPECT_EQ(MOJO_RESULT_OK, mojo().DestroyMessage(message));
+    return contents;
+  }
+
  private:
+  explicit CoreIpczTest(bool is_broker) {
+    CHECK(InitializeIpczNodeForProcess({.is_broker = is_broker}));
+  }
+
   const MojoSystemThunks2* const mojo_{GetMojoIpczImpl()};
 };
 
@@ -104,6 +207,11 @@ class ChannelPeerClosureListener {
 
   base::WaitableEvent disconnected_;
   scoped_refptr<ipcz_driver::Transport> transport_;
+};
+
+class CoreIpczTestClient : public CoreIpczTest {
+ public:
+  CoreIpczTestClient() : CoreIpczTest(kForClient) {}
 };
 
 TEST_F(CoreIpczTest, Close) {
@@ -442,6 +550,112 @@ TEST_F(CoreIpczTest, SharedBufferDuplicateUnsafe) {
   EXPECT_EQ(MOJO_RESULT_OK, mojo().Close(dupe));
   EXPECT_EQ(MOJO_RESULT_OK, mojo().Close(buffer));
 }
+
+#if !BUILDFLAG(IS_IOS)
+
+constexpr base::StringPiece kAttachmentName = "interesting pipe name";
+
+constexpr base::StringPiece kTestMessages[] = {
+    "hello hello",
+    "i don't know why you say goodbye",
+    "actually nvm i do",
+    "lol bye",
+};
+
+DEFINE_TEST_CLIENT_TEST_WITH_PIPE(InvitationSingleAttachmentClient,
+                                  CoreIpczTestClient,
+                                  h) {
+  InvitationDetails details;
+  ReceiveInvitationTransport(h, details);
+
+  MojoHandle invitation;
+  EXPECT_EQ(MOJO_RESULT_OK,
+            mojo().AcceptInvitation(&details.endpoint, nullptr, &invitation));
+
+  MojoHandle new_pipe;
+  EXPECT_EQ(MOJO_RESULT_OK, mojo().ExtractMessagePipeFromInvitation(
+                                invitation, kAttachmentName.data(),
+                                kAttachmentName.size(), nullptr, &new_pipe));
+  EXPECT_EQ(MOJO_RESULT_OK, mojo().Close(invitation));
+
+  WriteToMessagePipe(new_pipe, kTestMessages[3]);
+  EXPECT_EQ(kTestMessages[0], ReadFromMessagePipe(new_pipe));
+  EXPECT_EQ(MOJO_RESULT_OK, mojo().Close(new_pipe));
+}
+
+TEST_F(CoreIpczTest, InvitationSingleAttachment) {
+  RunTestClientWithController(
+      "InvitationSingleAttachmentClient", [&](ClientController& c) {
+        InvitationDetails details;
+        CreateAndShareInvitationTransport(c.pipe(), c.process(), details);
+
+        MojoHandle new_pipe;
+        MojoHandle invitation;
+        EXPECT_EQ(MOJO_RESULT_OK,
+                  mojo().CreateInvitation(nullptr, &invitation));
+        EXPECT_EQ(MOJO_RESULT_OK,
+                  mojo().AttachMessagePipeToInvitation(
+                      invitation, kAttachmentName.data(),
+                      kAttachmentName.size(), nullptr, &new_pipe));
+        EXPECT_EQ(MOJO_RESULT_OK, mojo().SendInvitation(
+                                      invitation, &details.process,
+                                      &details.endpoint, nullptr, 0, nullptr));
+        EXPECT_EQ(kTestMessages[3], ReadFromMessagePipe(new_pipe));
+        WriteToMessagePipe(new_pipe, kTestMessages[0]);
+        EXPECT_EQ(MOJO_RESULT_OK, mojo().Close(new_pipe));
+      });
+}
+
+DEFINE_TEST_CLIENT_TEST_WITH_PIPE(InvitationMultipleAttachmentsClient,
+                                  CoreIpczTestClient,
+                                  h) {
+  InvitationDetails details;
+  ReceiveInvitationTransport(h, details);
+
+  MojoHandle invitation;
+  EXPECT_EQ(MOJO_RESULT_OK,
+            mojo().AcceptInvitation(&details.endpoint, nullptr, &invitation));
+
+  for (uint32_t i = 0; i < std::size(kTestMessages); ++i) {
+    MojoHandle pipe;
+    EXPECT_EQ(MOJO_RESULT_OK, mojo().ExtractMessagePipeFromInvitation(
+                                  invitation, &i, sizeof(i), nullptr, &pipe));
+    WriteToMessagePipe(pipe, kTestMessages[i]);
+    EXPECT_EQ(kTestMessages[i], ReadFromMessagePipe(pipe));
+    EXPECT_EQ(MOJO_RESULT_OK, mojo().Close(pipe));
+  }
+  EXPECT_EQ(MOJO_RESULT_OK, mojo().Close(invitation));
+}
+
+TEST_F(CoreIpczTest, InvitationMultipleAttachments) {
+  RunTestClientWithController(
+      "InvitationMultipleAttachmentsClient", [&](ClientController& c) {
+        InvitationDetails details;
+        CreateAndShareInvitationTransport(c.pipe(), c.process(), details);
+
+        MojoHandle invitation;
+        EXPECT_EQ(MOJO_RESULT_OK,
+                  mojo().CreateInvitation(nullptr, &invitation));
+
+        MojoHandle pipes[std::size(kTestMessages)];
+        for (uint32_t i = 0; i < std::size(pipes); ++i) {
+          EXPECT_EQ(MOJO_RESULT_OK,
+                    mojo().AttachMessagePipeToInvitation(
+                        invitation, &i, sizeof(i), nullptr, &pipes[i]));
+        }
+        EXPECT_EQ(MOJO_RESULT_OK, mojo().SendInvitation(
+                                      invitation, &details.process,
+                                      &details.endpoint, nullptr, 0, nullptr));
+
+        for (size_t i = 0; i < std::size(pipes); ++i) {
+          EXPECT_EQ(kTestMessages[i], ReadFromMessagePipe(pipes[i]));
+          WriteToMessagePipe(pipes[i], kTestMessages[i]);
+          EXPECT_EQ(MOJO_RESULT_OK, mojo().Close(pipes[i]));
+        }
+      });
+}
+
+#endif  // !BUILDFLAG(IS_IOS)
 
 }  // namespace
 }  // namespace mojo::core

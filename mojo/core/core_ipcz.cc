@@ -21,6 +21,7 @@
 #include "base/synchronization/lock.h"
 #include "base/time/time.h"
 #include "mojo/core/ipcz_api.h"
+#include "mojo/core/ipcz_driver/invitation.h"
 #include "mojo/core/ipcz_driver/mojo_trap.h"
 #include "mojo/core/ipcz_driver/shared_buffer.h"
 #include "mojo/core/ipcz_driver/shared_buffer_mapping.h"
@@ -688,7 +689,12 @@ MojoResult MojoUnwrapPlatformSharedMemoryRegionIpcz(
 
 MojoResult MojoCreateInvitationIpcz(const MojoCreateInvitationOptions* options,
                                     MojoHandle* invitation_handle) {
-  return MOJO_RESULT_UNIMPLEMENTED;
+  if (!invitation_handle ||
+      (options && options->struct_size < sizeof(*options))) {
+    return MOJO_RESULT_INVALID_ARGUMENT;
+  }
+  *invitation_handle = ipcz_driver::Invitation::MakeBoxed();
+  return MOJO_RESULT_OK;
 }
 
 MojoResult MojoAttachMessagePipeToInvitationIpcz(
@@ -697,7 +703,14 @@ MojoResult MojoAttachMessagePipeToInvitationIpcz(
     uint32_t name_num_bytes,
     const MojoAttachMessagePipeToInvitationOptions* options,
     MojoHandle* message_pipe_handle) {
-  return MOJO_RESULT_UNIMPLEMENTED;
+  auto* invitation = ipcz_driver::Invitation::FromBox(invitation_handle);
+  if (!invitation || !message_pipe_handle ||
+      (options && options->struct_size < sizeof(*options))) {
+    return MOJO_RESULT_INVALID_ARGUMENT;
+  }
+  return invitation->Attach(
+      base::make_span(static_cast<const uint8_t*>(name), name_num_bytes),
+      message_pipe_handle);
 }
 
 MojoResult MojoExtractMessagePipeFromInvitationIpcz(
@@ -706,7 +719,14 @@ MojoResult MojoExtractMessagePipeFromInvitationIpcz(
     uint32_t name_num_bytes,
     const MojoExtractMessagePipeFromInvitationOptions* options,
     MojoHandle* message_pipe_handle) {
-  return MOJO_RESULT_UNIMPLEMENTED;
+  auto* invitation = ipcz_driver::Invitation::FromBox(invitation_handle);
+  if (!invitation || !message_pipe_handle ||
+      (options && options->struct_size < sizeof(*options))) {
+    return MOJO_RESULT_INVALID_ARGUMENT;
+  }
+  return invitation->Extract(
+      base::make_span(static_cast<const uint8_t*>(name), name_num_bytes),
+      message_pipe_handle);
 }
 
 MojoResult MojoSendInvitationIpcz(
@@ -716,14 +736,32 @@ MojoResult MojoSendInvitationIpcz(
     MojoProcessErrorHandler error_handler,
     uintptr_t error_handler_context,
     const MojoSendInvitationOptions* options) {
-  return MOJO_RESULT_UNIMPLEMENTED;
+  auto* invitation = ipcz_driver::Invitation::FromBox(invitation_handle);
+  if (!invitation) {
+    return MOJO_RESULT_INVALID_ARGUMENT;
+  }
+
+  const MojoResult result =
+      invitation->Send(process_handle, transport_endpoint, error_handler,
+                       error_handler_context, options);
+  if (result == MOJO_RESULT_OK) {
+    // On success, the invitation is consumed.
+    GetIpczAPI().Close(invitation_handle, IPCZ_NO_FLAGS, nullptr);
+  }
+  return result;
 }
 
 MojoResult MojoAcceptInvitationIpcz(
     const MojoInvitationTransportEndpoint* transport_endpoint,
     const MojoAcceptInvitationOptions* options,
     MojoHandle* invitation_handle) {
-  return MOJO_RESULT_UNIMPLEMENTED;
+  if (!transport_endpoint || !invitation_handle ||
+      (options && options->struct_size < sizeof(*options))) {
+    return MOJO_RESULT_INVALID_ARGUMENT;
+  }
+  *invitation_handle =
+      ipcz_driver::Invitation::Accept(transport_endpoint, options);
+  return MOJO_RESULT_OK;
 }
 
 MojoResult MojoSetQuotaIpcz(MojoHandle handle,

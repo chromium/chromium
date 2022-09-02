@@ -36,7 +36,7 @@ class MOJO_SYSTEM_IMPL_EXPORT Transport : public Object<Transport>,
   };
 
   Transport(Destination destination,
-            PlatformChannelEndpoint endpoint,
+            Channel::Endpoint endpoint,
             base::Process remote_process = base::Process());
 
   static std::pair<scoped_refptr<Transport>, scoped_refptr<Transport>>
@@ -56,9 +56,9 @@ class MOJO_SYSTEM_IMPL_EXPORT Transport : public Object<Transport>,
 
   // Takes ownership of the Transport's underlying channel endpoint, effectively
   // invalidating the transport. May only be called on a Transport which has not
-  // yet been activated.
+  // yet been activated, and only when the channel endpoint is not a server.
   PlatformChannelEndpoint TakeEndpoint() {
-    return std::move(inactive_endpoint_);
+    return std::move(absl::get<PlatformChannelEndpoint>(inactive_endpoint_));
   }
 
   // Activates this transport by creating and starting the underlying Channel
@@ -129,6 +129,7 @@ class MOJO_SYSTEM_IMPL_EXPORT Transport : public Object<Transport>,
 
   ~Transport() override;
 
+  bool IsEndpointValid() const;
   bool CanTransmitHandles() const;
 
   // Indicates whether this transport should serialize its remote process handle
@@ -145,7 +146,7 @@ class MOJO_SYSTEM_IMPL_EXPORT Transport : public Object<Transport>,
   // start its underlying Channel instance once activated. Not guarded by a lock
   // since it must not accessed beyond activation, where thread safety becomes a
   // factor.
-  PlatformChannelEndpoint inactive_endpoint_;
+  Channel::Endpoint inactive_endpoint_;
 
   base::Lock lock_;
   scoped_refptr<Channel> channel_ GUARDED_BY(lock_);

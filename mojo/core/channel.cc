@@ -12,6 +12,7 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/functional/overloaded.h"
 #include "base/logging.h"
 #include "base/memory/nonscannable_memory.h"
 #include "base/memory/ptr_util.h"
@@ -888,12 +889,24 @@ Channel::~Channel() {
 // static
 scoped_refptr<Channel> Channel::CreateForIpczDriver(
     Delegate* delegate,
-    PlatformChannelEndpoint endpoint,
+    Endpoint endpoint,
     scoped_refptr<base::SingleThreadTaskRunner> io_task_runner) {
-  scoped_refptr<Channel> channel =
-      Create(delegate, ConnectionParams(std::move(endpoint)),
-             HandlePolicy::kAcceptHandles, std::move(io_task_runner));
-  return channel;
+#if BUILDFLAG(IS_NACL)
+  return nullptr;
+#else
+  ConnectionParams params =
+      absl::visit(base::Overloaded{
+                      [](PlatformChannelEndpoint& endpoint) {
+                        return ConnectionParams(std::move(endpoint));
+                      },
+                      [](PlatformChannelServerEndpoint& endpoint) {
+                        return ConnectionParams(std::move(endpoint));
+                      },
+                  },
+                  endpoint);
+  return Create(delegate, std::move(params), HandlePolicy::kAcceptHandles,
+                std::move(io_task_runner));
+#endif
 }
 
 void Channel::ShutDown() {
