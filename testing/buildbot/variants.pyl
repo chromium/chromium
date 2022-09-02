@@ -819,8 +819,8 @@
   'CROS_ATLAS_RELEASE_BETA': {
     'skylab': {
       'cros_board': 'atlas',
-      'cros_chrome_version': '105.0.5195.42',
-      'cros_img': 'atlas-release/R105-14989.58.0',
+      'cros_chrome_version': '106.0.5249.14',
+      'cros_img': 'atlas-release/R106-15054.18.0',
     },
     'enabled': True,
     'identifier': 'ATLAS_RELEASE_BETA',
@@ -892,8 +892,8 @@
   'CROS_HANA_RELEASE_DEV': {
     'skylab': {
       'cros_board': 'hana',
-      'cros_chrome_version': '106.0.5249.12',
-      'cros_img': 'hana-release/R106-15054.14.0',
+      'cros_chrome_version': '107.0.5263.0',
+      'cros_img': 'hana-release/R107-15081.0.0',
     },
     'enabled': True,
     'identifier': 'HANA_RELEASE_DEV',
@@ -901,8 +901,8 @@
   'CROS_HANA_RELEASE_BETA': {
     'skylab': {
       'cros_board': 'hana',
-      'cros_chrome_version': '105.0.5195.42',
-      'cros_img': 'hana-release/R105-14989.58.0',
+      'cros_chrome_version': '106.0.5249.14',
+      'cros_img': 'hana-release/R106-15054.18.0',
     },
     'enabled': True,
     'identifier': 'HANA_RELEASE_BETA',
@@ -937,8 +937,8 @@
   'CROS_JACUZZI_RELEASE_DEV': {
     'skylab': {
       'cros_board': 'jacuzzi',
-      'cros_chrome_version': '106.0.5249.12',
-      'cros_img': 'jacuzzi-release/R106-15054.14.0',
+      'cros_chrome_version': '107.0.5263.0',
+      'cros_img': 'jacuzzi-release/R107-15081.0.0',
     },
     'enabled': True,
     'identifier': 'JACUZZI_RELEASE_DEV',
@@ -946,8 +946,8 @@
   'CROS_JACUZZI_RELEASE_BETA': {
     'skylab': {
       'cros_board': 'jacuzzi',
-      'cros_chrome_version': '105.0.5195.42',
-      'cros_img': 'jacuzzi-release/R105-14989.58.0',
+      'cros_chrome_version': '106.0.5249.14',
+      'cros_img': 'jacuzzi-release/R106-15054.18.0',
     },
     'enabled': True,
     'identifier': 'JACUZZI_RELEASE_BETA',
@@ -983,8 +983,8 @@
   'CROS_OCTOPUS_RELEASE_DEV': {
     'skylab': {
       'cros_board': 'octopus',
-      'cros_chrome_version': '106.0.5249.12',
-      'cros_img': 'octopus-release/R106-15054.14.0',
+      'cros_chrome_version': '107.0.5263.0',
+      'cros_img': 'octopus-release/R107-15081.0.0',
     },
     'enabled': True,
     'identifier': 'OCTOPUS_RELEASE_DEV',
