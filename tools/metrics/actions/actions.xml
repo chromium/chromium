@@ -24120,6 +24120,31 @@ should be able to be added at any place in this file.
   <description>Page Info Cookies subpage opened.</description>
 </action>
 
+<action name="PageInfo.CookiesSubpage.AllSitesFilteredOpened">
+  <owner>zsalata@google.com</owner>
+  <owner>olesiamarukhno@google.com</owner>
+  <owner>dullweber@chromium.org</owner>
+  <description>
+    Opened All sites with a filter for FPS from PageInfo.
+  </description>
+</action>
+
+<action name="PageInfo.CookiesSubpage.Opened">
+  <owner>zsalata@google.com</owner>
+  <owner>olesiamarukhno@google.com</owner>
+  <owner>dullweber@chromium.org</owner>
+  <description>Cookies subpage opened from PageInfo.</description>
+</action>
+
+<action name="PageInfo.CookiesSubpage.SettingsLinkClicked">
+  <owner>zsalata@google.com</owner>
+  <owner>olesiamarukhno@google.com</owner>
+  <owner>dullweber@chromium.org</owner>
+  <description>
+    Cookies settings link clicked in Cookies subpage from PageInfo.
+  </description>
+</action>
+
 <action name="PageInfo.ForgetSite.Cleared">
   <owner>olesiamarukhno@google.com</owner>
   <owner>dullweber@chromium.org</owner>

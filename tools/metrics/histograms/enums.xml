@@ -102657,6 +102657,7 @@ Called by update_scheduler_enums.py.-->
   <int value="32" label="AboutThisSite 'more about' link opened"/>
   <int value="33" label="Cookies subpage opened"/>
   <int value="34" label="Cookies settings opened"/>
+  <int value="35" label="'All sites' settings opened with a filter for FPS"/>
 </enum>
 
 <enum name="WebSiteSettingsAllSitesAction">
