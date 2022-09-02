@@ -169,6 +169,8 @@ void SessionLogHandler::HandleSaveSessionLogRequest(
   DCHECK_CALLED_ON_VALID_SEQUENCE(session_log_handler_sequence_checker_);
   CHECK_EQ(1U, args.size());
   DCHECK(save_session_log_callback_id_.empty());
+  CHECK(args[0].is_string());
+
   save_session_log_callback_id_ = args[0].GetString();
 
   content::WebContents* web_contents = web_ui()->GetWebContents();
