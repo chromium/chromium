@@ -102,6 +102,8 @@ source_set("permissions") {
     "request_type.h",
     "switches.cc",
     "switches.h",
+    "unused_site_permissions_service.cc",
+    "unused_site_permissions_service.h",
   ]
   deps = [
     "//base",
