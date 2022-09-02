@@ -9,6 +9,7 @@ import android.os.RemoteException;
 import androidx.annotation.NonNull;
 import androidx.concurrent.futures.CallbackToFutureAdapter;
 
+import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 
 import org.chromium.browserfragment.interfaces.IStringCallback;
@@ -51,6 +52,9 @@ public class Tab {
      * Sets this Tab to active.
      */
     public void setActive() {
+        if (mTabProxy == null) {
+            throw new IllegalStateException("Browser has been destroyed");
+        }
         try {
             mTabProxy.setActive();
         } catch (RemoteException e) {
@@ -61,6 +65,9 @@ public class Tab {
      * Closes this Tab.
      */
     public void close() {
+        if (mTabProxy == null) {
+            throw new IllegalStateException("Browser has been destroyed");
+        }
         try {
             mTabProxy.close();
         } catch (RemoteException e) {
@@ -69,6 +76,10 @@ public class Tab {
 
     public ListenableFuture<String> executeScript(
             @NonNull String script, boolean useSeparateIsolate) {
+        if (mTabProxy == null) {
+            return Futures.immediateFailedFuture(
+                    new IllegalStateException("Browser has been destroyed"));
+        }
         return CallbackToFutureAdapter.getFuture(completer -> {
             try {
                 mTabProxy.executeScript(script, useSeparateIsolate, new IStringCallback.Stub() {
@@ -106,6 +117,9 @@ public class Tab {
      */
     public void registerWebMessageCallback(
             WebMessageCallback callback, String jsObjectName, List<String> allowedOrigins) {
+        if (mTabProxy == null) {
+            throw new IllegalStateException("Browser has been destroyed");
+        }
         try {
             mTabProxy.registerWebMessageCallback(new IWebMessageCallback.Stub() {
                 @Override
@@ -137,6 +151,9 @@ public class Tab {
      * @param jsObjectName Name of the JavaScript object.
      */
     public void unregisterWebMessageCallback(String jsObjectName) {
+        if (mTabProxy == null) {
+            throw new IllegalStateException("Browser has been destroyed");
+        }
         try {
             mTabProxy.unregisterWebMessageCallback(jsObjectName);
         } catch (RemoteException e) {
@@ -175,5 +192,10 @@ public class Tab {
             return this == obj || mGuid.equals(((Tab) obj).getGuid());
         }
         return false;
+    }
+
+    void invalidate() {
+        mTabProxy = null;
+        mTabNavigationController.invalidate();
     }
 }

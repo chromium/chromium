@@ -23,6 +23,9 @@ import com.google.common.util.concurrent.ListenableFuture;
 import org.chromium.browserfragment.interfaces.IBrowserSandboxCallback;
 import org.chromium.browserfragment.interfaces.IBrowserSandboxService;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Handle to the Browsing Sandbox. Must be created asynchronously.
  */
@@ -45,8 +48,12 @@ public class Browser {
     private static final String DEFAULT_PROFILE_NAME = "DefaultProfile";
 
     private static Browser sInstance;
+    private static boolean sPendingConnection;
 
+    private ConnectionSetup mConnection;
     private IBrowserSandboxService mBrowserSandboxService;
+
+    private List<BrowserFragment> mActiveFragments = new ArrayList<>();
 
     private static class ConnectionSetup implements ServiceConnection {
         private CallbackToFutureAdapter.Completer<Browser> mCompleter;
@@ -57,7 +64,8 @@ public class Browser {
                 new IBrowserSandboxCallback.Stub() {
                     @Override
                     public void onBrowserProcessInitialized() {
-                        sInstance = new Browser(mBrowserSandboxService);
+                        sInstance = new Browser(ConnectionSetup.this, mBrowserSandboxService);
+                        sPendingConnection = false;
                         mCompleter.set(sInstance);
                         mCompleter = null;
                     }
@@ -79,12 +87,18 @@ public class Browser {
             }
         }
 
+        void unbind() {
+            mContext.unbindService(this);
+            sInstance = null;
+        }
+
         // TODO(rayankans): Actually handle failure / disconnection events.
         @Override
         public void onServiceDisconnected(ComponentName name) {}
     }
 
-    private Browser(IBrowserSandboxService service) {
+    private Browser(ConnectionSetup connection, IBrowserSandboxService service) {
+        mConnection = connection;
         mBrowserSandboxService = service;
     }
 
@@ -98,7 +112,11 @@ public class Browser {
         if (sInstance != null) {
             return Futures.immediateFuture(sInstance);
         }
-
+        if (sPendingConnection) {
+            return Futures.immediateFailedFuture(
+                    new IllegalStateException("Browser is already being created"));
+        }
+        sPendingConnection = true;
         return CallbackToFutureAdapter.getFuture(completer -> {
             // Use the application context since the Browser Sandbox might out live the Activity.
             Context applicationContext = context.getApplicationContext();
@@ -133,6 +151,9 @@ public class Browser {
      */
     @Nullable
     public BrowserFragment createFragment(FragmentParams params) {
+        if (mBrowserSandboxService == null) {
+            throw new IllegalStateException("Browser has been destroyed");
+        }
         try {
             BrowserFragment fragment = new BrowserFragment();
             fragment.initialize(
@@ -147,6 +168,9 @@ public class Browser {
      * Enables or disables DevTools remote debugging.
      */
     public void setRemoteDebuggingEnabled(boolean enabled) {
+        if (mBrowserSandboxService == null) {
+            throw new IllegalStateException("Browser has been destroyed");
+        }
         try {
             mBrowserSandboxService.setRemoteDebuggingEnabled(enabled);
         } catch (RemoteException e) {
@@ -164,5 +188,33 @@ public class Browser {
         } catch (PackageManager.NameNotFoundException e) {
         }
         return false;
+    }
+
+    void addFragment(BrowserFragment fragment) {
+        mActiveFragments.add(fragment);
+    }
+
+    void removeFragment(BrowserFragment fragment) {
+        mActiveFragments.remove(fragment);
+    }
+
+    boolean isShutdown() {
+        return mBrowserSandboxService == null;
+    }
+
+    public void shutdown() {
+        if (isShutdown()) {
+            // Browser was already shut down.
+            return;
+        }
+
+        for (BrowserFragment fragment : mActiveFragments) {
+            // This will detach the fragment, save the state, and remove |fragment| from
+            // |mActiveFragments|.
+            fragment.invalidate();
+        }
+
+        mBrowserSandboxService = null;
+        mConnection.unbind();
     }
 }

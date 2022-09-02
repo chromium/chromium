@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.concurrent.futures.CallbackToFutureAdapter;
 
+import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 
 import org.chromium.browserfragment.interfaces.IBooleanCallback;
@@ -68,6 +69,10 @@ public class TabManager {
      */
     @NonNull
     public ListenableFuture<Tab> getActiveTab() {
+        if (mDelegate == null) {
+            return Futures.immediateFailedFuture(
+                    new IllegalStateException("Browser has been destroyed"));
+        }
         return CallbackToFutureAdapter.getFuture(completer -> {
             try {
                 mDelegate.getActiveTab(new TabCallback(completer));
@@ -86,6 +91,10 @@ public class TabManager {
      */
     @NonNull
     public ListenableFuture<Tab> createTab() {
+        if (mDelegate == null) {
+            return Futures.immediateFailedFuture(
+                    new IllegalStateException("Browser has been destroyed"));
+        }
         return CallbackToFutureAdapter.getFuture(completer -> {
             try {
                 mDelegate.createTab(new TabCallback(completer));
@@ -111,10 +120,19 @@ public class TabManager {
      */
     @NonNull
     public ListenableFuture<Boolean> tryNavigateBack() {
+        if (mDelegate == null) {
+            return Futures.immediateFailedFuture(
+                    new IllegalStateException("Browser has been destroyed"));
+        }
         return CallbackToFutureAdapter.getFuture(completer -> {
             mDelegate.tryNavigateBack(new RequestNavigationCallback(completer));
             // Debug string.
             return "Did navigate back Future";
         });
+    }
+
+    void invalidate() {
+        mDelegate = null;
+        TabRegistry.getInstance().invalidate();
     }
 }

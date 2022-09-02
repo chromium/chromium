@@ -46,6 +46,7 @@ public class BrowserFragmentShellActivity extends AppCompatActivity {
 
     private Context mContext;
 
+    private Browser mBrowser;
     private TabManager mTabManager;
 
     @Override
@@ -69,6 +70,7 @@ public class BrowserFragmentShellActivity extends AppCompatActivity {
 
         final Button createTabButton = findViewById(R.id.create_tab);
         final Button navigateButton = findViewById(R.id.navigate_tab);
+        final Button shutdownButton = findViewById(R.id.shut_down);
 
         createTabButton.setOnClickListener((View v) -> {
             if (mTabManager != null) {
@@ -89,9 +91,16 @@ public class BrowserFragmentShellActivity extends AppCompatActivity {
                 }, mContext.getMainExecutor());
             }
         });
+
+        shutdownButton.setOnClickListener((View v) -> {
+            if (mBrowser != null) {
+                mBrowser.shutdown();
+            }
+        });
     }
 
     private void onBrowserReady(Browser browser, Bundle savedInstanceState) {
+        mBrowser = browser;
         browser.setRemoteDebuggingEnabled(true);
 
         BrowserFragment fragment = getOrCreateBrowserFragment(browser, savedInstanceState);

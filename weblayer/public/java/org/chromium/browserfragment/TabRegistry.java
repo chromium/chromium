@@ -40,4 +40,11 @@ class TabRegistry {
     void removeTab(Tab tab) {
         mGuidToTab.remove(tab.getGuid());
     }
+
+    void invalidate() {
+        for (Tab tab : mGuidToTab.values()) {
+            tab.invalidate();
+        }
+        mGuidToTab.clear();
+    }
 }

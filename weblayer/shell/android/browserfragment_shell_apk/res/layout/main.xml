@@ -22,6 +22,12 @@
             android:enabled="false"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
+        <Button
+            android:id="@+id/shut_down"
+            android:text="Shut Down"
+            android:enabled="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
       </LinearLayout>
       <androidx.fragment.app.FragmentContainerView
           android:id="@+id/fragment_container_view"
