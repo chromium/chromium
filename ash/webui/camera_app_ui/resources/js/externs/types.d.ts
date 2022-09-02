@@ -8,19 +8,6 @@
 // ESLint doesn't like "declare class" without jsdoc.
 /* eslint-disable require-jsdoc */
 
-// This is currently a Chrome only API, and the spec is still in working draft
-// stage.
-// https://developer.mozilla.org/en-US/docs/Web/API/UIEvent/sourceCapabilities
-
-interface UIEvent extends Event {
-  readonly sourceCapabilities: InputDeviceCapabilities|null;
-}
-
-interface InputDeviceCapabilities {
-  readonly firesTouchEvents: boolean;
-  readonly pointerMovementScrolls: boolean;
-}
-
 // File System Access API: This is currently a Chrome only API, and the spec is
 // still in working draft stage.
 // https://wicg.github.io/file-system-access/

@@ -173,10 +173,6 @@ print_preview_only_files =
     print_preview_ts_files + print_preview_html_wrapper_files
 
 ts_definitions = [
-  # Using an absolute path because this variable is also consumed by
-  # chrome/test/data/pdf:build_ts.
-  "//chrome/browser/resources/pdf/source_capabilities.d.ts",
-
   "//tools/typescript/definitions/chrome_event.d.ts",
   "//tools/typescript/definitions/content_settings.d.ts",
   "//tools/typescript/definitions/file_system.d.ts",

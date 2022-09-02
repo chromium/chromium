@@ -24,3 +24,20 @@ interface HTMLDialogElement {
   returnValue: string;
   showModal(): void;
 }
+
+// https://developer.mozilla.org/en-US/docs/Web/API/UIEvent/sourceCapabilities
+interface UIEvent extends Event {
+  readonly sourceCapabilities: InputDeviceCapabilities|null;
+}
+
+// https://developer.mozilla.org/en-US/docs/Web/API/InputDeviceCapabilities
+declare class InputDeviceCapabilities {
+  readonly firesTouchEvents: boolean;
+  readonly pointerMovementScrolls: boolean;
+  constructor(param: {firesTouchEvents: boolean});
+}
+
+interface UIEventInit {
+  // https://developer.mozilla.org/en-US/docs/Web/API/UIEvent/sourceCapabilities
+  sourceCapabilities?: InputDeviceCapabilities|null;
+}

@@ -114,8 +114,8 @@ ts_library("build_ts") {
     "//tools/typescript/definitions/bluetooth.d.ts",
     "//tools/typescript/definitions/bluetooth_private.d.ts",
     "//tools/typescript/definitions/metrics_private.d.ts",
+    "//tools/typescript/definitions/pending.d.ts",
     "//tools/typescript/definitions/settings_private.d.ts",
-    "types/dom_api.d.ts",
   ]
   root_dir = "$target_gen_dir/$preprocessed_ts_folder"
   in_files = src_ts_files + gen_ts_files + mojom_webui_files
