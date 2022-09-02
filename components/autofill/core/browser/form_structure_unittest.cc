@@ -1028,7 +1028,7 @@ TEST_F(FormStructureTestImpl, HeuristicsAutocompleteAttributeWithSections) {
                             &field);
   form.fields.push_back(field);
 
-  // Credit card fields are implicitly in a separate section from other fields.
+  // Credit card fields are implicitly in one, separate credit card section.
   test::CreateTestFormField("", "", "", "text", "section-foo cc-number",
                             &field);
   form.fields.push_back(field);
@@ -6232,7 +6232,7 @@ TEST_F(FormStructureTestImpl,
   field.max_length = 10000;
 
   // Billing.
-  field.section.SetPrefixFromAutocomplete({.section = "Billing"});
+  field.section = Section::FromAutocomplete({.section = "Billing"});
 
   field.label = u"Full Name";
   field.name = u"fullName";
@@ -6250,7 +6250,7 @@ TEST_F(FormStructureTestImpl,
   form.fields.push_back(field);
 
   // Shipping.
-  field.section.SetPrefixFromAutocomplete({.section = "Shipping"});
+  field.section = Section::FromAutocomplete({.section = "Shipping"});
 
   field.label = u"Full Name";
   field.name = u"fullName";
@@ -6318,7 +6318,7 @@ TEST_F(
   field.max_length = 10000;
 
   // Shipping.
-  field.section.SetPrefixFromAutocomplete({.section = "Shipping"});
+  field.section = Section::FromAutocomplete({.section = "Shipping"});
   field.label = u"Full Name";
   field.name = u"fullName";
   field.unique_renderer_id = test::MakeFieldRendererId();
@@ -6340,7 +6340,7 @@ TEST_F(
   form.fields.push_back(field);
 
   // Billing.
-  field.section.SetPrefixFromAutocomplete({.section = "Billing"});
+  field.section = Section::FromAutocomplete({.section = "Billing"});
   field.label = u"Full Name";
   field.name = u"fullName";
   field.unique_renderer_id = test::MakeFieldRendererId();
@@ -6367,7 +6367,7 @@ TEST_F(
   form.fields.push_back(field);
 
   // Work address (not realistic).
-  field.section.SetPrefixFromAutocomplete({.section = "Work"});
+  field.section = Section::FromAutocomplete({.section = "Work"});
   field.label = u"Full Name";
   field.name = u"fullName";
   field.unique_renderer_id = test::MakeFieldRendererId();
@@ -6768,7 +6768,7 @@ TEST_F(FormStructureTestImpl,
   field.max_length = 10000;
 
   // Shipping.
-  field.section.SetPrefixFromAutocomplete({.section = "shipping"});
+  field.section = Section::FromAutocomplete({.section = "shipping"});
 
   field.label = u"Full Name";
   field.name = u"fullName";
@@ -6791,7 +6791,7 @@ TEST_F(FormStructureTestImpl,
   form.fields.push_back(field);
 
   // Billing.
-  field.section.SetPrefixFromAutocomplete({.section = "billing"});
+  field.section = Section::FromAutocomplete({.section = "billing"});
 
   field.label = u"Country";
   field.name = u"country2";
@@ -6841,7 +6841,7 @@ TEST_F(FormStructureTestImpl,
   form.fields.push_back(field);
 
   // Billing-2.
-  field.section.SetPrefixFromAutocomplete({.section = "billing-2"});
+  field.section = Section::FromAutocomplete({.section = "billing-2"});
 
   field.label = u"Country";
   field.name = u"country";
@@ -7078,7 +7078,7 @@ TEST_F(FormStructureTestImpl,
   field.form_control_type = "text";
   field.max_length = 10000;
 
-  field.section.SetPrefixFromAutocomplete({.section = "billing"});
+  field.section = Section::FromAutocomplete({.section = "billing"});
 
   field.label = u"Country";
   field.name = u"country";
@@ -7147,7 +7147,7 @@ TEST_F(FormStructureTestImpl,
   field.form_control_type = "text";
   field.max_length = 10000;
 
-  field.section.SetPrefixFromAutocomplete({.section = "billing"});
+  field.section = Section::FromAutocomplete({.section = "billing"});
 
   field.label = u"Country";
   field.name = u"country";
@@ -7794,18 +7794,12 @@ TEST_F(FormStructureTestImpl, NoAutocompleteSectionNames) {
 
   // Assert the correct number of fields.
   ASSERT_EQ(6U, form_structure.field_count());
-  EXPECT_EQ("fullName_0_11-default",
-            form_structure.field(0)->section.ToString());
-  EXPECT_EQ("fullName_0_11-default",
-            form_structure.field(1)->section.ToString());
-  EXPECT_EQ("fullName_0_11-default",
-            form_structure.field(2)->section.ToString());
-  EXPECT_EQ("fullName_0_14-default",
-            form_structure.field(3)->section.ToString());
-  EXPECT_EQ("fullName_0_14-default",
-            form_structure.field(4)->section.ToString());
-  EXPECT_EQ("fullName_0_14-default",
-            form_structure.field(5)->section.ToString());
+  EXPECT_EQ("fullName_0_11", form_structure.field(0)->section.ToString());
+  EXPECT_EQ("fullName_0_11", form_structure.field(1)->section.ToString());
+  EXPECT_EQ("fullName_0_11", form_structure.field(2)->section.ToString());
+  EXPECT_EQ("fullName_0_14", form_structure.field(3)->section.ToString());
+  EXPECT_EQ("fullName_0_14", form_structure.field(4)->section.ToString());
+  EXPECT_EQ("fullName_0_14", form_structure.field(5)->section.ToString());
 }
 
 // Tests that the immediate recurrence of the |PHONE_HOME_NUMBER| type does not
@@ -7862,20 +7856,13 @@ TEST_F(FormStructureTestImpl, NoSplitByRecurringPhoneFieldType) {
   // Assert the correct number of fields.
   ASSERT_EQ(7U, form_structure.field_count());
 
-  EXPECT_EQ("blue-billing-default",
-            form_structure.field(0)->section.ToString());
-  EXPECT_EQ("blue-billing-default",
-            form_structure.field(1)->section.ToString());
-  EXPECT_EQ("blue-billing-default",
-            form_structure.field(2)->section.ToString());
-  EXPECT_EQ("blue-billing-default",
-            form_structure.field(3)->section.ToString());
-  EXPECT_EQ("blue-billing-default",
-            form_structure.field(4)->section.ToString());
-  EXPECT_EQ("blue-billing-default",
-            form_structure.field(5)->section.ToString());
-  EXPECT_EQ("blue-billing-default",
-            form_structure.field(6)->section.ToString());
+  EXPECT_EQ("blue-billing", form_structure.field(0)->section.ToString());
+  EXPECT_EQ("blue-billing", form_structure.field(1)->section.ToString());
+  EXPECT_EQ("blue-billing", form_structure.field(2)->section.ToString());
+  EXPECT_EQ("blue-billing", form_structure.field(3)->section.ToString());
+  EXPECT_EQ("blue-billing", form_structure.field(4)->section.ToString());
+  EXPECT_EQ("blue-billing", form_structure.field(5)->section.ToString());
+  EXPECT_EQ("blue-billing", form_structure.field(6)->section.ToString());
 }
 
 // Tests if a new logical form is started with the second appearance of a field
@@ -7922,14 +7909,10 @@ TEST_F(FormStructureTestImpl, SplitByRecurringFieldType) {
   // Assert the correct number of fields.
   ASSERT_EQ(4U, form_structure.field_count());
 
-  EXPECT_EQ("blue-shipping-default",
-            form_structure.field(0)->section.ToString());
-  EXPECT_EQ("blue-shipping-default",
-            form_structure.field(1)->section.ToString());
-  EXPECT_EQ("blue-shipping-default",
-            form_structure.field(2)->section.ToString());
-  EXPECT_EQ("country_0_14-default",
-            form_structure.field(3)->section.ToString());
+  EXPECT_EQ("blue-shipping", form_structure.field(0)->section.ToString());
+  EXPECT_EQ("blue-shipping", form_structure.field(1)->section.ToString());
+  EXPECT_EQ("blue-shipping", form_structure.field(2)->section.ToString());
+  EXPECT_EQ("country_0_14", form_structure.field(3)->section.ToString());
 }
 
 // Tests if a new logical form is started with the second appearance of a field
@@ -7978,14 +7961,10 @@ TEST_F(FormStructureTestImpl,
   // Assert the correct number of fields.
   ASSERT_EQ(4U, form_structure.field_count());
 
-  EXPECT_EQ("blue-shipping-default",
-            form_structure.field(0)->section.ToString());
-  EXPECT_EQ("blue-billing-default",
-            form_structure.field(1)->section.ToString());
-  EXPECT_EQ("blue-billing-default",
-            form_structure.field(2)->section.ToString());
-  EXPECT_EQ("country_0_14-default",
-            form_structure.field(3)->section.ToString());
+  EXPECT_EQ("blue-shipping", form_structure.field(0)->section.ToString());
+  EXPECT_EQ("blue-billing", form_structure.field(1)->section.ToString());
+  EXPECT_EQ("blue-billing", form_structure.field(2)->section.ToString());
+  EXPECT_EQ("country_0_14", form_structure.field(3)->section.ToString());
 }
 
 // Tests if a new logical form is started with the second appearance of a field
@@ -8032,14 +8011,10 @@ TEST_F(FormStructureTestImpl, SplitByNewAutocompleteSectionName) {
   // Assert the correct number of fields.
   ASSERT_EQ(4U, form_structure.field_count());
 
-  EXPECT_EQ("blue-shipping-default",
-            form_structure.field(0)->section.ToString());
-  EXPECT_EQ("blue-shipping-default",
-            form_structure.field(1)->section.ToString());
-  EXPECT_EQ("blue-billing-default",
-            form_structure.field(2)->section.ToString());
-  EXPECT_EQ("blue-billing-default",
-            form_structure.field(3)->section.ToString());
+  EXPECT_EQ("blue-shipping", form_structure.field(0)->section.ToString());
+  EXPECT_EQ("blue-shipping", form_structure.field(1)->section.ToString());
+  EXPECT_EQ("blue-billing", form_structure.field(2)->section.ToString());
+  EXPECT_EQ("blue-billing", form_structure.field(3)->section.ToString());
 }
 
 // Tests if a new logical form is started with the second appearance of a field
@@ -8085,14 +8060,10 @@ TEST_F(
   // Assert the correct number of fields.
   ASSERT_EQ(4U, form_structure.field_count());
 
-  EXPECT_EQ("blue-shipping-default",
-            form_structure.field(0)->section.ToString());
-  EXPECT_EQ("blue-shipping-default",
-            form_structure.field(1)->section.ToString());
-  EXPECT_EQ("blue-billing-default",
-            form_structure.field(2)->section.ToString());
-  EXPECT_EQ("blue-billing-default",
-            form_structure.field(3)->section.ToString());
+  EXPECT_EQ("blue-shipping", form_structure.field(0)->section.ToString());
+  EXPECT_EQ("blue-shipping", form_structure.field(1)->section.ToString());
+  EXPECT_EQ("blue-billing", form_structure.field(2)->section.ToString());
+  EXPECT_EQ("blue-billing", form_structure.field(3)->section.ToString());
 }
 
 // Tests if all the fields in the form belong to the same section when the
@@ -8127,10 +8098,8 @@ TEST_F(FormStructureTestImpl, FromEmptyAutocompleteSectionToDefinedOne) {
   // Assert the correct number of fields.
   ASSERT_EQ(2U, form_structure.field_count());
 
-  EXPECT_EQ("blue-shipping-default",
-            form_structure.field(0)->section.ToString());
-  EXPECT_EQ("blue-shipping-default",
-            form_structure.field(1)->section.ToString());
+  EXPECT_EQ("blue-shipping", form_structure.field(0)->section.ToString());
+  EXPECT_EQ("blue-shipping", form_structure.field(1)->section.ToString());
 }
 
 // Tests if all the fields in the form belong to the same section when one of
@@ -8172,9 +8141,9 @@ TEST_F(FormStructureTestImpl,
   // Assert the correct number of fields.
   ASSERT_EQ(3U, form_structure.field_count());
 
-  EXPECT_EQ("-shipping-default", form_structure.field(0)->section.ToString());
-  EXPECT_EQ("-shipping-default", form_structure.field(1)->section.ToString());
-  EXPECT_EQ("-shipping-default", form_structure.field(2)->section.ToString());
+  EXPECT_EQ("-shipping", form_structure.field(0)->section.ToString());
+  EXPECT_EQ("-shipping", form_structure.field(1)->section.ToString());
+  EXPECT_EQ("-shipping", form_structure.field(2)->section.ToString());
 }
 
 TEST_F(FormStructureTestImpl, FindFieldsEligibleForManualFilling) {

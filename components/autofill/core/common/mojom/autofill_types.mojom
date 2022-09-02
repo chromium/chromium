@@ -248,20 +248,17 @@ struct SectionFieldIdentifier {
   FieldRendererId field_renderer_id;
 };
 
-// autofill::Section::SectionPrefix
+// autofill::Section::SectionValue
 // (components/autofill/core/common/form_field_data.h)
-union SectionPrefix {
-  bool default_prefix;
-  SectionAutocomplete autocomplete_section_prefix;
-  SectionFieldIdentifier from_field_prefix;
-  bool credit_card_prefix;
+union SectionValue {
+  bool default_section;
+  SectionAutocomplete autocomplete;
+  SectionFieldIdentifier field_identifier;
 };
 
 // autofill::Section (components/autofill/core/common/form_field_data.h)
 struct Section {
-  // autofill::Section::FieldTypeGroupSuffix
-  uint8 field_type_group;
-  SectionPrefix prefix;
+  SectionValue value;
 };
 
 // autofill::AutocompleteParsingResult

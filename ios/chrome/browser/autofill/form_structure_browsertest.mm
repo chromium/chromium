@@ -334,23 +334,23 @@ std::string FormStructureBrowserTest::FormStructuresToString(
         section = section.substr(first_underscore);
       }
 
-      // Normalize the section by replacing the unique but platform-dependent
-      // integers in `field->section` with consecutive unique integers.
-      // The section string is of the form "fieldname_id1_id2-suffix", where
-      // id1, id2 are platform-dependent and thus need to be substituted.
-      size_t last_underscore = section.find_last_of('_');
-      size_t second_last_underscore =
-          section.find_last_of('_', last_underscore - 1);
-      size_t next_dash = section.find_first_of('-', last_underscore);
-      int new_section_index = static_cast<int>(section_to_index.size() + 1);
-      int section_index =
-          section_to_index.insert(std::make_pair(section, new_section_index))
-              .first->second;
-      if (second_last_underscore != std::string::npos &&
-          next_dash != std::string::npos) {
-        section = base::StringPrintf(
-            "%s%d%s", section.substr(0, second_last_underscore + 1).c_str(),
-            section_index, section.substr(next_dash).c_str());
+      if (field->section.is_from_fieldidentifier()) {
+        // Normalize the section by replacing the unique but platform-dependent
+        // integers in `field->section` with consecutive unique integers.
+        // The section string is of the form "fieldname_id1_id2-suffix", where
+        // id1, id2 are platform-dependent and thus need to be substituted.
+        size_t last_underscore = section.find_last_of('_');
+        size_t second_last_underscore =
+            section.find_last_of('_', last_underscore - 1);
+        int new_section_index = static_cast<int>(section_to_index.size() + 1);
+        int section_index =
+            section_to_index.insert(std::make_pair(section, new_section_index))
+                .first->second;
+        if (second_last_underscore != std::string::npos) {
+          section = base::StringPrintf(
+              "%s%d", section.substr(0, second_last_underscore + 1).c_str(),
+              section_index);
+        }
       }
 
       forms_string += field->Type().ToString();

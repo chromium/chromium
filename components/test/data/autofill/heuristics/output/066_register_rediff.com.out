@@ -1,18 +1,18 @@
-UNKNOWN_TYPE | name | Create a Rediffmail account |  | name_1-default
-NAME_FULL | login | Full Name:Enter your first name & last nameEg. Sameer Bhagwat |  | name_1-default
-UNKNOWN_TYPE | passwd | Choose a Rediffmail ID:@rediffmail.com |  | name_1-default
-UNKNOWN_TYPE | confirm_passwd | Password:6-12 characters allowed |  | name_1-default
-EMAIL_ADDRESS | altemail |  |  | name_1-default
-UNKNOWN_TYPE | chk_altemail |  | on | name_1-default
-UNKNOWN_TYPE | hintq |  |  | name_1-default
-UNKNOWN_TYPE | hinta | Select a Security Question: |  | name_1-default
-UNKNOWN_TYPE | mothername | Enter an Answer: |  | name_1-default
-UNKNOWN_TYPE | DOB_Day | Select a Security QuestionEnter an Answer |  | name_1-default
-UNKNOWN_TYPE | DOB_Month | Select a Security QuestionEnter an Answer |  | name_1-default
-UNKNOWN_TYPE | DOB_Year | Select a Security QuestionEnter an Answer |  | name_1-default
-UNKNOWN_TYPE | gender | Male | m | name_1-default
-UNKNOWN_TYPE | gender | Female | f | name_1-default
-ADDRESS_HOME_COUNTRY | country | Gender: | 99 | name_1-default
-ADDRESS_HOME_CITY | city |  |  | name_1-default
-UNKNOWN_TYPE | othercity | City : |  | name_1-default
-ADDRESS_HOME_CITY | 75cd7feb6ce926e1efbb8b96c0fb71c0 | City : |  | name_1-default
+UNKNOWN_TYPE | name | Create a Rediffmail account |  | name_1
+NAME_FULL | login | Full Name:Enter your first name & last nameEg. Sameer Bhagwat |  | name_1
+UNKNOWN_TYPE | passwd | Choose a Rediffmail ID:@rediffmail.com |  | name_1
+UNKNOWN_TYPE | confirm_passwd | Password:6-12 characters allowed |  | name_1
+EMAIL_ADDRESS | altemail |  |  | name_1
+UNKNOWN_TYPE | chk_altemail |  | on | name_1
+UNKNOWN_TYPE | hintq |  |  | name_1
+UNKNOWN_TYPE | hinta | Select a Security Question: |  | name_1
+UNKNOWN_TYPE | mothername | Enter an Answer: |  | name_1
+UNKNOWN_TYPE | DOB_Day | Select a Security QuestionEnter an Answer |  | name_1
+UNKNOWN_TYPE | DOB_Month | Select a Security QuestionEnter an Answer |  | name_1
+UNKNOWN_TYPE | DOB_Year | Select a Security QuestionEnter an Answer |  | name_1
+UNKNOWN_TYPE | gender | Male | m | name_1
+UNKNOWN_TYPE | gender | Female | f | name_1
+ADDRESS_HOME_COUNTRY | country | Gender: | 99 | name_1
+ADDRESS_HOME_CITY | city |  |  | name_1
+UNKNOWN_TYPE | othercity | City : |  | name_1
+ADDRESS_HOME_CITY | 75cd7feb6ce926e1efbb8b96c0fb71c0 | City : |  | name_1

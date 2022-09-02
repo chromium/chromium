@@ -1,20 +1,20 @@
-UNKNOWN_TYPE | zipCode | Enter ZIP Code |  | zipCode_1-default
-UNKNOWN_TYPE | Ntt | Search keywords |  | Ntt_1-default
-ADDRESS_HOME_COUNTRY | country | USA | USA | country_1-default
-ADDRESS_HOME_LINE1 | addressField2 | Address Name: |  | country_1-default
-NAME_FIRST | firstName | First Name: |  | country_1-default
-NAME_LAST | lastName | Last Name: |  | country_1-default
-COMPANY_NAME | addressField1 | Company Name: |  | country_1-default
-ADDRESS_HOME_LINE1 | address1 | Address Line 1: |  | address1_2-default
-ADDRESS_HOME_LINE2 | address2 | Address Line 2: |  | address1_2-default
-ADDRESS_HOME_CITY | city | City: |  | address1_2-default
-ADDRESS_HOME_STATE | state | State: |  | address1_2-default
-ADDRESS_HOME_ZIP | zipCode | ZIP Code: |  | address1_2-default
-ADDRESS_HOME_CITY | taxGeoCode | Municipality: As an additional way to make sure you receive your order, we ask that you select the name of your municipality (city, town, borough, village, etc.) followed by the county, township, or parish in which you reside. |  | taxGeoCode_3-default
-UNKNOWN_TYPE | billingAddress | This is also my billing address. | on | taxGeoCode_3-default
-EMAIL_ADDRESS | email1 | E-mail Address: |  | taxGeoCode_3-default
-PHONE_HOME_CITY_CODE | billphone1 | Contact Phone: |  | taxGeoCode_3-default
-PHONE_HOME_NUMBER_PREFIX | billphone2 | Contact Phone: |  | taxGeoCode_3-default
-PHONE_HOME_NUMBER_SUFFIX | billphone3 | Contact Phone: |  | taxGeoCode_3-default
-EMAIL_ADDRESS | selfAddress | Please enter the phone number and e-mail address associated with this billing address.E-mail Address: Contact Phone: | 0 | selfAddress_4-default
-UNKNOWN_TYPE | save-address | on | on | selfAddress_4-default
+UNKNOWN_TYPE | zipCode | Enter ZIP Code |  | zipCode_1
+UNKNOWN_TYPE | Ntt | Search keywords |  | Ntt_1
+ADDRESS_HOME_COUNTRY | country | USA | USA | country_1
+ADDRESS_HOME_LINE1 | addressField2 | Address Name: |  | country_1
+NAME_FIRST | firstName | First Name: |  | country_1
+NAME_LAST | lastName | Last Name: |  | country_1
+COMPANY_NAME | addressField1 | Company Name: |  | country_1
+ADDRESS_HOME_LINE1 | address1 | Address Line 1: |  | address1_2
+ADDRESS_HOME_LINE2 | address2 | Address Line 2: |  | address1_2
+ADDRESS_HOME_CITY | city | City: |  | address1_2
+ADDRESS_HOME_STATE | state | State: |  | address1_2
+ADDRESS_HOME_ZIP | zipCode | ZIP Code: |  | address1_2
+ADDRESS_HOME_CITY | taxGeoCode | Municipality: As an additional way to make sure you receive your order, we ask that you select the name of your municipality (city, town, borough, village, etc.) followed by the county, township, or parish in which you reside. |  | taxGeoCode_3
+UNKNOWN_TYPE | billingAddress | This is also my billing address. | on | taxGeoCode_3
+EMAIL_ADDRESS | email1 | E-mail Address: |  | taxGeoCode_3
+PHONE_HOME_CITY_CODE | billphone1 | Contact Phone: |  | taxGeoCode_3
+PHONE_HOME_NUMBER_PREFIX | billphone2 | Contact Phone: |  | taxGeoCode_3
+PHONE_HOME_NUMBER_SUFFIX | billphone3 | Contact Phone: |  | taxGeoCode_3
+EMAIL_ADDRESS | selfAddress | Please enter the phone number and e-mail address associated with this billing address.E-mail Address: Contact Phone: | 0 | selfAddress_4
+UNKNOWN_TYPE | save-address | on | on | selfAddress_4

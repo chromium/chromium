@@ -1,56 +1,56 @@
-UNKNOWN_TYPE | logonUsername | Secure account sign in | Email Address | logonUsername_1-default
-UNKNOWN_TYPE | logonPassword | password | password | logonUsername_1-default
-UNKNOWN_TYPE | zip | Find a store | Enter ZIP/Postal | zip_1-default
-UNKNOWN_TYPE | username | Access your wish list | Email | username_1-default
-UNKNOWN_TYPE | password | Password | Password | username_1-default
-ADDRESS_HOME_COUNTRY | countryType | Country Type | usa | countryType_1-default
-ADDRESS_HOME_COUNTRY | country | Country, APO/FPO | US | countryType_1-default
-NAME_FIRST | firstName | First Name |  | countryType_1-default
-NAME_LAST | lastName | Last Name |  | countryType_1-default
-ADDRESS_HOME_LINE1 | address1 | Address |  | countryType_1-default
-ADDRESS_HOME_LINE2 | address2 | Address |  | countryType_1-default
-ADDRESS_HOME_CITY | city | City |  | countryType_1-default
-ADDRESS_HOME_STATE | state | State |  | countryType_1-default
-ADDRESS_HOME_ZIP | zip | Zip |  | countryType_1-default
-UNKNOWN_TYPE | shippingChoice | Standard3 - 7 business days$7dates: Jun 08 - Jun 14 | Standard | countryType_1-default
-UNKNOWN_TYPE | shippingChoice | Two Day2 business days$15date: Jun 07 | SecondDay | countryType_1-default
-UNKNOWN_TYPE | shippingChoice | Overnight1 business day$20date: Jun 06 | Overnight | countryType_1-default
-UNKNOWN_TYPE | giftNumEntry | Gift Card Number: CLOSEYour 19-digit Gift Card number and four-digit pin number are on the back of your Gift Card. Enter these numbers in the Gift Card fields, then click the Apply button.Learn More about how to use Gift Cards. |  | giftNumEntry_1-default
-UNKNOWN_TYPE | pinNumEntry | PIN: |  | giftNumEntry_1-default
-CREDIT_CARD_TYPE | ccType | Card Type: |  | credit-card-cc
-CREDIT_CARD_NUMBER | ccNumber | Card Number: |  | credit-card-cc
-CREDIT_CARD_EXP_MONTH | expMonth | Expiration: | 1 | credit-card-cc
-CREDIT_CARD_EXP_4_DIGIT_YEAR | expYear | Expiration: | 2011 | credit-card-cc
-CREDIT_CARD_VERIFICATION_CODE | ccSecCode | Security Code: CLOSEVisa, Mastercard & Discover:The security code is a 3-digit number found on the back of the card near the signature strip.American Express:The security code is a 4-digit number found on the front right side of the card. |  | credit-card-cc
-UNKNOWN_TYPE | birthMonthBMLField | Birthday: CLOSEWe need your birthday for the Bill Me Later® credit check process. |  | ccType_2-default
-UNKNOWN_TYPE | birthDayBMLField | Birthday: CLOSEWe need your birthday for the Bill Me Later® credit check process. |  | ccType_2-default
-UNKNOWN_TYPE | birthYearBMLField | Birthday: CLOSEWe need your birthday for the Bill Me Later® credit check process. |  | ccType_2-default
-UNKNOWN_TYPE | SSN | Last 4 digits of your social security #: CLOSEWe need the last 4 digits of your SSN for the Bill Me Later® credit check process. If you do not have an SSN, you can still pay by Credit Card or PayPal. |  | ccType_2-default
-UNKNOWN_TYPE | agree | I agree to have the Terms and Conditions presented electronically. | yes | ccType_2-default
-UNKNOWN_TYPE | agreeTs | I agree to the Bill Me Later® Terms and Conditions. | yes | ccType_2-default
-ADDRESS_HOME_COUNTRY | countryType | Country Type | usa | ccType_2-default
-UNKNOWN_TYPE | billSameAsShip | My Billing & Shipping addresses are the same | yes | ccType_2-default
-ADDRESS_HOME_COUNTRY | country | Country, APO/FPO | US | ccType_2-default
-NAME_FIRST | firstName | First Name |  | ccType_2-default
-NAME_LAST | lastName | Last Name |  | ccType_2-default
-ADDRESS_HOME_LINE1 | address1 | Address |  | ccType_2-default
-ADDRESS_HOME_LINE2 | address2 | Address |  | ccType_2-default
-ADDRESS_HOME_CITY | city | City |  | ccType_2-default
-ADDRESS_HOME_STATE | state | State |  | ccType_2-default
-ADDRESS_HOME_ZIP | zip | Zip |  | ccType_2-default
-EMAIL_ADDRESS | email | Email CLOSEWe use this to send you an order confirmation and tracking info once your order ships. |  | ccType_2-default
-EMAIL_ADDRESS | confirmEmail | Re-Type Email |  | ccType_2-default
-PHONE_HOME_WHOLE_NUMBER | billingPhone | Billing Phone Number CLOSEThis must match the phone number on your credit card statement. Don't worry... we never share your number with anyone. |  | ccType_2-default
-UNKNOWN_TYPE | accessPassNumber | My AEREWARD$ # CLOSEAEREWARD$ NumberEnter the number found on the back of your AEREWARD$ card to earn rewards for your purchase.Learn More about AEREWARD$ |  | ccType_2-default
-UNKNOWN_TYPE | aeRewardsSignUp | Sign up now and receive 25 points  just for signing up! Learn More | true | ccType_2-default
-UNKNOWN_TYPE | aeAccount | Create my AE Account.CLOSECreate an AE Account to:Save Your Personal Info For Next TimeCheckout FasterTrack An Order Quicker Sign up now and receive 25 points just for signing up! Learn More | true | ccType_2-default
-UNKNOWN_TYPE | aeAccountPass | Password (6-15 Letters & Numbers) |  | ccType_2-default
-UNKNOWN_TYPE | aeAccountPassConfirm | Confirm Password |  | ccType_2-default
-UNKNOWN_TYPE | birthMonthBillAddField | Birthday: CLOSEWe'd love to wish you a happy birthday when it's time! However, you need to be 13 or older to create an account. |  | ccType_2-default
-UNKNOWN_TYPE | birthDayBillAddField | Birthday: CLOSEWe'd love to wish you a happy birthday when it's time! However, you need to be 13 or older to create an account. |  | ccType_2-default
-UNKNOWN_TYPE | birthYearBillAddField | Birthday: CLOSEWe'd love to wish you a happy birthday when it's time! However, you need to be 13 or older to create an account. |  | ccType_2-default
-UNKNOWN_TYPE | aeEmail | AE | on | ccType_2-default
-UNKNOWN_TYPE | aerieEmail | aerie | on | ccType_2-default
-UNKNOWN_TYPE | kidsEmail | 77kids | on | ccType_2-default
-UNKNOWN_TYPE | loyaltyTerms | I accept the Terms & Conditions |  | ccType_2-default
-MERCHANT_PROMO_CODE | CouponCode | Discount Code: CLOSEApplying DiscountsEnter your 8 or 20 digit code into the Discount Code field without any spaces, then click the Apply Discount button.Learn More about how to find and apply discounts |  | CouponCode_1-default
+UNKNOWN_TYPE | logonUsername | Secure account sign in | Email Address | logonUsername_1
+UNKNOWN_TYPE | logonPassword | password | password | logonUsername_1
+UNKNOWN_TYPE | zip | Find a store | Enter ZIP/Postal | zip_1
+UNKNOWN_TYPE | username | Access your wish list | Email | username_1
+UNKNOWN_TYPE | password | Password | Password | username_1
+ADDRESS_HOME_COUNTRY | countryType | Country Type | usa | countryType_1
+ADDRESS_HOME_COUNTRY | country | Country, APO/FPO | US | countryType_1
+NAME_FIRST | firstName | First Name |  | countryType_1
+NAME_LAST | lastName | Last Name |  | countryType_1
+ADDRESS_HOME_LINE1 | address1 | Address |  | countryType_1
+ADDRESS_HOME_LINE2 | address2 | Address |  | countryType_1
+ADDRESS_HOME_CITY | city | City |  | countryType_1
+ADDRESS_HOME_STATE | state | State |  | countryType_1
+ADDRESS_HOME_ZIP | zip | Zip |  | countryType_1
+UNKNOWN_TYPE | shippingChoice | Standard3 - 7 business days$7dates: Jun 08 - Jun 14 | Standard | countryType_1
+UNKNOWN_TYPE | shippingChoice | Two Day2 business days$15date: Jun 07 | SecondDay | countryType_1
+UNKNOWN_TYPE | shippingChoice | Overnight1 business day$20date: Jun 06 | Overnight | countryType_1
+UNKNOWN_TYPE | giftNumEntry | Gift Card Number: CLOSEYour 19-digit Gift Card number and four-digit pin number are on the back of your Gift Card. Enter these numbers in the Gift Card fields, then click the Apply button.Learn More about how to use Gift Cards. |  | giftNumEntry_1
+UNKNOWN_TYPE | pinNumEntry | PIN: |  | giftNumEntry_1
+CREDIT_CARD_TYPE | ccType | Card Type: |  | ccType_1
+CREDIT_CARD_NUMBER | ccNumber | Card Number: |  | ccType_1
+CREDIT_CARD_EXP_MONTH | expMonth | Expiration: | 1 | ccType_1
+CREDIT_CARD_EXP_4_DIGIT_YEAR | expYear | Expiration: | 2011 | ccType_1
+CREDIT_CARD_VERIFICATION_CODE | ccSecCode | Security Code: CLOSEVisa, Mastercard & Discover:The security code is a 3-digit number found on the back of the card near the signature strip.American Express:The security code is a 4-digit number found on the front right side of the card. |  | ccType_1
+UNKNOWN_TYPE | birthMonthBMLField | Birthday: CLOSEWe need your birthday for the Bill Me Later® credit check process. |  | birthMonthBMLField_2
+UNKNOWN_TYPE | birthDayBMLField | Birthday: CLOSEWe need your birthday for the Bill Me Later® credit check process. |  | birthMonthBMLField_2
+UNKNOWN_TYPE | birthYearBMLField | Birthday: CLOSEWe need your birthday for the Bill Me Later® credit check process. |  | birthMonthBMLField_2
+UNKNOWN_TYPE | SSN | Last 4 digits of your social security #: CLOSEWe need the last 4 digits of your SSN for the Bill Me Later® credit check process. If you do not have an SSN, you can still pay by Credit Card or PayPal. |  | birthMonthBMLField_2
+UNKNOWN_TYPE | agree | I agree to have the Terms and Conditions presented electronically. | yes | birthMonthBMLField_2
+UNKNOWN_TYPE | agreeTs | I agree to the Bill Me Later® Terms and Conditions. | yes | birthMonthBMLField_2
+ADDRESS_HOME_COUNTRY | countryType | Country Type | usa | birthMonthBMLField_2
+UNKNOWN_TYPE | billSameAsShip | My Billing & Shipping addresses are the same | yes | birthMonthBMLField_2
+ADDRESS_HOME_COUNTRY | country | Country, APO/FPO | US | birthMonthBMLField_2
+NAME_FIRST | firstName | First Name |  | birthMonthBMLField_2
+NAME_LAST | lastName | Last Name |  | birthMonthBMLField_2
+ADDRESS_HOME_LINE1 | address1 | Address |  | birthMonthBMLField_2
+ADDRESS_HOME_LINE2 | address2 | Address |  | birthMonthBMLField_2
+ADDRESS_HOME_CITY | city | City |  | birthMonthBMLField_2
+ADDRESS_HOME_STATE | state | State |  | birthMonthBMLField_2
+ADDRESS_HOME_ZIP | zip | Zip |  | birthMonthBMLField_2
+EMAIL_ADDRESS | email | Email CLOSEWe use this to send you an order confirmation and tracking info once your order ships. |  | birthMonthBMLField_2
+EMAIL_ADDRESS | confirmEmail | Re-Type Email |  | birthMonthBMLField_2
+PHONE_HOME_WHOLE_NUMBER | billingPhone | Billing Phone Number CLOSEThis must match the phone number on your credit card statement. Don't worry... we never share your number with anyone. |  | birthMonthBMLField_2
+UNKNOWN_TYPE | accessPassNumber | My AEREWARD$ # CLOSEAEREWARD$ NumberEnter the number found on the back of your AEREWARD$ card to earn rewards for your purchase.Learn More about AEREWARD$ |  | birthMonthBMLField_2
+UNKNOWN_TYPE | aeRewardsSignUp | Sign up now and receive 25 points  just for signing up! Learn More | true | birthMonthBMLField_2
+UNKNOWN_TYPE | aeAccount | Create my AE Account.CLOSECreate an AE Account to:Save Your Personal Info For Next TimeCheckout FasterTrack An Order Quicker Sign up now and receive 25 points just for signing up! Learn More | true | birthMonthBMLField_2
+UNKNOWN_TYPE | aeAccountPass | Password (6-15 Letters & Numbers) |  | birthMonthBMLField_2
+UNKNOWN_TYPE | aeAccountPassConfirm | Confirm Password |  | birthMonthBMLField_2
+UNKNOWN_TYPE | birthMonthBillAddField | Birthday: CLOSEWe'd love to wish you a happy birthday when it's time! However, you need to be 13 or older to create an account. |  | birthMonthBMLField_2
+UNKNOWN_TYPE | birthDayBillAddField | Birthday: CLOSEWe'd love to wish you a happy birthday when it's time! However, you need to be 13 or older to create an account. |  | birthMonthBMLField_2
+UNKNOWN_TYPE | birthYearBillAddField | Birthday: CLOSEWe'd love to wish you a happy birthday when it's time! However, you need to be 13 or older to create an account. |  | birthMonthBMLField_2
+UNKNOWN_TYPE | aeEmail | AE | on | birthMonthBMLField_2
+UNKNOWN_TYPE | aerieEmail | aerie | on | birthMonthBMLField_2
+UNKNOWN_TYPE | kidsEmail | 77kids | on | birthMonthBMLField_2
+UNKNOWN_TYPE | loyaltyTerms | I accept the Terms & Conditions |  | birthMonthBMLField_2
+MERCHANT_PROMO_CODE | CouponCode | Discount Code: CLOSEApplying DiscountsEnter your 8 or 20 digit code into the Discount Code field without any spaces, then click the Apply Discount button.Learn More about how to find and apply discounts |  | CouponCode_1

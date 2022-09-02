@@ -1,12 +1,12 @@
-NAME_FIRST | firstName | *First Name |  | firstName_1-default
-NAME_LAST | lastName | *Last Name |  | firstName_1-default
-ADDRESS_HOME_LINE1 | addressLine1 | *Address Line 1 |  | firstName_1-default
-ADDRESS_HOME_LINE2 | addressLine2 | Address Line 2 |  | firstName_1-default
-ADDRESS_HOME_CITY | city | *City |  | firstName_1-default
-ADDRESS_HOME_STATE | state | *State |  | firstName_1-default
-ADDRESS_HOME_ZIP | zipcode | *Zip Code |  | firstName_1-default
-PHONE_HOME_CITY_CODE | phoneAreaCode | *Phone |  | firstName_1-default
-PHONE_HOME_NUMBER | phoneExchange | *Phone |  | firstName_1-default
-PHONE_HOME_WHOLE_NUMBER | phoneNumber | *Phone |  | firstName_1-default
-UNKNOWN_TYPE | label | *Address Label |  | firstName_1-default
-UNKNOWN_TYPE | ssoShipToPOBox | This address is a P.O. Box. | true | firstName_1-default
+NAME_FIRST | firstName | *First Name |  | firstName_1
+NAME_LAST | lastName | *Last Name |  | firstName_1
+ADDRESS_HOME_LINE1 | addressLine1 | *Address Line 1 |  | firstName_1
+ADDRESS_HOME_LINE2 | addressLine2 | Address Line 2 |  | firstName_1
+ADDRESS_HOME_CITY | city | *City |  | firstName_1
+ADDRESS_HOME_STATE | state | *State |  | firstName_1
+ADDRESS_HOME_ZIP | zipcode | *Zip Code |  | firstName_1
+PHONE_HOME_CITY_CODE | phoneAreaCode | *Phone |  | firstName_1
+PHONE_HOME_NUMBER | phoneExchange | *Phone |  | firstName_1
+PHONE_HOME_WHOLE_NUMBER | phoneNumber | *Phone |  | firstName_1
+UNKNOWN_TYPE | label | *Address Label |  | firstName_1
+UNKNOWN_TYPE | ssoShipToPOBox | This address is a P.O. Box. | true | firstName_1

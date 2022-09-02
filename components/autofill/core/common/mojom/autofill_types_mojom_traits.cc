@@ -71,52 +71,45 @@ bool StructTraits<
 }
 
 // static
-autofill::mojom::SectionPrefixDataView::Tag
-UnionTraits<autofill::mojom::SectionPrefixDataView,
-            autofill::Section::SectionPrefix>::
-    GetTag(const autofill::Section::SectionPrefix& r) {
+autofill::mojom::SectionValueDataView::Tag
+UnionTraits<autofill::mojom::SectionValueDataView,
+            autofill::Section::SectionValue>::
+    GetTag(const autofill::Section::SectionValue& r) {
   if (absl::holds_alternative<autofill::Section::Default>(r))
-    return autofill::mojom::SectionPrefixDataView::Tag::kDefaultPrefix;
+    return autofill::mojom::SectionValueDataView::Tag::kDefaultSection;
   if (absl::holds_alternative<autofill::Section::Autocomplete>(r)) {
-    return autofill::mojom::SectionPrefixDataView::Tag::
-        kAutocompleteSectionPrefix;
+    return autofill::mojom::SectionValueDataView::Tag::kAutocomplete;
   }
   if (absl::holds_alternative<autofill::Section::FieldIdentifier>(r))
-    return autofill::mojom::SectionPrefixDataView::Tag::kFromFieldPrefix;
-  if (absl::holds_alternative<autofill::Section::CreditCard>(r))
-    return autofill::mojom::SectionPrefixDataView::Tag::kCreditCardPrefix;
+    return autofill::mojom::SectionValueDataView::Tag::kFieldIdentifier;
 
   NOTREACHED();
-  return autofill::mojom::SectionPrefixDataView::Tag::kDefaultPrefix;
+  return autofill::mojom::SectionValueDataView::Tag::kDefaultSection;
 }
 
 // static
-bool UnionTraits<autofill::mojom::SectionPrefixDataView,
-                 autofill::Section::SectionPrefix>::
-    Read(autofill::mojom::SectionPrefixDataView data,
-         autofill::Section::SectionPrefix* out) {
+bool UnionTraits<autofill::mojom::SectionValueDataView,
+                 autofill::Section::SectionValue>::
+    Read(autofill::mojom::SectionValueDataView data,
+         autofill::Section::SectionValue* out) {
   switch (data.tag()) {
-    case autofill::mojom::SectionPrefixDataView::Tag::kDefaultPrefix:
+    case autofill::mojom::SectionValueDataView::Tag::kDefaultSection:
       *out = autofill::Section::Default();
       break;
-    case autofill::mojom::SectionPrefixDataView::Tag::
-        kAutocompleteSectionPrefix: {
-      autofill::Section::Autocomplete autocomplete_section_prefix;
-      if (!data.ReadAutocompleteSectionPrefix(&autocomplete_section_prefix))
+    case autofill::mojom::SectionValueDataView::Tag::kAutocomplete: {
+      autofill::Section::Autocomplete autocomplete;
+      if (!data.ReadAutocomplete(&autocomplete))
         return false;
-      *out = std::move(autocomplete_section_prefix);
+      *out = std::move(autocomplete);
       break;
     }
-    case autofill::mojom::SectionPrefixDataView::Tag::kFromFieldPrefix: {
+    case autofill::mojom::SectionValueDataView::Tag::kFieldIdentifier: {
       autofill::Section::FieldIdentifier field_identifier;
-      if (!data.ReadFromFieldPrefix(&field_identifier))
+      if (!data.ReadFieldIdentifier(&field_identifier))
         return false;
       *out = std::move(field_identifier);
       break;
     }
-    case autofill::mojom::SectionPrefixDataView::Tag::kCreditCardPrefix:
-      *out = autofill::Section::CreditCard();
-      break;
   }
   return true;
 }
@@ -150,12 +143,7 @@ bool StructTraits<autofill::mojom::SectionFieldIdentifierDataView,
 bool StructTraits<autofill::mojom::SectionDataView, autofill::Section>::Read(
     autofill::mojom::SectionDataView data,
     autofill::Section* out) {
-  static_assert(sizeof(data.field_type_group()) <=
-                sizeof(autofill::Section::FieldTypeGroupSuffix));
-  out->field_type_group_ = static_cast<autofill::Section::FieldTypeGroupSuffix>(
-      data.field_type_group());
-
-  if (!data.ReadPrefix(&out->prefix_))
+  if (!data.ReadValue(&out->value_))
     return false;
   return true;
 }

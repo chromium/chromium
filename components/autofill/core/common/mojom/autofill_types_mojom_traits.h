@@ -91,33 +91,28 @@ struct StructTraits<autofill::mojom::SelectOptionDataView,
 };
 
 template <>
-struct UnionTraits<autofill::mojom::SectionPrefixDataView,
-                   autofill::Section::SectionPrefix> {
-  static autofill::mojom::SectionPrefixDataView::Tag GetTag(
-      const autofill::Section::SectionPrefix& r);
+struct UnionTraits<autofill::mojom::SectionValueDataView,
+                   autofill::Section::SectionValue> {
+  static autofill::mojom::SectionValueDataView::Tag GetTag(
+      const autofill::Section::SectionValue& r);
 
-  static bool default_prefix(const autofill::Section::SectionPrefix& r) {
+  static bool default_section(const autofill::Section::SectionValue& r) {
     DCHECK(absl::holds_alternative<autofill::Section::Default>(r));
     return true;
   }
 
-  static autofill::Section::Autocomplete autocomplete_section_prefix(
-      const autofill::Section::SectionPrefix& r) {
+  static autofill::Section::Autocomplete autocomplete(
+      const autofill::Section::SectionValue& r) {
     return absl::get<autofill::Section::Autocomplete>(r);
   }
 
-  static autofill::Section::FieldIdentifier from_field_prefix(
-      const autofill::Section::SectionPrefix& r) {
+  static autofill::Section::FieldIdentifier field_identifier(
+      const autofill::Section::SectionValue& r) {
     return absl::get<autofill::Section::FieldIdentifier>(r);
   }
 
-  static bool credit_card_prefix(const autofill::Section::SectionPrefix& r) {
-    DCHECK(absl::holds_alternative<autofill::Section::CreditCard>(r));
-    return true;
-  }
-
-  static bool Read(autofill::mojom::SectionPrefixDataView data,
-                   autofill::Section::SectionPrefix* out);
+  static bool Read(autofill::mojom::SectionValueDataView data,
+                   autofill::Section::SectionValue* out);
 };
 
 template <>
@@ -159,14 +154,9 @@ struct StructTraits<autofill::mojom::SectionFieldIdentifierDataView,
 
 template <>
 struct StructTraits<autofill::mojom::SectionDataView, autofill::Section> {
-  static uint8_t field_type_group(const autofill::Section& r) {
-    static_assert(sizeof(r.field_type_group_) <= sizeof(uint8_t));
-    return static_cast<uint8_t>(r.field_type_group_);
-  }
-
-  static const autofill::Section::SectionPrefix& prefix(
+  static const autofill::Section::SectionValue& value(
       const autofill::Section& r) {
-    return r.prefix_;
+    return r.value_;
   }
 
   static bool Read(autofill::mojom::SectionDataView data,

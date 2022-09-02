@@ -276,26 +276,17 @@ std::vector<Section> SectionTestCases() {
   test_cases.push_back(s);
 
   // Autocomplete.
-  s = Section();
-  s.SetPrefixFromAutocomplete(
+  s = Section::FromAutocomplete(
       {.section = "autocomplete_section", .mode = HtmlFieldMode::kBilling});
-  s.set_field_type_group(Section::FieldTypeGroupSuffix::kDefault);
   test_cases.push_back(s);
 
   // FieldIdentifier.
-  s = Section();
   base::flat_map<LocalFrameToken, size_t> frame_token_ids;
   FormFieldData field;
   field.name = u"from_field_name";
   field.host_frame = test::MakeLocalFrameToken();
   field.unique_renderer_id = FieldRendererId(123);
-  s.SetPrefixFromFieldIdentifier(field, frame_token_ids);
-  test_cases.push_back(s);
-
-  // CreditCard.
-  s = Section();
-  s.SetPrefixToCreditCard();
-  s.set_field_type_group(Section::FieldTypeGroupSuffix::kCreditCard);
+  s = Section::FromFieldIdentifier(field, frame_token_ids);
   test_cases.push_back(s);
 
   return test_cases;
@@ -333,7 +324,7 @@ TEST_F(AutofillTypeTraitsTestImpl, PassFormFieldData) {
   input.user_input = u"TestTypedValue";
   input.bounds = gfx::RectF(1, 2, 10, 100);
   base::flat_map<LocalFrameToken, size_t> frame_token_ids;
-  input.section.SetPrefixFromAutocomplete(
+  input.section = Section::FromAutocomplete(
       {.section = "autocomplete_section", .mode = HtmlFieldMode::kShipping});
 
   EXPECT_FALSE(input.host_frame.is_empty());

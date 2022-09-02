@@ -1,40 +1,40 @@
-UNKNOWN_TYPE | UserId | User ID or MP # |  | UserId_1-default
-UNKNOWN_TYPE | Password | Password |  | UserId_1-default
-UNKNOWN_TYPE | JumpToSelection | Jump To Section | https://www.alaskaair.com/www2/ssl/myalaskaair/myalaskaair.aspx | UserId_1-default
-UNKNOWN_TYPE | RememberMe | Remember my User ID on this computer. | true | UserId_1-default
-UNKNOWN_TYPE | MyWalletInformation.UseMyWalletFunds | Use My Wallet Funds | true | MyWalletInformation.UseMyWalletFunds_1-default
-UNKNOWN_TYPE | GiftCardsAndCertificatesInformation.UseGiftCardsOrCertificates | Use Certificates or Gift Cards (not deposited in a My Wallet account) | true | MyWalletInformation.UseMyWalletFunds_1-default
-UNKNOWN_TYPE | CreditCardInformation.BillingCreditCardEntry.CardTypes_Selected | Card Type* | CreditCard | MyWalletInformation.UseMyWalletFunds_1-default
-UNKNOWN_TYPE | CreditCardInformation.BillingCreditCardEntry.CardTypes_Selected | Alaska Airlines Commercial Account | AS | MyWalletInformation.UseMyWalletFunds_1-default
-CREDIT_CARD_NUMBER | CreditCardInformation.BillingCreditCardEntry.CardNumber | Card Number |  | credit-card-cc
-CREDIT_CARD_EXP_MONTH | CreditCardInformation.BillingCreditCardEntry.ExpirationMonths_Selected | Expiration* |  | credit-card-cc
-CREDIT_CARD_EXP_4_DIGIT_YEAR | CreditCardInformation.BillingCreditCardEntry.ExpirationYears_Selected | Expiration* |  | credit-card-cc
-CREDIT_CARD_NAME_FULL | CreditCardInformation.BillingCreditCardEntry.CardPersonName | Name on Card |  | credit-card-cc
-ADDRESS_HOME_COUNTRY | CreditCardInformation.BillingAddressEntry.Countries_Selected | Country | US | MyWalletInformation.UseMyWalletFunds_1-default
-ADDRESS_HOME_LINE1 | CreditCardInformation.BillingAddressEntry.Address1 | Address |  | MyWalletInformation.UseMyWalletFunds_1-default
-ADDRESS_HOME_LINE2 | CreditCardInformation.BillingAddressEntry.Address2 | Address Line 2 |  | MyWalletInformation.UseMyWalletFunds_1-default
-ADDRESS_HOME_CITY | CreditCardInformation.BillingAddressEntry.City | City |  | MyWalletInformation.UseMyWalletFunds_1-default
-ADDRESS_HOME_STATE | CreditCardInformation.BillingAddressEntry.USStates_Selected | State/Province |  | MyWalletInformation.UseMyWalletFunds_1-default
-ADDRESS_HOME_STATE | CreditCardInformation.BillingAddressEntry.CAStates_Selected | State/Province |  | MyWalletInformation.UseMyWalletFunds_1-default
-ADDRESS_HOME_STATE | CreditCardInformation.BillingAddressEntry.MXStates_Selected | State/Province |  | MyWalletInformation.UseMyWalletFunds_1-default
-UNKNOWN_TYPE | CreditCardInformation.BillingAddressEntry.OtherStates_Selected | State/Province |  | MyWalletInformation.UseMyWalletFunds_1-default
-ADDRESS_HOME_ZIP | CreditCardInformation.BillingAddressEntry.PostalCode | Zip/Postal Code |  | MyWalletInformation.UseMyWalletFunds_1-default
-PHONE_HOME_COUNTRY_CODE | CreditCardInformation.BillingPhoneNumberEntry.CountryCode_Selected | Country Code | 1 | MyWalletInformation.UseMyWalletFunds_1-default
-PHONE_HOME_CITY_AND_NUMBER | CreditCardInformation.BillingPhoneNumberEntry.Number | Phone (with area code) |  | MyWalletInformation.UseMyWalletFunds_1-default
-UNKNOWN_TYPE | TripInsurance.QuoteID | Yes, add trip protection for a total of $21.00. | 657566350481481886 | MyWalletInformation.UseMyWalletFunds_1-default
-UNKNOWN_TYPE | TripInsurance.QuoteID | No, I choose not to protect my purchase. | 657566350481481887 | MyWalletInformation.UseMyWalletFunds_1-default
-CREDIT_CARD_NUMBER | AncillaryCreditCardInformation.BillingCreditCardEntry.CardNumber | Card Number |  | credit-card-cc
-CREDIT_CARD_EXP_MONTH | AncillaryCreditCardInformation.BillingCreditCardEntry.ExpirationMonths_Selected | Expiration* |  | credit-card-cc
-CREDIT_CARD_EXP_4_DIGIT_YEAR | AncillaryCreditCardInformation.BillingCreditCardEntry.ExpirationYears_Selected | Expiration* |  | credit-card-cc
-CREDIT_CARD_NAME_FULL | AncillaryCreditCardInformation.BillingCreditCardEntry.CardPersonName | Name on Card |  | credit-card-cc
-ADDRESS_HOME_COUNTRY | AncillaryCreditCardInformation.BillingAddressEntry.Countries_Selected | Country | US | AncillaryCreditCardInformation.BillingAddressEntry.Countries_Selected_3-default
-ADDRESS_HOME_LINE1 | AncillaryCreditCardInformation.BillingAddressEntry.Address1 | Address |  | AncillaryCreditCardInformation.BillingAddressEntry.Countries_Selected_3-default
-ADDRESS_HOME_LINE2 | AncillaryCreditCardInformation.BillingAddressEntry.Address2 | Address Line 2 |  | AncillaryCreditCardInformation.BillingAddressEntry.Countries_Selected_3-default
-ADDRESS_HOME_CITY | AncillaryCreditCardInformation.BillingAddressEntry.City | City |  | AncillaryCreditCardInformation.BillingAddressEntry.Countries_Selected_3-default
-ADDRESS_HOME_STATE | AncillaryCreditCardInformation.BillingAddressEntry.USStates_Selected | State/Province |  | AncillaryCreditCardInformation.BillingAddressEntry.Countries_Selected_3-default
-ADDRESS_HOME_STATE | AncillaryCreditCardInformation.BillingAddressEntry.CAStates_Selected | State/Province |  | AncillaryCreditCardInformation.BillingAddressEntry.Countries_Selected_3-default
-ADDRESS_HOME_STATE | AncillaryCreditCardInformation.BillingAddressEntry.MXStates_Selected | State/Province |  | AncillaryCreditCardInformation.BillingAddressEntry.Countries_Selected_3-default
-UNKNOWN_TYPE | AncillaryCreditCardInformation.BillingAddressEntry.OtherStates_Selected | State/Province |  | AncillaryCreditCardInformation.BillingAddressEntry.Countries_Selected_3-default
-ADDRESS_HOME_ZIP | AncillaryCreditCardInformation.BillingAddressEntry.PostalCode | Zip/Postal Code |  | AncillaryCreditCardInformation.BillingAddressEntry.Countries_Selected_3-default
-PHONE_HOME_COUNTRY_CODE | AncillaryCreditCardInformation.BillingPhoneNumberEntry.CountryCode_Selected | Country Code | 1 | AncillaryCreditCardInformation.BillingAddressEntry.Countries_Selected_3-default
-PHONE_HOME_CITY_AND_NUMBER | AncillaryCreditCardInformation.BillingPhoneNumberEntry.Number | Phone (with area code) |  | AncillaryCreditCardInformation.BillingAddressEntry.Countries_Selected_3-default
+UNKNOWN_TYPE | UserId | User ID or MP # |  | UserId_1
+UNKNOWN_TYPE | Password | Password |  | UserId_1
+UNKNOWN_TYPE | JumpToSelection | Jump To Section | https://www.alaskaair.com/www2/ssl/myalaskaair/myalaskaair.aspx | UserId_1
+UNKNOWN_TYPE | RememberMe | Remember my User ID on this computer. | true | UserId_1
+UNKNOWN_TYPE | MyWalletInformation.UseMyWalletFunds | Use My Wallet Funds | true | MyWalletInformation.UseMyWalletFunds_1
+UNKNOWN_TYPE | GiftCardsAndCertificatesInformation.UseGiftCardsOrCertificates | Use Certificates or Gift Cards (not deposited in a My Wallet account) | true | MyWalletInformation.UseMyWalletFunds_1
+UNKNOWN_TYPE | CreditCardInformation.BillingCreditCardEntry.CardTypes_Selected | Card Type* | CreditCard | MyWalletInformation.UseMyWalletFunds_1
+UNKNOWN_TYPE | CreditCardInformation.BillingCreditCardEntry.CardTypes_Selected | Alaska Airlines Commercial Account | AS | MyWalletInformation.UseMyWalletFunds_1
+CREDIT_CARD_NUMBER | CreditCardInformation.BillingCreditCardEntry.CardNumber | Card Number |  | CreditCardInformation.BillingCreditCardEntry.CardNumber_2
+CREDIT_CARD_EXP_MONTH | CreditCardInformation.BillingCreditCardEntry.ExpirationMonths_Selected | Expiration* |  | CreditCardInformation.BillingCreditCardEntry.CardNumber_2
+CREDIT_CARD_EXP_4_DIGIT_YEAR | CreditCardInformation.BillingCreditCardEntry.ExpirationYears_Selected | Expiration* |  | CreditCardInformation.BillingCreditCardEntry.CardNumber_2
+CREDIT_CARD_NAME_FULL | CreditCardInformation.BillingCreditCardEntry.CardPersonName | Name on Card |  | CreditCardInformation.BillingCreditCardEntry.CardNumber_2
+ADDRESS_HOME_COUNTRY | CreditCardInformation.BillingAddressEntry.Countries_Selected | Country | US | MyWalletInformation.UseMyWalletFunds_1
+ADDRESS_HOME_LINE1 | CreditCardInformation.BillingAddressEntry.Address1 | Address |  | MyWalletInformation.UseMyWalletFunds_1
+ADDRESS_HOME_LINE2 | CreditCardInformation.BillingAddressEntry.Address2 | Address Line 2 |  | MyWalletInformation.UseMyWalletFunds_1
+ADDRESS_HOME_CITY | CreditCardInformation.BillingAddressEntry.City | City |  | MyWalletInformation.UseMyWalletFunds_1
+ADDRESS_HOME_STATE | CreditCardInformation.BillingAddressEntry.USStates_Selected | State/Province |  | MyWalletInformation.UseMyWalletFunds_1
+ADDRESS_HOME_STATE | CreditCardInformation.BillingAddressEntry.CAStates_Selected | State/Province |  | MyWalletInformation.UseMyWalletFunds_1
+ADDRESS_HOME_STATE | CreditCardInformation.BillingAddressEntry.MXStates_Selected | State/Province |  | MyWalletInformation.UseMyWalletFunds_1
+UNKNOWN_TYPE | CreditCardInformation.BillingAddressEntry.OtherStates_Selected | State/Province |  | MyWalletInformation.UseMyWalletFunds_1
+ADDRESS_HOME_ZIP | CreditCardInformation.BillingAddressEntry.PostalCode | Zip/Postal Code |  | MyWalletInformation.UseMyWalletFunds_1
+PHONE_HOME_COUNTRY_CODE | CreditCardInformation.BillingPhoneNumberEntry.CountryCode_Selected | Country Code | 1 | MyWalletInformation.UseMyWalletFunds_1
+PHONE_HOME_CITY_AND_NUMBER | CreditCardInformation.BillingPhoneNumberEntry.Number | Phone (with area code) |  | MyWalletInformation.UseMyWalletFunds_1
+UNKNOWN_TYPE | TripInsurance.QuoteID | Yes, add trip protection for a total of $21.00. | 657566350481481886 | MyWalletInformation.UseMyWalletFunds_1
+UNKNOWN_TYPE | TripInsurance.QuoteID | No, I choose not to protect my purchase. | 657566350481481887 | MyWalletInformation.UseMyWalletFunds_1
+CREDIT_CARD_NUMBER | AncillaryCreditCardInformation.BillingCreditCardEntry.CardNumber | Card Number |  | CreditCardInformation.BillingCreditCardEntry.CardNumber_2
+CREDIT_CARD_EXP_MONTH | AncillaryCreditCardInformation.BillingCreditCardEntry.ExpirationMonths_Selected | Expiration* |  | CreditCardInformation.BillingCreditCardEntry.CardNumber_2
+CREDIT_CARD_EXP_4_DIGIT_YEAR | AncillaryCreditCardInformation.BillingCreditCardEntry.ExpirationYears_Selected | Expiration* |  | CreditCardInformation.BillingCreditCardEntry.CardNumber_2
+CREDIT_CARD_NAME_FULL | AncillaryCreditCardInformation.BillingCreditCardEntry.CardPersonName | Name on Card |  | CreditCardInformation.BillingCreditCardEntry.CardNumber_2
+ADDRESS_HOME_COUNTRY | AncillaryCreditCardInformation.BillingAddressEntry.Countries_Selected | Country | US | AncillaryCreditCardInformation.BillingAddressEntry.Countries_Selected_3
+ADDRESS_HOME_LINE1 | AncillaryCreditCardInformation.BillingAddressEntry.Address1 | Address |  | AncillaryCreditCardInformation.BillingAddressEntry.Countries_Selected_3
+ADDRESS_HOME_LINE2 | AncillaryCreditCardInformation.BillingAddressEntry.Address2 | Address Line 2 |  | AncillaryCreditCardInformation.BillingAddressEntry.Countries_Selected_3
+ADDRESS_HOME_CITY | AncillaryCreditCardInformation.BillingAddressEntry.City | City |  | AncillaryCreditCardInformation.BillingAddressEntry.Countries_Selected_3
+ADDRESS_HOME_STATE | AncillaryCreditCardInformation.BillingAddressEntry.USStates_Selected | State/Province |  | AncillaryCreditCardInformation.BillingAddressEntry.Countries_Selected_3
+ADDRESS_HOME_STATE | AncillaryCreditCardInformation.BillingAddressEntry.CAStates_Selected | State/Province |  | AncillaryCreditCardInformation.BillingAddressEntry.Countries_Selected_3
+ADDRESS_HOME_STATE | AncillaryCreditCardInformation.BillingAddressEntry.MXStates_Selected | State/Province |  | AncillaryCreditCardInformation.BillingAddressEntry.Countries_Selected_3
+UNKNOWN_TYPE | AncillaryCreditCardInformation.BillingAddressEntry.OtherStates_Selected | State/Province |  | AncillaryCreditCardInformation.BillingAddressEntry.Countries_Selected_3
+ADDRESS_HOME_ZIP | AncillaryCreditCardInformation.BillingAddressEntry.PostalCode | Zip/Postal Code |  | AncillaryCreditCardInformation.BillingAddressEntry.Countries_Selected_3
+PHONE_HOME_COUNTRY_CODE | AncillaryCreditCardInformation.BillingPhoneNumberEntry.CountryCode_Selected | Country Code | 1 | AncillaryCreditCardInformation.BillingAddressEntry.Countries_Selected_3
+PHONE_HOME_CITY_AND_NUMBER | AncillaryCreditCardInformation.BillingPhoneNumberEntry.Number | Phone (with area code) |  | AncillaryCreditCardInformation.BillingAddressEntry.Countries_Selected_3

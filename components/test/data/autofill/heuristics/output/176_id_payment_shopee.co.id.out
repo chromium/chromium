@@ -1,6 +1,6 @@
-CREDIT_CARD_NAME_FULL |  | Nama Tertera di Kartu |  | credit-card-cc
-CREDIT_CARD_NUMBER |  | No. Kartu Kredit |  | credit-card-cc
-CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR |  | MM/YY |  | credit-card-cc
-UNKNOWN_TYPE |  | 000 |  | _2-default
-ADDRESS_HOME_LINE1 |  | Alamat Tagihan |  | _2-default
-ADDRESS_HOME_ZIP |  | Kode Pos |  | _2-default
+CREDIT_CARD_NAME_FULL |  | Nama Tertera di Kartu |  | _1
+CREDIT_CARD_NUMBER |  | No. Kartu Kredit |  | _1
+CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR |  | MM/YY |  | _1
+UNKNOWN_TYPE |  | 000 |  | _2
+ADDRESS_HOME_LINE1 |  | Alamat Tagihan |  | _2
+ADDRESS_HOME_ZIP |  | Kode Pos |  | _2

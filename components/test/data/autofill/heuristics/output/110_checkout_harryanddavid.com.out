@@ -1,42 +1,42 @@
-UNKNOWN_TYPE | typeOfAddress | Business address | H | typeOfAddress_1-default
-UNKNOWN_TYPE | personTitle | Title |  | typeOfAddress_1-default
-UNKNOWN_TYPE | recipientRelation | Relationship | 0 | typeOfAddress_1-default
-UNKNOWN_TYPE |  | Company name* | Χ  | typeOfAddress_1-default
-COMPANY_NAME | organizationName | Company name* |  | typeOfAddress_1-default
-UNKNOWN_TYPE |  | Attn. Line* | Χ  | typeOfAddress_1-default
-UNKNOWN_TYPE | businessTitle | Attn. Line* |  | typeOfAddress_1-default
-UNKNOWN_TYPE |  | First Name* | Χ  | typeOfAddress_1-default
-NAME_FIRST | firstName | First Name* |  | typeOfAddress_1-default
-UNKNOWN_TYPE |  | Last Name* | Χ  | typeOfAddress_1-default
-NAME_LAST | lastName | Last Name* |  | typeOfAddress_1-default
-UNKNOWN_TYPE |  | Additional info | Χ  | typeOfAddress_1-default
-NAME_MIDDLE | middleName | Additional info |  | typeOfAddress_1-default
-UNKNOWN_TYPE |  | Street address* | Χ  | typeOfAddress_1-default
-ADDRESS_HOME_LINE1 | address1 | Street address* |  | typeOfAddress_1-default
-UNKNOWN_TYPE |  | Apt.,suite, bldg. | Χ  | typeOfAddress_1-default
-ADDRESS_HOME_LINE2 | address2 | Apt.,suite, bldg. |  | typeOfAddress_1-default
-ADDRESS_HOME_COUNTRY | country | Country* | US | typeOfAddress_1-default
-UNKNOWN_TYPE |  | City* | Χ  | typeOfAddress_1-default
-ADDRESS_HOME_CITY | city | City* |  | typeOfAddress_1-default
-ADDRESS_HOME_STATE | state | State* | AL | typeOfAddress_1-default
-UNKNOWN_TYPE |  | ZIP* | Χ  | typeOfAddress_1-default
-ADDRESS_HOME_ZIP | zipCode | ZIP* |  | typeOfAddress_1-default
-UNKNOWN_TYPE |  | Phone number | Χ  | typeOfAddress_1-default
-PHONE_HOME_WHOLE_NUMBER | phone1 | Phone number |  | typeOfAddress_1-default
-UNKNOWN_TYPE |  | Ext | Χ  | typeOfAddress_1-default
-PHONE_HOME_EXTENSION | phone2 | Ext |  | typeOfAddress_1-default
-UNKNOWN_TYPE | phone1Type | Cell phone | C | typeOfAddress_1-default
-UNKNOWN_TYPE |  | Email address* | Χ  | typeOfAddress_1-default
-EMAIL_ADDRESS | email1 | Email address* |  | typeOfAddress_1-default
-UNKNOWN_TYPE |  | Confirm email address* | Χ  | typeOfAddress_1-default
-EMAIL_ADDRESS | logonId | Confirm email address* |  | typeOfAddress_1-default
-UNKNOWN_TYPE |  | Gift Card Number | Χ  | _1-default
-UNKNOWN_TYPE | GiftCardNumber | Gift Card Number |  | _1-default
-UNKNOWN_TYPE |  | PIN* | Χ  | _1-default
-UNKNOWN_TYPE | GiftCardPin | PIN* |  | _1-default
-UNKNOWN_TYPE | paymentType | What is PayPal? | on | _1-default
-UNKNOWN_TYPE | paymentType | Card Number Expiration Date | on | _1-default
-UNKNOWN_TYPE |  | Card Number | Χ  | _1-default
-CREDIT_CARD_NUMBER | clearTextAccount | Card Number |  | credit-card-cc
-CREDIT_CARD_EXP_MONTH | expire_month | Expiration Date | 01 | credit-card-cc
-CREDIT_CARD_EXP_4_DIGIT_YEAR | expire_year | Expiration Date | 2014 | credit-card-cc
+UNKNOWN_TYPE | typeOfAddress | Business address | H | typeOfAddress_1
+UNKNOWN_TYPE | personTitle | Title |  | typeOfAddress_1
+UNKNOWN_TYPE | recipientRelation | Relationship | 0 | typeOfAddress_1
+UNKNOWN_TYPE |  | Company name* | Χ  | typeOfAddress_1
+COMPANY_NAME | organizationName | Company name* |  | typeOfAddress_1
+UNKNOWN_TYPE |  | Attn. Line* | Χ  | typeOfAddress_1
+UNKNOWN_TYPE | businessTitle | Attn. Line* |  | typeOfAddress_1
+UNKNOWN_TYPE |  | First Name* | Χ  | typeOfAddress_1
+NAME_FIRST | firstName | First Name* |  | typeOfAddress_1
+UNKNOWN_TYPE |  | Last Name* | Χ  | typeOfAddress_1
+NAME_LAST | lastName | Last Name* |  | typeOfAddress_1
+UNKNOWN_TYPE |  | Additional info | Χ  | typeOfAddress_1
+NAME_MIDDLE | middleName | Additional info |  | typeOfAddress_1
+UNKNOWN_TYPE |  | Street address* | Χ  | typeOfAddress_1
+ADDRESS_HOME_LINE1 | address1 | Street address* |  | typeOfAddress_1
+UNKNOWN_TYPE |  | Apt.,suite, bldg. | Χ  | typeOfAddress_1
+ADDRESS_HOME_LINE2 | address2 | Apt.,suite, bldg. |  | typeOfAddress_1
+ADDRESS_HOME_COUNTRY | country | Country* | US | typeOfAddress_1
+UNKNOWN_TYPE |  | City* | Χ  | typeOfAddress_1
+ADDRESS_HOME_CITY | city | City* |  | typeOfAddress_1
+ADDRESS_HOME_STATE | state | State* | AL | typeOfAddress_1
+UNKNOWN_TYPE |  | ZIP* | Χ  | typeOfAddress_1
+ADDRESS_HOME_ZIP | zipCode | ZIP* |  | typeOfAddress_1
+UNKNOWN_TYPE |  | Phone number | Χ  | typeOfAddress_1
+PHONE_HOME_WHOLE_NUMBER | phone1 | Phone number |  | typeOfAddress_1
+UNKNOWN_TYPE |  | Ext | Χ  | typeOfAddress_1
+PHONE_HOME_EXTENSION | phone2 | Ext |  | typeOfAddress_1
+UNKNOWN_TYPE | phone1Type | Cell phone | C | typeOfAddress_1
+UNKNOWN_TYPE |  | Email address* | Χ  | typeOfAddress_1
+EMAIL_ADDRESS | email1 | Email address* |  | typeOfAddress_1
+UNKNOWN_TYPE |  | Confirm email address* | Χ  | typeOfAddress_1
+EMAIL_ADDRESS | logonId | Confirm email address* |  | typeOfAddress_1
+UNKNOWN_TYPE |  | Gift Card Number | Χ  | _1
+UNKNOWN_TYPE | GiftCardNumber | Gift Card Number |  | _1
+UNKNOWN_TYPE |  | PIN* | Χ  | _1
+UNKNOWN_TYPE | GiftCardPin | PIN* |  | _1
+UNKNOWN_TYPE | paymentType | What is PayPal? | on | _1
+UNKNOWN_TYPE | paymentType | Card Number Expiration Date | on | _1
+UNKNOWN_TYPE |  | Card Number | Χ  | _1
+CREDIT_CARD_NUMBER | clearTextAccount | Card Number |  | clearTextAccount_2
+CREDIT_CARD_EXP_MONTH | expire_month | Expiration Date | 01 | clearTextAccount_2
+CREDIT_CARD_EXP_4_DIGIT_YEAR | expire_year | Expiration Date | 2014 | clearTextAccount_2

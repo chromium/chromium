@@ -228,11 +228,11 @@ class FormStructure {
   // is available for at least one field.
   void SetFieldTypesFromAutocompleteAttribute();
 
-  // Sets each field's section based on the `parsed_autocomplete` member when
-  // available.
+  // Resets each field's section and sets it based on the `parsed_autocomplete`
+  // member when available.
   // Returns whether at least one field's `parsed_autocomplete` section is
   // correctly defined by the web developer.
-  bool SetSectionsFromAutocompleteAttribute();
+  bool SetSectionsFromAutocompleteOrReset();
 
   // Classifies each field in |fields_| using the regular expressions.
   void ParseFieldTypesWithPatterns(PatternSource pattern_source,

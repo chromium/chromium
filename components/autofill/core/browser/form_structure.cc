@@ -1284,19 +1284,21 @@ void FormStructure::SetFieldTypesFromAutocompleteAttribute() {
   }
 }
 
-bool FormStructure::SetSectionsFromAutocompleteAttribute() {
-  bool has_author_specified_section = false;
+bool FormStructure::SetSectionsFromAutocompleteOrReset() {
+  bool has_autocomplete = false;
   for (const auto& field : fields_) {
-    if (!field->parsed_autocomplete)
+    if (!field->parsed_autocomplete) {
+      field->section = Section();
       continue;
-
-    if (field->section.SetPrefixFromAutocomplete(
-            {.section = field->parsed_autocomplete->section,
-             .mode = field->parsed_autocomplete->mode})) {
-      has_author_specified_section = true;
     }
+
+    field->section = Section::FromAutocomplete(
+        {.section = field->parsed_autocomplete->section,
+         .mode = field->parsed_autocomplete->mode});
+    if (field->section)
+      has_autocomplete = true;
   }
-  return has_author_specified_section;
+  return has_autocomplete;
 }
 
 void FormStructure::ParseFieldTypesWithPatterns(PatternSource pattern_source,
@@ -2045,16 +2047,14 @@ void FormStructure::IdentifySectionsWithNewMethod() {
       base::FeatureList::IsEnabled(
           features::kAutofillSectionUponRedundantNameInfo);
 
-  for (const auto& field : fields_)
-    field->section = Section();
-
-  SetSectionsFromAutocompleteAttribute();
-
-  // Create a unique identifier for the section based on the field.
+  // Use unique local frame tokens of the fields to generate sections.
   base::flat_map<LocalFrameToken, size_t> frame_token_ids;
+
+  SetSectionsFromAutocompleteOrReset();
+
+  // Section for non-credit card fields.
   Section current_section;
-  current_section.SetPrefixFromFieldIdentifier(*fields_.front(),
-                                               frame_token_ids);
+  Section credit_card_section;
 
   // Keep track of the types we've seen in this section.
   ServerFieldTypeSet seen_types;
@@ -2068,12 +2068,18 @@ void FormStructure::IdentifySectionsWithNewMethod() {
   Section last_visible_section;
   for (const auto& field : fields_) {
     const ServerFieldType current_type = field->Type().GetStorableType();
-    // All credit card fields belong to the same section that's different
-    // from address sections.
+    // Put credit card fields into one, separate credit card section.
     if (AutofillType(current_type).group() == FieldTypeGroup::kCreditCard) {
-      field->section.SetPrefixToCreditCard();
+      if (!credit_card_section) {
+        credit_card_section =
+            Section::FromFieldIdentifier(*field, frame_token_ids);
+      }
+      field->section = credit_card_section;
       continue;
     }
+
+    if (!current_section)
+      current_section = Section::FromFieldIdentifier(*field, frame_token_ids);
 
     bool already_saw_current_type = seen_types.count(current_type) > 0;
 
@@ -2163,7 +2169,7 @@ void FormStructure::IdentifySectionsWithNewMethod() {
       }
 
       // The end of a section, so start a new section.
-      current_section.SetPrefixFromFieldIdentifier(*field, frame_token_ids);
+      current_section = Section::FromFieldIdentifier(*field, frame_token_ids);
 
       // The section described in the autocomplete section attribute
       // overrides the value determined by the heuristic.
@@ -2189,16 +2195,6 @@ void FormStructure::IdentifySectionsWithNewMethod() {
 
     field->section = current_section;
   }
-
-  // Ensure that credit card and address fields are in separate sections.
-  // This simplifies the section-aware logic in autofill_manager.cc.
-  for (const auto& field : fields_) {
-    FieldTypeGroup field_type_group = field->Type().group();
-    field->section.set_field_type_group(
-        field_type_group == FieldTypeGroup::kCreditCard
-            ? Section::FieldTypeGroupSuffix::kCreditCard
-            : Section::FieldTypeGroupSuffix::kDefault);
-  }
 }
 
 void FormStructure::IdentifySections(bool ignore_autocomplete) {
@@ -2214,15 +2210,26 @@ void FormStructure::IdentifySections(bool ignore_autocomplete) {
       base::FeatureList::IsEnabled(
           features::kAutofillSectionUponRedundantNameInfo);
 
-  for (const auto& field : fields_)
-    field->section = Section();
+  // Use unique local frame tokens of the fields to generate sections.
+  base::flat_map<LocalFrameToken, size_t> frame_token_ids;
 
-  if (ignore_autocomplete || !SetSectionsFromAutocompleteAttribute()) {
-    // Create a unique identifier based on the field for the section.
-    base::flat_map<LocalFrameToken, size_t> frame_token_ids;
+  bool has_autocomplete = SetSectionsFromAutocompleteOrReset();
+
+  // Put credit card fields into one, separate section.
+  Section credit_card_section;
+  for (const auto& field : fields_) {
+    if (field->Type().group() == FieldTypeGroup::kCreditCard) {
+      if (!credit_card_section) {
+        credit_card_section =
+            Section::FromFieldIdentifier(*field, frame_token_ids);
+      }
+      field->section = credit_card_section;
+    }
+  }
+
+  if (ignore_autocomplete || !has_autocomplete) {
+    // Section for non-credit card fields.
     Section current_section;
-    current_section.SetPrefixFromFieldIdentifier(*fields_.front(),
-                                                 frame_token_ids);
 
     // Keep track of the types we've seen in this section.
     ServerFieldTypeSet seen_types;
@@ -2232,12 +2239,12 @@ void FormStructure::IdentifySections(bool ignore_autocomplete) {
     Section last_visible_section;
     for (const auto& field : fields_) {
       const ServerFieldType current_type = field->Type().GetStorableType();
-      // All credit card fields belong to the same section that's different
-      // from address sections.
-      if (AutofillType(current_type).group() == FieldTypeGroup::kCreditCard) {
-        field->section.SetPrefixToCreditCard();
+      // Credit card fields are already in one, separate credit card section.
+      if (AutofillType(current_type).group() == FieldTypeGroup::kCreditCard)
         continue;
-      }
+
+      if (!current_section)
+        current_section = Section::FromFieldIdentifier(*field, frame_token_ids);
 
       bool already_saw_current_type = seen_types.count(current_type) > 0;
 
@@ -2300,7 +2307,7 @@ void FormStructure::IdentifySections(bool ignore_autocomplete) {
           seen_types.clear();
 
         // The end of a section, so start a new section.
-        current_section.SetPrefixFromFieldIdentifier(*field, frame_token_ids);
+        current_section = Section::FromFieldIdentifier(*field, frame_token_ids);
       }
 
       // Only consider a type "seen" if it was not ignored. Some forms have
@@ -2318,16 +2325,6 @@ void FormStructure::IdentifySections(bool ignore_autocomplete) {
 
       field->section = current_section;
     }
-  }
-
-  // Ensure that credit card and address fields are in separate sections.
-  // This simplifies the section-aware logic in autofill_manager.cc.
-  for (const auto& field : fields_) {
-    FieldTypeGroup field_type_group = field->Type().group();
-    field->section.set_field_type_group(
-        field_type_group == FieldTypeGroup::kCreditCard
-            ? Section::FieldTypeGroupSuffix::kCreditCard
-            : Section::FieldTypeGroupSuffix::kDefault);
   }
 }
 
