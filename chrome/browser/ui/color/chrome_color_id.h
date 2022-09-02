@@ -156,10 +156,11 @@
   E_CPONLY(kColorNewTabPageModuleScrollButtonBackground) \
   E_CPONLY(kColorNewTabPageModuleScrollButtonBackgroundHovered) \
   E_CPONLY(kColorNewTabPagePrimaryForeground) \
-  E_CPONLY(kColorNewTabPageSecondaryForeground) \
-  E_CPONLY(kColorNewTabPageSectionBorder) \
   E_CPONLY(kColorNewTabPageSearchBoxBackground) \
   E_CPONLY(kColorNewTabPageSearchBoxBackgroundHovered) \
+  E_CPONLY(kColorNewTabPageSearchBoxResultsTextDimmedSelected) \
+  E_CPONLY(kColorNewTabPageSecondaryForeground) \
+  E_CPONLY(kColorNewTabPageSectionBorder) \
   E_CPONLY(kColorNewTabPageSelectedBackground) \
   E_CPONLY(kColorNewTabPageSelectedBorder) \
   E_CPONLY(kColorNewTabPageSelectedForeground) \
@@ -249,6 +250,23 @@
   /* Quick Answers colors. */ \
   E_CPONLY(kColorQuickAnswersReportQueryButtonBackground) \
   E_CPONLY(kColorQuickAnswersReportQueryButtonForeground) \
+  /* Realbox colors. */ \
+  E_CPONLY(kColorRealBoxBackground) \
+  E_CPONLY(kColorRealBoxBackgroundHovered) \
+  E_CPONLY(kColorRealBoxBorder) \
+  E_CPONLY(kColorRealBoxForeground) \
+  E_CPONLY(kColorRealBoxPlaceholder) \
+  E_CPONLY(kColorRealBoxResultsBackground) \
+  E_CPONLY(kColorRealBoxResultsBackgroundHovered) \
+  E_CPONLY(kColorRealBoxResultsDimSelected) \
+  E_CPONLY(kColorRealBoxResultsForeground) \
+  E_CPONLY(kColorRealBoxResultsForegroundDimmed) \
+  E_CPONLY(kColorRealBoxResultsIcon) \
+  E_CPONLY(kColorRealBoxResultsIconFocusedOutline) \
+  E_CPONLY(kColorRealBoxResultsIconSelected) \
+  E_CPONLY(kColorRealBoxResultsUrl) \
+  E_CPONLY(kColorRealBoxResultsUrlSelected) \
+  E_CPONLY(kColorRealBoxSearchIconBackground) \
   /* Screenshot captured bubble colors. */ \
   E_CPONLY(kColorScreenshotCapturedImageBackground) \
   E_CPONLY(kColorScreenshotCapturedImageBorder) \

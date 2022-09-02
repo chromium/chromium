@@ -96,20 +96,20 @@
 
   :host([is-rich-suggestion]) #description,
   .dim {
-    color: var(--search-box-results-dim, var(--google-grey-700));
+    color: var(--color-real-box-results-foreground-dimmed);
   }
 
   :host-context(ntp-realbox-match:-webkit-any(:focus-within, .selected)):host([is-rich-suggestion]) #description,
   :host-context(ntp-realbox-match:-webkit-any(:focus-within, .selected)) .dim {
-    color: var(--search-box-results-dim-selected, var(--google-grey-700));
+    color: var(--color-real-box-results-dim-selected);
   }
 
   .url {
-    color: var(--search-box-results-url, var(--google-blue-700));
+    color: var(--color-real-box-results-url);
   }
 
   :host-context(ntp-realbox-match:-webkit-any(:focus-within, .selected)) .url {
-    color: var(--search-box-results-url-selected, var(--google-blue-700));
+    color: var(--color-real-box-results-url-selected);
   }
 
   #remove {
@@ -122,7 +122,8 @@
   }
 
   :host-context(ntp-realbox-match:-webkit-any(:focus-within, .selected)) #remove {
-    --cr-icon-button-fill-color: var(--search-box-icon-selected, var(--google-grey-700));
+    --cr-icon-button-fill-color:
+        var(--color-real-box-results-icon-selected);
     opacity: 1;
   }
 

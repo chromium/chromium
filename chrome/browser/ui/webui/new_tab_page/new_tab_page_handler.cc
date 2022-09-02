@@ -257,42 +257,6 @@ new_tab_page::mojom::ThemePtr MakeTheme(
   }
 
   theme->most_visited = std::move(most_visited);
-
-  // TODO(crbug.com/1346392): Move search box colors logic to the chrome color
-  // mixer.
-  auto search_box = realbox::mojom::SearchBoxTheme::New();
-  search_box->bg = color_provider.GetColor(kColorNewTabPageSearchBoxBackground);
-  search_box->bg_hovered =
-      color_provider.GetColor(kColorNewTabPageSearchBoxBackgroundHovered);
-  search_box->border_color =
-      webui::GetNativeTheme(web_contents)->UserHasContrastPreference()
-          ? color_provider.GetColor(kColorLocationBarBorder)
-          : SkColorSetRGB(218, 220, 224);  // google-grey-300
-  search_box->icon = color_provider.GetColor(kColorOmniboxResultsIcon);
-  search_box->icon_selected =
-      color_provider.GetColor(kColorOmniboxResultsIconSelected);
-  search_box->is_dark = !color_utils::IsDark(text_color);
-  search_box->ntp_bg = color_provider.GetColor(kColorNewTabPageBackground);
-  search_box->placeholder = color_provider.GetColor(kColorOmniboxTextDimmed);
-  search_box->results_bg =
-      color_provider.GetColor(kColorOmniboxResultsBackground);
-  search_box->results_bg_hovered =
-      color_provider.GetColor(kColorOmniboxResultsBackgroundHovered);
-  search_box->results_bg_selected =
-      color_provider.GetColor(kColorOmniboxResultsBackgroundSelected);
-  search_box->results_dim =
-      color_provider.GetColor(kColorOmniboxResultsTextDimmed);
-  search_box->results_dim_selected =
-      color_provider.GetColor(kColorOmniboxResultsTextDimmedSelected);
-  search_box->results_text = color_provider.GetColor(kColorOmniboxText);
-  search_box->results_text_selected =
-      color_provider.GetColor(kColorOmniboxResultsTextSelected);
-  search_box->results_url = color_provider.GetColor(kColorOmniboxResultsUrl);
-  search_box->results_url_selected =
-      color_provider.GetColor(kColorOmniboxResultsUrlSelected);
-  search_box->text = color_provider.GetColor(kColorOmniboxText);
-  theme->search_box = std::move(search_box);
-
   return theme;
 }
 

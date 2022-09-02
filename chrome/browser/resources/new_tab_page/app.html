@@ -305,7 +305,8 @@
       hidden$="[[!logoEnabled_]]">
   </ntp-logo>
   <ntp-realbox id="realbox" on-open-voice-search="onOpenVoiceSearch_"
-      theme="[[theme_.searchBox]]" shown$="[[realboxShown_]]">
+      is-dark="[[theme_.isDark]]"
+      shown$="[[realboxShown_]]">
   </ntp-realbox>
   <dom-if if="[[lazyRender_]]" on-dom-change="onLazyRendered_">
     <template>
@@ -345,7 +346,7 @@
       <!-- cr-button has a transparent background. This leads to incorrect
            results when a custom background is set. Therefore, wrap customize
            button in container to enforce solid background color. -->
-      <div id="customizeButtonContainer" 
+      <div id="customizeButtonContainer"
           hidden="[[customizeChromeSidePanelShowing_]]">
         <cr-button id="customizeButton" on-click="onCustomizeClick_"
             title="$i18n{customizeThisPage}">

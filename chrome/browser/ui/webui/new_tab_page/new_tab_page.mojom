@@ -4,7 +4,6 @@
 
 module new_tab_page.mojom;
 
-import "chrome/browser/ui/webui/realbox/realbox.mojom";
 import "skia/public/mojom/skcolor.mojom";
 import "ui/webui/resources/cr_components/most_visited/most_visited.mojom";
 import "url/mojom/url.mojom";
@@ -72,9 +71,6 @@ struct Theme {
 
   // Theme settings for the NTP MV tiles.
   most_visited.mojom.MostVisitedTheme most_visited;
-
-  // Theme settings for the NTP realbox. Matching those of the Omnibox.
-  realbox.mojom.SearchBoxTheme search_box;
 };
 
 // Specifies look of the doodle share button.

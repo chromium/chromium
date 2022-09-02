@@ -304,22 +304,20 @@ void RealboxHandler::SetupWebUIDataSource(content::WebUIDataSource* source) {
       {"showSuggestions", IDS_TOOLTIP_HEADER_SHOW_SUGGESTIONS_BUTTON}};
   source->AddLocalizedStrings(kStrings);
 
-  source->AddInteger(
-      "realboxMatchOmniboxThemeVariant",
-      base::GetFieldTrialParamByFeatureAsInt(
-          ntp_features::kRealboxMatchOmniboxTheme,
-          ntp_features::kRealboxMatchOmniboxThemeVariantParam, 0));
   source->AddBoolean(
       "realboxMatchOmniboxTheme",
       base::FeatureList::IsEnabled(ntp_features::kRealboxMatchOmniboxTheme));
+
+  source->AddBoolean(
+      "realboxMatchSearchboxTheme",
+      base::FeatureList::IsEnabled(ntp_features::kRealboxMatchSearchboxTheme));
+
   source->AddBoolean(
       "roundCorners",
       base::GetFieldTrialParamByFeatureAsInt(
           ntp_features::kRealboxMatchSearchboxTheme,
           ntp_features::kRealboxMatchSearchboxThemeParam, 0) == 1);
-  source->AddBoolean(
-      "realboxMatchSearchboxTheme",
-      base::FeatureList::IsEnabled(ntp_features::kRealboxMatchSearchboxTheme));
+
   source->AddString(
       "realboxDefaultIcon",
       base::FeatureList::IsEnabled(ntp_features::kRealboxUseGoogleGIcon)

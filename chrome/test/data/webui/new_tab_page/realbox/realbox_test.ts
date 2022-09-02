@@ -12,7 +12,7 @@ import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
-import {assertStyle, createTheme} from '../test_support.js';
+import {assertStyle} from '../test_support.js';
 
 import {TestRealboxBrowserProxy} from './test_realbox_browser_proxy.js';
 
@@ -176,45 +176,6 @@ suite('NewTabPageRealboxTest', () => {
 
     // Assert.
     await whenOpenVoiceSearch;
-  });
-
-  test('setting theme updates realbox', async () => {
-    const matches = realbox.$.matches;
-    // Assert.
-    assertStyle(realbox, '--search-box-bg', '');
-    assertStyle(realbox, '--search-box-placeholder', '');
-    assertStyle(realbox, '--search-box-results-bg', '');
-    assertStyle(realbox, '--search-box-text', '');
-    assertStyle(realbox, '--search-box-icon', '');
-    assertStyle(matches, '--search-box-icon', '');
-    assertStyle(matches, '--search-box-results-bg-hovered', '');
-    assertStyle(matches, '--search-box-results-bg-selected', '');
-    assertStyle(matches, '--search-box-results-bg', '');
-    assertStyle(matches, '--search-box-results-dim-selected', '');
-    assertStyle(matches, '--search-box-results-dim', '');
-    assertStyle(matches, '--search-box-results-text-selected', '');
-    assertStyle(matches, '--search-box-results-text', '');
-    assertStyle(matches, '--search-box-results-url-selected', '');
-    assertStyle(matches, '--search-box-results-url', '');
-
-    // Act.
-    realbox.theme = createTheme().searchBox;
-
-    // Assert.
-    assertStyle(realbox, '--search-box-bg', 'rgba(0, 0, 0, 1)');
-    assertStyle(realbox, '--search-box-placeholder', 'rgba(0, 0, 3, 1)');
-    assertStyle(realbox, '--search-box-results-bg', 'rgba(0, 0, 4, 1)');
-    assertStyle(realbox, '--search-box-text', 'rgba(0, 0, 13, 1)');
-    assertStyle(matches, '--search-box-icon-selected', 'rgba(0, 0, 2, 1)');
-    assertStyle(matches, '--search-box-results-bg-hovered', 'rgba(0, 0, 5, 1)');
-    assertStyle(matches, '--search-box-results-bg', 'rgba(0, 0, 4, 1)');
-    assertStyle(
-        matches, '--search-box-results-dim-selected', 'rgba(0, 0, 8, 1)');
-    assertStyle(matches, '--search-box-results-dim', 'rgba(0, 0, 7, 1)');
-    assertStyle(matches, '--search-box-results-text', 'rgba(0, 0, 9, 1)');
-    assertStyle(
-        matches, '--search-box-results-url-selected', 'rgba(0, 0, 12, 1)');
-    assertStyle(matches, '--search-box-results-url', 'rgba(0, 0, 11, 1)');
   });
 
   test('realbox default loupe icon', async () => {

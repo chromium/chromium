@@ -94,26 +94,7 @@ export function createTheme(): Theme {
     useTitlePill: false,
     useWhiteTileIcon: false,
   };
-  const searchBox = {
-    bg: {value: 0xff000000},
-    bgHovered: {value: 0xff00000e},
-    borderColor: {value: 0xff00000e},
-    icon: {value: 0xff000001},
-    iconSelected: {value: 0xff000002},
-    isDark: false,
-    ntpBg: {value: 0xff00000e},
-    placeholder: {value: 0xff000003},
-    resultsBg: {value: 0xff000004},
-    resultsBgHovered: {value: 0xff000005},
-    resultsBgSelected: {value: 0xff000006},
-    resultsDim: {value: 0xff000007},
-    resultsDimSelected: {value: 0xff000008},
-    resultsText: {value: 0xff000009},
-    resultsTextSelected: {value: 0xff00000a},
-    resultsUrl: {value: 0xff00000b},
-    resultsUrlSelected: {value: 0xff00000c},
-    text: {value: 0xff00000d},
-  };
+
   return {
     backgroundColor: {value: 0xffff0000},
     backgroundImage: undefined,
@@ -124,7 +105,6 @@ export function createTheme(): Theme {
     isDark: false,
     logoColor: undefined,
     mostVisited: mostVisited,
-    searchBox: searchBox,
     textColor: {value: 0xff0000ff},
     isCustomBackground: true,
   };

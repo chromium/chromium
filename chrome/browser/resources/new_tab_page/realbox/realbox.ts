@@ -6,13 +6,12 @@ import './realbox_dropdown.js';
 import './realbox_icon.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {skColorToRgba} from 'chrome://resources/js/color_utils.js';
 import {hasKeyModifiers} from 'chrome://resources/js/util.m.js';
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
-import {AutocompleteMatch, AutocompleteResult, PageCallbackRouter, PageHandlerInterface, SearchBoxTheme} from '../realbox.mojom-webui.js';
+import {AutocompleteMatch, AutocompleteResult, PageCallbackRouter, PageHandlerInterface} from '../realbox.mojom-webui.js';
 import {decodeString16, mojoString16, mojoTimeDelta} from '../utils.js';
 
 import {getTemplate} from './realbox.html.js';
@@ -60,7 +59,6 @@ export class RealboxElement extends PolymerElement {
       /** Whether the theme is dark. */
       isDark: {
         type: Boolean,
-        computed: `computeIsDark_(theme)`,
         reflectToAttribute: true,
       },
 
@@ -69,11 +67,6 @@ export class RealboxElement extends PolymerElement {
         type: Boolean,
         value: false,
         reflectToAttribute: true,
-      },
-
-      theme: {
-        type: Object,
-        observer: 'onThemeChange_',
       },
 
       /** Whether the realbox should match the searchbox. */
@@ -183,7 +176,6 @@ export class RealboxElement extends PolymerElement {
   isDark: boolean;
   matchesAreVisible: boolean;
   matchSearchbox: boolean;
-  theme: SearchBoxTheme;
   private charTypedTime_: number;
   private isDeletingInput_: boolean;
   private lastIgnoredEnterEvent_: KeyboardEvent|null;
@@ -306,39 +298,6 @@ export class RealboxElement extends PolymerElement {
         inline: '',
       });
     }
-  }
-
-  private onThemeChange_() {
-    if (!loadTimeData.getBoolean('realboxMatchOmniboxTheme')) {
-      return;
-    }
-
-    const variant = loadTimeData.getInteger('realboxMatchOmniboxThemeVariant');
-    if (variant === 0) {
-      this.updateStyles({
-        '--search-box-bg': skColorToRgba(assert(this.theme.bg)),
-        '--search-box-bg-hovered': skColorToRgba(assert(this.theme.bgHovered)),
-      });
-    } else if (variant === 1) {
-      this.updateStyles({
-        '--search-box-bg': skColorToRgba(assert(this.theme.ntpBg)),
-        '--search-box-bg-hovered': skColorToRgba(assert(this.theme.bgHovered)),
-      });
-    } else if (variant === 2) {
-      this.updateStyles({
-        '--search-box-bg': skColorToRgba(assert(this.theme.ntpBg)),
-        '--search-box-bg-hovered': skColorToRgba(assert(this.theme.resultsBg)),
-      });
-    }
-
-    this.updateStyles({
-      '--search-box-border-color':
-          skColorToRgba(assert(this.theme.borderColor)),
-      '--search-box-placeholder': skColorToRgba(assert(this.theme.placeholder)),
-      '--search-box-results-bg': skColorToRgba(assert(this.theme.resultsBg)),
-      '--search-box-text': skColorToRgba(assert(this.theme.text)),
-      '--search-box-icon': skColorToRgba(assert(this.theme.icon)),
-    });
   }
 
   //============================================================================
@@ -649,13 +608,6 @@ export class RealboxElement extends PolymerElement {
   //============================================================================
   // Helpers
   //============================================================================
-
-  private computeIsDark_(): boolean {
-    if (!this.theme) {
-      return false;
-    }
-    return this.theme.isDark;
-  }
 
   private computeSelectedMatch_(): AutocompleteMatch|null {
     if (!this.result_ || !this.result_.matches) {

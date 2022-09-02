@@ -300,32 +300,6 @@ TEST_F(NewTabPageHandlerTest, SetTheme) {
       .WillByDefault(testing::Return(true));
   mock_color_provider_source_.SetColor(
       kColorNewTabPageMostVisitedTileBackground, SkColorSetRGB(0, 0, 4));
-  mock_color_provider_source_.SetColor(kColorNewTabPageSearchBoxBackground,
-                                       SkColorSetRGB(0, 0, 5));
-  mock_color_provider_source_.SetColor(kColorOmniboxResultsIcon,
-                                       SkColorSetRGB(0, 0, 6));
-  mock_color_provider_source_.SetColor(kColorOmniboxResultsIconSelected,
-                                       SkColorSetRGB(0, 0, 7));
-  mock_color_provider_source_.SetColor(kColorOmniboxTextDimmed,
-                                       SkColorSetRGB(0, 0, 8));
-  mock_color_provider_source_.SetColor(kColorOmniboxResultsBackground,
-                                       SkColorSetRGB(0, 0, 9));
-  mock_color_provider_source_.SetColor(kColorOmniboxResultsBackgroundHovered,
-                                       SkColorSetRGB(0, 0, 10));
-  mock_color_provider_source_.SetColor(kColorOmniboxResultsBackgroundSelected,
-                                       SkColorSetRGB(0, 0, 11));
-  mock_color_provider_source_.SetColor(kColorOmniboxResultsTextDimmed,
-                                       SkColorSetRGB(0, 0, 12));
-  mock_color_provider_source_.SetColor(kColorOmniboxResultsTextDimmedSelected,
-                                       SkColorSetRGB(0, 0, 13));
-  mock_color_provider_source_.SetColor(kColorOmniboxText,
-                                       SkColorSetRGB(0, 0, 14));
-  mock_color_provider_source_.SetColor(kColorOmniboxResultsTextSelected,
-                                       SkColorSetRGB(0, 0, 15));
-  mock_color_provider_source_.SetColor(kColorOmniboxResultsUrl,
-                                       SkColorSetRGB(0, 0, 16));
-  mock_color_provider_source_.SetColor(kColorOmniboxResultsUrlSelected,
-                                       SkColorSetRGB(0, 0, 17));
 
   theme_service_observer_->OnThemeChanged();
   mock_page_.FlushForTesting();
@@ -357,20 +331,6 @@ TEST_F(NewTabPageHandlerTest, SetTheme) {
   EXPECT_TRUE(theme->most_visited->use_white_tile_icon);
   EXPECT_TRUE(theme->most_visited->use_title_pill);
   EXPECT_EQ(false, theme->most_visited->is_dark);
-  EXPECT_EQ(SkColorSetRGB(0, 0, 5), theme->search_box->bg);
-  EXPECT_EQ(SkColorSetRGB(0, 0, 6), theme->search_box->icon);
-  EXPECT_EQ(SkColorSetRGB(0, 0, 7), theme->search_box->icon_selected);
-  EXPECT_EQ(SkColorSetRGB(0, 0, 8), theme->search_box->placeholder);
-  EXPECT_EQ(SkColorSetRGB(0, 0, 9), theme->search_box->results_bg);
-  EXPECT_EQ(SkColorSetRGB(0, 0, 10), theme->search_box->results_bg_hovered);
-  EXPECT_EQ(SkColorSetRGB(0, 0, 11), theme->search_box->results_bg_selected);
-  EXPECT_EQ(SkColorSetRGB(0, 0, 12), theme->search_box->results_dim);
-  EXPECT_EQ(SkColorSetRGB(0, 0, 13), theme->search_box->results_dim_selected);
-  EXPECT_EQ(SkColorSetRGB(0, 0, 14), theme->search_box->results_text);
-  EXPECT_EQ(SkColorSetRGB(0, 0, 15), theme->search_box->results_text_selected);
-  EXPECT_EQ(SkColorSetRGB(0, 0, 16), theme->search_box->results_url);
-  EXPECT_EQ(SkColorSetRGB(0, 0, 17), theme->search_box->results_url_selected);
-  EXPECT_EQ(SkColorSetRGB(0, 0, 14), theme->search_box->text);
 }
 
 TEST_F(NewTabPageHandlerTest, SetCustomBackground) {
