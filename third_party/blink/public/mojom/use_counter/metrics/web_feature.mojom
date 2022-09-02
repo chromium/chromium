@@ -3669,6 +3669,7 @@ enum WebFeature {
   kDeferredShaping2ReshapedByLastResort = 4348,
   kAudioContextSinkId = 4349,
   kAudioContextSetSinkId = 4350,
+  kViewportDependentLazyLoadedImageWithSizesAttribute = 4351,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

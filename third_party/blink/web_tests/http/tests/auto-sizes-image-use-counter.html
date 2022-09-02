@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<script src=resources/common.js></script>
+<script src=../resources/testharness.js></script>
+<script src=../resources/testharnessreport.js></script>
+
+<script>
+  // The UseCounter ID.
+  const kViewportDependentLazyLoadedImageWithSizesAttribute = 4351;
+
+
+  function clearUseCounter() {
+    internals.clearUseCounter(document, kViewportDependentLazyLoadedImageWithSizesAttribute);
+  }
+
+  test(t => {
+    t.add_cleanup(clearUseCounter);
+    assert_false(internals.isUseCounted(document, kViewportDependentLazyLoadedImageWithSizesAttribute),
+                 'The auto-sizes compat use counter is not set before an impacted image is created');
+    const img = new Image();
+    img.srcset = "square100.png 100w";
+    assert_false(internals.isUseCounted(document, kViewportDependentLazyLoadedImageWithSizesAttribute),
+                 'the auto-sizes compat use counter is not set after srcset');
+    img.sizes = "90vw";
+    assert_false(internals.isUseCounted(document, kViewportDependentLazyLoadedImageWithSizesAttribute),
+                 'the auto-sizes compat use counter is not set after sizes');
+    img.loading = "lazy";
+    assert_true(internals.isUseCounted(document, kViewportDependentLazyLoadedImageWithSizesAttribute),
+                 'The auto-sizes compat use counter is counted after an impacted image is created');
+  }, 'The auto-sizes use-counter works properly');
+
+</script>

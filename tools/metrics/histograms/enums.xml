@@ -41274,6 +41274,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4348" label="DeferredShaping2ReshapedByLastResort"/>
   <int value="4349" label="AudioContextSinkId"/>
   <int value="4350" label="AudioContextSetSinkId"/>
+  <int value="4351" label="ViewportDependentLazyLoadedImageWithSizesAttribute"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">
