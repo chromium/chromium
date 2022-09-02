@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/v8_page_popup_controller_binding.h"
 
-#include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
+#include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_window.h"
 #include "third_party/blink/renderer/core/dom/context_features.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -25,7 +25,11 @@ void PagePopupControllerAttributeGetter(
   PagePopupController* cpp_value = nullptr;
   if (LocalFrame* frame = To<LocalDOMWindow>(impl)->GetFrame())
     cpp_value = PagePopupController::From(*frame->GetPage());
-  V8SetReturnValue(info, ToV8(cpp_value, holder, info.GetIsolate()));
+  V8SetReturnValue(
+      info,
+      ToV8Traits<PagePopupController>::ToV8(
+          ScriptState::From(info.GetIsolate()->GetCurrentContext()), cpp_value)
+          .ToLocalChecked());
 }
 
 void PagePopupControllerAttributeGetterCallback(
