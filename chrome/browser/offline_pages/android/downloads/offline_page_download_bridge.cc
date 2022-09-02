@@ -206,14 +206,9 @@ void SavePageIfNotNavigatedAway(const GURL& url,
   offline_pages::RecentTabHelper* tab_helper =
       RecentTabHelper::FromWebContents(web_contents);
   if (!tab_helper) {
-    if (request_id != OfflinePageModel::kInvalidOfflineId) {
-      offline_pages::RequestCoordinator* request_coordinator =
-          offline_pages::RequestCoordinatorFactory::GetForBrowserContext(
-              web_contents->GetBrowserContext());
-      if (request_coordinator)
-        request_coordinator->EnableForOffliner(request_id, client_id);
-      else
-        DVLOG(1) << "SavePageIfNotNavigatedAway has no valid coordinator.";
+    if (request_id != OfflinePageModel::kInvalidOfflineId &&
+        request_coordinator) {
+      request_coordinator->EnableForOffliner(request_id, client_id);
     }
     return;
   }
