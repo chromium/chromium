@@ -5656,6 +5656,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Media.WebMediaPlayerImpl.WatchTime"
     enum="WebMediaPlayerWatchTimeType" expires_after="2021-08-01">
+  <obsolete>
+    Removed 09/2022.
+  </obsolete>
   <owner>sandersd@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>

@@ -109,12 +109,6 @@ using ::media::MediaLogEvent;
 using ::media::MediaLogProperty;
 using ::media::MediaTrack;
 
-const char kWatchTimeHistogram[] = "Media.WebMediaPlayerImpl.WatchTime";
-
-void RecordSimpleWatchTimeUMA(media::RendererType type) {
-  UMA_HISTOGRAM_ENUMERATION(kWatchTimeHistogram, type);
-}
-
 void SetSinkIdOnMediaThread(scoped_refptr<WebAudioSourceProviderImpl> sink,
                             const std::string& device_id,
                             media::OutputDeviceStatusCB callback) {
@@ -3962,8 +3956,6 @@ void WebMediaPlayerImpl::MaybeUpdateBufferSizesForPlayback() {
 }
 
 void WebMediaPlayerImpl::OnSimpleWatchTimerTick() {
-  RecordSimpleWatchTimeUMA(renderer_type_);
-
   if (playback_events_recorder_)
     playback_events_recorder_->OnPipelineStatistics(GetPipelineStatistics());
 }
