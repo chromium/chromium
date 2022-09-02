@@ -43,6 +43,10 @@
 #include "components/enterprise/browser/controller/fake_browser_dm_token_storage.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/toolbar_manager_test_helper_android.h"
+#endif  // BUILDFLAG(IS_ANDROID)
+
 namespace policy {
 
 const size_t kNumChunks = 8;
@@ -136,7 +140,7 @@ class PolicyPrefsTest : public PlatformBrowserTest {
 class ChunkedPolicyPrefsTest : public PolicyPrefsTest,
                                public ::testing::WithParamInterface<size_t> {
  public:
-  ChunkedPolicyPrefsTest() = default;
+  ChunkedPolicyPrefsTest();
   ChunkedPolicyPrefsTest(const ChunkedPolicyPrefsTest&) = delete;
   ChunkedPolicyPrefsTest& operator=(const ChunkedPolicyPrefsTest&) = delete;
   ~ChunkedPolicyPrefsTest() override = default;
@@ -144,6 +148,15 @@ class ChunkedPolicyPrefsTest : public PolicyPrefsTest,
  protected:
   PrefMappingChunkInfo chunk_info_{GetParam(), GetNumChunks()};
 };
+
+ChunkedPolicyPrefsTest::ChunkedPolicyPrefsTest() {
+#if BUILDFLAG(IS_ANDROID)
+  // Skips recreating the Android activity when homepage settings are changed.
+  // This happens when the feature chrome::android::kStartSurfaceAndroid is
+  // enabled.
+  toolbar_manager::setSkipRecreateForTesting(true);
+#endif  // BUILDFLAG(IS_ANDROID)
+}
 
 // Verifies that policies make their corresponding preferences become managed,
 // and that the user can't override that setting.

@@ -85,4 +85,10 @@ public class ChromeBrowserTestsActivity extends ChromeTabbedActivity {
         return new File(UrlUtils.getIsolatedTestRoot(),
                 ChromeBrowserTestsApplication.PRIVATE_DATA_DIRECTORY_SUFFIX);
     }
+
+    @Override
+    public void recreate() {
+        throw new AssertionError("Unexpected call of recreate() in " + TAG
+                + ". See crbug.com/1359066 to fix the issue.");
+    }
 }

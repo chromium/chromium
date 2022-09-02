@@ -67,6 +67,8 @@
 #include "ui/shell_dialogs/select_file_dialog.h"          // nogncheck
 #include "ui/shell_dialogs/select_file_dialog_factory.h"  // nogncheck
 #include "ui/shell_dialogs/select_file_policy.h"          // nogncheck
+#else
+#include "chrome/browser/toolbar_manager_test_helper_android.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 using testing::_;
@@ -284,7 +286,14 @@ class TestSelectFileDialogFactory : public ui::SelectFileDialogFactory {
 };
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-PolicyUITest::PolicyUITest() = default;
+PolicyUITest::PolicyUITest() {
+#if BUILDFLAG(IS_ANDROID)
+  // Skips recreating the Android activity when homepage settings are changed.
+  // This happens when the feature chrome::android::kStartSurfaceAndroid is
+  // enabled.
+  toolbar_manager::setSkipRecreateForTesting(true);
+#endif  // BUILDFLAG(IS_ANDROID)
+}
 
 PolicyUITest::~PolicyUITest() = default;
 

@@ -86,6 +86,7 @@ if (is_android) {
     sources = [
       "android/test_support/src/org/chromium/chrome/test_support/FamilyInfoFeedbackSourceTestBridge.java",
       "android/test_support/src/org/chromium/chrome/test_support/PaymentRequestTestBridge.java",
+      "android/test_support/src/org/chromium/chrome/test_support/ToolbarManagerTestHelper.java",
     ]
   }
 
@@ -94,6 +95,7 @@ if (is_android) {
     sources = [
       "android/test_support/src/org/chromium/chrome/test_support/FamilyInfoFeedbackSourceTestBridge.java",
       "android/test_support/src/org/chromium/chrome/test_support/PaymentRequestTestBridge.java",
+      "android/test_support/src/org/chromium/chrome/test_support/ToolbarManagerTestHelper.java",
     ]
   }
 }
@@ -809,6 +811,7 @@ if (is_android) {
       ":sync_integration_test_support_java",
       ":test_support",
       ":test_support_java",
+      ":test_support_jni_headers",
       ":test_support_ui_android",
       "//build:chromeos_buildflags",
       "//chrome:chrome_android_core",
@@ -895,6 +898,8 @@ if (is_android) {
       "../browser/ssl/crlset_browsertest.cc",
       "../browser/subresource_filter/subresource_filter_browser_test_harness.cc",
       "../browser/subresource_filter/subresource_filter_browser_test_harness.h",
+      "../browser/toolbar_manager_test_helper_android.cc",
+      "../browser/toolbar_manager_test_helper_android.h",
       "../browser/ui/autofill/payments/offer_notification_controller_android_browsertest.cc",
       "../browser/ui/webui/policy/policy_ui_browsertest.cc",
       "../renderer/autofill/fake_mojo_password_manager_driver.cc",

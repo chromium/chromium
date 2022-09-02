@@ -312,6 +312,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
             new ObservableSupplierImpl<>();
 
     private boolean mIsDestroyed;
+    private static boolean sSkipRecreateForTesting;
 
     private static class TabObscuringCallback implements Callback<Boolean> {
         private final TabObscuringHandler mTabObscuringHandler;
@@ -1143,7 +1144,8 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
             // true/false. Otherwise, it will cause infinite loop of calling recreate().
             if (wasStartSurfaceAsHomepage == null || wasHomepageEnabled == null) return;
 
-            if (mIsStartSurfaceEnabled != ReturnToChromeUtil.isStartSurfaceEnabled(mActivity)) {
+            if (mIsStartSurfaceEnabled != ReturnToChromeUtil.isStartSurfaceEnabled(mActivity)
+                    && !sSkipRecreateForTesting) {
                 // If the state of whether Start surface is enabled is changed due to the homepage
                 // settings change, we need to recreate CTA to adopt this config change.
                 recreateActivityWithTabReparenting();
@@ -1640,7 +1642,8 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
 
     @Override
     public void onAccessibilityModeChanged(boolean enabled) {
-        if (mIsStartSurfaceEnabled != ReturnToChromeUtil.isStartSurfaceEnabled(mActivity)) {
+        if (mIsStartSurfaceEnabled != ReturnToChromeUtil.isStartSurfaceEnabled(mActivity)
+                && !sSkipRecreateForTesting) {
             // If Start surface is disabled or re-enabled due to the accessibility change, restarts
             // the activity to create the correct Toolbar from scratch.
             recreateActivityWithTabReparenting();
@@ -2171,5 +2174,14 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
     @VisibleForTesting
     public ToolbarTabController getToolbarTabControllerForTesting() {
         return mToolbarTabController;
+    }
+
+    /**
+     * Sets whether to skip recreating the activity when the settings are changed. It should only
+     * be true in testing.
+     */
+    @VisibleForTesting
+    public static void setSkipRecreateForTesting(boolean skipRecreating) {
+        sSkipRecreateForTesting = skipRecreating;
     }
 }
