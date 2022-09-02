@@ -218,8 +218,8 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="SBClientDownload.DownloadRequestDurationMedium" units="ms"
-    expires_after="2022-12-25">
+<histogram name="SBClientDownload.DownloadRequestDurationMedium.{Analysis}"
+    units="ms" expires_after="2022-12-25">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -234,6 +234,13 @@ chromium-metrics-reviews@google.com.
     SBClientDownload.DownloadRequestDuration. It has a maximum of 3 minutes to
     help investigate long-tail downloads.
   </summary>
+  <token key="Analysis">
+    <variant name="Dmg"/>
+    <variant name="Document" summary="Office document"/>
+    <variant name="None" summary="executable"/>
+    <variant name="Rar"/>
+    <variant name="Zip"/>
+  </token>
 </histogram>
 
 <histogram name="SBClientDownload.DownloadRequestNetError" enum="NetErrorCodes"
