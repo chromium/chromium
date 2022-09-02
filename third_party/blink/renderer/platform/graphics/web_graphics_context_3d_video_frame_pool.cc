@@ -148,8 +148,8 @@ bool WebGraphicsContext3DVideoFramePool::CopyRGBATextureToVideoFrame(
   unsigned query_id = 0;
   ri->GenQueriesEXT(1, &query_id);
 
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-  // On Windows and Mac, GMB data read will do synchronization on its own.
+#if BUILDFLAG(IS_WIN)
+  // On Windows, GMB data read will do synchronization on its own.
   // No need for GL_COMMANDS_COMPLETED_CHROMIUM QueryEXT.
   GLenum queryTarget = GL_COMMANDS_ISSUED_CHROMIUM;
 #else
