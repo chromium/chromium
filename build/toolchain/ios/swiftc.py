@@ -10,7 +10,50 @@ import sys
 import tempfile
 
 
+def fix_module_imports(header_path, output_path):
+  """Convert modules import to work without -fmodules support.
+
+  The Swift compiler assumes that the generated Objective-C header will be
+  imported from code compiled with module support enabled (-fmodules). The
+  generated code thus uses @import and provides no fallback if modules are
+  not enabled.
+
+  This function converts the generated header to instead use #import. It
+  assumes that `@import Foo;` can be replaced by `#import <Foo/Foo.h>`.
+
+  The header is read at `header_path` and written to `output_path`.
+  """
+
+  header_contents = []
+  with open(header_path, 'r') as header_file:
+    for line in header_file:
+      if line == '#if __has_feature(modules)\n':
+        header_contents.append('#if 1  // #if __has_feature(modules)\n')
+        nesting_level = 1
+        for line in header_file:
+          if line == '#endif\n':
+            nesting_level -= 1
+          elif line.startswith('@import'):
+            name = line.split()[1].split(';')[0]
+            if name != 'ObjectiveC':
+              header_contents.append(f'#import <{name}/{name}.h>  ')
+            header_contents.append('// ')
+          elif line.startswith('#if'):
+            nesting_level += 1
+
+          header_contents.append(line)
+          if nesting_level == 0:
+            break
+      else:
+        header_contents.append(line)
+
+  with open(output_path, 'w') as header_file:
+    for line in header_contents:
+      header_file.write(line)
+
+
 def compile_module(module, sources, settings, extras, tmpdir):
+  """Compile `module` from `sources` using `settings`."""
   output_file_map = {}
   if settings.whole_module_optimization:
     output_file_map[''] = {
@@ -115,63 +158,45 @@ def compile_module(module, sources, settings, extras, tmpdir):
 
   # The swiftc compiler uses a global module cache that is not robust against
   # changes in the sub-modules nor against corruption (see crbug.com/1358073).
-  # Use a separate temporary directory as module cache path for each invocation
-  # of the compiler (use the -module-cache-path as a prefix if specified).
-  prefix = None
-  if settings.module_cache_path:
-    prefix = os.path.abspath(settings.module_cache_path) + os.path.sep
-    if not os.path.exists(prefix):
-      os.makedirs(prefix)
+  # Force the compiler to store the module cache in a sub-directory of `tmpdir`
+  # to ensure a pristine module cache is used for every compiler invocation.
+  module_cache_path = os.path.join(tmpdir, settings.swiftc_version,
+                                   'ModuleCache')
 
-  with tempfile.TemporaryDirectory(prefix=prefix) as module_cache_path:
-    extra_args.extend(['-module-cache-path', module_cache_path])
+  # If the generated header is post-processed, generate it to a temporary
+  # location (to avoid having the file appear to suddenly change).
+  if settings.fix_module_imports:
+    header_path = os.path.join(tmpdir, f'{module}.h')
+  else:
+    header_path = settings.header_path
 
-    process = subprocess.Popen([
-        settings.swift_toolchain_path + '/usr/bin/swiftc',
-        '-parse-as-library',
-        '-module-name',
-        module,
-        '-emit-object',
-        '-emit-dependencies',
-        '-emit-module',
-        '-emit-module-path',
-        settings.module_path,
-        '-emit-objc-header',
-        '-emit-objc-header-path',
-        settings.header_path,
-        '-output-file-map',
-        output_file_map_path,
-        '-pch-output-dir',
-        os.path.abspath(settings.pch_output_dir),
-    ] + extra_args + extras + sources)
+  process = subprocess.Popen([
+      settings.swift_toolchain_path + '/usr/bin/swiftc',
+      '-parse-as-library',
+      '-module-name',
+      module,
+      '-module-cache-path',
+      module_cache_path,
+      '-emit-object',
+      '-emit-dependencies',
+      '-emit-module',
+      '-emit-module-path',
+      settings.module_path,
+      '-emit-objc-header',
+      '-emit-objc-header-path',
+      header_path,
+      '-output-file-map',
+      output_file_map_path,
+      '-pch-output-dir',
+      os.path.abspath(settings.pch_output_dir),
+  ] + extra_args + extras + sources)
 
-    process.communicate()
-    if process.returncode:
-      sys.exit(process.returncode)
+  process.communicate()
+  if process.returncode:
+    sys.exit(process.returncode)
 
-  # The swiftc compiler generates an header file that use clang modules
-  # if the support is available. However, it appears that clang always
-  # return 1 when __has_features(modules) when -std=c++20 is enabled,
-  # even if modules are explicitly disabled with -fno-modules. Moreover
-  # it appears that enabling modules when compiling Objective-C++ does
-  # not work with ToT clang (selectors are not visible) while it work
-  # if using Apple version of clang.
-  #
-  # Until those issues are resolved, the swiftc.py wrapper exposes a
-  # flag to modify the generated bridging header to replace the checks
-  # for modules by a constant (i.e. pretending the modules support is
-  # not available).
-  #
-  # TODO(crbug.com/1284275): Remove this hack when it is either possible
-  # to enable modules with ToT clang, clang is fixed to not enable the
-  # module support by default when -std=c++20 or both.
-  if settings.enable_cxx20_hack:
-    with open(settings.header_path, 'r') as header_file:
-      header_contents = header_file.read()
-
-    header_contents = header_contents.replace('__has_feature(modules)', '0')
-    with open(settings.header_path, 'w') as header_file:
-      header_file.write(header_contents)
+  if settings.fix_module_imports:
+    fix_module_imports(header_path, settings.header_path)
 
   # The swiftc compiler generates depfile that uses absolute paths, but
   # ninja requires paths in depfiles to be identical to paths used in
@@ -242,8 +267,6 @@ def main(args):
   parser.add_argument('-pch-output-dir',
                       help='path to directory where .pch files are saved')
   parser.add_argument('-module-path', help='path to the generated module file')
-  parser.add_argument('-module-cache-path',
-                      help='path to the clang module cache')
   parser.add_argument('-header-path', help='path to the generated header file')
   parser.add_argument('-bridge-header',
                       help='path to the Objective-C bridge header')
@@ -280,9 +303,13 @@ def main(args):
                       dest='enable_cxx_interop',
                       action='store_true',
                       help='allow importing C++ modules into Swift')
-  parser.add_argument('-enable-cxx20-hack',
+  parser.add_argument('-fix-module-imports',
                       action='store_true',
-                      help='enable hack to allow compilation with -std=c++20')
+                      help='enable hack to fix module imports')
+  parser.add_argument('-swiftc-version',
+                      default='',
+                      action='store',
+                      help='version of swiftc compiler')
 
   parsed, extras = parser.parse_known_args(args)
   with tempfile.TemporaryDirectory() as tmpdir:
