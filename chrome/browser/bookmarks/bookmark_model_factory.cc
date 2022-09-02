@@ -8,9 +8,11 @@
 #include "base/memory/singleton.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/bookmarks/chrome_bookmark_client.h"
 #include "chrome/browser/bookmarks/managed_bookmark_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_selections.h"
 #include "chrome/browser/sync/bookmark_sync_service_factory.h"
 #include "chrome/browser/ui/webui/bookmarks/bookmarks_ui.h"
 #include "chrome/browser/undo/bookmark_undo_service_factory.h"
@@ -22,6 +24,10 @@
 #include "components/undo/bookmark_undo_service.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/profiles/profile_helper.h"
+#endif
 
 namespace {
 
@@ -70,7 +76,15 @@ BookmarkModelFactory::GetDefaultFactory() {
 BookmarkModelFactory::BookmarkModelFactory()
     : ProfileKeyedServiceFactory(
           "BookmarkModel",
-          ProfileSelections::BuildRedirectedInIncognito()) {
+          ProfileSelections::Builder()
+              .WithRegular(ProfileSelection::kRedirectedToOriginal)
+              // Use OTR profile for Guest session.
+              // (Bookmarks can be enabled in Guest sessions under some
+              // enterprise policies.)
+              .WithGuest(ProfileSelection::kRedirectedToOriginal)
+              // No service for system profile.
+              .WithSystem(ProfileSelection::kNone)
+              .Build()) {
   DependsOn(BookmarkUndoServiceFactory::GetInstance());
   DependsOn(ManagedBookmarkServiceFactory::GetInstance());
   DependsOn(BookmarkSyncServiceFactory::GetInstance());
@@ -81,6 +95,13 @@ BookmarkModelFactory::~BookmarkModelFactory() {
 
 KeyedService* BookmarkModelFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // ChromeOS creates various profiles (login, lock screen...) that do
+  // not have/need access to bookmarks.
+  Profile* profile = Profile::FromBrowserContext(context);
+  if (!chromeos::ProfileHelper::IsRegularProfile(profile))
+    return nullptr;
+#endif
   return BuildBookmarkModel(context).release();
 }
 
