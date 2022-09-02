@@ -71,7 +71,7 @@ class CairoSurface {
   SkColor GetAveragePixelValue(bool frame);
 
  private:
-  raw_ptr<cairo_surface_t, DanglingUntriaged> surface_;
+  raw_ptr<cairo_surface_t> surface_;
   raw_ptr<cairo_t> cairo_;
 };
 
