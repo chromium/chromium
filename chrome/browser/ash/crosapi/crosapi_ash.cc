@@ -72,7 +72,6 @@
 #include "chrome/browser/ash/crosapi/networking_attributes_ash.h"
 #include "chrome/browser/ash/crosapi/networking_private_ash.h"
 #include "chrome/browser/ash/crosapi/policy_service_ash.h"
-#include "chrome/browser/ash/crosapi/power_ash.h"
 #include "chrome/browser/ash/crosapi/prefs_ash.h"
 #include "chrome/browser/ash/crosapi/remoting_ash.h"
 #include "chrome/browser/ash/crosapi/resource_manager_ash.h"
@@ -226,7 +225,6 @@ CrosapiAsh::CrosapiAsh(CrosapiDependencyRegistry* registry)
       network_settings_service_ash_(std::make_unique<NetworkSettingsServiceAsh>(
           g_browser_process->local_state())),
       policy_service_ash_(std::make_unique<PolicyServiceAsh>()),
-      power_ash_(std::make_unique<PowerAsh>()),
       prefs_ash_(
           std::make_unique<PrefsAsh>(g_browser_process->profile_manager(),
                                      g_browser_process->local_state())),
@@ -702,7 +700,7 @@ void CrosapiAsh::BindPolicyService(
 }
 
 void CrosapiAsh::BindPower(mojo::PendingReceiver<mojom::Power> receiver) {
-  power_ash_->BindReceiver(std::move(receiver));
+  NOTIMPLEMENTED();
 }
 
 void CrosapiAsh::BindPrefs(mojo::PendingReceiver<mojom::Prefs> receiver) {
