@@ -7,7 +7,6 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include <algorithm>
 #include <memory>
 #include <utility>
 
@@ -16,6 +15,7 @@
 #include "base/check.h"
 #include "base/compiler_specific.h"
 #include "base/i18n/case_conversion.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -255,11 +255,9 @@ void DefaultSearchManager::MergePrefsDataWithPrepopulated() {
       TemplateURLPrepopulateData::GetPrepopulatedEngines(pref_service_,
                                                          nullptr);
 
-  auto default_engine = std::find_if(
-      prepopulated_urls.begin(), prepopulated_urls.end(),
-      [&](const std::unique_ptr<TemplateURLData>& url) {
-        return url->prepopulate_id == prefs_default_search_->prepopulate_id;
-      });
+  auto default_engine = base::ranges::find(
+      prepopulated_urls, prefs_default_search_->prepopulate_id,
+      &TemplateURLData::prepopulate_id);
 
   if (default_engine == prepopulated_urls.end())
     return;

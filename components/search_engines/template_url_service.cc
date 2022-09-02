@@ -802,12 +802,11 @@ TemplateURLService::GetDefaultSearchProviderIgnoringExtensions() const {
     return nullptr;
 
   // Find the TemplateURL matching the data retrieved.
-  auto iter = std::find_if(template_urls_.begin(), template_urls_.end(),
-                           [this, &next_search](const auto& turl_to_check) {
-                             return TemplateURL::MatchesData(
-                                 turl_to_check.get(), next_search.get(),
-                                 search_terms_data());
-                           });
+  auto iter = base::ranges::find_if(
+      template_urls_, [this, &next_search](const auto& turl_to_check) {
+        return TemplateURL::MatchesData(turl_to_check.get(), next_search.get(),
+                                        search_terms_data());
+      });
   return iter == template_urls_.end() ? nullptr : iter->get();
 }
 

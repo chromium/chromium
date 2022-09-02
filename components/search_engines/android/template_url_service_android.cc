@@ -15,6 +15,7 @@
 #include "base/feature_list.h"
 #include "base/format_macros.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/google/core/common/google_util.h"
@@ -318,8 +319,8 @@ jboolean TemplateUrlServiceAndroid::SetPlayAPISearchEngine(
   // Check if there is already a search engine created from Play API.
   TemplateURLService::TemplateURLVector template_urls =
       template_url_service_->GetTemplateURLs();
-  auto existing_play_api_turl = std::find_if(
-      template_urls.cbegin(), template_urls.cend(),
+  auto existing_play_api_turl = base::ranges::find_if(
+      template_urls,
       [](const TemplateURL* turl) { return turl->created_from_play_api(); });
   if (existing_play_api_turl != template_urls.cend()) {
     // Migrate old Play API database entries that were incorrectly marked as
@@ -397,10 +398,9 @@ void TemplateUrlServiceAndroid::GetTemplateUrls(
   // Clean up duplication between a Play API template URL and a corresponding
   // prepopulated template URL.
   auto play_api_it =
-      std::find_if(template_urls.begin(), template_urls.end(),
-                   [](TemplateURL* template_url) {
-                     return template_url->created_from_play_api();
-                   });
+      base::ranges::find_if(template_urls, [](TemplateURL* template_url) {
+        return template_url->created_from_play_api();
+      });
   TemplateURL* play_api_turl =
       play_api_it != template_urls.end() ? *play_api_it : nullptr;
 

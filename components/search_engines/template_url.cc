@@ -978,10 +978,8 @@ std::string TemplateURLRef::HandleReplacements(
   // space as '+' in the former case and as '%20' in the latter case.
   bool is_in_query = true;
 
-  auto search_terms = std::find_if(replacements_.begin(), replacements_.end(),
-                                   [](const Replacement& replacement) {
-                                     return replacement.type == SEARCH_TERMS;
-                                   });
+  auto search_terms =
+      base::ranges::find(replacements_, SEARCH_TERMS, &Replacement::type);
 
   if (search_terms != replacements_.end()) {
     std::u16string::size_type query_start = parsed_url_.find('?');
