@@ -17,6 +17,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
+#include "base/types/optional_util.h"
 #include "chrome/common/search/search.mojom.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/renderer/searchbox/searchbox_extension.h"
@@ -233,7 +234,7 @@ bool SearchBox::GetMostVisitedItemWithID(
 }
 
 const NtpTheme* SearchBox::GetNtpTheme() const {
-  return base::OptionalOrNullptr(theme_);
+  return base::OptionalToPtr(theme_);
 }
 
 void SearchBox::StartCapturingKeyStrokes() {
