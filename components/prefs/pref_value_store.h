@@ -19,9 +19,7 @@
 #include "components/prefs/pref_store.h"
 #include "components/prefs/prefs_export.h"
 
-class PersistentPrefStore;
 class PrefNotifier;
-class PrefRegistry;
 class PrefStore;
 
 // The PrefValueStore manages various sources of values for Preferences
@@ -34,35 +32,6 @@ class PrefStore;
 class COMPONENTS_PREFS_EXPORT PrefValueStore {
  public:
   using PrefChangedCallback = base::RepeatingCallback<void(const std::string&)>;
-
-  // Delegate used to observe certain events in the |PrefValueStore|'s lifetime.
-  class Delegate {
-   public:
-    virtual ~Delegate() {}
-
-    // Called by the PrefValueStore constructor with the PrefStores passed to
-    // it.
-    virtual void Init(PrefStore* managed_prefs,
-                      PrefStore* supervised_user_prefs,
-                      PrefStore* extension_prefs,
-                      PrefStore* standalone_browser_prefs,
-                      PrefStore* command_line_prefs,
-                      PrefStore* user_prefs,
-                      PrefStore* recommended_prefs,
-                      PrefStore* default_prefs,
-                      PrefNotifier* pref_notifier) = 0;
-
-    virtual void InitIncognitoUserPrefs(
-        scoped_refptr<PersistentPrefStore> incognito_user_prefs_overlay,
-        scoped_refptr<PersistentPrefStore> incognito_user_prefs_underlay,
-        const std::vector<const char*>& overlay_pref_names) = 0;
-
-    virtual void InitPrefRegistry(PrefRegistry* pref_registry) = 0;
-
-    // Called whenever PrefValueStore::UpdateCommandLinePrefStore is called,
-    // with the same argument.
-    virtual void UpdateCommandLinePrefStore(PrefStore* command_line_prefs) = 0;
-  };
 
   // PrefStores must be listed here in order from highest to lowest priority.
   //   MANAGED contains all managed preferences that are provided by
@@ -116,8 +85,7 @@ class COMPONENTS_PREFS_EXPORT PrefValueStore {
                  PrefStore* user_prefs,
                  PrefStore* recommended_prefs,
                  PrefStore* default_prefs,
-                 PrefNotifier* pref_notifier,
-                 std::unique_ptr<Delegate> delegate = nullptr);
+                 PrefNotifier* pref_notifier);
 
   PrefValueStore(const PrefValueStore&) = delete;
   PrefValueStore& operator=(const PrefValueStore&) = delete;
@@ -137,8 +105,7 @@ class COMPONENTS_PREFS_EXPORT PrefValueStore {
       PrefStore* user_prefs,
       PrefStore* recommended_prefs,
       PrefStore* default_prefs,
-      PrefNotifier* pref_notifier,
-      std::unique_ptr<Delegate> delegate = nullptr);
+      PrefNotifier* pref_notifier);
 
   // A PrefValueStore can have exactly one callback that is directly
   // notified of preferences changing in the store. This does not
@@ -318,9 +285,6 @@ class COMPONENTS_PREFS_EXPORT PrefValueStore {
 
   // True if not all of the PrefStores were initialized successfully.
   bool initialization_failed_;
-
-  // Might be null.
-  std::unique_ptr<Delegate> delegate_;
 };
 
 namespace std {

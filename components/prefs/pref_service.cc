@@ -457,12 +457,10 @@ void PrefService::OnStoreDeletionFromDisk() {
   user_pref_store_->OnStoreDeletionFromDisk();
 }
 
-void PrefService::ChangePrefValueStore(
-    PrefStore* managed_prefs,
-    PrefStore* supervised_user_prefs,
-    PrefStore* extension_prefs,
-    PrefStore* recommended_prefs,
-    std::unique_ptr<PrefValueStore::Delegate> delegate) {
+void PrefService::ChangePrefValueStore(PrefStore* managed_prefs,
+                                       PrefStore* supervised_user_prefs,
+                                       PrefStore* extension_prefs,
+                                       PrefStore* recommended_prefs) {
   // Only adding new pref stores are supported.
   DCHECK(!pref_value_store_->HasPrefStore(PrefValueStore::MANAGED_STORE) ||
          !managed_prefs);
@@ -487,7 +485,7 @@ void PrefService::ChangePrefValueStore(
       managed_prefs, supervised_user_prefs, extension_prefs,
       nullptr /* command_line_prefs */, nullptr /* user_prefs */,
       nullptr /* standalone_browser_prefs */, recommended_prefs,
-      nullptr /* default_prefs */, pref_notifier_.get(), std::move(delegate));
+      nullptr /* default_prefs */, pref_notifier_.get());
 
   // Notify |pref_notifier_| on all changed values.
   for (const auto& kv : pref_changed_map) {

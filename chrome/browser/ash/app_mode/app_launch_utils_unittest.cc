@@ -67,7 +67,7 @@ class AppLaunchUtilsTest : public testing::Test {
     PrefServiceFactory pref_service_factory;
     pref_store_ = new JsonPrefStore(input_file_);
     pref_service_factory.set_user_prefs(pref_store_);
-    return pref_service_factory.Create(registry_, /*delegate=*/nullptr);
+    return pref_service_factory.Create(registry_);
   }
 
  public:

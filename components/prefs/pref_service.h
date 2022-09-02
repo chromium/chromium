@@ -386,16 +386,13 @@ class COMPONENTS_PREFS_EXPORT PrefService {
   // stores are allowed. If a corresponding store already exists, calling this
   // will cause DCHECK failures. If the newly added stores already contain
   // values, PrefNotifier associated with this object will be notified with
-  // these values. |delegate| can be passed to observe events of the new
-  // PrefValueStore.
+  // these values.
   // TODO(qinmin): packaging all the input params in a struct, and do the same
   // for the constructor.
-  void ChangePrefValueStore(
-      PrefStore* managed_prefs,
-      PrefStore* supervised_user_prefs,
-      PrefStore* extension_prefs,
-      PrefStore* recommended_prefs,
-      std::unique_ptr<PrefValueStore::Delegate> delegate = nullptr);
+  void ChangePrefValueStore(PrefStore* managed_prefs,
+                            PrefStore* supervised_user_prefs,
+                            PrefStore* extension_prefs,
+                            PrefStore* recommended_prefs);
 
   // A low level function for registering an observer for every single
   // preference changed notification. The caller must ensure that the observer
