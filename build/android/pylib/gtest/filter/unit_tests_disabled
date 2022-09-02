@@ -50,18 +50,9 @@ SQLiteServerBoundCertStoreTest.TestUpgradeV2
 PermissionsTest.GetWarningMessages_Plugins
 ImageOperations.ResizeShouldAverageColors
 
-# crbug.com/139643
-VariationsUtilTest.DisableAfterInitialization
-VariationsUtilTest.AssociateGoogleVariationID
-VariationsUtilTest.NoAssociation
-
 # crbug.com/141473
 AutofillManagerTest.UpdatePasswordSyncState
 AutofillManagerTest.UpdatePasswordGenerationState
-
-# crbug.com/145843
-EntropyProviderTest.UseOneTimeRandomizationSHA1
-EntropyProviderTest.UseOneTimeRandomizationPermuted
 
 # crbug.com/147500
 ManifestTest.RestrictedKeys
