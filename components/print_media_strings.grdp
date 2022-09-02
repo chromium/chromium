@@ -238,7 +238,7 @@
       12x19
     </message>
     <message name="PRINT_PREVIEW_MEDIA_NA_5X7_5X7IN"
-             desc="In Title Case: Media size shown to user in print preview for media ``5x7''">
+             desc="In Title Case: Media size shown to user in print preview for media ``5x7''.  This size is called ``2L'' in Japan.">
       5x7
     </message>
     <message name="PRINT_PREVIEW_MEDIA_NA_6X9_6X9IN"
@@ -404,6 +404,10 @@
     <message name="PRINT_PREVIEW_MEDIA_NA_WIDE_FORMAT_30X42IN"
              desc="In Title Case: Media size shown to user in print preview for media ``Wide-Format''">
       Wide-Format
+    </message>
+    <message name="PRINT_PREVIEW_MEDIA_OE_PHOTO_L_3_5X5IN"
+             desc="In Title Case: Media size shown to user in print preview for media ``3.5x5''.  This size is called ``L'' in Japan.">
+      3.5x5
     </message>
     <message name="PRINT_PREVIEW_MEDIA_OM_DAI_PA_KAI_275X395MM"
              desc="In Title Case: Media size shown to user in print preview for media ``Dai-Pa-Kai''">

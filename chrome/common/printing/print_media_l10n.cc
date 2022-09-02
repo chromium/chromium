@@ -127,6 +127,7 @@ int VendorIdToTranslatedId(const std::string& vendor_id) {
       {"na_super-a_8.94x14in", PRINT_PREVIEW_MEDIA_NA_SUPER_A_8_94X14IN},
       {"na_super-b_13x19in", PRINT_PREVIEW_MEDIA_NA_SUPER_B_13X19IN},
       {"na_wide-format_30x42in", PRINT_PREVIEW_MEDIA_NA_WIDE_FORMAT_30X42IN},
+      {"oe_photo-l_3.5x5in", PRINT_PREVIEW_MEDIA_OE_PHOTO_L_3_5X5IN},
       {"om_dai-pa-kai_275x395mm", PRINT_PREVIEW_MEDIA_OM_DAI_PA_KAI_275X395MM},
       {"om_folio-sp_215x315mm", PRINT_PREVIEW_MEDIA_OM_FOLIO_SP_215X315MM},
       {"om_invite_220x220mm", PRINT_PREVIEW_MEDIA_OM_INVITE_220X220MM},
