@@ -125,8 +125,16 @@ void IpcNetworkManager::OnNetworkListChanged(
     if (adapter_type == rtc::ADAPTER_TYPE_UNKNOWN) {
       adapter_type = rtc::GetAdapterTypeFromName(it->name.c_str());
     }
+    rtc::AdapterType underlying_adapter_type = rtc::ADAPTER_TYPE_UNKNOWN;
+    if (it->mac_address.has_value() && IsVpnMacAddress(*it->mac_address)) {
+      underlying_adapter_type = adapter_type;
+      adapter_type = rtc::ADAPTER_TYPE_VPN;
+    }
     auto network = std::make_unique<rtc::Network>(
         it->name, it->name, prefix, it->prefix_length, adapter_type);
+    if (adapter_type == rtc::ADAPTER_TYPE_VPN) {
+      network->set_underlying_type_for_vpn(underlying_adapter_type);
+    }
     network->set_default_local_address_provider(this);
     network->set_mdns_responder_provider(this);
 

@@ -20,6 +20,20 @@ bool StructTraits<
     return false;
   if (!data.ReadType(&out->type))
     return false;
+
+  mojo::ArrayDataView<uint8_t> view;
+  data.GetMacAddressDataView(&view);
+  out->mac_address.emplace();
+  if (!view.is_null()) {
+    if (view.size() != out->mac_address->size()) {
+      return false;
+    }
+    std::copy_n(view.data(), out->mac_address->size(),
+                out->mac_address->begin());
+  } else {
+    out->mac_address.reset();
+  }
+
   out->interface_index = data.interface_index();
   out->prefix_length = data.prefix_length();
   out->ip_address_attributes = data.ip_address_attributes();

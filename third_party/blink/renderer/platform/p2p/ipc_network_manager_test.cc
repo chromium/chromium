@@ -176,6 +176,49 @@ TEST_F(IpcNetworkManagerTest, DeterminesNetworkTypeFromNameIfUnknown) {
   EXPECT_EQ(rtc::ADAPTER_TYPE_WIFI, (*tun2)->type());
 }
 
+// Test that IpcNetworkManager will detect hardcoded VPN interfaces.
+TEST_F(IpcNetworkManagerTest, DeterminesVPNFromMacAddress) {
+  net::NetworkInterfaceList list;
+  net::IPAddress ip;
+  rtc::IPAddress ip_address;
+  absl::optional<net::Eui48MacAddress> mac_address(
+      {0x0, 0x5, 0x9A, 0x3C, 0x7A, 0x0});
+
+  // Assign the magic MAC address known to be a Cisco Anyconnect VPN interface.
+  EXPECT_TRUE(ip.AssignFromIPLiteral(kIPv6PublicAddrString1));
+  list.push_back(net::NetworkInterface(
+      "eth0", "eth1", 0, net::NetworkChangeNotifier::CONNECTION_UNKNOWN, ip, 64,
+      net::IP_ADDRESS_ATTRIBUTE_NONE, mac_address));
+
+  network_manager_->OnNetworkListChanged(list, net::IPAddress(),
+                                         net::IPAddress());
+  std::vector<const rtc::Network*> networks = network_manager_->GetNetworks();
+  ASSERT_EQ(1uL, networks.size());
+  ASSERT_EQ(rtc::ADAPTER_TYPE_VPN, networks[0]->type());
+  ASSERT_EQ(rtc::ADAPTER_TYPE_ETHERNET, networks[0]->underlying_type_for_vpn());
+}
+
+// Test that IpcNetworkManager doesn't classify this mac as VPN.
+TEST_F(IpcNetworkManagerTest, DeterminesNotVPN) {
+  net::NetworkInterfaceList list;
+  net::IPAddress ip;
+  rtc::IPAddress ip_address;
+  absl::optional<net::Eui48MacAddress> mac_address(
+      {0x0, 0x5, 0x9A, 0x3C, 0x7A, 0x1});
+
+  // This is close to a magic VPN mac but shouldn't match.
+  EXPECT_TRUE(ip.AssignFromIPLiteral(kIPv6PublicAddrString1));
+  list.push_back(net::NetworkInterface(
+      "eth0", "eth1", 0, net::NetworkChangeNotifier::CONNECTION_UNKNOWN, ip, 64,
+      net::IP_ADDRESS_ATTRIBUTE_NONE, mac_address));
+
+  network_manager_->OnNetworkListChanged(list, net::IPAddress(),
+                                         net::IPAddress());
+  std::vector<const rtc::Network*> networks = network_manager_->GetNetworks();
+  ASSERT_EQ(1uL, networks.size());
+  ASSERT_EQ(rtc::ADAPTER_TYPE_ETHERNET, networks[0]->type());
+}
+
 // Test that IpcNetworkManager will act as the mDNS responder provider for
 // all networks that it returns.
 TEST_F(IpcNetworkManagerTest,
