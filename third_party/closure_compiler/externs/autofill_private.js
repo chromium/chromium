@@ -106,7 +106,6 @@ chrome.autofillPrivate.AddressComponents;
  *   expirationYear: (string|undefined),
  *   nickname: (string|undefined),
  *   network: (string|undefined),
- *   imageSrc: (string|undefined),
  *   metadata: (!chrome.autofillPrivate.AutofillMetadata|undefined)
  * }}
  */
