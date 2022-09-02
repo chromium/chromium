@@ -822,6 +822,7 @@
 
     'internal.chrome.fyi': {
       'chromeos-amd64-generic-lacros-internal-rel': 'chromeos_amd64-generic_lacros_rel',
+      'chromeos-arm-generic-cfi-thin-lto-chrome': 'chromeos_arm-generic_cfi_thin_lto_official_reclient',
       'linux-autofill-captured-sites-rel': 'release_bot',
       'linux-finch-smoke-chrome': 'official_goma',
       'linux-password-manager-captured-sites-rel': 'release_bot',
@@ -2095,6 +2096,9 @@
 
     'chromeos_arm-generic_cfi_thin_lto_official': [
       'chromeos_device', 'arm-generic', 'cfi_full', 'thin_lto', 'official', 'full_symbols',
+    ],
+    'chromeos_arm-generic_cfi_thin_lto_official_reclient': [
+      'chromeos_device_reclient', 'arm-generic', 'cfi_full', 'thin_lto', 'official', 'full_symbols',
     ],
 
     'chromeos_arm-generic_dbg': [

@@ -6632,6 +6632,11 @@
     'name': 'internal.chrome.fyi',
     'mixins': ['chrome-tester-service-account'],
     'machines': {
+      'chromeos-arm-generic-cfi-thin-lto-chrome': {
+        'additional_compile_targets': [
+          'chromiumos_preflight',
+        ],
+      },
       'linux-chrome-reclient': {
         'additional_compile_targets': [
            # same build target as linux-chrome even if it doesn't run the tests
