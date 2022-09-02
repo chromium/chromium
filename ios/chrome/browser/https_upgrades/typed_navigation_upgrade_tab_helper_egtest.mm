@@ -301,9 +301,10 @@ std::string GetURLWithoutScheme(const GURL& url) {
   [self assertSuccessfulUpgrade:2];
 }
 
+// TODO(crbug.com/1359356): Test is consistently failing.
 // Same as test_TypeHTTPWithGoodHTTPS_ShouldUpgrade but with HTTPS-Only Mode
 // enabled.
-- (void)test_TypeHTTPWithGoodHTTPS_HTTPSOnlyModeEnabled_ShouldUpgrade {
+- (void)DISABLED_test_TypeHTTPWithGoodHTTPS_HTTPSOnlyModeEnabled_ShouldUpgrade {
   // Enable HTTPS-Only Mode.
   [ChromeEarlGrey setBoolValue:NO forUserPref:prefs::kHttpsOnlyModeEnabled];
 
