@@ -16,6 +16,7 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataBridge;
@@ -131,6 +132,7 @@ public class PermissionInfoTest {
     @SmallTest
     @Feature({"Preferences"})
     @RequiresRestart
+    @DisabledTest(message = "https://crbug.com/1342630")
     public void testResetDSEGeolocation_RegularProfile_DefaultsToAskFromBlock() throws Throwable {
         Profile regularProfile = getRegularProfile();
         setSettingAndExpectValue(ContentSettingsType.GEOLOCATION, DSE_ORIGIN, null,
