@@ -73,8 +73,8 @@ void DeviceManagementTask::OnRegisterDeviceRequestComplete(
     DMClient::RequestResult result) {
   VLOG(1) << __func__;
 
-  // TODO(crbug.com/1345407) : handle error cases when enrollment is mandatory.
-  result_ = result;
+  succeeded_ = (result == DMClient::RequestResult::kSuccess ||
+                result == DMClient::RequestResult::kAlreadyRegistered);
 }
 
 void DeviceManagementTask::RunFetchPolicy(base::OnceClosure callback) {
@@ -98,8 +98,8 @@ void DeviceManagementTask::OnFetchPolicyRequestComplete(
     const std::vector<PolicyValidationResult>& validation_results) {
   VLOG(1) << __func__;
 
-  result_ = result;
-  if (result != DMClient::RequestResult::kSuccess) {
+  succeeded_ = (result == DMClient::RequestResult::kSuccess);
+  if (!succeeded_) {
     for (const auto& validation_result : validation_results) {
       sequenced_task_runner_->PostTask(
           FROM_HERE,

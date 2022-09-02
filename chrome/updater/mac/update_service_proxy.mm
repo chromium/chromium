@@ -91,11 +91,11 @@ using base::SysUTF8ToNSString;
       getVersionWithReply:reply];
 }
 
-- (void)fetchPoliciesWithReply:(void (^)(void))reply {
+- (void)fetchPoliciesWithReply:(void (^)(int))reply {
   auto errorHandler = ^(NSError* xpcError) {
     LOG(ERROR) << "XPC connection failed: "
                << base::SysNSStringToUTF8([xpcError description]);
-    reply();
+    reply(xpcError.code);
   };
 
   [[_updateCheckXPCConnection remoteObjectProxyWithErrorHandler:errorHandler]
@@ -288,12 +288,14 @@ void UpdateServiceProxy::GetVersion(
   [client_ getVersionWithReply:reply];
 }
 
-void UpdateServiceProxy::FetchPolicies(base::OnceClosure callback) {
+void UpdateServiceProxy::FetchPolicies(base::OnceCallback<void(int)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   VLOG(1) << __func__;
-  __block base::OnceClosure block_callback = std::move(callback);
-  auto reply = ^() {
-    callback_runner_->PostTask(FROM_HERE, std::move(block_callback));
+  __block base::OnceCallback<void(int)> block_callback = std::move(callback);
+  auto reply = ^(int result) {
+    callback_runner_->PostTask(
+        FROM_HERE, base::BindOnce(std::move(block_callback), result));
   };
   [client_ fetchPoliciesWithReply:reply];
 }

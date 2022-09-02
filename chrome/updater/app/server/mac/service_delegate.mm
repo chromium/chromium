@@ -85,11 +85,11 @@
                                 std::move(cb)));
 }
 
-- (void)fetchPoliciesWithReply:(void (^)(void))reply {
-  auto cb = base::BindOnce(base::RetainBlock(^(void) {
+- (void)fetchPoliciesWithReply:(void (^)(int result))reply {
+  auto cb = base::BindOnce(base::RetainBlock(^(int result) {
     VLOG(0) << "FetchPolicies complete.";
     if (reply)
-      reply();
+      reply(result);
 
     _appServer->TaskCompleted();
   }));
@@ -425,11 +425,11 @@
   [_service getVersionWithReply:reply];
 }
 
-- (void)fetchPoliciesWithReply:(void (^)(void))reply {
+- (void)fetchPoliciesWithReply:(void (^)(int))reply {
   // This function may only be called by the same user.
   VLOG(1) << "Rejecting cross-user attempt to call " << __func__;
   if (reply)
-    reply();
+    reply(updater::kErrorPermissionDenied);
 }
 
 - (void)runPeriodicTasksWithReply:(void (^)(void))reply {

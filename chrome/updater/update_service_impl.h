@@ -44,7 +44,7 @@ class UpdateServiceImpl : public UpdateService {
   // Overrides for updater::UpdateService.
   void GetVersion(
       base::OnceCallback<void(const base::Version&)> callback) override;
-  void FetchPolicies(base::OnceClosure callback) override;
+  void FetchPolicies(base::OnceCallback<void(int)> callback) override;
   void RegisterApp(
       const RegistrationRequest& request,
       base::OnceCallback<void(const RegistrationResponse&)> callback) override;

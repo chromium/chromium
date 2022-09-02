@@ -232,8 +232,17 @@ void AppInstall::FetchPolicies() {
       updater_scope(), external_constants_->OverinstallTimeout());
 #endif
 
-  update_service_->FetchPolicies(
-      base::BindOnce(&AppInstall::RegisterUpdater, this));
+  update_service_->FetchPolicies(base::BindOnce(
+      [](scoped_refptr<AppInstall> app_install, int result) {
+        if (result != kErrorOk) {
+          LOG(ERROR) << "FetchPolicies failed: " << result;
+          app_install->Shutdown(result);
+          return;
+        }
+
+        app_install->RegisterUpdater();
+      },
+      base::WrapRefCounted(this)));
 }
 
 void AppInstall::RegisterUpdater() {

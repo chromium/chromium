@@ -325,6 +325,9 @@ constexpr int kErrorFailedToStartLaunchdWakeJob = 31;
 // internal job.
 constexpr int kErrorFailedAwaitingLaunchdUpdateServiceInternalJob = 32;
 
+// DM registration failure with mandatory enrollment.
+constexpr int kErrorDMRegistrationFailed = 33;
+
 constexpr int kErrorTagParsing = 50;
 
 // Metainstaller errors.

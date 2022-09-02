@@ -161,17 +161,18 @@ HRESULT UpdaterImpl::FetchPolicies(IUpdaterCallback* callback) {
       FROM_HERE,
       base::BindOnce(
           [](scoped_refptr<UpdateService> update_service,
-             base::OnceClosure callback_closure) {
-            update_service->FetchPolicies(std::move(callback_closure));
+             base::OnceCallback<void(int)> result_callback) {
+            update_service->FetchPolicies(std::move(result_callback));
           },
           com_server->update_service(),
           base::BindPostTask(
               base::ThreadPool::CreateSequencedTaskRunner(
                   {base::MayBlock(),
                    base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN}),
-              base::BindOnce(base::IgnoreResult(&IUpdaterCallback::Run),
-                             Microsoft::WRL::ComPtr<IUpdaterCallback>(callback),
-                             0))));
+              base::BindOnce(
+                  [](Microsoft::WRL::ComPtr<IUpdaterCallback> callback,
+                     int result) { callback->Run(result); },
+                  Microsoft::WRL::ComPtr<IUpdaterCallback>(callback)))));
   return S_OK;
 }
 

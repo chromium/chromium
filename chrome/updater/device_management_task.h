@@ -31,7 +31,8 @@ class DeviceManagementTask
   void RunRegisterDevice(base::OnceClosure callback);
   void RunFetchPolicy(base::OnceClosure callback);
 
-  DMClient::RequestResult result() const { return result_; }
+  bool is_enrollment_mandatory() const { return is_enrollment_mandatory_; }
+  bool succeeded() const { return succeeded_; }
 
  private:
   friend class base::RefCountedThreadSafe<DeviceManagementTask>;
@@ -51,8 +52,10 @@ class DeviceManagementTask
   void CallDMFunction(Function fn,
                       Callback member_callback,
                       base::OnceClosure callback) {
+    scoped_refptr<DMStorage> dm_storage = GetDefaultDMStorage();
+    is_enrollment_mandatory_ = dm_storage->IsEnrollmentMandatory();
     fn(DMClient::CreateDefaultConfigurator(config_->GetPolicyService()),
-       GetDefaultDMStorage(),
+       dm_storage,
        base::BindPostTask(
            main_task_runner_,
            base::BindOnce(member_callback, this).Then(std::move(callback))));
@@ -62,7 +65,8 @@ class DeviceManagementTask
   const scoped_refptr<Configurator> config_;
   const scoped_refptr<base::SequencedTaskRunner> main_task_runner_;
   const scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner_;
-  DMClient::RequestResult result_ = DMClient::RequestResult::kSuccess;
+  bool succeeded_ = false;
+  bool is_enrollment_mandatory_ = false;
 };
 
 }  // namespace updater

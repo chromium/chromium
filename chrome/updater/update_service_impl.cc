@@ -237,16 +237,28 @@ void UpdateServiceImpl::GetVersion(
       base::BindOnce(std::move(callback), base::Version(kUpdaterVersion)));
 }
 
-void UpdateServiceImpl::FetchPolicies(base::OnceClosure callback) {
+void UpdateServiceImpl::FetchPolicies(base::OnceCallback<void(int)> callback) {
   VLOG(1) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  base::MakeRefCounted<DeviceManagementTask>(config_, main_task_runner_)
-      ->RunRegisterDevice(
-          base::BindOnce(&DeviceManagementTask::RunFetchPolicy,
-                         base::MakeRefCounted<DeviceManagementTask>(
-                             config_, main_task_runner_),
-                         std::move(callback)));
+  scoped_refptr<DeviceManagementTask> register_device_task =
+      base::MakeRefCounted<DeviceManagementTask>(config_, main_task_runner_);
+  register_device_task->RunRegisterDevice(base::BindOnce(
+      [](scoped_refptr<DeviceManagementTask> register_device_task,
+         scoped_refptr<Configurator> config,
+         scoped_refptr<base::SequencedTaskRunner> main_task_runner,
+         base::OnceCallback<void(int)> callback) {
+        if (register_device_task->succeeded()) {
+          base::MakeRefCounted<DeviceManagementTask>(config, main_task_runner)
+              ->RunFetchPolicy(base::BindOnce(std::move(callback), kErrorOk));
+        } else {
+          std::move(callback).Run(
+              register_device_task->is_enrollment_mandatory()
+                  ? kErrorDMRegistrationFailed
+                  : kErrorOk);
+        }
+      },
+      register_device_task, config_, main_task_runner_, std::move(callback)));
 }
 
 void UpdateServiceImpl::RegisterApp(

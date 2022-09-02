@@ -32,9 +32,9 @@ class UpdateServiceImplInactive : public UpdateService {
         FROM_HERE, base::BindOnce(std::move(callback), base::Version()));
   }
 
-  void FetchPolicies(base::OnceClosure callback) override {
+  void FetchPolicies(base::OnceCallback<void(int)> callback) override {
     VLOG(1) << __func__ << " (Inactive)";
-    std::move(callback).Run();
+    std::move(callback).Run(-1);
   }
 
   void RegisterApp(
