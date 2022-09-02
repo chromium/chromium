@@ -6,6 +6,7 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#import "base/notreached.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_utils.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -118,6 +119,15 @@ const char kInfobarPermissionsModalEventHistogram[] =
 const char kInfobarPermissionsBadgeTappedHistogram[] =
     "Mobile.Messages.Badge.Tapped.InfobarTypePermissions";
 
+// Histogram names for InfobarTypeTailoredSecurityService.
+const char kInfobarTailoredSecurityServiceBannerEventHistogram[] =
+    "Mobile.Messages.Banner.Event.InfobarTypePermissions";
+const char kInfobarTailoredSecurityServiceBannerDismissTypeHistogram[] =
+    "Mobile.Messages.Banner.Dismiss.InfobarTypePermissions";
+// Modal.
+const char kInfobarTailoredSecurityServiceModalEventHistogram[] =
+    "Mobile.Messages.Modal.Event.InfobarTypePermissions";
+
 }  // namespace
 
 @interface InfobarMetricsRecorder ()
@@ -174,6 +184,10 @@ const char kInfobarPermissionsBadgeTappedHistogram[] =
       base::UmaHistogramEnumeration(kInfobarPermissionsBannerEventHistogram,
                                     event);
       break;
+    case InfobarType::kInfobarTypeTailoredSecurityService:
+      base::UmaHistogramEnumeration(
+          kInfobarTailoredSecurityServiceBannerEventHistogram, event);
+      break;
   }
 }
 
@@ -210,6 +224,11 @@ const char kInfobarPermissionsBadgeTappedHistogram[] =
     case InfobarType::kInfobarTypePermissions:
       base::UmaHistogramEnumeration(
           kInfobarPermissionsBannerDismissTypeHistogram, dismissType);
+      break;
+    case InfobarType::kInfobarTypeTailoredSecurityService:
+      base::UmaHistogramEnumeration(
+          kInfobarTailoredSecurityServiceBannerDismissTypeHistogram,
+          dismissType);
       break;
   }
 }
@@ -249,6 +268,10 @@ const char kInfobarPermissionsBadgeTappedHistogram[] =
       base::UmaHistogramEnumeration(kInfobarPermissionsModalEventHistogram,
                                     event);
       break;
+    case InfobarType::kInfobarTypeTailoredSecurityService:
+      base::UmaHistogramEnumeration(
+          kInfobarTailoredSecurityServiceModalEventHistogram, event);
+      break;
   }
 }
 
@@ -282,6 +305,10 @@ const char kInfobarPermissionsBadgeTappedHistogram[] =
     case InfobarType::kInfobarTypePermissions:
       base::UmaHistogramEnumeration(kInfobarPermissionsBadgeTappedHistogram,
                                     state);
+      break;
+    case InfobarType::kInfobarTypeTailoredSecurityService:
+      // TailoredSecurityService infobar doesn't have a badge.
+      NOTREACHED();
       break;
   }
 }

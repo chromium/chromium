@@ -24,6 +24,8 @@ enum class InfobarType {
   kInfobarTypeAddToReadingList = 6,
   // Message Infobar for media permissions.
   kInfobarTypePermissions = 7,
+  // Message Infobar for Tailored Security Service.
+  kInfobarTypeTailoredSecurityService = 8,
 };
 
 // Message "Confirm Infobars" types, these are the generic kInfobarTypeConfirm
