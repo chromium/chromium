@@ -26,6 +26,7 @@ aggregate_vector_icons("chrome_vector_icons") {
     "back_arrow_touch.icon",
     "back_to_tab.icon",
     "backspace.icon",
+    "battery_saver.icon",
     "blocked_redirect.icon",
     "bookmarkbar_touch_overflow.icon",
     "browser_tools.icon",

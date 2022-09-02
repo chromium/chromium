@@ -157,6 +157,7 @@ const char kChromeUIOsUrlAppURL[] = "chrome://internal/";
 const char kChromeUIPasswordManagerInternalsHost[] =
     "password-manager-internals";
 const char kChromeUIPasswordManagerHost[] = "password-manager";
+const char kChromeUIPerformanceSettingsURL[] = "chrome://settings/performance";
 const char kChromeUIPolicyHost[] = "policy";
 const char kChromeUIPolicyURL[] = "chrome://policy/";
 const char kChromeUIPredictorsHost[] = "predictors";
@@ -577,6 +578,7 @@ const char kOnStartupSubPage[] = "onStartup";
 const char kPasswordCheckSubPage[] = "passwords/check?start=true";
 const char kPasswordManagerSubPage[] = "passwords";
 const char kPaymentsSubPage[] = "payments";
+const char kPerformanceSubPage[] = "performance";
 const char kPrintingSettingsSubPage[] = "printing";
 const char kPrivacyGuideSubPage[] = "privacy/guide";
 const char kPrivacySubPage[] = "privacy";
