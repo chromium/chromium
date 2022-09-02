@@ -11,7 +11,7 @@
 #include "base/command_line.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
-#include "components/cdm/renderer/external_clear_key_key_system_properties.h"
+#include "components/cdm/renderer/external_clear_key_key_system_info.h"
 #include "components/network_hints/renderer/web_prescient_networking_impl.h"
 #include "components/web_cache/renderer/web_cache_impl.h"
 #include "content/public/test/test_service.mojom.h"
@@ -204,7 +204,7 @@ void ShellContentRendererClient::DidInitializeWorkerContextOnWorkerThread(
 #if BUILDFLAG(ENABLE_MOJO_CDM)
 void ShellContentRendererClient::GetSupportedKeySystems(
     media::GetSupportedKeySystemsCB cb) {
-  media::KeySystemPropertiesVector key_systems;
+  media::KeySystemInfoVector key_systems;
   if (base::FeatureList::IsEnabled(media::kExternalClearKeyForTesting))
     key_systems.push_back(std::make_unique<cdm::ExternalClearKeyProperties>());
   std::move(cb).Run(std::move(key_systems));

@@ -15,7 +15,7 @@
 #include "media/base/media_switches.h"
 #include "media/media_buildflags.h"
 #if BUILDFLAG(ENABLE_WIDEVINE)
-#include "components/cdm/renderer/widevine_key_system_properties.h"
+#include "components/cdm/renderer/widevine_key_system_info.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/widevine/cdm/widevine_cdm_common.h"  // nogncheck
 #endif  // BUILDFLAG(ENABLE_WIDEVINE)
@@ -26,23 +26,23 @@ using media::EmeConfigRuleState;
 using media::EmeFeatureSupport;
 using media::EmeInitDataType;
 using media::EncryptionScheme;
-using media::KeySystemProperties;
+using media::KeySystemInfo;
 using media::SupportedCodecs;
 #if BUILDFLAG(ENABLE_WIDEVINE)
-using Robustness = cdm::WidevineKeySystemProperties::Robustness;
+using Robustness = cdm::WidevineKeySystemInfo::Robustness;
 #endif  // BUILDFLAG(ENABLE_WIDEVINE)
 
 namespace cdm {
 
 namespace {
 
-// Implementation of KeySystemProperties for platform-supported key systems.
+// Implementation of KeySystemInfo for platform-supported key systems.
 // Assumes that platform key systems support no features but can and will
 // make use of persistence and identifiers.
-class AndroidPlatformKeySystemProperties : public KeySystemProperties {
+class AndroidPlatformKeySystemInfo : public KeySystemInfo {
  public:
-  AndroidPlatformKeySystemProperties(const std::string& name,
-                                     SupportedCodecs supported_codecs)
+  AndroidPlatformKeySystemInfo(const std::string& name,
+                               SupportedCodecs supported_codecs)
       : name_(name), supported_codecs_(supported_codecs) {}
 
   std::string GetBaseKeySystemName() const override { return name_; }
@@ -130,7 +130,7 @@ SupportedKeySystemResponse QueryKeySystemSupport(
 
 #if BUILDFLAG(ENABLE_WIDEVINE)
 void AddAndroidWidevine(
-    std::vector<std::unique_ptr<KeySystemProperties>>* key_systems) {
+    std::vector<std::unique_ptr<KeySystemInfo>>* key_systems) {
   // TODO(crbug.com/853336): Use media.mojom.KeySystemSupport instead of
   // separate IPC.
   auto response = QueryKeySystemSupport(kWidevineKeySystem);
@@ -163,7 +163,7 @@ void AddAndroidWidevine(
   // Since we do not control the implementation of the MediaDrm API on Android,
   // we assume that it can and will make use of persistence no matter whether
   // persistence-based features are supported or not.
-  key_systems->emplace_back(new WidevineKeySystemProperties(
+  key_systems->emplace_back(new WidevineKeySystemInfo(
       codecs,                             // Regular codecs.
       encryption_schemes,                 // Encryption schemes.
       session_types,                      // Session types.
@@ -178,7 +178,7 @@ void AddAndroidWidevine(
 #endif  // BUILDFLAG(ENABLE_WIDEVINE)
 
 void AddAndroidPlatformKeySystems(
-    std::vector<std::unique_ptr<KeySystemProperties>>* key_systems) {
+    std::vector<std::unique_ptr<KeySystemInfo>>* key_systems) {
   // TODO(crbug.com/853336): Update media.mojom.KeySystemSupport to handle this
   // case and use it instead.
 
@@ -190,8 +190,8 @@ void AddAndroidPlatformKeySystems(
        it != key_system_names.end(); ++it) {
     SupportedKeySystemResponse response = QueryKeySystemSupport(*it);
     if (response.non_secure_codecs != media::EME_CODEC_NONE) {
-      key_systems->emplace_back(new AndroidPlatformKeySystemProperties(
-          *it, response.non_secure_codecs));
+      key_systems->emplace_back(
+          new AndroidPlatformKeySystemInfo(*it, response.non_secure_codecs));
     }
   }
 }

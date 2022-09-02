@@ -7,7 +7,7 @@
 
 namespace android_webview {
 
-void AwAddKeySystems(std::vector<std::unique_ptr<media::KeySystemProperties>>*
+void AwAddKeySystems(std::vector<std::unique_ptr<media::KeySystemInfo>>*
                          key_systems_properties) {
 #if BUILDFLAG(ENABLE_WIDEVINE)
   cdm::AddAndroidWidevine(key_systems_properties);

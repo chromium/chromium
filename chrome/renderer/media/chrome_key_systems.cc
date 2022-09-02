@@ -18,12 +18,12 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/renderer/chrome_render_thread_observer.h"
-#include "components/cdm/renderer/external_clear_key_key_system_properties.h"
-#include "components/cdm/renderer/widevine_key_system_properties.h"
+#include "components/cdm/renderer/external_clear_key_key_system_info.h"
+#include "components/cdm/renderer/widevine_key_system_info.h"
 #include "content/public/renderer/render_thread.h"
 #include "media/base/decrypt_config.h"
 #include "media/base/eme_constants.h"
-#include "media/base/key_system_properties.h"
+#include "media/base/key_system_info.h"
 #include "media/cdm/cdm_capability.h"
 #include "media/media_buildflags.h"
 #include "third_party/widevine/cdm/buildflags.h"
@@ -48,8 +48,8 @@
 using media::CdmSessionType;
 using media::EmeConfig;
 using media::EmeFeatureSupport;
-using media::KeySystemProperties;
-using media::KeySystemPropertiesVector;
+using media::KeySystemInfo;
+using media::KeySystemInfoVector;
 using media::SupportedCodecs;
 
 namespace {
@@ -281,7 +281,7 @@ base::flat_set<CdmSessionType> UpdatePersistentLicenseSupport(
 }
 
 bool AddWidevine(const media::mojom::KeySystemCapabilityPtr& capability,
-                 KeySystemPropertiesVector* key_systems) {
+                 KeySystemInfoVector* key_systems) {
   // Codecs and encryption schemes.
   SupportedCodecs codecs = media::EME_CODEC_NONE;
   SupportedCodecs hw_secure_codecs = media::EME_CODEC_NONE;
@@ -317,13 +317,13 @@ bool AddWidevine(const media::mojom::KeySystemCapabilityPtr& capability,
   }
 
   // Robustness.
-  using Robustness = cdm::WidevineKeySystemProperties::Robustness;
+  using Robustness = cdm::WidevineKeySystemInfo::Robustness;
   auto max_audio_robustness = Robustness::SW_SECURE_CRYPTO;
   auto max_video_robustness = Robustness::SW_SECURE_DECODE;
 
 #if BUILDFLAG(IS_CHROMEOS)
   // On ChromeOS, we support HW_SECURE_ALL even without hardware secure codecs.
-  // See WidevineKeySystemProperties::GetRobustnessConfigRule().
+  // See WidevineKeySystemInfo::GetRobustnessConfigRule().
   max_audio_robustness = Robustness::HW_SECURE_ALL;
   max_video_robustness = Robustness::HW_SECURE_ALL;
 #else
@@ -340,7 +340,7 @@ bool AddWidevine(const media::mojom::KeySystemCapabilityPtr& capability,
   distinctive_identifier_support = EmeFeatureSupport::REQUESTABLE;
 #endif
 
-  key_systems->emplace_back(new cdm::WidevineKeySystemProperties(
+  key_systems->emplace_back(new cdm::WidevineKeySystemInfo(
       codecs, std::move(encryption_schemes), std::move(session_types),
       hw_secure_codecs, std::move(hw_secure_encryption_schemes),
       std::move(hw_secure_session_types), max_audio_robustness,
@@ -354,7 +354,7 @@ const char kExternalClearKeyKeySystem[] = "org.chromium.externalclearkey";
 
 void AddExternalClearKey(
     const media::mojom::KeySystemCapabilityPtr& /*capability*/,
-    KeySystemPropertiesVector* key_systems) {
+    KeySystemInfoVector* key_systems) {
   DVLOG(1) << __func__;
 
   if (!base::FeatureList::IsEnabled(media::kExternalClearKeyForTesting)) {
@@ -369,7 +369,7 @@ void AddExternalClearKey(
 void OnKeySystemSupportUpdated(
     media::GetSupportedKeySystemsCB cb,
     content::KeySystemCapabilityPtrMap key_system_capabilities) {
-  KeySystemPropertiesVector key_systems;
+  KeySystemInfoVector key_systems;
   for (const auto& entry : key_system_capabilities) {
     const auto& key_system = entry.first;
     const auto& capability = entry.second;
@@ -397,7 +397,7 @@ void OnKeySystemSupportUpdated(
 
 void GetChromeKeySystems(media::GetSupportedKeySystemsCB cb) {
 #if BUILDFLAG(IS_ANDROID) && BUILDFLAG(ENABLE_WIDEVINE)
-  KeySystemPropertiesVector key_systems;
+  KeySystemInfoVector key_systems;
   cdm::AddAndroidWidevine(&key_systems);
   std::move(cb).Run(std::move(key_systems));
   return;

@@ -21,7 +21,7 @@
 #include "content/public/common/alternative_error_page_override_info.mojom.h"
 #include "content/public/common/content_client.h"
 #include "media/base/audio_parameters.h"
-#include "media/base/key_system_properties.h"
+#include "media/base/key_system_info.h"
 #include "media/base/supported_types.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/platform/url_loader_throttle_provider.h"

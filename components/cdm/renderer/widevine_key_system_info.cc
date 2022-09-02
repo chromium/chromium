@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/cdm/renderer/widevine_key_system_properties.h"
+#include "components/cdm/renderer/widevine_key_system_info.h"
 
 #include "base/command_line.h"
 #include "base/feature_list.h"
@@ -25,7 +25,7 @@ using media::EmeInitDataType;
 using media::EmeMediaType;
 using media::EncryptionScheme;
 using media::SupportedCodecs;
-using Robustness = cdm::WidevineKeySystemProperties::Robustness;
+using Robustness = cdm::WidevineKeySystemInfo::Robustness;
 
 namespace cdm {
 namespace {
@@ -58,7 +58,7 @@ bool IsHardwareSecurityEnabledForKeySystem(const std::string& key_system) {
 
 }  // namespace
 
-WidevineKeySystemProperties::WidevineKeySystemProperties(
+WidevineKeySystemInfo::WidevineKeySystemInfo(
     SupportedCodecs codecs,
     base::flat_set<EncryptionScheme> encryption_schemes,
     base::flat_set<CdmSessionType> session_types,
@@ -80,13 +80,13 @@ WidevineKeySystemProperties::WidevineKeySystemProperties(
       persistent_state_support_(persistent_state_support),
       distinctive_identifier_support_(distinctive_identifier_support) {}
 
-WidevineKeySystemProperties::~WidevineKeySystemProperties() = default;
+WidevineKeySystemInfo::~WidevineKeySystemInfo() = default;
 
-std::string WidevineKeySystemProperties::GetBaseKeySystemName() const {
+std::string WidevineKeySystemInfo::GetBaseKeySystemName() const {
   return kWidevineKeySystem;
 }
 
-bool WidevineKeySystemProperties::IsSupportedKeySystem(
+bool WidevineKeySystemInfo::IsSupportedKeySystem(
     const std::string& key_system) const {
 #if BUILDFLAG(IS_WIN)
   if (key_system == kWidevineExperimentKeySystem &&
@@ -99,12 +99,12 @@ bool WidevineKeySystemProperties::IsSupportedKeySystem(
   return key_system == kWidevineKeySystem;
 }
 
-bool WidevineKeySystemProperties::ShouldUseBaseKeySystemName() const {
+bool WidevineKeySystemInfo::ShouldUseBaseKeySystemName() const {
   // Internally Widevine CDM only supports kWidevineKeySystem.
   return true;
 }
 
-bool WidevineKeySystemProperties::IsSupportedInitDataType(
+bool WidevineKeySystemInfo::IsSupportedInitDataType(
     EmeInitDataType init_data_type) const {
   // Here we assume that support for a container implies support for the
   // associated initialization data type. KeySystems handles validating
@@ -117,7 +117,7 @@ bool WidevineKeySystemProperties::IsSupportedInitDataType(
   return false;
 }
 
-EmeConfig::Rule WidevineKeySystemProperties::GetEncryptionSchemeConfigRule(
+EmeConfig::Rule WidevineKeySystemInfo::GetEncryptionSchemeConfigRule(
     EncryptionScheme encryption_scheme) const {
   bool is_supported = encryption_schemes_.contains(encryption_scheme);
   bool is_hw_secure_supported =
@@ -133,16 +133,15 @@ EmeConfig::Rule WidevineKeySystemProperties::GetEncryptionSchemeConfigRule(
   }
 }
 
-SupportedCodecs WidevineKeySystemProperties::GetSupportedCodecs() const {
+SupportedCodecs WidevineKeySystemInfo::GetSupportedCodecs() const {
   return codecs_;
 }
 
-SupportedCodecs WidevineKeySystemProperties::GetSupportedHwSecureCodecs()
-    const {
+SupportedCodecs WidevineKeySystemInfo::GetSupportedHwSecureCodecs() const {
   return hw_secure_codecs_;
 }
 
-EmeConfig::Rule WidevineKeySystemProperties::GetRobustnessConfigRule(
+EmeConfig::Rule WidevineKeySystemInfo::GetRobustnessConfigRule(
     const std::string& key_system,
     EmeMediaType media_type,
     const std::string& requested_robustness,
@@ -239,8 +238,8 @@ EmeConfig::Rule WidevineKeySystemProperties::GetRobustnessConfigRule(
   return media::EmeConfig::SupportedRule();
 }
 
-EmeConfig::Rule
-WidevineKeySystemProperties::GetPersistentLicenseSessionSupport() const {
+EmeConfig::Rule WidevineKeySystemInfo::GetPersistentLicenseSessionSupport()
+    const {
   bool is_supported =
       session_types_.contains(CdmSessionType::kPersistentLicense);
 
@@ -277,12 +276,11 @@ WidevineKeySystemProperties::GetPersistentLicenseSessionSupport() const {
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
-EmeFeatureSupport WidevineKeySystemProperties::GetPersistentStateSupport()
-    const {
+EmeFeatureSupport WidevineKeySystemInfo::GetPersistentStateSupport() const {
   return persistent_state_support_;
 }
 
-EmeFeatureSupport WidevineKeySystemProperties::GetDistinctiveIdentifierSupport()
+EmeFeatureSupport WidevineKeySystemInfo::GetDistinctiveIdentifierSupport()
     const {
   return distinctive_identifier_support_;
 }

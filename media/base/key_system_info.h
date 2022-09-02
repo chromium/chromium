@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MEDIA_BASE_KEY_SYSTEM_PROPERTIES_H_
-#define MEDIA_BASE_KEY_SYSTEM_PROPERTIES_H_
+#ifndef MEDIA_BASE_KEY_SYSTEM_INFO_H_
+#define MEDIA_BASE_KEY_SYSTEM_INFO_H_
 
 #include <string>
 
@@ -17,9 +17,9 @@
 namespace media {
 
 // Provides an interface for querying the properties of a registered key system.
-class MEDIA_EXPORT KeySystemProperties {
+class MEDIA_EXPORT KeySystemInfo {
  public:
-  virtual ~KeySystemProperties() {}
+  virtual ~KeySystemInfo() {}
 
   // Gets the base key system name, e.g. "org.chromium.foo".
   virtual std::string GetBaseKeySystemName() const = 0;
@@ -84,12 +84,11 @@ class MEDIA_EXPORT KeySystemProperties {
   virtual bool UseAesDecryptor() const;
 };
 
-using KeySystemPropertiesVector =
-    std::vector<std::unique_ptr<KeySystemProperties>>;
+using KeySystemInfoVector = std::vector<std::unique_ptr<KeySystemInfo>>;
 
 using GetSupportedKeySystemsCB =
-    base::RepeatingCallback<void(KeySystemPropertiesVector)>;
+    base::RepeatingCallback<void(KeySystemInfoVector)>;
 
 }  // namespace media
 
-#endif  // MEDIA_BASE_KEY_SYSTEM_PROPERTIES_H_
+#endif  // MEDIA_BASE_KEY_SYSTEM_INFO_H_

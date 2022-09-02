@@ -9,14 +9,14 @@
 #include <vector>
 
 namespace media {
-class KeySystemProperties;
+class KeySystemInfo;
 }
 
 namespace chromecast {
 namespace media {
 
 void AddChromecastKeySystems(
-    std::vector<std::unique_ptr<::media::KeySystemProperties>>*
+    std::vector<std::unique_ptr<::media::KeySystemInfo>>*
         key_systems_properties,
     bool enable_persistent_license_support,
     bool enable_playready);

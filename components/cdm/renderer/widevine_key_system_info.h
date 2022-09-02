@@ -2,20 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_CDM_RENDERER_WIDEVINE_KEY_SYSTEM_PROPERTIES_H_
-#define COMPONENTS_CDM_RENDERER_WIDEVINE_KEY_SYSTEM_PROPERTIES_H_
+#ifndef COMPONENTS_CDM_RENDERER_WIDEVINE_KEY_SYSTEM_INFO_H_
+#define COMPONENTS_CDM_RENDERER_WIDEVINE_KEY_SYSTEM_INFO_H_
 
 #include <string>
 
 #include "base/containers/flat_set.h"
 #include "media/base/content_decryption_module.h"
-#include "media/base/key_system_properties.h"
+#include "media/base/key_system_info.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace cdm {
 
-// Implementation of KeySystemProperties for Widevine key system.
-class WidevineKeySystemProperties : public media::KeySystemProperties {
+// Implementation of KeySystemInfo for Widevine key system.
+class WidevineKeySystemInfo : public media::KeySystemInfo {
  public:
   // Robustness values understood by the Widevine key system.
   // Note: GetRobustnessConfigRule is dependent on the order of these.
@@ -29,7 +29,7 @@ class WidevineKeySystemProperties : public media::KeySystemProperties {
     HW_SECURE_ALL,
   };
 
-  WidevineKeySystemProperties(
+  WidevineKeySystemInfo(
       media::SupportedCodecs codecs,
       base::flat_set<media::EncryptionScheme> encryption_schemes,
       base::flat_set<media::CdmSessionType> session_types,
@@ -40,7 +40,7 @@ class WidevineKeySystemProperties : public media::KeySystemProperties {
       Robustness max_video_robustness,
       media::EmeFeatureSupport persistent_state_support,
       media::EmeFeatureSupport distinctive_identifier_support);
-  ~WidevineKeySystemProperties() override;
+  ~WidevineKeySystemInfo() override;
 
   std::string GetBaseKeySystemName() const override;
   bool IsSupportedKeySystem(const std::string& key_system) const override;
@@ -75,4 +75,4 @@ class WidevineKeySystemProperties : public media::KeySystemProperties {
 
 }  // namespace cdm
 
-#endif  // COMPONENTS_CDM_RENDERER_WIDEVINE_KEY_SYSTEM_PROPERTIES_H_
+#endif  // COMPONENTS_CDM_RENDERER_WIDEVINE_KEY_SYSTEM_INFO_H_

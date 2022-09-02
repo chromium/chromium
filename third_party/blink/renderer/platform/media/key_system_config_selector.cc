@@ -154,7 +154,7 @@ bool IsSupportedMediaType(const std::string& container_mime_type,
   // Encrypted DolbyVision (DV) is supported under this build flag, but it is
   // not supported for clear playback or when using ClearKey. Remove the DV
   // codec strings to avoid asking IsSupported*MediaFormat() about DV. EME
-  // support for DV is described via KeySystemProperties::GetSupportedCodecs().
+  // support for DV is described via KeySystemInfo::GetSupportedCodecs().
   // TODO(crbug.com/1156282): Decouple the rest of clear vs EME codec support.
   if (!use_aes_decryptor &&
       base::ToLowerASCII(container_mime_type) == "video/mp4" &&

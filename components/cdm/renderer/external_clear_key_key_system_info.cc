@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/cdm/renderer/external_clear_key_key_system_properties.h"
+#include "components/cdm/renderer/external_clear_key_key_system_info.h"
 
 #include "base/notreached.h"
 #include "media/base/eme_constants.h"

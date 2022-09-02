@@ -66,7 +66,7 @@ static_assert((TEST_CODEC_FOO_ALL & EME_CODEC_ALL) == EME_CODEC_NONE,
               "test codec masks should only use invalid codec masks");
 
 // Base class to provide default implementations.
-class TestKeySystemPropertiesBase : public KeySystemProperties {
+class TestKeySystemInfoBase : public KeySystemInfo {
  public:
   bool IsSupportedInitDataType(EmeInitDataType init_data_type) const override {
     return init_data_type == EmeInitDataType::WEBM;
@@ -89,9 +89,9 @@ class TestKeySystemPropertiesBase : public KeySystemProperties {
   }
 };
 
-class AesKeySystemProperties : public TestKeySystemPropertiesBase {
+class AesKeySystemInfo : public TestKeySystemInfoBase {
  public:
-  AesKeySystemProperties(const std::string& name) : name_(name) {}
+  explicit AesKeySystemInfo(const std::string& name) : name_(name) {}
 
   std::string GetBaseKeySystemName() const override { return name_; }
 
@@ -122,7 +122,7 @@ class AesKeySystemProperties : public TestKeySystemPropertiesBase {
   std::string name_;
 };
 
-class ExternalKeySystemProperties : public TestKeySystemPropertiesBase {
+class ExternalKeySystemInfo : public TestKeySystemInfoBase {
  public:
   std::string GetBaseKeySystemName() const override { return kExternal; }
 
@@ -267,7 +267,7 @@ class TestMediaClient : public MediaClient {
   GetAudioRendererAlgorithmParameters(AudioParameters audio_parameters) final;
 
  private:
-  KeySystemPropertiesVector GetSupportedKeySystemsInternal();
+  KeySystemInfoVector GetSupportedKeySystemsInternal();
 
   GetSupportedKeySystemsCB get_supported_key_systems_cb_;
   bool supports_external_key_system_ = true;
@@ -307,13 +307,13 @@ TestMediaClient::GetAudioRendererAlgorithmParameters(
   return absl::nullopt;
 }
 
-KeySystemPropertiesVector TestMediaClient::GetSupportedKeySystemsInternal() {
-  KeySystemPropertiesVector key_systems;
+KeySystemInfoVector TestMediaClient::GetSupportedKeySystemsInternal() {
+  KeySystemInfoVector key_systems;
 
-  key_systems.emplace_back(std::make_unique<AesKeySystemProperties>(kUsesAes));
+  key_systems.emplace_back(std::make_unique<AesKeySystemInfo>(kUsesAes));
 
   if (supports_external_key_system_)
-    key_systems.emplace_back(std::make_unique<ExternalKeySystemProperties>());
+    key_systems.emplace_back(std::make_unique<ExternalKeySystemInfo>());
 
   return key_systems;
 }
@@ -372,7 +372,7 @@ class KeySystemsTest : public testing::Test {
 
   ~KeySystemsTest() override {
     // Clear the use of |test_media_client_|, which was set in SetUp().
-    // NOTE: This does not clear any cached KeySystemProperties in the global
+    // NOTE: This does not clear any cached KeySystemInfo in the global
     // KeySystems instance.
     SetMediaClient(nullptr);
   }

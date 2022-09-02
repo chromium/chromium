@@ -10,7 +10,7 @@
 
 #include "media/base/audio_codecs.h"
 #include "media/base/audio_parameters.h"
-#include "media/base/key_system_properties.h"
+#include "media/base/key_system_info.h"
 #include "media/base/media_export.h"
 #include "media/base/media_types.h"
 #include "media/base/video_codecs.h"

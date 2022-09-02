@@ -2,26 +2,25 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/base/key_system_properties.h"
+#include "media/base/key_system_info.h"
 
 namespace media {
 
-bool KeySystemProperties::IsSupportedKeySystem(
-    const std::string& key_system) const {
+bool KeySystemInfo::IsSupportedKeySystem(const std::string& key_system) const {
   // By default, only support the base key system.
   return key_system == GetBaseKeySystemName();
 }
 
-bool KeySystemProperties::ShouldUseBaseKeySystemName() const {
+bool KeySystemInfo::ShouldUseBaseKeySystemName() const {
   // By default, use the sub key system names for creating CDMs.
   return false;
 }
 
-SupportedCodecs KeySystemProperties::GetSupportedHwSecureCodecs() const {
+SupportedCodecs KeySystemInfo::GetSupportedHwSecureCodecs() const {
   return EME_CODEC_NONE;
 }
 
-bool KeySystemProperties::UseAesDecryptor() const {
+bool KeySystemInfo::UseAesDecryptor() const {
   return false;
 }
 
