@@ -15,6 +15,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
 #include "components/account_manager_core/account.h"
@@ -30,6 +31,7 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "google_apis/gaia/gaia_urls.h"
+#include "google_apis/gaia/google_service_auth_error.h"
 #include "google_apis/gaia/oauth2_access_token_consumer.h"
 #include "google_apis/gaia/oauth2_access_token_fetcher.h"
 #include "google_apis/gaia/oauth2_access_token_manager_test_util.h"
@@ -189,7 +191,7 @@ class MockProfileOAuth2TokenServiceObserver
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 class MockTestSigninClient : public testing::StrictMock<TestSigninClient> {
  public:
-  MockTestSigninClient(PrefService* pref_service)
+  explicit MockTestSigninClient(PrefService* pref_service)
       : testing::StrictMock<TestSigninClient>(pref_service) {}
 
   MOCK_METHOD(void, RemoveAllAccounts, (), (override));
@@ -963,4 +965,42 @@ TEST_F(ProfileOAuth2TokenServiceDelegateChromeOSTest,
   task_environment_.RunUntilIdle();
   EXPECT_EQ(1, access_token_consumer.num_access_token_fetch_success_);
   EXPECT_EQ(1, access_token_consumer.num_access_token_fetch_failure_);
+}
+
+TEST_F(ProfileOAuth2TokenServiceDelegateChromeOSTest,
+       AccountErrorsAreReportedToAccountManagerFacade) {
+  UpsertAccountAndWaitForCompletion(gaia_account_key(), account_info_.email,
+                                    kGaiaToken);
+  account_manager::MockAccountManagerFacadeObserver observer;
+  account_manager_facade_->AddObserver(&observer);
+  // Flush all the pending Mojo messages before setting expectations.
+  base::RunLoop().RunUntilIdle();
+
+  GoogleServiceAuthError error =
+      GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+          GoogleServiceAuthError::InvalidGaiaCredentialsReason::
+              CREDENTIALS_REJECTED_BY_SERVER);
+  base::RunLoop run_loop;
+  EXPECT_CALL(observer, OnAuthErrorChanged(gaia_account_key(), error))
+      .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
+  delegate_->UpdateAuthError(account_info_.account_id, error);
+  run_loop.Run();
+
+  account_manager_facade_->RemoveObserver(&observer);
+}
+
+TEST_F(ProfileOAuth2TokenServiceDelegateChromeOSTest,
+       AccountErrorNotificationsFromAccountManagerFacadeArePropagated) {
+  UpsertAccountAndWaitForCompletion(gaia_account_key(), kUserEmail, kGaiaToken);
+  TestOAuth2TokenServiceObserver observer(delegate_.get());
+  GoogleServiceAuthError error =
+      GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+          GoogleServiceAuthError::InvalidGaiaCredentialsReason::
+              CREDENTIALS_REJECTED_BY_SERVER);
+
+  // Simulate an observer notification from AccountManagerFacade.
+  delegate_->OnAuthErrorChanged(gaia_account_key(), error);
+  EXPECT_EQ(error, delegate_->GetAuthError(account_info_.account_id));
+  EXPECT_EQ(account_info_.account_id, observer.last_err_account_id_);
+  EXPECT_EQ(error, observer.last_err_);
 }

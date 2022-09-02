@@ -66,6 +66,9 @@ class ProfileOAuth2TokenServiceDelegateChromeOS
       const override;
   void RevokeCredentials(const CoreAccountId& account_id) override;
   void RevokeAllCredentials() override;
+  void UpdateAuthError(const CoreAccountId& account_id,
+                       const GoogleServiceAuthError& error,
+                       bool fire_auth_error_changed = true) override;
 
   // `account_manager::AccountManagerFacade::Observer` overrides.
   void OnAccountUpserted(const account_manager::Account& account) override;
