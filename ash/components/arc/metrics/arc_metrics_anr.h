@@ -25,6 +25,10 @@ class ArcMetricsAnr {
 
   void Report(mojom::AnrPtr anr);
 
+  void set_uma_suffix(const std::string& uma_suffix) {
+    uma_suffix_ = uma_suffix;
+  }
+
  private:
   void LogOnStart();
   void UpdateRate();
@@ -40,6 +44,8 @@ class ArcMetricsAnr {
   base::OneShotTimer pending_start_timer_;
   base::RepeatingTimer period_updater_;
   PrefService* const prefs_ = nullptr;
+
+  std::string uma_suffix_;
 
   THREAD_CHECKER(thread_checker_);
 };

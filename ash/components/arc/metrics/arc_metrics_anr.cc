@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/stringprintf.h"
 #include "components/prefs/pref_service.h"
 
 namespace arc {
@@ -73,6 +74,22 @@ std::string SourceToTableName(mojom::AnrSource value) {
   }
 }
 
+void RecordUmaWithSuffix(const std::string& name,
+                         int count,
+                         int max,
+                         const std::string& uma_suffix) {
+  base::UmaHistogramExactLinear(name, count, max);
+  if (uma_suffix.empty()) {
+    LOG(ERROR) << "Boot type is unknown. Skip recording " << name
+               << " with a suffix";
+    return;
+  }
+  // In addition to e.g. Arc.Anr.Per4Hours, record e.g.
+  // Arc.Anr.Per4Hours.FirstBootAfterUpdate.
+  base::UmaHistogramExactLinear(
+      base::StringPrintf("%s%s", name.c_str(), uma_suffix.c_str()), count, max);
+}
+
 }  // namespace
 
 ArcMetricsAnr::ArcMetricsAnr(PrefService* prefs) : prefs_(prefs) {
@@ -92,8 +109,8 @@ ArcMetricsAnr::~ArcMetricsAnr() {
   if (log_on_start_pending_) {
     // Session is shorter than |kMaxStartPeriodDuration| but longer than
     // |kMinStartPeriodDuration|.
-    base::UmaHistogramExactLinear(kStartPeriodHistogram,
-                                  count_10min_after_start_, kForPeriodMaxCount);
+    RecordUmaWithSuffix(kStartPeriodHistogram, count_10min_after_start_,
+                        kForPeriodMaxCount, uma_suffix_);
   }
 }
 
@@ -110,8 +127,8 @@ void ArcMetricsAnr::Report(mojom::AnrPtr anr) {
 
 void ArcMetricsAnr::LogOnStart() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  base::UmaHistogramExactLinear(kStartPeriodHistogram, count_10min_after_start_,
-                                kForPeriodMaxCount);
+  RecordUmaWithSuffix(kStartPeriodHistogram, count_10min_after_start_,
+                      kForPeriodMaxCount, uma_suffix_);
   // We already reported ANR count on start for this session.
   log_on_start_pending_ = false;
 }
@@ -123,9 +140,9 @@ void ArcMetricsAnr::UpdateRate() {
       prefs_->GetTimeDelta(prefs::kAnrPendingDuration) + kUpdateInterval;
   if (duration >= kRateInterval) {
     duration = base::TimeDelta();
-    base::UmaHistogramExactLinear(kRegularPeriodHistogram,
-                                  prefs_->GetInteger(prefs::kAnrPendingCount),
-                                  kForPeriodMaxCount);
+    RecordUmaWithSuffix(kRegularPeriodHistogram,
+                        prefs_->GetInteger(prefs::kAnrPendingCount),
+                        kForPeriodMaxCount, uma_suffix_);
     prefs_->SetInteger(prefs::kAnrPendingCount, 0);
   }
 

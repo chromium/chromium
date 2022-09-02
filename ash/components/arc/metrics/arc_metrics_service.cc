@@ -467,6 +467,8 @@ void ArcMetricsService::ReportBootProgress(
   boot_type_ = boot_type;
   for (auto& obs : boot_type_observers_)
     obs.OnBootTypeRetrieved(boot_type);
+  if (metrics_anr_)
+    metrics_anr_->set_uma_suffix(BootTypeToString(boot_type));
 
   if (IsArcVmEnabled()) {
     // For VM builds, do not call into session_manager since we don't use it

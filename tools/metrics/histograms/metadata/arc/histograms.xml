@@ -34,6 +34,14 @@ chromium-metrics-reviews@google.com.
   <variant name="UserInstalledAppDir" summary="Android /data/app directory"/>
 </variants>
 
+<variants name="AnrPeriods">
+  <variant name="First10MinutesAfterStart"
+      summary="10 minutes after ARC start."/>
+  <variant name="Per4Hours"
+      summary="Regular per 4 hours of ARC active session including session
+               restarts. This also includes period First10MinutesAfterStart"/>
+</variants>
+
 <variants name="ArcAccessibilityFeatures">
   <variant name="DockedMagnifier"/>
   <variant name="FullscreenMagnifier"/>
@@ -306,13 +314,20 @@ chromium-metrics-reviews@google.com.
   <summary>
     ANR rate separated by {AnrPeriod} as ANR count happened in this period.
   </summary>
-  <token key="AnrPeriod">
-    <variant name="First10MinutesAfterStart"
-        summary="10 minutes after ARC start."/>
-    <variant name="Per4Hours"
-        summary="Regular per 4 hours of ARC active session including session
-                 restarts. This also includes period First10MinutesAfterStart"/>
-  </token>
+  <token key="AnrPeriod" variants="AnrPeriods"/>
+</histogram>
+
+<histogram name="Arc.Anr.{AnrPeriod}.{ArcBootType}" units="ANRs"
+    expires_after="2023-03-01">
+  <owner>khmel@google.com</owner>
+  <owner>yusukes@google.com</owner>
+  <owner>arc-performance@google.com</owner>
+  <summary>
+    ANR rate separated by {AnrPeriod} and {ArcBootType} as ANR count happened in
+    this period.
+  </summary>
+  <token key="AnrPeriod" variants="AnrPeriods"/>
+  <token key="ArcBootType" variants="ArcBootTypes"/>
 </histogram>
 
 <histogram name="Arc.Anr.{AnrSource}" enum="ArcAnr" expires_after="2023-03-01">
