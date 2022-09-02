@@ -127,7 +127,7 @@ class PasswordEditDialogCoordinator {
         PropertyModelChangeProcessor.create(
                 mDialogViewModel, mDialogView, PasswordEditDialogViewBinder::bind);
 
-        mModalDialogManager.showDialog(mDialogModel, ModalDialogManager.ModalDialogType.TAB);
+        mModalDialogManager.showDialog(mDialogModel, ModalDialogManager.ModalDialogType.APP);
     }
 
     /**
@@ -160,7 +160,9 @@ class PasswordEditDialogCoordinator {
         PropertyModelChangeProcessor.create(
                 mDialogViewModel, mDialogView, PasswordEditDialogViewBinder::bind);
 
-        mModalDialogManager.showDialog(mDialogModel, ModalDialogManager.ModalDialogType.TAB);
+        mModalDialogManager.showDialog(mDialogModel,
+                mIsDialogWithDetailsFeatureEnabled ? ModalDialogManager.ModalDialogType.APP
+                                                   : ModalDialogManager.ModalDialogType.TAB);
     }
 
     private PropertyModel createDialogViewModel(
