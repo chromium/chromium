@@ -37,8 +37,9 @@ __gCrWeb.annotations.extractText = function(maxChars) {
 /**
  * Array of decorations objects, the original Node and the replacements nodes.
  * Each object contains the following Key/Values:
+ *  {string} id - unique id of original annotation.
  *  {Node} original - the original Node that was replaced.
- *  {Node[]} replacements - the Nodes the replaced the original.
+ *  {Node[]} replacements - the Nodes that replaced the original.
  */
 let decorations;
 
@@ -54,7 +55,6 @@ let decorations;
  *    TODO(crbug.com/1350973): refactor style as keys in a local style dict.
  * Annotations will be sorted and one will be dropped when two overlaps.
  * @param {object[]} annotations - list of annotations
- * TODO(crbug.com/1350973): refactor in smaller pieces.
  */
 __gCrWeb.annotations.decorateAnnotations = function(annotations) {
   // Avoid redoing without going through `removeDecorations` first.
@@ -64,21 +64,7 @@ __gCrWeb.annotations.decorateAnnotations = function(annotations) {
   let failures = 0;
   decorations = [];
 
-  // Sort the annotations.
-  annotations.sort((a, b) => {
-    return a.start - b.start;
-  });
-
-  // Remove overlaps (lower indexed annotation has priority).
-  let previous = null;
-  annotations.filter((element) => {
-    if (previous && previous.start < element.end &&
-        previous.end > element.start) {
-      return false;
-    }
-    previous = element;
-    return true;
-  });
+  cleanAnnotations(annotations);
 
   // Reparse page finding annotations and styling them.
   let annotationIndex = 0;
@@ -124,6 +110,7 @@ __gCrWeb.annotations.decorateAnnotations = function(annotations) {
           continue;
         }
         replacements.push({
+          index: annotationIndex,
           left: left,
           right: right,
           text: nodeText,
@@ -150,36 +137,7 @@ __gCrWeb.annotations.decorateAnnotations = function(annotations) {
       }
     }
 
-    // Process replacement list.
-    if (replacements.length > 0) {
-      let parentNode = node.parentNode;
-      let cursor = 0;
-      let parts = [];
-      for (let replacement of replacements) {
-        if (replacement.left > cursor) {
-          parts.push(document.createTextNode(
-              text.substring(cursor, replacement.left)));
-        }
-        let element = document.createElement('chrome_annotation');
-        element.setAttribute('data-data', replacement.data);
-        element.innerText = replacement.text;
-        element.style.cssText = replacement.style;
-        element.addEventListener('click', handleClick.bind(element), true);
-        parts.push(element);
-        cursor = replacement.right;
-      }
-      if (cursor < length) {
-        parts.push(document.createTextNode(text.substring(cursor, length)));
-      }
-
-      for (let part of parts) {
-        parentNode.insertBefore(part, node);
-      }
-      parentNode.removeChild(node);
-
-      // Keep track to be able to undo in `removeDecorations`.
-      decorations.push({original: node, replacements: parts});
-    }
+    replaceNode(node, replacements, text);
 
     return annotationIndex < annotations.length;
   });
@@ -325,16 +283,94 @@ const getPageText = function(maxChars) {
 };
 
 const handleClick = function(event) {
-  // TODO(crbug.com/1350973): select text, it might involve previous and
-  //  next nodes. Can we do this by using querySelector and unique annotation
-  //  ids?
   const annotation = event.currentTarget;
+
+  let startNode, endNode;
+  for (let decoration of decorations) {
+    for (let node of decoration.replacements) {
+      if (node.tagName == 'CHROME_ANNOTATION' &&
+          node.dataset.index == annotation.dataset.index) {
+        if (!startNode) {
+          startNode = node;
+        }
+        endNode = node;
+      }
+    }
+  }
+  if (startNode && endNode) {
+    document.getSelection().setBaseAndExtent(startNode, 0, endNode, 1);
+  }
+
   __gCrWeb.common.sendWebKitMessage('annotations', {
     command: 'annotations.onClick',
     data: annotation.dataset.data,
     rect: rectFromElement(annotation),
     text: `"${annotation.innerText}"`,
   });
+};
+
+/**
+ * Sorts and removes olverlappings annotations.
+ * @param {Array} annotations - input annotations, cleaned in-place
+ */
+const cleanAnnotations = function(annotations) {
+  // Sort the annotations.
+  annotations.sort((a, b) => {
+    return a.start - b.start;
+  });
+
+  // Remove overlaps (lower indexed annotation has priority).
+  let previous = null;
+  annotations.filter((element) => {
+    if (previous && previous.start < element.end &&
+        previous.end > element.start) {
+      return false;
+    }
+    previous = element;
+    return true;
+  });
+};
+
+/**
+ * Applies replacements in the given node.
+ * @param {Node} node - node to transform
+ * @param {Array} replacements - replacements
+ * @param {string} text - original node text
+ * @returns
+ */
+const replaceNode = function(node, replacements, text) {
+  if (replacements.length <= 0) {
+    return;
+  }
+
+  let parentNode = node.parentNode;
+  let cursor = 0;
+  let parts = [];
+  for (let replacement of replacements) {
+    if (replacement.left > cursor) {
+      parts.push(
+          document.createTextNode(text.substring(cursor, replacement.left)));
+    }
+    let element = document.createElement('chrome_annotation');
+    element.setAttribute('data-index', '' + replacement.index);
+    element.setAttribute('data-data', replacement.data);
+    element.innerText = replacement.text;
+    element.style.cssText = replacement.style;
+    element.addEventListener('click', handleClick.bind(element), true);
+    parts.push(element);
+    cursor = replacement.right;
+  }
+  if (cursor < text.length) {
+    parts.push(document.createTextNode(text.substring(cursor, text.length)));
+  }
+
+  for (let part of parts) {
+    parentNode.insertBefore(part, node);
+  }
+  parentNode.removeChild(node);
+
+  // Keep track to be able to undo in `removeDecorations`.
+  decorations.push({original: node, replacements: parts});
 };
 
 const rectFromElement = function(elt) {
