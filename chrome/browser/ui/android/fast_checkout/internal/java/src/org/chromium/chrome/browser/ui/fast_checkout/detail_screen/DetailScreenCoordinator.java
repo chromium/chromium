@@ -41,6 +41,9 @@ public class DetailScreenCoordinator {
                 view.findViewById(R.id.fast_checkout_detail_screen_recycler_view);
         recyclerView.setLayoutManager(
                 new LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false));
+        recyclerView.addItemDecoration(
+                new DetailItemDecoration(context.getResources().getDimensionPixelSize(
+                        R.dimen.fast_checkout_detail_sheet_spacing_vertical)));
 
         DetailScreenViewBinder.ViewHolder viewHolder =
                 new DetailScreenViewBinder.ViewHolder(context, view);
