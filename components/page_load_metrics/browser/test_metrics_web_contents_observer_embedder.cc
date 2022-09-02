@@ -152,6 +152,13 @@ class FilteringPageLoadMetricsObserver final : public PageLoadMetricsObserver {
     return FORWARD_OBSERVING;
   }
 
+  ObservePolicy OnPrerenderStart(content::NavigationHandle* navigation_handle,
+                                 const GURL& currently_committed_url) override {
+    const bool should_ignore = navigation_handle->GetURL().spec().find(
+                                   "ignore-on-start") != std::string::npos;
+    return should_ignore ? STOP_OBSERVING : CONTINUE_OBSERVING;
+  }
+
   ObservePolicy OnCommit(content::NavigationHandle* handle) override {
     const bool should_ignore =
         handle->GetURL().spec().find("ignore-on-commit") != std::string::npos;
