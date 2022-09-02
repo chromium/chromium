@@ -6,7 +6,9 @@
 #define CHROME_BROWSER_CHROMEOS_APP_MODE_APP_SESSION_METRICS_SERVICE_H_
 
 #include <string>
+#include <vector>
 
+#include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/prefs/pref_service.h"
@@ -55,12 +57,20 @@ class AppSessionMetricsService {
   AppSessionMetricsService& operator=(const AppSessionMetricsService&) = delete;
   ~AppSessionMetricsService();
 
+  static std::unique_ptr<AppSessionMetricsService> CreateForTesting(
+      PrefService* prefs,
+      const std::vector<std::string>& crash_dirs);
+
   void RecordKioskSessionStarted();
   void RecordKioskSessionWebStarted();
   void RecordKioskSessionStopped();
   void RecordKioskSessionCrashed();
   void RecordKioskSessionPluginCrashed();
   void RecordKioskSessionPluginHung();
+
+ protected:
+  AppSessionMetricsService(PrefService* prefs,
+                           const std::vector<std::string>& crash_dirs);
 
  private:
   bool IsKioskSessionRunning() const;
@@ -85,13 +95,26 @@ class AppSessionMetricsService {
       const std::string& kiosk_session_duration_histogram,
       const std::string& kiosk_session_duration_in_days_histogram);
 
+  void RecordKioskSessionDuration(
+      const std::string& kiosk_session_duration_histogram,
+      const std::string& kiosk_session_duration_in_days_histogram,
+      const base::Time& start_time) const;
+
   void RecordPreviousKioskSessionCrashIfAny();
 
   size_t RetrieveLastDaySessionCount(base::Time session_start_time);
 
   void ClearStartTime();
 
+  void RecordPreviousKioskSessionStopped(const base::Time& start_time) const;
+
+  void RecordPreviousKioskSessionCrashed(const base::Time& start_time) const;
+
+  void OnPreviousKioskSessionResult(const base::Time& start_time,
+                                    bool crashed) const;
+
   raw_ptr<PrefService> prefs_;
+
   // Initialized once the kiosk session is started or during recording of the
   // previously crashed kiosk session metrics.
   // Cleared once the session's duration metric is recorded:
@@ -104,6 +127,10 @@ class AppSessionMetricsService {
   base::RepeatingTimer metrics_timer_;
 
   const std::unique_ptr<DiskSpaceCalculator> disk_space_calculator_;
+
+  const std::vector<std::string> crash_dirs_;
+
+  base::WeakPtrFactory<AppSessionMetricsService> weak_ptr_factory_{this};
 };
 
 }  // namespace chromeos

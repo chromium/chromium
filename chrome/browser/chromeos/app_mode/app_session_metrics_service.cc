@@ -5,10 +5,15 @@
 #include "chrome/browser/chromeos/app_mode/app_session_metrics_service.h"
 
 #include <string>
+#include <vector>
 
 #include "base/callback_helpers.h"
+#include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/json/values_util.h"
+#include "base/memory/ptr_util.h"
+#include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/path_service.h"
 #include "base/process/process_metrics.h"
@@ -28,6 +33,14 @@
 namespace chromeos {
 
 namespace {
+
+// Info on crash report locations:
+// docs/website/site/chromium-os/packages/crash-reporting/faq/index.md
+const constexpr char* kCrashDirs[] = {
+    "/home/chronos/crash",      // crashes outside user session. may happen on
+                                // chromium shutdown
+    "/home/chronos/user/crash"  // crashes inside user/kiosk session
+};
 
 bool IsRestoredSession() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -56,6 +69,31 @@ void ReportUsedPercentage(const char* histogram_name,
     percents = (total - available) * 100 / total;
   }
   base::UmaHistogramPercentage(histogram_name, percents);
+}
+
+// Returns true if there is a new crash in |crash_dirs| after
+// |previous_start_time|.
+//
+// crash_dirs          - the list of known directories with crash related files.
+// previous_start_time - the start time of the previous kiosk session that is
+//                       suspected to end with a crash.
+bool IsPreviousKioskSessionCrashed(const std::vector<std::string>& crash_dirs,
+                                   const base::Time& previous_start_time) {
+  for (const auto& crash_file_path : crash_dirs) {
+    if (!base::PathExists(base::FilePath(crash_file_path)))
+      continue;
+    base::FileEnumerator enumerator(
+        base::FilePath(crash_file_path), /* recursive= */ true,
+        base::FileEnumerator::FILES | base::FileEnumerator::DIRECTORIES);
+    while (!enumerator.Next().empty()) {
+      if (enumerator.GetInfo().GetLastModifiedTime() > previous_start_time) {
+        // A new crash after |previous_start_time|.
+        return true;
+      }
+    }
+  }
+  // No new crashes in |crash_dirs|.
+  return false;
 }
 
 }  // namespace
@@ -117,10 +155,20 @@ class DiskSpaceCalculator {
 };
 
 AppSessionMetricsService::AppSessionMetricsService(PrefService* prefs)
-    : prefs_(prefs),
-      disk_space_calculator_(std::make_unique<DiskSpaceCalculator>()) {}
+    : AppSessionMetricsService(prefs,
+                               std::vector<std::string>(std::begin(kCrashDirs),
+                                                        std::end(kCrashDirs))) {
+}
 
 AppSessionMetricsService::~AppSessionMetricsService() = default;
+
+// static
+std::unique_ptr<AppSessionMetricsService>
+AppSessionMetricsService::CreateForTesting(
+    PrefService* prefs,
+    const std::vector<std::string>& crash_dirs) {
+  return base::WrapUnique(new AppSessionMetricsService(prefs, crash_dirs));
+}
 
 void AppSessionMetricsService::RecordKioskSessionStarted() {
   RecordKioskSessionStarted(KioskSessionState::kStarted);
@@ -138,12 +186,28 @@ void AppSessionMetricsService::RecordKioskSessionStopped() {
                              kKioskSessionDurationInDaysNormalHistogram);
 }
 
+void AppSessionMetricsService::RecordPreviousKioskSessionStopped(
+    const base::Time& start_time) const {
+  RecordKioskSessionState(KioskSessionState::kStopped);
+  RecordKioskSessionDuration(kKioskSessionDurationNormalHistogram,
+                             kKioskSessionDurationInDaysNormalHistogram,
+                             start_time);
+}
+
 void AppSessionMetricsService::RecordKioskSessionCrashed() {
   if (!IsKioskSessionRunning())
     return;
   RecordKioskSessionState(KioskSessionState::kCrashed);
   RecordKioskSessionDuration(kKioskSessionDurationCrashedHistogram,
                              kKioskSessionDurationInDaysCrashedHistogram);
+}
+
+void AppSessionMetricsService::RecordPreviousKioskSessionCrashed(
+    const base::Time& start_time) const {
+  RecordKioskSessionState(KioskSessionState::kCrashed);
+  RecordKioskSessionDuration(kKioskSessionDurationCrashedHistogram,
+                             kKioskSessionDurationInDaysCrashedHistogram,
+                             start_time);
 }
 
 void AppSessionMetricsService::RecordKioskSessionPluginCrashed() {
@@ -157,6 +221,13 @@ void AppSessionMetricsService::RecordKioskSessionPluginHung() {
   RecordKioskSessionDuration(kKioskSessionDurationCrashedHistogram,
                              kKioskSessionDurationInDaysCrashedHistogram);
 }
+
+AppSessionMetricsService::AppSessionMetricsService(
+    PrefService* prefs,
+    const std::vector<std::string>& crash_dirs)
+    : prefs_(prefs),
+      disk_space_calculator_(std::make_unique<DiskSpaceCalculator>()),
+      crash_dirs_(crash_dirs) {}
 
 bool AppSessionMetricsService::IsKioskSessionRunning() const {
   return !start_time_.is_null();
@@ -223,7 +294,17 @@ void AppSessionMetricsService::RecordKioskSessionDuration(
     const std::string& kiosk_session_duration_in_days_histogram) {
   if (!IsKioskSessionRunning())
     return;
-  base::TimeDelta duration = base::Time::Now() - start_time_;
+  RecordKioskSessionDuration(kiosk_session_duration_histogram,
+                             kiosk_session_duration_in_days_histogram,
+                             start_time_);
+  ClearStartTime();
+}
+
+void AppSessionMetricsService::RecordKioskSessionDuration(
+    const std::string& kiosk_session_duration_histogram,
+    const std::string& kiosk_session_duration_in_days_histogram,
+    const base::Time& start_time) const {
+  base::TimeDelta duration = base::Time::Now() - start_time;
   if (duration >= kKioskSessionDurationHistogramLimit) {
     base::UmaHistogramCounts100(kiosk_session_duration_in_days_histogram,
                                 std::min(100, duration.InDays()));
@@ -232,13 +313,11 @@ void AppSessionMetricsService::RecordKioskSessionDuration(
   base::UmaHistogramCustomTimes(
       kiosk_session_duration_histogram, duration, base::Seconds(1),
       kKioskSessionDurationHistogramLimit, kKioskHistogramBucketCount);
-  ClearStartTime();
 }
 
 void AppSessionMetricsService::RecordPreviousKioskSessionCrashIfAny() {
   const base::Value::Dict& metrics_dict =
       prefs_->GetValueDict(prefs::kKioskMetrics);
-
   const auto* previous_start_time_value =
       metrics_dict.Find(kKioskSessionStartTime);
   if (!previous_start_time_value)
@@ -246,11 +325,26 @@ void AppSessionMetricsService::RecordPreviousKioskSessionCrashIfAny() {
   auto previous_start_time = base::ValueToTime(previous_start_time_value);
   if (!previous_start_time.has_value())
     return;
-  // Setup |start_time_| to the previous not correctly completed session's
-  // start time. |start_time_| will be cleared once the crash session metrics
-  // are recorded.
-  start_time_ = previous_start_time.value();
-  RecordKioskSessionCrashed();
+
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+      base::BindOnce(&IsPreviousKioskSessionCrashed, crash_dirs_,
+                     previous_start_time.value()),
+      base::BindOnce(&AppSessionMetricsService::OnPreviousKioskSessionResult,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     previous_start_time.value()));
+}
+
+void AppSessionMetricsService::OnPreviousKioskSessionResult(
+    const base::Time& start_time,
+    bool crashed) const {
+  if (crashed) {
+    RecordPreviousKioskSessionCrashed(start_time);
+  } else {
+    // Previous session is successfully stopped, but due to a race condition not
+    // cleared local_state correctly.
+    RecordPreviousKioskSessionStopped(start_time);
+  }
 }
 
 size_t AppSessionMetricsService::RetrieveLastDaySessionCount(

@@ -6,6 +6,8 @@
 
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
+#include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/json/values_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
@@ -58,6 +60,8 @@ class AppSessionTest : public testing::Test {
   AppSessionTest(const AppSessionTest&) = delete;
   AppSessionTest& operator=(const AppSessionTest&) = delete;
 
+  void SetUp() override { ASSERT_TRUE(temp_dir_.CreateUniqueTempDir()); }
+
   TestingPrefServiceSimple* local_state() { return local_state_->Get(); }
 
   base::HistogramTester* histogram() { return &histogram_; }
@@ -75,9 +79,11 @@ class AppSessionTest : public testing::Test {
     // a web kiosk session starts.
     web_kiosk_main_browser_ = CreateBrowserWithTestWindow();
 
-    app_session_ =
-        std::make_unique<AppSession>(base::DoNothing(), local_state());
+    app_session_ = AppSession::CreateForTesting(
+        base::DoNothing(), local_state(), {crash_path().value()});
     app_session_->InitForWebKiosk(web_kiosk_main_browser_.get());
+
+    task_environment_.RunUntilIdle();
   }
 
   // Simulate opening a second browser window, and ensure it is automatically
@@ -102,8 +108,11 @@ class AppSessionTest : public testing::Test {
     return app_session_->is_shutting_down();
   }
 
+  base::FilePath crash_path() const { return temp_dir_.GetPath(); }
+
  private:
   content::BrowserTaskEnvironment task_environment_;
+  base::ScopedTempDir temp_dir_;
   std::unique_ptr<ScopedTestingLocalState> local_state_;
 
   // Must outlive |app_session_|.
@@ -178,6 +187,9 @@ TEST_F(AppSessionTest, WebKioskLastDaySessions) {
 
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
       ash::switches::kLoginUser, "fake-user");
+
+  base::FilePath crash_file;
+  ASSERT_TRUE(base::CreateTemporaryFileInDir(crash_path(), &crash_file));
 
   StartWebKioskSession();
   // We set |kKioskSessionStartTime| for previous session and did not clear them

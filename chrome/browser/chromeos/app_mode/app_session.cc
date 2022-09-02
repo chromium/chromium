@@ -193,31 +193,28 @@ class AppSession::PluginHandlerDelegateImpl
 #endif
 
 AppSession::AppSession()
-    :
-#if BUILDFLAG(ENABLE_PLUGINS)
-      plugin_handler_delegate_(
-          std::make_unique<PluginHandlerDelegateImpl>(this)),
-#endif
-      attempt_user_exit_(base::BindOnce(chrome::AttemptUserExit)),
-      metrics_service_(std::make_unique<AppSessionMetricsService>(
-          g_browser_process->local_state())) {
-}
+    : AppSession(base::BindOnce(chrome::AttemptUserExit),
+                 g_browser_process->local_state()) {}
 
 AppSession::AppSession(base::OnceClosure attempt_user_exit,
                        PrefService* local_state)
-    :
-#if BUILDFLAG(ENABLE_PLUGINS)
-      plugin_handler_delegate_(
-          std::make_unique<PluginHandlerDelegateImpl>(this)),
-#endif
-      attempt_user_exit_(std::move(attempt_user_exit)),
-      metrics_service_(
-          std::make_unique<AppSessionMetricsService>(local_state)) {
-}
+    : AppSession(std::move(attempt_user_exit),
+                 local_state,
+                 std::make_unique<AppSessionMetricsService>(local_state)) {}
 
 AppSession::~AppSession() {
   if (!is_shutting_down())
     metrics_service_->RecordKioskSessionStopped();
+}
+
+// static
+std::unique_ptr<AppSession> AppSession::CreateForTesting(
+    base::OnceClosure attempt_user_exit,
+    PrefService* local_state,
+    const std::vector<std::string>& crash_dirs) {
+  return base::WrapUnique(new AppSession(
+      std::move(attempt_user_exit), local_state,
+      AppSessionMetricsService::CreateForTesting(local_state, crash_dirs)));
 }
 
 void AppSession::RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
@@ -259,6 +256,19 @@ void AppSession::SetOnHandleBrowserCallbackForTesting(
 KioskSessionPluginHandlerDelegate*
 AppSession::GetPluginHandlerDelegateForTesting() {
   return plugin_handler_delegate_.get();
+}
+
+AppSession::AppSession(
+    base::OnceClosure attempt_user_exit,
+    PrefService* local_state,
+    std::unique_ptr<AppSessionMetricsService> metrics_service)
+    :
+#if BUILDFLAG(ENABLE_PLUGINS)
+      plugin_handler_delegate_(
+          std::make_unique<PluginHandlerDelegateImpl>(this)),
+#endif
+      attempt_user_exit_(std::move(attempt_user_exit)),
+      metrics_service_(std::move(metrics_service)) {
 }
 
 void AppSession::SetProfile(Profile* profile) {

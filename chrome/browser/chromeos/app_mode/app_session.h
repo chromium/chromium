@@ -37,11 +37,15 @@ class KioskSessionPluginHandlerDelegate;
 class AppSession {
  public:
   AppSession();
-  explicit AppSession(base::OnceClosure attempt_user_exit,
-                      PrefService* local_state);
+  AppSession(base::OnceClosure attempt_user_exit, PrefService* local_state);
   AppSession(const AppSession&) = delete;
   AppSession& operator=(const AppSession&) = delete;
   virtual ~AppSession();
+
+  static std::unique_ptr<AppSession> CreateForTesting(
+      base::OnceClosure attempt_user_exit,
+      PrefService* local_state,
+      const std::vector<std::string>& crash_dirs);
 
   static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 
@@ -67,6 +71,10 @@ class AppSession {
   bool is_shutting_down() const { return is_shutting_down_; }
 
  protected:
+  AppSession(base::OnceClosure attempt_user_exit,
+             PrefService* local_state,
+             std::unique_ptr<AppSessionMetricsService> metrics_service);
+
   // Set the |profile_| object.
   void SetProfile(Profile* profile);
 
