@@ -36,8 +36,11 @@ class PromosManager {
   // Weak pointer to the local state prefs store.
   const raw_ptr<PrefService> local_state_;
 
-  // The set of currently active promos.
+  // The set of currently active, continuous-display promos.
   std::set<promos_manager::Promo> active_promos_;
+
+  // The set of currently active, single-display promos.
+  std::set<promos_manager::Promo> single_display_active_promos_;
 
   // The impression history sorted by `day` (most recent -> least recent).
   std::vector<promos_manager::Impression> impression_history_;

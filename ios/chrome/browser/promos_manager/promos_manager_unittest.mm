@@ -72,10 +72,13 @@ void PromosManagerTest::CreatePromosManager() {
 // Create pref registry for tests.
 void PromosManagerTest::CreatePrefs() {
   local_state_ = std::make_unique<TestingPrefServiceSimple>();
+
   local_state_->registry()->RegisterListPref(
       prefs::kIosPromosManagerImpressions);
   local_state_->registry()->RegisterListPref(
       prefs::kIosPromosManagerActivePromos);
+  local_state_->registry()->RegisterListPref(
+      prefs::kIosPromosManagerSingleDisplayActivePromos);
 }
 
 // Tests the initializer correctly creates a PromosManager* with the
@@ -87,8 +90,13 @@ TEST_F(PromosManagerTest, InitWithPrefService) {
             nullptr);
   EXPECT_NE(local_state_->FindPreference(prefs::kIosPromosManagerActivePromos),
             nullptr);
+  EXPECT_NE(local_state_->FindPreference(
+                prefs::kIosPromosManagerSingleDisplayActivePromos),
+            nullptr);
   EXPECT_FALSE(local_state_->HasPrefPath(prefs::kIosPromosManagerImpressions));
   EXPECT_FALSE(local_state_->HasPrefPath(prefs::kIosPromosManagerActivePromos));
+  EXPECT_FALSE(local_state_->HasPrefPath(
+      prefs::kIosPromosManagerSingleDisplayActivePromos));
 }
 
 // Tests promos_manager::NameForPromo correctly returns the string

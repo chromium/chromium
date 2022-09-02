@@ -57,15 +57,26 @@ void PromosManager::Init() {
 
   active_promos_ = ActivePromos(
       local_state_->GetValueList(prefs::kIosPromosManagerActivePromos));
+  single_display_active_promos_ = ActivePromos(local_state_->GetValueList(
+      prefs::kIosPromosManagerSingleDisplayActivePromos));
   impression_history_ = ImpressionHistory(
       local_state_->GetValueList(prefs::kIosPromosManagerImpressions));
 }
 
 absl::optional<promos_manager::Promo> PromosManager::NextPromoForDisplay()
     const {
+  // Construct a superset including active (1) single-display and
+  // (2) continuous-display promo campaigns.
+  std::set<promos_manager::Promo> all_active_promos(active_promos_);
+
+  // Non-destructively insert the single-display promos into
+  // `all_active_promos`.
+  all_active_promos.insert(single_display_active_promos_.begin(),
+                           single_display_active_promos_.end());
+
   absl::optional<std::vector<promos_manager::Promo>>
       least_recently_shown_promos =
-          LeastRecentlyShown(active_promos_, impression_history_);
+          LeastRecentlyShown(all_active_promos, impression_history_);
 
   if (!least_recently_shown_promos.has_value())
     return absl::nullopt;
