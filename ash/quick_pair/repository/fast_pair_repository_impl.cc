@@ -509,6 +509,11 @@ void FastPairRepositoryImpl::OnDeleteAssociatedDevice(
   // Remove pending delete on successful Footprints delete.
   pending_write_store_->OnPairedDeviceDeleted(mac_address);
 
+  // Query the server and update the cache so the removal is reflected.
+  footprints_fetcher_->GetUserDevices(
+      base::BindOnce(&FastPairRepositoryImpl::UpdateUserDevicesCache,
+                     weak_ptr_factory_.GetWeakPtr()));
+
   if (!saved_device_registry_->GetAccountKey(mac_address).has_value()) {
     QP_LOG(INFO) << __func__
                  << ": Device was already removed from Saved Device Registry.";
@@ -634,6 +639,13 @@ void FastPairRepositoryImpl::OnDeleteAssociatedDeviceByAccountKey(
   QP_LOG(INFO) << __func__ << ": Device removal: from Footprints: "
                << footprints_removal_success << "; from SavedDeviceRegistry: "
                << saved_device_registry_removal_success;
+  if (footprints_removal_success) {
+    // If removing from footprints was successful, Query the server and update
+    // the cache so the removal is reflected.
+    footprints_fetcher_->GetUserDevices(
+        base::BindOnce(&FastPairRepositoryImpl::UpdateUserDevicesCache,
+                       weak_ptr_factory_.GetWeakPtr()));
+  }
 
   std::move(callback).Run(/*success=*/footprints_removal_success &&
                           saved_device_registry_removal_success);

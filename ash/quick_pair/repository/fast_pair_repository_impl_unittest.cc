@@ -413,6 +413,42 @@ TEST_F(FastPairRepositoryImplTest, UseStaleCache) {
   run_loop->Run();
 }
 
+TEST_F(FastPairRepositoryImplTest, LocalRemoveDeviceUpdatesCache) {
+  AccountKeyFilter filter(kFilterBytes1, {salt});
+  nearby::fastpair::GetObservedDeviceResponse response;
+  DeviceMetadata metadata(response, gfx::Image());
+
+  auto device = base::MakeRefCounted<Device>(kValidModelId, kTestBLEAddress,
+                                             Protocol::kFastPairInitial);
+  device->set_classic_address(kTestClassicAddress1);
+  fast_pair_repository_->AssociateAccountKey(device, kAccountKey1);
+  base::RunLoop().RunUntilIdle();
+  ASSERT_TRUE(footprints_fetcher_->ContainsKey(kAccountKey1));
+  ASSERT_TRUE(
+      saved_device_registry_->IsAccountKeySavedToRegistry(kAccountKey1));
+
+  auto run_loop = std::make_unique<base::RunLoop>();
+
+  // Check for the device, this will also load the device into the cache
+  fast_pair_repository_->CheckAccountKeys(
+      filter, base::BindOnce(&FastPairRepositoryImplTest::VerifyAccountKeyCheck,
+                             base::Unretained(this), run_loop->QuitClosure(),
+                             /*expected_result=*/true));
+  base::RunLoop().RunUntilIdle();
+
+  // Remove the device as if this chromebook was removing it. This should
+  // invalidate the cache so the device will be removed there as well.
+  fast_pair_repository_->DeleteAssociatedDevice(
+      classic_bluetooth_device_.GetAddress(), base::DoNothing());
+
+  // Device should not appear in the cache.
+  fast_pair_repository_->CheckAccountKeys(
+      filter, base::BindOnce(&FastPairRepositoryImplTest::VerifyAccountKeyCheck,
+                             base::Unretained(this), run_loop->QuitClosure(),
+                             /*expected_result=*/false));
+  run_loop->Run();
+}
+
 TEST_F(FastPairRepositoryImplTest, AssociateAccountKey_InvalidId) {
   auto device = base::MakeRefCounted<Device>(kInvalidModelId, kTestBLEAddress,
                                              Protocol::kFastPairInitial);
