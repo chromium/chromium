@@ -161,9 +161,8 @@ void GoogleURLLoaderThrottle::WillProcessResponse(
   // Built-in additional protection for the chrome web store origin by ensuring
   // that the X-Frame-Options protection mechanism is set to either DENY or
   // SAMEORIGIN.
-  GURL webstore_url(extension_urls::GetWebstoreLaunchURL());
   if (response_url.SchemeIsHTTPOrHTTPS() &&
-      response_url.DomainIs(webstore_url.host_piece())) {
+      extension_urls::IsWebstoreDomain(response_url)) {
     // TODO(mkwst): Consider shifting this to a NavigationThrottle rather than
     // relying on implicit ordering between this check and the time at which
     // ParsedHeaders is created.

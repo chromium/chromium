@@ -27,15 +27,11 @@
 #include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/extensions/extension_test_util.h"
-#include "chrome/test/base/ui_test_utils.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "content/public/browser/gpu_data_manager.h"
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"
-#include "content/public/browser/render_frame_host.h"
 #include "content/public/test/browser_test.h"
-#include "content/public/test/browser_test_utils.h"
-#include "content/public/test/test_navigation_observer.h"
 #include "extensions/browser/allowlist_state.h"
 #include "extensions/browser/api/management/management_api.h"
 #include "extensions/browser/extension_dialog_auto_confirm.h"
@@ -201,10 +197,6 @@ class ExtensionWebstorePrivateApiTest : public MixinBasedExtensionApiTest {
     return OpenTestURL(page_url);
   }
 
-  content::WebContents* GetWebContents() {
-    return browser()->tab_strip_model()->GetActiveWebContents();
-  }
-
   ExtensionService* service() {
     return ExtensionSystem::Get(browser()->profile())->extension_service();
   }
@@ -217,55 +209,6 @@ class ExtensionWebstorePrivateApiTest : public MixinBasedExtensionApiTest {
 
   std::unique_ptr<ScopedTestDialogAutoConfirm> auto_confirm_install_;
 };
-
-// Test cases for webstore origin frame blocking.
-IN_PROC_BROWSER_TEST_F(ExtensionWebstorePrivateApiTest,
-                       FrameWebstorePageBlocked) {
-  GURL url = embedded_test_server()->GetURL(
-      "/extensions/api_test/webstore_private/noframe.html");
-  content::WebContents* web_contents = GetWebContents();
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-
-  // Try to load the same URL, but with the current Chrome web store origin in
-  // an iframe (i.e. http://www.example.com)
-  content::TestNavigationObserver observer(web_contents);
-  ASSERT_TRUE(content::ExecuteScript(web_contents, "dropFrame()"));
-  EXPECT_TRUE(WaitForLoadStop(web_contents));
-  content::RenderFrameHost* subframe =
-      content::ChildFrameAt(web_contents->GetPrimaryMainFrame(), 0);
-  ASSERT_TRUE(subframe);
-
-  // The subframe load should fail due to XFO.
-  GURL iframe_url = embedded_test_server()->GetURL(
-      "www.example.com", "/extensions/api_test/webstore_private/noframe.html");
-  EXPECT_EQ(iframe_url, subframe->GetLastCommittedURL());
-  EXPECT_FALSE(observer.last_navigation_succeeded());
-  EXPECT_EQ(net::ERR_BLOCKED_BY_RESPONSE, observer.last_net_error_code());
-}
-
-IN_PROC_BROWSER_TEST_F(ExtensionWebstorePrivateApiTest, FrameErrorPageBlocked) {
-  GURL url = embedded_test_server()->GetURL(
-      "/extensions/api_test/webstore_private/noframe2.html");
-  content::WebContents* web_contents = GetWebContents();
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-
-  // Try to load the same URL, but with the current Chrome web store origin in
-  // an iframe (i.e. http://www.example.com)
-  content::TestNavigationObserver observer(web_contents);
-  ASSERT_TRUE(content::ExecuteScript(web_contents, "dropFrame()"));
-  EXPECT_TRUE(WaitForLoadStop(web_contents));
-  content::RenderFrameHost* subframe =
-      content::ChildFrameAt(web_contents->GetPrimaryMainFrame(), 0);
-  ASSERT_TRUE(subframe);
-
-  // The subframe load should fail due to XFO.
-  GURL iframe_url = embedded_test_server()->GetURL(
-      "www.example.com",
-      "/nonesuch/extensions/api_test/webstore_private/noframe2.html ");
-  EXPECT_EQ(iframe_url, subframe->GetLastCommittedURL());
-  EXPECT_FALSE(observer.last_navigation_succeeded());
-  EXPECT_EQ(net::ERR_BLOCKED_BY_RESPONSE, observer.last_net_error_code());
-}
 
 // Test cases where the user accepts the install confirmation dialog.
 IN_PROC_BROWSER_TEST_F(ExtensionWebstorePrivateApiTest, InstallAccepted) {
