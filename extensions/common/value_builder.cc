@@ -16,7 +16,8 @@ namespace extensions {
 DictionaryBuilder::DictionaryBuilder() : dict_(new base::DictionaryValue) {}
 
 DictionaryBuilder::DictionaryBuilder(const base::DictionaryValue& init)
-    : dict_(init.CreateDeepCopy()) {}
+    : dict_(base::DictionaryValue::From(
+          base::Value::ToUniquePtrValue(init.Clone()))) {}
 
 DictionaryBuilder::~DictionaryBuilder() {}
 

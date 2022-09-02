@@ -84,7 +84,8 @@ bool EventListener::Equals(const EventListener* other) const {
 std::unique_ptr<EventListener> EventListener::Copy() const {
   std::unique_ptr<DictionaryValue> filter_copy;
   if (filter_)
-    filter_copy = filter_->CreateDeepCopy();
+    filter_copy = base::DictionaryValue::From(
+        base::Value::ToUniquePtrValue(filter_->Clone()));
   return base::WrapUnique(
       new EventListener(event_name_, extension_id_, listener_url_, process_,
                         is_for_service_worker_, service_worker_version_id_,
@@ -163,8 +164,10 @@ bool EventListenerMap::AddListener(std::unique_ptr<EventListener> listener) {
 
 std::unique_ptr<EventMatcher> EventListenerMap::ParseEventMatcher(
     DictionaryValue* filter_dict) {
-  return std::make_unique<EventMatcher>(filter_dict->CreateDeepCopy(),
-                                        MSG_ROUTING_NONE);
+  return std::make_unique<EventMatcher>(
+      base::DictionaryValue::From(
+          base::Value::ToUniquePtrValue(filter_dict->Clone())),
+      MSG_ROUTING_NONE);
 }
 
 bool EventListenerMap::RemoveListener(const EventListener* listener) {
@@ -303,10 +306,13 @@ void EventListenerMap::LoadFilteredLazyListeners(
             // https://crbug.com/773103.
             Extension::GetBaseURLFromExtensionId(extension_id),
             blink::mojom::kInvalidServiceWorkerVersionId, kMainThreadId,
-            filter->CreateDeepCopy()));
+            base::DictionaryValue::From(
+                base::Value::ToUniquePtrValue(filter->Clone()))));
       } else {
-        AddListener(EventListener::ForExtension(it.key(), extension_id, nullptr,
-                                                filter->CreateDeepCopy()));
+        AddListener(EventListener::ForExtension(
+            it.key(), extension_id, nullptr,
+            base::DictionaryValue::From(
+                base::Value::ToUniquePtrValue(filter->Clone()))));
       }
     }
   }

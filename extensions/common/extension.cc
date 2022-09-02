@@ -264,10 +264,16 @@ scoped_refptr<Extension> Extension::Create(const base::FilePath& path,
   std::unique_ptr<extensions::Manifest> manifest;
   if (flags & FOR_LOGIN_SCREEN) {
     manifest = Manifest::CreateManifestForLoginScreen(
-        location, value.CreateDeepCopy(), std::move(extension_id));
+        location,
+        base::DictionaryValue::From(
+            base::Value::ToUniquePtrValue(value.Clone())),
+        std::move(extension_id));
   } else {
-    manifest = std::make_unique<Manifest>(location, value.CreateDeepCopy(),
-                                          std::move(extension_id));
+    manifest = std::make_unique<Manifest>(
+        location,
+        base::DictionaryValue::From(
+            base::Value::ToUniquePtrValue(value.Clone())),
+        std::move(extension_id));
   }
 
   std::vector<InstallWarning> install_warnings;
@@ -862,7 +868,8 @@ ExtensionInfo::ExtensionInfo(const base::DictionaryValue* manifest,
                              ManifestLocation location)
     : extension_id(id), extension_path(path), extension_location(location) {
   if (manifest)
-    extension_manifest = manifest->CreateDeepCopy();
+    extension_manifest = base::DictionaryValue::From(
+        base::Value::ToUniquePtrValue(manifest->Clone()));
 }
 
 ExtensionInfo::~ExtensionInfo() {}

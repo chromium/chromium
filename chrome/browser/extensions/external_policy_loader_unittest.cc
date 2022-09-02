@@ -56,7 +56,9 @@ class MockExternalPolicyProviderVisitor
              const std::set<std::string>& expected_extensions) {
     profile_ = std::make_unique<TestingProfile>();
     profile_->GetTestingPrefService()->SetManagedPref(
-        pref_names::kInstallForceList, policy_forcelist.CreateDeepCopy());
+        pref_names::kInstallForceList,
+        base::DictionaryValue::From(
+            base::Value::ToUniquePtrValue(policy_forcelist.Clone())));
     provider_ = std::make_unique<ExternalProviderImpl>(
         this,
         new ExternalPolicyLoader(

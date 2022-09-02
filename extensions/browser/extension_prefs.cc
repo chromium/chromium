@@ -1480,8 +1480,10 @@ void ExtensionPrefs::UpdateManifest(const Extension* extension) {
     bool update_required =
         !old_manifest || *extension->manifest()->value() != *old_manifest;
     if (update_required) {
-      UpdateExtensionPref(extension->id(), kPrefManifest,
-                          extension->manifest()->value()->CreateDeepCopy());
+      UpdateExtensionPref(
+          extension->id(), kPrefManifest,
+          base::DictionaryValue::From(base::Value::ToUniquePtrValue(
+              extension->manifest()->value()->Clone())));
     }
   }
 }

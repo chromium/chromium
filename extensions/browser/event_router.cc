@@ -627,28 +627,33 @@ void EventRouter::AddFilteredEventListener(
     regular_listener = EventListener::ForExtensionServiceWorker(
         event_name, param->get_extension_id(), process, sw_identifier->scope,
         sw_identifier->version_id, sw_identifier->thread_id,
-        filter.CreateDeepCopy());
+        base::DictionaryValue::From(
+            base::Value::ToUniquePtrValue(filter.Clone())));
     if (add_lazy_listener) {
       lazy_listener = EventListener::ForExtensionServiceWorker(
           event_name, param->get_extension_id(), nullptr, sw_identifier->scope,
           // Lazy listener, without worker version id and thread id.
           blink::mojom::kInvalidServiceWorkerVersionId, kMainThreadId,
-          filter.CreateDeepCopy());
+          base::DictionaryValue::From(
+              base::Value::ToUniquePtrValue(filter.Clone())));
     }
   } else if (param->is_extension_id()) {
-    regular_listener =
-        EventListener::ForExtension(event_name, param->get_extension_id(),
-                                    process, filter.CreateDeepCopy());
+    regular_listener = EventListener::ForExtension(
+        event_name, param->get_extension_id(), process,
+        base::DictionaryValue::From(
+            base::Value::ToUniquePtrValue(filter.Clone())));
     if (add_lazy_listener) {
-      lazy_listener =
-          EventListener::ForExtension(event_name, param->get_extension_id(),
-                                      nullptr,  // Lazy, without process.
-                                      filter.CreateDeepCopy());
+      lazy_listener = EventListener::ForExtension(
+          event_name, param->get_extension_id(),
+          nullptr,  // Lazy, without process.
+          base::DictionaryValue::From(
+              base::Value::ToUniquePtrValue(filter.Clone())));
     }
   } else if (param->is_listener_url() && !add_lazy_listener) {
-    regular_listener =
-        EventListener::ForURL(event_name, param->get_listener_url(), process,
-                              filter.CreateDeepCopy());
+    regular_listener = EventListener::ForURL(
+        event_name, param->get_listener_url(), process,
+        base::DictionaryValue::From(
+            base::Value::ToUniquePtrValue(filter.Clone())));
   } else {
     mojo::ReportBadMessage(kAddEventListenerWithInvalidParam);
     return;
@@ -678,15 +683,19 @@ void EventRouter::RemoveFilteredEventListener(
     listener = EventListener::ForExtensionServiceWorker(
         event_name, param->get_extension_id(), process, sw_identifier->scope,
         sw_identifier->version_id, sw_identifier->thread_id,
-        filter.CreateDeepCopy());
+        base::DictionaryValue::From(
+            base::Value::ToUniquePtrValue(filter.Clone())));
   } else if (param->is_extension_id()) {
-    listener =
-        EventListener::ForExtension(event_name, param->get_extension_id(),
-                                    process, filter.CreateDeepCopy());
+    listener = EventListener::ForExtension(
+        event_name, param->get_extension_id(), process,
+        base::DictionaryValue::From(
+            base::Value::ToUniquePtrValue(filter.Clone())));
 
   } else if (param->is_listener_url() && !remove_lazy_listener) {
-    listener = EventListener::ForURL(event_name, param->get_listener_url(),
-                                     process, filter.CreateDeepCopy());
+    listener = EventListener::ForURL(
+        event_name, param->get_listener_url(), process,
+        base::DictionaryValue::From(
+            base::Value::ToUniquePtrValue(filter.Clone())));
   } else {
     mojo::ReportBadMessage(kRemoveEventListenerWithInvalidParam);
     return;
