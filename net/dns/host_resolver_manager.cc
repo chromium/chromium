@@ -2593,6 +2593,12 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
                           const AddressList& addr_list) {
     DCHECK(proc_task_);
 
+    base::TimeDelta duration = tick_clock_->NowTicks() - start_time;
+    if (net_error == OK)
+      UMA_HISTOGRAM_LONG_TIMES_100("Net.DNS.ProcTask.SuccessTime", duration);
+    else
+      UMA_HISTOGRAM_LONG_TIMES_100("Net.DNS.ProcTask.FailureTime", duration);
+
     if (dns_task_error_ != OK && net_error == OK) {
       // This ProcTask was a fallback resolution after a failed insecure
       // DnsTask.

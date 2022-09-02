@@ -39044,30 +39044,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Net.DNS.ProcTask.FailureTime" units="ms"
-    expires_after="2018-11-08">
-  <obsolete>
-    Removed 11/2018.
-  </obsolete>
-  <owner>pauljensen@chromium.org</owner>
-  <owner>mef@chromium.org</owner>
-  <summary>
-    Duration of time taken by ProcTask in resolutions that failed.
-  </summary>
-</histogram>
-
-<histogram name="Net.DNS.ProcTask.SuccessTime" units="ms"
-    expires_after="2018-11-08">
-  <obsolete>
-    Removed 11/2018.
-  </obsolete>
-  <owner>pauljensen@chromium.org</owner>
-  <owner>mef@chromium.org</owner>
-  <summary>
-    Duration of time taken by ProcTask in resolutions that succeeded.
-  </summary>
-</histogram>
-
 <histogram name="Net.DNS.RecordParser.DomainNameLength" units="octets"
     expires_after="M80">
   <obsolete>

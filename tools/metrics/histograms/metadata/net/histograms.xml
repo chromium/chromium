@@ -1149,6 +1149,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Net.DNS.ProcTask.FailureTime" units="ms"
+    expires_after="2023-08-28">
+  <owner>horo@chromium.org</owner>
+  <owner>src/net/OWNERS</owner>
+  <summary>
+    Duration of time taken by ProcTask (the grouping of all individual DNS
+    queries for a single instance of resolving a name using the system resolver)
+    in resolutions that failed.
+  </summary>
+</histogram>
+
+<histogram name="Net.DNS.ProcTask.SuccessTime" units="ms"
+    expires_after="2023-08-28">
+  <owner>horo@chromium.org</owner>
+  <owner>src/net/OWNERS</owner>
+  <summary>
+    Duration of time taken by ProcTask (the grouping of all individual DNS
+    queries for a single instance of resolving a name using the system resolver)
+    in resolutions that succeeded.
+  </summary>
+</histogram>
+
 <histogram name="Net.DNS.Request.TotalTime" units="ms" expires_after="never">
 <!-- expires-never: Core network stack health metric -->
 

@@ -261,6 +261,11 @@ the actual call to `getaddrinfo()` using the
 `net::HostResolverProc` may be replaced by a chain of test implementations to
 override behavior.
 
+Data collected specifically for this source:
+
+* "Net.DNS.ProcTask.SuccessTime"
+* "Net.DNS.ProcTask.FailureTime"
+
 #### DNS
 
 `net::HostResolverSource::DNS`
