@@ -84,45 +84,53 @@ void EventPath::Initialize() {
   CalculateTreeOrderAndSetNearestAncestorClosedTree();
 }
 
-void EventPath::CalculatePath() {
-  DCHECK(node_);
-  DCHECK(node_event_contexts_.IsEmpty());
+EventPath::NodePath EventPath::CalculateNodePath(Node& node) {
+  // Given a node, find all the nodes the event path might traverse.
+  NodePath node_path;
+  Node* current = &node;
 
-  // For performance and memory usage reasons we want to store the
-  // path using as few bytes as possible and with as few allocations
-  // as possible which is why we gather the data on the stack before
-  // storing it in a perfectly sized node_event_contexts_ Vector.
-  HeapVector<Member<Node>, 64> nodes_in_path;
-  Node* current = node_;
-
-  nodes_in_path.push_back(current);
+  node_path.push_back(current);
   while (current) {
-    if (event_ && current->KeepEventInNode(*event_))
-      break;
     if (current->IsChildOfShadowHost() && !current->IsPseudoElement()) {
       if (HTMLSlotElement* slot = current->AssignedSlot()) {
         current = slot;
-        nodes_in_path.push_back(current);
+        node_path.push_back(current);
         continue;
       }
     }
     if (auto* shadow_root = DynamicTo<ShadowRoot>(current)) {
-      if (event_ && ShouldStopAtShadowRoot(*event_, *shadow_root, *node_))
-        break;
       current = current->OwnerShadowHost();
-      nodes_in_path.push_back(current);
+      node_path.push_back(current);
     } else {
       current = current->parentNode();
       if (current)
-        nodes_in_path.push_back(current);
+        node_path.push_back(current);
     }
   }
+  return node_path;
+}
 
-  node_event_contexts_.ReserveCapacity(nodes_in_path.size());
-  for (Node* node_in_path : nodes_in_path) {
+void EventPath::CalculatePath() {
+  DCHECK(node_);
+  DCHECK(node_event_contexts_.IsEmpty());
+
+  // Find the cached CalculateNodePath result
+  const NodePath& node_path =
+      node_->GetDocument().GetOrCalculateEventNodePath(*node_);
+  // We need to do the KeepEventInNode and ShouldStopAtShadowRoot checks
+  // outside of CalculateNodePath as they depend on the dispatched event.
+  for (Node* node_in_path : node_path) {
     DCHECK(node_in_path);
     node_event_contexts_.push_back(NodeEventContext(
         *node_in_path, EventTargetRespectingTargetRules(*node_in_path)));
+    if (!event_)
+      continue;
+    if (node_in_path->KeepEventInNode(*event_))
+      break;
+    if (auto* shadow_root = DynamicTo<ShadowRoot>(node_in_path)) {
+      if (ShouldStopAtShadowRoot(*event_, *shadow_root, *node_))
+        break;
+    }
   }
 }
 

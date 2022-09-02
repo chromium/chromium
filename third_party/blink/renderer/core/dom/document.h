@@ -61,6 +61,7 @@
 #include "third_party/blink/renderer/core/dom/document_lifecycle.h"
 #include "third_party/blink/renderer/core/dom/document_timing.h"
 #include "third_party/blink/renderer/core/dom/element.h"
+#include "third_party/blink/renderer/core/dom/events/event_path.h"
 #include "third_party/blink/renderer/core/dom/live_node_list_registry.h"
 #include "third_party/blink/renderer/core/dom/qualified_name.h"
 #include "third_party/blink/renderer/core/dom/synchronous_mutation_observer.h"
@@ -1464,6 +1465,8 @@ class CORE_EXPORT Document : public ContainerNode,
   // https://html.spec.whatwg.org/multipage/iframe-embed-object.html#the-embed-element
   void DelayLoadEventUntilLayoutTreeUpdate();
 
+  const EventPath::NodePath& GetOrCalculateEventNodePath(Node& node);
+
   const DocumentTiming& GetTiming() const { return document_timing_; }
 
   bool ShouldMarkFontPerformance() const {
@@ -2442,6 +2445,12 @@ class CORE_EXPORT Document : public ContainerNode,
   // Tracks and reports metrics of attempted font match attempts (both
   // successful and not successful) by the page.
   std::unique_ptr<FontMatchingMetrics> font_matching_metrics_;
+
+  // For a given node, cache the vector of nodes that defines its EventPath.
+  uint64_t event_node_path_dom_tree_version_;
+  typedef HeapHashMap<Member<Node>, Member<EventPath::NodePath>>
+      EventNodePathCache;
+  EventNodePathCache event_node_path_cache_;
 
 #if DCHECK_IS_ON()
   unsigned slot_assignment_recalc_forbidden_recursion_depth_ = 0;

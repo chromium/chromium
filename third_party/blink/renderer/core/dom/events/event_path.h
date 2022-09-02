@@ -46,6 +46,8 @@ class WindowEventContext;
 
 class CORE_EXPORT EventPath final : public GarbageCollected<EventPath> {
  public:
+  using NodePath = HeapVector<Member<Node>, 64>;
+
   explicit EventPath(Node&, Event* = nullptr);
   EventPath(const EventPath&) = delete;
   EventPath& operator=(const EventPath&) = delete;
@@ -84,6 +86,7 @@ class CORE_EXPORT EventPath final : public GarbageCollected<EventPath> {
   NodeEventContext& TopNodeEventContext();
 
   static EventTarget& EventTargetRespectingTargetRules(Node&);
+  static NodePath CalculateNodePath(Node&);
 
   void Trace(Visitor*) const;
   void Clear() {

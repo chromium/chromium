@@ -8424,6 +8424,7 @@ void Document::Trace(Visitor* visitor) const {
   visitor->Trace(anchor_element_interaction_tracker_);
   visitor->Trace(focused_element_change_observers_);
   visitor->Trace(pending_link_header_preloads_);
+  visitor->Trace(event_node_path_cache_);
   Supplementable<Document>::Trace(visitor);
   TreeScope::Trace(visitor);
   ContainerNode::Trace(visitor);
@@ -8796,6 +8797,22 @@ Document::PendingJavascriptUrl::~PendingJavascriptUrl() = default;
 void Document::CheckPartitionedCookiesOriginTrial(
     const ResourceResponse& response) {
   cookie_jar_->CheckPartitionedCookiesOriginTrial(response);
+}
+
+const EventPath::NodePath& Document::GetOrCalculateEventNodePath(Node& node) {
+  // TODO(crbug.com/1359407): In corner case situations, the cache may approach
+  // O(N^2) memory usage. We should attempt to keep its size limited.
+  if (event_node_path_dom_tree_version_ != dom_tree_version_) {
+    event_node_path_cache_.clear();
+    event_node_path_dom_tree_version_ = dom_tree_version_;
+  }
+  auto result = event_node_path_cache_.insert(&node, nullptr);
+  if (result.is_new_entry) {
+    EventPath::NodePath node_path = EventPath::CalculateNodePath(node);
+    result.stored_value->value =
+        MakeGarbageCollected<EventPath::NodePath>(std::move(node_path));
+  }
+  return *result.stored_value->value;
 }
 
 template class CORE_TEMPLATE_EXPORT Supplement<Document>;
