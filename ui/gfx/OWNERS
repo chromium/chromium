@@ -23,11 +23,9 @@ per-file screen*=oshima@chromium.org
 # Canvas painting.
 per-file canvas*=danakj@chromium.org
 
-# Overlay transforms.
+# Overlay states, configurations, etc.
 per-file overlay*=spang@chromium.org
-
-# Overlay plane data.
-per-file overlay_plane_data*=rjkroege@chromium.org
+per-file overlay*=rjkroege@chromium.org
 
 # Transform, interpolated transform and transform util.
 per-file transform*=danakj@chromium.org
