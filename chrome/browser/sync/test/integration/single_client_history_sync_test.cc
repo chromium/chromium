@@ -214,7 +214,7 @@ class SingleClientHistorySyncTest : public SyncTest {
 };
 
 IN_PROC_BROWSER_TEST_F(SingleClientHistorySyncTest,
-                       DoesNotUploadRetroactively) {
+                       DISABLED_DoesNotUploadRetroactively) {
   ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
 
   // Navigate somewhere before Sync is turned on.
@@ -250,7 +250,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientHistorySyncTest,
                                                   UrlIs(synced_url2.spec()))));
 }
 
-IN_PROC_BROWSER_TEST_F(SingleClientHistorySyncTest, UploadsAllFields) {
+IN_PROC_BROWSER_TEST_F(SingleClientHistorySyncTest, DISABLED_UploadsAllFields) {
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
 
   // Navigate to some URL, and make sure it shows up on the server.
