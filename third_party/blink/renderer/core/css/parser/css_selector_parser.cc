@@ -294,8 +294,16 @@ CSSSelectorParser<UseArena>::ConsumeForgivingRelativeSelectorList(
   // not allowed after pseudo elements.
   // (e.g. '::slotted(:has(.a))', '::part(foo):has(:hover)')
   if (inside_compound_pseudo_ ||
-      restricting_pseudo_element_ != CSSSelector::kPseudoUnknown ||
-      selector_list.IsEmpty()) {
+      restricting_pseudo_element_ != CSSSelector::kPseudoUnknown) {
+    return CSSSelectorList();
+  }
+
+  if (selector_list.IsEmpty()) {
+    // TODO(blee@igalia.com) Workaround to make :has() unforgiving to avoid
+    // JQuery :has() issue: https://github.com/w3c/csswg-drafts/issues/7676
+    // Should not fail with empty selector_list
+    failed_parsing_ = true;
+
     return CSSSelectorList();
   }
 
@@ -1042,6 +1050,13 @@ CSSSelectorParser<UseArena>::ConsumePseudo(CSSParserTokenRange& range) {
       std::unique_ptr<CSSSelectorList> selector_list =
           std::make_unique<CSSSelectorList>();
       *selector_list = ConsumeForgivingRelativeSelectorList(block);
+
+      // TODO(blee@igalia.com) Workaround to make :has() unforgiving to avoid
+      // JQuery :has() issue: https://github.com/w3c/csswg-drafts/issues/7676
+      // Should not check IsValid().
+      if (!selector_list->IsValid())
+        return nullptr;
+
       if (!block.AtEnd())
         return nullptr;
 
