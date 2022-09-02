@@ -69,6 +69,13 @@ AXTreeManager::AXTreeManager(const AXTreeID& tree_id,
     tree_observation_.Observe(ax_tree());
 }
 
+void AXTreeManager::Initialize(const ui::AXTreeUpdate& initial_tree) {
+  if (!ax_tree()->Unserialize(initial_tree)) {
+    LOG(FATAL) << "No recovery is possible if the initial tree is broken: "
+               << ax_tree()->error();
+  }
+}
+
 AXNode* AXTreeManager::GetNode(const AXNodeID node_id) const {
   return ax_tree_ ? ax_tree_->GetFromId(node_id) : nullptr;
 }

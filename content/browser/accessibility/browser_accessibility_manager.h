@@ -164,8 +164,6 @@ class CONTENT_EXPORT BrowserAccessibilityManager
 
   ~BrowserAccessibilityManager() override;
 
-  void Initialize(const ui::AXTreeUpdate& initial_tree);
-
   static ui::AXTreeUpdate GetEmptyDocument();
 
   enum RetargetEventType {

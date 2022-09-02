@@ -57,6 +57,8 @@ class AX_EXPORT AXTreeManager : public AXTreeObserver {
   // tree.
   virtual AXNode* GetParentNodeFromParentTreeAsAXNode() const = 0;
 
+  void Initialize(const AXTreeUpdate& initial_tree);
+
   // Called when the tree manager is about to be removed from the tree map,
   // `AXTreeManagerMap`.
   void WillBeRemovedFromMap();

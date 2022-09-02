@@ -272,6 +272,7 @@ test("accessibility_unittests") {
     "ax_tree_combiner_unittest.cc",
     "ax_tree_id_unittest.cc",
     "ax_tree_manager_base_unittest.cc",
+    "ax_tree_manager_unittest.cc",
     "ax_tree_serializer_unittest.cc",
     "ax_tree_source_checker_unittest.cc",
     "ax_tree_unittest.cc",

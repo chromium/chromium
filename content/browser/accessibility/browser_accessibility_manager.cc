@@ -223,14 +223,6 @@ BrowserAccessibilityManager::~BrowserAccessibilityManager() {
   ParentConnectionChanged(parent);
 }
 
-void BrowserAccessibilityManager::Initialize(
-    const ui::AXTreeUpdate& initial_tree) {
-  if (!ax_tree()->Unserialize(initial_tree)) {
-    LOG(FATAL) << "No recovery is possible if the initial tree is broken: "
-               << ax_tree()->error();
-  }
-}
-
 // A flag for use in tests to ensure events aren't suppressed or delayed.
 // static
 bool BrowserAccessibilityManager::never_suppress_or_delay_events_for_testing_ =
