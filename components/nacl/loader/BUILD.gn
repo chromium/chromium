@@ -184,8 +184,14 @@ if ((is_linux || is_chromeos) && current_cpu != "arm64") {
 # nacl_helper_bootstrap.  Copy them from the build directory for the
 # ARM32 toolchain.
 if ((is_linux || is_chromeos) && current_cpu == "arm64") {
+  if (default_toolchain == "//build/toolchain/cros:target") {
+    toolchain = "//build/toolchain/cros:nacl_helper_arm32"
+  } else {
+    toolchain = "//build/toolchain/linux:clang_arm"
+  }
+
   copy("nacl_helper") {
-    label = ":nacl_helper(//build/toolchain/linux:clang_arm)"
+    label = ":nacl_helper($toolchain)"
     out_dir = get_label_info(label, "root_out_dir")
     sources = [ "${out_dir}/nacl_helper" ]
     outputs = [ "${root_out_dir}/nacl_helper" ]
@@ -197,7 +203,7 @@ if ((is_linux || is_chromeos) && current_cpu == "arm64") {
   }
 
   copy("nacl_helper_bootstrap") {
-    label = "//native_client/src/trusted/service_runtime/linux:bootstrap(//build/toolchain/linux:clang_arm)"
+    label = "//native_client/src/trusted/service_runtime/linux:bootstrap($toolchain)"
     out_dir = get_label_info(label, "root_out_dir")
     sources = [ "${out_dir}/nacl_helper_bootstrap" ]
     outputs = [ "${root_out_dir}/nacl_helper_bootstrap" ]

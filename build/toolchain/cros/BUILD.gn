@@ -147,6 +147,14 @@ cros_toolchain("nacl_helper_arm32") {
     use_gold = false
     needs_gomacc_path_arg = false
     sysroot = cros_nacl_helper_arm32_sysroot
+
+    # Disable some uses of libraries that this build does not require. The
+    # sysroot for this build does not provide them, and they would be pulled in
+    # by indirect dependencies of nacl_helper otherwise.
+    use_cras = false
+    use_nss_certs = false
+    use_system_libdrm = false
+    use_system_libsync = false
   }
   ar = cros_nacl_helper_arm32_ar
   cc = cros_nacl_helper_arm32_cc
