@@ -47,6 +47,7 @@ generate_grd("build_static_grdp") {
     "foreground/css/combobutton.css",
     "foreground/css/common.css",
     "foreground/css/file_manager.css",
+    "foreground/css/file_manager_gm3.css",
     "foreground/css/file_status.css",
     "foreground/css/file_types.css",
     "foreground/css/list.css",

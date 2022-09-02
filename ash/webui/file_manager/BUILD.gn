@@ -46,6 +46,7 @@ static_library("file_manager_ui") {
   deps = [
     ":constants",
     ":file_manager_untrusted_ui",
+    "//ash/constants:constants",
     "//ash/webui/file_manager/mojom",
     "//ash/webui/file_manager/resources:file_manager_swa_resources",
     "//base",
