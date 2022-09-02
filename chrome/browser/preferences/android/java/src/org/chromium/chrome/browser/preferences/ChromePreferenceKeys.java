@@ -254,6 +254,18 @@ public final class ChromePreferenceKeys {
      */
     public static final String DESKTOP_SITE_GLOBAL_SETTING_OPT_IN_MESSAGE_SHOWN =
             "Chrome.RequestDesktopSiteGlobalSetting.OptInMessageShown";
+    /**
+     * Indicates whether the desktop site global setting was enabled prior to downgrade of desktop
+     * site domain level exceptions.
+     */
+    public static final String DESKTOP_SITE_EXCEPTIONS_DOWNGRADE_GLOBAL_SETTING_ENABLED =
+            "Chrome.RequestDesktopSiteExceptionsDowngrade.GlobalSettingEnabled";
+    /**
+     * Holds a set of tab IDs for tabs whose desktop site tab level settings have to be updated on
+     * downgrade of desktop site domain level exceptions.
+     */
+    public static final String DESKTOP_SITE_EXCEPTIONS_DOWNGRADE_TAB_SETTING_SET =
+            "Chrome.RequestDesktopSiteExceptionsDowngrade.TabSettingSet";
 
     public static final String DOWNLOAD_AUTO_RESUMPTION_ATTEMPT_LEFT = "ResumptionAttemptLeft";
     public static final String DOWNLOAD_FOREGROUND_SERVICE_OBSERVERS = "ForegroundServiceObservers";
@@ -1032,6 +1044,8 @@ public final class ChromePreferenceKeys {
                 DEFAULT_BROWSER_PROMO_SESSION_COUNT,
                 DEFAULT_ENABLED_DESKTOP_SITE_GLOBAL_SETTING,
                 DEFAULT_ENABLED_DESKTOP_SITE_GLOBAL_SETTING_SHOW_MESSAGE,
+                DESKTOP_SITE_EXCEPTIONS_DOWNGRADE_GLOBAL_SETTING_ENABLED,
+                DESKTOP_SITE_EXCEPTIONS_DOWNGRADE_TAB_SETTING_SET,
                 DESKTOP_SITE_GLOBAL_SETTING_OPT_IN_MESSAGE_SHOWN,
                 DOWNLOAD_INTERSTITIAL_DOWNLOAD_PENDING_REMOVAL,
                 EXPLORE_OFFLINE_CONTENT_AVAILABILITY_STATUS,

@@ -571,6 +571,7 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
             return true;
         }
 
+        RequestDesktopUtils.maybeRestoreUserAgentOnSiteSettingsDowngrade(this);
         switchUserAgentIfNeeded(UseDesktopUserAgentCaller.LOAD_IF_NEEDED + caller);
         restoreIfNeeded();
         return true;

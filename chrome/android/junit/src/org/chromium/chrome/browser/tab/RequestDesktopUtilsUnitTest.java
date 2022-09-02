@@ -11,6 +11,8 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -32,7 +34,6 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 import org.robolectric.annotation.Implementation;
 import org.robolectric.annotation.Implements;
-import org.robolectric.annotation.Resetter;
 
 import org.chromium.base.FeatureList;
 import org.chromium.base.FeatureList.TestValues;
@@ -46,12 +47,16 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.tab.RequestDesktopUtilsUnitTest.ShadowCriticalPersistedTabData;
 import org.chromium.chrome.browser.tab.RequestDesktopUtilsUnitTest.ShadowSysUtils;
 import org.chromium.chrome.browser.tab.TabUtils.LoadIfNeededCaller;
+import org.chromium.chrome.browser.tab.TabUtilsUnitTest.ShadowCriticalPersistedTabData;
+import org.chromium.chrome.browser.tab.TabUtilsUnitTest.ShadowProfile;
 import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
+import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.components.browser_ui.site_settings.SingleCategorySettings;
 import org.chromium.components.browser_ui.site_settings.SingleCategorySettings.SiteLayout;
+import org.chromium.components.browser_ui.site_settings.SiteSettingsFeatureList;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridgeJni;
 import org.chromium.components.content_settings.ContentSettingValues;
@@ -65,6 +70,8 @@ import org.chromium.components.messages.MessageDispatcher;
 import org.chromium.components.messages.MessageIdentifier;
 import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.content_public.browser.ContentFeatureList;
+import org.chromium.content_public.browser.NavigationController;
+import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
@@ -75,7 +82,10 @@ import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 import org.chromium.url.ShadowGURL;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -84,7 +94,8 @@ import java.util.Map.Entry;
  */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE,
-        shadows = {ShadowGURL.class, ShadowSysUtils.class, ShadowCriticalPersistedTabData.class})
+        shadows = {ShadowGURL.class, ShadowSysUtils.class, ShadowCriticalPersistedTabData.class,
+                ShadowProfile.class})
 public class RequestDesktopUtilsUnitTest {
     @Rule
     public JniMocker mJniMocker = new JniMocker();
@@ -109,6 +120,12 @@ public class RequestDesktopUtilsUnitTest {
     private Tab mTab;
     @Mock
     private CriticalPersistedTabData mCriticalPersistedTabData;
+    @Mock
+    private TabModelSelector mTabModelSelector;
+    @Mock
+    private TabModel mRegularTabModel;
+    @Mock
+    private TabModel mIncognitoTabModel;
 
     private @ContentSettingValues int mRdsDefaultValue;
     private SharedPreferencesManager mSharedPreferencesManager;
@@ -135,25 +152,6 @@ public class RequestDesktopUtilsUnitTest {
         }
     }
 
-    @Implements(CriticalPersistedTabData.class)
-    static class ShadowCriticalPersistedTabData {
-        private static CriticalPersistedTabData sCriticalPersistedTabData;
-
-        static void setCriticalPersistedTabData(CriticalPersistedTabData criticalPersistedTabData) {
-            sCriticalPersistedTabData = criticalPersistedTabData;
-        }
-
-        @Resetter
-        static void reset() {
-            sCriticalPersistedTabData = null;
-        }
-
-        @Implementation
-        public static CriticalPersistedTabData from(Tab tab) {
-            return sCriticalPersistedTabData;
-        }
-    }
-
     private static final String GOOGLE_COM = "[*.]google.com/";
 
     @Before
@@ -163,6 +161,7 @@ public class RequestDesktopUtilsUnitTest {
         mJniMocker.mock(WebsitePreferenceBridgeJni.TEST_HOOKS, mWebsitePreferenceBridgeJniMock);
         mJniMocker.mock(UrlUtilitiesJni.TEST_HOOKS, mUrlUtilitiesJniMock);
         ShadowCriticalPersistedTabData.setCriticalPersistedTabData(mCriticalPersistedTabData);
+        ShadowProfile.setProfile(mProfile);
 
         doAnswer(invocation -> mRdsDefaultValue)
                 .when(mWebsitePreferenceBridgeJniMock)
@@ -176,6 +175,9 @@ public class RequestDesktopUtilsUnitTest {
                 .when(mWebsitePreferenceBridgeJniMock)
                 .setContentSettingEnabled(
                         any(), eq(ContentSettingsType.REQUEST_DESKTOP_SITE), anyBoolean());
+        doAnswer(invocation -> mRdsDefaultValue == ContentSettingValues.ALLOW)
+                .when(mWebsitePreferenceBridgeJniMock)
+                .isContentSettingEnabled(any(), eq(ContentSettingsType.REQUEST_DESKTOP_SITE));
 
         doAnswer(invocation -> {
             mContentSettingMap.put(invocation.getArgument(2), invocation.getArgument(4));
@@ -194,6 +196,11 @@ public class RequestDesktopUtilsUnitTest {
         mResources = ApplicationProvider.getApplicationContext().getResources();
         when(mActivity.getResources()).thenReturn(mResources);
 
+        when(mTabModelSelector.getModels())
+                .thenReturn(Arrays.asList(mRegularTabModel, mIncognitoTabModel));
+        when(mTabModelSelector.getCurrentModel()).thenReturn(mRegularTabModel);
+        when(mRegularTabModel.getProfile()).thenReturn(mProfile);
+
         TrackerFactory.setTrackerForTests(mTracker);
     }
 
@@ -202,10 +209,15 @@ public class RequestDesktopUtilsUnitTest {
         FeatureList.setTestValues(null);
         ShadowSysUtils.setLowEndDevice(false);
         ShadowCriticalPersistedTabData.reset();
+        ShadowProfile.reset();
         mSharedPreferencesManager.removeKey(
                 ChromePreferenceKeys.DEFAULT_ENABLED_DESKTOP_SITE_GLOBAL_SETTING);
         mSharedPreferencesManager.removeKey(
                 SingleCategorySettings.USER_ENABLED_DESKTOP_SITE_GLOBAL_SETTING_PREFERENCE_KEY);
+        mSharedPreferencesManager.removeKey(
+                ChromePreferenceKeys.DESKTOP_SITE_EXCEPTIONS_DOWNGRADE_TAB_SETTING_SET);
+        mSharedPreferencesManager.removeKey(
+                ChromePreferenceKeys.DESKTOP_SITE_EXCEPTIONS_DOWNGRADE_GLOBAL_SETTING_ENABLED);
         TrackerFactory.setTrackerForTests(null);
     }
 
@@ -300,7 +312,7 @@ public class RequestDesktopUtilsUnitTest {
     public void testShouldDefaultEnableGlobalSetting_DisableOnLowEndDevice() {
         Map<String, String> params = new HashMap<>();
         params.put(RequestDesktopUtils.PARAM_GLOBAL_SETTING_DEFAULT_ON_ON_LOW_END_DEVICES, "false");
-        enableFeatureRequestDesktopSiteDefaults(params);
+        enableFeatureWithParams(ChromeFeatureList.REQUEST_DESKTOP_SITE_DEFAULTS, params, true);
         ShadowSysUtils.setLowEndDevice(true);
         boolean shouldDefaultEnable = RequestDesktopUtils.shouldDefaultEnableGlobalSetting(
                 RequestDesktopUtils
@@ -316,7 +328,7 @@ public class RequestDesktopUtilsUnitTest {
         params.put(
                 RequestDesktopUtils.PARAM_GLOBAL_SETTING_DEFAULT_ON_DISPLAY_SIZE_THRESHOLD_INCHES,
                 "10.0");
-        enableFeatureRequestDesktopSiteDefaults(params);
+        enableFeatureWithParams(ChromeFeatureList.REQUEST_DESKTOP_SITE_DEFAULTS, params, true);
         boolean shouldDefaultEnable = RequestDesktopUtils.shouldDefaultEnableGlobalSetting(11.0);
         Assert.assertTrue("Desktop site global setting should be default-enabled on 10\"+ devices.",
                 shouldDefaultEnable);
@@ -324,7 +336,7 @@ public class RequestDesktopUtilsUnitTest {
 
     @Test
     public void testShouldDefaultEnableGlobalSetting_UserPreviouslyUpdatedSetting() {
-        enableFeatureRequestDesktopSiteDefaults(null);
+        enableFeatureWithParams(ChromeFeatureList.REQUEST_DESKTOP_SITE_DEFAULTS, null, true);
         // This SharedPreference key will ideally be updated when the user explicitly requests for
         // an update to the desktop site global setting.
         mSharedPreferencesManager.writeBoolean(
@@ -340,7 +352,7 @@ public class RequestDesktopUtilsUnitTest {
 
     @Test
     public void testMaybeDefaultEnableGlobalSetting() {
-        enableFeatureRequestDesktopSiteDefaults(null);
+        enableFeatureWithParams(ChromeFeatureList.REQUEST_DESKTOP_SITE_DEFAULTS, null, true);
         boolean didDefaultEnable = RequestDesktopUtils.maybeDefaultEnableGlobalSetting(
                 RequestDesktopUtils.DEFAULT_GLOBAL_SETTING_DEFAULT_ON_DISPLAY_SIZE_THRESHOLD_INCHES,
                 Mockito.mock(Profile.class));
@@ -379,7 +391,7 @@ public class RequestDesktopUtilsUnitTest {
     public void testMaybeDefaultEnableGlobalSetting_DoNotEnableOnOptInEnabled() {
         Map<String, String> params = new HashMap<>();
         params.put(RequestDesktopUtils.PARAM_GLOBAL_SETTING_OPT_IN_ENABLED, "true");
-        enableFeatureRequestDesktopSiteDefaults(params);
+        enableFeatureWithParams(ChromeFeatureList.REQUEST_DESKTOP_SITE_DEFAULTS, params, true);
 
         boolean didDefaultEnable = RequestDesktopUtils.maybeDefaultEnableGlobalSetting(
                 RequestDesktopUtils.DEFAULT_GLOBAL_SETTING_DEFAULT_ON_DISPLAY_SIZE_THRESHOLD_INCHES,
@@ -391,7 +403,7 @@ public class RequestDesktopUtilsUnitTest {
 
     @Test
     public void testMaybeShowDefaultEnableGlobalSettingMessage() {
-        enableFeatureRequestDesktopSiteDefaults(null);
+        enableFeatureWithParams(ChromeFeatureList.REQUEST_DESKTOP_SITE_DEFAULTS, null, true);
 
         // Default-enable the global setting before the message is shown.
         RequestDesktopUtils.maybeDefaultEnableGlobalSetting(
@@ -426,7 +438,7 @@ public class RequestDesktopUtilsUnitTest {
 
     @Test
     public void testMaybeShowDefaultEnableGlobalSettingMessage_DoNotShowIfSettingIsDisabled() {
-        enableFeatureRequestDesktopSiteDefaults(null);
+        enableFeatureWithParams(ChromeFeatureList.REQUEST_DESKTOP_SITE_DEFAULTS, null, true);
 
         // Preference is set when the setting is default-enabled.
         mSharedPreferencesManager.writeBoolean(
@@ -453,7 +465,7 @@ public class RequestDesktopUtilsUnitTest {
     public void testMaybeShowGlobalSettingOptInMessage() {
         Map<String, String> params = new HashMap<>();
         params.put(RequestDesktopUtils.PARAM_GLOBAL_SETTING_OPT_IN_ENABLED, "true");
-        enableFeatureRequestDesktopSiteDefaults(params);
+        enableFeatureWithParams(ChromeFeatureList.REQUEST_DESKTOP_SITE_DEFAULTS, params, true);
         Tab tab = mock(Tab.class);
         when(tab.loadIfNeeded(LoadIfNeededCaller.MAYBE_SHOW_GLOBAL_SETTING_OPT_IN_MESSAGE))
                 .thenReturn(true);
@@ -487,7 +499,7 @@ public class RequestDesktopUtilsUnitTest {
     public void testMaybeShowGlobalSettingOptInMessage_ShowAtMostOnce() {
         Map<String, String> params = new HashMap<>();
         params.put(RequestDesktopUtils.PARAM_GLOBAL_SETTING_OPT_IN_ENABLED, "true");
-        enableFeatureRequestDesktopSiteDefaults(params);
+        enableFeatureWithParams(ChromeFeatureList.REQUEST_DESKTOP_SITE_DEFAULTS, params, true);
         Tab tab = mock(Tab.class);
         when(tab.loadIfNeeded(LoadIfNeededCaller.MAYBE_SHOW_GLOBAL_SETTING_OPT_IN_MESSAGE))
                 .thenReturn(true);
@@ -508,7 +520,7 @@ public class RequestDesktopUtilsUnitTest {
     public void testMaybeShowGlobalSettingOptInMessage_DoNotShowIfSettingIsEnabled() {
         Map<String, String> params = new HashMap<>();
         params.put(RequestDesktopUtils.PARAM_GLOBAL_SETTING_OPT_IN_ENABLED, "true");
-        enableFeatureRequestDesktopSiteDefaults(params);
+        enableFeatureWithParams(ChromeFeatureList.REQUEST_DESKTOP_SITE_DEFAULTS, params, true);
         Tab tab = mock(Tab.class);
         when(tab.loadIfNeeded(LoadIfNeededCaller.MAYBE_SHOW_GLOBAL_SETTING_OPT_IN_MESSAGE))
                 .thenReturn(true);
@@ -579,7 +591,7 @@ public class RequestDesktopUtilsUnitTest {
         @TabUserAgent
         int tabUserAgent = TabUserAgent.DESKTOP;
 
-        enableFeatureRequestDesktopSiteExceptions();
+        enableFeature(ContentFeatureList.REQUEST_DESKTOP_SITE_EXCEPTIONS, true);
 
         RequestDesktopUtils.maybeUpgradeTabLevelDesktopSiteSetting(
                 mTab, mProfile, tabUserAgent, mGoogleUrl);
@@ -589,21 +601,150 @@ public class RequestDesktopUtilsUnitTest {
         verify(mCriticalPersistedTabData).setUserAgent(TabUserAgent.DEFAULT);
     }
 
-    private void enableFeatureRequestDesktopSiteDefaults(Map<String, String> params) {
-        mTestValues.addFeatureFlagOverride(ChromeFeatureList.REQUEST_DESKTOP_SITE_DEFAULTS, true);
+    @Test
+    public void testDowngradeSiteExceptions_NotMoreThanOnce() {
+        // Test downgrade path.
+        testSiteExceptionsDowngradePath();
+
+        // Attempt to run downgrade again.
+        RequestDesktopUtils.maybeDowngradeSiteSettings(mTabModelSelector);
+        Assert.assertTrue("SharedPreferences string set should not be populated.",
+                mSharedPreferencesManager
+                        .readStringSet(ChromePreferenceKeys
+                                               .DESKTOP_SITE_EXCEPTIONS_DOWNGRADE_TAB_SETTING_SET)
+                        .isEmpty());
+    }
+
+    @Test
+    public void testDowngradeSiteExceptions_ClearSharedPrefs() {
+        testSiteExceptionsDowngradePath();
+
+        // Downgrade SharedPreferences keys should be removed when exceptions are re-enabled.
+        enableFeature(ContentFeatureList.REQUEST_DESKTOP_SITE_EXCEPTIONS, true);
+        RequestDesktopUtils.maybeDowngradeSiteSettings(mTabModelSelector);
+        Assert.assertTrue("SharedPreferences keys should be removed.",
+                !mSharedPreferencesManager.contains(
+                        ChromePreferenceKeys.DESKTOP_SITE_EXCEPTIONS_DOWNGRADE_TAB_SETTING_SET)
+                        && !mSharedPreferencesManager.contains(
+                                ChromePreferenceKeys
+                                        .DESKTOP_SITE_EXCEPTIONS_DOWNGRADE_GLOBAL_SETTING_ENABLED));
+    }
+
+    @Test
+    public void testDowngradeSiteExceptions_GlobalSettingChanged() {
+        mRdsDefaultValue = ContentSettingValues.BLOCK;
+        enableFeature(ContentFeatureList.REQUEST_DESKTOP_SITE_EXCEPTIONS, false);
+        enableFeature(SiteSettingsFeatureList.REQUEST_DESKTOP_SITE_EXCEPTIONS_DOWNGRADE, true);
+
+        int tabCount = 2;
+        List<Tab> regularTabs = createTabsForDesktopSiteExceptionsDowngradeTest(
+                mRegularTabModel, -1, tabCount, true, false);
+
+        when(mRegularTabModel.getCount()).thenReturn(tabCount);
+        RequestDesktopUtils.maybeDowngradeSiteSettings(mTabModelSelector);
+
+        // Simulate loading of tab 0 first, to downgrade.
+        RequestDesktopUtils.maybeRestoreUserAgentOnSiteSettingsDowngrade(regularTabs.get(0));
+
+        // Simulate an update to the global setting before loading tab 1 for downgrade.
+        mRdsDefaultValue = ContentSettingValues.ALLOW;
+        RequestDesktopUtils.maybeRestoreUserAgentOnSiteSettingsDowngrade(regularTabs.get(1));
+
+        // DESKTOP user agent should be applied to tab 0, tab 1's TabUserAgent should not be
+        // updated.
+        verify(mCriticalPersistedTabData).setUserAgent(TabUserAgent.DESKTOP);
+        verify(mCriticalPersistedTabData, never()).setUserAgent(TabUserAgent.MOBILE);
+        verify(mCriticalPersistedTabData, never()).setUserAgent(TabUserAgent.DEFAULT);
+    }
+
+    private void testSiteExceptionsDowngradePath() {
+        mRdsDefaultValue = ContentSettingValues.BLOCK;
+        enableFeature(ContentFeatureList.REQUEST_DESKTOP_SITE_EXCEPTIONS, false);
+        enableFeature(SiteSettingsFeatureList.REQUEST_DESKTOP_SITE_EXCEPTIONS_DOWNGRADE, true);
+
+        int regularTabCount = 2;
+        List<Tab> regularTabs = createTabsForDesktopSiteExceptionsDowngradeTest(
+                mRegularTabModel, -1, regularTabCount, true, false);
+
+        int incognitoTabCount = 1;
+        List<Tab> incognitoTabs = createTabsForDesktopSiteExceptionsDowngradeTest(
+                mIncognitoTabModel, regularTabCount - 1, incognitoTabCount, true);
+
+        when(mRegularTabModel.getCount()).thenReturn(regularTabCount);
+        when(mIncognitoTabModel.getCount()).thenReturn(incognitoTabCount);
+        RequestDesktopUtils.maybeDowngradeSiteSettings(mTabModelSelector);
+        Assert.assertTrue("SharedPreferences key for global setting should be present.",
+                mSharedPreferencesManager.contains(
+                        ChromePreferenceKeys
+                                .DESKTOP_SITE_EXCEPTIONS_DOWNGRADE_GLOBAL_SETTING_ENABLED));
+        Assert.assertFalse("SharedPreferences for global setting value should be set correctly.",
+                mSharedPreferencesManager.readBoolean(
+                        ChromePreferenceKeys
+                                .DESKTOP_SITE_EXCEPTIONS_DOWNGRADE_GLOBAL_SETTING_ENABLED,
+                        false));
+        Assert.assertEquals(
+                "SharedPreferences string set size should match the total tab count across all tab models.",
+                3,
+                mSharedPreferencesManager
+                        .readStringSet(ChromePreferenceKeys
+                                               .DESKTOP_SITE_EXCEPTIONS_DOWNGRADE_TAB_SETTING_SET)
+                        .size());
+
+        RequestDesktopUtils.maybeRestoreUserAgentOnSiteSettingsDowngrade(regularTabs.get(0));
+        RequestDesktopUtils.maybeRestoreUserAgentOnSiteSettingsDowngrade(incognitoTabs.get(0));
+        RequestDesktopUtils.maybeRestoreUserAgentOnSiteSettingsDowngrade(regularTabs.get(1));
+
+        verify(mCriticalPersistedTabData, times(2)).setUserAgent(TabUserAgent.DESKTOP);
+        verify(mCriticalPersistedTabData, never()).setUserAgent(TabUserAgent.MOBILE);
+        verify(mCriticalPersistedTabData, never()).setUserAgent(TabUserAgent.DEFAULT);
+
+        Assert.assertTrue("SharedPreferences key should exist.",
+                mSharedPreferencesManager.contains(
+                        ChromePreferenceKeys.DESKTOP_SITE_EXCEPTIONS_DOWNGRADE_TAB_SETTING_SET));
+        Assert.assertTrue(
+                "SharedPreferences string set should be empty after all tabs' tab level settings are processed.",
+                mSharedPreferencesManager
+                        .readStringSet(ChromePreferenceKeys
+                                               .DESKTOP_SITE_EXCEPTIONS_DOWNGRADE_TAB_SETTING_SET)
+                        .isEmpty());
+    }
+
+    private List<Tab> createTabsForDesktopSiteExceptionsDowngradeTest(
+            TabModel tabModel, int lastUsedTabId, int tabCount, Boolean... lastUsedUserAgents) {
+        assert tabCount == lastUsedUserAgents.length;
+        List<Tab> tabs = new ArrayList<>();
+        int tabIndex = 0;
+        for (int i = lastUsedTabId + 1; i <= lastUsedTabId + tabCount; i++) {
+            Tab tab = mock(Tab.class);
+            WebContents webContents = mock(WebContents.class);
+            NavigationController navigationController = mock(NavigationController.class);
+            when(tab.getId()).thenReturn(i);
+            when(tabModel.getTabAt(tabIndex)).thenReturn(tab);
+            when(tab.getWebContents()).thenReturn(webContents);
+            when(webContents.getNavigationController()).thenReturn(navigationController);
+            int finalTabIndex = tabIndex;
+            doAnswer(invocation -> lastUsedUserAgents[finalTabIndex])
+                    .when(navigationController)
+                    .getUseDesktopUserAgent();
+            tabIndex++;
+            tabs.add(tab);
+        }
+        return tabs;
+    }
+
+    private void enableFeature(String featureName, boolean enable) {
+        enableFeatureWithParams(featureName, null, enable);
+    }
+
+    private void enableFeatureWithParams(
+            String featureName, Map<String, String> params, boolean enable) {
+        mTestValues.addFeatureFlagOverride(featureName, enable);
         if (params != null) {
             for (Entry<String, String> param : params.entrySet()) {
                 mTestValues.addFieldTrialParamOverride(
-                        ChromeFeatureList.REQUEST_DESKTOP_SITE_DEFAULTS, param.getKey(),
-                        param.getValue());
+                        featureName, param.getKey(), param.getValue());
             }
         }
-        FeatureList.setTestValues(mTestValues);
-    }
-
-    private void enableFeatureRequestDesktopSiteExceptions() {
-        mTestValues.addFeatureFlagOverride(
-                ContentFeatureList.REQUEST_DESKTOP_SITE_EXCEPTIONS, true);
         FeatureList.setTestValues(mTestValues);
     }
 
