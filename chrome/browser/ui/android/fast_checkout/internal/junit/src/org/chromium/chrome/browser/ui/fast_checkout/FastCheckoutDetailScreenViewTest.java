@@ -77,14 +77,13 @@ public class FastCheckoutDetailScreenViewTest {
     private PropertyModel mModel;
     private static final FastCheckoutAutofillProfile sSampleProfile1 =
             FastCheckoutTestUtils.createDetailedProfile(
-                    /*name=*/"John Moe", /*streetAddress=*/"Park Avenue 234", /*city=*/"New York",
-                    /*postalCode=*/"12345", /*email=*/"john.moe@gmail.com",
+                    /*guid=*/"111", /*name=*/"John Moe", /*streetAddress=*/"Park Avenue 234",
+                    /*city=*/"New York", /*postalCode=*/"12345", /*email=*/"john.moe@gmail.com",
                     /*phoneNumber=*/"+1-345-543-645");
     private static final FastCheckoutAutofillProfile sSampleProfile2 =
             FastCheckoutTestUtils.createDetailedProfile(
-                    /*name=*/"Jane Doe", /*streetAddress=*/"Sunset Blvd. 456",
-                    /*city=*/"Los Angeles",
-                    /*postalCode=*/"99999", /*email=*/"doe.jane@gmail.com",
+                    /*guid=*/"555", /*name=*/"Jane Doe", /*streetAddress=*/"Sunset Blvd. 456",
+                    /*city=*/"Los Angeles", /*postalCode=*/"99999", /*email=*/"doe.jane@gmail.com",
                     /*phoneNumber=*/"+1-345-333-319");
 
     @Before

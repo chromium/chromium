@@ -64,13 +64,30 @@ import org.chromium.ui.modelutil.PropertyModel;
 @Config(manifest = Config.NONE)
 public class FastCheckoutMediatorTest {
     private static final FastCheckoutAutofillProfile[] DUMMY_PROFILES = {
-            FastCheckoutTestUtils.createDummyProfile("John Doe", "john@gmail.com"),
-            FastCheckoutTestUtils.createDummyProfile("Jane Doe", "jane@gmail.com"),
-            FastCheckoutTestUtils.createDummyProfile("Foo Boo", "foo@gmail.com")};
+            FastCheckoutTestUtils.createDetailedProfile(
+                    /*guid=*/"123", /*name=*/"John Moe",
+                    /*streetAddress=*/"Park Avenue 234", /*city=*/"New York",
+                    /*postalCode=*/"12345", /*email=*/"john.moe@gmail.com",
+                    /*phoneNumber=*/"+1-345-543-645"),
+            FastCheckoutTestUtils.createDetailedProfile(
+                    /*guid=*/"234", /*name=*/"Jane Doe",
+                    /*streetAddress=*/"Sunset Blvd. 456",
+                    /*city=*/"Los Angeles",
+                    /*postalCode=*/"99999", /*email=*/"doe.jane@gmail.com",
+                    /*phoneNumber=*/"+1-345-333-319"),
+            FastCheckoutTestUtils.createDetailedProfile(
+                    /*guid=*/"345", /*name=*/"Foo Boo",
+                    /*streetAddress=*/"Centennial Park",
+                    /*city=*/"San Francisco",
+                    /*postalCode=*/"23441", /*email=*/"foo@gmail.com",
+                    /*phoneNumber=*/"+1-205-333-009")};
     private static final FastCheckoutCreditCard[] DUMMY_CARDS = {
-            FastCheckoutTestUtils.createDummyCreditCard("https://example.com", "4111111111111111"),
             FastCheckoutTestUtils.createDummyCreditCard(
-                    "https://example.co.uk", "4111111145454111")};
+                    "xyz", "https://example.com", "4111111111111111"),
+            FastCheckoutTestUtils.createDummyCreditCard(
+                    "hfg", "https://example.co.uk", "4111111145454111"),
+            FastCheckoutTestUtils.createDummyCreditCard(
+                    "iyul", "https://neverseenbefore.com", "411167568911")};
 
     @Mock
     RecyclerView mMockParentView;
@@ -206,9 +223,72 @@ public class FastCheckoutMediatorTest {
         ModelList models = mModel.get(CREDIT_CARD_MODEL_LIST);
         assertThat(models.size(), is(DUMMY_CARDS.length + 1));
         for (int index = 0; index < DUMMY_CARDS.length; ++index) {
+            assertThat(models.get(index).type, is(DetailItemType.CREDIT_CARD));
             PropertyModel model = models.get(index).model;
             assertThat(model.get(CreditCardItemProperties.CREDIT_CARD), is(DUMMY_CARDS[index]));
         }
+    }
+
+    @Test
+    public void testSetAutofillProfileItemsUpdatesPreservesPriorSelection() {
+        mMediator.setAutofillProfileItems(DUMMY_PROFILES);
+        ModelList models = mModel.get(PROFILE_MODEL_LIST);
+
+        // There is one extra item due to the footer.
+        assertThat(models.size(), is(DUMMY_PROFILES.length + 1));
+        assertThat(mModel.get(SELECTED_PROFILE), is(DUMMY_PROFILES[0]));
+
+        // If the old profile no longer exists, the new first one is selected.
+        mMediator.setAutofillProfileItems(
+                new FastCheckoutAutofillProfile[] {DUMMY_PROFILES[1], DUMMY_PROFILES[2]});
+        assertThat(models.size(), is(3));
+        assertThat(mModel.get(SELECTED_PROFILE), is(DUMMY_PROFILES[1]));
+
+        // If it can be found, it remains selected.
+        mMediator.setAutofillProfileItems(DUMMY_PROFILES);
+        assertThat(models.size(), is(DUMMY_PROFILES.length + 1));
+        assertThat(mModel.get(SELECTED_PROFILE), is(DUMMY_PROFILES[1]));
+
+        // That is true even if only the GUID remains the same.
+        FastCheckoutAutofillProfile sameGUIDProfile =
+                FastCheckoutTestUtils.createDetailedProfile(DUMMY_PROFILES[1].getGUID(),
+                        /*name=*/"Frank Tank",
+                        /*streetAddress=*/"Somewhere 123",
+                        /*city=*/"Des Moines",
+                        /*postalCode=*/"93439", /*email=*/"frank@tank.com",
+                        /*phoneNumber=*/"+1-111-333-222");
+        mMediator.setAutofillProfileItems(new FastCheckoutAutofillProfile[] {
+                DUMMY_PROFILES[0], DUMMY_PROFILES[1], sameGUIDProfile});
+        assertThat(models.size(), is(4));
+        assertThat(mModel.get(SELECTED_PROFILE), is(sameGUIDProfile));
+    }
+
+    @Test
+    public void testSetCreditCardItemsUpdatesPreservesPriorSelection() {
+        mMediator.setCreditCardItems(DUMMY_CARDS);
+        ModelList models = mModel.get(CREDIT_CARD_MODEL_LIST);
+
+        // There is one extra item due to the footer.
+        assertThat(models.size(), is(DUMMY_CARDS.length + 1));
+        assertThat(mModel.get(SELECTED_CREDIT_CARD), is(DUMMY_CARDS[0]));
+
+        // If the old profile no longer exists, the new first one is selected.
+        mMediator.setCreditCardItems(new FastCheckoutCreditCard[] {DUMMY_CARDS[1], DUMMY_CARDS[2]});
+        assertThat(models.size(), is(3));
+        assertThat(mModel.get(SELECTED_CREDIT_CARD), is(DUMMY_CARDS[1]));
+
+        // If it can be found, it remains selected.
+        mMediator.setCreditCardItems(DUMMY_CARDS);
+        assertThat(models.size(), is(DUMMY_CARDS.length + 1));
+        assertThat(mModel.get(SELECTED_CREDIT_CARD), is(DUMMY_CARDS[1]));
+
+        // That is true even if only the GUID remains the same.
+        FastCheckoutCreditCard sameGUIDCard = FastCheckoutTestUtils.createDummyCreditCard(
+                DUMMY_CARDS[1].getGUID(), "https://example.fr", "56456551111");
+        mMediator.setCreditCardItems(
+                new FastCheckoutCreditCard[] {DUMMY_CARDS[0], DUMMY_CARDS[1], sameGUIDCard});
+        assertThat(models.size(), is(4));
+        assertThat(mModel.get(SELECTED_CREDIT_CARD), is(sameGUIDCard));
     }
 
     @Test
