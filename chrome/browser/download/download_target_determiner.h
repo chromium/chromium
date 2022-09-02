@@ -93,6 +93,15 @@ class DownloadTargetDeterminer : public download::DownloadItem::Observer {
   static bool IsAdobeReaderUpToDate();
 #endif
 
+  // Determine if the file type can be handled safely by the browser if it were
+  // to be opened via a file:// URL. Execute the callback with the determined
+  // value.
+  static void DetermineIfHandledSafelyHelper(
+      download::DownloadItem* download,
+      const base::FilePath& local_path,
+      const std::string& mime_type,
+      base::OnceCallback<void(bool)> callback);
+
  private:
   // The main workflow is controlled via a set of state transitions. Each state
   // has an associated handler. The handler for STATE_FOO is DoFoo. Each handler
@@ -252,11 +261,9 @@ class DownloadTargetDeterminer : public download::DownloadItem::Observer {
   // - STATE_DETERMINE_IF_ADOBE_READER_UP_TO_DATE.
   Result DoDetermineIfHandledSafely();
 
-#if BUILDFLAG(ENABLE_PLUGINS)
   // Callback invoked when a decision is available about whether the file type
   // can be handled safely by the browser.
   void DetermineIfHandledSafelyDone(bool is_handled_safely);
-#endif
 
   // Determine if Adobe Reader is up to date. Only do the check on Windows for
   // .pdf file targets.

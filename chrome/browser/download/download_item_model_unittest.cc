@@ -20,7 +20,10 @@
 #include "base/test/simple_test_clock.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "chrome/browser/download/chrome_download_manager_delegate.h"
 #include "chrome/browser/download/download_commands.h"
+#include "chrome/browser/download/download_core_service_factory.h"
+#include "chrome/browser/download/download_core_service_impl.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -98,6 +101,55 @@ RerouteInfo MakeTestRerouteInfo(Provider provider) {
 }
 const RerouteInfo kTestRerouteInfo = MakeTestRerouteInfo(kTestProvider);
 
+// A DownloadCoreService that returns the TestChromeDownloadManagerDelegate.
+class TestDownloadCoreService : public DownloadCoreServiceImpl {
+ public:
+  explicit TestDownloadCoreService(Profile* profile);
+  ~TestDownloadCoreService() override;
+
+  void set_download_manager_delegate(ChromeDownloadManagerDelegate* delegate) {
+    delegate_ = delegate;
+  }
+
+  ChromeDownloadManagerDelegate* GetDownloadManagerDelegate() override;
+
+  raw_ptr<ChromeDownloadManagerDelegate> delegate_;
+};
+
+TestDownloadCoreService::TestDownloadCoreService(Profile* profile)
+    : DownloadCoreServiceImpl(profile) {}
+
+TestDownloadCoreService::~TestDownloadCoreService() = default;
+
+ChromeDownloadManagerDelegate*
+TestDownloadCoreService::GetDownloadManagerDelegate() {
+  return delegate_;
+}
+
+static std::unique_ptr<KeyedService> CreateTestDownloadCoreService(
+    content::BrowserContext* browser_context) {
+  return std::make_unique<TestDownloadCoreService>(
+      Profile::FromBrowserContext(browser_context));
+}
+
+class TestChromeDownloadManagerDelegate : public ChromeDownloadManagerDelegate {
+ public:
+  explicit TestChromeDownloadManagerDelegate(Profile* profile)
+      : ChromeDownloadManagerDelegate(profile) {}
+  ~TestChromeDownloadManagerDelegate() override;
+
+  // ChromeDownloadManagerDelegate override:
+  bool IsOpenInBrowserPreferreredForFile(const base::FilePath& path) override;
+};
+
+TestChromeDownloadManagerDelegate::~TestChromeDownloadManagerDelegate() =
+    default;
+
+bool TestChromeDownloadManagerDelegate::IsOpenInBrowserPreferreredForFile(
+    const base::FilePath& path) {
+  return true;
+}
+
 }  // namespace
 
 class DownloadItemModelTest : public testing::Test {
@@ -117,6 +169,13 @@ class DownloadItemModelTest : public testing::Test {
   void SetUp() override {
     ASSERT_TRUE(testing_profile_manager_.SetUp());
     profile_ = testing_profile_manager_.CreateTestingProfile("testing_profile");
+    delegate_ =
+        std::make_unique<NiceMock<TestChromeDownloadManagerDelegate>>(profile_);
+    DownloadCoreServiceFactory::GetInstance()->SetTestingFactory(
+        profile_, base::BindRepeating(&CreateTestDownloadCoreService));
+    static_cast<TestDownloadCoreService*>(
+        DownloadCoreServiceFactory::GetForBrowserContext(profile_))
+        ->set_download_manager_delegate(delegate_.get());
   }
 
  protected:
@@ -198,6 +257,7 @@ class DownloadItemModelTest : public testing::Test {
   base::SimpleTestClock clock_;
   TestingProfileManager testing_profile_manager_;
   raw_ptr<TestingProfile> profile_;
+  std::unique_ptr<NiceMock<TestChromeDownloadManagerDelegate>> delegate_;
 
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -739,6 +799,13 @@ TEST_F(DownloadItemModelTest, CompletedBubbleWarningStatusText) {
 }
 
 #if !BUILDFLAG(IS_ANDROID)
+
+TEST_F(DownloadItemModelTest, ShouldPreferOpeningInBrowser_V2On) {
+  SetupDownloadItemDefaults();
+  SetupCompletedDownloadItem(base::Hours(1));
+  SetIsBubbleV2Enabled(true);
+  EXPECT_TRUE(model().ShouldPreferOpeningInBrowser());
+}
 
 TEST_F(DownloadItemModelTest, InProgressOrCompletedBubbleUIInfo_V2On) {
   SetupDownloadItemDefaults();

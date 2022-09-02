@@ -69,7 +69,7 @@ class DownloadItemModel : public DownloadUIModel,
   void SetWasUIWarningShown(bool should_notify) override;
   absl::optional<base::Time> GetEphemeralWarningUiShownTime() const override;
   void SetEphemeralWarningUiShownTime(absl::optional<base::Time> time) override;
-  bool ShouldPreferOpeningInBrowser() const override;
+  bool ShouldPreferOpeningInBrowser() override;
   void SetShouldPreferOpeningInBrowser(bool preference) override;
   safe_browsing::DownloadFileType::DangerLevel GetDangerLevel() const override;
   void SetDangerLevel(
@@ -126,6 +126,9 @@ class DownloadItemModel : public DownloadUIModel,
 #endif
 
   bool ShouldShowDropdown() const override;
+  void DetermineAndSetShouldPreferOpeningInBrowser(
+      const base::FilePath& target_path,
+      bool is_filetype_handled_safely) override;
 
   // download::DownloadItem::Observer implementation.
   void OnDownloadUpdated(download::DownloadItem* download) override;
