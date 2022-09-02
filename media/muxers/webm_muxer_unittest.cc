@@ -134,7 +134,8 @@ TEST_P(WebmMuxerTest,
   const std::string encoded_data("abcdefghijklmnopqrstuvwxyz");
   media::AudioParameters audio_params(
       media::AudioParameters::Format::AUDIO_PCM_LOW_LATENCY,
-      media::CHANNEL_LAYOUT_MONO, /*sample_rate=*/48000,
+      ChannelLayoutConfig::Mono(),
+      /*sample_rate=*/48000,
       /*frames_per_buffer=*/480);
   // Force an error in libwebm and expect OnEncodedVideo to fail.
   webm_muxer_->ForceOneLibWebmErrorForTesting();
@@ -157,7 +158,8 @@ TEST_P(WebmMuxerTest,
   const std::string encoded_data("abcdefghijklmnopqrstuvwxyz");
   media::AudioParameters audio_params(
       media::AudioParameters::Format::AUDIO_PCM_LOW_LATENCY,
-      media::CHANNEL_LAYOUT_MONO, /*sample_rate=*/48000,
+      ChannelLayoutConfig::Mono(),
+      /*sample_rate=*/48000,
       /*frames_per_buffer=*/480);
   // Force an error in libwebm and expect OnEncodedVideo to fail.
   webm_muxer_->ForceOneLibWebmErrorForTesting();
@@ -272,7 +274,7 @@ TEST_P(WebmMuxerTest, OnEncodedAudioTwoFrames) {
   const int frames_per_buffer = 480;
   media::AudioParameters audio_params(
       media::AudioParameters::Format::AUDIO_PCM_LOW_LATENCY,
-      media::CHANNEL_LAYOUT_MONO, sample_rate, frames_per_buffer);
+      ChannelLayoutConfig::Mono(), sample_rate, frames_per_buffer);
 
   const std::string encoded_data("abcdefghijklmnopqrstuvwxyz");
 
@@ -397,7 +399,7 @@ TEST_P(WebmMuxerTest, VideoIsStoredWhileWaitingForAudio) {
   const int frames_per_buffer = 480;
   media::AudioParameters audio_params(
       media::AudioParameters::Format::AUDIO_PCM_LOW_LATENCY,
-      media::CHANNEL_LAYOUT_MONO, sample_rate, frames_per_buffer);
+      ChannelLayoutConfig::Mono(), sample_rate, frames_per_buffer);
   const std::string encoded_audio("thisisanencodedaudiopacket");
 
   // Timestamped frames should come as:
@@ -495,7 +497,7 @@ class WebmMuxerTestUnparametrized : public testing::Test {
     int frames_per_buffer = frame_rate_hz * duration_ms / 1000;
     media::AudioParameters audio_params(
         media::AudioParameters::Format::AUDIO_PCM_LOW_LATENCY,
-        media::CHANNEL_LAYOUT_MONO, frame_rate_hz, frames_per_buffer);
+        ChannelLayoutConfig::Mono(), frame_rate_hz, frames_per_buffer);
     webm_muxer_->OnEncodedAudio(
         audio_params, "audio_at_offset",
         base::TimeTicks() + base::Milliseconds(system_timestamp_offset_ms));

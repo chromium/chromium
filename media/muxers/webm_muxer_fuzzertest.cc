@@ -82,9 +82,9 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
       }
 
       if (input_type.has_audio) {
-        const media::ChannelLayout layout = rng() % 2
-                                                ? media::CHANNEL_LAYOUT_STEREO
-                                                : media::CHANNEL_LAYOUT_MONO;
+        const media::ChannelLayoutConfig layout =
+            rng() % 2 ? media::ChannelLayoutConfig::Stereo()
+                      : media::ChannelLayoutConfig::Mono();
         const int sample_rate =
             kSampleRatesInKHz[rng() % std::size(kSampleRatesInKHz)];
 
