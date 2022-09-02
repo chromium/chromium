@@ -37,6 +37,8 @@ component("ash") {
     "accelerators/accelerator_notifications.h",
     "accelerators/accelerator_table.cc",
     "accelerators/accelerator_table.h",
+    "accelerators/ash_accelerator_configuration.cc",
+    "accelerators/ash_accelerator_configuration.h",
     "accelerators/ash_focus_manager_factory.cc",
     "accelerators/ash_focus_manager_factory.h",
     "accelerators/debug_commands.cc",
