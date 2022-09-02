@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/callback_list.h"
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
@@ -23,6 +24,7 @@
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/crostini/termina_installer.h"
 #include "chrome/browser/ash/guest_os/guest_id.h"
+#include "chrome/browser/ash/guest_os/guest_os_session_tracker.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_mount_provider_registry.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_terminal_provider_registry.h"
 #include "chrome/browser/ash/vm_shutdown_observer.h"
@@ -812,6 +814,9 @@ class CrostiniManager : public KeyedService,
   // Unregisters all container from GuestOsService's registries.
   void UnregisterAllContainers();
 
+  // Best-effort attempt to premount the user's files.
+  void MountCrostiniFilesBackground(guest_os::GuestInfo info);
+
   Profile* profile_;
   std::string owner_id_;
 
@@ -922,6 +927,8 @@ class CrostiniManager : public KeyedService,
 
   base::flat_map<guest_os::GuestId, guest_os::GuestOsMountProviderRegistry::Id>
       mount_provider_ids_;
+
+  base::CallbackListSubscription primary_counter_mount_subscription_;
 
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.

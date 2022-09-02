@@ -566,15 +566,16 @@ void CrostiniManager::CrostiniRestarter::StartLxdContainerFinished(
     return;
   }
   // If default termina/penguin, then sshfs mount and reshare folders, else we
-  // are finished. Also, a lot of unit tests don't inject a fake container so
-  // it's possible in tests to end up here without a running container. Don't
-  // try mounting sshfs in that case.
-  bool running =
-      guest_os::GuestOsSessionTracker::GetForProfile(profile_)->IsRunning(
-          container_id_);
-  if (container_id_ == DefaultContainerId() && running) {
-    crostini_manager_->MountCrostiniFiles(container_id_, base::DoNothing(),
-                                          true);
+  // are finished. Because the session tracker update and this method are racing
+  // on the same thread we do the update async once the session tracker is
+  // ready.
+  if (container_id_ == DefaultContainerId()) {
+    crostini_manager_->primary_counter_mount_subscription_ =
+        guest_os::GuestOsSessionTracker::GetForProfile(profile_)
+            ->RunOnceContainerStarted(
+                container_id_,
+                base::BindOnce(&CrostiniManager::MountCrostiniFilesBackground,
+                               crostini_manager_->GetWeakPtr()));
   }
   FinishRestart(result);
 }
@@ -3906,6 +3907,10 @@ void CrostiniManager::MountCrostiniFiles(guest_os::GuestId container_id,
           },
           std::move(callback)),
       background);
+}
+
+void CrostiniManager::MountCrostiniFilesBackground(guest_os::GuestInfo info) {
+  MountCrostiniFiles(info.guest_id, base::DoNothing(), true);
 }
 
 void CrostiniManager::GetInstallLocation(
