@@ -4,7 +4,6 @@
 
 #include "components/password_manager/core/browser/password_form_manager.h"
 
-#include <algorithm>
 #include <memory>
 #include <set>
 #include <string>
@@ -908,11 +907,8 @@ void PasswordFormManager::OnGeneratedPasswordAccepted(
     const std::u16string& password) {
   // Find the generating element to update its value. The parser needs a non
   // empty value.
-  auto it = std::find_if(form_data.fields.begin(), form_data.fields.end(),
-                         [generation_element_id](const auto& field_data) {
-                           return generation_element_id ==
-                                  field_data.unique_renderer_id;
-                         });
+  auto it = base::ranges::find(form_data.fields, generation_element_id,
+                               &FormFieldData::unique_renderer_id);
   // The parameters are coming from the renderer and can't be trusted.
   if (it == form_data.fields.end())
     return;

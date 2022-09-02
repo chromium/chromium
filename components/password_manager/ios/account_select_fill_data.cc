@@ -4,6 +4,7 @@
 
 #include "components/password_manager/ios/account_select_fill_data.h"
 
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "components/autofill/core/common/password_form_fill_data.h"
 
@@ -95,10 +96,7 @@ std::unique_ptr<FillData> AccountSelectFillData::GetFillData(
     return nullptr;
   }
 
-  auto it = std::find_if(credentials_.begin(), credentials_.end(),
-                         [&username](const auto& credential) {
-                           return credential.username == username;
-                         });
+  auto it = base::ranges::find(credentials_, username, &Credential::username);
   if (it == credentials_.end())
     return nullptr;
   const Credential& credential = *it;

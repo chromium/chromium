@@ -6,13 +6,13 @@
 
 #include <stddef.h>
 
-#include <algorithm>
 #include <set>
 #include <string>
 #include <utility>
 
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -252,10 +252,8 @@ void CheckField(const std::vector<FormFieldData>& fields,
     return;
   }
 
-  auto field_it = std::find_if(fields.begin(), fields.end(),
-                               [renderer_id](const FormFieldData& field) {
-                                 return field.unique_renderer_id == renderer_id;
-                               });
+  auto field_it = base::ranges::find(fields, renderer_id,
+                                     &FormFieldData::unique_renderer_id);
   ASSERT_TRUE(field_it != fields.end())
       << "Could not find a field with renderer ID " << renderer_id;
 

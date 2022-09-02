@@ -7,6 +7,7 @@
 #include "base/containers/circular_deque.h"
 #include "base/json/values_util.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
@@ -252,12 +253,9 @@ void PasswordChangeSuccessTrackerImpl::OnChangePasswordFlowModified(
 
   // We always take the first match. We do not expect conflicts and, if they,
   // occur, the information for both flows should be nearly identical.
-  auto predicate = [target_etld_plus_1 =
-                        ExtractEtldPlus1(url)](const IncompleteFlow& flow) {
-    return flow.etld_plus_1 == target_etld_plus_1;
-  };
-  if (auto it = std::find_if(incomplete_manual_flows_.cbegin(),
-                             incomplete_manual_flows_.cend(), predicate);
+  if (auto it =
+          base::ranges::find(incomplete_manual_flows_, ExtractEtldPlus1(url),
+                             &IncompleteFlow::etld_plus_1);
       it != incomplete_manual_flows_.cend()) {
     ListPrefUpdate update(pref_service_,
                           prefs::kPasswordChangeSuccessTrackerFlows);

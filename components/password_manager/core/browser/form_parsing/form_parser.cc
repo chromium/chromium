@@ -1118,9 +1118,8 @@ const FormFieldData* FindUsernameInPredictions(
     const std::vector<ProcessedField>& processed_fields,
     Interactability username_max) {
   for (autofill::FieldRendererId predicted_id : username_predictions) {
-    auto iter = std::find_if(
-        processed_fields.begin(), processed_fields.end(),
-        [predicted_id, username_max](const ProcessedField& processed_field) {
+    auto iter = base::ranges::find_if(
+        processed_fields, [&](const ProcessedField& processed_field) {
           return processed_field.field->unique_renderer_id == predicted_id &&
                  MatchesInteractability(processed_field, username_max);
         });

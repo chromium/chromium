@@ -4,13 +4,13 @@
 
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 
-#include <algorithm>
 #include <memory>
 #include <ostream>
 #include <string>
 #include <utility>
 
 #include "base/feature_list.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/password_manager/core/browser/android_affiliation/affiliation_utils.h"
@@ -93,9 +93,8 @@ bool ContainsEqualPasswordFormsUnordered(
 
   bool had_mismatched_actual_form = false;
   for (const auto& actual : actual_values) {
-    auto it_matching_expectation = std::find_if(
-        remaining_expectations.begin(), remaining_expectations.end(),
-        [&actual](const PasswordForm* expected) {
+    auto it_matching_expectation = base::ranges::find_if(
+        remaining_expectations, [&actual](const PasswordForm* expected) {
           return *expected == *actual;
         });
     if (it_matching_expectation != remaining_expectations.end()) {

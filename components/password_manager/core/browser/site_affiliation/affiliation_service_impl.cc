@@ -338,8 +338,8 @@ void AffiliationServiceImpl::CompleteInjectAffiliationAndBrandingInformation(
   // Inject the affiliated web realm into the form, if available. In case
   // multiple web realms are available, this will always choose the first
   // available web realm for injection.
-  auto affiliated_facet = std::find_if(
-      results.begin(), results.end(), [](const Facet& affiliated_facet) {
+  auto affiliated_facet =
+      base::ranges::find_if(results, [](const Facet& affiliated_facet) {
         return affiliated_facet.uri.IsValidWebFacetURI();
       });
   if (affiliated_facet != results.end())

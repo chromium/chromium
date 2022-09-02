@@ -4,10 +4,10 @@
 
 #include "components/password_manager/core/browser/sql_table_builder.h"
 
-#include <algorithm>
 #include <set>
 #include <utility>
 
+#include "base/containers/adapters.h"
 #include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
@@ -528,16 +528,12 @@ bool SQLTableBuilder::MigrateIndicesToNextFrom(unsigned old_version,
 
 std::vector<SQLTableBuilder::Column>::reverse_iterator
 SQLTableBuilder::FindLastColumnByName(const std::string& name) {
-  return std::find_if(
-      columns_.rbegin(), columns_.rend(),
-      [&name](const Column& column) { return name == column.name; });
+  return base::ranges::find(base::Reversed(columns_), name, &Column::name);
 }
 
 std::vector<SQLTableBuilder::Index>::reverse_iterator
 SQLTableBuilder::FindLastIndexByName(const std::string& name) {
-  return std::find_if(
-      indices_.rbegin(), indices_.rend(),
-      [&name](const Index& index) { return name == index.name; });
+  return base::ranges::find(base::Reversed(indices_), name, &Index::name);
 }
 
 bool SQLTableBuilder::IsVersionLastAndSealed(unsigned version) const {

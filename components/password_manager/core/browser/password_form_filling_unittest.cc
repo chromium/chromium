@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/memory/scoped_refptr.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -80,10 +81,8 @@ MATCHER_P3(IsLogin, username, password, uses_account_store, std::string()) {
 PasswordFormFillData::LoginCollection::const_iterator FindPasswordByUsername(
     const std::vector<autofill::PasswordAndMetadata>& logins,
     const std::u16string& username) {
-  return std::find_if(logins.begin(), logins.end(),
-                      [&username](const autofill::PasswordAndMetadata& login) {
-                        return login.username == username;
-                      });
+  return base::ranges::find(logins, username,
+                            &autofill::PasswordAndMetadata::username);
 }
 
 }  // namespace
