@@ -10,8 +10,7 @@ import androidx.appcompat.widget.Toolbar.OnMenuItemClickListener;
 import org.chromium.chrome.browser.ui.fast_checkout.data.FastCheckoutAutofillProfile;
 import org.chromium.chrome.browser.ui.fast_checkout.data.FastCheckoutCreditCard;
 import org.chromium.chrome.browser.ui.fast_checkout.home_screen.HomeScreenCoordinator;
-import org.chromium.ui.modelutil.ListModel;
-import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
+import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
@@ -70,7 +69,7 @@ public class FastCheckoutProperties {
             new WritableObjectPropertyKey<>("selected_profile");
 
     /** The models corresponding to all autofill profile options. */
-    public static final ReadableObjectPropertyKey<ListModel<ListItem>> PROFILE_MODEL_LIST =
+    public static final ReadableObjectPropertyKey<ModelList> PROFILE_MODEL_LIST =
             new ReadableObjectPropertyKey("profile_model_list");
 
     /** The chosen credit card option. */
@@ -78,7 +77,7 @@ public class FastCheckoutProperties {
             new WritableObjectPropertyKey<>("selected_credit_card");
 
     /** The models corresponding to all credit card options. */
-    public static final ReadableObjectPropertyKey<ListModel<ListItem>> CREDIT_CARD_MODEL_LIST =
+    public static final ReadableObjectPropertyKey<ModelList> CREDIT_CARD_MODEL_LIST =
             new ReadableObjectPropertyKey("credit_card_model_list");
 
     /** The delegate that handles actions on the home screen. */
@@ -106,15 +105,15 @@ public class FastCheckoutProperties {
      * The models that are displayed on the detail screen. This will either point to
      * PROFILE_MODEL_LIST or CREDIT_CARD_MODEL_LIST.
      */
-    public static final WritableObjectPropertyKey<ListModel<ListItem>> DETAIL_SCREEN_MODEL_LIST =
+    public static final WritableObjectPropertyKey<ModelList> DETAIL_SCREEN_MODEL_LIST =
             new WritableObjectPropertyKey<>("detail_screen_model_list");
 
     public static PropertyModel createDefaultModel() {
         return new PropertyModel.Builder(ALL_KEYS)
                 .with(VISIBLE, false)
                 .with(CURRENT_SCREEN, ScreenType.HOME_SCREEN)
-                .with(PROFILE_MODEL_LIST, new ListModel())
-                .with(CREDIT_CARD_MODEL_LIST, new ListModel())
+                .with(PROFILE_MODEL_LIST, new ModelList())
+                .with(CREDIT_CARD_MODEL_LIST, new ModelList())
                 .build();
     }
 

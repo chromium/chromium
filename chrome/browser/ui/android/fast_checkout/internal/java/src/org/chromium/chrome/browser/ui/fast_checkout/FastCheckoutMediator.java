@@ -17,6 +17,7 @@ import org.chromium.chrome.browser.ui.fast_checkout.data.FastCheckoutAutofillPro
 import org.chromium.chrome.browser.ui.fast_checkout.data.FastCheckoutCreditCard;
 import org.chromium.chrome.browser.ui.fast_checkout.detail_screen.AutofillProfileItemProperties;
 import org.chromium.chrome.browser.ui.fast_checkout.detail_screen.CreditCardItemProperties;
+import org.chromium.chrome.browser.ui.fast_checkout.detail_screen.FooterItemProperties;
 import org.chromium.chrome.browser.ui.fast_checkout.home_screen.HomeScreenCoordinator;
 import org.chromium.components.autofill_assistant.AutofillAssistantPublicTags;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
@@ -24,8 +25,8 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
-import org.chromium.ui.modelutil.ListModel;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
+import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /**
@@ -176,7 +177,7 @@ public class FastCheckoutMediator {
         assert profiles != null && profiles.length != 0;
 
         // Populate all model entries.
-        ListModel<ListItem> profileItems = mModel.get(FastCheckoutProperties.PROFILE_MODEL_LIST);
+        ModelList profileItems = mModel.get(FastCheckoutProperties.PROFILE_MODEL_LIST);
         profileItems.clear();
         for (FastCheckoutAutofillProfile profile : profiles) {
             PropertyModel model = AutofillProfileItemProperties.create(
@@ -184,9 +185,14 @@ public class FastCheckoutMediator {
                         setSelectedAutofillProfile(profile);
                         setCurrentScreen(FastCheckoutProperties.ScreenType.HOME_SCREEN);
                     });
-            ListItem item = new ListItem(DetailItemType.PROFILE, model);
-            profileItems.add(item);
+            profileItems.add(new ListItem(DetailItemType.PROFILE, model));
         }
+
+        // Add the footer item.
+        profileItems.add(new ListItem(DetailItemType.FOOTER,
+                FooterItemProperties.create(
+                        /*label=*/R.string.fast_checkout_detail_screen_add_new_text,
+                        /*onClickHandler=*/() -> mDelegate.openAutofillProfileSettings())));
 
         // TODO(crbug.com/1334642): Keep proper track of selected profile and list of available
         // profile items. For now setting the first element of the list as default.
@@ -203,8 +209,11 @@ public class FastCheckoutMediator {
         mModel.set(FastCheckoutProperties.SELECTED_PROFILE, selectedProfile);
 
         int foundProfiles = 0;
-        ListModel<ListItem> allItems = mModel.get(FastCheckoutProperties.PROFILE_MODEL_LIST);
+        ModelList allItems = mModel.get(FastCheckoutProperties.PROFILE_MODEL_LIST);
         for (ListItem item : allItems) {
+            if (item.type != DetailItemType.PROFILE) {
+                continue;
+            }
             boolean isSelected = selectedProfile.equals(
                     item.model.get(AutofillProfileItemProperties.AUTOFILL_PROFILE));
             item.model.set(AutofillProfileItemProperties.IS_SELECTED, isSelected);
@@ -226,7 +235,7 @@ public class FastCheckoutMediator {
         assert creditCards != null && creditCards.length != 0;
 
         // Populate all model entries.
-        ListModel<ListItem> cardItems = mModel.get(FastCheckoutProperties.CREDIT_CARD_MODEL_LIST);
+        ModelList cardItems = mModel.get(FastCheckoutProperties.CREDIT_CARD_MODEL_LIST);
         cardItems.clear();
         for (FastCheckoutCreditCard card : creditCards) {
             PropertyModel model = CreditCardItemProperties.create(
@@ -237,6 +246,12 @@ public class FastCheckoutMediator {
             ListItem item = new ListItem(DetailItemType.CREDIT_CARD, model);
             cardItems.add(item);
         }
+
+        // Add the footer item.
+        cardItems.add(new ListItem(DetailItemType.FOOTER,
+                FooterItemProperties.create(
+                        /*label=*/R.string.fast_checkout_detail_screen_add_new_text,
+                        /*onClickHandler=*/() -> mDelegate.openCreditCardSettings())));
 
         // TODO(crbug.com/1334642): Keep proper track of selected profile and list of available
         // profile items. For now setting the first element of the list as default.
@@ -253,8 +268,11 @@ public class FastCheckoutMediator {
         mModel.set(FastCheckoutProperties.SELECTED_CREDIT_CARD, selectedCreditCard);
 
         int foundCards = 0;
-        ListModel<ListItem> allItems = mModel.get(FastCheckoutProperties.CREDIT_CARD_MODEL_LIST);
+        ModelList allItems = mModel.get(FastCheckoutProperties.CREDIT_CARD_MODEL_LIST);
         for (ListItem item : allItems) {
+            if (item.type != DetailItemType.CREDIT_CARD) {
+                continue;
+            }
             boolean isSelected =
                     selectedCreditCard.equals(item.model.get(CreditCardItemProperties.CREDIT_CARD));
             item.model.set(CreditCardItemProperties.IS_SELECTED, isSelected);
@@ -285,7 +303,9 @@ public class FastCheckoutMediator {
         } else if (screenType == ScreenType.CREDIT_CARD_SCREEN) {
             mModel.set(FastCheckoutProperties.DETAIL_SCREEN_SETTINGS_CLICK_HANDLER,
                     createSettingsOnClickListener(() -> mDelegate.openCreditCardSettings()));
-            // TODO(crbug.com/1355310): Switch to credit card model, set title, etc.
+            // TODO(crbug.com/1355310): Set title, etc.
+            mModel.set(FastCheckoutProperties.DETAIL_SCREEN_MODEL_LIST,
+                    mModel.get(FastCheckoutProperties.CREDIT_CARD_MODEL_LIST));
         }
 
         mModel.set(FastCheckoutProperties.CURRENT_SCREEN, screenType);

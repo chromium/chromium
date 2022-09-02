@@ -17,11 +17,11 @@ import android.view.View;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.chromium.chrome.browser.ui.fast_checkout.FastCheckoutProperties.DetailItemType;
 import org.chromium.chrome.browser.ui.fast_checkout.R;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.ui.modelutil.RecyclerViewAdapter;
-import org.chromium.ui.modelutil.SimpleRecyclerViewMcp;
+import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 
 /**
  * A ViewHolder and a static bind method for FastCheckout's Autofill profile screen.
@@ -62,12 +62,13 @@ public class DetailScreenViewBinder {
         } else if (propertyKey == DETAIL_SCREEN_SETTINGS_MENU_TITLE) {
             view.mSettingsMenuItem.setTitle(model.get(DETAIL_SCREEN_SETTINGS_MENU_TITLE));
         } else if (propertyKey == DETAIL_SCREEN_MODEL_LIST) {
-            view.setAdapter(new RecyclerViewAdapter<>(
-                    new SimpleRecyclerViewMcp<>(model.get(DETAIL_SCREEN_MODEL_LIST),
-                            (item)
-                                    -> item.type,
-                            AutofillProfileItemViewBinder::connectPropertyModel),
-                    AutofillProfileItemViewBinder::createViewHolder));
+            SimpleRecyclerViewAdapter adapter =
+                    new SimpleRecyclerViewAdapter(model.get(DETAIL_SCREEN_MODEL_LIST));
+            adapter.registerType(DetailItemType.FOOTER, FooterItemViewBinder::create,
+                    FooterItemViewBinder::bind);
+            adapter.registerType(DetailItemType.PROFILE, AutofillProfileItemViewBinder::create,
+                    AutofillProfileItemViewBinder::bind);
+            view.setAdapter(adapter);
         }
     }
 }

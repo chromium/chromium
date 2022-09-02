@@ -8,54 +8,46 @@ import static org.chromium.chrome.browser.ui.fast_checkout.detail_screen.Autofil
 import static org.chromium.chrome.browser.ui.fast_checkout.detail_screen.AutofillProfileItemProperties.IS_SELECTED;
 import static org.chromium.chrome.browser.ui.fast_checkout.detail_screen.AutofillProfileItemProperties.ON_CLICK_LISTENER;
 
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
-import org.chromium.chrome.browser.ui.fast_checkout.FastCheckoutProperties.DetailItemType;
 import org.chromium.chrome.browser.ui.fast_checkout.R;
 import org.chromium.chrome.browser.ui.fast_checkout.data.FastCheckoutAutofillProfile;
-import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
-/**
- * AutofillProfileItemViewBinder contains factory and bind methods for
- * {@link AutofillProfileItemViewHolder}.
- */
-public class AutofillProfileItemViewBinder {
-    // TODO(crbug.com/1355310): Make proper factory function that can also deal with
-    // credit card items and footer items.
-    static AutofillProfileItemViewHolder createViewHolder(ViewGroup parent, int itemType) {
-        // Only one type of item is supported.
-        assert itemType == DetailItemType.PROFILE;
-        return new AutofillProfileItemViewHolder(
-                parent, R.layout.fast_checkout_autofill_profile_item);
-    }
-
-    /** Connects the model contained in item with viewHolder. */
-    static void connectPropertyModel(
-            AutofillProfileItemViewHolder viewHolder, MVCListAdapter.ListItem item) {
-        PropertyModelChangeProcessor.create(
-                item.model, viewHolder, AutofillProfileItemViewBinder::bind);
+/** A binder class for Autofill profile items on the detail sheet. */
+class AutofillProfileItemViewBinder {
+    /** Creates a view for Autofill profile items on the detail sheet. */
+    static View create(ViewGroup parent) {
+        return LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.fast_checkout_autofill_profile_item, parent, false);
     }
 
     /** Binds the item view with to the model properties. */
-    static void bind(
-            PropertyModel model, AutofillProfileItemViewHolder view, PropertyKey propertyKey) {
+    static void bind(PropertyModel model, View view, PropertyKey propertyKey) {
         if (propertyKey == AUTOFILL_PROFILE) {
             FastCheckoutAutofillProfile profile = model.get(AUTOFILL_PROFILE);
-
-            view.name.setText(profile.getFullName());
-            view.streetAddress.setText(profile.getStreetAddress());
-            view.cityAndPostalCode.setText(getCityAndPostalCode(profile));
-            view.country.setText(profile.getCountryName());
-            view.email.setText(profile.getEmailAddress());
-            view.phoneNumber.setText(profile.getPhoneNumber());
+            ((TextView) view.findViewById(R.id.fast_checkout_autofill_profile_item_name))
+                    .setText(profile.getFullName());
+            ((TextView) view.findViewById(R.id.fast_checkout_autofill_profile_item_street_address))
+                    .setText(profile.getStreetAddress());
+            ((TextView) view.findViewById(
+                     R.id.fast_checkout_autofill_profile_item_city_and_postal_code))
+                    .setText(getCityAndPostalCode(profile));
+            ((TextView) view.findViewById(R.id.fast_checkout_autofill_profile_item_country))
+                    .setText(profile.getCountryName());
+            ((TextView) view.findViewById(R.id.fast_checkout_autofill_profile_item_email))
+                    .setText(profile.getEmailAddress());
+            ((TextView) view.findViewById(R.id.fast_checkout_autofill_profile_item_phone_number))
+                    .setText(profile.getPhoneNumber());
         } else if (propertyKey == ON_CLICK_LISTENER) {
-            view.itemView.setOnClickListener((v) -> model.get(ON_CLICK_LISTENER).run());
+            view.setOnClickListener((v) -> model.get(ON_CLICK_LISTENER).run());
         } else if (propertyKey == IS_SELECTED) {
-            view.selectedIcon.setVisibility(model.get(IS_SELECTED) ? View.VISIBLE : View.GONE);
+            view.findViewById(R.id.fast_checkout_autofill_profile_item_selected_icon)
+                    .setVisibility(model.get(IS_SELECTED) ? View.VISIBLE : View.GONE);
         }
     }
 

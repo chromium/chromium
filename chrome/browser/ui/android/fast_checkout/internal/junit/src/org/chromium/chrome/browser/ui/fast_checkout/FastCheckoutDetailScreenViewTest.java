@@ -27,6 +27,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.filters.SmallTest;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -45,9 +46,10 @@ import org.chromium.chrome.browser.ui.fast_checkout.FastCheckoutProperties.Detai
 import org.chromium.chrome.browser.ui.fast_checkout.data.FastCheckoutAutofillProfile;
 import org.chromium.chrome.browser.ui.fast_checkout.detail_screen.AutofillProfileItemProperties;
 import org.chromium.chrome.browser.ui.fast_checkout.detail_screen.DetailScreenCoordinator;
+import org.chromium.chrome.browser.ui.fast_checkout.detail_screen.FooterItemProperties;
 import org.chromium.ui.base.TestActivity;
-import org.chromium.ui.modelutil.ListModel;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
+import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /**
@@ -147,7 +149,7 @@ public class FastCheckoutDetailScreenViewTest {
     public void testRecyclerViewPopulatesProfileItemEntriesAndReactsToClicks() {
         Runnable callback1 = mock(Runnable.class);
         Runnable callback2 = mock(Runnable.class);
-        ListModel<ListItem> models = mModel.get(PROFILE_MODEL_LIST);
+        ModelList models = mModel.get(PROFILE_MODEL_LIST);
 
         models.add(new ListItem(DetailItemType.PROFILE,
                 AutofillProfileItemProperties.create(sSampleProfile1, /*isSelected=*/false,
@@ -160,10 +162,10 @@ public class FastCheckoutDetailScreenViewTest {
 
         // Check that the sheet is populated properly.
         ShadowLooper.shadowMainLooper().idle();
-        assertThat(getProfileItems().getChildCount(), is(2));
+        assertThat(getListItems().getChildCount(), is(2));
 
         // Check that clicks are handled properly.
-        getProfileItemAt(0).performClick();
+        getListItemAt(0).performClick();
         ShadowLooper.shadowMainLooper().idle();
         verify(callback1, times(1)).run();
         verify(callback2, never()).run();
@@ -172,7 +174,7 @@ public class FastCheckoutDetailScreenViewTest {
     @Test
     @SmallTest
     public void testRecyclerViewBindsProfileDataToItemView() {
-        ListModel<ListItem> models = mModel.get(PROFILE_MODEL_LIST);
+        ModelList models = mModel.get(PROFILE_MODEL_LIST);
         models.add(new ListItem(DetailItemType.PROFILE,
                 AutofillProfileItemProperties.create(sSampleProfile1, /*isSelected=*/false,
                         /*onClickListener=*/() -> {})));
@@ -183,7 +185,7 @@ public class FastCheckoutDetailScreenViewTest {
 
         // Check that the sheet is populated properly.
         ShadowLooper.shadowMainLooper().idle();
-        assertThat(getProfileItems().getChildCount(), is(2));
+        assertThat(getListItems().getChildCount(), is(2));
 
         assertThatProfileItemLayoutIsCorrectAt(0, sSampleProfile1, /*isSelected=*/false);
         assertThatProfileItemLayoutIsCorrectAt(1, sSampleProfile2, /*isSelected=*/true);
@@ -198,44 +200,72 @@ public class FastCheckoutDetailScreenViewTest {
         assertThatProfileItemLayoutIsCorrectAt(1, sSampleProfile2, /*isSelected=*/false);
     }
 
-    private RecyclerView getProfileItems() {
+    @Test
+    @SmallTest
+    public void testRecyclerViewHandlesFooterItemCorrectly() {
+        Runnable callback = mock(Runnable.class);
+
+        ModelList models = mModel.get(PROFILE_MODEL_LIST);
+        models.add(new ListItem(DetailItemType.PROFILE,
+                AutofillProfileItemProperties.create(sSampleProfile1, /*isSelected=*/false,
+                        /*onClickListener=*/() -> { Assert.fail(); })));
+        models.add(new ListItem(DetailItemType.FOOTER,
+                FooterItemProperties.create(
+                        /*label=*/R.string.fast_checkout_detail_screen_add_new_text,
+                        /*onClickHandler=*/callback)));
+        mModel.set(DETAIL_SCREEN_MODEL_LIST, models);
+
+        // Check that the sheet is populated properly.
+        ShadowLooper.shadowMainLooper().idle();
+        assertThat(getListItems().getChildCount(), is(2));
+
+        // Check that the correct text is set for the footer item.
+        assertThat(getTextFromListItemWithId(1, R.id.fast_checkout_add_new_item_label),
+                equalTo(mView.getContext().getResources().getString(
+                        R.string.fast_checkout_detail_screen_add_new_text)));
+
+        // Check that clicks are handled properly.
+        getListItemAt(1).performClick();
+        ShadowLooper.shadowMainLooper().idle();
+        verify(callback, times(1)).run();
+    }
+
+    private RecyclerView getListItems() {
         return mView.findViewById(R.id.fast_checkout_detail_screen_recycler_view);
     }
 
-    private View getProfileItemAt(int index) {
-        return getProfileItems().getChildAt(index);
+    private View getListItemAt(int index) {
+        return getListItems().getChildAt(index);
+    }
+
+    /** Returns the text contained in the item with resId inside the item at this index. */
+    private String getTextFromListItemWithId(int index, int resId) {
+        TextView textView = getListItemAt(index).findViewById(resId);
+        return textView.getText().toString();
     }
 
     /** Asserts that the layout of the profile item at given index is correct. */
     private void assertThatProfileItemLayoutIsCorrectAt(
             int index, FastCheckoutAutofillProfile profile, boolean isSelected) {
-        assertThat(
-                getTextFromProfileItemWithId(index, R.id.fast_checkout_autofill_profile_item_name),
+        assertThat(getTextFromListItemWithId(index, R.id.fast_checkout_autofill_profile_item_name),
                 equalTo(profile.getFullName()));
-        assertThat(getTextFromProfileItemWithId(
+        assertThat(getTextFromListItemWithId(
                            index, R.id.fast_checkout_autofill_profile_item_street_address),
                 equalTo(profile.getStreetAddress()));
-        assertThat(getTextFromProfileItemWithId(
+        assertThat(getTextFromListItemWithId(
                            index, R.id.fast_checkout_autofill_profile_item_city_and_postal_code),
                 equalTo(profile.getLocality() + ", " + profile.getPostalCode()));
-        assertThat(getTextFromProfileItemWithId(
-                           index, R.id.fast_checkout_autofill_profile_item_country),
-                equalTo(profile.getCountryName()));
         assertThat(
-                getTextFromProfileItemWithId(index, R.id.fast_checkout_autofill_profile_item_email),
+                getTextFromListItemWithId(index, R.id.fast_checkout_autofill_profile_item_country),
+                equalTo(profile.getCountryName()));
+        assertThat(getTextFromListItemWithId(index, R.id.fast_checkout_autofill_profile_item_email),
                 equalTo(profile.getEmailAddress()));
-        assertThat(getTextFromProfileItemWithId(
+        assertThat(getTextFromListItemWithId(
                            index, R.id.fast_checkout_autofill_profile_item_phone_number),
                 equalTo(profile.getPhoneNumber()));
 
-        View icon = getProfileItemAt(index).findViewById(
+        View icon = getListItemAt(index).findViewById(
                 R.id.fast_checkout_autofill_profile_item_selected_icon);
         assertThat(icon.getVisibility(), is(isSelected ? View.VISIBLE : View.GONE));
-    }
-
-    /** Returns the text contained in the item with resId inside the view at this index. */
-    private String getTextFromProfileItemWithId(int index, int resId) {
-        TextView textView = getProfileItemAt(index).findViewById(resId);
-        return textView.getText().toString();
     }
 }
