@@ -1058,6 +1058,12 @@ const char kAccessibilitySelectToSpeakPrefsMigrationDescription[] =
     "This option enables Select-to-Speak prefs migration from extension local "
     "storage to Chrome prefs.";
 
+const char kAccessibilitySelectToSpeakPageMigrationName[] =
+    "Select-to-Speak Page Migration";
+const char kAccessibilitySelectToSpeakPageMigrationDescription[] =
+    "This option enables Select-to-Speak page migration from extension options "
+    "page to a Chrome OS settings page.";
+
 const char kPostQuantumCECPQ2Name[] = "TLS Post-Quantum Confidentiality";
 const char kPostQuantumCECPQ2Description[] =
     "This option enables a post-quantum (i.e. resistent to quantum computers) "

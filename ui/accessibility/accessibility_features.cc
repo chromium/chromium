@@ -167,6 +167,15 @@ bool AreExperimentalAccessibilityColorEnhancementSettingsEnabled() {
       ::features::kExperimentalAccessibilityColorEnhancementSettings);
 }
 
+const base::Feature kAccessibilitySelectToSpeakPageMigration{
+    "AccessibilitySelectToSpeakPageMigration",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
+bool IsAccessibilitySelectToSpeakPageMigrationEnabled() {
+  return base::FeatureList::IsEnabled(
+      ::features::kAccessibilitySelectToSpeakPageMigration);
+}
+
 const base::Feature kAccessibilitySelectToSpeakPrefsMigration{
     "AccessibilitySelectToSpeakPrefsMigration",
     base::FEATURE_DISABLED_BY_DEFAULT};

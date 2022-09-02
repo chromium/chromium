@@ -6727,6 +6727,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAccessibilityServiceDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(features::kAccessibilityService)},
 
+    {"enable-accessibility-select-to-speak-page-migration",
+     flag_descriptions::kAccessibilitySelectToSpeakPageMigrationName,
+     flag_descriptions::kAccessibilitySelectToSpeakPageMigrationDescription,
+     kOsCrOS,
+     FEATURE_VALUE_TYPE(features::kAccessibilitySelectToSpeakPageMigration)},
+
     {"enable-accessibility-select-to-speak-prefs-migration",
      flag_descriptions::kAccessibilitySelectToSpeakPrefsMigrationName,
      flag_descriptions::kAccessibilitySelectToSpeakPrefsMigrationDescription,

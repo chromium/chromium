@@ -137,6 +137,14 @@ AX_BASE_EXPORT extern const base::Feature
 AX_BASE_EXPORT bool
 AreExperimentalAccessibilityColorEnhancementSettingsEnabled();
 
+// Enables Select-to-Speak settings page migration from extension options page
+// to Chrome OS settings page.
+AX_BASE_EXPORT extern const base::Feature
+    kAccessibilitySelectToSpeakPageMigration;
+
+// Returns true if Select-to-Speak settings page migration enabled.
+AX_BASE_EXPORT bool IsAccessibilitySelectToSpeakPageMigrationEnabled();
+
 // Enables AccessibilitySelectToSpeakPrefsMigration.
 AX_BASE_EXPORT extern const base::Feature
     kAccessibilitySelectToSpeakPrefsMigration;
