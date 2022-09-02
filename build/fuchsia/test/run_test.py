@@ -18,7 +18,8 @@ from flash_device import flash, register_flash_args
 from log_manager import LogManager, start_system_log
 from publish_package import publish_packages, register_package_args
 from run_blink_test import BlinkTestRunner
-from run_executable_test import create_executable_test_runner
+from run_executable_test import create_executable_test_runner, \
+                                register_executable_test_args
 from run_gpu_test import GPUTestRunner
 from serve_repo import register_serve_args, serve_repository
 from start_emulator import create_emulator_from_args, register_emulator_args
@@ -55,6 +56,7 @@ def main():
     register_common_args(parser)
     register_device_args(parser)
     register_emulator_args(parser)
+    register_executable_test_args(parser)
     register_flash_args(parser, default_os_check='ignore')
     register_log_args(parser)
     register_package_args(parser, allow_temp_repo=True)
