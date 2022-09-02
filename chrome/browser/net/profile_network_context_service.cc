@@ -851,9 +851,9 @@ void ProfileNetworkContextService::ConfigureNetworkContextParamsInternal(
     network_context_params->file_paths->sct_auditing_pending_reports_file_name =
         base::FilePath(chrome::kSCTAuditingPendingReportsFileName);
   }
-  const base::Value* hsts_policy_bypass_list =
-      profile_->GetPrefs()->GetList(prefs::kHSTSPolicyBypassList);
-  for (const auto& value : hsts_policy_bypass_list->GetListDeprecated()) {
+  const base::Value::List& hsts_policy_bypass_list =
+      profile_->GetPrefs()->GetValueList(prefs::kHSTSPolicyBypassList);
+  for (const auto& value : hsts_policy_bypass_list) {
     const std::string* string_value = value.GetIfString();
     if (!string_value)
       continue;
