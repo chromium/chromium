@@ -676,7 +676,6 @@ TEST_F(TouchToFillControllerTest, ShowWebAuthnCredential) {
 
   TouchToFillWebAuthnCredential credential(
       TouchToFillWebAuthnCredential::Username(u"alice@example.com"),
-      TouchToFillWebAuthnCredential::DisplayName(u"alice"),
       TouchToFillWebAuthnCredential::BackendId("12345"));
   std::vector<TouchToFillWebAuthnCredential> credentials({credential});
 

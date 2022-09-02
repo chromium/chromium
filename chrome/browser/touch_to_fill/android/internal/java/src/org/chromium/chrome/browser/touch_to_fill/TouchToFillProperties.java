@@ -41,28 +41,29 @@ class TouchToFillProperties {
                 .build();
     }
 
+    static class FaviconOrFallback {
+        final String mUrl;
+        final @Nullable Bitmap mIcon;
+        final int mFallbackColor;
+        final boolean mIsFallbackColorDefault;
+        final int mIconType;
+        final int mIconSize;
+
+        FaviconOrFallback(String originUrl, @Nullable Bitmap icon, int fallbackColor,
+                boolean isFallbackColorDefault, int iconType, int iconSize) {
+            mUrl = originUrl;
+            mIcon = icon;
+            mFallbackColor = fallbackColor;
+            mIsFallbackColorDefault = isFallbackColorDefault;
+            mIconType = iconType;
+            mIconSize = iconSize;
+        }
+    }
+
     /**
      * Properties for a credential entry in TouchToFill sheet.
      */
     static class CredentialProperties {
-        static class FaviconOrFallback {
-            final String mUrl;
-            final @Nullable Bitmap mIcon;
-            final int mFallbackColor;
-            final boolean mIsFallbackColorDefault;
-            final int mIconType;
-            final int mIconSize;
-
-            FaviconOrFallback(String originUrl, @Nullable Bitmap icon, int fallbackColor,
-                    boolean isFallbackColorDefault, int iconType, int iconSize) {
-                mUrl = originUrl;
-                mIcon = icon;
-                mFallbackColor = fallbackColor;
-                mIsFallbackColorDefault = isFallbackColorDefault;
-                mIconType = iconType;
-                mIconSize = iconSize;
-            }
-        }
         static final PropertyModel
                 .WritableObjectPropertyKey<FaviconOrFallback> FAVICON_OR_FALLBACK =
                 new PropertyModel.WritableObjectPropertyKey<>("favicon");
@@ -87,17 +88,18 @@ class TouchToFillProperties {
      */
     static class WebAuthnCredentialProperties {
         static final PropertyModel
+                .WritableObjectPropertyKey<FaviconOrFallback> WEBAUTHN_FAVICON_OR_FALLBACK =
+                new PropertyModel.WritableObjectPropertyKey<>("favicon");
+        static final PropertyModel
                 .ReadableObjectPropertyKey<WebAuthnCredential> WEBAUTHN_CREDENTIAL =
                 new PropertyModel.ReadableObjectPropertyKey<>("webauthn_credential");
-        static final PropertyModel.ReadableIntPropertyKey WEBAUTHN_ICON =
-                new PropertyModel.ReadableIntPropertyKey("webauthn_icon");
         static final PropertyModel.ReadableObjectPropertyKey<Boolean> SHOW_WEBAUTHN_SUBMIT_BUTTON =
                 new PropertyModel.ReadableObjectPropertyKey<>("submit_credential");
         static final PropertyModel.ReadableObjectPropertyKey<Callback<WebAuthnCredential>>
                 ON_WEBAUTHN_CLICK_LISTENER =
                 new PropertyModel.ReadableObjectPropertyKey<>("on_webauthn_click_listener");
 
-        static final PropertyKey[] ALL_KEYS = {WEBAUTHN_CREDENTIAL, WEBAUTHN_ICON,
+        static final PropertyKey[] ALL_KEYS = {WEBAUTHN_CREDENTIAL, WEBAUTHN_FAVICON_OR_FALLBACK,
                 ON_WEBAUTHN_CLICK_LISTENER, SHOW_WEBAUTHN_SUBMIT_BUTTON};
 
         private WebAuthnCredentialProperties() {}
@@ -109,8 +111,6 @@ class TouchToFillProperties {
     static class HeaderProperties {
         static final PropertyModel.ReadableBooleanPropertyKey SHOW_SUBMIT_SUBTITLE =
                 new PropertyModel.ReadableBooleanPropertyKey("submit_credential");
-        static final PropertyModel.ReadableBooleanPropertyKey SINGLE_CREDENTIAL =
-                new PropertyModel.ReadableBooleanPropertyKey("single_credential");
         static final PropertyModel.ReadableObjectPropertyKey<String> FORMATTED_URL =
                 new PropertyModel.ReadableObjectPropertyKey<>("formatted_url");
         static final PropertyModel.ReadableBooleanPropertyKey ORIGIN_SECURE =
@@ -118,8 +118,19 @@ class TouchToFillProperties {
         static final PropertyModel.ReadableIntPropertyKey IMAGE_DRAWABLE_ID =
                 new PropertyModel.ReadableIntPropertyKey("image_drawable_id");
 
+        // TODO(https://crbug.com/1359047): These three computed properties are all used to
+        // determine the sheet title. Instead, TouchToFillMediator should select the right string
+        // resource to use.
+        static final PropertyModel.ReadableBooleanPropertyKey SINGLE_CREDENTIAL =
+                new PropertyModel.ReadableBooleanPropertyKey("single_credential");
+        static final PropertyModel.ReadableBooleanPropertyKey PASSWORD_CRED_PRESENT =
+                new PropertyModel.ReadableBooleanPropertyKey("password_cred_present");
+        static final PropertyModel.ReadableBooleanPropertyKey WEBAUTHN_CRED_PRESENT =
+                new PropertyModel.ReadableBooleanPropertyKey("webauthn_cred_present");
+
         static final PropertyKey[] ALL_KEYS = {SHOW_SUBMIT_SUBTITLE, SINGLE_CREDENTIAL,
-                FORMATTED_URL, ORIGIN_SECURE, IMAGE_DRAWABLE_ID};
+                FORMATTED_URL, ORIGIN_SECURE, IMAGE_DRAWABLE_ID, PASSWORD_CRED_PRESENT,
+                WEBAUTHN_CRED_PRESENT};
 
         private HeaderProperties() {}
     }

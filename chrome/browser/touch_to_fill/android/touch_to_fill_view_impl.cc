@@ -56,8 +56,6 @@ TouchToFillWebAuthnCredential ConvertJavaWebAuthnCredential(
   return TouchToFillWebAuthnCredential(
       TouchToFillWebAuthnCredential::Username(ConvertJavaStringToUTF16(
           env, Java_WebAuthnCredential_getUsername(env, credential))),
-      TouchToFillWebAuthnCredential::DisplayName(ConvertJavaStringToUTF16(
-          env, Java_WebAuthnCredential_getDisplayName(env, credential))),
       TouchToFillWebAuthnCredential::BackendId(ConvertJavaStringToUTF8(
           env, Java_WebAuthnCredential_getId(env, credential))));
 }
@@ -115,7 +113,6 @@ void TouchToFillViewImpl::Show(
     Java_TouchToFillBridge_insertWebAuthnCredential(
         env, webauthn_credential_array, i,
         ConvertUTF16ToJavaString(env, credential.username().value()),
-        ConvertUTF16ToJavaString(env, credential.display_name().value()),
         ConvertUTF8ToJavaString(env, credential.id().value()));
   }
 

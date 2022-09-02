@@ -53,7 +53,7 @@ import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.touch_to_fill.TouchToFillComponent.UserAction;
-import org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.CredentialProperties.FaviconOrFallback;
+import org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.FaviconOrFallback;
 import org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.ItemType;
 import org.chromium.chrome.browser.touch_to_fill.data.Credential;
 import org.chromium.chrome.browser.touch_to_fill.data.WebAuthnCredential;
@@ -89,7 +89,7 @@ public class TouchToFillControllerTest {
     private static final Credential CARL =
             new Credential("Carl", "G3h3!m", "Carl", TEST_URL.getSpec(), false, false, 0);
     private static final WebAuthnCredential DINO =
-            new WebAuthnCredential("dino@example.com", "Dino", "12345");
+            new WebAuthnCredential("dino@example.com", "12345");
     private static final @Px int DESIRED_FAVICON_SIZE = 64;
 
     @Rule

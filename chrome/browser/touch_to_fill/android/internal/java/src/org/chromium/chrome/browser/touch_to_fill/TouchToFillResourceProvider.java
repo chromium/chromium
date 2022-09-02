@@ -23,7 +23,14 @@ interface TouchToFillResourceProvider {
     /**
      * Returns the drawable id to be displayed beside a WebAuthn credential.
      *
+     * @deprecated This is being removed because the WebAuthn Icon is no
+     *             longer used.
      * @return A {@link DrawableRes} that is never 0.
      */
-    public @DrawableRes int getWebAuthnIconId();
+    @Deprecated
+    public default @DrawableRes int getWebAuthnIconId() {
+        /* TODO(https://crbug.com/1318942): Remove this default method
+         * after the downstream override is removed. */
+        return R.drawable.touch_to_fill_webauthn_icon;
+    }
 }

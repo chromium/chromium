@@ -182,7 +182,7 @@
       <message name="IDS_TOUCH_TO_FILL_SHEET_TITLE" desc="Header for Touch To Fill sheet where users can pick a credential to fill into a form to.">
         Choose an account
       </message>
-      <message name="IDS_TOUCH_TO_FILL_SHEET_UNIFORM_TITLE" desc="Header for Touch To Fill sheet where users can pick a credential to fill into a form. Will replace SHEET_TITLE_SINGLE and SHEET_TITLE.">
+      <message name="IDS_TOUCH_TO_FILL_SHEET_UNIFORM_TITLE" desc="Header for Touch To Fill sheet where users can pick a password credential to fill into a form. Will replace SHEET_TITLE_SINGLE and SHEET_TITLE.">
         Use saved password?
       </message>
       <message name="IDS_TOUCH_TO_FILL_SHEET_SUBTITLE_NOT_SECURE" desc="Subtitle for Touch To Fill sheet when the website is not secure. Note that similarly to the omnibox 'not secure' in this case primarily refers to HTTPS connection security. So prefer translations with a connotation of 'not private' (someone can intercept your communication with the site) rather than 'not trustworthy' (which would be a judgment of site reputation).">
@@ -215,8 +215,14 @@
       <message name="IDS_TOUCH_TO_FILL_SIGNIN" desc="Title of the button that continues filling and submitting the only available credential.">
         Sign in
       </message>
-      <message name="IDS_TOUCH_TO_FILL_SHEET_GENERIC_TITLE" desc="Header for Touch To Fill sheet where users can pick a credential to sign in to a website. Generalizes for password credentials and WebAuthn credentials.">
-        Sign in to this site?
+      <message name="IDS_TOUCH_TO_FILL_SHEET_TITLE_PASSKEY" desc="Header for Touch To Fill sheet where users can pick a Passkey credential to sign in to a website.">
+        Used saved passkey?
+      </message>
+      <message name="IDS_TOUCH_TO_FILL_SHEET_TITLE_PASSWORD_OR_PASSKEY" desc="Header for Touch To Fill sheet where users can pick a password or Passkey credential to sign in to a website.">
+        Used saved password or passkey?
+      </message>
+      <message name="IDS_TOUCH_TO_FILL_SHEET_WEBAUTHN_CREDENTIAL_CONTEXT" desc="Context string for second line of a Passkey on the Touch To Fill sheet, beneath the username.">
+        Use device unlock
       </message>
     </messages>
   </release>
