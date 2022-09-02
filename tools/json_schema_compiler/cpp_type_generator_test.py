@@ -213,16 +213,11 @@ class CppTypeGeneratorTest(unittest.TestCase):
                                _FakeSchemaLoader(None))
     self.assertEqual('std::vector<std::string>',
         manager.GetCppType(
-            self.permissions.types['Permissions'].properties['origins'].type_,
-            is_in_container=False))
-    self.assertEqual('std::vector<std::string>',
-        manager.GetCppType(
-            self.permissions.types['Permissions'].properties['origins'].type_,
-            is_in_container=True))
+            self.permissions.types['Permissions'].properties['origins'].type_))
     self.assertEqual(
         'bool',
         manager.GetCppType(self.permissions.functions['contains'].returns_async.
-                           params[0].type_, is_in_container=True))
+                           params[0].type_))
 
   def testHardIncludesForEnums(self):
     """Tests that enums generate hard includes. Note that it's important to use

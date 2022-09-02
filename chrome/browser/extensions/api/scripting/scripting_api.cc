@@ -615,9 +615,8 @@ ExtensionFunction::ResponseAction ScriptingExecuteScriptFunction::Run() {
     std::vector<std::string> string_args;
     string_args.reserve(injection_.args->size());
     for (const auto& arg : *injection_.args) {
-      DCHECK(arg);
       std::string json;
-      if (!base::JSONWriter::Write(*arg, &json))
+      if (!base::JSONWriter::Write(arg, &json))
         return RespondNow(Error("Unserializable argument passed."));
       string_args.push_back(std::move(json));
     }

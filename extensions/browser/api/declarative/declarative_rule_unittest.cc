@@ -15,7 +15,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using base::test::ParseJson;
-using base::test::ParseJsonDeprecated;
 using url_matcher::URLMatcher;
 using url_matcher::URLMatcherConditionFactory;
 using url_matcher::URLMatcherConditionSet;
@@ -67,8 +66,8 @@ typedef DeclarativeConditionSet<RecordingCondition> RecordingConditionSet;
 TEST(DeclarativeConditionTest, ErrorConditionSet) {
   URLMatcher matcher;
   RecordingConditionSet::Values conditions;
-  conditions.push_back(ParseJsonDeprecated("{\"key\": 1}"));
-  conditions.push_back(ParseJsonDeprecated("{\"bad_key\": 2}"));
+  conditions.push_back(ParseJson("{\"key\": 1}"));
+  conditions.push_back(ParseJson("{\"bad_key\": 2}"));
 
   std::string error;
   std::unique_ptr<RecordingConditionSet> result = RecordingConditionSet::Create(
@@ -80,8 +79,8 @@ TEST(DeclarativeConditionTest, ErrorConditionSet) {
 TEST(DeclarativeConditionTest, CreateConditionSet) {
   URLMatcher matcher;
   RecordingConditionSet::Values conditions;
-  conditions.push_back(ParseJsonDeprecated("{\"key\": 1}"));
-  conditions.push_back(ParseJsonDeprecated("[\"val1\", 2]"));
+  conditions.push_back(ParseJson("{\"key\": 1}"));
+  conditions.push_back(ParseJson("[\"val1\", 2]"));
 
   // Test insertion
   std::string error;
@@ -92,8 +91,7 @@ TEST(DeclarativeConditionTest, CreateConditionSet) {
   EXPECT_EQ(2u, result->conditions().size());
 
   EXPECT_EQ(matcher.condition_factory(), result->conditions()[0]->factory);
-  EXPECT_EQ(*ParseJsonDeprecated("{\"key\": 1}"),
-            *result->conditions()[0]->value);
+  EXPECT_EQ(ParseJson("{\"key\": 1}"), *result->conditions()[0]->value);
 }
 
 struct FulfillableCondition {
@@ -159,10 +157,10 @@ struct FulfillableCondition {
 TEST(DeclarativeConditionTest, FulfillConditionSet) {
   typedef DeclarativeConditionSet<FulfillableCondition> FulfillableConditionSet;
   FulfillableConditionSet::Values conditions;
-  conditions.push_back(ParseJsonDeprecated("{\"url_id\": 1, \"max\": 3}"));
-  conditions.push_back(ParseJsonDeprecated("{\"url_id\": 2, \"max\": 5}"));
-  conditions.push_back(ParseJsonDeprecated("{\"url_id\": 3, \"max\": 1}"));
-  conditions.push_back(ParseJsonDeprecated("{\"max\": -5}"));  // No url.
+  conditions.push_back(ParseJson("{\"url_id\": 1, \"max\": 3}"));
+  conditions.push_back(ParseJson("{\"url_id\": 2, \"max\": 5}"));
+  conditions.push_back(ParseJson("{\"url_id\": 3, \"max\": 1}"));
+  conditions.push_back(ParseJson("{\"max\": -5}"));  // No url.
 
   // Test insertion
   std::string error;
@@ -261,8 +259,8 @@ typedef DeclarativeActionSet<SummingAction> SummingActionSet;
 
 TEST(DeclarativeActionTest, ErrorActionSet) {
   SummingActionSet::Values actions;
-  actions.push_back(ParseJsonDeprecated("{\"value\": 1}"));
-  actions.push_back(ParseJsonDeprecated("{\"error\": \"the error\"}"));
+  actions.push_back(ParseJson("{\"value\": 1}"));
+  actions.push_back(ParseJson("{\"error\": \"the error\"}"));
 
   std::string error;
   bool bad = false;
@@ -273,8 +271,8 @@ TEST(DeclarativeActionTest, ErrorActionSet) {
   EXPECT_FALSE(result);
 
   actions.clear();
-  actions.push_back(ParseJsonDeprecated("{\"value\": 1}"));
-  actions.push_back(ParseJsonDeprecated("{\"bad\": 3}"));
+  actions.push_back(ParseJson("{\"value\": 1}"));
+  actions.push_back(ParseJson("{\"bad\": 3}"));
   result = SummingActionSet::Create(nullptr, nullptr, actions, &error, &bad);
   EXPECT_EQ("", error);
   EXPECT_TRUE(bad);
@@ -283,10 +281,8 @@ TEST(DeclarativeActionTest, ErrorActionSet) {
 
 TEST(DeclarativeActionTest, ApplyActionSet) {
   SummingActionSet::Values actions;
-  actions.push_back(
-      ParseJsonDeprecated("{\"value\": 1,"
-                          " \"priority\": 5}"));
-  actions.push_back(ParseJsonDeprecated("{\"value\": 2}"));
+  actions.push_back(ParseJson("{\"value\": 1, \"priority\": 5}"));
+  actions.push_back(ParseJson("{\"value\": 2}"));
 
   // Test insertion
   std::string error;

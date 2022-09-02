@@ -216,7 +216,7 @@ TEST(WebRequestConditionTest, CreateConditionSet) {
   URLMatcher matcher;
 
   WebRequestConditionSet::Values conditions;
-  conditions.push_back(base::test::ParseJsonDeprecated(
+  conditions.push_back(base::test::ParseJson(
       "{ \n"
       "  \"instanceType\": \"declarativeWebRequest.RequestMatcher\", \n"
       "  \"url\": { \n"
@@ -224,7 +224,7 @@ TEST(WebRequestConditionTest, CreateConditionSet) {
       "    \"schemes\": [\"http\"], \n"
       "  }, \n"
       "}"));
-  conditions.push_back(base::test::ParseJsonDeprecated(
+  conditions.push_back(base::test::ParseJson(
       "{ \n"
       "  \"instanceType\": \"declarativeWebRequest.RequestMatcher\", \n"
       "  \"url\": { \n"
@@ -286,7 +286,7 @@ TEST(WebRequestConditionTest, TestPortFilter) {
   URLMatcher matcher;
 
   WebRequestConditionSet::Values conditions;
-  conditions.push_back(base::test::ParseJsonDeprecated(
+  conditions.push_back(base::test::ParseJson(
       "{ \n"
       "  \"instanceType\": \"declarativeWebRequest.RequestMatcher\", \n"
       "  \"url\": { \n"

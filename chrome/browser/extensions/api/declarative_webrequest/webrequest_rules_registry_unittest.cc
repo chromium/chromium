@@ -135,15 +135,12 @@ class WebRequestRulesRegistryTest : public testing::Test {
     api::events::Rule rule;
     rule.id = kRuleId1;
     rule.priority = 100;
-    rule.actions.push_back(
-        base::Value::ToUniquePtrValue(base::Value(action_dict.Clone())));
+    rule.actions.emplace_back(action_dict.Clone());
     http_condition_dict.Set(keys2::kSchemesKey, std::move(scheme_http));
     http_condition_url_filter.Set(keys::kUrlKey,
                                   std::move(http_condition_dict));
-    rule.conditions.push_back(base::Value::ToUniquePtrValue(
-        base::Value(http_condition_url_filter.Clone())));
-    rule.conditions.push_back(base::Value::ToUniquePtrValue(
-        base::Value(https_condition_url_filter.Clone())));
+    rule.conditions.emplace_back(http_condition_url_filter.Clone());
+    rule.conditions.emplace_back(https_condition_url_filter.Clone());
     return rule;
   }
 
@@ -158,10 +155,8 @@ class WebRequestRulesRegistryTest : public testing::Test {
     api::events::Rule rule;
     rule.id = kRuleId2;
     rule.priority = 100;
-    rule.actions.push_back(
-        base::Value::ToUniquePtrValue(base::Value(action_dict.Clone())));
-    rule.conditions.push_back(
-        base::Value::ToUniquePtrValue(base::Value(condition_dict.Clone())));
+    rule.actions.emplace_back(action_dict.Clone());
+    rule.conditions.emplace_back(condition_dict.Clone());
     return rule;
   }
 
@@ -176,10 +171,8 @@ class WebRequestRulesRegistryTest : public testing::Test {
     api::events::Rule rule;
     rule.id = kRuleId3;
     rule.priority = 100;
-    rule.actions.push_back(
-        base::Value::ToUniquePtrValue(base::Value(action_dict.Clone())));
-    rule.conditions.push_back(
-        base::Value::ToUniquePtrValue(base::Value(condition_dict.Clone())));
+    rule.actions.emplace_back(action_dict.Clone());
+    rule.conditions.emplace_back(condition_dict.Clone());
     return rule;
   }
 
@@ -199,23 +192,21 @@ class WebRequestRulesRegistryTest : public testing::Test {
     api::events::Rule rule;
     rule.id = kRuleId4;
     rule.priority = 200;
-    rule.actions.push_back(
-        base::Value::ToUniquePtrValue(base::Value(action_dict.Clone())));
-    rule.conditions.push_back(
-        base::Value::ToUniquePtrValue(base::Value(condition_dict.Clone())));
+    rule.actions.emplace_back(action_dict.Clone());
+    rule.conditions.emplace_back(condition_dict.Clone());
     return rule;
   }
 
   // Create a condition with the attributes specified. An example value of
   // |attributes| is: "\"resourceType\": [\"stylesheet\"], \n".
-  std::unique_ptr<base::Value> CreateCondition(const std::string& attributes) {
+  base::Value CreateCondition(const std::string& attributes) {
     std::string json_description =
         "{ \n"
         "  \"instanceType\": \"declarativeWebRequest.RequestMatcher\", \n";
     json_description += attributes;
     json_description += "}";
 
-    return base::test::ParseJsonDeprecated(json_description);
+    return base::test::ParseJson(json_description);
   }
 
   // Create a rule with the ID |rule_id| and with conditions created from the
@@ -230,8 +221,7 @@ class WebRequestRulesRegistryTest : public testing::Test {
     api::events::Rule rule;
     rule.id = rule_id;
     rule.priority = 1;
-    rule.actions.push_back(
-        base::Value::ToUniquePtrValue(base::Value(action_dict.Clone())));
+    rule.actions.emplace_back(action_dict.Clone());
     for (auto* attribute : attributes)
       rule.conditions.push_back(CreateCondition(*attribute));
     return rule;
@@ -742,13 +732,11 @@ TEST(WebRequestRulesRegistrySimpleTest, HostPermissionsChecker) {
       "  \"instanceType\": \"declarativeWebRequest.RedirectRequest\",\n"
       "  \"redirectUrl\": \"http://bar.com\"                         \n"
       "}                                                             ";
-  std::unique_ptr<base::Value> action_value =
-      base::JSONReader::ReadDeprecated(kAction);
+  absl::optional<base::Value> action_value = base::JSONReader::Read(kAction);
   ASSERT_TRUE(action_value);
 
   WebRequestActionSet::Values actions;
-  actions.push_back(std::move(action_value));
-  ASSERT_TRUE(actions.back().get());
+  actions.push_back(std::move(*action_value));
 
   std::string error;
   bool bad_message = false;

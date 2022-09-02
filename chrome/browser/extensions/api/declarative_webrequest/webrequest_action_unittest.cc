@@ -47,22 +47,19 @@ namespace {
 const char kUnknownActionType[] = "unknownType";
 
 std::unique_ptr<WebRequestActionSet> CreateSetOfActions(const char* json) {
-  std::unique_ptr<base::Value> parsed_value(
-      base::test::ParseJsonDeprecated(json));
-  CHECK(parsed_value->is_list());
+  base::Value::List parsed_value = base::test::ParseJsonList(json);
 
   WebRequestActionSet::Values actions;
-  for (const base::Value& entry : parsed_value->GetListDeprecated()) {
+  for (const base::Value& entry : parsed_value) {
     CHECK(entry.is_dict());
-    actions.push_back(base::DictionaryValue::From(
-        base::Value::ToUniquePtrValue(entry.Clone())));
+    actions.push_back(entry.Clone());
   }
 
   std::string error;
   bool bad_message = false;
 
-  std::unique_ptr<WebRequestActionSet> action_set(
-      WebRequestActionSet::Create(NULL, NULL, actions, &error, &bad_message));
+  std::unique_ptr<WebRequestActionSet> action_set(WebRequestActionSet::Create(
+      nullptr, nullptr, actions, &error, &bad_message));
   EXPECT_EQ("", error);
   EXPECT_FALSE(bad_message);
   CHECK(action_set);
@@ -169,29 +166,32 @@ TEST(WebRequestActionTest, CreateAction) {
   // Test wrong data type passed.
   error.clear();
   base::ListValue empty_list;
-  result = WebRequestAction::Create(
-      NULL, NULL, empty_list, &error, &bad_message);
+  result = WebRequestAction::Create(nullptr, nullptr, empty_list, &error,
+                                    &bad_message);
   EXPECT_TRUE(bad_message);
   EXPECT_FALSE(result.get());
 
   // Test missing instanceType element.
   base::DictionaryValue input;
   error.clear();
-  result = WebRequestAction::Create(NULL, NULL, input, &error, &bad_message);
+  result =
+      WebRequestAction::Create(nullptr, nullptr, input, &error, &bad_message);
   EXPECT_TRUE(bad_message);
   EXPECT_FALSE(result.get());
 
   // Test wrong instanceType element.
   input.SetStringKey(keys::kInstanceTypeKey, kUnknownActionType);
   error.clear();
-  result = WebRequestAction::Create(NULL, NULL, input, &error, &bad_message);
+  result =
+      WebRequestAction::Create(nullptr, nullptr, input, &error, &bad_message);
   EXPECT_NE("", error);
   EXPECT_FALSE(result.get());
 
   // Test success
   input.SetStringKey(keys::kInstanceTypeKey, keys::kCancelRequestType);
   error.clear();
-  result = WebRequestAction::Create(NULL, NULL, input, &error, &bad_message);
+  result =
+      WebRequestAction::Create(nullptr, nullptr, input, &error, &bad_message);
   EXPECT_EQ("", error);
   EXPECT_FALSE(bad_message);
   ASSERT_TRUE(result.get());
@@ -207,7 +207,8 @@ TEST(WebRequestActionTest, CreateActionSet) {
 
   // Test empty input.
   error.clear();
-  result = WebRequestActionSet::Create(NULL, NULL, input, &error, &bad_message);
+  result = WebRequestActionSet::Create(nullptr, nullptr, input, &error,
+                                       &bad_message);
   EXPECT_TRUE(error.empty()) << error;
   EXPECT_FALSE(bad_message);
   ASSERT_TRUE(result.get());
@@ -221,10 +222,10 @@ TEST(WebRequestActionTest, CreateActionSet) {
   incorrect_action.SetStringKey(keys::kInstanceTypeKey, kUnknownActionType);
 
   // Test success.
-  input.push_back(base::DictionaryValue::From(
-      base::Value::ToUniquePtrValue(correct_action.Clone())));
+  input.push_back(correct_action.Clone());
   error.clear();
-  result = WebRequestActionSet::Create(NULL, NULL, input, &error, &bad_message);
+  result = WebRequestActionSet::Create(nullptr, nullptr, input, &error,
+                                       &bad_message);
   EXPECT_TRUE(error.empty()) << error;
   EXPECT_FALSE(bad_message);
   ASSERT_TRUE(result.get());
@@ -234,10 +235,10 @@ TEST(WebRequestActionTest, CreateActionSet) {
   EXPECT_EQ(10, result->GetMinimumPriority());
 
   // Test failure.
-  input.push_back(base::DictionaryValue::From(
-      base::Value::ToUniquePtrValue(incorrect_action.Clone())));
+  input.push_back(incorrect_action.Clone());
   error.clear();
-  result = WebRequestActionSet::Create(NULL, NULL, input, &error, &bad_message);
+  result = WebRequestActionSet::Create(nullptr, nullptr, input, &error,
+                                       &bad_message);
   EXPECT_NE("", error);
   EXPECT_FALSE(result.get());
 }

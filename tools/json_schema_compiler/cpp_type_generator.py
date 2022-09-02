@@ -62,7 +62,7 @@ class CppTypeGenerator(object):
       value += "_"
     return value
 
-  def GetCppType(self, type_, is_optional=False, is_in_container=False):
+  def GetCppType(self, type_, is_optional=False):
     """Translates a model.Property or model.Type into its C++ type.
 
     If REF types from different namespaces are referenced, will resolve
@@ -71,9 +71,6 @@ class CppTypeGenerator(object):
     Use |is_optional| if the type is optional. This will wrap the type either
     in an optional, or in a unique_ptr if possible (it is not possible to wrap
     an enum).
-
-    Use |is_in_container| if the type is appearing in a collection, e.g. a
-    std::vector or std::map. This will wrap it in the correct type with spacing.
     """
     cpp_type = None
     if type_.property_type == PropertyType.REF:
@@ -114,7 +111,7 @@ class CppTypeGenerator(object):
         # we know if the function was passed in or not.
         cpp_type = 'base::DictionaryValue'
     elif type_.property_type == PropertyType.ARRAY:
-      item_cpp_type = self.GetCppType(type_.item_type, is_in_container=True)
+      item_cpp_type = self.GetCppType(type_.item_type)
       cpp_type = 'std::vector<%s>' % item_cpp_type
     elif type_.property_type == PropertyType.BINARY:
       cpp_type = 'std::vector<uint8_t>'
@@ -125,12 +122,7 @@ class CppTypeGenerator(object):
     # never needs to be wrapped in pointer shenanigans.
     # TODO(kalman): change this - but it's an exceedingly far-reaching change.
     if not self.FollowRef(type_).property_type == PropertyType.ENUM:
-      is_base_value = (cpp_type == 'base::Value' or
-                       cpp_type == 'base::DictionaryValue')
-
-      # Wrap ptrs and base::Values in containers (which aren't movable) in
-      # scoped_ptrs.
-      if is_optional or (is_in_container and is_base_value):
+      if is_optional:
         if cpp_util.ShouldUseAbslOptional(type_):
           cpp_type = 'absl::optional<%s>' % cpp_type
         else:

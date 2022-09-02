@@ -331,7 +331,7 @@ void ValidateManagedPreference(
   if (pref->user_selectable_values) {
     for (const auto& value : *pref->user_selectable_values) {
       pref_user_selectable_values.push_back(
-          static_cast<CookiePrimarySetting>(value->GetInt()));
+          static_cast<CookiePrimarySetting>(value.GetInt()));
     }
   }
   EXPECT_EQ(pref_user_selectable_values.size(),

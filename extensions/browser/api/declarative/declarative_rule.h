@@ -59,7 +59,7 @@ namespace extensions {
 template<typename ConditionT>
 class DeclarativeConditionSet {
  public:
-  using Values = std::vector<std::unique_ptr<base::Value>>;
+  using Values = std::vector<base::Value>;
   using Conditions = std::vector<std::unique_ptr<const ConditionT>>;
   using const_iterator = typename Conditions::const_iterator;
 
@@ -143,7 +143,7 @@ class DeclarativeConditionSet {
 template<typename ActionT>
 class DeclarativeActionSet {
  public:
-  using Values = std::vector<std::unique_ptr<base::Value>>;
+  using Values = std::vector<base::Value>;
   using Actions = std::vector<scoped_refptr<const ActionT>>;
 
   explicit DeclarativeActionSet(const Actions& actions);
@@ -312,9 +312,8 @@ DeclarativeConditionSet<ConditionT>::Create(
   Conditions result;
 
   for (const auto& value : condition_values) {
-    CHECK(value.get());
     std::unique_ptr<ConditionT> condition = ConditionT::Create(
-        extension, url_matcher_condition_factory, *value, error);
+        extension, url_matcher_condition_factory, value, error);
     if (!error->empty())
       return nullptr;
     result.push_back(std::move(condition));
@@ -370,9 +369,8 @@ DeclarativeActionSet<ActionT>::Create(content::BrowserContext* browser_context,
   Actions result;
 
   for (const auto& value : action_values) {
-    CHECK(value.get());
     scoped_refptr<const ActionT> action =
-        ActionT::Create(browser_context, extension, *value, error, bad_message);
+        ActionT::Create(browser_context, extension, value, error, bad_message);
     if (!error->empty() || *bad_message)
       return nullptr;
     result.push_back(action);

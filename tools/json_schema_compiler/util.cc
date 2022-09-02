@@ -109,6 +109,11 @@ bool PopulateItem(const base::Value& from, std::unique_ptr<base::Value>* out) {
   return true;
 }
 
+bool PopulateItem(const base::Value& from, base::Value* out) {
+  *out = from.Clone();
+  return true;
+}
+
 bool PopulateItem(const base::Value& from,
                   std::unique_ptr<base::Value>* out,
                   std::u16string* error) {
@@ -139,6 +144,10 @@ void AddItemToList(const std::vector<uint8_t>& from, base::ListValue* out) {
 void AddItemToList(const std::unique_ptr<base::Value>& from,
                    base::ListValue* out) {
   out->Append(from->Clone());
+}
+
+void AddItemToList(const base::Value& from, base::ListValue* out) {
+  out->Append(from.Clone());
 }
 
 }  // namespace util

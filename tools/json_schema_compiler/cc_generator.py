@@ -276,8 +276,7 @@ class _Generator(object):
         if type_.additional_properties.property_type == PropertyType.ANY:
           c.Append('out->additional_properties.MergeDictionary(dict);')
         else:
-          cpp_type = self._type_helper.GetCppType(type_.additional_properties,
-                                                  is_in_container=True)
+          cpp_type = self._type_helper.GetCppType(type_.additional_properties)
           (c.Append('for (base::DictionaryValue::Iterator it(*dict);')
             .Sblock('     !it.IsAtEnd(); it.Advance()) {')
               .Append('%s tmp;' % cpp_type)
@@ -1108,7 +1107,7 @@ class _Generator(object):
     accessor = '.'
     if is_ptr:
       accessor = '->'
-      cpp_type = self._type_helper.GetCppType(item_type, is_in_container=True)
+      cpp_type = self._type_helper.GetCppType(item_type)
       c.Append('%s = std::make_unique<std::vector<%s>>();' %
                    (dst_var, cpp_type))
     (c.Sblock('for (const auto& it : (%s).GetList()) {' % src_var)

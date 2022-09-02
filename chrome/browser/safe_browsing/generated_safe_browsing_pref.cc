@@ -4,6 +4,7 @@
 
 #include "chrome/browser/safe_browsing/generated_safe_browsing_pref.h"
 
+#include "base/stl_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/settings_private.h"
 #include "components/prefs/pref_service.h"
@@ -184,13 +185,11 @@ void GeneratedSafeBrowsingPref::ApplySafeBrowsingManagementState(
         pref_object, reporting_pref);
 
     pref_object->user_selectable_values =
-        std::make_unique<std::vector<std::unique_ptr<base::Value>>>();
-    pref_object->user_selectable_values->push_back(
-        std::make_unique<base::Value>(
-            static_cast<int>(SafeBrowsingSetting::STANDARD)));
-    pref_object->user_selectable_values->push_back(
-        std::make_unique<base::Value>(
-            static_cast<int>(SafeBrowsingSetting::DISABLED)));
+        std::make_unique<std::vector<base::Value>>();
+    pref_object->user_selectable_values->emplace_back(
+        base::to_underlying(SafeBrowsingSetting::STANDARD));
+    pref_object->user_selectable_values->emplace_back(
+        base::to_underlying(SafeBrowsingSetting::DISABLED));
   }
 }
 

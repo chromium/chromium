@@ -132,14 +132,16 @@ IN_PROC_BROWSER_TEST_F(SetIconAPITest, Parameter) {
   ASSERT_EQ(1u, rules.size());
   ASSERT_EQ(rules[0]->actions.size(), 1u);
 
-  base::Value& action_value = *rules[0]->actions[0];
-  base::Value* action_instance_type = action_value.FindPath("instanceType");
+  const base::Value::Dict& action_value = rules[0]->actions[0].GetDict();
+  const std::string* action_instance_type =
+      action_value.FindString("instanceType");
   ASSERT_TRUE(action_instance_type);
-  EXPECT_EQ("declarativeContent.SetIcon", action_instance_type->GetString());
+  EXPECT_EQ("declarativeContent.SetIcon", *action_instance_type);
 
-  base::Value* image_data_value = action_value.FindPath({"imageData", "1"});
+  const std::string* image_data_value =
+      action_value.FindStringByDottedPath("imageData.1");
   ASSERT_TRUE(image_data_value);
-  EXPECT_EQ(kOneByOneImageData, image_data_value->GetString());
+  EXPECT_EQ(kOneByOneImageData, *image_data_value);
 }
 
 class SetIconAPIPrerenderingTest : public SetIconAPITest {

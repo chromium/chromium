@@ -180,9 +180,8 @@ GeneratedCookiePrimarySettingPref::GetPrefObject() const {
     // unit_tests associated with this file.
     std::sort(pref_object->user_selectable_values->begin(),
               pref_object->user_selectable_values->end(),
-              [](const std::unique_ptr<base::Value>& a,
-                 std::unique_ptr<base::Value>& b) {
-                return a->GetInt() < b->GetInt();
+              [](const base::Value& a, const base::Value& b) {
+                return a.GetInt() < b.GetInt();
               });
   }
   return pref_object;

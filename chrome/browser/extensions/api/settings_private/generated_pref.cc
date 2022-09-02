@@ -84,10 +84,9 @@ void GeneratedPref::AddUserSelectableValue(
     int value) {
   if (!pref_object->user_selectable_values) {
     pref_object->user_selectable_values =
-        std::make_unique<std::vector<std::unique_ptr<base::Value>>>();
+        std::make_unique<std::vector<base::Value>>();
   }
-  pref_object->user_selectable_values->push_back(
-      std::make_unique<base::Value>(static_cast<int>(value)));
+  pref_object->user_selectable_values->push_back(base::Value(value));
 }
 
 }  // namespace settings_private
