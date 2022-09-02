@@ -74,11 +74,15 @@ const AutocompleteAttributeTestcase kAutocompleteTestcases[]{
     {"section-random",
      {{"", HtmlFieldMode::kNone, HtmlFieldType::kUnrecognized}}},
 
-    // "webauthn" shouldn't prevent parsing, but is otherwise ignored.
-    {"name webauthn", {{"", HtmlFieldMode::kNone, HtmlFieldType::kName}}},
+    // "webauthn" token:
+    {"name webauthn",
+     {{"", HtmlFieldMode::kNone, HtmlFieldType::kName, /*webauthn=*/true}}},
     {"section-one shipping home tel webauthn",
-     {{"one", HtmlFieldMode::kShipping, HtmlFieldType::kTel}}},
-    {"webauthn", absl::nullopt},
+     {{"one", HtmlFieldMode::kShipping, HtmlFieldType::kTel,
+       /*webauthn=*/true}}},
+    {"webauthn",
+     {{"", HtmlFieldMode::kNone, HtmlFieldType::kUnspecified,
+       /*webauthn=*/true}}},
 
     // Too many tokens.
     {"hello section-one shipping home tel webauthn", absl::nullopt}};

@@ -1692,8 +1692,6 @@ void PasswordAutofillAgent::ShowSuggestionPopup(
     const WebInputElement& user_input,
     ShowAll show_all,
     OnPasswordField show_on_password_field) {
-  constexpr char kAutocompleteAttribute[] = "autocomplete";
-  constexpr char kAutocompleteWebAuthn[] = "webauthn";
   username_query_prefix_ = typed_username;
   FormData form;
   FormFieldData field;
@@ -1705,7 +1703,7 @@ void PasswordAutofillAgent::ShowSuggestionPopup(
     options |= SHOW_ALL;
   if (show_on_password_field)
     options |= IS_PASSWORD_FIELD;
-  if (user_input.GetAttribute(kAutocompleteAttribute) == kAutocompleteWebAuthn)
+  if (field.parsed_autocomplete && field.parsed_autocomplete->webauthn)
     options |= ACCEPTS_WEBAUTHN_CREDENTIALS;
 
   GetPasswordManagerDriver().ShowPasswordSuggestions(

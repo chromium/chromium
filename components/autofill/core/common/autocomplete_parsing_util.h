@@ -29,10 +29,11 @@ struct AutocompleteParsingResult {
 
   // `section` corresponds to the string after "section-".
   std::string section;
-  HtmlFieldMode mode;
+  HtmlFieldMode mode = HtmlFieldMode::kNone;
   // Type hints are parsed and validated, but otherwise unused.
-  HtmlFieldType field_type;
-  // webauthn is parsed, but otherwise unused.
+  HtmlFieldType field_type = HtmlFieldType::kUnspecified;
+  // Whether the field has a `webauthn` token.
+  bool webauthn = false;
 };
 
 bool operator==(const AutocompleteParsingResult& a,

@@ -27,7 +27,6 @@ enum class AutocompleteFlag {
   kUsername,
   kCurrentPassword,
   kNewPassword,
-  kWebAuthn,
   // Represents the whole family of cc-* flags + OTP flag.
   kNonPassword
 };
@@ -64,6 +63,9 @@ struct ProcessedField {
 
   // True if the server predicts that this field is not a username field.
   bool server_hints_not_username = false;
+
+  // True if the field accepts WebAuthn credentials, false otherwise.
+  bool accepts_webauthn_credentials = false;
 
   Interactability interactability = Interactability::kUnlikely;
 };

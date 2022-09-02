@@ -6,14 +6,11 @@
 #include <vector>
 
 #include "base/containers/fixed_flat_map.h"
-#include "base/notreached.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_regexes.h"
 #include "components/autofill/core/common/autofill_util.h"
-#include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/html_field_types.h"
 
 namespace autofill {
@@ -258,12 +255,13 @@ absl::optional<AutocompleteParsingResult> ParseAutocompleteAttribute(
 
   AutocompleteParsingResult result;
 
-  // The "webauthn" token is unused by Autofill, but skipped to parse the type
-  // correctly.
+  // Parse the "webauthn" token.
   if (tokens.back() == "webauthn") {
+    result.webauthn = true;
     tokens.pop_back();
-    if (tokens.empty())
-      return absl::nullopt;
+    if (tokens.empty()) {
+      return result;
+    }
   }
 
   // (1) The final token must be the field type.
@@ -285,7 +283,6 @@ absl::optional<AutocompleteParsingResult> ParseAutocompleteAttribute(
 
   // (3) The preceding token, if any, may be a fixed string that is either
   // "shipping" or "billing".
-  result.mode = HtmlFieldMode::kNone;
   if (!tokens.empty()) {
     for (HtmlFieldMode mode :
          {HtmlFieldMode::kBilling, HtmlFieldMode::kShipping})

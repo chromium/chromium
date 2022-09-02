@@ -2922,6 +2922,30 @@ TEST(FormParserTest, AcceptsWebAuthnCredentials) {
   });
 }
 
+// Tests that if a field is marked as autofill="username webauthn" then the
+// `accepts_webauthn_credentials` flag is set.
+TEST(FormParserTest, AcceptsUsernameWebAuthnCredentials) {
+  CheckTestData({
+      {
+          .description_for_logging =
+              "Field tagged with autofill=\"username webauthn\"",
+          .fields =
+              {
+                  {.role = ElementRole::USERNAME,
+                   .autocomplete_attribute = "username webauthn",
+                   .value = u"rosalina",
+                   .name = u"username",
+                   .form_control_type = "text"},
+                  {.role = ElementRole::CURRENT_PASSWORD,
+                   .value = u"luma",
+                   .name = u"password",
+                   .form_control_type = "password"},
+              },
+          .accepts_webauthn_credentials = true,
+      },
+  });
+}
+
 }  // namespace
 
 }  // namespace password_manager

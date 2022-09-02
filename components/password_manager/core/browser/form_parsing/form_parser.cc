@@ -14,7 +14,6 @@
 #include <vector>
 
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
@@ -22,7 +21,6 @@
 #include "base/strings/string_split.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/field_types.h"
-#include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_regex_constants.h"
 #include "components/autofill/core/common/autofill_regexes.h"
 #include "components/autofill/core/common/form_data.h"
@@ -45,42 +43,55 @@ constexpr char kAutocompleteCreditCardPrefix[] = "cc-";
 constexpr char kAutocompleteOneTimePassword[] = "one-time-code";
 constexpr char kAutocompleteWebAuthn[] = "webauthn";
 
+struct AutocompleteParsing {
+  AutocompleteFlag flag = AutocompleteFlag::kNone;
+  bool accepts_webauthn_credentials = false;
+};
+
 // The autocomplete attribute has one of the following structures:
-//   [section-*] [shipping|billing] [type_hint] field_type
+//   [section-*] [shipping|billing] [type_hint] field_type [webauthn]
 //   on | off | false
 // (see
 // https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#autofilling-form-controls%3A-the-autocomplete-attribute).
 // For password forms, only the field_type is relevant. So parsing the attribute
 // amounts to just taking the last token.  If that token is one of "username",
-// "current-password", "new-password" or "webauthn", this returns an appropriate
-// enum value.  If the token starts with a "cc-" prefix or is "one-time-code"
-// token, this returns kNonPassword.
-// Otherwise, returns kNone.
-AutocompleteFlag ExtractAutocompleteFlag(const std::string& attribute) {
+// "current-password", "new-password", this returns an appropriate enum value.
+// If the token starts with a "cc-" prefix or is "one-time-code" token, this
+// returns kNonPassword.  Otherwise, returns kNone.
+// If the webauthn token is present, this sets accepts_webauthn_credentials to
+// true.
+AutocompleteParsing ParseAutocomplete(const std::string& attribute) {
+  AutocompleteParsing result;
   std::vector<base::StringPiece> tokens =
       base::SplitStringPiece(attribute, base::kWhitespaceASCII,
                              base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
   if (tokens.empty())
-    return AutocompleteFlag::kNone;
+    return result;
+
+  if (base::EqualsCaseInsensitiveASCII(tokens.back(), kAutocompleteWebAuthn)) {
+    result.accepts_webauthn_credentials = true;
+    tokens.pop_back();
+  }
+
+  if (tokens.empty())
+    return result;
 
   const base::StringPiece& field_type = tokens.back();
-  if (base::EqualsCaseInsensitiveASCII(field_type, kAutocompleteUsername))
-    return AutocompleteFlag::kUsername;
-  if (base::EqualsCaseInsensitiveASCII(field_type,
-                                       kAutocompleteCurrentPassword))
-    return AutocompleteFlag::kCurrentPassword;
-  if (base::EqualsCaseInsensitiveASCII(field_type, kAutocompleteNewPassword))
-    return AutocompleteFlag::kNewPassword;
-  if (base::EqualsCaseInsensitiveASCII(field_type, kAutocompleteWebAuthn))
-    return AutocompleteFlag::kWebAuthn;
-
-  if (base::EqualsCaseInsensitiveASCII(field_type,
-                                       kAutocompleteOneTimePassword) ||
-      base::StartsWith(field_type, kAutocompleteCreditCardPrefix,
-                       base::CompareCase::SENSITIVE)) {
-    return AutocompleteFlag::kNonPassword;
+  if (base::EqualsCaseInsensitiveASCII(field_type, kAutocompleteUsername)) {
+    result.flag = AutocompleteFlag::kUsername;
+  } else if (base::EqualsCaseInsensitiveASCII(field_type,
+                                              kAutocompleteCurrentPassword)) {
+    result.flag = AutocompleteFlag::kCurrentPassword;
+  } else if (base::EqualsCaseInsensitiveASCII(field_type,
+                                              kAutocompleteNewPassword)) {
+    result.flag = AutocompleteFlag::kNewPassword;
+  } else if (base::EqualsCaseInsensitiveASCII(field_type,
+                                              kAutocompleteOneTimePassword) ||
+             base::StartsWith(field_type, kAutocompleteCreditCardPrefix,
+                              base::CompareCase::SENSITIVE)) {
+    result.flag = AutocompleteFlag::kNonPassword;
   }
-  return AutocompleteFlag::kNone;
+  return result;
 }
 
 // Returns true if the |str| contains words related to CVC fields.
@@ -488,7 +499,6 @@ void ParseUsingAutocomplete(const std::vector<ProcessedField>& processed_fields,
           result->confirmation_password = processed_field.field;
         }
         break;
-      case AutocompleteFlag::kWebAuthn:
       case AutocompleteFlag::kNonPassword:
       case AutocompleteFlag::kNone:
         break;
@@ -897,11 +907,15 @@ std::vector<ProcessedField> ProcessFields(
       }
     }
 
-    const AutocompleteFlag flag =
-        ExtractAutocompleteFlag(field.autocomplete_attribute);
+    const AutocompleteParsing autocomplete_parsing =
+        ParseAutocomplete(field.autocomplete_attribute);
 
     ProcessedField processed_field = {
-        .field = &field, .autocomplete_flag = flag, .is_password = is_password};
+        .field = &field,
+        .autocomplete_flag = autocomplete_parsing.flag,
+        .is_password = is_password,
+        .accepts_webauthn_credentials =
+            autocomplete_parsing.accepts_webauthn_credentials};
 
     if (field.properties_mask & FieldPropertiesFlags::kUserTyped)
       processed_field.interactability = Interactability::kCertain;
@@ -1088,7 +1102,7 @@ std::unique_ptr<PasswordForm> FormDataParser::Parse(const FormData& form_data,
 
   if (mode == Mode::kFilling) {
     for (const auto& field : processed_fields) {
-      if (field.autocomplete_flag == AutocompleteFlag::kWebAuthn) {
+      if (field.accepts_webauthn_credentials) {
         significant_fields.accepts_webauthn_credentials = true;
         break;
       }
