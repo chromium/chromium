@@ -394,8 +394,6 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
           {"ThrottleDisplayNoneAndVisibilityHiddenCrossOriginIframes",
            blink::features::
                kThrottleDisplayNoneAndVisibilityHiddenCrossOriginIframes},
-          {"ThrottleIntersectionObserverUMA",
-           blink::features::kThrottleIntersectionObserverUMA},
           {"TopicsAPI", features::kPrivacySandboxAdsAPIsOverride,
            kSetOnlyIfOverridden},
           {"UserAgentClientHint", blink::features::kUserAgentClientHint},
