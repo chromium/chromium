@@ -138,7 +138,7 @@ void ToolbarActionHoverCardController::UpdateHoverCard(
       break;
   }
 
-  if (action_view)
+  if (action_view && action_view->GetCurrentWebContents())
     UpdateOrShowHoverCard(action_view, update_type);
   else
     HideHoverCard();
@@ -201,6 +201,11 @@ void ToolbarActionHoverCardController::UpdateHoverCardContent(
   content::WebContents* web_contents = action_view->GetCurrentWebContents();
   DCHECK(web_contents);
 
+  // If the hover card is transitioning between tabs, we need to do a
+  // cross-fade.
+  if (hover_card_->GetAnchorView() != action_view)
+    hover_card_->SetTextFade(0.0);
+
   hover_card_->UpdateCardContent(action_view->view_controller(), web_contents);
 }
 
@@ -241,7 +246,7 @@ void ToolbarActionHoverCardController::ShowHoverCard(
     return;
 
   CreateHoverCard(target_action_view_);
-  // TODO(crbug.com/1351778): Update card contents for `target_action_view`.
+  UpdateHoverCardContent(target_action_view_);
   slide_animator_->UpdateTargetBounds();
   // TODO(crbug.com/1351778): Do we need to fix widget stack order? Revisit
   // this, specially after adding IPH.
@@ -319,14 +324,16 @@ void ToolbarActionHoverCardController::OnFadeAnimationEnded(
 void ToolbarActionHoverCardController::OnSlideAnimationProgressed(
     views::BubbleSlideAnimator* animator,
     double value) {
-  // TODO(crbug.com/1351778): Set text fade for hover card once content is
-  // updated based on the toolbar action.
+  if (hover_card_)
+    hover_card_->SetTextFade(value);
 }
 
 void ToolbarActionHoverCardController::OnSlideAnimationComplete(
     views::BubbleSlideAnimator* animator) {
-  // TODO(crbug.com/1351778): Set text fade for hover card once content is
-  // updated based on the toolbar action.
+  DCHECK(hover_card_);
+  // Make sure we're displaying the new text at 100% opacity, and none of the
+  // old text.
+  hover_card_->SetTextFade(1.0);
 }
 
 void ToolbarActionHoverCardController::OnViewIsDeleting(

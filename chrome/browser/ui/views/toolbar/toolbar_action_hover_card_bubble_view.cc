@@ -17,6 +17,7 @@
 #include "extensions/common/extension_features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/color/color_id.h"
 #include "ui/gfx/canvas.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/layout/box_layout.h"
@@ -31,6 +32,8 @@ namespace {
 
 // Maximum number of lines that labels can occupy.
 constexpr int kHoverCardTitleMaxLines = 2;
+constexpr int kHoverCardFootnoteTitleMaxLines = 2;
+constexpr int kHoverCardFootnoteDescriptionMaxLines = 2;
 
 // Hover card fixed width. Toolbar actions are not visible when window is too
 // small to display them, therefore hover cards wouldn't be displayed if the
@@ -184,7 +187,7 @@ class ToolbarActionHoverCardBubbleView::FadeLabel : public views::View {
     primary_label_->SetText(text);
   }
 
-  // Sets the fade-out of the label as |percent| in the range [0, 1]. Since
+  // Sets the fade-out of the label as `percent` in the range [0, 1]. Since
   // FadeLabel is designed to mask new text with the old and then fade away, the
   // higher the percentage the less opaque the label.
   void SetFade(double percent) {
@@ -197,6 +200,20 @@ class ToolbarActionHoverCardBubbleView::FadeLabel : public views::View {
         SkColorSetA(label_fading_out_->GetBackgroundColor(), alpha));
     label_fading_out_->SetEnabledColor(
         SkColorSetA(label_fading_out_->GetEnabledColor(), alpha));
+  }
+
+  void SetBackgroundColorId(ui::ColorId background_color_id) {
+    background_color_id_ = background_color_id;
+  }
+
+  void OnThemeChanged() override {
+    views::View::OnThemeChanged();
+
+    if (background_color_id_.has_value()) {
+      label_fading_out_->SetBackgroundColor(
+          GetColorProvider()->GetColor(background_color_id_.value()));
+      SetFade(percent_);
+    }
   }
 
   std::u16string GetText() const { return primary_label_->GetText(); }
@@ -229,7 +246,9 @@ class ToolbarActionHoverCardBubbleView::FadeLabel : public views::View {
   raw_ptr<RenderTextFactoryLabel> primary_label_;
   raw_ptr<SolidLabel> label_fading_out_;
   absl::optional<bool> was_filename_;
+
   double percent_ = 1.0;
+  absl::optional<ui::ColorId> background_color_id_;
 };
 
 class ToolbarActionHoverCardBubbleView::FootnoteView : public views::View {
@@ -237,29 +256,30 @@ class ToolbarActionHoverCardBubbleView::FootnoteView : public views::View {
   FootnoteView() {
     SetLayoutManager(std::make_unique<views::BoxLayout>(
         views::BoxLayout::Orientation::kVertical));
+    title_label_ = AddChildView(std::make_unique<FadeLabel>(
+        CONTEXT_TAB_HOVER_CARD_TITLE, kHoverCardFootnoteTitleMaxLines));
+    description_label_ = AddChildView(
+        std::make_unique<FadeLabel>(views::style::CONTEXT_DIALOG_BODY_TEXT,
+                                    kHoverCardFootnoteDescriptionMaxLines));
 
-    title_label_ = AddChildView(std::make_unique<views::Label>(
-        std::u16string(), CONTEXT_TAB_HOVER_CARD_TITLE,
-        views::style::STYLE_PRIMARY));
-    description_label_ = AddChildView(std::make_unique<views::Label>(
-        std::u16string(), views::style::CONTEXT_DIALOG_BODY_TEXT,
-        views::style::STYLE_PRIMARY));
-
-    auto format_label = [](views::Label* label) {
-      label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-      label->SetMultiLine(true);
-    };
-    format_label(title_label_);
-    format_label(description_label_);
+    title_label_->SetBackgroundColorId(ui::kColorBubbleFooterBackground);
+    description_label_->SetBackgroundColorId(ui::kColorBubbleFooterBackground);
   }
+
   ~FootnoteView() override = default;
 
   void SetContent(ToolbarActionViewController::HoverCardState state,
-                  const std::u16string& host) {
+                  std::u16string host) {
     DCHECK_NE(state, ToolbarActionViewController::HoverCardState::
                          kExtensionDoesNotWantAccess);
-    title_label_->SetText(GetFootnoteTitle(state));
-    description_label_->SetText(GetFootnoteDescription(state, host));
+    title_label_->SetText(GetFootnoteTitle(state), absl::nullopt);
+    description_label_->SetText(GetFootnoteDescription(state, host),
+                                absl::nullopt);
+  }
+
+  void SetFade(double percent) {
+    title_label_->SetFade(percent);
+    description_label_->SetFade(percent);
   }
 
   std::u16string GetTitleText() const { return title_label_->GetText(); }
@@ -269,10 +289,8 @@ class ToolbarActionHoverCardBubbleView::FootnoteView : public views::View {
   }
 
  private:
-  // TODO(crbug.com/1351778): Consider using FadeLabel after implementing
-  // content based on the extension.
-  raw_ptr<views::Label> title_label_;
-  raw_ptr<views::Label> description_label_;
+  raw_ptr<FadeLabel> title_label_;
+  raw_ptr<FadeLabel> description_label_;
 };
 
 // ToolbarActionHoverCardBubbleView:
@@ -356,9 +374,6 @@ ToolbarActionHoverCardBubbleView::ToolbarActionHoverCardBubbleView(
   // Start in the fully "faded-in" position so that whatever text we initially
   // display is visible.
   SetTextFade(1.0);
-
-  UpdateCardContent(action_view->view_controller(),
-                    action_view->GetCurrentWebContents());
 }
 
 void ToolbarActionHoverCardBubbleView::UpdateCardContent(
@@ -384,6 +399,7 @@ void ToolbarActionHoverCardBubbleView::UpdateCardContent(
 
 void ToolbarActionHoverCardBubbleView::SetTextFade(double percent) {
   title_label_->SetFade(percent);
+  footnote_view_->SetFade(percent);
 }
 
 std::u16string ToolbarActionHoverCardBubbleView::GetTitleTextForTesting()
