@@ -5807,20 +5807,21 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessWebViewTest, BrowsingInstanceSwap) {
 
   // Load an app with a <webview> guest that starts at a data: URL.
   LoadAppWithGuest("web_view/simple");
-  content::WebContents* guest = GetGuestWebContents();
-  ASSERT_TRUE(guest);
+  ASSERT_TRUE(GetGuestRenderFrameHost());
 
   // Navigate <webview> to a page on a.test.
   const GURL first_url =
       embedded_test_server()->GetURL("a.test", "/iframe.html");
   {
-    content::TestNavigationObserver load_observer(guest);
-    EXPECT_TRUE(
-        ExecuteScript(guest, "location.href = '" + first_url.spec() + "';"));
+    content::TestFrameNavigationObserver load_observer(
+        GetGuestRenderFrameHost());
+    EXPECT_TRUE(ExecuteScript(GetGuestRenderFrameHost(),
+                              "location.href = '" + first_url.spec() + "';"));
     load_observer.Wait();
   }
+
   scoped_refptr<content::SiteInstance> first_instance =
-      guest->GetPrimaryMainFrame()->GetSiteInstance();
+      GetGuestRenderFrameHost()->GetSiteInstance();
   EXPECT_TRUE(first_instance->IsGuest());
   EXPECT_TRUE(first_instance->GetProcess()->IsForGuestsOnly());
 
@@ -5830,7 +5831,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessWebViewTest, BrowsingInstanceSwap) {
       embedded_test_server()->GetURL("b.test", "/title1.html");
   EXPECT_TRUE(BrowserInitNavigationToUrl(GetGuestView(), second_url));
   scoped_refptr<content::SiteInstance> second_instance =
-      guest->GetPrimaryMainFrame()->GetSiteInstance();
+      GetGuestRenderFrameHost()->GetSiteInstance();
 
   // Ensure that a new unrelated guest SiteInstance was created, and that the
   // StoragePartition didn't change.
