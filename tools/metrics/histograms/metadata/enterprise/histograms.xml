@@ -99,7 +99,7 @@ chromium-metrics-reviews@google.com.
 <!-- expires-never: Needed for health check. -->
 
   <owner>igorcov@chromium.org</owner>
-  <owner>vsavu@chromium.org</owner>
+  <owner>vsavu@google.com</owner>
   <summary>
     Consistency between TPM lock state and absence/presence of install
     attributes at boot.
@@ -1276,7 +1276,7 @@ chromium-metrics-reviews@google.com.
 <!-- expires-never: Used for monitoring the health of device policy. -->
 
   <owner>igorcov@chromium.org</owner>
-  <owner>vsavu@chromium.org</owner>
+  <owner>vsavu@google.com</owner>
   <summary>
     Whether loading of device policy from file on an enterprise-enrolled
     (checked against install_attributes.pb) Chrome OS device yields an

@@ -18559,7 +18559,7 @@
     },
     {
       'name': 'DeviceShowLowDiskSpaceNotification',
-      'owners': ['vsavu@chromium.org'],
+      'owners': ['vsavu@google.com'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome_os:86-'],

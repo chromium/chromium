@@ -387,7 +387,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Cryptohome.FreeDiskSpaceDuringLoginTotalFreedInMb" units="MiB"
     expires_after="2023-02-01">
-  <owner>vsavu@chromium.org</owner>
+  <owner>vsavu@google.com</owner>
   <owner>gwendal@chromium.org</owner>
   <owner>sarthakkukreti@chromium.org</owner>
   <summary>
@@ -403,7 +403,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Cryptohome.FreeDiskSpaceTotalFreedInMb" units="MiB"
     expires_after="2023-02-01">
-  <owner>vsavu@chromium.org</owner>
+  <owner>vsavu@google.com</owner>
   <owner>gwendal@chromium.org</owner>
   <owner>sarthakkukreti@chromium.org</owner>
   <summary>
@@ -418,7 +418,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Cryptohome.FreeDiskSpaceTotalTime2" units="ms"
     expires_after="2023-02-01">
-  <owner>vsavu@chromium.org</owner>
+  <owner>vsavu@google.com</owner>
   <owner>dlunev@chromium.org</owner>
   <owner>sarthakkukreti@chromium.org</owner>
   <summary>
