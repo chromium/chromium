@@ -49,6 +49,10 @@ TabStripModel* SavedTabGroupModelListener::GetTabStripModelWithTabGroupId(
 void SavedTabGroupModelListener::OnBrowserAdded(Browser* browser) {
   if (model_->profile() != browser->profile())
     return;
+  if (observed_browsers_.count(browser)) {
+    // TODO(crbug.com/1345680): Investigate the root cause of duplicate calls.
+    return;
+  }
   observed_browsers_.insert(browser);
   browser->tab_strip_model()->AddObserver(this);
 }
