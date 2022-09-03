@@ -5733,11 +5733,10 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessWebViewTest, ErrorPageIsolation) {
 
   // Load an app with a <webview> guest that starts at a data: URL.
   LoadAppWithGuest("web_view/simple");
-  content::WebContents* guest = GetGuestWebContents();
-  ASSERT_TRUE(guest);
+  ASSERT_TRUE(GetGuestRenderFrameHost());
 
   scoped_refptr<content::SiteInstance> first_instance =
-      guest->GetPrimaryMainFrame()->GetSiteInstance();
+      GetGuestRenderFrameHost()->GetSiteInstance();
   EXPECT_TRUE(first_instance->IsGuest());
 
   // Navigate <webview> to an error page.
@@ -5746,19 +5745,20 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessWebViewTest, ErrorPageIsolation) {
   auto interceptor = content::URLLoaderInterceptor::SetupRequestFailForURL(
       error_url, net::ERR_NAME_NOT_RESOLVED);
   {
-    content::TestNavigationObserver load_observer(guest);
-    EXPECT_TRUE(
-        ExecuteScript(guest, "location.href = '" + error_url.spec() + "';"));
+    content::TestFrameNavigationObserver load_observer(
+        GetGuestRenderFrameHost());
+    EXPECT_TRUE(ExecuteScript(GetGuestRenderFrameHost(),
+                              "location.href = '" + error_url.spec() + "';"));
     load_observer.Wait();
     EXPECT_FALSE(load_observer.last_navigation_succeeded());
-    EXPECT_TRUE(guest->GetPrimaryMainFrame()->IsErrorDocument());
+    EXPECT_TRUE(GetGuestRenderFrameHost()->IsErrorDocument());
   }
 
   // The error page's SiteInstance should require a dedicated process due to
   // error page isolation, but it should still be considered a guest and should
   // stay in the guest's StoragePartition.
   scoped_refptr<content::SiteInstance> error_instance =
-      guest->GetPrimaryMainFrame()->GetSiteInstance();
+      GetGuestRenderFrameHost()->GetSiteInstance();
   EXPECT_TRUE(error_instance->RequiresDedicatedProcess());
   EXPECT_NE(error_instance, first_instance);
   EXPECT_TRUE(error_instance->IsGuest());
@@ -5770,22 +5770,23 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessWebViewTest, ErrorPageIsolation) {
   EXPECT_TRUE(BrowserInitNavigationToUrl(
       GetGuestView(),
       embedded_test_server()->GetURL("b.test", "/iframe.html")));
-  EXPECT_FALSE(guest->GetPrimaryMainFrame()->IsErrorDocument());
-  EXPECT_NE(guest->GetPrimaryMainFrame()->GetSiteInstance(), error_instance);
+  EXPECT_FALSE(GetGuestRenderFrameHost()->IsErrorDocument());
+  EXPECT_NE(GetGuestRenderFrameHost()->GetSiteInstance(), error_instance);
 
   content::WebContents* embedder = GetEmbedderWebContents();
   {
-    content::TestNavigationObserver load_observer(guest);
+    content::TestFrameNavigationObserver load_observer(
+        GetGuestRenderFrameHost());
     EXPECT_TRUE(ExecuteScript(
         embedder,
         "document.querySelector('webview').src = '" + error_url.spec() + "';"));
     load_observer.Wait();
     EXPECT_FALSE(load_observer.last_navigation_succeeded());
-    EXPECT_TRUE(guest->GetPrimaryMainFrame()->IsErrorDocument());
+    EXPECT_TRUE(GetGuestRenderFrameHost()->IsErrorDocument());
   }
 
   scoped_refptr<content::SiteInstance> second_error_instance =
-      guest->GetPrimaryMainFrame()->GetSiteInstance();
+      GetGuestRenderFrameHost()->GetSiteInstance();
   EXPECT_TRUE(second_error_instance->RequiresDedicatedProcess());
   EXPECT_TRUE(second_error_instance->IsGuest());
   EXPECT_EQ(first_instance->GetStoragePartitionConfig(),
