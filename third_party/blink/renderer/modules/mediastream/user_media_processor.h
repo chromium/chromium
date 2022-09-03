@@ -53,6 +53,8 @@ class MODULES_EXPORT UserMediaProcessor
  public:
   using MediaDevicesDispatcherCallback = base::RepeatingCallback<
       blink::mojom::blink::MediaDevicesDispatcherHost*()>;
+  using KeepDeviceAliveForTransferCallback = base::OnceCallback<void(bool)>;
+
   // |frame| must outlive this instance.
   UserMediaProcessor(LocalFrame* frame,
                      MediaDevicesDispatcherCallback media_devices_dispatcher_cb,
@@ -107,6 +109,14 @@ class MODULES_EXPORT UserMediaProcessor
           dispatcher_host) {
     dispatcher_host_.Bind(std::move(dispatcher_host), task_runner_);
   }
+
+  // Ensure the MediaStreamDevice underlying a source is not closed even if
+  // there are no remaining usages from this frame, as it's in the process of
+  // being transferred.
+  void KeepDeviceAliveForTransfer(
+      base::UnguessableToken session_id,
+      base::UnguessableToken transfer_id,
+      KeepDeviceAliveForTransferCallback keep_alive_cb);
 
   virtual void Trace(Visitor*) const;
 

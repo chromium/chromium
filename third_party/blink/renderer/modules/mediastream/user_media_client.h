@@ -80,6 +80,14 @@ class MODULES_EXPORT UserMediaClient
       mojo::PendingRemote<blink::mojom::blink::MediaDevicesDispatcherHost>
           media_devices_dispatcher);
 
+  // Ensure the MediaStreamDevice underlying a source is not closed even if
+  // there are no remaining usages from this frame, as it's in the process of
+  // being transferred.
+  void KeepDeviceAliveForTransfer(
+      base::UnguessableToken session_id,
+      base::UnguessableToken transfer_id,
+      UserMediaProcessor::KeepDeviceAliveForTransferCallback keep_alive_cb);
+
  private:
   class Request final : public GarbageCollected<Request> {
    public:
@@ -126,11 +134,7 @@ class MODULES_EXPORT UserMediaClient
   // LocalFrame instance that own this UserMediaClient.
   WeakMember<LocalFrame> frame_;
 
-  // |user_media_processor_| is a unique_ptr for testing purposes.
   Member<UserMediaProcessor> user_media_processor_;
-
-  // |user_media_processor_| is a unique_ptr in order to avoid compilation
-  // problems in builds that do not include WebRTC.
   Member<ApplyConstraintsProcessor> apply_constraints_processor_;
 
   HeapMojoRemote<blink::mojom::blink::MediaDevicesDispatcherHost>

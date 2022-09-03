@@ -100,6 +100,7 @@ UserMediaClient::UserMediaClient(
               std::move(task_runner))),
       media_devices_dispatcher_(frame->DomWindow()) {
   DCHECK(frame_);
+  DCHECK(user_media_processor_);
   // WrapWeakPersistent is safe because the |frame_| owns UserMediaClient.
   frame_->SetIsCapturingMediaCallback(WTF::BindRepeating(
       [](UserMediaClient* client) { return client && client->IsCapturing(); },
@@ -201,7 +202,6 @@ bool UserMediaClient::IsCapturing() {
 
 #if !BUILDFLAG(IS_ANDROID)
 void UserMediaClient::FocusCapturedSurface(const String& label, bool focus) {
-  DCHECK(user_media_processor_);
   user_media_processor_->FocusCapturedSurface(label, focus);
 }
 #endif
@@ -346,6 +346,16 @@ UserMediaClient* UserMediaClient::From(LocalDOMWindow* window) {
     Supplement<LocalDOMWindow>::ProvideTo(*window, client);
   }
   return client;
+}
+
+void UserMediaClient::KeepDeviceAliveForTransfer(
+    base::UnguessableToken session_id,
+    base::UnguessableToken transfer_id,
+    UserMediaProcessor::KeepDeviceAliveForTransferCallback keep_alive_cb) {
+  // KeepDeviceAliveForTransfer is safe to call even during an ongoing request,
+  // so doesn't need to be queued.
+  user_media_processor_->KeepDeviceAliveForTransfer(session_id, transfer_id,
+                                                    std::move(keep_alive_cb));
 }
 
 }  // namespace blink

@@ -55,11 +55,6 @@ class MODULES_EXPORT MediaStreamVideoCapturerSource
 
   ~MediaStreamVideoCapturerSource() override;
 
-  void KeepDeviceAliveForTransfer(
-      base::UnguessableToken session_id,
-      base::UnguessableToken transfer_id,
-      KeepDeviceAliveForTransferCallback keep_alive_cb) override;
-
   void SetDeviceCapturerFactoryCallbackForTesting(
       DeviceCapturerFactoryCallback testing_factory_callback);
 

@@ -862,10 +862,11 @@ void MediaStreamTrackImpl::BeingTransferred(
   // Creates a clone track to keep a reference in the renderer while
   // KeepDeviceAliveForTransfer is being called.
   MediaStreamTrack* cloned_track = clone(GetExecutionContext());
-  WebPlatformMediaStreamSource* platform_source =
-      cloned_track->Component()->Source()->GetPlatformSource();
-  if (platform_source) {
-    platform_source->KeepDeviceAliveForTransfer(
+
+  UserMediaClient* user_media_client =
+      UserMediaClient::From(To<LocalDOMWindow>(GetExecutionContext()));
+  if (user_media_client) {
+    user_media_client->KeepDeviceAliveForTransfer(
         device()->serializable_session_id().value(), transfer_id,
         WTF::Bind(
             [](MediaStreamTrack* cloned_track,

@@ -2107,4 +2107,12 @@ void UserMediaProcessor::SetMediaStreamDeviceObserverForTesting(
   media_stream_device_observer_for_testing_ = media_stream_device_observer;
 }
 
+void UserMediaProcessor::KeepDeviceAliveForTransfer(
+    base::UnguessableToken session_id,
+    base::UnguessableToken transfer_id,
+    KeepDeviceAliveForTransferCallback keep_alive_cb) {
+  GetMediaStreamDispatcherHost()->KeepDeviceAliveForTransfer(
+      session_id, transfer_id, std::move(keep_alive_cb));
+}
+
 }  // namespace blink

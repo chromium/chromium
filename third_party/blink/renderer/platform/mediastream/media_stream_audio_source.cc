@@ -152,14 +152,6 @@ bool MediaStreamAudioSource::HasSameNonReconfigurableSettings(
   return this_properties->HasSameNonReconfigurableSettings(*others_properties);
 }
 
-void MediaStreamAudioSource::KeepDeviceAliveForTransfer(
-    base::UnguessableToken session_id,
-    base::UnguessableToken transfer_id,
-    KeepDeviceAliveForTransferCallback keep_alive_cb) {
-  GetMediaStreamDispatcherHost()->KeepDeviceAliveForTransfer(
-      session_id, transfer_id, std::move(keep_alive_cb));
-}
-
 void MediaStreamAudioSource::DoChangeSource(
     const MediaStreamDevice& new_device) {
   DCHECK(GetTaskRunner()->BelongsToCurrentThread());
@@ -216,15 +208,6 @@ void MediaStreamAudioSource::DoStopSource() {
   LogMessage(base::StringPrintf("%s()", __func__));
   EnsureSourceIsStopped();
   is_stopped_ = true;
-}
-
-mojom::blink::MediaStreamDispatcherHost*
-MediaStreamAudioSource::GetMediaStreamDispatcherHost() {
-  if (!host_) {
-    Platform::Current()->GetBrowserInterfaceBroker()->GetInterface(
-        host_.BindNewPipeAndPassReceiver());
-  }
-  return host_.get();
 }
 
 void MediaStreamAudioSource::StopAudioDeliveryTo(MediaStreamAudioTrack* track) {
