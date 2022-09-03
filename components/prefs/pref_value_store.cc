@@ -207,10 +207,6 @@ bool PrefValueStore::IsInitializationComplete() const {
   return true;
 }
 
-bool PrefValueStore::HasPrefStore(PrefStoreType type) const {
-  return GetPrefStore(type);
-}
-
 bool PrefValueStore::PrefValueInStore(
     const std::string& name,
     PrefValueStore::PrefStoreType store) const {

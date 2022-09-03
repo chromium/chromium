@@ -81,9 +81,6 @@ class COMPONENTS_PREFS_EXPORT PrefServiceFactory {
   std::unique_ptr<PrefService> Create(
       scoped_refptr<PrefRegistry> pref_registry);
 
-  // Add pref stores from this object to the |pref_service|.
-  void ChangePrefValueStore(PrefService* pref_service);
-
  protected:
   scoped_refptr<PrefStore> managed_prefs_;
   scoped_refptr<PrefStore> supervised_user_prefs_;

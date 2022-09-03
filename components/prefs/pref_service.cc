@@ -52,29 +52,6 @@ uint32_t GetWriteFlags(const PrefService::Preference* pref) {
   return write_flags;
 }
 
-// For prefs names in |pref_store| that are not presented in |pref_changed_map|,
-// check if their values differ from those in pref_service->FindPreference() and
-// add the result into |pref_changed_map|.
-void CheckForNewPrefChangesInPrefStore(
-    std::map<std::string, bool>* pref_changed_map,
-    PrefStore* pref_store,
-    PrefService* pref_service) {
-  if (!pref_store)
-    return;
-  auto values = pref_store->GetValues();
-  for (auto item : values) {
-    // If the key already presents, skip it as a store with higher precedence
-    // already sets the entry.
-    if (pref_changed_map->find(item.first) != pref_changed_map->end())
-      continue;
-    const PrefService::Preference* pref =
-        pref_service->FindPreference(item.first);
-    if (!pref)
-      continue;
-    pref_changed_map->emplace(item.first, *(pref->GetValue()) != item.second);
-  }
-}
-
 }  // namespace
 
 PrefService::PersistentPrefStoreLoadingObserver::
@@ -455,43 +432,6 @@ void PrefService::ClearMutableValues() {
 
 void PrefService::OnStoreDeletionFromDisk() {
   user_pref_store_->OnStoreDeletionFromDisk();
-}
-
-void PrefService::ChangePrefValueStore(PrefStore* managed_prefs,
-                                       PrefStore* supervised_user_prefs,
-                                       PrefStore* extension_prefs,
-                                       PrefStore* recommended_prefs) {
-  // Only adding new pref stores are supported.
-  DCHECK(!pref_value_store_->HasPrefStore(PrefValueStore::MANAGED_STORE) ||
-         !managed_prefs);
-  DCHECK(
-      !pref_value_store_->HasPrefStore(PrefValueStore::SUPERVISED_USER_STORE) ||
-      !supervised_user_prefs);
-  DCHECK(!pref_value_store_->HasPrefStore(PrefValueStore::EXTENSION_STORE) ||
-         !extension_prefs);
-  DCHECK(!pref_value_store_->HasPrefStore(PrefValueStore::RECOMMENDED_STORE) ||
-         !recommended_prefs);
-
-  // If some of the stores are already initialized, check for pref value changes
-  // according to store precedence.
-  std::map<std::string, bool> pref_changed_map;
-  CheckForNewPrefChangesInPrefStore(&pref_changed_map, managed_prefs, this);
-  CheckForNewPrefChangesInPrefStore(&pref_changed_map, supervised_user_prefs,
-                                    this);
-  CheckForNewPrefChangesInPrefStore(&pref_changed_map, extension_prefs, this);
-  CheckForNewPrefChangesInPrefStore(&pref_changed_map, recommended_prefs, this);
-
-  pref_value_store_ = pref_value_store_->CloneAndSpecialize(
-      managed_prefs, supervised_user_prefs, extension_prefs,
-      nullptr /* command_line_prefs */, nullptr /* user_prefs */,
-      nullptr /* standalone_browser_prefs */, recommended_prefs,
-      nullptr /* default_prefs */, pref_notifier_.get());
-
-  // Notify |pref_notifier_| on all changed values.
-  for (const auto& kv : pref_changed_map) {
-    if (kv.second)
-      pref_notifier_.get()->OnPreferenceChanged(kv.first);
-  }
 }
 
 void PrefService::AddPrefObserverAllPrefs(PrefObserver* obs) {

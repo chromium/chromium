@@ -41,9 +41,3 @@ std::unique_ptr<PrefService> PrefServiceFactory::Create(
       standalone_browser_prefs_.get(), std::move(pref_registry),
       read_error_callback_, async_);
 }
-
-void PrefServiceFactory::ChangePrefValueStore(PrefService* pref_service) {
-  pref_service->ChangePrefValueStore(
-      managed_prefs_.get(), supervised_user_prefs_.get(),
-      extension_prefs_.get(), recommended_prefs_.get());
-}

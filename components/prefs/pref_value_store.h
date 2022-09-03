@@ -168,9 +168,6 @@ class COMPONENTS_PREFS_EXPORT PrefValueStore {
 
   bool IsInitializationComplete() const;
 
-  // Check whether a particular type of PrefStore exists.
-  bool HasPrefStore(PrefStoreType type) const;
-
  private:
   // Keeps a PrefStore reference on behalf of the PrefValueStore and monitors
   // the PrefStore for changes, forwarding notifications to PrefValueStore. This
