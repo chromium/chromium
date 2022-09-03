@@ -21,63 +21,81 @@ module ash.cros_healthd.mojom;
 // be, at most, 6 words in the |payload|. See section 2.3 "ACPI EC Event
 // notification" of the Wilco EC specification at go/wilco-ec-spec for more
 // information.
+//
+// NextMinVersion: 1, NextIndex: 3
+[Stable]
 struct EcEvent {
   // Derived value representing the reason/cause of the EC event.
   //
   // NOTE: This is a computed value and not sent by the EC.
+  //
+  // NextMinVersion: 1, NextIndex: 10
+  [Stable, Extensible]
   enum Reason {
+    // This is required for backwards compatibility, should not be used.
+    [Default] kUnmappedEnumField = 9,
     // |kSystemNotify| EC event types:
     //
     // An AC adapter event indicating a non-Wilco charger.
-    kNonWilcoCharger,
+    kNonWilcoCharger = 0,
     // An AC adapter event indicating a low power charger.
-    kLowPowerCharger,
+    kLowPowerCharger = 1,
     // A battery event indicating an incompatible battery.
-    kBatteryAuth,
+    kBatteryAuth = 2,
     // A USB-C event indicating an HDMI conflict.
-    kDockDisplay,
+    kDockDisplay = 3,
     // A USB-C event indicating a lack of thunderbolt support.
-    kDockThunderbolt,
+    kDockThunderbolt = 4,
     // A USB-C event indicating an incompatible dock.
-    kIncompatibleDock,
+    kIncompatibleDock = 5,
     // A USB-C event indicating the attached dock has overheated.
-    kDockError,
+    kDockError = 6,
 
     // |kSystemNotify| EC event type with no appropriate subtype.
-    kSysNotification,
+    kSysNotification = 7,
     // Non |kSystemNotify| EC event type.
-    kNonSysNotification,
+    kNonSysNotification = 8,
   };
 
   // The |type| member will be one of these.
+  [Stable, Extensible]
   enum Type {
+    // This is required for backwards compatibility, should not be used.
+    [Default] kUnmappedEnumField = 0,
     // Interpret |payload| as a system notify payload.
     kSystemNotify = 0x0012,
   };
 
-  Type type;
-  array<uint16> payload;
-  Reason reason;
+  Type type@0;
+  array<uint16> payload@1;
+  Reason reason@2;
 };
 
+// NextMinVersion: 1, NextIndex: 2
+[Stable]
 struct GetEcTelemetryResponse {
+  // NextMinVersion: 2, NextIndex: 5
+  [Stable, Extensible]
   enum Status {
+    // This is required for backwards compatibility, should not be used.
+    [MinVersion=1, Default] kUnmappedEnumField = 4,
     // The EC telemetry command was successfully completed.
-    kStatusOk,
+    kStatusOk = 0,
     // The EC telemetry command was rejected due to the empty request payload.
-    kStatusErrorInputPayloadEmpty,
+    kStatusErrorInputPayloadEmpty = 1,
     // The EC telemetry command was rejected due to the request payload being
     // too large.
-    kStatusErrorInputPayloadMaxSizeExceeded,
+    kStatusErrorInputPayloadMaxSizeExceeded = 2,
     // The EC telemetry command was failed due to EC driver error.
-    kStatusErrorAccessingDriver,
+    kStatusErrorAccessingDriver = 3,
   };
-  Status status;
-  string payload;
+  Status status@0;
+  string payload@1;
 };
 
 // Implemented by clients who desire EC notifications.
+[Stable]
 interface WilcoEcObserver {
   // Fired when an EC event occurs.
-  OnEcEvent(EcEvent ec_event);
+  OnEcEvent@0(EcEvent ec_event);
 };
