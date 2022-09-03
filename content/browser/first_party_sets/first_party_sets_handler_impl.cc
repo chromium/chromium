@@ -37,31 +37,8 @@ namespace {
 using FlattenedSets = FirstPartySetsHandlerImpl::FlattenedSets;
 using SingleSet = FirstPartySetParser::SingleSet;
 
-constexpr base::FilePath::CharType kPersistedFirstPartySetsFileName[] =
-    FILE_PATH_LITERAL("persisted_first_party_sets.json");
-
-// Reads the sets as raw JSON from their storage file, returning the raw sets on
-// success and empty string on failure.
-std::string LoadSetsFromDisk(const base::FilePath& path) {
-  DCHECK(!path.empty());
-
-  std::string result;
-  if (!base::ReadFileToString(path, &result)) {
-    VLOG(1) << "Failed loading serialized First-Party Sets file from "
-            << path.MaybeAsASCII();
-    return "";
-  }
-  return result;
-}
-
-// Writes the sets as raw JSON to the storage file.
-void MaybeWriteSetsToDisk(const base::FilePath& path, base::StringPiece sets) {
-  DCHECK(!path.empty());
-  if (!base::ImportantFileWriter::WriteFileAtomically(path, sets)) {
-    VLOG(1) << "Failed writing serialized First-Party Sets to file "
-            << path.MaybeAsASCII();
-  }
-}
+constexpr base::FilePath::CharType kFirstPartySetsDatabase[] =
+    FILE_PATH_LITERAL("first_party_sets.db");
 
 // Converts a list of First-Party Sets from a SingleSet to a FlattenedSet
 // representation.
@@ -360,10 +337,9 @@ void FirstPartySetsHandlerImpl::Init(const base::FilePath& user_data_dir,
                                      const std::string& flag_value) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!initialized_);
-  DCHECK(persisted_sets_path_.empty());
 
   initialized_ = true;
-  SetPersistedSets(user_data_dir);
+  SetDatabase(user_data_dir);
 
   if (IsEnabled()) {
     sets_loader_->SetManuallySpecifiedSet(flag_value);
@@ -402,52 +378,18 @@ void FirstPartySetsHandlerImpl::ResetForTesting() {
                      // this is a static singleton.
                      base::Unretained(this)));
   on_sets_ready_callbacks_.clear();
-  persisted_sets_path_ = base::FilePath();
   public_sets_ = nullptr;
-  raw_persisted_sets_ = absl::nullopt;
+  db_helper_.Reset();
 }
 
-void FirstPartySetsHandlerImpl::SetPersistedSets(
-    const base::FilePath& user_data_dir) {
+void FirstPartySetsHandlerImpl::GetPersistedPublicSetsForTesting(
+    base::OnceCallback<void(FirstPartySetsHandlerImpl::FlattenedSets)>
+        callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!raw_persisted_sets_.has_value());
-  DCHECK(persisted_sets_path_.empty());
-  if (user_data_dir.empty()) {
-    VLOG(1) << "Empty path. Failed loading serialized First-Party Sets file.";
-    // We have to continue, in case the embedder has enabled FPS but has not
-    // provided a directory to store persisted sets.
-    OnReadPersistedSetsFile("");
-    return;
-  }
-  persisted_sets_path_ = user_data_dir.Append(kPersistedFirstPartySetsFileName);
-
-  // We use USER_BLOCKING here since First-Party Set initialization blocks
-  // network navigations at startup.
-  //
-  // base::Unretained(this) is safe because this is a static singleton.
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_BLOCKING},
-      base::BindOnce(&LoadSetsFromDisk, persisted_sets_path_),
-      base::BindOnce(&FirstPartySetsHandlerImpl::OnReadPersistedSetsFile,
-                     base::Unretained(this)));
-}
-
-void FirstPartySetsHandlerImpl::OnReadPersistedSetsFile(
-    const std::string& raw_persisted_sets) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!raw_persisted_sets_.has_value());
-  raw_persisted_sets_ = raw_persisted_sets;
-  UmaHistogramTimes(
-      "Cookie.FirstPartySets.InitializationDuration.ReadPersistedSets2",
-      construction_timer_.Elapsed());
-
-  if (!public_sets_.is_null()) {
-    ClearSiteDataOnChangedSets();
-
-    if (IsEnabled()) {
-      InvokePendingQueries();
-    }
-  }
+  DCHECK(!db_helper_.is_null());
+  db_helper_
+      .AsyncCall(&FirstPartySetsHandlerDatabaseHelper::GetPersistedPublicSets)
+      .Then(std::move(callback));
 }
 
 void FirstPartySetsHandlerImpl::SetCompleteSets(
@@ -457,13 +399,26 @@ void FirstPartySetsHandlerImpl::SetCompleteSets(
   DCHECK(!public_sets.is_null());
   public_sets_ = std::move(public_sets);
 
-  if (raw_persisted_sets_.has_value()) {
     ClearSiteDataOnChangedSets();
 
     if (IsEnabled()) {
       InvokePendingQueries();
     }
+}
+
+void FirstPartySetsHandlerImpl::SetDatabase(
+    const base::FilePath& user_data_dir) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(db_helper_.is_null());
+
+  if (user_data_dir.empty()) {
+    VLOG(1) << "Empty path. Failed initializing First-Party Sets database.";
+    return;
   }
+  db_helper_.emplace(base::ThreadPool::CreateSequencedTaskRunner(
+                         {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
+                          base::TaskShutdownBehavior::BLOCK_SHUTDOWN}),
+                     user_data_dir.Append(kFirstPartySetsDatabase));
 }
 
 void FirstPartySetsHandlerImpl::InvokePendingQueries() {
@@ -486,16 +441,12 @@ network::mojom::PublicFirstPartySetsPtr FirstPartySetsHandlerImpl::GetSetsSync()
 void FirstPartySetsHandlerImpl::ClearSiteDataOnChangedSets() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!public_sets_.is_null());
-  DCHECK(raw_persisted_sets_.has_value());
 
-  // TODO(shuuran@chromium.org): Implement site state clearing.
-
-  if (!persisted_sets_path_.empty()) {
-    base::ThreadPool::PostTask(
-        FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-        base::BindOnce(
-            &MaybeWriteSetsToDisk, persisted_sets_path_,
-            FirstPartySetParser::SerializeFirstPartySets(public_sets_->sets)));
+  if (!db_helper_.is_null()) {
+    // TODO(shuuran@chromium.org): Implement site state clearing.
+    db_helper_
+        .AsyncCall(&FirstPartySetsHandlerDatabaseHelper::PersistPublicSets)
+        .WithArgs(public_sets_->sets);
   }
 }
 

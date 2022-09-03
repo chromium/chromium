@@ -178,9 +178,6 @@ class FirstPartySetsHandlerImplTest : public ::testing::Test {
 
     CHECK(scoped_dir_.CreateUniqueTempDir());
     CHECK(PathExists(scoped_dir_.GetPath()));
-
-    persisted_sets_path_ = scoped_dir_.GetPath().Append(
-        FILE_PATH_LITERAL("persisted_first_party_sets.json"));
   }
 
   base::File WritePublicSetsFile(base::StringPiece content) {
@@ -199,7 +196,6 @@ class FirstPartySetsHandlerImplTest : public ::testing::Test {
 
  protected:
   base::ScopedTempDir scoped_dir_;
-  base::FilePath persisted_sets_path_;
   base::test::TaskEnvironment env_;
 };
 
@@ -211,7 +207,6 @@ class FirstPartySetsHandlerImplDisabledTest
 };
 
 TEST_F(FirstPartySetsHandlerImplDisabledTest, IgnoresValid) {
-  // Persisted sets are expected to be loaded with the provided path.
   FirstPartySetsHandlerImpl::GetInstance()->Init(scoped_dir_.GetPath(),
                                                  /*flag_value=*/"");
 
@@ -220,9 +215,10 @@ TEST_F(FirstPartySetsHandlerImplDisabledTest, IgnoresValid) {
   // TODO(shuuran@chromium.org): test site state is cleared.
 
   // First-Party Sets is disabled, write an empty persisted sets to disk.
-  std::string got;
-  ASSERT_TRUE(base::ReadFileToString(persisted_sets_path_, &got));
-  EXPECT_EQ(got, "{}");
+  base::test::TestFuture<FirstPartySetsHandlerImpl::FlattenedSets> future;
+  FirstPartySetsHandlerImpl::GetInstance()->GetPersistedPublicSetsForTesting(
+      future.GetCallback());
+  EXPECT_THAT(future.Get(), IsEmpty());
 }
 
 class FirstPartySetsHandlerImplEnabledTest
@@ -232,7 +228,7 @@ class FirstPartySetsHandlerImplEnabledTest
       : FirstPartySetsHandlerImplTest(true) {}
 };
 
-TEST_F(FirstPartySetsHandlerImplEnabledTest, EmptyPersistedSetsDir) {
+TEST_F(FirstPartySetsHandlerImplEnabledTest, EmptyDBPath) {
   // Empty `user_data_dir` will fail to load persisted sets, but that will not
   // prevent `on_sets_ready` from being invoked.
   FirstPartySetsHandlerImpl::GetInstance()->Init(
@@ -251,8 +247,7 @@ TEST_F(FirstPartySetsHandlerImplEnabledTest, EmptyPersistedSetsDir) {
                            net::SiteType::kAssociated, 0)))));
 }
 
-TEST_F(FirstPartySetsHandlerImplEnabledTest,
-       Successful_PersistedSetsFileNotExist) {
+TEST_F(FirstPartySetsHandlerImplEnabledTest, Successful_NoPrePersistedSets) {
   FirstPartySetsHandlerImpl::GetInstance()
       ->SetEmbedderWillProvidePublicSetsForTesting(true);
   const std::string input =
@@ -262,7 +257,6 @@ TEST_F(FirstPartySetsHandlerImplEnabledTest,
   FirstPartySetsHandlerImpl::GetInstance()->SetPublicFirstPartySets(
       WritePublicSetsFile(input));
 
-  // Persisted sets are expected to be loaded with the provided path.
   FirstPartySetsHandlerImpl::GetInstance()->Init(
       scoped_dir_.GetPath(),
       /*flag_value=*/"https://example.test,https://associatedsite1.test");
@@ -287,68 +281,10 @@ TEST_F(FirstPartySetsHandlerImplEnabledTest,
 
   env().RunUntilIdle();
 
-  std::string got;
-  ASSERT_TRUE(base::ReadFileToString(persisted_sets_path_, &got));
-  EXPECT_THAT(FirstPartySetParser::DeserializeFirstPartySets(got),
-              UnorderedElementsAre(
-                  Pair(SerializesTo("https://example.test"),
-                       net::FirstPartySetEntry(
-                           net::SchemefulSite(GURL("https://example.test")),
-                           net::SiteType::kPrimary, absl::nullopt)),
-                  Pair(SerializesTo("https://associatedsite1.test"),
-                       net::FirstPartySetEntry(
-                           net::SchemefulSite(GURL("https://example.test")),
-                           net::SiteType::kAssociated, absl::nullopt)),
-                  Pair(SerializesTo("https://foo.test"),
-                       net::FirstPartySetEntry(
-                           net::SchemefulSite(GURL("https://foo.test")),
-                           net::SiteType::kPrimary, absl::nullopt)),
-                  Pair(SerializesTo("https://associatedsite2.test"),
-                       net::FirstPartySetEntry(
-                           net::SchemefulSite(GURL("https://foo.test")),
-                           net::SiteType::kAssociated, absl::nullopt))));
-}
-
-TEST_F(FirstPartySetsHandlerImplEnabledTest, Successful_PersistedSetsEmpty) {
-  FirstPartySetsHandlerImpl::GetInstance()
-      ->SetEmbedderWillProvidePublicSetsForTesting(true);
-  ASSERT_TRUE(base::WriteFile(persisted_sets_path_, "{}"));
-
-  const std::string input =
-      R"({"primary": "https://foo.test", )"
-      R"("associatedSites": ["https://associatedsite2.test"]})";
-  ASSERT_TRUE(base::JSONReader::Read(input));
-  FirstPartySetsHandlerImpl::GetInstance()->SetPublicFirstPartySets(
-      WritePublicSetsFile(input));
-
-  // Persisted sets are expected to be loaded with the provided path.
-  FirstPartySetsHandlerImpl::GetInstance()->Init(
-      scoped_dir_.GetPath(),
-      /*flag_value=*/"https://example.test,https://associatedsite1.test");
-  EXPECT_THAT(GetSetsAndWait(),
-              PublicSetsAre(UnorderedElementsAre(
-                  Pair(SerializesTo("https://example.test"),
-                       net::FirstPartySetEntry(
-                           net::SchemefulSite(GURL("https://example.test")),
-                           net::SiteType::kPrimary, absl::nullopt)),
-                  Pair(SerializesTo("https://associatedsite1.test"),
-                       net::FirstPartySetEntry(
-                           net::SchemefulSite(GURL("https://example.test")),
-                           net::SiteType::kAssociated, 0)),
-                  Pair(SerializesTo("https://foo.test"),
-                       net::FirstPartySetEntry(
-                           net::SchemefulSite(GURL("https://foo.test")),
-                           net::SiteType::kPrimary, absl::nullopt)),
-                  Pair(SerializesTo("https://associatedsite2.test"),
-                       net::FirstPartySetEntry(
-                           net::SchemefulSite(GURL("https://foo.test")),
-                           net::SiteType::kAssociated, 0)))));
-
-  env().RunUntilIdle();
-
-  std::string got;
-  ASSERT_TRUE(base::ReadFileToString(persisted_sets_path_, &got));
-  EXPECT_THAT(FirstPartySetParser::DeserializeFirstPartySets(got),
+  base::test::TestFuture<FirstPartySetsHandlerImpl::FlattenedSets> future;
+  FirstPartySetsHandlerImpl::GetInstance()->GetPersistedPublicSetsForTesting(
+      future.GetCallback());
+  EXPECT_THAT(future.Get(),
               UnorderedElementsAre(
                   Pair(SerializesTo("https://example.test"),
                        net::FirstPartySetEntry(
@@ -372,7 +308,6 @@ TEST_F(FirstPartySetsHandlerImplEnabledTest,
        GetSetsIfEnabledAndReady_AfterSetsReady) {
   FirstPartySetsHandlerImpl::GetInstance()
       ->SetEmbedderWillProvidePublicSetsForTesting(true);
-  ASSERT_TRUE(base::WriteFile(persisted_sets_path_, "{}"));
 
   const std::string input =
       R"({"primary": "https://example.test", )"
@@ -381,7 +316,6 @@ TEST_F(FirstPartySetsHandlerImplEnabledTest,
   FirstPartySetsHandlerImpl::GetInstance()->SetPublicFirstPartySets(
       WritePublicSetsFile(input));
 
-  // Persisted sets are expected to be loaded with the provided path.
   FirstPartySetsHandlerImpl::GetInstance()->Init(scoped_dir_.GetPath(),
                                                  /*flag_value=*/"");
   EXPECT_THAT(GetSetsAndWait(),
@@ -397,9 +331,10 @@ TEST_F(FirstPartySetsHandlerImplEnabledTest,
 
   env().RunUntilIdle();
 
-  std::string got;
-  ASSERT_TRUE(base::ReadFileToString(persisted_sets_path_, &got));
-  EXPECT_THAT(FirstPartySetParser::DeserializeFirstPartySets(got),
+  base::test::TestFuture<FirstPartySetsHandlerImpl::FlattenedSets> future;
+  FirstPartySetsHandlerImpl::GetInstance()->GetPersistedPublicSetsForTesting(
+      future.GetCallback());
+  EXPECT_THAT(future.Get(),
               UnorderedElementsAre(
                   Pair(SerializesTo("https://example.test"),
                        net::FirstPartySetEntry(
@@ -427,7 +362,6 @@ TEST_F(FirstPartySetsHandlerImplEnabledTest,
        GetSetsIfEnabledAndReady_BeforeSetsReady) {
   FirstPartySetsHandlerImpl::GetInstance()
       ->SetEmbedderWillProvidePublicSetsForTesting(true);
-  ASSERT_TRUE(base::WriteFile(persisted_sets_path_, "{}"));
 
   // Call GetSets before the sets are ready, and before Init has been called.
   base::test::TestFuture<network::mojom::PublicFirstPartySetsPtr> future;
@@ -435,7 +369,6 @@ TEST_F(FirstPartySetsHandlerImplEnabledTest,
       FirstPartySetsHandlerImpl::GetInstance()->GetSets(future.GetCallback()),
       absl::nullopt);
 
-  // Persisted sets are expected to be loaded with the provided path.
   FirstPartySetsHandlerImpl::GetInstance()->Init(scoped_dir_.GetPath(),
                                                  /*flag_value=*/"");
 

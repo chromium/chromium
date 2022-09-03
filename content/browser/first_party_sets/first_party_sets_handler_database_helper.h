@@ -82,6 +82,12 @@ class CONTENT_EXPORT FirstPartySetsHandlerDatabaseHelper {
   // `browser_context_id`.
   void UpdateClearStatusForContext(const std::string& browser_context_id);
 
+  // Wraps FirstPartySetsDatabase::SetPublicSets.
+  void PersistPublicSets(const FlattenedSets& sets);
+
+  // Wraps FirstPartySetsDatabase::GetPublicSets.
+  FlattenedSets GetPersistedPublicSets();
+
  private:
   std::unique_ptr<FirstPartySetsDatabase> db_
       GUARDED_BY_CONTEXT(sequence_checker_);

@@ -16,9 +16,11 @@
 #include "base/no_destructor.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
+#include "base/threading/sequence_bound.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/values.h"
 #include "content/browser/first_party_sets/first_party_set_parser.h"
+#include "content/browser/first_party_sets/first_party_sets_handler_database_helper.h"
 #include "content/browser/first_party_sets/first_party_sets_loader.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/first_party_sets_handler.h"
@@ -95,6 +97,10 @@ class CONTENT_EXPORT FirstPartySetsHandlerImpl : public FirstPartySetsHandler {
     embedder_will_provide_public_sets_ = enabled_ && will_provide;
   }
 
+  void GetPersistedPublicSetsForTesting(
+      base::OnceCallback<void(FirstPartySetsHandlerImpl::FlattenedSets)>
+          callback);
+
   // Computes information needed by the FirstPartySetsAccessDelegate in order
   // to update the browser's list of First-Party Sets to respect a profile's
   // setting for the per-profile FirstPartySetsOverrides policy.
@@ -108,16 +114,12 @@ class CONTENT_EXPORT FirstPartySetsHandlerImpl : public FirstPartySetsHandler {
   FirstPartySetsHandlerImpl(bool enabled,
                             bool embedder_will_provide_public_sets);
 
-  // This method reads the persisted First-Party Sets from the file under
-  // `user_data_dir`. Must be called exactly once.
-  void SetPersistedSets(const base::FilePath& user_data_dir);
-
-  // Stores the read persisted sets in `raw_persisted_sets_`. Must be called
-  // exactly once.
-  void OnReadPersistedSetsFile(const std::string& raw_persisted_sets);
-
   // Sets the public First-Party Sets data. Must be called exactly once.
   void SetCompleteSets(network::mojom::PublicFirstPartySetsPtr public_sets);
+
+  // Sets `db_helper_`, which will initialize the underlying First-Party Sets
+  // database under `user_data_dir`. Must be called exactly once.
+  void SetDatabase(const base::FilePath& user_data_dir);
 
   // Invokes any pending queries.
   void InvokePendingQueries();
@@ -127,13 +129,6 @@ class CONTENT_EXPORT FirstPartySetsHandlerImpl : public FirstPartySetsHandler {
   // Must be called after the list has been initialized.
   network::mojom::PublicFirstPartySetsPtr GetSetsSync() const;
 
-  // Does the following:
-  // 1) computes the diff between the `sets_` and the parsed
-  // `raw_persisted_sets_`;
-  // 2) clears the site data of the set of sites based on the diff;
-  // 3) writes the current First-Party Sets to the file in
-  // `persisted_sets_path_`.
-  //
   // TODO(shuuran@chromium.org): Implement the code to clear site state.
   void ClearSiteDataOnChangedSets() const;
 
@@ -151,14 +146,6 @@ class CONTENT_EXPORT FirstPartySetsHandlerImpl : public FirstPartySetsHandler {
   network::mojom::PublicFirstPartySetsPtr public_sets_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
-  // The sets that were persisted during the last run of Chrome. Initially
-  // unset (nullopt) until it has been read from disk.
-  absl::optional<std::string> raw_persisted_sets_
-      GUARDED_BY_CONTEXT(sequence_checker_);
-
-  // The path where persisted First-Party sets data is stored.
-  base::FilePath persisted_sets_path_ GUARDED_BY_CONTEXT(sequence_checker_);
-
   bool enabled_ GUARDED_BY_CONTEXT(sequence_checker_);
   bool embedder_will_provide_public_sets_ GUARDED_BY_CONTEXT(sequence_checker_);
 
@@ -172,6 +159,10 @@ class CONTENT_EXPORT FirstPartySetsHandlerImpl : public FirstPartySetsHandler {
 
   // Timer starting when the instance is constructed. Used for metrics.
   base::ElapsedTimer construction_timer_ GUARDED_BY_CONTEXT(sequence_checker_);
+
+  // Access the underlying DB on a database sequence to make sure none of DB
+  // operations that support blocking are called directly on the main thread.
+  base::SequenceBound<FirstPartySetsHandlerDatabaseHelper> db_helper_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

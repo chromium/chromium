@@ -116,4 +116,18 @@ void FirstPartySetsHandlerDatabaseHelper::UpdateClearStatusForContext(
   }
 }
 
+void FirstPartySetsHandlerDatabaseHelper::PersistPublicSets(
+    const FirstPartySetsHandlerDatabaseHelper::FlattenedSets& sets) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!db_->SetPublicSets(sets)) {
+    DVLOG(1) << "Failed to write public sets into the database.";
+  }
+}
+
+FirstPartySetsHandlerDatabaseHelper::FlattenedSets
+FirstPartySetsHandlerDatabaseHelper::GetPersistedPublicSets() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return db_->GetPublicSets();
+}
+
 }  // namespace content
