@@ -51,7 +51,8 @@ const char* const BOOL_ATTRIBUTES[] = {
     "range",
     "scrollable",
     "selected",
-    "interesting"
+    "interesting",
+    "table_header"
 };
 
 const char* const STRING_ATTRIBUTES[] = {
@@ -192,6 +193,7 @@ void AccessibilityTreeFormatterAndroid::AddProperties(
   dict->Set("scrollable", android_node->IsScrollable());
   dict->Set("selected", android_node->IsSelected());
   dict->Set("interesting", android_node->IsInterestingOnAndroid());
+  dict->Set("table_header", android_node->IsTableHeader());
 
   // String attributes.
   dict->Set("name", android_node->GetTextContentUTF16());

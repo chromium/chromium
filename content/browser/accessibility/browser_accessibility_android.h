@@ -67,6 +67,7 @@ class CONTENT_EXPORT BrowserAccessibilityAndroid : public BrowserAccessibility {
   bool IsSeekControl() const;
   bool IsSelected() const;
   bool IsSlider() const;
+  bool IsTableHeader() const;
   bool IsVisibleToUser() const;
 
   // This returns true for all nodes that we should navigate to.

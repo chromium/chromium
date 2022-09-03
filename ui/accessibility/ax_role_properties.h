@@ -104,9 +104,6 @@ AX_BASE_EXPORT bool IsGridLike(const ax::mojom::Role role);
 // Returns true if the provided role belongs to a heading.
 AX_BASE_EXPORT bool IsHeading(const ax::mojom::Role role);
 
-// Returns true if the provided role belongs to a heading or a table header.
-AX_BASE_EXPORT bool IsHeadingOrTableHeader(const ax::mojom::Role role);
-
 // Returns true if the provided role belongs to an iframe.
 AX_BASE_EXPORT bool IsIframe(const ax::mojom::Role role);
 

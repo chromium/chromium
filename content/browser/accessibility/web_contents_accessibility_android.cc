@@ -910,10 +910,10 @@ jboolean WebContentsAccessibilityAndroid::PopulateAccessibilityNodeInfo(
         env, obj, info, node->RowCount(), node->ColumnCount(),
         node->IsHierarchical());
   }
-  if (node->IsCollectionItem() || node->IsHeading()) {
+  if (node->IsCollectionItem() || node->IsTableHeader()) {
     Java_WebContentsAccessibilityImpl_setAccessibilityNodeInfoCollectionItemInfo(
         env, obj, info, node->RowIndex(), node->RowSpan(), node->ColumnIndex(),
-        node->ColumnSpan(), node->IsHeading());
+        node->ColumnSpan(), node->IsTableHeader());
   }
 
   // For sliders that are numeric, use the AccessibilityNodeInfo.RangeInfo

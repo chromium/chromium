@@ -284,7 +284,7 @@ bool BrowserAccessibilityAndroid::IsHeading() const {
   if (parent && parent->IsHeading())
     return true;
 
-  return ui::IsHeadingOrTableHeader(GetRole());
+  return ui::IsHeading(GetRole());
 }
 
 bool BrowserAccessibilityAndroid::IsHierarchical() const {
@@ -328,6 +328,10 @@ bool BrowserAccessibilityAndroid::IsSelected() const {
 
 bool BrowserAccessibilityAndroid::IsSlider() const {
   return GetRole() == ax::mojom::Role::kSlider;
+}
+
+bool BrowserAccessibilityAndroid::IsTableHeader() const {
+  return ui::IsTableHeader(GetRole());
 }
 
 bool BrowserAccessibilityAndroid::IsVisibleToUser() const {

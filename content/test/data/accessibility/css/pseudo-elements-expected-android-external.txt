@@ -1,2 +1,2 @@
 WebView focusable focused scrollable actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
-++TextView text:"[ Foo ]" CollectionItemInfo:[heading, rowSpan=0, colSpan=0, rowIndex=0, colIndex=0] actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="heading", roleDescription="heading 1"]
+++TextView text:"[ Foo ]" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="heading", roleDescription="heading 1"]

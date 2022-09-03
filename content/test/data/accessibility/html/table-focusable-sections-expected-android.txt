@@ -2,8 +2,8 @@ android.webkit.WebView focusable focused scrollable name='Table example - focusa
 ++android.widget.GridView role_description='table' collection row_count=4 column_count=2
 ++++android.view.View focusable
 ++++++android.view.View
-++++++++android.view.View role_description='column header' collection_item heading name='Sum' row_span=1 column_span=1
-++++++++android.view.View role_description='column header' collection_item heading name='Subtraction' row_span=1 column_index=1 column_span=1
+++++++++android.view.View role_description='column header' collection_item table_header name='Sum' row_span=1 column_span=1
+++++++++android.view.View role_description='column header' collection_item table_header name='Subtraction' row_span=1 column_index=1 column_span=1
 ++++android.view.View focusable
 ++++++android.view.View
 ++++++++android.view.View collection_item name='10' row_index=1 row_span=1 column_span=1

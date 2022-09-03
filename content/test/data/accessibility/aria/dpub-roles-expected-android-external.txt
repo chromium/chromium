@@ -37,6 +37,6 @@ WebView focusable focused scrollable actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chr
 ++View text:"doc-prologue" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="docPrologue", roleDescription="prologue"]
 ++View text:"doc-pullquote" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="docPullquote", roleDescription="pullquote"]
 ++View text:"doc-qna" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="docQna", roleDescription="Q&A"]
-++View text:"doc-subtitle" CollectionItemInfo:[heading, rowSpan=0, colSpan=0, rowIndex=0, colIndex=0] actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="docSubtitle", roleDescription="subtitle"]
+++View text:"doc-subtitle" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="docSubtitle", roleDescription="subtitle"]
 ++View text:"doc-tip" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="docTip", roleDescription="tip"]
 ++View text:"doc-toc" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="docToc", roleDescription="table of contents"]

@@ -331,18 +331,6 @@ bool IsHeading(const ax::mojom::Role role) {
   }
 }
 
-bool IsHeadingOrTableHeader(const ax::mojom::Role role) {
-  switch (role) {
-    case ax::mojom::Role::kColumnHeader:
-    case ax::mojom::Role::kDocSubtitle:
-    case ax::mojom::Role::kHeading:
-    case ax::mojom::Role::kRowHeader:
-      return true;
-    default:
-      return false;
-  }
-}
-
 bool IsIframe(ax::mojom::Role role) {
   switch (role) {
     case ax::mojom::Role::kIframe:
