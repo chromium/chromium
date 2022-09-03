@@ -53,6 +53,9 @@ class MockSuggestionsHandler
 class SingleFieldFormFillRouterTest : public testing::Test {
  protected:
   SingleFieldFormFillRouterTest() {
+    scoped_feature_list_async_parse_form_.InitWithFeatureState(
+        features::kAutofillParseAsync, true);
+
     prefs_ = test::PrefServiceForTesting();
 
     // Mock such that we don't trigger the cleanup.
@@ -75,6 +78,7 @@ class SingleFieldFormFillRouterTest : public testing::Test {
                               "SomeType", &test_field_);
   }
 
+  base::test::ScopedFeatureList scoped_feature_list_async_parse_form_;
   base::test::SingleThreadTaskEnvironment task_environment_;
   test::AutofillEnvironment autofill_environment_;
   std::unique_ptr<SingleFieldFormFillRouter> single_field_form_fill_router_;

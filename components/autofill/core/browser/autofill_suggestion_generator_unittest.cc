@@ -22,6 +22,7 @@
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/autofill/core/common/autofill_clock.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -36,7 +37,10 @@ namespace autofill {
 // browser_autofill_manager_unittest.cc.
 class AutofillSuggestionGeneratorTest : public testing::Test {
  public:
-  AutofillSuggestionGeneratorTest() = default;
+  AutofillSuggestionGeneratorTest() {
+    scoped_feature_list_async_parse_form_.InitWithFeatureState(
+        features::kAutofillParseAsync, true);
+  }
 
   void SetUp() override {
     autofill_client_.SetPrefs(test::PrefServiceForTesting());
@@ -59,10 +63,8 @@ class AutofillSuggestionGeneratorTest : public testing::Test {
 
   TestPersonalDataManager* personal_data() { return &personal_data_; }
 
- protected:
-  base::test::ScopedFeatureList scoped_feature_list_;
-
  private:
+  base::test::ScopedFeatureList scoped_feature_list_async_parse_form_;
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::SYSTEM_TIME};
   test::AutofillEnvironment autofill_environment_;
@@ -352,7 +354,8 @@ TEST_F(AutofillSuggestionGeneratorTest, CreateCreditCardSuggestion_LocalCard) {
 // popup.
 TEST_F(AutofillSuggestionGeneratorTest,
        CreateCreditCardSuggestion_PopupWithMetadata_VirtualCardNameField) {
-  scoped_feature_list_.InitAndEnableFeature(
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
       features::kAutofillEnableVirtualCardMetadata);
 
   // Create a server card.
@@ -406,7 +409,8 @@ TEST_F(AutofillSuggestionGeneratorTest,
 // Autofill popup.
 TEST_F(AutofillSuggestionGeneratorTest,
        CreateCreditCardSuggestion_PopupWithMetadata_VirtualCardNumberField) {
-  scoped_feature_list_.InitAndEnableFeature(
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
       features::kAutofillEnableVirtualCardMetadata);
 
   // Create a server card.
@@ -441,7 +445,8 @@ TEST_F(AutofillSuggestionGeneratorTest,
 // Autofill popup.
 TEST_F(AutofillSuggestionGeneratorTest,
        CreateCreditCardSuggestion_PopupWithMetadata_NonVirtualCardNameField) {
-  scoped_feature_list_.InitAndEnableFeature(
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
       features::kAutofillEnableVirtualCardMetadata);
 
   // Create a server card.
@@ -494,7 +499,8 @@ TEST_F(AutofillSuggestionGeneratorTest,
 // Autofill popup.
 TEST_F(AutofillSuggestionGeneratorTest,
        CreateCreditCardSuggestion_PopupWithMetadata_NonVirtualCardNumberField) {
-  scoped_feature_list_.InitAndEnableFeature(
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
       features::kAutofillEnableVirtualCardMetadata);
 
   // Create a server card.
