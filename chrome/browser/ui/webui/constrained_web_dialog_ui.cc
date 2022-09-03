@@ -128,5 +128,5 @@ ConstrainedWebDialogDelegate* ConstrainedWebDialogUI::GetConstrainedDelegate() {
           web_ui()->GetWebContents()->
               GetUserData(&kConstrainedWebDialogDelegateUserDataKey));
 
-  return user_data ? user_data->delegate() : NULL;
+  return user_data ? user_data->delegate() : nullptr;
 }

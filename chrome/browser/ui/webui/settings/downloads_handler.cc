@@ -123,7 +123,7 @@ void DownloadsHandler::HandleSelectDownloadLocation(
       l10n_util::GetStringUTF16(IDS_SETTINGS_DOWNLOAD_LOCATION),
       pref_service->GetFilePath(prefs::kDownloadDefaultDirectory), &info, 0,
       base::FilePath::StringType(),
-      web_ui()->GetWebContents()->GetTopLevelNativeWindow(), NULL);
+      web_ui()->GetWebContents()->GetTopLevelNativeWindow(), nullptr);
 }
 
 void DownloadsHandler::FileSelected(const base::FilePath& path,

@@ -425,7 +425,7 @@ class FakePrinterProviderAPI : public PrinterProviderAPI {
   const PrinterProviderPrintJob* GetNextPendingPrintJob() const {
     EXPECT_GT(pending_print_count(), 0u);
     if (pending_print_count() == 0)
-      return NULL;
+      return nullptr;
     return &pending_print_requests_.front().job;
   }
 

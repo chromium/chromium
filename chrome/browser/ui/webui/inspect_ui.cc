@@ -275,7 +275,7 @@ void InspectMessageHandler::HandleInitUICommand(const base::Value::List&) {
 static bool ParseStringArgs(const base::Value::List& args,
                             std::string* arg0,
                             std::string* arg1,
-                            std::string* arg2 = 0) {
+                            std::string* arg2 = nullptr) {
   int arg_size = args.size();
   if (arg0) {
     if (arg_size < 1 || !args[0].is_string()) {

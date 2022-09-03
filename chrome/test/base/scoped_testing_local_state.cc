@@ -18,5 +18,5 @@ ScopedTestingLocalState::ScopedTestingLocalState(
 
 ScopedTestingLocalState::~ScopedTestingLocalState() {
   EXPECT_EQ(&local_state_, browser_process_->local_state());
-  browser_process_->SetLocalState(NULL);
+  browser_process_->SetLocalState(nullptr);
 }

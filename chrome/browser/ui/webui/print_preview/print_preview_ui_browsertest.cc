@@ -44,7 +44,7 @@ class PrintPreviewBrowserTest : public InProcessBrowserTest {
   PrintPreviewBrowserTest() {}
 
   void Print() {
-    content::TestNavigationObserver nav_observer(NULL);
+    content::TestNavigationObserver nav_observer(nullptr);
     nav_observer.StartWatchingNewWebContents();
     chrome::ExecuteCommand(browser(), IDC_PRINT);
     nav_observer.Wait();

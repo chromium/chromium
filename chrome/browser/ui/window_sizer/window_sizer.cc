@@ -87,7 +87,7 @@ class DefaultStateProvider : public WindowSizer::StateProvider {
     // If a reference browser is set, use its window. Otherwise find last
     // active. Panels are never used as reference browsers as panels are
     // specially positioned.
-    BrowserWindow* window = NULL;
+    BrowserWindow* window = nullptr;
     // Window may be null if browser is just starting up.
     if (browser_ && browser_->window()) {
       window = browser_->window();

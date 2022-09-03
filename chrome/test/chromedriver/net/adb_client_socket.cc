@@ -391,7 +391,7 @@ class AdbSendFileSocket : AdbClientSocket {
   }
 
   void SendDone() {
-    int data = time(NULL);
+    int data = time(nullptr);
     SendPayload(kDoneCommand, data, nullptr, 0,
                 base::BindOnce(&AdbSendFileSocket::ReadFinalResponse,
                                base::Unretained(this)));

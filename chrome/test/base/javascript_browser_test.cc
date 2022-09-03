@@ -79,7 +79,7 @@ void JavaScriptBrowserTest::SetUpOnMainThread() {
 void JavaScriptBrowserTest::BuildJavascriptLibraries(
     std::vector<std::u16string>* libraries) {
   base::ScopedAllowBlockingForTesting allow_blocking;
-  ASSERT_TRUE(libraries != NULL);
+  ASSERT_TRUE(libraries != nullptr);
   std::vector<base::FilePath>::iterator user_libraries_iterator;
   for (user_libraries_iterator = user_libraries_.begin();
        user_libraries_iterator != user_libraries_.end();

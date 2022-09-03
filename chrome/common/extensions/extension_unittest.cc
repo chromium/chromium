@@ -362,7 +362,7 @@ TEST(ExtensionTest, WantsFileAccess) {
   GURL file_url("file:///etc/passwd");
 
   // Ignore the policy delegate for this test.
-  PermissionsData::SetPolicyDelegate(NULL);
+  PermissionsData::SetPolicyDelegate(nullptr);
 
   // <all_urls> permission
   extension = LoadManifest("permissions", "permissions_all_urls.json");

@@ -667,7 +667,7 @@ Status ExecuteWindowCommand(const WindowCommand& command,
                             const base::DictionaryValue& params,
                             std::unique_ptr<base::Value>* value) {
   Timeout timeout;
-  WebView* web_view = NULL;
+  WebView* web_view = nullptr;
   Status status = session->GetTargetWindow(&web_view);
   if (status.IsError())
     return status;
@@ -933,7 +933,7 @@ Status ExecuteSwitchToFrame(Session* session,
   base::Value::List new_args;
   new_args.Append(element->Clone());
   new_args.Append(chrome_driver_id);
-  result.reset(NULL);
+  result.reset();
   status = web_view->CallFunction(
       session->GetCurrentFrameId(), kSetFrameIdentifier, new_args, &result);
   if (status.IsError())
@@ -980,7 +980,8 @@ Status ExecuteFindElement(int interval_ms,
                           const base::DictionaryValue& params,
                           std::unique_ptr<base::Value>* value,
                           Timeout* timeout) {
-  return FindElement(interval_ms, true, NULL, session, web_view, params, value);
+  return FindElement(interval_ms, true, nullptr, session, web_view, params,
+                     value);
 }
 
 Status ExecuteFindElements(int interval_ms,
@@ -989,8 +990,8 @@ Status ExecuteFindElements(int interval_ms,
                            const base::DictionaryValue& params,
                            std::unique_ptr<base::Value>* value,
                            Timeout* timeout) {
-  return FindElement(
-      interval_ms, false, NULL, session, web_view, params, value);
+  return FindElement(interval_ms, false, nullptr, session, web_view, params,
+                     value);
 }
 
 Status ExecuteGetCurrentUrl(Session* session,
@@ -2489,7 +2490,7 @@ Status ExecuteSetLocation(Session* session,
                           const base::DictionaryValue& params,
                           std::unique_ptr<base::Value>* value,
                           Timeout* timeout) {
-  const base::DictionaryValue* location = NULL;
+  const base::DictionaryValue* location = nullptr;
   Geoposition geoposition;
   if (!params.GetDictionary("location", &location))
     return Status(kInvalidArgument, "missing or invalid 'location'");

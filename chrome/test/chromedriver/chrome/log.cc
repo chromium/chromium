@@ -26,7 +26,7 @@ void Log::AddEntry(Level level,
 }
 
 bool Log::truncate_logged_params = true;
-IsVLogOnFunc Log::is_vlog_on_func = NULL;
+IsVLogOnFunc Log::is_vlog_on_func = nullptr;
 
 namespace {
 

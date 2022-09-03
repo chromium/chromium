@@ -269,7 +269,7 @@ void CustomHomePagesTableModel::OnGotOneOfManyTitles(
 void CustomHomePagesTableModel::OnGotTitle(const GURL& entry_url,
                                            bool observable,
                                            history::QueryURLResult result) {
-  Entry* entry = NULL;
+  Entry* entry = nullptr;
   size_t entry_index = 0;
   for (size_t i = 0; i < entries_.size(); ++i) {
     if (entries_[i].url == entry_url) {

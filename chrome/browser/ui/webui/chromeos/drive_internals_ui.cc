@@ -904,7 +904,7 @@ class DriveInternalsWebUIHandler : public content::WebUIMessageHandler {
     drive::DriveIntegrationService* service =
         drive::DriveIntegrationServiceFactory::FindForProfile(profile());
     if (!service || !service->is_enabled())
-      return NULL;
+      return nullptr;
     return service;
   }
 

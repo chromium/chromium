@@ -49,7 +49,7 @@ bool ResolveHost(const std::string& host,
   hints.ai_socktype = SOCK_STREAM;
 
   struct addrinfo* result;
-  if (getaddrinfo(host.c_str(), NULL, &hints, &result))
+  if (getaddrinfo(host.c_str(), nullptr, &hints, &result))
     return false;
 
   auto list = net::AddressList::CreateFromAddrinfo(result);

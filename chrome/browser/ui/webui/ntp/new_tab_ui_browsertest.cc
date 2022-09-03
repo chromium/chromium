@@ -47,7 +47,7 @@ class NewTabUIBrowserTest : public InProcessBrowserTest {
     logging::SetLogMessageHandler(&HandleMessage);
   }
 
-  ~NewTabUIBrowserTest() override { logging::SetLogMessageHandler(NULL); }
+  ~NewTabUIBrowserTest() override { logging::SetLogMessageHandler(nullptr); }
 
   void TearDown() override {
     InProcessBrowserTest::TearDown();

@@ -72,7 +72,7 @@ const std::vector<UrlHandlerInfo>* UrlHandlers::GetUrlHandlers(
     const Extension* extension) {
   UrlHandlers* info = static_cast<UrlHandlers*>(
       extension->GetManifestData(mkeys::kUrlHandlers));
-  return info ? &info->handlers : NULL;
+  return info ? &info->handlers : nullptr;
 }
 
 // static
@@ -125,7 +125,7 @@ bool ParseUrlHandler(const std::string& handler_id,
     return false;
   }
 
-  const base::ListValue* manif_patterns = NULL;
+  const base::ListValue* manif_patterns = nullptr;
   if (!handler_info.GetList(mkeys::kMatches, &manif_patterns) ||
       manif_patterns->GetListDeprecated().size() == 0) {
     *error = ErrorUtils::FormatErrorMessageUTF16(
@@ -155,7 +155,7 @@ bool ParseUrlHandler(const std::string& handler_id,
 
 bool UrlHandlersParser::Parse(Extension* extension, std::u16string* error) {
   std::unique_ptr<UrlHandlers> info(new UrlHandlers);
-  const base::DictionaryValue* all_handlers = NULL;
+  const base::DictionaryValue* all_handlers = nullptr;
   if (!extension->manifest()->GetDictionary(
         mkeys::kUrlHandlers, &all_handlers)) {
     *error = merrors::kInvalidURLHandlers;
@@ -167,7 +167,7 @@ bool UrlHandlersParser::Parse(Extension* extension, std::u16string* error) {
   for (base::DictionaryValue::Iterator iter(*all_handlers); !iter.IsAtEnd();
        iter.Advance()) {
     // A URL handler entry is a title and a list of URL patterns to handle.
-    const base::DictionaryValue* handler = NULL;
+    const base::DictionaryValue* handler = nullptr;
     if (!iter.value().GetAsDictionary(&handler)) {
       *error = merrors::kInvalidURLHandlerPatternElement16;
       return false;

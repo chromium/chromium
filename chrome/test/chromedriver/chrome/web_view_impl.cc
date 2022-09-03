@@ -1433,7 +1433,7 @@ Status WebViewImpl::CallAsyncFunctionInternal(
       return status;
     }
 
-    base::DictionaryValue* result_info = NULL;
+    base::DictionaryValue* result_info = nullptr;
     if (!query_value->GetAsDictionary(&result_info))
       return Status(kUnknownError, "async result info is not a dictionary");
     absl::optional<int> status_code = result_info->FindIntKey("status");

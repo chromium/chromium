@@ -121,11 +121,11 @@ base::LazyInstance<base::ThreadLocalPointer<HttpServer>>::DestructorAtExit
 void StopServerOnIOThread() {
   // Note, |server| may be NULL.
   HttpServer* server = lazy_tls_server_ipv4.Pointer()->Get();
-  lazy_tls_server_ipv4.Pointer()->Set(NULL);
+  lazy_tls_server_ipv4.Pointer()->Set(nullptr);
   delete server;
 
   server = lazy_tls_server_ipv6.Pointer()->Get();
-  lazy_tls_server_ipv6.Pointer()->Set(NULL);
+  lazy_tls_server_ipv6.Pointer()->Set(nullptr);
   delete server;
 }
 

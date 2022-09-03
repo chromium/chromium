@@ -90,7 +90,7 @@ Status ParseFilePath(base::FilePath* to_set,
 Status ParseDict(std::unique_ptr<base::DictionaryValue>* to_set,
                  const base::Value& option,
                  Capabilities* capabilities) {
-  const base::DictionaryValue* dict = NULL;
+  const base::DictionaryValue* dict = nullptr;
   if (!option.GetAsDictionary(&dict))
     return Status(kInvalidArgument, "must be a dictionary");
   *to_set =
@@ -458,7 +458,7 @@ Status ParseNetAddress(NetAddress* to_set,
 
 Status ParseLoggingPrefs(const base::Value& option,
                          Capabilities* capabilities) {
-  const base::DictionaryValue* logging_prefs = NULL;
+  const base::DictionaryValue* logging_prefs = nullptr;
   if (!option.GetAsDictionary(&logging_prefs))
     return Status(kInvalidArgument, "must be a dictionary");
 
@@ -491,7 +491,7 @@ Status ParseInspectorDomainStatus(
 
 Status ParsePerfLoggingPrefs(const base::Value& option,
                              Capabilities* capabilities) {
-  const base::DictionaryValue* perf_logging_prefs = NULL;
+  const base::DictionaryValue* perf_logging_prefs = nullptr;
   if (!option.GetAsDictionary(&perf_logging_prefs))
     return Status(kInvalidArgument, "must be a dictionary");
 
@@ -549,7 +549,7 @@ Status ParseWindowTypes(const base::Value& option, Capabilities* capabilities) {
 Status ParseChromeOptions(
     const base::Value& capability,
     Capabilities* capabilities) {
-  const base::DictionaryValue* chrome_options = NULL;
+  const base::DictionaryValue* chrome_options = nullptr;
   if (!capability.GetAsDictionary(&chrome_options))
     return Status(kInvalidArgument, "must be a dictionary");
 
@@ -639,7 +639,7 @@ Status ParseChromeOptions(
 Status ParseSeleniumOptions(
     const base::Value& capability,
     Capabilities* capabilities) {
-  const base::DictionaryValue* selenium_options = NULL;
+  const base::DictionaryValue* selenium_options = nullptr;
   if (!capability.GetAsDictionary(&selenium_options))
     return Status(kInvalidArgument, "must be a dictionary");
   std::map<std::string, Parser> parser_map;

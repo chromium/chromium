@@ -53,7 +53,7 @@ net::CertType GetCertType(CERTCertificate *cert) {
 
   if (cert->nickname && (all_flags & CERTDB_USER))
     return net::USER_CERT;
-  if ((all_flags & CERTDB_VALID_CA) || CERT_IsCACert(cert, NULL))
+  if ((all_flags & CERTDB_VALID_CA) || CERT_IsCACert(cert, nullptr))
     return net::CA_CERT;
   // TODO(mattm): http://crbug.com/128633.
   if (trust.sslFlags & CERTDB_TERMINAL_RECORD)

@@ -100,7 +100,7 @@ Log::Level GetLevelFromSeverity(int severity) {
 WebDriverLog* GetSessionLog() {
   Session* session = GetThreadLocalSession();
   if (!session)
-    return NULL;
+    return nullptr;
   return session->driver_log.get();
 }
 

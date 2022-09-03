@@ -144,7 +144,7 @@ const char* NetworkStateInformer::StatusString(State state) {
       return kNetworkStateProxyAuthRequired;
     default:
       NOTREACHED();
-      return NULL;
+      return nullptr;
   }
 }
 

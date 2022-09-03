@@ -152,7 +152,7 @@ TEST(WindowSizerChromeOSNoAshTest, DefaultSizeCase) {
     gfx::Rect window_bounds;
     WindowSizerTestUtil::GetWindowBounds(p1024x768, p1024x768, gfx::Rect(),
                                          gfx::Rect(), gfx::Rect(), DEFAULT,
-                                         NULL, gfx::Rect(), &window_bounds);
+                                         nullptr, gfx::Rect(), &window_bounds);
     EXPECT_EQ(
         gfx::Rect(kDesktopBorderSize, kDesktopBorderSize,
                   1024 - kDesktopBorderSize * 2, 768 - kDesktopBorderSize),
@@ -164,7 +164,7 @@ TEST(WindowSizerChromeOSNoAshTest, DefaultSizeCase) {
     gfx::Rect window_bounds;
     WindowSizerTestUtil::GetWindowBounds(
         p1024x768, taskbar_bottom_work_area, gfx::Rect(), gfx::Rect(),
-        gfx::Rect(), DEFAULT, NULL, gfx::Rect(), &window_bounds);
+        gfx::Rect(), DEFAULT, nullptr, gfx::Rect(), &window_bounds);
     EXPECT_EQ(gfx::Rect(kDesktopBorderSize, kDesktopBorderSize,
                         1024 - kDesktopBorderSize * 2,
                         taskbar_bottom_work_area.height() - kDesktopBorderSize),
@@ -176,7 +176,7 @@ TEST(WindowSizerChromeOSNoAshTest, DefaultSizeCase) {
     gfx::Rect window_bounds;
     WindowSizerTestUtil::GetWindowBounds(
         p1024x768, taskbar_right_work_area, gfx::Rect(), gfx::Rect(),
-        gfx::Rect(), DEFAULT, NULL, gfx::Rect(), &window_bounds);
+        gfx::Rect(), DEFAULT, nullptr, gfx::Rect(), &window_bounds);
     EXPECT_EQ(
         gfx::Rect(kDesktopBorderSize, kDesktopBorderSize,
                   taskbar_right_work_area.width() - kDesktopBorderSize * 2,
@@ -189,7 +189,7 @@ TEST(WindowSizerChromeOSNoAshTest, DefaultSizeCase) {
     gfx::Rect window_bounds;
     WindowSizerTestUtil::GetWindowBounds(
         p1024x768, taskbar_left_work_area, gfx::Rect(), gfx::Rect(),
-        gfx::Rect(), DEFAULT, NULL, gfx::Rect(), &window_bounds);
+        gfx::Rect(), DEFAULT, nullptr, gfx::Rect(), &window_bounds);
     EXPECT_EQ(gfx::Rect(taskbar_left_work_area.x() + kDesktopBorderSize,
                         kDesktopBorderSize,
                         taskbar_left_work_area.width() - kDesktopBorderSize * 2,
@@ -202,7 +202,7 @@ TEST(WindowSizerChromeOSNoAshTest, DefaultSizeCase) {
     gfx::Rect window_bounds;
     WindowSizerTestUtil::GetWindowBounds(
         p1024x768, taskbar_top_work_area, gfx::Rect(), gfx::Rect(), gfx::Rect(),
-        DEFAULT, NULL, gfx::Rect(), &window_bounds);
+        DEFAULT, nullptr, gfx::Rect(), &window_bounds);
     EXPECT_EQ(gfx::Rect(kDesktopBorderSize,
                         taskbar_top_work_area.y() + kDesktopBorderSize,
                         1024 - kDesktopBorderSize * 2,
@@ -215,7 +215,7 @@ TEST(WindowSizerChromeOSNoAshTest, DefaultSizeCase) {
     gfx::Rect window_bounds;
     WindowSizerTestUtil::GetWindowBounds(p1280x1024, p1280x1024, gfx::Rect(),
                                          gfx::Rect(), gfx::Rect(), DEFAULT,
-                                         NULL, gfx::Rect(), &window_bounds);
+                                         nullptr, gfx::Rect(), &window_bounds);
     EXPECT_EQ(gfx::Rect((1280 - kMaximumWindowWidth) / 2, kDesktopBorderSize,
                         kMaximumWindowWidth, 1024 - kDesktopBorderSize),
               window_bounds);
@@ -226,7 +226,7 @@ TEST(WindowSizerChromeOSNoAshTest, DefaultSizeCase) {
     gfx::Rect window_bounds;
     WindowSizerTestUtil::GetWindowBounds(p1600x1200, p1600x1200, gfx::Rect(),
                                          gfx::Rect(), gfx::Rect(), DEFAULT,
-                                         NULL, gfx::Rect(), &window_bounds);
+                                         nullptr, gfx::Rect(), &window_bounds);
     EXPECT_EQ(gfx::Rect((1600 - kMaximumWindowWidth) / 2, kDesktopBorderSize,
                         kMaximumWindowWidth, 1200 - kDesktopBorderSize),
               window_bounds);
@@ -237,7 +237,7 @@ TEST(WindowSizerChromeOSNoAshTest, DefaultSizeCase) {
     gfx::Rect window_bounds;
     WindowSizerTestUtil::GetWindowBounds(p1680x1050, p1680x1050, gfx::Rect(),
                                          gfx::Rect(), gfx::Rect(), DEFAULT,
-                                         NULL, gfx::Rect(), &window_bounds);
+                                         nullptr, gfx::Rect(), &window_bounds);
     EXPECT_EQ(gfx::Rect((1680 - kMaximumWindowWidth) / 2, kDesktopBorderSize,
                         kMaximumWindowWidth, 1050 - kDesktopBorderSize),
               window_bounds);
@@ -248,7 +248,7 @@ TEST(WindowSizerChromeOSNoAshTest, DefaultSizeCase) {
     gfx::Rect window_bounds;
     WindowSizerTestUtil::GetWindowBounds(p1920x1200, p1920x1200, gfx::Rect(),
                                          gfx::Rect(), gfx::Rect(), DEFAULT,
-                                         NULL, gfx::Rect(), &window_bounds);
+                                         nullptr, gfx::Rect(), &window_bounds);
     EXPECT_EQ(gfx::Rect((1920 - kMaximumWindowWidth) / 2, kDesktopBorderSize,
                         kMaximumWindowWidth, 1200 - kDesktopBorderSize),
               window_bounds);
@@ -264,7 +264,7 @@ TEST(WindowSizerChromeOS2NoAshTest, LastWindowBoundsCase) {
     WindowSizerTestUtil::GetWindowBounds(
         p1024x768, p1024x768, gfx::Rect(),
         gfx::Rect(kDesktopBorderSize, kDesktopBorderSize, 500, 400),
-        gfx::Rect(), LAST_ACTIVE, NULL, gfx::Rect(), &window_bounds);
+        gfx::Rect(), LAST_ACTIVE, nullptr, gfx::Rect(), &window_bounds);
     EXPECT_EQ(gfx::Rect(kWindowTilePixels + kDesktopBorderSize,
                         kWindowTilePixels + kDesktopBorderSize, 500, 400)
                   .ToString(),
@@ -277,7 +277,7 @@ TEST(WindowSizerChromeOS2NoAshTest, LastWindowBoundsCase) {
     WindowSizerTestUtil::GetWindowBounds(
         p1024x768, taskbar_top_work_area, gfx::Rect(),
         gfx::Rect(kDesktopBorderSize, kDesktopBorderSize, 500, 400),
-        gfx::Rect(), LAST_ACTIVE, NULL, gfx::Rect(), &window_bounds);
+        gfx::Rect(), LAST_ACTIVE, nullptr, gfx::Rect(), &window_bounds);
     EXPECT_EQ(gfx::Rect(kWindowTilePixels + kDesktopBorderSize,
                         std::max(kWindowTilePixels + kDesktopBorderSize,
                                  34 /* toolbar height */),
@@ -292,7 +292,7 @@ TEST(WindowSizerChromeOS2NoAshTest, LastWindowBoundsCase) {
     WindowSizerTestUtil::GetWindowBounds(
         p1024x768, p1024x768, gfx::Rect(),
         gfx::Rect(kDesktopBorderSize, kDesktopBorderSize, 29, 29), gfx::Rect(),
-        LAST_ACTIVE, NULL, gfx::Rect(), &window_bounds);
+        LAST_ACTIVE, nullptr, gfx::Rect(), &window_bounds);
     EXPECT_EQ(gfx::Rect(kWindowTilePixels + kDesktopBorderSize,
                         kWindowTilePixels + kDesktopBorderSize, 30 /* not 29 */,
                         30 /* not 29 */)
@@ -306,7 +306,7 @@ TEST(WindowSizerChromeOS2NoAshTest, LastWindowBoundsCase) {
     WindowSizerTestUtil::GetWindowBounds(
         p1024x768, p1024x768, gfx::Rect(),
         gfx::Rect(kDesktopBorderSize, kDesktopBorderSize, 500, 400),
-        gfx::Rect(), LAST_ACTIVE, NULL, gfx::Rect(), &window_bounds);
+        gfx::Rect(), LAST_ACTIVE, nullptr, gfx::Rect(), &window_bounds);
     EXPECT_EQ(gfx::Rect(kWindowTilePixels + kDesktopBorderSize,
                         kWindowTilePixels + kDesktopBorderSize, 500, 400)
                   .ToString(),
@@ -322,7 +322,7 @@ TEST(WindowSizerChromeOSNoAshTest,
     WindowSizerTestUtil::GetWindowBounds(
         p1024x768, taskbar_left_work_area, gfx::Rect(),
         gfx::Rect(kDesktopBorderSize, kDesktopBorderSize, 500, 400),
-        gfx::Rect(), LAST_ACTIVE, NULL, gfx::Rect(), &window_bounds);
+        gfx::Rect(), LAST_ACTIVE, nullptr, gfx::Rect(), &window_bounds);
     EXPECT_EQ(gfx::Rect(kWindowTilePixels + kDesktopBorderSize,
                         kWindowTilePixels + kDesktopBorderSize, 500, 400)
                   .ToString(),
@@ -335,7 +335,7 @@ TEST(WindowSizerChromeOSNoAshTest,
     gfx::Rect window_bounds;
     WindowSizerTestUtil::GetWindowBounds(
         p1024x768, p1024x768, gfx::Rect(), gfx::Rect(10, 728, 500, 400),
-        gfx::Rect(), LAST_ACTIVE, NULL, gfx::Rect(), &window_bounds);
+        gfx::Rect(), LAST_ACTIVE, nullptr, gfx::Rect(), &window_bounds);
     EXPECT_EQ(gfx::Rect(10 + kWindowTilePixels, 738, 500, 400).ToString(),
               window_bounds.ToString());
   }
@@ -346,7 +346,7 @@ TEST(WindowSizerChromeOSNoAshTest,
     gfx::Rect window_bounds;
     WindowSizerTestUtil::GetWindowBounds(
         p1024x768, p1024x768, gfx::Rect(), gfx::Rect(10, 729, 500, 400),
-        gfx::Rect(), LAST_ACTIVE, NULL, gfx::Rect(), &window_bounds);
+        gfx::Rect(), LAST_ACTIVE, nullptr, gfx::Rect(), &window_bounds);
     EXPECT_EQ(gfx::Rect(10 + kWindowTilePixels, 738 /* not 739 */, 500, 400)
                   .ToString(),
               window_bounds.ToString());
@@ -358,7 +358,7 @@ TEST(WindowSizerChromeOSNoAshTest,
     gfx::Rect window_bounds;
     WindowSizerTestUtil::GetWindowBounds(
         p1024x768, p1024x768, gfx::Rect(), gfx::Rect(984, 10, 500, 400),
-        gfx::Rect(), LAST_ACTIVE, NULL, gfx::Rect(), &window_bounds);
+        gfx::Rect(), LAST_ACTIVE, nullptr, gfx::Rect(), &window_bounds);
     EXPECT_EQ(gfx::Rect(994, 10 + kWindowTilePixels, 500, 400).ToString(),
               window_bounds.ToString());
   }
@@ -369,7 +369,7 @@ TEST(WindowSizerChromeOSNoAshTest,
     gfx::Rect window_bounds;
     WindowSizerTestUtil::GetWindowBounds(
         p1024x768, p1024x768, gfx::Rect(), gfx::Rect(985, 10, 500, 400),
-        gfx::Rect(), LAST_ACTIVE, NULL, gfx::Rect(), &window_bounds);
+        gfx::Rect(), LAST_ACTIVE, nullptr, gfx::Rect(), &window_bounds);
     EXPECT_EQ(gfx::Rect(994 /* not 995 */, 10 + kWindowTilePixels, 500, 400)
                   .ToString(),
               window_bounds.ToString());
@@ -381,7 +381,7 @@ TEST(WindowSizerChromeOSNoAshTest,
     gfx::Rect window_bounds;
     WindowSizerTestUtil::GetWindowBounds(
         p1024x768, p1024x768, gfx::Rect(), gfx::Rect(985, 729, 500, 400),
-        gfx::Rect(), LAST_ACTIVE, NULL, gfx::Rect(), &window_bounds);
+        gfx::Rect(), LAST_ACTIVE, nullptr, gfx::Rect(), &window_bounds);
     EXPECT_EQ(
         gfx::Rect(994 /* not 995 */, 738 /* not 739 */, 500, 400).ToString(),
         window_bounds.ToString());

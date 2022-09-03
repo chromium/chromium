@@ -211,7 +211,7 @@ void V8UnitTest::SetUp() {
           .ToLocalChecked(),
       send_function);
 
-  context_.Reset(isolate, v8::Context::New(isolate, NULL, global));
+  context_.Reset(isolate, v8::Context::New(isolate, nullptr, global));
 
   // Set up console object for console.log(), etc.
   v8::Local<v8::ObjectTemplate> console = v8::ObjectTemplate::New(isolate);
@@ -346,7 +346,7 @@ void V8UnitTest::TestFunction(const std::string& function_name) {
 
   v8::TryCatch try_catch(isolate);
   v8::Local<v8::Value> result =
-      function->Call(context, context->Global(), 0, NULL)
+      function->Call(context, context->Global(), 0, nullptr)
           .FromMaybe(v8::Local<v8::Value>());
   // The test fails if an exception was thrown.
   if (result.IsEmpty())

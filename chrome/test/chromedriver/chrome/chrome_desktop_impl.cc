@@ -46,7 +46,7 @@ bool KillProcess(const base::Process& process, bool kill_gracefully) {
     kill(process.Pid(), SIGKILL);
     base::TimeTicks deadline = base::TimeTicks::Now() + base::Seconds(30);
     while (base::TimeTicks::Now() < deadline) {
-      pid_t pid = HANDLE_EINTR(waitpid(process.Pid(), NULL, WNOHANG));
+      pid_t pid = HANDLE_EINTR(waitpid(process.Pid(), nullptr, WNOHANG));
       if (pid == process.Pid())
         return true;
       if (pid == -1) {

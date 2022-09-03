@@ -93,7 +93,7 @@ void GcmInternalsUIMessageHandler::RequestAllInfo(
     gcm::GCMProfileServiceFactory::GetForProfile(profile);
 
   if (!profile_service || !profile_service->driver()) {
-    ReturnResults(profile, NULL, NULL);
+    ReturnResults(profile, nullptr, nullptr);
   } else {
     profile_service->driver()->GetGCMStatistics(
         base::BindOnce(
@@ -115,7 +115,7 @@ void GcmInternalsUIMessageHandler::SetRecording(const base::Value::List& list) {
       gcm::GCMProfileServiceFactory::GetForProfile(profile);
 
   if (!profile_service) {
-    ReturnResults(profile, NULL, NULL);
+    ReturnResults(profile, nullptr, nullptr);
     return;
   }
   // Get fresh stats after changing recording setting.

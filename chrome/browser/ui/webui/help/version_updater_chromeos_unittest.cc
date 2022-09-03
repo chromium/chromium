@@ -52,7 +52,7 @@ class VersionUpdaterCrosTest : public ::testing::Test {
       : version_updater_(VersionUpdater::Create(nullptr)),
         version_updater_cros_ptr_(
             reinterpret_cast<VersionUpdaterCros*>(version_updater_.get())),
-        fake_update_engine_client_(NULL),
+        fake_update_engine_client_(nullptr),
         mock_user_manager_(new MockUserManager()),
         user_manager_enabler_(base::WrapUnique(mock_user_manager_)) {}
 

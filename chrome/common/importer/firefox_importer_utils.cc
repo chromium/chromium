@@ -178,7 +178,7 @@ bool GetFirefoxVersionAndPathFromProfile(const base::FilePath& profile_path,
 }
 
 bool ReadPrefFile(const base::FilePath& path, std::string* content) {
-  if (content == NULL)
+  if (content == nullptr)
     return false;
 
   base::ReadFileToString(path, content);

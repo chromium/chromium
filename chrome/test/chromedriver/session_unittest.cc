@@ -52,7 +52,7 @@ TEST(Session, GetTargetWindowTargetWindowStillOpen) {
   std::unique_ptr<Chrome> chrome(new MockChrome());
   Session session("1", std::move(chrome));
   session.window = "1";
-  WebView* web_view = NULL;
+  WebView* web_view = nullptr;
   ASSERT_EQ(kOk, session.GetTargetWindow(&web_view).code());
   ASSERT_TRUE(web_view);
 }

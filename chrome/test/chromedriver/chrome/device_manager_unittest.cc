@@ -149,7 +149,7 @@ TEST(DeviceManager, AcquireDevice) {
   ASSERT_TRUE(device_manager.AcquireDevice(&device1).IsOk());
   ASSERT_TRUE(device_manager.AcquireDevice(&device2).IsOk());
   ASSERT_FALSE(device_manager.AcquireDevice(&device3).IsOk());
-  device1.reset(NULL);
+  device1.reset();
   ASSERT_TRUE(device_manager.AcquireDevice(&device3).IsOk());
   ASSERT_FALSE(device_manager.AcquireDevice(&device1).IsOk());
 }
@@ -163,7 +163,7 @@ TEST(DeviceManager, AcquireSpecificDevice) {
   ASSERT_TRUE(device_manager.AcquireSpecificDevice("a", &device1).IsOk());
   ASSERT_FALSE(device_manager.AcquireSpecificDevice("a", &device2).IsOk());
   ASSERT_TRUE(device_manager.AcquireSpecificDevice("b", &device3).IsOk());
-  device1.reset(NULL);
+  device1.reset();
   ASSERT_TRUE(device_manager.AcquireSpecificDevice("a", &device2).IsOk());
   ASSERT_FALSE(device_manager.AcquireSpecificDevice("a", &device1).IsOk());
   ASSERT_FALSE(device_manager.AcquireSpecificDevice("b", &device1).IsOk());

@@ -116,7 +116,7 @@ TEST(ProcessExtensions, SingleExtensionWithBgPage) {
   std::unique_ptr<base::Value> manifest =
       base::JSONReader::ReadDeprecated(manifest_txt);
   ASSERT_TRUE(manifest);
-  base::DictionaryValue* manifest_dict = NULL;
+  base::DictionaryValue* manifest_dict = nullptr;
   ASSERT_TRUE(manifest->GetAsDictionary(&manifest_dict));
   std::string key;
   ASSERT_TRUE(manifest_dict->GetString("key", &key));
@@ -215,7 +215,7 @@ TEST(PrepareUserDataDir, CustomPrefs) {
   ASSERT_TRUE(base::ReadFileToString(prefs_file, &prefs_str));
   std::unique_ptr<base::Value> prefs_value =
       base::JSONReader::ReadDeprecated(prefs_str);
-  const base::DictionaryValue* prefs_dict = NULL;
+  const base::DictionaryValue* prefs_dict = nullptr;
   ASSERT_TRUE(prefs_value->GetAsDictionary(&prefs_dict));
   AssertEQ(*prefs_dict, "myPrefsKey", "ok");
   AssertEQ(*prefs_dict, "pref.sub", "1");
@@ -226,7 +226,7 @@ TEST(PrepareUserDataDir, CustomPrefs) {
   ASSERT_TRUE(base::ReadFileToString(local_state_file, &local_state_str));
   std::unique_ptr<base::Value> local_state_value =
       base::JSONReader::ReadDeprecated(local_state_str);
-  const base::DictionaryValue* local_state_dict = NULL;
+  const base::DictionaryValue* local_state_dict = nullptr;
   ASSERT_TRUE(local_state_value->GetAsDictionary(&local_state_dict));
   AssertEQ(*local_state_dict, "myLocalKey", "ok");
   AssertEQ(*local_state_dict, "local.state.sub", "2");

@@ -59,7 +59,7 @@ const WebViewInfo* WebViewsInfo::GetForId(const std::string& id) const {
     if (views_info[i].id == id)
       return &views_info[i];
   }
-  return NULL;
+  return nullptr;
 }
 
 DevToolsHttpClient::DevToolsHttpClient(

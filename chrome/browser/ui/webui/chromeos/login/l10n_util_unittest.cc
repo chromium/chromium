@@ -100,7 +100,7 @@ TEST_F(L10nUtilTest, GetUILanguageList) {
 
   // This requires initialized StatisticsProvider (see L10nUtilTest()).
   std::unique_ptr<base::ListValue> list(
-      GetUILanguageList(NULL, std::string(), &input_manager_));
+      GetUILanguageList(nullptr, std::string(), &input_manager_));
 
   VerifyOnlyUILanguages(*list);
 }
@@ -161,7 +161,7 @@ TEST_F(L10nUtilTest, GetUILanguageListMulti) {
 
   // This requires initialized StatisticsProvider (see L10nUtilTest()).
   std::unique_ptr<base::ListValue> list(
-      GetUILanguageList(NULL, std::string(), &input_manager_));
+      GetUILanguageList(nullptr, std::string(), &input_manager_));
 
   VerifyOnlyUILanguages(*list);
 

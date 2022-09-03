@@ -70,7 +70,7 @@ constexpr base::FilePath::CharType kPdfExtension[] = FILE_PATH_LITERAL("pdf");
 class PrintingContextDelegate : public PrintingContext::Delegate {
  public:
   // PrintingContext::Delegate methods.
-  gfx::NativeView GetParentView() override { return NULL; }
+  gfx::NativeView GetParentView() override { return nullptr; }
   std::string GetAppLocale() override {
     return g_browser_process->GetApplicationLocale();
   }
@@ -503,7 +503,8 @@ void PdfPrinterHandler::OnDirectorySelected(const base::FilePath& filename,
   select_file_dialog_->SelectFile(
       ui::SelectFileDialog::SELECT_SAVEAS_FILE, std::u16string(), path,
       &file_type_info, 0, base::FilePath::StringType(),
-      platform_util::GetTopLevel(preview_web_contents_->GetNativeView()), NULL);
+      platform_util::GetTopLevel(preview_web_contents_->GetNativeView()),
+      nullptr);
 }
 
 base::FilePath PdfPrinterHandler::GetSaveLocation() const {

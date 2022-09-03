@@ -99,7 +99,7 @@ TEST_F(ContentScriptsManifestTest, FailLoadingNonUTF8Scripts) {
   scoped_refptr<Extension> extension(
       file_util::LoadExtension(install_dir, mojom::ManifestLocation::kUnpacked,
                                Extension::NO_FLAGS, &error));
-  ASSERT_TRUE(extension.get() == NULL);
+  ASSERT_TRUE(extension.get() == nullptr);
   ASSERT_STREQ(
       "Could not load file 'bad_encoding.js' for content script. "
       "It isn't UTF-8 encoded.",

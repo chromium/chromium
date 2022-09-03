@@ -272,7 +272,7 @@ TEST(PermissionsDataTest, SocketPermissions) {
   extension = LoadManifestUnchecked("socket_permissions", "socket1.json",
                                     mojom::ManifestLocation::kInternal,
                                     Extension::NO_FLAGS, &error);
-  EXPECT_TRUE(extension.get() == NULL);
+  EXPECT_TRUE(extension.get() == nullptr);
   std::string expected_error_msg_header = ErrorUtils::FormatErrorMessage(
       manifest_errors::kInvalidPermissionWithDetail,
       "socket",
@@ -402,7 +402,7 @@ class ExtensionScriptAndCaptureVisibleTest : public testing::Test {
     urls_.insert(chrome_untrusted_url);
     urls_.insert(about_flags_url);
     // Ignore the policy delegate for this test.
-    PermissionsData::SetPolicyDelegate(NULL);
+    PermissionsData::SetPolicyDelegate(nullptr);
   }
 
   enum AccessType {
@@ -666,7 +666,7 @@ TEST_F(ExtensionScriptAndCaptureVisibleTest, PermissionsWithChromeURLsEnabled) {
   extension = LoadManifestUnchecked(
       "script_and_capture", "extension_wildcard_chrome.json",
       mojom::ManifestLocation::kInternal, Extension::NO_FLAGS, &error);
-  EXPECT_FALSE(extension.get() == NULL);
+  EXPECT_FALSE(extension.get() == nullptr);
   EXPECT_EQ(DISALLOWED, GetExtensionAccess(extension.get(), http_url));
   EXPECT_EQ(DISALLOWED, GetExtensionAccess(extension.get(), https_url));
   EXPECT_EQ(ALLOWED_SCRIPT_ONLY,

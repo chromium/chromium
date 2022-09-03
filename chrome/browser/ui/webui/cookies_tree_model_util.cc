@@ -287,7 +287,7 @@ base::Value::List CookiesTreeModelUtil::GetChildNodeDetailsDeprecated(
 const CookieTreeNode* CookiesTreeModelUtil::GetTreeNodeFromPath(
     const CookieTreeNode* root,
     const std::string& path) {
-  const CookieTreeNode* child = NULL;
+  const CookieTreeNode* child = nullptr;
   const CookieTreeNode* parent = root;
   absl::optional<size_t> child_index;
 

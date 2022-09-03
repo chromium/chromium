@@ -57,16 +57,16 @@ base::TimeTicks TestBrowserWindow::TestLocationBar::GetMatchSelectionTimestamp()
 }
 
 const OmniboxView* TestBrowserWindow::TestLocationBar::GetOmniboxView() const {
-  return NULL;
+  return nullptr;
 }
 
 OmniboxView* TestBrowserWindow::TestLocationBar::GetOmniboxView() {
-  return NULL;
+  return nullptr;
 }
 
 LocationBarTesting*
     TestBrowserWindow::TestLocationBar::GetLocationBarForTesting() {
-  return NULL;
+  return nullptr;
 }
 
 bool TestBrowserWindow::TestLocationBar::IsInputTypedUrlWithoutScheme() const {
@@ -313,12 +313,12 @@ DownloadBubbleUIController* TestBrowserWindow::GetDownloadBubbleUIController() {
 }
 
 std::unique_ptr<FindBar> TestBrowserWindow::CreateFindBar() {
-  return NULL;
+  return nullptr;
 }
 
 web_modal::WebContentsModalDialogHost*
     TestBrowserWindow::GetWebContentsModalDialogHost() {
-  return NULL;
+  return nullptr;
 }
 
 ExclusiveAccessContext* TestBrowserWindow::GetExclusiveAccessContext() {
