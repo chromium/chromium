@@ -4,19 +4,27 @@
 
 #include "chrome/browser/ui/views/toolbar/toolbar_action_hover_card_bubble_view.h"
 
+#include "chrome/browser/extensions/site_permissions_helper.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_interactive_uitest.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_action_hover_card_bubble_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_action_hover_card_controller.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/interactive_test_utils.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/common/extension_features.h"
+#include "net/base/url_util.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/animation/animation_test_api.h"
 #include "ui/views/test/widget_test.h"
 
 namespace {
+
+using SiteInteraction = extensions::SitePermissionsHelper::SiteInteraction;
 
 // Similar to views::test::WidgetDestroyedWaiter but waiting after the widget
 // has been closed is a no-op rather than an error.
@@ -102,12 +110,15 @@ class ToolbarActionHoverCardBubbleViewUITest : public ExtensionsToolbarUITest {
       const std::string& path) {
     scoped_refptr<const extensions::Extension> extension =
         LoadTestExtension(path);
+    PinExtension(extension->id());
+    return extension;
+  }
 
+  void PinExtension(const extensions::ExtensionId& extension_id) {
     ToolbarActionsModel* const toolbar_model =
         ToolbarActionsModel::Get(browser()->profile());
-    toolbar_model->SetActionVisibility(extension->id(), true);
+    toolbar_model->SetActionVisibility(extension_id, true);
     GetExtensionsToolbarContainer()->GetWidget()->LayoutRootViewIfNecessary();
-    return extension;
   }
 
   // DialogBrowserTest:
@@ -145,33 +156,65 @@ IN_PROC_BROWSER_TEST_F(ToolbarActionHoverCardBubbleViewUITest,
   EXPECT_FALSE(widget->IsVisible());
 }
 
-// Verify anchor is correctly updated when moving hover from one action view to
-// another.
-// TODO(crbug.com/1351778): Once implemented, verify hover card content
-// matches corresponding action view.
+// Verify hover card content and anchor is correctly updated when moving hover
+// from one action view to another. Note that hover card content based on site
+// access is tested more in depth in ExtensionActionViewController unittest,
+// since such class computes the hover card state.
 IN_PROC_BROWSER_TEST_F(ToolbarActionHoverCardBubbleViewUITest,
-                       WidgetAnchoredToCorrectActionView) {
-  LoadExtensionAndPinIt("extensions/simple_with_popup");
-  LoadExtensionAndPinIt("extensions/simple_with_icon");
+                       WidgetUpdatedWhenHoveringBetweenActionViews) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // Install and pin one extension with host permissions and one without.
+  auto extensionA = LoadExtensionAndPinIt("extensions/simple_with_popup");
+  auto extensionB =
+      InstallExtensionWithHostPermissions("All Urls Extension", "<all_urls>");
+  PinExtension(extensionB->id());
   auto action_views = GetVisibleToolbarActionViews();
   ASSERT_EQ(action_views.size(), 2u);
 
-  HoverMouseOverActionView(action_views[0]);
+  // Navigate to a url extension B requests.
+  GURL url = embedded_test_server()->GetURL("example.com", "/title1.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  // Hover over extension A and verify card anchors to its action.
+  ToolbarActionView* actionA =
+      GetExtensionsToolbarContainer()->GetViewForId(extensionA->id());
+  HoverMouseOverActionView(actionA);
   views::Widget* const widget = hover_card()->GetWidget();
   views::test::WidgetVisibleWaiter(widget).Wait();
   ASSERT_TRUE(widget);
   EXPECT_TRUE(widget->IsVisible());
-  EXPECT_EQ(hover_card()->GetAnchorView(),
-            static_cast<views::View*>(action_views[0]));
+  EXPECT_EQ(hover_card()->GetAnchorView(), actionA);
+  // Hover card should have the extension's name and no footnote since the
+  // extension doesn't have access.
+  EXPECT_EQ(hover_card()->GetTitleTextForTesting(),
+            actionA->view_controller()->GetActionName());
+  EXPECT_EQ(hover_card()->GetFootnoteTitleTextForTesting(), u"");
+  EXPECT_EQ(hover_card()->GetFootnoteDescriptionTextForTesting(), u"");
 
-  // Note that the widget is the same because it transitions from one action
-  // view to the other.
-  HoverMouseOverActionView(action_views[1]);
+  // Hover over extension A and verify card anchors to its action. Note that the
+  // widget is the same because it transitions from one action view to the
+  // other.
+  ToolbarActionView* actionB =
+      GetExtensionsToolbarContainer()->GetViewForId(extensionB->id());
+  HoverMouseOverActionView(actionB);
   views::test::WidgetVisibleWaiter(widget).Wait();
   ASSERT_TRUE(widget);
   EXPECT_TRUE(widget->IsVisible());
-  EXPECT_EQ(hover_card()->GetAnchorView(),
-            static_cast<views::View*>(action_views[1]));
+  EXPECT_EQ(hover_card()->GetAnchorView(), actionB);
+  // Hover card should have the extension's name and footnote since the
+  // extension has site access (by default).
+  EXPECT_EQ(hover_card()->GetTitleTextForTesting(),
+            actionB->view_controller()->GetActionName());
+  EXPECT_EQ(
+      hover_card()->GetFootnoteTitleTextForTesting(),
+      l10n_util::GetStringUTF16(
+          IDS_EXTENSIONS_TOOLBAR_ACTION_HOVER_CARD_FOOTER_TITLE_HAS_ACCESS));
+  EXPECT_EQ(
+      hover_card()->GetFootnoteDescriptionTextForTesting(),
+      l10n_util::GetStringFUTF16(
+          IDS_EXTENSIONS_TOOLBAR_ACTION_HOVER_CARD_FOOTER_DESCRIPTION_EXTENSION_HAS_ACESSS,
+          base::UTF8ToUTF16(net::GetHostAndPort(url))));
 }
 
 // Verify hover card is not visible when mouse moves inside the extensions

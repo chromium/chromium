@@ -62,7 +62,25 @@ class ToolbarActionViewController {
     kMaxValue = kRequestAccessButton,
   };
 
-  virtual ~ToolbarActionViewController() {}
+  // Hover card states for a toolbar action view.
+  enum class HoverCardState {
+    // All extensions are allowed on the current site by the user.
+    kAllExtensionsAllowed,
+
+    // All extensions are blocked on the current site by the user.
+    kAllExtensionsBlocked,
+
+    // The extension has access to the current site.
+    kExtensionHasAccess,
+
+    // The extension requests access to the current site.
+    kExtensionRequestsAccess,
+
+    // The extension does not want access to the current site.
+    kExtensionDoesNotWantAccess,
+  };
+
+  virtual ~ToolbarActionViewController() = default;
 
   // Returns the unique ID of this particular action. For extensions, this is
   // the extension id; for component actions, this is the name of the component.
@@ -87,6 +105,10 @@ class ToolbarActionViewController {
 
   // Returns the tooltip to use for the given |web_contents|.
   virtual std::u16string GetTooltip(
+      content::WebContents* web_contents) const = 0;
+
+  // Returns the hover card state to use for the given `web_contents`.
+  virtual HoverCardState GetHoverCardState(
       content::WebContents* web_contents) const = 0;
 
   // Returns true if the action should be enabled on the given |web_contents|.

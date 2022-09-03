@@ -3,12 +3,19 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/toolbar/toolbar_action_hover_card_bubble_view.h"
+#include <string>
 
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
+#include "base/notreached.h"
+#include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
+#include "chrome/browser/ui/views/extensions/extensions_dialogs_utils.h"
+#include "chrome/grit/generated_resources.h"
+#include "content/public/browser/web_contents.h"
 #include "extensions/common/extension_features.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/canvas.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -46,6 +53,60 @@ bool CustomShadowsSupported() {
 #else
   return true;
 #endif
+}
+
+std::u16string GetFootnoteTitle(
+    ToolbarActionViewController::HoverCardState state) {
+  int title_id = -1;
+  switch (state) {
+    case ToolbarActionViewController::HoverCardState::kAllExtensionsAllowed:
+    case ToolbarActionViewController::HoverCardState::kExtensionHasAccess:
+      title_id =
+          IDS_EXTENSIONS_TOOLBAR_ACTION_HOVER_CARD_FOOTER_TITLE_HAS_ACCESS;
+      break;
+    case ToolbarActionViewController::HoverCardState::kAllExtensionsBlocked:
+      title_id =
+          IDS_EXTENSIONS_TOOLBAR_ACTION_HOVER_CARD_FOOTER_TITLE_BLOCKED_ACCESS;
+      break;
+    case ToolbarActionViewController::HoverCardState::kExtensionRequestsAccess:
+      title_id =
+          IDS_EXTENSIONS_TOOLBAR_ACTION_HOVER_CARD_FOOTER_TITLE_REQUESTS_ACCESS;
+      break;
+    case ToolbarActionViewController::HoverCardState::
+        kExtensionDoesNotWantAccess:
+      NOTREACHED();
+      break;
+  }
+  return l10n_util::GetStringUTF16(title_id);
+}
+
+std::u16string GetFootnoteDescription(
+    ToolbarActionViewController::HoverCardState state,
+    std::u16string host) {
+  int title_id = -1;
+  switch (state) {
+    case ToolbarActionViewController::HoverCardState::kAllExtensionsAllowed:
+      title_id =
+          IDS_EXTENSIONS_TOOLBAR_ACTION_HOVER_CARD_FOOTER_DESCRIPTION_ALL_EXTENSIONS_ALLOWED_ACCESS;
+      break;
+    case ToolbarActionViewController::HoverCardState::kAllExtensionsBlocked:
+      title_id =
+          IDS_EXTENSIONS_TOOLBAR_ACTION_HOVER_CARD_FOOTER_DESCRIPTION_ALL_EXTENSIONS_BLOCKED_ACCESS;
+      break;
+    case ToolbarActionViewController::HoverCardState::kExtensionHasAccess:
+      title_id =
+          IDS_EXTENSIONS_TOOLBAR_ACTION_HOVER_CARD_FOOTER_DESCRIPTION_EXTENSION_HAS_ACESSS;
+      break;
+    case ToolbarActionViewController::HoverCardState::kExtensionRequestsAccess:
+      title_id =
+          IDS_EXTENSIONS_TOOLBAR_ACTION_HOVER_CARD_FOOTER_DESCRIPTION_EXTENSION_REQUESTS_ACESSS;
+      break;
+    case ToolbarActionViewController::HoverCardState::
+        kExtensionDoesNotWantAccess:
+      NOTREACHED();
+      break;
+  }
+  return l10n_util::GetStringFUTF16(title_id, host);
 }
 
 // Label that renders its background in a solid color. Placed in front of a
@@ -193,12 +254,18 @@ class ToolbarActionHoverCardBubbleView::FootnoteView : public views::View {
   }
   ~FootnoteView() override = default;
 
-  // TODO(crbug.com/1351778): Set content based on a given site access status.
-  void SetContent() {
-    // TODO(crbug.com/1351778): Set visibility based on the status.
-    SetVisible(true);
-    title_label_->SetText(u"Site access");
-    description_label_->SetText(u"Description of the extension site access");
+  void SetContent(ToolbarActionViewController::HoverCardState state,
+                  const std::u16string& host) {
+    DCHECK_NE(state, ToolbarActionViewController::HoverCardState::
+                         kExtensionDoesNotWantAccess);
+    title_label_->SetText(GetFootnoteTitle(state));
+    description_label_->SetText(GetFootnoteDescription(state, host));
+  }
+
+  std::u16string GetTitleText() const { return title_label_->GetText(); }
+
+  std::u16string GetDescriptionText() const {
+    return description_label_->GetText();
   }
 
  private:
@@ -211,7 +278,6 @@ class ToolbarActionHoverCardBubbleView::FootnoteView : public views::View {
 // ToolbarActionHoverCardBubbleView:
 // ----------------------------------------------------------
 
-// TODO(crbug.com/1351778): Add content based on `action_view`.
 ToolbarActionHoverCardBubbleView::ToolbarActionHoverCardBubbleView(
     ToolbarActionView* action_view)
     : BubbleDialogDelegateView(action_view,
@@ -291,18 +357,49 @@ ToolbarActionHoverCardBubbleView::ToolbarActionHoverCardBubbleView(
   // display is visible.
   SetTextFade(1.0);
 
-  UpdateCardContent();
+  UpdateCardContent(action_view->view_controller(),
+                    action_view->GetCurrentWebContents());
 }
 
-void ToolbarActionHoverCardBubbleView::UpdateCardContent() {
-  title_label_->SetText(u"Extension name", absl::nullopt);
+void ToolbarActionHoverCardBubbleView::UpdateCardContent(
+    const ToolbarActionViewController* action_controller,
+    content::WebContents* web_contents) {
+  title_label_->SetText(action_controller->GetActionName(), absl::nullopt);
 
   DCHECK(GetBubbleFrameView());
-  footnote_view_->SetContent();
+  ToolbarActionViewController::HoverCardState state =
+      action_controller->GetHoverCardState(web_contents);
+  if (state_ == state)
+    return;
+
+  state_ = state;
+  if (state_ == ToolbarActionViewController::HoverCardState::
+                    kExtensionDoesNotWantAccess) {
+    footnote_view_->SetVisible(false);
+  } else {
+    footnote_view_->SetContent(state, GetCurrentHost(web_contents));
+    footnote_view_->SetVisible(true);
+  }
 }
 
 void ToolbarActionHoverCardBubbleView::SetTextFade(double percent) {
   title_label_->SetFade(percent);
+}
+
+std::u16string ToolbarActionHoverCardBubbleView::GetTitleTextForTesting()
+    const {
+  return title_label_->GetText();
+}
+
+std::u16string
+ToolbarActionHoverCardBubbleView::GetFootnoteTitleTextForTesting() const {
+  return footnote_view_->GetVisible() ? footnote_view_->GetTitleText() : u"";
+}
+
+std::u16string
+ToolbarActionHoverCardBubbleView::GetFootnoteDescriptionTextForTesting() const {
+  return footnote_view_->GetVisible() ? footnote_view_->GetDescriptionText()
+                                      : u"";
 }
 
 void ToolbarActionHoverCardBubbleView::OnThemeChanged() {

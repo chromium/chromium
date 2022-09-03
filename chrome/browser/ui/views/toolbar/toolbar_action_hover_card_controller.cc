@@ -10,9 +10,11 @@
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "chrome/browser/ui/toolbar/toolbar_action_hover_card_types.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_action_hover_card_bubble_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_action_view.h"
+#include "content/public/browser/web_contents.h"
 #include "extensions/common/extension_features.h"
 #include "ui/events/event_observer.h"
 #include "ui/views/event_monitor.h"
@@ -85,8 +87,9 @@ bool ToolbarActionHoverCardController::IsHoverCardVisible() const {
 
 bool ToolbarActionHoverCardController::IsHoverCardShowingForAction(
     ToolbarActionView* action_view) const {
-  return IsHoverCardVisible() && !fade_animator_->IsFadingOut() &&
-         GetTargetAnchorView() == action_view;
+  DCHECK(action_view);
+  return action_view->GetCurrentWebContents() && IsHoverCardVisible() &&
+         !fade_animator_->IsFadingOut() && GetTargetAnchorView() == action_view;
 }
 
 void ToolbarActionHoverCardController::UpdateHoverCard(
@@ -112,13 +115,19 @@ void ToolbarActionHoverCardController::UpdateHoverCard(
   }
 
   // If there's nothing to attach to then there's no point in creating a card.
-  if (!hover_card_ && (!action_view || !extensions_container_->GetWidget()))
+  if (!hover_card_ && (!action_view || !action_view->GetCurrentWebContents() ||
+                       !extensions_container_->GetWidget())) {
     return;
+  }
 
   switch (update_type) {
     case ToolbarActionHoverCardUpdateType::kHover:
       if (!action_view)
         last_mouse_exit_timestamp_ = base::TimeTicks::Now();
+      break;
+    case ToolbarActionHoverCardUpdateType::kToolbarActionUpdated:
+      DCHECK(action_view);
+      DCHECK(IsHoverCardShowingForAction(action_view));
       break;
     case ToolbarActionHoverCardUpdateType::kToolbarActionRemoved:
       // Should not have an action view associated.
@@ -139,6 +148,8 @@ void ToolbarActionHoverCardController::UpdateHoverCard(
 void ToolbarActionHoverCardController::UpdateOrShowHoverCard(
     ToolbarActionView* action_view,
     ToolbarActionHoverCardUpdateType update_type) {
+  DCHECK(action_view);
+
   // Close is asynchronous, so make sure that if we're closing we clear out all
   // of our data *now* rather than waiting for the deletion message.
   if (hover_card_ && hover_card_->GetWidget()->IsClosed())
@@ -150,10 +161,9 @@ void ToolbarActionHoverCardController::UpdateOrShowHoverCard(
   }
 
   if (hover_card_) {
-    // Card should never exist without an anchor.
+    // Card should never exist without an anchor or web contents
     DCHECK(hover_card_->GetAnchorView());
-    // TODO(crbug.com/1351778): Update card contents for `action_view` since the
-    // card was visible.
+    UpdateHoverCardContent(action_view);
 
     // If widget is already visible and anchored to the correct action view we
     // should not try to reset the anchor view or reshow.
@@ -185,8 +195,19 @@ void ToolbarActionHoverCardController::UpdateOrShowHoverCard(
   }
 }
 
+void ToolbarActionHoverCardController::UpdateHoverCardContent(
+    ToolbarActionView* action_view) {
+  DCHECK(action_view);
+  content::WebContents* web_contents = action_view->GetCurrentWebContents();
+  DCHECK(web_contents);
+
+  hover_card_->UpdateCardContent(action_view->view_controller(), web_contents);
+}
+
 void ToolbarActionHoverCardController::CreateHoverCard(
     ToolbarActionView* action_view) {
+  DCHECK(action_view);
+
   hover_card_ = new ToolbarActionHoverCardBubbleView(action_view);
   hover_card_observation_.Observe(hover_card_.get());
   event_sniffer_ = std::make_unique<EventSniffer>(this);

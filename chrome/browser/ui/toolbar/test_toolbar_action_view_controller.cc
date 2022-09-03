@@ -51,6 +51,13 @@ std::u16string TestToolbarActionViewController::GetTooltip(
   return tooltip_;
 }
 
+ToolbarActionViewController::HoverCardState
+TestToolbarActionViewController::GetHoverCardState(
+    content::WebContents* web_contents) const {
+  return ToolbarActionViewController::HoverCardState::
+      kExtensionDoesNotWantAccess;
+}
+
 bool TestToolbarActionViewController::IsEnabled(
     content::WebContents* web_contents) const {
   return is_enabled_;

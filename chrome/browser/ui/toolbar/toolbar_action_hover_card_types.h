@@ -9,8 +9,9 @@
 // once the base hover card controller class once it's implemented.
 enum class ToolbarActionHoverCardUpdateType {
   kHover,
-  kToolbarActionRemoved,
-  kEvent
+  kEvent,
+  kToolbarActionUpdated,
+  kToolbarActionRemoved
 };
 
 #endif  // CHROME_BROWSER_UI_TOOLBAR_TOOLBAR_ACTION_HOVER_CARD_TYPES_H_

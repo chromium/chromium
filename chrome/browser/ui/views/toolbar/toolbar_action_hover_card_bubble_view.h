@@ -5,11 +5,13 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_TOOLBAR_TOOLBAR_ACTION_HOVER_CARD_BUBBLE_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_TOOLBAR_TOOLBAR_ACTION_HOVER_CARD_BUBBLE_VIEW_H_
 
+#include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_action_view.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
 class ToolbarActionView;
+class WebContents;
 
 // Dialog that displays a hover card with extensions information.
 class ToolbarActionHoverCardBubbleView
@@ -23,14 +25,21 @@ class ToolbarActionHoverCardBubbleView
       const ToolbarActionHoverCardBubbleView&) = delete;
   ~ToolbarActionHoverCardBubbleView() override;
 
-  // Updates the hover card content.
-  // TODO(crbug.com/1351778): Update content based on a given `action_view`.
-  void UpdateCardContent();
+  // Updates the hover card content for `action_controller` in `web_contents`.
+  void UpdateCardContent(const ToolbarActionViewController* action_controller,
+                         content::WebContents* web_contents);
 
   // Update the text fade to the given percent, which should be between 0 and 1.
   void SetTextFade(double percent);
 
+  // Accessors used by tests.
+  std::u16string GetTitleTextForTesting() const;
+  std::u16string GetFootnoteTitleTextForTesting() const;
+  std::u16string GetFootnoteDescriptionTextForTesting() const;
+
  private:
+  friend class ToolbarActionHoverCardBubbleViewUITest;
+
   class FadeLabel;
   class FootnoteView;
 
@@ -41,6 +50,9 @@ class ToolbarActionHoverCardBubbleView
 
   raw_ptr<FadeLabel> title_label_ = nullptr;
   raw_ptr<FootnoteView> footnote_view_ = nullptr;
+
+  ToolbarActionViewController::HoverCardState state_ =
+      ToolbarActionViewController::HoverCardState::kExtensionDoesNotWantAccess;
 
   absl::optional<int> corner_radius_;
 };

@@ -48,6 +48,8 @@ class ToolbarActionHoverCardController : public views::ViewObserver {
 
   void UpdateOrShowHoverCard(ToolbarActionView* action_view,
                              ToolbarActionHoverCardUpdateType update_type);
+  void UpdateHoverCardContent(ToolbarActionView* action_view);
+
   void CreateHoverCard(ToolbarActionView* action_view);
   void ShowHoverCard(bool is_initial, const ToolbarActionView* action_view);
   void HideHoverCard();
