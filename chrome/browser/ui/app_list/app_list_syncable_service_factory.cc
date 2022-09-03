@@ -12,6 +12,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/app_list_syncable_service.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs_factory.h"
+#include "chrome/browser/ui/app_list/search/files/file_suggest_keyed_service_factory.h"
 #include "components/prefs/pref_service.h"
 #include "extensions/browser/extension_system_provider.h"
 #include "extensions/browser/extensions_browser_client.h"
@@ -53,8 +54,8 @@ std::unique_ptr<KeyedService> AppListSyncableServiceFactory::BuildInstanceFor(
   if (profile->IsGuestSession() && !profile->IsOffTheRecord())
     return nullptr;
 
-  VLOG(1) << "BuildInstanceFor: " << profile->GetDebugName()
-          << " (" << profile << ")";
+  VLOG(1) << "BuildInstanceFor: " << profile->GetDebugName() << " (" << profile
+          << ")";
   return std::make_unique<AppListSyncableService>(profile);
 }
 
@@ -80,15 +81,13 @@ AppListSyncableServiceFactory::AppListSyncableServiceFactory()
       extensions::ExtensionsBrowserClient::Get()->GetExtensionSystemFactory());
   dependent_factories.insert(ArcAppListPrefsFactory::GetInstance());
   dependent_factories.insert(apps::AppServiceProxyFactory::GetInstance());
-  for (FactorySet::iterator it = dependent_factories.begin();
-       it != dependent_factories.end();
-       ++it) {
-    DependsOn(*it);
-  }
+  dependent_factories.insert(
+      app_list::FileSuggestKeyedServiceFactory::GetInstance());
+  for (auto* dependent_factory : dependent_factories)
+    DependsOn(dependent_factory);
 }
 
-AppListSyncableServiceFactory::~AppListSyncableServiceFactory() {
-}
+AppListSyncableServiceFactory::~AppListSyncableServiceFactory() = default;
 
 KeyedService* AppListSyncableServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* browser_context) const {
@@ -96,8 +95,7 @@ KeyedService* AppListSyncableServiceFactory::BuildServiceInstanceFor(
 }
 
 void AppListSyncableServiceFactory::RegisterProfilePrefs(
-    user_prefs::PrefRegistrySyncable* registry) {
-}
+    user_prefs::PrefRegistrySyncable* registry) {}
 
 bool AppListSyncableServiceFactory::ServiceIsCreatedWithBrowserContext() const {
   // Start AppListSyncableService early so that the app list positions are

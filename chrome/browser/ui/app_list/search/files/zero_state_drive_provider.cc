@@ -25,6 +25,8 @@
 #include "base/time/time.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/app_list/search/files/file_suggest_keyed_service.h"
+#include "chrome/browser/ui/app_list/search/files/file_suggest_keyed_service_factory.h"
 #include "chrome/browser/ui/app_list/search/ranking/util.h"
 #include "chrome/browser/ui/app_list/search/search_controller.h"
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
@@ -132,12 +134,12 @@ ZeroStateDriveProvider::ZeroStateDriveProvider(
     Profile* profile,
     SearchController* search_controller,
     drive::DriveIntegrationService* drive_service,
-    session_manager::SessionManager* session_manager,
-    std::unique_ptr<ItemSuggestCache> item_suggest_cache)
+    session_manager::SessionManager* session_manager)
     : profile_(profile),
       drive_service_(drive_service),
       session_manager_(session_manager),
-      item_suggest_cache_(std::move(item_suggest_cache)),
+      file_suggest_service_(
+          FileSuggestKeyedServiceFactory::GetInstance()->GetService(profile)),
       construction_time_(base::Time::Now()),
       max_last_modified_time_(base::Days(base::GetFieldTrialParamByFeatureAsInt(
           ash::features::kProductivityLauncher,
@@ -145,7 +147,12 @@ ZeroStateDriveProvider::ZeroStateDriveProvider(
           8))) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(profile_);
-  DCHECK(item_suggest_cache_);
+
+  // `FileSuggestKeyedServiceFactory` ensures to build the keyed
+  // service when the app list syncable service is built. Meanwhile,
+  // `ZeroStateDriveProvider` is built only when the app list syncable service
+  // exists. Therefore, `file_suggest_service_` should always be true.
+  DCHECK(file_suggest_service_);
 
   task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
       {base::TaskPriority::USER_BLOCKING, base::MayBlock(),
@@ -154,8 +161,9 @@ ZeroStateDriveProvider::ZeroStateDriveProvider(
   // It's safe to use Unretained(this) by contract of the
   // CallbackListSubscription.
   item_suggest_subscription_ =
-      item_suggest_cache_->RegisterCallback(base::BindRepeating(
-          &ZeroStateDriveProvider::OnCacheUpdated, base::Unretained(this)));
+      file_suggest_service_->RegisterItemSuggestUpdateCallback(
+          base::BindRepeating(&ZeroStateDriveProvider::OnCacheUpdated,
+                              base::Unretained(this)));
 
   if (drive_service_) {
     if (drive_service_->IsMounted()) {
@@ -260,7 +268,8 @@ void ZeroStateDriveProvider::StartZeroState() {
   weak_factory_.InvalidateWeakPtrs();
 
   // Get the most recent results from the cache.
-  cache_results_ = item_suggest_cache_->GetResults();
+  cache_results_ = file_suggest_service_->GetSuggestData(
+      FileSuggestKeyedService::SuggestDataType::kItemSuggest);
   if (!cache_results_) {
     LogStatus(Status::kNoResults);
     return;
@@ -377,9 +386,8 @@ void ZeroStateDriveProvider::OnCacheUpdated() {
 }
 
 void ZeroStateDriveProvider::MaybeUpdateCache() {
-  if (base::Time::Now() - kFirstUpdateDelay > construction_time_) {
-    item_suggest_cache_->UpdateCache();
-  }
+  if (base::Time::Now() - kFirstUpdateDelay > construction_time_)
+    file_suggest_service_->MaybeUpdateItemSuggestCache();
 }
 
 }  // namespace app_list

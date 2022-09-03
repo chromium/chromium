@@ -26,7 +26,7 @@
 class Profile;
 
 namespace app_list {
-
+class FileSuggestKeyedService;
 class SearchController;
 
 class ZeroStateDriveProvider : public SearchProvider,
@@ -37,8 +37,7 @@ class ZeroStateDriveProvider : public SearchProvider,
   ZeroStateDriveProvider(Profile* profile,
                          SearchController* search_controller,
                          drive::DriveIntegrationService* drive_service,
-                         session_manager::SessionManager* session_manager,
-                         std::unique_ptr<ItemSuggestCache> item_suggest_cache);
+                         session_manager::SessionManager* session_manager);
   ~ZeroStateDriveProvider() override;
 
   ZeroStateDriveProvider(const ZeroStateDriveProvider&) = delete;
@@ -87,7 +86,7 @@ class ZeroStateDriveProvider : public SearchProvider,
   drive::DriveIntegrationService* const drive_service_;
   session_manager::SessionManager* const session_manager_;
 
-  std::unique_ptr<ItemSuggestCache> item_suggest_cache_;
+  const base::raw_ptr<FileSuggestKeyedService> file_suggest_service_;
   base::CallbackListSubscription item_suggest_subscription_;
 
   // The most recent results retrieved from |item_suggested_cache_|. This is

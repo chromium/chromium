@@ -169,10 +169,7 @@ std::unique_ptr<SearchController> CreateSearchController(
         std::make_unique<ZeroStateDriveProvider>(
             profile, controller.get(),
             drive::DriveIntegrationServiceFactory::GetForProfile(profile),
-            session_manager::SessionManager::Get(),
-            std::make_unique<ItemSuggestCache>(
-                profile, profile->GetDefaultStoragePartition()
-                             ->GetURLLoaderFactoryForBrowserProcess())));
+            session_manager::SessionManager::Get()));
   }
 
   if (app_list_features::IsLauncherSettingsSearchEnabled()) {

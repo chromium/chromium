@@ -74,7 +74,7 @@ class ItemSuggestCache {
   absl::optional<ItemSuggestCache::Results> GetResults();
 
   // Updates the cache by calling ItemSuggest. Virtual for testing.
-  virtual void UpdateCache();
+  virtual void MaybeUpdateCache();
 
   static absl::optional<ItemSuggestCache::Results> ConvertJsonForTest(
       const base::Value* value);

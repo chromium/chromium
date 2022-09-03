@@ -255,7 +255,7 @@ base::TimeDelta ItemSuggestCache::GetDelay() {
                                       : kShortDelayMinutes);
 }
 
-void ItemSuggestCache::UpdateCache() {
+void ItemSuggestCache::MaybeUpdateCache() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   update_start_time_ = base::TimeTicks::Now();
 

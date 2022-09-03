@@ -7,7 +7,11 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "chrome/browser/ui/app_list/search/files/file_suggest_keyed_service.h"
+#include "chrome/browser/ui/app_list/search/files/file_suggest_keyed_service_factory.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/dbus/power_manager/idle.pb.h"
 #include "components/session_manager/core/session_manager.h"
 #include "content/public/test/browser_task_environment.h"
@@ -18,34 +22,46 @@
 namespace app_list {
 namespace {
 
-class TestItemSuggestCache : public ItemSuggestCache {
+class TestFileSuggestKeyedService : public FileSuggestKeyedService {
  public:
-  explicit TestItemSuggestCache(Profile* profile)
-      : ItemSuggestCache(profile, nullptr) {}
-  TestItemSuggestCache(const TestItemSuggestCache&) = delete;
-  TestItemSuggestCache& operator=(const TestItemSuggestCache&) = delete;
-  ~TestItemSuggestCache() override = default;
+  explicit TestFileSuggestKeyedService(Profile* profile)
+      : FileSuggestKeyedService(profile) {}
+  TestFileSuggestKeyedService(const TestFileSuggestKeyedService&) = delete;
+  TestFileSuggestKeyedService& operator=(TestFileSuggestKeyedService&) = delete;
+  ~TestFileSuggestKeyedService() override = default;
 
-  void UpdateCache() override { update_count_++; }
+  // FileSuggestKeyedService:
+  void MaybeUpdateItemSuggestCache() override { update_count_++; }
 
   int update_count_ = 0;
 };
+
+std::unique_ptr<KeyedService> BuildTestFileSuggestKeyedService(
+    content::BrowserContext* context) {
+  return std::make_unique<TestFileSuggestKeyedService>(
+      Profile::FromBrowserContext(context));
+}
 
 }  // namespace
 
 class ZeroStateDriveProviderTest : public testing::Test {
  protected:
   void SetUp() override {
-    profile_ = std::make_unique<TestingProfile>();
+    testing_profile_manager_ = std::make_unique<TestingProfileManager>(
+        TestingBrowserProcess::GetGlobal());
+    EXPECT_TRUE(testing_profile_manager_->SetUp());
+    profile_ = testing_profile_manager_->CreateTestingProfile(
+        "primary_profile@test",
+        {{FileSuggestKeyedServiceFactory::GetInstance(),
+          base::BindRepeating(&BuildTestFileSuggestKeyedService)}});
+    file_suggest_service_ = static_cast<TestFileSuggestKeyedService*>(
+        FileSuggestKeyedServiceFactory::GetInstance()->GetService(profile_));
     session_manager_ = std::make_unique<session_manager::SessionManager>();
-    auto item_suggest_cache =
-        std::make_unique<TestItemSuggestCache>(profile_.get());
-    item_suggest_cache_ = item_suggest_cache.get();
 
     provider_ = std::make_unique<ZeroStateDriveProvider>(
-        profile_.get(), nullptr,
-        drive::DriveIntegrationServiceFactory::GetForProfile(profile_.get()),
-        session_manager_.get(), std::move(item_suggest_cache));
+        profile_, nullptr,
+        drive::DriveIntegrationServiceFactory::GetForProfile(profile_),
+        session_manager_.get());
   }
 
   void FastForwardByMinutes(int minutes) {
@@ -54,18 +70,17 @@ class ZeroStateDriveProviderTest : public testing::Test {
 
   void Wait() { task_environment_.RunUntilIdle(); }
 
-  int update_count() const { return item_suggest_cache_->update_count_; }
+  int update_count() const { return file_suggest_service_->update_count_; }
 
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
-  std::unique_ptr<TestingProfile> profile_;
+  std::unique_ptr<TestingProfileManager> testing_profile_manager_;
+  TestingProfile* profile_ = nullptr;
   std::unique_ptr<session_manager::SessionManager> session_manager_;
   std::unique_ptr<ZeroStateDriveProvider> provider_;
   base::HistogramTester histogram_tester_;
-
-  // Owned by |provider_|.
-  TestItemSuggestCache* item_suggest_cache_;
+  TestFileSuggestKeyedService* file_suggest_service_ = nullptr;
 };
 
 // TODO(crbug.com/1348339): Add a test for a file mount-triggered update at
