@@ -764,6 +764,27 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="ChromeOS.DiagnosticsUi.{NavigationView}.OpenDuration"
+    units="ms" expires_after="2023-02-12">
+  <owner>ashleydp@google.com</owner>
+  <owner>gavinwill@chromium.org</owner>
+  <owner>zentaro@chromium.org</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Records the duration that the Diagnostics App is open for a given page view.
+    Emitted when the active page changes or when the app is closed. Cumulatively
+    adds up to the total duration recorded by
+    &quot;ChromeOS.DiagnosticsUi.OpenDuration&quot; or
+    &quot;ChromeOS.FeatureUsage.DiagnosticsUi.Usetime&quot;.
+  </summary>
+  <token key="NavigationView">
+    <variant name="Connectivity" summary="chrome://diagnostics/?connectivity"/>
+    <variant name="Input" summary="chrome://diagnostics/?input"/>
+    <variant name="System"
+        summary="chrome://diagnostics/?system or chrome://diagnostics"/>
+  </token>
+</histogram>
+
 <histogram name="ChromeOS.DiagnosticsUi.{RoutineType}Result"
     enum="CrosDiagnosticsRoutineResult" expires_after="2023-06-15">
   <owner>ashleydp@google.com</owner>
