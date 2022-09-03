@@ -1303,7 +1303,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4432792777822557199">Páginas em <ph name="SOURCE_LANGUAGE" /> serão traduzidas para <ph name="TARGET_LANGUAGE" /> de agora em diante</translation>
 <translation id="4433642172056592619">Ignorada porque o usuário não está afiliado ao gerenciamento da máquina ou a máquina não é gerenciada.</translation>
 <translation id="4434045419905280838">Pop-ups e redirecionamentos</translation>
-<translation id="4435702339979719576">Postal</translation>
 <translation id="443673843213245140">O uso de um proxy está desativado, mas uma configuração explícita de proxy é especificada.</translation>
 <translation id="4441832193888514600">Ignorada porque a política só pode ser definida como uma política do usuário em nuvem.</translation>
 <translation id="4450893287417543264">Não mostrar novamente</translation>
@@ -2204,6 +2203,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6916954549222464607">Planejamento e gerenciamento financeiro</translation>
 <translation id="6917795328362592458">A senha que você usou foi encontrada em uma violação de dados. Para proteger suas contas, o Gerenciador de senhas recomenda que você revise as senhas salvas.</translation>
 <translation id="6934672428414710184">Este nome é da sua Conta do Google</translation>
+<translation id="6936976777388162184">Este é um dispositivo com pacote e não pode ser registrado com o Upgrade de quiosque e sinalização.</translation>
 <translation id="6939469646605424232">Dramas de TV</translation>
 <translation id="6944692733090228304">Você inseriu sua senha em um site que não é gerenciado por <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />. Para proteger sua conta, não reutilize sua senha em outros apps e sites.</translation>
 <translation id="6945221475159498467">Selecionar</translation>

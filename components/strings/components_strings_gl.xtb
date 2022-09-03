@@ -157,6 +157,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="1348198688976932919">O sitio que se indica a continuación contén aplicacións perigosas</translation>
 <translation id="1348779747280417563">Confirmar nome</translation>
 <translation id="1354976809542763843">Financiamento da vivenda</translation>
+<translation id="1355158069018170842">Mostrar baixadas de prezos nas pestanas</translation>
 <translation id="1355301061807280185">Emprego</translation>
 <translation id="1355754231781595724">Seguranza viaria</translation>
 <translation id="1357195169723583938">Quen utilizou o dispositivo recentemente e cando o fixo</translation>
@@ -466,6 +467,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2153609454945889823">Queres instalar Servizos de Google Play para realidade aumentada?</translation>
 <translation id="2154054054215849342">A sincronización non está dispoñible para o teu dominio</translation>
 <translation id="2154484045852737596">Editar tarxeta</translation>
+<translation id="2157640075051554492">Notificacións de seguimento de prezos</translation>
 <translation id="2161656808144014275">Texto</translation>
 <translation id="2162510787844374618">Contactando co banco…</translation>
 <translation id="2162620598375156287">Agora <ph name="CURRENT_PRICE" /> en <ph name="SOURCE_WEBSITE" /></translation>
@@ -1003,6 +1005,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3633738897356909127">Botón Actualizar Chrome. Preme Intro para actualizar Chrome desde a configuración do navegador</translation>
 <translation id="3634530185120165534">Bandexa 5</translation>
 <translation id="3634567936866541746">Acabas de escribir o teu contrasinal nun sitio enganoso. Para protexer as túas contas, Chrome recoméndache que comprobes os contrasinais que tes gardados.</translation>
+<translation id="3637033245385760976">As notificacións de Chrome deben estar activadas. Podes activalas en <ph name="NOTIFICATION_SETTINGS" /></translation>
 <translation id="3637662659967048211">Gardar na Conta de Google</translation>
 <translation id="3640766068866876100">Index-4x6-Ext</translation>
 <translation id="3642638418806704195">Aplicación:</translation>
@@ -1300,7 +1303,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="4432792777822557199">As páxinas en <ph name="SOURCE_LANGUAGE" /> traduciranse ao <ph name="TARGET_LANGUAGE" /> a partir de agora</translation>
 <translation id="4433642172056592619">Ignorouse porque o usuario non está vinculado á xestión de dispositivos ou porque o dispositivo non está xestionado.</translation>
 <translation id="4434045419905280838">Ventás emerxentes e redireccións</translation>
-<translation id="4435702339979719576">Postal)</translation>
 <translation id="443673843213245140">O uso dun proxy está desactivado, pero especifícase unha configuración de proxy explícita.</translation>
 <translation id="4441832193888514600">Ignorada porque a política só se pode configurar como unha política de usuario da nube.</translation>
 <translation id="4450893287417543264">Non mostrar outra vez</translation>
@@ -1425,6 +1427,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="4785376858512657294">Xestionar Conta de Google</translation>
 <translation id="4785689107224900852">Cambia a esta pestana</translation>
 <translation id="4786804728079074733">Voleibol</translation>
+<translation id="4789704664580239421">As alertas de baixada de prezos mostraranse nas pestanas que teñas abertas</translation>
 <translation id="4791134497475588553">Aplicacións Linux instaladas e último uso</translation>
 <translation id="4792686369684665359">A información que estás a piques de enviar non é segura</translation>
 <translation id="4796594887379589189">Código da conta para o traballo</translation>
@@ -1790,6 +1793,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="5730040223043577876">Chrome recoméndache que restablezas o contrasinal se o reutilizaches noutros sitios.</translation>
 <translation id="5736165827969430182">Minaría e metais</translation>
 <translation id="5737183892635480227">{NUM_CARDS,plural, =1{Garda a tarxeta na túa Conta de Google}other{Garda tarxetas na túa Conta de Google}}</translation>
+<translation id="5738385766833540397">Xestiona como recibes as alertas de baixada de prezos para os produtos dos que fas un seguimento</translation>
 <translation id="5743638595296120378">Compra de vehículos</translation>
 <translation id="5743898850056428078">Carreiras de motos</translation>
 <translation id="5745733273847572235">Pode pedirche permiso para usar a túa localización</translation>
@@ -1799,6 +1803,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="5759751709240058861">Utilizar e mover a túa cámara</translation>
 <translation id="5763042198335101085">Introduce un enderezo de correo electrónico válido</translation>
 <translation id="5764725887548570807">O formato de orixe non é válido.</translation>
+<translation id="5764920692828389743">Envíanse a: <ph name="EMAIL_ADDRESS" /></translation>
 <translation id="5765072501007116331">Para consultar os requisitos e métodos de entrega, selecciona un enderezo</translation>
 <translation id="57689295674415555">Non se autocompletou o número da tarxeta virtual?</translation>
 <translation id="5776313857861697733">Prioridade</translation>
@@ -1889,6 +1894,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="6017850046339264347">Os piratas informáticos do sitio <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> poderían instalar aplicacións enganosas que se fan pasar por algo que non son ou recompilar datos que poden utilizar para facer un seguimento das túas accións. <ph name="BEGIN_LEARN_MORE_LINK" />Máis información<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="6025416945513303461"><ph name="TYPE_1" />, <ph name="TYPE_2" /> e <ph name="TYPE_3" /> (sincronizado)</translation>
 <translation id="6027201098523975773">Introduce un nome</translation>
+<translation id="6028591542479806248">Xestiona as notificacións por correo electrónico e para móbiles</translation>
 <translation id="603068602130820122">Dúas grampas na parte dereita</translation>
 <translation id="6032524144326295339">Caixa de correo 2</translation>
 <translation id="6032955021262906325">Encadernación na parte esquerda</translation>
@@ -2809,6 +2815,7 @@ Detalles adicionais:
 <translation id="8559762987265718583">Non se pode establecer unha conexión privada con <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> porque a data e a hora do dispositivo (<ph name="DATE_AND_TIME" />) son incorrectas.</translation>
 <translation id="8564182942834072828">Documentos independentes/copias non intercaladas</translation>
 <translation id="8564985650692024650">Chromium recoméndache que restablezas o contrasinal de <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> se o reutilizaches noutros sitios.</translation>
+<translation id="8573969211731659953">As alertas de baixada de prezos están activadas. Podes cambiar esta opción en <ph name="NOTIFICATION_SETTINGS" /></translation>
 <translation id="8576310925653847813">Sistemas de cine domésticos</translation>
 <translation id="8577348305244205642">A tarxeta virtual non está dispoñible</translation>
 <translation id="858637041960032120">Engadir número de teléfono</translation>

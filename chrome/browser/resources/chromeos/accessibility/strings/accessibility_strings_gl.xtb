@@ -226,6 +226,7 @@
 <translation id="2497706219848005458">Amarelo verdoso</translation>
 <translation id="2523609930580546572">Titorial de ChromeVox</translation>
 <translation id="2525706221823668172">Atallos de teclado de Chromebook</translation>
+<translation id="2543973100702367007">Toca dúas veces para <ph name="LABEL" /></translation>
 <translation id="2553108862507765288">erro gramatical</translation>
 <translation id="2556326187583116255">Toca con 2 dedos para deter a voz que estea soando actualmente</translation>
 <translation id="2573256689920773241">Conceptos básicos de desprazamento</translation>
@@ -1115,6 +1116,7 @@
 <translation id="8693391540059827073">A miña estación favorita</translation>
 <translation id="8696284982970258155">Verde primavera pastel</translation>
 <translation id="8697111817566059991">{COUNT,plural, =1{barra vertical}other{# barras verticais}}</translation>
+<translation id="8733397807344284494">Para <ph name="LABEL" />, preme Buscar + Espazo</translation>
 <translation id="8741370088760768424">Suxestión: Para activar o elemento actual, preme Buscar + Espazo.</translation>
 <translation id="8743786158317878347">insire contido estruturado, como táboas</translation>
 <translation id="8746846427395705317">vai á palabra anterior</translation>

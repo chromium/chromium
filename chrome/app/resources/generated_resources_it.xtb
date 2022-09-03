@@ -678,6 +678,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse all
 <translation id="1632756664321977232">Strumento Ritaglia</translation>
 <translation id="163309982320328737">La larghezza caratteri iniziale è piena</translation>
 <translation id="1633947793238301227">Disabilitare l'Assistente Google</translation>
+<translation id="1634224622052500893">Rete Wi-Fi trovata</translation>
 <translation id="1634783886312010422">Hai già modificato questa password su <ph name="WEBSITE" />?</translation>
 <translation id="1636212173818785548">OK</translation>
 <translation id="163712950892155760"><ph name="BEGIN_PARAGRAPH1" />Per dati dell'app si intende qualsiasi dato salvato in un'app (in base alle impostazioni sviluppatore), inclusi dati come contatti, messaggi e foto. I dati di backup non incidono sulla tua quota di spazio di archiviazione di Drive.<ph name="END_PARAGRAPH1" />
@@ -1353,6 +1354,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2251218783371366160">Apri con visualizzatore di sistema</translation>
 <translation id="225163402930830576">Aggiorna reti</translation>
 <translation id="2251809247798634662">Nuova finestra di navigazione in incognito</translation>
+<translation id="2252017960592955005">Protezione di visualizzazione (beta)</translation>
 <translation id="225240747099314620">Consenti identificatori per contenuti protetti (potrebbe essere necessario riavviare il computer)</translation>
 <translation id="2255077166240162850">Questo dispositivo è stato bloccato con un dominio o una modalità diversi.</translation>
 <translation id="2255317897038918278">Timestamp Microsoft</translation>
@@ -2010,6 +2012,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2839032553903800133">Notifiche bloccate</translation>
 <translation id="2841013758207633010">Ora</translation>
 <translation id="2841837950101800123">Provider</translation>
+<translation id="2842013086666334835">Accedi alla rete "<ph name="NETWORK_ID" />"</translation>
 <translation id="2843560154284403323">Per completare la configurazione di Linux, aggiorna Chrome OS e riprova.</translation>
 <translation id="2844169650293029770">Dispositivo USB-C (porta anteriore sinistra)</translation>
 <translation id="2844809857160214557">Visualizza e gestisci i processi di stampa</translation>
@@ -2110,6 +2113,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2927017729816812676">Spazio di archiviazione cache</translation>
 <translation id="2928795416630981206">Possono monitorare la posizione della videocamera</translation>
 <translation id="2931157624143513983">Adatta ad area stampabile</translation>
+<translation id="2931342457001070961">Nessun microfono collegato</translation>
 <translation id="2932085390869194046">Suggerisci password...</translation>
 <translation id="2932483646085333864">Esci e accedi di nuovo per avviare la sincronizzazione</translation>
 <translation id="2932883381142163287">Segnala abuso</translation>
@@ -2173,6 +2177,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2996286169319737844">I dati vengono criptati con la tua passphrase di sincronizzazione. Non sono inclusi i metodi di pagamento e gli indirizzi di Google Pay.</translation>
 <translation id="2996722619877761919">Lato lungo</translation>
 <translation id="2996932914629936323">Consente di cancellare la cronologia da tutti i dispositivi sincronizzati</translation>
+<translation id="2998267783395280091">Rete trovata</translation>
 <translation id="3000378525979847272">Autorizzazioni consentite: <ph name="PERMISSION_1" /> e <ph name="PERMISSION_2" /></translation>
 <translation id="3000461861112256445">Audio in formato mono</translation>
 <translation id="3001144475369593262">Account di minori</translation>
@@ -2324,6 +2329,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3142562627629111859">Nuovo gruppo</translation>
 <translation id="3143515551205905069">Annulla sincronizzazione</translation>
 <translation id="3143754809889689516">Riproduci dall'inizio</translation>
+<translation id="3143937294861726703">Risparmio memoria attivo</translation>
 <translation id="3144647712221361880">Apri link come</translation>
 <translation id="3149510190863420837">Applicazioni Chrome</translation>
 <translation id="3150693969729403281">Esegui subito il controllo di sicurezza</translation>

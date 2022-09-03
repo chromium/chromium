@@ -990,6 +990,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a apps. Pued
 <translation id="1915307458270490472">Colgar</translation>
 <translation id="1916502483199172559">Avatar rojo predeterminado</translation>
 <translation id="1918141783557917887">Meno&amp;r</translation>
+<translation id="1919872106782726755">Para configurar una huella dactilar, haz que tu hijo toque el sensor de huellas dactilares en la esquina superior derecha del teclado, junto al botón de encendido. Los datos de la huella dactilar de tu hijo se almacenan de forma segura y no salen nunca de este dispositivo <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1920390473494685033">Contactos</translation>
 <translation id="1921544956190977703">Tienes la seguridad más sólida de Chrome contra descargas, extensiones y sitios web peligrosos.</translation>
 <translation id="1921584744613111023"><ph name="DPI" /> ppp</translation>
@@ -3124,6 +3125,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3924487862883651986">Envía las URL a la Navegación segura para verificarlas. También envía una pequeña muestra de páginas, descargas, información del sistema y actividad de extensiones para ayudar a descubrir nuevas amenazas. Vincula estos datos de manera temporal con tu Cuenta de Google cuando accedes a ella para protegerte en todas las apps de Google.</translation>
 <translation id="3925573269917483990">Cámara:</translation>
 <translation id="3926002189479431949">Cambió el teléfono con Smart Lock</translation>
+<translation id="392627956579011934">Debes reiniciar el SO para instalar los archivos de voz.</translation>
 <translation id="3927932062596804919">Rechazar</translation>
 <translation id="3928570707778085600">¿Quieres guardar los cambios de <ph name="FILE_OR_FOLDER_NAME" />?</translation>
 <translation id="3928659086758780856">Nivel de tinta bajo</translation>
@@ -6911,6 +6913,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7634566076839829401">Se produjo un error. Vuelve a intentarlo.</translation>
 <translation id="7635048370253485243">Fijado por tu administrador</translation>
 <translation id="7636919061354591437">Instalar en este dispositivo</translation>
+<translation id="7637253234491814483">Toca el sensor de huellas dactilares en la esquina superior derecha del teclado, junto al botón de encendido. Los datos de las huellas dactilares se almacenan de forma segura y no salen nunca de tu <ph name="DEVICE_TYPE" />.</translation>
 <translation id="7637593984496473097">No hay espacio suficiente en el disco</translation>
 <translation id="7639914187072011620">No se pudo obtener la URL de redireccionamiento para SAML del servidor.</translation>
 <translation id="764017888128728"><ph name="PASSWORD_MANAGER_BRAND" /> te permite acceder automáticamente a los sitios aptos con las contraseñas que guardaste.</translation>

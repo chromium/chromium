@@ -509,6 +509,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="3922427723338465344">{0,plural, =1{Cambia el dispositivo a la versión anterior en el transcurso de 1 minuto}other{Cambia el dispositivo a la versión anterior en el transcurso de # minutos}}</translation>
 <translation id="3923494859158167397">No se configuró ninguna red móvil.</translation>
 <translation id="3925540965556789199"><ph name="DATE" />, cargando eventos.</translation>
+<translation id="392627956579011934">Debes reiniciar el SO para instalar los archivos de voz.</translation>
 <translation id="3932043219784172185">No hay ningún dispositivo conectado</translation>
 <translation id="3934456833412894880">La carga adaptable está activada. Tu batería se mantendrá al 80% para extender la duración, y se cargará por completo cuando lo necesites.</translation>
 <translation id="3943857333388298514">Pegar</translation>

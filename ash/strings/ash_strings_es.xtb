@@ -509,6 +509,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="3922427723338465344">{0,plural, =1{Cambia el dispositivo a la versión anterior en un plazo de 1 minuto}other{Cambia el dispositivo a la versión anterior en un plazo de # minutos}}</translation>
 <translation id="3923494859158167397">No se han configurado redes móviles</translation>
 <translation id="3925540965556789199"><ph name="DATE" />, cargando eventos.</translation>
+<translation id="392627956579011934">Debes reiniciar para instalar los archivos de voz.</translation>
 <translation id="3932043219784172185">Ningún dispositivo conectado</translation>
 <translation id="3934456833412894880">La función Carga inteligente está activada. La batería llegará hasta el 80 % de carga para prolongar su duración y se cargará al 100 % cuando lo necesites.</translation>
 <translation id="3943857333388298514">Pegar</translation>

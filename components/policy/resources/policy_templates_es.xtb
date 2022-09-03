@@ -4061,7 +4061,6 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
 
       Si esta política no se establece o no es válida, el comportamiento será el mismo que en el caso de "Esperar a que la versión actual iguale a la versión inferior objetivo".</translation>
 <translation id="5229339291699779956">Habilita la tunelización de PCIe desde dispositivos periféricos Thunderbolt/USB4, y los dispositivos periféricos funcionarán a plena capacidad</translation>
-<translation id="5230095739094490896">Imprimir plantilla del atributo IPP "client-name"</translation>
 <translation id="5233239004553860036">Si se asigna el valor <ph name="POLICY_VALUE_ALL" /> a esta política o no se establece, se permitirán todos los usos de las cuentas gestionadas. Esto podría provocar que una cuenta gestionada fuera secundaria, por lo que solo recibiría políticas cuando se inicie sesión en la cuenta como cuenta principal en el perfil del navegador.
       Las políticas establecidas en la cuenta no se implementarán en los siguientes casos:
         -  Si se trata de una cuenta secundaria en el nivel del sistema operativo (Configuración de la cuenta).
@@ -7351,18 +7350,6 @@ OverrideSecurityRestrictionsOnInsecureOrigin. Si ambas políticas están present
 
       Si se asigna el valor "false" a esta política, no se inmovilizará ninguna pestaña.</translation>
 <translation id="8619748440665904084">Inhabilitar la importación de los datos para autocompletar formularios en la primera ejecución</translation>
-<translation id="8620103780247748230">Esta política controla el valor del atributo IPP (protocolo de impresión en Internet) <ph name="CLIENT_INFO_IPP_ATTRIBUTE" /> en los trabajos de impresión.
-
-      Si se define esta política en una cadena, se añadirá un elemento <ph name="CLIENT_INFO_IPP_ATTRIBUTE" /> adicional a cada trabajo de impresión. Al miembro <ph name="CLIENT_NAME_IPP_ATTRIBUTE" /> del elemento <ph name="CLIENT_INFO_IPP_ATTRIBUTE" /> añadido se le asignará el valor de la política después de sustituir las variables.
-
-      Las variables admitidas son <ph name="DIRECTORY_ID_PLACEHOLDER" />, <ph name="SERIAL_NUMBER_PLACEHOLDER" />, <ph name="ASSET_ID_PLACEHOLDER" />, <ph name="ANNOTATED_LOCATION_PLACEHOLDER" />, <ph name="USER_EMAIL_PLACEHOLDER" />, <ph name="USER_EMAIL_NAME_PLACEHOLDER" /> y <ph name="USER_EMAIL_DOMAIN" />. Las variables de marcador de posición no admitidas no se sustituirán.
-
-      El valor resultante después de sustituir las variables se considera válido si contiene solo caracteres <ph name="ASCII" /> que se puedan imprimir y su longitud no es superior a 255.
-
-      Ten en cuenta que, por motivos de privacidad, esta política solo se aplica para comunicarse con una impresora mediante los protocolos <ph name="IPPS_PROTOCOL" />, <ph name="HTTPS_PROTOCOL" />, <ph name="USB_PROTOCOL" /> o <ph name="IPP_USB_PROTOCOL" />. Asimismo, esta política solo se aplica a las impresoras compatibles con <ph name="CLIENT_NAME_IPP_ATTRIBUTE" />.
-
-      Si no se define esta política o se le asigna un valor vacío o no válido, no se añadirá un <ph name="CLIENT_INFO_PLACEHOLDER" /> adicional a las solicitudes de trabajo de impresión.
-      </translation>
 <translation id="8623672932476443039">Si se habilita la política, los usuarios podrán acceder al modo desarrollador para aplicaciones aisladas.
       Si se inhabilita, los usuarios no podrán acceder a esta función.
       Si no se establece, la opción predeterminada no estará disponible para usuarios gestionados por empresas en ChromeOS, pero sí estará disponible para el resto de los usuarios y sistemas operativos.</translation>

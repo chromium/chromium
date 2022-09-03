@@ -718,6 +718,7 @@ As permissões que você já concedeu a apps podem ser aplicadas a essa conta. V
 <translation id="16620462294541761">Não foi possível confirmar sua senha. Tente novamente.</translation>
 <translation id="166278006618318542">Algoritmo da chave pública do requerente</translation>
 <translation id="1662801900924515589">O app <ph name="APP" /> foi instalado</translation>
+<translation id="1665328953287874063">Use uma senha ou um PIN para desbloquear o <ph name="DEVICE_TYPE" /></translation>
 <translation id="1666232093776384142">Desativar proteção de acesso a dados para periféricos</translation>
 <translation id="1667842670298352129">Ouvir um texto específico lido em voz alta. Primeiro, selecione o ícone do recurso "Selecionar para ouvir" na parte de baixo da tela e depois destaque o texto. Você também pode usar um atalho do teclado, destacando texto e depois pressionando as teclas Pesquisa + S.</translation>
 <translation id="1668435968811469751">Inscrever-se manualmente</translation>
@@ -1365,6 +1366,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2251218783371366160">Abrir com o Visualizador do sistema</translation>
 <translation id="225163402930830576">Atualizar redes</translation>
 <translation id="2251809247798634662">Nova janela anônima</translation>
+<translation id="2252017960592955005">Proteção de visualização (Beta)</translation>
 <translation id="225240747099314620">Permitir identificadores de conteúdo protegido (pode ser necessário reiniciar o computador)</translation>
 <translation id="2255077166240162850">Este dispositivo foi bloqueado para um domínio ou modo diferente.</translation>
 <translation id="2255317897038918278">Carimbo de data/hora da Microsoft</translation>
@@ -1851,6 +1853,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2691385045260836588">Modelo</translation>
 <translation id="2691440343905273290">Mudar configurações de entrada</translation>
 <translation id="2693176596243495071">Ops! Ocorreu um erro desconhecido. Tente novamente mais tarde ou entre em contato com seu administrador se o problema persistir.</translation>
+<translation id="2698147581454716013">Este é um dispositivo com pacote e não pode ser registrado com o Upgrade de quiosque e sinalização.</translation>
 <translation id="2699911226086014512">Falha na operação do PIN, código de erro: <ph name="RETRIES" />.</translation>
 <translation id="2701330563083355633">Compartilhada por <ph name="DEVICE_NAME" /></translation>
 <translation id="2701737434167469065">Faça login, <ph name="EMAIL" /></translation>
@@ -1929,6 +1932,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2757338480560142065">A senha que você está salvando precisa corresponder à usada em <ph name="WEBSITE" /></translation>
 <translation id="2762441749940182211">Câmera bloqueada</translation>
 <translation id="2764786626780673772">Detalhes de VPN</translation>
+<translation id="2764920001292228569">Insira um nome de perfil</translation>
 <translation id="2765100602267695013">Entre em contato com seu provedor de rede móvel</translation>
 <translation id="2765217105034171413">Pequeno</translation>
 <translation id="2766006623206032690">Co&amp;lar e ir</translation>
@@ -3299,6 +3303,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="4065876735068446555">A rede que você está usando (<ph name="NETWORK_ID" />) pode exigir que você visite a página de login.</translation>
 <translation id="4066207411788646768">Verifique sua conexão para ver as impressoras disponíveis na sua rede</translation>
 <translation id="4066945815577305767">O Gerenciador de senhas expirou</translation>
+<translation id="4067839975993712852">Marcar a guia atual como lida</translation>
 <translation id="4068776064906523561">Impressões digitais salvas</translation>
 <translation id="407173827865827707">Ao clicar</translation>
 <translation id="4072701974556190758">A senha será salva na sua Conta do Google (<ph name="ACCOUNT" />). Você não precisará memorizá-la.</translation>
@@ -5782,6 +5787,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6508248480704296122">Relacionado a <ph name="NAME_PH" /></translation>
 <translation id="6508261954199872201">Aplicativo: <ph name="APP_NAME" /></translation>
 <translation id="6509207748479174212">Licença de mídia</translation>
+<translation id="6511827214781912955">Recomendamos que você exclua o arquivo <ph name="FILENAME" /> para que os outros usuários deste dispositivo não vejam suas senhas</translation>
 <translation id="6513247462497316522">Caso você não esteja conectado a outra rede, o Google Chrome utilizará dados móveis.</translation>
 <translation id="6514010653036109809">Dispositivo disponível:</translation>
 <translation id="6514565641373682518">Esta página desativou o cursor do mouse.</translation>
@@ -6065,6 +6071,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="6781978626986383437">Backup do Linux cancelado</translation>
 <translation id="6782067259631821405">PIN inválido</translation>
 <translation id="6784523122863989144">O perfil é compatível</translation>
+<translation id="6785739405821760313">Mostrando os espaços de trabalho salvos. Pressione Tab para navegar.</translation>
 <translation id="6785872064505734160">O Google Assistente no Chrome pode concluir ações em sites para você</translation>
 <translation id="6786747875388722282">Extensões</translation>
 <translation id="6787097042755590313">Outra guia</translation>
@@ -6651,6 +6658,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="7358338787722390626">Fechar a pesquisa no painel lateral</translation>
 <translation id="735994578317267253">Tenha seus apps, configurações e muito mais em qualquer dispositivo Chrome OS</translation>
 <translation id="7360233684753165754"><ph name="PAGE_NUMBER" /> páginas para <ph name="PRINTER_NAME" /></translation>
+<translation id="7360257054721917104">Mostrando os espaços de trabalho e modelos salvos. Pressione Tab para navegar.</translation>
 <translation id="7361297102842600584">Clique com o botão direito do mouse para executar o plug-in <ph name="PLUGIN_NAME" /></translation>
 <translation id="7362387053578559123">Os sites podem pedir para se conectar a dispositivos Bluetooth</translation>
 <translation id="7363349185727752629">Um guia das suas escolhas de privacidade</translation>
@@ -7304,6 +7312,7 @@ Pressione um interruptor ou tecla atribuídos para remover a atribuição.</tran
 <translation id="7953669802889559161">Entradas</translation>
 <translation id="7953955868932471628">Gerenciar atalhos</translation>
 <translation id="7955105108888461311">Perguntar diretamente</translation>
+<translation id="7955177647836564772">Se o Smart Lock estiver ativado e o smartphone desbloqueado, não vai ser necessário digitar uma senha ou um PIN</translation>
 <translation id="7956373551960864128">Suas impressoras salvas</translation>
 <translation id="7957074856830851026">Ver informações do dispositivo, como o número de série ou o ID do recurso</translation>
 <translation id="7959074893852789871">O arquivo continha vários certificados e alguns deles não foram importados:</translation>
@@ -7562,6 +7571,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Seus dispositivos<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195027750202970175">Tamanho em disco</translation>
 <translation id="8195191503358432289">Adicionar senha</translation>
+<translation id="8197673340773315084">Adicione um nome ou marcador, como "Trabalho" ou "Pessoal"</translation>
 <translation id="8198456017687137612">Transmitindo guia</translation>
 <translation id="8199300056570174101">Propriedades da rede (serviço) e do dispositivo</translation>
 <translation id="8200772114523450471">Retomar</translation>
@@ -7659,6 +7669,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8284279544186306258">todos os sites de <ph name="WEBSITE_1" /></translation>
 <translation id="8284326494547611709">Legendas</translation>
 <translation id="8286036467436129157">Fazer login</translation>
+<translation id="828642162569365647">O uso de uma senha ou um PIN protege seus dados neste <ph name="DEVICE_TYPE" /> e qualquer informação que você acesse pelo smartphone. O desbloqueio vai ser necessário sempre que seu <ph name="DEVICE_TYPE" /> sair do modo de suspensão.</translation>
 <translation id="8287902281644548111">Pesquisar por chamada de API/URL</translation>
 <translation id="8288032458496410887">Desinstalar <ph name="APP" />...</translation>
 <translation id="8289128870594824098">Tamanho do disco</translation>

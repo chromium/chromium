@@ -6,11 +6,13 @@
 <translation id="207576718733492531">List of credentials to be filled in on touch is closed.</translation>
 <translation id="2359808026110333948">Continue</translation>
 <translation id="2410754283952462441">Choose an account</translation>
+<translation id="263889165891674454">Used saved password or passkey?</translation>
 <translation id="3399357656427473483">List of credentials to be filled in on touch.</translation>
 <translation id="3653689374478248324">You'll sign in to <ph name="SITE_NAME" /></translation>
 <translation id="3950820424414687140">Sign in</translation>
-<translation id="5014228528537508015">Sign in to this site?</translation>
+<translation id="484988093836683706">Use device unlock</translation>
 <translation id="5441504010984421144">List of credentials to be filled in on touch opened at full height.</translation>
 <translation id="5624120631404540903">Manage passwords</translation>
+<translation id="5810853322773892502">Used saved passkey?</translation>
 <translation id="804577341878669140">Continue with account</translation>
 </translationbundle>

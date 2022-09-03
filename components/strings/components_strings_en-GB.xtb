@@ -1108,6 +1108,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3906954721959377182">Tablet</translation>
 <translation id="3909477809443608991"><ph name="URL" /> wants to play protected content. Your device's identity will be verified by Google and may be accessed by this site.</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
+<translation id="3923112503730743940">Oufuku Hagaki (Postcard)</translation>
 <translation id="3927932062596804919">Deny</translation>
 <translation id="393316646445601645">Internet and telecom</translation>
 <translation id="3939773374150895049">Use WebAuthn instead of CVC?</translation>
@@ -1136,6 +1137,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4009243425692662128">The content of pages that you print is sent to Google Cloud or third parties for analysis. For example, it might be scanned for sensitive data.</translation>
 <translation id="4010758435855888356">Allow storage access?</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{PDF document containing {COUNT} page}other{PDF document containing {COUNT} pages}}</translation>
+<translation id="4022639246993848966">3.5 x 5</translation>
 <translation id="4023431997072828269">Because this form is being submitted using a connection that’s not secure, your information will be visible to others.</translation>
 <translation id="4025913568718019429">Manage Google Privacy settings button, press Enter to visit your Google Account privacy settings</translation>
 <translation id="4030383055268325496">&amp;Undo add</translation>
@@ -1303,7 +1305,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4432792777822557199">Pages in <ph name="SOURCE_LANGUAGE" /> will be translated to <ph name="TARGET_LANGUAGE" /> from now on</translation>
 <translation id="4433642172056592619">Ignored because user is not affiliated to the machine management or the machine is not managed.</translation>
 <translation id="4434045419905280838">Pop-ups and redirects</translation>
-<translation id="4435702339979719576">Postcard)</translation>
 <translation id="443673843213245140">Use of a proxy is disabled but an explicit proxy configuration is specified.</translation>
 <translation id="4441832193888514600">Ignored because the policy can only be set as a cloud user policy.</translation>
 <translation id="4450893287417543264">Don't show again</translation>

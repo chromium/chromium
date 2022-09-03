@@ -226,6 +226,7 @@
 <translation id="2497706219848005458">Grüngelb</translation>
 <translation id="2523609930580546572">ChromeVox-Anleitung</translation>
 <translation id="2525706221823668172">Tastenkombinationen auf Chromebooks</translation>
+<translation id="2543973100702367007">Tippe hier doppelt, um Folgendes zu tun: <ph name="LABEL" /></translation>
 <translation id="2553108862507765288">Grammatikfehler</translation>
 <translation id="2556326187583116255">Tippe mit zwei Fingern, um die Sprachausgabe anzuhalten</translation>
 <translation id="2573256689920773241">Grundlegende Bedienung</translation>
@@ -1115,6 +1116,7 @@
 <translation id="8693391540059827073">Meine Lieblingsjahreszeit</translation>
 <translation id="8696284982970258155">Honigmelone</translation>
 <translation id="8697111817566059991">{COUNT,plural, =1{senkrechter Strich}other{# senkrechte Striche}}</translation>
+<translation id="8733397807344284494">Drücke Suchtaste + Leertaste, um Folgendes zu tun: <ph name="LABEL" /></translation>
 <translation id="8741370088760768424">Hinweis: Wenn du das aktuelle Element aktivieren möchtest, drücke „Suchtaste + Leertaste“.</translation>
 <translation id="8743786158317878347">Strukturierte Inhalte wie z. B. Tabellen eingeben</translation>
 <translation id="8746846427395705317">zum vorherigen Wort wechseln</translation>

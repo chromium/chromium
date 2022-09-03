@@ -4001,7 +4001,6 @@
 
       如果此政策未设置或无效，则等同于选择了“为实现版本降级，等待当前版本有可用的稳定版”这一行为选项。</translation>
 <translation id="5229339291699779956">为 Thunderbolt/USB4 外围设备启用 PCIe 隧道，外围设备会将自身的所有功能都发挥到极致</translation>
-<translation id="5230095739094490896">输出“client-name”IPP 属性模板</translation>
 <translation id="5233239004553860036">如果此政策设为<ph name="POLICY_VALUE_ALL" />或未设置，系统会允许受管理的帐号的所有使用情况。这可能会导致受管理的帐号成为辅助帐号，从而只能在该帐号作为浏览器配置文件中的主帐号登录时接收政策。
       在以下情况下，系统将不会强制执行针对帐号设定的政策：
         -  在操作系统级别将该帐号作为辅助帐号（帐号设置）
@@ -7236,18 +7235,6 @@
 
       如果此政策设为 false，系统将不会冻结任何标签页。</translation>
 <translation id="8619748440665904084">禁止在首次运行时导入自动填充表单数据</translation>
-<translation id="8620103780247748230">此政策旨在控制打印任务中<ph name="CLIENT_INFO_IPP_ATTRIBUTE" />IPP（互联网打印协议）属性的值。
-
-      如果此政策设为一个字符串，系统会为每个打印任务额外添加一个<ph name="CLIENT_INFO_IPP_ATTRIBUTE" />项。替换变量后，所添加的<ph name="CLIENT_INFO_IPP_ATTRIBUTE" />项的<ph name="CLIENT_NAME_IPP_ATTRIBUTE" />成员将设为此政策的值。
-
-      支持的变量包括 <ph name="DIRECTORY_ID_PLACEHOLDER" />、<ph name="SERIAL_NUMBER_PLACEHOLDER" />、<ph name="ASSET_ID_PLACEHOLDER" />、<ph name="ANNOTATED_LOCATION_PLACEHOLDER" />、<ph name="USER_EMAIL_PLACEHOLDER" />、<ph name="USER_EMAIL_NAME_PLACEHOLDER" />、<ph name="USER_EMAIL_DOMAIN" />。不支持的占位符变量不会展开。
-
-      如果替换变量后得到的值仅包含 <ph name="ASCII" /> 个可打印字符且长度不超过 255 个字符，该值将被视为有效。
-
-      请注意，为了保护隐私，仅当用户使用 <ph name="IPPS_PROTOCOL" />、<ph name="HTTPS_PROTOCOL" />、<ph name="USB_PROTOCOL" /> 或 <ph name="IPP_USB_PROTOCOL" /> 协议与打印机通信时，此政策才适用。另请注意，此政策仅适用于支持<ph name="CLIENT_NAME_IPP_ATTRIBUTE" />的打印机。
-
-      如果此政策未设置或设为空值/无效值，系统将不会向打印任务请求中添加额外的<ph name="CLIENT_INFO_PLACEHOLDER" />。
-      </translation>
 <translation id="8623672932476443039">如果启用此政策，用户可以访问已隔离应用的开发者模式。
       如果停用此政策，用户将无法使用这些功能。
       如果未设置此政策，则默认情况下，受企业管理的用户无法在 Chrome 操作系统上使用该模式，但在其他操作系统上可以使用，而其他用户在任何操作系统上均可使用。</translation>

@@ -157,6 +157,7 @@
 <translation id="1348198688976932919">На хоризонта се задава сайт с опасни приложения</translation>
 <translation id="1348779747280417563">Потвърждаване на името</translation>
 <translation id="1354976809542763843">Жилищно финансиране</translation>
+<translation id="1355158069018170842">Показване на понижения на цената в разделите</translation>
 <translation id="1355301061807280185">Работни места</translation>
 <translation id="1355754231781595724">Безопасност на автомобила и движението по пътищата</translation>
 <translation id="1357195169723583938">Кой е използвал устройството наскоро и кога</translation>
@@ -466,6 +467,7 @@
 <translation id="2153609454945889823">Да се инсталират ли услугите за Google Play за AR?</translation>
 <translation id="2154054054215849342">Синхронизирането не е налице за въведения от вас домейн</translation>
 <translation id="2154484045852737596">Редактиране на картата</translation>
+<translation id="2157640075051554492">Известия за следене на цени</translation>
 <translation id="2161656808144014275">Текст</translation>
 <translation id="2162510787844374618">Установява се връзка с банката ви...</translation>
 <translation id="2162620598375156287">Сега цената е <ph name="CURRENT_PRICE" /> в(ъв) <ph name="SOURCE_WEBSITE" /></translation>
@@ -1003,6 +1005,7 @@
 <translation id="3633738897356909127">Бутон „Актуализиране на Chrome“. Натиснете Enter, за да актуализирате Chrome от настройките</translation>
 <translation id="3634530185120165534">Тава 5</translation>
 <translation id="3634567936866541746">Току-що въведохте паролата си в измамнически сайт. За да защитите профилите си, Chrome препоръчва да проверите запазените си пароли.</translation>
+<translation id="3637033245385760976">Известията за Chrome трябва да са включени. Можете да ги включите в <ph name="NOTIFICATION_SETTINGS" /></translation>
 <translation id="3637662659967048211">Запазване в профила в Google</translation>
 <translation id="3640766068866876100">Index-4 x 6-Ext</translation>
 <translation id="3642638418806704195">Приложение:</translation>
@@ -1300,7 +1303,6 @@
 <translation id="4432792777822557199">От сега нататък страниците на <ph name="SOURCE_LANGUAGE" /> ще се превеждат на <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="4433642172056592619">Пренебрегнато, защото потребителят не е свързан с управлението на машината или тя не се управлява.</translation>
 <translation id="4434045419905280838">Изскач. прозорци и пренасочвания</translation>
-<translation id="4435702339979719576">пощенска картичка)</translation>
 <translation id="443673843213245140">Използването на прокси сървър е деактивирано, но е посочена изрична негова конфигурация.</translation>
 <translation id="4441832193888514600">Пренебрегнато, защото правилото може да бъде зададено само като правило за потребители в облака.</translation>
 <translation id="4450893287417543264">Да не се показва отново</translation>
@@ -1425,6 +1427,7 @@
 <translation id="4785376858512657294">Управление на профила в Google</translation>
 <translation id="4785689107224900852">Превключване към този раздел</translation>
 <translation id="4786804728079074733">Волейбол</translation>
+<translation id="4789704664580239421">В отворените ви раздели ще се показват сигнали за понижение на цената</translation>
 <translation id="4791134497475588553">Инсталираните приложения за Linux и кога са използвани последно</translation>
 <translation id="4792686369684665359">Информацията, която сте напът да изпратите, не е защитена</translation>
 <translation id="4796594887379589189">Идентификатор за отчитане на задания</translation>
@@ -1790,6 +1793,7 @@
 <translation id="5730040223043577876">Chrome препоръчва да зададете повторно паролата си, ако сте я използвали и на други сайтове.</translation>
 <translation id="5736165827969430182">Металургия и минно дело</translation>
 <translation id="5737183892635480227">{NUM_CARDS,plural, =1{Запазване на картата в профила ви в Google}other{Запазване на картите в профила ви в Google}}</translation>
+<translation id="5738385766833540397">Управлявайте начините, по които получавате сигнали за понижение на цената за продукти, които следите</translation>
 <translation id="5743638595296120378">Покупка на превозно средство</translation>
 <translation id="5743898850056428078">Състезания с мотори</translation>
 <translation id="5745733273847572235">Може да поиска достъп до местоположението ви</translation>
@@ -1799,6 +1803,7 @@
 <translation id="5759751709240058861">Използване и местене на камерата ви</translation>
 <translation id="5763042198335101085">Въведете валиден имейл адрес</translation>
 <translation id="5764725887548570807">Форматът на източника е невалиден.</translation>
+<translation id="5764920692828389743">Изпращане до <ph name="EMAIL_ADDRESS" /></translation>
 <translation id="5765072501007116331">За да видите начините на бърза доставка и изискванията, изберете адрес</translation>
 <translation id="57689295674415555">Номерът на виртуалната карта не е попълнен?</translation>
 <translation id="5772086939108830423">Използване на код за достъп на друго устройство</translation>
@@ -1890,6 +1895,7 @@
 <translation id="6017850046339264347">Извършители на атака срещу <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> могат да инсталират измамни приложения, които се представят за нещо друго или събират данни, които може да се използват за проследяването ви. <ph name="BEGIN_LEARN_MORE_LINK" />Научете повече<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="6025416945513303461"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /> (синхронизирани)</translation>
 <translation id="6027201098523975773">Въведете име</translation>
+<translation id="6028591542479806248">Управление на известията по имейл и на мобилно устройство</translation>
 <translation id="603068602130820122">Двуточково телбодиране отдясно</translation>
 <translation id="6032524144326295339">Пощенска кутия 2</translation>
 <translation id="6032955021262906325">Подвързване отляво</translation>
@@ -2810,6 +2816,7 @@
 <translation id="8559762987265718583">Не може да се установи частна връзка с/ъс <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />, тъй като датата и часът на устройството ви (<ph name="DATE_AND_TIME" />) са неправилни.</translation>
 <translation id="8564182942834072828">Отделни документи/неподредени копия</translation>
 <translation id="8564985650692024650">Chromium препоръчва да зададете повторно паролата си за <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />, ако сте я използвали и на други сайтове.</translation>
+<translation id="8573969211731659953">Сигналите за понижение на цената са включени. Можете да промените това в <ph name="NOTIFICATION_SETTINGS" />.</translation>
 <translation id="8576310925653847813">Системи за домашно кино</translation>
 <translation id="8577348305244205642">Няма достъп до виртуалната карта</translation>
 <translation id="858637041960032120">+ тел. номер</translation>

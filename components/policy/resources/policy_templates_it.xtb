@@ -357,6 +357,10 @@
 <translation id="1372618949173323717">Viene disattivato JavaScript</translation>
 <translation id="1376119291123231789">Attiva modalità di ricarica avanzata della batteria</translation>
 <translation id="1384459581748403878">Riferimento: <ph name="REFERENCE_URL" /></translation>
+<translation id="1384594066274112751">Questo criterio consente di fare in modo che qualsiasi URL corrispondente a uno o più pattern specificati nel criterio (usando il formato del filtro <ph name="URL_BLOCKLIST_POLICY_NAME" />) non venga mai ignorato dal browser.
+      Questo criterio viene applicato per ignorare l'utilizzo della memoria e la modalità ad alta efficienza.
+      Viene eseguito l'unload della pagina ignorata e le risorse della pagina vengono recuperate completamente. La scheda a cui è associata la pagina rimane nella tabstrip, ma se viene resa visibile viene attivato un ricaricamento completo.
+      </translation>
 <translation id="138847842893090358">Indica lo stato di aggiornamento del sistema operativo</translation>
 <translation id="1390529781843037070">Se il criterio viene impostato su Attivato o se non viene configurato, gli utenti possono stampare con <ph name="CLOUD_PRINT_NAME" /> dalla finestra di dialogo di stampa di <ph name="PRODUCT_NAME" />. <ph name="PRODUCT_NAME" /> può inviare documenti da stampare a <ph name="CLOUD_PRINT_NAME" />. Questo non impedisce agli utenti di inviare processi di stampa su siti web.
 
@@ -4068,7 +4072,6 @@ Se questo criterio viene impostato su Falso, <ph name="PRODUCT_NAME" /> non util
 
       Se il criterio non viene configurato o se non è valido, viene eseguito lo stesso comportamento dell'opzione "Attendi che il canale di destinazione controlli il downgrade del canale".</translation>
 <translation id="5229339291699779956">Viene attivato il tunneling PCIe per i dispositivi periferici Thunderbolt/USB4, i dispositivi periferici funzioneranno con le loro capacità complete</translation>
-<translation id="5230095739094490896">Modello dell'attributo IPP "client-name" per la stampa</translation>
 <translation id="5233239004553860036">Se questo criterio viene impostato su <ph name="POLICY_VALUE_ALL" /> o se non viene configurato, sono consentiti tutti gli utilizzi degli account gestiti. Di conseguenza, un account gestito potrebbe essere un account secondario, che riceverebbe i criteri soltanto se venisse eseguito l'accesso all'account come account principale in un profilo del browser.
       I criteri impostati per l'account non verranno applicati nei seguenti casi:
         -  Se l'account è un account secondario a livello di sistema operativo (Impostazioni account)
@@ -6468,6 +6471,7 @@ Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita 
       Questo criterio non ha effetto se viene configurato il criterio <ph name="DOWNLOAD_DIRECTORY_POLICY_NAME" />.
 
       Nota. Vedi l'elenco di variabili che puoi utilizzare: https://www.chromium.org/administrators/policy-list-3/user-data-directory-variables.</translation>
+<translation id="7719808201797990069">Eccezioni di pattern URL per ignorare le schede</translation>
 <translation id="7721944091689270995">ID utente <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="7724161903134898864">Se il criterio è impostato su 1, i siti web possono mostrare i popup. Se il criterio è impostato su 2, i popup vengono negati.
 
@@ -7315,18 +7319,6 @@ Se questa norma non viene impostata, le pagine saranno sottoposte a scansione pe
 
       Se il criterio viene impostato su false, le schede non verranno bloccate.</translation>
 <translation id="8619748440665904084">Disabilita l'importazione dei dati di compilazione automatica dei moduli alla prima esecuzione</translation>
-<translation id="8620103780247748230">Questo criterio consente di stabilire il valore dell'attributo IPP (Internet Printing Protocol) <ph name="CLIENT_INFO_IPP_ATTRIBUTE" /> nei processi di stampa.
-
-      Se il criterio viene impostato su una stringa, viene aggiunto un ulteriore elemento <ph name="CLIENT_INFO_IPP_ATTRIBUTE" /> a ogni processo di stampa. Il membro <ph name="CLIENT_NAME_IPP_ATTRIBUTE" /> dell'elemento <ph name="CLIENT_INFO_IPP_ATTRIBUTE" /> aggiunto verrà impostato sul valore del criterio dopo la sostituzione delle variabili.
-
-      Le variabili supportate sono <ph name="DIRECTORY_ID_PLACEHOLDER" />, <ph name="SERIAL_NUMBER_PLACEHOLDER" />, <ph name="ASSET_ID_PLACEHOLDER" />, <ph name="ANNOTATED_LOCATION_PLACEHOLDER" />, <ph name="USER_EMAIL_PLACEHOLDER" />, <ph name="USER_EMAIL_NAME_PLACEHOLDER" /> e <ph name="USER_EMAIL_DOMAIN" />. Le variabili segnaposto non supportate non verranno espanse.
-
-      Il valore ottenuto dopo la sostituzione delle variabili viene considerato valido se è costituito soltanto da caratteri stampabili <ph name="ASCII" /> e non supera i 255 caratteri.
-
-      Tieni presente che, per motivi di privacy, questo criterio si applica soltanto in caso di comunicazione con una stampante usando i protocolli <ph name="IPPS_PROTOCOL" />, <ph name="HTTPS_PROTOCOL" />, <ph name="USB_PROTOCOL" /> o <ph name="IPP_USB_PROTOCOL" />. Tieni inoltre presente che questo criterio si applica soltanto alle stampanti che supportano <ph name="CLIENT_NAME_IPP_ATTRIBUTE" />.
-
-      Se il criterio non viene configurato oppure se viene impostato un valore vuoto o non valido, non verrà aggiunto un ulteriore elemento <ph name="CLIENT_INFO_PLACEHOLDER" /> alle richieste di processi di stampa.
-      </translation>
 <translation id="8623672932476443039">Se il criterio viene impostato su enabled, gli utenti possono accedere alla modalità sviluppatore per le app isolate.
       Se viene impostato su disabled, gli utenti non possono accedere a queste funzionalità.
       Se non viene configurato, per impostazione predefinita le funzionalità non sono consentite per gli utenti gestiti a livello aziendale su Chrome OS, mentre sono consentite per tutti gli altri utenti e sistemi operativi.</translation>

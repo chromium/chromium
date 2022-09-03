@@ -226,6 +226,7 @@ Chrome arakatzaileko menua irekitzeko, sakatu Alt tekla eta F.</translation>
 <translation id="2497706219848005458">Berde horixka</translation>
 <translation id="2523609930580546572">ChromeVox tutoriala</translation>
 <translation id="2525706221823668172">Chromebook-eko lasterbideak</translation>
+<translation id="2543973100702367007">Sakatu birritan <ph name="LABEL" /></translation>
 <translation id="2553108862507765288">gramatika-akatsa</translation>
 <translation id="2556326187583116255">Sakatu bi hatzekin hizketa gelditzeko</translation>
 <translation id="2573256689920773241">Oinarrizko nabigazioa</translation>
@@ -1114,6 +1115,7 @@ Chrome arakatzaileko menua irekitzeko, sakatu Alt tekla eta F.</translation>
 <translation id="8693391540059827073">Gogoko dudan urte-sasoia</translation>
 <translation id="8696284982970258155">Ezti-ihintzaren kolorekoa</translation>
 <translation id="8697111817566059991">{COUNT,plural, =1{barra}other{# barra bertikal}}</translation>
+<translation id="8733397807344284494">Sakatu Bilaketa + zuriune-barra <ph name="LABEL" /></translation>
 <translation id="8741370088760768424">Aholkua: sakatu bilaketa-tekla eta zuriune-barra elementua aktibatzeko.</translation>
 <translation id="8743786158317878347">sartu egituratutako edukian, adibidez, tauletan</translation>
 <translation id="8746846427395705317">joan aurreko hitzera</translation>

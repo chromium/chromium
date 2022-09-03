@@ -714,6 +714,7 @@ Tillatelser du allerede har gitt apper, kan gjelde for denne kontoen. Du kan sty
 <translation id="16620462294541761">Beklager, passordet kan ikke verifiseres. Prøv på nytt.</translation>
 <translation id="166278006618318542">Algoritme for enhetens offentlige nøkkel</translation>
 <translation id="1662801900924515589"><ph name="APP" /> er installert</translation>
+<translation id="1665328953287874063">Bruk et passord eller en PIN-kode for å låse opp <ph name="DEVICE_TYPE" /></translation>
 <translation id="1666232093776384142">Slå av datatilgangsbeskyttelse for eksterne enheter</translation>
 <translation id="1667842670298352129">Få spesifikk tekst lest opp. Først velger du Tekstopplesing-ikonet nederst på skjermen, og deretter markerer du teksten. Du kan også bruke en hurtigtast: Marker tekst, og trykk deretter på søketasten + S.</translation>
 <translation id="1668435968811469751">Registrer manuelt</translation>
@@ -1844,6 +1845,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2691385045260836588">Modell</translation>
 <translation id="2691440343905273290">Endre inndatainnstillinger</translation>
 <translation id="2693176596243495071">Beklager. En ukjent feil oppsto. Prøv på nytt senere, eller kontakt administratoren hvis problemet fortsetter.</translation>
+<translation id="2698147581454716013">Dette er en pakkeenhet og kan ikke registreres med Kiosk og skilt-oppgradering.</translation>
 <translation id="2699911226086014512">PIN-kodehandlingen mislyktes med koden <ph name="RETRIES" />.</translation>
 <translation id="2701330563083355633">Delt fra <ph name="DEVICE_NAME" /></translation>
 <translation id="2701737434167469065">Logg på, <ph name="EMAIL" /></translation>
@@ -1922,6 +1924,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2757338480560142065">Sørg for at passordet du lagrer, samsvarer med passordet ditt for <ph name="WEBSITE" />.</translation>
 <translation id="2762441749940182211">Kameraet er blokkert</translation>
 <translation id="2764786626780673772">VPN-detaljer</translation>
+<translation id="2764920001292228569">Skriv inn et profilnavn</translation>
 <translation id="2765100602267695013">Kontakt mobiloperatøren din</translation>
 <translation id="2765217105034171413">Liten</translation>
 <translation id="2766006623206032690">&amp;Lim inn og gå til</translation>
@@ -3289,6 +3292,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="4065876735068446555">Det kan hende at nettverket du bruker (<ph name="NETWORK_ID" />), krever at du besøker en påloggingsside.</translation>
 <translation id="4066207411788646768">Kontrollér tilkoblingen din for å se tilgjengelige skrivere på nettverket</translation>
 <translation id="4066945815577305767">Passordene ble tidsavbrutt</translation>
+<translation id="4067839975993712852">Merk denne fanen som lest</translation>
 <translation id="4068776064906523561">Lagrede fingeravtrykk</translation>
 <translation id="407173827865827707">Ved klikk</translation>
 <translation id="4072701974556190758">Passordet blir lagret i Google-kontoen din, <ph name="ACCOUNT" />. Du trenger ikke å huske det.</translation>
@@ -5769,6 +5773,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="6508248480704296122">Knyttet til <ph name="NAME_PH" /></translation>
 <translation id="6508261954199872201">Program: <ph name="APP_NAME" /></translation>
 <translation id="6509207748479174212">Medielisens</translation>
+<translation id="6511827214781912955">Du bør vurdere å slette <ph name="FILENAME" />, slik at andre som bruker denne enheten, ikke kan se passordene dine</translation>
 <translation id="6513247462497316522">Google Chrome bruker mobile data hvis du ikke er koblet til et annet nettverk.</translation>
 <translation id="6514010653036109809">Tilgjengelig enhet:</translation>
 <translation id="6514565641373682518">Denne siden har deaktivert markøren din.</translation>
@@ -6050,6 +6055,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="6781978626986383437">Sikkerhetskopieringen av Linux er avbrutt</translation>
 <translation id="6782067259631821405">Ugyldig PIN-kode</translation>
 <translation id="6784523122863989144">Profilen støttes</translation>
+<translation id="6785739405821760313">Ser på lagrede skrivebord. Trykk på fanen for å navigere.</translation>
 <translation id="6785872064505734160">Google-assistenten i Chrome kan utføre handlinger for deg på ulike nettsteder</translation>
 <translation id="6786747875388722282">Utvidelser</translation>
 <translation id="6787097042755590313">Annen fane</translation>
@@ -6507,6 +6513,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7222204278952406003">Chrome er standardnettleseren din</translation>
 <translation id="7222232353993864120">E-postadresse</translation>
 <translation id="7222235798733126207">Begrenset deling mellom nettsteder</translation>
+<translation id="7225082563376899794">Bruk Windows Hello når du fyller ut passord</translation>
 <translation id="7225179976675429563">Nettverkstype mangler</translation>
 <translation id="7227458944009118910">Appene som er oppført nedenfor, kan også håndtere protokoll-linker. Andre apper kommer til å be om tillatelse.</translation>
 <translation id="7228523857728654909">Skjermlås og pålogging</translation>
@@ -6548,6 +6555,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7258192266780953209">Transformasjoner</translation>
 <translation id="7258225044283673131">Appen svarer ikke. Velg «Tving avslutning» for å lukke appen.</translation>
 <translation id="7260186537988033909">Registreringen som kiosk- og skiltenhet er fullført</translation>
+<translation id="7261851165551049223">Bruk TouchID når du fyller ut passord</translation>
 <translation id="7262004276116528033">Verten for denne påloggingstjenesten er <ph name="SAML_DOMAIN" /></translation>
 <translation id="7264695323040866038">Vil du alltid bruke <ph name="APP" />-appen til å åpne støttede nettlinker?</translation>
 <translation id="7267044199012331848">Kunne ikke installere den virtuelle maskinen. Prøv på nytt, eller kontakt administratoren din. Feilkode: <ph name="ERROR_CODE" />.</translation>
@@ -6634,6 +6642,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7358338787722390626">Lukk søket i sidepanelet</translation>
 <translation id="735994578317267253">Få appene dine, innstillingene dine med mer på alle ChromeOS-enheter</translation>
 <translation id="7360233684753165754"><ph name="PAGE_NUMBER" /> sider til <ph name="PRINTER_NAME" /></translation>
+<translation id="7360257054721917104">Ser på lagrede skrivebord og maler. Trykk på fanen for å navigere.</translation>
 <translation id="7361297102842600584">Høyreklikk for å kjøre <ph name="PLUGIN_NAME" />.</translation>
 <translation id="7362387053578559123">Nettsteder kan be om å få koble til Bluetooth-enheter</translation>
 <translation id="7363349185727752629">En veiledning i personvernvalgene dine</translation>
@@ -7286,6 +7295,7 @@ Trykk på en tilordnet bryter eller tast for å fjerne tilordningen.</translatio
 <translation id="7953669802889559161">Inndatametoder</translation>
 <translation id="7953955868932471628">Administrer snarveier</translation>
 <translation id="7955105108888461311">Spør fysisk</translation>
+<translation id="7955177647836564772">Hvis Smart Lock er slått på og telefonen låses opp, trenger du ikke å oppgi passord eller PIN-kode</translation>
 <translation id="7956373551960864128">Dine lagrede skrivere</translation>
 <translation id="7957074856830851026">Se informasjon om enheten, som for eksempel serienummeret eller element-ID-en</translation>
 <translation id="7959074893852789871">Filen inneholdt flere sertifikater, og enkelte av dem ble ikke importert:</translation>
@@ -7544,6 +7554,7 @@ Jeg tror ikke det er nødvendig å blokkere dette nettstedet.</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Enhetene dine<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195027750202970175">Lagringsstørrelse</translation>
 <translation id="8195191503358432289">Legg til passord</translation>
+<translation id="8197673340773315084">Legg til et navn eller en etikett, for eksempel Jobb eller Personlig</translation>
 <translation id="8198456017687137612">Casting-fanen</translation>
 <translation id="8199300056570174101">Egenskaper for nettverk (tjeneste) og enhet</translation>
 <translation id="8200772114523450471">Fortsett</translation>
@@ -7641,6 +7652,7 @@ Jeg tror ikke det er nødvendig å blokkere dette nettstedet.</translation>
 <translation id="8284279544186306258">alle <ph name="WEBSITE_1" />-nettsteder</translation>
 <translation id="8284326494547611709">Teksting</translation>
 <translation id="8286036467436129157">Logg på</translation>
+<translation id="828642162569365647">Passordet eller PIN-koden beskytter dataene dine på <ph name="DEVICE_TYPE" /> og eventuell informasjon du har tilgang til via telefonen. Du må låse opp enheten hver gang <ph name="DEVICE_TYPE" /> vekkes fra hvilemodus.</translation>
 <translation id="8287902281644548111">Søk etter API-kall/nettadresser</translation>
 <translation id="8288032458496410887">Avinstaller <ph name="APP" /></translation>
 <translation id="8289128870594824098">Diskstørrelse</translation>

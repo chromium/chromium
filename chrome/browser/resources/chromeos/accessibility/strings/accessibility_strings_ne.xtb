@@ -226,6 +226,7 @@
 <translation id="2497706219848005458">हरियो मिश्रित पहेँलो</translation>
 <translation id="2523609930580546572">ChromeVox बारे ट्यूटोरियल</translation>
 <translation id="2525706221823668172">Chromebook का किबोर्ड सर्टकटहरू</translation>
+<translation id="2543973100702367007"><ph name="LABEL" /> मा डबल ट्याप गर्नुहोस्</translation>
 <translation id="2553108862507765288">व्याकरणीय गल्ती</translation>
 <translation id="2556326187583116255">ChromeVox मा अन रहेको जुनसुकै वाक् सुविधा अफ गर्न २ वटा औँलाले ट्याप गर्नुहोस्</translation>
 <translation id="2573256689920773241">नेभिगेट गर्ने सामान्य तरिका</translation>
@@ -1115,6 +1116,7 @@
 <translation id="8693391540059827073">मेरो मन पर्ने मौसम</translation>
 <translation id="8696284982970258155">मधुरसको रङ्ग</translation>
 <translation id="8697111817566059991">{COUNT,plural, =1{पाइप}other{# ठाडो पाइपहरू}}</translation>
+<translation id="8733397807344284494"><ph name="LABEL" /> गर्न Search+Space थिच्नुहोस्</translation>
 <translation id="8741370088760768424">ध्यान दिनुहोस्: हालको पाठ खोलेर फेरि प्रयोग गर्न Search + Space की थिच्नुहोस्।</translation>
 <translation id="8743786158317878347">तालिकाहरू जस्ता संरचना गरिएको सामग्री प्रविष्टि गर्नुहोस्</translation>
 <translation id="8746846427395705317">कर्सर सारेर अघिल्लो शब्दमा लैजाऊ</translation>

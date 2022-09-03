@@ -4069,7 +4069,6 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
 
       Jika tidak disetel atau tidak valid, perilaku akan sama dengan "Tunggu saluran target juga mengalami downgrade saluran rilis".</translation>
 <translation id="5229339291699779956">Mengaktifkan tunneling PCIe untuk perangkat periferal Thunderbolt/USB4, perangkat periferal akan berfungsi pada kemampuan penuh</translation>
-<translation id="5230095739094490896">Mencetak template atribut IPP 'client-name'</translation>
 <translation id="5233239004553860036">Jika kebijakan ini disetel ke <ph name="POLICY_VALUE_ALL" /> atau tidak disetel, semua penggunaan akun terkelola akan diizinkan. Hal ini dapat menyebabkan akun terkelola menjadi akun sekunder, yang hanya akan menerima kebijakan jika akun tersebut login sebagai akun utama di Profil browser.
       Kebijakan yang disetel untuk akun tidak akan diterapkan dalam skenario berikut:
         -  Menjadi akun sekunder di tingkat OS (Setelan Akun)
@@ -7344,18 +7343,6 @@ Kebijakan akan dihapus pada M75.</translation>
 
       Jika kebijakan ditetapkan ke false, tidak ada tab yang akan dibekukan.</translation>
 <translation id="8619748440665904084">Nonaktifkan impor data formulir isi otomatis saat browser pertama kali dijalankan</translation>
-<translation id="8620103780247748230">Kebijakan ini mengontrol nilai atribut IPP (Internet Printing Protocol) <ph name="CLIENT_INFO_IPP_ATTRIBUTE" /> dalam tugas pencetakan.
-
-      Menyetel kebijakan ke string akan mengakibatkan penambahan item <ph name="CLIENT_INFO_IPP_ATTRIBUTE" /> tambahan ke setiap tugas pencetakan. Anggota <ph name="CLIENT_NAME_IPP_ATTRIBUTE" /> dari item <ph name="CLIENT_INFO_IPP_ATTRIBUTE" /> yang ditambahkan akan disetel ke nilai kebijakan setelah substitusi variabel.
-
-      Variabel yang didukung adalah <ph name="DIRECTORY_ID_PLACEHOLDER" />, <ph name="SERIAL_NUMBER_PLACEHOLDER" />, <ph name="ASSET_ID_PLACEHOLDER" />, <ph name="ANNOTATED_LOCATION_PLACEHOLDER" />, <ph name="USER_EMAIL_PLACEHOLDER" />, <ph name="USER_EMAIL_NAME_PLACEHOLDER" />, <ph name="USER_EMAIL_DOMAIN" />. Variabel placeholder yang tidak didukung tidak akan diperluas.
-
-      Nilai yang dihasilkan setelah substitusi variabel dianggap valid jika hanya terdiri dari karakter <ph name="ASCII" /> yang dapat dicetak dan panjangnya tidak melebihi 255.
-
-      Perlu diketahui, karena alasan privasi, kebijakan ini hanya berlaku saat berkomunikasi dengan printer menggunakan protokol <ph name="IPPS_PROTOCOL" />, <ph name="HTTPS_PROTOCOL" />, <ph name="USB_PROTOCOL" />, atau <ph name="IPP_USB_PROTOCOL" />. Perlu diketahui juga bahwa kebijakan ini hanya berlaku untuk printer yang mendukung <ph name="CLIENT_NAME_IPP_ATTRIBUTE" />.
-
-      Jika kebijakan ini disetel ke nilai kosong atau yang tidak valid atau tidak disetel, <ph name="CLIENT_INFO_PLACEHOLDER" /> tambahan tidak akan ditambahkan ke permintaan tugas pencetakan.
-      </translation>
 <translation id="8623672932476443039">Jika kebijakan disetel ke Aktif, pengguna akan dapat mengakses Mode Developer untuk Aplikasi Terisolasi.
       Jika kebijakan disetel ke Nonaktif, pengguna tidak dapat mengakses kemampuan tersebut.
       Jika kebijakan ini tidak disetel, secara default pengguna yang dikelola perusahaan tidak akan diizinkan di ChromeOS dan semua pengguna serta OS lainnya akan diizinkan.</translation>

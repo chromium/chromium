@@ -3990,7 +3990,6 @@
 
       如果政策未設定或無效，則行為會等同於「等待目標版本跟上版本降級」。</translation>
 <translation id="5229339291699779956">為 Thunderbolt/USB4 周邊裝置啟用 PCIe 通道，讓周邊裝置執行完整功能</translation>
-<translation id="5230095739094490896">列印 'client-name' IPP 屬性範本</translation>
 <translation id="5233239004553860036">如果將這項政策設為 <ph name="POLICY_VALUE_ALL" /> 或不設定，系統會允許受管理帳戶的所有使用情況。這麼做可能導致受管理帳戶變更為次要帳戶，進而讓該帳戶只有在做為主要帳戶登入瀏覽器設定檔時才能接收政策。
     在下列情況下，系統不會強制執行對該帳戶設定的政策：
         -  在 OS 層級 (帳戶設定) 做為次要帳戶
@@ -7194,16 +7193,6 @@
 
       如果將這項政策設為 False，系統將不會凍結任何分頁。</translation>
 <translation id="8619748440665904084">不允許在第一次執行時匯入自動填入表單資料</translation>
-<translation id="8620103780247748230">這項政策可控管列印工作中的 <ph name="CLIENT_INFO_IPP_ATTRIBUTE" /> IPP (網際網路列印通訊協定) 屬性值。
-
-      如果將這項政策設為字串，每個列印工作中就會新增額外的 <ph name="CLIENT_INFO_IPP_ATTRIBUTE" /> 項目。替換變數後，系統會將新增的 <ph name="CLIENT_INFO_IPP_ATTRIBUTE" /> 項目 <ph name="CLIENT_NAME_IPP_ATTRIBUTE" /> 成員設為政策值。支援的變數包括 <ph name="DIRECTORY_ID_PLACEHOLDER" />、<ph name="SERIAL_NUMBER_PLACEHOLDER" />、<ph name="ASSET_ID_PLACEHOLDER" />、<ph name="ANNOTATED_LOCATION_PLACEHOLDER" />、<ph name="USER_EMAIL_PLACEHOLDER" />、<ph name="USER_EMAIL_NAME_PLACEHOLDER" />、<ph name="USER_EMAIL_DOMAIN" />。系統不會展開不支援的預留位置變數。
-
-      如果變數僅包含 <ph name="ASCII" /> 可列印字元，且長度不超過 255 個半形字元，替換變數後產生的值就會視為有效。
-
-      請注意，基於隱私考量，這項政策僅適用於透過 <ph name="IPPS_PROTOCOL" />、<ph name="HTTPS_PROTOCOL" />、<ph name="USB_PROTOCOL" /> 或 <ph name="IPP_USB_PROTOCOL" /> 通訊協定與印表機的通訊。此外，這項政策僅適用於支援 <ph name="CLIENT_NAME_IPP_ATTRIBUTE" /> 的印表機。
-
-      如果未設定這項政策、設為空白或無效值，系統就不會在列印工作要求中新增額外的 <ph name="CLIENT_INFO_PLACEHOLDER" />。
-      </translation>
 <translation id="8623672932476443039">如果將這項政策設為啟用，使用者可以存取「已隔離應用程式的開發人員模式」。
       如果將這項政策設為停用，使用者將無法存取這些功能。
       如果不設定這項政策，在預設情況下，Chrome OS 上受企業管理的使用者將無法存取這個模式，其他作業系統上的一般使用者則可存取這個模式。</translation>

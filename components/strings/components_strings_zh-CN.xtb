@@ -157,6 +157,7 @@
 <translation id="1348198688976932919">您要访问的网站包含危险应用</translation>
 <translation id="1348779747280417563">确认姓名</translation>
 <translation id="1354976809542763843">住宅融资</translation>
+<translation id="1355158069018170842">在标签页中显示降价信息</translation>
 <translation id="1355301061807280185">工作机会</translation>
 <translation id="1355754231781595724">车辆与交通安全</translation>
 <translation id="1357195169723583938">最近使用过这部设备的用户和使用时间</translation>
@@ -466,6 +467,7 @@
 <translation id="2153609454945889823">安装“面向 AR 的 Google Play 服务”？</translation>
 <translation id="2154054054215849342">您的网域不支持同步</translation>
 <translation id="2154484045852737596">修改支付卡</translation>
+<translation id="2157640075051554492">价格跟踪通知</translation>
 <translation id="2161656808144014275">文字</translation>
 <translation id="2162510787844374618">正在联系银行…</translation>
 <translation id="2162620598375156287"><ph name="SOURCE_WEBSITE" /> 上的现价为 <ph name="CURRENT_PRICE" /></translation>
@@ -999,6 +1001,7 @@
 <translation id="3633738897356909127">“更新 Chrome”按钮，按 Enter 键即可前往 Chrome 设置以更新 Chrome</translation>
 <translation id="3634530185120165534">纸匣 5</translation>
 <translation id="3634567936866541746">您刚刚在一个诈骗网站中输入了密码。为保护您的帐号安全，Chrome 建议检查您已保存的密码。</translation>
+<translation id="3637033245385760976">Chrome 通知必须处于开启状态。您可以在“<ph name="NOTIFICATION_SETTINGS" />”中开启此功能</translation>
 <translation id="3637662659967048211">保存到 Google 帐号</translation>
 <translation id="3640766068866876100">Index-4x6-Ext</translation>
 <translation id="3642638418806704195">应用：</translation>
@@ -1296,7 +1299,6 @@
 <translation id="4432792777822557199">从现在开始，源语言为<ph name="SOURCE_LANGUAGE" />的网页一律会被翻译成<ph name="TARGET_LANGUAGE" /></translation>
 <translation id="4433642172056592619">被忽略了，因为用户未关联到机器管理服务或者相应机器不是处于受管理状态。</translation>
 <translation id="4434045419905280838">弹出式窗口和重定向</translation>
-<translation id="4435702339979719576">Postcard)</translation>
 <translation id="443673843213245140">已停用代理，但是指定了明确的代理配置。</translation>
 <translation id="4441832193888514600">被忽略了，因为此政策只能设为云端用户政策。</translation>
 <translation id="4450893287417543264">不再显示</translation>
@@ -1421,6 +1423,7 @@
 <translation id="4785376858512657294">管理 Google 帐号</translation>
 <translation id="4785689107224900852">切换到这个标签页</translation>
 <translation id="4786804728079074733">排球</translation>
+<translation id="4789704664580239421">在打开的标签页中显示降价提醒</translation>
 <translation id="4791134497475588553">已安装的 Linux 应用及其上次使用时间</translation>
 <translation id="4792686369684665359">您即将提交的信息不安全</translation>
 <translation id="4796594887379589189">工作帐号 ID</translation>
@@ -1786,6 +1789,7 @@
 <translation id="5730040223043577876">如果您在其他网站上重复使用了您的密码，Chrome 建议您重置该密码。</translation>
 <translation id="5736165827969430182">金属与采矿</translation>
 <translation id="5737183892635480227">{NUM_CARDS,plural, =1{将这张卡保存在您的 Google 帐号中}other{将这些卡保存在您的 Google 帐号中}}</translation>
+<translation id="5738385766833540397">管理您所跟踪商品的降价提醒接收方式</translation>
 <translation id="5743638595296120378">购车</translation>
 <translation id="5743898850056428078">摩托车赛</translation>
 <translation id="5745733273847572235">可以询问能否获取您的位置信息</translation>
@@ -1795,6 +1799,7 @@
 <translation id="5759751709240058861">使用和移动您的摄像头</translation>
 <translation id="5763042198335101085">请输入有效的电子邮件地址</translation>
 <translation id="5764725887548570807">源格式无效。</translation>
+<translation id="5764920692828389743">发送至 <ph name="EMAIL_ADDRESS" /></translation>
 <translation id="5765072501007116331">要查看递送方式和要求，请选择相应地址</translation>
 <translation id="57689295674415555">未填充虚拟卡号？</translation>
 <translation id="5776313857861697733">优先级</translation>
@@ -1885,6 +1890,7 @@
 <translation id="6017850046339264347"><ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> 上的攻击者可能会安装欺骗性应用来冒充其他内容或收集可用于对您进行跟踪的数据。<ph name="BEGIN_LEARN_MORE_LINK" />了解详情<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="6025416945513303461"><ph name="TYPE_1" />、<ph name="TYPE_2" />、<ph name="TYPE_3" />（已同步）</translation>
 <translation id="6027201098523975773">请输入名称</translation>
+<translation id="6028591542479806248">管理移动应用和电子邮件通知</translation>
 <translation id="603068602130820122">双钉（右侧）</translation>
 <translation id="6032524144326295339">信箱 2</translation>
 <translation id="6032955021262906325">装订（左侧）</translation>
@@ -2804,6 +2810,7 @@
 <translation id="8559762987265718583">您设备的日期和时间（<ph name="DATE_AND_TIME" />）不正确，因此无法与 <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> 建立私密连接。</translation>
 <translation id="8564182942834072828">单独的文档/非逐份打印的副本</translation>
 <translation id="8564985650692024650">如果您在其他网站上重复使用了您的 <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> 密码，Chromium 建议您重置该密码。</translation>
+<translation id="8573969211731659953">降价提醒功能已开启。您可以在“<ph name="NOTIFICATION_SETTINGS" />”中更改此设置</translation>
 <translation id="8576310925653847813">家庭影院系统</translation>
 <translation id="8577348305244205642">无法使用虚拟卡</translation>
 <translation id="858637041960032120">添加电话号码

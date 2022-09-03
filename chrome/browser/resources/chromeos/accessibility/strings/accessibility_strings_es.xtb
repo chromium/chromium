@@ -226,6 +226,7 @@
 <translation id="2497706219848005458">Amarillo verdoso</translation>
 <translation id="2523609930580546572">Tutorial de ChromeVox</translation>
 <translation id="2525706221823668172">Combinaciones de teclas de Chromebook</translation>
+<translation id="2543973100702367007">Toca dos veces para <ph name="LABEL" /></translation>
 <translation id="2553108862507765288">error gramatical</translation>
 <translation id="2556326187583116255">Toca con 2 dedos para detener cualquier mensaje de voz</translation>
 <translation id="2573256689920773241">Navegación básica</translation>
@@ -1115,6 +1116,7 @@
 <translation id="8693391540059827073">Mi estación favorita</translation>
 <translation id="8696284982970258155">Verde claro</translation>
 <translation id="8697111817566059991">{COUNT,plural, =1{barra vertical}other{# barras verticales}}</translation>
+<translation id="8733397807344284494">Pulsa la tecla de búsqueda + la barra espaciadora para <ph name="LABEL" /></translation>
 <translation id="8741370088760768424">Sugerencia: Pulsa la tecla de búsqueda + barra espaciadora para activar el elemento actual.</translation>
 <translation id="8743786158317878347">introduce contenido estructurado (por ejemplo, tablas)</translation>
 <translation id="8746846427395705317">ir a la palabra anterior</translation>

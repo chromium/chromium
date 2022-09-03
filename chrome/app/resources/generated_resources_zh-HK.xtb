@@ -681,6 +681,7 @@
 <translation id="1632756664321977232">裁剪工具</translation>
 <translation id="163309982320328737">初始字元寬度為全形</translation>
 <translation id="1633947793238301227">停用「Google 助理」</translation>
+<translation id="1634224622052500893">找到 Wi-Fi 網絡</translation>
 <translation id="1634783886312010422">您是否已在 <ph name="WEBSITE" /> 上變更此密碼？</translation>
 <translation id="1636212173818785548">確定</translation>
 <translation id="163712950892155760"><ph name="BEGIN_PARAGRAPH1" />應用程式資料泛指應用程式根據開發人員設定所儲存的任何資料，可能包括聯絡人、訊息和相片等資料。備份資料不會計算入「雲端硬碟」的儲存空間配額。<ph name="END_PARAGRAPH1" />
@@ -2023,6 +2024,7 @@
 <translation id="2839032553903800133">已封鎖通知</translation>
 <translation id="2841013758207633010">時間</translation>
 <translation id="2841837950101800123">供應商</translation>
+<translation id="2842013086666334835">登入「<ph name="NETWORK_ID" />」</translation>
 <translation id="2843560154284403323">如要完成 Linux 的設定程序，請更新 Chrome OS，然後再試一次。</translation>
 <translation id="2844169650293029770">USB-C 裝置 (左側前方連接埠)</translation>
 <translation id="2844809857160214557">查看及管理列印工作</translation>
@@ -2123,6 +2125,7 @@
 <translation id="2927017729816812676">快取儲存空間</translation>
 <translation id="2928795416630981206">已允許追蹤攝錄機位置</translation>
 <translation id="2931157624143513983">依可列印範圍自動調整</translation>
+<translation id="2931342457001070961">沒有連接麥克風</translation>
 <translation id="2932085390869194046">建議密碼…</translation>
 <translation id="2932483646085333864">登出後再次登入，即開始同步處理</translation>
 <translation id="2932883381142163287">舉報濫用</translation>
@@ -2186,6 +2189,7 @@
 <translation id="2996286169319737844">系統已使用您的同步密碼短語加密資料。Google Pay 的付款方法和地址不會包括在內。</translation>
 <translation id="2996722619877761919">長邊翻頁</translation>
 <translation id="2996932914629936323">清除所有已同步裝置上的記錄</translation>
+<translation id="2998267783395280091">找到網絡</translation>
 <translation id="3000378525979847272">已允許<ph name="PERMISSION_1" />、<ph name="PERMISSION_2" /></translation>
 <translation id="3000461861112256445">單聲道音效</translation>
 <translation id="3001144475369593262">兒童帳戶</translation>
@@ -2337,6 +2341,7 @@
 <translation id="3142562627629111859">新群組</translation>
 <translation id="3143515551205905069">取消同步處理</translation>
 <translation id="3143754809889689516">從頭開始播放</translation>
+<translation id="3143937294861726703">「節省記憶體」功能已開啟</translation>
 <translation id="3144647712221361880">以其他身分開啟連結</translation>
 <translation id="3149510190863420837">Chrome 應用程式</translation>
 <translation id="3150693969729403281">即刻執行安全檢查</translation>

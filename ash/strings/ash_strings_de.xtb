@@ -508,6 +508,7 @@ Schließe dein Gerät an eine Steckdose an.</translation>
 <translation id="3922427723338465344">{0,plural, =1{Gerät innerhalb von einer Minute auf eine frühere Version zurücksetzen}other{Gerät innerhalb von # Minuten auf eine frühere Version zurücksetzen}}</translation>
 <translation id="3923494859158167397">Es sind keine Mobilfunknetze eingerichtet</translation>
 <translation id="3925540965556789199"><ph name="DATE" />, Termine werden geladen.</translation>
+<translation id="392627956579011934">Zum Installieren der Sprachdateien ist ein Neustart erforderlich.</translation>
 <translation id="3932043219784172185">Kein Gerät verbunden</translation>
 <translation id="3934456833412894880">Adaptives Laden ist aktiviert. Der Akku bleibt bei 80 %, um seine Lebensdauer zu verlängern. Er wird vollständig aufgeladen, wenn du einen vollen Akku brauchst.</translation>
 <translation id="3943857333388298514">Einfügen</translation>
@@ -1255,6 +1256,7 @@ Neuinstallation</translation>
 <translation id="8152264887680882389"><ph name="TEXT" />, automatische Vervollständigung</translation>
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> – Diese Einstellung wird von deinem Administrator verwaltet.</translation>
 <translation id="8155628902202578800">Infodialog für <ph name="USER_EMAIL_ADDRESS" /> öffnen</translation>
+<translation id="8157728322324420120">Vorschläge für dich</translation>
 <translation id="8167567890448493835">"<ph name="LOCALE_NAME" />" wird verwendet</translation>
 <translation id="8183592608247778598">Du kannst auf deinem Gerät „<ph name="DEVICE_TYPE" />“ die letzten Fotos, Medien, Benachrichtigungen und Apps von deinem Smartphone aufrufen</translation>
 <translation id="8192202700944119416">Benachrichtigungen sind ausgeblendet.</translation>

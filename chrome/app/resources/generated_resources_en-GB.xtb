@@ -106,6 +106,7 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="1094607894174825014">Read or write operation was requested with an invalid offset on: "<ph name="DEVICE_NAME" />".</translation>
 <translation id="1095761715416917775">Make sure that you can always access your sync data</translation>
 <translation id="109647177154844434">Uninstalling Parallels Desktop will delete your Windows image. This includes its applications, settings and data. Are you sure that you wish to continue?</translation>
+<translation id="1097016918605049747">This page couldn't be translated</translation>
 <translation id="1097658378307015415">Before signing in, please enter as Guest to activate the network <ph name="NETWORK_ID" /></translation>
 <translation id="1099383081182863812">Are you able to see your Chromecast in the
     <ph name="BEGIN_LINK" />
@@ -681,6 +682,7 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="1632756664321977232">Crop tool</translation>
 <translation id="163309982320328737">Initial character width is Full</translation>
 <translation id="1633947793238301227">Disable Google Assistant</translation>
+<translation id="1634224622052500893">Wi-Fi network found</translation>
 <translation id="1634783886312010422">Have you already changed this password on <ph name="WEBSITE" />?</translation>
 <translation id="1636212173818785548">OK</translation>
 <translation id="163712950892155760"><ph name="BEGIN_PARAGRAPH1" />App data can be any data that an app has saved (based on developer settings), including data such as contacts, messages and photos. Backup data will not count towards your Drive storage quota.<ph name="END_PARAGRAPH1" />
@@ -791,6 +793,7 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="1730917990259790240"><ph name="BEGIN_PARAGRAPH1" />To remove apps, go to Settings &gt; Google Play Store &gt; Manage Android preferences &gt; Apps or Application manager. Then tap the app that you want to uninstall (you may need to swipe right or left to find the app). Then tap Uninstall or Disable.<ph name="END_PARAGRAPH1" /></translation>
 <translation id="1730989807608739928">Scroll towards the last tab</translation>
 <translation id="1731911755844941020">Sending request...</translation>
+<translation id="1732445923934584865">Ask in-person instead</translation>
 <translation id="1733383495376208985">Encrypt synced data with your own <ph name="BEGIN_LINK" />sync passphrase<ph name="END_LINK" />. This doesn't include payment methods and addresses from Google Pay.</translation>
 <translation id="1734212868489994726">Light blue</translation>
 <translation id="1734230530703461088">Failed to load extensions within the time limit. Please contact your administrator.</translation>
@@ -1317,6 +1320,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2203088913459920044">Name can use letters, numbers and special characters</translation>
 <translation id="220321590587754225">Couldn't connect. Try again.</translation>
 <translation id="2204034823255629767">Read and change anything that you type</translation>
+<translation id="2204387456724731099">This selection couldn't be translated</translation>
 <translation id="220858061631308971">Please enter this PIN code on "<ph name="DEVICE_NAME" />":</translation>
 <translation id="2210462644007531147">Couldn’t complete installation</translation>
 <translation id="2212565012507486665">Allow cookies</translation>
@@ -1365,6 +1369,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2251218783371366160">Open with system viewer</translation>
 <translation id="225163402930830576">Refresh Networks</translation>
 <translation id="2251809247798634662">New Incognito window</translation>
+<translation id="2252017960592955005">Viewing protection (beta)</translation>
 <translation id="225240747099314620">Allow identifiers for protected content (computer restart may be required)</translation>
 <translation id="2255077166240162850">This device was locked to different domain or mode.</translation>
 <translation id="2255317897038918278">Microsoft Time Stamping</translation>
@@ -2025,6 +2030,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2839032553903800133">Notifications blocked</translation>
 <translation id="2841013758207633010">Time</translation>
 <translation id="2841837950101800123">Provider</translation>
+<translation id="2842013086666334835">Sign in to "<ph name="NETWORK_ID" />"</translation>
 <translation id="2843560154284403323">To finish setting up Linux, update Chrome OS and try again.</translation>
 <translation id="2844169650293029770">USB-C device (left side front port)</translation>
 <translation id="2844809857160214557">View and manage print jobs</translation>
@@ -2125,6 +2131,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2927017729816812676">Cache Storage</translation>
 <translation id="2928795416630981206">Allowed to track your camera position</translation>
 <translation id="2931157624143513983">Fit to printable area</translation>
+<translation id="2931342457001070961">No microphone connected</translation>
 <translation id="2932085390869194046">Suggest password...</translation>
 <translation id="2932483646085333864">Sign out then sign in again to start sync</translation>
 <translation id="2932883381142163287">Report abuse</translation>
@@ -2188,6 +2195,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2996286169319737844">Data is encrypted with your sync passphrase. This doesn't include payment methods and addresses from Google Pay.</translation>
 <translation id="2996722619877761919">Flip on long edge</translation>
 <translation id="2996932914629936323">Clears history from all synced devices</translation>
+<translation id="2998267783395280091">Network found</translation>
 <translation id="3000378525979847272">Allowed <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /></translation>
 <translation id="3000461861112256445">Mono audio</translation>
 <translation id="3001144475369593262">Child accounts</translation>
@@ -2339,6 +2347,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3142562627629111859">New Group</translation>
 <translation id="3143515551205905069">Cancel sync</translation>
 <translation id="3143754809889689516">Play from the beginning</translation>
+<translation id="3143937294861726703">Memory saver is on</translation>
 <translation id="3144647712221361880">Open link as</translation>
 <translation id="3149510190863420837">Chrome Apps</translation>
 <translation id="3150693969729403281">Run safety check now</translation>
@@ -5140,6 +5149,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="5884474295213649357">This tab is connected to a USB device.</translation>
 <translation id="5885314688092915589">Your organisation will manage this profile</translation>
 <translation id="5886009770935151472">Finger 1</translation>
+<translation id="5886384907280980632">Turn off now</translation>
 <translation id="5889282057229379085">Maximum number of intermediate CAs: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5891688036610113830">Preferred Wi-Fi networks</translation>
 <translation id="5895138241574237353">Restart</translation>
@@ -5240,6 +5250,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="5975792506968920132">Battery Charge Percentage</translation>
 <translation id="5976160379964388480">Others</translation>
 <translation id="5978277834170881274">Use basic spell check</translation>
+<translation id="5978395054855988504">Battery Saver is on</translation>
 <translation id="5978493744931296692">Your administrator has disabled other profiles</translation>
 <translation id="5979084224081478209">Check passwords</translation>
 <translation id="5979156418378918004">{NUM_EXTENSIONS,plural, =1{You turned 1 potentially harmful extension back on}other{You turned {NUM_EXTENSIONS} potentially harmful extensions back on}}</translation>
@@ -8447,6 +8458,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="9048745018038487540">Select all fonts</translation>
 <translation id="9050666287014529139">Passphrase</translation>
 <translation id="9052404922357793350">Continue blocking</translation>
+<translation id="90528604757378587">Background activity and some visual effects, like smooth scrolling, may be limited.</translation>
 <translation id="9053563360605707198">Print on both sides</translation>
 <translation id="9055636786322918818">Enforce RC4 encryption. Using this option increases your risk, as the RC4 ciphers are insecure.</translation>
 <translation id="9056810968620647706">No matches were found.</translation>

@@ -992,6 +992,7 @@ Pode que se lle apliquen a esta conta os permisos que xa lles concedeses ás apl
 <translation id="1915307458270490472">Deter</translation>
 <translation id="1916502483199172559">Avatar vermello predeterminado</translation>
 <translation id="1918141783557917887">&amp;Máis pequeno</translation>
+<translation id="1919872106782726755">Para configurar a impresión dixital, pídelle ao teu fillo ou filla que toque o sensor correspondente na esquina superior dereita do teclado, xunto ao botón de acendido. Os datos da súa impresión dixital almacenaranse de maneira segura neste dispositivo (<ph name="DEVICE_TYPE" />) e nunca sairán del.</translation>
 <translation id="1920390473494685033">Contactos</translation>
 <translation id="1921544956190977703">Contas coa máxima seguranza de Chrome fronte a sitios web, descargas e extensións perigosos</translation>
 <translation id="1921584744613111023"><ph name="DPI" /> ppp</translation>
@@ -3126,6 +3127,7 @@ Código de erro: <ph name="ERROR_CODE" />.</translation>
 <translation id="3924487862883651986">Envía enderezos URL á función Navegación segura para comprobalos. Tamén envía unha pequena mostra da información do sistema, da actividade das extensións, das páxinas e das descargas para axudar a descubrir novas ameazas. Vincula temporalmente estes datos coa túa Conta de Google cando inicies sesión para protexerte nas aplicacións de Google.</translation>
 <translation id="3925573269917483990">Cámara:</translation>
 <translation id="3926002189479431949">Teléfono con Smart Lock cambiado</translation>
+<translation id="392627956579011934">É preciso reiniciar para instalar os ficheiros de voz.</translation>
 <translation id="3927932062596804919">Denegar</translation>
 <translation id="3928570707778085600">Queres gardar os cambios en <ph name="FILE_OR_FOLDER_NAME" />?</translation>
 <translation id="3928659086758780856">Hai pouca tinta</translation>
@@ -6910,6 +6912,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="7634566076839829401">Produciuse un erro. Téntao de novo.</translation>
 <translation id="7635048370253485243">Fixada polo teu administrador</translation>
 <translation id="7636919061354591437">Instalar neste dispositivo</translation>
+<translation id="7637253234491814483">Toca o sensor de impresión dixital na esquina superior dereita do teclado, xunto ao botón de acendido. Os datos da túa impresión dixital almacenaranse de maneira segura no teu dispositivo (<ph name="DEVICE_TYPE" />) e nunca sairán del.</translation>
 <translation id="7637593984496473097">Non queda espazo suficiente no disco</translation>
 <translation id="7639914187072011620">Non se puido obter do servidor o URL de redirección da SAML</translation>
 <translation id="764017888128728"><ph name="PASSWORD_MANAGER_BRAND" /> inicia sesión automaticamente nos sitios aptos cos contrasinais que gardaches.</translation>

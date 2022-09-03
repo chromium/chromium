@@ -349,6 +349,10 @@
 <translation id="1372618949173323717">Desativar JavaScript</translation>
 <translation id="1376119291123231789">Ativar o modo avançado de carregamento da bateria</translation>
 <translation id="1384459581748403878">Referência: <ph name="REFERENCE_URL" /></translation>
+<translation id="1384594066274112751">Esta política determina que qualquer URL que corresponda a um ou mais padrões especificados, usando o formato de filtro <ph name="URL_BLOCKLIST_POLICY_NAME" />, nunca seja descartado pelo navegador.
+      Isso se aplica à pressão da memória e ao descarte no modo de alta eficiência.
+      Uma página descartada é descarregada e os recursos dela são totalmente recuperados. A guia a que ela está associada permanece na barra de guias, mas se ela ficar visível, uma atualização completa vai ser acionada.
+      </translation>
 <translation id="138847842893090358">Informar o status de atualização do SO</translation>
 <translation id="1390529781843037070">Se a política for definida como "Ativada" ou deixada sem definição, os usuários poderão imprimir no <ph name="CLOUD_PRINT_NAME" /> pela caixa de diálogo de impressão do <ph name="PRODUCT_NAME" />. O <ph name="PRODUCT_NAME" /> pode enviar documentos para o <ph name="CLOUD_PRINT_NAME" /> para impressão. Os usuários não são impedidos de enviar trabalhos de impressão em sites.
 
@@ -1770,6 +1774,54 @@ Se esta política não for definida, a tela de privacidade ficará desativada in
 
       Quando esta política é definida como falsa, o visualizador de PDF não pode fazer anotações em PDFs.</translation>
 <translation id="2769952903507981510">Configurar o nome de domínio obrigatório para hosts de acesso remoto</translation>
+<translation id="2772650717382565415">Se a política for definida, vai ser especificada uma lista de apps da Web com instalação silenciosa (sem interação do usuário) e que não podem ser desinstalados nem desativados.
+
+      Cada item da lista da política é um objeto com um elemento obrigatório:
+      <ph name="URL_LABEL" />, que é o URL do app da Web que vai ser instalado.
+
+      Além de seis elementos opcionais:
+      - <ph name="DEFAULT_LAUNCH_CONTAINER_LABEL" />,
+      para a maneira como o app da Web é aberto (o padrão é uma nova guia).
+
+      - <ph name="CREATE_DESKTOP_SHORTCUT_LABEL" />,
+      com valor "verdadeiro" se você quiser criar atalhos na área de trabalho do <ph name="LINUX_OS_NAME" /> e do
+      <ph name="MS_WIN_NAME" />.
+
+      - <ph name="FALLBACK_APP_NAME_LABEL" />
+      (da versão 90 em diante do <ph name="PRODUCT_NAME" />)
+      permite substituir o nome do app se ele não for um
+      Progressive Web App (PWA) ou o nome do app instalado
+      temporariamente se ele for um PWA, mas a autenticação for exigida antes de
+      concluir a instalação. Se um
+      <ph name="CUSTOM_NAME_LABEL" /> e um
+      <ph name="FALLBACK_APP_NAME_LABEL" /> forem fornecidos,
+      o segundo vai ser ignorado.
+
+      - <ph name="OVERRIDE_APP_NAME_LABEL" />
+      (da versão 99 em diante do <ph name="PRODUCT_NAME" />)
+      permite substituir permanentemente os nomes de todos os apps da
+Web e PWAs. No momento, com suporte apenas no
+      <ph name="PRODUCT_OS_NAME" />.
+
+      - <ph name="CUSTOM_ICON_LABEL" />
+      (da versão 99 em diante do <ph name="PRODUCT_NAME" />)
+      permite substituir os ícones dos apps instalados. Os
+      ícones precisam ser quadrados, ter no máximo 1 MB e estar em um destes
+      formatos: jpeg, png, gif, webp, ico. O valor de hash precisa ser o hash SHA256
+      do arquivo de ícone. No momento, com suporte apenas no
+      <ph name="PRODUCT_OS_NAME" />.
+
+      - <ph name="INSTALL_AS_SHORTCUT_LABEL" />
+      (da versão 107 em diante
+      do <ph name="PRODUCT_NAME" />). Se ativado, o <ph name="URL_LABEL" />
+      fornecido vai ser instalado como um atalho, como se fosse feito pela opção "Criar atalho…"
+      na GUI do navegador para computador.
+      Observe que, quando instalado como um atalho, ele não vai ser atualizado se o
+      manifesto no <ph name="URL_LABEL" /> mudar.
+      Se desativado ou não configurado, o app da Web no
+      <ph name="URL_LABEL" /> fornecido vai ser instalado normalmente.
+
+      Consulte a política <ph name="PINNED_LAUNCHER_APPS_POLICY_NAME" /> para fixar apps na estante do <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="2772955711376920612">Se a política for definida como "Ativada" e <ph name="DEVICE_POWER_PEAK_SHIFT_BATTERY_THRESHOLD_POLICY_NAME" /> e <ph name="DEVICE_POWER_PEAK_SHIFT_DAY_CONFIG_POLICY_NAME" /> forem definidas, a economia de energia no período de pico permanecerá ativa, caso ela seja compatível com o dispositivo. A política de gerenciamento de energia no período de pico gera economia pela redução do uso de corrente alternada quando há alto consumo. É possível definir um horário de início e término do modo de economia de energia no período de pico para cada dia da semana. Durante esses períodos, o dispositivo funcionará usando a bateria mesmo se estiver conectado à corrente alternada, desde que a bateria se mantenha acima do limite especificado. Depois do horário de término especificado, o dispositivo funcionará usando energia de corrente alternada (se conectado), mas a bateria não será carregada. O dispositivo voltará a funcionar normalmente, usando corrente alternada e recarregando a bateria depois do horário de início de carregamento especificado.
 
       Se a política for definida como "Desativada", a economia de energia no período de pico permanecerá inativa.
@@ -4051,7 +4103,6 @@ Se esta política for definida como "Falsa", o <ph name="PRODUCT_NAME" /> não u
 
       Se a política não for definida ou for inválida, o comportamento será o mesmo de "Esperar que o canal conclua o downgrade de canal".</translation>
 <translation id="5229339291699779956">Ativa o encapsulamento de PCIe para dispositivos periféricos Thunderbolt/USB4, que funcionarão perfeitamente</translation>
-<translation id="5230095739094490896">Modelo do atributo de impressão "client-name" do IPP</translation>
 <translation id="5233239004553860036">Se esta política for definida como <ph name="POLICY_VALUE_ALL" /> ou deixada sem definição, todos os usos de contas gerenciadas serão permitidos. Isso pode fazer com que uma conta gerenciada se torne secundária, que só recebe políticas quando está conectada como conta principal em um perfil do navegador.
       As políticas definidas para a conta não são aplicadas nestes cenários:
         -  Ela é uma conta secundária no nível do SO (configurações da conta).
@@ -6464,6 +6515,7 @@ Se esta política não for definida, o renderizador padrão será usado para tod
       Esta política não tem efeito se a política <ph name="DOWNLOAD_DIRECTORY_POLICY_NAME" /> estiver definida.
 
       Observação: veja uma lista com as variáveis que podem ser usadas: https://www.chromium.org/administrators/policy-list-3/user-data-directory-variables (link em inglês).</translation>
+<translation id="7719808201797990069">Exceções ao padrão de URL para descarte de guias</translation>
 <translation id="7721944091689270995">ID do usuário do <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="7724161903134898864">Se a política for definida como 1, os sites poderão exibir pop-ups. Se ela for definida como 2, os pop-ups serão negados.
 
@@ -7321,18 +7373,6 @@ O modo recomendado para configurar políticas no Windows é por meio de GPO, emb
 
       Se a política for definida como falsa, nenhuma guia será congelada.</translation>
 <translation id="8619748440665904084">Desativar a importação de dados de preenchimento automático de formulários na primeira execução</translation>
-<translation id="8620103780247748230">Esta política controla o valor do atributo <ph name="CLIENT_INFO_IPP_ATTRIBUTE" /> do protocolo de impressão via Internet (IPP, na sigla em inglês) em trabalhos de impressão.
-
-      Se a política for definida como uma string, um item <ph name="CLIENT_INFO_IPP_ATTRIBUTE" /> extra vai ser adicionado a cada trabalho de impressão. O membro <ph name="CLIENT_NAME_IPP_ATTRIBUTE" /> do item <ph name="CLIENT_INFO_IPP_ATTRIBUTE" /> adicionado vai ser definido como o valor da política após a substituição das variáveis.
-
-      As variáveis aceitas são <ph name="DIRECTORY_ID_PLACEHOLDER" />, <ph name="SERIAL_NUMBER_PLACEHOLDER" />, <ph name="ASSET_ID_PLACEHOLDER" />, <ph name="ANNOTATED_LOCATION_PLACEHOLDER" />, <ph name="USER_EMAIL_PLACEHOLDER" />, <ph name="USER_EMAIL_NAME_PLACEHOLDER" /> e <ph name="USER_EMAIL_DOMAIN" />. As variáveis de marcador de posição sem suporte não vão ser expandidas.
-
-      O valor resultante após a substituição das variáveis vai ser considerado válido se consistir apenas em caracteres <ph name="ASCII" /> imprimíveis, com tamanho máximo de 255 deles.
-
-      Por motivos de privacidade, esta política se aplica apenas ao se comunicar com uma impressora usando os protocolos <ph name="IPPS_PROTOCOL" />, <ph name="HTTPS_PROTOCOL" />, <ph name="USB_PROTOCOL" /> ou <ph name="IPP_USB_PROTOCOL" />. Além disso, ela só se aplica a impressoras com suporte ao <ph name="CLIENT_NAME_IPP_ATTRIBUTE" />.
-
-      Se a política for deixada sem definição ou for definida com um valor vazio ou inválido, nenhum <ph name="CLIENT_INFO_PLACEHOLDER" /> extra vai ser adicionado às solicitações de trabalho de impressão.
-      </translation>
 <translation id="8623672932476443039">Se a política for definida como "Ativada", os usuários vão poder acessar o modo de desenvolvedor para apps isolados.
       Se a política for definida como "Desativada", os usuários não vão conseguir acessar esses recursos.
       Se esta política for deixada sem definição, o comportamento padrão vai ser bloquear o acesso de usuários gerenciados por empresas no ChromeOS a esses recursos e permitir o acesso para todos os outros usuários e sistemas operacionais.</translation>

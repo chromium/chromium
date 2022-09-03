@@ -157,6 +157,7 @@
 <translation id="1348198688976932919">Сайт містить небезпечні додатки</translation>
 <translation id="1348779747280417563">Підтвердити назву</translation>
 <translation id="1354976809542763843">Житлове фінансування й іпотека</translation>
+<translation id="1355158069018170842">Показувати сповіщення про зниження цін на вкладках</translation>
 <translation id="1355301061807280185">Вакансії</translation>
 <translation id="1355754231781595724">Безпека транспорту й дорожнього руху</translation>
 <translation id="1357195169723583938">Хто й коли нещодавно користувався пристроєм</translation>
@@ -466,6 +467,7 @@
 <translation id="2153609454945889823">Установити Сервіси Google Play для AR?</translation>
 <translation id="2154054054215849342">Синхронізація недоступна для вашого домену</translation>
 <translation id="2154484045852737596">Редагувати картку</translation>
+<translation id="2157640075051554492">Сповіщення про відстеження цін</translation>
 <translation id="2161656808144014275">Текст</translation>
 <translation id="2162510787844374618">З’єднання з банком…</translation>
 <translation id="2162620598375156287">Поточна ціна на сайті <ph name="SOURCE_WEBSITE" /> – <ph name="CURRENT_PRICE" /></translation>
@@ -1003,6 +1005,7 @@
 <translation id="3633738897356909127">Кнопка "Оновити Chrome"; натисніть Enter, щоб оновити веб-переглядач Chrome у його налаштуваннях</translation>
 <translation id="3634530185120165534">Лоток 5</translation>
 <translation id="3634567936866541746">Щойно ви ввели пароль на оманливому сайті. Щоб захистити ваші облікові записи, Chrome радить перевірити збережені паролі.</translation>
+<translation id="3637033245385760976">Потрібно ввімкнути сповіщення Chrome. Для цього перейдіть у <ph name="NOTIFICATION_SETTINGS" />.</translation>
 <translation id="3637662659967048211">Зберегти в обліковий запис Google</translation>
 <translation id="3640766068866876100">Index-4x6-Ext</translation>
 <translation id="3642638418806704195">Додаток:</translation>
@@ -1300,7 +1303,6 @@
 <translation id="4432792777822557199">Надалі сторінки цією мовою (<ph name="SOURCE_LANGUAGE" />) перекладатимуться такою мовою: <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="4433642172056592619">Ігнорується, оскільки користувач не зв’язаний із керуванням машиною або цією машиною взагалі не керують.</translation>
 <translation id="4434045419905280838">Спливаючі вікна/переспрямування</translation>
-<translation id="4435702339979719576">Листівка)</translation>
 <translation id="443673843213245140">Використання проксі-сервера вимкнено, але чітко вказано налаштування проксі-сервера.</translation>
 <translation id="4441832193888514600">Ігнорується, оскільки це правило можна налаштувати лише як хмарне правило для користувачів.</translation>
 <translation id="4450893287417543264">Більше не показувати</translation>
@@ -1425,6 +1427,7 @@
 <translation id="4785376858512657294">Керувати обліковим записом Google</translation>
 <translation id="4785689107224900852">Перейти на цю вкладку</translation>
 <translation id="4786804728079074733">Волейбол</translation>
+<translation id="4789704664580239421">Сповіщення про зниження цін з’являтимуться на відкритих вкладках</translation>
 <translation id="4791134497475588553">Установлені додатки Linux і час їх останнього використання</translation>
 <translation id="4792686369684665359">Інформація, яку ви хочете надіслати, незахищена</translation>
 <translation id="4796594887379589189">Ідентифікатор робочого облікового запису</translation>
@@ -1790,6 +1793,7 @@
 <translation id="5730040223043577876">Chrome радить скинути пароль, якщо ви застосовували його на інших сайтах.</translation>
 <translation id="5736165827969430182">Металургійна й гірничодобувна промисловість</translation>
 <translation id="5737183892635480227">{NUM_CARDS,plural, =1{Збережіть картку в обліковому записі Google}one{Збережіть картки в обліковому записі Google}few{Збережіть картки в обліковому записі Google}many{Збережіть картки в обліковому записі Google}other{Збережіть картки в обліковому записі Google}}</translation>
+<translation id="5738385766833540397">Укажіть, як ви хочете отримувати сповіщення про зниження цін на товари, які відстежуєте</translation>
 <translation id="5743638595296120378">Купівля автомобілів</translation>
 <translation id="5743898850056428078">Мотоперегони</translation>
 <translation id="5745733273847572235">Може просити доступ до геоданих</translation>
@@ -1799,6 +1803,7 @@
 <translation id="5759751709240058861">Використовувати й переміщувати камеру</translation>
 <translation id="5763042198335101085">Введіть дійсну електронну адресу</translation>
 <translation id="5764725887548570807">Недійсний формат джерела.</translation>
+<translation id="5764920692828389743">Надсилати на адресу <ph name="EMAIL_ADDRESS" /></translation>
 <translation id="5765072501007116331">Укажіть адресу, щоб переглянути способи доставки та вимоги.</translation>
 <translation id="57689295674415555">Номер віртуальної картки не заповнено?</translation>
 <translation id="5776313857861697733">Пріоритет</translation>
@@ -1889,6 +1894,7 @@
 <translation id="6017850046339264347">Зловмисники можуть використати сайт <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />, щоб установити на ваш пристрій оманливі додатки, які видають себе за інші або збирають дані для відстеження ваших дій. <ph name="BEGIN_LEARN_MORE_LINK" />Докладніше<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="6025416945513303461"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /> (синхронізовано)</translation>
 <translation id="6027201098523975773">Введіть ім’я</translation>
+<translation id="6028591542479806248">Керувати сповіщеннями на мобільному пристрої й електронною поштою</translation>
 <translation id="603068602130820122">Двічі скріпити праворуч</translation>
 <translation id="6032524144326295339">Поштова скринька 2</translation>
 <translation id="6032955021262906325">Зшити ліворуч</translation>
@@ -2196,6 +2202,7 @@
 <translation id="6916954549222464607">Фінансове планування та менеджмент</translation>
 <translation id="6917795328362592458">Введений пароль розкрито через порушення безпеки даних. Щоб захистити ваші облікові записи, Менеджер паролів радить перевірити збережені паролі.</translation>
 <translation id="6934672428414710184">Це ім’я з вашого облікового запису Google</translation>
+<translation id="6936976777388162184">Цей пристрій входить у комплект, тому його не можна зареєструвати за ліцензією Kiosk &amp; Signage Upgrade.</translation>
 <translation id="6939469646605424232">Телевізійні драми</translation>
 <translation id="6944692733090228304">Ви ввели пароль на сайті, яким не керує <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />. Щоб захистити свій обліковий запис, не використовуйте цей пароль для інших додатків і сайтів.</translation>
 <translation id="6945221475159498467">Вибрати</translation>
@@ -2809,6 +2816,7 @@
 <translation id="8559762987265718583">Не вдається встановити конфіденційне з’єднання з <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />, оскільки на пристрої встановлено неправильні дату й час (<ph name="DATE_AND_TIME" />).</translation>
 <translation id="8564182942834072828">Окремі документи/непідібрані копії</translation>
 <translation id="8564985650692024650">Chromium радить скинути пароль <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />, якщо ви застосовували його на інших сайтах.</translation>
+<translation id="8573969211731659953">Сповіщення про зниження цін увімкнено. Щоб вимкнути їх, перейдіть у <ph name="NOTIFICATION_SETTINGS" />.</translation>
 <translation id="8576310925653847813">Системи домашнього кінотеатру</translation>
 <translation id="8577348305244205642">Віртуальна картка недоступна</translation>
 <translation id="858637041960032120">Додати тел.номер

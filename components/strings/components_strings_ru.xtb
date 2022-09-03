@@ -157,6 +157,7 @@
 <translation id="1348198688976932919">Сайт содержит опасные приложения</translation>
 <translation id="1348779747280417563">Подтверждение</translation>
 <translation id="1354976809542763843">Ипотечное кредитование</translation>
+<translation id="1355158069018170842">Показывать скидки на вкладках</translation>
 <translation id="1355301061807280185">Вакансии</translation>
 <translation id="1355754231781595724">Безопасность дорожного движения</translation>
 <translation id="1357195169723583938">кто и когда использовал устройство;</translation>
@@ -466,6 +467,7 @@
 <translation id="2153609454945889823">Установить Сервисы Google Play для AR?</translation>
 <translation id="2154054054215849342">В вашем домене синхронизация недоступна</translation>
 <translation id="2154484045852737596">Изменение данных карты</translation>
+<translation id="2157640075051554492">Уведомления об отслеживаемых ценах</translation>
 <translation id="2161656808144014275">Текст</translation>
 <translation id="2162510787844374618">Устанавливается связь с банком…</translation>
 <translation id="2162620598375156287"><ph name="CURRENT_PRICE" /> на сайте <ph name="SOURCE_WEBSITE" /></translation>
@@ -1002,6 +1004,7 @@
 <translation id="3633738897356909127">Кнопка "Обновить Chrome". Нажмите Ввод, чтобы обновить Chrome.</translation>
 <translation id="3634530185120165534">Лоток 5</translation>
 <translation id="3634567936866541746">Вы только что ввели пароль на поддельном сайте. Чтобы защитить свои аккаунты, проверьте сохраненные пароли в браузере Chrome.</translation>
+<translation id="3637033245385760976">Необходимо включить уведомления в Chrome. Чтобы сделать это, откройте <ph name="NOTIFICATION_SETTINGS" />.</translation>
 <translation id="3637662659967048211">Сохранить в аккаунте Google?</translation>
 <translation id="3640766068866876100">Index-4x6-Ext</translation>
 <translation id="3642638418806704195">Приложение:</translation>
@@ -1299,7 +1302,6 @@
 <translation id="4432792777822557199">Страницы на этом языке (<ph name="SOURCE_LANGUAGE" />) будут автоматически переводиться на <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="4433642172056592619">Игнорируется, так как пользователь не связан с управлением этой машиной или она не находится под управлением.</translation>
 <translation id="4434045419905280838">Всплывающие окна и переадресация</translation>
-<translation id="4435702339979719576">Открытка</translation>
 <translation id="443673843213245140">Прокси-сервер отключен, но при этом его конфигурация задана явным образом.</translation>
 <translation id="4441832193888514600">Игнорируется, так как правило может быть настроено только на уровне облака.</translation>
 <translation id="4450893287417543264">Больше не показывать</translation>
@@ -1424,6 +1426,7 @@
 <translation id="4785376858512657294">Параметры аккаунта Google</translation>
 <translation id="4785689107224900852">Переключиться на эту вкладку</translation>
 <translation id="4786804728079074733">Волейбол</translation>
+<translation id="4789704664580239421">Оповещения о скидках будут показываться на открытых вкладках</translation>
 <translation id="4791134497475588553">Установленные Linux-приложения и даты их последнего использования.</translation>
 <translation id="4792686369684665359">Отправляемая вами информация не защищена</translation>
 <translation id="4796594887379589189">Идентификатор аккаунта, в котором выполняется задание</translation>
@@ -1789,6 +1792,7 @@
 <translation id="5730040223043577876">Chrome рекомендует сбросить пароль, если вы использовали его на других сайтах.</translation>
 <translation id="5736165827969430182">Горная и металлургическая промышленность</translation>
 <translation id="5737183892635480227">{NUM_CARDS,plural, =1{Сохраните карту в аккаунте Google}one{Сохраните карты в аккаунте Google}few{Сохраните карты в аккаунте Google}many{Сохраните карты в аккаунте Google}other{Сохраните карты в аккаунте Google}}</translation>
+<translation id="5738385766833540397">Выберите, куда будут приходить оповещения о скидках на отслеживаемые товары.</translation>
 <translation id="5743638595296120378">Покупка транспортного средства</translation>
 <translation id="5743898850056428078">Мотогонки</translation>
 <translation id="5745733273847572235">Разрешено отправлять запрос на доступ к информации о местоположении</translation>
@@ -1798,6 +1802,7 @@
 <translation id="5759751709240058861">Использование и перемещение вашей камеры.</translation>
 <translation id="5763042198335101085">Укажите действительный адрес электронной почты.</translation>
 <translation id="5764725887548570807">Недействительный формат источника.</translation>
+<translation id="5764920692828389743">Отправлять на адрес <ph name="EMAIL_ADDRESS" /></translation>
 <translation id="5765072501007116331">Выберите адрес, чтобы посмотреть способы и условия доставки.</translation>
 <translation id="57689295674415555">Номер виртуальной карты не указан?</translation>
 <translation id="5776313857861697733">Приоритет</translation>
@@ -1888,6 +1893,7 @@
 <translation id="6017850046339264347">Злоумышленники могут использовать сайт <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />, чтобы установить вредоносные приложения, маскирующиеся под безопасные программы или собирающие данные, по которым вас можно отследить. <ph name="BEGIN_LEARN_MORE_LINK" />Подробнее…<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="6025416945513303461"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /> (данные синхронизируются)</translation>
 <translation id="6027201098523975773">Введите имя.</translation>
+<translation id="6028591542479806248">Управление уведомлениями по электронной почте и на мобильном устройстве</translation>
 <translation id="603068602130820122">Две скобы справа</translation>
 <translation id="6032524144326295339">Почтовый ящик 2</translation>
 <translation id="6032955021262906325">Скрепление слева</translation>
@@ -2808,6 +2814,7 @@
 <translation id="8559762987265718583">Не удалось установить защищенное соединение с доменом <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> из-за неверных настроек системных часов и календаря (<ph name="DATE_AND_TIME" />).</translation>
 <translation id="8564182942834072828">Несколько документов/без разбора по копиям</translation>
 <translation id="8564985650692024650">Chromium рекомендует сбросить пароль, используемый в подразделении <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />, если вы указывали его на других сайтах.</translation>
+<translation id="8573969211731659953">Оповещения о скидках включены. Чтобы отключить их, откройте <ph name="NOTIFICATION_SETTINGS" />.</translation>
 <translation id="8576310925653847813">Домашние кинотеатры</translation>
 <translation id="8577348305244205642">Виртуальная карта недоступна</translation>
 <translation id="858637041960032120">Добавьте номер</translation>

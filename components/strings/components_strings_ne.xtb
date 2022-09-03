@@ -157,6 +157,7 @@
 <translation id="1348198688976932919">अगाडिको साइटमा खतरनाक एपहरू समावेश छन्‌</translation>
 <translation id="1348779747280417563">नाम सही भएको निश्चित गर्नुहोस्</translation>
 <translation id="1354976809542763843">घर कर्जा</translation>
+<translation id="1355158069018170842">मूल्य घट्दा पठाइने अलर्ट ट्याबहरूमा देखाइऊन्</translation>
 <translation id="1355301061807280185">जागिरहरू</translation>
 <translation id="1355754231781595724">सवारी साधन तथा यातायात सुरक्षा</translation>
 <translation id="1357195169723583938">हालासालै यन्त्र प्रयोग गर्ने व्यक्ति र प्रयोग गरिएको समय</translation>
@@ -466,6 +467,7 @@
 <translation id="2153609454945889823">Google Play Services for AR इन्स्टल गर्ने हो?</translation>
 <translation id="2154054054215849342">तपाईंको डोमेनको लागि सिंंक उपलब्ध छैन</translation>
 <translation id="2154484045852737596">कार्ड सम्पादन गर्नुहोस्</translation>
+<translation id="2157640075051554492">मूल्य ट्र्याक गर्ने सुविधासम्बन्धी सूचनाहरू</translation>
 <translation id="2161656808144014275">पाठ</translation>
 <translation id="2162510787844374618">तपाईंको बैंकमा सम्पर्क गरिँदै छ...</translation>
 <translation id="2162620598375156287">अहिले <ph name="SOURCE_WEBSITE" /> मा <ph name="CURRENT_PRICE" /> मा उपलब्ध छ</translation>
@@ -1000,6 +1002,7 @@
 <translation id="3633738897356909127">'Chrome अपडेट गर्नुहोस्' नामक बटन, आफ्नो Chrome का सेटिङमा गई Chrome अपडेट गर्न Enter थिच्नुहोस्</translation>
 <translation id="3634530185120165534">ट्रे ५</translation>
 <translation id="3634567936866541746">तपाईंले भर्खरै कुनै असुरक्षित साइटमा आफ्नो पासवर्ड हाल्नुभएको छ। तपाईंका खाताहरूको सुरक्षार्थ Chrome तपाईंलाई तपाईंका सेभ गरिएका पासवर्डहरूको जाँच गर्न सिफारिस गर्छ।</translation>
+<translation id="3637033245385760976">Chrome मार्फत सूचना देखाउने सुविधा अन हुनु पर्छ। तपाईं <ph name="NOTIFICATION_SETTINGS" /> मा गई यो सुविधा अन गर्न सक्नुहुन्छ</translation>
 <translation id="3637662659967048211">Google खातामा सेभ गर्नुहोस्</translation>
 <translation id="3640766068866876100">Index-4x6-Ext</translation>
 <translation id="3642638418806704195">एप:</translation>
@@ -1297,7 +1300,6 @@
 <translation id="4432792777822557199"><ph name="SOURCE_LANGUAGE" /> मा रहेका पृष्ठहरूलाई अब उप्रान्त <ph name="TARGET_LANGUAGE" /> मा अनुवाद गरिने छ</translation>
 <translation id="4433642172056592619">यी प्रयोगकर्ता मेसिन व्यवस्थापनमा आबद्ध नभएकाले वा यो मेसिन व्यवस्थापन नगरिएकाले क्लाउडसम्बन्धी नीति बेवास्ता गरिएको छ।</translation>
 <translation id="4434045419905280838">पपअप तथा रिडिरेक्टहरू</translation>
-<translation id="4435702339979719576">Postcard)</translation>
 <translation id="443673843213245140">प्रोक्सीको प्रयोग असक्षम गरिएको छ तर एक सुस्पष्ट प्रोक्सी विन्यास तोकिएको छ।</translation>
 <translation id="4441832193888514600">क्लाउडका प्रयोगकर्ताले मात्र नीति तय गर्न मिल्ने भएकाले वेवास्ता गरिएको छ।</translation>
 <translation id="4450893287417543264">फेरि नदेखाउनुहोस्</translation>
@@ -1422,6 +1424,7 @@
 <translation id="4785376858512657294">Google खाता व्यवस्थापन गर्नुहोस्</translation>
 <translation id="4785689107224900852">यो ट्याबमा लैजानुहोस्</translation>
 <translation id="4786804728079074733">भलिबल</translation>
+<translation id="4789704664580239421">मूल्य घट्दा पठाइने अलर्टहरू खुला रहेका ट्याबमा देखाइने छन्</translation>
 <translation id="4791134497475588553">स्थापना गरिएका Linux एप र यिनीहरूलाई अन्तिम पटक प्रयोग गरिएको समय</translation>
 <translation id="4792686369684665359">तपाईंले पेस गर्न लाग्नुभएको जानकारी सुरक्षित छैन</translation>
 <translation id="4796594887379589189">कार्य खाताको ID</translation>
@@ -1787,6 +1790,7 @@
 <translation id="5730040223043577876">तपाईंले आफ्नो पासवर्ड अन्य साइटहरूमा प्रयोग गर्नुभएका खण्डमा Chrome ले तपाईंको पासवर्ड रिसेट गर्न सिफारिस गर्दछ।</translation>
 <translation id="5736165827969430182">धातु तथा खानी</translation>
 <translation id="5737183892635480227">{NUM_CARDS,plural, =1{कार्डलाई आफ्नो Google खातामा सेभ गर्नुहोस्}other{कार्डहरूलाई आफ्नो Google खातामा सेभ गर्नुहोस्}}</translation>
+<translation id="5738385766833540397">तपाईं आफूले ट्र्याक गरेका उत्पादनको मूल्य घट्दा पठाइने अलर्टहरू कुन माध्यमबाट प्राप्त गर्न चाहनुहुन्छ भन्ने कुरा व्यवस्थापन गर्नुहोस्</translation>
 <translation id="5743638595296120378">सवारी साधन खरिद</translation>
 <translation id="5743898850056428078">मोटरसाइकल रेसिङ</translation>
 <translation id="5745733273847572235">तपाईंको लोकेसन सोध्न सक्छ</translation>
@@ -1796,6 +1800,7 @@
 <translation id="5759751709240058861">तपाईंको डिभाइसको क्यामेरा प्रयोग गर्ने तथा क्यामेरा यताउता घुमाउने</translation>
 <translation id="5763042198335101085">मान्य इमेल ठेगाना प्रविष्टि गर्नुहोस्</translation>
 <translation id="5764725887548570807">मूल फर्म्याट अवैध छ।</translation>
+<translation id="5764920692828389743"><ph name="EMAIL_ADDRESS" /> मा पठाइयोस्</translation>
 <translation id="5765072501007116331">डेलिभरीका विधि र मापदण्डहरू हेर्न, ठेगाना चयन गर्नुहोस्</translation>
 <translation id="57689295674415555">भर्चुअल कार्ड नम्बर भरिएको छैन?</translation>
 <translation id="5772086939108830423">अर्कै डिभाइसको पासकी प्रयोग गर्नुहोस्</translation>
@@ -1887,6 +1892,7 @@
 <translation id="6017850046339264347"><ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> मा रहेका आक्रमणकारीहरूले आफूलाई अर्कै रूपमा प्रस्तुत गर्ने भ्रामक एपहरू इन्स्टल गर्न वा तपाईंलाई ट्र्याक गर्नसकिने डेटा सङ्कलन गर्न सक्छन्‌। <ph name="BEGIN_LEARN_MORE_LINK" />थप जान्नुहोस्<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="6025416945513303461"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /> (सिंक गरिएको)</translation>
 <translation id="6027201098523975773">नाम प्रविष्टि गर्नुहोस्</translation>
+<translation id="6028591542479806248">मोबाइल तथा इमेलमार्फत पठाइने सूचनाहरू व्यवस्थापन गर्नुहोस्</translation>
 <translation id="603068602130820122">दायाँपट्टि दुई स्टिच</translation>
 <translation id="6032524144326295339">मेलबक्स २</translation>
 <translation id="6032955021262906325">बायाँ बाइन्ड</translation>
@@ -2807,6 +2813,7 @@
 <translation id="8559762987265718583"><ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />मा एउटा निजी जडान स्थापना गर्न सक्दैन किनकि तपाईँको यन्त्रको मिति र समय <ph name="DATE_AND_TIME" /> गलत छन्।</translation>
 <translation id="8564182942834072828">छुट्टा छुट्टै कागजातहरू/क्रमबद्ध नगरिएका प्रतिहरू</translation>
 <translation id="8564985650692024650">तपाईंले आफ्नो <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> को पासवर्ड अन्य साइटहरूमा पुनः प्रयोग गर्नुभएका खण्डमा Chromium ले तपाईंलाई उक्त पासवर्ड रिसेट गर्न सिफारिस गर्दछ।</translation>
+<translation id="8573969211731659953">मूल्य घट्दा अलर्ट पठाउने सुविधा अन छ। तपाईं <ph name="NOTIFICATION_SETTINGS" /> मा गई यो सेटिङ बदल्न सक्नुहुन्छ</translation>
 <translation id="8576310925653847813">होम थिएटर सिस्टम</translation>
 <translation id="8577348305244205642">भर्चुअल कार्ड उपलब्ध छैन</translation>
 <translation id="858637041960032120">फोन नम्बर थप्नुहोस्</translation>

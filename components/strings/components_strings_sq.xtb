@@ -157,6 +157,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="1348198688976932919">Sajti përpara përmban aplikacione të rrezikshme</translation>
 <translation id="1348779747280417563">Konfirmo emrin</translation>
 <translation id="1354976809542763843">Financimi i shtëpisë</translation>
+<translation id="1355158069018170842">Shfaq uljet e çmimeve në skeda</translation>
 <translation id="1355301061807280185">Punët</translation>
 <translation id="1355754231781595724">Siguria e automjeteve dhe e trafikut</translation>
 <translation id="1357195169723583938">Kush e ka përdorur pajisjen së fundi dhe kur</translation>
@@ -466,6 +467,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2153609454945889823">Të instalohen "Shërbimet e Google Play për AR"?</translation>
 <translation id="2154054054215849342">Sinkronizimi nuk ofrohet për domenin tënd</translation>
 <translation id="2154484045852737596">Redakto kartën</translation>
+<translation id="2157640075051554492">Njoftimet e monitorimit të çmimeve</translation>
 <translation id="2161656808144014275">Teksti</translation>
 <translation id="2162510787844374618">Po kontaktohet banka...</translation>
 <translation id="2162620598375156287">Tani <ph name="CURRENT_PRICE" /> te <ph name="SOURCE_WEBSITE" /></translation>
@@ -1003,6 +1005,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3633738897356909127">Butoni "Përditëso Chrome", shtyp "Enter" për të përditësuar Chrome nga cilësimet e Chrome</translation>
 <translation id="3634530185120165534">Tabakaja 5</translation>
 <translation id="3634567936866541746">Sapo e fute fjalëkalimin tënd në një sajt mashtrues. Për të siguruar llogaritë e tua, Chrome rekomandon të kontrollosh fjalëkalimet e ruajtura.</translation>
+<translation id="3637033245385760976">Njoftimet e Chrome duhet të jenë aktive. Mund t'i aktivizosh te <ph name="NOTIFICATION_SETTINGS" /></translation>
 <translation id="3637662659967048211">Ruaje në "Llogarinë e Google"</translation>
 <translation id="3640766068866876100">Index-4x6-Ext</translation>
 <translation id="3642638418806704195">Aplikacioni:</translation>
@@ -1300,7 +1303,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="4432792777822557199">Faqet në <ph name="SOURCE_LANGUAGE" /> do të përkthehen në <ph name="TARGET_LANGUAGE" /> nga tani e në vazhdim</translation>
 <translation id="4433642172056592619">Injoruar pasi përdoruesi nuk është i lidhur me menaxhimin e makinerisë ose makineria nuk është e menaxhuar.</translation>
 <translation id="4434045419905280838">Dritaret kërcyese dhe ridrejtimet</translation>
-<translation id="4435702339979719576">Postcard)</translation>
 <translation id="443673843213245140">Përdorimi i një përfaqësuesi është i çaktivizuar, por është specifikuar një konfigurim i qartë përfaqësuesi.</translation>
 <translation id="4441832193888514600">Shpërfillur për shkak se politika mund të shtohet vetëm si politikë e përdoruesit të resë kompjuterike.</translation>
 <translation id="4450893287417543264">Mos e shfaq përsëri</translation>
@@ -1425,6 +1427,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="4785376858512657294">Menaxho "Llogarinë e Google"</translation>
 <translation id="4785689107224900852">Kalo te kjo skedë</translation>
 <translation id="4786804728079074733">Volejbolli</translation>
+<translation id="4789704664580239421">Sinjalizimet për uljet e çmimeve do të shfaqen në skedat e tua të hapura</translation>
 <translation id="4791134497475588553">Aplikacionet e instaluara të Linux dhe kur janë përdorur për herë të fundit</translation>
 <translation id="4792686369684665359">Informacionet që po dërgon nuk janë të sigurta</translation>
 <translation id="4796594887379589189">ID-ja e llogarisë së punës</translation>
@@ -1790,6 +1793,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="5730040223043577876">Chrome rekomandon rivendosjen e fjalëkalimit tënd nëse e ke ripërdorur në sajte të tjera.</translation>
 <translation id="5736165827969430182">Metalet dhe minierat</translation>
 <translation id="5737183892635480227">{NUM_CARDS,plural, =1{Ruaje kartën në "Llogarinë tënde të Google"}other{Ruaji kartat në "Llogarinë tënde të Google"}}</translation>
+<translation id="5738385766833540397">Menaxho se si i merr sinjalizimet për uljet e çmimeve për produktet që monitoron</translation>
 <translation id="5743638595296120378">Blerja e automjeteve</translation>
 <translation id="5743898850056428078">Garat me motoçikleta</translation>
 <translation id="5745733273847572235">Mund të kërkojë vendndodhjen tënde</translation>
@@ -1799,6 +1803,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="5759751709240058861">Të përdorë dhe të lëvizë kamerën tënde</translation>
 <translation id="5763042198335101085">Fut një adresë të vlefshme email-i</translation>
 <translation id="5764725887548570807">Format i pavlefshëm i origjinës.</translation>
+<translation id="5764920692828389743">Dërgo te <ph name="EMAIL_ADDRESS" /></translation>
 <translation id="5765072501007116331">Për të parë mënyrat dhe kërkesat e dorëzimit, zgjidh një adresë</translation>
 <translation id="57689295674415555">Nuk është plotësuar numri i kartës virtuale?</translation>
 <translation id="5776313857861697733">Përparësia</translation>
@@ -1889,6 +1894,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6017850046339264347">Sulmuesit në <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> mund të instalojnë aplikacione mashtruese që pretendojnë se janë diçka tjetër ose që mbledhin të dhëna që mund të përdoren për të të gjurmuar. <ph name="BEGIN_LEARN_MORE_LINK" />Mëso më shumë<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="6025416945513303461"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /> (sinkronizuar)</translation>
 <translation id="6027201098523975773">Fut një emër</translation>
+<translation id="6028591542479806248">Menaxho njoftimet e email-it dhe pajisjes celulare</translation>
 <translation id="603068602130820122">Dy kapje me tel djathtas</translation>
 <translation id="6032524144326295339">Kutia postare 2</translation>
 <translation id="6032955021262906325">Lidhje majtas</translation>
@@ -2808,6 +2814,7 @@ Detaje shtesë:
 <translation id="8559762987265718583">Nuk mund të vendoset një lidhje private me <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />sepse data dhe ora (<ph name="DATE_AND_TIME" />) e pajisjes tënde nuk janë të sakta.</translation>
 <translation id="8564182942834072828">Dokumente të ndara/kopje të parenditura</translation>
 <translation id="8564985650692024650">Chromium rekomandon rivendosjen e fjalëkalimit tënd të <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> nëse e ke ripërdorur në sajte të tjera.</translation>
+<translation id="8573969211731659953">Sinjalizimet për uljet e çmimeve janë aktive. Mund ta ndryshosh këtë te <ph name="NOTIFICATION_SETTINGS" /></translation>
 <translation id="8576310925653847813">Sistemet e kinemasë së shtëpisë</translation>
 <translation id="8577348305244205642">Karta virtuale nuk ofrohet</translation>
 <translation id="858637041960032120">Shto numrin e telefonit</translation>

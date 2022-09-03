@@ -4010,7 +4010,6 @@ Als dit beleid is ingesteld op False, gebruikt <ph name="PRODUCT_NAME" /> geen s
 
       Als het beleid niet is ingesteld of ongeldig is, is het gedrag hetzelfde als voor 'Wachten tot het doelkanaal de kanaaldowngrade heeft verwerkt'.</translation>
 <translation id="5229339291699779956">Hiermee zet je PCIe-tunneling voor Thunderbolt/USB4-randapparaten aan, waardoor alle mogelijkheden van de randapparaten werken</translation>
-<translation id="5230095739094490896">IPP-kenmerktemplate 'client-name' voor afdrukken</translation>
 <translation id="5233239004553860036">Als je dit beleid instelt op <ph name="POLICY_VALUE_ALL" /> of niet instelt, zijn alle typen gebruik van beheerde accounts toegestaan. Dit kan ertoe leiden dat een beheerd account een secundair account is, waardoor het account alleen beleidsregels krijgt als het is ingelogd als primair account in een browserprofiel.
       Beleidsregels die zijn ingesteld voor het account, worden in de volgende scenario's niet afgedwongen:
 - Het account is een secundair account op OS-niveau (accountinstellingen)
@@ -7252,18 +7251,6 @@ Dit beleid geldt per frame en is niet alleen gebaseerd op de oorspronkelijke URL
 
       Als het beleid is ingesteld op 'False', worden er geen tabbladen vastgezet.</translation>
 <translation id="8619748440665904084">Import van formuliergegevens voor automatisch invullen bij eerste uitvoering uitzetten</translation>
-<translation id="8620103780247748230">Met dit beleid bepaal je de waarde van het kenmerk <ph name="CLIENT_INFO_IPP_ATTRIBUTE" /> IPP (Internet Printing Protocol) in afdruktaken.
-
-      Als je dit beleid instelt op een tekenreeks, wordt aan elke afdruktaak een extra <ph name="CLIENT_INFO_IPP_ATTRIBUTE" />-item toegevoegd. Het <ph name="CLIENT_NAME_IPP_ATTRIBUTE" />-element van het toegevoegde <ph name="CLIENT_INFO_IPP_ATTRIBUTE" />-item wordt ingesteld op de waarde van het beleid na vervanging van variabelen.
-
-      Ondersteunde variabelen zijn <ph name="DIRECTORY_ID_PLACEHOLDER" />, <ph name="SERIAL_NUMBER_PLACEHOLDER" />, <ph name="ASSET_ID_PLACEHOLDER" />, <ph name="ANNOTATED_LOCATION_PLACEHOLDER" />, <ph name="USER_EMAIL_PLACEHOLDER" />, <ph name="USER_EMAIL_NAME_PLACEHOLDER" />, <ph name="USER_EMAIL_DOMAIN" />. Niet-ondersteunde tijdelijke variabelen worden niet uitgebreid.
-
-      De resulterende waarde na vervanging van variabelen wordt als geldig beschouwd als deze alleen bestaat uit <ph name="ASCII" /> afdrukbare tekens en de lengte niet langer is dan 255.
-
-      Vanwege privacyredenen is dit beleid alleen van toepassing als er wordt gecommuniceerd met een printer via de protocollen <ph name="IPPS_PROTOCOL" />, <ph name="HTTPS_PROTOCOL" />, <ph name="USB_PROTOCOL" /> of <ph name="IPP_USB_PROTOCOL" />. Houd er ook rekening mee dat dit beleid alleen geldt voor printers die <ph name="CLIENT_NAME_IPP_ATTRIBUTE" /> ondersteunen.
-
-      Als je het beleid niet instelt of dit instelt op een lege of ongeldige waarde, worden er geen extra <ph name="CLIENT_INFO_PLACEHOLDER" /> toegevoegd aan verzoeken voor afdruktaken.
-      </translation>
 <translation id="8623672932476443039">Als je het beleid toepast, hebben gebruikers toegang tot de ontwikkelaarsmodus voor geïsoleerde apps.
       Als je het beleid niet toepast, hebben gebruikers geen toegang tot deze mogelijkheden.
       Als je dit beleid niet instelt, geldt de standaardwaarde 'niet toegestaan' voor beheerde zakelijke gebruikers op Chrome OS en 'toegestaan' voor alle andere gebruikers en besturingssystemen.</translation>

@@ -313,6 +313,7 @@
 <translation id="3689865792480713551"><ph name="ACTIVITY_DESCRIPTION" /> abbrechen.</translation>
 <translation id="3690128548376345212">Netzwerk <ph name="NETWORK_INDEX" /> von <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, nicht aktiviert, <ph name="CONNECTION_STATUS" />, Signalstärke <ph name="SIGNAL_STRENGTH" /> %, Details</translation>
 <translation id="3691184985318546178">Singhalesisch</translation>
+<translation id="3722341589402358578">Ein Fehler ist aufgetreten. Einige Elemente wurden möglicherweise nicht in den Papierkorb verschoben.</translation>
 <translation id="3726463242007121105">Dieses Gerät kann nicht geöffnet werden, da das zugehörige Dateisystem nicht unterstützt wird.</translation>
 <translation id="3727148787322499904">Änderungen dieser Einstellung wirken sich auf alle freigegebenen Netzwerke aus</translation>
 <translation id="3737576078404241332">Aus der Seitenleiste entfernen</translation>
@@ -353,6 +354,7 @@
 <translation id="4092890906744441904">Irisch</translation>
 <translation id="4124935795427217608">Einhorn</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> verschoben.</translation>
+<translation id="4176286497474237543">Papierkorb jetzt leeren</translation>
 <translation id="4186579485882418952">Offline-Modus aktivieren</translation>
 <translation id="4193154014135846272">Google-Dokument</translation>
 <translation id="4197674956721858839">Auswahl zippen</translation>
@@ -660,6 +662,7 @@
 <translation id="6643016212128521049">Löschen</translation>
 <translation id="6650726141019353908">Rosa Schmetterling</translation>
 <translation id="6657585470893396449">Passwort</translation>
+<translation id="6658865850469097484">Dateien im Papierkorb werden nach 30 Tagen automatisch gelöscht.</translation>
 <translation id="6673674183150363784">Französisch (Frankreich) mit Bépo-Tastatur</translation>
 <translation id="6710022688720561421">Roboter</translation>
 <translation id="6710213216561001401">Zurück</translation>

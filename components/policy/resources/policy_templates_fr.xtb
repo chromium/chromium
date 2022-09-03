@@ -4030,7 +4030,6 @@ Si elle est définie sur "False", <ph name="PRODUCT_NAME" /> n'utilise pas les n
 
       Si cette règle n'est pas configurée ou qu'elle n'est pas valide, le comportement adopté sera le même que pour l'option "Attendre que la version sélectionnée rattrape la version installée lors du retour à une version antérieure".</translation>
 <translation id="5229339291699779956">Active la tunnellisation PCIe pour les périphériques Thunderbolt/USB4 ; les périphériques fonctionneront alors au maximum de leur capacité</translation>
-<translation id="5230095739094490896">Impression du modèle d'attribut IPP "client-name"</translation>
 <translation id="5233239004553860036">Si la règle est définie sur <ph name="POLICY_VALUE_ALL" /> ou si elle n'est pas configurée, l'utilisation des comptes gérés n'est pas limitée. Il sera donc possible qu'un compte géré soit un compte secondaire. Celui-ci ne recevrait alors de règles que lorsqu'il serait connecté en tant que compte principal dans un profil de navigateur.
       Les règles configurées sur le compte ne s'appliqueront pas dans les cas suivants :
         - Le compte est défini comme secondaire au niveau du système d'exploitation (dans les paramètres du compte).
@@ -7293,18 +7292,6 @@ Il est conseillé de configurer les règles sur Windows via GPO, même si la ges
 
       Si cette règle est définie sur "False", aucun onglet n'est figé.</translation>
 <translation id="8619748440665904084">Désactiver l'importation des données de saisie automatique à la première exécution</translation>
-<translation id="8620103780247748230">Cette règle contrôle la valeur de l'attribut IPP (Internet Printing Protocol) <ph name="CLIENT_INFO_IPP_ATTRIBUTE" /> dans les tâches d'impression.
-
-      Si cette règle est définie sur une chaîne, un élément <ph name="CLIENT_INFO_IPP_ATTRIBUTE" /> supplémentaire est ajouté à chaque tâche d'impression. Le membre <ph name="CLIENT_NAME_IPP_ATTRIBUTE" /> de l'élément <ph name="CLIENT_INFO_IPP_ATTRIBUTE" /> ajouté sera défini sur la valeur de la règle après le remplacement des variables.
-
-      Les variables compatibles sont <ph name="DIRECTORY_ID_PLACEHOLDER" />, <ph name="SERIAL_NUMBER_PLACEHOLDER" />, <ph name="ASSET_ID_PLACEHOLDER" />, <ph name="ANNOTATED_LOCATION_PLACEHOLDER" />, <ph name="USER_EMAIL_PLACEHOLDER" />, <ph name="USER_EMAIL_NAME_PLACEHOLDER" /> et <ph name="USER_EMAIL_DOMAIN" />. Les variables d'espaces réservés non acceptées ne seront pas développées.
-
-      La valeur obtenue après la substitution des variables est considérée comme valide si elle ne comprend que <ph name="ASCII" /> caractères imprimables et que sa longueur n'excède pas 255.
-
-      Notez que, pour des raisons de confidentialité, cette règle ne s'applique que lorsque vous communiquez avec une imprimante à l'aide des protocoles <ph name="IPPS_PROTOCOL" />, <ph name="HTTPS_PROTOCOL" />, <ph name="USB_PROTOCOL" /> ou <ph name="IPP_USB_PROTOCOL" />. Notez également que cette règle ne s'applique qu'aux imprimantes compatibles avec <ph name="CLIENT_NAME_IPP_ATTRIBUTE" />.
-
-      Si la règle n'est pas configurée, si elle est définie sur une valeur vide ou non valide, aucun <ph name="CLIENT_INFO_PLACEHOLDER" /> supplémentaire ne sera ajouté aux requêtes de tâches d'impression.
-      </translation>
 <translation id="8623672932476443039">Si cette règle est activée, elle permet aux utilisateurs d'accéder au mode développeur pour les applis isolées.
       Si elle est désactivée, les utilisateurs ne pourront pas bénéficier de ce mode.
       Si cette règle n'est pas configurée, l'option par défaut n'est pas autorisée pour les utilisateurs gérés par une entreprise sur Chrome OS, mais est autorisée pour tous les autres utilisateurs et OS.</translation>

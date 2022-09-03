@@ -226,6 +226,7 @@
 <translation id="2497706219848005458">አረንጓዴ ቢጫ</translation>
 <translation id="2523609930580546572">ChromeVox አጋዥ ሥልጠና</translation>
 <translation id="2525706221823668172">የChromebook ቁልፍ ሰሌዳ አቋራጮች</translation>
+<translation id="2543973100702367007">ለ<ph name="LABEL" /> ሁለቴ መታ ያድርጉ</translation>
 <translation id="2553108862507765288">የስዋስው ስህተት</translation>
 <translation id="2556326187583116255">ማንኛውም የአሁኑ ንግግር ለማቆም በ2 ጣቶች መታ ያድርጉ</translation>
 <translation id="2573256689920773241">መሠረታዊ ዳሰሳ</translation>
@@ -1115,6 +1116,7 @@
 <translation id="8693391540059827073">የእኔ ተወዳጅ ምዕራፍ</translation>
 <translation id="8696284982970258155">ሃኒዴው</translation>
 <translation id="8697111817566059991">{COUNT,plural, =1{ቁም መስመር}one{# የቁም መስመሮች}other{# የቁም መስመሮች}}</translation>
+<translation id="8733397807344284494">ለ<ph name="LABEL" /> Search+Spaceን ይጫኑ</translation>
 <translation id="8741370088760768424">ፍንጭ፦ የአሁኑን ንጥል Search + Spaceን ይጫኑ።</translation>
 <translation id="8743786158317878347">እንደ ሠንጠረዦች ያለ የተዋቀረ ይዘት ያስገቡ</translation>
 <translation id="8746846427395705317">ወደ ቀዳሚው ቃል ሂድ</translation>

@@ -4042,7 +4042,6 @@ Bu politika Yanlış değerine ayarlanırsa <ph name="PRODUCT_NAME" /> yerel bil
 
       Ayarlanmadan bırakılır veya geçersiz olursa bu davranış, "Hedef kanalın kanal sürümü değişikliğini yakalamasını bekle" ile aynı olur.</translation>
 <translation id="5229339291699779956">Thunderbolt/USB4 çevre birimleri için PCle tünellemeyi etkinleştirir, çevre birimi cihazlarının tüm işlevleri çalışır</translation>
-<translation id="5230095739094490896">"client-name" IPP özelliği şablonunu yazdırma</translation>
 <translation id="5233239004553860036">Bu politika <ph name="POLICY_VALUE_ALL" /> değerine ayarlanır veya ayarlanmadan bırakılırsa yönetilen hesapların her türlü kullanımına izin verilir. Bu durum, yönetilen hesabın ikincil hesap olmasına ve yalnızca tarayıcı profilinde birincil hesap olarak oturum açtığında politika alabilmesine neden olabilir.
       Hesapta ayarlanan politikalar aşağıdaki durumlarda uygulanmaz:
         -  OS seviyesinde (Hesap Ayarları) ikincil hesap olma
@@ -7303,18 +7302,6 @@ Bu politika "true" (doğru) olarak ayarlanırsa kullanıcının tarayıcıyı ku
 
       Politika false (yanlış) değerine ayarlanırsa hiçbir sekme dondurulmaz.</translation>
 <translation id="8619748440665904084">İlk çalıştırmada form otomatik doldurma verilerinin içe aktarılmasını devre dışı bırak</translation>
-<translation id="8620103780247748230">Bu politika, yazdırma işlerindeki <ph name="CLIENT_INFO_IPP_ATTRIBUTE" /> IPP (İnternet Yazdırma Protokolü) özelliğinin değerini kontrol eder.
-
-      Politikanın bir dizeye ayarlanması, her yazdırma işine ilave bir <ph name="CLIENT_INFO_IPP_ATTRIBUTE" /> öğesi eklenmesiyle sonuçlanır. Eklenen <ph name="CLIENT_INFO_IPP_ATTRIBUTE" /> öğesinin <ph name="CLIENT_NAME_IPP_ATTRIBUTE" /> üyesi, değişkenlerin değiştirilmesinden sonraki politika değerine ayarlanır.
-
-      Desteklenen değişkenler: <ph name="DIRECTORY_ID_PLACEHOLDER" />, <ph name="SERIAL_NUMBER_PLACEHOLDER" />, <ph name="ASSET_ID_PLACEHOLDER" />, <ph name="ANNOTATED_LOCATION_PLACEHOLDER" />, <ph name="USER_EMAIL_PLACEHOLDER" />, <ph name="USER_EMAIL_NAME_PLACEHOLDER" />, <ph name="USER_EMAIL_DOMAIN" />. Desteklenmeyen yer tutucu değişkenleri genişletilmez.
-
-      Değişkenlerin değiştirilmesinden sonra ortaya çıkan değer, <ph name="ASCII" /> yazdırılabilir karakterlerini içerdiği ve uzunluğu 255'i geçmediği takdirde geçerli olarak kabul edilir.
-
-      Gizlilikle ilgili nedenlerden dolayı, bu politikanın yalnızca <ph name="IPPS_PROTOCOL" />, <ph name="HTTPS_PROTOCOL" />, <ph name="USB_PROTOCOL" /> veya <ph name="IPP_USB_PROTOCOL" /> protokollerini kullanan bir yazıcıyla iletişim kurarken geçerli olduğunu unutmayın. Ayrıca, bu politika yalnızca <ph name="CLIENT_NAME_IPP_ATTRIBUTE" /> destekleyen yazıcılarda geçerlidir.
-
-      Politika ayarlanmazsa ya da boş veya geçersiz bir değere ayarlanırsa yazdırma işi isteklerine ilave bir <ph name="CLIENT_INFO_PLACEHOLDER" /> eklenmez.
-      </translation>
 <translation id="8623672932476443039">Politika, etkin değerine ayarlanırsa kullanıcılar erişime kapalı uygulamalar için geliştirici moduna erişebilir.
       Politika, devre dışı değerine ayarlanırsa kullanıcılar bu özelliklere erişemez.
       Bu politika ayarlanmadan bırakılırsa varsayılan olarak ChromeOS'teki kuruluş tarafından yönetilen kullanıcılara izin verilmezken, diğer tüm kullanıcılara ve işletim sistemlerine izin verilir.</translation>
