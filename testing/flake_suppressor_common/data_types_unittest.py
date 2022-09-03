@@ -6,7 +6,7 @@
 import typing
 import unittest
 
-from flake_suppressor import data_types
+from flake_suppressor_common import data_types
 
 
 class ExpectationUnittest(unittest.TestCase):

@@ -5,7 +5,7 @@
 
 import unittest
 
-from flake_suppressor import tag_utils
+from flake_suppressor_common import tag_utils
 
 
 class RemoveMostIgnoredTagsUnittest(unittest.TestCase):

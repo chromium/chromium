@@ -11,7 +11,7 @@ import unittest
 
 from pyfakefs import fake_filesystem_unittest  # pylint: disable=import-error
 
-from flake_suppressor import result_output
+from flake_suppressor_common import result_output
 
 
 class GenerateHtmlOutputFileUnittest(fake_filesystem_unittest.TestCase):

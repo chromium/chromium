@@ -7,10 +7,10 @@ import collections
 import os
 from typing import List, Tuple
 
-from flake_suppressor import common_typing as ct
-from flake_suppressor import data_types
-from flake_suppressor import expectations
-from flake_suppressor import tag_utils
+from flake_suppressor_common import common_typing as ct
+from flake_suppressor_common import data_types
+from flake_suppressor_common import expectations
+from flake_suppressor_common import tag_utils
 
 from typ import expectations_parser
 

@@ -6,7 +6,7 @@
 import tempfile
 from typing import Dict, IO, List, Optional, Union
 
-from flake_suppressor import common_typing as ct
+from flake_suppressor_common import common_typing as ct
 
 UrlListType = List[str]
 StringTagsToUrlsType = Dict[str, UrlListType]

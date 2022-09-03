@@ -18,8 +18,8 @@ import validate_tag_consistency
 
 from pyfakefs import fake_filesystem_unittest  # pylint:disable=import-error
 
-from flake_suppressor import expectations
-from flake_suppressor import unittest_utils as uu
+from flake_suppressor_common import expectations
+from flake_suppressor_common import unittest_utils as uu
 
 
 # Note for all tests in this class: We can safely check the contents of the file
@@ -598,7 +598,7 @@ class GetExpectationFilesFromOriginUnittest(unittest.TestCase):
 
   def setUp(self) -> None:
     self._get_patcher = mock.patch(
-        'flake_suppressor.expectations.urllib.request.urlopen')
+        'flake_suppressor_common.expectations.urllib.request.urlopen')
     self._get_mock = self._get_patcher.start()
     self.addCleanup(self._get_patcher.stop)
 
@@ -669,11 +669,11 @@ class GetExpectationFilesFromLocalCheckoutUnittest(
 class AssertCheckoutIsUpToDateUnittest(unittest.TestCase):
   def setUp(self) -> None:
     self._origin_patcher = mock.patch(
-        'flake_suppressor.expectations.GetExpectationFilesFromOrigin')
+        'flake_suppressor_common.expectations.GetExpectationFilesFromOrigin')
     self._origin_mock = self._origin_patcher.start()
     self.addCleanup(self._origin_patcher.stop)
-    self._local_patcher = mock.patch(
-        'flake_suppressor.expectations.GetExpectationFilesFromLocalCheckout')
+    self._local_patcher = mock.patch('flake_suppressor_common.expectations.' +
+                                     'GetExpectationFilesFromLocalCheckout')
     self._local_mock = self._local_patcher.start()
     self.addCleanup(self._local_patcher.stop)
 

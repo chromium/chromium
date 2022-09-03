@@ -13,8 +13,8 @@ import urllib.request
 
 import gpu_path_util
 
-from flake_suppressor import common_typing as ct
-from flake_suppressor import tag_utils
+from flake_suppressor_common import common_typing as ct
+from flake_suppressor_common import tag_utils
 
 from typ import expectations_parser
 
@@ -101,6 +101,8 @@ def IterateThroughResultsForUser(result_map: ct.AggregatedResultsType,
 
         ModifyFileForResult(suite, test, typ_tags, bug, expected_result,
                             group_by_tags, include_all_tags)
+
+
 # pylint: enable=too-many-locals
 
 
@@ -147,6 +149,8 @@ def IterateThroughResultsWithThresholds(result_map: ct.AggregatedResultsType,
           expected_result = 'Failure'
         ModifyFileForResult(suite, test, typ_tags, '', expected_result,
                             group_by_tags, include_all_tags)
+
+
 # pylint: enable=too-many-locals,too-many-arguments
 
 
@@ -336,6 +340,8 @@ def ModifyFileForResult(suite: str, test: str, typ_tags: ct.TagTupleType,
         outfile.write(output_contents)
   else:
     AppendExpectationToEnd()
+
+
 # pylint: enable=too-many-locals,too-many-arguments
 
 
@@ -394,6 +400,8 @@ def FilterToMostSpecificTypTags(typ_tags: ct.TagTupleType,
   # Sort to keep order consistent with what we were given.
   filtered_tags.sort()
   return tuple(filtered_tags)
+
+
 # pylint: enable=too-many-locals
 
 

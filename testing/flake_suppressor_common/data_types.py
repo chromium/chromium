@@ -5,7 +5,7 @@
 
 from typing import Any
 
-from flake_suppressor import common_typing as ct
+from flake_suppressor_common import common_typing as ct
 
 from unexpected_passes_common import data_types as unexpected_dt
 

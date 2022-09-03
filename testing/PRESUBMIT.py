@@ -13,8 +13,15 @@ USE_PYTHON3 = True
 
 def CommonChecks(input_api, output_api):
   testing_env = dict(input_api.environ)
+  testing_path = input_api.PresubmitLocalPath()
+  # TODO(crbug.com/1358733): This is temporary till gpu code in
+  # flake_suppressor_commonis moved to gpu dir.
+  # Only common code will reside under /testing.
+  gpu_test_path = input_api.os_path.join(
+      input_api.PresubmitLocalPath(), '..', 'content', 'test', 'gpu')
   testing_env.update({
-      'PYTHONPATH': input_api.PresubmitLocalPath(),
+      'PYTHONPATH': input_api.os_path.pathsep.join(
+        [testing_path, gpu_test_path]),
       'PYTHONDONTWRITEBYTECODE': '1',
   })
 
@@ -24,6 +31,16 @@ def CommonChecks(input_api, output_api):
       output_api,
       '.',
       [r'^.+_unittest\.py$'],
+      run_on_python2=False,
+      run_on_python3=USE_PYTHON3,
+      skip_shebang_check=True))
+  output.extend(input_api.canned_checks.RunUnitTestsInDirectory(
+      input_api,
+      output_api,
+      input_api.os_path.join(input_api.PresubmitLocalPath(),
+                             'flake_suppressor_common'),
+      [r'^.+_unittest\.py$'],
+      env=testing_env,
       run_on_python2=False,
       run_on_python3=USE_PYTHON3,
       skip_shebang_check=True))

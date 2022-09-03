@@ -8,9 +8,8 @@
 import unittest
 import unittest.mock as mock
 
-from flake_suppressor import data_types
-from flake_suppressor import results
-
+from flake_suppressor_common import data_types
+from flake_suppressor_common import results
 
 GENERIC_EXPECTATION_FILE_CONTENTS = """\
 # tags: [ win ]
@@ -28,8 +27,9 @@ crbug.com/1111 [ win nvidia ] conformance/textures/misc/video-rotation.html [ Fa
 
 class BaseResultsUnittest(unittest.TestCase):
   def setUp(self) -> None:
-    self._local_patcher = mock.patch('flake_suppressor.results.expectations.'
-                                     'GetExpectationFilesFromLocalCheckout')
+    self._local_patcher = mock.patch(
+        'flake_suppressor_common.results.expectations.'
+        'GetExpectationFilesFromLocalCheckout')
     self._local_mock = self._local_patcher.start()
     self._local_mock.return_value = {}
     self.addCleanup(self._local_patcher.stop)

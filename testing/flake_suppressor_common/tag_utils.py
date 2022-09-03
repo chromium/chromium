@@ -5,7 +5,7 @@
 
 from typing import Iterable
 
-from flake_suppressor import common_typing as ct
+from flake_suppressor_common import common_typing as ct
 
 from gpu_tests import gpu_integration_test
 

@@ -9,8 +9,8 @@ import json
 import unittest
 import unittest.mock as mock
 
-from flake_suppressor import queries
-from flake_suppressor import unittest_utils as uu
+from flake_suppressor_common import queries
+from flake_suppressor_common import unittest_utils as uu
 
 
 class GetResultCountsUnittest(unittest.TestCase):
@@ -18,7 +18,7 @@ class GetResultCountsUnittest(unittest.TestCase):
     self._querier_instance = queries.BigQueryQuerier(1, 'project')
     self._querier_instance._submitted_builds = set(['build-1234', 'build-2345'])
     self._subprocess_patcher = mock.patch(
-        'flake_suppressor.queries.subprocess.run')
+        'flake_suppressor_common.queries.subprocess.run')
     self._subprocess_mock = self._subprocess_patcher.start()
     self.addCleanup(self._subprocess_patcher.stop)
 

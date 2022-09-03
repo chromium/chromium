@@ -8,9 +8,9 @@ import json
 import os
 import subprocess
 
-from flake_suppressor import common_typing as ct
-from flake_suppressor import results as results_module
-from flake_suppressor import tag_utils
+from flake_suppressor_common import common_typing as ct
+from flake_suppressor_common import results as results_module
+from flake_suppressor_common import tag_utils
 
 from unexpected_passes_common import queries as upc_queries
 

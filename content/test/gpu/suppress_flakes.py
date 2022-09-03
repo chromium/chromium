@@ -16,13 +16,19 @@ suppress_flakes.py \
   --project chrome-unexpected-pass-data \
   --sample-period 5
 """
-
 import argparse
+import os
+import sys
 
-from flake_suppressor import expectations
-from flake_suppressor import queries
-from flake_suppressor import result_output
-from flake_suppressor import results as results_module
+CHROMIUM_SRC_DIR = os.path.join(os.path.dirname(__file__), '..', '..', '..')
+sys.path.append(os.path.join(CHROMIUM_SRC_DIR, 'testing'))
+
+# pylint: disable=wrong-import-position
+from flake_suppressor_common import expectations
+from flake_suppressor_common import queries
+from flake_suppressor_common import result_output
+from flake_suppressor_common import results as results_module
+# pylint: enable=wrong-import-position
 
 
 def ParseArgs():
