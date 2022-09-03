@@ -51,5 +51,4 @@ dictionary MediaTrackSettings {
     [RuntimeEnabled=GetDisplayMedia] DOMString displaySurface;
     [RuntimeEnabled=GetDisplayMedia] boolean logicalSurface;
     [RuntimeEnabled=GetDisplayMedia] DOMString cursor;
-    [RuntimeEnabled=CaptureHandle, MeasureAs=CaptureHandle] CaptureHandle captureHandle;
 };
