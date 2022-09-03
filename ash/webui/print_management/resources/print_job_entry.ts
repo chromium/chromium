@@ -14,13 +14,13 @@ import './print_management_shared.css.js';
 import './strings.m.js';
 
 import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
-import {FocusRowBehavior} from 'chrome://resources/js/cr/ui/focus_row_behavior.js';
-import {I18nMixin, I18nMixinInterface} from 'chrome://resources/js/i18n_mixin.js';
+import {FocusRowMixin} from 'chrome://resources/js/cr/ui/focus_row_mixin.js';
+import {I18nMixin} from 'chrome://resources/js/i18n_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {String16} from 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
 import {Time} from 'chrome://resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
 import {IronA11yAnnouncer} from 'chrome://resources/polymer/v3_0/iron-a11y-announcer/iron-a11y-announcer.js';
-import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getMetadataProvider} from './mojo_interface_provider.js';
 import {getTemplate} from './print_job_entry.html.js';
@@ -149,9 +149,7 @@ function getGFileIconName(fileName: string): string {
  * item.
  */
 
-const PrintJobEntryElementBase =
-    mixinBehaviors([FocusRowBehavior], I18nMixin(PolymerElement)) as
-    {new (): PolymerElement & I18nMixinInterface};
+const PrintJobEntryElementBase = FocusRowMixin(I18nMixin(PolymerElement));
 
 export class PrintJobEntryElement extends PrintJobEntryElementBase {
   static get is() {

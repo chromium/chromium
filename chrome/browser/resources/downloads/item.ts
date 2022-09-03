@@ -18,11 +18,11 @@ import 'chrome://resources/polymer/v3_0/paper-styles/color.js';
 
 import {getToastManager} from 'chrome://resources/cr_elements/cr_toast/cr_toast_manager.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
-import {FocusRowBehavior} from 'chrome://resources/js/cr/ui/focus_row_behavior.js';
+import {FocusRowMixin} from 'chrome://resources/js/cr/ui/focus_row_mixin.js';
 import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {HTMLEscape} from 'chrome://resources/js/util.m.js';
-import {beforeNextRender, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {beforeNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BrowserProxy} from './browser_proxy.js';
 import {DangerType, States} from './constants.js';
@@ -41,9 +41,7 @@ export interface DownloadsItemElement {
   };
 }
 
-const DownloadsItemElementBase =
-    mixinBehaviors([FocusRowBehavior], PolymerElement) as
-    {new (): PolymerElement & FocusRowBehavior};
+const DownloadsItemElementBase = FocusRowMixin(PolymerElement);
 
 export class DownloadsItemElement extends DownloadsItemElementBase {
   static get is() {
@@ -163,12 +161,12 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
   private showProgress_: boolean;
   private useFileIcon_: boolean;
   private restoreFocusAfterCancel_: boolean = false;
-  overrideCustomEquivalent: boolean;
+  override overrideCustomEquivalent: boolean;
 
   constructor() {
     super();
 
-    /** Used by FocusRowBehavior. */
+    /** Used by FocusRowMixin. */
     this.overrideCustomEquivalent = true;
   }
 
@@ -184,8 +182,8 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
     focusWithoutInk(this.$.remove);
   }
 
-  /** Overrides FocusRowBehavior. */
-  getCustomEquivalent(sampleElement: HTMLElement): HTMLElement|null {
+  /** Overrides FocusRowMixin. */
+  override getCustomEquivalent(sampleElement: HTMLElement): HTMLElement|null {
     if (sampleElement.getAttribute('focus-type') === 'cancel') {
       return this.shadowRoot!.querySelector('[focus-type="retry"]');
     }

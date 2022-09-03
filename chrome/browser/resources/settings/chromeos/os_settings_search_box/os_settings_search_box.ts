@@ -152,13 +152,13 @@ class OsSettingsSearchBoxElement extends OsSettingsSearchBoxElementBase
       },
 
       /**
-       * Used by FocusRowBehavior to track the last focused element inside a
+       * Used by FocusRowMixin to track the last focused element inside a
        * <os-search-result-row> with the attribute 'focus-row-control'.
        */
       lastFocused_: Object,
 
       /**
-       * Used by FocusRowBehavior to track if the list has been blurred.
+       * Used by FocusRowMixin to track if the list has been blurred.
        */
       listBlurred_: Boolean,
 
@@ -531,7 +531,7 @@ class OsSettingsSearchBoxElement extends OsSettingsSearchBoxElementBase
   /**
    * Keydown handler to specify how enter-key, arrow-up key, and arrow-down-key
    * interacts with search results in the dropdown. Note that 'Enter' on keyDown
-   * when a row is focused is blocked by FocusRowBehavior behavior.
+   * when a row is focused is blocked by FocusRowMixin.
    */
   private onKeyDown_(e: KeyboardEvent) {
     if (!this.searchResultsExist_ ||

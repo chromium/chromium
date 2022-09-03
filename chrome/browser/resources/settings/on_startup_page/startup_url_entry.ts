@@ -18,8 +18,8 @@ import '../site_favicon.js';
 import {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
-import {FocusRowBehavior} from 'chrome://resources/js/cr/ui/focus_row_behavior.js';
-import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {FocusRowMixin} from 'chrome://resources/js/cr/ui/focus_row_mixin.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './startup_url_entry.html.js';
 import {StartupPageInfo, StartupUrlsPageBrowserProxyImpl} from './startup_urls_page_browser_proxy.js';
@@ -30,9 +30,7 @@ import {StartupPageInfo, StartupUrlsPageBrowserProxyImpl} from './startup_urls_p
  */
 export const EDIT_STARTUP_URL_EVENT: string = 'edit-startup-url';
 
-const SettingsStartupUrlEntryElementBase =
-    mixinBehaviors([FocusRowBehavior], PolymerElement) as
-    {new (): PolymerElement & FocusRowBehavior};
+const SettingsStartupUrlEntryElementBase = FocusRowMixin(PolymerElement);
 
 export class SettingsStartupUrlEntryElement extends
     SettingsStartupUrlEntryElementBase {

@@ -172,13 +172,13 @@ export class AllSitesElement extends AllSitesElementBase {
 
       /**
        * Used to track the last-focused element across rows for the
-       * focusRowBehavior.
+       * FocusRowMixin.
        */
       lastFocused_: Object,
 
       /**
        * Used to track whether the list of row items has been blurred for the
-       * focusRowBehavior.
+       * FocusRowMixin.
        */
       listBlurred_: Boolean,
 

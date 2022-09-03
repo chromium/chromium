@@ -12,12 +12,12 @@ import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 
 import {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
 import {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import {FocusRowBehavior} from 'chrome://resources/js/cr/ui/focus_row_behavior.js';
+import {FocusRowMixin} from 'chrome://resources/js/cr/ui/focus_row_mixin.js';
 import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.m.js';
 import {getFaviconForPageURL} from 'chrome://resources/js/icon.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {afterNextRender, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BrowserServiceImpl} from './browser_service.js';
 import {HistoryEntry} from './externs.js';
@@ -33,9 +33,7 @@ export interface HistoryItemElement {
   };
 }
 
-const HistoryItemElementBase =
-    mixinBehaviors([FocusRowBehavior], PolymerElement) as
-    {new (): PolymerElement & FocusRowBehavior};
+const HistoryItemElementBase = FocusRowMixin(PolymerElement);
 
 export class HistoryItemElement extends HistoryItemElementBase {
   static get is() {
@@ -339,7 +337,7 @@ export class HistoryItemElement extends HistoryItemElementBase {
    * @return An equivalent element to focus, or null to use the
    *     default element.
    */
-  getCustomEquivalent(sampleElement: Element): Element|null {
+  override getCustomEquivalent(sampleElement: HTMLElement): HTMLElement|null {
     return sampleElement.getAttribute('focus-type') === 'star' ? this.$.link :
                                                                  null;
   }

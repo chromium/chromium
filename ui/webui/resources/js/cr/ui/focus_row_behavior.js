@@ -2,11 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// Note: This file is deprecated, and should only be used by legacy code that
+// has not yet finished migrating to TypeScript/Polymer class based syntax. New
+// code should use focus_row_mixin.ts.
+
 // clang-format off
 import {afterNextRender} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {focusWithoutInk} from './focus_without_ink.js';
-import {FocusRow, FocusRowDelegate} from './focus_row.js';
+import {FocusRow, FocusRowDelegate} from './focus_row_js.js';
 // clang-format on
 
   /** @implements {FocusRowDelegate} */

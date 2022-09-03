@@ -162,7 +162,6 @@ checked_in_dts_files = [
   "cr_elements/policy/cr_policy_indicator.d.ts",
   "cr_elements/policy/cr_policy_pref_indicator.d.ts",
   "cr_elements/policy/cr_tooltip_icon.d.ts",
-  "js/cr/ui/focus_row_behavior.d.ts",
   "js/i18n_behavior.m.d.ts",
   "js/parse_html_subset.m.d.ts",
   "js/promise_resolver.m.d.ts",
@@ -235,6 +234,7 @@ if (is_chromeos_ash) {
     "cr_components/chromeos/quick_unlock/pin_keyboard.d.ts",
     "cr_elements/cr_container_shadow_behavior.d.ts",
     "js/list_property_update_behavior.d.ts",
+    "js/cr/ui/focus_row_behavior.d.ts",
   ]
 }
 
@@ -253,7 +253,6 @@ generate_definitions_js_files = [
   "js/cr/event_target.m.js",
   "js/cr.m.js",
   "js/cr/ui.m.js",
-  "js/cr/ui/focus_row.js",
   "js/cr/ui/keyboard_shortcut_list.js",
   "js/event_tracker.m.js",
   "js/load_time_data.m.js",
@@ -272,6 +271,7 @@ if (is_chromeos_ash || is_fuchsia || is_linux || is_mac || is_win) {
 
 if (is_chromeos_ash) {
   generate_definitions_js_files += [
+    "js/cr/ui/focus_row_js.js",
     "js/cr/ui/store_client.js",
     "js/cr/ui/store.js",
   ]
@@ -317,6 +317,7 @@ ts_library("library") {
                "js/custom_element.ts",
                "js/cr/ui/drag_wrapper.ts",
                "js/cr/ui/focus_grid.ts",
+               "js/cr/ui/focus_row.ts",
                "js/cr/ui/focus_outline_manager.ts",
                "js/cr/ui/store_ts.ts",
              ]
@@ -329,6 +330,7 @@ ts_library("library") {
       "cr_components/managed_dialog/managed_dialog.ts",
       "cr_components/managed_footnote/managed_footnote.html.ts",
       "cr_components/managed_footnote/managed_footnote.ts",
+      "js/cr/ui/focus_row_mixin.ts",
       "js/i18n_mixin.ts",
       "js/list_property_update_mixin.ts",
       "js/search_highlight_utils.ts",

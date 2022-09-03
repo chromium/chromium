@@ -2,6 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// Note: This file is deprecated, and should only be used by legacy code that
+// still relies on closure compiler for typechecking. All new code should use
+// focus_row.ts.
+
 // clang-format off
 import {assert, assertInstanceof} from 'chrome://resources/js/assert.m.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.m.js';

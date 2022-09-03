@@ -105,7 +105,7 @@ export class HistorySyncedDeviceCardElement extends PolymerElement {
     titleRow.addItem('collapse', '#collapse-button');
     const rows = [titleRow];
     if (this.opened) {
-      this.shadowRoot!.querySelectorAll('.item-container')
+      this.shadowRoot!.querySelectorAll<HTMLElement>('.item-container')
           .forEach(function(el) {
             const row = new FocusRow(el, null);
             row.addItem('link', '.website-link');

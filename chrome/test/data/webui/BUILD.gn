@@ -27,13 +27,17 @@ if (include_js_tests) {
     sources = [
       "bookmarks/bookmarks_focus_test.js",
       "cr_elements/cr_elements_focus_test.js",
-      "cr_focus_row_behavior_interactive_test.js",
+      "cr_focus_row_mixin_interactive_test.js",
       "extensions/cr_extensions_interactive_ui_tests.js",
       "history/history_focus_test.js",
       "print_preview/print_preview_interactive_ui_tests.js",
       "settings/cr_settings_interactive_ui_tests.js",
       "tab_search/tab_search_interactive_ui_tests.js",
     ]
+
+    if (is_chromeos_ash) {
+      sources += [ "cr_focus_row_behavior_interactive_test.js" ]
+    }
 
     if (!is_chromeos_ash) {
       sources += [ "signin/local_profile_customization_interactive_ui_test.js" ]
@@ -439,14 +443,17 @@ ts_library("build_ts") {
     "chrome_timeticks_test.ts",
     "color_provider_css_colors_test.ts",
     "color_provider_css_colors_test_chromeos.ts",
-    "cr_focus_row_behavior_test.ts",
+    "cr_focus_row_mixin_test.ts",
     "resources/list_property_update_mixin_tests.ts",
     "text_defaults_test.ts",
     "test_store_ts.ts",
   ]
 
   if (is_chromeos_ash) {
-    in_files += [ "resources/list_property_update_behavior_tests.ts" ]
+    in_files += [
+      "cr_focus_row_behavior_test.ts",
+      "resources/list_property_update_behavior_tests.ts",
+    ]
   }
 
   deps = [ "//ui/webui/resources:library" ]

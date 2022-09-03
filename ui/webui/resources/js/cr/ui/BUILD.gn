@@ -5,6 +5,7 @@
 import("//build/config/chromeos/ui_mode.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/preprocess_if_expr.gni")
+import("//ui/webui/resources/include_polymer.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 import("../../cr.gni")
 
@@ -35,8 +36,13 @@ preprocess_if_expr("preprocess_src_ts") {
     "drag_wrapper.ts",
     "focus_grid.ts",
     "focus_outline_manager.ts",
+    "focus_row.ts",
     "store_ts.ts",
   ]
+
+  if (include_polymer) {
+    in_files += [ "focus_row_mixin.ts" ]
+  }
 }
 
 preprocess_if_expr("preprocess_src") {
@@ -44,14 +50,10 @@ preprocess_if_expr("preprocess_src") {
   out_folder = "$preprocess_folder"
   out_manifest = "$target_gen_dir/$preprocess_src_manifest"
 
-  in_files = [
-    "keyboard_shortcut_list.js",
-    "focus_row.js",
-  ]
+  in_files = [ "keyboard_shortcut_list.js" ]
 
   if (!is_android) {
     in_files += [
-      "focus_row_behavior.js",
       "focus_without_ink.js",
 
       # The files below are deprecated, and are included on non-CrOS builds only
@@ -67,6 +69,8 @@ preprocess_if_expr("preprocess_src") {
 
   if (is_chromeos_ash) {
     in_files += [
+      "focus_row_behavior.js",
+      "focus_row_js.js",
       "store_client.js",
       "store.js",
     ]
@@ -79,15 +83,13 @@ group("closure_compile") {
 
 js_type_check("ui_resources_modules") {
   is_polymer3 = true
-  deps = [
-    ":focus_row",
-    ":focus_row_behavior",
-    ":focus_without_ink",
-  ]
+  deps = [ ":focus_without_ink" ]
   if (is_chromeos_ash) {
     deps += [
       ":command",
       ":context_menu_handler",
+      ":focus_row_behavior",
+      ":focus_row_js",
       ":keyboard_shortcut_list",
       ":menu",
       ":menu_button",
@@ -122,23 +124,23 @@ if (is_chromeos_ash) {
       "../..:event_tracker.m",
     ]
   }
-}
 
-js_library("focus_row") {
-  deps = [
-    "../..:assert.m",
-    "../..:event_tracker.m",
-    "../..:util.m",
-  ]
-}
+  js_library("focus_row_js") {
+    deps = [
+      "../..:assert.m",
+      "../..:event_tracker.m",
+      "../..:util.m",
+    ]
+  }
 
-js_library("focus_row_behavior") {
-  deps = [
-    ":focus_row",
-    ":focus_without_ink",
-    "../..:assert.m",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
+  js_library("focus_row_behavior") {
+    deps = [
+      ":focus_row_js",
+      ":focus_without_ink",
+      "../..:assert.m",
+      "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    ]
+  }
 }
 
 js_library("focus_without_ink") {
