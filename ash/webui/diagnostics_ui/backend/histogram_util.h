@@ -9,6 +9,8 @@
 #include <cstdint>
 
 #include "ash/webui/diagnostics_ui/mojom/system_routine_controller.mojom.h"
+#include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd.mojom.h"
+#include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_probe.mojom-shared.h"
 
 namespace base {
 class TimeDelta;
@@ -42,6 +44,12 @@ void EmitRoutineResult(mojom::RoutineType routine_type,
                        mojom::StandardRoutineResult result);
 
 void EmitSystemDataError(DataError error);
+
+// Tracks type and source struct of errors from calls to cros_healthd probe
+// service. `source_type` matches the `type_name` lookup in
+// cros_healthd_helpers.
+void EmitCrosHealthdProbeError(const base::StringPiece source_type,
+                               cros_healthd::mojom::ErrorType error_type);
 
 }  // namespace metrics
 }  // namespace diagnostics

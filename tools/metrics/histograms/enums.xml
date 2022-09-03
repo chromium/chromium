@@ -21537,6 +21537,18 @@ metrics consent we also won't be able to send UMA metrics. -->
   <int value="16" label="LaCrosVersionTooOld"/>
 </enum>
 
+<enum name="CrosDiagnosticsCrosHealthdProbeError">
+  <summary>
+    Error types matching ProbeError types from cros_healthd mojom
+    https://source.chromium.org/chromium/chromium/src/+/main:chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_probe.mojom;l=60
+  </summary>
+  <int value="0" label="FileReadError"/>
+  <int value="1" label="ParseError"/>
+  <int value="2" label="SystemUtilityError"/>
+  <int value="3" label="ServiceUnavailable"/>
+  <int value="4" label="Unknown"/>
+</enum>
+
 <enum name="CrosDiagnosticsDataError">
   <int value="0" label="NoData"/>
   <int value="1" label="NotANumber"/>

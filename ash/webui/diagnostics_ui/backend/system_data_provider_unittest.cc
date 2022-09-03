@@ -5,6 +5,7 @@
 #include "ash/webui/diagnostics_ui/backend/system_data_provider.h"
 
 #include <cstdint>
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -12,6 +13,7 @@
 #include "ash/webui/diagnostics_ui/backend/cpu_usage_data.h"
 #include "ash/webui/diagnostics_ui/backend/histogram_util.h"
 #include "ash/webui/diagnostics_ui/backend/power_manager_client_conversions.h"
+#include "ash/webui/diagnostics_ui/mojom/system_data_provider.mojom-forward.h"
 #include "base/bind.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
@@ -25,6 +27,8 @@
 #include "base/timer/mock_timer.h"
 #include "chromeos/ash/services/cros_healthd/public/cpp/fake_cros_healthd.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd.mojom.h"
+#include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_probe.mojom-forward.h"
+#include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_probe.mojom-shared.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_probe.mojom.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/dbus/power_manager/power_supply_properties.pb.h"
@@ -37,6 +41,9 @@ namespace {
 namespace healthd_mojom = cros_healthd::mojom;
 
 constexpr char kSystemDataError[] = "ChromeOS.DiagnosticsUi.Error.System";
+
+constexpr char kProbeErrorBatteryInfo[] =
+    "ChromeOS.DiagnosticsUi.Error.CrosHealthdProbeError.BatteryInfo";
 
 void SetProbeTelemetryInfoResponse(healthd_mojom::BatteryInfoPtr battery_info,
                                    healthd_mojom::CpuInfoPtr cpu_info,
@@ -192,6 +199,14 @@ healthd_mojom::BatteryInfoPtr CreateCrosHealthdBatteryHealthResponse(
       /*status=*/"",
       /*manufacture_date=*/absl::nullopt,
       /*temperature=*/0);
+}
+
+healthd_mojom::ProbeErrorPtr CreateProbeError(
+    healthd_mojom::ErrorType error_type) {
+  auto probe_error = healthd_mojom::ProbeError::New();
+  probe_error->type = error_type;
+  probe_error->msg = "probe error";
+  return probe_error;
 }
 
 void SetCrosHealthdBatteryInfoResponse(const std::string& vendor,
@@ -455,6 +470,28 @@ void VerifySystemDataErrorBucketCounts(
   tester.ExpectBucketCount(kSystemDataError,
                            metrics::DataError::kExpectationNotMet,
                            expected_expectation_not_met_error);
+}
+
+void VerifyProbeErrorBucketCounts(const base::HistogramTester& tester,
+                                  const std::string& metric_name,
+                                  size_t expected_unknown_error,
+                                  size_t expected_parse_error,
+                                  size_t expected_service_unavailable,
+                                  size_t expected_system_utility_error,
+                                  size_t expected_file_read_error) {
+  tester.ExpectBucketCount(metric_name, healthd_mojom::ErrorType::kUnknown,
+                           expected_unknown_error);
+  tester.ExpectBucketCount(metric_name, healthd_mojom::ErrorType::kParseError,
+                           expected_parse_error);
+  tester.ExpectBucketCount(metric_name,
+                           healthd_mojom::ErrorType::kServiceUnavailable,
+                           expected_service_unavailable);
+  tester.ExpectBucketCount(metric_name,
+                           healthd_mojom::ErrorType::kSystemUtilityError,
+                           expected_system_utility_error);
+  tester.ExpectBucketCount(metric_name,
+                           healthd_mojom::ErrorType::kFileReadError,
+                           expected_file_read_error);
 }
 
 }  // namespace
@@ -1361,6 +1398,39 @@ TEST_F(SystemDataProviderTest, RecordSystemDataError_DeltaZero) {
                                     /*expected_no_data_error=*/0,
                                     /*expected_not_a_number_error=*/0,
                                     /*expected_expectation_not_met_error=*/1);
+}
+
+// Validate expected metric triggered when request for BatteryInfo returns a
+// ProbeError.
+TEST_F(SystemDataProviderTest, RecordProbeError_BatteryInfo) {
+  base::HistogramTester histogram_tester;
+  VerifyProbeErrorBucketCounts(histogram_tester, kProbeErrorBatteryInfo,
+                               /*expected_unknown_error=*/0,
+                               /*expected_parse_error=*/0,
+                               /*expected_service_unavailable=*/0,
+                               /*expected_system_utility_error=*/0,
+                               /*expected_file_read_error=*/0);
+
+  auto info = healthd_mojom::TelemetryInfo::New();
+  auto battery_result = healthd_mojom::BatteryResult::NewError(
+      CreateProbeError(healthd_mojom::ErrorType::kParseError));
+  info->battery_result = std::move(battery_result);
+  cros_healthd::FakeCrosHealthd::Get()->SetProbeTelemetryInfoResponseForTesting(
+      info);
+  base::RunLoop run_loop;
+
+  system_data_provider_->GetBatteryInfo(
+      base::BindLambdaForTesting([&](mojom::BatteryInfoPtr ptr) {
+        EXPECT_TRUE(ptr);
+        VerifyProbeErrorBucketCounts(histogram_tester, kProbeErrorBatteryInfo,
+                                     /*expected_unknown_error=*/0,
+                                     /*expected_parse_error=*/1,
+                                     /*expected_service_unavailable=*/0,
+                                     /*expected_system_utility_error=*/0,
+                                     /*expected_file_read_error=*/0);
+        run_loop.Quit();
+      }));
+  run_loop.Run();
 }
 
 }  // namespace ash::diagnostics

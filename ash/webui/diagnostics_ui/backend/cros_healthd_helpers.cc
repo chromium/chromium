@@ -43,6 +43,8 @@ bool CheckResponse(const TResult& result,
 
   auto tag = result->which();
   if (tag == TTag::kError) {
+    diagnostics::metrics::EmitCrosHealthdProbeError(type_name,
+                                                    result->get_error()->type);
     LOG(ERROR) << "Error retrieving " << type_name
                << "from croshealthd: " << result->get_error()->msg;
     return false;
