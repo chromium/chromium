@@ -344,6 +344,11 @@ struct AutocompleteMatch {
   // Returns true if matches with given `type` may be attach an `action`.
   static bool IsActionCompatibleType(Type type);
 
+  // Returns whether this match is a starter pack suggestion provided by the
+  // built-in provider. This is the suggestion that the starter pack keyword
+  // mode chips attach to.
+  static bool IsStarterPackType(Type type);
+
   // Convenience function to check if |type| is one of the suggest types we
   // need to skip for search vs url partitions - url, text or image in the
   // clipboard or query tile.

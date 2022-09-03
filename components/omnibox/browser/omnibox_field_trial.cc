@@ -953,7 +953,7 @@ const base::FeatureParam<bool>
 const base::FeatureParam<int> kSiteSearchStarterPackRelevanceScore(
     &omnibox::kSiteSearchStarterPack,
     "SiteSearchStarterPackRelevanceScore",
-    1200);
+    1350);
 
 }  // namespace OmniboxFieldTrial
 
