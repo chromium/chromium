@@ -67,10 +67,12 @@
  */
 #define XMLPUBVAR XMLPUBLIC extern
 
+/** DOC_DISABLE */
 /* Compatibility */
 #if !defined(LIBXML_DLL_IMPORT)
 #define LIBXML_DLL_IMPORT XMLPUBVAR
 #endif
+/** DOC_ENABLE */
 
 #endif /* __XML_EXPORTS_H__ */
 

@@ -23,6 +23,8 @@
 #include <stdlib.h>
 #include <time.h>
 
+#include "private/dict.h"
+
 /*
  * Following http://www.ocert.org/advisories/ocert-2011-003.html
  * it seems that having hash randomization might be a good idea
@@ -496,10 +498,10 @@ static unsigned long
 xmlDictComputeFastQKey(const xmlChar *prefix, int plen,
                        const xmlChar *name, int len, int seed)
 {
-    unsigned long value = (unsigned long) seed;
+    unsigned long value = seed;
 
     if (plen == 0)
-	value += 30 * (unsigned long) ':';
+	value += 30 * ':';
     else
 	value += 30 * (*prefix);
 
@@ -537,7 +539,7 @@ xmlDictComputeFastQKey(const xmlChar *prefix, int plen,
     }
     len -= plen;
     if (len > 0) {
-        value += (unsigned long) ':';
+        value += ':';
 	len--;
     }
     switch (len) {

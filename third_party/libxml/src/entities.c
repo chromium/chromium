@@ -26,7 +26,8 @@
 #include <libxml/globals.h>
 #include <libxml/dict.h>
 
-#include "save.h"
+#include "private/entities.h"
+#include "private/error.h"
 
 /*
  * The XML predefined entities.

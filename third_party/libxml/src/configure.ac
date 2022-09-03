@@ -2,8 +2,8 @@ dnl Process this file with autoconf to produce a configure script.
 AC_PREREQ([2.63])
 
 m4_define([MAJOR_VERSION], 2)
-m4_define([MINOR_VERSION], 9)
-m4_define([MICRO_VERSION], 13)
+m4_define([MINOR_VERSION], 11)
+m4_define([MICRO_VERSION], 0)
 
 AC_INIT([libxml2],[MAJOR_VERSION.MINOR_VERSION.MICRO_VERSION])
 AC_CONFIG_SRCDIR([entities.c])
@@ -39,7 +39,7 @@ AC_SUBST(LIBXML_VERSION_EXTRA)
 
 VERSION=${LIBXML_VERSION}
 
-AM_INIT_AUTOMAKE([1.15 foreign no-dist-gzip dist-xz])
+AM_INIT_AUTOMAKE([1.16.3 foreign no-dist-gzip dist-xz])
 AM_MAINTAINER_MODE([enable])
 AM_SILENT_RULES([yes])
 
@@ -1226,7 +1226,8 @@ else
         [have_libicu=no])
 
     if test "x$have_libicu" = "xyes"; then
-        PKG_CHECK_VAR([ICU_DEFS], [icu-i18n], [DEFS])
+        m4_ifdef([PKG_CHECK_VAR],
+            [PKG_CHECK_VAR([ICU_DEFS], [icu-i18n], [DEFS])])
         if test "x$ICU_DEFS" != "x"; then
             CPPFLAGS="$CPPFLAGS $ICU_DEFS"
         fi
@@ -1436,7 +1437,7 @@ AC_SUBST(RELDATE)
 AC_SUBST(PYTHON_TESTS)
 
 # keep on one line for cygwin c.f. #130896
-AC_CONFIG_FILES([libxml2.spec:libxml.spec.in Makefile include/Makefile include/libxml/Makefile doc/Makefile doc/examples/Makefile doc/devhelp/Makefile example/Makefile fuzz/Makefile python/Makefile python/tests/Makefile xstc/Makefile include/libxml/xmlversion.h libxml-2.0.pc libxml-2.0-uninstalled.pc libxml2-config.cmake])
+AC_CONFIG_FILES([libxml2.spec:libxml.spec.in Makefile include/Makefile include/libxml/Makefile include/private/Makefile doc/Makefile doc/examples/Makefile doc/devhelp/Makefile example/Makefile fuzz/Makefile python/Makefile python/tests/Makefile xstc/Makefile include/libxml/xmlversion.h libxml-2.0.pc libxml-2.0-uninstalled.pc libxml2-config.cmake])
 AC_CONFIG_FILES([python/setup.py], [chmod +x python/setup.py])
 AC_CONFIG_FILES([xml2-config], [chmod +x xml2-config])
 AC_OUTPUT

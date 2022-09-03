@@ -24,7 +24,9 @@
 #include <libxml/globals.h>
 #include <libxml/tree.h>
 #include <libxml/parserInternals.h> /* for XML_MAX_TEXT_LENGTH */
-#include "buf.h"
+
+#include "private/buf.h"
+#include "private/error.h"
 
 #ifndef SIZE_MAX
 #define SIZE_MAX ((size_t) -1)
@@ -504,7 +506,7 @@ xmlBufGrow(xmlBufPtr buf, int len) {
     ret = xmlBufGrowInternal(buf, len);
     if (buf->error != 0)
         return(-1);
-    return((int) ret);
+    return(ret > INT_MAX ? INT_MAX : ret);
 }
 
 /**
@@ -1042,11 +1044,11 @@ xmlBufBackToBuffer(xmlBufPtr buf) {
          * Keep the buffer but provide a truncated size value.
          */
         xmlBufOverflowError(buf, "Allocated size too big for xmlBuffer");
-        ret->use = (int) buf->use;
+        ret->use = buf->use;
         ret->size = INT_MAX;
     } else {
-        ret->use = (int) buf->use;
-        ret->size = (int) buf->size;
+        ret->use = buf->use;
+        ret->size = buf->size;
     }
     ret->alloc = buf->alloc;
     ret->content = buf->content;

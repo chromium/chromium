@@ -23,6 +23,9 @@
 #include <libxml/parserInternals.h>
 #include <libxml/xmlstring.h>
 
+#include "private/parser.h"
+#include "private/string.h"
+
 /************************************************************************
  *                                                                      *
  *                Commodity functions to handle xmlChars                *

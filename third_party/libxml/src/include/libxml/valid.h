@@ -58,21 +58,6 @@ typedef void (XMLCDECL *xmlValidityWarningFunc) (void *ctx,
 			       const char *msg,
 			       ...) LIBXML_ATTR_FORMAT(2,3);
 
-#ifdef IN_LIBXML
-/**
- * XML_VCTXT_DTD_VALIDATED:
- *
- * Set after xmlValidateDtdFinal was called.
- */
-#define XML_VCTXT_DTD_VALIDATED (1u << 0)
-/**
- * XML_VCTXT_USE_PCTXT:
- *
- * Set if the validation context is part of a parser context.
- */
-#define XML_VCTXT_USE_PCTXT (1u << 1)
-#endif
-
 /*
  * xmlValidCtxt:
  * An xmlValidCtxt is used for error reporting when validating.

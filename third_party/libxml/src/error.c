@@ -16,9 +16,7 @@
 #include <libxml/xmlmemory.h>
 #include <libxml/globals.h>
 
-void XMLCDECL xmlGenericErrorDefaultFunc	(void *ctx ATTRIBUTE_UNUSED,
-				 const char *msg,
-				 ...) LIBXML_ATTR_FORMAT(2,3);
+#include "private/error.h"
 
 #define XML_GET_VAR_STR(msg, str) {				\
     int       size, prev_size = -1;				\

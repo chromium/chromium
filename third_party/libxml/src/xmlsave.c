@@ -19,9 +19,10 @@
 
 #include <libxml/HTMLtree.h>
 
-#include "buf.h"
-#include "enc.h"
-#include "save.h"
+#include "private/buf.h"
+#include "private/enc.h"
+#include "private/error.h"
+#include "private/save.h"
 
 /************************************************************************
  *									*
@@ -463,7 +464,7 @@ xmlAttrSerializeContent(xmlOutputBufferPtr buf, xmlAttrPtr attr)
  *
  * This will dump the content of the notation table as an XML DTD definition
  */
-void
+static void
 xmlBufDumpNotationTable(xmlBufPtr buf, xmlNotationTablePtr table) {
     xmlBufferPtr buffer;
 
@@ -487,7 +488,7 @@ xmlBufDumpNotationTable(xmlBufPtr buf, xmlNotationTablePtr table) {
  * This will dump the content of the element declaration as an XML
  * DTD definition
  */
-void
+static void
 xmlBufDumpElementDecl(xmlBufPtr buf, xmlElementPtr elem) {
     xmlBufferPtr buffer;
 
@@ -511,7 +512,7 @@ xmlBufDumpElementDecl(xmlBufPtr buf, xmlElementPtr elem) {
  * This will dump the content of the attribute declaration as an XML
  * DTD definition
  */
-void
+static void
 xmlBufDumpAttributeDecl(xmlBufPtr buf, xmlAttributePtr attr) {
     xmlBufferPtr buffer;
 
@@ -534,7 +535,7 @@ xmlBufDumpAttributeDecl(xmlBufPtr buf, xmlAttributePtr attr) {
  *
  * This will dump the content of the entity table as an XML DTD definition
  */
-void
+static void
 xmlBufDumpEntityDecl(xmlBufPtr buf, xmlEntityPtr ent) {
     xmlBufferPtr buffer;
 
@@ -595,7 +596,6 @@ static void
 xhtmlNodeDumpOutput(xmlSaveCtxtPtr ctxt, xmlNodePtr cur);
 #endif
 static void xmlNodeDumpOutputInternal(xmlSaveCtxtPtr ctxt, xmlNodePtr cur);
-void xmlNsListDumpOutput(xmlOutputBufferPtr buf, xmlNsPtr cur);
 static int xmlDocContentDumpOutput(xmlSaveCtxtPtr ctxt, xmlDocPtr cur);
 
 /**
@@ -2178,7 +2178,7 @@ xmlNodeDump(xmlBufferPtr buf, xmlDocPtr doc, xmlNodePtr cur, int level,
     xmlBufBackToBuffer(buffer);
     if (ret > INT_MAX)
         return(-1);
-    return((int) ret);
+    return(ret);
 }
 
 /**

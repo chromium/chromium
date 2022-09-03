@@ -146,6 +146,7 @@ XMLPUBFUN void XMLCALL
 						 int len);
 
 #ifdef LIBXML_SAX1_ENABLED
+XML_DEPRECATED
 XMLPUBFUN int XMLCALL
 		xmlSAXDefaultVersion		(int version);
 #endif /* LIBXML_SAX1_ENABLED */

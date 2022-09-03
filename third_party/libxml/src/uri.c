@@ -19,6 +19,8 @@
 #include <libxml/globals.h>
 #include <libxml/xmlerror.h>
 
+#include "private/error.h"
+
 /**
  * MAX_URI_LENGTH:
  *

@@ -21,6 +21,10 @@
 #include <libxml/xmlmemory.h>
 #include <libxml/threads.h>
 
+#include "private/error.h"
+#include "private/threads.h"
+#include "private/tree.h"
+
 /* #define DEBUG_GLOBALS */
 
 /*
@@ -175,6 +179,8 @@ const char *xmlParserVersion = LIBXML_VERSION_STRING LIBXML_VERSION_EXTRA;
 /**
  * xmlBufferAllocScheme:
  *
+ * DEPRECATED: Don't use.
+ *
  * Global setting, default allocation policy for buffers, default is
  * XML_BUFFER_ALLOC_EXACT
  */
@@ -182,6 +188,8 @@ xmlBufferAllocationScheme xmlBufferAllocScheme = XML_BUFFER_ALLOC_EXACT;
 static xmlBufferAllocationScheme xmlBufferAllocSchemeThrDef = XML_BUFFER_ALLOC_EXACT;
 /**
  * xmlDefaultBufferSize:
+ *
+ * DEPRECATED: Don't use.
  *
  * Global setting, default buffer size. Default value is BASE_BUFFER_SIZE
  */
@@ -201,6 +209,8 @@ int oldXMLWDcompatibility = 0; /* DEPRECATED */
 /**
  * xmlParserDebugEntities:
  *
+ * DEPRECATED: Don't use
+ *
  * Global setting, asking the parser to print out debugging information.
  * while handling entities.
  * Disabled by default
@@ -210,6 +220,8 @@ static int xmlParserDebugEntitiesThrDef = 0;
 /**
  * xmlDoValidityCheckingDefaultValue:
  *
+ * DEPRECATED: Use the modern options API with XML_PARSE_DTDVALID.
+ *
  * Global setting, indicate that the parser should work in validating mode.
  * Disabled by default.
  */
@@ -218,13 +230,17 @@ static int xmlDoValidityCheckingDefaultValueThrDef = 0;
 /**
  * xmlGetWarningsDefaultValue:
  *
- * Global setting, indicate that the parser should provide warnings.
+ * DEPRECATED: Don't use
+ *
+ * Global setting, indicate that the DTD validation should provide warnings.
  * Activated by default.
  */
 int xmlGetWarningsDefaultValue = 1;
 static int xmlGetWarningsDefaultValueThrDef = 1;
 /**
  * xmlLoadExtDtdDefaultValue:
+ *
+ * DEPRECATED: Use the modern options API with XML_PARSE_DTDLOAD.
  *
  * Global setting, indicate that the parser should load DTD while not
  * validating.
@@ -235,6 +251,8 @@ static int xmlLoadExtDtdDefaultValueThrDef = 0;
 /**
  * xmlPedanticParserDefaultValue:
  *
+ * DEPRECATED: Use the modern options API with XML_PARSE_PEDANTIC.
+ *
  * Global setting, indicate that the parser be pedantic
  * Disabled by default.
  */
@@ -242,6 +260,8 @@ int xmlPedanticParserDefaultValue = 0;
 static int xmlPedanticParserDefaultValueThrDef = 0;
 /**
  * xmlLineNumbersDefaultValue:
+ *
+ * DEPRECATED: The modern options API always enables line numbers.
  *
  * Global setting, indicate that the parser should store the line number
  * in the content field of elements in the DOM tree.
@@ -252,6 +272,8 @@ int xmlLineNumbersDefaultValue = 0;
 static int xmlLineNumbersDefaultValueThrDef = 0;
 /**
  * xmlKeepBlanksDefaultValue:
+ *
+ * DEPRECATED: Use the modern options API with XML_PARSE_NOBLANKS.
  *
  * Global setting, indicate that the parser should keep all blanks
  * nodes found in the content
@@ -264,6 +286,8 @@ static int xmlKeepBlanksDefaultValueThrDef = 1;
 /**
  * xmlSubstituteEntitiesDefaultValue:
  *
+ * DEPRECATED: Use the modern options API with XML_PARSE_NOENT.
+ *
  * Global setting, indicate that the parser should not generate entity
  * references but replace them with the actual content of the entity
  * Disabled by default, this should be activated when using XPath since
@@ -273,26 +297,38 @@ static int xmlKeepBlanksDefaultValueThrDef = 1;
 int xmlSubstituteEntitiesDefaultValue = 0;
 static int xmlSubstituteEntitiesDefaultValueThrDef = 0;
 
+/**
+ * xmlRegisterNodeDefaultValue:
+ *
+ * DEPRECATED: Don't use
+ */
 xmlRegisterNodeFunc xmlRegisterNodeDefaultValue = NULL;
 static xmlRegisterNodeFunc xmlRegisterNodeDefaultValueThrDef = NULL;
+
+/**
+ * xmlDeregisterNodeDefaultValue:
+ *
+ * DEPRECATED: Don't use
+ */
 xmlDeregisterNodeFunc xmlDeregisterNodeDefaultValue = NULL;
 static xmlDeregisterNodeFunc xmlDeregisterNodeDefaultValueThrDef = NULL;
 
+/**
+ * xmlParserInputBufferCreateFilenameValue:
+ *
+ * DEPRECATED: Don't use
+ */
 xmlParserInputBufferCreateFilenameFunc xmlParserInputBufferCreateFilenameValue = NULL;
 static xmlParserInputBufferCreateFilenameFunc xmlParserInputBufferCreateFilenameValueThrDef = NULL;
 
+/**
+ * xmlOutputBufferCreateFilenameValue:
+ *
+ * DEPRECATED: Don't use
+ */
 xmlOutputBufferCreateFilenameFunc xmlOutputBufferCreateFilenameValue = NULL;
 static xmlOutputBufferCreateFilenameFunc xmlOutputBufferCreateFilenameValueThrDef = NULL;
 
-/*
- * Error handling
- */
-
-/* xmlGenericErrorFunc xmlGenericError = xmlGenericErrorDefaultFunc; */
-/* Must initialize xmlGenericError in xmlInitParser */
-void XMLCDECL xmlGenericErrorDefaultFunc	(void *ctx ATTRIBUTE_UNUSED,
-				 const char *msg,
-				 ...);
 /**
  * xmlGenericError:
  *
@@ -358,6 +394,9 @@ static int xmlSaveNoEmptyTagsThrDef = 0;
 /**
  * xmlDefaultSAXHandler:
  *
+ * DEPRECATED: This handler is unused and will be removed from future
+ * versions.
+ *
  * Default SAX version1 handler for XML, builds the DOM tree
  */
 xmlSAXHandlerV1 xmlDefaultSAXHandler = {
@@ -395,6 +434,8 @@ xmlSAXHandlerV1 xmlDefaultSAXHandler = {
 /**
  * xmlDefaultSAXLocator:
  *
+ * DEPRECATED: Don't use
+ *
  * The default SAX Locator
  * { getPublicId, getSystemId, getLineNumber, getColumnNumber}
  */
@@ -405,9 +446,12 @@ xmlSAXLocator xmlDefaultSAXLocator = {
     xmlSAX2GetColumnNumber
 };
 
-#ifdef LIBXML_HTML_ENABLED
+#if defined(LIBXML_HTML_ENABLED) && defined(LIBXML_SAX1_ENABLED)
 /**
  * htmlDefaultSAXHandler:
+ *
+ * DEPRECATED: This handler is unused and will be removed from future
+ * versions.
  *
  * Default old SAX v1 handler for HTML, builds the DOM tree
  */
@@ -454,8 +498,8 @@ void
 xmlInitializeGlobalState(xmlGlobalStatePtr gs)
 {
 #ifdef DEBUG_GLOBALS
-    fprintf(stderr, "Initializing globals at %lu for thread %d\n",
-	    (unsigned long) gs, xmlGetThreadId());
+    fprintf(stderr, "Initializing globals at %p for thread %d\n",
+	    (void *) gs, xmlGetThreadId());
 #endif
 
     /*
@@ -543,10 +587,6 @@ void xmlCleanupGlobals(void)
     __xmlGlobalInitMutexDestroy();
 }
 
-/**
- * DOC_DISABLE : we ignore missing doc for the xmlThrDef functions,
- *               those are really internal work
- */
 void
 xmlThrDefSetGenericErrorFunc(void *ctx, xmlGenericErrorFunc handler) {
     xmlMutexLock(xmlThrDefMutex);
@@ -667,7 +707,7 @@ xmlThrDefOutputBufferCreateFilenameDefault(xmlOutputBufferCreateFilenameFunc fun
     return(old);
 }
 
-#ifdef LIBXML_HTML_ENABLED
+#if defined(LIBXML_HTML_ENABLED) && defined(LIBXML_SAX1_ENABLED)
 #undef	htmlDefaultSAXHandler
 xmlSAXHandlerV1 *
 __htmlDefaultSAXHandler(void) {

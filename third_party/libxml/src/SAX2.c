@@ -28,10 +28,9 @@
 #include <libxml/HTMLtree.h>
 #include <libxml/globals.h>
 
-/* Define SIZE_T_MAX unless defined through <limits.h>. */
-#ifndef SIZE_T_MAX
-# define SIZE_T_MAX     ((size_t)-1)
-#endif /* !SIZE_T_MAX */
+#include "private/error.h"
+#include "private/parser.h"
+#include "private/tree.h"
 
 /* #define DEBUG_SAX2 */
 /* #define DEBUG_SAX2_TREE */
@@ -1644,7 +1643,7 @@ xmlSAX2StartElement(void *ctx, const xmlChar *fullname, const xmlChar **atts)
     if (ctxt->linenumbers) {
 	if (ctxt->input != NULL) {
 	    if (ctxt->input->line < USHRT_MAX)
-		ret->line = (unsigned short) ctxt->input->line;
+		ret->line = ctxt->input->line;
 	    else
 	        ret->line = USHRT_MAX;
 	}
@@ -1909,7 +1908,7 @@ skip:
     if (ctxt->linenumbers) {
 	if (ctxt->input != NULL) {
 	    if (ctxt->input->line < USHRT_MAX)
-		ret->line = (unsigned short) ctxt->input->line;
+		ret->line = ctxt->input->line;
 	    else {
 	        ret->line = USHRT_MAX;
 		if (ctxt->options & XML_PARSE_BIG_LINES)
@@ -2287,7 +2286,7 @@ xmlSAX2StartElementNs(void *ctx,
     if (ctxt->linenumbers) {
 	if (ctxt->input != NULL) {
 	    if (ctxt->input->line < USHRT_MAX)
-		ret->line = (unsigned short) ctxt->input->line;
+		ret->line = ctxt->input->line;
 	    else
 	        ret->line = USHRT_MAX;
 	}
@@ -2596,22 +2595,23 @@ xmlSAX2Text(xmlParserCtxtPtr ctxt, const xmlChar *ch, int len,
 		xmlSAX2ErrMemory(ctxt, "xmlSAX2Characters: xmlStrdup returned NULL");
 		return;
  	    }
-            if (((size_t)ctxt->nodelen + (size_t)len > XML_MAX_TEXT_LENGTH) &&
+	    if (ctxt->nodelen > INT_MAX - len) {
+                xmlSAX2ErrMemory(ctxt, "xmlSAX2Characters overflow prevented");
+                return;
+	    }
+            if ((ctxt->nodelen + len > XML_MAX_TEXT_LENGTH) &&
                 ((ctxt->options & XML_PARSE_HUGE) == 0)) {
                 xmlSAX2ErrMemory(ctxt, "xmlSAX2Characters: huge text node");
                 return;
             }
-	    if ((size_t)ctxt->nodelen > SIZE_T_MAX - (size_t)len ||
-	        (size_t)ctxt->nodemem + (size_t)len > SIZE_T_MAX / 2) {
-                xmlSAX2ErrMemory(ctxt, "xmlSAX2Characters overflow prevented");
-                return;
-	    }
 	    if (ctxt->nodelen + len >= ctxt->nodemem) {
 		xmlChar *newbuf;
-		size_t size;
+		int size;
 
-		size = ctxt->nodemem + len;
-		size *= 2;
+		size = ctxt->nodemem > INT_MAX - len ?
+                       INT_MAX :
+                       ctxt->nodemem + len;
+		size = size > INT_MAX / 2 ? INT_MAX : size * 2;
                 newbuf = (xmlChar *) xmlRealloc(lastChild->content,size);
 		if (newbuf == NULL) {
 		    xmlSAX2ErrMemory(ctxt, "xmlSAX2Characters");
@@ -2711,7 +2711,7 @@ xmlSAX2ProcessingInstruction(void *ctx, const xmlChar *target,
     if (ctxt->linenumbers) {
 	if (ctxt->input != NULL) {
 	    if (ctxt->input->line < USHRT_MAX)
-		ret->line = (unsigned short) ctxt->input->line;
+		ret->line = ctxt->input->line;
 	    else
 	        ret->line = USHRT_MAX;
 	}
@@ -2771,7 +2771,7 @@ xmlSAX2Comment(void *ctx, const xmlChar *value)
     if (ctxt->linenumbers) {
 	if (ctxt->input != NULL) {
 	    if (ctxt->input->line < USHRT_MAX)
-		ret->line = (unsigned short) ctxt->input->line;
+		ret->line = ctxt->input->line;
 	    else
 	        ret->line = USHRT_MAX;
 	}
@@ -2828,6 +2828,8 @@ static int xmlSAX2DefaultVersionValue = 2;
 /**
  * xmlSAXDefaultVersion:
  * @version:  the version, 1 or 2
+ *
+ * DEPRECATED: Use parser option XML_PARSE_SAX1.
  *
  * Set the default version of SAX used globally by the library.
  * By default, during initialization the default is set to 2.
@@ -2998,7 +3000,9 @@ xmlSAX2InitHtmlDefaultSAXHandler(xmlSAXHandler *hdlr)
 void
 htmlDefaultSAXHandlerInit(void)
 {
+#ifdef LIBXML_SAX1_ENABLED
     xmlSAX2InitHtmlDefaultSAXHandler((xmlSAXHandlerPtr) &htmlDefaultSAXHandler);
+#endif
 }
 
 #endif /* LIBXML_HTML_ENABLED */

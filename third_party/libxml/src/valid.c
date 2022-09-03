@@ -23,6 +23,9 @@
 #include <libxml/list.h>
 #include <libxml/globals.h>
 
+#include "private/error.h"
+#include "private/parser.h"
+
 static xmlElementPtr xmlGetDtdElementDesc2(xmlDtdPtr dtd, const xmlChar *name,
 	                           int create);
 /* #define DEBUG_VALID_ALGO */
@@ -5015,7 +5018,7 @@ cont:
 	     * save the second branch 'or' branch
 	     */
 	    DEBUG_VALID_MSG("saving 'or' branch");
-	    if (vstateVPush(ctxt, CONT->c2, NODE, (unsigned char)(DEPTH + 1),
+	    if (vstateVPush(ctxt, CONT->c2, NODE, DEPTH + 1,
 			    OCCURS, ROLLBACK_OR) < 0)
 		return(-1);
 	    DEPTH++;

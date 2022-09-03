@@ -44,8 +44,10 @@
 #include <libxml/debugXML.h>
 #endif
 
-#include "buf.h"
-#include "save.h"
+#include "private/buf.h"
+#include "private/entities.h"
+#include "private/error.h"
+#include "private/tree.h"
 
 int __xmlRegisterCallbacks = 0;
 
@@ -2221,7 +2223,8 @@ xmlNewDocPI(xmlDocPtr doc, const xmlChar *name, const xmlChar *content) {
  * @content:  the PI content
  *
  * Creation of a processing instruction element.
- * Use xmlDocNewPI preferably to get string interning
+ *
+ * Use of this function is DISCOURAGED in favor of xmlNewDocPI.
  *
  * Returns a pointer to the new node object.
  */
@@ -2236,6 +2239,8 @@ xmlNewPI(const xmlChar *name, const xmlChar *content) {
  * @name:  the node name
  *
  * Creation of a new node element. @ns is optional (NULL).
+ *
+ * Use of this function is DISCOURAGED in favor of xmlNewDocNode.
  *
  * Returns a pointer to the new node object. Uses xmlStrdup() to make
  * copy of @name.
@@ -2277,6 +2282,8 @@ xmlNewNode(xmlNsPtr ns, const xmlChar *name) {
  * @name:  the node name
  *
  * Creation of a new node element. @ns is optional (NULL).
+ *
+ * Use of this function is DISCOURAGED in favor of xmlNewDocNodeEatName.
  *
  * Returns a pointer to the new node object, with pointer @name as
  * new node's name. Use xmlNewNode() if a copy of @name string is
@@ -2452,6 +2459,9 @@ xmlNewDocFragment(xmlDocPtr doc) {
  * @content:  the text content
  *
  * Creation of a new text node.
+ *
+ * Use of this function is DISCOURAGED in favor of xmlNewDocText.
+ *
  * Returns a pointer to the new node object.
  */
 xmlNodePtr
@@ -2682,6 +2692,8 @@ xmlNewDocText(const xmlDoc *doc, const xmlChar *content) {
  * @content:  the text content
  * @len:  the text len.
  *
+ * Use of this function is DISCOURAGED in favor of xmlNewDocTextLen.
+ *
  * Creation of a new text node with an extra parameter for the content's length
  * Returns a pointer to the new node object.
  */
@@ -2732,6 +2744,8 @@ xmlNewDocTextLen(xmlDocPtr doc, const xmlChar *content, int len) {
 /**
  * xmlNewComment:
  * @content:  the comment content
+ *
+ * Use of this function is DISCOURAGED in favor of xmlNewDocComment.
  *
  * Creation of a new node containing a comment.
  * Returns a pointer to the new node object.
@@ -3003,6 +3017,8 @@ xmlNewChild(xmlNodePtr parent, xmlNsPtr ns,
  * When inserting after @cur, @prev is passed as @cur.
  * If an existing attribute is found it is destroyed prior to adding @prop.
  *
+ * See the note regarding namespaces in xmlAddChild.
+ *
  * Returns the attribute being inserted or NULL in case of error.
  */
 static xmlNodePtr
@@ -3054,6 +3070,8 @@ xmlAddPropSibling(xmlNodePtr prev, xmlNodePtr cur, xmlNodePtr prop) {
  * As a result of text merging @elem may be freed.
  * If the new node is ATTRIBUTE, it is added into properties instead of children.
  * If there is an attribute with equal name, it is first destroyed.
+ *
+ * See the note regarding namespaces in xmlAddChild.
  *
  * Returns the new node or NULL in case of error.
  */
@@ -3133,6 +3151,8 @@ xmlAddNextSibling(xmlNodePtr cur, xmlNodePtr elem) {
  * If the new node is ATTRIBUTE, it is added into properties instead of children.
  * If there is an attribute with equal name, it is first destroyed.
  *
+ * See the note regarding namespaces in xmlAddChild.
+ *
  * Returns the new node or NULL in case of error.
  */
 xmlNodePtr
@@ -3209,6 +3229,8 @@ xmlAddPrevSibling(xmlNodePtr cur, xmlNodePtr elem) {
  * If the new element was already inserted in a document it is
  * first unlinked from its existing context.
  *
+ * See the note regarding namespaces in xmlAddChild.
+ *
  * Returns the new element or NULL in case of error.
  */
 xmlNodePtr
@@ -3284,6 +3306,8 @@ xmlAddSibling(xmlNodePtr cur, xmlNodePtr elem) {
  *
  * Add a list of node at the end of the child list of the parent
  * merging adjacent TEXT nodes (@cur may be freed)
+ *
+ * See the note regarding namespaces in xmlAddChild.
  *
  * Returns the last child or NULL in case of error.
  */
@@ -3370,6 +3394,12 @@ xmlAddChildList(xmlNodePtr parent, xmlNodePtr cur) {
  * merging adjacent TEXT nodes (in which case @cur is freed)
  * If the new node is ATTRIBUTE, it is added into properties instead of children.
  * If there is an attribute with equal name, it is first destroyed.
+ *
+ * All tree manipulation functions can safely move nodes within a document.
+ * But when moving nodes from one document to another, references to
+ * namespaces in element or attribute nodes are NOT fixed. In this case,
+ * you MUST call xmlReconciliateNs after the move operation to avoid
+ * memory errors.
  *
  * Returns the child or NULL in case of error.
  */
@@ -3938,6 +3968,8 @@ xmlUnlinkNode(xmlNodePtr cur) {
  * Unlink the old node from its current context, prune the new one
  * at the same place. If @cur was already inserted in a document it is
  * first unlinked from its existing context.
+ *
+ * See the note regarding namespaces in xmlAddChild.
  *
  * Returns the @old node
  */
@@ -7427,7 +7459,7 @@ xmlBufferDump(FILE *file, xmlBufferPtr buf) {
     if (file == NULL)
 	file = stdout;
     ret = fwrite(buf->content, sizeof(xmlChar), buf->use, file);
-    return(ret > INT_MAX ? INT_MAX : (int)ret);
+    return(ret > INT_MAX ? INT_MAX : ret);
 }
 
 /**
@@ -9574,7 +9606,8 @@ xmlDOMWrapCloneNode(xmlDOMWrapCtxtPtr ctxt,
 		/*
 		* Attributes (xmlAttr).
 		*/
-		clone = (xmlNodePtr) xmlMalloc(sizeof(xmlAttr));
+                /* Use xmlRealloc to avoid -Warray-bounds warning */
+		clone = (xmlNodePtr) xmlRealloc(NULL, sizeof(xmlAttr));
 		if (clone == NULL) {
 		    xmlTreeErrMemory("xmlDOMWrapCloneNode(): allocating an attr-node");
 		    goto internal_error;

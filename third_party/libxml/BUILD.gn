@@ -165,7 +165,6 @@ static_library("libxml") {
     #"src/SAX.c",
     "src/SAX2.c",
     "src/buf.c",
-    "src/buf.h",
 
     #"src/c14n.c",
     #"src/catalog.c",
@@ -173,7 +172,6 @@ static_library("libxml") {
 
     #"src/debugXML.c",
     "src/dict.c",
-    "src/enc.h",
     "src/encoding.c",
     "src/entities.c",
     "src/error.c",
@@ -233,7 +231,6 @@ static_library("libxml") {
     "src/pattern.c",
 
     #"src/relaxng.c",
-    "src/save.h",
 
     #"src/schematron.c",
     "src/threads.c",
@@ -273,7 +270,6 @@ static_library("libxml") {
 
     #"src/xpointer.c",
     #"src/xzlib.c",
-    "src/xzlib.h",
   ]
 
   configs -= [ "//build/config/compiler:chromium_code" ]

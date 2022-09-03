@@ -1,12 +1,222 @@
+NEWS file for libxml2
 
-        NEWS file for libxml2
+v2.10.0: Aug 17 2022
 
-The change log at 
-ChangeLog.html
- describes the recents commits
-to the GIT at 
-https://gitlab.gnome.org/GNOME/libxml2
- code base.Here is the list of public releases:
+### Security
+
+- [CVE-2022-2309] Reset nsNr in xmlCtxtReset
+- Reserve byte for NUL terminator and report errors consistently in xmlBuf and
+  xmlBuffer (David Kilzer)
+- Fix missing NUL terminators in xmlBuf and xmlBuffer functions (David Kilzer)
+- Fix integer overflow in xmlBufferDump() (David Kilzer)
+- xmlBufAvail() should return length without including a byte for NUL
+  terminator (David Kilzer)
+- Fix ownership of xmlNodePtr & xmlAttrPtr fields in xmlSetTreeDoc() (David
+  Kilzer)
+- Use xmlNewDocText in xmlXIncludeCopyRange
+- Fix use-after-free bugs when calling xmlTextReaderClose() before
+  xmlFreeTextReader() on post-validating parser (David Kilzer)
+- Use UPDATE_COMPAT() consistently in buf.c (David Kilzer)
+- fix: xmlXPathParserContext could be double-delete in  OOM case. (jinsub ahn)
+
+### Removals and deprecations
+
+- Disable XPointer location support by default
+- Remove outdated xml2Conf.sh
+- Deprecate module init and cleanup functions
+- Remove obsolete XML Software Autoupdate (XSA) file
+- Remove DOCBparser
+- Remove obsolete Python test framework
+- Remove broken VxWorks support
+- Remove broken Mac OS 9 support
+- Remove broken bakefile support
+- Remove broken Visual Studio 2010 support
+- Remove broken Windows CE support
+- Deprecate IDREF-related functions in valid.h
+- Deprecate legacy functions
+- Disable legacy support by default
+- Deprecate all functions in nanoftp.h
+- Disable FTP support by default
+- Add XML_DEPRECATED macro
+- Remove elfgcchack.h
+
+### Regressions
+
+- Skip incorrectly opened HTML comments
+- Restore behavior of htmlDocContentDumpFormatOutput() (David Kilzer)
+
+### Bug fixes
+
+- Fix memory leak with invalid XSD
+- Make XPath depth check work with recursive invocations
+- Fix memory leak in xmlLoadEntityContent error path
+- Avoid double-free if malloc fails in inputPush
+- Properly fold whitespace around the QName value when validating an XSD
+  schema. (Damjan Jovanovic)
+- Add whitespace folding for some atomic data types that it's missing on.
+  (Damjan Jovanovic)
+- Don't add IDs containing unexpanded entity references
+
+### Improvements
+
+- Avoid calling xmlSetTreeDoc
+- Simplify xmlFreeNode
+- Don't reset nsDef when changing node content
+- Fix unintended fall-through in xmlNodeAddContentLen
+- Remove unused xmlBuf functions (David Kilzer)
+- Implement xpath1() XPointer scheme
+- Add configuration flag for XPointer locations support
+- Fix compiler warnings in Python code
+- Mark more static data as `const` (David Kilzer)
+- Make xmlStaticCopyNode non-recursive
+- Clean up encoding switching code
+- Simplify recursive pthread mutex
+- Use non-recursive mutex in dict.c
+- Fix parser progress checks
+- Avoid arithmetic on freed pointers
+- Improve buffer allocation scheme
+- Remove unneeded #includes
+- Add support for some non-standard escapes in regular expressions. (Damjan
+  Jovanovic)
+- htmlParseComment: handle abruptly-closed comments (Mike Dalessio)
+- Add let variable tag support (Oliver Diehl)
+- Add value-of tag support (Oliver Diehl)
+- Remove useless call to xmlRelaxNGCleanupTypes
+- Don't include ICU headers in public headers
+- Update `xmlStrlen()` to use POSIX / ISO C `strlen()` (Mike Dalessio)
+- Fix unused variable warnings with disabled features
+- Only warn on invalid redeclarations of predefined entities
+- Remove unneeded code in xmlreader.c
+- Rework validation context flags
+
+### Portability
+
+- Use NAN/INFINITY if available to init XPath NaN/Inf (Sergey Kosukhin)
+- Fix Python tests on macOS
+- Fix xmlCleanupThreads on Windows
+- Fix reinitialization of library on Windows
+- Don't mix declarations and code in runtest.c
+- Use portable python shebangs (David Seifert)
+- Use critical sections as mutex on Windows
+- Don't set HAVE_WIN32_THREADS in win32config.h
+- Use stdint.h with newer MSVC
+- Remove cruft from win32config.h
+- Remove isinf/isnan emulation in win32config.h
+- Always fopen files with "rb"
+- Remove __DJGPP__ checks
+- Remove useless __CYGWIN__ checks
+
+### Build system
+
+- Don't autogenerate doc/examples/Makefile.am
+- cmake: Install libxml.m4 on UNIX-like platforms (Daniel E)
+- cmake: Use symbol versioning on UNIX-like platforms (Daniel E)
+- Port genUnicode.py to Python 3
+- Port gentest.py to Python 3
+- cmake: Fix build without thread support
+- cmake: Install documentation in CMAKE_INSTALL_DOCDIR
+- cmake: Remove non needed files in docs dir (Daniel E)
+- configure: move XML_PRIVATE_LIBS after WIN32_EXTRA_LIBADD is set
+  (Christopher Degawa)
+- Move local Autoconf macros into m4 directory
+- Use XML_PRIVATE_LIBS in libxml2_la_LIBADD
+- Update libxml-2.0-uninstalled.pc.in
+- Remove LIBS from XML_PRIVATE_LIBS
+- Add WIN32_EXTRA_LIBADD to XML_PRIVATE_LIBS
+- Don't overlink executables
+- cmake: Adjust paths for UNIX or UNIX-like target systems (Daniel Engberg)
+- build: Make use of variables in libxml's pkg-config file (Daniel Engberg)
+- Avoid obsolescent `test -a` constructs (David Seifert)
+- Move AM_MAINTAINER_MODE to AM section
+- configure.ac: make AM_SILENT_RULES([yes]) unconditional (David Seifert)
+- Streamline documentation installation
+- Don't try to recreate COPYING symlink
+- Detect libm using libtool's macros (David Seifert)
+- configure.ac: disable static libraries by default (David Seifert)
+- python/Makefile.am: nest python docs in $(docdir) (David Seifert)
+- python/Makefile.am: rely on global AM_INIT_AUTOMAKE (David Seifert)
+- Makefile.am: install examples more idiomatically (David Seifert)
+- configure.ac: remove useless AC_SUBST (David Seifert)
+- Respect `--sysconfdir` in source files (David Seifert)
+- Ignore configure backup file created by recent autoreconf too (Vadim Zeitlin)
+- Only install *.html and *.c example files
+- Remove --with-html-dir option
+- Rework documentation build system
+- Remove old website
+- Use AM_PATH_PYTHON/PKG_CHECK_MODULES for python bindings (David Seifert)
+- Update genChRanges.py
+- Update build_glob.py
+- Remove ICONV_CONST test
+- Remove obsolete AC_HEADER checks
+- Don't check for standard C89 library functions
+- Don't check for standard C89 headers
+- Remove special configuration for certain maintainers
+
+### Test suite, CI
+
+- Disable network in API tests
+- testapi: remove leading slash from "/missing.xml" (Mike Gilbert)
+- Build Autotools CI tests out of source tree (VPATH)
+- Add --with-minimum build to CI tests
+- Fix warnings when testing --with-minimum build
+- cmake: Run all tests when threads are disabled
+- Also build CI tests with -Werror
+- Move doc/examples tests to new test suite
+- Simplify 'make check' targets
+- Fix schemas and relaxng tests
+- Remove unused result files
+- Allow missing result files in runtest
+- Move regexp tests to runtest
+- Move SVG tests to runtest.c
+- Move testModule to new test suite
+- Move testThreads to new test suite
+- Remove major parts of old test suite
+- Make testchar return an error on failure (Tony Tascioglu)
+- Add CI job for static build
+- python/tests: open() relative to test scripts (David Seifert)
+- Port some test scripts to Python 3
+
+### Documentation
+
+- Improve documentation of tree manipulation API
+- Update xml2-config man page
+- Consolidate man pages
+- Rename xmlcatalog_man.xml
+- Make examples a standalone HTML page
+- Fix documentation in entities.c
+- Add note about optimization flags
+
+
+v2.9.14: May 02 2022:
+   - Security:
+  [CVE-2022-29824] Integer overflow in xmlBuf and xmlBuffer
+  Fix potential double-free in xmlXPtrStringRangeFunction
+  Fix memory leak in xmlFindCharEncodingHandler
+  Normalize XPath strings in-place
+  Prevent integer-overflow in htmlSkipBlankChars() and xmlSkipBlankChars()
+    (David Kilzer)
+  Fix leak of xmlElementContent (David Kilzer)
+
+   - Bug fixes:
+  Fix parsing of subtracted regex character classes
+  Fix recursion check in xinclude.c
+  Reset last error in xmlCleanupGlobals
+  Fix certain combinations of regex range quantifiers
+  Fix range quantifier on subregex
+
+   - Improvements:
+  Fix recovery from invalid HTML start tags
+
+   - Build system, portability:
+  Define LFS macros before including system headers
+  Initialize XPath floating-point globals
+  configure: check for icu DEFS (James Hilliard)
+  configure.ac: produce tar.xz only (GNOME policy) (David Seifert)
+  CMakeLists.txt: Fix LIBXML_VERSION_NUMBER
+  Fix build with older Python versions
+  Fix --without-valid build
+
+
 v2.9.13: Feb 19 2022:
    - Security:
   [CVE-2022-23308] Use-after-free of ID and IDREF attributes
