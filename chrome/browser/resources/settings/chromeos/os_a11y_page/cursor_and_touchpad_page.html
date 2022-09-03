@@ -98,10 +98,6 @@
     label="$i18n{cursorHighlightLabel}"
     deep-link-focus-id$="[[Setting.kHighlightCursorWhileMoving]]">
 </settings-toggle-button>
-<cr-link-row id="pointerSubpageButton" class="hr"
-    label="$i18n{mouseSettingsTitle}" on-click="onMouseTap_"
-    role-description="$i18n{subpageArrowRoleDescription}" embedded>
-</cr-link-row>
 <template is="dom-if" if="[[showShelfNavigationButtonsSettings_]]" restamp>
   <!-- If shelf navigation buttons are implicitly enabled by other a11y
       settings (e.g. by spoken feedback), the toggle control should be
@@ -124,3 +120,7 @@
       deep-link-focus-id$="[[Setting.kTabletNavigationButtons]]">
   </settings-toggle-button>
 </template>
+<cr-link-row id="pointerSubpageButton" class="hr"
+    label="$i18n{mouseSettingsTitle}" on-click="onMouseTap_"
+    role-description="$i18n{subpageArrowRoleDescription}" embedded>
+</cr-link-row>
