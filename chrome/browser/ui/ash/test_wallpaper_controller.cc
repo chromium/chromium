@@ -8,7 +8,9 @@
 #include "ash/public/cpp/wallpaper/online_wallpaper_params.h"
 #include "ash/public/cpp/wallpaper/wallpaper_controller_observer.h"
 #include "ash/public/cpp/wallpaper/wallpaper_types.h"
+#include "base/containers/adapters.h"
 #include "base/notreached.h"
+#include "base/ranges/algorithm.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/user_type.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -98,16 +100,16 @@ bool TestWallpaperController::SetDailyGooglePhotosWallpaperIdCache(
     const AccountId& account_id,
     const DailyGooglePhotosIdCache& ids) {
   id_cache_.ShrinkToSize(0);
-  std::for_each(ids.rbegin(), ids.rend(),
-                [&](uint id) { id_cache_.Put(std::move(id)); });
+  base::ranges::for_each(base::Reversed(ids),
+                         [&](uint id) { id_cache_.Put(std::move(id)); });
   return true;
 }
 
 bool TestWallpaperController::GetDailyGooglePhotosWallpaperIdCache(
     const AccountId& account_id,
     DailyGooglePhotosIdCache& ids_out) const {
-  std::for_each(id_cache_.rbegin(), id_cache_.rend(),
-                [&](uint id) { ids_out.Put(std::move(id)); });
+  base::ranges::for_each(base::Reversed(id_cache_),
+                         [&](uint id) { ids_out.Put(std::move(id)); });
   return true;
 }
 

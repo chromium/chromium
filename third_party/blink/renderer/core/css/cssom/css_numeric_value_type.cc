@@ -4,7 +4,9 @@
 
 #include "third_party/blink/renderer/core/css/cssom/css_numeric_value_type.h"
 
-#include <algorithm>
+#include <functional>
+
+#include "base/ranges/algorithm.h"
 
 namespace blink {
 
@@ -127,8 +129,8 @@ CSSNumericValueType::CSSNumericValueType(int exponent,
 
 CSSNumericValueType CSSNumericValueType::NegateExponents(
     CSSNumericValueType type) {
-  std::for_each(type.exponents_.begin(), type.exponents_.end(),
-                [](int& v) { v *= -1; });
+  base::ranges::transform(type.exponents_, type.exponents_.begin(),
+                          std::negate());
   return type;
 }
 

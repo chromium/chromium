@@ -4,9 +4,8 @@
 
 #include "ui/accessibility/ax_event_generator.h"
 
-#include <algorithm>
-
 #include "base/containers/contains.h"
+#include "base/ranges/algorithm.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_event.h"
 #include "ui/accessibility/ax_live_region_tracker.h"
@@ -947,8 +946,7 @@ void AXEventGenerator::FireRelationSourceEvents(AXTree* tree,
     if (sources_it == target_to_sources.end())
       return;
 
-    auto sources = sources_it->second;
-    std::for_each(sources.begin(), sources.end(), [&](AXNodeID source_id) {
+    base::ranges::for_each(sources_it->second, [&](AXNodeID source_id) {
       AXNode* source_node = tree->GetFromId(source_id);
 
       if (!source_node || source_nodes.count(source_node) > 0)
@@ -962,18 +960,15 @@ void AXEventGenerator::FireRelationSourceEvents(AXTree* tree,
     });
   };
 
-  std::for_each(tree->int_reverse_relations().begin(),
-                tree->int_reverse_relations().end(), callback);
-  std::for_each(
-      tree->intlist_reverse_relations().begin(),
-      tree->intlist_reverse_relations().end(), [&](auto& entry) {
-        // Explicitly exclude relationships for which an additional event on the
-        // source node would cause extra noise. For example, kRadioGroupIds
-        // forms relations among all radio buttons and serves little value for
-        // AT to get events on the previous radio button in the group.
-        if (entry.first != ax::mojom::IntListAttribute::kRadioGroupIds)
-          callback(entry);
-      });
+  base::ranges::for_each(tree->int_reverse_relations(), callback);
+  base::ranges::for_each(tree->intlist_reverse_relations(), [&](auto& entry) {
+    // Explicitly exclude relationships for which an additional event on the
+    // source node would cause extra noise. For example, kRadioGroupIds
+    // forms relations among all radio buttons and serves little value for
+    // AT to get events on the previous radio button in the group.
+    if (entry.first != ax::mojom::IntListAttribute::kRadioGroupIds)
+      callback(entry);
+  });
 }
 
 void AXEventGenerator::TrimEventsDueToAncestorIgnoredChanged(

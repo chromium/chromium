@@ -4,7 +4,6 @@
 
 #include "components/password_manager/core/browser/password_manager_util.h"
 
-#include <algorithm>
 #include <memory>
 #include <string>
 #include <tuple>
@@ -111,11 +110,11 @@ void TrimUsernameOnlyCredentials(
                 });
 
   // Set "skip_zero_click" on federated credentials.
-  std::for_each(android_credentials->begin(), android_credentials->end(),
-                [](const std::unique_ptr<PasswordForm>& form) {
-                  if (form->scheme == PasswordForm::Scheme::kUsernameOnly)
-                    form->skip_zero_click = true;
-                });
+  base::ranges::for_each(
+      *android_credentials, [](const std::unique_ptr<PasswordForm>& form) {
+        if (form->scheme == PasswordForm::Scheme::kUsernameOnly)
+          form->skip_zero_click = true;
+      });
 }
 
 bool IsLoggingActive(const password_manager::PasswordManagerClient* client) {

@@ -391,10 +391,11 @@ bool DiscardableSharedMemoryHeap::OnMemoryDump(
     // This iterates over all the memory allocated by the heap, and calls
     // |OnMemoryDump| for each. It does not contain any information about the
     // DiscardableSharedMemoryHeap itself.
-    std::for_each(memory_segments_.begin(), memory_segments_.end(),
-                  [pmd](const std::unique_ptr<ScopedMemorySegment>& segment) {
-                    segment->OnMemoryDump(pmd);
-                  });
+    base::ranges::for_each(
+        memory_segments_,
+        [pmd](const std::unique_ptr<ScopedMemorySegment>& segment) {
+          segment->OnMemoryDump(pmd);
+        });
   }
 
   return true;

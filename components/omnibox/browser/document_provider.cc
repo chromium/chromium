@@ -1007,25 +1007,26 @@ ACMatches DocumentProvider::ParseDocumentSearchResults(
 
 void DocumentProvider::CopyCachedMatchesToMatches(
     size_t skip_n_most_recent_matches) {
-  std::for_each(std::next(matches_cache_.begin(), skip_n_most_recent_matches),
-                matches_cache_.end(), [&](const auto& cache_key_match_pair) {
-                  auto match = cache_key_match_pair.second;
-                  match.allowed_to_be_default_match = false;
-                  match.TryRichAutocompletion(
-                      base::UTF8ToUTF16(match.destination_url.spec()),
-                      match.contents, input_);
-                  match.contents_class =
-                      DocumentProvider::Classify(match.contents, input_.text());
-                  match.RecordAdditionalInfo("from cache", "true");
-                  matches_.push_back(match);
-                });
+  base::ranges::transform(
+      std::next(matches_cache_.begin(), skip_n_most_recent_matches),
+      matches_cache_.end(), std::back_inserter(matches_),
+      [this](auto match) {
+        match.allowed_to_be_default_match = false;
+        match.TryRichAutocompletion(
+            base::UTF8ToUTF16(match.destination_url.spec()), match.contents,
+            input_);
+        match.contents_class =
+            DocumentProvider::Classify(match.contents, input_.text());
+        match.RecordAdditionalInfo("from cache", "true");
+        return match;
+      },
+      &MatchesCache::value_type::second);
 }
 
 void DocumentProvider::SetCachedMatchesScoresTo0() {
-  std::for_each(matches_cache_.begin(), matches_cache_.end(),
-                [&](auto& cache_key_match_pair) {
-                  cache_key_match_pair.second.relevance = 0;
-                });
+  base::ranges::for_each(matches_cache_, [&](auto& cache_key_match_pair) {
+    cache_key_match_pair.second.relevance = 0;
+  });
 }
 
 void DocumentProvider::DemoteMatchesBeyondMax() {

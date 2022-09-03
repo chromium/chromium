@@ -155,6 +155,7 @@ NewMobileIdentityConsistencyFRE GetNewMobileIdentityConsistencyFRE() {
 
 // Returns the weight for each trial group according to the FRE variations.
 std::map<variations::VariationID, int> GetGroupWeightsForFREVariations() {
+  // It would probably be more efficient to use a fixed_flat_map.
   std::map<variations::VariationID, int> weight_by_id = {
       {kControlTrialID, 25},
       {kHoldbackTrialID, 0},

@@ -8,7 +8,6 @@
 
 #include <regstr.h>
 
-#include <algorithm>
 #include <iostream>
 #include <memory>
 #include <string>
@@ -25,6 +24,7 @@
 #include "base/path_service.h"
 #include "base/process/launch.h"
 #include "base/process/process.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -438,8 +438,7 @@ void CallDispatchMethod(
       GetDispId(dispatch, method_name), IID_NULL, LOCALE_USER_DEFAULT,
       DISPATCH_METHOD, &dp, nullptr, nullptr, nullptr));
 
-  std::for_each(params.begin(), params.end(),
-                [&](auto& param) { ::VariantClear(&param); });
+  base::ranges::for_each(params, [&](auto& param) { ::VariantClear(&param); });
   return;
 }
 

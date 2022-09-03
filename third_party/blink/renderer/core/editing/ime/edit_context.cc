@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/editing/ime/edit_context.h"
 
 #include "base/containers/contains.h"
+#include "base/ranges/algorithm.h"
 #include "base/trace_event/trace_event.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_vector.h"
@@ -258,13 +259,12 @@ void EditContext::updateCharacterBounds(
                    std::to_string(character_bounds.size()));
 
   character_bounds_.Clear();
-  std::for_each(character_bounds.begin(), character_bounds.end(),
-                [this](const auto& bounds) {
-                  auto result_bounds = bounds->ToEnclosingRect();
-                  TRACE_EVENT1("ime", "EditContext::updateCharacterBounds",
-                               "charBounds", result_bounds.ToString());
-                  character_bounds_.push_back(result_bounds);
-                });
+  base::ranges::for_each(character_bounds, [this](const auto& bounds) {
+    auto result_bounds = bounds->ToEnclosingRect();
+    TRACE_EVENT1("ime", "EditContext::updateCharacterBounds", "charBounds",
+                 result_bounds.ToString());
+    character_bounds_.push_back(result_bounds);
+  });
 }
 
 void EditContext::updateControlBounds(DOMRect* control_bounds) {
@@ -352,13 +352,11 @@ const HeapVector<Member<Element>>& EditContext::attachedElements() {
 
 const HeapVector<Member<DOMRect>> EditContext::characterBounds() {
   HeapVector<Member<DOMRect>> dom_rects;
-
-  std::for_each(character_bounds_.begin(), character_bounds_.end(),
-                [&dom_rects](const auto& bound) {
-                  dom_rects.push_back(DOMRect::Create(
-                      bound.x(), bound.y(), bound.width(), bound.height()));
-                });
-
+  base::ranges::transform(
+      character_bounds_, std::back_inserter(dom_rects), [](const auto& bound) {
+        return DOMRect::Create(bound.x(), bound.y(), bound.width(),
+                               bound.height());
+      });
   return dom_rects;
 }
 
@@ -853,9 +851,8 @@ bool EditContext::GetCompositionCharacterBounds(WebVector<gfx::Rect>& bounds) {
                std::to_string(character_bounds_.size()));
 
   bounds.Clear();
-  std::for_each(
-      character_bounds_.begin(), character_bounds_.end(),
-      [&bounds, this](auto& bound_in_css_pixels) {
+  base::ranges::for_each(
+      character_bounds_, [&bounds, this](auto& bound_in_css_pixels) {
         // EditContext's coordinates are in CSS pixels, which need to be
         // converted to physical pixels before return.
         auto result_bounds = gfx::ScaleToEnclosingRect(

@@ -8,7 +8,6 @@
 #include <shlobj.h>
 #include <windows.h>
 
-#include <algorithm>
 #include <array>
 #include <string>
 #include <vector>
@@ -17,6 +16,7 @@
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/path_service.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -331,8 +331,8 @@ TEST_F(AppCommandRunnerTest, LoadAutoRunOnOsUpgradeAppCommands) {
       {{L"/c", L"exit 5420"}, kCmdId2},
   };
 
-  std::for_each(
-      std::begin(test_cases), std::end(test_cases), [&](const auto& test_case) {
+  base::ranges::for_each(
+      test_cases, [&](const auto& test_case) {
         CreateAppCommandOSUpgradeRegistry(
             GetTestScope(), kAppId1, test_case.command_id,
             base::StrCat({cmd_exe_command_line_.GetCommandLineString(), L" ",
@@ -344,12 +344,12 @@ TEST_F(AppCommandRunnerTest, LoadAutoRunOnOsUpgradeAppCommands) {
                                                           kAppId1);
 
   ASSERT_EQ(std::size(app_command_runners), std::size(test_cases));
-  std::for_each(app_command_runners.begin(), app_command_runners.end(),
-                [&](const auto& app_command_runner) {
-                  base::Process process;
-                  EXPECT_HRESULT_SUCCEEDED(app_command_runner.Run({}, process));
-                  EXPECT_TRUE(process.WaitForExit(/*exit_code=*/nullptr));
-                });
+  base::ranges::for_each(
+      app_command_runners, [&](const auto& app_command_runner) {
+        base::Process process;
+        EXPECT_HRESULT_SUCCEEDED(app_command_runner.Run({}, process));
+        EXPECT_TRUE(process.WaitForExit(/*exit_code=*/nullptr));
+      });
 }
 
 }  // namespace updater

@@ -4,6 +4,7 @@
 
 #include "components/exo/touch.h"
 
+#include "base/ranges/algorithm.h"
 #include "base/trace_event/trace_event.h"
 #include "components/exo/input_trace.h"
 #include "components/exo/seat.h"
@@ -207,9 +208,9 @@ Surface* Touch::GetEffectiveTargetForEvent(ui::LocatedEvent* event) const {
 }
 
 void Touch::CancelAllTouches() {
-  std::for_each(surface_touch_count_map_.begin(),
-                surface_touch_count_map_.end(),
-                [this](auto& it) { it.first->RemoveSurfaceObserver(this); });
+  base::ranges::for_each(surface_touch_count_map_, [this](auto& it) {
+    it.first->RemoveSurfaceObserver(this);
+  });
   touch_points_surface_map_.clear();
   surface_touch_count_map_.clear();
 }

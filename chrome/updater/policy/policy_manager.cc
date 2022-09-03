@@ -4,10 +4,10 @@
 
 #include "chrome/updater/policy/policy_manager.h"
 
-#include <algorithm>
 #include <string>
 #include <vector>
 
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
 #include "chrome/updater/policy/manager.h"
@@ -59,26 +59,23 @@ PolicyManager::PolicyManager(base::Value::Dict policies)
     : policies_(std::move(policies)) {
   constexpr size_t kInstallAppPrefixLength =
       base::StringPiece(kInstallAppPrefix).length();
-  std::for_each(std::begin(policies_), std::end(policies_),
-                [&](const auto& policy) {
-                  const std::string policy_name = policy.first;
-                  if (policy_name.length() <= kInstallAppPrefixLength ||
-                      !base::StartsWith(policy_name, kInstallAppPrefix) ||
-                      base::StartsWith(policy_name, kInstallAppsDefault) ||
-                      !policy.second.is_int()) {
-                    return;
-                  }
+  base::ranges::for_each(policies_, [&](const auto& policy) {
+    const std::string policy_name = policy.first;
+    if (policy_name.length() <= kInstallAppPrefixLength ||
+        !base::StartsWith(policy_name, kInstallAppPrefix) ||
+        base::StartsWith(policy_name, kInstallAppsDefault) ||
+        !policy.second.is_int()) {
+      return;
+    }
 
-                  if (policy.second.GetInt() !=
-                      (GetUpdaterScope() == UpdaterScope::kSystem
-                           ? kPolicyForceInstallMachine
-                           : kPolicyForceInstallUser)) {
-                    return;
-                  }
+    if (policy.second.GetInt() != (GetUpdaterScope() == UpdaterScope::kSystem
+                                       ? kPolicyForceInstallMachine
+                                       : kPolicyForceInstallUser)) {
+      return;
+    }
 
-                  force_install_apps_.push_back(
-                      policy_name.substr(kInstallAppPrefixLength));
-                });
+    force_install_apps_.push_back(policy_name.substr(kInstallAppPrefixLength));
+  });
 }
 
 PolicyManager::~PolicyManager() = default;

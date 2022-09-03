@@ -38,8 +38,8 @@ ScopedServer::~ScopedServer() {
     // Forces `request_matcher` to log to help debugging, unless the
     // predicate matches "..." string in the request.
     ADD_FAILURE() << "Unmet expectation: ";
-    std::for_each(request_matcher.begin(), request_matcher.end(),
-                  [](RequestMatcherPredicate pred) { pred.Run("..."); });
+    base::ranges::for_each(
+        request_matcher, [](RequestMatcherPredicate pred) { pred.Run("..."); });
   }
 }
 

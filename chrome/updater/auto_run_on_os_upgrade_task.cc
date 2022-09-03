@@ -4,7 +4,6 @@
 
 #include "chrome/updater/auto_run_on_os_upgrade_task.h"
 
-#include <algorithm>
 #include <string>
 #include <vector>
 
@@ -13,6 +12,7 @@
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/process/launch.h"
+#include "base/ranges/algorithm.h"
 #include "base/sequence_checker.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
@@ -58,8 +58,8 @@ void AutoRunOnOsUpgradeTask::Run(base::OnceClosure callback) {
 
 void AutoRunOnOsUpgradeTask::RunOnOsUpgradeForApps(
     const std::vector<std::string>& app_ids) {
-  std::for_each(app_ids.begin(), app_ids.end(),
-                [&](const auto& app_id) { RunOnOsUpgradeForApp(app_id); });
+  base::ranges::for_each(
+      app_ids, [&](const auto& app_id) { RunOnOsUpgradeForApp(app_id); });
 }
 
 #if BUILDFLAG(IS_WIN)
@@ -87,20 +87,19 @@ std::string GetOSUpgradeVersionsString(
 
 size_t AutoRunOnOsUpgradeTask::RunOnOsUpgradeForApp(const std::string& app_id) {
   size_t number_of_successful_tasks = 0;
-  const std::vector<AppCommandRunner> app_command_runners =
+  base::ranges::for_each(
       AppCommandRunner::LoadAutoRunOnOsUpgradeAppCommands(
-          scope_, base::SysUTF8ToWide(app_id));
-  std::for_each(app_command_runners.begin(), app_command_runners.end(),
-                [&](const auto& app_command_runner) {
-                  base::Process process;
-                  if (FAILED(app_command_runner.Run(
-                          {base::SysUTF8ToWide(os_upgrade_string_)}, process)))
-                    return;
+          scope_, base::SysUTF8ToWide(app_id)),
+      [&](const auto& app_command_runner) {
+        base::Process process;
+        if (FAILED(app_command_runner.Run(
+                {base::SysUTF8ToWide(os_upgrade_string_)}, process)))
+          return;
 
-                  VLOG(1) << "Successfully launched OS upgrade task with PID: "
-                          << process.Pid() << ": " << os_upgrade_string_;
-                  ++number_of_successful_tasks;
-                });
+        VLOG(1) << "Successfully launched OS upgrade task with PID: "
+                << process.Pid() << ": " << os_upgrade_string_;
+        ++number_of_successful_tasks;
+      });
 
   return number_of_successful_tasks;
 }

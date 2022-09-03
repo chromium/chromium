@@ -6,7 +6,6 @@
 
 #include <sys/types.h>
 
-#include <algorithm>
 #include <fstream>
 #include <iostream>
 #include <limits>
@@ -25,6 +24,7 @@
 #include "base/files/file_util.h"
 #include "base/i18n/number_formatting.h"
 #include "base/notreached.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -323,8 +323,8 @@ ProcessDataCollector::GetProcessUsages() {
       process_list.begin(), process_list.end(), 0.,
       [](const auto& i, const auto& s) { return i + s.power_usage_fraction; });
   if (total != 0) {
-    std::for_each(process_list.begin(), process_list.end(),
-                  [&total](auto& c) { c.power_usage_fraction /= total; });
+    base::ranges::for_each(
+        process_list, [&total](auto& c) { c.power_usage_fraction /= total; });
   }
 
   return process_list;

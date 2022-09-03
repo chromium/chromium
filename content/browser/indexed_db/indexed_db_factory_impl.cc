@@ -21,6 +21,7 @@
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -466,8 +467,8 @@ std::vector<IndexedDBDatabase*> IndexedDBFactoryImpl::GetOpenDatabasesForBucket(
   IndexedDBBucketState* factory = it->second.get();
   std::vector<IndexedDBDatabase*> out;
   out.reserve(factory->databases().size());
-  std::for_each(factory->databases().begin(), factory->databases().end(),
-                [&out](const auto& p) { out.push_back(p.second.get()); });
+  base::ranges::transform(factory->databases(), std::back_inserter(out),
+                          [](const auto& p) { return p.second.get(); });
   return out;
 }
 

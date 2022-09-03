@@ -9,8 +9,10 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
+#include "base/containers/adapters.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/ash/borealis/borealis_prefs.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_pref_names.h"
@@ -39,7 +41,7 @@ base::UnguessableToken TokenFromString(const std::string& str) {
 
   uint64_t high = 0, low = 0;
   int count = 0;
-  std::for_each(std::rbegin(bytes), std::rend(bytes), [&](auto byte) {
+  base::ranges::for_each(base::Reversed(bytes), [&](auto byte) {
     auto* p = count < kBytesPerUint64 ? &low : &high;
     int pos = count < kBytesPerUint64 ? count : count - kBytesPerUint64;
     *p += static_cast<uint64_t>(byte) << (pos * 8);

@@ -6,9 +6,8 @@
 
 #include <Psapi.h>
 
-#include <algorithm>
-
 #include "base/check.h"
+#include "base/ranges/algorithm.h"
 #include "chrome/browser/install_verification/win/module_info.h"
 
 namespace {
@@ -21,7 +20,7 @@ void CheckFreeLibrary(HMODULE module) {
 }  // namespace
 
 ModuleList::~ModuleList() {
-  std::for_each(modules_.begin(), modules_.end(), &CheckFreeLibrary);
+  base::ranges::for_each(modules_, &CheckFreeLibrary);
 }
 
 std::unique_ptr<ModuleList> ModuleList::FromLoadedModuleSnapshot(

@@ -6,9 +6,9 @@
 
 #include <stddef.h>
 
-#include <algorithm>
 #include <unordered_map>
 
+#include "base/ranges/algorithm.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/common/gles2_cmd_copy_texture_chromium_utils.h"
 #include "gpu/command_buffer/service/context_state.h"
@@ -1022,10 +1022,8 @@ void CopyTextureResourceManagerImpl::Destroy() {
   glDeleteFramebuffersEXT(1, &framebuffer_);
   framebuffer_ = 0;
 
-  std::for_each(
-      vertex_shaders_.begin(), vertex_shaders_.end(), DeleteShader);
-  std::for_each(
-      fragment_shaders_.begin(), fragment_shaders_.end(), DeleteShader);
+  base::ranges::for_each(vertex_shaders_, DeleteShader);
+  base::ranges::for_each(fragment_shaders_, DeleteShader);
 
   for (ProgramMap::const_iterator it = programs_.begin(); it != programs_.end();
        ++it) {

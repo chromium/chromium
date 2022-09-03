@@ -8,7 +8,6 @@
 #include <stddef.h>
 #include <sys/param.h>
 
-#include <algorithm>
 #include <string>
 #include <vector>
 
@@ -16,6 +15,7 @@
 #include "base/file_descriptor_posix.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/threading/sequenced_task_runner_handle.h"
@@ -325,7 +325,7 @@ void FilePathWatcherKQueue::Cancel() {
       DPLOG(ERROR) << "close kqueue";
     }
     kqueue_ = -1;
-    std::for_each(events_.begin(), events_.end(), ReleaseEvent);
+    base::ranges::for_each(events_, ReleaseEvent);
     events_.clear();
     callback_.Reset();
   }

@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/feature_list.h"
 #include "base/location.h"
+#include "base/ranges/algorithm.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "media/base/media_switches.h"
@@ -239,7 +240,7 @@ UrlIndex::~UrlIndex() {
   auto dcheck_has_one_ref = [](const UrlDataMap::value_type& entry) {
     DCHECK(entry.second->HasOneRef());
   };
-  std::for_each(indexed_data_.begin(), indexed_data_.end(), dcheck_has_one_ref);
+  base::ranges::for_each(indexed_data_, dcheck_has_one_ref);
 #endif
 }
 
