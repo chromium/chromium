@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <iterator>
 #include <unordered_set>
 #include <utility>
 
@@ -64,8 +65,7 @@ TitledUrlIndex::TitledUrlIndex(std::unique_ptr<TitledUrlNodeSorter> sorter)
     : sorter_(std::move(sorter)) {
 }
 
-TitledUrlIndex::~TitledUrlIndex() {
-}
+TitledUrlIndex::~TitledUrlIndex() = default;
 
 void TitledUrlIndex::SetNodeSorter(
     std::unique_ptr<TitledUrlNodeSorter> sorter) {
@@ -144,7 +144,7 @@ std::vector<TitledUrlMatch> TitledUrlIndex::GetResultsMatching(
                                              &query_nodes);
 
   std::vector<TitledUrlMatch> results = MatchTitledUrlNodesWithQuery(
-      sorted_nodes, query_nodes, max_count, match_ancestor_titles);
+      sorted_nodes, query_nodes, terms, max_count, match_ancestor_titles);
 
   // In practice, `max_count`, is always 50 (`kMaxBookmarkMatches`), so
   // `results.size()` is at most 50.
@@ -167,6 +167,7 @@ void TitledUrlIndex::SortMatches(const TitledUrlNodeSet& matches,
 std::vector<TitledUrlMatch> TitledUrlIndex::MatchTitledUrlNodesWithQuery(
     const TitledUrlNodes& nodes,
     const query_parser::QueryNodeVector& query_nodes,
+    const std::vector<std::u16string>& query_terms,
     size_t max_count,
     bool match_ancestor_titles) {
   SCOPED_UMA_HISTOGRAM_TIMER(
@@ -180,8 +181,8 @@ std::vector<TitledUrlMatch> TitledUrlIndex::MatchTitledUrlNodesWithQuery(
   int nodes_considered = 0;
   for (TitledUrlNodes::const_iterator i = nodes.begin();
        i != nodes.end() && matches.size() < max_count; ++i) {
-    absl::optional<TitledUrlMatch> match =
-        MatchTitledUrlNodeWithQuery(*i, query_nodes, match_ancestor_titles);
+    absl::optional<TitledUrlMatch> match = MatchTitledUrlNodeWithQuery(
+        *i, query_nodes, query_terms, match_ancestor_titles);
     if (match)
       matches.emplace_back(std::move(match).value());
     ++nodes_considered;
@@ -194,6 +195,7 @@ std::vector<TitledUrlMatch> TitledUrlIndex::MatchTitledUrlNodesWithQuery(
 absl::optional<TitledUrlMatch> TitledUrlIndex::MatchTitledUrlNodeWithQuery(
     const TitledUrlNode* node,
     const query_parser::QueryNodeVector& query_nodes,
+    const std::vector<std::u16string>& query_terms,
     bool match_ancestor_titles) {
   if (!node) {
     return absl::nullopt;
@@ -203,19 +205,56 @@ absl::optional<TitledUrlMatch> TitledUrlIndex::MatchTitledUrlNodeWithQuery(
   // of QueryParser may filter it out.  For example, the query
   // ["thi"] will match the title [Thinking], but since
   // ["thi"] is quoted we don't want to do a prefix match.
-  query_parser::QueryWordVector title_words, url_words, ancestor_words;
+
+  // Clean up the title, URL, and ancestor titles in preparation for string
+  // comparisons.
   const std::u16string lower_title =
       base::i18n::ToLower(Normalize(node->GetTitledUrlNodeTitle()));
-  query_parser::QueryParser::ExtractQueryWords(lower_title, &title_words);
   base::OffsetAdjuster::Adjustments adjustments;
-  query_parser::QueryParser::ExtractQueryWords(
-      CleanUpUrlForMatching(node->GetTitledUrlNodeUrl(), &adjustments),
-      &url_words);
+  const std::u16string clean_url =
+      CleanUpUrlForMatching(node->GetTitledUrlNodeUrl(), &adjustments);
+  std::vector<std::u16string> lower_ancestor_titles;
   if (match_ancestor_titles) {
-    for (auto ancestor : node->GetTitledUrlNodeAncestorTitles()) {
-      query_parser::QueryParser::ExtractQueryWords(
-          base::i18n::ToLower(Normalize(std::u16string(ancestor))),
-          &ancestor_words);
+    base::ranges::transform(
+        node->GetTitledUrlNodeAncestorTitles(),
+        std::back_inserter(lower_ancestor_titles),
+        [](const auto& ancestor_title) {
+          return base::i18n::ToLower(Normalize(std::u16string(ancestor_title)));
+        });
+  }
+
+  // Check if the input approximately matches the node. This is less strict than
+  // the following check; it will return false positives. But it's also much
+  // faster, so if it returns false, early exit and avoid the expensive
+  // `ExtractQueryWords()` calls. This is only necessary if
+  // `match_ancestor_titles` is true; otherwise, the previous search done before
+  // calling `MatchTitledUrlNodeWithQuery()` would have already done this.
+  if (match_ancestor_titles && approximate_node_match_) {
+    bool approximate_match =
+        base::ranges::all_of(query_terms, [&](const auto& word) {
+          if (lower_title.find(word) != std::u16string::npos)
+            return true;
+          if (clean_url.find(word) != std::u16string::npos)
+            return true;
+          for (const auto& ancestor_title : lower_ancestor_titles) {
+            if (ancestor_title.find(word) != std::u16string::npos)
+              return true;
+          }
+
+          return false;
+        });
+    if (!approximate_match)
+      return absl::nullopt;
+  }
+
+  // If `node` passed the approximate check above, to the more accurate check.
+  query_parser::QueryWordVector title_words, url_words, ancestor_words;
+  query_parser::QueryParser::ExtractQueryWords(clean_url, &url_words);
+  query_parser::QueryParser::ExtractQueryWords(lower_title, &title_words);
+  if (match_ancestor_titles) {
+    for (const auto& ancestor_title : lower_ancestor_titles) {
+      query_parser::QueryParser::ExtractQueryWords(ancestor_title,
+                                                   &ancestor_words);
     }
   }
 

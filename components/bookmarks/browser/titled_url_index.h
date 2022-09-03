@@ -13,7 +13,9 @@
 #include <vector>
 
 #include "base/containers/flat_set.h"
+#include "base/feature_list.h"
 #include "components/bookmarks/browser/titled_url_node_sorter.h"
+#include "components/bookmarks/common/bookmark_features.h"
 #include "components/query_parser/query_parser.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -61,22 +63,9 @@ class TitledUrlIndex {
       query_parser::MatchingAlgorithm matching_algorithm,
       bool match_ancestor_titles);
 
-  // For testing only.
-  TitledUrlNodeSet RetrieveNodesMatchingAllTermsForTesting(
-      const std::vector<std::u16string>& terms,
-      query_parser::MatchingAlgorithm matching_algorithm) const {
-    return RetrieveNodesMatchingAllTerms(terms, matching_algorithm);
-  }
-
-  // For testing only.
-  TitledUrlNodeSet RetrieveNodesMatchingAnyTermsForTesting(
-      const std::vector<std::u16string>& terms,
-      query_parser::MatchingAlgorithm matching_algorithm,
-      size_t max_nodes) const {
-    return RetrieveNodesMatchingAnyTerms(terms, matching_algorithm, max_nodes);
-  }
-
  private:
+  friend class TitledUrlIndexFake;
+
   using TitledUrlNodes = std::vector<const TitledUrlNode*>;
   using Index = std::map<std::u16string, TitledUrlNodeSet>;
 
@@ -90,6 +79,7 @@ class TitledUrlIndex {
   std::vector<TitledUrlMatch> MatchTitledUrlNodesWithQuery(
       const TitledUrlNodes& nodes,
       const query_parser::QueryNodeVector& query_nodes,
+      const std::vector<std::u16string>& query_terms,
       size_t max_count,
       bool match_ancestor_titles);
 
@@ -98,6 +88,7 @@ class TitledUrlIndex {
   absl::optional<TitledUrlMatch> MatchTitledUrlNodeWithQuery(
       const TitledUrlNode* node,
       const query_parser::QueryNodeVector& query_nodes,
+      const std::vector<std::u16string>& query_terms,
       bool match_ancestor_titles);
 
   // Return matches for the specified |terms|. This is an intersection of each
@@ -139,6 +130,11 @@ class TitledUrlIndex {
   Index index_;
 
   std::unique_ptr<TitledUrlNodeSorter> sorter_;
+
+  // Cached as a member variable as it's read up to 3000 times per omnibox
+  // keystroke and `IsEnabled()` is too expensive to call that frequently.
+  const bool approximate_node_match_ =
+      base::FeatureList::IsEnabled(kApproximateNodeMatch);
 };
 
 }  // namespace bookmarks

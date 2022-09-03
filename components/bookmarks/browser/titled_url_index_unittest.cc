@@ -14,9 +14,11 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "components/bookmarks/browser/titled_url_match.h"
 #include "components/bookmarks/browser/titled_url_node.h"
 #include "components/bookmarks/browser/typed_count_sorter.h"
+#include "components/bookmarks/common/bookmark_features.h"
 #include "components/bookmarks/test/test_bookmark_client.h"
 #include "components/query_parser/query_parser.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -92,6 +94,34 @@ class TestTitledUrlNode : public TitledUrlNode {
   std::u16string ancestor_title_;
 };
 
+}  // namespace
+
+class TitledUrlIndexFake : public TitledUrlIndex {
+ public:
+  using TitledUrlIndex::ExtractQueryWords;
+  using TitledUrlIndex::MatchTitledUrlNodeWithQuery;
+  using TitledUrlIndex::RetrieveNodesMatchingAllTerms;
+  using TitledUrlIndex::RetrieveNodesMatchingAnyTerms;
+
+  // Helper to call `TitledUrlIndex::MatchTitledUrlNodeWithQuery` with simpler
+  // parameters. Uses a temporary `TitledUrlNode`, so if it returns non
+  // `nullopt`, the returned `TitledUrlMatch::node` will be invalid.
+  absl::optional<TitledUrlMatch> MatchTitledUrlNodeWithQuery(
+      std::u16string node_title,
+      std::u16string query) {
+    TestTitledUrlNode node{node_title, GURL("http://foo.com"), u""};
+    std::vector<std::u16string> query_terms =
+        TitledUrlIndexFake::ExtractQueryWords(query);
+    query_parser::QueryNodeVector query_nodes;
+    query_parser::QueryParser::ParseQueryNodes(
+        query, query_parser::MatchingAlgorithm::ALWAYS_PREFIX_SEARCH,
+        &query_nodes);
+    return MatchTitledUrlNodeWithQuery(&node, query_nodes, query_terms, true);
+  }
+};
+
+namespace {
+
 class TitledUrlIndexTest : public testing::Test {
  public:
   const GURL kAboutBlankURL = GURL("about:blank");
@@ -101,7 +131,7 @@ class TitledUrlIndexTest : public testing::Test {
   ~TitledUrlIndexTest() override = default;
 
   void ResetNodes() {
-    index_ = std::make_unique<TitledUrlIndex>();
+    index_ = std::make_unique<TitledUrlIndexFake>();
     owned_nodes_.clear();
   }
 
@@ -191,11 +221,11 @@ class TitledUrlIndexTest : public testing::Test {
     }
   }
 
-  TitledUrlIndex* index() { return index_.get(); }
+  TitledUrlIndexFake* index() { return index_.get(); }
 
  private:
   std::vector<std::unique_ptr<TestTitledUrlNode>> owned_nodes_;
-  std::unique_ptr<TitledUrlIndex> index_;
+  std::unique_ptr<TitledUrlIndexFake> index_;
 };
 
 // Various permutations with differing input, queries and output that exercises
@@ -573,6 +603,27 @@ TEST_F(TitledUrlIndexTest, GetResultsSortedByTypedCount) {
   EXPECT_EQ(data[3].url, matches[1].node->GetTitledUrlNodeUrl());
 }
 
+TEST_F(TitledUrlIndexTest, MatchTitledUrlNodeWithQuery) {
+  // When the query matches the node, should return non `nullopt`.
+  EXPECT_TRUE(index()->MatchTitledUrlNodeWithQuery(u"matching", u"match"));
+  // When the query approximately matches the node, should return `nullopt`.
+  EXPECT_FALSE(index()->MatchTitledUrlNodeWithQuery(u"mmmatch", u"match"));
+  // WHen the query doesn't match the node, should return `nullopt`.
+  EXPECT_FALSE(index()->MatchTitledUrlNodeWithQuery(u"natch", u"match"));
+}
+
+TEST_F(TitledUrlIndexTest, MatchTitledUrlNodeWithQuery_ApproximateNodeMatch) {
+  base::test::ScopedFeatureList feature_list{kApproximateNodeMatch};
+  ResetNodes();
+
+  // When the query matches the node, should return non `nullopt`.
+  EXPECT_TRUE(index()->MatchTitledUrlNodeWithQuery(u"matching", u"match"));
+  // When the query approximately matches the node, should return `nullopt`.
+  EXPECT_FALSE(index()->MatchTitledUrlNodeWithQuery(u"mmmatch", u"match"));
+  // WHen the query doesn't match the node, should return `nullopt`.
+  EXPECT_FALSE(index()->MatchTitledUrlNodeWithQuery(u"natch", u"match"));
+}
+
 TEST_F(TitledUrlIndexTest, RetrieveNodesMatchingAllTerms) {
   TitledUrlNode* node =
       AddNode("term1 term2 other xyz ab", GURL("http://foo.com"));
@@ -594,7 +645,7 @@ TEST_F(TitledUrlIndexTest, RetrieveNodesMatchingAllTerms) {
     std::vector<std::u16string> terms =
         base::SplitString(base::UTF8ToUTF16(test_data.query), u" ",
                           base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
-    auto matches = index()->RetrieveNodesMatchingAllTermsForTesting(
+    auto matches = index()->RetrieveNodesMatchingAllTerms(
         terms, query_parser::MatchingAlgorithm::DEFAULT);
     if (test_data.should_be_retrieved) {
       EXPECT_EQ(matches.size(), 1u);
@@ -636,7 +687,7 @@ TEST_F(TitledUrlIndexTest, RetrieveNodesMatchingAnyTerms) {
     std::vector<std::u16string> terms =
         base::SplitString(base::UTF8ToUTF16(test_data.query), u" ",
                           base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
-    auto matches = index()->RetrieveNodesMatchingAnyTermsForTesting(
+    auto matches = index()->RetrieveNodesMatchingAnyTerms(
         terms, query_parser::MatchingAlgorithm::DEFAULT, 9);
 
     // Verify whether the node matched.
@@ -709,7 +760,7 @@ TEST_F(TitledUrlIndexTest, RetrieveNodesMatchingAnyTermsMaxNodes) {
     std::vector<std::u16string> terms =
         base::SplitString(base::UTF8ToUTF16(test_data.query), u" ",
                           base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
-    auto matches = index()->RetrieveNodesMatchingAnyTermsForTesting(
+    auto matches = index()->RetrieveNodesMatchingAnyTerms(
         terms, query_parser::MatchingAlgorithm::DEFAULT, 3);
 
     // Verify the correct nodes matched.
