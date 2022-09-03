@@ -384,4 +384,26 @@ suite('OsBluetoothDevicesSubpageTest', function() {
     assertFalse(isVisible(bluetoothDevicesSubpage.shadowRoot.querySelector(
         '#savedDevicesRowLink')));
   });
+
+  test('Single separator line when Fast Pair UI disabled', async function() {
+    bluetoothConfig.setSystemState(BluetoothSystemState.kEnabled);
+    loadTimeData.overrideValues({'enableFastPairFlag': false});
+    await init();
+
+    const sepLines = bluetoothDevicesSubpage.shadowRoot.querySelectorAll(
+        '.device-lists-separator');
+    assertEquals(sepLines.length, 1);
+  });
+
+  test(
+      'Greater than 1 separator line when Fast Pair UI enabled',
+      async function() {
+        bluetoothConfig.setSystemState(BluetoothSystemState.kEnabled);
+        loadTimeData.overrideValues({'enableFastPairFlag': true});
+        await init();
+
+        const sepLines = bluetoothDevicesSubpage.shadowRoot.querySelectorAll(
+            '.device-lists-separator');
+        assertGT(sepLines.length, 1);
+      });
 });
