@@ -227,9 +227,9 @@ js_library("esim_flow_ui.m") {
     ":profile_discovery_list_page.m",
     ":subflow_behavior.m",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_components/chromeos/network:cellular_utils.m",
-    "//ui/webui/resources/cr_components/chromeos/network:mojo_interface_provider.m",
-    "//ui/webui/resources/cr_components/chromeos/network:network_listener_behavior.m",
+    "//ui/webui/resources/cr_components/chromeos/network:cellular_utils",
+    "//ui/webui/resources/cr_components/chromeos/network:mojo_interface_provider",
+    "//ui/webui/resources/cr_components/chromeos/network:network_listener_behavior",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:i18n_behavior.m",
   ]
@@ -251,8 +251,8 @@ js_library("cellular_setup.m") {
     ":cellular_types.m",
     ":esim_flow_ui.m",
     ":psim_flow_ui.m",
-    "//ui/webui/resources/cr_components/chromeos/network:cellular_utils.m",
-    "//ui/webui/resources/cr_components/chromeos/network:mojo_interface_provider.m",
+    "//ui/webui/resources/cr_components/chromeos/network:cellular_utils",
+    "//ui/webui/resources/cr_components/chromeos/network:mojo_interface_provider",
     "//ui/webui/resources/js:i18n_behavior.m",
   ]
   extra_deps = [ ":cellular_setup_module" ]
@@ -284,6 +284,7 @@ polymer_modulizer("base_page") {
   html_file = "base_page.html"
   html_type = "dom-module"
   namespace_rewrites = cr_components_chromeos_namespace_rewrites
+  migrated_imports = cr_components_migrated_imports
   auto_imports = cr_components_chromeos_auto_imports
 }
 
@@ -292,6 +293,7 @@ polymer_modulizer("final_page") {
   html_file = "final_page.html"
   html_type = "dom-module"
   namespace_rewrites = cr_components_chromeos_namespace_rewrites
+  migrated_imports = cr_components_migrated_imports
   auto_imports = cr_components_chromeos_auto_imports
 }
 
@@ -327,6 +329,7 @@ polymer_modulizer("confirmation_code_page") {
   html_file = "confirmation_code_page.html"
   html_type = "dom-module"
   namespace_rewrites = cr_components_chromeos_namespace_rewrites
+  migrated_imports = cr_components_migrated_imports
   auto_imports = cr_components_chromeos_auto_imports
 }
 
@@ -344,6 +347,7 @@ polymer_modulizer("profile_discovery_list_item") {
   html_file = "profile_discovery_list_item.html"
   html_type = "dom-module"
   namespace_rewrites = cr_components_chromeos_namespace_rewrites
+  migrated_imports = cr_components_migrated_imports
   auto_imports = cr_components_chromeos_auto_imports
 }
 
@@ -361,8 +365,8 @@ polymer_modulizer("provisioning_page") {
   html_file = "provisioning_page.html"
   html_type = "dom-module"
   namespace_rewrites = cr_components_chromeos_namespace_rewrites
-  auto_imports = cr_components_chromeos_auto_imports
   migrated_imports = cr_components_migrated_imports
+  auto_imports = cr_components_chromeos_auto_imports
 }
 
 polymer_modulizer("psim_flow_ui") {
@@ -370,6 +374,7 @@ polymer_modulizer("psim_flow_ui") {
   html_file = "psim_flow_ui.html"
   html_type = "dom-module"
   namespace_rewrites = cr_components_chromeos_namespace_rewrites
+  migrated_imports = cr_components_migrated_imports
   auto_imports = cr_components_chromeos_auto_imports
 }
 
@@ -378,6 +383,7 @@ polymer_modulizer("esim_flow_ui") {
   html_file = "esim_flow_ui.html"
   html_type = "dom-module"
   namespace_rewrites = cr_components_chromeos_namespace_rewrites
+  migrated_imports = cr_components_migrated_imports
   auto_imports = cr_components_chromeos_auto_imports
 }
 
@@ -395,6 +401,7 @@ polymer_modulizer("cellular_setup") {
   html_file = "cellular_setup.html"
   html_type = "dom-module"
   namespace_rewrites = cr_components_chromeos_namespace_rewrites
+  migrated_imports = cr_components_migrated_imports
   auto_imports = cr_components_chromeos_auto_imports
 }
 

@@ -27,8 +27,8 @@ import './cups_nearby_printers.js';
 import 'chrome://resources/cr_components/localized_link/localized_link.js';
 import '../../icons.html.js';
 
-import {MojoInterfaceProvider, MojoInterfaceProviderImpl} from 'chrome://resources/cr_components/chromeos/network/mojo_interface_provider.m.js';
-import {NetworkListenerBehavior, NetworkListenerBehaviorInterface} from 'chrome://resources/cr_components/chromeos/network/network_listener_behavior.m.js';
+import {MojoInterfaceProvider, MojoInterfaceProviderImpl} from 'chrome://resources/cr_components/chromeos/network/mojo_interface_provider.js';
+import {NetworkListenerBehavior, NetworkListenerBehaviorInterface} from 'chrome://resources/cr_components/chromeos/network/network_listener_behavior.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {addWebUIListener, removeWebUIListener, sendWithPromise, WebUIListener} from 'chrome://resources/js/cr.m.js';
 import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.js';

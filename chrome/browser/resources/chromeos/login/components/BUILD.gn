@@ -154,8 +154,8 @@ js_library("network_select_login.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/network_select_login.m.js" ]
   deps = [
     "../:cr_ui.m",
-    "//ui/webui/resources/cr_components/chromeos/network:network_select.m",
-    "//ui/webui/resources/cr_components/chromeos/network:onc_mojo.m",
+    "//ui/webui/resources/cr_components/chromeos/network:network_select",
+    "//ui/webui/resources/cr_components/chromeos/network:onc_mojo",
     "//ui/webui/resources/js:assert.m",
   ]
   extra_deps = [ ":network_select_login_module" ]
@@ -323,6 +323,7 @@ polymer_modulizer("network_select_login") {
   html_file = "network_select_login.html"
   html_type = "dom-module"
   auto_imports = oobe_auto_imports
+  migrated_imports = oobe_migrated_imports
   namespace_rewrites = oobe_namespace_rewrites
 }
 

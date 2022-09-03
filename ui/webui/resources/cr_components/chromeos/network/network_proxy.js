@@ -7,7 +7,25 @@
  * values.
  */
 
+import '//resources/cr_elements/cr_button/cr_button.js';
+import '//resources/cr_elements/cr_input/cr_input.js';
+import '//resources/cr_elements/cr_toggle/cr_toggle.js';
+import '//resources/cr_elements/cr_hidden_style.css.js';
+import '//resources/cr_elements/md_select.css.js';
+import '//resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
+import './network_proxy_exclusions.js';
+import './network_proxy_input.js';
+import './network_shared_css.js';
+
+import {assert} from '//resources/js/assert.m.js';
+import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
+import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {CrPolicyNetworkBehaviorMojo} from './cr_policy_network_behavior_mojo.js';
+import {OncMojo} from './onc_mojo.js';
+
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'network-proxy',
 
   behaviors: [

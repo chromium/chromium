@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// #import {MojoInterfaceProviderImpl} from './mojo_interface_provider.m.js';
+import {MojoInterfaceProviderImpl} from './mojo_interface_provider.js';
 
 /**
  * @fileoverview Polymer behavior for observing CrosNetworkConfigObserver
@@ -10,7 +10,7 @@
  */
 
 /** @polymerBehavior */
-/* #export */ const NetworkListenerBehavior = {
+export const NetworkListenerBehavior = {
   /** @private {?chromeos.networkConfig.mojom.CrosNetworkConfigObserver} */
   observer_: null,
 
@@ -19,9 +19,8 @@
     this.observer_ =
         new chromeos.networkConfig.mojom.CrosNetworkConfigObserverReceiver(
             this);
-    network_config.MojoInterfaceProviderImpl.getInstance()
-        .getMojoServiceRemote()
-        .addObserver(this.observer_.$.bindNewPipeAndPassRemote());
+    MojoInterfaceProviderImpl.getInstance().getMojoServiceRemote().addObserver(
+        this.observer_.$.bindNewPipeAndPassRemote());
   },
 
   // CrosNetworkConfigObserver methods. Override these in the implementation.
@@ -48,7 +47,7 @@
 };
 
 /** @interface */
-/* #export */ class NetworkListenerBehaviorInterface {
+export class NetworkListenerBehaviorInterface {
   constructor() {
     /** @private {?chromeos.networkConfig.mojom.CrosNetworkConfigObserver} */
     this.observer_;

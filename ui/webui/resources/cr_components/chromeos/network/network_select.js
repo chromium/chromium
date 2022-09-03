@@ -7,11 +7,23 @@
  * networkConfig mojo API calls to populate it.
  */
 
-(function() {
+import '//resources/cr_elements/shared_vars_css.m.js';
+import '//resources/polymer/v3_0/paper-progress/paper-progress.js';
+import './network_list.js';
+
+import {assert} from '//resources/js/assert.m.js';
+import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {MojoInterfaceProvider, MojoInterfaceProviderImpl} from './mojo_interface_provider.js';
+import {NetworkList} from './network_list_types.js';
+import {NetworkListenerBehavior} from './network_listener_behavior.js';
+import {OncMojo} from './onc_mojo.js';
+
 
 const mojom = chromeos.networkConfig.mojom;
 
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'network-select',
 
   behaviors: [NetworkListenerBehavior],
@@ -103,8 +115,8 @@ Polymer({
 
   /** @override */
   created() {
-    this.networkConfig_ = network_config.MojoInterfaceProviderImpl.getInstance()
-                              .getMojoServiceRemote();
+    this.networkConfig_ =
+        MojoInterfaceProviderImpl.getInstance().getMojoServiceRemote();
   },
 
   /** @override */
@@ -294,4 +306,3 @@ Polymer({
     this.fire('network-item-selected', state);
   },
 });
-})();

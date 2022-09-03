@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import '../../../cr_elements/cr_shared_style.css.js';
-import '../network/network_shared_css.m.js';
+import '../network/network_shared_css.js';
 
 import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {NetworkType, PortalState} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
@@ -11,7 +11,7 @@ import {Network, NetworkHealthService, NetworkHealthServiceRemote, NetworkHealth
 
 import {assertNotReached} from '../../../js/assert.m.js';
 import {I18nBehavior} from '../../../js/i18n_behavior.m.js';
-import {OncMojo} from '../network/onc_mojo.m.js';
+import {OncMojo} from '../network/onc_mojo.js';
 
 const TechnologyIcons = {
   CELLULAR: 'cellular_0.svg',

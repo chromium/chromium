@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/cr_components/chromeos/network/network_config.m.js';
-import 'chrome://resources/cr_components/chromeos/network/network_icon.m.js';
-import 'chrome://resources/cr_components/chromeos/network/network_shared_css.m.js';
+import 'chrome://resources/cr_components/chromeos/network/network_config.js';
+import 'chrome://resources/cr_components/chromeos/network/network_icon.js';
+import 'chrome://resources/cr_components/chromeos/network/network_shared_css.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import 'chrome://resources/cr_elements/cr_page_host_style.css.js';

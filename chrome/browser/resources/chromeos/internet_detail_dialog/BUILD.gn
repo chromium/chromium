@@ -25,7 +25,7 @@ if (optimize_webui) {
     out_manifest = "$target_gen_dir/$build_manifest"
     excludes = [
       "chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-lite.js",
-      "chrome://resources/cr_components/chromeos/network/mojo_interface_provider.m.js",
+      "chrome://resources/cr_components/chromeos/network/mojo_interface_provider.js",
       "chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-lite.js",
       "chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js",
       "chrome://resources/mojo/services/network/public/mojom/ip_address.mojom-lite.js",
@@ -89,9 +89,9 @@ js_type_check("closure_compile") {
 
 js_library("internet_detail_dialog") {
   deps = [
-    "//ui/webui/resources/cr_components/chromeos/network:cr_policy_network_behavior_mojo.m",
-    "//ui/webui/resources/cr_components/chromeos/network:network_listener_behavior.m",
-    "//ui/webui/resources/cr_components/chromeos/network:onc_mojo.m",
+    "//ui/webui/resources/cr_components/chromeos/network:cr_policy_network_behavior_mojo",
+    "//ui/webui/resources/cr_components/chromeos/network:network_listener_behavior",
+    "//ui/webui/resources/cr_components/chromeos/network:onc_mojo",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:i18n_behavior.m",
   ]

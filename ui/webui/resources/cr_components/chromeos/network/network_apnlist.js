@@ -7,6 +7,19 @@
  * access points.
  */
 
+import '//resources/cr_elements/cr_button/cr_button.js';
+import '//resources/cr_elements/md_select.css.js';
+import '//resources/cr_elements/policy/cr_tooltip_icon.js';
+import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
+import './network_property_list_mojo.js';
+import './network_shared_css.js';
+
+import {OncMojo} from '//resources/cr_components/chromeos/network/onc_mojo.js';
+import {assert} from '//resources/js/assert.m.js';
+import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
+import {loadTimeData} from '//resources/js/load_time_data.m.js';
+import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
 const kDefaultAccessPointName = 'NONE';
 const kOtherAccessPointName = 'Other';
 
@@ -14,6 +27,7 @@ const USE_ATTACH_APN_ON_SAVE_METRIC_NAME =
     'Network.Cellular.Apn.UseAttachApnOnSave';
 
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'network-apnlist',
 
   behaviors: [I18nBehavior],

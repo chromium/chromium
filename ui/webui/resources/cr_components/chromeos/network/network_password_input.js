@@ -2,15 +2,28 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import {FAKE_CREDENTIAL} from './onc_mojo.m.js';
-// clang-format on
-
 /**
  * @fileoverview Polymer element for network password input fields.
  */
 
+import '../../../cr_elements/cr_icon_button/cr_icon_button.js';
+import '../../../cr_elements/cr_icons.css.js';
+import '../../../cr_elements/cr_input/cr_input.js';
+import '../../../cr_elements/shared_vars_css.m.js';
+import '//resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
+import './cr_policy_network_indicator_mojo.js';
+import './network_shared_css.js';
+
+import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {I18nBehavior} from '../../../js/i18n_behavior.m.js';
+
+import {CrPolicyNetworkBehaviorMojo} from './cr_policy_network_behavior_mojo.js';
+import {NetworkConfigElementBehavior} from './network_config_element_behavior.js';
+import {FAKE_CREDENTIAL} from './onc_mojo.js';
+
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'network-password-input',
 
   behaviors: [

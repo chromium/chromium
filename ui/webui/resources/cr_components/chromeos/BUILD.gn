@@ -24,7 +24,7 @@ group("polymer3_elements") {
     "bluetooth:polymer3_elements",
     "cellular_setup:polymer3_elements",
     "multidevice_setup:web_components",
-    "network:polymer3_elements",
+    "network:web_components",
     "network_health:web_components",
     "quick_unlock:web_components",
     "smb_shares:web_components",

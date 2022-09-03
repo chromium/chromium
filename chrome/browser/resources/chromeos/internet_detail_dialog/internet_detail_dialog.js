@@ -2,27 +2,27 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/cr_components/chromeos/network/cr_policy_network_indicator_mojo.m.js';
-import 'chrome://resources/cr_components/chromeos/network/network_apnlist.m.js';
-import 'chrome://resources/cr_components/chromeos/network/network_choose_mobile.m.js';
-import 'chrome://resources/cr_components/chromeos/network/network_icon.m.js';
-import 'chrome://resources/cr_components/chromeos/network/network_ip_config.m.js';
-import 'chrome://resources/cr_components/chromeos/network/network_nameservers.m.js';
-import 'chrome://resources/cr_components/chromeos/network/network_property_list_mojo.m.js';
-import 'chrome://resources/cr_components/chromeos/network/network_proxy.m.js';
-import 'chrome://resources/cr_components/chromeos/network/network_shared_css.m.js';
-import 'chrome://resources/cr_components/chromeos/network/network_siminfo.m.js';
+import 'chrome://resources/cr_components/chromeos/network/cr_policy_network_indicator_mojo.js';
+import 'chrome://resources/cr_components/chromeos/network/network_apnlist.js';
+import 'chrome://resources/cr_components/chromeos/network/network_choose_mobile.js';
+import 'chrome://resources/cr_components/chromeos/network/network_icon.js';
+import 'chrome://resources/cr_components/chromeos/network/network_ip_config.js';
+import 'chrome://resources/cr_components/chromeos/network/network_nameservers.js';
+import 'chrome://resources/cr_components/chromeos/network/network_property_list_mojo.js';
+import 'chrome://resources/cr_components/chromeos/network/network_proxy.js';
+import 'chrome://resources/cr_components/chromeos/network/network_shared_css.js';
+import 'chrome://resources/cr_components/chromeos/network/network_siminfo.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_page_host_style.css.js';
 import 'chrome://resources/cr_elements/icons.m.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import './strings.m.js';
 
-import {isActiveSim} from 'chrome://resources/cr_components/chromeos/network/cellular_utils.m.js';
-import {CrPolicyNetworkBehaviorMojo} from 'chrome://resources/cr_components/chromeos/network/cr_policy_network_behavior_mojo.m.js';
-import {MojoInterfaceProviderImpl} from 'chrome://resources/cr_components/chromeos/network/mojo_interface_provider.m.js';
-import {NetworkListenerBehavior} from 'chrome://resources/cr_components/chromeos/network/network_listener_behavior.m.js';
-import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.m.js';
+import {isActiveSim} from 'chrome://resources/cr_components/chromeos/network/cellular_utils.js';
+import {CrPolicyNetworkBehaviorMojo} from 'chrome://resources/cr_components/chromeos/network/cr_policy_network_behavior_mojo.js';
+import {MojoInterfaceProviderImpl} from 'chrome://resources/cr_components/chromeos/network/mojo_interface_provider.js';
+import {NetworkListenerBehavior} from 'chrome://resources/cr_components/chromeos/network/network_listener_behavior.js';
+import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';

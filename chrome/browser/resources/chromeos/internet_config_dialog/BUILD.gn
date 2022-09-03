@@ -67,9 +67,9 @@ js_type_check("closure_compile") {
 
 js_library("internet_config_dialog") {
   deps = [
-    "//ui/webui/resources/cr_components/chromeos/network:cr_policy_network_behavior_mojo.m",
-    "//ui/webui/resources/cr_components/chromeos/network:network_config.m",
-    "//ui/webui/resources/cr_components/chromeos/network:onc_mojo.m",
+    "//ui/webui/resources/cr_components/chromeos/network:cr_policy_network_behavior_mojo",
+    "//ui/webui/resources/cr_components/chromeos/network:network_config",
+    "//ui/webui/resources/cr_components/chromeos/network:onc_mojo",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:i18n_behavior.m",
   ]

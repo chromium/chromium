@@ -4,7 +4,7 @@
 
 import {CupsPrintersBrowserProxyImpl, PrinterType} from 'chrome://os-settings/chromeos/lazy_load.js';
 import {Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
-import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.m.js';
+import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';

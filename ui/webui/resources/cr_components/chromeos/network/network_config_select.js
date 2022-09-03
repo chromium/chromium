@@ -5,7 +5,23 @@
 /**
  * @fileoverview Polymer element for network configuration selection menus.
  */
+import '//resources/cr_elements/md_select.css.js';
+import '//resources/cr_elements/policy/cr_tooltip_icon.js';
+import '//resources/cr_elements/shared_vars_css.m.js';
+import '//resources/cr_elements/cr_shared_style.css.js';
+import './cr_policy_network_indicator_mojo.js';
+import './network_shared_css.js';
+
+import {assertNotReached} from '//resources/js/assert.m.js';
+import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
+import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {CrPolicyNetworkBehaviorMojo} from './cr_policy_network_behavior_mojo.js';
+import {NetworkConfigElementBehavior} from './network_config_element_behavior.js';
+import {OncMojo} from './onc_mojo.js';
+
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'network-config-select',
 
   behaviors: [

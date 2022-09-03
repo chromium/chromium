@@ -1,48 +1,36 @@
-<link rel="import" href="../../../html/polymer.html">
+<style include="network-shared">
+  cr-input {
+    margin: 0 var(--cr-button-edge-spacing);
+  }
 
-<link rel="import" href="../../../cr_elements/cr_input/cr_input.html">
-<link rel="import" href="../../../html/i18n_behavior.html">
-<link rel="import" href="network_shared_css.html">
-<link rel="import" href="onc_mojo.html">
+  #container {
+    align-items: center;
+    display: flex;
+    flex: 0 1 auto;
+    flex-direction: row;
+  }
 
-<dom-module id="network-proxy-input">
-  <template>
-    <style include="network-shared">
-      cr-input {
-        margin: 0 var(--cr-button-edge-spacing);
-      }
+  #label {
+    flex: 1;
+  }
 
-      #container {
-        align-items: center;
-        display: flex;
-        flex: 0 1 auto;
-        flex-direction: row;
-      }
+  #host {
+    width: 200px;
+  }
 
-      #label {
-        flex: 1;
-      }
-
-      #host {
-        width: 200px;
-      }
-
-      #port {
-        width: 50px;
-      }
-    </style>
-    <div id="container">
-      <div id="label">[[label]]</div>
-      <cr-input id="host" readonly="[[!editable]]"
-          aria-label="[[i18n('networkProxyHostInputA11yLabel', label)]]"
-          value="{{value.host.activeValue}}" on-change="onValueChange_">
-      </cr-input>
-      <div>[[i18n('networkProxyPort')]]</div>
-      <cr-input id="port" readonly="[[!editable]]"
-          aria-label="[[i18n('networkProxyPortInputA11yLabel', label)]]"
-          value="{{value.port.activeValue}}" on-change="onValueChange_">
-      </cr-input>
-    </div>
-  </template>
-  <script src="network_proxy_input.js"></script>
-</dom-module>
+  #port {
+    width: 50px;
+  }
+</style>
+<div id="container">
+  <div id="label">[[label]]</div>
+  <cr-input id="host" readonly="[[!editable]]"
+      aria-label="[[i18n('networkProxyHostInputA11yLabel', label)]]"
+      value="{{value.host.activeValue}}" on-change="onValueChange_">
+  </cr-input>
+  <div>[[i18n('networkProxyPort')]]</div>
+  <cr-input id="port" readonly="[[!editable]]"
+      aria-label="[[i18n('networkProxyPortInputA11yLabel', label)]]"
+      value="{{value.port.activeValue}}" on-change="onValueChange_">
+  </cr-input>
+</div>

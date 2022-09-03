@@ -6,7 +6,7 @@
  * @fileoverview Fake implementation of CrosNetworkConfig for testing.
  */
 
-import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.m.js';
+import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
 

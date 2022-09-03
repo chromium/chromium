@@ -8,15 +8,15 @@
  * optional properties (which may be null|undefined).
  */
 
-// clang-format off
-// #import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
-// #import 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-lite.js';
-// #import {CrPolicyIndicatorType} from 'chrome://resources/cr_elements/policy/cr_policy_indicator_behavior.js';
-// #import {OncMojo} from './onc_mojo.m.js';
-// clang-format on
+import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
+import 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-lite.js';
+
+import {CrPolicyIndicatorType} from 'chrome://resources/cr_elements/policy/cr_policy_indicator_behavior.js';
+
+import {OncMojo} from './onc_mojo.js';
 
 /** @polymerBehavior */
-/* #export */ const CrPolicyNetworkBehaviorMojo = {
+export const CrPolicyNetworkBehaviorMojo = {
   /**
    * @param {?OncMojo.ManagedProperty|undefined} property
    * @return {boolean} True if the property is controlled by network policy.
@@ -183,7 +183,7 @@
 };
 
 /** @interface */
-/* #export */ class CrPolicyNetworkBehaviorMojoInterface {
+export class CrPolicyNetworkBehaviorMojoInterface {
   /**
    * @param {?OncMojo.ManagedProperty|undefined} property
    * @return {boolean}

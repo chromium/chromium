@@ -26,7 +26,7 @@ js_library("traffic_counters") {
     "//chromeos/services/network_config/public/mojom:mojom_webui_js",
     "//chromeos/services/network_config/public/mojom:network_types_webui_js",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_components/chromeos/network:onc_mojo.m",
+    "//ui/webui/resources/cr_components/chromeos/network:onc_mojo",
     "//ui/webui/resources/js:i18n_behavior.m",
   ]
 }
@@ -36,8 +36,8 @@ js_library("traffic_counters_adapter") {
     "//chromeos/services/network_config/public/mojom:mojom_webui_js",
     "//chromeos/services/network_config/public/mojom:network_types_webui_js",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_components/chromeos/network:mojo_interface_provider.m",
-    "//ui/webui/resources/cr_components/chromeos/network:onc_mojo.m",
+    "//ui/webui/resources/cr_components/chromeos/network:mojo_interface_provider",
+    "//ui/webui/resources/cr_components/chromeos/network:onc_mojo",
     "//ui/webui/resources/js:i18n_behavior.m",
   ]
 }

@@ -7,7 +7,18 @@
  * state properties.
  */
 
+import './network_icons.js';
+import '../../../cr_elements/cr_hidden_style.css.js';
+import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
+
+import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {I18nBehavior} from '../../../js/i18n_behavior.m.js';
+
+import {OncMojo} from './onc_mojo.js';
+
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'network-icon',
 
   behaviors: [

@@ -1,54 +1,40 @@
-<link rel="import" href="../../../html/polymer.html">
+<style include="network-shared">
+  :host {
+    cursor: pointer;
+  }
+  :host([disabled]) {
+    cursor: initial;
+  }
+  cr-policy-network-indicator-mojo {
+    --cr-tooltip-icon-margin-start: var(--cr-controlled-by-spacing);
+  }
+  cr-policy-network-indicator-mojo.left {
+    margin-inline-end: var(--cr-controlled-by-spacing);
+  }
+  div.property-box {
+    width: 100%;
+  }
+</style>
 
-<link rel="import" href="../../../cr_elements/cr_toggle/cr_toggle.html">
-<link rel="import" href="../../../cr_elements/shared_vars_css.html">
-<link rel="import" href="cr_policy_network_behavior_mojo.html">
-<link rel="import" href="cr_policy_network_indicator_mojo.html">
-<link rel="import" href="network_config_element_behavior.html">
-<link rel="import" href="network_shared_css.html">
-
-<dom-module id="network-config-toggle">
-  <template>
-    <style include="network-shared">
-      :host {
-        cursor: pointer;
-      }
-      :host([disabled]) {
-        cursor: initial;
-      }
-      cr-policy-network-indicator-mojo {
-        --cr-tooltip-icon-margin-start: var(--cr-controlled-by-spacing);
-      }
-      cr-policy-network-indicator-mojo.left {
-        margin-inline-end: var(--cr-controlled-by-spacing);
-      }
-      div.property-box {
-        width: 100%;
-      }
-    </style>
-
-    <div class="property-box">
-      <div class="start">
-        <div aria-hidden="true">[[label]]</div>
-        <div id="sub-label" class="cr-secondary-text" aria-hidden="true">
-          [[subLabel]]
-        </div>
-      </div>
-      <template is="dom-if" if="[[policyOnLeft]]">
-        <cr-policy-network-indicator-mojo class="left"
-            property="[[property]]" tooltip-position="left">
-        </cr-policy-network-indicator-mojo>
-      </template>
-      <cr-toggle checked="{{checked}}"
-          disabled="[[getDisabled_(disabled, property)]]"
-          aria-label$="[[label]]" aria-describedby="sub-label">
-      </cr-toggle>
-      <template is="dom-if" if="[[!policyOnLeft]]">
-        <cr-policy-network-indicator-mojo
-            property="[[property]]" tooltip-position="left">
-        </cr-policy-network-indicator-mojo>
-      </template>
+<div class="property-box">
+  <div class="start">
+    <div aria-hidden="true">[[label]]</div>
+    <div id="sub-label" class="cr-secondary-text" aria-hidden="true">
+      [[subLabel]]
     </div>
+  </div>
+  <template is="dom-if" if="[[policyOnLeft]]">
+    <cr-policy-network-indicator-mojo class="left"
+        property="[[property]]" tooltip-position="left">
+    </cr-policy-network-indicator-mojo>
   </template>
-  <script src="network_config_toggle.js"></script>
-</dom-module>
+  <cr-toggle checked="{{checked}}"
+      disabled="[[getDisabled_(disabled, property)]]"
+      aria-label$="[[label]]" aria-describedby="sub-label">
+  </cr-toggle>
+  <template is="dom-if" if="[[!policyOnLeft]]">
+    <cr-policy-network-indicator-mojo
+        property="[[property]]" tooltip-position="left">
+    </cr-policy-network-indicator-mojo>
+  </template>
+</div>

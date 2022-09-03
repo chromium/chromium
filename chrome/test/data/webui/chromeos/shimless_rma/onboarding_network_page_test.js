@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.m.js';
+import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.js';
 import {fakeNetworks} from 'chrome://shimless-rma/fake_data.js';
 import {FakeShimlessRmaService} from 'chrome://shimless-rma/fake_shimless_rma_service.js';
 import {setNetworkConfigServiceForTesting, setShimlessRmaServiceForTesting} from 'chrome://shimless-rma/mojo_interface_provider.js';
@@ -61,7 +61,7 @@ export function onboardingNetworkPageTest() {
     const network = networkList.networks[1];
     component.showConfig_(
         network.type,
-        /* empty guid since network_config.m.js is not mocked */ undefined,
+        /* empty guid since network_config.js is not mocked */ undefined,
         'eth0');
 
     return flushTasks();

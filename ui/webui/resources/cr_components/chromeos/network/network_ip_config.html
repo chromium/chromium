@@ -1,47 +1,32 @@
-<link rel="import" href="../../../html/polymer.html">
-
-<link rel="import" href="../../../cr_elements/cr_toggle/cr_toggle.html">
-<link rel="import" href="../../../cr_elements/policy/cr_policy_indicator.html">
-<link rel="import" href="../../../html/i18n_behavior.html">
-<link rel="import" href="cr_policy_network_behavior_mojo.html">
-<link rel="import" href="network_property_list_mojo.html">
-<link rel="import" href="network_shared_css.html">
-<link rel="import" href="onc_mojo.html">
-
-<dom-module id="network-ip-config">
-  <template>
-    <style include="network-shared iron-flex">
-      cr-toggle {
-        margin-inline-start: var(--settings-control-label-spacing);
-      }
-    </style>
-    <template is="dom-if" if="[[shouldShowAutoIpConfigToggle_]]" restamp>
-      <div id="autoConfig" class="property-box">
-        <div id="autoIPConfigLabel" class="start">
-          [[i18n('networkIPConfigAuto')]]
-        </div>
-        <cr-policy-indicator indicator-type="[[getPolicyIndicatorType(
-            managedProperties.ipAddressConfigType)]]">
-        </cr-policy-indicator>
-        <cr-toggle id="autoConfigIpToggle" checked="{{automatic_}}"
-            disabled="[[!canChangeIPConfigType_(managedProperties, disabled)]]"
-            on-change="onAutomaticChange_"
-            aria-labelledby="autoIPConfigLabel">
-        </cr-toggle>
-      </div>
-    </template>
-    <template is="dom-if" if="[[hasIpConfigFields_(ipConfig_)]]">
-      <div class$="[[getFieldsClassList_(shouldShowAutoIpConfigToggle_)]]">
-        <network-property-list-mojo fields="[[ipConfigFields_]]"
-            all-fields-read-only="[[automatic_]]"
-            property-dict="[[ipConfig_]]"
-            edit-field-types="[[getIPEditFields_(automatic_,
-                managedProperties)]]"
-            on-property-change="onIPChange_"
-            disabled="[[disabled]]">
-        </network-property-list-mojo>
-      </div>
-    </template>
-  </template>
-  <script src="network_ip_config.js"></script>
-</dom-module>
+<style include="network-shared iron-flex">
+  cr-toggle {
+    margin-inline-start: var(--settings-control-label-spacing);
+  }
+</style>
+<template is="dom-if" if="[[shouldShowAutoIpConfigToggle_]]" restamp>
+  <div id="autoConfig" class="property-box">
+    <div id="autoIPConfigLabel" class="start">
+      [[i18n('networkIPConfigAuto')]]
+    </div>
+    <cr-policy-indicator indicator-type="[[getPolicyIndicatorType(
+        managedProperties.ipAddressConfigType)]]">
+    </cr-policy-indicator>
+    <cr-toggle id="autoConfigIpToggle" checked="{{automatic_}}"
+        disabled="[[!canChangeIPConfigType_(managedProperties, disabled)]]"
+        on-change="onAutomaticChange_"
+        aria-labelledby="autoIPConfigLabel">
+    </cr-toggle>
+  </div>
+</template>
+<template is="dom-if" if="[[hasIpConfigFields_(ipConfig_)]]">
+  <div class$="[[getFieldsClassList_(shouldShowAutoIpConfigToggle_)]]">
+    <network-property-list-mojo fields="[[ipConfigFields_]]"
+        all-fields-read-only="[[automatic_]]"
+        property-dict="[[ipConfig_]]"
+        edit-field-types="[[getIPEditFields_(automatic_,
+            managedProperties)]]"
+        on-property-change="onIPChange_"
+        disabled="[[disabled]]">
+    </network-property-list-mojo>
+  </div>
+</template>

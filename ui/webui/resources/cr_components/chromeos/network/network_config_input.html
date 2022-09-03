@@ -1,41 +1,26 @@
-<link rel="import" href="../../../html/polymer.html">
+<style include="network-shared">
+  #container {
+    align-items: center;
+    display: flex;
+    flex-direction: row;
+  }
 
-<link rel="import" href="../../../cr_elements/cr_input/cr_input.html">
-<link rel="import" href="../../../cr_elements/shared_vars_css.html">
-<link rel="import" href="cr_policy_network_behavior_mojo.html">
-<link rel="import" href="cr_policy_network_indicator_mojo.html">
-<link rel="import" href="network_config_element_behavior.html">
-<link rel="import" href="network_shared_css.html">
+  cr-input {
+    width: 100%;
+  }
 
-<dom-module id="network-config-input">
-  <template>
-    <style include="network-shared">
-      #container {
-        align-items: center;
-        display: flex;
-        flex-direction: row;
-      }
+  cr-policy-network-indicator-mojo {
+    --cr-tooltip-icon-margin-start: var(--cr-controlled-by-spacing);
+  }
+</style>
 
-      cr-input {
-        width: 100%;
-      }
-
-      cr-policy-network-indicator-mojo {
-        --cr-tooltip-icon-margin-start: var(--cr-controlled-by-spacing);
-      }
-    </style>
-
-    <div id="container">
-      <cr-input label="[[label]]" value="{{value}}"
-          hidden="[[hidden]]" readonly="[[readonly]]"
-          disabled="[[getDisabled_(disabled, property)]]"
-          on-keypress="onKeypress_">
-      </cr-input>
-      <cr-policy-network-indicator-mojo
-          property="[[property]]" tooltip-position="left">
-      </cr-policy-network-indicator>
-    </div>
-
-  </template>
-  <script src="network_config_input.js"></script>
-</dom-module>
+<div id="container">
+  <cr-input label="[[label]]" value="{{value}}"
+      hidden="[[hidden]]" readonly="[[readonly]]"
+      disabled="[[getDisabled_(disabled, property)]]"
+      on-keypress="onKeypress_">
+  </cr-input>
+  <cr-policy-network-indicator-mojo
+      property="[[property]]" tooltip-position="left">
+  </cr-policy-network-indicator>
+</div>

@@ -8,6 +8,30 @@
  * and existing networks.
  */
 
+import '../../../cr_elements/action_link.css.js';
+import '../../../cr_elements/cr_dialog/cr_dialog.js';
+import '../../../cr_elements/cr_toggle/cr_toggle.js';
+import '../../../cr_elements/policy/cr_policy_indicator.js';
+import '../../../js/action_link.js';
+import '//resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
+import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
+import '//resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
+import './network_config_input.js';
+import './network_config_select.js';
+import './network_config_toggle.js';
+import './network_password_input.js';
+import './network_shared_css.js';
+
+import {assert, assertNotReached} from '//resources/js/assert.m.js';
+import {loadTimeData} from '//resources/js/load_time_data.m.js';
+import {flush, html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {I18nBehavior} from '../../../js/i18n_behavior.m.js';
+
+import {MojoInterfaceProvider, MojoInterfaceProviderImpl} from './mojo_interface_provider.js';
+import {NetworkListenerBehavior} from './network_listener_behavior.js';
+import {OncMojo} from './onc_mojo.js';
+
 /**
  * Note: closure does not always recognize this if inside function() {}.
  * @enum {string}
@@ -53,6 +77,7 @@ const mojom = chromeos.networkConfig.mojom;
 /** @type {string}  */ const PLACEHOLDER_CREDENTIAL = '(credential)';
 
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'network-config',
 
   behaviors: [
@@ -452,8 +477,8 @@ Polymer({
 
   /** @override */
   created() {
-    this.networkConfig_ = network_config.MojoInterfaceProviderImpl.getInstance()
-                              .getMojoServiceRemote();
+    this.networkConfig_ =
+        MojoInterfaceProviderImpl.getInstance().getMojoServiceRemote();
   },
 
   /** @override */
@@ -596,7 +621,7 @@ Polymer({
 
   /** @private */
   focusFirstInput_() {
-    Polymer.dom.flush();
+    flush();
     const e = this.$$(
         'network-config-input:not([readonly]),' +
         'network-password-input:not([disabled]),' +
@@ -1789,7 +1814,7 @@ Polymer({
    * @private
    */
   showHiddenNetworkWarning_() {
-    Polymer.dom.flush();
+    flush();
     return loadTimeData.getBoolean('showHiddenNetworkWarning') &&
         this.autoConnect_ && !this.hasGuid_();
   },

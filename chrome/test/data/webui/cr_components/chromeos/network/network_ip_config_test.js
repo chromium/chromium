@@ -3,9 +3,9 @@
 // found in the LICENSE file.
 
 import 'chrome://os-settings/strings.m.js';
-import 'chrome://resources/cr_components/chromeos/network/network_ip_config.m.js';
+import 'chrome://resources/cr_components/chromeos/network/network_ip_config.js';
 
-import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.m.js';
+import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 suite('NetworkIpConfigTest', function() {

@@ -6,10 +6,10 @@
  * @fileoverview Behavior for network config elements.
  */
 
-// #import {OncMojo} from './onc_mojo.m.js';
+import {OncMojo} from './onc_mojo.js';
 
 /** @polymerBehavior */
-/* #export */ const NetworkConfigElementBehavior = {
+export const NetworkConfigElementBehavior = {
   properties: {
     disabled: {
       type: Boolean,

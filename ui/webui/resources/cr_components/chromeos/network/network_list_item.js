@@ -7,13 +7,36 @@
  * in a list based on ONC state properties.
  */
 
+import '//resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
+import '//resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
+import '../../../cr_elements/cr_icon_button/cr_icon_button.js';
+import '../../../cr_elements/icons.m.js';
+import '../../../cr_elements/policy/cr_policy_indicator.js';
+import '../../../cr_elements/cr_shared_style.css.js';
+import '../../../cr_elements/shared_vars_css.m.js';
+import './network_icon.js';
+
+import {CellularSetupPageName} from '//resources/cr_components/chromeos/cellular_setup/cellular_types.m.js';
+import {getESimProfileProperties} from '//resources/cr_components/chromeos/cellular_setup/esim_manager_utils.m.js';
+import {assert} from '//resources/js/assert.m.js';
+import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {FocusRowBehavior} from '../../../js/cr/ui/focus_row_behavior.js';
+import {I18nBehavior} from '../../../js/i18n_behavior.m.js';
+
+import {CrPolicyNetworkBehaviorMojo} from './cr_policy_network_behavior_mojo.js';
+import {MojoInterfaceProvider, MojoInterfaceProviderImpl} from './mojo_interface_provider.js';
+import {NetworkList} from './network_list_types.js';
+import {OncMojo} from './onc_mojo.js';
+
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'network-list-item',
 
   behaviors: [
     CrPolicyNetworkBehaviorMojo,
     I18nBehavior,
-    cr.ui.FocusRowBehavior,
+    FocusRowBehavior,
   ],
 
   properties: {
@@ -221,8 +244,8 @@ Polymer({
 
   /** @override */
   created() {
-    this.networkConfig_ = network_config.MojoInterfaceProviderImpl.getInstance()
-                              .getMojoServiceRemote();
+    this.networkConfig_ =
+        MojoInterfaceProviderImpl.getInstance().getMojoServiceRemote();
   },
 
   /** @override */
@@ -283,7 +306,7 @@ Polymer({
       return;
     }
 
-    const properties = await cellular_setup.getESimProfileProperties(
+    const properties = await getESimProfileProperties(
         this.networkState.typeState.cellular.iccid);
     if (!properties) {
       return;
@@ -916,8 +939,7 @@ Polymer({
    */
   onActivateButtonClick_(event) {
     this.fire(
-        'show-cellular-setup',
-        {pageName: cellularSetup.CellularSetupPageName.PSIM_FLOW_UI});
+        'show-cellular-setup', {pageName: CellularSetupPageName.PSIM_FLOW_UI});
     event.stopPropagation();
   },
 

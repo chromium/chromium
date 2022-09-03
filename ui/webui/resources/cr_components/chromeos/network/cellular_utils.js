@@ -2,20 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import {MojoInterfaceProviderImpl} from 'chrome://resources/cr_components/chromeos/network/mojo_interface_provider.m.js';
-// #import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.m.js';
-// clang-format on
+import 'chrome://resources/cr_components/chromeos/network/onc_mojo.js';
+
+import {MojoInterfaceProviderImpl} from 'chrome://resources/cr_components/chromeos/network/mojo_interface_provider.js';
 
 /**
  * Checks if the device has a cellular network with connectionState not
  * kNotConnected.
  * @return {!Promise<boolean>}
  */
-/* #export */ function hasActiveCellularNetwork() {
+export function hasActiveCellularNetwork() {
   const mojom = chromeos.networkConfig.mojom;
-  const networkConfig = network_config.MojoInterfaceProviderImpl.getInstance()
-                            .getMojoServiceRemote();
+  const networkConfig =
+      MojoInterfaceProviderImpl.getInstance().getMojoServiceRemote();
   return networkConfig
       .getNetworkStateList({
         filter: mojom.FilterType.kActive,
@@ -36,7 +35,7 @@
  *     deviceState
  * @return {!{pSimSlots: number, eSimSlots: number}}
  */
-/* #export */ function getSimSlotCount(deviceState) {
+export function getSimSlotCount(deviceState) {
   let pSimSlots = 0;
   let eSimSlots = 0;
 
@@ -60,10 +59,10 @@
  * network.
  * @return {!Promise<boolean>}
  */
-/* #export */ function isConnectedToNonCellularNetwork() {
+export function isConnectedToNonCellularNetwork() {
   const mojom = chromeos.networkConfig.mojom;
-  const networkConfig = network_config.MojoInterfaceProviderImpl.getInstance()
-                            .getMojoServiceRemote();
+  const networkConfig =
+      MojoInterfaceProviderImpl.getInstance().getMojoServiceRemote();
   return networkConfig
       .getNetworkStateList({
         filter: mojom.FilterType.kActive,
@@ -85,7 +84,7 @@
  * @param {?chromeos.networkConfig.mojom.NetworkStateProperties} networkState
  * @param {?chromeos.networkConfig.mojom.DeviceStateProperties} deviceState
  */
-/* #export */ function isActiveSim(networkState, deviceState) {
+export function isActiveSim(networkState, deviceState) {
   const mojom = chromeos.networkConfig.mojom;
   if (!networkState || networkState.type !== mojom.NetworkType.kCellular) {
     return false;

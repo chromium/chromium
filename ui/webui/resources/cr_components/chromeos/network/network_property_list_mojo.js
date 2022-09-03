@@ -2,16 +2,27 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import {FAKE_CREDENTIAL} from './onc_mojo.m.js';
-// clang-format on
-
 /**
  * @fileoverview Polymer element for displaying a list of network properties
  * in a list. This also supports editing fields inline for fields listed in
  * editFieldTypes.
  */
+import '//resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
+import '../../../cr_elements/cr_input/cr_input.js';
+import '../../../cr_elements/cr_shared_style.css.js';
+import './cr_policy_network_indicator_mojo.js';
+import './network_shared_css.js';
+
+import {assert} from '//resources/js/assert.m.js';
+import {flush, html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {I18nBehavior} from '../../../js/i18n_behavior.m.js';
+
+import {CrPolicyNetworkBehaviorMojo} from './cr_policy_network_behavior_mojo.js';
+import {FAKE_CREDENTIAL, OncMojo} from './onc_mojo.js';
+
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'network-property-list-mojo',
 
   behaviors: [I18nBehavior, CrPolicyNetworkBehaviorMojo],
@@ -125,7 +136,7 @@ Polymer({
    * @private
    */
   attemptToFocusFirstEditableCrInput_() {
-    Polymer.dom.flush();
+    flush();
 
     const crInput = /** @type {?HTMLElement} */
         (this.shadowRoot.querySelector('cr-input:not([readonly])'));

@@ -6,7 +6,23 @@
  * @fileoverview Polymer element containing all Sim lock dialogs
  */
 
-(function() {
+import '../../../cr_elements/cr_button/cr_button.js';
+import '../../../cr_elements/cr_dialog/cr_dialog.js';
+import '../../../cr_elements/icons.m.js';
+import '../../../cr_elements/cr_shared_style.css.js';
+import '//resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
+import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
+import './network_password_input.js';
+import './network_shared_css.js';
+
+import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {assertNotReached} from '../../../js/assert.m.js';
+import {I18nBehavior} from '../../../js/i18n_behavior.m.js';
+
+import {MojoInterfaceProvider, MojoInterfaceProviderImpl} from './mojo_interface_provider.js';
+import {OncMojo} from './onc_mojo.js';
+
 /** @enum {string} */
 const ErrorType = {
   NONE: 'none',
@@ -22,6 +38,7 @@ const PIN_MIN_LENGTH = 4;
 const PUK_MIN_LENGTH = 8;
 
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'sim-lock-dialogs',
 
   behaviors: [I18nBehavior],
@@ -176,8 +193,8 @@ Polymer({
 
   /** @override */
   created() {
-    this.networkConfig_ = network_config.MojoInterfaceProviderImpl.getInstance()
-                              .getMojoServiceRemote();
+    this.networkConfig_ =
+        MojoInterfaceProviderImpl.getInstance().getMojoServiceRemote();
   },
 
   /** @override */
@@ -776,4 +793,3 @@ Polymer({
     return this.i18n('networkSimPukDialogManagedWarningNoFailures');
   },
 });
-})();

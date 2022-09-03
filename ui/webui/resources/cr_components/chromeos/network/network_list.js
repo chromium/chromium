@@ -6,10 +6,24 @@
  * @fileoverview Polymer element for displaying a collapsable list of networks.
  */
 
+import './network_list_item.js';
+import '../../../cr_elements/cr_shared_style.css.js';
+import '//resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
+import '//resources/polymer/v3_0/iron-list/iron-list.js';
+
+import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {CrScrollableBehavior} from '../../../cr_elements/cr_scrollable_behavior.js';
+import {ListPropertyUpdateBehavior} from '../../../js/list_property_update_behavior.js';
+
+import {NetworkList} from './network_list_types.js';
+import {OncMojo} from './onc_mojo.js';
+
 /**
  * Polymer class definition for 'network-list'.
  */
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'network-list',
 
   properties: {

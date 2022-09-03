@@ -7,7 +7,25 @@
  * mobile networks.
  */
 
+import '//resources/cr_elements/cr_button/cr_button.js';
+import '//resources/cr_elements/md_select.css.js';
+import '//resources/cr_elements/cr_shared_style.css.js';
+import '//resources/mojo/mojo/public/js/mojo_bindings_lite.js';
+import '//resources/mojo/services/network/public/mojom/ip_address.mojom-lite.js';
+import '//resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-lite.js';
+import '//resources/mojo/mojo/public/mojom/base/time.mojom-lite.js';
+import '//resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-lite.js';
+import '//resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
+import './network_shared_css.js';
+
+import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
+import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {MojoInterfaceProvider, MojoInterfaceProviderImpl} from './mojo_interface_provider.js';
+import {OncMojo} from './onc_mojo.js';
+
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'network-choose-mobile',
 
   behaviors: [I18nBehavior],
@@ -70,8 +88,7 @@ Polymer({
   getNetworkConfig_() {
     if (!this.networkConfig_) {
       this.networkConfig_ =
-          network_config.MojoInterfaceProviderImpl.getInstance()
-              .getMojoServiceRemote();
+          MojoInterfaceProviderImpl.getInstance().getMojoServiceRemote();
     }
     return this.networkConfig_;
   },

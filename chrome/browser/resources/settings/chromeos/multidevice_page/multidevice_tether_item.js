@@ -11,14 +11,14 @@
  * serves a role comparable to the internet_page's network-summary element.
  */
 
-import 'chrome://resources/cr_components/chromeos/network/network_icon.m.js';
+import 'chrome://resources/cr_components/chromeos/network/network_icon.js';
 import '../../settings_shared.css.js';
 import '../../settings_vars.css.js';
 import './multidevice_feature_item.js';
 
-import {MojoInterfaceProviderImpl} from 'chrome://resources/cr_components/chromeos/network/mojo_interface_provider.m.js';
-import {NetworkListenerBehavior, NetworkListenerBehaviorInterface} from 'chrome://resources/cr_components/chromeos/network/network_listener_behavior.m.js';
-import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.m.js';
+import {MojoInterfaceProviderImpl} from 'chrome://resources/cr_components/chromeos/network/mojo_interface_provider.js';
+import {NetworkListenerBehavior, NetworkListenerBehaviorInterface} from 'chrome://resources/cr_components/chromeos/network/network_listener_behavior.js';
+import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../../i18n_setup.js';

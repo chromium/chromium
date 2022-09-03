@@ -8,8 +8,8 @@ import 'chrome://resources/cr_components/chromeos/cellular_setup/esim_flow_ui.m.
 import {ButtonState} from 'chrome://resources/cr_components/chromeos/cellular_setup/cellular_types.m.js';
 import {ESimPageName, ESimSetupFlowResult, FAILED_ESIM_SETUP_DURATION_METRIC_NAME, SUCCESSFUL_ESIM_SETUP_DURATION_METRIC_NAME} from 'chrome://resources/cr_components/chromeos/cellular_setup/esim_flow_ui.m.js';
 import {setESimManagerRemoteForTesting} from 'chrome://resources/cr_components/chromeos/cellular_setup/mojo_interface_provider.m.js';
-import {MojoInterfaceProviderImpl} from 'chrome://resources/cr_components/chromeos/network/mojo_interface_provider.m.js';
-import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.m.js';
+import {MojoInterfaceProviderImpl} from 'chrome://resources/cr_components/chromeos/network/mojo_interface_provider.js';
+import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {FakeNetworkConfig} from 'chrome://test/chromeos/fake_network_config_mojom.js';
 

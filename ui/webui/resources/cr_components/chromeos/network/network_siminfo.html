@@ -1,113 +1,90 @@
-<link rel="import" href="../../../html/polymer.html">
+<style include="network-shared iron-flex">
+  :host {
+    cursor: default
+  }
 
-<link rel="import" href="../../../cr_elements/cr_button/cr_button.html">
-<link rel="import" href="../../../cr_elements/cr_toggle/cr_toggle.html">
-<link rel="import" href="../../../cr_elements/icons.html">
-<link rel="import" href="../../../html/i18n_behavior.html">
-<link rel="import" href="../../../html/assert.html">
-<link rel="import" href="../../../html/cr/ui/focus_without_ink.html">
-<link rel="import" href="chrome://resources/cr_components/chromeos/network/cellular_utils.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/iron-flex-layout/iron-flex-layout-classes.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-tooltip/paper-tooltip.html">
-<link rel="import" href="mojo_interface_provider.html">
-<link rel="import" href="network_password_input.html">
-<link rel="import" href="network_shared_css.html">
-<link rel="import" href="sim_lock_dialogs.html">
-<link rel="import" href="onc_mojo.html">
+  iron-icon {
+    margin-inline-end: 10px;
+  }
 
-<dom-module id="network-siminfo">
-  <template>
-    <style include="network-shared iron-flex">
-      :host {
-        cursor: default
-      }
+  cr-policy-indicator {
+    margin-inline-end: var(--cr-button-edge-spacing);
+  }
 
-      iron-icon {
-        margin-inline-end: 10px;
-      }
+  cr-toggle {
+    margin-inline-start: var(--cr-button-edge-spacing);
+  }
 
-      cr-policy-indicator {
-        margin-inline-end: var(--cr-button-edge-spacing);
-      }
+  .separator {
+    border-inline-start: var(--cr-separator-line);
+    flex-shrink: 0;
+    height: calc(var(--cr-section-min-height) - 9px);
+    margin-inline-end: var(--cr-section-padding);
+    margin-inline-start: var(--cr-section-padding);
+  }
 
-      cr-toggle {
-        margin-inline-start: var(--cr-button-edge-spacing);
-      }
+  .pin-required-subtext {
+    color: var(--cros-text-color-secondary);
+  }
+</style>
 
-      .separator {
-        border-inline-start: var(--cr-separator-line);
-        flex-shrink: 0;
-        height: calc(var(--cr-section-min-height) - 9px);
-        margin-inline-end: var(--cr-section-padding);
-        margin-inline-start: var(--cr-section-padding);
-      }
+<!-- SIM locked -->
+<template is="dom-if" if="[[eq_(State.SIM_LOCKED, state_)]]" restamp>
+  <div id="simLocked" class="property-box two-line">
+    <cr-button id="unlockPinButton"
+        on-click="onUnlockPinTap_"
+        disabled="[[disabled]]">
+      [[i18n('networkSimUnlock')]]
+    </cr-button>
+  </div>
+</template>
 
-      .pin-required-subtext {
-        color: var(--cros-text-color-secondary);
-      }
-    </style>
-
-    <!-- SIM locked -->
-    <template is="dom-if" if="[[eq_(State.SIM_LOCKED, state_)]]" restamp>
-      <div id="simLocked" class="property-box two-line">
-        <cr-button id="unlockPinButton"
-            on-click="onUnlockPinTap_"
-            disabled="[[disabled]]">
-          [[i18n('networkSimUnlock')]]
-        </cr-button>
+<!-- SIM unlocked -->
+<template is="dom-if" if="[[eq_(State.SIM_UNLOCKED, state_)]]" restamp>
+  <div class="property-box two-line">
+    <div class="flex layout vertical"  aria-hidden="true">
+      <div id="pinRequiredLabel">
+        [[i18n('networkSimLockEnable')]]
       </div>
-    </template>
-
-    <!-- SIM unlocked -->
-    <template is="dom-if" if="[[eq_(State.SIM_UNLOCKED, state_)]]" restamp>
-      <div class="property-box two-line">
-        <div class="flex layout vertical"  aria-hidden="true">
-          <div id="pinRequiredLabel">
-            [[i18n('networkSimLockEnable')]]
-          </div>
-          <div id="pinRequiredSublabel" class="pin-required-subtext">
-            [[i18n('networkSimLockEnableSublabel')]]
-          </div>
-        </div>
-        <cr-button id="changePinButton" on-click="onChangePinTap_"
-            hidden$="[[!showChangePinButton_(deviceState, isActiveSim_,
-                isSimPinLockRestricted_)]]"
-            disabled="[[disabled]]">
-          [[i18n('networkSimChangePin')]]
-        </cr-button>
-        <template is="dom-if" if="[[!isActiveSim_]]" restamp>
-          <iron-icon id="help-icon" tabindex="0" icon="cr:help-outline"
-              aria-labelledby="pinRequiredLabel pinRequiredSublabel inActiveSimLockTooltip">
-          </iron-icon>
-          <paper-tooltip id="inActiveSimLockTooltip" for="help-icon" position="bottom"
-              aria-hidden="true" fit-to-visible-bounds>
-              [[i18n('networkSimLockedTooltip')]]
-          </paper-tooltip>
-          <div class="separator"></div>
-        </template>
-        <template is="dom-if" if="[[shouldShowPolicyIndicator_(isActiveSim_,
-            isSimPinLockRestricted_)]]" restamp>
-          <cr-policy-indicator id="simLockPolicyIcon" indicator-type="devicePolicy">
-          </cr-policy-indicator>
-        </template>
-        <cr-toggle id="simLockButton"
-            disabled="[[isSimLockButtonDisabled_(disabled, isActiveSim_,
-                isSimPinLockRestricted_, lockEnabled_)]]"
-            on-change="onSimLockEnabledChange_" checked="{{lockEnabled_}}"
-            aria-labelledby="pinRequiredLabel pinRequiredSublabel">
-        </cr-toggle>
+      <div id="pinRequiredSublabel" class="pin-required-subtext">
+        [[i18n('networkSimLockEnableSublabel')]]
       </div>
+    </div>
+    <cr-button id="changePinButton" on-click="onChangePinTap_"
+        hidden$="[[!showChangePinButton_(deviceState, isActiveSim_,
+            isSimPinLockRestricted_)]]"
+        disabled="[[disabled]]">
+      [[i18n('networkSimChangePin')]]
+    </cr-button>
+    <template is="dom-if" if="[[!isActiveSim_]]" restamp>
+      <iron-icon id="help-icon" tabindex="0" icon="cr:help-outline"
+          aria-labelledby="pinRequiredLabel pinRequiredSublabel inActiveSimLockTooltip">
+      </iron-icon>
+      <paper-tooltip id="inActiveSimLockTooltip" for="help-icon" position="bottom"
+          aria-hidden="true" fit-to-visible-bounds>
+          [[i18n('networkSimLockedTooltip')]]
+      </paper-tooltip>
+      <div class="separator"></div>
     </template>
+    <template is="dom-if" if="[[shouldShowPolicyIndicator_(isActiveSim_,
+        isSimPinLockRestricted_)]]" restamp>
+      <cr-policy-indicator id="simLockPolicyIcon" indicator-type="devicePolicy">
+      </cr-policy-indicator>
+    </template>
+    <cr-toggle id="simLockButton"
+        disabled="[[isSimLockButtonDisabled_(disabled, isActiveSim_,
+            isSimPinLockRestricted_, lockEnabled_)]]"
+        on-change="onSimLockEnabledChange_" checked="{{lockEnabled_}}"
+        aria-labelledby="pinRequiredLabel pinRequiredSublabel">
+    </cr-toggle>
+  </div>
+</template>
 
-    <template is="dom-if" if="[[isDialogOpen_]]" restamp>
-      <sim-lock-dialogs
-          global-policy="[[globalPolicy]]"
-          show-change-pin="[[showChangePin_]]"
-          is-dialog-open="{{isDialogOpen_}}"
-          device-state="[[deviceState]]">
-      </sim-lock-dialogs>
-    </template>
-  </template>
-  <script src="network_siminfo.js"></script>
-</dom-module>
+<template is="dom-if" if="[[isDialogOpen_]]" restamp>
+  <sim-lock-dialogs
+      global-policy="[[globalPolicy]]"
+      show-change-pin="[[showChangePin_]]"
+      is-dialog-open="{{isDialogOpen_}}"
+      device-state="[[deviceState]]">
+  </sim-lock-dialogs>
+</template>

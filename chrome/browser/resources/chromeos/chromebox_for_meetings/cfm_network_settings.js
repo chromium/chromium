@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/cr_components/chromeos/network/network_select.m.js';
-import 'chrome://resources/cr_components/chromeos/network/network_list.m.js';
+import 'chrome://resources/cr_components/chromeos/network/network_select.js';
+import 'chrome://resources/cr_components/chromeos/network/network_list.js';
 import 'chrome://resources/js/load_time_data.m.js';
 import 'chrome://resources/polymer/v3_0/iron-iconset-svg/iron-iconset-svg.js';
 import './strings.m.js';
 
-import {MojoInterfaceProviderImpl} from 'chrome://resources/cr_components/chromeos/network/mojo_interface_provider.m.js';
-import {NetworkList} from 'chrome://resources/cr_components/chromeos/network/network_list_types.m.js';
-import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.m.js';
+import {MojoInterfaceProviderImpl} from 'chrome://resources/cr_components/chromeos/network/mojo_interface_provider.js';
+import {NetworkList} from 'chrome://resources/cr_components/chromeos/network/network_list_types.js';
+import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.js';
 import {$} from 'chrome://resources/js/util.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 

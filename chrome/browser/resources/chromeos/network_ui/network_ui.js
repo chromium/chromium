@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/cr_components/chromeos/network/network_select.m.js';
+import 'chrome://resources/cr_components/chromeos/network/network_select.js';
 import 'chrome://resources/cr_components/chromeos/network_health/network_diagnostics.js';
 import 'chrome://resources/cr_components/chromeos/network_health/network_health_summary.js';
 import 'chrome://resources/cr_components/chromeos/traffic_counters/traffic_counters.js';
@@ -19,7 +19,7 @@ import './network_state_ui.js';
 import './network_logs_ui.js';
 import './network_metrics_ui.js';
 
-import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.m.js';
+import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.js';
 import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';

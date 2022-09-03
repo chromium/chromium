@@ -13,7 +13,7 @@ import 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-lite.js';
 import './file_path.mojom-lite.js';
 import './mojom/shimless_rma.mojom-lite.js';
 
-import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.m.js';
+import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.js';
 
 /**
  * @typedef {ash.shimlessRma.mojom.StateResult}

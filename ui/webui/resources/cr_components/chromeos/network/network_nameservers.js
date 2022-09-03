@@ -6,6 +6,21 @@
  * @fileoverview Polymer element for displaying network nameserver options.
  */
 
+import '//resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
+import '../../../cr_elements/cr_input/cr_input.js';
+import '../../../cr_elements/cr_radio_button/cr_radio_button.js';
+import '../../../cr_elements/cr_radio_group/cr_radio_group.js';
+import '../../../cr_elements/policy/cr_policy_indicator.js';
+import '../../../cr_elements/md_select.css.js';
+import './network_shared_css.js';
+
+import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {I18nBehavior} from '../../../js/i18n_behavior.m.js';
+
+import {CrPolicyNetworkBehaviorMojo} from './cr_policy_network_behavior_mojo.js';
+import {OncMojo} from './onc_mojo.js';
+
 /**
  * UI configuration options for nameservers.
  * @enum {string}
@@ -17,6 +32,7 @@ const NameserversType = {
 };
 
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'network-nameservers',
 
   behaviors: [I18nBehavior, CrPolicyNetworkBehaviorMojo],

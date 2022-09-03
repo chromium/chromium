@@ -9,7 +9,17 @@
  * string, url:port.
  */
 
+import '../../../cr_elements/cr_input/cr_input.js';
+import './network_shared_css.js';
+
+import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {I18nBehavior} from '../../../js/i18n_behavior.m.js';
+
+import {OncMojo} from './onc_mojo.js';
+
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'network-proxy-input',
 
   behaviors: [I18nBehavior],

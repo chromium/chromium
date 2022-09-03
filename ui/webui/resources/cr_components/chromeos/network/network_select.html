@@ -1,47 +1,31 @@
-<link rel="import" href="../../../html/polymer.html">
+<style>
+  :host {
+    display: inline-flex;
+    position: relative;
+  }
 
-<link rel="import" href="chrome://resources/cr_elements/shared_vars_css.html">
-<link rel="import" href="chrome://resources/html/assert.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-progress/paper-progress.html">
-<link rel="import" href="mojo_interface_provider.html">
-<link rel="import" href="network_list.html">
-<link rel="import" href="network_list_types.html">
-<link rel="import" href="network_listener_behavior.html">
-<link rel="import" href="onc_mojo.html">
+  paper-progress {
+    --paper-progress-active-color: var(--cros-icon-color-prominent);
+    height: 1px;
+    position: absolute;
+    width: 100%;
+  }
 
-<dom-module id="network-select">
-  <template>
-    <style>
-      :host {
-        display: inline-flex;
-        position: relative;
-      }
-
-      paper-progress {
-        --paper-progress-active-color: var(--cros-icon-color-prominent);
-        height: 1px;
-        position: absolute;
-        width: 100%;
-      }
-
-      #networkList {
-        flex: 1;
-      }
-    </style>
-    <template is="dom-if" if="[[showScanProgress]]" restamp>
-      <paper-progress indeterminate hidden$="[[!isScanOngoing_]]">
-      </paper-progress>
-    </template>
-    <network-list id="networkList"
-        on-selected="onNetworkListItemSelected_"
-        networks="[[networkStateList_]]" custom-items="[[customItems]]"
-        show-buttons="[[showButtons]]"
-        show-technology-badge="[[showTechnologyBadge]]"
-        no-bottom-scroll-border="[[noBottomScrollBorder]]"
-        activation-unavailable="[[activationUnavailable]]"
-        device-state="[[cellularDeviceState_]]"
-        global-policy="[[globalPolicy_]]">
-    </network-list>
-  </template>
-  <script src="network_select.js"></script>
-</dom-module>
+  #networkList {
+    flex: 1;
+  }
+</style>
+<template is="dom-if" if="[[showScanProgress]]" restamp>
+  <paper-progress indeterminate hidden$="[[!isScanOngoing_]]">
+  </paper-progress>
+</template>
+<network-list id="networkList"
+    on-selected="onNetworkListItemSelected_"
+    networks="[[networkStateList_]]" custom-items="[[customItems]]"
+    show-buttons="[[showButtons]]"
+    show-technology-badge="[[showTechnologyBadge]]"
+    no-bottom-scroll-border="[[noBottomScrollBorder]]"
+    activation-unavailable="[[activationUnavailable]]"
+    device-state="[[cellularDeviceState_]]"
+    global-policy="[[globalPolicy_]]">
+</network-list>
