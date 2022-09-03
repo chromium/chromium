@@ -3031,6 +3031,9 @@ extern const char kEcheSWADescription[];
 extern const char kEcheSWADebugModeName[];
 extern const char kEcheSWADebugModeDescription[];
 
+extern const char kEcheSWAMeasureLatencyName[];
+extern const char kEcheSWAMeasureLatencyDescription[];
+
 extern const char kEnableIkev2VpnName[];
 extern const char kEnableIkev2VpnDescription[];
 

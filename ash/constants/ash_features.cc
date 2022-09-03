@@ -574,6 +574,10 @@ const base::Feature kEcheSWA{"EcheSWA", base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kEcheSWADebugMode{"EcheSWADebugMode",
                                       base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables the E2E latecny measurement of Eche.
+const base::Feature kEcheSWAMeasureLatency{"EcheSWAMeasureLatency",
+                                           base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables background blur for the app list, shelf, unified system tray,
 // autoclick menu, etc. Also enables the AppsGridView mask layer, slower devices
 // may have choppier app list animations while in this mode. crbug.com/765292.
@@ -2007,6 +2011,10 @@ bool IsEcheSWAEnabled() {
 
 bool IsEcheSWADebugModeEnabled() {
   return base::FeatureList::IsEnabled(kEcheSWADebugMode);
+}
+
+bool IsEcheSWAMeasureLatencyEnabled() {
+  return base::FeatureList::IsEnabled(kEcheSWAMeasureLatency);
 }
 
 bool IsExperimentalRgbKeyboardPatternsEnabled() {

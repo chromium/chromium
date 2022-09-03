@@ -58031,6 +58031,7 @@ from previous Chrome versions.
   <int value="-980317085" label="EnablePasswordsAccountStorage:disabled"/>
   <int value="-980260493" label="NTPSnippets:disabled"/>
   <int value="-980054107" label="DestroyProfileOnBrowserClose:enabled"/>
+  <int value="-979438173" label="EcheSWAMeasureLatency:disabled"/>
   <int value="-979313250" label="enable-google-branded-context-menu"/>
   <int value="-979057409" label="enable-seccomp-filter-sandbox"/>
   <int value="-979034258" label="disable-ntp-other-sessions-menu"/>
@@ -59456,6 +59457,7 @@ from previous Chrome versions.
   <int value="-82266557" label="SafeBrowsingSecuritySectionUIAndroid:disabled"/>
   <int value="-81940476"
       label="OverrideSimilarLanguagesForHrefTranslate:disabled"/>
+  <int value="-81292879" label="EcheSWAMeasureLatency:enabled"/>
   <int value="-80501013" label="AutofillOffNoServerData:enabled"/>
   <int value="-80353187" label="disable-display-color-calibration"/>
   <int value="-79327236" label="ModeSpecificPowerButton:enabled"/>

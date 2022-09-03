@@ -25,6 +25,7 @@
  *    tabletMode: boolean,
  *    wifiConnectionState: string,
  *    debugMode: boolean,
+ *    MeasureLatency: boolean,
  * }}
  */
 /* #export */ let SystemInfo;

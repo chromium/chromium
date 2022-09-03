@@ -28,6 +28,7 @@ const ConnectionStateType kFakeWifiConnectionState =
 const bool kFakeDebugMode = false;
 const char kFakeGaiaId[] = "123";
 const char kFakeDeviceType[] = "Chromebook";
+const bool kFakeMeasureLatency = false;
 
 void ParseJson(const std::string& json,
                std::string& device_name,
@@ -36,7 +37,8 @@ void ParseJson(const std::string& json,
                std::string& wifi_connection_state,
                bool& debug_mode,
                std::string& gaia_id,
-               std::string& device_type) {
+               std::string& device_type,
+               bool& measure_latency) {
   absl::optional<base::Value> message_value = base::JSONReader::Read(json);
   base::Value::Dict* message_dictionary = message_value->GetIfDict();
   const std::string* device_name_ptr =
@@ -67,6 +69,10 @@ void ParseJson(const std::string& json,
       message_dictionary->FindString(kJsonDeviceTypeKey);
   if (device_type_ptr)
     device_type = *device_type_ptr;
+  absl::optional<bool> measure_latency_opt =
+      message_dictionary->FindBool(kJsonMeasureLatencyKey);
+  if (measure_latency_opt.has_value())
+    measure_latency = measure_latency_opt.value();
 }
 
 class TaskRunner {
@@ -263,11 +269,12 @@ TEST_F(SystemInfoProviderTest, GetSystemInfoHasCorrectJson) {
   bool debug_mode = true;
   std::string gaia_id = "";
   std::string device_type = "";
+  bool measure_latency = true;
 
   GetSystemInfo();
   std::string json = Callback::GetSystemInfo();
   ParseJson(json, device_name, board_name, tablet_mode, wifi_connection_state,
-            debug_mode, gaia_id, device_type);
+            debug_mode, gaia_id, device_type, measure_latency);
 
   EXPECT_EQ(device_name, kFakeDeviceName);
   EXPECT_EQ(board_name, kFakeBoardName);
@@ -276,6 +283,7 @@ TEST_F(SystemInfoProviderTest, GetSystemInfoHasCorrectJson) {
   EXPECT_EQ(debug_mode, kFakeDebugMode);
   EXPECT_EQ(gaia_id, kFakeGaiaId);
   EXPECT_EQ(device_type, kFakeDeviceType);
+  EXPECT_EQ(measure_latency, kFakeMeasureLatency);
 }
 
 TEST_F(SystemInfoProviderTest, ObserverCalledWhenBacklightChanged) {
