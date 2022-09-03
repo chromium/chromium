@@ -41,7 +41,6 @@
 #endif
 
 namespace updater {
-
 namespace {
 
 // Content-type of DM requests.
@@ -98,8 +97,8 @@ class DefaultConfigurator : public DMClient::Configurator {
 
 DefaultConfigurator::DefaultConfigurator(
     scoped_refptr<PolicyService> policy_service)
-    : network_fetcher_factory_(
-          base::MakeRefCounted<NetworkFetcherFactory>(policy_service)) {}
+    : network_fetcher_factory_(base::MakeRefCounted<NetworkFetcherFactory>(
+          PolicyServiceProxyConfiguration::Get(policy_service))) {}
 
 std::string DefaultConfigurator::GetPlatformParameter() const {
   std::string os_name = base::SysInfo::OperatingSystemName();

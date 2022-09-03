@@ -4,10 +4,15 @@
 
 #include "chrome/updater/unittest_util.h"
 
+#include <utility>
+
 #include "base/files/file_path.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/process/kill.h"
 #include "base/process/process_iterator.h"
 #include "base/time/time.h"
+#include "chrome/updater/policy/manager.h"
+#include "chrome/updater/policy/service.h"
 
 namespace updater::test {
 
@@ -25,6 +30,12 @@ bool WaitForProcessesToExit(const base::FilePath::StringType& executable_name,
 bool KillProcesses(const base::FilePath::StringType& executable_name,
                    int exit_code) {
   return base::KillProcesses(executable_name, exit_code, nullptr);
+}
+
+scoped_refptr<PolicyService> CreateTestPolicyService() {
+  PolicyService::PolicyManagerVector managers;
+  managers.push_back(GetDefaultValuesPolicyManager());
+  return base::MakeRefCounted<PolicyService>(std::move(managers));
 }
 
 }  // namespace updater::test

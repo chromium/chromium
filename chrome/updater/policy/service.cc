@@ -9,12 +9,13 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/check.h"
+#include "base/logging.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
+#include "chrome/updater/constants.h"
 #include "chrome/updater/external_constants.h"
-
 #include "chrome/updater/policy/dm_policy_manager.h"
 #include "chrome/updater/policy/policy_manager.h"
 #if BUILDFLAG(IS_WIN)
@@ -22,6 +23,7 @@
 #elif BUILDFLAG(IS_MAC)
 #include "chrome/updater/policy/mac/managed_preference_policy_manager.h"
 #endif
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace updater {
 
@@ -243,6 +245,54 @@ scoped_refptr<PolicyService> PolicyService::Create(
   managers.push_back(GetDefaultValuesPolicyManager());
 
   return base::MakeRefCounted<PolicyService>(std::move(managers));
+}
+
+PolicyServiceProxyConfiguration::PolicyServiceProxyConfiguration() = default;
+PolicyServiceProxyConfiguration::~PolicyServiceProxyConfiguration() = default;
+PolicyServiceProxyConfiguration::PolicyServiceProxyConfiguration(
+    const PolicyServiceProxyConfiguration&) = default;
+PolicyServiceProxyConfiguration& PolicyServiceProxyConfiguration::operator=(
+    const PolicyServiceProxyConfiguration&) = default;
+
+absl::optional<PolicyServiceProxyConfiguration>
+PolicyServiceProxyConfiguration::Get(
+    scoped_refptr<PolicyService> policy_service) {
+  std::string policy_proxy_mode;
+  if (!policy_service->GetProxyMode(nullptr, &policy_proxy_mode) ||
+      policy_proxy_mode.compare(kProxyModeSystem) == 0) {
+    return absl::nullopt;
+  }
+  VLOG(2) << "Using policy proxy " << policy_proxy_mode;
+
+  PolicyServiceProxyConfiguration policy_service_proxy_configuration;
+
+  bool is_policy_config_valid = true;
+  if (policy_proxy_mode.compare(kProxyModeFixedServers) == 0) {
+    std::string policy_proxy_url;
+    if (!policy_service->GetProxyServer(nullptr, &policy_proxy_url)) {
+      VLOG(1) << "Fixed server mode proxy has no URL specified.";
+      is_policy_config_valid = false;
+    } else {
+      policy_service_proxy_configuration.proxy_url = policy_proxy_url;
+    }
+  } else if (policy_proxy_mode.compare(kProxyModePacScript) == 0) {
+    std::string policy_proxy_pac_url;
+    if (!policy_service->GetProxyPacUrl(nullptr, &policy_proxy_pac_url)) {
+      VLOG(1) << "PAC proxy policy has no PAC URL specified.";
+      is_policy_config_valid = false;
+    } else {
+      policy_service_proxy_configuration.proxy_pac_url = policy_proxy_pac_url;
+    }
+  } else if (policy_proxy_mode.compare(kProxyModeAutoDetect)) {
+    policy_service_proxy_configuration.proxy_auto_detect = true;
+  }
+
+  if (!is_policy_config_valid) {
+    VLOG(1) << "Configuration set by policy was invalid.";
+    return absl::nullopt;
+  }
+
+  return policy_service_proxy_configuration;
 }
 
 }  // namespace updater

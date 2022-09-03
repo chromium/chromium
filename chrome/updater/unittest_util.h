@@ -6,9 +6,14 @@
 #define CHROME_UPDATER_UNITTEST_UTIL_H_
 
 #include "base/files/file_path.h"
+#include "base/memory/scoped_refptr.h"
 
 namespace base {
 class TimeDelta;
+}
+
+namespace updater {
+class PolicyService;
 }
 
 namespace updater::test {
@@ -28,6 +33,9 @@ bool WaitForProcessesToExit(const base::FilePath::StringType& executable_name,
 // Returns true if all processes were able to be killed off.
 bool KillProcesses(const base::FilePath::StringType& executable_name,
                    int exit_code);
+
+// A policy service with default values.
+scoped_refptr<PolicyService> CreateTestPolicyService();
 
 }  // namespace updater::test
 

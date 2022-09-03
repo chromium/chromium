@@ -7,18 +7,19 @@
 
 #include <memory>
 
-#include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "components/update_client/network.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace updater {
 
-class PolicyService;
+struct PolicyServiceProxyConfiguration;
 
 // Network fetcher factory for WinHTTP.
 class NetworkFetcherFactory : public update_client::NetworkFetcherFactory {
  public:
-  explicit NetworkFetcherFactory(scoped_refptr<PolicyService> policy_service);
+  explicit NetworkFetcherFactory(absl::optional<PolicyServiceProxyConfiguration>
+                                     policy_service_proxy_configuration);
   NetworkFetcherFactory(const NetworkFetcherFactory&) = delete;
   NetworkFetcherFactory& operator=(const NetworkFetcherFactory&) = delete;
 

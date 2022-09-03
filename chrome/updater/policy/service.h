@@ -61,6 +61,8 @@ class PolicyStatus {
 
 // The PolicyService returns policies for enterprise managed machines from the
 // source with the highest priority where the policy available.
+// TODO(crbug.com/1358718) - modernize the public interface to return by value
+// instead of two out-params.
 class PolicyService : public base::RefCountedThreadSafe<PolicyService> {
  public:
   using PolicyManagerVector =
@@ -69,6 +71,10 @@ class PolicyService : public base::RefCountedThreadSafe<PolicyService> {
   explicit PolicyService(PolicyManagerVector managers);
   PolicyService(const PolicyService&) = delete;
   PolicyService& operator=(const PolicyService&) = delete;
+
+  // Creates an instance that takes a snapshot of policies from all providers.
+  static scoped_refptr<PolicyService> Create(
+      scoped_refptr<ExternalConstants> external_constants);
 
   std::string source() const;
 
@@ -84,7 +90,6 @@ class PolicyService : public base::RefCountedThreadSafe<PolicyService> {
                                       int* cache_size_limit) const;
   bool GetPackageCacheExpirationTimeDays(PolicyStatus<int>* policy_status,
                                          int* cache_life_limit) const;
-
   bool GetEffectivePolicyForAppInstalls(const std::string& app_id,
                                         PolicyStatus<int>* policy_status,
                                         int* install_policy) const;
@@ -109,10 +114,6 @@ class PolicyService : public base::RefCountedThreadSafe<PolicyService> {
   bool GetForceInstallApps(
       PolicyStatus<std::vector<std::string>>* policy_status,
       std::vector<std::string>* force_install_apps) const;
-
-  // Creates an instance that takes a snapshot of policies from all providers.
-  static scoped_refptr<PolicyService> Create(
-      scoped_refptr<ExternalConstants> external_constants);
 
  protected:
   virtual ~PolicyService();
@@ -143,6 +144,22 @@ class PolicyService : public base::RefCountedThreadSafe<PolicyService> {
       const std::string& app_id,
       PolicyStatus<T>* policy_status,
       T* value) const;
+};
+
+// Decouples the proxy configuration from `PolicyService`.
+struct PolicyServiceProxyConfiguration {
+  PolicyServiceProxyConfiguration();
+  ~PolicyServiceProxyConfiguration();
+  PolicyServiceProxyConfiguration(const PolicyServiceProxyConfiguration&);
+  PolicyServiceProxyConfiguration& operator=(
+      const PolicyServiceProxyConfiguration&);
+
+  static absl::optional<PolicyServiceProxyConfiguration> Get(
+      scoped_refptr<PolicyService> policy_service);
+
+  absl::optional<bool> proxy_auto_detect;
+  absl::optional<std::string> proxy_pac_url;
+  absl::optional<std::string> proxy_url;
 };
 
 }  // namespace updater

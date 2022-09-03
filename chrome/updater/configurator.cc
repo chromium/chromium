@@ -125,9 +125,10 @@ std::string Configurator::GetDownloadPreference() const {
 
 scoped_refptr<update_client::NetworkFetcherFactory>
 Configurator::GetNetworkFetcherFactory() {
-  if (!network_fetcher_factory_)
-    network_fetcher_factory_ =
-        base::MakeRefCounted<NetworkFetcherFactory>(GetPolicyService());
+  if (!network_fetcher_factory_) {
+    network_fetcher_factory_ = base::MakeRefCounted<NetworkFetcherFactory>(
+        PolicyServiceProxyConfiguration::Get(policy_service_));
+  }
   return network_fetcher_factory_;
 }
 

@@ -23,6 +23,7 @@
 #include "chrome/updater/mac/net/network.h"
 #include "chrome/updater/policy/service.h"
 #import "net/base/mac/url_conversions.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 using ResponseStartedCallback =
@@ -358,7 +359,8 @@ void NetworkFetcher::DownloadToFile(
   [downloadTask resume];
 }
 
-NetworkFetcherFactory::NetworkFetcherFactory(scoped_refptr<PolicyService>) {}
+NetworkFetcherFactory::NetworkFetcherFactory(
+    absl::optional<PolicyServiceProxyConfiguration>) {}
 NetworkFetcherFactory::~NetworkFetcherFactory() = default;
 
 std::unique_ptr<update_client::NetworkFetcher> NetworkFetcherFactory::Create()

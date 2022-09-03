@@ -23,9 +23,9 @@
 #include "components/update_client/network.h"
 #include "components/winhttp/network_fetcher.h"
 #include "components/winhttp/proxy_configuration.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace updater {
-
 namespace {
 
 std::wstring FromCharOrEmpty(const wchar_t* str) {
@@ -78,50 +78,26 @@ ScopedIeProxyConfig::~ScopedIeProxyConfig() {
 
 // Factory method for the proxy configuration strategy.
 scoped_refptr<winhttp::ProxyConfiguration> GetProxyConfiguration(
-    scoped_refptr<PolicyService> policy_service) {
-  std::string policy_proxy_mode;
-  if (policy_service->GetProxyMode(nullptr, &policy_proxy_mode) &&
-      policy_proxy_mode.compare(kProxyModeSystem) != 0) {
-    VLOG(2) << "Using policy proxy " << policy_proxy_mode;
-    bool auto_detect = false;
-    std::wstring pac_url;
-    std::wstring proxy_url;
-    bool is_policy_config_valid = true;
-
-    if (policy_proxy_mode.compare(kProxyModeFixedServers) == 0) {
-      std::string policy_proxy_url;
-      if (!policy_service->GetProxyServer(nullptr, &policy_proxy_url)) {
-        VLOG(1) << "Fixed server mode proxy has no URL specified.";
-        is_policy_config_valid = false;
-      } else {
-        proxy_url = base::SysUTF8ToWide(policy_proxy_url);
-      }
-    } else if (policy_proxy_mode.compare(kProxyModePacScript) == 0) {
-      std::string policy_pac_url;
-      if (!policy_service->GetProxyServer(nullptr, &policy_pac_url)) {
-        VLOG(1) << "PAC proxy policy has no PAC URL specified.";
-        is_policy_config_valid = false;
-      } else {
-        pac_url = base::SysUTF8ToWide(policy_pac_url);
-      }
-    } else if (policy_proxy_mode.compare(kProxyModeAutoDetect)) {
-      auto_detect = true;
-    }
-
-    if (is_policy_config_valid) {
-      return base::MakeRefCounted<winhttp::ProxyConfiguration>(
-          winhttp::ProxyInfo{auto_detect, pac_url, proxy_url, L""});
-    } else {
-      VLOG(1) << "Configuration set by policy was invalid."
-              << "Proceding with system configuration";
-    }
+    absl::optional<PolicyServiceProxyConfiguration>
+        policy_service_proxy_configuration) {
+  if (policy_service_proxy_configuration) {
+    return base::MakeRefCounted<winhttp::ProxyConfiguration>(winhttp::ProxyInfo{
+        policy_service_proxy_configuration->proxy_auto_detect.value_or(false),
+        base::SysUTF8ToWide(
+            policy_service_proxy_configuration->proxy_pac_url.value_or("")),
+        base::SysUTF8ToWide(
+            policy_service_proxy_configuration->proxy_url.value_or("")),
+        L""});
   }
+
+  VLOG(1) << "Using the system configuration for proxy.";
 
   const base::win::OSInfo* os_info = base::win::OSInfo::GetInstance();
   const bool supports_automatic_proxy =
       os_info->version() >= base::win::Version::WIN8_1;
-  if (supports_automatic_proxy)
+  if (supports_automatic_proxy) {
     return base::MakeRefCounted<winhttp::AutoProxyConfiguration>();
+  }
 
   ScopedImpersonation impersonate_user;
   if (IsLocalSystemUser()) {
@@ -228,8 +204,10 @@ void NetworkFetcher::DownloadToFileComplete(int /*response_code*/) {
 }
 
 NetworkFetcherFactory::NetworkFetcherFactory(
-    scoped_refptr<PolicyService> policy_service)
-    : proxy_configuration_(GetProxyConfiguration(policy_service)),
+    absl::optional<PolicyServiceProxyConfiguration>
+        policy_service_proxy_configuration)
+    : proxy_configuration_(
+          GetProxyConfiguration(policy_service_proxy_configuration)),
       session_handle_(
           winhttp::CreateSessionHandle(L"Chrome Updater",
                                        proxy_configuration_->access_type())) {}
