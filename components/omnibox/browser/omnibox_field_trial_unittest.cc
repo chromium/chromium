@@ -50,7 +50,7 @@ class OmniboxFieldTrialTest : public testing::Test {
                                            const std::string& group_name) {
     base::FieldTrial* trial = base::FieldTrialList::CreateFieldTrial(
         name, group_name);
-    trial->group();
+    trial->Activate();
     return trial;
   }
 

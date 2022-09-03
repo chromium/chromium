@@ -73,8 +73,8 @@ class FieldTrialsProviderTest : public ::testing::Test {
     for (const ActiveGroup& trial : kFieldTrials) {
       base::FieldTrial* field_trial = base::FieldTrialList::CreateFieldTrial(
           trial.trial_name, trial.group_name);
-      // Call group() to finalize and mark the field trial as active.
-      field_trial->group();
+      // Call Activate() to finalize and mark the field trial as active.
+      field_trial->Activate();
     }
   }
 

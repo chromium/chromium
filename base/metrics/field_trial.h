@@ -205,12 +205,11 @@ class BASE_EXPORT FieldTrial : public RefCounted<FieldTrial> {
   // Return the name of the FieldTrial (excluding the group name).
   const std::string& trial_name() const { return trial_name_; }
 
-  // Return the randomly selected group number that was assigned, and notify
-  // any/all observers that this finalized group number has presumably been used
-  // (queried), and will never change. Note that this will force an instance to
+  // Finalizes the group assignment and notifies any/all observers. This is a
+  // no-op if the trial is already active. Note this will force an instance to
   // participate, and make it illegal to attempt to probabilistically add any
   // other groups to the trial.
-  int group();
+  void Activate();
 
   // If the group's name is empty, a string version containing the group number
   // is used as the group name. This causes a winner to be chosen if none was.

@@ -123,7 +123,7 @@ void ForceExperimentState(
     // This call must happen after all params have been registered for the
     // trial. Otherwise, since we look up params by trial and group name, the
     // params won't be registered under the correct key.
-    trial->group();
+    trial->Activate();
     // UI Strings can only be overridden from ACTIVATE_ON_STARTUP experiments.
     ApplyUIStringOverrides(experiment, override_callback);
   }
@@ -191,19 +191,21 @@ bool ShouldForceExperiment(const Study::Experiment& experiment,
   return false;
 }
 
-// Creates a trial with the name |trial_name|, and forcibly selects the
-// |kFeatureConflictGroupName| group, which specifies no feature, params, or
-// variation IDs. This group is used to indicate that there was a feature
-// conflict. For example, toggling a flag with params in chrome://flags, which
-// will associate the feature with a trial. If the variations seed specifies a
-// different trial with the same feature, then there is a conflict.
+// Creates a placeholder trial that indicates the feature conflict.
+//
+// This forcibly associates |trial_name| with the |kFeatureConflictGroupName|
+// group, which indicates the trial was not applied due to a feature conflict.
+// This group has no features, params, or variation IDs associated with it.
+//
+// Trials may be associated with this group due to toggling flags in
+// chrome://flags that are associated with the trial's features, or if there
+// are different trials associated with the same feature.
 void CreateTrialWithFeatureConflictGroup(const std::string& trial_name) {
   base::FieldTrial* trial = base::FieldTrialList::CreateFieldTrial(
       trial_name, internal::kFeatureConflictGroupName);
   DCHECK(trial);
-  // Query the trial's group in order to immediately activate it. This way,
-  // from the metrics logs, it will be obvious that there was a conflict.
-  trial->group();
+  // Activate immediately to make the conflict obvious in metrics logs.
+  trial->Activate();
 }
 
 }  // namespace

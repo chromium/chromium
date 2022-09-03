@@ -656,7 +656,7 @@ FeatureList::OverrideState FeatureList::GetOverrideStateByFeatureName(
 
     // Activate the corresponding field trial, if necessary.
     if (entry.field_trial)
-      entry.field_trial->group();
+      entry.field_trial->Activate();
 
     // TODO(asvitkine) Expand this section as more support is added.
 

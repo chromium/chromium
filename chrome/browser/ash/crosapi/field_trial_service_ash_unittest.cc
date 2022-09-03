@@ -19,7 +19,7 @@ constexpr char kGroupName[] = "Default";
 
 void CreateAndActivateFieldTrial(const std::string& trial_name,
                                  const std::string& group_name) {
-  base::FieldTrialList::CreateFieldTrial(trial_name, group_name)->group();
+  base::FieldTrialList::CreateFieldTrial(trial_name, group_name)->Activate();
 }
 
 void VerifyFieldTrial(const mojom::FieldTrialGroupInfoPtr& info,

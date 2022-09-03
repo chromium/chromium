@@ -207,7 +207,6 @@ TEST(EntropyProviderTest, UseOneTimeRandomizationSHA1) {
 
   // The trials are most likely to give different results since they have
   // different names.
-  EXPECT_NE(trials[0]->group(), trials[1]->group());
   EXPECT_NE(trials[0]->group_name(), trials[1]->group_name());
 }
 
@@ -240,7 +239,6 @@ TEST(EntropyProviderTest, UseOneTimeRandomizationNormalizedMurmurHash) {
 
   // The trials are most likely to give different results since they have
   // different names.
-  EXPECT_NE(trials[0]->group(), trials[1]->group());
   EXPECT_NE(trials[0]->group_name(), trials[1]->group_name());
 }
 
@@ -271,7 +269,6 @@ TEST(EntropyProviderTest, UseOneTimeRandomizationWithCustomSeedSHA1) {
 
   // Normally, these trials should produce different groups, but if the same
   // custom seed is used, they should produce the same group assignment.
-  EXPECT_EQ(trials[0]->group(), trials[1]->group());
   EXPECT_EQ(trials[0]->group_name(), trials[1]->group_name());
 }
 
@@ -304,7 +301,6 @@ TEST(EntropyProviderTest,
 
   // Normally, these trials should produce different groups, but if the same
   // custom seed is used, they should produce the same group assignment.
-  EXPECT_EQ(trials[0]->group(), trials[1]->group());
   EXPECT_EQ(trials[0]->group_name(), trials[1]->group_name());
 }
 

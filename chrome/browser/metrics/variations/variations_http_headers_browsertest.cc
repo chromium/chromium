@@ -646,7 +646,7 @@ IN_PROC_BROWSER_TEST_F(VariationsHttpHeadersBrowserTest,
   }
   // Activate the trial. This corresponds to ACTIVATE_ON_STARTUP for server-side
   // studies.
-  trial->group();
+  trial->Activate();
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetGoogleUrl()));
   absl::optional<std::string> header =

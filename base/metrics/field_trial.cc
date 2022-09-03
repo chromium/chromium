@@ -334,16 +334,15 @@ void FieldTrial::AppendGroup(const std::string& name,
   return;
 }
 
-int FieldTrial::group() {
+void FieldTrial::Activate() {
   FinalizeGroupChoice();
   if (trial_registered_)
     FieldTrialList::NotifyFieldTrialGroupSelection(this);
-  return group_;
 }
 
 const std::string& FieldTrial::group_name() {
-  // Call |group()| to ensure group gets assigned and observers are notified.
-  group();
+  // Call |Activate()| to ensure group gets assigned and observers are notified.
+  Activate();
   DCHECK(!group_name_.empty());
   return group_name_;
 }
@@ -522,14 +521,6 @@ FieldTrial* FieldTrialList::Find(StringPiece trial_name) {
     return nullptr;
   AutoLock auto_lock(global_->lock_);
   return global_->PreLockedFind(trial_name);
-}
-
-// static
-int FieldTrialList::FindValue(StringPiece trial_name) {
-  FieldTrial* field_trial = Find(trial_name);
-  if (field_trial)
-    return field_trial->group();
-  return FieldTrial::kNotFinalized;
 }
 
 // static
@@ -898,7 +889,7 @@ void FieldTrialList::RemoveObserver(Observer* observer) {
   AutoLock auto_lock(global_->lock_);
   Erase(global_->observers_, observer);
   DCHECK_EQ(global_->num_ongoing_notify_field_trial_group_selection_calls_, 0)
-      << "Cannot call RemoveObserver while accessing FieldTrial::group().";
+      << "Cannot call RemoveObserver while accessing FieldTrial::group_name().";
 }
 
 // static
@@ -1319,10 +1310,10 @@ bool FieldTrialList::CreateTrialsFromSharedMemoryMapping(
     FieldTrial* trial = CreateFieldTrial(trial_name, group_name);
     trial->ref_ = mem_iter.GetAsReference(entry);
     if (subtle::NoBarrier_Load(&entry->activated)) {
-      // Call |group()| to mark the trial as "used" and notify observers, if
-      // any. This is useful to ensure that field trials created in child
+      // Mark the trial as "used" and notify observers, if any.
+      // This is useful to ensure that field trials created in child
       // processes are properly reported in crash reports.
-      trial->group();
+      trial->Activate();
     }
   }
   return true;
@@ -1481,10 +1472,10 @@ bool FieldTrialList::CreateTrialsFromFieldTrialStatesInternal(
     if (!trial)
       return false;
     if (entry.activated) {
-      // Call |group()| to mark the trial as "used" and notify observers, if
-      // any. This is useful to ensure that field trials created in child
+      // Mark the trial as "used" and notify observers, if any.
+      // This is useful to ensure that field trials created in child
       // processes are properly reported in crash reports.
-      trial->group();
+      trial->Activate();
     }
   }
   return true;

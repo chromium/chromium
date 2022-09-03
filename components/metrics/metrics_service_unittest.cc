@@ -348,13 +348,13 @@ class ExperimentTestMetricsProvider : public TestMetricsProvider {
   void ProvideSystemProfileMetrics(
       SystemProfileProto* system_profile_proto) override {
     TestMetricsProvider::ProvideSystemProfileMetrics(system_profile_proto);
-    profile_metrics_trial_->group();
+    profile_metrics_trial_->Activate();
   }
 
   void ProvideCurrentSessionData(
       ChromeUserMetricsExtension* uma_proto) override {
     TestMetricsProvider::ProvideCurrentSessionData(uma_proto);
-    session_data_trial_->group();
+    session_data_trial_->Activate();
   }
 
  private:

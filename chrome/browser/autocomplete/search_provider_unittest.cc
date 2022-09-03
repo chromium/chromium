@@ -2531,7 +2531,7 @@ TEST_P(SearchProviderTest, DefaultProviderSuggestRelevanceScoringUrlInput) {
 TEST_P(SearchProviderTest, FieldTrialTriggeredParsing) {
   base::FieldTrial* trial = base::FieldTrialList::CreateFieldTrial(
       OmniboxFieldTrial::kBundledExperimentFieldTrialName, "DefaultGroup");
-  trial->group();
+  trial->Activate();
 
   QueryForInputAndWaitForFetcherResponses(
       u"foo", false,

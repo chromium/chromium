@@ -208,7 +208,7 @@ scoped_refptr<base::FieldTrial> CreateTrialAndAssociateId(
   if (trial) {
     // Ensure the trial is registered under the correct key so we can look it
     // up.
-    trial->group();
+    trial->Activate();
   }
 
   return trial;

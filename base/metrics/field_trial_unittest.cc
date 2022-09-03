@@ -85,7 +85,7 @@ class TestFieldTrialObserver : public FieldTrialList::Observer {
 // FieldTrial from OnFieldTrialGroupFinalized(). Used to test reentrancy.
 class FieldTrialObserverAccessingGroup : public FieldTrialList::Observer {
  public:
-  // |trial_to_access| is the FieldTrial on which to invoke group() when
+  // |trial_to_access| is the FieldTrial on which to invoke Activate() when
   // receiving an OnFieldTrialGroupFinalized() notification.
   explicit FieldTrialObserverAccessingGroup(
       scoped_refptr<FieldTrial> trial_to_access)
@@ -103,7 +103,7 @@ class FieldTrialObserverAccessingGroup : public FieldTrialList::Observer {
 
   void OnFieldTrialGroupFinalized(const std::string& trial,
                                   const std::string& group) override {
-    trial_to_access_->group();
+    trial_to_access_->Activate();
   }
 
  private:
@@ -228,7 +228,7 @@ TEST_F(FieldTrialTest, FiftyFiftyProbability) {
       continue;
     }
     trial->AppendGroup("second", 1);  // Always chosen at this point.
-    EXPECT_NE(FieldTrial::kNotFinalized, trial->group());
+    EXPECT_FALSE(trial->group_name().empty());
     second_winner = true;
   } while ((!second_winner || !first_winner) && counter < 100);
   EXPECT_TRUE(second_winner);
@@ -319,8 +319,7 @@ TEST_F(FieldTrialTest, ActiveGroups) {
   std::string winner("Winner");
   trial->AppendGroup(winner, 10);
   EXPECT_FALSE(trial->GetActiveGroup(&active_group));
-  // Finalize the group selection by accessing the selected group.
-  trial->group();
+  trial->Activate();
   EXPECT_TRUE(trial->GetActiveGroup(&active_group));
   EXPECT_EQ(one_winner, active_group.trial_name);
   EXPECT_EQ(winner, active_group.group_name);
@@ -333,8 +332,7 @@ TEST_F(FieldTrialTest, ActiveGroups) {
   multi_group_trial->AppendGroup("You", 3);
   multi_group_trial->AppendGroup("Them", 3);
   EXPECT_FALSE(multi_group_trial->GetActiveGroup(&active_group));
-  // Finalize the group selection by accessing the selected group.
-  multi_group_trial->group();
+  multi_group_trial->Activate();
   EXPECT_TRUE(multi_group_trial->GetActiveGroup(&active_group));
   EXPECT_EQ(multi_group, active_group.trial_name);
   EXPECT_EQ(multi_group_trial->group_name(), active_group.group_name);
@@ -372,7 +370,7 @@ TEST_F(FieldTrialTest, ActiveGroupsNotFinalized) {
       CreateFieldTrial(kTrialName, 100, kDefaultGroupName);
   trial->AppendGroup(kSecondaryGroupName, 50);
 
-  // Before |group()| is called, |GetActiveGroup()| should return false.
+  // Before |Activate()| is called, |GetActiveGroup()| should return false.
   FieldTrial::ActiveGroup active_group;
   EXPECT_FALSE(trial->GetActiveGroup(&active_group));
 
@@ -381,8 +379,8 @@ TEST_F(FieldTrialTest, ActiveGroupsNotFinalized) {
   FieldTrialList::GetActiveFieldTrialGroups(&active_groups);
   EXPECT_TRUE(active_groups.empty());
 
-  // After |group()| has been called, both APIs should succeed.
-  trial->group();
+  // After |Activate()| has been called, both APIs should succeed.
+  trial->Activate();
 
   EXPECT_TRUE(trial->GetActiveGroup(&active_group));
   EXPECT_EQ(kTrialName, active_group.trial_name);
@@ -430,8 +428,7 @@ TEST_F(FieldTrialTest, Save) {
 
   // Create a winning group.
   trial->AppendGroup("Winner", 10);
-  // Finalize the group selection by accessing the selected group.
-  trial->group();
+  trial->Activate();
   FieldTrialList::StatesToString(&save_string);
   EXPECT_EQ("Some name/Winner/", save_string);
   save_string.clear();
@@ -439,8 +436,7 @@ TEST_F(FieldTrialTest, Save) {
   // Create a second trial and winning group.
   scoped_refptr<FieldTrial> trial2 = CreateFieldTrial("xxx", 10, "Default xxx");
   trial2->AppendGroup("yyyy", 10);
-  // Finalize the group selection by accessing the selected group.
-  trial2->group();
+  trial2->Activate();
 
   FieldTrialList::StatesToString(&save_string);
   // We assume names are alphabetized... though this is not critical.
@@ -449,8 +445,7 @@ TEST_F(FieldTrialTest, Save) {
 
   // Create a third trial with only the default group.
   scoped_refptr<FieldTrial> trial3 = CreateFieldTrial("zzz", 10, "default");
-  // Finalize the group selection by accessing the selected group.
-  trial3->group();
+  trial3->Activate();
 
   FieldTrialList::StatesToString(&save_string);
   EXPECT_EQ("Some name/Winner/xxx/yyyy/zzz/default/", save_string);
@@ -471,8 +466,7 @@ TEST_F(FieldTrialTest, SaveAll) {
   // Create a winning group.
   trial = CreateFieldTrial("trial2", 10, "Default some name");
   trial->AppendGroup("Winner", 10);
-  // Finalize the group selection by accessing the selected group.
-  trial->group();
+  trial->Activate();
   FieldTrialList::AllStatesToString(&save_string, false);
   EXPECT_EQ("Some name/Default some name/*trial2/Winner/", save_string);
   save_string.clear();
@@ -480,8 +474,7 @@ TEST_F(FieldTrialTest, SaveAll) {
   // Create a second trial and winning group.
   scoped_refptr<FieldTrial> trial2 = CreateFieldTrial("xxx", 10, "Default xxx");
   trial2->AppendGroup("yyyy", 10);
-  // Finalize the group selection by accessing the selected group.
-  trial2->group();
+  trial2->Activate();
 
   FieldTrialList::AllStatesToString(&save_string, false);
   // We assume names are alphabetized... though this is not critical.
@@ -554,8 +547,7 @@ TEST_F(FieldTrialTest, DuplicateRestore) {
   scoped_refptr<FieldTrial> trial =
       CreateFieldTrial("Some name", 10, "Default");
   trial->AppendGroup("Winner", 10);
-  // Finalize the group selection by accessing the selected group.
-  trial->group();
+  trial->Activate();
   std::string save_string;
   FieldTrialList::StatesToString(&save_string);
   EXPECT_EQ("Some name/Winner/", save_string);
@@ -858,7 +850,7 @@ TEST_F(FieldTrialTest, Observe) {
   EXPECT_TRUE(chosen_group_name == kDefaultGroupName ||
               chosen_group_name == kSecondaryGroupName);
 
-  // The observer should be notified synchronously by the group() call.
+  // The observer should be notified synchronously by the group_name() call.
   EXPECT_EQ(kTrialName, observer.trial_name());
   EXPECT_EQ(chosen_group_name, observer.group_name());
 }
@@ -884,7 +876,7 @@ TEST_F(FieldTrialTest, ObserveReentrancy) {
 
   // Force selection of a group for |trial_2|. This will notify |observer| which
   // will force the selection of a group for |trial_1|. This should not hang.
-  trial_2->group();
+  trial_2->Activate();
 
   // The above call should have selected a group for |trial_1|.
   EXPECT_NE(FieldTrial::kNotFinalized, trial_1->group_);
@@ -906,8 +898,8 @@ TEST_F(FieldTrialTest, ObserveDisabled) {
   EXPECT_TRUE(observer.trial_name().empty());
   EXPECT_TRUE(observer.group_name().empty());
 
-  // Observer shouldn't be notified even after a |group()| call.
-  trial->group();
+  // Observer shouldn't be notified even after an |Activate()| call.
+  trial->Activate();
   RunLoop().RunUntilIdle();
   EXPECT_TRUE(observer.trial_name().empty());
   EXPECT_TRUE(observer.group_name().empty());
@@ -930,8 +922,8 @@ TEST_F(FieldTrialTest, ObserveForcedDisabled) {
   EXPECT_TRUE(observer.trial_name().empty());
   EXPECT_TRUE(observer.group_name().empty());
 
-  // Observer shouldn't be notified even after a |group()| call.
-  trial->group();
+  // Observer shouldn't be notified even after an |Activate()| call.
+  trial->Activate();
   RunLoop().RunUntilIdle();
   EXPECT_TRUE(observer.trial_name().empty());
   EXPECT_TRUE(observer.group_name().empty());
@@ -1057,11 +1049,11 @@ TEST(FieldTrialTestWithoutList, StatesStringFormat) {
     scoped_refptr<FieldTrial> trial =
         CreateFieldTrial("Abc", 10, "Default some name");
     trial->AppendGroup("cba", 10);
-    trial->group();
+    trial->Activate();
     scoped_refptr<FieldTrial> trial2 =
         CreateFieldTrial("Xyz", 10, "Default xxx");
     trial2->AppendGroup("zyx", 10);
-    trial2->group();
+    trial2->Activate();
     scoped_refptr<FieldTrial> trial3 = CreateFieldTrial("zzz", 10, "default");
 
     FieldTrialList::AllStatesToString(&save_string, false);
@@ -1193,20 +1185,20 @@ TEST_F(FieldTrialListTest, DoNotAddSimulatedFieldTrialsToAllocator) {
     test::ScopedFeatureList scoped_feature_list1;
     scoped_feature_list1.InitWithEmptyFeatureAndFieldTrialLists();
 
-    // Create a simulated trial and a real trial and call group() on them, which
-    // should only add the real trial to the field trial allocator.
+    // Create a simulated trial and a real trial and call Activate() on them,
+    // which should only add the real trial to the field trial allocator.
     FieldTrialList::InstantiateFieldTrialAllocatorIfNeeded();
 
     // This shouldn't add to the allocator.
     scoped_refptr<FieldTrial> simulated_trial =
         FieldTrial::CreateSimulatedFieldTrial(kTrialName, 100, "Simulated",
                                               0.95);
-    simulated_trial->group();
+    simulated_trial->Activate();
 
     // This should add to the allocator.
     FieldTrial* real_trial =
         FieldTrialList::CreateFieldTrial(kTrialName, "Real");
-    real_trial->group();
+    real_trial->Activate();
 
     shm_region = FieldTrialList::DuplicateFieldTrialSharedMemoryForTesting();
     ASSERT_TRUE(shm_region.IsValid());
@@ -1491,7 +1483,7 @@ TEST_F(FieldTrialTest, TestAllParamsToString) {
 
   scoped_refptr<FieldTrial> trial1 = CreateFieldTrial("t1", 100, "Default");
   trial1->AppendGroup("g1", 100);
-  trial1->group();
+  trial1->Activate();
   EXPECT_EQ(exptected_output, FieldTrialList::AllParamsToString(
                                   false, &MockEscapeQueryParamValue));
 
@@ -1502,7 +1494,7 @@ TEST_F(FieldTrialTest, TestAllParamsToString) {
   scoped_refptr<FieldTrial> trial2 = CreateFieldTrial("t2", 100, "Default");
   trial2->AppendGroup("g1", 100);
   trial2->AppendGroup("g2", 0);
-  trial2->group();
+  trial2->Activate();
   EXPECT_EQ(exptected_output, FieldTrialList::AllParamsToString(
                                   false, &MockEscapeQueryParamValue));
 }

@@ -60,7 +60,8 @@ class DocumentSuggestionsServiceTest : public testing::Test {
     variations::AssociateGoogleVariationID(
         variations::GOOGLE_WEB_PROPERTIES_ANY_CONTEXT, "trial name",
         "group name", kVariationID);
-    base::FieldTrialList::CreateFieldTrial("trial name", "group name")->group();
+    base::FieldTrialList::CreateFieldTrial("trial name", "group name")
+        ->Activate();
   }
   DocumentSuggestionsServiceTest(const DocumentSuggestionsServiceTest&) =
       delete;
