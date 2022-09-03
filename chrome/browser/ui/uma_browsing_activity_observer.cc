@@ -34,7 +34,8 @@
 namespace chrome {
 namespace {
 
-UMABrowsingActivityObserver* g_uma_browsing_activity_observer_instance = NULL;
+UMABrowsingActivityObserver* g_uma_browsing_activity_observer_instance =
+    nullptr;
 
 }  // namespace
 
@@ -91,7 +92,7 @@ void UMABrowsingActivityObserver::Observe(
 void UMABrowsingActivityObserver::OnAppTerminating() const {
   LogTimeBeforeUpdate();
   delete g_uma_browsing_activity_observer_instance;
-  g_uma_browsing_activity_observer_instance = NULL;
+  g_uma_browsing_activity_observer_instance = nullptr;
 }
 
 void UMABrowsingActivityObserver::LogTimeBeforeUpdate() const {

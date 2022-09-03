@@ -237,7 +237,7 @@ bool FullscreenControllerStateTest::TransitionAStepTowardState(
 }
 
 const char* FullscreenControllerStateTest::GetWindowStateString() {
-  return NULL;
+  return nullptr;
 }
 
 bool FullscreenControllerStateTest::InvokeEvent(Event event) {

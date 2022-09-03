@@ -558,7 +558,7 @@ void CollectedCookiesViews::EnableControls() {
     }
   }
   block_allowed_button_->SetEnabled(enable_allowed_buttons);
-  delete_allowed_button_->SetEnabled(node != NULL);
+  delete_allowed_button_->SetEnabled(node != nullptr);
 
   bool enable_blocked_buttons = false;
   node = blocked_cookies_tree_->GetSelectedNode();

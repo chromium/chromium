@@ -310,7 +310,7 @@ void ShowHelp(Browser* browser, HelpSource source) {
 }
 
 void ShowHelpForProfile(Profile* profile, HelpSource source) {
-  ShowHelpImpl(NULL, profile, source);
+  ShowHelpImpl(nullptr, profile, source);
 }
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)

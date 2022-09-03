@@ -46,9 +46,9 @@ bool AppSyncUIState::ShouldObserveAppSyncForProfile(Profile* profile) {
 
 AppSyncUIState::AppSyncUIState(Profile* profile)
     : profile_(profile),
-      sync_service_(NULL),
+      sync_service_(nullptr),
       status_(STATUS_NORMAL),
-      extension_registry_(NULL) {
+      extension_registry_(nullptr) {
   StartObserving();
 }
 
@@ -87,13 +87,13 @@ void AppSyncUIState::StopObserving() {
     return;
 
   sync_service_->RemoveObserver(this);
-  sync_service_ = NULL;
+  sync_service_ = nullptr;
 
   if (extension_registry_)
     extension_registry_->RemoveObserver(this);
-  extension_registry_ = NULL;
+  extension_registry_ = nullptr;
 
-  profile_ = NULL;
+  profile_ = nullptr;
 }
 
 void AppSyncUIState::SetStatus(Status status) {

@@ -23,9 +23,7 @@ using extensions::AppWindow;
 
 class ShapedAppWindowTargeterTest : public views::ViewsTestBase {
  public:
-  ShapedAppWindowTargeterTest()
-      : web_view_(NULL) {
-  }
+  ShapedAppWindowTargeterTest() : web_view_(nullptr) {}
 
   ShapedAppWindowTargeterTest(const ShapedAppWindowTargeterTest&) = delete;
   ShapedAppWindowTargeterTest& operator=(const ShapedAppWindowTargeterTest&) =

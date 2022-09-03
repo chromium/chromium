@@ -39,7 +39,7 @@ namespace {
 
 Profile* GetProfileForWindow(const views::Widget* window) {
   if (!window)
-    return NULL;
+    return nullptr;
   return reinterpret_cast<Profile*>(
       window->GetNativeWindowProperty(Profile::kProfileKey));
 }

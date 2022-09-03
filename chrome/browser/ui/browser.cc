@@ -673,7 +673,7 @@ FindBarController* Browser::GetFindBarController() {
 }
 
 bool Browser::HasFindBarController() const {
-  return find_bar_controller_.get() != NULL;
+  return find_bar_controller_.get() != nullptr;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1068,7 +1068,7 @@ void Browser::OpenFile() {
       ui::SelectFileDialog::FileTypeInfo::ANY_PATH_OR_URL;
   select_file_dialog_->SelectFile(
       ui::SelectFileDialog::SELECT_OPEN_FILE, std::u16string(), directory,
-      &file_types, 0, base::FilePath::StringType(), parent_window, NULL);
+      &file_types, 0, base::FilePath::StringType(), parent_window, nullptr);
 }
 
 void Browser::UpdateDownloadShelfVisibility(bool visible) {
@@ -1150,7 +1150,7 @@ WebContents* Browser::OpenURL(const OpenURLParams& params) {
   DCHECK(params.Valid());
 #endif
 
-  return OpenURLFromTab(NULL, params);
+  return OpenURLFromTab(nullptr, params);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -2552,8 +2552,9 @@ void Browser::OnDevToolsAvailabilityChanged() {
 
 void Browser::UpdateToolbar(bool should_restore_state) {
   TRACE_EVENT0("ui", "Browser::UpdateToolbar");
-  window_->UpdateToolbar(
-      should_restore_state ? tab_strip_model_->GetActiveWebContents() : NULL);
+  window_->UpdateToolbar(should_restore_state
+                             ? tab_strip_model_->GetActiveWebContents()
+                             : nullptr);
 }
 
 void Browser::ScheduleUIUpdate(WebContents* source, unsigned changed_flags) {
@@ -2849,7 +2850,7 @@ void Browser::TabDetachedAtImpl(content::WebContents* contents,
   RemoveScheduledUpdatesFor(contents);
 
   if (HasFindBarController() && was_active)
-    find_bar_controller_->ChangeWebContents(NULL);
+    find_bar_controller_->ChangeWebContents(nullptr);
 }
 
 void Browser::UpdateWindowForLoadingStateChanged(content::WebContents* source,

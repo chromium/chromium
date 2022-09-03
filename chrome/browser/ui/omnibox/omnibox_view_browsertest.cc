@@ -244,7 +244,7 @@ class OmniboxViewTest : public InProcessBrowserTest {
   }
 
   void WaitForAutocompleteControllerDone() {
-    OmniboxView* omnibox_view = NULL;
+    OmniboxView* omnibox_view = nullptr;
     ASSERT_NO_FATAL_FAILURE(GetOmniboxView(&omnibox_view));
 
     AutocompleteController* controller =
@@ -379,7 +379,7 @@ class OmniboxViewTest : public InProcessBrowserTest {
 // Test if ctrl-* accelerators are workable in omnibox.
 // Flaky. See https://crbug.com/751031.
 IN_PROC_BROWSER_TEST_F(OmniboxViewTest, DISABLED_BrowserAccelerators) {
-  OmniboxView* omnibox_view = NULL;
+  OmniboxView* omnibox_view = nullptr;
   ASSERT_NO_FATAL_FAILURE(GetOmniboxView(&omnibox_view));
 
   int tab_count = browser()->tab_strip_model()->count();
@@ -439,7 +439,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest, PopupAccelerators) {
   // Create a popup.
   Browser* popup = CreateBrowserForPopup(browser()->profile());
   ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(popup));
-  OmniboxView* omnibox_view = NULL;
+  OmniboxView* omnibox_view = nullptr;
   ASSERT_NO_FATAL_FAILURE(
       GetOmniboxViewForBrowser(popup, &omnibox_view));
   chrome::FocusLocationBar(popup);
@@ -476,7 +476,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest, PopupAccelerators) {
 }
 
 IN_PROC_BROWSER_TEST_F(OmniboxViewTest, BackspaceInKeywordMode) {
-  OmniboxView* omnibox_view = NULL;
+  OmniboxView* omnibox_view = nullptr;
   ASSERT_NO_FATAL_FAILURE(GetOmniboxView(&omnibox_view));
 
   // Trigger keyword hint mode.
@@ -531,7 +531,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest, BackspaceInKeywordMode) {
 
 // TODO(https://crbug.com/1030551): This test flakily times out.
 IN_PROC_BROWSER_TEST_F(OmniboxViewTest, DISABLED_DesiredTLD) {
-  OmniboxView* omnibox_view = NULL;
+  OmniboxView* omnibox_view = nullptr;
   ASSERT_NO_FATAL_FAILURE(GetOmniboxView(&omnibox_view));
   ASSERT_TRUE(omnibox_view->model()->PopupIsOpen());
 
@@ -551,7 +551,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest, DISABLED_DesiredTLD) {
 
 // TODO(https://crbug.com/1030551): Test times out on Win and Linux.
 IN_PROC_BROWSER_TEST_F(OmniboxViewTest, DISABLED_DesiredTLDWithTemporaryText) {
-  OmniboxView* omnibox_view = NULL;
+  OmniboxView* omnibox_view = nullptr;
   ASSERT_NO_FATAL_FAILURE(GetOmniboxView(&omnibox_view));
   ASSERT_TRUE(omnibox_view->model()->PopupIsOpen());
 
@@ -592,7 +592,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest, DISABLED_DesiredTLDWithTemporaryText) {
 }
 
 IN_PROC_BROWSER_TEST_F(OmniboxViewTest, ClearUserTextAfterBackgroundCommit) {
-  OmniboxView* omnibox_view = NULL;
+  OmniboxView* omnibox_view = nullptr;
   ASSERT_NO_FATAL_FAILURE(GetOmniboxView(&omnibox_view));
 
   // Navigate in first tab and enter text into the omnibox.
@@ -623,7 +623,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest, ClearUserTextAfterBackgroundCommit) {
 }
 
 IN_PROC_BROWSER_TEST_F(OmniboxViewTest, AltEnter) {
-  OmniboxView* omnibox_view = NULL;
+  OmniboxView* omnibox_view = nullptr;
   ASSERT_NO_FATAL_FAILURE(GetOmniboxView(&omnibox_view));
 
   omnibox_view->SetUserText(ASCIIToUTF16(chrome::kChromeUIHistoryURL));
@@ -635,7 +635,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest, AltEnter) {
 
 // TODO(https://crbug.com/1030551): This test flakily times out.
 IN_PROC_BROWSER_TEST_F(OmniboxViewTest, DISABLED_EnterToSearch) {
-  OmniboxView* omnibox_view = NULL;
+  OmniboxView* omnibox_view = nullptr;
   ASSERT_NO_FATAL_FAILURE(GetOmniboxView(&omnibox_view));
   ASSERT_TRUE(omnibox_view->model()->PopupIsOpen());
 
@@ -660,7 +660,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest, DISABLED_EnterToSearch) {
 }
 
 IN_PROC_BROWSER_TEST_F(OmniboxViewTest, EscapeToDefaultMatch) {
-  OmniboxView* omnibox_view = NULL;
+  OmniboxView* omnibox_view = nullptr;
   ASSERT_NO_FATAL_FAILURE(GetOmniboxView(&omnibox_view));
 
   // Input something to trigger inline autocomplete.
@@ -697,7 +697,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest, EscapeToDefaultMatch) {
 
 IN_PROC_BROWSER_TEST_F(OmniboxViewTest,
                        RevertDefaultRevertInlineTextWhenSelectingDefaultMatch) {
-  OmniboxView* omnibox_view = NULL;
+  OmniboxView* omnibox_view = nullptr;
   ASSERT_NO_FATAL_FAILURE(GetOmniboxView(&omnibox_view));
 
   // Input something to trigger inline autocomplete.
@@ -740,7 +740,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest, BasicTextOperations) {
       ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
   chrome::FocusLocationBar(browser());
 
-  OmniboxView* omnibox_view = NULL;
+  OmniboxView* omnibox_view = nullptr;
   ASSERT_NO_FATAL_FAILURE(GetOmniboxView(&omnibox_view));
 
   std::u16string old_text = omnibox_view->GetText();
@@ -831,7 +831,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest, BasicTextOperations) {
 // user input text when the URL is longer than the keyword.
 // (http://crbug.com/656209)
 IN_PROC_BROWSER_TEST_F(OmniboxViewTest, FocusSearchLongUrl) {
-  OmniboxView* omnibox_view = NULL;
+  OmniboxView* omnibox_view = nullptr;
   ASSERT_NO_FATAL_FAILURE(GetOmniboxView(&omnibox_view));
 
   ASSERT_GT(strlen(url::kAboutBlankURL),
@@ -845,7 +845,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest, FocusSearchLongUrl) {
 }
 
 IN_PROC_BROWSER_TEST_F(OmniboxViewTest, AcceptKeywordByTypingQuestionMark) {
-  OmniboxView* omnibox_view = NULL;
+  OmniboxView* omnibox_view = nullptr;
   ASSERT_NO_FATAL_FAILURE(GetOmniboxView(&omnibox_view));
 
   std::u16string search_keyword(kSearchKeyword);
@@ -874,7 +874,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest, SearchDisabledDontCrashOnQuestionMark) {
   policy_provider()->UpdateChromePolicy(policies);
   base::RunLoop().RunUntilIdle();
 
-  OmniboxView* omnibox_view = NULL;
+  OmniboxView* omnibox_view = nullptr;
   ASSERT_NO_FATAL_FAILURE(GetOmniboxView(&omnibox_view));
 
   // '?' isn't in the same place on all keyboard layouts, so send the character
@@ -890,7 +890,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest, SearchDisabledDontCrashOnQuestionMark) {
 }
 
 IN_PROC_BROWSER_TEST_F(OmniboxViewTest, NonSubstitutingKeywordTest) {
-  OmniboxView* omnibox_view = NULL;
+  OmniboxView* omnibox_view = nullptr;
   ASSERT_NO_FATAL_FAILURE(GetOmniboxView(&omnibox_view));
 
   Profile* profile = browser()->profile();
@@ -946,13 +946,13 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest, DISABLED_DeleteItem) {
   // items.
   TemplateURLService* model =
       TemplateURLServiceFactory::GetForProfile(browser()->profile());
-  model->SetUserSelectedDefaultSearchProvider(NULL);
+  model->SetUserSelectedDefaultSearchProvider(nullptr);
 
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
   chrome::FocusLocationBar(browser());
 
-  OmniboxView* omnibox_view = NULL;
+  OmniboxView* omnibox_view = nullptr;
   ASSERT_NO_FATAL_FAILURE(GetOmniboxView(&omnibox_view));
 
   ASSERT_TRUE(omnibox_view->model()->PopupIsOpen());
@@ -1027,7 +1027,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest, DISABLED_DeleteItem) {
 }
 
 IN_PROC_BROWSER_TEST_F(OmniboxViewTest, TabAcceptKeyword) {
-  OmniboxView* omnibox_view = NULL;
+  OmniboxView* omnibox_view = nullptr;
   ASSERT_NO_FATAL_FAILURE(GetOmniboxView(&omnibox_view));
 
   std::u16string text = kSearchKeyword;
@@ -1068,7 +1068,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest, TabAcceptKeyword) {
 }
 
 IN_PROC_BROWSER_TEST_F(OmniboxViewTest, PersistKeywordModeOnTabSwitch) {
-  OmniboxView* omnibox_view = NULL;
+  OmniboxView* omnibox_view = nullptr;
   ASSERT_NO_FATAL_FAILURE(GetOmniboxView(&omnibox_view));
 
   // Trigger keyword hint mode.
@@ -1113,7 +1113,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest, PersistKeywordModeOnTabSwitch) {
 
 IN_PROC_BROWSER_TEST_F(OmniboxViewTest,
                        CtrlKeyPressedWithInlineAutocompleteTest) {
-  OmniboxView* omnibox_view = NULL;
+  OmniboxView* omnibox_view = nullptr;
   ASSERT_NO_FATAL_FAILURE(GetOmniboxView(&omnibox_view));
 
   // Input something to trigger inline autocomplete.
@@ -1138,7 +1138,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest, UndoRedo) {
       ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
   chrome::FocusLocationBar(browser());
 
-  OmniboxView* omnibox_view = NULL;
+  OmniboxView* omnibox_view = nullptr;
   ASSERT_NO_FATAL_FAILURE(GetOmniboxView(&omnibox_view));
 
   std::u16string old_text = omnibox_view->GetText();
@@ -1197,7 +1197,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest, UndoRedo) {
 }
 
 IN_PROC_BROWSER_TEST_F(OmniboxViewTest, BackspaceDeleteHalfWidthKatakana) {
-  OmniboxView* omnibox_view = NULL;
+  OmniboxView* omnibox_view = nullptr;
   ASSERT_NO_FATAL_FAILURE(GetOmniboxView(&omnibox_view));
   // Insert text: ﾀﾞ. This is two, 3-byte UTF-8 characters:
   // U+FF80 "HALFWIDTH KATAKANA LETTER TA" and
@@ -1223,7 +1223,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest, BackspaceDeleteHalfWidthKatakana) {
 }
 
 IN_PROC_BROWSER_TEST_F(OmniboxViewTest, DoesNotUpdateAutocompleteOnBlur) {
-  OmniboxView* omnibox_view = NULL;
+  OmniboxView* omnibox_view = nullptr;
   ASSERT_NO_FATAL_FAILURE(GetOmniboxView(&omnibox_view));
 
   // Input something to trigger inline autocomplete.
@@ -1245,7 +1245,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest, DoesNotUpdateAutocompleteOnBlur) {
 }
 
 IN_PROC_BROWSER_TEST_F(OmniboxViewTest, Paste) {
-  OmniboxView* omnibox_view = NULL;
+  OmniboxView* omnibox_view = nullptr;
   ASSERT_NO_FATAL_FAILURE(GetOmniboxView(&omnibox_view));
   EXPECT_FALSE(omnibox_view->model()->PopupIsOpen());
 
@@ -1302,7 +1302,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest, EditSearchEngines) {
 // do we continue.
 IN_PROC_BROWSER_TEST_F(OmniboxViewTest,
                        DISABLED_CtrlArrowAfterArrowSuggestions) {
-  OmniboxView* omnibox_view = NULL;
+  OmniboxView* omnibox_view = nullptr;
   ASSERT_NO_FATAL_FAILURE(GetOmniboxView(&omnibox_view));
   ASSERT_TRUE(omnibox_view->model()->PopupIsOpen());
 

@@ -61,7 +61,7 @@ class MenuError : public GlobalError {
   bool HasBubbleView() override { return false; }
   bool HasShownBubbleView() override { return false; }
   void ShowBubbleView(Browser* browser) override { ADD_FAILURE(); }
-  GlobalErrorBubbleViewBase* GetBubbleView() override { return NULL; }
+  GlobalErrorBubbleViewBase* GetBubbleView() override { return nullptr; }
 
  private:
   int command_id_;

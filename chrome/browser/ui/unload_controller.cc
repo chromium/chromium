@@ -52,7 +52,8 @@ bool UnloadController::ShouldRunUnloadEventsHelper(
     content::WebContents* contents) {
   // If |contents| is being inspected, devtools needs to intercept beforeunload
   // events.
-  return DevToolsWindow::GetInstanceForInspectedWebContents(contents) != NULL;
+  return DevToolsWindow::GetInstanceForInspectedWebContents(contents) !=
+         nullptr;
 }
 
 bool UnloadController::RunUnloadEventsHelper(content::WebContents* contents) {

@@ -359,7 +359,7 @@ class BrowserTest : public extensions::ExtensionBrowserTest {
         return extension.get();
     }
     NOTREACHED();
-    return NULL;
+    return nullptr;
   }
 };
 
@@ -1179,8 +1179,8 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, TabClosingWhenRemovingExtension) {
   extensions::ExtensionService* service =
       extensions::ExtensionSystem::Get(browser()->profile())
           ->extension_service();
-  service->UninstallExtension(GetExtension()->id(),
-                              extensions::UNINSTALL_REASON_FOR_TESTING, NULL);
+  service->UninstallExtension(
+      GetExtension()->id(), extensions::UNINSTALL_REASON_FOR_TESTING, nullptr);
   EXPECT_EQ(1, observer.closing_count());
 
   model->RemoveObserver(&observer);
@@ -1276,8 +1276,8 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, ShouldShowLocationBar) {
   ASSERT_EQ(3u, chrome::GetBrowserCount(browser()->profile()));
 
   // Find the new browsers.
-  Browser* app_browser = NULL;
-  Browser* dev_tools_browser = NULL;
+  Browser* app_browser = nullptr;
+  Browser* dev_tools_browser = nullptr;
   for (auto* b : *BrowserList::GetInstance()) {
     if (b == browser()) {
       continue;
@@ -1464,7 +1464,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, OpenAppWindowLikeNtp) {
   ASSERT_EQ(2u, chrome::GetBrowserCount(browser()->profile()));
 
   // Find the new browser.
-  Browser* new_browser = NULL;
+  Browser* new_browser = nullptr;
   for (auto* b : *BrowserList::GetInstance()) {
     if (b != browser())
       new_browser = b;
@@ -2187,11 +2187,14 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, AboutVersion) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
                                            GURL(chrome::kChromeUIVersionURL)));
   WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_GT(ui_test_utils::FindInPage(tab, u"WebKit", true, true, NULL, NULL),
-            0);
-  ASSERT_GT(ui_test_utils::FindInPage(tab, u"OS", true, true, NULL, NULL), 0);
   ASSERT_GT(
-      ui_test_utils::FindInPage(tab, u"JavaScript", true, true, NULL, NULL), 0);
+      ui_test_utils::FindInPage(tab, u"WebKit", true, true, nullptr, nullptr),
+      0);
+  ASSERT_GT(ui_test_utils::FindInPage(tab, u"OS", true, true, nullptr, nullptr),
+            0);
+  ASSERT_GT(ui_test_utils::FindInPage(tab, u"JavaScript", true, true, nullptr,
+                                      nullptr),
+            0);
 }
 
 static const base::FilePath::CharType* kTestDir =

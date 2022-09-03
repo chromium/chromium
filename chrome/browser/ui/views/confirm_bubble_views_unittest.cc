@@ -38,7 +38,7 @@ TEST_F(ConfirmBubbleViewsTest, MAYBE_CreateAndClose) {
   // Bubble owns the model.
   bool model_deleted = false;
   std::unique_ptr<TestConfirmBubbleModel> model(
-      new TestConfirmBubbleModel(&model_deleted, NULL, NULL, NULL));
+      new TestConfirmBubbleModel(&model_deleted, nullptr, nullptr, nullptr));
   ConfirmBubbleViews* bubble = new ConfirmBubbleViews(std::move(model));
   gfx::NativeWindow parent = parent_widget->GetNativeWindow();
   constrained_window::CreateBrowserModalDialogViews(bubble, parent)->Show();

@@ -70,7 +70,7 @@ TEST_F(PinnedTabServiceTest, Popup) {
 
   // Close the popup. This shouldn't reset the saved state.
   popup->tab_strip_model()->CloseAllTabs();
-  popup.reset(NULL);
+  popup.reset();
 
   // Check the state to make sure it hasn't changed.
   result = PinnedTabTestUtils::TabsToString(

@@ -51,7 +51,7 @@ class ViewFocusChangeWaiter : public views::FocusChangeListener {
     focus_manager_->AddFocusChangeListener(this);
     // Call the focus change notification once in case the focus has
     // already changed.
-    OnWillChangeFocus(NULL, focus_manager_->GetFocusedView());
+    OnWillChangeFocus(nullptr, focus_manager_->GetFocusedView());
   }
 
   ViewFocusChangeWaiter(const ViewFocusChangeWaiter&) = delete;

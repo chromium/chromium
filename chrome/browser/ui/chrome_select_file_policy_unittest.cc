@@ -47,9 +47,9 @@ class FileSelectionUser : public ui::SelectFileDialog::Listener {
     const std::u16string title = std::u16string();
 
     file_selection_initialisation_in_progress = true;
-    select_file_dialog_->SelectFile(ui::SelectFileDialog::SELECT_OPEN_FILE,
-                                    title, file_path, NULL, 0,
-                                    base::FilePath::StringType(), NULL, NULL);
+    select_file_dialog_->SelectFile(
+        ui::SelectFileDialog::SELECT_OPEN_FILE, title, file_path, nullptr, 0,
+        base::FilePath::StringType(), nullptr, nullptr);
     file_selection_initialisation_in_progress = false;
   }
 

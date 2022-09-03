@@ -158,7 +158,7 @@ IN_PROC_BROWSER_TEST_F(VolumeControllerTest, Mutes) {
 
 class VolumeControllerSoundsTest : public VolumeControllerTest {
  public:
-  VolumeControllerSoundsTest() : sounds_manager_(NULL) {}
+  VolumeControllerSoundsTest() : sounds_manager_(nullptr) {}
 
   VolumeControllerSoundsTest(const VolumeControllerSoundsTest&) = delete;
   VolumeControllerSoundsTest& operator=(const VolumeControllerSoundsTest&) =

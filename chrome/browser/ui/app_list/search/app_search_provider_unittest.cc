@@ -390,8 +390,8 @@ TEST_F(AppSearchProviderTest, UninstallExtension) {
 
   EXPECT_EQ("Packaged App 1", RunQuery("pa1"));
   EXPECT_FALSE(results().empty());
-  service_->UninstallExtension(kPackagedApp1Id,
-                               extensions::UNINSTALL_REASON_FOR_TESTING, NULL);
+  service_->UninstallExtension(
+      kPackagedApp1Id, extensions::UNINSTALL_REASON_FOR_TESTING, nullptr);
 
   // Allow async callbacks to run.
   base::RunLoop().RunUntilIdle();

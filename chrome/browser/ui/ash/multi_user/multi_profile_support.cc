@@ -64,11 +64,11 @@ void RecordUMAForTransferredWindowType(aura::Window* window) {
       return;
     // If it is not a browser, it is probably be a V2 application. In that case
     // one of the AppWindowRegistry instances should know about it.
-    extensions::AppWindow* app_window = NULL;
+    extensions::AppWindow* app_window = nullptr;
     std::vector<Profile*> profiles =
         g_browser_process->profile_manager()->GetLoadedProfiles();
     for (std::vector<Profile*>::iterator it = profiles.begin();
-         it != profiles.end() && app_window == NULL; it++) {
+         it != profiles.end() && app_window == nullptr; it++) {
       app_window =
           extensions::AppWindowRegistry::Get(*it)->GetAppWindowForNativeWindow(
               window);

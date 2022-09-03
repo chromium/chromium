@@ -285,7 +285,7 @@ class TranslateManagerRenderViewHostTest
                      ->infobar_at(0)
                      ->delegate()
                      ->AsTranslateInfoBarDelegate()
-               : NULL;
+               : nullptr;
   }
 
 #if !defined(USE_AURA) && !BUILDFLAG(IS_MAC)
@@ -1597,9 +1597,9 @@ TEST_F(TranslateManagerRenderViewHostTest, BubbleNormalTranslate) {
 
   // Check the bubble exists instead of the infobar.
   translate::TranslateInfoBarDelegate* infobar = GetTranslateInfoBar();
-  ASSERT_TRUE(infobar == NULL);
+  ASSERT_TRUE(infobar == nullptr);
   TranslateBubbleModel* bubble = factory->model();
-  ASSERT_TRUE(bubble != NULL);
+  ASSERT_TRUE(bubble != nullptr);
   EXPECT_EQ(TranslateBubbleModel::VIEW_STATE_BEFORE_TRANSLATE,
             bubble->GetViewState());
 
@@ -1608,7 +1608,7 @@ TEST_F(TranslateManagerRenderViewHostTest, BubbleNormalTranslate) {
 
   // Check the bubble shows "Translating...".
   bubble = factory->model();
-  ASSERT_TRUE(bubble != NULL);
+  ASSERT_TRUE(bubble != nullptr);
   EXPECT_EQ(TranslateBubbleModel::VIEW_STATE_TRANSLATING,
             bubble->GetViewState());
 
@@ -1621,7 +1621,7 @@ TEST_F(TranslateManagerRenderViewHostTest, BubbleNormalTranslate) {
 
   // Check the bubble shows "Translated."
   bubble = factory->model();
-  ASSERT_TRUE(bubble != NULL);
+  ASSERT_TRUE(bubble != nullptr);
   EXPECT_EQ(TranslateBubbleModel::VIEW_STATE_AFTER_TRANSLATE,
             bubble->GetViewState());
 }
@@ -1638,9 +1638,9 @@ TEST_F(TranslateManagerRenderViewHostTest, BubbleTranslateScriptNotAvailable) {
 
   // Check the bubble exists instead of the infobar.
   translate::TranslateInfoBarDelegate* infobar = GetTranslateInfoBar();
-  ASSERT_TRUE(infobar == NULL);
+  ASSERT_TRUE(infobar == nullptr);
   TranslateBubbleModel* bubble = factory->model();
-  ASSERT_TRUE(bubble != NULL);
+  ASSERT_TRUE(bubble != nullptr);
   EXPECT_EQ(TranslateBubbleModel::VIEW_STATE_BEFORE_TRANSLATE,
             bubble->GetViewState());
 
@@ -1649,11 +1649,11 @@ TEST_F(TranslateManagerRenderViewHostTest, BubbleTranslateScriptNotAvailable) {
   SimulateTranslateScriptURLFetch(false);
 
   // We should not have sent any message to translate to the renderer.
-  EXPECT_FALSE(GetTranslateMessage(NULL, NULL));
+  EXPECT_FALSE(GetTranslateMessage(nullptr, nullptr));
 
   // And we should have an error infobar showing.
   bubble = factory->model();
-  ASSERT_TRUE(bubble != NULL);
+  ASSERT_TRUE(bubble != nullptr);
   EXPECT_EQ(TranslateBubbleModel::VIEW_STATE_ERROR, bubble->GetViewState());
 }
 
@@ -1670,7 +1670,7 @@ TEST_F(TranslateManagerRenderViewHostTest, BubbleUnknownLanguage) {
   SimulateNavigation(GURL("http://www.google.mys"), "und", true);
 
   // We should not have a bubble as we don't know the language.
-  ASSERT_TRUE(factory->model() == NULL);
+  ASSERT_TRUE(factory->model() == nullptr);
 
   // Translate the page anyway throught the context menu.
   std::unique_ptr<TestRenderViewContextMenu> menu(CreateContextMenu());
@@ -1679,9 +1679,9 @@ TEST_F(TranslateManagerRenderViewHostTest, BubbleUnknownLanguage) {
 
   // Check the bubble exists instead of the infobar.
   translate::TranslateInfoBarDelegate* infobar = GetTranslateInfoBar();
-  ASSERT_TRUE(infobar == NULL);
+  ASSERT_TRUE(infobar == nullptr);
   TranslateBubbleModel* bubble = factory->model();
-  ASSERT_TRUE(bubble != NULL);
+  ASSERT_TRUE(bubble != nullptr);
   EXPECT_EQ(TranslateBubbleModel::VIEW_STATE_TRANSLATING,
             bubble->GetViewState());
 }

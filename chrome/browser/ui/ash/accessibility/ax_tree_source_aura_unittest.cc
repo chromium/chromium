@@ -120,7 +120,7 @@ TEST_F(AXTreeSourceAuraTest, Accessors) {
   ASSERT_NE(textfield->GetUniqueId(), ax_tree.GetRoot()->GetUniqueId());
 
   // Try walking up the tree to the root.
-  AXAuraObjWrapper* test_root = NULL;
+  AXAuraObjWrapper* test_root = nullptr;
   for (AXAuraObjWrapper* root_finder = ax_tree.GetParent(content); root_finder;
        root_finder = ax_tree.GetParent(root_finder))
     test_root = root_finder;

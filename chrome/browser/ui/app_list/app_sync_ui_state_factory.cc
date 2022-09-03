@@ -12,7 +12,7 @@
 // static
 AppSyncUIState* AppSyncUIStateFactory::GetForProfile(Profile* profile) {
   if (!AppSyncUIState::ShouldObserveAppSyncForProfile(profile))
-    return NULL;
+    return nullptr;
 
   return static_cast<AppSyncUIState*>(
       GetInstance()->GetServiceForBrowserContext(profile, true));

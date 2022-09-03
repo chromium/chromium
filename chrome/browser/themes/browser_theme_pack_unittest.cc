@@ -243,7 +243,7 @@ void BrowserThemePackTest::BuildFromUnpackedExtension(
   std::string error;
   JSONFileValueDeserializer deserializer(manifest_path);
   std::unique_ptr<base::DictionaryValue> valid_value =
-      base::DictionaryValue::From(deserializer.Deserialize(NULL, &error));
+      base::DictionaryValue::From(deserializer.Deserialize(nullptr, &error));
   EXPECT_EQ("", error);
   ASSERT_TRUE(valid_value.get());
   scoped_refptr<Extension> extension(Extension::Create(
@@ -719,19 +719,19 @@ TEST_F(BrowserThemePackTest, InvalidDisplayProperties) {
 // These three tests should just not cause a segmentation fault.
 TEST_F(BrowserThemePackTest, NullPaths) {
   TestFilePathMap out_file_paths;
-  ParseImageNamesDictionary(NULL, &out_file_paths);
+  ParseImageNamesDictionary(nullptr, &out_file_paths);
 }
 
 TEST_F(BrowserThemePackTest, NullTints) {
-  LoadTintDictionary(NULL);
+  LoadTintDictionary(nullptr);
 }
 
 TEST_F(BrowserThemePackTest, NullColors) {
-  LoadColorDictionary(NULL);
+  LoadColorDictionary(nullptr);
 }
 
 TEST_F(BrowserThemePackTest, NullDisplayProperties) {
-  LoadDisplayPropertiesDictionary(NULL);
+  LoadDisplayPropertiesDictionary(nullptr);
 }
 
 TEST_F(BrowserThemePackTest, TestHasCustomImage) {

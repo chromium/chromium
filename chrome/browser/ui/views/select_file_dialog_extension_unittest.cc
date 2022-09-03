@@ -33,8 +33,8 @@ class SelectFileDialogExtensionTest : public ::testing::Test {
 
   static SelectFileDialogExtension* CreateDialog(
       ui::SelectFileDialog::Listener* listener) {
-    SelectFileDialogExtension* dialog = new SelectFileDialogExtension(listener,
-                                                                      NULL);
+    SelectFileDialogExtension* dialog =
+        new SelectFileDialogExtension(listener, nullptr);
     // Simulate the dialog opening.
     EXPECT_FALSE(SelectFileDialogExtension::PendingExists(kDefaultRoutingID));
     dialog->AddPending(kDefaultRoutingID);

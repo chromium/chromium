@@ -24,7 +24,7 @@ Browser* TestTabStripModelDelegate::CreateNewStripWithContents(
     std::vector<NewStripContents> contentses,
     const gfx::Rect& window_bounds,
     bool maximize) {
-  return NULL;
+  return nullptr;
 }
 
 void TestTabStripModelDelegate::WillAddWebContents(

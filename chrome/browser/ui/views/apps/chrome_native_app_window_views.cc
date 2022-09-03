@@ -279,7 +279,7 @@ ChromeNativeAppWindowViews::CreateNonClientFrameView(views::Widget* widget) {
 }
 
 bool ChromeNativeAppWindowViews::WidgetHasHitTestMask() const {
-  return shape_ != NULL;
+  return shape_ != nullptr;
 }
 
 void ChromeNativeAppWindowViews::GetWidgetHitTestMask(SkPath* mask) const {

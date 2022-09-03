@@ -203,11 +203,11 @@ TEST_F(RecentTabsSubMenuModelTest, NoTabs) {
   EXPECT_FALSE(model.IsEnabledAt(4));
   EXPECT_EQ(0, model.enable_count());
 
-  EXPECT_EQ(NULL, model.GetLabelFontListAt(0));
-  EXPECT_EQ(NULL, model.GetLabelFontListAt(1));
-  EXPECT_EQ(NULL, model.GetLabelFontListAt(2));
-  EXPECT_EQ(NULL, model.GetLabelFontListAt(3));
-  EXPECT_EQ(NULL, model.GetLabelFontListAt(4));
+  EXPECT_EQ(nullptr, model.GetLabelFontListAt(0));
+  EXPECT_EQ(nullptr, model.GetLabelFontListAt(1));
+  EXPECT_EQ(nullptr, model.GetLabelFontListAt(2));
+  EXPECT_EQ(nullptr, model.GetLabelFontListAt(3));
+  EXPECT_EQ(nullptr, model.GetLabelFontListAt(4));
 
   std::string url;
   std::u16string title;
@@ -255,13 +255,13 @@ TEST_F(RecentTabsSubMenuModelTest, RecentlyClosedTabsFromCurrentSession) {
   EXPECT_EQ(3, model.enable_count());
   EXPECT_EQ(3, model.execute_count());
 
-  EXPECT_EQ(NULL, model.GetLabelFontListAt(0));
-  EXPECT_EQ(NULL, model.GetLabelFontListAt(1));
+  EXPECT_EQ(nullptr, model.GetLabelFontListAt(0));
+  EXPECT_EQ(nullptr, model.GetLabelFontListAt(1));
   EXPECT_TRUE(model.GetLabelFontListAt(2));
-  EXPECT_EQ(NULL, model.GetLabelFontListAt(3));
-  EXPECT_EQ(NULL, model.GetLabelFontListAt(4));
-  EXPECT_EQ(NULL, model.GetLabelFontListAt(5));
-  EXPECT_EQ(NULL, model.GetLabelFontListAt(6));
+  EXPECT_EQ(nullptr, model.GetLabelFontListAt(3));
+  EXPECT_EQ(nullptr, model.GetLabelFontListAt(4));
+  EXPECT_EQ(nullptr, model.GetLabelFontListAt(5));
+  EXPECT_EQ(nullptr, model.GetLabelFontListAt(6));
 
   std::string url;
   std::u16string title;
@@ -324,13 +324,13 @@ TEST_F(RecentTabsSubMenuModelTest, RecentlyClosedGroupsFromCurrentSession) {
   EXPECT_EQ(3, model.enable_count());
   EXPECT_EQ(3, model.execute_count());
 
-  EXPECT_EQ(NULL, model.GetLabelFontListAt(0));
-  EXPECT_EQ(NULL, model.GetLabelFontListAt(1));
+  EXPECT_EQ(nullptr, model.GetLabelFontListAt(0));
+  EXPECT_EQ(nullptr, model.GetLabelFontListAt(1));
   EXPECT_TRUE(model.GetLabelFontListAt(2));
-  EXPECT_EQ(NULL, model.GetLabelFontListAt(3));
-  EXPECT_EQ(NULL, model.GetLabelFontListAt(4));
-  EXPECT_EQ(NULL, model.GetLabelFontListAt(5));
-  EXPECT_EQ(NULL, model.GetLabelFontListAt(6));
+  EXPECT_EQ(nullptr, model.GetLabelFontListAt(3));
+  EXPECT_EQ(nullptr, model.GetLabelFontListAt(4));
+  EXPECT_EQ(nullptr, model.GetLabelFontListAt(5));
+  EXPECT_EQ(nullptr, model.GetLabelFontListAt(6));
 
   std::string url;
   std::u16string title;
@@ -463,14 +463,14 @@ TEST_F(RecentTabsSubMenuModelTest,
   EXPECT_EQ(5, model.enable_count());
   EXPECT_EQ(4, model.execute_count());
 
-  EXPECT_EQ(NULL, model.GetLabelFontListAt(0));
-  EXPECT_EQ(NULL, model.GetLabelFontListAt(1));
+  EXPECT_EQ(nullptr, model.GetLabelFontListAt(0));
+  EXPECT_EQ(nullptr, model.GetLabelFontListAt(1));
   EXPECT_TRUE(model.GetLabelFontListAt(2));
-  EXPECT_EQ(NULL, model.GetLabelFontListAt(3));
-  EXPECT_EQ(NULL, model.GetLabelFontListAt(4));
-  EXPECT_EQ(NULL, model.GetLabelFontListAt(5));
-  EXPECT_EQ(NULL, model.GetLabelFontListAt(6));
-  EXPECT_EQ(NULL, model.GetLabelFontListAt(7));
+  EXPECT_EQ(nullptr, model.GetLabelFontListAt(3));
+  EXPECT_EQ(nullptr, model.GetLabelFontListAt(4));
+  EXPECT_EQ(nullptr, model.GetLabelFontListAt(5));
+  EXPECT_EQ(nullptr, model.GetLabelFontListAt(6));
+  EXPECT_EQ(nullptr, model.GetLabelFontListAt(7));
 
   std::string url;
   std::u16string title;
@@ -556,19 +556,19 @@ TEST_F(RecentTabsSubMenuModelTest, OtherDevices) {
   EXPECT_EQ(7, model.enable_count());
   EXPECT_EQ(10, model.execute_count());
 
-  EXPECT_EQ(NULL, model.GetLabelFontListAt(0));
-  EXPECT_EQ(NULL, model.GetLabelFontListAt(1));
-  EXPECT_EQ(NULL, model.GetLabelFontListAt(2));
-  EXPECT_EQ(NULL, model.GetLabelFontListAt(3));
+  EXPECT_EQ(nullptr, model.GetLabelFontListAt(0));
+  EXPECT_EQ(nullptr, model.GetLabelFontListAt(1));
+  EXPECT_EQ(nullptr, model.GetLabelFontListAt(2));
+  EXPECT_EQ(nullptr, model.GetLabelFontListAt(3));
   EXPECT_TRUE(model.GetLabelFontListAt(4));
-  EXPECT_EQ(NULL, model.GetLabelFontListAt(5));
-  EXPECT_EQ(NULL, model.GetLabelFontListAt(6));
-  EXPECT_EQ(NULL, model.GetLabelFontListAt(7));
-  EXPECT_EQ(NULL, model.GetLabelFontListAt(8));
+  EXPECT_EQ(nullptr, model.GetLabelFontListAt(5));
+  EXPECT_EQ(nullptr, model.GetLabelFontListAt(6));
+  EXPECT_EQ(nullptr, model.GetLabelFontListAt(7));
+  EXPECT_EQ(nullptr, model.GetLabelFontListAt(8));
   EXPECT_TRUE(model.GetLabelFontListAt(9));
-  EXPECT_EQ(NULL, model.GetLabelFontListAt(10));
-  EXPECT_EQ(NULL, model.GetLabelFontListAt(11));
-  EXPECT_EQ(NULL, model.GetLabelFontListAt(12));
+  EXPECT_EQ(nullptr, model.GetLabelFontListAt(10));
+  EXPECT_EQ(nullptr, model.GetLabelFontListAt(11));
+  EXPECT_EQ(nullptr, model.GetLabelFontListAt(12));
 
   std::string url;
   std::u16string title;

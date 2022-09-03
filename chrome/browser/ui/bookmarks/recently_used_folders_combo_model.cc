@@ -81,12 +81,12 @@ RecentlyUsedFoldersComboModel::RecentlyUsedFoldersComboModel(
     items_.erase(items_.begin() + kMaxMRUFolders, items_.end());
 
   // And put the bookmark bar and other nodes at the end of the list.
-  items_.push_back(Item(model->bookmark_bar_node(), Item::TYPE_NODE));
-  items_.push_back(Item(model->other_node(), Item::TYPE_NODE));
+  items_.emplace_back(model->bookmark_bar_node(), Item::TYPE_NODE);
+  items_.emplace_back(model->other_node(), Item::TYPE_NODE);
   if (model->mobile_node()->IsVisible())
-    items_.push_back(Item(model->mobile_node(), Item::TYPE_NODE));
-  items_.push_back(Item(NULL, Item::TYPE_SEPARATOR));
-  items_.push_back(Item(NULL, Item::TYPE_CHOOSE_ANOTHER_FOLDER));
+    items_.emplace_back(model->mobile_node(), Item::TYPE_NODE);
+  items_.emplace_back(nullptr, Item::TYPE_SEPARATOR);
+  items_.emplace_back(nullptr, Item::TYPE_CHOOSE_ANOTHER_FOLDER);
 }
 
 RecentlyUsedFoldersComboModel::~RecentlyUsedFoldersComboModel() {

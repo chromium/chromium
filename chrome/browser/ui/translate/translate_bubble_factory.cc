@@ -57,4 +57,4 @@ void TranslateBubbleFactory::SetFactory(TranslateBubbleFactory* factory) {
 }
 
 // static
-TranslateBubbleFactory* TranslateBubbleFactory::current_factory_ = NULL;
+TranslateBubbleFactory* TranslateBubbleFactory::current_factory_ = nullptr;

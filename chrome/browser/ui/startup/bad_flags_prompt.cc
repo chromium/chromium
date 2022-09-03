@@ -239,7 +239,7 @@ void MaybeShowInvalidUserDataDirWarningDialog() {
     if (locale.empty())
       locale = kUserDataDirDialogFallbackLocale;
     ui::ResourceBundle::InitSharedInstanceWithLocale(
-        locale, NULL, ui::ResourceBundle::DO_NOT_LOAD_COMMON_RESOURCES);
+        locale, nullptr, ui::ResourceBundle::DO_NOT_LOAD_COMMON_RESOURCES);
   }
 
   const std::u16string& title =
@@ -251,7 +251,7 @@ void MaybeShowInvalidUserDataDirWarningDialog() {
     ui::ResourceBundle::CleanupSharedInstance();
 
   // More complex dialogs cannot be shown before the earliest calls here.
-  ShowWarningMessageBox(NULL, title, message);
+  ShowWarningMessageBox(nullptr, title, message);
 }
 
 }  // namespace chrome

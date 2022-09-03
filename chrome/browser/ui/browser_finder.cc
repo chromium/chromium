@@ -132,7 +132,7 @@ Browser* FindBrowserMatching(const T& begin,
     if (BrowserMatches(*i, profile, window_feature, match_types, display_id))
       return *i;
   }
-  return NULL;
+  return nullptr;
 }
 
 Browser* FindBrowserWithTabbedOrAnyType(
@@ -143,7 +143,7 @@ Browser* FindBrowserWithTabbedOrAnyType(
     int64_t display_id = display::kInvalidDisplayId) {
   BrowserList* browser_list_impl = BrowserList::GetInstance();
   if (!browser_list_impl)
-    return NULL;
+    return nullptr;
   uint32_t match_types = kMatchAny;
   if (match_tabbed)
     match_types |= kMatchNormal;
@@ -219,17 +219,17 @@ Browser* FindBrowserWithID(SessionID desired_id) {
     if (browser->session_id() == desired_id)
       return browser;
   }
-  return NULL;
+  return nullptr;
 }
 
 Browser* FindBrowserWithWindow(gfx::NativeWindow window) {
   if (!window)
-    return NULL;
+    return nullptr;
   for (auto* browser : *BrowserList::GetInstance()) {
     if (browser->window() && browser->window()->GetNativeWindow() == window)
       return browser;
   }
-  return NULL;
+  return nullptr;
 }
 
 Browser* FindBrowserWithActiveWindow() {
@@ -270,7 +270,7 @@ Browser* FindLastActive() {
   BrowserList* browser_list_impl = BrowserList::GetInstance();
   if (browser_list_impl)
     return browser_list_impl->GetLastActive();
-  return NULL;
+  return nullptr;
 }
 
 size_t GetTotalBrowserCount() {

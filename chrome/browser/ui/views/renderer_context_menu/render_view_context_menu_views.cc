@@ -420,7 +420,7 @@ aura::Window* RenderViewContextMenuViews::GetActiveNativeView() {
       WebContents::FromRenderFrameHost(GetRenderFrameHost());
   if (!web_contents) {
     LOG(ERROR) << "RenderViewContextMenuViews::Show, couldn't find WebContents";
-    return NULL;
+    return nullptr;
   }
   return web_contents->GetNativeView();
 }

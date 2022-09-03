@@ -78,7 +78,7 @@ IN_PROC_BROWSER_TEST_F(GlobalErrorServiceBrowserTest, ShowBubbleView) {
 
   // Creating a second browser window should show the bubble view.
   CreateBrowser(browser()->profile());
-  EXPECT_EQ(NULL, service->GetFirstGlobalErrorWithBubbleView());
+  EXPECT_EQ(nullptr, service->GetFirstGlobalErrorWithBubbleView());
   EXPECT_TRUE(error->HasShownBubbleView());
   EXPECT_EQ(0, error->bubble_view_close_count());
 }
@@ -99,7 +99,7 @@ IN_PROC_BROWSER_TEST_F(GlobalErrorServiceBrowserTest, CloseBubbleView) {
 
   // Creating a second browser window should show the bubble view.
   CreateBrowser(browser()->profile());
-  EXPECT_EQ(NULL, service->GetFirstGlobalErrorWithBubbleView());
+  EXPECT_EQ(nullptr, service->GetFirstGlobalErrorWithBubbleView());
   EXPECT_TRUE(error->HasShownBubbleView());
   EXPECT_EQ(0, error->bubble_view_close_count());
 

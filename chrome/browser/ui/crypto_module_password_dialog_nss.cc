@@ -17,7 +17,7 @@ namespace {
 
 bool ShouldShowDialog(PK11SlotInfo* slot) {
   // The wincx arg is unused since we don't call PK11_SetIsLoggedInFunc.
-  return (PK11_NeedLogin(slot) && !PK11_IsLoggedIn(slot, NULL /* wincx */));
+  return (PK11_NeedLogin(slot) && !PK11_IsLoggedIn(slot, nullptr /* wincx */));
 }
 
 // Basically an asynchronous implementation of NSS's PK11_DoPassword.

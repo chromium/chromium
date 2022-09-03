@@ -91,12 +91,12 @@ void BrowserTabRestorer::TabRestoreServiceLoaded(
     sessions::TabRestoreService* service) {
   RestoreTab(browser_);
   // This deletes us.
-  browser_->profile()->SetUserData(kBrowserTabRestorerKey, NULL);
+  browser_->profile()->SetUserData(kBrowserTabRestorerKey, nullptr);
 }
 
 void BrowserTabRestorer::OnBrowserRemoved(Browser* browser) {
   // This deletes us.
-  browser_->profile()->SetUserData(kBrowserTabRestorerKey, NULL);
+  browser_->profile()->SetUserData(kBrowserTabRestorerKey, nullptr);
 }
 
 }  // namespace
