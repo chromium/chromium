@@ -1154,7 +1154,7 @@ TEST_F(FileManagerPathUtilTest, GetDisplayablePathTest) {
 
   volume_manager->AddVolumeForTesting(Volume::CreateForDocumentsProvider(
       "authority", "root_id", "document_id", "documents_provider_label",
-      "summary", {}, false));
+      "summary", {}, false, /*optional_fusebox_subdir=*/std::string()));
 
   volume_manager->AddVolumeForTesting(Volume::CreateForSftpGuestOs(
       "guest_os_label", base::FilePath("/mount_path/guest_os"),

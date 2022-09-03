@@ -196,6 +196,18 @@ std::string GenerateVolumeId(const Volume& volume) {
                        volume.mount_path().BaseName().AsUTF8Unsafe()});
 }
 
+std::string FuseBoxADPSubdir(const std::string& authority,
+                             const std::string& root_id) {
+  // Hash the authority and ID
+  // - because the ID can be quite long (400+ bytes) and
+  // - to avoid sharing the ID in the file system.
+  std::string hash =
+      crypto::SHA256HashString(base::StrCat({authority, "/", root_id}));
+  std::string b64;
+  base::Base64UrlEncode(hash, base::Base64UrlEncodePolicy::OMIT_PADDING, &b64);
+  return base::StrCat({"adp.", b64});
+}
+
 std::string FuseBoxMTPSubdir(const std::string& device_id) {
   // Derive the subdir name from the MTP device ID (which is stable even after
   // unplugging and replugging a phone). It's a hash of the ID, not the ID
@@ -543,7 +555,8 @@ std::unique_ptr<Volume> Volume::CreateForDocumentsProvider(
     const std::string& title,
     const std::string& summary,
     const GURL& icon_url,
-    bool read_only) {
+    bool read_only,
+    const std::string& optional_fusebox_subdir) {
   std::unique_ptr<Volume> volume(new Volume());
   volume->type_ = VOLUME_TYPE_DOCUMENTS_PROVIDER;
   // Keep source_path empty.
@@ -559,6 +572,14 @@ std::unique_ptr<Volume> Volume::CreateForDocumentsProvider(
     icon_set.SetIcon(ash::file_system_provider::IconSet::IconSize::SIZE_32x32,
                      icon_url);
     volume->icon_set_ = icon_set;
+  }
+  if (!optional_fusebox_subdir.empty()) {
+    volume->file_system_type_ = util::kFuseBox;
+    volume->volume_id_.insert(0, util::kFuseBox);
+    volume->mount_path_ =
+        base::FilePath(util::kFuseBoxMediaPath).Append(optional_fusebox_subdir);
+    if (ash::features::IsFileManagerFuseBoxDebugEnabled())
+      volume->volume_label_.insert(0, "fusebox ");
   }
   return volume;
 }
@@ -1656,7 +1677,60 @@ void VolumeManager::OnDocumentsProviderRootAdded(
   arc::ArcDocumentsProviderRootMap::GetForArcBrowserContext()->RegisterRoot(
       authority, document_id, root_id, read_only, mime_types);
   DoMountEvent(Volume::CreateForDocumentsProvider(
-      authority, root_id, document_id, title, summary, icon_url, read_only));
+      authority, root_id, document_id, title, summary, icon_url, read_only,
+      /*optional_fusebox_subdir=*/std::string()));
+
+  // The fusebox_mounter_ is enabled by a chrome flag.
+  if (!fusebox_mounter_)
+    return;
+
+  // Get the FileSystemURL of the ADP storage device.
+  auto* mount_points = storage::ExternalMountPoints::GetSystemInstance();
+  auto adp_file_system_url = mount_points->CreateExternalFileSystemURL(
+      blink::StorageKey(util::GetFilesAppOrigin()),
+      arc::kDocumentsProviderMountPointName,
+      base::FilePath(base::StrCat({authority, "/", root_id})));
+  const std::string url = adp_file_system_url.ToGURL().spec();
+
+  // Attach the ADP storage device to the fusebox daemon.
+  std::string subdir = FuseBoxADPSubdir(authority, root_id);
+  fusebox_mounter_->AttachStorage(
+      subdir, url, read_only,
+      base::BindOnce(&VolumeManager::OnFuseboxAttachStorageADP,
+                     weak_ptr_factory_.GetWeakPtr(), subdir,
+                     std::move(authority), std::move(root_id),
+                     std::move(document_id), std::move(title),
+                     std::move(summary), std::move(icon_url), read_only));
+}
+
+void VolumeManager::OnFuseboxAttachStorageADP(const std::string& subdir,
+                                              const std::string& authority,
+                                              const std::string& root_id,
+                                              const std::string& document_id,
+                                              const std::string& title,
+                                              const std::string& summary,
+                                              const GURL icon_url,
+                                              bool read_only,
+                                              int error) {
+  LOG_IF(ERROR, error) << "failed attaching adp " << authority;
+  if (error)
+    return;
+
+  // Create a Volume for the fusebox ADP storage device.
+  std::unique_ptr<Volume> volume =
+      Volume::CreateForDocumentsProvider(authority, root_id, document_id, title,
+                                         summary, icon_url, read_only, subdir);
+
+  // Register the fusebox ADP storage device with chrome::storage.
+  auto* mount_points = storage::ExternalMountPoints::GetSystemInstance();
+  bool result = mount_points->RegisterFileSystem(
+      base::StrCat({util::kFuseBoxMountNamePrefix, subdir}),
+      storage::kFileSystemTypeFuseBox, storage::FileSystemMountOption(),
+      volume->mount_path());
+  DCHECK(result);
+
+  // Mount the fusebox ADP storage device in files app.
+  DoMountEvent(std::move(volume));
 }
 
 void VolumeManager::OnDocumentsProviderRootRemoved(
@@ -1665,9 +1739,27 @@ void VolumeManager::OnDocumentsProviderRootRemoved(
     const std::string& document_id) {
   DoUnmountEvent(*Volume::CreateForDocumentsProvider(
       authority, root_id, std::string(), std::string(), std::string(), GURL(),
-      false));
+      false, /*optional_fusebox_subdir=*/std::string()));
   arc::ArcDocumentsProviderRootMap::GetForArcBrowserContext()->UnregisterRoot(
       authority, document_id);
+
+  // The fusebox_mounter_ is enabled by a chrome flag.
+  if (!fusebox_mounter_)
+    return;
+
+  // Unmount the fusebox ADP storage device in files app.
+  std::string volume_id = arc::GetDocumentsProviderVolumeId(authority, root_id);
+  if (base::WeakPtr<Volume> volume = FindVolumeById(util::kFuseBox + volume_id))
+    DoUnmountEvent(*volume);
+
+  // Remove the fusebox ADP storage device from chrome::storage.
+  std::string subdir = FuseBoxADPSubdir(authority, root_id);
+  auto* mount_points = storage::ExternalMountPoints::GetSystemInstance();
+  mount_points->RevokeFileSystem(
+      base::StrCat({util::kFuseBoxMountNamePrefix, subdir}));
+
+  // Detach the fusebox ADP storage device from the fusebox daemon.
+  fusebox_mounter_->DetachStorage(subdir, base::DoNothing());
 }
 
 void VolumeManager::AddSmbFsVolume(const base::FilePath& mount_point,

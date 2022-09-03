@@ -244,6 +244,9 @@ absl::optional<int> MyFilesFolderToMessageId(std::string folder) {
 const base::FilePath::CharType kFuseBoxMediaPath[] =
     FILE_PATH_LITERAL("/media/fuse/fusebox");
 
+const base::FilePath::CharType kFuseBoxMediaSlashPath[] =
+    FILE_PATH_LITERAL("/media/fuse/fusebox/");
+
 const base::FilePath::CharType kRemovableMediaPath[] =
     FILE_PATH_LITERAL("/media/removable");
 
@@ -257,6 +260,15 @@ const base::FilePath::CharType kArchiveMountPath[] =
     FILE_PATH_LITERAL("/media/archive");
 
 const char kFuseBox[] = "fusebox";
+
+// The actual value of this string is arbitrary (other than, per the comments
+// in external_mount_points.h, mount names should not contain '/'), but this
+// nonsense-looking word (based on the first two letters of each of "fuse box
+// mount name") is unique enough so that, when seeing "fubomona" in a log
+// message (e.g. in a storage::FileSystemURL's debug string form), code-
+// searching for that string should quickly find this definition here (and the
+// kFuseBoxMountNamePrefix name that code-search can find references for).
+const char kFuseBoxMountNamePrefix[] = "fubomona:";
 
 const char kShareCacheMountPointName[] = "ShareCache";
 

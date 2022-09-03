@@ -12,6 +12,8 @@
 #include "chrome/browser/ash/fusebox/fusebox_moniker.h"
 #include "chromeos/ash/components/dbus/fusebox/fusebox.pb.h"
 
+class Profile;
+
 namespace fusebox {
 
 class Server {
@@ -44,6 +46,20 @@ class Server {
                            const std::string& fs_url_prefix,
                            bool read_only);
   void UnregisterFSURLPrefix(const std::string& subdir);
+
+  // Converts a FuseBox filename (e.g. "/media/fuse/fusebox/subdir/p/q.txt") to
+  // a storage::FileSystemURL, substituting the fs_url_prefix for "/etc/subdir"
+  // according to previous RegisterFSURLPrefix calls. The "/p/q.txt" suffix may
+  // be empty but "subdir" (and everything prior) must be present.
+  //
+  // If "subdir" mapped to "filesystem:origin/external/mount_name/xxx/yyy" then
+  // this returns "filesystem:origin/external/mount_name/xxx/yyy/p/q.txt" in
+  // storage::FileSystemURL form.
+  //
+  // It returns an invalid storage::FileSystemURL if the filename doesn't match
+  // "/media/fuse/fusebox/subdir/etc" or the "subdir" wasn't registered.
+  storage::FileSystemURL ResolveFilename(Profile* profile,
+                                         const std::string& filename);
 
   // These methods map 1:1 to the D-Bus methods implemented by
   // fusebox_service_provider.cc.

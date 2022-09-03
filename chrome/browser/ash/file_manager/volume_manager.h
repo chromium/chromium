@@ -155,7 +155,8 @@ class Volume : public base::SupportsWeakPtr<Volume> {
       const std::string& title,
       const std::string& summary,
       const GURL& icon_url,
-      bool read_only);
+      bool read_only,
+      const std::string& optional_fusebox_subdir);
 
   static std::unique_ptr<Volume> CreateForSmb(base::FilePath mount_point,
                                               std::string display_name);
@@ -539,6 +540,15 @@ class VolumeManager : public KeyedService,
                       const std::string& display_name);
   void RemoveSmbFsVolume(const base::FilePath& mount_point);
 
+  void OnFuseboxAttachStorageADP(const std::string& subdir,
+                                 const std::string& authority,
+                                 const std::string& root_id,
+                                 const std::string& document_id,
+                                 const std::string& title,
+                                 const std::string& summary,
+                                 const GURL icon_url,
+                                 bool read_only,
+                                 int error);
   void OnFuseboxAttachStorageMTP(const std::string& subdir,
                                  const std::string& fsid,
                                  const std::string& label,

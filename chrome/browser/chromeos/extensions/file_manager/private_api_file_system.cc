@@ -718,14 +718,13 @@ FileManagerPrivateGetSizeStatsFunction::Run() {
   if (base::StartsWith(volume->file_system_type(), fusebox)) {
     std::string volume_id = params->volume_id;
 
-    if (volume->type() == file_manager::VOLUME_TYPE_MTP) {
+    if ((volume->type() == file_manager::VOLUME_TYPE_MTP) ||
+        (volume->type() == file_manager::VOLUME_TYPE_DOCUMENTS_PROVIDER)) {
       volume_id = volume_id.substr(fusebox.length());
     } else if (volume->type() == file_manager::VOLUME_TYPE_PROVIDED) {
       // NB: FileManagerPrivate.GetSizeStats is not called by files app JS
       // because regular PROVIDED volumes do not support size stats.
       volume_manager->ConvertFuseBoxFSPVolumeIdToFSPIfNeeded(&volume_id);
-    } else {
-      // TODO(crbug.com/1292825): add VOLUME_TYPE_DOCUMENTS_PROVIDER.
     }
 
     volume = volume_manager->FindVolumeById(volume_id);
