@@ -54,6 +54,7 @@
 #include "net/third_party/quiche/src/quiche/quic/core/quic_connection.h"
 #include "net/third_party/quiche/src/quiche/quic/test_tools/crypto_test_utils.h"
 #include "net/third_party/quiche/src/quiche/quic/test_tools/mock_clock.h"
+#include "net/third_party/quiche/src/quiche/quic/test_tools/mock_connection_id_generator.h"
 #include "net/third_party/quiche/src/quiche/quic/test_tools/mock_random.h"
 #include "net/third_party/quiche/src/quiche/quic/test_tools/qpack/qpack_test_utils.h"
 #include "net/third_party/quiche/src/quiche/quic/test_tools/quic_connection_peer.h"
@@ -525,7 +526,7 @@ class BidirectionalStreamQuicImplTest
         ToQuicSocketAddress(peer_addr_), helper_.get(), alarm_factory_.get(),
         new QuicChromiumPacketWriter(socket.get(), runner_.get()),
         true /* owns_writer */, quic::Perspective::IS_CLIENT,
-        quic::test::SupportedVersions(version_));
+        quic::test::SupportedVersions(version_), connection_id_generator_);
     if (connection_->version().KnowsWhichDecrypterToUse()) {
       connection_->InstallDecrypter(
           quic::ENCRYPTION_FORWARD_SECURE,
@@ -842,6 +843,7 @@ class BidirectionalStreamQuicImplTest
   std::unique_ptr<StaticSocketDataProvider> socket_data_;
   std::vector<PacketToWrite> writes_;
   url::SchemeHostPort destination_;
+  quic::test::MockConnectionIdGenerator connection_id_generator_;
   quic::test::NoopQpackStreamSenderDelegate noop_qpack_stream_sender_delegate_;
 };
 

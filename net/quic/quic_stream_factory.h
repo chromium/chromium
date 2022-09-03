@@ -42,7 +42,9 @@
 #include "net/quic/quic_session_key.h"
 #include "net/socket/client_socket_pool.h"
 #include "net/ssl/ssl_config_service.h"
+#include "net/third_party/quiche/src/quiche/quic/core/deterministic_connection_id_generator.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_config.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_connection_id.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_crypto_stream.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_packets.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_server_id.h"
@@ -628,6 +630,9 @@ class NET_EXPORT_PRIVATE QuicStreamFactory
   // respecting NIKs, as that data is fed into the crypto config map using the
   // corresponding NIK.
   const bool use_network_isolation_key_for_crypto_configs_;
+
+  quic::DeterministicConnectionIdGenerator connection_id_generator_{
+      quic::kQuicDefaultConnectionIdLength};
 
   base::WeakPtrFactory<QuicStreamFactory> weak_factory_{this};
 };

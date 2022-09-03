@@ -68,6 +68,7 @@
 #include "net/third_party/quiche/src/quiche/quic/platform/api/quic_flags.h"
 #include "net/third_party/quiche/src/quiche/quic/test_tools/crypto_test_utils.h"
 #include "net/third_party/quiche/src/quiche/quic/test_tools/mock_clock.h"
+#include "net/third_party/quiche/src/quiche/quic/test_tools/mock_connection_id_generator.h"
 #include "net/third_party/quiche/src/quiche/quic/test_tools/mock_random.h"
 #include "net/third_party/quiche/src/quiche/quic/test_tools/qpack/qpack_test_utils.h"
 #include "net/third_party/quiche/src/quiche/quic/test_tools/quic_connection_peer.h"
@@ -162,7 +163,8 @@ class TestQuicConnection : public quic::QuicConnection {
                      IPEndPoint address,
                      QuicChromiumConnectionHelper* helper,
                      QuicChromiumAlarmFactory* alarm_factory,
-                     quic::QuicPacketWriter* writer)
+                     quic::QuicPacketWriter* writer,
+                     quic::ConnectionIdGeneratorInterface& generator)
       : quic::QuicConnection(connection_id,
                              quic::QuicSocketAddress(),
                              ToQuicSocketAddress(address),
@@ -171,7 +173,8 @@ class TestQuicConnection : public quic::QuicConnection {
                              writer,
                              true /* owns_writer */,
                              quic::Perspective::IS_CLIENT,
-                             versions) {}
+                             versions,
+                             generator) {}
 
   void SetSendAlgorithm(quic::SendAlgorithmInterface* send_algorithm) {
     quic::test::QuicConnectionPeer::SetSendAlgorithm(this, send_algorithm);
@@ -375,8 +378,9 @@ class QuicHttpStreamTest : public ::testing::TestWithParam<TestParams>,
     connection_ = new TestQuicConnection(
         quic::test::SupportedVersions(version_), connection_id_, peer_addr_,
         helper_.get(), alarm_factory_.get(),
-        new QuicChromiumPacketWriter(
-            socket.get(), base::ThreadTaskRunnerHandle::Get().get()));
+        new QuicChromiumPacketWriter(socket.get(),
+                                     base::ThreadTaskRunnerHandle::Get().get()),
+        connection_id_generator_);
     connection_->set_visitor(&visitor_);
     connection_->SetSendAlgorithm(send_algorithm_);
 
@@ -704,6 +708,7 @@ class QuicHttpStreamTest : public ::testing::TestWithParam<TestParams>,
   std::unique_ptr<StaticSocketDataProvider> socket_data_;
   QuicPacketPrinter printer_;
   std::vector<PacketToWrite> writes_;
+  quic::test::MockConnectionIdGenerator connection_id_generator_;
   quic::test::NoopQpackStreamSenderDelegate noop_qpack_stream_sender_delegate_;
 };
 

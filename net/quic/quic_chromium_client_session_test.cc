@@ -60,6 +60,7 @@
 #include "net/third_party/quiche/src/quiche/quic/platform/api/quic_flags.h"
 #include "net/third_party/quiche/src/quiche/quic/platform/api/quic_test.h"
 #include "net/third_party/quiche/src/quiche/quic/test_tools/crypto_test_utils.h"
+#include "net/third_party/quiche/src/quiche/quic/test_tools/mock_connection_id_generator.h"
 #include "net/third_party/quiche/src/quiche/quic/test_tools/qpack/qpack_test_utils.h"
 #include "net/third_party/quiche/src/quiche/quic/test_tools/quic_client_promised_info_peer.h"
 #include "net/third_party/quiche/src/quiche/quic/test_tools/quic_connection_peer.h"
@@ -188,7 +189,7 @@ class QuicChromiumClientSessionTest
         quic::QuicUtils::CreateRandomConnectionId(&random_),
         quic::QuicSocketAddress(), ToQuicSocketAddress(kIpEndPoint), &helper_,
         &alarm_factory_, writer, true, quic::Perspective::IS_CLIENT,
-        quic::test::SupportedVersions(version_));
+        quic::test::SupportedVersions(version_), connection_id_generator_);
     session_ = std::make_unique<TestingQuicChromiumClientSession>(
         connection, std::move(socket),
         /*stream_factory=*/nullptr, &crypto_client_stream_factory_, &clock_,
@@ -313,6 +314,7 @@ class QuicChromiumClientSessionTest
   ProofVerifyDetailsChromium verify_details_;
   bool migrate_session_early_v2_ = false;
   bool allow_port_migration_ = false;
+  quic::test::MockConnectionIdGenerator connection_id_generator_;
   quic::test::NoopQpackStreamSenderDelegate noop_qpack_stream_sender_delegate_;
 };
 

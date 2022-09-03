@@ -53,6 +53,7 @@
 #include "net/third_party/quiche/src/quiche/quic/core/quic_utils.h"
 #include "net/third_party/quiche/src/quiche/quic/test_tools/crypto_test_utils.h"
 #include "net/third_party/quiche/src/quiche/quic/test_tools/mock_clock.h"
+#include "net/third_party/quiche/src/quiche/quic/test_tools/mock_connection_id_generator.h"
 #include "net/third_party/quiche/src/quiche/quic/test_tools/mock_random.h"
 #include "net/third_party/quiche/src/quiche/quic/test_tools/qpack/qpack_test_utils.h"
 #include "net/third_party/quiche/src/quiche/quic/test_tools/quic_connection_peer.h"
@@ -241,7 +242,8 @@ class QuicProxyClientSocketTest : public ::testing::TestWithParam<TestParams>,
         connection_id_, quic::QuicSocketAddress(),
         net::ToQuicSocketAddress(peer_addr_), helper_.get(),
         alarm_factory_.get(), writer, true /* owns_writer */,
-        quic::Perspective::IS_CLIENT, quic::test::SupportedVersions(version_));
+        quic::Perspective::IS_CLIENT, quic::test::SupportedVersions(version_),
+        connection_id_generator_);
     connection->set_visitor(&visitor_);
     quic::test::QuicConnectionPeer::SetSendAlgorithm(connection,
                                                      send_algorithm_);
@@ -638,6 +640,7 @@ class QuicProxyClientSocketTest : public ::testing::TestWithParam<TestParams>,
   quic::test::MockRandom random_generator_{0};
   ProofVerifyDetailsChromium verify_details_;
   MockCryptoClientStreamFactory crypto_client_stream_factory_;
+  quic::test::MockConnectionIdGenerator connection_id_generator_;
 
   std::string user_agent_;
   url::SchemeHostPort proxy_endpoint_;

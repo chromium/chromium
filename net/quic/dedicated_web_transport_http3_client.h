@@ -20,9 +20,11 @@
 #include "net/socket/client_socket_factory.h"
 #include "net/third_party/quiche/src/quiche/quic/core/crypto/quic_crypto_client_config.h"
 #include "net/third_party/quiche/src/quiche/quic/core/crypto/web_transport_fingerprint_proof_verifier.h"
+#include "net/third_party/quiche/src/quiche/quic/core/deterministic_connection_id_generator.h"
 #include "net/third_party/quiche/src/quiche/quic/core/http/quic_client_push_promise_index.h"
 #include "net/third_party/quiche/src/quiche/quic/core/http/quic_spdy_client_session.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_config.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_connection_id.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_versions.h"
 #include "net/third_party/quiche/src/quiche/quic/core/web_transport_interface.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -177,6 +179,8 @@ class NET_EXPORT DedicatedWebTransportHttp3Client
   std::unique_ptr<QuicChromiumPacketReader> packet_reader_;
   std::unique_ptr<QuicEventLogger> event_logger_;
   quic::QuicClientPushPromiseIndex push_promise_index_;
+  quic::DeterministicConnectionIdGenerator connection_id_generator_{
+      quic::kQuicDefaultConnectionIdLength};
 
   absl::optional<WebTransportCloseInfo> close_info_;
 
