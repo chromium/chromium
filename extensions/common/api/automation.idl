@@ -396,6 +396,7 @@
     increment,
     internalInvalidateTree,
     loadInlineTextBoxes,
+    longClick,
     replaceSelectedText,
     resumeMedia,
     scrollBackward,

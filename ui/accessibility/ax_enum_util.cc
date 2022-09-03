@@ -4,6 +4,7 @@
 
 #include "ui/accessibility/ax_enum_util.h"
 
+#include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 
 namespace ui {
@@ -681,6 +682,8 @@ const char* ToString(ax::mojom::Action action) {
       return "stopDuckingMedia";
     case ax::mojom::Action::kSuspendMedia:
       return "suspendMedia";
+    case ax::mojom::Action::kLongClick:
+      return "longClick";
   }
 
   return "";
@@ -1035,6 +1038,8 @@ const char* ToString(ax::mojom::BoolAttribute bool_attribute) {
       return "hasAriaAttribute";
     case ax::mojom::BoolAttribute::kTouchPassthrough:
       return "touchPassthrough";
+    case ax::mojom::BoolAttribute::kLongClickable:
+      return "longClickable";
   }
 
   return "";

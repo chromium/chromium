@@ -18,6 +18,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/accessibility/ax_enum_util.h"
+#include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_role_properties.h"
 #include "ui/accessibility/ax_tree_id.h"
@@ -783,6 +784,7 @@ void AXNodeData::AddAction(ax::mojom::Action action_enum) {
     case ax::mojom::Action::kStartDuckingMedia:
     case ax::mojom::Action::kStopDuckingMedia:
     case ax::mojom::Action::kSuspendMedia:
+    case ax::mojom::Action::kLongClick:
       break;
   }
 
@@ -1698,6 +1700,9 @@ std::string AXNodeData::ToString() const {
         break;
       case ax::mojom::BoolAttribute::kTouchPassthrough:
         result += " touch_passthrough=" + value;
+        break;
+      case ax::mojom::BoolAttribute::kLongClickable:
+        result += " long_clickable=" + value;
         break;
       case ax::mojom::BoolAttribute::kNone:
         break;

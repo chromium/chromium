@@ -1172,6 +1172,9 @@ AutomationNodeImpl.prototype = {
   suspendMedia: function() {
     this.performAction_('suspendMedia');
   },
+  longClick: function() {
+    this.performAction_('longClick');
+  },
 
   domQuerySelector: function(selector, callback) {
     if (!this.rootImpl) {
@@ -2163,6 +2166,7 @@ utils.expose(AutomationNode, AutomationNodeImpl, {
     'startDuckingMedia',
     'stopDuckingMedia',
     'suspendMedia',
+    'longClick',
     'toString',
     'unclippedBoundsForRange',
   ],

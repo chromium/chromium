@@ -640,6 +640,9 @@ AutomationInternalPerformActionFunction::ConvertToAXActionData(
     case api::automation::ACTION_TYPE_SUSPENDMEDIA:
       action->action = ax::mojom::Action::kSuspendMedia;
       break;
+    case api::automation::ACTION_TYPE_LONGCLICK:
+      action->action = ax::mojom::Action::kLongClick;
+      break;
     case api::automation::ACTION_TYPE_ANNOTATEPAGEIMAGES:
     case api::automation::ACTION_TYPE_SIGNALENDOFTEST:
     case api::automation::ACTION_TYPE_INTERNALINVALIDATETREE:

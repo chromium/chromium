@@ -368,8 +368,8 @@ enum State {
 // An action to be taken on an accessibility node.
 // In contrast to |AXDefaultActionVerb|, these describe what happens to the
 // object, e.g. "FOCUS".
-// Next version: 2
-// Next value: 38
+// Next version: 3
+// Next value: 39
 [Extensible, Stable, Uuid="ed8e4466-0522-4f98-ac28-59a523b70232"]
 enum Action {
   [Default]kNone = 0,
@@ -423,6 +423,8 @@ enum Action {
   // about word boundaries, line layout, and individual character
   // bounding boxes.
   kLoadInlineTextBoxes = 16,
+
+  [MinVersion=2] kLongClick = 38,
 
   // Delete any selected text in the control's text value and
   // insert |AXActionData::value| in its place, like when typing or pasting.
@@ -766,7 +768,8 @@ enum FloatAttribute {
 //
 // Finally, note that different tree sources can use all three states for a
 // given attribute, while another tree source only uses two.
-// Next value: 21
+// Next value: 22
+// Next Version: 2
 [Extensible, Stable, Uuid="ed1f1b8c-c89c-483f-9840-ca3b10042e81"]
 enum BoolAttribute {
   [Default]kNone = 0,
@@ -840,6 +843,9 @@ enum BoolAttribute {
   // is in touch exploration mode, e.g. a virtual keyboard normally
   // behaves this way.
   kTouchPassthrough = 20,
+
+  // A hint to clients that the node is long clickable.
+  [MinVersion=1] kLongClickable = 21,
 };
 
 // Next version: 4

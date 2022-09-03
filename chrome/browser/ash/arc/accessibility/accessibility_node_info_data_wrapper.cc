@@ -112,7 +112,8 @@ bool AccessibilityNodeInfoDataWrapper::IsAccessibilityFocusableContainer()
     return false;
 
   return GetProperty(AXBooleanProperty::SCREEN_READER_FOCUSABLE) ||
-         IsFocusable() || IsClickable() || IsToplevelScrollItem();
+         IsFocusable() || IsClickable() || IsLongClickable() ||
+         IsToplevelScrollItem();
   // TODO(hirokisato): probably check long clickable as well.
 }
 
@@ -401,6 +402,11 @@ void AccessibilityNodeInfoDataWrapper::Serialize(
 
   if (IsClickable())
     out_data->AddBoolAttribute(ax::mojom::BoolAttribute::kClickable, true);
+
+  if (IsLongClickable()) {
+    out_data->AddBoolAttribute(ax::mojom::BoolAttribute::kLongClickable, true);
+    out_data->AddAction(ax::mojom::Action::kLongClick);
+  }
 
   if (GetProperty(AXBooleanProperty::SELECTED)) {
     if (ui::IsSelectSupported(out_data->role)) {
@@ -754,6 +760,11 @@ bool AccessibilityNodeInfoDataWrapper::IsClickable() const {
          HasStandardAction(AXActionType::CLICK);
 }
 
+bool AccessibilityNodeInfoDataWrapper::IsLongClickable() const {
+  return GetProperty(AXBooleanProperty::LONG_CLICKABLE) ||
+         HasStandardAction(AXActionType::LONG_CLICK);
+}
+
 bool AccessibilityNodeInfoDataWrapper::IsFocusable() const {
   return GetProperty(AXBooleanProperty::FOCUSABLE) ||
          HasStandardAction(AXActionType::FOCUS) ||
@@ -801,7 +812,7 @@ bool AccessibilityNodeInfoDataWrapper::HasImportantPropertyInternal() const {
     return true;
   }
 
-  if (IsFocusable() || IsClickable())
+  if (IsFocusable() || IsClickable() || IsLongClickable())
     return true;
 
   // These properties are sorted in the same order of mojom file.

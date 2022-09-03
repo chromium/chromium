@@ -446,6 +446,13 @@ KeyMap.BINDINGS_ = [
     sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.SPACE]}},
   },
   {
+    command: 'forceLongClickOnCurrentItem',
+    sequence: {
+      cvoxModifier: true,
+      keys: {keyCode: [KeyCode.SPACE], shiftKey: [true]},
+    },
+  },
+  {
     command: 'contextMenu',
     sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.M]}},
   },

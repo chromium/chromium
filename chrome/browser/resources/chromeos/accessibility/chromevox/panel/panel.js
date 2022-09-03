@@ -401,9 +401,11 @@ export class Panel extends PanelInterface {
 
       // Insert items from the bindings into the menus.
       const sawBindingSet = {};
+      const bindingMap = new Map();
       const gestures = Object.keys(GestureCommandData.GESTURE_COMMAND_MAP);
       sortedBindings.forEach(binding => {
         const command = binding.command;
+        bindingMap.set(binding.command, binding);
         if (sawBindingSet[command]) {
           return;
         }
@@ -510,10 +512,12 @@ export class Panel extends PanelInterface {
         if (!actionMsg) {
           continue;
         }
-
+        const commandName = CommandStore.commandForMessage(actionMsg);
+        const command = bindingMap.get(commandName);
+        const shortcutName = command ? command.keySeq : '';
         const actionDesc = Msgs.getMsg(actionMsg);
         actionsMenu.addMenuItem(
-            actionDesc, '' /* menuItemShortcut */, '' /* menuItemBraille */,
+            actionDesc, shortcutName, '' /* menuItemBraille */,
             '' /* gesture */,
             () => BackgroundBridge.PanelBackground
                       .performStandardActionOnCurrentNode(standardAction));
@@ -1057,7 +1061,6 @@ export class Panel extends PanelInterface {
     if (pendingCallback) {
       await pendingCallback();
     }
-
     BackgroundBridge.PanelBackground.clearSavedNode();
   }
 
@@ -1246,6 +1249,7 @@ Panel.ACTION_TO_MSG_ID = {
   scrollBackward: 'action_scroll_backward_description',
   scrollForward: 'action_scroll_forward_description',
   showContextMenu: 'show_context_menu',
+  longClick: 'force_long_click_on_current_item',
 };
 
 

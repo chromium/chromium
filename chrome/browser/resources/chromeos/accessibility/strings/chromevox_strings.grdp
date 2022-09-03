@@ -48,6 +48,9 @@
   <message desc="The description of the forceClickOnCurrentItem key. Displayed in the Options page." name="IDS_CHROMEVOX_FORCE_CLICK_ON_CURRENT_ITEM">
     Click on current item
   </message>
+  <message desc="The description of the forceLongClickOnCurrentItem key. Displayed in the Options page." name="IDS_CHROMEVOX_FORCE_LONG_CLICK_ON_CURRENT_ITEM">
+    Long click on current item
+  </message>
   <message desc="The description of the readLinkURL key. Displayed in the Options page." name="IDS_CHROMEVOX_READ_LINK_URL">
     Announce the URL behind a link
   </message>

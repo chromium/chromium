@@ -64,12 +64,25 @@ CommandStore.messageForCommand = function(command) {
 /**
  * Gets a category given a command.
  * @param {string} command The command to query.
- * @return {string|undefined} The command, if any.
+ * @return {string|undefined} The category, if any.
  */
 CommandStore.categoryForCommand = function(command) {
   return (CommandStore.CMD_ALLOWLIST[command] || {}).category;
 };
 
+/**
+ * Gets the first command associated with the message id
+ * @param {string} msgId
+ * @return {string|undefined} The command, if any.
+ */
+CommandStore.commandForMessage = function(msgId) {
+  for (const commandName in CommandStore.CMD_ALLOWLIST) {
+    const command = CommandStore.CMD_ALLOWLIST[commandName];
+    if (command.msgId === msgId) {
+      return commandName;
+    }
+  }
+};
 
 /**
  * Gets all commands for a category.
@@ -382,6 +395,12 @@ CommandStore.CMD_ALLOWLIST = {
     allowEvents: true,
     msgId: 'force_click_on_current_item',
     category: 'actions',
+  },
+  'forceLongClickOnCurrentItem': {
+    announce: true,
+    denyContinuation: true,
+    allowEvents: true,
+    msgId: 'force_long_click_on_current_item',
   },
   'forceDoubleClickOnCurrentItem':
       {announce: true, allowEvents: true, denyContinuation: true},

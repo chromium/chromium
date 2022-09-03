@@ -227,6 +227,24 @@ AX_TEST_F('ChromeVoxPanelTest', 'ActionsMenu', async function() {
   this.assertActiveMenuItem('panel_menu_actions', 'Click On Current Item');
 });
 
+AX_TEST_F('ChromeVoxPanelTest', 'ActionsMenuLongClick', async function() {
+  await this.runWithLoadedTree(this.linksDoc);
+  // Get the node that will be checked for actions.
+  const activeNode = ChromeVoxState.instance.currentRange.start.node;
+  // Override the standard actions to have long click.
+  Object.defineProperty(activeNode, 'standardActions', {
+    value: ['longClick'],
+    writable: true,
+  });
+  CommandHandlerInterface.instance.onCommand('showActionsMenu');
+  await this.waitForMenu('panel_menu_actions');
+  // Go down three times
+  this.fireMockEvent('ArrowUp')();
+  this.assertActiveMenuItem('panel_menu_actions', 'Long click on current item');
+  this.fireMockEvent('ArrowDown')();
+  this.assertActiveMenuItem('panel_menu_actions', 'Click On Current Item');
+});
+
 AX_TEST_F(
     'ChromeVoxPanelTest', 'ShortcutsAreInternationalized', async function() {
       await this.runWithLoadedTree(this.linksDoc);

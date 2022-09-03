@@ -771,6 +771,11 @@ export class CommandHandler extends CommandHandlerInterface {
         // Skip all other processing; if focus changes, we should get an event
         // for that.
         return false;
+      case 'forceLongClickOnCurrentItem':
+        node.longClick();
+        // Skip all other processing; if focus changes, we should get an event
+        // for that.
+        return false;
       case 'jumpToDetails': {
         while (node && !node.details) {
           node = node.parent;

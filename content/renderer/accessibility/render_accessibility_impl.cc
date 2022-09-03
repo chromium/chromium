@@ -444,6 +444,7 @@ void RenderAccessibilityImpl::PerformAction(const ui::AXActionData& data) {
     case ax::mojom::Action::kStartDuckingMedia:
     case ax::mojom::Action::kStopDuckingMedia:
     case ax::mojom::Action::kSuspendMedia:
+    case ax::mojom::Action::kLongClick:
       break;
   }
 }
