@@ -775,7 +775,8 @@
       "external/wpt/webmessaging/broadcastchannel/cross-partition.https.tentative.html",
       "external/wpt/IndexedDB",
       "external/wpt/webstorage/localstorage-about-blank-3P-iframe-opens-3P-window.partitioned.tentative.html",
-      "fast/filesystem"
+      "fast/filesystem",
+      "external/wpt/postMessage"
     ],
     "args": [ "--enable-features=ThirdPartyStoragePartitioning" ]
   },
