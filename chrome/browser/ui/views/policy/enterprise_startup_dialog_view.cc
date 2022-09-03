@@ -14,6 +14,7 @@
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/headless/headless_mode_util.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/theme_resources.h"
@@ -94,6 +95,55 @@ class LogoView : public views::ImageView {
 BEGIN_METADATA(LogoView, views::ImageView)
 END_METADATA
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+
+// Alternate implementation of the EnterpriseStartupDialog which is used when
+// the headless mode is in effect. It does not display anything and when error
+// is set immediately calls back with not accepted condition.
+class HeadlessEnterpriseStartupDialogImpl : public EnterpriseStartupDialog {
+ public:
+  explicit HeadlessEnterpriseStartupDialogImpl(DialogResultCallback callback)
+      : callback_(std::move(callback)) {}
+
+  HeadlessEnterpriseStartupDialogImpl(
+      const HeadlessEnterpriseStartupDialogImpl&) = delete;
+  HeadlessEnterpriseStartupDialogImpl& operator=(
+      const HeadlessEnterpriseStartupDialogImpl&) = delete;
+
+  ~HeadlessEnterpriseStartupDialogImpl() override {
+    if (callback_) {
+      // ChromeBrowserCloudManagementRegisterWatcher dismisses the dialog
+      // without displaying an error messgae (in which case we would not
+      // have the outstanding callback) in case of successful enrollment,
+      // so allow it to show the browser window using the callback.
+      std::move(callback_).Run(/*was_accepted=*/false,
+                               /*can_show_browser_window_=*/true);
+    }
+  }
+
+  // Override EnterpriseStartupDialog
+  void DisplayLaunchingInformationWithThrobber(
+      const std::u16string& information) override {}
+
+  void DisplayErrorMessage(
+      const std::u16string& error_message,
+      const absl::optional<std::u16string>& accept_button) override {
+    if (callback_) {
+      // In headless mode the dialog is invisible, therefore there is
+      // no one to accept or dismiss it. So just dismiss the dialog
+      // right away without accepting the prompt and not allowing
+      // browser to show its window.
+      base::ThreadTaskRunnerHandle::Get()->PostTask(
+          FROM_HERE,
+          base::BindOnce(std::move(callback_), /*was_accepted=*/false,
+                         /*can_show_browser_window_=*/false));
+    }
+  }
+
+  bool IsShowing() override { return true; }
+
+ private:
+  DialogResultCallback callback_;
+};
 
 }  // namespace
 
@@ -284,6 +334,13 @@ void EnterpriseStartupDialogImpl::OnWidgetDestroying(views::Widget* widget) {
 // static
 std::unique_ptr<EnterpriseStartupDialog>
 EnterpriseStartupDialog::CreateAndShowDialog(DialogResultCallback callback) {
+  // If running in headless mode use an alternate version of the enterprise
+  // startup dialog.
+  if (headless::IsChromeNativeHeadless()) {
+    return std::make_unique<HeadlessEnterpriseStartupDialogImpl>(
+        std::move(callback));
+  }
+
   return std::make_unique<EnterpriseStartupDialogImpl>(std::move(callback));
 }
 
