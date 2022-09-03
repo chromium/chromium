@@ -4,11 +4,11 @@
 
 #include "components/omnibox/browser/keyword_provider.h"
 
-#include <algorithm>
 #include <string>
 #include <utility>
 #include <vector>
 
+#include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/i18n/case_conversion.h"
 #include "base/memory/raw_ptr.h"
@@ -429,12 +429,8 @@ void KeywordProvider::Start(const AutocompleteInput& input,
       // retrieved the same keyword twice.  For example, the keyword
       // "abc.abc.com" may be retrieved for the input "abc" from the full
       // keyword matching and the domain matching passes.
-      ACMatches::const_iterator duplicate = std::find_if(
-          matches_.begin(), matches_.end(),
-          [&i] (const AutocompleteMatch& m) {
-            return m.keyword == i->first->keyword();
-          });
-      if (duplicate == matches_.end()) {
+      if (!base::Contains(matches_, i->first->keyword(),
+                          &AutocompleteMatch::keyword)) {
         matches_.push_back(CreateAutocompleteMatch(
             i->first, i->second, input, keyword.length(), remaining_input,
             false, -1, false));

@@ -4,6 +4,7 @@
 
 #include "components/omnibox/browser/shortcuts_provider_test_util.h"
 
+#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -112,9 +113,8 @@ void RunShortcutsProviderTest(
   EXPECT_EQ(expected_urls.size(), ac_matches.size()) << debug;
 
   for (const auto& expected_url : expected_urls) {
-    auto iter = std::find_if(
-        ac_matches.begin(), ac_matches.end(),
-        [&expected_url](const AutocompleteMatch& match) {
+    auto iter = base::ranges::find_if(
+        ac_matches, [&expected_url](const AutocompleteMatch& match) {
           return expected_url.first == match.destination_url.spec() &&
                  expected_url.second == match.allowed_to_be_default_match;
         });

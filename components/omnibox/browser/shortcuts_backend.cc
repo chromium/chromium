@@ -17,6 +17,7 @@
 #include "base/guid.h"
 #include "base/i18n/case_conversion.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/task/thread_pool.h"
@@ -322,9 +323,8 @@ void ShortcutsBackend::OnURLsDeleted(
 
   ShortcutsDatabase::ShortcutIDs shortcut_ids;
   for (const auto& guid_pair : guid_map_) {
-    if (std::find_if(
-            deletion_info.deleted_rows().begin(),
-            deletion_info.deleted_rows().end(),
+    if (base::ranges::find_if(
+            deletion_info.deleted_rows(),
             history::URLRow::URLRowHasURL(
                 guid_pair.second->second.match_core.destination_url)) !=
         deletion_info.deleted_rows().end()) {

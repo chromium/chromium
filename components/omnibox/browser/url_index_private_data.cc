@@ -6,7 +6,6 @@
 
 #include <stdint.h>
 
-#include <algorithm>
 #include <limits>
 #include <memory>
 #include <numeric>
@@ -24,6 +23,7 @@
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/ranges/algorithm.h"
 #include "base/stl_util.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -362,23 +362,13 @@ void URLIndexPrivateData::ScheduleUpdateRecentVisits(
       tracker);
 }
 
-// Helper functor for DeleteURL.
-class HistoryInfoMapItemHasURL {
- public:
-  explicit HistoryInfoMapItemHasURL(const GURL& url): url_(url) {}
-
-  bool operator()(const std::pair<const HistoryID, HistoryInfoMapValue>& item) {
-    return item.second.url_row.url() == url_;
-  }
-
- private:
-  const GURL& url_;
-};
-
 bool URLIndexPrivateData::DeleteURL(const GURL& url) {
   // Find the matching entry in the history_info_map_.
-  auto pos = std::find_if(history_info_map_.begin(), history_info_map_.end(),
-                          HistoryInfoMapItemHasURL(url));
+  auto pos = base::ranges::find(
+      history_info_map_, url,
+      [](const std::pair<const HistoryID, HistoryInfoMapValue>& item) {
+        return item.second.url_row.url();
+      });
   if (pos == history_info_map_.end())
     return false;
   RemoveRowFromIndex(pos->second.url_row);

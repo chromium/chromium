@@ -15,6 +15,7 @@
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
@@ -1072,9 +1073,8 @@ size_t HistoryURLProvider::RemoveSubsequentMatchesOf(
 
   // Find the first occurrence of any URL in the redirect chain. We want to
   // keep this one since it is rated the highest.
-  history::HistoryMatches::iterator first(
-      std::find_first_of(matches->begin(), matches->end(), remove.begin(),
-                         remove.end(), history::HistoryMatch::EqualsGURL));
+  history::HistoryMatches::iterator first(base::ranges::find_first_of(
+      *matches, remove, history::HistoryMatch::EqualsGURL));
   DCHECK(first != matches->end()) << "We should have always found at least the "
                                      "original URL.";
 

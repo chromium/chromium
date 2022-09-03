@@ -4,7 +4,6 @@
 
 #include "components/omnibox/browser/autocomplete_result.h"
 
-#include <algorithm>
 #include <functional>
 #include <iterator>
 #include <string>
@@ -305,8 +304,8 @@ void AutocompleteResult::SortAndCull(
       std::pair<GURL, bool> default_match_fields =
           GetMatchComparisonFields(*preserve_default_match);
 
-      top_match = std::find_if(
-          matches_.begin(), matches_.end(), [&](const AutocompleteMatch& m) {
+      top_match =
+          base::ranges::find_if(matches_, [&](const AutocompleteMatch& m) {
             // Find a match that is a duplicate AND has the same fill_into_edit.
             return default_match_fields == GetMatchComparisonFields(m) &&
                    preserve_default_match->fill_into_edit == m.fill_into_edit;
@@ -693,11 +692,9 @@ ACMatches::iterator AutocompleteResult::FindTopMatch(
       }
     }
     return best;
-  } else {
-    return std::find_if(matches->begin(), matches->end(), [](const auto& m) {
-      return m.allowed_to_be_default_match;
-    });
   }
+  return base::ranges::find_if(
+      *matches, [](const auto& m) { return m.allowed_to_be_default_match; });
 }
 
 // static
@@ -1152,9 +1149,9 @@ void AutocompleteResult::MergeMatchesByProvider(ACMatches* old_matches,
   // Prevent old matches from this provider from outranking new ones and
   // becoming the default match by capping old matches' scores to be less than
   // the highest-scoring allowed-to-be-default match from this provider.
-  auto i = std::find_if(
-      new_matches.begin(), new_matches.end(),
-      [](const AutocompleteMatch& m) { return m.allowed_to_be_default_match; });
+  auto i = base::ranges::find_if(new_matches, [](const AutocompleteMatch& m) {
+    return m.allowed_to_be_default_match;
+  });
 
   // If the provider doesn't have any matches that are allowed-to-be-default,
   // cap scores below the global allowed-to-be-default match.
