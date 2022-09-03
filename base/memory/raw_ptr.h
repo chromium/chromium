@@ -122,6 +122,12 @@ struct RawPtrNoOpImpl {
     return wrapped_ptr + delta_elems;
   }
 
+  template <typename T>
+  static ALWAYS_INLINE ptrdiff_t GetDeltaElems(T* wrapped_ptr1,
+                                               T* wrapped_ptr2) {
+    return wrapped_ptr1 - wrapped_ptr2;
+  }
+
   // Returns a copy of a wrapped pointer, without making an assertion on whether
   // memory was freed or not.
   template <typename T>
@@ -272,6 +278,14 @@ struct MTECheckedPtrImpl {
             typename = std::enable_if_t<offset_type<Z>, void>>
   static ALWAYS_INLINE T* Advance(T* wrapped_ptr, Z delta_elems) {
     return wrapped_ptr + delta_elems;
+  }
+
+  template <typename T>
+  static ALWAYS_INLINE ptrdiff_t GetDeltaElems(T* wrapped_ptr1,
+                                               T* wrapped_ptr2) {
+    // Ensure that both pointers come from the same allocation.
+    CHECK(ExtractTag(wrapped_ptr1) == ExtractTag(wrapped_ptr2));
+    return wrapped_ptr1 - wrapped_ptr2;
   }
 
   // Returns a copy of a wrapped pointer, without making an assertion
@@ -495,6 +509,22 @@ struct BackupRefPtrImpl {
 #endif
   }
 
+  template <typename T>
+  static ALWAYS_INLINE ptrdiff_t GetDeltaElems(T* wrapped_ptr1,
+                                               T* wrapped_ptr2) {
+    uintptr_t address1 = partition_alloc::UntagPtr(wrapped_ptr1);
+    uintptr_t address2 = partition_alloc::UntagPtr(wrapped_ptr2);
+    // Ensure that both pointers are within the same slot, and pool!
+    // TODO(bartekn): Consider adding support for non-BRP pool too.
+    if (IsSupportedAndNotNull(address1)) {
+      CHECK(IsSupportedAndNotNull(address2));
+      CHECK(IsValidDelta(address2, address1 - address2));
+    } else {
+      CHECK(!IsSupportedAndNotNull(address2));
+    }
+    return wrapped_ptr1 - wrapped_ptr2;
+  }
+
   // Returns a copy of a wrapped pointer, without making an assertion on whether
   // memory was freed or not.
   // This method increments the reference count of the allocation slot.
@@ -585,6 +615,12 @@ struct AsanBackupRefPtrImpl {
             typename = std::enable_if_t<offset_type<Z>, void>>
   static ALWAYS_INLINE T* Advance(T* wrapped_ptr, Z delta_elems) {
     return wrapped_ptr + delta_elems;
+  }
+
+  template <typename T>
+  static ALWAYS_INLINE ptrdiff_t GetDeltaElems(T* wrapped_ptr1,
+                                               T* wrapped_ptr2) {
+    return wrapped_ptr1 - wrapped_ptr2;
   }
 
   // Returns a copy of a wrapped pointer, without making an assertion on whether
@@ -1029,6 +1065,16 @@ class TRIVIAL_ABI GSL_POINTER raw_ptr {
   friend ALWAYS_INLINE raw_ptr operator-(const raw_ptr& p, Z delta_elems) {
     raw_ptr result = p;
     return result -= delta_elems;
+  }
+  friend ALWAYS_INLINE ptrdiff_t operator-(const raw_ptr& p1,
+                                           const raw_ptr& p2) {
+    return Impl::GetDeltaElems(p1.wrapped_ptr_, p2.wrapped_ptr_);
+  }
+  friend ALWAYS_INLINE ptrdiff_t operator-(T* p1, const raw_ptr& p2) {
+    return Impl::GetDeltaElems(p1, p2.wrapped_ptr_);
+  }
+  friend ALWAYS_INLINE ptrdiff_t operator-(const raw_ptr& p1, T* p2) {
+    return Impl::GetDeltaElems(p1.wrapped_ptr_, p2);
   }
 
   // Stop referencing the underlying pointer and free its memory. Compared to

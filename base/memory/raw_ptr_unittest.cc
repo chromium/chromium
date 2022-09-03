@@ -5,6 +5,7 @@
 #include "base/memory/raw_ptr.h"
 
 #include <climits>
+#include <cstddef>
 #include <string>
 #include <tuple>
 #include <type_traits>
@@ -15,12 +16,14 @@
 #include "base/allocator/partition_alloc_support.h"
 #include "base/allocator/partition_allocator/dangling_raw_ptr_checks.h"
 #include "base/allocator/partition_allocator/partition_alloc.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/numerics/checked_math.h"
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
 #include "base/allocator/partition_allocator/tagging.h"
 #include "base/cpu.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr_asan_service.h"
+#include "base/test/gtest_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
@@ -1007,6 +1010,24 @@ TEST_F(RawPtrTest, MinusOperator) {
               CountingRawPtrHasCounts());
 }
 
+TEST_F(RawPtrTest, MinusDeltaOperator) {
+  int foo[] = {42, 43, 44, 45};
+  CountingRawPtr<int> ptrs[] = {&foo[0], &foo[1], &foo[2], &foo[3], &foo[4]};
+  for (int i = 0; i <= 4; ++i) {
+    for (int j = 0; j <= 4; ++j) {
+      ASSERT_EQ(ptrs[i] - ptrs[j], i - j);
+      ASSERT_EQ(ptrs[i] - &foo[j], i - j);
+      ASSERT_EQ(&foo[i] - ptrs[j], i - j);
+    }
+  }
+  EXPECT_THAT((CountingRawPtrExpectations{
+                  .get_for_dereference_cnt = 0,
+                  .get_for_extraction_cnt = 0,
+                  .get_for_comparison_cnt = 0,
+              }),
+              CountingRawPtrHasCounts());
+}
+
 TEST_F(RawPtrTest, AdvanceString) {
   const char kChars[] = "Hello";
   std::string str = kChars;
@@ -1481,9 +1502,9 @@ void RunBackupRefPtrImplAdvanceTest(
   protected_ptr += requested_size / 2;
   protected_ptr =
       protected_ptr + requested_size / 2;  // end-of-allocation address is ok
-  EXPECT_DEATH_IF_SUPPORTED(protected_ptr = protected_ptr + 1, "");
-  EXPECT_DEATH_IF_SUPPORTED(protected_ptr += 1, "");
-  EXPECT_DEATH_IF_SUPPORTED(++protected_ptr, "");
+  EXPECT_CHECK_DEATH(protected_ptr = protected_ptr + 1);
+  EXPECT_CHECK_DEATH(protected_ptr += 1);
+  EXPECT_CHECK_DEATH(++protected_ptr);
 
   // Even though |protected_ptr| is already puinting to the end of the
   // allocation, assign it explicitly to make sure the underlying implementation
@@ -1491,9 +1512,9 @@ void RunBackupRefPtrImplAdvanceTest(
   protected_ptr = ptr + requested_size;
   protected_ptr -= requested_size / 2;
   protected_ptr = protected_ptr - requested_size / 2;
-  EXPECT_DEATH_IF_SUPPORTED(protected_ptr = protected_ptr - 1, "");
-  EXPECT_DEATH_IF_SUPPORTED(protected_ptr -= 1, "");
-  EXPECT_DEATH_IF_SUPPORTED(--protected_ptr, "");
+  EXPECT_CHECK_DEATH(protected_ptr = protected_ptr - 1);
+  EXPECT_CHECK_DEATH(protected_ptr -= 1);
+  EXPECT_CHECK_DEATH(--protected_ptr);
 
   allocator.root()->Free(ptr);
 }
@@ -1533,6 +1554,49 @@ TEST(BackupRefPtrImpl, Advance) {
   ASSERT_GT(raw_size, partition_alloc::internal::kMaxBucketed);
   requested_size = allocator.root()->AdjustSizeForExtrasSubtract(slot_size);
   RunBackupRefPtrImplAdvanceTest(allocator, requested_size);
+}
+
+TEST(BackupRefPtrImpl, GetDeltaElems) {
+  // TODO(bartekn): Avoid using PartitionAlloc API directly. Switch to
+  // new/delete once PartitionAlloc Everywhere is fully enabled.
+  partition_alloc::PartitionAllocGlobalInit(HandleOOM);
+  partition_alloc::PartitionAllocator allocator;
+  allocator.init(kOpts);
+
+  size_t requested_size = allocator.root()->AdjustSizeForExtrasSubtract(512);
+  char* ptr1 = static_cast<char*>(allocator.root()->Alloc(requested_size, ""));
+  char* ptr2 = static_cast<char*>(allocator.root()->Alloc(requested_size, ""));
+  ASSERT_LT(ptr1, ptr2);  // There should be a ref-count between slots.
+  raw_ptr<char> protected_ptr1 = ptr1;
+  raw_ptr<char> protected_ptr1_2 = ptr1 + 1;
+  raw_ptr<char> protected_ptr1_3 = ptr1 + requested_size - 1;
+  raw_ptr<char> protected_ptr1_4 = ptr1 + requested_size;
+  raw_ptr<char> protected_ptr2 = ptr2;
+  raw_ptr<char> protected_ptr2_2 = ptr2 + 1;
+
+  EXPECT_EQ(protected_ptr1_2 - protected_ptr1, 1);
+  EXPECT_EQ(protected_ptr1 - protected_ptr1_2, -1);
+  EXPECT_EQ(protected_ptr1_3 - protected_ptr1,
+            checked_cast<ptrdiff_t>(requested_size) - 1);
+  EXPECT_EQ(protected_ptr1 - protected_ptr1_3,
+            -checked_cast<ptrdiff_t>(requested_size) + 1);
+  EXPECT_EQ(protected_ptr1_4 - protected_ptr1,
+            checked_cast<ptrdiff_t>(requested_size));
+  EXPECT_EQ(protected_ptr1 - protected_ptr1_4,
+            -checked_cast<ptrdiff_t>(requested_size));
+  EXPECT_CHECK_DEATH(protected_ptr2 - protected_ptr1);
+  EXPECT_CHECK_DEATH(protected_ptr1 - protected_ptr2);
+  EXPECT_CHECK_DEATH(protected_ptr2 - protected_ptr1_4);
+  EXPECT_CHECK_DEATH(protected_ptr1_4 - protected_ptr2);
+  EXPECT_CHECK_DEATH(protected_ptr2_2 - protected_ptr1);
+  EXPECT_CHECK_DEATH(protected_ptr1 - protected_ptr2_2);
+  EXPECT_CHECK_DEATH(protected_ptr2_2 - protected_ptr1_4);
+  EXPECT_CHECK_DEATH(protected_ptr1_4 - protected_ptr2_2);
+  EXPECT_EQ(protected_ptr2_2 - protected_ptr2, 1);
+  EXPECT_EQ(protected_ptr2 - protected_ptr2_2, -1);
+
+  allocator.root()->Free(ptr1);
+  allocator.root()->Free(ptr2);
 }
 
 bool IsQuarantineEmpty(partition_alloc::PartitionAllocator& allocator) {
