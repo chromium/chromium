@@ -3623,8 +3623,8 @@
                     },
                     "enable_features": [
                         "BookmarkApproximateNodeMatch",
+                        "BookmarkTypedUrlsMap",
                         "OmniboxBookmarkPaths",
-                        "OmniboxBookmarkTypedUrlsMap",
                         "OmniboxShortBookmarkSuggestionsByTotalInputLength"
                     ]
                 }

@@ -11,6 +11,8 @@ namespace bookmarks {
 
 extern const base::Feature kApproximateNodeMatch;
 
+extern const base::Feature kTypedUrlsMap;
+
 }  // namespace bookmarks
 
 #endif  // COMPONENTS_BOOKMARKS_COMMON_BOOKMARK_FEATURES_H_

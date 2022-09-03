@@ -15,6 +15,7 @@
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/browser/bookmark_storage.h"
+#include "components/bookmarks/common/bookmark_features.h"
 #include "components/bookmarks/managed/managed_bookmark_service.h"
 #include "components/bookmarks/managed/managed_bookmark_util.h"
 #include "components/favicon/core/favicon_util.h"
@@ -22,7 +23,6 @@
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/url_database.h"
 #include "components/offline_pages/buildflags/buildflags.h"
-#include "components/omnibox/common/omnibox_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync/base/pref_names.h"
 #include "components/sync_bookmarks/bookmark_sync_service.h"
@@ -87,7 +87,9 @@ void ChromeBookmarkClient::GetTypedCountForUrls(
   if (!url_db)
     return;
 
-  if (base::FeatureList::IsEnabled(omnibox::kBookmarkTypedUrlsMap)) {
+  static const bool kTypedUrlsMapEnabled =
+      base::FeatureList::IsEnabled(bookmarks::kTypedUrlsMap);
+  if (kTypedUrlsMapEnabled) {
     // Create a map mapping each `GURL` to its typed count. This isn't cached
     // since the in memory DB is updated as the user navigates and updating this
     // as well seems like overkill.
