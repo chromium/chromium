@@ -149,11 +149,6 @@ const char kReportDeviceLocation[] = "cros.device_status.report_location";
 const char kReportDeviceNetworkConfiguration[] =
     "cros.device_status.report_network_configuration";
 
-// Determines whether the device reports network interface types and addresses
-// in device status reports to the device management server.
-const char kReportDeviceNetworkInterfaces[] =
-    "cros.device_status.report_network_interfaces";
-
 // Determines whether the device reports dynamic network information such
 // connection state, signal strength, and IP Address in device status reports
 // and to management server.

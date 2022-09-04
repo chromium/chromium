@@ -139,7 +139,6 @@ const char* const kKnownSettings[] = {
     kReportDevicePowerStatus,
     kReportDeviceStorageStatus,
     kReportDeviceNetworkConfiguration,
-    kReportDeviceNetworkInterfaces,
     kReportDeviceNetworkStatus,
     kReportDeviceNetworkTelemetryCollectionRateMs,
     kReportDeviceNetworkTelemetryEventCheckingRateMs,
@@ -686,11 +685,6 @@ void DecodeReportingPolicies(const em::ChromeDeviceSettingsProto& policy,
       new_values_cache->SetBoolean(
           kReportDeviceNetworkConfiguration,
           reporting_policy.report_network_configuration());
-    }
-    if (reporting_policy.has_report_network_interfaces()) {
-      new_values_cache->SetBoolean(
-          kReportDeviceNetworkInterfaces,
-          reporting_policy.report_network_interfaces());
     }
     if (reporting_policy.has_report_network_status()) {
       new_values_cache->SetBoolean(kReportDeviceNetworkStatus,
