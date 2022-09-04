@@ -8,10 +8,11 @@
 
 #include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/accessibility/scoped_a11y_override_window_setter.h"
+#include "ash/public/cpp/style/color_provider.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/style/ash_color_provider.h"
+#include "ash/style/ash_color_id.h"
 #include "ash/style/pill_button.h"
 #include "ash/style/system_shadow.h"
 #include "ash/system/toast/toast_overlay.h"
@@ -20,6 +21,7 @@
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -58,6 +60,7 @@ class SystemToastInnerLabel : public views::Label {
     SetMaximumWidth(kToastTextMaximumWidth);
     SetMaxLines(2);
     SetSubpixelRenderingEnabled(false);
+    SetEnabledColorId(cros_tokens::kTextColorPrimary);
 
     SetFontList(views::Label::GetDefaultFontList().Derive(
         2, gfx::Font::FontStyle::NORMAL, gfx::Font::Weight::NORMAL));
@@ -66,23 +69,10 @@ class SystemToastInnerLabel : public views::Label {
   SystemToastInnerLabel(const SystemToastInnerLabel&) = delete;
   SystemToastInnerLabel& operator=(const SystemToastInnerLabel&) = delete;
   ~SystemToastInnerLabel() override = default;
-
- private:
-  // views::Label:
-  void OnThemeChanged() override {
-    views::Label::OnThemeChanged();
-    SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
-        AshColorProvider::ContentLayerType::kTextColorPrimary));
-  }
 };
 
 BEGIN_METADATA(SystemToastInnerLabel, views::Label)
 END_METADATA
-
-SkColor GetBackgroundColor() {
-  return AshColorProvider::Get()->GetBaseLayerColor(
-      AshColorProvider::BaseLayerType::kTransparent80);
-}
 
 // TODO(crbug/1294449): Handle the case when a word can't be fitted into
 // one-line where additional spaces need to be padded.
@@ -119,6 +109,7 @@ SystemToastStyle::SystemToastStyle(base::RepeatingClosure dismiss_callback,
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
   layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
+  SetBackground(views::CreateThemedSolidBackground(kColorAshShieldAndBase80));
 
   if (is_managed) {
     managed_icon_ = AddChildView(std::make_unique<views::ImageView>());
@@ -167,8 +158,6 @@ SystemToastStyle::SystemToastStyle(base::RepeatingClosure dismiss_callback,
 
   const int toast_corner_radius = toast_height / 2.f;
   layer()->SetRoundedCornerRadius(gfx::RoundedCornersF(toast_corner_radius));
-  SetBackground(views::CreateRoundedRectBackground(GetBackgroundColor(),
-                                                   toast_corner_radius));
   if (features::IsDarkLightModeEnabled()) {
     SetBorder(std::make_unique<views::HighlightBorder>(
         toast_corner_radius, views::HighlightBorder::Type::kHighlightBorder1,
@@ -228,13 +217,10 @@ void SystemToastStyle::AddedToWidget() {
 void SystemToastStyle::OnThemeChanged() {
   views::View::OnThemeChanged();
 
-  background()->SetNativeControlColor(GetBackgroundColor());
-
   if (managed_icon_) {
     managed_icon_->SetImage(gfx::CreateVectorIcon(
         kSystemMenuBusinessIcon,
-        AshColorProvider::Get()->GetContentLayerColor(
-            AshColorProvider::ContentLayerType::kIconColorPrimary)));
+        GetColorProvider()->GetColor(cros_tokens::kIconColorPrimary)));
   }
 
   SchedulePaint();
