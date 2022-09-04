@@ -774,11 +774,6 @@ void DecodeReportingPolicies(const em::ChromeDeviceSettingsProto& policy,
                     POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD,
                     base::Value(container.report_users()), nullptr);
     }
-    if (container.has_report_hardware_status()) {
-      policies->Set(key::kReportDeviceHardwareStatus, POLICY_LEVEL_MANDATORY,
-                    POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD,
-                    base::Value(container.report_hardware_status()), nullptr);
-    }
     if (container.has_report_session_status()) {
       policies->Set(key::kReportDeviceSessionStatus, POLICY_LEVEL_MANDATORY,
                     POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD,

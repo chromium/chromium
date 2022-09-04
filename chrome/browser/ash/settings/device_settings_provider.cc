@@ -133,7 +133,6 @@ const char* const kKnownSettings[] = {
     kReportDeviceCrashReportInfo,
     kReportDeviceCpuInfo,
     kReportDeviceFanInfo,
-    kReportDeviceHardwareStatus,
     kReportDeviceLocation,
     kReportDevicePeripherals,
     kReportDevicePowerStatus,
@@ -693,10 +692,6 @@ void DecodeReportingPolicies(const em::ChromeDeviceSettingsProto& policy,
     if (reporting_policy.has_report_users()) {
       new_values_cache->SetBoolean(kReportDeviceUsers,
                                    reporting_policy.report_users());
-    }
-    if (reporting_policy.has_report_hardware_status()) {
-      new_values_cache->SetBoolean(kReportDeviceHardwareStatus,
-                                   reporting_policy.report_hardware_status());
     }
     if (reporting_policy.has_report_session_status()) {
       new_values_cache->SetBoolean(kReportDeviceSessionStatus,

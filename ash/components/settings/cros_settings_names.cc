@@ -178,11 +178,6 @@ const char kReportDeviceSecurityStatus[] =
 // status reports to the device management server.
 const char kReportDeviceUsers[] = "cros.device_status.report_users";
 
-// Determines whether the device reports hardware status (CPU utilization,
-// disk space, etc) in device status reports to the device management server.
-const char kReportDeviceHardwareStatus[] =
-    "cros.device_status.report_hardware_status";
-
 // Determines whether the device reports kiosk session status (app IDs,
 // versions, etc) in device status reports to the device management server.
 const char kReportDeviceSessionStatus[] =

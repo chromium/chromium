@@ -132,7 +132,8 @@ message DeviceReportingProto {
   optional bool report_network_interfaces = 5
       [default = true, deprecated = true];
   optional bool report_users = 6 [default = true];
-  optional bool report_hardware_status = 7 [default = true];
+  // TODO(b/243960946): The server side should remove the usage of this field.
+  optional bool report_hardware_status = 7 [default = true, deprecated = true];
   optional bool report_session_status = 8 [default = true];
   optional bool report_os_update_status = 10 [default = false];
   optional bool report_running_kiosk_app = 11 [default = false];

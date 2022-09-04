@@ -967,8 +967,6 @@ class DeviceStatusCollectorTest : public testing::Test {
     scoped_testing_cros_settings_.device_settings()->SetBoolean(
         ash::kReportDeviceUsers, false);
     scoped_testing_cros_settings_.device_settings()->SetBoolean(
-        ash::kReportDeviceHardwareStatus, false);
-    scoped_testing_cros_settings_.device_settings()->SetBoolean(
         ash::kReportDeviceSessionStatus, false);
     scoped_testing_cros_settings_.device_settings()->SetBoolean(
         ash::kReportDeviceAudioStatus, false);
