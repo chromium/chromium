@@ -13,7 +13,7 @@
   [RuntimeEnabled=WebXRLightEstimation, RaisesException, MeasureAs=XRWebGLBindingGetReflectionCubeMap]
   WebGLTexture? getReflectionCubeMap(XRLightProbe lightProbe);
 
-  [RuntimeEnabled=WebXRCameraAccess, RaisesException]
+  [RuntimeEnabled=WebXRCameraAccess, RaisesException, MeasureAs=XRWebGLBindingGetCameraImage]
   WebGLTexture? getCameraImage(XRCamera camera);
 
   [RuntimeEnabled=WebXRDepth, RaisesException, MeasureAs=XRWebGLBindingGetDepthInformation]
