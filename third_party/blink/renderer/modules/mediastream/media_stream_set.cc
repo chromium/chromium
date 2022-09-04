@@ -33,9 +33,16 @@ MediaStreamSet::MediaStreamSet(
                                     WrapPersistent(this)));
     }
   } else {
-    std::move(media_streams_initialized_callback_)
-        .Run(initialized_media_streams_);
+    context->GetTaskRunner(TaskType::kInternalMedia)
+        ->PostTask(FROM_HERE,
+                   WTF::Bind(&MediaStreamSet::OnMediaStreamSetInitialized,
+                             WrapPersistent(this)));
   }
+}
+
+void MediaStreamSet::OnMediaStreamSetInitialized() {
+  std::move(std::move(media_streams_initialized_callback_))
+      .Run(initialized_media_streams_);
 }
 
 // TODO(crbug.com/1300883): Clean up other streams if one stream capture

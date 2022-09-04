@@ -32,6 +32,7 @@ class MODULES_EXPORT MediaStreamSet final
   void Trace(Visitor*) const override;
 
  private:
+  void OnMediaStreamSetInitialized();
   void OnMediaStreamInitialized(MediaStream*);
 
   const size_t media_streams_to_initialize_count_;
