@@ -179,6 +179,12 @@ static void RecordReplayAttach(int* pargc, const char*** pargv) {
     return;
   }
 
+  // When RECORD_REPLAY_DONT_RECORD we don't record, though the main browser
+  // process will still be configured as if we are recording, see above.
+  if (getenv("RECORD_REPLAY_DONT_RECORD")) {
+    return;
+  }
+
 #ifdef OS_LINUX
 
   base::Optional<std::string> apiKey;
