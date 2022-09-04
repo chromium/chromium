@@ -6071,11 +6071,10 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessWebViewTest, ContentScriptInOOPIF) {
   // Load an app with a <webview> guest that starts at a data: URL.
   LoadAppWithGuest("web_view/simple");
   content::WebContents* embedder = GetEmbedderWebContents();
-  content::WebContents* guest = GetGuestWebContents();
-  ASSERT_TRUE(guest);
+  content::RenderFrameHost* main_frame = GetGuestRenderFrameHost();
+  ASSERT_TRUE(main_frame);
   auto* web_view_renderer_state =
       extensions::WebViewRendererState::GetInstance();
-  content::RenderFrameHost* main_frame = guest->GetPrimaryMainFrame();
 
   // WebViewRendererState should have an entry for a single guest instance.
   ASSERT_EQ(1u, web_view_renderer_state->guest_count_for_testing());
@@ -6112,7 +6111,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessWebViewTest, ContentScriptInOOPIF) {
     ASSERT_EQ(2u, web_view_renderer_state->guest_count_for_testing());
   }
 
-  main_frame = guest->GetPrimaryMainFrame();
+  main_frame = GetGuestRenderFrameHost();
   content::RenderFrameHost* subframe = content::ChildFrameAt(main_frame, 0);
 
   // Navigate <webview> subframe cross-site to a URL that matches the content
@@ -6122,7 +6121,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessWebViewTest, ContentScriptInOOPIF) {
       embedded_test_server()->GetURL("b.test", "/title1.html");
   {
     content::RenderFrameDeletedObserver deleted_observer(subframe);
-    EXPECT_TRUE(NavigateIframeToURL(guest, "test", frame_url));
+    EXPECT_TRUE(NavigateToURLFromRenderer(subframe, frame_url));
     deleted_observer.WaitUntilDeleted();
     subframe = content::ChildFrameAt(main_frame, 0);
     EXPECT_TRUE(subframe->IsCrossProcessSubframe());
