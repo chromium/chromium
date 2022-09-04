@@ -5,9 +5,11 @@
 #include "third_party/blink/renderer/platform/transforms/transformation_matrix.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/platform/geometry/layout_rect.h"
 #include "third_party/blink/renderer/platform/transforms/transformation_matrix_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "ui/gfx/geometry/quad_f.h"
 
 namespace blink {
 
@@ -178,38 +180,66 @@ TEST(TransformationMatrixTest, ValidRangedMatrix) {
           -std::numeric_limits<double>::infinity(),
       },
   };
+
   for (double* entry : entries) {
     const double mv = entry[0];
     const double factor = entry[1];
 
-    TransformationMatrix m(mv, mv, mv, mv, mv, mv, mv, mv, mv, mv, mv, mv, mv,
-                           mv, mv, mv);
+    auto is_valid_point = [&](const gfx::PointF& p) -> bool {
+      return std::isfinite(p.x()) && std::isfinite(p.y());
+    };
+    auto is_valid_point3 = [&](const gfx::Point3F& p) -> bool {
+      return std::isfinite(p.x()) && std::isfinite(p.y()) &&
+             std::isfinite(p.z());
+    };
+    auto is_valid_rect = [&](const gfx::RectF& r) -> bool {
+      return is_valid_point(r.origin()) && std::isfinite(r.width()) &&
+             std::isfinite(r.height());
+    };
+    auto is_valid_quad = [&](const gfx::QuadF& q) -> bool {
+      return is_valid_point(q.p1()) && is_valid_point(q.p2()) &&
+             is_valid_point(q.p3()) && is_valid_point(q.p4());
+    };
+    auto is_valid_array16 = [&](const float* a) -> bool {
+      for (int i = 0; i < 16; i++) {
+        if (!std::isfinite(a[i]))
+          return false;
+      }
+      return true;
+    };
 
-    EXPECT_FALSE(m.Translate(factor, factor).IsInvalidMatrix())
-        << "m: " << m << " factor: " << factor << '\n';
-    EXPECT_FALSE(m.Translate3d(factor, factor, factor).IsInvalidMatrix())
-        << "m: " << m << " factor: " << factor << '\n';
+    auto test = [&](const TransformationMatrix& m) {
+      SCOPED_TRACE(String::Format("m: %s factor: %lg",
+                                  m.ToString().Utf8().data(), factor));
+      auto p = m.MapPoint(gfx::PointF(factor, factor));
+      EXPECT_TRUE(is_valid_point(p)) << p.ToString();
+      p = m.ProjectPoint(gfx::PointF(factor, factor));
+      EXPECT_TRUE(is_valid_point(p)) << p.ToString();
+      auto p3 = m.MapPoint(gfx::Point3F(factor, factor, factor));
+      EXPECT_TRUE(is_valid_point3(p3)) << p3.ToString();
+      auto r = m.MapRect(gfx::RectF(factor, factor, factor, factor));
+      EXPECT_TRUE(is_valid_rect(r)) << r.ToString();
 
-    EXPECT_FALSE(m.PostTranslate(factor, factor).IsInvalidMatrix())
-        << "m: " << m << " factor: " << factor << '\n';
+      gfx::QuadF q0(gfx::RectF(factor, factor, factor, factor));
+      auto q = m.MapQuad(q0);
+      EXPECT_TRUE(is_valid_quad(q)) << q.ToString();
+      q = m.ProjectQuad(q0);
+      EXPECT_TRUE(is_valid_quad(q)) << q.ToString();
+      // This should not trigger DCHECK.
+      LayoutRect layout_rect = m.ClampedBoundsOfProjectedQuad(q0);
+      // This is just to avoid unused variable warning.
+      EXPECT_TRUE(layout_rect.IsEmpty() || !layout_rect.IsEmpty());
 
-    EXPECT_FALSE(m.Scale(factor).IsInvalidMatrix())
-        << "m: " << m << " factor: " << factor << '\n';
-    EXPECT_FALSE(m.Scale3d(factor, factor, factor).IsInvalidMatrix())
-        << "m: " << m << " factor: " << factor << '\n';
+      float a[16];
+      m.ToTransform().matrix().getColMajor(a);
+      EXPECT_TRUE(is_valid_array16(a));
+      m.ToSkM44().getColMajor(a);
+      EXPECT_TRUE(is_valid_array16(a));
+    };
 
-    EXPECT_FALSE(m.Rotate(factor).IsInvalidMatrix())
-        << "m: " << m << " factor: " << factor << '\n';
-    EXPECT_FALSE(m.Zoom(factor).IsInvalidMatrix())
-        << "m: " << m << " factor: " << factor << '\n';
-
-    EXPECT_FALSE(m.Skew(factor, factor).IsInvalidMatrix())
-        << "m: " << m << " factor: " << factor << '\n';
-    EXPECT_FALSE(m.ApplyPerspective(factor).IsInvalidMatrix())
-        << "m: " << m << " factor: " << factor << '\n';
-    EXPECT_FALSE(
-        m.ApplyTransformOrigin(factor, factor, factor).IsInvalidMatrix())
-        << "m: " << m << " factor: " << factor << '\n';
+    test(TransformationMatrix(mv, mv, mv, mv, mv, mv, mv, mv, mv, mv, mv, mv,
+                              mv, mv, mv, mv));
+    test(TransformationMatrix().Translate(mv, mv));
   }
 }
 

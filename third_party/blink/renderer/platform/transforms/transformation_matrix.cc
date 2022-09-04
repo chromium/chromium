@@ -36,7 +36,6 @@
 #include "third_party/blink/renderer/platform/json/json_values.h"
 #include "third_party/blink/renderer/platform/transforms/affine_transform.h"
 #include "third_party/blink/renderer/platform/transforms/rotation.h"
-#include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "ui/gfx/geometry/box_f.h"
 #include "ui/gfx/geometry/quad_f.h"
@@ -81,25 +80,6 @@ using gfx::Quaternion;
 
 typedef double Vector4[4];
 typedef double Vector3[3];
-
-static void Clamp(double& value) {
-  // TODO(crbug.com/1224320): We should prevent NaN input from outside.
-  // To prevent crashes, the following clamp NaN to 0 is added.
-  value = UNLIKELY(std::isnan(value)) ? 0 : ClampTo<double>(value);
-}
-
-static void ClampMatrix(TransformationMatrix::Matrix4& matrix) {
-  for (int i = 0; i < 4; i++) {
-    for (int j = 0; j < 4; j++) {
-      Clamp(matrix[i][j]);
-    }
-  }
-}
-
-static float ClampToFloat(double value) {
-  // TODO(crbug.com/1224320): See Clamp() about isnan.
-  return UNLIKELY(std::isnan(value)) ? 0 : ClampTo<float>(value);
-}
 
 // inverse(original_matrix, inverse_matrix)
 //
@@ -873,7 +853,7 @@ gfx::PointF TransformationMatrix::ProjectPoint(const gfx::PointF& p,
     out_y /= w;
   }
 
-  return gfx::PointF(static_cast<float>(out_x), static_cast<float>(out_y));
+  return gfx::PointF(ClampToFloat(out_x), ClampToFloat(out_y));
 }
 
 gfx::QuadF TransformationMatrix::ProjectQuad(const gfx::QuadF& q) const {
@@ -907,23 +887,17 @@ static float ClampEdgeValue(float f) {
 LayoutRect TransformationMatrix::ClampedBoundsOfProjectedQuad(
     const gfx::QuadF& q) const {
   gfx::RectF mapped_quad_bounds = ProjectQuad(q).BoundingBox();
+  // mapped_quad_bounds.width()/height() may be infinity if e.g.
+  // right - left > float_max.
+  DCHECK(std::isfinite(mapped_quad_bounds.x()));
+  DCHECK(std::isfinite(mapped_quad_bounds.y()));
+  DCHECK(!std::isnan(mapped_quad_bounds.width()));
+  DCHECK(!std::isnan(mapped_quad_bounds.height()));
 
   float left = ClampEdgeValue(floorf(mapped_quad_bounds.x()));
   float top = ClampEdgeValue(floorf(mapped_quad_bounds.y()));
-
-  float right;
-  if (std::isinf(mapped_quad_bounds.x()) &&
-      std::isinf(mapped_quad_bounds.width()))
-    right = (LayoutUnit::Max() / 2).ToFloat();
-  else
-    right = ClampEdgeValue(ceilf(mapped_quad_bounds.right()));
-
-  float bottom;
-  if (std::isinf(mapped_quad_bounds.y()) &&
-      std::isinf(mapped_quad_bounds.height()))
-    bottom = (LayoutUnit::Max() / 2).ToFloat();
-  else
-    bottom = ClampEdgeValue(ceilf(mapped_quad_bounds.bottom()));
+  float right = ClampEdgeValue(ceilf(mapped_quad_bounds.right()));
+  float bottom = ClampEdgeValue(ceilf(mapped_quad_bounds.bottom()));
 
   return LayoutRect(LayoutUnit::Clamp(left), LayoutUnit::Clamp(top),
                     LayoutUnit::Clamp(right - left),
@@ -953,18 +927,16 @@ void TransformationMatrix::TransformBox(gfx::BoxF& box) const {
 }
 
 gfx::PointF TransformationMatrix::MapPoint(const gfx::PointF& p) const {
-  if (IsIdentityOrTranslation()) {
-    return gfx::PointF(p.x() + static_cast<float>(matrix_[3][0]),
-                       p.y() + static_cast<float>(matrix_[3][1]));
-  }
+  if (IsIdentityOrTranslation())
+    return TranslatePoint(p);
   return InternalMapPoint(p);
 }
 
 gfx::Point3F TransformationMatrix::MapPoint(const gfx::Point3F& p) const {
   if (IsIdentityOrTranslation()) {
-    return p + gfx::Vector3dF(static_cast<float>(matrix_[3][0]),
-                              static_cast<float>(matrix_[3][1]),
-                              static_cast<float>(matrix_[3][2]));
+    return gfx::Point3F(ClampToFloat(p.x() + matrix_[3][0]),
+                        ClampToFloat(p.y() + matrix_[3][1]),
+                        ClampToFloat(p.z() + matrix_[3][2]));
   }
   return InternalMapPoint(p);
 }
@@ -978,50 +950,36 @@ LayoutRect TransformationMatrix::MapRect(const LayoutRect& r) const {
 }
 
 gfx::RectF TransformationMatrix::MapRect(const gfx::RectF& r) const {
-  if (IsIdentityOrTranslation()) {
-    gfx::RectF mapped_rect(r);
-    mapped_rect.Offset(static_cast<float>(matrix_[3][0]),
-                       static_cast<float>(matrix_[3][1]));
-    return mapped_rect;
-  }
-
-  gfx::QuadF result;
-
-  float max_x = r.right();
-  float max_y = r.bottom();
-  result.set_p1(InternalMapPoint(gfx::PointF(r.x(), r.y())));
-  result.set_p2(InternalMapPoint(gfx::PointF(max_x, r.y())));
-  result.set_p3(InternalMapPoint(gfx::PointF(max_x, max_y)));
-  result.set_p4(InternalMapPoint(gfx::PointF(r.x(), max_y)));
-
-  return result.BoundingBox();
+  auto result = IsIdentityOrTranslation()
+                    ? gfx::RectF(TranslatePoint(r.origin()), r.size())
+                    : InternalMapQuad(gfx::QuadF(r)).BoundingBox();
+  // result.width()/height() may be infinity if e.g. right - left > float_max.
+  DCHECK(std::isfinite(result.x()));
+  DCHECK(std::isfinite(result.y()));
+  result.set_width(ClampToFloat(result.width()));
+  result.set_height(ClampToFloat(result.height()));
+  return result;
 }
 
 gfx::QuadF TransformationMatrix::MapQuad(const gfx::QuadF& q) const {
   if (IsIdentityOrTranslation()) {
-    return q + gfx::Vector2dF(ClampTo<float>(matrix_[3][0]),
-                              ClampTo<float>(matrix_[3][1]));
+    return gfx::QuadF(TranslatePoint(q.p1()), TranslatePoint(q.p2()),
+                      TranslatePoint(q.p3()), TranslatePoint(q.p4()));
   }
-
-  gfx::QuadF result;
-  result.set_p1(InternalMapPoint(q.p1()));
-  result.set_p2(InternalMapPoint(q.p2()));
-  result.set_p3(InternalMapPoint(q.p3()));
-  result.set_p4(InternalMapPoint(q.p4()));
-  return result;
+  return InternalMapQuad(q);
 }
 
 TransformationMatrix& TransformationMatrix::ScaleNonUniform(double sx,
                                                             double sy) {
-  Clamp(matrix_[0][0] *= sx);
-  Clamp(matrix_[0][1] *= sx);
-  Clamp(matrix_[0][2] *= sx);
-  Clamp(matrix_[0][3] *= sx);
+  matrix_[0][0] *= sx;
+  matrix_[0][1] *= sx;
+  matrix_[0][2] *= sx;
+  matrix_[0][3] *= sx;
 
-  Clamp(matrix_[1][0] *= sy);
-  Clamp(matrix_[1][1] *= sy);
-  Clamp(matrix_[1][2] *= sy);
-  Clamp(matrix_[1][3] *= sy);
+  matrix_[1][0] *= sy;
+  matrix_[1][1] *= sy;
+  matrix_[1][2] *= sy;
+  matrix_[1][3] *= sy;
   return *this;
 }
 
@@ -1030,10 +988,10 @@ TransformationMatrix& TransformationMatrix::Scale3d(double sx,
                                                     double sz) {
   ScaleNonUniform(sx, sy);
 
-  Clamp(matrix_[2][0] *= sz);
-  Clamp(matrix_[2][1] *= sz);
-  Clamp(matrix_[2][2] *= sz);
-  Clamp(matrix_[2][3] *= sz);
+  matrix_[2][0] *= sz;
+  matrix_[2][1] *= sz;
+  matrix_[2][2] *= sz;
+  matrix_[2][3] *= sz;
   return *this;
 }
 
@@ -1204,41 +1162,37 @@ TransformationMatrix& TransformationMatrix::Rotate3d(double rx,
 }
 
 TransformationMatrix& TransformationMatrix::Translate(double tx, double ty) {
-  Clamp(matrix_[3][0] += tx * matrix_[0][0] + ty * matrix_[1][0]);
-  Clamp(matrix_[3][1] += tx * matrix_[0][1] + ty * matrix_[1][1]);
-  Clamp(matrix_[3][2] += tx * matrix_[0][2] + ty * matrix_[1][2]);
-  Clamp(matrix_[3][3] += tx * matrix_[0][3] + ty * matrix_[1][3]);
+  matrix_[3][0] += tx * matrix_[0][0] + ty * matrix_[1][0];
+  matrix_[3][1] += tx * matrix_[0][1] + ty * matrix_[1][1];
+  matrix_[3][2] += tx * matrix_[0][2] + ty * matrix_[1][2];
+  matrix_[3][3] += tx * matrix_[0][3] + ty * matrix_[1][3];
   return *this;
 }
 
 TransformationMatrix& TransformationMatrix::Translate3d(double tx,
                                                         double ty,
                                                         double tz) {
-  Clamp(matrix_[3][0] +=
-        tx * matrix_[0][0] + ty * matrix_[1][0] + tz * matrix_[2][0]);
-  Clamp(matrix_[3][1] +=
-        tx * matrix_[0][1] + ty * matrix_[1][1] + tz * matrix_[2][1]);
-  Clamp(matrix_[3][2] +=
-        tx * matrix_[0][2] + ty * matrix_[1][2] + tz * matrix_[2][2]);
-  Clamp(matrix_[3][3] +=
-        tx * matrix_[0][3] + ty * matrix_[1][3] + tz * matrix_[2][3]);
+  matrix_[3][0] += tx * matrix_[0][0] + ty * matrix_[1][0] + tz * matrix_[2][0];
+  matrix_[3][1] += tx * matrix_[0][1] + ty * matrix_[1][1] + tz * matrix_[2][1];
+  matrix_[3][2] += tx * matrix_[0][2] + ty * matrix_[1][2] + tz * matrix_[2][2];
+  matrix_[3][3] += tx * matrix_[0][3] + ty * matrix_[1][3] + tz * matrix_[2][3];
   return *this;
 }
 
 TransformationMatrix& TransformationMatrix::PostTranslate(double tx,
                                                           double ty) {
   if (tx != 0) {
-    Clamp(matrix_[0][0] += matrix_[0][3] * tx);
-    Clamp(matrix_[1][0] += matrix_[1][3] * tx);
-    Clamp(matrix_[2][0] += matrix_[2][3] * tx);
-    Clamp(matrix_[3][0] += matrix_[3][3] * tx);
+    matrix_[0][0] += matrix_[0][3] * tx;
+    matrix_[1][0] += matrix_[1][3] * tx;
+    matrix_[2][0] += matrix_[2][3] * tx;
+    matrix_[3][0] += matrix_[3][3] * tx;
   }
 
   if (ty != 0) {
-    Clamp(matrix_[0][1] += matrix_[0][3] * ty);
-    Clamp(matrix_[1][1] += matrix_[1][3] * ty);
-    Clamp(matrix_[2][1] += matrix_[2][3] * ty);
-    Clamp(matrix_[3][1] += matrix_[3][3] * ty);
+    matrix_[0][1] += matrix_[0][3] * ty;
+    matrix_[1][1] += matrix_[1][3] * ty;
+    matrix_[2][1] += matrix_[2][3] * ty;
+    matrix_[3][1] += matrix_[3][3] * ty;
   }
   return *this;
 }
@@ -1248,10 +1202,10 @@ TransformationMatrix& TransformationMatrix::PostTranslate3d(double tx,
                                                             double tz) {
   PostTranslate(tx, ty);
   if (tz != 0) {
-    Clamp(matrix_[0][2] += matrix_[0][3] * tz);
-    Clamp(matrix_[1][2] += matrix_[1][3] * tz);
-    Clamp(matrix_[2][2] += matrix_[2][3] * tz);
-    Clamp(matrix_[3][2] += matrix_[3][3] * tz);
+    matrix_[0][2] += matrix_[0][3] * tz;
+    matrix_[1][2] += matrix_[1][3] * tz;
+    matrix_[2][2] += matrix_[2][3] * tz;
+    matrix_[3][2] += matrix_[3][3] * tz;
   }
   return *this;
 }
@@ -1288,12 +1242,12 @@ TransformationMatrix& TransformationMatrix::ApplyTransformOrigin(double x,
 }
 
 TransformationMatrix& TransformationMatrix::Zoom(double zoom_factor) {
-  Clamp(matrix_[0][3] /= zoom_factor);
-  Clamp(matrix_[1][3] /= zoom_factor);
-  Clamp(matrix_[2][3] /= zoom_factor);
-  Clamp(matrix_[3][0] *= zoom_factor);
-  Clamp(matrix_[3][1] *= zoom_factor);
-  Clamp(matrix_[3][2] *= zoom_factor);
+  matrix_[0][3] /= zoom_factor;
+  matrix_[1][3] /= zoom_factor;
+  matrix_[2][3] /= zoom_factor;
+  matrix_[3][0] *= zoom_factor;
+  matrix_[3][1] *= zoom_factor;
+  matrix_[3][2] *= zoom_factor;
   return *this;
 }
 
@@ -1641,12 +1595,18 @@ TransformationMatrix& TransformationMatrix::Multiply(
 
   SetMatrix(tmp);
 #endif
-  ClampMatrix(matrix_);
   return *this;
+}
+
+gfx::PointF TransformationMatrix::TranslatePoint(const gfx::PointF& p) const {
+  DCHECK(IsIdentityOrTranslation());
+  return gfx::PointF(ClampToFloat(p.x() + matrix_[3][0]),
+                     ClampToFloat(p.y() + matrix_[3][1]));
 }
 
 gfx::PointF TransformationMatrix::InternalMapPoint(
     const gfx::PointF& source_point) const {
+  DCHECK(!IsIdentityOrTranslation());
   double x = source_point.x();
   double y = source_point.y();
   double result_x = matrix_[3][0] + x * matrix_[0][0] + y * matrix_[1][0];
@@ -1661,6 +1621,7 @@ gfx::PointF TransformationMatrix::InternalMapPoint(
 
 gfx::Point3F TransformationMatrix::InternalMapPoint(
     const gfx::Point3F& source_point) const {
+  DCHECK(!IsIdentityOrTranslation());
   double x = source_point.x();
   double y = source_point.y();
   double z = source_point.z();
@@ -1679,6 +1640,11 @@ gfx::Point3F TransformationMatrix::InternalMapPoint(
   }
   return gfx::Point3F(ClampToFloat(result_x), ClampToFloat(result_y),
                       ClampToFloat(result_z));
+}
+
+gfx::QuadF TransformationMatrix::InternalMapQuad(const gfx::QuadF& q) const {
+  return gfx::QuadF(InternalMapPoint(q.p1()), InternalMapPoint(q.p2()),
+                    InternalMapPoint(q.p3()), InternalMapPoint(q.p4()));
 }
 
 bool TransformationMatrix::IsInvertible() const {
@@ -2022,7 +1988,6 @@ void TransformationMatrix::Recompose2D(const Decomposed2dType& decomp) {
 
   // Scale transform.
   Scale3d(decomp.scale_x, decomp.scale_y, 1);
-  DCHECK(!IsInvalidMatrix());
 }
 
 bool TransformationMatrix::IsInteger2DTranslation() const {
@@ -2090,32 +2055,41 @@ bool TransformationMatrix::Preserves2dAxisAlignment() const {
 }
 
 void TransformationMatrix::ToColumnMajorFloatArray(FloatMatrix4& result) const {
-  result[0] = M11();
-  result[1] = M12();
-  result[2] = M13();
-  result[3] = M14();
-  result[4] = M21();
-  result[5] = M22();
-  result[6] = M23();
-  result[7] = M24();
-  result[8] = M31();
-  result[9] = M32();
-  result[10] = M33();
-  result[11] = M34();
-  result[12] = M41();
-  result[13] = M42();
-  result[14] = M43();
-  result[15] = M44();
+  result[0] = ClampToFloat(M11());
+  result[1] = ClampToFloat(M12());
+  result[2] = ClampToFloat(M13());
+  result[3] = ClampToFloat(M14());
+  result[4] = ClampToFloat(M21());
+  result[5] = ClampToFloat(M22());
+  result[6] = ClampToFloat(M23());
+  result[7] = ClampToFloat(M24());
+  result[8] = ClampToFloat(M31());
+  result[9] = ClampToFloat(M32());
+  result[10] = ClampToFloat(M33());
+  result[11] = ClampToFloat(M34());
+  result[12] = ClampToFloat(M41());
+  result[13] = ClampToFloat(M42());
+  result[14] = ClampToFloat(M43());
+  result[15] = ClampToFloat(M44());
 }
 
 SkM44 TransformationMatrix::ToSkM44() const {
-  return SkM44(M11(), M21(), M31(), M41(), M12(), M22(), M32(), M42(), M13(),
-               M23(), M33(), M43(), M14(), M24(), M34(), M44());
+  return SkM44(ClampToFloat(M11()), ClampToFloat(M21()), ClampToFloat(M31()),
+               ClampToFloat(M41()), ClampToFloat(M12()), ClampToFloat(M22()),
+               ClampToFloat(M32()), ClampToFloat(M42()), ClampToFloat(M13()),
+               ClampToFloat(M23()), ClampToFloat(M33()), ClampToFloat(M43()),
+               ClampToFloat(M14()), ClampToFloat(M24()), ClampToFloat(M34()),
+               ClampToFloat(M44()));
 }
 
 gfx::Transform TransformationMatrix::ToTransform() const {
-  return gfx::Transform(M11(), M21(), M31(), M41(), M12(), M22(), M32(), M42(),
-                        M13(), M23(), M33(), M43(), M14(), M24(), M34(), M44());
+  return gfx::Transform(
+      ClampToFloat(M11()), ClampToFloat(M21()), ClampToFloat(M31()),
+      ClampToFloat(M41()), ClampToFloat(M12()), ClampToFloat(M22()),
+      ClampToFloat(M32()), ClampToFloat(M42()), ClampToFloat(M13()),
+      ClampToFloat(M23()), ClampToFloat(M33()), ClampToFloat(M43()),
+      ClampToFloat(M14()), ClampToFloat(M24()), ClampToFloat(M34()),
+      ClampToFloat(M44()));
 }
 
 String TransformationMatrix::ToString(bool as_matrix) const {

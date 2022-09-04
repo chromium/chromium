@@ -35,6 +35,7 @@
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/skia/include/core/SkM44.h"
 #include "ui/gfx/geometry/point3_f.h"
@@ -223,7 +224,7 @@ class PLATFORM_EXPORT TransformationMatrix {
   // dropped, effectively projecting the quad into the z=0 plane
   [[nodiscard]] gfx::QuadF MapQuad(const gfx::QuadF&) const;
 
-  // Map a point on the z=0 plane into a point on the plane with with the
+  // Map a point on the z=0 plane into a point on the plane with which the
   // transform applied, by extending a ray perpendicular to the source plane and
   // computing the local x,y position of the point where that ray intersects
   // with the destination plane.
@@ -453,16 +454,6 @@ class PLATFORM_EXPORT TransformationMatrix {
 
   bool IsInteger2DTranslation() const;
 
-  bool IsInvalidMatrix() const {
-    for (int i = 0; i < 4; i++) {
-      for (int j = 0; j < 4; j++) {
-        if (std::isinf(matrix_[i][j]) || std::isnan(matrix_[i][j]))
-          return true;
-      }
-    }
-    return false;
-  }
-
   // Returns true if axis-aligned 2d rects will remain axis-aligned after being
   // transformed by this matrix.
   bool Preserves2dAxisAlignment() const;
@@ -476,7 +467,8 @@ class PLATFORM_EXPORT TransformationMatrix {
   // translation.
   gfx::Vector2dF To2DTranslation() const {
     DCHECK(IsIdentityOr2DTranslation());
-    return gfx::Vector2dF(matrix_[3][0], matrix_[3][1]);
+    return gfx::Vector2dF(ClampToFloat(matrix_[3][0]),
+                          ClampToFloat(matrix_[3][1]));
   }
 
   typedef float FloatMatrix4[16];
@@ -490,10 +482,16 @@ class PLATFORM_EXPORT TransformationMatrix {
   String ToString(bool as_matrix = false) const;
 
  private:
-  gfx::PointF InternalMapPoint(const gfx::PointF& source_point) const;
-  gfx::Point3F InternalMapPoint(const gfx::Point3F& source_point) const;
+  gfx::PointF TranslatePoint(const gfx::PointF&) const;
+  gfx::PointF InternalMapPoint(const gfx::PointF&) const;
+  gfx::Point3F InternalMapPoint(const gfx::Point3F&) const;
+  gfx::QuadF InternalMapQuad(const gfx::QuadF&) const;
 
   void SetMatrix(const Matrix4& m) { memcpy(&matrix_, &m, sizeof(Matrix4)); }
+
+  static float ClampToFloat(double value) {
+    return UNLIKELY(std::isnan(value)) ? 0 : ClampTo<float>(value);
+  }
 
   Matrix4 matrix_;
 };
