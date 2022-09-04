@@ -720,6 +720,7 @@ Leidimai, kuriuos jau esate suteikę programoms, gali būti taikomi šiai paskyr
 <translation id="16620462294541761">Atsiprašome, slaptažodžio patvirtinti nepavyko. Bandykite dar kartą.</translation>
 <translation id="166278006618318542">Subjekto privačiojo rakto algoritmas</translation>
 <translation id="1662801900924515589">Programa „<ph name="APP" />“ įdiegta</translation>
+<translation id="1665328953287874063">Naudokite slaptažodį arba PIN kodą „<ph name="DEVICE_TYPE" />“ atrakinti</translation>
 <translation id="1666232093776384142">Duomenų prieigos apsaugos išoriniams įrenginiams nustatymo išjungimas</translation>
 <translation id="1667842670298352129">Klausykitės garsiai skaitomo konkretaus teksto. Pirmiausia ekrano apačioje pasirinkite piktogramą „Teksto ištarimas“, tada paryškinkite tekstą. Taip pat galite naudoti sparčiuosius klavišus: paryškinkite tekstą, tada paspauskite paieškos klavišą + S.</translation>
 <translation id="1668435968811469751">Registruotis neautomatiškai</translation>
@@ -1853,6 +1854,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2691385045260836588">Modelis</translation>
 <translation id="2691440343905273290">Keisti įvesties nustatymus</translation>
 <translation id="2693176596243495071">Oi! Įvyko nežinoma klaida. Bandykite dar kartą vėliau arba susisiekite su administratoriumi, jei problema išliks.</translation>
+<translation id="2698147581454716013">Tai yra grupės įrenginys, kurio negalima užregistruoti naudojant viešojo terminalo ir ženklų naujovinimą.</translation>
 <translation id="2699911226086014512">PIN kodo operacijos atlikti nepavyko, klaidos kodas: <ph name="RETRIES" />.</translation>
 <translation id="2701330563083355633">Bendrinta iš „<ph name="DEVICE_NAME" />“</translation>
 <translation id="2701737434167469065">Prisijungti, <ph name="EMAIL" /></translation>
@@ -1931,6 +1933,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2757338480560142065">Įsitikinkite, kad išsaugomas slaptažodis atitinka <ph name="WEBSITE" /> slaptažodį</translation>
 <translation id="2762441749940182211">Fotoaparatas užblokuotas</translation>
 <translation id="2764786626780673772">Išsami VPN informacija</translation>
+<translation id="2764920001292228569">Įveskite profilio pavadinimą</translation>
 <translation id="2765100602267695013">Susisiekite su mobiliojo ryšio tiekėju</translation>
 <translation id="2765217105034171413">Mažas</translation>
 <translation id="2766006623206032690">Įklij&amp;uoti ir eiti</translation>
@@ -3300,6 +3303,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="4065876735068446555">Naudojant šį tinklą (<ph name="NETWORK_ID" />) gali būti prašoma apsilankyti prisijungimo puslapyje.</translation>
 <translation id="4066207411788646768">Patikrinkite ryšį, kad galėtumėte peržiūrėti tinkle pasiekiamus spausdintuvus</translation>
 <translation id="4066945815577305767">Baigėsi slaptažodžių skirtasis laikas</translation>
+<translation id="4067839975993712852">Pažymėti dabartinį skirtuką kaip skaitytą</translation>
 <translation id="4068776064906523561">Išsaugoti kontroliniai kodai</translation>
 <translation id="407173827865827707">Spustelėjus</translation>
 <translation id="4072701974556190758">Slaptažodis bus išsaugotas „Google“ paskyroje (<ph name="ACCOUNT" />). Jums nereikės jo prisiminti.</translation>
@@ -5783,6 +5787,7 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="6508248480704296122">Susiję su „<ph name="NAME_PH" />“</translation>
 <translation id="6508261954199872201">Programa: <ph name="APP_NAME" /></translation>
 <translation id="6509207748479174212">Medijos licencija</translation>
+<translation id="6511827214781912955">Apsvarstykite galimybę ištrinti „<ph name="FILENAME" />“, kad kiti šį įrenginį naudojantys asmenys negalėtų peržiūrėti jūsų slaptažodžių</translation>
 <translation id="6513247462497316522">Jei nesate prisijungę prie kito tinklo, „Google Chrome“ naudos mobiliuosius duomenis.</translation>
 <translation id="6514010653036109809">Pasiekiami įrenginiai:</translation>
 <translation id="6514565641373682518">Šiame puslapyje neleidžiamas pelės žymeklis.</translation>
@@ -6070,6 +6075,7 @@ Turite dar # pažeistų slaptažodžių. „Google“ slaptažodžių tvarkyklė
 <translation id="6781978626986383437">„Linux“ atsarginės kopijos kūrimas atšauktas</translation>
 <translation id="6782067259631821405">Netinkamas PIN kodas</translation>
 <translation id="6784523122863989144">Profilis palaikomas</translation>
+<translation id="6785739405821760313">Peržiūrimi išsaugoti darbalaukiai. Jei norite naršyti, paspauskite tabuliavimo klavišą.</translation>
 <translation id="6785872064505734160">„Google“ padėjėjas naršyklėje „Chrome“ gali atlikti veiksmus svetainėse už jus</translation>
 <translation id="6786747875388722282">Plėtiniai</translation>
 <translation id="6787097042755590313">Kitas skirtukas</translation>
@@ -6654,6 +6660,7 @@ Turite dar # pažeistų slaptažodžių. „Google“ slaptažodžių tvarkyklė
 <translation id="7358338787722390626">Uždaryti paiešką šoniniame skydelyje</translation>
 <translation id="735994578317267253">Gaukite programų, nustatymų ir kt. bet kuriame „Chrome“ OS įrenginyje</translation>
 <translation id="7360233684753165754"><ph name="PAGE_NUMBER" /> psl. į „<ph name="PRINTER_NAME" />“</translation>
+<translation id="7360257054721917104">Peržiūrimi išsaugoti darbalaukiai ir šablonai. Jei norite naršyti, paspauskite tabuliavimo klavišą.</translation>
 <translation id="7361297102842600584">Spustelėkite dešiniuoju pelės klavišu, kad paleistumėte „<ph name="PLUGIN_NAME" />“</translation>
 <translation id="7362387053578559123">Svetainėse gali būti prašoma prisijungti prie „Bluetooth“ įrenginių</translation>
 <translation id="7363349185727752629">Privatumo pasirinkimų vadovas</translation>
@@ -7307,6 +7314,7 @@ Paspauskite priskirtą jungiklį ar klavišą, kad pašalintumėte priskyrimą</
 <translation id="7953669802889559161">Įvestys</translation>
 <translation id="7953955868932471628">Valdyti sparčiuosius klavišus</translation>
 <translation id="7955105108888461311">Paklausti asmeniškai</translation>
+<translation id="7955177647836564772">Jei „Smart Lock“ įjungta ir telefonas atrakintas, slaptažodžio ar PIN kodo įvesti nereikia</translation>
 <translation id="7956373551960864128">Išsaugoti spausdintuvai</translation>
 <translation id="7957074856830851026">Žr. įrenginio informaciją, pvz., jo serijos numerį ar ištekliaus ID</translation>
 <translation id="7959074893852789871">Faile buvo keli sertifikatai; kai kurie iš jų nebuvo importuoti:</translation>
@@ -7565,6 +7573,7 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Jūsų įrenginiai<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195027750202970175">Diske užimama vieta</translation>
 <translation id="8195191503358432289">Slaptažodžio pridėjimas</translation>
+<translation id="8197673340773315084">Pridėkite vardą arba etiketę, pvz., „Darbo“ arba „Asmeninis“</translation>
 <translation id="8198456017687137612">Perduodamas skirtukas</translation>
 <translation id="8199300056570174101">Tinklo (paslaugos) ir įrenginio nuosavybės</translation>
 <translation id="8200772114523450471">Atnaujinti</translation>
@@ -7662,6 +7671,7 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="8284279544186306258">visos <ph name="WEBSITE_1" /> svetainės</translation>
 <translation id="8284326494547611709">Subtitrai</translation>
 <translation id="8286036467436129157">Prisijungti</translation>
+<translation id="828642162569365647">Šis slaptažodis arba PIN kodas apsaugo jūsų duomenis šiame „<ph name="DEVICE_TYPE" />“ ir visą informaciją, kurią pasiekiate iš telefono. Turėsite atrakinti kiekvieną kartą „<ph name="DEVICE_TYPE" />“ pabudus iš miego būsenos.</translation>
 <translation id="8287902281644548111">Ieškoti pagal API iškvietimą / URL</translation>
 <translation id="8288032458496410887">Pašalinti „<ph name="APP" />“...</translation>
 <translation id="8289128870594824098">Disko dydis</translation>

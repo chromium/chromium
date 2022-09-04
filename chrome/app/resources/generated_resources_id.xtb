@@ -717,6 +717,7 @@ Izin yang telah Anda berikan ke aplikasi dapat berlaku untuk akun ini. Anda dapa
 <translation id="16620462294541761">Maaf, sandi Anda tidak dapat diverifikasi. Harap coba lagi.</translation>
 <translation id="166278006618318542">Algoritme Kunci Publik Subjek</translation>
 <translation id="1662801900924515589"><ph name="APP" /> telah diinstal</translation>
+<translation id="1665328953287874063">Gunakan sandi atau PIN untuk membuka kunci <ph name="DEVICE_TYPE" /></translation>
 <translation id="1666232093776384142">Nonaktifkan perlindungan akses data untuk periferal</translation>
 <translation id="1667842670298352129">Dengarkan teks tertentu dibacakan secara lisan. Pilih ikon Klik untuk Diucapkan di bagian bawah layar terlebih dulu, lalu tandai teks. Anda juga dapat menggunakan pintasan keyboard: Tandai teks, lalu tekan Penelusuran + S.</translation>
 <translation id="1668435968811469751">Daftar secara manual</translation>
@@ -1850,6 +1851,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2691385045260836588">Model</translation>
 <translation id="2691440343905273290">Ubah setelan input</translation>
 <translation id="2693176596243495071">Maaf, terjadi error yang tidak diketahui. Harap coba lagi nanti atau hubungi administrator jika masalah masih berlanjut.</translation>
+<translation id="2698147581454716013">Ini adalah perangkat yang dipaketkan dan tidak dapat didaftarkan dengan Signage &amp; Kiosk Upgrade.</translation>
 <translation id="2699911226086014512">Operasi PIN gagal dengan kode <ph name="RETRIES" />.</translation>
 <translation id="2701330563083355633">Dibagikan dari <ph name="DEVICE_NAME" /></translation>
 <translation id="2701737434167469065">Login, <ph name="EMAIL" /></translation>
@@ -1928,6 +1930,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2757338480560142065">Pastikan sandi yang Anda simpan cocok dengan sandi untuk <ph name="WEBSITE" /></translation>
 <translation id="2762441749940182211">Kamera diblokir</translation>
 <translation id="2764786626780673772">Detail VPN</translation>
+<translation id="2764920001292228569">Masukkan nama profil</translation>
 <translation id="2765100602267695013">Hubungi penyedia layanan seluler Anda</translation>
 <translation id="2765217105034171413">Kecil</translation>
 <translation id="2766006623206032690">Tem&amp;pel lalu buka</translation>
@@ -3297,6 +3300,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="4065876735068446555">Jaringan yang digunakan (<ph name="NETWORK_ID" />) mungkin mewajibkan Anda mengunjungi halaman masuk jaringan.</translation>
 <translation id="4066207411788646768">Periksa koneksi untuk melihat printer yang tersedia dalam jaringan Anda</translation>
 <translation id="4066945815577305767">Waktu sandi habis</translation>
+<translation id="4067839975993712852">Tandai tab saat ini sebagai telah dibaca</translation>
 <translation id="4068776064906523561">Sidik jari yang disimpan</translation>
 <translation id="407173827865827707">Saat diklik</translation>
 <translation id="4072701974556190758">Sandi akan disimpan di Akun Google Anda, <ph name="ACCOUNT" />. Anda tidak perlu mengingatnya.</translation>
@@ -5779,6 +5783,7 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="6508248480704296122">Berkaitan dengan <ph name="NAME_PH" /></translation>
 <translation id="6508261954199872201">Aplikasi: <ph name="APP_NAME" /></translation>
 <translation id="6509207748479174212">Lisensi Media</translation>
+<translation id="6511827214781912955">Sebaiknya hapus <ph name="FILENAME" />, agar orang lain yang menggunakan perangkat ini tidak dapat melihat sandi Anda</translation>
 <translation id="6513247462497316522">Google Chrome akan menggunakan data seluler jika Anda tidak terhubung ke jaringan lain.</translation>
 <translation id="6514010653036109809">Perangkat yang tersedia:</translation>
 <translation id="6514565641373682518">Halaman ini telah menonaktifkan kursor mouse Anda.</translation>
@@ -6060,6 +6065,7 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="6781978626986383437">Backup Linux dibatalkan</translation>
 <translation id="6782067259631821405">PIN tidak valid</translation>
 <translation id="6784523122863989144">Profil didukung</translation>
+<translation id="6785739405821760313">Melihat desktop tersimpan. Tekan tab untuk memilih.</translation>
 <translation id="6785872064505734160">Asisten Google di Chrome dapat menyelesaikan tindakan di seluruh situs untuk Anda</translation>
 <translation id="6786747875388722282">Ekstensi</translation>
 <translation id="6787097042755590313">Tab Lainnya</translation>
@@ -6646,6 +6652,7 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="7358338787722390626">Tutup penelusuran di panel samping</translation>
 <translation id="735994578317267253">Dapatkan aplikasi, setelan, dan lainnya di perangkat ChromeOS mana pun</translation>
 <translation id="7360233684753165754"><ph name="PAGE_NUMBER" /> halaman ke <ph name="PRINTER_NAME" /></translation>
+<translation id="7360257054721917104">Melihat desktop dan template tersimpan. Tekan tab untuk memilih.</translation>
 <translation id="7361297102842600584">Klik kanan untuk menjalankan <ph name="PLUGIN_NAME" /></translation>
 <translation id="7362387053578559123">Situs dapat meminta untuk terhubung ke perangkat Bluetooth</translation>
 <translation id="7363349185727752629">Panduan terkait pilihan privasi Anda</translation>
@@ -7299,6 +7306,7 @@ Tekan tombol akses atau tombol keyboard yang telah ditetapkan untuk menghapus pe
 <translation id="7953669802889559161">Input</translation>
 <translation id="7953955868932471628">Kelola pintasan</translation>
 <translation id="7955105108888461311">Tanya secara langsung</translation>
+<translation id="7955177647836564772">Jika Smart Lock diaktifkan dan ponsel tidak terkunci, Anda tidak perlu memasukkan sandi atau PIN</translation>
 <translation id="7956373551960864128">Printer yang Anda simpan</translation>
 <translation id="7957074856830851026">Melihat informasi perangkat, seperti nomor seri atau ID aset</translation>
 <translation id="7959074893852789871">File berisi beberapa sertifikat, beberapa di antaranya tidak diimpor.</translation>
@@ -7557,6 +7565,7 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Perangkat Anda<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195027750202970175">Ukuran di disk</translation>
 <translation id="8195191503358432289">Tambahkan sandi</translation>
+<translation id="8197673340773315084">Tambahkan nama atau label, seperti Kantor atau Pribadi</translation>
 <translation id="8198456017687137612">Mentransmisikan tab</translation>
 <translation id="8199300056570174101">Properti Perangkat dan Jaringan (Layanan)</translation>
 <translation id="8200772114523450471">Lanjutkan</translation>
@@ -7654,6 +7663,7 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8284279544186306258">semua situs <ph name="WEBSITE_1" /></translation>
 <translation id="8284326494547611709">Teks</translation>
 <translation id="8286036467436129157">Login</translation>
+<translation id="828642162569365647">Sandi atau PIN ini melindungi data Anda pada <ph name="DEVICE_TYPE" /> ini dan informasi apa pun yang Anda akses dari ponsel. Anda harus membuka kunci setiap kali <ph name="DEVICE_TYPE" /> diaktifkan dari tidur.</translation>
 <translation id="8287902281644548111">Telusuri berdasarkan panggilan API/URL</translation>
 <translation id="8288032458496410887">Uninstal <ph name="APP" />...</translation>
 <translation id="8289128870594824098">Ukuran disk</translation>

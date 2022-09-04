@@ -1015,7 +1015,7 @@
 <translation id="3664782872746246217">מילות מפתח:</translation>
 <translation id="3667704023705708645">הון סיכון</translation>
 <translation id="3671540257457995106">לאפשר את שינוי הגודל?</translation>
-<translation id="3672568546897166916">שגיאה ב-<ph name="ERROR_PATH" />: <ph name="ERROR_MESSAGE" /></translation>
+<translation id="3672568546897166916">שגיאה ב-<ph name="ERROR_PATH" />: ‏<ph name="ERROR_MESSAGE" /></translation>
 <translation id="3675563144891642599">גליל שלישי</translation>
 <translation id="3676592649209844519">מזהה מכשיר:</translation>
 <translation id="3677008721441257057">‏התכוונת לכתובת &lt;a href="#" id="dont-proceed-link"&gt;<ph name="DOMAIN" />&lt;/a&gt;?</translation>

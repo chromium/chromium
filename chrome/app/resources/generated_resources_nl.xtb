@@ -6494,6 +6494,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7222204278952406003">Chrome is je standaardbrowser</translation>
 <translation id="7222232353993864120">E-mailadres</translation>
 <translation id="7222235798733126207">Beperkt delen tussen sites</translation>
+<translation id="7225082563376899794">Windows Hello gebruiken bij het invullen van wachtwoorden</translation>
 <translation id="7225179976675429563">Type netwerk ontbreekt</translation>
 <translation id="7227458944009118910">Hieronder vermelde apps kunnen ook protocollinks verwerken. Andere apps vragen om toestemming.</translation>
 <translation id="7228523857728654909">Schermvergrendeling en inloggen</translation>
@@ -6535,6 +6536,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7258192266780953209">Transformaties</translation>
 <translation id="7258225044283673131">De app reageert niet. Selecteer 'Nu sluiten' om de app te sluiten.</translation>
 <translation id="7260186537988033909">Apparaatinschrijving voor kiosken en digitale borden afgerond</translation>
+<translation id="7261851165551049223">TouchID gebruiken bij het invullen van wachtwoorden</translation>
 <translation id="7262004276116528033">Deze inlogservice wordt gehost door <ph name="SAML_DOMAIN" />.</translation>
 <translation id="7264695323040866038">De <ph name="APP" />-app altijd gebruiken om ondersteunde weblinks te openen?</translation>
 <translation id="7267044199012331848">Kan de virtuele machine niet installeren. Probeer het opnieuw of neem contact op met je beheerder. Foutcode: <ph name="ERROR_CODE" />.</translation>
