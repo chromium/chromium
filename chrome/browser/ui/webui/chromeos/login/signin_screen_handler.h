@@ -86,9 +86,6 @@ class SigninScreenHandler
   // NetworkStateInformer::NetworkStateInformerObserver implementation:
   void UpdateState(NetworkError::ErrorReason reason) override;
 
-  // Required Local State preferences.
-  static void RegisterPrefs(PrefRegistrySimple* registry);
-
   // To avoid spurious error messages on flaky networks, the offline message is
   // only shown if the network is offline for a threshold number of seconds.
   // This method provides an ability to reduce the threshold to zero, allowing

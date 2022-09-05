@@ -92,21 +92,7 @@ std::string GetUserLastInputMethodId(const AccountId& account_id) {
       return input_method_id;
   }
 
-  // Try to use old values.
-  PrefService* const local_state = g_browser_process->local_state();
-  const base::Value::Dict& users_last_input_methods =
-      local_state->GetValueDict(::prefs::kUsersLastInputMethod);
-
-  const std::string* input_method_str =
-      users_last_input_methods.FindString(account_id.GetUserEmail());
-  if (!input_method_str) {
-    DVLOG(0) << "GetUserLastInputMethodId: no input method for this user";
-    return std::string();
-  }
-  // Migrate into the known_user system.
-  known_user.SetUserLastLoginInputMethodId(account_id, *input_method_str);
-
-  return *input_method_str;
+  return std::string();
 }
 
 void EnforceDevicePolicyInputMethods(std::string user_input_method_id) {

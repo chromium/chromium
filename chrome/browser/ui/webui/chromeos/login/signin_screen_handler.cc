@@ -371,11 +371,6 @@ void SigninScreenHandler::ReloadGaia(bool force_reload) {
   gaia_screen_handler_->ReloadGaia(force_reload);
 }
 
-void SigninScreenHandler::RegisterPrefs(PrefRegistrySimple* registry) {
-  // The pref is deprecated. Remove around 09/2022 (https://crbug.com/1297407)
-  registry->RegisterDictionaryPref(prefs::kUsersLastInputMethod);
-}
-
 void SigninScreenHandler::Observe(int type,
                                   const content::NotificationSource& source,
                                   const content::NotificationDetails& details) {

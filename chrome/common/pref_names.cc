@@ -2507,11 +2507,6 @@ const char kDeviceEnrollmentCanExit[] = "enrollment.can_exit";
 // Directory devices only.
 const char kDeviceDMToken[] = "device_dm_token";
 
-// Dictionary of per-user last input method (used at login screen). Note that
-// the pref name is UsersLRUInputMethods for compatibility with previous
-// versions.
-const char kUsersLastInputMethod[] = "UsersLRUInputMethod";
-
 // Key name of a dictionary in local state to store cached multiprofle user
 // behavior policy value.
 const char kCachedMultiProfileUserBehavior[] = "CachedMultiProfileUserBehavior";

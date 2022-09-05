@@ -509,7 +509,6 @@ const char kNtpSearchSuggestionsOptOut[] = "ntp.search_suggestions_opt_out";
 // Deprecated 09/2021.
 const char kAutofillAcceptSaveCreditCardPromptState[] =
     "autofill.accept_save_credit_card_prompt_state";
-const char kCloudPolicyOverridesPlatformPolicy[] = "policy.cloud_override";
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Deprecated 09/2021.
@@ -762,6 +761,11 @@ const char kProfileAvatarTutorialShown[] =
     "profile.avatar_bubble_tutorial_shown";
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+// Deprecated 09/2022.
+constexpr char kUsersLastInputMethod[] = "UsersLRUInputMethod";
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -773,8 +777,6 @@ void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
   // Deprecated 10/2021.
   registry->RegisterListPref(prefs::kUsedPolicyCertificates);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-  registry->RegisterBooleanPref(kCloudPolicyOverridesPlatformPolicy, false);
 
   registry->RegisterIntegerPref(kStabilityRendererHangCount, 0);
   registry->RegisterIntegerPref(kStabilityIncompleteSessionEndCount, 0);
@@ -821,6 +823,11 @@ void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
 
   // Deprecated 07/2022.
   registry->RegisterIntegerPref(kStabilityCrashCount, 0);
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Deprecated 09/2022
+  registry->RegisterDictionaryPref(kUsersLastInputMethod);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 // Register prefs used only for migration (clearing or moving to a new key).
@@ -1148,7 +1155,6 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
   ash::ResetScreen::RegisterPrefs(registry);
   ash::SchedulerConfigurationManager::RegisterLocalStatePrefs(registry);
   ash::ServicesCustomizationDocument::RegisterPrefs(registry);
-  chromeos::SigninScreenHandler::RegisterPrefs(registry);
   ash::StartupUtils::RegisterPrefs(registry);
   ash::StatsReportingController::RegisterLocalStatePrefs(registry);
   ash::system::AutomaticRebootManager::RegisterPrefs(registry);
@@ -1631,9 +1637,6 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
   // BEGIN_MIGRATE_OBSOLETE_LOCAL_STATE_PREFS
   // Please don't delete the preceding line. It is used by PRESUBMIT.py.
 
-  // Added 09/2021.
-  local_state->ClearPref(kCloudPolicyOverridesPlatformPolicy);
-
   // Added 10/2021.
   local_state->ClearPref(kTabStripStackedLayout);
 
@@ -1697,6 +1700,11 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
 
   // Added 07/2002.
   local_state->ClearPref(kStabilityCrashCount);
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Added 09/2022
+  local_state->ClearPref(kUsersLastInputMethod);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_LOCAL_STATE_PREFS
