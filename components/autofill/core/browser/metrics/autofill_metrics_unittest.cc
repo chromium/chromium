@@ -469,8 +469,7 @@ TEST_F(AutofillMetricsTest, NumberOfAutofilledFieldsAtSubmission) {
 // autocomplete attribute at submission time.
 TEST_F(AutofillMetricsTest,
        NumberOfAutofilledFieldsWithAutocompleteUnrecognizedAtSubmission) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
+  scoped_feature_list_.InitAndEnableFeature(
       features::kAutofillFillAndImportFromMoreFields);
   // Set up our form data with two autofilled fields.
   FormData form =
@@ -4431,8 +4430,7 @@ TEST_P(AutofillMetricsIFrameTest,
 
 // Test that we log preflight calls for credit card unmasking.
 TEST_F(AutofillMetricsTest, CreditCardUnmaskingPreflightCall) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
+  scoped_feature_list_.InitAndEnableFeature(
       features::kAutofillCreditCardAuthentication);
   std::string preflight_call_metric =
       "Autofill.BetterAuth.CardUnmaskPreflightCalled";
@@ -7155,8 +7153,7 @@ TEST_F(AutofillMetricsTest, DaysSinceLastUse_Profile) {
 
 // Test that we log the verification status of name tokens.
 TEST_F(AutofillMetricsTest, LogVerificationStatusesOfNameTokens) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
+  scoped_feature_list_.InitAndEnableFeature(
       features::kAutofillEnableSupportForMoreStructureInNames);
 
   base::HistogramTester histogram_tester;
@@ -7200,8 +7197,7 @@ TEST_F(AutofillMetricsTest, LogVerificationStatusesOfNameTokens) {
 
 // Test that we log the verification status of address tokens..
 TEST_F(AutofillMetricsTest, LogVerificationStatusesOfAddressTokens) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
+  scoped_feature_list_.InitAndEnableFeature(
       features::kAutofillEnableSupportForMoreStructureInAddresses);
 
   base::HistogramTester histogram_tester;
