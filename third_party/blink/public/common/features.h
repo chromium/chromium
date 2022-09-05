@@ -792,6 +792,7 @@ BLINK_COMMON_EXPORT extern const base::Feature kForceInOrderScript;
 // scripts are selectively applied via the allowlist provided from the feature
 // param. See https://crbug.com/1356396
 BLINK_COMMON_EXPORT extern const base::Feature kSelectiveInOrderScript;
+BLINK_COMMON_EXPORT extern const base::Feature kSelectiveInOrderScriptTarget;
 BLINK_COMMON_EXPORT extern const base::FeatureParam<std::string>
     kSelectiveInOrderScriptAllowList;
 

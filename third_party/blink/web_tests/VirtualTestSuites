@@ -1142,7 +1142,7 @@
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["wpt_internal/in-order-script-scheduling/selective-in-order"],
     "args": [
-      "--enable-features=SelectiveInOrderScript:allow_list/http%3A%2F%2Fbad3p.test%7Csync-script-1.js"
+      "--enable-features=SelectiveInOrderScript,SelectiveInOrderScriptTarget:allow_list/http%3A%2F%2Fbad3p.test%7Csync-script-1.js"
     ]
   },
   {

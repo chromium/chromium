@@ -956,16 +956,20 @@ PendingScript* ScriptLoader::PrepareScript(
   // kInOrder if it's eligible. We use ScriptSchedulingType::kInOrder
   // rather than kForceInOrder here since we don't preserve evaluation order
   // between intervened scripts and ordinary parser-blocking/inline scripts.
-  if (ShouldSelectiveInOrderScript() &&
-      !IsDocumentReloadedOrFormSubmitted(element_document) &&
+  if (!IsDocumentReloadedOrFormSubmitted(element_document) &&
       IsA<HTMLDocument>(context_window->document())) {
     switch (script_scheduling_type) {
       case ScriptSchedulingType::kParserBlocking:
         // TODO(hiroshige): Remove prepared_pending_script_ access outside
         // TakePendingScript().
         DCHECK(prepared_pending_script_);
-        if (prepared_pending_script_->IsEligibleForSelectiveInOrder())
-          script_scheduling_type = ScriptSchedulingType::kInOrder;
+        if (prepared_pending_script_->IsEligibleForSelectiveInOrder()) {
+          UseCounter::Count(context_window->document()->TopDocument(),
+                            WebFeature::kSelectiveInOrderScript);
+          if (ShouldSelectiveInOrderScript()) {
+            script_scheduling_type = ScriptSchedulingType::kInOrder;
+          }
+        }
         break;
       default:
         break;

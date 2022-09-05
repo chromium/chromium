@@ -41288,6 +41288,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4350" label="AudioContextSetSinkId"/>
   <int value="4351" label="ViewportDependentLazyLoadedImageWithSizesAttribute"/>
   <int value="4352" label="XRWebGLBindingGetCameraImage"/>
+  <int value="4353" label="SelectiveInOrderScript"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

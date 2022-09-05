@@ -3671,6 +3671,7 @@ enum WebFeature {
   kAudioContextSetSinkId = 4350,
   kViewportDependentLazyLoadedImageWithSizesAttribute = 4351,
   kXRWebGLBindingGetCameraImage = 4352,
+  kSelectiveInOrderScript = 4353,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.
