@@ -21,7 +21,6 @@ group("polymer3_elements") {
     ":enable_kiosk_module",
     ":error_message_module",
     ":family_link_notice_module",
-    ":fingerprint_setup_module",
     ":gaia_signin_module",
     ":guest_tos_module",
     ":hw_data_collection_module",
@@ -63,7 +62,7 @@ js_type_check("closure_compile_local") {
     ":enable_kiosk.m",
     ":error_message.m",
     ":family_link_notice.m",
-    ":fingerprint_setup.m",
+    ":fingerprint_setup",
     ":gaia_signin.m",
     ":gesture_navigation",
     ":guest_tos.m",
@@ -240,8 +239,8 @@ js_library("family_link_notice.m") {
   extra_deps = [ ":family_link_notice_module" ]
 }
 
-js_library("fingerprint_setup.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/fingerprint_setup.m.js" ]
+js_library("fingerprint_setup") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/fingerprint_setup.js" ]
   deps = [
     "../../components:display_manager_types.m",
     "../../components:oobe_cr_lottie.m",
@@ -255,7 +254,7 @@ js_library("fingerprint_setup.m") {
   ]
   externs_list = [ "//ui/webui/resources/cr_elements/cr_fingerprint/cr_fingerprint_progress_arc_externs.js" ]
 
-  extra_deps = [ ":fingerprint_setup_module" ]
+  extra_deps = [ ":web_components" ]
 }
 
 js_library("gesture_navigation") {
@@ -717,15 +716,6 @@ polymer_modulizer("family_link_notice") {
   namespace_rewrites = oobe_namespace_rewrites
 }
 
-polymer_modulizer("fingerprint_setup") {
-  js_file = "fingerprint_setup.js"
-  html_file = "fingerprint_setup.html"
-  html_type = "dom-module"
-  auto_imports = oobe_auto_imports + [ "chrome/browser/resources/chromeos/login/components/oobe_cr_lottie.html|OobeCrLottie" ]
-  migrated_imports = oobe_migrated_imports
-  namespace_rewrites = oobe_namespace_rewrites
-}
-
 polymer_modulizer("gaia_signin") {
   js_file = "gaia_signin.js"
   html_file = "gaia_signin.html"
@@ -867,6 +857,7 @@ html_to_js("web_components") {
     "adb_sideloading.js",
     "arc_terms_of_service.js",
     "autolaunch.js",
+    "fingerprint_setup.js",
     "gesture_navigation.js",
     "managed_terms_of_service.js",
     "marketing_opt_in.js",
