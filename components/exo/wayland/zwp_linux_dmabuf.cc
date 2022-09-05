@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/containers/contains.h"
+#include "base/ranges/algorithm.h"
 #include "components/exo/buffer.h"
 #include "components/exo/display.h"
 #include "components/exo/wayland/server_util.h"
@@ -151,11 +152,8 @@ wl_resource* create_buffer(wl_client* client,
                            int32_t height,
                            uint32_t format,
                            uint32_t flags) {
-  const auto* supported_format = std::find_if(
-      std::begin(kSupportedDmaBufFormats), std::end(kSupportedDmaBufFormats),
-      [format](const dmabuf_supported_format& supported_format) {
-        return supported_format.dmabuf_format == format;
-      });
+  const auto* supported_format = base::ranges::find(
+      kSupportedDmaBufFormats, format, &dmabuf_supported_format::dmabuf_format);
   if (supported_format == std::end(kSupportedDmaBufFormats)) {
     wl_resource_post_error(resource,
                            ZWP_LINUX_BUFFER_PARAMS_V1_ERROR_INVALID_FORMAT,

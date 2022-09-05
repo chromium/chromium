@@ -31,6 +31,7 @@
 #include "base/memory/shared_memory_mapper.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/posix/eintr_wrapper.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -1240,11 +1241,10 @@ std::unique_ptr<ClientBase::Buffer> ClientBase::CreateDrmBuffer(
 }
 
 ClientBase::Buffer* ClientBase::DequeueBuffer() {
-  auto buffer_it =
-      std::find_if(buffers_.begin(), buffers_.end(),
-                   [](const std::unique_ptr<ClientBase::Buffer>& buffer) {
-                     return !buffer->busy;
-                   });
+  auto buffer_it = base::ranges::find_if_not(
+      buffers_, [](const std::unique_ptr<ClientBase::Buffer>& buffer) {
+        return buffer->busy;
+      });
   if (buffer_it == buffers_.end())
     return nullptr;
 

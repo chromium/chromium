@@ -10,6 +10,7 @@
 
 #include "base/command_line.h"
 #include "base/containers/circular_deque.h"
+#include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "components/exo/wayland/clients/client_helper.h"
 #include "third_party/skia/include/core/SkCanvas.h"
@@ -70,10 +71,9 @@ void FeedbackPresented(void* data,
 void FeedbackDiscarded(void* data, struct wp_presentation_feedback* feedback) {
   Presentation* presentation = static_cast<Presentation*>(data);
   DCHECK_GT(presentation->submitted_frames.size(), 0u);
-  auto it = std::find_if(
-      presentation->submitted_frames.begin(),
-      presentation->submitted_frames.end(),
-      [feedback](Frame& frame) { return frame.feedback.get() == feedback; });
+  auto it =
+      base::ranges::find(presentation->submitted_frames, feedback,
+                         [](Frame& frame) { return frame.feedback.get(); });
   DCHECK(it != presentation->submitted_frames.end());
   presentation->submitted_frames.erase(it);
 }

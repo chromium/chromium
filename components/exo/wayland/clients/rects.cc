@@ -22,6 +22,7 @@
 #include "base/containers/circular_deque.h"
 #include "base/logging.h"
 #include "base/message_loop/message_pump_type.h"
+#include "base/ranges/algorithm.h"
 #include "base/scoped_generic.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_executor.h"
@@ -199,12 +200,9 @@ void FeedbackDiscarded(void* data,
                        struct wp_presentation_feedback* presentation_feedback) {
   Presentation* presentation = static_cast<Presentation*>(data);
   DCHECK_GT(presentation->scheduled_frames.size(), 0u);
-  auto it =
-      std::find_if(presentation->scheduled_frames.begin(),
-                   presentation->scheduled_frames.end(),
-                   [presentation_feedback](std::unique_ptr<Frame>& frame) {
-                     return frame->feedback.get() == presentation_feedback;
-                   });
+  auto it = base::ranges::find(
+      presentation->scheduled_frames, presentation_feedback,
+      [](std::unique_ptr<Frame>& frame) { return frame->feedback.get(); });
   DCHECK(it != presentation->scheduled_frames.end());
   presentation->scheduled_frames.erase(it);
   LOG(WARNING) << "Frame discarded";
