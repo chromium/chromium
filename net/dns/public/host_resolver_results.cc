@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "net/dns/host_resolver_results.h"
+#include "net/dns/public/host_resolver_results.h"
 
 #include <stdint.h>
 

@@ -19,7 +19,7 @@
 #include "net/base/load_timing_info.h"
 #include "net/base/net_export.h"
 #include "net/base/request_priority.h"
-#include "net/dns/host_resolver_results.h"
+#include "net/dns/public/host_resolver_results.h"
 #include "net/dns/public/resolve_error_info.h"
 #include "net/log/net_log_with_source.h"
 #include "net/socket/connection_attempts.h"

@@ -10,7 +10,7 @@
 
 #include "net/base/connection_endpoint_metadata.h"
 #include "net/base/ip_endpoint.h"
-#include "net/dns/host_resolver_results.h"
+#include "net/dns/public/host_resolver_results.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
