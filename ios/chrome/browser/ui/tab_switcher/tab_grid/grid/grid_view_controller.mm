@@ -1076,6 +1076,10 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 - (void)removeItemWithID:(NSString*)removedItemID
           selectedItemID:(NSString*)selectedItemID {
   NSUInteger index = [self indexOfItemWithID:removedItemID];
+  if (index == NSNotFound) {
+    // Do not remove if not showing the item (i.e. showing search results).
+    return;
+  }
   auto modelUpdates = ^{
     [self.items removeObjectAtIndex:index];
     self.selectedItemID = selectedItemID;
