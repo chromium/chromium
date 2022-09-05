@@ -4,21 +4,20 @@
 
 const CROS_TOKENS_JSON_URL = 'color_internals_tokens.json';
 
-interface Color {
-  value: string;
-  formula: string;
-}
-
 interface Token {
-  name: string;
-  mode_values: {light: Color, dark: Color};
+  token_name: string;
+  css_variable: string;
+  mode_values?: {light: string, dark: string};
 }
 
-function createColumnSpanningCell(text: string): HTMLTableCellElement {
-  const cell = document.createElement('td');
-  cell.scope = 'col';
-  cell.textContent = text;
-  return cell;
+interface TokenArray {
+  ref_tokens: Token[];
+  sys_tokens: Token[];
+}
+
+function getRGBAFromComputedStyle(element: HTMLElement): string {
+  const computedStyle = window.getComputedStyle(element);
+  return computedStyle.backgroundColor.toString();
 }
 
 function appendTokenRowToTable(
@@ -26,30 +25,39 @@ function appendTokenRowToTable(
   const newRow = table.insertRow();
 
   function appendColorCell(color: string) {
-    const cell = createColumnSpanningCell(color);
-    cell.classList.add('monospace');
     const colorSwatch = document.createElement('span');
+    const cell = document.createElement('td');
+    const text = document.createElement('span');
     colorSwatch.classList.add('color-swatch');
     colorSwatch.style.backgroundColor = color;
+    cell.classList.add('monospace');
     cell.appendChild(colorSwatch);
     newRow.append(cell);
+
+    // Perform this step last so the style has actually been computed.
+    text.textContent = getRGBAFromComputedStyle(colorSwatch);
+    cell.appendChild(text);
   }
 
   function appendFormulaCell(formula: string) {
-    const cell = createColumnSpanningCell(formula);
+    const cell = document.createElement('td');
+    cell.textContent = formula;
     newRow.append(cell);
   }
 
   const header = document.createElement('td');
-  header.textContent = token.name;
+  header.textContent = token.token_name;
   header.classList.add('monospace');
   newRow.append(header);
 
-  const {light, dark} = token.mode_values;
-  appendColorCell(light.value);
-  appendFormulaCell(light.formula);
-  appendColorCell(dark.value);
-  appendFormulaCell(dark.formula);
+  const cssVariableString = `var(${token.css_variable})`;
+  appendColorCell(cssVariableString);
+
+  // cros.sys.* tokens contain a definition of how they were calculated.
+  if (token.mode_values) {
+    appendFormulaCell(token.mode_values.light);
+    appendFormulaCell(token.mode_values.dark);
+  }
 }
 
 // The list of tokens and color values are provided as JSON resource by the
@@ -71,9 +79,18 @@ async function requestJSON(): Promise<JSON> {
 }
 
 async function populateTokenTable() {
-  const table = (document.querySelector('table')!).querySelector('tbody')!;
+  function addTokens(table: HTMLTableSectionElement, tokens: Token[]) {
+    Object.values(tokens).forEach(
+        t => appendTokenRowToTable(table, t as Token));
+  }
   const json = await requestJSON();
-  Object.values(json).forEach(t => appendTokenRowToTable(table, t as Token));
+  const tokens = json as unknown as TokenArray;
+  const refTable =
+      (document.querySelector('table#ref-tokens')!).querySelector('tbody')!;
+  const sysTable =
+      (document.querySelector('table#sys-tokens')!).querySelector('tbody')!;
+  addTokens(refTable, tokens.ref_tokens);
+  addTokens(sysTable, tokens.sys_tokens);
 }
 
 window.onload = () => {

@@ -1,67 +1,42 @@
-[
-    {
-        "name": "cros.ref.primary50",
-        "mode_values": {
-            "light": {
-                "value": "#202124ff",
-                "formula": "rgba(32, 33, 36, 1)"
-            },
-            "dark": {
-                "value": "#202124ff",
-                "formula": "rgba(32, 33, 36, 1)"
+{
+    "ref_tokens": [
+        {
+            "token_name": "cros.ref.primary50",
+            "css_variable": "--cros-ref-primary50"
+        }
+    ],
+    "sys_tokens": [
+        {
+            "token_name": "cros.sys.primary",
+            "css_variable": "--cros-sys-primary",
+            "mode_values": {
+                "light": "cros.ref.primary50",
+                "dark": "rgba(0, 0, 0, 0.5)"
+            }
+        },
+        {
+            "token_name": "cros.sys.on-primary",
+            "css_variable": "--cros-sys-on_primary",
+            "mode_values": {
+                "light": "rgba(255, 255, 255, 1)",
+                "dark": "cros.ref.primary50"
+            }
+        },
+        {
+            "token_name": "cros.sys.primary-container",
+            "css_variable": "--cros-sys-primary_container",
+            "mode_values": {
+                "light": "cros.ref.primary50.rgb @ 10%",
+                "dark": "cros.ref.primary50.rgb @ var(--cros.sys.disabled-opacity)"
+            }
+        },
+        {
+            "token_name": "cros.sys.on-primary-container",
+            "css_variable": "--cros-sys-on_primary_container",
+            "mode_values": {
+                "light": "rgba(255, 255, 255, 1)",
+                "dark": "blend(rgba(255, 255, 255, 0.04), cros.ref.primary50)"
             }
         }
-    },
-    {
-        "name": "cros.sys.primary",
-        "mode_values": {
-            "light": {
-                "value": "#202124ff",
-                "formula": "var(--cros.ref.primary50)"
-            },
-            "dark": {
-                "value": "#0000007f",
-                "formula": "rgba(0, 0, 0, 0.5)"
-            }
-        }
-    },
-    {
-        "name": "cros.sys.on-primary",
-        "mode_values": {
-            "light": {
-                "value": "#ffffffff",
-                "formula": "rgba(255, 255, 255, 1)"
-            },
-            "dark": {
-                "value": "#202124ff",
-                "formula": "var(--cros.ref.primary50)"
-            }
-        }
-    },
-    {
-        "name": "cros.sys.primary-container",
-        "mode_values": {
-            "light": {
-                "value": "#20212419",
-                "formula": "rgba(var(--cros.ref.primary50.rgb), 0.1)"
-            },
-            "dark": {
-                "value": "#20212460",
-                "formula": "rgba(var(--cros.ref.primary50.rgb), var(--cros.sys.disabled-opacity))"
-            }
-        }
-    },
-    {
-        "name": "cros.sys.on-primary-container",
-        "mode_values": {
-            "light": {
-                "value": "#ffffffff",
-                "formula": "rgba(255, 255, 255, 1)"
-            },
-            "dark": {
-                "value": "#292a2dff",
-                "formula": "rgba(41, 42, 45, 1)"
-            }
-        }
-    }
-]
+    ]
+}

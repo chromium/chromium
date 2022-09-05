@@ -202,6 +202,18 @@ class Color:
         if not parsed:
             raise ValueError('Malformed color value')
 
+    def GetFormula(self):
+        if self.blended_colors:
+            return 'blend(%s, %s)' % (self.blended_colors[0].GetFormula(),
+                                      self.blended_colors[1].GetFormula())
+        if self.var:
+            return self.var
+        if self.rgb_var:
+            a = self.opacity.GetReadableStr()
+            return '%s @ %s' % (self.rgb_var, a)
+        a = repr(self.opacity)
+        return 'rgba(%d, %d, %d, %s)' % (self.r, self.g, self.b, a)
+
     def __repr__(self):
         a = repr(self.opacity)
 

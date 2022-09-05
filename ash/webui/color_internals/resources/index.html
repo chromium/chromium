@@ -3,7 +3,7 @@
      found in the LICENSE file. -->
 <!DOCTYPE html>
 <head>
-  <link rel="stylesheet" href="chrome://theme/colors.css?sets=sys">
+  <link rel="stylesheet" href="chrome://theme/colors.css?sets=ref,sys">
   <meta charset="utf-8">
   <title>Color Internals</title>
   <style>
@@ -28,6 +28,12 @@
       table-layout: fixed;
       width: 100%;
     }
+    table > :not(caption) {
+      font-family: 'Courier New', Courier, monospace;
+    }
+    caption {
+      padding: 16px;
+    }
     th {
       background-color: var(--cros-sys-header);
       padding: 16px;
@@ -44,9 +50,6 @@
     }
     td {
       text-align: center;
-    }
-    .monospace {
-      font-family: 'Courier New', Courier, monospace;
     }
     #text-container {
       padding: 16px;
@@ -76,23 +79,30 @@
         cros_sys_colors.json5
       </a>.
     </p>
+    <p>The value column shows the current color for that token with the current
+      system palette in whatever light/dark theme you are currently using. The
+      formula columns show how a sys token is calculated from a ref token.
+    </p>
   </div>
   <div id="table-container">
-    <table id="cros-tokens" aria-labelledby="table-title">
-      <col>
-      <colgroup span="2"></colgroup>
-      <colgroup span="2"></colgroup>
+    <table id="ref-tokens">
+      <caption>Ref Tokens</caption>
       <thead>
         <tr>
-          <th class="border-end" rowspan="2">Token</th>
-          <th class="border-end" colspan="2" scope="colgroup">Light</th>
-          <th colspan="2" scope="colgroup">Dark</th>
+          <th class="border-end">Token</th>
+          <th class="border-end">Value</th>
         </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+    <table id="sys-tokens" aria-labelledby="table-title">
+      <caption>Sys Tokens</caption>
+      <thead>
         <tr>
-          <th class="border-end" scope="col">Value</th>
-          <th class="border-end" scope="col">Formula</th>
-          <th class="border-end" scope="col">Value</th>
-          <th scope="col">Formula</th>
+          <th class="border-end">Token</th>
+          <th class="border-end">Value</th>
+          <th class="border-end">Light Formula</th>
+          <th>Dark Formula</th>
         </tr>
       </thead>
       <tbody></tbody>

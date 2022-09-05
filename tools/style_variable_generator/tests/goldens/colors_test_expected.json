@@ -1,54 +1,21 @@
-[
-    {
-        "name": "google_grey_900",
-        "mode_values": {
-            "light": {
-                "value": "#202124ff",
-                "formula": "rgba(32, 33, 36, 1)"
-            },
-            "dark": {
-                "value": "#202124ff",
-                "formula": "rgba(32, 33, 36, 1)"
-            }
+{
+    "ref_tokens": [
+        {
+            "token_name": "google_grey_900",
+            "css_variable": "--google-grey-900"
+        },
+        {
+            "token_name": "text_color_primary",
+            "css_variable": "--cros-text-color-primary"
+        },
+        {
+            "token_name": "toggle_color",
+            "css_variable": "--cros-toggle-color"
+        },
+        {
+            "token_name": "bg_color_elevation_1",
+            "css_variable": "--cros-bg-color-elevation-1"
         }
-    },
-    {
-        "name": "text_color_primary",
-        "mode_values": {
-            "light": {
-                "value": "#202124ff",
-                "formula": "var(--google_grey_900)"
-            },
-            "dark": {
-                "value": "#ffffffff",
-                "formula": "rgba(255, 255, 255, 1)"
-            }
-        }
-    },
-    {
-        "name": "toggle_color",
-        "mode_values": {
-            "light": {
-                "value": "#20212419",
-                "formula": "rgba(var(--text_color_primary.rgb), 0.1)"
-            },
-            "dark": {
-                "value": "#ffffff60",
-                "formula": "rgba(var(--text_color_primary.rgb), var(--disabled_opacity))"
-            }
-        }
-    },
-    {
-        "name": "bg_color_elevation_1",
-        "mode_values": {
-            "light": {
-                "value": "#ffffffff",
-                "formula": "rgba(255, 255, 255, 1)"
-            },
-            "dark": {
-                "value": "#292a2dff",
-                "formula": "rgba(41, 42, 45, 1)"
-            }
-        }
-    }
-]
+    ],
+    "sys_tokens": []
+}
