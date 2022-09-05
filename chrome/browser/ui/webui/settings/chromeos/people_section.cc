@@ -398,6 +398,7 @@ void AddFingerprintResources(content::WebUIDataSource* html_source,
           IDS_SETTINGS_ADD_FINGERPRINT_DIALOG_INSTRUCTION_LOCATE_SCANNER_LEFT_SIDE_ARIA_LABEL;
       aria_label_includes_device = true;
       break;
+    case FingerprintLocation::LEFT_OF_POWER_BUTTON_TOP_RIGHT:
     case FingerprintLocation::UNKNOWN:
       instruction_id =
           IDS_SETTINGS_ADD_FINGERPRINT_DIALOG_INSTRUCTION_LOCATE_SCANNER_KEYBOARD;
