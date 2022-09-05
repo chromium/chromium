@@ -303,7 +303,7 @@
 <translation id="3592251141500063301"><ph name="FILE_NAME" /> को ऑफ़लाइन मोड में इस्तेमाल करने के लिए डाउनलोड नहीं किया जा सका</translation>
 <translation id="3601151620448429694"><ph name="NETWORK_NAME" /> · <ph name="CARRIER_NAME" /></translation>
 <translation id="3603385196401704894">कनाडाई फ़्रेंच</translation>
-<translation id="3606220979431771195">तुर्की-F</translation>
+<translation id="3606220979431771195">तुर्किये-F</translation>
 <translation id="3616113530831147358">ऑडियो</translation>
 <translation id="3619115746895587757">कैपुचिनो</translation>
 <translation id="3620292326130836921">सभी का बैक अप लिया गया!</translation>
@@ -423,7 +423,7 @@
 <translation id="4697043402264950621">फ़ाइल की सूची <ph name="COLUMN_NAME" /> के हिसाब से बढ़ते क्रम में लगाई गई है.</translation>
 <translation id="469897186246626197">यह फ़ाइल, Windows सॉफ़्टवेयर का इस्तेमाल करने वाले कंप्यूटर के लिए बनाई गई है. यह ChromeOS वाले आपके डिवाइस के साथ काम नहीं करती. ChromeOS पर फ़ाइलें खोलने के बारे में <ph name="BEGIN_LINK_HELP" />ज़्यादा जानें<ph name="END_LINK_HELP" />.</translation>
 <translation id="4706042980341760088">टाइपराइटर कीबोर्ड के साथ तमिल</translation>
-<translation id="4711094779914110278">तुर्की</translation>
+<translation id="4711094779914110278">तुर्किये</translation>
 <translation id="4712283082407695269">"<ph name="PATH" />" को खोला जा रहा है</translation>
 <translation id="4720185134442950733">मोबाइल डेटा नेटवर्क</translation>
 <translation id="4724850507808590449"><ph name="FILE_COUNT" /> फ़ोटो का बैक अप लिया गया</translation>
@@ -711,7 +711,7 @@
 <translation id="7008426324576352165">अपलोड को पूरा करने के लिए, आपके संगठन को ज़्यादा स्टोरेज की ज़रूरत है.</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
 <translation id="7014174261166285193">स्थापना विफल.</translation>
-<translation id="7031639531908619281">तुर्की</translation>
+<translation id="7031639531908619281">तुर्किये</translation>
 <translation id="7037472120706603960">तमिल ट्रांसलिट्रेशन</translation>
 <translation id="7040138676081995583">इसके साथ खोलें...</translation>
 <translation id="7048024426273850086"><ph name="NETWORK_COUNT" /> में से नेटवर्क <ph name="NETWORK_INDEX" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, सिग्नल की क्षमता <ph name="SIGNAL_STRENGTH" />%, फ़ोन की बैटरी <ph name="BATTERY_STATUS" />%, कनेक्ट करें</translation>
