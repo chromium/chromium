@@ -29969,9 +29969,20 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
-<action name="Signin_Signout_FromAccountListSettings">
+<action name="Signin_Signout">
   <owner>jlebel@chromium.org</owner>
-  <owner>fernandex@chromium.org</owner>
+  <owner>arthurmilchior@chromium.org</owner>
+  <description>
+    Recorded when the user signs out. Recorded for iOS only.
+  </description>
+</action>
+
+<action name="Signin_Signout_FromAccountListSettings">
+  <obsolete>
+    Removed since M107. Renamed without _FromAccountListSettings since the
+    action is called from anywhere.
+  </obsolete>
+  <owner>jlebel@chromium.org</owner>
   <owner>msarda@chromium.org</owner>
   <description>
     Recorded when the user signs out from the Account list view. Recorded for
@@ -29991,9 +30002,21 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
-<action name="Signin_SignoutClearData_FromAccountListSettings">
+<action name="Signin_SignoutClearData">
   <owner>jlebel@chromium.org</owner>
-  <owner>fernandex@chromium.org</owner>
+  <owner>arthurmilchior@chromium.org</owner>
+  <description>
+    Recorded when the user signs out and delete user data. Recorded for iOS
+    only.
+  </description>
+</action>
+
+<action name="Signin_SignoutClearData_FromAccountListSettings">
+  <obsolete>
+    Removed since M107. Renamed without _FromAccountListSettings since the
+    action is called from anywhere.
+  </obsolete>
+  <owner>jlebel@chromium.org</owner>
   <owner>msarda@chromium.org</owner>
   <description>
     Recorded when the user signs out and delete user data, from the Account list

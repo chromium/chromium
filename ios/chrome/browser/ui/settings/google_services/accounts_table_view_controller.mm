@@ -629,11 +629,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
                           forceClearData);
   }
   if (forceClearData) {
-    base::RecordAction(base::UserMetricsAction(
-        "Signin_SignoutClearData_FromAccountListSettings"));
+    base::RecordAction(base::UserMetricsAction("Signin_SignoutClearData"));
   } else {
-    base::RecordAction(
-        base::UserMetricsAction("Signin_Signout_FromAccountListSettings"));
+    base::RecordAction(base::UserMetricsAction("Signin_Signout"));
   }
 }
 
