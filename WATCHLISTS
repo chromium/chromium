@@ -756,7 +756,7 @@
                   '|ui/webui/resources/cr_components/chromeos/bluetooth'
     },
     'chromeos_cellular': {
-      'filepath': 'ash/services/cellular_setup/|'\
+      'filepath': 'chromeos/ash/services/cellular_setup/|'\
                   'chromeos/ash/components/dbus/hermes/|'\
                   'ui/webui/resources/cr_components/chromeos/cellular_setup/',
     },
