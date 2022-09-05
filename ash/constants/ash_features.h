@@ -361,7 +361,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kHandwritingLibraryDlc;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kHelpAppBackgroundPage;
-COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kHelpAppDiscoverTab;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kHelpAppDiscoverTabNotificationAllChannels;
 COMPONENT_EXPORT(ASH_CONSTANTS)

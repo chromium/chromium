@@ -40,7 +40,6 @@ class HelpAppSearchBrowserTestBase : public AppListSearchBrowserTest {
   HelpAppSearchBrowserTestBase() {
     scoped_feature_list_.InitWithFeatures(
         {chromeos::features::kHelpAppLauncherSearch,
-         chromeos::features::kHelpAppDiscoverTab,
          ash::features::kProductivityLauncher},
         {});
   }

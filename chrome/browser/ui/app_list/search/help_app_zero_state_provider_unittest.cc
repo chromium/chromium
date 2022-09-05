@@ -61,14 +61,12 @@ class HelpAppZeroStateProviderTest
   HelpAppZeroStateProviderTest() {
     if (GetParam()) {
       scoped_feature_list_.InitWithFeatures(
-          /*enabled_features=*/{chromeos::features::kHelpAppDiscoverTab,
-                                chromeos::features::kReleaseNotesSuggestionChip,
+          /*enabled_features=*/{chromeos::features::kReleaseNotesSuggestionChip,
                                 ash::features::kProductivityLauncher},
           /*disabled_features=*/{});
     } else {
       scoped_feature_list_.InitWithFeatures(
-          /*enabled_features=*/{chromeos::features::kHelpAppDiscoverTab,
-                                chromeos::features::
+          /*enabled_features=*/{chromeos::features::
                                     kReleaseNotesSuggestionChip},
           /*disabled_features=*/{ash::features::kProductivityLauncher});
     }
@@ -301,36 +299,6 @@ TEST_P(HelpAppZeroStateProviderTest,
 
   EXPECT_EQ(0, profile()->GetPrefs()->GetInteger(
                    prefs::kReleaseNotesSuggestionChipTimesLeftToShow));
-}
-
-class HelpAppZeroStateProviderWithDiscoverTabDisabledTest
-    : public HelpAppZeroStateProviderTest {
- public:
-  HelpAppZeroStateProviderWithDiscoverTabDisabledTest() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{chromeos::features::kReleaseNotesSuggestionChip},
-        /*disabled_features=*/{chromeos::features::kHelpAppDiscoverTab});
-  }
-  ~HelpAppZeroStateProviderWithDiscoverTabDisabledTest() override = default;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-INSTANTIATE_TEST_SUITE_P(ProductivityLauncher,
-                         HelpAppZeroStateProviderWithDiscoverTabDisabledTest,
-                         testing::Bool());
-
-TEST_P(HelpAppZeroStateProviderWithDiscoverTabDisabledTest,
-       DoesNotReturnDiscoverTabChipForEmptyQuery) {
-  profile()->GetPrefs()->SetInteger(
-      prefs::kDiscoverTabSuggestionChipTimesLeftToShow, 1);
-  profile()->GetPrefs()->SetInteger(
-      prefs::kReleaseNotesSuggestionChipTimesLeftToShow, 0);
-
-  StartZeroStateSearch();
-
-  EXPECT_TRUE(GetLatestResults().empty());
 }
 
 }  // namespace test

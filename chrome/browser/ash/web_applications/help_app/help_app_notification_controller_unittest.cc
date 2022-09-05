@@ -93,8 +93,7 @@ class HelpAppNotificationControllerTest : public BrowserWithTestWindowTest {
         base::Unretained(this)));
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/
-        {features::kHelpAppDiscoverTab,
-         features::kHelpAppDiscoverTabNotificationAllChannels,
+        {features::kHelpAppDiscoverTabNotificationAllChannels,
          features::kReleaseNotesNotificationAllChannels},
         /*disabled_features=*/{});
     pref_service_ = CreatePrefServiceAndRegisterPrefs();

@@ -134,10 +134,6 @@ HelpAppNotificationController::~HelpAppNotificationController() = default;
 // Checks profile type and when the last notification was shown to determine
 // whether we should show the Discover tab notification to the user.
 bool HelpAppNotificationController::ShouldShowDiscoverNotification() {
-  if (!base::FeatureList::IsEnabled(features::kHelpAppDiscoverTab)) {
-    return false;
-  }
-
   bool should_show_for_current_channel =
       chrome::GetChannel() == version_info::Channel::STABLE ||
       base::FeatureList::IsEnabled(

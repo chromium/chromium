@@ -44,9 +44,7 @@ class ResultsWaiter : public SearchController::Observer {
 
 AppListSearchBrowserTest::AppListSearchBrowserTest() {
   scoped_feature_list_.InitWithFeatures(
-      {chromeos::features::kHelpAppLauncherSearch,
-       chromeos::features::kHelpAppDiscoverTab},
-      {});
+      {chromeos::features::kHelpAppLauncherSearch}, {});
 }
 
 void AppListSearchBrowserTest::SetUpOnMainThread() {

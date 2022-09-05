@@ -5490,11 +5490,6 @@ const char kHelpAppBackgroundPageDescription[] =
     "to initialize the Help App Launcher search index and show the Discover "
     "tab notification.";
 
-const char kHelpAppDiscoverTabName[] = "Help App Discover Tab";
-const char kHelpAppDiscoverTabDescription[] =
-    "Enables the Discover tab in the help app. Even if the feature is enabled, "
-    "internal app logic might decide not to show the tab.";
-
 const char kHelpAppLauncherSearchName[] = "Help App launcher search";
 const char kHelpAppLauncherSearchDescription[] =
     "Enables showing search results from the help app in the launcher.";

@@ -3137,9 +3137,6 @@ extern const char kGuestOsFilesDescription[];
 extern const char kHelpAppBackgroundPageName[];
 extern const char kHelpAppBackgroundPageDescription[];
 
-extern const char kHelpAppDiscoverTabName[];
-extern const char kHelpAppDiscoverTabDescription[];
-
 extern const char kHelpAppLauncherSearchName[];
 extern const char kHelpAppLauncherSearchDescription[];
 

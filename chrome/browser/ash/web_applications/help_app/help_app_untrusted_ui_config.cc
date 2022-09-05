@@ -87,8 +87,6 @@ void PopulateLoadTimeData(content::WebUI* web_ui,
   source->AddBoolean(
       "HelpAppSearchServiceIntegration",
       base::FeatureList::IsEnabled(features::kEnableLocalSearchService));
-  source->AddBoolean("HelpAppDiscoverTab", base::FeatureList::IsEnabled(
-                                               features::kHelpAppDiscoverTab));
   source->AddBoolean(
       "HelpAppBackgroundPage",
       base::FeatureList::IsEnabled(features::kHelpAppBackgroundPage));

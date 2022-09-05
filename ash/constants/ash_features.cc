@@ -853,10 +853,6 @@ const base::Feature kHandwritingLibraryDlc{"HandwritingLibraryDlc",
 const base::Feature kHelpAppBackgroundPage{"HelpAppBackgroundPage",
                                            base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Enables the Discover Tab in the help app.
-const base::Feature kHelpAppDiscoverTab{"HelpAppDiscoverTab",
-                                        base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Enables or disables the Help App Discover tab notifications on non-stable
 // ChromeOS channels. Used for testing.
 const base::Feature kHelpAppDiscoverTabNotificationAllChannels{

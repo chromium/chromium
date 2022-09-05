@@ -44,10 +44,6 @@ constexpr char kHelpAppUpdatesResult[] = "help-app://updates";
 
 // Whether we should show the Discover Tab suggestion chip.
 bool ShouldShowDiscoverTabSuggestionChip(Profile* profile) {
-  if (!base::FeatureList::IsEnabled(ash::features::kHelpAppDiscoverTab)) {
-    return false;
-  }
-
   if (ash::features::IsProductivityLauncherEnabled())
     return false;
 
