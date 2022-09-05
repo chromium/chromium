@@ -63,6 +63,7 @@
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/password_manager/core/browser/leak_detection_dialog_utils.h"
 #include "components/password_manager/core/browser/manage_passwords_referrer.h"
+#include "components/password_manager/core/common/password_manager_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
@@ -1283,9 +1284,12 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
 
   html_source->AddLocalizedStrings(kLocalizedStrings);
   // PASSWORD_VIEW page timeouts in 5 minutes:
-  html_source->AddString("passwordsTimedOutDescription",
-                         l10n_util::GetPluralStringFUTF16(
-                             IDS_SETTINGS_PASSWORDS_TIMED_OUT_DESCRIPTION, 5));
+  html_source->AddString(
+      "passwordsTimedOutDescription",
+      l10n_util::GetPluralStringFUTF16(
+          IDS_SETTINGS_PASSWORDS_TIMED_OUT_DESCRIPTION,
+          password_manager::features::kPasswordNotesAuthValidity.Get()
+              .InMinutes()));
 }
 
 void AddSignOutDialogStrings(content::WebUIDataSource* html_source,
