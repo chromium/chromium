@@ -48,7 +48,11 @@ namespace blink {
 
 namespace {
 
+#ifdef FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION
+const size_t kMaxDecompressedSizeMb = 30;
+#else
 const size_t kMaxDecompressedSizeMb = 128;
+#endif
 
 class BlinkOTSContext final : public ots::OTSContext {
   DISALLOW_NEW();
