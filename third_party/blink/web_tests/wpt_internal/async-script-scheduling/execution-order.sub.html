@@ -1,5 +1,7 @@
 <!doctype html>
 <head>
+  <meta name=variant content="">
+  <meta name=variant content="?reload">
   <title>Async Script Execution Order</title>
   <script src="/resources/testharness.js"></script>
   <script src="/resources/testharnessreport.js"></script>
@@ -17,19 +19,32 @@
        pipeline. It does not represent the "ideal" or "desired" behavior, so
        changing it is probably fine. -->
   <script>
-    setup({single_test: true})
+      const reload_key = 'run-after-reload';
+      if (location.search == '?reload' && !window.localStorage.getItem(reload_key)) {
+        window.localStorage.setItem(reload_key, true);
+        location.reload();
+      } else {
+        window.localStorage.clear();
+        test();
+      }
 
     const logs = [];
     function logScript(msg) {
       logs.push(msg);
     }
-    window.onload = e => {
-      const actualOrder = logs.join(";");
-      const expectedOrder = "async_preload_or_blocking_render;async_preload_or_blocking_render;async;async;inline1;external;inline2;defer;DOMContentLoaded";
-      assert_equals(actualOrder, expectedOrder);
-      done();
-    };
-    document.addEventListener('DOMContentLoaded', e => { logScript('DOMContentLoaded'); });
+
+  function test() {
+    setup({ single_test: true })
+      window.onload = e => {
+        const actualOrder = logs.join(";");
+        const expectedOrder = "async_preload_or_blocking_render;async_preload_or_blocking_render;async;async;inline1;external;inline2;defer;DOMContentLoaded";
+        assert_equals(actualOrder, expectedOrder);
+        done();
+      };
+      document.addEventListener('DOMContentLoaded', e => {
+        logScript('DOMContentLoaded');
+      });
+    }
   </script>
   <script defer src="resources/script.sub.js?label=defer"></script>
   <!-- Note: The following two async scripts are named as "label=async". These are intentionally named with the same name

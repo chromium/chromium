@@ -4,6 +4,8 @@
 
 <head>
   <meta charset="utf-8">
+  <meta name=variant content="">
+  <meta name=variant content="?reload">
   <script src="/resources/testharness.js"></script>
   <script src="/resources/testharnessreport.js"></script>
   <script src="../resources/helper.js"></script>
@@ -11,20 +13,31 @@
 
 <body>
   <script>
-    setup({ single_test: true });
-    enableLogDOMContentLoaded();
-    function finish() {
-      assert_array_equals(
-        window.result,
-        ["Inline1", "Sync1", "Inline2", "EndOfBody",
-          "DOMContentLoaded", "Async1"], "Execution order");
-      // When ForceInOrder is enabled, the order is following:
-      // ["Inline1", "Async1", "Sync1", "Inline2",
-      // "EndOfBody", "DOMContentLoaded"]
-      done();
+      const reload_key = 'run-after-reload';
+      if (location.search == '?reload' && !window.localStorage.getItem(reload_key)) {
+        window.localStorage.setItem(reload_key, true);
+        location.reload();
+      } else {
+        window.localStorage.clear();
+        test();
+      }
+
+      function test() {
+      setup({ single_test: true });
+      enableLogDOMContentLoaded();
+      function finish() {
+        assert_array_equals(
+          window.result,
+          ["Inline1", "Sync1", "Inline2", "EndOfBody",
+            "DOMContentLoaded", "Async1"], "Execution order");
+        // When ForceInOrder is enabled, the order is following:
+        // ["Inline1", "Async1", "Sync1", "Inline2",
+        // "EndOfBody", "DOMContentLoaded"]
+        done();
+      }
+      window.addEventListener("load", finish);
+      logScript("Inline1");
     }
-    window.addEventListener("load", finish);
-    logScript("Inline1");
   </script>
 
   <!-- Add 1 sec delay to make the loading happens after DOMContentLoaded -->

@@ -4,6 +4,8 @@
 
 <head>
   <meta charset="utf-8">
+  <meta name=variant content="">
+  <meta name=variant content="?reload">
   <script src="/resources/testharness.js"></script>
   <script src="/resources/testharnessreport.js"></script>
   <script src="../resources/helper.js"></script>
@@ -11,17 +13,28 @@
 
 <body>
   <script>
-    setup({ single_test: true });
-    function finish() {
-      assert_array_equals(
-        window.result,
-        ["Inline1", "Sync1", "Sync2", "EndOfBody"], "Execution order");
-      // When SelectiveInOrder is enabled, the order is following:
-      // ["Inline1", "Sync2", "EndOfBody", "Sync1"]
-      done();
+      const reload_key = 'run-after-reload';
+      if (location.search == '?reload' && !window.localStorage.getItem(reload_key)) {
+        window.localStorage.setItem(reload_key, true);
+        location.reload();
+      } else {
+        window.localStorage.clear();
+        test();
+      }
+
+      function test() {
+      setup({ single_test: true });
+      function finish() {
+        assert_array_equals(
+          window.result,
+          ["Inline1", "Sync1", "Sync2", "EndOfBody"], "Execution order");
+        // When SelectiveInOrder is enabled, the order is following:
+        // ["Inline1", "Sync2", "EndOfBody", "Sync1"]
+        done();
+      }
+      logScript("Inline1");
+      window.addEventListener("load", finish);
     }
-    logScript("Inline1");
-    window.addEventListener("load", finish);
   </script>
 
   <script

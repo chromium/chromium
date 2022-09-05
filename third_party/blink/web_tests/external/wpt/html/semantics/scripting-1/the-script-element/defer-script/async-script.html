@@ -3,29 +3,20 @@
 <html>
 <head>
     <meta charset="utf-8">
+    <meta name=variant content="">
+    <meta name=variant content="?reload">
     <script src="/resources/testharness.js"></script>
     <script src="/resources/testharnessreport.js"></script>
     <script src="resources/helper.js"></script>
 </head>
 <body>
   <script>
-  setup({single_test: true});
-  function finish() {
-    assert_array_equals(
-        window.result,
-        ["Inline1", "Sync1", "EndOfBody", "DOMContentLoaded", "Async1"],
-        "Execution order");
-    // Chromium's force-defer order would be:
-    //  ["EndOfBody", "Inline1", "Sync1", "DOMContentLoaded", "Async1"]
-    done();
-  }
-  logScript("Inline1");
-  window.addEventListener("load", finish);
+    let child_path = 'support/async-script.html';
+    if (location.search == '?reload') {
+      child_path += '?reload';
+    }
+    const child_window = window.open(child_path);
+    fetch_tests_from_window(child_window);
   </script>
-  <script src="resources/sync-script-1.js"></script>
-  <!-- Delays are added to make DOMContentLoaded be fired before
-       async script load completion -->
-  <script src="resources/async-script-1.js?pipe=trickle(d1)" async></script>
-  <pre id="bodyend">End</pre>
 </body>
 </html>
