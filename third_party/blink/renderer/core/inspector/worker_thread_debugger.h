@@ -32,7 +32,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_WORKER_THREAD_DEBUGGER_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/inspector/thread_debugger.h"
+#include "third_party/blink/renderer/core/inspector/thread_debugger_common_impl.h"
 
 namespace blink {
 
@@ -41,7 +41,7 @@ class KURL;
 class SourceLocation;
 class WorkerThread;
 
-class CORE_EXPORT WorkerThreadDebugger final : public ThreadDebugger {
+class CORE_EXPORT WorkerThreadDebugger final : public ThreadDebuggerCommonImpl {
  public:
   explicit WorkerThreadDebugger(v8::Isolate*);
   WorkerThreadDebugger(const WorkerThreadDebugger&) = delete;

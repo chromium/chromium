@@ -2,60 +2,49 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_THREAD_DEBUGGER_H_
-#define THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_THREAD_DEBUGGER_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_THREAD_DEBUGGER_COMMON_IMPL_H_
+#define THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_THREAD_DEBUGGER_COMMON_IMPL_H_
 
 #include <memory>
-#include "third_party/blink/public/mojom/devtools/console_message.mojom-blink-forward.h"
-#include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
+
+#include "third_party/blink/renderer/platform/bindings/thread_debugger.h"
 #include "third_party/blink/renderer/platform/timer.h"
-#include "third_party/blink/renderer/platform/wtf/cross_thread_copier.h"
-#include "third_party/blink/renderer/platform/wtf/forward.h"
-#include "third_party/blink/renderer/platform/wtf/vector.h"
-#include "v8/include/v8-inspector.h"
-#include "v8/include/v8.h"
 
 namespace blink {
 
 class ExecutionContext;
 class SourceLocation;
 
-class CORE_EXPORT ThreadDebugger : public v8_inspector::V8InspectorClient,
-                                   public V8PerIsolateData::Data {
+// Implementation class of "ThreadDebugger" that is an abstract class in
+// platform/bindings. CommonImpl means the common implementation among
+// MainThreadDebugger and WorkerThreadDebugger.
+class ThreadDebuggerCommonImpl : public ThreadDebugger {
  public:
-  explicit ThreadDebugger(v8::Isolate*);
-  ThreadDebugger(const ThreadDebugger&) = delete;
-  ThreadDebugger& operator=(const ThreadDebugger&) = delete;
-  ~ThreadDebugger() override;
-
-  static ThreadDebugger* From(v8::Isolate*);
-  virtual bool IsWorker() = 0;
-  v8_inspector::V8Inspector* GetV8Inspector() const {
-    return v8_inspector_.get();
-  }
-
-  static void IdleStarted(v8::Isolate*);
-  static void IdleFinished(v8::Isolate*);
+  explicit ThreadDebuggerCommonImpl(v8::Isolate* isolate);
+  ThreadDebuggerCommonImpl(const ThreadDebuggerCommonImpl&) = delete;
+  ThreadDebuggerCommonImpl& operator=(const ThreadDebuggerCommonImpl&) = delete;
+  ~ThreadDebuggerCommonImpl() override;
 
   void AsyncTaskScheduled(const StringView& task_name,
                           void* task,
-                          bool recurring);
-  void AsyncTaskCanceled(void* task);
-  void AllAsyncTasksCanceled();
-  void AsyncTaskStarted(void* task);
-  void AsyncTaskFinished(void* task);
+                          bool recurring) override;
+  void AsyncTaskCanceled(void* task) override;
+  void AllAsyncTasksCanceled() override;
+  void AsyncTaskStarted(void* task) override;
+  void AsyncTaskFinished(void* task) override;
   unsigned PromiseRejected(v8::Local<v8::Context>,
                            const String& error_message,
                            v8::Local<v8::Value> exception,
-                           std::unique_ptr<SourceLocation>);
+                           std::unique_ptr<SourceLocation>) override;
   void PromiseRejectionRevoked(v8::Local<v8::Context>,
-                               unsigned promise_rejection_id);
+                               unsigned promise_rejection_id) override;
 
   v8_inspector::V8StackTraceId StoreCurrentStackTrace(
-      const StringView& description);
-  void ExternalAsyncTaskStarted(const v8_inspector::V8StackTraceId& parent);
-  void ExternalAsyncTaskFinished(const v8_inspector::V8StackTraceId& parent);
+      const StringView& description) override;
+  void ExternalAsyncTaskStarted(
+      const v8_inspector::V8StackTraceId& parent) override;
+  void ExternalAsyncTaskFinished(
+      const v8_inspector::V8StackTraceId& parent) override;
 
  protected:
   virtual int ContextGroupId(ExecutionContext*) = 0;
@@ -119,8 +108,7 @@ class CORE_EXPORT ThreadDebugger : public v8_inspector::V8InspectorClient,
   static void GetEventListenersCallback(
       const v8::FunctionCallbackInfo<v8::Value>&);
 
-  std::unique_ptr<v8_inspector::V8Inspector> v8_inspector_;
-  Vector<std::unique_ptr<TaskRunnerTimer<ThreadDebugger>>> timers_;
+  Vector<std::unique_ptr<TaskRunnerTimer<ThreadDebuggerCommonImpl>>> timers_;
   Vector<v8_inspector::V8InspectorClient::TimerCallback> timer_callbacks_;
   Vector<void*> timer_data_;
 };
@@ -137,4 +125,4 @@ struct CrossThreadCopier<v8_inspector::V8StackTraceId> {
 
 }  // namespace WTF
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_THREAD_DEBUGGER_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_THREAD_DEBUGGER_COMMON_IMPL_H_

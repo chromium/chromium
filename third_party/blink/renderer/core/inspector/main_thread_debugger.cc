@@ -90,8 +90,7 @@ LocalFrame* ToFrame(ExecutionContext* context) {
 MainThreadDebugger* MainThreadDebugger::instance_ = nullptr;
 
 MainThreadDebugger::MainThreadDebugger(v8::Isolate* isolate)
-    : ThreadDebugger(isolate),
-      paused_(false) {
+    : ThreadDebuggerCommonImpl(isolate), paused_(false) {
   base::AutoLock locker(CreationLock());
   DCHECK(!instance_);
   instance_ = this;
@@ -366,7 +365,7 @@ v8::MaybeLocal<v8::Value> MainThreadDebugger::memoryInfo(
 void MainThreadDebugger::installAdditionalCommandLineAPI(
     v8::Local<v8::Context> context,
     v8::Local<v8::Object> object) {
-  ThreadDebugger::installAdditionalCommandLineAPI(context, object);
+  ThreadDebuggerCommonImpl::installAdditionalCommandLineAPI(context, object);
   CreateFunctionProperty(
       context, object, "$", MainThreadDebugger::QuerySelectorCallback,
       "function $(selector, [startNode]) { [Command Line API] }",

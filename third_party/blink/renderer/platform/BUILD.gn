@@ -423,6 +423,8 @@ component("platform") {
     "bindings/script_wrappable.h",
     "bindings/string_resource.cc",
     "bindings/string_resource.h",
+    "bindings/thread_debugger.cc",
+    "bindings/thread_debugger.h",
     "bindings/to_v8.h",
     "bindings/trace_wrapper_v8_reference.h",
     "bindings/trace_wrapper_v8_string.cc",

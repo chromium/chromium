@@ -65,7 +65,7 @@ WorkerThreadDebugger* WorkerThreadDebugger::From(v8::Isolate* isolate) {
 }
 
 WorkerThreadDebugger::WorkerThreadDebugger(v8::Isolate* isolate)
-    : ThreadDebugger(isolate),
+    : ThreadDebuggerCommonImpl(isolate),
       paused_context_group_id_(kInvalidContextGroupId) {}
 
 WorkerThreadDebugger::~WorkerThreadDebugger() {

@@ -34,7 +34,7 @@
 #include <memory>
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/document_lifecycle.h"
-#include "third_party/blink/renderer/core/inspector/thread_debugger.h"
+#include "third_party/blink/renderer/core/inspector/thread_debugger_common_impl.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "v8/include/v8-inspector.h"
 #include "v8/include/v8.h"
@@ -46,7 +46,7 @@ class LocalFrame;
 class SecurityOrigin;
 class SourceLocation;
 
-class CORE_EXPORT MainThreadDebugger final : public ThreadDebugger {
+class CORE_EXPORT MainThreadDebugger final : public ThreadDebuggerCommonImpl {
  public:
   class ClientMessageLoop {
     USING_FAST_MALLOC(ClientMessageLoop);
