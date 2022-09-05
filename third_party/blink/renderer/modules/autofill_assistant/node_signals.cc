@@ -121,6 +121,17 @@ WebString GetType(const Element& element) {
   return WebString(element.getAttribute(html_names::kTypeAttr));
 }
 
+bool IsSupportedByClient(const Element& element) {
+  if (element.HasTagName(html_names::kInputTag)) {
+    const String input_type = String{GetType(element)}.LowerASCII();
+    return input_type != "checkbox" && input_type != "radio" &&
+           input_type != "submit" && input_type != "button" &&
+           input_type != "hidden";
+  }
+  return element.HasTagName(html_names::kTextareaTag) ||
+         element.HasTagName(html_names::kSelectTag);
+}
+
 WebString GetAria(const Element& element) {
   WebVector<QualifiedName> attributes;
   attributes.emplace_back(html_names::kAriaLabelAttr);
@@ -523,14 +534,10 @@ void CollectSignalsForNode(
       CollectSignalsForNode(*shadow_root, node_signals);
     }
 
-    if (!element.HasTagName(html_names::kInputTag) &&
-        !element.HasTagName(html_names::kTextareaTag) &&
-        !element.HasTagName(html_names::kSelectTag)) {
+    if (!IsSupportedByClient(element) || !IsVisible(element)) {
       continue;
     }
-    if (!IsVisible(element)) {
-      continue;
-    }
+
     AutofillAssistantNodeSignals signals;
     signals.backend_node_id = static_cast<int>(DOMNodeIds::IdForNode(&element));
     CollectNodeFeatures(element, &signals.node_features);

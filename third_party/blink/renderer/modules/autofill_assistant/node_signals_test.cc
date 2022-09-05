@@ -535,4 +535,50 @@ TEST_F(NodeSignalsTest, GetFormTypeAfterLabel) {
   EXPECT_EQ(results[0].context_features.form_type, "AFTRLBL BILLING");
 }
 
+TEST_F(NodeSignalsTest, IsSupportedByClient) {
+  SetBodyContent(R"(<input type="text">)");
+  EXPECT_EQ(GetAutofillAssistantNodeSignals(WebDocument(&GetDocument())).size(),
+            1u);
+
+  SetBodyContent(R"(<input>)");
+  EXPECT_EQ(GetAutofillAssistantNodeSignals(WebDocument(&GetDocument())).size(),
+            1u);
+
+  SetBodyContent(R"(<input type="checkbox">)");
+  EXPECT_TRUE(
+      GetAutofillAssistantNodeSignals(WebDocument(&GetDocument())).empty());
+
+  SetBodyContent(R"(<input type="Radio">)");
+  EXPECT_TRUE(
+      GetAutofillAssistantNodeSignals(WebDocument(&GetDocument())).empty());
+
+  SetBodyContent(R"(<input type="radio">)");
+  EXPECT_TRUE(
+      GetAutofillAssistantNodeSignals(WebDocument(&GetDocument())).empty());
+
+  SetBodyContent(R"(<input type="submit">)");
+  EXPECT_TRUE(
+      GetAutofillAssistantNodeSignals(WebDocument(&GetDocument())).empty());
+
+  SetBodyContent(R"(<input type="button">)");
+  EXPECT_TRUE(
+      GetAutofillAssistantNodeSignals(WebDocument(&GetDocument())).empty());
+
+  SetBodyContent(R"(<input type="hidden">)");
+  EXPECT_TRUE(
+      GetAutofillAssistantNodeSignals(WebDocument(&GetDocument())).empty());
+
+  SetBodyContent(R"(<select>)");
+  EXPECT_EQ(GetAutofillAssistantNodeSignals(WebDocument(&GetDocument())).size(),
+            1u);
+
+  SetBodyContent(R"(<textarea>)");
+  EXPECT_EQ(GetAutofillAssistantNodeSignals(WebDocument(&GetDocument())).size(),
+            1u);
+
+  SetBodyContent(R"(<div>)");
+  EXPECT_TRUE(
+      GetAutofillAssistantNodeSignals(WebDocument(&GetDocument())).empty());
+}
+
 }  // namespace blink
