@@ -108,6 +108,9 @@ NetworkManagerWlanApi::NetworkManagerWlanApi() {}
 
 NetworkManagerWlanApi::~NetworkManagerWlanApi() {
   // Close the connection.
+  // This is owned by the system bus, so we need to make sure we're clearing
+  // the pointer before its shutdown.
+  network_manager_proxy_ = nullptr;
   system_bus_->ShutdownAndBlock();
 }
 
