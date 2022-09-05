@@ -1913,7 +1913,7 @@
     },
     {
       name: "RenderBlockingStatus",
-      status: "experimental"
+      status: "stable"
     },
     {
       // The renderpriority attribute feature.
