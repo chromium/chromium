@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_SERVICES_CHROMEBOX_FOR_MEETINGS_PUBLIC_CPP_FAKE_SERVICE_CONNECTION_H_
-#define ASH_SERVICES_CHROMEBOX_FOR_MEETINGS_PUBLIC_CPP_FAKE_SERVICE_CONNECTION_H_
+#ifndef CHROMEOS_ASH_SERVICES_CHROMEBOX_FOR_MEETINGS_PUBLIC_CPP_FAKE_SERVICE_CONNECTION_H_
+#define CHROMEOS_ASH_SERVICES_CHROMEBOX_FOR_MEETINGS_PUBLIC_CPP_FAKE_SERVICE_CONNECTION_H_
 
-#include "ash/services/chromebox_for_meetings/public/cpp/service_connection.h"
-#include "ash/services/chromebox_for_meetings/public/mojom/cfm_service_manager.mojom.h"
 #include "base/bind.h"
+#include "chromeos/ash/services/chromebox_for_meetings/public/cpp/service_connection.h"
+#include "chromeos/ash/services/chromebox_for_meetings/public/mojom/cfm_service_manager.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
@@ -46,4 +46,4 @@ class FakeServiceConnectionImpl : public ServiceConnection {
 }  // namespace cfm
 }  // namespace ash
 
-#endif  // ASH_SERVICES_CHROMEBOX_FOR_MEETINGS_PUBLIC_CPP_FAKE_SERVICE_CONNECTION_H_
+#endif  // CHROMEOS_ASH_SERVICES_CHROMEBOX_FOR_MEETINGS_PUBLIC_CPP_FAKE_SERVICE_CONNECTION_H_

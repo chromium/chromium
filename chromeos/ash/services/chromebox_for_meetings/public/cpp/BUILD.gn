@@ -13,8 +13,8 @@ source_set("cpp") {
     "appid_util.h",
   ]
   deps = [
-    "//ash/services/chromebox_for_meetings/public/mojom",
     "//base",
+    "//chromeos/ash/services/chromebox_for_meetings/public/mojom",
   ]
   if (is_cfm) {
     sources += [
@@ -36,9 +36,9 @@ if (is_cfm) {
     ]
     deps = [
       ":cpp",
-      "//ash/services/chromebox_for_meetings/public/mojom",
       "//base",
       "//chromeos/ash/components/dbus/chromebox_for_meetings",
+      "//chromeos/ash/services/chromebox_for_meetings/public/mojom",
       "//mojo/public/cpp/bindings",
     ]
   }
@@ -49,8 +49,8 @@ source_set("unit_tests") {
   sources = [ "appid_util_unittest.cc" ]
   deps = [
     ":cpp",
-    "//ash/services/chromebox_for_meetings/public/mojom",
     "//base/test:test_support",
+    "//chromeos/ash/services/chromebox_for_meetings/public/mojom",
     "//mojo/core/embedder",
     "//mojo/public/cpp/bindings",
     "//testing/gtest",

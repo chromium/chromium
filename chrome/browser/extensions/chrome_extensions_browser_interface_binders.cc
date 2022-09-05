@@ -20,8 +20,6 @@
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/services/chromebox_for_meetings/public/cpp/appid_util.h"
-#include "ash/services/chromebox_for_meetings/public/mojom/cfm_service_manager.mojom.h"
 #include "ash/webui/camera_app_ui/camera_app_ui.h"
 #include "build/config/chromebox_for_meetings/buildflags.h"
 #include "chrome/browser/ash/enhanced_network_tts/enhanced_network_tts_impl.h"
@@ -33,6 +31,8 @@
 #include "chromeos/ash/components/enhanced_network_tts/mojom/enhanced_network_tts.mojom.h"
 #include "chromeos/ash/components/language/language_packs/language_packs_impl.h"
 #include "chromeos/ash/components/language/public/mojom/language_packs.mojom.h"
+#include "chromeos/ash/services/chromebox_for_meetings/public/cpp/appid_util.h"
+#include "chromeos/ash/services/chromebox_for_meetings/public/mojom/cfm_service_manager.mojom.h"
 #include "chromeos/components/remote_apps/mojom/remote_apps.mojom.h"
 #include "chromeos/services/media_perception/public/mojom/media_perception.mojom.h"
 #include "chromeos/services/tts/public/mojom/tts_service.mojom.h"
@@ -50,8 +50,8 @@
 #endif
 
 #if BUILDFLAG(PLATFORM_CFM)
-#include "ash/services/chromebox_for_meetings/public/cpp/service_connection.h"
 #include "chromeos/ash/components/chromebox_for_meetings/features.h"
+#include "chromeos/ash/services/chromebox_for_meetings/public/cpp/service_connection.h"
 #endif
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/services/chromebox_for_meetings/public/cpp/fake_service_context.h"
+#include "chromeos/ash/services/chromebox_for_meetings/public/cpp/fake_service_context.h"
 
 namespace ash {
 namespace cfm {
