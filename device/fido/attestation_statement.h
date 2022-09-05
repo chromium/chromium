@@ -35,6 +35,9 @@ class COMPONENT_EXPORT(DEVICE_FIDO) AttestationStatement {
   // nested within another CBOR object and encoded then.
   virtual cbor::Value AsCBOR() const = 0;
 
+  // Returns true if the attestation is a "none" attestation.
+  virtual bool IsNoneAttestation() const = 0;
+
   // Returns true if the attestation is a "self" attestation, i.e. is just the
   // private key signing itself to show that it is fresh.
   virtual bool IsSelfAttestation() const = 0;
@@ -70,6 +73,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) NoneAttestationStatement
   ~NoneAttestationStatement() override;
 
   cbor::Value AsCBOR() const override;
+  bool IsNoneAttestation() const override;
   bool IsSelfAttestation() const override;
   bool IsAttestationCertificateInappropriatelyIdentifying() const override;
   absl::optional<base::span<const uint8_t>> GetLeafCertificate() const override;

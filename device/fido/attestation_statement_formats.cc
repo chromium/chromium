@@ -135,6 +135,10 @@ cbor::Value FidoAttestationStatement::AsCBOR() const {
   return cbor::Value(std::move(attestation_statement_map));
 }
 
+bool FidoAttestationStatement::IsNoneAttestation() const {
+  return false;
+}
+
 bool FidoAttestationStatement::IsSelfAttestation() const {
   return false;
 }
@@ -192,6 +196,10 @@ cbor::Value PackedAttestationStatement::AsCBOR() const {
         cbor::Value(std::move(certificate_array));
   }
   return cbor::Value(std::move(attestation_statement_map));
+}
+
+bool PackedAttestationStatement::IsNoneAttestation() const {
+  return false;
 }
 
 bool PackedAttestationStatement::IsSelfAttestation() const {

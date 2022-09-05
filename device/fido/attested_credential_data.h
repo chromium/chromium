@@ -54,8 +54,9 @@ class COMPONENT_EXPORT(DEVICE_FIDO) AttestedCredentialData {
   bool IsAaguidZero() const;
 
   // Invoked when sending "none" attestation statement to the relying party.
-  // Replaces AAGUID with zero bytes.
-  void DeleteAaguid();
+  // Replaces AAGUID with zero bytes. Returns true if the AAGUID was modified
+  // or false if it was already zeros.
+  bool DeleteAaguid();
 
   // Produces a byte array consisting of:
   // * AAGUID (16 bytes)

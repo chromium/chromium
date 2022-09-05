@@ -1469,25 +1469,6 @@ void AuthenticatorCommon::OnRegisterResponse(
             AttestationErasureOption::kEraseAttestationAndAaguid;
       }
 
-      // TODO(crbug.com/1356340): once
-      // https://github.com/fido-alliance/fido-2-specs/pull/1347 is a little
-      // more mature we can plumb the attestation preference down to the
-      // authenticator and enforce this in the request handler.
-      if (attestation_erasure ==
-              AttestationErasureOption::kEraseAttestationAndAaguid &&
-          device_public_key_output.has_value() &&
-          !response_data->attestation_object.authenticator_data()
-               .attested_data()
-               ->IsAaguidZero()) {
-        // Zeroing the AAGUID would invalidate the DPK signature. The
-        // authenticator should not have returned an attestation in this case.
-        CompleteMakeCredentialRequest(
-            blink::mojom::AuthenticatorStatus::
-                DEVICE_PUBLIC_KEY_ATTESTATION_REJECTED,
-            nullptr, nullptr, Focus::kDoCheck);
-        return;
-      }
-
       if (attestation_erasure.has_value() &&
           // If a DPK attestation was requested then we show a prompt. (If
           // the RP ID is allowlisted by policy then the prompt will be
@@ -1532,17 +1513,6 @@ void AuthenticatorCommon::OnRegisterResponseAttestationDecided(
 
   if (!attestation_permitted) {
     attestation_erasure = AttestationErasureOption::kEraseAttestationAndAaguid;
-
-    if (device_public_key_included_attestation) {
-      // If the authenticator returned a DPK attestation due to
-      // kEnterpriseIfRPListedOnAuthenticator then, currently, we showed the
-      // attestation prompt too late and can only reject the response if
-      // there's an unwanted DPK attestation.
-      CompleteMakeCredentialRequest(blink::mojom::AuthenticatorStatus::
-                                        DEVICE_PUBLIC_KEY_ATTESTATION_REJECTED,
-                                    nullptr, nullptr, Focus::kDoCheck);
-      return;
-    }
   }
 
   // The check for IsAttestationCertificateInappropriatelyIdentifying is
@@ -1564,14 +1534,6 @@ void AuthenticatorCommon::OnRegisterResponseAttestationDecided(
     // in the enterprise policy, because that enables the individual attestation
     // bit in the register request and permits individual attestation generally.
     attestation_erasure = AttestationErasureOption::kEraseAttestationAndAaguid;
-
-    if (has_device_public_key_output) {
-      // Zeroing the AAGUID would invalidate the DPK signature. DPK cannot be
-      // supported in this case.
-      CompleteMakeCredentialRequest(blink::mojom::AuthenticatorStatus::
-                                        DEVICE_PUBLIC_KEY_ATTESTATION_REJECTED,
-                                    nullptr, nullptr, Focus::kDoCheck);
-    }
   }
 
   CompleteMakeCredentialRequest(
@@ -1836,6 +1798,29 @@ AuthenticatorCommon::CreateMakeCredentialResponse(
     response->transports.assign(transports.begin(), transports.end());
   }
 
+  bool did_modify_authenticator_data = false;
+  switch (attestation_erasure) {
+    case AttestationErasureOption::kIncludeAttestation:
+      break;
+    case AttestationErasureOption::kEraseAttestationButIncludeAaguid:
+      did_modify_authenticator_data =
+          response_data.attestation_object.EraseAttestationStatement(
+              device::AttestationObject::AAGUID::kInclude);
+      break;
+    case AttestationErasureOption::kEraseAttestationAndAaguid:
+      did_modify_authenticator_data =
+          response_data.attestation_object.EraseAttestationStatement(
+              device::AttestationObject::AAGUID::kErase);
+      break;
+  }
+
+  if (did_modify_authenticator_data) {
+    // The devicePubKey extension signs over the authenticator data so its
+    // signature is now invalid and we have to remove the extension.
+    response_data.attestation_object.EraseExtension(
+        device::kExtensionDevicePublicKey);
+  }
+
   bool did_create_hmac_secret = false;
   bool did_store_cred_blob = false;
   absl::optional<std::vector<uint8_t>> device_public_key_authenticator_output;
@@ -1905,6 +1890,8 @@ AuthenticatorCommon::CreateMakeCredentialResponse(
       case RequestExtension::kDevicePublicKey:
         if (device_public_key_authenticator_output &&
             response_data.device_public_key_signature) {
+          DCHECK(!did_modify_authenticator_data);
+
           response->device_public_key =
               blink::mojom::DevicePublicKeyResponse::New();
           response->device_public_key->authenticator_output =
@@ -1922,18 +1909,6 @@ AuthenticatorCommon::CreateMakeCredentialResponse(
     }
   }
 
-  switch (attestation_erasure) {
-    case AttestationErasureOption::kIncludeAttestation:
-      break;
-    case AttestationErasureOption::kEraseAttestationButIncludeAaguid:
-      response_data.attestation_object.EraseAttestationStatement(
-          device::AttestationObject::AAGUID::kInclude);
-      break;
-    case AttestationErasureOption::kEraseAttestationAndAaguid:
-      response_data.attestation_object.EraseAttestationStatement(
-          device::AttestationObject::AAGUID::kErase);
-      break;
-  }
   response->attestation_object =
       response_data.GetCBOREncodedAttestationObject();
   common_info->authenticator_data =

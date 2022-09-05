@@ -33,6 +33,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoAttestationStatement
   ~FidoAttestationStatement() override;
 
   cbor::Value AsCBOR() const override;
+  bool IsNoneAttestation() const override;
   bool IsSelfAttestation() const override;
   bool IsAttestationCertificateInappropriatelyIdentifying() const override;
   absl::optional<base::span<const uint8_t>> GetLeafCertificate() const override;
@@ -57,6 +58,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) PackedAttestationStatement
   ~PackedAttestationStatement() override;
 
   cbor::Value AsCBOR() const override;
+  bool IsNoneAttestation() const override;
   bool IsSelfAttestation() const override;
   bool IsAttestationCertificateInappropriatelyIdentifying() const override;
   absl::optional<base::span<const uint8_t>> GetLeafCertificate() const override;

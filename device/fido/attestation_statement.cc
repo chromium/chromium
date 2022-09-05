@@ -26,6 +26,10 @@ bool NoneAttestationStatement::
   return false;
 }
 
+bool NoneAttestationStatement::IsNoneAttestation() const {
+  return true;
+}
+
 bool NoneAttestationStatement::IsSelfAttestation() const {
   return false;
 }

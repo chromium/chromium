@@ -223,8 +223,12 @@ bool AttestedCredentialData::IsAaguidZero() const {
   return base::ranges::all_of(aaguid_, [](uint8_t v) { return v == 0; });
 }
 
-void AttestedCredentialData::DeleteAaguid() {
+bool AttestedCredentialData::DeleteAaguid() {
+  if (IsAaguidZero()) {
+    return false;
+  }
   std::fill(aaguid_.begin(), aaguid_.end(), 0);
+  return true;
 }
 
 std::vector<uint8_t> AttestedCredentialData::SerializeAsBytes() const {

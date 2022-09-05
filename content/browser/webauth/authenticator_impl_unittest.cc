@@ -4953,6 +4953,23 @@ class AuthenticatorDevicePublicKeyTest : public AuthenticatorImplTest {
   }
 
  protected:
+  // HasDevicePublicKeyExtensionInAuthenticatorData returns true if `response`
+  // contains a DPK extension in the authenticator data of the response.
+  bool HasDevicePublicKeyExtensionInAuthenticatorData(
+      const MakeCredentialAuthenticatorResponsePtr& response) {
+    device::AuthenticatorData parsed_auth_data =
+        AuthDataFromMakeCredentialResponse(response);
+
+    const auto& extensions = parsed_auth_data.extensions();
+    if (!extensions) {
+      return false;
+    }
+
+    const cbor::Value::MapValue& extensions_map = extensions->GetMap();
+    return extensions_map.find(cbor::Value(
+               device::kExtensionDevicePublicKey)) != extensions_map.end();
+  }
+
   TestAuthenticatorContentBrowserClient test_client_;
   raw_ptr<ContentBrowserClient> old_client_ = nullptr;
 };
@@ -4978,6 +4995,8 @@ TEST_F(AuthenticatorDevicePublicKeyTest, DevicePublicKeyMakeCredential) {
     ASSERT_EQ(result.status, AuthenticatorStatus::SUCCESS);
     ASSERT_EQ(static_cast<bool>(result.response->device_public_key),
               dpk_support);
+    ASSERT_EQ(HasDevicePublicKeyExtensionInAuthenticatorData(result.response),
+              dpk_support);
     if (dpk_support) {
       ASSERT_FALSE(
           result.response->device_public_key->authenticator_output.empty());
@@ -4989,11 +5008,8 @@ TEST_F(AuthenticatorDevicePublicKeyTest, DevicePublicKeyMakeCredential) {
 TEST_F(AuthenticatorDevicePublicKeyTest,
        DevicePublicKeyWithPrimaryAttestation) {
   // If the authenticator returns regular attestation and a devicePubKey
-  // response, and the browser needs to strip that attesation, then the request
-  // should fail because zeroing the AAGUID breaks the DPK signature.
-  // DPK-capable authenticators will need to support the forthcoming
-  // attestationFormats parameter if they wish to do non-null attestation with
-  // DPK.
+  // response, and the browser needs to strip that attesation, then the DPK
+  // extension should be removed.
   NavigateAndCommit(GURL(kTestOrigin1));
 
   device::VirtualCtap2Device::Config config;
@@ -5005,8 +5021,9 @@ TEST_F(AuthenticatorDevicePublicKeyTest,
   options->device_public_key = blink::mojom::DevicePublicKeyRequest::New();
   MakeCredentialResult result = AuthenticatorMakeCredential(std::move(options));
 
-  ASSERT_EQ(result.status,
-            AuthenticatorStatus::DEVICE_PUBLIC_KEY_ATTESTATION_REJECTED);
+  ASSERT_EQ(result.status, AuthenticatorStatus::SUCCESS);
+  ASSERT_FALSE(static_cast<bool>(result.response->device_public_key));
+  ASSERT_FALSE(HasDevicePublicKeyExtensionInAuthenticatorData(result.response));
 }
 
 TEST_F(AuthenticatorDevicePublicKeyTest, DevicePublicKeyGetAssertion) {
@@ -5167,8 +5184,8 @@ TEST_F(AuthenticatorDevicePublicKeyTest,
       {req_enterprise, no_allowlist, none,   no_ep, prompt_no,     true},
       // A successful ep=1 attestation results in a special prompt.
       {req_enterprise, no_allowlist, direct, ep,    prompt_ep_yes, true},
-      // ... rejecting that prompt is fatal to the request.
-      {req_enterprise, no_allowlist, direct, ep,    prompt_ep_no,  false},
+      // ... rejecting that prompt results in the DPK being stripped.
+      {req_enterprise, no_allowlist, direct, ep,    prompt_ep_no,  true},
 
       // An ep=1 request should either return an enterprise attestation or
       // nothing. So a "direct" response is invalid and should fail.
