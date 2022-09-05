@@ -31,6 +31,10 @@ class MockPlatformWindowDelegate : public PlatformWindowDelegate {
   MOCK_METHOD2(OnWindowStateChanged,
                void(PlatformWindowState old_state,
                     PlatformWindowState new_state));
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+  MOCK_METHOD1(OnWindowTiledStateChanged,
+               void(WindowTiledEdges new_tiled_edges));
+#endif
   MOCK_METHOD0(OnLostCapture, void());
   MOCK_METHOD1(OnAcceleratedWidgetAvailable,
                void(gfx::AcceleratedWidget widget));

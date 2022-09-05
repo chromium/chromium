@@ -45,6 +45,11 @@ struct WindowTiledEdges {
   bool top{false};
   bool bottom{false};
 
+  bool operator==(const WindowTiledEdges& other) const {
+    return left == other.left && right == other.right && top == other.top &&
+           bottom == other.bottom;
+  }
+
   bool operator!=(const WindowTiledEdges& other) const {
     return left != other.left || right != other.right || top != other.top ||
            bottom != other.bottom;

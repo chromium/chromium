@@ -418,7 +418,6 @@ TEST_P(WaylandWindowTest, SetDecorationInsets) {
       gfx::ScaleToRoundedRect(kNormalBounds, kHiDpiScale).size();
   const BoundsChange kHiDpiBounds{true};
 
-  // TODO(crbug.com/1306688): Change this to SetBoundsInDIP.
   window_->SetBoundsInDIP(kNormalBounds);
 
   uint32_t serial = 0;
@@ -494,6 +493,56 @@ TEST_P(WaylandWindowTest, SetDecorationInsets) {
                        state.get());
 
     Sync();
+  }
+}
+
+// Checks that when the window gets some of its edges tiled, it notifies the
+// delegate appropriately.
+TEST_P(WaylandWindowTest, HandleTiledEdges) {
+  // Only the stable XDG shell protocol supports tiled states.
+  if (GetParam().shell_version == wl::ShellVersion::kV6)
+    GTEST_SKIP();
+
+  constexpr gfx::Rect kWindowBounds{800, 600};
+  uint32_t serial = 0;
+
+  struct {
+    std::vector<xdg_toplevel_state> configured_states;
+    WindowTiledEdges expected_tiled_edges;
+  } kTestCases[]{
+      {{XDG_TOPLEVEL_STATE_TILED_LEFT}, {true, false, false, false}},
+      {{XDG_TOPLEVEL_STATE_TILED_RIGHT}, {false, true, false, false}},
+      {{XDG_TOPLEVEL_STATE_TILED_TOP}, {false, false, true, false}},
+      {{XDG_TOPLEVEL_STATE_TILED_BOTTOM}, {false, false, false, true}},
+      {{XDG_TOPLEVEL_STATE_TILED_LEFT, XDG_TOPLEVEL_STATE_TILED_TOP},
+       {true, false, true, false}},
+      {{XDG_TOPLEVEL_STATE_TILED_LEFT, XDG_TOPLEVEL_STATE_TILED_BOTTOM},
+       {true, false, false, true}},
+      {{XDG_TOPLEVEL_STATE_TILED_RIGHT, XDG_TOPLEVEL_STATE_TILED_TOP},
+       {false, true, true, false}},
+      {{XDG_TOPLEVEL_STATE_TILED_RIGHT, XDG_TOPLEVEL_STATE_TILED_BOTTOM},
+       {false, true, false, true}},
+      {{XDG_TOPLEVEL_STATE_TILED_LEFT, XDG_TOPLEVEL_STATE_TILED_TOP,
+        XDG_TOPLEVEL_STATE_TILED_BOTTOM},
+       {true, false, true, true}},
+      {{XDG_TOPLEVEL_STATE_TILED_RIGHT, XDG_TOPLEVEL_STATE_TILED_TOP,
+        XDG_TOPLEVEL_STATE_TILED_BOTTOM},
+       {false, true, true, true}},
+  };
+  for (const auto& test_case : kTestCases) {
+    auto configured_states = InitializeWlArrayWithActivatedState();
+    for (const auto additional_state : test_case.configured_states)
+      AddStateToWlArray(additional_state, configured_states.get());
+
+    EXPECT_CALL(delegate_,
+                OnWindowTiledStateChanged(test_case.expected_tiled_edges))
+        .Times(1);
+    SendConfigureEvent(xdg_surface_, kWindowBounds.size(), ++serial,
+                       configured_states.get());
+
+    Sync();
+
+    VerifyAndClearExpectations();
   }
 }
 
