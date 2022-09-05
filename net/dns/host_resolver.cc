@@ -26,8 +26,8 @@
 #include "net/dns/dns_util.h"
 #include "net/dns/host_cache.h"
 #include "net/dns/host_resolver_manager.h"
-#include "net/dns/public/host_resolver_results.h"
 #include "net/dns/mapped_host_resolver.h"
+#include "net/dns/public/host_resolver_results.h"
 #include "net/dns/resolve_context.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 

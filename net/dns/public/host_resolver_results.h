@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef NET_DNS_HOST_RESOLVER_RESULTS_H_
-#define NET_DNS_HOST_RESOLVER_RESULTS_H_
+#ifndef NET_DNS_PUBLIC_HOST_RESOLVER_RESULTS_H_
+#define NET_DNS_PUBLIC_HOST_RESOLVER_RESULTS_H_
 
 #include <string>
 #include <tuple>
@@ -45,4 +45,4 @@ struct NET_EXPORT_PRIVATE HostResolverEndpointResult {
 
 }  // namespace net
 
-#endif  // NET_DNS_HOST_RESOLVER_RESULTS_H_
+#endif  // NET_DNS_PUBLIC_HOST_RESOLVER_RESULTS_H_
