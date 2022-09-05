@@ -5716,7 +5716,11 @@
           "--browser=release",
           "--passthrough",
           "-v",
-          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-cmd-decoder=validating"
+          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-cmd-decoder=validating --enable-features=UseOzonePlatform --ozone-platform=wayland",
+          "--xvfb",
+          "--no-xvfb",
+          "--use-weston",
+          "--weston-use-gl"
         ],
         "isolate_name": "telemetry_gpu_integration_test",
         "merge": {

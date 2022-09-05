@@ -3023,6 +3023,14 @@
         'chromeos_args': [
           '$$MAGIC_SUBSTITUTION_ChromeOSTelemetryRemote',
         ],
+        # TODO(https://crbug.com/1359405): having --xvfb and --no-xvfb is confusing.
+        'lacros_args': [
+          '--extra-browser-args=--enable-features=UseOzonePlatform --ozone-platform=wayland',
+          '--xvfb',
+          '--no-xvfb',
+          '--use-weston',
+          '--weston-use-gl',
+        ],
       },
     },
 
@@ -3033,6 +3041,14 @@
         ],
         'chromeos_args': [
           '$$MAGIC_SUBSTITUTION_ChromeOSTelemetryRemote',
+        ],
+        # TODO(https://crbug.com/1359405): having --xvfb and --no-xvfb is confusing.
+        'lacros_args': [
+          '--extra-browser-args=--enable-features=UseOzonePlatform --ozone-platform=wayland',
+          '--xvfb',
+          '--no-xvfb',
+          '--use-weston',
+          '--weston-use-gl',
         ],
       },
     },
