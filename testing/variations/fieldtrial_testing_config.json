@@ -8115,28 +8115,6 @@
             ]
         }
     ],
-    "ReadWritePasswordNotesBackupField": [
-        {
-            "platforms": [
-                "android",
-                "android_weblayer",
-                "chromeos",
-                "chromeos_lacros",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "ReadWritePasswordNotesBackupField"
-                    ]
-                }
-            ]
-        }
-    ],
     "ReduceCpuUtilization": [
         {
             "platforms": [
