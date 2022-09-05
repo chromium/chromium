@@ -42,7 +42,8 @@ static void chunked_inflate(gz_header* header,
   auto out_buffer = std::make_unique<uint8_t[]>(out_chunk_size);
   while (true) {
     stream.next_in = &data[stream.total_in];
-    stream.avail_in = std::min(in_chunk_size, size - stream.total_in);
+    stream.avail_in =
+        std::min(in_chunk_size, size - static_cast<size_t>(stream.total_in));
     stream.next_out = out_buffer.get();
     stream.avail_out = out_chunk_size;
 
