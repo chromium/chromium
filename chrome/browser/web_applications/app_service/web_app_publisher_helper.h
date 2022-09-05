@@ -372,6 +372,8 @@ class WebAppPublisherHelper : public AppRegistrarObserver,
 
   void Init(bool observe_media_requests);
 
+  void ObserveWebAppSubsystems();
+
   apps::IconEffects GetIconEffects(const WebApp* web_app);
 
   const WebApp* GetWebApp(const AppId& app_id) const;

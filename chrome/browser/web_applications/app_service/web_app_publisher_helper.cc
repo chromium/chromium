@@ -1613,8 +1613,10 @@ void WebAppPublisherHelper::Init(bool observe_media_requests) {
   }
 
   DCHECK(provider_);
-  install_manager_observation_.Observe(&install_manager());
-  registrar_observation_.Observe(&registrar());
+  provider_->on_registry_ready().Post(
+      FROM_HERE, base::BindOnce(&WebAppPublisherHelper::ObserveWebAppSubsystems,
+                                weak_ptr_factory_.GetWeakPtr()));
+
   content_settings_observation_.Observe(
       HostContentSettingsMapFactory::GetForProfile(profile_));
 
@@ -1638,6 +1640,11 @@ void WebAppPublisherHelper::Init(bool observe_media_requests) {
     media_dispatcher_.Observe(MediaCaptureDevicesDispatcher::GetInstance());
   }
 #endif
+}
+
+void WebAppPublisherHelper::ObserveWebAppSubsystems() {
+  install_manager_observation_.Observe(&install_manager());
+  registrar_observation_.Observe(&registrar());
 }
 
 IconEffects WebAppPublisherHelper::GetIconEffects(const WebApp* web_app) {

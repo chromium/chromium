@@ -357,9 +357,8 @@ TEST_F(WebKioskAppUpdateObserverWithWebAppProviderTest,
     update->CreateApp(std::move(web_app));
     sync_bridge().CommitUpdate(
         std::move(update),
-        base::BindLambdaForTesting([this, app_id, &loop](bool success) {
+        base::BindLambdaForTesting([app_id, &loop](bool success) {
           ASSERT_TRUE(success);
-          web_app_provider()->install_manager().NotifyWebAppInstalled(app_id);
           loop.QuitWhenIdle();
         }));
     web_app::test::AddInstallUrlAndPlaceholderData(
