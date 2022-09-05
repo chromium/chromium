@@ -77401,9 +77401,11 @@ Called by update_net_trust_anchors.py.-->
 
 <enum name="PendingInvalidationStatus">
   <int value="0" label="Acknowledged invalidation"/>
-  <int value="1" label="Pending invalidations vector overflow"/>
-  <int value="2" label="Same version"/>
-  <int value="3" label="Lost invalidation"/>
+  <int value="1" label="Lost invalidation"/>
+  <int value="2" label="Pending invalidations vector overflow"/>
+  <int value="3" label="Same version (Deprecated)"/>
+  <int value="4" label="Same known version"/>
+  <int value="5" label="Same unknown version"/>
 </enum>
 
 <enum name="PepperBrokerAction">

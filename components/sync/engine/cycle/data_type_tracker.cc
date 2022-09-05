@@ -246,9 +246,13 @@ void DataTypeTracker::RecordRemoteInvalidation(
     auto it2 = pending_invalidations_.insert(it, std::move(incoming));
 
     // Increment that iterator to the old one, then acknowledge and remove it.
+    LogPendingInvalidationStatus(
+        (*it2)->IsUnknownVersion()
+            ? PendingInvalidationStatus::kSameUnknownVersion
+            : PendingInvalidationStatus::kSameKnownVersion);
     ++it2;
     (*it2)->Acknowledge();
-    LogPendingInvalidationStatus(PendingInvalidationStatus::kSameVersion);
+
     pending_invalidations_.erase(it2);
   } else {
     // The incoming has a version not in the pending_invalidations_ list.

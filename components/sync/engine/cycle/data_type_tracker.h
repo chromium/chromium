@@ -51,8 +51,11 @@ enum class PendingInvalidationStatus {
   kAcknowledged = 0,
   kLost = 1,
   kInvalidationsOverflow = 2,
-  kSameVersion = 3,
-  kMaxValue = kSameVersion,
+  // kSameVersion = 3,
+  // Invalidation list already has another invalidation with the same version.
+  kSameKnownVersion = 4,
+  kSameUnknownVersion = 5,
+  kMaxValue = kSameUnknownVersion,
 };
 
 // A class to track the per-type scheduling data.
