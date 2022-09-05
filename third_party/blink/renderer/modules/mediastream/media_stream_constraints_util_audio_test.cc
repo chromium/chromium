@@ -82,7 +82,7 @@ class MediaStreamConstraintsUtilAudioTestBase : public SimTest {
   void MakeSystemEchoCancellerDeviceExperimental() {
     media::AudioParameters experimental_system_echo_canceller_parameters(
         media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
-        media::CHANNEL_LAYOUT_STEREO,
+        media::ChannelLayoutConfig::Stereo(),
         media::AudioParameters::kAudioCDSampleRate, 1000);
     experimental_system_echo_canceller_parameters.set_effects(
         media::AudioParameters::EXPERIMENTAL_ECHO_CANCELLER);
@@ -513,13 +513,13 @@ class MediaStreamConstraintsUtilAudioTest
       capabilities_.emplace_back(
           "default_device", "fake_group1",
           media::AudioParameters(media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
-                                 media::CHANNEL_LAYOUT_STEREO,
+                                 media::ChannelLayoutConfig::Stereo(),
                                  media::AudioParameters::kAudioCDSampleRate,
                                  1000));
 
       media::AudioParameters system_echo_canceller_parameters(
           media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
-          media::CHANNEL_LAYOUT_STEREO,
+          media::ChannelLayoutConfig::Stereo(),
           media::AudioParameters::kAudioCDSampleRate, 1000);
       system_echo_canceller_parameters.set_effects(
           media::AudioParameters::ECHO_CANCELLER);
@@ -529,14 +529,15 @@ class MediaStreamConstraintsUtilAudioTest
       capabilities_.emplace_back(
           "4_channels_device", "fake_group3",
           media::AudioParameters(media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
-                                 media::CHANNEL_LAYOUT_4_0,
+                                 media::ChannelLayoutConfig::FromLayout<
+                                     media::CHANNEL_LAYOUT_4_0>(),
                                  media::AudioParameters::kAudioCDSampleRate,
                                  1000));
 
       capabilities_.emplace_back(
           "8khz_sample_rate_device", "fake_group4",
           media::AudioParameters(media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
-                                 media::CHANNEL_LAYOUT_STEREO,
+                                 media::ChannelLayoutConfig::Stereo(),
                                  webrtc::AudioProcessing::kSampleRate8kHz,
                                  1000));
 
@@ -544,7 +545,7 @@ class MediaStreamConstraintsUtilAudioTest
           "variable_latency_device", "fake_group5",
           media::AudioParameters(
               media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
-              media::CHANNEL_LAYOUT_STEREO,
+              media::ChannelLayoutConfig::Stereo(),
               media::AudioParameters::kAudioCDSampleRate, 512,
               media::AudioParameters::HardwareCapabilities(128, 4096)));
 
@@ -655,7 +656,7 @@ class MediaStreamConstraintsRemoteAPMTest
     capabilities_.emplace_back(
         "default_device", "fake_group1",
         media::AudioParameters(media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
-                               media::CHANNEL_LAYOUT_STEREO,
+                               media::ChannelLayoutConfig::Stereo(),
                                media::AudioParameters::kAudioCDSampleRate,
                                1000));
     default_device_ = &capabilities_[0];
@@ -2145,7 +2146,7 @@ class MediaStreamConstraintsRemoteAPMSampleRateRestrictionTest
     capabilities_.emplace_back(
         k22050HzDeviceId.c_str(), "22050hz_fake_group",
         media::AudioParameters(media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
-                               media::CHANNEL_LAYOUT_STEREO,
+                               media::ChannelLayoutConfig::Stereo(),
                                kNondivisibleSampleRateHz, 1000));
     default_device_ = &capabilities_[0];
   }

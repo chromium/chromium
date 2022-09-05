@@ -6,6 +6,8 @@
 
 #include "base/check.h"
 #include "build/build_config.h"
+#include "media/base/audio_parameters.h"
+#include "media/base/channel_layout.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 
 namespace blink {
@@ -84,18 +86,19 @@ MediaStreamDevice::MediaStreamDevice(
       group_id(group_id),
       name(name) {}
 
-MediaStreamDevice::MediaStreamDevice(mojom::MediaStreamType type,
-                                     const std::string& id,
-                                     const std::string& name,
-                                     int sample_rate,
-                                     int channel_layout,
-                                     int frames_per_buffer)
+MediaStreamDevice::MediaStreamDevice(
+    mojom::MediaStreamType type,
+    const std::string& id,
+    const std::string& name,
+    int sample_rate,
+    const media::ChannelLayoutConfig& channel_layout_config,
+    int frames_per_buffer)
     : type(type),
       id(id),
       video_facing(media::MEDIA_VIDEO_FACING_NONE),
       name(name),
       input(media::AudioParameters::AUDIO_FAKE,
-            static_cast<media::ChannelLayout>(channel_layout),
+            channel_layout_config,
             sample_rate,
             frames_per_buffer) {
   DCHECK(input.IsValid());

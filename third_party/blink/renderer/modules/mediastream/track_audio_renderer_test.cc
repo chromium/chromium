@@ -33,7 +33,7 @@ constexpr int kChannels = 2;
 constexpr int kAltChannels = 1;
 const media::AudioParameters kDefaultFormat(
     media::AudioParameters::Format::AUDIO_PCM_LINEAR,
-    media::ChannelLayout::CHANNEL_LAYOUT_STEREO,
+    media::ChannelLayoutConfig::Stereo(),
     kSampleRate,
     kFrames);
 
@@ -72,9 +72,9 @@ class FakeMediaStreamAudioSource final : public MediaStreamAudioSource {
   ~FakeMediaStreamAudioSource() override = default;
 
   void PushData(const media::AudioBus& data, base::TimeTicks reference_time) {
-    media::ChannelLayout layout =
-        data.channels() == 2 ? media::ChannelLayout::CHANNEL_LAYOUT_STEREO
-                             : media::ChannelLayout::CHANNEL_LAYOUT_MONO;
+    media::ChannelLayoutConfig layout =
+        data.channels() == 2 ? media::ChannelLayoutConfig::Stereo()
+                             : media::ChannelLayoutConfig::Mono();
 
     media::AudioParameters format(
         media::AudioParameters::Format::AUDIO_PCM_LINEAR, layout, kSampleRate,

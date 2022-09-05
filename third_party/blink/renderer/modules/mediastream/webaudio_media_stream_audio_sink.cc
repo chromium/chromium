@@ -35,8 +35,8 @@ WebAudioMediaStreamAudioSink::WebAudioMediaStreamAudioSink(
   WebLocalFrame* const web_frame = WebLocalFrame::FrameForCurrentContext();
   if (web_frame) {
     sink_params_.Reset(media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
-                       media::CHANNEL_LAYOUT_STEREO, context_sample_rate,
-                       kWebAudioRenderBufferSize);
+                       media::ChannelLayoutConfig::Stereo(),
+                       context_sample_rate, kWebAudioRenderBufferSize);
   }
   // Connect the source provider to the track as a sink.
   WebMediaStreamAudioSink::AddToAudioTrack(

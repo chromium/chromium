@@ -8,6 +8,7 @@
 
 #include "base/memory/ptr_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "media/base/audio_parameters.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_vector.h"
@@ -32,13 +33,13 @@ class MockCDQualityAudioSource : public MediaStreamAudioSource {
                                true) {
     SetFormat(media::AudioParameters(
         media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
-        media::CHANNEL_LAYOUT_STEREO,
+        media::ChannelLayoutConfig::Stereo(),
         media::AudioParameters::kAudioCDSampleRate,
         media::AudioParameters::kAudioCDSampleRate / 100));
     SetDevice(MediaStreamDevice(
         mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE, "mock_audio_device_id",
         "Mock audio device", media::AudioParameters::kAudioCDSampleRate,
-        media::CHANNEL_LAYOUT_STEREO,
+        media::ChannelLayoutConfig::Stereo(),
         media::AudioParameters::kAudioCDSampleRate / 100));
   }
 

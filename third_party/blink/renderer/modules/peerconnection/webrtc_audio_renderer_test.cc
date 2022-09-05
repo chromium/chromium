@@ -89,7 +89,7 @@ class AudioDeviceFactoryTestingPlatformSupport : public blink::Platform {
             ? media::OUTPUT_DEVICE_STATUS_ERROR_INTERNAL
             : media::OUTPUT_DEVICE_STATUS_OK,
         media::AudioParameters(media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
-                               media::CHANNEL_LAYOUT_STEREO,
+                               media::ChannelLayoutConfig::Stereo(),
                                kHardwareSampleRate, kHardwareBufferSize));
 
     if (params.device_id != kInvalidOutputDeviceId) {

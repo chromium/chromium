@@ -347,7 +347,7 @@ class RTCPeerConnectionHandlerTest : public SimTest {
         MediaStreamDevice(blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE,
                           "mock_device_id", "Mock device",
                           media::AudioParameters::kAudioCDSampleRate,
-                          media::CHANNEL_LAYOUT_STEREO,
+                          media::ChannelLayoutConfig::Stereo(),
                           media::AudioParameters::kAudioCDSampleRate / 100),
         false /* disable_local_echo */, blink::AudioProcessingProperties(),
         1 /* num_requested_channels */, base::DoNothing(),

@@ -132,9 +132,11 @@ class ProcessedLocalAudioSourceTest
     std::unique_ptr<blink::ProcessedLocalAudioSource> source =
         std::make_unique<blink::ProcessedLocalAudioSource>(
             *MainFrame().GetFrame(),
-            MediaStreamDevice(mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE,
-                              "mock_audio_device_id", "Mock audio device",
-                              kSampleRate, kChannelLayout, kDeviceBufferSize),
+            MediaStreamDevice(
+                mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE,
+                "mock_audio_device_id", "Mock audio device", kSampleRate,
+                media::ChannelLayoutConfig::FromLayout<kChannelLayout>(),
+                kDeviceBufferSize),
             false /* disable_local_echo */, properties, num_requested_channels,
             base::DoNothing(),
             scheduler::GetSingleThreadTaskRunnerForTesting());
