@@ -45,10 +45,6 @@ tast_disabled_tests_from_chrome_all = [
   "ui.ChromeCrashReporterMetrics.success_breakpad",
   "ui.ChromeCrashReporterMetrics.miss_breakpad",
 
-  # https://crbug.com/1273485: Flaky.
-  "printer.ProxyAdd.epson_software_collate",
-  "printer.ProxyAdd.epson_software_uncollated",
-
   # https://crbug.com/1279285: Flaky.
   "policy.AllowWakeLocks",
 
