@@ -285,14 +285,15 @@ export class ToolbarController {
         this.volumeManager_.getLocationInfo(currentDirectory);
     // Normally, isReadOnly can be used to show the label. This property
     // is always true for fake volumes (eg. Google Drive root). However, "Linux
-    // files" is a fake volume on first access until the VM is loaded and the
-    // mount point is initialised. The volume is technically read-only since the
-    // temportary fake volume can (and should) not be written to. However,
-    // showing the read only label is not appropriate since the volume will
-    // become read-write once all loading has completed.
+    // files" and GuestOS volumes are fake volume on first access until the VM
+    // is loaded and the mount point is initialised. The volume is technically
+    // read-only since the temporary fake volume can (and should) not be
+    // written to. However, showing the read only label is not appropriate since
+    // the volume will become read-write once all loading has completed.
     this.readOnlyIndicator_.hidden =
         !(locationInfo && locationInfo.isReadOnly &&
-          locationInfo.rootType !== VolumeManagerCommon.RootType.CROSTINI);
+          locationInfo.rootType !== VolumeManagerCommon.RootType.CROSTINI &&
+          locationInfo.rootType !== VolumeManagerCommon.RootType.GUEST_OS);
   }
 
   /** @private */

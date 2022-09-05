@@ -973,11 +973,42 @@ testcase.fileDisplayCheckNoReadOnlyIconOnLinuxFiles = async () => {
   const appId =
       await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.hello], []);
 
-  // Linux files fake root is shown.
-  await remoteCall.waitForElement(appId, fakeRoot);
-
   // Click on Linux files.
-  await remoteCall.callRemoteTestUtil('fakeMouseClick', appId, [fakeRoot]);
+  remoteCall.waitAndClickElement(appId, fakeRoot);
+
+  // Check: the loading indicator should be visible.
+  await remoteCall.waitForElement(
+      appId, '#list-container .loading-indicator:not([hidden])');
+
+  // Check: the toolbar read-only indicator should not be visible.
+  await remoteCall.waitForElement(appId, '#read-only-indicator[hidden]');
+};
+
+/**
+ * Tests to make sure read-only indicator is NOT visible when the current
+ * directory is a "GuestOs" fake root.
+ */
+testcase.fileDisplayCheckNoReadOnlyIconOnGuestOs = async () => {
+  const fakeRoot = '#directory-tree [root-type-icon="bruschetta"]';
+
+  // Create a Bruschetta guest for this test.
+  const guestId = await sendTestMessage({
+    name: 'registerMountableGuest',
+    displayName: 'mogsaur',
+    canMount: true,
+    vmType: 'bruschetta',
+  });
+
+  // Block mounts from progressing. This should cause the file manager to always
+  // show the loading bar for our mount.
+  await sendTestMessage({name: 'blockMounts'});
+
+  // Open files app on Downloads.
+  const appId =
+      await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.hello], []);
+
+  // Click on the placeholder.
+  remoteCall.waitAndClickElement(appId, fakeRoot);
 
   // Check: the loading indicator should be visible.
   await remoteCall.waitForElement(

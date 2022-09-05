@@ -418,7 +418,9 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("fileDisplayCheckSelectWithFakeItemSelected"),
         TestCase("fileDisplayCheckReadOnlyIconOnFakeDirectory"),
         TestCase("fileDisplayCheckNoReadOnlyIconOnDownloads"),
-        TestCase("fileDisplayCheckNoReadOnlyIconOnLinuxFiles")));
+        TestCase("fileDisplayCheckNoReadOnlyIconOnLinuxFiles"),
+        TestCase("fileDisplayCheckNoReadOnlyIconOnGuestOs")
+            .EnableGuestOsFiles()));
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     OpenVideoMediaApp, /* open_video_media_app.js */
