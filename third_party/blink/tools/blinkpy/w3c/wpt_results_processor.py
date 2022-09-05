@@ -506,15 +506,9 @@ class WPTResultsProcessor(object):
 
     def _add_result_to_sink(self, node, test_name, test_name_prefix=''):
         """Add test results to the result sink."""
-        actual_statuses = [
-            _wptrunner_to_resultdb_status(status)
-            for status in node['actual'].split()
-        ]
+        actual_statuses = node['actual'].split()
         flaky = len(set(actual_statuses)) > 1
-        expected = {
-            _wptrunner_to_resultdb_status(status)
-            for status in node['expected'].split()
-        }
+        expected = set(node['expected'].split())
         durations = node.get('times') or [0] * len(actual_statuses)
 
         artifacts = Artifacts(
@@ -534,10 +528,12 @@ class WPTResultsProcessor(object):
                                                    durations)):
             result = Result(
                 name=test_name,
-                actual=actual,
+                actual=_wptrunner_to_resultdb_status(actual),
                 started=(self.host.time() - duration),
                 took=duration,
                 worker=0,
+                # The expected statuses here are actually the web test/wptrunner
+                # ones, unlike `actual`, which is a ResultDB status.
                 expected=expected,
                 unexpected=(actual not in expected),
                 flaky=flaky,

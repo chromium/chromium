@@ -228,7 +228,7 @@ class WPTResultsProcessorTest(LoggingTestCase):
                              'result': {
                                  'name': test_name,
                                  'actual': 'ABORT',
-                                 'expected': {'ABORT'},
+                                 'expected': {'TIMEOUT'},
                                  'unexpected': False,
                                  'took': 1000,
                                  'flaky': False,
