@@ -30,6 +30,7 @@
 #include "services/media_session/public/mojom/media_session.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/models/image_model.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
@@ -165,9 +166,9 @@ void ExpandDeviceSelectorButton::OnColorsChanged(SkColor foreground_color) {
   SetImage(views::Button::STATE_NORMAL,
            gfx::CreateVectorIcon(vector_icons::kCaretDownIcon,
                                  kDropdownButtonIconSize, foreground_color));
-  const auto caret_down_image = gfx::CreateVectorIcon(
-      vector_icons::kCaretUpIcon, kDropdownButtonIconSize, foreground_color);
-  SetToggledImage(views::Button::STATE_NORMAL, &caret_down_image);
+  const auto caret_down_image = ui::ImageModel::FromVectorIcon(
+      vector_icons::kCaretUpIcon, foreground_color, kDropdownButtonIconSize);
+  SetToggledImageModel(views::Button::STATE_NORMAL, caret_down_image);
   views::InkDrop::Get(this)->SetBaseColor(foreground_color);
 }
 

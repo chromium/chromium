@@ -26,6 +26,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/models/image_model.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -188,8 +189,8 @@ class OmniboxRowView::HeaderView : public views::View {
 
     // The "toggled" button state corresponds with the group being hidden.
     // The button's action is therefore to Show the group, when clicked.
-    header_toggle_button_->SetToggledImage(views::Button::STATE_NORMAL,
-                                           &arrow_down);
+    header_toggle_button_->SetToggledImageModel(
+        views::Button::STATE_NORMAL, ui::ImageModel::FromImageSkia(arrow_down));
     header_toggle_button_->SetToggledTooltipText(
         l10n_util::GetStringUTF16(IDS_TOOLTIP_HEADER_SHOW_SUGGESTIONS_BUTTON));
     header_toggle_button_->SetToggledAccessibleName(l10n_util::GetStringFUTF16(
