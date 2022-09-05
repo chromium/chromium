@@ -6725,14 +6725,8 @@ const ComputedStyle* Element::EnsureComputedStyle(
   // EnsureComputedStyle. In some cases you might be fine using GetComputedStyle
   // without updating the style, but in most cases you want a clean tree for
   // that as well.
-  //
-  // Adjacent styling bits may be set and affect NeedsLayoutTreeUpdateForNode as
-  // part of EnsureComputedStyle in an ancestor chain.
-  // (see CSSComputedStyleDeclarationTest::NeedsAdjacentStyleRecalc). It is OK
-  // that it happens, but we need to ignore the effect on
-  // NeedsLayoutTreeUpdateForNodeIncludingDisplayLocked here.
-  DCHECK(!GetDocument().NeedsLayoutTreeUpdateForNodeIncludingDisplayLocked(
-      *this, true /* ignore_adjacent_style */));
+  DCHECK(
+      !GetDocument().NeedsLayoutTreeUpdateForNodeIncludingDisplayLocked(*this));
 
   // Retrieve a list of (non-inclusive) ancestors that we need to ensure the
   // ComputedStyle for *before* we can ensure the ComputedStyle for this

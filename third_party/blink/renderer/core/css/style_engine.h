@@ -339,6 +339,25 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   void UpdateStyleRecalcRoot(ContainerNode* ancestor, Node* dirty_node);
   void UpdateLayoutTreeRebuildRoot(ContainerNode* ancestor, Node* dirty_node);
 
+  enum class AncestorAnalysis {
+    // There is no dirtiness in the ancestor chain.
+    kNone,
+    // There is an interleaving root (i.e. a size query container) in the
+    // ancestor chain.
+    kInterleavingRoot,
+    // There is a style recalc root or style invalidation root in the ancestor
+    // chain.
+    kStyleRoot,
+  };
+
+  // Analyze the inclusive flat-tree ancestors of the given node to understand
+  // whether or not the next call to UpdateStyleAndLayoutTree would affect
+  // that node.
+  //
+  // This is useful for avoiding unnecessary forced style updates when we
+  // only care about the style of a specific node, e.g. getComputedStyle(e).
+  AncestorAnalysis AnalyzeAncestors(const Node&);
+
   bool MarkReattachAllowed() const;
 
   CSSFontSelector* GetFontSelector() { return font_selector_; }
@@ -566,6 +585,9 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
  private:
   // FontSelectorClient implementation.
   void FontsNeedUpdate(FontSelector*, FontInvalidationReason) override;
+
+  AncestorAnalysis AnalyzeInclusiveAncestor(const Node&);
+  AncestorAnalysis AnalyzeExclusiveAncestor(const Node&);
 
   void LoadVisionDeficiencyFilter();
 

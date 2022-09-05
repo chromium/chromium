@@ -668,13 +668,10 @@ class CORE_EXPORT Document : public ContainerNode,
 
   // Whether we need layout tree update for this node or not, without
   // considering nodes in display locked subtrees.
-  bool NeedsLayoutTreeUpdateForNode(const Node&,
-                                    bool ignore_adjacent_style = false) const;
+  bool NeedsLayoutTreeUpdateForNode(const Node&) const;
   // Whether we need layout tree update for this node or not, including nodes in
   // display locked subtrees.
-  bool NeedsLayoutTreeUpdateForNodeIncludingDisplayLocked(
-      const Node&,
-      bool ignore_adjacent_style = false) const;
+  bool NeedsLayoutTreeUpdateForNodeIncludingDisplayLocked(const Node&) const;
 
   // Update ComputedStyles and attach LayoutObjects if necessary. This
   // recursively invokes itself for all ancestor LocalFrames, because style in

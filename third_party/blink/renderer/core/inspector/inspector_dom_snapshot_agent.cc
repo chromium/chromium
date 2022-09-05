@@ -732,7 +732,7 @@ std::unique_ptr<protocol::Array<int>>
 InspectorDOMSnapshotAgent::BuildStylesForNode(Node* node) {
   DCHECK(
       !node->GetDocument().NeedsLayoutTreeUpdateForNodeIncludingDisplayLocked(
-          *node, true /* ignore_adjacent_style */));
+          *node));
   auto result = std::make_unique<protocol::Array<int>>();
   auto* layout_object = node->GetLayoutObject();
   if (!layout_object)

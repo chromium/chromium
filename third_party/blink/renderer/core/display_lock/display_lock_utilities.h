@@ -316,6 +316,12 @@ class CORE_EXPORT DisplayLockUtilities {
   // LockedAncestorPreventing*.
   static bool IsUnlockedQuickCheck(const Node& node);
 
+  // True if unlocking would invalidate style and produce a style recalc root at
+  // the specified node.
+  //
+  // See StyleEngine::style_recalc_root_.
+  static bool IsPotentialStyleRecalcRoot(const Node& node);
+
  private:
   // This is a helper function for ShouldIgnoreNodeDueToDisplayLock() when the
   // activation reason is kAccessibility. Note that it's private because it

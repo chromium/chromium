@@ -2994,6 +2994,63 @@ void StyleEngine::UpdateLayoutTreeRebuildRoot(ContainerNode* ancestor,
   layout_tree_rebuild_root_.Update(ancestor, dirty_node);
 }
 
+namespace {
+
+Node* AnalysisParent(const Node& node) {
+  return IsA<ShadowRoot>(node) ? node.ParentOrShadowHostElement()
+                               : LayoutTreeBuilderTraversal::Parent(node);
+}
+
+bool IsRootOrSibling(const Node* root, const Node& node) {
+  if (!root)
+    return false;
+  if (root == &node)
+    return true;
+  if (Node* root_parent = AnalysisParent(*root))
+    return root_parent == AnalysisParent(node);
+  return false;
+}
+
+}  // namespace
+
+StyleEngine::AncestorAnalysis StyleEngine::AnalyzeInclusiveAncestor(
+    const Node& node) {
+  if (IsRootOrSibling(style_recalc_root_.GetRootNode(), node))
+    return AncestorAnalysis::kStyleRoot;
+  if (IsRootOrSibling(style_invalidation_root_.GetRootNode(), node))
+    return AncestorAnalysis::kStyleRoot;
+  if (ComputedStyle::IsInterleavingRoot(node.GetComputedStyle()))
+    return AncestorAnalysis::kInterleavingRoot;
+  return AncestorAnalysis::kNone;
+}
+
+StyleEngine::AncestorAnalysis StyleEngine::AnalyzeExclusiveAncestor(
+    const Node& node) {
+  if (DisplayLockUtilities::IsPotentialStyleRecalcRoot(node))
+    return AncestorAnalysis::kStyleRoot;
+  return AnalyzeInclusiveAncestor(node);
+}
+
+StyleEngine::AncestorAnalysis StyleEngine::AnalyzeAncestors(const Node& node) {
+  AncestorAnalysis analysis = AnalyzeInclusiveAncestor(node);
+
+  for (const Node* ancestor = LayoutTreeBuilderTraversal::Parent(node);
+       ancestor; ancestor = LayoutTreeBuilderTraversal::Parent(*ancestor)) {
+    // Already at maximum severity, no need to proceed.
+    if (analysis == AncestorAnalysis::kStyleRoot)
+      return analysis;
+
+    // LayoutTreeBuilderTraversal::Parent skips ShadowRoots, so we check it
+    // explicitly here.
+    if (ShadowRoot* root = ancestor->GetShadowRoot())
+      analysis = std::max(analysis, AnalyzeExclusiveAncestor(*root));
+
+    analysis = std::max(analysis, AnalyzeExclusiveAncestor(*ancestor));
+  }
+
+  return analysis;
+}
+
 bool StyleEngine::MarkReattachAllowed() const {
   return !InRebuildLayoutTree() ||
          allow_mark_for_reattach_from_rebuild_layout_tree_;

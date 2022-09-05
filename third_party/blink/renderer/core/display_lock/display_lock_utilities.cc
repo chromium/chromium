@@ -912,4 +912,18 @@ bool DisplayLockUtilities::IsUnlockedQuickCheck(const Node& node) {
   return false;
 }
 
+bool DisplayLockUtilities::IsPotentialStyleRecalcRoot(const Node& node) {
+  auto* element = DynamicTo<Element>(node);
+  if (!element)
+    return false;
+  auto* context = element->GetDisplayLockContext();
+  if (!context)
+    return false;
+  if (context->StyleTraversalWasBlocked())
+    return true;
+  if (!context->ShouldStyleChildren())
+    return context->IsElementDirtyForStyleRecalc();
+  return false;
+}
+
 }  // namespace blink

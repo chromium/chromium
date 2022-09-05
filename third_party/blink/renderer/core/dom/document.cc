@@ -2277,21 +2277,18 @@ void Document::UpdateStyle() {
   }
 }
 
-bool Document::NeedsLayoutTreeUpdateForNode(const Node& node,
-                                            bool ignore_adjacent_style) const {
+bool Document::NeedsLayoutTreeUpdateForNode(const Node& node) const {
   // TODO(rakina): Switch some callers that may need to call
   // NeedsLayoutTreeUpdateForNodeIncludingDisplayLocked instead of this.
   if (DisplayLockUtilities::LockedAncestorPreventingStyle(node)) {
     // |node| is in a locked-subtree, so we don't need to update it.
     return false;
   }
-  return NeedsLayoutTreeUpdateForNodeIncludingDisplayLocked(
-      node, ignore_adjacent_style);
+  return NeedsLayoutTreeUpdateForNodeIncludingDisplayLocked(node);
 }
 
 bool Document::NeedsLayoutTreeUpdateForNodeIncludingDisplayLocked(
-    const Node& node,
-    bool ignore_adjacent_style) const {
+    const Node& node) const {
   if (!node.isConnected())
     return false;
   if (node.IsShadowRoot())
@@ -2323,51 +2320,14 @@ bool Document::NeedsLayoutTreeUpdateForNodeIncludingDisplayLocked(
     return false;
   }
 
-  bool is_dirty = false;
-  if (node.NeedsStyleRecalc() || node.NeedsStyleInvalidation()) {
-    if (auto* style = node.GetComputedStyle())
-      return !style->IsEnsuredOutsideFlatTree();
-    is_dirty = true;
+  switch (GetStyleEngine().AnalyzeAncestors(node)) {
+    case StyleEngine::AncestorAnalysis::kNone:
+      return false;
+    case StyleEngine::AncestorAnalysis::kInterleavingRoot:
+      return needs_update_inside_interleaving_root;
+    case StyleEngine::AncestorAnalysis::kStyleRoot:
+      return true;
   }
-  // For pseudo-style requests, we may have to update pseudo-elements of the
-  // interleaving root itself. Hence we also check `node`, even though it's
-  // not inside its own interleaving root.
-  if (ComputedStyle::IsInterleavingRoot(node.GetComputedStyle()) &&
-      needs_update_inside_interleaving_root) {
-    is_dirty = true;
-  }
-  for (const ContainerNode* ancestor = LayoutTreeBuilderTraversal::Parent(node);
-       ancestor; ancestor = LayoutTreeBuilderTraversal::Parent(*ancestor)) {
-    if (ShadowRoot* root = ancestor->GetShadowRoot()) {
-      if (root->NeedsStyleRecalc() || root->NeedsStyleInvalidation() ||
-          root->NeedsAdjacentStyleRecalc()) {
-        is_dirty = true;
-      }
-    }
-    if (ancestor->NeedsStyleRecalc() || ancestor->NeedsStyleInvalidation() ||
-        (ancestor->NeedsAdjacentStyleRecalc() && !ignore_adjacent_style)) {
-      is_dirty = true;
-    }
-    if (ComputedStyle::IsInterleavingRoot(ancestor->GetComputedStyle()) &&
-        needs_update_inside_interleaving_root) {
-      is_dirty = true;
-    }
-    if (is_dirty) {
-      if (auto* style = ancestor->GetComputedStyle())
-        return !style->IsEnsuredOutsideFlatTree();
-    }
-
-    auto* element = DynamicTo<Element>(ancestor);
-    if (!element)
-      continue;
-    if (auto* context = element->GetDisplayLockContext()) {
-      // Even if the ancestor is style-clean, we might've previously
-      // blocked a style traversal going to the ancestor or its descendants.
-      if (context->StyleTraversalWasBlocked())
-        return true;
-    }
-  }
-  return is_dirty;
 }
 
 void Document::UpdateStyleAndLayoutTreeForNode(const Node* node) {
