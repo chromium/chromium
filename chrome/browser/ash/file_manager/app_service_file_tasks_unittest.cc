@@ -864,5 +864,44 @@ TEST_F(AppServiceFileTasksTestEnabled, FindMultipleAppServicePluginVmApps) {
   EXPECT_TRUE(tasks[1].is_file_extension_match);
 }
 
+TEST_F(AppServiceFileTasksTestEnabled,
+       FindAppServicePluginVmApp_IgnoringExtensionCase) {
+  std::string file_ext = "Txt";
+  std::string file_name = "foo.txT";
+  std::string text_app_id = "Text app";
+  AddGuestOsAppWithIntentFilter(text_app_id, apps::AppType::kPluginVm,
+                                CreateExtensionTypeFileIntentFilter(
+                                    apps_util::kIntentActionView, file_ext));
+
+  // Check if the text PluginVm app is returned.
+  std::vector<FullTaskDescriptor> tasks = FindAppServiceTasks({{file_name}});
+  ASSERT_EQ(1U, tasks.size());
+  EXPECT_EQ(text_app_id, tasks[0].task_descriptor.app_id);
+  EXPECT_FALSE(tasks[0].is_generic_file_handler);
+  EXPECT_TRUE(tasks[0].is_file_extension_match);
+}
+
+TEST_F(AppServiceFileTasksTestEnabled, NoPluginVmAppsForFileSelection) {
+  std::string image_file_name = "foo.jpeg";
+  std::string image_app_id = "Image app";
+  std::string text_file_name = "foo.txt";
+  std::string text_app_id = "Text app";
+
+  // Add a text-only app and an image-only app.
+  AddGuestOsAppWithIntentFilter(
+      text_app_id, apps::AppType::kPluginVm,
+      CreateExtensionTypeFileIntentFilter(apps_util::kIntentActionView, "txt"));
+  AddGuestOsAppWithIntentFilter(image_app_id, apps::AppType::kPluginVm,
+                                CreateExtensionTypeFileIntentFilter(
+                                    apps_util::kIntentActionView, "jpeg"));
+
+  // Find an app that can open both the text and image file.
+  std::vector<FullTaskDescriptor> tasks =
+      FindAppServiceTasks({{text_file_name}, {image_file_name}});
+
+  // There shouldn't be any apps available.
+  ASSERT_EQ(0U, tasks.size());
+}
+
 }  // namespace file_tasks
 }  // namespace file_manager.
