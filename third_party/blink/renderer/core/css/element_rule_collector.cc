@@ -84,11 +84,13 @@ bool EvaluateAndAddContainerQueries(
     const Element& matching_element,
     const ContainerQuery& container_query,
     const StyleRecalcContext& style_recalc_context,
+    ContainerSelectorCache& container_selector_cache,
     MatchResult& result) {
   for (const ContainerQuery* current = &container_query; current;
        current = current->Parent()) {
     if (!ContainerQueryEvaluator::EvalAndAdd(
-            matching_element, style_recalc_context, *current, result)) {
+            matching_element, style_recalc_context, *current,
+            container_selector_cache, result)) {
       return false;
     }
   }
@@ -420,9 +422,9 @@ void ElementRuleCollector::CollectMatchingRulesForListInternal(
       // elements when they depend on the originating element.
       if (pseudo_style_request_.pseudo_id != kPseudoIdNone ||
           result.dynamic_pseudo == kPseudoIdNone) {
-        if (!EvaluateAndAddContainerQueries(context_.GetElement(),
-                                            *container_query,
-                                            style_recalc_context_, result_)) {
+        if (!EvaluateAndAddContainerQueries(
+                context_.GetElement(), *container_query, style_recalc_context_,
+                container_selector_cache_, result_)) {
           if (AffectsAnimations(rule_data))
             result_.SetConditionallyAffectsAnimations();
           continue;

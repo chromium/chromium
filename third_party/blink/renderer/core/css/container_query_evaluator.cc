@@ -48,6 +48,20 @@ bool Matches(const ComputedStyle& style,
          TypeMatches(style, container_selector);
 }
 
+Element* CachedContainer(Element* starting_element,
+                         const ContainerSelector& container_selector,
+                         ContainerSelectorCache& container_selector_cache) {
+  ContainerSelectorCache::AddResult add_result =
+      container_selector_cache.insert(container_selector, nullptr);
+
+  if (add_result.is_new_entry) {
+    add_result.stored_value->value = ContainerQueryEvaluator::FindContainer(
+        starting_element, container_selector);
+  }
+
+  return add_result.stored_value->value.Get();
+}
+
 }  // namespace
 
 // static
@@ -68,10 +82,12 @@ Element* ContainerQueryEvaluator::FindContainer(
   return nullptr;
 }
 
-bool ContainerQueryEvaluator::EvalAndAdd(const Element& matching_element,
-                                         const StyleRecalcContext& context,
-                                         const ContainerQuery& query,
-                                         MatchResult& match_result) {
+bool ContainerQueryEvaluator::EvalAndAdd(
+    const Element& matching_element,
+    const StyleRecalcContext& context,
+    const ContainerQuery& query,
+    ContainerSelectorCache& container_selector_cache,
+    MatchResult& match_result) {
   const ContainerSelector& selector = query.Selector();
   bool selects_size = selector.SelectsSizeContainers();
   bool selects_style = selector.SelectsStyleContainers();
@@ -81,7 +97,8 @@ bool ContainerQueryEvaluator::EvalAndAdd(const Element& matching_element,
   Element* starting_element =
       selects_size ? context.container
                    : matching_element.ParentOrShadowHostElement();
-  Element* container = FindContainer(starting_element, selector);
+  Element* container = CachedContainer(starting_element, query.Selector(),
+                                       container_selector_cache);
   if (!container)
     return false;
 
