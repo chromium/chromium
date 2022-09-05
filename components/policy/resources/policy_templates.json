@@ -11306,7 +11306,8 @@
       'owners': ['file://components/policy/resources/OWNERS', 'pmarko@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
-      'supported_on': ['chrome_os:77-83', 'chrome.linux:79-83', 'chrome.mac:83-'],
+      'supported_on': ['chrome_os:77-83', 'chrome.linux:79-83', 'chrome.mac:83-106'],
+      'deprecated': True,
       'features': {
         'dynamic_refresh': False,
         'per_profile': False,
@@ -11330,12 +11331,11 @@
       'id': 575,
       'caption': '''Determines whether the built-in certificate verifier will be used to verify server certificates''',
       'tags': [],
-      'desc': '''When this setting is enabled, <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> will perform verification of server certificates using the built-in certificate verifier.
-      When this setting is disabled, <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> will perform verification of server certificates using the legacy certificate verifier provided by the platform, unless <ph name="CHROME_ROOT_STORE_ENABLED_POLICY_NAME">ChromeRootStoreEnabled</ph> is enabled.
-      When this setting is not set, the built-in or the legacy certificate verifier may be used.
+      'desc': '''This policy is no longer supported, however the related policy <ph name="CHROME_ROOT_STORE_ENABLED_POLICY_NAME">ChromeRootStoreEnabled</ph> may be supported on certain platforms.
 
-      This policy is planned to be removed in <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> for <ph name="MAC_OS_NAME">macOS</ph> version 107, when support for the legacy certificate verifier on <ph name="MAC_OS_NAME">macOS</ph> is planned to be removed.
-      ''',
+      When this setting is enabled, <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> will perform verification of server certificates using the built-in certificate verifier.
+      When this setting is disabled, <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> will perform verification of server certificates using the legacy certificate verifier provided by the platform, unless <ph name="CHROME_ROOT_STORE_ENABLED_POLICY_NAME">ChromeRootStoreEnabled</ph> is enabled.
+      When this setting is not set, the built-in or the legacy certificate verifier may be used.''',
     },
     {
       'name': 'ChromeRootStoreEnabled',

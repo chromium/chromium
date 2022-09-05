@@ -31,7 +31,8 @@ declare_args() {
   # builtin_cert_verifier_feature_supported platforms.
   # See crbug.com/410574.  This can be removed when the builtin verifier is
   # unconditionally enabled on all platforms.
-  builtin_cert_verifier_policy_supported = is_mac
+  # TODO(https://crbug.com/1358693): Remove the code for this policy.
+  builtin_cert_verifier_policy_supported = false
 
   # Enables the build to have logging enabled by default.
   # This is intended for use only in developer builds.
