@@ -281,6 +281,7 @@ TEST(ExtensionInstallForceListPolicyHandlerTest, ApplyPolicySettings) {
   handler.ApplyPolicySettings(policy_map, &prefs);
   EXPECT_FALSE(prefs.GetValue(pref_names::kInstallForceList, &value));
   EXPECT_FALSE(value);
+  EXPECT_EQ(base::Value::Dict(), handler.GetPolicyDict(policy_map));
 
   // Set the policy to an empty value. This shouldn't affect the pref.
   policy_map.Set(policy::key::kExtensionInstallForcelist,
@@ -289,6 +290,7 @@ TEST(ExtensionInstallForceListPolicyHandlerTest, ApplyPolicySettings) {
   handler.ApplyPolicySettings(policy_map, &prefs);
   EXPECT_TRUE(prefs.GetValue(pref_names::kInstallForceList, &value));
   EXPECT_EQ(expected, *value);
+  EXPECT_EQ(expected.GetDict(), handler.GetPolicyDict(policy_map));
 
   // Add a correct entry to the policy. The pref should contain a corresponding
   // entry.
@@ -301,6 +303,7 @@ TEST(ExtensionInstallForceListPolicyHandlerTest, ApplyPolicySettings) {
   handler.ApplyPolicySettings(policy_map, &prefs);
   EXPECT_TRUE(prefs.GetValue(pref_names::kInstallForceList, &value));
   EXPECT_EQ(expected, *value);
+  EXPECT_EQ(expected.GetDict(), handler.GetPolicyDict(policy_map));
 
   // Add a correct entry with an omitted update URL. The pref should contain now
   // two entries, with the default update URL substituted for the new entry.
@@ -317,6 +320,7 @@ TEST(ExtensionInstallForceListPolicyHandlerTest, ApplyPolicySettings) {
   handler.ApplyPolicySettings(policy_map, &prefs);
   EXPECT_TRUE(prefs.GetValue(pref_names::kInstallForceList, &value));
   EXPECT_EQ(expected, *value);
+  EXPECT_EQ(expected.GetDict(), handler.GetPolicyDict(policy_map));
 
   // Add an invalid entry. The pref should still contain two previous entries.
   policy.Append("invalid");
@@ -326,6 +330,7 @@ TEST(ExtensionInstallForceListPolicyHandlerTest, ApplyPolicySettings) {
   handler.ApplyPolicySettings(policy_map, &prefs);
   EXPECT_TRUE(prefs.GetValue(pref_names::kInstallForceList, &value));
   EXPECT_EQ(expected, *value);
+  EXPECT_EQ(expected.GetDict(), handler.GetPolicyDict(policy_map));
 }
 
 TEST(ExtensionURLPatternListPolicyHandlerTest, CheckPolicySettings) {

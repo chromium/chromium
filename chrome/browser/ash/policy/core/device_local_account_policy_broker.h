@@ -7,13 +7,15 @@
 
 #include <string>
 
+#include "base/callback_forward.h"
 #include "chrome/browser/ash/policy/core/device_local_account.h"
 #include "chrome/browser/ash/policy/core/device_local_account_extension_tracker.h"
+#include "chrome/browser/ash/policy/core/device_local_account_external_cache.h"
 #include "chrome/browser/ash/policy/core/device_local_account_policy_store.h"
 #include "chrome/browser/ash/policy/external_data/device_local_account_external_data_manager.h"
 #include "chrome/browser/ash/policy/invalidation/affiliated_cloud_policy_invalidator.h"
 #include "chrome/browser/ash/policy/invalidation/affiliated_invalidation_service_provider.h"
-#include "chrome/browser/chromeos/extensions/device_local_account_external_policy_loader.h"
+#include "chrome/browser/extensions/external_loader.h"
 #include "components/policy/core/common/cloud/cloud_policy_store.h"
 #include "components/policy/core/common/cloud/component_cloud_policy_service.h"
 
@@ -63,9 +65,8 @@ class DeviceLocalAccountPolicyBroker
   const std::string& account_id() const { return account_id_; }
   const std::string& user_id() const { return user_id_; }
 
-  scoped_refptr<chromeos::DeviceLocalAccountExternalPolicyLoader>
-  extension_loader() const {
-    return extension_loader_;
+  scoped_refptr<extensions::ExternalLoader> extension_loader() const {
+    return external_cache_->GetExtensionLoader();
   }
 
   CloudPolicyCore* core() { return &core_; }
@@ -104,8 +105,19 @@ class DeviceLocalAccountPolicyBroker
   // ComponentCloudPolicyService::Delegate:
   void OnComponentCloudPolicyUpdated() override;
 
+  // Start the cache using the supplied |cache_task_runner|.
+  void StartCache(
+      const scoped_refptr<base::SequencedTaskRunner>& cache_task_runner);
+
+  // Stop the cache. When the cache is stopped, |callback| will be invoked.
+  void StopCache(base::OnceClosure callback);
+
+  // Return whether the cache is currently running.
+  bool IsCacheRunning() const;
+
  private:
   void CreateComponentCloudPolicyService(CloudPolicyClient* client);
+  void UpdateExtensionListFromStore();
 
   const raw_ptr<AffiliatedInvalidationServiceProvider>
       invalidation_service_provider_;
@@ -116,8 +128,7 @@ class DeviceLocalAccountPolicyBroker
   const std::unique_ptr<DeviceLocalAccountPolicyStore> store_;
   std::unique_ptr<DeviceLocalAccountExtensionTracker> extension_tracker_;
   scoped_refptr<DeviceLocalAccountExternalDataManager> external_data_manager_;
-  scoped_refptr<chromeos::DeviceLocalAccountExternalPolicyLoader>
-      extension_loader_;
+  std::unique_ptr<chromeos::DeviceLocalAccountExternalCache> external_cache_;
   CloudPolicyCore core_;
   std::unique_ptr<ComponentCloudPolicyService> component_policy_service_;
   base::RepeatingClosure policy_update_callback_;

@@ -160,6 +160,21 @@ bool ExtensionInstallForceListPolicyHandler::ParseList(
   return true;
 }
 
+base::Value::Dict ExtensionInstallForceListPolicyHandler::GetPolicyDict(
+    const policy::PolicyMap& policies) {
+  if (CheckPolicySettings(policies, nullptr)) {
+    PrefValueMap pref_value_map;
+    ApplyPolicySettings(policies, &pref_value_map);
+    const base::Value* value;
+    if (pref_value_map.GetValue(extensions::pref_names::kInstallForceList,
+                                &value) &&
+        value->is_dict()) {
+      return value->GetDict().Clone();
+    }
+  }
+  return base::Value::Dict();
+}
+
 // ExtensionURLPatternListPolicyHandler implementation -------------------------
 
 ExtensionURLPatternListPolicyHandler::ExtensionURLPatternListPolicyHandler(

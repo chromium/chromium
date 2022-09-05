@@ -60,6 +60,10 @@ class ExtensionInstallForceListPolicyHandler
   void ApplyPolicySettings(const policy::PolicyMap& policies,
                            PrefValueMap* prefs) override;
 
+  // Convenience method to directly get a base::Value::Dict with the policy
+  // values.
+  base::Value::Dict GetPolicyDict(const policy::PolicyMap& policy_map);
+
  private:
   // Parses the data in |policy_value| and writes them to |extension_dict|.
   bool ParseList(const base::Value* policy_value,

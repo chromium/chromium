@@ -641,12 +641,12 @@ TEST_F(DeviceLocalAccountPolicyExtensionCacheTest, Startup) {
   DeviceLocalAccountPolicyBroker* broker =
       service_->GetBrokerForUser(account_1_user_id_);
   ASSERT_TRUE(broker);
-  EXPECT_TRUE(broker->extension_loader()->IsCacheRunning());
+  EXPECT_TRUE(broker->IsCacheRunning());
 
   // Verify that the cache for account 2 has been started.
   broker = service_->GetBrokerForUser(account_2_user_id_);
   ASSERT_TRUE(broker);
-  EXPECT_TRUE(broker->extension_loader()->IsCacheRunning());
+  EXPECT_TRUE(broker->IsCacheRunning());
 }
 
 // Verifies that while the deletion of orphaned cache directories is in
@@ -668,7 +668,7 @@ TEST_F(DeviceLocalAccountPolicyExtensionCacheTest, RaceAgainstOrphanDeletion) {
   DeviceLocalAccountPolicyBroker* broker =
       service_->GetBrokerForUser(account_1_user_id_);
   ASSERT_TRUE(broker);
-  EXPECT_TRUE(broker->extension_loader()->IsCacheRunning());
+  EXPECT_TRUE(broker->IsCacheRunning());
 
   // Add account 2 to device policy.
   InstallDeviceLocalAccountPolicy(kAccount2);
@@ -679,14 +679,14 @@ TEST_F(DeviceLocalAccountPolicyExtensionCacheTest, RaceAgainstOrphanDeletion) {
   // deletion is still in progress.
   broker = service_->GetBrokerForUser(account_2_user_id_);
   ASSERT_TRUE(broker);
-  EXPECT_FALSE(broker->extension_loader()->IsCacheRunning());
+  EXPECT_FALSE(broker->IsCacheRunning());
 
   // Allow the orphan deletion to finish.
   extension_cache_task_runner_->RunUntilIdle();
   base::RunLoop().RunUntilIdle();
 
   // Verify that the cache for account 2 has been started.
-  EXPECT_TRUE(broker->extension_loader()->IsCacheRunning());
+  EXPECT_TRUE(broker->IsCacheRunning());
 }
 
 // Verifies that while the shutdown of a cache is in progress, no new cache is
@@ -716,7 +716,7 @@ TEST_F(DeviceLocalAccountPolicyExtensionCacheTest, RaceAgainstCacheShutdown) {
   DeviceLocalAccountPolicyBroker* broker =
       service_->GetBrokerForUser(account_1_user_id_);
   ASSERT_TRUE(broker);
-  EXPECT_FALSE(broker->extension_loader()->IsCacheRunning());
+  EXPECT_FALSE(broker->IsCacheRunning());
 
   // Allow the cache shutdown to finish.
   extension_cache_task_runner_->RunUntilIdle();
@@ -727,7 +727,7 @@ TEST_F(DeviceLocalAccountPolicyExtensionCacheTest, RaceAgainstCacheShutdown) {
 
   // Verify that the cache for account 1 has been started, reusing the existing
   // cache directory.
-  EXPECT_TRUE(broker->extension_loader()->IsCacheRunning());
+  EXPECT_TRUE(broker->IsCacheRunning());
 }
 
 // Verifies that while the deletion of an obsolete cache directory is in
@@ -761,7 +761,7 @@ TEST_F(DeviceLocalAccountPolicyExtensionCacheTest,
   DeviceLocalAccountPolicyBroker* broker =
       service_->GetBrokerForUser(account_1_user_id_);
   ASSERT_TRUE(broker);
-  EXPECT_FALSE(broker->extension_loader()->IsCacheRunning());
+  EXPECT_FALSE(broker->IsCacheRunning());
 
   // Allow the deletion to finish.
   extension_cache_task_runner_->RunUntilIdle();
@@ -771,7 +771,7 @@ TEST_F(DeviceLocalAccountPolicyExtensionCacheTest,
   EXPECT_FALSE(base::DirectoryExists(cache_dir_1_));
 
   // Verify that the cache for account 1 has been started.
-  EXPECT_TRUE(broker->extension_loader()->IsCacheRunning());
+  EXPECT_TRUE(broker->IsCacheRunning());
 }
 
 // Verifies that when an account is added and no deletion of cache directories
@@ -793,7 +793,7 @@ TEST_F(DeviceLocalAccountPolicyExtensionCacheTest, AddAccount) {
   DeviceLocalAccountPolicyBroker* broker =
       service_->GetBrokerForUser(account_1_user_id_);
   ASSERT_TRUE(broker);
-  EXPECT_TRUE(broker->extension_loader()->IsCacheRunning());
+  EXPECT_TRUE(broker->IsCacheRunning());
 }
 
 // Verifies that when an account is removed, its cache directory is deleted.
