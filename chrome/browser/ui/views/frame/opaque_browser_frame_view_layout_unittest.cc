@@ -19,6 +19,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/models/image_model.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_rep.h"
 #include "ui/gfx/text_constants.h"
@@ -164,7 +165,8 @@ class OpaqueBrowserFrameViewLayoutTest
     auto button = std::make_unique<views::ImageButton>();
     gfx::ImageSkiaRep rep(size, 1.0f);
     gfx::ImageSkia image(rep);
-    button->SetImage(views::Button::STATE_NORMAL, &image);
+    button->SetImageModel(views::Button::STATE_NORMAL,
+                          ui::ImageModel::FromImageSkia(image));
     button->SetID(view_id);
 
     // OpaqueBrowserFrameViewLayout requires the id of a view is set before

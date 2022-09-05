@@ -670,12 +670,15 @@ views::Button* OpaqueBrowserFrameView::CreateImageButton(int normal_image_id,
   views::ImageButton* button =
       new views::ImageButton(views::Button::PressedCallback());
   const ui::ThemeProvider* tp = frame()->GetThemeProvider();
-  button->SetImage(views::Button::STATE_NORMAL,
-                   tp->GetImageSkiaNamed(normal_image_id));
-  button->SetImage(views::Button::STATE_HOVERED,
-                   tp->GetImageSkiaNamed(hot_image_id));
-  button->SetImage(views::Button::STATE_PRESSED,
-                   tp->GetImageSkiaNamed(pushed_image_id));
+  button->SetImageModel(
+      views::Button::STATE_NORMAL,
+      ui::ImageModel::FromImageSkia(*tp->GetImageSkiaNamed(normal_image_id)));
+  button->SetImageModel(
+      views::Button::STATE_HOVERED,
+      ui::ImageModel::FromImageSkia(*tp->GetImageSkiaNamed(hot_image_id)));
+  button->SetImageModel(
+      views::Button::STATE_PRESSED,
+      ui::ImageModel::FromImageSkia(*tp->GetImageSkiaNamed(pushed_image_id)));
   button->SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
   if (browser_view()->GetIsNormalType()) {
     // Get a custom processed version of the theme's background image so

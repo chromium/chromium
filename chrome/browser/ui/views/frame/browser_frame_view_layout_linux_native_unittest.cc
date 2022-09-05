@@ -11,6 +11,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/test/views/chrome_views_test_base.h"
+#include "ui/base/models/image_model.h"
 #include "ui/linux/nav_button_provider.h"
 #include "ui/linux/window_frame_provider.h"
 #include "ui/views/background.h"
@@ -221,10 +222,10 @@ class BrowserFrameViewLayoutLinuxNativeTest : public ChromeViewsTestBase {
 
     for (const auto& button : kButtons) {
       for (const auto& state : kStates) {
-        button.button->SetImage(
+        button.button->SetImageModel(
             state.button_state,
-            nav_button_provider_->GetImage(button.type,
-                                           state.nav_button_provider_state));
+            ui::ImageModel::FromImageSkia(nav_button_provider_->GetImage(
+                button.type, state.nav_button_provider_state)));
       }
     }
   }
