@@ -55,14 +55,13 @@ bool ParamTraits<AudioParameters>::Read(const base::Pickle* m,
   }
 
   if (hardware_capabilities) {
-    *r = AudioParameters(format, channel_layout, sample_rate, frames_per_buffer,
-                         *hardware_capabilities);
+    *r = AudioParameters(format, {channel_layout, channels}, sample_rate,
+                         frames_per_buffer, *hardware_capabilities);
   } else {
-    *r =
-        AudioParameters(format, channel_layout, sample_rate, frames_per_buffer);
+    *r = AudioParameters(format, {channel_layout, channels}, sample_rate,
+                         frames_per_buffer);
   }
 
-  r->set_channels_for_discrete(channels);
   r->set_effects(effects);
   r->set_mic_positions(mic_positions);
   r->set_latency_tag(latency_tag);
