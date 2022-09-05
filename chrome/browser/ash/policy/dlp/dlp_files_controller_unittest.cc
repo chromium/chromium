@@ -79,16 +79,6 @@ bool CreateDummyFile(const base::FilePath& path) {
   return WriteFile(path, "42", sizeof("42")) == sizeof("42");
 }
 
-struct DialogChoiceResult {
-  DialogChoiceResult(bool should_action_proceed,
-                     std::vector<std::string> disallowed_file_sources)
-      : should_action_proceed(should_action_proceed),
-        disallowed_file_sources(disallowed_file_sources) {}
-
-  bool should_action_proceed;
-  std::vector<std::string> disallowed_file_sources;
-};
-
 struct FilesTransferInfo {
   FilesTransferInfo(DlpWarnDialog::FilesAction files_action,
                     std::vector<std::string> file_sources,
@@ -102,10 +92,12 @@ struct FilesTransferInfo {
   std::vector<std::string> file_paths;
 };
 
-}  // namespace
-
 using MockIsFilesTransferRestrictedCallback = testing::StrictMock<
     base::MockCallback<DlpFilesController::IsFilesTransferRestrictedCallback>>;
+using MockCheckIfDownloadAllowedCallback = testing::StrictMock<
+    base::MockCallback<DlpFilesController::CheckIfDownloadAllowedCallback>>;
+
+}  // namespace
 
 class DlpFilesControllerTest : public testing::Test {
  public:
@@ -161,8 +153,6 @@ class DlpFilesControllerTest : public testing::Test {
     rules_manager_ = dlp_rules_manager.get();
 
     files_controller_ = std::make_unique<DlpFilesController>(*rules_manager_);
-    ON_CALL(*rules_manager_, GetDlpFilesController)
-        .WillByDefault(::testing::Return(files_controller_.get()));
 
     reporting_manager_ = std::make_unique<DlpReportingManager>();
     SetReportQueueForReportingManager(reporting_manager_.get(), events,
@@ -275,13 +265,9 @@ TEST_F(DlpFilesControllerTest, GetDisallowedTransfers_DiffFileSystem) {
       base::FilePath("file.rar/path/in/archive"));
 
   base::test::TestFuture<std::vector<storage::FileSystemURL>> future;
-
-  ASSERT_TRUE(rules_manager_);
-  DlpFilesController* files_controller =
-      rules_manager_->GetDlpFilesController();
-  ASSERT_TRUE(files_controller);
-  files_controller->GetDisallowedTransfers(transferred_files, dst_url,
-                                           future.GetCallback());
+  ASSERT_TRUE(files_controller_);
+  files_controller_->GetDisallowedTransfers(transferred_files, dst_url,
+                                            future.GetCallback());
   EXPECT_TRUE(future.Wait());
   EXPECT_EQ(disallowed_files, future.Take());
 }
@@ -293,13 +279,10 @@ TEST_F(DlpFilesControllerTest, GetDisallowedTransfers_SameFileSystem) {
       {file_url1_, file_url2_, file_url3_});
 
   base::test::TestFuture<std::vector<storage::FileSystemURL>> future;
-  ASSERT_TRUE(rules_manager_);
-  DlpFilesController* files_controller =
-      rules_manager_->GetDlpFilesController();
-  ASSERT_TRUE(files_controller);
-  files_controller->GetDisallowedTransfers(transferred_files,
-                                           CreateFileSystemURL("Downloads"),
-                                           future.GetCallback());
+  ASSERT_TRUE(files_controller_);
+  files_controller_->GetDisallowedTransfers(transferred_files,
+                                            CreateFileSystemURL("Downloads"),
+                                            future.GetCallback());
   EXPECT_EQ(0u, future.Get().size());
 }
 
@@ -325,12 +308,9 @@ TEST_F(DlpFilesControllerTest, GetDisallowedTransfers_ClientNotRunning) {
 
   chromeos::DlpClient::Get()->GetTestInterface()->SetIsAlive(false);
   base::test::TestFuture<std::vector<storage::FileSystemURL>> future;
-  ASSERT_TRUE(rules_manager_);
-  DlpFilesController* files_controller =
-      rules_manager_->GetDlpFilesController();
-  ASSERT_TRUE(files_controller);
-  files_controller->GetDisallowedTransfers(transferred_files, dst_url,
-                                           future.GetCallback());
+  ASSERT_TRUE(files_controller_);
+  files_controller_->GetDisallowedTransfers(transferred_files, dst_url,
+                                            future.GetCallback());
   EXPECT_EQ(0u, future.Get().size());
 }
 
@@ -343,13 +323,10 @@ TEST_F(DlpFilesControllerTest, FilterDisallowedUploads_EmptyList) {
 
   base::test::TestFuture<std::vector<FileChooserFileInfoPtr>> future;
 
-  ASSERT_TRUE(rules_manager_);
-  DlpFilesController* files_controller =
-      rules_manager_->GetDlpFilesController();
-  ASSERT_TRUE(files_controller);
-  files_controller->FilterDisallowedUploads(std::move(uploaded_files),
-                                            GURL("https://example.com"),
-                                            future.GetCallback());
+  ASSERT_TRUE(files_controller_);
+  files_controller_->FilterDisallowedUploads(std::move(uploaded_files),
+                                             GURL("https://example.com"),
+                                             future.GetCallback());
 
   std::vector<FileChooserFileInfoPtr> filtered_uploads;
 
@@ -369,13 +346,10 @@ TEST_F(DlpFilesControllerTest, FilterDisallowedUploads_NonNativeFiles) {
       FileChooserFileInfo::NewFileSystem(FileSystemFileInfo::New()));
 
   base::test::TestFuture<std::vector<FileChooserFileInfoPtr>> future;
-  ASSERT_TRUE(rules_manager_);
-  DlpFilesController* files_controller =
-      rules_manager_->GetDlpFilesController();
-  ASSERT_TRUE(files_controller);
-  files_controller->FilterDisallowedUploads(std::move(uploaded_files),
-                                            GURL("https://example.com"),
-                                            future.GetCallback());
+  ASSERT_TRUE(files_controller_);
+  files_controller_->FilterDisallowedUploads(std::move(uploaded_files),
+                                             GURL("https://example.com"),
+                                             future.GetCallback());
 
   std::vector<FileChooserFileInfoPtr> filtered_uploads;
   filtered_uploads.push_back(
@@ -412,13 +386,10 @@ TEST_F(DlpFilesControllerTest, FilterDisallowedUploads_MixedFiles) {
       check_files_transfer_response);
 
   base::test::TestFuture<std::vector<FileChooserFileInfoPtr>> future;
-  ASSERT_TRUE(rules_manager_);
-  DlpFilesController* files_controller =
-      rules_manager_->GetDlpFilesController();
-  ASSERT_TRUE(files_controller);
-  files_controller->FilterDisallowedUploads(std::move(uploaded_files),
-                                            GURL("https://example.com"),
-                                            future.GetCallback());
+  ASSERT_TRUE(files_controller_);
+  files_controller_->FilterDisallowedUploads(std::move(uploaded_files),
+                                             GURL("https://example.com"),
+                                             future.GetCallback());
 
   std::vector<FileChooserFileInfoPtr> filtered_uploads;
   filtered_uploads.push_back(
@@ -449,11 +420,8 @@ TEST_F(DlpFilesControllerTest, GetDlpMetadata) {
 
   base::test::TestFuture<std::vector<DlpFilesController::DlpFileMetadata>>
       future;
-  ASSERT_TRUE(rules_manager_);
-  DlpFilesController* files_controller =
-      rules_manager_->GetDlpFilesController();
-  ASSERT_TRUE(files_controller);
-  files_controller->GetDlpMetadata(files_to_check, future.GetCallback());
+  ASSERT_TRUE(files_controller_);
+  files_controller_->GetDlpMetadata(files_to_check, future.GetCallback());
   EXPECT_TRUE(future.Wait());
   EXPECT_EQ(dlp_metadata, future.Take());
 }
@@ -469,11 +437,8 @@ TEST_F(DlpFilesControllerTest, GetDlpMetadata_FileNotAvailable) {
 
   base::test::TestFuture<std::vector<DlpFilesController::DlpFileMetadata>>
       future;
-  ASSERT_TRUE(rules_manager_);
-  DlpFilesController* files_controller =
-      rules_manager_->GetDlpFilesController();
-  ASSERT_TRUE(files_controller);
-  files_controller->GetDlpMetadata(files_to_check, future.GetCallback());
+  ASSERT_TRUE(files_controller_);
+  files_controller_->GetDlpMetadata(files_to_check, future.GetCallback());
   EXPECT_TRUE(future.Wait());
   EXPECT_EQ(dlp_metadata, future.Take());
 }
@@ -494,11 +459,8 @@ TEST_F(DlpFilesControllerTest, GetDlpRestrictionDetails_Mixed) {
   EXPECT_CALL(*rules_manager_, GetAggregatedComponents)
       .WillOnce(testing::Return(components));
 
-  ASSERT_TRUE(rules_manager_);
-  DlpFilesController* files_controller =
-      rules_manager_->GetDlpFilesController();
-  ASSERT_TRUE(files_controller);
-  auto result = files_controller->GetDlpRestrictionDetails(kExample1);
+  ASSERT_TRUE(files_controller_);
+  auto result = files_controller_->GetDlpRestrictionDetails(kExample1);
 
   ASSERT_EQ(result.size(), 3);
   std::vector<std::string> expected_urls;
@@ -536,12 +498,8 @@ TEST_F(DlpFilesControllerTest, GetDlpRestrictionDetails_Components) {
   EXPECT_CALL(*rules_manager_, GetAggregatedComponents)
       .WillOnce(testing::Return(components));
 
-  ASSERT_TRUE(rules_manager_);
-  DlpFilesController* files_controller =
-      rules_manager_->GetDlpFilesController();
-  ASSERT_TRUE(files_controller);
-  auto result = files_controller->GetDlpRestrictionDetails(kExample1);
-
+  ASSERT_TRUE(files_controller_);
+  auto result = files_controller_->GetDlpRestrictionDetails(kExample1);
   ASSERT_EQ(result.size(), 1);
   std::vector<std::string> expected_urls;
   std::vector<DlpRulesManager::Component> expected_components;
@@ -560,6 +518,8 @@ TEST_F(DlpFilesControllerTest, CheckReportingOnIsDlpPolicyMatched) {
       .WillOnce(testing::Return(DlpRulesManager::Level::kWarn))
       .WillOnce(testing::Return(DlpRulesManager::Level::kAllow));
 
+  EXPECT_CALL(*rules_manager_, GetReportingManager).Times(testing::AnyNumber());
+
   ASSERT_TRUE(files_controller_->IsDlpPolicyMatched(kExample1));
   ASSERT_FALSE(files_controller_->IsDlpPolicyMatched(kExample2));
   ASSERT_FALSE(files_controller_->IsDlpPolicyMatched(kExample3));
@@ -575,6 +535,17 @@ TEST_F(DlpFilesControllerTest, CheckReportingOnIsDlpPolicyMatched) {
   EXPECT_THAT(events[2], IsDlpPolicyEvent(CreateDlpPolicyEvent(
                              kExample3, DlpRulesManager::Restriction::kFiles,
                              DlpRulesManager::Level::kWarn)));
+}
+
+TEST_F(DlpFilesControllerTest, DownloadToLocalAllowed) {
+  MockCheckIfDownloadAllowedCallback cb;
+  EXPECT_CALL(cb, Run(/*is_allowed=*/true)).Times(1);
+
+  files_controller_->CheckIfDownloadAllowed(
+      GURL(kExample1),
+      base::FilePath(
+          "/home/chronos/u-0123456789abcdef/MyFiles/Downloads/img.jpg"),
+      cb.Get());
 }
 
 class DlpFilesExternalDestinationTest
@@ -699,8 +670,7 @@ TEST_P(DlpFilesExternalDestinationTest, IsFilesTransferRestricted_Component) {
       .WillOnce(testing::Return(DlpRulesManager::Level::kBlock));
 
   EXPECT_CALL(*rules_manager_, GetReportingManager())
-      .Times(::testing::AnyNumber())
-      .WillRepeatedly(::testing::Return(reporting_manager_.get()));
+      .Times(::testing::AnyNumber());
 
   auto dst_url = mount_points_->CreateExternalFileSystemURL(
       blink::StorageKey(), mount_name, base::FilePath(path));
@@ -718,6 +688,33 @@ TEST_P(DlpFilesExternalDestinationTest, IsFilesTransferRestricted_Component) {
                              DlpRulesManager::Level::kBlock)));
   EXPECT_THAT(events[1], IsDlpPolicyEvent(CreateDlpPolicyEvent(
                              kExample3, expected_component,
+                             DlpRulesManager::Restriction::kFiles,
+                             DlpRulesManager::Level::kBlock)));
+}
+
+TEST_P(DlpFilesExternalDestinationTest, FileDownloadBlocked) {
+  auto [mount_name, path, expected_component] = GetParam();
+
+  MockCheckIfDownloadAllowedCallback cb;
+  EXPECT_CALL(cb, Run(/*is_allowed=*/false)).Times(1);
+
+  EXPECT_CALL(*rules_manager_,
+              IsRestrictedComponent(_, expected_component, _, _))
+      .WillOnce(testing::Return(DlpRulesManager::Level::kBlock));
+
+  EXPECT_CALL(*rules_manager_, GetReportingManager())
+      .Times(::testing::AnyNumber());
+
+  auto dst_url = mount_points_->CreateExternalFileSystemURL(
+      blink::StorageKey(), mount_name, base::FilePath(path));
+  ASSERT_TRUE(dst_url.is_valid());
+
+  files_controller_->CheckIfDownloadAllowed(GURL(kExample1), dst_url.path(),
+                                            cb.Get());
+
+  ASSERT_EQ(events.size(), 1);
+  EXPECT_THAT(events[0], IsDlpPolicyEvent(CreateDlpPolicyEvent(
+                             kExample1, expected_component,
                              DlpRulesManager::Restriction::kFiles,
                              DlpRulesManager::Level::kBlock)));
 }
@@ -756,7 +753,7 @@ TEST_P(DlpFilesUrlDestinationTest, IsFilesTransferRestricted_Url) {
     disallowed_files.emplace_back(base::FilePath(), src);
 
   MockIsFilesTransferRestrictedCallback cb;
-  EXPECT_CALL(cb, Run(disallowed_files)).Times(1u);
+  EXPECT_CALL(cb, Run(disallowed_files)).Times(1);
 
   EXPECT_CALL(*rules_manager_, IsRestrictedDestination(_, _, _, _, _))
       .WillOnce(testing::Return(confidential_files_restriction_level))
@@ -764,8 +761,7 @@ TEST_P(DlpFilesUrlDestinationTest, IsFilesTransferRestricted_Url) {
       .WillOnce(testing::Return(confidential_files_restriction_level));
 
   EXPECT_CALL(*rules_manager_, GetReportingManager())
-      .Times(::testing::AnyNumber())
-      .WillRepeatedly(::testing::Return(reporting_manager_.get()));
+      .Times(::testing::AnyNumber());
 
   files_controller_->IsFilesTransferRestricted(
       transferred_files, DlpFilesController::DlpFileDestination(dst),
@@ -782,27 +778,14 @@ TEST_P(DlpFilesUrlDestinationTest, IsFilesTransferRestricted_Url) {
 
 class DlpFilesWarningDialogChoiceTest
     : public DlpFilesControllerTest,
-      public ::testing::WithParamInterface<DialogChoiceResult> {};
+      public ::testing::WithParamInterface<bool> {};
 
-INSTANTIATE_TEST_SUITE_P(
-    DlpFiles,
-    DlpFilesWarningDialogChoiceTest,
-    ::testing::Values(
-        DialogChoiceResult(/*should_action_proceed=*/true,
-                           std::vector<std::string>({kExample1})),
-        DialogChoiceResult(/*should_action_proceed=*/false,
-                           std::vector<std::string>({kExample1, kExample2}))));
+INSTANTIATE_TEST_SUITE_P(DlpFiles,
+                         DlpFilesWarningDialogChoiceTest,
+                         ::testing::Bool());
 
-TEST_P(DlpFilesWarningDialogChoiceTest,
-       IsFilesTransferRestricted_FileDownloadWarned) {
-  auto choice_result = GetParam();
-  std::vector<DlpFilesController::FileDaemonInfo> disallowed_files;
-  for (const auto& source : choice_result.disallowed_file_sources)
-    disallowed_files.emplace_back(base::FilePath(), source);
-  std::vector<DlpFilesController::FileDaemonInfo> transferred_files(
-      {{base::FilePath(), kExample1},
-       {base::FilePath(), kExample2},
-       {base::FilePath(), kExample3}});
+TEST_P(DlpFilesWarningDialogChoiceTest, FileDownloadWarned) {
+  bool choice_result = GetParam();
 
   storage::ExternalMountPoints* mount_points =
       storage::ExternalMountPoints::GetSystemInstance();
@@ -814,31 +797,29 @@ TEST_P(DlpFilesWarningDialogChoiceTest,
       base::FilePath(file_manager::util::kRemovableMediaPath)));
 
   std::unique_ptr<MockDlpWarnNotifier> wrapper =
-      std::make_unique<MockDlpWarnNotifier>(
-          choice_result.should_action_proceed);
+      std::make_unique<MockDlpWarnNotifier>(choice_result);
   MockDlpWarnNotifier* mock_dlp_warn_notifier = wrapper.get();
   files_controller_->SetWarnNotifierForTesting(std::move(wrapper));
 
   EXPECT_CALL(*mock_dlp_warn_notifier, ShowDlpWarningDialog).Times(1);
 
-  MockIsFilesTransferRestrictedCallback cb;
-  EXPECT_CALL(cb, Run(disallowed_files)).Times(1);
+  MockCheckIfDownloadAllowedCallback cb;
+  EXPECT_CALL(cb, Run(/*is_allowed=*/choice_result)).Times(1);
 
   EXPECT_CALL(*rules_manager_,
               IsRestrictedComponent(_, DlpRulesManager::Component::kUsb, _, _))
-      .WillOnce(testing::Return(DlpRulesManager::Level::kBlock))
-      .WillOnce(testing::Return(DlpRulesManager::Level::kWarn))
-      .WillOnce(testing::Return(DlpRulesManager::Level::kAllow));
+      .WillOnce(testing::Return(DlpRulesManager::Level::kWarn));
+
+  EXPECT_CALL(*rules_manager_, GetReportingManager())
+      .Times(::testing::AnyNumber());
 
   auto dst_url = mount_points->CreateExternalFileSystemURL(
       blink::StorageKey(), "removable",
       base::FilePath("MyUSB/path/in/removable"));
   ASSERT_TRUE(dst_url.is_valid());
 
-  files_controller_->IsFilesTransferRestricted(
-      transferred_files,
-      DlpFilesController::DlpFileDestination(dst_url.path().value()),
-      DlpWarnDialog::FilesAction::kDownload, cb.Get());
+  files_controller_->CheckIfDownloadAllowed(GURL(kExample1), dst_url.path(),
+                                            cb.Get());
 
   storage::ExternalMountPoints::GetSystemInstance()->RevokeAllFileSystems();
 }
@@ -902,6 +883,9 @@ TEST_P(DlpFilesWarningDialogContentTest,
   EXPECT_CALL(*rules_manager_,
               IsRestrictedComponent(_, DlpRulesManager::Component::kUsb, _, _))
       .WillRepeatedly(testing::Return(DlpRulesManager::Level::kWarn));
+
+  EXPECT_CALL(*rules_manager_, GetReportingManager())
+      .Times(::testing::AnyNumber());
 
   EXPECT_CALL(*mock_dlp_warn_notifier,
               ShowDlpWarningDialog(_, expected_dialog_options))
