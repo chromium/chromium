@@ -49,8 +49,10 @@ void AddProfileInfoAsSelectableField(UserInfo* info,
   if (type == ServerFieldType::NAME_MIDDLE && field.empty()) {
     field = profile->GetRawInfo(ServerFieldType::NAME_MIDDLE_INITIAL);
   }
-  info->add_field(AccessorySheetField(field, field, /*is_password=*/false,
-                                      /*selectable=*/true));
+  info->add_field(AccessorySheetField(
+      /*display_text=*/field, /*text_to_fill=*/field,
+      /*a11y_description=*/field, /*id=*/std::string(), /*is_obfuscated=*/false,
+      /*selectable=*/true));
 }
 
 UserInfo TranslateProfile(const AutofillProfile* profile) {

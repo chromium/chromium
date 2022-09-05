@@ -417,8 +417,10 @@ TEST_F(ManualFillingControllerLegacyTest,
        OnFillingTriggeredFillsAndClosesSheet) {
   const char16_t kTextToFill[] = u"TextToFill";
   const std::u16string text_to_fill(kTextToFill);
-  const autofill::AccessorySheetField field(text_to_fill, text_to_fill, false,
-                                            true);
+  const autofill::AccessorySheetField field(
+      /*display_text=*/text_to_fill, /*text_to_fill=*/text_to_fill,
+      /*a11y_description=*/text_to_fill, /*id=*/"", /*is_obfuscated=*/false,
+      /*selectable=*/true);
 
   EXPECT_CALL(mock_pwd_controller_,
               OnFillingTriggered(autofill::FieldGlobalId(), field));

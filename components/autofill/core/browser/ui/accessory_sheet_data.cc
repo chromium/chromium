@@ -11,21 +11,6 @@
 
 namespace autofill {
 
-// TODO(crbug.com/1224179) Delete this constructor.
-AccessorySheetField::AccessorySheetField(std::u16string display_text,
-                                         std::u16string a11y_description,
-                                         bool is_obfuscated,
-                                         bool selectable)
-    : display_text_(display_text),
-      text_to_fill_(std::move(display_text)),
-      a11y_description_(std::move(a11y_description)),
-      is_obfuscated_(is_obfuscated),
-      selectable_(selectable),
-      estimated_memory_use_by_strings_(
-          base::trace_event::EstimateMemoryUsage(display_text_) +
-          base::trace_event::EstimateMemoryUsage(text_to_fill_) +
-          base::trace_event::EstimateMemoryUsage(a11y_description_)) {}
-
 AccessorySheetField::AccessorySheetField(std::u16string display_text,
                                          std::u16string text_to_fill,
                                          std::u16string a11y_description,

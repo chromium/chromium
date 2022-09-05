@@ -5,6 +5,7 @@
 #include "chrome/browser/password_manager/android/password_accessory_controller_impl.h"
 
 #include <algorithm>
+#include <string>
 #include <utility>
 
 #include "base/bind.h"
@@ -78,16 +79,20 @@ autofill::UserInfo TranslateCredentials(bool current_field_is_password,
                    !credential.is_affiliation_based_match().value()));
 
   std::u16string username = GetDisplayUsername(credential);
-  user_info.add_field(
-      AccessorySheetField(username, username, /*is_password=*/false,
-                          /*selectable=*/!credential.username().empty() &&
-                              !current_field_is_password));
+  user_info.add_field(AccessorySheetField(
+      /*display_text=*/username, /*text_to_fill=*/username,
+      /*a11y_description=*/username, /*id=*/std::string(),
+      /*is_obfuscated=*/false,
+      /*selectable=*/!credential.username().empty()));
 
   user_info.add_field(AccessorySheetField(
-      credential.password(),
+      /*display_text=*/credential.password(),
+      /*text_to_fill=*/credential.password(),
+      /*a11y_description=*/
       l10n_util::GetStringFUTF16(
           IDS_PASSWORD_MANAGER_ACCESSORY_PASSWORD_DESCRIPTION, username),
-      /*is_password=*/true, /*selectable=*/current_field_is_password));
+      /*id=*/std::string(),
+      /*is_obfuscated=*/true, /*selectable=*/current_field_is_password));
 
   return user_info;
 }

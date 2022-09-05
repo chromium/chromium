@@ -22,10 +22,6 @@ namespace autofill {
 class AccessorySheetField {
  public:
   AccessorySheetField(std::u16string display_text,
-                      std::u16string a11y_description,
-                      bool is_obfuscated,
-                      bool selectable);
-  AccessorySheetField(std::u16string display_text,
                       std::u16string text_to_fill,
                       std::u16string a11y_description,
                       std::string id,
