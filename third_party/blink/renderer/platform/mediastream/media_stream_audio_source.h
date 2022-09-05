@@ -47,18 +47,16 @@ class MediaStreamComponent;
 //
 //   class MyAudioSource : public MediaStreamAudioSource { ... };
 //
-//   MediaStreamSource* media_stream_source = ...;
+//   MediaStreamSource* media_stream_source =
+//       MakeGarbageCollected<MediaStreamSource>(
+//           ..., std::make_unique<MyAudioSource>());
 //   MediaStreamComponent* media_stream_track = ...;
-//   source->setExtraData(new MyAudioSource());  // Takes ownership.
 //   if (MediaStreamAudioSource::From(media_stream_source)
-//           ->ConnectToTrack(media_stream_track)) {
+//           ->ConnectToInitializedTrack(media_stream_track)) {
 //     LOG(INFO) << "Success!";
 //   } else {
 //     LOG(ERROR) << "Failed!";
 //   }
-//   // Regardless of whether ConnectToTrack() succeeds, there will always be a
-//   // MediaStreamAudioTrack instance created.
-//   CHECK(MediaStreamAudioTrack::From(media_stream_track));
 class PLATFORM_EXPORT MediaStreamAudioSource
     : public WebPlatformMediaStreamSource {
  public:
