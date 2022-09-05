@@ -14,10 +14,8 @@
 
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
-#include "base/logging.h"
 #include "base/observer_list_types.h"
 #include "base/time/time.h"
-#include "chrome/browser/ui/app_list/search/mixer.h"
 #include "chrome/browser/ui/app_list/search/ranking/launch_data.h"
 #include "chrome/browser/ui/app_list/search/ranking/types.h"
 
@@ -78,9 +76,8 @@ class SearchController {
   virtual void StartSearch(const std::u16string& query) = 0;
   virtual void StartZeroState(base::OnceClosure on_done,
                               base::TimeDelta timeout) = 0;
-  // TODO(crbug.com/1199206): We should rename this to AppListClosing for
-  // consistency with AppListShown.
-  virtual void ViewClosing() = 0;
+
+  virtual void AppListClosing() = 0;
 
   virtual void OpenResult(ChromeSearchResult* result, int event_flags) = 0;
   virtual void InvokeResultAction(ChromeSearchResult* result,

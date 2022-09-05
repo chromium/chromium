@@ -14,9 +14,7 @@
 #include "ash/public/cpp/tablet_mode.h"
 #include "base/bind.h"
 #include "base/metrics/metrics_hashes.h"
-#include "base/sequence_token.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "chrome/browser/profiles/profile.h"
@@ -28,13 +26,9 @@
 #include "chrome/browser/ui/app_list/search/ranking/ranking_item_util.h"
 #include "chrome/browser/ui/app_list/search/search_metrics_observer.h"
 #include "chrome/browser/ui/app_list/search/search_provider.h"
-#include "chrome/browser/ui/app_list/search/search_result_ranker/chip_ranker.h"
-#include "chrome/browser/ui/app_list/search/search_result_ranker/histogram_util.h"
 #include "chrome/browser/ui/app_list/search/search_result_ranker/search_result_ranker.h"
 #include "components/metrics/structured/structured_events.h"
 #include "components/prefs/pref_service.h"
-#include "content/public/browser/browser_task_traits.h"
-#include "content/public/browser/browser_thread.h"
 
 namespace app_list {
 
@@ -93,7 +87,7 @@ void SearchControllerImpl::StartZeroState(base::OnceClosure on_done,
       FROM_HERE, std::move(on_done), timeout);
 }
 
-void SearchControllerImpl::ViewClosing() {
+void SearchControllerImpl::AppListClosing() {
   for (const auto& provider : providers_)
     provider->ViewClosing();
 }

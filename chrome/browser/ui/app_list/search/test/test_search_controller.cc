@@ -34,7 +34,7 @@ void TestSearchController::StartZeroState(base::OnceClosure on_done,
   provider_->StartZeroState();
 }
 
-void TestSearchController::ViewClosing() {}
+void TestSearchController::AppListClosing() {}
 
 void TestSearchController::OpenResult(ChromeSearchResult* result,
                                       int event_flags) {}

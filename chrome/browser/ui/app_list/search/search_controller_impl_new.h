@@ -13,12 +13,10 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/containers/flat_map.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ui/app_list/search/burnin_controller.h"
-#include "chrome/browser/ui/app_list/search/mixer.h"
 #include "chrome/browser/ui/app_list/search/ranking/launch_data.h"
 #include "chrome/browser/ui/app_list/search/ranking/ranker_delegate.h"
 #include "chrome/browser/ui/app_list/search/search_controller.h"
@@ -73,7 +71,7 @@ class SearchControllerImplNew : public SearchController {
   ChromeSearchResult* GetResultByTitleForTest(
       const std::string& title) override;
   void Train(LaunchData&& launch_data) override;
-  void ViewClosing() override;
+  void AppListClosing() override;
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
   void set_results_changed_callback_for_test(

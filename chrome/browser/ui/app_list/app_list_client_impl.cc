@@ -12,14 +12,12 @@
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_controller.h"
 #include "ash/public/cpp/new_window_delegate.h"
-#include "ash/public/cpp/shelf_model.h"
 #include "ash/public/cpp/tablet_mode.h"
 #include "base/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/strcat.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/crosapi/url_handler_ash.h"
 #include "chrome/browser/profiles/profile.h"
@@ -32,7 +30,6 @@
 #include "chrome/browser/ui/app_list/app_list_syncable_service.h"
 #include "chrome/browser/ui/app_list/app_list_syncable_service_factory.h"
 #include "chrome/browser/ui/app_list/app_sync_ui_state_watcher.h"
-#include "chrome/browser/ui/app_list/search/app_result.h"
 #include "chrome/browser/ui/app_list/search/chrome_search_result.h"
 #include "chrome/browser/ui/app_list/search/cros_action_history/cros_action_recorder.h"
 #include "chrome/browser/ui/app_list/search/ranking/launch_data.h"
@@ -51,12 +48,8 @@
 #include "chrome/browser/ui/webui/chrome_web_ui_controller_factory.h"
 #include "chromeos/crosapi/cpp/gurl_os_handler_utils.h"
 #include "components/session_manager/core/session_manager.h"
-#include "extensions/common/extension.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/display/display.h"
-#include "ui/display/screen.h"
 #include "ui/display/types/display_constants.h"
-#include "ui/gfx/geometry/rect.h"
 
 namespace {
 
@@ -405,7 +398,7 @@ void AppListClientImpl::OnAppListVisibilityWillChange(bool visible) {
     search_controller_->StartSearch(std::u16string());
   }
   if (!visible && search_controller_)
-    search_controller_->ViewClosing();
+    search_controller_->AppListClosing();
 }
 
 void AppListClientImpl::OnAppListVisibilityChanged(bool visible) {
