@@ -578,6 +578,10 @@ NSDictionary<NSNumber*, NSNumber*>* FakeWebState::GetStatesForAllPermissions()
   };
 }
 
+void FakeWebState::DownloadCurrentPage(
+    NSString* destination_file,
+    id<CRWWebViewDownloadDelegate> delegate) {}
+
 FakeWebStateWithPolicyCache::FakeWebStateWithPolicyCache(
     BrowserState* browser_state)
     : FakeWebState(),

@@ -29,6 +29,7 @@ enum class WKNavigationState;
 @protocol CRWScrollableContent;
 @protocol CRWSwipeRecognizerProvider;
 @class CRWWebViewContentView;
+@protocol CRWWebViewDownloadDelegate;
 @protocol CRWWebViewProxy;
 class GURL;
 @class WKWebView;
@@ -235,6 +236,12 @@ class WebStateImpl;
 // to the data visible in given window `rect`.
 - (void)showMenuWithItems:(NSArray<CRWContextMenuItem*>*)items
                      rect:(CGRect)rect;
+
+// Downloads the file from the `request` at `destination` path.
+- (void)downloadCurrentPageWithRequest:(NSURLRequest*)request
+                       destinationPath:(NSString*)destination
+                              delegate:(id<CRWWebViewDownloadDelegate>)delegate
+    API_AVAILABLE(ios(14.5));
 
 #pragma mark Navigation Message Handlers
 

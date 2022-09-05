@@ -18,6 +18,8 @@ source_set("download") {
   ]
 
   sources = [
+    "crw_web_view_download.h",
+    "crw_web_view_download.mm",
     "data_url_download_task.h",
     "data_url_download_task.mm",
     "download_controller_impl.h",

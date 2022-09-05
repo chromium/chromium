@@ -110,6 +110,9 @@ class FakeWebState : public WebState {
       API_AVAILABLE(ios(15.0));
   NSDictionary<NSNumber*, NSNumber*>* GetStatesForAllPermissions()
       const override API_AVAILABLE(ios(15.0));
+  void DownloadCurrentPage(NSString* destination_file,
+                           id<CRWWebViewDownloadDelegate> delegate) override
+      API_AVAILABLE(ios(14.5));
 
   void AddPolicyDecider(WebStatePolicyDecider* decider) override;
   void RemovePolicyDecider(WebStatePolicyDecider* decider) override;

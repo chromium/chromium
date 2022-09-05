@@ -24,6 +24,7 @@
 #include "ios/web/common/features.h"
 #import "ios/web/common/uikit_ui_util.h"
 #include "ios/web/common/url_util.h"
+#import "ios/web/download/crw_web_view_download.h"
 #import "ios/web/find_in_page/find_in_page_manager_impl.h"
 #include "ios/web/history_state_util.h"
 #include "ios/web/js_features/scroll_helper/scroll_helper_java_script_feature.h"
@@ -201,6 +202,9 @@ using web::wk_navigation_util::IsWKInternalUrl;
 // A custom drop interaction that is added alongside the web view's default drop
 // interaction.
 @property(nonatomic, strong) UIDropInteraction* customDropInteraction;
+
+// CRWWebViewDownload instance that handle download interactions.
+@property(nonatomic, strong) CRWWebViewDownload* download;
 
 // Session Information
 // -------------------
@@ -1035,6 +1039,17 @@ typedef void (^ViewportStateCompletion)(const web::PageViewportState*);
                               hasUserGesture:self.isUserInteracting
                         userInteractionState:&_userInteractionState
                                   currentURL:self.currentURL];
+}
+
+- (void)downloadCurrentPageWithRequest:(NSURLRequest*)request
+                       destinationPath:(NSString*)destination
+                              delegate:
+                                  (id<CRWWebViewDownloadDelegate>)delegate {
+  self.download = [[CRWWebViewDownload alloc] initWithPath:destination
+                                                   request:request
+                                                   webview:self.webView
+                                                  delegate:delegate];
+  [self.download startDownload];
 }
 
 #pragma mark - JavaScript

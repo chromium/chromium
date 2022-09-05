@@ -331,6 +331,9 @@ class WebStateImpl final : public WebState {
       API_AVAILABLE(ios(15.0));
   NSDictionary<NSNumber*, NSNumber*>* GetStatesForAllPermissions() const final
       API_AVAILABLE(ios(15.0));
+  void DownloadCurrentPage(NSString* destination_file,
+                           id<CRWWebViewDownloadDelegate> delegate) final
+      API_AVAILABLE(ios(14.5));
 
  protected:
   // WebState:

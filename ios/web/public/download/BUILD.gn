@@ -11,6 +11,7 @@ source_set("download") {
   ]
 
   sources = [
+    "crw_web_view_download.h",
     "download_controller.h",
     "download_controller_delegate.h",
     "download_task.h",
