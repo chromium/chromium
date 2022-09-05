@@ -225,6 +225,10 @@ extern const char kBrowserDataMigrationForUser[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kBrowserDataMigrationMode[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kBrowserDataBackwardMigrationForUser[];
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kBrowserDataBackwardMigrationMode[];
+COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kForceBrowserDataBackwardMigration[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kForceBrowserDataMigrationForTesting[];

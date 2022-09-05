@@ -696,6 +696,11 @@ const char kLoginUser[] = "login-user";
 // Specifies the user that the browser data migration should happen for.
 const char kBrowserDataMigrationForUser[] = "browser-data-migration-for-user";
 
+// Specifies the user that the browser data backward migration should happen
+// for.
+const char kBrowserDataBackwardMigrationForUser[] =
+    "browser-data-backward-migration-for-user";
+
 // Tells Chrome to forcefully trigger backward data migration.
 extern const char kForceBrowserDataBackwardMigration[] =
     "force-browser-data-backward-migration";
@@ -703,6 +708,10 @@ extern const char kForceBrowserDataBackwardMigration[] =
 // Run move migration instead of copy. Passed with
 // `kBrowserDataMigrationForUser`.
 const char kBrowserDataMigrationMode[] = "browser-data-migration-mode";
+
+// Backward migration mode. Passed with `kBrowserDataBackwardMigrationForUser`.
+const char kBrowserDataBackwardMigrationMode[] =
+    "browser-data-backward-migration-mode";
 
 // Force skip or force migration. Should only be used for testing.
 const char kForceBrowserDataMigrationForTesting[] =
