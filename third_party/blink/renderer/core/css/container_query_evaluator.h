@@ -96,8 +96,6 @@ class CORE_EXPORT ContainerQueryEvaluator final
 
   Change ComputeSizeChange() const;
   Change ComputeStyleChange() const;
-  bool Eval(const ContainerQuery&) const;
-  bool Eval(const ContainerQuery&, MediaQueryResultFlags*) const;
 
   struct Result {
     // Main evaluation result.
@@ -108,6 +106,8 @@ class CORE_EXPORT ContainerQueryEvaluator final
     // Indicates what we need to invalidate if the result value changes.
     Change change = Change::kNone;
   };
+
+  Result Eval(const ContainerQuery&) const;
 
   // Evaluate and add a dependent query to this evaluator. During calls to
   // SizeContainerChanged/StyleChanged, all dependent queries are checked to see

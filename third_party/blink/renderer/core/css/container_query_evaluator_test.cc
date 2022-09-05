@@ -75,7 +75,7 @@ class ContainerQueryEvaluatorTest : public PageTestBase,
     evaluator->SizeContainerChanged(
         GetDocument(), ContainerElement(),
         PhysicalSize(LayoutUnit(width), LayoutUnit(height)), contained_axes);
-    return evaluator->Eval(*container_query);
+    return evaluator->Eval(*container_query).value;
   }
 
   bool Eval(String query,
@@ -104,7 +104,7 @@ class ContainerQueryEvaluatorTest : public PageTestBase,
         PhysicalAxes{kPhysicalAxisNone});
 
     ContainerQuery* container_query = ParseContainer(query);
-    return evaluator->Eval(*container_query);
+    return evaluator->Eval(*container_query).value;
   }
 
   using Change = ContainerQueryEvaluator::Change;

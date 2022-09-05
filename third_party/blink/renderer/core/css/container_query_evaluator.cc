@@ -123,40 +123,73 @@ double ContainerQueryEvaluator::Height() const {
   return size_.height.ToDouble();
 }
 
-bool ContainerQueryEvaluator::Eval(
+ContainerQueryEvaluator::Result ContainerQueryEvaluator::Eval(
     const ContainerQuery& container_query) const {
-  return Eval(container_query, nullptr /* result_flags */);
-}
-
-bool ContainerQueryEvaluator::Eval(const ContainerQuery& container_query,
-                                   MediaQueryResultFlags* result_flags) const {
   if (!media_query_evaluator_)
-    return false;
-  return media_query_evaluator_->Eval(*container_query.query_, result_flags) ==
-         KleeneValue::kTrue;
+    return Result();
+
+  MediaQueryResultFlags result_flags;
+  bool value =
+      (media_query_evaluator_->Eval(*container_query.query_, &result_flags) ==
+       KleeneValue::kTrue);
+
+  Result result;
+  result.value = value;
+  result.unit_flags = result_flags.unit_flags;
+  return result;
 }
 
 bool ContainerQueryEvaluator::EvalAndAdd(const ContainerQuery& query,
                                          Change change,
                                          MatchResult& match_result) {
-  MediaQueryResultFlags result_flags;
-  bool result = Eval(query, &result_flags);
-  unsigned unit_flags = result_flags.unit_flags;
-  if (unit_flags & MediaQueryExpValue::UnitFlags::kDynamicViewport)
+  HeapHashMap<Member<const ContainerQuery>, Result>::AddResult entry =
+      results_.insert(&query, Result());
+
+  Result& result = entry.stored_value->value;
+
+  // We can only use the cached values when evaluating queries whose results
+  // would have been cleared by [Size,Style]ContainerChanged. The following
+  // represents dependencies on external circumstance that can change without
+  // ContainerQueryEvaluator being notified.
+  bool use_cached =
+      (result.unit_flags & (MediaQueryExpValue::UnitFlags::kRootFontRelative |
+                            MediaQueryExpValue::UnitFlags::kDynamicViewport |
+                            MediaQueryExpValue::UnitFlags::kStaticViewport |
+                            MediaQueryExpValue::UnitFlags::kContainer)) == 0;
+  bool has_cached = !entry.is_new_entry;
+
+  if (has_cached && use_cached) {
+    // Verify that the cached result is equal to the value we would get
+    // had we Eval'ed in full.
+#if EXPENSIVE_DCHECKS_ARE_ON()
+    Result actual = Eval(query);
+
+    // This ignores `change`, because it's not actually part of Eval's result.
+    DCHECK_EQ(result.value, actual.value);
+    DCHECK_EQ(result.unit_flags, actual.unit_flags);
+#endif  // EXPENSIVE_DCHECKS_ARE_ON()
+  } else {
+    result = Eval(query);
+  }
+
+  // Store the most severe `Change` seen.
+  result.change = std::max(result.change, change);
+
+  if (result.unit_flags & MediaQueryExpValue::UnitFlags::kDynamicViewport)
     match_result.SetDependsOnDynamicViewportUnits();
   // Note that container-relative units *may* fall back to the small viewport,
   // hence we also set the DependsOnStaticViewportUnits flag when in that case.
-  if (unit_flags & (MediaQueryExpValue::UnitFlags::kStaticViewport |
-                    MediaQueryExpValue::UnitFlags::kContainer)) {
+  if (result.unit_flags & (MediaQueryExpValue::UnitFlags::kStaticViewport |
+                           MediaQueryExpValue::UnitFlags::kContainer)) {
     match_result.SetDependsOnStaticViewportUnits();
   }
-  if (unit_flags & MediaQueryExpValue::UnitFlags::kRootFontRelative)
+  if (result.unit_flags & MediaQueryExpValue::UnitFlags::kRootFontRelative)
     match_result.SetDependsOnRemContainerQueries();
-  results_.Set(&query, Result{result, unit_flags, change});
-  unit_flags_ |= unit_flags;
   if (!depends_on_style_)
     depends_on_style_ = query.Selector().SelectsStyleContainers();
-  return result;
+  unit_flags_ |= result.unit_flags;
+
+  return result.value;
 }
 
 ContainerQueryEvaluator::Change ContainerQueryEvaluator::SizeContainerChanged(
@@ -268,7 +301,7 @@ ContainerQueryEvaluator::Change ContainerQueryEvaluator::ComputeSizeChange()
     const ContainerQuery& query = *result.key;
     if (!query.Selector().SelectsSizeContainers())
       continue;
-    if (Eval(query) != result.value.value)
+    if (Eval(query).value != result.value.value)
       change = std::max(result.value.change, change);
   }
 
@@ -283,7 +316,7 @@ ContainerQueryEvaluator::Change ContainerQueryEvaluator::ComputeStyleChange()
     const ContainerQuery& query = *result.key;
     if (!query.Selector().SelectsStyleContainers())
       continue;
-    if (Eval(query) == result.value.value)
+    if (Eval(query).value == result.value.value)
       continue;
     change = std::max(result.value.change, change);
   }
