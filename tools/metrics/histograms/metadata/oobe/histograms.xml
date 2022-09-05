@@ -188,8 +188,8 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <histogram name="OOBE.ArcTermsOfServiceScreen.ReviewFollowingSetup"
-    enum="BooleanChecked" expires_after="2023-02-12">
-  <owner>raleksandrov@google.com</owner>
+    enum="BooleanChecked" expires_after="2023-04-01">
+  <owner>dkuzmin@google.com</owner>
   <owner>cros-oac@google.com</owner>
   <summary>
     Whether the review Google Play following setup box is checked. Recorded when
@@ -226,8 +226,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.ErrorScreensTime.Enrollment.{OOBENetworkError}"
-    units="ms" expires_after="2022-12-18">
-  <owner>raleksandrov@google.com</owner>
+    units="ms" expires_after="2023-04-01">
+  <owner>dkuzmin@google.com</owner>
   <owner>cros-oac@google.com</owner>
   <summary>
     Time spent on error screens during enrollment or autoenrollment when the
@@ -238,8 +238,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.ErrorScreensTime.Signin.{OOBENetworkError}" units="ms"
-    expires_after="2022-12-18">
-  <owner>raleksandrov@google.com</owner>
+    expires_after="2023-04-01">
+  <owner>dkuzmin@google.com</owner>
   <owner>cros-oac@google.com</owner>
   <summary>
     Time spent on error screens during signin when the last error is
@@ -249,8 +249,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.ErrorScreensTime.Supervised.{OOBENetworkError}"
-    units="ms" expires_after="2022-10-01">
-  <owner>raleksandrov@google.com</owner>
+    units="ms" expires_after="2023-04-01">
+  <owner>dkuzmin@google.com</owner>
   <owner>cros-oac@google.com</owner>
   <summary>
     Time spent on error screens during supervised user creation when the last
@@ -260,8 +260,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.ErrorScreensTime.Update.{OOBENetworkError}" units="ms"
-    expires_after="2022-10-01">
-  <owner>raleksandrov@google.com</owner>
+    expires_after="2023-04-01">
+  <owner>dkuzmin@google.com</owner>
   <owner>cros-oac@google.com</owner>
   <summary>
     Time spent on error screens during update when the last error is
@@ -271,8 +271,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.EulaScreen.UserActions" enum="EulaScreenUserAction"
-    expires_after="2023-02-12">
-  <owner>raleksandrov@google.com</owner>
+    expires_after="2023-04-01">
+  <owner>dkuzmin@google.com</owner>
   <owner>cros-oac@google.com</owner>
   <summary>
     Tracks all user actions on the EULA screen. Recorded when user clicks on
@@ -293,8 +293,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.FingerprintSetupScreen.UserActions"
-    enum="FingerprintSetupScreenUserAction" expires_after="2023-02-01">
-  <owner>raleksandrov@google.com</owner>
+    enum="FingerprintSetupScreenUserAction" expires_after="2023-04-01">
+  <owner>dkuzmin@google.com</owner>
   <owner>cros-oac@google.com</owner>
   <summary>
     Tracks all user actions on the fingerprint screen. Recorded when user clicks
@@ -313,8 +313,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.GaiaPasswordChangedScreen.UserActions"
-    enum="GaiaPasswordChangedScreenUserAction" expires_after="2023-02-12">
-  <owner>raleksandrov@google.com</owner>
+    enum="GaiaPasswordChangedScreenUserAction" expires_after="2023-04-01">
+  <owner>dkuzmin@google.com</owner>
   <owner>cros-oac@google.com</owner>
   <summary>
     Tracks all user actions on the GaiaPasswordChanged screen. Recorded when
@@ -495,8 +495,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.PinSetupScreen.UserActions"
-    enum="PinSetupScreenUserAction" expires_after="2023-02-01">
-  <owner>raleksandrov@google.com</owner>
+    enum="PinSetupScreenUserAction" expires_after="2023-04-01">
+  <owner>dkuzmin@google.com</owner>
   <owner>cros-oac@google.com</owner>
   <summary>
     Tracks all user actions on the PinSetup screen. Recorded when user clicks on
@@ -530,64 +530,64 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.RecommendApps.Fetcher.AppCount" units="apps"
-    expires_after="2023-02-08">
-  <owner>raleksandrov@google.com</owner>
+    expires_after="2023-04-01">
+  <owner>dkuzmin@google.com</owner>
   <owner>cros-oac@google.com</owner>
   <owner>chromesky-eng@google.com</owner>
   <summary>The number of recommended apps.</summary>
 </histogram>
 
 <histogram name="OOBE.RecommendApps.Fetcher.DownloadTime" units="ms"
-    expires_after="2023-02-08">
-  <owner>raleksandrov@google.com</owner>
+    expires_after="2023-04-01">
+  <owner>dkuzmin@google.com</owner>
   <owner>cros-oac@google.com</owner>
   <owner>chromesky-eng@google.com</owner>
   <summary>The time it takes to fetch the recommended apps.</summary>
 </histogram>
 
 <histogram name="OOBE.RecommendApps.Fetcher.ResponseCode"
-    enum="HttpResponseCode" expires_after="2023-02-08">
-  <owner>raleksandrov@google.com</owner>
+    enum="HttpResponseCode" expires_after="2023-04-01">
+  <owner>dkuzmin@google.com</owner>
   <owner>cros-oac@google.com</owner>
   <owner>chromesky-eng@google.com</owner>
   <summary>The response code of fetching the recommended apps.</summary>
 </histogram>
 
 <histogram name="OOBE.RecommendApps.Fetcher.ResponseParseResult"
-    enum="RecommendAppsResponseParseResult" expires_after="2023-02-08">
-  <owner>raleksandrov@google.com</owner>
+    enum="RecommendAppsResponseParseResult" expires_after="2023-04-01">
+  <owner>dkuzmin@google.com</owner>
   <owner>cros-oac@google.com</owner>
   <owner>chromesky-eng@google.com</owner>
   <summary>The result of parsing the recommend-apps response.</summary>
 </histogram>
 
 <histogram name="OOBE.RecommendApps.Screen.Action"
-    enum="RecommendAppsScreenAction" expires_after="2023-02-08">
-  <owner>raleksandrov@google.com</owner>
+    enum="RecommendAppsScreenAction" expires_after="2023-04-01">
+  <owner>dkuzmin@google.com</owner>
   <owner>cros-oac@google.com</owner>
   <owner>chromesky-eng@google.com</owner>
   <summary>The user action on the recommend apps screen.</summary>
 </histogram>
 
 <histogram name="OOBE.RecommendApps.Screen.SelectedAppCount" units="apps"
-    expires_after="2023-02-08">
-  <owner>raleksandrov@google.com</owner>
+    expires_after="2023-04-01">
+  <owner>dkuzmin@google.com</owner>
   <owner>cros-oac@google.com</owner>
   <owner>chromesky-eng@google.com</owner>
   <summary>The number of apps user selected.</summary>
 </histogram>
 
 <histogram name="OOBE.RecommendApps.Screen.SelectedRecommendedPercentage"
-    units="%" expires_after="2023-02-08">
-  <owner>raleksandrov@google.com</owner>
+    units="%" expires_after="2023-04-01">
+  <owner>dkuzmin@google.com</owner>
   <owner>cros-oac@google.com</owner>
   <owner>chromesky-eng@google.com</owner>
   <summary>The ratio of selected and recommended apps.</summary>
 </histogram>
 
 <histogram name="OOBE.RecommendApps.Screen.State"
-    enum="RecommendAppsScreenState" expires_after="2023-02-08">
-  <owner>raleksandrov@google.com</owner>
+    enum="RecommendAppsScreenState" expires_after="2023-04-01">
+  <owner>dkuzmin@google.com</owner>
   <owner>cros-oac@google.com</owner>
   <owner>chromesky-eng@google.com</owner>
   <summary>Whether the reocmmend apps screen is shown.</summary>
@@ -607,8 +607,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="OOBE.StepCompletionTimeByExitReason.{OOBEScreenName_ExitReason}"
-    units="ms" expires_after="2023-02-01">
-  <owner>raleksandrov@google.com</owner>
+    units="ms" expires_after="2023-04-01">
+  <owner>dkuzmin@google.com</owner>
   <owner>cros-oac@google.com</owner>
   <summary>Time spent on specific OOBE screen grouped by exit reason.</summary>
   <token key="OOBEScreenName_ExitReason" variants="OOBEScreenName_ExitReason"/>
@@ -618,7 +618,7 @@ chromium-metrics-reviews@google.com.
     enum="BooleanShown" expires_after="never">
 <!-- expires-never: Core metric for monitoring OOBE flow regressions. -->
 
-  <owner>raleksandrov@google.com</owner>
+  <owner>dkuzmin@google.com</owner>
   <owner>cros-oac@google.com</owner>
   <summary>
     Whether {OOBELegacyScreenName} screen was shown or not. Recorded before
@@ -671,8 +671,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.SyncConsentScreen.ReviewFollowingSetup"
-    enum="BooleanChecked" expires_after="2023-02-01">
-  <owner>raleksandrov@google.com</owner>
+    enum="BooleanChecked" expires_after="2023-04-01">
+  <owner>dkuzmin@google.com</owner>
   <owner>cros-oac@google.com</owner>
   <summary>
     Whether the review following setup box is checked. Recorded when user leaves
@@ -742,8 +742,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.UpdateScreen.UpdateDownloadingTime" units="ms"
-    expires_after="2022-10-01">
-  <owner>raleksandrov@google.com</owner>
+    expires_after="2023-04-01">
+  <owner>dkuzmin@google.com</owner>
   <owner>cros-oac@google.com</owner>
   <summary>
     Time spent on downloading ChromeOS update when critical updated is found
