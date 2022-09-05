@@ -3920,6 +3920,7 @@
       field_group: "*",
       field_size: 2, // FIXME: Convert this to a keyword field
       field_template: "primitive",
+      include_paths: ["third_party/blink/public/mojom/scroll/scroll_enums.mojom-blink.h"],
       default_value: "mojom::blink::ScrollBehavior::kAuto",
       type_name: "mojom::blink::ScrollBehavior",
       keywords: ["auto", "smooth"],
