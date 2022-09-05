@@ -45,8 +45,11 @@ class SubscriberCrosapi : public KeyedService,
   void RegisterAppServiceProxyFromCrosapi(
       mojo::PendingReceiver<crosapi::mojom::AppServiceProxy> receiver);
 
-  void OnApps(const std::vector<AppPtr>& deltas);
+  void OnApps(const std::vector<AppPtr>& deltas,
+              AppType app_type,
+              bool should_notify_initialized);
 
+  virtual void InitializeApps();
   virtual void InitializePreferredApps(PreferredApps preferred_apps);
   virtual void OnPreferredAppsChanged(PreferredAppChangesPtr changes);
 

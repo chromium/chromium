@@ -161,7 +161,8 @@ AppServiceProxyAsh::BrowserAppInstanceRegistry() {
 void AppServiceProxyAsh::RegisterCrosApiSubScriber(
     SubscriberCrosapi* subscriber) {
   crosapi_subscriber_ = subscriber;
-  crosapi_subscriber_->OnApps(app_registry_cache_.GetAllApps());
+
+  crosapi_subscriber_->InitializeApps();
 
   // Initialise the Preferred Apps in the `crosapi_subscriber_` on register.
   if (preferred_apps_impl_ &&
@@ -190,7 +191,7 @@ void AppServiceProxyAsh::OnApps(std::vector<AppPtr> deltas,
                                 AppType app_type,
                                 bool should_notify_initialized) {
   if (crosapi_subscriber_) {
-    crosapi_subscriber_->OnApps(deltas);
+    crosapi_subscriber_->OnApps(deltas, app_type, should_notify_initialized);
   }
 
   AppServiceProxyBase::OnApps(std::move(deltas), app_type,

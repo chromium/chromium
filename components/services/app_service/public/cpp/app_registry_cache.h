@@ -51,7 +51,10 @@ class COMPONENT_EXPORT(APP_UPDATE) AppRegistryCache {
     // returns.
     virtual void OnAppUpdate(const AppUpdate& update) {}
 
-    // Called when the publisher for |app_type| has finished initiating apps.
+    // Called when the AppRegistryCache first receives a set of apps for
+    // |app_type|. This is usually when a publisher first publishes its apps but
+    // may also happen if the AppRegistryCache gets instantiated after this
+    // event (e.g. after a Lacros restart).
     // Note that this will not be called for app types initialized prior to this
     // observer being registered. Observers should call
     // AppRegistryCache::InitializedAppTypes() at the time of starting
