@@ -53,9 +53,9 @@ void AutozoomNudgeController::OnActiveUserPrefServiceChanged(
   // callback is only registered and called when
   // features::kAutozoomNudgeSessionReset is enabled.
   DictionaryPrefUpdate update(prefs, prefs::kAutozoomNudges);
-  update->SetIntPath(kShownCount, 0);
-  update->SetPath(kLastTimeShown, base::TimeToValue(base::Time()));
-  update->SetBoolPath(kHadEnabled, false);
+  update->GetDict().Set(kShownCount, 0);
+  update->GetDict().Set(kLastTimeShown, base::TimeToValue(base::Time()));
+  update->GetDict().Set(kHadEnabled, false);
 }
 
 base::Time AutozoomNudgeController::GetTime() {
@@ -74,25 +74,22 @@ void AutozoomNudgeController::HandleNudgeShown() {
 }
 
 bool AutozoomNudgeController::GetHadEnabled(PrefService* prefs) {
-  const base::Value* dictionary = prefs->GetDictionary(prefs::kAutozoomNudges);
-  if (!dictionary)
-    return false;
-  return dictionary->FindBoolPath(kHadEnabled).value_or(false);
+  const base::Value::Dict& dictionary =
+      prefs->GetValueDict(prefs::kAutozoomNudges);
+  return dictionary.FindBool(kHadEnabled).value_or(false);
 }
 
 int AutozoomNudgeController::GetShownCount(PrefService* prefs) {
-  const base::Value* dictionary = prefs->GetDictionary(prefs::kAutozoomNudges);
-  if (!dictionary)
-    return 0;
-  return dictionary->FindIntPath(kShownCount).value_or(0);
+  const base::Value::Dict& dictionary =
+      prefs->GetValueDict(prefs::kAutozoomNudges);
+  return dictionary.FindInt(kShownCount).value_or(0);
 }
 
 base::Time AutozoomNudgeController::GetLastShownTime(PrefService* prefs) {
-  const base::Value* dictionary = prefs->GetDictionary(prefs::kAutozoomNudges);
-  if (!dictionary)
-    return base::Time();
+  const base::Value::Dict& dictionary =
+      prefs->GetValueDict(prefs::kAutozoomNudges);
   absl::optional<base::Time> last_shown_time =
-      base::ValueToTime(dictionary->FindPath(kLastTimeShown));
+      base::ValueToTime(dictionary.Find(kLastTimeShown));
   return last_shown_time.value_or(base::Time());
 }
 
