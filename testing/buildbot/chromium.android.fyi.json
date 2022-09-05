@@ -13148,7 +13148,7 @@
             {
               "cipd_package": "chromium/testing/weblayer-x86",
               "location": "weblayer_instrumentation_test_M105",
-              "revision": "version:105.0.5195.113"
+              "revision": "version:105.0.5195.114"
             },
             {
               "cipd_package": "infra/tools/luci/logdog/butler/${platform}",
@@ -13573,7 +13573,7 @@
             {
               "cipd_package": "chromium/testing/weblayer-x86",
               "location": "weblayer_instrumentation_test_M105",
-              "revision": "version:105.0.5195.113"
+              "revision": "version:105.0.5195.114"
             },
             {
               "cipd_package": "infra/tools/luci/logdog/butler/${platform}",
