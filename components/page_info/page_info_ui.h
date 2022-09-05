@@ -87,10 +87,10 @@ class PageInfoUI {
     bool is_first_party;
   };
 
-  // |CookiesFPSInfo| contains information about a specific First-Party Set.
-  struct CookiesFPSInfo {
-    explicit CookiesFPSInfo(const std::u16string& owner_name);
-    ~CookiesFPSInfo();
+  // |CookiesFpsInfo| contains information about a specific First-Party Set.
+  struct CookiesFpsInfo {
+    explicit CookiesFpsInfo(const std::u16string& owner_name);
+    ~CookiesFpsInfo();
 
     // The name of the owner of the FPS.
     std::u16string owner_name;
@@ -116,7 +116,7 @@ class PageInfoUI {
     // The status of enforcement of blocking third-party cookies.
     CookieControlsEnforcement enforcement;
 
-    absl::optional<CookiesFPSInfo> fps_info;
+    absl::optional<CookiesFpsInfo> fps_info;
   };
 
   // |ChosenObjectInfo| contains information about a single |chooser_object| of

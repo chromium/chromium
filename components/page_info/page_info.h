@@ -248,8 +248,9 @@ class PageInfo : private content_settings::CookieControlsView {
   // Handles opening the link to show cookies settings and records the event.
   void OpenCookiesSettingsView();
 
-  // Handles opening the link to show all sites settings and records the event.
-  void OpenAllSitesView();
+  // Handles opening the link to show all sites settings with a filter for
+  // current site's fps  and records the event.
+  void OpenAllSitesViewFilteredToFps();
 
   // Handles opening the cookies dialog and records the event.
   void OpenCookiesDialog();

@@ -730,12 +730,17 @@ void PageInfo::OpenCookiesSettingsView() {
 #endif
 }
 
-void PageInfo::OpenAllSitesView() {
+void PageInfo::OpenAllSitesViewFilteredToFps() {
 #if BUILDFLAG(IS_ANDROID)
   NOTREACHED();
 #else
+  auto fps_owner = delegate_->GetFpsOwner(site_url_);
   RecordPageInfoAction(PAGE_INFO_ALL_SITES_WITH_FPS_FILTER_OPENED);
-  delegate_->ShowAllSitesSettings();
+  if (fps_owner)
+    delegate_->ShowAllSitesSettingsFilteredByFpsOwner(*fps_owner);
+  else
+    delegate_->ShowAllSitesSettingsFilteredByFpsOwner(std::u16string());
+
 #endif
 }
 
@@ -1205,7 +1210,7 @@ void PageInfo::PresentSiteDataInternal(base::OnceClosure done) {
 #if !BUILDFLAG(IS_ANDROID)
       auto fps_owner = delegate_->GetFpsOwner(site_url_);
       if (fps_owner)
-        cookies_info.fps_info = PageInfoUI::CookiesFPSInfo(*fps_owner);
+        cookies_info.fps_info = PageInfoUI::CookiesFpsInfo(*fps_owner);
 
 #endif
     }

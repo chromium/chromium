@@ -208,9 +208,11 @@ void ChromePageInfoDelegate::ShowCookiesSettings() {
   chrome::ShowSettingsSubPage(browser, chrome::kCookieSettingsSubPage);
 }
 
-void ChromePageInfoDelegate::ShowAllSitesSettings() {
+void ChromePageInfoDelegate::ShowAllSitesSettingsFilteredByFpsOwner(
+    const std::u16string& fps_owner) {
   Browser* browser = chrome::FindBrowserWithWebContents(web_contents_);
-  chrome::ShowSettingsSubPage(browser, chrome::kAllSitesSettingsSubpage);
+  chrome::ShowAllSitesSettingsFilteredByFpsOwner(browser,
+                                                 base::UTF16ToUTF8(fps_owner));
 }
 
 void ChromePageInfoDelegate::OpenCookiesDialog() {

@@ -494,6 +494,23 @@ void ShowPaymentMethods(Browser* browser) {
   ShowSettingsSubPage(browser, kPaymentsSubPage);
 }
 
+void ShowAllSitesSettingsFilteredByFpsOwner(
+    Browser* browser,
+    const std::string& fps_owner_host_name) {
+  GURL url = GetSettingsUrl(kAllSitesSettingsSubpage);
+  if (!fps_owner_host_name.empty()) {
+    GURL::Replacements replacements;
+    std::string query("searchSubpage=");
+    query += base::EscapeQueryParamValue(
+        base::StrCat({"related:", fps_owner_host_name}),
+        /*use_plus=*/false);
+    replacements.SetQueryStr(query);
+    url = url.ReplaceComponents(replacements);
+  }
+
+  ShowSingletonTabIgnorePathOverwriteNTP(browser, url);
+}
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 void ShowEnterpriseManagementPageInTabbedBrowser(Browser* browser) {
   // Management shows in a tab because it has a "back" arrow that takes the

@@ -60,7 +60,8 @@ class ChromePageInfoDelegate : public PageInfoDelegate {
   // page, depending on context.
   void ShowSiteSettings(const GURL& site_url) override;
   void ShowCookiesSettings() override;
-  void ShowAllSitesSettings() override;
+  void ShowAllSitesSettingsFilteredByFpsOwner(
+      const std::u16string& fps_owner) override;
   void OpenCookiesDialog() override;
   void OpenCertificateDialog(net::X509Certificate* certificate) override;
   void OpenConnectionHelpCenterPage(const ui::Event& event) override;

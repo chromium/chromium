@@ -26,7 +26,7 @@ class PageInfoCookiesContentView : public views::View, public PageInfoUI {
 
   void CookiesSettingsLinkClicked(const ui::Event& event);
 
-  void FPSSettingsButtonClicked(const ui::Event& event);
+  void FpsSettingsButtonClicked(const ui::Event& event);
 
   void OnToggleButtonPressed();
 
@@ -48,7 +48,7 @@ class PageInfoCookiesContentView : public views::View, public PageInfoUI {
 
   // Ensures the first-party sets information UI is present, with
   // placeholder information if necessary.
-  void InitFPSButton();
+  void InitFpsButton();
 
   raw_ptr<PageInfo> presenter_;
 

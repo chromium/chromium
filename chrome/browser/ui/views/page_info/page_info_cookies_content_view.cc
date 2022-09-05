@@ -172,7 +172,7 @@ void PageInfoCookiesContentView::SetCookieInfo(
     const std::u16string fps_button_subtitle = l10n_util::GetStringFUTF16(
         IDS_PAGE_INFO_FPS_BUTTON_SUBTITLE, cookie_info.fps_info->owner_name);
 
-    InitFPSButton();
+    InitFpsButton();
     // Update the text displaying the name of FPS owner.
     fps_button_->SetTitleText(fps_button_title);
     fps_button_->SetSubtitleText(fps_button_subtitle);
@@ -266,7 +266,7 @@ void PageInfoCookiesContentView::OnToggleButtonPressed() {
       blocking_third_party_cookies_toggle_->GetIsOn());
 }
 
-void PageInfoCookiesContentView::InitFPSButton() {
+void PageInfoCookiesContentView::InitFpsButton() {
   if (fps_button_)
     return;
 
@@ -284,7 +284,7 @@ void PageInfoCookiesContentView::InitFPSButton() {
   fps_button_ = cookies_buttons_container_view_->AddChildView(
       std::make_unique<PageInfoHoverButton>(
           base::BindRepeating(
-              &PageInfoCookiesContentView::FPSSettingsButtonClicked,
+              &PageInfoCookiesContentView::FpsSettingsButtonClicked,
               base::Unretained(this)),
           icon_fps, IDS_PAGE_INFO_COOKIES, std::u16string(),
           PageInfoViewFactory::VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_FPS_SETTINGS,
@@ -292,8 +292,6 @@ void PageInfoCookiesContentView::InitFPSButton() {
           PageInfoViewFactory::GetLaunchIcon()));
 }
 
-void PageInfoCookiesContentView::FPSSettingsButtonClicked(ui::Event const&) {
-  // TODO(crbug.com/1346305): Add passing current FPS owner to filter by it,
-  // after it's implemented.
-  presenter_->OpenAllSitesView();
+void PageInfoCookiesContentView::FpsSettingsButtonClicked(ui::Event const&) {
+  presenter_->OpenAllSitesViewFilteredToFps();
 }
