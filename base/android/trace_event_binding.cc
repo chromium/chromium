@@ -153,12 +153,12 @@ static jboolean JNI_TraceEvent_ViewHierarchyDumpEnabled(JNIEnv* env) {
 }
 static void JNI_TraceEvent_InitViewHierarchyDump(
     JNIEnv* env,
-    jint id,
+    jlong id,
     const JavaParamRef<jobject>& obj) {
   DCHECK(false);
   // This code should not be reached when base tracing is disabled. Calling
   // dumpViewHierarchy to avoid "unused function" warning.
-  Java_TraceEvent_dumpViewHierarchy(env, 0);
+  Java_TraceEvent_dumpViewHierarchy(env, 0, obj);
 }
 static jlong JNI_TraceEvent_StartActivityDump(JNIEnv* env,
                                               const JavaParamRef<jstring>& name,
