@@ -320,8 +320,6 @@ class NET_EXPORT URLRequestContext final {
   std::unique_ptr<QuicContext> quic_context_;
   std::unique_ptr<ClientSocketFactory> client_socket_factory_;
 
-  std::unique_ptr<HttpTransactionFactory> http_transaction_factory_;
-
   // The storage duplication for URLRequestJobFactory is needed because of
   // SetJobFactoryForTesting. Once this method is removable, we can only store a
   // unique_ptr similarly to the other fields.
@@ -341,6 +339,10 @@ class NET_EXPORT URLRequestContext final {
 
   // May be used (but not owned) by the HttpTransactionFactory.
   std::unique_ptr<HttpNetworkSession> http_network_session_;
+
+  // `http_transaction_factory_` might hold a raw pointer on
+  // `http_network_session_` so it needs to be declared last.
+  std::unique_ptr<HttpTransactionFactory> http_transaction_factory_;
 
   raw_ptr<NetworkQualityEstimator> network_quality_estimator_ = nullptr;
 
