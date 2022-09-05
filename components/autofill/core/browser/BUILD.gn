@@ -209,6 +209,8 @@ static_library("browser") {
     "form_processing/name_processing_util.h",
     "form_structure.cc",
     "form_structure.h",
+    "form_structure_rationalizer.cc",
+    "form_structure_rationalizer.h",
     "form_types.cc",
     "form_types.h",
     "geo/address_i18n.cc",

@@ -466,10 +466,6 @@ class FormStructure {
  private:
   friend class FormStructureTestApi;
 
-  // This class wraps a vector of vectors of field indices. The indices of a
-  // vector belong to the same group.
-  class SectionedFieldsIndexes;
-
   // Parses the field types from the server query response. |forms| must be the
   // same as the one passed to EncodeQueryRequest when constructing the query.
   // |form_interactions_ukm_logger| is used to provide logs to UKM and can be
@@ -483,75 +479,6 @@ class FormStructure {
 
   FormStructure(FormSignature form_signature,
                 const std::vector<FieldSignature>& field_signatures);
-
-  // A function to fine tune the credit cards related predictions. For example:
-  // lone credit card fields in an otherwise non-credit-card related form is
-  // unlikely to be correct, the function will override that prediction.
-  void RationalizeCreditCardFieldPredictions(LogManager* log_manager);
-
-  // A function to rewrite sequences of (street address, address_line2) into
-  // (address_line1, address_line2) as server predictions sometimes introduce
-  // wrong street address predictions.
-  void RationalizeStreetAddressAndAddressLine(LogManager* log_manager);
-
-  // The rationalization is based on the visible fields, but should be applied
-  // to the hidden select fields. This is because hidden 'select' fields are
-  // also autofilled to take care of the synthetic fields.
-  void ApplyRationalizationsToHiddenSelects(
-      size_t field_index,
-      ServerFieldType new_type,
-      AutofillMetrics::FormInteractionsUkmLogger*);
-
-  // Returns true if we can replace server predictions with the heuristics one.
-  bool HeuristicsPredictionsAreApplicable(size_t upper_index,
-                                          size_t lower_index,
-                                          ServerFieldType first_type,
-                                          ServerFieldType second_type);
-
-  // Applies upper type to upper field, and lower type to lower field, and
-  // applies the rationalization also to hidden select fields if necessary.
-  void ApplyRationalizationsToFields(
-      size_t upper_index,
-      size_t lower_index,
-      ServerFieldType upper_type,
-      ServerFieldType lower_type,
-      AutofillMetrics::FormInteractionsUkmLogger*);
-
-  // Returns true if the fields_[index] server type should be rationalized to
-  // ADDRESS_HOME_COUNTRY.
-  bool FieldShouldBeRationalizedToCountry(size_t index);
-
-  // Set fields_[|field_index|] to |new_type| and log this change.
-  void ApplyRationalizationsToFieldAndLog(
-      size_t field_index,
-      ServerFieldType new_type,
-      AutofillMetrics::FormInteractionsUkmLogger* form_interactions_ukm_logger);
-
-  // Two or three fields predicted as the whole address should be address lines
-  // 1, 2 and 3 instead.
-  void RationalizeAddressLineFields(
-      SectionedFieldsIndexes* sections_of_address_indexes,
-      AutofillMetrics::FormInteractionsUkmLogger*,
-      LogManager* log_manager);
-
-  // Rationalize state and country interdependently.
-  void RationalizeAddressStateCountry(
-      SectionedFieldsIndexes* sections_of_state_indexes,
-      SectionedFieldsIndexes* sections_of_country_indexes,
-      AutofillMetrics::FormInteractionsUkmLogger*,
-      LogManager* log_manager);
-
-  // Tunes the fields with identical predictions.
-  void RationalizeRepeatedFields(AutofillMetrics::FormInteractionsUkmLogger*,
-                                 LogManager* log_manager);
-
-  // Filters out fields that don't meet the relationship ruleset for their type
-  // defined in |type_relationships_rules_|.
-  void RationalizeTypeRelationships(LogManager* log_manager);
-
-  // A helper function to review the predictions and do appropriate adjustments
-  // when it considers necessary.
-  void RationalizeFieldTypePredictions(LogManager* log_manager);
 
   void EncodeFormForQuery(AutofillPageQueryRequest* query,
                           std::vector<FormSignature>* queried_form_signatures,
