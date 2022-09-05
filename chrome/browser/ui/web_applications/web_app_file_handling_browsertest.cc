@@ -155,19 +155,6 @@ class WebAppFileHandlingTestBase : public WebAppControllerBrowserTest {
 
 namespace {
 
-base::FilePath NewTestFilePath(const base::StringPiece extension) {
-  // CreateTemporaryFile blocks, temporarily allow blocking.
-  base::ScopedAllowBlockingForTesting allow_blocking;
-
-  // In order to test file handling, we need to be able to supply a file
-  // extension for the temp file.
-  base::FilePath test_file_path;
-  base::CreateTemporaryFile(&test_file_path);
-  base::FilePath new_file_path = test_file_path.AddExtensionASCII(extension);
-  EXPECT_TRUE(base::ReplaceFile(test_file_path, new_file_path, nullptr));
-  return new_file_path;
-}
-
 // Attach the launchParams to the window so we can inspect them easily.
 void AttachTestConsumer(content::WebContents* web_contents) {
   auto result = content::EvalJs(web_contents,
@@ -302,7 +289,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
 IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
                        PWAsCanReceiveFileLaunchParams) {
   InstallFileHandlingPWA();
-  base::FilePath test_file_path = NewTestFilePath("txt");
+  base::FilePath test_file_path = CreateTestFileWithExtension("txt");
   LaunchWithFiles(app_id(), GetTextFileHandlerActionURL(), {test_file_path});
 
   VerifyPwaDidReceiveFileLaunchParams(true, test_file_path);
@@ -311,7 +298,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
 IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
                        PWAsCanReceiveFileLaunchParamsInTab) {
   InstallFileHandlingPWA();
-  base::FilePath test_file_path = NewTestFilePath("txt");
+  base::FilePath test_file_path = CreateTestFileWithExtension("txt");
   LaunchWithFiles(app_id(), GetTextFileHandlerActionURL(), {test_file_path},
                   apps::LaunchContainer::kLaunchContainerTab);
 
@@ -325,23 +312,23 @@ IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
   // Test that file handler dispatches correct URL based on file extension.
   LaunchWithFiles(app_id(), GetSecureAppURL(), {});
   LaunchWithFiles(app_id(), GetTextFileHandlerActionURL(),
-                  {NewTestFilePath("txt")});
+                  {CreateTestFileWithExtension("txt")});
   LaunchWithFiles(app_id(), GetHTMLFileHandlerActionURL(),
-                  {NewTestFilePath("html")});
+                  {CreateTestFileWithExtension("html")});
   LaunchWithFiles(app_id(), GetCSVFileHandlerActionURL(),
-                  {NewTestFilePath("csv")});
+                  {CreateTestFileWithExtension("csv")});
 
   // Test as above in a tab.
   LaunchWithFiles(app_id(), GetSecureAppURL(), {},
                   apps::LaunchContainer::kLaunchContainerTab);
   LaunchWithFiles(app_id(), GetTextFileHandlerActionURL(),
-                  {NewTestFilePath("txt")},
+                  {CreateTestFileWithExtension("txt")},
                   apps::LaunchContainer::kLaunchContainerTab);
   LaunchWithFiles(app_id(), GetHTMLFileHandlerActionURL(),
-                  {NewTestFilePath("html")},
+                  {CreateTestFileWithExtension("html")},
                   apps::LaunchContainer::kLaunchContainerTab);
   LaunchWithFiles(app_id(), GetCSVFileHandlerActionURL(),
-                  {NewTestFilePath("csv")},
+                  {CreateTestFileWithExtension("csv")},
                   apps::LaunchContainer::kLaunchContainerTab);
 }
 
@@ -353,7 +340,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
   AppId app_id =
       InstallFileHandlingWebApp(u"An app that will be reloaded", handler_url);
 
-  base::FilePath file = NewTestFilePath("txt");
+  base::FilePath file = CreateTestFileWithExtension("txt");
 
   {
     auto redirect_scope = redirect_handle_.Redirect({
@@ -376,7 +363,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest, LaunchQueueSetOnReload) {
   AppId app_id =
       InstallFileHandlingWebApp(u"An app that will be reloaded", handler_url);
 
-  base::FilePath file = NewTestFilePath("txt");
+  base::FilePath file = CreateTestFileWithExtension("txt");
   LaunchWithFiles(app_id, handler_url, {file});
   VerifyPwaDidReceiveFileLaunchParams(true, file);
 
@@ -398,7 +385,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
   AppId app_id =
       InstallFileHandlingWebApp(u"An app that will be reloaded", handler_url);
 
-  base::FilePath file = NewTestFilePath("txt");
+  base::FilePath file = CreateTestFileWithExtension("txt");
   LaunchWithFiles(app_id, handler_url, {file});
   VerifyPwaDidReceiveFileLaunchParams(true, file);
 
@@ -432,7 +419,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
       "/web_app_file_handling/handle_files_with_redirect_to_other_origin.html");
   AppId app_id =
       InstallFileHandlingWebApp(u"An app that will be reloaded", handler_url);
-  base::FilePath file = NewTestFilePath("txt");
+  base::FilePath file = CreateTestFileWithExtension("txt");
 
   {
     auto redirect_scope = redirect_handle_.Redirect({
@@ -458,7 +445,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
   AppId app_id =
       InstallFileHandlingWebApp(u"An app that will be navigated", handler_url);
 
-  base::FilePath file = NewTestFilePath("txt");
+  base::FilePath file = CreateTestFileWithExtension("txt");
   LaunchWithFiles(app_id, handler_url, {file});
   VerifyPwaDidReceiveFileLaunchParams(true, file);
 
@@ -502,7 +489,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
 IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest, IsFileHandlerOnChromeOS) {
   InstallFileHandlingPWA();
 
-  base::FilePath test_file_path = NewTestFilePath("txt");
+  base::FilePath test_file_path = CreateTestFileWithExtension("txt");
   std::vector<file_manager::file_tasks::FullTaskDescriptor> tasks =
       file_manager::test::GetTasksForFile(profile(), test_file_path);
   // Note that there are normally multiple tasks due to default-installed
@@ -550,7 +537,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFileHandlingDisabledTest,
                        NoFileHandlerOnChromeOS) {
   InstallFileHandlingPWA();
 
-  base::FilePath test_file_path = NewTestFilePath("txt");
+  base::FilePath test_file_path = CreateTestFileWithExtension("txt");
   std::vector<file_manager::file_tasks::FullTaskDescriptor> tasks =
       file_manager::test::GetTasksForFile(profile(), test_file_path);
   EXPECT_EQ(0u, tasks.size());

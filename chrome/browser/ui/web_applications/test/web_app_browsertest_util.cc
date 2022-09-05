@@ -13,6 +13,7 @@
 #include "base/callback_helpers.h"
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/files/file_util.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "build/build_config.h"
@@ -454,6 +455,19 @@ void UpdateAwaiter::AwaitUpdate() {
 void UpdateAwaiter::OnWebAppManifestUpdated(const AppId& app_id,
                                             base::StringPiece old_name) {
   run_loop_.Quit();
+}
+
+base::FilePath CreateTestFileWithExtension(base::StringPiece extension) {
+  // CreateTemporaryFile blocks, temporarily allow blocking.
+  base::ScopedAllowBlockingForTesting allow_blocking;
+
+  // In order to test file handling, we need to be able to supply a file
+  // extension for the temp file.
+  base::FilePath test_file_path;
+  base::CreateTemporaryFile(&test_file_path);
+  base::FilePath new_file_path = test_file_path.AddExtensionASCII(extension);
+  EXPECT_TRUE(base::ReplaceFile(test_file_path, new_file_path, nullptr));
+  return new_file_path;
 }
 
 }  // namespace web_app

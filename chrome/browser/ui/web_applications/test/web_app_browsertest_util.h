@@ -162,6 +162,9 @@ class UpdateAwaiter : public WebAppInstallManagerObserver {
       scoped_observation_{this};
 };
 
+// Creates a temporary file with the |extension|.
+base::FilePath CreateTestFileWithExtension(base::StringPiece extension);
+
 }  // namespace web_app
 
 #endif  // CHROME_BROWSER_UI_WEB_APPLICATIONS_TEST_WEB_APP_BROWSERTEST_UTIL_H_
