@@ -49,7 +49,7 @@ source_set("flags") {
     "//components/translate/core/common",
     "//components/unified_consent",
     "//components/variations",
-    "//ios/chrome/app:buildflags",
+    "//ios/chrome/app:background_mode_buildflags",
     "//ios/chrome/app/strings:ios_strings",
     "//ios/chrome/browser",
     "//ios/chrome/browser/browsing_data:feature_flags",

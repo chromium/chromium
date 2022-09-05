@@ -38,7 +38,7 @@ source_set("features") {
   deps = [
     "//base",
     "//components/version_info:channel",
-    "//ios/chrome/app:buildflags",
+    "//ios/chrome/app:background_mode_buildflags",
     "//ios/chrome/browser/flags:system_flags",
     "//ios/chrome/common",
   ]

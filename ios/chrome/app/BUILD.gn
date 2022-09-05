@@ -13,9 +13,27 @@ import("//ios/build/config.gni")
 import("//ios/chrome/features.gni")
 import("//ios/public/provider/chrome/browser/build_config.gni")
 
-buildflag_header("buildflags") {
+declare_args() {
+  # Controls whether fast_app_terminate_buildflags is enabled
+  # (see crbug.com/1328891 for details).
+  fast_app_terminate_enabled = -1
+}
+
+# If fast_app_terminate_enabled is not enabled, default to true,
+# except in debug mode (as this makes it difficult to debug the
+# app termination crashes).
+if (fast_app_terminate_enabled == -1) {
+  fast_app_terminate_enabled = !is_debug
+}
+
+buildflag_header("background_mode_buildflags") {
   header = "background_mode_buildflags.h"
   flags = [ "IOS_BACKGROUND_MODE_ENABLED=$ios_enable_background_mode" ]
+}
+
+buildflag_header("fast_app_terminate_buildflags") {
+  header = "fast_app_terminate_buildflags.h"
+  flags = [ "FAST_APP_TERMINATE_ENABLED=$fast_app_terminate_enabled" ]
 }
 
 source_set("app") {
@@ -309,6 +327,7 @@ source_set("app_internal") {
     ":app_metrics_app_state_agent",
     ":blocking_scene_commands",
     ":enterprise_app_agent",
+    ":fast_app_terminate_buildflags",
     ":feed_app_agent",
     ":first_run_app_state_agent",
     ":mode",
