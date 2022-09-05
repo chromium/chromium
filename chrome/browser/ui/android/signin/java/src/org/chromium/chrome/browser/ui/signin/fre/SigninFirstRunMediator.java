@@ -22,6 +22,7 @@ import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.SigninManager.SignInCallback;
+import org.chromium.chrome.browser.signin.services.SigninManager.SignOutCallback;
 import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
 import org.chromium.chrome.browser.ui.signin.R;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerCoordinator;
@@ -287,6 +288,11 @@ public class SigninFirstRunMediator
     }
 
     private void handleContinueWithNative() {
+        if (mDestroyed) {
+            // FirstRunActivity was destroyed while we were waiting for native.
+            return;
+        }
+
         assert mDelegate.getNativeInitializationPromise().isFulfilled();
 
         // This is needed to get metrics/crash reports from the sign-in flow itself.
@@ -318,7 +324,10 @@ public class SigninFirstRunMediator
                 AccountUtils.createAccountFromName(mSelectedAccountName), new SignInCallback() {
                     @Override
                     public void onSignInComplete() {
-                        // Wait for sign-in to be complete before advancing to the next page.
+                        if (mDestroyed) {
+                            // FirstRunActivity was destroyed while we were waiting for sign-in.
+                            return;
+                        }
                         mDelegate.advanceToNextPage();
                     }
 
@@ -351,6 +360,11 @@ public class SigninFirstRunMediator
     }
 
     private void handleDismissWithNative() {
+        if (mDestroyed) {
+            // FirstRunActivity was destroyed while we were waiting for native.
+            return;
+        }
+
         assert mDelegate.getNativeInitializationPromise().isFulfilled();
 
         mDelegate.recordFreProgressHistogram(MobileFreProgress.WELCOME_DISMISS);
@@ -360,11 +374,17 @@ public class SigninFirstRunMediator
                         .getIdentityManager(Profile.getLastUsedRegularProfile())
                         .hasPrimaryAccount(ConsentLevel.SIGNIN)) {
             mModel.set(SigninFirstRunProperties.SHOW_SIGNIN_PROGRESS_SPINNER, true);
+            SignOutCallback signOutCallback = () -> {
+                if (mDestroyed) {
+                    // FirstRunActivity was destroyed while we were waiting for the sign-out.
+                    return;
+                }
+
+                mDelegate.advanceToNextPage();
+            };
             IdentityServicesProvider.get()
                     .getSigninManager(Profile.getLastUsedRegularProfile())
-                    .signOut(SignoutReason.ABORT_SIGNIN,
-                            ()
-                                    -> { mDelegate.advanceToNextPage(); },
+                    .signOut(SignoutReason.ABORT_SIGNIN, signOutCallback,
                             /* forceWipeUserData= */ false);
         } else {
             mDelegate.advanceToNextPage();
