@@ -17,10 +17,10 @@ MessagingDelegate::IsNativeMessagingHostAllowed(
   return PolicyPermission::DISALLOW;
 }
 
-std::unique_ptr<base::DictionaryValue> MessagingDelegate::MaybeGetTabInfo(
+absl::optional<base::Value::Dict> MessagingDelegate::MaybeGetTabInfo(
     content::WebContents* web_contents) {
   NOTIMPLEMENTED();
-  return nullptr;
+  return absl::nullopt;
 }
 
 content::WebContents* MessagingDelegate::GetWebContentsByTabId(

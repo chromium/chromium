@@ -145,7 +145,7 @@ void ExtensionKeybindingRegistry::CommandExecuted(
   base::Value::List args;
   args.Append(command);
 
-  std::unique_ptr<base::Value> tab_value;
+  base::Value tab_value;
   if (delegate_) {
     content::WebContents* web_contents =
         delegate_->GetWebContentsForExtension();
@@ -170,17 +170,14 @@ void ExtensionKeybindingRegistry::CommandExecuted(
       ExtensionTabUtil::ScrubTabBehavior scrub_tab_behavior =
           ExtensionTabUtil::GetScrubTabBehavior(extension, context_type,
                                                 web_contents);
-      tab_value = ExtensionTabUtil::CreateTabObject(
-                      web_contents, scrub_tab_behavior, extension)
-                      ->ToValue();
+      tab_value = base::Value::FromUniquePtrValue(
+          ExtensionTabUtil::CreateTabObject(web_contents, scrub_tab_behavior,
+                                            extension)
+              .ToValue());
     }
   }
 
-  if (!tab_value) {
-    // No currently-active tab. Push a null value.
-    tab_value = std::make_unique<base::Value>();
-  }
-  args.Append(base::Value::FromUniquePtrValue(std::move(tab_value)));
+  args.Append(std::move(tab_value));
 
   auto event =
       std::make_unique<Event>(events::COMMANDS_ON_COMMAND, kOnCommandEventName,

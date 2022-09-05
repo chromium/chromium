@@ -231,7 +231,7 @@ void ExtensionActionAPI::DispatchExtensionActionClicked(
     args->Append(base::Value::FromUniquePtrValue(
         ExtensionTabUtil::CreateTabObject(web_contents, scrub_tab_behavior,
                                           extension)
-            ->ToValue()));
+            .ToValue()));
 
     DispatchEventToExtension(web_contents->GetBrowserContext(),
                              extension_action.extension_id(), histogram_value,

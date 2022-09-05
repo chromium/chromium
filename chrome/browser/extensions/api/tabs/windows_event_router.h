@@ -11,6 +11,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/window_controller_list.h"
 #include "chrome/browser/extensions/window_controller_list_observer.h"
@@ -26,10 +27,6 @@
 #endif
 
 class Profile;
-
-namespace base {
-class ListValue;
-}
 
 namespace extensions {
 
@@ -81,7 +78,7 @@ class WindowsEventRouter : public AppWindowRegistry::Observer,
   void DispatchEvent(events::HistogramValue histogram_value,
                      const std::string& event_name,
                      WindowController* window_controller,
-                     std::unique_ptr<base::ListValue> args);
+                     base::Value::List args);
   bool HasEventListener(const std::string& event_name);
   void AddAppWindow(extensions::AppWindow* app_window);
 

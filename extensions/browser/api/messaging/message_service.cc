@@ -148,7 +148,7 @@ struct MessageService::MessageChannel {
 
 struct MessageService::OpenChannelParams {
   ChannelEndpoint source;
-  std::unique_ptr<base::DictionaryValue> source_tab;
+  absl::optional<base::Value::Dict> source_tab;
   ExtensionApiFrameIdMap::FrameData source_frame;
   std::unique_ptr<MessagePort> receiver;
   PortId receiver_port_id;
@@ -162,7 +162,7 @@ struct MessageService::OpenChannelParams {
 
   // Takes ownership of receiver.
   OpenChannelParams(const ChannelEndpoint& source,
-                    std::unique_ptr<base::DictionaryValue> source_tab,
+                    absl::optional<base::Value::Dict> source_tab,
                     const ExtensionApiFrameIdMap::FrameData& source_frame,
                     MessagePort* receiver,
                     const PortId& receiver_port_id,
@@ -342,14 +342,14 @@ void MessageService::OpenChannelToExtension(
   bool include_guest_process_info = false;
 
   // Get information about the opener's tab, if applicable.
-  std::unique_ptr<base::DictionaryValue> source_tab =
+  absl::optional<base::Value::Dict> source_tab =
       messaging_delegate_->MaybeGetTabInfo(source_contents);
 
   absl::optional<url::Origin> source_origin;
   if (source_render_frame_host)
     source_origin = source_render_frame_host->GetLastCommittedOrigin();
 
-  if (source_tab.get()) {
+  if (source_tab) {
     DCHECK(source_render_frame_host);
     source_frame = ExtensionApiFrameIdMap::Get()->GetFrameData(
         source_render_frame_host->GetGlobalId());
@@ -561,13 +561,10 @@ void MessageService::OpenChannelToTab(const ChannelEndpoint& source,
   std::unique_ptr<OpenChannelParams> params =
       std::make_unique<OpenChannelParams>(
           source,
-          std::unique_ptr<base::DictionaryValue>(),  // Source tab doesn't make
-                                                     // sense
-                                                     // for opening to tabs.
-          ExtensionApiFrameIdMap::FrameData(),       // There is no frame.
-          receiver.release(), receiver_port_id,
-          MessagingEndpoint::ForExtension(extension_id), std::move(opener_port),
-          extension_id,
+          absl::nullopt,  // No source_tab, as there is no frame.
+          ExtensionApiFrameIdMap::FrameData(), receiver.release(),
+          receiver_port_id, MessagingEndpoint::ForExtension(extension_id),
+          std::move(opener_port), extension_id,
           GURL(),         // Source URL doesn't make sense for opening to tabs.
           url::Origin(),  // Origin URL doesn't make sense for opening to tabs.
           channel_name,

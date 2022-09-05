@@ -1266,10 +1266,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, DiscardedProperty) {
   TabStripModel* tab_strip_model = browser()->tab_strip_model();
 
   // Creates Tab object to ensure the property is correct for the extension.
-  std::unique_ptr<api::tabs::Tab> tab_object_a =
-      ExtensionTabUtil::CreateTabObject(web_contents_a, kDontScrubBehavior,
-                                        nullptr, tab_strip_model, 0);
-  EXPECT_FALSE(tab_object_a->discarded);
+  api::tabs::Tab tab_object_a = ExtensionTabUtil::CreateTabObject(
+      web_contents_a, kDontScrubBehavior, nullptr, tab_strip_model, 0);
+  EXPECT_FALSE(tab_object_a.discarded);
 
   // Discards one tab.
   EXPECT_TRUE(tab_manager->DiscardTabByExtension(web_contents_a));
@@ -1278,7 +1277,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, DiscardedProperty) {
   // Make sure the property is changed accordingly after discarding the tab.
   tab_object_a = ExtensionTabUtil::CreateTabObject(
       web_contents_a, kDontScrubBehavior, nullptr, tab_strip_model, 0);
-  EXPECT_TRUE(tab_object_a->discarded);
+  EXPECT_TRUE(tab_object_a.discarded);
 
   // Get non-discarded tabs after discarding one tab.
   {
@@ -1461,10 +1460,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, AutoDiscardableProperty) {
 
   // Creates Tab object to ensure the property is correct for the extension.
   TabStripModel* tab_strip_model = browser()->tab_strip_model();
-  std::unique_ptr<api::tabs::Tab> tab_object_a =
-      ExtensionTabUtil::CreateTabObject(web_contents_a, kDontScrubBehavior,
-                                        nullptr, tab_strip_model, 0);
-  EXPECT_TRUE(tab_object_a->auto_discardable);
+  api::tabs::Tab tab_object_a = ExtensionTabUtil::CreateTabObject(
+      web_contents_a, kDontScrubBehavior, nullptr, tab_strip_model, 0);
+  EXPECT_TRUE(tab_object_a.auto_discardable);
 
   // Set up query and update functions with the extension.
   scoped_refptr<const Extension> extension = ExtensionBuilder("Test").Build();
@@ -1504,7 +1502,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, AutoDiscardableProperty) {
   // Make sure the property is changed accordingly after updating the tab.
   tab_object_a = ExtensionTabUtil::CreateTabObject(
       web_contents_a, kDontScrubBehavior, nullptr, tab_strip_model, 0);
-  EXPECT_FALSE(tab_object_a->auto_discardable);
+  EXPECT_FALSE(tab_object_a.auto_discardable);
 
   // Get auto-discardable tabs after changing the status of web contents A.
   query_result = RunQueryFunction(kAutoDiscardableQueryInfo);

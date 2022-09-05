@@ -11,12 +11,9 @@
 #include "base/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "extensions/browser/api/messaging/message_port.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
-
-namespace base {
-class DictionaryValue;
-}
 
 namespace content {
 class BrowserContext;
@@ -47,7 +44,7 @@ class MessagingDelegate {
 
   // If web_contents is a tab, returns a dictionary representing its tab.
   // Otherwise returns nullptr.
-  virtual std::unique_ptr<base::DictionaryValue> MaybeGetTabInfo(
+  virtual absl::optional<base::Value::Dict> MaybeGetTabInfo(
       content::WebContents* web_contents);
 
   // Returns the WebContents for the given tab ID, if found.

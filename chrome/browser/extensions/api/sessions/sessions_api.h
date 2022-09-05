@@ -39,11 +39,11 @@ class SessionsGetRecentlyClosedFunction : public ExtensionFunction {
  private:
   api::tabs::Tab CreateTabModel(const sessions::TabRestoreService::Tab& tab,
                                 bool active);
-  std::unique_ptr<api::windows::Window> CreateWindowModel(
+  api::windows::Window CreateWindowModel(
       const sessions::TabRestoreService::Window& window);
-  std::unique_ptr<api::tab_groups::TabGroup> CreateGroupModel(
+  api::tab_groups::TabGroup CreateGroupModel(
       const sessions::TabRestoreService::Group& group);
-  std::unique_ptr<api::sessions::Session> CreateSessionModel(
+  api::sessions::Session CreateSessionModel(
       const sessions::TabRestoreService::Entry& entry);
 };
 
@@ -58,10 +58,10 @@ class SessionsGetDevicesFunction : public ExtensionFunction {
                                 const sessions::SessionTab& tab,
                                 int tab_index,
                                 bool active);
-  std::unique_ptr<api::windows::Window> CreateWindowModel(
+  absl::optional<api::windows::Window> CreateWindowModel(
       const sessions::SessionWindow& window,
       const std::string& session_tag);
-  std::unique_ptr<api::sessions::Session> CreateSessionModel(
+  absl::optional<api::sessions::Session> CreateSessionModel(
       const sessions::SessionWindow& window,
       const std::string& session_tag);
   api::sessions::Device CreateDeviceModel(

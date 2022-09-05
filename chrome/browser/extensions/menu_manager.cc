@@ -712,7 +712,7 @@ void MenuManager::ExecuteCommand(content::BrowserContext* context,
       args.Append(base::Value::FromUniquePtrValue(
           ExtensionTabUtil::CreateTabObject(web_contents, scrub_tab_behavior,
                                             extension)
-              ->ToValue()));
+              .ToValue()));
     } else {
       args.Append(base::Value(base::Value::Type::DICTIONARY));
     }

@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
@@ -214,15 +213,14 @@ void WindowsEventRouter::OnWindowControllerAdded(
   if (!window_controller->GetBrowser())
     return;
 
-  std::unique_ptr<base::ListValue> args(new base::ListValue());
+  base::Value::List args;
   // Since we don't populate tab info here, the context type doesn't matter.
   constexpr ExtensionTabUtil::PopulateTabBehavior populate_behavior =
       ExtensionTabUtil::kDontPopulateTabs;
   constexpr Feature::Context context_type = Feature::UNSPECIFIED_CONTEXT;
-  args->Append(base::Value::FromUniquePtrValue(
-      ExtensionTabUtil::CreateWindowValueForExtension(
-          *window_controller->GetBrowser(), nullptr, populate_behavior,
-          context_type)));
+  args.Append(ExtensionTabUtil::CreateWindowValueForExtension(
+      *window_controller->GetBrowser(), nullptr, populate_behavior,
+      context_type));
   DispatchEvent(events::WINDOWS_ON_CREATED, windows::OnCreated::kEventName,
                 window_controller, std::move(args));
 }
@@ -238,8 +236,8 @@ void WindowsEventRouter::OnWindowControllerRemoved(
     return;
 
   int window_id = window_controller->GetWindowId();
-  std::unique_ptr<base::ListValue> args(new base::ListValue());
-  args->Append(window_id);
+  base::Value::List args;
+  args.Append(window_id);
   DispatchEvent(events::WINDOWS_ON_REMOVED, windows::OnRemoved::kEventName,
                 window_controller, std::move(args));
 }
@@ -254,15 +252,14 @@ void WindowsEventRouter::OnWindowBoundsChanged(
   if (!window_controller->GetBrowser())
     return;
 
-  auto args = std::make_unique<base::ListValue>();
+  base::Value::List args;
   // Since we don't populate tab info here, the context type doesn't matter.
   constexpr ExtensionTabUtil::PopulateTabBehavior populate_behavior =
       ExtensionTabUtil::kDontPopulateTabs;
   constexpr Feature::Context context_type = Feature::UNSPECIFIED_CONTEXT;
-  args->Append(base::Value::FromUniquePtrValue(
-      ExtensionTabUtil::CreateWindowValueForExtension(
-          *window_controller->GetBrowser(), nullptr, populate_behavior,
-          context_type)));
+  args.Append(ExtensionTabUtil::CreateWindowValueForExtension(
+      *window_controller->GetBrowser(), nullptr, populate_behavior,
+      context_type));
   DispatchEvent(events::WINDOWS_ON_BOUNDS_CHANGED,
                 windows::OnBoundsChanged::kEventName, window_controller,
                 std::move(args));
@@ -313,10 +310,10 @@ void WindowsEventRouter::OnActiveWindowChanged(
 void WindowsEventRouter::DispatchEvent(events::HistogramValue histogram_value,
                                        const std::string& event_name,
                                        WindowController* window_controller,
-                                       std::unique_ptr<base::ListValue> args) {
-  auto event = std::make_unique<Event>(histogram_value, event_name,
-                                       std::move(args->GetList()),
-                                       window_controller->profile());
+                                       base::Value::List args) {
+  auto event =
+      std::make_unique<Event>(histogram_value, event_name, std::move(args),
+                              window_controller->profile());
   event->will_dispatch_callback =
       base::BindRepeating(&WillDispatchWindowEvent, window_controller);
   EventRouter::Get(profile_)->BroadcastEvent(std::move(event));

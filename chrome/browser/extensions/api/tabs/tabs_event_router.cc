@@ -53,12 +53,10 @@ bool WillDispatchTabUpdatedEvent(
   ExtensionTabUtil::ScrubTabBehavior scrub_tab_behavior =
       ExtensionTabUtil::GetScrubTabBehavior(extension, target_context,
                                             contents);
-  std::unique_ptr<api::tabs::Tab> tab_object =
-      ExtensionTabUtil::CreateTabObject(contents, scrub_tab_behavior,
-                                        extension);
+  api::tabs::Tab tab_object = ExtensionTabUtil::CreateTabObject(
+      contents, scrub_tab_behavior, extension);
 
-  base::Value tab_value =
-      base::Value::FromUniquePtrValue(tab_object->ToValue());
+  base::Value tab_value = base::Value::FromUniquePtrValue(tab_object.ToValue());
 
   base::Value::Dict changed_properties;
   for (const auto& property : changed_property_names) {
@@ -87,7 +85,7 @@ bool WillDispatchTabCreatedEvent(
                                             contents);
   base::Value tab_value = base::Value::FromUniquePtrValue(
       ExtensionTabUtil::CreateTabObject(contents, scrub_tab_behavior, extension)
-          ->ToValue());
+          .ToValue());
   tab_value.SetBoolKey(tabs_constants::kSelectedKey, active);
   tab_value.SetBoolKey(tabs_constants::kActiveKey, active);
 

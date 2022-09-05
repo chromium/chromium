@@ -85,7 +85,7 @@ ExtensionFunction::ResponseAction TabGroupsGetFunction::Run() {
   DCHECK(!id.is_empty());
 
   return RespondNow(ArgumentList(api::tab_groups::Get::Results::Create(
-      *tab_groups_util::CreateTabGroupObject(id, *visual_data))));
+      tab_groups_util::CreateTabGroupObject(id, *visual_data))));
 }
 
 ExtensionFunction::ResponseAction TabGroupsQueryFunction::Run() {
@@ -93,7 +93,7 @@ ExtensionFunction::ResponseAction TabGroupsQueryFunction::Run() {
       api::tab_groups::Query::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  base::Value result_list(base::Value::Type::LIST);
+  base::Value::List result_list;
   Profile* profile = Profile::FromBrowserContext(browser_context());
   Browser* current_browser =
       ChromeExtensionFunctionDetails(this).GetCurrentBrowser();
@@ -153,11 +153,11 @@ ExtensionFunction::ResponseAction TabGroupsQueryFunction::Run() {
       }
 
       result_list.Append(base::Value::FromUniquePtrValue(
-          tab_groups_util::CreateTabGroupObject(id, *visual_data)->ToValue()));
+          tab_groups_util::CreateTabGroupObject(id, *visual_data).ToValue()));
     }
   }
 
-  return RespondNow(OneArgument(std::move(result_list)));
+  return RespondNow(WithArguments(std::move(result_list)));
 }
 
 ExtensionFunction::ResponseAction TabGroupsUpdateFunction::Run() {
@@ -206,8 +206,8 @@ ExtensionFunction::ResponseAction TabGroupsUpdateFunction::Run() {
     return RespondNow(NoArguments());
 
   return RespondNow(ArgumentList(api::tab_groups::Get::Results::Create(
-      *tab_groups_util::CreateTabGroupObject(tab_group->id(),
-                                             *tab_group->visual_data()))));
+      tab_groups_util::CreateTabGroupObject(tab_group->id(),
+                                            *tab_group->visual_data()))));
 }
 
 ExtensionFunction::ResponseAction TabGroupsMoveFunction::Run() {

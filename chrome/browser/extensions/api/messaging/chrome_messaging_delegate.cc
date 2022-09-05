@@ -74,7 +74,7 @@ ChromeMessagingDelegate::IsNativeMessagingHostAllowed(
   return PolicyPermission::DISALLOW;
 }
 
-std::unique_ptr<base::DictionaryValue> ChromeMessagingDelegate::MaybeGetTabInfo(
+absl::optional<base::Value::Dict> ChromeMessagingDelegate::MaybeGetTabInfo(
     content::WebContents* web_contents) {
   // Add info about the opener's tab (if it was a tab).
   if (web_contents && ExtensionTabUtil::GetTabId(web_contents) >= 0) {
@@ -90,11 +90,12 @@ std::unique_ptr<base::DictionaryValue> ChromeMessagingDelegate::MaybeGetTabInfo(
     // permissions.
     ExtensionTabUtil::ScrubTabBehavior scrub_tab_behavior = {
         ExtensionTabUtil::kDontScrubTab, ExtensionTabUtil::kDontScrubTab};
-    return ExtensionTabUtil::CreateTabObject(web_contents, scrub_tab_behavior,
-                                             nullptr)
-        ->ToValue();
+    return std::move(ExtensionTabUtil::CreateTabObject(
+                         web_contents, scrub_tab_behavior, nullptr)
+                         .ToValue()
+                         ->GetDict());
   }
-  return nullptr;
+  return absl::nullopt;
 }
 
 content::WebContents* ChromeMessagingDelegate::GetWebContentsByTabId(

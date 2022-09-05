@@ -593,15 +593,14 @@ BookmarkManagerPrivateOpenInNewTabFunction::RunOnReady() {
     return Error("Cannot open a folder in a new tab.");
 
   ExtensionTabUtil::OpenTabParams options;
-  options.url = std::make_unique<std::string>(node->url().spec());
-  options.active = std::make_unique<bool>(params->active);
-  options.bookmark_id = std::make_unique<int>(node->id());
+  options.url = node->url().spec();
+  options.active = params->active;
+  options.bookmark_id = node->id();
 
-  std::unique_ptr<base::DictionaryValue> result(
-      extensions::ExtensionTabUtil::OpenTab(this, options, user_gesture(),
-                                            &error));
-  if (!result)
-    return Error(error);
+  auto result =
+      extensions::ExtensionTabUtil::OpenTab(this, options, user_gesture());
+  if (!result.has_value())
+    return Error(result.error());
 
   return WithArguments();
 }
