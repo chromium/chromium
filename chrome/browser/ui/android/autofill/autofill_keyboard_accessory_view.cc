@@ -10,6 +10,7 @@
 #include "base/android/jni_string.h"
 #include "base/callback.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/trace_event/trace_event.h"
 
 #include "chrome/android/features/keyboard_accessory/jni_headers/AutofillKeyboardAccessoryViewBridge_jni.h"
 #include "chrome/browser/android/resource_mapper.h"
@@ -56,11 +57,13 @@ bool AutofillKeyboardAccessoryView::Initialize() {
 }
 
 void AutofillKeyboardAccessoryView::Hide() {
+  TRACE_EVENT0("passwords", "AutofillKeyboardAccessoryView::Hide");
   Java_AutofillKeyboardAccessoryViewBridge_dismiss(
       base::android::AttachCurrentThread(), java_object_);
 }
 
 void AutofillKeyboardAccessoryView::Show() {
+  TRACE_EVENT0("passwords", "AutofillKeyboardAccessoryView::Show");
   JNIEnv* env = base::android::AttachCurrentThread();
   ScopedJavaLocalRef<jobjectArray> data_array =
       Java_AutofillKeyboardAccessoryViewBridge_createAutofillSuggestionArray(

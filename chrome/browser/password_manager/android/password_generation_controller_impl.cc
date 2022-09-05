@@ -10,6 +10,7 @@
 #include "base/callback.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/trace_event/trace_event.h"
 #include "chrome/browser/autofill/manual_filling_controller.h"
 #include "chrome/browser/password_manager/android/password_accessory_controller.h"
 #include "chrome/browser/password_manager/android/password_generation_dialog_view_interface.h"
@@ -130,6 +131,8 @@ void PasswordGenerationControllerImpl::ShowManualGenerationDialog(
 void PasswordGenerationControllerImpl::FocusedInputChanged(
     autofill::mojom::FocusedFieldType focused_field_type,
     base::WeakPtr<password_manager::PasswordManagerDriver> driver) {
+  TRACE_EVENT0("passwords",
+               "PasswordGenerationControllerImpl::FocusedInputChanged");
   ResetState();
   if (focused_field_type == FocusedFieldType::kFillablePasswordField)
     active_frame_driver_ = std::move(driver);

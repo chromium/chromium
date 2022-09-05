@@ -125,6 +125,7 @@ void ManualFillingControllerImpl::OnAutomaticGenerationStatusChanged(
 
 void ManualFillingControllerImpl::RefreshSuggestions(
     const AccessorySheetData& accessory_sheet_data) {
+  TRACE_EVENT0("passwords", "ManualFillingControllerImpl::RefreshSuggestions");
   view_->OnItemsAvailable(accessory_sheet_data);
   available_sheets_.insert_or_assign(GetSourceForTabType(accessory_sheet_data),
                                      accessory_sheet_data);
@@ -400,6 +401,8 @@ void ManualFillingControllerImpl::OnSourceAvailabilityChanged(
     FillingSource source,
     AccessoryController* source_controller,
     AccessoryController::IsFillingSourceAvailable is_source_available) {
+  TRACE_EVENT0("passwords",
+               "ManualFillingControllerImpl::OnSourceAvailabilityChanged");
   absl::optional<AccessorySheetData> sheet = source_controller->GetSheetData();
   bool show_filling_source = sheet.has_value() && is_source_available;
   // TODO(crbug.com/1169167): Remove once all sheets pull this information

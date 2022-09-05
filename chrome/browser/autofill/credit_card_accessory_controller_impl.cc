@@ -14,6 +14,7 @@
 #include "base/debug/dump_without_crashing.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/trace_event/trace_event.h"
 #include "chrome/browser/android/preferences/autofill/autofill_profile_bridge.h"
 #include "chrome/browser/autofill/manual_filling_controller.h"
 #include "chrome/browser/autofill/manual_filling_utils.h"
@@ -322,6 +323,8 @@ CreditCardAccessoryController* CreditCardAccessoryController::GetIfExisting(
 }
 
 void CreditCardAccessoryControllerImpl::RefreshSuggestions() {
+  TRACE_EVENT0("passwords",
+               "CreditCardAccessoryControllerImpl::RefreshSuggestions");
   absl::optional<AccessorySheetData> data = GetSheetData();
   if (source_observer_) {
     source_observer_.Run(this, IsFillingSourceAvailable(data.has_value()));

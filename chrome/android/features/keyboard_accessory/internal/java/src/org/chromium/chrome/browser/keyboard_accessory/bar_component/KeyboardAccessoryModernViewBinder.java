@@ -19,6 +19,7 @@ import android.view.ViewGroup;
 
 import com.google.android.material.tabs.TabLayout;
 
+import org.chromium.base.TraceEvent;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.keyboard_accessory.R;
 import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.AutofillBarItem;
@@ -60,6 +61,7 @@ class KeyboardAccessoryModernViewBinder {
 
         @Override
         protected void bind(AutofillBarItem item, ChipView chipView) {
+            TraceEvent.begin("BarItemChipViewHolder#bind");
             int iconId = item.getSuggestion().getIconId();
             if (item.getFeatureForIPH() != null) {
                 if (item.getFeatureForIPH().equals(
@@ -116,6 +118,7 @@ class KeyboardAccessoryModernViewBinder {
             } else {
                 chipView.setIcon(iconId != 0 ? iconId : ChipView.INVALID_ICON_ID, false);
             }
+            TraceEvent.end("BarItemChipViewHolder#bind");
         }
     }
 

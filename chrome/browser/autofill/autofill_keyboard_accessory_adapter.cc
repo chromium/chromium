@@ -12,6 +12,7 @@
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/trace_event/trace_event.h"
 #include "chrome/browser/ui/autofill/autofill_popup_controller.h"
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
@@ -63,6 +64,8 @@ void AutofillKeyboardAccessoryAdapter::OnSelectedRowChanged(
     absl::optional<int> current_row_selection) {}
 
 void AutofillKeyboardAccessoryAdapter::OnSuggestionsChanged() {
+  TRACE_EVENT0("passwords",
+               "AutofillKeyboardAccessoryAdapter::OnSuggestionsChanged");
   DCHECK(controller_) << "Call OnSuggestionsChanged only from its owner!";
   DCHECK(view_) << "OnSuggestionsChanged called before a View was set!";
 

@@ -61,13 +61,12 @@ ManualFillingViewAndroid::~ManualFillingViewAndroid() {
 
 void ManualFillingViewAndroid::OnItemsAvailable(
     const AccessorySheetData& data) {
-  TRACE_EVENT_BEGIN0("passwords", __func__);
+  TRACE_EVENT0("passwords", "ManualFillingViewAndroid::OnItemsAvailable");
   if (auto obj = GetOrCreateJavaObject()) {
     JNIEnv* env = base::android::AttachCurrentThread();
     Java_ManualFillingComponentBridge_onItemsAvailable(
         env, obj, ConvertAccessorySheetDataToJavaObject(env, data));
   }
-  TRACE_EVENT_END0("passwords", __func__);
 }
 
 void ManualFillingViewAndroid::CloseAccessorySheet() {
@@ -85,12 +84,12 @@ void ManualFillingViewAndroid::SwapSheetWithKeyboard() {
 }
 
 void ManualFillingViewAndroid::ShowWhenKeyboardIsVisible() {
-  TRACE_EVENT_BEGIN0("passwords", __func__);
+  TRACE_EVENT0("passwords",
+               "ManualFillingViewAndroid::ShowWhenKeyboardIsVisible");
   if (auto obj = GetOrCreateJavaObject()) {
     Java_ManualFillingComponentBridge_showWhenKeyboardIsVisible(
         base::android::AttachCurrentThread(), obj);
   }
-  TRACE_EVENT_END0("passwords", __func__);
 }
 
 void ManualFillingViewAndroid::Hide() {
@@ -167,7 +166,9 @@ ScopedJavaLocalRef<jobject>
 ManualFillingViewAndroid::ConvertAccessorySheetDataToJavaObject(
     JNIEnv* env,
     const AccessorySheetData& tab_data) {
-  TRACE_EVENT_BEGIN0("passwords", __func__);
+  TRACE_EVENT0(
+      "passwords",
+      "ManualFillingViewAndroid::ConvertAccessorySheetDataToJavaObject");
   DCHECK(java_object_internal_);
   ScopedJavaLocalRef<jobject> j_tab_data =
       Java_ManualFillingComponentBridge_createAccessorySheetData(
@@ -223,7 +224,6 @@ ManualFillingViewAndroid::ConvertAccessorySheetDataToJavaObject(
         static_cast<int>(footer_command.accessory_action()));
   }
   return j_tab_data;
-  TRACE_EVENT_END0("passwords", __func__);
 }
 
 AccessorySheetField ManualFillingViewAndroid::ConvertJavaUserInfoField(

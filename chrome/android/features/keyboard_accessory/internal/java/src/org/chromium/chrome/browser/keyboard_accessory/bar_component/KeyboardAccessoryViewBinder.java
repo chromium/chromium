@@ -62,7 +62,7 @@ class KeyboardAccessoryViewBinder {
         /**
          * Called when the ViewHolder is bound.
          * @param item The {@link BarItem} that this ViewHolder represents.
-         * @param item The {@link View} that this ViewHolder binds the bar item to.
+         * @param view The {@link View} that this ViewHolder binds the bar item to.
          */
         protected abstract void bind(T item, V view);
 

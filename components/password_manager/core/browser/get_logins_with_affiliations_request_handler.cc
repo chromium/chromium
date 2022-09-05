@@ -8,6 +8,7 @@
 #include "base/callback.h"
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
+#include "base/trace_event/trace_event.h"
 
 #include "components/password_manager/core/browser/android_affiliation/affiliation_utils.h"
 #include "components/password_manager/core/browser/password_form.h"
@@ -105,6 +106,8 @@ void GetLoginsWithAffiliationsRequestHandler::HandleAffiliatedLoginsReceived(
     DCHECK(!form->is_public_suffix_match);
   results_.insert(results_.end(), std::make_move_iterator(logins.begin()),
                   std::make_move_iterator(logins.end()));
+  TRACE_EVENT_NESTABLE_ASYNC_END0("passwords", "PasswordStore::GetLogins",
+                                  consumer_.get());
   forms_received_.Run();
 }
 

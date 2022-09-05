@@ -20,6 +20,7 @@ import androidx.core.view.ViewCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.Callback;
+import org.chromium.base.TraceEvent;
 import org.chromium.chrome.browser.keyboard_accessory.R;
 import org.chromium.ui.widget.ViewRectProvider;
 
@@ -124,6 +125,7 @@ class KeyboardAccessoryModernView extends KeyboardAccessoryView {
 
     @Override
     protected void onFinishInflate() {
+        TraceEvent.begin("KeyboardAccessoryModernView#onFinishInflate");
         super.onFinishInflate();
         mSheetTitle = findViewById(R.id.sheet_title);
         mKeyboardToggle = findViewById(R.id.show_keyboard);
@@ -137,6 +139,7 @@ class KeyboardAccessoryModernView extends KeyboardAccessoryView {
 
         // Remove any paddings that might be inherited since this messes up the fading edge.
         ViewCompat.setPaddingRelative(mBarItemsView, 0, 0, 0, 0);
+        TraceEvent.end("KeyboardAccessoryModernView#onFinishInflate");
     }
 
     @Override
@@ -148,12 +151,14 @@ class KeyboardAccessoryModernView extends KeyboardAccessoryView {
 
     @Override
     void setVisible(boolean visible) {
+        TraceEvent.begin("KeyboardAccessoryModernView#setVisible");
         super.setVisible(visible);
         if (visible) {
             mBarItemsView.post(mBarItemsView::invalidateItemDecorations);
             // Animate the suggestions only if the bar wasn't visible already.
             if (getVisibility() != View.VISIBLE) animateSuggestionArrival();
         }
+        TraceEvent.end("KeyboardAccessoryModernView#setVisible");
     }
 
     @Override
@@ -195,10 +200,12 @@ class KeyboardAccessoryModernView extends KeyboardAccessoryView {
     }
 
     void setKeyboardToggleVisibility(boolean hasActiveTab) {
+        TraceEvent.begin("KeyboardAccessoryModernView#setKeyboardToggleVisibility");
         mKeyboardToggle.setVisibility(hasActiveTab ? VISIBLE : GONE);
         mSheetTitle.setVisibility(hasActiveTab ? VISIBLE : GONE);
         mBarItemsView.setVisibility(hasActiveTab ? GONE : VISIBLE);
         if (!hasActiveTab) mBarItemsView.post(mBarItemsView::invalidateItemDecorations);
+        TraceEvent.end("KeyboardAccessoryModernView#setKeyboardToggleVisibility");
     }
 
     void setSheetTitle(String title) {

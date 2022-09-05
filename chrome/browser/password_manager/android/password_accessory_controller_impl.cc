@@ -18,6 +18,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/trace_event/trace_event.h"
 #include "chrome/browser/autofill/manual_filling_controller.h"
 #include "chrome/browser/autofill/manual_filling_utils.h"
 #include "chrome/browser/password_manager/android/all_passwords_bottom_sheet_controller.h"
@@ -368,6 +369,8 @@ void PasswordAccessoryControllerImpl::RefreshSuggestionsForField(
   url::Origin origin = GetFocusedFrameOrigin();
   if (origin.opaque())
     return;  // Don't proceed for invalid origins.
+  TRACE_EVENT0("passwords",
+               "PasswordAccessoryControllerImpl::RefreshSuggestionsForField");
   last_focused_field_info_.emplace(origin, focused_field_type,
                                    is_manual_generation_available);
 
