@@ -22,6 +22,7 @@ source_set("bubble") {
     "//base:i18n",
     "//components/feature_engagement/public",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser",
     "//ios/chrome/browser:chrome_url_constants",
     "//ios/chrome/browser:utils",
     "//ios/chrome/browser/browser_state",

@@ -9,6 +9,7 @@
 
 #include <string>
 
+class ChromeBrowserState;
 class GURL;
 
 // Returns whether |url| is an external file reference.
@@ -24,6 +25,10 @@ bool IsURLNtp(const GURL& url);
 // Returns true if |scheme| is handled in Chrome, or by default handlers in
 // net::URLRequest.
 bool IsHandledProtocol(const std::string& scheme);
+
+// Whether or not, by default, `url` should be loaded using Desktop Mode.
+bool ShouldLoadUrlInDesktopMode(const GURL& url,
+                                ChromeBrowserState* browser_state);
 
 // Singleton object that generates constants for Chrome iOS applications.
 // Behavior of this object can be overridden by unit tests.

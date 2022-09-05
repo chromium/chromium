@@ -13,6 +13,7 @@
 #import "components/feature_engagement/public/tracker.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/chrome_url_constants.h"
+#import "ios/chrome/browser/chrome_url_util.h"
 #import "ios/chrome/browser/feature_engagement/tracker_factory.h"
 #import "ios/chrome/browser/flags/system_flags.h"
 #import "ios/chrome/browser/ui/bubble/bubble_presenter_delegate.h"
@@ -250,6 +251,12 @@ const CGFloat kBubblePresentationDelay = 1;
 
 - (void)presentDefaultSiteViewTipBubble {
   if (![self canPresentBubble])
+    return;
+
+  web::WebState* webState =
+      [self.delegate currentWebStateForBubblePresenter:self];
+  if (!webState ||
+      ShouldLoadUrlInDesktopMode(webState->GetVisibleURL(), self.browserState))
     return;
 
   BubbleArrowDirection arrowDirection =

@@ -14,7 +14,6 @@ source_set("content_settings") {
     "//components/content_settings/core/browser",
     "//components/keyed_service/ios",
     "//components/prefs",
-    "//ios/chrome/browser",
     "//ios/chrome/browser/browser_state",
   ]
 
