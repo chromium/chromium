@@ -1128,6 +1128,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ServiceWorker.WorkaroundForCrBug1342408Applied" units="cases"
+    expires_after="2023-06-30">
+  <owner>yyanagisawa@google.com</owner>
+  <owner>chrome-worker@google.com</owner>
+  <summary>
+    True if the workaround for crbug.com/1342408 has been applied. Otherwise,
+    false. The workaround is applied when the response stream call back is
+    called.
+
+    This information is used to understand if we need to continue this
+    workaround or not.
+  </summary>
+</histogram>
+
 <histogram name="ServiceWorker.{operation}Time" units="ms"
     expires_after="2023-07-19">
   <owner>cduvall@chromium.org</owner>

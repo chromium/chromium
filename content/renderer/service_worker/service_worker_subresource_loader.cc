@@ -139,13 +139,16 @@ void RestoreRequestBody(network::ResourceRequestBody* body,
 blink::mojom::ServiceWorkerFetchEventTimingPtr AdjustTimingIfNeededCrBug1342408(
     blink::mojom::ServiceWorkerFetchEventTimingPtr timing) {
   base::TimeTicks now = base::TimeTicks::Now();
+  const char* kMetricsName = "ServiceWorker.WorkaroundForCrBug1342408Applied";
   if (base::TimeTicks::IsConsistentAcrossProcesses() ||
       timing->respond_with_settled_time <= now) {
+    base::UmaHistogramBoolean(kMetricsName, false);
     return timing;
   }
   auto diff = timing->respond_with_settled_time - now;
   timing->dispatch_event_time -= diff;
   timing->respond_with_settled_time -= diff;
+  base::UmaHistogramBoolean(kMetricsName, true);
   return timing;
 }
 
