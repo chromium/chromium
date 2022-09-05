@@ -128,6 +128,13 @@ const base::Feature kAutofillConsiderVariationCountryCodeForPhoneNumbers{
 const base::Feature kAutofillCreateDataForTest{
     "AutofillCreateDataForTest", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// If enabled, checking whether a form has disappeared after an Ajax response is
+// delayed because subsequent Ajax responses may restore the form. If disabled,
+// the check happens right after a successful Ajax response.
+const base::Feature kAutofillDeferSubmissionClassificationAfterAjax{
+    "AutofillDeferSubmissionClassificationAfterAjax",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
 // If enabled, we try to fill and import from fields based on available
 // heuristic or server suggestions even if the autocomplete attribute is not
 // specified by the web standard. This does not affect the moments when the UI
