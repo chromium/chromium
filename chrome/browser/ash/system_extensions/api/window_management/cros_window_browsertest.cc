@@ -16,9 +16,11 @@
 #include "base/strings/string_piece_forward.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
+#include "base/token.h"
 #include "base/values.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/system_extensions/api/test_support/system_extensions_api_browsertest.h"
 #include "chrome/browser/ash/system_extensions/api/window_management/cros_window_management_test_helper.test-mojom.h"
 #include "chrome/browser/ash/system_extensions/system_extensions_install_manager.h"
@@ -32,6 +34,8 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/user_manager/user.h"
+#include "components/user_manager/user_manager.h"
 #include "content/public/browser/console_message.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/service_worker_context.h"
@@ -44,6 +48,7 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "ui/aura/window.h"
+#include "ui/aura/window_delegate.h"
 #include "ui/display/test/display_manager_test_api.h"
 #include "ui/events/test/event_generator.h"
 
@@ -171,6 +176,33 @@ class CrosWindowManagementTestHelper
     std::move(callback).Run();
   }
 
+  void GetMinimumSize(const std::string& id,
+                      GetMinimumSizeCallback callback) override {
+    // Get a Profile.
+    user_manager::User* active_user =
+        user_manager::UserManager::Get()->GetActiveUser();
+    DCHECK(active_user);
+    auto* profile = ProfileHelper::Get()->GetProfileByUser(active_user);
+
+    // Create a UnguessableToken from the passed string.
+    absl::optional<base::Token> token = base::Token::FromString(id);
+    DCHECK(token.has_value());
+
+    base::UnguessableToken target_id =
+        base::UnguessableToken::Deserialize(token->high(), token->low());
+
+    apps::AppServiceProxy* proxy =
+        apps::AppServiceProxyFactory::GetForProfile(profile);
+    CHECK(proxy->InstanceRegistry().ForOneInstance(
+        target_id, [callback = std::move(callback)](
+                       const apps::InstanceUpdate& update) mutable {
+          std::move(callback).Run(update.Window()
+                                      ->GetToplevelWindow()
+                                      ->delegate()
+                                      ->GetMinimumSize());
+        }));
+  }
+
   void GetShelfHeight(GetShelfHeightCallback callback) override {
     gfx::Rect shelf_bounds =
         AshTestBase::GetPrimaryShelf()->shelf_widget()->GetVisibleShelfBounds();
@@ -203,18 +235,19 @@ class CrosWindowManagementTestHelper
 class CrosWindowManagementBrowserTest : public SystemExtensionsApiBrowserTest {
  public:
   CrosWindowManagementBrowserTest()
-      : SystemExtensionsApiBrowserTest({
-            .tests_dir = kTestsDir,
-            .manifest_template = kManifestTemplate,
-            .additional_src_files = {"chrome/test/data/system_extensions/"
-                                     "cros_window_test_utils.js"},
-            .additional_gen_files =
-                {"gen/chrome/browser/ash/system_extensions/api/"
+      : SystemExtensionsApiBrowserTest(
+            {.tests_dir = kTestsDir,
+             .manifest_template = kManifestTemplate,
+             .additional_src_files = {"chrome/test/data/system_extensions/"
+                                      "cros_window_test_utils.js"},
+             .additional_gen_files = {
+                 "gen/chrome/browser/ash/system_extensions/api/"
                  "window_management/"
                  "cros_window_management_test_helper.test-mojom-lite.js",
                  "gen/ui/events/mojom/keyboard_codes.mojom-lite.js",
-                 "gen/ui/events/mojom/event_constants.mojom-lite.js"},
-        }) {
+                 "gen/ui/events/mojom/event_constants.mojom-lite.js",
+                 "gen/ui/gfx/geometry/mojom/geometry.mojom-lite.js",
+             }}) {
     AddRendererInterface(base::BindLambdaForTesting(
         [](mojo::PendingReceiver<
             system_extensions_test::mojom::CrosWindowManagementTestHelper>
@@ -368,6 +401,16 @@ IN_PROC_BROWSER_TEST_F(CrosWindowManagementBrowserTest, CrosWindowResizeTo) {
 
 IN_PROC_BROWSER_TEST_F(CrosWindowManagementBrowserTest, CrosWindowResizeBy) {
   RunTest("cros_window_resize_by.js");
+}
+
+IN_PROC_BROWSER_TEST_F(CrosWindowManagementBrowserTest,
+                       CrosWindowResizeBy_OverrideMinimumSize) {
+  RunTest("cros_window_resize_by_override_minimum_size.js");
+}
+
+IN_PROC_BROWSER_TEST_F(CrosWindowManagementBrowserTest,
+                       CrosWindowResizeTo_OverrideMinimumSize) {
+  RunTest("cros_window_resize_to_override_minimum_size.js");
 }
 
 IN_PROC_BROWSER_TEST_F(CrosWindowManagementBrowserTest,

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_SYSTEM_EXTENSIONS_API_WINDOW_MANAGEMENT_WINDOW_MANAGEMENT_IMPL_H_
 #define CHROME_BROWSER_ASH_SYSTEM_EXTENSIONS_API_WINDOW_MANAGEMENT_WINDOW_MANAGEMENT_IMPL_H_
 
+#include "ash/wm/wm_default_layout_manager.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/profiles/profile.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
@@ -20,7 +21,8 @@ class Window;
 
 namespace ash {
 
-class WindowManagementImpl : public blink::mojom::CrosWindowManagement {
+class WindowManagementImpl : public WmDefaultLayoutManager,
+                             public blink::mojom::CrosWindowManagement {
  public:
   explicit WindowManagementImpl(
       int32_t render_process_host_id,

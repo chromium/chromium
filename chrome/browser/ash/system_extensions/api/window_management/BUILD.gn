@@ -72,5 +72,6 @@ mojom("test_helper") {
   public_deps = [
     "//mojo/public/mojom/base",
     "//ui/events/mojom",
+    "//ui/gfx/geometry/mojom",
   ]
 }

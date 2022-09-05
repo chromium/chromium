@@ -8,6 +8,7 @@
 if (typeof systemExtensionsTest !== 'undefined') {
   importScripts(
       'keyboard_codes.mojom-lite.js', 'event_constants.mojom-lite.js',
+      'geometry.mojom-lite.js',
       'cros_window_management_test_helper.test-mojom-lite.js')
 
   globalThis.testHelper =

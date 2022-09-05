@@ -149,8 +149,9 @@ void WindowManagementImpl::ResizeTo(const base::UnguessableToken& id,
     return;
   }
 
-  target->SetBounds(
-      gfx::Rect(target->bounds().x(), target->bounds().y(), width, height));
+  // Use SetChildBoundsDirect() to override minimum window sizes.
+  SetChildBoundsDirect(target, gfx::Rect(target->bounds().x(),
+                                         target->bounds().y(), width, height));
   std::move(callback).Run(blink::mojom::CrosWindowManagementStatus::kSuccess);
 }
 
@@ -166,9 +167,12 @@ void WindowManagementImpl::ResizeBy(const base::UnguessableToken& id,
     return;
   }
 
-  target->SetBounds(gfx::Rect(target->bounds().x(), target->bounds().y(),
-                              target->bounds().width() + delta_width,
-                              target->bounds().height() + delta_height));
+  // Use SetChildBoundsDirect() to override minimum window sizes.
+  SetChildBoundsDirect(target,
+                       // target->SetBounds(
+                       gfx::Rect(target->bounds().x(), target->bounds().y(),
+                                 target->bounds().width() + delta_width,
+                                 target->bounds().height() + delta_height));
   std::move(callback).Run(blink::mojom::CrosWindowManagementStatus::kSuccess);
 }
 
