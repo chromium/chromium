@@ -167,8 +167,10 @@ class SingleClientHistorySyncTest : public SyncTest {
     // profiles/browsers it creates. Create an "empty" tab here, so that
     // NavigateToURL() will have a non-null WebContents to navigate in.
     for (int i = 0; i < num_clients(); ++i) {
-      DCHECK(AddTabAtIndexToBrowser(GetBrowser(0), 0, GURL("about:blank"),
-                                    ui::PAGE_TRANSITION_AUTO_TOPLEVEL));
+      if (!AddTabAtIndexToBrowser(GetBrowser(0), 0, GURL("about:blank"),
+                                  ui::PAGE_TRANSITION_AUTO_TOPLEVEL)) {
+        return false;
+      }
     }
 #endif
 
@@ -214,7 +216,7 @@ class SingleClientHistorySyncTest : public SyncTest {
 };
 
 IN_PROC_BROWSER_TEST_F(SingleClientHistorySyncTest,
-                       DISABLED_DoesNotUploadRetroactively) {
+                       DoesNotUploadRetroactively) {
   ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
 
   // Navigate somewhere before Sync is turned on.
@@ -250,7 +252,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientHistorySyncTest,
                                                   UrlIs(synced_url2.spec()))));
 }
 
-IN_PROC_BROWSER_TEST_F(SingleClientHistorySyncTest, DISABLED_UploadsAllFields) {
+IN_PROC_BROWSER_TEST_F(SingleClientHistorySyncTest, UploadsAllFields) {
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
 
   // Navigate to some URL, and make sure it shows up on the server.
