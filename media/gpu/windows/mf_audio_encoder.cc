@@ -470,9 +470,9 @@ void MFAudioEncoder::Initialize(const Options& options,
   }
 
   channel_count_ = options_.channels;
-  audio_params_ =
-      AudioParameters(AudioParameters::AUDIO_PCM_LOW_LATENCY, channel_layout,
-                      options_.sample_rate, kSamplesPerFrame);
+  audio_params_ = AudioParameters(AudioParameters::AUDIO_PCM_LOW_LATENCY,
+                                  {channel_layout, channel_count_},
+                                  options_.sample_rate, kSamplesPerFrame);
   input_timestamp_tracker_ =
       std::make_unique<AudioTimestampHelper>(options_.sample_rate);
   output_timestamp_tracker_ =
