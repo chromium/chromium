@@ -3340,19 +3340,10 @@ const char kCACertificateManagementAllowed[] =
     "ca_certificate_management_allowed";
 #endif
 
-#if BUILDFLAG(BUILTIN_CERT_VERIFIER_POLICY_SUPPORTED)
-// Boolean that specifies whether the built-in certificate verifier should be
-// used. If false, Chrome will use the platform certificate verifier. If not
-// set, Chrome will choose the certificate verifier based on experiments.
-const char kBuiltinCertificateVerifierEnabled[] =
-    "builtin_certificate_verifier_enabled";
-#endif
-
 #if BUILDFLAG(CHROME_ROOT_STORE_POLICY_SUPPORTED)
 // Boolean that specifies whether the Chrome Root Store and built-in
 // certificate verifier should be used. If false, Chrome will not use the
-// Chrome Root Store. (The built-in certificate verifier may or may not be used
-// depending on the state of kBuiltinCertificateVerifierEnabled, if supported.)
+// Chrome Root Store.
 // If not set, Chrome will choose the root store based on experiments.
 const char kChromeRootStoreEnabled[] = "chrome_root_store_enabled";
 #endif

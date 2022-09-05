@@ -25,8 +25,7 @@
 #if BUILDFLAG(BUILTIN_CERT_VERIFIER_FEATURE_SUPPORTED)
 class CertVerifierServiceCertVerifierBuiltinFeaturePolicyTest
     : public policy::PolicyTest,
-      public testing::WithParamInterface<
-          std::tuple<bool, absl::optional<bool>>> {
+      public testing::WithParamInterface<std::tuple<bool>> {
  public:
   void SetUpInProcessBrowserTestFixture() override {
     scoped_feature_list_.InitWithFeatureState(
@@ -37,16 +36,6 @@ class CertVerifierServiceCertVerifierBuiltinFeaturePolicyTest
         &test_cert_verifier_service_factory_);
 
     policy::PolicyTest::SetUpInProcessBrowserTestFixture();
-
-#if BUILDFLAG(BUILTIN_CERT_VERIFIER_POLICY_SUPPORTED)
-    auto policy_val = policy_use_builtin_cert_verifier();
-    if (policy_val.has_value()) {
-      policy::PolicyMap policies;
-      SetPolicy(&policies, policy::key::kBuiltinCertificateVerifierEnabled,
-                base::Value(*policy_val));
-      UpdateProviderPolicy(policies);
-    }
-#endif
   }
 
   void TearDownInProcessBrowserTestFixture() override {
@@ -75,14 +64,7 @@ class CertVerifierServiceCertVerifierBuiltinFeaturePolicyTest
     return std::get<0>(GetParam());
   }
 
-  absl::optional<bool> policy_use_builtin_cert_verifier() const {
-    return std::get<1>(GetParam());
-  }
-
   bool expected_use_builtin_cert_verifier() const {
-    auto policy_val = policy_use_builtin_cert_verifier();
-    if (policy_val.has_value())
-      return *policy_val;
     return feature_use_builtin_cert_verifier();
   }
 
@@ -106,22 +88,11 @@ IN_PROC_BROWSER_TEST_P(CertVerifierServiceCertVerifierBuiltinFeaturePolicyTest,
 INSTANTIATE_TEST_SUITE_P(
     All,
     CertVerifierServiceCertVerifierBuiltinFeaturePolicyTest,
-    ::testing::Combine(::testing::Bool(),
-                       ::testing::Values(absl::nullopt
-#if BUILDFLAG(BUILTIN_CERT_VERIFIER_POLICY_SUPPORTED)
-                                         ,
-                                         false,
-                                         true
-#endif
-                                         )),
+    ::testing::Combine(::testing::Bool()),
     [](const testing::TestParamInfo<
         CertVerifierServiceCertVerifierBuiltinFeaturePolicyTest::ParamType>&
            info) {
-      return base::StrCat(
-          {std::get<0>(info.param) ? "FeatureTrue" : "FeatureFalse",
-           std::get<1>(info.param).has_value()
-               ? (*std::get<1>(info.param) ? "PolicyTrue" : "PolicyFalse")
-               : "PolicyNotSet"});
+      return std::get<0>(info.param) ? "FeatureTrue" : "FeatureFalse";
     });
 #endif  // BUILDFLAG(BUILTIN_CERT_VERIFIER_FEATURE_SUPPORTED)
 

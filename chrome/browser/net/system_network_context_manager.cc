@@ -215,12 +215,6 @@ void OnAuthPrefsChanged(PrefService* local_state,
 
 #if BUILDFLAG(BUILTIN_CERT_VERIFIER_FEATURE_SUPPORTED)
 bool ShouldUseBuiltinCertVerifier(PrefService* local_state) {
-#if BUILDFLAG(BUILTIN_CERT_VERIFIER_POLICY_SUPPORTED)
-  const PrefService::Preference* builtin_cert_verifier_enabled_pref =
-      local_state->FindPreference(prefs::kBuiltinCertificateVerifierEnabled);
-  if (builtin_cert_verifier_enabled_pref->IsManaged())
-    return builtin_cert_verifier_enabled_pref->GetValue()->GetBool();
-#endif  // BUILDFLAG(BUILTIN_CERT_VERIFIER_POLICY_SUPPORTED)
   // Note: intentionally checking the feature state here rather than falling
   // back to CertVerifierImpl::kDefault, as browser-side network context
   // initialization for TrialComparisonCertVerifier depends on knowing which
@@ -578,13 +572,6 @@ void SystemNetworkContextManager::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kQuickCheckEnabled, true);
 
   registry->RegisterIntegerPref(prefs::kMaxConnectionsPerProxy, -1);
-
-#if BUILDFLAG(BUILTIN_CERT_VERIFIER_POLICY_SUPPORTED)
-  // Note that the default value is not relevant because the pref is only
-  // evaluated when it is managed.
-  registry->RegisterBooleanPref(prefs::kBuiltinCertificateVerifierEnabled,
-                                false);
-#endif  // BUILDFLAG(BUILTIN_CERT_VERIFIER_POLICY_SUPPORTED)
 
 #if BUILDFLAG(CHROME_ROOT_STORE_POLICY_SUPPORTED)
   // Note that the default value is not relevant because the pref is only

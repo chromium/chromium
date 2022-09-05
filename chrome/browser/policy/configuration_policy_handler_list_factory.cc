@@ -1638,12 +1638,6 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     base::Value::Type::BOOLEAN },
 #endif // !BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(ENABLE_EXTENSIONS)
 
-#if BUILDFLAG(BUILTIN_CERT_VERIFIER_POLICY_SUPPORTED)
-  { key::kBuiltinCertificateVerifierEnabled,
-    prefs::kBuiltinCertificateVerifierEnabled,
-    base::Value::Type::BOOLEAN },
-#endif  // BUILDFLAG(BUILTIN_CERT_VERIFIER_POLICY_SUPPORTED)
-
 #if BUILDFLAG(CHROME_ROOT_STORE_POLICY_SUPPORTED)
   { key::kChromeRootStoreEnabled,
     prefs::kChromeRootStoreEnabled,

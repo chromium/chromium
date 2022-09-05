@@ -1144,10 +1144,6 @@ extern const char kClientCertificateManagementAllowed[];
 extern const char kCACertificateManagementAllowed[];
 #endif
 
-#if BUILDFLAG(BUILTIN_CERT_VERIFIER_POLICY_SUPPORTED)
-extern const char kBuiltinCertificateVerifierEnabled[];
-#endif
-
 #if BUILDFLAG(CHROME_ROOT_STORE_POLICY_SUPPORTED)
 extern const char kChromeRootStoreEnabled[];
 #endif
