@@ -117,7 +117,14 @@ class TrashIOTask : public IOTask {
   void OnSetupSubDirectory(trash::TrashPathsMap::const_iterator& it,
                            const storage::FileSystemURL trash_subdirectory,
                            base::File::Error error);
+
+  // After setting up directory permissions, `set_permissions_success` will have
+  // true on success and false otherwise.
+  void OnSetDirectoryPermissions(trash::TrashPathsMap::const_iterator& it,
+                                 bool set_permissions_success);
   base::FilePath MakeRelativeFromBasePath(const base::FilePath& absolute_path);
+  base::FilePath MakeRelativePathAbsoluteFromBasePath(
+      const base::FilePath& relative_path);
 
   // Attempts to generate a unique destination filename when saving to
   // .Trash/files. Appends an increasing (N) suffix until a unique name is

@@ -73,6 +73,10 @@ void AssertTrashSetup(const base::FilePath& parent_path) {
   ASSERT_TRUE(
       base::DirectoryExists(trash_path.Append(trash::kFilesFolderName)));
   ASSERT_TRUE(base::DirectoryExists(trash_path.Append(trash::kInfoFolderName)));
+
+  int mode = 0;
+  ASSERT_TRUE(base::GetPosixFilePermissions(trash_path, &mode));
+  EXPECT_EQ(mode, 0711);
 }
 
 void ExpectFileContents(const base::FilePath& path,

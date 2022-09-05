@@ -72,6 +72,15 @@ bool WriteMetadataFileOnBlockingThread(const base::FilePath& destination_path,
   return base::WriteFile(destination_path, contents);
 }
 
+bool SetTrashDirectoryPermissions(const base::FilePath& trash_directory) {
+  return base::SetPosixFilePermissions(
+      trash_directory, base::FILE_PERMISSION_READ_BY_USER |
+                           base::FILE_PERMISSION_WRITE_BY_USER |
+                           base::FILE_PERMISSION_EXECUTE_BY_USER |
+                           base::FILE_PERMISSION_EXECUTE_BY_GROUP |
+                           base::FILE_PERMISSION_EXECUTE_BY_OTHERS);
+}
+
 TrashEntry::TrashEntry() : deletion_time(base::Time::Now()) {}
 TrashEntry::~TrashEntry() = default;
 
@@ -280,6 +289,15 @@ base::FilePath TrashIOTask::MakeRelativeFromBasePath(
   return base::FilePath(relative_path);
 }
 
+base::FilePath TrashIOTask::MakeRelativePathAbsoluteFromBasePath(
+    const base::FilePath& relative_path) {
+  if (base_path_.empty() || base_path_.IsParent(relative_path) ||
+      relative_path.IsAbsolute()) {
+    return relative_path;
+  }
+  return base_path_.Append(relative_path);
+}
+
 void TrashIOTask::GotFreeDiskSpace(
     size_t source_idx,
     const trash::TrashPathsMap::reverse_iterator& it,
@@ -345,6 +363,28 @@ void TrashIOTask::OnSetupSubDirectory(
   // directory.
   if (trash_subdirectory == it->second.trash_files) {
     SetupSubDirectory(it, it->second.trash_info);
+    return;
+  }
+
+  // We have to ensure the permission bits are appropriately setup to allow
+  // system daemons access to traverse the folder. By default the permissions
+  // are setup as 0700 when they should be 0711.
+  auto absolute_trash_path =
+      MakeRelativePathAbsoluteFromBasePath(trash_subdirectory.path().DirName());
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock()},
+      base::BindOnce(&SetTrashDirectoryPermissions,
+                     std::move(absolute_trash_path)),
+      base::BindOnce(&TrashIOTask::OnSetDirectoryPermissions,
+                     weak_ptr_factory_.GetWeakPtr(), base::OwnedRef(it)));
+}
+
+void TrashIOTask::OnSetDirectoryPermissions(
+    trash::TrashPathsMap::const_iterator& it,
+    bool set_permissions_success) {
+  if (!set_permissions_success) {
+    LOG(ERROR) << "Failed setting directory permissions";
+    Complete(State::kError);
     return;
   }
 
