@@ -48,6 +48,7 @@
 #include "base/allocator/partition_allocator/reservation_offset_table.h"
 #include "base/allocator/partition_allocator/tagging.h"
 #include "base/system/sys_info.h"
+#include "base/test/gtest_util.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -4050,7 +4051,7 @@ TEST_P(PartitionAllocDeathTest, ReleaseUnderflowRawPtr) {
       PartitionRefCountPointer(allocator.root()->ObjectToSlotStart(ptr));
   ref_count->Acquire();
   EXPECT_FALSE(ref_count->Release());
-  EXPECT_DEATH(ref_count->Release(), "");
+  EXPECT_DCHECK_DEATH(ref_count->Release());
   allocator.root()->Free(ptr);
 }
 
@@ -4061,7 +4062,7 @@ TEST_P(PartitionAllocDeathTest, ReleaseUnderflowDanglingPtr) {
       PartitionRefCountPointer(allocator.root()->ObjectToSlotStart(ptr));
   ref_count->AcquireFromUnprotectedPtr();
   EXPECT_FALSE(ref_count->ReleaseFromUnprotectedPtr());
-  EXPECT_DEATH(ref_count->ReleaseFromUnprotectedPtr(), "");
+  EXPECT_DCHECK_DEATH(ref_count->ReleaseFromUnprotectedPtr());
   allocator.root()->Free(ptr);
 }
 
