@@ -5,14 +5,11 @@
 #ifndef CONTENT_BROWSER_RENDERER_HOST_PENDING_BEACON_HOST_H_
 #define CONTENT_BROWSER_RENDERER_HOST_PENDING_BEACON_HOST_H_
 
-#include <vector>
-
 #include "base/memory/raw_ptr.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/document_user_data.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
-#include "net/base/network_change_notifier.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/frame/pending_beacon.mojom.h"
@@ -54,8 +51,7 @@ class PendingBeaconService;
 //    notified by RenderProcessHostDestroyed.
 class CONTENT_EXPORT PendingBeaconHost
     : public blink::mojom::PendingBeaconHost,
-      public DocumentUserData<PendingBeaconHost>,
-      public net::NetworkChangeNotifier::NetworkChangeObserver {
+      public DocumentUserData<PendingBeaconHost> {
  public:
   ~PendingBeaconHost() override;
   PendingBeaconHost(const PendingBeaconHost&) = delete;
@@ -73,11 +69,6 @@ class CONTENT_EXPORT PendingBeaconHost
 
   void SetReceiver(
       mojo::PendingReceiver<blink::mojom::PendingBeaconHost> receiver);
-
-  // `net::NetworkChangeNotifier::NetworkChangeObserver` implementation.
-  // Clears beacons when moving to a different network.
-  void OnNetworkChanged(
-      net::NetworkChangeNotifier::ConnectionType type) override;
 
  private:
   friend class DocumentUserData<PendingBeaconHost>;

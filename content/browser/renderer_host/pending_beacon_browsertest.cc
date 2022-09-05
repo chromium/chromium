@@ -39,15 +39,6 @@ MATCHER(IsFrameHidden,
 
 class PendingBeaconTimeoutBrowserTestBase : public ContentBrowserTest {
  protected:
-  void SetUp() override {
-// Some unexpected network changes happen when browsertests are running on
-// these platforms.
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_CHROMEOS_LACROS)
-    net::NetworkChangeNotifier::SetTestNotificationsOnly(true);
-#endif
-    ContentBrowserTest::SetUp();
-  }
-
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
     // Using base::Unretained() as `embedded_test_server()` is owned by
