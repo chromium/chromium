@@ -116,6 +116,25 @@ void PageInfoCookiesContentView::SetCookieInfo(
           IDS_PAGE_INFO_COOKIES_ALLOWED_SITES_COUNT,
           cookie_info.allowed_sites_count);
 
+  // Create the cookie dialog button, blocking third-party cookies button
+  // (only if third-party cookies are blocked in settings) and FPS button
+  // (only if fps are not blocked) if they don't yet exist. Those methods get
+  // called each time site data is updated, so if they *do* already exist,
+  // skip creating the buttons and just update the texts.
+  SetBlockingThirdPartyCookiesInfo(cookie_info, is_fps_allowed);
+
+  InitCookiesDialogButton();
+  // Update the text displaying the number of allowed sites.
+  cookies_dialog_button_->SetSubtitleText(num_allowed_sites_text);
+
+  SetFpsCookiesInfo(cookie_info.fps_info, is_fps_allowed);
+
+  PreferredSizeChanged();
+}
+
+void PageInfoCookiesContentView::SetBlockingThirdPartyCookiesInfo(
+    const CookiesNewInfo& cookie_info,
+    bool is_fps_allowed) {
   bool show_cookies_block_control = false;
   bool are_cookies_blocked = false;
   switch (cookie_info.status) {
@@ -132,13 +151,9 @@ void PageInfoCookiesContentView::SetCookieInfo(
       NOTREACHED();
   }
 
-  // Create the cookie dialog button, blocking third-party cookies button
-  // (only if third-party cookies are blocked in settings) and FPS button
-  // (only if fps are not blocked) if they don't yet exist. Those methods get
-  // called each time site data is updated, so if they *do* already exist,
-  // skip creating the buttons and just update the texts.
   if (show_cookies_block_control) {
     InitBlockingThirdPartyCookiesRow();
+    blocking_third_party_cookies_row_->SetVisible(true);
     InitBlockingThirdPartyCookiesToggleOrIcon(cookie_info.enforcement);
     if (blocking_third_party_cookies_toggle_)
       UpdateBlockingThirdPartyCookiesToggle(are_cookies_blocked);
@@ -157,28 +172,12 @@ void PageInfoCookiesContentView::SetCookieInfo(
           num_blocked_sites_text);
     }
 
+    // If third party cookies are being blocked the subtitle should be visible.
     blocking_third_party_cookies_subtitle_label_->SetVisible(
         are_cookies_blocked);
+  } else if (blocking_third_party_cookies_row_) {
+    blocking_third_party_cookies_row_->SetVisible(false);
   }
-
-  InitCookiesDialogButton();
-  // Update the text displaying the number of allowed sites.
-  cookies_dialog_button_->SetSubtitleText(num_allowed_sites_text);
-
-  if (is_fps_allowed) {
-    const std::u16string fps_button_title = l10n_util::GetStringFUTF16(
-        IDS_PAGE_INFO_FPS_BUTTON_TITLE, cookie_info.fps_info->owner_name);
-
-    const std::u16string fps_button_subtitle = l10n_util::GetStringFUTF16(
-        IDS_PAGE_INFO_FPS_BUTTON_SUBTITLE, cookie_info.fps_info->owner_name);
-
-    InitFpsButton();
-    // Update the text displaying the name of FPS owner.
-    fps_button_->SetTitleText(fps_button_title);
-    fps_button_->SetSubtitleText(fps_button_subtitle);
-  }
-
-  PreferredSizeChanged();
 }
 
 void PageInfoCookiesContentView::UpdateBlockingThirdPartyCookiesToggle(
@@ -189,9 +188,6 @@ void PageInfoCookiesContentView::UpdateBlockingThirdPartyCookiesToggle(
 
 void PageInfoCookiesContentView::InitBlockingThirdPartyCookiesToggleOrIcon(
     CookieControlsEnforcement enforcement) {
-  if (enforced_icon_ || blocking_third_party_cookies_toggle_)
-    return;
-
   // The row needs to be initiated before with
   // |InitBlockingThirdPartyCookiesRow| because we're adding subview to it.
   DCHECK(blocking_third_party_cookies_row_);
@@ -219,12 +215,26 @@ void PageInfoCookiesContentView::InitBlockingThirdPartyCookiesToggleOrIcon(
       break;
   }
 
+  // Set correct visibility for existing views.
+  if (enforced_icon_)
+    enforced_icon_->SetVisible(enforced);
+  if (blocking_third_party_cookies_toggle_)
+    blocking_third_party_cookies_toggle_->SetVisible(!enforced);
+
+  // If it's not enforced then toggle is for sure not being changed.
+  if (!enforced && blocking_third_party_cookies_toggle_)
+    return;
+
+  // Newly created views are visible by default.
   if (enforced) {
-    enforced_icon_ = blocking_third_party_cookies_row_->AddControl(
-        std::make_unique<NonAccessibleImageView>());
+    if (!enforced_icon_) {
+      enforced_icon_ = blocking_third_party_cookies_row_->AddControl(
+          std::make_unique<NonAccessibleImageView>());
+      enforced_icon_->SetTooltipText(l10n_util::GetStringUTF16(tooltip_id));
+    }
+    // If it's enforced then the icon might need to be changed.
     enforced_icon_->SetImage(
         PageInfoViewFactory::GetEnforcedCookieControlsIcon(enforcement));
-    enforced_icon_->SetTooltipText(l10n_util::GetStringUTF16(tooltip_id));
   } else {
     const auto tooltip = l10n_util::GetStringUTF16(
         IDS_PAGE_INFO_BLOCK_THIRD_PARTY_COOKIES_TOGGLE_TOOLTIP);
@@ -264,6 +274,26 @@ void PageInfoCookiesContentView::InitBlockingThirdPartyCookiesRow() {
 void PageInfoCookiesContentView::OnToggleButtonPressed() {
   presenter_->OnThirdPartyToggleClicked(
       blocking_third_party_cookies_toggle_->GetIsOn());
+}
+
+void PageInfoCookiesContentView::SetFpsCookiesInfo(
+    absl::optional<CookiesFpsInfo> fps_info,
+    bool is_fps_allowed) {
+  if (is_fps_allowed) {
+    InitFpsButton();
+    fps_button_->SetVisible(true);
+
+    const std::u16string fps_button_title = l10n_util::GetStringFUTF16(
+        IDS_PAGE_INFO_FPS_BUTTON_TITLE, fps_info->owner_name);
+    const std::u16string fps_button_subtitle = l10n_util::GetStringFUTF16(
+        IDS_PAGE_INFO_FPS_BUTTON_SUBTITLE, fps_info->owner_name);
+
+    // Update the text displaying the name of FPS owner.
+    fps_button_->SetTitleText(fps_button_title);
+    fps_button_->SetSubtitleText(fps_button_subtitle);
+  } else if (fps_button_) {
+    fps_button_->SetVisible(false);
+  }
 }
 
 void PageInfoCookiesContentView::InitFpsButton() {

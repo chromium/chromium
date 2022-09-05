@@ -1215,7 +1215,8 @@ void PageInfo::PresentSiteDataInternal(base::OnceClosure done) {
 #endif
     }
     cookies_info.status = status_;
-    cookies_info.enforcement = enforcement_;
+    // cookies_info.enforcement = enforcement_;
+    cookies_info.enforcement = CookieControlsEnforcement::kEnforcedByPolicy;
     ui_->SetCookieInfo(cookies_info);
   } else {
     CookieInfoList cookie_info_list;
