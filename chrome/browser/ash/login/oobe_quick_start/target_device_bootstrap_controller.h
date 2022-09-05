@@ -11,6 +11,7 @@
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/target_device_connection_broker.h"
+#include "components/qr_code_generator/qr_code_generator.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace ash::quick_start {
@@ -31,13 +32,16 @@ class TargetDeviceBootstrapController
     NONE,
     ERROR,
     ADVERTISING,
+    QR_CODE_VERIFICATION,
   };
 
   enum class ErrorCode {
     START_ADVERTISING_FAILED,
   };
 
-  using Payload = absl::variant<absl::monostate, ErrorCode>;
+  using QRCodePixelData = std::vector<uint8_t>;
+
+  using Payload = absl::variant<absl::monostate, ErrorCode, QRCodePixelData>;
 
   struct Status {
     Status();
@@ -81,6 +85,8 @@ class TargetDeviceBootstrapController
   void OnStopAdvertising();
   std::unique_ptr<TargetDeviceConnectionBroker> connection_broker_;
 
+  std::string source_device_id_;
+  base::WeakPtr<IncomingConnection> incoming_connection_;
   // TODO: Should we enforce one observer at a time here too?
   base::ObserverList<Observer> observers_;
 

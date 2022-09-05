@@ -4,7 +4,9 @@
 
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/fake_target_device_connection_broker.h"
 
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/random_session_id.h"
+#include "chrome/browser/ash/login/oobe_quick_start/connectivity/target_device_connection_broker.h"
 
 namespace ash::quick_start {
 
@@ -41,6 +43,15 @@ void FakeTargetDeviceConnectionBroker::StopAdvertising(
     base::OnceClosure on_stop_advertising_callback) {
   ++num_stop_advertising_calls_;
   on_stop_advertising_callback_ = std::move(on_stop_advertising_callback);
+}
+
+void FakeTargetDeviceConnectionBroker::InitiateConnection(
+    const std::string& source_device_id) {
+  auto random_session_id = RandomSessionId();
+  fake_incomming_connection_ =
+      std::make_unique<FakeIncommingConnection>(random_session_id);
+  connection_lifecycle_listener_->OnIncomingConnectionInitiated(
+      source_device_id, fake_incomming_connection_->AsWeakPtr());
 }
 
 }  // namespace ash::quick_start

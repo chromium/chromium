@@ -5,15 +5,32 @@
 #include "chrome/browser/ash/login/oobe_quick_start/target_device_bootstrap_controller.h"
 
 #include "base/bind.h"
-#include "base/callback_helpers.h"
 #include "base/check_op.h"
-#include "base/notreached.h"
+#include "base/containers/contains.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/authenticated_connection.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/incoming_connection.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/target_device_connection_broker_factory.h"
+#include "components/qr_code_generator/qr_code_generator.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace ash::quick_start {
+
+namespace {
+
+TargetDeviceBootstrapController::QRCodePixelData GenerateQRCode(
+    std::vector<uint8_t> blob) {
+  QRCodeGenerator qr_generator;
+  auto generated_code = qr_generator.Generate(
+      base::as_bytes(base::make_span(blob.data(), blob.size())));
+  CHECK(generated_code.has_value());
+  auto res = TargetDeviceBootstrapController::QRCodePixelData{
+      generated_code->data.begin(), generated_code->data.end()};
+  CHECK_EQ(res.size(), static_cast<size_t>(generated_code->qr_size *
+                                           generated_code->qr_size));
+  return res;
+}
+
+}  // namespace
 
 TargetDeviceBootstrapController::TargetDeviceBootstrapController() {
   connection_broker_ = TargetDeviceConnectionBrokerFactory::Create();
@@ -69,8 +86,18 @@ void TargetDeviceBootstrapController::StopAdvertising() {
 void TargetDeviceBootstrapController::OnIncomingConnectionInitiated(
     const std::string& source_device_id,
     base::WeakPtr<IncomingConnection> connection) {
-  // TODO(b/239855593): Implement
-  NOTIMPLEMENTED();
+  constexpr Step kPossibleSteps[] = {Step::ADVERTISING,
+                                     Step::QR_CODE_VERIFICATION};
+  DCHECK(base::Contains(kPossibleSteps, status_.step));
+  if (status_.step == Step::QR_CODE_VERIFICATION) {
+    // New connection came. It should be a different device.
+    DCHECK_NE(source_device_id_, source_device_id);
+  }
+  incoming_connection_ = std::move(connection);
+  auto qr_code = GenerateQRCode(incoming_connection_->GetQrCodeData());
+  status_.step = Step::QR_CODE_VERIFICATION;
+  status_.payload.emplace<QRCodePixelData>(std::move(qr_code));
+  NotifyObservers();
 }
 
 void TargetDeviceBootstrapController::OnConnectionAuthenticated(

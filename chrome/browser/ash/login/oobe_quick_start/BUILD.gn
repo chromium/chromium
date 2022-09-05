@@ -10,6 +10,7 @@ source_set("oobe_quick_start") {
   deps = [
     "connectivity",
     "//base",
+    "//components/qr_code_generator:qr_code_generator",
   ]
   sources = [
     "target_device_bootstrap_controller.cc",
