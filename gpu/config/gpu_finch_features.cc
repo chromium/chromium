@@ -510,8 +510,11 @@ bool IsAndroidSurfaceControlEnabled() {
   const auto* build_info = base::android::BuildInfo::GetInstance();
   if (IsDeviceBlocked(build_info->device(),
                       kAndroidSurfaceControlDeviceBlocklist.Get()) ||
-      IsDeviceBlocked(build_info->model(),
-                      kAndroidSurfaceControlModelBlocklist.Get())) {
+      (IsDeviceBlocked(build_info->model(),
+                       kAndroidSurfaceControlModelBlocklist.Get()) &&
+       // Power issue due to pre-rotate in the models has been fixed in S_V2.
+       // crbug.com/1328738
+       build_info->sdk_int() <= base::android::SDK_VERSION_S)) {
     return false;
   }
 
