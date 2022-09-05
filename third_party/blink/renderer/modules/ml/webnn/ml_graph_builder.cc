@@ -73,29 +73,41 @@ size_t GetBytesPerElement(V8MLOperandType::Enum operand_type) {
   }
 }
 
+absl::optional<size_t> ValidateAndCalculateElementsNumber(
+    const Vector<uint32_t>& dimensions,
+    String& error_message) {
+  if (dimensions.IsEmpty()) {
+    error_message = "The dimensions is empty.";
+    return absl::nullopt;
+  }
+  base::CheckedNumeric<size_t> checked_elements_number = 1;
+  for (auto& d : dimensions) {
+    if (d == 0) {
+      error_message = "All dimensions should be positive";
+      return absl::nullopt;
+    }
+    checked_elements_number *= d;
+  }
+  if (!checked_elements_number.IsValid()) {
+    error_message = "The elements number of the dimensions is too large.";
+    return absl::nullopt;
+  }
+  return checked_elements_number.ValueOrDie();
+}
+
 absl::optional<size_t> ValidateAndCalculateByteLength(
     V8MLOperandType::Enum type,
     const Vector<uint32_t>& dimensions,
-    ExceptionState& exception_state) {
-  if (dimensions.IsEmpty()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
-                                      "The dimensions is empty.");
+    String& error_message) {
+  absl::optional<size_t> elements_num =
+      ValidateAndCalculateElementsNumber(dimensions, error_message);
+  if (!elements_num) {
     return absl::nullopt;
   }
-  base::CheckedNumeric<size_t> elements_num = 1;
-  for (auto& d : dimensions) {
-    if (d == 0) {
-      exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
-                                        "All dimensions should be positive");
-      return absl::nullopt;
-    }
-    elements_num *= d;
-  }
   base::CheckedNumeric<size_t> checked_byte_length =
-      elements_num * GetBytesPerElement(type);
+      elements_num.value() * GetBytesPerElement(type);
   if (!checked_byte_length.IsValid()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
-                                      "The dimensions is too large.");
+    error_message = "The byte length of the dimensions is too large.";
     return absl::nullopt;
   }
   return checked_byte_length.ValueOrDie();
@@ -198,7 +210,11 @@ MLOperand* MLGraphBuilder::input(String name,
   V8MLOperandType::Enum type = desc->type().AsEnum();
   // If no dimensions, it represents a scalar. Set dimensions to {1}.
   Vector<uint32_t> dimensions = desc->getDimensionsOr({1});
-  if (!ValidateAndCalculateByteLength(type, dimensions, exception_state)) {
+  String error_message;
+  if (!ValidateAndCalculateByteLength(type, dimensions, error_message)) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kDataError,
+        "Invalid operand descriptor: " + error_message);
     return nullptr;
   }
   return MLOperand::CreateInput(this, type, std::move(dimensions),
@@ -217,9 +233,13 @@ MLOperand* MLGraphBuilder::constant(const MLOperandDescriptor* desc,
   V8MLOperandType::Enum type = desc->type().AsEnum();
   // If no dimensions, it represents a scalar. Set dimensions to {1}.
   Vector<uint32_t> dimensions = desc->getDimensionsOr({1});
+  String error_message;
   absl::optional<size_t> expected_byte_length =
-      ValidateAndCalculateByteLength(type, dimensions, exception_state);
+      ValidateAndCalculateByteLength(type, dimensions, error_message);
   if (!expected_byte_length) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kDataError,
+        "Invalid operand descriptor: " + error_message);
     return nullptr;
   }
   if (expected_byte_length.value() != buffer_view->byteLength()) {
@@ -311,11 +331,98 @@ MLOperand* MLGraphBuilder::averagePool2d(const MLOperand* input,
 MLOperand* MLGraphBuilder::reshape(const MLOperand* input,
                                    const Vector<int32_t>& new_shape,
                                    ExceptionState& exception_state) {
-  // TODO(crbug.com/1273291): Implement this on operating systems to access
-  // hardware acceleration.
-  exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
-                                    "Not implemented");
-  return nullptr;
+  String error_message;
+  absl::optional<size_t> input_elements_num =
+      ValidateAndCalculateElementsNumber(input->Dimensions(), error_message);
+  if (!input_elements_num) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kDataError,
+        "Invalid input operand: " + error_message);
+    return nullptr;
+  }
+  bool has_minus1 = false;
+  wtf_size_t minus1_dim_index;
+  base::CheckedNumeric<size_t> checked_newshape_elements_num = 1;
+  Vector<uint32_t> output_shape;
+  if (new_shape.size() == 0) {
+    // The empty new shape means reshaping to scalar, set output shape to {1}.
+    output_shape = {1};
+  } else {
+    output_shape.resize(new_shape.size());
+    // According to WebNN spec:
+    // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-reshape, only one
+    // component of new shape can be the special value of -1.
+    for (wtf_size_t i = 0; i < new_shape.size(); ++i) {
+      auto d = new_shape[i];
+      if (d < -1 || d == 0) {
+        exception_state.ThrowDOMException(
+            DOMExceptionCode::kDataError,
+            "The value of new shape should be positive or -1.");
+        return nullptr;
+      } else if (d == -1) {
+        if (has_minus1) {
+          exception_state.ThrowDOMException(
+              DOMExceptionCode::kDataError,
+              "Only one component of new shape can be -1.");
+          return nullptr;
+        }
+        has_minus1 = true;
+        minus1_dim_index = i;
+      } else {
+        checked_newshape_elements_num *= d;
+        output_shape[i] = d;
+      }
+    }
+  }
+  size_t newshape_elements_num;
+  if (!checked_newshape_elements_num.AssignIfValid(&newshape_elements_num)) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kDataError,
+        "The number of elements implied by new shape is too large.");
+    return nullptr;
+  }
+  DCHECK_NE(newshape_elements_num, size_t(0));
+  if (has_minus1) {
+    // The size of the dimension with the value -1 is computed so that the total
+    // size remains constant.
+    if (input_elements_num.value() % newshape_elements_num != size_t(0)) {
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kDataError,
+          String::Format(
+              "The number of elements (%zu) in the input tensor can't be "
+              "divided evenly by the number of elements (%zu) implied by new "
+              "shape.",
+              input_elements_num.value(), newshape_elements_num));
+      return nullptr;
+    }
+    // Check whether the quotient of type size_t is in the range of dimension of
+    // type uint32_t.
+    if (!base::CheckDiv(input_elements_num.value(), newshape_elements_num)
+             .AssignIfValid(&output_shape[minus1_dim_index])) {
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kDataError,
+          "The size of dimension with the value -1 is too large.");
+      return nullptr;
+    }
+  } else {
+    // The number of elements implied by new shape must be the same as the
+    // number of elements in the input tensor.
+    if (input_elements_num.value() != newshape_elements_num) {
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kDataError,
+          String::Format(
+              "The number of elements (%zu) implied by new shape doesn't match "
+              "the number of elements (%zu) in the input tensor.",
+              newshape_elements_num, input_elements_num.value()));
+      return nullptr;
+    }
+  }
+  auto* reshape = MakeGarbageCollected<MLOperator>(
+      this, MLOperator::OperatorKind::kReshape);
+  auto* output = MLOperand::CreateOutput(this, input->Type(),
+                                         std::move(output_shape), reshape);
+  reshape->Connect({input}, {output});
+  return output;
 }
 
 MLOperand* MLGraphBuilder::softmax(const MLOperand* input,

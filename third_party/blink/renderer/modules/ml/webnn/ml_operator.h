@@ -29,6 +29,7 @@ class MLOperator final : public ScriptWrappable {
     kDiv,
     kMax,
     kMin,
+    kReshape,
     kSoftmax
   };
   MLOperator(MLGraphBuilder* builder,
