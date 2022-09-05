@@ -168,14 +168,14 @@ void AutoEnrollmentCheckScreen::UpdateState() {
   captive_portal_status_ = new_captive_portal_status;
   auto_enrollment_state_ = new_auto_enrollment_state;
 
+  // TODO(crbug.com/1271134): Logging as "WARNING" to make sure it's preserved
+  // in the logs.
+  LOG(WARNING) << "AutoEnrollmentCheckScreen::UpdateState() retry = " << retry;
+
   // Retry if applicable. This is last so eventual callbacks find consistent
   // state.
   if (retry)
     auto_enrollment_controller_->Retry();
-
-  // TODO(crbug.com/1271134): Logging as "WARNING" to make sure it's preserved
-  // in the logs.
-  LOG(WARNING) << "AutoEnrollmentCheckScreen::UpdateState() retry = " << retry;
 }
 
 bool AutoEnrollmentCheckScreen::UpdateCaptivePortalStatus(
