@@ -685,6 +685,10 @@ void KeyboardUIController::SetContainerBehaviorInternal(ContainerType type) {
 }
 
 void KeyboardUIController::ShowKeyboard(bool lock) {
+  // TODO(b/245019967): Delete lock arg.
+  // Outside of unittests, this function is only ever called with
+  // lock = false.
+  // Maybe it could be refactored to not support the lock = true case.
   DVLOG(1) << "ShowKeyboard";
   set_keyboard_locked(lock);
   ShowKeyboardInternal(layout_delegate_->GetContainerForDefaultDisplay());
