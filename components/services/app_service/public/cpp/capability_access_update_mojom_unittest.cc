@@ -9,7 +9,7 @@ namespace {
 const char app_id[] = "abcdefgh";
 }  // namespace
 
-class CapabilityAccessUpdateTest : public testing::Test {
+class CapabilityAccessUpdateMojomTest : public testing::Test {
  protected:
   apps::mojom::OptionalBool expect_camera_;
   bool expect_camera_changed_;
@@ -91,21 +91,21 @@ class CapabilityAccessUpdateTest : public testing::Test {
   }
 };
 
-TEST_F(CapabilityAccessUpdateTest, StateIsNonNull) {
+TEST_F(CapabilityAccessUpdateMojomTest, StateIsNonNull) {
   apps::mojom::CapabilityAccessPtr state = apps::mojom::CapabilityAccess::New();
   state->app_id = app_id;
 
   TestCapabilityAccessUpdate(state.get(), nullptr);
 }
 
-TEST_F(CapabilityAccessUpdateTest, DeltaIsNonNull) {
+TEST_F(CapabilityAccessUpdateMojomTest, DeltaIsNonNull) {
   apps::mojom::CapabilityAccessPtr delta = apps::mojom::CapabilityAccess::New();
   delta->app_id = app_id;
 
   TestCapabilityAccessUpdate(nullptr, delta.get());
 }
 
-TEST_F(CapabilityAccessUpdateTest, BothAreNonNull) {
+TEST_F(CapabilityAccessUpdateMojomTest, BothAreNonNull) {
   apps::mojom::CapabilityAccessPtr state = apps::mojom::CapabilityAccess::New();
   state->app_id = app_id;
 
