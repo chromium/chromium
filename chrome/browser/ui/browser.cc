@@ -2935,7 +2935,11 @@ bool Browser::AppBrowserSupportsWindowFeature(WindowFeature feature,
     case FEATURE_LOCATIONBAR:
       return check_can_support || !fullscreen;
     case FEATURE_TABSTRIP:
-      return app_controller_->has_tab_strip();
+      // Even when the app has a tab strip, it should be hidden in
+      // fullscreen. This is consistent with the behavior of
+      // NormalBrowserSupportsWindowFeature().
+      return app_controller_->has_tab_strip() &&
+             (check_can_support || !fullscreen);
     case FEATURE_BOOKMARKBAR:
     case FEATURE_NONE:
       return false;
