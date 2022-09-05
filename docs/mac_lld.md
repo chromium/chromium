@@ -7,8 +7,8 @@ but we might discover showstopper bugs that delay things a bit.
 
 ## Background
 
-Chromium uses [LLD](https://lld.llvm.org/) as linker on all platforms,
-except when targeting iOS. LLD is faster than other ELF linkers (ELF
+Chromium uses [LLD](https://lld.llvm.org/) as linker on all platforms.
+LLD is faster than other ELF linkers (ELF
 is the executable file format used on most OSs, including Linux, Android,
 Chrome OS, Fuchsia), and it's faster than other COFF linkers (the executable
 file format on Windows).
