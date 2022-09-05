@@ -388,7 +388,7 @@ public abstract class SyncConsentFragmentBase
         mSyncConsentView.getMoreButton().setVisibility(View.VISIBLE);
         mSyncConsentView.getMoreButton().setOnClickListener(view -> {
             mSyncConsentView.getScrollView().smoothScrollBy(
-                    0, mSigninView.getScrollView().getHeight());
+                    0, mSyncConsentView.getScrollView().getHeight());
             // TODO(https://crbug.com/821127): Revise this user action.
             RecordUserAction.record("Signin_MoreButton_Shown");
         });
