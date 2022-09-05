@@ -81,6 +81,7 @@
 #include "chrome/browser/ash/login/screens/hid_detection_screen.h"
 #include "chrome/browser/ash/login/screens/kiosk_autolaunch_screen.h"
 #include "chrome/browser/ash/login/screens/kiosk_enable_screen.h"
+#include "chrome/browser/ash/login/screens/lacros_data_backward_migration_screen.h"
 #include "chrome/browser/ash/login/screens/lacros_data_migration_screen.h"
 #include "chrome/browser/ash/login/screens/locale_switch_screen.h"
 #include "chrome/browser/ash/login/screens/management_transition_screen.h"
@@ -153,6 +154,7 @@
 #include "chrome/browser/ui/webui/chromeos/login/hid_detection_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/kiosk_autolaunch_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/kiosk_enable_screen_handler.h"
+#include "chrome/browser/ui/webui/chromeos/login/lacros_data_backward_migration_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/lacros_data_migration_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/locale_switch_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/management_transition_screen_handler.h"
@@ -655,6 +657,9 @@ WizardController::CreateScreens() {
                           weak_factory_.GetWeakPtr())));
   append(std::make_unique<LacrosDataMigrationScreen>(
       oobe_ui->GetView<LacrosDataMigrationScreenHandler>()));
+  append(std::make_unique<LacrosDataBackwardMigrationScreen>(
+      oobe_ui->GetView<LacrosDataBackwardMigrationScreenHandler>()
+          ->AsWeakPtr()));
 
   if (HIDDetectionScreen::CanShowScreen()) {
     append(std::make_unique<HIDDetectionScreen>(
@@ -1046,6 +1051,10 @@ void WizardController::ShowActiveDirectoryPasswordChangeScreen(
 
 void WizardController::ShowLacrosDataMigrationScreen() {
   SetCurrentScreen(GetScreen(LacrosDataMigrationScreenView::kScreenId));
+}
+
+void WizardController::ShowLacrosDataBackwardMigrationScreen() {
+  SetCurrentScreen(GetScreen(LacrosDataBackwardMigrationScreenView::kScreenId));
 }
 
 void WizardController::ShowGuestTosScreen() {
@@ -2212,6 +2221,8 @@ void WizardController::AdvanceToScreen(OobeScreenId screen_id) {
     ShowManagementTransitionScreen();
   } else if (screen_id == LacrosDataMigrationScreenView::kScreenId) {
     ShowLacrosDataMigrationScreen();
+  } else if (screen_id == LacrosDataBackwardMigrationScreenView::kScreenId) {
+    ShowLacrosDataBackwardMigrationScreen();
   } else if (screen_id == GuestTosScreenView::kScreenId) {
     ShowGuestTosScreen();
   } else if (screen_id == ConsolidatedConsentScreenView::kScreenId) {

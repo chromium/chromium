@@ -24,6 +24,7 @@ js_type_check("closure_compile") {
     ":checking_downloading_update.m",
     ":encryption_migration",
     ":gaia_password_changed",
+    ":lacros_data_backward_migration",
     ":lacros_data_migration",
     ":management_transition",
     ":offline_login.m",
@@ -81,6 +82,17 @@ js_library("gaia_password_changed") {
 
 js_library("lacros_data_migration") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/login/lacros_data_migration.js" ]
+  deps = [
+    "../../components:oobe_slide.m",
+    "../../components/behaviors:login_screen_behavior.m",
+    "../../components/behaviors:oobe_dialog_host_behavior.m",
+    "../../components/dialogs:oobe_loading_dialog.m",
+  ]
+  extra_deps = [ ":web_components" ]
+}
+
+js_library("lacros_data_backward_migration") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/login/lacros_data_backward_migration.js" ]
   deps = [
     "../../components:oobe_slide.m",
     "../../components/behaviors:login_screen_behavior.m",
@@ -178,6 +190,7 @@ html_to_js("web_components") {
     "active_directory_password_change.js",
     "encryption_migration.js",
     "gaia_password_changed.js",
+    "lacros_data_backward_migration.js",
     "lacros_data_migration.js",
     "management_transition.js",
   ]

@@ -68,6 +68,7 @@
 #include "chrome/browser/ui/webui/chromeos/login/hid_detection_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/kiosk_autolaunch_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/kiosk_enable_screen_handler.h"
+#include "chrome/browser/ui/webui/chromeos/login/lacros_data_backward_migration_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/lacros_data_migration_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/locale_switch_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/management_transition_screen_handler.h"
@@ -393,6 +394,9 @@ void OobeUI::ConfigureOobeDisplay() {
   AddScreenHandler(std::make_unique<LocaleSwitchScreenHandler>(core_handler_));
 
   AddScreenHandler(std::make_unique<LacrosDataMigrationScreenHandler>());
+
+  AddScreenHandler(
+      std::make_unique<LacrosDataBackwardMigrationScreenHandler>());
 
   AddScreenHandler(std::make_unique<TermsOfServiceScreenHandler>());
 

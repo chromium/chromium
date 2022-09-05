@@ -293,6 +293,7 @@ class WizardController : public OobeUI::Observer {
   void ShowOsInstallScreen();
   void ShowOsTrialScreen();
   void ShowLacrosDataMigrationScreen();
+  void ShowLacrosDataBackwardMigrationScreen();
   void ShowConsolidatedConsentScreen();
   void ShowGuestTosScreen();
   void ShowThemeSelectionScreen();

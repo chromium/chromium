@@ -48,6 +48,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/app_list/app_list_client_impl.h"
 #include "chrome/browser/ui/webui/chromeos/login/app_launch_splash_screen_handler.h"
+#include "chrome/browser/ui/webui/chromeos/login/lacros_data_backward_migration_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/lacros_data_migration_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/shimless_rma_dialog.h"
 #include "chrome/common/chrome_switches.h"
@@ -349,6 +350,17 @@ void ChromeSessionManager::Initialize(
     // Show UI for browser data migration. The migration itself will be started
     // in `LacrosDataMigrationScreen::ShowImpl`.
     ShowLoginWizard(LacrosDataMigrationScreenView::kScreenId);
+    return;
+  }
+
+  if (base::FeatureList::IsEnabled(
+          ash::features::kLacrosProfileBackwardMigration) &&
+      parsed_command_line.HasSwitch(
+          switches::kForceBrowserDataBackwardMigration)) {
+    VLOG(1) << "Ash is running to do browser data backward migration.";
+    // Show UI for browser data backward migration. The backward migration
+    // itself will be started in `LacrosDataBackwardMigrationScreen::ShowImpl`.
+    ShowLoginWizard(LacrosDataBackwardMigrationScreenView::kScreenId);
     return;
   }
 

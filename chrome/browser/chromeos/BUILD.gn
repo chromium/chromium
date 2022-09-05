@@ -853,6 +853,8 @@ source_set("chromeos") {
     "../ash/login/screens/kiosk_autolaunch_screen.h",
     "../ash/login/screens/kiosk_enable_screen.cc",
     "../ash/login/screens/kiosk_enable_screen.h",
+    "../ash/login/screens/lacros_data_backward_migration_screen.cc",
+    "../ash/login/screens/lacros_data_backward_migration_screen.h",
     "../ash/login/screens/lacros_data_migration_screen.cc",
     "../ash/login/screens/lacros_data_migration_screen.h",
     "../ash/login/screens/locale_switch_screen.cc",

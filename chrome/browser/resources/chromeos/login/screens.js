@@ -45,6 +45,7 @@ import './screens/common/wrong_hwid.m.js';
 import './screens/login/active_directory_password_change.js';
 import './screens/login/encryption_migration.js';
 import './screens/login/gaia_password_changed.js';
+import './screens/login/lacros_data_backward_migration.js';
 import './screens/login/lacros_data_migration.js';
 import './screens/login/management_transition.js';
 import './screens/login/offline_login.m.js';
@@ -107,13 +108,26 @@ export const commonScreensList = [
  * List of screens that are used during the `login` flow only.
  */
 export const loginScreensList = [
-    {tag: 'active-directory-password-change-element', id: 'ad-password-change'},
-    {tag: 'encryption-migration-element', id: 'encryption-migration'},
-    {tag: 'gaia-password-changed-element', id: 'gaia-password-changed'},
-    {tag: 'lacros-data-migration-element', id: 'lacros-data-migration', extra_classes: ['migrate']},
-    {tag: 'management-transition-element', id: 'management-transition', extra_classes: ['migrate']},
-    {tag: 'offline-login-element', id: 'offline-login'},
-    {tag: 'update-required-card-element', id: 'update-required'},
+  {tag: 'active-directory-password-change-element', id: 'ad-password-change'},
+  {tag: 'encryption-migration-element', id: 'encryption-migration'},
+  {tag: 'gaia-password-changed-element', id: 'gaia-password-changed'},
+  {
+    tag: 'lacros-data-backward-migration-element',
+    id: 'lacros-data-backward-migration',
+    extra_classes: ['migrate'],
+  },
+  {
+    tag: 'lacros-data-migration-element',
+    id: 'lacros-data-migration',
+    extra_classes: ['migrate'],
+  },
+  {
+    tag: 'management-transition-element',
+    id: 'management-transition',
+    extra_classes: ['migrate'],
+  },
+  {tag: 'offline-login-element', id: 'offline-login'},
+  {tag: 'update-required-card-element', id: 'update-required'},
 ];
 
 /**
