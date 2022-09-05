@@ -62,6 +62,21 @@ Trial limited to specific platform:
 },
 ```
 
+#### WebView considerations
+Because WebView is built as part of the `"android"` os target, it is not possible
+to exclude a trial from WebView if it is enabled on Android.
+
+If the feature under trial can be enabled on WebView alongside other Android
+platforms, this is preferred.
+
+In situations where this is not feasible, the recommended solution is to
+explicitly disable the origin trial in
+`AwMainDelegate::BasicStartupComplete()` in [aw\_main\_delegate.cc] by
+appending the `embedder_support::kOriginTrialDisabledFeatures` switch with the
+disabled trial names as values.
+
+See http://crrev.com/c/3733267 for an example of how this can be done.
+
 ### CSS Properties
 
 You can also run experiment for new CSS properties with origin trial. After you
