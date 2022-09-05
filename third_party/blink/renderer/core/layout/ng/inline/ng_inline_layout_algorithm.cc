@@ -926,8 +926,7 @@ absl::optional<LayoutUnit> NGInlineLayoutAlgorithm::ApplyJustify(
   DCHECK_GT(line_text.length(), 0u);
 
   ShapeResultSpacing<String> spacing(line_text, Node().IsSvgText());
-  spacing.SetExpansion(space, line_info->BaseDirection(),
-                       line_info->LineStyle().GetTextJustify());
+  spacing.SetExpansion(space, line_info->BaseDirection());
   const LayoutObject* box = Node().GetLayoutBox();
   if (!spacing.HasExpansion()) {
     // See AdjustInlineDirectionLineBounds() of LayoutRubyBase and
@@ -951,8 +950,7 @@ absl::optional<LayoutUnit> NGInlineLayoutAlgorithm::ApplyJustify(
       inset =
           std::min(LayoutUnit(2 * line_info->LineStyle().FontSize()), inset);
     }
-    spacing.SetExpansion(space - inset, line_info->BaseDirection(),
-                         line_info->LineStyle().GetTextJustify());
+    spacing.SetExpansion(space - inset, line_info->BaseDirection());
   }
 
   for (NGInlineItemResult& item_result : *line_info->MutableResults()) {

@@ -713,7 +713,6 @@ fast/css3-text/css3-text-decoration/text-underline-position/text-underline-posit
 fast/css3-text/css3-text-decoration/text-underline-position/text-underline-position-cjk.html
 fast/css3-text/css3-text-decoration/text-underline-position/text-underline-position-under-out-of-flow.html
 fast/css3-text/css3-text-decoration/text-underline-position/text-underline-position-under.html
-fast/css3-text/css3-text-justify/text-justify-crash.html
 fast/dnd/link-dragging-draggable-div-with-dragged-link.html
 fast/dnd/link-dragging-non-draggable-link.html
 fast/dom/52776.html

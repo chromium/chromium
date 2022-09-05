@@ -4,37 +4,12 @@
 assertCSSResponsive({
   property: 'text-indent',
   from: 'inherit',
-  to: '200px each-line',
+  to: '200px',
   configurations: [{
-    state: {inherited: '10px'},
+    state: {inherited: '100px'},
     expect: [
-      {at: 0.25, is: '10px'},
-      {at: 0.75, is: '200px each-line'},
-    ],
-  }, {
-    state: {inherited: '100px each-line'},
-    expect: [
-      {at: 0.25, is: '125px each-line'},
-      {at: 0.75, is: '175px each-line'},
-    ],
-  }],
-});
-
-assertCSSResponsive({
-  property: 'text-indent',
-  from: neutralKeyframe,
-  to: '200px hanging',
-  configurations: [{
-    state: {underlying: '10px each-line hanging'},
-    expect: [
-      {at: 0.25, is: '10px each-line hanging'},
-      {at: 0.75, is: '200px hanging'},
-    ],
-  }, {
-    state: {underlying: '100px hanging'},
-    expect: [
-      {at: 0.25, is: '125px hanging'},
-      {at: 0.75, is: '175px hanging'},
+      {at: 0.25, is: '125px'},
+      {at: 0.75, is: '175px'},
     ],
   }],
 });

@@ -403,24 +403,6 @@
       field_group: "*",
       computed_style_custom_functions: ["getter", "setter"],
     },
-    {
-      name: "TextIndentLine",
-      inherited: true,
-      field_template: "keyword",
-      type_name: "TextIndentLine",
-      keywords: ["first-line", "each-line"],
-      default_value: "first-line",
-      field_group: "*",
-    },
-    {
-      name: "TextIndentType",
-      inherited: true,
-      field_template: "keyword",
-      type_name: "TextIndentType",
-      keywords: ["normal", "hanging"],
-      default_value: "normal",
-      field_group: "*",
-    },
     // Though will-change is not itself an inherited property, the intent
     // expressed by 'will-change: contents' includes descendants.
     {

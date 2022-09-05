@@ -543,7 +543,6 @@ class ComputedStyle : public ComputedStyleBase,
     return base::ValuesEquivalent(FilterInternal(), o.FilterInternal());
   }
 
-
   // background-image
   bool HasBackgroundImage() const {
     return BackgroundInternal().AnyLayerHasImage();
@@ -932,8 +931,12 @@ class ComputedStyle : public ComputedStyleBase,
   }
 
   // vertical-align
-  EVerticalAlign VerticalAlign() const { return static_cast<EVerticalAlign>(VerticalAlignInternal()); }
-  void SetVerticalAlign(EVerticalAlign v) { SetVerticalAlignInternal(static_cast<unsigned>(v)); }
+  EVerticalAlign VerticalAlign() const {
+    return static_cast<EVerticalAlign>(VerticalAlignInternal());
+  }
+  void SetVerticalAlign(EVerticalAlign v) {
+    SetVerticalAlignInternal(static_cast<unsigned>(v));
+  }
   void SetVerticalAlignLength(const Length& length) {
     SetVerticalAlignInternal(static_cast<unsigned>(EVerticalAlign::kLength));
     SetVerticalAlignLengthInternal(length);
@@ -1513,8 +1516,7 @@ class ComputedStyle : public ComputedStyleBase,
   ETextAlign GetTextAlign(bool is_last_line) const;
 
   // text-indent utility functions.
-  bool ShouldUseTextIndent(bool is_first_line,
-                           bool is_after_forced_break) const;
+  bool ShouldUseTextIndent(bool is_first_line) const;
 
   // text-transform utility functions.
   void ApplyTextTransform(String*, UChar previous_character = ' ') const;

@@ -684,7 +684,6 @@ TextRun InlineTextBox::ConstructTextRun(
               Direction(),
               DirOverride() || style.RtlOrdering() == EOrder::kVisual);
   run.SetTabSize(!style.CollapseWhiteSpace(), style.GetTabSize());
-  run.SetTextJustify(style.GetTextJustify());
 
   // Propagate the maximum length of the characters buffer to the TextRun, even
   // when we're only processing a substring.

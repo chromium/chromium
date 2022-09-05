@@ -32,7 +32,6 @@
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/text/tab_size.h"
 #include "third_party/blink/renderer/platform/text/text_direction.h"
-#include "third_party/blink/renderer/platform/text/text_justify.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_view.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -71,7 +70,6 @@ class PLATFORM_EXPORT TextRun final {
         direction_(static_cast<unsigned>(direction)),
         directional_override_(directional_override),
         disable_spacing_(false),
-        text_justify_(static_cast<unsigned>(TextJustify::kAuto)),
         normalize_space_(false),
         tab_size_(0) {
     data_.characters8 = c;
@@ -95,7 +93,6 @@ class PLATFORM_EXPORT TextRun final {
         direction_(static_cast<unsigned>(direction)),
         directional_override_(directional_override),
         disable_spacing_(false),
-        text_justify_(static_cast<unsigned>(TextJustify::kAuto)),
         normalize_space_(false),
         tab_size_(0) {
     data_.characters16 = c;
@@ -117,7 +114,6 @@ class PLATFORM_EXPORT TextRun final {
         direction_(static_cast<unsigned>(direction)),
         directional_override_(directional_override),
         disable_spacing_(false),
-        text_justify_(static_cast<unsigned>(TextJustify::kAuto)),
         normalize_space_(false),
         tab_size_(0) {
     if (!characters_length_) {
@@ -264,13 +260,6 @@ class PLATFORM_EXPORT TextRun final {
   }
   void SetDirectionalOverride(bool override) {
     directional_override_ = override;
-  }
-
-  void SetTextJustify(TextJustify text_justify) {
-    text_justify_ = static_cast<unsigned>(text_justify);
-  }
-  TextJustify GetTextJustify() const {
-    return static_cast<TextJustify>(text_justify_);
   }
 
   // Up-converts to UTF-16 as needed and normalizes spaces and Unicode control

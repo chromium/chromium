@@ -87,13 +87,7 @@ bool Character::IsHangulSlow(UChar32 character) {
 unsigned Character::ExpansionOpportunityCount(
     base::span<const LChar> characters,
     TextDirection direction,
-    bool& is_after_expansion,
-    const TextJustify text_justify) {
-  if (text_justify == TextJustify::kDistribute) {
-    is_after_expansion = true;
-    return base::checked_cast<unsigned>(characters.size());
-  }
-
+    bool& is_after_expansion) {
   unsigned count = 0;
   if (direction == TextDirection::kLtr) {
     for (size_t i = 0; i < characters.size(); ++i) {
@@ -121,8 +115,7 @@ unsigned Character::ExpansionOpportunityCount(
 unsigned Character::ExpansionOpportunityCount(
     base::span<const UChar> characters,
     TextDirection direction,
-    bool& is_after_expansion,
-    const TextJustify text_justify) {
+    bool& is_after_expansion) {
   unsigned count = 0;
   if (direction == TextDirection::kLtr) {
     for (size_t i = 0; i < characters.size(); ++i) {
@@ -137,8 +130,7 @@ unsigned Character::ExpansionOpportunityCount(
         character = U16_GET_SUPPLEMENTARY(character, characters[i + 1]);
         i++;
       }
-      if (text_justify == TextJustify::kAuto &&
-          IsCJKIdeographOrSymbol(character)) {
+      if (IsCJKIdeographOrSymbol(character)) {
         if (!is_after_expansion)
           count++;
         count++;
@@ -159,8 +151,7 @@ unsigned Character::ExpansionOpportunityCount(
         character = U16_GET_SUPPLEMENTARY(characters[i - 2], character);
         i--;
       }
-      if (text_justify == TextJustify::kAuto &&
-          IsCJKIdeographOrSymbol(character)) {
+      if (IsCJKIdeographOrSymbol(character)) {
         if (!is_after_expansion)
           count++;
         count++;

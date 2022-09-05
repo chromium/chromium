@@ -81,20 +81,18 @@ class PLATFORM_EXPORT Character {
 
   static unsigned ExpansionOpportunityCount(base::span<const LChar>,
                                             TextDirection,
-                                            bool& is_after_expansion,
-                                            const TextJustify);
+                                            bool& is_after_expansion);
   static unsigned ExpansionOpportunityCount(base::span<const UChar>,
                                             TextDirection,
-                                            bool& is_after_expansion,
-                                            const TextJustify);
+                                            bool& is_after_expansion);
   static unsigned ExpansionOpportunityCount(const TextRun& run,
                                             bool& is_after_expansion) {
-    if (run.Is8Bit())
+    if (run.Is8Bit()) {
       return ExpansionOpportunityCount(run.Span8(), run.Direction(),
-                                       is_after_expansion,
-                                       run.GetTextJustify());
+                                       is_after_expansion);
+    }
     return ExpansionOpportunityCount(run.Span16(), run.Direction(),
-                                     is_after_expansion, run.GetTextJustify());
+                                     is_after_expansion);
   }
 
   static bool IsUprightInMixedVertical(UChar32 character);

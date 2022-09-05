@@ -7154,29 +7154,14 @@ const CSSValue* TextIndent::ParseSingleValue(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
     const CSSParserLocalContext&) const {
-  // [ <length> | <percentage> ] && hanging? && each-line?
-  // Keywords only allowed when css3Text is enabled.
+  // [ <length> | <percentage> ]
   CSSValue* length_percentage = nullptr;
-  CSSValue* hanging = nullptr;
-  CSSValue* each_line = nullptr;
   do {
     if (!length_percentage) {
       length_percentage = css_parsing_utils::ConsumeLengthOrPercent(
           range, context, CSSPrimitiveValue::ValueRange::kAll,
           css_parsing_utils::UnitlessQuirk::kAllow);
       if (length_percentage) {
-        continue;
-      }
-    }
-
-    if (RuntimeEnabledFeatures::CSS3TextEnabled()) {
-      CSSValueID id = range.Peek().Id();
-      if (!hanging && id == CSSValueID::kHanging) {
-        hanging = css_parsing_utils::ConsumeIdent(range);
-        continue;
-      }
-      if (!each_line && id == CSSValueID::kEachLine) {
-        each_line = css_parsing_utils::ConsumeIdent(range);
         continue;
       }
     }
@@ -7188,12 +7173,6 @@ const CSSValue* TextIndent::ParseSingleValue(
   CSSValueList* list = CSSValueList::CreateSpaceSeparated();
   list->Append(*length_percentage);
 
-  if (hanging)
-    list->Append(*hanging);
-
-  if (each_line)
-    list->Append(*each_line);
-
   return list;
 }
 
@@ -7204,63 +7183,32 @@ const CSSValue* TextIndent::CSSValueFromComputedStyleInternal(
   CSSValueList* list = CSSValueList::CreateSpaceSeparated();
   list->Append(*ComputedStyleUtils::ZoomAdjustedPixelValueForLength(
       style.TextIndent(), style));
-  if (RuntimeEnabledFeatures::CSS3TextEnabled()) {
-    if (style.GetTextIndentType() == TextIndentType::kHanging)
-      list->Append(*CSSIdentifierValue::Create(CSSValueID::kHanging));
-    if (style.GetTextIndentLine() == TextIndentLine::kEachLine)
-      list->Append(*CSSIdentifierValue::Create(CSSValueID::kEachLine));
-  }
   return list;
 }
 
 void TextIndent::ApplyInitial(StyleResolverState& state) const {
   state.Style()->SetTextIndent(ComputedStyleInitialValues::InitialTextIndent());
-  state.Style()->SetTextIndentLine(
-      ComputedStyleInitialValues::InitialTextIndentLine());
-  state.Style()->SetTextIndentType(
-      ComputedStyleInitialValues::InitialTextIndentType());
 }
 
 void TextIndent::ApplyInherit(StyleResolverState& state) const {
   state.Style()->SetTextIndent(state.ParentStyle()->TextIndent());
-  state.Style()->SetTextIndentLine(state.ParentStyle()->GetTextIndentLine());
-  state.Style()->SetTextIndentType(state.ParentStyle()->GetTextIndentType());
 }
 
 void TextIndent::ApplyValue(StyleResolverState& state,
                             const CSSValue& value) const {
   Length length_or_percentage_value;
-  TextIndentLine text_indent_line_value =
-      ComputedStyleInitialValues::InitialTextIndentLine();
-  TextIndentType text_indent_type_value =
-      ComputedStyleInitialValues::InitialTextIndentType();
 
   for (auto& list_value : To<CSSValueList>(value)) {
     if (auto* list_primitive_value =
             DynamicTo<CSSPrimitiveValue>(*list_value)) {
       length_or_percentage_value = list_primitive_value->ConvertToLength(
           state.CssToLengthConversionData());
-    } else if (To<CSSIdentifierValue>(*list_value).GetValueID() ==
-               CSSValueID::kEachLine) {
-      text_indent_line_value = TextIndentLine::kEachLine;
-    } else if (To<CSSIdentifierValue>(*list_value).GetValueID() ==
-               CSSValueID::kHanging) {
-      text_indent_type_value = TextIndentType::kHanging;
     } else {
       NOTREACHED();
     }
   }
 
   state.Style()->SetTextIndent(length_or_percentage_value);
-  state.Style()->SetTextIndentLine(text_indent_line_value);
-  state.Style()->SetTextIndentType(text_indent_type_value);
-}
-
-const CSSValue* TextJustify::CSSValueFromComputedStyleInternal(
-    const ComputedStyle& style,
-    const LayoutObject*,
-    bool allow_visited_style) const {
-  return CSSIdentifierValue::Create(style.GetTextJustify());
 }
 
 const CSSValue* TextOrientation::CSSValueFromComputedStyleInternal(

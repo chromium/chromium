@@ -1523,7 +1523,6 @@ crbug.com/835484 paint/invalidation/outline/inline-focus.html [ Failure ]
 crbug.com/591099 paint/invalidation/scroll/fixed-under-composited-fixed-scrolled.html [ Failure ]
 
 # CSS Text failures
-crbug.com/316409 external/wpt/css/css-text/text-justify/text-justify-and-trailing-spaces-003.html [ Failure ]
 crbug.com/750990 external/wpt/css/css-text/text-transform/text-transform-upperlower-105.html [ Failure ]
 crbug.com/906369 external/wpt/css/css-text/text-transform/text-transform-capitalize-018.html [ Failure Pass ]
 crbug.com/906369 external/wpt/css/css-text/text-transform/text-transform-capitalize-026.html [ Failure ]
@@ -1988,6 +1987,33 @@ crbug.com/1319441 external/wpt/css/selectors/old-tests/css3-modsel-17.xml [ Skip
 crbug.com/1319441 external/wpt/css/selectors/old-tests/css3-modsel-65.xml [ Skip ]
 crbug.com/1319441 external/wpt/css/selectors/old-tests/css3-modsel-18b.xml [ Skip ]
 crbug.com/1319441 external/wpt/css/selectors/old-tests/css3-modsel-159.xml [ Skip ]
+
+# Failures from CSS3 Text (text-justify and text-indent: hanging/each-line) not being implemented.
+crbug.com/248894 external/wpt/css/css-pseudo/first-letter-allowed-properties.html [ Failure ]
+crbug.com/248894 external/wpt/css/css-pseudo/first-line-allowed-properties.html [ Failure ]
+crbug.com/248894 external/wpt/css/css-text/animations/text-indent-composition.html [ Failure ]
+crbug.com/248894 external/wpt/css/css-text/animations/text-indent-interpolation.html [ Failure ]
+crbug.com/248894 external/wpt/css/css-text/inheritance.html [ Failure ]
+crbug.com/248894 external/wpt/css/css-text/parsing/text-indent-computed.html [ Failure ]
+crbug.com/248894 external/wpt/css/css-text/parsing/text-indent-valid.html [ Failure ]
+crbug.com/248894 external/wpt/css/css-text/parsing/text-justify-computed.html [ Failure ]
+crbug.com/248894 external/wpt/css/css-text/parsing/text-justify-valid.html [ Failure ]
+crbug.com/248894 external/wpt/css/css-text/text-indent/text-indent-each-line-hanging.html [ Failure ]
+crbug.com/248894 external/wpt/css/css-text/text-justify/text-justify-001.html [ Failure ]
+crbug.com/248894 external/wpt/css/css-text/text-justify/text-justify-002.html [ Failure ]
+crbug.com/248894 external/wpt/css/css-text/text-justify/text-justify-003.html [ Failure ]
+crbug.com/248894 external/wpt/css/css-text/text-justify/text-justify-004.html [ Failure ]
+crbug.com/248894 external/wpt/css/css-text/text-justify/text-justify-005.html [ Failure ]
+crbug.com/248894 external/wpt/css/css-text/text-justify/text-justify-006.html [ Failure ]
+crbug.com/248894 external/wpt/css/css-text/text-justify/text-justify-and-trailing-spaces-003.html [ Failure ]
+crbug.com/248894 external/wpt/css/css-text/text-justify/text-justify-distribute-001.html [ Failure ]
+crbug.com/248894 external/wpt/css/css-text/text-justify/text-justify-inter-character-001.html [ Failure ]
+crbug.com/248894 external/wpt/css/css-text/text-justify/text-justify-inter-word-001.html [ Failure ]
+crbug.com/248894 external/wpt/css/css-text/text-justify/text-justify-interpolation.html [ Failure ]
+crbug.com/248894 external/wpt/css/css-text/text-justify/text-justify-none-001.html [ Failure ]
+crbug.com/248894 external/wpt/css/css-typed-om/the-stylepropertymap/properties/text-indent.html [ Failure ]
+crbug.com/248894 external/wpt/css/css-typed-om/the-stylepropertymap/properties/text-justify.html [ Failure ]
+crbug.com/248894 external/wpt/web-animations/responsive/textIndent.html [ Failure ]
 
 # ====== Style team owned tests to here ======
 
@@ -3778,8 +3804,6 @@ crbug.com/1223979 external/wpt/css/css-text/text-align/text-align-match-parent-0
 crbug.com/1223979 external/wpt/css/css-text/text-align/text-align-match-parent-02.html [ Failure ]
 crbug.com/1223979 external/wpt/css/css-text/text-align/text-align-match-parent-03.html [ Failure ]
 crbug.com/1223979 external/wpt/css/css-text/text-align/text-align-match-parent-04.html [ Failure ]
-crbug.com/1223979 external/wpt/css/css-text/text-justify/text-justify-distribute-001.html [ Failure ]
-crbug.com/1223979 external/wpt/css/css-text/text-justify/text-justify-inter-character-001.html [ Failure ]
 crbug.com/1223979 external/wpt/css/css-text/word-spacing/word-spacing-001.html [ Failure ]
 
 crbug.com/481431 external/wpt/css/css-break/box-decoration-break-clone-001.html [ Failure ]

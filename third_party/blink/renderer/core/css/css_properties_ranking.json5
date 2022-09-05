@@ -616,7 +616,6 @@
         "motion-path",
         "-epub-text-transform",
         "-epub-writing-mode",
-        "text-justify",
         "scale",
         "rotate",
         "translate",

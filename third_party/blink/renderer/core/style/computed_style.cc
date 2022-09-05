@@ -1697,13 +1697,8 @@ ETextAlign ComputedStyle::GetTextAlign(bool is_last_line) const {
   return GetTextAlign();
 }
 
-bool ComputedStyle::ShouldUseTextIndent(bool is_first_line,
-                                        bool is_after_forced_break) const {
-  bool should_use =
-      is_first_line || (is_after_forced_break &&
-                        GetTextIndentLine() != TextIndentLine::kFirstLine);
-  return GetTextIndentType() == TextIndentType::kNormal ? should_use
-                                                        : !should_use;
+bool ComputedStyle::ShouldUseTextIndent(bool is_first_line) const {
+  return is_first_line;
 }
 
 // Unicode 11 introduced Georgian capital letters (U+1C90 - U+1CBA,

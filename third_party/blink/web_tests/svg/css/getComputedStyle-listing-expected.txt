@@ -332,7 +332,6 @@ text-emphasis-color: rgb(0, 0, 0)
 text-emphasis-position: over
 text-emphasis-style: none
 text-indent: 0px
-text-justify: auto
 text-overflow: clip
 text-rendering: auto
 text-shadow: none

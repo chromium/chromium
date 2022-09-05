@@ -761,7 +761,7 @@ static const CSSPropertyID kStaticBlockProperties[] = {
     CSSPropertyID::kPageBreakAfter, CSSPropertyID::kPageBreakBefore,
     CSSPropertyID::kPageBreakInside, CSSPropertyID::kTextAlign,
     CSSPropertyID::kTextAlignLast, CSSPropertyID::kTextIndent,
-    CSSPropertyID::kTextJustify, CSSPropertyID::kWidows};
+    CSSPropertyID::kWidows};
 
 static const Vector<const CSSProperty*>& BlockPropertiesVector(
     const ExecutionContext* execution_context) {

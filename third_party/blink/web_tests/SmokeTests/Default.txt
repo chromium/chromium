@@ -420,7 +420,6 @@ fast/css3-text/css3-text-decoration/text-decoration-style-inherit.html
 fast/css3-text/css3-text-decoration/text-decoration-style-inherit-links.html
 fast/css3-text/css3-text-decoration/text-decoration-style-inherit-not-propagated-by-out-of-flow.html
 fast/css3-text/css3-text-decoration/text-decoration-style-inherit-simple-underlines.html
-fast/css3-text/css3-text-indent/text-indent-leading-out-of-flow.html
 fast/css3-text/css3-word-break/word-break-all-rtl.html
 fast/css/child-style-can-override-visited-style.html
 fast/css/clip-zooming.html

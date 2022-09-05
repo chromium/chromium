@@ -1391,7 +1391,6 @@ component("platform") {
     "text/text_direction.h",
     "text/text_encoding_detector.cc",
     "text/text_encoding_detector.h",
-    "text/text_justify.h",
     "text/text_run.cc",
     "text/text_run.h",
     "text/text_run_iterator.h",

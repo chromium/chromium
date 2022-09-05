@@ -443,13 +443,6 @@
     "inline-start",
     "inline-end",
     //
-    // text-justify
-    //
-    //auto
-    //none
-    "inter-word",
-    "distribute",
-    //
     // list-style-position
     //
     "outside",
@@ -1097,10 +1090,6 @@
     "minmax",
     "subgrid",
 
-    // text-indent
-    "each-line",
-    "hanging",
-
     // (scan:) media feature
     "progressive",
     "interlace",
@@ -1142,7 +1131,7 @@
     "text-before-edge",
     "text-after-edge",
     "ideographic",
-    // hanging
+    "hanging",
     "mathematical",
 
     // dominant-baseline
