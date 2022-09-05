@@ -4929,6 +4929,54 @@ TEST_P(PartitionAllocTest, SortActiveSlotSpans) {
   run_test(1);
 }
 
+#if BUILDFLAG(USE_FREESLOT_BITMAP)
+TEST_P(PartitionAllocTest, FreeSlotBitmapMarkedAsUsedAfterAlloc) {
+  void* ptr = allocator.root()->Alloc(kTestAllocSize, type_name);
+  uintptr_t slot_start = allocator.root()->ObjectToSlotStart(ptr);
+  EXPECT_TRUE(FreeSlotBitmapSlotIsUsed(slot_start));
+}
+
+TEST_P(PartitionAllocTest, FreeSlotBitmapMarkedAsFreeAfterFree) {
+  void* ptr = allocator.root()->Alloc(kTestAllocSize, type_name);
+  uintptr_t slot_start = allocator.root()->ObjectToSlotStart(ptr);
+  EXPECT_TRUE(FreeSlotBitmapSlotIsUsed(slot_start));
+
+  allocator.root()->Free(ptr);
+  EXPECT_FALSE(FreeSlotBitmapSlotIsUsed(slot_start));
+}
+
+TEST_P(PartitionAllocTest, FreeSlotBitmapResetAfterDecommit) {
+  void* ptr1 =
+      allocator.root()->Alloc(SystemPageSize() - kExtraAllocSize, type_name);
+  uintptr_t slot_start = allocator.root()->ObjectToSlotStart(ptr1);
+  allocator.root()->Free(ptr1);
+
+  EXPECT_FALSE(FreeSlotBitmapSlotIsUsed(slot_start));
+  // Decommit the slot span. Bitmap will be rewritten in Decommit().
+  allocator.root()->PurgeMemory(PurgeFlags::kDecommitEmptySlotSpans);
+  EXPECT_TRUE(FreeSlotBitmapSlotIsUsed(slot_start));
+}
+
+TEST_P(PartitionAllocTest, FreeSlotBitmapResetAfterPurge) {
+  void* ptr1 =
+      allocator.root()->Alloc(SystemPageSize() - kExtraAllocSize, type_name);
+  char* ptr2 = static_cast<char*>(
+      allocator.root()->Alloc(SystemPageSize() - kExtraAllocSize, type_name));
+  uintptr_t slot_start = allocator.root()->ObjectToSlotStart(ptr2);
+  allocator.root()->Free(ptr2);
+
+  CHECK_PAGE_IN_CORE(ptr2 - kPointerOffset, true);
+  EXPECT_FALSE(FreeSlotBitmapSlotIsUsed(slot_start));
+  // Bitmap will be rewritten in PartitionPurgeSlotSpan().
+  allocator.root()->PurgeMemory(PurgeFlags::kDiscardUnusedSystemPages);
+  CHECK_PAGE_IN_CORE(ptr2 - kPointerOffset, false);
+  EXPECT_TRUE(FreeSlotBitmapSlotIsUsed(slot_start));
+
+  allocator.root()->Free(ptr1);
+}
+
+#endif  // BUILDFLAG(USE_FREESLOT_BITMAP)
+
 }  // namespace partition_alloc::internal
 
 #endif  // !defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
