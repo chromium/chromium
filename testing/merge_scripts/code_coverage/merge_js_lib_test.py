@@ -3,6 +3,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import base64
+import json
 import mock
 import os
 import shutil
@@ -446,7 +448,8 @@ class MergeJSLibTest(unittest.TestCase):
 
         test_script_file = """{
 "text": "test\\ncontents\\n%d",
-"url": "%s"
+"url": "%s",
+"sourceMapURL":"%s"
 }"""
 
         scripts_dir = None
@@ -456,8 +459,24 @@ class MergeJSLibTest(unittest.TestCase):
             scripts_dir = tempfile.mkdtemp()
             for i, test_script in enumerate(test_files):
                 file_path = os.path.join(scripts_dir, '%d.js.json' % i)
+
+                source_map = ""
+                if test_script['exists']:
+                    # Create an inline sourcemap with just the required keys.
+                    source_map_data_url = base64.b64encode(
+                        json.dumps({
+                            "sources":
+                            [os.path.join(*test_script['location'])],
+                            "sourceRoot":
+                            ""
+                        }).encode('utf-8'))
+
+                    source_map = 'data:application/json;base64,' + \
+                        source_map_data_url.decode('utf-8')
+
                 with open(file_path, 'w') as f:
-                    f.write(test_script_file % (i, test_script['url']))
+                    f.write(test_script_file %
+                            (i, test_script['url'], source_map))
 
                 expected_files.append(file_path)
                 if test_script['exists']:
@@ -465,7 +484,12 @@ class MergeJSLibTest(unittest.TestCase):
                         os.path.join(scripts_dir, 'parsed_scripts',
                                      *test_script['location']))
 
-            merger.write_parsed_scripts(scripts_dir)
+            if len(expected_files) > 0:
+                expected_files.append(
+                    os.path.join(scripts_dir, 'parsed_scripts',
+                                 'parsed_scripts.json'))
+
+            merger.write_parsed_scripts(scripts_dir, source_dir='')
             actual_files = []
 
             for root, _, files in os.walk(scripts_dir):

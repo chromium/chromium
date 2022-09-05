@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 """Functions to merge multiple JavaScript coverage files into one"""
 
+import base64
 import logging
 import json
 import os
@@ -11,6 +12,7 @@ import sys
 _HERE_PATH = os.path.dirname(__file__)
 _THIRD_PARTY_PATH = os.path.normpath(
     os.path.join(_HERE_PATH, '..', '..', '..', 'third_party'))
+_SRC_PATH = os.path.normpath(os.path.join(_HERE_PATH, '..', '..', '..'))
 sys.path.append(os.path.join(_THIRD_PARTY_PATH, 'node'))
 sys.path.append(os.path.join(_THIRD_PARTY_PATH, 'js_code_coverage'))
 import node
@@ -274,7 +276,7 @@ def merge_coverage_files(coverage_dir, output_path):
         return merged_coverage_file.write(json.dumps(coverage_by_path))
 
 
-def write_parsed_scripts(task_output_dir):
+def write_parsed_scripts(task_output_dir, source_dir=_SRC_PATH):
     """Extract parsed script contents and write back to original folder
   structure.
 
@@ -287,8 +289,16 @@ def write_parsed_scripts(task_output_dir):
     The absolute file path to the raw parsed scripts or None if no parsed
     scripts were identified (or any of the raw data contains invalid JSON).
   """
+    _SOURCEMAPPING_DATA_URL_PREFIX = 'data:application/json;base64,'
+
     scripts = _get_paths_with_suffix(task_output_dir, '.js.json')
     output_dir = os.path.join(task_output_dir, 'parsed_scripts')
+
+    # The original file is extracted from the inline sourcemaps, this
+    # information is not available from the coverage data. So we have to
+    # maintain a URL to path map to ensure the coverage data knows the original
+    # source location.
+    url_to_path_map = {}
 
     if not scripts:
         return None
@@ -304,21 +314,55 @@ def write_parsed_scripts(task_output_dir):
             logging.error('Failed to parse %s: %s', file_path, e)
             return None
 
-        if any(key not in script_data for key in ('url', 'text')):
-            logging.info('File %s is missing key url or text', file_path)
+        if any(key not in script_data
+               for key in ('url', 'text', 'sourceMapURL')):
+            logging.info('File %s is missing key url, text or sourceMapURL',
+                         file_path)
             continue
 
-        if not script_data['url'].startswith('//'):
+        if len(script_data['sourceMapURL']) == 0:
             continue
 
-        source_path = os.path.normpath(script_data['url'].replace('//', ''))
-        source_directory = os.path.join(output_dir,
-                                        os.path.dirname(source_path))
-        if not os.path.exists(source_directory):
-            os.makedirs(source_directory)
+        decoded_sourcemap = base64.b64decode(
+            script_data['sourceMapURL'].replace(_SOURCEMAPPING_DATA_URL_PREFIX,
+                                                ''))
+        json_sourcemap = json.loads(decoded_sourcemap)
+        if len(json_sourcemap['sources']) == 0:
+            logging.warning('File %s has a valid sourcemap with no sources',
+                            file_path)
+            continue
 
-        with open(os.path.join(output_dir, source_path), 'wb') as f:
-            f.write(script_data['text'].encode('utf8'))
+        for source_idx in range(len(json_sourcemap['sources'])):
+            source_path = os.path.relpath(
+                os.path.normpath(
+                    os.path.join(json_sourcemap['sourceRoot'],
+                                 json_sourcemap['sources'][source_idx])),
+                source_dir)
+            source_directory = os.path.join(output_dir,
+                                            os.path.dirname(source_path))
+            if not os.path.exists(source_directory):
+                os.makedirs(source_directory)
+
+            with open(os.path.join(output_dir, source_path), 'wb') as f:
+                f.write(script_data['text'].encode('utf8'))
+
+            # Only write the first instance of the sources to the map.
+            # Sourcemaps require stability in their indexing as the mapping
+            # derived are based on the index location of the file in the
+            # "sources" and "sourcesContent" fields. Therefore the first index
+            # of the "sources" field will be the first file that was encountered
+            # during source map generation, i.e. this should be the actual
+            # chromium/src original file.
+            if script_data['url'] not in url_to_path_map:
+                url_to_path_map[script_data['url']] = source_path
+
+    if not url_to_path_map:
+        return None
+
+    with open(os.path.join(output_dir, 'parsed_scripts.json'),
+              'w+',
+              encoding='utf-8') as f:
+        json.dump(url_to_path_map, f)
 
     return output_dir
 
