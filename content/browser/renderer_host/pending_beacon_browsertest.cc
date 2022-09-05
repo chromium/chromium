@@ -9,11 +9,14 @@
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/browser/back_forward_cache_test_util.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
+#include "content/public/browser/permission_controller_delegate.h"
+#include "content/public/browser/permission_result.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -24,6 +27,7 @@
 #include "net/dns/mock_host_resolver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/permissions/permission_utils.h"
 
 namespace content {
 
@@ -40,6 +44,11 @@ MATCHER(IsFrameHidden,
 class PendingBeaconTimeoutBrowserTestBase : public ContentBrowserTest {
  protected:
   void SetUpOnMainThread() override {
+    CheckPermissionStatus(blink::PermissionType::BACKGROUND_SYNC,
+                          blink::mojom::PermissionStatus::GRANTED);
+    // TODO(crbug.com/1293679): Update ContentBrowserTest to support overriding
+    // permissions.
+
     host_resolver()->AddRule("*", "127.0.0.1");
     // Using base::Unretained() as `embedded_test_server()` is owned by
     // `content::BrowserTestBase` and should not be able to outlive.
@@ -126,6 +135,18 @@ class PendingBeaconTimeoutBrowserTestBase : public ContentBrowserTest {
   size_t sent_beacon_count() {
     base::AutoLock auto_lock(count_lock_);
     return sent_beacon_count_;
+  }
+
+  void CheckPermissionStatus(blink::PermissionType permission_type,
+                             blink::mojom::PermissionStatus permission_status) {
+    auto* permission_controller_delegate =
+        web_contents()->GetBrowserContext()->GetPermissionControllerDelegate();
+
+    base::MockOnceCallback<void(blink::mojom::PermissionStatus)> callback;
+    EXPECT_CALL(callback, Run(permission_status));
+    permission_controller_delegate->RequestPermission(
+        permission_type, current_frame_host(), GURL("127.0.0.1"),
+        /*user_gesture=*/true, callback.Get());
   }
 
   static constexpr char kBeaconEndpoint[] = "/pending_beacon/timeout";

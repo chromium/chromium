@@ -8,8 +8,12 @@
 
 #include "base/files/file_path.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "content/browser/renderer_host/pending_beacon_service.h"
+#include "content/public/browser/permission_result.h"
+#include "content/public/test/mock_permission_manager.h"
+#include "content/public/test/test_browser_context.h"
 #include "content/public/test/test_renderer_host.h"
 #include "mojo/public/cpp/system/functions.h"
 #include "net/http/http_request_headers.h"
@@ -18,6 +22,7 @@
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "third_party/blink/public/mojom/frame/pending_beacon.mojom-shared.h"
 #include "third_party/blink/public/mojom/frame/pending_beacon.mojom.h"
 #include "url/origin.h"
@@ -39,6 +44,9 @@ class PendingBeaconHostTestBase
   // The network requests made by the returned PendingBeaconHost will go through
   // `test_url_loader_factory_` which is useful for examining requests.
   PendingBeaconHost* CreateHost() {
+    SetPermissionStatus(blink::PermissionType::BACKGROUND_SYNC,
+                        blink::mojom::PermissionStatus::GRANTED);
+
     test_url_loader_factory_ =
         std::make_unique<network::TestURLLoaderFactory>();
     NavigateAndCommit(GURL(kBeaconPageURL));
@@ -56,6 +64,10 @@ class PendingBeaconHostTestBase
     return blink::mojom::BeaconMethod::kPost;
   }
 
+  static GURL CreateBeaconTargetURL(size_t i) {
+    return GURL(base::StringPrintf("%s/%zu", kBeaconTargetURL, i));
+  }
+
   // Verifies if the total number of network requests sent via
   // `test_url_loader_factory_` equals to `expected`.
   void ExpectTotalNetworkRequests(const base::Location& location,
@@ -64,6 +76,28 @@ class PendingBeaconHostTestBase
         << location.ToString();
   }
 
+  std::unique_ptr<BrowserContext> CreateBrowserContext() override {
+    auto context = std::make_unique<TestBrowserContext>();
+    context->SetPermissionControllerDelegate(
+        std::make_unique<::testing::NiceMock<MockPermissionManager>>());
+    return context;
+  }
+
+  // Updates the `permission_type` to the given `permission_status` through
+  // the MockPermissionManager.
+  void SetPermissionStatus(blink::PermissionType permission_type,
+                           blink::mojom::PermissionStatus permission_status) {
+    auto* mock_permission_manager = static_cast<MockPermissionManager*>(
+        browser_context()->GetPermissionControllerDelegate());
+
+    ON_CALL(*mock_permission_manager,
+            GetPermissionResultForOriginWithoutContext(permission_type,
+                                                       ::testing::_))
+        .WillByDefault(::testing::Return(PermissionResult(
+            permission_status, PermissionStatusSource::UNSPECIFIED)));
+  }
+
+  static constexpr char kBeaconTargetURL[] = "/test_send_beacon";
   static constexpr char kBeaconPageURL[] = "http://test-pending-beacon";
   std::unique_ptr<network::TestURLLoaderFactory> test_url_loader_factory_;
 };
@@ -193,6 +227,49 @@ TEST_P(PendingBeaconHostTest, DeleteOneAndSendOtherBeacons) {
     remotes[i]->SendNow();
   }
   ExpectTotalNetworkRequests(FROM_HERE, total - 1);
+}
+
+TEST_P(PendingBeaconHostTest, SendOnDocumentUnloadWithBackgroundSync) {
+  const std::string method = GetParam();
+  const size_t total = 5;
+
+  // Creates 5 beacons on the page.
+  auto* host = CreateHost();
+  std::vector<mojo::Remote<blink::mojom::PendingBeacon>> remotes(total);
+  for (size_t i = 0; i < remotes.size(); i++) {
+    auto receiver = remotes[i].BindNewPipeAndPassReceiver();
+    host->CreateBeacon(std::move(receiver), CreateBeaconTargetURL(i),
+                       ToBeaconMethod(method));
+  }
+
+  SetPermissionStatus(blink::PermissionType::BACKGROUND_SYNC,
+                      blink::mojom::PermissionStatus::GRANTED);
+  // Forces deleting the page where `host` resides.
+  DeleteContents();
+
+  ExpectTotalNetworkRequests(FROM_HERE, total);
+}
+
+TEST_P(PendingBeaconHostTest,
+       DoesNotSendOnDocumentUnloadWithoutBackgroundSync) {
+  const std::string method = GetParam();
+  const size_t total = 5;
+
+  // Creates 5 beacons on the page.
+  auto* host = CreateHost();
+  std::vector<mojo::Remote<blink::mojom::PendingBeacon>> remotes(total);
+  for (size_t i = 0; i < remotes.size(); i++) {
+    auto receiver = remotes[i].BindNewPipeAndPassReceiver();
+    host->CreateBeacon(std::move(receiver), CreateBeaconTargetURL(i),
+                       ToBeaconMethod(method));
+  }
+
+  SetPermissionStatus(blink::PermissionType::BACKGROUND_SYNC,
+                      blink::mojom::PermissionStatus::ASK);
+  // Forces deleting the page where `host` resides.
+  DeleteContents();
+
+  ExpectTotalNetworkRequests(FROM_HERE, 0);
 }
 
 class BeaconTestBase : public PendingBeaconHostTestBase {

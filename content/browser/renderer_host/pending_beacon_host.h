@@ -27,21 +27,24 @@ class PendingBeaconService;
 // beacons in the browser process.
 //
 // PendingBeaconHost is created once per document and bound to a RenderFrameHost
-// by calling `PendingBeaconHost::CreateForCurrentDocument`. See also
-// `DocumentUserData` for the lifetime of this class.
+// by `PendingBeaconHost::CreateForCurrentDocument()` called from
+// `RenderFrameHostImpl::GetPendingBeaconHost()`.
 //
-// PendingBeaconHost creates a new Beacon when `CreateBeacon` is called remotely
-// by a document.
+// PendingBeaconHost's lifetime is roughly the same as a single document (except
+// when crashing). See `DocumentUserData` for more details about lifetime.
 //
-// PendingBeaconHost receives `SendBeacon` requests initiated from renderer and
-// forwards it to PendingBeaconService. The requests can be initiated in one of
-// the following scenarios:
+// PendingBeaconHost creates a new Beacon when `CreateBeacon()` is called
+// remotely from a document in renderer.
+//
+// PendingBeaconHost receives `SendBeacon()` requests initiated from renderer
+// and forwards it to PendingBeaconService. The requests can be initiated in one
+// of the following scenarios:
 // -  When JavaScript executes `PendingBeacon.sendNow()`, which connects to
-//    receiver `Beacon`.
+//    receiver `Beacon::SendNow()`.
 // -  When the associated document enters `hidden` state, and the renderer's
-//    `PendingBeaconDispatcher` schedules the request according to individual
-//    PendingBeacon's backgroundTimeout property.
-// -  When the individual PendingBeacon's timeout property expires.
+//    `PendingBeaconDispatcher` schedules and dispatches the request according
+//    to individual PendingBeacon's backgroundTimeout property.
+// -  When the individual PendingBeacon's timer of timeout property expires.
 //
 // PendingBeaconHost is also responsible for triggering the sending of beacons:
 // -  When the associated document is discarded or deleted, PendingBeaconHost
@@ -77,6 +80,9 @@ class CONTENT_EXPORT PendingBeaconHost
       RenderFrameHost* rfh,
       scoped_refptr<network::SharedURLLoaderFactory> shared_url_factory,
       PendingBeaconService* service);
+
+  // Encapsulates how `beacons` are sent.
+  void Send(const std::vector<std::unique_ptr<Beacon>>& beacons);
 
   // Stores all the browser-side instances of `Beacon`.
   std::vector<std::unique_ptr<Beacon>> beacons_;
