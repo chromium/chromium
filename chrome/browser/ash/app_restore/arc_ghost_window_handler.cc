@@ -152,7 +152,7 @@ void ArcGhostWindowHandler::OnAppInstanceConnected() {
 
   // Send all pending window info updates to ARC.
   for (auto& window_info_pr : session_id_to_pending_window_info_) {
-    arc::UpdateWindowInfo(std::move(window_info_pr.second));
+    ::arc::UpdateWindowInfo(std::move(window_info_pr.second));
   }
   session_id_to_pending_window_info_.clear();
 
@@ -164,14 +164,14 @@ void ArcGhostWindowHandler::OnWindowInfoUpdated(int window_id,
                                                 int state,
                                                 int64_t display_id,
                                                 gfx::Rect bounds) {
-  auto window_info = arc::mojom::WindowInfo::New();
+  auto window_info = ::arc::mojom::WindowInfo::New();
   window_info->window_id = window_id;
   window_info->display_id = display_id;
   window_info->bounds = gfx::Rect(bounds);
   window_info->state = state;
 
   if (is_app_instance_connected_) {
-    arc::UpdateWindowInfo(std::move(window_info));
+    ::arc::UpdateWindowInfo(std::move(window_info));
     return;
   }
 
