@@ -2,9 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-importScripts('test_support.js');
+importScripts('test_support.js', 'cros_window_test_utils.js');
 
 promise_test(async () => {
+  // Open a browser window that takes focus.
+  await testHelper.openBrowserWindow();
+
   // async window retriever with stable window ordering after first retrieval.
   // TODO(b/242264908): Remove once the order of windows is guaranteed.
   let getWindows;

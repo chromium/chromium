@@ -144,6 +144,58 @@ class ServiceWorkerConsoleObserver
   base::RunLoop run_loop_;
 };
 
+Profile* GetProfile() {
+  user_manager::User* active_user =
+      user_manager::UserManager::Get()->GetActiveUser();
+  DCHECK(active_user);
+  auto* profile = ProfileHelper::Get()->GetProfileByUser(active_user);
+  DCHECK(profile);
+  return profile;
+}
+
+// Class used to wait for InstanceRegistry events.
+class InstanceRegistryEventWaiter : public apps::InstanceRegistry::Observer {
+ public:
+  InstanceRegistryEventWaiter() {
+    instance_registry_observation_.Observe(
+        &apps::AppServiceProxyFactory::GetForProfile(GetProfile())
+             ->InstanceRegistry());
+  }
+
+  ~InstanceRegistryEventWaiter() override = default;
+
+  // Returns the id of the next window that gets created.
+  base::UnguessableToken WaitForCreation() {
+    run_loop_.Run();
+    return window_id_.value();
+  }
+
+  // apps::InstanceRegistry::Observer
+  void OnInstanceUpdate(const apps::InstanceUpdate& update) override {
+    if (!update.IsCreation())
+      return;
+
+    window_id_ = update.InstanceId();
+    instance_registry_observation_.Reset();
+    run_loop_.Quit();
+  }
+
+  void OnInstanceRegistryWillBeDestroyed(
+      apps::InstanceRegistry* cache) override {
+    // This class is created and destroyed during tests so it will always be
+    // destroyed by the time the InstanceRegistry is destroyed.
+    NOTREACHED();
+  }
+
+ private:
+  base::ScopedObservation<apps::InstanceRegistry,
+                          apps::InstanceRegistry::Observer>
+      instance_registry_observation_{this};
+
+  base::RunLoop run_loop_;
+  absl::optional<base::UnguessableToken> window_id_;
+};
+
 base::FilePath GetWindowManagerExtensionDir() {
   base::FilePath test_dir;
   base::PathService::Get(chrome::DIR_TEST_DATA, &test_dir);
@@ -168,6 +220,13 @@ class CrosWindowManagementTestHelper
   CrosWindowManagementTestHelper() = default;
   ~CrosWindowManagementTestHelper() override = default;
 
+  void OpenBrowserWindow(OpenBrowserWindowCallback callback) override {
+    InstanceRegistryEventWaiter waiter;
+    chrome::NewEmptyWindow(GetProfile());
+    base::UnguessableToken window_id = waiter.WaitForCreation();
+    std::move(callback).Run(window_id.ToString());
+  }
+
   void SetDisplays(const std::string& displays,
                    SetDisplaysCallback callback) override {
     display::test::DisplayManagerTestApi(ash::Shell::Get()->display_manager())
@@ -178,12 +237,6 @@ class CrosWindowManagementTestHelper
 
   void GetMinimumSize(const std::string& id,
                       GetMinimumSizeCallback callback) override {
-    // Get a Profile.
-    user_manager::User* active_user =
-        user_manager::UserManager::Get()->GetActiveUser();
-    DCHECK(active_user);
-    auto* profile = ProfileHelper::Get()->GetProfileByUser(active_user);
-
     // Create a UnguessableToken from the passed string.
     absl::optional<base::Token> token = base::Token::FromString(id);
     DCHECK(token.has_value());
@@ -192,7 +245,7 @@ class CrosWindowManagementTestHelper
         base::UnguessableToken::Deserialize(token->high(), token->low());
 
     apps::AppServiceProxy* proxy =
-        apps::AppServiceProxyFactory::GetForProfile(profile);
+        apps::AppServiceProxyFactory::GetForProfile(GetProfile());
     CHECK(proxy->InstanceRegistry().ForOneInstance(
         target_id, [callback = std::move(callback)](
                        const apps::InstanceUpdate& update) mutable {
@@ -445,61 +498,11 @@ IN_PROC_BROWSER_TEST_F(CrosWindowManagementBrowserTest, CrosWindowFocusSingle) {
 }
 
 IN_PROC_BROWSER_TEST_F(CrosWindowManagementBrowserTest, CrosWindowFocusMulti) {
-  // Open browser instance to take focus.
-  chrome::NewWindow(browser());
-
   RunTest("cros_window_focus_multi.js");
 }
 
-IN_PROC_BROWSER_TEST_F(CrosWindowLegacyBrowserTest, CrosWindowClose) {
-  // Open browser instance to close outside of service worker.
-  chrome::NewWindow(browser());
-
-  aura::Window* initial = browser()->window()->GetNativeWindow();
-  aura::Window* new_window =
-      BrowserList::GetInstance()->GetLastActive()->window()->GetNativeWindow();
-
-  ASSERT_NE(initial, new_window);
-
-  // Set target id to crosWindow id of newly opened window as per instance
-  // registry.
-  std::string target_id;
-
-  apps::AppServiceProxy* proxy =
-      apps::AppServiceProxyFactory::GetForProfile(browser()->profile());
-  proxy->InstanceRegistry().ForEachInstance(
-      [&target_id, &new_window](const apps::InstanceUpdate& update) {
-        if (update.Window()->GetToplevelWindow() == new_window) {
-          CHECK(target_id.empty());
-          target_id = update.InstanceId().ToString();
-        }
-      });
-
-  std::string test_code = base::StringPrintf(R"(
-async function cros_test() {
-  let windows = await chromeos.windowManagement.getWindows();
-  assert_equals(windows.length, 2);
-
-  let window_to_close = windows.find(window => window.id === "%1$s");
-  assert_not_equals(undefined, window_to_close,
-      `Could not find window with id: (%1$s);`);
-
-  // TODO(b/242264794): Events are only dispatched to system extensions. Since
-  // this test doesn't use an actual System Extension, the commented out code
-  // below hangs. Uncomment once this test moves to running in a System
-  // Extension.
-  // let promise = eventPromise(chromeos.windowManagement, 'windowclosed');
-  // window_to_close.close();
-  // let e = await promise;
-  // assert_equals(e.window.id, "%1$s");
-
-  // windows = await chromeos.windowManagement.getWindows();
-  // assert_equals(windows.length, 1);
-}
-  )",
-                                             target_id.c_str());
-
-  RunTest(test_code);
+IN_PROC_BROWSER_TEST_F(CrosWindowManagementBrowserTest, CrosWindowClose) {
+  RunTest("cros_window_close.js");
 }
 
 IN_PROC_BROWSER_TEST_F(CrosWindowManagementBrowserTest,
