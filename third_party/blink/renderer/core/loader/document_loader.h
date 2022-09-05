@@ -392,6 +392,23 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
     return fenced_frame_reporting_;
   }
 
+  // Detect if the page is reloaded or after form submitted. This method is
+  // called in order to disable some interventions or optimizations based on the
+  // heuristic that the user might reload the page when interventions cause
+  // problems. Also, the user is likely to avoid reloading the page when they
+  // submit forms. So this method is useful to skip interventions in the
+  // following conditions.
+  // - Reload a page.
+  // - Submit a form.
+  // - Resubmit a form.
+  // The reason why we use DocumentLoader::GetNavigationType() instead of
+  // DocumentLoader::LoadType() is that DocumentLoader::LoadType() is reset to
+  // WebFrameLoadType::kStandard on DidFinishNavigation(). When JavaScript adds
+  // iframes after navigation, DocumentLoader::LoadType() always returns
+  // WebFrameLoadType::kStandard. DocumentLoader::GetNavigationType() doesn't
+  // have this problem.
+  bool IsReloadedOrFormSubmitted() const;
+
  protected:
   // Based on its MIME type, if the main document's response corresponds to an
   // MHTML archive, then every resources will be loaded from this archive.

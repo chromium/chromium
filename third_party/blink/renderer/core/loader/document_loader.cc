@@ -63,6 +63,7 @@
 #include "third_party/blink/public/platform/web_content_security_policy_struct.h"
 #include "third_party/blink/public/platform/web_url_request.h"
 #include "third_party/blink/public/web/blink.h"
+#include "third_party/blink/public/web/web_navigation_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_controller.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/document_init.h"
@@ -2917,6 +2918,17 @@ void DocumentLoader::NotifyPrerenderingDocumentActivated(
 HashMap<KURL, EarlyHintsPreloadEntry>
 DocumentLoader::GetEarlyHintsPreloadedResources() {
   return early_hints_preloaded_resources_;
+}
+
+bool DocumentLoader::IsReloadedOrFormSubmitted() const {
+  switch (navigation_type_) {
+    case WebNavigationType::kWebNavigationTypeReload:
+    case WebNavigationType::kWebNavigationTypeFormSubmitted:
+    case WebNavigationType::kWebNavigationTypeFormResubmitted:
+      return true;
+    default:
+      return false;
+  }
 }
 
 ContentSecurityPolicy* DocumentLoader::CreateCSP() {

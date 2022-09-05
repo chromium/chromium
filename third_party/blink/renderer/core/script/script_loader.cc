@@ -46,6 +46,7 @@
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
+#include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/loader/fetch_priority_attribute.h"
 #include "third_party/blink/renderer/core/loader/modulescript/module_script_creation_params.h"
 #include "third_party/blink/renderer/core/loader/modulescript/module_script_fetch_request.h"
@@ -245,6 +246,12 @@ enum class ShouldFireErrorEvent {
   kDoNotFire,
   kShouldFire,
 };
+
+bool IsDocumentReloadedOrFormSubmitted(const Document& element_document) {
+  Document& top_document = element_document.TopDocument();
+  return top_document.Loader() &&
+         top_document.Loader()->IsReloadedOrFormSubmitted();
+}
 
 bool ShouldForceDeferScript() {
   return base::FeatureList::IsEnabled(features::kForceDeferScriptIntervention);
@@ -931,6 +938,7 @@ PendingScript* ScriptLoader::PrepareScript(
   // [intervention, https://crbug.com/1339112] Force-defer parser-blocking and
   // inline scripts.
   if (ShouldForceDeferScript() && parser_inserted_ &&
+      !IsDocumentReloadedOrFormSubmitted(element_document) &&
       IsA<HTMLDocument>(context_window->document())) {
     switch (script_scheduling_type) {
       case ScriptSchedulingType::kParserBlocking:
@@ -949,6 +957,7 @@ PendingScript* ScriptLoader::PrepareScript(
   // rather than kForceInOrder here since we don't preserve evaluation order
   // between intervened scripts and ordinary parser-blocking/inline scripts.
   if (ShouldSelectiveInOrderScript() &&
+      !IsDocumentReloadedOrFormSubmitted(element_document) &&
       IsA<HTMLDocument>(context_window->document())) {
     switch (script_scheduling_type) {
       case ScriptSchedulingType::kParserBlocking:
@@ -970,6 +979,7 @@ PendingScript* ScriptLoader::PrepareScript(
   // the force in-order queue in ScriptRunner because we have to guarantee the
   // execution order of the scripts.
   if (ShouldForceInOrderScript() &&
+      !IsDocumentReloadedOrFormSubmitted(element_document) &&
       IsA<HTMLDocument>(context_window->document())) {
     switch (script_scheduling_type) {
       case ScriptSchedulingType::kAsync:

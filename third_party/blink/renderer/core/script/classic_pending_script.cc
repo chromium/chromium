@@ -71,6 +71,14 @@ bool CheckIfEligibleForDelay(const KURL& url,
       return false;
   }
 
+  // Not a specific reason to use element document here instead of context
+  // document.
+  Document& top_document = element_document.TopDocument();
+  if (top_document.Loader() &&
+      top_document.Loader()->IsReloadedOrFormSubmitted()) {
+    return false;
+  }
+
   return true;
 }
 
@@ -78,6 +86,9 @@ bool CheckIfEligibleForDelay(const KURL& url,
 // SelectiveInOrderScript. Also this function checks if the url is a same site
 // with the document's url, and returns false if it's a same site since 1st
 // party scripts are out of scope of the experiment.
+// Unlike CheckIfEligibleForDelay(), this method doesn't check the flag or
+// document reload status since those are mostly done in ScriptLoader, and it
+// only checks if the given url matches to the allowlist.
 bool CheckIfEligibleForSelectiveInOrder(const KURL& url,
                                         const Document& element_document) {
   scoped_refptr<const SecurityOrigin> src_security_origin =
