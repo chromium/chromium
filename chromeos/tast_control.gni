@@ -239,6 +239,9 @@ tast_disabled_tests_from_chrome_all = [
   "crostini.SSHFSMount.bullseye_stable",
   "crostini.SSHFSMount.buster_stable",
 
+  # https://crbug.com/1359911
+  "crostini.AppEmacs",
+
   # https://crbug.com/1352525
   "apps.ContentPreview",
 ]
