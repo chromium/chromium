@@ -7,6 +7,7 @@
 #include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "components/signin/public/base/signin_client.h"
@@ -264,10 +265,10 @@ void ConsistencyCookieManager::UpdateCookieIfExists(
     return;
 
   // Compute the current value of the cookie.
-  auto it = std::find_if(cookie_list.cbegin(), cookie_list.cend(),
-                         [](const net::CookieWithAccessResult& result) {
-                           return IsConsistencyCookie(result.cookie);
-                         });
+  auto it = base::ranges::find_if(
+      cookie_list, [](const net::CookieWithAccessResult& result) {
+        return IsConsistencyCookie(result.cookie);
+      });
   absl::optional<CookieValue> current_value =
       (it == cookie_list.cend())
           ? absl::nullopt

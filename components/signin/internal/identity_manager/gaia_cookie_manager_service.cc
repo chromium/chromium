@@ -6,13 +6,13 @@
 
 #include <stddef.h>
 
-#include <algorithm>
 #include <queue>
 #include <set>
 
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
+#include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/json/json_reader.h"
 #include "base/metrics/histogram_functions.h"
@@ -597,10 +597,8 @@ void GaiaCookieManagerService::TriggerListAccounts() {
     signin_client_->DelayNetworkCall(
         base::BindOnce(&GaiaCookieManagerService::StartFetchingListAccounts,
                        weak_ptr_factory_.GetWeakPtr()));
-  } else if (std::find_if(requests_.begin(), requests_.end(),
-                          [](const GaiaCookieRequest& request) {
-                            return request.request_type() == LIST_ACCOUNTS;
-                          }) == requests_.end()) {
+  } else if (!base::Contains(requests_, LIST_ACCOUNTS,
+                             &GaiaCookieRequest::request_type)) {
     requests_.push_back(GaiaCookieRequest::CreateListAccountsRequest());
   }
 }

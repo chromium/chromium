@@ -13,6 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/ranges/algorithm.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_client.h"
@@ -179,13 +180,10 @@ void MutableProfileOAuth2TokenServiceDelegate::RevokeServerRefreshToken::
   }
   // |this| pointer will be deleted when removed from the vector, so don't
   // access any members after call to erase().
-  token_service_delegate_->server_revokes_.erase(std::find_if(
-      token_service_delegate_->server_revokes_.begin(),
-      token_service_delegate_->server_revokes_.end(),
-      [this](const std::unique_ptr<MutableProfileOAuth2TokenServiceDelegate::
-                                       RevokeServerRefreshToken>& item) {
-        return item.get() == this;
-      }));
+  token_service_delegate_->server_revokes_.erase(base::ranges::find(
+      token_service_delegate_->server_revokes_, this,
+      &std::unique_ptr<MutableProfileOAuth2TokenServiceDelegate::
+                           RevokeServerRefreshToken>::get));
 }
 
 MutableProfileOAuth2TokenServiceDelegate::

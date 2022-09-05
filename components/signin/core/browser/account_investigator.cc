@@ -4,11 +4,11 @@
 
 #include "components/signin/core/browser/account_investigator.h"
 
-#include <algorithm>
 #include <iterator>
 
 #include "base/base64.h"
 #include "base/hash/sha1.h"
+#include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -189,11 +189,11 @@ AccountRelation AccountInvestigator::DiscernRelation(
   if (signed_in_accounts.empty() && signed_out_accounts.empty()) {
     return AccountRelation::EMPTY_COOKIE_JAR;
   }
-  auto signed_in_match_iter = std::find_if(
-      signed_in_accounts.begin(), signed_in_accounts.end(),
+  auto signed_in_match_iter = base::ranges::find_if(
+      signed_in_accounts,
       [&info](const ListedAccount& account) { return AreSame(info, account); });
-  auto signed_out_match_iter = std::find_if(
-      signed_out_accounts.begin(), signed_out_accounts.end(),
+  auto signed_out_match_iter = base::ranges::find_if(
+      signed_out_accounts,
       [&info](const ListedAccount& account) { return AreSame(info, account); });
   if (signed_in_match_iter != signed_in_accounts.end()) {
     if (signed_in_accounts.size() == 1) {
