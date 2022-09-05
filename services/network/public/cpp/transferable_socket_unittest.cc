@@ -6,17 +6,19 @@
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
-
-#include "net/base/winsock_init.h"
 #endif
 
-#include "base/process/process.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "net/log/net_log_source.h"
 #include "net/socket/socket_descriptor.h"
 #include "net/socket/tcp_socket.h"
 #include "services/network/public/mojom/transferable_socket.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if BUILDFLAG(IS_WIN)
+#include "base/process/process.h"
+#include "net/base/winsock_init.h"
+#endif
 
 namespace network {
 namespace {
@@ -30,13 +32,41 @@ TEST_F(TransferableSocketTest, MojoTraits) {
   net::TCPSocket socket(nullptr, nullptr, net::NetLogSource());
   socket.Open(net::AddressFamily::ADDRESS_FAMILY_IPV4);
   auto socket_desc = socket.ReleaseSocketDescriptorForTesting();
-  TransferableSocket transferable(base::Process::Current().Handle(),
-                                  socket_desc);
+  TransferableSocket transferable(socket_desc
+#if BUILDFLAG(IS_WIN)
+                                  ,
+                                  base::Process::Current()
+#endif
+  );
   TransferableSocket roundtripped;
   ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::TransferableSocket>(
       transferable, roundtripped));
   net::SocketDescriptor s = roundtripped.TakeSocket();
   ASSERT_NE(s, net::kInvalidSocket);
+}
+
+TEST_F(TransferableSocketTest, InvalidSocketMojoTraits) {
+  auto socket_desc = net::kInvalidSocket;
+  TransferableSocket transferable(socket_desc
+#if BUILDFLAG(IS_WIN)
+                                  ,
+                                  base::Process::Current()
+#endif
+  );
+  TransferableSocket roundtripped;
+  ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::TransferableSocket>(
+      transferable, roundtripped));
+  net::SocketDescriptor s = roundtripped.TakeSocket();
+  ASSERT_EQ(s, net::kInvalidSocket);
+}
+
+TEST_F(TransferableSocketTest, EmptyMojoTraits) {
+  TransferableSocket transferable;
+  TransferableSocket roundtripped;
+  ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::TransferableSocket>(
+      transferable, roundtripped));
+  net::SocketDescriptor s = roundtripped.TakeSocket();
+  ASSERT_EQ(s, net::kInvalidSocket);
 }
 
 }  // namespace

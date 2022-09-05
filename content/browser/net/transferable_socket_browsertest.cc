@@ -98,18 +98,6 @@ IN_PROC_BROWSER_TEST_F(TransferableSocketBrowserTest, TransferSocket) {
   // PID.
   network_service_test().FlushForTesting();
 
-  // Obtain the running process id of the network service, as this is needed to
-  // duplicate the socket.
-  auto processes = ServiceProcessHost::GetRunningProcessInfo();
-  base::ProcessHandle handle = base::kNullProcessHandle;
-  for (const auto& process : processes) {
-    if (process.IsService<network::mojom::NetworkService>()) {
-      ASSERT_EQ(base::kNullProcessHandle, handle);
-      handle = process.GetProcess().Handle();
-    }
-  }
-  ASSERT_NE(base::kNullProcessHandle, handle);
-
   mojo::PendingRemote<network::mojom::NetworkServiceTest>
       network_service_pending;
   GetNetworkService()->BindTestInterface(
@@ -137,8 +125,24 @@ IN_PROC_BROWSER_TEST_F(TransferableSocketBrowserTest, TransferSocket) {
       }));
   connect_run_loop.Run();
   socket.DetachFromThread();
+#if BUILDFLAG(IS_WIN)
+  // Obtain the running process id of the network service, as this is needed to
+  // duplicate the socket on Windows only.
+  auto processes = ServiceProcessHost::GetRunningProcessInfo();
+  base::Process network_process;
+  for (const auto& process : processes) {
+    if (process.IsService<network::mojom::NetworkService>()) {
+      ASSERT_FALSE(network_process.IsValid());
+      network_process = process.GetProcess().Duplicate();
+    }
+  }
+  ASSERT_TRUE(network_process.IsValid());
   network::TransferableSocket transferable(
-      handle, socket.ReleaseSocketDescriptorForTesting());
+      socket.ReleaseSocketDescriptorForTesting(), network_process);
+#else
+  network::TransferableSocket transferable(
+      socket.ReleaseSocketDescriptorForTesting());
+#endif
   {
     base::RunLoop network_service_runloop;
     network_service_test()->MakeRequestToServer(

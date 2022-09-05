@@ -49,9 +49,7 @@ void TestSocketBrokerImpl::CreateTcpSocket(net::AddressFamily address_family,
     rv = net::MapSystemError(errno);
     socket.reset();
   }
-  std::move(callback).Run(
-      network::TransferableSocket(base::kNullProcessHandle, socket.release()),
-      rv);
+  std::move(callback).Run(network::TransferableSocket(socket.release()), rv);
 #endif
 }
 
