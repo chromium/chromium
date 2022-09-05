@@ -37,9 +37,10 @@ const std::map<SyncSetupService::SyncableDatatype, const char*>
 }  // namespace
 
 bool IsRestrictAccountsToPatternsEnabled() {
-  const base::Value* value = GetApplicationContext()->GetLocalState()->GetList(
-      prefs::kRestrictAccountsToPatterns);
-  return !value->GetListDeprecated().empty();
+  return !GetApplicationContext()
+              ->GetLocalState()
+              ->GetValueList(prefs::kRestrictAccountsToPatterns)
+              .empty();
 }
 
 // TODO(crbug.com/1244632): Use the Authentication Service sign-in status API

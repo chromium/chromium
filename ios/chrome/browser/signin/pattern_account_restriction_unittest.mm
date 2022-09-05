@@ -23,11 +23,10 @@ class PatternAccountRestrictionTest : public PlatformTest {};
 // Tests that the PatternAccountRestriction filters email correctly when
 // restrictions are set.
 TEST_F(PatternAccountRestrictionTest, FilterEmailsWithRestrictions) {
-  base::Value value{base::Value::Type::LIST};
-  value.Append("*gmail.com");
-  value.Append("*google.com");
-  auto restriction =
-      PatternAccountRestrictionFromValue(value.GetListDeprecated());
+  base::Value::List list;
+  list.Append("*gmail.com");
+  list.Append("*google.com");
+  auto restriction = PatternAccountRestrictionFromValue(list);
 
   EXPECT_EQ(restriction->IsAccountRestricted(email1), false);
   EXPECT_EQ(restriction->IsAccountRestricted(email2), false);
@@ -37,9 +36,8 @@ TEST_F(PatternAccountRestrictionTest, FilterEmailsWithRestrictions) {
 // Tests that the PatternAccountRestriction does not filter emails when
 // restrictions are not set.
 TEST_F(PatternAccountRestrictionTest, FilterEmailsWithoutRestriction) {
-  base::Value value{base::Value::Type::LIST};
-  auto restriction =
-      PatternAccountRestrictionFromValue(value.GetListDeprecated());
+  base::Value::List list;
+  auto restriction = PatternAccountRestrictionFromValue(list);
 
   EXPECT_EQ(restriction->IsAccountRestricted(email1), false);
   EXPECT_EQ(restriction->IsAccountRestricted(email2), false);
@@ -49,11 +47,10 @@ TEST_F(PatternAccountRestrictionTest, FilterEmailsWithoutRestriction) {
 // Tests that the PatternAccountRestriction does not filter emails when the
 // restriction is not correctly formatted.
 TEST_F(PatternAccountRestrictionTest, FilterEmailsWithBadPattern) {
-  base::Value value{base::Value::Type::LIST};
-  value.Append("*gmail.com\\");
-  value.Append("*google.com");
-  auto restriction =
-      PatternAccountRestrictionFromValue(value.GetListDeprecated());
+  base::Value::List list;
+  list.Append("*gmail.com\\");
+  list.Append("*google.com");
+  auto restriction = PatternAccountRestrictionFromValue(list);
 
   EXPECT_EQ(restriction->IsAccountRestricted(email1), true);
   EXPECT_EQ(restriction->IsAccountRestricted(email2), false);

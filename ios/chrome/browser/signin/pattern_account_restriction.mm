@@ -93,10 +93,10 @@ bool ArePatternsValid(const base::Value* value) {
 }
 
 absl::optional<PatternAccountRestriction> PatternAccountRestrictionFromValue(
-    const base::Value::ConstListView& value) {
+    const base::Value::List& list) {
   std::vector<Pattern> patterns;
-  patterns.reserve(value.size());
-  for (const base::Value& item : value) {
+  patterns.reserve(list.size());
+  for (const base::Value& item : list) {
     if (!item.is_string())
       continue;
     auto maybe_pattern = PatternFromString(item.GetString());
