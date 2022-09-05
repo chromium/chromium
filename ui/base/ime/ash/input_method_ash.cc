@@ -154,6 +154,7 @@ void InputMethodAsh::ProcessKeyEventDone(
     ui::KeyEvent* event,
     ui::ime::KeyEventHandledState handled_state) {
   DCHECK(event);
+  bool is_handled_by_char_composer = false;
   if (event->type() == ET_KEY_PRESSED) {
     if (handled_state != ui::ime::KeyEventHandledState::kNotHandled) {
       // IME event has a priority to be handled, so that character composer
@@ -162,9 +163,9 @@ void InputMethodAsh::ProcessKeyEventDone(
     } else {
       // If IME does not handle key event, passes keyevent to character composer
       // to be able to compose complex characters.
-      bool is_handled = ExecuteCharacterComposer(*event);
+      is_handled_by_char_composer = ExecuteCharacterComposer(*event);
 
-      if (!is_handled &&
+      if (!is_handled_by_char_composer &&
           !KeycodeConverter::IsDomKeyForModifier(event->GetDomKey())) {
         // If the character composer didn't handle it either, then confirm any
         // composition text before forwarding the key event. We ignore modifier
@@ -177,7 +178,11 @@ void InputMethodAsh::ProcessKeyEventDone(
     }
   }
   if (event->type() == ET_KEY_PRESSED || event->type() == ET_KEY_RELEASED) {
-    std::ignore = ProcessKeyEventPostIME(event, handled_state,
+    ui::ime::KeyEventHandledState handled_state_to_process =
+        is_handled_by_char_composer
+            ? ui::ime::KeyEventHandledState::kHandledByIME
+            : handled_state;
+    std::ignore = ProcessKeyEventPostIME(event, handled_state_to_process,
                                          /* stopped_propagation */ false);
   }
   handling_key_event_ = false;
