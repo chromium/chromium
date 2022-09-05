@@ -35,6 +35,8 @@ export class PanelBackground {
     this.iSearch_;
     /** @private {AutomationNode} */
     this.savedNode_;
+    /** @private {Promise} */
+    this.resolvePanelCollapsed_;
   }
 
   static init() {
@@ -86,6 +88,9 @@ export class PanelBackground {
     BridgeHelper.registerHandler(
         Constants.TARGET, Constants.Action.SAVE_CURRENT_NODE,
         () => PanelBackground.instance.saveCurrentNode_());
+    BridgeHelper.registerHandler(
+        Constants.TARGET, Constants.Action.SET_PANEL_COLLAPSE_WATCHER,
+        () => PanelBackground.instance.setPanelCollapseWatcher_());
     BridgeHelper.registerHandler(
         Constants.TARGET, Constants.Action.SET_RANGE_TO_I_SEARCH_NODE,
         () => PanelBackground.instance.setRangeToISearchNode_());
@@ -258,6 +263,39 @@ export class PanelBackground {
     ChromeVoxState.instance.setCurrentRange(CursorRange.fromNode(node));
   }
 
+  /**
+   * Adds an event listener to detect panel collapse.
+   * @private
+   */
+  async setPanelCollapseWatcher_() {
+    const desktop =
+        await new Promise((resolve) => chrome.automation.getDesktop(resolve));
+    let notifyPanelCollapsed;
+    this.resolvePanelCollapsed_ = new Promise(resolve => {
+      notifyPanelCollapsed = resolve;
+    });
+    const onFocus = event => {
+      if (event.target.docUrl &&
+          event.target.docUrl.includes('chromevox/panel')) {
+        return;
+      }
+
+      desktop.removeEventListener(
+          chrome.automation.EventType.FOCUS, onFocus, true);
+
+      // Clears focus on the page by focusing the root explicitly. This makes
+      // sure we don't get future focus events as a result of giving this
+      // entire page focus (which would interfere with our desired range).
+      if (event.target.root) {
+        event.target.root.focus();
+      }
+
+      notifyPanelCollapsed();
+    };
+
+    desktop.addEventListener(chrome.automation.EventType.FOCUS, onFocus, true);
+  }
+
   /** @private */
   saveCurrentNode_() {
     if (ChromeVoxState.instance.currentRange) {
@@ -266,36 +304,11 @@ export class PanelBackground {
   }
 
   /**
-   * Listens for focus events, and returns once the target is not the panel.
+   * Wait for the promise to notify panel collapse to resolved.
    * @private
    */
   async waitForPanelCollapse_() {
-    return new Promise(async resolve => {
-      const desktop =
-          await new Promise((resolve) => chrome.automation.getDesktop(resolve));
-      // Watch for a focus event outside the panel.
-      const onFocus = event => {
-        if (event.target.docUrl &&
-            event.target.docUrl.includes('chromevox/panel')) {
-          return;
-        }
-
-        desktop.removeEventListener(
-            chrome.automation.EventType.FOCUS, onFocus, true);
-
-        // Clears focus on the page by focusing the root explicitly. This makes
-        // sure we don't get future focus events as a result of giving this
-        // entire page focus (which would interfere with our desired range).
-        if (event.target.root) {
-          event.target.root.focus();
-        }
-
-        resolve();
-      };
-
-      desktop.addEventListener(
-          chrome.automation.EventType.FOCUS, onFocus, true);
-    });
+    return this.resolvePanelCollapsed_;
   }
 }
 

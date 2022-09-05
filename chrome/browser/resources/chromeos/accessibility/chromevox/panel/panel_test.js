@@ -296,3 +296,19 @@ AX_TEST_F(
       this.assertActiveMenuItem(
           'panel_menu_touchgestures', 'Click on current item');
     });
+
+// Ensure 'Perform default action' in the actions tab invokes a click event.
+AX_TEST_F('ChromeVoxPanelTest', 'PerformDoDefaultAction', async function() {
+  const rootNode = await this.runWithLoadedTree(`<button>OK</button>`);
+  const button = rootNode.find({role: RoleType.BUTTON});
+  await this.waitForEvent(button, chrome.automation.EventType.FOCUS);
+  CommandHandlerInterface.instance.onCommand('showActionsMenu');
+  await this.waitForMenu('panel_menu_actions');
+  this.fireMockEvent('ArrowDown')();
+  this.assertActiveMenuItem('panel_menu_actions', 'Start Or End Selection');
+  this.fireMockEvent('ArrowDown')();
+  this.fireMockEvent('ArrowDown')();
+  this.assertActiveMenuItem('panel_menu_actions', 'Perform default action');
+  this.fireMockEvent('Enter')();
+  await this.waitForEvent(button, chrome.automation.EventType.CLICKED);
+});

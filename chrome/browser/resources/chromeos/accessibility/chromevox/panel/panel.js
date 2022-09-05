@@ -1048,6 +1048,10 @@ export class Panel extends PanelInterface {
     const pendingCallback = Panel.pendingCallback_;
     Panel.pendingCallback_ = null;
 
+    // Prepare the watcher before close the panel so that the watcher won't miss
+    // panel collapse signal.
+    await BackgroundBridge.PanelBackground.setPanelCollapseWatcher;
+
     // Make sure all menus are cleared to avoid bogus output when we re-open.
     Panel.clearMenus();
 
