@@ -27,6 +27,9 @@
 
 namespace {
 
+constexpr char kUpdaterPoliciesId[] = "updater";
+constexpr char kUpdaterPoliciesName[] = "Google Update Policies";
+
 std::string GetActiveDirectoryDomain() {
   std::string domain;
   ::DSROLE_PRIMARY_DOMAIN_INFO_BASIC* info = nullptr;
@@ -72,16 +75,13 @@ base::Value::Dict UpdaterStatusAndValueProvider::GetStatus() {
   return dict;
 }
 
-void UpdaterStatusAndValueProvider::GetValues(
-    base::Value::List& out_policy_values) {
+base::Value::Dict UpdaterStatusAndValueProvider::GetValues() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!updater_policies_) {
-    return;
-  }
+  if (!updater_policies_)
+    return {};
 
   base::Value::Dict updater_policies_data;
-  updater_policies_data.Set(policy::kNameKey, "Google Update Policies");
-  updater_policies_data.Set(policy::kIdKey, "updater");
+  updater_policies_data.Set(policy::kNameKey, kUpdaterPoliciesName);
 
   auto client =
       std::make_unique<policy::ChromePolicyConversionsClient>(profile_);
@@ -89,10 +89,14 @@ void UpdaterStatusAndValueProvider::GetValues(
   client->SetDropDefaultValues(true);
   // TODO(b/241519819): Find an alternative to using PolicyConversionsClient
   // directly.
-  updater_policies_data.Set("policies", client->ConvertUpdaterPolicies(
-                                            updater_policies_->Clone(),
-                                            GetGoogleUpdatePolicySchemas()));
-  out_policy_values.Append(std::move(updater_policies_data));
+  updater_policies_data.Set(
+      policy::kPoliciesKey,
+      client->ConvertUpdaterPolicies(updater_policies_->Clone(),
+                                     GetGoogleUpdatePolicySchemas()));
+
+  base::Value::Dict policy_values;
+  policy_values.Set(kUpdaterPoliciesId, std::move(updater_policies_data));
+  return policy_values;
 }
 
 base::Value::Dict UpdaterStatusAndValueProvider::GetNames() {
@@ -100,9 +104,9 @@ base::Value::Dict UpdaterStatusAndValueProvider::GetNames() {
   base::Value::Dict names;
   if (updater_policies_) {
     base::Value::Dict updater_policies;
-    updater_policies.Set(policy::kNameKey, "Google Update Policies");
+    updater_policies.Set(policy::kNameKey, kUpdaterPoliciesName);
     updater_policies.Set(policy::kPolicyNamesKey, GetGoogleUpdatePolicyNames());
-    names.Set("updater", std::move(updater_policies));
+    names.Set(kUpdaterPoliciesId, std::move(updater_policies));
   }
   return names;
 }

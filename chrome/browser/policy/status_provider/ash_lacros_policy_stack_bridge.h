@@ -26,11 +26,11 @@ class AshLacrosPolicyStackBridge : public policy::PolicyStatusProvider,
   base::Value::Dict GetStatus() override;
 
   // PolicyValueProvider implementation.
-  // Looks for Chrome policies in `out_policy_values` and merges Lacros policy
-  // values with Chrome policies as Lacros policies contain same policies as
-  // Chrome policies. Make sure you call ChromePolicesValueProvider's
-  // GetValues() function before this.
-  void GetValues(base::Value::List& out_policy_values) override;
+  // Chrome policies may have common policies between Lacros policies and the
+  // values may be overwritten in case of a merge. Make sure you call
+  // `ChromePolicesValueProvider`'s GetValues() function before this if you want
+  // to merge the policies with Chrome policies.
+  base::Value::Dict GetValues() override;
 
   // Returns empty dictionary because Lacros doesn't have unique policy names.
   // All related policy names are share between Chrome policies and can be

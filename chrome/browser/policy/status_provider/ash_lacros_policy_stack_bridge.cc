@@ -22,21 +22,14 @@ base::Value::Dict AshLacrosPolicyStackBridge::GetStatus() {
   return device_policy_status_.Clone();
 }
 
-void AshLacrosPolicyStackBridge::GetValues(
-    base::Value::List& out_policy_values) {
+base::Value::Dict AshLacrosPolicyStackBridge::GetValues() {
   if (device_policy_.empty())
-    return;
-  for (auto& value : out_policy_values) {
-    base::Value::Dict* dict = value.GetIfDict();
-    if (!dict)
-      continue;
-    const std::string* id = dict->FindString(policy::kIdKey);
-    if (id == nullptr || *id != policy::kChromePoliciesId)
-      continue;
-    base::Value::Dict* chrome_policies = dict->FindDict(policy::kPoliciesKey);
-    if (chrome_policies)
-      chrome_policies->Merge(device_policy_.Clone());
-  }
+    return {};
+  base::Value::Dict lacros_policies;
+  lacros_policies.Set(policy::kPoliciesKey, device_policy_.Clone());
+  base::Value::Dict policy_values;
+  policy_values.Set(policy::kChromePoliciesId, std::move(lacros_policies));
+  return policy_values;
 }
 
 base::Value::Dict AshLacrosPolicyStackBridge::GetNames() {

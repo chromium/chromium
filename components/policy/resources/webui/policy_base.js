@@ -26,12 +26,20 @@ import {$} from 'chrome://resources/js/util.m.js';
 let PolicyNamesResponse;
 
 /**
- * @typedef {!Array<{
- *  name: string,
- *  id: ?String,
- *  policies: {[name: string]: policy.Policy},
- *  precedenceOrder: ?Array<string>,
- * }>}
+ * @typedef {{
+ *    [id: string]: {
+ *      name: string,
+ *      policies: {[name: string]: policy.Policy},
+ *      precedenceOrder: ?Array<string>,
+ * }}
+ */
+let PolicyValues;
+
+/**
+ * @typedef {{
+ *      policyIds: Array<string>,
+ *      policyValues: PolicyValues,
+ * }}
  */
 let PolicyValuesResponse;
 
@@ -101,16 +109,22 @@ export class Page {
 
   /**
    * @param {PolicyNamesResponse} policyNames
-   * @param {PolicyValuesResponse} policyValues
+   * @param {PolicyValuesResponse} policyValuesResponse
    * @private
    */
-  onPoliciesReceived_(policyNames, policyValues) {
+  onPoliciesReceived_(policyNames, policyValuesResponse) {
+    /** @type {PolicyValues} */
+    const policyValues = policyValuesResponse.policyValues;
+    /** @type {Array<string>} */
+    const policyIds = policyValuesResponse.policyIds;
     /** @type {Array<!PolicyTableModel>} */
-    const policyGroups = policyValues.map(value => {
+    const policyGroups = policyIds.map(id => {
       const knownPolicyNames =
-          policyNames[value.id] ? policyNames[value.id].policyNames : [];
+          policyNames[id] ? policyNames[id].policyNames : [];
+      const value = policyValues[id];
       const knownPolicyNamesSet = new Set(knownPolicyNames);
-      const receivedPolicyNames = Object.keys(value.policies);
+      const receivedPolicyNames =
+          value.policies ? Object.keys(value.policies) : [];
       const allPolicyNames =
           Array.from(new Set([...knownPolicyNames, ...receivedPolicyNames]));
       const policies = allPolicyNames.map(
@@ -131,7 +145,7 @@ export class Page {
         name: value.forSigninScreen ?
             `${value.name} [${loadTimeData.getString('signinProfile')}]` :
             value.name,
-        id: value.isExtension ? value.id : null,
+        id: value.isExtension ? id : null,
         policies,
         ...(value.precedenceOrder && {precedenceOrder: value.precedenceOrder}),
       };

@@ -48,6 +48,11 @@ const char kPrecedencePoliciesId[] = "precedence";
 const char kPrecedencePoliciesName[] = "Policy Precedence";
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+const char kDeviceLocalAccountPoliciesId[] = "deviceLocalAccountPolicies";
+const char kIdentityFieldsId[] = "identityFields";
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 PolicyConversions::PolicyConversions(
     std::unique_ptr<PolicyConversionsClient> client)
     : client_(std::move(client)) {
@@ -174,7 +179,7 @@ Value::Dict DictionaryPolicyConversions::ToValueDict() {
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  all_policies.Set("deviceLocalAccountPolicies",
+  all_policies.Set(kDeviceLocalAccountPoliciesId,
                    GetDeviceLocalAccountPolicies());
   Value::Dict identity_fields = client()->GetIdentityFields();
   if (!identity_fields.empty())
@@ -264,29 +269,32 @@ ChromePolicyConversions& ChromePolicyConversions::SetDropDefaultValues(
 }
 
 std::string ChromePolicyConversions::ToJSON() {
-  return client()->ConvertValueToJSON(Value(ToValueList()));
+  return client()->ConvertValueToJSON(Value(ToValueDict()));
 }
 
-Value::List ChromePolicyConversions::ToValueList() {
-  Value::List all_policies;
+Value::Dict ChromePolicyConversions::ToValueDict() {
+  Value::Dict all_policies;
 
   if (client()->HasUserPolicies()) {
-    all_policies.Append(GetChromePolicies());
+    all_policies.Set(kChromePoliciesId, GetChromePolicies());
 
 #if !BUILDFLAG(IS_CHROMEOS)
     // Precedence policies do not apply to Chrome OS, so the Policy Precedence
     // table is not shown in chrome://policy.
-    all_policies.Append(GetPrecedencePolicies());
+    all_policies.Set(kPrecedencePoliciesId, GetPrecedencePolicies());
 #endif  // !BUILDFLAG(IS_CHROMEOS)
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  for (auto& device_policy : client()->GetDeviceLocalAccountPolicies())
-    all_policies.Append(std::move(device_policy));
+  Value::List local_account_policies =
+      client()->GetDeviceLocalAccountPolicies();
+  if (!local_account_policies.empty())
+    all_policies.Set(kDeviceLocalAccountPoliciesId,
+                     std::move(local_account_policies));
 
   Value::Dict identity_fields = client()->GetIdentityFields();
   if (!identity_fields.empty())
-    all_policies.Append(std::move(identity_fields));
+    all_policies.Set(kIdentityFieldsId, std::move(identity_fields));
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   return all_policies;
@@ -294,7 +302,6 @@ Value::List ChromePolicyConversions::ToValueList() {
 
 Value::Dict ChromePolicyConversions::GetChromePolicies() {
   Value::Dict chrome_policies_data;
-  chrome_policies_data.Set(kIdKey, kChromePoliciesId);
   chrome_policies_data.Set(kNameKey, kChromePoliciesName);
   Value::Dict chrome_policies = client()->GetChromePolicies();
   chrome_policies_data.Set(kPoliciesKey, std::move(chrome_policies));
@@ -304,7 +311,6 @@ Value::Dict ChromePolicyConversions::GetChromePolicies() {
 #if !BUILDFLAG(IS_CHROMEOS)
 Value::Dict ChromePolicyConversions::GetPrecedencePolicies() {
   Value::Dict precedence_policies_data;
-  precedence_policies_data.Set(kIdKey, kPrecedencePoliciesId);
   precedence_policies_data.Set(kNameKey, kPrecedencePoliciesName);
   precedence_policies_data.Set(kPoliciesKey, client()->GetPrecedencePolicies());
   precedence_policies_data.Set(kPrecedenceOrderKey,

@@ -156,7 +156,7 @@ class POLICY_EXPORT ChromePolicyConversions : public PolicyConversions {
 
   std::string ToJSON() override;
 
-  base::Value::List ToValueList();
+  base::Value::Dict ToValueDict();
 
  private:
   base::Value::Dict GetChromePolicies();

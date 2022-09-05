@@ -36,6 +36,20 @@ bool ContainsStorageManagedSchema(const extensions::Extension* extension) {
       extensions::manifest_keys::kStorageManagedSchema);
 }
 
+// Looks for policy::kIdKey in `policy` dictionary and adds it to
+// `extension_policies` with the ID value as a key. Moves `policy` when adding.
+void AddExtensionPolicyValueToDict(base::Value& policy,
+                                   base::Value::Dict& extension_policies) {
+  base::Value::Dict* policy_dict = policy.GetIfDict();
+  if (!policy_dict)
+    return;
+  std::string* id = policy_dict->FindString(policy::kIdKey);
+  if (!id)
+    return;
+  policy_dict->Remove(*id);
+  extension_policies.Set(*id, std::move(policy));
+}
+
 }  // namespace
 
 ExtensionPoliciesValueProvider::ExtensionPoliciesValueProvider(Profile* profile)
@@ -57,22 +71,23 @@ ExtensionPoliciesValueProvider::~ExtensionPoliciesValueProvider() {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
-void ExtensionPoliciesValueProvider::GetValues(
-    base::Value::List& out_policy_values) {
+base::Value::Dict ExtensionPoliciesValueProvider::GetValues() {
+  base::Value::Dict extension_policies;
   auto client =
       std::make_unique<policy::ChromePolicyConversionsClient>(profile_);
   if (client->HasUserPolicies()) {
     for (auto& policy :
          client->GetExtensionPolicies(policy::POLICY_DOMAIN_EXTENSIONS)) {
-      out_policy_values.Append(std::move(policy));
+      AddExtensionPolicyValueToDict(policy, extension_policies);
     }
   }
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   for (auto& policy :
        client->GetExtensionPolicies(policy::POLICY_DOMAIN_SIGNIN_EXTENSIONS)) {
-    out_policy_values.Append(std::move(policy));
+    AddExtensionPolicyValueToDict(policy, extension_policies);
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+  return extension_policies;
 }
 
 base::Value::Dict ExtensionPoliciesValueProvider::GetNames() {

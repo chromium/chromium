@@ -31,9 +31,8 @@ class ExtensionPoliciesValueProvider
   ~ExtensionPoliciesValueProvider() override;
 
   // PolicyValueProvider overrides.
-  // Appends each individual extension policy as a separate entry at the end of
-  // `out_policy_values`.
-  void GetValues(base::Value::List& out_policy_values) override;
+  // Returns each individual extension policy in a dictionary.
+  base::Value::Dict GetValues() override;
 
   base::Value::Dict GetNames() override;
 

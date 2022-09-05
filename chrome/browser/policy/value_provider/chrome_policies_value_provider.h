@@ -26,7 +26,7 @@ class ChromePoliciesValueProvider : public policy::PolicyValueProvider,
   ~ChromePoliciesValueProvider() override;
 
   // PolicyValueProvider implementation.
-  void GetValues(base::Value::List& out_policy_values) override;
+  base::Value::Dict GetValues() override;
 
   base::Value::Dict GetNames() override;
 

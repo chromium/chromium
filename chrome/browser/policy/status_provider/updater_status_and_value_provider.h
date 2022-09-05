@@ -38,7 +38,7 @@ class UpdaterStatusAndValueProvider : public policy::PolicyStatusProvider,
   base::Value::Dict GetStatus() override;
 
   // policy::PolicyValueProvider implementation.
-  void GetValues(base::Value::List& out_policy_values) override;
+  base::Value::Dict GetValues() override;
 
   base::Value::Dict GetNames() override;
 

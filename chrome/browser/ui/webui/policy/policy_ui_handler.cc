@@ -55,6 +55,7 @@
 #include "components/policy/core/browser/webui/json_generation.h"
 #include "components/policy/core/browser/webui/machine_level_user_cloud_policy_status_provider.h"
 #include "components/policy/core/browser/webui/policy_status_provider.h"
+#include "components/policy/core/browser/webui/policy_webui_constants.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/cloud_policy_core.h"
@@ -117,6 +118,24 @@
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #include "chrome/browser/policy/status_provider/updater_status_and_value_provider.h"
 #endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+
+namespace {
+void AddPolicyIdsForDisplay(const base::Value::Dict& policy_values,
+                            base::Value::List& policy_ids) {
+  for (const auto id_policy_pair : policy_values) {
+    policy_ids.Append(id_policy_pair.first);
+  }
+}
+
+// Appends the ID of `policy_values` to `policy_ids` and merges it to
+// `out_policy_values`.
+void MergePolicyValuesAndIds(base::Value::Dict policy_values,
+                             base::Value::Dict& out_policy_values,
+                             base::Value::List& out_policy_ids) {
+  AddPolicyIdsForDisplay(policy_values, out_policy_ids);
+  out_policy_values.Merge(std::move(policy_values));
+}
+}  // namespace
 
 PolicyUIHandler::PolicyUIHandler() = default;
 
@@ -344,26 +363,38 @@ base::Value::Dict PolicyUIHandler::GetPolicyNames() {
   return names;
 }
 
-base::Value::List PolicyUIHandler::GetPolicyValues() {
-  base::Value::List policy_values;
-  chrome_policies_value_provider_->GetValues(policy_values);
+base::Value::Dict PolicyUIHandler::GetPolicyValues() {
+  base::Value::Dict policy_values;
+  base::Value::List policy_ids;
+
+  MergePolicyValuesAndIds(chrome_policies_value_provider_->GetValues(),
+                          policy_values, policy_ids);
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   // For policy values to be merged correctly, we call GetValues() for Lacros
   // device policies after Chrome policies as described in documentation of
   // AshLacrosPolicyStackBridge.
-  ash_lacros_policy_stack_bridge_->GetValues(policy_values);
+  // Only merge policy values. We don't merge Lacros policy IDs because Lacros
+  // policies has the same ID as Chrome policies.
+  policy_values.Merge(ash_lacros_policy_stack_bridge_->GetValues());
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-  extension_policies_value_provider_->GetValues(policy_values);
+  MergePolicyValuesAndIds(extension_policies_value_provider_->GetValues(),
+                          policy_values, policy_ids);
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  updater_status_and_value_provider_->GetValues(policy_values);
+  MergePolicyValuesAndIds(updater_status_and_value_provider_->GetValues(),
+                          policy_values, policy_ids);
 #endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
-  return policy_values;
+  // Send the policy values and list of policy IDs so the UI can display values
+  // in this order.
+  base::Value::Dict dict;
+  dict.Set(policy::kPolicyValuesKey, std::move(policy_values));
+  dict.Set(policy::kPolicyIdsKey, std::move(policy_ids));
+  return dict;
 }
 
 void PolicyUIHandler::SendStatus() {

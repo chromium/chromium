@@ -49,9 +49,9 @@ class PolicyUIHandler : public web::WebUIIOSMessageHandler,
   // Returns a dictionary containing the policies supported by Chrome.
   base::Value::Dict GetPolicyNames() const;
 
-  // Returns an array containing the current values of the policies
-  // supported by Chrome.
-  base::Value::List GetPolicyValues() const;
+  // Returns a dictionary containing the current values of the policies
+  // supported by Chrome and list of the policy IDs.
+  base::Value::Dict GetPolicyValues() const;
 
   // Called to handle the "listenPoliciesUpdates" WebUI message.
   void HandleListenPoliciesUpdates(const base::Value::List& args);

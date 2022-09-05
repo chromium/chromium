@@ -21,6 +21,7 @@
 #import "components/policy/core/browser/policy_conversions.h"
 #import "components/policy/core/browser/webui/json_generation.h"
 #import "components/policy/core/browser/webui/machine_level_user_cloud_policy_status_provider.h"
+#import "components/policy/core/browser/webui/policy_webui_constants.h"
 #import "components/policy/core/common/cloud/machine_level_user_cloud_policy_manager.h"
 #import "components/policy/core/common/policy_map.h"
 #import "components/policy/core/common/policy_types.h"
@@ -196,20 +197,29 @@ base::Value::Dict PolicyUIHandler::GetPolicyNames() const {
   }
 
   base::Value::Dict chrome_values;
-  chrome_values.Set("name", "Chrome Policies");
-  chrome_values.Set("policyNames", std::move(chrome_policy_names));
+  chrome_values.Set(policy::kNameKey, policy::kChromePoliciesName);
+  chrome_values.Set(policy::kPolicyNamesKey, std::move(chrome_policy_names));
 
   base::Value::Dict names;
-  names.Set("chrome", std::move(chrome_values));
+  names.Set(policy::kChromePoliciesId, std::move(chrome_values));
   return names;
 }
 
-base::Value::List PolicyUIHandler::GetPolicyValues() const {
+base::Value::Dict PolicyUIHandler::GetPolicyValues() const {
+  base::Value::List policy_ids;
+  policy_ids.Append(policy::kChromePoliciesId);
+
   auto client = std::make_unique<PolicyConversionsClientIOS>(
       ChromeBrowserState::FromWebUIIOS(web_ui()));
-  return policy::ChromePolicyConversions(std::move(client))
-      .EnableConvertValues(true)
-      .ToValueList();
+  base::Value::Dict policy_values =
+      policy::ChromePolicyConversions(std::move(client))
+          .EnableConvertValues(true)
+          .ToValueDict();
+
+  base::Value::Dict dict;
+  dict.Set(policy::kPolicyValuesKey, std::move(policy_values));
+  dict.Set(policy::kPolicyIdsKey, std::move(policy_ids));
+  return dict;
 }
 
 void PolicyUIHandler::HandleListenPoliciesUpdates(
@@ -224,7 +234,7 @@ void PolicyUIHandler::HandleReloadPolicies(const base::Value::List& args) {
 
 void PolicyUIHandler::SendPolicies() {
   base::Value::Dict names = GetPolicyNames();
-  base::Value::List values = GetPolicyValues();
+  base::Value::Dict values = GetPolicyValues();
   web_ui()->FireWebUIListener("policies-updated", names, values);
 }
 

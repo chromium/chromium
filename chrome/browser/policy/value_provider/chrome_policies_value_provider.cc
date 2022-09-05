@@ -43,16 +43,11 @@ ChromePoliciesValueProvider::~ChromePoliciesValueProvider() {
   registry->RemoveObserver(this);
 }
 
-void ChromePoliciesValueProvider::GetValues(
-    base::Value::List& out_policy_values) {
+base::Value::Dict ChromePoliciesValueProvider::GetValues() {
   auto client =
       std::make_unique<policy::ChromePolicyConversionsClient>(profile_);
   auto policy_conversions = policy::ChromePolicyConversions(std::move(client));
-  base::Value::List chrome_policies =
-      policy_conversions.EnableConvertValues(true).ToValueList();
-  for (auto& policy : chrome_policies) {
-    out_policy_values.Append(std::move(policy));
-  }
+  return policy_conversions.EnableConvertValues(true).ToValueDict();
 }
 
 base::Value::Dict ChromePoliciesValueProvider::GetNames() {

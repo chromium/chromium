@@ -10,6 +10,7 @@
 
 #include <memory>
 #include <string>
+#include <utility>
 
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_multi_source_observation.h"
@@ -79,16 +80,21 @@ class PolicyUIHandler : public content::WebUIMessageHandler,
 
  private:
   base::Value::Dict GetPolicyNames();
-  base::Value::List GetPolicyValues();
+  base::Value::Dict GetPolicyValues();
 
   void HandleExportPoliciesJson(const base::Value::List& args);
   void HandleListenPoliciesUpdates(const base::Value::List& args);
   void HandleReloadPolicies(const base::Value::List& args);
   void HandleCopyPoliciesJson(const base::Value::List& args);
 
-  // Send information about the current policy values to the UI. For each policy
-  // whose value has been set, a dictionary containing the value and additional
-  // metadata is sent.
+  // Send information about the current policy values to the UI. Information is
+  // sent in two parts to the UI:
+  // - A dictionary containing all available policy names
+  // - A dictionary containing the value and additional metadata for each
+  // policy whose value has been set and the list of available policy IDs.
+  // Policy values and names are sent separately because the UI displays the
+  // policies that has their values set and the policies without value
+  // separately.
   void SendPolicies();
 
   // Send the status of cloud policy to the UI.
