@@ -10,6 +10,7 @@
 
 #include "base/allocator/partition_allocator/address_pool_manager.h"
 #include "base/allocator/partition_allocator/freeslot_bitmap.h"
+#include "base/allocator/partition_allocator/freeslot_bitmap_constants.h"
 #include "base/allocator/partition_allocator/oom.h"
 #include "base/allocator/partition_allocator/page_allocator.h"
 #include "base/allocator/partition_allocator/page_allocator_constants.h"
@@ -954,6 +955,9 @@ PartitionBucket<thread_safe>::ProvisionMoreSlotsAndAllocOne(
       PA_DCHECK(free_list_entries_added);
       prev_entry->SetNext(entry);
     }
+#if BUILDFLAG(USE_FREESLOT_BITMAP)
+    FreeSlotBitmapMarkSlotAsFree(next_slot);
+#endif
     next_slot = next_slot_end;
     next_slot_end = next_slot + slot_size;
     prev_entry = entry;
@@ -961,6 +965,10 @@ PartitionBucket<thread_safe>::ProvisionMoreSlotsAndAllocOne(
     free_list_entries_added++;
 #endif
   }
+
+#if BUILDFLAG(USE_FREESLOT_BITMAP)
+  FreeSlotBitmapMarkSlotAsFree(return_slot);
+#endif
 
 #if BUILDFLAG(PA_DCHECK_IS_ON)
   // The only provisioned slot not added to the free list is the one being

@@ -38,6 +38,7 @@
 #include "base/allocator/partition_allocator/address_pool_manager_types.h"
 #include "base/allocator/partition_allocator/allocation_guard.h"
 #include "base/allocator/partition_allocator/chromecast_buildflags.h"
+#include "base/allocator/partition_allocator/freeslot_bitmap.h"
 #include "base/allocator/partition_allocator/page_allocator.h"
 #include "base/allocator/partition_allocator/page_allocator_constants.h"
 #include "base/allocator/partition_allocator/partition_address_space.h"
@@ -1094,6 +1095,13 @@ PartitionRoot<thread_safe>::AllocFromBucket(Bucket* bucket,
   }
   PA_DCHECK(slot_span->GetUtilizedSlotSize() <= slot_span->bucket->slot_size);
   IncreaseTotalSizeOfAllocatedBytes(slot_span, raw_size);
+
+#if BUILDFLAG(USE_FREESLOT_BITMAP)
+  if (!slot_span->bucket->is_direct_mapped()) {
+    internal::FreeSlotBitmapMarkSlotAsUsed(slot_start);
+  }
+#endif
+
   return slot_start;
 }
 
@@ -1334,6 +1342,11 @@ PA_ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeInSlotSpan(
     uintptr_t slot_start,
     SlotSpan* slot_span) {
   DecreaseTotalSizeOfAllocatedBytes(slot_span);
+#if BUILDFLAG(USE_FREESLOT_BITMAP)
+  if (!slot_span->bucket->is_direct_mapped()) {
+    internal::FreeSlotBitmapMarkSlotAsFree(slot_start);
+  }
+#endif
   return slot_span->Free(slot_start);
 }
 

@@ -145,10 +145,14 @@ TEST(HardeningTest, SuccessfulCorruption) {
   void* new_data = root.Alloc(kAllocSize, "");
   ASSERT_EQ(new_data, data);
 
+  // This part fails with freeslot bitmap because it detects freelist
+  // corruptions, which is rather desirable behavior.
+#if !BUILDFLAG(USE_FREESLOT_BITMAP)
   // Not crashing, because a zeroed area is a "valid" freelist entry.
   void* new_data2 = root.Alloc(kAllocSize, "");
   // Now we have a pointer to the middle of an existing allocation.
   EXPECT_EQ(new_data2, to_corrupt);
+#endif
 }
 
 }  // namespace

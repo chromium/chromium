@@ -25,6 +25,10 @@ namespace {
 
 class PartitionAllocFreeSlotBitmapTest : public ::testing::Test {
  protected:
+  static constexpr FreeSlotBitmapCellType kAllUsed = 0u;
+  static constexpr FreeSlotBitmapCellType kAllFree =
+      std::numeric_limits<FreeSlotBitmapCellType>::max();
+
   void SetUp() override {
     // Allocates memory and creates a pseudo superpage in it. We need to
     // allocate |2 * kSuperPageSize| so that a whole superpage is contained in
@@ -114,8 +118,7 @@ TEST_F(PartitionAllocFreeSlotBitmapTest, MarkAllBitsInCellAsUsed) {
   }
 
   // Check all the bits in |cell_first_slot| are 1 (= free).
-  EXPECT_EQ(std::numeric_limits<FreeSlotBitmapCellType>::max(),
-            *cell_first_slot);
+  EXPECT_EQ(kAllFree, *cell_first_slot);
 
   for (size_t slot_addr = kFirstSlotAddr; slot_addr < kLastSlotAddr;
        slot_addr += kAlignment) {
@@ -123,7 +126,7 @@ TEST_F(PartitionAllocFreeSlotBitmapTest, MarkAllBitsInCellAsUsed) {
   }
 
   // Check all the bits in |cell_first_slot| are 0 (= used).
-  EXPECT_EQ(0u, *cell_first_slot);
+  EXPECT_EQ(kAllUsed, *cell_first_slot);
 }
 
 TEST_F(PartitionAllocFreeSlotBitmapTest, MarkLastSlotAsUsed) {
@@ -133,6 +136,73 @@ TEST_F(PartitionAllocFreeSlotBitmapTest, MarkLastSlotAsUsed) {
 
   FreeSlotBitmapMarkSlotAsUsed(last_slot_addr);
   EXPECT_TRUE(FreeSlotBitmapSlotIsUsed(last_slot_addr));
+}
+
+TEST_F(PartitionAllocFreeSlotBitmapTest, ResetBitmap) {
+  const size_t kNumSlots = 3 * kFreeSlotBitmapBitsPerCell;
+  for (size_t i = 0; i < kNumSlots; ++i) {
+    FreeSlotBitmapMarkSlotAsFree(SlotAddr(i));
+  }
+
+  auto [cell_first_slot, bit_index_first_slot] =
+      GetFreeSlotBitmapCellPtrAndBitIndex(SlotAddr(0));
+  EXPECT_EQ(0u, bit_index_first_slot);
+  EXPECT_EQ(kAllFree, *cell_first_slot);
+  EXPECT_EQ(kAllFree, *(cell_first_slot + 1));
+  EXPECT_EQ(kAllFree, *(cell_first_slot + 2));
+
+  FreeSlotBitmapReset(SlotAddr(kFreeSlotBitmapBitsPerCell),
+                      SlotAddr(2 * kFreeSlotBitmapBitsPerCell));
+  EXPECT_EQ(kAllFree, *cell_first_slot);
+  EXPECT_EQ(kAllUsed, *(cell_first_slot + 1));
+  EXPECT_EQ(kAllFree, *(cell_first_slot + 2));
+}
+
+TEST_F(PartitionAllocFreeSlotBitmapTest, ResetBitmapWithinSingleCell) {
+  const size_t kNumSlots = kFreeSlotBitmapBitsPerCell;
+  const size_t kResetStart = 0.25 * kFreeSlotBitmapBitsPerCell;
+  const size_t kResetEnd = 0.5 * kFreeSlotBitmapBitsPerCell;
+  for (size_t i = 0; i < kNumSlots; ++i) {
+    FreeSlotBitmapMarkSlotAsFree(SlotAddr(i));
+  }
+
+  auto [cell, bit_index] = GetFreeSlotBitmapCellPtrAndBitIndex(SlotAddr(0));
+  EXPECT_EQ(0u, bit_index);
+  EXPECT_EQ(kAllFree, *cell);
+
+  FreeSlotBitmapReset(SlotAddr(kResetStart), SlotAddr(kResetEnd));
+  for (size_t i = 0; i < kNumSlots; ++i) {
+    if (kResetStart <= i & i < kResetEnd) {
+      EXPECT_TRUE(FreeSlotBitmapSlotIsUsed(SlotAddr(i)));
+    } else {
+      EXPECT_FALSE(FreeSlotBitmapSlotIsUsed(SlotAddr(i)));
+    }
+  }
+}
+
+TEST_F(PartitionAllocFreeSlotBitmapTest, ResetBitmapIncludingPartialCells) {
+  const size_t kNumSlots = 3 * kFreeSlotBitmapBitsPerCell;
+  const size_t kResetStart = 0.5 * kFreeSlotBitmapBitsPerCell;
+  const size_t kResetEnd = 2.5 * kFreeSlotBitmapBitsPerCell;
+  for (size_t i = 0; i < kNumSlots; ++i) {
+    FreeSlotBitmapMarkSlotAsFree(SlotAddr(i));
+  }
+
+  auto [cell_first_slot, bit_index_first_slot] =
+      GetFreeSlotBitmapCellPtrAndBitIndex(SlotAddr(0));
+  EXPECT_EQ(0u, bit_index_first_slot);
+  EXPECT_EQ(kAllFree, *cell_first_slot);
+  EXPECT_EQ(kAllFree, *(cell_first_slot + 1));
+  EXPECT_EQ(kAllFree, *(cell_first_slot + 2));
+
+  FreeSlotBitmapReset(SlotAddr(kResetStart), SlotAddr(kResetEnd));
+  for (size_t i = 0; i < kNumSlots; ++i) {
+    if (kResetStart <= i & i < kResetEnd) {
+      EXPECT_TRUE(FreeSlotBitmapSlotIsUsed(SlotAddr(i)));
+    } else {
+      EXPECT_FALSE(FreeSlotBitmapSlotIsUsed(SlotAddr(i)));
+    }
+  }
 }
 
 }  // namespace partition_alloc::internal

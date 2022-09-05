@@ -7,6 +7,7 @@
 #include <cstdint>
 
 #include "base/allocator/partition_allocator/address_pool_manager_bitmap.h"
+#include "base/allocator/partition_allocator/freeslot_bitmap.h"
 #include "base/allocator/partition_allocator/oom.h"
 #include "base/allocator/partition_allocator/page_allocator.h"
 #include "base/allocator/partition_allocator/partition_address_space.h"
@@ -440,6 +441,11 @@ static size_t PartitionPurgeSlotSpan(
       slot_span->SetFreelistHead(head);
 
       PA_DCHECK(num_new_entries == num_slots - slot_span->num_allocated_slots);
+
+#if BUILDFLAG(USE_FREESLOT_BITMAP)
+      FreeSlotBitmapReset(slot_span_start + (slot_size * num_slots), end_addr);
+#endif
+
       // Discard the memory.
       ScopedSyscallTimer timer{root};
       DiscardSystemPages(begin_addr, unprovisioned_bytes);
