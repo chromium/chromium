@@ -342,6 +342,7 @@ class DirectWritingTrigger
                 } else {
                     // Handle ACTION_UP in editable field, to show DW Toolbar.
                     if (mEditableNodeBounds != null && !mEditableNodeBounds.isEmpty()
+                            && mCurrentStylusDownEvent != null
                             && mEditableNodeBounds.contains((int) mCurrentStylusDownEvent.getX(),
                                     (int) mCurrentStylusDownEvent.getY())) {
                         onStopRecognition(me, mEditableNodeBounds);
