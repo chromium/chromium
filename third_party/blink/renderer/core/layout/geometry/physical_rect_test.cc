@@ -11,6 +11,11 @@ namespace blink {
 
 namespace {
 
+TEST(PhysicalRectTest, AddOffset) {
+  EXPECT_EQ(PhysicalRect(1, 2, 3, 4) + PhysicalOffset(5, 6),
+            PhysicalRect(6, 8, 3, 4));
+}
+
 struct PhysicalOffsetRectUniteTestData {
   const char* test_case;
   PhysicalRect a;
