@@ -5,7 +5,6 @@
 #include "chrome/browser/lacros/app_mode/kiosk_session_service_lacros.h"
 
 #include "base/test/bind.h"
-#include "chrome/browser/lacros/app_mode/kiosk_session_service_lacros.h"
 #include "chrome/browser/lacros/browser_service_lacros.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/test/base/in_process_browser_test.h"

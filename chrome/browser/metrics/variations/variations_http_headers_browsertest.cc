@@ -39,7 +39,6 @@
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
-#include "components/variations/net/variations_http_headers.h"
 #include "components/variations/proto/study.pb.h"
 #include "components/variations/variations.mojom.h"
 #include "components/variations/variations_associated_data.h"

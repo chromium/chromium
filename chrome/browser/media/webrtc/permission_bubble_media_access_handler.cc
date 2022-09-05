@@ -38,7 +38,6 @@
 
 #include "chrome/browser/media/webrtc/screen_capture_permission_handler_android.h"
 #include "components/permissions/permission_uma_util.h"
-#include "components/permissions/permission_util.h"
 #include "content/public/common/content_features.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
