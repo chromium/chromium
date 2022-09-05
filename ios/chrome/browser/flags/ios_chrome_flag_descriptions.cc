@@ -475,6 +475,11 @@ const char kNewOverflowMenuCBDActionDescription[] =
 const char kNewOverflowMenuName[] = "New Overflow Menu";
 const char kNewOverflowMenuDescription[] = "Enables the new overflow menu";
 
+const char kNewOverflowMenuAlternateIPHName[] =
+    "New Overflow Menu Alternative IPH";
+const char kNewOverflowMenuAlternateIPHDescription[] =
+    "Uses the alternative IPH flow for the new overflow menu";
+
 const char kNewOverflowMenuSettingsActionName[] =
     "Settings action in the new overflow menu";
 const char kNewOverflowMenuSettingsActionDescription[] =

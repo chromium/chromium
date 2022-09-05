@@ -437,6 +437,11 @@ extern const char kNewOverflowMenuCBDActionDescription[];
 extern const char kNewOverflowMenuName[];
 extern const char kNewOverflowMenuDescription[];
 
+// Title and description for the flag to enable the new overflow menu alternate
+// IPH flow.
+extern const char kNewOverflowMenuAlternateIPHName[];
+extern const char kNewOverflowMenuAlternateIPHDescription[];
+
 // Title and description for the flag to add a Settings action to the new
 // overflow menu.
 extern const char kNewOverflowMenuSettingsActionName[];

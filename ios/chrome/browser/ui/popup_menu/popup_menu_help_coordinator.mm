@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/ui/main/layout_guide_scene_agent.h"
 #import "ios/chrome/browser/ui/main/scene_state.h"
 #import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
+#import "ios/chrome/browser/ui/popup_menu/overflow_menu/feature_flags.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/overflow_menu_swift.h"
 #import "ios/chrome/browser/ui/util/layout_guide_names.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
@@ -117,7 +118,13 @@ constexpr base::TimeDelta kMenuTipDelay = base::Seconds(1);
 }
 
 - (void)showOverflowMenuIPHInViewController:(UIViewController*)menu {
-  if (!self.inSessionWithPopupMenuIPH) {
+  // There are 2 reasons to show the IPH in the overflow menu:
+  // 1. The alternate flow is enabled and the feature tracker says it can show.
+  // 2. The user is still in a session where they saw the initial IPH.
+  BOOL shouldShowIPH =
+      (IsNewOverflowMenuAlternateIPHEnabled() && [self canShowIPH]) ||
+      self.inSessionWithPopupMenuIPH;
+  if (!shouldShowIPH) {
     return;
   }
 
@@ -169,16 +176,17 @@ constexpr base::TimeDelta kMenuTipDelay = base::Seconds(1);
 
 - (void)popupMenuIPHDidDismissWithSnoozeAction:
     (feature_engagement::Tracker::SnoozeAction)snoozeAction {
-  feature_engagement::Tracker* tracker = self.featureEngagementTracker;
-  if (tracker) {
-    const base::Feature& feature =
-        feature_engagement::kIPHOverflowMenuTipFeature;
-    tracker->DismissedWithSnooze(feature, snoozeAction);
-  }
+  [self trackerIPHDidDismissWithSnoozeAction:snoozeAction];
   self.popupMenuBubblePresenter = nil;
 }
 
 - (void)showPopupMenuBubbleIfNecessary {
+  // The alternate IPH flow only shows the IPH when entering the menu.
+  if (IsNewOverflowMenuAlternateIPHEnabled()) {
+    return;
+  }
+
+  // Skip if a presentation is already in progress
   if (self.popupMenuBubblePresenter) {
     return;
   }
@@ -203,9 +211,7 @@ constexpr base::TimeDelta kMenuTipDelay = base::Seconds(1);
   }
 
   // Early return if the engagement tracker won't display the IPH.
-  feature_engagement::Tracker* tracker = self.featureEngagementTracker;
-  const base::Feature& feature = feature_engagement::kIPHOverflowMenuTipFeature;
-  if (!tracker || !tracker->ShouldTriggerHelpUI(feature)) {
+  if (![self canShowIPH]) {
     return;
   }
 
@@ -256,6 +262,9 @@ constexpr base::TimeDelta kMenuTipDelay = base::Seconds(1);
 
 - (void)overflowMenuIPHDidDismissWithSnoozeAction:
     (feature_engagement::Tracker::SnoozeAction)snoozeAction {
+  if (IsNewOverflowMenuAlternateIPHEnabled()) {
+    [self trackerIPHDidDismissWithSnoozeAction:snoozeAction];
+  }
   self.overflowMenuBubblePresenter = nil;
 }
 
@@ -267,6 +276,27 @@ constexpr base::TimeDelta kMenuTipDelay = base::Seconds(1);
     self.inSessionWithPopupMenuIPH = NO;
   } else if (level >= SceneActivationLevelForegroundActive) {
     [self showPopupMenuBubbleIfNecessary];
+  }
+}
+
+#pragma mark - Feature Engagement Tracker queries
+
+// Queries the feature engagement tracker to see if IPH can currently be
+// displayed. Once this is called, the IPH MUST be shown and dismissed.
+- (BOOL)canShowIPH {
+  feature_engagement::Tracker* tracker = self.featureEngagementTracker;
+  const base::Feature& feature = feature_engagement::kIPHOverflowMenuTipFeature;
+  return tracker && tracker->ShouldTriggerHelpUI(feature);
+}
+
+// Alerts the feature engagement tracker that a shown IPH was dismissed.
+- (void)trackerIPHDidDismissWithSnoozeAction:
+    (feature_engagement::Tracker::SnoozeAction)snoozeAction {
+  feature_engagement::Tracker* tracker = self.featureEngagementTracker;
+  if (tracker) {
+    const base::Feature& feature =
+        feature_engagement::kIPHOverflowMenuTipFeature;
+    tracker->DismissedWithSnooze(feature, snoozeAction);
   }
 }
 

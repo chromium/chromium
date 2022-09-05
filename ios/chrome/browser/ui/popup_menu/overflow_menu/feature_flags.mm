@@ -28,6 +28,9 @@ const base::Feature kSmartSortingNewOverflowMenu{
 const base::Feature kNewOverflowMenuShareChromeAction{
     "kNewOverflowMenuShareChromeAction", base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kNewOverflowMenuAlternateIPH{
+    "NewOverflowMenuAlternateIPH", base::FEATURE_DISABLED_BY_DEFAULT};
+
 bool IsNewOverflowMenuEnabled() {
   if (@available(iOS 15, *)) {
     return base::FeatureList::IsEnabled(kNewOverflowMenu);
@@ -69,4 +72,9 @@ bool IsSmartSortingNewOverflowMenuEnabled() {
 bool IsNewOverflowMenuShareChromeActionEnabled() {
   return IsNewOverflowMenuEnabled() &&
          base::FeatureList::IsEnabled(kNewOverflowMenuShareChromeAction);
+}
+
+bool IsNewOverflowMenuAlternateIPHEnabled() {
+  return IsNewOverflowMenuEnabled() &&
+         base::FeatureList::IsEnabled(kNewOverflowMenuAlternateIPH);
 }
