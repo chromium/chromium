@@ -78,6 +78,9 @@ export class ProgressCenterPanel {
           if (item.type === ProgressItemType.DELETE) {
             return strf('DELETE_FILE_NAME', source);
           }
+          if (item.type === ProgressItemType.RESTORE_TO_DESTINATION) {
+            return strf('RESTORE_FROM_TRASH_FILE_NAME', source);
+          }
           return item.message;
         }
 
@@ -93,6 +96,9 @@ export class ProgressCenterPanel {
         }
         if (item.type === ProgressItemType.DELETE) {
           return strf('DELETE_ITEMS_REMAINING', count);
+        }
+        if (item.type === ProgressItemType.RESTORE_TO_DESTINATION) {
+          return strf('RESTORE_FROM_TRASH_ITEMS_REMAINING', count);
         }
         return item.message;
         break;
@@ -166,6 +172,9 @@ export class ProgressCenterPanel {
           if (item.type === ProgressItemType.DELETE) {
             return strf('DELETE_FILE_NAME', source);
           }
+          if (item.type === ProgressItemType.RESTORE_TO_DESTINATION) {
+            return strf('RESTORE_FROM_TRASH_FILE_NAME', source);
+          }
           return item.message;
         }
 
@@ -190,6 +199,9 @@ export class ProgressCenterPanel {
         }
         if (item.type === ProgressItemType.DELETE) {
           return strf('DELETE_ITEMS_REMAINING', count);
+        }
+        if (item.type === ProgressItemType.RESTORE_TO_DESTINATION) {
+          return strf('RESTORE_FROM_TRASH_ITEMS_REMAINING', count);
         }
         return item.message;
         break;
@@ -326,7 +338,8 @@ export class ProgressCenterPanel {
               item.type === ProgressItemType.MOVE ||
               item.type === ProgressItemType.FORMAT ||
               item.type === ProgressItemType.ZIP ||
-              item.type === ProgressItemType.DELETE) {
+              item.type === ProgressItemType.DELETE ||
+              item.type == ProgressItemType.RESTORE_TO_DESTINATION) {
             const donePanelItem = this.feedbackHost_.addPanelItem(item.id);
             donePanelItem.id = item.id;
             donePanelItem.panelType = donePanelItem.panelTypeDone;

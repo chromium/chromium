@@ -721,3 +721,85 @@ testcase.trashEnsureOldEntriesArePeriodicallyRemoved = async () => {
   await remoteCall.waitForElementLost(
       appId, ['#progress-panel', 'xf-panel-item']);
 };
+
+/**
+ * Tests that dragging and dropping on the Trash root actually
+ * trashes the item and it appears in Trash after drop
+ * completed.
+ */
+testcase.trashDragDropOutOfTrashPerformsRestoration = async () => {
+  const appId = await setupAndWaitUntilReady(
+      RootPath.DOWNLOADS, BASIC_LOCAL_ENTRY_SET, []);
+
+  // Select hello.txt and send it to the Trash.
+  await remoteCall.waitAndClickElement(
+      appId, '#file-list [file-name="hello.txt"]');
+  await remoteCall.waitAndClickElement(appId, '#move-to-trash-button');
+  await remoteCall.waitForElementLost(
+      appId, '#file-list [file-name="hello.txt"]');
+
+  // Navigate to the Trash root.
+  await navigateWithDirectoryTree(appId, '/Trash');
+
+  // Wait for the element to appear in the Trash.
+  await remoteCall.waitForElement(appId, '#file-list [file-name="hello.txt"]');
+
+  // Send a dragdrop event that emulates dragging the hello.txt onto the "My
+  // files" root in the directory tree.
+  const skipDrop = false;
+  chrome.test.assertTrue(
+      await remoteCall.callRemoteTestUtil(
+          'fakeDragAndDrop', appId,
+          [
+            '#file-list [file-name="hello.txt"] .entry-name',
+            '#directory-tree [entry-label="My files"]',
+            skipDrop,
+          ]),
+      'fakeDragLeaveOrDrop failed');
+
+  // Wait for the element to disappear from the file list.
+  await remoteCall.waitForElementLost(
+      appId, '#file-list [file-name="hello.txt"]');
+
+  // A feedback panel item should be created to indicate the restoring function.
+  await remoteCall.waitForElement(appId, ['#progress-panel', 'xf-panel-item']);
+
+  // Navigate to the "My files" root and ensure the file exists there now.
+  await navigateWithDirectoryTree(appId, '/My files');
+  await remoteCall.waitForElement(appId, '#file-list [file-name="hello.txt"]');
+};
+
+/**
+ * Tests that the Cut command should be enabled whilst the copy command should
+ * be disabled.
+ */
+testcase.trashCopyShouldBeDisabledCutShouldBeEnabled = async () => {
+  const appId = await setupAndWaitUntilReady(
+      RootPath.DOWNLOADS, BASIC_LOCAL_ENTRY_SET, []);
+
+  const fileSelector = '#file-list [file-name="hello.txt"]';
+
+  // Select hello.txt and send it to the Trash.
+  await remoteCall.waitAndClickElement(appId, fileSelector);
+  await remoteCall.waitAndClickElement(appId, '#move-to-trash-button');
+  await remoteCall.waitForElementLost(appId, fileSelector);
+
+  // Navigate to the Trash root.
+  await navigateWithDirectoryTree(appId, '/Trash');
+
+  // Wait for the element to appear in the Trash and right click it to get
+  // access to the context menu.
+  await remoteCall.waitAndRightClick(appId, fileSelector);
+
+  // Wait for the context menu to appear.
+  const contextMenuSelector = '#file-context-menu:not([hidden])';
+  await remoteCall.waitForElement(appId, contextMenuSelector);
+
+  // Ensure the cut command is enabled and the copy command is disabled.
+  await remoteCall.waitForElement(
+      appId,
+      contextMenuSelector + ' [command="#cut"]:not([hidden]):not([disabled])');
+  await remoteCall.waitForElement(
+      appId,
+      contextMenuSelector + ' [command="#copy"][disabled]:not([hidden])');
+};

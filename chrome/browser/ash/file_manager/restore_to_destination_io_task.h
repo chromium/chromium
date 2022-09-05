@@ -67,6 +67,14 @@ class RestoreToDestinationIOTask : public IOTask {
       size_t idx,
       base::FileErrorOr<trash::ParsedTrashInfoData> parsed_data);
 
+  // Used to intercept the `move_io_task_` ProgressCallback and ensure the
+  // progress is coming from the current task with the relevant task_id.
+  void OnProgressCallback(const ProgressStatus& status);
+
+  // Used to intercept the `move_io_task_` CompleteCallback and ensure the
+  // progress is coming from the current task with the relevant task_id.
+  void OnCompleteCallback(ProgressStatus status);
+
   base::FilePath MakeRelativeFromBasePath(const base::FilePath& absolute_path);
 
   scoped_refptr<storage::FileSystemContext> file_system_context_;

@@ -8,7 +8,7 @@ import {Command} from 'chrome://resources/js/cr/ui/command.js';
 import {getDisallowedTransfers, startIOTask} from '../../common/js/api.js';
 import {FileType} from '../../common/js/file_type.js';
 import {ProgressCenterItem, ProgressItemState, ProgressItemType} from '../../common/js/progress_center_common.js';
-import {getEnabledTrashVolumeURLs} from '../../common/js/trash.js';
+import {getEnabledTrashVolumeURLs, isAllTrashEntries, TrashEntry} from '../../common/js/trash.js';
 import {str, strf, util} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {FileOperationManager} from '../../externs/background/file_operation_manager.js';
@@ -302,10 +302,17 @@ export class FileTransferController {
     if (!currentDirEntry) {
       return;
     }
-    const volumeInfo = this.volumeManager_.getVolumeInfo(
-        util.isRecentRoot(currentDirEntry) ?
-            this.selectionHandler_.selection.entries[0] :
-            currentDirEntry);
+    let entry = currentDirEntry;
+    if (util.isRecentRoot(currentDirEntry)) {
+      entry = this.selectionHandler_.selection.entries[0];
+    } else if (util.isTrashRoot(currentDirEntry)) {
+      // In the event the entry resides in the Trash root, delegate to the item
+      // in .Trash/files to get the source filesystem.
+      const trashEntry = /** @type {TrashEntry|Entry} */ (
+          this.selectionHandler_.selection.entries[0]);
+      entry = trashEntry.filesEntry;
+    }
+    const volumeInfo = this.volumeManager_.getVolumeInfo(entry);
     if (!volumeInfo) {
       return;
     }
@@ -335,6 +342,16 @@ export class FileTransferController {
     clipboardData.setData('fs/tag', 'filemanager-data');
     clipboardData.setData(
         `fs/${SOURCE_ROOT_URL}`, sourceVolumeInfo.fileSystem.root.toURL());
+
+    // In the event a cut event has begun from the TrashRoot, the sources should
+    // be delegated to the underlying files to ensure any validation done
+    // onDrop_ (e.g. DLP scanning) is done on the actual file.
+    if (entries.every(util.isTrashEntry)) {
+      entries = entries.map(e => {
+        const trashEntry = /** @type {TrashEntry|Entry} */ (e);
+        return trashEntry.filesEntry;
+      });
+    }
 
     const sourceURLs = util.entriesToURLs(entries);
     clipboardData.setData('fs/sources', sourceURLs.join('\n'));
@@ -618,6 +635,14 @@ export class FileTransferController {
                   return Promise.reject('ABORT');
                 }
                 if (window.isSWA) {
+                  if (isAllTrashEntries(entries, this.volumeManager_)) {
+                    await startIOTask(
+                        chrome.fileManagerPrivate.IOTaskType
+                            .RESTORE_TO_DESTINATION,
+                        entries, {destinationFolder: destinationEntry});
+                    return;
+                  }
+
                   const taskType = toMove ?
                       chrome.fileManagerPrivate.IOTaskType.MOVE :
                       chrome.fileManagerPrivate.IOTaskType.COPY;
@@ -1230,6 +1255,11 @@ export class FileTransferController {
       return false;
     }
     if (this.selectionHandler_.selection.entries.length <= 0) {
+      return false;
+    }
+    // Trash entries are only allowed to be restored which is analogous to a
+    // cut event, so disallow the copy.
+    if (this.selectionHandler_.selection.entries.every(util.isTrashEntry)) {
       return false;
     }
     const entries = this.selectionHandler_.selection.entries;

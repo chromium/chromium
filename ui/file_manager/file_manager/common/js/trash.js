@@ -96,19 +96,51 @@ export const AUTO_DELETE_INTERVAL_MS = 30 * 24 * 60 * 60 * 1000;
  * Returns a list of strings that represent volumes that are enabled for Trash.
  * Used to validate drag drop data without resolving the URLs to Entry's.
  * @param {!VolumeManager} volumeManager
+ * @param {boolean} includeTrashPath True if URLs should have the .Trash folder
+ *     suffix.
  * @returns {!Array<!string>}
  */
-export function getEnabledTrashVolumeURLs(volumeManager) {
+export function getEnabledTrashVolumeURLs(
+    volumeManager, includeTrashPath = false) {
   const urls = [];
   for (let i = 0; i < volumeManager.volumeInfoList.length; i++) {
     const volumeInfo = volumeManager.volumeInfoList.item(i);
     for (const config of TrashConfig.CONFIG) {
       if (volumeInfo.volumeType === config.volumeType) {
-        urls.push(volumeInfo.fileSystem.root.toURL());
+        if (!includeTrashPath) {
+          urls.push(volumeInfo.fileSystem.root.toURL());
+          continue;
+        }
+        let fileSystemRootURL = volumeInfo.fileSystem.root.toURL();
+        if (fileSystemRootURL.endsWith('/')) {
+          fileSystemRootURL =
+              fileSystemRootURL.substring(0, fileSystemRootURL.length - 1);
+        }
+        urls.push(fileSystemRootURL + config.trashDir);
       }
     }
   }
   return urls;
+}
+
+/**
+ * Returns true if all supplied entries reside at a known trash location.
+ * @param {!Array<!Entry>} entries List of entries to verify.
+ * @param {!VolumeManager} volumeManager Volume manager used to get trash
+ *     location URLs.
+ * @returns {boolean} True if all entries are trash
+ */
+export function isAllTrashEntries(entries, volumeManager) {
+  const enabledTrashVolumeURLs =
+      getEnabledTrashVolumeURLs(volumeManager, /*includeTrashPath=*/ true);
+  return entries.every(e => {
+    for (const volumeURL of enabledTrashVolumeURLs) {
+      if (e.toURL().startsWith(volumeURL)) {
+        return true;
+      }
+    }
+    return false;
+  });
 }
 
 /**

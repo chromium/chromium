@@ -9,10 +9,27 @@
 #include "base/bind.h"
 #include "base/logging.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "chrome/browser/ash/file_manager/io_task_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace file_manager::io_task {
+
+namespace {
+
+base::FilePath RemapInfoPathToFilePath(const base::FilePath& trash_file_path) {
+  if (trash_file_path.DirName().BaseName().value() != trash::kFilesFolderName ||
+      trash_file_path.DirName().DirName().empty()) {
+    LOG(ERROR) << "Folder path doesn't contain files parent folder";
+    return trash_file_path;
+  }
+  const auto trash_folder_path = trash_file_path.DirName().DirName();
+  return trash_folder_path.Append(trash::kInfoFolderName)
+      .Append(
+          trash_file_path.BaseName().AddExtension(trash::kTrashInfoExtension));
+}
+
+}  // namespace
 
 RestoreToDestinationIOTask::RestoreToDestinationIOTask(
     std::vector<storage::FileSystemURL> file_urls,
@@ -70,10 +87,17 @@ void RestoreToDestinationIOTask::Complete(State state) {
 }
 
 void RestoreToDestinationIOTask::ValidateTrashInfo(size_t idx) {
-  const base::FilePath& trash_info =
+  base::FilePath trash_info =
       (base_path_.empty())
           ? progress_.sources[idx].url.path()
           : base_path_.Append(progress_.sources[idx].url.path());
+
+  // Supplied URLs can be of items in the .Trash/files or .Trash/info
+  // directory, if in the former the URL gets rewritten to the latter to
+  // ensure input is appropriate for validation.
+  if (trash_info.FinalExtension() != trash::kTrashInfoExtension) {
+    trash_info = RemapInfoPathToFilePath(trash_info);
+  }
 
   auto on_parsed_callback =
       base::BindOnce(&RestoreToDestinationIOTask::OnTrashInfoParsed,
@@ -108,14 +132,53 @@ void RestoreToDestinationIOTask::OnTrashInfoParsed(
     // parent task is tied to the life of the child task.
     move_io_task_ = std::make_unique<CopyOrMoveIOTask>(
         OperationType::kMove, std::move(source_urls_),
-        std::move(destination_file_names_), progress_.destination_folder,
-        profile_, file_system_context_);
-    move_io_task_->Execute(std::move(progress_callback_),
-                           std::move(complete_callback_));
+        std::move(destination_file_names_),
+        std::move(progress_.destination_folder), profile_,
+        file_system_context_);
+
+    // The existing callbacks need to be intercepted to ensure the IOTask
+    // progress that is propagated is sent from the `RestoreToDestinationIOTask`
+    // instead of the underlying `CopyOrMoveIOTask`.
+    auto progress_callback =
+        base::BindRepeating(&RestoreToDestinationIOTask::OnProgressCallback,
+                            weak_ptr_factory_.GetWeakPtr());
+    auto complete_callback =
+        base::BindOnce(&RestoreToDestinationIOTask::OnCompleteCallback,
+                       weak_ptr_factory_.GetWeakPtr());
+
+    move_io_task_->Execute(std::move(progress_callback),
+                           std::move(complete_callback));
     return;
   }
 
   ValidateTrashInfo(idx + 1);
+}
+
+void RestoreToDestinationIOTask::OnProgressCallback(
+    const ProgressStatus& status) {
+  progress_.state = status.state;
+  progress_.bytes_transferred = status.bytes_transferred;
+  progress_.total_bytes = status.total_bytes;
+  progress_.remaining_seconds = status.remaining_seconds;
+  for (int i = 0; i < status.outputs.size(); ++i) {
+    if (i < progress_.outputs.size() && i < status.outputs.size()) {
+      if (progress_.outputs[i].url == status.outputs[i].url &&
+          progress_.outputs[i].error == status.outputs[i].error) {
+        continue;
+      }
+    }
+    progress_.outputs.emplace_back(status.outputs[i].url,
+                                   status.outputs[i].error);
+  }
+  progress_callback_.Run(progress_);
+}
+
+void RestoreToDestinationIOTask::OnCompleteCallback(ProgressStatus status) {
+  const auto task_id = progress_.task_id;
+  progress_ = std::move(status);
+  progress_.task_id = task_id;
+  progress_.type = OperationType::kRestoreToDestination;
+  Complete(progress_.state);
 }
 
 base::FilePath RestoreToDestinationIOTask::MakeRelativeFromBasePath(
