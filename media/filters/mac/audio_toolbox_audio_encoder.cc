@@ -227,8 +227,8 @@ void AudioToolboxAudioEncoder::Encode(std::unique_ptr<AudioBus> input_bus,
 
     EncodedAudioBuffer encoded_buffer(
         AudioParameters(AudioParameters::AUDIO_PCM_LINEAR,
-                        GuessChannelLayout(channel_count_), sample_rate_,
-                        num_frames),
+                        ChannelLayoutConfig::Guess(channel_count_),
+                        sample_rate_, num_frames),
         std::move(packet_buffer), packet_description.mDataByteSize,
         base::TimeTicks() + timestamp_helper_->GetTimestamp(),
         timestamp_helper_->GetFrameDuration(num_frames));

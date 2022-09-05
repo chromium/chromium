@@ -501,13 +501,14 @@ std::unique_ptr<Renderer> PipelineIntegrationTestBase::CreateDefaultRenderer(
     audio_sink_ =
         new NullAudioSink(task_environment_.GetMainThreadTaskRunner());
   } else {
-    ChannelLayout output_layout =
-        mono_output_ ? CHANNEL_LAYOUT_MONO : CHANNEL_LAYOUT_STEREO;
+    ChannelLayoutConfig output_layout_config =
+        mono_output_ ? ChannelLayoutConfig::Mono()
+                     : ChannelLayoutConfig::Stereo();
 
     clockless_audio_sink_ = new ClocklessAudioSink(
         OutputDeviceInfo("", OUTPUT_DEVICE_STATUS_OK,
                          AudioParameters(AudioParameters::AUDIO_PCM_LOW_LATENCY,
-                                         output_layout, 44100, 512)));
+                                         output_layout_config, 44100, 512)));
 
     // Say "not optimized for hardware parameters" to disallow renderer
     // resampling. Hashed tests need this avoid platform dependent floating

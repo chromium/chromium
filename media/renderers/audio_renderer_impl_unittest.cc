@@ -118,7 +118,7 @@ class AudioRendererImplTest : public ::testing::Test,
   // Give the decoder some non-garbage media properties.
   AudioRendererImplTest()
       : hardware_params_(AudioParameters::AUDIO_PCM_LOW_LATENCY,
-                         kChannelLayout,
+                         ChannelLayoutConfig::FromLayout<kChannelLayout>(),
                          kOutputSamplesPerSecond,
                          512),
         main_thread_task_runner_(base::ThreadTaskRunnerHandle::Get()),
@@ -134,8 +134,10 @@ class AudioRendererImplTest : public ::testing::Test,
 
     ConfigureDemuxerStream(true);
 
-    AudioParameters out_params(AudioParameters::AUDIO_PCM_LOW_LATENCY,
-                               kChannelLayout, kOutputSamplesPerSecond, 512);
+    AudioParameters out_params(
+        AudioParameters::AUDIO_PCM_LOW_LATENCY,
+        ChannelLayoutConfig::FromLayout<kChannelLayout>(),
+        kOutputSamplesPerSecond, 512);
     renderer_ = std::make_unique<AudioRendererImpl>(
         main_thread_task_runner_, sink_.get(),
         base::BindRepeating(&AudioRendererImplTest::CreateAudioDecoderForTest,
@@ -267,7 +269,8 @@ class AudioRendererImplTest : public ::testing::Test,
     SetMediaClient(&media_client_);
 
     hardware_params_.Reset(AudioParameters::AUDIO_BITSTREAM_EAC3,
-                           kChannelLayout, kOutputSamplesPerSecond, 512);
+                           ChannelLayoutConfig::FromLayout<kChannelLayout>(),
+                           kOutputSamplesPerSecond, 512);
     sink_ = base::MakeRefCounted<FakeAudioRendererSink>(hardware_params_);
     AudioDecoderConfig audio_config(AudioCodec::kAC3, kSampleFormatEac3,
                                     kChannelLayout, kInputSamplesPerSecond,
@@ -894,11 +897,14 @@ TEST_F(AudioRendererImplTest, Underflow_OneCapacityIncreasePerUnderflow) {
 // Verify that the proper reduced search space is configured for playback rate
 // changes when upmixing is applied to the input.
 TEST_F(AudioRendererImplTest, ChannelMask) {
-  AudioParameters hw_params(AudioParameters::AUDIO_PCM_LOW_LATENCY,
-                            CHANNEL_LAYOUT_7_1, kOutputSamplesPerSecond, 1024);
+  AudioParameters hw_params(
+      AudioParameters::AUDIO_PCM_LOW_LATENCY,
+      ChannelLayoutConfig::FromLayout<CHANNEL_LAYOUT_7_1>(),
+      kOutputSamplesPerSecond, 1024);
   ConfigureConfigChangeRenderer(
       AudioParameters(AudioParameters::AUDIO_PCM_LOW_LATENCY,
-                      CHANNEL_LAYOUT_STEREO, kOutputSamplesPerSecond, 1024),
+                      ChannelLayoutConfig::Stereo(), kOutputSamplesPerSecond,
+                      1024),
       hw_params);
   Initialize();
   std::vector<bool> mask = channel_mask();
@@ -1506,9 +1512,10 @@ TEST_F(AudioRendererImplTest, BasicMutedPlayback) {
 }
 
 TEST_F(AudioRendererImplTest, SinkIsFlushed) {
-  ConfigureWithMockSink(AudioParameters(AudioParameters::AUDIO_PCM_LOW_LATENCY,
-                                        kChannelLayout, kOutputSamplesPerSecond,
-                                        1024 * 15));
+  ConfigureWithMockSink(
+      AudioParameters(AudioParameters::AUDIO_PCM_LOW_LATENCY,
+                      ChannelLayoutConfig::FromLayout<kChannelLayout>(),
+                      kOutputSamplesPerSecond, 1024 * 15));
   Initialize();
   Preroll();
   StartTicking();
@@ -1529,9 +1536,10 @@ TEST_F(AudioRendererImplTest, LowLatencyHint) {
   // Use a basic setup that avoids buffer conversion and sample rate mismatch.
   // This simplifies passing frames to the algorithm and verification of
   // frames-to-time logic.
-  ConfigureBasicRenderer(AudioParameters(AudioParameters::AUDIO_PCM_LOW_LATENCY,
-                                         kChannelLayout, kInputSamplesPerSecond,
-                                         kFramesPerBuffer));
+  ConfigureBasicRenderer(
+      AudioParameters(AudioParameters::AUDIO_PCM_LOW_LATENCY,
+                      ChannelLayoutConfig::FromLayout<kChannelLayout>(),
+                      kInputSamplesPerSecond, kFramesPerBuffer));
   Initialize();
 
   // Setup renderer for playback.
@@ -1617,9 +1625,10 @@ TEST_F(AudioRendererImplTest, HighLatencyHint) {
   // Use a basic setup that avoids buffer conversion and sample rate mismatch.
   // This simplifies passing frames to the algorithm and verification of
   // frames-to-time logic.
-  ConfigureBasicRenderer(AudioParameters(AudioParameters::AUDIO_PCM_LOW_LATENCY,
-                                         kChannelLayout, kInputSamplesPerSecond,
-                                         kFramesPerBuffer));
+  ConfigureBasicRenderer(
+      AudioParameters(AudioParameters::AUDIO_PCM_LOW_LATENCY,
+                      ChannelLayoutConfig::FromLayout<kChannelLayout>(),
+                      kInputSamplesPerSecond, kFramesPerBuffer));
   Initialize();
 
   // Setup renderer for playback.

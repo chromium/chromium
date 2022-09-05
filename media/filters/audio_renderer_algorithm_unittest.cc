@@ -117,8 +117,9 @@ class AudioRendererAlgorithmTest : public testing::Test {
     else if (sample_format == kSampleFormatDts)
       format = media::AudioParameters::AUDIO_BITSTREAM_DTS;
 
-    AudioParameters params(format, channel_layout, samples_per_second,
-                           frames_per_buffer);
+    AudioParameters params(format,
+                           ChannelLayoutConfig(channel_layout, channels_),
+                           samples_per_second, frames_per_buffer);
     is_bitstream_format_ = params.IsBitstreamFormat();
     bool is_encrypted = false;
     algorithm_.Initialize(params, is_encrypted);
@@ -345,11 +346,12 @@ class AudioRendererAlgorithmTest : public testing::Test {
 
   void WsolaTest(double playback_rate) {
     const int kSampleRateHz = 48000;
-    const ChannelLayout kChannelLayout = CHANNEL_LAYOUT_STEREO;
+    constexpr ChannelLayout kChannelLayout = CHANNEL_LAYOUT_STEREO;
     const int kNumFrames = kSampleRateHz / 100;  // 10 milliseconds.
 
     channels_ = ChannelLayoutToChannelCount(kChannelLayout);
-    AudioParameters params(AudioParameters::AUDIO_PCM_LINEAR, kChannelLayout,
+    AudioParameters params(AudioParameters::AUDIO_PCM_LINEAR,
+                           ChannelLayoutConfig::FromLayout<kChannelLayout>(),
                            kSampleRateHz, kNumFrames);
     bool is_encrypted = false;
     algorithm_.Initialize(params, is_encrypted);
