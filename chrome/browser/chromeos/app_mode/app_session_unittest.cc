@@ -226,9 +226,9 @@ TEST_F(AppSessionTest, WebKioskLastDaySessions) {
 }
 
 TEST_F(AppSessionTestMockTime, PeriodicMetrics) {
-  const char* const kPeriodicMetrics[] = {kKioskRamUsagePercentageHistogram,
-                                          kKioskSwapUsagePercentageHistogram,
-                                          kKioskDiskUsagePercentageHistogram};
+  const char* const kPeriodicMetrics[] = {
+      kKioskRamUsagePercentageHistogram, kKioskSwapUsagePercentageHistogram,
+      kKioskDiskUsagePercentageHistogram, kKioskChromeProcessCountHistogram};
   StartWebKioskSession();
 
   task_environment()->FastForwardBy(kPeriodicMetricsInterval / 2);

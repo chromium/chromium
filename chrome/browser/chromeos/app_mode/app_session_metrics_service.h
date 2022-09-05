@@ -25,6 +25,7 @@ extern const char kKioskSessionDurationInDaysCrashedHistogram[];
 extern const char kKioskRamUsagePercentageHistogram[];
 extern const char kKioskSwapUsagePercentageHistogram[];
 extern const char kKioskDiskUsagePercentageHistogram[];
+extern const char kKioskChromeProcessCountHistogram[];
 extern const char kKioskSessionLastDayList[];
 extern const char kKioskSessionStartTime[];
 
@@ -83,9 +84,14 @@ class AppSessionMetricsService {
 
   void RecordRamUsage() const;
 
+  // Not recorded if Chrome fails to return the SystemMemoryInfo.
+  // This can happen, for example, if it fails to open /proc/meminfo
+  // on Linux.
   void RecordSwapUsage() const;
 
   void RecordDiskSpaceUsage() const;
+
+  void RecordChromeProcessCount() const;
 
   void RecordKioskSessionState(KioskSessionState state) const;
 

@@ -16,6 +16,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/path_service.h"
+#include "base/process/process_iterator.h"
 #include "base/process/process_metrics.h"
 #include "base/system/sys_info.h"
 #include "base/task/thread_pool.h"
@@ -111,6 +112,7 @@ const char kKioskSessionDurationInDaysCrashedHistogram[] =
 const char kKioskRamUsagePercentageHistogram[] = "Kiosk.RamUsagePercentage";
 const char kKioskSwapUsagePercentageHistogram[] = "Kiosk.SwapUsagePercentage";
 const char kKioskDiskUsagePercentageHistogram[] = "Kiosk.DiskUsagePercentage";
+const char kKioskChromeProcessCountHistogram[] = "Kiosk.ChromeProcessCount";
 const char kKioskSessionLastDayList[] = "last-day-sessions";
 const char kKioskSessionStartTime[] = "session-start-time";
 
@@ -129,9 +131,7 @@ class DiskSpaceCalculator {
   };
   void StartCalculation() {
     base::FilePath path;
-    if (!base::PathService::Get(base::DIR_HOME, &path)) {
-      return;
-    }
+    DCHECK(base::PathService::Get(base::DIR_HOME, &path));
     base::ThreadPool::PostTaskAndReplyWithResult(
         FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
         base::BindOnce(&DiskSpaceCalculator::GetDiskSpaceBlocking, path),
@@ -254,6 +254,7 @@ void AppSessionMetricsService::RecordPeriodicMetrics() {
   RecordRamUsage();
   RecordSwapUsage();
   RecordDiskSpaceUsage();
+  RecordChromeProcessCount();
 }
 
 void AppSessionMetricsService::RecordRamUsage() const {
@@ -277,6 +278,14 @@ void AppSessionMetricsService::RecordSwapUsage() const {
 void AppSessionMetricsService::RecordDiskSpaceUsage() const {
   DCHECK(disk_space_calculator_);
   disk_space_calculator_->StartCalculation();
+}
+
+void AppSessionMetricsService::RecordChromeProcessCount() const {
+  base::FilePath chrome_path;
+  DCHECK(base::PathService::Get(base::FILE_EXE, &chrome_path));
+  base::FilePath::StringType exe_name = chrome_path.BaseName().value();
+  int process_count = base::GetProcessCount(exe_name, nullptr);
+  base::UmaHistogramCounts100(kKioskChromeProcessCountHistogram, process_count);
 }
 
 void AppSessionMetricsService::RecordKioskSessionState(

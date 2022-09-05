@@ -22,13 +22,25 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<histogram name="Kiosk.ChromeProcessCount" units="processes"
+    expires_after="2023-08-23">
+  <owner>vkovalova@chromium.org</owner>
+  <owner>chromeos-kiosk-eng@google.com</owner>
+  <summary>
+    ChromeOS only. Records the number of processes on the machine that are
+    running from chrome during Kiosk session. Recorded once per hour. Kiosk
+    sessions shorter than one hour will have no emits.
+  </summary>
+</histogram>
+
 <histogram name="Kiosk.DiskUsagePercentage" units="%"
     expires_after="2023-07-01">
   <owner>vkovalova@chromium.org</owner>
   <owner>chromeos-kiosk-eng@google.com</owner>
   <summary>
-    ChromeOS only. Records the percentage of disk space in use. Starts being
-    recorded when a kiosk session is started. Emitted once per hour.
+    ChromeOS only. Records the percentage of disk space in use during Kiosk
+    session. Recorded once per hour. Kiosk sessions shorter than one hour will
+    have no emits.
   </summary>
 </histogram>
 
@@ -121,8 +133,9 @@ chromium-metrics-reviews@google.com.
   <owner>vkovalova@chromium.org</owner>
   <owner>chromeos-kiosk-eng@google.com</owner>
   <summary>
-    ChromeOS only. Records the percentage of RAM in use. Starts being recorded
-    when a kiosk session is started. Emitted once per hour.
+    ChromeOS only. Records the percentage of RAM in use during Kiosk session. Is
+    recorded once per hour. Kiosk sessions shorter than one hour will have no
+    emits.
   </summary>
 </histogram>
 
@@ -247,8 +260,9 @@ chromium-metrics-reviews@google.com.
   <owner>vkovalova@chromium.org</owner>
   <owner>chromeos-kiosk-eng@google.com</owner>
   <summary>
-    ChromeOS only. Records the percentage of swap memory in use. Starts being
-    recorded when a kiosk session is started. Emitted once per hour.
+    ChromeOS only. Records the percentage of swap memory in use during Kiosk
+    session. Recorded once per hour. Kiosk sessions shorter than one hour will
+    have no emits.
   </summary>
 </histogram>
 
