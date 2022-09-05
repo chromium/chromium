@@ -387,12 +387,6 @@ const base::Value* PrefService::GetDefaultPrefValue(
   return value;
 }
 
-const base::Value* PrefService::GetList(const std::string& path) const {
-  const base::Value& value = GetValue(path);
-  DCHECK(value.is_list());
-  return &value;
-}
-
 void PrefService::AddPrefObserver(const std::string& path, PrefObserver* obs) {
   pref_notifier_->AddPrefObserver(path, obs);
 }
