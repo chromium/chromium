@@ -233,7 +233,6 @@ class PasswordStoreTest : public testing::Test {
 
   TestingPrefServiceSimple* pref_service() { return &pref_service_; }
 
- protected:
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::MainThreadType::UI,
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
