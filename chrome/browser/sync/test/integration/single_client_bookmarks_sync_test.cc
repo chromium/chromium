@@ -1500,17 +1500,13 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksSyncTest,
   SetFavicon(0, bookmark, icon_url, CreateFavicon(SK_ColorWHITE),
              bookmarks_helper::FROM_UI);
 
+  ASSERT_TRUE(BookmarkFaviconLoadedChecker(0, GURL(kBookmarkPageUrl)).Wait());
+  ASSERT_TRUE(
+      UpdatedProgressMarkerChecker(GetSyncService(kSingleProfileIndex)).Wait());
   ASSERT_TRUE(bookmarks_helper::ServerBookmarksEqualityChecker(
                   {{title, GURL(kBookmarkPageUrl)}},
                   /*cryptographer=*/nullptr)
                   .Wait());
-  // TODO(crbug.com/1330378): for some reason it's important to put
-  // UpdatedProgressMarkerChecker after (not before)
-  // ServerBookmarksEqualityChecker, otherwise, test became flaky. Investigate
-  // whether there is an issue with UpdatedProgressMarkerChecker (e.g.
-  // satisfying exit condition early, if change still didn't reach sync thread).
-  ASSERT_TRUE(
-      UpdatedProgressMarkerChecker(GetSyncService(kSingleProfileIndex)).Wait());
 
   // Stop Sync and update local entity to enter in unsynced state.
   GetClient(kSingleProfileIndex)->StopSyncServiceWithoutClearingData();

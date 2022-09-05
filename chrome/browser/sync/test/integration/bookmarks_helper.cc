@@ -126,6 +126,9 @@ void ApplyBookmarkFavicon(
 
 // Helper class used to wait for changes to take effect on the favicon of a
 // particular bookmark node in a particular bookmark model.
+// TODO(crbug.com/1359984): Wait for favicon being fully loaded (including check
+// that the right favicon is loaded) instead of being invalidated. Callers need
+// extra audit.
 class FaviconChangeObserver : public bookmarks::BookmarkModelObserver {
  public:
   FaviconChangeObserver(BookmarkModel* model, const BookmarkNode* node)
@@ -137,7 +140,7 @@ class FaviconChangeObserver : public bookmarks::BookmarkModelObserver {
   FaviconChangeObserver& operator=(const FaviconChangeObserver&) = delete;
 
   ~FaviconChangeObserver() override { model_->RemoveObserver(this); }
-  void WaitForSetFavicon() {
+  void WaitUntilFaviconUnset() {
     DCHECK(!run_loop_.running());
     content::RunThisRunLoop(&run_loop_);
   }
@@ -173,7 +176,7 @@ class FaviconChangeObserver : public bookmarks::BookmarkModelObserver {
                                      const BookmarkNode* node) override {}
   void BookmarkNodeFaviconChanged(BookmarkModel* model,
                                   const BookmarkNode* node) override {
-    if (model == model_ && node == node_) {
+    if (model == model_ && node == node_ && !node->is_favicon_loaded()) {
       run_loop_.Quit();
     }
   }
@@ -296,7 +299,7 @@ void SetFaviconImpl(Profile* profile,
   }
 
   // Wait for the favicon for |node| to be invalidated.
-  observer.WaitForSetFavicon();
+  observer.WaitUntilFaviconUnset();
   model->GetFavicon(node);
 }
 
@@ -341,7 +344,7 @@ void DeleteFaviconMappingsImpl(Profile* profile,
   }
 
   // Wait for the favicon for |node| to be invalidated.
-  observer.WaitForSetFavicon();
+  observer.WaitUntilFaviconUnset();
   model->GetFavicon(node);
 }
 
