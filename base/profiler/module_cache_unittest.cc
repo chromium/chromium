@@ -10,7 +10,9 @@
 
 #include "base/callback.h"
 #include "base/callback_helpers.h"
+#include "base/containers/adapters.h"
 #include "base/profiler/module_cache.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_piece.h"
 #include "base/test/bind.h"
 #include "build/build_config.h"
@@ -351,9 +353,8 @@ TEST(ModuleCacheTest, CheckAgainstProcMaps) {
     path_regions[region.path].push_back(&region);
 
   const auto find_last_executable_region = [](const RegionVector& regions) {
-    const auto rloc = std::find_if(
-        regions.rbegin(), regions.rend(),
-        [](const debug::MappedMemoryRegion* region) {
+    const auto rloc = base::ranges::find_if(
+        base::Reversed(regions), [](const debug::MappedMemoryRegion* region) {
           return static_cast<bool>(region->permissions &
                                    debug::MappedMemoryRegion::EXECUTE);
         });
