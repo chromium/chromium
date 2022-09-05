@@ -34,8 +34,9 @@ gn args ./out/dangling/
 use_goma = true
 is_debug = false
 dcheck_always_on = true
-use_backup_ref_ptr = true
+enable_backup_ref_ptr_support = true
 enable_dangling_raw_ptr_checks = true
+use_backup_ref_ptr = true
 ```
 
 We want to emphasize that `is_debug = false` is important. It is a common
