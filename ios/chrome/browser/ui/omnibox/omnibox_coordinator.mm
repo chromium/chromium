@@ -53,7 +53,7 @@
 #error "This file requires ARC support."
 #endif
 
-@interface OmniboxCoordinator () <OmniboxViewControllerDelegate>
+@interface OmniboxCoordinator () <OmniboxViewControllerTextInputDelegate>
 // Object taking care of adding the accessory views to the keyboard.
 @property(nonatomic, strong)
     OmniboxAssistiveKeyboardDelegateImpl* keyboardDelegate;
@@ -96,13 +96,8 @@
 
   self.viewController.defaultLeadingImage =
       GetOmniboxSuggestionIcon(DEFAULT_FAVICON);
-  // TODO(crbug.com/1045047): Use HandlerForProtocol after commands protocol
-  // clean up.
-  self.viewController.dispatcher =
-      static_cast<id<BrowserCommands, LoadQueryCommands, OmniboxCommands>>(
-          self.browser->GetCommandDispatcher());
-  self.viewController.delegate = self;
-  self.mediator = [[OmniboxMediator alloc] init];
+  self.viewController.textInputDelegate = self;
+  self.mediator = [[OmniboxMediator alloc] initWithIncognito:isIncognito];
   self.mediator.templateURLService =
       ios::TemplateURLServiceFactory::GetForBrowserState(
           self.browser->GetBrowserState());
@@ -110,6 +105,15 @@
       IOSChromeFaviconLoaderFactory::GetForBrowserState(
           self.browser->GetBrowserState());
   self.mediator.consumer = self.viewController;
+  self.mediator.omniboxCommandsHandler =
+      HandlerForProtocol(self.browser->GetCommandDispatcher(), OmniboxCommands);
+  self.mediator.loadQueryCommandsHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), LoadQueryCommands);
+  self.mediator.sceneState =
+      SceneStateBrowserAgent::FromBrowser(self.browser)->GetSceneState();
+  self.mediator.URLLoadingBrowserAgent =
+      UrlLoadingBrowserAgent::FromBrowser(self.browser);
+  self.viewController.pasteDelegate = self.mediator;
 
   DCHECK(self.editController);
 
@@ -258,36 +262,11 @@
   return self.viewController.textField;
 }
 
-#pragma mark - OmniboxViewControllerDelegate
+#pragma mark - OmniboxViewControllerTextInputDelegate
 
 - (void)omniboxViewControllerTextInputModeDidChange:
     (OmniboxViewController*)omniboxViewController {
   _editView->UpdatePopupAppearance();
-}
-
-- (void)omniboxViewControllerUserDidVisitCopiedLink:
-    (OmniboxViewController*)omniboxViewController {
-  // Don't log pastes in incognito.
-  if (self.browser->GetBrowserState()->IsOffTheRecord()) {
-    return;
-  }
-
-  SceneState* sceneState =
-      SceneStateBrowserAgent::FromBrowser(self.browser)->GetSceneState();
-  DefaultBrowserSceneAgent* agent =
-      [DefaultBrowserSceneAgent agentFromScene:sceneState];
-  [agent.nonModalScheduler logUserPastedInOmnibox];
-}
-
-- (void)omniboxViewControllerSearchImage:(UIImage*)image {
-  DCHECK(image);
-  web::NavigationManager::WebLoadParams webParams =
-      ImageSearchParamGenerator::LoadParamsForImage(
-          image, ios::TemplateURLServiceFactory::GetForBrowserState(
-                     self.browser->GetBrowserState()));
-  UrlLoadParams params = UrlLoadParams::InCurrentTab(webParams);
-
-  UrlLoadingBrowserAgent::FromBrowser(self.browser)->Load(params);
 }
 
 #pragma mark - private

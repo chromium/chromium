@@ -12,27 +12,31 @@
 #import "ios/chrome/browser/ui/orchestrator/edit_view_animatee.h"
 #import "ios/chrome/browser/ui/orchestrator/location_bar_offset_provider.h"
 
-@protocol BrowserCommands;
-@protocol LoadQueryCommands;
-@protocol OmniboxCommands;
 @protocol OmniboxReturnDelegate;
 @class OmniboxViewController;
 class OmniboxTextChangeDelegate;
 
-@protocol OmniboxViewControllerDelegate
+// Delegate for text input changes in OmniboxViewController.
+@protocol OmniboxViewControllerTextInputDelegate
 
 // Called after the text input mode changes in the OmniboxViewController. This
 // means that the active keyboard has changed.
 - (void)omniboxViewControllerTextInputModeDidChange:
     (OmniboxViewController*)omniboxViewController;
 
-// Called after the user uses the "Visit copied link" context menu entry.
-- (void)omniboxViewControllerUserDidVisitCopiedLink:
-    (OmniboxViewController*)omniboxViewController;
+@end
 
-// Starts a reverse image search with `image`. Caller must check that the search
-// engine supports image search.
-- (void)omniboxViewControllerSearchImage:(UIImage*)image;
+// Delegate for paste actions in OmniboxViewController.
+@protocol OmniboxViewControllerPasteDelegate
+
+// User tapped on the keyboard accessory's paste button.
+- (void)didTapPasteToSearchButton:(NSArray<NSItemProvider*>*)itemProviders;
+// User tapped on the Search Copied Text from the omnibox menu.
+- (void)didTapSearchCopiedText;
+// User tapped on the Search Copied Image from the omnibox menu.
+- (void)didTapSearchCopiedImage;
+// User tapped on the Visit Copied Link from the omnibox menu.
+- (void)didTapVisitCopiedLink;
 
 @end
 
@@ -55,13 +59,10 @@ class OmniboxTextChangeDelegate;
 @property(nonatomic, assign)
     UISemanticContentAttribute semanticContentAttribute;
 
-// The dispatcher for the paste and go action.
-@property(nonatomic, weak)
-    id<BrowserCommands, LoadQueryCommands, OmniboxCommands>
-        dispatcher;
-
 // The delegate for this object.
-@property(nonatomic, weak) id<OmniboxViewControllerDelegate> delegate;
+@property(nonatomic, weak) id<OmniboxViewControllerTextInputDelegate>
+    textInputDelegate;
+@property(nonatomic, weak) id<OmniboxViewControllerPasteDelegate> pasteDelegate;
 @property(nonatomic, weak) id<OmniboxReturnDelegate> returnKeyDelegate;
 
 // Designated initializer.

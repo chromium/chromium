@@ -11,9 +11,6 @@
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/open_from_clipboard/clipboard_recent_content.h"
 #include "components/strings/grit/components_strings.h"
-#import "ios/chrome/browser/ui/commands/browser_commands.h"
-#import "ios/chrome/browser/ui/commands/load_query_commands.h"
-#import "ios/chrome/browser/ui/commands/omnibox_commands.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_utils.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_constants.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_container_view.h"
@@ -385,51 +382,7 @@ const CGFloat kClearButtonSize = 28.0f;
   // Interacted while focused.
   self.omniboxInteractedWhileFocused = YES;
 
-  __weak __typeof(self) weakSelf = self;
-  auto textCompletion =
-      ^(__kindof id<NSItemProviderReading> providedItem, NSError* error) {
-        LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeGeneral);
-        dispatch_async(dispatch_get_main_queue(), ^{
-          NSString* text = static_cast<NSString*>(providedItem);
-          if (text) {
-            [weakSelf.dispatcher loadQuery:text immediately:YES];
-            [weakSelf.dispatcher cancelOmniboxEdit];
-          }
-        });
-      };
-  auto imageCompletion =
-      ^(__kindof id<NSItemProviderReading> providedItem, NSError* error) {
-        dispatch_async(dispatch_get_main_queue(), ^{
-          UIImage* image = static_cast<UIImage*>(providedItem);
-          if (image) {
-            [weakSelf.delegate omniboxViewControllerSearchImage:image];
-            [weakSelf.dispatcher cancelOmniboxEdit];
-          }
-        });
-      };
-  for (NSItemProvider* itemProvider in itemProviders) {
-    if (self.searchByImageEnabled &&
-        [itemProvider canLoadObjectOfClass:[UIImage class]]) {
-      RecordAction(
-          UserMetricsAction("Mobile.OmniboxPasteButton.SearchCopiedImage"));
-      [itemProvider loadObjectOfClass:[UIImage class]
-                    completionHandler:imageCompletion];
-      break;
-    } else if ([itemProvider canLoadObjectOfClass:[NSURL class]]) {
-      RecordAction(
-          UserMetricsAction("Mobile.OmniboxPasteButton.SearchCopiedLink"));
-      // Load URL as a NSString to avoid further conversion.
-      [itemProvider loadObjectOfClass:[NSString class]
-                    completionHandler:textCompletion];
-      break;
-    } else if ([itemProvider canLoadObjectOfClass:[NSString class]]) {
-      RecordAction(
-          UserMetricsAction("Mobile.OmniboxPasteButton.SearchCopiedText"));
-      [itemProvider loadObjectOfClass:[NSString class]
-                    completionHandler:textCompletion];
-      break;
-    }
-  }
+  [self.pasteDelegate didTapPasteToSearchButton:itemProviders];
 }
 
 #pragma mark - OmniboxConsumer
@@ -493,7 +446,7 @@ const CGFloat kClearButtonSize = 28.0f;
   [self.textField updateTextDirection];
   self.semanticContentAttribute = [self.textField bestSemanticContentAttribute];
 
-  [self.delegate omniboxViewControllerTextInputModeDidChange:self];
+  [self.textInputDelegate omniboxViewControllerTextInputModeDidChange:self];
 }
 
 - (void)updateCachedClipboardState {
@@ -659,36 +612,16 @@ const CGFloat kClearButtonSize = 28.0f;
   RecordAction(
       UserMetricsAction("Mobile.OmniboxContextMenu.SearchCopiedImage"));
   self.omniboxInteractedWhileFocused = YES;
-  __weak __typeof(self) weakSelf = self;
-  ClipboardRecentContent::GetInstance()->GetRecentImageFromClipboard(
-      base::BindOnce(^(absl::optional<gfx::Image> optionalImage) {
-        if (!optionalImage) {
-          return;
-        }
-        UIImage* image = optionalImage.value().ToUIImage();
-        [weakSelf.delegate omniboxViewControllerSearchImage:image];
-      }));
+  [self.pasteDelegate didTapSearchCopiedImage];
 }
 
 - (void)visitCopiedLink:(id)sender {
   // A search using clipboard link is activity that should indicate a user
   // that would be interested in setting Chrome as the default browser.
   LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeGeneral);
-  [self.delegate omniboxViewControllerUserDidVisitCopiedLink:self];
   RecordAction(UserMetricsAction("Mobile.OmniboxContextMenu.VisitCopiedLink"));
   self.omniboxInteractedWhileFocused = YES;
-  __weak __typeof(self) weakSelf = self;
-  ClipboardRecentContent::GetInstance()->GetRecentURLFromClipboard(
-      base::BindOnce(^(absl::optional<GURL> optionalURL) {
-        if (!optionalURL) {
-          return;
-        }
-        NSString* url = base::SysUTF8ToNSString(optionalURL.value().spec());
-        dispatch_async(dispatch_get_main_queue(), ^{
-          [weakSelf.dispatcher loadQuery:url immediately:YES];
-          [weakSelf.dispatcher cancelOmniboxEdit];
-        });
-      }));
+  [self.pasteDelegate didTapVisitCopiedLink];
 }
 
 - (void)searchCopiedText:(id)sender {
@@ -697,18 +630,7 @@ const CGFloat kClearButtonSize = 28.0f;
   LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeGeneral);
   RecordAction(UserMetricsAction("Mobile.OmniboxContextMenu.SearchCopiedText"));
   self.omniboxInteractedWhileFocused = YES;
-  __weak __typeof(self) weakSelf = self;
-  ClipboardRecentContent::GetInstance()->GetRecentTextFromClipboard(
-      base::BindOnce(^(absl::optional<std::u16string> optionalText) {
-        if (!optionalText) {
-          return;
-        }
-        NSString* query = base::SysUTF16ToNSString(optionalText.value());
-        dispatch_async(dispatch_get_main_queue(), ^{
-          [weakSelf.dispatcher loadQuery:query immediately:YES];
-          [weakSelf.dispatcher cancelOmniboxEdit];
-        });
-      }));
+  [self.pasteDelegate didTapSearchCopiedText];
 }
 
 #pragma mark - UIScribbleInteractionDelegate
