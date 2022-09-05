@@ -496,9 +496,10 @@ const NGLayoutResult* NGBlockNode::Layout(
 
   auto* block_flow = DynamicTo<LayoutBlockFlow>(box_.Get());
 
-  // Try to perform "simplified" layout.
+  // Try to perform "simplified" layout, unless it's a fragmentation context
+  // root (the simplified layout algorithm doesn't support fragmentainers).
   if (cache_status == NGLayoutCacheStatus::kNeedsSimplifiedLayout &&
-      !GetFlowThread(block_flow)) {
+      (!block_flow || !block_flow->IsFragmentationContextRoot())) {
     DCHECK(layout_result);
 #if DCHECK_IS_ON()
     const NGLayoutResult* previous_result = layout_result;

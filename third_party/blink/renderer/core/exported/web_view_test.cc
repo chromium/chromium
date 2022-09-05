@@ -147,6 +147,7 @@
 #include "third_party/blink/renderer/platform/keyboard_codes.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/testing/histogram_tester.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/url_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
@@ -5381,6 +5382,24 @@ TEST_F(WebViewTest, ViewportUnitsPrintingWithPageZoom) {
   EXPECT_EQ(expected_width, t1->OffsetWidth());
   EXPECT_EQ(expected_width, t2->OffsetWidth());
 
+  frame->PrintEnd();
+}
+
+TEST_F(WebViewTest, ResizeWithFixedPosCrash) {
+  if (!RuntimeEnabledFeatures::LayoutNGEnabled())
+    return;
+  ScopedLayoutNGPrintingForTest ng_printing_enabled(true);
+  WebViewImpl* web_view = web_view_helper_.Initialize();
+  WebURL base_url = url_test_helpers::ToKURL("http://example.com/");
+  frame_test_helpers::LoadHTMLString(web_view->MainFrameImpl(),
+                                     "<div style='position:fixed;'></div>",
+                                     base_url);
+  WebLocalFrameImpl* frame = web_view->MainFrameImpl();
+  gfx::Size page_size(300, 360);
+  WebPrintParams print_params;
+  print_params.print_content_area.set_size(page_size);
+  frame->PrintBegin(print_params, WebNode());
+  web_view->MainFrameWidget()->Resize(page_size);
   frame->PrintEnd();
 }
 
