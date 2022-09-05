@@ -4024,7 +4024,7 @@ if (!is_android) {
         "../browser/ui/webui/chromeos/system_web_dialog_browsertest.cc",
         "../browser/ui/webui/nearby_share/nearby_share_dialog_ui_browsertest.cc",
         "../browser/ui/webui/settings/ash/accessibility_handler_browsertest.cc",
-        "../browser/ui/webui/settings/ash/account_manager_handler_browsertest.cc",
+        "../browser/ui/webui/settings/ash/account_manager_ui_handler_browsertest.cc",
         "../browser/ui/webui/settings/ash/device_power_handler_browsertest.cc",
         "../browser/ui/webui/signin/inline_login_dialog_chromeos_browsertest.cc",
         "../browser/ui/webui/signin/inline_login_handler_chromeos_browsertest.cc",

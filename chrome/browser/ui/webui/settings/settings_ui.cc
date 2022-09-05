@@ -116,7 +116,7 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
-#include "chrome/browser/ui/webui/settings/ash/account_manager_handler.h"
+#include "chrome/browser/ui/webui/settings/ash/account_manager_ui_handler.h"
 #include "chrome/browser/ui/webui/settings/ash/android_apps_handler.h"
 #include "chrome/browser/ui/webui/settings/ash/multidevice_handler.h"
 #include "chrome/common/chrome_switches.h"
