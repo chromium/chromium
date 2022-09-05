@@ -121,11 +121,17 @@ def get_tsc_paths(board):
 
 def generate_tsconfig(board):
     cca_root = os.getcwd()
+    # TODO(pihsun): This needs to be in sync with BUILD.gn, have some heuristic
+    # to get the dependency from there or from the generated tsconfig.json
+    # instead?
+    root_dir = get_chromium_root()
+    common_definitions = os.path.join(root_dir, 'tools/typescript/definitions')
 
     with open(os.path.join(cca_root, 'tsconfig_base.json')) as f:
         tsconfig = json.load(f)
 
     tsconfig['files'] = glob.glob('js/**/*.ts', recursive=True)
+    tsconfig['files'].append(os.path.join(common_definitions, 'pending.d.ts'))
     tsconfig['compilerOptions']['noEmit'] = True
     tsconfig['compilerOptions']['paths'] = get_tsc_paths(board)
 
