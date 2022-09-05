@@ -12,6 +12,7 @@
 #include "chrome/browser/policy/schema_registry_service.h"
 #include "chrome/browser/policy/value_provider/value_provider_util.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/policy/core/browser/policy_conversions.h"
 #include "components/policy/core/common/policy_namespace.h"
 #include "components/policy/core/common/policy_service.h"
 #include "components/policy/core/common/schema.h"
@@ -114,7 +115,7 @@ base::Value::Dict ExtensionPoliciesValueProvider::GetExtensionPolicyNames(
       continue;
     }
     base::Value::Dict extension_value;
-    extension_value.Set("name", extension->name());
+    extension_value.Set(policy::kNameKey, extension->name());
     const policy::Schema* schema = schema_map->GetSchema(
         policy::PolicyNamespace(policy_domain, extension->id()));
     base::Value::List policy_names;
@@ -125,7 +126,7 @@ base::Value::Dict ExtensionPoliciesValueProvider::GetExtensionPolicyNames(
         policy_names.Append(prop.key());
       }
     }
-    extension_value.Set("policyNames", std::move(policy_names));
+    extension_value.Set(policy::kPolicyNamesKey, std::move(policy_names));
     names.Set(extension->id(), std::move(extension_value));
   }
   return names;

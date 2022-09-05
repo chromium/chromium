@@ -19,6 +19,7 @@
 #include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/policy/core/browser/configuration_policy_handler_list.h"
+#include "components/policy/core/browser/policy_conversions.h"
 #include "components/policy/core/browser/policy_conversions_client.h"
 #include "components/policy/core/browser/policy_error_map.h"
 #include "components/policy/core/common/policy_map.h"
@@ -164,10 +165,11 @@ Value::List ChromePolicyConversionsClient::GetExtensionPolicies(
                         &empty_error_map, PoliciesSet(), PoliciesSet(),
                         GetKnownPolicies(schema_map, policy_namespace));
     Value::Dict extension_policies_data;
-    extension_policies_data.Set("name", extension->name());
-    extension_policies_data.Set("id", extension->id());
+    extension_policies_data.Set(policy::kNameKey, extension->name());
+    extension_policies_data.Set(policy::kIdKey, extension->id());
     extension_policies_data.Set("forSigninScreen", for_signin_screen);
-    extension_policies_data.Set("policies", std::move(extension_policies));
+    extension_policies_data.Set(policy::kPoliciesKey,
+                                std::move(extension_policies));
     policies.Append(std::move(extension_policies_data));
   }
 #endif
@@ -243,10 +245,10 @@ Value::List ChromePolicyConversionsClient::GetDeviceLocalAccountPolicies() {
         GetPolicyValues(map, &errors, deprecated_policies, future_policies,
                         GetKnownPolicies(schema_map, policy_namespace));
     Value::Dict current_account_policies_data;
-    current_account_policies_data.Set("id", user_id);
+    current_account_policies_data.Set(policy::kIdKey, user_id);
     current_account_policies_data.Set("user_id", user_id);
-    current_account_policies_data.Set("name", user_id);
-    current_account_policies_data.Set("policies",
+    current_account_policies_data.Set(policy::kNameKey, user_id);
+    current_account_policies_data.Set(policy::kPoliciesKey,
                                       std::move(current_account_policies));
     policies.Append(std::move(current_account_policies_data));
   }

@@ -207,7 +207,7 @@ base::Value::Dict PolicyUIHandler::GetPolicyNames() const {
 base::Value::List PolicyUIHandler::GetPolicyValues() const {
   auto client = std::make_unique<PolicyConversionsClientIOS>(
       ChromeBrowserState::FromWebUIIOS(web_ui()));
-  return policy::ArrayPolicyConversions(std::move(client))
+  return policy::ChromePolicyConversions(std::move(client))
       .EnableConvertValues(true)
       .ToValueList();
 }

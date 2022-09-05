@@ -20,6 +20,7 @@
 #include "chrome/browser/policy/chrome_policy_conversions_client.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/install_static/install_util.h"
+#include "components/policy/core/browser/policy_conversions.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
@@ -79,8 +80,8 @@ void UpdaterStatusAndValueProvider::GetValues(
   }
 
   base::Value::Dict updater_policies_data;
-  updater_policies_data.Set("name", "Google Update Policies");
-  updater_policies_data.Set("id", "updater");
+  updater_policies_data.Set(policy::kNameKey, "Google Update Policies");
+  updater_policies_data.Set(policy::kIdKey, "updater");
 
   auto client =
       std::make_unique<policy::ChromePolicyConversionsClient>(profile_);
@@ -99,8 +100,8 @@ base::Value::Dict UpdaterStatusAndValueProvider::GetNames() {
   base::Value::Dict names;
   if (updater_policies_) {
     base::Value::Dict updater_policies;
-    updater_policies.Set("name", "Google Update Policies");
-    updater_policies.Set("policyNames", GetGoogleUpdatePolicyNames());
+    updater_policies.Set(policy::kNameKey, "Google Update Policies");
+    updater_policies.Set(policy::kPolicyNamesKey, GetGoogleUpdatePolicyNames());
     names.Set("updater", std::move(updater_policies));
   }
   return names;
