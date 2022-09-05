@@ -42,7 +42,7 @@ export class StatusBoxElement extends CustomElement {
 
     // Set appropriate box legend based on status key
     this.shadowRoot.querySelector('.legend').textContent =
-        loadTimeData.getString(status.boxLegendKey);
+        loadTimeData.getString(status.policyDescriptionKey);
 
     if (scope === 'device') {
       // Populate the device naming information.

@@ -7,6 +7,7 @@
 #include "base/values.h"
 #include "chrome/browser/policy/status_provider/status_provider_util.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/policy/core/browser/webui/policy_status_provider.h"
 #include "components/policy/core/common/cloud/cloud_policy_core.h"
 #include "components/policy/core/common/cloud/cloud_policy_store.h"
 
@@ -24,5 +25,7 @@ base::Value::Dict UserCloudPolicyStatusProvider::GetStatus() {
       policy::PolicyStatusProvider::GetStatusFromCore(core_);
   ExtractDomainFromUsername(&dict);
   GetUserAffiliationStatus(&dict, profile_);
+  dict.Set(policy::kPolicyDescriptionKey, kUserPolicyStatusDescription);
+  SetDomainInUserStatus(dict);
   return dict;
 }

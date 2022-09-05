@@ -68,10 +68,8 @@ class PolicyUIHandler : public web::WebUIIOSMessageHandler,
   void SendPolicies();
 
   // Get a value dictionary of cloud policies' status information for each scope
-  // that has cloud policy enabled (device and/or user). If
-  // `include_box_legend_key` is true, legend values needed for each status
-  // boxes will be added to the Value.
-  base::Value::Dict GetStatusValue(bool include_box_legend_key) const;
+  // that has cloud policy enabled (device and/or user).
+  base::Value::Dict GetStatusValue() const;
 
   void SendStatus();
 

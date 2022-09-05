@@ -7,6 +7,7 @@
 #include "base/values.h"
 #include "chrome/browser/policy/status_provider/status_provider_util.h"
 #include "components/policy/core/browser/cloud/message_util.h"
+#include "components/policy/core/browser/webui/policy_status_provider.h"
 #include "components/policy/core/common/cloud/cloud_policy_store.h"
 
 DeviceLocalAccountPolicyStatusProvider::DeviceLocalAccountPolicyStatusProvider(
@@ -36,6 +37,8 @@ base::Value::Dict DeviceLocalAccountPolicyStatusProvider::GetStatus() {
   }
   ExtractDomainFromUsername(&dict);
   dict.Set("publicAccount", true);
+  dict.Set(policy::kPolicyDescriptionKey, kUserPolicyStatusDescription);
+  SetDomainInUserStatus(dict);
   return dict;
 }
 

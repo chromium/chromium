@@ -8,17 +8,18 @@
 #include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
 
+extern const char kDevicePolicyStatusDescription[];
+extern const char kUserPolicyStatusDescription[];
+
 void ExtractDomainFromUsername(base::Value::Dict* dict);
 
 // Adds a new entry to |dict| with the affiliation status of the user associated
 // with |profile|. This method shouldn't be called for device scope status.
 void GetUserAffiliationStatus(base::Value::Dict* dict, Profile* profile);
 
-// MachineStatus box labels itself as `machine policies` on desktop. In the
-// domain of mobile devices such as iOS or Android we want to label this box as
-// `device policies`. This is a helper function that retrieves the expected
-// labelKey
-std::string GetMachineStatusLegendKey();
+// Looks for "username" key in `user_status` and sets "domain" key with the
+// domain of username.
+void SetDomainInUserStatus(base::Value::Dict& user_status);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 void GetOffHoursStatus(base::Value::Dict* dict);

@@ -135,6 +135,15 @@ void MergePolicyValuesAndIds(base::Value::Dict policy_values,
   AddPolicyIdsForDisplay(policy_values, out_policy_ids);
   out_policy_values.Merge(std::move(policy_values));
 }
+
+// Puts `status` in `out_status` dictionary with `scope` key of `status` is not
+// empty.
+void SetStatus(std::string scope,
+               base::Value::Dict status,
+               base::Value::Dict& out_status) {
+  if (!status.empty())
+    out_status.Set(scope, std::move(status));
+}
 }  // namespace
 
 PolicyUIHandler::PolicyUIHandler() = default;
@@ -401,46 +410,19 @@ void PolicyUIHandler::SendStatus() {
   if (!IsJavascriptAllowed())
     return;
 
-  FireWebUIListener("status-updated", GetStatusValue(/*for_webui*/ true));
+  FireWebUIListener("status-updated", GetStatusValue());
 }
 
-base::Value::Dict PolicyUIHandler::GetStatusValue(bool for_webui) const {
-  base::Value::Dict device_status = device_status_provider_->GetStatus();
-  base::Value::Dict user_status = user_status_provider_->GetStatus();
-  const std::string* username = user_status.FindString("username");
-  if (username && !username->empty())
-    user_status.Set("domain", gaia::ExtractDomainName(*username));
-
-  base::Value::Dict machine_status = machine_status_provider_->GetStatus();
-
+base::Value::Dict PolicyUIHandler::GetStatusValue() const {
   base::Value::Dict status;
-  if (!device_status.empty()) {
-    if (for_webui)
-      device_status.Set("boxLegendKey", "statusDevice");
-    status.Set("device", std::move(device_status));
-  }
-
-  if (!machine_status.empty()) {
-    if (for_webui)
-      machine_status.Set("boxLegendKey", GetMachineStatusLegendKey());
-    status.Set("machine", std::move(machine_status));
-  }
-
-  if (!user_status.empty()) {
-    if (for_webui)
-      user_status.Set("boxLegendKey", "statusUser");
-    status.Set("user", std::move(user_status));
-  }
+  SetStatus("device", device_status_provider_->GetStatus(), status);
+  SetStatus("user", user_status_provider_->GetStatus(), status);
+  SetStatus("machine", machine_status_provider_->GetStatus(), status);
 
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  base::Value::Dict updater_status =
-      updater_status_and_value_provider_->GetStatus();
-  if (!updater_status.empty()) {
-    if (for_webui)
-      updater_status.Set("boxLegendKey", "statusUpdater");
-    status.Set("updater", std::move(updater_status));
-  }
+  SetStatus("updater", updater_status_and_value_provider_->GetStatus(), status);
 #endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+
   return status;
 }
 
@@ -540,8 +522,7 @@ std::string PolicyUIHandler::GetPoliciesAsJson() {
   policy::JsonGenerationParams params = policy::GetChromeMetadataParams(
       /*application_name=*/l10n_util::GetStringUTF8(IDS_PRODUCT_NAME));
 
-  return policy::GenerateJson(std::move(client),
-                              GetStatusValue(/*for_webui*/ false), params);
+  return policy::GenerateJson(std::move(client), GetStatusValue(), params);
 }
 
 void DoWritePoliciesToJSONFile(const base::FilePath& path,

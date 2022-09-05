@@ -158,7 +158,7 @@ std::string PolicyUIHandler::GetPoliciesAsJson() {
       ChromeBrowserState::FromWebUIIOS(web_ui()));
 
   return policy::GenerateJson(
-      std::move(client), GetStatusValue(/*include_box_legend_key=*/false),
+      std::move(client), GetStatusValue(),
       policy::JsonGenerationParams()
           .with_application_name(l10n_util::GetStringUTF8(IDS_IOS_PRODUCT_NAME))
           .with_channel_name(GetChannelString(GetChannel()))
@@ -238,8 +238,7 @@ void PolicyUIHandler::SendPolicies() {
   web_ui()->FireWebUIListener("policies-updated", names, values);
 }
 
-base::Value::Dict PolicyUIHandler::GetStatusValue(
-    bool include_box_legend_key) const {
+base::Value::Dict PolicyUIHandler::GetStatusValue() const {
   base::Value::Dict machine_status = machine_status_provider_->GetStatus();
 
   // Given that it's usual for users to bring their own devices and the fact
@@ -248,17 +247,12 @@ base::Value::Dict PolicyUIHandler::GetStatusValue(
   machine_status.Remove("machine");
 
   base::Value::Dict status;
-  if (!machine_status.empty()) {
-    if (include_box_legend_key) {
-      machine_status.Set("boxLegendKey", "statusDevice");
-    }
-    status.Set("machine", std::move(machine_status));
-  }
+  status.Set("machine", std::move(machine_status));
   return status;
 }
 
 void PolicyUIHandler::SendStatus() {
-  base::Value::Dict status = GetStatusValue(/*include_box_legend_key=*/true);
+  base::Value::Dict status = GetStatusValue();
   web_ui()->FireWebUIListener("status-updated", status);
 }
 

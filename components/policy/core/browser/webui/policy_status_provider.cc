@@ -26,6 +26,8 @@ namespace em = enterprise_management;
 
 namespace policy {
 
+const char kPolicyDescriptionKey[] = "policyDescriptionKey";
+
 namespace {
 
 // Formats the association state indicated by |data|. If |data| is NULL, the

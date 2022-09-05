@@ -21,6 +21,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/install_static/install_util.h"
 #include "components/policy/core/browser/policy_conversions.h"
+#include "components/policy/core/browser/webui/policy_status_provider.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
@@ -29,6 +30,7 @@ namespace {
 
 constexpr char kUpdaterPoliciesId[] = "updater";
 constexpr char kUpdaterPoliciesName[] = "Google Update Policies";
+constexpr char kUpdaterPolicyStatusDescription[] = "statusUpdater";
 
 std::string GetActiveDirectoryDomain() {
   std::string domain;
@@ -72,6 +74,10 @@ base::Value::Dict UpdaterStatusAndValueProvider::GetStatus() {
     dict.Set("timeSinceLastRefresh",
              GetTimeSinceLastActionString(updater_status_->last_checked_time));
   }
+  if (dict.empty())
+    return {};
+
+  dict.Set(policy::kPolicyDescriptionKey, kUpdaterPolicyStatusDescription);
   return dict;
 }
 

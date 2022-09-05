@@ -6,6 +6,7 @@
 
 #include "base/values.h"
 #include "chrome/browser/policy/status_provider/status_provider_util.h"
+#include "components/policy/core/browser/webui/policy_status_provider.h"
 
 DeviceActiveDirectoryPolicyStatusProvider::
     DeviceActiveDirectoryPolicyStatusProvider(
@@ -17,5 +18,6 @@ DeviceActiveDirectoryPolicyStatusProvider::
 base::Value::Dict DeviceActiveDirectoryPolicyStatusProvider::GetStatus() {
   base::Value::Dict dict = UserActiveDirectoryPolicyStatusProvider::GetStatus();
   dict.Set("enterpriseDomainManager", enterprise_domain_manager_);
+  dict.Set(policy::kPolicyDescriptionKey, kDevicePolicyStatusDescription);
   return dict;
 }

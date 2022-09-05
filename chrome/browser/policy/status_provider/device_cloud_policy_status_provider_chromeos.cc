@@ -9,6 +9,7 @@
 #include "base/values.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/policy/status_provider/status_provider_util.h"
+#include "components/policy/core/browser/webui/policy_status_provider.h"
 
 DeviceCloudPolicyStatusProviderChromeOS::
     DeviceCloudPolicyStatusProviderChromeOS(
@@ -25,6 +26,7 @@ base::Value::Dict DeviceCloudPolicyStatusProviderChromeOS::GetStatus() {
   base::Value::Dict dict =
       policy::PolicyStatusProvider::GetStatusFromCore(core_);
   dict.Set("enterpriseDomainManager", enterprise_domain_manager_);
+  dict.Set(policy::kPolicyDescriptionKey, kDevicePolicyStatusDescription);
   GetOffHoursStatus(&dict);
   return dict;
 }

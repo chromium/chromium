@@ -9,6 +9,7 @@
 #include "chrome/browser/policy/status_provider/status_provider_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/policy/core/browser/cloud/message_util.h"
+#include "components/policy/core/browser/webui/policy_status_provider.h"
 #include "components/policy/core/common/cloud/cloud_policy_store.h"
 #include "components/policy/core/common/policy_loader_lacros.h"
 #include "components/policy/proto/device_management_backend.pb.h"
@@ -47,5 +48,7 @@ base::Value::Dict UserPolicyStatusProviderLacros::GetStatus() {
            FormatStoreStatus(
                policy::CloudPolicyStore::STATUS_OK,
                policy::CloudPolicyValidatorBase::Status::VALIDATION_OK));
+  dict.Set(policy::kPolicyDescriptionKey, kUserPolicyStatusDescription);
+  SetDomainInUserStatus(dict);
   return dict;
 }

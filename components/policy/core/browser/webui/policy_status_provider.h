@@ -26,6 +26,8 @@ class CloudPolicyClient;
 class CloudPolicyCore;
 class CloudPolicyStore;
 
+POLICY_EXPORT extern const char kPolicyDescriptionKey[];
+
 // An interface for querying the status of a policy provider.  It surfaces
 // things like last fetch time or status of the backing store, but not the
 // actual policies themselves.

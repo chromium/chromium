@@ -8,9 +8,11 @@
 
 #include "base/callback_forward.h"
 #include "base/values.h"
+#include "chrome/browser/policy/status_provider/status_provider_util.h"
 #include "chromeos/crosapi/mojom/policy_service.mojom.h"
 #include "chromeos/lacros/lacros_service.h"
 #include "components/policy/core/browser/policy_conversions.h"
+#include "components/policy/core/browser/webui/policy_status_provider.h"
 
 AshLacrosPolicyStackBridge::AshLacrosPolicyStackBridge() {
   LoadDevicePolicy();
@@ -95,6 +97,8 @@ void AshLacrosPolicyStackBridge::OnDevicePolicyLoaded(
   if (device_policy != device_policy_) {
     device_policy_ = std::move(device_policy);
     device_policy_status_ = std::move(legend_data);
+    device_policy_status_.Set(policy::kPolicyDescriptionKey,
+                              kDevicePolicyStatusDescription);
   }
   NotifyStatusChange();
   NotifyValueChange();

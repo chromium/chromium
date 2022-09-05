@@ -102,9 +102,7 @@ class PolicyUIHandler : public content::WebUIMessageHandler,
 
   // Get the status of cloud policy. For each scope that has cloud policy
   // enabled (device and/or user), a dictionary containing status information.
-  // If |for_webui| is true, values needed for webui will be included
-  // additionally.
-  base::Value::Dict GetStatusValue(bool for_webui) const;
+  base::Value::Dict GetStatusValue() const;
 
   // Build a JSON string of all the policies.
   std::string GetPoliciesAsJson();
