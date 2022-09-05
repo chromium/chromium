@@ -32,7 +32,7 @@ std::string TestTraceEvent::TestSmoke() {
   // This test does not verify the log message actually reaches dev tracing, but
   // it does test that the interface exists and that it can be called without
   // crashing.
-  const void* cat_enabled = interface_->GetCategoryEnabled("bar");
+  const void* cat_enabled = interface_->GetCategoryEnabled("ppapi");
   interface_->AddTraceEvent('B', cat_enabled, "foo", 0, 0, NULL, NULL, NULL, 0);
   interface_->AddTraceEvent('E', cat_enabled, "foo", 0, 0, NULL, NULL, NULL, 0);
   PASS();
@@ -42,7 +42,7 @@ std::string TestTraceEvent::TestSmokeWithTimestamps() {
   // This test does not verify the log message actually reaches dev tracing, but
   // it does test that the interface exists and that it can be called without
   // crashing.
-  const void* cat_enabled = interface_->GetCategoryEnabled("bar");
+  const void* cat_enabled = interface_->GetCategoryEnabled("ppapi");
   interface_->AddTraceEventWithThreadIdAndTimestamp(
     'B', cat_enabled, "foo", 0, 0, 42, 0, NULL, NULL, NULL, 0);
   interface_->AddTraceEventWithThreadIdAndTimestamp(
