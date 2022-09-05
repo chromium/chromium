@@ -497,6 +497,13 @@ CSSMathExpressionOperation::CreateTrigonometricFunctionSimplified(
       DCHECK(value >= -90 && value <= 90 || std::isnan(value));
       break;
     }
+    case CSSValueID::kAcos: {
+      DCHECK_EQ(operands.size(), 1u);
+      unit_type = CSSPrimitiveValue::UnitType::kDegrees;
+      value = Rad2deg(acos(ValueAsNumber(operands[0], error)));
+      DCHECK(value >= 0 && value <= 180 || std::isnan(value));
+      break;
+    }
     default:
       return nullptr;
   }
@@ -1212,6 +1219,7 @@ class CSSMathExpressionNodeParser {
       case CSSValueID::kCos:
       case CSSValueID::kTan:
       case CSSValueID::kAsin:
+      case CSSValueID::kAcos:
         return RuntimeEnabledFeatures::CSSTrigonometricFunctionsEnabled();
       case CSSValueID::kAnchor:
       case CSSValueID::kAnchorSize:
@@ -1316,6 +1324,7 @@ class CSSMathExpressionNodeParser {
       case CSSValueID::kCos:
       case CSSValueID::kTan:
       case CSSValueID::kAsin:
+      case CSSValueID::kAcos:
         DCHECK(RuntimeEnabledFeatures::CSSTrigonometricFunctionsEnabled());
         max_argument_count = 1;
         min_argument_count = 1;
@@ -1361,6 +1370,7 @@ class CSSMathExpressionNodeParser {
       case CSSValueID::kCos:
       case CSSValueID::kTan:
       case CSSValueID::kAsin:
+      case CSSValueID::kAcos:
         DCHECK(RuntimeEnabledFeatures::CSSTrigonometricFunctionsEnabled());
         return CSSMathExpressionOperation::
             CreateTrigonometricFunctionSimplified(std::move(nodes),

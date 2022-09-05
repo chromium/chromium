@@ -21,6 +21,13 @@ function test_serialization(specified, expected, {prop="transform"}={}) {
 }
 //TEST CASE                                            | EXPECTED
 var test_map = {
+    "acos(1)"                                           :"calc(0deg)",
+    "acos(-1)"                                          :"calc(180deg)",
+    "acos(-1.5)"                                        :"calc(NaN * 1deg)",
+    "acos(1.5)"                                         :"calc(NaN * 1deg)",
+    "acos(2)"                                           :"calc(NaN * 1deg)",
+    "acos(0.5)"                                         :"calc(60deg)",
+    "acos(1 - 0.5)"                                     :"calc(60deg)",
     "acos(0)"                                           :"calc(90deg)",
     "asin(1)"                                           :"calc(90deg)",
     "asin(-1)"                                          :"calc(-90deg)",

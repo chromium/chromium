@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-FAIL acos(1) should be used-value-equivalent to 0deg assert_not_equals: rotate(acos(1)) isn't valid in 'transform'; got the default value instead. got disallowed value "none"
+PASS acos(1) should be used-value-equivalent to 0deg
 FAIL atan(0) should be used-value-equivalent to 0deg assert_not_equals: rotate(atan(0)) isn't valid in 'transform'; got the default value instead. got disallowed value "none"
 PASS asin(0) should be used-value-equivalent to 0deg
 FAIL atan2(0,0) should be used-value-equivalent to 0deg assert_not_equals: rotate(atan2(0,0)) isn't valid in 'transform'; got the default value instead. got disallowed value "none"
@@ -10,7 +10,7 @@ PASS calc(asin(sin(30deg + 1.0471967rad ) )) should be used-value-equivalent to 
 FAIL calc(acos(cos(30deg - 0.523599rad ) )) should be used-value-equivalent to 0deg assert_not_equals: calc(acos(cos(30deg - 0.523599rad ) )) isn't valid in 'margin-left'; got the default value instead. got disallowed value "0px"
 PASS calc(asin(sin(3.14159 / 2 + 1 - 1) )) should be used-value-equivalent to 90deg
 PASS calc(asin(sin(100grad) )) should be used-value-equivalent to 90deg
-FAIL calc(acos(cos(0 / 2 + 1 - 1) )) should be used-value-equivalent to 0deg assert_not_equals: calc(acos(cos(0 / 2 + 1 - 1) )) isn't valid in 'transform'; got the default value instead. got disallowed value "none"
+PASS calc(acos(cos(0 / 2 + 1 - 1) )) should be used-value-equivalent to 0deg
 FAIL calc(atan(tan(30deg + 0.261799rad ) )) should be used-value-equivalent to 45deg assert_not_equals: calc(atan(tan(30deg + 0.261799rad ) )) isn't valid in 'transform'; got the default value instead. got disallowed value "none"
 FAIL calc(atan(tan(0.7853975rad ) )) should be used-value-equivalent to 45deg assert_not_equals: calc(atan(tan(0.7853975rad ) )) isn't valid in 'transform'; got the default value instead. got disallowed value "none"
 FAIL calc(atan(tan(3.14159 / 4 + 1 - 1) )) should be used-value-equivalent to 45deg assert_not_equals: calc(atan(tan(3.14159 / 4 + 1 - 1) )) isn't valid in 'transform'; got the default value instead. got disallowed value "none"

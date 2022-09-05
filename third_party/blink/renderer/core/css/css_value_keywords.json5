@@ -1356,7 +1356,7 @@
     "asin",
     // "atan",
     // "atan2",
-    // "acos",
+    "acos",
 
     //<calc-constant>
     //https://drafts.csswg.org/css-values/#calc-syntax
