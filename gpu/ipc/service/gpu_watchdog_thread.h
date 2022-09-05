@@ -281,7 +281,13 @@ class GPU_IPC_SERVICE_EXPORT GpuWatchdogThread
 #endif
 
 #if BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CASTOS)
-  raw_ptr<FILE, DanglingUntriaged> tty_file_ = nullptr;
+  struct Deleter {
+    inline void operator()(FILE* f) {
+      if (f)
+        fclose(f);
+    }
+  };
+  std::unique_ptr<FILE, Deleter> tty_file_;
   int host_tty_ = -1;
   int active_tty_ = -1;
   int last_active_tty_ = -1;

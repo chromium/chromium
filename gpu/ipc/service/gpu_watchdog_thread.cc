@@ -107,8 +107,8 @@ GpuWatchdogThread::GpuWatchdogThread(base::TimeDelta timeout,
 #endif
 
 #if BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CASTOS)
-  tty_file_ = base::OpenFile(
-      base::FilePath(FILE_PATH_LITERAL("/sys/class/tty/tty0/active")), "r");
+  tty_file_.reset(base::OpenFile(
+      base::FilePath(FILE_PATH_LITERAL("/sys/class/tty/tty0/active")), "r"));
   UpdateActiveTTY();
   host_tty_ = active_tty_;
 #endif
@@ -132,11 +132,6 @@ GpuWatchdogThread::~GpuWatchdogThread() {
 #if BUILDFLAG(IS_WIN)
   if (watched_thread_handle_)
     CloseHandle(watched_thread_handle_);
-#endif
-
-#if BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CASTOS)
-  if (tty_file_)
-    fclose(tty_file_);
 #endif
 }
 
@@ -826,8 +821,8 @@ void GpuWatchdogThread::UpdateActiveTTY() {
 
   active_tty_ = -1;
   char tty_string[8] = {0};
-  if (tty_file_ && !fseek(tty_file_, 0, SEEK_SET) &&
-      fread(tty_string, 1, 7, tty_file_)) {
+  if (tty_file_ && !fseek(tty_file_.get(), 0, SEEK_SET) &&
+      fread(tty_string, 1, 7, tty_file_.get())) {
     int tty_number;
     if (sscanf(tty_string, "tty%d\n", &tty_number) == 1) {
       active_tty_ = tty_number;
