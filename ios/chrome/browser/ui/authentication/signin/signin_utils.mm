@@ -111,8 +111,17 @@ bool ShouldPresentUserSigninUpgrade(ChromeBrowserState* browser_state,
     return false;
 
   // Sign-in can be disabled by policy or through user Settings.
-  if (!signin::IsSigninAllowed(browser_state->GetPrefs()))
-    return false;
+  AuthenticationService* authentication_service =
+      AuthenticationServiceFactory::GetForBrowserState(browser_state);
+  switch (authentication_service->GetServiceStatus()) {
+    case AuthenticationService::ServiceStatus::SigninDisabledByUser:
+    case AuthenticationService::ServiceStatus::SigninDisabledByInternal:
+    case AuthenticationService::ServiceStatus::SigninDisabledByPolicy:
+      return false;
+    case AuthenticationService::ServiceStatus::SigninForcedByPolicy:
+    case AuthenticationService::ServiceStatus::SigninAllowed:
+      break;
+  }
 
   AuthenticationService* auth_service =
       AuthenticationServiceFactory::GetForBrowserState(browser_state);
@@ -182,13 +191,6 @@ void RecordUpgradePromoSigninStarted(
       [defaults integerForKey:kSigninPromoViewDisplayCountKey];
   ++display_count;
   [defaults setInteger:display_count forKey:kSigninPromoViewDisplayCountKey];
-}
-
-bool IsSigninAllowed(const PrefService* prefs) {
-  ios::ChromeIdentityService* identityService =
-      ios::GetChromeBrowserProvider().GetChromeIdentityService();
-  return identityService->IsServiceSupported() &&
-         prefs->GetBoolean(prefs::kSigninAllowed) && IsSigninAllowedByPolicy();
 }
 
 bool IsSigninAllowedByPolicy() {

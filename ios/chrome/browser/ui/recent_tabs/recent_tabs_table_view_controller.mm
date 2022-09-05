@@ -30,6 +30,7 @@
 #include "ios/chrome/browser/search_engines/template_url_service_factory.h"
 #include "ios/chrome/browser/sessions/live_tab_context_browser_agent.h"
 #include "ios/chrome/browser/sessions/session_util.h"
+#import "ios/chrome/browser/signin/authentication_service.h"
 #include "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
 #include "ios/chrome/browser/sync/session_sync_service_factory.h"
@@ -591,12 +592,21 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
 
 // Adds Other Devices Section and its header.
 - (void)addOtherDevicesSectionForState:(SessionsSyncUserState)state {
+  AuthenticationService* authService =
+      AuthenticationServiceFactory::GetForBrowserState(self.browserState);
+  const AuthenticationService::ServiceStatus authServiceStatus =
+      authService->GetServiceStatus();
   // If sign-in is disabled through user Settings, do not show Other Devices
   // section. However, if sign-in is disabled by policy Chrome will
   // continue to show the Other Devices section with a specialized message.
-  const PrefService* prefs = self.browserState->GetPrefs();
-  if (!signin::IsSigninAllowed(prefs) && signin::IsSigninAllowedByPolicy()) {
-    return;
+  switch (authServiceStatus) {
+    case AuthenticationService::ServiceStatus::SigninDisabledByUser:
+    case AuthenticationService::ServiceStatus::SigninDisabledByInternal:
+      return;
+    case AuthenticationService::ServiceStatus::SigninDisabledByPolicy:
+    case AuthenticationService::ServiceStatus::SigninForcedByPolicy:
+    case AuthenticationService::ServiceStatus::SigninAllowed:
+      break;
   }
 
   TableViewModel* model = self.tableViewModel;
@@ -632,7 +642,8 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
   }
 
   if (!self.isSyncDisabledByAdministrator &&
-      signin::IsSigninAllowed(self.browserState->GetPrefs())) {
+      authServiceStatus !=
+          AuthenticationService::ServiceStatus::SigninDisabledByPolicy) {
     ItemType itemType;
     NSString* itemSubtitle;
     NSString* itemButtonText;

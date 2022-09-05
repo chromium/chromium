@@ -269,43 +269,6 @@ TEST_F(SigninUtilsTest, TestWillNotShowIfDisabledByPolicy) {
       chrome_browser_state_.get(), version_1_0));
 }
 
-// signin::IsSigninAllowed should respect the kSigninAllowed pref.
-TEST_F(SigninUtilsTest, TestSigninAllowedPref) {
-  ios::FakeChromeIdentityService::GetInstanceFromChromeProvider()
-      ->AddIdentities(@[ @"foo", @"bar" ]);
-  // Sign-in is allowed by default.
-  EXPECT_TRUE(signin::IsSigninAllowed(chrome_browser_state_.get()->GetPrefs()));
-
-  // When sign-in is disabled, the accessor should return false.
-  chrome_browser_state_->GetPrefs()->SetBoolean(prefs::kSigninAllowed, false);
-  EXPECT_FALSE(
-      signin::IsSigninAllowed(chrome_browser_state_.get()->GetPrefs()));
-}
-
-// signin::IsSigninAllowedByPolicy should respect the kBrowserSigninPolicy
-// pref.
-TEST_F(SigninUtilsTest, TestSigninAllowedByPolicyPref) {
-  ios::FakeChromeIdentityService::GetInstanceFromChromeProvider()
-      ->AddIdentities(@[ @"foo", @"bar" ]);
-  // Sign-in is allowed by default.
-  EXPECT_TRUE(signin::IsSigninAllowedByPolicy());
-
-  // When sign-in is disabled by policy, the accessor should return false.
-  GetLocalState()->SetInteger(prefs::kBrowserSigninPolicy,
-                              static_cast<int>(BrowserSigninMode::kDisabled));
-  EXPECT_FALSE(signin::IsSigninAllowedByPolicy());
-  EXPECT_FALSE(
-      signin::IsSigninAllowed(chrome_browser_state_.get()->GetPrefs()));
-
-  // When sign-in is explicitly enabled by the user, but the policy has not
-  // changed the accessor should return false.
-  chrome_browser_state_->GetPrefs()->SetBoolean(prefs::kSigninAllowed, true);
-
-  EXPECT_FALSE(signin::IsSigninAllowedByPolicy());
-  EXPECT_FALSE(
-      signin::IsSigninAllowed(chrome_browser_state_.get()->GetPrefs()));
-}
-
 // signin::GetPrimaryIdentitySigninState for a signed-out user should
 // return the signed out state.
 TEST_F(SigninUtilsTest, TestGetPrimaryIdentitySigninStateSignedOut) {

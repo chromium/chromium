@@ -564,8 +564,11 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
 
   AuthenticationService* authService =
       AuthenticationServiceFactory::GetForBrowserState(_browserState);
+  const AuthenticationService::ServiceStatus authServiceStatus =
+      authService->GetServiceStatus();
   // If sign-in is disabled by policy there should not be a sign-in promo.
-  if (!signin::IsSigninAllowedByPolicy() ||
+  if ((authServiceStatus ==
+       AuthenticationService::ServiceStatus::SigninDisabledByPolicy) ||
       ([self isSyncDisabledByPolicy] &&
        !authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin))) {
     item = [self signinDisabledByPolicyTextItem];
@@ -593,7 +596,10 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
     [_signinPromoViewMediator signinPromoViewIsVisible];
 
     item = signinPromoItem;
-  } else if (signin::IsSigninAllowed(_browserState->GetPrefs()) &&
+  } else if ((authServiceStatus ==
+                  AuthenticationService::ServiceStatus::SigninForcedByPolicy ||
+              authServiceStatus ==
+                  AuthenticationService::ServiceStatus::SigninAllowed) &&
              !authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin)) {
     item = [self accountSignInItem];
     [_signinPromoViewMediator disconnect];
