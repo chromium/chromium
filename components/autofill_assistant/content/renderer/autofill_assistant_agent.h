@@ -77,6 +77,11 @@ class AutofillAssistantAgent : public content::RenderFrameObserver,
                       base::File model,
                       const std::string& overrides_policy);
 
+  void SetElementAttribute(int32_t backend_node_id,
+                           const std::u16string& attribute_value,
+                           const std::u16string& value,
+                           bool send_events);
+
   mojo::AssociatedRemote<mojom::AutofillAssistantDriver> driver_;
 
   mojo::AssociatedReceiver<mojom::AutofillAssistantAgent> receiver_{this};

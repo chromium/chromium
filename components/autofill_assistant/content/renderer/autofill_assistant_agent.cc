@@ -7,6 +7,8 @@
 #include <ostream>
 
 #include "base/command_line.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "components/autofill_assistant/content/common/switches.h"
 #include "components/optimization_guide/machine_learning_tflite_buildflags.h"
 #include "content/public/renderer/render_frame.h"
@@ -29,6 +31,8 @@ namespace autofill_assistant {
 namespace {
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+
+constexpr char16_t kSemanticPredictionAttributeName[] = u"semantic-prediction";
 
 using OverridesMap = AutofillAssistantModelExecutor::OverridesMap;
 using SparseVector = AutofillAssistantModelExecutor::SparseVector;
@@ -60,6 +64,14 @@ std::string NodeSignalsToDebugString(
       << "\n\t}\n}";
 
   return out.str();
+}
+
+std::u16string SemanticPredictionResultToDebugString(
+    const std::pair<int, int>& result,
+    bool ignore_objective) {
+  return base::StrCat({u"{role: ", base::NumberToString16(result.first),
+                       u", objective: ", base::NumberToString16(result.second),
+                       (ignore_objective ? u"(ignored)}" : u"}")});
 }
 
 SparseVector KeyCoordinatesToSparseVector(
@@ -216,9 +228,13 @@ void AutofillAssistantAgent::OnGetModelFile(
             switches::kAutofillAssistantDebugAnnotateDom)) {
       VLOG(3) << NodeSignalsToDebugString(node_signal);
       if (result) {
-        VLOG(3) << "Result { role: " << result->first
-                << ", objective: " << result->second
-                << (ignore_objective ? " (ignored)" : "") << " }";
+        std::u16string result_string = SemanticPredictionResultToDebugString(
+            result.value(), ignore_objective);
+        VLOG(3) << "Result found " << result_string;
+
+        SetElementAttribute(node_signal.backend_node_id,
+                            kSemanticPredictionAttributeName, result_string,
+                            /*send_events=*/false);
       }
     }
 
@@ -265,6 +281,31 @@ void AutofillAssistantAgent::SetElementValue(const int32_t backend_node_id,
   target_form_control_element.SetValue(blink::WebString::FromUTF16(value),
                                        send_events);
   std::move(callback).Run(true);
+}
+
+void AutofillAssistantAgent::SetElementAttribute(
+    const int32_t backend_node_id,
+    const std::u16string& attribute_name,
+    const std::u16string& value,
+    bool send_events) {
+  blink::WebLocalFrame* frame = render_frame()->GetWebFrame();
+  if (!frame) {
+    VLOG(1) << "Failed to set Element attribute, no frame.";
+    return;
+  }
+
+  blink::WebElement target_element =
+      frame->GetDocument().GetElementByDevToolsNodeId(backend_node_id);
+  if (target_element.IsNull() || !target_element.IsFormControlElement()) {
+    VLOG(3) << "Failed to set Element attribute, invalid target.";
+    return;
+  }
+
+  blink::WebFormControlElement target_form_control_element =
+      target_element.To<blink::WebFormControlElement>();
+  target_form_control_element.SetAttribute(
+      blink::WebString::FromUTF16(attribute_name),
+      blink::WebString::FromUTF16(value));
 }
 
 void AutofillAssistantAgent::SetElementChecked(
