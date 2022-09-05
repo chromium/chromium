@@ -7,7 +7,6 @@
 <translation id="1178581264944972037">Кідірту</translation>
 <translation id="1306460908038601864">Өшірулі</translation>
 <translation id="1311894908970423688">Қажетті мән: <ph name="VALUE_DATE_OR_TIME" />.</translation>
-<translation id="145015347812617860"><ph name="COUNT" /> элемент</translation>
 <translation id="1480676835519562650">бірнешеуін таңдауға болады, <ph name="SELECTED" />/<ph name="COUNT" /> таңдалды.</translation>
 <translation id="1588438908519853928">Қалыпты</translation>
 <translation id="1591562245178063882">Осы айда</translation>
@@ -31,7 +30,6 @@
 <translation id="2246498165605549352">Жергілікті файл</translation>
 <translation id="2247351761944213033"><ph name="WEEKNUMBER" />-апта, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904"><ph name="NUMBER" />-аудиотрек</translation>
-<translation id="2307576640803031502">тізімде, <ph name="INDEX" />/<ph name="COUNT" /> элемент</translation>
 <translation id="2393030564806080191">Оналтылық форматтағы түс</translation>
 <translation id="2398813069815436052">диалогтік терезе ашылды.</translation>
 <translation id="245932805758469625">бейненің соңына дейін қалған секундтар саны</translation>

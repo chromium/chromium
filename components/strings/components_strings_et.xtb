@@ -1806,6 +1806,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="5764920692828389743">Saada aadressile <ph name="EMAIL_ADDRESS" /></translation>
 <translation id="5765072501007116331">Kohaletoimetamisviiside ja nõuete nägemiseks valige aadress</translation>
 <translation id="57689295674415555">Virtuaalkaardi numbrit pole sisestatud?</translation>
+<translation id="5772086939108830423">Pääsukoodi kasutamine teises seadmes</translation>
 <translation id="5776313857861697733">Prioriteet</translation>
 <translation id="5781136890105823427">Katse on lubatud</translation>
 <translation id="578305955206182703">Merevaigukollane</translation>
@@ -3055,6 +3056,7 @@ Lisateave:
 <translation id="950736567201356821">Kolm auku ülal</translation>
 <translation id="961663415146723894">Köide all</translation>
 <translation id="962484866189421427">Sisu võib üritada installida petturlikke rakendusi, mis esinevad millegi muuna või koguvad andmeid, mida saab kasutada teie jälgimiseks. <ph name="BEGIN_LINK" />Kuva siiski<ph name="END_LINK" /></translation>
+<translation id="964050462028070434">Paroolide ja pääsukoodide haldamine …</translation>
 <translation id="96680173638229310">Autod ja sõidukid</translation>
 <translation id="969892804517981540">Ametlik järk</translation>
 <translation id="973773823069644502">Lisage kohaletoimetamisaadress</translation>

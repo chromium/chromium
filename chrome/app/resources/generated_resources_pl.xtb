@@ -680,6 +680,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane wcześniej aplikacjom. U
 <translation id="1632756664321977232">Narzędzie do przycinania</translation>
 <translation id="163309982320328737">Początkowa szerokość znaków: pełna</translation>
 <translation id="1633947793238301227">Wyłącz Asystenta Google</translation>
+<translation id="1634224622052500893">Znaleziono sieć Wi-Fi</translation>
 <translation id="1634783886312010422">Czy hasło w witrynie <ph name="WEBSITE" /> zostało już zmienione?</translation>
 <translation id="1636212173818785548">OK</translation>
 <translation id="163712950892155760"><ph name="BEGIN_PARAGRAPH1" />Dane aplikacji mogą obejmować dowolne informacje zapisane przez aplikację (w zależności od ustawień określonych przez dewelopera) – w tym dane takie jak kontakty, wiadomości i zdjęcia. Dane kopii zapasowej nie zmniejszają ilości miejsca dostępnego na Dysku.<ph name="END_PARAGRAPH1" />
@@ -1997,6 +1998,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2839032553903800133">Powiadomienia blokowane</translation>
 <translation id="2841013758207633010">Godzina</translation>
 <translation id="2841837950101800123">Dostawca</translation>
+<translation id="2842013086666334835">Zaloguj się w usłudze „<ph name="NETWORK_ID" />”</translation>
 <translation id="2843560154284403323">Aby dokończyć konfigurowanie Linuksa, zaktualizuj Chrome OS i spróbuj ponownie.</translation>
 <translation id="2844169650293029770">Urządzenie USB-C (przedni port na lewym boku)</translation>
 <translation id="2844809857160214557">Przeglądaj zadania drukowania i zarządzaj nimi</translation>
@@ -2097,6 +2099,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="2927017729816812676">Pamięć podręczna</translation>
 <translation id="2928795416630981206">Zezwolono na śledzenie pozycji kamery</translation>
 <translation id="2931157624143513983">Dopasuj do możliwego do zadrukowania obszaru</translation>
+<translation id="2931342457001070961">Nie podłączono mikrofonu</translation>
 <translation id="2932085390869194046">Zaproponuj hasło...</translation>
 <translation id="2932483646085333864">Wyloguj się i zaloguj się ponownie, by rozpocząć synchronizację</translation>
 <translation id="2932883381142163287">Zgłoś nadużycie</translation>
@@ -2160,6 +2163,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="2996286169319737844">Dane są szyfrowane Twoim hasłem synchronizacji. Nie obejmuje to form płatności ani adresów w Google Pay.</translation>
 <translation id="2996722619877761919">Odwróć wzdłuż dłuższej krawędzi</translation>
 <translation id="2996932914629936323">Usuwa historię ze wszystkich zsynchronizowanych urządzeń</translation>
+<translation id="2998267783395280091">Znaleziono sieć</translation>
 <translation id="3000378525979847272">Przyznano uprawnienia: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /></translation>
 <translation id="3000461861112256445">Dźwięk mono</translation>
 <translation id="3001144475369593262">Konta dla dzieci</translation>
@@ -2311,6 +2315,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3142562627629111859">Nowa grupa</translation>
 <translation id="3143515551205905069">Anuluj synchronizację</translation>
 <translation id="3143754809889689516">Odtwórz od początku</translation>
+<translation id="3143937294861726703">Oszczędzanie pamięci jest włączone</translation>
 <translation id="3144647712221361880">Otwórz link jako</translation>
 <translation id="3149510190863420837">Aplikacje Chrome</translation>
 <translation id="3150693969729403281">Wykonaj kontrolę zabezpieczeń teraz</translation>

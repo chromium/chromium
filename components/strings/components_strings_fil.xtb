@@ -1806,6 +1806,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="5764920692828389743">Ipadala sa <ph name="EMAIL_ADDRESS" /></translation>
 <translation id="5765072501007116331">Upang makita ang mga pamamaraan at kinakailangan sa paghahatid, pumili ng address</translation>
 <translation id="57689295674415555">Hindi napunan ang numero ng virtual card?</translation>
+<translation id="5772086939108830423">Gumamit ng Passkey sa Ibang Device</translation>
 <translation id="5776313857861697733">Priyoridad</translation>
 <translation id="5781136890105823427">Naka-enable ang eksperimento</translation>
 <translation id="578305955206182703">Amber</translation>
@@ -2202,6 +2203,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="6916954549222464607">Pagpaplano at pamamahala sa pananalapi</translation>
 <translation id="6917795328362592458">Nakita sa isang data breach ang password na kakagamit mo lang. Para ma-secure ang iyong mga account, inirerekomenda ng Password Manager na tingnan mo ang iyong mga naka-save na password.</translation>
 <translation id="6934672428414710184">Nagmula ang pangalang ito sa iyong Google Account</translation>
+<translation id="6936976777388162184">Isa itong naka-bundle na device at hindi ito puwedeng i-enroll sa Upgrade para sa Kiosk at Signage.</translation>
 <translation id="6939469646605424232">Mga drama sa TV</translation>
 <translation id="6944692733090228304">Inilagay mo ang iyong password sa site na hindi pinapamahalaan ng <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />. Para protektahan ang iyong account, huwag gamiting muli ang password mo sa iba pang app at site.</translation>
 <translation id="6945221475159498467">Pumili</translation>
@@ -3054,6 +3056,7 @@ Mga karagdagang detalye:
 <translation id="950736567201356821">Triple punch top</translation>
 <translation id="961663415146723894">Bind bottom</translation>
 <translation id="962484866189421427">Maaaring subukan ng content na itong mag-install ng mga mapanlinlang na app na nagpapanggap na ibang bagay o nangongolekta ng data na maaaring gamitin para subaybayan ka. <ph name="BEGIN_LINK" />Ipakita pa rin<ph name="END_LINK" /></translation>
+<translation id="964050462028070434">Pamahalaan ang Mga Password at Passkey…</translation>
 <translation id="96680173638229310">Mga sasakyan</translation>
 <translation id="969892804517981540">Official Build</translation>
 <translation id="973773823069644502">Magdagdag ng Address sa Paghahatid</translation>

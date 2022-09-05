@@ -7,7 +7,6 @@
 <translation id="1178581264944972037">مکث</translation>
 <translation id="1306460908038601864">خاموش</translation>
 <translation id="1311894908970423688">مقدار باید <ph name="VALUE_DATE_OR_TIME" /> باشد.</translation>
-<translation id="145015347812617860"><ph name="COUNT" /> مورد</translation>
 <translation id="1480676835519562650">قابلیت چند انتخابی، <ph name="SELECTED" /> مورد از <ph name="COUNT" /> مورد انتخاب شده است.</translation>
 <translation id="1588438908519853928">معمولی</translation>
 <translation id="1591562245178063882">این ماه</translation>
@@ -31,7 +30,6 @@
 <translation id="2246498165605549352">فایل محلی</translation>
 <translation id="2247351761944213033">هفته <ph name="WEEKNUMBER" />، <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">آهنگ <ph name="NUMBER" /></translation>
-<translation id="2307576640803031502">در فهرست، مورد <ph name="INDEX" /> از <ph name="COUNT" /></translation>
 <translation id="2393030564806080191">مقدار رنگ در مبنای شانزده</translation>
 <translation id="2398813069815436052">کادر گفتگو باز شد.</translation>
 <translation id="245932805758469625">ثانیه‌های باقی‌مانده از ویدیو</translation>

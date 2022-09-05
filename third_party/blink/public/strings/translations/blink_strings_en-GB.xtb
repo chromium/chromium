@@ -7,7 +7,6 @@
 <translation id="1178581264944972037">Pause</translation>
 <translation id="1306460908038601864">Off</translation>
 <translation id="1311894908970423688">Value must be <ph name="VALUE_DATE_OR_TIME" />.</translation>
-<translation id="145015347812617860"><ph name="COUNT" /> items</translation>
 <translation id="1480676835519562650">multiselectable, <ph name="SELECTED" /> of <ph name="COUNT" /> selected.</translation>
 <translation id="1588438908519853928">Normal</translation>
 <translation id="1591562245178063882">This month</translation>
@@ -31,7 +30,6 @@
 <translation id="2246498165605549352">Local file</translation>
 <translation id="2247351761944213033">Week <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">Track <ph name="NUMBER" /></translation>
-<translation id="2307576640803031502">in list, item <ph name="INDEX" /> of <ph name="COUNT" /></translation>
 <translation id="2393030564806080191">Hexadecimal colour value</translation>
 <translation id="2398813069815436052">dialogue opened.</translation>
 <translation id="245932805758469625">number of seconds of video remaining</translation>

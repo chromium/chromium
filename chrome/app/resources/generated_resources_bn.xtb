@@ -718,6 +718,7 @@
 <translation id="16620462294541761">দুঃখিত, আপনার পাসওয়ার্ড যাচাই করা যায়নি৷ দয়া করে আবার চেষ্টা করুন৷</translation>
 <translation id="166278006618318542">বিষয় সর্বজনীন কী অ্যালগারিদম</translation>
 <translation id="1662801900924515589"><ph name="APP" /> ইনস্টল করা হয়ে গেছে</translation>
+<translation id="1665328953287874063">আপনার <ph name="DEVICE_TYPE" /> আনলক করতে পাসওয়ার্ড বা পিন ব্যবহার করুন</translation>
 <translation id="1666232093776384142">পেরিফেরালের জন্য 'ডেটা অ্যাক্সেস সুরক্ষা' বন্ধ করুন</translation>
 <translation id="1667842670298352129">নির্দিষ্ট কিছু টেক্সট জোরে শুনুন। প্রথমে, স্ক্রিনের নিচে থাকা 'বাছুন ও শুনুন' আইকন বেছে নিন, তারপরে টেক্সট হাইলাইট করুন। এছাড়াও আপনি কীবোর্ড শর্টকাট ব্যবহার করতে পারেন: টেক্সট হাইলাইট করে 'Search + S' কী ব্যবহার করুন।</translation>
 <translation id="1668435968811469751">ম্যানুয়ালি এনরোল করুন</translation>
@@ -1852,6 +1853,7 @@
 <translation id="2691385045260836588">মডেল</translation>
 <translation id="2691440343905273290">ইনপুট সেটিংস পরিবর্তন করুন</translation>
 <translation id="2693176596243495071">একটি অজানা সমস্যা হয়েছে। অনুগ্রহ করে পরে আবার চেষ্টা করুন বা সমস্যাটি হতে থাকলে আপনার প্রশাসককে জানান।</translation>
+<translation id="2698147581454716013">এটি একটি বান্ডেল ডিভাইস এবং 'কিয়স্ক' ও 'সাইনেজ' আপগ্রেডের মাধ্যমে নথিভুক্ত করা যাবে না।</translation>
 <translation id="2699911226086014512">পিন ভিত্তিক কাজটি সঠিকভাবে করা যায়নি, সমস্যার কোড <ph name="RETRIES" />।</translation>
 <translation id="2701330563083355633"><ph name="DEVICE_NAME" /> থেকে শেয়ার করা হয়েছে</translation>
 <translation id="2701737434167469065">সাইন-ইন করুন, <ph name="EMAIL" /></translation>
@@ -1930,6 +1932,7 @@
 <translation id="2757338480560142065">আপনি যে পাসওয়ার্ডটি সেভ করছেন, সেটি <ph name="WEBSITE" />-এ আপনার দেওয়া পাসওয়ার্ডের সাথে মিলছে কিনা ভাল করে তা দেখে নিন</translation>
 <translation id="2762441749940182211">ক্যামেরার ব্যবহার ব্লক করা হয়েছে</translation>
 <translation id="2764786626780673772">VPN-এর বিবরণ</translation>
+<translation id="2764920001292228569">প্রোফাইল নাম লিখুন</translation>
 <translation id="2765100602267695013">আপনার মোবাইল পরিষেবা প্রদানকারীর সাথে যোগাযোগ করুন</translation>
 <translation id="2765217105034171413">ক্ষুদ্র</translation>
 <translation id="2766006623206032690">প্র&amp;তিলেপন করুন ও যান</translation>
@@ -3298,6 +3301,7 @@
 <translation id="4065876735068446555">আপনি যে নেটওয়ার্কটি <ph name="NETWORK_ID" /> ব্যবহার করছেন সেটির জন্য অপনাকে এটির লগ-ইন পৃষ্ঠাতে যেতে হতে পরে৷</translation>
 <translation id="4066207411788646768">আপনার নেটওয়ার্কে থাকা প্রিন্টারগুলি দেখতে ইন্টারনেট কানেকশন চেক করুন</translation>
 <translation id="4066945815577305767">পাসওয়ার্ড দেওয়ার সময় শেষ</translation>
+<translation id="4067839975993712852">বর্তমান ট্যাবটি 'পড়া হয়ে গেছে' হিসেবে চিহ্নিত করুন</translation>
 <translation id="4068776064906523561">সংরক্ষিত আঙ্গুলের ছাপগুলি</translation>
 <translation id="407173827865827707">ক্লিক করা হলে</translation>
 <translation id="4072701974556190758">পাসওয়ার্ড আপনার <ph name="ACCOUNT" /> নামের Google অ্যাকাউন্টে সেভ করা হবে। আপনাকে এটি মনে রাখতে হবে না।</translation>
@@ -5784,6 +5788,7 @@
 <translation id="6508248480704296122"><ph name="NAME_PH" /> সম্পর্কিত</translation>
 <translation id="6508261954199872201">App: <ph name="APP_NAME" /></translation>
 <translation id="6509207748479174212">মিডিয়া লাইসেন্স</translation>
+<translation id="6511827214781912955"><ph name="FILENAME" /> মুছে ফেলার বিষয়টি বিবেচনা করুন, যাতে এই ডিভাইসটি ব্যবহার করে অন্যরা আপনার পাসওয়ার্ড দেখতে না পারে</translation>
 <translation id="6513247462497316522">যদি আপনি অন্য নেটওয়ার্কের সাথে সংযুক্ত না থাকেন তাহলে Google Chrome মোবাইল ডেটা ব্যবহার করবে৷</translation>
 <translation id="6514010653036109809">উপলব্ধ ডিভাইস:</translation>
 <translation id="6514565641373682518">এই পৃষ্ঠাটি আপনার মাউস কার্সরকে অক্ষম করেছে৷</translation>
@@ -6067,6 +6072,7 @@
 <translation id="6781978626986383437">Linux ব্যাক-আপ বাতিল করা হয়েছে</translation>
 <translation id="6782067259631821405">ভুল পিন</translation>
 <translation id="6784523122863989144">প্রোফাইল ব্যবহার করা যাবে</translation>
+<translation id="6785739405821760313">'সেভ করা ডেস্ক' মোডে দেখছেন। নেভিগেট করতে Tab প্রেস করুন।</translation>
 <translation id="6785872064505734160">Chrome-এ Google Assistant আপনার হয়ে সমস্ত ওয়েবসাইটে বিভিন্ন অ্যাকশন সম্পূর্ণ করতে পারে</translation>
 <translation id="6786747875388722282">এক্সটেনশানসমূহ</translation>
 <translation id="6787097042755590313">অন্য ট্যাব</translation>
@@ -6653,6 +6659,7 @@
 <translation id="7358338787722390626">সাইড প্যানেলে সার্চ বন্ধ করুন</translation>
 <translation id="735994578317267253">যেকোনও ChromeOS ডিভাইসেই আপনার পছন্দের অ্যাপ, সেটিংস এবং আরও অনেক কিছু অ্যাক্সেস করুন</translation>
 <translation id="7360233684753165754"><ph name="PRINTER_NAME" /> এ <ph name="PAGE_NUMBER" />টি পাতা</translation>
+<translation id="7360257054721917104">'সেভ করা ডেস্ক' মোড ও টেমপ্লেট দেখছেন। নেভিগেট করতে Tab প্রেস করুন।</translation>
 <translation id="7361297102842600584"><ph name="PLUGIN_NAME" /> চালানোর জন্য ডান-ক্লিক করুন</translation>
 <translation id="7362387053578559123">সাইটগুলি ব্লুটুথ ডিভাইসের সাথে কানেক্ট করার অনুমতি চাইতে পারে</translation>
 <translation id="7363349185727752629">আপনার গোপনীয়তা পছন্দ গাইড</translation>
@@ -7305,6 +7312,7 @@
 <translation id="7953669802889559161">ইনপুট</translation>
 <translation id="7953955868932471628">শর্টকাটগুলি পরিচালনা করুন</translation>
 <translation id="7955105108888461311">ব্যক্তিগতভাবে অ্যাক্সেস চান</translation>
+<translation id="7955177647836564772">Smart Lock চালু থাকা অবস্থায় আপনার ফোন যদি আনলক থাকে, তাহলে আপনাকে পাসওয়ার্ড বা পিন লিখতে হবে না</translation>
 <translation id="7956373551960864128">আপনার সেভ করা প্রিন্টার</translation>
 <translation id="7957074856830851026">ডিভাইসের তথ্য দেখুন, যেমন এর সিরিয়াল নম্বর বা অ্যাসেট আইডি</translation>
 <translation id="7959074893852789871">ফাইলটিতে একাধিক শংসাপত্র রয়েছে, এর মধ্যে কয়েকটি আমদানি করা হয়নি:</translation>
@@ -7563,6 +7571,7 @@
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />আপনার ডিভাইস<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195027750202970175">ডিস্কের মাপ</translation>
 <translation id="8195191503358432289">পাসওয়ার্ড যোগ করুন</translation>
+<translation id="8197673340773315084">নাম বা লেবেল যোগ করুন, যেমন, অফিস বা ব্যক্তিগত</translation>
 <translation id="8198456017687137612">কাস্ট করার ট্যাব</translation>
 <translation id="8199300056570174101">নেটওয়ার্ক (পরিষেবা) এবং ডিভাইসের বৈশিষ্ট্য</translation>
 <translation id="8200772114523450471">আবার চালু করা</translation>
@@ -7660,6 +7669,7 @@
 <translation id="8284279544186306258">সব <ph name="WEBSITE_1" /> সাইট</translation>
 <translation id="8284326494547611709">পরিচয়লিপিগুলি</translation>
 <translation id="8286036467436129157">সাইন-ইন করুন</translation>
+<translation id="828642162569365647">ফোন থেকে আপনি কোনও তথ্য অ্যাক্সেস করলে এবং <ph name="DEVICE_TYPE" />-এ থাকা আপনার ডেটা, এই পাসওয়ার্ড বা পিন সুরক্ষিত রাখে। আপনার <ph name="DEVICE_TYPE" /> 'স্লিপ' মোড থেকে অ্যাক্টিভ হলে প্রত্যেকবার আপনাকে এটি আনলক করতে হবে।</translation>
 <translation id="8287902281644548111">এপিআই কল/ইউআরএল অনুযায়ী সার্চ করুন</translation>
 <translation id="8288032458496410887"><ph name="APP" /> আনইনস্টল করুন...</translation>
 <translation id="8289128870594824098">ডিস্ক সাইজ</translation>

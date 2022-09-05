@@ -1805,6 +1805,7 @@
 <translation id="5764920692828389743">ወደ <ph name="EMAIL_ADDRESS" /> ላክ</translation>
 <translation id="5765072501007116331">የማድረሻ ዘዴዎችን እና መስፈርቶችን ለመመልከት አድራሻ ይምረጡ</translation>
 <translation id="57689295674415555">ምናባዊ የካርድ ቁጥር አልተሞላም?</translation>
+<translation id="5772086939108830423">አንድ የይለፍ ቁልፍን በተለየ መሣሪያ ላይ ይጠቀሙ</translation>
 <translation id="5776313857861697733">ቅድሚያ</translation>
 <translation id="5781136890105823427">ሙከራ ነቅቷል</translation>
 <translation id="578305955206182703">አምበር</translation>
@@ -2201,6 +2202,7 @@
 <translation id="6916954549222464607">የፋይናንስ ዕቅድ እና አስተዳደር</translation>
 <translation id="6917795328362592458">አሁን የተጠቀሙበት የይለፍ ቃል በውሂብ ጥሰት ውስጥ ተገኝቷል። የእርስዎን መለያዎች ደህንነት ለመጠበቅ፣ የይለፍ ቃል አስተዳዳሪ የተቀመጡ የይለፍ ቃላትዎን እንዲፈትሹ ይመክራል።</translation>
 <translation id="6934672428414710184">ይህ ስም ከእርስዎ Google መለያ የተገኘ ነው</translation>
+<translation id="6936976777388162184">ይህ የተቀረቀበ መሣሪያ ነው እና በኪዮስክ እና በምልክት ማሻሻያ መመዝገብ አይችልም።</translation>
 <translation id="6939469646605424232">የቲቪ ድራማዎች</translation>
 <translation id="6944692733090228304">በ<ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> ወደ የማይተዳደር ጣቢያ ላይ የእርስዎን የይለፍ ቃል አስገብተዋል። ለእርስዎ መለያ ጥበቃ ለማድረግ፣ በሌሎች መተግበሪያዎች እና ጣቢያዎች ላይ የእርስዎን የይለፍ ቃል ዳግም አይጠቀሙ።</translation>
 <translation id="6945221475159498467">ይምረጡ</translation>
@@ -3054,6 +3056,7 @@
 <translation id="950736567201356821">ሦስቴ ከላይ ብሳ</translation>
 <translation id="961663415146723894">ከታች ጠርዝ</translation>
 <translation id="962484866189421427">ይህ ይዘት የሆነ ሌላ ነገር እንደሆኑ የሚያስመስሉ አጭበርባሪ መተግበሪያዎችን ወይም እርስዎን ለመከታተል ጥቅም ላይ ሊውል የሚችል ውሂብን የሚሰበስቡ መተግበሪያዎችን ለመጫን ሊሞክር ይችል ይሆናል። <ph name="BEGIN_LINK" />የሆነው ሆኖ አሳይ<ph name="END_LINK" /></translation>
+<translation id="964050462028070434">የይለፍ ቃላትን እና የይለፍ ቁልፎችን ያስተዳድሩ…</translation>
 <translation id="96680173638229310">መኪናዎች እና ተሸከርካሪዎች</translation>
 <translation id="969892804517981540">ይፋ ግንባታ</translation>
 <translation id="973773823069644502">የማድረሻ አድራሻ ያክሉ</translation>

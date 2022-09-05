@@ -265,6 +265,7 @@
 <translation id="1592005682883173041">ローカルデータへのアクセス</translation>
 <translation id="1594030484168838125">選択</translation>
 <translation id="1596296697375291157">スリラー、犯罪、ミステリー映画</translation>
+<translation id="1599199147673445968">カード情報を更新する場合は、<ph name="BEGIN_LINK" />こちらで入力してください<ph name="END_LINK" /></translation>
 <translation id="160851722280695521">Chrome で Dino Run ゲームをプレイします</translation>
 <translation id="161042844686301425">シアン</translation>
 <translation id="1611101756749861742">ロール 2</translation>
@@ -1008,6 +1009,7 @@
 <translation id="3664782872746246217">キーワード:</translation>
 <translation id="3667704023705708645">ベンチャー キャピタル</translation>
 <translation id="3671540257457995106">サイズ変更を許可しますか？</translation>
+<translation id="3672568546897166916"><ph name="ERROR_PATH" /> でエラーが発生しました: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="3675563144891642599">ロール 3</translation>
 <translation id="3676592649209844519">デバイス ID:</translation>
 <translation id="3677008721441257057">もしかして: &lt;a href="#" id="dont-proceed-link"&gt;<ph name="DOMAIN" />&lt;/a&gt;</translation>

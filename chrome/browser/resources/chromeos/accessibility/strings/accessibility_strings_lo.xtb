@@ -226,6 +226,7 @@
 <translation id="2497706219848005458">ສີເຫຼືອງອົມຂຽວ</translation>
 <translation id="2523609930580546572">ການສອນການນຳໃຊ້ ChromeVox</translation>
 <translation id="2525706221823668172">ທາງລັດແປ້ນພິມ Chromebook</translation>
+<translation id="2543973100702367007">ແຕະສອງເທື່ອເພື່ອ <ph name="LABEL" /></translation>
 <translation id="2553108862507765288">ຄວາມ​ຜິດ​ດ້ານ​ໄວ​ຍາ​ກອນ</translation>
 <translation id="2556326187583116255">ໃຊ້ 2 ນິ້ວມືເພື່ອຢຸດສຽງເວົ້າໃນປັດຈຸບັນຕ່າງໆ</translation>
 <translation id="2573256689920773241">ວິທີພື້ນຖານໃນການໄປຍັງສ່ວນຕ່າງໆ</translation>
@@ -1114,6 +1115,7 @@
 <translation id="8693391540059827073">ລະດູການທີ່ຂ້ອຍມັກ</translation>
 <translation id="8696284982970258155">ສີຂຽວຮັນນີດິວ</translation>
 <translation id="8697111817566059991">{COUNT,plural, =1{ ເຄື່ອງໝາຍ |}other{ # ເຄື່ອງໝາຍ | ລວງຕັ້ງ}}</translation>
+<translation id="8733397807344284494">ກົດ ຊອກຫາ+ຍະຫວ່າງ ເພື່ອ <ph name="LABEL" /></translation>
 <translation id="8741370088760768424">ຄຳບອກໃບ້: ກົດຊອກຫາ + ຍະຫວ່າງເພື່ອເປີດໃຊ້ລາຍການປັດຈຸບັນ.</translation>
 <translation id="8743786158317878347">ເຂົ້າເນື້ອ​ໃນທີ່ເຮັດເປັນໂຄງຮ່າງໄວ້​, ເຊັ່ນ​: ຕາ​ຕະ​ລາງ</translation>
 <translation id="8746846427395705317">ຍ້າຍໄປຫາຄຳກ່ອນໜ້າ</translation>

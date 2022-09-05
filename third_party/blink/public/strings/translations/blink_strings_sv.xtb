@@ -7,7 +7,6 @@
 <translation id="1178581264944972037">Paus</translation>
 <translation id="1306460908038601864">Av</translation>
 <translation id="1311894908970423688">Värdet måste vara <ph name="VALUE_DATE_OR_TIME" />.</translation>
-<translation id="145015347812617860"><ph name="COUNT" /> objekt</translation>
 <translation id="1480676835519562650">kan välja flera, <ph name="SELECTED" /> av <ph name="COUNT" /> har valts.</translation>
 <translation id="1588438908519853928">Normal</translation>
 <translation id="1591562245178063882">Den här månaden</translation>
@@ -31,7 +30,6 @@
 <translation id="2246498165605549352">Lokal fil</translation>
 <translation id="2247351761944213033">Vecka <ph name="WEEKNUMBER" /> <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">Spår <ph name="NUMBER" /></translation>
-<translation id="2307576640803031502">i listan, objekt <ph name="INDEX" /> av <ph name="COUNT" /></translation>
 <translation id="2393030564806080191">Hexadecimalt färgvärde</translation>
 <translation id="2398813069815436052">en dialogruta har öppnats.</translation>
 <translation id="245932805758469625">antal sekunder kvar av videon</translation>

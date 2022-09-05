@@ -716,6 +716,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili aplik
 <translation id="16620462294541761">Litujeme, heslo nelze ověřit. Zkuste to prosím znovu.</translation>
 <translation id="166278006618318542">Algoritmus veřejného klíče subjektu</translation>
 <translation id="1662801900924515589">Aplikace <ph name="APP" /> je nainstalována</translation>
+<translation id="1665328953287874063">Odemykejte svůj <ph name="DEVICE_TYPE" /> heslem nebo kódem PIN</translation>
 <translation id="1666232093776384142">Deaktivace ochrany přístupu k datům pro periferní zařízení</translation>
 <translation id="1667842670298352129">Nechte si nahlas přečíst konkrétní text. V dolní části obrazovky vyberte ikonu Poslech vybraného textu a potom zvýrazněte text. Můžete také použít klávesovou zkratku: zvýrazněte text a potom stiskněte klávesu Hledat + S.</translation>
 <translation id="1668435968811469751">Zaregistrovat ručně</translation>
@@ -1838,6 +1839,7 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2691385045260836588">Model</translation>
 <translation id="2691440343905273290">Změnit nastavení vstupu</translation>
 <translation id="2693176596243495071">Jejda! Došlo k neznámé chybě. Zkuste to znovu později, a pokud problém bude přetrvávat, kontaktujte administrátora.</translation>
+<translation id="2698147581454716013">Toto zařízení je součástí balíčku a nelze ho zaregistrovat do upgradu Kiosk &amp; Signage.</translation>
 <translation id="2699911226086014512">Operace s kódem PIN selhala. Kód chyby: <ph name="RETRIES" />.</translation>
 <translation id="2701330563083355633">Sdíleno ze zařízení <ph name="DEVICE_NAME" /></translation>
 <translation id="2701737434167469065">Přihlásit se, <ph name="EMAIL" /></translation>
@@ -1916,6 +1918,7 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2757338480560142065">Zkontrolujte, zda se ukládané heslo shoduje s heslem pro web <ph name="WEBSITE" />.</translation>
 <translation id="2762441749940182211">Kamera je blokována</translation>
 <translation id="2764786626780673772">Podrobnosti sítě VPN</translation>
+<translation id="2764920001292228569">Zadejte název profilu</translation>
 <translation id="2765100602267695013">Obraťte se na svého mobilního operátora.</translation>
 <translation id="2765217105034171413">Malé</translation>
 <translation id="2766006623206032690">Vl&amp;ožit a rovnou otevřít</translation>
@@ -3284,6 +3287,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="4065876735068446555">Síť, kterou používáte (<ph name="NETWORK_ID" />), může vyžadovat, abyste navštívili její přihlašovací stránku.</translation>
 <translation id="4066207411788646768">Chcete-li zobrazit dostupné tiskárny v síti, zkontrolujte připojení</translation>
 <translation id="4066945815577305767">Časový limit hesel vypršel</translation>
+<translation id="4067839975993712852">Označit aktuální kartu jako přečtenou</translation>
 <translation id="4068776064906523561">Uložené otisky prstu</translation>
 <translation id="407173827865827707">Při kliknutí</translation>
 <translation id="4072701974556190758">Heslo se uloží do vašeho účtu Google (<ph name="ACCOUNT" />). Nebudete si ho muset pamatovat.</translation>
@@ -5762,6 +5766,7 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="6508248480704296122">Souvisí s: <ph name="NAME_PH" /></translation>
 <translation id="6508261954199872201">Aplikace: <ph name="APP_NAME" /></translation>
 <translation id="6509207748479174212">Mediální licence</translation>
+<translation id="6511827214781912955">Zvažte smazání souboru <ph name="FILENAME" />, aby ostatní uživatelé tohoto zařízení neviděli vaše hesla</translation>
 <translation id="6513247462497316522">Pokud nebudete připojeni k jiné síti, použije prohlížeč Google Chrome mobilní data.</translation>
 <translation id="6514010653036109809">Dostupné zařízení:</translation>
 <translation id="6514565641373682518">Tato stránka deaktivovala ukazatel myši.</translation>
@@ -6047,6 +6052,7 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="6781978626986383437">Zálohování kontejneru systému Linux bylo zrušeno</translation>
 <translation id="6782067259631821405">Neplatný kód PIN</translation>
 <translation id="6784523122863989144">Profil je podporován</translation>
+<translation id="6785739405821760313">Jsou zobrazeny uložené plochy. Můžete je procházet tabulátorem.</translation>
 <translation id="6785872064505734160">Asistent Google v Chromu může na webech provádět různé akce za vás</translation>
 <translation id="6786747875388722282">Rozšíření</translation>
 <translation id="6787097042755590313">Jiná karta</translation>
@@ -6633,6 +6639,7 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="7358338787722390626">Zavřít vyhledávání na postranním panelu</translation>
 <translation id="735994578317267253">Mějte své aplikace, nastavení a další položky na každém zařízení se systémem ChromeOS</translation>
 <translation id="7360233684753165754">Počet stránek pro tiskárnu <ph name="PRINTER_NAME" />: <ph name="PAGE_NUMBER" /></translation>
+<translation id="7360257054721917104">Jsou zobrazeny uložené plochy a šablony. Můžete je procházet tabulátorem.</translation>
 <translation id="7361297102842600584">Plugin <ph name="PLUGIN_NAME" /> spustíte kliknutím pravým tlačítkem</translation>
 <translation id="7362387053578559123">Weby mohou žádat o připojení k zařízením Bluetooth</translation>
 <translation id="7363349185727752629">Průvodce možnostmi ochrany soukromí</translation>
@@ -7285,6 +7292,7 @@ Pokud přiřazení chcete odstranit, stiskněte přiřazený přepínač nebo kl
 <translation id="7953669802889559161">Metody zadávání</translation>
 <translation id="7953955868932471628">Spravovat zástupce</translation>
 <translation id="7955105108888461311">Zeptat se osobně</translation>
+<translation id="7955177647836564772">Pokud je zapnutá funkce Smart Lock a váš telefon je odemknutý, heslo ani PIN zadávat nemusíte.</translation>
 <translation id="7956373551960864128">Vaše uložené tiskárny</translation>
 <translation id="7957074856830851026">Zobrazit informace o zařízení, například sériové či evidenční číslo</translation>
 <translation id="7959074893852789871">Soubor obsahoval více certifikátů, z nichž některé nebyly importovány:</translation>
@@ -7543,6 +7551,7 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Vaše zařízení<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195027750202970175">Velikost na disku</translation>
 <translation id="8195191503358432289">Přidat heslo</translation>
+<translation id="8197673340773315084">Přidejte jméno nebo štítek, například Pracovní nebo Osobní</translation>
 <translation id="8198456017687137612">Odesílání karty</translation>
 <translation id="8199300056570174101">Vlastnosti sítě (služba) a zařízení</translation>
 <translation id="8200772114523450471">Pokračovat</translation>
@@ -7640,6 +7649,7 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8284279544186306258">všechny weby <ph name="WEBSITE_1" /></translation>
 <translation id="8284326494547611709">Titulky</translation>
 <translation id="8286036467436129157">Přihlásit se</translation>
+<translation id="828642162569365647">Toto heslo nebo PIN chrání vaše data na tomto zařízení <ph name="DEVICE_TYPE" /> a všechny informace, ke kterým z telefonu máte přístup. Při každém probuzení z režimu spánku bude <ph name="DEVICE_TYPE" /> potřeba odemknout.</translation>
 <translation id="8287902281644548111">Vyhledat podle adresy URL / volání API</translation>
 <translation id="8288032458496410887">Odinstalovat aplikaci <ph name="APP" />…</translation>
 <translation id="8289128870594824098">Velikost disku</translation>

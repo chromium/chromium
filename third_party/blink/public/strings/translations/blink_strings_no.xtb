@@ -7,7 +7,6 @@
 <translation id="1178581264944972037">Stans midlertidig</translation>
 <translation id="1306460908038601864">Av</translation>
 <translation id="1311894908970423688">Verdien må være <ph name="VALUE_DATE_OR_TIME" />.</translation>
-<translation id="145015347812617860"><ph name="COUNT" /> elementer</translation>
 <translation id="1480676835519562650">node med flere mulige valg – <ph name="SELECTED" /> av <ph name="COUNT" /> er valgt.</translation>
 <translation id="1588438908519853928">Normal</translation>
 <translation id="1591562245178063882">Denne måneden</translation>
@@ -31,7 +30,6 @@
 <translation id="2246498165605549352">Lokal fil</translation>
 <translation id="2247351761944213033">Uke <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">Spor <ph name="NUMBER" /></translation>
-<translation id="2307576640803031502">på listen, element <ph name="INDEX" /> av <ph name="COUNT" /></translation>
 <translation id="2393030564806080191">Heksadesimal fargeverdi</translation>
 <translation id="2398813069815436052">En dialogboks er åpnet.</translation>
 <translation id="245932805758469625">antall sekunder med video som gjenstår</translation>

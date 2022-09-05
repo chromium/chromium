@@ -717,6 +717,7 @@ Behörigheter som du redan har gett appar kan gälla för det här kontot. Du ka
 <translation id="16620462294541761">Det gick inte att verifiera lösenordet. Försök igen.</translation>
 <translation id="166278006618318542">Mottagarens publika nyckelalgoritm</translation>
 <translation id="1662801900924515589"><ph name="APP" /> har installerats</translation>
+<translation id="1665328953287874063">Lås upp <ph name="DEVICE_TYPE" /> med ett lösenord eller en pinkod</translation>
 <translation id="1666232093776384142">Inaktivera dataåtkomstskydd för kringutrustning</translation>
 <translation id="1667842670298352129">Få utvald text uppläst. Välj först textuppläsningsikonen längst ned på skärmen och markera sedan texten. Du kan även använda ett kortkommando: Markera texten och tryck sedan på Sök + S.</translation>
 <translation id="1668435968811469751">Registrera på egen hand</translation>
@@ -1850,6 +1851,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2691385045260836588">Modell</translation>
 <translation id="2691440343905273290">Ändra inmatningsinställningar</translation>
 <translation id="2693176596243495071">Hoppsan! Ett okänt fel har uppstått. Försök igen senare eller kontakta administratören om felet kvarstår.</translation>
+<translation id="2698147581454716013">Det här är en paketerad enhet som inte kan registreras för kiosk- och skyltuppgraderingar.</translation>
 <translation id="2699911226086014512">Pinkodsåtgärden misslyckades med felkod <ph name="RETRIES" />.</translation>
 <translation id="2701330563083355633">Delades från <ph name="DEVICE_NAME" /></translation>
 <translation id="2701737434167469065">Logga in, <ph name="EMAIL" /></translation>
@@ -1928,6 +1930,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2757338480560142065">Kontrollera att lösenordet som du sparar överensstämmer med lösenordet för <ph name="WEBSITE" /></translation>
 <translation id="2762441749940182211">Kamera är blockerad</translation>
 <translation id="2764786626780673772">VPN-information</translation>
+<translation id="2764920001292228569">Ange ett profilnamn</translation>
 <translation id="2765100602267695013">Kontakta mobilleverantören</translation>
 <translation id="2765217105034171413">Liten</translation>
 <translation id="2766006623206032690">Kl&amp;istra in och öppna</translation>
@@ -3297,6 +3300,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="4065876735068446555">Nätverket du använder (<ph name="NETWORK_ID" />) kanske kräver att du besöker dess inloggningssida.</translation>
 <translation id="4066207411788646768">Kontrollera anslutningen om du vill se vilka skrivare som är tillgängliga i nätverket</translation>
 <translation id="4066945815577305767">Tidsgränsen har uppnåtts</translation>
+<translation id="4067839975993712852">Markera den aktuella fliken som läst</translation>
 <translation id="4068776064906523561">Sparade fingeravtryck</translation>
 <translation id="407173827865827707">Vid klick</translation>
 <translation id="4072701974556190758">Lösenordet sparas i ditt Google-konto, <ph name="ACCOUNT" />. Du slipper lägga det på minnet.</translation>
@@ -5779,6 +5783,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="6508248480704296122">Kopplade till <ph name="NAME_PH" /></translation>
 <translation id="6508261954199872201">App: <ph name="APP_NAME" /></translation>
 <translation id="6509207748479174212">Medielicens</translation>
+<translation id="6511827214781912955">Det kan vara bra att radera <ph name="FILENAME" /> så att andra som använder enheten inte kan se lösenorden</translation>
 <translation id="6513247462497316522">Google Chrome kommer att använda mobila data om du inte är ansluten till ett annat nätverk.</translation>
 <translation id="6514010653036109809">Tillgänglig enhet:</translation>
 <translation id="6514565641373682518">Muspekaren har inaktiverats av sidan.</translation>
@@ -6060,6 +6065,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="6781978626986383437">Säkerhetskopieringen av Linux har avbrutits</translation>
 <translation id="6782067259631821405">Ogiltig pinkod</translation>
 <translation id="6784523122863989144">Profilen stöds</translation>
+<translation id="6785739405821760313">Visar sparade skrivbord. Tryck på tabb för att navigera.</translation>
 <translation id="6785872064505734160">Google-assistenten i Chrome kan slutföra åtgärder åt dig på webbplatser</translation>
 <translation id="6786747875388722282">Tillägg</translation>
 <translation id="6787097042755590313">Annan flik</translation>
@@ -6644,6 +6650,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="7358338787722390626">Stäng sökning på sidopanelen</translation>
 <translation id="735994578317267253">Få tillgång till dina appar, inställningar med mera på alla ChromeOS-enheter</translation>
 <translation id="7360233684753165754"><ph name="PAGE_NUMBER" /> sidor till <ph name="PRINTER_NAME" /></translation>
+<translation id="7360257054721917104">Visar sparade skrivbord och mallar. Tryck på tabb för att navigera.</translation>
 <translation id="7361297102842600584">Högerklicka för att köra <ph name="PLUGIN_NAME" /></translation>
 <translation id="7362387053578559123">Webbplatser får begära tillstånd att ansluta till enheter via Bluetooth</translation>
 <translation id="7363349185727752629">En guide över dina integritetsval</translation>
@@ -7297,6 +7304,7 @@ Tryck på en brytare eller tangent som redan tilldelats en åtgärd om du vill t
 <translation id="7953669802889559161">Inmatningar</translation>
 <translation id="7953955868932471628">Hantera genvägar</translation>
 <translation id="7955105108888461311">Fråga själv</translation>
+<translation id="7955177647836564772">Om Smart Lock är aktiverat och telefonen är upplåst behöver du inte ange lösenord eller pinkod</translation>
 <translation id="7956373551960864128">Dina sparade skrivare</translation>
 <translation id="7957074856830851026">Visa enhetsinformation, t.ex. serienummer eller tillgångs-id</translation>
 <translation id="7959074893852789871">Filen innehöll flera certifikat och några av dem importerades inte:</translation>
@@ -7555,6 +7563,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Dina enheter<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195027750202970175">Storlek på disk</translation>
 <translation id="8195191503358432289">Lägg till lösenord</translation>
+<translation id="8197673340773315084">Lägg till ett namn eller en etikett, till exempel Jobb eller Privat</translation>
 <translation id="8198456017687137612">Castar flik</translation>
 <translation id="8199300056570174101">Nätverkstjänst och enhetsegenskaper</translation>
 <translation id="8200772114523450471">Återuppta</translation>
@@ -7652,6 +7661,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8284279544186306258">alla <ph name="WEBSITE_1" />-webbplatser</translation>
 <translation id="8284326494547611709">Textning</translation>
 <translation id="8286036467436129157">Logga in</translation>
+<translation id="828642162569365647">Det här lösenordet eller den här pinkoden skyddar din data på denna <ph name="DEVICE_TYPE" /> och all information som du får åtkomst till från telefonen. Du måste låsa upp varje gång din <ph name="DEVICE_TYPE" /> väcks från viloläge.</translation>
 <translation id="8287902281644548111">Sök efter API-anrop/webbadress</translation>
 <translation id="8288032458496410887">Avinstallera <ph name="APP" /> …</translation>
 <translation id="8289128870594824098">Diskstorlek</translation>

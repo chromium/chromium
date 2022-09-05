@@ -7,7 +7,6 @@
 <translation id="1178581264944972037">ဆိုင်းငံ့ထားရန်</translation>
 <translation id="1306460908038601864">ပိတ်ထားသည်</translation>
 <translation id="1311894908970423688">တန်ဖိုးမှာ <ph name="VALUE_DATE_OR_TIME" /> ဖြစ်ရမည်။</translation>
-<translation id="145015347812617860"><ph name="COUNT" /> အကြောင်းအရာများ</translation>
 <translation id="1480676835519562650">အများအပြားရွေးချယ်၍ရသည်၊ <ph name="COUNT" /> မှ <ph name="SELECTED" /> ခု ရွေးချယ်ထားသည်။</translation>
 <translation id="1588438908519853928">ပုံမှန်</translation>
 <translation id="1591562245178063882">ဤလ</translation>
@@ -31,7 +30,6 @@
 <translation id="2246498165605549352">စက်အတွင်းဖိုင်</translation>
 <translation id="2247351761944213033">အပတ် <ph name="WEEKNUMBER" />၊ <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">အပုဒ်ရေ <ph name="NUMBER" /></translation>
-<translation id="2307576640803031502">စာရင်းတွင်၊ <ph name="COUNT" /> ခုအနက် <ph name="INDEX" /></translation>
 <translation id="2393030564806080191">ဟက်စ်အရောင် အညွှန်းကိန်း</translation>
 <translation id="2398813069815436052">ဒိုင်ယာလော့ ဖွင့်ထားသည်။</translation>
 <translation id="245932805758469625">ဗီဒီယိုပြီးဆုံးရန် ကျန်ရှိ စက္ကန့်</translation>

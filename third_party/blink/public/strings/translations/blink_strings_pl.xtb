@@ -7,7 +7,6 @@
 <translation id="1178581264944972037">Wstrzymaj</translation>
 <translation id="1306460908038601864">Wyłączono</translation>
 <translation id="1311894908970423688">Wymagana wartość: <ph name="VALUE_DATE_OR_TIME" />.</translation>
-<translation id="145015347812617860">Elementy: <ph name="COUNT" /></translation>
 <translation id="1480676835519562650">wielokrotny wybór, wybrano <ph name="SELECTED" /> z <ph name="COUNT" />.</translation>
 <translation id="1588438908519853928">Normalny</translation>
 <translation id="1591562245178063882">W tym miesiącu</translation>
@@ -31,7 +30,6 @@
 <translation id="2246498165605549352">Plik lokalny</translation>
 <translation id="2247351761944213033">Tydzień <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">Utwór <ph name="NUMBER" /></translation>
-<translation id="2307576640803031502">na liście, pozycja <ph name="INDEX" /> z <ph name="COUNT" /></translation>
 <translation id="2393030564806080191">Wartość szesnastkowego kodu koloru</translation>
 <translation id="2398813069815436052">okno zostało otwarte.</translation>
 <translation id="245932805758469625">pozostały czas filmu w sekundach</translation>

@@ -716,6 +716,7 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris lietotnēm. Vara
 <translation id="16620462294541761">Diemžēl jūsu paroli nevarēja verificēt. Lūdzu, mēģiniet vēlreiz.</translation>
 <translation id="166278006618318542">Subjekta publiskās atslēgas algoritms</translation>
 <translation id="1662801900924515589">Lietotne <ph name="APP" /> ir instalēta.</translation>
+<translation id="1665328953287874063"><ph name="DEVICE_TYPE" /> jāatbloķē, izmantojot paroli vai PIN</translation>
 <translation id="1666232093776384142">Datu piekļuves aizsardzības atspējošana perifērajām ierīcēm</translation>
 <translation id="1667842670298352129">Noklausieties konkrētu tekstu. Vispirms ekrāna apakšdaļā atlasiet ikonu “Atlasīt, lai izrunātu” un pēc tam iezīmējiet tekstu. Varat arī izmantot īsinājumtaustiņus: iezīmējiet tekstu un pēc tam nospiediet meklēšanas taustiņu + S.</translation>
 <translation id="1668435968811469751">Reģistrēties manuāli</translation>
@@ -1837,6 +1838,7 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="2691385045260836588">Modelis</translation>
 <translation id="2691440343905273290">Mainīt ievades iestatījumus</translation>
 <translation id="2693176596243495071">Diemžēl radās nezināma kļūda. Vēlāk mēģiniet vēlreiz, vai sazinieties ar administratoru, ja problēma joprojām pastāv.</translation>
+<translation id="2698147581454716013">Šī ierīce ir daļa no komplekta, un to nevar reģistrēt licencei Kiosk &amp; Signage Upgrade.</translation>
 <translation id="2699911226086014512">PIN darbība neizdevās, kods: <ph name="RETRIES" />.</translation>
 <translation id="2701330563083355633">Kopīgota no: <ph name="DEVICE_NAME" /></translation>
 <translation id="2701737434167469065">Pierakstīties (<ph name="EMAIL" />)</translation>
@@ -1915,6 +1917,7 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="2757338480560142065">Parolei, kuru vēlaties saglabāt, ir jāatbilst vietnē <ph name="WEBSITE" /> izmantotajai parolei.</translation>
 <translation id="2762441749940182211">Kameras lietošana ir bloķēta</translation>
 <translation id="2764786626780673772">VPN dati</translation>
+<translation id="2764920001292228569">Ievadiet profila nosaukumu</translation>
 <translation id="2765100602267695013">Lūdzu, sazinieties ar mobilo sakaru operatoru</translation>
 <translation id="2765217105034171413">Mazs</translation>
 <translation id="2766006623206032690">Ielīmēt un doties</translation>
@@ -3284,6 +3287,7 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="4065876735068446555">Iespējams, izmantotajā tīklā (<ph name="NETWORK_ID" />) tiks prasīts apmeklēt pieteikšanās lapu.</translation>
 <translation id="4066207411788646768">Lūdzu, pārbaudiet savienojumu, lai skatītu tīklā pieejamos printerus.</translation>
 <translation id="4066945815577305767">Radās autentifikācijas noildze</translation>
+<translation id="4067839975993712852">Atzīmēt pašreizējo cilni kā izlasītu</translation>
 <translation id="4068776064906523561">Saglabātie pirkstu nospiedumi</translation>
 <translation id="407173827865827707">Noklikšķinot</translation>
 <translation id="4072701974556190758">Parole tiks saglabāta jūsu Google kontā (<ph name="ACCOUNT" />). Jums tā nebūs jāiegaumē.</translation>
@@ -5762,6 +5766,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="6508248480704296122">Saistīts(-a) ar <ph name="NAME_PH" /></translation>
 <translation id="6508261954199872201">Lietojumprogramma: <ph name="APP_NAME" /></translation>
 <translation id="6509207748479174212">Multivides licence</translation>
+<translation id="6511827214781912955">Lai citi lietotāji, kuri izmanto šo ierīci, nevarētu skatīt jūsu paroles, ieteicams izdzēst failu <ph name="FILENAME" /></translation>
 <translation id="6513247462497316522">Ja jums nebūs pieejams savienojums ar tīklu, Google Chrome izmantos mobilos datus.</translation>
 <translation id="6514010653036109809">Pieejamā ierīce:</translation>
 <translation id="6514565641373682518">Šī lapa ir atspējojusi jūsu peles kursoru.</translation>
@@ -6047,6 +6052,7 @@ Jums ir vēl # uzlauztas paroles. Google paroļu pārvaldnieks iesaka nekavējot
 <translation id="6781978626986383437">Linux dublējums atcelts</translation>
 <translation id="6782067259631821405">Nederīgs PIN</translation>
 <translation id="6784523122863989144">Profils tiek atbalstīts</translation>
+<translation id="6785739405821760313">Tiek skatītas saglabātās darbvietas. Lai pārietu citur, nospiediet tabulēšanas taustiņu.</translation>
 <translation id="6785872064505734160">Google asistents pārlūkprogrammā Chrome var veikt darbības vietnēs jūsu vārdā.</translation>
 <translation id="6786747875388722282">Paplašinājumi</translation>
 <translation id="6787097042755590313">Cita cilne</translation>
@@ -6504,6 +6510,7 @@ Jums ir vēl # uzlauztas paroles. Google paroļu pārvaldnieks iesaka nekavējot
 <translation id="7222204278952406003">Chrome ir jūsu noklusējuma pārlūks</translation>
 <translation id="7222232353993864120">E-pasta adrese</translation>
 <translation id="7222235798733126207">Ierobežota datu kopīgošana starp vietnēm</translation>
+<translation id="7225082563376899794">Aizpildot paroles, izmantot Windows Hello</translation>
 <translation id="7225179976675429563">Nav norādīts tīkla veids</translation>
 <translation id="7227458944009118910">Tālāk norādītās lietotnes var apstrādāt arī protokolu saites. Citas lietotnes lūgs atļauju.</translation>
 <translation id="7228523857728654909">Ekrāna bloķēšana un pierakstīšanās</translation>
@@ -6545,6 +6552,7 @@ Jums ir vēl # uzlauztas paroles. Google paroļu pārvaldnieks iesaka nekavējot
 <translation id="7258192266780953209">Pārveidošana</translation>
 <translation id="7258225044283673131">Šī lietojumprogramma nereaģē. Lai aizvērtu lietotni, atlasiet vienumu “Aizvērt piespiedu kārtā”.</translation>
 <translation id="7260186537988033909">Kioska un digitālā ceļrāža ierīces reģistrācija pabeigta</translation>
+<translation id="7261851165551049223">Aizpildot paroles, izmantot Touch ID</translation>
 <translation id="7262004276116528033">Šo pierakstīšanās pakalpojumu nodrošina <ph name="SAML_DOMAIN" /></translation>
 <translation id="7264695323040866038">Vai vienmēr izmantot lietotni <ph name="APP" />, lai atvērtu atbalstītās tīmekļa saites?</translation>
 <translation id="7267044199012331848">Nevarēja instalēt virtuālo mašīnu. Lūdzu, mēģiniet vēlreiz vai sazinieties ar administratoru. Kļūdas kods: <ph name="ERROR_CODE" />.</translation>
@@ -6631,6 +6639,7 @@ Jums ir vēl # uzlauztas paroles. Google paroļu pārvaldnieks iesaka nekavējot
 <translation id="7358338787722390626">Aizvērt meklēšanas lapu sānu panelī</translation>
 <translation id="735994578317267253">Piekļūstiet savām lietotnēm, iestatījumiem u.c. vienumiem jebkurā Chrome OS ierīcē</translation>
 <translation id="7360233684753165754"><ph name="PAGE_NUMBER" /> lapas nosūtītas printerim <ph name="PRINTER_NAME" /></translation>
+<translation id="7360257054721917104">Tiek skatītas saglabātās darbvietas un veidnes. Lai pārietu citur, nospiediet tabulēšanas taustiņu.</translation>
 <translation id="7361297102842600584">Lai palaistu spraudni <ph name="PLUGIN_NAME" />, noklikšķiniet ar labo peles pogu</translation>
 <translation id="7362387053578559123">Atļaut vietnēm pieprasīt atļauju veidot savienojumu ar Bluetooth ierīcēm</translation>
 <translation id="7363349185727752629">Konfidencialitātes iestatījumu ceļvedis</translation>
@@ -7283,6 +7292,7 @@ Lai noņemtu piešķīrumu, nospiediet piešķirto slēdzi vai taustiņu.</trans
 <translation id="7953669802889559161">Ievades metodes</translation>
 <translation id="7953955868932471628">Pārvaldīt saīsnes</translation>
 <translation id="7955105108888461311">Jautāt personiski</translation>
+<translation id="7955177647836564772">Ja ir ieslēgta funkcija Smart Lock un tālrunis ir atbloķēts, nav jāievada parole vai PIN</translation>
 <translation id="7956373551960864128">Jūsu saglabātie printeri</translation>
 <translation id="7957074856830851026">Skatīt informāciju par ierīci, piemēram, sērijas numuru vai īpašuma ID</translation>
 <translation id="7959074893852789871">Failā bija iekļauti vairāki sertifikāti, no kuriem daži netika importēti:</translation>
@@ -7541,6 +7551,7 @@ Glabājiet atslēgas failu drošā vietā. Tas būs vajadzīgs, lai izveidotu ja
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Jūsu ierīces<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195027750202970175">Lielums diskā</translation>
 <translation id="8195191503358432289">Paroles pievienošana</translation>
+<translation id="8197673340773315084">Pievienojiet nosaukumu vai iezīmi, piemēram, “Darbs” vai “Personīgais”.</translation>
 <translation id="8198456017687137612">Apraides cilne</translation>
 <translation id="8199300056570174101">Tīklu (pakalpojumu) un ierīču rekvizīti</translation>
 <translation id="8200772114523450471">Kopsavilkums</translation>
@@ -7638,6 +7649,7 @@ Glabājiet atslēgas failu drošā vietā. Tas būs vajadzīgs, lai izveidotu ja
 <translation id="8284279544186306258">visās <ph name="WEBSITE_1" /> vietnēs</translation>
 <translation id="8284326494547611709">Subtitri</translation>
 <translation id="8286036467436129157">Pierakstīties</translation>
+<translation id="828642162569365647">Ar šo paroli vai PIN tiks aizsargāti jūsu dati šajā ierīcē (<ph name="DEVICE_TYPE" />) un informācija, kurai piekļūsiet no sava tālruņa. <ph name="DEVICE_TYPE" /> būs jāatbloķē katru reizi, kad tas tiks aktivizēts pēc miega režīma beigām.</translation>
 <translation id="8287902281644548111">Meklēt pēc API izsaukuma/URL</translation>
 <translation id="8288032458496410887">Vai atinstalēt lietotni <ph name="APP" />?</translation>
 <translation id="8289128870594824098">Diska lielums</translation>

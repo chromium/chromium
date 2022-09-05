@@ -678,6 +678,7 @@
 <translation id="1632756664321977232">ჩამოჭრის ხელსაწყო</translation>
 <translation id="163309982320328737">პირველადი სიმბოლოს სიგანე სავსეა</translation>
 <translation id="1633947793238301227">Google ასისტენტის გათიშვა</translation>
+<translation id="1634224622052500893">ნაპოვნია Wi-Fi ქსელი</translation>
 <translation id="1634783886312010422">ეს პაროლი <ph name="WEBSITE" />-ზე უკვე შეცვალეთ?</translation>
 <translation id="1636212173818785548">კარგი</translation>
 <translation id="163712950892155760"><ph name="BEGIN_PARAGRAPH1" />აპების მონაცემებად შეიძლება ჩაითვალოს ამა თუ იმ აპის მიერ შენახული ნებისმიერი სახის მონაცემი (დეველოპერის პარამეტრების მიხედვით), მათ შორის, ისეთი მონაცემები, როგორიცაა კონტაქტები, შეტყობინებები და ფოტოები. სარეზერვო მონაცემები არ აისახება Google Drive-ზე თქვენთვის გამოყოფილი მეხსიერების კვოტაზე.<ph name="END_PARAGRAPH1" />
@@ -2008,6 +2009,7 @@
 <translation id="2839032553903800133">შეტყობინებები დაბლოკილია</translation>
 <translation id="2841013758207633010">დრო</translation>
 <translation id="2841837950101800123">პროვაიდერი</translation>
+<translation id="2842013086666334835">შედით „<ph name="NETWORK_ID" />“-ში</translation>
 <translation id="2843560154284403323">Linux-ის დაყენების დასასრულებლად განაახლეთ ChromeOS და ცადეთ ხელახლა.</translation>
 <translation id="2844169650293029770">USB-C მოწყობილობა (მარცხენა წინა პორტი)</translation>
 <translation id="2844809857160214557">ბეჭდვის დავალებების ნახვა და მართვა</translation>
@@ -2108,6 +2110,7 @@
 <translation id="2927017729816812676">ქეშის მეხსიერება</translation>
 <translation id="2928795416630981206">თქვენი კამერის პოზიციისთვის თვალის მიდევნება დაშვებულია</translation>
 <translation id="2931157624143513983">ბეჭდვად არეზე მორგება</translation>
+<translation id="2931342457001070961">მიკროფონი დაკავშირებული არ არის</translation>
 <translation id="2932085390869194046">პაროლის შემოთავაზება…</translation>
 <translation id="2932483646085333864">სინქრონიზაციის დასაწყებად, გადით სისტემიდან და შედით ხელახლა</translation>
 <translation id="2932883381142163287">არასათანადო მოპყრობის შესახებ შეტყობინება</translation>
@@ -2171,6 +2174,7 @@
 <translation id="2996286169319737844">მონაცემები დაშიფრულია თქვენი სინქრონიზაციის საიდუმლო ფრაზით. აღნიშნული არ მოიცავს Google Pay-ში შენახულ გადახდის მეთოდებსა და მისამართებს.</translation>
 <translation id="2996722619877761919">ამობრუნება გრძელ კიდეზე</translation>
 <translation id="2996932914629936323">გაასუფთავებს ისტორიას ყველა სინქრონიზებულ მოწყობილობაზე</translation>
+<translation id="2998267783395280091">ნაპოვნია  ქსელი</translation>
 <translation id="3000378525979847272">დაშვებულია <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /></translation>
 <translation id="3000461861112256445">მონო აუდიო</translation>
 <translation id="3001144475369593262">ბავშვების ანგარიშები</translation>
@@ -2322,6 +2326,7 @@
 <translation id="3142562627629111859">ახალი ჯგუფი</translation>
 <translation id="3143515551205905069">სინქრონიზაციის გაუქმება</translation>
 <translation id="3143754809889689516">დასაწყისიდან დაკვრა</translation>
+<translation id="3143937294861726703">მეხსიერების დამზოგი ჩართულია</translation>
 <translation id="3144647712221361880">ბმულის გახსნა, როგორც</translation>
 <translation id="3149510190863420837">Chrome-ის პროგრამები</translation>
 <translation id="3150693969729403281">უსაფრთხოების შემოწმების გაშვება</translation>

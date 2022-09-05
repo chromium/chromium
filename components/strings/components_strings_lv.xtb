@@ -1805,6 +1805,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="5764920692828389743">Sūtīt uz e-pasta adresi <ph name="EMAIL_ADDRESS" /></translation>
 <translation id="5765072501007116331">Lai skatītu piegādes veidus un prasības, atlasiet adresi.</translation>
 <translation id="57689295674415555">Vai nav ievadīts virtuālās kartes numurs?</translation>
+<translation id="5772086939108830423">Izmantot piekļuves atslēgu citā ierīcē</translation>
 <translation id="5776313857861697733">Prioritārs</translation>
 <translation id="5781136890105823427">Eksperiments iespējots</translation>
 <translation id="578305955206182703">Dzintarkrāsa</translation>
@@ -2201,6 +2202,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="6916954549222464607">Finanšu plānošana un pārvaldība</translation>
 <translation id="6917795328362592458">Nupat izmantotā parole ir atklāta datu aizsardzības pārkāpuma dēļ. Lai aizsargātu kontus, Paroļu pārvaldnieks iesaka pārbaudīt saglabātās paroles.</translation>
 <translation id="6934672428414710184">Šis vārds ir no jūsu Google konta</translation>
+<translation id="6936976777388162184">Šī ierīce ir daļa no komplekta, un to nevar reģistrēt licencei Kiosk &amp; Signage Upgrade.</translation>
 <translation id="6939469646605424232">TV drāmas</translation>
 <translation id="6944692733090228304">Jūs ievadījāt paroli vietnē, kuru nepārvalda <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />. Lai aizsargātu savu kontu, neizmantojiet šo paroli citās lietotnēs un vietnēs.</translation>
 <translation id="6945221475159498467">Atlasīt</translation>
@@ -3054,6 +3056,7 @@ Papildu informācija:
 <translation id="950736567201356821">Trīs caurumi augšdaļā</translation>
 <translation id="961663415146723894">Iesējums apakšdaļā</translation>
 <translation id="962484866189421427">Šis saturs jūsu ierīcē var mēģināt instalēt maldinošas lietotnes, kas tiek uzdodas par cita veida saturu, vai vākt datus, kas var tikt izmantoti jūsu izsekošanai. <ph name="BEGIN_LINK" />Tāpat rādīt<ph name="END_LINK" />.</translation>
+<translation id="964050462028070434">Pārvaldīt paroles un piekļuves atslēgas…</translation>
 <translation id="96680173638229310">Automašīnas un transportlīdzekļi</translation>
 <translation id="969892804517981540">Oficiālā Uzbūve</translation>
 <translation id="973773823069644502">Pievienot piegādes adresi</translation>

@@ -716,6 +716,7 @@
 <translation id="16620462294541761">К сожалению, не удалось подтвердить пароль. Повторите попытку.</translation>
 <translation id="166278006618318542">Алгоритм открытого ключа субъекта</translation>
 <translation id="1662801900924515589">Приложение "<ph name="APP" />" установлено.</translation>
+<translation id="1665328953287874063">Разблокируйте устройство <ph name="DEVICE_TYPE" /> с помощью пароля или PIN-кода</translation>
 <translation id="1666232093776384142">Снять ограничение на доступ к данным для периферийных устройств?</translation>
 <translation id="1667842670298352129">Читать вслух выбранный текст. Чтобы воспользоваться функцией, нажмите на значок "Озвучивание при нажатии" внизу экрана и выделите нужный текст. Также вы можете выделить текст и нажать Поиск + S.</translation>
 <translation id="1668435968811469751">Зарегистрировать вручную</translation>
@@ -1837,6 +1838,7 @@
 <translation id="2691385045260836588">Модель</translation>
 <translation id="2691440343905273290">Изменить настройки ввода</translation>
 <translation id="2693176596243495071">Произошла неизвестная ошибка. Повторите попытку позже. Если ситуация не изменится, обратитесь к администратору.</translation>
+<translation id="2698147581454716013">У этого устройства встроенная лицензия, поэтому его нельзя зарегистрировать для режима киоска или цифровой вывески.</translation>
 <translation id="2699911226086014512">Не удалось установить PIN-код (ошибка <ph name="RETRIES" />).</translation>
 <translation id="2701330563083355633">С устройства "<ph name="DEVICE_NAME" />"</translation>
 <translation id="2701737434167469065">Войти в аккаунт <ph name="EMAIL" /></translation>
@@ -1915,6 +1917,7 @@
 <translation id="2757338480560142065">Убедитесь, что пароль, который вы сохраняете, совпадает с паролем для сайта <ph name="WEBSITE" />.</translation>
 <translation id="2762441749940182211">Доступ к камере запрещен</translation>
 <translation id="2764786626780673772">Сведения о VPN</translation>
+<translation id="2764920001292228569">Введите название профиля.</translation>
 <translation id="2765100602267695013">Обратитесь к оператору мобильной связи.</translation>
 <translation id="2765217105034171413">Мелкий</translation>
 <translation id="2766006623206032690">Вс&amp;тавить из буфера и перейти</translation>
@@ -3284,6 +3287,7 @@
 <translation id="4065876735068446555">Возможно, вам нужно перейти на страницу входа сети <ph name="NETWORK_ID" />.</translation>
 <translation id="4066207411788646768">Чтобы увидеть принтеры, доступные в вашей сети, подключитесь к Интернету.</translation>
 <translation id="4066945815577305767">Превышено время ожидания</translation>
+<translation id="4067839975993712852">Отметить текущую вкладку как прочитанную</translation>
 <translation id="4068776064906523561">Сохраненные отпечатки пальцев</translation>
 <translation id="407173827865827707">При нажатии</translation>
 <translation id="4072701974556190758">Пароль будет сохранен в вашем аккаунте Google (<ph name="ACCOUNT" />). Вам не нужно его запоминать.</translation>
@@ -5765,6 +5769,7 @@
 <translation id="6508248480704296122">Похожее на <ph name="NAME_PH" /></translation>
 <translation id="6508261954199872201">Приложение: <ph name="APP_NAME" /></translation>
 <translation id="6509207748479174212">Лицензии</translation>
+<translation id="6511827214781912955">Рекомендуем удалить файл <ph name="FILENAME" />, чтобы другие пользователи, которые работают с этим устройством, не могли видеть ваши пароли.</translation>
 <translation id="6513247462497316522">При отсутствии подключения к другой сети Google Chrome будет использовать мобильную сеть передачи данных.</translation>
 <translation id="6514010653036109809">Доступное устройство:</translation>
 <translation id="6514565641373682518">Эта страница скрыла курсор.</translation>
@@ -6052,6 +6057,7 @@
 <translation id="6781978626986383437">Резервное копирование контейнера Linux отменено.</translation>
 <translation id="6782067259631821405">Неверный PIN-код.</translation>
 <translation id="6784523122863989144">Профиль поддерживается.</translation>
+<translation id="6785739405821760313">Просмотр сохраненных рабочих столов. Для навигации по ним нажимайте Tab.</translation>
 <translation id="6785872064505734160">Google Ассистент в Chrome может помогать вам выполнять действия на сайтах.</translation>
 <translation id="6786747875388722282">Расширения</translation>
 <translation id="6787097042755590313">Другая вкладка</translation>
@@ -6636,6 +6642,7 @@
 <translation id="7358338787722390626">Закрыть боковое окно поиска</translation>
 <translation id="735994578317267253">Доступ к приложениям, настройкам и другим параметрам на любом устройстве с ChromeOS</translation>
 <translation id="7360233684753165754">Печать <ph name="PAGE_NUMBER" /> стр. на принтере <ph name="PRINTER_NAME" /></translation>
+<translation id="7360257054721917104">Просмотр сохраненных рабочих столов и шаблонов. Для навигации по ним нажимайте Tab.</translation>
 <translation id="7361297102842600584">Нажмите правой кнопкой мыши, чтобы запустить плагин "<ph name="PLUGIN_NAME" />"</translation>
 <translation id="7362387053578559123">Разрешить сайтам отправлять запрос на подключение к устройствам Bluetooth</translation>
 <translation id="7363349185727752629">Все о настройках конфиденциальности</translation>
@@ -7288,6 +7295,7 @@
 <translation id="7953669802889559161">Способы ввода</translation>
 <translation id="7953955868932471628">Управление ярлыками</translation>
 <translation id="7955105108888461311">Запросить доступ лично</translation>
+<translation id="7955177647836564772">Если функция Smart Lock включена и телефон разблокирован, вводить пароль или PIN-код не нужно.</translation>
 <translation id="7956373551960864128">Сохраненные принтеры</translation>
 <translation id="7957074856830851026">Получать данные об устройстве, например серийный номер или идентификатор объекта</translation>
 <translation id="7959074893852789871">Файл содержал несколько сертификатов, некоторые из которых не были импортированы:</translation>
@@ -7546,6 +7554,7 @@
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Ваши устройства<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195027750202970175">Объем на диске</translation>
 <translation id="8195191503358432289">Добавление пароля</translation>
+<translation id="8197673340773315084">Укажите имя или название (например, "Рабочий" или "Личный")</translation>
 <translation id="8198456017687137612">Трансляция вкладки</translation>
 <translation id="8199300056570174101">Настройки сети и устройства</translation>
 <translation id="8200772114523450471">Возобновить</translation>
@@ -7643,6 +7652,7 @@
 <translation id="8284279544186306258">все сайты <ph name="WEBSITE_1" /></translation>
 <translation id="8284326494547611709">Субтитры</translation>
 <translation id="8286036467436129157">Вход</translation>
+<translation id="828642162569365647">Этот пароль или PIN-код будет защищать ваши данные на текущем устройстве <ph name="DEVICE_TYPE" />, а также информацию, получаемую с телефона. Чтобы выйти из спящего режима, потребуется разблокировать устройство <ph name="DEVICE_TYPE" />.</translation>
 <translation id="8287902281644548111">Поиск по URL или запросу к API</translation>
 <translation id="8288032458496410887">Удалить приложение "<ph name="APP" />"...</translation>
 <translation id="8289128870594824098">Размер диска</translation>

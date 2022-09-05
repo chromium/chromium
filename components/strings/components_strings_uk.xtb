@@ -1806,6 +1806,7 @@
 <translation id="5764920692828389743">Надсилати на адресу <ph name="EMAIL_ADDRESS" /></translation>
 <translation id="5765072501007116331">Укажіть адресу, щоб переглянути способи доставки та вимоги.</translation>
 <translation id="57689295674415555">Номер віртуальної картки не заповнено?</translation>
+<translation id="5772086939108830423">Використати ключ доступу на іншому пристрої</translation>
 <translation id="5776313857861697733">Пріоритет</translation>
 <translation id="5781136890105823427">Експеримент увімкнено</translation>
 <translation id="578305955206182703">Бурштиновий</translation>
@@ -3056,6 +3057,7 @@
 <translation id="950736567201356821">Пробити три отвори вгорі</translation>
 <translation id="961663415146723894">Зшити внизу</translation>
 <translation id="962484866189421427">Ця сторінка може намагатися встановлювати оманливі додатки, які видають себе за інший вміст, або збирати дані для відстеження ваших дій. <ph name="BEGIN_LINK" />Усе одно показати<ph name="END_LINK" /></translation>
+<translation id="964050462028070434">Керувати паролями та ключами доступу…</translation>
 <translation id="96680173638229310">Автомобілі й транспортні засоби</translation>
 <translation id="969892804517981540">Розробка</translation>
 <translation id="973773823069644502">Додати адресу доставки</translation>

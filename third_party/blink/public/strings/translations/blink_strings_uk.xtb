@@ -7,7 +7,6 @@
 <translation id="1178581264944972037">Пауза</translation>
 <translation id="1306460908038601864">Вимкнено</translation>
 <translation id="1311894908970423688">Укажіть значення <ph name="VALUE_DATE_OR_TIME" />.</translation>
-<translation id="145015347812617860">Закладок: <ph name="COUNT" /></translation>
 <translation id="1480676835519562650">можна вибрати кілька параметрів, вибрано <ph name="SELECTED" /> з <ph name="COUNT" />.</translation>
 <translation id="1588438908519853928">Звичайний</translation>
 <translation id="1591562245178063882">Цей місяць</translation>
@@ -31,7 +30,6 @@
 <translation id="2246498165605549352">Локальний файл</translation>
 <translation id="2247351761944213033">Тиждень <ph name="WEEKNUMBER" />, <ph name="YEAR" /> р.</translation>
 <translation id="2277199496770840904">Композиція <ph name="NUMBER" /></translation>
-<translation id="2307576640803031502">у списку, пункт <ph name="INDEX" /> з <ph name="COUNT" /></translation>
 <translation id="2393030564806080191">Шістнадцяткове значення кольору</translation>
 <translation id="2398813069815436052">вікно відкрите.</translation>
 <translation id="245932805758469625">кількість секунд до кінця відео</translation>

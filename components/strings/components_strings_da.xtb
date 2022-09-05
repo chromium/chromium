@@ -1806,6 +1806,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="5764920692828389743">Send til <ph name="EMAIL_ADDRESS" /></translation>
 <translation id="5765072501007116331">Vælg en adresse for at se leveringsmetoder og -krav</translation>
 <translation id="57689295674415555">Er det virtuelle kortnummer ikke udfyldt?</translation>
+<translation id="5772086939108830423">Brug en adgangsnøgle på en anden enhed</translation>
 <translation id="5776313857861697733">Prioritet</translation>
 <translation id="5781136890105823427">Eksperimentet er aktiveret</translation>
 <translation id="578305955206182703">Ravgul</translation>
@@ -2202,6 +2203,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="6916954549222464607">Finansiel planlægning og styring</translation>
 <translation id="6917795328362592458">Den adgangskode, du lige har brugt, er blevet lækket i forbindelse med et brud på datasikkerheden. For at beskytte dine konti anbefaler Adgangskodeadministrator, at du tjekker dine gemte adgangskoder.</translation>
 <translation id="6934672428414710184">Dette navn er fra din Google-konto</translation>
+<translation id="6936976777388162184">Dette er en pakkeenhed, som ikke kan tilmeldes Kiosk &amp; Signage-opgraderingen.</translation>
 <translation id="6939469646605424232">Tv-drama</translation>
 <translation id="6944692733090228304">Du indtastede din adgangskode på et website, der ikke administreres af <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />. Du kan beskytte din konto ved at undgå at bruge din adgangskode i andre apps og på andre websites.</translation>
 <translation id="6945221475159498467">Vælg</translation>
@@ -3055,6 +3057,7 @@ Yderligere oplysninger:
 <translation id="950736567201356821">Tre huller øverst</translation>
 <translation id="961663415146723894">Bind nederst</translation>
 <translation id="962484866189421427">Dette indhold kan forsøge at installere vildledende apps, der foregiver at være noget andet, eller som indsamler data, der kan anvendes til at overvåge dig. <ph name="BEGIN_LINK" />Vis alligevel<ph name="END_LINK" /></translation>
+<translation id="964050462028070434">Administrer adgangskoder og adgangsnøgler…</translation>
 <translation id="96680173638229310">Biler og køretøjer</translation>
 <translation id="969892804517981540">Officiel version</translation>
 <translation id="973773823069644502">Tilføj leveringsadresse</translation>

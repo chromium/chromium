@@ -106,6 +106,7 @@ Gaan jou wagwoorde enige tyd na in <ph name="GOOGLE_PASSWORD_MANAGER" />.</trans
 <translation id="1094607894174825014">Lees- of skryftaak is met 'n ongeldige afwyking versoek: "<ph name="DEVICE_NAME" />".</translation>
 <translation id="1095761715416917775">Maak seker dat jy altyd toegang tot jou gesinkroniseerde data het</translation>
 <translation id="109647177154844434">As Parallels Desktop gedeïnstalleer word, sal jou Windows-stelselkopie uitgevee word. Dit sluit die programme, instellings en data daarvan in. Is jy seker jy wil voortgaan?</translation>
+<translation id="1097016918605049747">Hierdie bladsy kon nie vertaal word nie.</translation>
 <translation id="1097658378307015415">Voor jy aanmeld, gaan asseblief as Gas in om die netwerk <ph name="NETWORK_ID" /> te aktiveer</translation>
 <translation id="1099383081182863812">Kan jy jou Chromecast in die
     <ph name="BEGIN_LINK" />
@@ -791,6 +792,7 @@ Toestemmings wat jy reeds aan programme gegee het, kan op hierdie rekening van t
 <translation id="1730917990259790240"><ph name="BEGIN_PARAGRAPH1" />Gaan na Instellings &gt; Google Play Winkel &gt; Bestuur Android-voorkeure &gt; Programme of Programbestuurder om programme te verwyder. Tik dan op die program wat jy wil deïnstalleer (jy sal dalk links of regs moet swiep om die program te kry). Tik dan op Deïnstalleer of Deaktiveer.<ph name="END_PARAGRAPH1" /></translation>
 <translation id="1730989807608739928">Rollees na die laaste oortjie</translation>
 <translation id="1731911755844941020">Stuur tans versoek …</translation>
+<translation id="1732445923934584865">Vra eerder persoonlik</translation>
 <translation id="1733383495376208985">Enkripteer gesinkroniseerde data met jou eie <ph name="BEGIN_LINK" />sinkroniseringwagfrase<ph name="END_LINK" />. Dit sluit nie betaalmetodes en adresse van Google Pay af in nie.</translation>
 <translation id="1734212868489994726">Ligblou</translation>
 <translation id="1734230530703461088">Kon uitbreidings nie binne die tydlimiet laai nie. Kontak jou administrateur.</translation>
@@ -1317,6 +1319,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="2203088913459920044">Naam kan letters, syfers en spesiale karakters gebruik</translation>
 <translation id="220321590587754225">Kon nie koppel nie. Probeer weer.</translation>
 <translation id="2204034823255629767">Lees en verander enigiets wat jy invoer</translation>
+<translation id="2204387456724731099">Hierdie keuse kon nie vertaal word nie</translation>
 <translation id="220858061631308971">Voer hierdie PIN-kode op "<ph name="DEVICE_NAME" />" in.</translation>
 <translation id="2210462644007531147">Kon nie installering voltooi nie</translation>
 <translation id="2212565012507486665">Laat webkoekies toe</translation>
@@ -1365,6 +1368,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="2251218783371366160">Maak met stelselbekyker oop</translation>
 <translation id="225163402930830576">Herlaai netwerke</translation>
 <translation id="2251809247798634662">Nuwe Incognito-venster</translation>
+<translation id="2252017960592955005">Bekyk tans beskerming (beta)</translation>
 <translation id="225240747099314620">Laat identifiseerders vir beskermde inhoud toe (rekenaarherbegin sal dalk vereis word)</translation>
 <translation id="2255077166240162850">Hierdie toestel is in ander domein of modus gesluit.</translation>
 <translation id="2255317897038918278">Microsoft-tydstempel</translation>
@@ -5141,6 +5145,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="5884474295213649357">Hierdie oortjie is aan 'n USB-toestel gekoppel.</translation>
 <translation id="5885314688092915589">Jou organisasie sal hierdie profiel bestuur</translation>
 <translation id="5886009770935151472">Vinger 1</translation>
+<translation id="5886384907280980632">Skakel nou af</translation>
 <translation id="5889282057229379085">Maksimum getal intermediêre CA's: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5891688036610113830">Voorkeur-Wi-Fi-netwerke</translation>
 <translation id="5895138241574237353">Herbegin</translation>
@@ -5241,6 +5246,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="5975792506968920132">Batterylaaipersentasie</translation>
 <translation id="5976160379964388480">Ander</translation>
 <translation id="5978277834170881274">&amp;Gebruik basiese speltoets</translation>
+<translation id="5978395054855988504">Batterybespaarder is aan</translation>
 <translation id="5978493744931296692">Jou administrateur het ander profiele gedeaktiveer</translation>
 <translation id="5979084224081478209">Gaan wagwoorde na</translation>
 <translation id="5979156418378918004">{NUM_EXTENSIONS,plural, =1{Jy het 1 potensieel skadelike uitbreiding weer aangeskakel}other{Jy het {NUM_EXTENSIONS} potensieel skadelike uitbreidings weer aangeskakel}}</translation>
@@ -8447,6 +8453,7 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="9048745018038487540">Kies alle lettertipes</translation>
 <translation id="9050666287014529139">Wagfrase</translation>
 <translation id="9052404922357793350">Hou aan blokkeer</translation>
+<translation id="90528604757378587">Agtergrondaktiwiteit en sommige visuele effekte, soos gladde rollees, kan beperk wees.</translation>
 <translation id="9053563360605707198">Druk op albei kante</translation>
 <translation id="9055636786322918818">Laat RC4-enkripsie toe. As jy hierdie opsie gebruik, verhoog dit jou risiko aangesien die RC4-syfers onveilig is.</translation>
 <translation id="9056810968620647706">Geen passings is gevind nie.</translation>

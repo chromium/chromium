@@ -1804,6 +1804,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="5764920692828389743">Küldés ide: <ph name="EMAIL_ADDRESS" /></translation>
 <translation id="5765072501007116331">A kézbesítési módok és követelmények megtekintéséhez válassza ki a címet</translation>
 <translation id="57689295674415555">Nincs kitöltve a virtuális kártya száma?</translation>
+<translation id="5772086939108830423">Azonosítókulcs használata másik eszközön</translation>
 <translation id="5776313857861697733">Prioritás</translation>
 <translation id="5781136890105823427">Kísérlet engedélyezve</translation>
 <translation id="578305955206182703">Borostyánsárga</translation>
@@ -2200,6 +2201,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="6916954549222464607">Pénzügyi tervezés és menedzsment</translation>
 <translation id="6917795328362592458">Kiderült, hogy a most használt jelszava adatvédelmi incidensben volt érintett. Fiókjai biztonságának megőrzése érdekében a Jelszókezelő a mentett jelszavak ellenőrzését javasolja.</translation>
 <translation id="6934672428414710184">Ez a név a Google-fiókjából származik</translation>
+<translation id="6936976777388162184">Csomag részét képező eszköz, ezért nem regisztrálható a Kiosk és a Signage Upgrade szolgáltatásra.</translation>
 <translation id="6939469646605424232">Televíziós filmdrámák</translation>
 <translation id="6944692733090228304">Olyan webhelyen adta meg a jelszavát, amelyet nem a(z) <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> kezel. Fiókja védelme érdekében ne használja fel újra a jelszót más alkalmazásokban és webhelyeken.</translation>
 <translation id="6945221475159498467">Kiválasztás</translation>
@@ -3053,6 +3055,7 @@ További részletek:
 <translation id="950736567201356821">Három lyuk felül</translation>
 <translation id="961663415146723894">Kötés alul</translation>
 <translation id="962484866189421427">Ez a tartalom megtévesztő alkalmazásokat telepíthet, amelyek más alkalmazásnak tettethetik magukat, illetve az Ön nyomon követésére alkalmas adatokat gyűjthetnek. <ph name="BEGIN_LINK" />Megjelenítés mindenképpen<ph name="END_LINK" /></translation>
+<translation id="964050462028070434">Jelszavak és azonosítókulcsok kezelése…</translation>
 <translation id="96680173638229310">Autók és más járművek</translation>
 <translation id="969892804517981540">Hivatalos verzió</translation>
 <translation id="973773823069644502">Kézbesítési cím hozzáadása</translation>

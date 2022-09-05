@@ -7,7 +7,6 @@
 <translation id="1178581264944972037">الإيقاف مؤقتًا</translation>
 <translation id="1306460908038601864">غير مفعّل</translation>
 <translation id="1311894908970423688">يجب أن تكون القيمة <ph name="VALUE_DATE_OR_TIME" />.</translation>
-<translation id="145015347812617860"><ph name="COUNT" /> من العناصر</translation>
 <translation id="1480676835519562650">اختيار متعدد، تم اختيار <ph name="SELECTED" /> من أصل <ph name="COUNT" />.</translation>
 <translation id="1588438908519853928">عادي</translation>
 <translation id="1591562245178063882">هذا الشهر</translation>
@@ -31,7 +30,6 @@
 <translation id="2246498165605549352">ملف محلي</translation>
 <translation id="2247351761944213033">الأسبوع <ph name="WEEKNUMBER" />، <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">المقطع الصوتي <ph name="NUMBER" /></translation>
-<translation id="2307576640803031502">في القائمة، العنصر <ph name="INDEX" /> من أصل <ph name="COUNT" />.</translation>
 <translation id="2393030564806080191">قيمة اللون السداسية العشرية</translation>
 <translation id="2398813069815436052">تم فتح مربع الحوار.</translation>
 <translation id="245932805758469625">عدد الثواني المتبقية من الفيديو</translation>

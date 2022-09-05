@@ -7,7 +7,6 @@
 <translation id="1178581264944972037">暫停</translation>
 <translation id="1306460908038601864">關閉</translation>
 <translation id="1311894908970423688">數值必須為 <ph name="VALUE_DATE_OR_TIME" />。</translation>
-<translation id="145015347812617860"><ph name="COUNT" /> 個項目</translation>
 <translation id="1480676835519562650">可以揀幾個項目，揀咗 <ph name="SELECTED" /> 個，總共有 <ph name="COUNT" /> 個。</translation>
 <translation id="1588438908519853928">一般</translation>
 <translation id="1591562245178063882">本月</translation>
@@ -31,7 +30,6 @@
 <translation id="2246498165605549352">本機檔案</translation>
 <translation id="2247351761944213033"><ph name="YEAR" /> 年，第 <ph name="WEEKNUMBER" /> 週</translation>
 <translation id="2277199496770840904">曲目 <ph name="NUMBER" /></translation>
-<translation id="2307576640803031502">清單入面嘅第 <ph name="INDEX" /> 個項目，總共有 <ph name="COUNT" /> 項</translation>
 <translation id="2393030564806080191">十六進制顏色值</translation>
 <translation id="2398813069815436052">開咗對話框。</translation>
 <translation id="245932805758469625">影片淨番嘅秒數</translation>

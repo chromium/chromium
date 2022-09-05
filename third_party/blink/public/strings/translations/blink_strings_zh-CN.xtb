@@ -7,7 +7,6 @@
 <translation id="1178581264944972037">暂停</translation>
 <translation id="1306460908038601864">已关闭</translation>
 <translation id="1311894908970423688">值必须为 <ph name="VALUE_DATE_OR_TIME" />。</translation>
-<translation id="145015347812617860">有<ph name="COUNT" />个书签</translation>
 <translation id="1480676835519562650">可选择多项，已选择 <ph name="SELECTED" /> 项（共 <ph name="COUNT" /> 项）。</translation>
 <translation id="1588438908519853928">正常</translation>
 <translation id="1591562245178063882">本月</translation>
@@ -31,7 +30,6 @@
 <translation id="2246498165605549352">本地文件</translation>
 <translation id="2247351761944213033"><ph name="YEAR" /> 年第 <ph name="WEEKNUMBER" /> 周</translation>
 <translation id="2277199496770840904">字幕轨 <ph name="NUMBER" /></translation>
-<translation id="2307576640803031502">列表中的第 <ph name="INDEX" /> 项，共有 <ph name="COUNT" /> 项</translation>
 <translation id="2393030564806080191">十六进制颜色值</translation>
 <translation id="2398813069815436052">对话框已打开。</translation>
 <translation id="245932805758469625">视频剩余时间（以秒为单位）</translation>

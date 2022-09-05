@@ -1805,6 +1805,7 @@ Del</translation>
 <translation id="5764725887548570807">פורמט המקור לא תקין.</translation>
 <translation id="5765072501007116331">עליך לבחור כתובת כדי לראות שיטות מסירה ודרישות</translation>
 <translation id="57689295674415555">מספר הכרטיס הווירטואלי לא הוזן?</translation>
+<translation id="5772086939108830423">שימוש במפתח גישה במכשיר אחר</translation>
 <translation id="5776313857861697733">עדיפות</translation>
 <translation id="5781136890105823427">הניסוי מופעל</translation>
 <translation id="578305955206182703">ענבר</translation>
@@ -2200,6 +2201,7 @@ Del</translation>
 <translation id="6916954549222464607">תכנון וניהול פיננסי</translation>
 <translation id="6917795328362592458">הסיסמה שבה השתמשת עכשיו אותרה בפרצה באבטחת מידע. כדי להגן על החשבונות שלך, לפי מנהל הסיסמאות, מומלץ לבדוק את הסיסמאות השמורות שלך.</translation>
 <translation id="6934672428414710184">‏השם הזה הוא מחשבון Google שלך</translation>
+<translation id="6936976777388162184">‏זהו מכשיר שמגיע בחבילה ולא ניתן לרשום אותו לשדרוג של מכשירים לחתימה דיגיטלית ושל Kiosk.</translation>
 <translation id="6939469646605424232">סדרות דרמה</translation>
 <translation id="6944692733090228304">הזנת את הסיסמה שלך באתר שלא מנוהל על ידי <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />. כדי להגן על החשבון, מומלץ לא להשתמש בסיסמה שלך באפליקציות ובאתרים אחרים.</translation>
 <translation id="6945221475159498467">בחירה</translation>
@@ -3051,6 +3053,7 @@ Del</translation>
 <translation id="950736567201356821">3 ניקובים בחלק העליון</translation>
 <translation id="961663415146723894">כריכה בקצה התחתון</translation>
 <translation id="962484866189421427">ייתכן שבתוכן הזה יש קוד להתקנת אפליקציות מטעות שמתחזות למשהו אחר או שאוספות נתונים המאפשרים לעקוב אחריך. <ph name="BEGIN_LINK" />אני רוצה לראות בכל זאת<ph name="END_LINK" /></translation>
+<translation id="964050462028070434">ניהול של סיסמאות ומפתחות גישה…</translation>
 <translation id="96680173638229310">כלי רכב</translation>
 <translation id="969892804517981540">גרסה רשמית</translation>
 <translation id="973773823069644502">הוספת כתובת למסירה</translation>

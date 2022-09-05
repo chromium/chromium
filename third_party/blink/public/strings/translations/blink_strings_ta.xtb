@@ -7,7 +7,6 @@
 <translation id="1178581264944972037">இடைநிறுத்து</translation>
 <translation id="1306460908038601864">முடக்கு</translation>
 <translation id="1311894908970423688">மதிப்பு <ph name="VALUE_DATE_OR_TIME" /> என இருக்க வேண்டும்.</translation>
-<translation id="145015347812617860"><ph name="COUNT" /> உருப்படிகள்</translation>
 <translation id="1480676835519562650">பலவற்றைத் தேர்ந்தெடுக்கலாம், <ph name="SELECTED" />/<ph name="COUNT" /> தேர்ந்தெடுக்கப்பட்டுள்ளன.</translation>
 <translation id="1588438908519853928">இயல்பு</translation>
 <translation id="1591562245178063882">இந்த மாதம்</translation>
@@ -31,7 +30,6 @@
 <translation id="2246498165605549352">அக ஃபைல்</translation>
 <translation id="2247351761944213033">வாரம் <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">டிராக் <ph name="NUMBER" /></translation>
-<translation id="2307576640803031502">பட்டியலில் உள்ளது (<ph name="INDEX" />/<ph name="COUNT" />)</translation>
 <translation id="2393030564806080191">ஹெக்சாடெசிமல் வண்ண மதிப்பு</translation>
 <translation id="2398813069815436052">உரையாடல் திறக்கப்பட்டது.</translation>
 <translation id="245932805758469625">மீதமுள்ள வீடியோவின் வினாடிகள்</translation>

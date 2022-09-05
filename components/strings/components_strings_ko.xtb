@@ -1806,6 +1806,7 @@
 <translation id="5764920692828389743"><ph name="EMAIL_ADDRESS" />(으)로 보내기</translation>
 <translation id="5765072501007116331">배달 방법과 요구사항을 확인하려면 주소를 선택하세요.</translation>
 <translation id="57689295674415555">가상 카드 번호가 자동 완성되지 않았나요?</translation>
+<translation id="5772086939108830423">다른 기기의 패스키 사용</translation>
 <translation id="5776313857861697733">우선순위</translation>
 <translation id="5781136890105823427">실험 기능 사용 설정됨</translation>
 <translation id="578305955206182703">황색</translation>
@@ -3053,6 +3054,7 @@
 <translation id="950736567201356821">상단 3공 펀칭</translation>
 <translation id="961663415146723894">하단 바인드</translation>
 <translation id="962484866189421427">이 콘텐츠에서 다른 앱인 것처럼 가장하거나 사용자를 추적하는 데 사용될 수 있는 데이터를 수집하는 사기성 앱을 설치할 수도 있습니다. <ph name="BEGIN_LINK" />그래도 표시하기<ph name="END_LINK" /></translation>
+<translation id="964050462028070434">비밀번호 및 패스키 관리…</translation>
 <translation id="96680173638229310">자동차 및 개인 이동 수단</translation>
 <translation id="969892804517981540">공식 빌드</translation>
 <translation id="973773823069644502">배달 주소 추가</translation>

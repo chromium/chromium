@@ -681,6 +681,7 @@
 <translation id="1632756664321977232">కత్తిరింపు టూల్</translation>
 <translation id="163309982320328737">ప్రారంభ అక్షరం వెడల్పు నిండింది</translation>
 <translation id="1633947793238301227">Google Assistantను డిజేబుల్ చేయండి</translation>
+<translation id="1634224622052500893">Wi-Fi నెట్‌వర్క్ కనుగొనబడింది</translation>
 <translation id="1634783886312010422">మీరు ఇప్పటికే ఈ పాస్‌వర్డ్‌ను <ph name="WEBSITE" />లో మార్చారా?</translation>
 <translation id="1636212173818785548">సరే</translation>
 <translation id="163712950892155760"><ph name="BEGIN_PARAGRAPH1" />యాప్ డేటా అనేది, (డెవలపర్ సెట్టింగ్‌ల ఆధారంగా) కాంటాక్ట్‌లు, మెసేజ్‌లు, ఫోటోల వంటి డేటాతో సహా, యాప్ సేవ్ చేసిన ఎలాంటి డేటా అయినా కావచ్చు. బ్యాకప్ డేటా మీ Drive స్టోరేజ్ కోటాలో లెక్కించబడదు.<ph name="END_PARAGRAPH1" />
@@ -2025,6 +2026,7 @@
 <translation id="2839032553903800133">నోటిఫికేషన్‌లు బ్లాక్ చేయబడ్డాయి</translation>
 <translation id="2841013758207633010">సమయం</translation>
 <translation id="2841837950101800123">ప్రదాత</translation>
+<translation id="2842013086666334835">"<ph name="NETWORK_ID" />"కు సైన్ ఇన్ చేయండి</translation>
 <translation id="2843560154284403323">Linuxను సెటప్ చేయడాన్ని పూర్తి చేయడానికి, ChromeOSను అప్‌డేట్ చేసి, మళ్లీ ట్రై చేయండి.</translation>
 <translation id="2844169650293029770">USB-C పరికరం (ఎడమవైపు ముందు పోర్ట్)</translation>
 <translation id="2844809857160214557">ప్రింట్ టాస్క్‌లను చూడండి, మేనేజ్ చేయండి</translation>
@@ -2125,6 +2127,7 @@
 <translation id="2927017729816812676">కాష్ నిల్వ</translation>
 <translation id="2928795416630981206">మీ కెమెరా పొజిషన్‌ను ట్రాక్ చేయడానికి అనుమతించబడింది</translation>
 <translation id="2931157624143513983">ప్రింట్ చేయగల సైజ్‌కు అమర్చు</translation>
+<translation id="2931342457001070961">మైక్రోఫోన్ కనెక్ట్ చేసి లేదు</translation>
 <translation id="2932085390869194046">పాస్‌వర్డ్‌‌ను సూచించు...</translation>
 <translation id="2932483646085333864">సింక్‌ను ప్రారంభించడానికి సైన్ అవుట్ చేసి, సైన్ ఇన్ చేయండి</translation>
 <translation id="2932883381142163287">దుర్వినియోగాన్ని రిపోర్ట్ చేయి</translation>
@@ -2188,6 +2191,7 @@
 <translation id="2996286169319737844">మీ సింక్‌ రహస్య పదబంధంతో డేటా ఎన్‌క్రిప్ట్ చేయబడింది. Google Payకి చెందిన పేమెంట్ ఆప్షన్‌లు మరియు అడ్రస్‌లు ఇందులో ఉండవు.</translation>
 <translation id="2996722619877761919">పొడవైన అంచులో తిప్పు</translation>
 <translation id="2996932914629936323">సింక్ చేయబడిన అన్ని పరికరాల నుండి హిస్టరీని క్లియర్ చేస్తుంది</translation>
+<translation id="2998267783395280091">నెట్‌వర్క్ కనుగొనబడింది</translation>
 <translation id="3000378525979847272"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> అనుమతించబడ్డాయి</translation>
 <translation id="3000461861112256445">మోనో ఆడియో</translation>
 <translation id="3001144475369593262">చిన్నారి ఖాతాలు</translation>
@@ -2339,6 +2343,7 @@
 <translation id="3142562627629111859">కొత్త గ్రూప్</translation>
 <translation id="3143515551205905069">సింక్‌ను రద్దు చేయి</translation>
 <translation id="3143754809889689516">ప్రారంభం నుండి ప్లే చేయి</translation>
+<translation id="3143937294861726703">మెమరీ సేవర్ ఆన్‌లో ఉంది</translation>
 <translation id="3144647712221361880">లింక్‌ను దీని తరపున తెరువు</translation>
 <translation id="3149510190863420837">Chrome యాప్‌లు</translation>
 <translation id="3150693969729403281">ఇప్పుడే భద్రతా తనిఖీని రన్ చేయండి</translation>

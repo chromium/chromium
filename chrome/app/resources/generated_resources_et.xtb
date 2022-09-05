@@ -1356,6 +1356,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="2251218783371366160">Ava süsteemivaaturiga</translation>
 <translation id="225163402930830576">Värskenda võrke</translation>
 <translation id="2251809247798634662">Uus inkognito aken</translation>
+<translation id="2252017960592955005">Vaatamiskaitse (beeta)</translation>
 <translation id="225240747099314620">Luba kaitstud sisu identifikaatorid (vajalik võib olla arvuti taaskäivitamine)</translation>
 <translation id="2255077166240162850">Seade on lukustatud muus domeenis või režiimis.</translation>
 <translation id="2255317897038918278">Microsofti ajatembeldus</translation>
@@ -6513,6 +6514,7 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="7222204278952406003">Chrome on teie vaikebrauser</translation>
 <translation id="7222232353993864120">E-posti aadress</translation>
 <translation id="7222235798733126207">Piiratud jagamine saitide vahel</translation>
+<translation id="7225082563376899794">Kasuta paroolide sisestamisel teenust Windows Hello</translation>
 <translation id="7225179976675429563">Võrgu tüüp puudub</translation>
 <translation id="7227458944009118910">All loetletud rakendused saavad samuti protokollide linke käsitleda. Muud rakendused küsivad luba.</translation>
 <translation id="7228523857728654909">Ekraanilukk ja sisselogimine</translation>
@@ -6554,6 +6556,7 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="7258192266780953209">Teisendamised</translation>
 <translation id="7258225044283673131">Rakendus ei reageeri. Rakenduse sulgemiseks valige käsk „Sundpeata”.</translation>
 <translation id="7260186537988033909">Kioski- ja teabeseadmete registreerimine viidi lõpule</translation>
+<translation id="7261851165551049223">Kasuta paroolide sisestamisel Touch ID-d</translation>
 <translation id="7262004276116528033">Sisselogimisteenust hostib <ph name="SAML_DOMAIN" /></translation>
 <translation id="7264695323040866038">Kas kasutada toetatud veebilinkide avamiseks alati rakendust <ph name="APP" />?</translation>
 <translation id="7267044199012331848">Virtuaalmasinat ei õnnestunud installida. Proovige uuesti või võtke ühendust administraatoriga. Veakood: <ph name="ERROR_CODE" />.</translation>

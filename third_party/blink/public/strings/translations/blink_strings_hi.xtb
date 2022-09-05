@@ -7,7 +7,6 @@
 <translation id="1178581264944972037">रोकें</translation>
 <translation id="1306460908038601864">बंद है</translation>
 <translation id="1311894908970423688">तारीख <ph name="VALUE_DATE_OR_TIME" /> होनी चाहिए.</translation>
-<translation id="145015347812617860"><ph name="COUNT" /> आइटम</translation>
 <translation id="1480676835519562650">कई विकल्प चुनने की सुविधा, <ph name="COUNT" /> में से <ph name="SELECTED" /> चुने गए.</translation>
 <translation id="1588438908519853928">सामान्य</translation>
 <translation id="1591562245178063882">इस माह</translation>
@@ -31,7 +30,6 @@
 <translation id="2246498165605549352">लोकल फ़ाइल</translation>
 <translation id="2247351761944213033">हफ़्ता <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">ट्रैक <ph name="NUMBER" /></translation>
-<translation id="2307576640803031502">सूची में मौजूद <ph name="COUNT" /> आइटम में से आइटम <ph name="INDEX" /></translation>
 <translation id="2393030564806080191">रंग का हेक्साडेसिमल मान</translation>
 <translation id="2398813069815436052">डायलॉग खोला गया.</translation>
 <translation id="245932805758469625">बचे हुए वीडियो का कुल समय सेकंड में</translation>

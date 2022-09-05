@@ -6501,6 +6501,7 @@ Tienes # contraseñas vulneradas más. El gestor de contraseñas de Google te re
 <translation id="7222204278952406003">Chrome es tu navegador predeterminado</translation>
 <translation id="7222232353993864120">Dirección de correo electrónico</translation>
 <translation id="7222235798733126207">Limitación de lo que se comparte entre sitios</translation>
+<translation id="7225082563376899794">Usar Windows Hello al rellenar contraseñas</translation>
 <translation id="7225179976675429563">Falta el tipo de red.</translation>
 <translation id="7227458944009118910">Las aplicaciones que se indican abajo también pueden procesar enlaces de protocolo. Otras aplicaciones pedirán permiso.</translation>
 <translation id="7228523857728654909">Bloqueo de pantalla e inicio de sesión</translation>
@@ -6542,6 +6543,7 @@ Tienes # contraseñas vulneradas más. El gestor de contraseñas de Google te re
 <translation id="7258192266780953209">Transformaciones</translation>
 <translation id="7258225044283673131">La aplicación no responde. Selecciona "Forzar cierre" para cerrar la aplicación.</translation>
 <translation id="7260186537988033909">Registro de dispositivo de kiosco y señalización completado</translation>
+<translation id="7261851165551049223">Usar ID táctil al rellenar contraseñas</translation>
 <translation id="7262004276116528033">Este servicio de inicio de sesión está alojado por <ph name="SAML_DOMAIN" /></translation>
 <translation id="7264695323040866038">¿Usar siempre la aplicación <ph name="APP" /> para abrir enlaces web compatibles?</translation>
 <translation id="7267044199012331848">No se ha podido instalar la máquina virtual. Vuelve a intentarlo o ponte en contacto con el administrador. Código de error: <ph name="ERROR_CODE" />.</translation>

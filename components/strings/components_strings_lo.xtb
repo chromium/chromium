@@ -157,6 +157,7 @@
 <translation id="1348198688976932919">ເວັບໄຊທີ່ຈະເຂົ້າປະກອບມີແອັບອັນຕະລາຍ</translation>
 <translation id="1348779747280417563">ຢືນຢັນຊື່</translation>
 <translation id="1354976809542763843">ສິນເຊື່ອເຮືອນ</translation>
+<translation id="1355158069018170842">ສະແດງການຫຼຸດລາຄາຢູ່ແຖບ</translation>
 <translation id="1355301061807280185">ວຽກ</translation>
 <translation id="1355754231781595724">ລົດ ແລະ ຄວາມປອດໄພໃນການຈະລາຈອນ</translation>
 <translation id="1357195169723583938">ໃຜໃຊ້ອຸປະກອນເມື່ອບໍ່ດົນມານີ້ ແລະ ເວລາໃດ</translation>
@@ -466,6 +467,7 @@
 <translation id="2153609454945889823">ຕິດຕັ້ງບໍລິການ Google Play ສຳລັບ AR ບໍ?</translation>
 <translation id="2154054054215849342">ການຊິ້ງຂໍ້ມູນບໍ່ມີໃຫ້ນຳໃຊ້ສຳລັບໂດເມນຂອງທ່ານ</translation>
 <translation id="2154484045852737596">ແກ້ໄຂບັດ</translation>
+<translation id="2157640075051554492">ການແຈ້ງເຕືອນການຕິດຕາມລາຄາ</translation>
 <translation id="2161656808144014275">ຂໍ້ຄວາມ</translation>
 <translation id="2162510787844374618">ກຳລັງຕິດຕໍ່ທະນາຄານຂອງທ່ານ...</translation>
 <translation id="2162620598375156287">ຕອນນີ້ <ph name="CURRENT_PRICE" /> ຢູ່ <ph name="SOURCE_WEBSITE" /></translation>
@@ -1003,6 +1005,7 @@
 <translation id="3633738897356909127">ປຸ່ມອັບເດດ Chrome, ກົດ Enter ເພື່ອອັບເດດ Chrome ຈາກການຕັ້ງຄ່າ Chrome ຂອງທ່ານ</translation>
 <translation id="3634530185120165534">ຖາດ 5</translation>
 <translation id="3634567936866541746">ທ່ານຫາກໍປ້ອນລະຫັດຜ່ານຂອງທ່ານໃສ່ເວັບໄຊຫຼອກລວງ. ເພື່ອຮັກສາຄວາມປອດໄພບັນຊີຂອງທ່ານ, Chrome ແນະນຳໃຫ້ກວດສອບລະຫັດຜ່ານທີ່ທ່ານບັນທຶກໄວ້.</translation>
+<translation id="3637033245385760976">ຕ້ອງເປີດການແຈ້ງເຕືອນ Chrome. ທ່ານສາມາດເປີດໃຊ້ພວກມັນໄດ້ໃນ <ph name="NOTIFICATION_SETTINGS" /></translation>
 <translation id="3637662659967048211">ບັນທຶກໄປໃສ່ບັນຊີ Google</translation>
 <translation id="3640766068866876100">Index-4x6-Ext</translation>
 <translation id="3642638418806704195">ແອັບພລິເຄຊັນ:</translation>
@@ -1424,6 +1427,7 @@
 <translation id="4785376858512657294">ຈັດການບັນຊີ Google</translation>
 <translation id="4785689107224900852">ປ່ຽນເປັນແຖບນີ້</translation>
 <translation id="4786804728079074733">ບານສົ່ງ</translation>
+<translation id="4789704664580239421">ການແຈ້ງເຕືອນການຫຼຸດລາຄາຈະສະແດງຢູ່ແຖບທີ່ທ່ານເປີດໄວ້</translation>
 <translation id="4791134497475588553">ແອັບ Linux ທີ່ຕິດຕັ້ງແລ້ວ ແລະ ມີການນຳໃຊ້ພວກມັນຄັ້ງສຸດທ້າຍເມື່ອໃດ</translation>
 <translation id="4792686369684665359">ຂໍມູນທີ່ທ່ານຈະສົ່ງບໍ່ປອດໄພ</translation>
 <translation id="4796594887379589189">ID ບັນຊີວຽກ</translation>
@@ -1789,6 +1793,7 @@
 <translation id="5730040223043577876">Chrome ແນະນຳໃຫ້ຣີເຊັດລະຫັດຜ່ານຂອງທ່ານ ຖ້າທ່ານນຳມັນມາໃຊ້ໃໝ່ໃນເວັບໄຊອື່ນ.</translation>
 <translation id="5736165827969430182">ໂລຫະ ແລະ ບໍ່ແຮ່</translation>
 <translation id="5737183892635480227">{NUM_CARDS,plural, =1{ບັນທຶກບັດໄວ້ໃນບັນຊີ Google ຂອງທ່ານ}other{ບັນທຶກບັດໄວ້ໃນບັນຊີ Google ຂອງທ່ານ}}</translation>
+<translation id="5738385766833540397">ຈັດການວິທີທີ່ທ່ານຮັບການແຈ້ງເຕືອນການຫຼຸດລາຄາສຳລັບສິນຄ້າທີ່ທ່ານຕິດຕາມ</translation>
 <translation id="5743638595296120378">ການຊື້ລົດ</translation>
 <translation id="5743898850056428078">ການແຂ່ງລົດຈັກ</translation>
 <translation id="5745733273847572235">ສາມາດຂໍສະຖານທີ່ຂອງທ່ານ</translation>
@@ -1798,6 +1803,7 @@
 <translation id="5759751709240058861">ໃຊ້ ແລະ ຍ້າຍກ້ອງຂອງທ່ານ</translation>
 <translation id="5763042198335101085">ປ້ອນທີ່ຢູ່ອີເມວທີ່ຖືກຕ້ອງ</translation>
 <translation id="5764725887548570807">ຮູບແບບຕົ້ນທາງບໍ່ຖືກຕ້ອງ.</translation>
+<translation id="5764920692828389743">ສົ່ງໄປ <ph name="EMAIL_ADDRESS" /></translation>
 <translation id="5765072501007116331">ເພື່ອເບິ່ງວິທີ ແລະ ຂໍ້ກຳນົດການສົ່ງ, ກະລຸນາເລືອກທີ່ຢູ່</translation>
 <translation id="57689295674415555">ບໍ່ໄດ້ໃສ່ໝາຍເລກບັດສະເໝືອນບໍ?</translation>
 <translation id="5772086939108830423">ໃຊ້ກະແຈຜ່ານຢູ່ອຸປະກອນອື່ນ</translation>
@@ -1889,6 +1895,7 @@
 <translation id="6017850046339264347">ຜູ້ໂຈມຕີຢູ່ໃນ <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> ສາມາດຕິດຕັ້ງແອັບຫຼອກລວງທີ່ຫຼອກເປັນບາງຢ່າງອື່ນ ຫຼື ເກັບເອົາຂໍ້ມູນທີ່ອາດຈະຖືກໃຊ້ເພື່ອຕິດຕາມທ່ານ. <ph name="BEGIN_LEARN_MORE_LINK" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="6025416945513303461"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /> (ຊິ້ງຂໍ້ມູນແລ້ວ)</translation>
 <translation id="6027201098523975773">ປ້ອນຊື່</translation>
+<translation id="6028591542479806248">ຈັດການການແຈ້ງເຕືອນມືຖື ແລະ ອີເມວ</translation>
 <translation id="603068602130820122">ໜີບກະຫຼັບເຟີຢູ່ເບື້ອງຂວາສອງເທື່ອ</translation>
 <translation id="6032524144326295339">ກ່ອງຈົດໝາຍ 2</translation>
 <translation id="6032955021262906325">ຫຍິບເຫຼັ້ມເບື້ອງຊ້າຍ</translation>
@@ -2809,6 +2816,7 @@
 <translation id="8559762987265718583">ບໍ່​ສາ​ມາດ​ຕັ້ງ​ການ​ເຊື່ອມ​ຕໍ່​ສ່ວນ​ຕົວ​ກັບ <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> ໄດ້ ເພາະ​ວ່າ​ວັນ​ທີ ແລະ​ເວ​ລາ​ອຸ​ປະ​ກອນ​ຂອງ​ທ່ານ (<ph name="DATE_AND_TIME" />) ບໍ່​ຖືກ​ຕ້ອງ.</translation>
 <translation id="8564182942834072828">ເອກະສານແຍກກັນ/ບໍ່ໄດ້ຈັດຊຸດສຳເນົາ</translation>
 <translation id="8564985650692024650">Chromium ແນະນຳໃຫ້ຣີເຊັດລະຫັດຜ່ານ <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> ຂອງທ່ານ ຖ້າທ່ານນຳມັນມາໃຊ້ໃໝ່ໃນເວັບໄຊອື່ນ.</translation>
+<translation id="8573969211731659953">ເປີດໃຊ້ການແຈ້ງເຕືອນການຫຼຸດລາຄາແລ້ວ. ທ່ານສາມາດປ່ຽນສິ່ງນີ້ໄດ້ໃນ <ph name="NOTIFICATION_SETTINGS" /></translation>
 <translation id="8576310925653847813">ລະບົບໂຮມເທຍເຕີ</translation>
 <translation id="8577348305244205642">ບໍ່ສາມາດໃຊ້ບັດສະເໝືອນໄດ້</translation>
 <translation id="858637041960032120">ເພີ່ມ​ເບີໂທລະ​ສັບ</translation>

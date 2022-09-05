@@ -7,7 +7,6 @@
 <translation id="1178581264944972037">I-pause</translation>
 <translation id="1306460908038601864">I-off</translation>
 <translation id="1311894908970423688">Dapat ay <ph name="VALUE_DATE_OR_TIME" /> ang value.</translation>
-<translation id="145015347812617860"><ph name="COUNT" /> (na) item</translation>
 <translation id="1480676835519562650">multiselectable, <ph name="SELECTED" /> sa <ph name="COUNT" /> ang pinili.</translation>
 <translation id="1588438908519853928">Normal</translation>
 <translation id="1591562245178063882">Buwang ito</translation>
@@ -31,7 +30,6 @@
 <translation id="2246498165605549352">Lokal na File</translation>
 <translation id="2247351761944213033">Linggo <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">Track <ph name="NUMBER" /></translation>
-<translation id="2307576640803031502">nasa listahan, item <ph name="INDEX" /> sa <ph name="COUNT" /></translation>
 <translation id="2393030564806080191">Hexadecimal na value ng kulay</translation>
 <translation id="2398813069815436052">nabuksan ang dialog.</translation>
 <translation id="245932805758469625">bilang ng mga segundong natitira sa video</translation>

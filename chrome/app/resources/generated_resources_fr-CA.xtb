@@ -679,6 +679,7 @@ Les autorisations que vous avez déjà accordées à des applications peuvent s'
 <translation id="1632756664321977232">Recadrage</translation>
 <translation id="163309982320328737">La largeur de caractères initiale est « Complète »</translation>
 <translation id="1633947793238301227">Désactiver l'Assistant Google</translation>
+<translation id="1634224622052500893">Réseau Wi-Fi trouvé</translation>
 <translation id="1634783886312010422">Avez-vous déjà changé ce mot de passe sur <ph name="WEBSITE" />?</translation>
 <translation id="1636212173818785548">OK</translation>
 <translation id="163712950892155760"><ph name="BEGIN_PARAGRAPH1" />Les données d'application correspondent à toutes les données enregistrées par une application (en fonction des paramètres définis par le développeur), y compris les données, comme les contacts, les messages et les photos. Les données des sauvegardes ne comptent pas dans votre quota de stockage Disque.<ph name="END_PARAGRAPH1" />
@@ -2010,6 +2011,7 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2839032553903800133">Notifications bloquées</translation>
 <translation id="2841013758207633010">Heure</translation>
 <translation id="2841837950101800123">Fournisseur</translation>
+<translation id="2842013086666334835">Se connecter à « <ph name="NETWORK_ID" /> »</translation>
 <translation id="2843560154284403323">Pour terminer la configuration de Linux, mettez à jour Chrome OS et réessayez.</translation>
 <translation id="2844169650293029770">Appareil USB-C (port avant-gauche)</translation>
 <translation id="2844809857160214557">Consultez et gérez les tâches d'impression</translation>
@@ -2110,6 +2112,7 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2927017729816812676">Stockage du cache</translation>
 <translation id="2928795416630981206">Autorisés à suivre la position de votre caméra</translation>
 <translation id="2931157624143513983">Ajuster à la zone imprimable</translation>
+<translation id="2931342457001070961">Aucun microphone connecté</translation>
 <translation id="2932085390869194046">Suggérer un mot de passe…</translation>
 <translation id="2932483646085333864">Déconnectez-vous puis reconnectez-vous pour commencer la synchronisation</translation>
 <translation id="2932883381142163287">Signaler un abus</translation>
@@ -2173,6 +2176,7 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2996286169319737844">Des données ont été chiffrées à l'aide de votre phrase de passe de synchronisation. Cette méthode ne couvre pas les modes de paiement ni les adresses de Google Pay.</translation>
 <translation id="2996722619877761919">Retourner sur les bords longs</translation>
 <translation id="2996932914629936323">Efface l'historique de tous les appareils synchronisés</translation>
+<translation id="2998267783395280091">Réseau trouvé</translation>
 <translation id="3000378525979847272">Autorisations accordées : <ph name="PERMISSION_1" /> et <ph name="PERMISSION_2" /></translation>
 <translation id="3000461861112256445">Audio mono</translation>
 <translation id="3001144475369593262">Comptes pour enfants</translation>
@@ -2324,6 +2328,7 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="3142562627629111859">Nouveau groupe</translation>
 <translation id="3143515551205905069">Annuler la synchronisation</translation>
 <translation id="3143754809889689516">Faire jouer depuis le début</translation>
+<translation id="3143937294861726703">L'économiseur de mémoire est activé</translation>
 <translation id="3144647712221361880">Ouvrir le lien en tant que</translation>
 <translation id="3149510190863420837">Applications Chrome</translation>
 <translation id="3150693969729403281">Exécuter la vérification de sécurité maintenant</translation>

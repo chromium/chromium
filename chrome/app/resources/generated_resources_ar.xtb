@@ -717,6 +717,7 @@
 <translation id="16620462294541761">عذرًا، ولكن تعذر التحقق من كلمة المرور. يُرجى المحاولة مرة أخرى.</translation>
 <translation id="166278006618318542">خوارزمية المفتاح العام لصاحب الشهادة</translation>
 <translation id="1662801900924515589">تم تثبيت <ph name="APP" />.</translation>
+<translation id="1665328953287874063">مطلوب استخدام كلمة مرور أو رقم تعريف شخصي لفتح قفل <ph name="DEVICE_TYPE" /></translation>
 <translation id="1666232093776384142">الحماية من الوصول إلى البيانات في الأجهزة الملحقة</translation>
 <translation id="1667842670298352129">‏هذه الميزة تتيح لك إمكانية سماع نص معيَّن بصوت عالٍ. أولاً، انقر على رمز "سماع الاختيار" في أسفل الشاشة، ثم ميِّز النص التي تريد سماعه. ويمكنك أيضًا استخدام اختصار لوحة المفاتيح لسماع النص، وذلك من خلال تمييز النص، ثم الضغط على مفتاح البحث + S.</translation>
 <translation id="1668435968811469751">تسجيل يدوي</translation>
@@ -1838,6 +1839,7 @@
 <translation id="2691385045260836588">الطراز</translation>
 <translation id="2691440343905273290">تغيير إعدادات الإدخال</translation>
 <translation id="2693176596243495071">عفوًا،  حدث خطأ غير معروف. يُرجى إعادة المحاولة فيما بعد أو الاتصال بالمشرف في حال استمرار المشكلة.</translation>
+<translation id="2698147581454716013">‏هذا جهاز مُزوَّد بترخيص مجمّع ولا يمكن إدراجه ضمن "ترقية Kiosk &amp; Signage".</translation>
 <translation id="2699911226086014512">تعذَّر إتمام عملية رقم التعريف الشخصي باستخدام الرمز <ph name="RETRIES" />.</translation>
 <translation id="2701330563083355633">تمت المشاركة من <ph name="DEVICE_NAME" /></translation>
 <translation id="2701737434167469065">تسجيل الدخول، <ph name="EMAIL" /></translation>
@@ -1917,6 +1919,7 @@
 <translation id="2757338480560142065">يُرجى التأكد من أن كلمة المرور التي تحتفظ بها تُطابِق كلمة مرور <ph name="WEBSITE" />.</translation>
 <translation id="2762441749940182211">تم حظر استخدام الكاميرا</translation>
 <translation id="2764786626780673772">‏تفاصيل الشبكة الافتراضية الخاصة (VPN)</translation>
+<translation id="2764920001292228569">يُرجى إدخال اسم للملف الشخصي.</translation>
 <translation id="2765100602267695013">يُرجى التواصل مع مقدِّم خدمة الجوّال.</translation>
 <translation id="2765217105034171413">صغير</translation>
 <translation id="2766006623206032690">‏&amp;لصق عنوان URL والدخول إليه</translation>
@@ -3285,6 +3288,7 @@
 <translation id="4065876735068446555">قد تتطلب الشبكة التي تستخدمها <ph name="NETWORK_ID" /> زيارة صفحة تسجيل الدخول التابعة لها.</translation>
 <translation id="4066207411788646768">يُرجى التحقق من الاتصال بالإنترنت لمعرفة الطابعات المتاحة في شبكتك.</translation>
 <translation id="4066945815577305767">انتهاء مهلة استخدام "مدير كلمات المرور"</translation>
+<translation id="4067839975993712852">وضع علامة "مقروءة" على علامة التبويب الحالية</translation>
 <translation id="4068776064906523561">بصمات الإصبع المحفوظة</translation>
 <translation id="407173827865827707">عند النقر</translation>
 <translation id="4072701974556190758">‏سيتم حفظ كلمة المرور في حسابك على Google، <ph name="ACCOUNT" />. لن تضطر إلى تذكّرها.</translation>
@@ -5766,6 +5770,7 @@
 <translation id="6508248480704296122">ذات صلة بـ <ph name="NAME_PH" /></translation>
 <translation id="6508261954199872201">التطبيق: <ph name="APP_NAME" /></translation>
 <translation id="6509207748479174212">ترخيص الوسائط</translation>
+<translation id="6511827214781912955">ننصحك بحذف الملف "<ph name="FILENAME" />"، حتى لا يتمكّن مستخدمو هذا الجهاز الآخرون من الاطّلاع على كلمات مرورك.</translation>
 <translation id="6513247462497316522">‏سيستخدم Google Chrome بيانات الجوال إذا لم تكن متصلاً بشبكة أخرى.</translation>
 <translation id="6514010653036109809">الجهاز المتاح:</translation>
 <translation id="6514565641373682518">أوقفت هذه الصفحة مؤشر الماوس.</translation>
@@ -6055,6 +6060,7 @@
 <translation id="6781978626986383437">‏تم إلغاء عملية الاحتفاظ بنسخة احتياطية من Linux</translation>
 <translation id="6782067259631821405">رقم التعريف الشخصي غير صالح</translation>
 <translation id="6784523122863989144">توافق الملف الشخصي</translation>
+<translation id="6785739405821760313">‏يتم عرض أسطح المكتب المحفوظة. اضغط على مفتاح التبويب (Tab) للتنقّل بينها.</translation>
 <translation id="6785872064505734160">‏بإمكان "مساعد Google" في Chrome إكمال الإجراءات التي تريدها على المواقع الإلكترونية.</translation>
 <translation id="6786747875388722282">الإضافات</translation>
 <translation id="6787097042755590313">علامة تبويب أخرى</translation>
@@ -6640,6 +6646,7 @@
 <translation id="7358338787722390626">‏إغلاق صفحة "بحث Google" في اللوحة الجانبية</translation>
 <translation id="735994578317267253">‏استخدام التطبيقات والإعدادات وغيرها الكثير على أي جهاز يعمل بنظام التشغيل Chrome</translation>
 <translation id="7360233684753165754"><ph name="PAGE_NUMBER" /> صفحة على <ph name="PRINTER_NAME" /></translation>
+<translation id="7360257054721917104">‏يتم عرض أسطح المكتب والنماذج المحفوظة. اضغط على مفتاح التبويب (Tab) للتنقّل بينها.</translation>
 <translation id="7361297102842600584">انقر بزر الماوس الأيمن لتشغيل <ph name="PLUGIN_NAME" /></translation>
 <translation id="7362387053578559123">السماح للمواقع الإلكترونية بطلب الاتصال بأجهزة تتضمّن بلوتوث</translation>
 <translation id="7363349185727752629">دليل خيارات الخصوصية</translation>
@@ -7293,6 +7300,7 @@
 <translation id="7953669802889559161">أساليب الإدخال</translation>
 <translation id="7953955868932471628">إدارة لإختصارات</translation>
 <translation id="7955105108888461311">طلب الوصول شخصيًا</translation>
+<translation id="7955177647836564772">‏في حال تفعيل مجموعة ميزات Smart Lock وكان هاتفك غير مقفل، لن تحتاج إلى إدخال كلمة مرور أو رقم تعريف شخصي.</translation>
 <translation id="7956373551960864128">الطابعات المحفوظة</translation>
 <translation id="7957074856830851026">الاطّلاع على معلومات الجهاز، مثل الرقم التسلسلي أو رقم تعريف مادة العرض</translation>
 <translation id="7959074893852789871">احتوى الملف على شهادات متعددة، لم يتم استيراد بعضها:</translation>
@@ -7551,6 +7559,7 @@
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />أجهزتك<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195027750202970175">الحجم على القرص</translation>
 <translation id="8195191503358432289">إضافة كلمة مرور</translation>
+<translation id="8197673340773315084">يُرجى إضافة اسم أو تصنيف، مثل "مخصّص للعمل" أو "شخصي".</translation>
 <translation id="8198456017687137612">جارٍ إرسال محتوى علامة التبويب</translation>
 <translation id="8199300056570174101">خصائص الشبكة (الخدمة) والجهاز</translation>
 <translation id="8200772114523450471">استئناف</translation>
@@ -7649,6 +7658,7 @@
 <translation id="8284279544186306258">جميع مواقع <ph name="WEBSITE_1" /></translation>
 <translation id="8284326494547611709">الترجمة والشرح</translation>
 <translation id="8286036467436129157">تسجيل الدخول</translation>
+<translation id="828642162569365647">توفّر كلمة المرور أو رقم التعريف الشخصي حماية لبياناتك على <ph name="DEVICE_TYPE" /> هذا وأي معلومات تصل إليها من هاتفك. يجب فتح قفل الجهاز في كل مرة يتم فيها تنشيط <ph name="DEVICE_TYPE" /> من وضع السكون.</translation>
 <translation id="8287902281644548111">‏البحث حسب طلب بيانات من واجهة برمجة التطبيقات/عنوان URL</translation>
 <translation id="8288032458496410887">إلغاء تثبيت <ph name="APP" />...</translation>
 <translation id="8289128870594824098">حجم القرص</translation>

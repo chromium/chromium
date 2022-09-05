@@ -716,6 +716,7 @@
 <translation id="16620462294541761">מצטערים, לא ניתן לאמת את הסיסמה שלך. יש לנסות שוב.</translation>
 <translation id="166278006618318542">אלגוריתם מפתח ציבורי של נושא</translation>
 <translation id="1662801900924515589">האפליקציה <ph name="APP" /> הותקנה</translation>
+<translation id="1665328953287874063">צריך להשתמש בסיסמה או בקוד אימות כדי לבטל את הנעילה של <ph name="DEVICE_TYPE" /></translation>
 <translation id="1666232093776384142">השבתת הגנת הגישה לנתונים עבור ציוד היקפי</translation>
 <translation id="1667842670298352129">‏האזנה להקראת טקסט ספציפי. קודם לוחצים על סמל ההקראה בתחתית המסך ואז מדגישים את הטקסט. אפשר גם להשתמש במקשי הקיצור: מדגישים טקסט ומקישים על מקש החיפוש + S.</translation>
 <translation id="1668435968811469751">הרשמה ידנית</translation>
@@ -1848,6 +1849,7 @@
 <translation id="2691385045260836588">דגם</translation>
 <translation id="2691440343905273290">שינוי הגדרות הקלט</translation>
 <translation id="2693176596243495071">אופס. אירעה שגיאה לא ידועה. כדאי לנסות שוב מאוחר יותר, או לפנות אל מנהל המערכת אם הבעיה ממשיכה.</translation>
+<translation id="2698147581454716013">‏זהו מכשיר שמגיע בחבילה ולא ניתן לרשום אותו לשדרוג של מכשירים לחתימה דיגיטלית ושל Kiosk.</translation>
 <translation id="2699911226086014512">פעולת קוד האימות נכשלה עם הקוד <ph name="RETRIES" />.</translation>
 <translation id="2701330563083355633">שותפה מהמכשיר <ph name="DEVICE_NAME" /></translation>
 <translation id="2701737434167469065">כניסה, <ph name="EMAIL" /></translation>
@@ -1927,6 +1929,7 @@
 <translation id="2757338480560142065">יש לוודא שהסיסמה שנשמרת זהה לסיסמה שלך עבור <ph name="WEBSITE" />.</translation>
 <translation id="2762441749940182211">לא ניתן להשתמש במצלמה בדף זה</translation>
 <translation id="2764786626780673772">‏פרטי VPN</translation>
+<translation id="2764920001292228569">יש להזין שם לפרופיל</translation>
 <translation id="2765100602267695013">עליך לפנות לספק השירות הסלולרי שלך</translation>
 <translation id="2765217105034171413">קטן</translation>
 <translation id="2766006623206032690">הדבקה והמשך</translation>
@@ -2682,6 +2685,7 @@
 <translation id="3494769164076977169">יש לשאול כשאתר מנסה להוריד קבצים באופן אוטומטי לאחר הקובץ הראשון (מומלץ)</translation>
 <translation id="3495496470825196617">מעבר למצב שינה בזמן טעינה</translation>
 <translation id="3495660573538963482">‏ההגדרות של Google Assistant</translation>
+<translation id="3495675993466884458">מנהל המערכת אישר ל-<ph name="APP_ORIGIN" /> להקליט את המסך</translation>
 <translation id="3496213124478423963">התרחקות מתצוגה</translation>
 <translation id="3496238553815913323"><ph name="LANGUAGE" /> (לא נבחרה)</translation>
 <translation id="3496689104192986836">רמת הטעינה של הסוללה: <ph name="PERCENTAGE" />%</translation>
@@ -2800,6 +2804,7 @@
 <translation id="3616741288025931835">&amp;ניקוי נתוני גלישה...</translation>
 <translation id="3617891479562106823">רקעים אינם זמינים. צריך לנסות שוב מאוחר יותר.</translation>
 <translation id="3619115746895587757">קפוצ'ינו</translation>
+<translation id="3620136223548713675">מיקום גאוגרפי</translation>
 <translation id="3621807901162200696">‏עזרה בשיפור התכונות והביצועים של ChromeOS</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{אפליקציה}two{# אפליקציות}many{# אפליקציות}other{# אפליקציות}}</translation>
 <translation id="362333465072914957">‏בהמתנה להנפקת אישור על ידי ה-CA</translation>
@@ -3293,6 +3298,7 @@
 <translation id="4065876735068446555">ייתכן שתוצג דרישה להיכנס לדף ההתחברות של הרשת שבה בחרת להשתמש (<ph name="NETWORK_ID" />).</translation>
 <translation id="4066207411788646768">יש לפתור בעיות בחיבור כדי לראות מדפסות זמינות ברשת</translation>
 <translation id="4066945815577305767">חלף הזמן הקצוב לשימוש במנהל הסיסמאות</translation>
+<translation id="4067839975993712852">סימון הכרטיסייה הנוכחית כ'נקראה'</translation>
 <translation id="4068776064906523561">טביעות אצבע שמורות</translation>
 <translation id="407173827865827707">בזמן לחיצה</translation>
 <translation id="4072701974556190758">‏הסיסמה תישמר בחשבון Google שלך, <ph name="ACCOUNT" />. לא צריך לזכור אותה.</translation>
@@ -5775,6 +5781,7 @@
 <translation id="6508248480704296122">קשור אל <ph name="NAME_PH" /></translation>
 <translation id="6508261954199872201">יישום: <ph name="APP_NAME" /></translation>
 <translation id="6509207748479174212">רישיון מדיה</translation>
+<translation id="6511827214781912955">כדאי למחוק את <ph name="FILENAME" /> כדי שמשתמשים אחרים במכשיר לא יוכלו לראות את הסיסמאות שלך</translation>
 <translation id="6513247462497316522">‏Google Chrome ישתמש בחבילת הגלישה אם אין לך חיבור לרשת אחרת.</translation>
 <translation id="6514010653036109809">מכשיר זמין:</translation>
 <translation id="6514565641373682518">דף זה השבית את סמן העכבר שלך.</translation>
@@ -6060,6 +6067,7 @@
 <translation id="6781978626986383437">‏גיבוי Linux נכשל</translation>
 <translation id="6782067259631821405">קוד אימות לא חוקי</translation>
 <translation id="6784523122863989144">פרופיל נתמך</translation>
+<translation id="6785739405821760313">‏מוצגים שולחנות העבודה הווירטואליים ששמרת. צריך להקיש על Tab כדי לנווט.</translation>
 <translation id="6785872064505734160">‏Google Assistant ב-Chrome יכולה להשלים עבורך פעולות באתרים</translation>
 <translation id="6786747875388722282">תוספים</translation>
 <translation id="6787097042755590313">כרטיסייה אחרת</translation>
@@ -6517,6 +6525,7 @@
 <translation id="7222204278952406003">‏Chrome הוא דפדפן ברירת המחדל</translation>
 <translation id="7222232353993864120">כתובת אימייל</translation>
 <translation id="7222235798733126207">הגבלה על השיתוף בין אתרים</translation>
+<translation id="7225082563376899794">‏שימוש ב-Windows Hello בזמן מילוי סיסמאות</translation>
 <translation id="7225179976675429563">חסר סוג רשת</translation>
 <translation id="7227458944009118910">האפליקציות המפורטות בהמשך גם יכולות לטפל בקישורים מסוג פרוטוקול. אפליקציות אחרות יבקשו הרשאה.</translation>
 <translation id="7228523857728654909">נעילת מסך וכניסה</translation>
@@ -6558,6 +6567,7 @@
 <translation id="7258192266780953209">טרנספורמציות</translation>
 <translation id="7258225044283673131">האפליקציה לא מגיבה. כדי לסגור את האפליקציה, יש לבחור באפשרות "אילוץ סגירה".</translation>
 <translation id="7260186537988033909">הרישום של מכשיר השילוט והקיוסק הושלם</translation>
+<translation id="7261851165551049223">‏שימוש ב-TouchID בזמן מילוי סיסמאות</translation>
 <translation id="7262004276116528033">שירות הכניסה הזה מתארח ב-<ph name="SAML_DOMAIN" />.</translation>
 <translation id="7264695323040866038">להשתמש תמיד באפליקציה <ph name="APP" /> לפתיחה של קישורים נתמכים באינטרנט?</translation>
 <translation id="7267044199012331848">לא ניתן להתקין את המכונה הווירטואלית. אפשר לנסות שוב או ליצור קשר עם מנהל המערכת. קוד שגיאה: <ph name="ERROR_CODE" />.</translation>
@@ -6644,6 +6654,7 @@
 <translation id="7358338787722390626">סגירת החיפוש בחלונית הצדדית</translation>
 <translation id="735994578317267253">‏קל לקבל את האפליקציות, ההגדרות ועוד בכל מכשיר Chrome OS</translation>
 <translation id="7360233684753165754"><ph name="PAGE_NUMBER" /> עמודים אל <ph name="PRINTER_NAME" /></translation>
+<translation id="7360257054721917104">‏מוצגים שולחנות העבודה הווירטואליים והתבניות ששמרת. צריך להקיש על Tab כדי לנווט.</translation>
 <translation id="7361297102842600584">יש ללחוץ לחיצה ימנית כדי להפעיל את <ph name="PLUGIN_NAME" /></translation>
 <translation id="7362387053578559123">‏אתרים יכולים לבקש הרשאה להתחבר למכשירי Bluetooth</translation>
 <translation id="7363349185727752629">מדריך לבחירות שלך בנושא פרטיות</translation>
@@ -7295,6 +7306,7 @@
 <translation id="7953669802889559161">שיטות קלט</translation>
 <translation id="7953955868932471628">ניהול קיצורי דרך</translation>
 <translation id="7955105108888461311">ביצוע בקשה פנים-אל-פנים</translation>
+<translation id="7955177647836564772">‏אם מצב Smart Lock מופעל והטלפון לא נעול, אין צורך להזין סיסמה או קוד אימות</translation>
 <translation id="7956373551960864128">מדפסות שמורות</translation>
 <translation id="7957074856830851026">הצגה של פרטי המכשיר, כמו המספר הסידורי או מזהה הנכס שלו</translation>
 <translation id="7959074893852789871">הקובץ הכיל אישורים מרובים, חלקם לא יובאו:</translation>
@@ -7555,6 +7567,7 @@
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />המכשירים שלך<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195027750202970175">גודל בדיסק</translation>
 <translation id="8195191503358432289">הוספת סיסמה</translation>
+<translation id="8197673340773315084">יש להוסיף שם או תווית, כמו 'עבודה' או 'אישי'</translation>
 <translation id="8198456017687137612">העברת הכרטיסייה</translation>
 <translation id="8199300056570174101">מאפייני רשת (שירות) ומכשיר</translation>
 <translation id="8200772114523450471">חידוש</translation>
@@ -7652,6 +7665,7 @@
 <translation id="8284279544186306258">כל אתרי <ph name="WEBSITE_1" /></translation>
 <translation id="8284326494547611709">כתוביות</translation>
 <translation id="8286036467436129157">כניסה</translation>
+<translation id="828642162569365647">הסיסמה או קוד האימות האלה מגינים על הנתונים שלך ב-<ph name="DEVICE_TYPE" /> הזה ועל כל מידע שיש לך גישה אליו מהטלפון. צריך לבטל את הנעילה בכל פעם ש-<ph name="DEVICE_TYPE" /> יוצא ממצב שינה.</translation>
 <translation id="8287902281644548111">‏חיפוש לפי קריאה ל-API/כתובת URL</translation>
 <translation id="8288032458496410887">הסרת <ph name="APP" />...</translation>
 <translation id="8289128870594824098">גודל כונן</translation>

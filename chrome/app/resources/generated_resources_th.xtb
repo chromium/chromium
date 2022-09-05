@@ -106,6 +106,7 @@
 <translation id="1094607894174825014">ได้รับคำขอการอ่านหรือเขียนที่มีออฟเซ็ตไม่ถูกต้องใน "<ph name="DEVICE_NAME" />"</translation>
 <translation id="1095761715416917775">ตรวจสอบว่าคุณเข้าถึงข้อมูลที่ซิงค์ไว้ได้เสมอ</translation>
 <translation id="109647177154844434">การถอนการติดตั้ง Parallels Desktop จะเป็นการลบอิมเมจของ Windows ซึ่งรวมถึงแอปพลิเคชัน การตั้งค่า และข้อมูลด้วย คุณแน่ใจไหมว่าต้องการดำเนินการต่อ</translation>
+<translation id="1097016918605049747">แปลหน้านี้ไม่ได้</translation>
 <translation id="1097658378307015415">ก่อนที่จะลงชื่อเข้าใช้ โปรดเข้าใช้ในฐานะผู้มาเยือนเพื่อเปิดใช้งานเครือข่าย <ph name="NETWORK_ID" /></translation>
 <translation id="1099383081182863812">คุณมองเห็น Chromecast ใน <ph name="BEGIN_LINK" />แอป Google Home<ph name="END_LINK" /> ไหม</translation>
 <translation id="1099962274138857708">รูปภาพคัดลอกมาจาก <ph name="DEVICE_NAME" /></translation>
@@ -780,6 +781,7 @@
 <translation id="1730917990259790240"><ph name="BEGIN_PARAGRAPH1" />หากต้องการนำแอปออก ให้ไปที่การตั้งค่า &gt; Google Play Store &gt; จัดการค่ากำหนด Android &gt; ตัวจัดการแอปหรือแอปพลิเคชัน แล้วแตะแอปที่คุณต้องการถอนการติดตั้ง (อาจต้องเลื่อนไปทางขวาหรือทางซ้ายเพื่อค้นหาแอป) และแตะถอนการติดตั้ง หรือปิดใช้<ph name="END_PARAGRAPH1" /></translation>
 <translation id="1730989807608739928">เลื่อนไปทางแท็บสุดท้าย</translation>
 <translation id="1731911755844941020">กำลังส่งคำขอ...</translation>
+<translation id="1732445923934584865">ถามด้วยตนเองแทน</translation>
 <translation id="1733383495376208985">เข้ารหัสลับข้อมูลที่ซิงค์ด้วย<ph name="BEGIN_LINK" />รหัสผ่านการซิงค์<ph name="END_LINK" />ของคุณเอง ข้อมูลนี้ไม่รวมถึงวิธีการชำระเงินและที่อยู่จาก Google Pay</translation>
 <translation id="1734212868489994726">สีฟ้าอ่อน</translation>
 <translation id="1734230530703461088">โหลดส่วนขยายไม่สำเร็จในเวลาที่กำหนด โปรดติดต่อผู้ดูแลระบบ</translation>
@@ -1305,6 +1307,7 @@
 <translation id="2203088913459920044">ชื่อมีตัวอักษร ตัวเลข และสัญลักษณ์พิเศษได้</translation>
 <translation id="220321590587754225">เชื่อมต่อไม่ได้ ลองอีกครั้ง</translation>
 <translation id="2204034823255629767">อ่านและเปลี่ยนแปลงสิ่งที่คุณพิมพ์</translation>
+<translation id="2204387456724731099">แปลตัวเลือกนี้ไม่ได้</translation>
 <translation id="220858061631308971">โปรดป้อนรหัส PIN นี้บน "<ph name="DEVICE_NAME" />":</translation>
 <translation id="2210462644007531147">ติดตั้งไม่สำเร็จ</translation>
 <translation id="2212565012507486665">อนุญาตคุกกี้</translation>
@@ -5123,6 +5126,7 @@
 <translation id="5884474295213649357">แท็บนี้เชื่อมต่อกับอุปกรณ์ USB อยู่</translation>
 <translation id="5885314688092915589">องค์กรของคุณจะจัดการโปรไฟล์นี้</translation>
 <translation id="5886009770935151472">นิ้วที่ 1</translation>
+<translation id="5886384907280980632">ปิดเลย</translation>
 <translation id="5889282057229379085">จำนวนสูงสุดของ CA ระดับกลาง: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5891688036610113830">เครือข่าย Wi-Fi ที่ต้องการ</translation>
 <translation id="5895138241574237353">ปิดแล้วเปิดอีกครั้ง</translation>
@@ -5222,6 +5226,7 @@
 <translation id="5975792506968920132">เปอร์เซ็นต์การชาร์จแบตเตอรี่</translation>
 <translation id="5976160379964388480">อื่นๆ</translation>
 <translation id="5978277834170881274">&amp;ใช้ฟีเจอร์ตรวจตัวสะกดพื้นฐาน</translation>
+<translation id="5978395054855988504">โหมดประหยัดแบตเตอรี่เปิดอยู่</translation>
 <translation id="5978493744931296692">ผู้ดูแลระบบปิดใช้โปรไฟล์อื่นๆ</translation>
 <translation id="5979084224081478209">ตรวจสอบรหัสผ่าน</translation>
 <translation id="5979156418378918004">{NUM_EXTENSIONS,plural, =1{คุณได้เปิดส่วนขยายที่อาจเป็นอันตราย 1 รายการขึ้นมาอีกครั้ง}other{คุณได้เปิดส่วนขยายที่อาจเป็นอันตราย {NUM_EXTENSIONS} รายการขึ้นมาอีกครั้ง}}</translation>
@@ -8428,6 +8433,7 @@
 <translation id="9048745018038487540">เลือกแบบอักษรทั้งหมด</translation>
 <translation id="9050666287014529139">ข้อความรหัสผ่าน</translation>
 <translation id="9052404922357793350">บล็อกต่อไป</translation>
+<translation id="90528604757378587">ระบบอาจจำกัดกิจกรรมในเบื้องหลังและเอฟเฟกต์ภาพบางอย่าง เช่น การเลื่อนอย่างราบรื่น</translation>
 <translation id="9053563360605707198">พิมพ์ทั้ง 2 ด้าน</translation>
 <translation id="9055636786322918818">บังคับใช้การเข้ารหัส RC4 การใช้ตัวเลือกนี้เป็นการเพิ่มความเสี่ยงเนื่องจากการเข้ารหัส RC4 นั้นไม่ปลอดภัย</translation>
 <translation id="9056810968620647706">ไม่พบรายการที่ตรงกัน</translation>

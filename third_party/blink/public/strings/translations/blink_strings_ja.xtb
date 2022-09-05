@@ -7,7 +7,6 @@
 <translation id="1178581264944972037">一時停止</translation>
 <translation id="1306460908038601864">オフ</translation>
 <translation id="1311894908970423688">値は <ph name="VALUE_DATE_OR_TIME" /> とする必要があります。</translation>
-<translation id="145015347812617860"><ph name="COUNT" />個のアイテム</translation>
 <translation id="1480676835519562650">複数の選択が可能です。<ph name="COUNT" /> 件中 <ph name="SELECTED" /> 件が選択されています。</translation>
 <translation id="1588438908519853928">ノーマル</translation>
 <translation id="1591562245178063882">今月</translation>
@@ -31,7 +30,6 @@
 <translation id="2246498165605549352">ローカル ファイル</translation>
 <translation id="2247351761944213033"><ph name="YEAR" />年第<ph name="WEEKNUMBER" />週</translation>
 <translation id="2277199496770840904">トラック <ph name="NUMBER" /></translation>
-<translation id="2307576640803031502">リスト内の <ph name="COUNT" /> 件中 <ph name="INDEX" /> 件目のアイテム</translation>
 <translation id="2393030564806080191">16 進数色コード</translation>
 <translation id="2398813069815436052">ダイアログが開いています。</translation>
 <translation id="245932805758469625">残りの再生時間（秒）</translation>

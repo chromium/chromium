@@ -7,7 +7,6 @@
 <translation id="1178581264944972037">পজ কৰক</translation>
 <translation id="1306460908038601864">অফ</translation>
 <translation id="1311894908970423688">মানটো <ph name="VALUE_DATE_OR_TIME" /> হ’বই লাগিব।</translation>
-<translation id="145015347812617860"><ph name="COUNT" />টা বস্তু</translation>
 <translation id="1480676835519562650">একাধিক বাছনি কৰিব পৰা, <ph name="COUNT" />ৰ ভিতৰত <ph name="SELECTED" /> টি বাছনি কৰা হ'ল।</translation>
 <translation id="1588438908519853928">সাধাৰণ</translation>
 <translation id="1591562245178063882">এইটো মাহ</translation>
@@ -31,7 +30,6 @@
 <translation id="2246498165605549352">স্থানীয় ফাইল</translation>
 <translation id="2247351761944213033">সপ্তাহ <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">ট্ৰেক <ph name="NUMBER" /></translation>
-<translation id="2307576640803031502">সূচীখনত, <ph name="COUNT" /> টা বস্তুৰ <ph name="INDEX" /></translation>
 <translation id="2393030564806080191">হেক্সাডেচিমেল ৰঙৰ মান</translation>
 <translation id="2398813069815436052">ডায়লগ খোলা হৈছে।</translation>
 <translation id="245932805758469625">ভিডিঅ'টো বাকী থকা ছেকেণ্ডৰ সংখ্যা</translation>

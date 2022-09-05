@@ -6516,6 +6516,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7222204278952406003">Chrome이 기본 브라우저로 설정되어 있습니다.</translation>
 <translation id="7222232353993864120">이메일 주소</translation>
 <translation id="7222235798733126207">사이트 간 공유 제한</translation>
+<translation id="7225082563376899794">Windows Hello를 사용하여 비밀번호 입력</translation>
 <translation id="7225179976675429563">네트워크 유형이 없습니다.</translation>
 <translation id="7227458944009118910">아래에 나열된 앱은 프로토콜 링크도 처리할 수 있습니다. 목록에 없는 앱은 권한을 요청합니다.</translation>
 <translation id="7228523857728654909">화면 잠금 및 로그인</translation>
@@ -6557,6 +6558,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7258192266780953209">Transformations(변환)</translation>
 <translation id="7258225044283673131">애플리케이션이 응답하지 않습니다. '강제 종료'를 선택하여 앱을 닫으세요.</translation>
 <translation id="7260186537988033909">키오스크 및 사이니지 기기 등록 완료</translation>
+<translation id="7261851165551049223">Touch ID를 사용하여 비밀번호 입력</translation>
 <translation id="7262004276116528033">이 로그인 서비스는 <ph name="SAML_DOMAIN" />에서 호스팅됩니다.</translation>
 <translation id="7264695323040866038">지원되는 웹 링크를 열 때 항상 <ph name="APP" /> 앱을 사용할까요?</translation>
 <translation id="7267044199012331848">가상 머신을 설치할 수 없습니다. 다시 시도하거나 관리자에게 문의하세요. 오류 코드: <ph name="ERROR_CODE" /></translation>

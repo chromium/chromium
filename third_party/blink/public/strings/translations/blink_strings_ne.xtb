@@ -7,7 +7,6 @@
 <translation id="1178581264944972037">पज गर्नुहोस्</translation>
 <translation id="1306460908038601864">निष्क्रिय छ</translation>
 <translation id="1311894908970423688">मान अनिवार्य रूपमा <ph name="VALUE_DATE_OR_TIME" /> हुनु पर्छ।</translation>
-<translation id="145015347812617860"><ph name="COUNT" /> वस्तुहरू</translation>
 <translation id="1480676835519562650">धेरै विकल्प चयन गर्ने सुविधा, <ph name="COUNT" /> मध्ये <ph name="SELECTED" /> चयन गरियो।</translation>
 <translation id="1588438908519853928">सामान्य</translation>
 <translation id="1591562245178063882">यो महिना</translation>
@@ -31,7 +30,6 @@
 <translation id="2246498165605549352">स्थानीय फाइल</translation>
 <translation id="2247351761944213033">हप्ता <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">ट्र्याक <ph name="NUMBER" /></translation>
-<translation id="2307576640803031502">सूचीमा छ, <ph name="COUNT" /> मध्ये <ph name="INDEX" /> औँ वस्तु</translation>
 <translation id="2393030564806080191">रङको हेक्साडेसिमल मान</translation>
 <translation id="2398813069815436052">डायलग खोलिएको छ।</translation>
 <translation id="245932805758469625">भिडियोको बाँकी सेकेन्डको अवधि</translation>

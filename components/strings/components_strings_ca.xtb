@@ -1806,6 +1806,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="5764920692828389743">Envia a <ph name="EMAIL_ADDRESS" /></translation>
 <translation id="5765072501007116331">Per veure els mètodes i els requisits d'entrega, selecciona una adreça</translation>
 <translation id="57689295674415555">No s'ha emplenat el número de la targeta virtual?</translation>
+<translation id="5772086939108830423">Utilitza una clau d'accés en un altre dispositiu</translation>
 <translation id="5776313857861697733">Prioritat</translation>
 <translation id="5781136890105823427">Experiment activat</translation>
 <translation id="578305955206182703">Ambre</translation>
@@ -3054,6 +3055,7 @@ Detalls addicionals:
 <translation id="950736567201356821">Encunyació triple a la part superior</translation>
 <translation id="961663415146723894">Enquadernació per la part inferior</translation>
 <translation id="962484866189421427">Pot ser que aquest contingut provi d'instal·lar aplicacions enganyoses que es facin passar per d'altres o que recullin dades que podrien utilitzar-se per fer un seguiment de la teva activitat. <ph name="BEGIN_LINK" />Mostra igualment<ph name="END_LINK" /></translation>
+<translation id="964050462028070434">Gestiona les contrasenyes i les claus d'accés…</translation>
 <translation id="96680173638229310">Automòbils i vehicles</translation>
 <translation id="969892804517981540">Compilació oficial</translation>
 <translation id="973773823069644502">Afegeix una adreça d'entrega</translation>

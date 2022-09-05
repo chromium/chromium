@@ -7,7 +7,6 @@
 <translation id="1178581264944972037">Түр зогсоох</translation>
 <translation id="1306460908038601864">Унтраалттай</translation>
 <translation id="1311894908970423688">Утга нь <ph name="VALUE_DATE_OR_TIME" /> байх ёстой.</translation>
-<translation id="145015347812617860"><ph name="COUNT" /> зүйлс</translation>
 <translation id="1480676835519562650">олныг сонгох боломжтой, <ph name="COUNT" />-c <ph name="SELECTED" />-г сонгосон</translation>
 <translation id="1588438908519853928">Хэвийн</translation>
 <translation id="1591562245178063882">Энэ сар</translation>
@@ -31,7 +30,6 @@
 <translation id="2246498165605549352">Дотоод файл</translation>
 <translation id="2247351761944213033">Долоо хоног <ph name="WEEKNUMBER" /> , <ph name="YEAR" /></translation>
 <translation id="2277199496770840904"><ph name="NUMBER" />-р бичлэг</translation>
-<translation id="2307576640803031502">жагсаалтын <ph name="COUNT" />-с <ph name="INDEX" /></translation>
 <translation id="2393030564806080191">Арван зургаатын өнгөний утга</translation>
 <translation id="2398813069815436052">харилцах цонхыг нээсэн.</translation>
 <translation id="245932805758469625">видео үргэлжлэх үлдсэн секундийн тоо</translation>

@@ -352,6 +352,10 @@
 <translation id="1372618949173323717">JavaScript uitzetten</translation>
 <translation id="1376119291123231789">Geavanceerde batterijoplaadmodus aanzetten</translation>
 <translation id="1384459581748403878">Referentie: <ph name="REFERENCE_URL" /></translation>
+<translation id="1384594066274112751">Dit beleid zorgt ervoor dat elke URL die overeenkomt met een of meer patronen uit het beleid (met de filterindeling <ph name="URL_BLOCKLIST_POLICY_NAME" />), nooit door de browser wordt verwijderd.
+      Dit is van toepassing op geheugenbelasting en weggooien in de modus voor hoge efficiëntie.
+      Het laden van een weggegooide pagina wordt ongedaan gemaakt en de bijbehorende resources worden volledig teruggeclaimd. Het tabblad waaraan de pagina is gekoppeld, blijft in de tabbladstrook staan, maar als je het tabblad zichtbaar maakt, wordt de pagina helemaal opnieuw geladen.
+      </translation>
 <translation id="138847842893090358">OS-updatestatus rapporten</translation>
 <translation id="1390529781843037070">Als je het beleid toepast of niet instelt, kunnen gebruikers naar <ph name="CLOUD_PRINT_NAME" /> afdrukken vanaf het <ph name="PRODUCT_NAME" />-afdrukdialoogvenster. <ph name="PRODUCT_NAME" /> kan documenten naar <ph name="CLOUD_PRINT_NAME" /> sturen om ze af te drukken. Dit voorkomt niet dat gebruikers afdruktaken op websites indienen.
 
@@ -1756,6 +1760,28 @@ Dit beleid vereist aanvullende instellingen om van kracht te worden. Ga naar htt
 
       Als dit beleid is ingesteld op false, kunnen met de pdf-viewer geen annotaties in pdf's worden gemaakt.</translation>
 <translation id="2769952903507981510">De vereiste domeinnaam configureren voor hosts voor externe toegang</translation>
+<translation id="2772650717382565415">Als je het beleid instelt, wordt een lijst met web-apps gespecificeerd die op de achtergrond worden geïnstalleerd zonder interactie met de gebruiker en die niet kunnen worden verwijderd of uitgezet door gebruikers.
+
+Elk lijstitem van het beleid is een object met een verplicht lid:
+<ph name="URL_LABEL" /> (de URL van de web-app die moet worden geïnstalleerd)
+
+en 6 optionele leden:
+- <ph name="DEFAULT_LAUNCH_CONTAINER_LABEL" /> (voor hoe de web-app wordt geopend: de standaardinstelling is een nieuw tabblad)
+
+- <ph name="CREATE_DESKTOP_SHORTCUT_LABEL" /> (True als je <ph name="LINUX_OS_NAME" />- en <ph name="MS_WIN_NAME" />-snelkoppelingen wilt maken).
+
+      - <ph name="FALLBACK_APP_NAME_LABEL" /> (Vanaf versie 90 van <ph name="PRODUCT_NAME" /> kun je de app-naam overschrijven als het geen progressive web-app (PWA) is, of kun je de tijdelijk geïnstalleerde app-naam overschrijven als het een PWA is, maar verificatie vereist is voordat de installatie kan worden afgerond. Als zowel <ph name="CUSTOM_NAME_LABEL" /> als <ph name="FALLBACK_APP_NAME_LABEL" /> zijn verstrekt, wordt die laatste genegeerd.)
+
+      - <ph name="OVERRIDE_APP_NAME_LABEL" /> (Vanaf versie 99 van <ph name="PRODUCT_NAME" /> kun je de app-naam definitief overschrijven voor alle web-apps en PWA's. Momenteel alleen ondersteund op <ph name="PRODUCT_OS_NAME" />.)
+
+- <ph name="CUSTOM_ICON_LABEL" /> (Vanaf versie 99 van <ph name="PRODUCT_NAME" /> kun je het app-icoon van geïnstalleerde apps overschrijven. De iconen moeten vierkant zijn, met een maximale grootte van 1 MB en in een van de volgende indelingen: jpeg, png, gif, webp, ico. De hash-waarde moet de hash SHA256 van het icoonbestand zijn. Momenteel alleen ondersteund op <ph name="PRODUCT_OS_NAME" />.)
+
+- <ph name="INSTALL_AS_SHORTCUT_LABEL" /> (vanaf <ph name="PRODUCT_NAME" /> versie 107). Als je dit beleid toepast, wordt de opgegeven <ph name="URL_LABEL" /> geïnstalleerd als snelkoppeling, alsof je dit doet via de optie Snelkoppeling maken
+      in de GUI van de desktopbrowser.
+      Houd er rekening mee dat als het manifest in <ph name="URL_LABEL" /> wordt gewijzigd, de URL niet wordt geüpdatet als deze is geïnstalleerd als snelkoppeling.
+      Als je dit beleid niet toepast of niet instelt, wordt de web-app op de opgegeven <ph name="URL_LABEL" /> normaal geïnstalleerd.
+
+      Bekijk <ph name="PINNED_LAUNCHER_APPS_POLICY_NAME" /> voor het vastzetten van apps op de <ph name="PRODUCT_OS_NAME" />-plank.</translation>
 <translation id="2772955711376920612">Als je dit beleid toepast en <ph name="DEVICE_POWER_PEAK_SHIFT_BATTERY_THRESHOLD_POLICY_NAME" /> en <ph name="DEVICE_POWER_PEAK_SHIFT_DAY_CONFIG_POLICY_NAME" /> instelt, blijft stroom voor piekuren aan (als het apparaat hiervoor geschikt is). Het beleid voor stroombeheer voor piekuren is een energiebesparingsbeleid waarmee het gebruik van wisselstroom op piekuren wordt geminimaliseerd. Voor elke dag van de week kun je een begin- en eindtijd instellen voor stroom voor piekuren. Zolang de batterij op deze momenten boven de ingestelde drempelwaarde blijft, blijft het apparaat op de batterij draaien (zelfs als het is aangesloten op wisselstroom). Na de ingestelde eindtijd gebruikt het apparaat wisselstroom (als het daarop is aangesloten) maar wordt de batterij niet opgeladen. Het apparaat keert terug naar de normale werking waarbij wisselstroom wordt gebruikt en de batterij wordt opgeladen na de opgegeven begintijd voor opladen.
 
       Als je het beleid niet toepast, blijft stroom voor piekuren uit.
@@ -6399,6 +6425,7 @@ https://blog.chromium.org/2021/09/user-agent-reduction-origin-trial-and-dates.ht
       Dit beleid heeft geen effect als het beleid <ph name="DOWNLOAD_DIRECTORY_POLICY_NAME" /> is ingesteld.
 
       Opmerking: Bekijk een lijst met variabelen die je kunt gebruiken (https://www.chromium.org/administrators/policy-list-3/user-data-directory-variables).</translation>
+<translation id="7719808201797990069">URL-patroonuitzonderingen voor tabbladverwijdering</translation>
 <translation id="7721944091689270995">Gebruikers-ID voor <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="7724161903134898864">Als je het beleid instelt op 1, kunnen websites pop-ups bekijken. Als je het beleid instelt op 2, worden pop-ups geblokkeerd.
 

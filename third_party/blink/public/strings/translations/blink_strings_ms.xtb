@@ -7,7 +7,6 @@
 <translation id="1178581264944972037">Jeda</translation>
 <translation id="1306460908038601864">Mati</translation>
 <translation id="1311894908970423688">Nilai mestilah <ph name="VALUE_DATE_OR_TIME" />.</translation>
-<translation id="145015347812617860"><ph name="COUNT" /> item</translation>
 <translation id="1480676835519562650">pelbagai pilihan, <ph name="SELECTED" /> daripada <ph name="COUNT" /> dipilih.</translation>
 <translation id="1588438908519853928">Biasa</translation>
 <translation id="1591562245178063882">Bulan ini</translation>
@@ -31,7 +30,6 @@
 <translation id="2246498165605549352">Fail Setempat</translation>
 <translation id="2247351761944213033">Minggu <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">Lagu <ph name="NUMBER" /></translation>
-<translation id="2307576640803031502">dalam senarai, item <ph name="INDEX" /> daripada <ph name="COUNT" /></translation>
 <translation id="2393030564806080191">Nilai warna perenambelasan</translation>
 <translation id="2398813069815436052">dialog dibuka.</translation>
 <translation id="245932805758469625">bilangan saat baki video</translation>

@@ -678,6 +678,7 @@ Pots comprovar les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_
 <translation id="1632756664321977232">Eina de retallada</translation>
 <translation id="163309982320328737">L'amplada inicial dels caràcters és completa</translation>
 <translation id="1633947793238301227">Desactiva l'Assistent de Google</translation>
+<translation id="1634224622052500893">S'ha trobat una xarxa Wi‑Fi</translation>
 <translation id="1634783886312010422">Ja has canviat aquesta contrasenya a <ph name="WEBSITE" />?</translation>
 <translation id="1636212173818785548">D'acord</translation>
 <translation id="163712950892155760"><ph name="BEGIN_PARAGRAPH1" />Les dades de les aplicacions poden ser qualsevol mena de dades que hagi desat una aplicació (en funció de la configuració del desenvolupador), incloses dades com ara contactes, missatges i fotos. Les dades de la còpia de seguretat no es tenen en compte per calcular la quota d'emmagatzematge de Drive.<ph name="END_PARAGRAPH1" />
@@ -1352,6 +1353,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2251218783371366160">Obre amb el lector del sistema</translation>
 <translation id="225163402930830576">Actualitza les xarxes</translation>
 <translation id="2251809247798634662">Finestra d'incògnit nova</translation>
+<translation id="2252017960592955005">Protecció de visualització (beta)</translation>
 <translation id="225240747099314620">Permet els identificadors per a contingut protegit (és possible que calgui reiniciar l'ordinador)</translation>
 <translation id="2255077166240162850">Aquest dispositiu s'ha bloquejat amb un domini o un mode diferents.</translation>
 <translation id="2255317897038918278">Marques de temps de Microsoft</translation>
@@ -2007,6 +2009,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2839032553903800133">Notificacions bloquejades</translation>
 <translation id="2841013758207633010">Hora</translation>
 <translation id="2841837950101800123">Proveïdor</translation>
+<translation id="2842013086666334835">Inicia la sessió a "<ph name="NETWORK_ID" />"</translation>
 <translation id="2843560154284403323">Per acabar de configurar Linux, actualitza Chrome OS i torna-ho a provar.</translation>
 <translation id="2844169650293029770">Dispositiu USB-C (port frontal esquerre)</translation>
 <translation id="2844809857160214557">Consulta i gestiona les tasques d'impressió</translation>
@@ -2107,6 +2110,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2927017729816812676">Emmagatzematge a la memòria cau</translation>
 <translation id="2928795416630981206">Amb permís per fer un seguiment de la posició de la càmera</translation>
 <translation id="2931157624143513983">Ajusta a l'àrea imprimible</translation>
+<translation id="2931342457001070961">No hi ha cap micròfon connectat</translation>
 <translation id="2932085390869194046">Suggereix una contrasenya...</translation>
 <translation id="2932483646085333864">Tanca la sessió i torna-la a iniciar per començar la sincronització</translation>
 <translation id="2932883381142163287">Informa d'un ús abusiu</translation>
@@ -2170,6 +2174,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2996286169319737844">Les dades estan encriptades amb la teva frase de contrasenya de sincronització. No inclouen les formes de pagament ni les adreces de Google Pay.</translation>
 <translation id="2996722619877761919">Capgira per la vora llarga</translation>
 <translation id="2996932914629936323">Esborra l'historial de tots els dispositius sincronitzats</translation>
+<translation id="2998267783395280091">S'ha trobat una xarxa</translation>
 <translation id="3000378525979847272">Permisos concedits: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /></translation>
 <translation id="3000461861112256445">Àudio mono</translation>
 <translation id="3001144475369593262">Comptes infantils</translation>
@@ -2321,6 +2326,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3142562627629111859">Grup nou</translation>
 <translation id="3143515551205905069">Cancel·la la sincronització</translation>
 <translation id="3143754809889689516">Reprodueix des del principi</translation>
+<translation id="3143937294861726703">L'estalvi de memòria està activat</translation>
 <translation id="3144647712221361880">Obre l'enllaç com a</translation>
 <translation id="3149510190863420837">Aplicacions de Chrome</translation>
 <translation id="3150693969729403281">Executa la comprovació de seguretat ara</translation>
@@ -6499,6 +6505,7 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="7222204278952406003">Chrome és el navegador predeterminat</translation>
 <translation id="7222232353993864120">Adreça electrònica</translation>
 <translation id="7222235798733126207">Compartició limitada entre llocs web</translation>
+<translation id="7225082563376899794">Utilitza Windows Hello en emplenar les contrasenyes</translation>
 <translation id="7225179976675429563">Falta el tipus de xarxa</translation>
 <translation id="7227458944009118910">Les aplicacions que s'enumeren a continuació també poden gestionar enllaços de protocol. Les altres aplicacions et demanaran permís.</translation>
 <translation id="7228523857728654909">Bloqueig de pantalla i inici de sessió</translation>
@@ -6540,6 +6547,7 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="7258192266780953209">Transformacions</translation>
 <translation id="7258225044283673131">L'aplicació no respon. Selecciona "Força el tancament" per tancar l'aplicació.</translation>
 <translation id="7260186537988033909">S'ha completat la inscripció del dispositiu de quiosc i de cartelleria</translation>
+<translation id="7261851165551049223">Utilitza Touch ID en emplenar les contrasenyes</translation>
 <translation id="7262004276116528033">Aquest servei d'inici de sessió s'allotja a <ph name="SAML_DOMAIN" /></translation>
 <translation id="7264695323040866038">Vols utilitzar sempre l'aplicació <ph name="APP" /> per obrir els enllaços web admesos?</translation>
 <translation id="7267044199012331848">No s'ha pogut instal·lar la màquina virtual. Torna-ho a provar o contacta amb l'administrador. Codi d'error: <ph name="ERROR_CODE" />.</translation>

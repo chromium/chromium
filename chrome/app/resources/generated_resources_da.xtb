@@ -718,6 +718,7 @@ De tilladelser, du har givet til apps, gælder muligvis for denne konto. Du kan 
 <translation id="16620462294541761">Din adgangskode blev ikke bekræftet. Prøv igen.</translation>
 <translation id="166278006618318542">Algoritme for emnets offentlige nøgle</translation>
 <translation id="1662801900924515589"><ph name="APP" /> er installeret</translation>
+<translation id="1665328953287874063">Brug en adgangskode eller pinkode til at låse din <ph name="DEVICE_TYPE" /> op</translation>
 <translation id="1666232093776384142">Deaktiver Beskyttelse af dataadgang for eksterne enheder</translation>
 <translation id="1667842670298352129">Få oplæst en bestemt tekst. Start med at vælge ikonet for Tekstoplæsning nederst på skærmen, og fremhæv derefter teksten. Du kan også bruge en tastaturgenvej: Fremhæv tekst, og tryk derefter på søgetasten+S.</translation>
 <translation id="1668435968811469751">Tilmeld manuelt</translation>
@@ -1851,6 +1852,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2691385045260836588">Model</translation>
 <translation id="2691440343905273290">Skift indstillinger for indtastning</translation>
 <translation id="2693176596243495071">Ups! Der opstod en ukendt fejl. Prøv igen senere, eller kontakt din administrator, hvis problemet fortsætter.</translation>
+<translation id="2698147581454716013">Dette er en pakkeenhed, som ikke kan tilmeldes Kiosk &amp; Signage-opgraderingen.</translation>
 <translation id="2699911226086014512">Pinkodehandlingen mislykkedes med koden <ph name="RETRIES" />.</translation>
 <translation id="2701330563083355633">Delt fra <ph name="DEVICE_NAME" /></translation>
 <translation id="2701737434167469065">Log ind, <ph name="EMAIL" /></translation>
@@ -1929,6 +1931,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2757338480560142065">Sørg for, at den adgangskode, du gemmer, er den samme som din adgangskode til <ph name="WEBSITE" /></translation>
 <translation id="2762441749940182211">Der er blokeret for adgang til kameraet</translation>
 <translation id="2764786626780673772">Info om VPN</translation>
+<translation id="2764920001292228569">Angiv et profilnavn</translation>
 <translation id="2765100602267695013">Kontakt dit mobilselskab</translation>
 <translation id="2765217105034171413">Lille</translation>
 <translation id="2766006623206032690">Indsæt og fortsæt</translation>
@@ -3298,6 +3301,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4065876735068446555">Det netværk, du bruger (<ph name="NETWORK_ID" />), kan kræve, at du går til netværkets loginside.</translation>
 <translation id="4066207411788646768">Tjek din forbindelse for at se tilgængelige printere på dit netværk.</translation>
 <translation id="4066945815577305767">Adgangskoderne fik timeout</translation>
+<translation id="4067839975993712852">Markér den aktuelle fane som læst</translation>
 <translation id="4068776064906523561">Gemte fingeraftryk</translation>
 <translation id="407173827865827707">Ved klik</translation>
 <translation id="4072701974556190758">Adgangskoden gemmes på din Google-konto <ph name="ACCOUNT" />. Du behøver ikke at huske den.</translation>
@@ -5780,6 +5784,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="6508248480704296122">Relateret til <ph name="NAME_PH" /></translation>
 <translation id="6508261954199872201">Program: <ph name="APP_NAME" /></translation>
 <translation id="6509207748479174212">Medielicens</translation>
+<translation id="6511827214781912955">Du bør overveje at slette <ph name="FILENAME" />, så andre, der bruger denne enhed, ikke kan se dine adgangskoder</translation>
 <translation id="6513247462497316522">Google Chrome anvender mobildata, hvis du ikke har forbindelse til et andet netværk.</translation>
 <translation id="6514010653036109809">Tilgængelig enhed:</translation>
 <translation id="6514565641373682518">Denne side har deaktiveret din musemarkør.</translation>
@@ -6063,6 +6068,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangskodeadministrator anb
 <translation id="6781978626986383437">Linux-sikkerhedskopieringen blev annulleret</translation>
 <translation id="6782067259631821405">Ugyldig pinkode</translation>
 <translation id="6784523122863989144">Profilen understøttes</translation>
+<translation id="6785739405821760313">Viser gemte skriveborde. Tryk på Tab-tasten for at navigere.</translation>
 <translation id="6785872064505734160">Google Assistent i Chrome kan udføre handlinger for dig på websites</translation>
 <translation id="6786747875388722282">Udvidelser</translation>
 <translation id="6787097042755590313">Anden fane</translation>
@@ -6520,6 +6526,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangskodeadministrator anb
 <translation id="7222204278952406003">Chrome er din standardbrowser</translation>
 <translation id="7222232353993864120">Mailadresse</translation>
 <translation id="7222235798733126207">Begrænset deling mellem websites</translation>
+<translation id="7225082563376899794">Brug Windows Hello til at udfylde adgangskoder</translation>
 <translation id="7225179976675429563">Netværkstype mangler</translation>
 <translation id="7227458944009118910">De apps, der er angivet nedenfor, kan også håndtere protokollinks. Andre apps beder om tilladelse.</translation>
 <translation id="7228523857728654909">Skærmlås og login</translation>
@@ -6561,6 +6568,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangskodeadministrator anb
 <translation id="7258192266780953209">Transformationer</translation>
 <translation id="7258225044283673131">Appen svarer ikke. Vælg "Tving til at lukke" for at lukke appen.</translation>
 <translation id="7260186537988033909">Terminal- og signeringsenheden er tilmeldt</translation>
+<translation id="7261851165551049223">Brug Touch ID til at udfylde adgangskoder</translation>
 <translation id="7262004276116528033">Denne logintjeneste hostes af <ph name="SAML_DOMAIN" />.</translation>
 <translation id="7264695323040866038">Vil du altid bruge appen <ph name="APP" /> til at åbne understøttede weblinks?</translation>
 <translation id="7267044199012331848">Den virtuelle maskine kunne ikke installeres. Prøv igen, eller kontakt din administrator Fejlkode: <ph name="ERROR_CODE" />.</translation>
@@ -6647,6 +6655,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangskodeadministrator anb
 <translation id="7358338787722390626">Luk søgning i sidepanel</translation>
 <translation id="735994578317267253">Få dine apps, indstillinger m.m. på enhver ChromeOS-enhed</translation>
 <translation id="7360233684753165754"><ph name="PAGE_NUMBER" /> sider til <ph name="PRINTER_NAME" /></translation>
+<translation id="7360257054721917104">Viser gemte skriveborde og skabeloner. Tryk på Tab-tasten for at navigere.</translation>
 <translation id="7361297102842600584">Klik for at køre <ph name="PLUGIN_NAME" /></translation>
 <translation id="7362387053578559123">Websites kan anmode om tilladelse til at oprette forbindelse til Bluetooth-enheder</translation>
 <translation id="7363349185727752629">En guide til dine privatlivsindstillinger</translation>
@@ -7299,6 +7308,7 @@ Tryk på en kontakt eller tast, der er tildelt en handling, for at fjerne tildel
 <translation id="7953669802889559161">Indtastningsmetoder</translation>
 <translation id="7953955868932471628">Administrer genveje</translation>
 <translation id="7955105108888461311">Spørg ansigt til ansigt</translation>
+<translation id="7955177647836564772">Hvis Smart Lock er aktiveret, og din telefon er låst op, behøver du ikke at angive en adgangskode eller pinkode</translation>
 <translation id="7956373551960864128">Dine gemte printere</translation>
 <translation id="7957074856830851026">Se enhedsoplysninger som f.eks. serienummer eller aktiv-id</translation>
 <translation id="7959074893852789871">Filen indeholdt flere certifikater, hvoraf nogle af dem ikke blev importeret:</translation>
@@ -7557,6 +7567,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Dine enheder<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195027750202970175">Filstørrelse</translation>
 <translation id="8195191503358432289">Tilføj adgangskode</translation>
+<translation id="8197673340773315084">Tilføj et navn eller en etiket, f.eks. Arbejde eller Privat</translation>
 <translation id="8198456017687137612">Caster fane</translation>
 <translation id="8199300056570174101">Egenskaber for netværkstjeneste og enhed</translation>
 <translation id="8200772114523450471">Genoptag</translation>
@@ -7654,6 +7665,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8284279544186306258">alle websites på <ph name="WEBSITE_1" /></translation>
 <translation id="8284326494547611709">Undertekster</translation>
 <translation id="8286036467436129157">Log ind</translation>
+<translation id="828642162569365647">Denne adgangskode eller pinkode beskytter dine data på denne <ph name="DEVICE_TYPE" /> samt eventuelle oplysninger, du tilgår via din telefon. Du skal låse op, hver gang din <ph name="DEVICE_TYPE" /> vækkes fra dvaletilstand.</translation>
 <translation id="8287902281644548111">Søg efter API-kald/webadresse</translation>
 <translation id="8288032458496410887">Afinstaller <ph name="APP" />...</translation>
 <translation id="8289128870594824098">Diskstørrelse</translation>

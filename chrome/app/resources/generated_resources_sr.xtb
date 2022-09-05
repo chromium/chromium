@@ -713,6 +713,7 @@
 <translation id="16620462294541761">Жао нам је, нисмо успели да верификујемо лозинку. Пробајте поново.</translation>
 <translation id="166278006618318542">Алгоритам јавног кључа субјекта</translation>
 <translation id="1662801900924515589">Апликација <ph name="APP" /> је инсталирана</translation>
+<translation id="1665328953287874063">Користите лозинку или PIN да бисте откључали <ph name="DEVICE_TYPE" /></translation>
 <translation id="1666232093776384142">Онемогућите заштиту приступа подацима за периферне уређаје</translation>
 <translation id="1667842670298352129">Слушајте читање одређеног текста наглас. Прво изаберите икону Изаберите за говор у дну екрана, па истакните текст. Можете да користите и тастерске пречице: истакните текст, па притисните тастер за претрагу + S.</translation>
 <translation id="1668435968811469751">Региструјте се ручно</translation>
@@ -1834,6 +1835,7 @@
 <translation id="2691385045260836588">Модел</translation>
 <translation id="2691440343905273290">Промените подешавања уноса</translation>
 <translation id="2693176596243495071">Упс! Дошло је до непознате грешке. Пробајте поново касније или контактирајте администратора ако се проблем настави.</translation>
+<translation id="2698147581454716013">Ово је уређај у оквиру пакета и не може да се региструје за надоградњу киоска или уређаја за пријављивање.</translation>
 <translation id="2699911226086014512">PIN операција није успела, кôд грешке <ph name="RETRIES" />.</translation>
 <translation id="2701330563083355633">Дељено са: <ph name="DEVICE_NAME" /></translation>
 <translation id="2701737434167469065">Пријавите се, <ph name="EMAIL" /></translation>
@@ -1912,6 +1914,7 @@
 <translation id="2757338480560142065">Проверите да ли се лозинка коју чувате подудара са лозинком за <ph name="WEBSITE" /></translation>
 <translation id="2762441749940182211">Камера је блокирана</translation>
 <translation id="2764786626780673772">Детаљи о VPN-у</translation>
+<translation id="2764920001292228569">Унесите назив профила</translation>
 <translation id="2765100602267695013">Обратите се мобилном оператеру</translation>
 <translation id="2765217105034171413">Мала</translation>
 <translation id="2766006623206032690">На&amp;лепи и иди</translation>
@@ -3281,6 +3284,7 @@
 <translation id="4065876735068446555">Мрежа коју користите (<ph name="NETWORK_ID" />) ће можда захтевати да посетите страницу за пријављивање.</translation>
 <translation id="4066207411788646768">Проверите везу да бисте видели доступне штампаче на мрежи</translation>
 <translation id="4066945815577305767">Време за лозинке је истекло</translation>
+<translation id="4067839975993712852">Означи актуелну картицу као прочитану</translation>
 <translation id="4068776064906523561">Сачувани отисци прстију</translation>
 <translation id="407173827865827707">При клику</translation>
 <translation id="4072701974556190758">Лозинка ће бити сачувана на вашем Google налогу, <ph name="ACCOUNT" />. Нећете морати да је памтите.</translation>
@@ -5762,6 +5766,7 @@
 <translation id="6508248480704296122">Сродно са ставком <ph name="NAME_PH" /></translation>
 <translation id="6508261954199872201">Апл.: <ph name="APP_NAME" /></translation>
 <translation id="6509207748479174212">Лиценца за медије</translation>
+<translation id="6511827214781912955">Размислите о томе да избришете <ph name="FILENAME" /> да други који користе овај уређај не би могли да виде ваше лозинке</translation>
 <translation id="6513247462497316522">Google Chrome ће користити мобилне податке ако нисте повезани са другом мрежом.</translation>
 <translation id="6514010653036109809">Доступан уређај:</translation>
 <translation id="6514565641373682518">Ова страница је онемогућила курсор.</translation>
@@ -6047,6 +6052,7 @@
 <translation id="6781978626986383437">Прављење резервне копије за Linux је отказано</translation>
 <translation id="6782067259631821405">Неважећи PIN</translation>
 <translation id="6784523122863989144">Профил је подржан</translation>
+<translation id="6785739405821760313">Приказују се сачуване радне површине. Притисните картицу да бисте се кретали.</translation>
 <translation id="6785872064505734160">Google помоћник у Chrome-у може да довршава радње за вас на веб-сајтовима</translation>
 <translation id="6786747875388722282">Додаци</translation>
 <translation id="6787097042755590313">Друге картице</translation>
@@ -6631,6 +6637,7 @@
 <translation id="7358338787722390626">Затворите претрагу на бочној табли</translation>
 <translation id="735994578317267253">Користите своје апликације, подешавања и друго на било ком ChromeOS уређају</translation>
 <translation id="7360233684753165754">Странице (<ph name="PAGE_NUMBER" />) на штампачу <ph name="PRINTER_NAME" /></translation>
+<translation id="7360257054721917104">Приказују се сачуване радне површине и шаблони. Притисните картицу да бисте се кретали.</translation>
 <translation id="7361297102842600584">Кликните десним тастером да бисте покренули <ph name="PLUGIN_NAME" /></translation>
 <translation id="7362387053578559123">Сајтови могу да траже да се повезују са Bluetooth уређајима</translation>
 <translation id="7363349185727752629">Водич за изборе у вези са приватношћу</translation>
@@ -7283,6 +7290,7 @@
 <translation id="7953669802889559161">Уноси</translation>
 <translation id="7953955868932471628">Управљај пречицама</translation>
 <translation id="7955105108888461311">Затражи лично</translation>
+<translation id="7955177647836564772">Ако је Smart Lock укључен и телефон је откључан, не морате да уносите лозинку или PIN</translation>
 <translation id="7956373551960864128">Сачувани штампачи</translation>
 <translation id="7957074856830851026">Преглед информација о уређају, као што је серијски број или ИД дела</translation>
 <translation id="7959074893852789871">Датотека садржи више сертификата, од којих неки нису увезени:</translation>
@@ -7541,6 +7549,7 @@
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Уређаји<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195027750202970175">Величина на диску</translation>
 <translation id="8195191503358432289">Додајте лозинку</translation>
+<translation id="8197673340773315084">Додајте назив или ознаку као што су Пословни или Лични</translation>
 <translation id="8198456017687137612">Пребацује се картица</translation>
 <translation id="8199300056570174101">Својства мреже (услуга) и уређаја</translation>
 <translation id="8200772114523450471">Настави</translation>
@@ -7638,6 +7647,7 @@
 <translation id="8284279544186306258">сви <ph name="WEBSITE_1" /> сајтови</translation>
 <translation id="8284326494547611709">Титл</translation>
 <translation id="8286036467436129157">Пријави ме</translation>
+<translation id="828642162569365647">Ова лозинка или PIN штити податке на овом <ph name="DEVICE_TYPE" />-у, укључујући све информације којима приступате са телефона. Мораћете да откључате сваки пут када се <ph name="DEVICE_TYPE" /> покрене из режима спавања.</translation>
 <translation id="8287902281644548111">Претражите према API позиву/URL-у</translation>
 <translation id="8288032458496410887">Деинсталирај: <ph name="APP" />...</translation>
 <translation id="8289128870594824098">Величина диска</translation>

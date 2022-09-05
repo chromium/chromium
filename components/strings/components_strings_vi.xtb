@@ -1108,6 +1108,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="3906954721959377182">Máy tính bảng</translation>
 <translation id="3909477809443608991"><ph name="URL" /> muốn phát nội dung được bảo vệ. Thông tin định danh của thiết bị sẽ được Google xác minh và trang web này có thể truy cập vào thông tin đó.</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
+<translation id="3923112503730743940">Oufuku Hagaki (Bưu thiếp)</translation>
 <translation id="3927932062596804919">Từ chối</translation>
 <translation id="393316646445601645">Internet và viễn thông</translation>
 <translation id="3939773374150895049">Sử dụng WebAuthn thay cho CVC?</translation>
@@ -1136,6 +1137,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="4009243425692662128">Nội dung của các trang bạn in được gửi tới Google Cloud hoặc các bên thứ ba để phân tích. Ví dụ: nội dung đó có thể được quét tìm dữ liệu nhạy cảm.</translation>
 <translation id="4010758435855888356">Cho phép quyền truy cập bộ nhớ?</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{Tài liệu PDF chứa {COUNT} trang}other{Tài liệu PDF chứa {COUNT} trang}}</translation>
+<translation id="4022639246993848966">3,5 x 5</translation>
 <translation id="4023431997072828269">Vì bạn đang gửi biểu mẫu này bằng đường kết nối không an toàn nên người khác có thể nhìn thấy thông tin của bạn.</translation>
 <translation id="4025913568718019429">Nút quản lý chế độ cài đặt quyền riêng tư của Google, nhấn phím Enter để truy cập phần cài đặt quyền riêng tư của Tài khoản Google</translation>
 <translation id="4030383055268325496">&amp;Hoàn tác thêm</translation>

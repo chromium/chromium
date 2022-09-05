@@ -1806,6 +1806,7 @@
 <translation id="5764920692828389743">傳送到 <ph name="EMAIL_ADDRESS" /></translation>
 <translation id="5765072501007116331">如要查看快遞方式和相關規定，請選取一個地址</translation>
 <translation id="57689295674415555">尚未填寫虛擬卡號嗎？</translation>
+<translation id="5772086939108830423">使用其他裝置的密碼金鑰</translation>
 <translation id="5776313857861697733">優先順序</translation>
 <translation id="5781136890105823427">實驗已啟用</translation>
 <translation id="578305955206182703">琥珀色</translation>
@@ -2202,6 +2203,7 @@
 <translation id="6916954549222464607">財務規劃與管理</translation>
 <translation id="6917795328362592458">系統發現你剛才使用的密碼因為資料侵害事件而遭到外洩。為確保帳戶安全，密碼管理工具建議你立即檢查已儲存的密碼。</translation>
 <translation id="6934672428414710184">這是你在 Google 帳戶中設定的名稱</translation>
+<translation id="6936976777388162184">這是隨附裝置，因此無法註冊 Kiosk &amp; Signage 升級版。</translation>
 <translation id="6939469646605424232">電視劇</translation>
 <translation id="6944692733090228304">你在不是由 <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> 管理的網站上輸入了你的密碼。為確保帳戶安全，請勿在其他應用程式和網站上重複使用你的密碼。</translation>
 <translation id="6945221475159498467">選取</translation>
@@ -3054,6 +3056,7 @@
 <translation id="950736567201356821">三孔 (頂端)</translation>
 <translation id="961663415146723894">裝訂 (底部)</translation>
 <translation id="962484866189421427">這項內容可能會試圖讓你安裝身分不實的欺騙性應用程式，或是收集可用於追蹤你的資料。<ph name="BEGIN_LINK" />仍要顯示<ph name="END_LINK" /></translation>
+<translation id="964050462028070434">管理密碼和密碼金鑰…</translation>
 <translation id="96680173638229310">汽車與車輛</translation>
 <translation id="969892804517981540">正式版本</translation>
 <translation id="973773823069644502">新增快遞地址</translation>

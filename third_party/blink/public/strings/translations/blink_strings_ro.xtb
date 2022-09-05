@@ -7,7 +7,6 @@
 <translation id="1178581264944972037">Întrerupe</translation>
 <translation id="1306460908038601864">Dezactivat</translation>
 <translation id="1311894908970423688">Valoarea trebuie să fie <ph name="VALUE_DATE_OR_TIME" />.</translation>
-<translation id="145015347812617860"><ph name="COUNT" /> elemente</translation>
 <translation id="1480676835519562650">Este posibilă selectarea multiplă, ai selectat <ph name="SELECTED" /> din <ph name="COUNT" />.</translation>
 <translation id="1588438908519853928">Normal</translation>
 <translation id="1591562245178063882">Luna aceasta</translation>
@@ -31,7 +30,6 @@
 <translation id="2246498165605549352">Fișier local</translation>
 <translation id="2247351761944213033">Săptămâna <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">Melodia <ph name="NUMBER" /></translation>
-<translation id="2307576640803031502">în listă, elementul <ph name="INDEX" /> din <ph name="COUNT" /></translation>
 <translation id="2393030564806080191">Valoarea hexazecimală a culorii</translation>
 <translation id="2398813069815436052">casetă de dialog deschisă.</translation>
 <translation id="245932805758469625">numărul de secunde rămase din videoclip</translation>

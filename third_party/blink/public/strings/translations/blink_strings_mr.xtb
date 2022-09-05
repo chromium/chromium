@@ -7,7 +7,6 @@
 <translation id="1178581264944972037">विराम द्या</translation>
 <translation id="1306460908038601864">बंद करा</translation>
 <translation id="1311894908970423688">मूल्य <ph name="VALUE_DATE_OR_TIME" /> असणे आवश्यक आहे.</translation>
-<translation id="145015347812617860"><ph name="COUNT" /> आयटम</translation>
 <translation id="1480676835519562650">एकाहून अधिक निवडण्यायोग्य, <ph name="COUNT" /> पैकी <ph name="SELECTED" /> निवडले.</translation>
 <translation id="1588438908519853928">सामान्य</translation>
 <translation id="1591562245178063882">या महिन्यात</translation>
@@ -31,7 +30,6 @@
 <translation id="2246498165605549352">स्थानिक फाइल</translation>
 <translation id="2247351761944213033">आठवडा <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">ट्रॅक <ph name="NUMBER" /></translation>
-<translation id="2307576640803031502">सूचीमधील, <ph name="COUNT" /> पैकी <ph name="INDEX" /> आयटम</translation>
 <translation id="2393030564806080191">रंगाचे हेक्साडेसिमल मूल्य</translation>
 <translation id="2398813069815436052">डायलॉग उघडला.</translation>
 <translation id="245932805758469625">व्हिडिओच्या शिल्लक सेकंदांची संख्या</translation>

@@ -718,6 +718,7 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="16620462294541761">Paumanhin, hindi ma-verify ang iyong password. Pakisubukang muli.</translation>
 <translation id="166278006618318542">Subject Public Key Algorithm</translation>
 <translation id="1662801900924515589">Na-install ang <ph name="APP" /></translation>
+<translation id="1665328953287874063">Gumamit ng password o PIN para i-unlock ang iyong <ph name="DEVICE_TYPE" /></translation>
 <translation id="1666232093776384142">I-disable ang proteksyon sa pag-access ng data para sa mga peripheral</translation>
 <translation id="1667842670298352129">Marinig na binabasa nang malakas ang partikular na text. Una, piliin ang icon na Select-to-speak sa ibaba ng iyong screen, pagkatapos ay i-highlight ang text. Puwede ka ring gumamit ng keyboard shortcut: Mag-highlight ng text, pagkatapos ay pindutin ang Search + S.</translation>
 <translation id="1668435968811469751">Magpa-enroll nang manual</translation>
@@ -1851,6 +1852,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2691385045260836588">Modelo</translation>
 <translation id="2691440343905273290">Baguhin ang mga setting ng pag-input</translation>
 <translation id="2693176596243495071">Oops!  Nagkaroon ng hindi matukoy na error. Pakisubukang muli sa ibang pagkakataon o makipag-ugnayan sa iyong administrator kung magpapatuloy ang isyu.</translation>
+<translation id="2698147581454716013">Isa itong naka-bundle na device at hindi ito puwedeng i-enroll sa Upgrade para sa Kiosk at Signage.</translation>
 <translation id="2699911226086014512">Hindi nagamit ang PIN na may code <ph name="RETRIES" />.</translation>
 <translation id="2701330563083355633">Ibinahagi mula kay <ph name="DEVICE_NAME" /></translation>
 <translation id="2701737434167469065">Mag-sign in, <ph name="EMAIL" /></translation>
@@ -1929,6 +1931,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2757338480560142065">Tiyaking ang password na sine-save mo ay tumutugma sa iyong password para sa <ph name="WEBSITE" /></translation>
 <translation id="2762441749940182211">Naka-block ang camera</translation>
 <translation id="2764786626780673772">Mga detalye ng VPN</translation>
+<translation id="2764920001292228569">Maglagay ng pangalan ng profile</translation>
 <translation id="2765100602267695013">Makipag-ugnayan sa iyong provider sa mobile</translation>
 <translation id="2765217105034171413">Maliit</translation>
 <translation id="2766006623206032690">Pa&amp;ste at umalis</translation>
@@ -3298,6 +3301,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="4065876735068446555">Maaaring hilingin sa iyo ng network na ginagamit mo (<ph name="NETWORK_ID" />) na bisitahin ang page sa pag-log in nito.</translation>
 <translation id="4066207411788646768">Pakisuri ang iyong koneksyon para makita ang mga available na printer sa network mo</translation>
 <translation id="4066945815577305767">Nag-time out ang mga password</translation>
+<translation id="4067839975993712852">Markahan ang kasalukuyang tab bilang nabasa na</translation>
 <translation id="4068776064906523561">Mga naka-save na fingerprint</translation>
 <translation id="407173827865827707">Sa pag-click</translation>
 <translation id="4072701974556190758">Ise-save ang password sa iyong Google Account na <ph name="ACCOUNT" />. Hindi mo ito kakailanganing tandaan.</translation>
@@ -5780,6 +5784,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="6508248480704296122">Kaugnay ng <ph name="NAME_PH" /></translation>
 <translation id="6508261954199872201">App: <ph name="APP_NAME" /></translation>
 <translation id="6509207748479174212">Lisensya ng media</translation>
+<translation id="6511827214781912955">Pag-isipang i-delete ang <ph name="FILENAME" />, para hindi makita ng iba pang gumagamit ng device na ito ang iyong mga password</translation>
 <translation id="6513247462497316522">Gagamit ang Google Chrome ng data ng mobile kung hindi ka nakakonekta sa isa pang network.</translation>
 <translation id="6514010653036109809">Available na device:</translation>
 <translation id="6514565641373682518">Hindi pinagana ng pahinang ito ang cursor ng iyong mouse.</translation>
@@ -6063,6 +6068,7 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="6781978626986383437">Nakansela ang pag-back up ng Linux</translation>
 <translation id="6782067259631821405">Invalid ang PIN</translation>
 <translation id="6784523122863989144">Sinusuportahan ang profile</translation>
+<translation id="6785739405821760313">Pagtingin sa mga naka-save na desk. Pindutin ang tab para mag-navigate.</translation>
 <translation id="6785872064505734160">Makakakumpleto ang Google Assistant sa Chrome ng mga pagkilos sa lahat ng website para sa iyo</translation>
 <translation id="6786747875388722282">Mga Extension</translation>
 <translation id="6787097042755590313">Ibang Tab</translation>
@@ -6520,6 +6526,7 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="7222204278952406003">Ang Chrome ay ang default mong browser</translation>
 <translation id="7222232353993864120">Email Address</translation>
 <translation id="7222235798733126207">Limitadong pagbabahagi sa pagitan ng mga site</translation>
+<translation id="7225082563376899794">Gamitin ang Windows Hello kapag pinupunan ang mga password</translation>
 <translation id="7225179976675429563">Nawawala ang uri ng network</translation>
 <translation id="7227458944009118910">Puwede ring mangasiwa ng mga link ng protocol ang mga app na nakalista sa ibaba. Hihingi ng pahintulot ang iba pang app.</translation>
 <translation id="7228523857728654909">Lock ng screen at pag-sign in</translation>
@@ -6561,6 +6568,7 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="7258192266780953209">Mga Pagbabago</translation>
 <translation id="7258225044283673131">Hindi tumutugon ang application. Piliin ang "Puwersahang isara" para isara ang app.</translation>
 <translation id="7260186537988033909">Tapos na ang pag-enroll ng kiosk at signage device</translation>
+<translation id="7261851165551049223">Gamitin ang TouchID kapag pinupunan ang mga password</translation>
 <translation id="7262004276116528033">Hino-host ng <ph name="SAML_DOMAIN" /> ang serbisyo sa pag-sign in</translation>
 <translation id="7264695323040866038">Palaging gamitin ang <ph name="APP" /> app para buksan ang mga sinusuportahang link ng web?</translation>
 <translation id="7267044199012331848">Hindi ma-install ang virtual machine. Pakisubukan ulit, o makipag-ugnayan sa iyong administrator. Code ng error: <ph name="ERROR_CODE" />.</translation>
@@ -6647,6 +6655,7 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="7358338787722390626">I-close ang paghahanap sa panel sa gilid</translation>
 <translation id="735994578317267253">Makuha ang iyong mga app, setting, at iba pa sa anumang ChromeOS device</translation>
 <translation id="7360233684753165754"><ph name="PAGE_NUMBER" /> (na) page sa <ph name="PRINTER_NAME" /></translation>
+<translation id="7360257054721917104">Pagtingin sa mga naka-save na desk at template. Pindutin ang tab para mag-navigate.</translation>
 <translation id="7361297102842600584">I-right click upang patakbuhin ang <ph name="PLUGIN_NAME" /></translation>
 <translation id="7362387053578559123">Puwedeng hilingin ng mga site na kumonekta sa mga Bluetooth device</translation>
 <translation id="7363349185727752629">Isang gabay tungkol sa iyong mga opsyon sa privacy</translation>
@@ -7300,6 +7309,7 @@ Pumindot ng nakatalagang switch o key para alisin ang pagtatalaga.</translation>
 <translation id="7953669802889559161">Mga Input</translation>
 <translation id="7953955868932471628">Pamahalaan ang mga shortcut</translation>
 <translation id="7955105108888461311">Magtanong nang personal</translation>
+<translation id="7955177647836564772">Kung naka-on ang Smart Lock at naka-unlock ang iyong telepono, hindi mo kailangang maglagay ng password o PIN</translation>
 <translation id="7956373551960864128">Mga naka-save mong printer</translation>
 <translation id="7957074856830851026">Tingnan ang impormasyon ng device, gaya ng serial number o asset ID nito</translation>
 <translation id="7959074893852789871">Naglaman ang file ng maramihang certificate, ilan sa mga ito ang na-import:</translation>
@@ -7558,6 +7568,7 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Ang iyong mga device<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195027750202970175">Sukat sa disk</translation>
 <translation id="8195191503358432289">Magdagdag ng password</translation>
+<translation id="8197673340773315084">Magdagdag ng pangalan o label, tulad ng Trabaho o Personal</translation>
 <translation id="8198456017687137612">Ikina-cast ang tab</translation>
 <translation id="8199300056570174101">Mga property ng Network (Serbisyo) at Device</translation>
 <translation id="8200772114523450471">Resume</translation>
@@ -7655,6 +7666,7 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8284279544186306258">lahat ng site ng <ph name="WEBSITE_1" /></translation>
 <translation id="8284326494547611709">Mga Caption</translation>
 <translation id="8286036467436129157">Mag-sign In</translation>
+<translation id="828642162569365647">Pinoprotektahan ng password o PIN na ito ang iyong data sa <ph name="DEVICE_TYPE" /> na ito at ang anumang impormasyong ia-access mo mula sa iyong telepono. Kakailanganin mong mag-unlock sa bawat pagkakataong mag-wake mula sa sleep ang iyong <ph name="DEVICE_TYPE" />.</translation>
 <translation id="8287902281644548111">Maghanap ayon sa API call/URL</translation>
 <translation id="8288032458496410887">I-uninstall ang <ph name="APP" />...</translation>
 <translation id="8289128870594824098">Laki ng disk</translation>

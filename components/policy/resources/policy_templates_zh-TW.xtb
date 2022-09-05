@@ -348,6 +348,8 @@
 <translation id="1372618949173323717">停用 JavaScript</translation>
 <translation id="1376119291123231789">啟用進階充電模式</translation>
 <translation id="1384459581748403878">參考頁面：<ph name="REFERENCE_URL" /></translation>
+<translation id="1384594066274112751">如果啟用這項政策，只要任何網址符合政策指定 (使用 <ph name="URL_BLOCKLIST_POLICY_NAME" /> 篩選器格式) 的一或多個模式，就不會遭瀏覽器捨棄。這項政策會套用至用於釋放記憶體壓力及高效率模式的捨棄功能。系統會卸載捨棄的網頁，並完整收回該網頁的資源。與網頁殘餘資料相關聯的分頁仍會保留在分頁列中，當使用者切換到該分頁時，就會觸發系統完整重新載入該分頁。
+      </translation>
 <translation id="138847842893090358">回報作業系統的更新狀態</translation>
 <translation id="1390529781843037070">如果將這項政策設為啟用或不設定，使用者將可透過 <ph name="PRODUCT_NAME" /> 列印對話方塊把列印工作提交至 <ph name="CLOUD_PRINT_NAME" />。<ph name="PRODUCT_NAME" /> 可將文件提交至 <ph name="CLOUD_PRINT_NAME" />進行列印。這並不會禁止使用者在網站上提交列印工作。
 
@@ -1750,6 +1752,33 @@
 
       如果將這項政策設為 False，PDF 檢視器將無法為PDF 加註。</translation>
 <translation id="2769952903507981510">設定遠端存取主機所需的網域名稱</translation>
+<translation id="2772650717382565415">你可以透過這項政策指定要以無訊息方式 (使用者不用操作) 安裝的網頁應用程式清單。使用者無法解除安裝或停用這些網頁應用程式。
+
+      這項政策的每個清單項目都是一個物件，由下列必要元素組成：
+      <ph name="URL_LABEL" /> (要安裝的網頁應用程式網址)
+
+      6 個選擇性元素：
+      - <ph name="DEFAULT_LAUNCH_CONTAINER_LABEL" />
+      (設定網頁應用程式的開啟方式，預設值是在新分頁中開啟)
+
+      - <ph name="CREATE_DESKTOP_SHORTCUT_LABEL" />
+      (如要建立 <ph name="LINUX_OS_NAME" /> 和 <ph name="MS_WIN_NAME" /> 桌面捷徑，請設為 True)。
+
+      - <ph name="FALLBACK_APP_NAME_LABEL" />
+      (適用於 <ph name="PRODUCT_NAME" /> 90 以上版本，可用於覆寫非漸進式網頁應用程式 (PWA) 的應用程式名稱，或是針對暫時性安裝，且需經過驗證才能完成安裝的 PWA 覆寫應用程式名稱。如果同時提供 <ph name="CUSTOM_NAME_LABEL" /> 和 <ph name="FALLBACK_APP_NAME_LABEL" />，系統會忽略後者)。
+
+      - <ph name="OVERRIDE_APP_NAME_LABEL" />
+      (適用於 <ph name="PRODUCT_NAME" /> 99 以上版本，可用於永久覆寫所有網頁應用程式和 PWA 的應用程式名稱。目前僅支援 <ph name="PRODUCT_OS_NAME" />)。
+
+      - <ph name="CUSTOM_ICON_LABEL" />
+      (適用於 <ph name="PRODUCT_NAME" /> 99 以上版本，可用於覆寫安裝版應用程式的應用程式圖示。該圖示必須為方形，大小不得超過 1 MB，且採用下列其中一種格式：jpeg、png、gif、webp、ico。雜湊值必須是圖示檔案的 SHA256 雜湊。目前僅支援 <ph name="PRODUCT_OS_NAME" />)。
+
+      - <ph name="INSTALL_AS_SHORTCUT_LABEL" />
+      (適用於 <ph name="PRODUCT_NAME" /> 107 以上版本)。如果啟用的話，系統就會以捷徑的形式安裝指定的<ph name="URL_LABEL" />，就像使用電腦版瀏覽器 GUI 的「建立捷徑...」選項安裝網頁應用程式一樣。
+      請注意，如果以捷徑的形式安裝，系統不會在<ph name="URL_LABEL" />的資訊清單變更時更新網頁應用程式。
+      如果停用或未設定，系統會正常安裝指定<ph name="URL_LABEL" />的網頁應用程式。
+
+      如要將應用程式固定到 <ph name="PRODUCT_OS_NAME" /> 檔案櫃，請參閱 <ph name="PINNED_LAUNCHER_APPS_POLICY_NAME" /> 政策。</translation>
 <translation id="2772955711376920612">如果將這項政策設為啟用，同時設定 <ph name="DEVICE_POWER_PEAK_SHIFT_BATTERY_THRESHOLD_POLICY_NAME" /> 和 <ph name="DEVICE_POWER_PEAK_SHIFT_DAY_CONFIG_POLICY_NAME" />，電源尖峰轉移功能將保持在開啟狀態，前提是裝置提供相關支援。尖峰轉移電源管理政策是一項節電政策，能夠在用電尖峰時段將交流電的使用量降到最低。你可以針對每個平日，個別設定「電源尖峰轉移」模式的開始和結束時間。在這些時間範圍內，只要電池電量高於指定閾值，即使裝置已連接到交流電源，也仍會使用電池的電力。到達指定的結束時間後，如果裝置已連接到交流電源，則將改用交流電源，但不會為電池充電。到達指定的充電開始時間後，如果裝置已連接到交流電源，裝置一樣會使用交流電源運作，並為電池充電。
 
       如果將這項政策設為停用，電源尖峰轉移功能將保持在關閉狀態。
@@ -6357,6 +6386,7 @@
 
       如果設定了 <ph name="DOWNLOAD_DIRECTORY_POLICY_NAME" /> 政策，則這項政策不會有任何作用。
       注意：如要查看可使用的變數清單，請前往 https://www.chromium.org/administrators/policy-list-3/user-data-directory-variables。</translation>
+<translation id="7719808201797990069">分頁捨棄功能的網址模式例外狀況</translation>
 <translation id="7721944091689270995"><ph name="PLUGIN_VM_NAME" /> 使用者 ID</translation>
 <translation id="7724161903134898864">如果將這項政策設為 1，網站即可顯示彈出式視窗。如果將這項政策設為 2，網站將無法顯示彈出式視窗。
 

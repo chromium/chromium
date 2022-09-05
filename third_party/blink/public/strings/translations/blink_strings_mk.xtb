@@ -7,7 +7,6 @@
 <translation id="1178581264944972037">Пауза</translation>
 <translation id="1306460908038601864">Исклучени</translation>
 <translation id="1311894908970423688">Вредноста мора да биде <ph name="VALUE_DATE_OR_TIME" />.</translation>
-<translation id="145015347812617860"><ph name="COUNT" /> ставки</translation>
 <translation id="1480676835519562650">повеќе опции за избор, избрани се <ph name="SELECTED" /> од <ph name="COUNT" />.</translation>
 <translation id="1588438908519853928">Нормален</translation>
 <translation id="1591562245178063882">Овој месец</translation>
@@ -31,7 +30,6 @@
 <translation id="2246498165605549352">Локална датотека</translation>
 <translation id="2247351761944213033"><ph name="WEEKNUMBER" /> недела, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">Песна <ph name="NUMBER" /></translation>
-<translation id="2307576640803031502">во список, ставка <ph name="INDEX" /> од <ph name="COUNT" /></translation>
 <translation id="2393030564806080191">Хексадецимална вредност на бојата</translation>
 <translation id="2398813069815436052">дијалогот е отворен.</translation>
 <translation id="245932805758469625">број на преостанати секунди од видеото</translation>

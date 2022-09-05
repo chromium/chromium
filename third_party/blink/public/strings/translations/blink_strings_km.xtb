@@ -7,7 +7,6 @@
 <translation id="1178581264944972037">ផ្អាក</translation>
 <translation id="1306460908038601864">បិទ</translation>
 <translation id="1311894908970423688">តម្លៃត្រូវតែ <ph name="VALUE_DATE_OR_TIME" />។</translation>
-<translation id="145015347812617860">ធាតុ <ph name="COUNT" /></translation>
 <translation id="1480676835519562650">អាចជ្រើសរើសបានច្រើន បានជ្រើសរើស <ph name="SELECTED" /> ក្នុងចំណោម <ph name="COUNT" />។</translation>
 <translation id="1588438908519853928">ធម្មតា</translation>
 <translation id="1591562245178063882">ខែនេះ</translation>
@@ -31,7 +30,6 @@
 <translation id="2246498165605549352">ឯកសារ​មូលដ្ឋាន</translation>
 <translation id="2247351761944213033">សប្តាហ៍ <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">បទទី <ph name="NUMBER" /></translation>
-<translation id="2307576640803031502">នៅក្នុងបញ្ជី ធាតុ <ph name="INDEX" /> នៃ <ph name="COUNT" /></translation>
 <translation id="2393030564806080191">តម្លៃពណ៌​គោលដប់ប្រាំមួយ</translation>
 <translation id="2398813069815436052">បានបើក​ប្រអប់។</translation>
 <translation id="245932805758469625">ចំនួន​វិនាទី​នៅ​សល់​សម្រាប់​ការចាក់​វីដេអូ</translation>

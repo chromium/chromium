@@ -7,7 +7,6 @@
 <translation id="1178581264944972037">Pausa</translation>
 <translation id="1306460908038601864">Desativado</translation>
 <translation id="1311894908970423688">O valor tem de ser <ph name="VALUE_DATE_OR_TIME" />.</translation>
-<translation id="145015347812617860"><ph name="COUNT" /> itens</translation>
 <translation id="1480676835519562650">vários selecionáveis, <ph name="SELECTED" /> de <ph name="COUNT" /> selecionados.</translation>
 <translation id="1588438908519853928">Normal</translation>
 <translation id="1591562245178063882">Este mês</translation>
@@ -31,7 +30,6 @@
 <translation id="2246498165605549352">Ficheiro local</translation>
 <translation id="2247351761944213033">Semana <ph name="WEEKNUMBER" />, de <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">Faixa <ph name="NUMBER" /></translation>
-<translation id="2307576640803031502">na lista, item <ph name="INDEX" /> de <ph name="COUNT" /></translation>
 <translation id="2393030564806080191">Valor de cor hexadecimal</translation>
 <translation id="2398813069815436052">caixa de diálogo aberta.</translation>
 <translation id="245932805758469625">segundos restantes do vídeo</translation>

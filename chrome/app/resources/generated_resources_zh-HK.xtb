@@ -718,6 +718,7 @@
 <translation id="16620462294541761">很抱歉，系統無法驗證您的密碼，請再試一次。</translation>
 <translation id="166278006618318542">主體公開金鑰演算法</translation>
 <translation id="1662801900924515589">已安裝「<ph name="APP" />」</translation>
+<translation id="1665328953287874063">使用密碼或 PIN 解鎖 <ph name="DEVICE_TYPE" /></translation>
 <translation id="1666232093776384142">停用周邊裝置的資料存取保護</translation>
 <translation id="1667842670298352129">由系統讀出特定文字。請先選取畫面底部的「選取以朗讀」圖示，然後突顯所需文字。您亦可使用鍵盤快速鍵：突顯文字，然後按下搜尋鍵 + S 鍵。</translation>
 <translation id="1668435968811469751">手動註冊</translation>
@@ -1852,6 +1853,7 @@
 <translation id="2691385045260836588">型號</translation>
 <translation id="2691440343905273290">變更輸入法設定</translation>
 <translation id="2693176596243495071">抱歉！出現不明的錯誤。請稍後再試一次，如果問題持續，請與您的管理員聯絡。</translation>
+<translation id="2698147581454716013">這是隨附裝置，因此無法註冊 Kiosk &amp; Signage 升級版。</translation>
 <translation id="2699911226086014512">PIN 操作失敗，錯誤代碼為 <ph name="RETRIES" />。</translation>
 <translation id="2701330563083355633">透過 <ph name="DEVICE_NAME" /> 分享</translation>
 <translation id="2701737434167469065">登入，<ph name="EMAIL" /></translation>
@@ -1930,6 +1932,7 @@
 <translation id="2757338480560142065">請確保您儲存的密碼與 <ph name="WEBSITE" /> 上的密碼相符</translation>
 <translation id="2762441749940182211">已禁止使用相機</translation>
 <translation id="2764786626780673772">VPN 詳細資料</translation>
+<translation id="2764920001292228569">請輸入設定檔名稱</translation>
 <translation id="2765100602267695013">請聯絡流動裝置供應商</translation>
 <translation id="2765217105034171413">小</translation>
 <translation id="2766006623206032690">貼上及前往(&amp;S)</translation>
@@ -3303,6 +3306,7 @@
 <translation id="4065876735068446555">目前使用的網絡 (<ph name="NETWORK_ID" />) 可能要求您前往其登入頁面。</translation>
 <translation id="4066207411788646768">請檢查您的連線，以查看網絡中的可用打印機</translation>
 <translation id="4066945815577305767">密碼逾時</translation>
+<translation id="4067839975993712852">將目前的分頁標示為已讀</translation>
 <translation id="4068776064906523561">已儲存的指紋</translation>
 <translation id="407173827865827707">僅在點擊時</translation>
 <translation id="4072701974556190758">密碼將會儲存在您的 Google 帳戶 (<ph name="ACCOUNT" />) 中，您無需記住密碼。</translation>
@@ -5783,6 +5787,7 @@
 <translation id="6508248480704296122">同 <ph name="NAME_PH" /> 相關</translation>
 <translation id="6508261954199872201">應用程式：<ph name="APP_NAME" /></translation>
 <translation id="6509207748479174212">媒體授權</translation>
+<translation id="6511827214781912955">建議刪除「<ph name="FILENAME" />」，讓此裝置的其他使用者無法查看您的密碼</translation>
 <translation id="6513247462497316522">如果您沒有連線至其他網絡，Google Chrome 將使用流動數據網絡連線。</translation>
 <translation id="6514010653036109809">可用的裝置：</translation>
 <translation id="6514565641373682518">這個網頁已停用滑鼠游標。</translation>
@@ -6064,6 +6069,7 @@
 <translation id="6781978626986383437">已取消 Linux 備份</translation>
 <translation id="6782067259631821405">PIN 無效</translation>
 <translation id="6784523122863989144">支援設定檔</translation>
+<translation id="6785739405821760313">睇緊儲存咗嘅桌面。㩒一下 Tab 鍵就可以瀏覽。</translation>
 <translation id="6785872064505734160">Chrome 的「Google 助理」可助您完成各網站的操作</translation>
 <translation id="6786747875388722282">擴充功能</translation>
 <translation id="6787097042755590313">其他分頁</translation>
@@ -6650,6 +6656,7 @@
 <translation id="7358338787722390626">閂側面板入面嘅搜尋工具列</translation>
 <translation id="735994578317267253">在任何 Chrome OS 裝置上取得您的應用程式和設定等</translation>
 <translation id="7360233684753165754">將 <ph name="PAGE_NUMBER" /> 頁傳送至「<ph name="PRINTER_NAME" />」列印</translation>
+<translation id="7360257054721917104">睇緊儲存咗嘅桌面同範本。㩒一下 Tab 鍵就可以瀏覽。</translation>
 <translation id="7361297102842600584">按一下滑鼠右鍵即可執行 <ph name="PLUGIN_NAME" /></translation>
 <translation id="7362387053578559123">網站可要求連接藍牙裝置</translation>
 <translation id="7363349185727752629">私隱選項指南</translation>
@@ -7303,6 +7310,7 @@
 <translation id="7953669802889559161">輸入方法</translation>
 <translation id="7953955868932471628">管理快速鍵</translation>
 <translation id="7955105108888461311">要求存取權</translation>
+<translation id="7955177647836564772">如果 Smart Lock 已開啟，且手機已解鎖，您將不需要輸入密碼或 PIN</translation>
 <translation id="7956373551960864128">已儲存的打印機</translation>
 <translation id="7957074856830851026">查看裝置資料，例如序號或資產 ID</translation>
 <translation id="7959074893852789871">檔案含有多個憑證，但某些無法匯入：</translation>
@@ -7561,6 +7569,7 @@
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />您的裝置<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195027750202970175">磁碟大小</translation>
 <translation id="8195191503358432289">新增密碼</translation>
+<translation id="8197673340773315084">新增名稱或標籤，例如「工作」或「個人」</translation>
 <translation id="8198456017687137612">正在投放分頁</translation>
 <translation id="8199300056570174101">網絡 (服務) 和裝置屬性元件</translation>
 <translation id="8200772114523450471">繼續</translation>
@@ -7658,6 +7667,7 @@
 <translation id="8284279544186306258">所有 <ph name="WEBSITE_1" /> 網站</translation>
 <translation id="8284326494547611709">字幕</translation>
 <translation id="8286036467436129157">登入</translation>
+<translation id="828642162569365647">此密碼或 PIN 會在此 <ph name="DEVICE_TYPE" /> 上保護您的資料，包括您從手機串流的任何資料。每次要喚醒 <ph name="DEVICE_TYPE" /> 時，您都需要解鎖裝置。</translation>
 <translation id="8287902281644548111">按 API 調用/網址搜尋</translation>
 <translation id="8288032458496410887">解除安裝 <ph name="APP" />…</translation>
 <translation id="8289128870594824098">磁碟大小</translation>

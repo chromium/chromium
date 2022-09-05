@@ -7,7 +7,6 @@
 <translation id="1178581264944972037">Szünet</translation>
 <translation id="1306460908038601864">Ki</translation>
 <translation id="1311894908970423688">Ilyen érték szükséges: <ph name="VALUE_DATE_OR_TIME" />.</translation>
-<translation id="145015347812617860"><ph name="COUNT" /> elem</translation>
 <translation id="1480676835519562650">több is választható, <ph name="COUNT" />/<ph name="SELECTED" /> van kiválasztva.</translation>
 <translation id="1588438908519853928">Normál</translation>
 <translation id="1591562245178063882">Ebben a hónapban</translation>
@@ -31,7 +30,6 @@
 <translation id="2246498165605549352">Helyi fájl</translation>
 <translation id="2247351761944213033"><ph name="WEEKNUMBER" />. hét, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904"><ph name="NUMBER" />. szám</translation>
-<translation id="2307576640803031502">a lista <ph name="INDEX" />/<ph name="COUNT" />. eleme</translation>
 <translation id="2393030564806080191">Szín hexadecimális értéke</translation>
 <translation id="2398813069815436052">párbeszédpanel megnyitva.</translation>
 <translation id="245932805758469625">a videóból hátralévő másodpercek száma</translation>

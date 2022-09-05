@@ -7,7 +7,6 @@
 <translation id="1178581264944972037">일시중지</translation>
 <translation id="1306460908038601864">꺼짐</translation>
 <translation id="1311894908970423688">값이 <ph name="VALUE_DATE_OR_TIME" />여야 합니다.</translation>
-<translation id="145015347812617860">항목 <ph name="COUNT" />개</translation>
 <translation id="1480676835519562650">여러 항목 선택 가능, <ph name="COUNT" />개 중 <ph name="SELECTED" />개 선택됨.</translation>
 <translation id="1588438908519853928">일반</translation>
 <translation id="1591562245178063882">이번 달</translation>
@@ -31,7 +30,6 @@
 <translation id="2246498165605549352">로컬 파일</translation>
 <translation id="2247351761944213033"><ph name="YEAR" />, <ph name="WEEKNUMBER" />번째 주</translation>
 <translation id="2277199496770840904"><ph name="NUMBER" />번 트랙</translation>
-<translation id="2307576640803031502">목록의 항목 <ph name="COUNT" />개 중 <ph name="INDEX" />번째</translation>
 <translation id="2393030564806080191">16진수 색상 값</translation>
 <translation id="2398813069815436052">대화상자가 열렸습니다.</translation>
 <translation id="245932805758469625">동영상 남은 시간</translation>
