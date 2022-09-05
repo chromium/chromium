@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
-// Next MinVersion: 54
+// Next MinVersion: 55
 
 module arc.mojom;
 
@@ -42,6 +42,9 @@ struct AppInfo {
 
   // Size of app and associated data in bytes.
   [MinVersion=52] AppStorage? app_storage;
+  // Option, only for ARC upgrade. True if the app is fixing up.
+  // During fixup, it cannot be launched.
+  [MinVersion=54] bool need_fixup;
 };
 
 // Describes the data required to install a web app.

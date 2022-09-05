@@ -106,6 +106,7 @@ class ArcAppListPrefs : public KeyedService,
             bool show_in_launcher,
             bool shortcut,
             bool launchable,
+            bool need_fixup,
             absl::optional<uint64_t> app_size_in_bytes,
             absl::optional<uint64_t> data_size_in_bytes);
     AppInfo(const AppInfo& other);
@@ -142,6 +143,9 @@ class ArcAppListPrefs : public KeyedService,
     // Whether app can be launched. In some case we cannot launch an app because
     // it requires parameters we might not provide.
     bool launchable;
+    // Whether app need fixup. When ARC large version upgrade e.g. P to R, app
+    // may need fixup.
+    bool need_fixup;
 
     // Storage size of app and it's related data.
     absl::optional<uint64_t> app_size_in_bytes;
@@ -534,6 +538,7 @@ class ArcAppListPrefs : public KeyedService,
                          const bool suspended,
                          const bool shortcut,
                          const bool launchable,
+                         const bool need_fixup,
                          const WindowLayout& initial_window_layout,
                          const absl::optional<uint64_t> app_size_in_bytes,
                          const absl::optional<uint64_t> data_size_in_bytes);

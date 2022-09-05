@@ -312,7 +312,7 @@ bool LaunchAppWithIntent(content::BrowserContext* context,
   ArcAppListPrefs* const prefs = ArcAppListPrefs::Get(context);
   std::unique_ptr<ArcAppListPrefs::AppInfo> app_info = prefs->GetApp(app_id);
   absl::optional<std::string> launch_intent_to_send = launch_intent;
-  if (app_info && !app_info->ready) {
+  if (app_info && (!app_info->ready || app_info->need_fixup)) {
     if (!IsArcPlayStoreEnabledForProfile(profile)) {
       if (prefs->IsDefault(app_id)) {
         // The setting can fail if the preference is managed.  However, the
@@ -351,6 +351,7 @@ bool LaunchAppWithIntent(content::BrowserContext* context,
       }
     }
 
+    // TODO(sstan): Triage ghost window for different launch source.
     // App launched by user rather than full restore.
     if (window_info &&
         window_info->window_id <=
