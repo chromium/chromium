@@ -2,21 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/app_list/search/search_metrics_observer.h"
+#include "chrome/browser/ui/app_list/search/search_metrics_manager.h"
 
-#include "base/containers/flat_set.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/app_list/search/chrome_search_result.h"
-#include "chrome/browser/ui/app_list/search/ranking/types.h"
-#include "chrome/browser/ui/app_list/search/search_controller.h"
 #include "components/drive/drive_pref_names.h"
 #include "components/prefs/pref_service.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace app_list {
 namespace {
@@ -152,8 +146,8 @@ void LogContinueMetrics(const std::vector<Result>& results) {
 
 }  // namespace
 
-SearchMetricsObserver::SearchMetricsObserver(Profile* profile,
-                                             ash::AppListNotifier* notifier) {
+SearchMetricsManager::SearchMetricsManager(Profile* profile,
+                                           ash::AppListNotifier* notifier) {
   if (notifier) {
     observation_.Observe(notifier);
   } else {
@@ -164,11 +158,11 @@ SearchMetricsObserver::SearchMetricsObserver(Profile* profile,
     LogIsDriveEnabled(profile);
 }
 
-SearchMetricsObserver::~SearchMetricsObserver() = default;
+SearchMetricsManager::~SearchMetricsManager() = default;
 
-void SearchMetricsObserver::OnImpression(Location location,
-                                         const std::vector<Result>& results,
-                                         const std::u16string& query) {
+void SearchMetricsManager::OnImpression(Location location,
+                                        const std::vector<Result>& results,
+                                        const std::u16string& query) {
   LogTypeActions("Impression", location, query, TypeSet(results));
   if (!results.empty())
     LogViewAction(location, query, Action::kImpression);
@@ -176,18 +170,18 @@ void SearchMetricsObserver::OnImpression(Location location,
     LogContinueMetrics(results);
 }
 
-void SearchMetricsObserver::OnAbandon(Location location,
-                                      const std::vector<Result>& results,
-                                      const std::u16string& query) {
+void SearchMetricsManager::OnAbandon(Location location,
+                                     const std::vector<Result>& results,
+                                     const std::u16string& query) {
   LogTypeActions("Abandon", location, query, TypeSet(results));
   if (!results.empty())
     LogViewAction(location, query, Action::kAbandon);
 }
 
-void SearchMetricsObserver::OnLaunch(Location location,
-                                     const Result& launched,
-                                     const std::vector<Result>& shown,
-                                     const std::u16string& query) {
+void SearchMetricsManager::OnLaunch(Location location,
+                                    const Result& launched,
+                                    const std::vector<Result>& shown,
+                                    const std::u16string& query) {
   LogViewAction(location, query, Action::kLaunch);
 
   // Record an ignore for all result types in this view. If other views are
@@ -214,9 +208,9 @@ void SearchMetricsObserver::OnLaunch(Location location,
   base::UmaHistogramExactLinear(histogram_name, launched_index, 50);
 }
 
-void SearchMetricsObserver::OnIgnore(Location location,
-                                     const std::vector<Result>& results,
-                                     const std::u16string& query) {
+void SearchMetricsManager::OnIgnore(Location location,
+                                    const std::vector<Result>& results,
+                                    const std::u16string& query) {
   // We have no two concurrently displayed views showing the same result types,
   // so it's safe to log an ignore for all result types here.
   LogTypeActions("Ignore", location, query, TypeSet(results));

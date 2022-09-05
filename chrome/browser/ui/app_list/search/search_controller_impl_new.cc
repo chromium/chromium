@@ -24,7 +24,7 @@
 #include "chrome/browser/ui/app_list/search/cros_action_history/cros_action_recorder.h"
 #include "chrome/browser/ui/app_list/search/ranking/ranker_delegate.h"
 #include "chrome/browser/ui/app_list/search/ranking/scoring.h"
-#include "chrome/browser/ui/app_list/search/search_metrics_observer.h"
+#include "chrome/browser/ui/app_list/search/search_metrics_manager.h"
 #include "chrome/browser/ui/app_list/search/search_provider.h"
 #include "components/metrics/structured/structured_events.h"
 #include "components/prefs/pref_service.h"
@@ -56,8 +56,8 @@ SearchControllerImplNew::SearchControllerImplNew(
           base::BindRepeating(&SearchControllerImplNew::OnBurnInPeriodElapsed,
                               base::Unretained(this)))),
       ranker_(std::make_unique<RankerDelegate>(profile, this)),
-      metrics_observer_(
-          std::make_unique<SearchMetricsObserver>(profile, notifier)),
+      metrics_manager_(
+          std::make_unique<SearchMetricsManager>(profile, notifier)),
       model_updater_(model_updater),
       list_controller_(list_controller) {
   DCHECK(app_list_features::IsCategoricalSearchEnabled());

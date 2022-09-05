@@ -34,7 +34,7 @@ enum class AppListSearchResultType;
 
 namespace app_list {
 
-class SearchMetricsObserver;
+class SearchMetricsManager;
 class SearchProvider;
 enum class RankingItemType;
 
@@ -144,7 +144,7 @@ class SearchControllerImplNew : public SearchController {
   // If set, called when results set by a provider change.
   ResultsChangedCallback results_changed_callback_;
 
-  std::unique_ptr<SearchMetricsObserver> metrics_observer_;
+  std::unique_ptr<SearchMetricsManager> metrics_manager_;
   using Providers = std::vector<std::unique_ptr<SearchProvider>>;
   Providers providers_;
   AppListModelUpdater* const model_updater_;

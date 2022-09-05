@@ -16,8 +16,7 @@
 #include "chrome/browser/ui/app_list/test/test_app_list_controller_delegate.h"
 #include "chrome/test/base/chrome_ash_test_base.h"
 
-namespace app_list {
-namespace test {
+namespace app_list::test {
 
 using ::test::TestAppListControllerDelegate;
 
@@ -91,5 +90,4 @@ TEST_F(SearchControllerImplTest,
   }
 }
 
-}  // namespace test
-}  // namespace app_list
+}  // namespace app_list::test
