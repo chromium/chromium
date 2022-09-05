@@ -309,8 +309,9 @@ enum PaiFlowState {
 
 // Names and values match the CATEGORY_ constants on
 // android.content.pm.ApplicationInfo.
+[Extensible]
 enum AppCategory {
-  kUndefined = -1,
+  [Default] kUndefined = -1,
   kGame = 0,
   kAudio = 1,
   kVideo = 2,
