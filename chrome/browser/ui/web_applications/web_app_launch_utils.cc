@@ -477,13 +477,10 @@ void RecordMetrics(const AppId& app_id,
                    content::WebContents* web_contents) {
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
-  // TODO(crbug.com/1014328): Populate WebApp metrics instead of Extensions.
-  if (container == apps::LaunchContainer::kLaunchContainerTab) {
-    UMA_HISTOGRAM_ENUMERATION("Extensions.AppTabLaunchType",
-                              extensions::LAUNCH_TYPE_REGULAR, 100);
-  } else if (container == apps::LaunchContainer::kLaunchContainerWindow) {
+  if (container == apps::LaunchContainer::kLaunchContainerWindow)
     RecordAppWindowLaunch(profile, app_id);
-  }
+
+  // TODO(crbug.com/1014328): Populate WebApp metrics instead of Extensions.
   UMA_HISTOGRAM_ENUMERATION("Extensions.BookmarkAppLaunchSource",
                             launch_source);
   UMA_HISTOGRAM_ENUMERATION("Extensions.BookmarkAppLaunchContainer", container);

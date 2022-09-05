@@ -130,26 +130,9 @@ void ExpectLaunchCounts(const base::HistogramTester& tester,
   tester.ExpectTotalCount("Extensions.BookmarkAppLaunchContainer",
                           windowLaunches + tabLaunches);
 
-  if (tabLaunches > 0) {
-    tester.ExpectUniqueSample("Extensions.AppTabLaunchType",
-                              extensions::LAUNCH_TYPE_REGULAR, tabLaunches);
-  } else {
-    EXPECT_EQ(nullptr, base::StatisticsRecorder::FindHistogram(
-                           "Extensions.AppTabLaunchType"));
-  }
-
   tester.ExpectUniqueSample("Extensions.BookmarkAppLaunchSource",
                             extensions::AppLaunchSource::kSourceTest,
                             windowLaunches + tabLaunches);
-
-  tester.ExpectBucketCount("Extensions.BookmarkAppLaunchContainer",
-                           apps::LaunchContainer::kLaunchContainerWindow,
-                           windowLaunches);
-  tester.ExpectBucketCount("Extensions.BookmarkAppLaunchContainer",
-                           apps::LaunchContainer::kLaunchContainerTab,
-                           tabLaunches);
-  tester.ExpectTotalCount("Extensions.BookmarkAppLaunchContainer",
-                          windowLaunches + tabLaunches);
 }
 
 }  // namespace
