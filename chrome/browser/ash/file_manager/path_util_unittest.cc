@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "ash/components/arc/arc_features.h"
 #include "ash/components/arc/arc_util.h"
 #include "ash/components/arc/session/arc_bridge_service.h"
 #include "ash/components/arc/session/arc_service_manager.h"
@@ -1069,6 +1070,48 @@ TEST_F(FileManagerPathUtilConvertUrlTest,
       std::vector<FileSystemURL>{
           CreateExternalURL(base::FilePath::FromUTF8Unsafe(
               "/run/arc/sdcard/read/emulated/0/a/b/c"))},
+      base::BindOnce(
+          [](base::RunLoop* run_loop, const std::vector<GURL>& urls,
+             const std::vector<base::FilePath>& paths_to_share) {
+            run_loop->Quit();
+            ASSERT_EQ(1U, urls.size());
+            EXPECT_EQ(GURL(), urls[0]);  // Invalid URL.
+          },
+          &run_loop));
+}
+
+TEST_F(FileManagerPathUtilConvertUrlTest,
+       ConvertToContentUrls_AndroidFiles_GuestOs) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      arc::kEnableVirtioBlkForData};
+  base::RunLoop run_loop;
+  ConvertToContentUrls(
+      ProfileManager::GetPrimaryUserProfile(),
+      std::vector<FileSystemURL>{
+          CreateExternalURL(base::FilePath::FromUTF8Unsafe(
+              "/media/fuse/android_files/Pictures/a/b.jpg"))},
+      base::BindOnce(
+          [](base::RunLoop* run_loop, const std::vector<GURL>& urls,
+             const std::vector<base::FilePath>& paths_to_share) {
+            run_loop->Quit();
+            ASSERT_EQ(1U, urls.size());
+            EXPECT_EQ(GURL("content://org.chromium.arc.volumeprovider/"
+                           "external_files/Pictures/a/b.jpg"),
+                      urls[0]);
+          },
+          &run_loop));
+}
+
+TEST_F(FileManagerPathUtilConvertUrlTest,
+       ConvertToContentUrls_InvalidAndroidFiles_GuestOs) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      arc::kEnableVirtioBlkForData};
+  base::RunLoop run_loop;
+  ConvertToContentUrls(
+      ProfileManager::GetPrimaryUserProfile(),
+      std::vector<FileSystemURL>{
+          CreateExternalURL(base::FilePath::FromUTF8Unsafe(
+              "/run/arc/sdcard/write/emulated/0/Pictures/a/b.jpg"))},
       base::BindOnce(
           [](base::RunLoop* run_loop, const std::vector<GURL>& urls,
              const std::vector<base::FilePath>& paths_to_share) {

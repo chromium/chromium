@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "ash/components/arc/arc_features.h"
 #include "ash/components/arc/arc_util.h"
 #include "base/barrier_closure.h"
 #include "base/base64.h"
@@ -253,6 +254,9 @@ const base::FilePath::CharType kRemovableMediaPath[] =
 const base::FilePath::CharType kAndroidFilesPath[] =
     FILE_PATH_LITERAL("/run/arc/sdcard/write/emulated/0");
 
+const base::FilePath::CharType kGuestOsAndroidFilesPath[] =
+    FILE_PATH_LITERAL("/media/fuse/android_files");
+
 const base::FilePath::CharType kSystemFontsPath[] =
     FILE_PATH_LITERAL("/usr/share/fonts");
 
@@ -328,6 +332,8 @@ base::FilePath GetAndroidFilesPath() {
   base::FilePath path;
   if (mount_points->GetRegisteredPath(mount_point_name, &path))
     return path;
+  if (base::FeatureList::IsEnabled(arc::kEnableVirtioBlkForData))
+    return base::FilePath(file_manager::util::kGuestOsAndroidFilesPath);
   return base::FilePath(file_manager::util::kAndroidFilesPath);
 }
 
@@ -673,10 +679,10 @@ bool ConvertPathToArcUrl(const base::FilePath& path,
     return true;
   }
 
-  // Convert paths under Android files root (/run/arc/sdcard/write/emulated/0).
+  // Convert paths under Android files root (e.g.,
+  // /run/arc/sdcard/write/emulated/0).
   result_path = base::FilePath(kArcExternalFilesRoot);
-  if (base::FilePath(kAndroidFilesPath)
-          .AppendRelativePath(path, &result_path)) {
+  if (GetAndroidFilesPath().AppendRelativePath(path, &result_path)) {
     *arc_url_out = GURL(kArcStorageContentUrlPrefix)
                        .Resolve(base::EscapePath(result_path.AsUTF8Unsafe()));
     return true;
@@ -949,7 +955,7 @@ std::string GetPathDisplayTextForSettings(Profile* profile,
               .Append(l10n_util::GetStringUTF8(
                   IDS_FILE_BROWSER_DRIVE_SHARED_WITH_ME_COLLECTION_LABEL))
               .value())) {
-  } else if (ReplacePrefix(&result, kAndroidFilesPath,
+  } else if (ReplacePrefix(&result, GetAndroidFilesPath().value(),
                            l10n_util::GetStringUTF8(
                                IDS_FILE_BROWSER_ANDROID_FILES_ROOT_LABEL))) {
   } else if (ReplacePrefix(&result, GetCrostiniMountDirectory(profile).value(),
