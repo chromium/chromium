@@ -139,8 +139,12 @@ bool CouldSuggestWithSurroundingText(const base::StringPiece16& text,
          text.size() >= kMinimumNumberOfCharsToProduceSuggestion;
 }
 
+bool u16_isalpha(char16_t ch) {
+  return (ch >= u'A' && ch <= u'Z') || (ch >= u'a' && ch <= u'z');
+}
+
 bool WouldBeInCompletionMode(const base::StringPiece16& text) {
-  return !text.empty() && std::isalpha(text.back());
+  return !text.empty() && u16_isalpha(text.back());
 }
 
 // TODO(crbug/1146266): Add DismissedAccuracy metric back in.
