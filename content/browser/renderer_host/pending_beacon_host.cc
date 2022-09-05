@@ -25,6 +25,8 @@ PendingBeaconHost::PendingBeaconHost(
       service_(service) {
   DCHECK(shared_url_factory_);
   DCHECK(service_);
+
+  net::NetworkChangeNotifier::AddNetworkChangeObserver(this);
 }
 
 void PendingBeaconHost::CreateBeacon(
@@ -37,6 +39,7 @@ void PendingBeaconHost::CreateBeacon(
 }
 
 PendingBeaconHost::~PendingBeaconHost() {
+  net::NetworkChangeNotifier::RemoveNetworkChangeObserver(this);
   service_->SendBeacons(beacons_, shared_url_factory_.get());
 }
 
@@ -66,6 +69,17 @@ void PendingBeaconHost::SendBeacon(Beacon* beacon) {
 void PendingBeaconHost::SetReceiver(
     mojo::PendingReceiver<blink::mojom::PendingBeaconHost> receiver) {
   receiver_.Bind(std::move(receiver));
+}
+
+void PendingBeaconHost::OnNetworkChanged(
+    net::NetworkChangeNotifier::ConnectionType type) {
+  // Every network change will be preceded by a call with CONNECTION_NONE, and
+  // NetworkChangeNotifier suggests that destructive actions be performed in
+  // the call with CONNECTION_NONE, so clear beacons only in this case.
+  if (type != net::NetworkChangeNotifier::ConnectionType::CONNECTION_NONE)
+    return;
+
+  beacons_.clear();
 }
 
 DOCUMENT_USER_DATA_KEY_IMPL(PendingBeaconHost);

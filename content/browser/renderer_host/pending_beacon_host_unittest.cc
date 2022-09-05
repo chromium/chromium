@@ -8,10 +8,12 @@
 
 #include "base/files/file_path.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "content/browser/renderer_host/pending_beacon_service.h"
 #include "content/public/test/test_renderer_host.h"
 #include "mojo/public/cpp/system/functions.h"
+#include "net/base/network_change_notifier.h"
 #include "net/http/http_request_headers.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
@@ -39,6 +41,8 @@ class PendingBeaconHostTestBase
   // The network requests made by the returned PendingBeaconHost will go through
   // `test_url_loader_factory_` which is useful for examining requests.
   PendingBeaconHost* CreateHost() {
+    network_change_notifier_ = net::NetworkChangeNotifier::CreateIfNeeded();
+
     test_url_loader_factory_ =
         std::make_unique<network::TestURLLoaderFactory>();
     NavigateAndCommit(GURL(kBeaconPageURL));
@@ -56,6 +60,10 @@ class PendingBeaconHostTestBase
     return blink::mojom::BeaconMethod::kPost;
   }
 
+  static GURL CreateBeaconTargetURL(size_t i) {
+    return GURL(base::StringPrintf("%s/%zu", kBeaconTargetURL, i));
+  }
+
   // Verifies if the total number of network requests sent via
   // `test_url_loader_factory_` equals to `expected`.
   void ExpectTotalNetworkRequests(const base::Location& location,
@@ -64,7 +72,9 @@ class PendingBeaconHostTestBase
         << location.ToString();
   }
 
+  static constexpr char kBeaconTargetURL[] = "/test_send_beacon";
   static constexpr char kBeaconPageURL[] = "http://test-pending-beacon";
+  std::unique_ptr<net::NetworkChangeNotifier> network_change_notifier_;
   std::unique_ptr<network::TestURLLoaderFactory> test_url_loader_factory_;
 };
 
@@ -104,7 +114,7 @@ INSTANTIATE_TEST_SUITE_P(
 
 TEST_P(PendingBeaconHostTest, SendBeacon) {
   const std::string method = GetParam();
-  const auto url = GURL("/test_send_beacon");
+  const auto url = GURL(kBeaconTargetURL);
   auto* host = CreateHost();
   mojo::Remote<blink::mojom::PendingBeacon> remote;
   auto receiver = remote.BindNewPipeAndPassReceiver();
@@ -117,7 +127,6 @@ TEST_P(PendingBeaconHostTest, SendBeacon) {
 
 TEST_P(PendingBeaconHostTest, SendOneOfBeacons) {
   const std::string method = GetParam();
-  const auto* url = "/test_send_beacon";
   const size_t total = 5;
 
   // Sends out only the 3rd of 5 created beacons.
@@ -125,19 +134,19 @@ TEST_P(PendingBeaconHostTest, SendOneOfBeacons) {
   std::vector<mojo::Remote<blink::mojom::PendingBeacon>> remotes(total);
   for (size_t i = 0; i < remotes.size(); i++) {
     auto receiver = remotes[i].BindNewPipeAndPassReceiver();
-    host->CreateBeacon(std::move(receiver), GURL(url + i),
+    host->CreateBeacon(std::move(receiver), CreateBeaconTargetURL(i),
                        ToBeaconMethod(method));
   }
 
   const size_t sent_beacon_i = 2;
-  SetExpectNetworkRequest(FROM_HERE, method, GURL(url + sent_beacon_i));
+  SetExpectNetworkRequest(FROM_HERE, method,
+                          CreateBeaconTargetURL(sent_beacon_i));
   remotes[sent_beacon_i]->SendNow();
   ExpectTotalNetworkRequests(FROM_HERE, 1);
 }
 
 TEST_P(PendingBeaconHostTest, SendBeacons) {
   const std::string method = GetParam();
-  const auto* url = "/test_send_beacon";
   const size_t total = 5;
 
   // Sends out all 5 created beacons, in reversed order.
@@ -145,11 +154,11 @@ TEST_P(PendingBeaconHostTest, SendBeacons) {
   std::vector<mojo::Remote<blink::mojom::PendingBeacon>> remotes(total);
   for (size_t i = 0; i < remotes.size(); i++) {
     auto receiver = remotes[i].BindNewPipeAndPassReceiver();
-    host->CreateBeacon(std::move(receiver), GURL(url + i),
+    host->CreateBeacon(std::move(receiver), CreateBeaconTargetURL(i),
                        ToBeaconMethod(method));
   }
   for (int i = remotes.size() - 1; i >= 0; i--) {
-    SetExpectNetworkRequest(FROM_HERE, method, GURL(url + i));
+    SetExpectNetworkRequest(FROM_HERE, method, CreateBeaconTargetURL(i));
     remotes[i]->SendNow();
   }
   ExpectTotalNetworkRequests(FROM_HERE, total);
@@ -157,7 +166,7 @@ TEST_P(PendingBeaconHostTest, SendBeacons) {
 
 TEST_P(PendingBeaconHostTest, DeleteAndSendBeacon) {
   const std::string method = GetParam();
-  const auto url = GURL("/test_send_beacon");
+  const auto url = GURL(kBeaconTargetURL);
   auto* host = CreateHost();
   mojo::Remote<blink::mojom::PendingBeacon> remote;
   auto receiver = remote.BindNewPipeAndPassReceiver();
@@ -171,7 +180,6 @@ TEST_P(PendingBeaconHostTest, DeleteAndSendBeacon) {
 
 TEST_P(PendingBeaconHostTest, DeleteOneAndSendOtherBeacons) {
   const std::string method = GetParam();
-  const auto* url = "/test_send_beacon";
   const size_t total = 5;
 
   // Creates 5 beacons. Deletes the 3rd of them, and sends out the others.
@@ -179,7 +187,7 @@ TEST_P(PendingBeaconHostTest, DeleteOneAndSendOtherBeacons) {
   std::vector<mojo::Remote<blink::mojom::PendingBeacon>> remotes(total);
   for (size_t i = 0; i < remotes.size(); i++) {
     auto receiver = remotes[i].BindNewPipeAndPassReceiver();
-    host->CreateBeacon(std::move(receiver), GURL(url + i),
+    host->CreateBeacon(std::move(receiver), CreateBeaconTargetURL(i),
                        ToBeaconMethod(method));
   }
 
@@ -188,11 +196,45 @@ TEST_P(PendingBeaconHostTest, DeleteOneAndSendOtherBeacons) {
 
   for (int i = remotes.size() - 1; i >= 0; i--) {
     if (i != deleted_beacon_i) {
-      SetExpectNetworkRequest(FROM_HERE, method, GURL(url + i));
+      SetExpectNetworkRequest(FROM_HERE, method, CreateBeaconTargetURL(i));
     }
     remotes[i]->SendNow();
   }
   ExpectTotalNetworkRequests(FROM_HERE, total - 1);
+}
+
+class PendingBeaconHostNetworkChangeTest : public PendingBeaconHostTestBase {
+ protected:
+  void SimulateNetworkChange() {
+    net::NetworkChangeNotifier::NotifyObserversOfNetworkChangeForTests(
+        net::NetworkChangeNotifier::CONNECTION_NONE);
+    // The network change notifier notifies of changes asynchronously.
+    base::RunLoop().RunUntilIdle();
+    net::NetworkChangeNotifier::NotifyObserversOfNetworkChangeForTests(
+        net::NetworkChangeNotifier::CONNECTION_WIFI);
+    // The network change notifier notifies of changes asynchronously.
+    base::RunLoop().RunUntilIdle();
+  }
+};
+
+TEST_F(PendingBeaconHostNetworkChangeTest, ClearAll) {
+  // Creates 5 beacons
+  const int total = 5;
+  auto* host = CreateHost();
+  std::vector<mojo::Remote<blink::mojom::PendingBeacon>> remotes(total);
+  for (auto& remote : remotes) {
+    auto receiver = remote.BindNewPipeAndPassReceiver();
+    host->CreateBeacon(std::move(receiver), GURL(kBeaconTargetURL),
+                       ToBeaconMethod(net::HttpRequestHeaders::kGetMethod));
+  }
+
+  SimulateNetworkChange();
+  // Sends out all beacons.
+  for (auto& remote : remotes) {
+    remote->SendNow();
+  }
+
+  ExpectTotalNetworkRequests(FROM_HERE, 0);
 }
 
 class BeaconTestBase : public PendingBeaconHostTestBase {
