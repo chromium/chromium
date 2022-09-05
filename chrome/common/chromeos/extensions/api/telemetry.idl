@@ -113,19 +113,16 @@ namespace os.telemetry {
   callback StatefulPartitionInfoCallback = void (StatefulPartitionInfo statefulPartitionInfo);
 
   interface Functions {
-    // Retrieves battery info.
     [supportsPromises] static void getBatteryInfo(BatteryInfoCallback callback);
 
     [supportsPromises] static void getCpuInfo(CpuInfoCallback callback);
 
     [supportsPromises] static void getMemoryInfo(MemoryInfoCallback callback);
 
-    // Retrieves OEM data.
     [supportsPromises] static void getOemData(OemDataCallback callback);
 
     [supportsPromises] static void getOsVersionInfo(OsVersionInfoCallback callback);
 
-    // Retrieves VPD info.
     [supportsPromises] static void getVpdInfo(VpdInfoCallback callback);
 
     [supportsPromises] static void getStatefulPartitionInfo(StatefulPartitionInfoCallback callback);

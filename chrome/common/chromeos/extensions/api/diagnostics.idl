@@ -128,62 +128,46 @@ namespace os.diagnostics {
   callback RunRoutineCallback = void (RunRoutineResponse response);
 
   interface Functions {
-    // Starts battery capacity routine.
     [supportsPromises] static void getAvailableRoutines(GetAvailableRoutinesCallback callback);
 
-    // Get routine update
     [supportsPromises] static void getRoutineUpdate(GetRoutineUpdateRequest request,
                                                     GetRoutineUpdateCallback callback);
 
-    // Starts AcPower routine.
     [supportsPromises] static void runAcPowerRoutine(RunAcPowerRoutineRequest request,
                                                      RunRoutineCallback callback);
 
-    // Starts battery capacity routine.
     [supportsPromises] static void runBatteryCapacityRoutine(RunRoutineCallback callback);
 
-    // Starts battery charge routine.
     [supportsPromises] static void runBatteryChargeRoutine(RunBatteryChargeRoutineRequest request,
                                                            RunRoutineCallback callback);
 
-    // Starts battery discharge routine.
     [supportsPromises] static void runBatteryDischargeRoutine(RunBatteryDischargeRoutineRequest request,
                                                               RunRoutineCallback callback);
 
-    // Starts battery health routine.
     [supportsPromises] static void runBatteryHealthRoutine(RunRoutineCallback callback);
 
-    // Starts CPU cache routine.
     [supportsPromises] static void runCpuCacheRoutine(RunCpuRoutineRequest request,
                                                       RunRoutineCallback callback);
 
-    // Starts CPU floating point accuracy routine.
     [supportsPromises] static void runCpuFloatingPointAccuracyRoutine(RunCpuRoutineRequest request,
                                                                       RunRoutineCallback callback);
 
-    // Starts CPU prime search routine.
     [supportsPromises] static void runCpuPrimeSearchRoutine(RunCpuRoutineRequest request,
                                                             RunRoutineCallback callback);
 
-    // Starts CPU stress routine.
     [supportsPromises] static void runCpuStressRoutine(RunCpuRoutineRequest request,
                                                        RunRoutineCallback callback);
 
-    // Starts disk read routine.
     [supportsPromises] static void runDiskReadRoutine(RunDiskReadRequest request,
                                                       RunRoutineCallback callback);
 
-    // Starts LAN connectivitty routine.
     [supportsPromises] static void runLanConnectivityRoutine(RunRoutineCallback callback);
 
-    // Starts memory routine.
     [supportsPromises] static void runMemoryRoutine(RunRoutineCallback callback);
 
-    // Starts NVMe wear level routine.
     [supportsPromises] static void runNvmeWearLevelRoutine(RunNvmeWearLevelRequest request,
                                                            RunRoutineCallback callback);
 
-    // Starts SmartctlCheck routine.
     [supportsPromises] static void runSmartctlCheckRoutine(RunRoutineCallback callback);
   };
 };
