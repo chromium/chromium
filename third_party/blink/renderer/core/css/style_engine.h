@@ -268,6 +268,8 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   void SetStyleAffectedByLayout() { style_affected_by_layout_ = true; }
   bool StyleAffectedByLayout() { return style_affected_by_layout_; }
 
+  bool StyleMaybeAffectedByLayout(const Node&);
+
   bool SkippedContainerRecalc() const { return skipped_container_recalc_ != 0; }
   void IncrementSkippedContainerRecalc() { ++skipped_container_recalc_; }
   void DecrementSkippedContainerRecalc() { --skipped_container_recalc_; }

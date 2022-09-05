@@ -60,25 +60,13 @@ class ParentLayoutUpgrade : public LayoutUpgrade {
   HTMLFrameOwnerElement& owner_;
 };
 
-// Upgrades whenever the (inclusive) ancestor chain has a relevant upgrade
-// reason. Suitable when the style of a specific node will be accessed.
+// Upgrades whenever the (inclusive) ancestor chain contains an interleaving
+// root. Suitable when the style of a specific node will be accessed.
 class NodeLayoutUpgrade : public LayoutUpgrade {
   STACK_ALLOCATED();
 
  public:
   explicit NodeLayoutUpgrade(const Node& node) : node_(node) {}
-
-  using Reasons = unsigned;
-
-  enum Reason {
-    // The current ComputedStyle of this node depends on size container queries.
-    kDependsOnSizeContainerQueries = 1 << 0,
-    // The node is an interleaving root. This means that we *may* enter
-    // interleaved style recalc (via layout) on this node.
-    kInterleavingRoot = 1 << 1,
-  };
-
-  static Reasons GetReasons(const Node&);
 
   bool ShouldUpgrade() override;
 

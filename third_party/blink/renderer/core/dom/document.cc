@@ -2307,19 +2307,16 @@ bool Document::NeedsLayoutTreeUpdateForNodeIncludingDisplayLocked(
   if (!analyze)
     analyze = !DisplayLockUtilities::IsUnlockedQuickCheck(node);
 
-  // If style may depend on layout (which is the case for container queries),
-  // then we need to analyze the (inclusive) ancestor chain in order to figure
-  // out if the call to UpdateStyleAndLayoutTree needs an upgrade [1].
-  //
-  // Note that NeedsLayout may be marked without any style-dirtiness, and
-  // also note that style-dirtiness on elements unrelated to this ancestor
-  // chain may *cause* NeedsLayout.
-  //
-  // [1] See blink::LayoutUpgrade
+  bool maybe_affected_by_layout =
+      GetStyleEngine().StyleMaybeAffectedByLayout(node);
+  // Even if we don't need layout *now*, any dirty style may invalidate layout.
   bool maybe_needs_layout =
       (update != StyleAndLayoutTreeUpdate::kNone) || View()->NeedsLayout();
+  bool needs_update_inside_interleaving_root =
+      maybe_affected_by_layout && maybe_needs_layout;
+
   if (!analyze)
-    analyze = GetStyleEngine().StyleAffectedByLayout() && maybe_needs_layout;
+    analyze = needs_update_inside_interleaving_root;
 
   if (!analyze) {
     DCHECK_EQ(StyleAndLayoutTreeUpdate::kNone, update);
@@ -2332,29 +2329,13 @@ bool Document::NeedsLayoutTreeUpdateForNodeIncludingDisplayLocked(
       return !style->IsEnsuredOutsideFlatTree();
     is_dirty = true;
   }
-
-  // NodeLayoutUpgrade::GetReasons returns a set of possible upgrade
-  // reasons [1] for the provided node, but not all of those possible reasons
-  // should actually be treated as dirtying in all situations. (Keep reading).
-  //
-  // [1] See blink::NodeLayoutUpgrade::Reasons
-  NodeLayoutUpgrade::Reasons upgrade_mask =
-      maybe_needs_layout ? NodeLayoutUpgrade::kDependsOnSizeContainerQueries
-                         : 0;
-
-  if (NodeLayoutUpgrade::GetReasons(node) & upgrade_mask)
+  // For pseudo-style requests, we may have to update pseudo-elements of the
+  // interleaving root itself. Hence we also check `node`, even though it's
+  // not inside its own interleaving root.
+  if (ComputedStyle::IsInterleavingRoot(node.GetComputedStyle()) &&
+      needs_update_inside_interleaving_root) {
     is_dirty = true;
-
-  // If `node` does not have a style, we're typically in display:none. In this
-  // case, we can not be sure that we *don't* require a layout upgrade, since
-  // this information would be stored on `ComputedStyle`. Hence we treat any
-  // style-less node as requiring an upgrade if the node could possibly be
-  // affected by layout (which is only the case inside an interleaving root).
-  if (ComputedStyle::IsNullOrEnsured(node.GetComputedStyle()) &&
-      maybe_needs_layout) {
-    upgrade_mask |= NodeLayoutUpgrade::kInterleavingRoot;
   }
-
   for (const ContainerNode* ancestor = LayoutTreeBuilderTraversal::Parent(node);
        ancestor; ancestor = LayoutTreeBuilderTraversal::Parent(*ancestor)) {
     if (ShadowRoot* root = ancestor->GetShadowRoot()) {
@@ -2367,8 +2348,10 @@ bool Document::NeedsLayoutTreeUpdateForNodeIncludingDisplayLocked(
         (ancestor->NeedsAdjacentStyleRecalc() && !ignore_adjacent_style)) {
       is_dirty = true;
     }
-    if (NodeLayoutUpgrade::GetReasons(*ancestor) & upgrade_mask)
+    if (ComputedStyle::IsInterleavingRoot(ancestor->GetComputedStyle()) &&
+        needs_update_inside_interleaving_root) {
       is_dirty = true;
+    }
     if (is_dirty) {
       if (auto* style = ancestor->GetComputedStyle())
         return !style->IsEnsuredOutsideFlatTree();

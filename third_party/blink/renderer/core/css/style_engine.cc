@@ -2334,6 +2334,15 @@ const MediaQueryEvaluator& StyleEngine::EnsureMediaQueryEvaluator() {
   return *media_query_evaluator_;
 }
 
+bool StyleEngine::StyleMaybeAffectedByLayout(const Node& node) {
+  // Note that the StyleAffectedByLayout flag is set based on which
+  // ComputedStyles we've resolved previously. Since style resolution may never
+  // reach elements in display:none, we defensively treat any null-or-ensured
+  // ComputedStyle as affected by layout.
+  return StyleAffectedByLayout() ||
+         ComputedStyle::IsNullOrEnsured(node.GetComputedStyle());
+}
+
 bool StyleEngine::UpdateRemUnits(const ComputedStyle* old_root_style,
                                  const ComputedStyle* new_root_style) {
   if (!new_root_style || !UsesRemUnits())

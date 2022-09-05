@@ -26,18 +26,6 @@ bool ParentLayoutUpgrade::ShouldUpgrade() {
          NodeLayoutUpgrade(owner_).ShouldUpgrade();
 }
 
-NodeLayoutUpgrade::Reasons NodeLayoutUpgrade::GetReasons(const Node& node) {
-  Reasons reasons = 0;
-
-  const ComputedStyle* style =
-      ComputedStyle::NullifyEnsured(node.GetComputedStyle());
-  if (style && style->DependsOnSizeContainerQueries())
-    reasons |= kDependsOnSizeContainerQueries;
-  if (ComputedStyle::IsInterleavingRoot(node.GetComputedStyle()))
-    reasons |= kInterleavingRoot;
-  return reasons;
-}
-
 bool NodeLayoutUpgrade::ShouldUpgrade() {
   if (!node_.isConnected())
     return false;
@@ -48,26 +36,17 @@ bool NodeLayoutUpgrade::ShouldUpgrade() {
   if (style_engine.SkippedContainerRecalc())
     return true;
 
-  Reasons mask =
-      style_engine.StyleAffectedByLayout() ? kDependsOnSizeContainerQueries : 0;
+  bool maybe_affected_by_layout =
+      style_engine.StyleMaybeAffectedByLayout(node_);
 
-  if (GetReasons(node_) & mask)
-    return true;
-
-  // Whether or not `node_` depends on container queries is stored on its
-  // `ComputedStyle`. If the node does not have a style, we defensively assume
-  // that it *does* depend on container queries, and upgrade whenever we're
-  // inside any interleaving root.
-  if (ComputedStyle::IsNullOrEnsured(node_.GetComputedStyle()))
-    mask |= NodeLayoutUpgrade::kInterleavingRoot;
-
-  // Early out if nothing can possibly match.
-  if (!mask)
+  if (!maybe_affected_by_layout)
     return false;
 
-  for (ContainerNode* ancestor = LayoutTreeBuilderTraversal::Parent(node_);
-       ancestor; ancestor = LayoutTreeBuilderTraversal::Parent(*ancestor)) {
-    if (GetReasons(*ancestor) & mask)
+  // For pseudo-style requests, we may have to update pseudo-elements of the
+  // interleaving root itself. Hence we use inclusive ancestors here.
+  for (const Node* ancestor = &node_; ancestor;
+       ancestor = LayoutTreeBuilderTraversal::Parent(*ancestor)) {
+    if (ComputedStyle::IsInterleavingRoot(ancestor->GetComputedStyle()))
       return true;
   }
 
