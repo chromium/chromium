@@ -32,6 +32,8 @@ namespace blink {
 
 const char* gRecordReplayScript = R""""(
 
+(() => {
+
 const {
   log,
   setCDPMessageCallback,
@@ -969,6 +971,8 @@ function collectUnresolvedSourceMapResources(mapText, mapURL) {
     sources: unresolvedSources,
   };
 }
+
+})();
 
 )"""";
 
