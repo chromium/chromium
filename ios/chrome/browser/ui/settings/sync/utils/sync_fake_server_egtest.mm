@@ -194,8 +194,7 @@ void WaitForNumberOfEntities(int entity_count, syncer::ModelType entity_type) {
 }
 
 // Tests that autofill profile injected in FakeServer gets synced to client.
-// TODO(crbug.com/1358127): Test flaky on iPhone simulator.
-- (void)DISABLED_testSyncDownloadAutofillProfile {
+- (void)testSyncDownloadAutofillProfile {
   const std::string kGuid = "2340E83B-5BEE-4560-8F95-5914EF7F539E";
   const std::string kFullName = "Peter Pan";
   GREYAssertFalse([ChromeEarlGrey isAutofillProfilePresentWithGUID:kGuid
