@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// Mark the test as fully loaded. The Browser Test reads this.
+window.__TEST_LOADED__ = false;
+
 async function run() {
   // Grab the JS module to test from the GET params.
   const params = new URLSearchParams(window.location.search);
@@ -15,6 +18,7 @@ async function run() {
   }
 
   // Notify the BrowserTest to continue.
+  window.__TEST_LOADED__ = true;
   window.domAutomationController.send('LOADED');
 }
 

@@ -93,11 +93,19 @@ void FileManagerJsTestBase::RunTestURL(const std::string& file) {
       browser()->tab_strip_model()->GetActiveWebContents();
   ASSERT_TRUE(web_contents);
 
-  // Wait for the JS modules to be loaded and exported to window.
-  content::DOMMessageQueue message_queue(web_contents);
-  std::string message;
-  ASSERT_TRUE(message_queue.WaitForMessage(&message));
-  EXPECT_EQ(message, "\"LOADED\"");
+  // The test might have finished loading.
+  bool is_test_loaded = false;
+  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
+      web_contents, "domAutomationController.send(window.__TEST_LOADED__);",
+      &is_test_loaded));
+
+  if (!is_test_loaded) {
+    // Wait for the JS modules to be loaded and exported to window.
+    content::DOMMessageQueue message_queue(web_contents);
+    std::string message;
+    ASSERT_TRUE(message_queue.WaitForMessage(&message));
+    EXPECT_EQ(message, "\"LOADED\"");
+  }
 
   // Execute the WebUI test harness.
   EXPECT_TRUE(ExecuteWebUIResourceTest(web_contents));
