@@ -46,6 +46,9 @@ class WaiterMetricsObserver final : public PageLoadMetricsObserver {
       content::NavigationHandle* navigation_handle,
       const GURL& currently_committed_url) override;
 
+  ObservePolicy OnPrerenderStart(content::NavigationHandle* navigation_handle,
+                                 const GURL& currently_committed_url) override;
+
   void OnTimingUpdate(content::RenderFrameHost* subframe_rfh,
                       const mojom::PageLoadTiming& timing) override;
 
@@ -558,6 +561,15 @@ WaiterMetricsObserver::OnFencedFramesStart(
     content::NavigationHandle* navigation_handle,
     const GURL& currently_committed_url) {
   return FORWARD_OBSERVING;
+}
+
+page_load_metrics::PageLoadMetricsObserver::ObservePolicy
+WaiterMetricsObserver::OnPrerenderStart(
+    content::NavigationHandle* navigation_handle,
+    const GURL& currently_committed_url) {
+  NOTREACHED()
+      << "Waiters are not currently used directly on Prerendered pages.";
+  return STOP_OBSERVING;
 }
 
 void WaiterMetricsObserver::OnTimingUpdate(
