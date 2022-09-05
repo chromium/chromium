@@ -689,8 +689,6 @@ scoped_refptr<const VideoFrame> RawDataHelper::GetFrame(size_t index) {
     offset += layout_->planes()[i].size;
   }
 
-  // TODO(crbug.com/1045825): Investigate use of MOJO_SHARED_BUFFER, similar to
-  // changes made in crrev.com/c/2050895.
   scoped_refptr<const VideoFrame> video_frame =
       VideoFrame::WrapExternalYuvDataWithLayout(
           *layout_, video_->VisibleRect(), video_->VisibleRect().size(),

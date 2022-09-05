@@ -89,10 +89,7 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
     // STORAGE_UNOWNED_MEMORY) and handle it appropriately in all cases.
     STORAGE_DMABUFS = 5,  // Each plane is stored into a DmaBuf.
 #endif
-    // Backed by a mojo shared buffer. This should only be used by the
-    // MojoSharedBufferVideoFrame subclass.
-    STORAGE_MOJO_SHARED_BUFFER = 6,
-    STORAGE_GPU_MEMORY_BUFFER = 7,
+    STORAGE_GPU_MEMORY_BUFFER = 6,
     STORAGE_LAST = STORAGE_GPU_MEMORY_BUFFER,
   };
 

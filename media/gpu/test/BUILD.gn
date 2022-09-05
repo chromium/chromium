@@ -71,7 +71,6 @@ source_set("test_helpers") {
   ]
   deps = [
     "//media/gpu",
-    "//media/mojo/common:mojo_shared_buffer_video_frame",
     "//media/parsers",
     "//mojo/public/cpp/system",
     "//testing/gtest",

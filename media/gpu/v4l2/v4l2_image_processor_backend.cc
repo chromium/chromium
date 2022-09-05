@@ -205,7 +205,6 @@ v4l2_memory InputStorageTypeToV4L2Memory(VideoFrame::StorageType storage_type) {
     case VideoFrame::STORAGE_OWNED_MEMORY:
     case VideoFrame::STORAGE_UNOWNED_MEMORY:
     case VideoFrame::STORAGE_SHMEM:
-    case VideoFrame::STORAGE_MOJO_SHARED_BUFFER:
       return V4L2_MEMORY_USERPTR;
     case VideoFrame::STORAGE_DMABUFS:
     case VideoFrame::STORAGE_GPU_MEMORY_BUFFER:

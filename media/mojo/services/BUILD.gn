@@ -102,7 +102,6 @@ component("services") {
     "//media/learning/impl",
     "//media/learning/mojo:impl",
     "//media/mojo/common",
-    "//media/mojo/common:mojo_shared_buffer_video_frame",
     "//services/metrics/public/cpp:metrics_cpp",
     "//services/metrics/public/cpp:ukm_builders",
     "//services/service_manager/public/mojom",

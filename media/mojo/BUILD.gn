@@ -63,7 +63,6 @@ source_set("test_support") {
   public_deps = [
     "//media/mojo/clients",
     "//media/mojo/common",
-    "//media/mojo/common:mojo_shared_buffer_video_frame",
     "//media/mojo/mojom",
     "//media/mojo/mojom:test_interfaces",
     "//media/mojo/services",

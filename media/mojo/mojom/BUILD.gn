@@ -627,10 +627,7 @@ mojom("mojom") {
       ]
       traits_headers = [ "video_frame_mojom_traits.h" ]
       traits_sources = [ "video_frame_mojom_traits.cc" ]
-      traits_public_deps = [
-        "//media/mojo/common:mojo_shared_buffer_video_frame",
-        "//ui/gfx/geometry/mojom",
-      ]
+      traits_public_deps = [ "//ui/gfx/geometry/mojom" ]
     },
     {
       types = [

@@ -76,8 +76,6 @@ std::string VideoFrame::StorageTypeToString(
     case VideoFrame::STORAGE_DMABUFS:
       return "DMABUFS";
 #endif
-    case VideoFrame::STORAGE_MOJO_SHARED_BUFFER:
-      return "MOJO_SHARED_BUFFER";
     case VideoFrame::STORAGE_GPU_MEMORY_BUFFER:
       return "GPU_MEMORY_BUFFER";
   }
@@ -100,8 +98,7 @@ bool VideoFrame::IsStorageTypeMappable(VideoFrame::StorageType storage_type) {
       // GetGpuMemoryBuffer() and call gfx::GpuMemoryBuffer::Map().
       (storage_type == VideoFrame::STORAGE_UNOWNED_MEMORY ||
        storage_type == VideoFrame::STORAGE_OWNED_MEMORY ||
-       storage_type == VideoFrame::STORAGE_SHMEM ||
-       storage_type == VideoFrame::STORAGE_MOJO_SHARED_BUFFER);
+       storage_type == VideoFrame::STORAGE_SHMEM);
 }
 
 // static
@@ -835,13 +832,6 @@ scoped_refptr<VideoFrame> VideoFrame::WrapVideoFrame(
     const gfx::Rect& visible_rect,
     const gfx::Size& natural_size) {
   DCHECK(frame->visible_rect().Contains(visible_rect));
-
-  // The following storage type should not be wrapped as the shared region
-  // cannot be owned by both the wrapped frame and the wrapping frame.
-  //
-  // TODO: We can support this now since we have a reference to the wrapped
-  // frame through |wrapped_frame_|.
-  DCHECK(frame->storage_type() != STORAGE_MOJO_SHARED_BUFFER);
 
   if (!AreValidPixelFormatsForWrap(frame->format(), format)) {
     DLOG(ERROR) << __func__ << " Invalid format conversion."
