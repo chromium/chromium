@@ -144,7 +144,7 @@ IOSChromeMainParts::~IOSChromeMainParts() {
 void IOSChromeMainParts::PreEarlyInitialization() {
 #if BUILDFLAG(USE_ALLOCATOR_SHIM)
   if (ShouldInstallAllocatorShim()) {
-    base::allocator::InitializeAllocatorShim();
+    allocator_shim::InitializeAllocatorShim();
   }
 #endif
 }
@@ -262,7 +262,7 @@ void IOSChromeMainParts::PreCreateThreads() {
   // particular version of OS. TODO(crbug.com/1108219): Remove this workaround
   // when/if the bug gets fixed.
   if (ShouldInstallAllocatorShim()) {
-    bool malloc_intercepted = base::allocator::AreMallocZonesIntercepted();
+    bool malloc_intercepted = allocator_shim::AreMallocZonesIntercepted();
     base::UmaHistogramBoolean("IOS.Allocator.ShimInstalled",
                               malloc_intercepted);
 

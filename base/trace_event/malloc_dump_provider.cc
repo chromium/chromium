@@ -123,16 +123,17 @@ void ReportPartitionAllocStats(ProcessMemoryDump* pmd,
                                                         level_of_detail);
   bool is_light_dump = level_of_detail == MemoryDumpLevelOfDetail::BACKGROUND;
 
-  auto* allocator = internal::PartitionAllocMalloc::Allocator();
+  auto* allocator = allocator_shim::internal::PartitionAllocMalloc::Allocator();
   allocator->DumpStats("allocator", is_light_dump, &partition_stats_dumper);
 
   auto* original_allocator =
-      internal::PartitionAllocMalloc::OriginalAllocator();
+      allocator_shim::internal::PartitionAllocMalloc::OriginalAllocator();
   if (original_allocator) {
     original_allocator->DumpStats("original", is_light_dump,
                                   &partition_stats_dumper);
   }
-  auto* aligned_allocator = internal::PartitionAllocMalloc::AlignedAllocator();
+  auto* aligned_allocator =
+      allocator_shim::internal::PartitionAllocMalloc::AlignedAllocator();
   if (aligned_allocator != allocator) {
     aligned_allocator->DumpStats("aligned", is_light_dump,
                                  &partition_stats_dumper);

@@ -12,8 +12,7 @@
 #include "base/allocator/partition_allocator/shim/malloc_zone_functions_mac.h"
 #include "third_party/apple_apsl/malloc.h"
 
-namespace base {
-namespace allocator {
+namespace allocator_shim {
 
 MallocZoneFunctions MallocZoneFunctionsToReplaceDefault() {
   MallocZoneFunctions new_functions;
@@ -58,7 +57,6 @@ MallocZoneFunctions MallocZoneFunctionsToReplaceDefault() {
   return new_functions;
 }
 
-}  // namespace allocator
-}  // namespace base
+}  // namespace allocator_shim
 
 #endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_SHIM_ALLOCATOR_SHIM_OVERRIDE_MAC_SYMBOLS_H_

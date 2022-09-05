@@ -13,8 +13,7 @@
 
 #include "base/base_export.h"
 
-namespace base {
-namespace allocator {
+namespace allocator_shim {
 
 // Set to true if the link-time magic has successfully hooked into the CRT's
 // heap initialization.
@@ -42,7 +41,6 @@ BASE_EXPORT void* WinHeapAlignedRealloc(void* ptr,
                                         size_t alignment);
 BASE_EXPORT void WinHeapAlignedFree(void* ptr);
 
-}  // namespace allocator
-}  // namespace base
+}  // namespace allocator_shim
 
 #endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_SHIM_WINHEAP_STUBS_WIN_H_

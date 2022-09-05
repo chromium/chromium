@@ -23,7 +23,7 @@ void EnableTerminationOnHeapCorruption() {
 
 bool UncheckedMalloc(size_t size, void** result) {
 #if BUILDFLAG(USE_ALLOCATOR_SHIM)
-  *result = allocator::UncheckedAlloc(size);
+  *result = allocator_shim::UncheckedAlloc(size);
 #else
   *result = malloc(size);
 #endif
@@ -32,7 +32,7 @@ bool UncheckedMalloc(size_t size, void** result) {
 
 void UncheckedFree(void* ptr) {
 #if BUILDFLAG(USE_ALLOCATOR_SHIM)
-  allocator::UncheckedFree(ptr);
+  allocator_shim::UncheckedFree(ptr);
 #else
   free(ptr);
 #endif

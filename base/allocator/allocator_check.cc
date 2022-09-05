@@ -19,22 +19,20 @@
 #include "base/allocator/partition_allocator/shim/allocator_interception_mac.h"
 #endif
 
-namespace base {
-namespace allocator {
+namespace base::allocator {
 
 bool IsAllocatorInitialized() {
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(USE_ALLOCATOR_SHIM)
   // Set by allocator_shim_override_ucrt_symbols_win.h when the
   // shimmed _set_new_mode() is called.
-  return g_is_win_shim_layer_initialized;
+  return allocator_shim::g_is_win_shim_layer_initialized;
 #elif BUILDFLAG(IS_APPLE) && !defined(MEMORY_TOOL_REPLACES_ALLOCATOR) && \
     !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   // From allocator_interception_mac.mm.
-  return base::allocator::g_replaced_default_zone;
+  return allocator_shim::g_replaced_default_zone;
 #else
   return true;
 #endif
 }
 
-}  // namespace allocator
-}  // namespace base
+}  // namespace base::allocator

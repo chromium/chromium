@@ -34,7 +34,7 @@ SHIM_ALWAYS_EXPORT void* operator new[](size_t size,
 
 extern "C" {
 
-void* (*malloc_unchecked)(size_t) = &base::allocator::UncheckedAlloc;
+void* (*malloc_unchecked)(size_t) = &allocator_shim::UncheckedAlloc;
 
 namespace {
 
@@ -52,11 +52,11 @@ int win_new_mode = 0;
 int _set_new_mode(int flag) {
   // The MS CRT calls this function early on in startup, so this serves as a low
   // overhead proof that the allocator shim is in place for this process.
-  base::allocator::g_is_win_shim_layer_initialized = true;
+  allocator_shim::g_is_win_shim_layer_initialized = true;
   int old_mode = win_new_mode;
   win_new_mode = flag;
 
-  base::allocator::SetCallNewHandlerOnMallocFailure(win_new_mode != 0);
+  allocator_shim::SetCallNewHandlerOnMallocFailure(win_new_mode != 0);
 
   return old_mode;
 }

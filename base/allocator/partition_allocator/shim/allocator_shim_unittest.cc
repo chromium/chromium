@@ -44,8 +44,7 @@
 extern "C" void* __libc_memalign(size_t align, size_t s);
 #endif
 
-namespace base {
-namespace allocator {
+namespace allocator_shim {
 namespace {
 
 using testing::_;
@@ -242,7 +241,7 @@ class AllocatorShimTest : public testing::Test {
     aligned_reallocs_intercepted_by_size.resize(MaxSizeTracked());
     aligned_reallocs_intercepted_by_addr.resize(MaxSizeTracked());
     aligned_frees_intercepted_by_addr.resize(MaxSizeTracked());
-    did_fail_realloc_0xfeed_once = std::make_unique<ThreadLocalBoolean>();
+    did_fail_realloc_0xfeed_once = std::make_unique<base::ThreadLocalBoolean>();
     num_new_handler_calls.store(0, std::memory_order_release);
     instance_ = this;
 
@@ -284,7 +283,7 @@ class AllocatorShimTest : public testing::Test {
   std::vector<size_t> aligned_reallocs_intercepted_by_size;
   std::vector<size_t> aligned_reallocs_intercepted_by_addr;
   std::vector<size_t> aligned_frees_intercepted_by_addr;
-  std::unique_ptr<ThreadLocalBoolean> did_fail_realloc_0xfeed_once;
+  std::unique_ptr<base::ThreadLocalBoolean> did_fail_realloc_0xfeed_once;
   std::atomic<uint32_t> num_new_handler_calls;
 
  private:
@@ -301,9 +300,9 @@ struct TestStruct2 {
   uint8_t ignored_3;
 };
 
-class ThreadDelegateForNewHandlerTest : public PlatformThread::Delegate {
+class ThreadDelegateForNewHandlerTest : public base::PlatformThread::Delegate {
  public:
-  explicit ThreadDelegateForNewHandlerTest(WaitableEvent* event)
+  explicit ThreadDelegateForNewHandlerTest(base::WaitableEvent* event)
       : event_(event) {}
 
   void ThreadMain() override {
@@ -314,7 +313,7 @@ class ThreadDelegateForNewHandlerTest : public PlatformThread::Delegate {
   }
 
  private:
-  WaitableEvent* event_;
+  base::WaitableEvent* event_;
 };
 
 AllocatorShimTest* AllocatorShimTest::instance_ = nullptr;
@@ -577,24 +576,24 @@ TEST_F(AllocatorShimTest, NewNoThrowTooLarge) {
 // We expect to see excactly kNumThreads invocations of the new_handler.
 TEST_F(AllocatorShimTest, NewHandlerConcurrency) {
   const int kNumThreads = 32;
-  PlatformThreadHandle threads[kNumThreads];
+  base::PlatformThreadHandle threads[kNumThreads];
 
   // The WaitableEvent here is used to attempt to trigger all the threads at
   // the same time, after they have been initialized.
-  WaitableEvent event(WaitableEvent::ResetPolicy::MANUAL,
-                      WaitableEvent::InitialState::NOT_SIGNALED);
+  base::WaitableEvent event(base::WaitableEvent::ResetPolicy::MANUAL,
+                            base::WaitableEvent::InitialState::NOT_SIGNALED);
 
   ThreadDelegateForNewHandlerTest mock_thread_main(&event);
 
-  for (int i = 0; i < kNumThreads; ++i)
-    PlatformThread::Create(0, &mock_thread_main, &threads[i]);
+  for (auto& thread : threads)
+    base::PlatformThread::Create(0, &mock_thread_main, &thread);
 
   std::set_new_handler(&AllocatorShimTest::NewHandler);
   SetCallNewHandlerOnMallocFailure(true);  // It's going to fail on realloc().
   InsertAllocatorDispatch(&g_mock_dispatch);
   event.Signal();
-  for (int i = 0; i < kNumThreads; ++i)
-    PlatformThread::Join(threads[i]);
+  for (auto& thread : threads)
+    base::PlatformThread::Join(thread);
   RemoveAllocatorDispatchForTesting(&g_mock_dispatch);
   ASSERT_EQ(kNumThreads, GetNumberOfNewHandlerCalls());
 }
@@ -728,5 +727,4 @@ TEST_F(AllocatorShimTest, BatchMalloc) {
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && BUILDFLAG(IS_APPLE)
 
 }  // namespace
-}  // namespace allocator
-}  // namespace base
+}  // namespace allocator_shim

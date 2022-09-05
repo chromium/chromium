@@ -67,8 +67,8 @@ bool EnablePCScanForMallocPartitionsIfNeeded() {
   using Config = partition_alloc::internal::PCScan::InitConfig;
   DCHECK(base::FeatureList::GetInstance());
   if (base::FeatureList::IsEnabled(base::features::kPartitionAllocPCScan)) {
-    base::allocator::EnablePCScan({Config::WantedWriteProtectionMode::kEnabled,
-                                   Config::SafepointMode::kEnabled});
+    allocator_shim::EnablePCScan({Config::WantedWriteProtectionMode::kEnabled,
+                                  Config::SafepointMode::kEnabled});
     base::allocator::RegisterPCScanStatsReporter();
     return true;
   }
@@ -90,7 +90,7 @@ bool EnablePCScanForMallocPartitionsInBrowserProcessIfNeeded() {
     CHECK_EQ(Config::WantedWriteProtectionMode::kDisabled, wp_mode)
         << "DCScan is currently only supported on Linux based systems";
 #endif
-    base::allocator::EnablePCScan({wp_mode, Config::SafepointMode::kEnabled});
+    allocator_shim::EnablePCScan({wp_mode, Config::SafepointMode::kEnabled});
     base::allocator::RegisterPCScanStatsReporter();
     return true;
   }
@@ -112,7 +112,7 @@ bool EnablePCScanForMallocPartitionsInRendererProcessIfNeeded() {
     CHECK_EQ(Config::WantedWriteProtectionMode::kDisabled, wp_mode)
         << "DCScan is currently only supported on Linux based systems";
 #endif
-    base::allocator::EnablePCScan({wp_mode, Config::SafepointMode::kDisabled});
+    allocator_shim::EnablePCScan({wp_mode, Config::SafepointMode::kDisabled});
     base::allocator::RegisterPCScanStatsReporter();
     return true;
   }
@@ -151,7 +151,7 @@ void PartitionAllocSupport::ReconfigureEarlyish(
   // These initializations are only relevant for PartitionAlloc-Everywhere
   // builds.
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-  base::allocator::EnablePartitionAllocMemoryReclaimer();
+  allocator_shim::EnablePartitionAllocMemoryReclaimer();
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 }
 
@@ -307,13 +307,13 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
         // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-  base::allocator::ConfigurePartitions(
-      base::allocator::EnableBrp(enable_brp),
-      base::allocator::EnableBrpZapping(enable_brp_zapping),
-      base::allocator::SplitMainPartition(split_main_partition),
-      base::allocator::UseDedicatedAlignedPartition(
+  allocator_shim::ConfigurePartitions(
+      allocator_shim::EnableBrp(enable_brp),
+      allocator_shim::EnableBrpZapping(enable_brp_zapping),
+      allocator_shim::SplitMainPartition(split_main_partition),
+      allocator_shim::UseDedicatedAlignedPartition(
           use_dedicated_aligned_partition),
-      base::allocator::AlternateBucketDistribution(base::FeatureList::IsEnabled(
+      allocator_shim::AlternateBucketDistribution(base::FeatureList::IsEnabled(
           base::features::kPartitionAllocUseAlternateDistribution)));
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
@@ -363,15 +363,15 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
         .root()
         ->EnableThreadCacheIfSupported();
   } else {
-    base::internal::PartitionAllocMalloc::Allocator()
+    allocator_shim::internal::PartitionAllocMalloc::Allocator()
         ->EnableThreadCacheIfSupported();
   }
 
   if (base::FeatureList::IsEnabled(
           base::features::kPartitionAllocLargeEmptySlotSpanRing)) {
-    base::internal::PartitionAllocMalloc::Allocator()
+    allocator_shim::internal::PartitionAllocMalloc::Allocator()
         ->EnableLargeEmptySlotSpanRing();
-    base::internal::PartitionAllocMalloc::AlignedAllocator()
+    allocator_shim::internal::PartitionAllocMalloc::AlignedAllocator()
         ->EnableLargeEmptySlotSpanRing();
   }
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)

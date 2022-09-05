@@ -19,6 +19,10 @@
 
 namespace base::allocator::dispatcher::internal {
 
+#if BUILDFLAG(USE_ALLOCATOR_SHIM)
+using allocator_shim::AllocatorDispatch;
+#endif
+
 // A simple utility class to pass all the information required to properly hook
 // into the memory allocation subsystems from DispatcherImpl to the Dispatcher.
 struct BASE_EXPORT DispatchData {

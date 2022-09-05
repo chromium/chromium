@@ -8,8 +8,7 @@
 #include "base/check.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace base {
-namespace allocator {
+namespace allocator_shim {
 namespace {
 
 bool IsPtrAligned(void* ptr, size_t alignment) {
@@ -66,5 +65,4 @@ TEST(WinHeapStubs, AlignedReallocationsCorrectlyCopyData) {
   WinHeapAlignedFree(ptr);
 }
 
-}  // namespace allocator
-}  // namespace base
+}  // namespace allocator_shim

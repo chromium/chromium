@@ -63,7 +63,7 @@ class SamplingMallocShimsTest : public base::MultiProcessTest {
  public:
   static void multiprocessTestSetup() {
 #if BUILDFLAG(IS_APPLE)
-    base::allocator::InitializeAllocatorShim();
+    allocator_shim::InitializeAllocatorShim();
 #endif  // BUILDFLAG(IS_APPLE)
     crash_reporter::InitializeCrashKeys();
     InstallMallocHooks(AllocatorState::kMaxMetadata,

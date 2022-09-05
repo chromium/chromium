@@ -19,8 +19,7 @@
 #include "base/check_op.h"
 #include "base/numerics/safe_conversions.h"
 
-namespace base {
-namespace allocator {
+namespace allocator_shim {
 
 bool g_is_win_shim_layer_initialized = false;
 
@@ -122,8 +121,8 @@ void* AlignAllocation(void* ptr, size_t alignment) {
 
   // Write the prefix.
   AlignedPrefix* prefix = reinterpret_cast<AlignedPrefix*>(address) - 1;
-  prefix->original_allocation_offset =
-      checked_cast<unsigned int>(address - reinterpret_cast<uintptr_t>(ptr));
+  prefix->original_allocation_offset = base::checked_cast<unsigned int>(
+      address - reinterpret_cast<uintptr_t>(ptr));
 #if DCHECK_IS_ON()
   prefix->magic = AlignedPrefix::kMagic;
 #endif  // DCHECK_IS_ON()
@@ -205,5 +204,4 @@ void WinHeapAlignedFree(void* ptr) {
   WinHeapFree(original_allocation);
 }
 
-}  // namespace allocator
-}  // namespace base
+}  // namespace allocator_shim

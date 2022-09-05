@@ -10,8 +10,7 @@
 #include "base/base_export.h"
 #include "third_party/apple_apsl/malloc.h"
 
-namespace base {
-namespace allocator {
+namespace allocator_shim {
 
 struct MallocZoneFunctions;
 
@@ -59,7 +58,6 @@ BASE_EXPORT void ShimNewMallocZones();
 BASE_EXPORT void ReplaceZoneFunctions(ChromeMallocZone* zone,
                                       const MallocZoneFunctions* functions);
 
-}  // namespace allocator
-}  // namespace base
+}  // namespace allocator_shim
 
 #endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_SHIM_ALLOCATOR_INTERCEPTION_MAC_H_

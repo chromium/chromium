@@ -57,7 +57,7 @@ void ProfilingClient::StartProfiling(mojom::ProfilingParamsPtr params,
   //
   // Wth PartitionAlloc, the shims are already in place, calling this leads to
   // an infinite loop.
-  base::allocator::PeriodicallyShimNewMallocZones();
+  allocator_shim::PeriodicallyShimNewMallocZones();
 #endif  // BUILDFLAG(IS_APPLE) && !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
 #if BUILDFLAG(IS_ANDROID) && BUILDFLAG(CAN_UNWIND_WITH_CFI_TABLE) && \

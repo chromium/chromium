@@ -22,7 +22,7 @@
 namespace base::allocator::dispatcher::allocator_shim_details {
 namespace {
 
-using allocator::AllocatorDispatch;
+using allocator_shim::AllocatorDispatch;
 
 void* AllocFn(const AllocatorDispatch* self, size_t size, void* context) {
   ReentryGuard guard;
@@ -219,7 +219,7 @@ namespace base::allocator::dispatcher {
 
 void InstallStandardAllocatorHooks() {
 #if BUILDFLAG(USE_ALLOCATOR_SHIM)
-  allocator::InsertAllocatorDispatch(
+  allocator_shim::InsertAllocatorDispatch(
       &allocator_shim_details::g_allocator_dispatch);
 #else
   // If the allocator shim isn't available, then we don't install any hooks.
@@ -236,7 +236,7 @@ void InstallStandardAllocatorHooks() {
 
 void RemoveStandardAllocatorHooksForTesting() {
 #if BUILDFLAG(USE_ALLOCATOR_SHIM)
-  allocator::RemoveAllocatorDispatchForTesting(
+  allocator_shim::RemoveAllocatorDispatchForTesting(
       &allocator_shim_details::g_allocator_dispatch);  // IN-TEST
 #endif
 #if BUILDFLAG(USE_PARTITION_ALLOC) && !BUILDFLAG(IS_NACL)
@@ -280,7 +280,7 @@ struct Dispatcher::Impl {
   static void ConnectToEmitters(const internal::DispatchData& dispatch_data) {
 #if BUILDFLAG(USE_ALLOCATOR_SHIM)
     if (auto* const allocator_dispatch = dispatch_data.GetAllocatorDispatch()) {
-      allocator::InsertAllocatorDispatch(allocator_dispatch);
+      allocator_shim::InsertAllocatorDispatch(allocator_dispatch);
     }
 #endif
 
@@ -299,7 +299,7 @@ struct Dispatcher::Impl {
   static void DisconnectFromEmitters(internal::DispatchData& dispatch_data) {
 #if BUILDFLAG(USE_ALLOCATOR_SHIM)
     if (auto* const allocator_dispatch = dispatch_data.GetAllocatorDispatch()) {
-      allocator::RemoveAllocatorDispatchForTesting(
+      allocator_shim::RemoveAllocatorDispatchForTesting(
           allocator_dispatch);  // IN-TEST
     }
 #endif

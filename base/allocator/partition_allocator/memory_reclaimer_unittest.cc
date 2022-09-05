@@ -117,7 +117,7 @@ PA_NOINLINE void FreeForTest(void* data) {
 
 TEST_F(MemoryReclaimerTest, DoNotAlwaysPurgeThreadCache) {
   // Make sure the thread cache is enabled in the main partition.
-  base::internal::PartitionAllocMalloc::Allocator()
+  allocator_shim::internal::PartitionAllocMalloc::Allocator()
       ->EnableThreadCacheIfSupported();
 
   for (size_t i = 0; i < ThreadCache::kDefaultSizeThreshold; i++) {

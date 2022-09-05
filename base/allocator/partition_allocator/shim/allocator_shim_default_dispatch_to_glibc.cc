@@ -26,7 +26,7 @@ void __libc_free(void* ptr);
 
 namespace {
 
-using base::allocator::AllocatorDispatch;
+using allocator_shim::AllocatorDispatch;
 
 // Strictly speaking, it would make more sense to not subtract amything, but
 // other shims limit to something lower than INT_MAX (which is 0x7FFFFFFF on

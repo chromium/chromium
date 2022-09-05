@@ -10,8 +10,7 @@
 #include "base/allocator/partition_allocator/shim/malloc_zone_functions_mac.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace base {
-namespace allocator {
+namespace allocator_shim {
 
 namespace {
 void ResetMallocZone(ChromeMallocZone* zone) {
@@ -61,5 +60,4 @@ TEST_F(AllocatorInterceptionTest, ShimNewMallocZones) {
 }
 #endif
 
-}  // namespace allocator
-}  // namespace base
+}  // namespace allocator_shim

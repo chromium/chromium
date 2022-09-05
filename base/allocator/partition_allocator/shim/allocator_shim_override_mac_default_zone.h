@@ -31,7 +31,7 @@ void PartitionAllocMallocHookOnAfterForkInChild();
 
 }  // namespace partition_alloc
 
-namespace base::allocator {
+namespace allocator_shim {
 
 namespace {
 
@@ -376,6 +376,6 @@ InitializeDefaultMallocZoneWithPartitionAlloc() {
 
 }  // namespace
 
-}  // namespace base::allocator
+}  // namespace allocator_shim
 
 #endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_SHIM_ALLOCATOR_SHIM_OVERRIDE_MAC_DEFAULT_ZONE_H_

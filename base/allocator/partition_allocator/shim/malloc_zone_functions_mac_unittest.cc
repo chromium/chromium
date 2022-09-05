@@ -6,8 +6,7 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace base {
-namespace allocator {
+namespace allocator_shim {
 
 class MallocZoneFunctionsTest : public testing::Test {
  protected:
@@ -54,5 +53,4 @@ TEST_F(MallocZoneFunctionsTest, CannotStoreMoreThanMaxZones) {
   EXPECT_EQ(max_zone_count, GetMallocZoneCountForTesting());
 }
 
-}  // namespace allocator
-}  // namespace base
+}  // namespace allocator_shim

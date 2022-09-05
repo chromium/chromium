@@ -280,7 +280,7 @@ RunContentProcess(ContentMainParams params,
   } else {
     is_initialized = true;
 #if BUILDFLAG(IS_MAC) && BUILDFLAG(USE_ALLOCATOR_SHIM)
-    base::allocator::InitializeAllocatorShim();
+    allocator_shim::InitializeAllocatorShim();
 #endif
     base::EnableTerminationOnOutOfMemory();
 

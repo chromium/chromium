@@ -8,8 +8,7 @@
 
 #include "base/synchronization/lock.h"
 
-namespace base {
-namespace allocator {
+namespace allocator_shim {
 
 MallocZoneFunctions g_malloc_zones[kMaxZoneCount];
 static_assert(std::is_pod<MallocZoneFunctions>::value,
@@ -115,5 +114,4 @@ void ClearAllMallocZonesForTesting() {
   g_zone_count = 0;
 }
 
-}  // namespace allocator
-}  // namespace base
+}  // namespace allocator_shim

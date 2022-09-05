@@ -41,7 +41,7 @@
 #include <windows.h>
 #endif
 
-using base::allocator::AllocatorDispatch;
+using allocator_shim::AllocatorDispatch;
 
 namespace {
 
@@ -273,8 +273,7 @@ void* AllocateAlignedMemory(size_t alignment, size_t size) {
 
 }  // namespace
 
-namespace base {
-namespace internal {
+namespace allocator_shim::internal {
 
 namespace {
 #if BUILDFLAG(IS_APPLE)
@@ -301,7 +300,7 @@ void PartitionAllocSetCallNewHandlerOnMallocFailure(bool value) {
 }
 
 void* PartitionMalloc(const AllocatorDispatch*, size_t size, void* context) {
-  ScopedDisallowAllocations guard{};
+  partition_alloc::ScopedDisallowAllocations guard{};
   return Allocator()->AllocWithFlagsNoHooks(
       g_alloc_flags, MaybeAdjustSize(size),
       partition_alloc::PartitionPageSize());
@@ -310,7 +309,7 @@ void* PartitionMalloc(const AllocatorDispatch*, size_t size, void* context) {
 void* PartitionMallocUnchecked(const AllocatorDispatch*,
                                size_t size,
                                void* context) {
-  ScopedDisallowAllocations guard{};
+  partition_alloc::ScopedDisallowAllocations guard{};
   return Allocator()->AllocWithFlagsNoHooks(
       partition_alloc::AllocFlags::kReturnNull | g_alloc_flags,
       MaybeAdjustSize(size), partition_alloc::PartitionPageSize());
@@ -320,7 +319,7 @@ void* PartitionCalloc(const AllocatorDispatch*,
                       size_t n,
                       size_t size,
                       void* context) {
-  ScopedDisallowAllocations guard{};
+  partition_alloc::ScopedDisallowAllocations guard{};
   const size_t total = base::CheckMul(n, MaybeAdjustSize(size)).ValueOrDie();
   return Allocator()->AllocWithFlagsNoHooks(
       partition_alloc::AllocFlags::kZeroFill | g_alloc_flags, total,
@@ -331,7 +330,7 @@ void* PartitionMemalign(const AllocatorDispatch*,
                         size_t alignment,
                         size_t size,
                         void* context) {
-  ScopedDisallowAllocations guard{};
+  partition_alloc::ScopedDisallowAllocations guard{};
   return AllocateAlignedMemory(alignment, size);
 }
 
@@ -339,7 +338,7 @@ void* PartitionAlignedAlloc(const AllocatorDispatch* dispatch,
                             size_t size,
                             size_t alignment,
                             void* context) {
-  ScopedDisallowAllocations guard{};
+  partition_alloc::ScopedDisallowAllocations guard{};
   return AllocateAlignedMemory(alignment, size);
 }
 
@@ -355,7 +354,7 @@ void* PartitionAlignedRealloc(const AllocatorDispatch* dispatch,
                               size_t size,
                               size_t alignment,
                               void* context) {
-  ScopedDisallowAllocations guard{};
+  partition_alloc::ScopedDisallowAllocations guard{};
   void* new_ptr = nullptr;
   if (size > 0) {
     size = MaybeAdjustSize(size);
@@ -385,7 +384,7 @@ void* PartitionRealloc(const AllocatorDispatch*,
                        void* address,
                        size_t size,
                        void* context) {
-  ScopedDisallowAllocations guard{};
+  partition_alloc::ScopedDisallowAllocations guard{};
 #if BUILDFLAG(IS_APPLE)
   if (UNLIKELY(!partition_alloc::IsManagedByPartitionAlloc(
                    reinterpret_cast<uintptr_t>(address)) &&
@@ -409,7 +408,7 @@ void __real_free(void*);
 #endif  // BUILDFLAG(IS_CAST_ANDROID)
 
 void PartitionFree(const AllocatorDispatch*, void* object, void* context) {
-  ScopedDisallowAllocations guard{};
+  partition_alloc::ScopedDisallowAllocations guard{};
 #if BUILDFLAG(IS_APPLE)
   // TODO(bartekn): Add MTE unmasking here (and below).
   if (UNLIKELY(!partition_alloc::IsManagedByPartitionAlloc(
@@ -451,7 +450,7 @@ void PartitionFreeDefiniteSize(const AllocatorDispatch*,
                                void* address,
                                size_t size,
                                void* context) {
-  ScopedDisallowAllocations guard{};
+  partition_alloc::ScopedDisallowAllocations guard{};
   // TODO(lizeb): Optimize PartitionAlloc to use the size information. This is
   // still useful though, as we avoid double-checking that the address is owned.
   partition_alloc::ThreadSafePartitionRoot::FreeNoHooks(address);
@@ -532,13 +531,11 @@ PartitionAllocMalloc::AlignedAllocator() {
   return ::AlignedAllocator();
 }
 
-}  // namespace internal
-}  // namespace base
+}  // namespace allocator_shim::internal
 
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
-namespace base {
-namespace allocator {
+namespace allocator_shim {
 
 void EnablePartitionAllocMemoryReclaimer() {
   // Unlike other partitions, Allocator() and AlignedAllocator() do not register
@@ -681,8 +678,8 @@ void EnablePCScan(partition_alloc::internal::PCScan::InitConfig config) {
     partition_alloc::internal::PCScan::RegisterScannableRoot(
         AlignedAllocator());
 
-  internal::NonScannableAllocator::Instance().NotifyPCScanEnabled();
-  internal::NonQuarantinableAllocator::Instance().NotifyPCScanEnabled();
+  base::internal::NonScannableAllocator::Instance().NotifyPCScanEnabled();
+  base::internal::NonQuarantinableAllocator::Instance().NotifyPCScanEnabled();
 }
 #endif  // defined(PA_ALLOW_PCSCAN)
 
@@ -695,30 +692,34 @@ void ConfigurePartitionAlloc() {
 #endif  // defined(ARCH_CPU_X86)
 }
 #endif  // BUILDFLAG(IS_WIN)
-}  // namespace allocator
-}  // namespace base
+}  // namespace allocator_shim
 
 const AllocatorDispatch AllocatorDispatch::default_dispatch = {
-    &base::internal::PartitionMalloc,           // alloc_function
-    &base::internal::PartitionMallocUnchecked,  // alloc_unchecked_function
-    &base::internal::PartitionCalloc,    // alloc_zero_initialized_function
-    &base::internal::PartitionMemalign,  // alloc_aligned_function
-    &base::internal::PartitionRealloc,   // realloc_function
-    &base::internal::PartitionFree,      // free_function
-    &base::internal::PartitionGetSizeEstimate,  // get_size_estimate_function
-    &base::internal::PartitionBatchMalloc,      // batch_malloc_function
-    &base::internal::PartitionBatchFree,        // batch_free_function
+    &allocator_shim::internal::PartitionMalloc,  // alloc_function
+    &allocator_shim::internal::
+        PartitionMallocUnchecked,  // alloc_unchecked_function
+    &allocator_shim::internal::
+        PartitionCalloc,  // alloc_zero_initialized_function
+    &allocator_shim::internal::PartitionMemalign,  // alloc_aligned_function
+    &allocator_shim::internal::PartitionRealloc,   // realloc_function
+    &allocator_shim::internal::PartitionFree,      // free_function
+    &allocator_shim::internal::
+        PartitionGetSizeEstimate,  // get_size_estimate_function
+    &allocator_shim::internal::PartitionBatchMalloc,  // batch_malloc_function
+    &allocator_shim::internal::PartitionBatchFree,    // batch_free_function
 #if BUILDFLAG(IS_APPLE)
     // On Apple OSes, free_definite_size() is always called from free(), since
     // get_size_estimate() is used to determine whether an allocation belongs to
     // the current zone. It makes sense to optimize for it.
-    &base::internal::PartitionFreeDefiniteSize,
+    &allocator_shim::internal::PartitionFreeDefiniteSize,
 #else
     nullptr,  // free_definite_size_function
 #endif
-    &base::internal::PartitionAlignedAlloc,    // aligned_malloc_function
-    &base::internal::PartitionAlignedRealloc,  // aligned_realloc_function
-    &base::internal::PartitionFree,            // aligned_free_function
+    &allocator_shim::internal::
+        PartitionAlignedAlloc,  // aligned_malloc_function
+    &allocator_shim::internal::
+        PartitionAlignedRealloc,               // aligned_realloc_function
+    &allocator_shim::internal::PartitionFree,  // aligned_free_function
     nullptr,                                   // next
 };
 
@@ -795,8 +796,7 @@ SHIM_ALWAYS_EXPORT struct mallinfo mallinfo(void) __THROW {
 
 #if BUILDFLAG(IS_APPLE)
 
-namespace base {
-namespace allocator {
+namespace allocator_shim {
 
 void InitializeDefaultAllocatorPartitionRoot() {
   // On OS_APPLE, the initialization of PartitionRoot uses memory allocations
@@ -806,8 +806,7 @@ void InitializeDefaultAllocatorPartitionRoot() {
   std::ignore = Allocator();
 }
 
-}  // namespace allocator
-}  // namespace base
+}  // namespace allocator_shim
 
 #endif  // BUILDFLAG(IS_APPLE)
 

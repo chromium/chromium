@@ -26,7 +26,7 @@ class SamplingHeapProfilerTest : public ::testing::Test {
  public:
   void SetUp() override {
 #if BUILDFLAG(IS_APPLE)
-    allocator::InitializeAllocatorShim();
+    allocator_shim::InitializeAllocatorShim();
 #endif
     SamplingHeapProfiler::Init();
 

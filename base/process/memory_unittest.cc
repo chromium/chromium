@@ -74,7 +74,7 @@ static void callFree(void *ptr) {
 
 TEST(ProcessMemoryTest, MacTerminateOnHeapCorruption) {
 #if BUILDFLAG(USE_ALLOCATOR_SHIM)
-  base::allocator::InitializeAllocatorShim();
+  allocator_shim::InitializeAllocatorShim();
 #endif
   // Assert that freeing an unallocated pointer will crash the process.
   char buf[9];
@@ -93,7 +93,7 @@ TEST(ProcessMemoryTest, MacTerminateOnHeapCorruption) {
 #endif
 
 #if BUILDFLAG(USE_ALLOCATOR_SHIM)
-  base::allocator::UninterceptMallocZonesForTesting();
+  allocator_shim::UninterceptMallocZonesForTesting();
 #endif
 }
 
@@ -102,14 +102,14 @@ TEST(ProcessMemoryTest, MacTerminateOnHeapCorruption) {
 TEST(MemoryTest, AllocatorShimWorking) {
 #if BUILDFLAG(IS_MAC)
 #if BUILDFLAG(USE_ALLOCATOR_SHIM)
-  base::allocator::InitializeAllocatorShim();
+  allocator_shim::InitializeAllocatorShim();
 #endif
-  base::allocator::InterceptAllocationsMac();
+  allocator_shim::InterceptAllocationsMac();
 #endif
   ASSERT_TRUE(base::allocator::IsAllocatorInitialized());
 
 #if BUILDFLAG(IS_MAC)
-  base::allocator::UninterceptMallocZonesForTesting();
+  allocator_shim::UninterceptMallocZonesForTesting();
 #endif
 }
 
@@ -159,7 +159,7 @@ class OutOfMemoryDeathTest : public OutOfMemoryTest {
  public:
   void SetUpInDeathAssert() {
 #if BUILDFLAG(IS_MAC) && BUILDFLAG(USE_ALLOCATOR_SHIM)
-    base::allocator::InitializeAllocatorShim();
+    allocator_shim::InitializeAllocatorShim();
 #endif
 
     // Must call EnableTerminationOnOutOfMemory() because that is called from
@@ -172,7 +172,7 @@ class OutOfMemoryDeathTest : public OutOfMemoryTest {
 
 #if BUILDFLAG(IS_MAC)
   void TearDown() override {
-    base::allocator::UninterceptMallocZonesForTesting();
+    allocator_shim::UninterceptMallocZonesForTesting();
   }
 #endif
 
@@ -537,7 +537,7 @@ class OutOfMemoryHandledTest : public OutOfMemoryTest {
 
   void TearDown() override {
 #if BUILDFLAG(IS_MAC)
-    base::allocator::UninterceptMallocZonesForTesting();
+    allocator_shim::UninterceptMallocZonesForTesting();
 #endif
   }
 };

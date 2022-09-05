@@ -44,7 +44,7 @@
 #include "base/mac/mac_util.h"
 #endif
 
-namespace base::allocator {
+namespace allocator_shim {
 
 bool g_replaced_default_zone = false;
 
@@ -131,7 +131,7 @@ MallocZoneFunctions g_old_purgeable_zone;
 void* oom_killer_malloc(struct _malloc_zone_t* zone, size_t size) {
   void* result = g_old_zone.malloc(zone, size);
   if (!result && size)
-    TerminateBecauseOutOfMemory(size);
+    partition_alloc::TerminateBecauseOutOfMemory(size);
   return result;
 }
 
@@ -140,14 +140,14 @@ void* oom_killer_calloc(struct _malloc_zone_t* zone,
                         size_t size) {
   void* result = g_old_zone.calloc(zone, num_items, size);
   if (!result && num_items && size)
-    TerminateBecauseOutOfMemory(num_items * size);
+    partition_alloc::TerminateBecauseOutOfMemory(num_items * size);
   return result;
 }
 
 void* oom_killer_valloc(struct _malloc_zone_t* zone, size_t size) {
   void* result = g_old_zone.valloc(zone, size);
   if (!result && size)
-    TerminateBecauseOutOfMemory(size);
+    partition_alloc::TerminateBecauseOutOfMemory(size);
   return result;
 }
 
@@ -158,7 +158,7 @@ void oom_killer_free(struct _malloc_zone_t* zone, void* ptr) {
 void* oom_killer_realloc(struct _malloc_zone_t* zone, void* ptr, size_t size) {
   void* result = g_old_zone.realloc(zone, ptr, size);
   if (!result && size)
-    TerminateBecauseOutOfMemory(size);
+    partition_alloc::TerminateBecauseOutOfMemory(size);
   return result;
 }
 
@@ -171,7 +171,7 @@ void* oom_killer_memalign(struct _malloc_zone_t* zone,
   // https://opensource.apple.com/source/libmalloc/libmalloc-283/src/malloc.c .
   if (!result && size && alignment >= sizeof(void*) &&
       base::bits::IsPowerOfTwo(alignment)) {
-    TerminateBecauseOutOfMemory(size);
+    partition_alloc::TerminateBecauseOutOfMemory(size);
   }
   return result;
 }
@@ -181,7 +181,7 @@ void* oom_killer_memalign(struct _malloc_zone_t* zone,
 void* oom_killer_malloc_purgeable(struct _malloc_zone_t* zone, size_t size) {
   void* result = g_old_purgeable_zone.malloc(zone, size);
   if (!result && size)
-    TerminateBecauseOutOfMemory(size);
+    partition_alloc::TerminateBecauseOutOfMemory(size);
   return result;
 }
 
@@ -190,14 +190,14 @@ void* oom_killer_calloc_purgeable(struct _malloc_zone_t* zone,
                                   size_t size) {
   void* result = g_old_purgeable_zone.calloc(zone, num_items, size);
   if (!result && num_items && size)
-    TerminateBecauseOutOfMemory(num_items * size);
+    partition_alloc::TerminateBecauseOutOfMemory(num_items * size);
   return result;
 }
 
 void* oom_killer_valloc_purgeable(struct _malloc_zone_t* zone, size_t size) {
   void* result = g_old_purgeable_zone.valloc(zone, size);
   if (!result && size)
-    TerminateBecauseOutOfMemory(size);
+    partition_alloc::TerminateBecauseOutOfMemory(size);
   return result;
 }
 
@@ -210,7 +210,7 @@ void* oom_killer_realloc_purgeable(struct _malloc_zone_t* zone,
                                    size_t size) {
   void* result = g_old_purgeable_zone.realloc(zone, ptr, size);
   if (!result && size)
-    TerminateBecauseOutOfMemory(size);
+    partition_alloc::TerminateBecauseOutOfMemory(size);
   return result;
 }
 
@@ -223,7 +223,7 @@ void* oom_killer_memalign_purgeable(struct _malloc_zone_t* zone,
   // https://opensource.apple.com/source/libmalloc/libmalloc-283/src/malloc.c .
   if (!result && size && alignment >= sizeof(void*) &&
       base::bits::IsPowerOfTwo(alignment)) {
-    TerminateBecauseOutOfMemory(size);
+    partition_alloc::TerminateBecauseOutOfMemory(size);
   }
   return result;
 }
@@ -257,7 +257,8 @@ void* oom_killer_cfallocator_system_default(CFIndex alloc_size,
                                             void* info) {
   void* result = g_old_cfallocator_system_default(alloc_size, hint, info);
   if (!result)
-    TerminateBecauseOutOfMemory(static_cast<size_t>(alloc_size));
+    partition_alloc::TerminateBecauseOutOfMemory(
+        static_cast<size_t>(alloc_size));
   return result;
 }
 
@@ -266,7 +267,8 @@ void* oom_killer_cfallocator_malloc(CFIndex alloc_size,
                                     void* info) {
   void* result = g_old_cfallocator_malloc(alloc_size, hint, info);
   if (!result)
-    TerminateBecauseOutOfMemory(static_cast<size_t>(alloc_size));
+    partition_alloc::TerminateBecauseOutOfMemory(
+        static_cast<size_t>(alloc_size));
   return result;
 }
 
@@ -275,7 +277,8 @@ void* oom_killer_cfallocator_malloc_zone(CFIndex alloc_size,
                                          void* info) {
   void* result = g_old_cfallocator_malloc_zone(alloc_size, hint, info);
   if (!result)
-    TerminateBecauseOutOfMemory(static_cast<size_t>(alloc_size));
+    partition_alloc::TerminateBecauseOutOfMemory(
+        static_cast<size_t>(alloc_size));
   return result;
 }
 
@@ -289,7 +292,7 @@ allocWithZone_t g_old_allocWithZone;
 id oom_killer_allocWithZone(id self, SEL _cmd, NSZone* zone) {
   id result = g_old_allocWithZone(self, _cmd, zone);
   if (!result)
-    TerminateBecauseOutOfMemory(0);
+    partition_alloc::TerminateBecauseOutOfMemory(0);
   return result;
 }
 
@@ -538,7 +541,7 @@ void ShimNewMallocZonesAndReschedule(base::Time end_time,
     return;
 
   base::TimeDelta next_delay = delay * 2;
-  SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&ShimNewMallocZonesAndReschedule, end_time, next_delay),
       delay);
@@ -608,4 +611,4 @@ void ReplaceZoneFunctions(ChromeMallocZone* zone,
   }
 }
 
-}  // namespace base::allocator
+}  // namespace allocator_shim

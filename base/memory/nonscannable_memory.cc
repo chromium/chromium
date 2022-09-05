@@ -42,8 +42,8 @@ void* NonScannableAllocatorImpl<Quarantinable>::Alloc(size_t size) {
         0, size, partition_alloc::PartitionPageSize());
   }
   // Otherwise, dispatch to default partition.
-  return PartitionAllocMalloc::Allocator()->AllocWithFlagsNoHooks(
-      0, size, partition_alloc::PartitionPageSize());
+  return allocator_shim::internal::PartitionAllocMalloc::Allocator()
+      ->AllocWithFlagsNoHooks(0, size, partition_alloc::PartitionPageSize());
 }
 
 template <bool Quarantinable>

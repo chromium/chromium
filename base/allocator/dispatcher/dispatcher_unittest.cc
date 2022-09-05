@@ -121,8 +121,8 @@ TEST_F(BaseAllocatorDispatcherTest, VerifyNotificationUsingPartitionAllocator) {
 
 #if BUILDFLAG(USE_ALLOCATOR_SHIM)
 struct AllocatorShimAllocator {
-  void* Alloc(size_t size) { return base::allocator::UncheckedAlloc(size); }
-  void Free(void* data) { base::allocator::UncheckedFree(data); }
+  void* Alloc(size_t size) { return allocator_shim::UncheckedAlloc(size); }
+  void Free(void* data) { allocator_shim::UncheckedFree(data); }
 };
 
 #if BUILDFLAG(IS_APPLE) && !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)

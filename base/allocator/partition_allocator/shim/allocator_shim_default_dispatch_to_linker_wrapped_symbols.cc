@@ -27,7 +27,7 @@ size_t __real_malloc_usable_size(void*);
 
 namespace {
 
-using base::allocator::AllocatorDispatch;
+using allocator_shim::AllocatorDispatch;
 
 void* RealMalloc(const AllocatorDispatch*, size_t size, void* context) {
   return __real_malloc(size);

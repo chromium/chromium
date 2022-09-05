@@ -12,8 +12,7 @@
 #include "base/immediate_crash.h"
 #include "third_party/apple_apsl/malloc.h"
 
-namespace base {
-namespace allocator {
+namespace allocator_shim {
 
 typedef void* (*malloc_type)(struct _malloc_zone_t* zone, size_t size);
 typedef void* (*calloc_type)(struct _malloc_zone_t* zone,
@@ -97,7 +96,6 @@ inline MallocZoneFunctions& GetFunctionsForZone(void* zone) {
   IMMEDIATE_CRASH();
 }
 
-}  // namespace allocator
-}  // namespace base
+}  // namespace allocator_shim
 
 #endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_SHIM_MALLOC_ZONE_FUNCTIONS_MAC_H_

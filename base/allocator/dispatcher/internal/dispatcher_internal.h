@@ -26,6 +26,10 @@
 
 namespace base::allocator::dispatcher::internal {
 
+#if BUILDFLAG(USE_ALLOCATOR_SHIM)
+using allocator_shim::AllocatorDispatch;
+#endif
+
 template <typename CheckObserverPredicate,
           typename... ObserverTypes,
           size_t... Indices>

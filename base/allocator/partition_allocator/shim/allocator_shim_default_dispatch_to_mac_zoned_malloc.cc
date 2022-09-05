@@ -8,8 +8,7 @@
 #include "base/allocator/partition_allocator/shim/allocator_shim.h"
 #include "base/allocator/partition_allocator/shim/malloc_zone_functions_mac.h"
 
-namespace base {
-namespace allocator {
+namespace allocator_shim {
 namespace {
 
 void* MallocImpl(const AllocatorDispatch*, size_t size, void* context) {
@@ -103,5 +102,4 @@ const AllocatorDispatch AllocatorDispatch::default_dispatch = {
     nullptr,               /* next */
 };
 
-}  // namespace allocator
-}  // namespace base
+}  // namespace allocator_shim
