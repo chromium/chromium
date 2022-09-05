@@ -1889,31 +1889,8 @@ bool VolumeManager::DoMountEvent(std::unique_ptr<Volume> volume_ptr,
       DCHECK(volume_ptr);
       DCHECK_EQ((*it)->volume_id(), volume.volume_id());
 
-      // TODO(crbug.com/1354029) Is it possible for a Volume object with
-      // different properties to be inserted here?
-      DCHECK_EQ((*it)->configurable(), volume.configurable());
-      DCHECK_EQ((*it)->device_type(), volume.device_type());
-      DCHECK_EQ((*it)->drive_label(), volume.drive_label());
-      DCHECK_EQ((*it)->file_system_id(), volume.file_system_id());
-      DCHECK_EQ((*it)->file_system_type(), volume.file_system_type());
-      DCHECK_EQ((*it)->has_media(), volume.has_media());
-      DCHECK_EQ((*it)->hidden(), volume.hidden());
-      DCHECK_EQ((*it)->is_parent(), volume.is_parent());
-      DCHECK_EQ((*it)->is_read_only_removable_device(),
-                volume.is_read_only_removable_device());
-      DCHECK_EQ((*it)->is_read_only(), volume.is_read_only());
-      DCHECK_EQ((*it)->mount_condition(), volume.mount_condition());
-      DCHECK_EQ((*it)->mount_context(), volume.mount_context());
-      DCHECK_EQ((*it)->mount_path(), volume.mount_path());
-      DCHECK_EQ((*it)->remote_mount_path(), volume.remote_mount_path());
-      DCHECK_EQ((*it)->source_path(), volume.source_path());
-      DCHECK_EQ((*it)->source(), volume.source());
-      DCHECK_EQ((*it)->storage_device_path(), volume.storage_device_path());
-      DCHECK_EQ((*it)->type(), volume.type());
-      DCHECK_EQ((*it)->volume_label(), volume.volume_label());
-      DCHECK_EQ((*it)->watchable(), volume.watchable());
-
-      // Replace the Volume in |mounted_volumes_|.
+      // It is possible for a Volume object with different properties to be
+      // inserted here. Replace the Volume in |mounted_volumes_|.
       const_cast<std::unique_ptr<Volume>&>(*it) = std::move(volume_ptr);
       VLOG(1) << "Replaced volume '" << volume.volume_id() << "'";
     }
