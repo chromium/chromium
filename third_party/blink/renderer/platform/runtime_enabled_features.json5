@@ -1899,7 +1899,6 @@
     },
     {
       name: "RegionCapture",
-      origin_trial_feature_name: "RegionCapture",
       status: {"Android": "", "default": "stable"},
     },
     {
