@@ -118,14 +118,6 @@ MATCHER_P(equalsSuggestion, other, "") {
 
 }  // namespace
 
-// Automagically used to pretty-print Suggestion. Must be in same namespace.
-void PrintTo(const Suggestion& suggestion, std::ostream* os) {
-  *os << "(main_text: \"" << suggestion.main_text.value << "\", labels: \""
-      << SuggestionLabelsToString(suggestion.labels)
-      << "\", frontend_id: " << suggestion.frontend_id
-      << ", additional_label: \"" << suggestion.additional_label << "\")";
-}
-
 class AutofillKeyboardAccessoryAdapterTest : public testing::Test {
  public:
   AutofillKeyboardAccessoryAdapterTest()

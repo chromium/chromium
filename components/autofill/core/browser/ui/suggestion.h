@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/logging.h"
 #include "base/strings/string_piece.h"
 #include "base/types/strong_alias.h"
 #include "build/build_config.h"
@@ -164,6 +165,20 @@ struct Suggestion {
   // If specified, this text will be played back as voice over for a11y.
   absl::optional<std::u16string> voice_over;
 };
+
+#if defined(UNIT_TEST)
+inline void PrintTo(const Suggestion& suggestion, std::ostream* os) {
+  *os << std::endl
+      << "Suggestion (frontend_id:" << suggestion.frontend_id
+      << ", main_text:\"" << suggestion.main_text.value << "\""
+      << (suggestion.main_text.is_primary ? "(Primary)" : "(Not Primary)")
+      << ", minor_text:\"" << suggestion.minor_text.value << "\""
+      << (suggestion.minor_text.is_primary ? "(Primary)" : "(Not Primary)")
+      << ", additional_label: \"" << suggestion.additional_label << "\""
+      << ", icon:" << suggestion.icon
+      << ", trailing_icon:" << suggestion.trailing_icon << ")";
+}
+#endif
 
 }  // namespace autofill
 
