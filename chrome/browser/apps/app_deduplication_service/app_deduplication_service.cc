@@ -24,16 +24,13 @@ AppDeduplicationService::~AppDeduplicationService() = default;
 
 std::vector<Entry> AppDeduplicationService::GetDuplicates(
     const EntryId& entry_id) {
-  // TODO(b/238394602): Add logic to handle url entry id and web apps.
   std::vector<Entry> entries;
 
-  auto it = entry_to_group_map_.find(entry_id);
-
-  if (it == entry_to_group_map_.end()) {
+  absl::optional<uint32_t> duplication_index = FindDuplicationIndex(entry_id);
+  if (!duplication_index.has_value()) {
     return entries;
   }
-  uint32_t duplication_index = it->second;
-  const auto& group = duplication_map_.find(duplication_index);
+  const auto& group = duplication_map_.find(duplication_index.value());
   if (group == duplication_map_.end()) {
     return entries;
   }
@@ -53,19 +50,18 @@ std::vector<Entry> AppDeduplicationService::GetDuplicates(
 
 bool AppDeduplicationService::AreDuplicates(const EntryId& entry_id_1,
                                             const EntryId& entry_id_2) {
-  // TODO(b/238394602): Add logic to handle url entry id and web apps.
   // TODO(b/238394602): Add interface with more than 2 entry ids.
-  auto it_1 = entry_to_group_map_.find(entry_id_1);
-  if (it_1 == entry_to_group_map_.end()) {
+  absl::optional<uint32_t> duplication_index_1 =
+      FindDuplicationIndex(entry_id_1);
+  if (!duplication_index_1.has_value()) {
     return false;
   }
-  uint32_t duplication_index_1 = it_1->second;
 
-  auto it_2 = entry_to_group_map_.find(entry_id_2);
-  if (it_2 == entry_to_group_map_.end()) {
+  absl::optional<uint32_t> duplication_index_2 =
+      FindDuplicationIndex(entry_id_2);
+  if (!duplication_index_2.has_value()) {
     return false;
   }
-  uint32_t duplication_index_2 = it_2->second;
 
   return duplication_index_1 == duplication_index_2;
 }
@@ -132,6 +128,17 @@ void AppDeduplicationService::UpdateInstallationStatus(
   it->second = apps_util::IsInstalled(update.Readiness())
                    ? EntryStatus::kInstalledApp
                    : EntryStatus::kNotInstalledApp;
+}
+
+absl::optional<uint32_t> AppDeduplicationService::FindDuplicationIndex(
+    const EntryId& entry_id) {
+  // TODO(b/238394602): Add logic to handle url entry id and web apps.
+  auto it = entry_to_group_map_.find(entry_id);
+
+  if (it == entry_to_group_map_.end()) {
+    return absl::nullopt;
+  }
+  return it->second;
 }
 
 }  // namespace apps::deduplication

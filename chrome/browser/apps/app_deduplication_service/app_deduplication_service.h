@@ -58,6 +58,12 @@ class AppDeduplicationService : public KeyedService,
 
   void UpdateInstallationStatus(const apps::AppUpdate& update);
 
+  // Search if this entry id belongs to any of the duplicate group.
+  // Returns the map key of the duplicate group in the duplication map if a
+  // group is found, and return nullptr if the entry id doesn't belong to
+  // and duplicate group.
+  absl::optional<uint32_t> FindDuplicationIndex(const EntryId& entry_id);
+
   std::map<uint32_t, DuplicateGroup> duplication_map_;
   std::map<EntryId, uint32_t> entry_to_group_map_;
   std::map<EntryId, EntryStatus> entry_status_;
