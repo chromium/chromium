@@ -108,7 +108,7 @@ class TextRunCollection {
 
  private:
   // Will be null if we skipped autodetection.
-  raw_ptr<UBiDi> bidi_;
+  raw_ptr<UBiDi, DanglingUntriaged> bidi_;
 
   // Text of all the runs.
   std::u16string text_;

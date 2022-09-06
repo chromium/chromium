@@ -218,8 +218,8 @@ class HttpCache::WorkItem {
 
  private:
   WorkItemOperation operation_;
-  raw_ptr<Transaction> transaction_;
-  raw_ptr<ActiveEntry*> entry_;
+  raw_ptr<Transaction, DanglingUntriaged> transaction_;
+  raw_ptr<ActiveEntry*, DanglingUntriaged> entry_;
   CompletionOnceCallback callback_;  // User callback.
 };
 

@@ -66,7 +66,7 @@ struct UniquePtrMatcher {
   }
 
  private:
-  const raw_ptr<T> t_;
+  const raw_ptr<T, DanglingUntriaged> t_;
 };
 
 template <class T, class Deleter = std::default_delete<T>>
