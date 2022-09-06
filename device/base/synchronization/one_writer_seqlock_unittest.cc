@@ -46,7 +46,8 @@ class BasicSeqLockTestThread : public base::PlatformThread::Delegate {
       base::subtle::Atomic32 version;
       do {
         version = seqlock_->ReadBegin();
-        OneWriterSeqLock::AtomicReaderMemcpy(&copy, data_, sizeof(TestData));
+        OneWriterSeqLock::AtomicReaderMemcpy(&copy, data_.get(),
+                                             sizeof(TestData));
       } while (seqlock_->ReadRetry(version));
 
       for (unsigned j = 1; j < 32; ++j)
