@@ -262,20 +262,22 @@ component("partition_alloc") {
       "partition_alloc_base/mac/scoped_typeref.h",
     ]
   }
-  if (current_cpu == "x64") {
-    defines += [ "PA_PCSCAN_STACK_SUPPORTED" ]
-    sources += [ "starscan/stack/asm/x64/push_registers_asm.cc" ]
-  } else if (current_cpu == "x86") {
-    defines += [ "PA_PCSCAN_STACK_SUPPORTED" ]
-    sources += [ "starscan/stack/asm/x86/push_registers_asm.cc" ]
-  } else if (current_cpu == "arm") {
-    defines += [ "PA_PCSCAN_STACK_SUPPORTED" ]
-    sources += [ "starscan/stack/asm/arm/push_registers_asm.cc" ]
-  } else if (current_cpu == "arm64") {
-    defines += [ "PA_PCSCAN_STACK_SUPPORTED" ]
-    sources += [ "starscan/stack/asm/arm64/push_registers_asm.cc" ]
-  } else {
-    # To support a trampoline for another arch, please refer to v8/src/heap/base.
+  if (build_with_chromium) {
+    if (current_cpu == "x64") {
+      defines += [ "PA_PCSCAN_STACK_SUPPORTED" ]
+      sources += [ "starscan/stack/asm/x64/push_registers_asm.cc" ]
+    } else if (current_cpu == "x86") {
+      defines += [ "PA_PCSCAN_STACK_SUPPORTED" ]
+      sources += [ "starscan/stack/asm/x86/push_registers_asm.cc" ]
+    } else if (current_cpu == "arm") {
+      defines += [ "PA_PCSCAN_STACK_SUPPORTED" ]
+      sources += [ "starscan/stack/asm/arm/push_registers_asm.cc" ]
+    } else if (current_cpu == "arm64") {
+      defines += [ "PA_PCSCAN_STACK_SUPPORTED" ]
+      sources += [ "starscan/stack/asm/arm64/push_registers_asm.cc" ]
+    } else {
+      # To support a trampoline for another arch, please refer to v8/src/heap/base.
+    }
   }
   public_deps = [
     ":chromecast_buildflags",
