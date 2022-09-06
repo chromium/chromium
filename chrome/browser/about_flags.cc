@@ -2592,12 +2592,22 @@ const FeatureEntry::FeatureParam
              kPasswordChangeInSettingsWithForcedWarningForEverySite,
          "true"}};
 
+const FeatureEntry::FeatureParam
+    kPasswordChangeInSettingsVariationWeakCredentials[] = {
+        {password_manager::features::
+             kPasswordChangeInSettingsWeakCredentialsParam.name,
+         "true"}};
+
 const FeatureEntry::FeatureVariation
     kPasswordChangeInSettingsFeatureVariations[] = {
         {"Force leak warnings for every site in settings.",
          kPasswordChangeInSettingsVariationWithForcedWarningForEverySite,
          std::size(
              kPasswordChangeInSettingsVariationWithForcedWarningForEverySite),
+         nullptr},
+        {"Include weak credentials.",
+         kPasswordChangeInSettingsVariationWeakCredentials,
+         std::size(kPasswordChangeInSettingsVariationWeakCredentials),
          nullptr}};
 
 #if BUILDFLAG(IS_ANDROID)

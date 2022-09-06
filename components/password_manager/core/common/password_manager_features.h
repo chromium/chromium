@@ -87,6 +87,12 @@ extern const base::Feature kUsernameFirstFlowFallbackCrowdsourcing;
 
 // All features parameters are in alphabetical order.
 
+// If `true`, then password change in settings will also be offered for
+// insecure credentials that are weak (and not phished or leaked).
+constexpr base::FeatureParam<bool>
+    kPasswordChangeInSettingsWeakCredentialsParam = {&kPasswordChangeInSettings,
+                                                     "weak_credentials", false};
+
 // True if the client is part of the live_experiment group for
 // |kPasswordDomainCapabilitiesFetching|, otherwise, the client is assumed to be
 // in the regular launch group.

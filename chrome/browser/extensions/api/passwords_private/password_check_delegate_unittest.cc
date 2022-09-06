@@ -1235,7 +1235,7 @@ TEST_F(PasswordCheckDelegateTest, HasStartableScript) {
   PasswordForm form1 = MakeSavedPassword(kExampleCom, kUsername1, kPassword1);
   AddIssueToForm(&form1, InsecureType::kLeaked);
   store().AddLogin(form1);
-  const url::Origin origin1 = url::Origin::Create(GURL(kExampleCom));
+  const url::Origin kOrigin1 = url::Origin::Create(GURL(kExampleCom));
 
   PasswordForm form2 = MakeSavedPassword(kExampleOrg, kUsername2, kPassword2);
   store().AddLogin(form2);
@@ -1243,7 +1243,7 @@ TEST_F(PasswordCheckDelegateTest, HasStartableScript) {
 
   RunUntilIdle();
 
-  EXPECT_CALL(password_scripts_fetcher(), IsScriptAvailable(origin1))
+  EXPECT_CALL(password_scripts_fetcher(), IsScriptAvailable(kOrigin1))
       .WillOnce(Return(false));
 
   // Only the form with the known issue shows up and does not have a startable
@@ -1294,6 +1294,58 @@ TEST_F(PasswordCheckDelegateTest, HasStartableScript) {
       PasswordCheckScriptsCacheState::kCacheStaleAndUiUpdate, 1);
 }
 
+TEST_F(PasswordCheckDelegateTest, HasStartableScript_WeakCredentials) {
+  base::test::ScopedFeatureList feature_list(
+      password_manager::features::kPasswordChange);
+  base::HistogramTester histogram_tester;
+
+  identity_test_env().MakeAccountAvailable(kTestEmail);
+  // Enable password sync.
+  sync_service().SetActiveDataTypes(syncer::ModelTypeSet(syncer::PASSWORDS));
+
+  // Add two forms: One that is leaked and weak and one that is only weak.
+  PasswordForm form1 = MakeSavedPassword(kExampleCom, kUsername1, kPassword1);
+  AddIssueToForm(&form1, InsecureType::kLeaked);
+  AddIssueToForm(&form1, InsecureType::kWeak);
+  store().AddLogin(form1);
+  const url::Origin kOrigin1 = url::Origin::Create(GURL(kExampleCom));
+
+  PasswordForm form2 = MakeSavedPassword(kExampleOrg, kUsername2, kPassword2);
+  AddIssueToForm(&form2, InsecureType::kWeak);
+  store().AddLogin(form2);
+  const url::Origin origin2 = url::Origin::Create(GURL(kExampleOrg));
+
+  EXPECT_CALL(password_scripts_fetcher(), IsScriptAvailable)
+      .WillRepeatedly(Return(true));
+
+  RunUntilIdle();
+  delegate().StartPasswordCheck();
+  RunUntilIdle();
+
+  // By default only the first form has a startable script because it is also
+  // leaked.
+  EXPECT_THAT(
+      delegate().GetWeakCredentials(),
+      UnorderedElementsAre(ExpectCredentialWithScriptInfo(
+                               kUsername1, /*has_startable_script=*/true),
+                           ExpectCredentialWithScriptInfo(
+                               kUsername2, /*has_startable_script=*/false)));
+
+  // After setin the feature parameter for weak credentials to `true` ...
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      password_manager::features::kPasswordChangeInSettings,
+      {{"weak_credentials", "true"}});
+
+  // ... both credentials are marked as having a password change script.
+  EXPECT_THAT(
+      delegate().GetWeakCredentials(),
+      UnorderedElementsAre(ExpectCredentialWithScriptInfo(
+                               kUsername1, /*has_startable_script=*/true),
+                           ExpectCredentialWithScriptInfo(
+                               kUsername2, /*has_startable_script=*/true)));
+}
+
 TEST_F(PasswordCheckDelegateTest, HasStartableScript_SyncDisabled) {
   base::test::ScopedFeatureList feature_list(
       password_manager::features::kPasswordChange);
@@ -1306,7 +1358,7 @@ TEST_F(PasswordCheckDelegateTest, HasStartableScript_SyncDisabled) {
   PasswordForm form1 = MakeSavedPassword(kExampleCom, kUsername1, kPassword1);
   AddIssueToForm(&form1, InsecureType::kLeaked);
   store().AddLogin(form1);
-  const url::Origin origin1 = url::Origin::Create(GURL(kExampleCom));
+  const url::Origin kOrigin1 = url::Origin::Create(GURL(kExampleCom));
 
   RunUntilIdle();
 
@@ -1333,7 +1385,7 @@ TEST_F(PasswordCheckDelegateTest, HasStartableScript_FeatureDisabled) {
   PasswordForm form1 = MakeSavedPassword(kExampleCom, kUsername1, kPassword1);
   AddIssueToForm(&form1, InsecureType::kLeaked);
   store().AddLogin(form1);
-  const url::Origin origin1 = url::Origin::Create(GURL(kExampleCom));
+  const url::Origin kOrigin1 = url::Origin::Create(GURL(kExampleCom));
 
   RunUntilIdle();
 
@@ -1359,7 +1411,7 @@ TEST_F(PasswordCheckDelegateTest, HasStartableScript_CacheFresh) {
   PasswordForm form1 = MakeSavedPassword(kExampleCom, kUsername1, kPassword1);
   AddIssueToForm(&form1, InsecureType::kLeaked);
   store().AddLogin(form1);
-  const url::Origin origin1 = url::Origin::Create(GURL(kExampleCom));
+  const url::Origin kOrigin1 = url::Origin::Create(GURL(kExampleCom));
 
   RunUntilIdle();
 
@@ -1396,7 +1448,7 @@ TEST_F(PasswordCheckDelegateTest,
   PasswordForm form1 = MakeSavedPassword(kExampleCom, kUsername1, kPassword1);
   AddIssueToForm(&form1, InsecureType::kLeaked);
   store().AddLogin(form1);
-  const url::Origin origin1 = url::Origin::Create(GURL(kExampleCom));
+  const url::Origin kOrigin1 = url::Origin::Create(GURL(kExampleCom));
 
   RunUntilIdle();
 

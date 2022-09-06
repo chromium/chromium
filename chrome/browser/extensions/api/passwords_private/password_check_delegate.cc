@@ -642,20 +642,24 @@ PasswordCheckDelegate::ConstructInsecureCredential(
   } else {
     api_credential.change_password_url = GetChangePasswordUrl(entry.url);
   }
-  // For the time being, the automated password change is restricted to
-  // compromised credentials. In the future, this requirement may be relaxed.
-  if ((entry.IsPhished() || entry.IsLeaked()) &&
-      IsAutomatedPasswordChangeFromSettingsEnabled() &&
-      !entry.username.empty()) {
+
+  api_credential.has_startable_script = false;
+  if (entry.username.empty() ||
+      !IsAutomatedPasswordChangeFromSettingsEnabled()) {
+    return api_credential;
+  }
+
+  if (entry.IsPhished() || entry.IsLeaked() ||
+      password_manager::features::kPasswordChangeInSettingsWeakCredentialsParam
+          .Get()) {
     GURL url = api_credential.is_android_credential
                    ? GURL(entry.affiliated_web_realm)
                    : entry.url;
     api_credential.has_startable_script =
         !url.is_empty() && GetPasswordScriptsFetcher()->IsScriptAvailable(
                                url::Origin::Create(entry.url));
-  } else {
-    api_credential.has_startable_script = false;
   }
+
   return api_credential;
 }
 
