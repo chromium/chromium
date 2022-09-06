@@ -1024,7 +1024,7 @@ const String& DocumentTransitionStyleTracker::UAStyleSheet() {
                            const String& tag,
                            const TransformationMatrix& source_matrix,
                            const LayoutSize& source_size) {
-    builder.Append("@keyframes page-transition-container-anim-");
+    builder.Append("@keyframes -ua-page-transition-container-anim-");
     builder.Append(tag);
     builder.AppendFormat(
         R"CSS({
@@ -1042,7 +1042,7 @@ const String& DocumentTransitionStyleTracker::UAStyleSheet() {
         source_size.Width().ToFloat(), source_size.Height().ToFloat());
 
     append_selector("html::page-transition-container", tag);
-    builder.Append("{ animation: page-transition-container-anim-");
+    builder.Append("{ animation: -ua-page-transition-container-anim-");
     builder.Append(tag);
     builder.Append(" 0.25s both }");
 

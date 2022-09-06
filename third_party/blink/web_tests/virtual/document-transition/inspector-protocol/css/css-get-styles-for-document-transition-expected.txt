@@ -393,7 +393,7 @@ The test verifies functionality of querying style information for document-trans
                                     }
                                     [7] : {
                                         name : animation-name
-                                        value : page-transition-container-anim-shared
+                                        value : -ua-page-transition-container-anim-shared
                                     }
                                     [8] : {
                                         name : animation-timeline
@@ -403,7 +403,7 @@ The test verifies functionality of querying style information for document-trans
                                 shorthandEntries : [
                                     [0] : {
                                         name : animation
-                                        value : 0.25s ease 0s 1 normal both running page-transition-container-anim-shared
+                                        value : 0.25s ease 0s 1 normal both running -ua-page-transition-container-anim-shared
                                     }
                                 ]
                             }
@@ -722,7 +722,7 @@ The test verifies functionality of querying style information for document-trans
                                     }
                                     [7] : {
                                         name : animation-name
-                                        value : blink-page-transition-fade-out
+                                        value : -ua-blink-page-transition-fade-out
                                     }
                                     [8] : {
                                         name : animation-timeline
@@ -732,7 +732,7 @@ The test verifies functionality of querying style information for document-trans
                                 shorthandEntries : [
                                     [0] : {
                                         name : animation
-                                        value : 0.25s ease 0s 1 normal both running blink-page-transition-fade-out
+                                        value : 0.25s ease 0s 1 normal both running -ua-blink-page-transition-fade-out
                                     }
                                 ]
                             }
@@ -1037,7 +1037,7 @@ The test verifies functionality of querying style information for document-trans
                                     }
                                     [7] : {
                                         name : animation-name
-                                        value : blink-page-transition-fade-out
+                                        value : -ua-blink-page-transition-fade-out
                                     }
                                     [8] : {
                                         name : animation-timeline
@@ -1047,7 +1047,7 @@ The test verifies functionality of querying style information for document-trans
                                 shorthandEntries : [
                                     [0] : {
                                         name : animation
-                                        value : 0.25s ease 0s 1 normal both running blink-page-transition-fade-out
+                                        value : 0.25s ease 0s 1 normal both running -ua-blink-page-transition-fade-out
                                     }
                                 ]
                             }
@@ -1352,7 +1352,7 @@ The test verifies functionality of querying style information for document-trans
                                     }
                                     [7] : {
                                         name : animation-name
-                                        value : blink-page-transition-fade-in
+                                        value : -ua-blink-page-transition-fade-in
                                     }
                                     [8] : {
                                         name : animation-timeline
@@ -1362,7 +1362,7 @@ The test verifies functionality of querying style information for document-trans
                                 shorthandEntries : [
                                     [0] : {
                                         name : animation
-                                        value : 0.25s ease 0s 1 normal both running blink-page-transition-fade-in
+                                        value : 0.25s ease 0s 1 normal both running -ua-blink-page-transition-fade-in
                                     }
                                 ]
                             }
@@ -1521,7 +1521,7 @@ The test verifies functionality of querying style information for document-trans
                                     }
                                     [7] : {
                                         name : animation-name
-                                        value : blink-page-transition-fade-in
+                                        value : -ua-blink-page-transition-fade-in
                                     }
                                     [8] : {
                                         name : animation-timeline
@@ -1531,7 +1531,7 @@ The test verifies functionality of querying style information for document-trans
                                 shorthandEntries : [
                                     [0] : {
                                         name : animation
-                                        value : 0.25s ease 0s 1 normal both running blink-page-transition-fade-in
+                                        value : 0.25s ease 0s 1 normal both running -ua-blink-page-transition-fade-in
                                     }
                                 ]
                             }
@@ -2032,7 +2032,7 @@ Dumping styles for : ::page-transition-outgoing-image with id root{
                             }
                             [7] : {
                                 name : animation-name
-                                value : blink-page-transition-fade-out
+                                value : -ua-blink-page-transition-fade-out
                             }
                             [8] : {
                                 name : animation-timeline
@@ -2042,7 +2042,7 @@ Dumping styles for : ::page-transition-outgoing-image with id root{
                         shorthandEntries : [
                             [0] : {
                                 name : animation
-                                value : 0.25s ease 0s 1 normal both running blink-page-transition-fade-out
+                                value : 0.25s ease 0s 1 normal both running -ua-blink-page-transition-fade-out
                             }
                         ]
                     }
@@ -2349,7 +2349,7 @@ Dumping styles for : ::page-transition-incoming-image with id root{
                             }
                             [7] : {
                                 name : animation-name
-                                value : blink-page-transition-fade-in
+                                value : -ua-blink-page-transition-fade-in
                             }
                             [8] : {
                                 name : animation-timeline
@@ -2359,7 +2359,7 @@ Dumping styles for : ::page-transition-incoming-image with id root{
                         shorthandEntries : [
                             [0] : {
                                 name : animation
-                                value : 0.25s ease 0s 1 normal both running blink-page-transition-fade-in
+                                value : 0.25s ease 0s 1 normal both running -ua-blink-page-transition-fade-in
                             }
                         ]
                     }
@@ -2569,7 +2569,7 @@ Dumping styles for : ::page-transition-container with id shared{
                             }
                             [7] : {
                                 name : animation-name
-                                value : page-transition-container-anim-shared
+                                value : -ua-page-transition-container-anim-shared
                             }
                             [8] : {
                                 name : animation-timeline
@@ -2579,7 +2579,7 @@ Dumping styles for : ::page-transition-container with id shared{
                         shorthandEntries : [
                             [0] : {
                                 name : animation
-                                value : 0.25s ease 0s 1 normal both running page-transition-container-anim-shared
+                                value : 0.25s ease 0s 1 normal both running -ua-page-transition-container-anim-shared
                             }
                         ]
                     }
@@ -2804,7 +2804,7 @@ Dumping styles for : ::page-transition-outgoing-image with id shared{
                             }
                             [7] : {
                                 name : animation-name
-                                value : blink-page-transition-fade-out
+                                value : -ua-blink-page-transition-fade-out
                             }
                             [8] : {
                                 name : animation-timeline
@@ -2814,7 +2814,7 @@ Dumping styles for : ::page-transition-outgoing-image with id shared{
                         shorthandEntries : [
                             [0] : {
                                 name : animation
-                                value : 0.25s ease 0s 1 normal both running blink-page-transition-fade-out
+                                value : 0.25s ease 0s 1 normal both running -ua-blink-page-transition-fade-out
                             }
                         ]
                     }
@@ -3121,7 +3121,7 @@ Dumping styles for : ::page-transition-incoming-image with id shared{
                             }
                             [7] : {
                                 name : animation-name
-                                value : blink-page-transition-fade-in
+                                value : -ua-blink-page-transition-fade-in
                             }
                             [8] : {
                                 name : animation-timeline
@@ -3131,7 +3131,7 @@ Dumping styles for : ::page-transition-incoming-image with id shared{
                         shorthandEntries : [
                             [0] : {
                                 name : animation
-                                value : 0.25s ease 0s 1 normal both running blink-page-transition-fade-in
+                                value : 0.25s ease 0s 1 normal both running -ua-blink-page-transition-fade-in
                             }
                         ]
                     }
