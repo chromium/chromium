@@ -90,8 +90,6 @@ constexpr int kWindowWidth = 1024;
 constexpr int kWindowHeight = 758;
 constexpr float kMaxRatioOfWorkArea = 0.9;
 
-constexpr base::TimeDelta kExtendedAccountInfoTimeout = base::Seconds(10);
-
 constexpr int kSupportedAcceleratorCommands[] = {
     IDC_CLOSE_TAB,  IDC_CLOSE_WINDOW,    IDC_EXIT,
     IDC_FULLSCREEN, IDC_MINIMIZE_WINDOW, IDC_BACK,
@@ -268,15 +266,6 @@ void ProfilePicker::AddOnProfilePickerOpenedCallbackForTesting(
   DCHECK(!callback.is_null());
   g_profile_picker_opened_callback_for_testing =
       new base::OnceClosure(std::move(callback));
-}
-
-// static
-void ProfilePicker::SetExtendedAccountInfoTimeoutForTesting(
-    base::TimeDelta timeout) {
-  if (g_profile_picker_view) {
-    g_profile_picker_view->SetExtendedAccountInfoTimeoutForTesting(  // IN-TEST
-        timeout);
-  }
 }
 
 // ProfilePickerForceSigninDialog
@@ -505,8 +494,7 @@ void ProfilePickerView::RemoveObserver(
 ProfilePickerView::ProfilePickerView(ProfilePicker::Params&& params)
     : keep_alive_(KeepAliveOrigin::USER_MANAGER_VIEW,
                   KeepAliveRestartOption::DISABLED),
-      params_(std::move(params)),
-      extended_account_info_timeout_(kExtendedAccountInfoTimeout) {
+      params_(std::move(params)) {
   // Setup the WidgetDelegate.
   SetHasWindowSizeControls(true);
   SetTitle(IDS_PRODUCT_NAME);
@@ -710,8 +698,7 @@ void ProfilePickerView::SwitchToSignedInFlow(
     bool is_saml) {
   DCHECK(!signed_in_flow_);
   signed_in_flow_ = std::make_unique<ProfileCreationSignedInFlowController>(
-      this, signed_in_profile, std::move(contents), profile_color,
-      extended_account_info_timeout_, is_saml);
+      this, signed_in_profile, std::move(contents), profile_color, is_saml);
   signed_in_flow_->Init();
 }
 
@@ -910,11 +897,6 @@ bool ProfilePickerView::GetDiceSigningIn() const {
   return static_cast<bool>(dice_sign_in_provider_);
 }
 #endif
-
-void ProfilePickerView::SetExtendedAccountInfoTimeoutForTesting(
-    base::TimeDelta timeout) {
-  extended_account_info_timeout_ = timeout;
-}
 
 void ProfilePickerView::ConfigureAccelerators() {
   const std::vector<AcceleratorMapping> accelerator_list(GetAcceleratorList());

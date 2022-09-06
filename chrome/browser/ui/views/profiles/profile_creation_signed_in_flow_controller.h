@@ -26,7 +26,6 @@ class ProfileCreationSignedInFlowController
       Profile* profile,
       std::unique_ptr<content::WebContents> contents,
       absl::optional<SkColor> profile_color,
-      base::TimeDelta extended_account_info_timeout,
       bool is_saml);
   ~ProfileCreationSignedInFlowController() override;
   ProfileCreationSignedInFlowController(
@@ -61,11 +60,6 @@ class ProfileCreationSignedInFlowController
       ProfilePicker::BrowserOpenedCallback finish_flow_callback,
       Profile* profile_with_browser_opened);
 
-  // For finishing the profile creation flow, the extended account info is
-  // needed (for properly naming the new profile). After a timeout, a fallback
-  // name is used, instead, to unblock the flow.
-  base::TimeDelta extended_account_info_timeout_;
-
   // Stores whether this is profile creation for saml sign-in (that skips most
   // of the logic).
   const bool is_saml_;
@@ -86,5 +80,21 @@ class ProfileCreationSignedInFlowController
   base::WeakPtrFactory<ProfileCreationSignedInFlowController> weak_ptr_factory_{
       this};
 };
+
+namespace testing {
+
+// Overrides the timeout we give to the extended account info fetch after a
+// profile creation, before we use fallback values instead.
+class ScopedCreatedProfileInfoFetchTimeoutOverride {
+ public:
+  explicit ScopedCreatedProfileInfoFetchTimeoutOverride(
+      base::TimeDelta timeout);
+  ~ScopedCreatedProfileInfoFetchTimeoutOverride();
+
+ private:
+  absl::optional<base::TimeDelta> overriden_timeout_;
+};
+
+}  // namespace testing
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_CREATION_SIGNED_IN_FLOW_CONTROLLER_H_

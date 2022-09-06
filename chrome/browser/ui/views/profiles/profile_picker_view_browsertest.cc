@@ -9,6 +9,7 @@
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/policy/profile_policy_connector_builder.h"
 #include "chrome/browser/sync/sync_startup_tracker.h"
+#include "chrome/browser/ui/views/profiles/profile_creation_signed_in_flow_controller.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_view.h"
 
 #include <set>
@@ -939,8 +940,8 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
       IdentityManagerFactory::GetForProfile(profile_being_created);
 
   // Make it work without waiting for a long delay.
-  ProfilePicker::SetExtendedAccountInfoTimeoutForTesting(
-      base::Milliseconds(10));
+  testing::ScopedCreatedProfileInfoFetchTimeoutOverride timeout_override{
+      base::Milliseconds(10)};
 
   // Add an account - simulate a successful Gaia sign-in.
   CoreAccountInfo core_account_info =

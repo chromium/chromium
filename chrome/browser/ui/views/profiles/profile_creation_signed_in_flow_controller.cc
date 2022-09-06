@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/profiles/profile_creation_signed_in_flow_controller.h"
 
 #include "base/threading/thread_task_runner_handle.h"
+#include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
@@ -15,7 +16,6 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
@@ -26,6 +26,12 @@
 #include "components/signin/public/identity_manager/account_info.h"
 
 namespace {
+
+constexpr base::TimeDelta kDefaultExtendedAccountInfoTimeout =
+    base::Seconds(10);
+
+absl::optional<base::TimeDelta> g_extended_account_info_timeout_for_testing =
+    absl::nullopt;
 
 // Shows the customization bubble if possible. The bubble won't be shown if the
 // color is enforced by policy or downloaded through Sync or the default theme
@@ -80,13 +86,11 @@ ProfileCreationSignedInFlowController::ProfileCreationSignedInFlowController(
     Profile* profile,
     std::unique_ptr<content::WebContents> contents,
     absl::optional<SkColor> profile_color,
-    base::TimeDelta extended_account_info_timeout,
     bool is_saml)
     : ProfilePickerSignedInFlowController(host,
                                           profile,
                                           std::move(contents),
                                           profile_color),
-      extended_account_info_timeout_(extended_account_info_timeout),
       is_saml_(is_saml) {}
 
 ProfileCreationSignedInFlowController::
@@ -134,7 +138,8 @@ void ProfileCreationSignedInFlowController::Init() {
       weak_ptr_factory_.GetWeakPtr(), account_info));
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE, extended_account_info_timeout_closure_.callback(),
-      extended_account_info_timeout_);
+      g_extended_account_info_timeout_for_testing.value_or(
+          kDefaultExtendedAccountInfoTimeout));
 }
 
 void ProfileCreationSignedInFlowController::Cancel() {
@@ -306,3 +311,24 @@ void ProfileCreationSignedInFlowController::OnBrowserOpened(
   CHECK(browser);
   std::move(finish_flow_callback).Run(browser);
 }
+
+namespace testing {
+
+ScopedCreatedProfileInfoFetchTimeoutOverride::
+    ScopedCreatedProfileInfoFetchTimeoutOverride(base::TimeDelta timeout) {
+  if (g_extended_account_info_timeout_for_testing.has_value()) {
+    overriden_timeout_ = g_extended_account_info_timeout_for_testing.value();
+  }
+  g_extended_account_info_timeout_for_testing = timeout;
+}
+
+ScopedCreatedProfileInfoFetchTimeoutOverride::
+    ~ScopedCreatedProfileInfoFetchTimeoutOverride() {
+  if (overriden_timeout_.has_value()) {
+    g_extended_account_info_timeout_for_testing = overriden_timeout_.value();
+  } else {
+    g_extended_account_info_timeout_for_testing.reset();
+  }
+}
+
+}  // namespace testing

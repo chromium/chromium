@@ -191,10 +191,6 @@ class ProfilePickerView : public views::WidgetDelegateView,
   void BackButtonPressed(const ui::Event& event);
   void NavigateBack();
 
-  // Overrides the default timeout for waiting for extended account info for any
-  // future signed-in profile creation flow.
-  void SetExtendedAccountInfoTimeoutForTesting(base::TimeDelta timeout);
-
   // Register basic keyboard accelerators such as closing the window (Alt-F4
   // on Windows).
   void ConfigureAccelerators();
@@ -266,9 +262,6 @@ class ProfilePickerView : public views::WidgetDelegateView,
 #endif
 
   std::unique_ptr<ProfilePickerSignedInFlowController> signed_in_flow_;
-
-  // Delay used for a timeout, may be overridden by tests.
-  base::TimeDelta extended_account_info_timeout_;
 
   // Creation time of the picker, to measure performance on startup. Only set
   // when the picker is shown on startup.
