@@ -102,7 +102,7 @@
 <translation id="1243027604378859286">രചയിതാവ്:</translation>
 <translation id="1246424317317450637">ബോള്‍ഡ്</translation>
 <translation id="1250759482327835220">അടുത്ത പ്രാവശ്യം കൂടുതൽ വേഗത്തിൽ പണമടയ്ക്കാൻ, നിങ്ങളുടെ Google അക്കൗണ്ടിൽ കാർഡ്, പേര്, ബില്ലിംഗ് വിലാസം എന്നിവ സംരക്ഷിക്കുക.</translation>
-<translation id="1252799212227771492">'ഷീറ്റ് സൃഷ്ടിക്കുക' ബട്ടൺ, പുതിയൊരു Google ഷീറ്റ് വേഗത്തിൽ സൃഷ്ടിക്കാൻ Enter അമർത്തുക</translation>
+<translation id="1252799212227771492">'ഷീറ്റ് സൃഷ്ടിക്കുക' ബട്ടൺ, പുതിയൊരു Google Sheet വേഗത്തിൽ സൃഷ്ടിക്കാൻ Enter അമർത്തുക</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (സമന്വയിപ്പിച്ചു)</translation>
 <translation id="1256368399071562588">&lt;p&gt;നിങ്ങളൊരു വെബ്‌സൈറ്റ് സന്ദർശിക്കാൻ ശ്രമിക്കുകയും അത് തുറക്കാതിരിക്കുകയുമാണെങ്കിൽ, ഇനിപ്പറയുന്ന ട്രബിള്‍ഷൂട്ടിംഗ് ഘട്ടങ്ങൾ ഉപയോഗിച്ച്, പ്രശ്നം പരിഹരിക്കാൻ ശ്രമിക്കുക:&lt;/p&gt;
     &lt;ol&gt;
@@ -1415,7 +1415,7 @@
 <translation id="4813512666221746211">നെറ്റ്‌വര്‍ക്ക് പിശക്</translation>
 <translation id="4816492930507672669">പേജിന് യുക്തമാക്കുക</translation>
 <translation id="4819347708020428563">ഡിഫോൾട്ട് കാഴ്‌ചയിൽ കുറിപ്പുകൾ എഡിറ്റ് ചെയ്യണോ?</translation>
-<translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, പുതിയൊരു Google ഷീറ്റ് വേഗത്തിൽ സൃഷ്ടിക്കാൻ Tab അമർത്തുക, തുടർന്ന് Enter അമർത്തുക</translation>
+<translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, പുതിയൊരു Google Sheet വേഗത്തിൽ സൃഷ്ടിക്കാൻ Tab അമർത്തുക, തുടർന്ന് Enter അമർത്തുക</translation>
 <translation id="4825507807291741242">ശക്തമായത്</translation>
 <translation id="483241715238664915">മുന്നറിയിപ്പുകൾ ഓണാക്കുക</translation>
 <translation id="4834250788637067901">Google Pay ഉപയോഗിക്കുന്ന പേയ്മെന്റ് രീതികളും ഓഫറുകളും വിലാസങ്ങളും</translation>
@@ -2606,7 +2606,7 @@
 <translation id="8067872629359326442">വഞ്ചനാപരമായ സൈറ്റിൽ നിങ്ങൾ ഇപ്പോൾ പാസ്‍വേഡ് നൽകി. Chromium-ന് സഹായിക്കാനാവും. നിങ്ങളുടെ പാസ്‌വേഡ് മാറ്റാനും നിങ്ങളുടെ അക്കൗണ്ട് അപകടത്തിലായിരിക്കാമെന്ന് Google-നെ അറിയിക്കാനും 'അക്കൗണ്ട് പരിരക്ഷിക്കുക' ക്ലിക്ക് ചെയ്യുക.</translation>
 <translation id="8070439594494267500">ആപ്പ് ഐക്കൺ</translation>
 <translation id="8074253406171541171">10x13 (എൻവലപ്പ്)</translation>
-<translation id="8075736640322370409">പുതിയൊരു Google ഷീറ്റ് വേഗത്തിൽ സൃഷ്ടിക്കുക</translation>
+<translation id="8075736640322370409">പുതിയൊരു Google Sheet വേഗത്തിൽ സൃഷ്ടിക്കുക</translation>
 <translation id="8075898834294118863">സൈറ്റ് ക്രമീകരണം മാനേജ് ചെയ്യുക</translation>
 <translation id="8076492880354921740">ടാബുകള്‍‌</translation>
 <translation id="8078141288243656252">തിരിക്കുമ്പോൾ അനോട്ടേറ്റ് ചെയ്യാനാവില്ല</translation>
