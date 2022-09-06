@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
+#include "chromeos/ui/base/display_util.h"
 #include "chromeos/ui/base/tablet_state.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/base/window_state_type.h"
@@ -19,6 +20,7 @@
 #include "chromeos/ui/frame/caption_buttons/frame_size_button.h"
 #include "chromeos/ui/frame/caption_buttons/snap_controller.h"
 #include "chromeos/ui/frame/frame_header.h"
+#include "chromeos/ui/frame/frame_utils.h"
 #include "chromeos/ui/frame/multitask_menu/float_controller_base.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "chromeos/ui/wm/window_util.h"
@@ -27,6 +29,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
+#include "ui/display/screen.h"
 #include "ui/events/event_sink.h"
 #include "ui/gfx/animation/slide_animation.h"
 #include "ui/gfx/animation/tween.h"
@@ -41,6 +44,7 @@
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/views/window/caption_button_types.h"
 #include "ui/views/window/frame_caption_button.h"
+#include "ui/views/window/vector_icons/vector_icons.h"
 
 namespace chromeos {
 
@@ -181,6 +185,7 @@ FrameCaptionButtonContainerView::FrameCaptionButtonContainerView(
   // Insert the buttons left to right.
   if (custom_button)
     custom_button_ = AddChildView(std::move(custom_button));
+
   if (chromeos::wm::features::IsFloatWindowEnabled()) {
     float_button_ = AddChildView(std::make_unique<views::FrameCaptionButton>(
         base::BindRepeating(
@@ -223,6 +228,13 @@ FrameCaptionButtonContainerView::FrameCaptionButtonContainerView(
       l10n_util::GetStringUTF16(IDS_APP_ACCNAME_CLOSE));
   AddChildView(close_button_.get());
 
+  SetButtonImage(views::CAPTION_BUTTON_ICON_FLOAT, chromeos::kFloatButtonIcon);
+  SetButtonImage(views::CAPTION_BUTTON_ICON_MENU, chromeos::kFloatWindowIcon);
+  SetButtonImage(views::CAPTION_BUTTON_ICON_MINIMIZE,
+                 views::kWindowControlMinimizeIcon);
+  SetButtonImage(views::CAPTION_BUTTON_ICON_CLOSE,
+                 views::kWindowControlCloseIcon);
+
   // The float button relies on minimum size to know if it can be floated, which
   // can only be checked after the widget has been initialized.
   if (frame->IsNativeWidgetInitialized()) {
@@ -240,6 +252,18 @@ void FrameCaptionButtonContainerView::TestApi::EndAnimations() {
   container_view_->tablet_mode_animation_->End();
 }
 
+void FrameCaptionButtonContainerView::SetPaintAsActive(bool paint_as_active) {
+  if (custom_button_)
+    custom_button_->SetPaintAsActive(paint_as_active);
+  if (float_button_)
+    float_button_->SetPaintAsActive(paint_as_active);
+  menu_button_->SetPaintAsActive(paint_as_active);
+  minimize_button_->SetPaintAsActive(paint_as_active);
+  size_button_->SetPaintAsActive(paint_as_active);
+  close_button_->SetPaintAsActive(paint_as_active);
+  SchedulePaint();
+}
+
 void FrameCaptionButtonContainerView::SetButtonImage(
     views::CaptionButtonIcon icon,
     const gfx::VectorIcon& icon_definition) {
@@ -252,18 +276,6 @@ void FrameCaptionButtonContainerView::SetButtonImage(
       buttons[i]->SetImage(icon, views::FrameCaptionButton::Animate::kNo,
                            icon_definition);
   }
-}
-
-void FrameCaptionButtonContainerView::SetPaintAsActive(bool paint_as_active) {
-  if (custom_button_)
-    custom_button_->SetPaintAsActive(paint_as_active);
-  if (float_button_)
-    float_button_->SetPaintAsActive(paint_as_active);
-  menu_button_->SetPaintAsActive(paint_as_active);
-  minimize_button_->SetPaintAsActive(paint_as_active);
-  size_button_->SetPaintAsActive(paint_as_active);
-  close_button_->SetPaintAsActive(paint_as_active);
-  SchedulePaint();
 }
 
 void FrameCaptionButtonContainerView::SetBackgroundColor(
@@ -358,29 +370,10 @@ void FrameCaptionButtonContainerView::UpdateCaptionButtonState(bool animate) {
       model_->IsVisible(views::CAPTION_BUTTON_ICON_CLOSE));
 }
 
-void FrameCaptionButtonContainerView::UpdateSizeButtonTooltip(
-    bool use_restore_frame) {
-  size_button_->SetTooltipText(
-      use_restore_frame ? l10n_util::GetStringUTF16(IDS_APP_ACCNAME_MAXIMIZE)
-                        : l10n_util::GetStringUTF16(IDS_APP_ACCNAME_RESTORE));
-}
-
-void FrameCaptionButtonContainerView::UpdateFloatButton() {
-  // This may be called during widget initialization.
-  if (!float_button_ || !GetWidget())
-    return;
-
-  const bool floated = GetWidget()->GetNativeWindow()->GetProperty(
-                           kWindowStateTypeKey) == WindowStateType::kFloated;
-  float_button_->SetTooltipText(
-      floated
-          // TODO(sammiequon|shidi): Update this to the correct string once UX
-          // writing has a decision.
-          ? l10n_util::GetStringUTF16(IDS_APP_ACCNAME_RESTORE)
-          : l10n_util::GetStringUTF16(IDS_APP_ACCNAME_FLOAT));
-  SetButtonImage(
-      views::CAPTION_BUTTON_ICON_FLOAT,
-      floated ? chromeos::kUnfloatButtonIcon : chromeos::kFloatButtonIcon);
+void FrameCaptionButtonContainerView::UpdateButtonsImageAndTooltip() {
+  UpdateSizeButton();
+  UpdateSnapButtons();
+  UpdateFloatButton();
 }
 
 void FrameCaptionButtonContainerView::SetButtonSize(const gfx::Size& size) {
@@ -508,6 +501,54 @@ void FrameCaptionButtonContainerView::SetButtonIcon(
   auto it = button_icon_map_.find(icon);
   if (it != button_icon_map_.end())
     button->SetImage(icon, fcb_animate, *it->second);
+}
+
+void FrameCaptionButtonContainerView::UpdateSizeButton() {
+  const bool use_zoom_icons = model_->InZoomMode();
+  const gfx::VectorIcon& restore_icon = use_zoom_icons
+                                            ? chromeos::kWindowControlDezoomIcon
+                                            : views::kWindowControlRestoreIcon;
+  const gfx::VectorIcon& maximize_icon =
+      use_zoom_icons ? chromeos::kWindowControlZoomIcon
+                     : views::kWindowControlMaximizeIcon;
+
+  const bool use_restore_frame = chromeos::ShouldUseRestoreFrame(frame_);
+  SetButtonImage(views::CAPTION_BUTTON_ICON_MAXIMIZE_RESTORE,
+                 use_restore_frame ? maximize_icon : restore_icon);
+  size_button_->SetTooltipText(
+      use_restore_frame ? l10n_util::GetStringUTF16(IDS_APP_ACCNAME_MAXIMIZE)
+                        : l10n_util::GetStringUTF16(IDS_APP_ACCNAME_RESTORE));
+}
+
+void FrameCaptionButtonContainerView::UpdateSnapButtons() {
+  const bool is_horizontal_display = chromeos::IsDisplayLayoutHorizontal(
+      display::Screen::GetScreen()->GetDisplayNearestWindow(
+          frame_->GetNativeWindow()));
+  SetButtonImage(views::CAPTION_BUTTON_ICON_LEFT_TOP_SNAPPED,
+                 is_horizontal_display
+                     ? chromeos::kWindowControlLeftSnappedIcon
+                     : chromeos::kWindowControlTopSnappedIcon);
+  SetButtonImage(views::CAPTION_BUTTON_ICON_RIGHT_BOTTOM_SNAPPED,
+                 is_horizontal_display
+                     ? chromeos::kWindowControlRightSnappedIcon
+                     : chromeos::kWindowControlBottomSnappedIcon);
+}
+
+void FrameCaptionButtonContainerView::UpdateFloatButton() {
+  if (!float_button_)
+    return;
+
+  const bool floated = frame_->GetNativeWindow()->GetProperty(
+                           kWindowStateTypeKey) == WindowStateType::kFloated;
+  SetButtonImage(
+      views::CAPTION_BUTTON_ICON_FLOAT,
+      floated ? chromeos::kUnfloatButtonIcon : chromeos::kFloatButtonIcon);
+  float_button_->SetTooltipText(
+      floated
+          // TODO(sammiequon|shidi): Update this to the correct string once UX
+          // writing has a decision.
+          ? l10n_util::GetStringUTF16(IDS_APP_ACCNAME_RESTORE)
+          : l10n_util::GetStringUTF16(IDS_APP_ACCNAME_FLOAT));
 }
 
 void FrameCaptionButtonContainerView::MinimizeButtonPressed() {

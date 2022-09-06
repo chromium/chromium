@@ -199,8 +199,6 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameHeader {
 
   gfx::Rect GetTitleBounds() const;
 
-  void UpdateSnapIcons();
-
   // The widget that the caption buttons act on. This can be different from
   // |view_|'s widget.
   raw_ptr<views::Widget> target_widget_;

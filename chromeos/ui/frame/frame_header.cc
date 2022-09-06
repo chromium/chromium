@@ -6,12 +6,9 @@
 
 #include "base/containers/cxx20_erase.h"
 #include "base/logging.h"  // DCHECK
-#include "chromeos/ui/base/display_util.h"
-#include "chromeos/ui/frame/caption_buttons/caption_button_model.h"
 #include "chromeos/ui/frame/caption_buttons/frame_caption_button_container_view.h"
 #include "chromeos/ui/frame/frame_utils.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
-#include "chromeos/ui/wm/features.h"
 #include "ui/base/class_property.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -19,7 +16,6 @@
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/compositor/layer_tree_owner.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
-#include "ui/display/screen.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/font_list.h"
@@ -31,7 +27,6 @@
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/views/window/caption_button_layout_constants.h"
 #include "ui/views/window/non_client_view.h"
-#include "ui/views/window/vector_icons/vector_icons.h"
 
 DEFINE_UI_CLASS_PROPERTY_TYPE(chromeos::FrameHeader*)
 
@@ -376,15 +371,6 @@ void FrameHeader::PaintTitleBar(gfx::Canvas* canvas) {
 void FrameHeader::SetCaptionButtonContainer(
     chromeos::FrameCaptionButtonContainerView* caption_button_container) {
   caption_button_container_ = caption_button_container;
-  caption_button_container_->SetButtonImage(views::CAPTION_BUTTON_ICON_MINIMIZE,
-                                            views::kWindowControlMinimizeIcon);
-  caption_button_container_->SetButtonImage(views::CAPTION_BUTTON_ICON_MENU,
-                                            chromeos::kFloatWindowIcon);
-  caption_button_container_->SetButtonImage(views::CAPTION_BUTTON_ICON_CLOSE,
-                                            views::kWindowControlCloseIcon);
-  caption_button_container_->SetButtonImage(views::CAPTION_BUTTON_ICON_FLOAT,
-                                            chromeos::kFloatButtonIcon);
-  UpdateSnapIcons();
 
   // Perform layout to ensure the container height is correct.
   LayoutHeaderInternal();
@@ -404,25 +390,7 @@ void FrameHeader::LayoutHeaderInternal() {
   // Make sure the animator view is at the bottom.
   view_->ReorderChildView(frame_animator_, 0);
 
-  bool use_zoom_icons = caption_button_container()->model()->InZoomMode();
-  const gfx::VectorIcon& restore_icon = use_zoom_icons
-                                            ? chromeos::kWindowControlDezoomIcon
-                                            : views::kWindowControlRestoreIcon;
-  const gfx::VectorIcon& maximize_icon =
-      use_zoom_icons ? chromeos::kWindowControlZoomIcon
-                     : views::kWindowControlMaximizeIcon;
-  // TODO(crbug.com/1092005): Investigate if we can move this to
-  // CaptionButtonModel and just check the model in
-  // chromeos::FrameCaptionButtonContainerView.
-  const bool use_restore_frame =
-      chromeos::ShouldUseRestoreFrame(target_widget_);
-  caption_button_container()->SetButtonImage(
-      views::CAPTION_BUTTON_ICON_MAXIMIZE_RESTORE,
-      use_restore_frame ? maximize_icon : restore_icon);
-  caption_button_container()->UpdateFloatButton();
-  UpdateSnapIcons();
-
-  caption_button_container()->UpdateSizeButtonTooltip(use_restore_frame);
+  caption_button_container()->UpdateButtonsImageAndTooltip();
 
   caption_button_container()->SetButtonSize(
       views::GetCaptionButtonLayoutSize(GetButtonLayoutSize()));
@@ -473,20 +441,6 @@ gfx::Rect FrameHeader::GetTitleBounds() const {
       left_header_view_ ? left_header_view_.get() : back_button_.get();
   return GetAvailableTitleBounds(left_view, caption_button_container_,
                                  GetHeaderHeight());
-}
-
-void FrameHeader::UpdateSnapIcons() {
-  const bool is_horizontal_display = chromeos::IsDisplayLayoutHorizontal(
-      display::Screen::GetScreen()->GetDisplayNearestWindow(
-          target_widget_->GetNativeWindow()));
-  caption_button_container()->SetButtonImage(
-      views::CAPTION_BUTTON_ICON_LEFT_TOP_SNAPPED,
-      is_horizontal_display ? chromeos::kWindowControlLeftSnappedIcon
-                            : chromeos::kWindowControlTopSnappedIcon);
-  caption_button_container()->SetButtonImage(
-      views::CAPTION_BUTTON_ICON_RIGHT_BOTTOM_SNAPPED,
-      is_horizontal_display ? chromeos::kWindowControlRightSnappedIcon
-                            : chromeos::kWindowControlBottomSnappedIcon);
 }
 
 }  // namespace chromeos

@@ -97,15 +97,15 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameCaptionButtonContainerView
 
   views::FrameCaptionButton* size_button() { return size_button_; }
 
+  // Sets whether the buttons should be painted as active. Does not schedule
+  // a repaint.
+  void SetPaintAsActive(bool paint_as_active);
+
   // Sets the id of the vector image to paint the button for |icon|. The
   // FrameCaptionButtonContainerView will keep track of the image to use for
   // |icon| even if none of the buttons currently use |icon|.
   void SetButtonImage(views::CaptionButtonIcon icon,
                       const gfx::VectorIcon& icon_definition);
-
-  // Sets whether the buttons should be painted as active. Does not schedule
-  // a repaint.
-  void SetPaintAsActive(bool paint_as_active);
 
   // Sets the background frame color that buttons should compute their color
   // respective to.
@@ -128,10 +128,9 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameCaptionButtonContainerView
   // state. A parent view should relayout to reflect the change in states.
   void UpdateCaptionButtonState(bool animate);
 
-  void UpdateSizeButtonTooltip(bool use_restore_frame);
-
-  // Updates the float button's image and tooltip.
-  void UpdateFloatButton();
+  // Updates the image and tooltips of the size, float and snap buttons. These
+  // can change on state change or display orientation change.
+  void UpdateButtonsImageAndTooltip();
 
   // Sets the size of the buttons in this container.
   void SetButtonSize(const gfx::Size& size);
@@ -158,8 +157,6 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameCaptionButtonContainerView
   void AnimationProgressed(const gfx::Animation* animation) override;
 
  private:
-  friend class FrameCaptionButtonContainerViewTest;
-
   // Sets |button|'s icon to |icon|. If |animate| is Animate::kYes, the button
   // will crossfade to the new icon. If |animate| is Animate::kNo and
   // |icon| == |button|->icon(), the crossfade animation is progressed to the
@@ -167,6 +164,12 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameCaptionButtonContainerView
   void SetButtonIcon(views::FrameCaptionButton* button,
                      views::CaptionButtonIcon icon,
                      Animate animate);
+
+  // Helpers to update the icons of various buttons and maybe their tooltips as
+  // well.
+  void UpdateSizeButton();
+  void UpdateSnapButtons();
+  void UpdateFloatButton();
 
   void FloatButtonPressed();
   void MinimizeButtonPressed();
