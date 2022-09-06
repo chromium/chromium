@@ -14,8 +14,8 @@ class WebState;
 // Utility functions needed by webState users to get information about Tab.
 namespace tab_util {
 
-// Get the tab title based on the |web_state|.
-// |web_state| can't be null.
+// Get the tab title based on the `web_state`.
+// `web_state` can't be null.
 NSString* GetTabTitle(const web::WebState* web_state);
 
 }  // namespace tab_util

@@ -178,8 +178,8 @@ TEST_F(TabHelperDelegateInstallerTest, InstallDelegatesForReplacedWebStates) {
   FakeTabHelper* replacement_tab_helper = FakeTabHelper::FromWebState(
       browser_->GetWebStateList()->GetWebStateAt(0));
 
-  // Verify that the delegates were uninstalled from |tab_helper| and installed
-  // for |replacement_tab_helper|.
+  // Verify that the delegates were uninstalled from `tab_helper` and installed
+  // for `replacement_tab_helper`.
   EXPECT_FALSE(tab_helper->GetDelegate());
   EXPECT_FALSE(tab_helper->GetSecondDelegate());
   EXPECT_EQ(replacement_tab_helper->GetDelegate(), &delegate_);
@@ -207,7 +207,7 @@ TEST_F(TabHelperDelegateInstallerTest,
   std::unique_ptr<web::WebState> detached_web_state =
       browser_->GetWebStateList()->DetachWebStateAt(0);
 
-  // Verify that the delegates were uninstalled from |tab_helper|.
+  // Verify that the delegates were uninstalled from `tab_helper`.
   EXPECT_FALSE(tab_helper->GetDelegate());
   EXPECT_FALSE(tab_helper->GetSecondDelegate());
 }
@@ -248,7 +248,7 @@ TEST_F(TabHelperDelegateInstallerTest,
     browser_.reset();
   }
 
-  // Verify that the delegates were uninstalled from |tab_helper|.
+  // Verify that the delegates were uninstalled from `tab_helper`.
   EXPECT_FALSE(set_delegate);
   EXPECT_FALSE(set_second_delegate);
 }
@@ -276,7 +276,7 @@ TEST_F(TabHelperDelegateInstallerTest,
   installer = nullptr;
   second_installer = nullptr;
 
-  // Verify that the delegates were uninstalled from |tab_helper|.
+  // Verify that the delegates were uninstalled from `tab_helper`.
   EXPECT_FALSE(tab_helper->GetDelegate());
   EXPECT_FALSE(tab_helper->GetSecondDelegate());
 }

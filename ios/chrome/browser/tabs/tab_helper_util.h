@@ -9,7 +9,7 @@ namespace web {
 class WebState;
 }
 
-// Attaches tab helpers to WebState. If |for_prerender| is true, then only
+// Attaches tab helpers to WebState. If `for_prerender` is true, then only
 // the tab helpers that must be attached even for pre-rendered WebStates
 // are created.
 void AttachTabHelpers(web::WebState* web_state, bool for_prerender);

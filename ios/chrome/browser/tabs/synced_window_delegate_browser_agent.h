@@ -32,7 +32,7 @@ class SyncedWindowDelegateBrowserAgent
       const SyncedWindowDelegateBrowserAgent&) = delete;
   ~SyncedWindowDelegateBrowserAgent() override;
 
-  // Return the tab id for the tab at |index|.
+  // Return the tab id for the tab at `index`.
   SessionID GetTabIdAt(int index) const override;
   bool IsSessionRestoreInProgress() const override;
   bool ShouldSync() const override;
@@ -66,7 +66,7 @@ class SyncedWindowDelegateBrowserAgent
   // BrowserObserver
   void BrowserDestroyed(Browser* browser) override;
 
-  // Sets the window id of |web_state| to |session_id_|.
+  // Sets the window id of `web_state` to `session_id_`.
   void SetWindowIdForWebState(web::WebState* web_state);
 
   WebStateList* web_state_list_;
