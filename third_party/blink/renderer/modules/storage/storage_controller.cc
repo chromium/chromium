@@ -118,7 +118,7 @@ void StorageController::ClearAreasIfNeeded() {
 }
 
 scoped_refptr<CachedStorageArea> StorageController::GetLocalStorageArea(
-    const LocalDOMWindow* local_dom_window,
+    LocalDOMWindow* local_dom_window,
     mojo::PendingRemote<mojom::blink::StorageArea> local_storage_area) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   EnsureLocalStorageNamespaceCreated();

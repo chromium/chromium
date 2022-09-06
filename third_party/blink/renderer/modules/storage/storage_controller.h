@@ -78,7 +78,7 @@ class MODULES_EXPORT StorageController : public mojom::blink::DomStorageClient {
   // LocalStorage:
 
   scoped_refptr<CachedStorageArea> GetLocalStorageArea(
-      const LocalDOMWindow* local_dom_window,
+      LocalDOMWindow* local_dom_window,
       mojo::PendingRemote<mojom::blink::StorageArea> local_storage_area = {});
   void AddLocalStorageInspectorStorageAgent(InspectorDOMStorageAgent* agent);
   void RemoveLocalStorageInspectorStorageAgent(InspectorDOMStorageAgent* agent);

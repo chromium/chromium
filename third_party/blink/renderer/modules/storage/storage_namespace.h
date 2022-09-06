@@ -76,11 +76,11 @@ class MODULES_EXPORT StorageNamespace final
 
   // |storage_area| is ignored here if a cached namespace already exists.
   scoped_refptr<CachedStorageArea> GetCachedArea(
-      const LocalDOMWindow* local_dom_window,
+      LocalDOMWindow* local_dom_window,
       mojo::PendingRemote<mojom::blink::StorageArea> storage_area = {});
 
   scoped_refptr<CachedStorageArea> CreateCachedAreaForPrerender(
-      const LocalDOMWindow* local_dom_window,
+      LocalDOMWindow* local_dom_window,
       mojo::PendingRemote<mojom::blink::StorageArea> storage_area = {});
 
   void EvictSessionStorageCachedData();

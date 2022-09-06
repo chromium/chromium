@@ -188,8 +188,7 @@ String CachedStorageArea::RegisterSource(Source* source) {
 CachedStorageArea::CachedStorageArea(
     AreaType type,
     const BlinkStorageKey& storage_key,
-    const LocalDOMWindow* local_dom_window,
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+    LocalDOMWindow* local_dom_window,
     StorageNamespace* storage_namespace,
     bool is_session_storage_for_prerendering,
     mojo::PendingRemote<mojom::blink::StorageArea> storage_area)
@@ -197,7 +196,6 @@ CachedStorageArea::CachedStorageArea(
       storage_key_(storage_key),
       storage_namespace_(storage_namespace),
       is_session_storage_for_prerendering_(is_session_storage_for_prerendering),
-      task_runner_(std::move(task_runner)),
       areas_(MakeGarbageCollected<HeapHashMap<WeakMember<Source>, String>>()) {
   BindStorageArea(std::move(storage_area), local_dom_window);
   base::trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(
@@ -210,7 +208,7 @@ CachedStorageArea::~CachedStorageArea() {
       this);
 }
 
-const LocalDOMWindow* CachedStorageArea::GetBestCurrentDOMWindow() {
+LocalDOMWindow* CachedStorageArea::GetBestCurrentDOMWindow() {
   for (auto key : areas_->Keys()) {
     if (!key->GetDOMWindow()) {
       continue;
@@ -222,7 +220,7 @@ const LocalDOMWindow* CachedStorageArea::GetBestCurrentDOMWindow() {
 
 void CachedStorageArea::BindStorageArea(
     mojo::PendingRemote<mojom::blink::StorageArea> new_area,
-    const LocalDOMWindow* local_dom_window) {
+    LocalDOMWindow* local_dom_window) {
   // Some tests may not provide a StorageNamespace.
   DCHECK(!remote_area_);
   if (!local_dom_window)
@@ -234,18 +232,22 @@ void CachedStorageArea::BindStorageArea(
     pending_mutations_by_key_.clear();
     pending_mutations_by_source_.clear();
     return;
-  } else if (new_area) {
-    remote_area_.Bind(std::move(new_area), task_runner_);
+  }
+
+  auto task_runner =
+      local_dom_window->GetTaskRunner(TaskType::kInternalNavigationAssociated);
+  if (new_area) {
+    remote_area_.Bind(std::move(new_area), task_runner);
   } else if (storage_namespace_) {
     storage_namespace_->BindStorageArea(
         *local_dom_window,
-        remote_area_.BindNewPipeAndPassReceiver(task_runner_));
+        remote_area_.BindNewPipeAndPassReceiver(task_runner));
   } else {
     return;
   }
 
   receiver_.reset();
-  remote_area_->AddObserver(receiver_.BindNewPipeAndPassRemote(task_runner_));
+  remote_area_->AddObserver(receiver_.BindNewPipeAndPassRemote(task_runner));
 }
 
 void CachedStorageArea::ResetConnection(

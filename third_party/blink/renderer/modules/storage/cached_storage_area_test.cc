@@ -55,8 +55,7 @@ class CachedStorageAreaTest : public testing::Test {
                                ->MainFrame()
                                ->DomWindow());
     cached_area_ = base::MakeRefCounted<CachedStorageArea>(
-        area_type, kRootStorageKey, local_dom_window_root,
-        scheduler::GetSingleThreadTaskRunnerForTesting(), nullptr,
+        area_type, kRootStorageKey, local_dom_window_root, nullptr,
         /*is_session_storage_for_prerendering=*/false);
     cached_area_->SetRemoteAreaForTesting(
         mock_storage_area_.GetInterfaceRemote());
@@ -895,8 +894,7 @@ TEST_F(CachedStorageAreaTest, RecoveryWhenNoLocalDOMWindowPresent) {
   // When no local DOM window is present this shouldn't fatal, just not bind
   auto cached_area = base::MakeRefCounted<CachedStorageArea>(
       CachedStorageArea::AreaType::kSessionStorage,
-      CachedStorageAreaTest::kRootStorageKey, nullptr, task_runner,
-      sessionStorage,
+      CachedStorageAreaTest::kRootStorageKey, nullptr, sessionStorage,
       /*is_session_storage_for_prerendering=*/false);
 
   // If we add an active source then re-bind it should work

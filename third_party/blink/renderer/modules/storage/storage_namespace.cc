@@ -69,7 +69,7 @@ void StorageNamespace::ProvideSessionStorageNamespaceTo(
 }
 
 scoped_refptr<CachedStorageArea> StorageNamespace::GetCachedArea(
-    const LocalDOMWindow* local_dom_window,
+    LocalDOMWindow* local_dom_window,
     mojo::PendingRemote<mojom::blink::StorageArea> storage_area) {
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
@@ -102,8 +102,7 @@ scoped_refptr<CachedStorageArea> StorageNamespace::GetCachedArea(
   result = base::MakeRefCounted<CachedStorageArea>(
       IsSessionStorage() ? CachedStorageArea::AreaType::kSessionStorage
                          : CachedStorageArea::AreaType::kLocalStorage,
-      local_dom_window->GetStorageKey(), local_dom_window,
-      controller_->TaskRunner(), this,
+      local_dom_window->GetStorageKey(), local_dom_window, this,
       /*is_session_storage_for_prerendering=*/false, std::move(storage_area));
   cached_areas_.insert(std::make_unique<const BlinkStorageKey>(
                            local_dom_window->GetStorageKey()),
@@ -112,14 +111,13 @@ scoped_refptr<CachedStorageArea> StorageNamespace::GetCachedArea(
 }
 
 scoped_refptr<CachedStorageArea> StorageNamespace::CreateCachedAreaForPrerender(
-    const LocalDOMWindow* local_dom_window,
+    LocalDOMWindow* local_dom_window,
     mojo::PendingRemote<mojom::blink::StorageArea> storage_area) {
   DCHECK((IsSessionStorage()));
   return base::MakeRefCounted<CachedStorageArea>(
       IsSessionStorage() ? CachedStorageArea::AreaType::kSessionStorage
                          : CachedStorageArea::AreaType::kLocalStorage,
-      local_dom_window->GetStorageKey(), local_dom_window,
-      controller_->TaskRunner(), this,
+      local_dom_window->GetStorageKey(), local_dom_window, this,
       /*is_session_storage_for_prerendering=*/true, std::move(storage_area));
 }
 

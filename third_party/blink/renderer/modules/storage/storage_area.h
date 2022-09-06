@@ -90,7 +90,7 @@ class StorageArea final : public ScriptWrappable,
       const char* name,
       WebScopedVirtualTimePauser::VirtualTaskDuration duration) override;
 
-  const LocalDOMWindow* GetDOMWindow() override;
+  LocalDOMWindow* GetDOMWindow() override;
 
  private:
   void RecordModificationInMetrics();

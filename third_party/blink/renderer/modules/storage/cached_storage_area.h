@@ -54,7 +54,7 @@ class MODULES_EXPORT CachedStorageArea
     virtual blink::WebScopedVirtualTimePauser CreateWebScopedVirtualTimePauser(
         const char* name,
         WebScopedVirtualTimePauser::VirtualTaskDuration duration) = 0;
-    virtual const LocalDOMWindow* GetDOMWindow() = 0;
+    virtual LocalDOMWindow* GetDOMWindow() = 0;
   };
 
   enum class AreaType {
@@ -65,8 +65,7 @@ class MODULES_EXPORT CachedStorageArea
   CachedStorageArea(
       AreaType type,
       const BlinkStorageKey& storage_key,
-      const LocalDOMWindow* local_dom_window,
-      scoped_refptr<base::SingleThreadTaskRunner> ipc_runner,
+      LocalDOMWindow* local_dom_window,
       StorageNamespace* storage_namespace,
       bool is_session_storage_for_prerendering,
       mojo::PendingRemote<mojom::blink::StorageArea> storage_area = {});
@@ -135,11 +134,11 @@ class MODULES_EXPORT CachedStorageArea
     String old_value;
   };
 
-  const LocalDOMWindow* GetBestCurrentDOMWindow();
+  LocalDOMWindow* GetBestCurrentDOMWindow();
 
   void BindStorageArea(
       mojo::PendingRemote<mojom::blink::StorageArea> new_area = {},
-      const LocalDOMWindow* local_dom_window = nullptr);
+      LocalDOMWindow* local_dom_window = nullptr);
 
   // mojom::blink::StorageAreaObserver:
   void KeyChanged(const Vector<uint8_t>& key,
@@ -201,7 +200,6 @@ class MODULES_EXPORT CachedStorageArea
   // remote_area_). For more details:
   // https://docs.google.com/document/d/1I5Hr8I20-C1GBr4tAXdm0U8a1RDUKHt4n7WcH4fxiSE/edit?usp=sharing
   const bool is_session_storage_for_prerendering_;
-  const scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 
   std::unique_ptr<StorageAreaMap> map_;
 

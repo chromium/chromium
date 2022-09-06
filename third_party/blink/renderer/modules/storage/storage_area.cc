@@ -254,7 +254,7 @@ blink::WebScopedVirtualTimePauser StorageArea::CreateWebScopedVirtualTimePauser(
       ->CreateWebScopedVirtualTimePauser(name, duration);
 }
 
-const LocalDOMWindow* StorageArea::GetDOMWindow() {
+LocalDOMWindow* StorageArea::GetDOMWindow() {
   return DomWindow();
 }
 
