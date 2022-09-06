@@ -2164,7 +2164,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SafeBrowsing.V4Database.Size" units="KB"
-    expires_after="2023-01-01">
+    expires_after="2023-03-05">
   <owner>vakh@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>

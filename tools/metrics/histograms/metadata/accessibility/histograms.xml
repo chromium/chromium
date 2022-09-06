@@ -1390,7 +1390,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.Performance.SendPendingAccessibilityEvents"
-    units="ms" expires_after="2023-01-01">
+    units="ms" expires_after="2023-03-05">
   <owner>aleventhal@chromium.org</owner>
   <owner>janewman@microsoft.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
@@ -1731,7 +1731,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DomDistiller.MessageDismissalCondition"
-    enum="ReaderModeMessageDismissalCondition" expires_after="2022-12-31">
+    enum="ReaderModeMessageDismissalCondition" expires_after="2023-03-05">
   <owner>twellington@chromium.org</owner>
   <owner>aishwaryarj@google.com</owner>
   <summary>

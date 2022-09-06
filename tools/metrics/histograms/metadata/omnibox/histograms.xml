@@ -1843,7 +1843,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Omnibox.SuggestionUsed.URL.Experimental.NavigationToFirstMeaningfulPaint"
-    units="ms" expires_after="2023-01-01">
+    units="ms" expires_after="2023-03-05">
   <owner>jdonnelly@chromium.org</owner>
   <owner>mpearson@chromium.org</owner>
   <owner>chrome-omnibox-team@google.com</owner>

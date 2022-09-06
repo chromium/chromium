@@ -1699,7 +1699,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="BrotliFilter.CompressionPercent" units="%"
-    expires_after="2023-01-01">
+    expires_after="2023-03-05">
   <owner>eustas@chromium.org</owner>
   <summary>Compressed/Decompressed size ratio.</summary>
 </histogram>
@@ -12725,7 +12725,7 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="SpellCheck.SpellingService.RequestDuration" units="ms"
-    expires_after="2023-01-01">
+    expires_after="2023-03-05">
   <owner>yyushkina@google.com</owner>
   <owner>gujen@google.com</owner>
   <owner>chrome-language@google.com</owner>
@@ -15011,7 +15011,7 @@ regressions. -->
 </histogram>
 
 <histogram name="WebUI.CreatedForUrl" enum="WebUIUrlHashes"
-    expires_after="2023-01-01">
+    expires_after="2023-03-05">
   <owner>dbeam@chromium.org</owner>
   <summary>URLs for which Chrome creates WebUIControllers.</summary>
 </histogram>

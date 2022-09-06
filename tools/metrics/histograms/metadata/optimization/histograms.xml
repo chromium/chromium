@@ -382,7 +382,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="OptimizationGuide.HintsManager.RaceNavigationFetchAttemptStatus"
     enum="OptimizationGuideRaceNavigationFetchAttemptStatus"
-    expires_after="2023-01-01">
+    expires_after="2023-03-05">
   <owner>mcrouse@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
   <summary>

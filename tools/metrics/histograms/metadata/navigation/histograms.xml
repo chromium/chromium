@@ -342,7 +342,7 @@ Also used in tools/metrics/histograms/metadata/page/histograms.xml.
 </histogram>
 
 <histogram name="BackForwardCache.HistoryNavigationOutcome.NotRestoredReason"
-    enum="BackForwardCacheNotRestoredReason" expires_after="2023-01-01">
+    enum="BackForwardCacheNotRestoredReason" expires_after="2023-03-05">
   <owner>hajimehoshi@chromium.org</owner>
   <owner>bfcache-dev@chromium.org</owner>
   <summary>
@@ -1417,7 +1417,7 @@ Also used in tools/metrics/histograms/metadata/page/histograms.xml.
 </histogram>
 
 <histogram name="Navigation.UrlParamFilter.FilteredParamCount" units="count"
-    expires_after="2023-01-02">
+    expires_after="2023-03-05">
   <owner>mreichhoff@chromium.org</owner>
   <owner>wanderview@chromium.org</owner>
   <owner>bcl@chromium.org</owner>
@@ -1430,7 +1430,7 @@ Also used in tools/metrics/histograms/metadata/page/histograms.xml.
 </histogram>
 
 <histogram name="Navigation.UrlParamFilter.FilteredParamCountExperimental"
-    units="count" expires_after="2023-01-02">
+    units="count" expires_after="2023-03-05">
   <owner>mreichhoff@chromium.org</owner>
   <owner>wanderview@chromium.org</owner>
   <owner>bcl@chromium.org</owner>
