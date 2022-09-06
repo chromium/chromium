@@ -294,6 +294,7 @@ void WelcomeScreenHandler::GetAdditionalParameters(base::Value::Dict* dict) {
                                     input_method_manager));
   dict->Set("timezoneList", GetTimezoneList());
   dict->Set("demoModeCountryList", DemoSession::GetCountryList());
+  dict->Set("isQuickStartEnabled", ash::features::IsOobeQuickStartEnabled());
 }
 
 void WelcomeScreenHandler::InitializeDeprecated() {

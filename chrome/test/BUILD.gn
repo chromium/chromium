@@ -3728,6 +3728,7 @@ if (!is_android) {
         "../browser/ash/login/screens/packaged_license_screen_browsertest.cc",
         "../browser/ash/login/screens/parental_handoff_screen_browsertest.cc",
         "../browser/ash/login/screens/pin_setup_screen_browsertest.cc",
+        "../browser/ash/login/screens/quick_start_screen_browsertest.cc",
         "../browser/ash/login/screens/recommend_apps/scoped_test_recommend_apps_fetcher_factory.cc",
         "../browser/ash/login/screens/recommend_apps/scoped_test_recommend_apps_fetcher_factory.h",
         "../browser/ash/login/screens/recommend_apps_screen_browsertest.cc",

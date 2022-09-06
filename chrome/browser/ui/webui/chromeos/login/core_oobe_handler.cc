@@ -129,7 +129,6 @@ void CoreOobeHandler::GetAdditionalParameters(base::Value::Dict* dict) {
   if (policy::EnrollmentRequisitionManager::IsMeetDevice()) {
     dict->Set("flowType", "meet");
   }
-  dict->Set("isQuickStartEnabled", ash::features::IsOobeQuickStartEnabled());
 }
 
 void CoreOobeHandler::RegisterMessages() {
