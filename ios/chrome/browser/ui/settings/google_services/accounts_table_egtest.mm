@@ -260,14 +260,7 @@ const NSTimeInterval kSyncOperationTimeout = 10.0;
 }
 
 // Tests that signing out from a managed user account clears the user's data.
-// TODO(crbug.com/1352968): Flaky on iOS simulator.
-#if TARGET_IPHONE_SIMULATOR
-#define MAYBE_testsSignOutFromManagedAccount \
-  DISABLED_testsSignOutFromManagedAccount
-#else
-#define MAYBE_testsSignOutFromManagedAccount testsSignOutFromManagedAccount
-#endif
-- (void)MAYBE_testsSignOutFromManagedAccount {
+- (void)testsSignOutFromManagedAccount {
   // Sign In `fakeManagedIdentity`.
   [SigninEarlGreyUI
       signinWithFakeIdentity:[FakeChromeIdentity fakeManagedIdentity]];
@@ -338,15 +331,7 @@ const NSTimeInterval kSyncOperationTimeout = 10.0;
 
 // Tests that users data is cleared out when the signed in account disappear and
 // it is a managed account. Regression test for crbug.com/1208381.
-// TODO(crbug.com/1352968): Flaky on iOS simulator.
-#if TARGET_IPHONE_SIMULATOR
-#define MAYBE_testsManagedAccountRemovedFromAnotherGoogleApp \
-  DISABLED_testsManagedAccountRemovedFromAnotherGoogleApp
-#else
-#define MAYBE_testsManagedAccountRemovedFromAnotherGoogleApp \
-  testsManagedAccountRemovedFromAnotherGoogleApp
-#endif
-- (void)MAYBE_testsManagedAccountRemovedFromAnotherGoogleApp {
+- (void)testsManagedAccountRemovedFromAnotherGoogleApp {
   // Sign In `fakeManagedIdentity`.
   FakeChromeIdentity* fakeIdentity = [FakeChromeIdentity fakeManagedIdentity];
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
@@ -447,8 +432,7 @@ const NSTimeInterval kSyncOperationTimeout = 10.0;
 
 // Tests to open the sign-out confirmation dialog, and then open an external
 // URL.
-// TODO(crbug.com/1352968): Re-enable this test after defalking.
-- (void)DISABLED_testInterruptDuringSignOutConfirmation {
+- (void)testInterruptDuringSignOutConfirmation {
   FakeChromeIdentity* fakeIdentity = [FakeChromeIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
@@ -472,8 +456,7 @@ const NSTimeInterval kSyncOperationTimeout = 10.0;
 
 // Tests that opening and closing the sign-out confirmation dialog does
 // not affect the user's sign-in state.
-// TODO(crbug.com/1352968): Re-enable this test after defalking.
-- (void)DISABLED_testDismissSignOutConfirmationTwice {
+- (void)testDismissSignOutConfirmationTwice {
   FakeChromeIdentity* fakeIdentity = [FakeChromeIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
