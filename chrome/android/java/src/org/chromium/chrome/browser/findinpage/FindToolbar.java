@@ -142,6 +142,7 @@ public class FindToolbar extends LinearLayout implements BackPressHandler {
                 } else if (event.getAction() == KeyEvent.ACTION_UP) {
                     getKeyDispatcherState().handleUpEvent(event);
                     if (event.isTracking() && !event.isCanceled()) {
+                        BackPressManager.record(Type.FIND_TOOLBAR);
                         mFindToolbar.deactivate();
                         return true;
                     }
