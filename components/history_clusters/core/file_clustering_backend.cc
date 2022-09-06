@@ -101,6 +101,22 @@ std::vector<history::Cluster> GetClustersFromFile() {
       history::ClusterVisit cluster_visit;
       cluster_visit.annotated_visit.visit_row.visit_id = visit_id;
       cluster_visit.score = static_cast<float>(*score);
+
+      // Get duplicate visit IDs.
+      const base::Value::List* duplicate_visit_ids =
+          json_visit_dict.FindList("duplicateVisitIds");
+      if (duplicate_visit_ids) {
+        LOG(ERROR) << "Found duplicate visit";
+        for (const auto& json_duplicate_visit_id : *duplicate_visit_ids) {
+          int64_t duplicate_visit_id;
+          LOG(ERROR) << "Serializing " << json_duplicate_visit_id.GetString();
+          if (base::StringToInt64(json_duplicate_visit_id.GetString(),
+                                  &duplicate_visit_id)) {
+            cluster_visit.duplicate_visits.push_back({duplicate_visit_id});
+          }
+        }
+      }
+
       cluster.visits.push_back(cluster_visit);
     }
 
@@ -193,6 +209,23 @@ FileClusteringBackend::GetClustersOnBackgroundThread(
               : it->second.content_annotations.search_normalized_url;
       in_progress_cluster_visit.url_for_display =
           ComputeURLForDisplay(in_progress_cluster_visit.normalized_url);
+
+      // Fill in duplicate visits.
+      in_progress_cluster_visit.duplicate_visits.clear();
+      for (const auto& duplicate_visit : cluster_visit.duplicate_visits) {
+        auto duplicate_visit_it =
+            visit_id_to_visit_map.find(duplicate_visit.visit_id);
+        if (duplicate_visit_it == visit_id_to_visit_map.end()) {
+          continue;
+        }
+
+        const auto& full_duplicate_visit = duplicate_visit_it->second;
+        in_progress_cluster_visit.duplicate_visits.push_back(
+            {full_duplicate_visit.visit_row.visit_id,
+             full_duplicate_visit.url_row.url(),
+             full_duplicate_visit.visit_row.visit_time});
+      }
+
       in_progress_cluster.visits.push_back(in_progress_cluster_visit);
     }
 

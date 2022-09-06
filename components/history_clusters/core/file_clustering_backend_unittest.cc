@@ -71,7 +71,8 @@ TEST_F(FileClusteringBackendTest, Success) {
             "visits": [
               {
                 "visitId": "3",
-                "score": 0.5
+                "score": 0.5,
+                "duplicateVisitIds": ["10", "11"]
               },
               {
                 "score": 0.5
@@ -123,6 +124,9 @@ TEST_F(FileClusteringBackendTest, Success) {
   history::AnnotatedVisit visit3 =
       testing::CreateDefaultAnnotatedVisit(3, GURL("https://foo.com/"));
   annotated_visits.push_back(visit3);
+  history::AnnotatedVisit visit10 =
+      testing::CreateDefaultAnnotatedVisit(10, GURL("https://foo.com/"));
+  annotated_visits.push_back(visit10);
 
   base::RunLoop run_loop;
   std::vector<history::Cluster> result_clusters;
@@ -141,7 +145,8 @@ TEST_F(FileClusteringBackendTest, Success) {
   EXPECT_THAT(testing::ToVisitResults(result_clusters),
               ElementsAre(ElementsAre(testing::VisitResult(1, 0.5),
                                       testing::VisitResult(2, 0.3)),
-                          ElementsAre(testing::VisitResult(3, 0.5))));
+                          ElementsAre(testing::VisitResult(
+                              3, 0.5, {history::DuplicateClusterVisit{10}}))));
   // Make sure visit URLs have URLs for display.
   for (const auto& result_cluster : result_clusters) {
     for (const auto& result_visit : result_cluster.visits) {
