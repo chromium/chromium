@@ -1,0 +1,58 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef COMPONENTS_MIRRORING_SERVICE_OPENSCREEN_MESSAGE_PORT_H_
+#define COMPONENTS_MIRRORING_SERVICE_OPENSCREEN_MESSAGE_PORT_H_
+
+#include <string>
+
+#include "base/component_export.h"
+#include "base/strings/string_piece.h"
+#include "components/mirroring/mojom/cast_message_channel.mojom.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/openscreen/src/cast/common/public/message_port.h"
+
+namespace mirroring {
+
+class COMPONENT_EXPORT(MIRRORING_SERVICE) OpenscreenMessagePort final
+    : public openscreen::cast::MessagePort,
+      public mojom::CastMessageChannel {
+ public:
+  // In Chrome the source and destination are fixed for a given message port.
+  OpenscreenMessagePort(
+      base::StringPiece source_id,
+      base::StringPiece destination_id,
+      mojo::PendingRemote<mojom::CastMessageChannel> outbound_channel,
+      mojo::PendingReceiver<mojom::CastMessageChannel> inbound_channel);
+
+  ~OpenscreenMessagePort() override;
+
+  // openscreen::cast::MessagePort overrides.
+  void SetClient(Client& client) override;
+  void ResetClient() override;
+  void PostMessage(const std::string& destination_sender_id,
+                   const std::string& message_namespace,
+                   const std::string& message) override;
+
+ private:
+  // mojom::CastMessageChannel overrides.
+  // Receive a message from the Cast receiver over the Cast V2 channel.
+  // TODO(https://crbug.com/1359456): rename mojo method to something more
+  // intuitive, like "OnMessage."
+  void Send(mojom::CastMessagePtr message) override;
+
+  const base::StringPiece source_id_;
+  const std::string destination_id_;
+  const mojo::Remote<mojom::CastMessageChannel> outbound_channel_;
+  const mojo::Receiver<mojom::CastMessageChannel> inbound_channel_;
+
+  raw_ptr<Client> client_ = nullptr;
+};
+
+}  // namespace mirroring
+
+#endif  // COMPONENTS_MIRRORING_SERVICE_OPENSCREEN_MESSAGE_PORT_H_
