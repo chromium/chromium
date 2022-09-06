@@ -249,10 +249,10 @@ base::Value BuildInstallProcessErrorLogJson(web_app::WebAppProvider& provider) {
 }
 
 #if BUILDFLAG(IS_MAC)
-base::Value BuildAppShimRegistryLocalStorageJson() {
-  base::Value root(base::Value::Type::DICTIONARY);
-  root.SetKey(kAppShimRegistryLocalStorage,
-              AppShimRegistry::Get()->AsDebugValue());
+base::Value::Dict BuildAppShimRegistryLocalStorageJson() {
+  base::Value::Dict root;
+  root.Set(kAppShimRegistryLocalStorage,
+           AppShimRegistry::Get()->AsDebugDict().Clone());
   return root;
 }
 #endif
@@ -323,7 +323,7 @@ void WebAppInternalsSource::BuildWebAppInternalsJson(
     base::OnceCallback<void(base::Value root)> callback) {
   auto* provider = web_app::WebAppProvider::GetForLocalAppsUnchecked(profile);
 
-  base::Value root(base::Value::Type::LIST);
+  base::Value::List root;
   root.Append(BuildIndexJson());
   root.Append(BuildInstalledWebAppsJson(*provider));
   root.Append(BuildPreinstalledWebAppConfigsJson(*provider));
@@ -340,7 +340,7 @@ void WebAppInternalsSource::BuildWebAppInternalsJson(
       FROM_HERE, {base::TaskPriority::USER_VISIBLE, base::MayBlock()},
       base::BindOnce(&BuildWebAppDiskStateJson,
                      web_app::GetWebAppsRootDirectory(profile),
-                     std::move(root)),
+                     base::Value(std::move(root))),
       std::move(callback));
 }
 
