@@ -22,7 +22,7 @@ namespace {
 NSString* const kTTSStartTag = @"function(){var _a_tts='";
 NSString* const kTTSEndTag = @"'";
 
-// When |kTTSAudioDataExtractorScriptFormat| is evaluated on a Google voice
+// When `kTTSAudioDataExtractorScriptFormat` is evaluated on a Google voice
 // search results page, this script will extract the innerHTML from the script
 // element containing TTS data.  The format takes one parameter, which is the
 // start tag from the TTS config singleton.
@@ -58,7 +58,7 @@ NSData* ExtractVoiceSearchAudioDataFromPageHTML(NSString* page_html) {
   }
 
   // The base64-encoded data will be everything between
-  // |audioDataStartTag| and |audioDataEndTag|.
+  // `audioDataStartTag` and `audioDataEndTag`.
   NSUInteger start_position =
       data_start_tag_range.location + data_start_tag_range.length;
   NSRange data_range =

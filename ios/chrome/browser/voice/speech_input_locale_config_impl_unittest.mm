@@ -79,7 +79,7 @@ class SpeechInputLocaleConfigImplTest : public PlatformTest {
 
   const voice::SpeechInputLocaleConfig* config() const { return &config_; }
 
-  // Returns the code for the SpeechInputLocale matching |locale_code|.
+  // Returns the code for the SpeechInputLocale matching `locale_code`.
   std::string GetMatchingLocaleForCode(const std::string& locale_code) {
     return config_.GetMatchingLocale(locale_code).code;
   }

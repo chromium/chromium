@@ -28,12 +28,12 @@ bool VoiceSearchURLRewriter(GURL* url, web::BrowserState* browser_state) {
   std::string language =
       chrome_browser_state->GetPrefs()->GetString(prefs::kVoiceSearchLocale);
   GURL rewritten_url(*url);
-  // The |hl| parameter will be overriden only if the voice search locale
+  // The `hl` parameter will be overriden only if the voice search locale
   // is not empty. If it is empty (indicating that voice search locale
-  // uses device language), the |hl| will keep the original value.
-  // If there is no |hl| in the query the |spknlang| will use the application
-  // locale as a fallback (instead of using the same locale for both |hl|
-  // and |spknlang|).
+  // uses device language), the `hl` will keep the original value.
+  // If there is no `hl` in the query the `spknlang` will use the application
+  // locale as a fallback (instead of using the same locale for both `hl`
+  // and `spknlang`).
   if (language.empty()) {
     voice::SpeechInputLocaleConfig* locale_config =
         voice::SpeechInputLocaleConfig::GetInstance();

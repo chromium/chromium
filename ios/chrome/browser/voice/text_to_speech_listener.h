@@ -30,17 +30,17 @@ class WebState;
 
 @protocol TextToSpeechListenerDelegate<NSObject>
 
-// Called by |listener| when TTS audio data has been extracted from its
+// Called by `listener` when TTS audio data has been extracted from its
 // WebState.  If a page load was encountered that was not a Voice Search SRP,
-// this function is called with a nil |result|.
+// this function is called with a nil `result`.
 - (void)textToSpeechListener:(TextToSpeechListener*)listener
             didReceiveResult:(NSData*)result;
 
-// Called by |listener| after its WebState is destroyed.
+// Called by `listener` after its WebState is destroyed.
 - (void)textToSpeechListenerWebStateWasDestroyed:
     (TextToSpeechListener*)listener;
 
-// Called by |listener| to determine whether |URL| is a Voice Search SRP with
+// Called by `listener` to determine whether `URL` is a Voice Search SRP with
 // Text-To-Speech data.
 - (BOOL)shouldTextToSpeechListener:(TextToSpeechListener*)listener
                   parseDataFromURL:(const GURL&)URL;

@@ -36,7 +36,7 @@ NSString* const kValidVoiceSearchScript =
 // The expected audio data to be returned by the TextToSpeechListener.
 @property(nonatomic, strong) NSData* expectedAudioData;
 
-// Whether |-textToSpeechListener:didReceiveResult:| was called.
+// Whether `-textToSpeechListener:didReceiveResult:` was called.
 @property(nonatomic, assign) BOOL audioDataReceived;
 
 @end
@@ -87,7 +87,7 @@ class TextToSpeechListenerTest : public PlatformTest {
     web_state_->GetView();
     web_state_->SetKeepRenderProcessAlive(true);
     // Load Html is triggering several callbacks when called the first time.
-    // Call it a first time before setting the |delegate_| to make sure that it
+    // Call it a first time before setting the `delegate_` to make sure that it
     // is working as expected in tests.
     web::test::LoadHtml(@"<html><body>Page loaded</body></html>", web_state());
     ASSERT_TRUE(
