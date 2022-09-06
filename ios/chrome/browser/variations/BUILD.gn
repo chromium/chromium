@@ -20,6 +20,24 @@ source_set("variations") {
   ]
 }
 
+source_set("first_run") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "ios_chrome_first_run_variations_seed_manager.h",
+    "ios_chrome_first_run_variations_seed_manager.mm",
+    "ios_chrome_seed_response.h",
+    "ios_chrome_seed_response.mm",
+  ]
+  deps = [
+    "//base",
+    "//build:branding_buildflags",
+    "//components/variations",
+    "//components/version_info:version_info",
+    "//ios/chrome/common",
+    "//net",
+  ]
+}
+
 generate_ui_string_overrider("ios_chrome_ui_string_overrider_factory") {
   inputs = [
     "$root_gen_dir/components/strings/grit/components_chromium_strings.h",
