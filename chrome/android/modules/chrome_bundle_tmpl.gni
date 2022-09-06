@@ -138,6 +138,10 @@ template("chrome_bundle") {
         }
       }
 
+      if (enable_silent_java_assert_reporting) {
+        custom_assertion_handler = crash_reporting_assertion_handler
+      }
+
       # Each module needs a unique resource package ID so that we don't have ID
       # collisions between feature modules.
       package_id = _package_id

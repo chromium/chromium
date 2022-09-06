@@ -2138,8 +2138,8 @@ if (enable_java_templates) {
 
       # Set these even when !use_final_fields so that they have correct default
       # values within robolectric_binary(), which ignores jar_excluded_patterns.
-      if ((defined(invoker.use_custom_assertion_handler) &&
-           invoker.use_custom_assertion_handler) || enable_java_asserts) {
+      if ((defined(invoker.assertions_implicitly_enabled) &&
+           invoker.assertions_implicitly_enabled) || enable_java_asserts) {
         defines += [ "_ENABLE_ASSERTS" ]
       }
       if (use_cfi_diag || is_ubsan || is_ubsan_security || is_ubsan_vptr) {
@@ -2917,6 +2917,11 @@ if (enable_java_templates) {
       _loadable_modules += _sanitizer_runtimes
     }
 
+    _assertions_implicitly_enabled = defined(invoker.custom_assertion_handler)
+
+    # Many possible paths where we wouldn't use this variable.
+    not_needed([ "_assertions_implicitly_enabled" ])
+
     if (_generate_buildconfig_java) {
       generate_build_config_srcjar("${_template_name}__build_config_srcjar") {
         forward_variables_from(invoker,
@@ -2930,7 +2935,7 @@ if (enable_java_templates) {
         }
         bundles_supported = _bundles_supported
         use_final_fields = true
-        use_custom_assertion_handler = defined(invoker.custom_assertion_handler)
+        assertions_implicitly_enabled = _assertions_implicitly_enabled
         enable_multidex = _enable_multidex
         is_incremental_install = _incremental_apk
         if (defined(invoker.build_config_include_product_version_resource) &&
@@ -3082,7 +3087,8 @@ if (enable_java_templates) {
         if (defined(invoker.proguard_configs)) {
           proguard_configs += invoker.proguard_configs
         }
-        if (!enable_java_asserts && (!defined(testonly) || !testonly) &&
+        if (!_assertions_implicitly_enabled && !enable_java_asserts &&
+            (!defined(testonly) || !testonly) &&
             # Injected JaCoCo code causes -checkdiscards to fail.
             !use_jacoco_coverage) {
           proguard_configs += [ "//build/android/dcheck_is_off.flags" ]
