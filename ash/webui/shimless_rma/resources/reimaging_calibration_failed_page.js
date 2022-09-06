@@ -17,7 +17,7 @@ import {afterNextRender, html, mixinBehaviors, PolymerElement} from 'chrome://re
 import {ComponentTypeToId} from './data.js';
 import {getShimlessRmaService} from './mojo_interface_provider.js';
 import {CalibrationComponentStatus, CalibrationStatus, ComponentType, ShimlessRmaServiceInterface, StateResult} from './shimless_rma_types.js';
-import {disableNextButton, enableNextButton, executeThenTransitionState} from './shimless_rma_util.js';
+import {disableNextButton, enableNextButton, executeThenTransitionState, focusPageTitle} from './shimless_rma_util.js';
 
 /**
  * @fileoverview
@@ -218,6 +218,8 @@ export class ReimagingCalibrationFailedPage extends
             gradient.style.setProperty('visibility', 'visible');
           }
         });
+
+    focusPageTitle(this);
   }
 
   /** @private */
@@ -246,9 +248,6 @@ export class ReimagingCalibrationFailedPage extends
       // Focus on the first clickable component at the beginning.
       this.focusedComponentIndex_ =
           this.componentCheckboxes_.findIndex(component => !component.disabled);
-      afterNextRender(this, () => {
-        this.focusOnCurrentComponent_();
-      });
     });
   }
 

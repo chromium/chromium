@@ -11,7 +11,7 @@ import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v
 
 import {getShimlessRmaService} from './mojo_interface_provider.js';
 import {FinalizationError, FinalizationObserverInterface, FinalizationObserverReceiver, FinalizationStatus, RmadErrorCode, ShimlessRmaServiceInterface, StateResult} from './shimless_rma_types.js';
-import {executeThenTransitionState} from './shimless_rma_util.js';
+import {executeThenTransitionState, focusPageTitle} from './shimless_rma_util.js';
 
 /** @type {!Object<!FinalizationStatus, string>} */
 const finalizationStatusTextKeys = {
@@ -71,6 +71,13 @@ export class WrapupFinalizePage extends WrapupFinalizePageBase {
 
     this.shimlessRmaService_.observeFinalizationStatus(
         this.finalizationObserverReceiver_.$.bindNewPipeAndPassRemote());
+  }
+
+  /** @override */
+  ready() {
+    super.ready();
+
+    focusPageTitle(this);
   }
 
   /**

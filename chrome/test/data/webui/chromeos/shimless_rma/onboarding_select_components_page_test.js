@@ -217,8 +217,7 @@ export function onboardingSelectComponentsPageTest() {
 
     await flushTasks();
 
-    // At the beginning we should be focused on the first clickable component,
-    // which is the camera.
+    componentCameraButton.click();
     assertDeepEquals(componentCameraButton, getDeepActiveElement());
     // We are at the beginning of the list, so left arrow should do nothing.
     window.dispatchEvent(new KeyboardEvent('keydown', {key: 'ArrowLeft'}));

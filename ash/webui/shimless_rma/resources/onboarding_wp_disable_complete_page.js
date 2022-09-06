@@ -10,7 +10,7 @@ import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v
 
 import {getShimlessRmaService} from './mojo_interface_provider.js';
 import {ShimlessRmaServiceInterface, StateResult, WriteProtectDisableCompleteAction} from './shimless_rma_types.js';
-import {enableNextButton} from './shimless_rma_util.js';
+import {enableNextButton, focusPageTitle} from './shimless_rma_util.js';
 
 /** @type {!Object<WriteProtectDisableCompleteAction, string>} */
 const disableActionTextKeys = {
@@ -61,6 +61,8 @@ export class OnboardingWpDisableCompletePage extends
   ready() {
     super.ready();
     enableNextButton(this);
+
+    focusPageTitle(this);
   }
 
   constructor() {

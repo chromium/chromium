@@ -14,7 +14,7 @@ import {afterNextRender, html, mixinBehaviors, PolymerElement} from 'chrome://re
 
 import {getShimlessRmaService} from './mojo_interface_provider.js';
 import {ShimlessRmaServiceInterface, StateResult} from './shimless_rma_types.js';
-import {disableNextButton, enableNextButton} from './shimless_rma_util.js';
+import {disableNextButton, enableNextButton, focusPageTitle} from './shimless_rma_util.js';
 
 /**
  * @fileoverview
@@ -185,6 +185,8 @@ export class ReimagingDeviceInformationPage extends
     this.getOriginalSkuAndSkuList_();
     this.getOriginalWhiteLabelAndWhiteLabelList_();
     this.getOriginalDramPartNumber_();
+
+    focusPageTitle(this);
   }
 
   /** @private */

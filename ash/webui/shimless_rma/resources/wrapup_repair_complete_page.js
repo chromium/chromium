@@ -14,7 +14,7 @@ import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v
 
 import {getShimlessRmaService} from './mojo_interface_provider.js';
 import {ExternalDiskStateObserverInterface, ExternalDiskStateObserverReceiver, PowerCableStateObserverInterface, PowerCableStateObserverReceiver, RmadErrorCode, SaveLogResponse, ShimlessRmaServiceInterface, ShutdownMethod} from './shimless_rma_types.js';
-import {executeThenTransitionState} from './shimless_rma_util.js';
+import {executeThenTransitionState, focusPageTitle} from './shimless_rma_util.js';
 
 /**
  * @fileoverview
@@ -164,6 +164,13 @@ export class WrapupRepairCompletePage extends WrapupRepairCompletePageBase {
 
     this.shimlessRmaService_.observeExternalDiskState(
         this.externalDiskStateReceiver_.$.bindNewPipeAndPassRemote());
+  }
+
+  /** @override */
+  ready() {
+    super.ready();
+
+    focusPageTitle(this);
   }
 
   /** @protected */

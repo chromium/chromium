@@ -2,7 +2,7 @@
 </style>
 <base-page left-pane-only>
   <div slot="left-pane">
-    <h1>[[i18n('wipeDeviceTitleText')]]</h1>
+    <h1 tabindex="-1">[[i18n('wipeDeviceTitleText')]]</h1>
     <!-- TODO(gavinwill): Replace |disabled| with variable -->
     <cr-radio-group id="wipeDeviceRadioGroup" disabled="[[allButtonsDisabled]]"
         on-selected-changed="onOptionChanged_">

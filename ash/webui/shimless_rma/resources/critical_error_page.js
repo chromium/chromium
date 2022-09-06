@@ -12,7 +12,7 @@ import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v
 
 import {getShimlessRmaService} from './mojo_interface_provider.js';
 import {ShimlessRmaServiceInterface} from './shimless_rma_types.js';
-import {disableAllButtons} from './shimless_rma_util.js';
+import {disableAllButtons, focusPageTitle} from './shimless_rma_util.js';
 
 /**
  * @fileoverview
@@ -50,6 +50,13 @@ export class CriticalErrorPage extends CriticalErrorPageBase {
     super();
     /** @private {ShimlessRmaServiceInterface} */
     this.shimlessRmaService_ = getShimlessRmaService();
+  }
+
+  /** @override */
+  ready() {
+    super.ready();
+
+    focusPageTitle(this);
   }
 
   /** @protected */

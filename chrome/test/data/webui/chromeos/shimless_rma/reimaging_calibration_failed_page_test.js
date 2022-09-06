@@ -321,8 +321,7 @@ export function reimagingCalibrationFailedPageTest() {
 
     await flushTasks();
 
-    // At the beginning we should be focused on the first clickable component,
-    // which is the camera.
+    componentLidAccelerometerButton.click();
     assertDeepEquals(componentLidAccelerometerButton, getDeepActiveElement());
     // We are at the beginning of the list, so left arrow should do nothing.
     window.dispatchEvent(new KeyboardEvent('keydown', {key: 'ArrowLeft'}));

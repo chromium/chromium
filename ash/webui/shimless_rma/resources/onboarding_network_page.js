@@ -22,7 +22,7 @@ import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v
 
 import {getNetworkConfigService, getShimlessRmaService} from './mojo_interface_provider.js';
 import {NetworkConfigServiceInterface, ShimlessRmaServiceInterface, StateResult} from './shimless_rma_types.js';
-import {enableNextButton} from './shimless_rma_util.js';
+import {enableNextButton, focusPageTitle} from './shimless_rma_util.js';
 
 /**
  * @fileoverview
@@ -152,6 +152,8 @@ export class OnboardingNetworkPage extends OnboardingNetworkPageBase {
     this.shimlessRmaService_.trackConfiguredNetworks();
     this.refreshNetworks();
     enableNextButton(this);
+
+    focusPageTitle(this);
   }
 
   /** CrosNetworkConfigObserver impl */

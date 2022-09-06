@@ -17,7 +17,7 @@ import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v
 
 import {getShimlessRmaService} from './mojo_interface_provider.js';
 import {HardwareVerificationStatusObserverInterface, HardwareVerificationStatusObserverReceiver, OsUpdateObserverInterface, OsUpdateObserverReceiver, OsUpdateOperation, ShimlessRmaServiceInterface, StateResult, UpdateErrorCode} from './shimless_rma_types.js';
-import {disableAllButtons, enableAllButtons, enableNextButton} from './shimless_rma_util.js';
+import {disableAllButtons, enableAllButtons, enableNextButton, focusPageTitle} from './shimless_rma_util.js';
 
 /**
  * @fileoverview
@@ -153,6 +153,8 @@ export class OnboardingUpdatePageElement extends
     this.getCurrentVersionText_();
     this.getUpdateVersionNumber_();
     enableNextButton(this);
+
+    focusPageTitle(this);
   }
 
   /**

@@ -14,7 +14,7 @@ import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v
 import {ComponentTypeToId} from './data.js';
 import {getShimlessRmaService} from './mojo_interface_provider.js';
 import {CalibrationComponentStatus, CalibrationObserverInterface, CalibrationObserverReceiver, CalibrationOverallStatus, ShimlessRmaServiceInterface, StateResult} from './shimless_rma_types.js';
-import {enableNextButton, executeThenTransitionState} from './shimless_rma_util.js';
+import {enableNextButton, executeThenTransitionState, focusPageTitle} from './shimless_rma_util.js';
 
 /**
  * @fileoverview
@@ -63,6 +63,13 @@ export class ReimagingCalibrationRunPage extends
 
     this.shimlessRmaService_.observeCalibrationProgress(
         this.calibrationObserverReceiver_.$.bindNewPipeAndPassRemote());
+  }
+
+  /** @override */
+  ready() {
+    super.ready();
+
+    focusPageTitle(this);
   }
 
   /** @return {!Promise<!{stateResult: !StateResult}>} */

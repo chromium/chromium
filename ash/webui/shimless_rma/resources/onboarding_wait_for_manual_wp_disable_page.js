@@ -10,7 +10,7 @@ import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v
 
 import {getShimlessRmaService} from './mojo_interface_provider.js';
 import {HardwareWriteProtectionStateObserverInterface, HardwareWriteProtectionStateObserverReceiver, ShimlessRmaServiceInterface, StateResult} from './shimless_rma_types.js';
-import {disableAllButtons} from './shimless_rma_util.js';
+import {disableAllButtons, focusPageTitle} from './shimless_rma_util.js';
 
 /**
  * @fileoverview
@@ -63,6 +63,13 @@ export class OnboardingWaitForManualWpDisablePage extends
     this.shimlessRmaService_.observeHardwareWriteProtectionState(
         this.hardwareWriteProtectionStateObserverReceiver_.$
             .bindNewPipeAndPassRemote());
+  }
+
+  /** @override */
+  ready() {
+    super.ready();
+
+    focusPageTitle(this);
   }
 
   /**

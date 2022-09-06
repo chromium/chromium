@@ -12,6 +12,8 @@ import './shimless_rma_shared_css.js';
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {focusPageTitle} from './shimless_rma_util.js';
+
 /**
  * @fileoverview
  * 'splash-screen' is displayed while waiting for the first state to be fetched
@@ -33,6 +35,13 @@ export class SplashScreen extends SplashScreenBase {
 
   static get template() {
     return html`{__html_template__}`;
+  }
+
+  /** @override */
+  ready() {
+    super.ready();
+
+    focusPageTitle(this);
   }
 
   /**

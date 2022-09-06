@@ -3,7 +3,7 @@
 
 <base-page>
   <div slot="left-pane">
-    <h1>[[i18n('selectComponentsTitleText')]]</h1>
+    <h1 tabindex="-1">[[i18n('selectComponentsTitleText')]]</h1>
     <div class="instructions">
       <localized-link id="reworkFlowLink"
           localized-string="[[reworkFlowLinkText_]]">
@@ -13,7 +13,8 @@
   <div slot="right-pane">
     <div class="scroll-container">
       <div id="componentList" class="component-grid repair">
-        <template is="dom-repeat" items="{{componentCheckboxes_}}" as="component">
+        <template is="dom-repeat" items="{{componentCheckboxes_}}"
+            as="component">
           <repair-component-chip id="[[component.id]]"
             unique-id="[[component.uniqueId]]"
             checked="{{component.checked}}"
@@ -21,7 +22,8 @@
                 allButtonsDisabled)]]"
             component-name="[[component.name]]"
             component-identifier="[[component.identifier]]"
-            is-first-clickable-component="[[component.isFirstClickableComponent]]">
+            is-first-clickable-component=
+                "[[component.isFirstClickableComponent]]">
           </repair-component-chip>
         </template>
       </div>

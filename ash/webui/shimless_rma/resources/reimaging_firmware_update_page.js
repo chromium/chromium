@@ -13,7 +13,7 @@ import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v
 
 import {getShimlessRmaService} from './mojo_interface_provider.js';
 import {ShimlessRmaServiceInterface, StateResult, UpdateRoFirmwareObserverInterface, UpdateRoFirmwareObserverReceiver, UpdateRoFirmwareStatus} from './shimless_rma_types.js';
-import {disableNextButton, enableNextButton} from './shimless_rma_util.js';
+import {disableNextButton, enableNextButton, focusPageTitle} from './shimless_rma_util.js';
 
 /** @type {!Object<!UpdateRoFirmwareStatus, string>} */
 const STATUS_TEXT_KEY_MAP = {
@@ -123,6 +123,13 @@ export class UpdateRoFirmwarePage extends UpdateRoFirmwarePageBase {
 
     this.shimlessRmaService_.observeRoFirmwareUpdateProgress(
         this.updateRoFirmwareObserverReceiver_.$.bindNewPipeAndPassRemote());
+  }
+
+  /** @override */
+  ready() {
+    super.ready();
+
+    focusPageTitle(this);
   }
 
   static get observers() {
