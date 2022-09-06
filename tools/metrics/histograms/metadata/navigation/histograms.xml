@@ -98,7 +98,7 @@ Also used in tools/metrics/histograms/metadata/page/histograms.xml.
 <histogram
     name="BackForwardCache.AllSites.HistoryNavigationOutcome.BrowsingInstanceNotSwappedReason"
     enum="BackForwardCacheBrowsingInstanceNotSwappedReason"
-    expires_after="2023-01-01">
+    expires_after="2023-03-05">
   <owner>hajimehoshi@chromium.org</owner>
   <owner>bfcache-dev@chromium.org</owner>
   <summary>
@@ -266,7 +266,7 @@ Also used in tools/metrics/histograms/metadata/page/histograms.xml.
 <histogram
     name="BackForwardCache.HistoryNavigationOutcome.BrowsingInstanceNotSwappedReason"
     enum="BackForwardCacheBrowsingInstanceNotSwappedReason"
-    expires_after="2022-12-25">
+    expires_after="2023-03-05">
   <owner>hajimehoshi@chromium.org</owner>
   <owner>bfcache-dev@chromium.org</owner>
   <summary>
@@ -454,7 +454,7 @@ Also used in tools/metrics/histograms/metadata/page/histograms.xml.
 
 <histogram
     name="BackForwardCache.UnexpectedRendererToBrowserMessage.InterfaceName"
-    enum="MojoInterfaceName" expires_after="2022-12-25">
+    enum="MojoInterfaceName" expires_after="2023-03-05">
   <owner>carlscab@google.com</owner>
   <owner>bfcache-dev@chromium.org</owner>
   <summary>
@@ -585,7 +585,7 @@ Also used in tools/metrics/histograms/metadata/page/histograms.xml.
 </histogram>
 
 <histogram name="Navigation.CrossOtr.ContextMenu.RefreshCount" units="count"
-    expires_after="2023-01-02">
+    expires_after="2023-03-05">
   <owner>mreichhoff@chromium.org</owner>
   <owner>wanderview@chromium.org</owner>
   <owner>bcl@chromium.org</owner>
@@ -597,7 +597,7 @@ Also used in tools/metrics/histograms/metadata/page/histograms.xml.
 </histogram>
 
 <histogram name="Navigation.CrossOtr.ContextMenu.RefreshCountExperimental"
-    units="count" expires_after="2023-01-02">
+    units="count" expires_after="2023-03-05">
   <owner>mreichhoff@chromium.org</owner>
   <owner>wanderview@chromium.org</owner>
   <owner>bcl@chromium.org</owner>
@@ -610,7 +610,7 @@ Also used in tools/metrics/histograms/metadata/page/histograms.xml.
 </histogram>
 
 <histogram name="Navigation.CrossOtr.ContextMenu.ResponseCode"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2023-01-02">
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2023-03-05">
   <owner>mreichhoff@chromium.org</owner>
   <owner>wanderview@chromium.org</owner>
   <owner>bcl@chromium.org</owner>
@@ -625,7 +625,7 @@ Also used in tools/metrics/histograms/metadata/page/histograms.xml.
 </histogram>
 
 <histogram name="Navigation.CrossOtr.ContextMenu.ResponseCodeExperimental"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2023-01-02">
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2023-03-05">
   <owner>mreichhoff@chromium.org</owner>
   <owner>wanderview@chromium.org</owner>
   <owner>bcl@chromium.org</owner>
@@ -763,7 +763,7 @@ Also used in tools/metrics/histograms/metadata/page/histograms.xml.
 </histogram>
 
 <histogram name="Navigation.IsSameSiteInstance"
-    enum="NavigationIsSameSiteInstance" expires_after="2023-01-01">
+    enum="NavigationIsSameSiteInstance" expires_after="2023-03-05">
   <owner>arthursonzogni@chromium.org</owner>
   <owner>clamy@chromium.org</owner>
   <owner>nasko@chromium.org</owner>
@@ -842,7 +842,7 @@ Also used in tools/metrics/histograms/metadata/page/histograms.xml.
 </histogram>
 
 <histogram name="Navigation.MainFrame.SiteEngagementLevel"
-    enum="SiteEngagementLevel" expires_after="2023-01-01">
+    enum="SiteEngagementLevel" expires_after="2023-03-05">
   <owner>meacer@chromium.org</owner>
   <owner>security-enamel@chromium.org</owner>
   <summary>
@@ -919,7 +919,7 @@ Also used in tools/metrics/histograms/metadata/page/histograms.xml.
 </histogram>
 
 <histogram name="Navigation.MainFrameSchemeDifferentPage2"
-    enum="NavigationScheme" expires_after="2023-01-01">
+    enum="NavigationScheme" expires_after="2023-03-05">
   <owner>estark@chromium.org</owner>
   <owner>elawrence@chromium.org</owner>
   <owner>trusty-transport@chromium.org</owner>
@@ -1199,7 +1199,7 @@ Also used in tools/metrics/histograms/metadata/page/histograms.xml.
 </histogram>
 
 <histogram name="Navigation.ReadyToCommitUntilCommit2" units="ms"
-    expires_after="2023-01-01">
+    expires_after="2023-03-05">
   <owner>clamy@chromium.org</owner>
   <owner>nasko@chromium.org</owner>
   <summary>
@@ -1309,7 +1309,7 @@ Also used in tools/metrics/histograms/metadata/page/histograms.xml.
 </histogram>
 
 <histogram name="Navigation.StartToCommit" units="ms"
-    expires_after="2023-01-01">
+    expires_after="2023-03-05">
   <owner>nasko@chromium.org</owner>
   <owner>csharrison@chromium.org</owner>
   <summary>
@@ -1359,7 +1359,7 @@ Also used in tools/metrics/histograms/metadata/page/histograms.xml.
 </histogram>
 
 <histogram name="Navigation.TimeToReadyToCommit2" units="ms"
-    expires_after="2023-01-01">
+    expires_after="2023-03-05">
   <owner>clamy@chromium.org</owner>
   <owner>nasko@chromium.org</owner>
   <summary>

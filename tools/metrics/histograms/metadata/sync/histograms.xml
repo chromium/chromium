@@ -167,7 +167,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.BookmarksModelMetadataCorruptionReason"
-    enum="SyncBookmarkModelMetadataCorruptionReason" expires_after="2023-01-01">
+    enum="SyncBookmarkModelMetadataCorruptionReason" expires_after="2023-03-05">
   <owner>rushans@google.com</owner>
   <owner>mastiz@chromium.org</owner>
   <component>Services&gt;Sync</component>
@@ -221,7 +221,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.ConfigureDataTypes" enum="SyncModelTypes"
-    expires_after="2023-01-01">
+    expires_after="2023-03-05">
   <owner>mastiz@chromium.org</owner>
   <owner>treib@chromium.org</owner>
   <component>Services&gt;Sync</component>
@@ -257,7 +257,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Sync.Crypto.CustomPassphraseKeyDerivationMethodOnSuccessfulDecryption"
     enum="SyncCustomPassphraseKeyDerivationMethodState"
-    expires_after="2023-01-01">
+    expires_after="2023-03-05">
   <owner>mmoskvitin@google.com</owner>
   <owner>treib@chromium.org</owner>
   <component>Services&gt;Sync</component>
@@ -272,7 +272,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Sync.Crypto.CustomPassphraseKeyDerivationMethodStateOnStartup"
     enum="SyncCustomPassphraseKeyDerivationMethodState"
-    expires_after="2023-01-01">
+    expires_after="2023-03-05">
   <owner>mmoskvitin@google.com</owner>
   <owner>treib@chromium.org</owner>
   <component>Services&gt;Sync</component>
@@ -483,7 +483,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.InitialState" enum="SyncInitialState"
-    expires_after="2023-01-01">
+    expires_after="2023-03-05">
   <owner>treib@chromium.org</owner>
   <owner>mastiz@chromium.org</owner>
   <component>Services&gt;Sync</component>
@@ -997,7 +997,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.RecordedUserEventType" enum="SyncUserEventType"
-    expires_after="2022-12-18">
+    expires_after="2023-03-05">
   <owner>mmoskvitin@google.com</owner>
   <owner>treib@chromium.org</owner>
   <component>Services&gt;Sync</component>

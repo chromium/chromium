@@ -39,7 +39,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.DataDecoder.Image.DecodingTime" units="ms"
-    expires_after="2022-12-18">
+    expires_after="2023-03-05">
   <owner>lukasza@chromium.org</owner>
   <owner>rsesek@chromium.org</owner>
   <summary>
@@ -157,7 +157,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.HttpsFirstMode.SettingChanged" enum="BooleanEnabled"
-    expires_after="2023-01-01">
+    expires_after="2023-03-05">
   <owner>cthomp@chromium.org</owner>
   <owner>trusty-transport@chromium.org</owner>
   <summary>
@@ -179,7 +179,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.JSONParser.ChromiumExtensionUsage"
-    enum="JsonParserExtension" expires_after="2023-01-01">
+    enum="JsonParserExtension" expires_after="2023-03-05">
   <owner>rsesek@chromium.org</owner>
   <owner>chrome-platform-security@google.com</owner>
   <summary>
@@ -281,7 +281,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.PrivateNetworkAccess.CachedResourceCheckResult"
-    enum="PrivateNetworkAccessCheckResult" expires_after="2022-12-31">
+    enum="PrivateNetworkAccessCheckResult" expires_after="2023-03-05">
   <owner>titouan@chromium.org</owner>
   <owner>clamy@chromium.org</owner>
   <owner>mkwst@chromium.org</owner>
@@ -305,7 +305,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Security.PrivateNetworkAccess.MismatchedAddressSpacesDuringRequest"
-    enum="Boolean" expires_after="2022-12-31">
+    enum="Boolean" expires_after="2023-03-05">
   <owner>titouan@chromium.org</owner>
   <owner>clamy@chromium.org</owner>
   <owner>mkwst@chromium.org</owner>
@@ -424,7 +424,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.SCTAuditing.NumPersistedReportsLoaded"
-    units="reports" expires_after="2022-12-01">
+    units="reports" expires_after="2023-03-05">
   <owner>cthomp@chromium.org</owner>
   <owner>trusty-transport@chromium.org</owner>
   <summary>

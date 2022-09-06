@@ -32,7 +32,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <histogram name="HeapProfiling.AndroidStackUnwinder"
-    enum="AndroidStackUnwinder" expires_after="2022-12-02">
+    enum="AndroidStackUnwinder" expires_after="2023-03-05">
   <owner>joenotcharles@chromium.org</owner>
   <owner>chrome-memory@google.com</owner>
   <summary>
@@ -501,7 +501,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.Discardable.FreelistSize.Foreground" units="KiB"
-    expires_after="2023-01-01">
+    expires_after="2023-03-05">
   <owner>thiabaud@google.com</owner>
   <owner>lizeb@chromium.org</owner>
   <summary>
@@ -521,7 +521,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.Discardable.LockingSuccess"
-    enum="BooleanLockingSuccess" expires_after="2023-01-01">
+    enum="BooleanLockingSuccess" expires_after="2023-03-05">
   <owner>thiabaud@google.com</owner>
   <owner>lizeb@chromium.org</owner>
   <summary>
@@ -531,7 +531,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.Discardable.Size.Foreground" units="KiB"
-    expires_after="2023-01-01">
+    expires_after="2023-03-05">
   <owner>thiabaud@google.com</owner>
   <owner>lizeb@chromium.org</owner>
   <summary>
@@ -2746,7 +2746,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.Total.SystemCommitLimit" units="GB"
-    expires_after="2023-01-01">
+    expires_after="2023-03-05">
   <owner>zmo@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
   <summary>

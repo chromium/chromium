@@ -32,7 +32,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cookie.ClockSkew.ExpiredWithoutSkew" enum="Boolean"
-    expires_after="2023-01-01">
+    expires_after="2023-03-05">
   <owner>kyraseevers@chromium.org</owner>
   <owner>bingler@chromium.org</owner>
   <summary>
@@ -203,7 +203,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cookie.DomainHasNonASCII" enum="Boolean"
-    expires_after="2023-01-01">
+    expires_after="2023-03-05">
   <owner>johannhof@chromium.org</owner>
   <owner>bingler@chromium.org</owner>
   <summary>
@@ -463,7 +463,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cookie.LoadProblem" enum="CookieLoadProblem"
-    expires_after="2023-01-01">
+    expires_after="2023-03-05">
   <owner>morlovich@chromium.org</owner>
   <summary>
     Recorded when a problem is recorded when loading the persistent cookie
@@ -801,7 +801,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cookie.SameSiteAttributeValue" enum="CookieSameSiteString"
-    expires_after="2023-01-01">
+    expires_after="2023-03-05">
   <owner>bingler@chromium.org</owner>
   <owner>miketaylr@chromium.org</owner>
   <summary>

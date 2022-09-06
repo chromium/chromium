@@ -304,7 +304,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.ANGLE.D3D11FeatureLevel" enum="D3DFeatureLevel"
-    expires_after="2023-01-01">
+    expires_after="2023-03-05">
   <owner>jonahr@google.com</owner>
   <owner>angle-team@google.com</owner>
   <summary>
@@ -318,7 +318,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.ANGLE.D3D11InitializeResult" enum="D3D11InitializeResult"
-    expires_after="2023-01-01">
+    expires_after="2023-03-05">
   <owner>jonahr@google.com</owner>
   <owner>angle-team@google.com</owner>
   <summary>
@@ -329,7 +329,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.ANGLE.D3D9InitializeResult" enum="D3D9InitializeResult"
-    expires_after="2023-01-01">
+    expires_after="2023-03-05">
   <owner>jonahr@google.com</owner>
   <owner>angle-team@google.com</owner>
   <summary>
@@ -377,7 +377,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.BlocklistFeatureTestResults"
-    enum="GPUBlocklistFeatureTestResults" expires_after="2023-01-01">
+    enum="GPUBlocklistFeatureTestResults" expires_after="2023-03-05">
   <owner>vmiura@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
   <summary>
@@ -397,7 +397,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.CanvasOopRaster.OopRasterAndGpuAcceleration"
-    enum="CanvasOopRasterAndGpuAcceleration" expires_after="2023-01-01">
+    enum="CanvasOopRasterAndGpuAcceleration" expires_after="2023-03-05">
   <owner>vasilyt@chromium.org</owner>
   <owner>nazabris@microsoft.com</owner>
   <owner>jochin@microsoft.com</owner>
@@ -476,7 +476,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.D3DShaderModel" enum="ShaderModel"
-    expires_after="2023-01-01">
+    expires_after="2023-03-05">
   <owner>jonahr@google.com</owner>
   <owner>angle-team@google.com</owner>
   <summary>
@@ -531,7 +531,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.DirectComposition.DCLayer.YUVOverlayCount"
-    units="overlays" expires_after="2023-01-01">
+    units="overlays" expires_after="2023-03-05">
   <owner>magchen@chromium.org</owner>
   <owner>zmo@chromium.org</owner>
   <summary>
@@ -847,7 +847,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.GLImplementation" enum="GLImplementation"
-    expires_after="2023-01-01">
+    expires_after="2023-03-05">
   <owner>magchen@chromium.org</owner>
   <owner>zmo@chromium.org</owner>
   <summary>
@@ -899,7 +899,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.GPUProcessExitCode" enum="GPUProcessExitCode"
-    expires_after="2023-01-01">
+    expires_after="2023-03-05">
   <owner>zmo@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
   <summary>
@@ -917,7 +917,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.GPUProcessLaunchTime" units="ms"
-    expires_after="2023-01-01">
+    expires_after="2023-03-05">
   <owner>vmiura@chromium.org</owner>
   <summary>
     Startup time of the GPU process as measured by the GPU process host.
@@ -938,7 +938,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.GPUProcessTerminationStatus2" enum="GpuTerminationStatus"
-    expires_after="2023-01-01">
+    expires_after="2023-03-05">
   <owner>vmiura@chromium.org</owner>
   <summary>
     Counts for each time the GPU Process Host detects the process dies.
@@ -1418,7 +1418,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.SoftwareRendering" enum="BooleanSoftwareRendering"
-    expires_after="2023-01-01">
+    expires_after="2023-03-05">
   <owner>zmo@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
   <summary>

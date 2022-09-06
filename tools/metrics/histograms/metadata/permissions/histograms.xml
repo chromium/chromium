@@ -402,7 +402,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Permissions.Engagement.Accepted" units="%"
-    expires_after="2023-01-01">
+    expires_after="2023-03-05">
   <owner>engedy@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
@@ -423,7 +423,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Permissions.Engagement.Denied" units="%"
-    expires_after="2023-01-01">
+    expires_after="2023-03-05">
   <owner>engedy@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
@@ -453,7 +453,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Permissions.MissingOSLevelPermission.Action"
-    enum="PermissionAction" expires_after="2023-01-01">
+    enum="PermissionAction" expires_after="2023-03-05">
   <owner>andypaicu@chromium.org</owner>
   <owner>engedy@chromium.org</owner>
   <owner>hkamila@chromium.org</owner>
@@ -465,7 +465,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Permissions.MissingOSLevelPermission.ShouldShow"
-    enum="Boolean" expires_after="2023-01-01">
+    enum="Boolean" expires_after="2023-03-05">
   <owner>andypaicu@chromium.org</owner>
   <owner>engedy@chromium.org</owner>
   <owner>hkamila@chromium.org</owner>
@@ -658,7 +658,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Permissions.Prompt.Dismissed.PriorDismissCount2" units="units"
-    expires_after="2023-01-01">
+    expires_after="2023-03-05">
   <owner>engedy@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
@@ -950,7 +950,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Permissions.QuietNotificationPrompts.IsEnabledInPrefs"
-    enum="BooleanEnabled" expires_after="2023-01-01">
+    enum="BooleanEnabled" expires_after="2023-03-05">
   <owner>andypaicu@chromium.org</owner>
   <owner>engedy@chromium.org</owner>
   <owner>hkamila@chromium.org</owner>

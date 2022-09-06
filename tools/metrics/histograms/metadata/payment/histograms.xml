@@ -275,7 +275,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="PaymentRequest.SecurePaymentConfirmation.Funnel.EnrollSystemPromptResult"
     enum="SecurePaymentConfirmationEnrollSystemPromptResult"
-    expires_after="2022-11-22">
+    expires_after="2023-03-05">
   <owner>rouslan@chromium.org</owner>
   <owner>web-payments-team@google.com</owner>
   <summary>
@@ -290,7 +290,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="PaymentRequest.SecurePaymentConfirmation.Funnel.SystemPromptResult"
     enum="SecurePaymentConfirmationSystemPromptResult"
-    expires_after="2022-11-22">
+    expires_after="2023-03-05">
   <owner>rouslan@chromium.org</owner>
   <owner>web-payments-team@google.com</owner>
   <summary>
@@ -303,7 +303,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PaymentRequest.SecurePaymentConfirmationCredentialIdSizeInBytes"
-    units="bytes" expires_after="2022-11-22">
+    units="bytes" expires_after="2023-03-05">
   <owner>rouslan@chromium.org</owner>
   <owner>web-payments-team@google.com</owner>
   <summary>

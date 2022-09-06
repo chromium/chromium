@@ -233,7 +233,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DevTools.IssuesPanelResourceOpened"
-    enum="DevToolsIssuesPanelResourceOpened" expires_after="2022-12-01">
+    enum="DevToolsIssuesPanelResourceOpened" expires_after="2023-03-05">
   <owner>yangguo@chromium.org</owner>
   <owner>dsv@chromium.org</owner>
   <summary>
@@ -316,7 +316,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DevTools.MutatingHttpAction"
-    enum="DevToolsMutatingHttpActionVerb" expires_after="2022-12-31">
+    enum="DevToolsMutatingHttpActionVerb" expires_after="2023-03-05">
   <owner>dsv@chromium.org</owner>
   <owner>caseq@chromium.org</owner>
   <summary>

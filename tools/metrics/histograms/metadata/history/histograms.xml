@@ -815,7 +815,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.Clusters.Backend.NumKeywordsPerCluster"
-    units="number keywords" expires_after="2023-02-26">
+    units="number keywords" expires_after="2023-03-05">
   <owner>mcrouse@chromium.org</owner>
   <owner>chrome-journeys@google.com</owner>
   <component>UI&gt;Browser&gt;Journeys</component>
@@ -1031,7 +1031,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.Clusters.Survey.CanShowAnySurvey" enum="Boolean"
-    expires_after="2022-12-01">
+    expires_after="2023-03-05">
   <owner>tommycli@chromium.org</owner>
   <owner>chrome-journeys@google.com</owner>
   <component>UI&gt;Browser&gt;Journeys</component>
@@ -1044,7 +1044,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.Clusters.Survey.CanShowSurvey" enum="Boolean"
-    expires_after="2022-12-01">
+    expires_after="2023-03-05">
   <owner>tommycli@chromium.org</owner>
   <owner>chrome-journeys@google.com</owner>
   <component>UI&gt;Browser&gt;Journeys</component>
@@ -1057,7 +1057,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.Clusters.Survey.Requested"
-    enum="HistoryClustersSurvey" expires_after="2022-12-01">
+    enum="HistoryClustersSurvey" expires_after="2023-03-05">
   <owner>tommycli@chromium.org</owner>
   <owner>chrome-journeys@google.com</owner>
   <component>UI&gt;Browser&gt;Journeys</component>
@@ -1068,7 +1068,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.Clusters.Survey.Success" enum="Boolean"
-    expires_after="2022-12-01">
+    expires_after="2023-03-05">
   <owner>tommycli@chromium.org</owner>
   <owner>chrome-journeys@google.com</owner>
   <component>UI&gt;Browser&gt;Journeys</component>
@@ -1843,7 +1843,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="History.URLTableCount" units="URLs" expires_after="2023-01-01">
+<histogram name="History.URLTableCount" units="URLs" expires_after="2023-03-05">
   <owner>mpearson@chromium.org</owner>
   <owner>sky@chromium.org</owner>
   <component>UI&gt;Browser&gt;History</component>

@@ -153,7 +153,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebAuthentication.ChromeOS.U2FClient.IsU2fEnabledStatus"
-    enum="WebAuthenticationU2FClientStatus" expires_after="2022-12-31">
+    enum="WebAuthenticationU2FClientStatus" expires_after="2023-03-05">
   <owner>martinkr@google.com</owner>
   <owner>chrome-webauthn@google.com</owner>
   <summary>
@@ -180,7 +180,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebAuthentication.GetAssertionRequestTransport"
-    enum="WebAuthenticationFidoTransport" expires_after="2023-01-01">
+    enum="WebAuthenticationFidoTransport" expires_after="2023-03-05">
   <owner>kenrb@chromium.org</owner>
   <owner>martinkr@google.com</owner>
   <summary>
@@ -191,7 +191,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebAuthentication.GetAssertionResponseTransport"
-    enum="WebAuthenticationFidoTransport" expires_after="2022-12-31">
+    enum="WebAuthenticationFidoTransport" expires_after="2023-03-05">
   <owner>kenrb@chromium.org</owner>
   <owner>martinkr@google.com</owner>
   <summary>
@@ -223,7 +223,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebAuthentication.MakeCredentialResponseTransport"
-    enum="WebAuthenticationFidoTransport" expires_after="2022-12-31">
+    enum="WebAuthenticationFidoTransport" expires_after="2023-03-05">
   <owner>kenrb@chromium.org</owner>
   <owner>martinkr@google.com</owner>
   <summary>

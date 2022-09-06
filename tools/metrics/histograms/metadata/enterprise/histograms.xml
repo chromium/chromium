@@ -124,7 +124,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Enterprise.AutoEnrollmentControllerTimeout"
     enum="EnterpriseAutoEnrollmentControllerTimeoutReport"
-    expires_after="2023-01-01">
+    expires_after="2023-03-05">
   <owner>vsavu@google.com</owner>
   <owner>igorcov@chromium.org</owner>
   <summary>
@@ -440,7 +440,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.CloudReportingRequestCount" units="requests"
-    expires_after="2023-01-01">
+    expires_after="2023-03-05">
   <owner>zmin@chromium.org</owner>
   <owner>pastarmovj@chromium.org</owner>
   <summary>
@@ -450,7 +450,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.CloudReportingRequestSize" units="KB"
-    expires_after="2023-01-01">
+    expires_after="2023-03-05">
   <owner>zmin@chromium.org</owner>
   <owner>pastarmovj@chromium.org</owner>
   <summary>
@@ -1876,7 +1876,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.OnBulkDataEntry.DataSize" units="bytes"
-    expires_after="2023-01-01">
+    expires_after="2023-03-05">
   <owner>domfc@chromium.org</owner>
   <owner>webprotect-team@google.com</owner>
   <summary>
@@ -1893,7 +1893,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.Policies" enum="EnterprisePolicies"
-    expires_after="2023-01-01">
+    expires_after="2023-03-05">
   <owner>mnissler@chromium.org</owner>
   <summary>
     A set of enterprise policy rules that are in use. This is recorded every 24
@@ -2321,7 +2321,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.VPDCacheReadResult" enum="VPDCacheReadResult"
-    expires_after="2023-01-01">
+    expires_after="2023-03-05">
   <owner>vsavu@google.com</owner>
   <owner>igorcov@chromium.org</owner>
   <summary>The result of Chrome reading the VPD cache on Chrome OS.</summary>

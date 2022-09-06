@@ -366,7 +366,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Omnibox.CharTypedToRepaintLatency.InsertToPresent" units="ms"
-    expires_after="2023-01-01">
+    expires_after="2023-03-05">
   <owner>asvitkine@chromium.org</owner>
   <owner>mpearson@chromium.org</owner>
   <owner>jdonnelly@chromium.org</owner>
@@ -394,7 +394,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Omnibox.CharTypedToRepaintLatency.ToPaint" units="ms"
-    expires_after="2023-01-01">
+    expires_after="2023-03-05">
   <owner>asvitkine@chromium.org</owner>
   <owner>mpearson@chromium.org</owner>
   <owner>jdonnelly@chromium.org</owner>
@@ -1397,7 +1397,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Omnibox.SelectedPosition" units="position"
-    expires_after="2023-01-01">
+    expires_after="2023-03-05">
   <owner>jdonnelly@chromium.org</owner>
   <owner>mpearson@chromium.org</owner>
   <owner>chrome-omnibox-team@google.com</owner>
@@ -1529,7 +1529,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Omnibox.SuggestionUsed.ResumeJourney.ClusterKeywordType"
-    enum="HistoryClusterKeywordType" expires_after="2023-02-26">
+    enum="HistoryClusterKeywordType" expires_after="2023-03-05">
   <owner>junzou@chromium.org</owner>
   <owner>chrome-intelligence-core@google.com</owner>
   <summary>
@@ -1582,7 +1582,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Omnibox.SuggestionUsed.ResumeJourney.PageEntityCollection"
-    enum="OptimizationGuidePageEntityCollection" expires_after="2023-02-26">
+    enum="OptimizationGuidePageEntityCollection" expires_after="2023-03-05">
   <owner>junzou@chromium.org</owner>
   <owner>chrome-intelligence-core@google.com</owner>
   <summary>
@@ -2057,7 +2057,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Omnibox.ToggleSuggestionGroupId.Off" enum="SuggestionGroupId"
-    expires_after="2023-01-01">
+    expires_after="2023-03-05">
   <owner>mahmadi@google.com</owner>
   <owner>chrome-omnibox-team@google.com</owner>
   <summary>

@@ -1024,7 +1024,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="TranslateModelService.LanguageDetectionModel.PendingRequestCallbacks"
-    units="requests" expires_after="2023-01-01">
+    units="requests" expires_after="2023-03-05">
   <owner>mcrouse@chromium.org</owner>
   <owner>chrome-language@chromium.org</owner>
   <summary>

@@ -362,7 +362,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.AutofillAssistant.DependenciesInvalidated"
-    enum="AutofillAssistantDependenciesInvalidated" expires_after="2023-01-01">
+    enum="AutofillAssistantDependenciesInvalidated" expires_after="2023-03-05">
   <owner>fga@google.com</owner>
   <owner>autofill_assistant+watch@google.com</owner>
   <summary>
@@ -737,7 +737,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.BackgroundTaskScheduler.TaskScheduled.Success"
-    enum="BackgroundTaskId" expires_after="2023-01-01">
+    enum="BackgroundTaskId" expires_after="2023-03-05">
   <owner>fgorski@chromium.org</owner>
   <owner>nyquist@chromium.org</owner>
   <summary>
@@ -1317,7 +1317,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.DownloadManager.OpenSource.Audio"
-    enum="AndroidDownloadOpenSource" expires_after="2023-01-01">
+    enum="AndroidDownloadOpenSource" expires_after="2023-03-05">
   <owner>shaktisahu@chromium.org</owner>
   <owner>clank-downloads@google.com</owner>
   <summary>Records how users open audio download files on Android.</summary>
@@ -2306,7 +2306,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Messages.Enqueued.Hidden" enum="MessageIdentifier"
-    expires_after="2022-12-31">
+    expires_after="2023-03-05">
   <owner>lazzzis@chromium.org</owner>
   <owner>src/components/messages/OWNERS</owner>
   <summary>
@@ -2551,7 +2551,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.NTP.Impression" enum="NTPImpressionType"
-    expires_after="2023-01-01">
+    expires_after="2023-03-05">
   <owner>finkm@chromium.org</owner>
   <summary>
     Counts impressions of the NTP on Android. It also counts potential
@@ -2939,7 +2939,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.PackageStats.CacheSize" units="MB"
-    expires_after="2023-01-01">
+    expires_after="2023-03-05">
   <owner>nyquist@chromium.org</owner>
   <owner>yfriedman@chromium.org</owner>
   <summary>
@@ -2948,7 +2948,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.PackageStats.CodeSize" units="MB"
-    expires_after="2023-01-01">
+    expires_after="2023-03-05">
   <owner>nyquist@chromium.org</owner>
   <owner>yfriedman@chromium.org</owner>
   <summary>
@@ -2959,7 +2959,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.PackageStats.DataSize" units="MB"
-    expires_after="2023-01-01">
+    expires_after="2023-03-05">
   <owner>nyquist@chromium.org</owner>
   <owner>yfriedman@chromium.org</owner>
   <summary>
@@ -3748,7 +3748,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.View.onDraw.30Seconds" units="count"
-    expires_after="2023-01-01">
+    expires_after="2023-03-05">
   <owner>nuskos@chromium.org</owner>
   <owner>chrometto-team@google.com</owner>
   <summary>

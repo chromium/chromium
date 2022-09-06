@@ -1089,7 +1089,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Event.Latency.ScrollUpdate.TimeToScrollUpdateSwapBegin2"
-    units="microseconds" expires_after="2023-01-01">
+    units="microseconds" expires_after="2023-03-05">
   <owner>nzolghadr@chromium.org</owner>
   <summary>
     Time between initial creation of a wheel/touch event and start of the frame

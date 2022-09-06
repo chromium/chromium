@@ -102,7 +102,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SafeBrowsing.AdvancedProtection.TokenFetchStatus"
-    enum="GoogleServiceAuthError" expires_after="2023-01-01">
+    enum="GoogleServiceAuthError" expires_after="2023-03-05">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -135,7 +135,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SafeBrowsing.AndroidTelemetry.ApkDownload.Outcome"
-    enum="ApkDownloadTelemetryOutcome" expires_after="2023-01-01">
+    enum="ApkDownloadTelemetryOutcome" expires_after="2023-03-05">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -145,7 +145,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SafeBrowsing.BlockingPage.RequestDestination"
-    enum="RequestDestination" expires_after="2023-01-01">
+    enum="RequestDestination" expires_after="2023-03-05">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -850,7 +850,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SafeBrowsing.DeepScan.Upload.Duration" units="ms"
-    expires_after="2023-01-01">
+    expires_after="2023-03-05">
   <owner>domfc@chromium.org</owner>
   <owner>webprotect-team@google.com</owner>
   <summary>
@@ -1198,7 +1198,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SafeBrowsing.ExtensionTelemetry.Signals.SignalType"
-    enum="SBExtensionTelemetrySignalsSignalType" expires_after="2023-01-01">
+    enum="SBExtensionTelemetrySignalsSignalType" expires_after="2023-03-05">
   <owner>anunoy@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -1389,7 +1389,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SafeBrowsing.PageLoadToken.ClearReason"
-    enum="SafeBrowsingPageLoadTokenClearReason" expires_after="2023-01-01">
+    enum="SafeBrowsingPageLoadTokenClearReason" expires_after="2023-03-05">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -1657,7 +1657,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SafeBrowsing.RT.CacheManager.RealTimeVerdictCount"
-    units="entries" expires_after="2023-01-01">
+    units="entries" expires_after="2023-03-05">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -1892,7 +1892,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SafeBrowsing.RT.RequestDestinations.Checked"
-    enum="RequestDestination" expires_after="2023-01-01">
+    enum="RequestDestination" expires_after="2023-03-05">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -1912,7 +1912,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SafeBrowsing.RT.Response.VerdictType"
-    enum="SafeBrowsingRTLookupResponseVerdictType" expires_after="2023-02-26">
+    enum="SafeBrowsingRTLookupResponseVerdictType" expires_after="2023-03-05">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -2404,7 +2404,7 @@ and applied correctly. -->
 </histogram>
 
 <histogram name="SafeBrowsing.V4ProcessPartialUpdate.ApplyUpdateDuration"
-    units="ms" expires_after="2023-01-01">
+    units="ms" expires_after="2023-03-05">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -2689,7 +2689,7 @@ failing to fetch the updates which puts users' security at risk. -->
 </histogram>
 
 <histogram name="SafeBrowsingBinaryUploadRequest.TimeToGetFCMToken" units="ms"
-    expires_after="2023-01-01">
+    expires_after="2023-03-05">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>

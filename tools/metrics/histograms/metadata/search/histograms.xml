@@ -776,7 +776,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.ContextualSearchPromoCardChoice" enum="BooleanOptedIn"
-    expires_after="2023-01-01">
+    expires_after="2023-03-05">
   <owner>donnd@chromium.org</owner>
   <owner>contextual-search-eng@google.com</owner>
   <summary>
@@ -1370,14 +1370,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.QueryTiles.Fetcher.Start" units="hours"
-    expires_after="2023-01-01">
+    expires_after="2023-03-05">
   <owner>qinmin@chromium.org</owner>
   <owner>chrome-upboarding-eng@google.com</owner>
   <summary>Records the hour (0-23) when the TileFetcher task starts.</summary>
 </histogram>
 
 <histogram name="Search.QueryTiles.FetcherHttpResponseCode"
-    enum="HttpResponseCode" expires_after="2023-01-01">
+    enum="HttpResponseCode" expires_after="2023-03-05">
   <owner>qinmin@chromium.org</owner>
   <owner>chrome-upboarding-eng@google.com</owner>
   <summary>Records the HTTP response code get from TileFetcher.</summary>
@@ -1520,7 +1520,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.QueryTiles.TrendingTileEvent" enum="TrendingTileEvent"
-    expires_after="2023-01-01">
+    expires_after="2023-03-05">
   <owner>qinmin@chromium.org</owner>
   <owner>chrome-upboarding-eng@google.com</owner>
   <summary>

@@ -271,7 +271,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OptimizationGuide.HintsFetcher.GetHintsRequest.HintCount"
-    units="units" expires_after="2023-01-01">
+    units="units" expires_after="2023-03-05">
   <owner>mcrouse@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
   <summary>
@@ -281,7 +281,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OptimizationGuide.HintsFetcher.GetHintsRequest.HostCount"
-    units="total host count" expires_after="2023-01-01">
+    units="total host count" expires_after="2023-03-05">
   <owner>mcrouse@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
   <summary>
@@ -311,7 +311,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OptimizationGuide.HintsFetcher.GetHintsRequest.UrlCount"
-    units="total url count" expires_after="2023-01-01">
+    units="total url count" expires_after="2023-03-05">
   <owner>mcrouse@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
   <summary>
@@ -333,7 +333,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OptimizationGuide.HintsManager.ActiveTabUrlsToFetchFor"
-    units="counts" expires_after="2023-01-01">
+    units="counts" expires_after="2023-03-05">
   <owner>sophiechang@chromium.org</owner>
   <owner>mcrouse@chromium.org</owner>
   <summary>
@@ -588,7 +588,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OptimizationGuide.OptimizationHintsComponent.MajorVersion"
-    units="major version number" expires_after="2023-01-01">
+    units="major version number" expires_after="2023-03-05">
   <owner>sophiechang@chromium.org</owner>
   <owner>mcrouse@chromium.org</owner>
   <summary>
@@ -676,7 +676,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="OptimizationGuide.PageContentAnnotations.SalientImageAvailability"
-    enum="OptimizationGuideSalientImageAvailability" expires_after="2022-10-30">
+    enum="OptimizationGuideSalientImageAvailability" expires_after="2023-03-05">
   <owner>tbansal@chromium.org</owner>
   <owner>chrome-intelligence-core@google.com</owner>
   <summary>Records the availability of salient images on page load.</summary>
@@ -739,7 +739,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="OptimizationGuide.PageContentAnnotationsService.ContentAnnotationsStorageStatus"
     enum="OptimizationGuidePageContentAnnotationsStorageStatus"
-    expires_after="2023-02-26">
+    expires_after="2023-03-05">
   <owner>sophiechang@chromium.org</owner>
   <owner>mcrouse@chromium.org</owner>
   <summary>
@@ -1076,7 +1076,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="OptimizationGuide.PredictionModelDownloadManager.DownloadStatus"
     enum="OptimizationGuidePredictionModelDownloadStatus"
-    expires_after="2023-01-01">
+    expires_after="2023-03-05">
   <owner>sophiechang@chromium.org</owner>
   <owner>mcrouse@chromium.org</owner>
   <summary>
@@ -1087,7 +1087,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="OptimizationGuide.PredictionModelDownloadManager.DownloadSucceeded"
-    enum="BooleanSuccess" expires_after="2023-01-01">
+    enum="BooleanSuccess" expires_after="2023-03-05">
   <owner>sophiechang@chromium.org</owner>
   <owner>mcrouse@chromium.org</owner>
   <summary>
@@ -1151,7 +1151,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="OptimizationGuide.PredictionModelFetcher.GetModelsResponse.NetErrorCode"
-    enum="NetErrorCodes" expires_after="2023-02-26">
+    enum="NetErrorCodes" expires_after="2023-03-05">
   <owner>mcrouse@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
   <summary>
@@ -1181,7 +1181,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="OptimizationGuide.PredictionModelFetcher.GetModelsResponse.Status"
-    enum="HttpResponseCode" expires_after="2023-02-26">
+    enum="HttpResponseCode" expires_after="2023-03-05">
   <owner>mcrouse@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
   <summary>

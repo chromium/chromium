@@ -1492,7 +1492,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.FormForest.GetBrowserFormOfRendererForm.Duration"
-    units="microseconds" expires_after="2023-01-01">
+    units="microseconds" expires_after="2023-03-05">
   <owner>schwering@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -2622,7 +2622,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.PopupHidingReason" enum="AutofillPopupHidingReason"
-    expires_after="2023-01-01">
+    expires_after="2023-03-05">
   <owner>mamir@google.com</owner>
   <owner>koerber@google.com</owner>
   <summary>
@@ -2935,7 +2935,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Autofill.ProfileImport.UpdateProfileWithRemovedPhoneNumberDecision"
-    enum="AutofillProfileImportDecision" expires_after="2022-12-25">
+    enum="AutofillProfileImportDecision" expires_after="2023-03-05">
   <owner>fleimgruber@google.com</owner>
   <owner>chrome-autofill-team@google.com</owner>
   <summary>
@@ -3311,7 +3311,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.StoredCreditCardDisusedCount" units="cards"
-    expires_after="2022-12-12">
+    expires_after="2023-03-05">
   <owner>battre@chromium.org</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
 <!-- Name completed by histogram_suffixes name="AutofillCreditCardType" -->
@@ -3365,7 +3365,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Autofill.StrikeDatabase.CreditCardSaveNotOfferedDueToMaxStrikes"
-    enum="AutofillSaveType" expires_after="2023-01-01">
+    enum="AutofillSaveType" expires_after="2023-03-05">
   <owner>jsaul@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
@@ -3377,7 +3377,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Autofill.StrikeDatabase.LocalCardMigrationNotOfferedDueToMaxStrikes"
-    enum="AutofillSaveType" expires_after="2023-01-01">
+    enum="AutofillSaveType" expires_after="2023-03-05">
   <owner>jsaul@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
@@ -3423,7 +3423,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.StrikeDatabase.StrikesPresentWhenLocalCardSaved"
-    units="strikes" expires_after="2023-01-01">
+    units="strikes" expires_after="2023-03-05">
   <owner>jsaul@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
@@ -3433,7 +3433,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.StrikeDatabase.StrikesPresentWhenServerCardSaved"
-    units="strikes" expires_after="2023-01-01">
+    units="strikes" expires_after="2023-03-05">
   <owner>jsaul@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
