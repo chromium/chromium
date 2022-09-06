@@ -518,7 +518,10 @@ class Profile : public content::BrowserContext {
   // true or false, so that calls can be nested.
   int accessibility_pause_level_ = 0;
 
-  base::ObserverList<ProfileObserver> observers_;
+  base::ObserverList<ProfileObserver,
+                     /*check_empty=*/true,
+                     /*allow_reentrancy=*/false>
+      observers_;
 
   class ChromeVariationsClient;
   std::unique_ptr<variations::VariationsClient> chrome_variations_client_;
