@@ -371,8 +371,7 @@ GpuServiceImpl::GpuServiceImpl(
         gpu_info_.gpu.vendor_id != 0xffff && gpu_info_.gpu.vendor_id != 0;
 
     const bool is_thread_safe =
-        features::IsDrDcEnabled() &&
-        !gpu_channel_manager_->gpu_driver_bug_workarounds().disable_drdc;
+        features::IsDrDcEnabled() && !gpu_driver_bug_workarounds_.disable_drdc;
     // If GL is using a real GPU, the gpu_info will be passed in and vulkan will
     // use the same GPU.
     vulkan_context_provider_ = VulkanInProcessContextProvider::Create(
