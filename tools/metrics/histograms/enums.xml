@@ -74881,6 +74881,18 @@ Called by update_net_trust_anchors.py.-->
   </int>
 </enum>
 
+<enum name="PageFlipResult">
+  <int value="0" label="Success">
+    Indicates that the page flip was committed successfully.
+  </int>
+  <int value="1" label="Failed plane assignment">
+    Indicates that the page flip failed because we could not assign planes.
+  </int>
+  <int value="2" label="Failed commit">
+    Indicates that we assigned planes but the DRM commit failed.
+  </int>
+</enum>
+
 <enum name="PageLoadBackForwardCacheEvent">
   <int value="0" label="Enter back-forward cache"/>
   <int value="1" label="Restore from back-forward cache"/>

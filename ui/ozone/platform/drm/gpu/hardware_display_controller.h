@@ -182,6 +182,8 @@ class HardwareDisplayController {
   void AsValueInto(base::trace_event::TracedValue* value) const;
 
  private:
+  // These values are persisted to logs. Entries should not be
+  // renumbered and numeric values should never be reused.
   enum PageFlipResult {
     // Indicates that the page flip was committed successfully.
     kSuccess = 0,

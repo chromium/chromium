@@ -319,6 +319,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Compositing.Display.HardwareDisplayController.SchedulePageFlipResult"
+    enum="PageFlipResult" expires_after="2023-03-02">
+  <owner>jshargo@chromium.org</owner>
+  <owner>seanpaul@chromium.org</owner>
+  <owner>chromeos-gfx-compositor@chromium.org</owner>
+  <summary>
+    Logged once per frame, represents whether we could successfully schedule a
+    page flip, or what error we encountered along the way.
+  </summary>
+</histogram>
+
 <histogram name="Compositing.Display.OverlayCombinationCache.NumIdsEvicted"
     units="units" expires_after="2023-01-29">
   <owner>khaslett@chromium.org</owner>

@@ -14,6 +14,7 @@
 
 #include "base/bind.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/strings/stringprintf.h"
 #include "base/trace_event/trace_conversion_helper.h"
 #include "base/trace_event/trace_event.h"
@@ -174,6 +175,9 @@ void HardwareDisplayController::SchedulePageFlip(
 
   PageFlipResult result =
       ScheduleOrTestPageFlip(plane_list, page_flip_request, &release_fence);
+  UMA_HISTOGRAM_ENUMERATION(
+      "Compositing.Display.HardwareDisplayController.SchedulePageFlipResult",
+      result);
 
   if (PageFlipResult::kSuccess != result) {
     for (const auto& plane : plane_list) {
