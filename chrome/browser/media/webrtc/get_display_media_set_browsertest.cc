@@ -113,6 +113,17 @@ IN_PROC_BROWSER_TEST_F(GetDisplayMediaSetBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(GetDisplayMediaSetBrowserTest,
+                       GetDisplayMediaSetNoScreenSuccess) {
+  SetScreens(/*screen_count=*/0u);
+  EXPECT_TRUE(RunGetDisplayMediaSet(contents_, "{autoSelectAllScreens: true}"));
+  // If no screen is attached to a device, the |DisplayManager| will add a
+  // default device. This same behavior is used in other places in Chrome that
+  // handle multiple screens (e.g. in the window placement API) and
+  // getDisplayMediaSet will follow the same convention.
+  EXPECT_EQ(1u, GetStreamCount(contents_));
+}
+
+IN_PROC_BROWSER_TEST_F(GetDisplayMediaSetBrowserTest,
                        GetDisplayMediaSetMultipleScreensSuccess) {
   SetScreens(/*screen_count=*/5u);
   EXPECT_TRUE(RunGetDisplayMediaSet(contents_, "{autoSelectAllScreens: true}"));
