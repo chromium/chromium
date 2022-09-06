@@ -59,7 +59,7 @@ std::vector<absl::optional<ino_t>> GetFilesInodes(
 absl::optional<DlpRulesManager::Component> MapFilePathtoPolicyComponent(
     Profile* profile,
     const base::FilePath file_path) {
-  if (base::FilePath(file_manager::util::kAndroidFilesPath)
+  if (base::FilePath(file_manager::util::GetAndroidFilesPath())
           .IsParent(file_path)) {
     return DlpRulesManager::Component::kArc;
   }

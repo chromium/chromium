@@ -582,7 +582,7 @@ class DlpFilesExternalDestinationTest
     ASSERT_TRUE(mount_points_->RegisterFileSystem(
         file_manager::util::GetAndroidFilesMountPointName(),
         storage::kFileSystemTypeLocal, storage::FileSystemMountOption(),
-        base::FilePath(file_manager::util::kAndroidFilesPath)));
+        base::FilePath(file_manager::util::GetAndroidFilesPath())));
 
     ASSERT_TRUE(mount_points_->RegisterFileSystem(
         chromeos::kSystemMountNameRemovable, storage::kFileSystemTypeLocal,
