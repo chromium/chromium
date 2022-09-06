@@ -4,6 +4,7 @@
 
 #include "content/browser/first_party_sets/first_party_sets_loader.h"
 
+#include <iterator>
 #include <set>
 #include <utility>
 #include <vector>
@@ -13,6 +14,7 @@
 #include "base/containers/flat_map.h"
 #include "base/files/file_util.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/ranges/algorithm.h"
 #include "base/sequence_checker.h"
 #include "base/task/thread_pool.h"
 #include "content/browser/first_party_sets/first_party_set_parser.h"
@@ -112,7 +114,7 @@ void FirstPartySetsLoader::ApplyManuallySpecifiedSet() {
     return;
   const net::SchemefulSite& manual_owner =
       manually_specified_set_->GetPrimary();
-  const FlattenedSets& manual_sites = manually_specified_set_->GetSet();
+  FlattenedSets manual_sites = manually_specified_set_->GetSet();
 
   // Erase the intersection between |sets_| and |manually_specified_set_| and
   // any members whose owner was in the intersection.
@@ -135,9 +137,7 @@ void FirstPartySetsLoader::ApplyManuallySpecifiedSet() {
       });
 
   // Next, we must add the manually specified set to |sets_|.
-  for (const auto& manual_site : manual_sites) {
-    sets_.emplace(manual_site.first, manual_site.second);
-  }
+  base::ranges::move(manual_sites, std::inserter(sets_, sets_.end()));
   // Now remove singleton sets, which are sets that just contain sites that
   // *are* owners, but no longer have any (other) members.
   std::set<net::SchemefulSite> owners_with_members;

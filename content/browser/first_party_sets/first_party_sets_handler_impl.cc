@@ -47,8 +47,7 @@ FlattenedSets SetListToFlattenedSets(const std::vector<SingleSet>& set_list) {
   FlattenedSets sets;
   for (const auto& set : set_list) {
     for (const auto& site_and_entry : set) {
-      bool inserted =
-          sets.emplace(site_and_entry.first, site_and_entry.second).second;
+      bool inserted = sets.emplace(site_and_entry).second;
       DCHECK(inserted);
     }
   }
@@ -62,9 +61,7 @@ void UpdateCustomizationMap(
     FirstPartySetsHandlerImpl::PolicyCustomization& site_to_entry) {
   for (const auto& set : set_list) {
     for (const auto& site_and_entry : set) {
-      bool inserted =
-          site_to_entry.emplace(site_and_entry.first, site_and_entry.second)
-              .second;
+      bool inserted = site_to_entry.emplace(site_and_entry).second;
       DCHECK(inserted);
     }
   }
@@ -84,9 +81,7 @@ void AddIfPolicySetOverlaps(
   if (auto it = existing_sets.find(site); it != existing_sets.end()) {
     // Add the index of `site`'s policy set to the list of policy set indices
     // that also overlap with site_owner.
-    auto [site_and_sets, inserted] =
-        policy_set_overlaps.insert({it->second.primary(), {}});
-    site_and_sets->second.insert(policy_set_index);
+    policy_set_overlaps[it->second.primary()].insert(policy_set_index);
   }
 }
 
