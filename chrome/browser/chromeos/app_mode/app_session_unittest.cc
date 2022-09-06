@@ -37,6 +37,8 @@ namespace {
 
 using ::chromeos::FakePowerManagerClient;
 
+constexpr char kTestAppId[] = "aaaabbbbaaaabbbbaaaabbbbaaaabbbb";
+
 #if BUILDFLAG(ENABLE_PLUGINS)
 constexpr char16_t kPepperPluginName1[] = u"pepper_plugin_name1";
 constexpr char16_t kPepperPluginName2[] = u"pepper_plugin_name2";
@@ -64,6 +66,8 @@ class AppSessionTest : public testing::Test {
 
   TestingPrefServiceSimple* local_state() { return local_state_->Get(); }
 
+  TestingProfile* profile() { return &profile_; }
+
   base::HistogramTester* histogram() { return &histogram_; }
 
   base::test::TaskEnvironment* task_environment() { return &task_environment_; }
@@ -73,7 +77,7 @@ class AppSessionTest : public testing::Test {
         Browser::CreateParams(&profile_, true));
   }
 
-  // Simulate starting a kiosk session.
+  // Simulate starting a web kiosk session.
   void StartWebKioskSession() {
     // Create the main kiosk browser window, which is normally auto-created when
     // a web kiosk session starts.
@@ -86,14 +90,21 @@ class AppSessionTest : public testing::Test {
     task_environment_.RunUntilIdle();
   }
 
-  // Simulate opening a second browser window, and ensure it is automatically
+  // Simulate starting a chrome app kiosk session.
+  void StartChromeAppKioskSession() {
+    app_session_ =
+        std::make_unique<AppSession>(base::DoNothing(), local_state());
+    app_session_->Init(&profile_, kTestAppId);
+  }
+
+  // Simulate opening a new browser window, and ensure it is automatically
   // closed.
-  void OpenSecondBrowserAndEnsureItIsClosed() {
-    auto another_browser = CreateBrowserWithTestWindow();
+  void OpenNewBrowserAndEnsureItIsClosed() {
+    auto new_browser = CreateBrowserWithTestWindow();
 
     // Ensure it is closed.
     base::RunLoop loop;
-    static_cast<TestBrowserWindow*>(another_browser->window())
+    static_cast<TestBrowserWindow*>(new_browser->window())
         ->SetCloseCallback(
             base::BindLambdaForTesting([&loop]() { loop.Quit(); }));
     loop.Run();
@@ -118,6 +129,7 @@ class AppSessionTest : public testing::Test {
   // Must outlive |app_session_|.
   TestingProfile profile_;
   // Main browser window created when launching a web kiosk app.
+  // Could be nullptr if |StartWebKioskSession| function was not called.
   std::unique_ptr<Browser> web_kiosk_main_browser_;
   base::HistogramTester histogram_;
   std::unique_ptr<AppSession> app_session_;
@@ -135,7 +147,10 @@ TEST_F(AppSessionTest, WebKioskTracksBrowserCreation) {
                                  KioskSessionState::kWebStarted, 1);
   histogram()->ExpectTotalCount(kKioskSessionCountPerDayHistogram, 1);
 
-  OpenSecondBrowserAndEnsureItIsClosed();
+  OpenNewBrowserAndEnsureItIsClosed();
+  // The main browser window still exists, the kiosk session should not
+  // shutdown.
+  EXPECT_FALSE(IsSessionShuttingDown());
   histogram()->ExpectBucketCount(kKioskNewBrowserWindowHistogram,
                                  KioskBrowserWindowType::kOther, 1);
   histogram()->ExpectBucketCount(kKioskNewBrowserWindowHistogram,
@@ -152,6 +167,43 @@ TEST_F(AppSessionTest, WebKioskTracksBrowserCreation) {
       dict.FindList(kKioskSessionLastDayList);
   ASSERT_TRUE(sessions_list);
   EXPECT_EQ(1, sessions_list->size());
+
+  histogram()->ExpectBucketCount(kKioskSessionStateHistogram,
+                                 KioskSessionState::kStopped, 1);
+  EXPECT_EQ(2, histogram()->GetAllSamples(kKioskSessionStateHistogram).size());
+
+  histogram()->ExpectTotalCount(kKioskSessionDurationNormalHistogram, 1);
+  histogram()->ExpectTotalCount(kKioskSessionDurationInDaysNormalHistogram, 0);
+}
+
+TEST_F(AppSessionTest, ChromeAppKioskSessionState) {
+  StartChromeAppKioskSession();
+  histogram()->ExpectBucketCount(kKioskSessionStateHistogram,
+                                 KioskSessionState::kStarted, 1);
+  histogram()->ExpectTotalCount(kKioskSessionCountPerDayHistogram, 1);
+}
+
+TEST_F(AppSessionTest, ChromeAppKioskTracksBrowserCreation) {
+  auto app_session =
+      std::make_unique<AppSession>(base::DoNothing(), local_state());
+  app_session->Init(profile(), kTestAppId);
+
+  OpenNewBrowserAndEnsureItIsClosed();
+  // Closing the browser should not shutdown the ChromeApp kiosk session.
+  EXPECT_FALSE(app_session->is_shutting_down());
+  histogram()->ExpectBucketCount(kKioskNewBrowserWindowHistogram,
+                                 KioskBrowserWindowType::kOther, 1);
+  histogram()->ExpectTotalCount(kKioskNewBrowserWindowHistogram, 1);
+
+  const base::Value::Dict& dict =
+      local_state()->GetValueDict(prefs::kKioskMetrics);
+  const base::Value::List* sessions_list =
+      dict.FindList(kKioskSessionLastDayList);
+  ASSERT_TRUE(sessions_list);
+  EXPECT_EQ(1, sessions_list->size());
+
+  // Emulate exiting kiosk session.
+  app_session.reset();
 
   histogram()->ExpectBucketCount(kKioskSessionStateHistogram,
                                  KioskSessionState::kStopped, 1);
