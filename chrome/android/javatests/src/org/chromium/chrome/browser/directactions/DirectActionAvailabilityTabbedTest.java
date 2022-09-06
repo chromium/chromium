@@ -25,6 +25,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.components.autofill_assistant.AssistantFeatures;
+import org.chromium.components.embedder_support.util.UrlConstants;
 
 /**
  * Tests the availability of core direct actions in different activities.
@@ -47,8 +48,9 @@ public class DirectActionAvailabilityTabbedTest {
 
     @Before
     public void setUp() throws Exception {
-        // Using OnBlank times out when waiting for NTP. Using null makes the test work.
-        mTabbedActivityTestRule.startMainActivityWithURL(null);
+        // Using OnBlank times out when waiting for NTP. Using UrlConstants.NTP_URL makes the test
+        // work.
+        mTabbedActivityTestRule.startMainActivityWithURL(UrlConstants.NTP_URL);
     }
 
     @Test
