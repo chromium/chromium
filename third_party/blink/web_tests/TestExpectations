@@ -4978,6 +4978,7 @@ crbug.com/1204176 virtual/main-threaded-percent-based-scrolling/fast/scrolling/e
 crbug.com/1204176 virtual/compositor-threaded-percent-based-scrolling/fast/scrolling/events/overscroll-event-fired-to-element-with-overscroll-behavior.html [ Failure Timeout ]
 crbug.com/1204176 virtual/compositor-threaded-percent-based-scrolling/fast/scrolling/events/overscroll-event-fired-to-scrolled-element.html [ Failure Timeout ]
 crbug.com/1204176 virtual/compositor-threaded-percent-based-scrolling/fast/scrolling/events/overscroll-event-fired-to-window.html [ Failure Timeout ]
+crbug.com/1357787 [ Mac ] virtual/compositor-threaded-percent-based-scrolling/fast/scrolling/inertial-scrolling-with-pointer-events-none-overlay.html [ Failure Pass ]
 
 #fast/scroll-behavior/
 
