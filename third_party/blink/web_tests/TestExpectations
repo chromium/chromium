@@ -6905,3 +6905,6 @@ crbug.com/1306304 [ Mac ] plugins/multiple-plugins.html [ Failure Pass ]
 
 # Sheriff 2022-09-01
 virtual/gpu/fast/canvas/disconnected-canvas-lost-gpu-context.html [ Skip ]
+
+# Sheriff 2022-09-06
+crbug.com/1358298 external/wpt/html/cross-origin-embedder-policy/require-corp.https.html [ Failure Pass ]
