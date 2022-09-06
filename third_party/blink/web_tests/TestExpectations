@@ -1951,6 +1951,8 @@ crbug.com/1158554 external/wpt/css/css-conditional/css-supports-040.xht [ Failur
 crbug.com/1158554 external/wpt/css/css-conditional/css-supports-041.xht [ Failure ]
 crbug.com/1158554 external/wpt/css/css-conditional/css-supports-042.xht [ Failure ]
 crbug.com/1158554 external/wpt/css/css-conditional/at-supports-046.html [ Failure ]
+crbug.com/1255685 external/wpt/css/css-conditional/at-supports-font-format-001.html [ Failure ]
+crbug.com/1255685 external/wpt/css/css-conditional/at-supports-font-tech-001.html [ Failure ]
 
 
 # @container / contain:inline-size
@@ -3308,8 +3310,6 @@ crbug.com/626703 [ Win ] external/wpt/dom/nodes/NodeList-static-length-getter-ta
 crbug.com/626703 [ Mac12 ] external/wpt/dom/nodes/NodeList-static-length-getter-tampered-indexOf-3.html [ Skip Timeout ]
 crbug.com/626703 [ Win ] external/wpt/dom/nodes/NodeList-static-length-getter-tampered-indexOf-3.html [ Skip Timeout ]
 crbug.com/626703 [ Win10.20h2 ] wpt_internal/orientation-event/motion/page-visibility.https.html [ Timeout ]
-crbug.com/626703 external/wpt/css/css-conditional/at-supports-font-format-001.html [ Failure ]
-crbug.com/626703 external/wpt/css/css-conditional/at-supports-font-tech-001.html [ Failure ]
 crbug.com/626703 [ Mac10.15 ] virtual/document-transition/wpt_internal/document-transition/commit-timeout-crash.html [ Timeout ]
 crbug.com/626703 external/wpt/custom-elements/form-associated/ElementInternals-target-element-is-held-strongly.html [ Timeout ]
 crbug.com/626703 external/wpt/custom-elements/throw-on-dynamic-markup-insertion-counter-construct-xml-parser.xhtml [ Crash ]
