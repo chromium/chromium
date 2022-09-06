@@ -7,7 +7,7 @@
   <!-- This is used to represent the top of the viewport, so we can scroll the
        below-viewport iframe out-of-view later in the test -->
   <div id="atf_div"></div>
-  <div style="height:1000vh;"></div>
+  <div style="height:9000px;"></div>
   <div id="btf_div"></div>
   <script>
     let loaded_ids = [];
@@ -94,6 +94,8 @@
         window.requestIdleCallback(() => resolve());
       });
     };
+
+    setup(cleanup);
 
     promise_test(async t => {
       t.add_cleanup(cleanup);
