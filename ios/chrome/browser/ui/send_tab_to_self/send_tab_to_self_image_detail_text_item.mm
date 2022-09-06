@@ -28,9 +28,8 @@
   [super configureCell:cell withStyler:styler];
   cell.textLabel.text = self.text;
   cell.detailTextLabel.text = self.detailText;
-  DCHECK([self.iconImageName length]);
-  cell.image = [[UIImage imageNamed:self.iconImageName]
-      imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+  DCHECK(self.iconImage);
+  cell.image = self.iconImage;
   if (self.selected) {
     cell.accessoryType = UITableViewCellAccessoryCheckmark;
   } else {

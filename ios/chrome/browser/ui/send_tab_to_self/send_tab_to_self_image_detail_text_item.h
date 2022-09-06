@@ -13,8 +13,8 @@
 // and a detail text. This item uses multi-lines text field.
 @interface SendTabToSelfImageDetailTextItem : TableViewItem
 
-// The name of the image to display (required).
-@property(nonatomic, copy) NSString* iconImageName;
+// The image to display (required).
+@property(nonatomic, strong) UIImage* iconImage;
 
 // The title text to display.
 @property(nonatomic, copy) NSString* text;

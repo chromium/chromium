@@ -53,6 +53,7 @@ source_set("send_tab_to_self_ui") {
     "//base",
     "//components/send_tab_to_self",
     "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/browser/ui/icons:symbols",
     "//ios/chrome/browser/ui/infobars/presentation:positioner",
     "//ios/chrome/browser/ui/overlays:util",
     "//ios/chrome/browser/ui/settings/cells",

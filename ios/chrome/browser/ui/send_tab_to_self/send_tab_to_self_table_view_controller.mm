@@ -14,6 +14,7 @@
 #include "components/send_tab_to_self/features.h"
 #include "components/send_tab_to_self/send_tab_to_self_model.h"
 #include "components/send_tab_to_self/target_device_info.h"
+#import "ios/chrome/browser/ui/icons/chrome_symbol.h"
 #import "ios/chrome/browser/ui/send_tab_to_self/send_tab_to_self_image_detail_text_item.h"
 #import "ios/chrome/browser/ui/send_tab_to_self/send_tab_to_self_manage_devices_item.h"
 #import "ios/chrome/browser/ui/send_tab_to_self/send_tab_to_self_modal_delegate.h"
@@ -41,6 +42,8 @@ NSString* const kSendTabToSelfModalCancelButton =
 // Accessibility identifier of the Modal Cancel Button.
 NSString* const kSendTabToSelfModalSendButton =
     @"kSendTabToSelfModalSendButton";
+
+CGFloat kSymbolSize = 22;
 
 }  // namespace
 
@@ -252,19 +255,44 @@ typedef NS_ENUM(NSInteger, ItemType) {
         [self sendTabToSelfdaysSinceLastUpdate:daysSinceLastUpdate];
     switch (iter->device_type) {
       case sync_pb::SyncEnums::TYPE_TABLET:
-        deviceItem.iconImageName = @"send_tab_to_self_tablet";
+        if (UseSymbols()) {
+          deviceItem.iconImage =
+              DefaultSymbolWithPointSize(kIPadSymbol, kSymbolSize);
+        } else {
+          deviceItem.iconImage =
+              [UIImage imageNamed:@"send_tab_to_self_tablet"];
+        }
         break;
       case sync_pb::SyncEnums::TYPE_PHONE:
-        deviceItem.iconImageName = @"send_tab_to_self_smartphone";
+        if (UseSymbols()) {
+          deviceItem.iconImage =
+              DefaultSymbolWithPointSize(kIPhoneSymbol, kSymbolSize);
+        } else {
+          deviceItem.iconImage =
+              [UIImage imageNamed:@"send_tab_to_self_smartphone"];
+        }
         break;
       case sync_pb::SyncEnums::TYPE_WIN:
       case sync_pb::SyncEnums::TYPE_MAC:
       case sync_pb::SyncEnums::TYPE_LINUX:
       case sync_pb::SyncEnums::TYPE_CROS:
-        deviceItem.iconImageName = @"send_tab_to_self_laptop";
+        if (UseSymbols()) {
+          deviceItem.iconImage =
+              DefaultSymbolWithPointSize(kLaptopSymbol, kSymbolSize);
+        } else {
+          deviceItem.iconImage =
+              [UIImage imageNamed:@"send_tab_to_self_laptop"];
+        }
         break;
       default:
-        deviceItem.iconImageName = @"send_tab_to_self_devices";
+        if (UseSymbols()) {
+          // TODO(crbug.com/1315544): Use correct symbol
+          deviceItem.iconImage =
+              DefaultSymbolWithPointSize(kLaptopSymbol, kSymbolSize);
+        } else {
+          deviceItem.iconImage =
+              [UIImage imageNamed:@"send_tab_to_self_devices"];
+        }
     }
 
     if (iter == _targetDeviceList.begin()) {
