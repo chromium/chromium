@@ -41,12 +41,9 @@ void CastMessagePortSenderImpl::MaybeClose() {
 }
 
 void CastMessagePortSenderImpl::SetClient(
-    openscreen::cast::MessagePort::Client* client,
-    std::string client_sender_id) {
+    openscreen::cast::MessagePort::Client& client) {
   VLOG(2) << __func__;
-  CHECK(client);
-  CHECK(!client_);
-  client_ = client;
+  client_ = &client;
 }
 
 void CastMessagePortSenderImpl::ResetClient() {

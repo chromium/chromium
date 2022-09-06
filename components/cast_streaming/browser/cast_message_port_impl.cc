@@ -80,13 +80,9 @@ void CastMessagePortImpl::MaybeClose() {
 }
 
 void CastMessagePortImpl::SetClient(
-    openscreen::cast::MessagePort::Client* client,
-    std::string client_sender_id) {
+    openscreen::cast::MessagePort::Client& client) {
   DVLOG(2) << __func__;
-  DCHECK_NE(!client_, !client);
-  client_ = client;
-  if (!client_)
-    MaybeClose();
+  client_ = &client;
 }
 
 void CastMessagePortImpl::ResetClient() {
