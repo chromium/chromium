@@ -493,14 +493,20 @@ void D3D11AV1Accelerator::FillPicParams(
   pp->cdef.damping = frame_header.cdef.damping - coeff_shift - 3u;
   pp->cdef.bits = frame_header.cdef.bits;
   for (size_t i = 0; i < libgav1::kMaxCdefStrengths; ++i) {
+    // libgav1's computation will give values of |4| for secondary strengths
+    // despite it being a two-bit entry with range 0-3, so check for this, and
+    // subtract.
+    // See https://aomediacodec.github.io/av1-spec/#cdef-params-syntax
+    uint8_t y_str = frame_header.cdef.y_secondary_strength[i] >> coeff_shift;
+    uint8_t uv_str = frame_header.cdef.uv_secondary_strength[i] >> coeff_shift;
+    y_str = y_str == 4 ? 3 : y_str;
+    uv_str = uv_str == 4 ? 3 : uv_str;
     pp->cdef.y_strengths[i].primary =
         frame_header.cdef.y_primary_strength[i] >> coeff_shift;
-    pp->cdef.y_strengths[i].secondary =
-        frame_header.cdef.y_secondary_strength[i] >> coeff_shift;
+    pp->cdef.y_strengths[i].secondary = y_str;
     pp->cdef.uv_strengths[i].primary =
         frame_header.cdef.uv_primary_strength[i] >> coeff_shift;
-    pp->cdef.uv_strengths[i].secondary =
-        frame_header.cdef.uv_secondary_strength[i] >> coeff_shift;
+    pp->cdef.uv_strengths[i].secondary = uv_str;
   }
 
   pp->interp_filter = frame_header.interpolation_filter;
