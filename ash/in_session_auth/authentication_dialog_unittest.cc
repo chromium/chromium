@@ -9,6 +9,7 @@
 #include "ash/components/login/auth/auth_performer.h"
 #include "ash/components/login/auth/mock_auth_performer.h"
 #include "ash/components/login/auth/public/auth_factors_data.h"
+#include "ash/components/login/auth/public/authentication_error.h"
 #include "ash/components/login/auth/public/cryptohome_key_constants.h"
 #include "ash/public/cpp/in_session_auth_token_provider.h"
 #include "ash/public/cpp/test/mock_in_session_auth_token_provider.h"
@@ -169,7 +170,7 @@ TEST_F(AuthenticationDialogTest, IncorrectPasswordProvidedThenCorrect) {
             std::move(user_context),
             password == kExpectedPassword
                 ? absl::nullopt
-                : absl::optional<CryptohomeError>{CryptohomeError{
+                : absl::optional<AuthenticationError>{AuthenticationError{
                       user_data_auth::
                           CRYPTOHOME_ERROR_AUTHORIZATION_KEY_NOT_FOUND}});
       });
@@ -204,7 +205,7 @@ TEST_F(AuthenticationDialogTest, AuthSessionRestartedWhenExpired) {
             std::move(user_context),
             number_of_calls++
                 ? absl::nullopt
-                : absl::optional<CryptohomeError>{CryptohomeError{
+                : absl::optional<AuthenticationError>{AuthenticationError{
                       user_data_auth::CRYPTOHOME_INVALID_AUTH_SESSION_TOKEN}});
       });
 

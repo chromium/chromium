@@ -132,7 +132,8 @@ void AuthPerformer::AuthenticateUsingKnowledgeKey(
         LOGIN_LOG(ERROR) << "Could not find Password key";
         std::move(callback).Run(
             std::move(context),
-            CryptohomeError{user_data_auth::CRYPTOHOME_ERROR_KEY_NOT_FOUND});
+            AuthenticationError{
+                user_data_auth::CRYPTOHOME_ERROR_KEY_NOT_FOUND});
         return;
       }
       key->SetLabel(factor->ref().label().value());
@@ -143,7 +144,8 @@ void AuthPerformer::AuthenticateUsingKnowledgeKey(
         LOGIN_LOG(ERROR) << "Could not find Password key";
         std::move(callback).Run(
             std::move(context),
-            CryptohomeError{user_data_auth::CRYPTOHOME_ERROR_KEY_NOT_FOUND});
+            AuthenticationError{
+                user_data_auth::CRYPTOHOME_ERROR_KEY_NOT_FOUND});
         return;
       }
       key->SetLabel(key_def->label.value());
@@ -248,7 +250,7 @@ void AuthPerformer::AuthenticateWithPassword(
                        << key_label;
       std::move(callback).Run(
           std::move(context),
-          CryptohomeError{user_data_auth::CRYPTOHOME_ERROR_KEY_NOT_FOUND});
+          AuthenticationError{user_data_auth::CRYPTOHOME_ERROR_KEY_NOT_FOUND});
       return;
     }
   } else {
@@ -257,7 +259,7 @@ void AuthPerformer::AuthenticateWithPassword(
                        << key_label;
       std::move(callback).Run(
           std::move(context),
-          CryptohomeError{user_data_auth::CRYPTOHOME_ERROR_KEY_NOT_FOUND});
+          AuthenticationError{user_data_auth::CRYPTOHOME_ERROR_KEY_NOT_FOUND});
       return;
     }
   }
@@ -299,7 +301,7 @@ void AuthPerformer::AuthenticateWithPin(const std::string& pin,
       LOGIN_LOG(ERROR) << "User does not have PIN as factor";
       std::move(callback).Run(
           std::move(context),
-          CryptohomeError{user_data_auth::CRYPTOHOME_ERROR_KEY_NOT_FOUND});
+          AuthenticationError{user_data_auth::CRYPTOHOME_ERROR_KEY_NOT_FOUND});
       return;
     }
     DCHECK_EQ(factor->ref().label().value(), kCryptohomePinLabel);
@@ -310,7 +312,7 @@ void AuthPerformer::AuthenticateWithPin(const std::string& pin,
       LOGIN_LOG(ERROR) << "User does not have PIN as factor";
       std::move(callback).Run(
           std::move(context),
-          CryptohomeError{user_data_auth::CRYPTOHOME_ERROR_KEY_NOT_FOUND});
+          AuthenticationError{user_data_auth::CRYPTOHOME_ERROR_KEY_NOT_FOUND});
       return;
     }
     DCHECK_EQ(key_def->label.value(), kCryptohomePinLabel);
@@ -338,7 +340,7 @@ void AuthPerformer::AuthenticateAsKiosk(std::unique_ptr<UserContext> context,
       LOGIN_LOG(ERROR) << "Could not find Kiosk key";
       std::move(callback).Run(
           std::move(context),
-          CryptohomeError{user_data_auth::CRYPTOHOME_ERROR_KEY_NOT_FOUND});
+          AuthenticationError{user_data_auth::CRYPTOHOME_ERROR_KEY_NOT_FOUND});
       return;
     }
     cryptohome::AuthFactorInput input(cryptohome::AuthFactorInput::Kiosk{});
@@ -363,7 +365,7 @@ void AuthPerformer::AuthenticateAsKiosk(std::unique_ptr<UserContext> context,
     LOGIN_LOG(ERROR) << "Could not find Kiosk key";
     std::move(callback).Run(
         std::move(context),
-        CryptohomeError{user_data_auth::CRYPTOHOME_ERROR_KEY_NOT_FOUND});
+        AuthenticationError{user_data_auth::CRYPTOHOME_ERROR_KEY_NOT_FOUND});
     return;
   }
   key_data->set_label(key_def->label.value());
@@ -399,7 +401,8 @@ void AuthPerformer::OnStartAuthSession(
   auto error = user_data_auth::ReplyToCryptohomeError(reply);
   if (error != user_data_auth::CRYPTOHOME_ERROR_NOT_SET) {
     LOGIN_LOG(ERROR) << "Could not start authsession " << error;
-    std::move(callback).Run(false, std::move(context), CryptohomeError{error});
+    std::move(callback).Run(false, std::move(context),
+                            AuthenticationError{error});
     return;
   }
   CHECK(reply.has_value());
@@ -459,7 +462,7 @@ void AuthPerformer::OnAuthenticateAuthSession(
   auto error = user_data_auth::ReplyToCryptohomeError(reply);
   if (error != user_data_auth::CRYPTOHOME_ERROR_NOT_SET) {
     LOGIN_LOG(EVENT) << "Failed to authenticate session, error code " << error;
-    std::move(callback).Run(std::move(context), CryptohomeError{error});
+    std::move(callback).Run(std::move(context), AuthenticationError{error});
     return;
   }
   CHECK(reply.has_value());
@@ -478,7 +481,7 @@ void AuthPerformer::OnAuthenticateAuthFactor(
     LOGIN_LOG(EVENT)
         << "Failed to authenticate session via authfactor, error code "
         << error;
-    std::move(callback).Run(std::move(context), CryptohomeError{error});
+    std::move(callback).Run(std::move(context), AuthenticationError{error});
     return;
   }
   CHECK(reply.has_value());
@@ -504,7 +507,7 @@ void AuthPerformer::OnGetAuthSessionStatus(
   if (error != user_data_auth::CRYPTOHOME_ERROR_NOT_SET) {
     LOGIN_LOG(EVENT) << "Failed to get authsession status " << error;
     std::move(callback).Run(AuthSessionStatus(), base::TimeDelta(),
-                            std::move(context), CryptohomeError{error});
+                            std::move(context), AuthenticationError{error});
     return;
   }
   CHECK(reply.has_value());

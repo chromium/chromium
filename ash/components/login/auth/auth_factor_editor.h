@@ -6,7 +6,7 @@
 #define ASH_COMPONENTS_LOGIN_AUTH_AUTH_FACTOR_EDITOR_H_
 
 #include "ash/components/login/auth/public/auth_callbacks.h"
-#include "ash/components/login/auth/public/cryptohome_error.h"
+#include "ash/components/login/auth/public/authentication_error.h"
 #include "ash/components/login/auth/public/user_context.h"
 #include "base/callback.h"
 #include "base/component_export.h"

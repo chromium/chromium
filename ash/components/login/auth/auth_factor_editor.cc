@@ -44,7 +44,8 @@ void AuthFactorEditor::AddKioskKey(std::unique_ptr<UserContext> context,
       LOGIN_LOG(ERROR) << "Adding Kiosk key while one already exists";
       std::move(callback).Run(
           std::move(context),
-          CryptohomeError{user_data_auth::CRYPTOHOME_ADD_CREDENTIALS_FAILED});
+          AuthenticationError{
+              user_data_auth::CRYPTOHOME_ADD_CREDENTIALS_FAILED});
       return;
     }
 
@@ -72,7 +73,7 @@ void AuthFactorEditor::AddKioskKey(std::unique_ptr<UserContext> context,
     LOGIN_LOG(ERROR) << "Adding Kiosk key while one already exists";
     std::move(callback).Run(
         std::move(context),
-        CryptohomeError{user_data_auth::CRYPTOHOME_ADD_CREDENTIALS_FAILED});
+        AuthenticationError{user_data_auth::CRYPTOHOME_ADD_CREDENTIALS_FAILED});
     return;
   }
 
@@ -308,7 +309,7 @@ void AuthFactorEditor::OnAddCredentials(
   auto error = user_data_auth::ReplyToCryptohomeError(reply);
   if (error != user_data_auth::CRYPTOHOME_ERROR_NOT_SET) {
     LOGIN_LOG(ERROR) << "AddCredentials failed with error " << error;
-    std::move(callback).Run(std::move(context), CryptohomeError{error});
+    std::move(callback).Run(std::move(context), AuthenticationError{error});
     return;
   }
   CHECK(reply.has_value());
@@ -325,7 +326,7 @@ void AuthFactorEditor::OnAddAuthFactor(
   auto error = user_data_auth::ReplyToCryptohomeError(reply);
   if (error != user_data_auth::CRYPTOHOME_ERROR_NOT_SET) {
     LOGIN_LOG(ERROR) << "AddAuthFactor failed with error " << error;
-    std::move(callback).Run(std::move(context), CryptohomeError{error});
+    std::move(callback).Run(std::move(context), AuthenticationError{error});
     return;
   }
   CHECK(reply.has_value());
@@ -342,7 +343,7 @@ void AuthFactorEditor::OnUpdateCredential(
   auto error = user_data_auth::ReplyToCryptohomeError(reply);
   if (error != user_data_auth::CRYPTOHOME_ERROR_NOT_SET) {
     LOGIN_LOG(ERROR) << "UpdateCredential failed with error " << error;
-    std::move(callback).Run(std::move(context), CryptohomeError{error});
+    std::move(callback).Run(std::move(context), AuthenticationError{error});
     return;
   }
   CHECK(reply.has_value());
@@ -357,7 +358,7 @@ void AuthFactorEditor::OnUpdateAuthFactor(
   auto error = user_data_auth::ReplyToCryptohomeError(reply);
   if (error != user_data_auth::CRYPTOHOME_ERROR_NOT_SET) {
     LOGIN_LOG(ERROR) << "UpdateAuthFactor failed with error " << error;
-    std::move(callback).Run(std::move(context), CryptohomeError{error});
+    std::move(callback).Run(std::move(context), AuthenticationError{error});
     return;
   }
   CHECK(reply.has_value());
@@ -372,7 +373,7 @@ void AuthFactorEditor::OnRecoveryFactorAdded(
   auto error = user_data_auth::ReplyToCryptohomeError(reply);
   if (error != user_data_auth::CRYPTOHOME_ERROR_NOT_SET) {
     LOG(WARNING) << "AddAuthFactor for recovery failed with error " << error;
-    std::move(callback).Run(std::move(context), CryptohomeError{error});
+    std::move(callback).Run(std::move(context), AuthenticationError{error});
     return;
   }
 
@@ -388,7 +389,7 @@ void AuthFactorEditor::OnRecoveryFactorRemoved(
   auto error = user_data_auth::ReplyToCryptohomeError(reply);
   if (error != user_data_auth::CRYPTOHOME_ERROR_NOT_SET) {
     LOG(WARNING) << "RemoveAuthFactor for recovery failed with error " << error;
-    std::move(callback).Run(std::move(context), CryptohomeError{error});
+    std::move(callback).Run(std::move(context), AuthenticationError{error});
     return;
   }
 

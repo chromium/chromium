@@ -106,7 +106,7 @@ void AuthSessionAuthenticator::OnStartAuthSession(
     StartAuthSessionCallback callback,
     bool user_exists,
     std::unique_ptr<UserContext> context,
-    absl::optional<CryptohomeError> error) {
+    absl::optional<AuthenticationError> error) {
   if (error.has_value()) {
     std::move(callback).Run(/*user_exists=*/false, std::move(context),
                             error.value());
@@ -151,7 +151,7 @@ void AuthSessionAuthenticator::OnRemoveStaleUserForEphemeral(
     LOGIN_LOG(ERROR) << "Stale ephemeral user removal failed with error "
                      << error;
     std::move(callback).Run(/*user_exists=*/true, std::move(original_context),
-                            CryptohomeError(error));
+                            AuthenticationError(error));
     return;
   }
   // Retry the auth session creation after we recovered from stale data.
@@ -166,7 +166,7 @@ void AuthSessionAuthenticator::OnStartAuthSessionAfterStaleRemoval(
     StartAuthSessionCallback callback,
     bool user_exists,
     std::unique_ptr<UserContext> context,
-    absl::optional<CryptohomeError> error) {
+    absl::optional<AuthenticationError> error) {
   if (error.has_value()) {
     std::move(callback).Run(/*user_exists=*/false, std::move(context),
                             error.value());
@@ -185,7 +185,7 @@ void AuthSessionAuthenticator::OnStartAuthSessionAfterStaleRemoval(
 void AuthSessionAuthenticator::DoCompleteLogin(
     bool user_exists,
     std::unique_ptr<UserContext> context,
-    absl::optional<CryptohomeError> error) {
+    absl::optional<AuthenticationError> error) {
   AuthErrorCallback error_callback = base::BindOnce(
       &AuthSessionAuthenticator::ProcessCryptohomeError,
       weak_factory_.GetWeakPtr(),
@@ -310,7 +310,7 @@ void AuthSessionAuthenticator::AuthenticateToLogin(
 void AuthSessionAuthenticator::DoLoginAsExistingUser(
     bool user_exists,
     std::unique_ptr<UserContext> context,
-    absl::optional<CryptohomeError> error) {
+    absl::optional<AuthenticationError> error) {
   AuthErrorCallback error_callback = base::BindOnce(
       &AuthSessionAuthenticator::ProcessCryptohomeError,
       weak_factory_.GetWeakPtr(),
@@ -329,7 +329,7 @@ void AuthSessionAuthenticator::DoLoginAsExistingUser(
         << "User directory does not exist for supposedly existing user";
     std::move(error_callback)
         .Run(std::move(context),
-             CryptohomeError{
+             AuthenticationError{
                  user_data_auth::CRYPTOHOME_ERROR_ACCOUNT_NOT_FOUND});
     return;
   }
@@ -425,7 +425,7 @@ void AuthSessionAuthenticator::LoginAsPublicSession(
 void AuthSessionAuthenticator::DoLoginAsPublicSession(
     bool user_exists,
     std::unique_ptr<UserContext> context,
-    absl::optional<CryptohomeError> error) {
+    absl::optional<AuthenticationError> error) {
   AuthErrorCallback error_callback = base::BindOnce(
       &AuthSessionAuthenticator::ProcessCryptohomeError,
       weak_factory_.GetWeakPtr(), AuthFailure::COULD_NOT_MOUNT_TMPFS);
@@ -501,7 +501,7 @@ void AuthSessionAuthenticator::LoginAsKioskImpl(
 void AuthSessionAuthenticator::DoLoginAsKiosk(
     bool user_exists,
     std::unique_ptr<UserContext> context,
-    absl::optional<CryptohomeError> error) {
+    absl::optional<AuthenticationError> error) {
   AuthErrorCallback error_callback = base::BindOnce(
       &AuthSessionAuthenticator::ProcessCryptohomeError,
       weak_factory_.GetWeakPtr(),
@@ -654,7 +654,7 @@ void AuthSessionAuthenticator::PrepareForNewAttempt(
 
 bool AuthSessionAuthenticator::ResolveCryptohomeError(
     AuthFailure::FailureReason default_error,
-    CryptohomeError& error) {
+    AuthenticationError& error) {
   switch (error.error_code) {
     // Not an error:
     case user_data_auth::CRYPTOHOME_ERROR_NOT_SET:
@@ -775,7 +775,7 @@ bool AuthSessionAuthenticator::ResolveCryptohomeError(
 void AuthSessionAuthenticator::ProcessCryptohomeError(
     AuthFailure::FailureReason default_error,
     std::unique_ptr<UserContext> context,
-    CryptohomeError error) {
+    AuthenticationError error) {
   if (!consumer_)
     return;
   DCHECK_NE(error.error_code, user_data_auth::CRYPTOHOME_ERROR_NOT_SET);
@@ -800,7 +800,7 @@ void AuthSessionAuthenticator::ProcessCryptohomeError(
 void AuthSessionAuthenticator::HandlePasswordChangeDetected(
     AuthErrorCallback fallback,
     std::unique_ptr<UserContext> context,
-    CryptohomeError error) {
+    AuthenticationError error) {
   if (error.error_code ==
       user_data_auth::CRYPTOHOME_ERROR_AUTHORIZATION_KEY_FAILED) {
     LOGIN_LOG(EVENT) << "Password change detected";
@@ -815,7 +815,7 @@ void AuthSessionAuthenticator::HandlePasswordChangeDetected(
 void AuthSessionAuthenticator::HandleMigrationRequired(
     AuthErrorCallback fallback,
     std::unique_ptr<UserContext> context,
-    CryptohomeError error) {
+    AuthenticationError error) {
   const bool migration_required =
       error.error_code == user_data_auth::CRYPTOHOME_ERROR_MOUNT_OLD_ENCRYPTION;
   const bool incomplete_migration =
@@ -890,7 +890,7 @@ void AuthSessionAuthenticator::OnSafeModeOwnershipCheck(
 // Crash if directory could not be unmounted
 void AuthSessionAuthenticator::OnUnmountForNonOwner(
     std::unique_ptr<UserContext> context,
-    absl::optional<CryptohomeError> error) {
+    absl::optional<AuthenticationError> error) {
   if (error) {
     // Crash if could not unmount home directory, and let session_manager
     // handle it.

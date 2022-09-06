@@ -102,7 +102,7 @@ TEST_F(AuthPerformerTest, StartWithUntypedPasswordKey) {
 
   // Act.
   base::test::TestFuture<bool, std::unique_ptr<UserContext>,
-                         absl::optional<CryptohomeError>>
+                         absl::optional<AuthenticationError>>
       result;
   performer.StartAuthSession(std::move(context_), /*ephemeral=*/false,
                              AuthSessionIntent::kDecrypt, result.GetCallback());
@@ -135,7 +135,7 @@ TEST_F(AuthPerformerTest, StartWithUntypedKioskKey) {
 
   // Act.
   base::test::TestFuture<bool, std::unique_ptr<UserContext>,
-                         absl::optional<CryptohomeError>>
+                         absl::optional<AuthenticationError>>
       result;
   performer.StartAuthSession(std::move(context_), /*ephemeral=*/false,
                              AuthSessionIntent::kDecrypt, result.GetCallback());
@@ -168,7 +168,7 @@ TEST_F(AuthPerformerTest, KnowledgeKeyCorrectLabelFallback) {
             ReplyAsSuccess(std::move(callback));
           });
   base::test::TestFuture<std::unique_ptr<UserContext>,
-                         absl::optional<CryptohomeError>>
+                         absl::optional<AuthenticationError>>
       result;
   performer.AuthenticateUsingKnowledgeKey(std::move(context_),
                                           result.GetCallback());
@@ -199,7 +199,7 @@ TEST_F(AuthPerformerTest, KnowledgeKeyNoFallbackOnPin) {
             ReplyAsKeyMismatch(std::move(callback));
           });
   base::test::TestFuture<std::unique_ptr<UserContext>,
-                         absl::optional<CryptohomeError>>
+                         absl::optional<AuthenticationError>>
       result;
   performer.AuthenticateUsingKnowledgeKey(std::move(context_),
                                           result.GetCallback());
@@ -225,7 +225,7 @@ TEST_F(AuthPerformerTest, AuthenticateWithPasswordCorrectLabel) {
             ReplyAsSuccess(std::move(callback));
           });
   base::test::TestFuture<std::unique_ptr<UserContext>,
-                         absl::optional<CryptohomeError>>
+                         absl::optional<AuthenticationError>>
       result;
 
   performer.AuthenticateWithPassword("legacy-0", "secret", std::move(context_),
@@ -243,7 +243,7 @@ TEST_F(AuthPerformerTest, AuthenticateWithPasswordBadLabel) {
   AuthPerformer performer(&mock_client_);
 
   base::test::TestFuture<std::unique_ptr<UserContext>,
-                         absl::optional<CryptohomeError>>
+                         absl::optional<AuthenticationError>>
       result;
 
   performer.AuthenticateWithPassword("gaia", "secret", std::move(context_),
@@ -271,7 +271,7 @@ TEST_F(AuthPerformerTest, AuthSessionStatusOnError) {
       });
   base::test::TestFuture<AuthSessionStatus, base::TimeDelta,
                          std::unique_ptr<UserContext>,
-                         absl::optional<CryptohomeError>>
+                         absl::optional<AuthenticationError>>
       result;
   performer.GetAuthSessionStatus(std::move(context_), result.GetCallback());
   // Session does not have a status
@@ -302,7 +302,7 @@ TEST_F(AuthPerformerTest, AuthSessionStatusOnInvalidSession) {
       });
   base::test::TestFuture<AuthSessionStatus, base::TimeDelta,
                          std::unique_ptr<UserContext>,
-                         absl::optional<CryptohomeError>>
+                         absl::optional<AuthenticationError>>
       result;
   performer.GetAuthSessionStatus(std::move(context_), result.GetCallback());
   // Session does not have a status
@@ -332,7 +332,7 @@ TEST_F(AuthPerformerTest, AuthSessionStatusOnInvalidSessionAnotherFlow) {
       });
   base::test::TestFuture<AuthSessionStatus, base::TimeDelta,
                          std::unique_ptr<UserContext>,
-                         absl::optional<CryptohomeError>>
+                         absl::optional<AuthenticationError>>
       result;
   performer.GetAuthSessionStatus(std::move(context_), result.GetCallback());
   // Session does not have a status
@@ -361,7 +361,7 @@ TEST_F(AuthPerformerTest, AuthSessionStatusWhenNotAuthenticated) {
       });
   base::test::TestFuture<AuthSessionStatus, base::TimeDelta,
                          std::unique_ptr<UserContext>,
-                         absl::optional<CryptohomeError>>
+                         absl::optional<AuthenticationError>>
       result;
   performer.GetAuthSessionStatus(std::move(context_), result.GetCallback());
   // Session is valid but not authenticated
@@ -392,7 +392,7 @@ TEST_F(AuthPerformerTest, AuthSessionStatusWhenAuthenticated) {
 
   base::test::TestFuture<AuthSessionStatus, base::TimeDelta,
                          std::unique_ptr<UserContext>,
-                         absl::optional<CryptohomeError>>
+                         absl::optional<AuthenticationError>>
       result;
   performer.GetAuthSessionStatus(std::move(context_), result.GetCallback());
   // Session is authenticated

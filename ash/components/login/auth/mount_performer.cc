@@ -128,7 +128,7 @@ void MountPerformer::OnCreatePersistentUser(
   auto error = user_data_auth::ReplyToCryptohomeError(reply);
   if (error != user_data_auth::CRYPTOHOME_ERROR_NOT_SET) {
     LOGIN_LOG(ERROR) << "CreatePersistentUser failed with error " << error;
-    std::move(callback).Run(std::move(context), CryptohomeError{error});
+    std::move(callback).Run(std::move(context), AuthenticationError{error});
     return;
   }
   CHECK(reply.has_value());
@@ -142,7 +142,7 @@ void MountPerformer::OnPrepareGuestVault(
   auto error = user_data_auth::ReplyToCryptohomeError(reply);
   if (error != user_data_auth::CRYPTOHOME_ERROR_NOT_SET) {
     LOGIN_LOG(ERROR) << "PrepareGuestVault failed with error " << error;
-    std::move(callback).Run(std::move(context), CryptohomeError{error});
+    std::move(callback).Run(std::move(context), AuthenticationError{error});
     return;
   }
   CHECK(reply.has_value());
@@ -157,7 +157,7 @@ void MountPerformer::OnPrepareEphemeralVault(
   auto error = user_data_auth::ReplyToCryptohomeError(reply);
   if (error != user_data_auth::CRYPTOHOME_ERROR_NOT_SET) {
     LOGIN_LOG(ERROR) << "PrepareEphemeralVault failed with error " << error;
-    std::move(callback).Run(std::move(context), CryptohomeError{error});
+    std::move(callback).Run(std::move(context), AuthenticationError{error});
     return;
   }
   CHECK(reply.has_value());
@@ -172,7 +172,7 @@ void MountPerformer::OnPreparePersistentVault(
   auto error = user_data_auth::ReplyToCryptohomeError(reply);
   if (error != user_data_auth::CRYPTOHOME_ERROR_NOT_SET) {
     LOGIN_LOG(ERROR) << "PreparePersistentVault failed with error " << error;
-    std::move(callback).Run(std::move(context), CryptohomeError{error});
+    std::move(callback).Run(std::move(context), AuthenticationError{error});
     return;
   }
   CHECK(reply.has_value());
@@ -187,7 +187,7 @@ void MountPerformer::OnPrepareVaultForMigration(
   auto error = user_data_auth::ReplyToCryptohomeError(reply);
   if (error != user_data_auth::CRYPTOHOME_ERROR_NOT_SET) {
     LOGIN_LOG(ERROR) << "PrepareVaultForMigration failed with error " << error;
-    std::move(callback).Run(std::move(context), CryptohomeError{error});
+    std::move(callback).Run(std::move(context), AuthenticationError{error});
     return;
   }
   CHECK(reply.has_value());
@@ -202,7 +202,7 @@ void MountPerformer::OnRemove(
   auto error = user_data_auth::ReplyToCryptohomeError(reply);
   if (error != user_data_auth::CRYPTOHOME_ERROR_NOT_SET) {
     LOGIN_LOG(ERROR) << "Remove failed with error " << error;
-    std::move(callback).Run(std::move(context), CryptohomeError{error});
+    std::move(callback).Run(std::move(context), AuthenticationError{error});
     return;
   }
   CHECK(reply.has_value());
@@ -217,7 +217,7 @@ void MountPerformer::OnUnmount(
   auto error = user_data_auth::ReplyToCryptohomeError(reply);
   if (error != user_data_auth::CRYPTOHOME_ERROR_NOT_SET) {
     LOGIN_LOG(ERROR) << "Unmount failed with error" << error;
-    std::move(callback).Run(std::move(context), CryptohomeError{error});
+    std::move(callback).Run(std::move(context), AuthenticationError{error});
     return;
   }
   CHECK(reply.has_value());

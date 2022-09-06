@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_COMPONENTS_LOGIN_AUTH_PUBLIC_CRYPTOHOME_ERROR_H_
-#define ASH_COMPONENTS_LOGIN_AUTH_PUBLIC_CRYPTOHOME_ERROR_H_
+#ifndef ASH_COMPONENTS_LOGIN_AUTH_PUBLIC_AUTHENTICATION_ERROR_H_
+#define ASH_COMPONENTS_LOGIN_AUTH_PUBLIC_AUTHENTICATION_ERROR_H_
 
 #include "ash/components/login/auth/public/auth_failure.h"
 #include "base/component_export.h"
@@ -12,9 +12,9 @@
 namespace ash {
 
 // Struct that wraps implementation details of cryptohomed error reporting.
-struct COMPONENT_EXPORT(ASH_LOGIN_AUTH) CryptohomeError {
-  explicit CryptohomeError(user_data_auth::CryptohomeErrorCode error_code);
-  ~CryptohomeError();
+struct COMPONENT_EXPORT(ASH_LOGIN_AUTH) AuthenticationError {
+  explicit AuthenticationError(user_data_auth::CryptohomeErrorCode error_code);
+  ~AuthenticationError();
 
   // Original error reported by cryptohome.
   user_data_auth::CryptohomeErrorCode error_code;
@@ -25,4 +25,4 @@ struct COMPONENT_EXPORT(ASH_LOGIN_AUTH) CryptohomeError {
 
 }  // namespace ash
 
-#endif  // ASH_COMPONENTS_LOGIN_AUTH_PUBLIC_CRYPTOHOME_ERROR_H_
+#endif  // ASH_COMPONENTS_LOGIN_AUTH_PUBLIC_AUTHENTICATION_ERROR_H_

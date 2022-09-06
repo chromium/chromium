@@ -36,7 +36,7 @@ class HibernateManagerTest : public testing::Test {
   }
 
   void ResumeAuthOpCallback(std::unique_ptr<UserContext> user_context,
-                            absl::optional<CryptohomeError> error) {
+                            absl::optional<AuthenticationError> error) {
     if (error == absl::nullopt) {
       successful_callbacks_++;
     } else {

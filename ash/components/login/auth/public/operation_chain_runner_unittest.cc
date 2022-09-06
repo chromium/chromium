@@ -22,7 +22,7 @@ TEST(OperationChainRunnerTest, TestEmptyList) {
           [](std::unique_ptr<UserContext> context) { EXPECT_TRUE(context); }),
       /* failure callback */
       base::BindLambdaForTesting([](std::unique_ptr<UserContext> context,
-                                    CryptohomeError error) { FAIL(); }));
+                                    AuthenticationError error) { FAIL(); }));
 }
 
 TEST(OperationChainRunnerTest, TestSingleSuccessfulOperation) {
@@ -44,7 +44,7 @@ TEST(OperationChainRunnerTest, TestSingleSuccessfulOperation) {
       }),
       /* failure callback */
       base::BindLambdaForTesting([](std::unique_ptr<UserContext> context,
-                                    CryptohomeError error) { FAIL(); }));
+                                    AuthenticationError error) { FAIL(); }));
   EXPECT_TRUE(chain_finished);
 }
 
@@ -55,7 +55,8 @@ TEST(OperationChainRunnerTest, TestSingleFailedOperation) {
         context->SetAuthSessionId("session");
         std::move(callback).Run(
             std::move(context),
-            CryptohomeError{user_data_auth::CRYPTOHOME_ERROR_KEY_NOT_FOUND});
+            AuthenticationError{
+                user_data_auth::CRYPTOHOME_ERROR_KEY_NOT_FOUND});
       }));
 
   bool chain_finished = false;
@@ -66,7 +67,7 @@ TEST(OperationChainRunnerTest, TestSingleFailedOperation) {
           [&](std::unique_ptr<UserContext> context) { FAIL(); }),
       /* failure callback */
       base::BindLambdaForTesting(
-          [&](std::unique_ptr<UserContext> context, CryptohomeError error) {
+          [&](std::unique_ptr<UserContext> context, AuthenticationError error) {
             EXPECT_TRUE(context);
             EXPECT_EQ(context->GetAuthSessionId(), "session");
             chain_finished = true;
@@ -111,7 +112,7 @@ TEST(OperationChainRunnerTest, TestSuccesfulSequenceOrdering) {
       }),
       /* failure callback */
       base::BindLambdaForTesting([](std::unique_ptr<UserContext> context,
-                                    CryptohomeError error) { FAIL(); }));
+                                    AuthenticationError error) { FAIL(); }));
   EXPECT_TRUE(chain_finished);
 }
 
@@ -131,7 +132,8 @@ TEST(OperationChainRunnerTest, TestFailedMiddleOperation) {
                                      AuthOperationCallback callback) {
         std::move(callback).Run(
             std::move(context),
-            CryptohomeError{user_data_auth::CRYPTOHOME_ERROR_KEY_NOT_FOUND});
+            AuthenticationError{
+                user_data_auth::CRYPTOHOME_ERROR_KEY_NOT_FOUND});
       }));
   operations.push_back(
       base::BindLambdaForTesting([&](std::unique_ptr<UserContext> context,
@@ -148,7 +150,7 @@ TEST(OperationChainRunnerTest, TestFailedMiddleOperation) {
           [](std::unique_ptr<UserContext> context) { FAIL(); }),
       /* failure callback */
       base::BindLambdaForTesting(
-          [&](std::unique_ptr<UserContext> context, CryptohomeError error) {
+          [&](std::unique_ptr<UserContext> context, AuthenticationError error) {
             chain_finished = true;
             EXPECT_TRUE(context);
           }));

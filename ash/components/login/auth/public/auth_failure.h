@@ -16,6 +16,9 @@
 
 namespace ash {
 
+// High-level indication of the error that happened during authentication.
+// This value defines various erroneous situations which should be resolved
+// via their individual UI flows.
 class COMPONENT_EXPORT(ASH_LOGIN_AUTH) AuthFailure {
  public:
   // Enum used for UMA. Do NOT reorder or remove entry. Don't forget to

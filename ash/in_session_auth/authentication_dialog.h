@@ -25,7 +25,7 @@ class Textfield;
 
 namespace ash {
 
-struct CryptohomeError;
+struct AuthenticationError;
 
 // To be used for in-session authentication. Currently, only password
 // is supported, however, there are plans to enrich this dialog to eventually
@@ -88,7 +88,7 @@ class AuthenticationDialog : public views::DialogDelegateView {
   // modify the UI appropriately, in case of success we close the dialog.
   void OnAuthFactorValidityChecked(
       std::unique_ptr<UserContext> user_context,
-      absl::optional<CryptohomeError> cryptohome_error);
+      absl::optional<AuthenticationError> cryptohome_error);
 
   // Registered as a callback to the Cancel and Close buttons. Calls
   // `NotifyResult` with `success` == false.
@@ -103,14 +103,14 @@ class AuthenticationDialog : public views::DialogDelegateView {
   // and discovering that the auth session is no longer active
   void OnAuthSessionInvalid(bool user_exists,
                             std::unique_ptr<UserContext> user_context,
-                            absl::optional<CryptohomeError> cryptohome_error);
+                            absl::optional<AuthenticationError> auth_error);
 
   // Passed as a callback to `AuthPerformer::StartAuthSession`. Saves the
   // password key label to pass it later to authentication attempts and handles
   // errors from cryptohome
   void OnAuthSessionStarted(bool user_exists,
                             std::unique_ptr<UserContext> user_context,
-                            absl::optional<CryptohomeError> cryptohome_error);
+                            absl::optional<AuthenticationError> auth_error);
 
   base::raw_ptr<views::Textfield> password_field_;
   base::raw_ptr<views::Label> invalid_password_label_;

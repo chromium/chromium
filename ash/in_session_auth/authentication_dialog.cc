@@ -8,7 +8,7 @@
 
 #include "ash/components/login/auth/auth_performer.h"
 #include "ash/components/login/auth/public/auth_session_intent.h"
-#include "ash/components/login/auth/public/cryptohome_error.h"
+#include "ash/components/login/auth/public/authentication_error.h"
 #include "ash/components/login/auth/public/cryptohome_key_constants.h"
 #include "ash/components/login/auth/public/user_context.h"
 #include "ash/public/cpp/in_session_auth_dialog_controller.h"
@@ -174,7 +174,7 @@ void AuthenticationDialog::ValidateAuthFactor() {
 
 void AuthenticationDialog::OnAuthFactorValidityChecked(
     std::unique_ptr<UserContext> user_context,
-    absl::optional<CryptohomeError> cryptohome_error) {
+    absl::optional<AuthenticationError> cryptohome_error) {
   if (cryptohome_error.has_value()) {
     if (cryptohome_error.value().error_code ==
         user_data_auth::CRYPTOHOME_INVALID_AUTH_SESSION_TOKEN) {
@@ -229,7 +229,7 @@ void AuthenticationDialog::ConfigureChildViews() {
 void AuthenticationDialog::OnAuthSessionInvalid(
     bool user_exists,
     std::unique_ptr<UserContext> user_context,
-    absl::optional<CryptohomeError> cryptohome_error) {
+    absl::optional<AuthenticationError> cryptohome_error) {
   OnAuthSessionStarted(user_exists, std::move(user_context), cryptohome_error);
   ValidateAuthFactor();
 }
@@ -237,7 +237,7 @@ void AuthenticationDialog::OnAuthSessionInvalid(
 void AuthenticationDialog::OnAuthSessionStarted(
     bool user_exists,
     std::unique_ptr<UserContext> user_context,
-    absl::optional<CryptohomeError> cryptohome_error) {
+    absl::optional<AuthenticationError> cryptohome_error) {
   if (cryptohome_error.has_value()) {
     LOG(ERROR) << "Error starting authsession for in session authentication: "
                << cryptohome_error.value().error_code;

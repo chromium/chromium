@@ -2,13 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/components/login/auth/public/cryptohome_error.h"
+#include "ash/components/login/auth/public/authentication_error.h"
 
 namespace ash {
 
-CryptohomeError::CryptohomeError(user_data_auth::CryptohomeErrorCode error_code)
+AuthenticationError::AuthenticationError(
+    user_data_auth::CryptohomeErrorCode error_code)
     : error_code(error_code) {}
 
-CryptohomeError::~CryptohomeError() = default;
+AuthenticationError::~AuthenticationError() = default;
 
 }  // namespace ash

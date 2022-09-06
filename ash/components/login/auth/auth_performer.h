@@ -10,7 +10,7 @@
 #include "ash/components/login/auth/public/auth_callbacks.h"
 #include "ash/components/login/auth/public/auth_session_intent.h"
 #include "ash/components/login/auth/public/auth_session_status.h"
-#include "ash/components/login/auth/public/cryptohome_error.h"
+#include "ash/components/login/auth/public/authentication_error.h"
 #include "base/callback.h"
 #include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
@@ -39,13 +39,13 @@ class COMPONENT_EXPORT(ASH_LOGIN_AUTH) AuthPerformer {
   using StartSessionCallback =
       base::OnceCallback<void(bool /* user_exists */,
                               std::unique_ptr<UserContext>,
-                              absl::optional<CryptohomeError>)>;
+                              absl::optional<AuthenticationError>)>;
 
   using AuthSessionStatusCallback =
       base::OnceCallback<void(AuthSessionStatus status,
                               base::TimeDelta lifetime,
                               std::unique_ptr<UserContext>,
-                              absl::optional<CryptohomeError>)>;
+                              absl::optional<AuthenticationError>)>;
 
   // Invalidates any ongoing mount attempts by invalidating Weak pointers on
   // internal callbacks. Callbacks for ongoing operations will not be called

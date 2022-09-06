@@ -12,7 +12,7 @@
 #include "ash/components/login/auth/auth_performer.h"
 #include "ash/components/login/auth/authenticator.h"
 #include "ash/components/login/auth/mount_performer.h"
-#include "ash/components/login/auth/public/cryptohome_error.h"
+#include "ash/components/login/auth/public/authentication_error.h"
 #include "ash/components/login/auth/safe_mode_delegate.h"
 #include "ash/components/login/hibernate/hibernate_manager.h"
 #include "base/callback.h"
@@ -94,7 +94,7 @@ class COMPONENT_EXPORT(ASH_LOGIN_AUTH) AuthSessionAuthenticator
   using StartAuthSessionCallback =
       base::OnceCallback<void(bool user_exists,
                               std::unique_ptr<UserContext> context,
-                              absl::optional<CryptohomeError> error)>;
+                              absl::optional<AuthenticationError> error)>;
 
   // Callbacks that handles auth session started for particular login flows.
   // |user_exists| indicates if cryptohome actually exists on the disk,
@@ -102,16 +102,16 @@ class COMPONENT_EXPORT(ASH_LOGIN_AUTH) AuthSessionAuthenticator
   // the keys.
   void DoLoginAsPublicSession(bool user_exists,
                               std::unique_ptr<UserContext> context,
-                              absl::optional<CryptohomeError> error);
+                              absl::optional<AuthenticationError> error);
   void DoLoginAsKiosk(bool user_exists,
                       std::unique_ptr<UserContext> context,
-                      absl::optional<CryptohomeError> error);
+                      absl::optional<AuthenticationError> error);
   void DoLoginAsExistingUser(bool user_exists,
                              std::unique_ptr<UserContext> context,
-                             absl::optional<CryptohomeError> error);
+                             absl::optional<AuthenticationError> error);
   void DoCompleteLogin(bool user_exists,
                        std::unique_ptr<UserContext> context,
-                       absl::optional<CryptohomeError> error);
+                       absl::optional<AuthenticationError> error);
 
   // Common part of login logic shared by user creation flow and flow when
   // user have changed password elsewhere and decides to re-create cryptohome.
@@ -131,7 +131,7 @@ class COMPONENT_EXPORT(ASH_LOGIN_AUTH) AuthSessionAuthenticator
                           StartAuthSessionCallback callback,
                           bool user_exists,
                           std::unique_ptr<UserContext> context,
-                          absl::optional<CryptohomeError> error);
+                          absl::optional<AuthenticationError> error);
   void RemoveStaleUserForEphemeral(
       const std::string& auth_session_id,
       std::unique_ptr<UserContext> original_context,
@@ -146,7 +146,7 @@ class COMPONENT_EXPORT(ASH_LOGIN_AUTH) AuthSessionAuthenticator
       StartAuthSessionCallback callback,
       bool user_exists,
       std::unique_ptr<UserContext> context,
-      absl::optional<CryptohomeError> error);
+      absl::optional<AuthenticationError> error);
 
   void PrepareForNewAttempt(const std::string& method_id,
                             const std::string& long_desc);
@@ -164,22 +164,22 @@ class COMPONENT_EXPORT(ASH_LOGIN_AUTH) AuthSessionAuthenticator
   // Other errors are handled by `fallback`.
   void HandlePasswordChangeDetected(AuthErrorCallback fallback,
                                     std::unique_ptr<UserContext> context,
-                                    CryptohomeError error);
+                                    AuthenticationError error);
   // Handles errors specific to the encryption migration:
   //   if the encryption migration is required, triggers OnOldEncryptionDetected
   //   method on the consumer.
   // Other errors are handled by `fallback`.
   void HandleMigrationRequired(AuthErrorCallback fallback,
                                std::unique_ptr<UserContext> context,
-                               CryptohomeError error);
+                               AuthenticationError error);
 
   bool ResolveCryptohomeError(AuthFailure::FailureReason default_error,
-                              CryptohomeError& error);
+                              AuthenticationError& error);
   // Generic error handler, can be used as ErrorHandlingCallback when first
   // parameter is bound to a user type-specific failure reason.
   void ProcessCryptohomeError(AuthFailure::FailureReason default_reason,
                               std::unique_ptr<UserContext> user_context,
-                              CryptohomeError error);
+                              AuthenticationError error);
   // Check used for existing regular users - in safe mode would check
   // if home directory contains valid owner key. If key is not found,
   // would unmount directory and notify failure.
@@ -189,7 +189,7 @@ class COMPONENT_EXPORT(ASH_LOGIN_AUTH) AuthSessionAuthenticator
                                 AuthOperationCallback callback,
                                 bool is_owner);
   void OnUnmountForNonOwner(std::unique_ptr<UserContext> context,
-                            absl::optional<CryptohomeError> error);
+                            absl::optional<AuthenticationError> error);
 
   // Save information about user so that it can be used by
   // `CryptohomeKeyDelegateServiceProvider`.

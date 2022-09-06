@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "ash/components/login/auth/public/cryptohome_error.h"
+#include "ash/components/login/auth/public/authentication_error.h"
 #include "base/callback.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -17,15 +17,15 @@ class UserContext;
 
 using AuthOperationCallback =
     base::OnceCallback<void(std::unique_ptr<UserContext>,
-                            absl::optional<CryptohomeError>)>;
+                            absl::optional<AuthenticationError>)>;
 using AuthOperation = base::OnceCallback<void(std::unique_ptr<UserContext>,
                                               AuthOperationCallback)>;
 using AuthErrorCallback =
-    base::OnceCallback<void(std::unique_ptr<UserContext>, CryptohomeError)>;
+    base::OnceCallback<void(std::unique_ptr<UserContext>, AuthenticationError)>;
 using AuthSuccessCallback =
     base::OnceCallback<void(std::unique_ptr<UserContext>)>;
 using NoContextOperationCallback =
-    base::OnceCallback<void(absl::optional<CryptohomeError>)>;
+    base::OnceCallback<void(absl::optional<AuthenticationError>)>;
 
 }  // namespace ash
 
