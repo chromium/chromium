@@ -40,8 +40,7 @@ MATCHER_P(SerializesTo, want, "") {
 
 class FirstPartySetsManagerTest : public ::testing::Test {
  public:
-  explicit FirstPartySetsManagerTest(bool enabled, bool context_enabled)
-      : manager_(enabled), fps_context_config_(context_enabled) {}
+  explicit FirstPartySetsManagerTest(bool enabled) : manager_(enabled) {}
 
   void SetCompleteSets(
       const base::flat_map<net::SchemefulSite, net::FirstPartySetEntry>&
@@ -82,9 +81,8 @@ class FirstPartySetsManagerTest : public ::testing::Test {
   base::test::TaskEnvironment& env() { return env_; }
 
  protected:
-  void SetFirstPartySetsContextConfig(bool enabled,
-                                      OverrideSets customizations) {
-    fps_context_config_ = net::FirstPartySetsContextConfig(enabled);
+  void SetFirstPartySetsContextConfig(OverrideSets customizations) {
+    fps_context_config_ = net::FirstPartySetsContextConfig();
     fps_context_config_.SetCustomizations(std::move(customizations));
   }
 
@@ -97,8 +95,7 @@ class FirstPartySetsManagerTest : public ::testing::Test {
 class FirstPartySetsManagerDisabledTest : public FirstPartySetsManagerTest {
  public:
   FirstPartySetsManagerDisabledTest()
-      : FirstPartySetsManagerTest(/*enabled=*/false, /*context_enabled=*/true) {
-  }
+      : FirstPartySetsManagerTest(/*enabled=*/false) {}
 };
 
 TEST_F(FirstPartySetsManagerDisabledTest, SetCompleteSets) {
@@ -133,14 +130,14 @@ TEST_F(FirstPartySetsManagerDisabledTest, ComputeMetadata_InfersSingletons) {
   net::SchemefulSite wss_member(GURL("wss://member1.test"));
 
   SetFirstPartySetsContextConfig(
-      true, {{net::SchemefulSite(GURL("https://member1.test")),
-              {net::FirstPartySetEntry(
-                  net::SchemefulSite(GURL("https://example.test")),
-                  net::SiteType::kAssociated, 0)}},
-             {net::SchemefulSite(GURL("https://example.test")),
-              {net::FirstPartySetEntry(
-                  net::SchemefulSite(GURL("https://example.test")),
-                  net::SiteType::kPrimary, absl::nullopt)}}});
+      {{net::SchemefulSite(GURL("https://member1.test")),
+        {net::FirstPartySetEntry(
+            net::SchemefulSite(GURL("https://example.test")),
+            net::SiteType::kAssociated, 0)}},
+       {net::SchemefulSite(GURL("https://example.test")),
+        {net::FirstPartySetEntry(
+            net::SchemefulSite(GURL("https://example.test")),
+            net::SiteType::kPrimary, absl::nullopt)}}});
 
   // Works if the site is provided with WSS scheme instead of HTTPS.
   EXPECT_THAT(
@@ -159,8 +156,7 @@ TEST_F(FirstPartySetsManagerDisabledTest, ComputeMetadata_InfersSingletons) {
 
 class FirstPartySetsEnabledTest : public FirstPartySetsManagerTest {
  public:
-  FirstPartySetsEnabledTest()
-      : FirstPartySetsManagerTest(/*enabled=*/true, /*context_enabled=*/true) {}
+  FirstPartySetsEnabledTest() : FirstPartySetsManagerTest(/*enabled=*/true) {}
 };
 
 TEST_F(FirstPartySetsEnabledTest, SetCompleteSets) {
@@ -899,21 +895,19 @@ class OverrideSetsFirstPartySetsManagerTest : public FirstPartySetsEnabledTest {
         },
         {{example_cctld, example_test}});
 
-    SetFirstPartySetsContextConfig(
-        true,
-        {
-            // New entry:
-            {foo,
-             {net::FirstPartySetEntry(foo, net::SiteType::kPrimary,
-                                      absl::nullopt)}},
-            // Removed entry:
-            {net::SchemefulSite(GURL("https://member1.test")), absl::nullopt},
-            // Remapped entry:
-            {net::SchemefulSite(GURL("https://member2.test")),
-             {net::FirstPartySetEntry(foo, net::SiteType::kAssociated, 0)}},
-            // Removed alias:
-            {example_cctld, absl::nullopt},
-        });
+    SetFirstPartySetsContextConfig({
+        // New entry:
+        {foo,
+         {net::FirstPartySetEntry(foo, net::SiteType::kPrimary,
+                                  absl::nullopt)}},
+        // Removed entry:
+        {net::SchemefulSite(GURL("https://member1.test")), absl::nullopt},
+        // Remapped entry:
+        {net::SchemefulSite(GURL("https://member2.test")),
+         {net::FirstPartySetEntry(foo, net::SiteType::kAssociated, 0)}},
+        // Removed alias:
+        {example_cctld, absl::nullopt},
+    });
   }
 };
 

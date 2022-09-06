@@ -28,7 +28,7 @@ FirstPartySetsAccessDelegate::FirstPartySetsAccessDelegate(
     mojom::FirstPartySetsAccessDelegateParamsPtr params,
     FirstPartySetsManager* const manager)
     : manager_(manager),
-      context_config_(net::FirstPartySetsContextConfig(IsEnabled(params))),
+      enabled_(IsEnabled(params)),
       pending_queries_(
           IsEnabled(params) && receiver.is_valid() && manager_->is_enabled()
               ? std::make_unique<base::circular_deque<base::OnceClosure>>()
@@ -54,7 +54,7 @@ FirstPartySetsAccessDelegate::ComputeMetadata(
     base::OnceCallback<void(net::FirstPartySetMetadata)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!context_config_.is_enabled()) {
+  if (!enabled_) {
     return {net::FirstPartySetMetadata()};
   }
   if (pending_queries_) {
@@ -79,7 +79,7 @@ FirstPartySetsAccessDelegate::FindOwners(
         callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!context_config_.is_enabled())
+  if (!enabled_)
     return {{}};
 
   if (pending_queries_) {
@@ -101,7 +101,7 @@ void FirstPartySetsAccessDelegate::ComputeMetadataAndInvoke(
     const std::set<net::SchemefulSite>& party_context,
     base::OnceCallback<void(net::FirstPartySetMetadata)> callback) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(context_config_.is_enabled());
+  DCHECK(enabled_);
 
   std::pair<base::OnceCallback<void(net::FirstPartySetMetadata)>,
             base::OnceCallback<void(net::FirstPartySetMetadata)>>
@@ -121,7 +121,7 @@ void FirstPartySetsAccessDelegate::FindOwnersAndInvoke(
     base::OnceCallback<void(FirstPartySetsAccessDelegate::OwnersResult)>
         callback) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(context_config_.is_enabled());
+  DCHECK(enabled_);
 
   std::pair<
       base::OnceCallback<void(FirstPartySetsAccessDelegate::OwnersResult)>,

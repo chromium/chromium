@@ -19,21 +19,17 @@ class NET_EXPORT FirstPartySetsContextConfig {
   using OverrideSets =
       base::flat_map<SchemefulSite, absl::optional<FirstPartySetEntry>>;
 
-  explicit FirstPartySetsContextConfig(bool enabled);
+  FirstPartySetsContextConfig();
 
   FirstPartySetsContextConfig(const FirstPartySetsContextConfig& other);
 
   ~FirstPartySetsContextConfig();
-
-  bool is_enabled() const { return enabled_; }
 
   void SetCustomizations(OverrideSets customizations);
 
   const OverrideSets& customizations() const { return customizations_; }
 
  private:
-  bool enabled_ = true;
-
   OverrideSets customizations_;
 };
 

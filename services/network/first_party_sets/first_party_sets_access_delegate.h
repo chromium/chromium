@@ -12,6 +12,7 @@
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
+#include "base/thread_annotations.h"
 #include "base/timer/elapsed_timer.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -52,7 +53,7 @@ class FirstPartySetsAccessDelegate
 
   bool is_enabled() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    return context_config_.is_enabled() && manager_->is_enabled();
+    return enabled_ && manager_->is_enabled();
   }
 
   // Computes the First-Party Set metadata related to the given context.
@@ -109,6 +110,10 @@ class FirstPartySetsAccessDelegate
   // service.
   const raw_ptr<FirstPartySetsManager> manager_
       GUARDED_BY_CONTEXT(sequence_checker_);
+
+  // Whether First-Party Sets is enabled for this context in particular. Note
+  // that this is unrelated to `manager_.is_enabled`.
+  bool enabled_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
 
   // First-Party Sets configuration for this network context.
   net::FirstPartySetsContextConfig context_config_

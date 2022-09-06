@@ -125,7 +125,6 @@ net::FirstPartySetMetadata FirstPartySetsManager::ComputeMetadataInternal(
     const net::FirstPartySetsContextConfig& fps_context_config) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(sets_.has_value());
-  DCHECK(fps_context_config.is_enabled());
 
   const base::ElapsedTimer timer;
 
@@ -153,7 +152,6 @@ absl::optional<net::FirstPartySetEntry> FirstPartySetsManager::FindEntry(
     const net::FirstPartySetsContextConfig& fps_context_config) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(sets_.has_value());
-  DCHECK(fps_context_config.is_enabled());
   const base::ElapsedTimer timer;
 
   net::SchemefulSite normalized_site = site;
@@ -222,7 +220,6 @@ FirstPartySetsManager::OwnersResult FirstPartySetsManager::FindOwnersInternal(
     const net::FirstPartySetsContextConfig& fps_context_config) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(sets_.has_value());
-  DCHECK(fps_context_config.is_enabled());
 
   std::vector<std::pair<net::SchemefulSite, net::FirstPartySetEntry>>
       sites_to_entries;

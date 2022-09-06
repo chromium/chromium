@@ -6,8 +6,7 @@
 
 namespace net {
 
-FirstPartySetsContextConfig::FirstPartySetsContextConfig(bool enabled)
-    : enabled_(enabled) {}
+FirstPartySetsContextConfig::FirstPartySetsContextConfig() = default;
 
 FirstPartySetsContextConfig::FirstPartySetsContextConfig(
     const FirstPartySetsContextConfig& other) = default;
@@ -17,8 +16,7 @@ FirstPartySetsContextConfig::~FirstPartySetsContextConfig() = default;
 void FirstPartySetsContextConfig::SetCustomizations(
     OverrideSets customizations) {
   DCHECK(customizations_.empty());
-  if (enabled_)
-    customizations_ = std::move(customizations);
+  customizations_ = std::move(customizations);
 }
 
 }  // namespace net
