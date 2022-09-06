@@ -125,6 +125,15 @@ ASH_EXPORT void ToggleResizeLockMenu();
 // If a window is pinned (aka forced fullscreen), exit from pinned mode.
 ASH_EXPORT void UnpinWindow();
 
+// Volume down.
+ASH_EXPORT void VolumeDown();
+
+// Volume mute.
+ASH_EXPORT void VolumeMute();
+
+// Volume up.
+ASH_EXPORT void VolumeUp();
+
 // Change the display zooming up or down.
 ASH_EXPORT bool ZoomDisplay(bool up);
 

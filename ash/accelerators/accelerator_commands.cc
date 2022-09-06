@@ -49,6 +49,9 @@ namespace accelerators {
 
 namespace {
 
+// Percent by which the volume should be changed when a volume key is pressed.
+const double kStepPercentage = 4.0;
+
 views::Widget* FindPipWidget() {
   return Shell::Get()->focus_cycler()->FindWidget(
       base::BindRepeating([](views::Widget* widget) {
@@ -296,6 +299,46 @@ void UnpinWindow() {
       Shell::Get()->screen_pinning_controller()->pinned_window();
   if (pinned_window)
     WindowState::Get(pinned_window)->Restore();
+}
+
+void VolumeDown() {
+  auto* audio_handler = CrasAudioHandler::Get();
+  if (audio_handler->IsOutputMuted()) {
+    audio_handler->SetOutputVolumePercent(0);
+  } else {
+    if (features::IsAudioPeripheralVolumeGranularityEnabled())
+      audio_handler->DecreaseOutputVolumeByOneStep();
+    else
+      audio_handler->AdjustOutputVolumeByPercent(-kStepPercentage);
+
+    if (audio_handler->IsOutputVolumeBelowDefaultMuteLevel())
+      audio_handler->SetOutputMute(true);
+    else
+      AcceleratorController::PlayVolumeAdjustmentSound();
+  }
+}
+
+void VolumeMute() {
+  CrasAudioHandler::Get()->SetOutputMute(true);
+}
+
+void VolumeUp() {
+  auto* audio_handler = CrasAudioHandler::Get();
+  bool play_sound = false;
+  if (audio_handler->IsOutputMuted()) {
+    audio_handler->SetOutputMute(false);
+    audio_handler->AdjustOutputVolumeToAudibleLevel();
+    play_sound = true;
+  } else {
+    play_sound = audio_handler->GetOutputVolumePercent() != 100;
+    if (features::IsAudioPeripheralVolumeGranularityEnabled())
+      audio_handler->IncreaseOutputVolumeByOneStep();
+    else
+      audio_handler->AdjustOutputVolumeByPercent(kStepPercentage);
+  }
+
+  if (play_sound)
+    AcceleratorController::PlayVolumeAdjustmentSound();
 }
 
 bool ZoomDisplay(bool up) {

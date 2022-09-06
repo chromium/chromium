@@ -1384,56 +1384,6 @@ void HandleTogglePrivacyScreen() {
       PrivacyScreenController::kToggleUISurfaceKeyboardShortcut);
 }
 
-// Percent by which the volume should be changed when a volume key is pressed.
-const double kStepPercentage = 4.0;
-
-void HandleVolumeDown() {
-  base::RecordAction(UserMetricsAction("Accel_VolumeDown_F9"));
-
-  auto* audio_handler = CrasAudioHandler::Get();
-  if (audio_handler->IsOutputMuted()) {
-    audio_handler->SetOutputVolumePercent(0);
-  } else {
-    if (features::IsAudioPeripheralVolumeGranularityEnabled())
-      audio_handler->DecreaseOutputVolumeByOneStep();
-    else
-      audio_handler->AdjustOutputVolumeByPercent(-kStepPercentage);
-
-    if (audio_handler->IsOutputVolumeBelowDefaultMuteLevel())
-      audio_handler->SetOutputMute(true);
-    else
-      AcceleratorController::PlayVolumeAdjustmentSound();
-  }
-}
-
-void HandleVolumeMute(const ui::Accelerator& accelerator) {
-  if (accelerator.key_code() == ui::VKEY_VOLUME_MUTE)
-    base::RecordAction(UserMetricsAction("Accel_VolumeMute_F8"));
-
-  CrasAudioHandler::Get()->SetOutputMute(true);
-}
-
-void HandleVolumeUp() {
-  base::RecordAction(UserMetricsAction("Accel_VolumeUp_F10"));
-
-  auto* audio_handler = CrasAudioHandler::Get();
-  bool play_sound = false;
-  if (audio_handler->IsOutputMuted()) {
-    audio_handler->SetOutputMute(false);
-    audio_handler->AdjustOutputVolumeToAudibleLevel();
-    play_sound = true;
-  } else {
-    play_sound = audio_handler->GetOutputVolumePercent() != 100;
-    if (features::IsAudioPeripheralVolumeGranularityEnabled())
-      audio_handler->IncreaseOutputVolumeByOneStep();
-    else
-      audio_handler->AdjustOutputVolumeByPercent(kStepPercentage);
-  }
-
-  if (play_sound)
-    AcceleratorController::PlayVolumeAdjustmentSound();
-}
-
 bool CanHandleActiveMagnifierZoom() {
   return Shell::Get()->fullscreen_magnifier_controller()->IsEnabled() ||
          Shell::Get()->docked_magnifier_controller()->GetEnabled();
@@ -2459,13 +2409,17 @@ void AcceleratorControllerImpl::PerformAction(
       accelerators::UnpinWindow();
       break;
     case VOLUME_DOWN:
-      HandleVolumeDown();
+      base::RecordAction(UserMetricsAction("Accel_VolumeDown_F9"));
+      accelerators::VolumeDown();
       break;
     case VOLUME_MUTE:
-      HandleVolumeMute(accelerator);
+      if (accelerator.key_code() == ui::VKEY_VOLUME_MUTE)
+        base::RecordAction(UserMetricsAction("Accel_VolumeMute_F8"));
+      accelerators::VolumeMute();
       break;
     case VOLUME_UP:
-      HandleVolumeUp();
+      base::RecordAction(UserMetricsAction("Accel_VolumeUp_F10"));
+      accelerators::VolumeUp();
       break;
     case WINDOW_CYCLE_SNAP_LEFT:
     case WINDOW_CYCLE_SNAP_RIGHT:
