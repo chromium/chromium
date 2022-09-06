@@ -1698,9 +1698,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Viz.DelegatedCompositing.Status" enum="DelegatedStatus"
-    expires_after="2022-10-09">
+    expires_after="2023-06-09">
   <owner>petermcneeley@chromium.org</owner>
   <owner>rjkroege@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
   <summary>
     An enum status result for attempted delegated compositing (success or
     failure reason) recorded every drawn frame. Currently only recorded for
@@ -1709,9 +1710,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Viz.DisplayCompositor.OverlayNumProposedCandidates"
-    units="units" expires_after="2023-02-26">
+    units="units" expires_after="2023-06-09">
   <owner>petermcneeley@chromium.org</owner>
-  <owner>dcastagna@chromium.org</owner>
+  <owner>khaslett@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
   <summary>
     A count of the number of proposed overlay candidates available for overlay
     selection. Recorded every time a frame is rendered by the display
@@ -1720,9 +1722,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Viz.DisplayCompositor.OverlayQuadMaterial"
-    enum="OverlayQuadMaterial" expires_after="2023-02-26">
+    enum="OverlayQuadMaterial" expires_after="2023-06-09">
   <owner>petermcneeley@chromium.org</owner>
-  <owner>dcastagna@chromium.org</owner>
+  <owner>khaslett@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
   <summary>
     Quad material for current promoted overlay, per frame. Recorded every time a
     frame is rendered by the display compositor.
@@ -1730,9 +1733,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Viz.DisplayCompositor.OverlayStrategy"
-    enum="OverlayStrategies" expires_after="2023-01-29">
+    enum="OverlayStrategies" expires_after="2023-06-09">
   <owner>khaslett@chromium.org</owner>
   <owner>kylechar@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
   <summary>
     Overlay strategies used to promote Hardware Overlays, once or more per
     frame. Recorded every time a frame is rendered by the display compositor, or
@@ -1741,9 +1745,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Viz.DisplayCompositor.OverlaySwitchInterval" units="ms"
-    expires_after="2023-01-15">
+    expires_after="2023-06-09">
   <owner>petermcneeley@chromium.org</owner>
-  <owner>dcastagna@chromium.org</owner>
+  <owner>khaslett@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
   <summary>
     The time, in milliseconds, since the change in overlay selection. Recorded
     every time a frame is rendered by the display compositor.
@@ -1769,9 +1774,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Viz.FileDescriptorTracking.TimeToCompute" units="microseconds"
-    expires_after="2023-01-09">
+    expires_after="2023-06-09">
   <owner>petermcneeley@chromium.org</owner>
   <owner>rjkroege@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
   <summary>
     Time spent computing the number of active File Descriptors. This is logged
     once every 5 minutes as the cost of this computation is estimated to be at
@@ -1783,9 +1789,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Viz.FileDescriptorTracking.{FdStat}" units="units"
-    expires_after="2023-01-09">
+    expires_after="2023-06-09">
   <owner>petermcneeley@chromium.org</owner>
   <owner>rjkroege@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
   <summary>
     {FdStat} File Descriptors for the GPU process. This is logged once every 5
     minutes as the cost of this computation is estimated to be at least 1ms.
