@@ -244,6 +244,10 @@ Profile* Profile::FromWebUI(content::WebUI* web_ui) {
 }
 
 void Profile::AddObserver(ProfileObserver* observer) {
+  // Instrumentation for https://crbug.com/1359689.
+  CHECK(observer);
+  CHECK(!observers_.HasObserver(observer));
+
   observers_.AddObserver(observer);
 }
 
@@ -434,13 +438,19 @@ void Profile::MaybeSendDestroyedNotification() {
   TRACE_EVENT("shutdown", "Profile::MaybeSendDestroyedNotification",
                ChromeTrackEvent::kChromeBrowserContext, this);
 
-  if (!sent_destroyed_notification_) {
-    sent_destroyed_notification_ = true;
+  if (sent_destroyed_notification_)
+    return;
+  sent_destroyed_notification_ = true;
 
-    NotifyWillBeDestroyed();
+  // Instrumentation for https://crbug.com/1359689,
+  auto weak_this = weak_factory_.GetWeakPtr();
 
-    for (auto& observer : observers_)
-      observer.OnProfileWillBeDestroyed(this);
+  NotifyWillBeDestroyed();
+  CHECK(weak_this);
+
+  for (auto& observer : observers_) {
+    observer.OnProfileWillBeDestroyed(this);
+    CHECK(weak_this);
   }
 }
 
