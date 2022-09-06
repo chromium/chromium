@@ -22,6 +22,10 @@
 #include "components/device_signals/core/common/win/win_types.h"
 #endif  // BUILDFLAG(IS_WIN)
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#include "base/json/json_writer.h"
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+
 using SignalCollectionError = device_signals::SignalCollectionError;
 using PresenceValue = device_signals::PresenceValue;
 
@@ -71,6 +75,41 @@ std::string EncodeHash(const std::string& byte_string) {
                         &encoded_string);
   return encoded_string;
 }
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+
+absl::optional<device_signals::RegistryHive> ConvertHiveFromApi(
+    api::enterprise_reporting_private::RegistryHive api_hive) {
+  switch (api_hive) {
+    case api::enterprise_reporting_private::REGISTRY_HIVE_HKEY_CLASSES_ROOT:
+      return device_signals::RegistryHive::kHkeyClassesRoot;
+    case api::enterprise_reporting_private::REGISTRY_HIVE_HKEY_LOCAL_MACHINE:
+      return device_signals::RegistryHive::kHkeyLocalMachine;
+    case api::enterprise_reporting_private::REGISTRY_HIVE_HKEY_CURRENT_USER:
+      return device_signals::RegistryHive::kHkeyCurrentUser;
+    case api::enterprise_reporting_private::REGISTRY_HIVE_NONE:
+      return absl::nullopt;
+  }
+}
+
+api::enterprise_reporting_private::RegistryHive ConvertHiveToApi(
+    absl::optional<device_signals::RegistryHive> hive) {
+  if (!hive) {
+    return api::enterprise_reporting_private::REGISTRY_HIVE_NONE;
+  }
+
+  switch (hive.value()) {
+    case device_signals::RegistryHive::kHkeyClassesRoot:
+      return api::enterprise_reporting_private::REGISTRY_HIVE_HKEY_CLASSES_ROOT;
+    case device_signals::RegistryHive::kHkeyLocalMachine:
+      return api::enterprise_reporting_private::
+          REGISTRY_HIVE_HKEY_LOCAL_MACHINE;
+    case device_signals::RegistryHive::kHkeyCurrentUser:
+      return api::enterprise_reporting_private::REGISTRY_HIVE_HKEY_CURRENT_USER;
+  }
+}
+
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 
 }  // namespace
 
@@ -139,19 +178,75 @@ absl::optional<ParsedSignalsError> ConvertFileSystemInfoResponse(
   return absl::nullopt;
 }
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+
+std::vector<device_signals::GetSettingsOptions> ConvertSettingsOptions(
+    const std::vector<api::enterprise_reporting_private::GetSettingsOptions>&
+        api_options) {
+  std::vector<device_signals::GetSettingsOptions> converted_options;
+  for (const auto& api_options_param : api_options) {
+    device_signals::GetSettingsOptions converted_param;
+    converted_param.path = api_options_param.path;
+    converted_param.key = api_options_param.key;
+    converted_param.get_value = api_options_param.get_value;
+    converted_param.hive = ConvertHiveFromApi(api_options_param.hive);
+
+    converted_options.push_back(std::move(converted_param));
+  }
+  return converted_options;
+}
+
+absl::optional<ParsedSignalsError> ConvertSettingsResponse(
+    const device_signals::SignalsAggregationResponse& aggregation_response,
+    std::vector<api::enterprise_reporting_private::GetSettingsResponse>*
+        arg_list) {
+  auto error = TryParseError(aggregation_response,
+                             aggregation_response.settings_response);
+  if (error) {
+    return error.value();
+  }
+
+  std::vector<api::enterprise_reporting_private::GetSettingsResponse>
+      api_responses;
+  const auto& settings_signal_values =
+      aggregation_response.settings_response.value();
+  for (const auto& settings_item : settings_signal_values.settings_items) {
+    api::enterprise_reporting_private::GetSettingsResponse response;
+    response.path = settings_item.path;
+    response.key = settings_item.key;
+    response.presence = ConvertPresenceValue(settings_item.presence);
+    response.hive = ConvertHiveToApi(settings_item.hive);
+
+    std::string json_value;
+    if (settings_item.setting_value &&
+        base::JSONWriter::Write(settings_item.setting_value.value(),
+                                &json_value)) {
+      response.value = json_value;
+    }
+
+    api_responses.push_back(std::move(response));
+  }
+
+  *arg_list = std::move(api_responses);
+  return absl::nullopt;
+}
+
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+
 #if BUILDFLAG(IS_WIN)
 
 absl::optional<ParsedSignalsError> ConvertAvProductsResponse(
-    const device_signals::SignalsAggregationResponse& response,
+    const device_signals::SignalsAggregationResponse& aggregation_response,
     std::vector<api::enterprise_reporting_private::AntiVirusSignal>* arg_list) {
-  auto error = TryParseError(response, response.av_signal_response);
+  auto error = TryParseError(aggregation_response,
+                             aggregation_response.av_signal_response);
   if (error) {
     return error.value();
   }
 
   std::vector<api::enterprise_reporting_private::AntiVirusSignal>
       api_av_signals;
-  const auto& av_response = response.av_signal_response.value();
+  const auto& av_response = aggregation_response.av_signal_response.value();
   for (const auto& av_product : av_response.av_products) {
     api::enterprise_reporting_private::AntiVirusSignal api_av_signal;
     api_av_signal.display_name = av_product.display_name;
@@ -184,16 +279,18 @@ absl::optional<ParsedSignalsError> ConvertAvProductsResponse(
 }
 
 absl::optional<ParsedSignalsError> ConvertHotfixesResponse(
-    const device_signals::SignalsAggregationResponse& response,
+    const device_signals::SignalsAggregationResponse& aggregation_response,
     std::vector<api::enterprise_reporting_private::HotfixSignal>* arg_list) {
-  auto error = TryParseError(response, response.hotfix_signal_response);
+  auto error = TryParseError(aggregation_response,
+                             aggregation_response.hotfix_signal_response);
   if (error) {
     return error.value();
   }
 
   std::vector<api::enterprise_reporting_private::HotfixSignal>
       api_hotfix_signals;
-  const auto& hotfix_response = response.hotfix_signal_response.value();
+  const auto& hotfix_response =
+      aggregation_response.hotfix_signal_response.value();
   for (const auto& hotfix : hotfix_response.hotfixes) {
     api::enterprise_reporting_private::HotfixSignal api_hotfix;
     api_hotfix.hotfix_id = hotfix.hotfix_id;

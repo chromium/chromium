@@ -293,6 +293,33 @@ class EnterpriseReportingPrivateGetFileSystemInfoFunction
 
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+class EnterpriseReportingPrivateGetSettingsFunction : public ExtensionFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("enterprise.reportingPrivate.getSettings",
+                             ENTERPRISEREPORTINGPRIVATE_GETSETTINGS)
+
+  EnterpriseReportingPrivateGetSettingsFunction();
+  EnterpriseReportingPrivateGetSettingsFunction(
+      const EnterpriseReportingPrivateGetSettingsFunction&) = delete;
+  EnterpriseReportingPrivateGetSettingsFunction& operator=(
+      const EnterpriseReportingPrivateGetSettingsFunction&) = delete;
+
+ private:
+  ~EnterpriseReportingPrivateGetSettingsFunction() override;
+
+  // ExtensionFunction
+  ExtensionFunction::ResponseAction Run() override;
+
+  void OnSignalRetrieved(device_signals::SignalsAggregationResponse response);
+
+  device_signals::SignalName signal_name() {
+    return device_signals::SignalName::kSystemSettings;
+  }
+};
+
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+
 #if BUILDFLAG(IS_WIN)
 
 class EnterpriseReportingPrivateGetAvInfoFunction : public ExtensionFunction {

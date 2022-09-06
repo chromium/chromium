@@ -35525,6 +35525,7 @@ Called by update_extension_histograms.py.-->
   <int value="1700" label="FILEMANAGERPRIVATEINTERNAL_PARSETRASHINFOFILES"/>
   <int value="1701" label="PASSWORDSPRIVATE_EXTENDAUTHVALIDITY"/>
   <int value="1702" label="AUTOTESTPRIVATE_GETDESKSINFO"/>
+  <int value="1703" label="ENTERPRISEREPORTINGPRIVATE_GETSETTINGS"/>
 </enum>
 
 <enum name="ExtensionIconState">

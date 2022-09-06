@@ -16,6 +16,7 @@
 
 namespace device_signals {
 struct GetFileSystemInfoOptions;
+struct GetSettingsOptions;
 struct SignalsAggregationResponse;
 enum class SignalCollectionError;
 }  // namespace device_signals
@@ -35,28 +36,46 @@ ConvertFileSystemInfoOptions(
         api::enterprise_reporting_private::GetFileSystemInfoOptions>&
         api_options);
 
-// Parses and converts the File System info signal values from `response` into
-// `arg_list`. If any error occurred during signal collection, it will be
-// returned and `arg_list` will remain unchanged.
+// Parses and converts the File System info signal values from
+// `aggregation_response` into `arg_list`. If any error occurred during signal
+// collection, it will be returned and `arg_list` will remain unchanged.
 absl::optional<ParsedSignalsError> ConvertFileSystemInfoResponse(
-    const device_signals::SignalsAggregationResponse& response,
+    const device_signals::SignalsAggregationResponse& aggregation_response,
     std::vector<api::enterprise_reporting_private::GetFileSystemInfoResponse>*
         arg_list);
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+
+// Converts GetSettingsOptions from the Extension API struct definition,
+// `api_options`, to the device_signals component definition.
+std::vector<device_signals::GetSettingsOptions> ConvertSettingsOptions(
+    const std::vector<api::enterprise_reporting_private::GetSettingsOptions>&
+        api_options);
+
+// Parses and converts the Settings signal values from `aggregation_response`
+// into `arg_list`. If any error occurred during signal collection, it will be
+// returned and `arg_list` will remain unchanged.
+absl::optional<ParsedSignalsError> ConvertSettingsResponse(
+    const device_signals::SignalsAggregationResponse& aggregation_response,
+    std::vector<api::enterprise_reporting_private::GetSettingsResponse>*
+        arg_list);
+
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+
 #if BUILDFLAG(IS_WIN)
 
-// Parses and converts the Antivirus signal values from `response` into
-// `arg_list`. If any error occurred during signal collection, it will be
+// Parses and converts the Antivirus signal values from `aggregation_response`
+// into `arg_list`. If any error occurred during signal collection, it will be
 // returned and `arg_list` will remain unchanged.
 absl::optional<ParsedSignalsError> ConvertAvProductsResponse(
-    const device_signals::SignalsAggregationResponse& response,
+    const device_signals::SignalsAggregationResponse& aggregation_response,
     std::vector<api::enterprise_reporting_private::AntiVirusSignal>* arg_list);
 
-// Parses and converts the Hotfix signal values from `response` into
+// Parses and converts the Hotfix signal values from `aggregation_response` into
 // `arg_list`. If any error occurred during signal collection,  it will be
 // returned and `arg_list` will remain unchanged.
 absl::optional<ParsedSignalsError> ConvertHotfixesResponse(
-    const device_signals::SignalsAggregationResponse& response,
+    const device_signals::SignalsAggregationResponse& aggregation_response,
     std::vector<api::enterprise_reporting_private::HotfixSignal>* arg_list);
 
 #endif  // BUILDFLAG(IS_WIN)

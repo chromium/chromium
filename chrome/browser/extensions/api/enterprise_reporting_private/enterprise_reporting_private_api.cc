@@ -712,6 +712,77 @@ void EnterpriseReportingPrivateGetFileSystemInfoFunction::OnSignalRetrieved(
 
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+
+// getSettings
+
+EnterpriseReportingPrivateGetSettingsFunction::
+    EnterpriseReportingPrivateGetSettingsFunction() = default;
+EnterpriseReportingPrivateGetSettingsFunction::
+    ~EnterpriseReportingPrivateGetSettingsFunction() = default;
+
+ExtensionFunction::ResponseAction
+EnterpriseReportingPrivateGetSettingsFunction::Run() {
+  if (!IsNewFunctionEnabled(
+          enterprise_signals::features::NewEvFunction::kSettings)) {
+    return RespondNow(Error(device_signals::ErrorToString(
+        device_signals::SignalCollectionError::kUnsupported)));
+  }
+
+  std::unique_ptr<api::enterprise_reporting_private::GetSettings::Params>
+      params(api::enterprise_reporting_private::GetSettings::Params::Create(
+          args()));
+  EXTENSION_FUNCTION_VALIDATE(params.get());
+
+  // Verify that all paths strings are UTF8.
+  bool paths_are_all_utf8 = true;
+  for (const auto& api_options_param : params->request.options) {
+    if (!base::IsStringUTF8(api_options_param.path)) {
+      paths_are_all_utf8 = false;
+      break;
+    }
+  }
+  EXTENSION_FUNCTION_VALIDATE(paths_are_all_utf8);
+
+  auto aggregation_request = CreateAggregationRequest(
+      params->request.user_context.user_id, signal_name());
+  aggregation_request.settings_signal_parameters =
+      ConvertSettingsOptions(params->request.options);
+
+  StartSignalCollection(
+      aggregation_request, browser_context(),
+      base::BindOnce(
+          &EnterpriseReportingPrivateGetSettingsFunction::OnSignalRetrieved,
+          this));
+
+  return RespondLater();
+}
+
+void EnterpriseReportingPrivateGetSettingsFunction::OnSignalRetrieved(
+    device_signals::SignalsAggregationResponse response) {
+  if (!CanReturnResponse(browser_context())) {
+    // The browser is no longer accepting responses, so just bail.
+    return;
+  }
+
+  std::vector<api::enterprise_reporting_private::GetSettingsResponse> arg_list;
+  auto parsed_error = ConvertSettingsResponse(response, &arg_list);
+
+  if (parsed_error) {
+    LogSignalCollectionFailed(signal_name(), parsed_error->error,
+                              parsed_error->is_top_level_error);
+    Respond(Error(device_signals::ErrorToString(parsed_error->error)));
+    return;
+  }
+
+  LogSignalCollectionSucceeded(signal_name(), arg_list.size());
+  Respond(ArgumentList(
+      api::enterprise_reporting_private::GetSettings::Results::Create(
+          arg_list)));
+}
+
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+
 #if BUILDFLAG(IS_WIN)
 
 // getAvInfo

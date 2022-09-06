@@ -49,6 +49,51 @@ HotfixSignalResponse& HotfixSignalResponse::operator=(
 HotfixSignalResponse::~HotfixSignalResponse() = default;
 #endif  // BUILDFLAG(IS_WIN)
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+
+GetSettingsOptions::GetSettingsOptions() = default;
+GetSettingsOptions::GetSettingsOptions(const GetSettingsOptions&) = default;
+
+GetSettingsOptions& GetSettingsOptions::operator=(const GetSettingsOptions&) =
+    default;
+
+GetSettingsOptions::~GetSettingsOptions() = default;
+
+SettingsItem::SettingsItem() = default;
+
+SettingsItem::SettingsItem(const SettingsItem& other) {
+  path = other.path;
+  key = other.key;
+  hive = other.hive;
+  presence = other.presence;
+  if (other.setting_value) {
+    setting_value = other.setting_value->Clone();
+  }
+}
+
+SettingsItem& SettingsItem::operator=(const SettingsItem& other) {
+  path = other.path;
+  key = other.key;
+  hive = other.hive;
+  presence = other.presence;
+  if (other.setting_value) {
+    setting_value = other.setting_value->Clone();
+  }
+  return *this;
+}
+
+SettingsItem::~SettingsItem() = default;
+
+SettingsResponse::SettingsResponse() = default;
+SettingsResponse::SettingsResponse(const SettingsResponse&) = default;
+
+SettingsResponse& SettingsResponse::operator=(const SettingsResponse&) =
+    default;
+
+SettingsResponse::~SettingsResponse() = default;
+
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+
 FileSystemInfoResponse::FileSystemInfoResponse() = default;
 FileSystemInfoResponse::FileSystemInfoResponse(const FileSystemInfoResponse&) =
     default;

@@ -236,6 +236,81 @@ namespace enterprise.reportingPrivate {
   callback FileSystemInfoCallback =
       void(GetFileSystemInfoResponse[] fileSystemSignals);
 
+  [platforms = ("win")]
+  enum RegistryHive {
+    HKEY_CLASSES_ROOT,
+    HKEY_LOCAL_MACHINE,
+    HKEY_CURRENT_USER
+  };
+
+  [platforms = ("win", "mac")]
+  dictionary GetSettingsOptions {
+    // Path to a collection of settings.
+    // On Windows it would be the path to the reg key inside the hive.
+    // On Mac it would be the path to the plist file.
+    DOMString path;
+
+    // Key specifying the setting entry we're looking for.
+    // On Windows, that will be the registry key itself.
+    // On Mac, this is a key path used to retrieve a value from
+    // valueForKeyPath:.
+    DOMString key;
+
+    // When set to true, the retrieved signal will also include the setting's
+    // value. When false, the signal will only contain the setting's
+    // presence.
+    // Supported setting types on Windows:
+    // - REG_SZ
+    // - REG_DWORD
+    // - REG_QWORD
+    // Supported setting types on Mac:
+    // - NSString
+    // - NSNumber
+    boolean getValue;
+
+    // Windows registry hive containing the desired value.
+    [platforms = ("win")]
+    RegistryHive hive;
+  };
+
+  [platforms = ("win", "mac")]
+  dictionary GetSettingsRequest {
+    // Information about the for whom the signal collection request is for.
+    UserContext userContext;
+
+    // Collection of parameters used to conduct signals collection about
+    // specific settings of the system.
+    GetSettingsOptions[] options;
+  };
+
+  [platforms = ("win", "mac")]
+  dictionary GetSettingsResponse {
+    // Path as given in the corresponding <code>GetSettingsOptions</code>
+    // request.
+    DOMString path;
+
+    // Key as given in the corresponding <code>GetSettingsOptions</code>
+    // request.
+    DOMString key;
+
+    // Hive as given in the corresponding <code>GetSettingsOptions</code>
+    // request.
+    [platforms = ("win")]
+    RegistryHive hive;
+
+    // Value indicating whether the specific resource could be found or not.
+    PresenceValue presence;
+
+    // JSON-stringified value of the setting. Only set if <code>getValue</code>
+    // was true in the corresponding request, and if the setting value was
+    // retrievable.
+    DOMString? value;
+  };
+
+  [platforms = ("win", "mac")]
+  callback SettingsCallback =
+      void(GetSettingsResponse[] settings);
+
   interface Functions {
     // Gets the identity of device that Chrome browser is running on. The ID is
     // retrieved from the local device and used by the Google admin console.
@@ -298,6 +373,16 @@ namespace enterprise.reportingPrivate {
     static void getFileSystemInfo(
         GetFileSystemInfoRequest request,
         FileSystemInfoCallback callback);
+
+    // Gets information about system settings specified by the contents of
+    // <code>request</code>. <code>request</code> must hold a user context to be
+    // used to verify the affiliation between the user's organization and the
+    // organization managing the browser. If the management or affiliation
+    // states are not suitable, no results will be returned.
+    [platforms = ("win", "mac"), supportsPromises]
+    static void getSettings(
+        GetSettingsRequest request,
+        SettingsCallback callback);
 
     // Gets information about AntiVirus software installed on the current
     // device. <code>userContext</code> is used to verify the affiliation
