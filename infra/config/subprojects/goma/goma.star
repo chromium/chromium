@@ -574,21 +574,21 @@ def goma_builder(
 goma_builder(
     name = "Chromium Android ARM 32-bit Goma RBE Staging",
     goma_backend = goma.backend.RBE_STAGING,
-    execution_timeout = 4 * time.hour,
+    execution_timeout = 5 * time.hour,
 )
 
 goma_builder(
     name = "Chromium Android ARM 32-bit Goma RBE ToT",
     goma_backend = goma.backend.RBE_TOT,
     goma_enable_ats = False,
-    execution_timeout = 4 * time.hour,
+    execution_timeout = 5 * time.hour,
 )
 
 goma_builder(
     name = "Chromium Android ARM 32-bit Goma RBE ToT (ATS)",
     goma_backend = goma.backend.RBE_TOT,
     goma_enable_ats = True,
-    execution_timeout = 4 * time.hour,
+    execution_timeout = 5 * time.hour,
 )
 
 goma_builder(
