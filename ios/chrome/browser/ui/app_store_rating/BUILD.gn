@@ -2,6 +2,19 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+source_set("app_store_rating") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "app_store_rating_scene_agent.h",
+    "app_store_rating_scene_agent.mm",
+  ]
+  frameworks = [ "Foundation.framework" ]
+  deps = [
+    "//base",
+    "//ios/chrome/browser/ui/main:observing_scene_agent",
+  ]
+}
+
 source_set("features") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
