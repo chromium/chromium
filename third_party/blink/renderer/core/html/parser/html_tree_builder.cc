@@ -1158,7 +1158,6 @@ void HTMLTreeBuilder::ProcessStartTag(AtomicHTMLToken* token) {
   const HTMLTag tag = token->GetHTMLTag();
   switch (GetInsertionMode()) {
     case kInitialMode:
-      DCHECK_EQ(GetInsertionMode(), kInitialMode);
       DefaultForInitial();
       [[fallthrough]];
     case kBeforeHTMLMode:
@@ -1232,12 +1231,11 @@ void HTMLTreeBuilder::ProcessStartTag(AtomicHTMLToken* token) {
       DCHECK_EQ(GetInsertionMode(), kInBodyMode);
       ProcessStartTagForInBody(token);
       break;
+
     case kInTableMode:
-      DCHECK_EQ(GetInsertionMode(), kInTableMode);
       ProcessStartTagForInTable(token);
       break;
     case kInCaptionMode:
-      DCHECK_EQ(GetInsertionMode(), kInCaptionMode);
       switch (tag) {
         case CAPTION_COL_OR_COLGROUP_CASES:
         case TABLE_BODY_CONTEXT_CASES:
@@ -1256,7 +1254,6 @@ void HTMLTreeBuilder::ProcessStartTag(AtomicHTMLToken* token) {
       ProcessStartTagForInBody(token);
       break;
     case kInColumnGroupMode:
-      DCHECK_EQ(GetInsertionMode(), kInColumnGroupMode);
       switch (tag) {
         case HTMLTag::kHTML:
           ProcessHtmlStartTagForInBody(token);
@@ -1277,7 +1274,6 @@ void HTMLTreeBuilder::ProcessStartTag(AtomicHTMLToken* token) {
       ProcessStartTag(token);
       break;
     case kInTableBodyMode:
-      DCHECK_EQ(GetInsertionMode(), kInTableBodyMode);
       switch (tag) {
         case HTMLTag::kTr:
           // How is there ever anything to pop?
@@ -1312,7 +1308,6 @@ void HTMLTreeBuilder::ProcessStartTag(AtomicHTMLToken* token) {
       ProcessStartTagForInTable(token);
       break;
     case kInRowMode:
-      DCHECK_EQ(GetInsertionMode(), kInRowMode);
       switch (tag) {
         case TABLE_CELL_CONTEXT_CASES:
           tree_.OpenElements()->PopUntilTableRowScopeMarker();
@@ -1336,7 +1331,6 @@ void HTMLTreeBuilder::ProcessStartTag(AtomicHTMLToken* token) {
       ProcessStartTagForInTable(token);
       break;
     case kInCellMode:
-      DCHECK_EQ(GetInsertionMode(), kInCellMode);
       switch (tag) {
         case CAPTION_COL_OR_COLGROUP_CASES:
         case TABLE_CELL_CONTEXT_CASES:
@@ -1359,8 +1353,6 @@ void HTMLTreeBuilder::ProcessStartTag(AtomicHTMLToken* token) {
       break;
     case kAfterBodyMode:
     case kAfterAfterBodyMode:
-      DCHECK(GetInsertionMode() == kAfterBodyMode ||
-             GetInsertionMode() == kAfterAfterBodyMode);
       if (tag == HTMLTag::kHTML) {
         ProcessHtmlStartTagForInBody(token);
         return;
@@ -1369,7 +1361,6 @@ void HTMLTreeBuilder::ProcessStartTag(AtomicHTMLToken* token) {
       ProcessStartTag(token);
       break;
     case kInHeadNoscriptMode:
-      DCHECK_EQ(GetInsertionMode(), kInHeadNoscriptMode);
       switch (tag) {
         case HTMLTag::kHTML:
           ProcessHtmlStartTagForInBody(token);
@@ -1394,7 +1385,6 @@ void HTMLTreeBuilder::ProcessStartTag(AtomicHTMLToken* token) {
       ProcessToken(token);
       break;
     case kInFramesetMode:
-      DCHECK_EQ(GetInsertionMode(), kInFramesetMode);
       switch (tag) {
         case HTMLTag::kHTML:
           ProcessHtmlStartTagForInBody(token);
@@ -1415,8 +1405,6 @@ void HTMLTreeBuilder::ProcessStartTag(AtomicHTMLToken* token) {
       break;
     case kAfterFramesetMode:
     case kAfterAfterFramesetMode:
-      DCHECK(GetInsertionMode() == kAfterFramesetMode ||
-             GetInsertionMode() == kAfterAfterFramesetMode);
       if (tag == HTMLTag::kHTML) {
         ProcessHtmlStartTagForInBody(token);
         return;
@@ -1428,7 +1416,6 @@ void HTMLTreeBuilder::ProcessStartTag(AtomicHTMLToken* token) {
       ParseError(token);
       break;
     case kInSelectInTableMode:
-      DCHECK_EQ(GetInsertionMode(), kInSelectInTableMode);
       switch (tag) {
         case HTMLTag::kCaption:
         case HTMLTag::kTable:
@@ -1446,8 +1433,6 @@ void HTMLTreeBuilder::ProcessStartTag(AtomicHTMLToken* token) {
       }
       [[fallthrough]];
     case kInSelectMode:
-      DCHECK(GetInsertionMode() == kInSelectMode ||
-             GetInsertionMode() == kInSelectInTableMode);
       switch (tag) {
         case HTMLTag::kHTML:
           ProcessHtmlStartTagForInBody(token);
@@ -2126,11 +2111,9 @@ void HTMLTreeBuilder::ProcessEndTag(AtomicHTMLToken* token) {
   const HTMLTag tag = token->GetHTMLTag();
   switch (GetInsertionMode()) {
     case kInitialMode:
-      DCHECK_EQ(GetInsertionMode(), kInitialMode);
       DefaultForInitial();
       [[fallthrough]];
     case kBeforeHTMLMode:
-      DCHECK_EQ(GetInsertionMode(), kBeforeHTMLMode);
       switch (tag) {
         case HTMLTag::kHead:
         case HTMLTag::kBody:
@@ -2144,7 +2127,6 @@ void HTMLTreeBuilder::ProcessEndTag(AtomicHTMLToken* token) {
       DefaultForBeforeHTML();
       [[fallthrough]];
     case kBeforeHeadMode:
-      DCHECK_EQ(GetInsertionMode(), kBeforeHeadMode);
       switch (tag) {
         case HTMLTag::kHead:
         case HTMLTag::kBody:
@@ -2158,7 +2140,6 @@ void HTMLTreeBuilder::ProcessEndTag(AtomicHTMLToken* token) {
       DefaultForBeforeHead();
       [[fallthrough]];
     case kInHeadMode:
-      DCHECK_EQ(GetInsertionMode(), kInHeadMode);
       // FIXME: This case should be broken out into processEndTagForInHead,
       // because other end tag cases now refer to it ("process the token for
       // using the rules of the "in head" insertion mode"). but because the
@@ -2182,7 +2163,6 @@ void HTMLTreeBuilder::ProcessEndTag(AtomicHTMLToken* token) {
       DefaultForInHead();
       [[fallthrough]];
     case kAfterHeadMode:
-      DCHECK_EQ(GetInsertionMode(), kAfterHeadMode);
       switch (tag) {
         case HTMLTag::kBody:
         case HTMLTag::kHTML:
@@ -2195,15 +2175,12 @@ void HTMLTreeBuilder::ProcessEndTag(AtomicHTMLToken* token) {
       DefaultForAfterHead();
       [[fallthrough]];
     case kInBodyMode:
-      DCHECK_EQ(GetInsertionMode(), kInBodyMode);
       ProcessEndTagForInBody(token);
       break;
     case kInTableMode:
-      DCHECK_EQ(GetInsertionMode(), kInTableMode);
       ProcessEndTagForInTable(token);
       break;
     case kInCaptionMode:
-      DCHECK_EQ(GetInsertionMode(), kInCaptionMode);
       switch (tag) {
         case HTMLTag::kCaption:
           ProcessCaptionEndTagForInCaption();
@@ -2231,7 +2208,6 @@ void HTMLTreeBuilder::ProcessEndTag(AtomicHTMLToken* token) {
       ProcessEndTagForInBody(token);
       break;
     case kInColumnGroupMode:
-      DCHECK_EQ(GetInsertionMode(), kInColumnGroupMode);
       switch (tag) {
         case HTMLTag::kColgroup:
           ProcessColgroupEndTagForInColumnGroup();
@@ -2252,19 +2228,15 @@ void HTMLTreeBuilder::ProcessEndTag(AtomicHTMLToken* token) {
       ProcessEndTag(token);
       break;
     case kInRowMode:
-      DCHECK_EQ(GetInsertionMode(), kInRowMode);
       ProcessEndTagForInRow(token);
       break;
     case kInCellMode:
-      DCHECK_EQ(GetInsertionMode(), kInCellMode);
       ProcessEndTagForInCell(token);
       break;
     case kInTableBodyMode:
-      DCHECK_EQ(GetInsertionMode(), kInTableBodyMode);
       ProcessEndTagForInTableBody(token);
       break;
     case kAfterBodyMode:
-      DCHECK_EQ(GetInsertionMode(), kAfterBodyMode);
       if (tag == HTMLTag::kHTML) {
         if (IsParsingFragment()) {
           ParseError(token);
@@ -2275,14 +2247,11 @@ void HTMLTreeBuilder::ProcessEndTag(AtomicHTMLToken* token) {
       }
       [[fallthrough]];
     case kAfterAfterBodyMode:
-      DCHECK(GetInsertionMode() == kAfterBodyMode ||
-             GetInsertionMode() == kAfterAfterBodyMode);
       ParseError(token);
       SetInsertionMode(kInBodyMode);
       ProcessEndTag(token);
       break;
     case kInHeadNoscriptMode:
-      DCHECK_EQ(GetInsertionMode(), kInHeadNoscriptMode);
       if (tag == HTMLTag::kNoscript) {
         DCHECK(tree_.CurrentStackItem()->MatchesHTMLTag(HTMLTag::kNoscript));
         tree_.OpenElements()->Pop();
@@ -2316,7 +2285,6 @@ void HTMLTreeBuilder::ProcessEndTag(AtomicHTMLToken* token) {
       SetInsertionMode(original_insertion_mode_);
       break;
     case kInFramesetMode:
-      DCHECK_EQ(GetInsertionMode(), kInFramesetMode);
       if (tag == HTMLTag::kFrameset) {
         bool ignore_frameset_for_fragment_parsing = tree_.CurrentIsRootNode();
         ignore_frameset_for_fragment_parsing =
@@ -2336,19 +2304,15 @@ void HTMLTreeBuilder::ProcessEndTag(AtomicHTMLToken* token) {
       }
       break;
     case kAfterFramesetMode:
-      DCHECK_EQ(GetInsertionMode(), kAfterFramesetMode);
       if (tag == HTMLTag::kHTML) {
         SetInsertionMode(kAfterAfterFramesetMode);
         return;
       }
       [[fallthrough]];
     case kAfterAfterFramesetMode:
-      DCHECK(GetInsertionMode() == kAfterFramesetMode ||
-             GetInsertionMode() == kAfterAfterFramesetMode);
       ParseError(token);
       break;
     case kInSelectInTableMode:
-      DCHECK(GetInsertionMode() == kInSelectInTableMode);
       switch (tag) {
         case HTMLTag::kCaption:
         case HTMLTag::kTable:
@@ -2367,8 +2331,6 @@ void HTMLTreeBuilder::ProcessEndTag(AtomicHTMLToken* token) {
       }
       [[fallthrough]];
     case kInSelectMode:
-      DCHECK(GetInsertionMode() == kInSelectMode ||
-             GetInsertionMode() == kInSelectInTableMode);
       switch (tag) {
         case HTMLTag::kOptgroup:
           if (tree_.CurrentStackItem()->MatchesHTMLTag(HTMLTag::kOption) &&
@@ -2465,7 +2427,6 @@ ReprocessBuffer:
 
   switch (GetInsertionMode()) {
     case kInitialMode: {
-      DCHECK_EQ(GetInsertionMode(), kInitialMode);
       buffer.SkipLeadingWhitespace();
       if (buffer.IsEmpty())
         return;
@@ -2473,7 +2434,6 @@ ReprocessBuffer:
       [[fallthrough]];
     }
     case kBeforeHTMLMode: {
-      DCHECK_EQ(GetInsertionMode(), kBeforeHTMLMode);
       buffer.SkipLeadingWhitespace();
       if (buffer.IsEmpty())
         return;
@@ -2485,7 +2445,6 @@ ReprocessBuffer:
       [[fallthrough]];
     }
     case kBeforeHeadMode: {
-      DCHECK_EQ(GetInsertionMode(), kBeforeHeadMode);
       buffer.SkipLeadingWhitespace();
       if (buffer.IsEmpty())
         return;
@@ -2493,7 +2452,6 @@ ReprocessBuffer:
       [[fallthrough]];
     }
     case kInHeadMode: {
-      DCHECK_EQ(GetInsertionMode(), kInHeadMode);
       StringView leading_whitespace = buffer.TakeLeadingWhitespace();
       if (!leading_whitespace.IsEmpty())
         tree_.InsertTextNode(leading_whitespace, kAllWhitespace);
@@ -2503,7 +2461,6 @@ ReprocessBuffer:
       [[fallthrough]];
     }
     case kAfterHeadMode: {
-      DCHECK_EQ(GetInsertionMode(), kAfterHeadMode);
       StringView leading_whitespace = buffer.TakeLeadingWhitespace();
       if (!leading_whitespace.IsEmpty())
         tree_.InsertTextNode(leading_whitespace, kAllWhitespace);
@@ -2516,19 +2473,12 @@ ReprocessBuffer:
     case kInCaptionMode:
     case kTemplateContentsMode:
     case kInCellMode: {
-      DCHECK(GetInsertionMode() == kInBodyMode ||
-             GetInsertionMode() == kInCaptionMode ||
-             GetInsertionMode() == kInCellMode ||
-             GetInsertionMode() == kTemplateContentsMode);
       ProcessCharacterBufferForInBody(buffer);
       break;
     }
     case kInTableMode:
     case kInTableBodyMode:
     case kInRowMode: {
-      DCHECK(GetInsertionMode() == kInTableMode ||
-             GetInsertionMode() == kInTableBodyMode ||
-             GetInsertionMode() == kInRowMode);
       DCHECK(pending_table_characters_.IsEmpty());
       if (tree_.CurrentStackItem()->IsElementNode() &&
           (tree_.CurrentStackItem()->MatchesHTMLTag(HTMLTag::kTable) ||
@@ -2551,7 +2501,6 @@ ReprocessBuffer:
       break;
     }
     case kInColumnGroupMode: {
-      DCHECK_EQ(GetInsertionMode(), kInColumnGroupMode);
       StringView leading_whitespace = buffer.TakeLeadingWhitespace();
       if (!leading_whitespace.IsEmpty())
         tree_.InsertTextNode(leading_whitespace, kAllWhitespace);
@@ -2568,19 +2517,15 @@ ReprocessBuffer:
     }
     case kAfterBodyMode:
     case kAfterAfterBodyMode: {
-      DCHECK(GetInsertionMode() == kAfterBodyMode ||
-             GetInsertionMode() == kAfterAfterBodyMode);
       // FIXME: parse error
       SetInsertionMode(kInBodyMode);
       goto ReprocessBuffer;
     }
     case kTextMode: {
-      DCHECK_EQ(GetInsertionMode(), kTextMode);
       tree_.InsertTextNode(buffer.TakeRemaining());
       break;
     }
     case kInHeadNoscriptMode: {
-      DCHECK_EQ(GetInsertionMode(), kInHeadNoscriptMode);
       StringView leading_whitespace = buffer.TakeLeadingWhitespace();
       if (!leading_whitespace.IsEmpty())
         tree_.InsertTextNode(leading_whitespace, kAllWhitespace);
@@ -2591,9 +2536,6 @@ ReprocessBuffer:
     }
     case kInFramesetMode:
     case kAfterFramesetMode: {
-      DCHECK(GetInsertionMode() == kInFramesetMode ||
-             GetInsertionMode() == kAfterFramesetMode ||
-             GetInsertionMode() == kAfterAfterFramesetMode);
       String leading_whitespace = buffer.TakeRemainingWhitespace();
       if (!leading_whitespace.IsEmpty())
         tree_.InsertTextNode(leading_whitespace, kAllWhitespace);
@@ -2603,8 +2545,6 @@ ReprocessBuffer:
     }
     case kInSelectInTableMode:
     case kInSelectMode: {
-      DCHECK(GetInsertionMode() == kInSelectMode ||
-             GetInsertionMode() == kInSelectInTableMode);
       tree_.InsertTextNode(buffer.TakeRemaining());
       break;
     }
@@ -2634,34 +2574,24 @@ void HTMLTreeBuilder::ProcessEndOfFile(AtomicHTMLToken* token) {
   DCHECK_EQ(token->GetType(), HTMLToken::kEndOfFile);
   switch (GetInsertionMode()) {
     case kInitialMode:
-      DCHECK_EQ(GetInsertionMode(), kInitialMode);
       DefaultForInitial();
       [[fallthrough]];
     case kBeforeHTMLMode:
-      DCHECK_EQ(GetInsertionMode(), kBeforeHTMLMode);
       DefaultForBeforeHTML();
       [[fallthrough]];
     case kBeforeHeadMode:
-      DCHECK_EQ(GetInsertionMode(), kBeforeHeadMode);
       DefaultForBeforeHead();
       [[fallthrough]];
     case kInHeadMode:
-      DCHECK_EQ(GetInsertionMode(), kInHeadMode);
       DefaultForInHead();
       [[fallthrough]];
     case kAfterHeadMode:
-      DCHECK_EQ(GetInsertionMode(), kAfterHeadMode);
       DefaultForAfterHead();
       [[fallthrough]];
     case kInBodyMode:
     case kInCellMode:
     case kInCaptionMode:
     case kInRowMode:
-      DCHECK(GetInsertionMode() == kInBodyMode ||
-             GetInsertionMode() == kInCellMode ||
-             GetInsertionMode() == kInCaptionMode ||
-             GetInsertionMode() == kInRowMode ||
-             GetInsertionMode() == kTemplateContentsMode);
       // Emit parse error based on what elements are still open.
       DVLOG(1) << "Not implemented.";
       if (!template_insertion_modes_.IsEmpty() &&
@@ -2670,18 +2600,13 @@ void HTMLTreeBuilder::ProcessEndOfFile(AtomicHTMLToken* token) {
       break;
     case kAfterBodyMode:
     case kAfterAfterBodyMode:
-      DCHECK(GetInsertionMode() == kAfterBodyMode ||
-             GetInsertionMode() == kAfterAfterBodyMode);
       break;
     case kInHeadNoscriptMode:
-      DCHECK_EQ(GetInsertionMode(), kInHeadNoscriptMode);
       DefaultForInHeadNoscript();
       ProcessEndOfFile(token);
       return;
     case kAfterFramesetMode:
     case kAfterAfterFramesetMode:
-      DCHECK(GetInsertionMode() == kAfterFramesetMode ||
-             GetInsertionMode() == kAfterAfterFramesetMode);
       break;
     case kInColumnGroupMode:
       if (tree_.CurrentIsRootNode()) {
@@ -2697,12 +2622,6 @@ void HTMLTreeBuilder::ProcessEndOfFile(AtomicHTMLToken* token) {
     case kInTableBodyMode:
     case kInSelectInTableMode:
     case kInSelectMode:
-      DCHECK(GetInsertionMode() == kInSelectMode ||
-             GetInsertionMode() == kInSelectInTableMode ||
-             GetInsertionMode() == kInTableMode ||
-             GetInsertionMode() == kInFramesetMode ||
-             GetInsertionMode() == kInTableBodyMode ||
-             GetInsertionMode() == kInColumnGroupMode);
       if (tree_.CurrentNode() != tree_.OpenElements()->RootNode())
         ParseError(token);
       if (!template_insertion_modes_.IsEmpty() &&
