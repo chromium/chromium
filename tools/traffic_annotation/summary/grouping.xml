@@ -467,6 +467,7 @@ after discussions on the right group.
     <sender name="Favicon">
       <annotation id="content_suggestion_get_favicon"/>
       <annotation id="icon_catcher_get_large_icon"/>
+      <annotation id="favicon_fetcher_get_favicon"/>
     </sender>
     <sender name="Images">
       <annotation id="image_annotation"/>

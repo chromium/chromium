@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser.supervised_user;
 
+import android.graphics.Bitmap;
+
+import org.chromium.base.Callback;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.supervised_user.website_approval.WebsiteApprovalCoordinator;
@@ -14,6 +17,25 @@ import org.chromium.url.GURL;
  * Requests approval from a parent of a supervised user to unblock navigation to a given URL.
  */
 class WebsiteParentApproval {
+    // Favicon default specs
+    private static final int FAVICON_MIN_SOURCE_SIZE_PIXEL = 16;
+    private static final int FAVICON_DESIRED_SIZE_PIXEL = 32;
+
+    /**
+     * Wrapper class used to store a fetched favicon.
+     */
+    private static final class FaviconHelper {
+        Bitmap mFavicon;
+
+        public void setFavicon(Bitmap favicon) {
+            mFavicon = favicon;
+        }
+
+        public Bitmap getFavicon() {
+            return mFavicon;
+        }
+    }
+
     /**
      * Whether or not local (i.e. on-device) approval is supported.
      *
@@ -42,13 +64,17 @@ class WebsiteParentApproval {
     private static void requestLocalApproval(WindowAndroid windowAndroid, GURL url) {
         // First ask the parent to authenticate.
         ParentAuthDelegate delegate = new ParentAuthDelegateImpl();
+        FaviconHelper faviconHelper = new FaviconHelper();
         delegate.requestLocalAuth(windowAndroid, url,
-                (success) -> { onParentAuthComplete(success, windowAndroid, url); });
+                (success) -> { onParentAuthComplete(success, windowAndroid, url, faviconHelper); });
+
+        WebsiteParentApprovalJni.get().fetchFavicon(url, FAVICON_MIN_SOURCE_SIZE_PIXEL,
+                FAVICON_DESIRED_SIZE_PIXEL, (Bitmap favicon) -> faviconHelper.setFavicon(favicon));
     }
 
     /** Displays the screen giving the parent the option to approve or deny the website.*/
     private static void onParentAuthComplete(
-            boolean success, WindowAndroid windowAndroid, GURL url) {
+            boolean success, WindowAndroid windowAndroid, GURL url, FaviconHelper faviconHelper) {
         if (!success) {
             WebsiteParentApprovalJni.get().onCompletion(false);
             return;
@@ -69,11 +95,15 @@ class WebsiteParentApproval {
                         WebsiteParentApprovalJni.get().onCompletion(false);
                     }
                 });
+        // TODO(crbug.com/1340912): consume faviconHelper to set the favicon.
         websiteApprovalUi.show();
     }
 
     @NativeMethods
     interface Natives {
         void onCompletion(boolean success);
+
+        void fetchFavicon(GURL url, int minSourceSizePixel, int desiredSizePixel,
+                Callback<Bitmap> onFaviconFetched);
     }
 }

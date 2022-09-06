@@ -1,0 +1,68 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROME_BROWSER_SUPERVISED_USER_ANDROID_FAVICON_FETCHER_H_
+#define CHROME_BROWSER_SUPERVISED_USER_ANDROID_FAVICON_FETCHER_H_
+
+#include <string>
+#include "base/memory/raw_ptr.h"
+#include "base/task/cancelable_task_tracker.h"
+#include "chrome/browser/profiles/profile.h"
+#include "components/favicon/core/large_icon_service.h"
+#include "components/favicon_base/favicon_callback.h"
+#include "components/favicon_base/favicon_types.h"
+#include "ui/gfx/image/image.h"
+#include "url/gurl.h"
+
+class FaviconFetcher {
+ public:
+  explicit FaviconFetcher(Profile* profile);
+
+  FaviconFetcher() = delete;
+
+  FaviconFetcher(const FaviconFetcher&) = delete;
+
+  ~FaviconFetcher() = default;
+
+  // Initiates a request to fetch a favicon for a specific url.
+  // Wraps the calls to a service that obtains the favicon and returns
+  // through the provided callback. The FaviconFetcher will delete
+  // itself upon callback completion.
+  void FetchFavicon(
+      const GURL& url,
+      bool continue_to_server,
+      int min_source_size_in_pixel,
+      int desired_size_in_pixel,
+      const base::android::ScopedJavaGlobalRef<jobject>& callback);
+
+ private:
+  // Wrapper for favicon specs.
+  struct FaviconDimensions {
+    int min_source_size_in_pixel;
+    // Set to zero to return icon without rescaling.
+    int desired_size_in_pixel;
+  };
+
+  // Provides access to the status of a request for fetching a favicon.
+  void OnFaviconDownloaded(
+      const GURL& url,
+      const base::android::ScopedJavaGlobalRef<jobject>& callback,
+      FaviconDimensions faviconDimensions,
+      favicon_base::GoogleFaviconServerRequestStatus status);
+
+  // Returns the downloaded favicon through the provided callback.
+  // If the favicon is not present in cache, requests it from google servers.
+  void OnGetFaviconFromCacheFinished(
+      const GURL& url,
+      bool continue_to_server,
+      const base::android::ScopedJavaGlobalRef<jobject>& callback,
+      FaviconDimensions faviconDimensions,
+      const favicon_base::LargeIconImageResult& image_result);
+
+  // Required for execution of icon fetching.
+  raw_ptr<favicon::LargeIconService> large_icon_service_;
+  base::CancelableTaskTracker task_tracker_;
+};
+
+#endif  // CHROME_BROWSER_SUPERVISED_USER_ANDROID_FAVICON_CALLER_H_
