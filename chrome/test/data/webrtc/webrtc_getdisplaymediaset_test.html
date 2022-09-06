@@ -1,0 +1,27 @@
+<html>
+<head>
+  <title>WebRTC Automated Test</title>
+  <script type="text/javascript" src="test_functions.js"></script>
+  <script>
+  'use strict';
+
+  let stored_media_streams;
+
+  async function runGetDisplayMediaSet(constraints) {
+    try {
+      stored_media_streams =
+        await navigator.mediaDevices.getDisplayMediaSet(constraints);
+      returnToTest("capture-success");
+    } catch(error) {
+      returnToTest("capture-failure");
+    }
+  }
+
+  function getStreamCount() {
+    returnToTest(stored_media_streams.length.toString());
+  }
+  </script>
+</head>
+<body>
+</body>
+</html>
