@@ -82,6 +82,8 @@
 crbug.com/1166379 [ android android-pixel-4 ] ScreenshotSync_GPURasterWithDivs [ RetryOnFailure ]
 crbug.com/1166379 [ android android-pixel-4 ] ScreenshotSync_SWRasterWithDivs [ RetryOnFailure ]
 
+crbug.com/1340081 [ linux release amd-0x7340 renderer-skia-vulkan ] ScreenshotSync_GPURasterWithCanvas [ RetryOnFailure ]
+
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
 #######################################################################

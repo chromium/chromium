@@ -313,15 +313,15 @@ crbug.com/1086687 [ chromeos chromeos-board-kevin ] Pixel_PrecisionRoundedCorner
 crbug.com/1338173 [ chromeos chromeos-board-amd64-generic ] Pixel_PrecisionRoundedCorner [ Failure ]
 
 # Flaky hang.
-crbug.com/1218288 [ fuchsia-board-astro ] Pixel_PrecisionRoundedCorner [ Failure ]
-crbug.com/1136875 [ fuchsia-board-qemu-x64 ] Pixel_PrecisionRoundedCorner [ RetryOnFailure ]
+crbug.com/1218288 [ fuchsia fuchsia-board-astro ] Pixel_PrecisionRoundedCorner [ Failure ]
+crbug.com/1136875 [ fuchsia fuchsia-board-qemu-x64 ] Pixel_PrecisionRoundedCorner [ RetryOnFailure ]
 
 # Still fails on Nexus 5 after all other Pixel_CanvasLowLatency* pass.
 crbug.com/1097752 [ android android-nexus-5 ] Pixel_CanvasLowLatencyWebGLAlphaFalse [ Failure ]
 crbug.com/1097752 [ android android-nexus-5 ] Pixel_VideoStreamFromWebGLAlphaCanvas [ Failure ]
 
 # Fails on Fuchsia emulators
-crbug.com/1302427 [ fuchsia-board-qemu-x64 ] Pixel_CanvasLowLatencyWebGLAlphaFalse [ Failure ]
+crbug.com/1302427 [ fuchsia fuchsia-board-qemu-x64 ] Pixel_CanvasLowLatencyWebGLAlphaFalse [ Failure ]
 
 # Flaky blank output on ChromeOS
 crbug.com/1278991 [ chromeos chromeos-board-amd64-generic renderer-skia-gl ] Pixel_OffscreenCanvasWebGLDefault [ RetryOnFailure ]
@@ -441,6 +441,14 @@ crbug.com/982292 [ mac release intel-0x3e9b ] Pixel_Video_MP4_FourColors_Rot_270
 
 # Flaking on Linux FYI Release (AMD RX 5500 XT)
 crbug.com/1340081 [ linux release amd-0x7340 ] Pixel_ScissorTestWithPreserveDrawingBuffer [ RetryOnFailure ]
+crbug.com/1340081 [ linux release amd-0x7340 renderer-skia-vulkan ] Pixel_WebGL* [ RetryOnFailure ]
+crbug.com/1340081 [ linux release amd-0x7340 renderer-skia-vulkan ] Pixel_CSS3DBlueBox [ RetryOnFailure ]
+crbug.com/1340081 [ linux release amd-0x7340 renderer-skia-vulkan ] Pixel_CanvasLowLatencyWebGLAlphaFalse [ RetryOnFailure ]
+crbug.com/1340081 [ linux release amd-0x7340 renderer-skia-vulkan ] Pixel_CanvasLowLatencyWebGLDrawImage [ RetryOnFailure ]
+crbug.com/1340081 [ linux release amd-0x7340 renderer-skia-vulkan ] Pixel_RepeatedWebGLTo2D [ RetryOnFailure ]
+crbug.com/1340081 [ linux release amd-0x7340 renderer-skia-vulkan ] Pixel_VideoStreamFrom2DCanvas [ RetryOnFailure ]
+crbug.com/1340081 [ linux release amd-0x7340 renderer-skia-vulkan ] Pixel_VideoStreamFromWebGLAlphaCanvas_TwoCopy_CpuReadback [ RetryOnFailure ]
+crbug.com/1340081 [ linux release amd-0x7340 renderer-skia-vulkan ] Pixel_Video_Context_Loss_VP9 [ RetryOnFailure ]
 
 crbug.com/1345777 [ android ] Pixel_VideoStreamFromWebGLCanvas [ Skip ]
 
