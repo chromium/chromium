@@ -174,6 +174,16 @@ void CloudUploadHandler::UpdateProgressNotification() {
   notification_manager_.ShowProgress(progress);
 }
 
+void CloudUploadHandler::OnEndUpload(GURL hosted_url) {
+  // TODO (b/243095484) Define error behavior on invalid hosted URL.
+  observed_relative_drive_path_.clear();
+  // Stop suppressing Drive events for the observed file.
+  scoped_suppress_drive_notifications_for_path_.reset();
+  if (callback_) {
+    std::move(callback_).Run(hosted_url);
+  }
+}
+
 void CloudUploadHandler::OnDestinationDirectoryCreated(
     storage::FileSystemURL destination_folder_url,
     base::File::Error error) {
@@ -202,14 +212,32 @@ void CloudUploadHandler::OnDestinationDirectoryCreated(
   observed_task_id_ = io_task_controller_->Add(std::move(task));
 }
 
-void CloudUploadHandler::OnEndUpload(GURL hosted_url) {
-  // TODO (b/243095484) Define error behavior on invalid hosted URL.
-  observed_relative_drive_path_.clear();
-  // Stop suppressing Drive events for the observed file.
-  scoped_suppress_drive_notifications_for_path_.reset();
-  if (callback_) {
-    std::move(callback_).Run(hosted_url);
+void CloudUploadHandler::OnFileShownInFolder(
+    platform_util::OpenOperationResult result) {
+  if (result == platform_util::OPEN_SUCCEEDED) {
+    return;
   }
+  std::string error_string = "";
+  switch (result) {
+    case platform_util::OpenOperationResult::OPEN_SUCCEEDED:
+      error_string = "OPEN_SUCCEEDED";
+      break;
+    case platform_util::OpenOperationResult::OPEN_FAILED_PATH_NOT_FOUND:
+      error_string = "OPEN_FAILED_PATH_NOT_FOUND";
+      break;
+    case platform_util::OpenOperationResult::OPEN_FAILED_INVALID_TYPE:
+      error_string = "OPEN_FAILED_INVALID_TYPE";
+      break;
+    case platform_util::OpenOperationResult::
+        OPEN_FAILED_NO_HANLDER_FOR_FILE_TYPE:
+      error_string = "OPEN_FAILED_NO_HANLDER_FOR_FILE_TYPE";
+      break;
+    case platform_util::OpenOperationResult::OPEN_FAILED_FILE_ERROR:
+      error_string = "OPEN_FAILED_FILE_ERROR";
+      break;
+  }
+  LOG(ERROR) << "Failed to show destination file in Files app : "
+             << error_string;
 }
 
 void CloudUploadHandler::OnIOTaskStatus(
@@ -217,29 +245,54 @@ void CloudUploadHandler::OnIOTaskStatus(
   if (status.task_id != observed_task_id_) {
     return;
   }
-  if (status.total_bytes > 0) {
-    move_progress_ = 100 * status.bytes_transferred / status.total_bytes;
-  }
-  UpdateProgressNotification();
-  if (observed_relative_drive_path_.empty()) {
-    // TODO (b/242685536) Define multiple-file handling.
-    DCHECK_EQ(status.sources.size(), 1);
-    DCHECK_EQ(status.outputs.size(), 1);
+  switch (status.state) {
+    case file_manager::io_task::State::kQueued:
+      return;
+    case file_manager::io_task::State::kInProgress:
+      if (status.total_bytes > 0) {
+        move_progress_ = 100 * status.bytes_transferred / status.total_bytes;
+      }
+      UpdateProgressNotification();
+      if (observed_relative_drive_path_.empty()) {
+        // TODO (b/242685536) Define multiple-file handling.
+        DCHECK_EQ(status.sources.size(), 1);
+        DCHECK_EQ(status.outputs.size(), 1);
 
-    if (!drive_integration_service_) {
-      LOG(ERROR) << "No drive integration service";
+        if (!drive_integration_service_) {
+          LOG(ERROR) << "No drive integration service";
+          OnEndUpload(GURL());
+          return;
+        }
+
+        // Get the output path from the IOTaskController's ProgressStatus. The
+        // destination file name is not known in advance, given that it's
+        // generated from the IOTaskController which resolves potential name
+        // clashes.
+        drive_integration_service_->GetRelativeDrivePath(
+            status.outputs[0].url.path(), &observed_relative_drive_path_);
+        scoped_suppress_drive_notifications_for_path_ = std::make_unique<
+            file_manager::ScopedSuppressDriveNotificationsForPath>(
+            profile_, observed_relative_drive_path_);
+      }
+      return;
+    case file_manager::io_task::State::kSuccess:
+      move_progress_ = 100;
+      UpdateProgressNotification();
+      DCHECK_EQ(status.outputs.size(), 1);
+      file_manager::util::ShowItemInFolder(
+          profile_, status.outputs[0].url.path(),
+          base::BindOnce(&CloudUploadHandler::OnFileShownInFolder,
+                         weak_ptr_factory_.GetWeakPtr()));
+      return;
+    case file_manager::io_task::State::kCancelled:
+      LOG(ERROR) << "Move -- CANCELLED";
       OnEndUpload(GURL());
       return;
-    }
-
-    // Get the output path from the IOTaskController's ProgressStatus. The
-    // destination file name is not known in advance, given that it's generated
-    // from the IOTaskController which resolves potential name clashes.
-    drive_integration_service_->GetRelativeDrivePath(
-        status.outputs[0].url.path(), &observed_relative_drive_path_);
-    scoped_suppress_drive_notifications_for_path_ =
-        std::make_unique<file_manager::ScopedSuppressDriveNotificationsForPath>(
-            profile_, observed_relative_drive_path_);
+    case file_manager::io_task::State::kError:
+    case file_manager::io_task::State::kNeedPassword:
+      LOG(ERROR) << "Move -- ERROR";
+      OnEndUpload(GURL());
+      return;
   }
 }
 
@@ -265,7 +318,6 @@ void CloudUploadHandler::OnSyncingStatusUpdate(
       case drivefs::mojom::ItemEvent::State::kCompleted:
         sync_progress_ = 100;
         UpdateProgressNotification();
-        LOG(ERROR) << "Drive -- COMPLETED";
         return;
       case drivefs::mojom::ItemEvent::State::kFailed:
         // TODO (b/243095484) Define error behavior.

@@ -13,6 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/file_manager/io_task_controller.h"
+#include "chrome/browser/ash/file_manager/open_util.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/chromeos/extensions/file_manager/scoped_suppress_drive_notifications_for_path.h"
 #include "chrome/browser/ui/webui/chromeos/cloud_upload/cloud_upload_notification_manager.h"
@@ -66,6 +67,8 @@ class CloudUploadHandler
   void OnDestinationDirectoryCreated(
       storage::FileSystemURL destination_folder_url,
       base::File::Error error);
+
+  void OnFileShownInFolder(platform_util::OpenOperationResult result);
 
   // IOTaskController::Observer:
   void OnIOTaskStatus(
