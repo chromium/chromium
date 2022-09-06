@@ -768,9 +768,8 @@ class CORE_EXPORT LocalFrameView final
   }
 
   void AddPendingTransformUpdate(LayoutObject& object);
-  void RemovePendingTransformUpdate(const LayoutObject& object);
+  bool RemovePendingTransformUpdate(const LayoutObject& object);
   void UpdateAllPendingTransforms();
-  void ClearAllPendingTransformUpdates();
 
  protected:
   void FrameRectsChanged(const gfx::Rect&) override;

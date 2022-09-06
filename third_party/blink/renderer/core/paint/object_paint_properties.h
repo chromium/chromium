@@ -314,10 +314,11 @@ class CORE_EXPORT ObjectPaintProperties {
   }
 #endif
 
-  void DirectlyUpdateTransformAndOrigin(
-      TransformPaintPropertyNode::TransformAndOrigin&& transform_and_origin) {
-    transform_->DirectlyUpdateTransformAndOrigin(
-        std::move(transform_and_origin));
+  PaintPropertyChangeType DirectlyUpdateTransformAndOrigin(
+      TransformPaintPropertyNode::TransformAndOrigin&& transform_and_origin,
+      const TransformPaintPropertyNode::AnimationState& animation_state) {
+    return transform_->DirectlyUpdateTransformAndOrigin(
+        std::move(transform_and_origin), animation_state);
   }
 
  private:

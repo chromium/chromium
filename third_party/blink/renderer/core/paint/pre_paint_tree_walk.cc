@@ -60,10 +60,8 @@ void PrePaintTreeWalk::WalkTree(LocalFrameView& root_frame_view) {
   // GeometryMapper depends on paint properties.
   bool needs_tree_builder_context_update =
       NeedsTreeBuilderContextUpdate(root_frame_view, context);
-  if (needs_tree_builder_context_update) {
-    root_frame_view.ClearAllPendingTransformUpdates();
+  if (needs_tree_builder_context_update)
     GeometryMapper::ClearCache();
-  }
 
   VisualViewport& visual_viewport =
       root_frame_view.GetPage()->GetVisualViewport();

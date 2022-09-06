@@ -225,6 +225,9 @@ class PLATFORM_EXPORT TransformPaintPropertyNode
     // ID of the containing document.
     CompositorElementId visible_frame_element_id;
 
+    PaintPropertyChangeType ComputeTransformChange(
+        const TransformAndOrigin& other,
+        const AnimationState& animation_state) const;
     PaintPropertyChangeType ComputeChange(
         const State& other,
         const AnimationState& animation_state) const;
@@ -281,11 +284,9 @@ class PLATFORM_EXPORT TransformPaintPropertyNode
   }
   gfx::Point3F Origin() const { return state_.transform_and_origin.Origin(); }
 
-  void DirectlyUpdateTransformAndOrigin(
-      TransformAndOrigin&& transform_and_origin) {
-    state_.transform_and_origin = std::move(transform_and_origin);
-    AddChanged(PaintPropertyChangeType::kChangedOnlyValues);
-  }
+  PaintPropertyChangeType DirectlyUpdateTransformAndOrigin(
+      TransformAndOrigin&& transform_and_origin,
+      const AnimationState& animation_state);
 
   // The associated scroll node, or nullptr otherwise.
   const ScrollPaintPropertyNode* ScrollNode() const {

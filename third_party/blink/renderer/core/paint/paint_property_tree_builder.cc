@@ -827,6 +827,30 @@ void FragmentPaintPropertyTreeBuilder::UpdateAnchorScrollTranslation() {
     context_.current.transform = properties_->AnchorScrollTranslation();
 }
 
+// Directly updates the associated cc transform node if possible, and
+// downgrades the |PaintPropertyChangeType| if successful.
+static void DirectlyUpdateCcTransform(
+    const TransformPaintPropertyNode& transform,
+    const LayoutObject& object,
+    PaintPropertyChangeType& change_type) {
+  // We only assume worst-case overlap testing due to animations (see:
+  // |GeometryMapper::VisualRectForCompositingOverlap()|) so we can only use
+  // the direct transform update (which skips checking for compositing changes)
+  // when animations are present.
+  if (change_type == PaintPropertyChangeType::kChangedOnlySimpleValues &&
+      transform.HasActiveTransformAnimation()) {
+    if (auto* paint_artifact_compositor =
+            object.GetFrameView()->GetPaintArtifactCompositor()) {
+      bool updated =
+          paint_artifact_compositor->DirectlyUpdateTransform(transform);
+      if (updated) {
+        change_type = PaintPropertyChangeType::kChangedOnlyCompositedValues;
+        transform.CompositorSimpleValuesUpdated();
+      }
+    }
+  }
+}
+
 // TODO(dbaron): Remove this function when we can remove the
 // BackfaceVisibilityInteropEnabled() check, and have the caller use
 // CompositingReason::kDirectReasonsForTransformProperty directly.
@@ -920,24 +944,8 @@ void FragmentPaintPropertyTreeBuilder::UpdateTransformForSVGChild(
           object_.StyleRef().IsRunningTransformAnimationOnCompositor();
       auto effective_change_type = properties_->UpdateTransform(
           *context_.current.transform, std::move(state), animation_state);
-      // We only assume worst-case overlap testing due to animations (see:
-      // |PendingLayer::VisualRectForOverlapTesting|) so we can only use the
-      // direct transform update (which skips checking for compositing changes)
-      // when animations are present.
-      if (effective_change_type ==
-              PaintPropertyChangeType::kChangedOnlySimpleValues &&
-          properties_->Transform()->HasActiveTransformAnimation()) {
-        if (auto* paint_artifact_compositor =
-                object_.GetFrameView()->GetPaintArtifactCompositor()) {
-          bool updated = paint_artifact_compositor->DirectlyUpdateTransform(
-              *properties_->Transform());
-          if (updated) {
-            effective_change_type =
-                PaintPropertyChangeType::kChangedOnlyCompositedValues;
-            properties_->Transform()->CompositorSimpleValuesUpdated();
-          }
-        }
-      }
+      DirectlyUpdateCcTransform(*properties_->Transform(), object_,
+                                effective_change_type);
       OnUpdateTransform(effective_change_type);
     } else {
       OnClearTransform(properties_->ClearTransform());
@@ -1190,25 +1198,8 @@ void FragmentPaintPropertyTreeBuilder::UpdateIndividualTransform(
           running_on_compositor_test && (style.*running_on_compositor_test)();
       auto effective_change_type = (properties_->*updater)(
           *context_.current.transform, std::move(state), animation_state);
-      // We only assume worst-case overlap testing due to animations (see:
-      // |PendingLayer::VisualRectForOverlapTesting|) so we can only use the
-      // direct transform update (which skips checking for compositing changes)
-      // when animations are present.
-      const auto* transform = (properties_->*getter)();
-      if (effective_change_type ==
-              PaintPropertyChangeType::kChangedOnlySimpleValues &&
-          transform->HasActiveTransformAnimation()) {
-        if (auto* paint_artifact_compositor =
-                object_.GetFrameView()->GetPaintArtifactCompositor()) {
-          bool updated =
-              paint_artifact_compositor->DirectlyUpdateTransform(*transform);
-          if (updated) {
-            effective_change_type =
-                PaintPropertyChangeType::kChangedOnlyCompositedValues;
-            transform->CompositorSimpleValuesUpdated();
-          }
-        }
-      }
+      DirectlyUpdateCcTransform(*(properties_->*getter)(), object_,
+                                effective_change_type);
       OnUpdateTransform(effective_change_type);
     } else {
       OnClearTransform((properties_->*clearer)());
@@ -2928,6 +2919,13 @@ void FragmentPaintPropertyTreeBuilder::SetNeedsPaintPropertyUpdateIfNeeded() {
     }
   }
 
+  // If we reach FragmentPaintPropertyTreeBuilder for an object needing a
+  // pending transform update, we need to go ahead and do a regular transform
+  // update so that the context (e.g.,
+  // |translation_2d_to_layout_shift_root_delta|) is updated properly.
+  if (object_.GetFrameView()->RemovePendingTransformUpdate(object_))
+    object_.GetMutableForPainting().SetOnlyThisNeedsPaintPropertyUpdate();
+
   if (box.Size() == box.PreviousSize())
     return;
 
@@ -4216,22 +4214,14 @@ void PaintPropertyTreeBuilder::DirectlyUpdateTransformMatrix(
             ComputedStyle::kExcludeIndependentTransformProperties);
       });
 
-  // Normally we don't modify the transform node directly, but this fast path
-  // updates it in-place.
-  properties->DirectlyUpdateTransformAndOrigin(std::move(transform_and_origin));
+  TransformPaintPropertyNode::AnimationState animation_state;
+  animation_state.is_running_animation_on_compositor =
+      box.StyleRef().IsRunningTransformAnimationOnCompositor();
+  auto effective_change_type = properties->DirectlyUpdateTransformAndOrigin(
+      std::move(transform_and_origin), animation_state);
+  DirectlyUpdateCcTransform(*transform, object, effective_change_type);
 
-  auto effective_change_type =
-      PaintPropertyChangeType::kChangedOnlySimpleValues;
-  if (transform->HasActiveTransformAnimation()) {
-    auto* pac = object.GetFrameView()->GetPaintArtifactCompositor();
-    if (pac && pac->DirectlyUpdateTransform(*transform)) {
-      effective_change_type =
-          PaintPropertyChangeType::kChangedOnlyCompositedValues;
-      transform->CompositorSimpleValuesUpdated();
-    }
-  }
-
-  if (effective_change_type ==
+  if (effective_change_type >=
       PaintPropertyChangeType::kChangedOnlySimpleValues) {
     object.GetFrameView()->SetPaintArtifactCompositorNeedsUpdate(
         PaintArtifactCompositorUpdateReason::

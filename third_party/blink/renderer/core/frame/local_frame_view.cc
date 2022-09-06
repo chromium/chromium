@@ -5001,32 +5001,24 @@ void LocalFrameView::AddPendingTransformUpdate(LayoutObject& object) {
   pending_transform_updates_->insert(&object);
 }
 
-void LocalFrameView::RemovePendingTransformUpdate(const LayoutObject& object) {
-  if (pending_transform_updates_) {
-    pending_transform_updates_->erase(const_cast<LayoutObject*>(&object));
-  }
+bool LocalFrameView::RemovePendingTransformUpdate(const LayoutObject& object) {
+  if (!pending_transform_updates_)
+    return false;
+  auto it =
+      pending_transform_updates_->find(const_cast<LayoutObject*>(&object));
+  if (it == pending_transform_updates_->end())
+    return false;
+  pending_transform_updates_->erase(it);
+  return true;
 }
 
 void LocalFrameView::UpdateAllPendingTransforms() {
   DCHECK(GetFrame().IsLocalRoot() || !IsAttached());
-  GeometryMapper::ClearCache();
   ForAllNonThrottledLocalFrameViews([](LocalFrameView& frame_view) {
     if (frame_view.pending_transform_updates_) {
       for (const LayoutObject* object :
            *frame_view.pending_transform_updates_) {
         PaintPropertyTreeBuilder::DirectlyUpdateTransformMatrix(*object);
-      }
-      frame_view.pending_transform_updates_->clear();
-    }
-  });
-}
-
-void LocalFrameView::ClearAllPendingTransformUpdates() {
-  DCHECK(GetFrame().IsLocalRoot() || !IsAttached());
-  ForAllNonThrottledLocalFrameViews([](LocalFrameView& frame_view) {
-    if (frame_view.pending_transform_updates_) {
-      for (LayoutObject* object : *frame_view.pending_transform_updates_) {
-        object->SetNeedsPaintPropertyUpdate();
       }
       frame_view.pending_transform_updates_->clear();
     }
