@@ -17,6 +17,7 @@
 #include "base/i18n/time_formatting.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
@@ -939,19 +940,33 @@ std::u16string CreditCard::NetworkAndLastFourDigits(
                          : network + u"  " + obfuscated_string;
 }
 
+// TODO(crbug.com/1357204): Rename to CardNameAndLastFourDigits.
 std::u16string CreditCard::CardIdentifierStringForAutofillDisplay(
     std::u16string customized_nickname,
     int obfuscation_length) const {
+  std::u16string card_name = CardNameForAutofillDisplay(customized_nickname);
+  std::u16string last_four = LastFourDigits();
+
+  if (last_four.empty())
+    return card_name;
+
+  std::u16string obfuscated_last_four =
+      internal::GetObfuscatedStringForCardDigits(last_four, obfuscation_length);
+  return card_name.empty()
+             ? obfuscated_last_four
+             : base::StrCat({card_name, u"  ", obfuscated_last_four});
+}
+
+std::u16string CreditCard::CardNameForAutofillDisplay(
+    const std::u16string& customized_nickname) const {
   if (HasNonEmptyValidNickname() || !customized_nickname.empty()) {
-    return NicknameAndLastFourDigits(customized_nickname, obfuscation_length);
-  } else if (base::FeatureList::IsEnabled(
-                 features::kAutofillEnableCardProductName) &&
-             !product_description_.empty()) {
-    // If product description is available, format card label as 'Product
-    // description  ****2345'.
-    return ProductDescriptionAndLastFourdigits(obfuscation_length);
+    return customized_nickname.empty() ? nickname_ : customized_nickname;
   }
-  return NetworkAndLastFourDigits(obfuscation_length);
+  if (base::FeatureList::IsEnabled(features::kAutofillEnableCardProductName) &&
+      !product_description_.empty()) {
+    return product_description_;
+  }
+  return NetworkForDisplay();
 }
 
 #if BUILDFLAG(IS_ANDROID)
@@ -1111,18 +1126,6 @@ std::u16string CreditCard::NicknameAndLastFourDigits(
 
   return (customized_nickname.empty() ? nickname_ : customized_nickname) +
          u"  " +
-         internal::GetObfuscatedStringForCardDigits(digits, obfuscation_length);
-}
-
-std::u16string CreditCard::ProductDescriptionAndLastFourdigits(
-    int obfuscation_length) const {
-  DCHECK(!product_description_.empty());
-  const std::u16string digits = LastFourDigits();
-  // If digits are empty, return product description.
-  if (digits.empty())
-    return product_description_;
-
-  return product_description_ + u"  " +
          internal::GetObfuscatedStringForCardDigits(digits, obfuscation_length);
 }
 
