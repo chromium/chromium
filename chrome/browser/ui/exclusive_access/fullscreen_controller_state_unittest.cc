@@ -68,6 +68,7 @@ class FullscreenControllerTestWindow : public TestBrowserWindow,
       const GURL& url,
       ExclusiveAccessBubbleType bubble_type,
       ExclusiveAccessBubbleHideCallback bubble_first_hide_callback,
+      bool notify_download,
       bool force_update) override;
   bool IsExclusiveAccessBubbleDisplayed() const override;
   void OnExclusiveAccessUserInput() override;
@@ -189,6 +190,7 @@ void FullscreenControllerTestWindow::UpdateExclusiveAccessExitBubbleContent(
     const GURL& url,
     ExclusiveAccessBubbleType bubble_type,
     ExclusiveAccessBubbleHideCallback bubble_first_hide_callback,
+    bool notify_download,
     bool force_update) {}
 
 bool FullscreenControllerTestWindow::IsExclusiveAccessBubbleDisplayed() const {

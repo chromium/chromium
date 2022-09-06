@@ -31,10 +31,6 @@ enum ExclusiveAccessBubbleType {
   // For browser fullscreen mode.
   EXCLUSIVE_ACCESS_BUBBLE_TYPE_BROWSER_FULLSCREEN_EXIT_INSTRUCTION,
   EXCLUSIVE_ACCESS_BUBBLE_TYPE_EXTENSION_FULLSCREEN_EXIT_INSTRUCTION,
-
-  // To notify user that a download has started.
-  EXCLUSIVE_ACCESS_BUBBLE_TYPE_DOWNLOAD_STARTED,
-  EXCLUSIVE_ACCESS_BUBBLE_TYPE_DOWNLOAD_STARTED_AND_EXIT
 };
 
 namespace exclusive_access_bubble {
@@ -54,7 +50,12 @@ std::u16string GetAllowButtonTextForType(ExclusiveAccessBubbleType type,
 // Gets the text instructing the user how to exit an exclusive access mode.
 // |accelerator| is the name of the key to exit fullscreen mode.
 std::u16string GetInstructionTextForType(ExclusiveAccessBubbleType type,
-                                         const std::u16string& accelerator);
+                                         const std::u16string& accelerator,
+                                         bool notify_download,
+                                         bool notify_overridden);
+
+// Helpers to categorize different types of ExclusiveAccessBubbleType.
+bool IsExclusiveAccessModeBrowserFullscreen(ExclusiveAccessBubbleType type);
 
 }  // namespace exclusive_access_bubble
 

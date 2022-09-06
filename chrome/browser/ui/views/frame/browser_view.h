@@ -469,6 +469,7 @@ class BrowserView : public BrowserWindow,
       const GURL& url,
       ExclusiveAccessBubbleType bubble_type,
       ExclusiveAccessBubbleHideCallback bubble_first_hide_callback,
+      bool notify_download,
       bool force_update) override;
   bool IsExclusiveAccessBubbleDisplayed() const override;
   void OnExclusiveAccessUserInput() override;

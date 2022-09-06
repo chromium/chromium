@@ -310,6 +310,7 @@ void PresentationReceiverWindowView::EnterFullscreen(
 #endif
   UpdateExclusiveAccessExitBubbleContent(url, bubble_type,
                                          ExclusiveAccessBubbleHideCallback(),
+                                         /*notify_download=*/false,
                                          /*force_update=*/false);
 }
 
@@ -324,15 +325,18 @@ void PresentationReceiverWindowView::UpdateExclusiveAccessExitBubbleContent(
     const GURL& url,
     ExclusiveAccessBubbleType bubble_type,
     ExclusiveAccessBubbleHideCallback bubble_first_hide_callback,
+    bool notify_download,
     bool force_update) {
+  DCHECK(!notify_download || exclusive_access_bubble_);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // On Chrome OS, we will not show the toast for the normal browser fullscreen
   // mode.  The 'F11' text is confusing since how to access F11 on a Chromebook
   // is not common knowledge and there is also a dedicated fullscreen toggle
   // button available.
-  if (bubble_type == EXCLUSIVE_ACCESS_BUBBLE_TYPE_NONE || url.is_empty()) {
+  if ((!notify_download && bubble_type == EXCLUSIVE_ACCESS_BUBBLE_TYPE_NONE) ||
+      url.is_empty()) {
 #else
-  if (bubble_type == EXCLUSIVE_ACCESS_BUBBLE_TYPE_NONE) {
+  if (!notify_download && bubble_type == EXCLUSIVE_ACCESS_BUBBLE_TYPE_NONE) {
 #endif
     // |exclusive_access_bubble_.reset()| will trigger callback for current
     // bubble with |ExclusiveAccessBubbleHideReason::kInterrupted| if available.
@@ -346,7 +350,8 @@ void PresentationReceiverWindowView::UpdateExclusiveAccessExitBubbleContent(
 
   if (exclusive_access_bubble_) {
     exclusive_access_bubble_->UpdateContent(
-        url, bubble_type, std::move(bubble_first_hide_callback), force_update);
+        url, bubble_type, std::move(bubble_first_hide_callback),
+        notify_download, force_update);
     return;
   }
 

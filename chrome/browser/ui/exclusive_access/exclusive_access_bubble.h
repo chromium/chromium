@@ -110,6 +110,12 @@ class ExclusiveAccessBubble : public gfx::AnimationDelegate {
   // The type of the bubble; controls e.g. which buttons to show.
   ExclusiveAccessBubbleType bubble_type_;
 
+  // The bubble should notify about downloads
+  bool notify_download_ = false;
+
+  // The bubble should notify about overriding another ExclusiveAccessBubble
+  bool notify_overridden_ = false;
+
  private:
   friend class ExclusiveAccessTest;
 

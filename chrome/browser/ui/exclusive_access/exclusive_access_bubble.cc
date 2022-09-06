@@ -119,8 +119,8 @@ std::u16string ExclusiveAccessBubble::GetCurrentAllowButtonText() const {
 
 std::u16string ExclusiveAccessBubble::GetInstructionText(
     const std::u16string& accelerator) const {
-  return exclusive_access_bubble::GetInstructionTextForType(bubble_type_,
-                                                            accelerator);
+  return exclusive_access_bubble::GetInstructionTextForType(
+      bubble_type_, accelerator, notify_download_, notify_overridden_);
 }
 
 bool ExclusiveAccessBubble::IsHideTimeoutRunning() const {
