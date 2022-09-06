@@ -46,6 +46,8 @@ constexpr char kProbeErrorBatteryInfo[] =
     "ChromeOS.DiagnosticsUi.Error.CrosHealthdProbeError.BatteryInfo";
 constexpr char kProbeErrorCpuInfo[] =
     "ChromeOS.DiagnosticsUi.Error.CrosHealthdProbeError.CpuInfo";
+constexpr char kProbeErrorMemoryInfo[] =
+    "ChromeOS.DiagnosticsUi.Error.CrosHealthdProbeError.MemoryInfo";
 
 void SetProbeTelemetryInfoResponse(healthd_mojom::BatteryInfoPtr battery_info,
                                    healthd_mojom::CpuInfoPtr cpu_info,
@@ -1479,6 +1481,50 @@ TEST_F(SystemDataProviderTest, RecordProbeError_CpuInfo) {
                                /*expected_service_unavailable=*/0,
                                /*expected_system_utility_error=*/0,
                                /*expected_file_read_error=*/1);
+}
+
+// Validate expected metric triggered when request for MemoryInfo returns a
+// ProbeError.
+TEST_F(SystemDataProviderTest, RecordProbeError_MemoryInfo) {
+  base::HistogramTester histogram_tester;
+  VerifyProbeErrorBucketCounts(histogram_tester, kProbeErrorMemoryInfo,
+                               /*expected_unknown_error=*/0,
+                               /*expected_parse_error=*/0,
+                               /*expected_service_unavailable=*/0,
+                               /*expected_system_utility_error=*/0,
+                               /*expected_file_read_error=*/0);
+
+  auto timer = std::make_unique<base::MockRepeatingTimer>();
+  auto* timer_ptr = timer.get();
+  system_data_provider_->SetMemoryUsageTimerForTesting(std::move(timer));
+  FakeMemoryUsageObserver observer;
+  system_data_provider_->ObserveMemoryUsage(
+      observer.receiver.BindNewPipeAndPassRemote());
+  // Clear any pending observerations from initializing.
+  base::RunLoop().RunUntilIdle();
+  VerifyProbeErrorBucketCounts(histogram_tester, kProbeErrorMemoryInfo,
+                               /*expected_unknown_error=*/0,
+                               /*expected_parse_error=*/0,
+                               /*expected_service_unavailable=*/0,
+                               /*expected_system_utility_error=*/0,
+                               /*expected_file_read_error=*/0);
+
+  auto info = healthd_mojom::TelemetryInfo::New();
+  auto memory_result = healthd_mojom::MemoryResult::NewError(
+      CreateProbeError(healthd_mojom::ErrorType::kSystemUtilityError));
+  info->memory_result = std::move(memory_result);
+  cros_healthd::FakeCrosHealthd::Get()->SetProbeTelemetryInfoResponseForTesting(
+      info);
+
+  timer_ptr->Fire();
+  base::RunLoop().RunUntilIdle();
+
+  VerifyProbeErrorBucketCounts(histogram_tester, kProbeErrorMemoryInfo,
+                               /*expected_unknown_error=*/0,
+                               /*expected_parse_error=*/0,
+                               /*expected_service_unavailable=*/0,
+                               /*expected_system_utility_error=*/1,
+                               /*expected_file_read_error=*/0);
 }
 
 }  // namespace ash::diagnostics
