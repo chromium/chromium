@@ -308,14 +308,11 @@ test("blink_common_unittests") {
   }
 
   if (is_fuchsia) {
+    use_cfv1 = false
+
     # TODO(https://crbug.com/1185811): Investigate removing the requirement for
     # job_policy_ambient_mark_vmo_exec for the sake of V8's allocator in tests.
     test_runner_shard = "//build/config/fuchsia/test/elf_test_ambient_exec_runner.shard.test-cml"
-
-    # TODO(crbug.com/1313103): Remove and apply use_cfv1=false once the roller
-    # is updated to launch the test via the .cm manifest.
-    additional_manifest_fragments =
-        [ "//build/config/fuchsia/test/jit_capabilities.test-cmx" ]
   }
 
   data_deps = [ ":common_unittests_data" ]
