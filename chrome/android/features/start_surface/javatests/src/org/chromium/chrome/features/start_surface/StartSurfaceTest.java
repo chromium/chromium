@@ -28,6 +28,7 @@ import static org.junit.Assume.assumeTrue;
 
 import static org.chromium.chrome.features.start_surface.StartSurfaceMediator.FEED_VISIBILITY_CONSISTENCY;
 import static org.chromium.chrome.features.start_surface.StartSurfaceTestUtils.START_SURFACE_TEST_BASE_PARAMS;
+import static org.chromium.chrome.features.start_surface.StartSurfaceTestUtils.START_SURFACE_TEST_SINGLE_ENABLED_PARAMS;
 import static org.chromium.chrome.features.start_surface.StartSurfaceTestUtils.sClassParamsForStartSurfaceTest;
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 import static org.chromium.ui.test.util.ViewUtils.waitForStableView;
@@ -179,7 +180,7 @@ public class StartSurfaceTest {
     @Test
     @MediumTest
     @Feature({"StartSurface"})
-    @CommandLineFlags.Add({START_SURFACE_TEST_BASE_PARAMS})
+    @CommandLineFlags.Add({START_SURFACE_TEST_SINGLE_ENABLED_PARAMS})
     public void testShow_SingleAsHomepage() {
         if (!mImmediateReturn) {
             StartSurfaceTestUtils.pressHomePageButton(mActivityTestRule.getActivity());
@@ -210,7 +211,8 @@ public class StartSurfaceTest {
     @Test
     @MediumTest
     @Feature({"StartSurface"})
-    @CommandLineFlags.Add({START_SURFACE_TEST_BASE_PARAMS})
+    @CommandLineFlags.
+    Add({START_SURFACE_TEST_SINGLE_ENABLED_PARAMS + "/hide_switch_when_no_incognito_tabs/false"})
     public void testShow_SingleAsHomepage_NoIncognitoSwitch() {
         if (!mImmediateReturn) {
             StartSurfaceTestUtils.pressHomePageButton(mActivityTestRule.getActivity());
@@ -256,9 +258,10 @@ public class StartSurfaceTest {
     @Test
     @LargeTest
     @Feature({"StartSurface"})
+    @CommandLineFlags.
+    Add({START_SURFACE_TEST_BASE_PARAMS + "exclude_mv_tiles/true/show_last_active_tab_only/false"
+            + "/open_ntp_instead_of_start/false/tab_count_button_on_start_surface/false"})
     // clang-format off
-    @CommandLineFlags.Add({START_SURFACE_TEST_BASE_PARAMS +
-        "/exclude_mv_tiles/true/hide_switch_when_no_incognito_tabs/true"})
     public void testShow_SingleAsHomepage_NoMVTiles() {
         // clang-format on
         if (!mImmediateReturn) {
@@ -302,9 +305,9 @@ public class StartSurfaceTest {
     @Test
     @LargeTest
     @Feature({"StartSurface"})
+    @CommandLineFlags.
+    Add({START_SURFACE_TEST_BASE_PARAMS + "exclude_mv_tiles/true/open_ntp_instead_of_start/false"})
     // clang-format off
-    @CommandLineFlags.Add({START_SURFACE_TEST_BASE_PARAMS + "/exclude_mv_tiles/true" +
-        "/hide_switch_when_no_incognito_tabs/true/show_last_active_tab_only/true"})
     public void testShow_SingleAsHomepage_SingleTabNoMVTiles() {
         // clang-format on
         Assume.assumeFalse("https://crbug.com/1205642, https://crbug.com/1214303",
@@ -350,7 +353,7 @@ public class StartSurfaceTest {
     @MediumTest
     @Feature({"StartSurface"})
     // clang-format off
-    @CommandLineFlags.Add({START_SURFACE_TEST_BASE_PARAMS})
+    @CommandLineFlags.Add({START_SURFACE_TEST_SINGLE_ENABLED_PARAMS})
     @DisableIf.
         Build(sdk_is_less_than = Build.VERSION_CODES.N, message = "Flaky, see crbug.com/1246457")
     public void testShow_SingleAsHomepage_FromResumeShowStart() throws Exception {
@@ -395,7 +398,7 @@ public class StartSurfaceTest {
     @Test
     @MediumTest
     @Feature({"StartSurface"})
-    @CommandLineFlags.Add({START_SURFACE_TEST_BASE_PARAMS})
+    @CommandLineFlags.Add({START_SURFACE_TEST_SINGLE_ENABLED_PARAMS})
     @DisabledTest(message = "crbug.com/1170673 - NoInstant_NoReturn version is flaky")
     public void testSearchInSingleSurface() {
         if (!mImmediateReturn) {
@@ -429,7 +432,8 @@ public class StartSurfaceTest {
     @Test
     @MediumTest
     @Feature({"StartSurface"})
-    @CommandLineFlags.Add({START_SURFACE_TEST_BASE_PARAMS + "/open_ntp_instead_of_start/true"})
+    @CommandLineFlags.
+    Add({START_SURFACE_TEST_BASE_PARAMS + "hide_switch_when_no_incognito_tabs/false"})
     public void testCreateNewTab_OpenNTPInsteadOfStart() {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         StartSurfaceTestUtils.waitForTabModel(cta);
@@ -458,7 +462,6 @@ public class StartSurfaceTest {
     @Test
     @MediumTest
     @Feature({"StartSurface"})
-    @CommandLineFlags.Add({START_SURFACE_TEST_BASE_PARAMS + "/open_ntp_instead_of_start/true"})
     public void testHomeButton_OpenNTPInsteadOfStart() {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         StartSurfaceTestUtils.waitForTabModel(cta);
@@ -493,15 +496,15 @@ public class StartSurfaceTest {
     @Test
     @MediumTest
     @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
-    // clang-format off
+
     @EnableFeatures({ChromeFeatureList.TAB_SWITCHER_ON_RETURN + "<Study",
             ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID,
             ChromeFeatureList.START_SURFACE_ANDROID + "<Study"})
-    @CommandLineFlags.Add({
-            START_SURFACE_TEST_BASE_PARAMS + "/show_last_active_tab_only/true",
+    @CommandLineFlags.Add({START_SURFACE_TEST_BASE_PARAMS + "open_ntp_instead_of_start/false",
             // Disable feed placeholder animation because it causes waitForDeferredStartup() to time
             // out.
             FeedPlaceholderLayout.DISABLE_ANIMATION_SWITCH})
+    // clang-format off
     public void startSurfaceRecordHistogramsTest_SingleTab() {
         // clang-format on
         startSurfaceRecordHistogramsTest(true);
@@ -514,7 +517,7 @@ public class StartSurfaceTest {
     @EnableFeatures({ChromeFeatureList.TAB_SWITCHER_ON_RETURN + "<Study",
         ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID,
         ChromeFeatureList.START_SURFACE_ANDROID + "<Study"})
-    @CommandLineFlags.Add({START_SURFACE_TEST_BASE_PARAMS,
+    @CommandLineFlags.Add({START_SURFACE_TEST_SINGLE_ENABLED_PARAMS,
         // Disable feed placeholder animation because it causes waitForDeferredStartup() to time
         // out.
         FeedPlaceholderLayout.DISABLE_ANIMATION_SWITCH})
@@ -592,7 +595,7 @@ public class StartSurfaceTest {
     @Test
     @MediumTest
     @Feature({"StartSurface"})
-    @CommandLineFlags.Add({START_SURFACE_TEST_BASE_PARAMS})
+    @CommandLineFlags.Add({START_SURFACE_TEST_SINGLE_ENABLED_PARAMS})
     public void testShow_SingleAsHomepage_VoiceSearchButtonShown() {
         if (!mImmediateReturn) {
             StartSurfaceTestUtils.pressHomePageButton(mActivityTestRule.getActivity());
@@ -609,7 +612,7 @@ public class StartSurfaceTest {
     @Test
     @MediumTest
     @Feature({"StartSurface"})
-    @CommandLineFlags.Add({START_SURFACE_TEST_BASE_PARAMS})
+    @CommandLineFlags.Add({START_SURFACE_TEST_SINGLE_ENABLED_PARAMS})
     public void testShow_SingleAsHomepage_BottomSheet() {
         if (!mImmediateReturn) {
             StartSurfaceTestUtils.pressHomePageButton(mActivityTestRule.getActivity());
@@ -657,7 +660,7 @@ public class StartSurfaceTest {
     @Test
     @MediumTest
     @Feature({"StartSurface"})
-    @CommandLineFlags.Add({START_SURFACE_TEST_BASE_PARAMS})
+    @CommandLineFlags.Add({START_SURFACE_TEST_SINGLE_ENABLED_PARAMS})
     public void testShow_SingleAsHomepage_ResetScrollPosition() {
         if (!mImmediateReturn) {
             StartSurfaceTestUtils.pressHomePageButton(mActivityTestRule.getActivity());
@@ -689,7 +692,7 @@ public class StartSurfaceTest {
     @Test
     @MediumTest
     @Feature({"StartSurface"})
-    @CommandLineFlags.Add({START_SURFACE_TEST_BASE_PARAMS})
+    @CommandLineFlags.Add({START_SURFACE_TEST_SINGLE_ENABLED_PARAMS})
     public void singleAsHomepage_PressHomeButtonWillKeepTab() {
         if (!mImmediateReturn) {
             StartSurfaceTestUtils.pressHomePageButton(mActivityTestRule.getActivity());
@@ -725,7 +728,7 @@ public class StartSurfaceTest {
     @MediumTest
     @Feature({"StartSurface"})
     // clang-format off
-    @CommandLineFlags.Add({START_SURFACE_TEST_BASE_PARAMS})
+    @CommandLineFlags.Add({START_SURFACE_TEST_SINGLE_ENABLED_PARAMS})
     @DisableIf.Build(sdk_is_greater_than = VERSION_CODES.O_MR1, supported_abis_includes = "x86",
             message = "Flaky, see crbug.com/1258154")
     public void testNotShowIncognitoHomepage() {
@@ -761,7 +764,7 @@ public class StartSurfaceTest {
     @MediumTest
     @Feature({"StartSurface"})
     // clang-format off
-    @CommandLineFlags.Add({START_SURFACE_TEST_BASE_PARAMS})
+    @CommandLineFlags.Add({START_SURFACE_TEST_SINGLE_ENABLED_PARAMS})
     public void test_DoNotLoadLastSelectedTabOnStartup() {
         // clang-format on
         doTestNotLoadLastSelectedTabOnStartupImpl();
@@ -771,7 +774,6 @@ public class StartSurfaceTest {
     @MediumTest
     @Feature({"StartSurface"})
     // clang-format off
-    @CommandLineFlags.Add({START_SURFACE_TEST_BASE_PARAMS + "/show_last_active_tab_only/true"})
     public void test_DoNotLoadLastSelectedTabOnStartupV2() {
         // clang-format on
         doTestNotLoadLastSelectedTabOnStartupImpl();

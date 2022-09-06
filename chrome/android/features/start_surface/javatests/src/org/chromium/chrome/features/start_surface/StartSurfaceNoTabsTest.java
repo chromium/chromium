@@ -81,8 +81,7 @@ public class StartSurfaceNoTabsTest {
                     new ParameterSet().value(false, true).name("NoInstant_Return"),
                     new ParameterSet().value(true, true).name("Instant_Return"));
 
-    private static final String BASE_PARAMS =
-            "force-fieldtrial-params=Study.Group:start_surface_variation";
+    private static final String BASE_PARAMS = "force-fieldtrial-params=Study.Group:";
 
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
@@ -124,7 +123,7 @@ public class StartSurfaceNoTabsTest {
     @LargeTest
     @Feature({"StartSurface"})
     // clang-format off
-    @CommandLineFlags.Add({BASE_PARAMS + "/single/tab_count_button_on_start_surface/true"})
+    @CommandLineFlags.Add({BASE_PARAMS + "tab_count_button_on_start_surface/true"})
     @DisabledTest(message = "https://crbug.com/1263910")
     public void testShow_SingleAsHomepage_NoTabs() throws TimeoutException {
         // clang-format on
@@ -156,8 +155,7 @@ public class StartSurfaceNoTabsTest {
     @MediumTest
     @Feature({"StartSurface"})
     // clang-format off
-    @CommandLineFlags.Add({BASE_PARAMS + "/single/exclude_mv_tiles/true" +
-        "/show_last_active_tab_only/true/open_ntp_instead_of_start/true"})
+    @CommandLineFlags.Add({BASE_PARAMS + "exclude_mv_tiles/true"})
     @DisabledTest(message = "https://crbug.com/1263910")
     public void testShow_SingleAsHomepage_SingleTabSwitcher_NoTabs() {
         // clang-format on

@@ -45,6 +45,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
+import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.build.BuildConfig;
@@ -103,6 +104,7 @@ import java.util.concurrent.CountDownLatch;
         ChromeFeatureList.START_SURFACE_ANDROID, ChromeFeatureList.INSTANT_START})
 @Restriction({Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE,
     UiRestriction.RESTRICTION_TYPE_PHONE})
+@DoNotBatch(reason = "InstantStartTest tests startup behaviours and thus can't be batched.")
 public class InstantStartTest {
     // clang-format on
     private static final String IMMEDIATE_RETURN_PARAMS = "force-fieldtrial-params=Study.Group:"
@@ -486,7 +488,8 @@ public class InstantStartTest {
     public void testShowLastTabWhenHomepageDisabledNoImmediateReturn() throws IOException {
         // clang-format on
         Assert.assertTrue(ChromeFeatureList.sInstantStart.isEnabled());
-        Assert.assertEquals(-1, ReturnToChromeUtil.TAB_SWITCHER_ON_RETURN_MS.getValue());
+        Assert.assertEquals(ReturnToChromeUtil.TAB_SWITCHER_ON_RETURN_MS.getDefaultValue(),
+                ReturnToChromeUtil.TAB_SWITCHER_ON_RETURN_MS.getValue());
 
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> HomepageManager.getInstance().setPrefHomepageEnabled(false));
@@ -506,7 +509,8 @@ public class InstantStartTest {
           throws IOException {
         // clang-format on
         Assert.assertFalse(ChromeFeatureList.sInstantStart.isEnabled());
-        Assert.assertEquals(-1, ReturnToChromeUtil.TAB_SWITCHER_ON_RETURN_MS.getValue());
+        Assert.assertEquals(ReturnToChromeUtil.TAB_SWITCHER_ON_RETURN_MS.getDefaultValue(),
+                ReturnToChromeUtil.TAB_SWITCHER_ON_RETURN_MS.getValue());
 
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> HomepageManager.getInstance().setPrefHomepageEnabled(false));

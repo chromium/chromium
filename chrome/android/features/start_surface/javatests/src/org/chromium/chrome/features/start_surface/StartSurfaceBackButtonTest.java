@@ -13,6 +13,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withParent;
 import static org.hamcrest.CoreMatchers.allOf;
 
 import static org.chromium.chrome.features.start_surface.StartSurfaceTestUtils.START_SURFACE_TEST_BASE_PARAMS;
+import static org.chromium.chrome.features.start_surface.StartSurfaceTestUtils.START_SURFACE_TEST_SINGLE_ENABLED_PARAMS;
 import static org.chromium.chrome.features.start_surface.StartSurfaceTestUtils.sClassParamsForStartSurfaceTest;
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 import static org.chromium.ui.test.util.ViewUtils.waitForView;
@@ -155,7 +156,7 @@ public class StartSurfaceBackButtonTest {
     @Test
     @MediumTest
     @Feature({"StartSurface"})
-    @CommandLineFlags.Add({START_SURFACE_TEST_BASE_PARAMS})
+    @CommandLineFlags.Add({START_SURFACE_TEST_SINGLE_ENABLED_PARAMS})
     public void testShow_SingleAsHomepage_BackButton() {
         if (!mImmediateReturn) {
             StartSurfaceTestUtils.pressHomePageButton(mActivityTestRule.getActivity());
@@ -197,7 +198,7 @@ public class StartSurfaceBackButtonTest {
     @MediumTest
     @Feature({"StartSurface"})
     // clang-format off
-    @CommandLineFlags.Add({START_SURFACE_TEST_BASE_PARAMS})
+    @CommandLineFlags.Add({START_SURFACE_TEST_SINGLE_ENABLED_PARAMS})
     @DisableIf.
         Build(sdk_is_less_than = Build.VERSION_CODES.N, message = "Flaky, see crbug.com/1246457")
     public void testShow_SingleAsHomepage_BackButtonWithTabSwitcher() {
@@ -209,7 +210,7 @@ public class StartSurfaceBackButtonTest {
     @MediumTest
     @Feature({"StartSurface"})
     // clang-format off
-    @CommandLineFlags.Add({START_SURFACE_TEST_BASE_PARAMS + "/show_last_active_tab_only/true"})
+    @CommandLineFlags.Add({START_SURFACE_TEST_BASE_PARAMS + "open_ntp_instead_of_start/false"})
     @DisableIf.
         Build(sdk_is_less_than = Build.VERSION_CODES.N, message = "Flaky, see crbug.com/1246457")
     public void testShow_SingleAsHomepageV2_BackButtonWithTabSwitcher() {
@@ -280,7 +281,7 @@ public class StartSurfaceBackButtonTest {
     @Test
     @MediumTest
     @Feature({"StartSurface"})
-    @CommandLineFlags.Add({START_SURFACE_TEST_BASE_PARAMS})
+    @CommandLineFlags.Add({START_SURFACE_TEST_SINGLE_ENABLED_PARAMS})
     public void testOpenRecentTabOnStartAndTapBackButtonReturnToStartSurface()
             throws ExecutionException {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
@@ -310,9 +311,8 @@ public class StartSurfaceBackButtonTest {
     @Test
     @MediumTest
     @Feature({"StartSurface"})
+    @CommandLineFlags.Add({START_SURFACE_TEST_BASE_PARAMS + "open_ntp_instead_of_start/false"})
     // clang-format off
-    @CommandLineFlags.Add({START_SURFACE_TEST_BASE_PARAMS
-        + "/show_last_active_tab_only/true/tab_count_button_on_start_surface/true"})
     public void testUserActionLoggedWhenBackToStartSurfaceHomePage() throws ExecutionException {
         // clang-format on
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
@@ -339,7 +339,7 @@ public class StartSurfaceBackButtonTest {
     @MediumTest
     @Feature({"StartSurface"})
     // clang-format off
-    @CommandLineFlags.Add({START_SURFACE_TEST_BASE_PARAMS})
+    @CommandLineFlags.Add({START_SURFACE_TEST_SINGLE_ENABLED_PARAMS})
     @DisabledTest(message = "https://crbug.com/1246457")
     @DisableFeatures({ChromeFeatureList.BACK_GESTURE_REFACTOR})
     public void testSwipeBackOnStartSurfaceHomePage() throws ExecutionException {
@@ -350,7 +350,7 @@ public class StartSurfaceBackButtonTest {
     @Test
     @MediumTest
     @Feature({"StartSurface"})
-    @CommandLineFlags.Add({START_SURFACE_TEST_BASE_PARAMS})
+    @CommandLineFlags.Add({START_SURFACE_TEST_SINGLE_ENABLED_PARAMS})
     @DisabledTest(message = "https://crbug.com/1246457")
     @EnableFeatures({ChromeFeatureList.BACK_GESTURE_REFACTOR})
     public void testSwipeBackOnStartSurfaceHomePage_BackGestureRefactor()
@@ -361,7 +361,7 @@ public class StartSurfaceBackButtonTest {
     @Test
     @MediumTest
     @Feature({"StartSurface"})
-    @CommandLineFlags.Add({START_SURFACE_TEST_BASE_PARAMS})
+    @CommandLineFlags.Add({START_SURFACE_TEST_SINGLE_ENABLED_PARAMS})
     @DisabledTest(message = "https://crbug.com/1246457")
     public void testSwipeBackOnTabOfLaunchTypeStartSurface() throws ExecutionException {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
@@ -384,7 +384,7 @@ public class StartSurfaceBackButtonTest {
     @Test
     @MediumTest
     @Feature({"StartSurface"})
-    @CommandLineFlags.Add({START_SURFACE_TEST_BASE_PARAMS})
+    @CommandLineFlags.Add({START_SURFACE_TEST_SINGLE_ENABLED_PARAMS})
     public void testBackButtonOnIncognitoTabOpenedFromStart() throws ExecutionException {
         // This is a test for crbug.com/1315915 to make sure when clicking back button on the
         // incognito tab opened from Start, the non-incognito homepage should show.

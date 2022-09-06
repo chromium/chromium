@@ -11,7 +11,7 @@ import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-import static org.chromium.chrome.features.start_surface.StartSurfaceTestUtils.START_SURFACE_TEST_BASE_PARAMS;
+import static org.chromium.chrome.features.start_surface.StartSurfaceTestUtils.START_SURFACE_TEST_SINGLE_ENABLED_PARAMS;
 import static org.chromium.chrome.features.start_surface.StartSurfaceTestUtils.sClassParamsForStartSurfaceTest;
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
@@ -150,7 +150,7 @@ public class StartSurfaceMVTilesTest {
     @Test
     @MediumTest
     @Feature({"StartSurface"})
-    @CommandLineFlags.Add({START_SURFACE_TEST_BASE_PARAMS})
+    @CommandLineFlags.Add({START_SURFACE_TEST_SINGLE_ENABLED_PARAMS})
     public void testTapMVTilesInSingleSurface() {
         if (!mImmediateReturn) {
             StartSurfaceTestUtils.pressHomePageButton(mActivityTestRule.getActivity());
@@ -176,7 +176,7 @@ public class StartSurfaceMVTilesTest {
     @Feature({"StartSurface"})
     // Disable feed placeholder animation because it causes waitForSnackbar() to time out.
     @CommandLineFlags.
-    Add({START_SURFACE_TEST_BASE_PARAMS, FeedPlaceholderLayout.DISABLE_ANIMATION_SWITCH})
+    Add({START_SURFACE_TEST_SINGLE_ENABLED_PARAMS, FeedPlaceholderLayout.DISABLE_ANIMATION_SWITCH})
     public void testDismissTileWithContextMenuAndUndo() throws Exception {
         if (!mImmediateReturn) {
             StartSurfaceTestUtils.pressHomePageButton(mActivityTestRule.getActivity());
@@ -208,7 +208,7 @@ public class StartSurfaceMVTilesTest {
     @Test
     @MediumTest
     @Feature({"StartSurface"})
-    @CommandLineFlags.Add({START_SURFACE_TEST_BASE_PARAMS})
+    @CommandLineFlags.Add({START_SURFACE_TEST_SINGLE_ENABLED_PARAMS})
     public void testOpenTileInNewTabWithContextMenu() throws ExecutionException {
         if (!mImmediateReturn) {
             StartSurfaceTestUtils.pressHomePageButton(mActivityTestRule.getActivity());
@@ -232,7 +232,7 @@ public class StartSurfaceMVTilesTest {
     @Test
     @MediumTest
     @Feature({"StartSurface"})
-    @CommandLineFlags.Add({START_SURFACE_TEST_BASE_PARAMS})
+    @CommandLineFlags.Add({START_SURFACE_TEST_SINGLE_ENABLED_PARAMS})
     public void testOpenTileInIncognitoTabWithContextMenu() throws ExecutionException {
         Assume.assumeFalse("https://crbug.com/1210554", mUseInstantStart && mImmediateReturn);
         if (!mImmediateReturn) {

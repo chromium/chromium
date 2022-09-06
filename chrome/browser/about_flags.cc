@@ -2070,54 +2070,28 @@ const FeatureEntry::FeatureVariation kTabGridLayoutAndroidVariations[] = {
 };
 
 const FeatureEntry::FeatureParam kStartSurfaceAndroid_SingleSurface[] = {
-    {"start_surface_variation", "single"},
+    {"open_ntp_instead_of_start", "false"},
+    {"show_last_active_tab_only", "false"},
     {"show_tabs_in_mru_order", "true"}};
 
-const FeatureEntry::FeatureParam kStartSurfaceAndroid_SingleSurface_V2[] = {
-    {"start_surface_variation", "single"},
-    {"show_last_active_tab_only", "true"},
-    {"open_ntp_instead_of_start", "true"}};
-
-const FeatureEntry::FeatureParam kStartSurfaceAndroid_SingleSurfaceSingleTab[] =
-    {{"start_surface_variation", "single"},
-     {"show_last_active_tab_only", "true"},
-     {"hide_switch_when_no_incognito_tabs", "true"}};
-
 const FeatureEntry::FeatureParam kStartSurfaceAndroid_CandidateA[] = {
-    {"start_surface_variation", "single"},
-    {"show_last_active_tab_only", "true"},
-    {"hide_switch_when_no_incognito_tabs", "true"},
-    {"tab_count_button_on_start_surface", "true"}};
+    {"open_ntp_instead_of_start", "false"}};
 
 const FeatureEntry::FeatureParam kStartSurfaceAndroid_CandidateA_SyncCheck[] = {
-    {"start_surface_variation", "single"},
-    {"show_last_active_tab_only", "true"},
-    {"hide_switch_when_no_incognito_tabs", "true"},
-    {"tab_count_button_on_start_surface", "true"},
+    {"open_ntp_instead_of_start", "false"},
     {"check_sync_before_show_start_at_startup", "true"}};
 
 const FeatureEntry::FeatureParam
     kStartSurfaceAndroid_CandidateA_SigninPromoTimeLimit[] = {
-        {"start_surface_variation", "single"},
-        {"show_last_active_tab_only", "true"},
-        {"hide_switch_when_no_incognito_tabs", "true"},
-        {"tab_count_button_on_start_surface", "true"},
+        {"open_ntp_instead_of_start", "false"},
         {"sign_in_promo_show_since_last_background_limit_ms", "30000"}};
 
 const FeatureEntry::FeatureParam kStartSurfaceAndroid_CandidateB[] = {
-    {"start_surface_variation", "single"},
-    {"show_last_active_tab_only", "true"},
-    {"hide_switch_when_no_incognito_tabs", "true"},
-    {"tab_count_button_on_start_surface", "true"},
     {"open_ntp_instead_of_start", "true"}};
 
 const FeatureEntry::FeatureParam
     kStartSurfaceAndroid_CandidateB_AlwaysShowIncognito[] = {
-        {"start_surface_variation", "single"},
-        {"show_last_active_tab_only", "true"},
-        {"hide_switch_when_no_incognito_tabs", "false"},
-        {"tab_count_button_on_start_surface", "true"},
-        {"open_ntp_instead_of_start", "true"}};
+        {"hide_switch_when_no_incognito_tabs", "false"}};
 
 const FeatureEntry::FeatureVariation kStartSurfaceAndroidVariations[] = {
     {"Candidate A", kStartSurfaceAndroid_CandidateA,
@@ -2134,10 +2108,6 @@ const FeatureEntry::FeatureVariation kStartSurfaceAndroidVariations[] = {
      std::size(kStartSurfaceAndroid_CandidateB_AlwaysShowIncognito), nullptr},
     {"Single Surface", kStartSurfaceAndroid_SingleSurface,
      std::size(kStartSurfaceAndroid_SingleSurface), nullptr},
-    {"Single Surface V2", kStartSurfaceAndroid_SingleSurface_V2,
-     std::size(kStartSurfaceAndroid_SingleSurface_V2), nullptr},
-    {"Single Surface + Single Tab", kStartSurfaceAndroid_SingleSurfaceSingleTab,
-     std::size(kStartSurfaceAndroid_SingleSurfaceSingleTab), nullptr},
 };
 
 const FeatureEntry::FeatureParam kFeedPositionAndroid_push_down_feed_small[] = {
