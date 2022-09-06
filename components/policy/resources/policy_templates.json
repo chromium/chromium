@@ -26515,7 +26515,8 @@
         'cloud_only': True,
       },
       'id': 931,
-      'future_on': ['chrome.*', 'chrome_os', 'fuchsia'],
+      'supported_on': ['chrome.*:106-', 'chrome_os:106-'],
+      'future_on': ['fuchsia'],
       'caption': '''Configuration policy for the OnPrint <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> Enterprise Connector''',
       'tags': [],
       'desc': '''List of <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> Enterprise Connectors services settings to be applied to the <ph name="ON_PRINT_ENTERPRISE_CONNECTOR">OnPrint</ph> Enterprise Connector, which triggers when a page or file is printed from <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>.
