@@ -726,12 +726,12 @@ unsigned Internals::workerThreadCount() const {
   return WorkerThread::WorkerThreadCount();
 }
 
-GCObservation* Internals::observeGC(ScriptValue script_value) {
+GCObservation* Internals::observeGC(ScriptValue script_value,
+                                    ExceptionState& exception_state) {
   v8::Local<v8::Value> observed_value = script_value.V8Value();
   DCHECK(!observed_value.IsEmpty());
   if (observed_value->IsNull() || observed_value->IsUndefined()) {
-    V8ThrowException::ThrowTypeError(v8::Isolate::GetCurrent(),
-                                     "value to observe is null or undefined");
+    exception_state.ThrowTypeError("value to observe is null or undefined");
     return nullptr;
   }
 
@@ -3770,7 +3770,7 @@ String Internals::getParsedImportMap(Document* document,
       Modulator::From(ToScriptStateForMainWorld(document->GetFrame()));
 
   if (!modulator) {
-    V8ThrowException::ThrowTypeError(v8::Isolate::GetCurrent(), "No modulator");
+    exception_state.ThrowTypeError("No modulator");
     return String();
   }
 

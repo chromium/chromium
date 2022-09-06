@@ -102,7 +102,7 @@ class Internals final : public ScriptWrappable {
 
   String elementLayoutTreeAsText(Element*, ExceptionState&);
 
-  GCObservation* observeGC(ScriptValue);
+  GCObservation* observeGC(ScriptValue, ExceptionState&);
 
   bool isPreloaded(const String& url);
   bool isPreloadedBy(const String& url, Document*);

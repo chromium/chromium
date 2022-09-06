@@ -27,7 +27,7 @@
 [
     DoNotCheckConstants
 ] interface Internals {
-    GCObservation observeGC(any observed);
+    [RaisesException] GCObservation observeGC(any observed);
 
     [RaisesException] DOMString elementLayoutTreeAsText(Element element);
     boolean isPreloaded(DOMString url);
