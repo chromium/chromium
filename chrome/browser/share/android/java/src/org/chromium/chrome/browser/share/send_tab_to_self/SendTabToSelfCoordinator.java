@@ -156,16 +156,19 @@ public class SendTabToSelfCoordinator {
             // This must be the old behavior where the entry point is shown even in states where
             // no promo is shown.
             assert !ChromeFeatureList.isEnabled(ChromeFeatureList.SEND_TAB_TO_SELF_SIGNIN_PROMO);
+            MetricsRecorder.recordSendingEvent(SendingEvent.SHOW_NO_TARGET_DEVICE_MESSAGE);
             mController.requestShowContent(new NoTargetDeviceBottomSheetContent(mContext), true);
             return;
         }
 
         switch (displayReason.get()) {
             case EntryPointDisplayReason.INFORM_NO_TARGET_DEVICE:
+                MetricsRecorder.recordSendingEvent(SendingEvent.SHOW_NO_TARGET_DEVICE_MESSAGE);
                 mController.requestShowContent(
                         new NoTargetDeviceBottomSheetContent(mContext), true);
                 return;
             case EntryPointDisplayReason.OFFER_FEATURE:
+                MetricsRecorder.recordSendingEvent(SendingEvent.SHOW_DEVICE_LIST);
                 // TODO(crbug.com/1219434): Merge with INFORM_NO_TARGET_DEVICE, just let the UI
                 // differentiate between the 2 by checking the device list size.
                 List<TargetDeviceInfo> targetDevices =
@@ -176,6 +179,7 @@ public class SendTabToSelfCoordinator {
                         true);
                 return;
             case EntryPointDisplayReason.OFFER_SIGN_IN: {
+                MetricsRecorder.recordSendingEvent(SendingEvent.SHOW_SIGNIN_PROMO);
                 new AccountPickerBottomSheetCoordinator(mWindowAndroid, mController,
                         new SendTabToSelfAccountPickerDelegate(this::onSignInComplete, mProfile));
                 return;

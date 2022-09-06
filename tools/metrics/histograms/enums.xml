@@ -87193,17 +87193,17 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
 </enum>
 
 <enum name="SendTabToSelfClickResult">
-  <int value="0" label="SendTabToSelf entry point is shown.">
+  <int value="0" label="(obsolete) SendTabToSelf entry point is shown.">
     <obsolete>
       Removed on 06/2020.
     </obsolete>
   </int>
   <int value="1" label="SendTabToSelf target device is clicked."/>
   <int value="2" label="SendTabToSelf device list is shown.">
-    <obsolete>
-      Removed on 06/2020.
-    </obsolete>
+    Removed on 06/2020 and brought back 09/2022.
   </int>
+  <int value="3" label="No target device message shown."/>
+  <int value="4" label="Sign-in promo shown."/>
 </enum>
 
 <enum name="SendTabToSelfNotification">
@@ -87226,7 +87226,11 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="1" label="Dismissed"/>
   <int value="2" label="Opened"/>
   <int value="3" label="TimedOut"/>
-  <int value="4" label="Sent"/>
+  <int value="4" label="(obsolete) Sent">
+    <obsolete>
+      Removed 09/2022.
+    </obsolete>
+  </int>
   <int value="5" label="DismissReasonUnknown"/>
 </enum>
 

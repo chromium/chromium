@@ -253,8 +253,9 @@ void OpenManageDevicesTab(CommandDispatcher* dispatcher) {
 
 - (void)sendTabToTargetDeviceCacheGUID:(NSString*)cacheGUID
                       targetDeviceName:(NSString*)deviceName {
-  send_tab_to_self::RecordDeviceClicked(
-      send_tab_to_self::ShareEntryPoint::kShareMenu);
+  send_tab_to_self::RecordSendingEvent(
+      send_tab_to_self::ShareEntryPoint::kShareMenu,
+      send_tab_to_self::SendingEvent::kClickItem);
 
   SendTabToSelfSyncServiceFactory::GetForBrowserState(
       self.browser->GetBrowserState())
@@ -293,6 +294,14 @@ void OpenManageDevicesTab(CommandDispatcher* dispatcher) {
   switch (*displayReason) {
     case send_tab_to_self::EntryPointDisplayReason::kInformNoTargetDevice:
     case send_tab_to_self::EntryPointDisplayReason::kOfferFeature: {
+      const auto sending_event =
+          *displayReason ==
+                  send_tab_to_self::EntryPointDisplayReason::kOfferFeature
+              ? send_tab_to_self::SendingEvent::kShowDeviceList
+              : send_tab_to_self::SendingEvent::kShowNoTargetDeviceMessage;
+      send_tab_to_self::RecordSendingEvent(
+          send_tab_to_self::ShareEntryPoint::kShareMenu, sending_event);
+
       ChromeBrowserState* browserState = self.browser->GetBrowserState();
       send_tab_to_self::SendTabToSelfSyncService* syncService =
           SendTabToSelfSyncServiceFactory::GetForBrowserState(browserState);
@@ -328,6 +337,10 @@ void OpenManageDevicesTab(CommandDispatcher* dispatcher) {
       break;
     }
     case send_tab_to_self::EntryPointDisplayReason::kOfferSignIn: {
+      send_tab_to_self::RecordSendingEvent(
+          send_tab_to_self::ShareEntryPoint::kShareMenu,
+          send_tab_to_self::SendingEvent::kShowSigninPromo);
+
       __weak __typeof(self) weakSelf = self;
       ShowSigninCommandCompletionCallback callback = ^(BOOL succeeded) {
         [weakSelf onSigninComplete:succeeded];

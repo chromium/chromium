@@ -17,11 +17,23 @@ enum class ShareEntryPoint {
   kTabMenu,
 };
 
-// Records whether the user clicked to send a tab to a device.
-void RecordDeviceClicked(ShareEntryPoint entry_point);
+// State of the send tab to self option in the UI.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// For historical reasons, this maps to SendTabToSelfClickResult in enums.xml.
+// A Java counterpart will be generated for this enum.
+// GENERATED_JAVA_ENUM_PACKAGE: (
+//   org.chromium.chrome.browser.share.send_tab_to_self)
+enum class SendingEvent {
+  // kShowItem = 0,
+  kClickItem = 1,
+  kShowDeviceList = 2,
+  kShowNoTargetDeviceMessage = 3,
+  kShowSigninPromo = 4,
+  kMaxValue = kShowSigninPromo,
+};
 
-// Records when a tab is sent to a device.
-void RecordNotificationSent();
+void RecordSendingEvent(ShareEntryPoint entry_point, SendingEvent event);
 
 // Records when a received STTS notification is shown.
 void RecordNotificationShown();
