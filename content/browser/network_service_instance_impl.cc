@@ -70,6 +70,10 @@
 #include "content/browser/network_sandbox.h"
 #endif
 
+#if BUILDFLAG(IS_WIN)
+#include "content/browser/net/network_service_process_tracker_win.h"
+#endif
+
 namespace content {
 
 namespace {
@@ -916,5 +920,13 @@ void CreateNetworkContextInNetworkService(
       base::BindOnce(&CreateNetworkContextInternal, std::move(context)));
 #endif  // BUILDFLAG(IS_ANDROID)
 }
+
+#if BUILDFLAG(IS_WIN)
+
+void SetNetworkServiceTrackerToCurrentProcessForTesting() {
+  internal::SetNetworkServiceTrackerToCurrentProcessForTesting();
+}
+
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace content

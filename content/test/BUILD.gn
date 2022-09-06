@@ -1768,6 +1768,7 @@ test("content_browsertests") {
       "../browser/accessibility/ax_platform_node_textrangeprovider_win_browsertest.cc",
       "../browser/accessibility/ax_platform_node_win_browsertest.cc",
       "../browser/accessibility/hit_testing_win_browsertest.cc",
+      "../browser/net/network_service_process_tracker_win_browsertest.cc",
       "../browser/renderer_host/accessibility_object_lifetime_win_browsertest.cc",
       "../browser/renderer_host/accessibility_tree_linkage_win_browsertest.cc",
       "../browser/renderer_host/direct_manipulation_test_helper_win.cc",

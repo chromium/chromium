@@ -2404,6 +2404,8 @@ source_set("browser") {
       "media/key_system_support_win.cc",
       "media/key_system_support_win.h",
       "memory/swap_metrics_driver_impl_win.cc",
+      "net/network_service_process_tracker_win.cc",
+      "net/network_service_process_tracker_win.h",
       "renderer_host/direct_manipulation_event_handler_win.cc",
       "renderer_host/direct_manipulation_event_handler_win.h",
       "renderer_host/direct_manipulation_helper_win.cc",
