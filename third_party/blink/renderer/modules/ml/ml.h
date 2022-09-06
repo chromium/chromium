@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/navigator.h"
 #include "third_party/blink/renderer/modules/ml/ml_context.h"
+#include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
@@ -23,7 +24,7 @@ class ScriptState;
 
 // This class represents the "Machine Learning" object "navigator.ml" and will
 // be shared between the Model Loader API and WebNN API.
-class ML final : public ScriptWrappable {
+class MODULES_EXPORT ML final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
