@@ -675,6 +675,7 @@
 <translation id="1632756664321977232">કાપો ટૂલ</translation>
 <translation id="163309982320328737">પ્રારંભિક અક્ષરની પહોળાઈ પૂર્ણ છે</translation>
 <translation id="1633947793238301227">Google Assistant બંધ કરો</translation>
+<translation id="1634224622052500893">વાઇ-ફાઇ નેટવર્ક મળ્યું</translation>
 <translation id="1634783886312010422">શું તમે પહેલેથી <ph name="WEBSITE" /> પર પાસવર્ડ બદલી નાખ્યો હતો?</translation>
 <translation id="1636212173818785548">ઓકે</translation>
 <translation id="163712950892155760"><ph name="BEGIN_PARAGRAPH1" />ઍપનો ડેટા, ઍપમાં સાચવેલો (ડેવલપર સેટિંગના આધારે) કોઈપણ ડેટા હોઈ શકે છે, જેમાં સંપર્કો, મેસેજ અને ફોટા જેવા ડેટાનો સમાવેશ થાય છે. બૅકઅપ ડેટાની ગણતરી તમારા Driveના સ્ટોરેજ ક્વોટામાં કરવામાં આવશે નહીં.<ph name="END_PARAGRAPH1" />
@@ -711,6 +712,7 @@
 <translation id="16620462294541761">માફ કરશો, તમારો પાસવર્ડ ચકાસી શકાયો નથી. કૃપા કરીને ફરીથી પ્રયત્ન કરો.</translation>
 <translation id="166278006618318542">વિષય સાર્વજનિક કી ઍલ્ગોરિધમ</translation>
 <translation id="1662801900924515589"><ph name="APP" /> ઇન્સ્ટૉલ કરવામાં આવી</translation>
+<translation id="1665328953287874063">તમારું <ph name="DEVICE_TYPE" /> અનલૉક કરવા માટે પાસવર્ડ કે પિનનો ઉપયોગ કરો</translation>
 <translation id="1666232093776384142">પેરિફેરલ માટે ડેટા ઍક્સેસની સુરક્ષા બંધ કરો</translation>
 <translation id="1667842670298352129">ચોક્કસ ટેક્સ્ટને મોટેથી વંચાતી સાંભળો. પહેલા, તમારી સ્ક્રીન પર સૌથી નીચે 'સાંભળવા માટે પસંદ કરો' આઇકન પસંદ કરો, પછી ટેક્સ્ટ હાઇલાઇટ કરો. તમે કીબોર્ડ શૉર્ટકટનો પણ ઉપયોગ કરી શકો છો: ટેક્સ્ટ હાઇલાઇટ કરો, પછી Search + S દબાવો.</translation>
 <translation id="1668435968811469751">મેન્યુઅલી નોંધણી કરો</translation>
@@ -1833,6 +1835,7 @@
 <translation id="2691385045260836588">મોડલ</translation>
 <translation id="2691440343905273290">ઇનપુટ સેટિંગ બદલો</translation>
 <translation id="2693176596243495071">અરેરે! અજાણી ભૂલ આવી. કૃપા કરીને થોડા સમય પછી ફરી પ્રયાસ કરો અથવા જો સમસ્યા ચાલુ રહે, તો તમારા વ્યવસ્થાપકનો સંપર્ક કરો.</translation>
+<translation id="2698147581454716013">આ બંડલ કરેલું ડિવાઇસ છે અને તેની કિઓસ્ક અને સાઇનેજ અપગ્રેડ સાથે નોંધણી કરી શકાતી નથી.</translation>
 <translation id="2699911226086014512">કોડ <ph name="RETRIES" /> સાથે પિન ઑપરેશન નિષ્ફળ થયું.</translation>
 <translation id="2701330563083355633"><ph name="DEVICE_NAME" />માંથી શેર કર્યું</translation>
 <translation id="2701737434167469065">સાઇન ઇન કરો, <ph name="EMAIL" /></translation>
@@ -1911,6 +1914,7 @@
 <translation id="2757338480560142065"><ph name="WEBSITE" /> માટેના તમારા પાસવર્ડ સાથે, તમે સાચવી રહ્યાં છો તે પાસવર્ડ મેળ ખાતો હોવાની ખાતરી કરો</translation>
 <translation id="2762441749940182211">કૅમેરા બ્લૉક કર્યો</translation>
 <translation id="2764786626780673772">VPNની વિગતો</translation>
+<translation id="2764920001292228569">પ્રોફાઇલ નામ દાખલ કરો</translation>
 <translation id="2765100602267695013">કૃપા કરીને તમારા મોબાઇલ નેટવર્ક પ્રદાતાનો સંપર્ક કરો</translation>
 <translation id="2765217105034171413">નાનું</translation>
 <translation id="2766006623206032690">પે&amp;સ્ટ કરો અને જાઓ</translation>
@@ -2005,6 +2009,7 @@
 <translation id="2839032553903800133">નોટિફિકેશનને બ્લૉક કરેલાં છે</translation>
 <translation id="2841013758207633010">સમય</translation>
 <translation id="2841837950101800123">પ્રદાતા</translation>
+<translation id="2842013086666334835">"<ph name="NETWORK_ID" />"માં સાઇન ઇન કરો</translation>
 <translation id="2843560154284403323">Linuxનું સેટઅપ પૂરું કરવા માટે, ChromeOSને અપડેટ કરીને ફરી પ્રયાસ કરો.</translation>
 <translation id="2844169650293029770">USB-C ઉપકરણ (ડાબી બાજુનું આગળનું પોર્ટ)</translation>
 <translation id="2844809857160214557">પ્રિન્ટ કરવાના કામો જુઓ અને મેનેજ કરો</translation>
@@ -2105,6 +2110,7 @@
 <translation id="2927017729816812676">કૅશ મેમરી સ્ટોરેજ</translation>
 <translation id="2928795416630981206">તમારા કૅમેરાનું સ્ટેટસ ટ્રૅક કરવાની મંજૂરી છે</translation>
 <translation id="2931157624143513983">પ્રિન્ટ કરી શકાય એટલી જગ્યામાં બંધબેસતું કરો</translation>
+<translation id="2931342457001070961">કોઈ માઇક્રોફોન કનેક્ટેડ નથી</translation>
 <translation id="2932085390869194046">પાસવર્ડ સૂચવો...</translation>
 <translation id="2932483646085333864">સિંક ચાલુ કરવા માટે સાઇન આઉટ કરો પછી ફરી સાઇન કરો</translation>
 <translation id="2932883381142163287">દુરુપયોગ જણાવો</translation>
@@ -2168,6 +2174,7 @@
 <translation id="2996286169319737844">ડેટા તમારા સિંક પાસફ્રેઝ સાથે એન્ક્રિપ્ટ કર્યો હતો. આમાં Google Payની ચુકવણી પદ્ધતિઓ અને ઍડ્રેસ સામેલ હોતા નથી.</translation>
 <translation id="2996722619877761919">લાંબી કિનારી પર ફ્લિપ કરો</translation>
 <translation id="2996932914629936323">સિંક કરેલા બધા ડિવાઇસમાંથી ઇતિહાસ સાફ કરે છે</translation>
+<translation id="2998267783395280091">નેટવર્ક મળ્યું</translation>
 <translation id="3000378525979847272"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />ને મંજૂરી આપી</translation>
 <translation id="3000461861112256445">મૉનો ઑડિઓ</translation>
 <translation id="3001144475369593262">બાળકના એકાઉન્ટ</translation>
@@ -2319,6 +2326,7 @@
 <translation id="3142562627629111859">નવું Group</translation>
 <translation id="3143515551205905069">સિંક કરવાનું રદ કરો</translation>
 <translation id="3143754809889689516">શરૂઆતથી ચલાવો</translation>
+<translation id="3143937294861726703">મેમરી સેવર ચાલુ છે</translation>
 <translation id="3144647712221361880">આ રીતે લિંક ખોલો</translation>
 <translation id="3149510190863420837">Chrome ઍપ્લિકેશનો</translation>
 <translation id="3150693969729403281">હમણાં જ સલામતી માટે તપાસ ચલાવો</translation>
@@ -3280,6 +3288,7 @@
 <translation id="4065876735068446555">તમે ઉપયોગમાં લઈ રહ્યાં છો તે નેટવર્ક (<ph name="NETWORK_ID" />) માટે, તમારે તેના લૉગ ઇન પેજની મુલાકાત લેવાની જરૂર હોઈ શકે છે.</translation>
 <translation id="4066207411788646768">તમારા નેટવર્કમાં ઉપલબ્ધ હોય એવા પ્રિન્ટર જોવા માટે, કૃપા કરીને તમારું નેટવર્ક ચેક કરો</translation>
 <translation id="4066945815577305767">પાસવર્ડની સમયસીમા સમાપ્ત થઈ</translation>
+<translation id="4067839975993712852">વર્તમાન ટૅબને 'વાંચેલા' તરીકે માર્ક કરો</translation>
 <translation id="4068776064906523561">સાચવેલ ફિંગરપ્રિન્ટ</translation>
 <translation id="407173827865827707">ક્લિક કરવા પર</translation>
 <translation id="4072701974556190758">પાસવર્ડ તમારા Google એકાઉન્ટ, <ph name="ACCOUNT" />માં સાચવવામાં આવશે. તમારે યાદ રાખવું જરૂરી રહેશે નહીં.</translation>
@@ -5763,6 +5772,7 @@ USB ડિવાઇસ</translation>
 <translation id="6508248480704296122"><ph name="NAME_PH" />થી સંબંધિત</translation>
 <translation id="6508261954199872201">App: <ph name="APP_NAME" /></translation>
 <translation id="6509207748479174212">મીડિયા લાઇસન્સ</translation>
+<translation id="6511827214781912955"><ph name="FILENAME" />ને ડિલીટ કરવાનું વિચારો, જેથી આ ડિવાઇસનો ઉપયોગ કરનારા અન્ય લોકો તમારા પાસવર્ડ ન જોઈ શકે</translation>
 <translation id="6513247462497316522">જો તમે બીજા નેટવર્કથી કનેક્ટ નથી, તો Google Chrome મોબાઇલ ડેટાનો ઉપયોગ કરશે.</translation>
 <translation id="6514010653036109809">ઉપલબ્ધ ઉપકરણ:</translation>
 <translation id="6514565641373682518">આ પેજથી તમારું માઉસ કર્સરને બંધ થયું છે.</translation>
@@ -6046,6 +6056,7 @@ USB ડિવાઇસ</translation>
 <translation id="6781978626986383437">Linuxનું બૅકઅપ રદ કર્યું</translation>
 <translation id="6782067259631821405">અમાન્ય પિન</translation>
 <translation id="6784523122863989144">પ્રોફાઇલને સપોર્ટ આપવામાં આવે છે</translation>
+<translation id="6785739405821760313">સાચવેલા ડેસ્ક જોઈ રહ્યાં છીએ. નૅવિગેટ કરવા ટૅબ દબાવો.</translation>
 <translation id="6785872064505734160">Google Assistant Chromeમાં, તમારા માટે ઘણી વેબસાઇટમાં અમુક ઍક્શન પૂર્ણ કરી શકે છે</translation>
 <translation id="6786747875388722282">એક્સ્ટેન્શન</translation>
 <translation id="6787097042755590313">અન્ય ટૅબ</translation>
@@ -6632,6 +6643,7 @@ USB ડિવાઇસ</translation>
 <translation id="7358338787722390626">બાજુની પૅનલમાંથી શોધની સેવા બંધ કરો</translation>
 <translation id="735994578317267253">કોઈપણ ChromeOS ડિવાઇસ પર તમારી ઍપ, સેટિંગ અને બીજું ઘણું મેળવો</translation>
 <translation id="7360233684753165754"><ph name="PAGE_NUMBER" /> પેજને <ph name="PRINTER_NAME" /> પર મોકલ્યાં</translation>
+<translation id="7360257054721917104">સાચવેલા ડેસ્ક અને નમૂના જોઈ રહ્યાં છીએ. નૅવિગેટ કરવા ટૅબ દબાવો.</translation>
 <translation id="7361297102842600584"><ph name="PLUGIN_NAME" /> ચલાવવા માટે રાઇટ-ક્લિક કરો</translation>
 <translation id="7362387053578559123">સાઇટ બ્લૂટૂથ ડિવાઇસ સાથે કનેક્ટ કરવાનું પૂછી શકે છે</translation>
 <translation id="7363349185727752629">તમારી પ્રાઇવસીની પસંદગીઓની માર્ગદર્શિકા</translation>
@@ -7284,6 +7296,7 @@ USB ડિવાઇસ</translation>
 <translation id="7953669802889559161">ઇનપુટ</translation>
 <translation id="7953955868932471628">શૉર્ટકટ્સનું સંચાલન કરો</translation>
 <translation id="7955105108888461311">રૂબરૂ પૂછો</translation>
+<translation id="7955177647836564772">જો Smart Lock ચાલુ કરેલું હોય અને તમારો ફોન અનલૉક કરેલો હોય, તો તમારે પાસવર્ડ કે પિન દાખલ કરવાની જરૂર રહેતી નથી</translation>
 <translation id="7956373551960864128">તમે સાચવેલું પ્રિન્ટર</translation>
 <translation id="7957074856830851026">ડિવાઇસ વિશેની માહિતી જુઓ, જેમ કે તેનો અનુક્રમ નંબર અથવા અસેટ ID</translation>
 <translation id="7959074893852789871">ફાઇલમાં બહુવિધ પ્રમાણપત્રો રહેલા છે, તેમાંનાં કેટલાક આયાત કરેલા નથી:</translation>
@@ -7537,6 +7550,7 @@ USB ડિવાઇસ</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />તમારા ડિવાઇસ<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195027750202970175">ડિસ્ક પર કદ</translation>
 <translation id="8195191503358432289">પાસવર્ડ ઉમેરો</translation>
+<translation id="8197673340773315084">ઑફિસ કે વ્યક્તિગત જેવું નામ કે લેબલ ઉમેરો</translation>
 <translation id="8198456017687137612">ટૅબ કાસ્ટ કરી રહ્યાં છીએ</translation>
 <translation id="8199300056570174101">નેટવર્ક (સેવા) અને ઉપકરણના ગુણધર્મો</translation>
 <translation id="8200772114523450471">રિઝ્યુમે</translation>
@@ -7634,6 +7648,7 @@ USB ડિવાઇસ</translation>
 <translation id="8284279544186306258">બધી <ph name="WEBSITE_1" /> સાઇટ</translation>
 <translation id="8284326494547611709">કૅપ્શન્સ</translation>
 <translation id="8286036467436129157">સાઇન ઇન કરો</translation>
+<translation id="828642162569365647">આ પાસવર્ડ કે પિન આ <ph name="DEVICE_TYPE" /> પર તમારા ડેટાને અને તમે તમારા ફોન પરથી ઍક્સેસ કરતા હો એવી કોઈપણ માહિતીને સુરક્ષિત રાખે છે. જ્યારે તમારું <ph name="DEVICE_TYPE" /> ડિવાઇસ સ્લીપ મોડમાંથી બહાર આવે, ત્યારે પ્રત્યેક વખતે તમારે તેને અનલૉક કરવાની જરૂર રહેશે.</translation>
 <translation id="8287902281644548111">API કૉલ/URL અનુસાર શોધ કરો</translation>
 <translation id="8288032458496410887"><ph name="APP" />ને અનઇન્સ્ટૉલ કરો...</translation>
 <translation id="8289128870594824098">ડિસ્કનું કદ</translation>

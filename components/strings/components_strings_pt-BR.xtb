@@ -1108,6 +1108,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3906954721959377182">Tablet</translation>
 <translation id="3909477809443608991">Solicitação para reproduzir conteúdo protegido feita por <ph name="URL" />. A identidade do seu dispositivo será verificada pelo Google e poderá ser acessada por esse site.</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
+<translation id="3923112503730743940">Oufuku Hagaki (cartão postal)</translation>
 <translation id="3927932062596804919">Negar</translation>
 <translation id="393316646445601645">Internet e telecomunicações</translation>
 <translation id="3939773374150895049">Usar WebAuthn em vez de CVC?</translation>
@@ -1136,6 +1137,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4009243425692662128">O conteúdo das páginas que você imprime é enviado ao Google Cloud ou a terceiros para análise. Por exemplo, ele pode ser verificado em busca de dados sensíveis.</translation>
 <translation id="4010758435855888356">Permitir acesso ao armazenamento?</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{Documento PDF com {COUNT} página}one{Documento PDF com {COUNT} página}other{Documento PDF com {COUNT} páginas}}</translation>
+<translation id="4022639246993848966">3,5x5</translation>
 <translation id="4023431997072828269">Como o formulário é enviado por uma conexão que não é segura, suas informações ficarão visíveis para outras pessoas.</translation>
 <translation id="4025913568718019429">Botão "Gerenciar configurações de privacidade do Google". Pressione Enter para acessar as configurações de privacidade da Conta do Google</translation>
 <translation id="4030383055268325496">&amp;Desfazer adicionar</translation>

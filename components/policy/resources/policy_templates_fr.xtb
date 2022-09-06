@@ -1771,6 +1771,50 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
 
       Si cette règle est définie sur "False", la visionneuse de PDF ne peut pas annoter ces fichiers.</translation>
 <translation id="2769952903507981510">Configurer le nom de domaine requis pour les hôtes d'accès à distance</translation>
+<translation id="2772650717382565415">Permet d'établir la liste des applis Web qui s'installent de manière autonome (sans intervention de l'utilisateur) et de spécifier les utilisateurs qui ne peuvent pas les désinstaller ni les désactiver.
+
+      Chaque élément de la liste de cette règle est un objet constitué d'un membre obligatoire :
+      <ph name="URL_LABEL" /> (qui correspond à l'URL de l'appli Web à installer)
+
+      et de six membres facultatifs :
+      - <ph name="DEFAULT_LAUNCH_CONTAINER_LABEL" />
+      (qui indique où s'ouvre l'appli Web ; par défaut, elle s'ouvre dans un nouvel onglet)
+
+      - <ph name="CREATE_DESKTOP_SHORTCUT_LABEL" />
+      ("True" si vous voulez créer des raccourcis sur le bureau <ph name="LINUX_OS_NAME" /> et
+      <ph name="MS_WIN_NAME" />).
+
+      - <ph name="FALLBACK_APP_NAME_LABEL" />
+      (Disponible depuis la version 90 de <ph name="PRODUCT_NAME" /> ;
+      permet de remplacer le nom de l'appli,
+      sauf pour les progressive web apps (PWA) –
+      dans le cas d'une PWA avec authentification requise pour l'installation,
+      le nom de l'appli temporaire peut être remplacé. Si les règles
+      <ph name="CUSTOM_NAME_LABEL" /> et
+      <ph name="FALLBACK_APP_NAME_LABEL" /> sont fournies,
+      cette dernière sera ignorée.)
+
+      - <ph name="OVERRIDE_APP_NAME_LABEL" />
+      (Disponible depuis la version 99 de <ph name="PRODUCT_NAME" /> ;
+      permet de remplacer définitivement le nom d'une appli pour toutes les applis Web et les PWA. Uniquement disponible sur
+      <ph name="PRODUCT_OS_NAME" /> actuellement.)
+
+      - <ph name="CUSTOM_ICON_LABEL" />
+      (Disponible depuis la version 99 de <ph name="PRODUCT_NAME" /> ;
+      permet de remplacer l'icône des applis installées. Les
+      icônes doivent être carrées, faire 1 Mo au maximum, dans l'un des formats
+      suivants : jpeg, png, gif, webp, ico. La valeur de hachage doit être un hachage SHA256
+      du fichier d'icône. Uniquement disponible sur
+      <ph name="PRODUCT_OS_NAME" /> actuellement.)
+
+      - <ph name="INSTALL_AS_SHORTCUT_LABEL" />
+      (Disponible depuis la version 107 de <ph name="PRODUCT_NAME" />). Si cette option est activée, l'<ph name="URL_LABEL" /> donnée
+      sera installée en tant que raccourci, comme si vous cliquiez sur l'option "Créer un raccourci…"
+      dans l'IUG du navigateur pour ordinateur.
+      Notez que lorsqu'elle est installée en tant que raccourci, elle n'est pas mise à jour si le fichier manifeste dans <ph name="URL_LABEL" /> change.
+      Si cette règle est désactivée ou qu'elle n'est pas configurée, l'appli Web de l'<ph name="URL_LABEL" /> donnée sera installée normalement.
+
+      Consultez la règle <ph name="PINNED_LAUNCHER_APPS_POLICY_NAME" /> pour épingler des applis à l'étagère <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="2772955711376920612">Si cette règle est activée, et que les règles <ph name="DEVICE_POWER_PEAK_SHIFT_BATTERY_THRESHOLD_POLICY_NAME" /> et <ph name="DEVICE_POWER_PEAK_SHIFT_DAY_CONFIG_POLICY_NAME" /> sont configurées, le mode d'alimentation alternée en heures pleines est activé (s'il est disponible sur l'appareil). Ce mode permet d'économiser l'énergie en faisant fonctionner autant que possible l'appareil sur batterie plutôt que sur secteur pendant les heures pleines. Vous pouvez définir l'heure de début et de fin de ce mode pour chaque jour de la semaine. Tant que le niveau de charge de la batterie reste au-dessus du seuil spécifié, l'appareil fonctionne sur batterie en heures pleines (même s'il est branché sur une prise électrique). Passée l'heure de fin définie, l'appareil repasse sur l'alimentation secteur (s'il est branché sur une prise), mais il ne recharge pas la batterie. L'appareil reprendra son fonctionnement habituel en utilisant l'alimentation secteur et en rechargeant la batterie à l'heure programmée pour le début de la charge.
 
       Si cette règle est désactivée, le mode d'alimentation alternée en heures pleines l'est également.
@@ -3678,12 +3722,6 @@ Lorsque cette règle est définie, <ph name="PRODUCT_OS_NAME" /> n'autorise les 
 
       Si cette règle n'est pas définie, le paramètre par défaut est autorisé pour les utilisateurs gérés par une entreprise et pour les utilisateurs non gérés.</translation>
 <translation id="487460824085252184">Effectuer automatiquement la migration, sans demander l'autorisation de l'utilisateur.</translation>
-<translation id="48749493657448872">Lorsque ce paramètre est activé, <ph name="PRODUCT_NAME" /> vérifie les certificats des serveurs à l'aide de l'outil de vérification intégré.
-      Lorsqu'il est désactivé, <ph name="PRODUCT_NAME" /> vérifie les certificats des serveurs à l'aide de l'ancien outil de vérification fourni par la plate-forme, sauf si <ph name="CHROME_ROOT_STORE_ENABLED_POLICY_NAME" /> est activé.
-      Lorsqu'il n'est pas défini, l'outil intégré de vérification des certificats ou l'ancien outil peuvent être utilisés.
-
-      Il est prévu que cette règle soit supprimée dans la version 107 de <ph name="PRODUCT_NAME" /> pour <ph name="MAC_OS_NAME" />, car l'ancien outil de vérification des certificats sur <ph name="MAC_OS_NAME" /> ne devrait alors plus être pris en charge.
-      </translation>
 <translation id="4874982543810021567">Bloquer WebUSB sur ces sites</translation>
 <translation id="4876805738539874299">Version SSL maximale activée</translation>
 <translation id="4877402532842958110">Cette règle est obsolète (veuillez utiliser la règle <ph name="URL_ALLOWLIST_POLICY_NAME" /> à la place).

@@ -1108,6 +1108,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="3906954721959377182">Tablični računalnik</translation>
 <translation id="3909477809443608991"><ph name="URL" /> želi predvajati zaščiteno vsebino. Google bo preveril identiteto naprave in do nje bo morda dostopalo to spletno mesto.</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> – <ph name="ERROR" /></translation>
+<translation id="3923112503730743940">Oufuku Hagaki (razglednica)</translation>
 <translation id="3927932062596804919">Ne dovoli</translation>
 <translation id="393316646445601645">Internet in telekomunikacije</translation>
 <translation id="3939773374150895049">Želite namesto kode CVC uporabiti WebAuthn?</translation>
@@ -1136,6 +1137,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="4009243425692662128">Vsebina natisnjenih strani je poslana v Google Cloud ali drugim ponudnikom v analizo. Lahko je na primer pregledana glede tega, ali vsebuje občutljive podatke.</translation>
 <translation id="4010758435855888356">Želite odobriti dostop do shrambe?</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{Dokument PDF, ki vsebuje {COUNT} stran}one{Dokument PDF, ki vsebuje {COUNT} stran}two{Dokument PDF, ki vsebuje {COUNT} strani}few{Dokument PDF, ki vsebuje {COUNT} strani}other{Dokument PDF, ki vsebuje {COUNT} strani}}</translation>
+<translation id="4022639246993848966">3,5 x 5</translation>
 <translation id="4023431997072828269">Ta obrazec pošiljate prek povezave, ki ni varna, zato bodo drugi uporabniki lahko videli vaše podatke.</translation>
 <translation id="4025913568718019429">Gumb za upravljanje nastavitev zasebnosti v Googlu, pritisnite Enter, če želite odpreti nastavitve zasebnosti v računu Google.</translation>
 <translation id="4030383055268325496">&amp;Razveljavi dodajanje</translation>
@@ -1806,6 +1808,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="5764920692828389743">Pošiljanje na <ph name="EMAIL_ADDRESS" />.</translation>
 <translation id="5765072501007116331">Če si želite ogledati načine dostave in zahteve, izberite naslov</translation>
 <translation id="57689295674415555">Številka virtualne kartice ni izpolnjena?</translation>
+<translation id="5772086939108830423">Uporaba ključa za dostop v drugi napravi</translation>
 <translation id="5776313857861697733">Prednost</translation>
 <translation id="5781136890105823427">Preizkus je omogočen</translation>
 <translation id="578305955206182703">Jantarna</translation>
@@ -3055,6 +3058,7 @@ Dodatne podrobnosti:
 <translation id="950736567201356821">Trojno luknjanje zgoraj</translation>
 <translation id="961663415146723894">Vezava spodaj</translation>
 <translation id="962484866189421427">Ta vsebina lahko poskusi namestiti zavajajoče aplikacije, ki se izdajajo za kaj drugega ali zbirajo podatke, s katerimi vas je mogoče spremljati. <ph name="BEGIN_LINK" />Vseeno pokaži<ph name="END_LINK" /></translation>
+<translation id="964050462028070434">Upravljanje gesel in ključev za dostop …</translation>
 <translation id="96680173638229310">Avtomobili in vozila</translation>
 <translation id="969892804517981540">Uradna različica</translation>
 <translation id="973773823069644502">Dodajanje naslova za dostavo</translation>

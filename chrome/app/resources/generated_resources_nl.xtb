@@ -106,6 +106,7 @@ Je kunt je wachtwoorden altijd checken in <ph name="GOOGLE_PASSWORD_MANAGER" />.
 <translation id="1094607894174825014">Lees- of schrijfbewerking is aangevraagd met een ongeldige verschuiving op: <ph name="DEVICE_NAME" />.</translation>
 <translation id="1095761715416917775">Zorg dat je altijd toegang hebt tot je gesynchroniseerde gegevens</translation>
 <translation id="109647177154844434">Als je Parallels Desktop verwijdert, wordt je Windows-image verwijderd. Bijbehorende apps, instellingen en gegevens worden ook verwijderd. Weet je zeker dat je wilt doorgaan?</translation>
+<translation id="1097016918605049747">Deze pagina kan niet worden vertaald</translation>
 <translation id="1097658378307015415">Voordat je inlogt, log je eerst in als gast om het netwerk <ph name="NETWORK_ID" /> te activeren.</translation>
 <translation id="1099383081182863812">Zie je je Chromecast in de <ph name="BEGIN_LINK" />Google Home-app<ph name="END_LINK" />?</translation>
 <translation id="1099962274138857708">Afbeelding gekopieerd vanaf <ph name="DEVICE_NAME" /></translation>
@@ -678,6 +679,7 @@ Rechten die je al hebt gegeven aan apps, kunnen van toepassing zijn op dit accou
 <translation id="1632756664321977232">Tool Bijsnijden</translation>
 <translation id="163309982320328737">Standaard karakterbreedte is 'volledig'</translation>
 <translation id="1633947793238301227">De Google Assistent uitzetten</translation>
+<translation id="1634224622052500893">Wifi-netwerk gevonden</translation>
 <translation id="1634783886312010422">Heb je dit wachtwoord al gewijzigd op <ph name="WEBSITE" />?</translation>
 <translation id="1636212173818785548">OK</translation>
 <translation id="163712950892155760"><ph name="BEGIN_PARAGRAPH1" />App-gegevens kunnen alle gegevens zijn die een app heeft opgeslagen (op basis van de ontwikkelaarsinstellingen), waaronder gegevens zoals contacten, berichten en foto's. Back-upgegevens tellen niet mee voor de opslaglimiet van Drive.<ph name="END_PARAGRAPH1" />
@@ -780,6 +782,7 @@ Rechten die je al hebt gegeven aan apps, kunnen van toepassing zijn op dit accou
 <translation id="1730917990259790240"><ph name="BEGIN_PARAGRAPH1" />Als je apps wilt verwijderen, ga je naar Instellingen &gt; Google Play Store &gt; Android-voorkeuren beheren &gt; Apps of App-beheer en tik je op de app die je wilt verwijderen (je moet mogelijk naar rechts of links swipen om de app te vinden). Tik vervolgens op Verwijderen of Uitzetten.<ph name="END_PARAGRAPH1" /></translation>
 <translation id="1730989807608739928">Scrollen richting het laatste tabblad</translation>
 <translation id="1731911755844941020">Aanvraag wordt verstuurd...</translation>
+<translation id="1732445923934584865">Persoonlijk vragen</translation>
 <translation id="1733383495376208985">Gesynchroniseerde gegevens versleutelen met je eigen <ph name="BEGIN_LINK" />wachtwoordzin voor synchronisatie<ph name="END_LINK" />. Hieronder vallen geen betaalmethoden en adressen van Google Pay.</translation>
 <translation id="1734212868489994726">Lichtblauw</translation>
 <translation id="1734230530703461088">Kan extensies niet binnen de tijdslimiet laden. Neem contact op met je beheerder.</translation>
@@ -1305,6 +1308,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2203088913459920044">De naam mag letters, cijfers en speciale tekens bevatten</translation>
 <translation id="220321590587754225">Kan geen verbinding maken. Probeer het opnieuw.</translation>
 <translation id="2204034823255629767">Alles lezen en wijzigen wat je typt</translation>
+<translation id="2204387456724731099">Deze selectie kan niet worden vertaald</translation>
 <translation id="220858061631308971">Voer deze pincode in op '<ph name="DEVICE_NAME" />':</translation>
 <translation id="2210462644007531147">Kan de installatie niet afronden</translation>
 <translation id="2212565012507486665">Cookies toestaan</translation>
@@ -2011,6 +2015,7 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="2839032553903800133">Meldingen geblokkeerd</translation>
 <translation id="2841013758207633010">Tijd</translation>
 <translation id="2841837950101800123">Provider</translation>
+<translation id="2842013086666334835">Inloggen bij <ph name="NETWORK_ID" /></translation>
 <translation id="2843560154284403323">Als je de installatie van Linux wilt afronden, update je Chrome OS en probeer je het opnieuw.</translation>
 <translation id="2844169650293029770">USB-C-apparaat (poort links aan de voorkant)</translation>
 <translation id="2844809857160214557">Afdruktaken bekijken en beheren</translation>
@@ -2111,6 +2116,7 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="2927017729816812676">Cache-opslag</translation>
 <translation id="2928795416630981206">Toestemming om je camerapositie bij te houden</translation>
 <translation id="2931157624143513983">Aanpassen aan afdrukgebied</translation>
+<translation id="2931342457001070961">Geen microfoon aangesloten</translation>
 <translation id="2932085390869194046">Wachtwoord voorstellen…</translation>
 <translation id="2932483646085333864">Log uit en weer in om de synchronisatie te starten</translation>
 <translation id="2932883381142163287">Misbruik melden</translation>
@@ -2174,6 +2180,7 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="2996286169319737844">De gegevens zijn versleuteld met je wachtwoordzin voor synchronisatie. Hieronder vallen geen betaalmethoden en adressen van Google Pay.</translation>
 <translation id="2996722619877761919">Omslaan aan lange zijde</translation>
 <translation id="2996932914629936323">Hiermee wordt de geschiedenis van al je gesynchroniseerde apparaten gewist</translation>
+<translation id="2998267783395280091">Netwerk gevonden</translation>
 <translation id="3000378525979847272">Rechten voor <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> toegestaan</translation>
 <translation id="3000461861112256445">Monogeluid</translation>
 <translation id="3001144475369593262">Kinderaccounts</translation>
@@ -2325,6 +2332,7 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="3142562627629111859">Nieuwe groep</translation>
 <translation id="3143515551205905069">Synchronisatie annuleren</translation>
 <translation id="3143754809889689516">Afspelen vanaf het begin</translation>
+<translation id="3143937294861726703">Geheugenbesparing staat aan</translation>
 <translation id="3144647712221361880">Link openen als</translation>
 <translation id="3149510190863420837">Chrome-apps</translation>
 <translation id="3150693969729403281">Veiligheidscheck nu uitvoeren</translation>
@@ -5121,6 +5129,7 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="5884474295213649357">Dit tabblad is gekoppeld aan een USB-apparaat.</translation>
 <translation id="5885314688092915589">Je organisatie beheert dit profiel</translation>
 <translation id="5886009770935151472">Vinger 1</translation>
+<translation id="5886384907280980632">Nu uitzetten</translation>
 <translation id="5889282057229379085">Maximum aantal tussenliggende certificeringsinstanties: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5891688036610113830">Wifi-netwerken met voorrang</translation>
 <translation id="5895138241574237353">Opnieuw starten</translation>
@@ -5220,6 +5229,7 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="5975792506968920132">Percentage acculading</translation>
 <translation id="5976160379964388480">Overige</translation>
 <translation id="5978277834170881274">Standaard spellingcontrole gebruiken</translation>
+<translation id="5978395054855988504">Batterijbesparing staat aan</translation>
 <translation id="5978493744931296692">Je beheerder heeft andere profielen uitgezet</translation>
 <translation id="5979084224081478209">Wachtwoorden controleren</translation>
 <translation id="5979156418378918004">{NUM_EXTENSIONS,plural, =1{Je hebt 1 potentieel schadelijke extensie weer aangezet}other{Je hebt {NUM_EXTENSIONS} potentieel schadelijke extensies weer aangezet}}</translation>
@@ -8423,6 +8433,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="9048745018038487540">Alle lettertypen selecteren</translation>
 <translation id="9050666287014529139">Wachtwoordzin</translation>
 <translation id="9052404922357793350">Doorgaan met blokkeren</translation>
+<translation id="90528604757378587">Achtergrondactiviteit en sommige visuele effecten, zoals vloeiend scrollen, kunnen beperkt zijn.</translation>
 <translation id="9053563360605707198">Dubbelzijdig afdrukken</translation>
 <translation id="9055636786322918818">RC4-versleuteling afdwingen. Als je deze optie gebruikt, loop je meer risico, aangezien RC4-codering onbeveiligd is.</translation>
 <translation id="9056810968620647706">Geen overeenkomsten gevonden.</translation>

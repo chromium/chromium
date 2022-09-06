@@ -714,6 +714,7 @@
 <translation id="16620462294541761">معذرت، آپ کے پاس ورڈ کی توثیق نہیں کی جا سکی۔ براہ کرم دوبارہ کوشش کریں۔</translation>
 <translation id="166278006618318542">موضوع عوامی کلید الگورتھم</translation>
 <translation id="1662801900924515589"><ph name="APP" /> انسٹال ہو گئی</translation>
+<translation id="1665328953287874063">‏اپنا <ph name="DEVICE_TYPE" /> غیر مقفل کرنے کے لیے پاس ورڈ یا PIN کا استعمال کریں</translation>
 <translation id="1666232093776384142">پیریفیرلز کے لئے ڈیٹا تک رسائی کے تحفظ کو غیر فعال کریں</translation>
 <translation id="1667842670298352129">‏کچھ مخصوص ٹیکسٹ کو بآواز بلند پڑھتے ہوئے سنیں۔ پہلے، اپنی اسکرین کے نیچے 'سننے کیلئے منتخب کریں' آئیکن کو منتخب کریں، پھر ٹیکسٹ کو نمایاں کریں۔ آپ کی بورڈ شارٹ کٹ بھی استعمال کر سکتے ہیں: ٹیکسٹ نمایاں کریں، پھر Search + S کو دبائیں۔</translation>
 <translation id="1668435968811469751">دستی طور پر اندراج کریں</translation>
@@ -1353,6 +1354,7 @@
 <translation id="2251218783371366160">سسٹم ویور کے ساتھ کھولیں</translation>
 <translation id="225163402930830576">نیٹ ورکس کو ریفریش کریں</translation>
 <translation id="2251809247798634662">نئی پوشیدگی ونڈو</translation>
+<translation id="2252017960592955005">دیکھنے کا تحفظ (بی ٹا)</translation>
 <translation id="225240747099314620">تحفظ یافتہ مواد کیلئے شناخت کنندگان کی اجازت دیں (کمپیوٹر ری اسٹارٹ کرنے کی ضرورت ہو سکتی ہے)</translation>
 <translation id="2255077166240162850">یہ آلہ مختلف ڈومین یا موڈ میں پہلے سے مقفل ہے۔</translation>
 <translation id="2255317897038918278">‏Microsoft ٹائم اسٹامپنگ</translation>
@@ -1837,6 +1839,7 @@
 <translation id="2691385045260836588">ماڈل</translation>
 <translation id="2691440343905273290">ان پٹ ترتیبات تبدیل کریں</translation>
 <translation id="2693176596243495071">افوہ!  ایک نامعلوم خرابی پیش آ گئی۔ مسئلہ برقرار رہنے پر براہ کرم بعد میں دوبارہ کوشش کریں یا اپنے منتظم سے رابطہ کریں۔</translation>
+<translation id="2698147581454716013">‏یہ ایک بنڈل کردہ آلہ ہے اور اس کا Kiosk اور Signage Upgrade کے ساتھ اندراج نہیں کیا جا سکتا۔</translation>
 <translation id="2699911226086014512">‏کوڈ <ph name="RETRIES" /> کے ساتھ PIN کی کارروائی ناکام ہو گئی۔</translation>
 <translation id="2701330563083355633"><ph name="DEVICE_NAME" /> سے اشتراک کردہ</translation>
 <translation id="2701737434167469065">سائن ان کریں، <ph name="EMAIL" /></translation>
@@ -1915,6 +1918,7 @@
 <translation id="2757338480560142065">اس بات کو یقینی بنائیں کہ آپ جو پاس ورڈ محفوظ کر رہے ہیں وہ آپ کے <ph name="WEBSITE" /> کے پاس ورڈ سے مماثل ہے۔</translation>
 <translation id="2762441749940182211">کیمرا مسدود ہے</translation>
 <translation id="2764786626780673772">‏VPN کی تفصیلات</translation>
+<translation id="2764920001292228569">پروفائل کا نام درج کریں</translation>
 <translation id="2765100602267695013">براہ کرم اپنے موبائل فراہم کنندہ سے رابطہ کریں</translation>
 <translation id="2765217105034171413">چھوٹا</translation>
 <translation id="2766006623206032690">پی&amp;سٹ کریں اور جائیں</translation>
@@ -3284,6 +3288,7 @@
 <translation id="4065876735068446555">آپ کا زیر استعمال نیٹ ورک (<ph name="NETWORK_ID" />) آپ سے اپنا لاگ ان صفحہ ملاحظہ کرنے کا تقاضہ کر سکتا ہے۔</translation>
 <translation id="4066207411788646768">اپنے نیٹ ورک میں دستیاب پرنٹرز دیکھنے کے لیے براہ کرم اپنا کنکشن چیک کریں</translation>
 <translation id="4066945815577305767">پاس ورڈز کا وقت ختم ہو گیا</translation>
+<translation id="4067839975993712852">موجودہ ٹیب کو پڑھا ہوا کے بطور نشان زد کریں</translation>
 <translation id="4068776064906523561">محفوظ کردہ فنگر پرنٹس</translation>
 <translation id="407173827865827707">کلک کرنے پر</translation>
 <translation id="4072701974556190758">‏پاس ورڈ آپ کے Google اکاؤنٹ میں محفوظ کیا جائے گا، <ph name="ACCOUNT" />۔ آپ کو اسے یاد رکھنے کی ضرورت نہیں ہے۔</translation>
@@ -5764,6 +5769,7 @@
 <translation id="6508248480704296122"><ph name="NAME_PH" /> سے متعلق</translation>
 <translation id="6508261954199872201">ایپ: <ph name="APP_NAME" /></translation>
 <translation id="6509207748479174212">میڈیا لائسنس</translation>
+<translation id="6511827214781912955"><ph name="FILENAME" /> کو حذف کرنے پر غور کریں، تاکہ اس آلے کو استعمال کرنے والے دوسرے لوگ آپ کے پاس ورڈز نہ دیکھ سکیں</translation>
 <translation id="6513247462497316522">‏اگر آپ کسی دوسرے نیٹ ورک سے منسلک نہیں ہیں تو Google Chrome موبائل ڈیٹا کا استعمال کرے گا۔</translation>
 <translation id="6514010653036109809">دستیاب آلہ:</translation>
 <translation id="6514565641373682518">اس صفحہ نے آپ کے ماؤس کرسر کو غیر فعال کر دیا ہے۔</translation>
@@ -6045,6 +6051,7 @@
 <translation id="6781978626986383437">‏Linux کا بیک اپ منسوخ ہو گیا</translation>
 <translation id="6782067259631821405">‏غلط PIN</translation>
 <translation id="6784523122863989144">پروفائل تعاون یافتہ ہے</translation>
+<translation id="6785739405821760313">محفوظ کردہ ڈیسکس دیکھی جا رہی ہیں۔ نیویگیٹ کرنے کے لیے ٹیب دبائیں۔</translation>
 <translation id="6785872064505734160">‏Chrome میں موجود Google اسسٹنٹ سبھی ویب سائٹوں پر آپ کے لیے کارروائیوں کو مکمل کر سکتی ہے</translation>
 <translation id="6786747875388722282">توسیعات</translation>
 <translation id="6787097042755590313">دیگر ٹیب</translation>
@@ -6502,6 +6509,7 @@
 <translation id="7222204278952406003">‏Chrome آپ کا ڈیفالٹ براؤزر ہے</translation>
 <translation id="7222232353993864120">ای میل پتہ</translation>
 <translation id="7222235798733126207">سائٹس کے درمیان محدود اشتراک</translation>
+<translation id="7225082563376899794">‏پاس ورڈز بھرتے وقت Windows Hello کا استعمال کریں</translation>
 <translation id="7225179976675429563">نیٹ ورک کی قسم غائب ہے</translation>
 <translation id="7227458944009118910">ذیل میں درج ایپس پروٹوکول لنکس کو بھی ہینڈل کر سکتی ہیں۔ دیگر ایپس اجازت طلب کریں گی۔</translation>
 <translation id="7228523857728654909">اسکرین لاک اور سائن ان</translation>
@@ -6543,6 +6551,7 @@
 <translation id="7258192266780953209">تبدیلیاں</translation>
 <translation id="7258225044283673131">ایپلیکیشن جواب نہیں دے رہی ہے۔ ایپ بند کرنے کیلئے، "زبردستی بند کریں" منتخب کریں۔</translation>
 <translation id="7260186537988033909">کیوسک اور سائنیج آلہ کا اندراج مکمل ہو گیا</translation>
+<translation id="7261851165551049223">‏پاس ورڈز بھرتے وقت TouchID کا استعمال کریں</translation>
 <translation id="7262004276116528033">اس سائن ان سروس کی میزبانی <ph name="SAML_DOMAIN" />  کرتا ہے</translation>
 <translation id="7264695323040866038">تعاون یافتہ ویب لنکس کھولنے کے لیے ہمیشہ <ph name="APP" /> استعمال کریں؟</translation>
 <translation id="7267044199012331848">ورچوئل مشین کو انسٹال نہیں کیا جا سکا۔ براہ کرم دوبارہ کوشش کریں، یا اپنے منتظم سے رابطہ کریں۔ خرابی کا کوڈ: <ph name="ERROR_CODE" />۔</translation>
@@ -6629,6 +6638,7 @@
 <translation id="7358338787722390626">سائیڈ پینل میں تلاش ٹول بار کو بند کریں</translation>
 <translation id="735994578317267253">‏کسی بھی ChromeOS آلہ پر اپنی ایپس، ترتیبات وغیرہ حاصل کریں</translation>
 <translation id="7360233684753165754"><ph name="PRINTER_NAME" /> کیلئے <ph name="PAGE_NUMBER" /> صفحات</translation>
+<translation id="7360257054721917104">محفوظ کردہ ڈیسکس اور تمثیلات دیکھی جا رہی ہیں۔ نیویگیٹ کرنے کے لیے ٹیب دبائیں۔</translation>
 <translation id="7361297102842600584"><ph name="PLUGIN_NAME" /> چلانے کیلئے دایاں کلک کریں</translation>
 <translation id="7362387053578559123">سائٹس بلوٹوتھ آلات سے منسلک ہونے کے لیے پوچھ سکتی ہیں</translation>
 <translation id="7363349185727752629">آپ کی رازداری کے انتخابات کی گائیڈ</translation>
@@ -7281,6 +7291,7 @@
 <translation id="7953669802889559161">ان پٹس</translation>
 <translation id="7953955868932471628">شارٹ کٹس کا نظم کریں</translation>
 <translation id="7955105108888461311">ذاتی طور پر پوچھیں</translation>
+<translation id="7955177647836564772">‏Smart Lock کے آن ہونے اور آپ کے فون کے غیر مقفل ہونے پر آپ کو پاس ورڈ یا PIN درج کرنے کی ضرورت نہیں ہے</translation>
 <translation id="7956373551960864128">آپ کے محفوظ کردہ پرنٹرز</translation>
 <translation id="7957074856830851026">‏آلہ کی معلومات دیکھیں، جیسے اس کا نمبر شمار یا اثاثہ ID</translation>
 <translation id="7959074893852789871">فائل میں متعدد سرٹیفیکیٹس شامل ہیں، ان میں سے کچھ کو درآمد نہیں کیا گیا:</translation>
@@ -7538,6 +7549,7 @@
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />آپ کے آلات<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195027750202970175">ڈسک پر سائز</translation>
 <translation id="8195191503358432289">پاس ورڈ شامل کریں</translation>
+<translation id="8197673340773315084">کوئی نام یا لیبل شامل کریں جیسے دفتر یا ذاتی</translation>
 <translation id="8198456017687137612">کاسٹنگ ٹیب</translation>
 <translation id="8199300056570174101">نیٹ ورک (سروس) اور آلہ کی خصوصیات</translation>
 <translation id="8200772114523450471">دوبارہ شروع کریں</translation>
@@ -7635,6 +7647,7 @@
 <translation id="8284279544186306258">سبھی <ph name="WEBSITE_1" /> سائٹس</translation>
 <translation id="8284326494547611709">کیپشنز</translation>
 <translation id="8286036467436129157">سائن ان کریں</translation>
+<translation id="828642162569365647">‏یہ پاس ورڈ یا PIN اس <ph name="DEVICE_TYPE" /> پر آپ کے ڈیٹا کی حفاظت کرتا ہے اور کسی بھی اس معلومات جس تک آپ اپنے فون سے رسائی حاصل کرتے ہیں۔ آپ کو نیند سے بیدار ہونے پر ہر بار اپنے <ph name="DEVICE_TYPE" /> کو غیر مقفل کرنا ہوگا۔</translation>
 <translation id="8287902281644548111">‏API کال/URL کے لحاظ سے تلاش کریں</translation>
 <translation id="8288032458496410887"><ph name="APP" /> کو اَن انسٹال کریں…</translation>
 <translation id="8289128870594824098">ڈسک کا سائز</translation>

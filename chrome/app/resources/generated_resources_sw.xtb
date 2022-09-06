@@ -714,6 +714,7 @@ Huenda ruhusa ambazo tayari umezipa programu zikatumika kwenye akaunti hii. Unaw
 <translation id="16620462294541761">Samahani, nenosiri lako halikuweza kuthibitishwa. Tafadhali jaribu tena.</translation>
 <translation id="166278006618318542">Kanuni ya Ufunguo wa Umma wa Mhusika</translation>
 <translation id="1662801900924515589">Umesakinisha <ph name="APP" /></translation>
+<translation id="1665328953287874063">Tumia nenosiri au PIN ili ufungue <ph name="DEVICE_TYPE" /> yako</translation>
 <translation id="1666232093776384142">Zima kipengele cha kulinda data inayoweza kufikiwa na vifaa vinavyounganishwa kwenye kompyuta</translation>
 <translation id="1667842670298352129">Sikiliza maandishi mahususi yakisomwa kwa sauti. Kwanza, chagua aikoni ya kipengele cha Chagua ili Izungumze kwenye sehemu ya chini ya skrini, kisha uangazie maandishi. Pia unaweza kutumia mikato ya kibodi: Angazia maandishi, kisha bonyeza kitufe cha Tafuta na S kwa wakati mmoja.</translation>
 <translation id="1668435968811469751">Jiandikishe mwenyewe</translation>
@@ -1847,6 +1848,7 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="2691385045260836588">Muundo</translation>
 <translation id="2691440343905273290">Badilisha mipangilio ya mbinu ya kuingiza data</translation>
 <translation id="2693176596243495071">Samahani! Hitilafu isiyojulikana imetokea. Tafadhali jaribu tena baadaye au uwasiliane na msimamizi wako ikiwa tatizo hili litaendelea.</translation>
+<translation id="2698147581454716013">Hiki ni kifaa chenye kifurushi na hakiwezi kusajiliwa kwenye Toleo Jipya la Skrini ya Kuonyesha Matangazo na Mabango Dijitali.</translation>
 <translation id="2699911226086014512">Imeshindwa kuweka PIN kwa kutumia msimbo <ph name="RETRIES" />.</translation>
 <translation id="2701330563083355633">Umepokea kutoka <ph name="DEVICE_NAME" /></translation>
 <translation id="2701737434167469065">Ingia katika akaunti, <ph name="EMAIL" /></translation>
@@ -1925,6 +1927,7 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="2757338480560142065">Hakikisha kwamba nenosiri unalohifadhi linalingana na nenosiri lako kwenye <ph name="WEBSITE" /></translation>
 <translation id="2762441749940182211">Kamera imezuiwa</translation>
 <translation id="2764786626780673772">Maelezo ya VPN</translation>
+<translation id="2764920001292228569">Weka jina la wasifu</translation>
 <translation id="2765100602267695013">Tafadhali wasiliana na mtoa huduma wa kifaa chako cha mkononi</translation>
 <translation id="2765217105034171413">Ndogo</translation>
 <translation id="2766006623206032690">&amp;Bandika na uende</translation>
@@ -3294,6 +3297,7 @@ Ungependa kuanza <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4065876735068446555">Mtandao unaotumia (<ph name="NETWORK_ID" />) unaweza kukuhitaji utembelee ukurasa wake wa kuingia katika akaunti.</translation>
 <translation id="4066207411788646768">Tafadhali angalia muunganisho wako ili uone printa zinazopatikana katika mtandao wako</translation>
 <translation id="4066945815577305767">Muda wa kuthibitisha manenosiri umeisha</translation>
+<translation id="4067839975993712852">Weka alama kuwa kichupo ulichofungua kimesomwa</translation>
 <translation id="4068776064906523561">Alama za vidole zilizohifadhiwa</translation>
 <translation id="407173827865827707">Unapobofya</translation>
 <translation id="4072701974556190758">Nenosiri litahifadhiwa katika Akaunti yako ya Google, <ph name="ACCOUNT" />. Hutahitaji kulikumbuka.</translation>
@@ -5774,6 +5778,7 @@ Unaweza kukabidhi kitendo hiki swichi nyingi.</translation>
 <translation id="6508248480704296122">Inahusiana na <ph name="NAME_PH" /></translation>
 <translation id="6508261954199872201">Programu: <ph name="APP_NAME" /></translation>
 <translation id="6509207748479174212">Leseni ya maudhui</translation>
+<translation id="6511827214781912955">Hakikisha unafuta <ph name="FILENAME" />, ili watu wengine wanaotumia kifaa hiki wasione manenosiri yako</translation>
 <translation id="6513247462497316522">Google Chrome itatumia data ya simu ya mkononi ukiwa hujaunganishwa kwenye mtandao mwingine.</translation>
 <translation id="6514010653036109809">Kifaa kinachopatikana:</translation>
 <translation id="6514565641373682518">Ukurasa huu umekilemza kiteuzi chako cha kipanya.</translation>
@@ -6055,6 +6060,7 @@ Una manenosiri # zaidi yaliyoathiriwa. Kidhibiti cha Manenosiri cha Google kinap
 <translation id="6781978626986383437">Imeghairi kuhifadhi rudufu ya Linux</translation>
 <translation id="6782067259631821405">PIN si Sahihi</translation>
 <translation id="6784523122863989144">Wasifu unaoweza kutumika</translation>
+<translation id="6785739405821760313">Unaangalia maeneokazi yaliyohifadhiwa. Bonyeza kichupo ili usogeze.</translation>
 <translation id="6785872064505734160">Programu ya Mratibu wa Google katika Chrome inaweza kukukamilishia vitendo kwenye tovuti</translation>
 <translation id="6786747875388722282">Viendelezi</translation>
 <translation id="6787097042755590313">Kichupo Kingine</translation>
@@ -6512,6 +6518,7 @@ Una manenosiri # zaidi yaliyoathiriwa. Kidhibiti cha Manenosiri cha Google kinap
 <translation id="7222204278952406003">Chrome ni kivinjari chako chaguomsingi</translation>
 <translation id="7222232353993864120">Anwani ya barua pepe</translation>
 <translation id="7222235798733126207">Ushiriki uliodhibitiwa kati ya tovuti</translation>
+<translation id="7225082563376899794">Tumia Windows Hello unapojaza manenosiri</translation>
 <translation id="7225179976675429563">Aina ya mtandao inakosekana</translation>
 <translation id="7227458944009118910">Programu zilizoorodheshwa hapo chini zinaweza kudhibiti viungo vya itifaki pia. Programu zingine zitaomba ruhusa.</translation>
 <translation id="7228523857728654909">Kufunga programu na kuingia katika akaunti</translation>
@@ -6553,6 +6560,7 @@ Una manenosiri # zaidi yaliyoathiriwa. Kidhibiti cha Manenosiri cha Google kinap
 <translation id="7258192266780953209">Ugeuzaji</translation>
 <translation id="7258225044283673131">Programu haifanyi kazi. Chagua "Lazimisha kufunga" ili ufunge programu.</translation>
 <translation id="7260186537988033909">Uandikishaji wa kifaa cha skrini ya kuonyesha matangazo na mabango ya dijitali umekamilika</translation>
+<translation id="7261851165551049223">Tumia Touch ID unapojaza manenosiri</translation>
 <translation id="7262004276116528033">Huduma hii ya kuingia katika akaunti inatolewa na <ph name="SAML_DOMAIN" /></translation>
 <translation id="7264695323040866038">Je, ungependa kutumia programu ya <ph name="APP" /> kila wakati kufungua viungo vya wavuti vinavyotumika?</translation>
 <translation id="7267044199012331848">Imeshindwa kusakinisha mashine pepe. Tafadhali jaribu tena au uwasiliane na msimamizi wako. Msimbo wa hitilafu: <ph name="ERROR_CODE" />.</translation>
@@ -6639,6 +6647,7 @@ Una manenosiri # zaidi yaliyoathiriwa. Kidhibiti cha Manenosiri cha Google kinap
 <translation id="7358338787722390626">Funga utafutaji kwenye kidirisha cha pembeni</translation>
 <translation id="735994578317267253">Pata programu zako, mipangilio na zaidi kwenye kifaa chochote cha ChromeOS</translation>
 <translation id="7360233684753165754">Kurasa <ph name="PAGE_NUMBER" /> kwa <ph name="PRINTER_NAME" /></translation>
+<translation id="7360257054721917104">Unaangalia maeneokazi na violezo vilivyohifadhiwa. Bonyeza kichupo ili usogeze.</translation>
 <translation id="7361297102842600584">Bofya kitufe cha kulia cha kipanya ili utumie <ph name="PLUGIN_NAME" /></translation>
 <translation id="7362387053578559123">Tovuti zinaweza kuomba ruhusa ya kuunganisha kwenye vifaa vyenye Bluetooth</translation>
 <translation id="7363349185727752629">Mwongozo wa chaguo zako za faragha</translation>
@@ -7293,6 +7302,7 @@ Bonyeza swichi au kitufe ulichokabidhi ili uondoe kitendo ulichokabidhi.</transl
 <translation id="7953669802889559161">Mbinu za kuingiza data</translation>
 <translation id="7953955868932471628">Dhibiti mikato</translation>
 <translation id="7955105108888461311">Omba idhini mwenyewe</translation>
+<translation id="7955177647836564772">Huhitaji kuweka nenosiri au PIN, ikiwa kipengele cha Smart Lock kimewashwa na simu yako imefunguliwa</translation>
 <translation id="7956373551960864128">Printa ulizohifadhi</translation>
 <translation id="7957074856830851026">Kuona maelezo ya kifaa, kama vile nambari ya ufuatiliaji au kitambulisho cha kipengee</translation>
 <translation id="7959074893852789871">Faili ina vyeti anuwai, badhii ya vingine ambavyo havikuletwa:</translation>
@@ -7551,6 +7561,7 @@ Sidhani tovuti hii inapaswa kuzuiwa!</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Vifaa vyako<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195027750202970175">Ukubwa kwenye diski</translation>
 <translation id="8195191503358432289">Weka nenosiri</translation>
+<translation id="8197673340773315084">Weka jina au lebo, kama vile wasifu wa Kazi au Binafsi</translation>
 <translation id="8198456017687137612">Inatuma maudhui ya kichupo</translation>
 <translation id="8199300056570174101">Sifa za Kifaa na Mtandao (Huduma)</translation>
 <translation id="8200772114523450471">Endelea</translation>
@@ -7648,6 +7659,7 @@ Sidhani tovuti hii inapaswa kuzuiwa!</translation>
 <translation id="8284279544186306258">tovuti zote <ph name="WEBSITE_1" /></translation>
 <translation id="8284326494547611709">Manukuu</translation>
 <translation id="8286036467436129157">Ingia</translation>
+<translation id="828642162569365647">Nenosiri au PIN hii inalinda data yako kwenye <ph name="DEVICE_TYPE" /> hii na taarifa yoyote unayoifikia kutoka kwenye simu yako. Utahitaji kufungua kila wakati skrini ya <ph name="DEVICE_TYPE" /> yako inapowaka.</translation>
 <translation id="8287902281644548111">Tafuta kulingana na simu ya API/URL</translation>
 <translation id="8288032458496410887">Ondoa <ph name="APP" />...</translation>
 <translation id="8289128870594824098">Ukubwa wa diski</translation>

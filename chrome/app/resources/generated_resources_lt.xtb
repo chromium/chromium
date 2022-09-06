@@ -6533,6 +6533,7 @@ Turite dar # pažeistų slaptažodžių. „Google“ slaptažodžių tvarkyklė
 <translation id="7222204278952406003">„Chrome“ yra numatytoji naršyklė</translation>
 <translation id="7222232353993864120">El. pašto adresas</translation>
 <translation id="7222235798733126207">Ribotas bendrinimas tarp svetainių</translation>
+<translation id="7225082563376899794">Naudoti „Windows Hello“ pildant slaptažodžius</translation>
 <translation id="7225179976675429563">Trūksta tinklo tipo</translation>
 <translation id="7227458944009118910">Toliau nurodytos programos taip pat gali apdoroti protokolo nuorodas. Kitos programos prašys leidimo.</translation>
 <translation id="7228523857728654909">Ekrano užraktas ir prisijungimas</translation>
@@ -6574,6 +6575,7 @@ Turite dar # pažeistų slaptažodžių. „Google“ slaptažodžių tvarkyklė
 <translation id="7258192266780953209">Transformacijos</translation>
 <translation id="7258225044283673131">Programa nereaguoja. Pasirinkite „Priverstinai uždaryti“, kad uždarytumėte programą.</translation>
 <translation id="7260186537988033909">Viešojo terminalo ir ženklų įrenginio registracija baigta</translation>
+<translation id="7261851165551049223">Naudoti „Touch ID“ pildant slaptažodžius</translation>
 <translation id="7262004276116528033">Ši prisijungimo paslauga priglobiama <ph name="SAML_DOMAIN" />.</translation>
 <translation id="7264695323040866038">Visada naudoti programą „<ph name="APP" />“ palaikomoms žiniatinklio nuorodoms atidaryti?</translation>
 <translation id="7267044199012331848">Nepavyko įdiegti virtualiojo įrenginio. Bandykite dar kartą arba susisiekite su administratoriumi. Klaidos kodas: <ph name="ERROR_CODE" />.</translation>

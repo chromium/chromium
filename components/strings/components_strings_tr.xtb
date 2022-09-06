@@ -1806,6 +1806,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="5764920692828389743"><ph name="EMAIL_ADDRESS" /> adresine gönder</translation>
 <translation id="5765072501007116331">Teslimat yöntemlerini ve gereksinimleri görmek için bir adres seçin</translation>
 <translation id="57689295674415555">Sanal kart numarası doldurulmadı mı?</translation>
+<translation id="5772086939108830423">Farklı bir cihazdaki şifre anahtarını kullanın</translation>
 <translation id="5776313857861697733">Öncelik</translation>
 <translation id="5781136890105823427">Deneme etkin</translation>
 <translation id="578305955206182703">Kehribar rengi</translation>
@@ -2202,6 +2203,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="6916954549222464607">Finansal planlama ve yönetim</translation>
 <translation id="6917795328362592458">Az önce kullandığınız şifrenin bir veri ihlali sonucunda açığa çıktığı anlaşıldı. Şifre Yöneticisi, hesaplarınızın güvenliğini sağlamak için kayıtlı şifrelerinizi kontrol etmenizi öneriyor.</translation>
 <translation id="6934672428414710184">Bu ad Google Hesabınızdan gelmektedir</translation>
+<translation id="6936976777388162184">Paket halinde sunulan bu cihaz, Kiosk ve Tabela Güncellemesi'ne kaydedilemez.</translation>
 <translation id="6939469646605424232">TV dizileri</translation>
 <translation id="6944692733090228304">Şifrenizi <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> tarafından yönetilmeyen bir sitede girdiniz. Hesabınızı korumak için şifrenizi başka uygulama ve sitelerde tekrar kullanmayın.</translation>
 <translation id="6945221475159498467">Seç</translation>
@@ -3055,6 +3057,7 @@ Ek ayrıntılar:
 <translation id="950736567201356821">Üstte üçlü delik</translation>
 <translation id="961663415146723894">Alttan bağlı</translation>
 <translation id="962484866189421427">Bu içerik başka bir şeyi taklit eden aldatıcı uygulamalar yükleyebilir veya sizi izlemek için kullanılabilecek veriler toplayabilir. <ph name="BEGIN_LINK" />Yine de göster<ph name="END_LINK" /></translation>
+<translation id="964050462028070434">Şifreleri ve şifre anahtarlarını yönetin…</translation>
 <translation id="96680173638229310">Arabalar ve taşıtlar</translation>
 <translation id="969892804517981540">Resmi Derleme</translation>
 <translation id="973773823069644502">Teslimat Adresi Ekle</translation>

@@ -1031,6 +1031,7 @@ Các quyền bạn từng cấp cho ứng dụng có thể áp dụng cho cả t
 <translation id="1931152874660185993">Không có thành phần nào được cài đặt.</translation>
 <translation id="1931410639376954712">Đang cài đặt <ph name="DEVICE_OS" /></translation>
 <translation id="1932098463447129402">Không được Trước</translation>
+<translation id="1933489278505808700">Đã cho phép đọc và thay đổi</translation>
 <translation id="1935303383381416800">Được phép xem vị trí của bạn</translation>
 <translation id="1936157145127842922">Hiển thị trong Thư mục</translation>
 <translation id="1936931585862840749">Hãy dùng số để biểu thị số lượng bản cần in (1 đến <ph name="MAX_COPIES" />).</translation>
@@ -3552,6 +3553,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="4310132194679586591">Chọn một ứng dụng trên thiết bị để mở đường liên kết này</translation>
 <translation id="4310139701823742692">Tệp có định dạng sai. Hãy kiểm tra tệp PPD rồi thử lại.</translation>
 <translation id="431076611119798497">&amp;Chi tiết</translation>
+<translation id="4311284648179069796">Không được phép đọc và thay đổi</translation>
 <translation id="4312701113286993760">{COUNT,plural, =1{1 Tài khoản Google}other{<ph name="EXTRA_ACCOUNTS" /> Tài khoản Google}}</translation>
 <translation id="4312866146174492540">Chặn (mặc định)</translation>
 <translation id="4314497418046265427">Làm việc năng suất hơn khi kết nối điện thoại với <ph name="DEVICE_TYPE" /></translation>
@@ -3743,6 +3745,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="4504940961672722399">Sử dụng tiện ích này bằng cách nhấp vào biểu tượng này hoặc bằng cách nhấn <ph name="EXTENSION_SHORTCUT" />.</translation>
 <translation id="450552327874992444">Từ đã được thêm</translation>
 <translation id="4507128560633489176">Đã xóa dữ liệu.</translation>
+<translation id="4507373251891673233">Bạn đã chặn tất cả tiện ích từ <ph name="HOST" /></translation>
 <translation id="450867954911715010">Cài đặt trợ năng</translation>
 <translation id="4508765956121923607">Xem &amp;Nguồn</translation>
 <translation id="4509421746503122514">Chạy lại để cập nhật</translation>
@@ -4016,6 +4019,7 @@ Nhấn tổ hợp phím Ctrl + Alt + Giảm độ sáng để thu nhỏ.</transl
 <translation id="4763408175235639573">Các cookie sau đã được cài đặt khi bạn xem trang này</translation>
 <translation id="4765524037138975789">{MONTHS,plural, =1{Thiết bị này sẽ được lưu trong 1 tháng và trong thời gian đó, bạn có thể kết nối mà không cần dùng mã. Chế độ này do quản trị viên của bạn thiết lập.}other{Thiết bị này sẽ được lưu trong {MONTHS} tháng và trong thời gian đó, bạn có thể kết nối mà không cần dùng mã. Chế độ này do quản trị viên của bạn thiết lập.}}</translation>
 <translation id="4765582662863429759">Cho phép Android Messages chuyển tiếp tin nhắn văn bản từ điện thoại sang Chromebook</translation>
+<translation id="4766598565665644999">Tất cả tiện ích đều có thể đọc và thay đổi <ph name="HOST" /></translation>
 <translation id="4768332406694066911">Bạn có các chứng chỉ từ những tổ chức nhận dạng bạn sau đây</translation>
 <translation id="4770119228883592393">Đã yêu cầu quyền. Hãy nhấn tổ hợp phím ⌘ + Option + Mũi tên xuống để phản hồi</translation>
 <translation id="4773112038801431077">Nâng cấp Linux</translation>
@@ -5189,6 +5193,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
           <ph name="LINE_BREAK" />
           Hình ảnh này sẽ hiển thị trên màn hình đăng nhập và màn hình khóa của Chromebook.</translation>
 <translation id="5925147183566400388">Con trỏ tới Báo cáo Thực hành Chứng nhận</translation>
+<translation id="5927232971138258197">Tiện ích này có thể đọc và thay đổi <ph name="HOST" /></translation>
 <translation id="592740088639760830">Dừng vùng chứa này</translation>
 <translation id="592880897588170157">Tải tệp PDF xuống thay vì tự động mở trong Chrome</translation>
 <translation id="592919310198008711">Khi tôi nhấp vào tiện ích</translation>
@@ -6295,6 +6300,7 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="6973611239564315524">Đã có bản nâng cấp lên Debian 10 (Buster)</translation>
 <translation id="69739764870135975">Nếu cũng đặt Google là công cụ tìm kiếm mặc định, thì bạn sẽ nhận được nội dung đề xuất phù hợp và có liên quan đến ngữ cảnh hơn</translation>
 <translation id="697508444536771064">Tắt Linux</translation>
+<translation id="6975361011348772931">Đã yêu cầu đọc và thay đổi</translation>
 <translation id="6978121630131642226">Công cụ Tìm kiếm</translation>
 <translation id="6979044105893951891">Chạy và thoát khỏi các phiên khách được quản lý</translation>
 <translation id="6979158407327259162">Google Drive</translation>
@@ -7294,6 +7300,7 @@ Nhấn một công tắc hoặc phím đã gán để xóa.</translation>
 <translation id="793531125873261495">Lỗi khi tải máy ảo xuống. Vui lòng thử lại.</translation>
 <translation id="7935451262452051102">Đã hoàn thành <ph name="PERCENT" />%</translation>
 <translation id="7939062555109487992">Tùy chọn nâng cao</translation>
+<translation id="7939073735115504773">Nhấp vào biểu tượng của tiện ích này để đọc và thay đổi <ph name="HOST" /></translation>
 <translation id="7939328347457537652">Quản lý chứng chỉ thiết bị</translation>
 <translation id="7939412583708276221">Vẫn tiếp tục</translation>
 <translation id="7941179291434537290">Trạng thái sẵn sàng của tính năng chia sẻ Internet:</translation>

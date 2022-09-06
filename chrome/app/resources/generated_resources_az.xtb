@@ -710,6 +710,7 @@ Hazırda tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna bilər. And
 <translation id="16620462294541761">Parolunuz doğrulanmadı. Yenidən cəhd edin.</translation>
 <translation id="166278006618318542">Subyektin İctimai Açarı Alqoritmi</translation>
 <translation id="1662801900924515589"><ph name="APP" /> quraşdırıldı</translation>
+<translation id="1665328953287874063"><ph name="DEVICE_TYPE" /> cihazını kiliddən çıxarmaq üçün parol və ya PIN istifadə edin</translation>
 <translation id="1666232093776384142">Periferik cihazlar üçün data giriş qorumasını deaktiv edin</translation>
 <translation id="1667842670298352129">Xüsusi mətnin ucadan səsləndirilməsinə qulaq asın. Əvvəlcə ekranınızın aşağısındakı "Seçib danışın" ikonasını seçin, sonra mətni vurğulayın. Həmçinin klaviatura qısa yolundan istifadə edə bilərsiniz: Mətni vurğulayın, sonra Axtarış + S düyməsini basın.</translation>
 <translation id="1668435968811469751">Əl ilə qeydiyyatdan keçirin</translation>
@@ -1348,6 +1349,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2251218783371366160">Sistem izləyici ilə açın</translation>
 <translation id="225163402930830576">Şəbəkələri yeniləyin</translation>
 <translation id="2251809247798634662">Yeni Anonim pəncərə</translation>
+<translation id="2252017960592955005">Baxış qorunması (Beta)</translation>
 <translation id="225240747099314620">Qorunan kontent üçün identifikatorlara icazə verin (kompüterin yenidən başladılması tələb oluna bilər)</translation>
 <translation id="2255077166240162850">Bu cihaz müxtəlif domen və ya rejimlə kilidləndi.</translation>
 <translation id="2255317897038918278">Microsoft Zaman Möhürləməsi</translation>
@@ -1834,6 +1836,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2691385045260836588">Model</translation>
 <translation id="2691440343905273290">Daxiletmə ayarlarını dəyişin</translation>
 <translation id="2693176596243495071">Xəta oldu. Sonra cəhd edin və ya administratorla əlaqə saxlayın.</translation>
+<translation id="2698147581454716013">Bu paketə bağlı cihazdır və Kiosk və Signage Upgrade'də qeydiyyatdan keçə bilməz.</translation>
 <translation id="2699911226086014512">PIN əməliyyatı <ph name="RETRIES" /> kodu ilə alınmadı.</translation>
 <translation id="2701330563083355633"><ph name="DEVICE_NAME" /> adlı cihazdan paylaşıldı</translation>
 <translation id="2701737434167469065">Daxil olun, <ph name="EMAIL" /></translation>
@@ -1912,6 +1915,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2757338480560142065">Yadda saxlanılan parolun <ph name="WEBSITE" /> paroluna uyğun olduğuna əmin olun</translation>
 <translation id="2762441749940182211">Kamera blok edildi</translation>
 <translation id="2764786626780673772">VPN detalları</translation>
+<translation id="2764920001292228569">Profil adı daxil edin</translation>
 <translation id="2765100602267695013">Mobil provayderinizlə əlaqə saxlayın</translation>
 <translation id="2765217105034171413">Kiçik</translation>
 <translation id="2766006623206032690">Yerləşdirin və keçin</translation>
@@ -3281,6 +3285,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="4065876735068446555">İstifadə etdiyiniz şəbəkə (<ph name="NETWORK_ID" />) login səhifəsinə daxil olmağınızı tələb edə bilər.</translation>
 <translation id="4066207411788646768">Şəbəkədə əlçatan printerlərə baxmaq üçün bağlantını yoxlayın</translation>
 <translation id="4066945815577305767">Parolların vaxtı keçib</translation>
+<translation id="4067839975993712852">Cari tabı oxunmuş olaraq qeyd edin</translation>
 <translation id="4068776064906523561">Yadda saxlanmış barmaq izləri</translation>
 <translation id="407173827865827707">Klikləyin</translation>
 <translation id="4072701974556190758">Parollar <ph name="ACCOUNT" /> Google Hesabınızda saxlanılacaq. Bunu yaddaşınızda saxlamağınız lazım deyil.</translation>
@@ -5758,6 +5763,7 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="6508248480704296122"><ph name="NAME_PH" /> ilə əlaqədar</translation>
 <translation id="6508261954199872201">Tətbiq: <ph name="APP_NAME" /></translation>
 <translation id="6509207748479174212">Media lisenziyası</translation>
+<translation id="6511827214781912955"><ph name="FILENAME" /> faylını silin ki, bu cihazı istifadə edən başqa şəxslər parollarınızı görməsin</translation>
 <translation id="6513247462497316522">Digər şəbəkəyə qoşulmadığınız halda Google Chrome mobil data istifadə edəcək.</translation>
 <translation id="6514010653036109809">Əlçatan cihaz:</translation>
 <translation id="6514565641373682518">Bu səhifə maus kursorunuzu deaktiv etdi.</translation>
@@ -6039,6 +6045,7 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="6781978626986383437">Linux yedəkləməsi ləğv edildi</translation>
 <translation id="6782067259631821405">Yanlış PIN</translation>
 <translation id="6784523122863989144">Profil dəstəklənir</translation>
+<translation id="6785739405821760313">Yadda saxlanmış masalara baxılır. Keçmək üçün taba basın.</translation>
 <translation id="6785872064505734160">Chrome'da Google Assistent sizin üçün vebsaytlarda əməliyyatlar icra edə bilər</translation>
 <translation id="6786747875388722282">Artırmalar</translation>
 <translation id="6787097042755590313">Digər Tab</translation>
@@ -6496,6 +6503,7 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="7222204278952406003">Chrome defolt brauzerdir</translation>
 <translation id="7222232353993864120">E-poçt Ünvanı</translation>
 <translation id="7222235798733126207">Saytlar arasında məhdud paylaşım</translation>
+<translation id="7225082563376899794">Parolları daxil edərkən Windows Hello istifadə edin</translation>
 <translation id="7225179976675429563">Şəbəkə növü çatışmır</translation>
 <translation id="7227458944009118910">Aşağıda sadalanan tətbiqlər protokol keçidlərini də idarə edə bilər. Digər tətbiqlər icazə istəyəcək.</translation>
 <translation id="7228523857728654909">Ekran kilidi və giriş</translation>
@@ -6537,6 +6545,7 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="7258192266780953209">Transformasiya</translation>
 <translation id="7258225044283673131">Bu tətbiq cavab vermir. Tətbiqi bağlamaq üçün "Məcbur bağlayın" seçin.</translation>
 <translation id="7260186537988033909">Köşk və işarə cihazının qeydiyyatı tamamlanıb</translation>
+<translation id="7261851165551049223">Parolları daxil edərkən TouchID istifadə edin</translation>
 <translation id="7262004276116528033">Bu giriş xidməti <ph name="SAML_DOMAIN" /> tərəfindən dəstəklənir</translation>
 <translation id="7264695323040866038">Dəstəklənən veb keçidlərini açmaq üçün həmişə <ph name="APP" /> tətbiqindən istifadə edilsin?</translation>
 <translation id="7267044199012331848">Virtual cihazı quraşdırmaq mümkün olmadı. Yenidən cəhd edin və ya administratorunuz ilə əlaqə saxlayın. Xəta kodu: <ph name="ERROR_CODE" />.</translation>
@@ -6623,6 +6632,7 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="7358338787722390626">Yan paneldə axtarışı bağlayın</translation>
 <translation id="735994578317267253">İstənilən ChromeOS cihazında tətbiqlər, ayarlar və s. əldə edin</translation>
 <translation id="7360233684753165754"><ph name="PRINTER_NAME" /> üçün <ph name="PAGE_NUMBER" /> səhifə</translation>
+<translation id="7360257054721917104">Yadda saxlanmış masa və ya şablonlara baxılır. Keçmək üçün taba basın.</translation>
 <translation id="7361297102842600584"><ph name="PLUGIN_NAME" /> çalışdırmaq üçün sağ düymə ilə klikləyin</translation>
 <translation id="7362387053578559123">Saytlar Bluetooth cihazlarına qoşulmaq üçün icazə istəyə bilər</translation>
 <translation id="7363349185727752629">Məxfilik seçimləriniz üçün bələdçi</translation>
@@ -7275,6 +7285,7 @@ Təyinatı silmək üçün təyin edilmiş keçirici və ya düyməni basın.</t
 <translation id="7953669802889559161">Daxiletmələr</translation>
 <translation id="7953955868932471628">Qısayolları idarə edin</translation>
 <translation id="7955105108888461311">Şəxsən soruşun</translation>
+<translation id="7955177647836564772">Smart Lock aktiv edilibsə və telefonunuzun kilidi açılıbsa, parol və ya PIN daxil etməyinizə ehtiyac yoxdur</translation>
 <translation id="7956373551960864128">Yadda saxlanılmış printerlər</translation>
 <translation id="7957074856830851026">Seriya nömrəsi və aktiv ID-si kimi cihaz məlumatlarına baxın</translation>
 <translation id="7959074893852789871">Fayl bəziləri import olunmayan çoxsaylı sertifikatlardan ibarətdir:</translation>
@@ -7532,6 +7543,7 @@ Bu saytın blok edilməsini düşünmürəm!</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Cihazlarınız<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195027750202970175">Disk ölçüsü</translation>
 <translation id="8195191503358432289">Parol əlavə edin</translation>
+<translation id="8197673340773315084">İş və ya Şəxsi kimi ad və ya etiket əlavə edin</translation>
 <translation id="8198456017687137612">Yayım tabı</translation>
 <translation id="8199300056570174101">Şəbəkə (Xidmət) və Cihaz xüsusiyyətləri</translation>
 <translation id="8200772114523450471">Davam edin</translation>
@@ -7629,6 +7641,7 @@ Bu saytın blok edilməsini düşünmürəm!</translation>
 <translation id="8284279544186306258">bütün <ph name="WEBSITE_1" /> saytları</translation>
 <translation id="8284326494547611709">Başlıqlar</translation>
 <translation id="8286036467436129157">Giriş</translation>
+<translation id="828642162569365647">Bu parol və ya PIN bu <ph name="DEVICE_TYPE" /> cihazındakı məlumatlarınızı və telefonunuzdan giriş etdiyiniz hər hansı məzmunu qoruyur. Hər dəfə <ph name="DEVICE_TYPE" /> yuxudan oyananda kilidi açmalısınız.</translation>
 <translation id="8287902281644548111">API zəngi/Link tərəfindən Axtarış</translation>
 <translation id="8288032458496410887"><ph name="APP" /> tətbiqini sistemdən silin...</translation>
 <translation id="8289128870594824098">Disk ölçüsü</translation>

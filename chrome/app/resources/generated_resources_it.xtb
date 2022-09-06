@@ -106,6 +106,7 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1094607894174825014">L'operazione di lettura o scrittura è stata richiesta con un offset non valido su: "<ph name="DEVICE_NAME" />".</translation>
 <translation id="1095761715416917775">Assicurati di poter accedere sempre ai dati sincronizzati</translation>
 <translation id="109647177154844434">La disinstallazione di Parallels Desktop comporterà l'eliminazione dell'immagine di Windows, inclusi dati, applicazioni e impostazioni associati. Vuoi continuare?</translation>
+<translation id="1097016918605049747">Impossibile tradurre questa pagina</translation>
 <translation id="1097658378307015415">Prima di accedere, entra come Ospite per attivare la rete <ph name="NETWORK_ID" /></translation>
 <translation id="1099383081182863812">Riesci a vedere il tuo Chromecast nell'<ph name="BEGIN_LINK" />app Google Home<ph name="END_LINK" />?</translation>
 <translation id="1099962274138857708">Immagine copiata da <ph name="DEVICE_NAME" /></translation>
@@ -781,6 +782,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse all
 <translation id="1730917990259790240"><ph name="BEGIN_PARAGRAPH1" />Per rimuovere le app apri Impostazioni &gt; Google Play Store &gt; Gestisci le preferenze Android &gt; App o Gestione applicazioni, quindi tocca l'app che vuoi disinstallare (potresti dover scorrere verso sinistra o verso destra per trovarla) e infine tocca Disinstalla o Disattiva.<ph name="END_PARAGRAPH1" /></translation>
 <translation id="1730989807608739928">Scorri verso l'ultima scheda</translation>
 <translation id="1731911755844941020">Invio richiesta in corso...</translation>
+<translation id="1732445923934584865">Chiedi di persona</translation>
 <translation id="1733383495376208985">Cripta i dati sincronizzati con la tua <ph name="BEGIN_LINK" />passphrase di sincronizzazione<ph name="END_LINK" />. Non sono inclusi i metodi di pagamento e gli indirizzi di Google Pay.</translation>
 <translation id="1734212868489994726">Azzurro</translation>
 <translation id="1734230530703461088">Impossibile caricare le estensioni entro il limite di tempo. Contatta l'amministratore.</translation>
@@ -1306,6 +1308,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2203088913459920044">Il nome può contenere lettere, numeri e caratteri speciali</translation>
 <translation id="220321590587754225">Impossibile connettersi. Riprova.</translation>
 <translation id="2204034823255629767">Lettura e modifica del testo digitato</translation>
+<translation id="2204387456724731099">Impossibile tradurre questa selezione</translation>
 <translation id="220858061631308971">Inserisci questo codice PIN su "<ph name="DEVICE_NAME" />":</translation>
 <translation id="2210462644007531147">Impossibile completare l'installazione</translation>
 <translation id="2212565012507486665">Consenti cookie</translation>
@@ -5128,6 +5131,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="5884474295213649357">La scheda è connessa a un dispositivo USB.</translation>
 <translation id="5885314688092915589">La tua organizzazione gestirà questo profilo</translation>
 <translation id="5886009770935151472">Dito 1</translation>
+<translation id="5886384907280980632">Disattiva ora</translation>
 <translation id="5889282057229379085">Numero massimo di CA intermedie: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5891688036610113830">Reti Wi-Fi preferite</translation>
 <translation id="5895138241574237353">Riavvia</translation>
@@ -5227,6 +5231,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="5975792506968920132">Percentuale di carica della batteria</translation>
 <translation id="5976160379964388480">Altri</translation>
 <translation id="5978277834170881274">&amp;Usa controllo ortografico di base</translation>
+<translation id="5978395054855988504">Risparmio energetico attivo</translation>
 <translation id="5978493744931296692">L'amministratore ha disattivato altri profili</translation>
 <translation id="5979084224081478209">Controlla password</translation>
 <translation id="5979156418378918004">{NUM_EXTENSIONS,plural, =1{Hai riattivato 1 estensione potenzialmente dannosa}other{Hai riattivato {NUM_EXTENSIONS} estensioni potenzialmente dannose}}</translation>
@@ -8434,6 +8439,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="9048745018038487540">Seleziona tutti i caratteri</translation>
 <translation id="9050666287014529139">Passphrase</translation>
 <translation id="9052404922357793350">Continua a bloccare</translation>
+<translation id="90528604757378587">L'attività in background e alcuni effetti visivi, come lo scorrimento continuo, potrebbero essere limitati.</translation>
 <translation id="9053563360605707198">Stampa su entrambe le facciate</translation>
 <translation id="9055636786322918818">Applica la crittografia RC4. Se scegli di utilizzare quest'opzione vai incontro a un rischio maggiore, in quanto le crittografie RC4 non sono sicure.</translation>
 <translation id="9056810968620647706">Nessuna corrispondenza trovata.</translation>

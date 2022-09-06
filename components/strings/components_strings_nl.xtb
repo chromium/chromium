@@ -1103,6 +1103,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="3906954721959377182">Tablet</translation>
 <translation id="3909477809443608991"><ph name="URL" /> wil beschermde content afspelen. De identiteit van je apparaat wordt geverifieerd door Google en is mogelijk toegankelijk voor deze site.</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
+<translation id="3923112503730743940">Oufuku Hagaki (briefkaart)</translation>
 <translation id="3927932062596804919">Weigeren</translation>
 <translation id="393316646445601645">Internet en telecom</translation>
 <translation id="3939773374150895049">WebAuthn gebruiken in plaats van CVC?</translation>
@@ -1131,6 +1132,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="4009243425692662128">De content van pagina's die je afdrukt, wordt naar Google Cloud of derden gestuurd voor analyse. De tekst kan bijvoorbeeld worden gescand op gevoelige gegevens of malware.</translation>
 <translation id="4010758435855888356">Toegang tot opslag toestaan?</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{Pdf-document met {COUNT} pagina}other{Pdf-document met {COUNT} pagina's}}</translation>
+<translation id="4022639246993848966">3,5x5</translation>
 <translation id="4023431997072828269">Dit formulier wordt ingediend via een verbinding die niet beveiligd is. Hierdoor zijn je gegevens zichtbaar voor anderen.</translation>
 <translation id="4025913568718019429">De knop Google-privacyinstellingen beheren, druk op Enter om naar de privacyinstellingen van je Google-account te gaan</translation>
 <translation id="4030383055268325496">&amp;Toevoegen ongedaan maken</translation>

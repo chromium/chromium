@@ -226,6 +226,7 @@
 <translation id="2497706219848005458">צהוב-ירוק</translation>
 <translation id="2523609930580546572">‏מדריך של ChromeVox</translation>
 <translation id="2525706221823668172">‏מקשי קיצור ב-Chromebook</translation>
+<translation id="2543973100702367007">אפשר להקיש הקשה כפולה כדי <ph name="LABEL" /></translation>
 <translation id="2553108862507765288">grammatical mistake</translation>
 <translation id="2556326187583116255">מקישים בעזרת שתי אצבעות כדי להפסיק את הדיבור המופעל</translation>
 <translation id="2573256689920773241">ניווט בסיסי</translation>
@@ -1115,6 +1116,7 @@
 <translation id="8693391540059827073">העונה האהובה עליי</translation>
 <translation id="8696284982970258155">טל דבש</translation>
 <translation id="8697111817566059991">{COUNT,plural, =1{קו ניצב}two{# סימני קו ניצב}many{# סימני קו ניצב}other{# סימני קו ניצב}}</translation>
+<translation id="8733397807344284494">אפשר להקיש על חיפוש+רווח כדי <ph name="LABEL" /></translation>
 <translation id="8741370088760768424">רמז: עליך להקיש על מקש החיפוש ועל הרווח כדי להפעיל את הפריט הנוכחי.</translation>
 <translation id="8743786158317878347">כניסה לתוכן מובנה, כמו טבלאות</translation>
 <translation id="8746846427395705317">move to the previous word</translation>

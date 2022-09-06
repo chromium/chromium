@@ -711,6 +711,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a apps. Pued
 <translation id="16620462294541761">No es posible verificar tu contraseña. Inténtalo nuevamente.</translation>
 <translation id="166278006618318542">Algoritmo de clave pública del sujeto</translation>
 <translation id="1662801900924515589">Se instaló <ph name="APP" /></translation>
+<translation id="1665328953287874063">Usa una contraseña o un PIN para desbloquear tu <ph name="DEVICE_TYPE" /></translation>
 <translation id="1666232093776384142">Inhabilita la protección del acceso a los datos para dispositivos periféricos</translation>
 <translation id="1667842670298352129">Escucha un texto específico en voz alta. Primero, elige el ícono de Seleccionar para pronunciar en la parte inferior de la pantalla y, luego, destaca el texto. También puedes usar una combinación de teclas: destaca el texto y, luego, presiona Búsqueda + S.</translation>
 <translation id="1668435968811469751">Inscribirse manualmente</translation>
@@ -1349,6 +1350,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2251218783371366160">Abrir con el lector del sistema</translation>
 <translation id="225163402930830576">Actualizar redes</translation>
 <translation id="2251809247798634662">Nueva ventana de Incógnito</translation>
+<translation id="2252017960592955005">Protección de visualización (beta)</translation>
 <translation id="225240747099314620">Permitir identificadores para el contenido protegido (es posible que sea necesario reiniciar la computadora)</translation>
 <translation id="2255077166240162850">Se bloqueó este dispositivo para otros dominios o modos.</translation>
 <translation id="2255317897038918278">Impresión de fecha de Microsoft</translation>
@@ -1832,6 +1834,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2691385045260836588">Modelo</translation>
 <translation id="2691440343905273290">Cambiar la configuración de entrada</translation>
 <translation id="2693176596243495071">Se produjo un error desconocido. Vuelve a intentarlo más tarde o comunícate con tu administrador si el problema persiste.</translation>
+<translation id="2698147581454716013">Este es un dispositivo agrupado y no se puede inscribir en la actualización de Kiosk &amp; Signage.</translation>
 <translation id="2699911226086014512">No se pudo realizar la operación del PIN con el código <ph name="RETRIES" />.</translation>
 <translation id="2701330563083355633">Se compartió de <ph name="DEVICE_NAME" /></translation>
 <translation id="2701737434167469065">Acceder, <ph name="EMAIL" /></translation>
@@ -1910,6 +1913,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2757338480560142065">Asegúrate de que la contraseña que guardes coincida con tu contraseña de <ph name="WEBSITE" /></translation>
 <translation id="2762441749940182211">Cámara bloqueada</translation>
 <translation id="2764786626780673772">Detalles de VPN</translation>
+<translation id="2764920001292228569">Ingresa un nombre de perfil</translation>
 <translation id="2765100602267695013">Comunícate con tu proveedor de servicios móviles</translation>
 <translation id="2765217105034171413">Pequeño</translation>
 <translation id="2766006623206032690">Pe&amp;gar y acceder</translation>
@@ -3279,6 +3283,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4065876735068446555">Es posible que la red que estás usando (<ph name="NETWORK_ID" />) requiera que visites la página de acceso.</translation>
 <translation id="4066207411788646768">Revisa la conexión para ver las impresoras disponibles en tu red</translation>
 <translation id="4066945815577305767">Se agotó el tiempo de espera para ingresar contraseñas</translation>
+<translation id="4067839975993712852">Marcar la pestaña actual como leída</translation>
 <translation id="4068776064906523561">Huellas digitales guardadas</translation>
 <translation id="407173827865827707">Al hacer clic</translation>
 <translation id="4072701974556190758">La contraseña se guardará en tu Cuenta de Google, <ph name="ACCOUNT" />. No deberás recordarla.</translation>
@@ -5760,6 +5765,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="6508248480704296122">Relacionada con <ph name="NAME_PH" /></translation>
 <translation id="6508261954199872201">Aplicación: <ph name="APP_NAME" /></translation>
 <translation id="6509207748479174212">Licencia de medios</translation>
+<translation id="6511827214781912955">Considera borrar <ph name="FILENAME" /> para que las otras personas que usan este dispositivo no puedan ver tus contraseñas</translation>
 <translation id="6513247462497316522">Google Chrome utilizará los datos para celulares si no te conectas a otra red.</translation>
 <translation id="6514010653036109809">Dispositivo disponible:</translation>
 <translation id="6514565641373682518">Esta página ha inhabilitado el cursor del mouse.</translation>
@@ -6041,6 +6047,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="6781978626986383437">Se canceló la copia de seguridad de Linux</translation>
 <translation id="6782067259631821405">El PIN no es válido</translation>
 <translation id="6784523122863989144">El perfil es compatible</translation>
+<translation id="6785739405821760313">Se muestran los escritorios guardados. Presiona Tab para navegar.</translation>
 <translation id="6785872064505734160">El Asistente de Google en Chrome puede completar acciones por ti en diferentes sitios web</translation>
 <translation id="6786747875388722282">Extensiones</translation>
 <translation id="6787097042755590313">Otra pestaña</translation>
@@ -6498,6 +6505,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7222204278952406003">Chrome es el navegador predeterminado</translation>
 <translation id="7222232353993864120">Dirección de correo electrónico</translation>
 <translation id="7222235798733126207">Limitamos el uso compartido entre sitios</translation>
+<translation id="7225082563376899794">Usar Windows Hello para completar contraseñas</translation>
 <translation id="7225179976675429563">Falta el tipo de red.</translation>
 <translation id="7227458944009118910">Las apps enumeradas a continuación también admiten los enlaces del protocolo. Otras apps solicitarán permiso.</translation>
 <translation id="7228523857728654909">Bloqueo de pantalla y acceso</translation>
@@ -6539,6 +6547,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7258192266780953209">Transformaciones</translation>
 <translation id="7258225044283673131">La app no responde. Selecciona "Forzar cierre" para cerrar la app.</translation>
 <translation id="7260186537988033909">Se completó la inscripción del dispositivo en el modo de kiosko y señalización</translation>
+<translation id="7261851165551049223">Usar TouchID para completar contraseñas</translation>
 <translation id="7262004276116528033">El servicio de acceso a la cuenta está alojado en <ph name="SAML_DOMAIN" /></translation>
 <translation id="7264695323040866038">¿Deseas usar siempre la app de <ph name="APP" /> para abrir vínculos web compatibles?</translation>
 <translation id="7267044199012331848">No se pudo instalar la máquina virtual. Inténtalo de nuevo o comunícate con el administrador. Código de error: <ph name="ERROR_CODE" />.</translation>
@@ -6625,6 +6634,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7358338787722390626">Cierra la búsqueda en el panel lateral</translation>
 <translation id="735994578317267253">Accede a tus apps, parámetros de configuración y más en cualquier dispositivo Chrome OS</translation>
 <translation id="7360233684753165754"><ph name="PAGE_NUMBER" /> páginas a <ph name="PRINTER_NAME" /></translation>
+<translation id="7360257054721917104">Se muestran escritorios y plantillas guardados. Presiona Tab para navegar.</translation>
 <translation id="7361297102842600584">Hacer clic con el botón derecho para ejecutar <ph name="PLUGIN_NAME" /></translation>
 <translation id="7362387053578559123">Permitir que los sitios soliciten permiso para conectarse a dispositivos Bluetooth</translation>
 <translation id="7363349185727752629">Una guía de las opciones de privacidad</translation>
@@ -7278,6 +7288,7 @@ Presiona un interruptor o tecla que ya esté asignado para quitar la asignación
 <translation id="7953669802889559161">Entradas</translation>
 <translation id="7953955868932471628">Administrar accesos directos</translation>
 <translation id="7955105108888461311">Preguntar en persona</translation>
+<translation id="7955177647836564772">Si la función Smart Lock está activada y tu teléfono está desbloqueado, no tendrás que ingresar un PIN ni una contraseña.</translation>
 <translation id="7956373551960864128">Tus impresoras guardadas</translation>
 <translation id="7957074856830851026">Ver información del dispositivo, como el número de serie o la ID del activo</translation>
 <translation id="7959074893852789871">El archivo contenía múltiples certificados. Algunos fueron importados:</translation>
@@ -7536,6 +7547,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Tus dispositivos<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195027750202970175">Tamaño en disco</translation>
 <translation id="8195191503358432289">Agregar contraseña</translation>
+<translation id="8197673340773315084">Agrega un nombre o una etiqueta, como Trabajo o Personal</translation>
 <translation id="8198456017687137612">Pestaña de transmisión</translation>
 <translation id="8199300056570174101">Propiedades de la red (servicio) y del dispositivo</translation>
 <translation id="8200772114523450471">Reanudar</translation>
@@ -7633,6 +7645,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8284279544186306258">todos los sitios de <ph name="WEBSITE_1" /></translation>
 <translation id="8284326494547611709">Subtítulos</translation>
 <translation id="8286036467436129157">Acceder</translation>
+<translation id="828642162569365647">La contraseña o el PIN protegen tus datos en este dispositivo <ph name="DEVICE_TYPE" /> y cualquier información a la que accedas desde tu teléfono. Deberás desbloquear tu <ph name="DEVICE_TYPE" /> cada vez se active tras la suspensión.</translation>
 <translation id="8287902281644548111">Busca por URL o llamada a la API</translation>
 <translation id="8288032458496410887">Desinstalar <ph name="APP" />…</translation>
 <translation id="8289128870594824098">Tamaño del disco</translation>

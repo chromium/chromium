@@ -352,6 +352,10 @@
 <translation id="1372618949173323717">JavaScript deaktivieren</translation>
 <translation id="1376119291123231789">Intelligenten Akkulademodus aktivieren</translation>
 <translation id="1384459581748403878">Referenz: <ph name="REFERENCE_URL" /></translation>
+<translation id="1384594066274112751">Mit dieser Richtlinie wird jede URL, die mit einem oder mehreren der angegebenen Muster (im <ph name="URL_BLOCKLIST_POLICY_NAME" />-Filterformat) übereinstimmt, nie vom Browser verworfen.
+      Dies gilt für das Verwerfen bei hoher Speicherauslastung und bei der Verwendung des Modus für hohe Effizienz.
+      Verworfene Seiten werden entfernt und die zugehörigen Ressourcen vollständig freigegeben. Der Tab, mit dem sie verknüpft sind, bleibt im Tabstreifen. Wird er jedoch sichtbar, wird eine vollständige Aktualisierung ausgelöst.
+      </translation>
 <translation id="138847842893090358">Update-Status des Betriebssystems melden</translation>
 <translation id="1390529781843037070">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, können Nutzer im <ph name="PRODUCT_NAME" />-Druckdialogfeld über <ph name="CLOUD_PRINT_NAME" /> drucken. <ph name="PRODUCT_NAME" /> kann Dokumente zum Drucken an <ph name="CLOUD_PRINT_NAME" /> senden. Dies verhindert nicht, dass Nutzer Druckaufträge an Websites senden können.
 
@@ -3706,12 +3710,6 @@ Wenn diese Richtlinie konfiguriert ist, erlaubt <ph name="PRODUCT_OS_NAME" /> es
 
       Wenn diese Richtlinie nicht konfiguriert ist, kann die Funktion von durch Unternehmen verwaltete Nutzer und nicht verwaltete Nutzer standardmäßig verwendet werden.</translation>
 <translation id="487460824085252184">Automatisch migrieren, ohne die Zustimmung des Nutzers einzuholen</translation>
-<translation id="48749493657448872">Wenn diese Einstellung aktiviert ist, verifiziert <ph name="PRODUCT_NAME" /> Serverzertifikate anhand der integrierten Zertifikatsprüfung.
-      Ist sie deaktiviert, verifiziert <ph name="PRODUCT_NAME" /> Serverzertifikate anhand der von der Plattform bereitgestellten Legacy-Zertifikatsprüfung, es sei denn <ph name="CHROME_ROOT_STORE_ENABLED_POLICY_NAME" /> ist aktiviert.
-      Wenn diese Einstellung nicht konfiguriert ist, wird die integrierte oder die Legacy-Zertifikatsprüfung verwendet.
-
-      Diese Richtlinie wird voraussichtlich in Version 107 von <ph name="PRODUCT_NAME" /> für <ph name="MAC_OS_NAME" /> entfernt, wenn auch die Legacy-Zertifikatsprüfung in <ph name="MAC_OS_NAME" /> voraussichtlich nicht mehr unterstützt wird.
-      </translation>
 <translation id="4874982543810021567">WebUSB auf diesen Websites blockieren</translation>
 <translation id="4876805738539874299">SSL-Höchstversion aktiviert</translation>
 <translation id="4877402532842958110">Diese Richtlinie wurde eingestellt. Bitte verwende stattdessen <ph name="URL_ALLOWLIST_POLICY_NAME" />.
@@ -6449,6 +6447,7 @@ Wenn die Richtlinie nicht festgelegt ist, werden keine Einschränkungen angewend
       Diese Richtlinie hat keine Auswirkungen, wenn die Richtlinie <ph name="DOWNLOAD_DIRECTORY_POLICY_NAME" /> konfiguriert ist.
 
       Hinweis: Unter https://www.chromium.org/administrators/policy-list-3/user-data-directory-variables findest du eine Liste der Variablen, die verwendet werden können.</translation>
+<translation id="7719808201797990069">URL-Muster-Ausnahmen für das Verwerfen von Tabs</translation>
 <translation id="7721944091689270995"><ph name="PLUGIN_VM_NAME" />-Nutzer-ID</translation>
 <translation id="7724161903134898864">Wenn die Richtlinie auf "1" gesetzt ist, können Websites Pop-ups anzeigen. Wenn die Richtlinie auf "2" gesetzt ist, werden Pop-ups blockiert.
 

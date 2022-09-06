@@ -1807,6 +1807,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="5764920692828389743">Lähetä tänne: <ph name="EMAIL_ADDRESS" /></translation>
 <translation id="5765072501007116331">Valitse osoite, niin näet toimitustavat ja vaatimukset.</translation>
 <translation id="57689295674415555">Eikö virtuaalista korttinumeroa ole täytetty?</translation>
+<translation id="5772086939108830423">Käytä avainkoodia eri laitteella</translation>
 <translation id="5776313857861697733">Tärkeät</translation>
 <translation id="5781136890105823427">Kokeilu käytössä</translation>
 <translation id="578305955206182703">Kullanruskea</translation>
@@ -2203,6 +2204,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="6916954549222464607">Taloussuunnittelu ja varainhoito</translation>
 <translation id="6917795328362592458">Juuri käyttämäsi salasana on löytynyt tietosuojaloukkauksesta. Tiliesi suojaamiseksi Salasanat suosittelee, että tarkistat tallennetut salasanasi.</translation>
 <translation id="6934672428414710184">Tämä nimi on peräisin Google-tililtäsi</translation>
+<translation id="6936976777388162184">Tämä on laite kuuluu pakettiin, eikä sitä voi rekisteröidä Kiosk &amp; Signage Upgradeen.</translation>
 <translation id="6939469646605424232">TV-draamat</translation>
 <translation id="6944692733090228304">Kirjoitit salasanan sivustolle, jota <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> ei ylläpidä. Älä käytä samaa salasanaa muissa sovelluksissa tai muilla sivustoilla tilisi turvallisuuden vuoksi.</translation>
 <translation id="6945221475159498467">Valitse</translation>
@@ -3056,6 +3058,7 @@ Lisätietoja:
 <translation id="950736567201356821">Kolme reikää yläreunassa</translation>
 <translation id="961663415146723894">Alareuna sidottu</translation>
 <translation id="962484866189421427">Tämä sisältö voi yrittää asentaa petollisia sovelluksia, jotka esiintyvät jonakin muuna tai keräävät tietoja, joilla sinua voidaan seurata. <ph name="BEGIN_LINK" />Näytä silti<ph name="END_LINK" /></translation>
+<translation id="964050462028070434">Muokkaa salasanoja ja avainkoodeja…</translation>
 <translation id="96680173638229310">Autot ja ajoneuvot</translation>
 <translation id="969892804517981540">Virallinen koontiversio</translation>
 <translation id="973773823069644502">Lisää jakeluosoite</translation>

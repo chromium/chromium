@@ -1806,6 +1806,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="5764920692828389743">Skicka till <ph name="EMAIL_ADDRESS" /></translation>
 <translation id="5765072501007116331">Välj en adress för att visa leveranssätt och krav</translation>
 <translation id="57689295674415555">Har det virtuella kortnumret inte fyllts i?</translation>
+<translation id="5772086939108830423">Använd en nyckel på en annan enhet</translation>
 <translation id="5776313857861697733">Prioritet</translation>
 <translation id="5781136890105823427">Ett experiment har aktiverats</translation>
 <translation id="578305955206182703">Bärnstensfärgad</translation>
@@ -3056,6 +3057,7 @@ Mer information:
 <translation id="950736567201356821">Tre hål högst upp</translation>
 <translation id="961663415146723894">Bindning längst ned</translation>
 <translation id="962484866189421427">Bedrägliga appar som inte gör vad de påstås göra eller insamling av data som används för att spåra dig skulle kunna installeras via innehållet. <ph name="BEGIN_LINK" />Visa ändå<ph name="END_LINK" /></translation>
+<translation id="964050462028070434">Hantera lösenord och nycklar …</translation>
 <translation id="96680173638229310">Bilar och fordon</translation>
 <translation id="969892804517981540">Officiell version</translation>
 <translation id="973773823069644502">Lägg till leveransadress</translation>

@@ -106,6 +106,7 @@ Comprueba tus contraseñas en cualquier momento en el <ph name="GOOGLE_PASSWORD_
 <translation id="1094607894174825014">La operación de lectura o escritura se ha solicitado con una variación no válida de "<ph name="DEVICE_NAME" />".</translation>
 <translation id="1095761715416917775">Asegúrate de que siempre puedas acceder a tus datos sincronizados</translation>
 <translation id="109647177154844434">Si desinstalas Parallels Desktop, se eliminará tu imagen de Windows, lo que incluye sus aplicaciones, ajustes y datos. ¿Seguro que quieres continuar?</translation>
+<translation id="1097016918605049747">No se ha podido traducir esta página</translation>
 <translation id="1097658378307015415">Antes de iniciar sesión, entra como invitado para activar la red <ph name="NETWORK_ID" />.</translation>
 <translation id="1099383081182863812">¿Puedes ver tu Chromecast en la <ph name="BEGIN_LINK" />aplicación Google Home<ph name="END_LINK" />?</translation>
 <translation id="1099962274138857708">Imagen copiada desde <ph name="DEVICE_NAME" /></translation>
@@ -714,6 +715,7 @@ Los permisos que hayas dado a aplicaciones se pueden aplicar a esta cuenta. Pued
 <translation id="16620462294541761">La contraseña no se ha podido verificar. Vuelve a intentarlo.</translation>
 <translation id="166278006618318542">Algoritmo de clave pública de la entidad receptora</translation>
 <translation id="1662801900924515589">Se ha instalado <ph name="APP" /></translation>
+<translation id="1665328953287874063">Usa una contraseña o un PIN para desbloquear tu <ph name="DEVICE_TYPE" /></translation>
 <translation id="1666232093776384142">Inhabilitar protección de acceso a datos desde periféricos</translation>
 <translation id="1667842670298352129">Escucha un texto concreto leído en voz alta. Primero, selecciona el icono Enunciar selección situado en la parte inferior de la pantalla y, a continuación, selecciona el texto. También puedes usar una combinación de teclas: selecciona el texto y pulsa la tecla de búsqueda + S.</translation>
 <translation id="1668435968811469751">Registrar manualmente</translation>
@@ -779,6 +781,7 @@ Los permisos que hayas dado a aplicaciones se pueden aplicar a esta cuenta. Pued
 <translation id="1730917990259790240"><ph name="BEGIN_PARAGRAPH1" />Para desinstalar aplicaciones, ve a Ajustes &gt; Google Play Store &gt; Gestionar preferencias de Android &gt; Aplicaciones o Administrador de aplicaciones. A continuación, toca la aplicación que quieras desinstalar (es posible que tengas que deslizar el dedo hacia la derecha o la izquierda para encontrar la aplicación) y Desinstalar o Inhabilitar.<ph name="END_PARAGRAPH1" /></translation>
 <translation id="1730989807608739928">Desplazarse a la última pestaña</translation>
 <translation id="1731911755844941020">Enviando solicitud...</translation>
+<translation id="1732445923934584865">Preguntar en persona</translation>
 <translation id="1733383495376208985">Cifrar datos sincronizados con tu propia <ph name="BEGIN_LINK" />frase de contraseña de sincronización<ph name="END_LINK" />. El cifrado no incluye los métodos de pago ni las direcciones de Google Pay.</translation>
 <translation id="1734212868489994726">Azul claro</translation>
 <translation id="1734230530703461088">No se han podido cargar las extensiones dentro del límite de tiempo. Ponte en contacto con tu administrador.</translation>
@@ -1304,6 +1307,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2203088913459920044">El nombre puede contener letras, números y caracteres especiales</translation>
 <translation id="220321590587754225">No se ha podido conectar. Inténtalo de nuevo.</translation>
 <translation id="2204034823255629767">Leer y modificar todo lo que escribas</translation>
+<translation id="2204387456724731099">No se ha podido traducir esta selección</translation>
 <translation id="220858061631308971">Introduce este código PIN en "<ph name="DEVICE_NAME" />":</translation>
 <translation id="2210462644007531147">No se ha podido completar la instalación</translation>
 <translation id="2212565012507486665">Permitir cookies</translation>
@@ -1352,6 +1356,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2251218783371366160">Abrir con visor del sistema</translation>
 <translation id="225163402930830576">Actualizar redes</translation>
 <translation id="2251809247798634662">Nueva ventana de Incógnito</translation>
+<translation id="2252017960592955005">Protección contra fisgones (beta)</translation>
 <translation id="225240747099314620">Permitir identificadores para contenido protegido (es posible que sea necesario reiniciar el ordenador)</translation>
 <translation id="2255077166240162850">Este dispositivo ha sido bloqueado en un dominio o modo diferente.</translation>
 <translation id="2255317897038918278">Impresión de fecha de Microsoft</translation>
@@ -1836,6 +1841,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2691385045260836588">Modelo</translation>
 <translation id="2691440343905273290">Cambiar configuración de introducción de texto</translation>
 <translation id="2693176596243495071">¡Vaya! Se ha producido un error desconocido. Vuelve a intentarlo más tarde o ponte en contacto con el administrador si el problema persiste.</translation>
+<translation id="2698147581454716013">Este dispositivo forma parte de un paquete y no se puede registrar con la Licencia de Kiosk y Signage</translation>
 <translation id="2699911226086014512">Error al realizar la operación con PIN con el código <ph name="RETRIES" />.</translation>
 <translation id="2701330563083355633">Compartido desde <ph name="DEVICE_NAME" /></translation>
 <translation id="2701737434167469065">Iniciar sesión, <ph name="EMAIL" /></translation>
@@ -1914,6 +1920,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2757338480560142065">La contraseña que guardes debe coincidir con tu contraseña de <ph name="WEBSITE" />.</translation>
 <translation id="2762441749940182211">Cámara bloqueada</translation>
 <translation id="2764786626780673772">Detalles de la red VPN</translation>
+<translation id="2764920001292228569">Introduce un nombre de perfil</translation>
 <translation id="2765100602267695013">Ponte en contacto con tu proveedor de telefonía móvil</translation>
 <translation id="2765217105034171413">Pequeño</translation>
 <translation id="2766006623206032690">Pe&amp;gar y acceder</translation>
@@ -3282,6 +3289,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4065876735068446555">La red que estás utilizando (<ph name="NETWORK_ID" />) puede requerir el acceso a su página de inicio de sesión.</translation>
 <translation id="4066207411788646768">Comprueba la conexión a Internet para ver las impresoras disponibles de tu red</translation>
 <translation id="4066945815577305767">Se ha agotado el tiempo de espera de las contraseñas</translation>
+<translation id="4067839975993712852">Marcar la pestaña actual como leída</translation>
 <translation id="4068776064906523561">Huellas digitales guardadas</translation>
 <translation id="407173827865827707">Al hacer clic</translation>
 <translation id="4072701974556190758">La contraseña se guardará en tu cuenta de Google (<ph name="ACCOUNT" />). No te hará falta recordarla.</translation>
@@ -5120,6 +5128,7 @@ Puedes asignar esta acción a varios interruptores.</translation>
 <translation id="5884474295213649357">Esta pestaña está conectada a un dispositivo USB.</translation>
 <translation id="5885314688092915589">Tu organización gestionará este perfil</translation>
 <translation id="5886009770935151472">Dedo 1</translation>
+<translation id="5886384907280980632">Desactivar ahora</translation>
 <translation id="5889282057229379085">Número máximo de entidades emisoras de certificados intermediarias: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5891688036610113830">Redes Wi-Fi preferidas</translation>
 <translation id="5895138241574237353">Reiniciar</translation>
@@ -5220,6 +5229,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="5975792506968920132">Porcentaje de carga de batería</translation>
 <translation id="5976160379964388480">Otros</translation>
 <translation id="5978277834170881274">&amp;Utilizar la revisión ortográfica básica</translation>
+<translation id="5978395054855988504">Ahorro de batería activado</translation>
 <translation id="5978493744931296692">Tu administrador ha inhabilitado otros perfiles</translation>
 <translation id="5979084224081478209">Comprobar contraseñas</translation>
 <translation id="5979156418378918004">{NUM_EXTENSIONS,plural, =1{Has vuelto a activar 1 extensión potencialmente dañina}other{Has vuelto a activar {NUM_EXTENSIONS} extensiones potencialmente dañinas}}</translation>
@@ -5763,6 +5773,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6508248480704296122">Relacionada con <ph name="NAME_PH" /></translation>
 <translation id="6508261954199872201">Aplicación: <ph name="APP_NAME" /></translation>
 <translation id="6509207748479174212">Licencia de contenido multimedia</translation>
+<translation id="6511827214781912955">Te recomendamos que elimines <ph name="FILENAME" /> para que otras personas que usen este dispositivo no puedan ver tus contraseñas</translation>
 <translation id="6513247462497316522">Google Chrome utilizará datos móviles si no te has conectado a otra red.</translation>
 <translation id="6514010653036109809">Dispositivo disponible:</translation>
 <translation id="6514565641373682518">Esta página ha inhabilitado el cursor de tu ratón.</translation>
@@ -6044,6 +6055,7 @@ Tienes # contraseñas vulneradas más. El gestor de contraseñas de Google te re
 <translation id="6781978626986383437">Copia de seguridad de Linux cancelada</translation>
 <translation id="6782067259631821405">PIN no válido</translation>
 <translation id="6784523122863989144">Perfil admitido</translation>
+<translation id="6785739405821760313">Visualizando escritorios guardados. Pulsa el tabulador para desplazarte.</translation>
 <translation id="6785872064505734160">El Asistente de Google en Chrome puede realizar acciones por ti en sitios web.</translation>
 <translation id="6786747875388722282">Extensiones</translation>
 <translation id="6787097042755590313">Otra pestaña</translation>
@@ -6630,6 +6642,7 @@ Tienes # contraseñas vulneradas más. El gestor de contraseñas de Google te re
 <translation id="7358338787722390626">Cerrar la búsqueda en el panel lateral</translation>
 <translation id="735994578317267253">Accede a tus aplicaciones, ajustes y mucho más en cualquier dispositivo Chrome OS</translation>
 <translation id="7360233684753165754"><ph name="PAGE_NUMBER" /> páginas a <ph name="PRINTER_NAME" /></translation>
+<translation id="7360257054721917104">Visualizando escritorios y plantillas guardados. Pulsa el tabulador para desplazarte.</translation>
 <translation id="7361297102842600584">Haz clic con el botón derecho para ejecutar <ph name="PLUGIN_NAME" /></translation>
 <translation id="7362387053578559123">Los sitios pueden solicitar permiso para conectarse a dispositivos Bluetooth</translation>
 <translation id="7363349185727752629">Una guía de tus opciones de privacidad</translation>
@@ -7283,6 +7296,7 @@ Pulsa un interruptor o una tecla con una acción asignada para quitársela.</tra
 <translation id="7953669802889559161">Métodos de introducción de texto</translation>
 <translation id="7953955868932471628">Gestionar accesos directos</translation>
 <translation id="7955105108888461311">Preguntar en persona</translation>
+<translation id="7955177647836564772">Si Smart Lock está activado y tu teléfono está desbloqueado, no tendrás que introducir ni una contraseña ni un PIN</translation>
 <translation id="7956373551960864128">Tus impresoras guardadas</translation>
 <translation id="7957074856830851026">Ver información del dispositivo, como el número de serie o el ID de recurso</translation>
 <translation id="7959074893852789871">El archivo contenía varios certificados, pero algunos de ellos no se han importado:</translation>
@@ -7541,6 +7555,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Tus dispositivos<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195027750202970175">Tamaño en disco</translation>
 <translation id="8195191503358432289">Añade una contraseña</translation>
+<translation id="8197673340773315084">Añade un nombre o una etiqueta, como Trabajo o Personal</translation>
 <translation id="8198456017687137612">Enviando pestaña</translation>
 <translation id="8199300056570174101">Propiedades de los dispositivos y las redes (servicio)</translation>
 <translation id="8200772114523450471">Reanudar</translation>
@@ -7638,6 +7653,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8284279544186306258">todos los sitios de <ph name="WEBSITE_1" /></translation>
 <translation id="8284326494547611709">Subtítulos</translation>
 <translation id="8286036467436129157">Iniciar sesión</translation>
+<translation id="828642162569365647">Esta contraseña o este PIN protege los datos que tengas en este <ph name="DEVICE_TYPE" /> y cualquier información a la que accedas desde tu teléfono. Tendrás que desbloquear tu <ph name="DEVICE_TYPE" /> cada vez que se active al salir del modo de suspensión.</translation>
 <translation id="8287902281644548111">Buscar por llamada a la API o URL</translation>
 <translation id="8288032458496410887">Desinstalar <ph name="APP" />...</translation>
 <translation id="8289128870594824098">Tamaño de disco</translation>
@@ -8421,6 +8437,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="9048745018038487540">Seleccionar todas las fuentes</translation>
 <translation id="9050666287014529139">Frase de contraseña</translation>
 <translation id="9052404922357793350">Seguir bloqueando</translation>
+<translation id="90528604757378587">Es posible que la actividad en segundo plano y algunos efectos visuales, como el desplazamiento suave, estén limitados.</translation>
 <translation id="9053563360605707198">Imprimir en ambas caras</translation>
 <translation id="9055636786322918818">Fuerza el cifrado RC4. Esta opción aumenta el riesgo, ya que los algoritmos de cifrado de RC4 no son seguros.</translation>
 <translation id="9056810968620647706">No se ha encontrado ningún resultado coincidente.</translation>

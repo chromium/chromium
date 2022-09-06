@@ -2,8 +2,11 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="sl">
 <translation id="1068168522143272502">Seznam naslovov in možnosti plačila, ki jih je treba izpolniti med postopki nakupa, so odprti pri polovični višini.</translation>
+<translation id="248973266728004341">Dodajanje nove kreditne kartice</translation>
 <translation id="2501278716633472235">Nazaj</translation>
+<translation id="312532069930005172">Odpiranje nastavitev profila za samodejno izpolnjevanje</translation>
 <translation id="4401440167302712543">Samodejno izpolnjevanje podatkov za pošiljanje in plačilo ob zaključku nakupa.</translation>
+<translation id="4526274353008646337">Dodajanje novega naslova</translation>
 <translation id="567079066552447069">Seznam naslovov in možnosti plačila, ki jih je treba izpolniti med postopki dokončanja nakupa, so zaprti.</translation>
 <translation id="780301667611848630">Ne, hvala</translation>
 <translation id="8264703973415044493">Seznam naslovov in možnosti plačila, ki jih je treba izpolniti med postopki nakupa, so odprti pri polni višini.</translation>
@@ -11,5 +14,6 @@
 <translation id="884264119367021077">Naslov za pošiljanje</translation>
 <translation id="8873105120914375071">Želite hitreje zaključiti nakup?</translation>
 <translation id="9032876013752408138">Samodejno izpolnjevanje mojih podatkov</translation>
+<translation id="9130271303738808219">Odpiranje nastavitev kreditne kartice</translation>
 <translation id="984275831282074731">Plačilna sredstva</translation>
 </translationbundle>

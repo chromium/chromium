@@ -715,6 +715,7 @@ Les autorisations que vous avez déjà accordées aux applis peuvent s'appliquer
 <translation id="16620462294541761">Mot de passe incorrect. Veuillez réessayer.</translation>
 <translation id="166278006618318542">Algorithme de clé publique de l'objet</translation>
 <translation id="1662801900924515589"><ph name="APP" /> installé</translation>
+<translation id="1665328953287874063">Utilisez un mot de passe ou un code pour déverrouiller votre <ph name="DEVICE_TYPE" /></translation>
 <translation id="1666232093776384142">Désactiver la protection de l'accès aux données pour les périphériques</translation>
 <translation id="1667842670298352129">En bas de l'écran, sélectionnez l'icône Sélectionner pour prononcer, puis mettez en surbrillance le texte qui vous sera lu à voix haute. Vous pouvez aussi utiliser un raccourci clavier : mettez le texte en surbrillance, puis appuyer sur Recherche+S.</translation>
 <translation id="1668435968811469751">Faire l'inscription manuellement</translation>
@@ -1836,6 +1837,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2691385045260836588">Modèle</translation>
 <translation id="2691440343905273290">Modifier les paramètres de saisie</translation>
 <translation id="2693176596243495071">Petit problème… Une erreur inconnue s'est produite. Veuillez réessayer plus tard ou contacter votre administrateur si le problème persiste.</translation>
+<translation id="2698147581454716013">Il s'agit d'un appareil avec licence intégrée qui ne peut pas fonctionner avec Kiosk &amp; Signage Upgrade.</translation>
 <translation id="2699911226086014512">Échec de l'opération. Code <ph name="RETRIES" />.</translation>
 <translation id="2701330563083355633">Partagé par <ph name="DEVICE_NAME" /></translation>
 <translation id="2701737434167469065">Se connecter, <ph name="EMAIL" /></translation>
@@ -1914,6 +1916,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2757338480560142065">Assurez-vous que le mot de passe que vous enregistrez correspond bien à votre mot de passe <ph name="WEBSITE" /></translation>
 <translation id="2762441749940182211">Caméra bloquée</translation>
 <translation id="2764786626780673772">Informations sur le VPN</translation>
+<translation id="2764920001292228569">Entrez un nom de profil</translation>
 <translation id="2765100602267695013">Veuillez contacter votre opérateur de téléphonie mobile</translation>
 <translation id="2765217105034171413">Léger</translation>
 <translation id="2766006623206032690">Coller l'URL et y a&amp;ccéder</translation>
@@ -3283,6 +3286,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="4065876735068446555">Pour utiliser ce réseau (<ph name="NETWORK_ID" />), il est possible que vous deviez vous rendre sur la page de connexion correspondante.</translation>
 <translation id="4066207411788646768">Veuillez vérifier votre connexion pour afficher les imprimantes disponibles sur le réseau</translation>
 <translation id="4066945815577305767">Délai dépassé</translation>
+<translation id="4067839975993712852">Marquer l'onglet actif comme lu</translation>
 <translation id="4068776064906523561">Empreintes digitales enregistrées</translation>
 <translation id="407173827865827707">En cas de clic</translation>
 <translation id="4072701974556190758">Votre mot de passe sera enregistré dans votre compte Google (<ph name="ACCOUNT" />). Vous n'aurez pas à vous en souvenir.</translation>
@@ -5765,6 +5769,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6508248480704296122">En rapport avec <ph name="NAME_PH" /></translation>
 <translation id="6508261954199872201">Application : <ph name="APP_NAME" /></translation>
 <translation id="6509207748479174212">Licence multimédia</translation>
+<translation id="6511827214781912955">Pensez à supprimer <ph name="FILENAME" /> afin que les autres utilisateurs de cet appareil ne puissent pas voir vos mots de passe</translation>
 <translation id="6513247462497316522">Si vous n'êtes connecté à aucun autre réseau, Google Chrome va utiliser un service Internet mobile.</translation>
 <translation id="6514010653036109809">Appareil disponible :</translation>
 <translation id="6514565641373682518">Cette page a désactivé le curseur de votre souris.</translation>
@@ -6048,6 +6053,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="6781978626986383437">Sauvegarde Linux annulée</translation>
 <translation id="6782067259631821405">Code incorrect</translation>
 <translation id="6784523122863989144">Profil accepté</translation>
+<translation id="6785739405821760313">Affichage des bureaux enregistrés. Appuyez sur Tabulation pour naviguer.</translation>
 <translation id="6785872064505734160">L'Assistant Google dans Chrome peut effectuer des actions sur les sites Web à votre place</translation>
 <translation id="6786747875388722282">Extensions</translation>
 <translation id="6787097042755590313">Autre onglet</translation>
@@ -6634,6 +6640,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="7358338787722390626">Fermer la recherche dans le panneau latéral</translation>
 <translation id="735994578317267253">Retrouvez vos applis, vos paramètres et bien plus sur n'importe quel appareil Chrome OS</translation>
 <translation id="7360233684753165754"><ph name="PAGE_NUMBER" /> pages sur <ph name="PRINTER_NAME" /></translation>
+<translation id="7360257054721917104">Affichage des bureaux enregistrés et des modèles. Appuyez sur Tabulation pour naviguer.</translation>
 <translation id="7361297102842600584">Faites un clic droit pour exécuter <ph name="PLUGIN_NAME" />.</translation>
 <translation id="7362387053578559123">Les sites peuvent demander à se connecter à des appareils Bluetooth</translation>
 <translation id="7363349185727752629">Guide de vos paramètres de confidentialité</translation>
@@ -7287,6 +7294,7 @@ Appuyez sur un contacteur ou une touche associé(e) pour supprimer l'association
 <translation id="7953669802889559161">Modes de saisie</translation>
 <translation id="7953955868932471628">Gérer les raccourcis</translation>
 <translation id="7955105108888461311">Demander en personne</translation>
+<translation id="7955177647836564772">Si Smart Lock est activé et que votre téléphone est déverrouillé, vous n'avez pas besoin de saisir de mot de passe ni de code</translation>
 <translation id="7956373551960864128">Vos imprimantes enregistrées</translation>
 <translation id="7957074856830851026">Voir les informations sur l'appareil telles que son numéro de série ou son identifiant</translation>
 <translation id="7959074893852789871">Le fichier contenait plusieurs certificats, dont certains n'ont pas été importés :</translation>
@@ -7545,6 +7553,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Vos appareils<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195027750202970175">Taille sur le disque</translation>
 <translation id="8195191503358432289">Ajouter un mot de passe</translation>
+<translation id="8197673340773315084">Ajoutez un nom ou un libellé, par exemple Travail ou Personnel</translation>
 <translation id="8198456017687137612">Diffusion de l'onglet</translation>
 <translation id="8199300056570174101">Propriétés du réseau (service) et de l'appareil</translation>
 <translation id="8200772114523450471">Reprendre</translation>
@@ -7642,6 +7651,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8284279544186306258">tous les sites <ph name="WEBSITE_1" /></translation>
 <translation id="8284326494547611709">Sous-titres</translation>
 <translation id="8286036467436129157">Connexion</translation>
+<translation id="828642162569365647">Ce mot de passe ou ce code protège vos données sur ce <ph name="DEVICE_TYPE" /> et toute information à laquelle vous accédez depuis votre téléphone. Vous devrez déverrouiller l'appareil chaque fois que votre <ph name="DEVICE_TYPE" /> sortira du mode veille.</translation>
 <translation id="8287902281644548111">Rechercher par appel d'API/URL</translation>
 <translation id="8288032458496410887">Désinstaller <ph name="APP" />…</translation>
 <translation id="8289128870594824098">Taille du disque</translation>

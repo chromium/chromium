@@ -1108,6 +1108,7 @@
 <translation id="3906954721959377182">Таблет</translation>
 <translation id="3909477809443608991"><ph name="URL" /> сака да пушти заштитени содржини. Google ќе го потврди идентитетот на вашиот уред, а сајтов ќе може да пристапи до него.</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
+<translation id="3923112503730743940">Oufuku Hagaki (разгледница)</translation>
 <translation id="3927932062596804919">Одбиј</translation>
 <translation id="393316646445601645">Интернет и телекомуникации</translation>
 <translation id="3939773374150895049">Да се користи WebAuthn наместо CVC?</translation>
@@ -1136,6 +1137,7 @@
 <translation id="4009243425692662128">Содржините на страниците што ги печатите се испраќаат на Google Cloud или трети страни за анализа. На пример, можеби ќе се скенираат за да се провери дали содржат чувствителни податоци.</translation>
 <translation id="4010758435855888356">Да се дозволи пристап до капацитетот?</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{PDF-документ со {COUNT} страница}one{PDF-документ со {COUNT} страница}other{PDF-документ со {COUNT} страници}}</translation>
+<translation id="4022639246993848966">3,5x5</translation>
 <translation id="4023431997072828269">Бидејќи формуларов се испраќа преку врска што не е безбедна, вашите податоци ќе бидат видливи за другите.</translation>
 <translation id="4025913568718019429">Копче „Управувајте со поставките за приватност на Google“, притиснете Enter за да отидете во поставките за приватност за сметката на Google</translation>
 <translation id="4030383055268325496">&amp;Врати додавање</translation>

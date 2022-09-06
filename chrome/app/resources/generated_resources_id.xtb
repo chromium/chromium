@@ -106,6 +106,7 @@ Periksa sandi Anda kapan saja di <ph name="GOOGLE_PASSWORD_MANAGER" />.</transla
 <translation id="1094607894174825014">Operasi baca atau tulis diminta dengan offset yang tidak valid di: "<ph name="DEVICE_NAME" />".</translation>
 <translation id="1095761715416917775">Pastikan Anda selalu dapat mengakses data tersinkronisasi</translation>
 <translation id="109647177154844434">Meng-uninstal Parallels Desktop akan menghapus image Windows Anda. Ini termasuk aplikasi, setelan, dan datanya. Yakin ingin melanjutkan?</translation>
+<translation id="1097016918605049747">Halaman ini tidak dapat diterjemahkan</translation>
 <translation id="1097658378307015415">Sebelum masuk, masuklah sebagai Tamu untuk mengaktifkan jaringan <ph name="NETWORK_ID" /></translation>
 <translation id="1099383081182863812">Bisakah Anda melihat Chromecast di
     <ph name="BEGIN_LINK" />
@@ -791,6 +792,7 @@ Izin yang telah Anda berikan ke aplikasi dapat berlaku untuk akun ini. Anda dapa
 <translation id="1730917990259790240"><ph name="BEGIN_PARAGRAPH1" />Untuk menghapus aplikasi, buka Setelan &gt; Google Play Store &gt; Kelola preferensi Android &gt; Aplikasi atau Pengelola aplikasi. Lalu, ketuk aplikasi yang ingin di-uninstal (Anda mungkin perlu menggeser ke kanan atau ke kiri untuk mencari aplikasi). Selanjutnya, ketuk Uninstal atau Nonaktifkan.<ph name="END_PARAGRAPH1" /></translation>
 <translation id="1730989807608739928">Scroll ke tab terakhir</translation>
 <translation id="1731911755844941020">Mengirimkan permintaan...</translation>
+<translation id="1732445923934584865">Tanya secara langsung</translation>
 <translation id="1733383495376208985">Enkripsikan data yang disinkronkan dengan <ph name="BEGIN_LINK" />frasa sandi siknronisasi<ph name="END_LINK" /> Anda sendiri. Data ini tidak mencakup alamat dan metode pembayaran dari Google Pay.</translation>
 <translation id="1734212868489994726">Biru muda</translation>
 <translation id="1734230530703461088">Gagal memuat ekstensi sebelum batas waktu. Harap hubungi administrator Anda.</translation>
@@ -1317,6 +1319,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2203088913459920044">Nama dapat menggunakan huruf, angka, dan karakter khusus</translation>
 <translation id="220321590587754225">Tidak dapat terhubung. Coba lagi.</translation>
 <translation id="2204034823255629767">Membaca dan mengubah apa saja yang Anda ketik</translation>
+<translation id="2204387456724731099">Pilihan ini tidak dapat diterjemahkan</translation>
 <translation id="220858061631308971">Masukkan kode PIN ini ke "<ph name="DEVICE_NAME" />":</translation>
 <translation id="2210462644007531147">Tidak dapat menyelesaikan penginstalan</translation>
 <translation id="2212565012507486665">Izinkan cookie</translation>
@@ -1365,6 +1368,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2251218783371366160">Buka menggunakan penampil sistem</translation>
 <translation id="225163402930830576">Segarkan Jaringan</translation>
 <translation id="2251809247798634662">Jendela Samaran baru</translation>
+<translation id="2252017960592955005">Perlindungan dari pengintip (Beta)</translation>
 <translation id="225240747099314620">Izinkan ID untuk konten yang dilindungi (mungkin harus memulai ulang komputer)</translation>
 <translation id="2255077166240162850">Perangkat ini terkunci ke domain atau mode lain.</translation>
 <translation id="2255317897038918278">Microsoft Time Stamping</translation>
@@ -2080,7 +2084,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2889064240420137087">Buka link dengan...</translation>
 <translation id="2891566119238851894">Buka penelusuran di panel samping. Penelusuran tidak dibuka di panel samping.</translation>
 <translation id="2891922230654533301">Gunakan perangkat Anda untuk login ke <ph name="APP_NAME" />?</translation>
-<translation id="2893013536106749396">Pilih kartu yang membuat Anda terus menerima kabar terbaru tentang hal-hal yang penting</translation>
+<translation id="2893013536106749396">Pilih kartu yang perlu Anda buka</translation>
 <translation id="2893168226686371498">Browser default</translation>
 <translation id="2893180576842394309">Google dapat menggunakan histori Anda untuk mempersonalisasi Penelusuran dan layanan Google lainnya</translation>
 <translation id="2894757982205307093">Tab baru di grup</translation>
@@ -4499,7 +4503,7 @@ Gunakan Ctrl + Alt + Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="5265797726250773323">Error saat menginstal</translation>
 <translation id="5266113311903163739">Kesalahan Impor Otoritas Sertifikasi</translation>
 <translation id="526622169288322445">Tindakan lainnya untuk <ph name="ADDRESS_SUMMARY" /></translation>
-<translation id="5268373933383932086">Halaman Anda, selera Anda</translation>
+<translation id="5268373933383932086">Halaman Anda, semau Anda</translation>
 <translation id="5269977353971873915">Gagal Mencetak</translation>
 <translation id="5273806377963980154">Edit URL situs</translation>
 <translation id="5275084684151588738">Kamus Pengguna</translation>
@@ -5140,6 +5144,7 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="5884474295213649357">Tab ini terhubung dengan perangkat USB.</translation>
 <translation id="5885314688092915589">Organisasi Anda akan mengelola profil ini</translation>
 <translation id="5886009770935151472">Jari 1</translation>
+<translation id="5886384907280980632">Nonaktifkan sekarang</translation>
 <translation id="5889282057229379085">Jumlah maksimum CA perantara: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5891688036610113830">Jaringan Wi-Fi pilihan</translation>
 <translation id="5895138241574237353">Mulai Ulang</translation>
@@ -5240,6 +5245,7 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="5975792506968920132">Persentase Pengisian Daya Baterai</translation>
 <translation id="5976160379964388480">Yang Lain</translation>
 <translation id="5978277834170881274">&amp;Gunakan fitur periksa ejaan dasar</translation>
+<translation id="5978395054855988504">Penghemat Baterai aktif</translation>
 <translation id="5978493744931296692">Administrator Anda telah menonaktifkan profil lain</translation>
 <translation id="5979084224081478209">Periksa sandi</translation>
 <translation id="5979156418378918004">{NUM_EXTENSIONS,plural, =1{Anda mengaktifkan kembali 1 ekstensi yang berpotensi berbahaya}other{Anda mengaktifkan kembali {NUM_EXTENSIONS} ekstensi yang berpotensi berbahaya}}</translation>
@@ -8447,6 +8453,7 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="9048745018038487540">Pilih semua font</translation>
 <translation id="9050666287014529139">Frasa sandi</translation>
 <translation id="9052404922357793350">Lanjutkan pemblokiran</translation>
+<translation id="90528604757378587">Aktivitas latar belakang dan beberapa efek visual, seperti scroll yang lancar, mungkin dibatasi.</translation>
 <translation id="9053563360605707198">Print di kedua sisi</translation>
 <translation id="9055636786322918818">Terapkan enkripsi RC4. Penggunaan opsi ini akan meningkatkan risiko, karena cipher RC4 tidak aman.</translation>
 <translation id="9056810968620647706">Tidak ditemukan kecocokan.</translation>

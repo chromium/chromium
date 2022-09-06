@@ -1105,6 +1105,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="3906954721959377182">Tablet</translation>
 <translation id="3909477809443608991"><ph name="URL" /> chiede di riprodurre contenuti protetti. Google verificherà l'identità del tuo dispositivo e questo sito potrebbe avervi accesso.</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
+<translation id="3923112503730743940">Oufuku Hagaki (cartolina)</translation>
 <translation id="3927932062596804919">Non consentire</translation>
 <translation id="393316646445601645">Internet e telecomunicazioni</translation>
 <translation id="3939773374150895049">Usare WebAuthn anziché CVC?</translation>
@@ -1133,6 +1134,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="4009243425692662128">I contenuti delle pagine che stampi vengono inviati a Google Cloud o a terze parti per essere analizzati. Ad esempio, potrebbero essere sottoposti a scansione alla ricerca di dati sensibili.</translation>
 <translation id="4010758435855888356">Vuoi consentire l'accesso allo spazio di archiviazione?</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{Documento PDF contenente {COUNT} pagina}other{Documento PDF contenente {COUNT} pagine}}</translation>
+<translation id="4022639246993848966">8,9 x 12,7 cm</translation>
 <translation id="4023431997072828269">Le tue informazioni saranno visibili agli altri utenti perché il modulo verrà inviato tramite una connessione non sicura.</translation>
 <translation id="4025913568718019429">Pulsante Gestisci le impostazioni sulla privacy di Google, premi Invio per andare alle impostazioni sulla privacy del tuo Account Google.</translation>
 <translation id="4030383055268325496">&amp;Annulla aggiunta</translation>

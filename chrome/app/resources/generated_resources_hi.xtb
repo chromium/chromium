@@ -106,6 +106,7 @@
 <translation id="1094607894174825014">पढ़ें या लिखें संचालन का अनुरोध किसी अमान्य ऑफ़सेट के साथ इस पर किया गया था: "<ph name="DEVICE_NAME" />".</translation>
 <translation id="1095761715416917775">पक्का करें कि आप हमेशा अपना सिंक किया हुआ डेटा ऐक्सेस कर सकें</translation>
 <translation id="109647177154844434">Parallels Desktop को अनइंस्टॉल करने से आपकी Windows की इमेज मिट जाएगी. इसके ऐप्लिकेशन, सेटिंग, और डेटा इसमें शामिल हैं. क्या आप वाकई जारी रखना चाहते हैं?</translation>
+<translation id="1097016918605049747">इस पेज का अनुवाद नहीं किया जा सकता</translation>
 <translation id="1097658378307015415">प्रवेश करने से पहले, कृपया <ph name="NETWORK_ID" /> नेटवर्क सक्रिय करने के लिए अतिथि के रूप में प्रविष्ट हों</translation>
 <translation id="1099383081182863812">क्या आप
     <ph name="BEGIN_LINK" />
@@ -682,6 +683,7 @@
 <translation id="1632756664321977232">काट-छांट करने का टूल</translation>
 <translation id="163309982320328737">आरंभिक वर्ण चौड़ाई पूर्ण है</translation>
 <translation id="1633947793238301227">Google Assistant बंद करें</translation>
+<translation id="1634224622052500893">वाई-फ़ाई नेटवर्क मिल गया</translation>
 <translation id="1634783886312010422">क्या आपने <ph name="WEBSITE" /> पर पहले ही पासवर्ड बदल दिया है?</translation>
 <translation id="1636212173818785548">ठीक</translation>
 <translation id="163712950892155760"><ph name="BEGIN_PARAGRAPH1" />ऐप्लिकेशन से जुड़े डेटा में ऐसा कोई भी डेटा शामिल हो सकता है जिसे किसी ऐप्लिकेशन ने (डेवलपर सेटिंग के आधार पर) सेव किया है. इसमें संपर्क, मैसेज (एसएमएस), और फ़ोटो जैसा डेटा भी शामिल है. बैक अप डेटा को आपके Drive के स्टोरेज कोटा में नहीं गिना जाएगा.<ph name="END_PARAGRAPH1" />
@@ -791,6 +793,7 @@
 <translation id="1730917990259790240"><ph name="BEGIN_PARAGRAPH1" />ऐप्लिकेशन हटाने के लिए, सेटिंग &gt; Google Play Store &gt; Android प्राथमिकताएं प्रबंधित करें &gt; ऐप्लिकेशन या ऐप्लिकेशन एडमिन पर जाएं. फिर उस ऐप्लिकेशन पर टैप करें जिसे आप अनइंस्टॉल करना चाहते हैं (ऐप्लिकेशन ढूंढने के लिए आपको दाएं या बाएं स्वाइप करना पड़ सकता है). फिर अनइंस्टॉल करें या बंद करें पर टैप करें.<ph name="END_PARAGRAPH1" /></translation>
 <translation id="1730989807608739928">स्क्रोल करके आखिरी टैब की ओर जाएं</translation>
 <translation id="1731911755844941020">अनुरोध भेजा जा रहा है...</translation>
+<translation id="1732445923934584865">इसके बजाय, व्यक्तिगत तौर पर ऐक्सेस मांगें</translation>
 <translation id="1733383495376208985">सिंक किए गए डेटा को <ph name="BEGIN_LINK" />अपने खुद के सिंक लंबे पासवर्ड<ph name="END_LINK" /> से सुरक्षित करें. इसमें Google Pay से भुगतान करने के तरीके और पते शामिल नहीं हैं.</translation>
 <translation id="1734212868489994726">हल्का नीला</translation>
 <translation id="1734230530703461088">समयसीमा के अंदर एक्सटेंशन लोड नहीं किए जा सके. कृपया अपने एडमिन से संपर्क करें.</translation>
@@ -1317,6 +1320,7 @@
 <translation id="2203088913459920044">नाम में अक्षर, संख्याएं, और विशेष वर्ण इस्तेमाल किए जा सकते हैं</translation>
 <translation id="220321590587754225">कनेक्ट नहीं किया जा सका. फिर से कोशिश करें.</translation>
 <translation id="2204034823255629767">आप जो कुछ भी लिखते हैं उसे पढ़ें और बदलें</translation>
+<translation id="2204387456724731099">चुने गए टेक्स्ट का अनुवाद नहीं किया जा सकता</translation>
 <translation id="220858061631308971">कृपया इस पिन कोड को "<ph name="DEVICE_NAME" />" पर दर्ज करें:</translation>
 <translation id="2210462644007531147">इंस्टॉल नहीं किया जा सका</translation>
 <translation id="2212565012507486665">कुकी की अनुमति दें</translation>
@@ -2023,6 +2027,7 @@
 <translation id="2839032553903800133">सूचनाएं ब्लॉक की गईं</translation>
 <translation id="2841013758207633010">समय</translation>
 <translation id="2841837950101800123">कंपनी</translation>
+<translation id="2842013086666334835">"<ph name="NETWORK_ID" />" में साइन इन करें</translation>
 <translation id="2843560154284403323">Linux का सेट अप पूरा करने के लिए, ChromeOS अपडेट करके दोबारा कोशिश करें.</translation>
 <translation id="2844169650293029770">USB-C डिवाइस (बायां सामने वाला पोर्ट)</translation>
 <translation id="2844809857160214557">प्रिंट जॉब देखें और प्रबंधित करें</translation>
@@ -2123,6 +2128,7 @@
 <translation id="2927017729816812676">कैश मेमोरी</translation>
 <translation id="2928795416630981206">आपके कैमरे की स्थिति को ट्रैक करने की अनुमति है</translation>
 <translation id="2931157624143513983">जिस जगह पर प्रिंट किया जाना है उसके हिसाब से फ़िट करें</translation>
+<translation id="2931342457001070961">कोई माइक्रोफ़ोन कनेक्ट नहीं है</translation>
 <translation id="2932085390869194046">पासवर्ड सुझाएं...</translation>
 <translation id="2932483646085333864">सिंक शुरू करने के लिए साइन आउट करें और फिर से साइन इन करें</translation>
 <translation id="2932883381142163287">बुरे बर्ताव की शिकायत करें</translation>
@@ -2186,6 +2192,7 @@
 <translation id="2996286169319737844">आपका डेटा आपके सिंक लंबे पासवर्ड से सुरक्षित किया गया था. इसमें Google Pay से भुगतान करने के तरीके और पते शामिल नहीं हैं.</translation>
 <translation id="2996722619877761919">लंबे किनारे की तरफ़ पलटें</translation>
 <translation id="2996932914629936323">सिंक किए हुए सभी डिवाइसों से ब्राउज़िंग इतिहास मिट जाएगा</translation>
+<translation id="2998267783395280091">नेटवर्क मिल गया</translation>
 <translation id="3000378525979847272"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> की अनुमति दी गई</translation>
 <translation id="3000461861112256445">मोनो ऑडियो</translation>
 <translation id="3001144475369593262">बच्चे के खाते</translation>
@@ -2337,6 +2344,7 @@
 <translation id="3142562627629111859">नया ग्रुप</translation>
 <translation id="3143515551205905069">लिंक करना रोक दें</translation>
 <translation id="3143754809889689516">शुरू से चलाएं</translation>
+<translation id="3143937294861726703">मेमोरी सेवर की सेटिंग चालू है</translation>
 <translation id="3144647712221361880">लिंक को इस रूप में खोलें</translation>
 <translation id="3149510190863420837">Chrome ऐप्स</translation>
 <translation id="3150693969729403281">अभी सुरक्षा जांच करें</translation>
@@ -5136,6 +5144,7 @@
 <translation id="5884474295213649357">यह टैब किसी USB डिवाइस से कनेक्ट है.</translation>
 <translation id="5885314688092915589">आपका संगठन इस प्रोफ़ाइल को मैनेज करेगा</translation>
 <translation id="5886009770935151472">उंगली 1</translation>
+<translation id="5886384907280980632">अभी बंद करें</translation>
 <translation id="5889282057229379085">मध्यवर्ती CA की अधिकतम संख्या: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5891688036610113830">पसंदीदा वाई-फ़ाई नेटवर्क</translation>
 <translation id="5895138241574237353">फिर से प्रारंभ करें</translation>
@@ -5236,6 +5245,7 @@
 <translation id="5975792506968920132">बैटरी चार्ज का प्रतिशत</translation>
 <translation id="5976160379964388480">अन्य</translation>
 <translation id="5978277834170881274">&amp;बुनियादी 'वर्तनी जाँच' का इस्तेमाल करें</translation>
+<translation id="5978395054855988504">'बैटरी सेवर' चालू है</translation>
 <translation id="5978493744931296692">आपके एडमिन ने अन्य प्रोफ़ाइल बंद कर दी हैं</translation>
 <translation id="5979084224081478209">पासवर्ड जांचें</translation>
 <translation id="5979156418378918004">{NUM_EXTENSIONS,plural, =1{आपने 1 ऐसा एक्सटेंशन फिर से चालू कर दिया है जो शायद नुकसान पहुंचा सकता है}one{आपके एडमिन ने {NUM_EXTENSIONS} ऐसा एक्सटेंशन फिर से चालू कर दिया है जो शायद नुकसान पहुंचा सकता है}other{आपने {NUM_EXTENSIONS} ऐसे एक्सटेंशन फिर से चालू कर दिए हैं जो शायद नुकसान पहुंचा सकते हैं}}</translation>
@@ -8439,6 +8449,7 @@
 <translation id="9048745018038487540">सभी फ़ॉन्ट चुनें</translation>
 <translation id="9050666287014529139">पासफ़्रेज़ (लंबा पासवर्ड)</translation>
 <translation id="9052404922357793350">ब्लॉक करना जारी रखें</translation>
+<translation id="90528604757378587">बैकग्राउंड में होने वाली गतिविधि और कुछ विज़ुअल इफ़ेक्ट, जैसे कि आसानी से स्क्रोल करने की सुविधा सीमित हो सकती है.</translation>
 <translation id="9053563360605707198">दोनों तरफ़ प्रिंट करें</translation>
 <translation id="9055636786322918818">RC4 सुरक्षा लागू करें. इस विकल्प का इस्तेमाल करने से आपका खतरा बढ़ जाता है, क्योंकि RC4 सिफ़र सुरक्षित नहीं होते हैं.</translation>
 <translation id="9056810968620647706">कोई मिलान नहीं मिले.</translation>

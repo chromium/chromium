@@ -30,6 +30,7 @@
 <translation id="1717218214683051432">Harakat sensorlari</translation>
 <translation id="1743802530341753419">Saytlar qurilmaga ulanishiga ruxsat so‘ralsin (tavsiya etiladi)</translation>
 <translation id="1779089405699405702">Tasvir dekoderi</translation>
+<translation id="1785415724048343560">Nuqsonlarsiz ishlashi uchun tavsiya etiladi</translation>
 <translation id="1818308510395330587"><ph name="APP_NAME" /> AR ishlatishi uchun <ph name="BEGIN_LINK" />Android sozlamalari<ph name="END_LINK" /> orqali kamerani yoqing.</translation>
 <translation id="1864927262126810325"><ph name="SOURCE_NAME" />dan</translation>
 <translation id="1887786770086287077">Bu qurilmada Joylashuvni aniqlash xizmati yoqilmagan, uni <ph name="BEGIN_LINK" />Android sozlamalari<ph name="END_LINK" /> orqali yoqing.</translation>
@@ -169,6 +170,7 @@
 <translation id="4751476147751820511">Harakat va yorug‘lik sensorlari</translation>
 <translation id="4811450222531576619">Manbasi va mavzusi haqida batafsil</translation>
 <translation id="4836046166855586901">Sayt bu qurilmadan faol foydalanishingiz haqidagi axborotni yuborishdan oldin sizdan ruxsat oladi</translation>
+<translation id="483914009762354899">Bu domen ichidagi barcha saytlar</translation>
 <translation id="4883854917563148705">Boshqariladigan sozlamalarni oʻzgartirish imkonsiz</translation>
 <translation id="4887024562049524730">Saytlar virtual reallik qurilmalari yoki maʼlumotlaridan foydalanishi oldidan ruxsat olsin (tavsiya etiladi)</translation>
 <translation id="4962975101802056554">Qurilma uchun barcha ruxsatnomalarni bekor qilish</translation>

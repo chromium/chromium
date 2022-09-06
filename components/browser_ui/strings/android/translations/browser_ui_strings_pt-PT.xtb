@@ -30,6 +30,7 @@
 <translation id="1717218214683051432">Sensores de movimento</translation>
 <translation id="1743802530341753419">Perguntar antes de permitir a ligação de sites a um dispositivo (recomendado)</translation>
 <translation id="1779089405699405702">Descodificador de imagem</translation>
+<translation id="1785415724048343560">Recomendado para obter a melhor experiência</translation>
 <translation id="1818308510395330587">Para permitir que a app <ph name="APP_NAME" /> utilize a realidade aumentada, ative também a câmara nas <ph name="BEGIN_LINK" />Definições do Android<ph name="END_LINK" />.</translation>
 <translation id="1864927262126810325">De <ph name="SOURCE_NAME" /></translation>
 <translation id="1887786770086287077">O acesso à localização está desativado para este dispositivo. Ative-o nas <ph name="BEGIN_LINK" />Definições do Android<ph name="END_LINK" />.</translation>
@@ -169,6 +170,7 @@
 <translation id="4751476147751820511">Sensores de movimento ou de luz</translation>
 <translation id="4811450222531576619">Saiba mais sobre a respetiva origem e tópico</translation>
 <translation id="4836046166855586901">Perguntar quando um site pretender saber quando está a utilizar ativamente este dispositivo.</translation>
+<translation id="483914009762354899">Incluir todos os sites neste domínio</translation>
 <translation id="4883854917563148705">As definições geridas não podem ser repostas</translation>
 <translation id="4887024562049524730">Perguntar antes de permitir que os sites utilizem os seus dados e dispositivo de realidade virtual (recomendado)</translation>
 <translation id="4962975101802056554">Revogar todas as autorizações do dispositivo</translation>

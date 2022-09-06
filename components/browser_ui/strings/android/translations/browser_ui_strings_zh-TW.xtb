@@ -30,6 +30,7 @@
 <translation id="1717218214683051432">動作感應器</translation>
 <translation id="1743802530341753419">允許網站連線至裝置前，必須先詢問你 (建議)</translation>
 <translation id="1779089405699405702">影像解碼器</translation>
+<translation id="1785415724048343560">建議勾選以獲得最佳體驗</translation>
 <translation id="1818308510395330587">如要允許 <ph name="APP_NAME" /> 使用 AR，請一併在 <ph name="BEGIN_LINK" />Android 設定<ph name="END_LINK" />中開啟攝影機。</translation>
 <translation id="1864927262126810325">來自 <ph name="SOURCE_NAME" /></translation>
 <translation id="1887786770086287077">這部裝置的位置資訊存取權已關閉。請在 <ph name="BEGIN_LINK" />Android 設定<ph name="END_LINK" />中予以開啟。</translation>
@@ -169,6 +170,7 @@
 <translation id="4751476147751820511">動作或光源感應器</translation>
 <translation id="4811450222531576619">瞭解來源和主題</translation>
 <translation id="4836046166855586901">允許網站詢問你使用這部裝置的時間</translation>
+<translation id="483914009762354899">包括這個網域中的所有網站</translation>
 <translation id="4883854917563148705">無法重設受管理的設定</translation>
 <translation id="4887024562049524730">系統必須先詢問你，才能允許網站使用你的虛擬實境裝置和資料 (建議設定)</translation>
 <translation id="4962975101802056554">撤銷裝置的所有權限</translation>
@@ -309,6 +311,7 @@
 <translation id="7791543448312431591">新增</translation>
 <translation id="780301667611848630">不用了，謝謝</translation>
 <translation id="7804248752222191302">有網站正在使用你的攝影機</translation>
+<translation id="7816129586531226979">相關網站可能會記住你在不同網站上的身分</translation>
 <translation id="7817023149356982970">系統會將你登出這個網站。</translation>
 <translation id="7828557259026017104">Cookie 是你造訪過的網站所建立的檔案，網站會使用這些檔案記住你的偏好設定。第三方 Cookie 由其他網站所建立。這類網站通常是在你造訪的網站上提供部分內容 (例如廣告或圖片) 的其他網站。</translation>
 <translation id="7835852323729233924">正在播放媒體</translation>

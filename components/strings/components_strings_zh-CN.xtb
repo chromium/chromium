@@ -1802,6 +1802,7 @@
 <translation id="5764920692828389743">发送至 <ph name="EMAIL_ADDRESS" /></translation>
 <translation id="5765072501007116331">要查看递送方式和要求，请选择相应地址</translation>
 <translation id="57689295674415555">未填充虚拟卡号？</translation>
+<translation id="5772086939108830423">使用另一部设备上的通行密钥</translation>
 <translation id="5776313857861697733">优先级</translation>
 <translation id="5781136890105823427">已启用实验</translation>
 <translation id="578305955206182703">琥珀色</translation>
@@ -2197,6 +2198,7 @@
 <translation id="6916954549222464607">财务规划与管理</translation>
 <translation id="6917795328362592458">系统检测到，您刚才使用的密码遭遇了数据泄露。为确保您的帐号安全，密码管理工具建议您检查已保存的所有密码。</translation>
 <translation id="6934672428414710184">此名称来自您的 Google 帐号</translation>
+<translation id="6936976777388162184">这是一个套装设备，无法注册自助服务终端和数字标牌升级服务。</translation>
 <translation id="6939469646605424232">电视剧</translation>
 <translation id="6944692733090228304">您在一个不受 <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> 管理的网站上输入了您的密码。为了保护您的帐号，请不要在其他应用和网站上重复使用您的密码。</translation>
 <translation id="6945221475159498467">选择</translation>
@@ -3050,6 +3052,7 @@
 <translation id="950736567201356821">三孔（顶部）</translation>
 <translation id="961663415146723894">装订（底部）</translation>
 <translation id="962484866189421427">此内容可能会尝试安装欺骗性应用，而这些应用能够冒充其他内容或收集可用于对您进行跟踪的数据。<ph name="BEGIN_LINK" />仍然显示<ph name="END_LINK" /></translation>
+<translation id="964050462028070434">管理密码和通行密钥…</translation>
 <translation id="96680173638229310">汽车与车辆</translation>
 <translation id="969892804517981540">正式版本</translation>
 <translation id="973773823069644502">添加速递地址</translation>

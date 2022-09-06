@@ -1806,6 +1806,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="5764920692828389743">Pošalji na <ph name="EMAIL_ADDRESS" /></translation>
 <translation id="5765072501007116331">Da biste videli načine i zahteve za isporuku, izaberite adresu</translation>
 <translation id="57689295674415555">Broj virtuelne kartice nije unet?</translation>
+<translation id="5772086939108830423">Koristite pristupni kôd na drugom uređaju</translation>
 <translation id="5776313857861697733">Prioritet</translation>
 <translation id="5781136890105823427">Eksperiment je omogućen</translation>
 <translation id="578305955206182703">Oker</translation>
@@ -3055,6 +3056,7 @@ Dodatni detalji:
 <translation id="950736567201356821">Trostruko bušenje na vrhu</translation>
 <translation id="961663415146723894">Povez na dnu</translation>
 <translation id="962484866189421427">Ovaj sadržaj možda pokušava da instalira obmanjujuće aplikacije koje se pretvaraju da su nešto drugo ili da prikupljaju podatke koji mogu da se koriste za praćenje. <ph name="BEGIN_LINK" />Prikaži<ph name="END_LINK" /></translation>
+<translation id="964050462028070434">Upravljajte lozinkama i pristupnim kodovima…</translation>
 <translation id="96680173638229310">Automobili i vozila</translation>
 <translation id="969892804517981540">Zvanična verzija</translation>
 <translation id="973773823069644502">Dodaj adresu za dostavu</translation>

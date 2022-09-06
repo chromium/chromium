@@ -1806,6 +1806,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="5764920692828389743">Envíanse a: <ph name="EMAIL_ADDRESS" /></translation>
 <translation id="5765072501007116331">Para consultar os requisitos e métodos de entrega, selecciona un enderezo</translation>
 <translation id="57689295674415555">Non se autocompletou o número da tarxeta virtual?</translation>
+<translation id="5772086939108830423">Usar clave de acceso dun dispositivo distinto</translation>
 <translation id="5776313857861697733">Prioridade</translation>
 <translation id="5781136890105823427">O experimento está activado</translation>
 <translation id="578305955206182703">Ámbar</translation>
@@ -2202,6 +2203,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="6916954549222464607">Xestión e planificación financeira</translation>
 <translation id="6917795328362592458">O contrasinal que acabas de utilizar viuse implicado nunha violación da seguranza dos datos. Para protexer as túas contas, o xestor de contrasinais recomenda que comprobes os contrasinais gardados.</translation>
 <translation id="6934672428414710184">Este nome procede da túa Conta de Google</translation>
+<translation id="6936976777388162184">Este é un dispositivo dun lote e non se pode inscribir con Kiosk e Signage Upgrade.</translation>
 <translation id="6939469646605424232">Series dramáticas</translation>
 <translation id="6944692733090228304">Introduciches o teu contrasinal nun sitio que non está xestionado por <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />. Para protexer a túa conta, non reutilices o contrasinal noutros sitios nin aplicacións.</translation>
 <translation id="6945221475159498467">Seleccionar</translation>
@@ -3054,6 +3056,7 @@ Detalles adicionais:
 <translation id="950736567201356821">Tres perforacións na parte superior</translation>
 <translation id="961663415146723894">Encadernación na parte inferior</translation>
 <translation id="962484866189421427">Este contido pode tentar instalar aplicacións enganosas que pretenden pasar por algo que non son ou recompilar datos que se poden utilizar para facer un seguimento das túas accións. <ph name="BEGIN_LINK" />Mostrar igualmente<ph name="END_LINK" /></translation>
+<translation id="964050462028070434">Xestionar contrasinais e claves de acceso…</translation>
 <translation id="96680173638229310">Automóbiles e vehículos</translation>
 <translation id="969892804517981540">Compilación oficial</translation>
 <translation id="973773823069644502">Engadir enderezo de entrega</translation>

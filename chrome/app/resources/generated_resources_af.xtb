@@ -682,6 +682,7 @@ Toestemmings wat jy reeds aan programme gegee het, kan op hierdie rekening van t
 <translation id="1632756664321977232">Snoeinutsding</translation>
 <translation id="163309982320328737">Aanvanklike karakterbreedte is vol</translation>
 <translation id="1633947793238301227">Deaktiveer Google Assistent</translation>
+<translation id="1634224622052500893">Wi-fi-netwerk gekry</translation>
 <translation id="1634783886312010422">Het jy hierdie wagwoord reeds op <ph name="WEBSITE" /> verander?</translation>
 <translation id="1636212173818785548">Goed</translation>
 <translation id="163712950892155760"><ph name="BEGIN_PARAGRAPH1" />Programdata kan enige data wees wat 'n program gestoor het (gegrond op ontwikkelaarinstellings), insluitend data soos kontakte, boodskappe en foto's. Rugsteundata sal nie deel vorm van jou Drive-bergingkwota nie.<ph name="END_PARAGRAPH1" />
@@ -2029,6 +2030,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="2839032553903800133">Kennisgewings is geblokkeer</translation>
 <translation id="2841013758207633010">Tyd</translation>
 <translation id="2841837950101800123">Verskaffer</translation>
+<translation id="2842013086666334835">Meld aan by "<ph name="NETWORK_ID" />"</translation>
 <translation id="2843560154284403323">Dateer Chrome-bedryfstelsel op en probeer weer om Linux klaar op te stel.</translation>
 <translation id="2844169650293029770">USB C-toestel (voorste poort aan linkerkant)</translation>
 <translation id="2844809857160214557">Bekyk en bestuur druktake</translation>
@@ -2129,6 +2131,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="2927017729816812676">Kasberging</translation>
 <translation id="2928795416630981206">Mag jou kameraposisie naspoor</translation>
 <translation id="2931157624143513983">Pas op drukbare gebied</translation>
+<translation id="2931342457001070961">Geen mikrofoon is gekoppel nie</translation>
 <translation id="2932085390869194046">Stel wagwoord voor …</translation>
 <translation id="2932483646085333864">Meld af en meld dan weer aan om te begin sinkroniseer</translation>
 <translation id="2932883381142163287">Gee misbruik aan</translation>
@@ -2192,6 +2195,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="2996286169319737844">Data word met jou sinkroniseringwagfrase geënkripteer. Dit sluit nie betaalmetodes en adresse van Google Pay af in nie.</translation>
 <translation id="2996722619877761919">Keer om na lang kant</translation>
 <translation id="2996932914629936323">Maak geskiedenis op alle gesinkroniseerde toestelle skoon</translation>
+<translation id="2998267783395280091">Netwerk gekry</translation>
 <translation id="3000378525979847272">Het <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> toegelaat</translation>
 <translation id="3000461861112256445">Mono-oudio</translation>
 <translation id="3001144475369593262">Kinderrekeninge</translation>
@@ -2343,6 +2347,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="3142562627629111859">Nuwe groep</translation>
 <translation id="3143515551205905069">Kanselleer sinkronisering</translation>
 <translation id="3143754809889689516">Speel van die begin af</translation>
+<translation id="3143937294861726703">Geheuebespaarder is aan</translation>
 <translation id="3144647712221361880">Maak skakel oop as</translation>
 <translation id="3149510190863420837">Chrome-programme</translation>
 <translation id="3150693969729403281">Doen veiligheidskontrole nou</translation>

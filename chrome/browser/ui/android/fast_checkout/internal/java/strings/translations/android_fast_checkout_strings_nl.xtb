@@ -2,9 +2,11 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="nl">
 <translation id="1068168522143272502">De lijst met adressen en betalingsopties die kunnen worden ingevuld tijdens het betalingsproces is geopend op halve hoogte.</translation>
+<translation id="248973266728004341">Nieuwe creditcard toevoegen</translation>
 <translation id="2501278716633472235">Terug</translation>
 <translation id="312532069930005172">Profielinstellingen voor automatisch invullen openen</translation>
 <translation id="4401440167302712543">Verzend- en betalingsgegevens automatisch invullen tijdens het afrekenen</translation>
+<translation id="4526274353008646337">Nieuw adres toevoegen</translation>
 <translation id="567079066552447069">De lijst met adressen en betalingsopties die kunnen worden ingevuld tijdens het betalingsproces is gesloten.</translation>
 <translation id="780301667611848630">Nee, bedankt</translation>
 <translation id="8264703973415044493">De lijst met adressen en betalingsopties die kunnen worden ingevuld tijdens het betalingsproces is geopend op volledige hoogte.</translation>
@@ -12,5 +14,6 @@
 <translation id="884264119367021077">Verzendadres</translation>
 <translation id="8873105120914375071">Sneller betalen?</translation>
 <translation id="9032876013752408138">Mijn gegevens automatisch invullen</translation>
+<translation id="9130271303738808219">Creditcardinstellingen openen</translation>
 <translation id="984275831282074731">Betaalmethoden</translation>
 </translationbundle>

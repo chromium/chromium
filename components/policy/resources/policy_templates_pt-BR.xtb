@@ -3749,12 +3749,6 @@ Quando a política for definida, o <ph name="PRODUCT_OS_NAME" /> permitirá que 
 
       Se a política for deixada sem definição, o padrão será permitido tanto para usuários gerenciados por empresas quanto para os não gerenciados.</translation>
 <translation id="487460824085252184">Migrar automaticamente, sem autorização do usuário.</translation>
-<translation id="48749493657448872">Quando esta configuração estiver ativada, o <ph name="PRODUCT_NAME" /> vai verificar os certificados do servidor usando o verificador integrado de certificados.
-      Quando ela estiver desativada, o <ph name="PRODUCT_NAME" /> vai verificar os certificados do servidor usando o verificador legado disponibilizado pela plataforma, a menos que <ph name="CHROME_ROOT_STORE_ENABLED_POLICY_NAME" /> esteja ativada.
-      Quando esta configuração não for definida, tanto o verificador de certificados integrado quanto o legado podem ser usados.
-
-      Esta política vai ser removida no <ph name="PRODUCT_NAME" /> para <ph name="MAC_OS_NAME" /> versão 107. O suporte ao verificador de certificados legado no <ph name="MAC_OS_NAME" /> também vai ser removido nessa versão.
-      </translation>
 <translation id="4874982543810021567">Bloquear o WebUSB nesses sites</translation>
 <translation id="4876805738539874299">Versão máxima de SSL ativada</translation>
 <translation id="4877402532842958110">Esta política está obsoleta. Use a <ph name="URL_ALLOWLIST_POLICY_NAME" />.
@@ -5882,6 +5876,20 @@ Se esta configuração estiver desativada ou se nenhum valor for definido, o Mod
       A definição de uma lista de URLs nesta política tem o mesmo efeito que configurar a flag de linha de comando --unsafely-treat-insecure-origin-as-secure para uma lista dos mesmos URLs separados por vírgulas. A política modificará a flag de linha de comando e UnsafelyTreatInsecureOriginAsSecure, se estiver presente.
 
       Para ver mais informações sobre contextos seguros, consulte "Secure Contexts" (https://www.w3.org/TR/secure-contexts) (em inglês).</translation>
+<translation id="7034831650852513978">Esta política controla o valor do <ph name="IPP_ATTRIBUTE" /> <ph name="IPP_PROTOCOL" /> (<ph name="INTERNET_PRINTING_PROTOCOL" />) <ph name="CLIENT_INFO_IPP_ATTRIBUTE" /> em trabalhos de impressão.
+
+      Se a política for definida como uma string, um item <ph name="CLIENT_INFO_IPP_ATTRIBUTE" /> extra vai ser adicionado a cada trabalho de impressão. O membro <ph name="CLIENT_NAME_IPP_ATTRIBUTE" /> do item <ph name="CLIENT_INFO_IPP_ATTRIBUTE" /> adicionado vai ser definido como o valor da política após a substituição das variáveis.
+
+      As variáveis aceitas são <ph name="DIRECTORY_ID_PLACEHOLDER" />, <ph name="SERIAL_NUMBER_PLACEHOLDER" />, <ph name="ASSET_ID_PLACEHOLDER" />, <ph name="ANNOTATED_LOCATION_PLACEHOLDER" />, <ph name="USER_EMAIL_PLACEHOLDER" />, <ph name="USER_EMAIL_NAME_PLACEHOLDER" /> e <ph name="USER_EMAIL_DOMAIN" />. As variáveis de marcador de posição sem suporte não vão ser expandidas.
+
+      O valor resultante após a substituição das variáveis vai ser considerado válido se consistir apenas em caracteres <ph name="ASCII" /> imprimíveis, com no máximo 255 deles.
+
+      Por motivos de privacidade, esta política se aplica apenas ao se comunicar com uma impressora usando os protocolos <ph name="IPPS_PROTOCOL" />, <ph name="HTTPS_PROTOCOL" />, <ph name="USB_PROTOCOL" /> ou <ph name="IPP_USB_PROTOCOL" />. Além disso, ela só se aplica a impressoras com suporte ao <ph name="CLIENT_NAME_IPP_ATTRIBUTE" />.
+
+      A política se aplica apenas a usuários afiliados.
+
+      Se ela for deixada sem definição ou for definida com um valor vazio ou inválido, nenhum <ph name="CLIENT_INFO_PLACEHOLDER" /> extra vai ser adicionado às solicitações de trabalho de impressão.
+      </translation>
 <translation id="703672323011778742">Esta política foi suspensa na versão M88. O Flash não é mais compatível com o Chrome. Se a política for definida como 1, você poderá definir se todos os sites poderão executar automaticamente o plug-in <ph name="FLASH_PLUGIN_NAME" />. Se ela for definida como 2, esse plug-in será negado em todos os sites. O "Clique para ver" permite que o plug-in <ph name="FLASH_PLUGIN_NAME" /> seja executado, mas os usuários precisam clicar no marcador para iniciar a execução.
 
       Se a política não for definida, a <ph name="BLOCK_PLUGINS_POLICY_NAME" /> será usada e os usuários poderão mudar essa configuração.
@@ -6832,6 +6840,7 @@ Se a política não for definida, a configuração ficará ativada, mas o usuár
       </translation>
 <translation id="8102913158860568230">Configuração padrão mediastream</translation>
 <translation id="8104962233214241919">Selecionar certificados de cliente automaticamente para estes sites</translation>
+<translation id="8109762054721090517">Modelo do <ph name="IPP_ATTRIBUTE" /><ph name="INTERNET_PRINTING_PROTOCOL" /> <ph name="CLIENT_NAME_IPP_ATTRIBUTE" /></translation>
 <translation id="8114382167597081590">Não aplicar o Modo restrito no YouTube</translation>
 <translation id="8117921351531866504">Permite que você defina se os sites têm permissão de verificar se os usuários salvaram formas de pagamento.
 

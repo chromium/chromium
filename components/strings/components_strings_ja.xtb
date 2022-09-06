@@ -156,6 +156,7 @@
 <translation id="1348198688976932919">アクセス先のサイトには危険なアプリがあります</translation>
 <translation id="1348779747280417563">名前を確認</translation>
 <translation id="1354976809542763843">住宅ローン</translation>
+<translation id="1355158069018170842">タブに値下げ情報を表示する</translation>
 <translation id="1355301061807280185">仕事</translation>
 <translation id="1355754231781595724">交通安全</translation>
 <translation id="1357195169723583938">最近デバイスを使用したユーザーとその日時</translation>
@@ -464,6 +465,7 @@
 <translation id="2153609454945889823">Google Play 開発者サービス（AR）をインストールしますか？</translation>
 <translation id="2154054054215849342">お使いのドメインでは同期機能をご利用いただけません</translation>
 <translation id="2154484045852737596">カードを編集</translation>
+<translation id="2157640075051554492">価格トラッキングの通知</translation>
 <translation id="2161656808144014275">テキスト</translation>
 <translation id="2162510787844374618">カード発行会社に問い合わせています...</translation>
 <translation id="2162620598375156287">現在の価格は <ph name="SOURCE_WEBSITE" /> で <ph name="CURRENT_PRICE" /></translation>
@@ -998,6 +1000,7 @@
 <translation id="3633738897356909127">Chrome を更新するボタンです。Enter キーを押すと Chrome の設定で Chrome を更新します</translation>
 <translation id="3634530185120165534">トレイ 5</translation>
 <translation id="3634567936866541746">偽のサイトでパスワードを入力しました。アカウントを保護するため、保存したパスワードをすぐに確認することをおすすめします。</translation>
+<translation id="3637033245385760976">Chrome の通知をオンにする必要があります。[<ph name="NOTIFICATION_SETTINGS" />] でオンにできます</translation>
 <translation id="3637662659967048211">Google アカウントに保存</translation>
 <translation id="3640766068866876100">Index-4x6-Ext</translation>
 <translation id="3642638418806704195">アプリケーション:</translation>
@@ -1098,6 +1101,7 @@
 <translation id="3906954721959377182">タブレット</translation>
 <translation id="3909477809443608991"><ph name="URL" /> が保護されたコンテンツの再生を要求しています。デバイスの認証情報が Google によって確認され、このサイトによる認証情報へのアクセスが許可されます。</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
+<translation id="3923112503730743940">往復はがき</translation>
 <translation id="3927932062596804919">拒否</translation>
 <translation id="393316646445601645">インターネット、通信</translation>
 <translation id="3939773374150895049">CVC の代わりに WebAuthn を使用しますか？</translation>
@@ -1126,6 +1130,7 @@
 <translation id="4009243425692662128">印刷するページのコンテンツは分析のため Google Cloud または第三者に送信されます。たとえば、機密データがないかスキャンされます。</translation>
 <translation id="4010758435855888356">ストレージへのアクセスを許可しますか？</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{{COUNT} ページの PDF ドキュメント}other{{COUNT} ページの PDF ドキュメント}}</translation>
+<translation id="4022639246993848966">3.5 x 5</translation>
 <translation id="4023431997072828269">このフォームは安全ではない接続を使用して送信されているため、情報が他人に読み取られる可能性があります。</translation>
 <translation id="4025913568718019429">[Google のプライバシー設定を管理] ボタンです。Enter キーを押すと Google アカウントのプライバシー設定に移動します</translation>
 <translation id="4030383055268325496">追加の取り消し（&amp;U）</translation>
@@ -1413,6 +1418,7 @@
 <translation id="4785376858512657294">Google アカウントを管理</translation>
 <translation id="4785689107224900852">このタブに切り替え</translation>
 <translation id="4786804728079074733">バレーボール</translation>
+<translation id="4789704664580239421">開いているタブに値下げアラートが表示されます</translation>
 <translation id="4791134497475588553">Linux アプリがインストールされ、最後に使用されたとき</translation>
 <translation id="4792686369684665359">送信しようとしている情報は保護されません</translation>
 <translation id="4796594887379589189">ジョブ管理 ID</translation>
@@ -1775,6 +1781,7 @@
 <translation id="5730040223043577876">パスワードを他のサイトで再使用した場合、Chrome ではパスワードの再設定を促すメッセージが表示されます。</translation>
 <translation id="5736165827969430182">金属、鉱業</translation>
 <translation id="5737183892635480227">{NUM_CARDS,plural, =1{Google アカウントにカードを保存}other{Google アカウントにカードを保存}}</translation>
+<translation id="5738385766833540397">トラッキングしている商品の値下げアラートを受け取る方法を管理します</translation>
 <translation id="5743638595296120378">自動車販売</translation>
 <translation id="5743898850056428078">オートバイ レース</translation>
 <translation id="5745733273847572235">位置情報を要求できる</translation>
@@ -1784,8 +1791,10 @@
 <translation id="5759751709240058861">カメラの使用と移動</translation>
 <translation id="5763042198335101085">有効なメールアドレスを入力してください</translation>
 <translation id="5764725887548570807">オリジンの形式が無効です。</translation>
+<translation id="5764920692828389743">送信先: <ph name="EMAIL_ADDRESS" /></translation>
 <translation id="5765072501007116331">配達方法と要件を確認するには、住所を選択してください</translation>
 <translation id="57689295674415555">仮想カード番号が入力されない場合</translation>
+<translation id="5772086939108830423">別のデバイスのパスキーを使用</translation>
 <translation id="5776313857861697733">優先度</translation>
 <translation id="5781136890105823427">テスト機能を有効にしました</translation>
 <translation id="578305955206182703">アンバー</translation>
@@ -1873,6 +1882,7 @@
 <translation id="6017850046339264347"><ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> では、悪意のあるユーザーによって詐欺的なアプリ（他のものに成りすましたり、ユーザーの追跡などに使用可能なデータを収集したりするアプリ）がインストールされる可能性があります。<ph name="BEGIN_LEARN_MORE_LINK" />詳細<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="6025416945513303461"><ph name="TYPE_1" />、<ph name="TYPE_2" />、<ph name="TYPE_3" />（同期済み）</translation>
 <translation id="6027201098523975773">名前を入力してください</translation>
+<translation id="6028591542479806248">モバイル通知とメール通知を管理します</translation>
 <translation id="603068602130820122">2 か所のステープル（右）</translation>
 <translation id="6032524144326295339">用紙受け 2</translation>
 <translation id="6032955021262906325">製本（左綴じ）</translation>
@@ -2176,6 +2186,7 @@
 <translation id="6916954549222464607">財務プランニング、マネジメント</translation>
 <translation id="6917795328362592458">たった今使用したパスワードがデータ侵害で検出されました。パスワード マネージャーでは、アカウントを保護するために保存したパスワードを確認することをおすすめします。</translation>
 <translation id="6934672428414710184">Google アカウントで設定されている名前です</translation>
+<translation id="6936976777388162184">これはバンドルされたデバイスです。Kiosk &amp; Signage Upgrade に登録することはできません。</translation>
 <translation id="6939469646605424232">テレビドラマ</translation>
 <translation id="6944692733090228304"><ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> が管理していないサイトでパスワードを入力しました。アカウントを保護するには、他のアプリやサイトでパスワードを再使用しないでください。</translation>
 <translation id="6945221475159498467">選択</translation>
@@ -2788,6 +2799,7 @@
 <translation id="8559762987265718583">デバイスの日時（<ph name="DATE_AND_TIME" />）が正しくないため、<ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> へのプライベート接続を確立できません。</translation>
 <translation id="8564182942834072828">個別のドキュメント（丁合いなし）</translation>
 <translation id="8564985650692024650"><ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> パスワードを他のサイトで再使用した場合、Chromium ではパスワードの再設定を促すメッセージが表示されます。</translation>
+<translation id="8573969211731659953">値下げアラートはオンになっています。[<ph name="NOTIFICATION_SETTINGS" />] で変更できます</translation>
 <translation id="8576310925653847813">ホームシアター システム</translation>
 <translation id="8577348305244205642">仮想カードを使用できません</translation>
 <translation id="858637041960032120">電話番号を追加
@@ -3027,6 +3039,7 @@
 <translation id="950736567201356821">3 穴パンチ（上）</translation>
 <translation id="961663415146723894">製本（下綴じ）</translation>
 <translation id="962484866189421427">このコンテンツを表示すると、詐欺的なアプリ（他のものに成りすましたり、ユーザーの追跡などに使用可能なデータを収集したりするアプリ）のインストールが試行される可能性があります。<ph name="BEGIN_LINK" />危険性を理解したうえで表示する<ph name="END_LINK" /></translation>
+<translation id="964050462028070434">パスワードとパスキーを管理...</translation>
 <translation id="96680173638229310">自動車、乗り物</translation>
 <translation id="969892804517981540">Official Build</translation>
 <translation id="973773823069644502">配達先住所を追加</translation>

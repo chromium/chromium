@@ -356,6 +356,10 @@
 <translation id="1372618949173323717">Nonaktifkan JavaScript</translation>
 <translation id="1376119291123231789">Mengaktifkan mode pengisian daya baterai lanjutan</translation>
 <translation id="1384459581748403878">Referensi: <ph name="REFERENCE_URL" /></translation>
+<translation id="1384594066274112751">Kebijakan ini membuat URL apa pun yang cocok dengan satu atau beberapa pola yang ditentukan (menggunakan format filter <ph name="URL_BLOCKLIST_POLICY_NAME" />) tidak akan dihapus oleh browser.
+      Kebijakan ini berlaku untuk menghentikan tekanan memori dan mode efisiensi tinggi.
+      Halaman yang dihapus akan dihapus muatannya dan resource-nya akan diklaim kembali sepenuhnya. Tab yang terkait dengannya tetap berada di tab setrip. Namun, jika tab disetel agar terlihat, pemuatan ulang penuh akan dipicu.
+      </translation>
 <translation id="138847842893090358">Melaporkan status update OS</translation>
 <translation id="1390529781843037070">Jika kebijakan disetel ke Aktif atau tidak disetel, pengguna akan dapat mencetak ke <ph name="CLOUD_PRINT_NAME" /> dari dialog pencetakan <ph name="PRODUCT_NAME" />. <ph name="PRODUCT_NAME" /> dapat mengirimkan dokumen ke <ph name="CLOUD_PRINT_NAME" /> untuk dicetak. Kebijakan ini tidak menghalangi pengguna mengirimkan pekerjaan cetak di situs web.
 
@@ -3760,12 +3764,6 @@ Jika kebijakan ini disetel, <ph name="PRODUCT_OS_NAME" /> hanya mengizinkan peng
 
       Jika kebijakan ini tidak disetel, baik pengguna yang dikelola maupun tidak dikelola perusahaan akan diizinkan secara default.</translation>
 <translation id="487460824085252184">Migrasi otomatis, jangan tanya persetujuan pengguna.</translation>
-<translation id="48749493657448872">Jika setelan ini diaktifkan, <ph name="PRODUCT_NAME" /> akan menjalankan verifikasi sertifikat server menggunakan pemverifikasi sertifikat bawaan.
-      Jika setelan ini dinonaktifkan, <ph name="PRODUCT_NAME" /> akan menjalankan verifikasi sertifikat server menggunakan pemverifikasi sertifikat lama yang disediakan oleh platform, kecuali jika <ph name="CHROME_ROOT_STORE_ENABLED_POLICY_NAME" /> diaktifkan.
-      Jika setelan ini tidak disetel, pemverifikasi sertifikat yang lama atau bawaan dapat digunakan.
-
-      Kebijakan ini akan dihapus dari <ph name="PRODUCT_NAME" /> untuk <ph name="MAC_OS_NAME" /> versi 107 dan saat ini terjadi, dukungan untuk pemverifikasi sertifikat versi lama di <ph name="MAC_OS_NAME" /> akan dihapus.
-      </translation>
 <translation id="4874982543810021567">Blokir WebUSB di situs ini</translation>
 <translation id="4876805738539874299">Versi SSL maksimum diaktifkan</translation>
 <translation id="4877402532842958110">Kebijakan ini tidak digunakan lagi. Sebagai gantinya, gunakan kebijakan '<ph name="URL_ALLOWLIST_POLICY_NAME" />'.
@@ -5904,6 +5902,20 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
       Menetapkan daftar URL dalam kebijakan ini memiliki efek yang sama dengan menetapkan tanda command line --unsafely-treat-insecure-origin-as-secure ke daftar yang dipisahkan koma, yang berisi URL yang sama. Jika ditetapkan, kebijakan ini akan mengganti tanda command line dan UnsafelyTreatInsecureOriginAsSecure.
 
       Untuk informasi selengkapnya tentang konteks aman, lihat Secure Contexts (https://www.w3.org/TR/secure-contexts ).</translation>
+<translation id="7034831650852513978">Kebijakan ini mengontrol nilai <ph name="IPP_ATTRIBUTE" /> <ph name="CLIENT_INFO_IPP_ATTRIBUTE" /> <ph name="IPP_PROTOCOL" /> (<ph name="INTERNET_PRINTING_PROTOCOL" />) dalam tugas pencetakan.
+
+      Menyetel kebijakan ke string akan mengakibatkan penambahan item <ph name="CLIENT_INFO_IPP_ATTRIBUTE" /> tambahan ke setiap tugas pencetakan. Anggota <ph name="CLIENT_NAME_IPP_ATTRIBUTE" /> dari item <ph name="CLIENT_INFO_IPP_ATTRIBUTE" /> yang ditambahkan akan disetel ke nilai kebijakan setelah substitusi variabel.
+
+      Variabel yang didukung adalah <ph name="DIRECTORY_ID_PLACEHOLDER" />, <ph name="SERIAL_NUMBER_PLACEHOLDER" />, <ph name="ASSET_ID_PLACEHOLDER" />, <ph name="ANNOTATED_LOCATION_PLACEHOLDER" />, <ph name="USER_EMAIL_PLACEHOLDER" />, <ph name="USER_EMAIL_NAME_PLACEHOLDER" />, <ph name="USER_EMAIL_DOMAIN" />. Variabel placeholder yang tidak didukung tidak akan diperluas.
+
+      Nilai yang dihasilkan setelah substitusi variabel dianggap valid jika hanya terdiri dari karakter <ph name="ASCII" /> yang dapat dicetak dan panjangnya tidak melebihi 255.
+
+      Perlu diketahui, karena alasan privasi, kebijakan ini hanya berlaku saat berkomunikasi dengan printer menggunakan protokol <ph name="IPPS_PROTOCOL" />, <ph name="HTTPS_PROTOCOL" />, <ph name="USB_PROTOCOL" />, atau <ph name="IPP_USB_PROTOCOL" />. Perlu diketahui juga bahwa kebijakan ini hanya berlaku untuk printer yang mendukung <ph name="CLIENT_NAME_IPP_ATTRIBUTE" />.
+
+      Kebijakan ini hanya berlaku untuk pengguna terafiliasi.
+
+      Jika kebijakan ini disetel ke nilai kosong atau yang tidak valid atau tidak disetel, <ph name="CLIENT_INFO_PLACEHOLDER" /> tambahan tidak akan ditambahkan ke permintaan tugas pencetakan.
+      </translation>
 <translation id="703672323011778742">Kebijakan ini tidak digunakan lagi di M88, Flash tidak lagi didukung oleh Chrome. Jika kebijakan disetel ke 1, Anda dapat menyetel apakah semua situs dapat otomatis menjalankan plugin <ph name="FLASH_PLUGIN_NAME" />. Jika kebijakan disetel ke 2, plugin ini akan ditolak untuk semua situs. Fungsi klik untuk putar akan membuat plugin <ph name="FLASH_PLUGIN_NAME" /> berjalan, tetapi pengguna harus mengklik placeholder untuk memulainya.
 
       Jika kebijakan tidak disetel, <ph name="BLOCK_PLUGINS_POLICY_NAME" /> akan digunakan dan pengguna akan dapat mengubah setelan ini.
@@ -6537,6 +6549,7 @@ Cara yang diharapkan terkait penggunaan kebijakan ini adalah merotasi konfiguras
       Kebijakan ini tidak akan berpengaruh jika kebijakan <ph name="DOWNLOAD_DIRECTORY_POLICY_NAME" /> disetel.
 
       Catatan: Lihat daftar variabel yang dapat Anda gunakan ( https://www.chromium.org/administrators/policy-list-3/user-data-directory-variables ).</translation>
+<translation id="7719808201797990069">Pengecualian pola URL untuk penghapusan tab</translation>
 <translation id="7721944091689270995">ID pengguna <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="7724161903134898864">Jika kebijakan disetel ke 1, situs akan menampilkan pop-up. Jika kebijakan disetel ke 2, pop-up tidak dapat ditampilkan.
 
@@ -6853,6 +6866,7 @@ Cara yang diharapkan terkait penggunaan kebijakan ini adalah merotasi konfiguras
       </translation>
 <translation id="8102913158860568230">Setelan streaming media default</translation>
 <translation id="8104962233214241919">Memilih sertifikat klien untuk situs ini secara otomatis</translation>
+<translation id="8109762054721090517">Template untuk <ph name="IPP_ATTRIBUTE" /> <ph name="CLIENT_NAME_IPP_ATTRIBUTE" /> <ph name="INTERNET_PRINTING_PROTOCOL" /></translation>
 <translation id="8114382167597081590">Jangan terapkan Mode Terbatas di YouTube</translation>
 <translation id="8117921351531866504">Memungkinkan Anda menentukan situs diizinkan atau tidak untuk memeriksa apakah pengguna telah menyimpan metode pembayaran.
 

@@ -106,6 +106,7 @@ Verifique as suas palavras-passe em qualquer altura no <ph name="GOOGLE_PASSWORD
 <translation id="1094607894174825014">Foi solicitada uma operação de leitura ou de escrita com um desvio inválido em: "<ph name="DEVICE_NAME" />".</translation>
 <translation id="1095761715416917775">Certifique-se de que pode aceder sempre aos seus dados de sincronização</translation>
 <translation id="109647177154844434">A desinstalação do Parallels Desktop irá eliminar a sua imagem do Windows. Isto inclui as respetivas apps, definições e dados. Tem a certeza de que pretende continuar?</translation>
+<translation id="1097016918605049747">Não foi possível traduzir esta página</translation>
 <translation id="1097658378307015415">Antes de iniciar sessão, entre como Convidado para ativar a rede <ph name="NETWORK_ID" /></translation>
 <translation id="1099383081182863812">Consegue ver o seu Chromecast na <ph name="BEGIN_LINK" />app Google Home<ph name="END_LINK" />?</translation>
 <translation id="1099962274138857708">Imagem copiada do <ph name="DEVICE_NAME" /></translation>
@@ -780,6 +781,7 @@ As autorizações que já concedeu às apps podem aplicar-se a esta conta. Pode 
 <translation id="1730917990259790240"><ph name="BEGIN_PARAGRAPH1" />Para remover aplicações, aceda a Definições &gt; Google Play Store &gt; Gerir as preferências do Android &gt; Apps ou Gestor de aplicações. Toque na aplicação que pretende desinstalar (pode ter de deslizar rapidamente para a direita ou para a esquerda para encontrar a aplicação). Em seguida, toque em Desinstalar ou em Desativar.<ph name="END_PARAGRAPH1" /></translation>
 <translation id="1730989807608739928">Desloque o ecrã em direção ao último separador</translation>
 <translation id="1731911755844941020">A enviar pedido...</translation>
+<translation id="1732445923934584865">Pedir antes pessoalmente</translation>
 <translation id="1733383495376208985">Encriptar dados sincronizados com a sua própria <ph name="BEGIN_LINK" />frase de acesso de sincronização<ph name="END_LINK" />. Não estão incluídos métodos de pagamento e endereços do Google Pay.</translation>
 <translation id="1734212868489994726">Azul claro</translation>
 <translation id="1734230530703461088">Falha ao carregar extensões dentro do limite de tempo. Contacte o seu administrador.</translation>
@@ -1016,6 +1018,7 @@ As autorizações que já concedeu às apps podem aplicar-se a esta conta. Pode 
 <translation id="1931152874660185993">Não existem componentes instalados.</translation>
 <translation id="1931410639376954712">A instalar o <ph name="DEVICE_OS" /></translation>
 <translation id="1932098463447129402">Não anterior a</translation>
+<translation id="1933489278505808700">Com autorização para ler e alterar</translation>
 <translation id="1935303383381416800">Com autorização para ver a sua localização</translation>
 <translation id="1936157145127842922">Mostrar na pasta</translation>
 <translation id="1936931585862840749">Utilize um número para indicar as cópias a imprimir (1 a <ph name="MAX_COPIES" />).</translation>
@@ -1305,6 +1308,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2203088913459920044">O nome pode utilizar letras, números e carateres especiais</translation>
 <translation id="220321590587754225">Não foi possível ligar. Tente novamente.</translation>
 <translation id="2204034823255629767">Ler e alterar tudo o que introduzir</translation>
+<translation id="2204387456724731099">Não foi possível traduzir esta seleção</translation>
 <translation id="220858061631308971">Introduza este código PIN no "<ph name="DEVICE_NAME" />":</translation>
 <translation id="2210462644007531147">Não foi possível concluir a instalação</translation>
 <translation id="2212565012507486665">Permitir cookies</translation>
@@ -3530,6 +3534,7 @@ Pretende pará-lo?</translation>
 <translation id="4310132194679586591">Selecione uma app no dispositivo para abrir este link</translation>
 <translation id="4310139701823742692">O ficheiro tem o formato errado. Verifique o ficheiro PPD e tente novamente.</translation>
 <translation id="431076611119798497">&amp;Detalhes</translation>
+<translation id="4311284648179069796">Sem autorização para ler e alterar</translation>
 <translation id="4312701113286993760">{COUNT,plural, =1{1 Conta Google}other{<ph name="EXTRA_ACCOUNTS" /> Contas Google}}</translation>
 <translation id="4312866146174492540">Bloquear (predefinição)</translation>
 <translation id="4314497418046265427">Aumente a sua produtividade ao ligar o seu telemóvel ao dispositivo <ph name="DEVICE_TYPE" /></translation>
@@ -3720,6 +3725,7 @@ Pretende pará-lo?</translation>
 <translation id="4504940961672722399">Clique no ícone ou prima <ph name="EXTENSION_SHORTCUT" /> para utilizar esta extensão.</translation>
 <translation id="450552327874992444">Palavra já adicionada.</translation>
 <translation id="4507128560633489176">Dados limpos.</translation>
+<translation id="4507373251891673233">Bloqueou todas as extensões de <ph name="HOST" /></translation>
 <translation id="450867954911715010">Definições de acessibilidade</translation>
 <translation id="4508765956121923607">Ver &amp;Origem</translation>
 <translation id="4509421746503122514">Reiniciar para atualizar</translation>
@@ -3993,6 +3999,7 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="4763408175235639573">Foram definidos os seguintes cookies quando viu esta página</translation>
 <translation id="4765524037138975789">{MONTHS,plural, =1{Este dispositivo vai ser guardado durante 1 mês e pode associar sem um código da próxima vez. Esta opção é definida pelo administrador.}other{Este dispositivo vai ser guardado durante {MONTHS} meses e pode associar sem um código da próxima vez. Esta opção é definida pelo administrador.}}</translation>
 <translation id="4765582662863429759">Permite às Mensagens Android retransmitir as mensagens de texto do telemóvel para o Chromebook.</translation>
+<translation id="4766598565665644999">Todas as extensões podem ler e alterar <ph name="HOST" /></translation>
 <translation id="4768332406694066911">Tem certificados destas entidades que o identificam</translation>
 <translation id="4770119228883592393">Autorização solicitada, prima ⌘ + Opção + seta para baixo para responder.</translation>
 <translation id="4773112038801431077">Atualize o Linux</translation>
@@ -5127,6 +5134,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="5884474295213649357">Este separador está associado a um dispositivo USB.</translation>
 <translation id="5885314688092915589">A sua organização irá gerir este perfil</translation>
 <translation id="5886009770935151472">Dedo 1</translation>
+<translation id="5886384907280980632">Desativar agora</translation>
 <translation id="5889282057229379085">Número máximo de ACs intermédias:<ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5891688036610113830">Redes Wi-Fi preferidas</translation>
 <translation id="5895138241574237353">Reiniciar</translation>
@@ -5166,6 +5174,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
     <ph name="LINE_BREAK" />
     Esta imagem irá aparecer no ecrã de início de sessão e no ecrã de bloqueio do Chromebook.</translation>
 <translation id="5925147183566400388">Apontador para a declaração de práticas de certificação</translation>
+<translation id="5927232971138258197">Esta extensão pode ler e alterar <ph name="HOST" /></translation>
 <translation id="592740088639760830">Parar este contentor</translation>
 <translation id="592880897588170157">Transferir ficheiros PDF em vez de os abrir automaticamente no Chrome</translation>
 <translation id="592919310198008711">Quando clico na extensão</translation>
@@ -5227,6 +5236,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="5975792506968920132">Percentagem de carga da bateria</translation>
 <translation id="5976160379964388480">Outros</translation>
 <translation id="5978277834170881274">&amp;Utilizar a verificação ortográfica básica</translation>
+<translation id="5978395054855988504">Poupança de bateria ativada</translation>
 <translation id="5978493744931296692">O seu administrador desativou outros perfis</translation>
 <translation id="5979084224081478209">Verificar palavras-passe</translation>
 <translation id="5979156418378918004">{NUM_EXTENSIONS,plural, =1{Reativou 1 extensão potencialmente prejudicial.}other{Reativou {NUM_EXTENSIONS} extensões potencialmente prejudiciais.}}</translation>
@@ -6271,6 +6281,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="6973611239564315524">Está disponível uma atualização para a versão Debian 10 (Buster).</translation>
 <translation id="69739764870135975">Se o Google também for o seu motor de pesquisa predefinido, verá melhores sugestões contextualmente relevantes</translation>
 <translation id="697508444536771064">Encerrar o Linux</translation>
+<translation id="6975361011348772931">Pediu para ler e alterar</translation>
 <translation id="6978121630131642226">Motores de pesquisa</translation>
 <translation id="6979044105893951891">Inicie e saia das sessões de convidado geridas</translation>
 <translation id="6979158407327259162">Google Drive</translation>
@@ -7270,6 +7281,7 @@ Prima uma tecla ou um interruptor atribuído para remover a atribuição.</trans
 <translation id="793531125873261495">Ocorreu um erro ao transferir a máquina virtual. Tente novamente.</translation>
 <translation id="7935451262452051102"><ph name="PERCENT" />% concluído</translation>
 <translation id="7939062555109487992">Opções avançadas</translation>
+<translation id="7939073735115504773">Clique no ícone desta extensão para ler e alterar <ph name="HOST" /></translation>
 <translation id="7939328347457537652">Gerir certificados do dispositivo</translation>
 <translation id="7939412583708276221">Manter na mesma</translation>
 <translation id="7941179291434537290">Prontidão da ligação (à Internet) via telemóvel:</translation>
@@ -8434,6 +8446,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="9048745018038487540">Selecionar todos os tipos de letra</translation>
 <translation id="9050666287014529139">Frase de acesso</translation>
 <translation id="9052404922357793350">Continuar a bloquear</translation>
+<translation id="90528604757378587">A atividade em segundo plano e alguns efeitos visuais, como o deslocamento suave, podem ser limitados.</translation>
 <translation id="9053563360605707198">Imprimir de ambos os lados</translation>
 <translation id="9055636786322918818">Aplicar a encriptação RC4. A utilização desta opção aumenta o seu risco, uma vez que as cifras RC4 são inseguras.</translation>
 <translation id="9056810968620647706">Não foram encontradas correspondências.</translation>

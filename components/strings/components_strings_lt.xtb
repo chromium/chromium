@@ -1807,6 +1807,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="5764920692828389743">Siųsti: <ph name="EMAIL_ADDRESS" /></translation>
 <translation id="5765072501007116331">Jei norite peržiūrėti pristatymo metodus ir reikalavimus, pasirinkite adresą.</translation>
 <translation id="57689295674415555">Virtualios kortelės numeris neįvestas?</translation>
+<translation id="5772086939108830423">Naudoti slaptažodį kitame įrenginyje</translation>
 <translation id="5776313857861697733">Prioritetas</translation>
 <translation id="5781136890105823427">Eksperimentas įgalintas</translation>
 <translation id="578305955206182703">Gintaro spalva</translation>
@@ -3057,6 +3058,7 @@ Papildoma išsami informacija:
 <translation id="950736567201356821">Trys skylės viršuje</translation>
 <translation id="961663415146723894">Įrišimas apačioje</translation>
 <translation id="962484866189421427">Šis turinys gali bandyti įdiegti klaidinančių programų, kurios apsimeta kitomis programomis, arba rinkti duomenis, naudojamus jums stebėti. <ph name="BEGIN_LINK" />Rodyti vis tiek<ph name="END_LINK" /></translation>
+<translation id="964050462028070434">Tvarkyti slaptažodžius ir „passkey“…</translation>
 <translation id="96680173638229310">Automobiliai ir transporto priemonės</translation>
 <translation id="969892804517981540">Oficialiai pagaminta</translation>
 <translation id="973773823069644502">Pridėti pristatymo adresą</translation>

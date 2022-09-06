@@ -717,6 +717,7 @@
 <translation id="16620462294541761">비밀번호가 일치하지 않습니다. 다시 시도해 주세요.</translation>
 <translation id="166278006618318542">대상 공개 키 알고리즘</translation>
 <translation id="1662801900924515589"><ph name="APP" /> 설치됨</translation>
+<translation id="1665328953287874063">비밀번호 또는 PIN을 사용하여 <ph name="DEVICE_TYPE" /> 잠금 해제하기</translation>
 <translation id="1666232093776384142">주변기기 데이터 액세스 보호 중지</translation>
 <translation id="1667842670298352129">특정 텍스트를 소리 내어 읽어줍니다. 먼저 화면 하단에 있는 텍스트 읽어주기 아이콘을 선택한 다음 텍스트를 강조표시하세요. 단축키를 사용할 수도 있습니다. 텍스트를 강조표시한 다음 검색 + S를 누르세요.</translation>
 <translation id="1668435968811469751">직접 등록</translation>
@@ -1364,6 +1365,7 @@
 <translation id="2251218783371366160">시스템 뷰어로 열기</translation>
 <translation id="225163402930830576">네트워크 새로고침</translation>
 <translation id="2251809247798634662">새 시크릿 창</translation>
+<translation id="2252017960592955005">사생활 보호(베타)</translation>
 <translation id="225240747099314620">보호된 콘텐츠에 대한 식별자 허용(컴퓨터를 다시 시작해야 할 수 있음)</translation>
 <translation id="2255077166240162850">이 기기가 다른 도메인 또는 모드로 잠겼습니다.</translation>
 <translation id="2255317897038918278">Microsoft Time Stamping</translation>
@@ -1851,6 +1853,7 @@
 <translation id="2691385045260836588">모델</translation>
 <translation id="2691440343905273290">입력 설정 변경</translation>
 <translation id="2693176596243495071">죄송합니다. 알 수 없는 오류가 발생했습니다. 나중에 다시 시도하거나 문제가 계속되는 경우 관리자에게 문의하세요.</translation>
+<translation id="2698147581454716013">번들 기기이며 Kiosk &amp; Signage 업그레이드에 등록할 수 없습니다.</translation>
 <translation id="2699911226086014512">PIN 작업에 실패했습니다. 오류 코드는 <ph name="RETRIES" />입니다.</translation>
 <translation id="2701330563083355633"><ph name="DEVICE_NAME" />에서 공유함</translation>
 <translation id="2701737434167469065">로그인, <ph name="EMAIL" /></translation>
@@ -1929,6 +1932,7 @@
 <translation id="2757338480560142065">저장하려는 비밀번호가 <ph name="WEBSITE" />의 비밀번호와 일치하는지 확인하세요.</translation>
 <translation id="2762441749940182211">카메라 차단됨</translation>
 <translation id="2764786626780673772">VPN 세부정보</translation>
+<translation id="2764920001292228569">프로필 이름을 입력하세요.</translation>
 <translation id="2765100602267695013">이동통신사에 문의해 주세요.</translation>
 <translation id="2765217105034171413">작게</translation>
 <translation id="2766006623206032690">붙여넣어 바로가기(&amp;S)</translation>
@@ -3298,6 +3302,7 @@
 <translation id="4065876735068446555">사용 중인 네트워크(<ph name="NETWORK_ID" />)에서 로그인 페이지 방문을 요청할 수 있습니다.</translation>
 <translation id="4066207411788646768">네트워크 내 사용 가능한 프린터를 보려면 인터넷 연결 상태를 확인하세요.</translation>
 <translation id="4066945815577305767">비밀번호 시간 초과</translation>
+<translation id="4067839975993712852">현재 탭을 읽음으로 표시</translation>
 <translation id="4068776064906523561">저장된 지문</translation>
 <translation id="407173827865827707">클릭 시</translation>
 <translation id="4072701974556190758">비밀번호가 Google 계정(<ph name="ACCOUNT" />)에 저장됩니다. 기억하지 않아도 됩니다.</translation>
@@ -5778,6 +5783,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6508248480704296122"><ph name="NAME_PH" /> 관련</translation>
 <translation id="6508261954199872201">애플리케이션:<ph name="APP_NAME" /></translation>
 <translation id="6509207748479174212">미디어 라이선스</translation>
+<translation id="6511827214781912955">이 기기를 사용하는 다른 사용자가 내 비밀번호를 볼 수 없도록 <ph name="FILENAME" /> 파일을 삭제해 보세요.</translation>
 <translation id="6513247462497316522">다른 네트워크에 연결되어 있지 않을 경우 Chrome은 모바일 데이터를 사용합니다.</translation>
 <translation id="6514010653036109809">사용할 수 있는 기기:</translation>
 <translation id="6514565641373682518">이 페이지에서 마우스 커서를 사용 중지했습니다.</translation>
@@ -6059,6 +6065,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6781978626986383437">Linux 백업이 취소됨</translation>
 <translation id="6782067259631821405">잘못된 PIN</translation>
 <translation id="6784523122863989144">지원되는 프로필입니다.</translation>
+<translation id="6785739405821760313">저장된 데스크를 보는 중입니다. 이동하려면 Tab을 누르세요.</translation>
 <translation id="6785872064505734160">Chrome의 Google 어시스턴트가 사용자를 위해 여러 웹사이트에서 작업을 완료할 수 있습니다.</translation>
 <translation id="6786747875388722282">확장 프로그램</translation>
 <translation id="6787097042755590313">다른 탭</translation>
@@ -6645,6 +6652,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7358338787722390626">측면 패널의 검색 닫기</translation>
 <translation id="735994578317267253">모든 ChromeOS 기기에서 앱, 설정 등을 사용하세요</translation>
 <translation id="7360233684753165754"><ph name="PRINTER_NAME" />에서 <ph name="PAGE_NUMBER" />페이지 인쇄</translation>
+<translation id="7360257054721917104">저장된 데스크 및 템플릿을 보는 중입니다. 이동하려면 Tab을 누르세요.</translation>
 <translation id="7361297102842600584"><ph name="PLUGIN_NAME" />을(를) 실행하려면 오른쪽 마우스 버튼을 클릭하세요.</translation>
 <translation id="7362387053578559123">사이트에서 블루투스 기기에 연결하도록 요청할 수 있음</translation>
 <translation id="7363349185727752629">개인 정보 보호 선택 가이드</translation>
@@ -7299,6 +7307,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="7953669802889559161">입력</translation>
 <translation id="7953955868932471628">단축키 관리</translation>
 <translation id="7955105108888461311">직접 요청</translation>
+<translation id="7955177647836564772">Smart Lock이 사용 설정되어 있고 휴대전화가 잠금 해제되어 있는 경우 비밀번호나 PIN을 입력하지 않아도 됩니다.</translation>
 <translation id="7956373551960864128">저장한 프린터</translation>
 <translation id="7957074856830851026">일련번호 또는 기기 ID와 같은 기기 정보 보기</translation>
 <translation id="7959074893852789871">파일에 여러 인증서가 있지만 그 중 일부를 가져올 수 없습니다.</translation>
@@ -7557,6 +7566,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />내 기기<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195027750202970175">디스크에서 차지하는 용량</translation>
 <translation id="8195191503358432289">비밀번호 추가</translation>
+<translation id="8197673340773315084">직장 또는 개인과 같은 이름 또는 라벨 추가</translation>
 <translation id="8198456017687137612">탭 전송 중</translation>
 <translation id="8199300056570174101">네트워크(서비스) 및 기기 속성</translation>
 <translation id="8200772114523450471">다시 시작</translation>
@@ -7654,6 +7664,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8284279544186306258">모든 <ph name="WEBSITE_1" /> 사이트</translation>
 <translation id="8284326494547611709">자막</translation>
 <translation id="8286036467436129157">로그인</translation>
+<translation id="828642162569365647">이 비밀번호 또는 PIN은 이 <ph name="DEVICE_TYPE" />의 데이터와 휴대전화에서 액세스하는 모든 정보를 보호합니다. <ph name="DEVICE_TYPE" /> 기기가 절전 모드에서 해제될 때마다 잠금 해제해야 합니다.</translation>
 <translation id="8287902281644548111">API 호출/URL로 검색</translation>
 <translation id="8288032458496410887"><ph name="APP" /> 제거...</translation>
 <translation id="8289128870594824098">디스크 크기</translation>

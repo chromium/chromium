@@ -1104,6 +1104,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="3906954721959377182">Tablet</translation>
 <translation id="3909477809443608991"><ph name="URL" /> chce prehrať chránený obsah. Google overí totožnosť vášho zariadenia a tento web k nej môže získať prístup.</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
+<translation id="3923112503730743940">Oufuku Hagaki (pohľadnica)</translation>
 <translation id="3927932062596804919">Odmietnuť</translation>
 <translation id="393316646445601645">Internet a telekomunikácie</translation>
 <translation id="3939773374150895049">Chcete namiesto overovacieho kódu karty použiť WebAuthn?</translation>
@@ -1132,6 +1133,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="4009243425692662128">Obsah stránok, ktoré vytlačíte, sa odosiela na analýzu do služby Google Cloud alebo tretím stranám. Môže sa v ňom napríklad kontrolovať prítomnosť citlivých údajov.</translation>
 <translation id="4010758435855888356">Chcete povoliť prístup k úložisku?</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{Dokument PDF s {COUNT} stranou}few{Dokument PDF s {COUNT} stranami}many{Dokument PDF s {COUNT} strany}other{Dokument PDF s {COUNT} stranami}}</translation>
+<translation id="4022639246993848966">3,5 × 5</translation>
 <translation id="4023431997072828269">Tento formulár je odosielaný cez pripojenie, ktoré nie je zabezpečené, takže ostatní budú vidieť vaše informácie.</translation>
 <translation id="4025913568718019429">Tlačidlo na správu nastavení ochrany súkromia v Chrome, stlačením klávesa Enter prejdite do nastavení ochrany súkromia svojho účtu Google</translation>
 <translation id="4030383055268325496">&amp;Vrátiť späť pridanie</translation>
@@ -1802,6 +1804,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="5764920692828389743">Odoslať na <ph name="EMAIL_ADDRESS" /></translation>
 <translation id="5765072501007116331">Ak chcete zobraziť spôsoby a požiadavky doručenia, vyberte adresu</translation>
 <translation id="57689295674415555">Nebolo vyplnené číslo virtuálnej karty?</translation>
+<translation id="5772086939108830423">Použiť prístupový kľúč v inom zariadení</translation>
 <translation id="5776313857861697733">Priorita</translation>
 <translation id="5781136890105823427">Experiment je povolený</translation>
 <translation id="578305955206182703">Žltohnedá</translation>
@@ -3051,6 +3054,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="950736567201356821">Tri dierky hore</translation>
 <translation id="961663415146723894">Zviazať dolu</translation>
 <translation id="962484866189421427">Tento obsah sa môže pokúsiť nainštalovať klamlivé aplikácie vydávajúce sa za iné aplikácie alebo zhromažďovať údaje, ktoré sa dajú použiť na sledovanie vašej osoby. <ph name="BEGIN_LINK" />Napriek tomu zobraziť<ph name="END_LINK" /></translation>
+<translation id="964050462028070434">Spravovať heslá a prístupové kľúče…</translation>
 <translation id="96680173638229310">Automobily a vozidlá</translation>
 <translation id="969892804517981540">oficiálna zostava</translation>
 <translation id="973773823069644502">Pridať adresu doručenia</translation>

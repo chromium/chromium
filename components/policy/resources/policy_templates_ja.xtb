@@ -339,6 +339,10 @@
 <translation id="1372618949173323717">JavaScript を無効にする</translation>
 <translation id="1376119291123231789">詳細なバッテリー充電モードを有効にする</translation>
 <translation id="1384459581748403878">参考: <ph name="REFERENCE_URL" /></translation>
+<translation id="1384594066274112751">このポリシーでは、ブラウザで破棄しないようにする URL のパターンを <ph name="URL_BLOCKLIST_POLICY_NAME" /> フィルタ形式で指定できます。
+      この例外は、メモリ負荷の発生時や高効率モード時のページ破棄に適用されます。
+      破棄されたページはアンロードされ、リソースは完全に再利用されます。関連付けられたタブはタブストリップに残り、表示すると完全に再読み込みされます。
+      </translation>
 <translation id="138847842893090358">OS の更新ステータスをレポートします</translation>
 <translation id="1390529781843037070">このポリシーを有効に設定するか未設定のままにした場合、ユーザーは <ph name="PRODUCT_NAME" /> の印刷ダイアログから <ph name="CLOUD_PRINT_NAME" /> で印刷できます。<ph name="PRODUCT_NAME" /> で、ドキュメントを <ph name="CLOUD_PRINT_NAME" /> に送信して印刷できます。なお、ユーザーがウェブサイトで印刷ジョブを送信できなくなるわけではありません。
 
@@ -1025,6 +1029,7 @@
 <translation id="2043770014371753404">無効な企業プリンタ</translation>
 <translation id="2057317273526988987">URL のリストへのアクセスを許可する</translation>
 <translation id="2058055310819710697">分離されたアプリのデベロッパー モードを有効にします</translation>
+<translation id="205807990145127714">電波強度が変化した場合に報告するテレメトリー データ。</translation>
 <translation id="2061123930713023976">デバッグのネットワーク パケット キャプチャを許可する</translation>
 <translation id="2061810934846663491">リモート アクセス ホストの必須のドメイン名を設定する</translation>
 <translation id="2062632109797189011">サポートを終了した window.webkitStorageInfo API を再度使用できるようにする</translation>
@@ -1672,6 +1677,13 @@
 
       このポリシーを false に設定した場合は、PDF ビューアで PDF に注釈を追加できません。</translation>
 <translation id="2769952903507981510">リモート アクセス ホストの必須のドメイン名を設定する</translation>
+<translation id="2772650717382565415">このポリシーでは、ユーザーに操作を求めずにサイレント インストールするウェブアプリのリストを指定します。ユーザーはこれらのウェブアプリをアンインストールすることもオフにすることもできません。
+
+      このポリシーで指定するリストの個々の項目は、必須の <ph name="URL_LABEL" />（インストールするウェブアプリの URL）と、6 つの省略可能な <ph name="DEFAULT_LAUNCH_CONTAINER_LABEL" />（ウェブアプリを開く方法、デフォルトは新しいタブ）、<ph name="CREATE_DESKTOP_SHORTCUT_LABEL" />（<ph name="LINUX_OS_NAME" /> と <ph name="MS_WIN_NAME" /> のデスクトップ ショートカットを作成する場合は True）、<ph name="FALLBACK_APP_NAME_LABEL" />（<ph name="PRODUCT_NAME" /> バージョン 90 以降では、プログレッシブ ウェブアプリ（PWA）以外のアプリ名をオーバーライドできます。また、PWA であってもインストールの完了に認証が必要な場合は、一時的にインストールされたアプリ名をオーバーライドできます。<ph name="CUSTOM_NAME_LABEL" /> と <ph name="FALLBACK_APP_NAME_LABEL" /> の両方が設定されている場合、後者は無視されます）、<ph name="OVERRIDE_APP_NAME_LABEL" />（<ph name="PRODUCT_NAME" /> バージョン 99 以降では、すべてのウェブアプリと PWA のアプリ名を完全にオーバーライドできます。現在 <ph name="PRODUCT_OS_NAME" /> でのみサポートされています）、<ph name="CUSTOM_ICON_LABEL" />（<ph name="PRODUCT_NAME" /> バージョン　99 以降では、インストールされたアプリのアプリアイコンをオーバーライドできます。アイコンは正方形でサイズを 1 MB 以内とし、jpeg、png、gif、webp、ico のいずれかの形式にする必要があります。ハッシュ値は SHA256 ハッシュのアイコン ファイルとします。現在 <ph name="PRODUCT_OS_NAME" /> でのみサポートされています）、<ph name="INSTALL_AS_SHORTCUT_LABEL" />（<ph name="PRODUCT_NAME" /> バージョン 107 以降）で構成されるオブジェクトとなります。有効にすると、デスクトップ ブラウザの GUI で [ショートカットを作成...] オプションを使用した場合と同様に、指定した <ph name="URL_LABEL" /> がショートカットとしてインストールされます。
+      なお、ショートカットとしてインストールした場合、<ph name="URL_LABEL" /> のマニフェストが変更されても、ショートカットは更新されません。
+      無効にするか未設定のままにした場合、指定した <ph name="URL_LABEL" /> のウェブアプリは通常どおりインストールされます。
+
+      <ph name="PRODUCT_OS_NAME" /> シェルフへのアプリの固定については、<ph name="PINNED_LAUNCHER_APPS_POLICY_NAME" /> ポリシーをご覧ください。</translation>
 <translation id="2772955711376920612">このポリシーを有効に設定して、<ph name="DEVICE_POWER_PEAK_SHIFT_BATTERY_THRESHOLD_POLICY_NAME" /> と <ph name="DEVICE_POWER_PEAK_SHIFT_DAY_CONFIG_POLICY_NAME" /> を設定した場合、デバイスが対応していれば電力ピークシフトが有効になります。電力ピークシフトの電力管理ポリシーは、ピーク使用時に交流電流の使用量を最小限に抑える省電力ポリシーです。各平日に、電力ピークシフト モードの開始時刻と終了時刻を設定できます。バッテリー残量が指定したしきい値を上回っている限り、この時間帯は、交流電流が接続されている場合でもデバイスの実行にはバッテリーが使用されます。指定した終了時刻を過ぎると、電源に接続されている場合、デバイスの実行には交流電流が使用されますが、バッテリーは充電されません。指定した開始時刻を過ぎると、デバイスは再び、交流電流を使って通常どおりに動作し、バッテリーが充電されます。
 
       このポリシーを無効に設定した場合、電力ピークシフトは無効になります。
@@ -3497,12 +3509,6 @@
 <translation id="4861767323695239729">ユーザー セッションで許可する入力方法を設定します</translation>
 <translation id="4873380469296842901">この設定を有効にした場合、スマートフォン ハブをすでにオプトインしているユーザーは、Chrome OS 上でスマートフォンの通知を送受信できます。この設定を無効にした場合、ユーザーはこの機能を使用できません。PhoneHubAllowed ポリシーを無効にした場合も、ユーザーはこの機能を使用できません。このポリシーを未設定のままにした場合、デフォルトでは、企業の管理対象ユーザーと管理対象外ユーザーのいずれもこの機能を使用できます。</translation>
 <translation id="487460824085252184">ユーザーの同意を求めずに自動的に移行する</translation>
-<translation id="48749493657448872">有効な場合、<ph name="PRODUCT_NAME" /> は組み込みの証明書確認機能を使用してサーバー証明書の確認を行います。
-      無効な場合、<ph name="CHROME_ROOT_STORE_ENABLED_POLICY_NAME" /> が有効になっていない限り、<ph name="PRODUCT_NAME" /> はプラットフォームから提供される従来の証明書確認機能を使用してサーバー証明書の確認を行います。
-      未設定の場合、組み込みまたは従来の証明書確認機能が使用される可能性があります。
-
-      このポリシーは <ph name="MAC_OS_NAME" /> 向け <ph name="PRODUCT_NAME" /> バージョン 107 で削除される予定です（<ph name="MAC_OS_NAME" /> での従来の証明書確認機能のサポートが削除されるため）。
-      </translation>
 <translation id="4874982543810021567">WebUSB をブロックするサイト</translation>
 <translation id="4876805738539874299">有効な SSL の最大バージョン</translation>
 <translation id="4877402532842958110">このポリシーはサポートが終了しています。代わりに <ph name="URL_ALLOWLIST_POLICY_NAME" /> ポリシーを使用してください。
@@ -3519,6 +3525,7 @@
       このポリシーを無効に設定するか未設定のままにした場合、<ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> への登録は任意となります。登録できなかった場合でも、<ph name="PRODUCT_NAME" /> の起動プロセスはブロックされません。
 
       このポリシーは、デスクトップ上のマシンスコープのクラウド ポリシー登録で使用されます。詳しくは、https://support.google.com/chrome/a/answer/9301891?ref_topic=9301744 をご覧ください。</translation>
+<translation id="488996881569316769">ネットワーク テレメトリー</translation>
 <translation id="4890453377345554695">このポリシーでは、ホスト オペレーティング システムのファイル システム内にあるファイルやディレクトリに書き込みアクセスすることに関して、ユーザーに許可を要求できるサイトの URL パターンリストを指定できます。
 
       このポリシーを未設定のままにした場合、<ph name="DEFAULT_FILE_SYSTEM_WRITE_GUARD_SETTING_POLICY_NAME" /> が設定されていればその設定がすべてのサイトで使用され、設定されていなければユーザーの個人設定が適用されます。
@@ -4930,6 +4937,7 @@
 <translation id="6506486086262398387">このポリシーを有効に設定した場合、<ph name="PRODUCT_OS_NAME" /> のネットワーク ファイル共有の機能では、必要に応じて SMB 共有の認証に NTLM が使用されます。このポリシーを無効に設定した場合、SMB 共有の NTLM 認証は無効になります。
 
       このポリシーを未設定のままにした場合、デフォルトの動作は管理対象ユーザーに対して無効になり、それ以外のユーザーに対しては有効になります。</translation>
+<translation id="6513453889192806240">HTTPS レイテンシ</translation>
 <translation id="6515357889978918016"><ph name="PLUGIN_VM_NAME" /> の画像</translation>
 <translation id="6518102411616460786">ターゲット チャンネルがチャンネル ダウングレードの対象になるまで待機する</translation>
 <translation id="6520802717075138474">初回実行時にデフォルトのブラウザから検索エンジンをインポートする</translation>
@@ -5183,6 +5191,12 @@
 
       このポリシーが false に設定されているか未設定の場合、<ph name="PLUGIN_VM_NAME" /> はユーザーに対して有効になりません。
       このポリシーが true に設定されている場合、<ph name="PLUGIN_VM_NAME" /> はユーザーに対して有効になります（ただし他の設定でも許可されている必要があります）。<ph name="PLUGIN_VM_NAME" /> を実行するには、<ph name="PLUGIN_VM_ALLOWED_POLICY_NAME" /> と <ph name="USER_PLUGIN_VM_ALLOWED_POLICY_NAME" /> を true に設定し、<ph name="PLUGIN_VM_LICENSE_KEY_POLICY_NAME" /> または <ph name="PLUGIN_VM_USER_ID_POLICY_NAME" /> のいずれかを設定する必要があります。</translation>
+<translation id="6750902920405577210">電波強度に変化があった場合に報告するテレメトリー データのリスト。
+
+      指定した各テレメトリー データは、それを制御するポリシーで無効にされていない場合のみ報告されます。
+      https_latency と network_telemetry を制御するポリシーは、ReportDeviceNetworkStatus です。
+
+     設定しない場合、電波強度に変化があったときに追加のテレメトリー データは報告されません。</translation>
 <translation id="6752711782954612641"><ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> がオンの場合に、<ph name="DEFAULT_SEARCH_PROVIDER_SEARCH_URL_POST_PARAMS_POLICY_NAME" /> では、POST を使った URL の検索に使用するパラメータを指定できます。名前と値のペアをカンマで区切って指定します。テンプレート パラメータ（<ph name="SEARCH_TERM_MARKER" /> など）の値は、実際の検索キーワードのデータに置き換えられます。
 
       <ph name="DEFAULT_SEARCH_PROVIDER_SEARCH_URL_POST_PARAMS_POLICY_NAME" /> を未設定のままにした場合、検索リクエストは GET メソッドを使用して送信されます。</translation>
@@ -5467,6 +5481,20 @@
       このポリシーで URL のリストを設定すると、コマンドライン フラグ「--unsafely-treat-insecure-origin-as-secure」で同じ URL をカンマ区切りリストで設定した場合と同じ結果が得られます。このポリシーは、このコマンドライン フラグと UnsafelyTreatInsecureOriginAsSecure（設定されている場合）よりも優先されます。
 
       安全なコンテキストについて詳しくは、https://www.w3.org/TR/secure-contexts をご覧ください。</translation>
+<translation id="7034831650852513978">このポリシーは、印刷ジョブにおける <ph name="CLIENT_INFO_IPP_ATTRIBUTE" /> <ph name="IPP_PROTOCOL" />（<ph name="INTERNET_PRINTING_PROTOCOL" />）<ph name="IPP_ATTRIBUTE" />の値を制御します。
+
+      このポリシーを文字列に設定した場合、すべての印刷ジョブに <ph name="CLIENT_INFO_IPP_ATTRIBUTE" /> アイテムが追加されます。追加された <ph name="CLIENT_INFO_IPP_ATTRIBUTE" /> アイテムの <ph name="CLIENT_NAME_IPP_ATTRIBUTE" /> メンバーは、変数を置換後、ポリシーの値に設定されます。
+
+      サポートされている変数は、<ph name="DIRECTORY_ID_PLACEHOLDER" />、<ph name="SERIAL_NUMBER_PLACEHOLDER" />、<ph name="ASSET_ID_PLACEHOLDER" />、<ph name="ANNOTATED_LOCATION_PLACEHOLDER" />、<ph name="USER_EMAIL_PLACEHOLDER" />、<ph name="USER_EMAIL_NAME_PLACEHOLDER" />、<ph name="USER_EMAIL_DOMAIN" /> です。サポートされていないプレースホルダ変数は展開されません。
+
+      変数置換後の値は、<ph name="ASCII" /> で印刷可能な文字のみで構成され、かつ長さが 255 文字以下の場合に有効とみなされます。
+
+      なお、プライバシー上の理由から、このポリシーは、<ph name="IPPS_PROTOCOL" />、<ph name="HTTPS_PROTOCOL" />、<ph name="USB_PROTOCOL" />、または <ph name="IPP_USB_PROTOCOL" /> プロトコルを使用したプリンタと通信する場合にのみ適用されます。また、このポリシーが適用されるのは <ph name="CLIENT_NAME_IPP_ATTRIBUTE" /> をサポートするプリンタに限られます。
+
+      このポリシーは、関連のあるユーザーにのみ適用されます。
+
+      このポリシーを設定しないか、空の値または無効な値が設定されている場合、<ph name="CLIENT_INFO_PLACEHOLDER" /> は印刷ジョブ リクエストに追加されません。
+      </translation>
 <translation id="703672323011778742">このポリシーは M88 でサポートが終了しています。Flash は Chrome でご利用いただけなくなりました。このポリシーを 1 に設定すると、<ph name="FLASH_PLUGIN_NAME" /> プラグインをすべてのウェブサイトで自動実行できるかどうかを設定できます。このポリシーを 2 に設定した場合、このプラグインはすべてのウェブサイトで拒否されます。「クリックして再生」の場合、<ph name="FLASH_PLUGIN_NAME" /> プラグインは実行できますが、ユーザーがプレースホルダをクリックしないと開始されません。
 
       このポリシーを未設定のままにした場合、<ph name="BLOCK_PLUGINS_POLICY_NAME" /> が使用され、ユーザーがこの設定を変更することもできます。
@@ -6060,6 +6088,7 @@
       <ph name="DOWNLOAD_DIRECTORY_POLICY_NAME" /> ポリシーが設定されている場合、このポリシーは無視されます。
 
       注: 使用できる変数の一覧については、https://www.chromium.org/administrators/policy-list-3/user-data-directory-variables をご覧ください。</translation>
+<translation id="7719808201797990069">タブ破棄の例外 URL パターン</translation>
 <translation id="7721944091689270995"><ph name="PLUGIN_VM_NAME" /> ユーザー ID</translation>
 <translation id="7724161903134898864">このポリシーを 1 に設定した場合、ウェブサイトによるポップアップの表示が許可されます。このポリシーを 2 に設定した場合、ポップアップは拒否されます。
 
@@ -6362,6 +6391,7 @@
       </translation>
 <translation id="8102913158860568230">デフォルトのメディアストリームの設定</translation>
 <translation id="8104962233214241919">これらのサイトのクライアント証明書を自動的に選択する</translation>
+<translation id="8109762054721090517"><ph name="CLIENT_NAME_IPP_ATTRIBUTE" /> <ph name="INTERNET_PRINTING_PROTOCOL" /> <ph name="IPP_ATTRIBUTE" />のテンプレート</translation>
 <translation id="8114382167597081590">YouTube で制限モードを強制適用しない</translation>
 <translation id="8117921351531866504">保存されているお支払い方法の確認をウェブサイトに許可するかどうかを設定します。
 

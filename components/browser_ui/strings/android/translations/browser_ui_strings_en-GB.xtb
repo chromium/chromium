@@ -30,6 +30,7 @@
 <translation id="1717218214683051432">Motion sensors</translation>
 <translation id="1743802530341753419">Ask before allowing sites to connect to a device (recommended)</translation>
 <translation id="1779089405699405702">Image decoder</translation>
+<translation id="1785415724048343560">Recommended for best experience</translation>
 <translation id="1818308510395330587">To let <ph name="APP_NAME" /> use AR, also turn on camera in <ph name="BEGIN_LINK" />Android settings<ph name="END_LINK" />.</translation>
 <translation id="1864927262126810325">From <ph name="SOURCE_NAME" /></translation>
 <translation id="1887786770086287077">Location access is off for this device. Turn it on in <ph name="BEGIN_LINK" />Android Settings<ph name="END_LINK" />.</translation>
@@ -169,6 +170,7 @@
 <translation id="4751476147751820511">Motion or light sensors</translation>
 <translation id="4811450222531576619">Learn about its source and topic</translation>
 <translation id="4836046166855586901">Ask when a site wants to know when you're actively using this device</translation>
+<translation id="483914009762354899">Include all sites under this domain</translation>
 <translation id="4883854917563148705">Managed settings cannot be reset</translation>
 <translation id="4887024562049524730">Ask before allowing sites to use your virtual reality device and data (recommended)</translation>
 <translation id="4962975101802056554">Revoke all permissions for device</translation>

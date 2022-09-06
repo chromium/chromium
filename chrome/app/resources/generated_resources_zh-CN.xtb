@@ -709,6 +709,7 @@
 <translation id="16620462294541761">抱歉，无法验证您的密码，请重试。</translation>
 <translation id="166278006618318542">证书持有者公共密钥算法</translation>
 <translation id="1662801900924515589">已安装“<ph name="APP" />”</translation>
+<translation id="1665328953287874063">使用密码或 PIN 码解锁您的 <ph name="DEVICE_TYPE" /></translation>
 <translation id="1666232093776384142">停用“外围设备数据访问保护”设置</translation>
 <translation id="1667842670298352129">让系统大声朗读特定文字。首先，选择屏幕底部的“随选朗读”图标，然后突出显示文字。您也可以使用键盘快捷键：突出显示文字，然后按搜索键 + S。</translation>
 <translation id="1668435968811469751">手动注册</translation>
@@ -1345,6 +1346,7 @@
 <translation id="2251218783371366160">使用系统查看器打开</translation>
 <translation id="225163402930830576">刷新网络</translation>
 <translation id="2251809247798634662">打开新的无痕式窗口</translation>
+<translation id="2252017960592955005">防查看（Beta 版）</translation>
 <translation id="225240747099314620">允许将标识符用于受保护内容（可能需要重新启动计算机）</translation>
 <translation id="2255077166240162850">此设备已锁定到其他网域或模式。</translation>
 <translation id="2255317897038918278">Microsoft 时间戳</translation>
@@ -1827,6 +1829,7 @@
 <translation id="2691385045260836588">型号</translation>
 <translation id="2691440343905273290">更改输入设置</translation>
 <translation id="2693176596243495071">糟糕！发生了未知错误。请稍后重试；如果问题依然存在，请与您的管理员联系。</translation>
+<translation id="2698147581454716013">这是一个套装设备，无法注册自助服务终端和数字标牌升级服务。</translation>
 <translation id="2699911226086014512">PIN 码操作失败，错误代码为 <ph name="RETRIES" />。</translation>
 <translation id="2701330563083355633">共享自 <ph name="DEVICE_NAME" /></translation>
 <translation id="2701737434167469065">登录，<ph name="EMAIL" /></translation>
@@ -1905,6 +1908,7 @@
 <translation id="2757338480560142065">请确保您要保存的密码与您用来登录 <ph name="WEBSITE" /> 的密码相符</translation>
 <translation id="2762441749940182211">已禁止使用摄像头</translation>
 <translation id="2764786626780673772">VPN 详细信息</translation>
+<translation id="2764920001292228569">输入个人资料名称</translation>
 <translation id="2765100602267695013">请联系您的移动服务提供商</translation>
 <translation id="2765217105034171413">小</translation>
 <translation id="2766006623206032690">粘贴并转到(&amp;S)</translation>
@@ -3273,6 +3277,7 @@
 <translation id="4065876735068446555">您正在使用的网络 (<ph name="NETWORK_ID" />) 可能需要您访问其登录页面。</translation>
 <translation id="4066207411788646768">请检查您的网络连接状况，以查看网络中可用的打印机</translation>
 <translation id="4066945815577305767">密码验证超时</translation>
+<translation id="4067839975993712852">将当前标签页标记为已读</translation>
 <translation id="4068776064906523561">已保存的指纹</translation>
 <translation id="407173827865827707">点击时</translation>
 <translation id="4072701974556190758">系统会将该密码保存在您的 Google 帐号 (<ph name="ACCOUNT" />) 中。您无需记住该密码。</translation>
@@ -5749,6 +5754,7 @@
 <translation id="6508248480704296122">已与“<ph name="NAME_PH" />”关联</translation>
 <translation id="6508261954199872201">应用：<ph name="APP_NAME" /></translation>
 <translation id="6509207748479174212">媒体许可</translation>
+<translation id="6511827214781912955">不妨考虑删除“<ph name="FILENAME" />”，让使用此设备的他人看不到您的密码</translation>
 <translation id="6513247462497316522">如果您没有连接到其他网络，则 Google Chrome 会使用移动数据网络。</translation>
 <translation id="6514010653036109809">可用的设备：</translation>
 <translation id="6514565641373682518">此网页已隐藏鼠标指针。</translation>
@@ -6030,6 +6036,7 @@
 <translation id="6781978626986383437">已取消 Linux 备份</translation>
 <translation id="6782067259631821405">PIN 码无效</translation>
 <translation id="6784523122863989144">个人资料必须受支持</translation>
+<translation id="6785739405821760313">正在查看已保存的桌面。按 Tab 键即可导航。</translation>
 <translation id="6785872064505734160">Chrome 中的 Google 助理可帮您在各网站上完成所需操作</translation>
 <translation id="6786747875388722282">扩展程序</translation>
 <translation id="6787097042755590313">另一标签页</translation>
@@ -6487,6 +6494,7 @@
 <translation id="7222204278952406003">Chrome 是您的默认浏览器</translation>
 <translation id="7222232353993864120">电子邮件地址</translation>
 <translation id="7222235798733126207">受限的网站间共享</translation>
+<translation id="7225082563376899794">填充密码时使用 Windows Hello</translation>
 <translation id="7225179976675429563">缺少网络类型</translation>
 <translation id="7227458944009118910">下列应用也能处理协议链接。其他应用会请求授权。</translation>
 <translation id="7228523857728654909">屏幕锁定和登录</translation>
@@ -6528,6 +6536,7 @@
 <translation id="7258192266780953209">转换</translation>
 <translation id="7258225044283673131">此应用无响应。请选择“强制关闭”以关闭此应用。</translation>
 <translation id="7260186537988033909">自助服务终端和数字标牌设备注册已完成</translation>
+<translation id="7261851165551049223">填充密码时使用触控 ID</translation>
 <translation id="7262004276116528033">此登录服务由 <ph name="SAML_DOMAIN" /> 托管</translation>
 <translation id="7264695323040866038">始终使用<ph name="APP" />应用打开受支持的网站链接？</translation>
 <translation id="7267044199012331848">无法安装此虚拟机。请重试，或与您的管理员联系。错误代码：<ph name="ERROR_CODE" />。</translation>
@@ -6614,6 +6623,7 @@
 <translation id="7358338787722390626">关闭侧边栏中的搜索工具栏。</translation>
 <translation id="735994578317267253">在任意 Chrome 操作系统设备上使用您的应用、设置等等</translation>
 <translation id="7360233684753165754">通过“<ph name="PRINTER_NAME" />”打印 <ph name="PAGE_NUMBER" /> 个页面</translation>
+<translation id="7360257054721917104">正在查看已保存的桌面和模板。按 Tab 键即可导航。</translation>
 <translation id="7361297102842600584">右键点击即可运行 <ph name="PLUGIN_NAME" /></translation>
 <translation id="7362387053578559123">网站可以请求连接到蓝牙设备</translation>
 <translation id="7363349185727752629">隐私控制选项指南</translation>
@@ -7266,6 +7276,7 @@
 <translation id="7953669802889559161">输入法</translation>
 <translation id="7953955868932471628">管理快捷方式</translation>
 <translation id="7955105108888461311">当面申请</translation>
+<translation id="7955177647836564772">如果 Smart Lock 已开启且您的手机处于未锁定状态，您无需输入密码或 PIN 码</translation>
 <translation id="7956373551960864128">已保存的打印机</translation>
 <translation id="7957074856830851026">查看设备信息，例如设备的序列号或资产 ID</translation>
 <translation id="7959074893852789871">该文件包含多个证书，其中部分证书未导入：</translation>
@@ -7524,6 +7535,7 @@
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />您的设备<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195027750202970175">占用的存储空间</translation>
 <translation id="8195191503358432289">添加密码</translation>
+<translation id="8197673340773315084">添加一个名称或标签，例如“工作”或“个人”</translation>
 <translation id="8198456017687137612">正在投放标签页</translation>
 <translation id="8199300056570174101">网络（服务）和设备属性</translation>
 <translation id="8200772114523450471">继续</translation>
@@ -7621,6 +7633,7 @@
 <translation id="8284279544186306258">所有<ph name="WEBSITE_1" />网站</translation>
 <translation id="8284326494547611709">字幕</translation>
 <translation id="8286036467436129157">登录</translation>
+<translation id="828642162569365647">此密码或 PIN 码可保护您在这部 <ph name="DEVICE_TYPE" /> 上的数据以及您通过手机访问的任何信息。每次 <ph name="DEVICE_TYPE" /> 从睡眠状态中唤醒后，您都需要解锁。</translation>
 <translation id="8287902281644548111">按 API 调用/网址搜索</translation>
 <translation id="8288032458496410887">卸载<ph name="APP" />…</translation>
 <translation id="8289128870594824098">磁盘大小</translation>

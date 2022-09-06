@@ -711,6 +711,7 @@
 <translation id="16620462294541761">Кешіріңіз, құпия сөзіңізді растау мүмкін болмады. Әрекетті қайталап көріңіз.</translation>
 <translation id="166278006618318542">Тақырыптың ортақ кілт алгоритмі</translation>
 <translation id="1662801900924515589"><ph name="APP" /> орнатылды.</translation>
+<translation id="1665328953287874063"><ph name="DEVICE_TYPE" /> құлпын ашу үшін құпия сөзді немесе PIN кодын пайдаланыңыз</translation>
 <translation id="1666232093776384142">Перифериялық құрылғылар үшін деректердің пайдаланылуын қорғау параметрін өшіру</translation>
 <translation id="1667842670298352129">Дауыстап оқылатын мәтінді тыңдаңыз. Алдымен экранның төменгі жағындағы Select to Speak белгішесін басыңыз, одан кейін мәтінді ерекшелеңіз. Сондай-ақ перне тіркесімін пайдалана аласыз: мәтінді ерекшелеп, "Іздеу" + S перне тіркесімін басыңыз.</translation>
 <translation id="1668435968811469751">Қолмен тіркеу</translation>
@@ -1832,6 +1833,7 @@
 <translation id="2691385045260836588">Моделі</translation>
 <translation id="2691440343905273290">Енгізу параметрлерін өзгерту</translation>
 <translation id="2693176596243495071">Қап! Белгісіз қате шықты. Әрекетті кейінірек қайталаңыз немесе мәселе жойылмаса, әкімшіге хабарласыңыз.</translation>
+<translation id="2698147581454716013">Бұл құрылғының лицензиясы ендірілген және ол Kiosk &amp; Signage Upgrade лицензиясына тіркелмейді.</translation>
 <translation id="2699911226086014512">PIN коды орнатылмады. Қате коды: <ph name="RETRIES" />.</translation>
 <translation id="2701330563083355633"><ph name="DEVICE_NAME" /> құрылғысынан бөлісілді.</translation>
 <translation id="2701737434167469065"><ph name="EMAIL" /> аккаунтына кіру</translation>
@@ -1910,6 +1912,7 @@
 <translation id="2757338480560142065">Сақталып жатқан құпия сөзіңіздің <ph name="WEBSITE" /> құпия сөзіне сәйкес келетінін тексеріңіз.</translation>
 <translation id="2762441749940182211">Камераға тыйым салынған</translation>
 <translation id="2764786626780673772">VPN мәліметтері</translation>
+<translation id="2764920001292228569">Профиль атауын енгізіңіз.</translation>
 <translation id="2765100602267695013">Мобильдік операторға хабарласыңыз.</translation>
 <translation id="2765217105034171413">Кіші</translation>
 <translation id="2766006623206032690">Қ&amp;ою және өту</translation>
@@ -3279,6 +3282,7 @@
 <translation id="4065876735068446555">Пайдаланып жатқан желі (<ph name="NETWORK_ID" />) үшін оның кіру бетіне өту қажет болуы мүмкін.</translation>
 <translation id="4066207411788646768">Желідегі қолжетімді принтерлерді көру үшін байланысты тексеріңіз.</translation>
 <translation id="4066945815577305767">Құпия сөздерді пайдалану уақыты өтіп кетті</translation>
+<translation id="4067839975993712852">Қолданыстағы қойындыны оқылған деп белгілеу</translation>
 <translation id="4068776064906523561">Сақталған саусақ іздері</translation>
 <translation id="407173827865827707">Түрту арқылы</translation>
 <translation id="4072701974556190758">Құпия сөз Google аккаунтында (<ph name="ACCOUNT" />) сақталады. Оны еске сақтаудың қажеті жоқ.</translation>
@@ -5757,6 +5761,7 @@
 <translation id="6508248480704296122">Келесіге қатысты: <ph name="NAME_PH" /></translation>
 <translation id="6508261954199872201">Қолданба: <ph name="APP_NAME" /></translation>
 <translation id="6509207748479174212">Медиафайл лицензиясы</translation>
+<translation id="6511827214781912955"><ph name="FILENAME" /> файлын жойып көріңіз, мұндайда осы құрылғыны пайдаланатын басқа адамдар құпия сөздеріңізді көре алмайды.</translation>
 <translation id="6513247462497316522">Басқа желіге қосылмаған болсаңыз, Google Chrome ұялы деректерді пайдаланады.</translation>
 <translation id="6514010653036109809">Қолжетімді құрылғы:</translation>
 <translation id="6514565641373682518">Бұл бет тінтуір жүгіргісін өшірді.</translation>
@@ -6038,6 +6043,7 @@
 <translation id="6781978626986383437">Linux контейнерінің сақтық көшірмесін жасаудан бас тартылды</translation>
 <translation id="6782067259631821405">PIN коды жарамсыз</translation>
 <translation id="6784523122863989144">Профильге қолдау көрсетіледі.</translation>
+<translation id="6785739405821760313">Сақталған жұмыс үстелдерін көру. Жылжу үшін Tab пернесін басыңыз.</translation>
 <translation id="6785872064505734160">Chrome браузерінде Google Assistant сіз үшін веб-сайттар арқылы әрекеттер орындай алады.</translation>
 <translation id="6786747875388722282">Кеңейтімдер</translation>
 <translation id="6787097042755590313">Басқа қойынды</translation>
@@ -6624,6 +6630,7 @@
 <translation id="7358338787722390626">Бүйірлік панельде іздеу бетін жабу</translation>
 <translation id="735994578317267253">Қолданбаларыңызды, параметрлеріңізді және т.б. құралдарды кез келген ChromeOS құрылғысында пайдаланыңыз.</translation>
 <translation id="7360233684753165754"><ph name="PRINTER_NAME" /> принтері үшін <ph name="PAGE_NUMBER" /> бет</translation>
+<translation id="7360257054721917104">Сақталған жұмыс үстелдері мен үлгілерді көру. Жылжу үшін Tab пернесін басыңыз.</translation>
 <translation id="7361297102842600584"><ph name="PLUGIN_NAME" /> плагинін іске қосу үшін тінтуірдің оң жақ түймесін басыңыз</translation>
 <translation id="7362387053578559123">Сайттар Bluetooth құрылғыларына қосылуға рұқсат сұрайды</translation>
 <translation id="7363349185727752629">Құпиялылыққа қатысты таңдауларыңыз бойынша нұсқаулық</translation>
@@ -7276,6 +7283,7 @@
 <translation id="7953669802889559161">Енгізу әдістері</translation>
 <translation id="7953955868932471628">Таңбашаларды басқару</translation>
 <translation id="7955105108888461311">Жеке сұрау</translation>
+<translation id="7955177647836564772">Smart Lock қосулы және телефоныңыздың құлпы ашық болса, құпия сөзді немесе PIN кодын енгізудің қажеті жоқ.</translation>
 <translation id="7956373551960864128">Сақталған принтерлер</translation>
 <translation id="7957074856830851026">Сериялық нөмір және актив идентификаторы сияқты құрылғы ақпаратын көру</translation>
 <translation id="7959074893852789871">Файлда кейбіреулері импортталмаған көптеген сертификаттар бар:</translation>
@@ -7533,6 +7541,7 @@
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Құрылғыларыңыз<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195027750202970175">Дискідегі көлемі</translation>
 <translation id="8195191503358432289">Құпия сөз қосу</translation>
+<translation id="8197673340773315084">Атау не белгі қосыңыз, мысалы, "Жұмыс" немесе "Жеке".</translation>
 <translation id="8198456017687137612">Қойынды трансляциялануда</translation>
 <translation id="8199300056570174101">Желі (қызмет) және құрылғы сипаттары</translation>
 <translation id="8200772114523450471">Жалғастыру</translation>
@@ -7630,6 +7639,7 @@
 <translation id="8284279544186306258">барлық <ph name="WEBSITE_1" /> сайттары</translation>
 <translation id="8284326494547611709">Титрлер</translation>
 <translation id="8286036467436129157">Кіру</translation>
+<translation id="828642162569365647">Құпия сөз немесе PIN коды <ph name="DEVICE_TYPE" /> құрылғысындағы деректерді және телефоннан алынатын ақпаратты қорғайды. <ph name="DEVICE_TYPE" /> ұйқы режимінен шыққан сайын, оны ашуыңыз керек.</translation>
 <translation id="8287902281644548111">API шақыруы/URL бойынша іздеу</translation>
 <translation id="8288032458496410887"><ph name="APP" /> жойылуда...</translation>
 <translation id="8289128870594824098">Диск көлемі</translation>

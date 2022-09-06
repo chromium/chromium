@@ -680,6 +680,7 @@ Izimvume ozinikezile ama-app kakade zingase zisebenze kule akhawunti. Ungakwazi 
 <translation id="1632756664321977232">Ithuluzi Lokunqampuna</translation>
 <translation id="163309982320328737">Ububanzi bohlamvu lokuqala bugcwele</translation>
 <translation id="1633947793238301227">Khubaza Umsizi we-Google</translation>
+<translation id="1634224622052500893">Inethiwekhi ye-Wi-Fi Itholakele</translation>
 <translation id="1634783886312010422">Ingabe usuyishintshile kakade le phasiwedi ku-<ph name="WEBSITE" />?</translation>
 <translation id="1636212173818785548">KULUNGILE</translation>
 <translation id="163712950892155760"><ph name="BEGIN_PARAGRAPH1" />Idatha ye-app kungaba inoma iyiphi idatha elondolozwe yi-app (kusukela kumasethingi wonjiniyela), okufaka phakathi idatha efana noxhumana nabo, imilayezo, nezithombe. Idatha yokwenza isipele ngeke ibalwe esilinganisweni sakho sesitoreji se-Drive.<ph name="END_PARAGRAPH1" />
@@ -1365,6 +1366,7 @@ Ungaphatha izilungiselelo zale akhawunti ngokufaka uhlelo lokusebenza lwe-Family
 <translation id="2251218783371366160">Vula ngesibukeli sesistimu</translation>
 <translation id="225163402930830576">Vuselela amanethiwekhi</translation>
 <translation id="2251809247798634662">Iwindi le-incognito elisha</translation>
+<translation id="2252017960592955005">Ukuvikelwa kokubuka (i-Beta)</translation>
 <translation id="225240747099314620">Vumela izikhombi zokuqukethwe okuvikelekile (ukuqaliswa kabusha kwekhompyutha kungadingeka)</translation>
 <translation id="2255077166240162850">Le divayisi ikhiyiwe kusizinda esihlukile noma imodi.</translation>
 <translation id="2255317897038918278">Ukufaka isitembu kwesikhathi kwe-Microsoft</translation>
@@ -2026,6 +2028,7 @@ Ungaphatha izilungiselelo zale akhawunti ngokufaka uhlelo lokusebenza lwe-Family
 <translation id="2839032553903800133">Izaziso zivinjelwe</translation>
 <translation id="2841013758207633010">Isikhathi</translation>
 <translation id="2841837950101800123">Umhlinzeki</translation>
+<translation id="2842013086666334835">Ngena ngemvume ku-"<ph name="NETWORK_ID" />"</translation>
 <translation id="2843560154284403323">Ukuze uqede ukusetha i-Linux, buyekeza i-ChromeOS bese uyazama futhi.</translation>
 <translation id="2844169650293029770">Idivayisi ye-USB-C (imbobo ephambili yohlangothi lwesinxele)</translation>
 <translation id="2844809857160214557">Buka futhi ulawule imisebenzi yokuphrinta</translation>
@@ -2126,6 +2129,7 @@ I-<ph name="DOMAIN" /> idinga ukuba ugcine ikhadi lakho elimsathi lifakiwe.</tra
 <translation id="2927017729816812676">Isitoreji senqolobane</translation>
 <translation id="2928795416630981206">Ivumelekile ukulandelela indawo yekhamera yakho</translation>
 <translation id="2931157624143513983">Linganisa kundawo engaphrinteka</translation>
+<translation id="2931342457001070961">Ayikho imakrofoni exhunyiwe</translation>
 <translation id="2932085390869194046">Iphakamisa iphasiwedi...</translation>
 <translation id="2932483646085333864">Phuma ngemvume bese ungena ngemvume futhi ukuze uqale ukuvumelanisa</translation>
 <translation id="2932883381142163287">Bika ukuhlukumeza</translation>
@@ -2189,6 +2193,7 @@ I-<ph name="DOMAIN" /> idinga ukuba ugcine ikhadi lakho elimsathi lifakiwe.</tra
 <translation id="2996286169319737844">Idatha ibethelwe ngomshwana wakho wokungena wokuvumelanisa. Lokhu akubandakanyi izindlela zokukhokha kusuka ku-Google Pay.</translation>
 <translation id="2996722619877761919">Phendukisa kunqenqema olude</translation>
 <translation id="2996932914629936323">Isula umlando kusuka kuwo wonke amadivayisi avumelanisiwe</translation>
+<translation id="2998267783395280091">Inethiwekhi Itholakele</translation>
 <translation id="3000378525979847272">Kuvunyelwe i-<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /></translation>
 <translation id="3000461861112256445">Umsindo we-mono</translation>
 <translation id="3001144475369593262">Ama-akhawunti wezingane</translation>
@@ -2340,6 +2345,7 @@ I-<ph name="DOMAIN" /> idinga ukuba ugcine ikhadi lakho elimsathi lifakiwe.</tra
 <translation id="3142562627629111859">Iqembu elisha</translation>
 <translation id="3143515551205905069">Khansela ukuvumelanisa</translation>
 <translation id="3143754809889689516">Dlala kusukela ekuqaleni</translation>
+<translation id="3143937294861726703">Isilondolozi Senkumbulo sivuliwe</translation>
 <translation id="3144647712221361880">Vula isixhumanisi njenge-</translation>
 <translation id="3149510190863420837">Izinhlelo zokusebenza ze-Chrome</translation>
 <translation id="3150693969729403281">Sebenzisa ukuhlola kokuphepha manje</translation>

@@ -714,6 +714,7 @@
 <translation id="16620462294541761">කණගාටුයි, ඔබේ රහස්වචනය තහවුරු කරගත නොහැක. කරුණාකර නැවත උත්සාහ කරන්න.</translation>
 <translation id="166278006618318542">පොදු යතුරු ඇල්ගොරිතම විෂය</translation>
 <translation id="1662801900924515589"><ph name="APP" /> ස්ථාපනය කරන ලදී</translation>
+<translation id="1665328953287874063">ඔබේ <ph name="DEVICE_TYPE" /> අගුළු හැරීමට මුරපදයක් හෝ PIN එකක් භාවිතා කරන්න</translation>
 <translation id="1666232093776384142">උපාංග සඳහා දත්ත ප්‍රවේශ ආරක්ෂාව අබල කරන්න</translation>
 <translation id="1667842670298352129">නිශ්චිත පෙළ ශබ්ද නඟා කියවීමට සවන් දෙන්න. පළමුව, ඔබේ තිරයෙහි පහළින් ඇති කථා කිරීමට තෝරන්න නිරූපකය තෝරා, ඉන්පසු පෙළ උද්දීපනය කරන්න. ඔබට යතුරු පුවරු කෙටිමඟක් ද භාවිතා කළ හැක: පෙළ උද්දීපනය කර, ඉන්පසු සෙවීම + S ඔබන්න.</translation>
 <translation id="1668435968811469751">හස්තීයව ලියාපදිංචි වන්න</translation>
@@ -1353,6 +1354,7 @@
 <translation id="2251218783371366160">පද්ධති දැක්මෙන් විවෘත කරන්න</translation>
 <translation id="225163402930830576">ජාල නැවුම් කරන්න</translation>
 <translation id="2251809247798634662">නව අප්‍රසිද්ධ කවුළුව</translation>
+<translation id="2252017960592955005">බැලීමේ ආරක්ෂණය (බීටා)</translation>
 <translation id="225240747099314620">ආරක්ෂිත අන්තර්ගතය සඳහා හැඳුනුම්කාරකවලට ඉඩ දෙන්න (පරිගණකය නැවත පණ ගැන්වීමට සිදු විය හැක)</translation>
 <translation id="2255077166240162850">මෙම උපාංගය වෙනත් වසමට හෝ ප්‍රකාරයට අඟුලු දමා ඇත.</translation>
 <translation id="2255317897038918278">Microsoft වේලාව මුද්‍රා තැබීම</translation>
@@ -1839,6 +1841,7 @@
 <translation id="2691385045260836588">මාදිලිය</translation>
 <translation id="2691440343905273290">ආදාන සැකසීම් වෙනස් කරන්න</translation>
 <translation id="2693176596243495071">අපොයි! නොදන්නා දෝෂයක් ඇති විය. පසුව නැවත උත්සාහ කරන්න හෝ ගැටලුව දිගටම පැවතියහොත් ඔබේ පරිපාලකයා සම්බන්ධ කර ගන්න.</translation>
+<translation id="2698147581454716013">මෙය පොදි බඳින ලද උපාංගයක් වන අතර Kiosk සහ Signage Upgrade සමග ලියාපදිංචි විය නොහැක.</translation>
 <translation id="2699911226086014512"><ph name="RETRIES" /> කේතය සමඟ රහස් අංක මෙහෙයුම අසාර්ථක විය.</translation>
 <translation id="2701330563083355633"><ph name="DEVICE_NAME" /> වෙතින් බෙදා ගන්නා ලදි</translation>
 <translation id="2701737434167469065">පුරන්න, <ph name="EMAIL" /></translation>
@@ -1917,6 +1920,7 @@
 <translation id="2757338480560142065">ඔබ සුරකින මුරපදය <ph name="WEBSITE" /> සඳහා වන ඔබේ මුරපදයට ගැළපෙන බව සහතික කර ගන්න</translation>
 <translation id="2762441749940182211">කැමරාව අවහිරයි</translation>
 <translation id="2764786626780673772">VPN විස්තර</translation>
+<translation id="2764920001292228569">පැතිකඩ නමක් ඇතුළු කරන්න</translation>
 <translation id="2765100602267695013">කරුණාකර ඔබගේ ජංගම සැපයුම්කරු අමතන්න</translation>
 <translation id="2765217105034171413">කුඩා</translation>
 <translation id="2766006623206032690">අල&amp;වා යන්න</translation>
@@ -3287,6 +3291,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="4065876735068446555">ඔබ භාවිතා කරන ජාලයට (<ph name="NETWORK_ID" />) ඔබ එහි පුරනය වීමේ පිටුවට පිවිසීම අවශ්‍ය වනු ඇත.</translation>
 <translation id="4066207411788646768">ඔබේ ජාලයේ ඇති මුද්‍රක බැලීමට ඔබේ සබැඳුම පරීක්ෂා කරන්න</translation>
 <translation id="4066945815577305767">මුරපදය කාල නිමා විය</translation>
+<translation id="4067839975993712852">වත්මන් පටිත්ත කියවූ ලෙස ලකුණු කරන්න</translation>
 <translation id="4068776064906523561">සුරැකි ඇඟිලි සලකුණු</translation>
 <translation id="407173827865827707">ක්ලික් මත</translation>
 <translation id="4072701974556190758">මුරපදය ඔබගේ Google ගිණුම, <ph name="ACCOUNT" /> තුළ සුරැකෙනු ඇත. ඔබට එය මතක තබා ගැනීමට සිදු නොවනු ඇත.</translation>
@@ -5769,6 +5774,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="6508248480704296122"><ph name="NAME_PH" /> වෙත අදාළ</translation>
 <translation id="6508261954199872201">යෙදුම්: <ph name="APP_NAME" /></translation>
 <translation id="6509207748479174212">මාධ්‍ය බලපත්‍රය</translation>
+<translation id="6511827214781912955"><ph name="FILENAME" /> මකා දැමීමට සලකා බලන්න, එවිට මෙම උපාංගය භාවිතා කරන අනෙක් අයට ඔබේ මුරපද දැකිය නොහැක</translation>
 <translation id="6513247462497316522">ඔබ වෙනත් ජාලයකට සබැඳී නැති නම්, Google Chrome ජංගම දත්ත භාවිතා කරනු ඇත.</translation>
 <translation id="6514010653036109809">ලබා ගත හැකි උපාංගය:</translation>
 <translation id="6514565641373682518">මෙම පිටුව ඔබේ මවුස කර්සරය අක්‍රිය කර තිබේ.</translation>
@@ -6050,6 +6056,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="6781978626986383437">ලිනක්ස් උස්ථය අවලංගු කළා</translation>
 <translation id="6782067259631821405">වලංගු නොවන PIN අංකය</translation>
 <translation id="6784523122863989144">පැතිකඩට සහාය දක්වයි</translation>
+<translation id="6785739405821760313">සුරකින ලද මේස බැලීම. සංචාලනය කිරීමට පටිත්ත ඔබන්න.</translation>
 <translation id="6785872064505734160">Chrome තුළ ඇති Google සහකරු ඔබ වෙනුවෙන් වෙබය පුරා කාර්ය ඉටු කළ හැක</translation>
 <translation id="6786747875388722282">දිගු</translation>
 <translation id="6787097042755590313">වෙනත් ටැබය</translation>
@@ -6507,6 +6514,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="7222204278952406003">Chrome ඔබේ පෙරනිමි බ්‍රවුසරය වෙයි</translation>
 <translation id="7222232353993864120">ඊමේල් ලිපිනය</translation>
 <translation id="7222235798733126207">අඩවි අතර සීමිත බෙදා ගැනීම</translation>
+<translation id="7225082563376899794">මුරපද පුරවන විට Windows Hello භාවිතා කරන්න</translation>
 <translation id="7225179976675429563">ජාල වර්ගය නොමැත</translation>
 <translation id="7227458944009118910">පහත ලැයිස්තුගත කර ඇති යෙදුම්වලට ප්‍රොටොකෝල සබැඳිද හැසිරවිය හැකිය. වෙනත් යෙදුම් අවසර ඉල්ලනු ඇත.</translation>
 <translation id="7228523857728654909">තිර අගුල සහ පුරනය</translation>
@@ -6548,6 +6556,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="7258192266780953209">පරිණාමන</translation>
 <translation id="7258225044283673131">යෙදුම ප්‍රතිචාර නොදක්වයි. යෙදුම වැසීමට "බලෙන් වසන්න" තෝරන්න.</translation>
 <translation id="7260186537988033909">කියෝස්ක් සහ සයිනේජ් උපාංග ලියාපදිංචි කිරීම අවසන්ය</translation>
+<translation id="7261851165551049223">මුරපද පුරවන විට TouchID භාවිතා කරන්න</translation>
 <translation id="7262004276116528033">පුරනය වීමේ සේවාව <ph name="SAML_DOMAIN" /> වෙතින් සත්කාර කරනු ලැබේ</translation>
 <translation id="7264695323040866038">සහාය දක්වන වෙබ් සබැඳි විවෘත කිරීමට සැම විටම <ph name="APP" /> යෙදුම භාවිත කරන්නද?</translation>
 <translation id="7267044199012331848">අතත්‍ය යන්ත්‍රය ස්ථාපන කළ නොහැකි විය. නැවත උත්සාහ කරන්න, නැති නම් ඔබේ පරිපාලකයා සම්බන්ධ කර ගන්න. දෝෂ කේතය: <ph name="ERROR_CODE" />.</translation>
@@ -6634,6 +6643,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="7358338787722390626">පැති පැනලයේ සෙවීම වසන්න</translation>
 <translation id="735994578317267253">ඕනෑම ChromeOS උපාංගයක ඔබගේ යෙදුම්, සැකසීම් සහ තවත් දේ ලබා ගන්න</translation>
 <translation id="7360233684753165754"><ph name="PRINTER_NAME" /> වෙත පිටු <ph name="PAGE_NUMBER" />ක්</translation>
+<translation id="7360257054721917104">සුරකින ලද මේස සහ අච්චු බැලීම. සංචාලනය කිරීමට පටිත්ත ඔබන්න.</translation>
 <translation id="7361297102842600584"><ph name="PLUGIN_NAME" /> ධාවනය කිරීමට දකුණු-ක්ලික් කරන්න</translation>
 <translation id="7362387053578559123">අඩවි බ්ලූටූත් උපාංග වෙත සම්බන්ධ වීමට ඉල්ලිය හැකිය</translation>
 <translation id="7363349185727752629">ඔබගේ පෞද්ගලිකත්ව තේරීම්වල මාර්ගෝපදේශයක්</translation>
@@ -7285,6 +7295,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="7953669802889559161">ආදාන</translation>
 <translation id="7953955868932471628">කෙටිමං පාලනය</translation>
 <translation id="7955105108888461311">පුද්ගලිකව විමසන්න</translation>
+<translation id="7955177647836564772">Smart Lock ක්‍රියාත්මක කර ඔබේ දුරකථනය අගුළු හැර තිබේ නම්, ඔබට මුරපදයක් හෝ PIN අංකයක් ඇතුළු කිරීමට අවශ්‍ය නොවේ</translation>
 <translation id="7956373551960864128">ඔබේ සුරැකි මුද්‍රක</translation>
 <translation id="7957074856830851026">එහි අනුක්‍රමික අංකය හෝ වත්කම් ID යනාදි උපාංග තොරතුරු බලන්න</translation>
 <translation id="7959074893852789871">ගොනුවේ බොහෝ සහතික අඩංගු වේ, එයින් සමහරක් ආනයනය නොකරන ලදී:</translation>
@@ -7542,6 +7553,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />ඔබගේ උපාංග<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195027750202970175">තැටිය මත තරම</translation>
 <translation id="8195191503358432289">මුරපදය එක් කරන්න</translation>
+<translation id="8197673340773315084">වැඩ හෝ පුද්ගලික වැනි, නමක් හෝ ලේබලයක් එක් කරන්න</translation>
 <translation id="8198456017687137612">විකාශ ටැබය</translation>
 <translation id="8199300056570174101">ජාල (සේවාව) සහ උපාංග ගුණාංග</translation>
 <translation id="8200772114523450471">කරගෙන යන්න</translation>
@@ -7639,6 +7651,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="8284279544186306258">සියලු <ph name="WEBSITE_1" /> අඩවි</translation>
 <translation id="8284326494547611709">සිරස්තල</translation>
 <translation id="8286036467436129157">පුරන්න</translation>
+<translation id="828642162569365647">මෙම මුරපදය හෝ PIN මෙම <ph name="DEVICE_TYPE" /> මත ඔබේ දත්ත සහ ඔබ ඔබේ දුරකථනයෙන් ප්‍රවේශ වන ඕනෑම තොරතුරක් ආරක්ෂා කරයි. ඔබේ <ph name="DEVICE_TYPE" /> නින්දෙන් අවදි වන සෑම අවස්ථාවකම ඔබට අගුළු හැරීමට අවශ්‍ය වනු ඇත.</translation>
 <translation id="8287902281644548111">API ඇමතුමට/URL එකට අනුව සොයන්න</translation>
 <translation id="8288032458496410887"><ph name="APP" /> අස්ථාපනය කරමින්...</translation>
 <translation id="8289128870594824098">තැටි ප්‍රමාණය</translation>

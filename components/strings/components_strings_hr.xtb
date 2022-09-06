@@ -1805,6 +1805,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="5764920692828389743">Pošalji na uređaj <ph name="EMAIL_ADDRESS" /></translation>
 <translation id="5765072501007116331">Odaberite adresu za prikaz načina dostave i zahtjeva za dostavu.</translation>
 <translation id="57689295674415555">Broj virtualne kartice nije ispunjen?</translation>
+<translation id="5772086939108830423">Upotrijebi pristupni ključ na drugom uređaju</translation>
 <translation id="5776313857861697733">Prioritet</translation>
 <translation id="5781136890105823427">Eksperiment omogućen</translation>
 <translation id="578305955206182703">Jantarna</translation>
@@ -3055,6 +3056,7 @@ i netočne vjerodajnice. To može značiti da se neki napadač pokušava predsta
 <translation id="950736567201356821">Trostruko bušenje pri vrhu</translation>
 <translation id="961663415146723894">Uvez pri dnu</translation>
 <translation id="962484866189421427">Ovaj sadržaj može pokušati instalirati obmanjujuće aplikacije koje se pretvaraju da su nešto drugo ili prikupljaju podatke na temelju kojih vas je moguće pratiti. <ph name="BEGIN_LINK" />Ipak prikaži<ph name="END_LINK" /></translation>
+<translation id="964050462028070434">Upravljanje zaporkama i pristupnim ključevima...</translation>
 <translation id="96680173638229310">Automobili i vozila</translation>
 <translation id="969892804517981540">Službeni sastavak</translation>
 <translation id="973773823069644502">Dodajte adresu za isporuku</translation>

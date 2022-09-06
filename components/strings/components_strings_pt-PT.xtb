@@ -1108,6 +1108,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="3906954721959377182">Tablet</translation>
 <translation id="3909477809443608991"><ph name="URL" /> pretende reproduzir conteúdo protegido. A identidade do seu dispositivo será validada pela Google e este site poderá aceder à mesma.</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
+<translation id="3923112503730743940">Oufuku Hagaki (postal)</translation>
 <translation id="3927932062596804919">Recusar</translation>
 <translation id="393316646445601645">Internet e telecomunicações</translation>
 <translation id="3939773374150895049">Pretende utilizar o WebAuthn em vez do CVC?</translation>
@@ -1136,6 +1137,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="4009243425692662128">O conteúdo das páginas que imprime é enviado para o Google Cloud ou terceiros para análise. Por exemplo, pode ser analisado quanto a dados confidenciais.</translation>
 <translation id="4010758435855888356">Permitir o acesso ao armazenamento?</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{Documento PDF com {COUNT} página}other{Documento PDF com {COUNT} páginas}}</translation>
+<translation id="4022639246993848966">3,5 x 5</translation>
 <translation id="4023431997072828269">Uma vez que este formulário está a ser enviado através de uma ligação insegura, as suas informações vão ficar visíveis para outras pessoas.</translation>
 <translation id="4025913568718019429">Botão Gerir definições de privacidade do Google, prima Enter para visitar as definições de privacidade da sua Conta Google</translation>
 <translation id="4030383055268325496">&amp;Anular adição</translation>

@@ -3665,12 +3665,6 @@
 
       如果不設定這項政策，預設值是允許受企業管理以及未受管理的使用者執行這項功能。</translation>
 <translation id="487460824085252184">自動遷移，不要求使用者同意。</translation>
-<translation id="48749493657448872">如果啟用這項設定，<ph name="PRODUCT_NAME" /> 將使用內建的憑證驗證器執行伺服器憑證驗證作業。
-      除非 <ph name="CHROME_ROOT_STORE_ENABLED_POLICY_NAME" /> 已啟用，否則如果停用這項設定，<ph name="PRODUCT_NAME" /> 將使用平台提供的舊版憑證驗證器執行伺服器憑證驗證作業。
-      如果不進行設定，系統可能會使用內建或舊版的憑證驗證器。
-
-      我們計劃將這項政策從 <ph name="MAC_OS_NAME" /> 107 版的 <ph name="PRODUCT_NAME" /> 中移除，屆時也將停止支援 <ph name="MAC_OS_NAME" /> 的舊版憑證驗證器。
-      </translation>
 <translation id="4874982543810021567">在這些網站上封鎖 WebUSB</translation>
 <translation id="4876805738539874299">已啟用 SSL 最高版本</translation>
 <translation id="4877402532842958110">這項政策已遭淘汰，請改用「<ph name="URL_ALLOWLIST_POLICY_NAME" />」政策。
@@ -5759,6 +5753,18 @@
       如果在這項政策中設定網址清單，效果等同於將「--unsafely-treat-insecure-origin-as-secure」指令列旗標設定為相同網址的清單 (以逗號分隔)。這項政策會覆寫前述指令列旗標與 UnsafelyTreatInsecureOriginAsSecure 政策 (如已設定)。
 
       如要進一步瞭解安全內容，請參閱「安全內容」：https://www.w3.org/TR/secure-contexts。</translation>
+<translation id="7034831650852513978">這項政策可控管列印工作中的 <ph name="CLIENT_INFO_IPP_ATTRIBUTE" /> <ph name="IPP_PROTOCOL" /> (<ph name="INTERNET_PRINTING_PROTOCOL" />) <ph name="IPP_ATTRIBUTE" />值。
+
+      如果將這項政策設為字串，每個列印工作中就會新增額外的 <ph name="CLIENT_INFO_IPP_ATTRIBUTE" /> 項目。替換變數後，系統會將新增的 <ph name="CLIENT_INFO_IPP_ATTRIBUTE" /> 項目 <ph name="CLIENT_NAME_IPP_ATTRIBUTE" /> 成員設為政策值。支援的變數包括 <ph name="DIRECTORY_ID_PLACEHOLDER" />、<ph name="SERIAL_NUMBER_PLACEHOLDER" />、<ph name="ASSET_ID_PLACEHOLDER" />、<ph name="ANNOTATED_LOCATION_PLACEHOLDER" />、<ph name="USER_EMAIL_PLACEHOLDER" />、<ph name="USER_EMAIL_NAME_PLACEHOLDER" />、<ph name="USER_EMAIL_DOMAIN" />。系統不會展開不支援的預留位置變數。
+
+      如果變數僅包含 <ph name="ASCII" /> 可列印字元，且長度不超過 255 個半形字元，替換變數後產生的值就會視為有效。
+
+      請注意，基於隱私考量，這項政策只會套用在透過 <ph name="IPPS_PROTOCOL" />、<ph name="HTTPS_PROTOCOL" />、<ph name="USB_PROTOCOL" /> 或 <ph name="IPP_USB_PROTOCOL" /> 通訊協定與印表機的通訊。此外，這項政策只會套用至支援 <ph name="CLIENT_NAME_IPP_ATTRIBUTE" /> 的印表機。
+
+      這項政策只會套用至關聯的使用者。
+
+      如果未設定這項政策、設為空白或無效值，系統就不會在列印工作要求中新增額外的 <ph name="CLIENT_INFO_PLACEHOLDER" />。
+      </translation>
 <translation id="703672323011778742">這項政策已在 M88 版遭到淘汰，Chrome 已不再支援 Flash。如果將這項政策設為 1，你將可設定是否允許所有網站自動執行 <ph name="FLASH_PLUGIN_NAME" /> 外掛程式。如果將這項政策設為 2，所有網站都無法自動執行這個外掛程式。啟用「隨點即播」功能時，使用者必須手動點選預留位置，<ph name="FLASH_PLUGIN_NAME" /> 外掛程式才會開始執行。
 
           如果未設定這項政策，系統會使用 <ph name="BLOCK_PLUGINS_POLICY_NAME" />，且使用者可以變更這項設定。
@@ -6697,6 +6703,7 @@
       </translation>
 <translation id="8102913158860568230">預設媒體串流設定</translation>
 <translation id="8104962233214241919">自動為這些網站選取用戶端憑證</translation>
+<translation id="8109762054721090517"><ph name="CLIENT_NAME_IPP_ATTRIBUTE" /> <ph name="INTERNET_PRINTING_PROTOCOL" /><ph name="IPP_ATTRIBUTE" />的範本</translation>
 <translation id="8114382167597081590">不強制執行 YouTube 嚴格篩選模式</translation>
 <translation id="8117921351531866504">你可以設定網站是否能檢查使用者有沒有已儲存的付款方式。
 

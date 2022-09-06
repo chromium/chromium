@@ -3026,6 +3026,11 @@ Chế độ này tương tự như <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_KEEP_E
 <translation id="3989829840000169163">Chặn các điểm tiện ích cũ của trình duyệt</translation>
 <translation id="3990391739475801018">Chế độ tiết kiệm pin sẽ tắt.</translation>
 <translation id="3994043824457743421">Cho thông báo giữa trang xuất hiện trên trang Thẻ mới</translation>
+<translation id="3996325823532867220">Chính sách này không còn được hỗ trợ. Tuy nhiên, chính sách liên quan <ph name="CHROME_ROOT_STORE_ENABLED_POLICY_NAME" /> có thể được hỗ trợ trên một số nền tảng nhất định.
+
+      Khi bạn bật chế độ cài đặt này, <ph name="PRODUCT_NAME" /> sẽ sử dụng trình xác minh chứng chỉ tích hợp sẵn để xác minh chứng chỉ máy chủ.
+      Khi bạn tắt chế độ cài đặt này, <ph name="PRODUCT_NAME" /> sẽ sử dụng trình xác minh chứng chỉ cũ do nền tảng cung cấp để xác minh chứng chỉ máy chủ, trừ khi bạn bật <ph name="CHROME_ROOT_STORE_ENABLED_POLICY_NAME" />.
+      Nếu bạn không đặt chế độ cài đặt này, thì trình xác minh chứng chỉ cũ hoặc tích hợp sẵn có thể được sử dụng.</translation>
 <translation id="3997519162482760140">URL sẽ được cấp quyền truy cập thiết bị quay video trên các trang đăng nhập SAML</translation>
 <translation id="4004523942550416237">Không hiển thị quy trình so khớp giọng nói của Trợ lý Google trong quá trình thiết lập ban đầu</translation>
 <translation id="4007646377576030214"> Lưu ý rằng chúng tôi không dùng chính sách này trong M87 nữa và sẽ xóa khỏi M89. Vui lòng dùng <ph name="MANAGED_GUEST_SESSION_PRIVACY_WARNINGS_POLICY_NAME" /> để định cấu hình các cảnh báo về quyền riêng tư của những phiên khách được quản lý.
@@ -3743,12 +3748,6 @@ Khi bạn đặt chính sách này, <ph name="PRODUCT_OS_NAME" /> chỉ cho phé
 
       Nếu bạn không thiết lập chính sách này, thì chế độ mặc định sẽ được áp dụng cho cả người dùng do doanh nghiệp quản lý và người dùng không được quản lý.</translation>
 <translation id="487460824085252184">Tự động di chuyển, không cần yêu cầu sự chấp thuận của người dùng.</translation>
-<translation id="48749493657448872">Khi bạn bật chế độ cài đặt này, <ph name="PRODUCT_NAME" /> sẽ sử dụng trình xác minh chứng chỉ tích hợp sẵn để xác minh chứng chỉ máy chủ.
-      Khi bạn tắt chế độ cài đặt này, <ph name="PRODUCT_NAME" /> sẽ sử dụng trình xác minh chứng chỉ cũ do nền tảng cung cấp để xác minh chứng chỉ máy chủ, trừ khi bạn bật <ph name="CHROME_ROOT_STORE_ENABLED_POLICY_NAME" />.
-      Nếu bạn không đặt chế độ cài đặt này, thì trình xác minh chứng chỉ cũ hoặc tích hợp sẵn có thể được sử dụng.
-
-      Chúng tôi dự định loại bỏ chính sách này khỏi <ph name="PRODUCT_NAME" /> cho <ph name="MAC_OS_NAME" /> phiên bản 107, khi ngừng hỗ trợ trình xác minh chứng chỉ cũ trong <ph name="MAC_OS_NAME" /> theo kế hoạch.
-      </translation>
 <translation id="4874982543810021567">Chặn WebUSB trên các trang web này</translation>
 <translation id="4876805738539874299">Đã bật phiên bản SSL tối đa</translation>
 <translation id="4877402532842958110">Chính sách này không còn dùng nữa, vui lòng sử dụng chính sách "<ph name="URL_ALLOWLIST_POLICY_NAME" />".

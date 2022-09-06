@@ -3682,12 +3682,6 @@ Als je dit beleid niet toepast of niet instelt, kunnen sites niet tegelijkertijd
 
       Als je dit beleid niet instelt, is de standaardoptie toegestaan voor zowel zakelijk beheerde gebruikers als niet-beheerde gebruikers.</translation>
 <translation id="487460824085252184">Automatisch migreren, niet om toestemming van de gebruiker vragen.</translation>
-<translation id="48749493657448872">Als deze instelling aanstaat, verifieert <ph name="PRODUCT_NAME" /> servercertificaten met de ingebouwde certificaatverificatie.
-Als deze instelling uitstaat, verifieert <ph name="PRODUCT_NAME" /> servercertificaten met de verouderde certificaatverificatie die door het platform wordt geleverd, tenzij <ph name="CHROME_ROOT_STORE_ENABLED_POLICY_NAME" /> aanstaat.
-Als deze instelling niet is ingesteld, kan de ingebouwde of de verouderde certificaatverificatie worden gebruikt.
-
-Volgens planning wordt dit beleid verwijderd vanaf <ph name="PRODUCT_NAME" /> voor <ph name="MAC_OS_NAME" /> versie 107 wanneer de ondersteuning voor de verouderde certificaatverificatie in <ph name="MAC_OS_NAME" /> volgens de planning wordt verwijderd.
-      </translation>
 <translation id="4874982543810021567">WebUSB blokkeren op deze sites</translation>
 <translation id="4876805738539874299">Maximale SSL-versie aangezet</translation>
 <translation id="4877402532842958110">Dit beleid is beëindigd. Gebruik in plaats daarvan het beleid <ph name="URL_ALLOWLIST_POLICY_NAME" />.
@@ -5789,6 +5783,20 @@ Als je dit beleid instelt op een lege lijst of niet instelt, zijn er geen URL's 
       Als er een lijst met URL's wordt ingesteld in dit beleid, heeft dit hetzelfde effect als wanneer de opdrachtregelmarkering '--unsafely-treat-insecure-origin-as-secure' wordt ingesteld voor een door komma's gescheiden lijst met dezelfde URL's. Het beleid overschrijft de opdrachtregelmarkering en UnsafelyTreatInsecureOriginAsSecure, indien aanwezig.
 
       Voor meer informatie over een veilige context ga je naar https://www.w3.org/TR/secure-contexts.</translation>
+<translation id="7034831650852513978">Met dit beleid bepaal je de waarde van <ph name="CLIENT_INFO_IPP_ATTRIBUTE" /> <ph name="IPP_PROTOCOL" /> (<ph name="INTERNET_PRINTING_PROTOCOL" />) <ph name="IPP_ATTRIBUTE" /> in afdruktaken.
+
+      Als je dit beleid instelt op een tekenreeks, wordt aan elke afdruktaak een extra <ph name="CLIENT_INFO_IPP_ATTRIBUTE" />-item toegevoegd. Het <ph name="CLIENT_NAME_IPP_ATTRIBUTE" />-element van het toegevoegde <ph name="CLIENT_INFO_IPP_ATTRIBUTE" />-item wordt ingesteld op de waarde van het beleid na vervanging van variabelen.
+
+      Ondersteunde variabelen zijn <ph name="DIRECTORY_ID_PLACEHOLDER" />, <ph name="SERIAL_NUMBER_PLACEHOLDER" />, <ph name="ASSET_ID_PLACEHOLDER" />, <ph name="ANNOTATED_LOCATION_PLACEHOLDER" />, <ph name="USER_EMAIL_PLACEHOLDER" />, <ph name="USER_EMAIL_NAME_PLACEHOLDER" />, <ph name="USER_EMAIL_DOMAIN" />. Niet-ondersteunde tijdelijke variabelen worden niet uitgebreid.
+
+      De resulterende waarde na vervanging van variabelen wordt als geldig beschouwd als deze alleen bestaat uit <ph name="ASCII" /> afdrukbare tekens en de lengte niet langer is dan 255.
+
+      Vanwege privacyredenen is dit beleid alleen van toepassing als er wordt gecommuniceerd met een printer via de protocollen <ph name="IPPS_PROTOCOL" />, <ph name="HTTPS_PROTOCOL" />, <ph name="USB_PROTOCOL" /> of <ph name="IPP_USB_PROTOCOL" />. Houd er ook rekening mee dat dit beleid alleen geldt voor printers die <ph name="CLIENT_NAME_IPP_ATTRIBUTE" /> ondersteunen.
+
+      Het beleid geldt alleen voor aangesloten gebruikers.
+
+      Als je het beleid niet instelt of dit instelt op een lege of ongeldige waarde, wordt er geen extra <ph name="CLIENT_INFO_PLACEHOLDER" /> toegevoegd aan verzoeken voor afdruktaken.
+      </translation>
 <translation id="703672323011778742">Dit beleid is beëindigd in M88. Flash wordt niet meer ondersteund door Chrome. Als je het beleid instelt op 1, kun je instellen of alle websites automatisch de <ph name="FLASH_PLUGIN_NAME" />-plug-in mogen uitvoeren. Als je het beleid instelt op 2, wordt deze plug-in geblokkeerd voor alle websites. Via click-to-play kan de <ph name="FLASH_PLUGIN_NAME" />-plug-in worden uitgevoerd maar moeten gebruikers op de tijdelijke aanduiding klikken om deze te starten.
 
       Als je het beleid niet instelt, wordt <ph name="BLOCK_PLUGINS_POLICY_NAME" /> gebruikt en kunnen gebruikers deze instelling wijzigen.
@@ -6746,6 +6754,7 @@ De URL-lijsten <ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" /> en <ph name="ENTE
       </translation>
 <translation id="8102913158860568230">Standaardinstelling voor mediastreams</translation>
 <translation id="8104962233214241919">Clientcertificaten automatisch selecteren voor deze sites</translation>
+<translation id="8109762054721090517">Template voor <ph name="CLIENT_NAME_IPP_ATTRIBUTE" /> <ph name="INTERNET_PRINTING_PROTOCOL" /> <ph name="IPP_ATTRIBUTE" /></translation>
 <translation id="8114382167597081590">'Beperkte modus' niet afdwingen op YouTube</translation>
 <translation id="8117921351531866504">Hiermee kun je instellen of websites controleren of de gebruiker betaalmethoden heeft opgeslagen.
 

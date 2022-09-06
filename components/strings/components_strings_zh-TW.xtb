@@ -1108,6 +1108,7 @@
 <translation id="3906954721959377182">平板電腦</translation>
 <translation id="3909477809443608991"><ph name="URL" /> 想要播放受到保護的內容。Google 會驗證你的裝置身分，這個網站可能也會存取你的裝置身分。</translation>
 <translation id="3909695131102177774"><ph name="LABEL" />：<ph name="ERROR" /></translation>
+<translation id="3923112503730743940">Oufuku Hagaki (明信片)</translation>
 <translation id="3927932062596804919">拒絕</translation>
 <translation id="393316646445601645">網際網路與電信</translation>
 <translation id="3939773374150895049">要使用 WebAuthn 取代信用卡驗證碼嗎？</translation>
@@ -1136,6 +1137,7 @@
 <translation id="4009243425692662128">你列印的頁面內容會傳送給 Google Cloud 或第三方進行分析。舉例來說，Google Cloud 或第三方可能會掃描文字，檢查是否含有機密資料。</translation>
 <translation id="4010758435855888356">要授予儲存空間存取權嗎？</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{PDF 文件，共 {COUNT} 頁}other{PDF 文件，共 {COUNT} 頁}}</translation>
+<translation id="4022639246993848966">3.5x5</translation>
 <translation id="4023431997072828269">這個表單是透過不安全的連線提交，其他人將可看到你的資訊。</translation>
 <translation id="4025913568718019429">「管理 Google 隱私權設定」按鈕；按下 Enter 鍵即可前往 Google 帳戶隱私權設定</translation>
 <translation id="4030383055268325496">復原新增(&amp;U)</translation>

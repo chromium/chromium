@@ -1806,6 +1806,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="5764920692828389743">Dërgo te <ph name="EMAIL_ADDRESS" /></translation>
 <translation id="5765072501007116331">Për të parë mënyrat dhe kërkesat e dorëzimit, zgjidh një adresë</translation>
 <translation id="57689295674415555">Nuk është plotësuar numri i kartës virtuale?</translation>
+<translation id="5772086939108830423">Përdor një çelës kalimi në një pajisje tjetër</translation>
 <translation id="5776313857861697733">Përparësia</translation>
 <translation id="5781136890105823427">Eksperimenti u aktivizua</translation>
 <translation id="578305955206182703">E verdhë portokalli</translation>
@@ -2201,6 +2202,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6916954549222464607">Planifikimi dhe menaxhimi financiar</translation>
 <translation id="6917795328362592458">Fjalëkalimi që sapo përdore u gjet në një nxjerrje të paautorizuar të të dhënave. Për të mbrojtur llogaritë e tua, "Menaxheri i fjalëkalimeve" rekomandon që të kontrollosh fjalëkalimet e ruajtura.</translation>
 <translation id="6934672428414710184">Ky emër është nga "Llogaria jote e Google"</translation>
+<translation id="6936976777388162184">Kjo është një pajisje pjesë e një pakete dhe nuk mund të regjistrohet me përmirësimin e kioskës dhe sinjalizimit.</translation>
 <translation id="6939469646605424232">Dramat televizive</translation>
 <translation id="6944692733090228304">Ke futur fjalëkalimin tënd në një faqe që nuk menaxhohet nga <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />. Për të mbrojtur llogarinë, mos e ripërdor fjalëkalimin tënd në aplikacione dhe faqe të tjera.</translation>
 <translation id="6945221475159498467">Përzgjidhe</translation>
@@ -3053,6 +3055,7 @@ Detaje shtesë:
 <translation id="950736567201356821">Tri shpime lart</translation>
 <translation id="961663415146723894">Lidhje poshtë</translation>
 <translation id="962484866189421427">Kjo përmbajtje mund të përpiqet të instalojë aplikacione mashtruese që pretendojnë se janë diçka tjetër ose që mbledhin të dhëna që mund të përdoren për të të gjurmuar. <ph name="BEGIN_LINK" />Shfaq gjithsesi<ph name="END_LINK" /></translation>
+<translation id="964050462028070434">Menaxho fjalëkalimet dhe çelësat e kalimit…</translation>
 <translation id="96680173638229310">Makinat dhe automjetet</translation>
 <translation id="969892804517981540">Ndërtimi zyrtar</translation>
 <translation id="973773823069644502">Shto adresën e dorëzimit</translation>

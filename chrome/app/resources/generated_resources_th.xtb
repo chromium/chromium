@@ -1018,6 +1018,7 @@
 <translation id="1931152874660185993">ไม่มีคอมโพเนนต์ที่ได้รับการติดตั้ง</translation>
 <translation id="1931410639376954712">กำลังติดตั้ง <ph name="DEVICE_OS" /></translation>
 <translation id="1932098463447129402">หลังจาก</translation>
+<translation id="1933489278505808700">ได้รับอนุญาตให้อ่านและเปลี่ยนแปลง</translation>
 <translation id="1935303383381416800">ได้รับอนุญาตให้ดูตำแหน่งของคุณ</translation>
 <translation id="1936157145127842922">แสดงในโฟลเดอร์</translation>
 <translation id="1936931585862840749">ใช้ตัวเลขเพื่อระบุจำนวนสำเนาที่ต้องการพิมพ์ (1 ถึง <ph name="MAX_COPIES" />)</translation>
@@ -3532,6 +3533,7 @@
 <translation id="4310132194679586591">เลือกแอปในอุปกรณ์เพื่อเปิดลิงก์นี้</translation>
 <translation id="4310139701823742692">รูปแบบไฟล์ไม่ถูกต้อง ตรวจสอบไฟล์ PPD แล้วลองอีกครั้ง</translation>
 <translation id="431076611119798497">&amp;รายละเอียด</translation>
+<translation id="4311284648179069796">ไม่ได้รับอนุญาตให้อ่านและเปลี่ยนแปลง</translation>
 <translation id="4312701113286993760">{COUNT,plural, =1{บัญชี Google 1 บัญชี}other{บัญชี Google <ph name="EXTRA_ACCOUNTS" /> บัญชี}}</translation>
 <translation id="4312866146174492540">บล็อก (ค่าเริ่มต้น)</translation>
 <translation id="4314497418046265427">เพิ่มประสิทธิภาพการทำงานเมื่อคุณเชื่อมต่อโทรศัพท์กับ <ph name="DEVICE_TYPE" /></translation>
@@ -3722,6 +3724,7 @@
 <translation id="4504940961672722399">ใช้ส่วนขยายนี้โดยคลิกที่ไอคอนนี้ หรือกด <ph name="EXTENSION_SHORTCUT" /></translation>
 <translation id="450552327874992444">เพิ่มคำนี้ไปแล้ว</translation>
 <translation id="4507128560633489176">ล้างข้อมูลแล้ว</translation>
+<translation id="4507373251891673233">คุณได้บล็อกส่วนขยายทั้งหมดจาก <ph name="HOST" /></translation>
 <translation id="450867954911715010">การตั้งค่าการเข้าถึง</translation>
 <translation id="4508765956121923607">ดู&amp;ต้นฉบับ</translation>
 <translation id="4509421746503122514">เปิดอีกครั้งเพื่ออัปเดต</translation>
@@ -3995,6 +3998,7 @@
 <translation id="4763408175235639573">มีการวางคุกกี้ต่อไปนี้เมื่อคุณดูหน้าเว็บนี้</translation>
 <translation id="4765524037138975789">{MONTHS,plural, =1{อุปกรณ์นี้จะได้รับการบันทึกไว้เป็นเวลา 1 เดือนและคุณสามารถเชื่อมต่อโดยไม่ใช้รหัสได้ในครั้งถัดไป ผู้ดูแลระบบเป็นคนตั้งค่านี้}other{อุปกรณ์นี้จะได้รับการบันทึกไว้เป็นเวลา {MONTHS} เดือนและคุณสามารถเชื่อมต่อโดยไม่ใช้รหัสได้ในครั้งถัดไป ผู้ดูแลระบบเป็นคนตั้งค่านี้}}</translation>
 <translation id="4765582662863429759">อนุญาตให้ Android Messages นำส่งข้อความจากโทรศัพท์ไปยัง Chromebook ของคุณ</translation>
+<translation id="4766598565665644999">ส่วนขยายทั้งหมดอ่านและเปลี่ยนแปลง <ph name="HOST" /> ได้</translation>
 <translation id="4768332406694066911">คุณมีใบรับรองจากองค์กรเหล่านี้ซึ่งระบุถึงตัวคุณ</translation>
 <translation id="4770119228883592393">ขอสิทธิ์ กด ⌘ + Option + ลูกศรลงเพื่อตอบกลับ</translation>
 <translation id="4773112038801431077">อัปเกรด Linux</translation>
@@ -5166,6 +5170,7 @@
     <ph name="LINE_BREAK" />
     ภาพนี้จะแสดงในหน้าลงชื่อเข้าใช้และหน้าจอล็อกของ Chromebook</translation>
 <translation id="5925147183566400388">ตัวชี้ไปยังคำชี้แจงเกี่ยวกับแนวทางปฏิบัติสำหรับใบรับรอง</translation>
+<translation id="5927232971138258197">ส่วนขยายนี้อ่านและเปลี่ยนแปลง <ph name="HOST" /> ได้</translation>
 <translation id="592740088639760830">หยุดการทำงานของคอนเทนเนอร์นี้</translation>
 <translation id="592880897588170157">ดาวน์โหลดไฟล์ PDF แทนการเปิดโดยอัตโนมัติใน Chrome</translation>
 <translation id="592919310198008711">เมื่อฉันคลิกส่วนขยาย</translation>
@@ -6271,6 +6276,7 @@
 <translation id="6973611239564315524">มีการอัปเกรดเป็น Debian 10 (Buster) พร้อมใช้งาน</translation>
 <translation id="69739764870135975">หาก Google เป็นเครื่องมือค้นหาเริ่มต้นของคุณด้วย คุณจะเห็นคำแนะนำที่มีประสิทธิภาพและเกี่ยวข้องกับบริบทมากยิ่งขึ้น</translation>
 <translation id="697508444536771064">ปิด Linux</translation>
+<translation id="6975361011348772931">ได้ขออ่านและเปลี่ยนแปลง</translation>
 <translation id="6978121630131642226">เครื่องมือค้นหา</translation>
 <translation id="6979044105893951891">เปิดและออกจากเซสชันผู้เยี่ยมชมที่มีการจัดการ</translation>
 <translation id="6979158407327259162">Google ไดรฟ์</translation>
@@ -7269,6 +7275,7 @@
 <translation id="793531125873261495">เกิดข้อผิดพลาดขณะดาวน์โหลดเครื่องเสมือน โปรดลองอีกครั้ง</translation>
 <translation id="7935451262452051102">เสร็จสมบูรณ์ <ph name="PERCENT" />%</translation>
 <translation id="7939062555109487992">ตัวเลือกขั้นสูง</translation>
+<translation id="7939073735115504773">คลิกไอคอนของส่วนขยายนี้เพื่ออ่านและเปลี่ยนแปลง <ph name="HOST" /></translation>
 <translation id="7939328347457537652">จัดการใบรับรองอุปกรณ์</translation>
 <translation id="7939412583708276221">เก็บเอาไว้ ไม่ว่าอย่างไรก็ตาม</translation>
 <translation id="7941179291434537290">ความพร้อมดำเนินการของการเชื่อมต่ออินเทอร์เน็ตผ่านมือถือ:</translation>

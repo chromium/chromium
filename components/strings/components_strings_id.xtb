@@ -1107,6 +1107,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="3906954721959377182">Tablet</translation>
 <translation id="3909477809443608991"><ph name="URL" /> ingin memutar konten yang dilindungi. Identitas perangkat Anda akan diverifikasi oleh Google dan akan dapat diakses oleh situs ini.</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
+<translation id="3923112503730743940">Oufuku Hagaki (Kartu Pos)</translation>
 <translation id="3927932062596804919">Tolak</translation>
 <translation id="393316646445601645">Internet &amp; telekomunikasi</translation>
 <translation id="3939773374150895049">Gunakan WebAuthn dan bukan CVC?</translation>
@@ -1135,6 +1136,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="4009243425692662128">Konten halaman yang Anda cetak akan dikirim ke Google Cloud atau pihak ketiga untuk dianalisis. Misalnya, teks mungkin dipindai untuk mendeteksi data sensitif.</translation>
 <translation id="4010758435855888356">Izinkan akses penyimpanan?</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{Dokumen PDF berisi {COUNT} halaman}other{Dokumen PDF berisi {COUNT} halaman}}</translation>
+<translation id="4022639246993848966">3,5x5</translation>
 <translation id="4023431997072828269">Karena formulir ini dikirim menggunakan koneksi yang tidak aman, informasi Anda akan dapat dilihat oleh pengguna lain.</translation>
 <translation id="4025913568718019429">Tombol Kelola setelan Privasi Google, tekan Enter untuk membuka setelan privasi Akun Google Anda</translation>
 <translation id="4030383055268325496">&amp;Urungkan penambahan</translation>

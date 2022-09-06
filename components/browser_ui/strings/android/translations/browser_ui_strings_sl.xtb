@@ -30,6 +30,7 @@
 <translation id="1717218214683051432">Tipala gibanja</translation>
 <translation id="1743802530341753419">Prikaži poziv, preden se spletnim mestom dovoli povezovanje z napravo (priporočeno)</translation>
 <translation id="1779089405699405702">Slikovni dekodirnik</translation>
+<translation id="1785415724048343560">Priporočljivo za najboljšo izkušnjo</translation>
 <translation id="1818308510395330587">Če želite aplikaciji <ph name="APP_NAME" /> dovoliti uporabo razširjene resničnosti, prav tako vklopite fotoaparat v <ph name="BEGIN_LINK" />nastavitvah za Android<ph name="END_LINK" />.</translation>
 <translation id="1864927262126810325">Iz: <ph name="SOURCE_NAME" /></translation>
 <translation id="1887786770086287077">Dostop do lokacije je izklopljen za to napravo. Vklopite ga lahko v <ph name="BEGIN_LINK" />nastavitvah za Android<ph name="END_LINK" />.</translation>
@@ -169,6 +170,7 @@
 <translation id="4751476147751820511">Tipala za gibanje in svetlobo</translation>
 <translation id="4811450222531576619">Preberite več o njenem viru in temi</translation>
 <translation id="4836046166855586901">Vprašaj, ko želi spletno mesto vedeti, kdaj aktivno uporabljate to napravo.</translation>
+<translation id="483914009762354899">Vključi vsa spletna mesta v tej domeni</translation>
 <translation id="4883854917563148705">Upravljanih nastavitev ni mogoče ponastaviti</translation>
 <translation id="4887024562049524730">Vprašaj, preden se spletnim mestom dovoli uporaba naprav in podatkov za navidezno resničnost (priporočeno)</translation>
 <translation id="4962975101802056554">Umik vseh dovoljenj za napravo</translation>
@@ -309,6 +311,7 @@
 <translation id="7791543448312431591">Dodaj</translation>
 <translation id="780301667611848630">Ne, hvala</translation>
 <translation id="7804248752222191302">Spletno mesto uporablja kamero</translation>
+<translation id="7816129586531226979">Povezana spletna mesta si vas lahko zapomnijo na več spletnih mestih.</translation>
 <translation id="7817023149356982970">Odjavljeni boste s tega spletnega mesta.</translation>
 <translation id="7828557259026017104">Piškotki so datoteke, ki jih ustvarijo spletna mesta, ki jih obiščete. Spletna mesta jih uporabljajo, da si zapomnijo vaše nastavitve. Piškotke drugih spletnih mest ustvarijo druga spletna mesta. Ta spletna mesta imajo v lasti nekatero vsebino, na primer oglase ali slike, ki jo vidite na spletni strani, ki jo obiščete.</translation>
 <translation id="7835852323729233924">Predvajanje predstavnosti</translation>

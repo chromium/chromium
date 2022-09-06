@@ -1806,6 +1806,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="5764920692828389743">Pošalji na <ph name="EMAIL_ADDRESS" /></translation>
 <translation id="5765072501007116331">Za prikaz načina i uslova isporuke, izaberite adresu</translation>
 <translation id="57689295674415555">Broj virtuelne kartice nije ispunjen?</translation>
+<translation id="5772086939108830423">Koristi pristupni ključ na drugom uređaju</translation>
 <translation id="5776313857861697733">Prioritet</translation>
 <translation id="5781136890105823427">Eksperiment je omogućen</translation>
 <translation id="578305955206182703">Tamnožuta</translation>
@@ -2202,6 +2203,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="6916954549222464607">Finansijsko planiranje i upravljanje</translation>
 <translation id="6917795328362592458">Lozinka koju ste upravo koristili pronađena je prilikom narušavanja podataka. Da osigura vaše račune, Upravitelj lozinki preporučuje da provjerite sačuvane lozinke.</translation>
 <translation id="6934672428414710184">Ovaj naziv je s vašeg Google računa</translation>
+<translation id="6936976777388162184">Ovo je uređaj u paketu i nije se moguće prijaviti pomoću Kioska i Nadogradnje potpisivanja.</translation>
 <translation id="6939469646605424232">TV drame</translation>
 <translation id="6944692733090228304">Unijeli ste lozinku na web lokaciji kojom ne upravlja organizacija <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />. Da zaštitite račun, lozinku nemojte ponovo koristiti u drugim aplikacijama i na drugim web lokacijama.</translation>
 <translation id="6945221475159498467">Odaberi</translation>
@@ -3054,6 +3056,7 @@ Dodatni detalji:
 <translation id="950736567201356821">Trostruko bušenje na gornjoj strani</translation>
 <translation id="961663415146723894">Povezivanje donje strane</translation>
 <translation id="962484866189421427">Sadržaj može pokušati instalirati obmanjujuće aplikacije koje se pretvaraju da predstavljaju nešto drugo ili koje prikupljaju podatke koji se mogu iskoristiti za vaše praćenje. <ph name="BEGIN_LINK" />Ipak prikaži<ph name="END_LINK" /></translation>
+<translation id="964050462028070434">Upravljajte lozinkama i pristupnim ključevima…</translation>
 <translation id="96680173638229310">Automobili i vozila</translation>
 <translation id="969892804517981540">Zvanična verzija</translation>
 <translation id="973773823069644502">Dodaj adresu za isporuku</translation>

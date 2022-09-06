@@ -715,6 +715,7 @@ Pots comprovar les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_
 <translation id="16620462294541761">No s'ha pogut verificar la teva contrasenya. Torna-ho a provar.</translation>
 <translation id="166278006618318542">Algoritme de clau pública del subjecte</translation>
 <translation id="1662801900924515589">S'ha instal·lat <ph name="APP" /></translation>
+<translation id="1665328953287874063">Utilitza una contrasenya o un PIN per desbloquejar el teu <ph name="DEVICE_TYPE" /></translation>
 <translation id="1666232093776384142">Desactiva la protecció d'accés a les dades per als perifèrics</translation>
 <translation id="1667842670298352129">Escolta un text concret en veu alta. Primer, selecciona la icona Escolta la selecció, a la part inferior de la pantalla. A continuació, marca el text. També pots utilitzar les tecles de drecera: marca el text i, tot seguit, prem Cerca+S.</translation>
 <translation id="1668435968811469751">Inscriu-me manualment</translation>
@@ -1837,6 +1838,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2691385045260836588">Model</translation>
 <translation id="2691440343905273290">Canvia la configuració de la introducció</translation>
 <translation id="2693176596243495071">S'ha produït un error desconegut. Torna-ho a provar més tard o contacta amb l'administrador si el problema no es resol.</translation>
+<translation id="2698147581454716013">Aquest és un dispositiu agrupat i no es pot inscriure amb la Llicència de Kiosk i Signage.</translation>
 <translation id="2699911226086014512">Ha fallat l'operació del PIN; codi: <ph name="RETRIES" />.</translation>
 <translation id="2701330563083355633">S'ha compartit des del dispositiu <ph name="DEVICE_NAME" /></translation>
 <translation id="2701737434167469065">Inicia la sessió, <ph name="EMAIL" /></translation>
@@ -1915,6 +1917,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2757338480560142065">Assegura't que la contrasenya que estàs desant coincideixi amb la contrasenya de: <ph name="WEBSITE" /></translation>
 <translation id="2762441749940182211">La càmera està bloquejada</translation>
 <translation id="2764786626780673772">Detalls de la VPN</translation>
+<translation id="2764920001292228569">Introdueix un nom per al perfil</translation>
 <translation id="2765100602267695013">Contacta amb el teu proveïdor de telefonia mòbil</translation>
 <translation id="2765217105034171413">Petit</translation>
 <translation id="2766006623206032690">En&amp;ganxa i ves</translation>
@@ -3287,6 +3290,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="4065876735068446555">És possible que la xarxa que esteu fent servir (<ph name="NETWORK_ID" />) sol·liciti que en visiteu la pàgina d'inici de sessió.</translation>
 <translation id="4066207411788646768">Comprova la connexió per veure les impressores disponibles a la xarxa</translation>
 <translation id="4066945815577305767">S'ha esgotat el temps d'espera de les contrasenyes</translation>
+<translation id="4067839975993712852">Marca la pestanya actual com a llegida</translation>
 <translation id="4068776064906523561">Empremtes digitals desades</translation>
 <translation id="407173827865827707">En fer clic</translation>
 <translation id="4072701974556190758">La contrasenya es desarà al teu Compte de Google, <ph name="ACCOUNT" />. No caldrà que la memoritzis.</translation>
@@ -3489,7 +3493,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="4275830172053184480">Reinici del dispositiu</translation>
 <translation id="4277434192562187284">Font de configuració XML</translation>
 <translation id="4278390842282768270">Permès</translation>
-<translation id="4278498748067682896">Utilitzaràs una actualització de quiosc i de cartelleria que només permet que el dispositiu funcioni en mode de quiosc o de cartelleria. Si vols que els usuaris iniciïn la sessió al dispositiu, torna enrere i inscriu-lo mitjançant Llicència de Chrome Enterprise.</translation>
+<translation id="4278498748067682896">Utilitzaràs una Llicència de Kiosk i Signage que només permet que el dispositiu funcioni en mode de quiosc o de cartelleria. Si vols que els usuaris iniciïn la sessió al dispositiu, torna enrere i inscriu-lo mitjançant Llicència de Chrome Enterprise.</translation>
 <translation id="4279129444466079448">Pots instal·lar <ph name="PROFILE_LIMIT" /> perfils d'eSIM com a màxim en aquest dispositiu. Per afegir-ne un altre, primer suprimeix-ne un.</translation>
 <translation id="4280325816108262082">El dispositiu es desconnectarà automàticament quan s'apagui o no s'estigui fent servir</translation>
 <translation id="4281844954008187215">Condicions del servei</translation>
@@ -5767,6 +5771,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6508248480704296122">Relacionada amb <ph name="NAME_PH" /></translation>
 <translation id="6508261954199872201">Aplicació: <ph name="APP_NAME" /></translation>
 <translation id="6509207748479174212">Llicència per a recursos multimèdia</translation>
+<translation id="6511827214781912955">Et recomanem que suprimeixis <ph name="FILENAME" /> perquè els altres usuaris que utilitzen aquest dispositiu no puguin veure les teves contrasenyes.</translation>
 <translation id="6513247462497316522">Google Chrome utilitzarà dades mòbils si no esteu connectat a una altra xarxa.</translation>
 <translation id="6514010653036109809">Dispositiu disponible:</translation>
 <translation id="6514565641373682518">Aquesta pàgina ha desactivat el cursor del ratolí.</translation>
@@ -6048,6 +6053,7 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="6781978626986383437">S'ha cancel·lat la còpia de seguretat de Linux</translation>
 <translation id="6782067259631821405">El PIN no és vàlid</translation>
 <translation id="6784523122863989144">El perfil s'admet</translation>
+<translation id="6785739405821760313">Es mostren els escriptoris desats. Prem la pestanya per navegar.</translation>
 <translation id="6785872064505734160">L'Assistent de Google a Chrome pot dur a terme accions per tu en llocs web</translation>
 <translation id="6786747875388722282">Extensions</translation>
 <translation id="6787097042755590313">Una altra pestanya</translation>
@@ -6634,6 +6640,7 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="7358338787722390626">Tanca la cerca al tauler lateral</translation>
 <translation id="735994578317267253">Gaudeix de les teves aplicacions, la configuració i més en qualsevol dispositiu Chrome OS</translation>
 <translation id="7360233684753165754"><ph name="PAGE_NUMBER" /> pàgines a <ph name="PRINTER_NAME" /></translation>
+<translation id="7360257054721917104">Es mostren les plantilles i els escriptoris desats. Prem la pestanya per navegar.</translation>
 <translation id="7361297102842600584">Fes clic amb el botó dret per executar <ph name="PLUGIN_NAME" /></translation>
 <translation id="7362387053578559123">Els llocs web poden demanar permís per connectar-se a dispositius Bluetooth</translation>
 <translation id="7363349185727752629">Guia de les teves opcions de privadesa</translation>
@@ -7287,6 +7294,7 @@ Prem un interruptor o una tecla assignats per suprimir una assignació.</transla
 <translation id="7953669802889559161">Introducció de text</translation>
 <translation id="7953955868932471628">Gestiona les dreceres</translation>
 <translation id="7955105108888461311">Pregunta en persona</translation>
+<translation id="7955177647836564772">Si Smart Lock està activat i el telèfon està desbloquejat, no caldrà que introdueixis cap contrasenya ni cap PIN</translation>
 <translation id="7956373551960864128">Les teves impressores desades</translation>
 <translation id="7957074856830851026">Mostra la informació del dispositiu, com ara el número de sèrie o l'identificador de recurs</translation>
 <translation id="7959074893852789871">El fitxer contenia certificats múltiples, però alguns no s'han importat:</translation>
@@ -7545,6 +7553,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Els teus dispositius<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195027750202970175">Espai ocupat al disc</translation>
 <translation id="8195191503358432289">Afegeix una contrasenya</translation>
+<translation id="8197673340773315084">Afegeix un nom o una etiqueta, com ara Feina o Personal</translation>
 <translation id="8198456017687137612">S'està emetent la pestanya</translation>
 <translation id="8199300056570174101">Xarxa (servei) i propietats del dispositiu</translation>
 <translation id="8200772114523450471">Reprèn</translation>
@@ -7642,6 +7651,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8284279544186306258">tots els llocs web de <ph name="WEBSITE_1" /></translation>
 <translation id="8284326494547611709">Subtítols</translation>
 <translation id="8286036467436129157">Inicia la sessió</translation>
+<translation id="828642162569365647">Aquesta contrasenya o aquest PIN protegeix les teves dades en aquest <ph name="DEVICE_TYPE" /> i la informació a què accedeixes des del telèfon. Hauràs de desbloquejar el dispositiu cada vegada que el teu <ph name="DEVICE_TYPE" /> s'activi.</translation>
 <translation id="8287902281644548111">Cerca per crida a l'API o URL</translation>
 <translation id="8288032458496410887">Desinstal·la <ph name="APP" />...</translation>
 <translation id="8289128870594824098">Mida del disc</translation>

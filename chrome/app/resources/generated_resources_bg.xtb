@@ -678,6 +678,7 @@
 <translation id="1632756664321977232">Инструмент за подрязване</translation>
 <translation id="163309982320328737">Първоначалната ширина на знаците да бъде цяла</translation>
 <translation id="1633947793238301227">Деактивиране на Google Асистент</translation>
+<translation id="1634224622052500893">Намерена е Wi-Fi мрежа</translation>
 <translation id="1634783886312010422">Променихте ли вече тази парола в(ъв) <ph name="WEBSITE" />?</translation>
 <translation id="1636212173818785548">OK</translation>
 <translation id="163712950892155760"><ph name="BEGIN_PARAGRAPH1" />Данните от приложенията могат да бъдат всяка запазена от тях информация (въз основа на настройките за програмисти), включително контакти, съобщения и снимки. Данните в резервното копие не се отчитат в квотата за хранилището ви в Диск.<ph name="END_PARAGRAPH1" />
@@ -714,6 +715,7 @@
 <translation id="16620462294541761">За съжаление паролата ви не можа да бъде потвърдена. Моля, опитайте отново.</translation>
 <translation id="166278006618318542">Алгоритъм на публичен ключ на субект</translation>
 <translation id="1662801900924515589">Приложението <ph name="APP" /> е инсталирано</translation>
+<translation id="1665328953287874063">Използвайте парола или ПИН код, за да отключите своя <ph name="DEVICE_TYPE" /></translation>
 <translation id="1666232093776384142">Деактивиране на защитата на достъпа до данните от периферни устройства</translation>
 <translation id="1667842670298352129">Слушайте конкретен текст, прочетен на глас. Първо изберете иконата на „Прочитане на глас“ в долната част на екрана, а след това откройте текст. Можете също да използвате и клавишна комбинация: откройте текст и натиснете клавиша „търсене“ + S.</translation>
 <translation id="1668435968811469751">Ръчно записване</translation>
@@ -1846,6 +1848,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2691385045260836588">Модел</translation>
 <translation id="2691440343905273290">Промяна на настройките за въвеждане</translation>
 <translation id="2693176596243495071">Ами сега! Възникна неизвестна грешка. Моля, опитайте отново по-късно или се свържете с администратора си, ако проблемът продължи.</translation>
+<translation id="2698147581454716013">Това устройство се предлага в пакет и не може да бъде регистрирано в Kiosk &amp; Signage Upgrade.</translation>
 <translation id="2699911226086014512">Операцията с ПИН кода не бе успешна: код <ph name="RETRIES" />.</translation>
 <translation id="2701330563083355633">Споделено от <ph name="DEVICE_NAME" /></translation>
 <translation id="2701737434167469065">Влизане в профила <ph name="EMAIL" /></translation>
@@ -1924,6 +1927,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2757338480560142065">Уверете се, че запазваната парола съвпада с тази за <ph name="WEBSITE" /></translation>
 <translation id="2762441749940182211">Достъпът до камерата е блокиран</translation>
 <translation id="2764786626780673772">Подробности за VPN</translation>
+<translation id="2764920001292228569">Въведете име на потребителския профил</translation>
 <translation id="2765100602267695013">Свържете се с мобилния си оператор</translation>
 <translation id="2765217105034171413">Малък</translation>
 <translation id="2766006623206032690">&amp;Поставяне и старт</translation>
@@ -2018,6 +2022,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2839032553903800133">Известията са блокирани</translation>
 <translation id="2841013758207633010">Време</translation>
 <translation id="2841837950101800123">Доставчик</translation>
+<translation id="2842013086666334835">Вход в(ъв) <ph name="NETWORK_ID" /></translation>
 <translation id="2843560154284403323">За да завършите настройването на Linux, актуализирайте Chrome OS и опитайте отново.</translation>
 <translation id="2844169650293029770">Устройство с USB-C (предният ляв порт)</translation>
 <translation id="2844809857160214557">Преглеждайте и управлявайте заданията за отпечатване</translation>
@@ -2118,6 +2123,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2927017729816812676">Хранилище за кеш</translation>
 <translation id="2928795416630981206">Сайтове с разрешение за проследяване на позицията на камерата ви</translation>
 <translation id="2931157624143513983">Уеднаквяване с областта за печат</translation>
+<translation id="2931342457001070961">Няма свързан микрофон</translation>
 <translation id="2932085390869194046">Предложение за парола...</translation>
 <translation id="2932483646085333864">Излезте от профила си и отново влезте в него, за да стартира синхронизирането</translation>
 <translation id="2932883381142163287">Подаване на сигнал за злоупотреба</translation>
@@ -2181,6 +2187,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2996286169319737844">Данните са шифровани с пропуска ви за синхронизиране. Това не включва начините на плащане и адресите от Google Pay.</translation>
 <translation id="2996722619877761919">Обръщане по дългата страна</translation>
 <translation id="2996932914629936323">Изчиства историята от всички синхронизирани устройства.</translation>
+<translation id="2998267783395280091">Намерена е мрежа</translation>
 <translation id="3000378525979847272">Разрешени са „<ph name="PERMISSION_1" />“ и „<ph name="PERMISSION_2" />“</translation>
 <translation id="3000461861112256445">Монозвук</translation>
 <translation id="3001144475369593262">Профили на деца</translation>
@@ -2332,6 +2339,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3142562627629111859">Нова група</translation>
 <translation id="3143515551205905069">Анулиране на синхронизирането</translation>
 <translation id="3143754809889689516">Възпроизвеждане от началото</translation>
+<translation id="3143937294861726703">Функцията за икономия на памет е включена</translation>
 <translation id="3144647712221361880">Отваряне на връзката като</translation>
 <translation id="3149510190863420837">Приложения в Chrome</translation>
 <translation id="3150693969729403281">Старт на функцията за проверка за безопасността</translation>
@@ -3294,6 +3302,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4065876735068446555">Използваната от вас мрежа (<ph name="NETWORK_ID" />) може да изисква да посетите страницата й за вход.</translation>
 <translation id="4066207411788646768">Моля, проверете връзката си, за да видите наличните принтери в мрежата си</translation>
 <translation id="4066945815577305767">Времето за изчакване при достъп до паролите изтече</translation>
+<translation id="4067839975993712852">Означаване на текущия раздел като прочетен</translation>
 <translation id="4068776064906523561">Запазени отпечатъци</translation>
 <translation id="407173827865827707">При кликване</translation>
 <translation id="4072701974556190758">Паролата ще бъде запазена в профила ви в Google (<ph name="ACCOUNT" />). Не е необходимо да я помните.</translation>
@@ -5777,6 +5786,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="6508248480704296122">Свързано със <ph name="NAME_PH" /></translation>
 <translation id="6508261954199872201">Приложение: <ph name="APP_NAME" /></translation>
 <translation id="6509207748479174212">Лиценз за мултимедия</translation>
+<translation id="6511827214781912955">Добре е да изтриете „<ph name="FILENAME" />“, така че другите хора, които използват това устройство, да не могат да видят паролите ви</translation>
 <translation id="6513247462497316522">Google Chrome ще използва мобилни данни, ако не сте свързани с друга мрежа.</translation>
 <translation id="6514010653036109809">Налично устройство:</translation>
 <translation id="6514565641373682518">Тази страница е деактивирала курсора на мишката ви.</translation>
@@ -6058,6 +6068,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="6781978626986383437">Създаването на резервно копие на Linux бе анулирано</translation>
 <translation id="6782067259631821405">Невалиден ПИН</translation>
 <translation id="6784523122863989144">Потребителският профил се поддържа</translation>
+<translation id="6785739405821760313">Преглеждате запазените работни кътове. Натиснете Tab за придвижване.</translation>
 <translation id="6785872064505734160">Google Асистент в Chrome може да извършва действия вместо вас във всички уебсайтове</translation>
 <translation id="6786747875388722282">Разширения</translation>
 <translation id="6787097042755590313">Друг раздел</translation>
@@ -6644,6 +6655,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="7358338787722390626">Затваряне на лентата за търсене в страничния панел</translation>
 <translation id="735994578317267253">Получаване на вашите приложения, настройки и др. на всяко устройство с Chrome OS</translation>
 <translation id="7360233684753165754"><ph name="PAGE_NUMBER" /> страници до „<ph name="PRINTER_NAME" />“</translation>
+<translation id="7360257054721917104">Преглеждате запазените работни кътове и шаблони. Натиснете Tab за придвижване.</translation>
 <translation id="7361297102842600584">Кликнете с десен бутон, за да стартирате <ph name="PLUGIN_NAME" /></translation>
 <translation id="7362387053578559123">Сайтовете могат да извеждат запитвания за свързване с устройства с Bluetooth</translation>
 <translation id="7363349185727752629">Ръководство за настройките ви за поверителност</translation>
@@ -7297,6 +7309,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="7953669802889559161">Въвеждане</translation>
 <translation id="7953955868932471628">Управление на преките пътища</translation>
 <translation id="7955105108888461311">Питане лично</translation>
+<translation id="7955177647836564772">Ако функцията Smart Lock е включена и телефонът ви е отключен, не е необходимо да въвеждате парола или ПИН код</translation>
 <translation id="7956373551960864128">Вашите запазени принтери</translation>
 <translation id="7957074856830851026">Преглед на информация за устройството, като например серийния номер или идентификатора на актива</translation>
 <translation id="7959074893852789871">Файлът съдържаше няколко сертификата, някои от които не бяха импортирани:</translation>
@@ -7555,6 +7568,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Вашите устройства<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195027750202970175">Размер върху диска</translation>
 <translation id="8195191503358432289">Добавяне на парола</translation>
+<translation id="8197673340773315084">Добавете име или етикет, като например „Служебен“ или „Личен“</translation>
 <translation id="8198456017687137612">Разделът се предава</translation>
 <translation id="8199300056570174101">Свойства на мрежата (услугата) и устройството</translation>
 <translation id="8200772114523450471">Възобновяване</translation>
@@ -7652,6 +7666,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8284279544186306258">всички <ph name="WEBSITE_1" /> сайта</translation>
 <translation id="8284326494547611709">Надписи</translation>
 <translation id="8286036467436129157">Вход</translation>
+<translation id="828642162569365647">Паролата или ПИН кодът защитават данните ви на това устройство <ph name="DEVICE_TYPE" />, включително информацията, до която осъществявате достъп от телефона си. Ще трябва да отключвате всеки път, когато <ph name="DEVICE_TYPE" /> излезе от спящ режим.</translation>
 <translation id="8287902281644548111">Търсене по извикване на API/по URL адрес</translation>
 <translation id="8288032458496410887">Деинсталиране на <ph name="APP" />...</translation>
 <translation id="8289128870594824098">Размер на диска</translation>

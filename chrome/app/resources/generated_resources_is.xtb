@@ -718,6 +718,7 @@ Heimildir sem þú hefur þegar veitt forritum kunna að gilda á þessum reikni
 <translation id="16620462294541761">Því miður var ekki hægt að staðfesta aðgangsorðið þitt. Reyndu aftur.</translation>
 <translation id="166278006618318542">Reiknirit opinbers lykils viðfangs</translation>
 <translation id="1662801900924515589"><ph name="APP" /> var sett upp</translation>
+<translation id="1665328953287874063">Notaðu aðgangsorð eða PIN-númer til að opna <ph name="DEVICE_TYPE" /></translation>
 <translation id="1666232093776384142">Slökkva á gagnaaðgangsvörn fyrir jaðartæki</translation>
 <translation id="1667842670298352129">Heyra tiltekinn texta í upplestri. Veldu fyrst táknið „Textaupplestur“ neðst á skjánum og yfirstrikaðu síðan textann. Þú getur einnig notað flýtilykil: Yfirstrikaðu textann og ýttu síðan á Search + S.</translation>
 <translation id="1668435968811469751">Skrá handvirkt</translation>
@@ -1365,6 +1366,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2251218783371366160">Opna með skoðara kerfis</translation>
 <translation id="225163402930830576">Endurnýja net</translation>
 <translation id="2251809247798634662">Nýr huliðsgluggi</translation>
+<translation id="2252017960592955005">Áhorfsvörn (betaútgáfa)</translation>
 <translation id="225240747099314620">Leyfa auðkenni fyrir varið efni (hugsanlega þarf að endurræsa tölvuna)</translation>
 <translation id="2255077166240162850">Þetta tæki var læst á öðru léni eða í annarri stillingu.</translation>
 <translation id="2255317897038918278">Microsoft-tímastimpill</translation>
@@ -1851,6 +1853,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2691385045260836588">Gerð</translation>
 <translation id="2691440343905273290">Breyta innsláttarstillingum</translation>
 <translation id="2693176596243495071">Úbbs! Óþekkt villa kom upp. Reyndu aftur síðar eða hafðu samband við kerfisstjórann þinn ef vandamálið er viðvarandi.</translation>
+<translation id="2698147581454716013">Þetta er pakkaleyfistæki og ekki er hægt að skrá það í sjálfsala- eða merkingauppfærslu.</translation>
 <translation id="2699911226086014512">PIN-aðgerð með kóðanum <ph name="RETRIES" /> mistókst.</translation>
 <translation id="2701330563083355633">Deilt úr <ph name="DEVICE_NAME" /></translation>
 <translation id="2701737434167469065">Skrá inn, <ph name="EMAIL" /></translation>
@@ -1929,6 +1932,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2757338480560142065">Gakktu úr skugga um að aðgangsorðið sem þú ert að vista passi við aðgangsorðið fyrir <ph name="WEBSITE" />.</translation>
 <translation id="2762441749940182211">Lokað á myndavél</translation>
 <translation id="2764786626780673772">Upplýsingar um VPN-netið</translation>
+<translation id="2764920001292228569">Sláðu inn prófílnafn</translation>
 <translation id="2765100602267695013">Hafðu samband við farsímafyrirtækið</translation>
 <translation id="2765217105034171413">Lítið</translation>
 <translation id="2766006623206032690">Líma og opna</translation>
@@ -3298,6 +3302,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="4065876735068446555">Netið sem þú notar (<ph name="NETWORK_ID" />) kann að fara fram á að þú farir á innskráningarsíðu þess.</translation>
 <translation id="4066207411788646768">Athugaðu tenginguna til að sjá tiltæka prentara á netinu þínu</translation>
 <translation id="4066945815577305767">Tímamörk aðgangsorða runnu út</translation>
+<translation id="4067839975993712852">Merkja núverandi flipa sem lesinn</translation>
 <translation id="4068776064906523561">Vistuð fingraför</translation>
 <translation id="407173827865827707">Við smell</translation>
 <translation id="4072701974556190758">Aðgangsorð verður vistað á Google reikningnum þínum, <ph name="ACCOUNT" />. Þú þarft ekki að leggja það á minnið.</translation>
@@ -5780,6 +5785,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="6508248480704296122">Tengist <ph name="NAME_PH" /></translation>
 <translation id="6508261954199872201">Forrit: <ph name="APP_NAME" /></translation>
 <translation id="6509207748479174212">Margmiðlunarleyfi</translation>
+<translation id="6511827214781912955">Íhugaðu að eyða <ph name="FILENAME" /> til að aðrir notendur tækisins geti ekki skoðað aðgangsorðin þín</translation>
 <translation id="6513247462497316522">Google Chrome notar farsímagögn ef þú ert ekki með tengingu við annað net.</translation>
 <translation id="6514010653036109809">Tiltækt tæki:</translation>
 <translation id="6514565641373682518">Þessi síða hefur gert músarbendilinn óvirkan.</translation>
@@ -6063,6 +6069,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="6781978626986383437">Hætt við Linux-afritun</translation>
 <translation id="6782067259631821405">Ógilt PIN-númer</translation>
 <translation id="6784523122863989144">Prófíll er studdur</translation>
+<translation id="6785739405821760313">Skoðar vistuð skrifborð. Ýttu á dálkalykilinn (Tab) til að fletta.</translation>
 <translation id="6785872064505734160">Google hjálparinn í Chrome getur lokið aðgerðum á ýmsum vefsíðum fyrir þig</translation>
 <translation id="6786747875388722282">Viðbætur</translation>
 <translation id="6787097042755590313">Annar flipi</translation>
@@ -6649,6 +6656,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="7358338787722390626">Loka leit í hliðarglugga</translation>
 <translation id="735994578317267253">Fáðu forritin þín, stillingarnar og fleira í hvaða ChromeOS tæki sem er</translation>
 <translation id="7360233684753165754"><ph name="PAGE_NUMBER" /> síður með <ph name="PRINTER_NAME" /></translation>
+<translation id="7360257054721917104">Skoðar vistuð skrifborð og sniðmát. Ýttu á dálkalykilinn (Tab) til að fletta.</translation>
 <translation id="7361297102842600584">Hægrismelltu til að keyra <ph name="PLUGIN_NAME" /></translation>
 <translation id="7362387053578559123">Vefsvæði geta beðið um að tengjast Bluetooth-tækjum</translation>
 <translation id="7363349185727752629">Leiðarvísir persónuverndarstillinga</translation>
@@ -7302,6 +7310,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="7953669802889559161">Innsláttur</translation>
 <translation id="7953955868932471628">Stjórna flýtileiðum</translation>
 <translation id="7955105108888461311">Spyrja í eigin persónu</translation>
+<translation id="7955177647836564772">Ef kveikt er á Smart Lock og síminn er ólæstur þarftu ekki að slá inn aðgangsorð eða PIN-númer</translation>
 <translation id="7956373551960864128">Vistaðir prentarar þínir</translation>
 <translation id="7957074856830851026">Sjá upplýsingar um tæki, svo sem raðnúmer eða eignarauðkenni</translation>
 <translation id="7959074893852789871">Skráin innihélt mörg vottorð en sum þeirra voru ekki flutt inn:</translation>
@@ -7559,6 +7568,7 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Tækin þín<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195027750202970175">Stærð á diski</translation>
 <translation id="8195191503358432289">Bæta við aðgangsorði</translation>
+<translation id="8197673340773315084">Bættu við heiti eða merki eins og „Vinna“ eða „Persónulegt“.</translation>
 <translation id="8198456017687137612">Útsendingarflipi</translation>
 <translation id="8199300056570174101">Eiginleikar netkerfis (þjónustu) og tækis</translation>
 <translation id="8200772114523450471">Halda áfram</translation>
@@ -7656,6 +7666,7 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8284279544186306258">öllum vefsvæðum <ph name="WEBSITE_1" /></translation>
 <translation id="8284326494547611709">Skjátextar</translation>
 <translation id="8286036467436129157">Skrá inn</translation>
+<translation id="828642162569365647">Þetta PIN-númer eða aðgangsorð verndar gögnin þín í þessari <ph name="DEVICE_TYPE" /> og allar upplýsingar sem þú opnar í símanum þínum. Þú verður að taka úr lás í hvert skipti sem <ph name="DEVICE_TYPE" /> vaknar úr svefni.</translation>
 <translation id="8287902281644548111">Leita eftir forritaskilakalli / vefslóð</translation>
 <translation id="8288032458496410887">Fjarlægja <ph name="APP" />...</translation>
 <translation id="8289128870594824098">Diskstærð</translation>

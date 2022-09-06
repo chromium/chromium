@@ -226,6 +226,7 @@
 <translation id="2497706219848005458">グリーン イエロー</translation>
 <translation id="2523609930580546572">ChromeVox チュートリアル</translation>
 <translation id="2525706221823668172">Chromebook のキーボード ショートカット</translation>
+<translation id="2543973100702367007">タブルタップすると、<ph name="LABEL" /> できます</translation>
 <translation id="2553108862507765288">文法上の誤り</translation>
 <translation id="2556326187583116255">現在の読み上げを停止するには 2 本の指でタップします</translation>
 <translation id="2573256689920773241">基本操作</translation>
@@ -1114,6 +1115,7 @@
 <translation id="8693391540059827073">お気に入りの季節</translation>
 <translation id="8696284982970258155">ハニーデュー</translation>
 <translation id="8697111817566059991">{COUNT,plural, =1{パイプ}other{# 個のパイプ}}</translation>
+<translation id="8733397807344284494">検索+Space キーを押すと、<ph name="LABEL" /> できます</translation>
 <translation id="8741370088760768424">ヒント: 検索+Space キーを押すと現在の項目を有効にできます。</translation>
 <translation id="8743786158317878347">表などの構造化コンテンツに入ります</translation>
 <translation id="8746846427395705317">前の単語に移動</translation>

@@ -1109,6 +1109,7 @@
 <translation id="3906954721959377182">ট্যাবলেট</translation>
 <translation id="3909477809443608991"><ph name="URL" /> সুরক্ষিত কন্টেন্ট চালাতে চায়। আপনার ডিভাইসের পরিচয় Google যাচাই করে দেখবে এবং এই সাইট সম্ভবত সেটি অ্যাক্সেস করবে।</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
+<translation id="3923112503730743940">Oufuku Hagaki (পোস্টকার্ড)</translation>
 <translation id="3927932062596804919">অস্বীকার</translation>
 <translation id="393316646445601645">ইন্টারনেট ও টেলিকম</translation>
 <translation id="3939773374150895049">সিভিসি কোডের পরিবর্তে WebAuthn ব্যবহার করবেন?</translation>
@@ -1137,6 +1138,7 @@
 <translation id="4009243425692662128">আপনার প্রিন্ট করা পৃষ্ঠার কন্টেন্ট বিশ্লেষণের জন্য Google Cloud বা থার্ড-পার্টিকে পাঠানো হয়েছে। যেমন, কোনও সংবেদনশীল ডেটা আছে কিনা জানার জন্য এটি হয়ত স্ক্যান করা হতে পারে।</translation>
 <translation id="4010758435855888356">স্টোরেজ অ্যাক্সেসের অনুমতি দেবেন?</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{পিডিএফ ডকুমেন্টে {COUNT}টি পৃষ্ঠা আছে}one{পিডিএফ ডকুমেন্টে {COUNT}টি পৃষ্ঠা আছে}other{পিডিএফ ডকুমেন্টে {COUNT}টি পৃষ্ঠা আছে}}</translation>
+<translation id="4022639246993848966">৩.৫x৫</translation>
 <translation id="4023431997072828269">এই ফর্মটি এমন কানেকশন ব্যবহার করে জমা দেওয়া হয়েছে যা নিরাপদ নয়, তাই আপনার তথ্য অন্যান্য ব্যবহারকারীরা দেখতে পাবেন।</translation>
 <translation id="4025913568718019429">'Google-এর গোপনীয়তা সেটিংস ম্যানেজ করুন' বোতাম , আপনার Google অ্যাকাউন্টের গোপনীয়তা সেটিংসে যেতে Enter প্রেস করুন</translation>
 <translation id="4030383055268325496">&amp;যোগ করাকে পূর্বাবস্থায় ফেরান</translation>

@@ -30,6 +30,7 @@
 <translation id="1717218214683051432">เซ็นเซอร์ตรวจจับความเคลื่อนไหว</translation>
 <translation id="1743802530341753419">ถามก่อนอนุญาตให้เว็บไซต์เชื่อมต่อกับอุปกรณ์ (แนะนำ)</translation>
 <translation id="1779089405699405702">ตัวถอดรหัสรูปภาพ</translation>
+<translation id="1785415724048343560">แนะนำเพื่อประสบการณ์การใช้งานที่ดีที่สุด</translation>
 <translation id="1818308510395330587">หากต้องการอนุญาตให้ <ph name="APP_NAME" /> ใช้ AR ให้เปิดใช้กล้องใน<ph name="BEGIN_LINK" />การตั้งค่า Android<ph name="END_LINK" /> ด้วย</translation>
 <translation id="1864927262126810325">จาก <ph name="SOURCE_NAME" /></translation>
 <translation id="1887786770086287077">ตอนนี้ตำแหน่งสำหรับอุปกรณ์เครื่องนี้ปิดอยู่ เปิดตำแหน่งได้ใน<ph name="BEGIN_LINK" />การตั้งค่า Android<ph name="END_LINK" /></translation>
@@ -169,6 +170,7 @@
 <translation id="4751476147751820511">เซ็นเซอร์จับความเคลื่อนไหวหรือเซ็นเซอร์แสง</translation>
 <translation id="4811450222531576619">ดูข้อมูลเกี่ยวกับแหล่งที่มาและหัวข้อ</translation>
 <translation id="4836046166855586901">ถามเมื่อเว็บไซต์ต้องการทราบเวลาที่คุณใช้งานอุปกรณ์นี้อยู่</translation>
+<translation id="483914009762354899">รวมเว็บไซต์ทั้งหมดไว้ภายใต้โดเมนนี้</translation>
 <translation id="4883854917563148705">รีเซ็ตการตั้งค่าที่มีการจัดการไม่ได้</translation>
 <translation id="4887024562049524730">ถามก่อนที่จะอนุญาตให้เว็บไซต์ใช้อุปกรณ์และข้อมูล Virtual Reality ของคุณ (แนะนำ)</translation>
 <translation id="4962975101802056554">เพิกถอนสิทธิ์ทั้งหมดสำหรับอุปกรณ์</translation>

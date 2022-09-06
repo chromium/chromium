@@ -1108,6 +1108,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="3906954721959377182">Tablet</translation>
 <translation id="3909477809443608991"><ph name="URL" /> solicita reproducir contenido protegido. Google verificará la identidad de tu dispositivo y el sitio web podrá consultarla.</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
+<translation id="3923112503730743940">Oufuku Hagaki (Postcard)</translation>
 <translation id="3927932062596804919">Denegar</translation>
 <translation id="393316646445601645">Internet y telecomunicaciones</translation>
 <translation id="3939773374150895049">¿Usar WebAuthn en lugar de CVC?</translation>
@@ -1136,6 +1137,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="4009243425692662128">El contenido de las páginas que imprimes se envía a Google Cloud o a terceros para analizarlo. Por ejemplo, puede que se analice para buscar datos sensibles.</translation>
 <translation id="4010758435855888356">¿Permitir espacio de almacenamiento?</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{Documento PDF que contiene {COUNT} página}other{Documento PDF que contiene {COUNT} páginas}}</translation>
+<translation id="4022639246993848966">3,5 x 5</translation>
 <translation id="4023431997072828269">Se está usando una conexión no segura para enviar este formulario, por lo que otros usuarios podrán ver tu información.</translation>
 <translation id="4025913568718019429">Botón Gestionar configuración de privacidad de cuenta de Google: pulsa Intro para ir a la configuración de privacidad de tu cuenta de Google</translation>
 <translation id="4030383055268325496">&amp;Deshacer acción de añadir</translation>
@@ -2203,6 +2205,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="6916954549222464607">Planificación y gestión financiera</translation>
 <translation id="6917795328362592458">La contraseña que acabas de usar se ha encontrado en una quiebra de seguridad de datos. Para proteger tus cuentas, el gestor de contraseñas te recomienda que compruebes las contraseñas que tengas guardadas.</translation>
 <translation id="6934672428414710184">Este nombre proviene de tu cuenta de Google</translation>
+<translation id="6936976777388162184">Este dispositivo forma parte de un paquete y no se puede registrar con la Licencia de Kiosk y Signage</translation>
 <translation id="6939469646605424232">Series dramáticas</translation>
 <translation id="6944692733090228304"><ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> no gestiona el sitio web en el que has introducido tu contraseña. Para proteger tu cuenta, no utilices la misma contraseña en otras aplicaciones o sitios.</translation>
 <translation id="6945221475159498467">Seleccionar</translation>

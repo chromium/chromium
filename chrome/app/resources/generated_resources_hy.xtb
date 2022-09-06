@@ -716,6 +716,7 @@
 <translation id="16620462294541761">Ձեր գաղտնաբառը չհաստատվեց: Կրկին փորձեք:</translation>
 <translation id="166278006618318542">Առարկայի հանրային բանալու ալգորիթմ</translation>
 <translation id="1662801900924515589"><ph name="APP" /> հավելվածը տեղադրվեց</translation>
+<translation id="1665328953287874063">Օգտագործեք գաղտնաբառ կամ PIN կոդ՝ ձեր սարքը (<ph name="DEVICE_TYPE" />) ապակողպելու համար</translation>
 <translation id="1666232093776384142">Անջատել տվյալների հասանելիության պաշտպանությունը արտաքին սարքերի համար</translation>
 <translation id="1667842670298352129">Հնչեցրեք ընդգծված տեքստը։ Նախ էկրանի ներքևում սեղմեք «Ընտրեք և լսեք» պատկերակը, ապա ընդգծեք տեքստը։ Նաև կարող եք օգտագործել ստեղնային դյուրանցում. ընդգծեք տեքստը, ապա սեղմեք Որոնում + S։</translation>
 <translation id="1668435968811469751">Գրանցել ձեռքով</translation>
@@ -1017,6 +1018,7 @@
 <translation id="1931152874660185993">Բաղադրիչներ տեղադրված չեն:</translation>
 <translation id="1931410639376954712"><ph name="DEVICE_OS" />-ը տեղադրվում է</translation>
 <translation id="1932098463447129402">Ոչ շուտ</translation>
+<translation id="1933489278505808700">Թույլատրված է դիտել և փոխել</translation>
 <translation id="1935303383381416800">Թույլատրվում է տեսնել ձեր տեղադրությունը</translation>
 <translation id="1936157145127842922">Ցուցադրել պանակում</translation>
 <translation id="1936931585862840749">Թվերով նշեք՝ քանի օրինակ է անհրաժեշտ տպել (1-ից <ph name="MAX_COPIES" />)։</translation>
@@ -1837,6 +1839,7 @@
 <translation id="2691385045260836588">Մոդել</translation>
 <translation id="2691440343905273290">Փոխել ներածման կարգավորումները</translation>
 <translation id="2693176596243495071">Անհայտ սխալ առաջացավ։ Փորձեք ավելի ուշ: Եթե սխալը կրկնվի, կապվեք ձեր ադմինիստրատորի հետ։</translation>
+<translation id="2698147581454716013">Այս սարքում ներկառուցված է լիցենզիայի փաթեթ, և սարքը հնարավոր չէ գրանցել կրպակի և ցուցանակի ռեժիմում։</translation>
 <translation id="2699911226086014512">Չհաջողվեց PIN կոդ սահմանել: Սխալի կոդը՝ <ph name="RETRIES" />:</translation>
 <translation id="2701330563083355633">Ուղարկվել է <ph name="DEVICE_NAME" />-ի միջոցով</translation>
 <translation id="2701737434167469065">Մուտք գործել, <ph name="EMAIL" /></translation>
@@ -1915,6 +1918,7 @@
 <translation id="2757338480560142065">Ստուգեք՝ արդյոք գաղտնաբառը, որը պահում եք, համընկնում է <ph name="WEBSITE" /> ծառայության ձեր գաղտնաբառի հետ։</translation>
 <translation id="2762441749940182211">Տեսախցիկի օգտագործումն արգելված է</translation>
 <translation id="2764786626780673772">Տեղեկություններ VPN-ի մասին</translation>
+<translation id="2764920001292228569">Մուտքագրեք պրոֆիլի անվանում</translation>
 <translation id="2765100602267695013">Դիմեք ձեր բջջային կապի օպերատորին</translation>
 <translation id="2765217105034171413">Փոքր</translation>
 <translation id="2766006623206032690">Տեղա&amp;դրել և անցնել</translation>
@@ -3283,6 +3287,7 @@
 <translation id="4065876735068446555">Ցանցը, որից օգտվում եք, <ph name="NETWORK_ID" /> կարող է պահանջել, որ դուք այցելեք նրա մուտքի էջը:</translation>
 <translation id="4066207411788646768">Միացեք համացանցին, որպեսզի կարողանաք տեսնել ձեր ցանցում հասանելի տպիչները</translation>
 <translation id="4066945815577305767">Սպասման ժամանակը սպառվել է</translation>
+<translation id="4067839975993712852">Նշել ընթացիկ ներդիրը որպես ընթերցված</translation>
 <translation id="4068776064906523561">Պահված մատնահետքեր</translation>
 <translation id="407173827865827707">Սեղմելուց հետո</translation>
 <translation id="4072701974556190758">Գաղտնաբառը կպահվի ձեր Google հաշվում (<ph name="ACCOUNT" />)։ Այն հիշելու անհրաժեշտություն չի լինի։</translation>
@@ -3525,6 +3530,7 @@
 <translation id="4310132194679586591">Ընտրեք հավելված ձեր սարքում՝ այս հղումը բացելու համար</translation>
 <translation id="4310139701823742692">Ֆայլի ձևաչափը սխալ է: Ստուգեք PPD ֆայլը և նորից փորձեք:</translation>
 <translation id="431076611119798497">&amp;Մանրամասներ</translation>
+<translation id="4311284648179069796">Թույլատրված չէ դիտել և փոխել</translation>
 <translation id="4312701113286993760">{COUNT,plural, =1{1 Google հաշիվ}one{<ph name="EXTRA_ACCOUNTS" /> Google հաշիվ}other{<ph name="EXTRA_ACCOUNTS" /> Google հաշիվ}}</translation>
 <translation id="4312866146174492540">Արգելափակել (կանխադրված)</translation>
 <translation id="4314497418046265427">Աշխատեք ավելի արդյունավետ՝ միացնելով հեռախոսը <ph name="DEVICE_TYPE" /> սարքին</translation>
@@ -3715,6 +3721,7 @@
 <translation id="4504940961672722399">Օգտագործեք այս ընդլայնումը` սեղմելով այս պատկերակը կամ <ph name="EXTENSION_SHORTCUT" />:</translation>
 <translation id="450552327874992444">Բառն արդեն ավելացվել է</translation>
 <translation id="4507128560633489176">Տվյալները ջնջվեցին։</translation>
+<translation id="4507373251891673233">Դուք արգելափակել եք <ph name="HOST" /> կայքի բոլոր ընդլայնումները</translation>
 <translation id="450867954911715010">Հատուկ գործառույթների կարգավորումներ</translation>
 <translation id="4508765956121923607">Դիտել աղ&amp;բյուրը</translation>
 <translation id="4509421746503122514">Թարմացնելու համար վերագործարկեք</translation>
@@ -3987,6 +3994,7 @@
 <translation id="4763408175235639573">Այս էջը դիտելիս տեղակայվել են հետևյալ քուքիները</translation>
 <translation id="4765524037138975789">{MONTHS,plural, =1{Այս սարքը կպահվի 1 ամսով։ Հաջորդ անգամ դուք կարող եք միանալ առանց կոդի։ Այս պարամետրը կարգավորվում է ադմինիստրատորի կողմից։}one{Այս սարքը կպահվի {MONTHS} ամսով։ Հաջորդ անգամ դուք կարող եք միանալ առանց կոդի։ Այս պարամետրը կարգավորվում է ադմինիստրատորի կողմից։}other{Այս սարքը կպահվի {MONTHS} ամսով։ Հաջորդ անգամ դուք կարող եք միանալ առանց կոդի։ Այս պարամետրը կարգավորվում է ադմինիստրատորի կողմից։}}</translation>
 <translation id="4765582662863429759">Թույլ է տալիս Android Messages հավելվածին հեռարձակել ձեր հեռախոսի հաղորդագրությունները Chromebook-ին</translation>
+<translation id="4766598565665644999">Բոլոր ընդլայնումները կարող են դիտել և փոխել <ph name="HOST" /> կայքը</translation>
 <translation id="4768332406694066911">Դուք այս կազմակերպություններից այնպիսի հավաստագրեր ունեք, որոնք ձեզ կարող են նույնականացնել</translation>
 <translation id="4770119228883592393">Պահանջվում է թույլտվություն։ Արձագանքելու համար սեղմեք ⌘ + Option + վար սլաք։</translation>
 <translation id="4773112038801431077">Լինուքսի նորացում</translation>
@@ -5160,6 +5168,7 @@
     <ph name="LINE_BREAK" />
     Այս նկարը կցուցադրվի Chromebook-ի մուտքի էկրանին և կողպէկրանին:</translation>
 <translation id="5925147183566400388">Հավաստագրման կենտրոնի կարգի նշորդ</translation>
+<translation id="5927232971138258197">Այս ընդլայնումը կարող է դիտել և փոխել <ph name="HOST" /> կայքը</translation>
 <translation id="592740088639760830">Դադարեցնել այս կոնտեյների աշխատանքը</translation>
 <translation id="592880897588170157">PDF ֆայլերը ներբեռնել՝ Chrome-ում ավտոմատ բացելու փոխարեն</translation>
 <translation id="592919310198008711">Երբ ես սեղմեմ ընդլայնման վրա</translation>
@@ -5763,6 +5772,7 @@
 <translation id="6508248480704296122">Կապված է <ph name="NAME_PH" />-ի հետ</translation>
 <translation id="6508261954199872201">Հավելված` <ph name="APP_NAME" /></translation>
 <translation id="6509207748479174212">Մեդիա արտոնագիր</translation>
+<translation id="6511827214781912955">Խորհուրդ ենք տալիս ջնջել <ph name="FILENAME" /> ֆայլը, որպեսզի այս սարքի մյուս օգտատերերը չկարողանան տեսնել ձեր գաղտնաբառերը</translation>
 <translation id="6513247462497316522">Եթե կապակցված չեք այլ ցանցի, Google Chrome-ը կօգտագործի տվյալների փոխանցման բջջային ցանցը:</translation>
 <translation id="6514010653036109809">Հասանելի սարք՝</translation>
 <translation id="6514565641373682518">Այս էջը կողպել է ձեր մկնիկի նշորդը:</translation>
@@ -6046,6 +6056,7 @@
 <translation id="6781978626986383437">Լինուքսի պահուստավորումը չեղարկվել է</translation>
 <translation id="6782067259631821405">Սխալ PIN</translation>
 <translation id="6784523122863989144">Պրոֆիլն աջակցվում է</translation>
+<translation id="6785739405821760313">Պահված աշխատասեղանների դիտում։ Անցնելու համար սեղմեք Tab։</translation>
 <translation id="6785872064505734160">Google Օգնականը Chrome-ում կարող է կայքերի հետ կապված գործողություններ կատարել</translation>
 <translation id="6786747875388722282">Ընդլայնումներ</translation>
 <translation id="6787097042755590313">Այլ ներդիր</translation>
@@ -6264,6 +6275,7 @@
 <translation id="6973611239564315524">Հասանելի է Debian 10-ի (Buster) նորացում</translation>
 <translation id="69739764870135975">Եթե Google-ը նաև ձեր կանխադրված որոնողական համակարգն է, դուք կտեսնեք ավելի լավ և համապատասխան առաջարկներ։</translation>
 <translation id="697508444536771064">Անջատել Լինուքսը</translation>
+<translation id="6975361011348772931">Դիտելու և փոխելու թույլտվության հայտն ուղարկված է</translation>
 <translation id="6978121630131642226">Որոնման համակարգեր</translation>
 <translation id="6979044105893951891">Հյուրի կառավարվող աշխատաշրջանների գործարկում և դադարեցում</translation>
 <translation id="6979158407327259162">Google Drive</translation>
@@ -6632,6 +6644,7 @@
 <translation id="7358338787722390626">Փակել որոնումը կողային վահանակում</translation>
 <translation id="735994578317267253">Ստացեք ձեր հավելվածները, կարգավորումներն ու ավելին ցանկացած ChromeOS սարքում</translation>
 <translation id="7360233684753165754"><ph name="PAGE_NUMBER" /> էջ <ph name="PRINTER_NAME" /> տպիչով</translation>
+<translation id="7360257054721917104">Պահված աշխատասեղանների կամ ձևանմուշների դիտում։ Անցնելու համար սեղմեք Tab։</translation>
 <translation id="7361297102842600584">Սեղմեք մկնիկի աջ կոճակը՝ <ph name="PLUGIN_NAME" /> փլագինն աշխատեցնելու համար</translation>
 <translation id="7362387053578559123">Կայքերը կարող են Bluetooth սարքերին միանալու թույլտվություն հայցել</translation>
 <translation id="7363349185727752629">Գաղտնիության կարգավորումների ուղեցույց</translation>
@@ -7260,6 +7273,7 @@
 <translation id="793531125873261495">Չհաջողվեց ներբեռնել վիրտուալ մեքենան: Նորից փորձեք:</translation>
 <translation id="7935451262452051102">Կատարված է <ph name="PERCENT" />%</translation>
 <translation id="7939062555109487992">Ընդլայնված ընտրանքներ</translation>
+<translation id="7939073735115504773">Սեղմեք այս ընդլայնման պատկերակի վրա՝ <ph name="HOST" /> կայքը դիտելու և փոխելու համար</translation>
 <translation id="7939328347457537652">Կառավարել սարքի հավաստագրերը</translation>
 <translation id="7939412583708276221">Տեղադրել</translation>
 <translation id="7941179291434537290">Մոդեմի ռեժիմի պատրաստ լինելը՝</translation>
@@ -7283,6 +7297,7 @@
 <translation id="7953669802889559161">Ներածման մեթոդներ</translation>
 <translation id="7953955868932471628">Կառավարել դյուրանցումները</translation>
 <translation id="7955105108888461311">Հարցնել անձամբ</translation>
+<translation id="7955177647836564772">Եթե Smart Lock-ը միացված է, և հեռախոսն ապակողպված է, PIN կոդ կամ գաղտնաբառ մուտքագրելու կարիք չկա</translation>
 <translation id="7956373551960864128">Ձեր պահված տպիչները</translation>
 <translation id="7957074856830851026">Տեսնել սարքի մասին տեղեկություններ, օրինակ՝ սերիական համարը և օբյեկտի ID-ն</translation>
 <translation id="7959074893852789871">Ֆայլը մի քանի վկայագիր ունի, որոնցից մի քանիսը չեն ներմուծվել՝</translation>
@@ -7540,6 +7555,7 @@
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Ձեր սարքերը<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195027750202970175">Սկավառակի տարածքը</translation>
 <translation id="8195191503358432289">Գաղտնաբառի ավելացում</translation>
+<translation id="8197673340773315084">Ավելացրեք անվանում կամ պիտակ, օրինակ՝ «Աշխատանքային» կամ «Անձնական»</translation>
 <translation id="8198456017687137612">Ներդիրի հեռարձակում</translation>
 <translation id="8199300056570174101">Ցանցի (ծառայության) և սարքի կարգավորումներ</translation>
 <translation id="8200772114523450471">Շարունակել</translation>
@@ -7637,6 +7653,7 @@
 <translation id="8284279544186306258">բոլոր <ph name="WEBSITE_1" /> կայքերը</translation>
 <translation id="8284326494547611709">Ենթագրեր</translation>
 <translation id="8286036467436129157">Մուտք գործել</translation>
+<translation id="828642162569365647">Այս գաղտնաբառը կամ PIN կոդը կպաշտպանի ձեր տվյալները <ph name="DEVICE_TYPE" /> սարքում, այդ թվում՝ տեղեկությունները, որոնք դուք բացում եք ձեր հեռախոսից։ Քնի ռեժիմից դուրս գալու համար ձեզ անհրաժեշտ կլինի ամեն անգամ ապակողպել <ph name="DEVICE_TYPE" /> սարքը։</translation>
 <translation id="8287902281644548111">Որոնեք ըստ URL-ի կամ API-ի հարցման</translation>
 <translation id="8288032458496410887">Ապատեղադրել <ph name="APP" /> հավելվածը…</translation>
 <translation id="8289128870594824098">Սկավառակի չափը</translation>

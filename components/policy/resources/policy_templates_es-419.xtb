@@ -357,6 +357,10 @@
 <translation id="1372618949173323717">Inhabilitar JavaScript</translation>
 <translation id="1376119291123231789">Habilitar el modo avanzado de carga de la batería</translation>
 <translation id="1384459581748403878">Referencia: <ph name="REFERENCE_URL" /></translation>
+<translation id="1384594066274112751">Esta política hace que el navegador no descarte nunca las URLs que coincidan con uno o más de los patrones que especifican (con el formato de filtro <ph name="URL_BLOCKLIST_POLICY_NAME" />).
+      Esto se aplica al descarte de la presión de memoria y del modo de alta eficiencia.
+      Si se descarta una página, se descargará y se recuperarán todos sus recursos. La pestaña a la que está asociada permanece en la barra de pestañas, pero se activa una recarga completa si la haces visible.
+      </translation>
 <translation id="138847842893090358">Informa el estado de la actualización del SO</translation>
 <translation id="1390529781843037070">Si habilitas la política o no la estableces, los usuarios podrán realizar impresiones en <ph name="CLOUD_PRINT_NAME" /> desde el diálogo de impresión de <ph name="PRODUCT_NAME" />. <ph name="PRODUCT_NAME" /> puede enviar documentos a <ph name="CLOUD_PRINT_NAME" /> para imprimirlos. Esto no impide que los usuarios envíen trabajos de impresión en sitios web.
 
@@ -1773,6 +1777,54 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
 
       Si la estableces como falsa, el visor de PDF no podrá agregar anotaciones en archivos PDF.</translation>
 <translation id="2769952903507981510">Configura el nombre de dominio requerido para los hosts de acceso remoto.</translation>
+<translation id="2772650717382565415">Si estableces la política, se especificará una lista de apps web que se instalan de manera discreta, sin la interacción del usuario, y que este no podrá desinstalar ni desactivar.
+
+      Cada elemento de la lista de la política es un objeto con un miembro obligatorio:
+      <ph name="URL_LABEL" /> (la URL de la app web que se instalará)
+
+      y 6 miembros opcionales:
+      - <ph name="DEFAULT_LAUNCH_CONTAINER_LABEL" />
+      (establece la manera en la que se abrirá la app web; la opción predeterminada es una nueva pestaña)
+
+      - <ph name="CREATE_DESKTOP_SHORTCUT_LABEL" />
+      (verdadero, si se crean accesos directos de escritorio para <ph name="LINUX_OS_NAME" /> y
+      <ph name="MS_WIN_NAME" />).
+
+      - <ph name="FALLBACK_APP_NAME_LABEL" />
+      (A partir de la versión 90 de <ph name="PRODUCT_NAME" />,
+      te permite anular el nombre de la app si no es una
+      App web progresiva [AWP], o el nombre de la app instalada
+      temporalmente si es una AWP, pero se requiere autenticación para que la
+      instalación pueda completarse. Si se proporcionan
+      <ph name="CUSTOM_NAME_LABEL" /> y
+      <ph name="FALLBACK_APP_NAME_LABEL" />,
+      se ignorará este último).
+
+      - <ph name="OVERRIDE_APP_NAME_LABEL" />
+      (A partir de la versión 99 de <ph name="PRODUCT_NAME" />,
+      te permite anular de forma permanente el nombre de la app para todas las apps
+      web y AWPs. Actualmente, solo se admite en
+      <ph name="PRODUCT_OS_NAME" />).
+
+      - <ph name="CUSTOM_ICON_LABEL" />
+      (A partir de la versión 99 de <ph name="PRODUCT_NAME" />,
+      te permite anular el ícono de las apps instaladas. Los
+      íconos deben tener forma cuadrada, un tamaño máximo de 1 MB y uno de los siguientes
+      formatos: jpeg, png, gif, webp o ico. El valor de hash del archivo del ícono
+      debe ser SHA256. Actualmente, solo se admite en
+      <ph name="PRODUCT_OS_NAME" />).
+
+      - <ph name="INSTALL_AS_SHORTCUT_LABEL" />
+      (A partir de la versión 107
+      de <ph name="PRODUCT_NAME" />). Si se habilita, la <ph name="URL_LABEL" />
+      se instalará como acceso directo, como si se hiciera mediante la opción "Crear acceso directo…"
+      en la GUI del navegador para computadoras.
+      Ten en cuenta que, en caso de que se instale como acceso directo, no se actualizará si
+      cambia el manifiesto de <ph name="URL_LABEL" />.
+      Si se inhabilita o no se establece, la app web en la
+      <ph name="URL_LABEL" /> determinada se instalará normalmente.
+
+      Para fijar apps a la barra de <ph name="PRODUCT_OS_NAME" />, consulta <ph name="PINNED_LAUNCHER_APPS_POLICY_NAME" />.</translation>
 <translation id="2772955711376920612">Si habilitas la política y estableces <ph name="DEVICE_POWER_PEAK_SHIFT_BATTERY_THRESHOLD_POLICY_NAME" /> y <ph name="DEVICE_POWER_PEAK_SHIFT_DAY_CONFIG_POLICY_NAME" />, se mantendrá activada la carga fuera del horario de mayor consumo (cuando lo admita el dispositivo). La política para la administración de carga fuera del horario de mayor consumo es una política destinada a ahorrar energía que minimiza el uso de corriente alterna en horas de mayor consumo. Puedes establecer una hora de inicio y finalización para ejecutar el modo de carga fuera del horario de mayor consumo en cada día de la semana. Mientras la batería esté por encima del umbral especificado, el dispositivo funcionará con la batería en los horarios establecidos (incluso si está conectado a la corriente alterna). Después de la hora de finalización especificada, el dispositivo funcionará con corriente alterna (en caso de estar conectado), pero no cargará la batería. El dispositivo volverá a funcionar con normalidad usando corriente alterna y cargará la batería después de la hora de inicio de carga especificada.
 
       Si inhabilitas la política, la carga fuera del horario de mayor consumo se mantendrá desactivada.
@@ -3704,12 +3756,6 @@ Si estableces esta política, <ph name="PRODUCT_OS_NAME" /> solo permitirá que 
 
       Si no estableces esta política, se podrá utilizar el valor predeterminado tanto para usuarios administrados por una empresa como para aquellos no administrados.</translation>
 <translation id="487460824085252184">Migra automáticamente y no solicita el consentimiento del usuario.</translation>
-<translation id="48749493657448872">Si habilitas esta configuración, <ph name="PRODUCT_NAME" /> verificará los certificados de servidores mediante el verificador de certificados integrado.
-      Si la inhabilitas, <ph name="PRODUCT_NAME" /> verificará los certificados de servidores mediante el verificador de certificados heredado que incluye la plataforma, a menos que se habilite <ph name="CHROME_ROOT_STORE_ENABLED_POLICY_NAME" />.
-      Si no la estableces, podrá utilizarse el verificador de certificados integrado o el heredado.
-
-      Se planea quitar esta política en la versión 107 de <ph name="PRODUCT_NAME" /> para <ph name="MAC_OS_NAME" /> cuando se quite la compatibilidad con el verificador de certificados heredado de <ph name="MAC_OS_NAME" />.
-      </translation>
 <translation id="4874982543810021567">Bloquea WebUSB en estos sitios</translation>
 <translation id="4876805738539874299">Versión de SSL máxima habilitada</translation>
 <translation id="4877402532842958110">Esta política dejó de estar disponible. Usa la política "<ph name="URL_ALLOWLIST_POLICY_NAME" />" en su lugar.
@@ -6481,6 +6527,7 @@ Si se selecciona "U2F_EXTENDED", el segundo factor integrado proporcionará func
       La política no tiene efecto si se configura la política <ph name="DOWNLOAD_DIRECTORY_POLICY_NAME" />.
 
       Nota: Consulta la lista de las variables que puedes utilizar (https://www.chromium.org/administrators/policy-list-3/user-data-directory-variables).</translation>
+<translation id="7719808201797990069">Excepciones de patrones de URL para descartar pestañas</translation>
 <translation id="7721944091689270995">ID de usuario de <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="7724161903134898864">Si estableces la política en 1, los sitios web podrán mostrar ventanas emergentes. Si la estableces en 2, se rechazarán las ventanas emergentes.
 
