@@ -99,14 +99,21 @@ const char kIcuDataFileName[] = "icudtl.dat";
 // See for details: http://userguide.icu-project.org/datetime/timezone
 const char kIcuTimeZoneEnvVariable[] = "ICU_TIMEZONE_FILES_DIR";
 
-// We assume that Fuchsia will provide time zone data at this path for Chromium
-// to load, and that the path will be timely updated when Fuchsia needs to
-// uprev the ICU version it is using. There are unit tests that will fail at
-// Fuchsia roll time in case either Chromium or Fuchsia get upgraded to
-// mutually incompatible ICU versions. That should be enough to alert the
-// developers of the need to keep ICU library versions in ICU and Fuchsia in
-// reasonable sync.
-const char kIcuTimeZoneDataDir[] = "/config/data/tzdata/icu/44/le";
+// Up-to-date time zone data is expected to be provided by the system as a
+// directory offered to Chromium components at /config/tzdata.  Chromium
+// components should "use" the `tzdata` directory capability, specifying the
+// "/config/tzdata" path.  The capability's "availability" should be set to
+// "required" or "optional" as appropriate - if no data is provided then ICU
+// initialization will (in future silently) fall-back to the (potentially stale)
+// timezone data included in the package.
+//
+// TimeZoneDataTest.* tests verify that external timezone data is correctly
+// loaded from the system, to alert developers if the platform and Chromium
+// versions are no longer compatible versions.
+const char kIcuTimeZoneDataDir[] = "/config/tzdata/icu/44/le";
+
+// Path used to receive tzdata via the legacy config-data mechanism.
+const char kLegacyIcuTimeZoneDataDir[] = "/config/data/tzdata/icu/44/le";
 #endif  // BUILDFLAG(IS_FUCHSIA)
 
 #if BUILDFLAG(IS_ANDROID)
@@ -201,17 +208,29 @@ void LazyInitIcuDataFile() {
 // Configures ICU to load external time zone data, if appropriate.
 void InitializeExternalTimeZoneData() {
 #if BUILDFLAG(IS_FUCHSIA)
-  if (!base::DirectoryExists(base::FilePath(g_icu_time_zone_data_dir))) {
-    // TODO(https://crbug.com/1061262): Make this FATAL unless expected.
-    PLOG(WARNING) << "Could not open: '" << g_icu_time_zone_data_dir
-                  << "'. Using built-in timezone database";
-    return;
-  }
-
   // Set the environment variable to override the location used by ICU.
   // Loading can still fail if the directory is empty or its data is invalid.
   std::unique_ptr<base::Environment> env = base::Environment::Create();
-  env->SetVar(kIcuTimeZoneEnvVariable, g_icu_time_zone_data_dir);
+
+  // If the ICU tzdata path exists then do not fall-back to config-data.
+  // TODO(crbug.com/1360077): Remove fall-back once all components are migrated.
+  if (base::PathExists(base::FilePath(g_icu_time_zone_data_dir))) {
+    // If the tzdata directory does not exist then silently fallback to
+    // using the inbuilt (possibly stale) timezone data.
+    if (base::DirectoryExists(base::FilePath(g_icu_time_zone_data_dir))) {
+      env->SetVar(kIcuTimeZoneEnvVariable, g_icu_time_zone_data_dir);
+    }
+
+  } else if (g_icu_time_zone_data_dir == kIcuTimeZoneDataDir &&
+             base::DirectoryExists(
+                 base::FilePath((kLegacyIcuTimeZoneDataDir)))) {
+    // Only fall-back to attempting to load from the legacy config-data path
+    // if `g_icu_time_zone_data_dir` has not been changed by a test.
+    env->SetVar(kIcuTimeZoneEnvVariable, kLegacyIcuTimeZoneDataDir);
+  } else {
+    PLOG(WARNING) << "Could not locate tzdata in config-data. "
+                  << "Using built-in timezone database";
+  }
 #endif  // BUILDFLAG(IS_FUCHSIA)
 }
 
