@@ -6,6 +6,7 @@
 
 #include "third_party/blink/renderer/core/layout/ng/ng_block_node.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_constraint_space.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_constraint_space_builder.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_layout_result.h"
 
 namespace blink {
@@ -35,6 +36,21 @@ void LayoutNGView::UpdateBlockLayout(bool relayout_children) {
       NGConstraintSpace::CreateFromLayoutObject(*this);
 
   NGBlockNode(this).Layout(constraint_space);
+}
+
+MinMaxSizes LayoutNGView::ComputeIntrinsicLogicalWidths() const {
+  NOT_DESTROYED();
+  WritingMode writing_mode = StyleRef().GetWritingMode();
+
+  NGConstraintSpace space =
+      NGConstraintSpaceBuilder(writing_mode, StyleRef().GetWritingDirection(),
+                               /* is_new_fc */ true)
+          .ToConstraintSpace();
+
+  NGBlockNode node(const_cast<LayoutNGView*>(this));
+  DCHECK(node.CanUseNewLayout());
+  return node.ComputeMinMaxSizes(writing_mode, MinMaxSizesType::kContent, space)
+      .sizes;
 }
 
 }  // namespace blink

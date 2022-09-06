@@ -31,6 +31,9 @@ class CORE_EXPORT LayoutNGView : public LayoutNGBlockFlowMixin<LayoutView> {
 
  protected:
   bool IsOfType(LayoutObjectType) const override;
+
+ private:
+  MinMaxSizes ComputeIntrinsicLogicalWidths() const override;
 };
 
 template <>
