@@ -218,6 +218,10 @@ void PrefetchService::PrefetchUrl(
                 ->GetLastCommittedURL())) {
       return;
     }
+
+    delegate_->OnPrefetchLikely(WebContents::FromRenderFrameHost(
+        &prefetch_container->GetPrefetchDocumentManager()
+             ->render_frame_host()));
   }
 
   RecordExistingPrefetchWithMatchingURL(prefetch_container);
@@ -407,6 +411,10 @@ void PrefetchService::OnGotEligibilityResult(
     base::WeakPtr<PrefetchContainer> prefetch_container,
     bool eligible,
     absl::optional<PrefetchStatus> status) {
+  if (prefetch_container)
+    prefetch_container->GetPrefetchDocumentManager()
+        ->OnEligibilityCheckComplete(eligible);
+
   if (!eligible || !prefetch_container) {
     if (status && prefetch_container) {
       prefetch_container->SetPrefetchStatus(status.value());
@@ -727,8 +735,7 @@ void PrefetchService::OnPrefetchComplete(
   if (!prefetch_container)
     return;
 
-  // TODO(https://crbug.com/1299059): Store relevant metrics based on the status
-  // of the completed prefetch.
+  prefetch_container->OnPrefetchComplete();
 
   if (prefetch_container->IsDecoy()) {
     // Since this prefetch was a decoy, we don't cache the response.
@@ -938,6 +945,9 @@ base::WeakPtr<PrefetchContainer> PrefetchService::GetPrefetchToServe(
 
   if (prefetch_iter == prefetches_ready_to_serve_.end())
     return nullptr;
+
+  if (prefetch_iter->second)
+    prefetch_iter->second->OnNavigationToPrefetch();
 
   return prefetch_iter->second;
 }

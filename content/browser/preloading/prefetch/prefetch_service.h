@@ -82,15 +82,6 @@ class CONTENT_EXPORT PrefetchService {
   // called with the prefetch.
   base::WeakPtr<PrefetchContainer> GetPrefetchToServe(const GURL& url) const;
 
-  // Returns the current prefetches associated with |this|. Used to check the
-  // state of the prefetches.
-  // TODO(https://crbug.com/1299059): Remove this once we can get metrics
-  // instead.
-  const std::map<PrefetchContainer::Key, base::WeakPtr<PrefetchContainer>>&
-  GetAllPrefetchesForTesting() {
-    return all_prefetches_;
-  }
-
   // Helper functions to control the behavior of the eligibility check when
   // testing.
   static void SetServiceWorkerContextForTesting(ServiceWorkerContext* context);

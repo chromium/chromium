@@ -10,11 +10,13 @@
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "content/browser/preloading/prefetch/prefetch_probe_result.h"
 #include "content/browser/preloading/prefetch/prefetch_status.h"
 #include "content/browser/preloading/prefetch/prefetch_type.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/speculation_host_delegate.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
@@ -75,6 +77,9 @@ class CONTENT_EXPORT PrefetchContainer {
   bool HasPrefetchStatus() const { return prefetch_status_.has_value(); }
   PrefetchStatus GetPrefetchStatus() const;
 
+  // Whether or not the prefetch was determined to be eligibile
+  void OnEligibilityCheckComplete(bool is_eligible);
+
   // Whether this prefetch is a decoy. Decoy prefetches will not store the
   // response, and not serve any prefetched resources.
   void SetIsDecoy(bool is_decoy) { is_decoy_ = is_decoy; }
@@ -111,6 +116,19 @@ class CONTENT_EXPORT PrefetchContainer {
   // The |PrefetchDocumentManager| that requested |this|.
   PrefetchDocumentManager* GetPrefetchDocumentManager() const;
 
+  // Called when a navigation is started that could pottentially use this
+  // prefetch.
+  void OnNavigationToPrefetch() { navigated_to_ = true; }
+
+  // Called with the result of the probe. If the probing feature is enabled,
+  // then a probe must complete successfully before the prefetch can be served.
+  void OnPrefetchProbeResult(PrefetchProbeResult probe_result);
+
+  // Called when |PrefetchService::OnPrefetchComplete| is called for the
+  // prefetch. This happens when |loader_| fully downloads the requested
+  // resource.
+  void OnPrefetchComplete();
+
   // Whether or not |this| has a prefetched response.
   bool HasValidPrefetchedResponse(base::TimeDelta cacheable_duration) const;
 
@@ -123,6 +141,13 @@ class CONTENT_EXPORT PrefetchContainer {
   // the caller.
   std::unique_ptr<PrefetchedMainframeResponseContainer>
   ReleasePrefetchedResponse();
+
+  // Returns the time between the prefetch request was sent and the time the
+  // response headers were received. Not set if the prefetch request hasn't been
+  // sent or the response headers haven't arrived.
+  absl::optional<base::TimeDelta> GetPrefetchHeaderLatency() const {
+    return header_latency_;
+  }
 
   // Returns request id to be used by DevTools
   const std::string& RequestId() const { return request_id_; }
@@ -139,6 +164,15 @@ class CONTENT_EXPORT PrefetchContainer {
       const {
     return devtools_observer_;
   }
+
+ protected:
+  friend class PrefetchContainerTest;
+
+  // Updates metrics based on the result of the prefetch request.
+  void UpdatePrefetchRequestMetrics(
+      const absl::optional<network::URLLoaderCompletionStatus>&
+          completion_status,
+      const network::mojom::URLResponseHead* head);
 
  private:
   // The ID of the render frame host that triggered the prefetch.
@@ -182,6 +216,23 @@ class CONTENT_EXPORT PrefetchContainer {
   // The time at which |prefetched_response_| was received. This is used to
   // determine whether or not |prefetched_response_| is stale.
   absl::optional<base::TimeTicks> prefetch_received_time_;
+
+  ukm::SourceId ukm_source_id_;
+
+  // The size of the prefetched response.
+  absl::optional<int> data_length_;
+
+  // The amount  of time it took for the prefetch to complete.
+  absl::optional<base::TimeDelta> fetch_duration_;
+
+  // The amount  of time it took for the headers to be received.
+  absl::optional<base::TimeDelta> header_latency_;
+
+  // Whether or not a navigation to this prefetch occurred.
+  bool navigated_to_ = false;
+
+  // The result of probe when checked on navigation.
+  absl::optional<PrefetchProbeResult> probe_result_;
 
   // The different possible states of the cookie copy process.
   enum class CookieCopyStatus {

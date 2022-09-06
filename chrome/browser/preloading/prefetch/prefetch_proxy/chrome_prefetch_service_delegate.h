@@ -13,7 +13,8 @@
 
 namespace content {
 class BrowserContext;
-}
+class WebContents;
+}  // namespace content
 
 class Profile;
 class PrefetchProxyOriginDecider;
@@ -43,6 +44,7 @@ class ChromePrefetchServiceDelegate : public content::PrefetchServiceDelegate {
   bool IsSomePreloadingEnabled() override;
   bool IsExtendedPreloadingEnabled() override;
   bool IsDomainInPrefetchAllowList(const GURL& referring_url) override;
+  void OnPrefetchLikely(content::WebContents* web_contents) override;
 
  private:
   // The profile that |this| is associated with.

@@ -17158,10 +17158,30 @@ be describing additional metrics about the same event.
       SRP link.
     </summary>
   </metric>
+  <metric name="PrefetchHeaderLatencyMs">
+    <summary>
+      Time between the prefetch request was sent and the time the response
+      headers were received. Unset if the headers have not been receved by the
+      time the user navigated to the current page.
+    </summary>
+  </metric>
+  <metric name="PrivatePrefetch">
+    <summary>
+      This is 1 if the prefetched resource was prefetched via the private
+      prefetch proxy. This is not logged otherwise.
+    </summary>
+  </metric>
   <metric name="ProbeLatencyMs">
     <summary>
       How long the network probe blocked commit in milliseconds. Recorded only
       when a probe was required.
+    </summary>
+  </metric>
+  <metric name="SameTabAsPrefetchingTab">
+    <summary>
+      This is 1 if the page load matching the prefetch was in the same
+      WebContents as the page that triggerd the prefetch. This is not logged
+      otherwise.
     </summary>
   </metric>
   <metric name="SRPClickPrefetchStatus" enum="PrefetchProxyPrefetchStatus">

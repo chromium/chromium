@@ -13,6 +13,7 @@
 #include "content/browser/preloading/prefetch/prefetch_type.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/document_user_data.h"
+#include "content/public/browser/prefetch_metrics.h"
 #include "content/public/browser/speculation_host_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "third_party/blink/public/mojom/speculation_rules/speculation_rules.mojom.h"
@@ -63,6 +64,19 @@ class CONTENT_EXPORT PrefetchDocumentManager
   bool HaveCanaryChecksStarted() const { return have_canary_checks_started_; }
   void OnCanaryChecksStarted() { have_canary_checks_started_ = true; }
 
+  // Returns metrics for prefetches requested by the associated page load.
+  PrefetchReferringPageMetrics& GetReferringPageMetrics() {
+    return referring_page_metrics_;
+  }
+
+  // Updates metrics when the eligibility check for a prefetch requested by this
+  // page load is completed.
+  void OnEligibilityCheckComplete(bool is_eligible);
+
+  // Updates metrics when the response for a prefetch requested by this page
+  // load is received.
+  void OnPrefetchSuccessful();
+
   static void SetPrefetchServiceForTesting(PrefetchService* prefetch_service);
 
  private:
@@ -84,6 +98,9 @@ class CONTENT_EXPORT PrefetchDocumentManager
 
   // Stores whether or not canary checks have been started for this page.
   bool have_canary_checks_started_{false};
+
+  // Metrics related to the prefetches requested by this page load.
+  PrefetchReferringPageMetrics referring_page_metrics_;
 
   base::WeakPtrFactory<PrefetchDocumentManager> weak_method_factory_{this};
 

@@ -5,6 +5,8 @@
 #include "content/browser/preloading/prefetch/prefetch_container.h"
 
 #include "base/test/metrics/histogram_tester.h"
+#include "components/ukm/test_ukm_recorder.h"
+#include "content/browser/preloading/prefetch/prefetch_probe_result.h"
 #include "content/browser/preloading/prefetch/prefetch_status.h"
 #include "content/browser/preloading/prefetch/prefetch_type.h"
 #include "content/browser/preloading/prefetch/prefetched_mainframe_response_container.h"
@@ -14,13 +16,14 @@
 #include "content/public/test/test_renderer_host.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/isolation_info.h"
+#include "services/metrics/public/cpp/metrics_utils.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace content {
-namespace {
 
 class PrefetchContainerTest : public RenderViewHostTestHarness {
  public:
@@ -73,6 +76,14 @@ class PrefetchContainerTest : public RenderViewHostTestHarness {
     base::RunLoop().RunUntilIdle();
 
     return result;
+  }
+
+  void UpdatePrefetchRequestMetrics(
+      PrefetchContainer* prefetch_container,
+      const absl::optional<network::URLLoaderCompletionStatus>&
+          completion_status,
+      const network::mojom::URLResponseHead* head) {
+    prefetch_container->UpdatePrefetchRequestMetrics(completion_status, head);
   }
 
  private:
@@ -209,5 +220,187 @@ TEST_F(PrefetchContainerTest, CookieCopy) {
       base::Milliseconds(30), 1);
 }
 
-}  // namespace
+TEST_F(PrefetchContainerTest, PrefetchProxyPrefetchedResourceUkm) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+
+  std::unique_ptr<PrefetchContainer> prefetch_container =
+      std::make_unique<PrefetchContainer>(
+          GlobalRenderFrameHostId(1234, 5678), GURL("https://test.com"),
+          PrefetchType(/*use_isolated_network_context=*/true,
+                       /*use_prefetch_proxy=*/true),
+          nullptr);
+
+  network::URLLoaderCompletionStatus completion_status;
+  completion_status.encoded_data_length = 100;
+  completion_status.completion_time =
+      base::TimeTicks() + base::Milliseconds(200);
+
+  network::mojom::URLResponseHeadPtr head =
+      network::mojom::URLResponseHead::New();
+  head->load_timing.request_start = base::TimeTicks();
+
+  UpdatePrefetchRequestMetrics(prefetch_container.get(), completion_status,
+                               head.get());
+
+  prefetch_container->TakePrefetchedResponse(
+      std::make_unique<PrefetchedMainframeResponseContainer>(
+          net::IsolationInfo(), std::move(head),
+          std::make_unique<std::string>("test body")));
+
+  // Simulates the URL of the prefetch being navigated to and the prefetch being
+  // considered for serving.
+  prefetch_container->OnNavigationToPrefetch();
+
+  // Simulate a successful DNS probe for this prefetch. Not this will also
+  // update the status of the prefetch to
+  // |PrefetchStatus::kPrefetchUsedProbeSuccess|.
+  prefetch_container->OnPrefetchProbeResult(
+      PrefetchProbeResult::kDNSProbeSuccess);
+
+  // Deleting the prefetch container will trigger the recording of the
+  // PrefetchProxy_PrefetchedResource UKM event.
+  prefetch_container.reset();
+
+  auto ukm_entries = ukm_recorder.GetEntries(
+      ukm::builders::PrefetchProxy_PrefetchedResource::kEntryName,
+      {
+          ukm::builders::PrefetchProxy_PrefetchedResource::kResourceTypeName,
+          ukm::builders::PrefetchProxy_PrefetchedResource::kStatusName,
+          ukm::builders::PrefetchProxy_PrefetchedResource::kLinkClickedName,
+          ukm::builders::PrefetchProxy_PrefetchedResource::kDataLengthName,
+          ukm::builders::PrefetchProxy_PrefetchedResource::kFetchDurationMSName,
+          ukm::builders::PrefetchProxy_PrefetchedResource::
+              kISPFilteringStatusName,
+          ukm::builders::PrefetchProxy_PrefetchedResource::
+              kNavigationStartToFetchStartMSName,
+          ukm::builders::PrefetchProxy_PrefetchedResource::kLinkPositionName,
+      });
+
+  ASSERT_EQ(ukm_entries.size(), 1U);
+  EXPECT_EQ(ukm_entries[0].source_id, ukm::kInvalidSourceId);
+
+  const auto& ukm_metrics = ukm_entries[0].metrics;
+
+  ASSERT_TRUE(
+      ukm_metrics.find(
+          ukm::builders::PrefetchProxy_PrefetchedResource::kResourceTypeName) !=
+      ukm_metrics.end());
+  EXPECT_EQ(
+      ukm_metrics.at(
+          ukm::builders::PrefetchProxy_PrefetchedResource::kResourceTypeName),
+      /*mainfrmae*/ 1);
+
+  ASSERT_TRUE(
+      ukm_metrics.find(
+          ukm::builders::PrefetchProxy_PrefetchedResource::kStatusName) !=
+      ukm_metrics.end());
+  EXPECT_EQ(ukm_metrics.at(
+                ukm::builders::PrefetchProxy_PrefetchedResource::kStatusName),
+            static_cast<int>(PrefetchStatus::kPrefetchUsedProbeSuccess));
+
+  ASSERT_TRUE(
+      ukm_metrics.find(
+          ukm::builders::PrefetchProxy_PrefetchedResource::kLinkClickedName) !=
+      ukm_metrics.end());
+  EXPECT_EQ(
+      ukm_metrics.at(
+          ukm::builders::PrefetchProxy_PrefetchedResource::kLinkClickedName),
+      1);
+
+  ASSERT_TRUE(
+      ukm_metrics.find(
+          ukm::builders::PrefetchProxy_PrefetchedResource::kDataLengthName) !=
+      ukm_metrics.end());
+  EXPECT_EQ(
+      ukm_metrics.at(
+          ukm::builders::PrefetchProxy_PrefetchedResource::kDataLengthName),
+      ukm::GetExponentialBucketMinForBytes(100));
+
+  ASSERT_TRUE(ukm_metrics.find(ukm::builders::PrefetchProxy_PrefetchedResource::
+                                   kFetchDurationMSName) != ukm_metrics.end());
+  EXPECT_EQ(ukm_metrics.at(ukm::builders::PrefetchProxy_PrefetchedResource::
+                               kFetchDurationMSName),
+            200);
+
+  ASSERT_TRUE(ukm_metrics.find(ukm::builders::PrefetchProxy_PrefetchedResource::
+                                   kISPFilteringStatusName) !=
+              ukm_metrics.end());
+  EXPECT_EQ(ukm_metrics.at(ukm::builders::PrefetchProxy_PrefetchedResource::
+                               kISPFilteringStatusName),
+            static_cast<int>(PrefetchProbeResult::kDNSProbeSuccess));
+
+  // These fields are not set and should not be in the UKM event.
+  EXPECT_TRUE(ukm_metrics.find(ukm::builders::PrefetchProxy_PrefetchedResource::
+                                   kNavigationStartToFetchStartMSName) ==
+              ukm_metrics.end());
+  EXPECT_TRUE(
+      ukm_metrics.find(
+          ukm::builders::PrefetchProxy_PrefetchedResource::kLinkPositionName) ==
+      ukm_metrics.end());
+}
+
+TEST_F(PrefetchContainerTest, PrefetchProxyPrefetchedResourceUkm_NothingSet) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+
+  std::unique_ptr<PrefetchContainer> prefetch_container =
+      std::make_unique<PrefetchContainer>(
+          GlobalRenderFrameHostId(1234, 5678), GURL("https://test.com"),
+          PrefetchType(/*use_isolated_network_context=*/true,
+                       /*use_prefetch_proxy=*/true),
+          nullptr);
+  prefetch_container.reset();
+
+  auto ukm_entries = ukm_recorder.GetEntries(
+      ukm::builders::PrefetchProxy_PrefetchedResource::kEntryName,
+      {
+          ukm::builders::PrefetchProxy_PrefetchedResource::kResourceTypeName,
+          ukm::builders::PrefetchProxy_PrefetchedResource::kStatusName,
+          ukm::builders::PrefetchProxy_PrefetchedResource::kLinkClickedName,
+          ukm::builders::PrefetchProxy_PrefetchedResource::kDataLengthName,
+          ukm::builders::PrefetchProxy_PrefetchedResource::kFetchDurationMSName,
+          ukm::builders::PrefetchProxy_PrefetchedResource::
+              kISPFilteringStatusName,
+      });
+
+  ASSERT_EQ(ukm_entries.size(), 1U);
+  EXPECT_EQ(ukm_entries[0].source_id, ukm::kInvalidSourceId);
+
+  const auto& ukm_metrics = ukm_entries[0].metrics;
+  ASSERT_TRUE(
+      ukm_metrics.find(
+          ukm::builders::PrefetchProxy_PrefetchedResource::kResourceTypeName) !=
+      ukm_metrics.end());
+  EXPECT_EQ(
+      ukm_metrics.at(
+          ukm::builders::PrefetchProxy_PrefetchedResource::kResourceTypeName),
+      /*mainfrmae*/ 1);
+
+  ASSERT_TRUE(
+      ukm_metrics.find(
+          ukm::builders::PrefetchProxy_PrefetchedResource::kStatusName) !=
+      ukm_metrics.end());
+  EXPECT_EQ(ukm_metrics.at(
+                ukm::builders::PrefetchProxy_PrefetchedResource::kStatusName),
+            static_cast<int>(PrefetchStatus::kPrefetchNotStarted));
+
+  ASSERT_TRUE(
+      ukm_metrics.find(
+          ukm::builders::PrefetchProxy_PrefetchedResource::kLinkClickedName) !=
+      ukm_metrics.end());
+  EXPECT_EQ(
+      ukm_metrics.at(
+          ukm::builders::PrefetchProxy_PrefetchedResource::kLinkClickedName),
+      0);
+
+  EXPECT_TRUE(
+      ukm_metrics.find(
+          ukm::builders::PrefetchProxy_PrefetchedResource::kDataLengthName) ==
+      ukm_metrics.end());
+  EXPECT_TRUE(ukm_metrics.find(ukm::builders::PrefetchProxy_PrefetchedResource::
+                                   kFetchDurationMSName) == ukm_metrics.end());
+  EXPECT_TRUE(ukm_metrics.find(ukm::builders::PrefetchProxy_PrefetchedResource::
+                                   kISPFilteringStatusName) ==
+              ukm_metrics.end());
+}
+
 }  // namespace content

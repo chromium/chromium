@@ -78,6 +78,10 @@ class CONTENT_EXPORT PrefetchURLLoaderInterceptor
   // navigation.
   NavigationLoaderInterceptor::LoaderCallback loader_callback_;
 
+  // The time when probing was started. Used to calculate probe latency which is
+  // reported to the tab helper.
+  absl::optional<base::TimeTicks> probe_start_time_;
+
   // The time when we started waiting for cookies to be copied, delaying the
   // navigation. Used to calculate total cookie wait time.
   absl::optional<base::TimeTicks> cookie_copy_start_time_;

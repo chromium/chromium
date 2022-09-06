@@ -15,6 +15,7 @@
 #include "components/page_load_metrics/browser/page_load_tracker.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/prefetch_metrics.h"
 #include "content/public/browser/web_contents.h"
 #include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -107,9 +108,12 @@ PrefetchProxyPageLoadMetricsObserver::OnCommit(
 
   PrefetchProxyTabHelper* tab_helper = PrefetchProxyTabHelper::FromWebContents(
       navigation_handle->GetWebContents());
-  if (!tab_helper)
-    return STOP_OBSERVING;
-  after_srp_metrics_ = tab_helper->after_srp_metrics();
+  if (tab_helper)
+    after_srp_metrics_ = tab_helper->after_srp_metrics();
+
+  serving_page_metrics_ =
+      content::PrefetchServingPageMetrics::GetForNavigationHandle(
+          *navigation_handle);
 
   history::HistoryService* history_service =
       HistoryServiceFactory::GetForProfileIfExists(
@@ -134,26 +138,32 @@ PrefetchProxyPageLoadMetricsObserver::OnCommit(
 
 void PrefetchProxyPageLoadMetricsObserver::OnDidInternalNavigationAbort(
     content::NavigationHandle* navigation_handle) {
+  serving_page_metrics_ =
+      content::PrefetchServingPageMetrics::GetForNavigationHandle(
+          *navigation_handle);
+
   PrefetchProxyTabHelper* tab_helper = PrefetchProxyTabHelper::FromWebContents(
       navigation_handle->GetWebContents());
-  if (!tab_helper)
-    return;
-
-  std::unique_ptr<PrefetchProxyTabHelper::AfterSRPMetrics> after_srp_metrics =
-      tab_helper->ComputeAfterSRPMetricsBeforeCommit(navigation_handle);
-  if (!after_srp_metrics)
-    return;
-
-  // Metrics should also be recorded when the navigation failed due to an abort
-  // or otherwise. That way, we don't skew the metrics towards only pages that
-  // commit.
-  after_srp_metrics_ = *after_srp_metrics;
+  if (tab_helper) {
+    std::unique_ptr<PrefetchProxyTabHelper::AfterSRPMetrics> after_srp_metrics =
+        tab_helper->ComputeAfterSRPMetricsBeforeCommit(navigation_handle);
+    if (after_srp_metrics) {
+      // Metrics should also be recorded when the navigation failed due to an
+      // abort or otherwise. That way, we don't skew the metrics towards only
+      // pages that commit.
+      after_srp_metrics_ = *after_srp_metrics;
+    }
+  }
 
   RecordAfterSRPEvent();
 }
 
 void PrefetchProxyPageLoadMetricsObserver::OnPrefetchLikely() {
   GetPrefetchMetrics();
+
+  referring_page_metrics_ =
+      content::PrefetchReferringPageMetrics::GetForCurrentDocument(
+          GetDelegate().GetWebContents()->GetPrimaryMainFrame());
 }
 
 void PrefetchProxyPageLoadMetricsObserver::GetPrefetchMetrics() {
@@ -243,6 +253,11 @@ void PrefetchProxyPageLoadMetricsObserver::RecordPrefetchProxyEvent() {
     }
   }
 
+  // We should not have metrics from both the chrome/ and content/
+  // implementations of speculation rules prefetch.
+  DCHECK(!(srp_metrics_ && srp_metrics_->predicted_urls_count_ > 0 &&
+           referring_page_metrics_));
+
   if (srp_metrics_ && srp_metrics_->predicted_urls_count_ > 0) {
     builder.Setprefetch_eligible_count(srp_metrics_->prefetch_eligible_count_);
     builder.Setprefetch_attempted_count(
@@ -250,32 +265,74 @@ void PrefetchProxyPageLoadMetricsObserver::RecordPrefetchProxyEvent() {
     builder.Setprefetch_successful_count(
         srp_metrics_->prefetch_successful_count_);
   }
+
+  if (referring_page_metrics_) {
+    builder.Setprefetch_eligible_count(
+        referring_page_metrics_->prefetch_eligible_count);
+    builder.Setprefetch_attempted_count(
+        referring_page_metrics_->prefetch_attempted_count);
+    builder.Setprefetch_successful_count(
+        referring_page_metrics_->prefetch_successful_count);
+  }
+
   builder.Record(ukm::UkmRecorder::Get());
 }
 
 void PrefetchProxyPageLoadMetricsObserver::RecordAfterSRPEvent() {
-  if (!after_srp_metrics_)
+  // We should not have metrics from both the chrome/ and content/
+  // implementations of speculation rules prefetch.
+  DCHECK(!(after_srp_metrics_ && serving_page_metrics_));
+  if (!after_srp_metrics_ && !serving_page_metrics_)
     return;
-
-  const PrefetchProxyTabHelper::AfterSRPMetrics& metrics = *after_srp_metrics_;
 
   ukm::builders::PrefetchProxy_AfterSRPClick builder(
       GetDelegate().GetPageUkmSourceId());
 
-  builder.SetSRPPrefetchEligibleCount(metrics.prefetch_eligible_count_);
+  if (after_srp_metrics_) {
+    const PrefetchProxyTabHelper::AfterSRPMetrics& metrics =
+        *after_srp_metrics_;
 
-  if (metrics.prefetch_status_) {
-    builder.SetSRPClickPrefetchStatus(
-        static_cast<int>(metrics.prefetch_status_.value()));
+    builder.SetSRPPrefetchEligibleCount(metrics.prefetch_eligible_count_);
+
+    if (metrics.prefetch_status_) {
+      builder.SetSRPClickPrefetchStatus(
+          static_cast<int>(metrics.prefetch_status_.value()));
+    }
+
+    if (metrics.clicked_link_srp_position_) {
+      builder.SetClickedLinkSRPPosition(
+          metrics.clicked_link_srp_position_.value());
+    }
+
+    if (metrics.probe_latency_) {
+      builder.SetProbeLatencyMs(
+          metrics.probe_latency_.value().InMilliseconds());
+    }
   }
 
-  if (metrics.clicked_link_srp_position_) {
-    builder.SetClickedLinkSRPPosition(
-        metrics.clicked_link_srp_position_.value());
-  }
+  if (serving_page_metrics_) {
+    if (serving_page_metrics_->prefetch_status) {
+      builder.SetSRPClickPrefetchStatus(
+          serving_page_metrics_->prefetch_status.value());
+    }
 
-  if (metrics.probe_latency_) {
-    builder.SetProbeLatencyMs(metrics.probe_latency_.value().InMilliseconds());
+    if (serving_page_metrics_->required_private_prefetch_proxy) {
+      builder.SetPrivatePrefetch(1);
+    }
+
+    if (serving_page_metrics_->same_tab_as_prefetching_tab) {
+      builder.SetSameTabAsPrefetchingTab(1);
+    }
+
+    if (serving_page_metrics_->prefetch_header_latency) {
+      builder.SetPrefetchHeaderLatencyMs(
+          serving_page_metrics_->prefetch_header_latency->InMilliseconds());
+    }
+
+    if (serving_page_metrics_->probe_latency) {
+      builder.SetProbeLatencyMs(
+          serving_page_metrics_->probe_latency.value().InMilliseconds());
+    }
   }
 
   builder.Record(ukm::UkmRecorder::Get());

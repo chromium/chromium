@@ -19,8 +19,11 @@
 #include "content/browser/preloading/prefetch/prefetch_params.h"
 #include "content/browser/preloading/prefetch/prefetch_probe_result.h"
 #include "content/browser/preloading/prefetch/prefetch_service.h"
+#include "content/browser/preloading/prefetch/prefetch_serving_page_metrics_container.h"
 #include "content/browser/preloading/prefetch/prefetched_mainframe_response_container.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
+#include "content/browser/renderer_host/navigation_request.h"
+#include "content/public/browser/prefetch_metrics.h"
 #include "content/public/browser/web_contents.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "url/gurl.h"
@@ -43,6 +46,17 @@ PrefetchService* PrefetchServiceFromFrameTreeNodeId(int frame_tree_node_id) {
   if (!browser_context)
     return nullptr;
   return BrowserContextImpl::From(browser_context)->GetPrefetchService();
+}
+
+PrefetchServingPageMetricsContainer*
+PrefetchServingPageMetricsContainerFromFrameTreeNodeId(int frame_tree_node_id) {
+  FrameTreeNode* frame_tree_node =
+      FrameTreeNode::GloballyFindByID(frame_tree_node_id);
+  if (!frame_tree_node || !frame_tree_node->navigation_request())
+    return nullptr;
+
+  return PrefetchServingPageMetricsContainer::GetForNavigationHandle(
+      *frame_tree_node->navigation_request());
 }
 
 void RecordCookieWaitTime(base::TimeDelta wait_time) {
@@ -94,6 +108,7 @@ void PrefetchURLLoaderInterceptor::MaybeCreateLoader(
     return;
   }
   if (origin_prober->ShouldProbeOrigins()) {
+    probe_start_time_ = base::TimeTicks::Now();
     base::OnceClosure on_success_callback =
         base::BindOnce(&PrefetchURLLoaderInterceptor::
                            EnsureCookiesCopiedAndInterceptPrefetchedNavigation,
@@ -107,6 +122,14 @@ void PrefetchURLLoaderInterceptor::MaybeCreateLoader(
                        std::move(on_success_callback)));
     return;
   }
+
+  prefetch_container->OnPrefetchProbeResult(PrefetchProbeResult::kNoProbing);
+  PrefetchServingPageMetricsContainer* serving_page_metrics_container =
+      PrefetchServingPageMetricsContainerFromFrameTreeNodeId(
+          frame_tree_node_id_);
+  if (serving_page_metrics_container)
+    serving_page_metrics_container->SetPrefetchStatus(
+        prefetch_container->GetPrefetchStatus());
 
   EnsureCookiesCopiedAndInterceptPrefetchedNavigation(tenative_resource_request,
                                                       prefetch_container);
@@ -136,16 +159,28 @@ void PrefetchURLLoaderInterceptor::OnProbeComplete(
     base::WeakPtr<PrefetchContainer> prefetch_container,
     base::OnceClosure on_success_callback,
     PrefetchProbeResult result) {
-  // TODO(https://crbug.com/1299059): Record metrics on the result of the probe.
+  DCHECK(probe_start_time_);
+
+  PrefetchServingPageMetricsContainer* serving_page_metrics_container =
+      PrefetchServingPageMetricsContainerFromFrameTreeNodeId(
+          frame_tree_node_id_);
+  if (serving_page_metrics_container)
+    serving_page_metrics_container->SetProbeLatency(base::TimeTicks::Now() -
+                                                    probe_start_time_.value());
+
+  if (prefetch_container) {
+    prefetch_container->OnPrefetchProbeResult(result);
+
+    if (serving_page_metrics_container)
+      serving_page_metrics_container->SetPrefetchStatus(
+          prefetch_container->GetPrefetchStatus());
+  }
 
   if (PrefetchProbeResultIsSuccess(result)) {
     std::move(on_success_callback).Run();
     return;
   }
 
-  if (prefetch_container)
-    prefetch_container->SetPrefetchStatus(
-        PrefetchStatus::kPrefetchNotUsedProbeFailed);
   DoNotInterceptNavigation();
 }
 
@@ -182,8 +217,6 @@ void PrefetchURLLoaderInterceptor::InterceptPrefetchedNavigation(
     DoNotInterceptNavigation();
     return;
   }
-
-  prefetch_container->SetPrefetchStatus(PrefetchStatus::kPrefetchUsedNoProbe);
 
   std::unique_ptr<PrefetchFromStringURLLoader> url_loader =
       std::make_unique<PrefetchFromStringURLLoader>(

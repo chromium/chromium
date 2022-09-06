@@ -12,11 +12,15 @@
 #include "content/browser/preloading/prefetch/prefetch_cookie_listener.h"
 #include "content/browser/preloading/prefetch/prefetch_document_manager.h"
 #include "content/browser/preloading/prefetch/prefetch_network_context.h"
+#include "content/browser/preloading/prefetch/prefetch_probe_result.h"
 #include "content/browser/preloading/prefetch/prefetch_service.h"
 #include "content/browser/preloading/prefetch/prefetch_status.h"
 #include "content/browser/preloading/prefetch/prefetch_type.h"
 #include "content/browser/preloading/prefetch/prefetched_mainframe_response_container.h"
 #include "content/public/browser/global_routing_id.h"
+#include "services/metrics/public/cpp/metrics_utils.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "url/gurl.h"
@@ -53,9 +57,38 @@ PrefetchContainer::PrefetchContainer(
       url_(url),
       prefetch_type_(prefetch_type),
       prefetch_document_manager_(prefetch_document_manager),
+      ukm_source_id_(prefetch_document_manager_
+                         ? prefetch_document_manager_->render_frame_host()
+                               .GetPageUkmSourceId()
+                         : ukm::kInvalidSourceId),
       request_id_(base::UnguessableToken::Create().ToString()) {}
 
-PrefetchContainer::~PrefetchContainer() = default;
+PrefetchContainer::~PrefetchContainer() {
+  ukm::builders::PrefetchProxy_PrefetchedResource builder(ukm_source_id_);
+  builder.SetResourceType(/*mainframe*/ 1);
+  builder.SetStatus(static_cast<int>(
+      prefetch_status_.value_or(PrefetchStatus::kPrefetchNotStarted)));
+  builder.SetLinkClicked(navigated_to_);
+
+  if (data_length_) {
+    builder.SetDataLength(
+        ukm::GetExponentialBucketMinForBytes(data_length_.value()));
+  }
+
+  if (fetch_duration_) {
+    builder.SetFetchDurationMS(fetch_duration_->InMilliseconds());
+  }
+
+  if (probe_result_) {
+    builder.SetISPFilteringStatus(static_cast<int>(probe_result_.value()));
+  }
+
+  // TODO(https://crbug.com/1299059): Get the navigation start time and set the
+  // NavigationStartToFetchStartMs field of the PrefetchProxy.PrefetchedResource
+  // UKM event.
+
+  builder.Record(ukm::UkmRecorder::Get());
+}
 
 PrefetchStatus PrefetchContainer::GetPrefetchStatus() const {
   DCHECK(prefetch_status_);
@@ -153,6 +186,47 @@ void PrefetchContainer::ResetURLLoader() {
   loader_.reset();
 }
 
+void PrefetchContainer::OnPrefetchProbeResult(
+    PrefetchProbeResult probe_result) {
+  probe_result_ = probe_result;
+
+  switch (probe_result) {
+    case PrefetchProbeResult::kNoProbing:
+      prefetch_status_ = PrefetchStatus::kPrefetchUsedNoProbe;
+      break;
+    case PrefetchProbeResult::kDNSProbeSuccess:
+    case PrefetchProbeResult::kTLSProbeSuccess:
+      prefetch_status_ = PrefetchStatus::kPrefetchUsedProbeSuccess;
+      break;
+    case PrefetchProbeResult::kDNSProbeFailure:
+    case PrefetchProbeResult::kTLSProbeFailure:
+      prefetch_status_ = PrefetchStatus::kPrefetchNotUsedProbeFailed;
+      break;
+  }
+}
+
+void PrefetchContainer::OnPrefetchComplete() {
+  if (!loader_)
+    return;
+  UpdatePrefetchRequestMetrics(loader_->CompletionStatus(),
+                               loader_->ResponseInfo());
+}
+
+void PrefetchContainer::UpdatePrefetchRequestMetrics(
+    const absl::optional<network::URLLoaderCompletionStatus>& completion_status,
+    const network::mojom::URLResponseHead* head) {
+  if (completion_status)
+    data_length_ = completion_status->encoded_data_length;
+
+  if (head)
+    header_latency_ =
+        head->load_timing.receive_headers_end - head->load_timing.request_start;
+
+  if (completion_status && head)
+    fetch_duration_ =
+        completion_status->completion_time - head->load_timing.request_start;
+}
+
 bool PrefetchContainer::HasValidPrefetchedResponse(
     base::TimeDelta cacheable_duration) const {
   return prefetched_response_ != nullptr &&
@@ -165,6 +239,10 @@ void PrefetchContainer::TakePrefetchedResponse(
     std::unique_ptr<PrefetchedMainframeResponseContainer> prefetched_response) {
   DCHECK(!prefetched_response_);
   DCHECK(!is_decoy_);
+
+  if (prefetch_document_manager_)
+    prefetch_document_manager_->OnPrefetchSuccessful();
+
   prefetch_received_time_ = base::TimeTicks::Now();
   prefetched_response_ = std::move(prefetched_response);
 }
