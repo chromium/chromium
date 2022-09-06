@@ -424,7 +424,7 @@ VideoFrame::VideoFrame(scoped_refptr<media::VideoFrame> frame,
 
   external_allocated_memory_ =
       media::VideoFrame::AllocationSize(frame->format(), frame->coded_size());
-  v8::Isolate::GetCurrent()->AdjustAmountOfExternalAllocatedMemory(
+  context->GetIsolate()->AdjustAmountOfExternalAllocatedMemory(
       external_allocated_memory_);
 }
 

@@ -75,7 +75,8 @@ constexpr char kDocumentTransitionToken[] =
   meta->setAttribute(html_names::kContentAttr, trial_token);
   document.head()->appendChild(meta);
 
-  v8::HandleScope scope(v8::Isolate::GetCurrent());
+  v8::HandleScope scope(
+      page_holder.GetPage().GetAgentGroupScheduler().Isolate());
   auto value = ClassicScript::CreateUnspecifiedScript(
                    "!!document.createDocumentTransition")
                    ->RunScriptAndReturnValue(document.domWindow());

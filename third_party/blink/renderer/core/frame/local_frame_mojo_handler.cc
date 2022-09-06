@@ -884,7 +884,7 @@ void LocalFrameMojoHandler::JavaScriptMethodExecuteRequest(
   converter->SetDateAllowed(true);
   converter->SetRegExpAllowed(true);
 
-  v8::HandleScope handle_scope(v8::Isolate::GetCurrent());
+  v8::HandleScope handle_scope(ToIsolate(frame_));
   v8::Local<v8::Value> result;
   script_execution_power_mode_voter_->VoteFor(
       power_scheduler::PowerMode::kScriptExecution);
@@ -914,7 +914,7 @@ void LocalFrameMojoHandler::JavaScriptExecuteRequest(
   script_execution_power_mode_voter_->VoteFor(
       power_scheduler::PowerMode::kScriptExecution);
 
-  v8::HandleScope handle_scope(v8::Isolate::GetCurrent());
+  v8::HandleScope handle_scope(ToIsolate(frame_));
   v8::Local<v8::Value> result =
       ClassicScript::CreateUnspecifiedScript(javascript)
           ->RunScriptAndReturnValue(DomWindow())
