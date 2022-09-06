@@ -134,7 +134,6 @@ class OnDeviceClusteringWithoutContentBackendTest : public ::testing::Test {
     config_.keyword_filter_on_noisy_visits = true;
     config_.keyword_filter_on_entity_aliases = true;
     config_.max_entity_aliases_in_keywords = 100;
-    config_.split_clusters_at_search_visits = false;
     config_.should_label_clusters = false;
     config_.entity_relevance_threshold = 60;
     config_.should_check_hosts_to_skip_clustering_for = true;

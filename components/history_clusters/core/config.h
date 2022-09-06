@@ -286,9 +286,6 @@ struct Config {
   // Returns the default batch size for annotating visits when clustering.
   size_t clustering_tasks_batch_size = 250;
 
-  // Whether to split the clusters when a search visit is encountered.
-  bool split_clusters_at_search_visits = true;
-
   // Whether to assign labels to clusters. If the label exists, it will be shown
   // in the UI. If the label doesn't exist, the UI will emphasize the top visit.
   // Note: The default value here is meaningless, because the actual default

@@ -290,10 +290,6 @@ Config::Config() {
       "content_clustering_intersection_threshold",
       cluster_interaction_threshold);
 
-  split_clusters_at_search_visits = GetFieldTrialParamByFeatureAsBool(
-      features::kOnDeviceClustering, "split_clusters_at_search_visits",
-      split_clusters_at_search_visits);
-
   should_label_clusters =
       base::FeatureList::IsEnabled(internal::kJourneysLabels);
 

@@ -21,8 +21,7 @@ bool ShouldAddVisitToCluster(const history::ClusterVisit& visit,
       GetConfig().cluster_navigation_time_cutoff) {
     return false;
   }
-  if (GetConfig().split_clusters_at_search_visits &&
-      !visit.annotated_visit.content_annotations.search_terms.empty()) {
+  if (!visit.annotated_visit.content_annotations.search_terms.empty()) {
     // If we want to split the clusters at search visits and we are at a search
     // visit, only add the visit to the cluster if the last search visit was
     // also a search visit with the same terms. Also break the cluster if there
