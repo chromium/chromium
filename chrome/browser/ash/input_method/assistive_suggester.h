@@ -94,6 +94,11 @@ class AssistiveSuggester : public SuggestionsSource {
     return &emoji_suggester_;
   }
 
+  absl::optional<AssistiveSuggesterSwitch::EnabledSuggestions>
+  get_enabled_suggestion_from_last_onfocus_for_testing() {
+    return enabled_suggestions_from_last_onfocus_;
+  }
+
  private:
   // Callback that is run after enabled_suggestions is received.
   void ProcessOnSurroundingTextChanged(
@@ -167,8 +172,9 @@ class AssistiveSuggester : public SuggestionsSource {
   void RecordTextInputStateMetrics(
       const AssistiveSuggesterSwitch::EnabledSuggestions& enabled_suggestions);
 
-  void HandleLongpressEnabledKeyEvent(
-      const ui::KeyEvent& key_character,
+  void HandleLongpressEnabledKeyEvent(const ui::KeyEvent& key_character);
+
+  void HandleEnabledSuggestionsOnFocus(
       const AssistiveSuggesterSwitch::EnabledSuggestions& enabled_suggestions);
 
   void OnLongpressDetected();
@@ -195,6 +201,9 @@ class AssistiveSuggester : public SuggestionsSource {
 
   // The current suggester in use, nullptr means no suggestion is shown.
   Suggester* current_suggester_ = nullptr;
+
+  absl::optional<AssistiveSuggesterSwitch::EnabledSuggestions>
+      enabled_suggestions_from_last_onfocus_;
 
   base::WeakPtrFactory<AssistiveSuggester> weak_ptr_factory_{this};
 };

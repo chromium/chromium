@@ -357,13 +357,21 @@ void AssistiveSuggester::OnFocus(int context_id) {
   emoji_suggester_.OnFocus(context_id);
   multi_word_suggester_.OnFocus(context_id);
   longpress_diacritics_suggester_.OnFocus(context_id);
+  enabled_suggestions_from_last_onfocus_ = absl::nullopt;
   suggester_switch_->FetchEnabledSuggestionsThen(
-      base::BindOnce(&AssistiveSuggester::RecordTextInputStateMetrics,
+      base::BindOnce(&AssistiveSuggester::HandleEnabledSuggestionsOnFocus,
                      weak_ptr_factory_.GetWeakPtr()));
+}
+
+void AssistiveSuggester::HandleEnabledSuggestionsOnFocus(
+    const AssistiveSuggesterSwitch::EnabledSuggestions& enabled_suggestions) {
+  enabled_suggestions_from_last_onfocus_ = enabled_suggestions;
+  AssistiveSuggester::RecordTextInputStateMetrics(enabled_suggestions);
 }
 
 void AssistiveSuggester::OnBlur() {
   focused_context_id_ = absl::nullopt;
+  enabled_suggestions_from_last_onfocus_ = absl::nullopt;
   personal_info_suggester_.OnBlur();
   emoji_suggester_.OnBlur();
   multi_word_suggester_.OnBlur();
@@ -407,22 +415,22 @@ bool AssistiveSuggester::OnKeyEvent(const ui::KeyEvent& event) {
   if (IsDiacriticsOnPhysicalKeyboardLongpressEnabled()) {
     // Longpress diacritics behaviour overrides the longpress to repeat key
     // behaviour for alphabetical keys.
+    // TODO(b/244665864): Move this repeat key handling into
+    // HandleLongpressEnabledKeyEvent
     if (event.is_repeat() &&
         kDefaultLongpressEnabledKeys.contains(event.GetCharacter())) {
       return true;  // Do not propagate this event.
     }
-    suggester_switch_->FetchEnabledSuggestionsThen(
-        base::BindOnce(&AssistiveSuggester::HandleLongpressEnabledKeyEvent,
-                       weak_ptr_factory_.GetWeakPtr(), event));
+    AssistiveSuggester::HandleLongpressEnabledKeyEvent(event);
   }
   return false;
 }
 
 void AssistiveSuggester::HandleLongpressEnabledKeyEvent(
-    const ui::KeyEvent& event,
-    const AssistiveSuggesterSwitch::EnabledSuggestions& enabled_suggestions) {
+    const ui::KeyEvent& event) {
   if (!IsDiacriticsOnPhysicalKeyboardLongpressEnabled() ||
-      !enabled_suggestions.diacritic_suggestions ||
+      !enabled_suggestions_from_last_onfocus_ ||
+      !enabled_suggestions_from_last_onfocus_->diacritic_suggestions ||
       !kDefaultLongpressEnabledKeys.contains(event.GetCharacter())) {
     return;
   }

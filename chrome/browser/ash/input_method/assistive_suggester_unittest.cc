@@ -697,6 +697,50 @@ TEST_F(AssistiveSuggesterTest,
       CreateRepeatKeyEvent(ui::DomCode::ARROW_DOWN)));
 }
 
+TEST_F(AssistiveSuggesterTest, StoreLastEnabledSuggestionOnFocus) {
+  EnabledSuggestions enabled_suggestions = EnabledSuggestions{
+      .emoji_suggestions = true, .diacritic_suggestions = true};
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kDiacriticsOnPhysicalKeyboardLongpress},
+      /*disabled_features=*/{});
+  // TODO(b/242472734): Allow enabled suggestions passed without replace.
+  assistive_suggester_ = std::make_unique<AssistiveSuggester>(
+      suggestion_handler_.get(), profile_.get(),
+      std::make_unique<FakeSuggesterSwitch>(enabled_suggestions));
+  SetInputMethodOptions(*profile_, /*predictive_writing_enabled=*/false,
+                        /*diacritics_on_longpress_enabled=*/true);
+  assistive_suggester_->OnActivate(kUsEnglishEngineId);
+  assistive_suggester_->OnFocus(5);
+
+  EXPECT_TRUE(assistive_suggester_
+                  ->get_enabled_suggestion_from_last_onfocus_for_testing()
+                  .has_value());
+  EXPECT_EQ(*assistive_suggester_
+                 ->get_enabled_suggestion_from_last_onfocus_for_testing(),
+            enabled_suggestions);
+}
+
+TEST_F(AssistiveSuggesterTest, ClearLastEnabledSuggestionOnBlur) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kDiacriticsOnPhysicalKeyboardLongpress},
+      /*disabled_features=*/{});
+  // TODO(b/242472734): Allow enabled suggestions passed without replace.
+  assistive_suggester_ = std::make_unique<AssistiveSuggester>(
+      suggestion_handler_.get(), profile_.get(),
+      std::make_unique<FakeSuggesterSwitch>(EnabledSuggestions{
+          .emoji_suggestions = true, .diacritic_suggestions = true}));
+  SetInputMethodOptions(*profile_, /*predictive_writing_enabled=*/false,
+                        /*diacritics_on_longpress_enabled=*/true);
+  assistive_suggester_->OnActivate(kUsEnglishEngineId);
+  assistive_suggester_->OnFocus(5);
+  assistive_suggester_->OnBlur();
+
+  EXPECT_FALSE(assistive_suggester_
+                   ->get_enabled_suggestion_from_last_onfocus_for_testing()
+                   .has_value());
+}
 struct PersonalInfoTestCase {
   std::string test_name;
   std::u16string surrounding_text;
