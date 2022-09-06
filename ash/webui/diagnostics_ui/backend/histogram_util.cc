@@ -21,6 +21,8 @@ constexpr char kProbeErrorMetricCpuInfoSource[] =
     "ChromeOS.DiagnosticsUi.Error.CrosHealthdProbeError.CpuInfo";
 constexpr char kProbeErrorMetricMemoryInfoSource[] =
     "ChromeOS.DiagnosticsUi.Error.CrosHealthdProbeError.MemoryInfo";
+constexpr char kProbeErrorMetricSystemInfoSource[] =
+    "ChromeOS.DiagnosticsUi.Error.CrosHealthdProbeError.SystemInfo";
 
 // Source type matches |type_name| from cros_healthd_helpers.
 const std::string GetMetricNameForSourceType(
@@ -31,6 +33,8 @@ const std::string GetMetricNameForSourceType(
     return kProbeErrorMetricCpuInfoSource;
   if (source_type == "memory info")
     return kProbeErrorMetricMemoryInfoSource;
+  if (source_type == "system info")
+    return kProbeErrorMetricSystemInfoSource;
 
   return "";
 }

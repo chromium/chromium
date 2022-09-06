@@ -48,6 +48,8 @@ constexpr char kProbeErrorCpuInfo[] =
     "ChromeOS.DiagnosticsUi.Error.CrosHealthdProbeError.CpuInfo";
 constexpr char kProbeErrorMemoryInfo[] =
     "ChromeOS.DiagnosticsUi.Error.CrosHealthdProbeError.MemoryInfo";
+constexpr char kProbeErrorSystemInfo[] =
+    "ChromeOS.DiagnosticsUi.Error.CrosHealthdProbeError.SystemInfo";
 
 void SetProbeTelemetryInfoResponse(healthd_mojom::BatteryInfoPtr battery_info,
                                    healthd_mojom::CpuInfoPtr cpu_info,
@@ -1525,6 +1527,37 @@ TEST_F(SystemDataProviderTest, RecordProbeError_MemoryInfo) {
                                /*expected_service_unavailable=*/0,
                                /*expected_system_utility_error=*/1,
                                /*expected_file_read_error=*/0);
+}
+
+// Validate expected metric triggered when request for SystemInfo returns a
+// ProbeError.
+TEST_F(SystemDataProviderTest, RecordProbeError_SystemInfo) {
+  base::HistogramTester histogram_tester;
+  VerifyProbeErrorBucketCounts(
+      histogram_tester, kProbeErrorSystemInfo, /*expected_unknown_error=*/0,
+      /*expected_parse_error=*/0, /*expected_service_unavailable=*/0,
+      /*expected_system_utility_error=*/0, /*expected_file_read_error=*/0);
+
+  auto system_result = healthd_mojom::SystemResult::NewError(
+      CreateProbeError(healthd_mojom::ErrorType::kServiceUnavailable));
+  auto info = healthd_mojom::TelemetryInfo::New();
+  info->system_result = std::move(system_result);
+  cros_healthd::FakeCrosHealthd::Get()->SetProbeTelemetryInfoResponseForTesting(
+      info);
+
+  base::RunLoop run_loop;
+  system_data_provider_->GetSystemInfo(
+      base::BindLambdaForTesting([&](mojom::SystemInfoPtr ptr) {
+        ASSERT_TRUE(ptr);
+        VerifyProbeErrorBucketCounts(histogram_tester, kProbeErrorSystemInfo,
+                                     /*expected_unknown_error=*/0,
+                                     /*expected_parse_error=*/0,
+                                     /*expected_service_unavailable=*/1,
+                                     /*expected_system_utility_error=*/0,
+                                     /*expected_file_read_error=*/0);
+        run_loop.Quit();
+      }));
+  run_loop.Run();
 }
 
 }  // namespace ash::diagnostics

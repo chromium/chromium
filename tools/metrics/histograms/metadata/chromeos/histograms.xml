@@ -697,6 +697,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
     <variant name="BatteryInfo"/>
     <variant name="CpuInfo"/>
     <variant name="MemoryInfo"/>
+    <variant name="SystemInfo"/>
   </token>
 </histogram>
 
