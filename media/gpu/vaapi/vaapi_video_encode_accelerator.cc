@@ -11,6 +11,7 @@
 #include <memory>
 #include <type_traits>
 #include <utility>
+#include <variant>
 
 #include "base/bind.h"
 #include "base/bits.h"
