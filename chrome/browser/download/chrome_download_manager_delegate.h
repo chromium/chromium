@@ -194,6 +194,9 @@ class ChromeDownloadManagerDelegate
   void ScheduleCancelForEphemeralWarning(const std::string& guid);
 #endif
 
+  // Returns true if |path| should open in the browser.
+  virtual bool IsOpenInBrowserPreferreredForFile(const base::FilePath& path);
+
  protected:
   virtual safe_browsing::DownloadProtectionService*
       GetDownloadProtectionService();
@@ -289,9 +292,6 @@ class ChromeDownloadManagerDelegate
       uint32_t download_id,
       content::DownloadTargetCallback callback,
       std::unique_ptr<DownloadTargetInfo> target_info);
-
-  // Returns true if |path| should open in the browser.
-  bool IsOpenInBrowserPreferreredForFile(const base::FilePath& path);
 
   void MaybeSendDangerousDownloadOpenedReport(download::DownloadItem* download,
                                               bool show_download_in_folder);

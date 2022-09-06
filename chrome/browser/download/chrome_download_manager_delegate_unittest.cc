@@ -28,6 +28,8 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "chrome/browser/download/download_core_service_factory.h"
+#include "chrome/browser/download/download_core_service_impl.h"
 #include "chrome/browser/download/download_item_model.h"
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/download/download_target_info.h"
@@ -247,6 +249,37 @@ class TestChromeDownloadManagerDelegate : public ChromeDownloadManagerDelegate {
   friend class ChromeDownloadManagerDelegateTest;
 };
 
+// A DownloadCoreService that returns the TestChromeDownloadManagerDelegate.
+class TestDownloadCoreService : public DownloadCoreServiceImpl {
+ public:
+  explicit TestDownloadCoreService(Profile* profile);
+  ~TestDownloadCoreService() override;
+
+  void set_download_manager_delegate(ChromeDownloadManagerDelegate* delegate) {
+    delegate_ = delegate;
+  }
+
+  ChromeDownloadManagerDelegate* GetDownloadManagerDelegate() override;
+
+  raw_ptr<ChromeDownloadManagerDelegate> delegate_;
+};
+
+TestDownloadCoreService::TestDownloadCoreService(Profile* profile)
+    : DownloadCoreServiceImpl(profile) {}
+
+TestDownloadCoreService::~TestDownloadCoreService() = default;
+
+ChromeDownloadManagerDelegate*
+TestDownloadCoreService::GetDownloadManagerDelegate() {
+  return delegate_;
+}
+
+static std::unique_ptr<KeyedService> CreateTestDownloadCoreService(
+    content::BrowserContext* browser_context) {
+  return std::make_unique<TestDownloadCoreService>(
+      Profile::FromBrowserContext(browser_context));
+}
+
 class ChromeDownloadManagerDelegateTest
     : public ChromeRenderViewHostTestHarness {
  public:
@@ -327,6 +360,11 @@ void ChromeDownloadManagerDelegateTest::SetUp() {
   delegate_ =
       std::make_unique<::testing::NiceMock<TestChromeDownloadManagerDelegate>>(
           profile());
+  DownloadCoreServiceFactory::GetInstance()->SetTestingFactory(
+      profile(), base::BindRepeating(&CreateTestDownloadCoreService));
+  static_cast<TestDownloadCoreService*>(
+      DownloadCoreServiceFactory::GetForBrowserContext(profile()))
+      ->set_download_manager_delegate(delegate_.get());
   download_prefs()->SkipSanitizeDownloadTargetPathForTesting();
   download_prefs()->SetDownloadPath(test_download_dir_);
   delegate_->SetDownloadManager(download_manager_.get());

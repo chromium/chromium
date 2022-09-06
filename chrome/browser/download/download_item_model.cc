@@ -12,6 +12,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/metrics/field_trial.h"
 #include "base/observer_list.h"
+#include "base/run_loop.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/supports_user_data.h"
@@ -28,6 +29,7 @@
 #include "chrome/browser/download/download_history.h"
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/download/download_stats.h"
+#include "chrome/browser/download/download_target_determiner.h"
 #include "chrome/browser/download/offline_item_utils.h"
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/enterprise/connectors/connectors_manager.h"
@@ -93,7 +95,7 @@ class DownloadItemModelData : public base::SupportsUserData::Data {
 
   // Whether the download should be opened in the browser vs. the system handler
   // for the file type.
-  bool should_prefer_opening_in_browser_;
+  absl::optional<bool> should_prefer_opening_in_browser_;
 
   // Danger level of the file determined based on the file type and whether
   // there was a user action associated with the download.
@@ -142,7 +144,6 @@ DownloadItemModelData* DownloadItemModelData::GetOrCreate(
 DownloadItemModelData::DownloadItemModelData()
     : should_show_in_shelf_(true),
       was_ui_notified_(false),
-      should_prefer_opening_in_browser_(false),
       danger_level_(DownloadFileType::NOT_DANGEROUS),
       is_being_revived_(false) {}
 
@@ -434,9 +435,29 @@ void DownloadItemModel::SetEphemeralWarningUiShownTime(
   data->ephemeral_warning_ui_shown_time_ = ephemeral_warning_ui_shown_time;
 }
 
-bool DownloadItemModel::ShouldPreferOpeningInBrowser() const {
-  const DownloadItemModelData* data = DownloadItemModelData::Get(download_);
-  return data && data->should_prefer_opening_in_browser_;
+bool DownloadItemModel::ShouldPreferOpeningInBrowser() {
+  const DownloadItemModelData* data =
+      DownloadItemModelData::GetOrCreate(download_);
+#if !BUILDFLAG(IS_ANDROID)
+  if (!data->should_prefer_opening_in_browser_ && IsBubbleV2Enabled()) {
+    base::FilePath path = GetTargetFilePath();
+    std::string mime_type = GetMimeType();
+    base::RunLoop run_loop;
+    DownloadTargetDeterminer::DetermineIfHandledSafelyHelper(
+        download_, path, mime_type,
+        base::BindOnce(
+            [](base::OnceClosure quit_run_loop,
+               base::WeakPtr<DownloadUIModel> model, const base::FilePath& path,
+               bool is_handled_safely) {
+              model->DetermineAndSetShouldPreferOpeningInBrowser(
+                  path, is_handled_safely);
+              std::move(quit_run_loop).Run();
+            },
+            run_loop.QuitClosure(), GetWeakPtr(), path));
+    run_loop.Run();
+  }
+#endif  // !BUILDFLAG(IS_ANDROID)
+  return data->should_prefer_opening_in_browser_.value_or(false);
 }
 
 void DownloadItemModel::SetShouldPreferOpeningInBrowser(bool preference) {
@@ -1043,4 +1064,34 @@ bool DownloadItemModel::ShouldShowDropdown() const {
   }
 
   return true;
+}
+
+void DownloadItemModel::DetermineAndSetShouldPreferOpeningInBrowser(
+    const base::FilePath& target_path,
+    bool is_filetype_handled_safely) {
+  DownloadCoreService* download_core_service =
+      DownloadCoreServiceFactory::GetForBrowserContext(
+          content::DownloadItemUtils::GetBrowserContext(download_));
+  if (!download_core_service)
+    return;
+
+  ChromeDownloadManagerDelegate* delegate =
+      download_core_service->GetDownloadManagerDelegate();
+  if (!delegate)
+    return;
+
+  if (!target_path.empty() &&
+      delegate->IsOpenInBrowserPreferreredForFile(target_path) &&
+      is_filetype_handled_safely) {
+    SetShouldPreferOpeningInBrowser(true);
+    return;
+  }
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+  if (download_->GetOriginalMimeType() == "application/x-x509-user-cert") {
+    SetShouldPreferOpeningInBrowser(true);
+    return;
+  }
+#endif
+  SetShouldPreferOpeningInBrowser(false);
 }

@@ -1502,17 +1502,10 @@ void ChromeDownloadManagerDelegate::OnDownloadTargetDetermined(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DownloadItem* item = download_manager_->GetDownload(download_id);
   if (item) {
-    if (!target_info->target_path.empty() &&
-        IsOpenInBrowserPreferreredForFile(target_info->target_path) &&
-        target_info->is_filetype_handled_safely)
-      DownloadItemModel(item).SetShouldPreferOpeningInBrowser(true);
-
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-    if (item->GetOriginalMimeType() == "application/x-x509-user-cert")
-      DownloadItemModel(item).SetShouldPreferOpeningInBrowser(true);
-#endif
-
-    DownloadItemModel(item).SetDangerLevel(target_info->danger_level);
+    DownloadItemModel model(item);
+    model.DetermineAndSetShouldPreferOpeningInBrowser(
+        target_info->target_path, target_info->is_filetype_handled_safely);
+    model.SetDangerLevel(target_info->danger_level);
   }
   if (ShouldBlockFile(item, target_info->danger_type)) {
     MaybeReportDangerousDownloadBlocked(

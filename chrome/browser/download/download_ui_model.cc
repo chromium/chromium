@@ -451,7 +451,7 @@ absl::optional<base::Time> DownloadUIModel::GetEphemeralWarningUiShownTime()
 void DownloadUIModel::SetEphemeralWarningUiShownTime(
     absl::optional<base::Time> time) {}
 
-bool DownloadUIModel::ShouldPreferOpeningInBrowser() const {
+bool DownloadUIModel::ShouldPreferOpeningInBrowser() {
   return true;
 }
 
@@ -1758,3 +1758,7 @@ void DownloadUIModel::ReviewScanningVerdict(
 bool DownloadUIModel::ShouldShowDropdown() const {
   return true;
 }
+
+void DownloadUIModel::DetermineAndSetShouldPreferOpeningInBrowser(
+    const base::FilePath& target_path,
+    bool is_filetype_handled_safely) {}

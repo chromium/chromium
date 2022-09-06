@@ -750,6 +750,26 @@ void IsHandledBySafePlugin(content::BrowserContext* browser_context,
 }  // namespace
 #endif  // BUILDFLAG(ENABLE_PLUGINS)
 
+void DownloadTargetDeterminer::DetermineIfHandledSafelyHelper(
+    download::DownloadItem* download,
+    const base::FilePath& local_path,
+    const std::string& mime_type,
+    base::OnceCallback<void(bool)> callback) {
+  if (blink::IsSupportedMimeType(mime_type)) {
+    std::move(callback).Run(true);
+    return;
+  }
+
+#if BUILDFLAG(ENABLE_PLUGINS)
+  IsHandledBySafePlugin(content::DownloadItemUtils::GetBrowserContext(download),
+                        net::FilePathToFileURL(local_path), mime_type,
+                        RETRY_IF_STALE_PLUGIN_LIST, std::move(callback));
+
+#else
+  std::move(callback).Run(false);
+#endif
+}
+
 DownloadTargetDeterminer::Result
     DownloadTargetDeterminer::DoDetermineIfHandledSafely() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -762,25 +782,13 @@ DownloadTargetDeterminer::Result
   if (mime_type_.empty())
     return CONTINUE;
 
-  if (blink::IsSupportedMimeType(mime_type_)) {
-    is_filetype_handled_safely_ = true;
-    return CONTINUE;
-  }
-
-#if BUILDFLAG(ENABLE_PLUGINS)
-  IsHandledBySafePlugin(
-      content::DownloadItemUtils::GetBrowserContext(download_),
-      net::FilePathToFileURL(local_path_), mime_type_,
-      RETRY_IF_STALE_PLUGIN_LIST,
+  DetermineIfHandledSafelyHelper(
+      download_, local_path_, mime_type_,
       base::BindOnce(&DownloadTargetDeterminer::DetermineIfHandledSafelyDone,
                      weak_ptr_factory_.GetWeakPtr()));
   return QUIT_DOLOOP;
-#else
-  return CONTINUE;
-#endif
 }
 
-#if BUILDFLAG(ENABLE_PLUGINS)
 void DownloadTargetDeterminer::DetermineIfHandledSafelyDone(
     bool is_handled_safely) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -789,7 +797,6 @@ void DownloadTargetDeterminer::DetermineIfHandledSafelyDone(
   is_filetype_handled_safely_ = is_handled_safely;
   DoLoop();
 }
-#endif
 
 DownloadTargetDeterminer::Result
     DownloadTargetDeterminer::DoDetermineIfAdobeReaderUpToDate() {

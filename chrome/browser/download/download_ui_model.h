@@ -337,7 +337,7 @@ class DownloadUIModel {
 
   // Returns |true| if opening in the browser is preferred for this download. If
   // |false|, the download should be opened with the system default application.
-  virtual bool ShouldPreferOpeningInBrowser() const;
+  virtual bool ShouldPreferOpeningInBrowser();
 
   // Change what's returned by ShouldPreferOpeningInBrowser to |preference|.
   virtual void SetShouldPreferOpeningInBrowser(bool preference);
@@ -518,6 +518,15 @@ class DownloadUIModel {
 
   // Whether the dropdown menu button should be shown or not.
   virtual bool ShouldShowDropdown() const;
+
+  // Determines if a download should be preferably opened in the browser instead
+  // of the platform. Use |is_filetype_handled_safely| indicating if opening a
+  // file of this type is safe in the current BrowserContext, |target_path| to
+  // see if files of this type should be opened in the browser, and set whether
+  // the download should be preferred opening in the browser.
+  virtual void DetermineAndSetShouldPreferOpeningInBrowser(
+      const base::FilePath& target_path,
+      bool is_filetype_handled_safely);
 
  protected:
   // Returns the MIME type of the download.
