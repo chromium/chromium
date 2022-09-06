@@ -40,6 +40,13 @@ bool UserNoteComparator(const user_notes::UserNoteInstance* first,
   return first->rect() < second->rect();
 }
 
+SidePanelCoordinator* GetSidePanelCoordinator(BrowserView* browser_view) {
+  if (!browser_view)
+    return nullptr;
+
+  return browser_view->side_panel_coordinator();
+}
+
 }  // namespace
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(UserNoteUICoordinator,
@@ -75,18 +82,42 @@ UserNoteUICoordinator* UserNoteUICoordinator::GetOrCreateForBrowser(
 UserNoteUICoordinator::UserNoteUICoordinator(Browser* browser)
     : browser_(browser) {
   browser_->tab_strip_model()->AddObserver(this);
+  is_tab_strip_model_observed_ = true;
 }
 
 UserNoteUICoordinator::~UserNoteUICoordinator() = default;
 
+void UserNoteUICoordinator::OnSidePanelDidClose() {
+  scroll_view_ = nullptr;
+  if (auto* side_panel_coordinator = GetSidePanelCoordinator(browser_view_)) {
+    side_panel_coordinator->RemoveSidePanelViewStateObserver(this);
+  }
+}
+
 void UserNoteUICoordinator::CreateAndRegisterEntry(
     SidePanelRegistry* global_registry) {
-  global_registry->Register(std::make_unique<SidePanelEntry>(
+  auto entry = std::make_unique<SidePanelEntry>(
       SidePanelEntry::Id::kUserNote,
       l10n_util::GetStringUTF16(IDS_USER_NOTE_TITLE),
       ui::ImageModel::FromVectorIcon(kInkHighlighterIcon, ui::kColorIcon),
       base::BindRepeating(&UserNoteUICoordinator::CreateUserNotesView,
-                          base::Unretained(this))));
+                          base::Unretained(this)));
+  entry->AddObserver(this);
+  global_registry->Register(std::move(entry));
+}
+
+void UserNoteUICoordinator::OnEntryShown(SidePanelEntry* entry) {
+  // Do not observe again if tab strip model is already being observed.
+  if (is_tab_strip_model_observed_)
+    return;
+
+  browser_->tab_strip_model()->AddObserver(this);
+  is_tab_strip_model_observed_ = true;
+}
+
+void UserNoteUICoordinator::OnEntryHidden(SidePanelEntry* entry) {
+  browser_->tab_strip_model()->RemoveObserver(this);
+  is_tab_strip_model_observed_ = false;
 }
 
 void UserNoteUICoordinator::OnNoteDeleted(const base::UnguessableToken& id,
@@ -95,6 +126,7 @@ void UserNoteUICoordinator::OnNoteDeleted(const base::UnguessableToken& id,
   auto* service =
       user_notes::UserNoteServiceFactory::GetForContext(browser_->profile());
   service->OnNoteDeleted(id);
+  scroll_view_->Layout();
 }
 
 void UserNoteUICoordinator::OnNoteSelected(const base::UnguessableToken& id) {
@@ -196,6 +228,20 @@ void UserNoteUICoordinator::ScrollToNote() {
   scroll_to_note_id_ = base::UnguessableToken::Null();
 }
 
+void UserNoteUICoordinator::InvalidateIfVisible() {
+  if (!browser_view_)
+    browser_view_ = BrowserView::GetBrowserViewForBrowser(browser_);
+
+  auto* side_panel_coordinator = GetSidePanelCoordinator(browser_view_);
+
+  if (!side_panel_coordinator || side_panel_coordinator->GetCurrentEntryId() !=
+                                     SidePanelEntry::Id::kUserNote) {
+    return;
+  }
+
+  Invalidate();
+}
+
 void UserNoteUICoordinator::Invalidate() {
   if (!scroll_view_)
     return;
@@ -282,8 +328,14 @@ void UserNoteUICoordinator::Invalidate() {
 }
 
 void UserNoteUICoordinator::Show() {
-  auto* side_panel_coordinator =
-      BrowserView::GetBrowserViewForBrowser(browser_)->side_panel_coordinator();
+  if (!browser_view_)
+    browser_view_ = BrowserView::GetBrowserViewForBrowser(browser_);
+
+  auto* side_panel_coordinator = GetSidePanelCoordinator(browser_view_);
+
+  if (!side_panel_coordinator) {
+    return;
+  }
 
   if (side_panel_coordinator->GetCurrentEntryId() ==
       SidePanelEntry::Id::kUserNote) {
@@ -302,7 +354,7 @@ void UserNoteUICoordinator::OnTabStripModelChanged(
   if (!selection.active_tab_changed() || tab_strip_model->closing_all())
     return;
 
-  Invalidate();
+  InvalidateIfVisible();
 }
 
 std::unique_ptr<views::View> UserNoteUICoordinator::CreateUserNotesView() {
@@ -311,6 +363,13 @@ std::unique_ptr<views::View> UserNoteUICoordinator::CreateUserNotesView() {
   // [| [NoteView]              | <--- scroll content view ] <--- scroll view
   // [| ...                     |]
   // [| ...                     |]
+
+  if (!browser_view_)
+    browser_view_ = BrowserView::GetBrowserViewForBrowser(browser_);
+
+  if (auto* side_panel_coordinator = GetSidePanelCoordinator(browser_view_)) {
+    side_panel_coordinator->AddSidePanelViewStateObserver(this);
+  }
 
   auto root_view = std::make_unique<views::View>();
   root_view->SetLayoutManager(std::make_unique<views::FillLayout>());

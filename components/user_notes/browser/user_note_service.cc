@@ -401,14 +401,14 @@ void UserNoteService::OnNoteMetadataFetchedForNavigation(
     // in the foreground. This is to fix edge cases around back/forward
     // navigations, where the Page (and attached UserNoteManager) is kept alive
     // in the BFCache. If the notes didn't change on disk by the time the user
-    // does a back/forward navigation, Invalidate() will never get called
-    // because there won't be any diff between the instances in the Page and the
-    // notes on disk. Ideally, Invalidate() should only be called if this is a
-    // back/forward navigation and the notes didn't change, but there's no way
-    // to know whether the notes changed until further down the callback stack.
-    // Since Invalidate() is cheap enough, always calling it here is considered
-    // an acceptable fix for now.
-    ui->Invalidate();
+    // does a back/forward navigation, InvalidateIfVisible() will never get
+    // called because there won't be any diff between the instances in the Page
+    // and the notes on disk. Ideally, InvalidateIfVisible() should only be
+    // called if this is a back/forward navigation and the notes didn't change,
+    // but there's no way to know whether the notes changed until further down
+    // the callback stack. Since InvalidateIfVisible() is cheap enough, always
+    // calling it here is considered an acceptable fix for now.
+    ui->InvalidateIfVisible();
 
     if (!metadata_snapshot.IsEmpty()) {
       // TODO(crbug.com/1313967): For now, automatically activate User Notes UI
@@ -513,7 +513,7 @@ void UserNoteService::OnFrameChangesApplied(base::UnguessableToken change_id) {
     UserNotesUI* ui =
         delegate_->GetUICoordinatorForFrame(frame_changes->render_frame_host());
     DCHECK(ui);
-    ui->Invalidate();
+    ui->InvalidateIfVisible();
   }
 
   note_changes_in_progress_.erase(changes_it);

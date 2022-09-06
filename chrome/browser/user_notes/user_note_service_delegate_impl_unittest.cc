@@ -30,7 +30,7 @@ const char kBaseUrl[] = "http://www.google.com/";
 
 class MockUserNotesUI : public UserNotesUI {
  public:
-  MOCK_METHOD(void, Invalidate, (), (override));
+  MOCK_METHOD(void, InvalidateIfVisible, (), (override));
   MOCK_METHOD(void,
               FocusNote,
               (const base::UnguessableToken& guid),
@@ -58,14 +58,14 @@ TEST_F(UserNoteServiceDelegateImplTest, GetUICoordinatorForFrame) {
   // Attach a mock UserNotesUI implementation to the browsers.
   auto mock_ui1 = std::make_unique<MockUserNotesUI>();
   MockUserNotesUI* mock1 = mock_ui1.get();
-  EXPECT_CALL(*mock_ui1, Invalidate).Times(0);
+  EXPECT_CALL(*mock_ui1, InvalidateIfVisible).Times(0);
   EXPECT_CALL(*mock_ui1, FocusNote).Times(0);
   EXPECT_CALL(*mock_ui1, StartNoteCreation).Times(0);
   EXPECT_CALL(*mock_ui1, Show).Times(0);
 
   auto mock_ui2 = std::make_unique<MockUserNotesUI>();
   MockUserNotesUI* mock2 = mock_ui2.get();
-  EXPECT_CALL(*mock_ui2, Invalidate).Times(0);
+  EXPECT_CALL(*mock_ui2, InvalidateIfVisible).Times(0);
   EXPECT_CALL(*mock_ui2, FocusNote).Times(0);
   EXPECT_CALL(*mock_ui2, StartNoteCreation).Times(0);
   EXPECT_CALL(*mock_ui2, Show).Times(0);

@@ -11,6 +11,8 @@
 #include "base/unguessable_token.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_entry_observer.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_view_state_observer.h"
 #include "components/user_notes/interfaces/user_notes_ui.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/views/view.h"
@@ -22,6 +24,7 @@ class UserNoteInstance;
 
 class SidePanelRegistry;
 class UserNoteView;
+class BrowserView;
 
 namespace user_notes {
 class UserNoteInstance;
@@ -37,7 +40,9 @@ class UnguessableToken;
 
 class UserNoteUICoordinator : public user_notes::UserNotesUI,
                               public TabStripModelObserver,
-                              public views::ViewObserver {
+                              public views::ViewObserver,
+                              public SidePanelViewStateObserver,
+                              public SidePanelEntryObserver {
  public:
   // Creates a UserNoteUICoordinator and attaches it to the specified Browser
   // using the user data key of UserNotesUI. If an instance is already attached,
@@ -71,7 +76,7 @@ class UserNoteUICoordinator : public user_notes::UserNotesUI,
   // UserNoteUI overrides
   void FocusNote(const base::UnguessableToken& guid) override;
   void StartNoteCreation(user_notes::UserNoteInstance* instance) override;
-  void Invalidate() override;
+  void InvalidateIfVisible() override;
   void Show() override;
 
   // TabStripModelObserver overrides
@@ -83,18 +88,33 @@ class UserNoteUICoordinator : public user_notes::UserNotesUI,
   // views::ViewObserver:
   void OnViewBoundsChanged(views::View* observed_view) override;
 
+  // SidePanelViewStateObserver
+  void OnSidePanelDidClose() override;
+
+  // SidePanelEntryObserver:
+  void OnEntryShown(SidePanelEntry* entry) override;
+  void OnEntryHidden(SidePanelEntry* entry) override;
+
  private:
   explicit UserNoteUICoordinator(Browser* browser);
+
+  FRIEND_TEST_ALL_PREFIXES(UserNoteUICoordinatorTest,
+                           CleanScrollViewOnSidePanelCloseWithoutNotes);
+  FRIEND_TEST_ALL_PREFIXES(UserNoteUICoordinatorTest,
+                           CleanScrollViewOnSidePanelCloseWithNotes);
 
   void CreateSidePanelEntry(SidePanelRegistry* global_registry);
   void ScrollToNote();
   std::unique_ptr<views::View> CreateUserNotesView();
+  void Invalidate();
 
   raw_ptr<Browser> browser_;
   raw_ptr<views::ScrollView> scroll_view_ = nullptr;
   base::ScopedObservation<views::View, views::ViewObserver>
       scoped_view_observer_{this};
   base::UnguessableToken scroll_to_note_id_ = base::UnguessableToken::Null();
+  raw_ptr<BrowserView> browser_view_ = nullptr;
+  bool is_tab_strip_model_observed_ = false;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_USER_NOTE_USER_NOTE_UI_COORDINATOR_H_

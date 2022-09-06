@@ -37,7 +37,7 @@ class UserNotesUI : public base::SupportsUserData::Data {
   // Called when the model has changed and the UI should consequently refresh
   // the notes it is displaying. The new model must be polled from the active
   // tab's primary page.
-  virtual void Invalidate() = 0;
+  virtual void InvalidateIfVisible() = 0;
 
   // Called by the UserNoteService when the user triggers one of the feature's
   // entry points, indicating the Notes UI should show itself.

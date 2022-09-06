@@ -236,7 +236,7 @@ class MockFrameUserNoteChanges : public FrameUserNoteChanges {
 
 class MockUserNotesUI : public UserNotesUI {
  public:
-  MOCK_METHOD(void, Invalidate, (), (override));
+  MOCK_METHOD(void, InvalidateIfVisible, (), (override));
 
   // The following methods are not used for these tests but they still need to
   // be mocked because they are sbstract.
@@ -584,7 +584,7 @@ TEST_F(UserNoteServiceTest, OnNoteMetadataFetchedForNavigationSomeNotes) {
 
   // Configure UI mock.
   auto mock_ui = std::make_unique<MockUserNotesUI>();
-  EXPECT_CALL(*mock_ui, Invalidate).Times(1);
+  EXPECT_CALL(*mock_ui, InvalidateIfVisible).Times(1);
   EXPECT_CALL(*mock_ui, FocusNote).Times(0);
   EXPECT_CALL(*mock_ui, StartNoteCreation).Times(0);
   EXPECT_CALL(*mock_ui, Show).Times(1);
@@ -697,7 +697,7 @@ TEST_F(UserNoteServiceTest, OnNoteMetadataFetchedForNavigationNoNotes) {
 
   // Configure UI mock.
   auto mock_ui = std::make_unique<MockUserNotesUI>();
-  EXPECT_CALL(*mock_ui, Invalidate).Times(1);
+  EXPECT_CALL(*mock_ui, InvalidateIfVisible).Times(1);
   EXPECT_CALL(*mock_ui, FocusNote).Times(0);
   EXPECT_CALL(*mock_ui, StartNoteCreation).Times(0);
   EXPECT_CALL(*mock_ui, Show).Times(0);
@@ -1093,7 +1093,7 @@ TEST_F(UserNoteServiceTest, OnFrameChangesApplied) {
 
   // Configure UI mock.
   auto mock_ui = std::make_unique<MockUserNotesUI>();
-  EXPECT_CALL(*mock_ui, Invalidate).Times(1);
+  EXPECT_CALL(*mock_ui, InvalidateIfVisible).Times(1);
   EXPECT_CALL(*mock_ui, FocusNote).Times(0);
   EXPECT_CALL(*mock_ui, StartNoteCreation).Times(0);
   EXPECT_CALL(*mock_ui, Show).Times(0);
@@ -1141,7 +1141,7 @@ TEST_F(UserNoteServiceTest, OnFrameChangesApplied) {
   Mock::VerifyAndClearExpectations(mock_ui.get());
 
   // Simulate the second change being applied.
-  EXPECT_CALL(*mock_ui, Invalidate).Times(0);
+  EXPECT_CALL(*mock_ui, InvalidateIfVisible).Times(0);
   EXPECT_CALL(*mock_ui, FocusNote).Times(0);
   EXPECT_CALL(*mock_ui, StartNoteCreation).Times(0);
   EXPECT_CALL(*mock_ui, Show).Times(0);

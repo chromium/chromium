@@ -242,7 +242,7 @@ TEST_F(UserNoteUICoordinatorTest, AddNoteMiddleUserSidePanel) {
   size_t index = note_ids_.size() - 1;
   AddUserNote(manager, index);
 
-  user_note_ui_coordinator_->Invalidate();
+  user_note_ui_coordinator_->InvalidateIfVisible();
   EXPECT_EQ(scroll_view->contents()->children().size(), 3u);
 
   UserNoteView* middle_user_note_view = views::AsViewClass<UserNoteView>(
@@ -266,7 +266,7 @@ TEST_F(UserNoteUICoordinatorTest, AddNoteEndUserSidePanel) {
   // note3 = rect(0,0,0,2)
   for (size_t i = 0; i < 3; ++i) {
     note_ids_.emplace_back(base::UnguessableToken::Create());
-    note_rects_.emplace_back(gfx::Rect(0, 0, 0, i));
+    note_rects_.emplace_back(0, 0, 0, i);
     AddUserNote(manager, i);
   }
 
@@ -282,7 +282,7 @@ TEST_F(UserNoteUICoordinatorTest, AddNoteEndUserSidePanel) {
   size_t index = note_ids_.size() - 1;
   AddUserNote(manager, index);
 
-  user_note_ui_coordinator_->Invalidate();
+  user_note_ui_coordinator_->InvalidateIfVisible();
   EXPECT_EQ(scroll_view->contents()->children().size(), 4u);
 
   UserNoteView* last_user_note_view = views::AsViewClass<UserNoteView>(
@@ -312,7 +312,7 @@ TEST_F(UserNoteUICoordinatorTest, MAYBE_RemoveMiddleUserSidePanel) {
   // note3 = rect(0,0,0,2)
   for (size_t i = 0; i < 3; ++i) {
     note_ids_.emplace_back(base::UnguessableToken::Create());
-    note_rects_.emplace_back(gfx::Rect(0, 0, 0, i));
+    note_rects_.emplace_back(0, 0, 0, i);
     AddUserNote(manager, i);
   }
 
@@ -323,7 +323,7 @@ TEST_F(UserNoteUICoordinatorTest, MAYBE_RemoveMiddleUserSidePanel) {
 
   // Remove note2 from the service.
   manager->RemoveNote(note_ids_[1]);
-  user_note_ui_coordinator_->Invalidate();
+  user_note_ui_coordinator_->InvalidateIfVisible();
 
   EXPECT_EQ(scroll_view->contents()->children().size(), 2u);
 
@@ -355,7 +355,7 @@ TEST_F(UserNoteUICoordinatorTest, MAYBE_RemoveEndUserSidePanel) {
   // note3 = rect(0,0,0,2)
   for (size_t i = 0; i < 3; ++i) {
     note_ids_.emplace_back(base::UnguessableToken::Create());
-    note_rects_.emplace_back(gfx::Rect(0, 0, 0, i));
+    note_rects_.emplace_back(0, 0, 0, i);
     AddUserNote(manager, i);
   }
 
@@ -367,7 +367,7 @@ TEST_F(UserNoteUICoordinatorTest, MAYBE_RemoveEndUserSidePanel) {
   // Remove note3 from the service.
   size_t index = note_ids_.size() - 1;
   manager->RemoveNote(note_ids_[index]);
-  user_note_ui_coordinator_->Invalidate();
+  user_note_ui_coordinator_->InvalidateIfVisible();
   EXPECT_EQ(scroll_view->contents()->children().size(), 2u);
 
   for (auto* child_view : scroll_view->contents()->children()) {
@@ -398,7 +398,7 @@ TEST_F(UserNoteUICoordinatorTest, MAYBE_RemoveAllNoteUserSidePanel) {
   // note3 = rect(0,0,0,2)
   for (size_t i = 0; i < 3; ++i) {
     note_ids_.emplace_back(base::UnguessableToken::Create());
-    note_rects_.emplace_back(gfx::Rect(0, 0, 0, i));
+    note_rects_.emplace_back(0, 0, 0, i);
     AddUserNote(manager, i);
   }
 
@@ -412,7 +412,45 @@ TEST_F(UserNoteUICoordinatorTest, MAYBE_RemoveAllNoteUserSidePanel) {
     manager->RemoveNote(id);
   }
 
-  user_note_ui_coordinator_->Invalidate();
+  user_note_ui_coordinator_->InvalidateIfVisible();
   // Verify that the user note side panel is empty.
   EXPECT_EQ(scroll_view->contents()->children().size(), 0u);
+}
+
+TEST_F(UserNoteUICoordinatorTest, CleanScrollViewOnSidePanelCloseWithoutNotes) {
+  coordinator_->Toggle();
+  EXPECT_TRUE(browser_view()->unified_side_panel()->GetVisible());
+
+  coordinator_->Show(SidePanelEntry::Id::kUserNote);
+  EXPECT_NE(user_note_ui_coordinator_->scroll_view_, nullptr);
+
+  coordinator_->Close();
+  EXPECT_EQ(user_note_ui_coordinator_->scroll_view_, nullptr);
+}
+
+TEST_F(UserNoteUICoordinatorTest, CleanScrollViewOnSidePanelCloseWithNotes) {
+  coordinator_->Toggle();
+  EXPECT_TRUE(browser_view()->unified_side_panel()->GetVisible());
+
+  user_notes::UserNoteManager* manager =
+      user_notes::UserNoteManager::GetForPage(
+          browser_view()->GetActiveWebContents()->GetPrimaryPage());
+  EXPECT_TRUE(manager);
+
+  // Add 3 notes with the following rects:
+  // note1 = rect(0,0,0,0)
+  // note2 = rect(0,0,0,10)
+  // note3 = rect(0,0,0,20)
+  for (size_t i = 0; i < 3; ++i) {
+    note_ids_.emplace_back(base::UnguessableToken::Create());
+    note_rects_.emplace_back(0, 0, 0, i);
+    AddUserNote(manager, i);
+  }
+
+  // Show user note from the user note coordinator
+  user_note_ui_coordinator_->Show();
+  EXPECT_NE(user_note_ui_coordinator_->scroll_view_, nullptr);
+
+  coordinator_->Close();
+  EXPECT_EQ(user_note_ui_coordinator_->scroll_view_, nullptr);
 }
