@@ -43,6 +43,8 @@ class BlinkGCPluginAction : public PluginASTAction {
         options_.enable_persistent_in_unique_ptr_check = true;
       } else if (arg == "enable-members-on-stack-check") {
         options_.enable_members_on_stack_check = true;
+      } else if (arg == "fix-bugs-of-is-considered-abstract") {
+        options_.fix_bugs_of_is_considered_abstract = true;
       } else if (arg.find("ignored-paths-for-default-malloc=") == 0) {
         options_.ignored_paths_for_default_malloc = SplitArg(arg);
       } else if (arg.find("allowed-paths-for-default-malloc=") == 0) {

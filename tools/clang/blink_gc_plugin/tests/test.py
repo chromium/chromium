@@ -27,8 +27,14 @@ class BlinkGcPluginTest(plugin_testing.ClangPluginTest):
     if self.use_cppgc:
       clang_cmd.append('-DUSE_V8_OILPAN')
     clang_cmd.extend([
-        '-Xclang', '-plugin-arg-blink-gc-plugin', '-Xclang',
-        'ignored-paths-for-default-malloc=heap/stubs.h'
+        '-Xclang',
+        '-plugin-arg-blink-gc-plugin',
+        '-Xclang',
+        'ignored-paths-for-default-malloc=heap/stubs.h',
+        '-Xclang',
+        '-plugin-arg-blink-gc-plugin',
+        '-Xclang',
+        'fix-bugs-of-is-considered-abstract',
     ])
 
   def ProcessOneResult(self, test_name, actual):

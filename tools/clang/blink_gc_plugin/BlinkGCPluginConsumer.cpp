@@ -308,8 +308,9 @@ void BlinkGCPluginConsumer::CheckDefaultMalloc(RecordInfo* info) {
 
   // Don't check if the class can't construct.
   if (info->record()->isAbstract() ||
-      (info->IsConsideredAbstract() &&
-       !info->record()->needsImplicitDefaultConstructor())) {
+      // |fix_bugs| is always true here because this function is used by a
+      // new feature that is disabled by default.
+      info->IsConsideredAbstract(/*fix_bugs*/ true)) {
     return;
   }
 
@@ -471,7 +472,7 @@ void BlinkGCPluginConsumer::CheckDispatch(RecordInfo* info) {
   // If this is a non-abstract class check that it is dispatched to.
   // TODO: Create a global variant of this local check. We can only check if
   // the dispatch body is known in this compilation unit.
-  if (info->IsConsideredAbstract())
+  if (info->IsConsideredAbstract(options_.fix_bugs_of_is_considered_abstract))
     return;
 
   const FunctionDecl* defn;
