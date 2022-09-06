@@ -320,7 +320,9 @@ class IntegrationTest : public ::testing::Test {
 
   void ExpectLastStarted() { test_commands_->ExpectLastStarted(); }
 
-  void RunOfflineInstall() { test_commands_->RunOfflineInstall(); }
+  void RunOfflineInstall(bool is_silent_install) {
+    test_commands_->RunOfflineInstall(is_silent_install);
+  }
 
   scoped_refptr<IntegrationTestCommands> test_commands_;
 
@@ -898,7 +900,14 @@ TEST_F(IntegrationTest, RecoveryNoUpdater) {
 TEST_F(IntegrationTest, OfflineInstall) {
   Install();
   ExpectInstalled();
-  RunOfflineInstall();
+  RunOfflineInstall(/*is_silent_install=*/false);
+  Uninstall();
+}
+
+TEST_F(IntegrationTest, SilentOfflineInstall) {
+  Install();
+  ExpectInstalled();
+  RunOfflineInstall(/*is_silent_install=*/true);
   Uninstall();
 }
 

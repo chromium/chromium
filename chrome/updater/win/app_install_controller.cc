@@ -96,6 +96,111 @@ bool GetShellDispatch(Microsoft::WRL::ComPtr<IShellDispatch2>* shell_dispatch) {
          SUCCEEDED(dispatch.As(shell_dispatch));
 }
 
+class InstallProgressSilentObserver : public InstallProgressObserver {
+ public:
+  explicit InstallProgressSilentObserver(ui::OmahaWndEvents* events_sink);
+  ~InstallProgressSilentObserver() override = default;
+
+  // Overrides for InstallProgressObserver.
+  // These functions are called on the thread which owns this class.
+  void OnCheckingForUpdate() override;
+  void OnUpdateAvailable(const std::u16string& app_id,
+                         const std::u16string& app_name,
+                         const std::u16string& version_string) override;
+  void OnWaitingToDownload(const std::u16string& app_id,
+                           const std::u16string& app_name) override;
+  void OnDownloading(const std::u16string& app_id,
+                     const std::u16string& app_name,
+                     int time_remaining_ms,
+                     int pos) override;
+  void OnWaitingRetryDownload(const std::u16string& app_id,
+                              const std::u16string& app_name,
+                              const base::Time& next_retry_time) override;
+  void OnWaitingToInstall(const std::u16string& app_id,
+                          const std::u16string& app_name,
+                          bool* can_start_install) override;
+  void OnInstalling(const std::u16string& app_id,
+                    const std::u16string& app_name,
+                    int time_remaining_ms,
+                    int pos) override;
+  void OnPause() override;
+  void OnComplete(const ObserverCompletionInfo& observer_info) override;
+
+ private:
+  THREAD_CHECKER(thread_checker_);
+
+  // Event sink must out-live this observer.
+  raw_ptr<ui::OmahaWndEvents> events_sink_ = nullptr;
+};
+
+InstallProgressSilentObserver::InstallProgressSilentObserver(
+    ui::OmahaWndEvents* events_sink)
+    : events_sink_(events_sink) {
+  DCHECK(events_sink_);
+}
+
+void InstallProgressSilentObserver::OnCheckingForUpdate() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+}
+
+void InstallProgressSilentObserver::OnUpdateAvailable(
+    const std::u16string& app_id,
+    const std::u16string& app_name,
+    const std::u16string& version_string) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+}
+
+void InstallProgressSilentObserver::OnWaitingToDownload(
+    const std::u16string& app_id,
+    const std::u16string& app_name) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+}
+
+void InstallProgressSilentObserver::OnDownloading(
+    const std::u16string& app_id,
+    const std::u16string& app_name,
+    int time_remaining_ms,
+    int pos) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+}
+
+void InstallProgressSilentObserver::OnWaitingRetryDownload(
+    const std::u16string& app_id,
+    const std::u16string& app_name,
+    const base::Time& next_retry_time) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+}
+
+void InstallProgressSilentObserver::OnWaitingToInstall(
+    const std::u16string& app_id,
+    const std::u16string& app_name,
+    bool* can_start_install) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+}
+
+void InstallProgressSilentObserver::OnInstalling(const std::u16string& app_id,
+                                                 const std::u16string& app_name,
+                                                 int time_remaining_ms,
+                                                 int pos) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+}
+
+void InstallProgressSilentObserver::OnPause() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+}
+
+void InstallProgressSilentObserver::OnComplete(
+    const ObserverCompletionInfo& observer_info) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK(events_sink_);
+  VLOG(1) << __func__;
+
+  // TODO(crbug.com/1286580): Launch `post_install_launch_command_line` for
+  // each app if needed.
+
+  events_sink_->DoExit();
+}
+
 // Implements a simple inter-thread communication protocol based on Windows
 // messages exchanged between the application installer and its UI.
 //
@@ -112,7 +217,8 @@ class InstallProgressObserverIPC : public InstallProgressObserver {
   // UI threads.
   static constexpr unsigned int WM_PROGRESS_WINDOW_IPC = WM_APP + 1;
 
-  explicit InstallProgressObserverIPC(ui::ProgressWnd* progress_wnd);
+  InstallProgressObserverIPC(InstallProgressObserver* observer,
+                             DWORD observer_thread_id);
   InstallProgressObserverIPC(const InstallProgressObserverIPC&) = delete;
   InstallProgressObserverIPC& operator=(const InstallProgressObserverIPC&) =
       delete;
@@ -213,26 +319,24 @@ class InstallProgressObserverIPC : public InstallProgressObserver {
   THREAD_CHECKER(thread_checker_);
 
   // This member is not owned by this class.
-  raw_ptr<ui::ProgressWnd> progress_wnd_ = nullptr;
+  raw_ptr<InstallProgressObserver> observer_ = nullptr;
 
-  // The thread id of the thread which owns the |ProgressWnd|.
-  int window_thread_id_ = 0;
+  // The thread id of the thread which creates the `observer_`. The thread
+  // must have a message queue to enable this IPC class to post messages to it.
+  DWORD observer_thread_id_ = 0;
 };
 
 InstallProgressObserverIPC::InstallProgressObserverIPC(
-    ui::ProgressWnd* progress_wnd)
-    : progress_wnd_(progress_wnd),
-      window_thread_id_(
-          ::GetWindowThreadProcessId(progress_wnd_->m_hWnd, nullptr)) {
-  DCHECK(progress_wnd);
-  DCHECK(progress_wnd->m_hWnd);
-  DCHECK(IsWindow(progress_wnd->m_hWnd));
+    InstallProgressObserver* observer,
+    DWORD obserer_thread_id)
+    : observer_(observer), observer_thread_id_(obserer_thread_id) {
+  DCHECK(observer);
 }
 
 void InstallProgressObserverIPC::OnCheckingForUpdate() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  DCHECK(progress_wnd_);
-  ::PostThreadMessage(window_thread_id_, WM_PROGRESS_WINDOW_IPC,
+  DCHECK(observer_);
+  ::PostThreadMessage(observer_thread_id_, WM_PROGRESS_WINDOW_IPC,
                       static_cast<WPARAM>(IPCAppMessages::kOnCheckingForUpdate),
                       0);
 }
@@ -242,14 +346,14 @@ void InstallProgressObserverIPC::OnUpdateAvailable(
     const std::u16string& app_name,
     const std::u16string& version_string) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  DCHECK(progress_wnd_);
+  DCHECK(observer_);
   std::unique_ptr<ParamOnUpdateAvailable> param_on_update_available =
       std::make_unique<ParamOnUpdateAvailable>();
   param_on_update_available->app_id = app_id;
   param_on_update_available->app_name = app_name;
   param_on_update_available->version_string = version_string;
   ::PostThreadMessage(
-      window_thread_id_, WM_PROGRESS_WINDOW_IPC,
+      observer_thread_id_, WM_PROGRESS_WINDOW_IPC,
       static_cast<WPARAM>(IPCAppMessages::kOnUpdateAvailable),
       reinterpret_cast<LPARAM>(param_on_update_available.release()));
 }
@@ -265,14 +369,14 @@ void InstallProgressObserverIPC::OnDownloading(const std::u16string& app_id,
                                                int time_remaining_ms,
                                                int pos) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  DCHECK(progress_wnd_);
+  DCHECK(observer_);
   std::unique_ptr<ParamOnDownloading> param_on_downloading =
       std::make_unique<ParamOnDownloading>();
   param_on_downloading->app_id = app_id;
   param_on_downloading->app_name = app_name;
   param_on_downloading->time_remaining_ms = time_remaining_ms;
   param_on_downloading->pos = pos;
-  ::PostThreadMessage(window_thread_id_, WM_PROGRESS_WINDOW_IPC,
+  ::PostThreadMessage(observer_thread_id_, WM_PROGRESS_WINDOW_IPC,
                       static_cast<WPARAM>(IPCAppMessages::kOnDownloading),
                       reinterpret_cast<LPARAM>(param_on_downloading.release()));
 }
@@ -289,13 +393,13 @@ void InstallProgressObserverIPC::OnWaitingToInstall(
     const std::u16string& app_name,
     bool* can_start_install) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  DCHECK(progress_wnd_);
+  DCHECK(observer_);
   std::unique_ptr<ParamOnWaitingToInstall> param_on_waiting_to_install =
       std::make_unique<ParamOnWaitingToInstall>();
   param_on_waiting_to_install->app_id = app_id;
   param_on_waiting_to_install->app_name = app_name;
   ::PostThreadMessage(
-      window_thread_id_, WM_PROGRESS_WINDOW_IPC,
+      observer_thread_id_, WM_PROGRESS_WINDOW_IPC,
       static_cast<WPARAM>(IPCAppMessages::kOnWaitingToInstall),
       reinterpret_cast<LPARAM>(param_on_waiting_to_install.release()));
 }
@@ -306,14 +410,14 @@ void InstallProgressObserverIPC::OnInstalling(const std::u16string& app_id,
                                               int pos) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   // TODO(sorin): implement progress, https://crbug.com/1014594.
-  DCHECK(progress_wnd_);
+  DCHECK(observer_);
   std::unique_ptr<ParamOnInstalling> param_on_installing =
       std::make_unique<ParamOnInstalling>();
   param_on_installing->app_id = app_id;
   param_on_installing->app_name = app_name;
   param_on_installing->time_remaining_ms = time_remaining_ms;
   param_on_installing->pos = pos;
-  ::PostThreadMessage(window_thread_id_, WM_PROGRESS_WINDOW_IPC,
+  ::PostThreadMessage(observer_thread_id_, WM_PROGRESS_WINDOW_IPC,
                       static_cast<WPARAM>(IPCAppMessages::kOnInstalling),
                       reinterpret_cast<LPARAM>(param_on_installing.release()));
 }
@@ -325,35 +429,33 @@ void InstallProgressObserverIPC::OnPause() {
 void InstallProgressObserverIPC::OnComplete(
     const ObserverCompletionInfo& observer_info) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  DCHECK(progress_wnd_);
+  DCHECK(observer_);
   std::unique_ptr<ParamOnComplete> param_on_complete =
       std::make_unique<ParamOnComplete>();
   param_on_complete->observer_info = observer_info;
-  ::PostThreadMessage(window_thread_id_, WM_PROGRESS_WINDOW_IPC,
+  ::PostThreadMessage(observer_thread_id_, WM_PROGRESS_WINDOW_IPC,
                       static_cast<WPARAM>(IPCAppMessages::kOnComplete),
                       reinterpret_cast<LPARAM>(param_on_complete.release()));
 }
 
 void InstallProgressObserverIPC::Invoke(WPARAM wparam, LPARAM lparam) {
-  DCHECK_EQ(::GetWindowThreadProcessId(progress_wnd_->m_hWnd, nullptr),
-            ::GetCurrentThreadId());
-  auto* observer = static_cast<InstallProgressObserver*>(progress_wnd_);
+  DCHECK_EQ(observer_thread_id_, ::GetCurrentThreadId());
   switch (static_cast<IPCAppMessages>(wparam)) {
     case IPCAppMessages::kOnCheckingForUpdate:
-      observer->OnCheckingForUpdate();
+      observer_->OnCheckingForUpdate();
       break;
     case IPCAppMessages::kOnUpdateAvailable: {
       std::unique_ptr<ParamOnUpdateAvailable> param_on_update_available(
           reinterpret_cast<ParamOnUpdateAvailable*>(lparam));
-      observer->OnUpdateAvailable(param_on_update_available->app_id,
-                                  param_on_update_available->app_name,
-                                  param_on_update_available->version_string);
+      observer_->OnUpdateAvailable(param_on_update_available->app_id,
+                                   param_on_update_available->app_name,
+                                   param_on_update_available->version_string);
       break;
     }
     case IPCAppMessages::kOnDownloading: {
       std::unique_ptr<ParamOnDownloading> param_on_downloading(
           reinterpret_cast<ParamOnDownloading*>(lparam));
-      observer->OnDownloading(
+      observer_->OnDownloading(
           param_on_downloading->app_id, param_on_downloading->app_name,
           param_on_downloading->time_remaining_ms, param_on_downloading->pos);
       break;
@@ -363,15 +465,15 @@ void InstallProgressObserverIPC::Invoke(WPARAM wparam, LPARAM lparam) {
           reinterpret_cast<ParamOnWaitingToInstall*>(lparam));
       // TODO(sorin): implement cancelling of an install. crbug.com/1014591
       bool can_install = false;
-      observer->OnWaitingToInstall(param_on_waiting_to_install->app_id,
-                                   param_on_waiting_to_install->app_name,
-                                   &can_install);
+      observer_->OnWaitingToInstall(param_on_waiting_to_install->app_id,
+                                    param_on_waiting_to_install->app_name,
+                                    &can_install);
       break;
     }
     case IPCAppMessages::kOnInstalling: {
       std::unique_ptr<ParamOnInstalling> param_on_installing(
           reinterpret_cast<ParamOnInstalling*>(lparam));
-      observer->OnInstalling(
+      observer_->OnInstalling(
           param_on_installing->app_id, param_on_installing->app_name,
           param_on_installing->time_remaining_ms, param_on_installing->pos);
       break;
@@ -379,7 +481,7 @@ void InstallProgressObserverIPC::Invoke(WPARAM wparam, LPARAM lparam) {
     case IPCAppMessages::kOnComplete: {
       std::unique_ptr<ParamOnComplete> param_on_complete(
           reinterpret_cast<ParamOnComplete*>(lparam));
-      observer->OnComplete(param_on_complete->observer_info);
+      observer_->OnComplete(param_on_complete->observer_info);
       break;
     }
     default:
@@ -432,6 +534,7 @@ class AppInstallControllerImpl : public AppInstallController,
                                  public WTL::CMessageFilter {
  public:
   explicit AppInstallControllerImpl(
+      bool is_silent_install,
       scoped_refptr<UpdateService> update_service);
   AppInstallControllerImpl();
 
@@ -510,8 +613,8 @@ class AppInstallControllerImpl : public AppInstallController,
   // The message loop associated with the UI.
   std::unique_ptr<WTL::CMessageLoop> ui_message_loop_;
 
-  // The progress window.
-  std::unique_ptr<ui::ProgressWnd> progress_wnd_;
+  std::unique_ptr<InstallProgressObserver> observer_;
+  DWORD ui_thread_id_ = 0u;
 
   // The adapter for the inter-thread calls between the updater main thread
   // and the UI thread.
@@ -519,18 +622,22 @@ class AppInstallControllerImpl : public AppInstallController,
 
   // Called when InstallApp is done.
   base::OnceCallback<void(int)> callback_;
+
+  const bool is_silent_install_ = false;
 };
 
 // TODO(sorin): fix the hardcoding of the application name.
 // https:crbug.com/1296931
 AppInstallControllerImpl::AppInstallControllerImpl(
+    bool is_silent_install,
     scoped_refptr<UpdateService> update_service)
     : main_task_runner_(base::SequencedTaskRunnerHandle::Get()),
       ui_task_runner_(base::ThreadPool::CreateSingleThreadTaskRunner(
           {base::TaskPriority::USER_BLOCKING,
            base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
           base::SingleThreadTaskRunnerThreadMode::DEDICATED)),
-      update_service_(update_service) {}
+      update_service_(update_service),
+      is_silent_install_(is_silent_install) {}
 AppInstallControllerImpl::~AppInstallControllerImpl() = default;
 
 void AppInstallControllerImpl::InstallApp(
@@ -559,8 +666,9 @@ void AppInstallControllerImpl::DoInstallApp() {
   ui_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&AppInstallControllerImpl::RunUI, this));
 
-  install_progress_observer_ipc_ =
-      std::make_unique<InstallProgressObserverIPC>(progress_wnd_.get());
+  // The UI thread runs the observer.
+  install_progress_observer_ipc_ = std::make_unique<InstallProgressObserverIPC>(
+      observer_.get(), ui_thread_id_);
 
   RegistrationRequest request;
   request.app_id = app_id_;
@@ -652,8 +760,9 @@ void AppInstallControllerImpl::DoInstallAppOffline(
   ui_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&AppInstallControllerImpl::RunUI, this));
 
-  install_progress_observer_ipc_ =
-      std::make_unique<InstallProgressObserverIPC>(progress_wnd_.get());
+  // The UI thread runs the observer.
+  install_progress_observer_ipc_ = std::make_unique<InstallProgressObserverIPC>(
+      observer_.get(), ui_thread_id_);
 
   // TODO(crbug.com/1286581): fine-tune installation behavior by serializing
   // other related command line options, such as "/sessionid <sid>" into
@@ -841,7 +950,7 @@ void AppInstallControllerImpl::HandleInstallResult(
   install_progress_observer_ipc_->OnComplete(observer_info);
 }
 
-// Creates and shows the progress window. The window has thread affinity. It
+// Creates the install progress observer. The observer has thread affinity. It
 // must be created, process its messages, and be destroyed on the same thread.
 void AppInstallControllerImpl::InitializeUI() {
   DCHECK(ui_task_runner_->RunsTasksInCurrentSequence());
@@ -850,11 +959,18 @@ void AppInstallControllerImpl::InitializeUI() {
 
   ui_message_loop_ = std::make_unique<WTL::CMessageLoop>();
   ui_message_loop_->AddMessageFilter(this);
-  progress_wnd_ =
-      std::make_unique<ui::ProgressWnd>(ui_message_loop_.get(), nullptr);
-  progress_wnd_->SetEventSink(this);
-  progress_wnd_->Initialize();
-  progress_wnd_->Show();
+  ui_thread_id_ = ::GetCurrentThreadId();
+
+  if (is_silent_install_) {
+    observer_ = std::make_unique<InstallProgressSilentObserver>(this);
+  } else {
+    auto progress_wnd =
+        std::make_unique<ui::ProgressWnd>(ui_message_loop_.get(), nullptr);
+    progress_wnd->SetEventSink(this);
+    progress_wnd->Initialize();
+    progress_wnd->Show();
+    observer_.reset(progress_wnd.release());
+  }
 }
 
 void AppInstallControllerImpl::RunUI() {
@@ -865,7 +981,7 @@ void AppInstallControllerImpl::RunUI() {
   ui_message_loop_->RemoveMessageFilter(this);
 
   // This object is owned by the UI thread must be destroyed on this thread.
-  progress_wnd_ = nullptr;
+  observer_ = nullptr;
 
   main_task_runner_->PostTask(FROM_HERE,
                               base::BindOnce(std::move(callback_), kErrorOk));
@@ -890,8 +1006,8 @@ BOOL AppInstallControllerImpl::PreTranslateMessage(MSG* msg) {
 }
 
 DWORD AppInstallControllerImpl::GetUIThreadID() const {
-  DCHECK(progress_wnd_);
-  return ::GetWindowThreadProcessId(progress_wnd_->m_hWnd, nullptr);
+  DCHECK_NE(ui_thread_id_, 0u);
+  return ui_thread_id_;
 }
 
 bool AppInstallControllerImpl::DoLaunchBrowser(const std::string& url) {
@@ -927,17 +1043,21 @@ void AppInstallControllerImpl::DoCancel() {
 
 }  // namespace
 
-scoped_refptr<App> MakeAppInstall() {
+scoped_refptr<App> MakeAppInstall(bool is_silent_install) {
   return base::MakeRefCounted<AppInstall>(
       base::BindRepeating(
           [](const std::string& app_name) -> std::unique_ptr<SplashScreen> {
             return std::make_unique<ui::SplashScreen>(
                 base::UTF8ToUTF16(app_name));
           }),
-      base::BindRepeating([](scoped_refptr<UpdateService> update_service)
-                              -> scoped_refptr<AppInstallController> {
-        return base::MakeRefCounted<AppInstallControllerImpl>(update_service);
-      }));
+      base::BindRepeating(
+          [](bool is_silent_install,
+             scoped_refptr<UpdateService> update_service)
+              -> scoped_refptr<AppInstallController> {
+            return base::MakeRefCounted<AppInstallControllerImpl>(
+                is_silent_install, update_service);
+          },
+          is_silent_install));
 }
 
 }  // namespace updater

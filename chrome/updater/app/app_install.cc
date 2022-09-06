@@ -79,7 +79,7 @@ class AppInstallControllerImpl : public AppInstallController {
 
 }  // namespace
 
-scoped_refptr<App> MakeAppInstall() {
+scoped_refptr<App> MakeAppInstall(bool /*is_silent_install*/) {
   return base::MakeRefCounted<AppInstall>(
       base::BindRepeating(
           [](const std::string& /*app_name*/) -> std::unique_ptr<SplashScreen> {

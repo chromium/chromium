@@ -159,6 +159,9 @@ extern const char kHealthCheckSwitch[];
 // `/enterprise`. Manual argument parsing is needed for that scenario.
 extern const char kEnterpriseSwitch[];
 
+// Specifies that no UI should be shown.
+extern const char kSilentSwitch[];
+
 // Specifies the handoff request argument. On Windows, the request may
 // be from legacy updaters which pass the argument in the format of
 // `/handoff <install-args-details>`. Manual argument parsing is needed for that

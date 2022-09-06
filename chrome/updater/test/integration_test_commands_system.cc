@@ -296,7 +296,10 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
     RunCommand("uninstall_app", {Param("app_id", app_id)});
   }
 
-  void RunOfflineInstall() override { RunCommand("run_offline_install"); }
+  void RunOfflineInstall(bool is_silent_install) override {
+    RunCommand("run_offline_install",
+               {Param("silent", is_silent_install ? "true" : "false")});
+  }
 
  private:
   ~IntegrationTestCommandsSystem() override = default;

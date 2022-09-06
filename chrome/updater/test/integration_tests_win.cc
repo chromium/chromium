@@ -1370,7 +1370,7 @@ void UninstallApp(UpdaterScope scope, const std::string& app_id) {
   ASSERT_EQ(key.DeleteKey(base::SysUTF8ToWide(app_id).c_str()), ERROR_SUCCESS);
 }
 
-void RunOfflineInstall(UpdaterScope scope) {
+void RunOfflineInstall(UpdaterScope scope, bool is_silent_install) {
   constexpr wchar_t kTestAppID[] = L"{CDABE316-39CD-43BA-8440-6D1E0547AEE6}";
   constexpr char kManifestFormat[] =
       "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
@@ -1485,40 +1485,47 @@ void RunOfflineInstall(UpdaterScope scope) {
       updater::kSessionIdSwitch, "{E85204C6-6F2F-40BF-9E6C-4952208BB977}");
   offline_install_cmd.AppendSwitchNative(updater::kOfflineDirSwitch,
                                          offline_dir.value());
+  if (is_silent_install)
+    offline_install_cmd.AppendSwitch(updater::kSilentSwitch);
 
   base::Process process = base::LaunchProcess(offline_install_cmd, {});
   EXPECT_TRUE(process.IsValid());
 
-  // Dismiss the installation completion dialog, then wait for the process exit.
-  EXPECT_TRUE(WaitFor(base::BindRepeating([]() {
-    // Enumerate the top-level dialogs to find the setup dialog.
-    WindowEnumerator(
-        ::GetDesktopWindow(), base::BindRepeating([](HWND hwnd) {
-          return WindowEnumerator::IsSystemDialog(hwnd) &&
-                 base::Contains(
-                     WindowEnumerator::GetWindowText(hwnd),
-                     GetLocalizedStringF(
-                         IDS_INSTALLER_DISPLAY_NAME_BASE,
-                         GetLocalizedString(IDS_FRIENDLY_COMPANY_NAME_BASE)));
-        }),
-        base::BindRepeating([](HWND hwnd) {
-          // Enumerates the dialog items to search for installation complete
-          // message. Once found, close the dialog.
-          WindowEnumerator(
-              hwnd, base::BindRepeating([](HWND hwnd) {
-                return base::Contains(
-                    WindowEnumerator::GetWindowText(hwnd),
-                    GetLocalizedString(IDS_BUNDLE_INSTALLED_SUCCESSFULLY_BASE));
-              }),
-              base::BindRepeating([](HWND hwnd) {
-                ::PostMessage(::GetParent(hwnd), WM_CLOSE, 0, 0);
-              }))
-              .Run();
-        }))
-        .Run();
+  if (is_silent_install) {
+    WaitForUpdaterExit(scope);
+  } else {
+    // Dismiss the installation completion dialog, then wait for the process
+    // exit.
+    EXPECT_TRUE(WaitFor(base::BindRepeating([]() {
+      // Enumerate the top-level dialogs to find the setup dialog.
+      WindowEnumerator(
+          ::GetDesktopWindow(), base::BindRepeating([](HWND hwnd) {
+            return WindowEnumerator::IsSystemDialog(hwnd) &&
+                   base::Contains(
+                       WindowEnumerator::GetWindowText(hwnd),
+                       GetLocalizedStringF(
+                           IDS_INSTALLER_DISPLAY_NAME_BASE,
+                           GetLocalizedString(IDS_FRIENDLY_COMPANY_NAME_BASE)));
+          }),
+          base::BindRepeating([](HWND hwnd) {
+            // Enumerates the dialog items to search for installation complete
+            // message. Once found, close the dialog.
+            WindowEnumerator(hwnd, base::BindRepeating([](HWND hwnd) {
+                               return base::Contains(
+                                   WindowEnumerator::GetWindowText(hwnd),
+                                   GetLocalizedString(
+                                       IDS_BUNDLE_INSTALLED_SUCCESSFULLY_BASE));
+                             }),
+                             base::BindRepeating([](HWND hwnd) {
+                               ::PostMessage(::GetParent(hwnd), WM_CLOSE, 0, 0);
+                             }))
+                .Run();
+          }))
+          .Run();
 
-    return !IsUpdaterRunning();
-  })));
+      return !IsUpdaterRunning();
+    })));
+  }
 
   // App installer should have created the expected reg value.
   base::win::RegKey key;
@@ -1530,9 +1537,13 @@ void RunOfflineInstall(UpdaterScope scope) {
             ERROR_SUCCESS);
   EXPECT_EQ(value, L"CoolApp");
 
-  // Event should have been signaled by the post-install command via the
-  // installer result API.
-  EXPECT_TRUE(event.TimedWait(TestTimeouts::action_max_timeout()));
+  // TODO(crbug.com/1286580): Remove this `if` clause when the silent install
+  // launches post install command.
+  if (!is_silent_install) {
+    // Event should have been signaled by the post-install command via the
+    // installer result API.
+    EXPECT_TRUE(event.TimedWait(TestTimeouts::action_max_timeout()));
+  }
 
   EXPECT_TRUE(DeleteRegKey(root, app_client_state_key));
 }

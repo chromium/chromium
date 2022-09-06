@@ -22,7 +22,7 @@ const char kExecutableName[] = "updater";
 #endif
 
 // Command line arguments.
-// If a command line switch is marked as `needs backward-compatibility`, it
+// If a command line switch is marked as `backward-compatibility`, it
 // means the switch name cannot be changed, and the parser must be able to
 // handle command line in the DOS style '/<switch> <optional_value>'. This is to
 // make sure the new updater understands the hand-off requests from the legacy
@@ -64,14 +64,15 @@ const char kServerUpdateServiceSwitchValue[] = "update";
 // Recovery command line arguments.
 const char kRecoverSwitch[] = "recover";
 const char kBrowserVersionSwitch[] = "browser-version";
-const char kSessionIdSwitch[] = "sessionid";  // needs backward-compatibility
+const char kSessionIdSwitch[] = "sessionid";  // backward-compatibility.
 const char kAppGuidSwitch[] = "appguid";
 
 const char kHealthCheckSwitch[] = "healthcheck";
 
-const char kEnterpriseSwitch[] = "enterprise";  // needs backward-compatibility
-const char kHandoffSwitch[] = "handoff";        // needs backward-compatibility
-const char kOfflineDirSwitch[] = "offlinedir";  // needs backward-compatibility
+const char kEnterpriseSwitch[] = "enterprise";  // backward-compatibility.
+const char kSilentSwitch[] = "silent";          // backward-compatibility.
+const char kHandoffSwitch[] = "handoff";        // backward-compatibility.
+const char kOfflineDirSwitch[] = "offlinedir";  // backward-compatibility.
 
 const char kCmdLineExpectElevated[] = "expect-elevated";
 

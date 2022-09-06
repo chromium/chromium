@@ -161,7 +161,7 @@ int HandleUpdaterCommands(UpdaterScope updater_scope,
       command_line->HasSwitch(kTagSwitch) ||
       command_line->HasSwitch(kRuntimeSwitch) ||
       command_line->HasSwitch(kHandoffSwitch)) {
-    return MakeAppInstall()->Run();
+    return MakeAppInstall(command_line->HasSwitch(kSilentSwitch))->Run();
   }
 
   if (command_line->HasSwitch(kUninstallSwitch) ||

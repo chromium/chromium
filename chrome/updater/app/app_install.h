@@ -107,7 +107,7 @@ class AppInstall : public App {
   scoped_refptr<UpdateService> update_service_;
 };
 
-scoped_refptr<App> MakeAppInstall();
+scoped_refptr<App> MakeAppInstall(bool is_silent_install);
 
 }  // namespace updater
 
