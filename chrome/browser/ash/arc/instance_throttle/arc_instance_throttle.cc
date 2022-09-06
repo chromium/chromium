@@ -246,6 +246,7 @@ class ArcInstanceThrottleFactory
 
   ArcInstanceThrottleFactory() {
     DependsOn(ArcBootPhaseMonitorBridgeFactory::GetInstance());
+    DependsOn(ArcMetricsServiceFactory::GetInstance());
   }
   ~ArcInstanceThrottleFactory() override = default;
 };
@@ -303,11 +304,16 @@ ArcInstanceThrottle::ArcInstanceThrottle(content::BrowserContext* context,
   StartObservers();
   DCHECK(bridge_);
   bridge_->power()->AddObserver(this);
+
+  ArcMetricsService::GetForBrowserContext(context)->AddBootTypeObserver(this);
 }
 
 ArcInstanceThrottle::~ArcInstanceThrottle() = default;
 
 void ArcInstanceThrottle::Shutdown() {
+  ArcMetricsService::GetForBrowserContext(context())->RemoveBootTypeObserver(
+      this);
+
   bridge_->power()->RemoveObserver(this);
 
   StopObservers();
@@ -315,6 +321,25 @@ void ArcInstanceThrottle::Shutdown() {
 
 void ArcInstanceThrottle::OnConnectionReady() {
   NotifyCpuRestriction(ToCpuRestriction(should_throttle()));
+}
+
+void ArcInstanceThrottle::OnBootTypeRetrieved(mojom::BootType boot_type) {
+  switch (boot_type) {
+    case mojom::BootType::UNKNOWN:
+      break;
+    case mojom::BootType::FIRST_BOOT:
+    case mojom::BootType::FIRST_BOOT_AFTER_UPDATE:
+      // ARCVM vCPUs tend to be very busy on those boots. Allow Chrome to use
+      // the enforcing quota mode to cap the VM's CPU usage.
+      return;
+    case mojom::BootType::REGULAR_BOOT:
+      // On the other hand, regular boot does not usually consume that much vCPU
+      // time. Disable quota enforcement now to prevent unnecessary ANRs from
+      // happening.
+      never_enforce_quota_ = true;
+      return;
+  }
+  NOTREACHED();
 }
 
 void ArcInstanceThrottle::ThrottleInstance(bool should_throttle) {
