@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/file_system_access/safe_move_helper.h"
+#include "content/browser/file_system_access/file_system_access_safe_move_helper.h"
 
 #include "base/files/file.h"
 #include "base/memory/ref_counted.h"
@@ -43,10 +43,11 @@ namespace {
 class HashCalculator : public base::RefCounted<HashCalculator> {
  public:
   // Must be called on the FileSystemContext's IO runner.
-  static void CreateAndStart(scoped_refptr<storage::FileSystemContext> context,
-                             SafeMoveHelper::HashCallback callback,
-                             const storage::FileSystemURL& source_url,
-                             storage::FileSystemOperationRunner*) {
+  static void CreateAndStart(
+      scoped_refptr<storage::FileSystemContext> context,
+      FileSystemAccessSafeMoveHelper::HashCallback callback,
+      const storage::FileSystemURL& source_url,
+      storage::FileSystemOperationRunner*) {
     DCHECK_CURRENTLY_ON(BrowserThread::IO);
     auto calculator = base::MakeRefCounted<HashCalculator>(std::move(context),
                                                            std::move(callback));
@@ -54,7 +55,7 @@ class HashCalculator : public base::RefCounted<HashCalculator> {
   }
 
   HashCalculator(scoped_refptr<storage::FileSystemContext> context,
-                 SafeMoveHelper::HashCallback callback)
+                 FileSystemAccessSafeMoveHelper::HashCallback callback)
       : context_(std::move(context)), callback_(std::move(callback)) {
     DCHECK(context_);
   }
@@ -119,7 +120,8 @@ class HashCalculator : public base::RefCounted<HashCalculator> {
   SEQUENCE_CHECKER(sequence_checker_);
 
   const scoped_refptr<storage::FileSystemContext> context_;
-  SafeMoveHelper::HashCallback callback_ GUARDED_BY_CONTEXT(sequence_checker_);
+  FileSystemAccessSafeMoveHelper::HashCallback callback_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   const scoped_refptr<net::IOBufferWithSize> buffer_{
       base::MakeRefCounted<net::IOBufferWithSize>(8 * 1024)};
@@ -134,7 +136,7 @@ class HashCalculator : public base::RefCounted<HashCalculator> {
 
 }  // namespace
 
-SafeMoveHelper::SafeMoveHelper(
+FileSystemAccessSafeMoveHelper::FileSystemAccessSafeMoveHelper(
     base::WeakPtr<FileSystemAccessManagerImpl> manager,
     const FileSystemAccessManagerImpl::BindingContext& context,
     const storage::FileSystemURL& source_url,
@@ -151,9 +153,10 @@ SafeMoveHelper::SafeMoveHelper(
           std::move(quarantine_connection_callback)),
       has_transient_user_activation_(has_transient_user_activation) {}
 
-SafeMoveHelper::~SafeMoveHelper() = default;
+FileSystemAccessSafeMoveHelper::~FileSystemAccessSafeMoveHelper() = default;
 
-void SafeMoveHelper::Start(SafeMoveHelperCallback callback) {
+void FileSystemAccessSafeMoveHelper::Start(
+    FileSystemAccessSafeMoveHelperCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   callback_ = std::move(callback);
 
@@ -169,11 +172,13 @@ void SafeMoveHelper::Start(SafeMoveHelperCallback callback) {
     return;
   }
 
-  ComputeHashForSourceFile(base::BindOnce(&SafeMoveHelper::DoAfterWriteCheck,
-                                          weak_factory_.GetWeakPtr()));
+  ComputeHashForSourceFile(
+      base::BindOnce(&FileSystemAccessSafeMoveHelper::DoAfterWriteCheck,
+                     weak_factory_.GetWeakPtr()));
 }
 
-void SafeMoveHelper::ComputeHashForSourceFile(HashCallback callback) {
+void FileSystemAccessSafeMoveHelper::ComputeHashForSourceFile(
+    HashCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!manager_) {
@@ -190,9 +195,10 @@ void SafeMoveHelper::ComputeHashForSourceFile(HashCallback callback) {
                      std::move(wrapped_callback), source_url()));
 }
 
-void SafeMoveHelper::DoAfterWriteCheck(base::File::Error hash_result,
-                                       const std::string& hash,
-                                       int64_t size) {
+void FileSystemAccessSafeMoveHelper::DoAfterWriteCheck(
+    base::File::Error hash_result,
+    const std::string& hash,
+    int64_t size) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (hash_result != base::File::FILE_OK) {
@@ -224,11 +230,11 @@ void SafeMoveHelper::DoAfterWriteCheck(base::File::Error hash_result,
   item->has_user_gesture = has_transient_user_activation_;
   manager_->permission_context()->PerformAfterWriteChecks(
       std::move(item), context_.frame_id,
-      base::BindOnce(&SafeMoveHelper::DidAfterWriteCheck,
+      base::BindOnce(&FileSystemAccessSafeMoveHelper::DidAfterWriteCheck,
                      weak_factory_.GetWeakPtr()));
 }
 
-void SafeMoveHelper::DidAfterWriteCheck(
+void FileSystemAccessSafeMoveHelper::DidAfterWriteCheck(
     FileSystemAccessPermissionContext::AfterWriteCheckResult result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (result !=
@@ -257,12 +263,14 @@ void SafeMoveHelper::DidAfterWriteCheck(
       quarantine_connection_callback_.Run(
           quarantine_remote.BindNewPipeAndPassReceiver());
     }
-    result_callback = base::BindOnce(
-        &SafeMoveHelper::DidFileDoQuarantine, weak_factory_.GetWeakPtr(),
-        dest_url(), referrer_url, std::move(quarantine_remote));
+    result_callback =
+        base::BindOnce(&FileSystemAccessSafeMoveHelper::DidFileDoQuarantine,
+                       weak_factory_.GetWeakPtr(), dest_url(), referrer_url,
+                       std::move(quarantine_remote));
   } else {
-    result_callback = base::BindOnce(&SafeMoveHelper::DidFileSkipQuarantine,
-                                     weak_factory_.GetWeakPtr());
+    result_callback =
+        base::BindOnce(&FileSystemAccessSafeMoveHelper::DidFileSkipQuarantine,
+                       weak_factory_.GetWeakPtr());
   }
   manager_->DoFileSystemOperation(
       FROM_HERE, &storage::FileSystemOperationRunner::Move,
@@ -271,12 +279,13 @@ void SafeMoveHelper::DidAfterWriteCheck(
       std::make_unique<storage::CopyOrMoveHookDelegate>());
 }
 
-void SafeMoveHelper::DidFileSkipQuarantine(base::File::Error result) {
+void FileSystemAccessSafeMoveHelper::DidFileSkipQuarantine(
+    base::File::Error result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::move(callback_).Run(file_system_access_error::FromFileError(result));
 }
 
-void SafeMoveHelper::DidFileDoQuarantine(
+void FileSystemAccessSafeMoveHelper::DidFileDoQuarantine(
     const storage::FileSystemURL& target_url,
     const GURL& referrer_url,
     mojo::Remote<quarantine::mojom::Quarantine> quarantine_remote,
@@ -319,7 +328,7 @@ void SafeMoveHelper::DidFileDoQuarantine(
             ->browser()
             ->GetApplicationClientGUIDForQuarantineCheck(),
         mojo::WrapCallbackWithDefaultInvokeIfNotRun(
-            base::BindOnce(&SafeMoveHelper::DidAnnotateFile,
+            base::BindOnce(&FileSystemAccessSafeMoveHelper::DidAnnotateFile,
                            weak_factory_.GetWeakPtr(),
                            std::move(quarantine_remote)),
             quarantine::mojom::QuarantineFileResult::ANNOTATION_FAILED));
@@ -329,7 +338,7 @@ void SafeMoveHelper::DidFileDoQuarantine(
         FROM_HERE, {base::MayBlock()},
         base::BindOnce(&quarantine::SetInternetZoneIdentifierDirectly,
                        target_url.path(), authority_url, referrer_url),
-        base::BindOnce(&SafeMoveHelper::DidAnnotateFile,
+        base::BindOnce(&FileSystemAccessSafeMoveHelper::DidAnnotateFile,
                        weak_factory_.GetWeakPtr(),
                        std::move(quarantine_remote)));
 #else
@@ -339,7 +348,7 @@ void SafeMoveHelper::DidFileDoQuarantine(
   }
 }
 
-void SafeMoveHelper::DidAnnotateFile(
+void FileSystemAccessSafeMoveHelper::DidAnnotateFile(
     mojo::Remote<quarantine::mojom::Quarantine> quarantine_remote,
     quarantine::mojom::QuarantineFileResult result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

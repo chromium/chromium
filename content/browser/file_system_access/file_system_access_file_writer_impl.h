@@ -11,7 +11,7 @@
 #include "components/services/filesystem/public/mojom/types.mojom.h"
 #include "content/browser/file_system_access/file_system_access_file_handle_impl.h"
 #include "content/browser/file_system_access/file_system_access_handle_base.h"
-#include "content/browser/file_system_access/safe_move_helper.h"
+#include "content/browser/file_system_access/file_system_access_safe_move_helper.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -100,7 +100,8 @@ class CONTENT_EXPORT FileSystemAccessFileWriterImpl
   void CloseImpl(CloseCallback callback);
   void AbortImpl(AbortCallback callback);
   void DidReplaceSwapFile(
-      std::unique_ptr<content::SafeMoveHelper> safe_move_helper,
+      std::unique_ptr<content::FileSystemAccessSafeMoveHelper>
+          file_system_access_safe_move_helper,
       blink::mojom::FileSystemAccessErrorPtr result);
 
   bool is_close_pending() const {

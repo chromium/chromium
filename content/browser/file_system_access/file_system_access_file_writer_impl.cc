@@ -5,17 +5,12 @@
 #include "content/browser/file_system_access/file_system_access_file_writer_impl.h"
 
 #include "base/bind.h"
-#include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
-#include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
-#include "components/services/quarantine/quarantine.h"
 #include "content/browser/file_system_access/file_system_access_error.h"
 #include "content/browser/file_system_access/file_system_access_manager_impl.h"
-#include "content/browser/file_system_access/safe_move_helper.h"
-#include "content/public/browser/content_browser_client.h"
-#include "content/public/common/content_client.h"
+#include "content/browser/file_system_access/file_system_access_safe_move_helper.h"
+#include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_operation.h"
 #include "storage/browser/file_system/file_system_operation_runner.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_error.mojom.h"
@@ -249,21 +244,24 @@ void FileSystemAccessFileWriterImpl::CloseImpl(CloseCallback callback) {
 
   close_callback_ = std::move(callback);
 
-  auto safe_move_helper = std::make_unique<SafeMoveHelper>(
-      manager()->AsWeakPtr(), context(),
-      /*source_url=*/swap_url(),
-      /*dest_url=*/url(),
-      FileSystemOperation::CopyOrMoveOptionSet(
-          FileSystemOperation::CopyOrMoveOption::
-              kPreserveDestinationPermissions),
-      std::move(quarantine_connection_callback_),
-      has_transient_user_activation_);
+  auto file_system_access_safe_move_helper =
+      std::make_unique<FileSystemAccessSafeMoveHelper>(
+          manager()->AsWeakPtr(), context(),
+          /*source_url=*/swap_url(),
+          /*dest_url=*/url(),
+          FileSystemOperation::CopyOrMoveOptionSet(
+              FileSystemOperation::CopyOrMoveOption::
+                  kPreserveDestinationPermissions),
+          std::move(quarantine_connection_callback_),
+          has_transient_user_activation_);
   // Allows the unique pointer to be bound to the callback so the helper stays
   // alive until the operation completes.
-  SafeMoveHelper* raw_helper = safe_move_helper.get();
+  FileSystemAccessSafeMoveHelper* raw_helper =
+      file_system_access_safe_move_helper.get();
   raw_helper->Start(
       base::BindOnce(&FileSystemAccessFileWriterImpl::DidReplaceSwapFile,
-                     weak_factory_.GetWeakPtr(), std::move(safe_move_helper)));
+                     weak_factory_.GetWeakPtr(),
+                     std::move(file_system_access_safe_move_helper)));
 }
 
 void FileSystemAccessFileWriterImpl::AbortImpl(AbortCallback callback) {
@@ -284,7 +282,7 @@ void FileSystemAccessFileWriterImpl::AbortImpl(AbortCallback callback) {
 }
 
 void FileSystemAccessFileWriterImpl::DidReplaceSwapFile(
-    std::unique_ptr<content::SafeMoveHelper> /*safe_move_helper*/,
+    std::unique_ptr<FileSystemAccessSafeMoveHelper> /*move_helper*/,
     blink::mojom::FileSystemAccessErrorPtr result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (result->status != FileSystemAccessStatus::kOk) {

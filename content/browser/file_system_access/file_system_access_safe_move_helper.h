@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_FILE_SYSTEM_ACCESS_SAFE_MOVE_HELPER_H_
-#define CONTENT_BROWSER_FILE_SYSTEM_ACCESS_SAFE_MOVE_HELPER_H_
+#ifndef CONTENT_BROWSER_FILE_SYSTEM_ACCESS_FILE_SYSTEM_ACCESS_SAFE_MOVE_HELPER_H_
+#define CONTENT_BROWSER_FILE_SYSTEM_ACCESS_FILE_SYSTEM_ACCESS_SAFE_MOVE_HELPER_H_
 
 #include "base/files/file.h"
 #include "base/sequence_checker.h"
@@ -22,12 +22,12 @@ namespace content {
 // Helper class which moves files (and eventually directories). Safe browsing
 // checks are performed and the mark of the web is added for certain file system
 // types, as appropriate.
-class CONTENT_EXPORT SafeMoveHelper {
+class CONTENT_EXPORT FileSystemAccessSafeMoveHelper {
  public:
-  using SafeMoveHelperCallback =
+  using FileSystemAccessSafeMoveHelperCallback =
       base::OnceCallback<void(blink::mojom::FileSystemAccessErrorPtr)>;
 
-  SafeMoveHelper(
+  FileSystemAccessSafeMoveHelper(
       base::WeakPtr<FileSystemAccessManagerImpl> manager,
       const FileSystemAccessManagerImpl::BindingContext& context,
       const storage::FileSystemURL& source_url,
@@ -35,11 +35,13 @@ class CONTENT_EXPORT SafeMoveHelper {
       storage::FileSystemOperation::CopyOrMoveOptionSet options,
       download::QuarantineConnectionCallback quarantine_connection_callback,
       bool has_transient_user_activation);
-  SafeMoveHelper(const SafeMoveHelper&) = delete;
-  SafeMoveHelper& operator=(const SafeMoveHelper&) = delete;
-  ~SafeMoveHelper();
+  FileSystemAccessSafeMoveHelper(const FileSystemAccessSafeMoveHelper&) =
+      delete;
+  FileSystemAccessSafeMoveHelper& operator=(
+      const FileSystemAccessSafeMoveHelper&) = delete;
+  ~FileSystemAccessSafeMoveHelper();
 
-  void Start(SafeMoveHelperCallback callback);
+  void Start(FileSystemAccessSafeMoveHelperCallback callback);
 
   const storage::FileSystemURL& source_url() const { return source_url_; }
   const storage::FileSystemURL& dest_url() const { return dest_url_; }
@@ -93,12 +95,13 @@ class CONTENT_EXPORT SafeMoveHelper {
   bool has_transient_user_activation_ GUARDED_BY_CONTEXT(sequence_checker_) =
       false;
 
-  SafeMoveHelperCallback callback_ GUARDED_BY_CONTEXT(sequence_checker_);
+  FileSystemAccessSafeMoveHelperCallback callback_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
-  base::WeakPtrFactory<SafeMoveHelper> weak_factory_
+  base::WeakPtrFactory<FileSystemAccessSafeMoveHelper> weak_factory_
       GUARDED_BY_CONTEXT(sequence_checker_){this};
 };
 
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_FILE_SYSTEM_ACCESS_SAFE_MOVE_HELPER_H_
+#endif  // CONTENT_BROWSER_FILE_SYSTEM_ACCESS_FILE_SYSTEM_ACCESS_SAFE_MOVE_HELPER_H_

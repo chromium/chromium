@@ -2,14 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/file_system_access/safe_move_helper.h"
+#include "content/browser/file_system_access/file_system_access_safe_move_helper.h"
 
 #include <memory>
 #include <string>
 #include <utility>
 
-#include "base/bind.h"
-#include "base/callback_helpers.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/guid.h"
@@ -18,6 +16,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
+#include "content/browser/file_system_access/file_system_access_safe_move_helper.h"
 #include "content/browser/file_system_access/file_system_access_write_lock_manager.h"
 #include "content/browser/file_system_access/fixed_file_system_access_permission_grant.h"
 #include "content/browser/file_system_access/mock_file_system_access_permission_context.h"
@@ -101,9 +100,9 @@ std::string GetHexEncodedString(const std::string& input) {
   return base::HexEncode(base::as_bytes(base::make_span(input)));
 }
 
-class SafeMoveHelperTest : public testing::Test {
+class FileSystemAccessSafeMoveHelperTest : public testing::Test {
  public:
-  SafeMoveHelperTest()
+  FileSystemAccessSafeMoveHelperTest()
       : task_environment_(base::test::TaskEnvironment::MainThreadType::IO) {}
 
   virtual FileSystemAccessPermissionContext* permission_context() {
@@ -157,7 +156,7 @@ class SafeMoveHelperTest : public testing::Test {
         test_dest_url_,
         FileSystemAccessWriteLockManager::WriteLockType::kShared));
 
-    helper_ = std::make_unique<SafeMoveHelper>(
+    helper_ = std::make_unique<FileSystemAccessSafeMoveHelper>(
         manager_->AsWeakPtr(),
         FileSystemAccessManagerImpl::BindingContext(kTestStorageKey, kTestURL,
                                                     kFrameId),
@@ -204,10 +203,10 @@ class SafeMoveHelperTest : public testing::Test {
           FixedFileSystemAccessPermissionGrant::PermissionStatus::GRANTED,
           base::FilePath());
 
-  std::unique_ptr<SafeMoveHelper> helper_;
+  std::unique_ptr<FileSystemAccessSafeMoveHelper> helper_;
 };
 
-TEST_F(SafeMoveHelperTest, HashSimpleOK) {
+TEST_F(FileSystemAccessSafeMoveHelperTest, HashSimpleOK) {
   EXPECT_TRUE(base::WriteFile(test_source_url_.path(), "abc"));
 
   base::RunLoop loop;
@@ -224,7 +223,7 @@ TEST_F(SafeMoveHelperTest, HashSimpleOK) {
   loop.Run();
 }
 
-TEST_F(SafeMoveHelperTest, HashEmptyOK) {
+TEST_F(FileSystemAccessSafeMoveHelperTest, HashEmptyOK) {
   base::RunLoop loop;
   helper_->ComputeHashForSourceFileForTesting(base::BindLambdaForTesting(
       [&](base::File::Error result, const std::string& hash_value,
@@ -239,7 +238,7 @@ TEST_F(SafeMoveHelperTest, HashEmptyOK) {
   loop.Run();
 }
 
-TEST_F(SafeMoveHelperTest, HashNonExistingFileFails) {
+TEST_F(FileSystemAccessSafeMoveHelperTest, HashNonExistingFileFails) {
   ASSERT_EQ(base::File::FILE_OK,
             storage::AsyncFileTestHelper::Remove(file_system_context_.get(),
                                                  test_source_url_,
@@ -254,7 +253,7 @@ TEST_F(SafeMoveHelperTest, HashNonExistingFileFails) {
   loop.Run();
 }
 
-TEST_F(SafeMoveHelperTest, HashLargerFileOK) {
+TEST_F(FileSystemAccessSafeMoveHelperTest, HashLargerFileOK) {
   size_t target_size = 9 * 1024u;
   std::string file_data(target_size, '0');
   EXPECT_TRUE(base::WriteFile(test_source_url_.path(), file_data));
@@ -273,7 +272,7 @@ TEST_F(SafeMoveHelperTest, HashLargerFileOK) {
   loop.Run();
 }
 
-TEST_F(SafeMoveHelperTest, Simple) {
+TEST_F(FileSystemAccessSafeMoveHelperTest, Simple) {
   EXPECT_TRUE(base::WriteFile(test_source_url_.path(), "abc"));
 
   base::RunLoop loop;
@@ -291,7 +290,7 @@ TEST_F(SafeMoveHelperTest, Simple) {
       file_system_context_.get(), test_dest_url_, 3));
 }
 
-TEST_F(SafeMoveHelperTest, DestExists) {
+TEST_F(FileSystemAccessSafeMoveHelperTest, DestExists) {
   EXPECT_TRUE(base::WriteFile(test_source_url_.path(), "abc"));
 
   ASSERT_EQ(base::File::FILE_OK,
@@ -314,7 +313,7 @@ TEST_F(SafeMoveHelperTest, DestExists) {
       file_system_context_.get(), test_dest_url_, 3));
 }
 
-TEST_F(SafeMoveHelperTest, SecurityCheckFailed) {
+TEST_F(FileSystemAccessSafeMoveHelperTest, SecurityCheckFailed) {
   quarantine_.MakeSecurityCheckFail();
 
   EXPECT_TRUE(base::WriteFile(test_source_url_.path(), "abc"));
@@ -336,7 +335,8 @@ TEST_F(SafeMoveHelperTest, SecurityCheckFailed) {
       file_system_context_.get(), test_dest_url_, 3));
 }
 
-class SafeMoveHelperAfterWriteChecksTest : public SafeMoveHelperTest {
+class FileSystemAccessSafeMoveHelperAfterWriteChecksTest
+    : public FileSystemAccessSafeMoveHelperTest {
  public:
   FileSystemAccessPermissionContext* permission_context() override {
     return &permission_context_;
@@ -347,7 +347,7 @@ class SafeMoveHelperAfterWriteChecksTest : public SafeMoveHelperTest {
       permission_context_;
 };
 
-TEST_F(SafeMoveHelperAfterWriteChecksTest, Allow) {
+TEST_F(FileSystemAccessSafeMoveHelperAfterWriteChecksTest, Allow) {
   EXPECT_TRUE(base::WriteFile(test_source_url_.path(), "abc"));
 
   std::string expected_hash;
@@ -384,7 +384,7 @@ TEST_F(SafeMoveHelperAfterWriteChecksTest, Allow) {
       file_system_context_.get(), test_dest_url_, 3));
 }
 
-TEST_F(SafeMoveHelperAfterWriteChecksTest, Block) {
+TEST_F(FileSystemAccessSafeMoveHelperAfterWriteChecksTest, Block) {
   EXPECT_TRUE(base::WriteFile(test_source_url_.path(), "abc"));
 
   EXPECT_CALL(permission_context_, PerformAfterWriteChecks_(_, kFrameId, _))
