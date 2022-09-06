@@ -235,7 +235,8 @@ public class GestureListenerManagerImpl
     }
 
     @CalledByNative
-    private void onFlingEnd() {
+    @VisibleForTesting
+    void onFlingEnd() {
         mHasActiveFlingScroll = false;
         for (mIterator.rewind(); mIterator.hasNext();) {
             mIterator.next().onFlingEndGesture(verticalScrollOffset(), verticalScrollExtent());
@@ -243,7 +244,8 @@ public class GestureListenerManagerImpl
     }
 
     @CalledByNative
-    private void onEventAck(int event, boolean consumed, float scrollOffsetX, float scrollOffsetY) {
+    @VisibleForTesting
+    void onEventAck(int event, boolean consumed, float scrollOffsetX, float scrollOffsetY) {
         switch (event) {
             case EventType.GESTURE_FLING_START:
                 // If we're here, then |consumed| is false as otherwise #onFlingStart() would have
@@ -309,7 +311,8 @@ public class GestureListenerManagerImpl
      * Called when a gesture event ack happens for |EventType.GESTURE_SCROLL_BEGIN|.
      */
     @CalledByNative
-    private void onScrollBegin(boolean isDirectionUp) {
+    @VisibleForTesting
+    void onScrollBegin(boolean isDirectionUp) {
         setGestureScrollInProgress(true);
         for (mIterator.rewind(); mIterator.hasNext();) {
             mIterator.next().onScrollStarted(
@@ -321,7 +324,8 @@ public class GestureListenerManagerImpl
      * Called when a gesture event ack happens for |EventType.GESTURE_FLING_START|.
      */
     @CalledByNative
-    private void onFlingStart(boolean isDirectionUp) {
+    @VisibleForTesting
+    void onFlingStart(boolean isDirectionUp) {
         // The view expects the fling velocity in pixels/s.
         mHasActiveFlingScroll = true;
         for (mIterator.rewind(); mIterator.hasNext();) {
@@ -336,7 +340,8 @@ public class GestureListenerManagerImpl
     }
 
     @CalledByNative
-    private void resetPopupsAndInput(boolean renderProcessGone) {
+    @VisibleForTesting
+    void resetPopupsAndInput(boolean renderProcessGone) {
         PopupController.hidePopupsAndClearSelection(mWebContents);
         resetScrollInProgress();
         if (renderProcessGone) {
