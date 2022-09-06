@@ -121,6 +121,27 @@ promise_test(async function() {
   checkSize(100, 50, "Sizing normally");
 
   await nextRendering();
+  parent.classList.add("hidden");
+  checkSize(0, 0, "No box");
+
+  await nextRendering();
+  parent.classList.remove("hidden");
+  contents.classList.remove("size-100-50");
+  checkSize(0, 0, "Sizing normally to 0x0");
+
+  await nextRendering();
+  contents.classList.add("size-100-50");
+  target.classList.add("skip-contents");
+  checkSize(0, 0, "Using the new last remembered size");
+}, "Last remembered size can be set to 0 after losing display:none");
+
+promise_test(async function() {
+  this.add_cleanup(cleanup);
+  target.classList.add("cis-auto");
+  contents.classList.add("size-100-50");
+  checkSize(100, 50, "Sizing normally");
+
+  await nextRendering();
   target.classList.add("skip-contents");
   contents.classList.remove("size-100-50");
   checkSize(100, 50, "Using last remembered size");

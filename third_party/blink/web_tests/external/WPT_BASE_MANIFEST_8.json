@@ -182973,6 +182973,58 @@
        {}
       ]
      ],
+     "text-decoration-skip-spaces-001.html": [
+      "151887c8d5062dd92ff2d7776cba679b7412ac69",
+      [
+       null,
+       [
+        [
+         "/css/css-text-decor/reference/text-decoration-skip-spaces-001-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "text-decoration-skip-spaces-002.html": [
+      "ba12899798b5ed57b4846e7839b84120e68be83d",
+      [
+       null,
+       [
+        [
+         "/css/css-text-decor/reference/text-decoration-skip-spaces-002-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "text-decoration-skip-spaces-003.html": [
+      "bde91c76051fa13002f67a7e911eeb56c78aec45",
+      [
+       null,
+       [
+        [
+         "/css/css-text-decor/reference/text-decoration-skip-spaces-002-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "text-decoration-skip-spaces-004.html": [
+      "39f6d329a5a1ca87233082e4b82865acf5466edf",
+      [
+       null,
+       [
+        [
+         "/css/css-text-decor/reference/text-decoration-skip-spaces-002-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "text-decoration-style-multiple.html": [
       "8068e8ee37496549471cf118a904ae43f4d69d75",
       [
@@ -226108,6 +226160,19 @@
        {}
       ]
      ],
+     "backdrop-filter-invalid.html": [
+      "57d69b8b8dcfff1b22f1efc59e3f5e0f744ecc15",
+      [
+       null,
+       [
+        [
+         "/css/filter-effects/filter-invalid-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "backdrop-filter-isolation-fixed.html": [
       "9954ecb86de8b3306c61b042941a7b69f8480a22",
       [
@@ -226233,6 +226298,19 @@
         [
          "/css/filter-effects/backdrop-filter-root-element-ref.html",
          "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "backdrop-filter-svg-background-image-blur.html": [
+      "9cd18b0542c86911b3a0b774fe892a61102c8b85",
+      [
+       null,
+       [
+        [
+         "/css/reference/blank.html",
+         "!="
         ]
        ],
        {}
@@ -227442,6 +227520,19 @@
        {}
       ]
      ],
+     "filter-invalid.html": [
+      "3aad44efd4ece87e680d31613c641975b2aeb1c6",
+      [
+       null,
+       [
+        [
+         "/css/filter-effects/filter-invalid-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "filter-invert-001-test.html": [
       "001e3a6e1dcdfb47a9a172c866e243ffa1f40e0d",
       [
@@ -227554,6 +227645,19 @@
         [
          "/css/filter-effects/filter-subregion-01-ref.html",
          "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "filter-svg-background-image-blur.html": [
+      "ab56d73c0547e923a034f9a7c431fe3b2ed51b6e",
+      [
+       null,
+       [
+        [
+         "/css/reference/blank.html",
+         "!="
         ]
        ],
        {}
@@ -243660,6 +243764,19 @@
         [
          [
           "/mathml/relations/css-styling/mathvariant-case-sensitivity-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "mathvariant-double-struck-font-style-font-weight.html": [
+       "2e283e1d7022d69eeee89d85ad562586a5aacd4b",
+       [
+        null,
+        [
+         [
+          "/mathml/relations/css-styling/mathvariant-double-struck-font-style-font-weight-ref.html",
           "=="
          ]
         ],
@@ -288986,7 +289103,7 @@
      ],
      "contain-intrinsic-size": {
       "auto-006-expected.txt": [
-       "de0af677f3ccc047f3b5976a50aaad58fd986765",
+       "0ca0e43a5194c7dd5302793a3a5bac2436739c50",
        []
       ],
       "auto-007-expected.txt": [
@@ -293699,6 +293816,14 @@
        "f7b71783b555c92fe02916ece3e377a13ef7c09b",
        []
       ],
+      "text-decoration-skip-spaces-001-ref.html": [
+       "bc3a101330cae358afd5556fda89f64d107a5d74",
+       []
+      ],
+      "text-decoration-skip-spaces-002-ref.html": [
+       "3da02d95f470a3e948ea7216e56fc22fb2f8c5e7",
+       []
+      ],
       "text-decoration-style-multiple-ref.html": [
        "f80396930e1bbaf06df7b999cf657cf74af99bc0",
        []
@@ -297609,11 +297734,11 @@
       []
      ],
      "acos-asin-atan-atan2-computed-expected.txt": [
-      "c5224929d7821f1ae7b53c18a9ac4359f9c0f76f",
+      "15263b2bd5044f179904ec084dbc6a52fc217e81",
       []
      ],
      "acos-asin-atan-atan2-serialize-expected.txt": [
-      "34c0d5fb4c6cf8b39c72b147c4ebfb84e00f29b2",
+      "b44f21ebf6f55428a63e37644e03a0075ac572d3",
       []
      ],
      "animations": {
@@ -300903,7 +301028,7 @@
       []
      ],
      "getComputedStyle-detached-subtree-expected.txt": [
-      "825295a7b0603c56f0915c9d95617b32a6cf9bbe",
+      "398bd27e88525133b181f1006d057818a206e6a4",
       []
      ],
      "getComputedStyle-insets-absolute-expected.txt": [
@@ -300915,7 +301040,7 @@
       []
      ],
      "getComputedStyle-pseudo-expected.txt": [
-      "1318b2643ed9f769c3485665027dc9392fa20e17",
+      "71d4474e8a37a23a543d1365ab86a26ea7f7107d",
       []
      ],
      "getComputedStyle-width-scroll.tentative-expected.txt": [
@@ -301734,6 +301859,10 @@
      ],
      "filter-hue_rotate-001-ref.html": [
       "dcb4fb6b3facd908e94643c2e951c53d588fa2ff",
+      []
+     ],
+     "filter-invalid-ref.html": [
+      "086dfe97a0dffb8d0e84fc717d865f3b97ba1b84",
       []
      ],
      "filter-invert-001-ref.html": [
@@ -324250,6 +324379,12 @@
           "ba2edfbf270583ab62e32647fcd234f7b039ed83",
           []
          ]
+        },
+        "support": {
+         "async-script.html": [
+          "d513bafe4f6db18b4d5685ceffa1c9ce03837350",
+          []
+         ]
         }
        },
        "defer.js": [
@@ -331027,6 +331162,10 @@
       ],
       "mathvariant-case-sensitivity-ref.html": [
        "28d9acc1f4c2466c0d13c6bacc4e454b3bf365f3",
+       []
+      ],
+      "mathvariant-double-struck-font-style-font-weight-ref.html": [
+       "817723a62d3eec1e4f00f0229338f4b34e786e9d",
        []
       ],
       "mathvariant-double-struck-ref.html": [
@@ -347102,7 +347241,13 @@
     "idlharness.https.any.worker-expected.txt": [
      "53c04a27703fe53fe16940e0b838228b5c303acc",
      []
-    ]
+    ],
+    "resources": {
+     "utils.js": [
+      "5754de2d5d993ed87a37836855ce365dcd24fc6b",
+      []
+     ]
+    }
    },
    "webrtc": {
     "DIR_METADATA": [
@@ -402116,7 +402261,7 @@
        ]
       ],
       "auto-006.html": [
-       "d88f51ba5eaad0b8cef23e5e32644797b4346338",
+       "adc2a6dcdea93fd2677fd6b0b840fb7b3befe5fb",
        [
         null,
         {}
@@ -410405,7 +410550,7 @@
       ]
      ],
      "acos-asin-atan-atan2-serialize.html": [
-      "54f6ee56685fcabec858092ece278fdff871ec42",
+      "4db5af1617d9691a8f106ff54713c8a166173a24",
       [
        null,
        {}
@@ -492782,9 +492927,13 @@
          ]
         ],
         "async-script.html": [
-         "ea6c546781106d5c76589c49f7db3e82096b7a74",
+         "dea7f987bfa9a67a6662972b7965ac9f26df9b57",
          [
           null,
+          {}
+         ],
+         [
+          "html/semantics/scripting-1/the-script-element/defer-script/async-script.html?reload",
           {}
          ]
         ],
@@ -537490,6 +537639,13 @@
        {}
       ]
      ],
+     "scroll-timeline-in-container-query.html": [
+      "f74fa59bd3af03dbaddce131538c6243b595416f",
+      [
+       null,
+       {}
+      ]
+     ],
      "scroll-timeline-inactive.html": [
       "92165d7046c19e10dfcdb74b2b32f5216bf2abc4",
       [
@@ -537541,6 +537697,13 @@
      ],
      "scroll-timeline-shorthand.tentative.html": [
       "b340ff34ffe4e2ba0d93014ce114656ec3fb5373",
+      [
+       null,
+       {}
+      ]
+     ],
+     "scroll-timeline-sibling-gcs.html": [
+      "21d5b8c04fe066c48640832653f2e7a735bef3c7",
       [
        null,
        {}
@@ -544655,7 +544818,7 @@
       ]
      ],
      "workers.html": [
-      "83c281b209ef749518673b91bab031072a41979e",
+      "daaedf481c93bb1bf98b1c6a45f9a9945077e6f0",
       [
        null,
        {

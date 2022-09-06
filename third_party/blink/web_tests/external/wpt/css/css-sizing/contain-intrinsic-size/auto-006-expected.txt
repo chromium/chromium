@@ -1,6 +1,7 @@
 This is a testharness.js-based test.
 PASS Basic usage
 FAIL Last remembered size can be 0 assert_equals: Using last remembered size - clientWidth expected 0 but got 75
+FAIL Last remembered size can be set to 0 after losing display:none assert_equals: Using the new last remembered size - clientWidth expected 0 but got 100
 PASS Last remembered size is logical
 PASS Last remembered size survives box destruction
 PASS Last remembered size survives display type changes
