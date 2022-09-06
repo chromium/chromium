@@ -352,6 +352,9 @@ const char kPrerender2MemoryThresholdParamName[] = "memory_threshold_in_mb";
 const char kPrerender2MemoryAcceptablePercentOfSystemMemoryParamName[] =
     "acceptable_percent_of_system_memory";
 
+const base::Feature kPrerender2InBackground{"Prerender2InBackground",
+                                            base::FEATURE_DISABLED_BY_DEFAULT};
+
 bool IsPrerender2Enabled() {
   return base::FeatureList::IsEnabled(blink::features::kPrerender2);
 }

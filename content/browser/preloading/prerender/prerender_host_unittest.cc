@@ -457,5 +457,46 @@ TEST_F(PrerenderHostTest, UrlMatchPredicate) {
       prerender_host->IsUrlMatch(GURL("https://example2.com/empty.html")));
 }
 
+// TODO(crbug.com/1356907): Remove this and merge it to PrerenderHostTest once
+// kPrerender2InBackground is enabled by default.
+class PrerenderHostInBackgroundTest : public PrerenderHostTest {
+ public:
+  PrerenderHostInBackgroundTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {blink::features::kPrerender2,
+         // Enable to run prerenderings in the background.
+         blink::features::kPrerender2InBackground},
+        // Disable the memory requirement of Prerender2 so the test can run on
+        // any bot.
+        {blink::features::kPrerender2MemoryControls});
+  }
+
+  ~PrerenderHostInBackgroundTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(PrerenderHostInBackgroundTest,
+       DontCancelPrerenderWhenTriggerGetsHidden) {
+  std::unique_ptr<TestWebContents> web_contents =
+      CreateWebContents(GURL("https://example.com/"));
+  const GURL kPrerenderingUrl = GURL("https://example.com/empty.html");
+  RenderFrameHostImpl* initiator_rfh = web_contents->GetPrimaryMainFrame();
+  PrerenderHostRegistry* registry = web_contents->GetPrerenderHostRegistry();
+  const int prerender_frame_tree_node_id = registry->CreateAndStartHost(
+      GeneratePrerenderAttributes(kPrerenderingUrl, initiator_rfh),
+      *web_contents);
+  PrerenderHost* prerender_host =
+      registry->FindNonReservedHostById(prerender_frame_tree_node_id);
+  ASSERT_NE(prerender_host, nullptr);
+  CommitPrerenderNavigation(*prerender_host);
+
+  // Changing the visibility state to HIDDEN will not affect prerendering.
+  web_contents->WasHidden();
+  web_contents->ActivatePrerenderedPage(kPrerenderingUrl);
+  ExpectFinalStatus(PrerenderHost::FinalStatus::kActivated);
+}
+
 }  // namespace
 }  // namespace content

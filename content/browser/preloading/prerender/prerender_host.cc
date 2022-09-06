@@ -259,6 +259,11 @@ void PrerenderHost::DidFinishNavigation(NavigationHandle* navigation_handle) {
 
 void PrerenderHost::OnVisibilityChanged(Visibility visibility) {
   TRACE_EVENT("navigation", "PrerenderHost::OnVisibilityChanged");
+  // Keep prerenderings alive in the background when their visibility state
+  // changes to HIDDEN if the feature is enabled.
+  if (base::FeatureList::IsEnabled(blink::features::kPrerender2InBackground))
+    return;
+
   if (visibility == Visibility::HIDDEN) {
     Cancel(FinalStatus::kTriggerBackgrounded);
   }
