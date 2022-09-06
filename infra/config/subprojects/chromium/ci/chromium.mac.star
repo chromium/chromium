@@ -443,6 +443,9 @@ ios_builder(
             short_name = "ctl",
         ),
     ],
+    goma_backend = None,
+    reclient_instance = reclient.instance.DEFAULT_TRUSTED,
+    reclient_jobs = reclient.jobs.DEFAULT,
 )
 
 ios_builder(
@@ -475,6 +478,9 @@ ios_builder(
             short_name = "dev",
         ),
     ],
+    goma_backend = None,
+    reclient_instance = reclient.instance.DEFAULT_TRUSTED,
+    reclient_jobs = reclient.jobs.DEFAULT,
     # We don't have necessary capacity to run this configuration in CQ, but it
     # is part of the main waterfall
 )
