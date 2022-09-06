@@ -2009,6 +2009,8 @@ bool NGBoxFragmentPainter::NodeAtPoint(const HitTestContext& hit_test,
                 physical_offset - box_item_->OffsetInContainerFragment()))
           return true;
       } else {
+        if (UpdateHitTestResultForView(bounds_rect, hit_test))
+          return true;
         if (hit_test.AddNodeToResult(fragment.NodeForHitTest(), &box_fragment_,
                                      bounds_rect, physical_offset))
           return true;
@@ -2017,6 +2019,27 @@ bool NGBoxFragmentPainter::NodeAtPoint(const HitTestContext& hit_test,
   }
 
   return false;
+}
+
+bool NGBoxFragmentPainter::UpdateHitTestResultForView(
+    const PhysicalRect& bounds_rect,
+    const HitTestContext& hit_test) const {
+  const LayoutObject* layout_object = PhysicalFragment().GetLayoutObject();
+  if (!layout_object || !layout_object->IsLayoutView() ||
+      hit_test.result->InnerNode()) {
+    return false;
+  }
+  auto* element = layout_object->GetDocument().documentElement();
+  if (!element)
+    return false;
+  const auto children = PhysicalFragment().Children();
+  auto it = std::find_if(
+      children.begin(), children.end(),
+      [element](const NGLink& link) { return link->GetNode() == element; });
+  if (it == children.end())
+    return false;
+  return hit_test.AddNodeToResultWithContentOffset(
+      element, To<NGPhysicalBoxFragment>(**it), bounds_rect, it->Offset());
 }
 
 bool NGBoxFragmentPainter::HitTestAllPhases(

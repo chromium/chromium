@@ -290,6 +290,9 @@ class CORE_EXPORT NGBoxFragmentPainter : public BoxPainterBase {
   bool HitTestOverflowControl(const HitTestContext&,
                               PhysicalOffset accumulated_offset);
 
+  bool UpdateHitTestResultForView(const PhysicalRect& bounds_rect,
+                                  const HitTestContext& hit_test) const;
+
   const NGPhysicalBoxFragment& PhysicalFragment() const {
     return box_fragment_;
   }
