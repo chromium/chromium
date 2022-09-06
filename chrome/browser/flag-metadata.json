@@ -293,11 +293,6 @@
     "expiry_milestone": 102
   },
   {
-    "name": "ash-enable-pip-rounded-corners",
-    "owners": [ "edcourtney" ],
-    "expiry_milestone": 96
-  },
-  {
     "name": "ash-enable-unified-desktop",
     "owners": [ "//ash/OWNERS" ],
     // Unified desktop can be enabled by enterprise policy. The switch exists in

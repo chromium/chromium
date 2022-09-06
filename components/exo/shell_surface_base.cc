@@ -7,7 +7,6 @@
 #include <algorithm>
 
 #include "ash/constants/ash_constants.h"
-#include "ash/constants/ash_features.h"
 #include "ash/display/screen_orientation_controller.h"
 #include "ash/frame/non_client_frame_view_ash.h"
 #include "ash/public/cpp/ash_constants.h"
@@ -1545,8 +1544,6 @@ void ShellSurfaceBase::UpdateShadow() {
 
 void ShellSurfaceBase::UpdateCornerRadius() {
   if (!widget_)
-    return;
-  if (!ash::features::IsPipRoundedCornersEnabled())
     return;
 
   ash::WindowState* window_state =

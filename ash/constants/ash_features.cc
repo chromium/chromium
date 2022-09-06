@@ -1264,10 +1264,6 @@ const base::Feature kPhoneHubCallNotification{
 const base::Feature kPhoneHubMonochromeNotificationIcons{
     "PhoneHubMonochromeNotificationIcons", base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Enables rounded corners for the Picture-in-picture window.
-const base::Feature kPipRoundedCorners{"PipRoundedCorners",
-                                       base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Enables or disables the preference of using constant frame rate for camera
 // when streaming.
 const base::Feature kPreferConstantFrameRate{"PreferConstantFrameRate",
@@ -2365,10 +2361,6 @@ bool IsPinAutosubmitBackfillFeatureEnabled() {
 
 bool IsPinAutosubmitFeatureEnabled() {
   return base::FeatureList::IsEnabled(kQuickUnlockPinAutosubmit);
-}
-
-bool IsPipRoundedCornersEnabled() {
-  return base::FeatureList::IsEnabled(kPipRoundedCorners);
 }
 
 bool IsPolyDevicePairingAllowed() {

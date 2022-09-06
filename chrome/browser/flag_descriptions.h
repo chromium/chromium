@@ -2693,9 +2693,6 @@ extern const char kArcEnableUsapDesc[];
 extern const char kArcEnableVirtioBlkForDataName[];
 extern const char kArcEnableVirtioBlkForDataDesc[];
 
-extern const char kAshEnablePipRoundedCornersName[];
-extern const char kAshEnablePipRoundedCornersDescription[];
-
 extern const char kAshEnableUnifiedDesktopName[];
 extern const char kAshEnableUnifiedDesktopDescription[];
 

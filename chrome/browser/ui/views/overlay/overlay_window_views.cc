@@ -30,9 +30,7 @@
 #include "ui/views/window/non_client_view.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/ash_constants.h"
-#include "ash/public/cpp/rounded_corner_utils.h"
 #include "ash/public/cpp/window_properties.h"  // nogncheck
 #include "ui/aura/window.h"
 #endif
@@ -290,14 +288,6 @@ void OverlayWindowViews::DoShowInactive() {
   // its aspect ratio. Let Exo handle adding a rounded corner decorartor.
   desktop_window_tree_host->GetWaylandExtension()->SetPip();
   desktop_window_tree_host->SetAspectRatio(gfx::SizeF(natural_size_));
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // For rounded corners.
-  if (ash::features::IsPipRoundedCornersEnabled()) {
-    ash::SetCornerRadius(GetNativeWindow(), GetRootView()->layer(),
-                         chromeos::kPipRoundedCornerRadius);
-  }
 #endif
 
   // If this is not the first time the window is shown, this will be a no-op.
