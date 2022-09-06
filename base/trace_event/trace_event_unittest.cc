@@ -946,13 +946,7 @@ class AfterStateChangeEnabledStateObserver
   }
 
   void OnTraceLogDisabled() override {
-    // Perfetto intentionally notifies observers before tracing is disabled so
-    // that final trace events may still be written.
-#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
-    EXPECT_TRUE(TraceLog::GetInstance()->IsEnabled());
-#else
     EXPECT_FALSE(TraceLog::GetInstance()->IsEnabled());
-#endif
   }
 };
 

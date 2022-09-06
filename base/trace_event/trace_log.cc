@@ -1027,7 +1027,7 @@ void TraceLog::SetEnabled(const TraceConfig& trace_config,
 #if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 perfetto::DataSourceConfig TraceLog::GetCurrentTrackEventDataSourceConfig()
     const {
-  AutoLock lock(lock_);
+  AutoLock lock(track_event_lock_);
   return track_event_config_;
 }
 
@@ -2316,8 +2316,9 @@ tracing::PerfettoPlatform* TraceLog::GetOrCreatePerfettoPlatform() {
 }
 
 void TraceLog::OnSetup(const perfetto::DataSourceBase::SetupArgs& args) {
-  AutoLock lock(lock_);
+  AutoLock lock(track_event_lock_);
   track_event_config_ = *args.config;
+  track_event_enabled_ = true;
 }
 
 void TraceLog::OnStart(const perfetto::DataSourceBase::StartArgs&) {
@@ -2333,6 +2334,14 @@ void TraceLog::OnStart(const perfetto::DataSourceBase::StartArgs&) {
 
 void TraceLog::OnStop(const perfetto::DataSourceBase::StopArgs&) {
   AutoLock lock(observers_lock_);
+  {
+    // We can't use |lock_| because OnStop() can be called from within
+    // SetDisabled(). We also can't use |observers_lock_|, because observers
+    // below can call into IsEnabled(), which needs to access
+    // |track_event_enabled_|. So we use a separate lock.
+    AutoLock track_event_lock(track_event_lock_);
+    track_event_enabled_ = false;
+  }
   for (auto* it : enabled_state_observers_)
     it->OnTraceLogDisabled();
   for (const auto& it : async_observers_) {
