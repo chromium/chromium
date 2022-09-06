@@ -172,7 +172,11 @@ class AssistiveSuggester : public SuggestionsSource {
   void RecordTextInputStateMetrics(
       const AssistiveSuggesterSwitch::EnabledSuggestions& enabled_suggestions);
 
-  void HandleLongpressEnabledKeyEvent(const ui::KeyEvent& key_character);
+  // Does longpress related processing (if enabled).
+  // Returns true if we block the keyevent from passing to IME, and stop
+  // dispatch.
+  // Returns false, if we want IME to process the event and dispatch it.
+  bool HandleLongpressEnabledKeyEvent(const ui::KeyEvent& key_character);
 
   void HandleEnabledSuggestionsOnFocus(
       const AssistiveSuggesterSwitch::EnabledSuggestions& enabled_suggestions);

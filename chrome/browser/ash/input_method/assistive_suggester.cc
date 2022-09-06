@@ -412,27 +412,23 @@ bool AssistiveSuggester::OnKeyEvent(const ui::KeyEvent& event) {
     }
   }
 
-  if (IsDiacriticsOnPhysicalKeyboardLongpressEnabled()) {
-    // Longpress diacritics behaviour overrides the longpress to repeat key
-    // behaviour for alphabetical keys.
-    // TODO(b/244665864): Move this repeat key handling into
-    // HandleLongpressEnabledKeyEvent
-    if (event.is_repeat() &&
-        kDefaultLongpressEnabledKeys.contains(event.GetCharacter())) {
-      return true;  // Do not propagate this event.
-    }
-    AssistiveSuggester::HandleLongpressEnabledKeyEvent(event);
-  }
-  return false;
+  return AssistiveSuggester::HandleLongpressEnabledKeyEvent(event);
 }
 
-void AssistiveSuggester::HandleLongpressEnabledKeyEvent(
+bool AssistiveSuggester::HandleLongpressEnabledKeyEvent(
     const ui::KeyEvent& event) {
   if (!IsDiacriticsOnPhysicalKeyboardLongpressEnabled() ||
       !enabled_suggestions_from_last_onfocus_ ||
       !enabled_suggestions_from_last_onfocus_->diacritic_suggestions ||
       !kDefaultLongpressEnabledKeys.contains(event.GetCharacter())) {
-    return;
+    return false;
+  }
+
+  // Longpress diacritics behaviour overrides the longpress to repeat key
+  // behaviour for alphabetical keys.
+  if (event.is_repeat() &&
+      kDefaultLongpressEnabledKeys.contains(event.GetCharacter())) {
+    return true;  // Do not propagate this event.
   }
 
   const char c = event.GetCharacter();
@@ -444,7 +440,7 @@ void AssistiveSuggester::HandleLongpressEnabledKeyEvent(
         FROM_HERE, kLongpressActivationDelay,
         base::BindOnce(&AssistiveSuggester::OnLongpressDetected,
                        weak_ptr_factory_.GetWeakPtr()));
-    return;
+    return false;
   }
 
   // Process longpress interrupted event (key press up before timer callback
@@ -454,8 +450,8 @@ void AssistiveSuggester::HandleLongpressEnabledKeyEvent(
       *current_longpress_char_ == c) {
     current_longpress_char_ = absl::nullopt;
     longpress_timer_.Stop();
-    return;
   }
+  return false;
 }
 
 void AssistiveSuggester::OnLongpressDetected() {
