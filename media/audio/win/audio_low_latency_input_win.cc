@@ -14,7 +14,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/command_line.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -424,9 +423,8 @@ AudioInputStream::OpenOutcome WASAPIAudioInputStream::Open() {
     }
   }
 
-  const base::CommandLine* cmd_line = base::CommandLine::ForCurrentProcess();
   use_fake_audio_capture_timestamps_ =
-      cmd_line->HasSwitch(switches::kUseFakeAudioCaptureTimestamps);
+      base::FeatureList::IsEnabled(media::kUseFakeAudioCaptureTimestamps);
   if (use_fake_audio_capture_timestamps_) {
     SendLogMessage("%s => (WARNING: capture timestamps will be fake)",
                    __func__);

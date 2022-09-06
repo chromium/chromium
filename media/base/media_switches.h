@@ -48,7 +48,6 @@ MEDIA_EXPORT extern const char kEnableExclusiveAudio[];
 MEDIA_EXPORT extern const char kForceWaveAudio[];
 MEDIA_EXPORT extern const char kTrySupportedChannelLayouts[];
 MEDIA_EXPORT extern const char kWaveOutBuffers[];
-MEDIA_EXPORT extern const char kUseFakeAudioCaptureTimestamps[];
 #endif
 
 #if BUILDFLAG(IS_FUCHSIA)
@@ -282,6 +281,7 @@ MEDIA_EXPORT extern const base::Feature kMediaFoundationD3D11VideoCapture;
 MEDIA_EXPORT extern const base::Feature kMediaFoundationClearPlayback;
 MEDIA_EXPORT extern const base::Feature kAllowMediaFoundationFrameServerMode;
 MEDIA_EXPORT extern const base::Feature kWasapiRawAudioCapture;
+MEDIA_EXPORT extern const base::Feature kUseFakeAudioCaptureTimestamps;
 MEDIA_EXPORT extern const base::Feature kD3D11Vp9kSVCHWDecoding;
 
 // Strategy affecting how Media Foundation Renderer determines its rendering

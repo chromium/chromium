@@ -59548,6 +59548,7 @@ from previous Chrome versions.
   <int value="-29847483" label="MemoryAblation:enabled"/>
   <int value="-29507521" label="ContextualNudges:disabled"/>
   <int value="-28295905" label="AutofillEnableAccountWalletStorage:enabled"/>
+  <int value="-28079219" label="UseFakeAudioCaptureTimestamps:enabled"/>
   <int value="-27287076" label="DesktopPWAsTabStripSettings:disabled"/>
   <int value="-27213807" label="GlobalMediaControls:enabled"/>
   <int value="-25025176" label="PerformantSplitViewResizing:enabled"/>
@@ -60767,6 +60768,7 @@ from previous Chrome versions.
   <int value="723318188" label="EnableUniveralLinks:disabled"/>
   <int value="723385329" label="SystemEmojiPickerClipboard:enabled"/>
   <int value="723619383" label="TopSitesFromSiteEngagement:enabled"/>
+  <int value="723894144" label="UseFakeAudioCaptureTimestamps:disabled"/>
   <int value="724052572" label="EnableFilesystemInIncognito"/>
   <int value="724189703" label="OptimizeNetworkBuffers:disabled"/>
   <int value="724208771" label="TabsInCBD:enabled"/>
