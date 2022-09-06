@@ -128,89 +128,97 @@ struct GattService {
 };
 
 // Callback functions expected to be imported by the GATT client.
-class FlossGattClientCallbacks {
+//
+// This also doubles as an observer class for the GATT client since it will
+// really only filter out calls that aren't for this client.
+class FlossGattClientObserver : public base::CheckedObserver {
  public:
+  FlossGattClientObserver(const FlossGattClientObserver&) = delete;
+  FlossGattClientObserver& operator=(const FlossGattClientObserver&) = delete;
+
+  FlossGattClientObserver() = default;
+  ~FlossGattClientObserver() override = default;
+
   // A client has completed registration for callbacks. Subsequent uses should
   // use this client id.
-  virtual void OnClientRegistered(int32_t status, int32_t client_id) = 0;
+  virtual void GattClientRegistered(GattStatus status, int32_t client_id) {}
 
   // A client connection has changed state.
-  virtual void OnClientConnectionState(int32_t status,
-                                       int32_t client_id,
-                                       bool connected,
-                                       std::string address) = 0;
+  virtual void GattClientConnectionState(GattStatus status,
+                                         int32_t client_id,
+                                         bool connected,
+                                         std::string address) {}
 
   // The PHY used for a connection has changed states.
-  virtual void OnPhyUpdate(std::string address,
-                           LePhy tx,
-                           LePhy rx,
-                           GattStatus status) = 0;
+  virtual void GattPhyUpdate(std::string address,
+                             LePhy tx,
+                             LePhy rx,
+                             GattStatus status) {}
 
   // Result of reading the currently used PHY.
-  virtual void OnPhyRead(std::string address,
-                         LePhy tx,
-                         LePhy rx,
-                         GattStatus status) = 0;
+  virtual void GattPhyRead(std::string address,
+                           LePhy tx,
+                           LePhy rx,
+                           GattStatus status) {}
 
   // Service resolution completed and GATT db available.
-  virtual void OnSearchComplete(std::string address,
-                                std::vector<GattService> services,
-                                int32_t status) = 0;
+  virtual void GattSearchComplete(std::string address,
+                                  const std::vector<GattService>& services,
+                                  GattStatus status) {}
 
   // Result of reading a characteristic.
-  virtual void OnCharacteristicRead(std::string address,
-                                    int32_t status,
-                                    int32_t handle,
-                                    std::vector<uint8_t> data) = 0;
+  virtual void GattCharacteristicRead(std::string address,
+                                      GattStatus status,
+                                      int32_t handle,
+                                      const std::vector<uint8_t>& data) {}
 
   // Result of writing a characteristic.
-  virtual void OnCharacteristicWrite(std::string address,
-                                     int32_t status,
-                                     int32_t handle) = 0;
+  virtual void GattCharacteristicWrite(std::string address,
+                                       GattStatus status,
+                                       int32_t handle) {}
 
   // Reliable write completed.
-  virtual void OnExecuteWrite(std::string address, int32_t status) = 0;
+  virtual void GattExecuteWrite(std::string address, GattStatus status) {}
 
   // Result of reading a descriptor.
-  virtual void OnDescriptorRead(std::string address,
-                                int32_t status,
-                                int32_t handle,
-                                std::vector<uint8_t> data) = 0;
+  virtual void GattDescriptorRead(std::string address,
+                                  GattStatus status,
+                                  int32_t handle,
+                                  const std::vector<uint8_t>& data) {}
 
   // Result of writing to a descriptor.
-  virtual void OnDescriptorWrite(std::string address,
-                                 int32_t status,
-                                 int32_t handle) = 0;
+  virtual void GattDescriptorWrite(std::string address,
+                                   GattStatus status,
+                                   int32_t handle) {}
 
   // Notification or indication of a handle on a remote device.
-  virtual void OnNotify(std::string address,
-                        int32_t handle,
-                        std::vector<uint8_t> data) = 0;
+  virtual void GattNotify(std::string address,
+                          int32_t handle,
+                          const std::vector<uint8_t>& data) {}
 
   // Result of reading remote rssi.
-  virtual void OnReadRemoteRssi(std::string address,
-                                int32_t rssi,
-                                int32_t status) = 0;
+  virtual void GattReadRemoteRssi(std::string address,
+                                  int32_t rssi,
+                                  GattStatus status) {}
 
   // Result of setting connection mtu.
-  virtual void OnConfigureMtu(std::string address,
-                              int32_t mtu,
-                              int32_t status) = 0;
+  virtual void GattConfigureMtu(std::string address,
+                                int32_t mtu,
+                                GattStatus status) {}
 
   // Change to connection parameters.
-  virtual void OnConnectionUpdated(std::string address,
-                                   int32_t interval,
-                                   int32_t latency,
-                                   int32_t timeout,
-                                   int32_t status) = 0;
+  virtual void GattConnectionUpdated(std::string address,
+                                     int32_t interval,
+                                     int32_t latency,
+                                     int32_t timeout,
+                                     GattStatus status) {}
 
   // Notification when there is an addition/removal/change of a GATT service.
-  virtual void OnServiceChanged(std::string address) = 0;
+  virtual void GattServiceChanged(std::string address) {}
 };
 
-class DEVICE_BLUETOOTH_EXPORT FlossGattClient
-    : public FlossDBusClient,
-      public FlossGattClientCallbacks {
+class DEVICE_BLUETOOTH_EXPORT FlossGattClient : public FlossDBusClient,
+                                                public FlossGattClientObserver {
  public:
   static const char kExportedCallbacksPath[];
 
@@ -222,6 +230,10 @@ class DEVICE_BLUETOOTH_EXPORT FlossGattClient
 
   FlossGattClient(const FlossGattClient&) = delete;
   FlossGattClient& operator=(const FlossGattClient&) = delete;
+
+  // Manage observers.
+  void AddObserver(FlossGattClientObserver* observer);
+  void RemoveObserver(FlossGattClientObserver* observer);
 
   // Create a GATT client connection to a remote device on given transport.
   virtual void Connect(ResponseCallback<Void> callback,
@@ -306,53 +318,53 @@ class DEVICE_BLUETOOTH_EXPORT FlossGattClient
             const int adapter_index) override;
 
  protected:
-  // FlossGattClientCallbacks overrides
-  void OnClientRegistered(int32_t status, int32_t client_id) override;
-  void OnClientConnectionState(int32_t status,
-                               int32_t client_id,
-                               bool connected,
-                               std::string address) override;
-  void OnPhyUpdate(std::string address,
+  // FlossGattClientObserver overrides
+  void GattClientRegistered(GattStatus status, int32_t client_id) override;
+  void GattClientConnectionState(GattStatus status,
+                                 int32_t client_id,
+                                 bool connected,
+                                 std::string address) override;
+  void GattPhyUpdate(std::string address,
+                     LePhy tx,
+                     LePhy rx,
+                     GattStatus status) override;
+  void GattPhyRead(std::string address,
                    LePhy tx,
                    LePhy rx,
                    GattStatus status) override;
-  void OnPhyRead(std::string address,
-                 LePhy tx,
-                 LePhy rx,
-                 GattStatus status) override;
-  void OnSearchComplete(std::string address,
-                        std::vector<GattService> services,
-                        int32_t status) override;
-  void OnCharacteristicRead(std::string address,
-                            int32_t status,
-                            int32_t handle,
-                            std::vector<uint8_t> data) override;
-  void OnCharacteristicWrite(std::string address,
-                             int32_t status,
-                             int32_t handle) override;
-  void OnExecuteWrite(std::string address, int32_t status) override;
-  void OnDescriptorRead(std::string address,
-                        int32_t status,
-                        int32_t handle,
-                        std::vector<uint8_t> data) override;
-  void OnDescriptorWrite(std::string address,
-                         int32_t status,
-                         int32_t handle) override;
-  void OnNotify(std::string address,
-                int32_t handle,
-                std::vector<uint8_t> data) override;
-  void OnReadRemoteRssi(std::string address,
-                        int32_t rssi,
-                        int32_t status) override;
-  void OnConfigureMtu(std::string address,
-                      int32_t mtu,
-                      int32_t status) override;
-  void OnConnectionUpdated(std::string address,
-                           int32_t interval,
-                           int32_t latency,
-                           int32_t timeout,
-                           int32_t status) override;
-  void OnServiceChanged(std::string address) override;
+  void GattSearchComplete(std::string address,
+                          const std::vector<GattService>& services,
+                          GattStatus status) override;
+  void GattCharacteristicRead(std::string address,
+                              GattStatus status,
+                              int32_t handle,
+                              const std::vector<uint8_t>& data) override;
+  void GattCharacteristicWrite(std::string address,
+                               GattStatus status,
+                               int32_t handle) override;
+  void GattExecuteWrite(std::string address, GattStatus status) override;
+  void GattDescriptorRead(std::string address,
+                          GattStatus status,
+                          int32_t handle,
+                          const std::vector<uint8_t>& data) override;
+  void GattDescriptorWrite(std::string address,
+                           GattStatus status,
+                           int32_t handle) override;
+  void GattNotify(std::string address,
+                  int32_t handle,
+                  const std::vector<uint8_t>& data) override;
+  void GattReadRemoteRssi(std::string address,
+                          int32_t rssi,
+                          GattStatus status) override;
+  void GattConfigureMtu(std::string address,
+                        int32_t mtu,
+                        GattStatus status) override;
+  void GattConnectionUpdated(std::string address,
+                             int32_t interval,
+                             int32_t latency,
+                             int32_t timeout,
+                             GattStatus status) override;
+  void GattServiceChanged(std::string address) override;
 
   // Managed by FlossDBusManager - we keep local pointer to access object proxy.
   base::raw_ptr<dbus::Bus> bus_ = nullptr;
@@ -360,10 +372,15 @@ class DEVICE_BLUETOOTH_EXPORT FlossGattClient
   // Path used for gatt api calls by this class.
   dbus::ObjectPath gatt_adapter_path_;
 
+  // List of observers interested in event notifications from this client.
+  base::ObserverList<FlossGattClientObserver> observers_;
+
   // Service which implements the GattClient interface.
   std::string service_name_;
 
  private:
+  friend class FlossGattClientTest;
+
   template <typename R, typename... Args>
   void CallGattMethod(ResponseCallback<R> callback,
                       const char* member,
@@ -373,10 +390,10 @@ class DEVICE_BLUETOOTH_EXPORT FlossGattClient
   }
 
   // Id given for registering as a client against Floss. Used in many apis.
-  uint32_t client_id_ = 0;
+  int32_t client_id_ = 0;
 
   // Exported callbacks for interacting with daemon.
-  ExportedCallbackManager<FlossGattClientCallbacks> exported_callback_manager_{
+  ExportedCallbackManager<FlossGattClientObserver> exported_callback_manager_{
       gatt::kCallbackInterface};
 
   base::WeakPtrFactory<FlossGattClient> weak_ptr_factory_{this};
