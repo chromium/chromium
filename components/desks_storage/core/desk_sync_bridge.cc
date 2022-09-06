@@ -238,14 +238,13 @@ std::string GetAppId(const sync_pb::WorkspaceDeskSpecifics_App& app) {
 // Convert App proto to `app_restore::AppLaunchInfo`.
 std::unique_ptr<app_restore::AppLaunchInfo> ConvertToAppLaunchInfo(
     const sync_pb::WorkspaceDeskSpecifics_App& app) {
-  const int32_t window_id = app.window_id();
   const std::string app_id = GetAppId(app);
 
   if (app_id.empty())
     return nullptr;
 
   auto app_launch_info =
-      std::make_unique<app_restore::AppLaunchInfo>(app_id, window_id);
+      std::make_unique<app_restore::AppLaunchInfo>(app_id, app.window_id());
 
   if (app.has_display_id())
     app_launch_info->display_id = app.display_id();
@@ -1131,12 +1130,11 @@ void DeskSyncBridge::AddOrUpdateEntry(std::unique_ptr<DeskTemplate> new_entry,
   }
 
   // Add/update this entry to the store and model.
-  auto entity_data = CopyToEntityData(sync_proto);
-  change_processor()->Put(uuid.AsLowercaseString(), std::move(entity_data),
+  change_processor()->Put(uuid.AsLowercaseString(),
+                          CopyToEntityData(sync_proto),
                           batch->GetMetadataChangeList());
 
-  std::unique_ptr<DeskTemplate> persisted_entry = FromSyncProto(sync_proto);
-  desk_template_entries_[uuid] = std::move(persisted_entry);
+  desk_template_entries_[uuid] = FromSyncProto(sync_proto);
   const DeskTemplate* result = GetUserEntryByUUID(uuid);
 
   batch->WriteData(uuid.AsLowercaseString(),

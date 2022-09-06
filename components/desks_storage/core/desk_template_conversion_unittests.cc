@@ -50,6 +50,10 @@ app_restore::TabGroupInfo MakeSampleTabGroup() {
                   kSampleTabGroupTitle, tab_groups::TabGroupColorId::kGrey));
 }
 
+apps::AppRegistryCache* GetAppsCache(AccountId& account_id) {
+  return apps::AppRegistryCacheWrapper::Get().GetAppRegistryCache(account_id);
+}
+
 }  // namespace
 
 class DeskTemplateConversionTest : public testing::Test {
@@ -74,9 +78,8 @@ class DeskTemplateConversionTest : public testing::Test {
 };
 
 TEST_F(DeskTemplateConversionTest, ParseBrowserTemplate) {
-  base::StringPiece raw_json =
-      base::StringPiece(desk_test_util::kValidPolicyTemplateBrowser);
-  auto parsed_json = base::JSONReader::ReadAndReturnValueWithError(raw_json);
+  auto parsed_json = base::JSONReader::ReadAndReturnValueWithError(
+      base::StringPiece(desk_test_util::kValidPolicyTemplateBrowser));
 
   EXPECT_TRUE(parsed_json.has_value());
   EXPECT_TRUE(parsed_json->is_dict());
@@ -131,9 +134,8 @@ TEST_F(DeskTemplateConversionTest, ParseBrowserTemplate) {
 }
 
 TEST_F(DeskTemplateConversionTest, ParseBrowserTemplateMinimized) {
-  base::StringPiece raw_json =
-      base::StringPiece(desk_test_util::kValidPolicyTemplateBrowserMinimized);
-  auto parsed_json = base::JSONReader::ReadAndReturnValueWithError(raw_json);
+  auto parsed_json = base::JSONReader::ReadAndReturnValueWithError(
+      base::StringPiece(desk_test_util::kValidPolicyTemplateBrowserMinimized));
 
   EXPECT_TRUE(parsed_json.has_value());
   EXPECT_TRUE(parsed_json->is_dict());
@@ -192,9 +194,9 @@ TEST_F(DeskTemplateConversionTest, ParseBrowserTemplateMinimized) {
 }
 
 TEST_F(DeskTemplateConversionTest, ParseChromePwaTemplate) {
-  base::StringPiece raw_json = base::StringPiece(
-      desk_test_util::kValidPolicyTemplateChromeAndProgressive);
-  auto parsed_json = base::JSONReader::ReadAndReturnValueWithError(raw_json);
+  auto parsed_json =
+      base::JSONReader::ReadAndReturnValueWithError(base::StringPiece(
+          desk_test_util::kValidPolicyTemplateChromeAndProgressive));
 
   EXPECT_TRUE(parsed_json.has_value());
   EXPECT_TRUE(parsed_json->is_dict());
@@ -273,8 +275,8 @@ TEST_F(DeskTemplateConversionTest, ParseChromePwaTemplate) {
 }
 
 TEST_F(DeskTemplateConversionTest, EmptyJsonTest) {
-  base::StringPiece raw_json = base::StringPiece(kEmptyJson);
-  auto parsed_json = base::JSONReader::ReadAndReturnValueWithError(raw_json);
+  auto parsed_json = base::JSONReader::ReadAndReturnValueWithError(
+      base::StringPiece(kEmptyJson));
 
   EXPECT_TRUE(parsed_json.has_value());
   EXPECT_TRUE(parsed_json->is_dict());
@@ -286,9 +288,8 @@ TEST_F(DeskTemplateConversionTest, EmptyJsonTest) {
 }
 
 TEST_F(DeskTemplateConversionTest, ParsesWithDefaultValueSetToTemplates) {
-  base::StringPiece raw_json =
-      base::StringPiece(desk_test_util::kPolicyTemplateWithoutType);
-  auto parsed_json = base::JSONReader::ReadAndReturnValueWithError(raw_json);
+  auto parsed_json = base::JSONReader::ReadAndReturnValueWithError(
+      base::StringPiece(desk_test_util::kPolicyTemplateWithoutType));
 
   EXPECT_TRUE(parsed_json.has_value());
   EXPECT_TRUE(parsed_json->is_dict());
@@ -301,9 +302,8 @@ TEST_F(DeskTemplateConversionTest, ParsesWithDefaultValueSetToTemplates) {
 }
 
 TEST_F(DeskTemplateConversionTest, DeskTemplateFromJsonBrowserTest) {
-  base::StringPiece raw_json =
-      base::StringPiece(desk_test_util::kValidPolicyTemplateBrowser);
-  auto parsed_json = base::JSONReader::ReadAndReturnValueWithError(raw_json);
+  auto parsed_json = base::JSONReader::ReadAndReturnValueWithError(
+      base::StringPiece(desk_test_util::kValidPolicyTemplateBrowser));
 
   EXPECT_TRUE(parsed_json.has_value());
   EXPECT_TRUE(parsed_json->is_dict());
@@ -312,20 +312,15 @@ TEST_F(DeskTemplateConversionTest, DeskTemplateFromJsonBrowserTest) {
       desk_template_conversion::ParseDeskTemplateFromSource(
           *parsed_json, ash::DeskTemplateSource::kPolicy);
 
-  apps::AppRegistryCache* app_cache =
-      apps::AppRegistryCacheWrapper::Get().GetAppRegistryCache(account_id_);
-
   base::Value desk_template_value =
       desk_template_conversion::SerializeDeskTemplateAsPolicy(
-          desk_template.get(), app_cache);
-
+          desk_template.get(), GetAppsCache(account_id_));
   EXPECT_EQ(*parsed_json, desk_template_value);
 }
 
 TEST_F(DeskTemplateConversionTest, ToJsonIgnoreUnsupportedApp) {
-  base::StringPiece raw_json =
-      base::StringPiece(desk_test_util::kValidPolicyTemplateBrowser);
-  auto parsed_json = base::JSONReader::ReadAndReturnValueWithError(raw_json);
+  auto parsed_json = base::JSONReader::ReadAndReturnValueWithError(
+      base::StringPiece(desk_test_util::kValidPolicyTemplateBrowser));
 
   EXPECT_TRUE(parsed_json.has_value());
   EXPECT_TRUE(parsed_json->is_dict());
@@ -339,20 +334,17 @@ TEST_F(DeskTemplateConversionTest, ToJsonIgnoreUnsupportedApp) {
       kTestWindowId, desk_test_util::kTestUnsupportedAppId,
       desk_template->mutable_desk_restore_data());
 
-  apps::AppRegistryCache* app_cache =
-      apps::AppRegistryCacheWrapper::Get().GetAppRegistryCache(account_id_);
-
   base::Value desk_template_value =
       desk_template_conversion::SerializeDeskTemplateAsPolicy(
-          desk_template.get(), app_cache);
+          desk_template.get(), GetAppsCache(account_id_));
 
   EXPECT_EQ(*parsed_json, desk_template_value);
 }
 
 TEST_F(DeskTemplateConversionTest, DeskTemplateFromJsonAppTest) {
-  base::StringPiece raw_json = base::StringPiece(
-      desk_test_util::kValidPolicyTemplateChromeAndProgressive);
-  auto parsed_json = base::JSONReader::ReadAndReturnValueWithError(raw_json);
+  auto parsed_json =
+      base::JSONReader::ReadAndReturnValueWithError(base::StringPiece(
+          desk_test_util::kValidPolicyTemplateChromeAndProgressive));
 
   EXPECT_TRUE(parsed_json.has_value());
   EXPECT_TRUE(parsed_json->is_dict());
@@ -361,12 +353,9 @@ TEST_F(DeskTemplateConversionTest, DeskTemplateFromJsonAppTest) {
       desk_template_conversion::ParseDeskTemplateFromSource(
           *parsed_json, ash::DeskTemplateSource::kPolicy);
 
-  apps::AppRegistryCache* app_cache =
-      apps::AppRegistryCacheWrapper::Get().GetAppRegistryCache(account_id_);
-
   base::Value desk_template_value =
       desk_template_conversion::SerializeDeskTemplateAsPolicy(
-          desk_template.get(), app_cache);
+          desk_template.get(), GetAppsCache(account_id_));
 
   EXPECT_EQ(*parsed_json, desk_template_value);
 }
@@ -383,12 +372,9 @@ TEST_F(DeskTemplateConversionTest, EnsureLacrosBrowserWindowsSavedProperly) {
                                      {GURL(kBrowserUrl1), GURL(kBrowserUrl2)})
           .Build();
 
-  apps::AppRegistryCache* app_cache =
-      apps::AppRegistryCacheWrapper::Get().GetAppRegistryCache(account_id_);
-
   base::Value desk_template_value =
       desk_template_conversion::SerializeDeskTemplateAsPolicy(
-          desk_template.get(), app_cache);
+          desk_template.get(), GetAppsCache(account_id_));
 
   base::Value::Dict expected_browser_tab1;
   expected_browser_tab1.Set("url", base::Value(kBrowserUrl1));

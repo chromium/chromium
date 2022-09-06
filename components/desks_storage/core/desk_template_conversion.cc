@@ -780,10 +780,8 @@ base::Value ConvertURLsToBrowserAppTabValues(const std::vector<GURL>& urls) {
 
 std::string GetAppTypeForJson(apps::AppRegistryCache* apps_cache,
                               const std::string& app_id) {
-  const auto app_type = apps_cache->GetAppType(app_id);
-
   // This switch should follow the same structure as DeskSyncBridge#FillApp.
-  switch (app_type) {
+  switch (apps_cache->GetAppType(app_id)) {
     case apps::AppType::kWeb:
     case apps::AppType::kSystemWeb:
       return kAppTypeChrome;

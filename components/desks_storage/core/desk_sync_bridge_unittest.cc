@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "ash/public/cpp/desk_template.h"
+#include "base/containers/fixed_flat_set.h"
 #include "base/guid.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
@@ -142,6 +143,42 @@ const std::string kPolicyWithTwoTemplates =
     "2\",\"title\":\"Example2\"}],\"active_tab_index\":1,\"first_non_pinned_"
     "tab_index\":1,\"window_id\":0,"
     "\"display_id\":\"100\",\"pre_minimized_window_state\":\"NORMAL\"}]}}]";
+
+constexpr auto kWindowOpenDispositionValues = base::MakeFixedFlatSet<
+    sync_pb::WorkspaceDeskSpecifics_WindowOpenDisposition>(
+    {sync_pb::WorkspaceDeskSpecifics_WindowOpenDisposition_UNKNOWN,
+     sync_pb::WorkspaceDeskSpecifics_WindowOpenDisposition_CURRENT_TAB,
+     sync_pb::WorkspaceDeskSpecifics_WindowOpenDisposition_SINGLETON_TAB,
+     sync_pb::WorkspaceDeskSpecifics_WindowOpenDisposition_NEW_FOREGROUND_TAB,
+     sync_pb::WorkspaceDeskSpecifics_WindowOpenDisposition_NEW_BACKGROUND_TAB,
+     sync_pb::WorkspaceDeskSpecifics_WindowOpenDisposition_NEW_POPUP,
+     sync_pb::WorkspaceDeskSpecifics_WindowOpenDisposition_NEW_WINDOW,
+     sync_pb::WorkspaceDeskSpecifics_WindowOpenDisposition_SAVE_TO_DISK,
+     sync_pb::WorkspaceDeskSpecifics_WindowOpenDisposition_OFF_THE_RECORD,
+     sync_pb::WorkspaceDeskSpecifics_WindowOpenDisposition_IGNORE_ACTION,
+     sync_pb::WorkspaceDeskSpecifics_WindowOpenDisposition_SWITCH_TO_TAB,
+     sync_pb::
+         WorkspaceDeskSpecifics_WindowOpenDisposition_NEW_PICTURE_IN_PICTURE});
+
+constexpr auto kLaunchContainerValues = base::MakeFixedFlatSet<
+    sync_pb::WorkspaceDeskSpecifics_LaunchContainer>({
+    sync_pb::WorkspaceDeskSpecifics_LaunchContainer_LAUNCH_CONTAINER_WINDOW,
+    sync_pb::
+        WorkspaceDeskSpecifics_LaunchContainer_LAUNCH_CONTAINER_PANEL_DEPRECATED,
+    sync_pb::WorkspaceDeskSpecifics_LaunchContainer_LAUNCH_CONTAINER_TAB,
+    sync_pb::WorkspaceDeskSpecifics_LaunchContainer_LAUNCH_CONTAINER_NONE,
+});
+
+constexpr auto kTabGroupColors = base::MakeFixedFlatSet<SyncTabGroupColor>(
+    {SyncTabGroupColor::WorkspaceDeskSpecifics_TabGroupColor_GREY,
+     SyncTabGroupColor::WorkspaceDeskSpecifics_TabGroupColor_BLUE,
+     SyncTabGroupColor::WorkspaceDeskSpecifics_TabGroupColor_RED,
+     SyncTabGroupColor::WorkspaceDeskSpecifics_TabGroupColor_YELLOW,
+     SyncTabGroupColor::WorkspaceDeskSpecifics_TabGroupColor_GREEN,
+     SyncTabGroupColor::WorkspaceDeskSpecifics_TabGroupColor_PINK,
+     SyncTabGroupColor::WorkspaceDeskSpecifics_TabGroupColor_PURPLE,
+     SyncTabGroupColor::WorkspaceDeskSpecifics_TabGroupColor_CYAN,
+     SyncTabGroupColor::WorkspaceDeskSpecifics_TabGroupColor_ORANGE});
 
 void FillDefaultBrowserAppWindow(WorkspaceDeskSpecifics_App* app,
                                  BrowserAppWindow* app_window,
@@ -792,22 +829,7 @@ TEST_F(DeskSyncBridgeTest, AppNameConversionShouldBeLossless) {
 TEST_F(DeskSyncBridgeTest, WindowOpenDispositionConversionShouldBeLossless) {
   CreateBridge();
 
-  std::vector<sync_pb::WorkspaceDeskSpecifics_WindowOpenDisposition> values = {
-      sync_pb::WorkspaceDeskSpecifics_WindowOpenDisposition_UNKNOWN,
-      sync_pb::WorkspaceDeskSpecifics_WindowOpenDisposition_CURRENT_TAB,
-      sync_pb::WorkspaceDeskSpecifics_WindowOpenDisposition_SINGLETON_TAB,
-      sync_pb::WorkspaceDeskSpecifics_WindowOpenDisposition_NEW_FOREGROUND_TAB,
-      sync_pb::WorkspaceDeskSpecifics_WindowOpenDisposition_NEW_BACKGROUND_TAB,
-      sync_pb::WorkspaceDeskSpecifics_WindowOpenDisposition_NEW_POPUP,
-      sync_pb::WorkspaceDeskSpecifics_WindowOpenDisposition_NEW_WINDOW,
-      sync_pb::WorkspaceDeskSpecifics_WindowOpenDisposition_SAVE_TO_DISK,
-      sync_pb::WorkspaceDeskSpecifics_WindowOpenDisposition_OFF_THE_RECORD,
-      sync_pb::WorkspaceDeskSpecifics_WindowOpenDisposition_IGNORE_ACTION,
-      sync_pb::WorkspaceDeskSpecifics_WindowOpenDisposition_SWITCH_TO_TAB,
-      sync_pb::
-          WorkspaceDeskSpecifics_WindowOpenDisposition_NEW_PICTURE_IN_PICTURE};
-
-  for (const auto& test_value : values) {
+  for (const auto& test_value : kWindowOpenDispositionValues) {
     WorkspaceDeskSpecifics desk_proto = ExampleWorkspaceDeskSpecifics(
         kTestUuid1.AsLowercaseString(), "template 1");
 
@@ -831,15 +853,7 @@ TEST_F(DeskSyncBridgeTest, WindowOpenDispositionConversionShouldBeLossless) {
 TEST_F(DeskSyncBridgeTest, LaunchContainerConversionShouldBeLossless) {
   CreateBridge();
 
-  std::vector<sync_pb::WorkspaceDeskSpecifics_LaunchContainer> values = {
-      sync_pb::WorkspaceDeskSpecifics_LaunchContainer_LAUNCH_CONTAINER_WINDOW,
-      sync_pb::
-          WorkspaceDeskSpecifics_LaunchContainer_LAUNCH_CONTAINER_PANEL_DEPRECATED,
-      sync_pb::WorkspaceDeskSpecifics_LaunchContainer_LAUNCH_CONTAINER_TAB,
-      sync_pb::WorkspaceDeskSpecifics_LaunchContainer_LAUNCH_CONTAINER_NONE,
-  };
-
-  for (const auto& test_value : values) {
+  for (const auto& test_value : kLaunchContainerValues) {
     WorkspaceDeskSpecifics desk_proto = ExampleWorkspaceDeskSpecifics(
         kTestUuid1.AsLowercaseString(), "template 1");
 
@@ -863,21 +877,10 @@ TEST_F(DeskSyncBridgeTest, LaunchContainerConversionShouldBeLossless) {
 TEST_F(DeskSyncBridgeTest, TabGroupInfoConversionShouldBeLossless) {
   CreateBridge();
 
-  std::vector<SyncTabGroupColor> values = {
-      SyncTabGroupColor::WorkspaceDeskSpecifics_TabGroupColor_GREY,
-      SyncTabGroupColor::WorkspaceDeskSpecifics_TabGroupColor_BLUE,
-      SyncTabGroupColor::WorkspaceDeskSpecifics_TabGroupColor_RED,
-      SyncTabGroupColor::WorkspaceDeskSpecifics_TabGroupColor_YELLOW,
-      SyncTabGroupColor::WorkspaceDeskSpecifics_TabGroupColor_GREEN,
-      SyncTabGroupColor::WorkspaceDeskSpecifics_TabGroupColor_PINK,
-      SyncTabGroupColor::WorkspaceDeskSpecifics_TabGroupColor_PURPLE,
-      SyncTabGroupColor::WorkspaceDeskSpecifics_TabGroupColor_CYAN,
-      SyncTabGroupColor::WorkspaceDeskSpecifics_TabGroupColor_ORANGE};
-
   // Iterate over colors, changing the values contained within the
   // tab group for each iteration.
   size_t curr_start = 0;
-  for (const auto& test_color_value : values) {
+  for (const auto& test_color_value : kTabGroupColors) {
     // We test with the color GREEN by default.
     if (test_color_value ==
         SyncTabGroupColor::WorkspaceDeskSpecifics_TabGroupColor_GREEN) {
@@ -926,13 +929,9 @@ TEST_F(DeskSyncBridgeTest, EnsureAshBrowserWindowsSavedProperly) {
                                    GURL(base::StringPrintf(kTestUrlFormat, 2))})
           .Build();
 
-  WorkspaceDeskSpecifics converted_desk_proto =
-      bridge()->ToSyncProto(desk_template.get());
-  WorkspaceDeskSpecifics expected_desk_proto =
-      CreateBrowserTemplateExpectedValue(kDefaultTemplateIndex,
-                                         desk_template->created_time());
-
-  EXPECT_THAT(converted_desk_proto, EqualsSpecifics(expected_desk_proto));
+  EXPECT_THAT(bridge()->ToSyncProto(desk_template.get()),
+              EqualsSpecifics(CreateBrowserTemplateExpectedValue(
+                  kDefaultTemplateIndex, desk_template->created_time())));
 }
 
 TEST_F(DeskSyncBridgeTest, EnsureLacrosBrowserWindowsCanBeSavedProperly) {
@@ -950,13 +949,9 @@ TEST_F(DeskSyncBridgeTest, EnsureLacrosBrowserWindowsCanBeSavedProperly) {
                                  GURL(base::StringPrintf(kTestUrlFormat, 2))})
           .Build();
 
-  WorkspaceDeskSpecifics converted_desk_proto =
-      bridge()->ToSyncProto(desk_template.get());
-  WorkspaceDeskSpecifics expected_desk_proto =
-      CreateBrowserTemplateExpectedValue(kDefaultTemplateIndex,
-                                         desk_template->created_time());
-
-  EXPECT_THAT(converted_desk_proto, EqualsSpecifics(expected_desk_proto));
+  EXPECT_THAT(bridge()->ToSyncProto(desk_template.get()),
+              EqualsSpecifics(CreateBrowserTemplateExpectedValue(
+                  kDefaultTemplateIndex, desk_template->created_time())));
 }
 
 TEST_F(DeskSyncBridgeTest, EnsurePwaInAshChromeCanBeSavedProperly) {
@@ -969,12 +964,10 @@ TEST_F(DeskSyncBridgeTest, EnsurePwaInAshChromeCanBeSavedProperly) {
           .AddAshPwaAppWindow(kPwaWindowId,
                               base::StringPrintf(kTestUrlFormat, 1))
           .Build();
-  WorkspaceDeskSpecifics converted_desk_proto =
-      bridge()->ToSyncProto(desk_template.get());
-  WorkspaceDeskSpecifics expected_desk_proto = CreatePwaTemplateExpectedValue(
-      kDefaultTemplateIndex, desk_template->created_time());
 
-  EXPECT_THAT(converted_desk_proto, EqualsSpecifics(expected_desk_proto));
+  EXPECT_THAT(bridge()->ToSyncProto(desk_template.get()),
+              EqualsSpecifics(CreatePwaTemplateExpectedValue(
+                  kDefaultTemplateIndex, desk_template->created_time())));
 }
 
 TEST_F(DeskSyncBridgeTest, EnsurePwaInLacrosChromeCanBeSavedProperly) {
@@ -987,12 +980,10 @@ TEST_F(DeskSyncBridgeTest, EnsurePwaInLacrosChromeCanBeSavedProperly) {
           .AddLacrosPwaAppWindow(kPwaWindowId,
                                  base::StringPrintf(kTestUrlFormat, 1))
           .Build();
-  WorkspaceDeskSpecifics converted_desk_proto =
-      bridge()->ToSyncProto(desk_template.get());
-  WorkspaceDeskSpecifics expected_desk_proto = CreatePwaTemplateExpectedValue(
-      kDefaultTemplateIndex, desk_template->created_time());
 
-  EXPECT_THAT(converted_desk_proto, EqualsSpecifics(expected_desk_proto));
+  EXPECT_THAT(bridge()->ToSyncProto(desk_template.get()),
+              EqualsSpecifics(CreatePwaTemplateExpectedValue(
+                  kDefaultTemplateIndex, desk_template->created_time())));
 }
 
 TEST_F(DeskSyncBridgeTest, EnsureChromeAppCanBeSavedProperly) {
@@ -1005,14 +996,11 @@ TEST_F(DeskSyncBridgeTest, EnsureChromeAppCanBeSavedProperly) {
           .AddChromeAppWindow(kChromeAppWindowId,
                               desk_test_util::kTestChromeAppId)
           .Build();
-  WorkspaceDeskSpecifics converted_desk_proto =
-      bridge()->ToSyncProto(desk_template.get());
-  WorkspaceDeskSpecifics expected_desk_proto =
-      CreateChromeAppTemplateExpectedValue(
-          kDefaultTemplateIndex, desk_template->created_time(),
-          kChromeAppWindowId, desk_test_util::kTestChromeAppId);
 
-  EXPECT_THAT(converted_desk_proto, EqualsSpecifics(expected_desk_proto));
+  EXPECT_THAT(bridge()->ToSyncProto(desk_template.get()),
+              EqualsSpecifics(CreateChromeAppTemplateExpectedValue(
+                  kDefaultTemplateIndex, desk_template->created_time(),
+                  kChromeAppWindowId, desk_test_util::kTestChromeAppId)));
 }
 
 TEST_F(DeskSyncBridgeTest, EnsureLacrosChromeAppCanBeSavedProperly) {
@@ -1025,14 +1013,11 @@ TEST_F(DeskSyncBridgeTest, EnsureLacrosChromeAppCanBeSavedProperly) {
           .AddChromeAppWindow(kChromeAppWindowId,
                               desk_test_util::kTestLacrosChromeAppId)
           .Build();
-  WorkspaceDeskSpecifics converted_desk_proto =
-      bridge()->ToSyncProto(desk_template.get());
-  WorkspaceDeskSpecifics expected_desk_proto =
-      CreateChromeAppTemplateExpectedValue(
-          kDefaultTemplateIndex, desk_template->created_time(),
-          kChromeAppWindowId, desk_test_util::kTestLacrosChromeAppId);
 
-  EXPECT_THAT(converted_desk_proto, EqualsSpecifics(expected_desk_proto));
+  EXPECT_THAT(bridge()->ToSyncProto(desk_template.get()),
+              EqualsSpecifics(CreateChromeAppTemplateExpectedValue(
+                  kDefaultTemplateIndex, desk_template->created_time(),
+                  kChromeAppWindowId, desk_test_util::kTestLacrosChromeAppId)));
 }
 
 TEST_F(DeskSyncBridgeTest, EnsureUnsupportedAppCanBeIgnored) {
@@ -1047,14 +1032,11 @@ TEST_F(DeskSyncBridgeTest, EnsureUnsupportedAppCanBeIgnored) {
           .AddGenericAppWindow(kUnsupportedAppWindowId,
                                desk_test_util::kTestUnsupportedAppId)
           .Build();
-  WorkspaceDeskSpecifics converted_desk_proto =
-      bridge()->ToSyncProto(desk_template.get());
-  WorkspaceDeskSpecifics expected_desk_proto =
-      CreateChromeAppTemplateExpectedValue(
-          kDefaultTemplateIndex, desk_template->created_time(),
-          kChromeAppWindowId, desk_test_util::kTestChromeAppId);
 
-  EXPECT_THAT(converted_desk_proto, EqualsSpecifics(expected_desk_proto));
+  EXPECT_THAT(bridge()->ToSyncProto(desk_template.get()),
+              EqualsSpecifics(CreateChromeAppTemplateExpectedValue(
+                  kDefaultTemplateIndex, desk_template->created_time(),
+                  kChromeAppWindowId, desk_test_util::kTestChromeAppId)));
 }
 
 // Tests that the sync bridge appropriately handles explicitly unknown desk type
