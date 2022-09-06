@@ -6,11 +6,13 @@
 
 #include <memory>
 #include <string>
+
 #include "base/base64url.h"
 #include "base/command_line.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/lru_cache.h"
 #include "base/memory/raw_ptr.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_piece.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -2088,10 +2090,8 @@ TEST(MultipleIntentStarterTest, ImplicitTriggeringSendsFirstLegacyIntent) {
         EXPECT_THAT(request.url(),
                     Eq(GURL("https://example.com/intent_a/intent_b")));
         EXPECT_TRUE(request.client_context().is_in_chrome_triggered());
-        const auto& actual_intent_param = std::find_if(
-            request.script_parameters().begin(),
-            request.script_parameters().end(),
-            [&](const auto& param) { return param.name() == "INTENT"; });
+        const auto actual_intent_param = base::ranges::find(
+            request.script_parameters(), "INTENT", &ScriptParameterProto::name);
         ASSERT_THAT(actual_intent_param, Ne(request.script_parameters().end()));
         auto actual_intents =
             base::SplitString(actual_intent_param->value(), ",",

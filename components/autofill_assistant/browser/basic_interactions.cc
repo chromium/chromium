@@ -3,9 +3,10 @@
 // found in the LICENSE file.
 
 #include "components/autofill_assistant/browser/basic_interactions.h"
-#include <algorithm>
+
 #include "base/callback_helpers.h"
 #include "base/i18n/time_formatting.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -599,12 +600,9 @@ bool BasicInteractions::ToggleUserAction(const ToggleUserActionProto& proto) {
     return false;
   }
 
-  auto user_action_it = std::find_if(
-      user_actions_value->user_actions().values().cbegin(),
-      user_actions_value->user_actions().values().cend(),
-      [&](const UserActionProto& user_action) {
-        return user_action.identifier() == proto.user_action_identifier();
-      });
+  auto user_action_it = base::ranges::find(
+      user_actions_value->user_actions().values(),
+      proto.user_action_identifier(), &UserActionProto::identifier);
   if (user_action_it == user_actions_value->user_actions().values().cend()) {
     DVLOG(2) << "Error evaluating " << __func__ << ": "
              << proto.user_action_identifier() << " not found in "

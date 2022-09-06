@@ -4,8 +4,7 @@
 
 #include "components/autofill_assistant/browser/url_utils.h"
 
-#include <algorithm>
-
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
@@ -33,11 +32,11 @@ bool IsInDomainOrSubDomain(const GURL& url, const GURL& domain) {
 
 bool IsInDomainOrSubDomain(const GURL& url,
                            const std::vector<std::string>& allowed_domains) {
-  return std::find_if(allowed_domains.begin(), allowed_domains.end(),
-                      [url](const std::string& allowed_domain) {
-                        return url.host() == allowed_domain ||
-                               IsInSubDomain(url, allowed_domain);
-                      }) != allowed_domains.end();
+  return base::ranges::find_if(allowed_domains,
+                               [url](const std::string& allowed_domain) {
+                                 return url.host() == allowed_domain ||
+                                        IsInSubDomain(url, allowed_domain);
+                               }) != allowed_domains.end();
 }
 
 bool IsSamePublicSuffixDomain(const GURL& url1, const GURL& url2) {

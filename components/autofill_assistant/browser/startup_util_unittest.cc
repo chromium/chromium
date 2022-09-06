@@ -8,6 +8,7 @@
 #include <memory>
 #include <ostream>
 
+#include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/autofill_assistant/browser/features.h"
@@ -183,11 +184,8 @@ class StartupUtilParametrizedTest
 
   // Returns whether |feature| is enabled for the current run.
   bool IsFeatureEnabled(const base::Feature& feature) const {
-    return std::find_if(GetParam().enabled_features.begin(),
-                        GetParam().enabled_features.end(),
-                        [&](const base::Feature& candidate) {
-                          return candidate.name == feature.name;
-                        }) != GetParam().enabled_features.end();
+    return base::Contains(GetParam().enabled_features, feature.name,
+                          &base::Feature::name);
   }
 
  private:
