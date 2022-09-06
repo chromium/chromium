@@ -446,6 +446,7 @@ void AccessCodeCastSinkService::CheckMediaSinkForExpiration(
         "expiration timer has already fired so there is no need to re-trigger "
         "it.",
         sink_id);
+    ExpireSink(sink_id);
     return;
   }
 
@@ -659,14 +660,18 @@ void AccessCodeCastSinkService::OnExpiration(const MediaSinkInternal& sink) {
             sink.id());
     return;
   }
-  RemoveSinkIdFromAllEntries(sink.id());
+
+  ExpireSink(sink.id());
+}
+
+void AccessCodeCastSinkService::ExpireSink(const MediaSink::Id& sink_id) {
+  RemoveSinkIdFromAllEntries(sink_id);
   // Must find the sink from media router for removal since it has more total
   // information.
   base::PostTaskAndReplyWithResult(
       cast_media_sink_service_impl_->task_runner().get(), FROM_HERE,
       base::BindOnce(&CastMediaSinkServiceImpl::GetSinkById,
-                     base::Unretained(cast_media_sink_service_impl_),
-                     sink.id()),
+                     base::Unretained(cast_media_sink_service_impl_), sink_id),
       base::BindOnce(
           &AccessCodeCastSinkService::RemoveAndDisconnectMediaSinkFromRouter,
           weak_ptr_factory_.GetWeakPtr()));
