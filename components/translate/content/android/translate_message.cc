@@ -82,7 +82,9 @@ class BridgeImpl : public TranslateMessage::Bridge {
   }
 
   void ClearNativePointer(JNIEnv* env) override {
-    Java_TranslateMessage_clearNativePointer(env, java_translate_message_);
+    if (java_translate_message_)
+      Java_TranslateMessage_clearNativePointer(env, java_translate_message_);
+    java_translate_message_ = nullptr;
   }
 
   void Dismiss(JNIEnv* env) override {
@@ -155,7 +157,6 @@ TranslateMessage::~TranslateMessage() {
   JNIEnv* env = base::android::AttachCurrentThread();
   if (state_ != State::kDismissed)
     bridge_->Dismiss(env);
-  bridge_->ClearNativePointer(env);
 }
 
 void TranslateMessage::ShowTranslateStep(TranslateStep step,
@@ -165,6 +166,11 @@ void TranslateMessage::ShowTranslateStep(TranslateStep step,
   JNIEnv* env = base::android::AttachCurrentThread();
 
   if (!ui_delegate_) {
+    ui_delegate_ = std::make_unique<TranslateUIDelegate>(
+        translate_manager_, source_language, target_language);
+  }
+
+  if (state_ == State::kDismissed) {
     if (!bridge_->CreateTranslateMessage(env, web_contents_, this,
                                          GetDismissalDurationSeconds())) {
       // The |bridge_| failed to create the Java TranslateMessage, such as when
@@ -172,12 +178,8 @@ void TranslateMessage::ShowTranslateStep(TranslateStep step,
       return;
     }
 
-    ui_delegate_ = std::make_unique<TranslateUIDelegate>(
-        translate_manager_, source_language, target_language);
-  }
-
-  if (state_ == State::kDismissed)
     RecordCompactInfobarEvent(InfobarEvent::INFOBAR_IMPRESSION);
+  }
 
   if (ui_delegate_->GetSourceLanguageCode() != source_language)
     ui_delegate_->UpdateSourceLanguage(source_language);
@@ -410,6 +412,7 @@ void TranslateMessage::HandleDismiss(JNIEnv* env, jint dismiss_reason) {
     }
   }
 
+  bridge_->ClearNativePointer(env);
   state_ = State::kDismissed;
 
   // The only time |on_dismiss_callback_| will be null is during the destruction
