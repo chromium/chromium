@@ -10,6 +10,7 @@
 #include "base/files/file_path.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace gfx {
@@ -47,17 +48,23 @@ class ASH_EXPORT SignoutScreenshotHandler {
   // Saves the screenshot to disk.
   void SaveScreenshot(scoped_refptr<base::RefCountedMemory> png_data);
 
+  // Callback invoked after the screenshot is saved.
+  void OnScreenshotSaved();
+
   // Deletes an existing screenshot from disk.
   void DeleteScreenshot();
+
+  // Callback invoked after the screenshot is deleted.
+  void OnScreenshotDeleted();
 
   // Returns the path to the screenshot file.
   base::FilePath GetScreenshotPath() const;
 
-  // Invokes the done callback.
-  void OnDone();
-
   // Invoked when the screenshot is done.
   base::OnceClosure done_callback_;
+
+  // Time when the screenshot process started.
+  base::TimeTicks start_time_;
 
   // Size of the output screenshot.
   gfx::Size screenshot_size_;

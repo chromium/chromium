@@ -2203,6 +2203,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.Glanceables.SignoutScreenshotDuration" units="ms"
+    expires_after="2023-03-01">
+  <owner>jamescook@chromium.org</owner>
+  <owner>tbarzic@chromium.org</owner>
+  <summary>
+    The amount of time it took to capture the signout screenshot, encode it to
+    PNG, and write it to disk. Recorded on startup, with data from the previous
+    session's signout.
+  </summary>
+</histogram>
+
 <histogram name="Ash.Homescreen.AnimationSmoothness" units="%"
     expires_after="2023-01-10">
   <owner>sammiequon@chromium.org</owner>

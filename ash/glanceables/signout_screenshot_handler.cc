@@ -17,6 +17,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "base/time/time.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/snapshot/snapshot.h"
@@ -52,6 +53,7 @@ SignoutScreenshotHandler::~SignoutScreenshotHandler() = default;
 
 void SignoutScreenshotHandler::TakeScreenshot(base::OnceClosure done_callback) {
   done_callback_ = std::move(done_callback);
+  start_time_ = base::TimeTicks::Now();
 
   // TODO(crbug.com/1353119): Support multiple displays. For now, use the most
   // recently active display.
@@ -109,8 +111,17 @@ void SignoutScreenshotHandler::SaveScreenshot(
   base::ThreadPool::PostTaskAndReply(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_BLOCKING},
       base::BindOnce(&WriteScreenshotOnBlockingPool, file_path, png_data),
-      base::BindOnce(&SignoutScreenshotHandler::OnDone,
+      base::BindOnce(&SignoutScreenshotHandler::OnScreenshotSaved,
                      weak_factory_.GetWeakPtr()));
+}
+
+void SignoutScreenshotHandler::OnScreenshotSaved() {
+  // Record the screenshot duration to a pref, which will be saved as part of
+  // shutdown. The UMA metric will be recorded on the next startup.
+  base::TimeDelta duration = base::TimeTicks::Now() - start_time_;
+  glanceables_util::SaveSignoutScreenshotDuration(Shell::Get()->local_state(),
+                                                  duration);
+  std::move(done_callback_).Run();
 }
 
 void SignoutScreenshotHandler::DeleteScreenshot() {
@@ -119,13 +130,11 @@ void SignoutScreenshotHandler::DeleteScreenshot() {
   base::ThreadPool::PostTaskAndReply(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_BLOCKING},
       base::BindOnce(&DeleteScreenshotOnBlockingPool, file_path),
-      base::BindOnce(&SignoutScreenshotHandler::OnDone,
+      base::BindOnce(&SignoutScreenshotHandler::OnScreenshotDeleted,
                      weak_factory_.GetWeakPtr()));
 }
 
-void SignoutScreenshotHandler::OnDone() {
-  // TODO(crbug.com/1353119): Record UMA metric with the time spent taking the
-  // screenshot and writing it to disk.
+void SignoutScreenshotHandler::OnScreenshotDeleted() {
   std::move(done_callback_).Run();
 }
 

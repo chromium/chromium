@@ -8,6 +8,7 @@
 
 #include <memory>
 
+#include "ash/glanceables/glanceables_util.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/desks/desks_util.h"
@@ -17,6 +18,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
 #include "base/threading/thread_restrictions.h"
+#include "base/time/time.h"
 #include "ui/aura/window.h"
 
 namespace ash {
@@ -56,6 +58,12 @@ TEST_F(SignoutScreenshotHandlerTest, TakeScreenshotWithWindowOpen) {
   int64_t file_size = 0;
   ASSERT_TRUE(base::GetFileSize(screenshot_path_, &file_size));
   EXPECT_GT(file_size, 0);
+
+  // Screenshot duration was recorded.
+  base::TimeDelta duration =
+      glanceables_util::GetSignoutScreenshotDurationForTest(
+          Shell::Get()->local_state());
+  EXPECT_FALSE(duration.is_zero());
 }
 
 // Tests that no screenshot is taken when no windows are open and the existing

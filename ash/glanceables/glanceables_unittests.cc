@@ -12,6 +12,7 @@
 #include "ash/glanceables/glanceables_controller.h"
 #include "ash/glanceables/glanceables_restore_view.h"
 #include "ash/glanceables/glanceables_up_next_view.h"
+#include "ash/glanceables/glanceables_util.h"
 #include "ash/glanceables/glanceables_view.h"
 #include "ash/glanceables/glanceables_weather_view.h"
 #include "ash/glanceables/glanceables_welcome_label.h"
@@ -32,6 +33,7 @@
 #include "base/check.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_path_override.h"
 #include "base/time/time.h"
@@ -402,6 +404,25 @@ TEST_F(GlanceablesTest, UnminimizingOneWindowRestoresAllWindows) {
   // Both windows are restored.
   EXPECT_TRUE(WindowState::Get(back_window.get())->IsNormalStateType());
   EXPECT_TRUE(WindowState::Get(front_window.get())->IsNormalStateType());
+}
+
+TEST_F(GlanceablesTest, RecordSignoutScreenshotDurationMetric) {
+  PrefService* local_state = Shell::Get()->local_state();
+
+  // Simulate a previous session that recorded a duration.
+  const base::TimeDelta duration = base::Milliseconds(123);
+  glanceables_util::SaveSignoutScreenshotDuration(local_state, duration);
+
+  // Recording the metric records a histogram.
+  base::HistogramTester histograms;
+  glanceables_util::RecordSignoutScreenshotDurationMetric(local_state);
+  histograms.ExpectUniqueTimeSample("Ash.Glanceables.SignoutScreenshotDuration",
+                                    duration, 1);
+
+  // Pref is reset.
+  const base::TimeDelta updated_duration =
+      glanceables_util::GetSignoutScreenshotDurationForTest(local_state);
+  EXPECT_EQ(0, updated_duration.InMilliseconds());
 }
 
 }  // namespace ash

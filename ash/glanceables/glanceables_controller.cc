@@ -9,6 +9,7 @@
 #include "ash/ambient/ambient_controller.h"
 #include "ash/ambient/ambient_weather_controller.h"
 #include "ash/glanceables/glanceables_delegate.h"
+#include "ash/glanceables/glanceables_util.h"
 #include "ash/glanceables/glanceables_view.h"
 #include "ash/glanceables/glanceables_window_hider.h"
 #include "ash/public/cpp/shell_window_ids.h"
@@ -57,6 +58,9 @@ void GlanceablesController::Init(
     std::unique_ptr<GlanceablesDelegate> delegate) {
   DCHECK(delegate);
   delegate_ = std::move(delegate);
+
+  glanceables_util::RecordSignoutScreenshotDurationMetric(
+      Shell::Get()->local_state());
 }
 
 void GlanceablesController::ShowOnLogin() {

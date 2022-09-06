@@ -18,6 +18,7 @@
 #include "ash/detachable_base/detachable_base_handler.h"
 #include "ash/display/display_prefs.h"
 #include "ash/display/privacy_screen_controller.h"
+#include "ash/glanceables/glanceables_util.h"
 #include "ash/keyboard/keyboard_controller_impl.h"
 #include "ash/login/login_screen_controller.h"
 #include "ash/login/ui/login_expanded_public_account_view.h"
@@ -156,6 +157,7 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry, bool for_test) {
   LockStateController::RegisterPrefs(registry);
   quick_pair::Mediator::RegisterLocalStatePrefs(registry);
   TopShortcutsView::RegisterLocalStatePrefs(registry);
+  glanceables_util::RegisterLocalStatePrefs(registry);
 }
 
 void RegisterSigninProfilePrefs(PrefRegistrySimple* registry, bool for_test) {
