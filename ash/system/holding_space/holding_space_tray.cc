@@ -506,9 +506,14 @@ void HoldingSpaceTray::UpdateVisibility() {
     return;
   }
 
-  // The holding space tray should always be shown if the `model` contains fully
-  // initialized items. Otherwise, it should only be visible if the pinned files
-  // section is going to show a placeholder.
+  // If the predictability flag is enabled, always show the holding space tray.
+  if (features::IsHoldingSpacePredictabilityEnabled()) {
+    SetVisiblePreferred(true);
+    return;
+  }
+  // The holding space tray should always be shown if the `model` contains
+  // fully initialized items. Otherwise, it should only be visible if the
+  // pinned files section is going to show a placeholder.
   auto* prefs = Shell::Get()->session_controller()->GetActivePrefService();
   SetVisiblePreferred(
       ModelContainsInitializedItems(model) ||

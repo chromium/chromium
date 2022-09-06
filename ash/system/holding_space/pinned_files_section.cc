@@ -6,6 +6,7 @@
 
 #include "ash/bubble/bubble_utils.h"
 #include "ash/bubble/simple_grid_layout.h"
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/holding_space/holding_space_client.h"
 #include "ash/public/cpp/holding_space/holding_space_constants.h"
 #include "ash/public/cpp/holding_space/holding_space_controller.h"
@@ -138,6 +139,10 @@ PinnedFilesSection::~PinnedFilesSection() = default;
 
 // static
 bool PinnedFilesSection::ShouldShowPlaceholder(PrefService* prefs) {
+  // If the predictability flag is enabled, always show the placeholder.
+  if (features::IsHoldingSpacePredictabilityEnabled())
+    return true;
+
   // The placeholder should only be shown if:
   // * a holding space item has been added at some point in time,
   // * a holding space item has *never* been pinned, and
