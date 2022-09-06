@@ -125,9 +125,10 @@ DlpFilesController::DlpFileRestrictionDetails::~DlpFileRestrictionDetails() =
     default;
 
 DlpFilesController::FileDaemonInfo::FileDaemonInfo(
+    ino_t inode,
     const base::FilePath& path,
     const std::string& source_url)
-    : path(path), source_url(source_url) {}
+    : inode(inode), path(path), source_url(source_url) {}
 
 DlpFilesController::DlpFileDestination::DlpFileDestination(
     const std::string& url)
@@ -287,7 +288,7 @@ void DlpFilesController::CheckIfDownloadAllowed(
     return;
   }
 
-  FileDaemonInfo file_info(base::FilePath(""), download_url.spec());
+  FileDaemonInfo file_info({}, base::FilePath(""), download_url.spec());
   IsFilesTransferRestricted(
       {std::move(file_info)}, DlpFileDestination(file_path.value()),
       DlpWarnDialog::FilesAction::kDownload,

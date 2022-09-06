@@ -133,11 +133,12 @@ void DlpFilesPolicyServiceProvider::IsFilesTransferRestricted(
 
   std::vector<policy::DlpFilesController::FileDaemonInfo> files_info;
   for (const auto& file : request.transferred_files()) {
-    if (!file.has_path() || !file.has_source_url()) {
+    if (!file.has_inode() || !file.has_path() || !file.has_source_url()) {
       LOG(ERROR) << "Missing file path or file source url";
       continue;
     }
-    files_info.emplace_back(base::FilePath(file.path()), file.source_url());
+    files_info.emplace_back(file.inode(), base::FilePath(file.path()),
+                            file.source_url());
   }
 
   policy::DlpRulesManager* rules_manager =
@@ -180,6 +181,7 @@ void DlpFilesPolicyServiceProvider::RespondWithRestrictedFilesTransfer(
 
   for (const auto& file : restricted_files) {
     dlp::FileMetadata* file_metadata = response_proto.add_restricted_files();
+    file_metadata->set_inode(file.inode);
     file_metadata->set_path(file.path.value());
     file_metadata->set_source_url(file.source_url.spec());
   }

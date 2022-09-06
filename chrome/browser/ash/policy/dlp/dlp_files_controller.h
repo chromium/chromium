@@ -74,16 +74,21 @@ class DlpFilesController {
   // daemon.
   struct FileDaemonInfo {
     FileDaemonInfo() = delete;
-    FileDaemonInfo(const base::FilePath& path, const std::string& source_url);
+    FileDaemonInfo(ino_t inode,
+                   const base::FilePath& path,
+                   const std::string& source_url);
 
     friend bool operator==(const FileDaemonInfo& a, const FileDaemonInfo& b) {
-      return a.path == b.path && a.source_url == b.source_url;
+      return a.inode == b.inode && a.path == b.path &&
+             a.source_url == b.source_url;
     }
     friend bool operator!=(const FileDaemonInfo& a, const FileDaemonInfo& b) {
       return !(a == b);
     }
 
-    // File Path.
+    // File inode.
+    ino_t inode;
+    // File path.
     base::FilePath path;
     // Source URL from which the file was downloaded.
     GURL source_url;
