@@ -267,10 +267,15 @@ bool Pointer::ConstrainPointer(PointerConstraintDelegate* delegate) {
   // server instance. Default implementation allows this for ARC and Lacros
   // windows which have their own security mechanism and are considered trusted.
   aura::Window* toplevel = constrained_surface->window()->GetToplevelWindow();
-  auto* shell_surface_base = GetShellSurfaceBaseForWindow(toplevel);
-  auto* security_delegate = shell_surface_base->GetSecurityDelegate();
 
-  bool permitted = security_delegate->CanLockPointer(toplevel);
+  SecurityDelegate* security_delegate =
+      constrained_surface->GetSecurityDelegate();
+  // |security_delegate| could be nullptr, if:
+  // - the surface hasn't been assigned a role; or
+  // - a role has been assigned, but that specific role doesn't set a security
+  //   delegate.
+  bool permitted =
+      security_delegate && security_delegate->CanLockPointer(toplevel);
   if (!permitted) {
     delegate->OnDefunct();
     return false;

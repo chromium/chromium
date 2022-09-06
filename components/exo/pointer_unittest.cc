@@ -222,10 +222,8 @@ class PointerConstraintTest : public PointerTest {
   std::unique_ptr<ShellSurface> BuildShellSurfaceWhichPermitsPointerLock() {
     std::unique_ptr<ShellSurface> shell_surface =
         test::ShellSurfaceBuilder({10, 10}).BuildShellSurface();
-
     shell_surface->GetWidget()->GetNativeWindow()->SetProperty(
         chromeos::kUseOverviewToExitPointerLock, true);
-
     return shell_surface;
   }
 
@@ -1885,6 +1883,32 @@ TEST_F(PointerConstraintTest, NoPointerMotionEventWhenUnconstrainingPointer) {
 
   // Ensure the posted task for synthesized mouse move event is run.
   base::RunLoop().RunUntilIdle();
+
+  pointer_.reset();
+}
+
+TEST_F(PointerConstraintTest, ConstrainPointerWithUncommittedShellSurface) {
+  std::unique_ptr<ShellSurface> uncommitted_shell_surface =
+      test::ShellSurfaceBuilder({10, 10}).SetNoCommit().BuildShellSurface();
+
+  Surface* surface = uncommitted_shell_surface->surface_for_testing();
+  surface->window()->GetToplevelWindow()->SetProperty(
+      chromeos::kUseOverviewToExitPointerLock, true);
+
+  focus_client_->FocusWindow(surface->window());
+  EXPECT_CALL(delegate_, CanAcceptPointerEventsForSurface(surface))
+      .WillRepeatedly(testing::Return(true));
+  testing::NiceMock<MockPointerConstraintDelegate> second_constraint;
+  EXPECT_CALL(second_constraint, GetConstrainedSurface())
+      .WillRepeatedly(testing::Return(surface));
+  ON_CALL(second_constraint, IsPersistent())
+      .WillByDefault(testing::Return(true));
+
+  // Verify that the operation doesn't crash.
+  // The operation fails because the window associated with |surface| (or its
+  // ancestors) cannot be activated before a widget is created in the commit
+  // process, while pointer capture is not allowed on an inactive window.
+  EXPECT_FALSE(pointer_->ConstrainPointer(&second_constraint));
 
   pointer_.reset();
 }
