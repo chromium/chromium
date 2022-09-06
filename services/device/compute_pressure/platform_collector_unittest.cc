@@ -171,15 +171,7 @@ TEST_F(PlatformCollectorTest, EnsureStarted_SkipsFirstSample) {
   EXPECT_THAT(samples_, testing::Contains(PressureSample{0.4}));
 }
 
-// TODO(crbug.com/1271419): Flaky.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_WIN)
-#define MAYBE_Stop_Delayed_EnsureStarted_Immediate \
-  DISABLED_Stop_Delayed_EnsureStarted_Immediate
-#else
-#define MAYBE_Stop_Delayed_EnsureStarted_Immediate \
-  Stop_Delayed_EnsureStarted_Immediate
-#endif
-TEST_F(PlatformCollectorTest, MAYBE_Stop_Delayed_EnsureStarted_Immediate) {
+TEST_F(PlatformCollectorTest, Stop_Delayed_EnsureStarted_Immediate) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   collector_->EnsureStarted();
@@ -195,15 +187,7 @@ TEST_F(PlatformCollectorTest, MAYBE_Stop_Delayed_EnsureStarted_Immediate) {
   EXPECT_THAT(samples_, testing::Contains(PressureSample{0.25}));
 }
 
-// TODO(crbug.com/1271419): Flaky.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_Stop_Delayed_EnsureStarted_Delayed \
-  DISABLED_Stop_Delayed_EnsureStarted_Delayed
-#else
-#define MAYBE_Stop_Delayed_EnsureStarted_Delayed \
-  Stop_Delayed_EnsureStarted_Delayed
-#endif
-TEST_F(PlatformCollectorTest, MAYBE_Stop_Delayed_EnsureStarted_Delayed) {
+TEST_F(PlatformCollectorTest, Stop_Delayed_EnsureStarted_Delayed) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   collector_->EnsureStarted();
