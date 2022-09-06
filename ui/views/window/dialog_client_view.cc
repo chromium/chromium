@@ -369,10 +369,10 @@ void DialogClientView::SetupLayout() {
       .AddColumn(LayoutAlignment::kStretch, LayoutAlignment::kStretch, kFixed,
                  TableLayout::ColumnSize::kUsePreferred, 0, 0)
       .AddPaddingColumn(kStretchy, GetExtraViewSpacing())
-      .AddColumn(LayoutAlignment::kStretch, LayoutAlignment::kStretch, kFixed,
+      .AddColumn(LayoutAlignment::kStretch, LayoutAlignment::kEnd, kFixed,
                  TableLayout::ColumnSize::kUsePreferred, 0, 0)
       .AddPaddingColumn(kFixed, button_spacing)
-      .AddColumn(LayoutAlignment::kStretch, LayoutAlignment::kStretch, kFixed,
+      .AddColumn(LayoutAlignment::kStretch, LayoutAlignment::kEnd, kFixed,
                  TableLayout::ColumnSize::kUsePreferred, 0, 0)
       .AddPaddingColumn(kFixed, button_row_insets_.right())
       .AddPaddingRow(kFixed, button_row_insets_.top())
