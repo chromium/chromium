@@ -214,6 +214,7 @@ void ThreadControllerImpl::DoWork(WorkType work_type) {
             if (selected_task->task_execution_trace_logger)
               selected_task->task_execution_trace_logger.Run(
                   ctx, selected_task->task);
+            SequenceManagerImpl::EmitTaskPriority(ctx, selected_task->priority);
           });
       if (!weak_ptr)
         return;

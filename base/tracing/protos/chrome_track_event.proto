@@ -811,9 +811,24 @@ message AndroidIPC {
   optional int64 dur_ms = 2;
 }
 
+message SequenceManagerTask {
+  enum Priority {
+    UNKNOWN = 0;
+    CONTROL_PRIORITY = 1;
+    HIGHEST_PRIORITY = 2;
+    VERY_HIGH_PRIORITY = 3;
+    HIGH_PRIORITY = 4;
+    NORMAL_PRIORITY = 5;
+    LOW_PRIORITY = 6;
+    BEST_EFFORT_PRIORITY = 7;
+  }
+
+  optional Priority priority = 1;
+}
+
 message ChromeTrackEvent {
   // Extension range for Chrome: 1000-1999
-  // Next ID: 1040
+  // Next ID: 1041
   extend TrackEvent {
     optional ChromeAppState chrome_app_state = 1000;
 
@@ -899,5 +914,7 @@ message ChromeTrackEvent {
     optional AndroidIPC android_ipc = 1038;
 
     optional ChromeSqlDiagnostics sql_diagnostics = 1039;
+
+    optional SequenceManagerTask sequence_manager_task = 1040;
   }
 }

@@ -9,6 +9,7 @@
 #include "base/callback_helpers.h"
 #include "base/pending_task.h"
 #include "base/task/common/lazy_now.h"
+#include "base/task/sequence_manager/task_queue.h"
 #include "base/task/sequence_manager/tasks.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -31,7 +32,8 @@ class SequencedTaskSource {
   struct BASE_EXPORT SelectedTask {
     SelectedTask(const SelectedTask&);
     SelectedTask(Task& task,
-                 TaskExecutionTraceLogger task_execution_trace_logger);
+                 TaskExecutionTraceLogger task_execution_trace_logger,
+                 TaskQueue::QueuePriority priority);
     ~SelectedTask();
 
     Task& task;
@@ -39,6 +41,7 @@ class SequencedTaskSource {
     // execution. Can be null
     TaskExecutionTraceLogger task_execution_trace_logger =
         TaskExecutionTraceLogger();
+    TaskQueue::QueuePriority priority;
   };
 
   virtual ~SequencedTaskSource() = default;

@@ -69,6 +69,31 @@ class TracedBaseValue : public trace_event::ConvertableToTraceFormat {
   base::Value value_;
 };
 
+#if BUILDFLAG(ENABLE_BASE_TRACING)
+perfetto::protos::pbzero::SequenceManagerTask::Priority TaskPriorityToProto(
+    TaskQueue::QueuePriority priority) {
+  using ProtoPriority = perfetto::protos::pbzero::SequenceManagerTask::Priority;
+  switch (priority) {
+    case TaskQueue::QueuePriority::kControlPriority:
+      return ProtoPriority::CONTROL_PRIORITY;
+    case TaskQueue::QueuePriority::kHighestPriority:
+      return ProtoPriority::HIGHEST_PRIORITY;
+    case TaskQueue::QueuePriority::kVeryHighPriority:
+      return ProtoPriority::VERY_HIGH_PRIORITY;
+    case TaskQueue::QueuePriority::kHighPriority:
+      return ProtoPriority::HIGH_PRIORITY;
+    case TaskQueue::QueuePriority::kNormalPriority:
+      return ProtoPriority::NORMAL_PRIORITY;
+    case TaskQueue::QueuePriority::kLowPriority:
+      return ProtoPriority::LOW_PRIORITY;
+    case TaskQueue::QueuePriority::kBestEffortPriority:
+      return ProtoPriority::BEST_EFFORT_PRIORITY;
+    case TaskQueue::QueuePriority::kQueuePriorityCount:
+      return ProtoPriority::UNKNOWN;
+  }
+}
+#endif  //  BUILDFLAG(ENABLE_BASE_TRACING)
+
 }  // namespace
 
 std::unique_ptr<SequenceManager> CreateSequenceManagerOnCurrentThread(
@@ -534,49 +559,27 @@ void SequenceManagerImpl::SetNextWakeUp(LazyNow* lazy_now,
   }
 }
 
-namespace {
+void SequenceManagerImpl::EmitTaskPriority(
+    perfetto::EventContext& ctx,
+    TaskQueue::QueuePriority task_queue_priority) {
+#if BUILDFLAG(ENABLE_BASE_TRACING)
+  // Other parameters are included only when "scheduler" category is enabled.
+  const uint8_t* scheduler_category_enabled =
+      TRACE_EVENT_API_GET_CATEGORY_GROUP_ENABLED("scheduler");
 
-const char* RunTaskTraceNameForPriority(TaskQueue::QueuePriority priority) {
-  switch (priority) {
-    case TaskQueue::QueuePriority::kControlPriority:
-      return "RunControlPriorityTask";
-    case TaskQueue::QueuePriority::kHighestPriority:
-      return "RunHighestPriorityTask";
-    case TaskQueue::QueuePriority::kVeryHighPriority:
-      return "RunVeryHighPriorityTask";
-    case TaskQueue::QueuePriority::kHighPriority:
-      return "RunHighPriorityTask";
-    case TaskQueue::QueuePriority::kNormalPriority:
-      return "RunNormalPriorityTask";
-    case TaskQueue::QueuePriority::kLowPriority:
-      return "RunLowPriorityTask";
-    case TaskQueue::QueuePriority::kBestEffortPriority:
-      return "RunBestEffortPriorityTask";
-    case TaskQueue::QueuePriority::kQueuePriorityCount:
-      NOTREACHED();
-      return nullptr;
-  }
+  if (!*scheduler_category_enabled)
+    return;
+  auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
+  auto* sequence_manager_task = event->set_sequence_manager_task();
+  sequence_manager_task->set_priority(TaskPriorityToProto(task_queue_priority));
+#endif  //  BUILDFLAG(ENABLE_BASE_TRACING)
 }
-
-}  // namespace
 
 absl::optional<SequenceManagerImpl::SelectedTask>
 SequenceManagerImpl::SelectNextTask(LazyNow& lazy_now,
                                     SelectTaskOption option) {
   absl::optional<SelectedTask> selected_task =
       SelectNextTaskImpl(lazy_now, option);
-  if (!selected_task)
-    return selected_task;
-
-  ExecutingTask& executing_task =
-      *main_thread_only().task_execution_stack.rbegin();
-
-  // It's important that there are no active trace events here which will
-  // terminate before we finish executing the task.
-  TRACE_EVENT_BEGIN1("sequence_manager",
-                     RunTaskTraceNameForPriority(executing_task.priority),
-                     "task_type", executing_task.task_type);
-  TRACE_EVENT_BEGIN0("sequence_manager", executing_task.task_queue_name);
 
   return selected_task;
 }
@@ -708,7 +711,8 @@ SequenceManagerImpl::SelectNextTaskImpl(LazyNow& lazy_now,
 
     return SelectedTask(
         executing_task.pending_task,
-        executing_task.task_queue->task_execution_trace_logger());
+        executing_task.task_queue->task_execution_trace_logger(),
+        executing_task.priority);
   }
 }
 
@@ -720,10 +724,6 @@ bool SequenceManagerImpl::ShouldRunTaskOfPriority(
 void SequenceManagerImpl::DidRunTask(LazyNow& lazy_now) {
   ExecutingTask& executing_task =
       *main_thread_only().task_execution_stack.rbegin();
-
-  TRACE_EVENT_END0("sequence_manager", executing_task.task_queue_name);
-  TRACE_EVENT_END0("sequence_manager",
-                   RunTaskTraceNameForPriority(executing_task.priority));
 
   NotifyDidProcessTask(&executing_task, &lazy_now);
   main_thread_only().task_execution_stack.pop_back();

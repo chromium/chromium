@@ -12,8 +12,11 @@ SequencedTaskSource::SelectedTask::SelectedTask(const SelectedTask&) = default;
 
 SequencedTaskSource::SelectedTask::SelectedTask(
     Task& task,
-    TaskExecutionTraceLogger task_execution_trace_logger)
-    : task(task), task_execution_trace_logger(task_execution_trace_logger) {}
+    TaskExecutionTraceLogger task_execution_trace_logger,
+    TaskQueue::QueuePriority priority)
+    : task(task),
+      task_execution_trace_logger(task_execution_trace_logger),
+      priority(priority) {}
 
 SequencedTaskSource::SelectedTask::~SelectedTask() = default;
 

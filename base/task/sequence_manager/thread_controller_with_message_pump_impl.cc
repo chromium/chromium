@@ -425,6 +425,8 @@ absl::optional<WakeUp> ThreadControllerWithMessagePumpImpl::DoWorkImpl(
                               if (selected_task->task_execution_trace_logger)
                                 selected_task->task_execution_trace_logger.Run(
                                     ctx, selected_task->task);
+                              SequenceManagerImpl::EmitTaskPriority(
+                                  ctx, selected_task->priority);
                             });
 
     LazyNow lazy_now_after_run_task(time_source_);

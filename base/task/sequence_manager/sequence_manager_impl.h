@@ -114,6 +114,10 @@ class BASE_EXPORT SequenceManagerImpl
   // according to its default state.
   static void ResetNoWakeUpsForCanceledTasksForTesting();
 
+  // Emitting the task priority if scheduler category is enabled.
+  static void EmitTaskPriority(perfetto::EventContext& ctx,
+                               TaskQueue::QueuePriority task_queue_priority);
+
   // SequenceManager implementation:
   void BindToCurrentThread() override;
   scoped_refptr<SequencedTaskRunner> GetTaskRunnerForCurrentTask() override;
