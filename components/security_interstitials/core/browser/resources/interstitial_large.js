@@ -233,12 +233,7 @@ function setupEvents() {
   }
 
   if (lookalike) {
-    console.warn(
-        'Chrome has determined that ' +
-        loadTimeData.getString('lookalikeRequestHostname') +
-        ' could be fake or fraudulent.\n\n' +
-        'If you believe this is shown in error please visit ' +
-        'https://g.co/chrome/lookalike-warnings');
+    console.warn(loadTimeData.getString('lookalikeConsoleMessage'));
   }
 
   preventDefaultOnPoundLinkClicks();
