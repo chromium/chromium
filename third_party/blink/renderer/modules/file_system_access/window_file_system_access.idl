@@ -5,7 +5,7 @@
 // https://wicg.github.io/file-system-access/#local-filesystem
 [
     SecureContext,
-    RuntimeEnabled=FileSystemAccessLocal,
+    RuntimeEnabled=FileSystemAccess,
     ImplementedAs=GlobalFileSystemAccess
 ] partial interface Window {
     [CallWith=ScriptState, RaisesException, Measure]
