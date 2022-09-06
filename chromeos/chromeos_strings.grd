@@ -2847,7 +2847,7 @@ Try tapping the mic to ask me anything.
         This component couldn't be detected.
       </message>
       <message name="IDS_SHIMLESS_RMA_REWORK_FLOW_LINK" translateable="false" desc="The text with a link that will redirect the user to the reworking flow. The reworking flow is only used when the user wants to repurpose the mainboard for another device.">
-        If you replaced or reworked the mainboard, go to this <ph name="LINK_BEGIN">&lt;a id="reworkFlowLink"&gt;</ph>rework flow<ph name="LINK_END">&lt;/a&gt;</ph>.
+        If you replaced or reworked the mainboard, go to this <ph name="LINK_BEGIN">&lt;a id="reworkFlowLink"&gt;</ph>rework flow.<ph name="LINK_END">&lt;/a&gt;</ph>
       </message>
       <!-- Choose destination page -->
       <message name="IDS_SHIMLESS_RMA_CHOOSE_DESTINATION" translateable="false" desc="Title for the page shown when choosing the return destination of the device after repair.">
@@ -2886,7 +2886,7 @@ Try tapping the mic to ask me anything.
         Perform RMA Server Unlock
       </message>
       <message name="IDS_SHIMLESS_RMA_RSU_CODE_INSTRUCTIONS" translateable="false" desc="Instructions for the RSU challenge page.">
-        Use this QR code to get the 8 character unlock code. You can also manually type <ph name="LINK_BEGIN">&lt;a id="rsuCodeDialogLink"&gt;</ph>this URL<ph name="LINK_END">&lt;/a&gt;</ph>.
+        Use this QR code to get the 8 character unlock code. You can also manually type <ph name="LINK_BEGIN">&lt;a id="rsuCodeDialogLink"&gt;</ph>this URL to get the RSU code.<ph name="LINK_END">&lt;/a&gt;</ph>
       </message>
       <message name="IDS_SHIMLESS_RMA_RSU_CODE_LABEL" translateable="false" desc="Label for the RSU code input box.">
         Enter the 8-characters
