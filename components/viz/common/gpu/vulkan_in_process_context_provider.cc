@@ -32,13 +32,14 @@ VulkanInProcessContextProvider::Create(
     gpu::VulkanImplementation* vulkan_implementation,
     uint32_t heap_memory_limit,
     uint32_t sync_cpu_memory_limit,
+    const bool is_thread_safe,
     const gpu::GPUInfo* gpu_info,
     base::TimeDelta cooldown_duration_at_memory_pressure_critical) {
   scoped_refptr<VulkanInProcessContextProvider> context_provider(
       new VulkanInProcessContextProvider(
           vulkan_implementation, heap_memory_limit, sync_cpu_memory_limit,
           cooldown_duration_at_memory_pressure_critical));
-  if (!context_provider->Initialize(gpu_info))
+  if (!context_provider->Initialize(gpu_info, is_thread_safe))
     return nullptr;
   return context_provider;
 }
@@ -81,8 +82,8 @@ VulkanInProcessContextProvider::~VulkanInProcessContextProvider() {
   Destroy();
 }
 
-bool VulkanInProcessContextProvider::Initialize(
-    const gpu::GPUInfo* gpu_info) {
+bool VulkanInProcessContextProvider::Initialize(const gpu::GPUInfo* gpu_info,
+                                                const bool is_thread_safe) {
   DCHECK(!device_queue_);
 
   const auto& instance_extensions = vulkan_implementation_->GetVulkanInstance()
@@ -99,8 +100,9 @@ bool VulkanInProcessContextProvider::Initialize(
     }
   }
 
-  device_queue_ = gpu::CreateVulkanDeviceQueue(vulkan_implementation_, flags,
-                                               gpu_info, heap_memory_limit_);
+  device_queue_ =
+      gpu::CreateVulkanDeviceQueue(vulkan_implementation_, flags, gpu_info,
+                                   heap_memory_limit_, is_thread_safe);
   if (!device_queue_)
     return false;
 
