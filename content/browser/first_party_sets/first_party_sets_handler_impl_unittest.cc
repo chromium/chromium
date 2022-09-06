@@ -14,6 +14,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "content/browser/first_party_sets/first_party_set_parser.h"
+#include "content/browser/first_party_sets/local_set_declaration.h"
 #include "content/public/browser/first_party_sets_handler.h"
 #include "net/base/schemeful_site.h"
 #include "net/first_party_sets/first_party_set_entry.h"
@@ -208,7 +209,7 @@ class FirstPartySetsHandlerImplDisabledTest
 
 TEST_F(FirstPartySetsHandlerImplDisabledTest, IgnoresValid) {
   FirstPartySetsHandlerImpl::GetInstance()->Init(scoped_dir_.GetPath(),
-                                                 /*flag_value=*/"");
+                                                 LocalSetDeclaration());
 
   env().RunUntilIdle();
 
@@ -233,7 +234,7 @@ TEST_F(FirstPartySetsHandlerImplEnabledTest, EmptyDBPath) {
   // prevent `on_sets_ready` from being invoked.
   FirstPartySetsHandlerImpl::GetInstance()->Init(
       /*user_data_dir=*/{},
-      /*flag_value=*/"https://example.test,https://associatedsite1.test");
+      LocalSetDeclaration("https://example.test,https://associatedsite1.test"));
 
   EXPECT_THAT(GetSetsAndWait(),
               PublicSetsAre(UnorderedElementsAre(
@@ -259,7 +260,7 @@ TEST_F(FirstPartySetsHandlerImplEnabledTest, Successful_NoPrePersistedSets) {
 
   FirstPartySetsHandlerImpl::GetInstance()->Init(
       scoped_dir_.GetPath(),
-      /*flag_value=*/"https://example.test,https://associatedsite1.test");
+      LocalSetDeclaration("https://example.test,https://associatedsite1.test"));
   EXPECT_THAT(GetSetsAndWait(),
               PublicSetsAre(UnorderedElementsAre(
                   Pair(SerializesTo("https://example.test"),
@@ -317,7 +318,7 @@ TEST_F(FirstPartySetsHandlerImplEnabledTest,
       WritePublicSetsFile(input));
 
   FirstPartySetsHandlerImpl::GetInstance()->Init(scoped_dir_.GetPath(),
-                                                 /*flag_value=*/"");
+                                                 LocalSetDeclaration());
   EXPECT_THAT(GetSetsAndWait(),
               PublicSetsAre(UnorderedElementsAre(
                   Pair(SerializesTo("https://example.test"),
@@ -370,7 +371,7 @@ TEST_F(FirstPartySetsHandlerImplEnabledTest,
       absl::nullopt);
 
   FirstPartySetsHandlerImpl::GetInstance()->Init(scoped_dir_.GetPath(),
-                                                 /*flag_value=*/"");
+                                                 LocalSetDeclaration());
 
   const std::string input =
       R"({"primary": "https://example.test", )"
@@ -410,7 +411,7 @@ class FirstPartySetsHandlerGetCustomizationForPolicyTest
     FirstPartySetsHandlerImpl::GetInstance()
         ->SetEmbedderWillProvidePublicSetsForTesting(true);
     FirstPartySetsHandlerImpl::GetInstance()->Init(scoped_dir_.GetPath(),
-                                                   /*flag_value=*/"");
+                                                   LocalSetDeclaration());
   }
 
   // Writes the public list of First-Party Sets which GetCustomizationForPolicy

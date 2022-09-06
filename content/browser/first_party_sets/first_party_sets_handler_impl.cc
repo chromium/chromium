@@ -23,6 +23,7 @@
 #include "content/browser/first_party_sets/addition_overlaps_union_find.h"
 #include "content/browser/first_party_sets/first_party_set_parser.h"
 #include "content/browser/first_party_sets/first_party_sets_loader.h"
+#include "content/browser/first_party_sets/local_set_declaration.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/first_party_sets_handler.h"
 #include "content/public/common/content_client.h"
@@ -334,7 +335,7 @@ FirstPartySetsHandlerImpl::GetSets(SetsReadyOnceCallback callback) {
 }
 
 void FirstPartySetsHandlerImpl::Init(const base::FilePath& user_data_dir,
-                                     const std::string& flag_value) {
+                                     const LocalSetDeclaration& local_set) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!initialized_);
 
@@ -342,7 +343,7 @@ void FirstPartySetsHandlerImpl::Init(const base::FilePath& user_data_dir,
   SetDatabase(user_data_dir);
 
   if (IsEnabled()) {
-    sets_loader_->SetManuallySpecifiedSet(flag_value);
+    sets_loader_->SetManuallySpecifiedSet(local_set);
     if (!embedder_will_provide_public_sets_) {
       sets_loader_->SetComponentSets(base::File());
     }

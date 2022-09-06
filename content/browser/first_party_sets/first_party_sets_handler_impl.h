@@ -22,6 +22,7 @@
 #include "content/browser/first_party_sets/first_party_set_parser.h"
 #include "content/browser/first_party_sets/first_party_sets_handler_database_helper.h"
 #include "content/browser/first_party_sets/first_party_sets_loader.h"
+#include "content/browser/first_party_sets/local_set_declaration.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/first_party_sets_handler.h"
 #include "net/base/schemeful_site.h"
@@ -56,14 +57,15 @@ class CONTENT_EXPORT FirstPartySetsHandlerImpl : public FirstPartySetsHandler {
 
   // This method reads the persisted First-Party Sets from the file under
   // `user_data_dir` and sets the First-Party Set that was provided via the
-  // flag/switch.
+  // flag(s).
   //
   // If First-Party Sets is disabled, then this method still needs to read the
   // persisted sets, since we may still need to clear data from a previous
   // invocation of Chromium which had First-Party Sets enabled.
   //
   // Must be called exactly once.
-  void Init(const base::FilePath& user_data_dir, const std::string& flag_value);
+  void Init(const base::FilePath& user_data_dir,
+            const LocalSetDeclaration& local_set);
 
   // Returns the fully-parsed and validated public First-Party Sets data.
   // Returns the data synchronously via an optional if it's already available,

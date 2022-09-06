@@ -11,14 +11,12 @@
 #include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
-#include "base/containers/flat_set.h"
 #include "base/files/file_util.h"
-#include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/sequence_checker.h"
-#include "base/strings/string_split.h"
 #include "base/task/thread_pool.h"
 #include "content/browser/first_party_sets/first_party_set_parser.h"
+#include "content/browser/first_party_sets/local_set_declaration.h"
 #include "net/base/schemeful_site.h"
 #include "net/first_party_sets/first_party_set_entry.h"
 #include "services/network/public/mojom/first_party_sets.mojom.h"
@@ -27,48 +25,6 @@
 namespace content {
 
 namespace {
-
-absl::optional<std::pair<net::SchemefulSite, FirstPartySetsLoader::SingleSet>>
-CanonicalizeSet(const std::vector<std::string>& origins) {
-  if (origins.empty())
-    return absl::nullopt;
-
-  const absl::optional<net::SchemefulSite> maybe_owner =
-      content::FirstPartySetParser::CanonicalizeRegisteredDomain(
-          origins[0], true /* emit_errors */);
-  if (!maybe_owner.has_value()) {
-    LOG(ERROR) << "First-Party Set owner is not valid; aborting.";
-    return absl::nullopt;
-  }
-
-  const net::SchemefulSite& owner = *maybe_owner;
-  std::vector<std::pair<net::SchemefulSite, net::FirstPartySetEntry>> sites(
-      {{owner, net::FirstPartySetEntry(owner, net::SiteType::kPrimary,
-                                       absl::nullopt)}});
-  base::flat_set<net::SchemefulSite> associated_sites;
-  for (auto it = origins.begin() + 1; it != origins.end(); ++it) {
-    const absl::optional<net::SchemefulSite> maybe_member =
-        content::FirstPartySetParser::CanonicalizeRegisteredDomain(
-            *it, true /* emit_errors */);
-    if (maybe_member.has_value() && maybe_member != owner &&
-        !base::Contains(associated_sites, *maybe_member)) {
-      sites.emplace_back(*maybe_member, net::FirstPartySetEntry(
-                                            owner, net::SiteType::kAssociated,
-                                            associated_sites.size()));
-      associated_sites.insert(*maybe_member);
-    }
-  }
-
-  if (sites.size() < 2) {
-    // We're guaranteed at least one site (the primary), but there needs to be
-    // at least one other site as well.
-    LOG(ERROR) << "No valid First-Party Set members were specified; aborting.";
-    return absl::nullopt;
-  }
-
-  return absl::make_optional(
-      std::make_pair(std::move(owner), std::move(sites)));
-}
 
 std::string ReadSetsFile(base::File sets_file) {
   std::string raw_sets;
@@ -87,10 +43,9 @@ FirstPartySetsLoader::~FirstPartySetsLoader() {
 }
 
 void FirstPartySetsLoader::SetManuallySpecifiedSet(
-    const std::string& flag_value) {
+    const LocalSetDeclaration& local_set) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  manually_specified_set_ = {CanonicalizeSet(base::SplitString(
-      flag_value, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY))};
+  manually_specified_set_ = local_set;
   UmaHistogramTimes(
       "Cookie.FirstPartySets.InitializationDuration.ReadCommandLineSet2",
       construction_timer_.Elapsed());
@@ -153,11 +108,11 @@ void FirstPartySetsLoader::DisposeFile(base::File sets_file) {
 void FirstPartySetsLoader::ApplyManuallySpecifiedSet() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(HasAllInputs());
-  if (!manually_specified_set_.value().has_value())
+  if (manually_specified_set_->empty())
     return;
   const net::SchemefulSite& manual_owner =
-      manually_specified_set_->value().first;
-  const FlattenedSets& manual_sites = manually_specified_set_->value().second;
+      manually_specified_set_->GetPrimary();
+  const FlattenedSets& manual_sites = manually_specified_set_->GetSet();
 
   // Erase the intersection between |sets_| and |manually_specified_set_| and
   // any members whose owner was in the intersection.

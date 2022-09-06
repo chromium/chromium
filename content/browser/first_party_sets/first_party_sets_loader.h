@@ -11,6 +11,7 @@
 #include "base/thread_annotations.h"
 #include "base/timer/elapsed_timer.h"
 #include "content/browser/first_party_sets/first_party_set_parser.h"
+#include "content/browser/first_party_sets/local_set_declaration.h"
 #include "content/common/content_export.h"
 #include "services/network/public/mojom/first_party_sets.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -38,7 +39,7 @@ class CONTENT_EXPORT FirstPartySetsLoader {
 
   // Stores the First-Party Set that was provided via the `kUseFirstPartySet`
   // flag/switch.
-  void SetManuallySpecifiedSet(const std::string& flag_value);
+  void SetManuallySpecifiedSet(const LocalSetDeclaration& local_set);
 
   // Asynchronously parses and stores the sets from `sets_file` into the
   // members-to-owners map `sets_`, and merges with any previously-loaded sets
@@ -81,14 +82,10 @@ class CONTENT_EXPORT FirstPartySetsLoader {
   // Aliases that were defined by the public set declarations.
   FirstPartySetParser::Aliases aliases_ GUARDED_BY_CONTEXT(sequence_checker_);
 
-  // Holds the set that was provided on the command line (if any). There are two
-  // layers of absl::optional here because the value is initially unset (outer
-  // optional), and may be empty if no command-line flag was provided (or one
-  // was provided but invalid) (inner optional). For convenience, we store the
-  // primary domain separately, *and* store it and its entry within the
-  // `FlattenedSets`.
-  absl::optional<absl::optional<std::pair<net::SchemefulSite, FlattenedSets>>>
-      manually_specified_set_ GUARDED_BY_CONTEXT(sequence_checker_);
+  // Holds the set that was provided on the command line (if any). This is
+  // nullopt until `SetManuallySpecifiedSet` is called.
+  absl::optional<LocalSetDeclaration> manually_specified_set_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   enum Progress {
     kNotStarted,

@@ -18,6 +18,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "content/browser/first_party_sets/first_party_set_parser.h"
+#include "content/browser/first_party_sets/local_set_declaration.h"
 #include "net/base/schemeful_site.h"
 #include "net/first_party_sets/first_party_set_entry.h"
 #include "services/network/public/mojom/first_party_sets.mojom.h"
@@ -80,7 +81,7 @@ class FirstPartySetsLoaderTest : public ::testing::Test {
 };
 
 TEST_F(FirstPartySetsLoaderTest, IgnoresInvalidFile) {
-  loader().SetManuallySpecifiedSet("");
+  loader().SetManuallySpecifiedSet(LocalSetDeclaration());
   const std::string input = "certainly not valid JSON";
   SetComponentSets(loader(), input);
   EXPECT_THAT(WaitAndGetResult(), PublicSetsAre(IsEmpty()));
@@ -89,7 +90,7 @@ TEST_F(FirstPartySetsLoaderTest, IgnoresInvalidFile) {
 TEST_F(FirstPartySetsLoaderTest, ParsesComponent) {
   SetComponentSets(loader(), "");
   // Set required input to make sure callback gets called.
-  loader().SetManuallySpecifiedSet("");
+  loader().SetManuallySpecifiedSet(LocalSetDeclaration());
   EXPECT_THAT(WaitAndGetResult(), PublicSetsAre(IsEmpty()));
 }
 
@@ -99,7 +100,7 @@ TEST_F(FirstPartySetsLoaderTest, AcceptsMinimal) {
       "[\"https://aaaa.test\",],}";
   SetComponentSets(loader(), input);
   // Set required input to make sure callback gets called.
-  loader().SetManuallySpecifiedSet("");
+  loader().SetManuallySpecifiedSet(LocalSetDeclaration());
 
   EXPECT_THAT(WaitAndGetResult(),
               PublicSetsAre(UnorderedElementsAre(
@@ -122,7 +123,7 @@ TEST_F(FirstPartySetsLoaderTest, AcceptsMultipleSets) {
 
   SetComponentSets(loader(), input);
   // Set required input to make sure callback gets called.
-  loader().SetManuallySpecifiedSet("");
+  loader().SetManuallySpecifiedSet(LocalSetDeclaration());
 
   EXPECT_THAT(WaitAndGetResult(),
               PublicSetsAre(UnorderedElementsAre(
@@ -157,7 +158,7 @@ TEST_F(FirstPartySetsLoaderTest, SetComponentSets_Idempotent) {
   SetComponentSets(loader(), input);
   SetComponentSets(loader(), input2);
   // Set required input to make sure callback gets called.
-  loader().SetManuallySpecifiedSet("");
+  loader().SetManuallySpecifiedSet(LocalSetDeclaration());
 
   EXPECT_THAT(WaitAndGetResult(),
               // The second call to SetComponentSets should have had no effect.
@@ -187,7 +188,7 @@ TEST_F(FirstPartySetsLoaderTest, OwnerIsOnlyMember) {
 
   SetComponentSets(loader(), input);
   // Set required input to make sure callback gets called.
-  loader().SetManuallySpecifiedSet("");
+  loader().SetManuallySpecifiedSet(LocalSetDeclaration());
 
   EXPECT_THAT(WaitAndGetResult(), PublicSetsAre(IsEmpty()));
 }
@@ -199,7 +200,7 @@ TEST_F(FirstPartySetsLoaderTest, OwnerIsMember) {
 {"primary": "https://foo.test", "associatedSites": ["https://associatedsite2.test"]})";
   SetComponentSets(loader(), input);
   // Set required input to make sure callback gets called.
-  loader().SetManuallySpecifiedSet("");
+  loader().SetManuallySpecifiedSet(LocalSetDeclaration());
 
   EXPECT_THAT(WaitAndGetResult(), PublicSetsAre(IsEmpty()));
 }
@@ -213,165 +214,9 @@ TEST_F(FirstPartySetsLoaderTest, RepeatedMember) {
 
   SetComponentSets(loader(), input);
   // Set required input to make sure callback gets called.
-  loader().SetManuallySpecifiedSet("");
+  loader().SetManuallySpecifiedSet(LocalSetDeclaration());
 
   EXPECT_THAT(WaitAndGetResult(), PublicSetsAre(IsEmpty()));
-}
-
-TEST_F(FirstPartySetsLoaderTest, SetsManuallySpecified_Invalid_TooSmall) {
-  loader().SetManuallySpecifiedSet("https://example.test");
-  // Set required input to make sure callback gets called.
-  SetComponentSets(loader(), "");
-
-  EXPECT_THAT(WaitAndGetResult(), PublicSetsAre(IsEmpty()));
-}
-
-TEST_F(FirstPartySetsLoaderTest, SetsManuallySpecified_Invalid_NotOrigins) {
-  loader().SetManuallySpecifiedSet("https://example.test,associatedsite1");
-  // Set required input to make sure callback gets called.
-  SetComponentSets(loader(), "");
-
-  EXPECT_THAT(WaitAndGetResult(), PublicSetsAre(IsEmpty()));
-}
-
-TEST_F(FirstPartySetsLoaderTest, SetsManuallySpecified_Invalid_NotHTTPS) {
-  loader().SetManuallySpecifiedSet(
-      "https://example.test,http://associatedsite1.test");
-  // Set required input to make sure callback gets called.
-  SetComponentSets(loader(), "");
-
-  EXPECT_THAT(WaitAndGetResult(), PublicSetsAre(IsEmpty()));
-}
-
-TEST_F(FirstPartySetsLoaderTest,
-       SetsManuallySpecified_Invalid_RegisteredDomain_Owner) {
-  loader().SetManuallySpecifiedSet(
-      "https://www.example.test..,https://www.associatedsite.test");
-  // Set required input to make sure callback gets called.
-  SetComponentSets(loader(), "");
-
-  EXPECT_THAT(WaitAndGetResult(), PublicSetsAre(IsEmpty()));
-}
-
-TEST_F(FirstPartySetsLoaderTest,
-       SetsManuallySpecified_Invalid_RegisteredDomain_Member) {
-  loader().SetManuallySpecifiedSet(
-      "https://www.example.test,https://www.associatedsite.test..");
-  // Set required input to make sure callback gets called.
-  SetComponentSets(loader(), "");
-
-  EXPECT_THAT(WaitAndGetResult(), PublicSetsAre(IsEmpty()));
-}
-
-TEST_F(FirstPartySetsLoaderTest, SetsManuallySpecified_Valid_SingleMember) {
-  loader().SetManuallySpecifiedSet(
-      "https://example.test,https://associatedsite.test");
-  // Set required input to make sure callback gets called.
-  SetComponentSets(loader(), "");
-
-  EXPECT_THAT(WaitAndGetResult(),
-              PublicSetsAre(UnorderedElementsAre(
-                  Pair(SerializesTo("https://example.test"),
-                       net::FirstPartySetEntry(
-                           net::SchemefulSite(GURL("https://example.test")),
-                           net::SiteType::kPrimary, absl::nullopt)),
-                  Pair(SerializesTo("https://associatedsite.test"),
-                       net::FirstPartySetEntry(
-                           net::SchemefulSite(GURL("https://example.test")),
-                           net::SiteType::kAssociated, 0)))));
-}
-
-TEST_F(FirstPartySetsLoaderTest,
-       SetsManuallySpecified_Valid_SingleMember_RegisteredDomain) {
-  loader().SetManuallySpecifiedSet(
-      "https://www.example.test,https://www.associatedsite.test");
-  // Set required input to make sure callback gets called.
-  SetComponentSets(loader(), "");
-
-  EXPECT_THAT(WaitAndGetResult(),
-              PublicSetsAre(UnorderedElementsAre(
-                  Pair(SerializesTo("https://example.test"),
-                       net::FirstPartySetEntry(
-                           net::SchemefulSite(GURL("https://example.test")),
-                           net::SiteType::kPrimary, absl::nullopt)),
-                  Pair(SerializesTo("https://associatedsite.test"),
-                       net::FirstPartySetEntry(
-                           net::SchemefulSite(GURL("https://example.test")),
-                           net::SiteType::kAssociated, 0)))));
-}
-
-TEST_F(FirstPartySetsLoaderTest, SetsManuallySpecified_Valid_MultipleMembers) {
-  loader().SetManuallySpecifiedSet(
-      "https://example.test,https://associatedsite1.test,https://"
-      "associatedsite2.test");
-  // Set required input to make sure callback gets called.
-  SetComponentSets(loader(), "");
-
-  EXPECT_THAT(WaitAndGetResult(),
-              PublicSetsAre(UnorderedElementsAre(
-                  Pair(SerializesTo("https://example.test"),
-                       net::FirstPartySetEntry(
-                           net::SchemefulSite(GURL("https://example.test")),
-                           net::SiteType::kPrimary, absl::nullopt)),
-                  Pair(SerializesTo("https://associatedsite1.test"),
-                       net::FirstPartySetEntry(
-                           net::SchemefulSite(GURL("https://example.test")),
-                           net::SiteType::kAssociated, 0)),
-                  Pair(SerializesTo("https://associatedsite2.test"),
-                       net::FirstPartySetEntry(
-                           net::SchemefulSite(GURL("https://example.test")),
-                           net::SiteType::kAssociated, 1)))));
-}
-
-TEST_F(FirstPartySetsLoaderTest,
-       SetsManuallySpecified_Valid_OwnerIsOnlyMember) {
-  loader().SetManuallySpecifiedSet("https://example.test,https://example.test");
-  // Set required input to make sure callback gets called.
-  SetComponentSets(loader(), "");
-
-  EXPECT_THAT(WaitAndGetResult(), PublicSetsAre(IsEmpty()));
-}
-
-TEST_F(FirstPartySetsLoaderTest, SetsManuallySpecified_Valid_OwnerIsMember) {
-  loader().SetManuallySpecifiedSet(
-      "https://example.test,https://example.test,https://associatedsite1.test");
-  // Set required input to make sure callback gets called.
-  SetComponentSets(loader(), "");
-
-  EXPECT_THAT(WaitAndGetResult(),
-              PublicSetsAre(UnorderedElementsAre(
-                  Pair(SerializesTo("https://example.test"),
-                       net::FirstPartySetEntry(
-                           net::SchemefulSite(GURL("https://example.test")),
-                           net::SiteType::kPrimary, absl::nullopt)),
-                  Pair(SerializesTo("https://associatedsite1.test"),
-                       net::FirstPartySetEntry(
-                           net::SchemefulSite(GURL("https://example.test")),
-                           net::SiteType::kAssociated, 0)))));
-}
-
-TEST_F(FirstPartySetsLoaderTest, SetsManuallySpecified_Valid_RepeatedMember) {
-  loader().SetManuallySpecifiedSet(R"(https://example.test,
-https://associatedsite1.test,
-https://associatedsite2.test,
-https://associatedsite1.test)");
-  // Set required input to make sure callback gets called.
-  SetComponentSets(loader(), "");
-
-  EXPECT_THAT(WaitAndGetResult(),
-              PublicSetsAre(UnorderedElementsAre(
-                  Pair(SerializesTo("https://example.test"),
-                       net::FirstPartySetEntry(
-                           net::SchemefulSite(GURL("https://example.test")),
-                           net::SiteType::kPrimary, absl::nullopt)),
-                  Pair(SerializesTo("https://associatedsite1.test"),
-                       net::FirstPartySetEntry(
-                           net::SchemefulSite(GURL("https://example.test")),
-                           net::SiteType::kAssociated, 0)),
-                  Pair(SerializesTo("https://associatedsite2.test"),
-                       net::FirstPartySetEntry(
-                           net::SchemefulSite(GURL("https://example.test")),
-                           net::SiteType::kAssociated, 1)))));
 }
 
 TEST_F(FirstPartySetsLoaderTest, SetsManuallySpecified_DeduplicatesOwnerOwner) {
@@ -380,9 +225,9 @@ TEST_F(FirstPartySetsLoaderTest, SetsManuallySpecified_DeduplicatesOwnerOwner) {
       R"(["https://associatedsite2.test", "https://associatedsite3.test"]}
 {"primary": "https://bar.test", "associatedSites": ["https://associatedsite4.test"]})";
   SetComponentSets(loader(), input);
-  loader().SetManuallySpecifiedSet(
+  loader().SetManuallySpecifiedSet(LocalSetDeclaration(
       "https://example.test,https://associatedsite1.test,https://"
-      "associatedsite2.test");
+      "associatedsite2.test"));
 
   EXPECT_THAT(WaitAndGetResult(),
               PublicSetsAre(UnorderedElementsAre(
@@ -415,9 +260,9 @@ TEST_F(FirstPartySetsLoaderTest,
       R"(["https://associatedsite1.test", "https://example.test"]}
 {"primary": "https://bar.test", "associatedSites": ["https://associatedsite2.test"]})";
   SetComponentSets(loader(), input);
-  loader().SetManuallySpecifiedSet(
+  loader().SetManuallySpecifiedSet(LocalSetDeclaration(
       "https://example.test,https://associatedsite1.test,https://"
-      "associatedsite3.test");
+      "associatedsite3.test"));
 
   EXPECT_THAT(WaitAndGetResult(),
               PublicSetsAre(UnorderedElementsAre(
@@ -451,7 +296,7 @@ TEST_F(FirstPartySetsLoaderTest,
 {"primary": "https://associatedsite3.test", "associatedSites": ["https://associatedsite4.test"]})";
   SetComponentSets(loader(), input);
   loader().SetManuallySpecifiedSet(
-      "https://example.test,https://associatedsite3.test");
+      LocalSetDeclaration("https://example.test,https://associatedsite3.test"));
 
   EXPECT_THAT(WaitAndGetResult(),
               PublicSetsAre(UnorderedElementsAre(
@@ -484,9 +329,9 @@ TEST_F(FirstPartySetsLoaderTest,
       R"(["https://associatedsite2.test", "https://associatedsite3.test"]}
 {"primary": "https://bar.test", "associatedSites": ["https://associatedsite4.test"]})";
   SetComponentSets(loader(), input);
-  loader().SetManuallySpecifiedSet(
+  loader().SetManuallySpecifiedSet(LocalSetDeclaration(
       "https://example.test,https://associatedsite1.test,https://"
-      "associatedsite2.test");
+      "associatedsite2.test"));
 
   EXPECT_THAT(WaitAndGetResult(),
               PublicSetsAre(UnorderedElementsAre(
@@ -526,7 +371,7 @@ TEST_F(FirstPartySetsLoaderTest,
       R"({"primary": "https://foo.test", "associatedSites": ["https://associatedsite1.test"]})";
   SetComponentSets(loader(), input);
   loader().SetManuallySpecifiedSet(
-      "https://example.test,https://associatedsite1.test");
+      LocalSetDeclaration("https://example.test,https://associatedsite1.test"));
 
   // If we just erased entries that overlapped with the manually-supplied
   // set, https://foo.test would be left as a singleton set. But since we
