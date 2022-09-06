@@ -77,6 +77,21 @@ chromium-metrics-reviews@google.com.
   <variant name="ProfileStore." summary="for profile-scoped store"/>
 </variants>
 
+<variants name="UPMMigrationType">
+  <variant name="InitialMigrationForSyncUsers"
+      summary="migrating passwords from build-in backend to android backend
+               for sync users after enrolling into the UPM experiment"/>
+  <variant name="MigrationForLocalUsers"
+      summary="migrating passwords between android backend and build-in
+               backend to ensure consistency for local users"/>
+  <variant name="NonSyncableDataMigrationToAndroidBackend"
+      summary="migrating non-syncable data to the android backend when
+               password sync gets enabled"/>
+  <variant name="NonSyncableDataMigrationToBuiltInBackend"
+      summary="migrating non-syncable data to the built-in backend when
+               password sync gets disabled"/>
+</variants>
+
 <histogram name="KeyboardAccessory.AccessoryActionImpression"
     enum="AccessoryAction" expires_after="2023-02-26">
   <owner>fhorschig@chromium.org</owner>
@@ -3311,54 +3326,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PasswordManager.UnifiedPasswordManager.{Type}.Latency"
+<histogram
+    name="PasswordManager.UnifiedPasswordManager.{UPMMigrationType}.Latency"
     units="ms" expires_after="M108">
   <owner>fhorschig@chromium.org</owner>
   <owner>vsemeniuk@google.com</owner>
   <summary>
-    Real-time duration {Type}. Recorded when all operations are completed and
-    migration is finished.
+    Real-time duration of {UPMMigrationType}. Recorded when all operations are
+    completed and migration is finished.
   </summary>
-  <token key="Type">
-    <variant name="InitialMigration" summary="(obsolete)"/>
-    <variant name="InitialMigrationForSyncUsers"
-        summary="to migrate passwords from build-in backend to android
-                 backend for sync users after enrolling into the UPM
-                 experiment"/>
-    <variant name="MigrationForLocalUsers"
-        summary="to migrate passwords between android backend and build-in
-                 backend to ensure consistency for local users"/>
-    <variant name="NonSyncableDataMigrationToAndroidBackend"
-        summary="to migrate non-syncable data to the android backend when
-                 password sync gets enabled"/>
-    <variant name="NonSyncableDataMigrationToBuiltInBackend"
-        summary="to migrate non-syncable data to the built-in backend when
-                 password sync gets disabled"/>
-    <variant name="RollingMigration" summary="(obsolete)"/>
-  </token>
+  <token key="UPMMigrationType" variants="UPMMigrationType"/>
 </histogram>
 
-<histogram name="PasswordManager.UnifiedPasswordManager.{Type}.Success"
+<histogram
+    name="PasswordManager.UnifiedPasswordManager.{UPMMigrationType}.Success"
     enum="BooleanSuccess" expires_after="M108">
   <owner>fhorschig@chromium.org</owner>
   <owner>vsemeniuk@google.com</owner>
   <summary>
-    Records success of {Type}. Recorded when the migration is finished.
+    Records success of {UPMMigrationType}. Recorded when the migration is
+    finished.
   </summary>
-  <token key="Type">
-    <variant name="InitialMigration" summary="(obsolete)"/>
-    <variant name="InitialMigration2"
-        summary="migrating passwords from build-in backend to android backend
-                 after enrolling into the UPM experiment"/>
-    <variant name="NonSyncableDataMigrationToAndroidBackend"
-        summary="migrating non-syncable data to the android backend when
-                 password sync gets enabled"/>
-    <variant name="NonSyncableDataMigrationToBuiltInBackend"
-        summary="migrating non-syncable data to the built-in backend when
-                 password sync gets disabled"/>
-    <variant name="RollingMigration"
-        summary="migrating passwords from android backend to build-in backend"/>
-  </token>
+  <token key="UPMMigrationType" variants="UPMMigrationType"/>
 </histogram>
 
 <histogram name="PasswordManager.UpdateUIDismissalReason"
