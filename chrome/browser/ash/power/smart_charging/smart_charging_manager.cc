@@ -216,7 +216,7 @@ std::unique_ptr<SmartChargingManager> SmartChargingManager::CreateInstance() {
   DCHECK(detector);
 
   mojo::PendingRemote<viz::mojom::VideoDetectorObserver> video_observer;
-  std::unique_ptr<SmartChargingManager> screen_brightness_manager =
+  std::unique_ptr<SmartChargingManager> smart_charging_manager =
       std::make_unique<SmartChargingManager>(
           detector, video_observer.InitWithNewPipeAndPassReceiver(),
           session_manager::SessionManager::Get(),
@@ -227,7 +227,7 @@ std::unique_ptr<SmartChargingManager> SmartChargingManager::CreateInstance() {
       ->GetHostFrameSinkManager()
       ->AddVideoDetectorObserver(std::move(video_observer));
 
-  return screen_brightness_manager;
+  return smart_charging_manager;
 }
 
 void SmartChargingManager::OnUserActivity(const ui::Event* event) {
