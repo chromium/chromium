@@ -29,7 +29,7 @@ void IOSChromeFieldTrials::SetUpFeatureControllingFieldTrials(
     bool has_seed,
     const base::FieldTrial::EntropyProvider* low_entropy_provider,
     base::FeatureList* feature_list) {
-  // Note: On iOS, the |low_entropy_provider| is guaranteed to be non-null.
+  // Note: On iOS, the `low_entropy_provider` is guaranteed to be non-null.
   DCHECK(low_entropy_provider);
 
   // Disable trials when testing to remove sources of nondeterminism.

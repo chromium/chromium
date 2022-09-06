@@ -28,12 +28,12 @@ enum WhatsNewPromoStatus {
 bool AlwaysDisplayFirstRun();
 
 // Returns the host name for an alternative Origin Server host for use by
-// |BrandCode| startup ping. Returns empty string if there is no alternative
+// `BrandCode` startup ping. Returns empty string if there is no alternative
 // host specified.
 NSString* GetOriginServerHost();
 
 // Returns the promo force enabled, as determined by the experimental flags.
-// If |WHATS_NEW_DEFAULT| is returned, no promo is force enabled.
+// If `WHATS_NEW_DEFAULT` is returned, no promo is force enabled.
 WhatsNewPromoStatus GetWhatsNewPromoStatus();
 
 // Returns the URL for the alternative Discover Feed server.
