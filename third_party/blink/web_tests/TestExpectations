@@ -3284,7 +3284,7 @@ crbug.com/626703 virtual/threaded/external/wpt/requestidlecallback/deadline-max-
 crbug.com/626703 external/wpt/service-workers/service-worker/navigation-timing-extended.https.html [ Failure ]
 crbug.com/626703 virtual/plz-dedicated-worker/external/wpt/service-workers/service-worker/navigation-timing-extended.https.html [ Failure ]
 crbug.com/626703 external/wpt/preload/preload-resource-match.https.html [ Failure ]
-crbug.com/626703 virtual/prerender/external/wpt/speculation-rules/prerender/workers.html [ Failure ]
+crbug.com/1359555 virtual/prerender/external/wpt/speculation-rules/prerender/workers.html [ Failure Timeout ]
 crbug.com/626703 [ Win ] virtual/prerender/external/wpt/speculation-rules/prerender/restriction-presentation-request.https.html [ Failure ]
 crbug.com/626703 [ Win ] virtual/prerender/external/wpt/speculation-rules/prerender/storage-foundation.https.html [ Failure ]
 crbug.com/626703 [ Win ] virtual/partitioned-cookies/http/tests/inspector-protocol/network/disabled-cache-navigation.js [ Failure ]
