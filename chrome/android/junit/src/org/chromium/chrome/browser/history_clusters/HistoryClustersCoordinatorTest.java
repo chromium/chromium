@@ -89,11 +89,6 @@ public class HistoryClustersCoordinatorTest {
     private static final String NEW_TAB_EXTRA = "IN_NEW_TAB";
 
     class TestHistoryClustersDelegate implements HistoryClustersDelegate {
-        private final ObservableSupplierImpl<Boolean> mShouldShowPrivacyDisclaimerSupplier =
-                new ObservableSupplierImpl<>();
-        private final ObservableSupplierImpl<Boolean> mShouldShowClearBrowsingDataSupplier =
-                new ObservableSupplierImpl<>();
-
         public TestHistoryClustersDelegate() {
             mShouldShowPrivacyDisclaimerSupplier.set(true);
             mShouldShowClearBrowsingDataSupplier.set(true);
@@ -154,6 +149,11 @@ public class HistoryClustersCoordinatorTest {
         }
 
         @Override
+        public boolean hasOtherFormsOfBrowsingHistory() {
+            return mHasOtherFormsOfBrowsingHistory;
+        }
+
+        @Override
         public void markVisitForRemoval(ClusterVisit clusterVisit) {
             mVisitsForRemoval.add(clusterVisit);
         }
@@ -206,12 +206,16 @@ public class HistoryClustersCoordinatorTest {
     private ClusterVisit mVisit2;
     private HistoryCluster mCluster;
     private HistoryClustersResult mClusterResult;
-    private TestHistoryClustersDelegate mHistoryClustersDelegate =
-            new TestHistoryClustersDelegate();
+    private TestHistoryClustersDelegate mHistoryClustersDelegate;
     private List<ClusterVisit> mVisitsForRemoval = new ArrayList<>();
     private SelectionDelegate<ClusterVisit> mSelectionDelegate = new SelectionDelegate<>();
+    private final ObservableSupplierImpl<Boolean> mShouldShowPrivacyDisclaimerSupplier =
+            new ObservableSupplierImpl<>();
+    private final ObservableSupplierImpl<Boolean> mShouldShowClearBrowsingDataSupplier =
+            new ObservableSupplierImpl<>();
     private boolean mIsSeparateActivity = true;
     private boolean mAreTabGroupsEnabled = true;
+    private boolean mHasOtherFormsOfBrowsingHistory = true;
 
     @Before
     public void setUp() {
@@ -229,6 +233,7 @@ public class HistoryClustersCoordinatorTest {
                 Collections.emptyList(), 123L, Arrays.asList("pugs", "terriers"));
         mClusterResult = new HistoryClustersResult(Arrays.asList(mCluster),
                 new LinkedHashMap<>(ImmutableMap.of("label", 1)), "dogs", false, false);
+        mHistoryClustersDelegate = new TestHistoryClustersDelegate();
 
         mActivityScenario =
                 ActivityScenario.launch(ChromeTabbedActivity.class).onActivity(activity -> {
@@ -496,6 +501,32 @@ public class HistoryClustersCoordinatorTest {
         assertNotNull(toolbar);
         assertNotNull(toolbar.getMenu().findItem(R.id.close_menu_id));
         assertNotNull(toolbar.getMenu().findItem(R.id.selection_mode_open_in_tab_group));
+    }
+
+    @Test
+    public void testDisclaimerButtonVisibility() {
+        mHasOtherFormsOfBrowsingHistory = false;
+        mHistoryClustersCoordinator.getActivityContentView();
+        mHistoryClustersCoordinator.setInitialQuery(QueryState.forQueryless());
+        fulfillPromise(mPromise, mClusterResult);
+
+        HistoryClustersToolbar toolbar = mHistoryClustersCoordinator.getActivityContentView()
+                                                 .findViewById(R.id.selectable_list)
+                                                 .findViewById(R.id.action_bar);
+
+        assertFalse(toolbar.getMenu().findItem(R.id.info_menu_id).isVisible());
+
+        mHasOtherFormsOfBrowsingHistory = true;
+        mShouldShowPrivacyDisclaimerSupplier.set(false);
+
+        assertTrue(toolbar.getMenu().findItem(R.id.info_menu_id).isVisible());
+
+        mShouldShowPrivacyDisclaimerSupplier.set(true);
+        assertTrue(toolbar.getMenu().findItem(R.id.info_menu_id).isVisible());
+
+        mHasOtherFormsOfBrowsingHistory = false;
+        mShouldShowPrivacyDisclaimerSupplier.set(false);
+        assertFalse(toolbar.getMenu().findItem(R.id.info_menu_id).isVisible());
     }
 
     private <T> void fulfillPromise(Promise<T> promise, T result) {

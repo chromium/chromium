@@ -219,6 +219,11 @@ public class HistoryManager implements OnMenuItemClickListener, SelectionObserve
                     HistoryManager.this.toggleInfoHeaderVisibility();
                 }
 
+                @Override
+                public boolean hasOtherFormsOfBrowsingHistory() {
+                    return mContentManager.hasPrivacyDisclaimers();
+                }
+
                 @Nullable
                 @Override
                 public ViewGroup getClearBrowsingDataView(ViewGroup parent) {
@@ -755,6 +760,8 @@ public class HistoryManager implements OnMenuItemClickListener, SelectionObserve
     @Override
     public void onPrivacyDisclaimerHasChanged() {
         mToolbar.updateInfoMenuItem(shouldShowInfoButton(), shouldShowInfoHeaderIfAvailable());
+        mShouldShowPrivacyDisclaimerSupplier.set(
+                mContentManager.getShouldShowPrivacyDisclaimersIfAvailable());
     }
 
     // HistoryContentManager.Observer
