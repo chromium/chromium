@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.ui.fast_checkout.home_screen;
 import android.content.Context;
 import android.view.View;
 
-import org.chromium.chrome.browser.ui.fast_checkout.FastCheckoutComponent;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
@@ -27,8 +26,7 @@ public class HomeScreenCoordinator {
         void onShowCreditCardList();
     }
 
-    public HomeScreenCoordinator(Context context, View view, PropertyModel model,
-            FastCheckoutComponent.Delegate delegate) {
+    public HomeScreenCoordinator(Context context, View view, PropertyModel model) {
         // Bind view and mediator through the model.
         HomeScreenViewBinder.ViewHolder viewHolder =
                 new HomeScreenViewBinder.ViewHolder(context, view);

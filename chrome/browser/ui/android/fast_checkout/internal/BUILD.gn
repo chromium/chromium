@@ -98,6 +98,7 @@ robolectric_library("junit") {
 
   sources = [
     "junit/src/org/chromium/chrome/browser/ui/fast_checkout/FastCheckoutDetailScreenViewTest.java",
+    "junit/src/org/chromium/chrome/browser/ui/fast_checkout/FastCheckoutHomeScreenViewTest.java",
     "junit/src/org/chromium/chrome/browser/ui/fast_checkout/FastCheckoutMediatorTest.java",
   ]
   deps = [

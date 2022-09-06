@@ -35,7 +35,7 @@ class FastCheckoutCoordinator implements FastCheckoutComponent {
 
         View homeScreenView = rootView.findViewById(R.id.fast_checkout_home_screen_sheet);
         HomeScreenCoordinator homeScreenCoordinator =
-                new HomeScreenCoordinator(context, homeScreenView, mModel, delegate);
+                new HomeScreenCoordinator(context, homeScreenView, mModel);
 
         // The detail screen can display the Autofill profile or the credit
         // card selection.
