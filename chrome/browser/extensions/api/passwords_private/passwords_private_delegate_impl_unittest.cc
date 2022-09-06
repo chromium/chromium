@@ -198,7 +198,6 @@ password_manager::PasswordForm CreateSampleForm(
 MATCHER_P(PasswordUiEntryDataEquals, expected, "") {
   return testing::Value(expected.get().urls.link, arg.urls.link) &&
          testing::Value(expected.get().username, arg.username) &&
-         testing::Value(*expected.get().note, *arg.note) &&
          testing::Value(expected.get().stored_in, arg.stored_in) &&
          testing::Value(expected.get().is_android_credential,
                         arg.is_android_credential);
@@ -457,6 +456,7 @@ TEST_F(PasswordsPrivateDelegateImplTest, ChangeSavedPassword) {
   api::passwords_private::ChangeSavedPasswordParams params;
   params.password = "new_pass";
   params.username = "new_user";
+  params.note = "new note";
 
   sample_form.username_value = u"new_user";
   sample_form.password_value = u"new_pass";
@@ -471,64 +471,11 @@ TEST_F(PasswordsPrivateDelegateImplTest, ChangeSavedPassword) {
   base::RunLoop().RunUntilIdle();
 
   // Check that the changing the password got reflected in the passwords list.
+  // `note` field should not be filled when `GetSavedPasswordsList` is called.
   EXPECT_CALL(callback, Run(SizeIs(1)))
       .WillOnce([](const PasswordsPrivateDelegate::UiEntries& passwords) {
-        EXPECT_EQ("new_user", passwords[0].username);
-        EXPECT_THAT(passwords[0].note, Eq(""));
-      });
-  delegate.GetSavedPasswordsList(callback.Get());
-}
-
-TEST_F(PasswordsPrivateDelegateImplTest, ChangeSavedPasswordWithNote) {
-  password_manager::PasswordForm sample_form = CreateSampleForm();
-  sample_form.notes.emplace_back(
-      u"display name", u"note with non-empty display name",
-      /*date_created=*/base::Time::Now(), /*hide_by_default=*/true);
-  sample_form.notes.emplace_back(u"note with empty display name",
-                                 /*date_created=*/base::Time::Now());
-  SetUpPasswordStores({sample_form});
-
-  PasswordsPrivateDelegateImpl delegate(&profile_);
-  // Spin the loop to allow PasswordStore tasks posted on the creation of
-  // |delegate| to be completed.
-  base::RunLoop().RunUntilIdle();
-
-  // Double check that the contents of the passwords list matches our
-  // expectation. The note with an empty `unique_display_name` is returned.
-  base::MockCallback<PasswordsPrivateDelegate::UiEntriesCallback> callback;
-  EXPECT_CALL(callback, Run(SizeIs(1)))
-      .WillOnce([&](const PasswordsPrivateDelegate::UiEntries& passwords) {
-        EXPECT_EQ(sample_form.username_value,
-                  base::UTF8ToUTF16(passwords[0].username));
-        EXPECT_THAT(passwords[0].note,
-                    Eq(base::UTF16ToUTF8(sample_form.notes[1].value)));
-      });
-  delegate.GetSavedPasswordsList(callback.Get());
-  int sample_form_id = delegate.GetIdForCredential(
-      password_manager::CredentialUIEntry(sample_form));
-
-  api::passwords_private::ChangeSavedPasswordParams params;
-  params.password = "new_pass";
-  params.username = "new_user";
-  params.note = "new note";
-
-  sample_form.password_value = u"new_pass";
-  sample_form.username_value = u"new_user";
-  int new_form_id = delegate.GetIdForCredential(
-      password_manager::CredentialUIEntry(sample_form));
-
-  auto result = delegate.ChangeSavedPassword(sample_form_id, params);
-  EXPECT_EQ(result, new_form_id);
-
-  // Spin the loop to allow PasswordStore tasks posted when changing the
-  // password to be completed.
-  base::RunLoop().RunUntilIdle();
-
-  // Check that the changing the password got reflected in the passwords
-  EXPECT_CALL(callback, Run(SizeIs(1)))
-      .WillOnce([](const PasswordsPrivateDelegate::UiEntries& passwords) {
-        EXPECT_EQ("new_user", passwords[0].username);
-        EXPECT_THAT(passwords[0].note, Eq("new note"));
+        EXPECT_THAT(passwords[0].username, Eq("new_user"));
+        EXPECT_THAT(passwords[0].note, Eq(absl::nullopt));
       });
   delegate.GetSavedPasswordsList(callback.Get());
 }
@@ -735,7 +682,10 @@ TEST_F(PasswordsPrivateDelegateImplTest, TestPassedReauthOnView) {
 
 TEST_F(PasswordsPrivateDelegateImplTest,
        TestPassedReauthOnRequestCredentialDetails) {
-  SetUpPasswordStores({CreateSampleForm()});
+  password_manager::PasswordForm sample_form = CreateSampleForm();
+  sample_form.notes.emplace_back(u"best note ever",
+                                 /*date_created=*/base::Time::Now());
+  SetUpPasswordStores({sample_form});
 
   PasswordsPrivateDelegateImpl delegate(&profile_);
   // Spin the loop to allow PasswordStore tasks posted on the creation of
@@ -756,6 +706,7 @@ TEST_F(PasswordsPrivateDelegateImplTest,
           [&](absl::optional<api::passwords_private::PasswordUiEntry> entry) {
             EXPECT_THAT(entry->password, Eq("test"));
             EXPECT_THAT(entry->username, Eq("test@gmail.com"));
+            EXPECT_THAT(entry->note, Eq("best note ever"));
           });
 
   delegate.RequestCredentialDetails(0, password_callback.Get(), nullptr);
@@ -957,7 +908,6 @@ TEST_F(PasswordsPrivateDelegateImplTest, AndroidCredential) {
   expected_entry.urls.link =
       "https://play.google.com/store/apps/details?id=example.com";
   expected_entry.username = "test@gmail.com";
-  expected_entry.note.emplace();
   expected_entry.is_android_credential = true;
   expected_entry.stored_in = api::passwords_private::PASSWORD_STORE_SET_DEVICE;
   EXPECT_CALL(callback, Run(testing::ElementsAre(PasswordUiEntryDataEquals(

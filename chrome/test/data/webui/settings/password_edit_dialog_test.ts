@@ -932,7 +932,6 @@ suite('PasswordEditDialog', function() {
         // if the user clicks cancel, add dialog is still visible.
         passwordDialog.dispatchEvent(new CustomEvent('close'));
         await flushTasks();
-        debugger;
 
         assertAddDialogParts(addDialog);
         assertFalse(!!addDialog.shadowRoot!.querySelector(
