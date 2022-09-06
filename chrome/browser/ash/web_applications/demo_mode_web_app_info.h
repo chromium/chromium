@@ -10,10 +10,6 @@
 
 struct WebAppInstallInfo;
 
-#if defined(OFFICIAL_BUILD)
-#error Demo Mode should only be included in unofficial builds.
-#endif
-
 class DemoModeSystemAppDelegate : public ash::SystemWebAppDelegate {
  public:
   explicit DemoModeSystemAppDelegate(Profile* profile);

@@ -42,6 +42,7 @@
 #include "chrome/browser/ash/web_applications/camera_app/chrome_camera_app_ui_constants.h"
 #include "chrome/browser/ash/web_applications/connectivity_diagnostics_system_web_app_info.h"
 #include "chrome/browser/ash/web_applications/crosh_system_web_app_info.h"
+#include "chrome/browser/ash/web_applications/demo_mode_web_app_info.h"
 #include "chrome/browser/ash/web_applications/diagnostics_system_web_app_info.h"
 #include "chrome/browser/ash/web_applications/eche_app_info.h"
 #include "chrome/browser/ash/web_applications/face_ml_system_web_app_info.h"
@@ -96,7 +97,6 @@
 #include "ui/base/ui_base_features.h"
 #include "url/origin.h"
 #if !defined(OFFICIAL_BUILD)
-#include "chrome/browser/ash/web_applications/demo_mode_web_app_info.h"
 #include "chrome/browser/ash/web_applications/sample_system_web_app_info.h"
 #endif  // !defined(OFFICIAL_BUILD)
 
@@ -114,6 +114,7 @@ SystemWebAppDelegateMap CreateSystemWebApps(Profile* profile) {
   // post-migration. We're making delegates for everything, and will then use
   // them in place of SystemAppInfos.
   info_vec.push_back(std::make_unique<CameraSystemAppDelegate>(profile));
+  info_vec.push_back(std::make_unique<DemoModeSystemAppDelegate>(profile));
   info_vec.push_back(std::make_unique<DiagnosticsSystemAppDelegate>(profile));
   info_vec.push_back(std::make_unique<OSSettingsSystemAppDelegate>(profile));
   info_vec.push_back(std::make_unique<CroshSystemAppDelegate>(profile));
@@ -142,7 +143,6 @@ SystemWebAppDelegateMap CreateSystemWebApps(Profile* profile) {
   info_vec.push_back(std::make_unique<FaceMLSystemAppDelegate>(profile));
 
 #if !defined(OFFICIAL_BUILD)
-  info_vec.push_back(std::make_unique<DemoModeSystemAppDelegate>(profile));
   info_vec.push_back(std::make_unique<SampleSystemAppDelegate>(profile));
 #endif  // !defined(OFFICIAL_BUILD)
 

@@ -292,11 +292,6 @@ IN_PROC_BROWSER_TEST_F(DemoSessionLoginTest, SessionStartup) {
   login_manager_mixin_.WaitForActiveSession();
 }
 
-// Demo SWA is currently only included for unofficial builds
-//
-// TODO(b/238771784): Change this check to IS_CHROME_BRANDING (and eventually
-// remove check entirely when we prepare to launch)
-#if !defined(OFFICIAL_BUILD)
 IN_PROC_BROWSER_TEST_F(DemoSessionLoginTest, DemoSWALaunchesOnSessionStartup) {
   base::ScopedAllowBlockingForTesting scoped_allow_blocking;
 
@@ -310,7 +305,6 @@ IN_PROC_BROWSER_TEST_F(DemoSessionLoginTest, DemoSWALaunchesOnSessionStartup) {
       ash::FindSystemWebAppBrowser(profile, SystemWebAppType::DEMO_MODE);
   ASSERT_TRUE(demo_app_browser);
 }
-#endif  // !defined(OFFICIAL_BUILD)
 
 }  // namespace
 }  // namespace ash

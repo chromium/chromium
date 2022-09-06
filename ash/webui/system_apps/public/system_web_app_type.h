@@ -55,12 +55,11 @@ enum class SystemWebAppType {
   // A System Web App that launches on Demo Mode startup, to display animated
   // content that highlights various features of ChromeOS
   //
-  // Currently this SWA is only enabled in unofficial builds while still under
-  // development. Prefer to file bugs to the internal Demo Mode component:
+  // Prefer to file bugs to the internal Demo Mode component:
   // b/components/812312
   //
   // Source: //ash/webui/demo_mode_app_ui/
-  // Contact: jacksontadie@google.com, drcrash@chromium.org
+  // Contact: cros-demo-mode-eng@google.com
   DEMO_MODE = 18,
 
   // OS FEEDBACK is a SWA that provides step by step guides to submit a

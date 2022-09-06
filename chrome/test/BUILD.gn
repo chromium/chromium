@@ -3871,6 +3871,7 @@ if (!is_android) {
         "../browser/ash/system/device_disabling_browsertest.cc",
         "../browser/ash/system/tray_accessibility_browsertest.cc",
         "../browser/ash/web_applications/camera_app/camera_app_integration_browsertest.cc",
+        "../browser/ash/web_applications/demo_mode_app_integration_browsertest.cc",
         "../browser/ash/web_applications/diagnostics_app_integration_browsertest.cc",
         "../browser/ash/web_applications/eche_app_integration_browsertest.cc",
         "../browser/ash/web_applications/face_ml_integration_browsertest.cc",
@@ -4061,14 +4062,8 @@ if (!is_android) {
         "//testing/buildbot/filters:chromeos_filters",
       ]
       if (!is_official_build) {
-        sources += [
-          "../browser/ash/web_applications/demo_mode_app_integration_browsertest.cc",
-          "../browser/ash/web_applications/sample_system_web_app_integration_browsertest.cc",
-        ]
-        deps += [
-          "//ash/webui/demo_mode_app_ui",
-          "//ash/webui/sample_system_web_app_ui",
-        ]
+        sources += [ "../browser/ash/web_applications/sample_system_web_app_integration_browsertest.cc" ]
+        deps += [ "//ash/webui/sample_system_web_app_ui" ]
       }
       if (use_dbus) {
         deps += [ "//dbus:test_support" ]
@@ -4143,6 +4138,7 @@ if (!is_android) {
         "//ash/keyboard/ui:test_support",
         "//ash/public/cpp/external_arc",
         "//ash/services/multidevice_setup/public/cpp:test_support",
+        "//ash/webui/demo_mode_app_ui",
         "//ash/webui/diagnostics_ui",
         "//ash/webui/eche_app_ui",
         "//ash/webui/face_ml_app_ui",

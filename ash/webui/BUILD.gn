@@ -21,6 +21,7 @@ test("ash_webui_unittests") {
 
   deps = [
     "//ash/webui/common/backend:unit_tests",
+    "//ash/webui/demo_mode_app_ui:unit_tests",
     "//ash/webui/diagnostics_ui:unit_tests",
     "//ash/webui/diagnostics_ui/backend:unit_tests",
     "//ash/webui/diagnostics_ui/mojom:unit_tests",
@@ -47,10 +48,6 @@ test("ash_webui_unittests") {
     "//ui/gl:test_support",
   ]
 
-  if (!is_official_build) {
-    deps += [ "//ash/webui/demo_mode_app_ui:unit_tests" ]
-  }
-
   # Tests for Camera App only work on Chrome OS device but not linux-chromeos.
   if (is_chromeos_device) {
     deps += [ "//ash/webui/camera_app_ui:unit_tests" ]
@@ -69,6 +66,7 @@ group("closure_compile") {
   deps = [
     "//ash/webui/common:closure_compile",
     "//ash/webui/connectivity_diagnostics:closure_compile",
+    "//ash/webui/demo_mode_app_ui:closure_compile",
     "//ash/webui/diagnostics_ui:closure_compile",
     "//ash/webui/eche_app_ui:closure_compile",
     "//ash/webui/file_manager/resources:closure_compile",
@@ -83,8 +81,4 @@ group("closure_compile") {
     "//ash/webui/shimless_rma:closure_compile",
     "//ash/webui/system_apps:closure_compile",
   ]
-
-  if (!is_official_build) {
-    deps += [ "//ash/webui/demo_mode_app_ui:closure_compile" ]
-  }
 }

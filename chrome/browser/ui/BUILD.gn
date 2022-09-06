@@ -3100,6 +3100,7 @@ static_library("ui") {
       "//ash/webui/camera_app_ui",
       "//ash/webui/color_internals",
       "//ash/webui/connectivity_diagnostics",
+      "//ash/webui/demo_mode_app_ui",
       "//ash/webui/diagnostics_ui",
       "//ash/webui/eche_app_ui",
       "//ash/webui/file_manager:file_manager_ui",
@@ -3305,10 +3306,7 @@ static_library("ui") {
           "webui/chromeos/emulator/device_emulator_ui.h",
         ]
       }
-      deps += [
-        "//ash/webui/demo_mode_app_ui",
-        "//ash/webui/sample_system_web_app_ui",
-      ]
+      deps += [ "//ash/webui/sample_system_web_app_ui" ]
     }
   }
 

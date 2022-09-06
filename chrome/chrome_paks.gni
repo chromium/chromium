@@ -222,6 +222,7 @@ template("chrome_extra_paks") {
         "$root_gen_dir/ash/public/cpp/resources/ash_public_unscaled_resources.pak",
         "$root_gen_dir/ash/webui/ash_camera_app_resources.pak",
         "$root_gen_dir/ash/webui/ash_color_internals_resources.pak",
+        "$root_gen_dir/ash/webui/ash_demo_mode_app_resources.pak",
         "$root_gen_dir/ash/webui/ash_diagnostics_app_resources.pak",
         "$root_gen_dir/ash/webui/ash_eche_app_resources.pak",
         "$root_gen_dir/ash/webui/ash_eche_bundle_resources.pak",
@@ -288,6 +289,7 @@ template("chrome_extra_paks") {
         "//ash/webui/resources:camera_app_resources",
         "//ash/webui/resources:color_internals_resources",
         "//ash/webui/resources:connectivity_diagnostics_resources",
+        "//ash/webui/resources:demo_mode_app_resources",
         "//ash/webui/resources:diagnostics_app_resources",
         "//ash/webui/resources:eche_app_resources",
         "//ash/webui/resources:eche_bundle_resources",
@@ -346,12 +348,10 @@ template("chrome_extra_paks") {
 
       if (!is_official_build) {
         sources += [
-          "$root_gen_dir/ash/webui/ash_demo_mode_app_resources.pak",
           "$root_gen_dir/ash/webui/ash_sample_system_web_app_resources.pak",
           "$root_gen_dir/ash/webui/ash_sample_system_web_app_untrusted_resources.pak",
         ]
         deps += [
-          "//ash/webui/resources:demo_mode_app_resources",
           "//ash/webui/resources:sample_system_web_app_resources",
           "//ash/webui/resources:sample_system_web_app_untrusted_resources",
         ]
