@@ -1635,9 +1635,6 @@ void PrintRenderFrameHelper::SnapshotForContentAnalysis(
     return;
   }
 
-  GetPrintManagerHost()->DidGetPrintedPagesCount(
-      print_pages_params.params->document_cookie, page_count);
-
   for (size_t page_index = 0; page_index < page_count; ++page_index) {
     PrintPageInternal(
         *print_pages_params.params, page_index, page_count,

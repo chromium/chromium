@@ -3467,7 +3467,8 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessServicePrintBrowserTest,
 
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
-// TODO(crbug.com/1256506): Re-enable test on Windows.
+// TODO(crbug.com/1256506): Re-enable test on Windows.  Must also wait until
+// crbug.com/1358766 is resolved.
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_ContentAnalysisPrintBrowserTest \
   DISABLED_ContentAnalysisPrintBrowserTest
@@ -3532,7 +3533,8 @@ class MAYBE_ContentAnalysisPrintBrowserTest
   base::test::ScopedFeatureList feature_list_;
 };
 
-// TODO(crbug.com/1256506): Re-enable test on Windows.
+// TODO(crbug.com/1256506): Re-enable test on Windows.  Must also wait until
+// crbug.com/1358766 is resolved.
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_ContentAnalysisScriptedPreviewlessPrintBrowserTest \
   DISABLED_ContentAnalysisScriptedPreviewlessPrintBrowserTest
@@ -3658,12 +3660,14 @@ IN_PROC_BROWSER_TEST_P(MAYBE_ContentAnalysisPrintBrowserTest,
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-// TODO(crbug.com/1256506): Re-enable test on Windows.
+// TODO(crbug.com/1256506): Re-enable test on Windows.  Must also wait until
+// crbug.com/1358766 is resolved.
 INSTANTIATE_TEST_SUITE_P(All,
                          MAYBE_ContentAnalysisPrintBrowserTest,
                          testing::Bool());
 
-// TODO(crbug.com/1256506): Re-enable test on Windows.
+// TODO(crbug.com/1256506): Re-enable test on Windows.  Must also wait until
+// crbug.com/1358766 is resolved.
 // This test suite doesn't run on CrOS since it doesn't support non-print
 // preview scripted printing.
 #if !BUILDFLAG(IS_CHROMEOS)
