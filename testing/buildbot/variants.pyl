@@ -961,6 +961,26 @@
     'enabled': True,
     'identifier': 'JACUZZI_RELEASE_STABLE',
   },
+  'CROS_JACUZZI_PUBLIC': {
+    'skylab': {
+      'cros_board': 'jacuzzi',
+      'cros_chrome_version': '105.0.5190.0',
+      'cros_img': 'jacuzzi-public/R105-14988.0.0',
+      'bucket': 'chromiumos-image-archive',
+    },
+    'enabled': True,
+    'identifier': 'JACUZZI_PUBLIC',
+  },
+  'CROS_KEVIN_PUBLIC': {
+    'skylab': {
+      'cros_board': 'kevin',
+      'cros_chrome_version': '105.0.5190.0',
+      'cros_img': 'kevin64-public/R105-14988.0.0',
+      'bucket': 'chromiumos-image-archive',
+    },
+    'enabled': True,
+    'identifier': 'KEVIN_PUBLIC',
+  },
   'CROS_OCTOPUS_FULL': {
     'skylab': {
       'cros_board': 'octopus',

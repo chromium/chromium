@@ -90205,6 +90205,63 @@
       }
     ]
   },
+  "lacros-arm64-generic-rel-skylab-fyi": {
+    "additional_compile_targets": [
+      "chrome"
+    ],
+    "skylab_tests": [
+      {
+        "args": [],
+        "bucket": "chromiumos-image-archive",
+        "cros_board": "jacuzzi",
+        "cros_img": "jacuzzi-public/R105-14988.0.0",
+        "name": "lacros_fyi_tast_tests JACUZZI_PUBLIC",
+        "swarming": {},
+        "tast_expr": "(\"group:mainline\" && \"dep:lacros\" && !informational)",
+        "test": "lacros_fyi_tast_tests",
+        "test_id_prefix": "ninja://chromeos/lacros:lacros_fyi_tast_tests/",
+        "timeout_sec": 10800,
+        "variant_id": "JACUZZI_PUBLIC"
+      },
+      {
+        "args": [],
+        "bucket": "chromiumos-image-archive",
+        "cros_board": "kevin",
+        "cros_img": "kevin64-public/R105-14988.0.0",
+        "name": "lacros_fyi_tast_tests KEVIN_PUBLIC",
+        "swarming": {},
+        "tast_expr": "(\"group:mainline\" && \"dep:lacros\" && !informational)",
+        "test": "lacros_fyi_tast_tests",
+        "test_id_prefix": "ninja://chromeos/lacros:lacros_fyi_tast_tests/",
+        "timeout_sec": 10800,
+        "variant_id": "KEVIN_PUBLIC"
+      },
+      {
+        "args": [],
+        "bucket": "chromiumos-image-archive",
+        "cros_board": "jacuzzi",
+        "cros_img": "jacuzzi-public/R105-14988.0.0",
+        "name": "ozone_unittests JACUZZI_PUBLIC",
+        "swarming": {},
+        "test": "ozone_unittests",
+        "test_id_prefix": "ninja://ui/ozone:ozone_unittests/",
+        "timeout_sec": 3600,
+        "variant_id": "JACUZZI_PUBLIC"
+      },
+      {
+        "args": [],
+        "bucket": "chromiumos-image-archive",
+        "cros_board": "kevin",
+        "cros_img": "kevin64-public/R105-14988.0.0",
+        "name": "ozone_unittests KEVIN_PUBLIC",
+        "swarming": {},
+        "test": "ozone_unittests",
+        "test_id_prefix": "ninja://ui/ozone:ozone_unittests/",
+        "timeout_sec": 3600,
+        "variant_id": "KEVIN_PUBLIC"
+      }
+    ]
+  },
   "linux-annotator-rel": {
     "scripts": [
       {
