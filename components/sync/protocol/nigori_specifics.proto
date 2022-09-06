@@ -67,16 +67,20 @@ message NigoriSpecifics {
   // Passwords and Wi-Fi configurations are always encrypted, so we don't need
   // a field here.  History delete directives need to be consumable by the
   // server, and thus can't be encrypted.
-  optional bool encrypt_bookmarks = 13;
-  optional bool encrypt_preferences = 14;
-  optional bool encrypt_autofill_profile = 15;
-  optional bool encrypt_autofill = 16;
-  optional bool encrypt_themes = 17;
-  optional bool encrypt_typed_urls = 18;
-  optional bool encrypt_extensions = 19;
-  optional bool encrypt_sessions = 20;
-  optional bool encrypt_apps = 21;
-  optional bool encrypt_search_engines = 22;
+  // USS clients don't read these values, datatypes are either always encrypted,
+  // never encrypted or encrypted when |encrypt_everything| set to true.
+  // TODO(crbug.com/1360022): complete deprecation of encrypt_* fields (replace
+  // fields with reserved) once <M82 clients aren't supported.
+  optional bool encrypt_bookmarks = 13 [deprecated = true];
+  optional bool encrypt_preferences = 14 [deprecated = true];
+  optional bool encrypt_autofill_profile = 15 [deprecated = true];
+  optional bool encrypt_autofill = 16 [deprecated = true];
+  optional bool encrypt_themes = 17 [deprecated = true];
+  optional bool encrypt_typed_urls = 18 [deprecated = true];
+  optional bool encrypt_extensions = 19 [deprecated = true];
+  optional bool encrypt_sessions = 20 [deprecated = true];
+  optional bool encrypt_apps = 21 [deprecated = true];
+  optional bool encrypt_search_engines = 22 [deprecated = true];
 
   // Deprecated on clients where tab sync is enabled by default.
   reserved 23;
@@ -85,11 +89,11 @@ message NigoriSpecifics {
   // If true, all current and future datatypes will be encrypted.
   optional bool encrypt_everything = 24;
 
-  optional bool encrypt_extension_settings = 25;
+  optional bool encrypt_extension_settings = 25 [deprecated = true];
 
   optional bool encrypt_app_notifications = 26 [deprecated = true];
 
-  optional bool encrypt_app_settings = 27;
+  optional bool encrypt_app_settings = 27 [deprecated = true];
 
   // User device information. Contains information about each device that has a
   // sync-enabled Chrome browser connected to the user account.
@@ -149,11 +153,11 @@ message NigoriSpecifics {
   reserved "encrypt_articles";
 
   // Boolean corresponding to whether app list items should be encrypted.
-  optional bool encrypt_app_list = 38;
+  optional bool encrypt_app_list = 38 [deprecated = true];
 
   // Boolean corresponding to whether usage count and last use date of Wallet
   // data should be encrypted.
-  optional bool encrypt_autofill_wallet_metadata = 39;
+  optional bool encrypt_autofill_wallet_metadata = 39 [deprecated = true];
 
   // Boolean indicating whether this node was originally missing a
   // |keystore_migration_time| field value, and was fixed on the server by
@@ -162,13 +166,13 @@ message NigoriSpecifics {
   optional bool server_only_was_missing_keystore_migration_time = 40;
 
   // Boolean corresponding to whether arc pakcage items should be encrypted.
-  optional bool encrypt_arc_package = 41;
+  optional bool encrypt_arc_package = 41 [deprecated = true];
 
   // Boolean corresponding to whether printer items should be encrypted.
-  optional bool encrypt_printers = 42;
+  optional bool encrypt_printers = 42 [deprecated = true];
 
   // Boolean corresponding to whether reading list items should be encrypted.
-  optional bool encrypt_reading_list = 43;
+  optional bool encrypt_reading_list = 43 [deprecated = true];
 
   reserved 44;
   reserved "encrypt_mountain_shares";
@@ -199,13 +203,13 @@ message NigoriSpecifics {
   optional string custom_passphrase_key_derivation_salt = 46;
 
   // Boolean corresponding to whether send tab should be encrypted.
-  optional bool encrypt_send_tab_to_self = 47;
+  optional bool encrypt_send_tab_to_self = 47 [deprecated = true];
 
   // Boolean corresponding to whether Web Apps data should be encrypted.
-  optional bool encrypt_web_apps = 48;
+  optional bool encrypt_web_apps = 48 [deprecated = true];
 
   // Boolean corresponding to whether OS preferences should be encrypted.
-  optional bool encrypt_os_preferences = 49;
+  optional bool encrypt_os_preferences = 49 [deprecated = true];
 
   // Some debug-only fields for passphrase type TRUSTED_VAULT_PASSPHRASE.
   message TrustedVaultDebugInfo {
@@ -219,10 +223,9 @@ message NigoriSpecifics {
 
   optional TrustedVaultDebugInfo trusted_vault_debug_info = 50;
 
-  // Boolean corresponding to whether workspace desk should be encrypted.
-  optional bool encrypt_workspace_desk = 51;
+  reserved 51;
+  reserved "encrypt_workspace_desk";
 
-  // Boolean corresponding to whether printers authorization server items should
-  // be encrypted.
-  optional bool encrypt_printers_authorization_servers = 52;
+  reserved 52;
+  reserved "encrypt_printers_authorization_servers";
 }
