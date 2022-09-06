@@ -29,8 +29,7 @@ class MessageQueueManager implements ScopeChangeController.Delegate {
     // TokenHolder tracking whether the queue should be suspended.
     private final TokenHolder mSuppressionTokenHolder =
             new TokenHolder(this::onSuspendedStateChange);
-    private final MessageAnimationCoordinator mAnimationCoordinator =
-            new MessageAnimationCoordinator();
+    private final MessageAnimationCoordinator mAnimationCoordinator;
 
     /**
      * A {@link Map} collection which contains {@code MessageKey} as the key and the corresponding
@@ -54,6 +53,10 @@ class MessageQueueManager implements ScopeChangeController.Delegate {
     private final Map<ScopeKey, Boolean> mScopeStates = new HashMap<>();
 
     private ScopeChangeController mScopeChangeController = new ScopeChangeController(this);
+
+    public MessageQueueManager(MessageAnimationCoordinator animationCoordinator) {
+        mAnimationCoordinator = animationCoordinator;
+    }
 
     /**
      * Enqueues a message. Associates the message with its key; the key is used later to dismiss the
@@ -131,9 +134,7 @@ class MessageQueueManager implements ScopeChangeController.Delegate {
         }
 
         message.dismiss(dismissReason);
-        if (mAnimationCoordinator.getCurrentDisplayedMessage() == messageState) {
-            updateCurrentDisplayedMessage(null);
-        }
+        updateCurrentDisplayedMessage(getNextMessage());
         MessagesMetrics.recordDismissReason(message.getMessageIdentifier(), dismissReason);
     }
 

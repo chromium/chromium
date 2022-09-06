@@ -42,7 +42,9 @@ public class MessageDispatcherImpl implements ManagedMessageDispatcher {
             MessageAutodismissDurationProvider autodismissDurationProvider,
             Callback<Animator> animatorStartCallback, WindowAndroid windowAndroid) {
         this(messageContainer, messageMaxTranslation, autodismissDurationProvider,
-                animatorStartCallback, windowAndroid, new MessageQueueManager());
+                animatorStartCallback, windowAndroid,
+                new MessageQueueManager(
+                        new MessageAnimationCoordinator(messageContainer, animatorStartCallback)));
     }
 
     @VisibleForTesting

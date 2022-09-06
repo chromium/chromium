@@ -32,6 +32,7 @@ import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
+import org.chromium.components.messages.MessageStateHandler.Position;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.test.util.BlankUiTestActivity;
@@ -102,11 +103,11 @@ public class SingleActionMessageTest {
         view.setId(R.id.message_banner);
         message.setMessageBannerForTesting(messageBanner);
         message.setViewForTesting(view);
-        message.show();
+        message.show(Position.INVISIBLE, Position.FRONT);
         Assert.assertEquals(
                 "Message container should have one message view after the message is shown.", 1,
                 container.getChildCount());
-        message.hide(true, () -> {});
+        message.hide(Position.FRONT, Position.INVISIBLE, true);
         // Let's pretend the animation ended, and the mediator called the callback as a result.
         final ArgumentCaptor<Runnable> runnableCaptor = ArgumentCaptor.forClass(Runnable.class);
         verify(messageBanner).hide(anyBoolean(), runnableCaptor.capture());
@@ -237,7 +238,7 @@ public class SingleActionMessageTest {
         view.setId(R.id.message_banner);
         message.setMessageBannerForTesting(messageBanner);
         message.setViewForTesting(view);
-        message.show();
+        message.show(Position.INVISIBLE, Position.FRONT);
         return message;
     }
 

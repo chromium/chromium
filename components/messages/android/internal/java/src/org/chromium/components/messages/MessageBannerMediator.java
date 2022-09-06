@@ -105,21 +105,23 @@ class MessageBannerMediator implements SwipeHandler {
     /**
      * Shows the message banner with an animation.
      * @param messageShown The {@link Runnable} that will run once the message banner is shown.
+     * @return The animator to show the message.
      */
-    void show(Runnable messageShown) {
+    Animator show(Runnable messageShown) {
         if (mCurrentState == State.HIDDEN) {
             mModel.set(TRANSLATION_Y, -mMaxTranslationYSupplier.get());
         }
         cancelAnyAnimations();
-        startAnimation(true, 0, false, messageShown);
+        return startAnimation(true, 0, false, messageShown);
     }
 
     /**
      * Hides the message banner with an animation.
      * @param animate Whether to hide with an animation.
      * @param messageHidden The {@link Runnable} that will run once the message banner is hidden.
+     * @return The animator to hide the message.
      */
-    void hide(boolean animate, Runnable messageHidden) {
+    Animator hide(boolean animate, Runnable messageHidden) {
         cancelAnyAnimations();
 
         if (!animate) {
@@ -130,10 +132,9 @@ class MessageBannerMediator implements SwipeHandler {
 
         if (mCurrentState == State.HIDDEN) {
             messageHidden.run();
-            return;
+            return null;
         }
-
-        startAnimation(true, -mMaxTranslationYSupplier.get(), false, messageHidden);
+        return startAnimation(true, -mMaxTranslationYSupplier.get(), false, messageHidden);
     }
 
     void setOnTouchRunnable(Runnable runnable) {
@@ -199,8 +200,8 @@ class MessageBannerMediator implements SwipeHandler {
                     ? 0
                     : MathUtils.flipSignIf(mMaxHorizontalTranslationPx.get(), translationX < 0);
         }
-        startAnimation(
-                isVertical, translateTo, false, translateTo != 0 ? mMessageDismissed : () -> {});
+        mAnimatorStartCallback.onResult(startAnimation(
+                isVertical, translateTo, false, translateTo != 0 ? mMessageDismissed : () -> {}));
     }
 
     @Override
@@ -228,8 +229,8 @@ class MessageBannerMediator implements SwipeHandler {
 
         // TODO(crbug.com/1157213): See if we can use velocity to change the animation
         // speed/duration.
-        startAnimation(isVertical(mSwipeDirection), translateTo, velocity != 0,
-                translateTo != 0 ? mMessageDismissed : () -> {});
+        mAnimatorStartCallback.onResult(startAnimation(isVertical(mSwipeDirection), translateTo,
+                velocity != 0, translateTo != 0 ? mMessageDismissed : () -> {}));
     }
 
     @Override
@@ -246,8 +247,9 @@ class MessageBannerMediator implements SwipeHandler {
      * @param translateTo Target translation value for the animation.
      * @param didFling Whether the animation is the result of a fling gesture.
      * @param onEndCallback Callback that will be called after the animation.
+     * @return The animator which can trigger the animation.
      */
-    private void startAnimation(
+    private AnimatorSet startAnimation(
             boolean vertical, float translateTo, boolean didFling, Runnable onEndCallback) {
         final long duration = translateTo == 0 ? ENTER_DURATION_MS : EXIT_DURATION_MS;
 
@@ -291,7 +293,7 @@ class MessageBannerMediator implements SwipeHandler {
         });
 
         mAnimation = animatorSet;
-        mAnimatorStartCallback.onResult(mAnimation);
+        return animatorSet;
     }
 
     private void cancelAnyAnimations() {

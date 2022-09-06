@@ -93,11 +93,12 @@ public class MessageBannerMediatorUnitTest {
 
     @Test
     public void testShowMessage() {
-        mMediator.show(mShownRunnable);
+        Animator animator = mMediator.show(mShownRunnable);
 
         verify(mShownRunnable, times(0)).run();
         assertModelState(0, -100, 0, "before showing.");
 
+        animator.start();
         shadowOf(getMainLooper()).idle();
 
         assertModelState(0, 0, 1, "fully shown.");
@@ -106,15 +107,17 @@ public class MessageBannerMediatorUnitTest {
 
     @Test
     public void testHideMessage() {
-        mMediator.show(mShownRunnable);
+        Animator animator = mMediator.show(mShownRunnable);
+        animator.start();
 
         shadowOf(getMainLooper()).idle();
 
         assertModelState(0, 0, 1, "fully shown.");
 
-        mMediator.hide(true, mHiddenRunnable);
+        animator = mMediator.hide(true, mHiddenRunnable);
         verify(mHiddenRunnable, times(0)).run();
 
+        animator.start();
         shadowOf(getMainLooper()).idle();
 
         assertModelState(0, -100, 0, "after hidden.");
@@ -123,20 +126,22 @@ public class MessageBannerMediatorUnitTest {
 
     @Test
     public void testHideMessageNoAnimation() {
-        mMediator.show(mShownRunnable);
+        Animator animator = mMediator.show(mShownRunnable);
+        animator.start();
 
         shadowOf(getMainLooper()).idle();
 
         assertModelState(0, 0, 1, "fully shown.");
 
         mMediator.hide(false, mHiddenRunnable);
+
         assertModelState(0, -100, 0, "after hidden.");
         verify(mHiddenRunnable, times(1)).run();
     }
 
     @Test
     public void testVerticalDismiss() {
-        mMediator.show(mShownRunnable);
+        mMediator.show(mShownRunnable).start();
 
         shadowOf(getMainLooper()).idle();
 
@@ -157,7 +162,7 @@ public class MessageBannerMediatorUnitTest {
 
     @Test
     public void testVerticalNotDismissed() {
-        mMediator.show(mShownRunnable);
+        mMediator.show(mShownRunnable).start();
 
         shadowOf(getMainLooper()).idle();
 
@@ -179,7 +184,7 @@ public class MessageBannerMediatorUnitTest {
 
     @Test
     public void testSwipeDownIsNoop() {
-        mMediator.show(mShownRunnable);
+        mMediator.show(mShownRunnable).start();
 
         shadowOf(getMainLooper()).idle();
 
@@ -196,7 +201,7 @@ public class MessageBannerMediatorUnitTest {
 
     @Test
     public void testLeftDismiss() {
-        mMediator.show(mShownRunnable);
+        mMediator.show(mShownRunnable).start();
 
         shadowOf(getMainLooper()).idle();
 
@@ -217,7 +222,7 @@ public class MessageBannerMediatorUnitTest {
 
     @Test
     public void testLeftNotDismissed() {
-        mMediator.show(mShownRunnable);
+        mMediator.show(mShownRunnable).start();
 
         shadowOf(getMainLooper()).idle();
 
@@ -238,7 +243,7 @@ public class MessageBannerMediatorUnitTest {
 
     @Test
     public void testRightDismiss() {
-        mMediator.show(mShownRunnable);
+        mMediator.show(mShownRunnable).start();
 
         shadowOf(getMainLooper()).idle();
 
@@ -259,7 +264,7 @@ public class MessageBannerMediatorUnitTest {
 
     @Test
     public void testRightNotDismissed() {
-        mMediator.show(mShownRunnable);
+        mMediator.show(mShownRunnable).start();
 
         shadowOf(getMainLooper()).idle();
 
@@ -280,7 +285,7 @@ public class MessageBannerMediatorUnitTest {
 
     @Test
     public void testHorizontalFlingFromOutsideThresholdToCenterDismissed() {
-        mMediator.show(mShownRunnable);
+        mMediator.show(mShownRunnable).start();
 
         shadowOf(getMainLooper()).idle();
 
@@ -301,7 +306,7 @@ public class MessageBannerMediatorUnitTest {
 
     @Test
     public void testVerticalFlingDown() {
-        mMediator.show(mShownRunnable);
+        mMediator.show(mShownRunnable).start();
 
         shadowOf(getMainLooper()).idle();
 
@@ -322,7 +327,7 @@ public class MessageBannerMediatorUnitTest {
 
     @Test
     public void testVerticalFlingDownIsNoop() {
-        mMediator.show(mShownRunnable);
+        mMediator.show(mShownRunnable).start();
 
         shadowOf(getMainLooper()).idle();
 
@@ -339,7 +344,7 @@ public class MessageBannerMediatorUnitTest {
 
     @Test
     public void testVerticalFlingUpWithinThresholdDismisses() {
-        mMediator.show(mShownRunnable);
+        mMediator.show(mShownRunnable).start();
 
         shadowOf(getMainLooper()).idle();
 
@@ -358,7 +363,7 @@ public class MessageBannerMediatorUnitTest {
 
     @Test
     public void testVerticalFlingUpOutsideThresholdDismisses() {
-        mMediator.show(mShownRunnable);
+        mMediator.show(mShownRunnable).start();
 
         shadowOf(getMainLooper()).idle();
 
@@ -377,7 +382,7 @@ public class MessageBannerMediatorUnitTest {
 
     @Test
     public void testLeftFlingWithinThresholdPositiveXNoDismisses() {
-        mMediator.show(mShownRunnable);
+        mMediator.show(mShownRunnable).start();
 
         shadowOf(getMainLooper()).idle();
 
@@ -398,7 +403,7 @@ public class MessageBannerMediatorUnitTest {
 
     @Test
     public void testLeftFlingWithinThresholdNegativeXNoDismisses() {
-        mMediator.show(mShownRunnable);
+        mMediator.show(mShownRunnable).start();
 
         shadowOf(getMainLooper()).idle();
 
@@ -419,7 +424,7 @@ public class MessageBannerMediatorUnitTest {
 
     @Test
     public void testRightFlingWithinThresholdNegativeXNoDismisses() {
-        mMediator.show(mShownRunnable);
+        mMediator.show(mShownRunnable).start();
 
         shadowOf(getMainLooper()).idle();
 
@@ -440,7 +445,7 @@ public class MessageBannerMediatorUnitTest {
 
     @Test
     public void testRightFlingWithinThresholdPositiveXNoDismisses() {
-        mMediator.show(mShownRunnable);
+        mMediator.show(mShownRunnable).start();
 
         shadowOf(getMainLooper()).idle();
 
@@ -461,7 +466,7 @@ public class MessageBannerMediatorUnitTest {
 
     @Test
     public void testLeftFlingOutsideThresholdDismisses() {
-        mMediator.show(mShownRunnable);
+        mMediator.show(mShownRunnable).start();
 
         shadowOf(getMainLooper()).idle();
 
@@ -482,7 +487,7 @@ public class MessageBannerMediatorUnitTest {
 
     @Test
     public void testRightFlingOutsideThresholdDismisses() {
-        mMediator.show(mShownRunnable);
+        mMediator.show(mShownRunnable).start();
 
         shadowOf(getMainLooper()).idle();
 

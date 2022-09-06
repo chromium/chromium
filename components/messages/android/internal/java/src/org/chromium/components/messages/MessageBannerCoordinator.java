@@ -6,6 +6,7 @@ package org.chromium.components.messages;
 
 import android.animation.Animator;
 import android.content.res.Resources;
+import android.provider.Settings;
 
 import androidx.annotation.VisibleForTesting;
 
@@ -88,9 +89,10 @@ class MessageBannerCoordinator {
 
     /**
      * Shows the message banner.
+     * @return The animator which shows the message view.
      */
-    void show() {
-        mMediator.show(() -> {
+    Animator show() {
+        return mMediator.show(() -> {
             setOnTouchRunnable(mTimer::resetTimer);
             announceForAccessibility();
             setOnTitleChanged(() -> {
@@ -105,10 +107,17 @@ class MessageBannerCoordinator {
      * Hides the message banner.
      * @param animate Whether to hide with an animation.
      * @param messageHidden The {@link Runnable} that will run once the message banner is hidden.
+     * @return The animator which hides the message view.
      */
-    void hide(boolean animate, Runnable messageHidden) {
+    Animator hide(boolean animate, Runnable messageHidden) {
         mTimer.cancelTimer();
-        mMediator.hide(animate, () -> {
+        // Skip animation if animation has been globally disabled.
+        // Otherwise, child animator's listener's onEnd will be called immediately after onStart,
+        // even before parent animatorSet's listener's onStart.
+        var isAnimationDisabled = Settings.Global.getFloat(mView.getContext().getContentResolver(),
+                                          Settings.Global.ANIMATOR_DURATION_SCALE, 1f)
+                == 0;
+        return mMediator.hide(animate && !isAnimationDisabled, () -> {
             setOnTouchRunnable(null);
             setOnTitleChanged(null);
             messageHidden.run();
