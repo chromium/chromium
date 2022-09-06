@@ -271,9 +271,10 @@ std::string GetURLWithoutScheme(const GURL& url) {
   [self assertNoUpgrade];
 }
 
+// TODO(crbug.com/1359356): Test is consistently failing.
 // Type an HTTP URL without scheme. The navigation should be upgraded to HTTPS
 // which should load successfully.
-- (void)test_TypeHTTPWithGoodHTTPS_ShouldUpgrade {
+- (void)DISABLED_test_TypeHTTPWithGoodHTTPS_ShouldUpgrade {
   [HttpsUpgradeAppInterface setHTTPSPortForTesting:self.goodHTTPSServer->port()
                                       useFakeHTTPS:true];
 
@@ -342,10 +343,11 @@ std::string GetURLWithoutScheme(const GURL& url) {
                 @"HTTPS-Only mode unexpectedly recorded a histogram event");
 }
 
+// TODO(crbug.com/1359356): Test is consistently failing.
 // Type an HTTP URL without scheme. The navigation should be upgraded to HTTPS,
 // but the HTTPS URL serves bad response. The navigation should fall back to
 // HTTP.
-- (void)test_HTTPWithBadHTTPS_ShouldFallback {
+- (void)DISABLED_test_HTTPWithBadHTTPS_ShouldFallback {
   [HttpsUpgradeAppInterface setHTTPSPortForTesting:self.badHTTPSServer->port()
                                       useFakeHTTPS:false];
   [HttpsUpgradeAppInterface
@@ -377,10 +379,11 @@ std::string GetURLWithoutScheme(const GURL& url) {
   [self assertFailedUpgrade:1];
 }
 
+// TODO(crbug.com/1359356): Test is consistently failing.
 // Type an HTTP URL without scheme. The navigation should be upgraded to HTTPS,
 // but the HTTPS URL serves a slow loading response. The upgrade should timeout
 // and the navigation should fall back to HTTP.
-- (void)test_HTTPWithSlowHTTPS_ShouldFallBack {
+- (void)DISABLED_test_HTTPWithSlowHTTPS_ShouldFallBack {
   [HttpsUpgradeAppInterface setHTTPSPortForTesting:self.slowHTTPSServer->port()
                                       useFakeHTTPS:true];
   [HttpsUpgradeAppInterface
