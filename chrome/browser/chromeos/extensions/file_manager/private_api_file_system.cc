@@ -32,6 +32,7 @@
 #include "base/system/sys_info.h"
 #include "base/task/task_runner_util.h"
 #include "base/task/thread_pool.h"
+#include "base/threading/platform_thread.h"
 #include "base/values.h"
 #include "chrome/browser/ash/arc/fileapi/arc_documents_provider_root.h"
 #include "chrome/browser/ash/arc/fileapi/arc_documents_provider_root_map.h"
@@ -1960,6 +1961,16 @@ void FileManagerPrivateInternalParseTrashInfoFilesFunction::
     OnTrashInfoFilesParsed(
         std::vector<base::FileErrorOr<file_manager::trash::ParsedTrashInfoData>>
             parsed_data) {
+  // The underlying trash service could potentially live longer than the Files
+  // window that invoked this function, ensure the frame host and browser
+  // context are alive before continuing.
+  if (!render_frame_host() || !browser_context()) {
+    LOG(WARNING) << "Parsing trashinfo files finished but no window available "
+                    "to respond to";
+    Respond(WithArguments());
+    return;
+  }
+
   file_manager::util::FileDefinitionList file_definition_list;
   std::vector<file_manager::trash::ParsedTrashInfoData> valid_data;
   url::Origin origin = render_frame_host()->GetLastCommittedOrigin();
