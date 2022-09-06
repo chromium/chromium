@@ -51,7 +51,7 @@ class StateStore : public base::SupportsWeakPtr<StateStore>,
              bool deferred_load);
   // This variant is useful for testing (using a mock ValueStore).
   StateStore(content::BrowserContext* context,
-             std::unique_ptr<value_store::ValueStore> store);
+             absl::optional<base::Value> store);
 
   StateStore(const StateStore&) = delete;
   StateStore& operator=(const StateStore&) = delete;
@@ -71,7 +71,7 @@ class StateStore : public base::SupportsWeakPtr<StateStore>,
   // Sets a value for a given extension and key.
   void SetExtensionValue(const std::string& extension_id,
                          const std::string& key,
-                         std::unique_ptr<base::Value> value);
+                         base::Value value);
 
   // Removes a value for a given extension and key.
   void RemoveExtensionValue(const std::string& extension_id,

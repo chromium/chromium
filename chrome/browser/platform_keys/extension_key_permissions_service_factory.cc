@@ -23,17 +23,24 @@ namespace {
 void OnGotExtensionValue(GetExtensionKeyPermissionsServiceCallback callback,
                          content::BrowserContext* context,
                          extensions::ExtensionId extension_id,
-                         std::unique_ptr<base::Value> value) {
+                         absl::optional<base::Value> value) {
   Profile* profile = Profile::FromBrowserContext(context);
   if (!profile) {
     std::move(callback).Run(/*extension_key_permissions_service=*/nullptr);
     return;
   }
 
+  base::Value::List store_state_list;
+  if (value && value->is_list()) {
+    store_state_list = std::move(value->GetList());
+  } else if (value) {
+    LOG(ERROR) << "Found a state store of wrong type.";
+  }
+
   std::move(callback).Run(std::make_unique<ExtensionKeyPermissionsService>(
       extension_id, extensions::ExtensionSystem::Get(profile)->state_store(),
-      std::move(value), profile->GetProfilePolicyConnector()->policy_service(),
-      context));
+      std::move(store_state_list),
+      profile->GetProfilePolicyConnector()->policy_service(), context));
 }
 
 }  // namespace

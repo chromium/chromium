@@ -122,7 +122,7 @@ void StateStore::GetExtensionValue(const std::string& extension_id,
 
 void StateStore::SetExtensionValue(const std::string& extension_id,
                                    const std::string& key,
-                                   std::unique_ptr<base::Value> value) {
+                                   base::Value value) {
   for (TestObserver& observer : observers_)
     observer.WillSetExtensionValue(extension_id, key);
 
@@ -152,7 +152,7 @@ void StateStore::FlushForTesting(base::OnceClosure flushed_callback) {
   GetExtensionValue("fake_id", "fake_key",
                     base::BindOnce(
                         [](base::OnceClosure flushed_callback,
-                           std::unique_ptr<base::Value> ignored) {
+                           absl::optional<base::Value> ignored) {
                           std::move(flushed_callback).Run();
                         },
                         std::move(flushed_callback)));

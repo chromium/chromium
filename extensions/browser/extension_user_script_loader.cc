@@ -273,12 +273,12 @@ void LoadScriptsOnFileTaskRunner(
 }
 
 UserScriptList ConvertValueToScripts(const Extension& extension,
-                                     const base::Value& list) {
+                                     const base::Value::List& list) {
   const int valid_schemes = UserScript::ValidUserScriptSchemes(
       scripting::kScriptsCanExecuteEverywhere);
 
   UserScriptList scripts;
-  for (const base::Value& value : list.GetListDeprecated()) {
+  for (const base::Value& value : list) {
     std::u16string error;
     std::unique_ptr<api::content_scripts::ContentScript> content_script =
         api::content_scripts::ContentScript::FromValue(value, &error);
@@ -287,9 +287,8 @@ UserScriptList ConvertValueToScripts(const Extension& extension,
       continue;
 
     std::unique_ptr<UserScript> script = std::make_unique<UserScript>();
-    const auto* dict = static_cast<const base::DictionaryValue*>(&value);
-    const base::Value* id_value = dict->FindKey(scripting::kId);
-    auto* id = id_value->GetIfString();
+    const auto& dict = value.GetDict();
+    auto* id = dict.FindString(scripting::kId);
     if (!id)
       continue;
 
@@ -594,17 +593,17 @@ void ExtensionUserScriptLoader::DynamicScriptsStorageHelper::SetDynamicScripts(
   if (!state_store_)
     return;
 
-  auto scripts_value = std::make_unique<base::Value>(base::Value::Type::LIST);
+  base::Value::List scripts_value;
   URLPatternSet persistent_patterns;
   for (const std::unique_ptr<UserScript>& script : scripts) {
     if (!base::Contains(persistent_dynamic_script_ids, script->id()))
       continue;
 
-    base::DictionaryValue value =
-        std::move(*CreateContentScriptObject(*script).ToValue());
-    value.SetStringPath(scripting::kId, script->id());
+    base::Value::Dict value =
+        std::move(CreateContentScriptObject(*script).ToValue()->GetDict());
+    value.Set(scripting::kId, script->id());
 
-    scripts_value->Append(std::move(value));
+    scripts_value.Append(std::move(value));
     persistent_patterns.AddPatterns(script->url_patterns());
   }
 
@@ -612,12 +611,12 @@ void ExtensionUserScriptLoader::DynamicScriptsStorageHelper::SetDynamicScripts(
                                             std::move(persistent_patterns));
   state_store_->SetExtensionValue(extension_id_,
                                   scripting::kRegisteredScriptsStorageKey,
-                                  std::move(scripts_value));
+                                  base::Value(std::move(scripts_value)));
 }
 
 void ExtensionUserScriptLoader::DynamicScriptsStorageHelper::
     OnDynamicScriptsReadFromStorage(DynamicScriptsReadCallback callback,
-                                    std::unique_ptr<base::Value> value) {
+                                    absl::optional<base::Value> value) {
   const Extension* extension = ExtensionRegistry::Get(browser_context_)
                                    ->enabled_extensions()
                                    .GetByID(extension_id_);
@@ -625,8 +624,9 @@ void ExtensionUserScriptLoader::DynamicScriptsStorageHelper::
                        "up if the extension was disabled";
 
   UserScriptList scripts;
-  if (value && value->type() == base::Value::Type::LIST) {
-    UserScriptList dynamic_scripts = ConvertValueToScripts(*extension, *value);
+  if (value && value->is_list()) {
+    UserScriptList dynamic_scripts =
+        ConvertValueToScripts(*extension, value->GetList());
     scripts.insert(scripts.end(),
                    std::make_move_iterator(dynamic_scripts.begin()),
                    std::make_move_iterator(dynamic_scripts.end()));

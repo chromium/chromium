@@ -139,7 +139,7 @@ class ExtensionUserScriptLoader : public UserScriptLoader {
     // Deserializes `value` into a UserScriptList and calls `callback` with that
     // list.
     void OnDynamicScriptsReadFromStorage(DynamicScriptsReadCallback callback,
-                                         std::unique_ptr<base::Value> value);
+                                         absl::optional<base::Value> value);
 
     raw_ptr<content::BrowserContext> browser_context_;
 

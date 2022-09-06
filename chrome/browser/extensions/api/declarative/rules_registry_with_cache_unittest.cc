@@ -254,7 +254,7 @@ TEST_F(RulesRegistryWithCacheTest, DeclarativeRulesStored) {
 
   // 2. Test writing behavior.
   {
-    base::Value value(base::Value::Type::LIST);
+    base::Value::List value;
     value.Append(base::Value(true));
     cache_delegate->UpdateRules(extension1_->id(), std::move(value));
   }
@@ -267,7 +267,7 @@ TEST_F(RulesRegistryWithCacheTest, DeclarativeRulesStored) {
   int write_count = store->write_count();
 
   {
-    base::Value value = base::Value(base::Value::Type::LIST);
+    base::Value::List value;
     cache_delegate->UpdateRules(extension1_->id(), std::move(value));
     EXPECT_FALSE(cache_delegate->GetDeclarativeRulesStored(extension1_->id()));
   }
@@ -277,7 +277,7 @@ TEST_F(RulesRegistryWithCacheTest, DeclarativeRulesStored) {
   write_count = store->write_count();
 
   {
-    base::Value value = base::Value(base::Value::Type::LIST);
+    base::Value::List value;
     cache_delegate->UpdateRules(extension1_->id(), std::move(value));
     EXPECT_FALSE(cache_delegate->GetDeclarativeRulesStored(extension1_->id()));
   }
@@ -302,7 +302,7 @@ TEST_F(RulesRegistryWithCacheTest, DeclarativeRulesStored) {
 TEST_F(RulesRegistryWithCacheTest, EphemeralCacheIsEphemeral) {
   auto cache_delegate = std::make_unique<RulesCacheDelegate>(
       RulesCacheDelegate::Type::kEphemeral, false);
-  base::Value value(base::Value::Type::LIST);
+  base::Value::List value;
   value.Append(base::Value(true));
   cache_delegate->UpdateRules(extension1_->id(), std::move(value));
   content::RunAllTasksUntilIdle();

@@ -53,7 +53,7 @@ bool ContainsTag(uint64_t tags, crosapi::mojom::KeyTag value) {
   return tags & static_cast<uint64_t>(value);
 }
 
-const base::DictionaryValue* GetKeyPermissionsMap(
+const base::Value::Dict* GetKeyPermissionsMap(
     policy::PolicyService* const profile_policies) {
   if (!profile_policies)
     return nullptr;
@@ -66,18 +66,16 @@ const base::DictionaryValue* GetKeyPermissionsMap(
     DVLOG(1) << "KeyPermissions policy is not set";
     return nullptr;
   }
-  const base::DictionaryValue* key_permissions_map = nullptr;
-  policy_value->GetAsDictionary(&key_permissions_map);
-  return key_permissions_map;
+  return policy_value->GetIfDict();
 }
 
 bool GetCorporateKeyUsageFromPref(
-    const base::DictionaryValue* key_permissions_for_ext) {
+    const base::Value::Dict* key_permissions_for_ext) {
   if (!key_permissions_for_ext)
     return false;
 
   const base::Value* allow_corporate_key_usage =
-      key_permissions_for_ext->FindKey(kPolicyAllowCorporateKeyUsage);
+      key_permissions_for_ext->Find(kPolicyAllowCorporateKeyUsage);
   if (!allow_corporate_key_usage || !allow_corporate_key_usage->is_bool())
     return false;
   return allow_corporate_key_usage->GetBool();
@@ -91,18 +89,14 @@ bool PolicyAllowsCorporateKeyUsageForExtension(
   if (!profile_policies)
     return false;
 
-  const base::DictionaryValue* key_permissions_map =
+  const base::Value::Dict* key_permissions_map =
       GetKeyPermissionsMap(profile_policies);
   if (!key_permissions_map)
     return false;
 
-  const base::Value* key_permissions_for_ext_value =
-      key_permissions_map->FindKey(extension_id);
-  const base::DictionaryValue* key_permissions_for_ext = nullptr;
-  if (!key_permissions_for_ext_value ||
-      !key_permissions_for_ext_value->GetAsDictionary(
-          &key_permissions_for_ext) ||
-      !key_permissions_for_ext)
+  const base::Value::Dict* key_permissions_for_ext =
+      key_permissions_map->FindDict(extension_id);
+  if (!key_permissions_for_ext)
     return false;
 
   bool allow_corporate_key_usage =
@@ -153,7 +147,7 @@ crosapi::mojom::KeystoreService* GetKeystoreService(
 ExtensionKeyPermissionsService::ExtensionKeyPermissionsService(
     const std::string& extension_id,
     extensions::StateStore* extensions_state_store,
-    std::unique_ptr<base::Value> state_store_value,
+    base::Value::List state_store_value,
     policy::PolicyService* profile_policies,
     content::BrowserContext* browser_context)
     : extension_id_(extension_id),
@@ -163,9 +157,7 @@ ExtensionKeyPermissionsService::ExtensionKeyPermissionsService(
   DCHECK(extensions_state_store_);
   DCHECK(profile_policies_);
   DCHECK(keystore_service_);
-
-  if (state_store_value)
-    KeyEntriesFromState(*state_store_value);
+  KeyEntriesFromState(state_store_value);
 }
 
 ExtensionKeyPermissionsService::~ExtensionKeyPermissionsService() = default;
@@ -323,20 +315,15 @@ bool ExtensionKeyPermissionsService::PolicyAllowsCorporateKeyUsage() const {
 
 void ExtensionKeyPermissionsService::WriteToStateStore() {
   extensions_state_store_->SetExtensionValue(
-      extension_id_, kStateStorePlatformKeys, KeyEntriesToState());
+      extension_id_, kStateStorePlatformKeys, base::Value(KeyEntriesToState()));
 }
 
 void ExtensionKeyPermissionsService::KeyEntriesFromState(
-    const base::Value& state) {
+    const base::Value::List& state) {
   state_store_entries_.clear();
 
-  if (!state.is_list()) {
-    LOG(ERROR) << "Found a state store of wrong type.";
-    return;
-  }
-  for (const auto& entry : state.GetListDeprecated()) {
+  for (const auto& entry : state) {
     std::string spki_b64;
-    const base::DictionaryValue* dict_entry = nullptr;
     if (entry.is_string()) {
       spki_b64 = entry.GetString();
       // This handles the case that the store contained a plain list of base64
@@ -344,17 +331,16 @@ void ExtensionKeyPermissionsService::KeyEntriesFromState(
       KeyEntry new_entry(spki_b64);
       new_entry.sign_once = true;
       state_store_entries_.push_back(new_entry);
-    } else if (entry.GetAsDictionary(&dict_entry)) {
-      const std::string* spki_b64_str =
-          dict_entry->FindStringKey(kStateStoreSPKI);
+    } else if (entry.is_dict()) {
+      const base::Value::Dict& dict_entry = entry.GetDict();
+      const std::string* spki_b64_str = dict_entry.FindString(kStateStoreSPKI);
       if (spki_b64_str)
         spki_b64 = *spki_b64_str;
       KeyEntry new_entry(spki_b64);
-      new_entry.sign_once = dict_entry->FindBoolKey(kStateStoreSignOnce)
+      new_entry.sign_once = dict_entry.FindBool(kStateStoreSignOnce)
                                 .value_or(new_entry.sign_once);
-      new_entry.sign_unlimited =
-          dict_entry->FindBoolKey(kStateStoreSignUnlimited)
-              .value_or(new_entry.sign_unlimited);
+      new_entry.sign_unlimited = dict_entry.FindBool(kStateStoreSignUnlimited)
+                                     .value_or(new_entry.sign_unlimited);
       state_store_entries_.push_back(new_entry);
     } else {
       LOG(ERROR) << "Found invalid entry of type " << entry.type()
@@ -364,8 +350,7 @@ void ExtensionKeyPermissionsService::KeyEntriesFromState(
   }
 }
 
-std::unique_ptr<base::Value>
-ExtensionKeyPermissionsService::KeyEntriesToState() {
+base::Value::List ExtensionKeyPermissionsService::KeyEntriesToState() {
   base::Value::List new_state;
   for (const KeyEntry& entry : state_store_entries_) {
     // Drop entries that the extension doesn't have any permissions for anymore.
@@ -383,7 +368,7 @@ ExtensionKeyPermissionsService::KeyEntriesToState() {
     }
     new_state.Append(std::move(new_entry));
   }
-  return std::make_unique<base::Value>(std::move(new_state));
+  return new_state;
 }
 
 // static
@@ -392,17 +377,16 @@ ExtensionKeyPermissionsService::GetCorporateKeyUsageAllowedAppIds(
     policy::PolicyService* const profile_policies) {
   std::vector<std::string> permissions;
 
-  const base::DictionaryValue* key_permissions_service_map =
+  const base::Value::Dict* key_permissions_service_map =
       GetKeyPermissionsMap(profile_policies);
   if (!key_permissions_service_map)
     return permissions;
 
-  for (const auto item : key_permissions_service_map->DictItems()) {
+  for (const auto item : *key_permissions_service_map) {
     const auto& app_id = item.first;
-    const auto& key_permission = item.second;
-    const base::DictionaryValue* key_permissions_service_for_app = nullptr;
-    if (!key_permission.GetAsDictionary(&key_permissions_service_for_app) ||
-        !key_permissions_service_for_app) {
+    const base::Value::Dict* key_permissions_service_for_app =
+        item.second.GetIfDict();
+    if (!key_permissions_service_for_app) {
       continue;
     }
     if (GetCorporateKeyUsageFromPref(key_permissions_service_for_app))

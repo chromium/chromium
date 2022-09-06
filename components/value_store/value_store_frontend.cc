@@ -49,21 +49,16 @@ class ValueStoreFrontend::Backend : public base::RefCountedThreadSafe<Backend> {
     }
 
     origin_task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(&ValueStoreFrontend::Backend::RunCallback, this,
-                       std::move(callback),
-                       value.has_value()
-                           ? base::Value::ToUniquePtrValue(std::move(*value))
-                           : nullptr));
+        FROM_HERE, base::BindOnce(&ValueStoreFrontend::Backend::RunCallback,
+                                  this, std::move(callback), std::move(value)));
   }
 
-  void Set(const std::string& key, std::unique_ptr<base::Value> value) {
+  void Set(const std::string& key, base::Value value) {
     DCHECK(file_task_runner_->RunsTasksInCurrentSequence());
     LazyInit();
     // We don't need the old value, so skip generating changes.
     ValueStore::WriteResult result = storage_->Set(
-        ValueStore::IGNORE_QUOTA | ValueStore::NO_GENERATE_CHANGES, key,
-        *value);
+        ValueStore::IGNORE_QUOTA | ValueStore::NO_GENERATE_CHANGES, key, value);
     LOG_IF(ERROR, !result.status().ok())
         << "Error while writing " << key << " to " << db_path_.value();
   }
@@ -91,7 +86,7 @@ class ValueStoreFrontend::Backend : public base::RefCountedThreadSafe<Backend> {
   }
 
   void RunCallback(ValueStoreFrontend::ReadCallback callback,
-                   std::unique_ptr<base::Value> value) {
+                   absl::optional<base::Value> value) {
     DCHECK(origin_task_runner_->RunsTasksInCurrentSequence());
     std::move(callback).Run(std::move(value));
   }
@@ -140,8 +135,7 @@ void ValueStoreFrontend::Get(const std::string& key, ReadCallback callback) {
                                 key, std::move(callback)));
 }
 
-void ValueStoreFrontend::Set(const std::string& key,
-                             std::unique_ptr<base::Value> value) {
+void ValueStoreFrontend::Set(const std::string& key, base::Value value) {
   DCHECK(origin_task_runner_->RunsTasksInCurrentSequence());
 
   file_task_runner_->PostTask(

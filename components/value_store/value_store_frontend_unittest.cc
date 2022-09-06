@@ -51,18 +51,18 @@ class ValueStoreFrontendTest : public testing::Test {
         value_store::GetValueStoreTaskRunner());
   }
 
-  bool Get(const std::string& key, std::unique_ptr<base::Value>* output) {
+  bool Get(const std::string& key, absl::optional<base::Value>* output) {
     storage_->Get(key, base::BindOnce(&ValueStoreFrontendTest::GetAndWait,
                                       base::Unretained(this), output));
     RunUntilIdle();
-    return !!output->get();
+    return output->has_value();
   }
 
  protected:
   void RunUntilIdle() { task_environment_.RunUntilIdle(); }
 
-  void GetAndWait(std::unique_ptr<base::Value>* output,
-                  std::unique_ptr<base::Value> result) {
+  void GetAndWait(absl::optional<base::Value>* output,
+                  absl::optional<base::Value> result) {
     *output = std::move(result);
   }
 
@@ -74,7 +74,7 @@ class ValueStoreFrontendTest : public testing::Test {
 };
 
 TEST_F(ValueStoreFrontendTest, GetExistingData) {
-  std::unique_ptr<base::Value> value;
+  absl::optional<base::Value> value;
   ASSERT_FALSE(Get("key0", &value));
 
   // Test existing keys in the DB.
@@ -92,14 +92,14 @@ TEST_F(ValueStoreFrontendTest, GetExistingData) {
 }
 
 TEST_F(ValueStoreFrontendTest, ChangesPersistAfterReload) {
-  storage_->Set("key0", std::make_unique<base::Value>(0));
-  storage_->Set("key1", std::make_unique<base::Value>("new1"));
+  storage_->Set("key0", base::Value(0));
+  storage_->Set("key1", base::Value("new1"));
   storage_->Remove("key2");
 
   // Reload the DB and test our changes.
   ResetStorage();
 
-  std::unique_ptr<base::Value> value;
+  absl::optional<base::Value> value;
   {
     ASSERT_TRUE(Get("key0", &value));
     ASSERT_TRUE(value->is_int());

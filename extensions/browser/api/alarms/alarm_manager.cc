@@ -72,14 +72,14 @@ base::TimeDelta TimeDeltaFromDelay(double delay_in_minutes) {
 
 AlarmManager::AlarmList AlarmsFromValue(const std::string extension_id,
                                         bool is_unpacked,
-                                        const base::Value::ConstListView list) {
+                                        const base::Value::List& list) {
   AlarmManager::AlarmList alarms;
   for (const base::Value& alarm_value : list) {
     std::unique_ptr<Alarm> alarm(new Alarm());
     if (alarm_value.is_dict() &&
         alarms::Alarm::Populate(alarm_value, alarm->js_alarm.get())) {
       absl::optional<base::TimeDelta> delta =
-          base::ValueToTimeDelta(alarm_value.FindKey(kAlarmGranularity));
+          base::ValueToTimeDelta(alarm_value.GetDict().Find(kAlarmGranularity));
       if (delta) {
         alarm->granularity = *delta;
         // No else branch. It's okay to ignore the failure since we have
@@ -97,15 +97,13 @@ AlarmManager::AlarmList AlarmsFromValue(const std::string extension_id,
   return alarms;
 }
 
-std::unique_ptr<base::ListValue> AlarmsToValue(
+base::Value::List AlarmsToValue(
     const std::vector<std::unique_ptr<Alarm>>& alarms) {
-  std::unique_ptr<base::ListValue> list(new base::ListValue());
-  for (size_t i = 0; i < alarms.size(); ++i) {
-    std::unique_ptr<base::DictionaryValue> alarm =
-        alarms[i]->js_alarm->ToValue();
-    alarm->SetKey(kAlarmGranularity,
-                  base::TimeDeltaToValue(alarms[i]->granularity));
-    list->GetList().Append(base::Value::FromUniquePtrValue(std::move(alarm)));
+  base::Value::List list;
+  for (const auto& item : alarms) {
+    base::Value::Dict alarm = std::move(item->js_alarm->ToValue()->GetDict());
+    alarm.Set(kAlarmGranularity, base::TimeDeltaToValue(item->granularity));
+    list.Append(std::move(alarm));
   }
   return list;
 }
@@ -320,22 +318,22 @@ void AlarmManager::WriteToStorage(const std::string& extension_id) {
   if (!storage)
     return;
 
-  std::unique_ptr<base::Value> alarms;
+  base::Value alarms;
   auto list = alarms_.find(extension_id);
   if (list != alarms_.end())
-    alarms = AlarmsToValue(list->second);
+    alarms = base::Value(AlarmsToValue(list->second));
   else
-    alarms = AlarmsToValue(AlarmList());
+    alarms = base::Value(AlarmsToValue(AlarmList()));
   storage->SetExtensionValue(extension_id, kRegisteredAlarms,
                              std::move(alarms));
 }
 
 void AlarmManager::ReadFromStorage(const std::string& extension_id,
                                    bool is_unpacked,
-                                   std::unique_ptr<base::Value> value) {
-  if (value.get() && value->is_list()) {
+                                   absl::optional<base::Value> value) {
+  if (value && value->is_list()) {
     AlarmList alarm_states =
-        AlarmsFromValue(extension_id, is_unpacked, value->GetListDeprecated());
+        AlarmsFromValue(extension_id, is_unpacked, value->GetList());
     for (auto& alarm : alarm_states)
       AddAlarmImpl(extension_id, std::move(alarm));
   }

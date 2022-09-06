@@ -40,14 +40,16 @@ const char kDuplicateRuleId[] = "Duplicate rule ID: %s";
 const char kErrorCannotRemoveManifestRules[] =
     "Rules declared in the 'event_rules' manifest field cannot be removed";
 
-base::Value RulesToValue(const std::vector<const api::events::Rule*>& rules) {
-  base::Value value(base::Value::Type::LIST);
+base::Value::List RulesToValue(
+    const std::vector<const api::events::Rule*>& rules) {
+  base::Value::List value;
   for (const auto* rule : rules)
     value.Append(std::move(*rule->ToValue()));
   return value;
 }
 
-std::vector<api::events::Rule> RulesFromValue(const base::Value* value) {
+std::vector<api::events::Rule> RulesFromValue(
+    const absl::optional<base::Value>& value) {
   std::vector<api::events::Rule> rules;
 
   if (!value || !value->is_list())
@@ -308,7 +310,7 @@ size_t RulesRegistry::GetNumberOfUsedRuleIdentifiersForTesting() const {
 }
 
 void RulesRegistry::DeserializeAndAddRules(const std::string& extension_id,
-                                           std::unique_ptr<base::Value> rules) {
+                                           absl::optional<base::Value> rules) {
   DCHECK_CURRENTLY_ON(owner_thread());
 
   // Since this is called in response to asynchronously loading rules from
@@ -319,8 +321,8 @@ void RulesRegistry::DeserializeAndAddRules(const std::string& extension_id,
     return;
   }
 
-  std::string error = AddRulesNoFill(extension_id, RulesFromValue(rules.get()),
-                                     &rules_, nullptr);
+  std::string error =
+      AddRulesNoFill(extension_id, RulesFromValue(rules), &rules_, nullptr);
   if (!error.empty())
     ReportInternalError(extension_id, error);
 }

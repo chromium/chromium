@@ -68,7 +68,7 @@ class RulesCacheDelegate {
   // Initialize the storage functionality.
   void Init(RulesRegistry* registry);
 
-  void UpdateRules(const std::string& extension_id, base::Value value);
+  void UpdateRules(const std::string& extension_id, base::Value::List value);
 
   // Indicates whether or not this registry has any registered rules cached.
   bool HasRules() const;
@@ -104,7 +104,7 @@ class RulesCacheDelegate {
   // Read/write a list of rules serialized to Values.
   void ReadFromStorage(const std::string& extension_id);
   void ReadFromStorageCallback(const std::string& extension_id,
-                               std::unique_ptr<base::Value> value);
+                               absl::optional<base::Value> value);
 
   // Check the preferences whether the extension with |extension_id| has some
   // rules stored on disk. If this information is not in the preferences, true

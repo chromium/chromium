@@ -234,7 +234,7 @@ class RulesRegistry : public base::RefCountedThreadSafe<RulesRegistry> {
   // Deserialize the rules from the given Value object and add them to the
   // RulesRegistry.
   void DeserializeAndAddRules(const std::string& extension_id,
-                              std::unique_ptr<base::Value> rules);
+                              absl::optional<base::Value> rules);
 
   // Reports an internal error with the specified params to the extensions
   // client.

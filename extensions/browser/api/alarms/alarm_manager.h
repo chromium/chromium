@@ -196,7 +196,7 @@ class AlarmManager : public BrowserContextKeyedAPI,
   void WriteToStorage(const std::string& extension_id);
   void ReadFromStorage(const std::string& extension_id,
                        bool is_unpacked,
-                       std::unique_ptr<base::Value> value);
+                       absl::optional<base::Value> value);
 
   // Set the timer to go off at the specified |time|, and set |next_poll_time|
   // appropriately.

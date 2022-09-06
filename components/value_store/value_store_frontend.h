@@ -5,12 +5,12 @@
 #ifndef COMPONENTS_VALUE_STORE_VALUE_STORE_FRONTEND_H_
 #define COMPONENTS_VALUE_STORE_VALUE_STORE_FRONTEND_H_
 
-#include <memory>
 #include <string>
 
 #include "base/callback.h"
 #include "base/memory/ref_counted.h"
 #include "base/values.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class FilePath;
@@ -23,7 +23,7 @@ class ValueStoreFactory;
 // A frontend for a LeveldbValueStore, for use on the UI thread.
 class ValueStoreFrontend {
  public:
-  using ReadCallback = base::OnceCallback<void(std::unique_ptr<base::Value>)>;
+  using ReadCallback = base::OnceCallback<void(absl::optional<base::Value>)>;
 
   ValueStoreFrontend(
       const scoped_refptr<ValueStoreFactory>& store_factory,
@@ -40,7 +40,7 @@ class ValueStoreFrontend {
   void Get(const std::string& key, ReadCallback callback);
 
   // Sets a value with the given key.
-  void Set(const std::string& key, std::unique_ptr<base::Value> value);
+  void Set(const std::string& key, base::Value value);
 
   // Removes the value with the given key.
   void Remove(const std::string& key);

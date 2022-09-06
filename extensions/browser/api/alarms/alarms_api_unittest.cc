@@ -17,6 +17,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/simple_test_clock.h"
+#include "base/test/values_test_util.h"
 #include "base/values.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/fake_local_frame.h"
@@ -697,10 +698,8 @@ TEST_F(ExtensionAlarmsSchedulingTest, PollFrequencyFromStoredAlarm) {
     std::string alarm_args =
         "[{\"name\": \"hello\", \"scheduledTime\": 10000, "
         "\"periodInMinutes\": 0.0001}]";
-    std::unique_ptr<base::ListValue> value =
-        base::ListValue::From(base::JSONReader::ReadDeprecated(alarm_args));
     alarm_manager_->ReadFromStorage(extension()->id(), test_data[i].is_unpacked,
-                                    std::move(value));
+                                    base::test::ParseJson(alarm_args));
 
     // Let the alarm fire once, we will verify the next polling time afterwards.
     alarm_manager_->GetAlarm(
