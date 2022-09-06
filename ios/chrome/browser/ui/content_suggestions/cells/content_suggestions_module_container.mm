@@ -238,7 +238,9 @@ const float kTrendingQueriesContentHeight = 103;
 // modules.
 - (CGFloat)titleTopInset {
   if (ShouldMinimizeSpacingForModuleRefresh()) {
-    return kTitleShortenedTopInset;
+    return self.type == ContentSuggestionsModuleTypeReturnToRecentTab
+               ? 0
+               : kTitleShortenedTopInset;
   } else if (ShouldRemoveHeadersForModuleRefresh() &&
              self.type != ContentSuggestionsModuleTypeTrendingQueries) {
     return self.type == ContentSuggestionsModuleTypeReturnToRecentTab

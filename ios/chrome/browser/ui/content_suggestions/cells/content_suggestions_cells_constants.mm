@@ -12,7 +12,7 @@
 
 CGFloat ReturnToRecentTabHeight() {
   if (ShouldMinimizeSpacingForModuleRefresh()) {
-    return 55;
+    return 64;
   } else {
     return kReturnToRecentTabSize.height;
   }
