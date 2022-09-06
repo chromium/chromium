@@ -66,6 +66,7 @@ class TriggerScriptCoordinator : public content::WebContentsObserver {
       std::unique_ptr<WebController> web_controller,
       std::unique_ptr<ServiceRequestSender> request_sender,
       const GURL& get_trigger_scripts_server,
+      const GURL& get_trigger_scripts_by_hash_prefix_server_,
       std::unique_ptr<StaticTriggerConditions> static_trigger_conditions,
       std::unique_ptr<DynamicTriggerConditions> dynamic_trigger_conditions,
       ukm::UkmRecorder* ukm_recorder,
@@ -215,6 +216,10 @@ class TriggerScriptCoordinator : public content::WebContentsObserver {
 
   // The URL of the server that should be contacted by |request_sender_|.
   GURL get_trigger_scripts_server_;
+
+  // The URL of the server that should be contacted by |request_sender_|
+  // to get the trigger scripts in a privacy-sensitive way.
+  GURL get_trigger_scripts_by_hash_prefix_server_;
 
   // The web controller to evaluate element conditions.
   std::unique_ptr<WebController> web_controller_;

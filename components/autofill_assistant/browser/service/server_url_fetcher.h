@@ -27,6 +27,8 @@ class ServerUrlFetcher {
   virtual GURL GetNextActionsEndpoint() const;
   // Returns the endpoint to send the GetTriggerScripts RPC to.
   virtual GURL GetTriggerScriptsEndpoint() const;
+  // Returns the endpoint to send the GetTriggerScriptsByHashPrefix RPC to.
+  virtual GURL GetTriggerScriptsByHashPrefixEndpoint() const;
   // Returns the endpoint to send the GetCapabilitiesByHashPrefix RPC to.
   virtual GURL GetCapabilitiesByHashEndpoint() const;
   // Returns the endpoint to send the GetUserData RPC to.

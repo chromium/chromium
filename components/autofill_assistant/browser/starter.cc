@@ -634,6 +634,7 @@ void Starter::StartTriggerScript() {
           /* enable_full_stack_traces= */ false),
       std::move(service_request_sender),
       url_fetcher.GetTriggerScriptsEndpoint(),
+      url_fetcher.GetTriggerScriptsByHashPrefixEndpoint(),
       std::make_unique<StaticTriggerConditions>(
           platform_delegate_, pending_trigger_context_.get(), startup_url),
       std::make_unique<DynamicTriggerConditions>(), ukm_recorder_,

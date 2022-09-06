@@ -42,6 +42,7 @@ TriggerScriptCoordinator::TriggerScriptCoordinator(
     std::unique_ptr<WebController> web_controller,
     std::unique_ptr<ServiceRequestSender> request_sender,
     const GURL& get_trigger_scripts_server,
+    const GURL& get_trigger_scripts_by_hash_prefix_server_,
     std::unique_ptr<StaticTriggerConditions> static_trigger_conditions,
     std::unique_ptr<DynamicTriggerConditions> dynamic_trigger_conditions,
     ukm::UkmRecorder* ukm_recorder,
@@ -51,6 +52,8 @@ TriggerScriptCoordinator::TriggerScriptCoordinator(
       ui_delegate_(starter_delegate->CreateTriggerScriptUiDelegate()),
       request_sender_(std::move(request_sender)),
       get_trigger_scripts_server_(get_trigger_scripts_server),
+      get_trigger_scripts_by_hash_prefix_server_(
+          get_trigger_scripts_by_hash_prefix_server_),
       web_controller_(std::move(web_controller)),
       static_trigger_conditions_(std::move(static_trigger_conditions)),
       dynamic_trigger_conditions_(std::move(dynamic_trigger_conditions)),
@@ -98,7 +101,7 @@ void TriggerScriptCoordinator::Start(
         kHashPrefixSize, url::Origin::Create(GetCurrentURL()));
 
     request_sender_->SendRequest(
-        get_trigger_scripts_server_,
+        get_trigger_scripts_by_hash_prefix_server_,
         ProtocolUtils::CreateTriggerScriptsByHashRequest(
             kHashPrefixSize, {hash_prefix}, client_context,
             trigger_context_->GetScriptParameters()),

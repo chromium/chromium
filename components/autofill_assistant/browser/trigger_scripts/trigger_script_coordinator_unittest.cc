@@ -67,6 +67,8 @@ std::unique_ptr<base::test::ScopedFeatureList> CreateScopedFeatureList(
 const char kFakeDeepLink[] = "https://example.com/q?data=test";
 const char kFakeServerUrl[] =
     "https://www.fake.backend.com/trigger_script_server";
+const char kFakePrivacySensitiveServerUrl[] =
+    "https://www.fake.backend.com/trigger_script_by_hash_prefix_server";
 
 class TriggerScriptCoordinatorTest : public testing::Test {
  public:
@@ -110,7 +112,8 @@ class TriggerScriptCoordinatorTest : public testing::Test {
     coordinator_ = std::make_unique<TriggerScriptCoordinator>(
         fake_platform_delegate_.GetWeakPtr(), web_contents(),
         std::move(mock_web_controller), std::move(mock_request_sender),
-        GURL(kFakeServerUrl), std::move(mock_static_trigger_conditions),
+        GURL(kFakeServerUrl), GURL(kFakePrivacySensitiveServerUrl),
+        std::move(mock_static_trigger_conditions),
         std::move(mock_dynamic_trigger_conditions), &ukm_recorder_,
         web_contents()->GetPrimaryMainFrame()->GetPageUkmSourceId());
   }
@@ -272,7 +275,7 @@ TEST_F(TriggerScriptCoordinatorTest,
   fake_platform_delegate_.fake_common_dependencies_->msbb_enabled_ = false;
 
   EXPECT_CALL(*mock_request_sender_,
-              OnSendRequest(GURL(kFakeServerUrl), _, _,
+              OnSendRequest(GURL(kFakePrivacySensitiveServerUrl), _, _,
                             RpcType::GET_TRIGGER_SCRIPTS_BY_HASH_PREFIX))
       .WillOnce(RunOnceCallback<2>(net::HTTP_OK, "invalid",
                                    ServiceRequestSender::ResponseInfo{}));
@@ -1833,7 +1836,7 @@ TEST_P(TriggerScriptCoordinatorParameterizedTest,
   response.SerializeToString(&serialized_response);
 
   EXPECT_CALL(*mock_request_sender_,
-              OnSendRequest(GURL(kFakeServerUrl), _, _,
+              OnSendRequest(GURL(kFakePrivacySensitiveServerUrl), _, _,
                             RpcType::GET_TRIGGER_SCRIPTS_BY_HASH_PREFIX))
       .WillOnce(RunOnceCallback<2>(net::HTTP_OK, serialized_response,
                                    ServiceRequestSender::ResponseInfo{}));
