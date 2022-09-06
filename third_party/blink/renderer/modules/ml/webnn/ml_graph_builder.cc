@@ -131,29 +131,39 @@ bool ValidateClampOptions(const MLClampOptions* options,
   return true;
 }
 
+// Broadcast the input shapes and return the output shape.
+// If bidirectional is true, its behavior follows the numpy-broadcasting-rule:
+// https://numpy.org/doc/stable/user/basics.broadcasting.html#general-broadcasting-rules.
+// Otherwise, it unidirectionally broadcasts the lhs to the rhs.
 absl::optional<Vector<uint32_t>> BroadcastShapes(
-    const Vector<uint32_t>& dims_a,
-    const Vector<uint32_t>& dims_b) {
-  // According WebNN spec:
-  // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-binary, the element-wise
-  // binary operation will be broadcasted according to numpy-broadcasting-rule:
-  // https://numpy.org/doc/stable/user/basics.broadcasting.html#general-broadcasting-rules.
-  // The rank of the output tensor is the maximum rank of the input tensors.
-  auto rank_a = dims_a.size(), rank_b = dims_b.size();
-  auto rank_output = std::max(rank_a, rank_b);
+    const Vector<uint32_t>& dims_lhs,
+    const Vector<uint32_t>& dims_rhs,
+    bool bidirectional = true) {
+  // If bidirectional is true, the rank of the output shape is the maximum rank
+  // of the input shapes. Otherwise it is as the same as the rhs' rank.
+  auto rank_lhs = dims_lhs.size(), rank_rhs = dims_rhs.size();
+  auto rank_output = bidirectional ? std::max(rank_lhs, rank_rhs) : rank_rhs;
   Vector<uint32_t> dims_output(rank_output);
   for (wtf_size_t i = 0; i < rank_output; ++i) {
-    auto dim_a = i < rank_a ? dims_a[rank_a - i - 1] : 1;
-    DCHECK_GT(dim_a, uint32_t(0));
-    auto dim_b = i < rank_b ? dims_b[rank_b - i - 1] : 1;
-    DCHECK_GT(dim_b, uint32_t(0));
-    // Two dimensions are compatible when they are equal, or one of them is 1.
-    if (dim_a != dim_b && dim_a != 1 && dim_b != 1) {
+    auto dim_lhs = i < rank_lhs ? dims_lhs[rank_lhs - i - 1] : 1;
+    DCHECK_GT(dim_lhs, uint32_t(0));
+    auto dim_rhs = i < rank_rhs ? dims_rhs[rank_rhs - i - 1] : 1;
+    DCHECK_GT(dim_rhs, uint32_t(0));
+    // If bidirectional is true, two dimensions are compatible when they are
+    // equal, or one of them is 1. Otherwise, two dimensions are compatible when
+    // they are equal, or the lhs dimension is 1.
+    if (bidirectional) {
+      if (dim_lhs != dim_rhs && dim_lhs != 1 && dim_rhs != 1) {
+        return absl::nullopt;
+      }
+    } else if (dim_lhs != dim_rhs && dim_lhs != 1) {
       return absl::nullopt;
     }
-    // For each dimension of the output tensor, its size is the maximum size
-    // along that dimension of the input tensors.
-    dims_output[rank_output - i - 1] = std::max(dim_a, dim_b);
+    // If bidirectional is true, for each dimension of the output tensor, its
+    // size is the maximum size along that dimension of the input shapes.
+    // Otherwise, its size is the same as the rhs.
+    dims_output[rank_output - i - 1] =
+        bidirectional ? std::max(dim_lhs, dim_rhs) : dim_rhs;
   }
   return dims_output;
 }
@@ -311,11 +321,85 @@ MLOperand* MLGraphBuilder::gemm(const MLOperand* a,
                                 const MLOperand* b,
                                 const MLGemmOptions* options,
                                 ExceptionState& exception_state) {
-  // TODO(crbug.com/1273291): Implement this on operating systems to access
-  // hardware acceleration.
-  exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
-                                    "Not implemented");
-  return nullptr;
+  if (a->Type() != b->Type()) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kDataError,
+        "The types of first two inputs don't match.");
+    return nullptr;
+  }
+  // According to WebNN spec:
+  // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-gemm, the first input 2-D
+  // tensor with shape [M, K] if aTranspose is false, or [K, M] if aTranspose is
+  // true.
+  auto shape_a = a->Dimensions();
+  if (shape_a.size() != 2) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
+                                      "The first input must be a 2-D tensor.");
+    return nullptr;
+  }
+  if (options->aTranspose()) {
+    shape_a.Reverse();
+  }
+  // The second input 2-D tensor with shape [K, N] if bTranspose is false, or
+  // [N, K] if bTranspose is true.
+  auto shape_b = b->Dimensions();
+  if (shape_b.size() != 2) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
+                                      "The second input must be a 2-D tensor.");
+    return nullptr;
+  }
+  if (options->bTranspose()) {
+    shape_b.Reverse();
+  }
+  // The number of columns in the first matrix must be equal to the number of
+  // rows in the second matrix.
+  if (shape_a[1] != shape_b[0]) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kDataError,
+        String::Format(
+            "The number of columns (%u) in the %sfirst matrix isn't equal to "
+            "the number of rows (%u) in the %ssecond matrix.",
+            shape_a[1], options->aTranspose() ? "transposed " : "", shape_b[0],
+            options->bTranspose() ? "transposed " : ""));
+    return nullptr;
+  };
+  // The output is 2-D tensor of shape [M, N].
+  Vector<uint32_t> output_shape = {shape_a[0], shape_b[1]};
+  // The third input tensor c is either a scalar, or of the shape that is
+  // unidirectionally broadcastable to the output shape [M, N].
+  if (options->hasC()) {
+    const auto* c = options->c();
+    if (c->Type() != a->Type()) {
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kDataError,
+          "The third input type doesn't match other inputs' type.");
+      return nullptr;
+    }
+    const auto shape_c = options->c()->Dimensions();
+    if (shape_c.size() > 2) {
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kDataError,
+          "The third input tensor should be either a scalar or a 2-D tensor.");
+      return nullptr;
+    }
+    if (!BroadcastShapes(shape_c, output_shape, false)) {
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kDataError,
+          "The third input tensor isn't unidirectionally broadcastable to the "
+          "output tensor.");
+      return nullptr;
+    }
+  }
+  auto* gemm =
+      MakeGarbageCollected<MLOperator>(this, MLOperator::OperatorKind::kGemm);
+  HeapVector<Member<const MLOperand>> inputs = {a, b};
+  if (options->hasC()) {
+    inputs.push_back(options->c());
+  }
+  auto* output =
+      MLOperand::CreateOutput(this, a->Type(), std::move(output_shape), gemm);
+  gemm->Connect(std::move(inputs), {output});
+  return output;
 }
 
 MLOperand* MLGraphBuilder::averagePool2d(const MLOperand* input,
