@@ -4,7 +4,7 @@
 
 #include "components/webcrypto/algorithm_registry.h"
 
-#include "base/lazy_instance.h"
+#include "base/no_destructor.h"
 #include "components/webcrypto/algorithm_implementation.h"
 #include "components/webcrypto/algorithm_implementations.h"
 #include "components/webcrypto/status.h"
@@ -89,12 +89,10 @@ class AlgorithmRegistry {
 
 }  // namespace
 
-base::LazyInstance<AlgorithmRegistry>::Leaky g_algorithm_registry =
-    LAZY_INSTANCE_INITIALIZER;
-
 Status GetAlgorithmImplementation(blink::WebCryptoAlgorithmId id,
                                   const AlgorithmImplementation** impl) {
-  *impl = g_algorithm_registry.Get().GetAlgorithm(id);
+  static base::NoDestructor<AlgorithmRegistry> algorithm_registry;
+  *impl = algorithm_registry->GetAlgorithm(id);
   if (*impl)
     return Status::Success();
   return Status::ErrorUnsupported();

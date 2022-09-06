@@ -6,7 +6,7 @@
 
 #include "base/command_line.h"
 #include "base/containers/span.h"
-#include "base/lazy_instance.h"
+#include "base/no_destructor.h"
 #include "base/task/single_thread_task_executor.h"
 #include "components/webcrypto/algorithm_dispatch.h"
 #include "components/webcrypto/status.h"
@@ -33,10 +33,8 @@ class InitOnce : public blink::Platform {
   base::SingleThreadTaskExecutor main_thread_task_executor_;
 };
 
-base::LazyInstance<InitOnce>::Leaky g_once = LAZY_INSTANCE_INITIALIZER;
-
 void EnsureInitialized() {
-  g_once.Get();
+  static base::NoDestructor<InitOnce> init_once;
 }
 
 blink::WebCryptoAlgorithm CreateRsaHashedImportAlgorithm(
