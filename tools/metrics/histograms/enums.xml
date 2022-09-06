@@ -1601,7 +1601,7 @@ Unknown properties are collapsed to zero. -->
   <int value="5" label="InferenceExecutionFailed"/>
 </enum>
 
-<enum name="AliveAfterApiNotConnectedStatus">
+<enum name="AliveAfterErrorStatus">
   <int value="0" label="Alive on receiving the error, this is always reported"/>
   <int value="1"
       label="Alive after a delay, Chrome didn't shutdown/restart since

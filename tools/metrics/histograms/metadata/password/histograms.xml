@@ -747,18 +747,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PasswordManager.AliveAfterApiNotConnectedError"
-    enum="AliveAfterApiNotConnectedStatus" expires_after="2023-02-19">
+<histogram name="PasswordManager.AliveAfter{ErrorCode}Error"
+    enum="AliveAfterErrorStatus" expires_after="2023-02-19">
   <owner>vasilii@chromium.org</owner>
   <owner>maxan@google.com</owner>
   <summary>
-    Recorded after PasswordStore GMS Core backend returned with
-    API_NOT_CONNECTED error. The first status is reported right after receiving
-    the error, the second one is reported with a 10 seconds delay indicating if
-    Chrome didn't shutdown/restart soon after receiving this error. Note that
-    the second status could also be not reported if Chrome is sent to
-    background.
+    Recorded after PasswordStore GMS Core backend returned with {ErrorCode}
+    error. The first status is reported right after receiving the error, the
+    second one is reported with a 10 seconds delay indicating if Chrome didn't
+    shutdown/restart soon after receiving this error. Note that the second
+    status could also be not reported if Chrome is sent to background.
   </summary>
+  <token key="ErrorCode">
+    <variant name="ApiNotConnected" summary="API_NOT_CONNECTED"/>
+    <variant name="ConnectionSuspended"
+        summary="CONNECTION_SUSPENDED_DURING_CALL"/>
+  </token>
 </histogram>
 
 <histogram name="PasswordManager.Android.PasswordCredentialEntry"

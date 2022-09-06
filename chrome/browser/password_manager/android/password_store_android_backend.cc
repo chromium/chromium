@@ -54,8 +54,9 @@ constexpr char kUPMActiveHistogram[] =
     "PasswordManager.UnifiedPasswordManager.ActiveStatus";
 constexpr char kAliveAfterApiNotConnectedHistogram[] =
     "PasswordManager.AliveAfterApiNotConnectedError";
-constexpr base::TimeDelta kReportAliveAfterApiNotConnectedDelay =
-    base::Seconds(10);
+constexpr char kAliveAfterConnectionSuspendedHistogram[] =
+    "PasswordManager.AliveAfterConnectionSuspendedError";
+constexpr base::TimeDelta kReportAliveAfterErrorDelay = base::Seconds(10);
 
 using base::UTF8ToUTF16;
 using password_manager::GetExpressionForFederatedMatching;
@@ -68,7 +69,7 @@ using SuccessStatus = PasswordStoreBackendMetricsRecorder::SuccessStatus;
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
-enum class AliveAfterApiNotConnectedStatus {
+enum class AliveAfterErrorStatus {
   // Alive on receiving the error, this code is the basis for the analysis.
   kAliveOnError = 0,
   // Alive after a delay, Chrome didn't shutdown/restart since receiving the
@@ -775,19 +776,8 @@ void PasswordStoreAndroidBackend::OnError(JobId job_id,
       prefs_->SetBoolean(prefs::kSettingsMigratedToUPM, false);
     }
 
-    if (api_error_code == AndroidBackendAPIErrorCode::kApiNotConnected) {
-      base::UmaHistogramEnumeration(
-          kAliveAfterApiNotConnectedHistogram,
-          AliveAfterApiNotConnectedStatus::kAliveOnError);
-      main_task_runner_->PostDelayedTask(
-          FROM_HERE,
-          base::BindOnce(static_cast<void (*)(const char*,
-                                              AliveAfterApiNotConnectedStatus)>(
-                             &base::UmaHistogramEnumeration),
-                         kAliveAfterApiNotConnectedHistogram,
-                         AliveAfterApiNotConnectedStatus::kAliveAfterDelay),
-          kReportAliveAfterApiNotConnectedDelay);
-    }
+    // TODO(crbug.com/1349276): Remove this after analyzing metrics
+    ReportAliveStatusOnAPIErrorIfNeeded(api_error_code);
 
     if (ShouldRecordUptimeOnApiError(api_error_code)) {
       base::UmaHistogramLongTimes(
@@ -927,6 +917,36 @@ PasswordChangesOrErrorReply PasswordStoreAndroidBackend::
       PasswordStoreBackendMetricsRecorder(BackendInfix("AndroidBackend"),
                                           metric_infix),
       std::move(callback));
+}
+
+void PasswordStoreAndroidBackend::ReportAliveStatusOnAPIErrorIfNeeded(
+    AndroidBackendAPIErrorCode error_code) {
+  if (error_code == AndroidBackendAPIErrorCode::kApiNotConnected) {
+    base::UmaHistogramEnumeration(kAliveAfterApiNotConnectedHistogram,
+                                  AliveAfterErrorStatus::kAliveOnError);
+    main_task_runner_->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(
+            static_cast<void (*)(const char*, AliveAfterErrorStatus)>(
+                &base::UmaHistogramEnumeration),
+            kAliveAfterApiNotConnectedHistogram,
+            AliveAfterErrorStatus::kAliveAfterDelay),
+        kReportAliveAfterErrorDelay);
+  }
+
+  if (error_code ==
+      AndroidBackendAPIErrorCode::kConnectionSuspendedDuringCall) {
+    base::UmaHistogramEnumeration(kAliveAfterConnectionSuspendedHistogram,
+                                  AliveAfterErrorStatus::kAliveOnError);
+    main_task_runner_->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(
+            static_cast<void (*)(const char*, AliveAfterErrorStatus)>(
+                &base::UmaHistogramEnumeration),
+            kAliveAfterConnectionSuspendedHistogram,
+            AliveAfterErrorStatus::kAliveAfterDelay),
+        kReportAliveAfterErrorDelay);
+  }
 }
 
 void PasswordStoreAndroidBackend::GetAllLoginsForAccount(

@@ -890,6 +890,52 @@ TEST_F(PasswordStoreAndroidBackendTest, RecordsAliveStatusOnApiNotConnected) {
       kAliveAfterErrorMetric, kAliveAfterApiNotConnectedAfterDelayStatus, 1);
 }
 
+TEST_F(PasswordStoreAndroidBackendTest,
+       RecordsAliveStatusOnConnectionSuspended) {
+  constexpr char kAliveAfterErrorMetric[] =
+      "PasswordManager.AliveAfterConnectionSuspendedError";
+
+  base::HistogramTester histogram_tester;
+
+  backend().InitBackend(PasswordStoreAndroidBackend::RemoteChangesReceived(),
+                        base::RepeatingClosure(), base::DoNothing());
+  backend().OnSyncServiceInitialized(sync_service());
+
+  ASSERT_FALSE(sync_service()->GetAuthError().IsTransientError());
+  ASSERT_FALSE(sync_service()->GetAuthError().IsPersistentError());
+
+  base::MockCallback<LoginsOrErrorReply> mock_reply;
+  EXPECT_CALL(*bridge(), GetAllLogins).WillOnce(Return(kJobId));
+  backend().GetAllLoginsAsync(mock_reply.Get());
+  EXPECT_CALL(mock_reply,
+              Run(ExpectError(PasswordStoreBackendError::kUnrecoverable)));
+  AndroidBackendError error{AndroidBackendErrorType::kExternalError};
+  // Simulate receiving CONNECTION_SUSPENDED_DURING_CALL code.
+  const int kConnectionSuspendedErrorCode = static_cast<int>(
+      AndroidBackendAPIErrorCode::kConnectionSuspendedDuringCall);
+  error.api_error_code = absl::optional<int>(kConnectionSuspendedErrorCode);
+  consumer().OnError(kJobId, std::move(error));
+
+  const int kAliveAfterConnectionSuspendedOnErrorStatus = 0;
+  const int kAliveAfterConnectionSuspendedAfterDelayStatus = 1;
+
+  // Fast forward to right before expected metric reporting.
+  task_environment_.FastForwardBy(base::Seconds(9));
+  histogram_tester.ExpectBucketCount(
+      kAliveAfterErrorMetric, kAliveAfterConnectionSuspendedOnErrorStatus, 1);
+  histogram_tester.ExpectBucketCount(
+      kAliveAfterErrorMetric, kAliveAfterConnectionSuspendedAfterDelayStatus,
+      0);
+
+  // Metric should be eventually reported after a 10 seconds delay.
+  task_environment_.FastForwardBy(base::Seconds(1));
+  histogram_tester.ExpectBucketCount(
+      kAliveAfterErrorMetric, kAliveAfterConnectionSuspendedOnErrorStatus, 1);
+  histogram_tester.ExpectBucketCount(
+      kAliveAfterErrorMetric, kAliveAfterConnectionSuspendedAfterDelayStatus,
+      1);
+}
+
 TEST_F(PasswordStoreAndroidBackendTest, RecordsUptimeOnApiNotConnected) {
   const base::TimeDelta expected_uptime = base::Seconds(17);
 
