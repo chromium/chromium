@@ -45,6 +45,13 @@ public class Shell extends LinearLayout {
 
     private static final long COMPLETED_PROGRESS_TIMEOUT_MS = 200;
 
+    // Stylus handwriting: Setting this ime option instructs stylus writing service to restrict
+    // capturing writing events slightly outside the Url bar area. This is needed to prevent stylus
+    // handwriting in inputs in web content area that are very close to url bar area, from being
+    // committed to Url bar's Edit text. Ex: google.com search field.
+    private static final String IME_OPTION_RESTRICT_STYLUS_WRITING_AREA =
+            "restrictDirectWritingArea=true";
+
     private final Runnable mClearProgressRunnable = new Runnable() {
         @Override
         public void run() {
@@ -186,6 +193,7 @@ public class Shell extends LinearLayout {
                 return false;
             }
         });
+        mUrlTextView.setPrivateImeOptions(IME_OPTION_RESTRICT_STYLUS_WRITING_AREA);
     }
 
     /**
