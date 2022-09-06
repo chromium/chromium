@@ -201,7 +201,7 @@ void OperationManager::CancelWrite(const ExtensionId& extension_id,
                                    Operation::CancelWriteCallback callback) {
   Operation* existing_operation = GetOperation(extension_id);
 
-  if (existing_operation == NULL) {
+  if (existing_operation == nullptr) {
     std::move(callback).Run(false, error::kNoOperationInProgress);
   } else {
     existing_operation->PostTask(
@@ -338,7 +338,7 @@ Operation* OperationManager::GetOperation(const ExtensionId& extension_id) {
   auto existing_operation = operations_.find(extension_id);
 
   if (existing_operation == operations_.end())
-    return NULL;
+    return nullptr;
   return existing_operation->second.get();
 }
 

@@ -43,8 +43,7 @@ class DesktopCaptureApiTest : public ExtensionApiTest {
         SetPickerFactoryForTests(&picker_factory_);
   }
   ~DesktopCaptureApiTest() override {
-    DesktopCaptureChooseDesktopMediaFunction::
-        SetPickerFactoryForTests(NULL);
+    DesktopCaptureChooseDesktopMediaFunction::SetPickerFactoryForTests(nullptr);
   }
 
   void SetUpOnMainThread() override {

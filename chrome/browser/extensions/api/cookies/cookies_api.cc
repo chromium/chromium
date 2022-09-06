@@ -543,7 +543,7 @@ ExtensionFunction::ResponseAction CookiesGetAllCookieStoresFunction::Run() {
   Profile* original_profile = Profile::FromBrowserContext(browser_context());
   DCHECK(original_profile);
   std::unique_ptr<base::ListValue> original_tab_ids(new base::ListValue());
-  Profile* incognito_profile = NULL;
+  Profile* incognito_profile = nullptr;
   std::unique_ptr<base::ListValue> incognito_tab_ids;
   if (include_incognito_information() &&
       original_profile->HasPrimaryOTRProfile()) {

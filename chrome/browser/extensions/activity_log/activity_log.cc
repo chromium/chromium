@@ -105,23 +105,23 @@ struct ApiInfo {
 
 static const ApiInfo kApiInfoTable[] = {
     // Tabs APIs that require tab ID translation
-    {Action::ACTION_API_CALL, "tabs.connect", 0, LOOKUP_TAB_ID, NULL},
-    {Action::ACTION_API_CALL, "tabs.detectLanguage", 0, LOOKUP_TAB_ID, NULL},
-    {Action::ACTION_API_CALL, "tabs.duplicate", 0, LOOKUP_TAB_ID, NULL},
-    {Action::ACTION_API_CALL, "tabs.executeScript", 0, LOOKUP_TAB_ID, NULL},
-    {Action::ACTION_API_CALL, "tabs.get", 0, LOOKUP_TAB_ID, NULL},
-    {Action::ACTION_API_CALL, "tabs.insertCSS", 0, LOOKUP_TAB_ID, NULL},
-    {Action::ACTION_API_CALL, "tabs.move", 0, LOOKUP_TAB_ID, NULL},
-    {Action::ACTION_API_CALL, "tabs.reload", 0, LOOKUP_TAB_ID, NULL},
-    {Action::ACTION_API_CALL, "tabs.remove", 0, LOOKUP_TAB_ID, NULL},
-    {Action::ACTION_API_CALL, "tabs.sendMessage", 0, LOOKUP_TAB_ID, NULL},
-    {Action::ACTION_API_CALL, "tabs.update", 0, LOOKUP_TAB_ID, NULL},
-    {Action::ACTION_API_EVENT, "tabs.onUpdated", 0, LOOKUP_TAB_ID, NULL},
-    {Action::ACTION_API_EVENT, "tabs.onMoved", 0, LOOKUP_TAB_ID, NULL},
-    {Action::ACTION_API_EVENT, "tabs.onDetached", 0, LOOKUP_TAB_ID, NULL},
-    {Action::ACTION_API_EVENT, "tabs.onAttached", 0, LOOKUP_TAB_ID, NULL},
-    {Action::ACTION_API_EVENT, "tabs.onRemoved", 0, LOOKUP_TAB_ID, NULL},
-    {Action::ACTION_API_EVENT, "tabs.onReplaced", 0, LOOKUP_TAB_ID, NULL},
+    {Action::ACTION_API_CALL, "tabs.connect", 0, LOOKUP_TAB_ID, nullptr},
+    {Action::ACTION_API_CALL, "tabs.detectLanguage", 0, LOOKUP_TAB_ID, nullptr},
+    {Action::ACTION_API_CALL, "tabs.duplicate", 0, LOOKUP_TAB_ID, nullptr},
+    {Action::ACTION_API_CALL, "tabs.executeScript", 0, LOOKUP_TAB_ID, nullptr},
+    {Action::ACTION_API_CALL, "tabs.get", 0, LOOKUP_TAB_ID, nullptr},
+    {Action::ACTION_API_CALL, "tabs.insertCSS", 0, LOOKUP_TAB_ID, nullptr},
+    {Action::ACTION_API_CALL, "tabs.move", 0, LOOKUP_TAB_ID, nullptr},
+    {Action::ACTION_API_CALL, "tabs.reload", 0, LOOKUP_TAB_ID, nullptr},
+    {Action::ACTION_API_CALL, "tabs.remove", 0, LOOKUP_TAB_ID, nullptr},
+    {Action::ACTION_API_CALL, "tabs.sendMessage", 0, LOOKUP_TAB_ID, nullptr},
+    {Action::ACTION_API_CALL, "tabs.update", 0, LOOKUP_TAB_ID, nullptr},
+    {Action::ACTION_API_EVENT, "tabs.onUpdated", 0, LOOKUP_TAB_ID, nullptr},
+    {Action::ACTION_API_EVENT, "tabs.onMoved", 0, LOOKUP_TAB_ID, nullptr},
+    {Action::ACTION_API_EVENT, "tabs.onDetached", 0, LOOKUP_TAB_ID, nullptr},
+    {Action::ACTION_API_EVENT, "tabs.onAttached", 0, LOOKUP_TAB_ID, nullptr},
+    {Action::ACTION_API_EVENT, "tabs.onRemoved", 0, LOOKUP_TAB_ID, nullptr},
+    {Action::ACTION_API_EVENT, "tabs.onReplaced", 0, LOOKUP_TAB_ID, nullptr},
 
     // Other APIs that accept URLs as strings
     {Action::ACTION_API_CALL, "bookmarks.create", 0, DICT_LOOKUP, "url"},
@@ -134,35 +134,38 @@ static const ApiInfo kApiInfoTable[] = {
     {Action::ACTION_API_CALL, "history.addUrl", 0, DICT_LOOKUP, "url"},
     {Action::ACTION_API_CALL, "history.deleteUrl", 0, DICT_LOOKUP, "url"},
     {Action::ACTION_API_CALL, "history.getVisits", 0, DICT_LOOKUP, "url"},
-    {Action::ACTION_API_CALL, "webstore.install", 0, NONE, NULL},
+    {Action::ACTION_API_CALL, "webstore.install", 0, NONE, nullptr},
     {Action::ACTION_API_CALL, "windows.create", 0, DICT_LOOKUP, "url"},
-    {Action::ACTION_DOM_ACCESS, "Document.location", 0, NONE, NULL},
-    {Action::ACTION_DOM_ACCESS, "HTMLAnchorElement.href", 0, NONE, NULL},
-    {Action::ACTION_DOM_ACCESS, "HTMLButtonElement.formAction", 0, NONE, NULL},
-    {Action::ACTION_DOM_ACCESS, "HTMLEmbedElement.src", 0, NONE, NULL},
-    {Action::ACTION_DOM_ACCESS, "HTMLFormElement.action", 0, NONE, NULL},
-    {Action::ACTION_DOM_ACCESS, "HTMLFrameElement.src", 0, NONE, NULL},
-    {Action::ACTION_DOM_ACCESS, "HTMLHtmlElement.manifest", 0, NONE, NULL},
-    {Action::ACTION_DOM_ACCESS, "HTMLIFrameElement.src", 0, NONE, NULL},
-    {Action::ACTION_DOM_ACCESS, "HTMLImageElement.longDesc", 0, NONE, NULL},
-    {Action::ACTION_DOM_ACCESS, "HTMLImageElement.src", 0, NONE, NULL},
-    {Action::ACTION_DOM_ACCESS, "HTMLImageElement.lowsrc", 0, NONE, NULL},
-    {Action::ACTION_DOM_ACCESS, "HTMLInputElement.formAction", 0, NONE, NULL},
-    {Action::ACTION_DOM_ACCESS, "HTMLInputElement.src", 0, NONE, NULL},
-    {Action::ACTION_DOM_ACCESS, "HTMLLinkElement.href", 0, NONE, NULL},
-    {Action::ACTION_DOM_ACCESS, "HTMLMediaElement.src", 0, NONE, NULL},
-    {Action::ACTION_DOM_ACCESS, "HTMLMediaElement.currentSrc", 0, NONE, NULL},
-    {Action::ACTION_DOM_ACCESS, "HTMLModElement.cite", 0, NONE, NULL},
-    {Action::ACTION_DOM_ACCESS, "HTMLObjectElement.data", 0, NONE, NULL},
-    {Action::ACTION_DOM_ACCESS, "HTMLQuoteElement.cite", 0, NONE, NULL},
-    {Action::ACTION_DOM_ACCESS, "HTMLScriptElement.src", 0, NONE, NULL},
-    {Action::ACTION_DOM_ACCESS, "HTMLSourceElement.src", 0, NONE, NULL},
-    {Action::ACTION_DOM_ACCESS, "HTMLTrackElement.src", 0, NONE, NULL},
-    {Action::ACTION_DOM_ACCESS, "HTMLVideoElement.poster", 0, NONE, NULL},
-    {Action::ACTION_DOM_ACCESS, "Location.assign", 0, NONE, NULL},
-    {Action::ACTION_DOM_ACCESS, "Location.replace", 0, NONE, NULL},
-    {Action::ACTION_DOM_ACCESS, "Window.location", 0, NONE, NULL},
-    {Action::ACTION_DOM_ACCESS, "XMLHttpRequest.open", 1, NONE, NULL}};
+    {Action::ACTION_DOM_ACCESS, "Document.location", 0, NONE, nullptr},
+    {Action::ACTION_DOM_ACCESS, "HTMLAnchorElement.href", 0, NONE, nullptr},
+    {Action::ACTION_DOM_ACCESS, "HTMLButtonElement.formAction", 0, NONE,
+     nullptr},
+    {Action::ACTION_DOM_ACCESS, "HTMLEmbedElement.src", 0, NONE, nullptr},
+    {Action::ACTION_DOM_ACCESS, "HTMLFormElement.action", 0, NONE, nullptr},
+    {Action::ACTION_DOM_ACCESS, "HTMLFrameElement.src", 0, NONE, nullptr},
+    {Action::ACTION_DOM_ACCESS, "HTMLHtmlElement.manifest", 0, NONE, nullptr},
+    {Action::ACTION_DOM_ACCESS, "HTMLIFrameElement.src", 0, NONE, nullptr},
+    {Action::ACTION_DOM_ACCESS, "HTMLImageElement.longDesc", 0, NONE, nullptr},
+    {Action::ACTION_DOM_ACCESS, "HTMLImageElement.src", 0, NONE, nullptr},
+    {Action::ACTION_DOM_ACCESS, "HTMLImageElement.lowsrc", 0, NONE, nullptr},
+    {Action::ACTION_DOM_ACCESS, "HTMLInputElement.formAction", 0, NONE,
+     nullptr},
+    {Action::ACTION_DOM_ACCESS, "HTMLInputElement.src", 0, NONE, nullptr},
+    {Action::ACTION_DOM_ACCESS, "HTMLLinkElement.href", 0, NONE, nullptr},
+    {Action::ACTION_DOM_ACCESS, "HTMLMediaElement.src", 0, NONE, nullptr},
+    {Action::ACTION_DOM_ACCESS, "HTMLMediaElement.currentSrc", 0, NONE,
+     nullptr},
+    {Action::ACTION_DOM_ACCESS, "HTMLModElement.cite", 0, NONE, nullptr},
+    {Action::ACTION_DOM_ACCESS, "HTMLObjectElement.data", 0, NONE, nullptr},
+    {Action::ACTION_DOM_ACCESS, "HTMLQuoteElement.cite", 0, NONE, nullptr},
+    {Action::ACTION_DOM_ACCESS, "HTMLScriptElement.src", 0, NONE, nullptr},
+    {Action::ACTION_DOM_ACCESS, "HTMLSourceElement.src", 0, NONE, nullptr},
+    {Action::ACTION_DOM_ACCESS, "HTMLTrackElement.src", 0, NONE, nullptr},
+    {Action::ACTION_DOM_ACCESS, "HTMLVideoElement.poster", 0, NONE, nullptr},
+    {Action::ACTION_DOM_ACCESS, "Location.assign", 0, NONE, nullptr},
+    {Action::ACTION_DOM_ACCESS, "Location.replace", 0, NONE, nullptr},
+    {Action::ACTION_DOM_ACCESS, "Window.location", 0, NONE, nullptr},
+    {Action::ACTION_DOM_ACCESS, "XMLHttpRequest.open", 1, NONE, nullptr}};
 
 // A singleton class which provides lookups into the kApiInfoTable data
 // structure.  It inserts all data into a map on first lookup.
@@ -181,9 +184,9 @@ class ApiInfoDatabase {
                         const std::string& api_name) const {
     auto i = api_database_.find(api_name);
     if (i == api_database_.end())
-      return NULL;
+      return nullptr;
     if (i->second->action_type != action_type)
-      return NULL;
+      return nullptr;
     return i->second;
   }
 
@@ -211,16 +214,12 @@ bool GetUrlForTabId(int tab_id,
                     Profile* profile,
                     GURL* url,
                     bool* is_incognito) {
-  content::WebContents* contents = NULL;
-  Browser* browser = NULL;
-  bool found = ExtensionTabUtil::GetTabById(
-      tab_id,
-      profile,
-      true,  // Search incognito tabs, too.
-      &browser,
-      NULL,
-      &contents,
-      NULL);
+  content::WebContents* contents = nullptr;
+  Browser* browser = nullptr;
+  bool found =
+      ExtensionTabUtil::GetTabById(tab_id, profile,
+                                   true,  // Search incognito tabs, too.
+                                   &browser, nullptr, &contents, nullptr);
 
   if (found) {
     *url = contents->GetURL();
@@ -256,7 +255,7 @@ bool ResolveUrl(const GURL& base, const std::string& arg, GURL* arg_out) {
 void ExtractUrls(scoped_refptr<Action> action, Profile* profile) {
   const ApiInfo* api_info = ApiInfoDatabase::GetInstance()->Lookup(
       action->action_type(), action->api_name());
-  if (api_info == NULL)
+  if (api_info == nullptr)
     return;
 
   int url_index = api_info->arg_url_index;

@@ -668,7 +668,7 @@ bool CommandService::GetExtensionActionCommand(const std::string& extension_id,
   if (active)
     *active = false;
 
-  const Command* requested_command = NULL;
+  const Command* requested_command = nullptr;
   switch (action_type) {
     case ActionInfo::TYPE_BROWSER:
       requested_command = CommandsInfo::GetBrowserActionCommand(extension);

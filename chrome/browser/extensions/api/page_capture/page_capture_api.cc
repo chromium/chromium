@@ -55,7 +55,7 @@ void ClearFileReferenceOnIOThread(
 
 }  // namespace
 
-static PageCaptureSaveAsMHTMLFunction::TestDelegate* test_delegate_ = NULL;
+static PageCaptureSaveAsMHTMLFunction::TestDelegate* test_delegate_ = nullptr;
 
 PageCaptureSaveAsMHTMLFunction::PageCaptureSaveAsMHTMLFunction() {
 }
@@ -255,13 +255,13 @@ void PageCaptureSaveAsMHTMLFunction::ReturnSuccess(int64_t file_size) {
 }
 
 WebContents* PageCaptureSaveAsMHTMLFunction::GetWebContents() {
-  Browser* browser = NULL;
-  content::WebContents* web_contents = NULL;
+  Browser* browser = nullptr;
+  content::WebContents* web_contents = nullptr;
 
   if (!ExtensionTabUtil::GetTabById(params_->details.tab_id, browser_context(),
                                     include_incognito_information(), &browser,
-                                    NULL, &web_contents, NULL)) {
-    return NULL;
+                                    nullptr, &web_contents, nullptr)) {
+    return nullptr;
   }
   return web_contents;
 }

@@ -18,7 +18,7 @@
 namespace {
 
 bool g_skip_picker_for_test = false;
-base::FilePath* g_path_to_be_picked_for_test = NULL;
+base::FilePath* g_path_to_be_picked_for_test = nullptr;
 
 }  // namespace
 
@@ -98,7 +98,7 @@ void EntryPicker::SkipPickerAndAlwaysSelectPathForTest(
 // static
 void EntryPicker::SkipPickerAndAlwaysCancelForTest() {
   g_skip_picker_for_test = true;
-  g_path_to_be_picked_for_test = NULL;
+  g_path_to_be_picked_for_test = nullptr;
 }
 
 // static

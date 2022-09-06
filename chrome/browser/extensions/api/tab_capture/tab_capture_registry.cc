@@ -186,7 +186,7 @@ std::string TabCaptureRegistry::AddRequest(
   LiveRequest* const request = FindRequest(target_contents);
 
   // Currently, we do not allow multiple active captures for same tab.
-  if (request != NULL) {
+  if (request != nullptr) {
     if (request->capture_state() == tab_capture::TAB_CAPTURE_STATE_PENDING ||
         request->capture_state() == tab_capture::TAB_CAPTURE_STATE_ACTIVE) {
       return device_id;

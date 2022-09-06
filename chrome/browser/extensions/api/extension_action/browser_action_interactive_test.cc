@@ -281,7 +281,7 @@ IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveTest, DISABLED_TestOpenPopup) {
   }
 
   EXPECT_TRUE(listener.WaitUntilSatisfied());
-  Browser* new_browser = NULL;
+  Browser* new_browser = nullptr;
   {
     content::WindowedNotificationObserver frame_observer(
         content::NOTIFICATION_LOAD_COMPLETED_MAIN_FRAME,
@@ -298,7 +298,7 @@ IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveTest, DISABLED_TestOpenPopup) {
     frame_observer.Wait();
   }
 
-  EXPECT_TRUE(new_browser != NULL);
+  EXPECT_TRUE(new_browser != nullptr);
 
   ResultCatcher catcher;
   {

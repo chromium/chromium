@@ -431,7 +431,7 @@ TEST_F(ActivityLogTest, UninstalledExtension) {
   action->set_page_url(GURL("http://www.google.com"));
 
   activity_log->OnExtensionUninstalled(
-      NULL, extension.get(), extensions::UNINSTALL_REASON_FOR_TESTING);
+      nullptr, extension.get(), extensions::UNINSTALL_REASON_FOR_TESTING);
   activity_log->GetFilteredActions(
       extension->id(), Action::ACTION_ANY, "", "", "", -1,
       base::BindOnce(ActivityLogTest::RetrieveActions_LogAndFetchActions0));

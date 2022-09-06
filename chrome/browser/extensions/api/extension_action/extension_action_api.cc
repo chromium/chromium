@@ -202,7 +202,7 @@ void ExtensionActionAPI::DispatchExtensionActionClicked(
     WebContents* web_contents,
     const Extension* extension) {
   events::HistogramValue histogram_value = events::UNKNOWN;
-  const char* event_name = NULL;
+  const char* event_name = nullptr;
   switch (extension_action.action_type()) {
     case ActionInfo::TYPE_ACTION:
       histogram_value = events::ACTION_ON_CLICKED;

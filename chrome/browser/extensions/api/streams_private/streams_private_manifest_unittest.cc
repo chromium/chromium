@@ -42,7 +42,7 @@ TEST_F(StreamsPrivateManifestTest, ValidMimeTypesHandlerMIMETypes) {
 
   ASSERT_TRUE(extension.get());
   MimeTypesHandler* handler = MimeTypesHandler::GetHandler(extension.get());
-  ASSERT_TRUE(handler != NULL);
+  ASSERT_TRUE(handler != nullptr);
 
   EXPECT_FALSE(handler->CanHandleMIMEType("text/html"));
   EXPECT_TRUE(handler->CanHandleMIMEType("text/plain"));
@@ -63,7 +63,7 @@ TEST_F(StreamsPrivateManifestTest, MimeTypesHandlerMIMETypesNotAllowlisted) {
   ASSERT_TRUE(extension.get());
 
   MimeTypesHandler* handler = MimeTypesHandler::GetHandler(extension.get());
-  ASSERT_TRUE(handler == NULL);
+  ASSERT_TRUE(handler == nullptr);
 }
 
 }  // namespace

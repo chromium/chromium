@@ -76,7 +76,7 @@ Profile* ChooseProfileFromStoreId(const std::string& store_id,
     return profile->GetOriginalProfile();
   if (store_id == kOffTheRecordProfileStoreId && allow_incognito)
     return profile->GetPrimaryOTRProfile(/*create_if_needed=*/true);
-  return NULL;
+  return nullptr;
 }
 
 const char* GetStoreIdFromProfile(Profile* profile) {

@@ -151,9 +151,8 @@ sql::Database* ActivityDatabase::GetSqlConnection() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (valid_db_) {
     return &db_;
-  } else {
-    return NULL;
   }
+  return nullptr;
 }
 
 void ActivityDatabase::Close() {

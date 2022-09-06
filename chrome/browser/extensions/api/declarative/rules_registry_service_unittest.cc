@@ -68,7 +68,7 @@ class RulesRegistryServiceTest : public testing::Test {
 };
 
 TEST_F(RulesRegistryServiceTest, TestConstructionAndMultiThreading) {
-  RulesRegistryService registry_service(NULL);
+  RulesRegistryService registry_service(nullptr);
 
   int key = RulesRegistryService::kDefaultRulesRegistryID;
   TestRulesRegistry* ui_registry =

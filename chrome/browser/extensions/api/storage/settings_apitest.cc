@@ -211,7 +211,7 @@ class ExtensionSettingsApiTest : public ExtensionApiTest {
 
     // Only load the extension after the listeners have been set up, to avoid
     // initialisation race conditions.
-    const Extension* extension = NULL;
+    const Extension* extension = nullptr;
     if (extension_dir) {
       extension = LoadExtension(
           test_data_dir_.AppendASCII("settings").AppendASCII(*extension_dir),

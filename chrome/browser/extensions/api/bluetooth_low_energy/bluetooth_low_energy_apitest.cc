@@ -264,7 +264,7 @@ IN_PROC_BROWSER_TEST_F(BluetoothLowEnergyApiTest, GetServices) {
 
   EXPECT_CALL(*mock_adapter_, GetDevice(_))
       .Times(3)
-      .WillOnce(Return(static_cast<BluetoothDevice*>(NULL)))
+      .WillOnce(Return(static_cast<BluetoothDevice*>(nullptr)))
       .WillRepeatedly(Return(device0_.get()));
 
   EXPECT_CALL(*device0_, GetGattServices())
@@ -293,12 +293,12 @@ IN_PROC_BROWSER_TEST_F(BluetoothLowEnergyApiTest, GetService) {
 
   EXPECT_CALL(*mock_adapter_, GetDevice(_))
       .Times(3)
-      .WillOnce(Return(static_cast<BluetoothDevice*>(NULL)))
+      .WillOnce(Return(static_cast<BluetoothDevice*>(nullptr)))
       .WillRepeatedly(Return(device0_.get()));
 
   EXPECT_CALL(*device0_, GetGattService(kTestServiceId0))
       .Times(2)
-      .WillOnce(Return(static_cast<BluetoothRemoteGattService*>(NULL)))
+      .WillOnce(Return(static_cast<BluetoothRemoteGattService*>(nullptr)))
       .WillOnce(Return(service0_.get()));
 
   // Load and wait for setup.
@@ -462,7 +462,7 @@ IN_PROC_BROWSER_TEST_F(BluetoothLowEnergyApiTest, GetCharacteristics) {
       Return(device0_.get()));
   EXPECT_CALL(*device0_, GetGattService(kTestServiceId0))
       .Times(3)
-      .WillOnce(Return(static_cast<BluetoothRemoteGattService*>(NULL)))
+      .WillOnce(Return(static_cast<BluetoothRemoteGattService*>(nullptr)))
       .WillRepeatedly(Return(service0_.get()));
   EXPECT_CALL(*service0_, GetCharacteristics())
       .Times(2)
@@ -491,17 +491,18 @@ IN_PROC_BROWSER_TEST_F(BluetoothLowEnergyApiTest, GetCharacteristic) {
 
   EXPECT_CALL(*mock_adapter_, GetDevice(_))
       .Times(4)
-      .WillOnce(Return(static_cast<BluetoothDevice*>(NULL)))
+      .WillOnce(Return(static_cast<BluetoothDevice*>(nullptr)))
       .WillRepeatedly(Return(device0_.get()));
 
   EXPECT_CALL(*device0_, GetGattService(kTestServiceId0))
       .Times(3)
-      .WillOnce(Return(static_cast<BluetoothRemoteGattService*>(NULL)))
+      .WillOnce(Return(static_cast<BluetoothRemoteGattService*>(nullptr)))
       .WillRepeatedly(Return(service0_.get()));
 
   EXPECT_CALL(*service0_, GetCharacteristic(kTestCharacteristicId0))
       .Times(2)
-      .WillOnce(Return(static_cast<BluetoothRemoteGattCharacteristic*>(NULL)))
+      .WillOnce(
+          Return(static_cast<BluetoothRemoteGattCharacteristic*>(nullptr)))
       .WillOnce(Return(chrc0_.get()));
 
   // Load the extension and wait for first test.
@@ -803,7 +804,8 @@ IN_PROC_BROWSER_TEST_F(BluetoothLowEnergyApiTest, GetDescriptors) {
       .WillRepeatedly(Return(service0_.get()));
   EXPECT_CALL(*service0_, GetCharacteristic(kTestCharacteristicId0))
       .Times(3)
-      .WillOnce(Return(static_cast<BluetoothRemoteGattCharacteristic*>(NULL)))
+      .WillOnce(
+          Return(static_cast<BluetoothRemoteGattCharacteristic*>(nullptr)))
       .WillRepeatedly(Return(chrc0_.get()));
   EXPECT_CALL(*chrc0_, GetDescriptors())
       .Times(2)
@@ -836,22 +838,23 @@ IN_PROC_BROWSER_TEST_F(BluetoothLowEnergyApiTest, GetDescriptor) {
 
   EXPECT_CALL(*mock_adapter_, GetDevice(_))
       .Times(5)
-      .WillOnce(Return(static_cast<BluetoothDevice*>(NULL)))
+      .WillOnce(Return(static_cast<BluetoothDevice*>(nullptr)))
       .WillRepeatedly(Return(device0_.get()));
 
   EXPECT_CALL(*device0_, GetGattService(kTestServiceId0))
       .Times(4)
-      .WillOnce(Return(static_cast<BluetoothRemoteGattService*>(NULL)))
+      .WillOnce(Return(static_cast<BluetoothRemoteGattService*>(nullptr)))
       .WillRepeatedly(Return(service0_.get()));
 
   EXPECT_CALL(*service0_, GetCharacteristic(kTestCharacteristicId0))
       .Times(3)
-      .WillOnce(Return(static_cast<BluetoothRemoteGattCharacteristic*>(NULL)))
+      .WillOnce(
+          Return(static_cast<BluetoothRemoteGattCharacteristic*>(nullptr)))
       .WillRepeatedly(Return(chrc0_.get()));
 
   EXPECT_CALL(*chrc0_, GetDescriptor(kTestDescriptorId0))
       .Times(2)
-      .WillOnce(Return(static_cast<BluetoothRemoteGattDescriptor*>(NULL)))
+      .WillOnce(Return(static_cast<BluetoothRemoteGattDescriptor*>(nullptr)))
       .WillOnce(Return(desc0_.get()));
 
   // Load the extension and wait for first test.
@@ -1152,7 +1155,7 @@ IN_PROC_BROWSER_TEST_F(BluetoothLowEnergyApiTest, GattConnection) {
   catcher.RestrictToBrowserContext(browser()->profile());
 
   EXPECT_CALL(*mock_adapter_, GetDevice(_))
-      .WillRepeatedly(Return(static_cast<BluetoothDevice*>(NULL)));
+      .WillRepeatedly(Return(static_cast<BluetoothDevice*>(nullptr)));
   EXPECT_CALL(*mock_adapter_, GetDevice(kTestLeDeviceAddress0))
       .WillRepeatedly(Return(device0_.get()));
   EXPECT_CALL(*mock_adapter_, GetDevice(kTestLeDeviceAddress1))

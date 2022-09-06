@@ -253,7 +253,7 @@ const char* StateString(download::DownloadItem::DownloadState state) {
 download::DownloadItem::DownloadState StateEnumFromString(
     const std::string& state) {
   for (size_t i = 0; i < std::size(kStateStrings); ++i) {
-    if ((kStateStrings[i] != NULL) && (state == kStateStrings[i]))
+    if ((kStateStrings[i] != nullptr) && (state == kStateStrings[i]))
       return static_cast<DownloadItem::DownloadState>(i);
   }
   return DownloadItem::MAX_DOWNLOAD_STATE;
@@ -461,7 +461,7 @@ void GetManagers(content::BrowserContext* context,
         profile->GetPrimaryOTRProfile(/*create_if_needed=*/true)
             ->GetDownloadManager();
   } else {
-    *incognito_manager = NULL;
+    *incognito_manager = nullptr;
   }
 }
 
@@ -502,8 +502,8 @@ void MaybeSetUiEnabled(DownloadCoreService* service,
 DownloadItem* GetDownload(content::BrowserContext* context,
                           bool include_incognito,
                           int id) {
-  DownloadManager* manager = NULL;
-  DownloadManager* incognito_manager = NULL;
+  DownloadManager* manager = nullptr;
+  DownloadManager* incognito_manager = nullptr;
   GetManagers(context, include_incognito, &manager, &incognito_manager);
   DownloadItem* download_item = manager->GetDownload(id);
   if (!download_item && incognito_manager)
@@ -668,8 +668,8 @@ class ExtensionDownloadsEventRouterData : public base::SupportsUserData::Data {
  public:
   static ExtensionDownloadsEventRouterData* Get(DownloadItem* download_item) {
     base::SupportsUserData::Data* data = download_item->GetUserData(kKey);
-    return (data == NULL)
-               ? NULL
+    return (data == nullptr)
+               ? nullptr
                : static_cast<ExtensionDownloadsEventRouterData*>(data);
   }
 
@@ -985,7 +985,8 @@ const char DownloadedByExtension::kKey[] = "DownloadItem DownloadedByExtension";
 DownloadedByExtension* DownloadedByExtension::Get(
     download::DownloadItem* item) {
   base::SupportsUserData::Data* data = item->GetUserData(kKey);
-  return (data == NULL) ? NULL : static_cast<DownloadedByExtension*>(data);
+  return (data == nullptr) ? nullptr
+                           : static_cast<DownloadedByExtension*>(data);
 }
 
 DownloadedByExtension::DownloadedByExtension(download::DownloadItem* item,
@@ -1134,8 +1135,8 @@ ExtensionFunction::ResponseAction DownloadsSearchFunction::Run() {
   std::unique_ptr<downloads::Search::Params> params(
       downloads::Search::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
-  DownloadManager* manager = NULL;
-  DownloadManager* incognito_manager = NULL;
+  DownloadManager* manager = nullptr;
+  DownloadManager* incognito_manager = nullptr;
   GetManagers(browser_context(), include_incognito_information(), &manager,
               &incognito_manager);
   ExtensionDownloadsEventRouter* router =
@@ -1161,8 +1162,9 @@ ExtensionFunction::ResponseAction DownloadsSearchFunction::Run() {
        it != results.end(); ++it) {
     DownloadItem* download_item = *it;
     uint32_t download_id = download_item->GetId();
-    bool off_record = ((incognito_manager != NULL) &&
-                       (incognito_manager->GetDownload(download_id) != NULL));
+    bool off_record =
+        ((incognito_manager != nullptr) &&
+         (incognito_manager->GetDownload(download_id) != nullptr));
     Profile* profile = Profile::FromBrowserContext(browser_context());
     base::Value::Dict json_item = DownloadItemToJSON(
         *it, off_record
@@ -1246,8 +1248,8 @@ ExtensionFunction::ResponseAction DownloadsEraseFunction::Run() {
   std::unique_ptr<downloads::Erase::Params> params(
       downloads::Erase::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
-  DownloadManager* manager = NULL;
-  DownloadManager* incognito_manager = NULL;
+  DownloadManager* manager = nullptr;
+  DownloadManager* incognito_manager = nullptr;
   GetManagers(browser_context(), include_incognito_information(), &manager,
               &incognito_manager);
   DownloadQuery::DownloadVector results;
@@ -1303,7 +1305,7 @@ DownloadsAcceptDangerFunction::DownloadsAcceptDangerFunction() {}
 DownloadsAcceptDangerFunction::~DownloadsAcceptDangerFunction() {}
 
 DownloadsAcceptDangerFunction::OnPromptCreatedCallback*
-    DownloadsAcceptDangerFunction::on_prompt_created_ = NULL;
+    DownloadsAcceptDangerFunction::on_prompt_created_ = nullptr;
 
 ExtensionFunction::ResponseAction DownloadsAcceptDangerFunction::Run() {
   std::unique_ptr<downloads::AcceptDanger::Params> params(
@@ -1403,8 +1405,8 @@ DownloadsShowDefaultFolderFunction::DownloadsShowDefaultFolderFunction() {}
 DownloadsShowDefaultFolderFunction::~DownloadsShowDefaultFolderFunction() {}
 
 ExtensionFunction::ResponseAction DownloadsShowDefaultFolderFunction::Run() {
-  DownloadManager* manager = NULL;
-  DownloadManager* incognito_manager = NULL;
+  DownloadManager* manager = nullptr;
+  DownloadManager* incognito_manager = nullptr;
   GetManagers(browser_context(), include_incognito_information(), &manager,
               &incognito_manager);
   platform_util::OpenItem(
@@ -1804,7 +1806,7 @@ bool ExtensionDownloadsEventRouter::DetermineFilename(
   DownloadItem* item =
       GetDownload(browser_context, include_incognito, download_id);
   ExtensionDownloadsEventRouterData* data =
-      item ? ExtensionDownloadsEventRouterData::Get(item) : NULL;
+      item ? ExtensionDownloadsEventRouterData::Get(item) : nullptr;
   // maxListeners=1 in downloads.idl and suggestCallback in
   // downloads_custom_bindings.js should prevent duplicate DeterminerCallback
   // calls from the same renderer, but an extension may have more than one

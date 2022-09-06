@@ -546,7 +546,7 @@ class DownloadExtensionTest : public ExtensionApiTest {
     EXPECT_EQ(0, manager->NonMaliciousInProgressCount());
     EXPECT_EQ(0, manager->InProgressCount());
     if (manager->InProgressCount() != 0)
-      return NULL;
+      return nullptr;
     return CreateSlowTestDownload(first_download_.get(), kFirstDownloadUrl);
   }
 
@@ -1107,7 +1107,7 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
   GetCurrentManager()->GetAllDownloads(&items);
   EXPECT_EQ(0UL, items.size());
   ASSERT_TRUE(result);
-  download_item = NULL;
+  download_item = nullptr;
   ASSERT_TRUE(result->is_list());
   base::Value::ListView result_list = result->GetListDeprecated();
   ASSERT_EQ(1UL, result_list.size());
@@ -4484,7 +4484,7 @@ IN_PROC_BROWSER_TEST_F(
   content::RenderProcessHost* host = AddFilenameDeterminer();
 
   // Start a download.
-  DownloadItem* item = NULL;
+  DownloadItem* item = nullptr;
   {
     DownloadManager* manager = GetCurrentManager();
     std::unique_ptr<content::DownloadTestObserver> observer(
@@ -4508,7 +4508,7 @@ IN_PROC_BROWSER_TEST_F(
     for (auto iter = items.begin(); iter != items.end(); ++iter) {
       if ((*iter)->GetState() == DownloadItem::IN_PROGRESS) {
         // There should be only one IN_PROGRESS item.
-        EXPECT_EQ(NULL, item);
+        EXPECT_EQ(nullptr, item);
         item = *iter;
       }
     }

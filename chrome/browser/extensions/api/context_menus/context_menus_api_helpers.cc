@@ -46,11 +46,11 @@ MenuItem* GetParent(MenuItem::Id parent_id,
   if (!parent) {
     *error = ErrorUtils::FormatErrorMessage(
         kCannotFindItemError, GetIDString(parent_id));
-    return NULL;
+    return nullptr;
   }
   if (parent->type() != MenuItem::NORMAL) {
     *error = kParentsMustBeNormalError;
-    return NULL;
+    return nullptr;
   }
   return parent;
 }

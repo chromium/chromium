@@ -135,7 +135,8 @@ testing::AssertionResult RequestContentScriptAPITest::RunTest(
       browser(), embedded_test_server()->GetURL("/extensions/test_file.html")));
 
   content::WebContents* web_contents =
-      browser() ? browser()->tab_strip_model()->GetActiveWebContents() : NULL;
+      browser() ? browser()->tab_strip_model()->GetActiveWebContents()
+                : nullptr;
   if (!web_contents)
     return testing::AssertionFailure() << "No web contents.";
 

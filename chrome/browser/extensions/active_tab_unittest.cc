@@ -141,7 +141,8 @@ class ActiveTabTest : public ChromeRenderViewHostTestHarness {
         permissions_data->CanAccessPage(url, tab_id, nullptr) &&
         permissions_data->CanRunContentScriptOnPage(url, tab_id, nullptr);
     bool capture = permissions_data->CanCaptureVisiblePage(
-        url, tab_id, NULL, extensions::CaptureRequirement::kActiveTabOrAllUrls);
+        url, tab_id, nullptr,
+        extensions::CaptureRequirement::kActiveTabOrAllUrls);
     switch (feature) {
       case PERMITTED_SCRIPT_ONLY:
         return script && !capture;

@@ -74,7 +74,7 @@ syncer::SyncableService* SyncValueStoreCache::GetSyncableService(
       return extension_backend_.get();
     default:
       NOTREACHED();
-      return NULL;
+      return nullptr;
   }
 }
 

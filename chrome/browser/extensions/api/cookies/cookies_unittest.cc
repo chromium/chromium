@@ -64,18 +64,17 @@ TEST_F(ExtensionCookiesTest, StoreIdProfileConversion) {
   EXPECT_EQ(
       profile->GetPrimaryOTRProfile(/*create_if_needed=*/true),
       cookies_helpers::ChooseProfileFromStoreId("1", profile.get(), true));
-  EXPECT_EQ(NULL,
-            cookies_helpers::ChooseProfileFromStoreId(
-                "1", profile.get(), false));
+  EXPECT_EQ(nullptr, cookies_helpers::ChooseProfileFromStoreId(
+                         "1", profile.get(), false));
 
   EXPECT_EQ(std::string("1"),
             cookies_helpers::GetStoreIdFromProfile(
                 profile->GetPrimaryOTRProfile(/*create_if_needed=*/true)));
   EXPECT_EQ(
-      NULL,
+      nullptr,
       cookies_helpers::ChooseProfileFromStoreId(
           "0", profile->GetPrimaryOTRProfile(/*create_if_needed=*/true), true));
-  EXPECT_EQ(NULL,
+  EXPECT_EQ(nullptr,
             cookies_helpers::ChooseProfileFromStoreId(
                 "0", profile->GetPrimaryOTRProfile(/*create_if_needed=*/true),
                 false));

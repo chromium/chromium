@@ -49,7 +49,7 @@ namespace {
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
 // Find a browser other than |browser|.
 Browser* FindOtherBrowser(Browser* browser) {
-  Browser* found = NULL;
+  Browser* found = nullptr;
   for (auto* b : *BrowserList::GetInstance()) {
     if (b == browser)
       continue;

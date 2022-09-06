@@ -318,7 +318,7 @@ class ExternallyConnectableMessagingTest : public MessagingApiTest {
   }
 
   Result CanConnectAndSendMessagesToMainFrame(const Extension* extension,
-                                              const char* message = NULL) {
+                                              const char* message = nullptr) {
     return CanConnectAndSendMessagesToFrame(browser()
                                                 ->tab_strip_model()
                                                 ->GetActiveWebContents()
@@ -327,7 +327,7 @@ class ExternallyConnectableMessagingTest : public MessagingApiTest {
   }
 
   Result CanConnectAndSendMessagesToIFrame(const Extension* extension,
-                                           const char* message = NULL) {
+                                           const char* message = nullptr) {
     content::RenderFrameHost* frame = content::FrameMatchingPredicate(
         browser()->tab_strip_model()->GetActiveWebContents()->GetPrimaryPage(),
         base::BindRepeating(&content::FrameIsChildOfMainFrame));
@@ -407,7 +407,7 @@ class ExternallyConnectableMessagingTest : public MessagingApiTest {
 
   std::string GetTlsChannelIdFromPortConnect(const Extension* extension,
                                              bool include_tls_channel_id,
-                                             const char* message = NULL) {
+                                             const char* message = nullptr) {
     return GetTlsChannelIdFromAssertion("getTlsChannelIdFromPortConnect",
                                         extension,
                                         include_tls_channel_id,
@@ -416,7 +416,7 @@ class ExternallyConnectableMessagingTest : public MessagingApiTest {
 
   std::string GetTlsChannelIdFromSendMessage(const Extension* extension,
                                              bool include_tls_channel_id,
-                                             const char* message = NULL) {
+                                             const char* message = nullptr) {
     return GetTlsChannelIdFromAssertion("getTlsChannelIdFromSendMessage",
                                         extension,
                                         include_tls_channel_id,
@@ -839,20 +839,21 @@ IN_PROC_BROWSER_TEST_F(ExternallyConnectableMessagingTest,
     // the user denied our interactive request.
     EXPECT_EQ(
         COULD_NOT_ESTABLISH_CONNECTION_ERROR,
-        CanConnectAndSendMessagesToFrame(incognito_frame, app.get(), NULL));
+        CanConnectAndSendMessagesToFrame(incognito_frame, app.get(), nullptr));
     EXPECT_EQ(1, alert_tracker.GetAndResetAlertCount());
 
     // Try again. User has already denied so alert not shown.
     EXPECT_EQ(
         COULD_NOT_ESTABLISH_CONNECTION_ERROR,
-        CanConnectAndSendMessagesToFrame(incognito_frame, app.get(), NULL));
+        CanConnectAndSendMessagesToFrame(incognito_frame, app.get(), nullptr));
     EXPECT_EQ(0, alert_tracker.GetAndResetAlertCount());
   }
 
   // It's not possible to allow an app in incognito.
   ExtensionPrefs::Get(profile())->SetIsIncognitoEnabled(app->id(), true);
-  EXPECT_EQ(COULD_NOT_ESTABLISH_CONNECTION_ERROR,
-            CanConnectAndSendMessagesToFrame(incognito_frame, app.get(), NULL));
+  EXPECT_EQ(
+      COULD_NOT_ESTABLISH_CONNECTION_ERROR,
+      CanConnectAndSendMessagesToFrame(incognito_frame, app.get(), nullptr));
 }
 
 IN_PROC_BROWSER_TEST_F(ExternallyConnectableMessagingTest,
@@ -929,7 +930,7 @@ IN_PROC_BROWSER_TEST_F(ExternallyConnectableMessagingTest,
     // the app hasn't installed event handlers.
     EXPECT_EQ(
         COULD_NOT_ESTABLISH_CONNECTION_ERROR,
-        CanConnectAndSendMessagesToFrame(incognito_frame, app.get(), NULL));
+        CanConnectAndSendMessagesToFrame(incognito_frame, app.get(), nullptr));
     // No dialog should have been shown.
     EXPECT_EQ(0, alert_tracker.GetAndResetAlertCount());
   }
@@ -958,21 +959,21 @@ IN_PROC_BROWSER_TEST_F(ExternallyConnectableMessagingTest,
 
     // Connection allowed even with incognito disabled, because the user
     // accepted the interactive request.
-    EXPECT_EQ(
-        OK, CanConnectAndSendMessagesToFrame(incognito_frame, app.get(), NULL));
+    EXPECT_EQ(OK, CanConnectAndSendMessagesToFrame(incognito_frame, app.get(),
+                                                   nullptr));
     EXPECT_EQ(1, alert_tracker.GetAndResetAlertCount());
 
     // Try again. User has already allowed.
-    EXPECT_EQ(
-        OK, CanConnectAndSendMessagesToFrame(incognito_frame, app.get(), NULL));
+    EXPECT_EQ(OK, CanConnectAndSendMessagesToFrame(incognito_frame, app.get(),
+                                                   nullptr));
     EXPECT_EQ(0, alert_tracker.GetAndResetAlertCount());
   }
 
   // Apps can't be allowed in incognito mode, but it's moot because it's
   // already allowed.
   ExtensionPrefs::Get(profile())->SetIsIncognitoEnabled(app->id(), true);
-  EXPECT_EQ(OK,
-            CanConnectAndSendMessagesToFrame(incognito_frame, app.get(), NULL));
+  EXPECT_EQ(OK, CanConnectAndSendMessagesToFrame(incognito_frame, app.get(),
+                                                 nullptr));
 }
 
 // Tests connection from incognito tabs when there are multiple tabs open to the
@@ -1036,7 +1037,7 @@ IN_PROC_BROWSER_TEST_F(ExternallyConnectableMessagingTest,
 
     EXPECT_EQ(1U, infobar_manager1->infobar_count());
     EXPECT_EQ(OK, CanConnectAndSendMessagesToFrame(incognito_frame2, app.get(),
-                                                   NULL));
+                                                   nullptr));
     EXPECT_EQ(1, alert_tracker.GetAndResetAlertCount());
     EXPECT_EQ(0U, infobar_manager1->infobar_count());
   }

@@ -75,7 +75,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest,
 IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest, BrowserActionDefaultPersistence) {
   // Find the extension (it's a shame we don't have an ID for this, but it
   // was generated in the last test).
-  const Extension* extension = NULL;
+  const Extension* extension = nullptr;
   const ExtensionSet& extension_set =
       ExtensionRegistry::Get(profile())->enabled_extensions();
   for (ExtensionSet::const_iterator iter = extension_set.begin();

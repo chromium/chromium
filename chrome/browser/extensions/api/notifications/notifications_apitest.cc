@@ -86,7 +86,7 @@ class NotificationsApiTest : public extensions::ExtensionApiTest {
 
   const Extension* LoadAppWithWindowState(
       const std::string& test_name, WindowState window_state) {
-    const char* window_state_string = NULL;
+    const char* window_state_string = nullptr;
     switch (window_state) {
       case WindowState::FULLSCREEN:
         window_state_string = "fullscreen";
@@ -118,7 +118,7 @@ class NotificationsApiTest : public extensions::ExtensionApiTest {
     if (iter != app_windows.end())
       return *iter;
 
-    return NULL;
+    return nullptr;
   }
 
   ExtensionNotificationDisplayHelper* GetDisplayHelper() {

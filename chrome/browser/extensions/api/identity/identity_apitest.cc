@@ -218,7 +218,7 @@ class AsyncExtensionBrowserTest : public ExtensionBrowserTest {
 class TestHangOAuth2MintTokenFlow : public OAuth2MintTokenFlow {
  public:
   TestHangOAuth2MintTokenFlow()
-      : OAuth2MintTokenFlow(NULL, OAuth2MintTokenFlow::Parameters()) {}
+      : OAuth2MintTokenFlow(nullptr, OAuth2MintTokenFlow::Parameters()) {}
 
   void Start(scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
              const std::string& access_token) override {

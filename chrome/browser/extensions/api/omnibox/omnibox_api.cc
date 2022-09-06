@@ -52,7 +52,7 @@ std::unique_ptr<omnibox::SuggestResult> GetOmniboxDefaultSuggestion(
   ExtensionPrefs* prefs = ExtensionPrefs::Get(profile);
 
   std::unique_ptr<omnibox::SuggestResult> suggestion;
-  const base::DictionaryValue* dict = NULL;
+  const base::DictionaryValue* dict = nullptr;
   if (prefs && prefs->ReadPrefAsDictionary(extension_id,
                                            kOmniboxDefaultSuggestion,
                                            &dict)) {

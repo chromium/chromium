@@ -48,7 +48,7 @@ std::unique_ptr<NativeMessagingHostManifest> NativeMessagingHostManifest::Load(
 
   JSONFileValueDeserializer deserializer(file_path);
   std::unique_ptr<base::Value> parsed =
-      deserializer.Deserialize(NULL, error_message);
+      deserializer.Deserialize(nullptr, error_message);
   if (!parsed) {
     return nullptr;
   }

@@ -43,7 +43,7 @@ class ProxySettingsApiTest : public ExtensionApiTest {
                         PrefService* pref_service) {
     const PrefService::Preference* pref =
         pref_service->FindPreference(proxy_config::prefs::kProxy);
-    ASSERT_TRUE(pref != NULL);
+    ASSERT_TRUE(pref != nullptr);
     EXPECT_TRUE(pref->IsExtensionControlled());
 
     // TODO(https://crbug.com/1348219) This should call
@@ -81,7 +81,7 @@ class ProxySettingsApiTest : public ExtensionApiTest {
   void ExpectNoSettings(PrefService* pref_service) {
     const PrefService::Preference* pref =
         pref_service->FindPreference(proxy_config::prefs::kProxy);
-    ASSERT_TRUE(pref != NULL);
+    ASSERT_TRUE(pref != nullptr);
     EXPECT_FALSE(pref->IsExtensionControlled());
   }
 

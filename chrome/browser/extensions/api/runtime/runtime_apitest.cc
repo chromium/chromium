@@ -418,7 +418,7 @@ IN_PROC_BROWSER_TEST_P(RuntimeApiTest,
 
   // Uninstall the extension and expect its uninstall url to open.
   extension_service()->UninstallExtension(
-      extension->id(), extensions::UNINSTALL_REASON_USER_INITIATED, NULL);
+      extension->id(), extensions::UNINSTALL_REASON_USER_INITIATED, nullptr);
   TabStripModel* tabs = browser()->tab_strip_model();
 
   EXPECT_EQ(2, tabs->count());
@@ -449,7 +449,7 @@ IN_PROC_BROWSER_TEST_P(RuntimeApiTest,
   TestExtensionRegistryObserver observer(ExtensionRegistry::Get(profile()),
                                          extension->id());
   extension_service()->UninstallExtension(
-      extension->id(), extensions::UNINSTALL_REASON_USER_INITIATED, NULL);
+      extension->id(), extensions::UNINSTALL_REASON_USER_INITIATED, nullptr);
   observer.WaitForExtensionUninstalled();
 
   EXPECT_EQ(1, tabs->count());

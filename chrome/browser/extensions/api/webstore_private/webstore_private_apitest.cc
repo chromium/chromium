@@ -521,7 +521,7 @@ class ExtensionWebstoreGetWebGLStatusTest : public InProcessBrowserTest {
  protected:
   void RunTest(bool webgl_allowed) {
     // If Gpu access is disallowed then WebGL will not be available.
-    if (!content::GpuDataManager::GetInstance()->GpuAccessAllowed(NULL))
+    if (!content::GpuDataManager::GetInstance()->GpuAccessAllowed(nullptr))
       webgl_allowed = false;
 
     static const char kEmptyArgs[] = "[]";

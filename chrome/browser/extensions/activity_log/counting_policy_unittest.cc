@@ -69,7 +69,7 @@ class CountingPolicyTest : public testing::Test {
     test_user_manager_.reset();
 #endif
     base::RunLoop().RunUntilIdle();
-    profile_.reset(NULL);
+    profile_.reset();
     base::RunLoop().RunUntilIdle();
   }
 
