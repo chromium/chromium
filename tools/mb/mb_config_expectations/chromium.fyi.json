@@ -995,8 +995,7 @@
       "target_cpu": "x64",
       "target_environment": "simulator",
       "target_os": "ios",
-      "use_goma": true,
-      "use_lld": false
+      "use_goma": true
     }
   },
   "ios15-beta-simulator": {
@@ -1062,9 +1061,7 @@
       "target_cpu": "x64",
       "target_environment": "simulator",
       "target_os": "ios",
-      "treat_warnings_as_errors": false,
-      "use_goma": true,
-      "use_lld": false
+      "use_goma": true
     }
   },
   "lacros-amd64-generic-rel (goma cache silo)": {
