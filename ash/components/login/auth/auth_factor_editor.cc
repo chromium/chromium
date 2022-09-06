@@ -214,6 +214,8 @@ void AuthFactorEditor::ReplaceContextKey(std::unique_ptr<UserContext> context,
     cryptohome::AuthFactorRef ref{cryptohome::AuthFactorType::kPassword,
                                   KeyLabel{old_key->GetLabel()}};
 
+    request.set_auth_factor_label(ref.label().value());
+
     cryptohome::AuthFactorCommonMetadata metadata;
     cryptohome::AuthFactor factor(ref, std::move(metadata));
 

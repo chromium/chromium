@@ -10,6 +10,7 @@
 #include "ash/components/login/auth/public/cryptohome_key_constants.h"
 #include "ash/components/login/auth/public/operation_chain_runner.h"
 #include "ash/components/login/auth/public/user_context.h"
+#include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
@@ -17,6 +18,7 @@
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/notreached.h"
+#include "chromeos/ash/components/cryptohome/auth_factor.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_util.h"
 #include "chromeos/ash/components/cryptohome/system_salt_getter.h"
@@ -561,10 +563,18 @@ void AuthSessionAuthenticator::RecoverEncryptedData(
   DCHECK(!is_ephemeral_mount_enforced_);
   LOGIN_LOG(USER) << "Attempting to update user password";
 
-  const cryptohome::KeyDefinition* password_key_def =
-      context->GetAuthFactorsData().FindOnlinePasswordKey();
-  DCHECK(password_key_def);
-  const std::string key_label = password_key_def->label.value();
+  std::string key_label;
+  if (features::IsUseAuthFactorsEnabled()) {
+    auto* password_factor =
+        context->GetAuthFactorsData().FindOnlinePasswordFactor();
+    DCHECK(password_factor);
+    key_label = password_factor->ref().label().value();
+  } else {
+    const cryptohome::KeyDefinition* password_key_def =
+        context->GetAuthFactorsData().FindOnlinePasswordKey();
+    DCHECK(password_key_def);
+    key_label = password_key_def->label.value();
+  }
 
   if (!context->HasReplacementKey()) {
     // Assume that there was an attempt to use the key, so it is was already
