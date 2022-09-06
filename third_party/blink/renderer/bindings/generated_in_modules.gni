@@ -1372,8 +1372,6 @@ generated_enumeration_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_screen_idle_state.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_sdp_semantics.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_sdp_semantics.h",
-  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_secure_payment_confirmation_action.cc",
-  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_secure_payment_confirmation_action.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_self_capture_preference_enum.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_self_capture_preference_enum.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_surface_switching_preference_enum.cc",

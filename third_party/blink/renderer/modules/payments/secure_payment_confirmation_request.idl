@@ -2,14 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// https://github.com/w3c/secure-payment-confirmation
-
-enum SecurePaymentConfirmationAction {
-    "authenticate",
-};
+// https://w3c.github.io/secure-payment-confirmation/#sctn-securepaymentconfirmationrequest-dictionary
 
 dictionary SecurePaymentConfirmationRequest {
-    SecurePaymentConfirmationAction action;
     required sequence<BufferSource> credentialIds;
 
     // Opaque data about the current transaction provided by the issuer. As the
