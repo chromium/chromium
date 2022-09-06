@@ -133,9 +133,9 @@ class UpdateServiceProxy : public UpdateService {
   // This task runner is thread-affine with the COM STA.
   scoped_refptr<base::SingleThreadTaskRunner> com_task_runner_;
 
-  // COM server instance owned by the STA. That means the instance must be
-  // created and destroyed on the com_task_runner_.
-  Microsoft::WRL::ComPtr<IUnknown> server_;
+  // Updater COM server instance owned by the STA. That means the instance must
+  // be created and destroyed on the com_task_runner_.
+  Microsoft::WRL::ComPtr<IUpdater> updater_;
 };
 
 }  // namespace updater
