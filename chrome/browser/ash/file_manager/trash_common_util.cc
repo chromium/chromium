@@ -63,43 +63,6 @@ TrashPathsMap GenerateEnabledTrashLocationsForProfile(
           /*prefix_path=*/
           util::GetDownloadsFolderForProfile(profile).BaseName()));
 
-  auto* integration_service =
-      drive::DriveIntegrationServiceFactory::FindForProfile(profile);
-  if (integration_service) {
-    enabled_trash_locations.try_emplace(
-        integration_service->GetMountPointPath(),
-        TrashLocation(
-            /*supplied_relative_folder_path=*/base::FilePath(".Trash-1000"),
-            /*supplied_mount_point_path=*/integration_service
-                ->GetMountPointPath()));
-  }
-
-  // Ensure Crostini is running before adding it as an enabled path.
-  file_manager::VolumeManager* const volume_manager =
-      file_manager::VolumeManager::Get(profile);
-  if (crostini::CrostiniManager::GetForProfile(profile) &&
-      crostini::IsCrostiniRunning(profile) && volume_manager) {
-    // A `base_path` is supplied in tests to ensure files are only added to
-    // temporary directories. If `base_path` has been supplied, use the mocked
-    // volume mount path instead of the real mount path.
-    const base::FilePath crostini_mount_point =
-        (base_path.empty())
-            ? file_manager::util::GetCrostiniMountDirectory(profile)
-            : base_path.Append("crostini");
-    base::WeakPtr<file_manager::Volume> volume =
-        volume_manager->FindVolumeFromPath(crostini_mount_point);
-    if (volume) {
-      enabled_trash_locations.try_emplace(
-          crostini_mount_point,
-          TrashLocation(
-              /*supplied_relative_folder_path=*/base::FilePath(".local")
-                  .Append("share")
-                  .Append("Trash"),
-              /*supplied_mount_point_path=*/crostini_mount_point,
-              /*prefix_path=*/volume->remote_mount_path()));
-    }
-  }
-
   return enabled_trash_locations;
 }
 

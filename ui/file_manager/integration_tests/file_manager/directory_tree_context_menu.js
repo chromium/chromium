@@ -1143,13 +1143,9 @@ testcase.dirContextMenuCrostini = async () => {
     ['#copy', true],
     ['#paste-into-folder', false],
     ['#rename', true],
-    ['#move-to-trash', true],
     ['#delete', true],
     ['#new-folder', true],
   ];
-  if (await sendTestMessage({name: 'isTrashEnabled'}) !== 'true') {
-    folderMenus.splice(4, 1);
-  }
   const linuxQuery = '#directory-tree [entry-label="Linux files"]';
 
   // Add a crostini folder.

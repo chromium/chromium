@@ -74,17 +74,6 @@ TrashConfig.CONFIG = [
   new TrashConfig(
       VolumeManagerCommon.VolumeType.DOWNLOADS, '/', '/.Trash/',
       'MY_FILES_ROOT_LABEL'),
-  new TrashConfig(
-      VolumeManagerCommon.VolumeType.CROSTINI, '/', '/.local/share/Trash/',
-      'LINUX_FILES_ROOT_LABEL', {},
-      /*prefixPathWithRemoteMount=*/ true),
-  new TrashConfig(
-      VolumeManagerCommon.VolumeType.DRIVE, '/', '/.Trash-1000/',
-      'DRIVE_DIRECTORY_LABEL', {
-        'root': 'DRIVE_MY_DRIVE_LABEL',
-        'team_drives': 'DRIVE_SHARED_DRIVES_LABEL',
-        'Computers': 'DRIVE_COMPUTERS_LABEL',
-      }),
 ];
 
 /**

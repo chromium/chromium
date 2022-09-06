@@ -83,10 +83,6 @@ class EmptyTrashIOTaskTest : public TrashBaseTest {
         SetupTrashDirectory(downloads_dir_, trash::kTrashFolderName,
                             directories.trash_subdirectories));
 
-    // Setup /media/fuse/termina_hash_pengiun/.local/share/Trash
-    directories.trash_directories.emplace_back(SetupTrashDirectory(
-        crostini_dir_, ".local/share/Trash", directories.trash_subdirectories));
-
     return directories;
   }
 };
