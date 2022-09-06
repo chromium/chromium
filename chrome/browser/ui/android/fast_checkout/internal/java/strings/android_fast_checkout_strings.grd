@@ -188,6 +188,12 @@
       <message name="IDS_FAST_CHECKOUT_HOME_SHEET_DECLINE" desc="Text for declining autofilling the selected options on the site.">
         No thanks
       </message>
+      <message name="IDS_FAST_CHECKOUT_HOME_SHEET_EXPAND_ICON_AUTOFILL_PROFILE_DESCRIPTION" desc="Accessibility string for the icon that allows entering the Autofill profile detail sheet.">
+        Change Autofill profile selection.
+      </message>
+      <message name="IDS_FAST_CHECKOUT_HOME_SHEET_EXPAND_ICON_CREDIT_CARD_DESCRIPTION" desc="Accessibility string for the icon that allows entering the Autofill profile detail sheet.">
+        Change credit card selection.
+      </message>
       <message name="IDS_FAST_CHECKOUT_CONTENT_DESCRIPTION" desc="Accessibility string read when the Fast Checkout bottom sheet is opened. It describes the bottom sheet where a user can pick an address and payment option to fill during checkout flows">
         List of addresses and payment options to be filled during checkout flows.
       </message>

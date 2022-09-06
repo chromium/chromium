@@ -86,12 +86,13 @@
               android:textAppearance="@style/TextAppearance.TextMedium.Primary" />
         </LinearLayout>
         <ImageView
+            android:id="@+id/fast_checkout_expand_icon_autofill_profile"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/fast_checkout_home_sheet_expand_option_icon_margin_start"
             android:layout_marginEnd="@dimen/fast_checkout_home_sheet_expand_option_icon_margin_end"
             android:layout_gravity="center_vertical"
-            android:importantForAccessibility="no"
+            android:contentDescription="@string/fast_checkout_home_sheet_expand_icon_autofill_profile_description"
             app:tint="@color/default_icon_color_secondary_tint_list"
             app:srcCompat="@drawable/ic_expand_more_horizontal_black_24dp" />
       </LinearLayout>
@@ -125,11 +126,13 @@
               android:layout_weight="1"
               android:textAppearance="@style/TextAppearance.TextMedium.Primary" />
           <ImageView
+            android:id="@+id/fast_checkout_expand_icon_credit_card"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/fast_checkout_home_sheet_expand_option_icon_margin_start"
             android:layout_marginEnd="@dimen/fast_checkout_home_sheet_expand_option_icon_margin_end"
             android:importantForAccessibility="no"
+            android:contentDescription="@string/fast_checkout_home_sheet_expand_icon_credit_card_description"
             app:tint="@color/default_icon_color_secondary_tint_list"
             app:srcCompat="@drawable/ic_expand_more_horizontal_black_24dp" />
       </LinearLayout>

@@ -103,6 +103,14 @@ public class FastCheckoutHomeScreenViewTest {
         assertThat(getTextFromView(R.id.fast_checkout_sheet_selected_credit_card_header),
                 equalTo(sSelectedCreditCard.getObfuscatedNumber()));
 
+        // Test the accessibility strings for the "expand" icons.
+        assertThat(getContentDescriptionFromView(R.id.fast_checkout_expand_icon_autofill_profile),
+                equalTo(mHomeScreenView.getContext().getResources().getString(
+                        R.string.fast_checkout_home_sheet_expand_icon_autofill_profile_description)));
+        assertThat(getContentDescriptionFromView(R.id.fast_checkout_expand_icon_credit_card),
+                equalTo(mHomeScreenView.getContext().getResources().getString(
+                        R.string.fast_checkout_home_sheet_expand_icon_credit_card_description)));
+
         ImageView mCreditCardImageView =
                 (ImageView) mHomeScreenView.findViewById(R.id.fast_checkout_credit_card_icon);
         assertThat(shadowOf(mCreditCardImageView.getDrawable()).getCreatedFromResId(),
@@ -160,5 +168,11 @@ public class FastCheckoutHomeScreenViewTest {
     private String getTextFromView(int resId) {
         TextView textView = mHomeScreenView.findViewById(resId);
         return textView.getText().toString();
+    }
+
+    /** Returns the content description for the view with resId inside the home screen view. */
+    private String getContentDescriptionFromView(int resId) {
+        View view = mHomeScreenView.findViewById(resId);
+        return view.getContentDescription().toString();
     }
 }
