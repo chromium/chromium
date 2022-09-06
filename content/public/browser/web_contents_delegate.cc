@@ -251,6 +251,11 @@ std::string WebContentsDelegate::GetTitleForMediaControls(
   return {};
 }
 
+std::unique_ptr<AudioStreamBrokerFactory>
+WebContentsDelegate::CreateAudioStreamBrokerFactory(WebContents* web_contents) {
+  return nullptr;
+}
+
 #if BUILDFLAG(IS_ANDROID)
 bool WebContentsDelegate::ShouldBlockMediaRequest(const GURL& url) {
   return false;

@@ -90,6 +90,7 @@ enum class ProtocolHandlerSecurityLevel;
 
 namespace content {
 
+class AudioStreamBrokerFactory;
 struct OpenURLParams;
 
 enum class KeyboardEventProcessingResult;
@@ -574,6 +575,12 @@ class CONTENT_EXPORT WebContentsDelegate {
   // For example, this returns an extension name for title instead of extension
   // url.
   virtual std::string GetTitleForMediaControls(WebContents* web_contents);
+
+  // Returns AudioStreamBrokerFactory to use to create AudioStreamBroker when
+  // creating audio I/O streams. Returned `AudioStreamBrokerFactory` is used and
+  // deleted on the IO thread.
+  virtual std::unique_ptr<AudioStreamBrokerFactory>
+  CreateAudioStreamBrokerFactory(WebContents* web_contents);
 
 #if BUILDFLAG(IS_ANDROID)
   // Returns true if the given media should be blocked to load.

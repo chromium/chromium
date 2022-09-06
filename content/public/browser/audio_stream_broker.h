@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_MEDIA_AUDIO_STREAM_BROKER_H_
-#define CONTENT_BROWSER_MEDIA_AUDIO_STREAM_BROKER_H_
+#ifndef CONTENT_PUBLIC_BROWSER_AUDIO_STREAM_BROKER_H_
+#define CONTENT_PUBLIC_BROWSER_AUDIO_STREAM_BROKER_H_
 
 #include <cstdint>
 #include <memory>
@@ -11,7 +11,6 @@
 
 #include "base/callback.h"
 #include "content/common/content_export.h"
-#include "media/mojo/mojom/audio_input_stream.mojom.h"
 #include "media/mojo/mojom/audio_output_stream.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/mojom/media/renderer_audio_input_stream_factory.mojom.h"
@@ -26,7 +25,7 @@ class UserInputMonitorBase;
 namespace mojom {
 class AudioStreamFactory;
 }
-}
+}  // namespace media
 
 namespace content {
 
@@ -137,4 +136,4 @@ class CONTENT_EXPORT AudioStreamBrokerFactory {
 
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_MEDIA_AUDIO_STREAM_BROKER_H_
+#endif  // CONTENT_PUBLIC_BROWSER_AUDIO_STREAM_BROKER_H_

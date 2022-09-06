@@ -71,7 +71,6 @@
 #include "content/browser/find_request_manager.h"
 #include "content/browser/gpu/gpu_data_manager_impl.h"
 #include "content/browser/host_zoom_map_impl.h"
-#include "content/browser/media/audio_stream_broker.h"
 #include "content/browser/media/audio_stream_monitor.h"
 #include "content/browser/media/media_web_contents_observer.h"
 #include "content/browser/permissions/permission_controller_impl.h"
@@ -8861,6 +8860,11 @@ void WebContentsImpl::ClearDeviceEmulationSize() {
 
 ForwardingAudioStreamFactory* WebContentsImpl::GetAudioStreamFactory() {
   if (!audio_stream_factory_) {
+    std::unique_ptr<AudioStreamBrokerFactory> broker_factory;
+    if (delegate_)
+      broker_factory = delegate_->CreateAudioStreamBrokerFactory(this);
+    if (!broker_factory)
+      broker_factory = AudioStreamBrokerFactory::CreateImpl();
     audio_stream_factory_.emplace(
         this,
         // BrowserMainLoop::GetInstance() may be null in unit tests.
@@ -8868,7 +8872,7 @@ ForwardingAudioStreamFactory* WebContentsImpl::GetAudioStreamFactory() {
             ? static_cast<media::UserInputMonitorBase*>(
                   BrowserMainLoop::GetInstance()->user_input_monitor())
             : nullptr,
-        AudioStreamBrokerFactory::CreateImpl());
+        std::move(broker_factory));
   }
 
   return &*audio_stream_factory_;
