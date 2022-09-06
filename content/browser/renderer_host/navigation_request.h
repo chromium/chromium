@@ -985,6 +985,11 @@ class CONTENT_EXPORT NavigationRequest
     return navigation_or_document_handle_;
   }
 
+  const std::pair<url::Origin, std::string>&
+  browser_side_origin_to_commit_with_debug_info() {
+    return browser_side_origin_to_commit_with_debug_info_;
+  }
+
  private:
   friend class NavigationRequestTest;
 
@@ -1613,6 +1618,11 @@ class CONTENT_EXPORT NavigationRequest
   blink::mojom::BeginNavigationParamsPtr begin_params_;
   blink::mojom::CommitNavigationParamsPtr commit_params_;
   bool same_origin_ = false;
+  // This member is calculated at ReadyToCommit time. It is used to compare
+  // against renderer calculated origin and browser calculated one at commit
+  // time.
+  std::pair<url::Origin, std::string>
+      browser_side_origin_to_commit_with_debug_info_;
 
   // Stores the NavigationUIData for this navigation until the NavigationHandle
   // is created. This can be null if the embedded did not provide a
