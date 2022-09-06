@@ -39,15 +39,17 @@
 
   #replaceFileContainer > button {
     cursor: pointer;
-    margin: 0 0 0 auto;
   }
 
   #replaceFileInfo {
+    flex: 1;
     font-family: var(--feedback-roboto-font-family);
     font-size: 13px;
     line-height: 20px;
+    margin-inline-end: 12px;
     overflow: hidden;
-    padding: 4px 12px 4px 0;
+    padding: 4px 0 4px 0;
+    white-space: nowrap;
   }
 
   #selectFileDialog {
@@ -114,6 +116,7 @@
   #selectedFileContainer {
     display: flex;
     flex-direction: row-reverse;
+    width: 206px;
   }
 
 </style>
