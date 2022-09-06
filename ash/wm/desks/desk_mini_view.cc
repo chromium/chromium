@@ -203,7 +203,8 @@ void DeskMiniView::OnWidgetGestureTap(const gfx::Rect& screen_rect,
   // the desk.
   const bool old_force_show_desk_buttons = force_show_desk_buttons_;
   force_show_desk_buttons_ =
-      !Shell::Get()->tablet_mode_controller()->InTabletMode() &&
+      !(features::IsDesksCloseAllEnabled() &&
+        Shell::Get()->tablet_mode_controller()->InTabletMode()) &&
       ((is_long_gesture && IsPointOnMiniView(screen_rect.CenterPoint())) ||
        (!is_long_gesture && view_to_update->GetVisible() &&
         view_to_update->HitTestRect(

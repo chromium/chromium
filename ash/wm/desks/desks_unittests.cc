@@ -6227,6 +6227,28 @@ TEST_F(DesksTest, PrimaryUserHasUsedDesksRecently) {
   desks_restore_util::OverrideClockForTesting(nullptr);
 }
 
+// Tests that a desk's close button is visible in tablet mode after long
+// pressing on the desk's preview.
+TEST_F(DesksTest, CloseButtonShowsAfterLongPressInTabletMode) {
+  TabletModeControllerTestApi().EnterTabletMode();
+
+  NewDesk();
+  ASSERT_EQ(2u, DesksController::Get()->desks().size());
+
+  EnterOverview();
+  ASSERT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
+
+  // Long-tapping the desk preview should show the close button for the desk.
+  const DeskMiniView* mini_view = GetPrimaryRootDesksBarView()->mini_views()[0];
+  const DeskPreviewView* desk_preview_view = mini_view->desk_preview();
+  const gfx::Point desk_preview_view_center =
+      desk_preview_view->GetBoundsInScreen().CenterPoint();
+  auto* event_generator = GetEventGenerator();
+  LongGestureTap(desk_preview_view_center, event_generator);
+
+  EXPECT_TRUE(mini_view->close_desk_button()->GetVisible());
+}
+
 class DesksBentoBarTest : public DesksTest {
  public:
   DesksBentoBarTest() {
