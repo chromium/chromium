@@ -40,7 +40,7 @@ namespace blink {
 class InbandTextTrack final : public TextTrack,
                               public WebInbandTextTrackClient {
  public:
-  explicit InbandTextTrack(WebInbandTextTrack*);
+  explicit InbandTextTrack(WebInbandTextTrack*, HTMLElement*);
   ~InbandTextTrack() override;
 
   void SetTrackList(TextTrackList*) override;

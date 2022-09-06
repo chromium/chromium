@@ -71,11 +71,13 @@ const AtomicString& TextTrack::MetadataKeyword() {
 TextTrack::TextTrack(const AtomicString& kind,
                      const AtomicString& label,
                      const AtomicString& language,
+                     HTMLElement* source_element,
                      const AtomicString& id,
                      TextTrackType type)
     : TrackBase(WebMediaPlayer::kTextTrack, kind, label, language, id),
       active_cues_(nullptr),
       track_list_(nullptr),
+      source_element_(source_element),
       track_type_(type),
       readiness_state_(kNotLoaded),
       track_index_(kInvalidTrackIndex),
@@ -359,8 +361,11 @@ const AtomicString& TextTrack::InterfaceName() const {
 }
 
 ExecutionContext* TextTrack::GetExecutionContext() const {
-  HTMLMediaElement* owner = MediaElement();
-  return owner ? owner->GetExecutionContext() : nullptr;
+  if (!source_element_)
+    return nullptr;
+  DCHECK(!MediaElement() || source_element_->GetExecutionContext() ==
+                                MediaElement()->GetExecutionContext());
+  return source_element_->GetExecutionContext();
 }
 
 HTMLMediaElement* TextTrack::MediaElement() const {
@@ -380,6 +385,7 @@ void TextTrack::Trace(Visitor* visitor) const {
   visitor->Trace(active_cues_);
   visitor->Trace(track_list_);
   visitor->Trace(style_sheets_);
+  visitor->Trace(source_element_);
   TrackBase::Trace(visitor);
   EventTargetWithInlineData::Trace(visitor);
 }

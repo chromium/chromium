@@ -3203,7 +3203,7 @@ void HTMLMediaElement::AddTextTrack(WebInbandTextTrack* web_track) {
   // 4.8.12.11.2 Sourcing in-band text tracks
   // 1. Associate the relevant data with a new text track and its corresponding
   // new TextTrack object.
-  auto* text_track = MakeGarbageCollected<InbandTextTrack>(web_track);
+  auto* text_track = MakeGarbageCollected<InbandTextTrack>(web_track, this);
 
   // 2. Set the new text track's kind, label, and language based on the
   // semantics of the relevant data, as defined by the relevant specification.
@@ -3278,7 +3278,8 @@ TextTrack* HTMLMediaElement::addTextTrack(const AtomicString& kind,
   //    text track kind to kind, its text track label to label, its text
   //    track language to language, ..., and its text track list of cues to
   //    an empty list.
-  auto* text_track = MakeGarbageCollected<TextTrack>(kind, label, language);
+  auto* text_track =
+      MakeGarbageCollected<TextTrack>(kind, label, language, this);
   //    ..., its text track readiness state to the text track loaded state, ...
   text_track->SetReadinessState(TextTrack::kLoaded);
 
