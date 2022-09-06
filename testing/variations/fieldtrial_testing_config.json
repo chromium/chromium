@@ -681,30 +681,28 @@
             ]
         }
     ],
-    "ArcVmInitThrottle2": [
+    "ArcVmInitThrottle3": [
         {
             "platforms": [
                 "chromeos"
             ],
             "experiments": [
                 {
-                    "name": "throttle_to_70_percent",
+                    "name": "throttle_to_50_percent",
+                    "params": {
+                        "quota": "50"
+                    },
                     "enable_features": [
-                        "CrOSLateBootArcVmInitial70Throttle"
-                    ],
-                    "disable_features": [
-                        "CrOSLateBootArcVmInitial30Throttle",
-                        "CrOSLateBootArcVmInitial50Throttle"
+                        "CrOSLateBootArcVmInitialThrottle"
                     ]
                 },
                 {
-                    "name": "throttle_to_50_percent",
+                    "name": "throttle_to_75_percent",
+                    "params": {
+                        "quota": "75"
+                    },
                     "enable_features": [
-                        "CrOSLateBootArcVmInitial50Throttle"
-                    ],
-                    "disable_features": [
-                        "CrOSLateBootArcVmInitial30Throttle",
-                        "CrOSLateBootArcVmInitial70Throttle"
+                        "CrOSLateBootArcVmInitialThrottle"
                     ]
                 }
             ]
