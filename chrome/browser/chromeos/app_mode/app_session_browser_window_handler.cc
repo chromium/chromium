@@ -68,6 +68,7 @@ void AppSessionBrowserWindowHandler::HandleNewSettingsWindow(
     NavigateParams nav_params(
         settings_browser_, GURL(url_string),
         ui::PageTransition::PAGE_TRANSITION_AUTO_TOPLEVEL);
+    nav_params.window_action = NavigateParams::SHOW_WINDOW;
     Navigate(&nav_params);
     return;
   }

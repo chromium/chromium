@@ -29,6 +29,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom-forward.h"
 #include "chromeos/ash/components/network/portal_detector/network_portal_detector.h"
@@ -65,6 +66,11 @@ const test::UIPath kErrorMessageContinueButton = {"error-message",
 //     chrome/test/data/chromeos/app_mode/webstore/inlineinstall/
 //         detail/enelnimkndkcejhjnpaofdlbbfmdnagi
 const char kTestGetVolumeListKioskApp[] = "enelnimkndkcejhjnpaofdlbbfmdnagi";
+
+constexpr char kSettingsPage1[] = "chrome://os-settings/manageAccessibility";
+constexpr char kSettingsPage2[] =
+    "chrome-extension://mndnfokpggljbaajbnioimlmbfngpief/chromevox/options/"
+    "options.html";
 
 // Helper class to replace settings urls for KioskSettingsNavigationThrottle.
 class ScopedSettingsPages {
@@ -466,7 +472,7 @@ IN_PROC_BROWSER_TEST_F(KioskDeviceOwnedTest, SettingsWindow) {
 
   // App session should be initialized.
   ASSERT_TRUE(app_session);
-  ASSERT_EQ(app_session->GetSettingsBrowserForTesting(), nullptr);
+  ASSERT_FALSE(app_session->GetSettingsBrowserForTesting());
 
   Profile* profile = ProfileManager::GetPrimaryUserProfile();
 
@@ -525,7 +531,7 @@ IN_PROC_BROWSER_TEST_F(KioskDeviceOwnedTest, SettingsWindow) {
 
   // Close settings browser, expect the value to be cleared.
   CloseBrowserSynchronously(settings_browser);
-  EXPECT_EQ(app_session->GetSettingsBrowserForTesting(), nullptr);
+  EXPECT_FALSE(app_session->GetSettingsBrowserForTesting());
 
   {
     // Open another browser with url page2, but now of type TYPE_NORMAL.
@@ -544,6 +550,71 @@ IN_PROC_BROWSER_TEST_F(KioskDeviceOwnedTest, SettingsWindow) {
     ASSERT_TRUE(settings_browser);
     EXPECT_FALSE(params.browser == settings_browser);
   }
+}
+
+// This test covers b/245088137: after opening the settings browser and moving
+// focus to the main kiosk app, the settings browser could not be opened again.
+IN_PROC_BROWSER_TEST_F(KioskDeviceOwnedTest, SettingsWindowShouldBeActive) {
+  StartAppLaunchFromLoginScreen(
+      NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE);
+  WaitForAppLaunchWithOptions(true /* check_launch_data */,
+                              false /* terminate_app */,
+                              true /* keep_app_open */);
+  AppSessionAsh* app_session = KioskAppManager::Get()->app_session();
+
+  // App session should be initialized.
+  ASSERT_TRUE(app_session);
+  ASSERT_FALSE(app_session->GetSettingsBrowserForTesting());
+
+  Profile* profile = ProfileManager::GetPrimaryUserProfile();
+  {
+    // Open the settings browser.
+    NavigateParams params(profile, GURL(kSettingsPage1),
+                          ui::PAGE_TRANSITION_AUTO_BOOKMARK);
+    params.disposition = WindowOpenDisposition::NEW_POPUP;
+    params.window_action = NavigateParams::SHOW_WINDOW;
+    Navigate(&params);
+    // Wait for browser to be handled.
+    base::RunLoop waiter;
+    app_session->SetOnHandleBrowserCallbackForTesting(waiter.QuitClosure());
+    waiter.Run();
+  }
+
+  Browser* settings_browser = app_session->GetSettingsBrowserForTesting();
+
+  // Make sure the settings browser was opened, and it is focused.
+  ASSERT_TRUE(settings_browser);
+  EXPECT_TRUE(settings_browser->window()->IsActive());
+
+  // Emulate focus switching.
+  settings_browser->window()->Deactivate();
+  EXPECT_FALSE(settings_browser->window()->IsActive());
+
+  content::WebContents* web_contents =
+      settings_browser->tab_strip_model()->GetActiveWebContents();
+
+  {
+    // Open another settings browser.
+    // Also, expect navigation inside of the old window to kSettingsPage2.
+    content::TestNavigationObserver settings_navigation_observer(web_contents,
+                                                                 1);
+    NavigateParams params(profile, GURL(kSettingsPage2),
+                          ui::PAGE_TRANSITION_AUTO_BOOKMARK);
+    params.disposition = WindowOpenDisposition::NEW_POPUP;
+    Navigate(&params);
+    // Wait for browser to be handled.
+    base::RunLoop waiter;
+    app_session->SetOnHandleBrowserCallbackForTesting(waiter.QuitClosure());
+    waiter.Run();
+    // Also wait for navigaiton to finish.
+    settings_navigation_observer.Wait();
+  }
+  // The settings browser should not have changed.
+  ASSERT_EQ(settings_browser, app_session->GetSettingsBrowserForTesting());
+  EXPECT_EQ(web_contents->GetLastCommittedURL(), GURL(kSettingsPage2));
+
+  // The settings browser should be focused again.
+  EXPECT_TRUE(settings_browser->window()->IsActive());
 }
 
 // Verifies that an enterprise device does not auto-launch kiosk mode when cros
