@@ -13,7 +13,6 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
-#include "components/media_router/common/media_source.h"
 #include "media/base/audio_codecs.h"
 #include "media/base/video_codecs.h"
 #include "third_party/blink/public/platform/modules/remoteplayback/remote_playback_source.h"

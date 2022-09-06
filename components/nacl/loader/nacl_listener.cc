@@ -29,7 +29,6 @@
 #include "base/synchronization/waitable_event.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "build/build_config.h"
 #include "components/nacl/common/nacl.mojom.h"
 #include "components/nacl/common/nacl_messages.h"
 #include "components/nacl/common/nacl_service.h"
