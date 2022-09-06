@@ -232,6 +232,11 @@ class FfxTestRunner(AbstractContextManager):
         self._debug_data_directory = None
 
     def __enter__(self):
+        # Remove any stale experimental_structure_output value that may have
+        # been left behind by the previous implementation.
+        run_ffx_command(
+            ('config', 'remove', 'test.experimental_structured_output'),
+            check=False)
         if self._results_dir:
             os.makedirs(self._results_dir, exist_ok=True)
         else:
@@ -260,8 +265,8 @@ class FfxTestRunner(AbstractContextManager):
             A subprocess.Popen object.
         """
         command = [
-            '--config', 'test.experimental_structured_output=false', 'test',
-            'run', '--output-directory', self._results_dir, component_uri
+            'test', 'run', '--output-directory', self._results_dir,
+            component_uri
         ]
         if test_args:
             command.append('--')

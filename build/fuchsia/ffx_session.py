@@ -426,6 +426,11 @@ class FfxSession():
     self._debug_data_directory = None
 
   def __enter__(self):
+    # Remove any stale experimental_structure_output value that may have been
+    # left behind by the previous implementation.
+    self._ffx.run_ffx(
+        ['config', 'remove', 'test.experimental_structured_output'],
+        check=False)
     if self._log_manager.IsLoggingEnabled():
       # Use a subdir of the configured log directory to hold test outputs.
       self._output_dir = os.path.join(self._log_manager.GetLogDirectory(),
@@ -467,8 +472,8 @@ class FfxSession():
       A subprocess.Popen object.
     """
     command = [
-        '--config', 'test.experimental_structured_output=false', 'test', 'run',
-        '--output-directory', self._output_dir, component_uri, '--'
+        'test', 'run', '--output-directory', self._output_dir, component_uri,
+        '--'
     ]
     command.extend(package_args)
     return ffx_target.open_ffx(command)
