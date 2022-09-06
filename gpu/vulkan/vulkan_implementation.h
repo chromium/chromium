@@ -20,7 +20,6 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/scoped_hardware_buffer_handle.h"
-#include "ui/gfx/geometry/size.h"
 #endif
 
 namespace gfx {
