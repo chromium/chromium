@@ -35,7 +35,6 @@ group("polymer3_elements") {
     ":sync_consent_module",
     ":tpm_error_module",
     ":user_creation_module",
-    ":wrong_hwid_module",
   ]
 }
 
@@ -84,7 +83,7 @@ js_type_check("closure_compile_local") {
     ":theme_selection",
     ":tpm_error.m",
     ":user_creation.m",
-    ":wrong_hwid.m",
+    ":wrong_hwid",
   ]
 }
 
@@ -629,8 +628,8 @@ js_library("user_creation.m") {
   extra_deps = [ ":user_creation_module" ]
 }
 
-js_library("wrong_hwid.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/wrong_hwid.m.js" ]
+js_library("wrong_hwid") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/wrong_hwid.js" ]
   deps = [
     "../../components/behaviors:login_screen_behavior.m",
     "../../components/behaviors:oobe_dialog_host_behavior.m",
@@ -638,7 +637,7 @@ js_library("wrong_hwid.m") {
     "../../components/buttons:oobe_text_button.m",
     "../../components/dialogs:oobe_adaptive_dialog.m",
   ]
-  extra_deps = [ ":wrong_hwid_module" ]
+  extra_deps = [ ":web_components" ]
 }
 
 js_library("error_message.m") {
@@ -836,14 +835,6 @@ polymer_modulizer("tpm_error") {
   namespace_rewrites = oobe_namespace_rewrites
 }
 
-polymer_modulizer("wrong_hwid") {
-  js_file = "wrong_hwid.js"
-  html_file = "wrong_hwid.html"
-  html_type = "dom-module"
-  auto_imports = oobe_auto_imports
-  namespace_rewrites = oobe_namespace_rewrites
-}
-
 polymer_modulizer("error_message") {
   js_file = "error_message.js"
   html_file = "error_message.html"
@@ -866,5 +857,6 @@ html_to_js("web_components") {
     "pin_setup.js",
     "saml_confirm_password.js",
     "theme_selection.js",
+    "wrong_hwid.js",
   ]
 }
