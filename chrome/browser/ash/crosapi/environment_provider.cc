@@ -103,7 +103,7 @@ mojom::DefaultPathsPtr EnvironmentProvider::GetDefaultPaths() {
       default_paths->drivefs = integration_service->GetMountPointPath();
     }
     default_paths->android_files =
-        base::FilePath(file_manager::util::kAndroidFilesPath);
+        base::FilePath(file_manager::util::GetAndroidFilesPath());
     default_paths->linux_files =
         file_manager::util::GetCrostiniMountDirectory(profile);
     base::FilePath ash_resources;

@@ -656,7 +656,7 @@ base::FilePath DownloadPrefs::SanitizeDownloadTargetPath(
     return path;
 
   // Allow paths under the Android files mount point.
-  if (base::FilePath(file_manager::util::kAndroidFilesPath).IsParent(path))
+  if (base::FilePath(file_manager::util::GetAndroidFilesPath()).IsParent(path))
     return path;
 
   // Allow Linux files mount point and subdirs.
