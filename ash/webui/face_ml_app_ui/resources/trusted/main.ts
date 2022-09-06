@@ -4,6 +4,6 @@
 
 // Example of fill the content.
 (async () => {
-  const content = document.querySelector<HTMLElement>('#content')!;
+  const content = document.querySelector<HTMLElement>('#app-top-bar')!;
   content.textContent = 'Welcome to the Face ML app!';
 })();
