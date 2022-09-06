@@ -89,8 +89,10 @@ class WebEngineAudioOutputDeviceTest : public testing::Test {
  protected:
   void Initialize() {
     output_device_->Initialize(
-        media::AudioParameters(media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
-                               kChannelLayout, kSampleRate, kFramesPerPeriod),
+        media::AudioParameters(
+            media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
+            media::ChannelLayoutConfig::FromLayout<kChannelLayout>(),
+            kSampleRate, kFramesPerPeriod),
         &renderer_);
 
     task_environment_.RunUntilIdle();
