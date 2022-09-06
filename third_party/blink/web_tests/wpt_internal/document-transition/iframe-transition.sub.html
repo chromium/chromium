@@ -10,8 +10,16 @@
 iframe { width: 500px; height: 500px }
 </style>
 
-<iframe id=frame src="http://{{domains[www]}}:{{ports[http][0]}}/wpt_internal/document-transition/frame-helper.html"></iframe>
 <script>
 addEventListener("message", takeScreenshot);
+</script>
+
+<iframe id=frame src="http://{{domains[www]}}:{{ports[http][0]}}/wpt_internal/document-transition/frame-helper.html"></iframe>
+
+<script>
+setTimeout(() => {
+  console.log("didn't get a message");
+  takeScreenshot();
+}, 2000);
 </script>
 
