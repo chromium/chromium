@@ -8,6 +8,7 @@ for more details on the presubmit API built into depot_tools.
 """
 
 USE_PYTHON3 = True
+PRESUBMIT_VERSION = '2.0.0'
 
 
 def GetPrettyPrintErrors(input_api, output_api, cwd, rel_path, results):
@@ -117,7 +118,7 @@ def ValidateSingleFile(input_api, output_api, file_obj, cwd, results):
   return False
 
 
-def CheckChange(input_api, output_api):
+def CheckHistogramFormatting(input_api, output_api):
   """Checks that histograms.xml is pretty-printed and well-formatted."""
   results = []
   cwd = input_api.PresubmitLocalPath()
@@ -136,11 +137,3 @@ def CheckChange(input_api, output_api):
     GetValidateHistogramsError(input_api, output_api, cwd, results)
 
   return results
-
-
-def CheckChangeOnUpload(input_api, output_api):
-  return CheckChange(input_api, output_api)
-
-
-def CheckChangeOnCommit(input_api, output_api):
-  return CheckChange(input_api, output_api)
