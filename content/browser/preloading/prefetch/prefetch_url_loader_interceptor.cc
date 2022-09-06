@@ -94,6 +94,7 @@ void PrefetchURLLoaderInterceptor::MaybeCreateLoader(
   url_ = tenative_resource_request.url;
 
   base::WeakPtr<PrefetchContainer> prefetch_container = GetPrefetch(url_);
+  DCHECK(!prefetch_container || prefetch_container->GetURL() == url_);
   if (!prefetch_container ||
       !prefetch_container->HasValidPrefetchedResponse(
           PrefetchCacheableDuration()) ||

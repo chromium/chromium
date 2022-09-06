@@ -30,7 +30,19 @@ PrefetchDocumentManager::PrefetchDocumentManager(RenderFrameHost* rfh)
     : DocumentUserData(rfh),
       WebContentsObserver(WebContents::FromRenderFrameHost(rfh)) {}
 
-PrefetchDocumentManager::~PrefetchDocumentManager() = default;
+PrefetchDocumentManager::~PrefetchDocumentManager() {
+  // On destruction, removes any owned prefetches from |PrefetchService|. Other
+  // prefetches associated by |this| are owned by |PrefetchService| and can
+  // still be used after the destruction of |this|.
+  PrefetchService* prefetch_service = GetPrefetchService();
+  if (!prefetch_service)
+    return;
+
+  for (const auto& prefetch_iter : owned_prefetches_) {
+    prefetch_service->RemovePrefetch(
+        prefetch_iter.second->GetPrefetchContainerKey());
+  }
+}
 
 void PrefetchDocumentManager::DidStartNavigation(
     NavigationHandle* navigation_handle) {
@@ -60,6 +72,10 @@ void PrefetchDocumentManager::DidStartNavigation(
   // for that URL, then stop.
   auto prefetch_iter = all_prefetches_.find(navigation_handle->GetURL());
   if (prefetch_iter == all_prefetches_.end() || !prefetch_iter->second)
+    return;
+
+  // If this prefetch has already been used with another navigation then stop.
+  if (prefetch_iter->second->HasPrefetchBeenConsideredToServe())
     return;
 
   serving_page_metrics_container->SetRequiredPrivatePrefetchProxy(

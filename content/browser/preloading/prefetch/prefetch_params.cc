@@ -66,7 +66,7 @@ bool PrefetchAllowAllDomainsForExtendedPreloading() {
       "allow_all_domains_for_extended_preloading", true);
 }
 
-int PrefetchServiceMaximumNumberOfConcurrentPrefetches() {
+size_t PrefetchServiceMaximumNumberOfConcurrentPrefetches() {
   return base::GetFieldTrialParamByFeatureAsInt(
       features::kPrefetchUseContentRefactor, "max_concurrent_prefetches", 1);
 }

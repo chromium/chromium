@@ -171,6 +171,9 @@ class PrefetchServiceTest : public RenderViewHostTestHarness {
   }
 
   void TearDown() override {
+    if (PrefetchDocumentManager::GetForCurrentDocument(main_rfh()))
+      PrefetchDocumentManager::DeleteForCurrentDocument(main_rfh());
+    PrefetchDocumentManager::SetPrefetchServiceForTesting(nullptr);
     mock_navigation_handle_.reset();
     prefetch_service_.reset();
     PrefetchService::SetURLLoaderFactoryForTesting(nullptr);

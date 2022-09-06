@@ -80,7 +80,11 @@ class CONTENT_EXPORT PrefetchService {
   // Returns the prefetch with |url| that is ready to serve. In order for a
   // prefetch to be ready to serve, |PrepareToServe| must have been previously
   // called with the prefetch.
-  base::WeakPtr<PrefetchContainer> GetPrefetchToServe(const GURL& url) const;
+  base::WeakPtr<PrefetchContainer> GetPrefetchToServe(const GURL& url);
+
+  // Removes the prefetch with the given |prefetch_container_key| from
+  // |all_prefetches_|.
+  void RemovePrefetch(const PrefetchContainer::Key& prefetch_container_key);
 
   // Helper functions to control the behavior of the eligibility check when
   // testing.
@@ -207,8 +211,8 @@ class CONTENT_EXPORT PrefetchService {
   // not started yet.
   std::vector<base::WeakPtr<PrefetchContainer>> prefetch_queue_;
 
-  // The number of prefetches with in progress requests.
-  int num_active_prefetches_{0};
+  // The set of prefetches with in progress requests.
+  std::set<PrefetchContainer::Key> active_prefetches_;
 
   // Prefetches owned by |this|. Once the network request for a prefetch is
   // started, |this| takes ownership of the prefetch so the response can be used

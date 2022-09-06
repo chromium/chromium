@@ -120,6 +120,11 @@ class CONTENT_EXPORT PrefetchContainer {
   // prefetch.
   void OnNavigationToPrefetch() { navigated_to_ = true; }
 
+  // Returns whether or not this prefetch has been considered to serve for a
+  // navigation in the past. If it has, then it shouldn't be used for any future
+  // navigations.
+  bool HasPrefetchBeenConsideredToServe() const { return navigated_to_; }
+
   // Called with the result of the probe. If the probing feature is enabled,
   // then a probe must complete successfully before the prefetch can be served.
   void OnPrefetchProbeResult(PrefetchProbeResult probe_result);

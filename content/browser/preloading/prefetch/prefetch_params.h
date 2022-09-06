@@ -36,7 +36,7 @@ bool PrefetchAllowAllDomains();
 bool PrefetchAllowAllDomainsForExtendedPreloading();
 
 // The maximum number of mainframes allowed to be prefetched at the same time.
-int PrefetchServiceMaximumNumberOfConcurrentPrefetches();
+size_t PrefetchServiceMaximumNumberOfConcurrentPrefetches();
 
 // Returns true if an ineligible prefetch request should be put on the network,
 // but not cached, to disguise the presence of cookies (or other criteria). The

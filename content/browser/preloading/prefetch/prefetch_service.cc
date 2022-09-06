@@ -484,9 +484,8 @@ base::WeakPtr<PrefetchContainer> PrefetchService::PopNextPrefetchContainer() {
 
   // Don't start any new prefetches if we are currently at or beyond the limit
   // for the number of concurrent prefetches.
-  DCHECK(num_active_prefetches_ >= 0);
   DCHECK(PrefetchServiceMaximumNumberOfConcurrentPrefetches() >= 0);
-  if (num_active_prefetches_ >=
+  if (active_prefetches_.size() >=
       PrefetchServiceMaximumNumberOfConcurrentPrefetches()) {
     return nullptr;
   }
@@ -550,8 +549,14 @@ void PrefetchService::ResetPrefetch(
   DCHECK(
       owned_prefetches_.find(prefetch_container->GetPrefetchContainerKey()) !=
       owned_prefetches_.end());
-  owned_prefetches_.erase(
-      owned_prefetches_.find(prefetch_container->GetPrefetchContainerKey()));
+
+  RemovePrefetch(prefetch_container->GetPrefetchContainerKey());
+
+  auto active_prefetch_iter =
+      active_prefetches_.find(prefetch_container->GetPrefetchContainerKey());
+  if (active_prefetch_iter != active_prefetches_.end()) {
+    active_prefetches_.erase(active_prefetch_iter);
+  }
 
   auto prefetches_ready_to_serve_iter =
       prefetches_ready_to_serve_.find(prefetch_container->GetURL());
@@ -559,6 +564,17 @@ void PrefetchService::ResetPrefetch(
       prefetches_ready_to_serve_iter->second->GetPrefetchContainerKey() ==
           prefetch_container->GetPrefetchContainerKey()) {
     prefetches_ready_to_serve_.erase(prefetches_ready_to_serve_iter);
+  }
+
+  owned_prefetches_.erase(
+      owned_prefetches_.find(prefetch_container->GetPrefetchContainerKey()));
+}
+
+void PrefetchService::RemovePrefetch(
+    const PrefetchContainer::Key& prefetch_container_key) {
+  const auto prefetch_iter = all_prefetches_.find(prefetch_container_key);
+  if (prefetch_iter != all_prefetches_.end()) {
+    all_prefetches_.erase(prefetch_iter);
   }
 }
 
@@ -654,7 +670,7 @@ void PrefetchService::StartSinglePrefetch(
                                           prefetch_container, isolation_info),
                            PrefetchMainframeBodyLengthLimit());
   prefetch_container->TakeURLLoader(std::move(loader));
-  num_active_prefetches_++;
+  active_prefetches_.insert(prefetch_container->GetPrefetchContainerKey());
 
   PrefetchDocumentManager* prefetch_document_manager =
       prefetch_container->GetPrefetchDocumentManager();
@@ -696,10 +712,14 @@ void PrefetchService::OnPrefetchRedirect(
     const network::mojom::URLResponseHead& response_head,
     std::vector<std::string>* removed_headers) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  num_active_prefetches_--;
 
   if (!prefetch_container)
     return;
+
+  DCHECK(
+      active_prefetches_.find(prefetch_container->GetPrefetchContainerKey()) !=
+      active_prefetches_.end());
+  active_prefetches_.erase(prefetch_container->GetPrefetchContainerKey());
 
   // Currently all redirects are disabled. See https://crbug.com/1266876 for
   // more details.
@@ -730,10 +750,14 @@ void PrefetchService::OnPrefetchComplete(
     const net::IsolationInfo& isolation_info,
     std::unique_ptr<std::string> body) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  num_active_prefetches_--;
 
   if (!prefetch_container)
     return;
+
+  DCHECK(
+      active_prefetches_.find(prefetch_container->GetPrefetchContainerKey()) !=
+      active_prefetches_.end());
+  active_prefetches_.erase(prefetch_container->GetPrefetchContainerKey());
 
   prefetch_container->OnPrefetchComplete();
 
@@ -940,16 +964,17 @@ void PrefetchService::OnGotIsolatedCookiesForCopy(
 }
 
 base::WeakPtr<PrefetchContainer> PrefetchService::GetPrefetchToServe(
-    const GURL& url) const {
+    const GURL& url) {
   auto prefetch_iter = prefetches_ready_to_serve_.find(url);
-
   if (prefetch_iter == prefetches_ready_to_serve_.end())
     return nullptr;
 
-  if (prefetch_iter->second)
-    prefetch_iter->second->OnNavigationToPrefetch();
+  base::WeakPtr<PrefetchContainer> prefetch_container = prefetch_iter->second;
+  prefetches_ready_to_serve_.erase(prefetch_iter);
+  if (prefetch_container)
+    prefetch_container->OnNavigationToPrefetch();
 
-  return prefetch_iter->second;
+  return prefetch_container;
 }
 
 // static
