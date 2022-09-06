@@ -51,6 +51,7 @@ android_library("js_sandbox_java") {
     "java/src/androidx/javascriptengine/JavaScriptIsolate.java",
     "java/src/androidx/javascriptengine/JavaScriptSandbox.java",
     "java/src/androidx/javascriptengine/SandboxDeadException.java",
+    "java/src/androidx/javascriptengine/SandboxUnsupportedException.java",
   ]
 
   deps = [

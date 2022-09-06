@@ -32,25 +32,9 @@ public class WebViewJavaScriptSandboxTest {
     // require more memory.
     private static final long REASONABLE_HEAP_SIZE = 100 * 1024 * 1024;
 
-    private boolean canCreateJsSandbox() throws Throwable {
-        Context context = ContextUtils.getApplicationContext();
-        ListenableFuture<JavaScriptSandbox> jsSandboxFuture =
-                JavaScriptSandbox.createConnectedInstanceAsync(context);
-        JavaScriptSandbox jsSandbox;
-        try {
-            jsSandbox = jsSandboxFuture.get(5, TimeUnit.SECONDS);
-        } catch (ExecutionException e) {
-            return false;
-        }
-        jsSandbox.close();
-        return true;
-    }
-
     @Before
     public void setUp() throws Throwable {
-        // Ensure WebView version supports creation of sandbox. Remove this once we have a client
-        // side check.
-        Assume.assumeTrue(canCreateJsSandbox());
+        Assume.assumeTrue(JavaScriptSandbox.isSupported());
     }
 
     @Test

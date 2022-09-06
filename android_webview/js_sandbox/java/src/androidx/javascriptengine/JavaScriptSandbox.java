@@ -20,6 +20,7 @@ import androidx.annotation.StringDef;
 import androidx.annotation.VisibleForTesting;
 import androidx.concurrent.futures.CallbackToFutureAdapter;
 import androidx.core.content.ContextCompat;
+import androidx.core.content.pm.PackageInfoCompat;
 
 import com.google.common.util.concurrent.ListenableFuture;
 
@@ -213,6 +214,9 @@ public final class JavaScriptSandbox implements AutoCloseable {
      *
      * Only one sandbox process can exist at a time. Attempting to create a new instance before
      * the previous instance has been closed fails with an {@link IllegalStateException}.
+     * <p>
+     * Sandbox support should be checked using {@link JavaScriptSandbox#isSupported()} before
+     * attempting to create a sandbox via this method.
      *
      * @param context When the context is destroyed, the connection is closed. Use an
      *         application
@@ -224,6 +228,9 @@ public final class JavaScriptSandbox implements AutoCloseable {
     @NonNull
     public static ListenableFuture<JavaScriptSandbox> createConnectedInstanceAsync(
             @NonNull Context context) {
+        if (!isSupported()) {
+            throw new SandboxUnsupportedException("The system does not support JavaScriptSandbox");
+        }
         PackageInfo systemWebViewPackage = WebView.getCurrentWebViewPackage();
         ComponentName compName =
                 new ComponentName(systemWebViewPackage.packageName, JS_SANDBOX_SERVICE_NAME);
@@ -254,6 +261,29 @@ public final class JavaScriptSandbox implements AutoCloseable {
         ComponentName compName = new ComponentName(context, JS_SANDBOX_SERVICE_NAME);
         int flag = Context.BIND_AUTO_CREATE;
         return bindToServiceWithCallback(context, compName, flag);
+    }
+
+    /**
+     * Check if JavaScriptSandbox is supported on the system.
+     *
+     * This method should be used to check for sandbox support before calling
+     * {@link JavaScriptSandbox#createConnectedInstanceAsync(Context)}.
+     *
+     * @return true if JavaScriptSandbox is supported and false otherwise.
+     */
+    @NonNull
+    public static boolean isSupported() {
+        PackageInfo systemWebViewPackage = WebView.getCurrentWebViewPackage();
+        if (systemWebViewPackage == null) {
+            return false;
+        }
+        long versionCode = PackageInfoCompat.getLongVersionCode(systemWebViewPackage);
+        // The current IPC interface was introduced in 102.0.4976.0 (crrev.com/3560402), so all
+        // versions above that are supported. Additionally, the relevant IPC changes were
+        // cherry-picked into M101 at 101.0.4951.24 (crrev.com/3568575), so versions between
+        // 101.0.4951.24 inclusive and 102.0.4952.0 exclusive are also supported.
+        return versionCode >= 4976_000_00L
+                || (4951_024_00L <= versionCode && versionCode < 4952_000_00L);
     }
 
     @NonNull
