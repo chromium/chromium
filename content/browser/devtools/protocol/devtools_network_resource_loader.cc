@@ -8,7 +8,6 @@
 #include "base/bind.h"
 #include "base/json/json_writer.h"
 #include "base/memory/ptr_util.h"
-#include "content/browser/devtools/protocol/devtools_network_resource_loader.h"
 #include "net/base/load_flags.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/simple_url_loader.h"

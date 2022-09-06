@@ -21,7 +21,6 @@
 #include "content/browser/file_system_access/file_system_access_write_lock_manager.h"
 #include "content/browser/file_system_access/fixed_file_system_access_permission_grant.h"
 #include "content/browser/file_system_access/mock_file_system_access_permission_context.h"
-#include "content/browser/file_system_access/safe_move_helper.h"
 #include "content/public/test/browser_task_environment.h"
 #include "storage/browser/file_system/file_system_operation.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
