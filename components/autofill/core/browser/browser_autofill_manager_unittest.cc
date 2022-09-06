@@ -117,6 +117,7 @@ namespace {
 const int kDefaultPageID = 137;
 const std::string kArbitraryNickname = "Grocery Card";
 const std::u16string kArbitraryNickname16 = u"Grocery Card";
+const std::string kAddressEntryIcon = "accountIcon";
 
 class MockAutofillClient : public TestAutofillClient {
  public:
@@ -1256,14 +1257,16 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
   FormsSeen(forms);
 
   GetAutofillSuggestions(form, form.fields[0]);
-  CheckSuggestions(kDefaultPageID,
-                   Suggestion("Charles", "Charles Hardin Holley", "", 1),
-                   Suggestion("Elvis", "Elvis Aaron Presley", "", 2));
+  CheckSuggestions(
+      kDefaultPageID,
+      Suggestion("Charles", "Charles Hardin Holley", kAddressEntryIcon, 1),
+      Suggestion("Elvis", "Elvis Aaron Presley", kAddressEntryIcon, 2));
 
   GetAutofillSuggestions(form, form.fields[1]);
-  CheckSuggestions(kDefaultPageID,
-                   Suggestion("Holley", "Charles Hardin Holley", "", 1),
-                   Suggestion("Presley", "Elvis Aaron Presley", "", 2));
+  CheckSuggestions(
+      kDefaultPageID,
+      Suggestion("Holley", "Charles Hardin Holley", kAddressEntryIcon, 1),
+      Suggestion("Presley", "Elvis Aaron Presley", kAddressEntryIcon, 2));
 }
 
 // Test that the call is properly forwarded to its SingleFieldFormFillRouter.
@@ -1318,8 +1321,9 @@ TEST_P(SuggestionMatchingTest, GetProfileSuggestions_EmptyValue) {
       label2 = "3734 Elvis Presley Blvd.";
   }
   // Test that we sent the right values to the external delegate.
-  CheckSuggestions(kDefaultPageID, Suggestion("Charles", label1, "", 1),
-                   Suggestion("Elvis", label2, "", 2));
+  CheckSuggestions(kDefaultPageID,
+                   Suggestion("Charles", label1, kAddressEntryIcon, 1),
+                   Suggestion("Elvis", label2, kAddressEntryIcon, 2));
 }
 
 // Test that we return only matching address profile suggestions when the
@@ -1347,7 +1351,8 @@ TEST_P(SuggestionMatchingTest, GetProfileSuggestions_MatchCharacter) {
       label = "3734 Elvis Presley Blvd.";
   }
   // Test that we sent the right values to the external delegate.
-  CheckSuggestions(kDefaultPageID, Suggestion("Elvis", label, "", 1));
+  CheckSuggestions(kDefaultPageID,
+                   Suggestion("Elvis", label, kAddressEntryIcon, 1));
 }
 
 // Tests that we return address profile suggestions values when the section
@@ -1395,18 +1400,21 @@ TEST_P(SuggestionMatchingTest,
     case EnabledFeature::kDesktop:
     case EnabledFeature::kMobileShowAll:
     case EnabledFeature::kMobileShowOne:
-      CheckSuggestions(kDefaultPageID,
-                       Suggestion("Googler", "1600 Amphitheater pkwy", "", 1),
-                       Suggestion("Grimes", "1234 Smith Blvd.", "", 2));
+      CheckSuggestions(
+          kDefaultPageID,
+          Suggestion("Googler", "1600 Amphitheater pkwy", kAddressEntryIcon, 1),
+          Suggestion("Grimes", "1234 Smith Blvd.", kAddressEntryIcon, 2));
       break;
     case EnabledFeature::kNone:
       // Test that we sent the right values to the external delegate. No labels
       // with duplicate values "Grimes" merged.
       CheckSuggestions(
           kDefaultPageID,
-          Suggestion("Googler", "1600 Amphitheater pkwy", "", 1),
-          Suggestion("Grimes", "1234 Smith Blvd., Carl Grimes", "", 2),
-          Suggestion("Grimes", "1234 Smith Blvd., Robin Grimes", "", 3));
+          Suggestion("Googler", "1600 Amphitheater pkwy", kAddressEntryIcon, 1),
+          Suggestion("Grimes", "1234 Smith Blvd., Carl Grimes",
+                     kAddressEntryIcon, 2),
+          Suggestion("Grimes", "1234 Smith Blvd., Robin Grimes",
+                     kAddressEntryIcon, 3));
   }
 }
 
@@ -1440,7 +1448,8 @@ TEST_P(SuggestionMatchingTest,
       label = "3734 Elvis Presley Blvd.";
   }
   // Test that we sent the right values to the external delegate.
-  CheckSuggestions(kDefaultPageID, Suggestion("Elvis", label, "", 1));
+  CheckSuggestions(kDefaultPageID,
+                   Suggestion("Elvis", label, kAddressEntryIcon, 1));
 }
 
 // Test that we return no suggestions when the form has no relevant fields.
@@ -1512,8 +1521,9 @@ TEST_P(SuggestionMatchingTest, GetProfileSuggestions_WithDuplicates) {
       label2 = "3734 Elvis Presley Blvd.";
   }
   // Test that we sent the right values to the external delegate.
-  CheckSuggestions(kDefaultPageID, Suggestion("Charles", label1, "", 1),
-                   Suggestion("Elvis", label2, "", 2));
+  CheckSuggestions(kDefaultPageID,
+                   Suggestion("Charles", label1, kAddressEntryIcon, 1),
+                   Suggestion("Elvis", label2, kAddressEntryIcon, 2));
 }
 
 // Test that we return no suggestions when autofill is disabled.
@@ -2433,8 +2443,9 @@ TEST_P(SuggestionMatchingTest, GetAddressAndCreditCardSuggestions) {
       label2 = "3734 Elvis Presley Blvd.";
   }
   // Test that we sent the right values to the external delegate.
-  CheckSuggestions(kDefaultPageID, Suggestion("Charles", label1, "", 1),
-                   Suggestion("Elvis", label2, "", 2));
+  CheckSuggestions(kDefaultPageID,
+                   Suggestion("Charles", label1, kAddressEntryIcon, 1),
+                   Suggestion("Elvis", label2, kAddressEntryIcon, 2));
 
   const int kPageID2 = 2;
   test::CreateTestFormField("Card Number", "cardnumber", "", "text", &field);
@@ -3058,8 +3069,9 @@ TEST_P(SuggestionMatchingTest, GetFieldSuggestionsWhenFormIsAutofilled) {
       label2 = "3734 Elvis Presley Blvd.";
   }
   // Test that we sent the right values to the external delegate.
-  CheckSuggestions(kDefaultPageID, Suggestion("Charles", label1, "", 1),
-                   Suggestion("Elvis", label2, "", 2));
+  CheckSuggestions(kDefaultPageID,
+                   Suggestion("Charles", label1, kAddressEntryIcon, 1),
+                   Suggestion("Elvis", label2, kAddressEntryIcon, 2));
 }
 
 // Test that nothing breaks when there are single field form fill (Autocomplete)
@@ -3122,7 +3134,8 @@ TEST_P(SuggestionMatchingTest, GetFieldSuggestionsWithDuplicateValues) {
       label = "3734 Elvis Presley Blvd.";
   }
   // Test that we sent the right values to the external delegate.
-  CheckSuggestions(kDefaultPageID, Suggestion("Elvis", label, "", 1));
+  CheckSuggestions(kDefaultPageID,
+                   Suggestion("Elvis", label, kAddressEntryIcon, 1));
 }
 
 TEST_P(SuggestionMatchingTest, GetProfileSuggestions_FancyPhone) {
@@ -3188,9 +3201,10 @@ TEST_P(SuggestionMatchingTest, GetProfileSuggestions_FancyPhone) {
       label3 = "3734 Elvis Presley Blvd.";
   }
   // Test that we sent the right values to the external delegate.
-  CheckSuggestions(kDefaultPageID, Suggestion(value1, label1, "", 1),
-                   Suggestion(value2, label2, "", 2),
-                   Suggestion(value3, label3, "", 3));
+  CheckSuggestions(kDefaultPageID,
+                   Suggestion(value1, label1, kAddressEntryIcon, 1),
+                   Suggestion(value2, label2, kAddressEntryIcon, 2),
+                   Suggestion(value3, label3, kAddressEntryIcon, 3));
 }
 
 TEST_P(BrowserAutofillManagerStructuredProfileTest,
@@ -3232,13 +3246,15 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
   GetAutofillSuggestions(form, phone_prefix);
 
   // Test that we sent the right prefix values to the external delegate.
-  CheckSuggestions(kDefaultPageID, Suggestion("356", "1800FLOWERS", "", 1));
+  CheckSuggestions(kDefaultPageID,
+                   Suggestion("356", "1800FLOWERS", kAddressEntryIcon, 1));
 
   const FormFieldData& phone_suffix = form.fields[3];
   GetAutofillSuggestions(form, phone_suffix);
 
   // Test that we sent the right suffix values to the external delegate.
-  CheckSuggestions(kDefaultPageID, Suggestion("9377", "1800FLOWERS", "", 1));
+  CheckSuggestions(kDefaultPageID,
+                   Suggestion("9377", "1800FLOWERS", kAddressEntryIcon, 1));
 }
 
 // Tests that the suggestion consists of phone number without the country code
@@ -3262,8 +3278,8 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
   const FormFieldData& field = form.fields[9];
   GetAutofillSuggestions(form, field);
 
-  CheckSuggestions(kDefaultPageID,
-                   Suggestion("123456789", "Natty Bumppo", "", 1));
+  CheckSuggestions(kDefaultPageID, Suggestion("123456789", "Natty Bumppo",
+                                              kAddressEntryIcon, 1));
 }
 
 // Tests that we return email profile suggestions values
@@ -3307,8 +3323,9 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
   personal_data().AddProfile(profile);
 
   GetAutofillSuggestions(form, form.fields[2]);
-  CheckSuggestions(kDefaultPageID,
-                   Suggestion("test@example.com", "Natty Bumppo", "", 1));
+  CheckSuggestions(
+      kDefaultPageID,
+      Suggestion("test@example.com", "Natty Bumppo", kAddressEntryIcon, 1));
 }
 
 // Test that we correctly fill an address form.
@@ -7563,8 +7580,10 @@ TEST_P(SuggestionMatchingTest, DisplaySuggestionsWithMatchingTokens) {
       label2 = "3734 Elvis Presley Blvd.";
   }
   // Test that we sent the right values to the external delegate.
-  CheckSuggestions(kDefaultPageID, Suggestion("buddy@gmail.com", label1, "", 1),
-                   Suggestion("theking@gmail.com", label2, "", 2));
+  CheckSuggestions(
+      kDefaultPageID,
+      Suggestion("buddy@gmail.com", label1, kAddressEntryIcon, 1),
+      Suggestion("theking@gmail.com", label2, kAddressEntryIcon, 2));
 }
 
 // Verify that typing "apple" will match "123 Apple St." when substring matching
@@ -7600,8 +7619,8 @@ TEST_P(SuggestionMatchingTest,
       label = "123 Apple St.";
   }
   // Test that we sent the right values to the external delegate.
-  CheckSuggestions(kDefaultPageID,
-                   Suggestion("123 Apple St., unit 6", label, "", 1));
+  CheckSuggestions(kDefaultPageID, Suggestion("123 Apple St., unit 6", label,
+                                              kAddressEntryIcon, 1));
 }
 
 // Verify that typing "mail" will not match any of the "@gmail.com" email
@@ -7945,8 +7964,9 @@ TEST_P(SuggestionMatchingTest,
       label1 = "1234 Smith Blvd., Carl Shawn Smith Grimes";
       label2 = "1234 Smith Blvd., Robin Adam Smith Grimes";
   }
-  CheckSuggestions(kDefaultPageID, Suggestion("Shawn Smith", label1, "", 1),
-                   Suggestion("Adam Smith", label2, "", 2));
+  CheckSuggestions(kDefaultPageID,
+                   Suggestion("Shawn Smith", label1, kAddressEntryIcon, 1),
+                   Suggestion("Adam Smith", label2, kAddressEntryIcon, 2));
 }
 
 TEST_P(BrowserAutofillManagerStructuredProfileTest, ShouldUploadForm) {

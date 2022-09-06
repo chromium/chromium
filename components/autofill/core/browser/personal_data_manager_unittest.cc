@@ -68,6 +68,7 @@ namespace {
 
 const char kPrimaryAccountEmail[] = "syncuser@example.com";
 const char16_t kPrimaryAccountEmail16[] = u"syncuser@example.com";
+const std::string kAddressEntryIcon = "accountIcon";
 
 enum UserMode { USER_MODE_NORMAL, USER_MODE_INCOGNITO };
 
@@ -2445,7 +2446,7 @@ TEST_F(PersonalDataManagerTest, GetProfileSuggestions_ForContactForm) {
           testing::Field(&Suggestion::labels,
                          ConstructLabelLineMatrix(
                              {u"(978) 674-4120", u"hoa.pham@comcast.net"})),
-          testing::Field(&Suggestion::icon, ""))));
+          testing::Field(&Suggestion::icon, kAddressEntryIcon))));
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
@@ -2470,7 +2471,7 @@ TEST_F(PersonalDataManagerTest, GetProfileSuggestions_AddressForm) {
                   testing::Field(&Suggestion::labels,
                                  ConstructLabelLineMatrix(
                                      {u"401 Merrimack St, Lowell, MA 01852"})),
-                  testing::Field(&Suggestion::icon, ""))));
+                  testing::Field(&Suggestion::icon, kAddressEntryIcon))));
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
@@ -2495,7 +2496,7 @@ TEST_F(PersonalDataManagerTest, GetProfileSuggestions_AddressPhoneForm) {
           AllOf(testing::Field(&Suggestion::labels,
                                ConstructLabelLineMatrix(
                                    {u"(978) 674-4120", u"401 Merrimack St"})),
-                testing::Field(&Suggestion::icon, ""))));
+                testing::Field(&Suggestion::icon, kAddressEntryIcon))));
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
@@ -2520,7 +2521,7 @@ TEST_F(PersonalDataManagerTest, GetProfileSuggestions_AddressEmailForm) {
           testing::Field(&Suggestion::labels,
                          ConstructLabelLineMatrix(
                              {u"401 Merrimack St", u"hoa.pham@comcast.net"})),
-          testing::Field(&Suggestion::icon, ""))));
+          testing::Field(&Suggestion::icon, kAddressEntryIcon))));
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
@@ -2544,7 +2545,7 @@ TEST_F(PersonalDataManagerTest, GetProfileSuggestions_FormWithOneProfile) {
       ElementsAre(
           AllOf(testing::Field(&Suggestion::labels,
                                ConstructLabelLineMatrix({u"401 Merrimack St"})),
-                testing::Field(&Suggestion::icon, ""))));
+                testing::Field(&Suggestion::icon, kAddressEntryIcon))));
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
@@ -2592,12 +2593,12 @@ TEST_F(PersonalDataManagerTest,
                                ConstructLabelLineMatrix(
                                    {u"401 Merrimack St", u"(978) 674-4120",
                                     u"hoa.pham@comcast.net"})),
-                testing::Field(&Suggestion::icon, "")),
+                testing::Field(&Suggestion::icon, kAddressEntryIcon)),
           AllOf(testing::Field(&Suggestion::labels,
                                ConstructLabelLineMatrix({u"216 Broadway St",
                                                          u"(978) 452-3366",
                                                          u"hp@aol.com"})),
-                testing::Field(&Suggestion::icon, ""))));
+                testing::Field(&Suggestion::icon, kAddressEntryIcon))));
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
@@ -2642,11 +2643,11 @@ TEST_F(PersonalDataManagerTest, GetProfileSuggestions_MobileShowOne) {
           AllOf(testing::Field(&Suggestion::labels,
                                std::vector<std::vector<Suggestion::Text>>{
                                    {Suggestion::Text(u"(978) 674-4120")}}),
-                testing::Field(&Suggestion::icon, "")),
+                testing::Field(&Suggestion::icon, kAddressEntryIcon)),
           AllOf(testing::Field(&Suggestion::labels,
                                std::vector<std::vector<Suggestion::Text>>{
                                    {Suggestion::Text(u"(617) 268-6862")}}),
-                testing::Field(&Suggestion::icon, ""))));
+                testing::Field(&Suggestion::icon, kAddressEntryIcon))));
 
   // Tests a form with name, address, phone number, and email address fields.
   EXPECT_THAT(
@@ -2659,11 +2660,11 @@ TEST_F(PersonalDataManagerTest, GetProfileSuggestions_MobileShowOne) {
           AllOf(testing::Field(&Suggestion::labels,
                                std::vector<std::vector<Suggestion::Text>>{
                                    {Suggestion::Text(u"401 Merrimack St")}}),
-                testing::Field(&Suggestion::icon, "")),
+                testing::Field(&Suggestion::icon, kAddressEntryIcon)),
           AllOf(testing::Field(&Suggestion::labels,
                                std::vector<std::vector<Suggestion::Text>>{
                                    {Suggestion::Text(u"11 Elkins St")}}),
-                testing::Field(&Suggestion::icon, ""))));
+                testing::Field(&Suggestion::icon, kAddressEntryIcon))));
 }
 #endif  // if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 
@@ -2709,12 +2710,12 @@ TEST_F(PersonalDataManagerTest, GetProfileSuggestions_MobileShowAll) {
                                std::vector<std::vector<Suggestion::Text>>{
                                    {Suggestion::Text(ConstructMobileLabelLine(
                                        {u"Hoa", u"(978) 674-4120"}))}}),
-                testing::Field(&Suggestion::icon, "")),
+                testing::Field(&Suggestion::icon, kAddressEntryIcon)),
           AllOf(testing::Field(&Suggestion::labels,
                                std::vector<std::vector<Suggestion::Text>>{
                                    {Suggestion::Text(ConstructMobileLabelLine(
                                        {u"María", u"(617) 268-6862"}))}}),
-                testing::Field(&Suggestion::icon, ""))));
+                testing::Field(&Suggestion::icon, kAddressEntryIcon))));
 
   // Tests a form with name, address, phone number, and email address fields.
   EXPECT_THAT(
@@ -2730,13 +2731,13 @@ TEST_F(PersonalDataManagerTest, GetProfileSuggestions_MobileShowAll) {
                   std::vector<std::vector<Suggestion::Text>>{
                       {Suggestion::Text(ConstructMobileLabelLine(
                           {u"Hoa", u"401 Merrimack St", u"(978) 674-4120"}))}}),
-              testing::Field(&Suggestion::icon, "")),
+              testing::Field(&Suggestion::icon, kAddressEntryIcon)),
           AllOf(testing::Field(
                     &Suggestion::labels,
                     std::vector<std::vector<Suggestion::Text>>{
                         {Suggestion::Text(ConstructMobileLabelLine(
                             {u"María", u"11 Elkins St", u"(617) 268-6862"}))}}),
-                testing::Field(&Suggestion::icon, ""))));
+                testing::Field(&Suggestion::icon, kAddressEntryIcon))));
 }
 #endif  // if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 

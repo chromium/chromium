@@ -1325,39 +1325,6 @@
             ]
         }
     ],
-    "AutofillMorePredictableDesktopUI": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_2022-01-27",
-                    "enable_features": [
-                        "AutofillCenterAlignedSuggestions",
-                        "AutofillTypeSpecificPopupWidth",
-                        "AutofillUseConsistentPopupSettingsIcons",
-                        "AutofillVisualImprovementsForSuggestionUi"
-                    ],
-                    "disable_features": []
-                },
-                {
-                    "name": "Disabled_2022-01-27",
-                    "enable_features": [],
-                    "disable_features": [
-                        "AutofillCenterAlignedSuggestions",
-                        "AutofillTypeSpecificPopupWidth",
-                        "AutofillUseConsistentPopupSettingsIcons",
-                        "AutofillVisualImprovementsForSuggestionUi"
-                    ]
-                }
-            ]
-        }
-    ],
     "AutofillParseMerchantPromoCodeFields": [
         {
             "platforms": [

@@ -335,7 +335,7 @@ const base::Feature kAutofillExtractAllDatalists{
 // Controls if type-specific popup widths are used.
 // TODO(crbug.com/1250729): Remove once launched.
 const base::Feature kAutofillTypeSpecificPopupWidth{
-    "AutofillTypeSpecificPopupWidth", base::FEATURE_DISABLED_BY_DEFAULT};
+    "AutofillTypeSpecificPopupWidth", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // When enabled, HTML autocomplete values that do not map to any known type, but
 // look reasonable (e.g. contain "address") are simply ignored. Without the
@@ -375,7 +375,7 @@ extern const base::Feature kAutofillLabelAffixRemoval{
 // Enabled a suggestion menu that is aligned to the center of the field.
 // TODO(crbug/1248339): Remove once experiment is finished.
 extern const base::Feature kAutofillCenterAlignedSuggestions{
-    "AutofillCenterAlignedSuggestions", base::FEATURE_DISABLED_BY_DEFAULT};
+    "AutofillCenterAlignedSuggestions", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Controls the maximum pixels the popup is shifted towards the center.
 // TODO(crbug/1248339): Remove once experiment is finished.
@@ -571,7 +571,7 @@ const base::Feature kAutofillUseImprovedLabelDisambiguation{
 // footer.
 const base::Feature kAutofillUseConsistentPopupSettingsIcons{
     "AutofillUseConsistentPopupSettingsIcons",
-    base::FEATURE_DISABLED_BY_DEFAULT};
+    base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Controls whether to use the combined heuristic and the autocomplete section
 // implementation for section splitting or not. See https://crbug.com/1076175.
@@ -582,7 +582,7 @@ const base::Feature kAutofillUseNewSectioningMethod{
 // also used for the password manager.
 const base::Feature kAutofillVisualImprovementsForSuggestionUi{
     "AutofillVisualImprovementsForSuggestionUi",
-    base::FEATURE_DISABLED_BY_DEFAULT};
+    base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Controls an ablation study in which autofill for addresses and payment data
 // can be suppressed.

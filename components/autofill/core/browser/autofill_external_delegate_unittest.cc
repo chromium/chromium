@@ -246,8 +246,12 @@ TEST_F(AutofillExternalDelegateUnitTest, TestExternalDelegateVirtualCalls) {
   IssueOnQuery(kRecentQueryId);
 
   // The enums must be cast to ints to prevent compile errors on linux_rel.
-  auto element_ids = testing::ElementsAre(
-      kAutofillProfileId, static_cast<int>(POPUP_ITEM_ID_AUTOFILL_OPTIONS));
+  auto element_ids =
+      testing::ElementsAre(kAutofillProfileId,
+#if !BUILDFLAG(IS_ANDROID)
+                           static_cast<int>(POPUP_ITEM_ID_SEPARATOR),
+#endif
+                           static_cast<int>(POPUP_ITEM_ID_AUTOFILL_OPTIONS));
   AutofillClient::PopupOpenArgs open_args;
   EXPECT_CALL(autofill_client_, ShowAutofillPopup)
       .WillOnce(testing::SaveArg<0>(&open_args));
@@ -285,8 +289,12 @@ TEST_F(AutofillExternalDelegateUnitTest,
   IssueOnQuery(kRecentQueryId);
 
   // The enums must be cast to ints to prevent compile errors on linux_rel.
-  auto element_ids = testing::ElementsAre(
-      kAutofillProfileId, static_cast<int>(POPUP_ITEM_ID_AUTOFILL_OPTIONS));
+  auto element_ids =
+      testing::ElementsAre(kAutofillProfileId,
+#if !BUILDFLAG(IS_ANDROID)
+                           static_cast<int>(POPUP_ITEM_ID_SEPARATOR),
+#endif
+                           static_cast<int>(POPUP_ITEM_ID_AUTOFILL_OPTIONS));
   AutofillClient::PopupOpenArgs open_args;
   EXPECT_CALL(autofill_client_, ShowAutofillPopup)
       .WillOnce(testing::SaveArg<0>(&open_args));
@@ -373,12 +381,16 @@ TEST_F(AutofillExternalDelegateUnitTest, ExternalDelegateDataList) {
                                                data_list_items);
 
   // The enums must be cast to ints to prevent compile errors on linux_rel.
-  auto element_ids = testing::ElementsAre(
-      static_cast<int>(POPUP_ITEM_ID_DATALIST_ENTRY),
+  auto element_ids =
+      testing::ElementsAre(static_cast<int>(POPUP_ITEM_ID_DATALIST_ENTRY),
 #if !BUILDFLAG(IS_ANDROID)
-      static_cast<int>(POPUP_ITEM_ID_SEPARATOR),
+                           static_cast<int>(POPUP_ITEM_ID_SEPARATOR),
 #endif
-      kAutofillProfileId, static_cast<int>(POPUP_ITEM_ID_AUTOFILL_OPTIONS));
+                           kAutofillProfileId,
+#if !BUILDFLAG(IS_ANDROID)
+                           static_cast<int>(POPUP_ITEM_ID_SEPARATOR),
+#endif
+                           static_cast<int>(POPUP_ITEM_ID_AUTOFILL_OPTIONS));
   AutofillClient::PopupOpenArgs open_args;
   EXPECT_CALL(autofill_client_, ShowAutofillPopup)
       .WillOnce(testing::SaveArg<0>(&open_args));
@@ -428,12 +440,16 @@ TEST_F(AutofillExternalDelegateUnitTest, UpdateDataListWhileShowingPopup) {
                                                data_list_items);
 
   // The enums must be cast to ints to prevent compile errors on linux_rel.
-  auto element_ids = testing::ElementsAre(
-      static_cast<int>(POPUP_ITEM_ID_DATALIST_ENTRY),
+  auto element_ids =
+      testing::ElementsAre(static_cast<int>(POPUP_ITEM_ID_DATALIST_ENTRY),
 #if !BUILDFLAG(IS_ANDROID)
-      static_cast<int>(POPUP_ITEM_ID_SEPARATOR),
+                           static_cast<int>(POPUP_ITEM_ID_SEPARATOR),
 #endif
-      kAutofillProfileId, static_cast<int>(POPUP_ITEM_ID_AUTOFILL_OPTIONS));
+                           kAutofillProfileId,
+#if !BUILDFLAG(IS_ANDROID)
+                           static_cast<int>(POPUP_ITEM_ID_SEPARATOR),
+#endif
+                           static_cast<int>(POPUP_ITEM_ID_AUTOFILL_OPTIONS));
   AutofillClient::PopupOpenArgs open_args;
   EXPECT_CALL(autofill_client_, ShowAutofillPopup)
       .WillOnce(testing::SaveArg<0>(&open_args));
@@ -478,13 +494,17 @@ TEST_F(AutofillExternalDelegateUnitTest, DuplicateAutofillDatalistValues) {
                                                data_list_labels);
 
   // The enums must be cast to ints to prevent compile errors on linux_rel.
-  auto element_ids = testing::ElementsAre(
-      static_cast<int>(POPUP_ITEM_ID_DATALIST_ENTRY),
-      static_cast<int>(POPUP_ITEM_ID_DATALIST_ENTRY),
+  auto element_ids =
+      testing::ElementsAre(static_cast<int>(POPUP_ITEM_ID_DATALIST_ENTRY),
+                           static_cast<int>(POPUP_ITEM_ID_DATALIST_ENTRY),
 #if !BUILDFLAG(IS_ANDROID)
-      static_cast<int>(POPUP_ITEM_ID_SEPARATOR),
+                           static_cast<int>(POPUP_ITEM_ID_SEPARATOR),
 #endif
-      kAutofillProfileId, static_cast<int>(POPUP_ITEM_ID_AUTOFILL_OPTIONS));
+                           kAutofillProfileId,
+#if !BUILDFLAG(IS_ANDROID)
+                           static_cast<int>(POPUP_ITEM_ID_SEPARATOR),
+#endif
+                           static_cast<int>(POPUP_ITEM_ID_AUTOFILL_OPTIONS));
   AutofillClient::PopupOpenArgs open_args;
   EXPECT_CALL(autofill_client_, ShowAutofillPopup)
       .WillOnce(testing::SaveArg<0>(&open_args));
@@ -916,8 +936,11 @@ TEST_F(AutofillExternalDelegateUnitTest, ExternalDelegateFillFieldWithValue) {
 TEST_F(AutofillExternalDelegateUnitTest, ShouldShowGooglePayIcon) {
   IssueOnQuery(kRecentQueryId);
 
-  auto element_icons =
-      testing::ElementsAre(std::string(), testing::StartsWith("googlePay"));
+  auto element_icons = testing::ElementsAre(std::string(),
+#if !BUILDFLAG(IS_ANDROID)
+                                            std::string(),
+#endif
+                                            testing::StartsWith("googlePay"));
   AutofillClient::PopupOpenArgs open_args;
   EXPECT_CALL(autofill_client_, ShowAutofillPopup)
       .WillOnce(testing::SaveArg<0>(&open_args));
@@ -946,9 +969,11 @@ TEST_F(AutofillExternalDelegateUnitTest,
        ShouldNotShowGooglePayIconIfSuggestionsContainLocalCards) {
   IssueOnQuery(kRecentQueryId);
 
-  auto element_icons = testing::ElementsAre(
-      std::string(),
-      std::string() /* Autofill setting item does not have icon. */);
+  auto element_icons = testing::ElementsAre(std::string(),
+#if !BUILDFLAG(IS_ANDROID)
+                                            std::string(),
+#endif
+                                            "settingsIcon");
   AutofillClient::PopupOpenArgs open_args;
   EXPECT_CALL(autofill_client_, ShowAutofillPopup)
       .WillOnce(testing::SaveArg<0>(&open_args));
@@ -971,6 +996,9 @@ TEST_F(AutofillExternalDelegateUnitTest, ShouldUseNewSettingName) {
 
   auto element_main_texts = testing::ElementsAre(
       Suggestion::Text(std::u16string(), Suggestion::Text::IsPrimary(true)),
+#if !BUILDFLAG(IS_ANDROID)
+      Suggestion::Text(std::u16string(), Suggestion::Text::IsPrimary(false)),
+#endif
       Suggestion::Text(l10n_util::GetStringUTF16(IDS_AUTOFILL_MANAGE),
                        Suggestion::Text::IsPrimary(true)));
   AutofillClient::PopupOpenArgs open_args;
@@ -1024,6 +1052,9 @@ TEST_F(AutofillExternalDelegateCardsFromAccountTest,
       Suggestion::Text(
           l10n_util::GetStringUTF16(IDS_AUTOFILL_SHOW_ACCOUNT_CARDS),
           Suggestion::Text::IsPrimary(true)),
+#if !BUILDFLAG(IS_ANDROID)
+      Suggestion::Text(std::u16string(), Suggestion::Text::IsPrimary(false)),
+#endif
       Suggestion::Text(l10n_util::GetStringUTF16(IDS_AUTOFILL_MANAGE),
                        Suggestion::Text::IsPrimary(true)));
   AutofillClient::PopupOpenArgs open_args;
