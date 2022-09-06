@@ -9,7 +9,6 @@
 #include <sys/un.h>
 #include <unistd.h>
 
-#include <algorithm>
 #include <limits>
 #include <memory>
 #include <string>
@@ -38,6 +37,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/posix/safe_strerror.h"
 #include "base/process/process_metrics.h"
+#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
@@ -817,7 +817,7 @@ TEST_F(ArcVmClientAdapterTest, StartMiniArc_JobRestart) {
   const auto& ops = upstart_operations();
   // Find the STOP operation for the job.
   auto it =
-      std::find_if(ops.begin(), ops.end(), [](const UpstartOperation& op) {
+      base::ranges::find_if(ops, [](const UpstartOperation& op) {
         return op.type == UpstartOperationType::STOP &&
                kArcVmPreLoginServicesJobName == op.name;
       });
@@ -1051,7 +1051,7 @@ TEST_F(ArcVmClientAdapterTest, StartMiniArc_UreadaheadByDefault) {
 
   const auto& ops = upstart_operations();
   const auto it =
-      std::find_if(ops.begin(), ops.end(), [](const UpstartOperation& op) {
+      base::ranges::find_if(ops, [](const UpstartOperation& op) {
         return op.type == UpstartOperationType::START &&
                kArcVmPreLoginServicesJobName == op.name;
       });
@@ -1069,13 +1069,13 @@ TEST_F(ArcVmClientAdapterTest, StartMiniArc_DisableUreadahead) {
 
   const auto& ops = upstart_operations();
   const auto it =
-      std::find_if(ops.begin(), ops.end(), [](const UpstartOperation& op) {
+      base::ranges::find_if(ops, [](const UpstartOperation& op) {
         return op.type == UpstartOperationType::START &&
                kArcVmPreLoginServicesJobName == op.name;
       });
   ASSERT_NE(ops.end(), it);
   const auto it_ureadahead =
-      std::find(it->env.begin(), it->env.end(), "DISABLE_UREADAHEAD=1");
+      base::ranges::find(it->env, "DISABLE_UREADAHEAD=1");
   EXPECT_NE(it->env.end(), it_ureadahead);
 }
 

@@ -4,7 +4,6 @@
 
 #include "ash/components/arc/session/arc_bridge_host_impl.h"
 
-#include <algorithm>
 #include <utility>
 
 #include "ash/components/arc/mojom/accessibility_helper.mojom.h"
@@ -72,6 +71,7 @@
 #include "ash/public/cpp/message_center/arc_notifications_host_initializer.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/ranges/algorithm.h"
 #include "chromeos/components/sensors/mojom/cros_sensor_service.mojom.h"
 
 namespace arc {
@@ -488,11 +488,8 @@ void ArcBridgeHostImpl::OnInstanceReady(
 
 void ArcBridgeHostImpl::OnChannelClosed(MojoChannelBase* channel) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  mojo_channels_.erase(
-      std::find_if(mojo_channels_.begin(), mojo_channels_.end(),
-                   [channel](std::unique_ptr<MojoChannelBase>& ptr) {
-                     return ptr.get() == channel;
-                   }));
+  mojo_channels_.erase(base::ranges::find(
+      mojo_channels_, channel, &std::unique_ptr<MojoChannelBase>::get));
 }
 
 }  // namespace arc

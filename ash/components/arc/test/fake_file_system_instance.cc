@@ -19,6 +19,7 @@
 #include "base/files/scoped_file.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/ranges/algorithm.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "mojo/public/cpp/system/platform_handle.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -205,9 +206,8 @@ void FakeFileSystemInstance::RemoveRecentDocument(const Document& document) {
   // Unfortunately we don't know the root_id when deleting a document, so
   // here we need to loop through all available roots to find the document.
   for (auto const& doc : recent_documents_) {
-    const auto iter = std::find_if(
-        doc.second.begin(), doc.second.end(),
-        [&document](const Document& recent_document) {
+    const auto iter = base::ranges::find_if(
+        doc.second, [&document](const Document& recent_document) {
           return document.authority == recent_document.authority &&
                  document.document_id == recent_document.document_id;
         });
