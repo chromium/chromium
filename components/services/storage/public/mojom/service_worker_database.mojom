@@ -70,7 +70,7 @@ struct ServiceWorkerRegistrationData {
 
   // TODO(crbug.com/1177199): merge COEP to policy container
   network.mojom.CrossOriginEmbedderPolicy cross_origin_embedder_policy;
-  blink.mojom.PolicyContainerPolicies policy_container_policies;
+  blink.mojom.PolicyContainerPolicies? policy_container_policies;
 
   // The type of the frame that registered this service worker, which is used
   // to restrict the use of some powerful APIs in FencedFrames

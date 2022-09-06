@@ -346,7 +346,9 @@ void ServiceWorkerGlobalScope::FetchAndRunModuleScript(
   DCHECK(IsContextThread());
   DCHECK(!reject_coep_unsafe_none);
 
-  SetPolicyContainer(std::move(policy_container));
+  // policy_container_host could be null for registration restored from old DB
+  if (policy_container)
+    SetPolicyContainer(std::move(policy_container));
 
   if (worker_main_script_load_params) {
     SetWorkerMainScriptLoadingParametersForModules(

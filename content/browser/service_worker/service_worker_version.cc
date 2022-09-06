@@ -1991,9 +1991,11 @@ void ServiceWorkerVersion::StartWorkerInternal() {
 
   params->ukm_source_id = ukm_source_id_;
 
-  DCHECK(policy_container_host_);
-  params->policy_container =
-      policy_container_host_->CreatePolicyContainerForBlink();
+  // policy_container_host could be null for registration restored from old DB
+  if (policy_container_host_) {
+    params->policy_container =
+        policy_container_host_->CreatePolicyContainerForBlink();
+  }
 
   embedded_worker_->Start(std::move(params),
                           base::BindOnce(&ServiceWorkerVersion::OnStartSent,
