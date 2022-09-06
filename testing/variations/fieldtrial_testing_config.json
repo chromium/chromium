@@ -3637,11 +3637,13 @@
                 {
                     "name": "Enabled",
                     "params": {
+                        "BookmarkLimitNumNodesForBookmarkSearchCount": "500",
                         "OmniboxBookmarkPathsUiDynamicReplaceUrl": "true",
                         "ShortBookmarkSuggestionsByTotalInputLengthThreshold": "3"
                     },
                     "enable_features": [
                         "BookmarkApproximateNodeMatch",
+                        "BookmarkLimitNumNodesForBookmarkSearch",
                         "BookmarkTypedUrlsMap",
                         "OmniboxBookmarkPaths",
                         "OmniboxShortBookmarkSuggestionsByTotalInputLength"

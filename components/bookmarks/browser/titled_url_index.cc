@@ -32,11 +32,6 @@ namespace bookmarks {
 
 namespace {
 
-// The maximum number of nodes to fetch when looking for nodes that match any
-// term (i.e. when invoking `RetrieveNodesMatchingAnyTerms()`). Parameterized
-// for testing.
-constexpr size_t kMatchingAnyTermsMaxNodes = 3000;
-
 // Returns a normalized version of the UTF16 string |text|.  If it fails to
 // normalize the string, returns |text| itself as a best-effort.
 std::u16string Normalize(const std::u16string& text) {
@@ -107,9 +102,10 @@ std::vector<TitledUrlMatch> TitledUrlIndex::GetResultsMatching(
   {
     SCOPED_UMA_HISTOGRAM_TIMER(
         "Bookmarks.GetResultsMatching.Timing.RetrievingNodes");
+    static const size_t kMaxNodes = kLimitNumNodesForBookmarkSearchCount.Get();
     matches = match_ancestor_titles
                   ? RetrieveNodesMatchingAnyTerms(terms, matching_algorithm,
-                                                  kMatchingAnyTermsMaxNodes)
+                                                  kMaxNodes)
                   : RetrieveNodesMatchingAllTerms(terms, matching_algorithm);
   }
   base::UmaHistogramBoolean("Bookmarks.GetResultsMatching.AnyTermApproach.Used",
