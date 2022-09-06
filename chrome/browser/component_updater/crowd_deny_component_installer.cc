@@ -82,8 +82,8 @@ void CrowdDenyComponentInstallerPolicy::ComponentReady(
   absl::optional<int> format =
       manifest.FindIntKey(kCrowdDenyManifestPreloadDataFormatKey);
   if (!format || *format != kCrowdDenyManifestPreloadDataCurrentFormat) {
-    DVLOG(1) << "Crowd Deny component bailing out. Future data version: "
-             << *format;
+    DVLOG(1) << "Crowd Deny component bailing out.";
+    DVLOG_IF(1, format) << "Future data version: " << *format;
     return;
   }
 

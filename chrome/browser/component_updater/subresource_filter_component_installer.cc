@@ -76,7 +76,9 @@ void SubresourceFilterComponentInstallerPolicy::ComponentReady(
   absl::optional<int> ruleset_format =
       manifest.FindIntKey(kManifestRulesetFormatKey);
   if (!ruleset_format || *ruleset_format != kCurrentRulesetFormat) {
-    DVLOG(1) << "Bailing out. Future ruleset version: " << *ruleset_format;
+    DVLOG(1) << "Bailing out.";
+    DVLOG_IF(1, ruleset_format)
+        << "Future ruleset version: " << *ruleset_format;
     return;
   }
   subresource_filter::UnindexedRulesetInfo ruleset_info;
