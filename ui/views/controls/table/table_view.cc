@@ -1358,17 +1358,21 @@ void TableView::AdvanceSelection(AdvanceDirection direction) {
     ScheduleUpdateAccessibilityFocusIfNeeded();
     return;
   }
-  size_t view_index = ModelToView(selection_model_.active().value());
+  size_t active_index = selection_model_.active().value();
+  size_t view_index = ModelToView(active_index);
+  const GroupRange range(GetGroupRange(active_index));
+  size_t view_range_start = ModelToView(range.start);
   if (direction == AdvanceDirection::kDecrement) {
     bool make_header_active = header_ && view_index == 0;
     header_row_is_active_ = make_header_active;
     SelectByViewIndex(
         make_header_active
             ? absl::nullopt
-            : absl::make_optional(std::max(size_t{1}, view_index) - 1));
+            : absl::make_optional(std::max(size_t{1}, view_range_start) - 1));
   } else {
     header_row_is_active_ = false;
-    SelectByViewIndex(std::min(GetRowCount() - 1, view_index + 1));
+    SelectByViewIndex(
+        std::min(GetRowCount() - 1, view_range_start + range.length));
   }
 }
 

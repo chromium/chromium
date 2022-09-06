@@ -3773,6 +3773,8 @@ static_library("ui") {
       "cocoa/tab_menu_bridge.mm",
       "cocoa/task_manager_mac.h",
       "cocoa/task_manager_mac.mm",
+      "cocoa/task_manager_mac_table_view.h",
+      "cocoa/task_manager_mac_table_view.mm",
       "cocoa/touchbar/browser_window_default_touch_bar.h",
       "cocoa/touchbar/browser_window_default_touch_bar.mm",
       "cocoa/touchbar/browser_window_touch_bar_controller.h",

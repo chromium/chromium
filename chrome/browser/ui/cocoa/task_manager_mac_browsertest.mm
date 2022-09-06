@@ -34,6 +34,8 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest_mac.h"
+#include "ui/base/test/ui_controls.h"
+#include "url/gurl.h"
 
 namespace task_manager {
 
@@ -307,4 +309,84 @@ IN_PROC_BROWSER_TEST_F(TaskManagerMacTest, SelectionConsistency) {
   EXPECT_EQ(TableFirstSelectedRow(), FindRowForTab(tabs[2]));
 }
 
+IN_PROC_BROWSER_TEST_F(TaskManagerMacTest, NavigateSelection) {
+  ASSERT_NO_FATAL_FAILURE(ClearStoredColumnSettings());
+
+  chrome::ShowTaskManager(browser());
+
+  // Set up three new tabs that are in the same task group
+  size_t numGroupTabs = 3;
+  for (size_t i = 1; i <= numGroupTabs; ++i) {
+    chrome::AddTabAt(browser(), GURL(), i, true);
+  }
+
+  // Set up a tab in a different process than the previous New Tab task group
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), embedded_test_server()->GetURL("/title2.html"),
+      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+
+  // Wait for their titles to appear in the TaskManager.
+  auto pattern = browsertest_util::MatchTab("Title *");
+  size_t rows = 1;
+  ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(rows, pattern));
+
+  // Find the single tab we set up that is not in a task group
+  std::unique_ptr<TaskManagerTester> tester =
+      TaskManagerTester::Create(base::RepeatingClosure());
+  std::vector<content::WebContents*> tabs;
+  for (size_t i = 0; i < tester->GetRowCount(); ++i) {
+    // Filter based on our title.
+    if (!base::MatchPattern(tester->GetRowTitle(i), pattern))
+      continue;
+    content::WebContents* tab = FindWebContentsByTabId(tester->GetTabId(i));
+    EXPECT_NE(nullptr, tab);
+    tabs.push_back(tab);
+  }
+  EXPECT_EQ(1U, tabs.size());
+
+  // Select the row corresponding to the tab for title2.html
+  // and store its tab id.
+  [GetTable()
+          selectRowIndexes:[NSIndexSet
+                               indexSetWithIndex:FindRowForTab(tabs[0]).value()]
+      byExtendingSelection:NO];
+
+  absl::optional<size_t> selectedRowIndexes = TableFirstSelectedRow();
+  ASSERT_TRUE(selectedRowIndexes.has_value());
+  size_t expectedSelectedRowIndex = selectedRowIndexes.value();
+  EXPECT_EQ((size_t)[GetTable() numberOfRows] - 1, expectedSelectedRowIndex);
+
+  ui_controls::EnableUIControls();
+  TaskManagerWindowController* windowController =
+      GetTaskManagerMac()->CocoaControllerForTests();
+
+  // Navigate up to the three grouped tasks
+  ui_controls::SendKeyPress(windowController.window, ui::VKEY_UP, false, false,
+                            false, false);
+  expectedSelectedRowIndex -= numGroupTabs;
+  EXPECT_EQ(expectedSelectedRowIndex, TableFirstSelectedRow().value());
+  EXPECT_EQ(3, [GetTable() numberOfSelectedRows]);
+
+  // Navigate off of the three grouped tasks
+  ui_controls::SendKeyPress(windowController.window, ui::VKEY_UP, false, false,
+                            false, false);
+  expectedSelectedRowIndex--;
+  EXPECT_EQ(expectedSelectedRowIndex, TableFirstSelectedRow().value());
+  EXPECT_EQ(1, [GetTable() numberOfSelectedRows]);
+
+  // Navigate down into the three grouped tasks
+  ui_controls::SendKeyPress(windowController.window, ui::VKEY_DOWN, false,
+                            false, false, false);
+  expectedSelectedRowIndex++;
+  EXPECT_EQ(expectedSelectedRowIndex, TableFirstSelectedRow().value());
+  EXPECT_EQ(3, [GetTable() numberOfSelectedRows]);
+
+  // Navigate down into the single task
+  ui_controls::SendKeyPress(windowController.window, ui::VKEY_DOWN, false,
+                            false, false, false);
+  expectedSelectedRowIndex += numGroupTabs;
+  EXPECT_EQ(expectedSelectedRowIndex, TableFirstSelectedRow().value());
+  EXPECT_EQ(1, [GetTable() numberOfSelectedRows]);
+}
 }  // namespace task_manager
