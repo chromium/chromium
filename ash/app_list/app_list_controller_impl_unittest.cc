@@ -11,7 +11,6 @@
 #include "ash/app_list/app_list_bubble_presenter.h"
 #include "ash/app_list/app_list_metrics.h"
 #include "ash/app_list/app_list_presenter_impl.h"
-#include "ash/app_list/app_list_test_view_delegate.h"
 #include "ash/app_list/test/app_list_test_helper.h"
 #include "ash/app_list/views/app_list_bubble_view.h"
 #include "ash/app_list/views/app_list_item_view.h"
@@ -23,15 +22,11 @@
 #include "ash/app_list/views/contents_view.h"
 #include "ash/app_list/views/paged_apps_grid_view.h"
 #include "ash/app_list/views/search_box_view.h"
-#include "ash/app_list/views/suggestion_chip_container_view.h"
 #include "ash/assistant/model/assistant_ui_model.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
-#include "ash/ime/ime_controller_impl.h"
-#include "ash/ime/test_ime_controller_client.h"
 #include "ash/keyboard/keyboard_controller_impl.h"
 #include "ash/keyboard/ui/test/keyboard_test_util.h"
-#include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/public/cpp/assistant/controller/assistant_ui_controller.h"
 #include "ash/public/cpp/session/session_types.h"
 #include "ash/public/cpp/shelf_config.h"
@@ -42,30 +37,24 @@
 #include "ash/public/cpp/test/assistant_test_api.h"
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/public/cpp/test/test_shelf_item_delegate.h"
-#include "ash/public/cpp/window_properties.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shelf/shelf.h"
-#include "ash/shelf/shelf_layout_manager.h"
 #include "ash/shelf/shelf_view.h"
 #include "ash/shelf/shelf_view_test_api.h"
 #include "ash/shelf/shelf_widget.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/layer_animation_stopped_waiter.h"
-#include "ash/test/test_widget_builder.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
-#include "base/bind.h"
 #include "base/i18n/number_formatting.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/test/with_feature_override.h"
 #include "components/session_manager/session_manager_types.h"
-#include "ui/base/emoji/emoji_panel_helper.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/presentation_time_recorder.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
@@ -233,86 +222,6 @@ TEST_F(AppListControllerImplTest, AppListHiddenWhenShelfAlignmentChanges) {
   }
 }
 
-// In clamshell mode, when the AppListView's bottom is on the display edge
-// and app list state is HALF, the rounded corners should be hidden
-// (https://crbug.com/942084).
-TEST_F(AppListControllerImplTest, HideRoundingCorners) {
-  Shell::Get()->keyboard_controller()->SetEnableFlag(
-      keyboard::KeyboardEnableFlag::kShelfEnabled);
-
-  // Show the app list view and click on the search box with mouse. So the
-  // VirtualKeyboard is shown.
-  ShowAppListNow(AppListViewState::kPeeking);
-  GetSearchBoxView()->SetSearchBoxActive(true, ui::ET_MOUSE_PRESSED);
-
-  // Wait until the virtual keyboard shows on the screen.
-  base::RunLoop().RunUntilIdle();
-  EXPECT_TRUE(GetVirtualKeyboardWindow()->IsVisible());
-
-  // Test the following things:
-  // (1) AppListView is at the top of the screen.
-  // (2) AppListView's state is HALF.
-  // (3) AppListBackgroundShield is translated to hide the rounded corners.
-  aura::Window* native_window = GetAppListView()->GetWidget()->GetNativeView();
-  gfx::Rect app_list_screen_bounds = native_window->GetBoundsInScreen();
-  EXPECT_EQ(0, app_list_screen_bounds.y());
-  EXPECT_EQ(AppListViewState::kHalf, GetAppListView()->app_list_state());
-  gfx::Transform expected_transform;
-  expected_transform.Translate(0, -(ShelfConfig::Get()->shelf_size() / 2));
-  EXPECT_EQ(
-      expected_transform,
-      GetAppListView()->GetAppListBackgroundShieldForTest()->GetTransform());
-
-  // Set the search box inactive and wait until the virtual keyboard is hidden.
-  GetSearchBoxView()->SetSearchBoxActive(false, ui::ET_MOUSE_PRESSED);
-  base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(nullptr, GetVirtualKeyboardWindow());
-
-  // Test that the rounded corners should show again.
-  expected_transform = gfx::Transform();
-  EXPECT_EQ(
-      expected_transform,
-      GetAppListView()->GetAppListBackgroundShieldForTest()->GetTransform());
-}
-
-// Verify that when the emoji panel shows and AppListView is in Peeking state,
-// AppListView's rounded corners should be hidden (see https://crbug.com/950468)
-TEST_F(AppListControllerImplTest, HideRoundingCornersWhenEmojiShows) {
-  ui::SetShowEmojiKeyboardCallback(
-      base::BindRepeating(ui::ShowTabletModeEmojiPanel));
-  // Set IME client. Otherwise the emoji panel is unable to show.
-  ImeController* ime_controller = Shell::Get()->ime_controller();
-  TestImeControllerClient client;
-  ime_controller->SetClient(&client);
-
-  // Show the app list view and right-click on the search box with mouse. So the
-  // text field's context menu shows.
-  ShowAppListNow(AppListViewState::kPeeking);
-  SearchBoxView* search_box_view =
-      GetAppListView()->app_list_main_view()->search_box_view();
-  RightClickOn(search_box_view);
-
-  // Expect that the first item in the context menu should be "Emoji". Show the
-  // emoji panel.
-  auto text_field_api =
-      std::make_unique<views::TextfieldTestApi>(search_box_view->search_box());
-  ASSERT_EQ("Emoji",
-            base::UTF16ToUTF8(
-                text_field_api->context_menu_contents()->GetLabelAt(0)));
-  text_field_api->context_menu_contents()->ActivatedAt(0);
-
-  // Wait for enough time. Then expect that AppListView is pushed up.
-  base::RunLoop().RunUntilIdle();
-  ASSERT_EQ(gfx::Point(0, 0), GetAppListView()->GetBoundsInScreen().origin());
-
-  // AppListBackgroundShield is translated to hide the rounded corners.
-  gfx::Transform expected_transform;
-  expected_transform.Translate(0, -(ShelfConfig::Get()->shelf_size() / 2));
-  EXPECT_EQ(
-      expected_transform,
-      GetAppListView()->GetAppListBackgroundShieldForTest()->GetTransform());
-}
-
 // Verifies that the dragged item has the correct focusable siblings after drag
 // (https://crbug.com/990071).
 TEST_F(AppListControllerImplTest, CheckTabOrderAfterDragIconToShelf) {
@@ -380,64 +289,6 @@ TEST_F(AppListControllerImplTest, PageResetByTimerInTabletMode) {
   // Once the app list is closed, the page should be reset when the timer is
   // skipped.
   EXPECT_EQ(0, apps_grid_view->pagination_model()->selected_page());
-}
-
-// Verifies that in clamshell mode the bounds of AppListView are correct when
-// the AppListView is in PEEKING state and the virtual keyboard is enabled (see
-// https://crbug.com/944233).
-TEST_F(AppListControllerImplTest, CheckAppListViewBoundsWhenVKeyboardEnabled) {
-  Shell::Get()->keyboard_controller()->SetEnableFlag(
-      keyboard::KeyboardEnableFlag::kShelfEnabled);
-
-  // Show the AppListView and click on the search box with mouse. So the
-  // VirtualKeyboard is shown. Wait until the virtual keyboard shows.
-  ShowAppListNow(AppListViewState::kPeeking);
-  GetSearchBoxView()->SetSearchBoxActive(true, ui::ET_MOUSE_PRESSED);
-  base::RunLoop().RunUntilIdle();
-  EXPECT_TRUE(GetVirtualKeyboardWindow()->IsVisible());
-
-  // Hide the AppListView. Wait until the virtual keyboard is hidden as well.
-  DismissAppListNow();
-  base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(nullptr, GetVirtualKeyboardWindow());
-
-  // Show the AppListView again. Check the following things:
-  // (1) Virtual keyboard does not show.
-  // (2) AppListView is in PEEKING state.
-  // (3) AppListView's bounds are the same as the preferred bounds for
-  // the PEEKING state.
-  ShowAppListNow(AppListViewState::kPeeking);
-  base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(AppListViewState::kPeeking, GetAppListView()->app_list_state());
-  EXPECT_EQ(nullptr, GetVirtualKeyboardWindow());
-  EXPECT_EQ(GetAppListView()->GetPreferredWidgetBoundsForState(
-                AppListViewState::kPeeking),
-            GetAppListViewNativeWindow()->bounds());
-}
-
-// Verifies that the the virtual keyboard does not get shown if the search box
-// is activated by user typing when the app list in the peeking state.
-TEST_F(AppListControllerImplTest, VirtualKeyboardNotShownWhenUserStartsTyping) {
-  Shell::Get()->keyboard_controller()->SetEnableFlag(
-      keyboard::KeyboardEnableFlag::kShelfEnabled);
-
-  // Show the AppListView, then simulate a key press - verify that the virtual
-  // keyboard is not shown.
-  ShowAppListNow(AppListViewState::kPeeking);
-  EXPECT_EQ(AppListViewState::kPeeking, GetAppListView()->app_list_state());
-  PressAndReleaseKey(ui::KeyboardCode::VKEY_0);
-  EXPECT_EQ(AppListViewState::kHalf, GetAppListView()->app_list_state());
-
-  base::RunLoop().RunUntilIdle();
-  EXPECT_FALSE(GetVirtualKeyboardWindow()->IsVisible());
-
-  // The keyboard should get shown if the user taps on the search box.
-  GestureTapOn(GetAppListView()->search_box_view());
-  ASSERT_TRUE(keyboard::WaitUntilShown());
-
-  DismissAppListNow();
-  base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(nullptr, GetVirtualKeyboardWindow());
 }
 
 // Verifies that in clamshell mode the AppListView bounds remain in the
@@ -658,7 +509,8 @@ TEST_F(AppListControllerImplTest,
   PressHomeButton();
 
   EXPECT_FALSE(shell->overview_controller()->InOverviewSession());
-  EXPECT_EQ(AppListViewState::kPeeking, GetAppListView()->app_list_state());
+  EXPECT_EQ(AppListViewState::kFullscreenAllApps,
+            GetAppListView()->app_list_state());
   GetAppListTestHelper()->CheckVisibility(true);
   ASSERT_TRUE(GetAppListView()->GetWidget());
   EXPECT_TRUE(GetAppListView()->GetWidget()->GetNativeWindow()->IsVisible());
@@ -915,209 +767,6 @@ TEST_F(AppListControllerImplTest, CreatePage) {
 
   // Verify that there is no page break items.
   EXPECT_EQ(0, CountPageBreakItems());
-}
-
-// The test parameter indicates whether the shelf should auto-hide. In either
-// case the animation behaviors should be the same.
-class AppListAnimationTest : public AshTestBase,
-                             public testing::WithParamInterface<bool> {
- public:
-  AppListAnimationTest() = default;
-
-  AppListAnimationTest(const AppListAnimationTest&) = delete;
-  AppListAnimationTest& operator=(const AppListAnimationTest&) = delete;
-
-  ~AppListAnimationTest() override = default;
-
-  void SetUp() override {
-    AshTestBase::SetUp();
-
-    Shelf* const shelf = AshTestBase::GetPrimaryShelf();
-    shelf->SetAlignment(ShelfAlignment::kBottom);
-
-    if (GetParam()) {
-      shelf->SetAutoHideBehavior(ShelfAutoHideBehavior::kAlways);
-    }
-
-    // The shelf should be shown at this point despite auto hide behavior, given
-    // that no windows are shown.
-    shown_shelf_bounds_ = shelf->shelf_widget()->GetWindowBoundsInScreen();
-  }
-
-  int GetAppListCurrentTop() {
-    gfx::Point app_list_top =
-        GetAppListView()->GetBoundsInScreen().top_center();
-    GetAppListView()->GetWidget()->GetLayer()->transform().TransformPoint(
-        &app_list_top);
-    return app_list_top.y();
-  }
-
-  int GetAppListTargetTop() {
-    gfx::Point app_list_top =
-        GetAppListView()->GetBoundsInScreen().top_center();
-    GetAppListView()
-        ->GetWidget()
-        ->GetLayer()
-        ->GetTargetTransform()
-        .TransformPoint(&app_list_top);
-    return app_list_top.y();
-  }
-
-  int shown_shelf_top() const { return shown_shelf_bounds_.y(); }
-
-  // The offset that should be animated between kPeeking and kClosed app list
-  // view states - the vertical distance between shelf top (in shown state) and
-  // the app list top in peeking state.
-  int PeekingHeightOffset() const {
-    return shown_shelf_bounds_.y() - PeekingHeightTop();
-  }
-
-  // The app list view y coordinate in peeking state.
-  int PeekingHeightTop() const {
-    return shown_shelf_bounds_.bottom() -
-           GetAppListView()->GetHeightForState(AppListViewState::kPeeking);
-  }
-
- private:
-  // Set during setup.
-  gfx::Rect shown_shelf_bounds_;
-};
-
-INSTANTIATE_TEST_SUITE_P(AutoHideShelf, AppListAnimationTest, testing::Bool());
-
-// Tests app list animation to peeking state.
-TEST_P(AppListAnimationTest, AppListShowPeekingAnimation) {
-  // Set the normal transition duration so tests can easily determine intended
-  // animation length, and calculate expected app list position at different
-  // animation step points. Also, prevents the app list view to snapping to the
-  // final position.
-  ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
-
-  ShowAppListNow(AppListViewState::kPeeking);
-
-  // Verify that the app list view's top matches the shown shelf top as the show
-  // animation starts.
-  EXPECT_EQ(shown_shelf_top(), GetAppListCurrentTop());
-  EXPECT_EQ(PeekingHeightTop(), GetAppListTargetTop());
-}
-
-// Tests app list animation from peeking to closed state.
-TEST_P(AppListAnimationTest, AppListCloseFromPeekingAnimation) {
-  ShowAppListNow(AppListViewState::kPeeking);
-
-  // Set the normal transition duration so tests can easily determine intended
-  // animation length, and calculate expected app list position at different
-  // animation step points. Also, prevents the app list view to snapping to the
-  // final position.
-  ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
-
-  // Dismiss app list, initial app list position should be at peeking height.
-  const int offset_to_animate = PeekingHeightOffset();
-  DismissAppListNow();
-  EXPECT_EQ(shown_shelf_top() - offset_to_animate, GetAppListCurrentTop());
-  EXPECT_EQ(shown_shelf_top(), GetAppListTargetTop());
-}
-
-// Tests app list close animation when app list gets dismissed while animating
-// to peeking state.
-TEST_P(AppListAnimationTest, AppListDismissWhileShowingPeeking) {
-  // Set the normal transition duration so tests can easily determine intended
-  // animation length, and calculate expected app list position at different
-  // animation step points. Also, prevents the app list view to snapping to the
-  // final position.
-  ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
-
-  ShowAppListNow(AppListViewState::kPeeking);
-
-  // Verify that the app list view's top matches the shown shelf top as the show
-  // animation starts.
-  EXPECT_EQ(shown_shelf_top(), GetAppListCurrentTop());
-  EXPECT_EQ(PeekingHeightTop(), GetAppListTargetTop());
-
-  // Start dismissing app list. Verify the new animation starts at the same
-  // point the show animation ended.
-  DismissAppListNow();
-
-  EXPECT_EQ(shown_shelf_top(), GetAppListTargetTop());
-}
-
-// Tests app list animation when show is requested while app list close
-// animation is in progress.
-TEST_P(AppListAnimationTest, AppListShowPeekingWhileClosing) {
-  // Show app list while animations are still instantanious.
-  ShowAppListNow(AppListViewState::kPeeking);
-
-  // Set the normal transition duration so tests can easily determine intended
-  // animation length, and calculate expected app list position at different
-  // animation step points. Also, prevents the app list view to snapping to the
-  // final position.
-  ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
-
-  int offset_to_animate = PeekingHeightOffset();
-  DismissAppListNow();
-
-  // Verify that the app list view's top initially matches the peeking height.
-  EXPECT_EQ(shown_shelf_top() - offset_to_animate, GetAppListCurrentTop());
-  EXPECT_EQ(shown_shelf_top(), GetAppListTargetTop());
-
-  // Start showing the app list. Verify the new animation starts at the same
-  // point the show animation ended.
-  ShowAppListNow(AppListViewState::kPeeking);
-
-  EXPECT_EQ(PeekingHeightTop(), GetAppListTargetTop());
-}
-
-// Tests that how search box opacity is animated when the app list is shown and
-// closed.
-TEST_P(AppListAnimationTest, SearchBoxOpacityDuringShowAndClose) {
-  // Set a transition duration that prevents the app list view from snapping to
-  // the final position.
-  ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
-
-  ShowAppListNow(AppListViewState::kPeeking);
-
-  SearchBoxView* const search_box = GetSearchBoxView();
-
-  // The search box opacity should start  at 0, and animate to 1.
-  EXPECT_EQ(0.0f, search_box->layer()->opacity());
-  EXPECT_EQ(1.0f, search_box->layer()->GetTargetOpacity());
-
-  // If the app list is closed while the animation is still in progress, the
-  // search box opacity should animate from the current opacity.
-  DismissAppListNow();
-
-  EXPECT_EQ(0.0f, search_box->layer()->opacity());
-  EXPECT_EQ(0.0f, search_box->layer()->GetTargetOpacity());
-
-  search_box->layer()->GetAnimator()->StopAnimating();
-
-  // When show again, verify the app list animates from 0 opacity again.
-  ShowAppListNow(AppListViewState::kPeeking);
-
-  EXPECT_EQ(0.0f, search_box->layer()->opacity());
-  EXPECT_EQ(1.0f, search_box->layer()->GetTargetOpacity());
-
-  search_box->layer()->GetAnimator()->StopAnimating();
-  EXPECT_EQ(1.0f, search_box->layer()->opacity());
-
-  // Search box opacity animates from the current (full opacity) when closed
-  // from shown state.
-  DismissAppListNow();
-
-  EXPECT_EQ(1.0f, search_box->layer()->opacity());
-  EXPECT_EQ(0.0f, search_box->layer()->GetTargetOpacity());
-
-  // If the app list is show again during close animation, the search box
-  // opacity should animate from the current value.
-  ShowAppListNow(AppListViewState::kPeeking);
-
-  EXPECT_EQ(1.0f, search_box->layer()->opacity());
-  EXPECT_EQ(1.0f, search_box->layer()->GetTargetOpacity());
 }
 
 class AppListControllerImplMetricsTest : public AshTestBase {
