@@ -764,12 +764,16 @@ void TextfieldModel::SetCompositionText(
 
 #if BUILDFLAG(IS_CHROMEOS)
 bool TextfieldModel::SetAutocorrectRange(const gfx::Range& range) {
-  // TODO(crbug.com/1108170): Add an underline to |range|.
   if (range.GetMax() > render_text()->text().length()) {
     return false;
   }
   autocorrect_range_ = range;
-  return true;
+
+  // TODO(b/161490813): Update |autocorrect_range_| and show underline.
+  //  Autocorrect range needs to be updated based on user text inputs and an
+  //  underline should be shown for the range.
+  NOTIMPLEMENTED_LOG_ONCE();
+  return false;
 }
 #endif
 
