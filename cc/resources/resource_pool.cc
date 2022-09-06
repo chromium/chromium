@@ -591,15 +591,15 @@ bool ResourcePool::OnMemoryDump(const base::trace_event::MemoryDumpArgs& args,
   } else {
     for (const auto& resource : unused_resources_) {
       resource->OnMemoryDump(pmd, tracing_id_, resource_provider_,
-                             true /* is_free */);
+                             true /* is_free */, false /* is_busy */);
     }
     for (const auto& resource : busy_resources_) {
       resource->OnMemoryDump(pmd, tracing_id_, resource_provider_,
-                             false /* is_free */);
+                             false /* is_free */, true /* is_busy */);
     }
     for (const auto& entry : in_use_resources_) {
       entry.second->OnMemoryDump(pmd, tracing_id_, resource_provider_,
-                                 false /* is_free */);
+                                 false /* is_free */, false /* is_busy */);
     }
   }
   return true;
@@ -635,7 +635,8 @@ void ResourcePool::PoolResource::OnMemoryDump(
     base::trace_event::ProcessMemoryDump* pmd,
     int tracing_id,
     const viz::ClientResourceProvider* resource_provider,
-    bool is_free) const {
+    bool is_free,
+    bool is_busy) const {
   // Resource IDs are not process-unique, so log with the ResourcePool's unique
   // tracing id.
   const std::string dump_name = base::StringPrintf(
@@ -665,6 +666,8 @@ void ResourcePool::PoolResource::OnMemoryDump(
 
   uint64_t free_size = is_free ? total_bytes : 0u;
   dump->AddScalar("free_size", MemoryAllocatorDump::kUnitsBytes, free_size);
+  uint64_t busy_size = is_busy ? total_bytes : 0u;
+  dump->AddScalar("busy_size", MemoryAllocatorDump::kUnitsBytes, busy_size);
 }
 
 }  // namespace cc
