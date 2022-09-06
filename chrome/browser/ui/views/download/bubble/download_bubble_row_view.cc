@@ -364,6 +364,8 @@ DownloadBubbleRowView::DownloadBubbleRowView(
   show_in_folder_action_ = AddQuickAction(DownloadCommands::SHOW_IN_FOLDER);
   quick_action_holder_->SetVisible(false);
   layout->SetChildViewIgnoredByLayout(quick_action_holder_, true);
+  quick_action_holder_->SetBackground(
+      views::CreateThemedSolidBackground(ui::kColorDialogBackground));
 
   subpage_icon_holder_ =
       AddChildView(std::make_unique<views::FlexLayoutView>());
