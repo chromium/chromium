@@ -291,8 +291,6 @@ ci.gpu.mac_builder(
         category = "Mac|Builder",
         short_name = "rel",
     ),
-    goma_backend = goma.backend.RBE_PROD,
-    reclient_instance = None,
 )
 
 ci.gpu.mac_builder(
@@ -309,8 +307,6 @@ ci.gpu.mac_builder(
         category = "Mac|Builder",
         short_name = "dbg",
     ),
-    goma_backend = goma.backend.RBE_PROD,
-    reclient_instance = None,
 )
 
 ci.gpu.mac_builder(
