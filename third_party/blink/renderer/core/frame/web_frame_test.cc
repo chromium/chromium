@@ -6728,8 +6728,10 @@ class CompositedSelectionBoundsTest
   static int LayerIdFromNode(const cc::Layer* root_layer, blink::Node* node) {
     Vector<const cc::Layer*> layers;
     if (node->IsDocumentNode()) {
-      layers = CcLayersByName(root_layer,
-                              "Scrolling background of LayoutView #document");
+      layers = CcLayersByName(
+          root_layer, RuntimeEnabledFeatures::LayoutNGViewEnabled()
+                          ? "Scrolling background of LayoutNGView #document"
+                          : "Scrolling background of LayoutView #document");
     } else {
       DCHECK(node->IsElementNode());
       layers = CcLayersByDOMElementId(root_layer,
@@ -8794,7 +8796,9 @@ TEST_F(WebFrameTest, WebXrImmersiveOverlay) {
 
   const cc::Layer* root_layer = layer_tree_host->root_layer();
   const char* view_background_layer_name =
-      "Scrolling background of LayoutView #document";
+      RuntimeEnabledFeatures::LayoutNGViewEnabled()
+          ? "Scrolling background of LayoutNGView #document"
+          : "Scrolling background of LayoutView #document";
   EXPECT_EQ(1u, CcLayersByName(root_layer, view_background_layer_name).size());
   EXPECT_EQ(1u, CcLayersByDOMElementId(root_layer, "other").size());
   // The overlay is not composited when it's not in full screen.
