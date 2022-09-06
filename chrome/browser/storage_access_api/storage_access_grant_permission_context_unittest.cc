@@ -42,8 +42,20 @@ class StorageAccessGrantPermissionContextTest
     : public ChromeRenderViewHostTestHarness {
  public:
   explicit StorageAccessGrantPermissionContextTest(bool saa_enabled) {
-    features_.InitWithFeatureState(net::features::kStorageAccessAPI,
-                                   saa_enabled);
+    std::vector<base::test::ScopedFeatureList::FeatureAndParams> enabled;
+    std::vector<base::Feature> disabled;
+    if (saa_enabled) {
+      enabled.push_back({net::features::kStorageAccessAPI,
+                         {
+                             {
+                                 "storage_access_api_auto_deny_outside_fps",
+                                 "false",
+                             },
+                         }});
+    } else {
+      disabled.push_back(net::features::kStorageAccessAPI);
+    }
+    features_.InitWithFeaturesAndParameters(enabled, disabled);
   }
 
   void SetUp() override {

@@ -13,6 +13,7 @@
 #include "base/base64.h"
 #include "base/bind.h"
 #include "base/build_time.h"
+#include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/dcheck_is_on.h"
@@ -21,6 +22,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/current_thread.h"
@@ -2925,6 +2927,24 @@ bool NetworkContext::IsAllowedToUseAllHttpAuthSchemes(
     const url::SchemeHostPort& scheme_host_port) {
   DCHECK(url_matcher_);
   return !url_matcher_->MatchURL(scheme_host_port.GetURL()).empty();
+}
+
+void NetworkContext::ComputeFirstPartySetMetadata(
+    const net::SchemefulSite& site,
+    const absl::optional<net::SchemefulSite>& top_frame_site,
+    const std::vector<net::SchemefulSite>& party_context,
+    ComputeFirstPartySetMetadataCallback callback) {
+  auto callbacks = base::SplitOnceCallback(std::move(callback));
+
+  if (absl::optional<net::FirstPartySetMetadata> sync_metadata =
+          first_party_sets_access_delegate_.ComputeMetadata(
+              site, base::OptionalOrNullptr(top_frame_site),
+              std::set<net::SchemefulSite>(party_context.begin(),
+                                           party_context.end()),
+              std::move(callbacks.first));
+      sync_metadata.has_value()) {
+    std::move(callbacks.second).Run(std::move(sync_metadata).value());
+  }
 }
 
 void NetworkContext::CreateTrustedUrlLoaderFactoryForNetworkService(

@@ -341,6 +341,10 @@ const base::FeatureParam<bool> kStorageAccessAPIGrantsUnpartitionedStorage(
     &kStorageAccessAPI,
     "storage-access-api-grants-unpartitioned-storage",
     false);
+const base::FeatureParam<bool> kStorageAccessAPIAutoGrantInFPS{
+    &kStorageAccessAPI, "storage_access_api_auto_grant_in_fps", true};
+const base::FeatureParam<bool> kStorageAccessAPIAutoDenyOutsideFPS{
+    &kStorageAccessAPI, "storage_access_api_auto_deny_outside_fps", true};
 
 // Enables partitioning of third party storage (IndexedDB, CacheStorage, etc.)
 // by the top level site to reduce fingerprinting.

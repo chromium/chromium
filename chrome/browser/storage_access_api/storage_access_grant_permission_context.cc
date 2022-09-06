@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
@@ -15,11 +16,16 @@
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
+#include "components/permissions/permission_request_id.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
+#include "content/public/common/content_features.h"
 #include "net/base/features.h"
+#include "net/first_party_sets/first_party_set_metadata.h"
+#include "net/first_party_sets/same_party_context.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
+#include "services/network/public/mojom/network_context.mojom.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom.h"
 
@@ -74,6 +80,71 @@ void StorageAccessGrantPermissionContext::DecidePermission(
     return;
   }
 
+  if (!base::FeatureList::IsEnabled(features::kFirstPartySets) ||
+      (!net::features::kStorageAccessAPIAutoGrantInFPS.Get() &&
+       !net::features::kStorageAccessAPIAutoDenyOutsideFPS.Get())) {
+    // First-Party Sets is disabled, or Auto-grants and auto-denials are both
+    // disabled, so don't bother getting First-Party Sets data.
+    UseImplicitGrantOrPrompt(id, requesting_origin, embedding_origin,
+                             user_gesture, std::move(callback));
+    return;
+  }
+
+  return browser_context()
+      ->GetDefaultStoragePartition()
+      ->GetNetworkContext()
+      ->ComputeFirstPartySetMetadata(
+          net::SchemefulSite(requesting_origin),
+          net::SchemefulSite(embedding_origin), /*party_context=*/{},
+          base::BindOnce(&StorageAccessGrantPermissionContext::
+                             CheckForAutoGrantOrAutoDenial,
+                         weak_factory_.GetWeakPtr(), id, requesting_origin,
+                         embedding_origin, user_gesture, std::move(callback)));
+}
+
+void StorageAccessGrantPermissionContext::CheckForAutoGrantOrAutoDenial(
+    const permissions::PermissionRequestID& id,
+    const GURL& requesting_origin,
+    const GURL& embedding_origin,
+    bool user_gesture,
+    permissions::BrowserPermissionCallback callback,
+    net::FirstPartySetMetadata metadata) {
+  // We should only run this method if something might need the FPS metadata.
+  DCHECK(net::features::kStorageAccessAPIAutoGrantInFPS.Get() ||
+         net::features::kStorageAccessAPIAutoDenyOutsideFPS.Get());
+  switch (metadata.context().context_type()) {
+    case net::SamePartyContext::Type::kCrossParty:
+      if (net::features::kStorageAccessAPIAutoDenyOutsideFPS.Get()) {
+        NotifyPermissionSetInternal(
+            id, requesting_origin, embedding_origin, std::move(callback),
+            /*persist=*/true, CONTENT_SETTING_BLOCK, /*implicit_result=*/true);
+        return;
+      }
+      // Not autodenying; fall back to implicit grants or prompt.
+      break;
+    case net::SamePartyContext::Type::kSameParty:
+      if (net::features::kStorageAccessAPIAutoGrantInFPS.Get()) {
+        // Since the sites are in the same First-Party Set, risk of abuse due to
+        // allowing access is considered to be low.
+        NotifyPermissionSetInternal(
+            id, requesting_origin, embedding_origin, std::move(callback),
+            /*persist=*/true, CONTENT_SETTING_ALLOW, /*implicit_result=*/true);
+        return;
+      }
+      // Not autogranting; fall back to implicit grants or prompt.
+      break;
+  }
+
+  return UseImplicitGrantOrPrompt(id, requesting_origin, embedding_origin,
+                                  user_gesture, std::move(callback));
+}
+
+void StorageAccessGrantPermissionContext::UseImplicitGrantOrPrompt(
+    const permissions::PermissionRequestID& id,
+    const GURL& requesting_origin,
+    const GURL& embedding_origin,
+    bool user_gesture,
+    permissions::BrowserPermissionCallback callback) {
   HostContentSettingsMap* settings_map =
       HostContentSettingsMapFactory::GetForProfile(browser_context());
   DCHECK(settings_map);
@@ -94,9 +165,10 @@ void StorageAccessGrantPermissionContext::DecidePermission(
   // If we have fewer grants than our limit, we can just set an implicit grant
   // now and skip prompting the user.
   if (existing_implicit_grants < GetImplicitGrantLimit()) {
-    NotifyPermissionSetInternal(
-        id, requesting_origin, embedding_origin, std::move(callback),
-        /*persist=*/true, CONTENT_SETTING_ALLOW, /*implicit_result=*/true);
+    NotifyPermissionSetInternal(id, requesting_origin, embedding_origin,
+                                std::move(callback),
+                                /*persist=*/true, CONTENT_SETTING_ALLOW,
+                                /*implicit_result=*/true);
     return;
   }
 
@@ -170,10 +242,10 @@ void StorageAccessGrantPermissionContext::NotifyPermissionSetInternal(
   DCHECK(settings_map);
   DCHECK(persist);
 
-  static const content_settings::ContentSettingConstraints implicit_grant = {
+  static const content_settings::ContentSettingConstraints ephemeral_grant = {
       content_settings::GetConstraintExpiration(kImplicitGrantDuration),
       content_settings::SessionModel::UserSession};
-  static const content_settings::ContentSettingConstraints explicit_grant = {
+  static const content_settings::ContentSettingConstraints durable_grant = {
       content_settings::GetConstraintExpiration(kExplicitGrantDuration),
       content_settings::SessionModel::Durable};
 
@@ -182,7 +254,7 @@ void StorageAccessGrantPermissionContext::NotifyPermissionSetInternal(
   // grant.
   settings_map->SetContentSettingDefaultScope(
       requesting_origin, embedding_origin, ContentSettingsType::STORAGE_ACCESS,
-      content_setting, implicit_result ? implicit_grant : explicit_grant);
+      content_setting, implicit_result ? ephemeral_grant : durable_grant);
 
   ContentSettingsForOneType grants;
   settings_map->GetSettingsForOneType(ContentSettingsType::STORAGE_ACCESS,

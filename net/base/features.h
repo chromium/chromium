@@ -484,6 +484,14 @@ NET_EXPORT extern const base::FeatureParam<int>
 // granted if the storage is partitioned.
 NET_EXPORT extern const base::FeatureParam<bool>
     kStorageAccessAPIGrantsUnpartitionedStorage;
+// Whether to auto-grant storage access requests when the top level origin and
+// the requesting origin are in the same First-Party Set.
+NET_EXPORT extern const base::FeatureParam<bool>
+    kStorageAccessAPIAutoGrantInFPS;
+// Whether to auto-deny storage access requests when the top level origin and
+// the requesting origin are not in the same First-Party Set.
+NET_EXPORT extern const base::FeatureParam<bool>
+    kStorageAccessAPIAutoDenyOutsideFPS;
 
 NET_EXPORT extern const base::Feature kThirdPartyStoragePartitioning;
 
