@@ -4,8 +4,7 @@
 
 package org.chromium.chrome.browser.omnibox;
 
-import android.graphics.drawable.Drawable;
-import android.view.View;
+import androidx.annotation.ColorInt;
 
 /**
  * A supplement to {@link LocationBarCoordinator} with methods specific to larger devices.
@@ -23,13 +22,10 @@ public class LocationBarCoordinatorTablet implements LocationBarCoordinator.SubC
     }
 
     /**
-     * Gets the background drawable.
-     *
+     * Sets the color of the background.
      * <p>TODO(1133482): Hide this View interaction if possible.
-     *
-     * @see View#getBackground()
      */
-    public Drawable getBackground() {
-        return mLocationBarTablet.getBackground();
+    public void tintBackground(@ColorInt int color) {
+        mLocationBarTablet.getBackground().mutate().setTint(color);
     }
 }
