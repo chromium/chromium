@@ -505,9 +505,6 @@ crbug.com/1359408 [ fuchsia fuchsia-board-qemu-x64 ] deqp/data/gles2/shaders/con
 # Win failures     #
 ####################
 
-# Intel OpenGL driver issue, fixed in 27.20.100.9126
-crbug.com/angleproject/5543 [ win intel angle-opengl passthrough ] conformance/extensions/webgl-compressed-texture-s3tc-srgb.html [ Failure ]
-
 # Consistent failures in functions.control_flow.return_in_nested_loop_vertex and functions.control_flow.return_in_nested_loop_fragment
 # Possible HLSL compiler bug.
 crbug.com/478572 [ win angle-d3d9 passthrough ] deqp/data/gles2/shaders/functions.html [ Failure ]
@@ -527,9 +524,6 @@ crbug.com/1152602 [ win amd-0x7340 angle-d3d11 ] conformance/canvas/drawingbuffe
 
 # The functions test have been persistently flaky on D3D9
 crbug.com/956134 [ win angle-d3d9 ] conformance/extensions/webgl-depth-texture.html [ Failure ]
-
-# Mark ANGLE's OpenGL as flaky on Windows Nvidia
-crbug.com/582083 [ win nvidia angle-opengl ] conformance/* [ RetryOnFailure ]
 
 # D3D9 / AMD RX 5500 XT / Passthrough command decoder
 crbug.com/1159126 [ win amd-0x7340 angle-d3d9 passthrough ] conformance/more/glsl/uniformOutOfBounds.html [ RetryOnFailure ]
