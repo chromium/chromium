@@ -2250,6 +2250,72 @@ TEST(ServiceWorkerDatabaseTest, UpdateLastCheckTime) {
                                           base::Time::Now()));
 }
 
+TEST(ServiceWorkerDatabaseTest, UpdateFetchHandlerType) {
+  std::unique_ptr<ServiceWorkerDatabase> database(CreateDatabaseInMemory());
+  GURL origin("https://example.com");
+  blink::StorageKey key(url::Origin::Create(origin));
+  ServiceWorkerDatabase::DeletedVersion deleted_version;
+
+  // Should be false because a registration does not exist.
+  EXPECT_EQ(ServiceWorkerDatabase::Status::kErrorNotFound,
+            database->UpdateLastCheckTime(0, key, base::Time::Now()));
+
+  // Add a registration.
+  RegistrationData data;
+  data.registration_id = 100;
+  data.scope = URL(origin, "/foo");
+  data.key = key;
+  data.script = URL(origin, "/script.js");
+  data.version_id = 200;
+  data.last_update_check = base::Time::Now();
+  data.fetch_handler_type =
+      blink::mojom::ServiceWorkerFetchHandlerType::kNotSkippable;
+  data.resources_total_size_bytes = 100;
+  data.policy_container_policies = blink::mojom::PolicyContainerPolicies::New();
+  std::vector<ResourceRecordPtr> resources;
+  resources.push_back(CreateResource(1, data.script, 100));
+  EXPECT_EQ(ServiceWorkerDatabase::Status::kOk,
+            database->WriteRegistration(data, resources, &deleted_version));
+
+  // Make sure that the registration is stored.
+  RegistrationDataPtr data_out;
+  std::vector<ResourceRecordPtr> resources_out;
+  EXPECT_EQ(ServiceWorkerDatabase::Status::kOk,
+            database->ReadRegistration(data.registration_id, key, &data_out,
+                                       &resources_out));
+  VerifyRegistrationData(data, *data_out);
+  EXPECT_EQ(1u, resources_out.size());
+
+  // Update the fetch handler type.
+  EXPECT_EQ(ServiceWorkerDatabase::Status::kOk,
+            database->UpdateFetchHandlerType(
+                data.registration_id, key,
+                blink::mojom::ServiceWorkerFetchHandlerType::kNoHandler));
+
+  // Make sure that the registration is updated.
+  resources_out.clear();
+  EXPECT_EQ(ServiceWorkerDatabase::Status::kOk,
+            database->ReadRegistration(data.registration_id, key, &data_out,
+                                       &resources_out));
+  mojom::ServiceWorkerRegistrationDataPtr expected_data = data.Clone();
+  expected_data->fetch_handler_type =
+      blink::mojom::ServiceWorkerFetchHandlerType::kNoHandler;
+  VerifyRegistrationData(*expected_data, *data_out);
+  EXPECT_EQ(1u, resources_out.size());
+
+  // Delete the registration.
+  EXPECT_EQ(ServiceWorkerDatabase::Status::kOk,
+            database->DeleteRegistration(data.registration_id, key,
+                                         &deleted_version));
+  EXPECT_EQ(data.registration_id, deleted_version.registration_id);
+
+  // Should be false because the registration is gone.
+  EXPECT_EQ(ServiceWorkerDatabase::Status::kErrorNotFound,
+            database->UpdateFetchHandlerType(
+                data.registration_id, key,
+                blink::mojom::ServiceWorkerFetchHandlerType::kNotSkippable));
+}
+
 TEST(ServiceWorkerDatabaseTest, UncommittedAndPurgeableResourceIds) {
   std::unique_ptr<ServiceWorkerDatabase> database(CreateDatabaseInMemory());
 

@@ -770,6 +770,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ServiceWorker.OnStarted.UpdatedFetchHandlerType"
+    enum="ServiceWorkerFetchHandlerType" expires_after="2023-06-30">
+  <owner>yyanagisawa@chromium.org</owner>
+  <owner>chrome-worker@google.com</owner>
+  <summary>
+    The type of the fetch handler type to be stored in the database for update.
+
+    During the start of ServiceWorker, the fetch handler type is decided, and
+    sent via OnStarted. If the fetch handler type is different from the fetch
+    handler type already recognized and stored before, it will eventually be
+    updated when it is read from the database next time.
+
+    This metrics records the name of the new fetch handler detected.
+  </summary>
+</histogram>
+
 <histogram name="ServiceWorker.PaymentRequestEvent.Time" units="ms"
     expires_after="2022-11-22">
   <owner>rouslan@chromium.org</owner>

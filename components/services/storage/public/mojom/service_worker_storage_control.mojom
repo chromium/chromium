@@ -4,12 +4,13 @@
 
 module storage.mojom;
 
-import "components/services/storage/public/mojom/storage_policy_update.mojom";
 import "components/services/storage/public/mojom/service_worker_database.mojom";
-import "third_party/blink/public/mojom/storage_key/storage_key.mojom";
+import "components/services/storage/public/mojom/storage_policy_update.mojom";
 import "mojo/public/mojom/base/big_buffer.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "services/network/public/mojom/url_response_head.mojom";
+import "third_party/blink/public/mojom/service_worker/service_worker_fetch_handler_type.mojom";
+import "third_party/blink/public/mojom/storage_key/storage_key.mojom";
 import "url/mojom/url.mojom";
 
 // An interface that is used to keep track of which service worker versions are
@@ -207,6 +208,11 @@ interface ServiceWorkerStorageControl {
   UpdateNavigationPreloadHeader(int64 registration_id,
                                 blink.mojom.StorageKey key,
                                 string value) =>
+      (ServiceWorkerDatabaseStatus status);
+  // Updates the fetch handler type in storage.
+  UpdateFetchHandlerType(int64 registration_id,
+                         blink.mojom.StorageKey key,
+                         blink.mojom.ServiceWorkerFetchHandlerType type) =>
       (ServiceWorkerDatabaseStatus status);
 
   // Returns a new registration id which is guaranteed to be unique in the

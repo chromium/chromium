@@ -563,6 +563,21 @@ void ServiceWorkerRegistry::UpdateNavigationPreloadHeader(
       static_cast<const int64_t>(registration_id), key, value);
 }
 
+void ServiceWorkerRegistry::UpdateFetchHandlerType(
+    int64_t registration_id,
+    const blink::StorageKey& key,
+    blink::mojom::ServiceWorkerFetchHandlerType fetch_handler_type,
+    StatusCallback callback) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CreateInvokerAndStartRemoteCall(
+      &storage::mojom::ServiceWorkerStorageControl::UpdateFetchHandlerType,
+      base::BindOnce(&ServiceWorkerRegistry::DidUpdateRegistration,
+                     weak_factory_.GetWeakPtr(), std::move(callback)),
+      static_cast<const int64_t>(registration_id), key,
+      static_cast<const blink::mojom::ServiceWorkerFetchHandlerType>(
+          fetch_handler_type));
+}
+
 void ServiceWorkerRegistry::StoreUncommittedResourceId(
     int64_t resource_id,
     const blink::StorageKey& key) {

@@ -167,6 +167,12 @@ class ServiceWorkerStorage {
                                      const blink::StorageKey& key,
                                      const std::string& value,
                                      DatabaseStatusCallback callback);
+  // Updates the stored fetch handler type to match the value of
+  // the active service worker version's.
+  void UpdateFetchHandlerType(int64_t registration_id,
+                              const blink::StorageKey& key,
+                              blink::mojom::ServiceWorkerFetchHandlerType type,
+                              DatabaseStatusCallback callback);
 
   // Deletes the registration specified by |registration_id|. This should be
   // called only from ServiceWorkerRegistry.

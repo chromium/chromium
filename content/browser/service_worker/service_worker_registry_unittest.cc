@@ -458,6 +458,21 @@ class ServiceWorkerRegistryTest : public testing::Test {
     return result;
   }
 
+  blink::ServiceWorkerStatusCode UpdateFetchHandlerType(
+      const ServiceWorkerRegistration* registration,
+      ServiceWorkerVersion::FetchHandlerType fetch_handler_type) {
+    base::RunLoop loop;
+    blink::ServiceWorkerStatusCode result;
+    registry()->UpdateFetchHandlerType(
+        registration->id(), registration->key(), fetch_handler_type,
+        base::BindLambdaForTesting([&](blink::ServiceWorkerStatusCode status) {
+          result = status;
+          loop.Quit();
+        }));
+    loop.Run();
+    return result;
+  }
+
   GetStorageUsageForStorageKeyResult GetStorageUsageForStorageKey(
       const blink::StorageKey& key) {
     GetStorageUsageForStorageKeyResult result;
@@ -866,7 +881,12 @@ TEST_F(ServiceWorkerRegistryTest, StoreFindUpdateDeleteRegistration) {
   EXPECT_EQ(blink::ServiceWorkerStatusCode::kOk,
             UpdateToActiveState(found_registration.get()));
   found_registration->set_last_update_check(kToday);
-  UpdateLastUpdateCheckTime(found_registration.get());
+  ASSERT_EQ(UpdateLastUpdateCheckTime(found_registration.get()),
+            blink::ServiceWorkerStatusCode::kOk);
+  ASSERT_EQ(UpdateFetchHandlerType(
+                found_registration.get(),
+                ServiceWorkerVersion::FetchHandlerType::kEmptyFetchHandler),
+            blink::ServiceWorkerStatusCode::kOk);
 
   found_registration = nullptr;
 
@@ -894,6 +914,8 @@ TEST_F(ServiceWorkerRegistryTest, StoreFindUpdateDeleteRegistration) {
   EXPECT_EQ(ServiceWorkerVersion::ACTIVATED,
             found_registration->active_version()->status());
   EXPECT_EQ(kToday, found_registration->last_update_check());
+  EXPECT_EQ(ServiceWorkerVersion::FetchHandlerType::kEmptyFetchHandler,
+            found_registration->active_version()->fetch_handler_type());
 
   // Confirm that we only notified a modification once.
   EXPECT_EQ(1,

@@ -868,6 +868,31 @@ ServiceWorkerDatabase::UpdateNavigationPreloadHeader(
   return WriteBatch(&batch);
 }
 
+ServiceWorkerDatabase::Status ServiceWorkerDatabase::UpdateFetchHandlerType(
+    int64_t registration_id,
+    const blink::StorageKey& key,
+    const blink::mojom::ServiceWorkerFetchHandlerType type) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  Status status = LazyOpen(false);
+  if (IsNewOrNonexistentDatabase(status))
+    return Status::kErrorNotFound;
+  if (status != Status::kOk)
+    return status;
+  if (key.origin().opaque())
+    return Status::kErrorFailed;
+
+  mojom::ServiceWorkerRegistrationDataPtr registration;
+  status = ReadRegistrationData(registration_id, key, &registration);
+  if (status != Status::kOk)
+    return status;
+
+  registration->fetch_handler_type = type;
+
+  leveldb::WriteBatch batch;
+  WriteRegistrationDataInBatch(*registration, &batch);
+  return WriteBatch(&batch);
+}
+
 ServiceWorkerDatabase::Status ServiceWorkerDatabase::DeleteRegistration(
     int64_t registration_id,
     const blink::StorageKey& key,

@@ -312,6 +312,22 @@ class ServiceWorkerStorageTest : public testing::Test {
     return result;
   }
 
+  ServiceWorkerDatabase::Status UpdateFetchHandlerType(
+      int64_t registration_id,
+      const blink::StorageKey& key,
+      blink::mojom::ServiceWorkerFetchHandlerType fetch_handler_type) {
+    ServiceWorkerDatabase::Status result;
+    base::RunLoop loop;
+    storage()->UpdateFetchHandlerType(
+        registration_id, key, fetch_handler_type,
+        base::BindLambdaForTesting([&](ServiceWorkerDatabase::Status status) {
+          result = status;
+          loop.Quit();
+        }));
+    loop.Run();
+    return result;
+  }
+
   ServiceWorkerDatabase::Status FindRegistrationForClientUrl(
       const GURL& document_url,
       const blink::StorageKey& key) {
@@ -570,6 +586,11 @@ TEST_F(ServiceWorkerStorageTest, DisabledStorage) {
       ServiceWorkerDatabase::Status::kErrorDisabled);
 
   EXPECT_EQ(UpdateToActiveState(kRegistrationId, kKey),
+            ServiceWorkerDatabase::Status::kErrorDisabled);
+
+  EXPECT_EQ(UpdateFetchHandlerType(
+                kRegistrationId, kKey,
+                blink::mojom::ServiceWorkerFetchHandlerType::kNotSkippable),
             ServiceWorkerDatabase::Status::kErrorDisabled);
 
   EXPECT_EQ(DeleteRegistration(kRegistrationId, kKey),

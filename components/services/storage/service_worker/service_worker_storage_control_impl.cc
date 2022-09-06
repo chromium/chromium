@@ -247,6 +247,15 @@ void ServiceWorkerStorageControlImpl::UpdateNavigationPreloadHeader(
                                           std::move(callback));
 }
 
+void ServiceWorkerStorageControlImpl::UpdateFetchHandlerType(
+    int64_t registration_id,
+    const blink::StorageKey& key,
+    blink::mojom::ServiceWorkerFetchHandlerType type,
+    UpdateLastUpdateCheckTimeCallback callback) {
+  storage_->UpdateFetchHandlerType(registration_id, key, type,
+                                   std::move(callback));
+}
+
 void ServiceWorkerStorageControlImpl::GetNewRegistrationId(
     GetNewRegistrationIdCallback callback) {
   storage_->GetNewRegistrationId(std::move(callback));

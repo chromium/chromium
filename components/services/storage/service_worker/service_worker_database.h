@@ -160,6 +160,12 @@ class ServiceWorkerDatabase {
   Status UpdateNavigationPreloadHeader(int64_t registration_id,
                                        const blink::StorageKey& key,
                                        const std::string& value);
+  // Updates a fetch handler type for the specified registration.
+  // Returns OK if it's successfully updated. Otherwise, returns an error.
+  Status UpdateFetchHandlerType(
+      int64_t registration_id,
+      const blink::StorageKey& key,
+      const blink::mojom::ServiceWorkerFetchHandlerType type);
 
   // Deletes a registration for |registration_id| and moves resource records
   // associated with it into the purgeable list. If deletion occurred, fills
