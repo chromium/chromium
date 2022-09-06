@@ -6,6 +6,7 @@ package org.chromium.base.test;
 
 import androidx.test.core.app.ApplicationProvider;
 
+import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.InitializationError;
 import org.robolectric.DefaultTestLifecycle;
 import org.robolectric.TestLifecycle;
@@ -16,6 +17,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.LifetimeAssert;
 import org.chromium.base.PathUtils;
 import org.chromium.base.metrics.UmaRecorderHolder;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.testing.local.LocalRobolectricTestRunner;
 
 import java.lang.reflect.Method;
@@ -60,5 +62,14 @@ public class BaseRobolectricTestRunner extends LocalRobolectricTestRunner {
     @Override
     protected Class<? extends TestLifecycle> getTestLifecycleClass() {
         return BaseTestLifecycle.class;
+    }
+
+    @Override
+    protected boolean isIgnored(FrameworkMethod method) {
+        if (super.isIgnored(method) || method.getAnnotation(DisabledTest.class) != null) {
+            return true;
+        }
+        Class<?> testSuiteClass = method.getDeclaringClass();
+        return testSuiteClass.getAnnotation(DisabledTest.class) != null;
     }
 }

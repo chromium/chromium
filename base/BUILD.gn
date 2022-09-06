@@ -4513,6 +4513,7 @@ if (is_android) {
 
     deps = [
       ":base_java",
+      ":base_java_test_support",
       "//testing/android/junit:junit_test_support",
       "//third_party/android_support_test_runner:runner_java",
       "//third_party/androidx:androidx_test_core_java",
@@ -4570,6 +4571,8 @@ if (is_android) {
       "test/android/junit/src/org/chromium/base/test/util/CommandLineFlagsNoClassAnnotationCheckTest.java",
       "test/android/junit/src/org/chromium/base/test/util/CommandLineFlagsWithClassAnnotationCheckTest.java",
       "test/android/junit/src/org/chromium/base/test/util/DisableIfTest.java",
+      "test/android/junit/src/org/chromium/base/test/util/DisabledTestForClassRobolectricTest.java",
+      "test/android/junit/src/org/chromium/base/test/util/DisabledTestRobolectricTest.java",
       "test/android/junit/src/org/chromium/base/test/util/RestrictionSkipCheckTest.java",
       "test/android/junit/src/org/chromium/base/test/util/SkipCheckTest.java",
     ]

@@ -26,10 +26,11 @@ There are a number of different ways to do so:
     method name for GTest-based tests, `@unittest.skip` for Python-based tests,
     or using the
     [DisabledTest](../../base/test/android/javatests/src/org/chromium/base/test/DisabledTest.java)
-    annotation for JUnit-based Java tests.  In these cases, you don't run the
-    test by default, but you can determine the list of disabled tests at
-    runtime because the tests are present in the executable, and you may still
-    be able to force the test to be run via a command-line flag.
+    annotation for JUnit-based Java tests (this works in both instrumentation
+    and Robolectric tests). In these cases, you don't run the test by default,
+    but you can determine the list of disabled tests at runtime because the
+    tests are present in the executable, and you may still be able to force the
+    test to be run via a command-line flag.
 
 *   Fourth, for test frameworks that support
     [expectations files or filter files](https://bit.ly/chromium-test-list-format),
