@@ -44,20 +44,19 @@ class ASH_EXPORT GlanceablesUpNextView : public views::View,
       const base::Time start_time,
       const google_apis::calendar::EventList* fetched_events) override;
 
-  std::vector<std::tuple<views::Label*, views::Label*>>
-  events_list_items_views_for_test() {
-    return events_list_items_views_;
-  }
-
  private:
+  friend class GlanceablesTest;
+
   void CreateEventsListItemView(
       const google_apis::calendar::CalendarEvent& event);
   void CreateEventsListView(const SingleDayEventList& events);
+  void AddNoEventsLabel();
 
   CalendarModel* calendar_model_ = nullptr;
   views::View* events_list_view_ = nullptr;
   std::vector<std::tuple<views::Label*, views::Label*>>
       events_list_items_views_;
+  views::Label* no_events_label_ = nullptr;
 };
 
 }  // namespace ash

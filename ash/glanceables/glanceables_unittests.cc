@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <vector>
 
 #include "ash/ambient/ambient_controller.h"
 #include "ash/ambient/model/ambient_weather_model.h"
@@ -127,6 +128,13 @@ class GlanceablesTest : public AshTestBase {
     return controller_->view_->up_next_view_;
   }
 
+  std::vector<std::tuple<views::Label*, views::Label*>>
+  GetEventsListItemsViews() {
+    return GetUpNextView()->events_list_items_views_;
+  }
+
+  views::Label* GetNoEventsLabel() { return GetUpNextView()->no_events_label_; }
+
   views::Label* GetRestoreSessionLabel() {
     return controller_->view_->restore_session_label_;
   }
@@ -232,7 +240,7 @@ TEST_F(GlanceablesTest, UpNextViewRendersCorrectly) {
   SimulateCalendarEventsFetched();
 
   // Events list contains rendered event items inside.
-  const auto& items = GetUpNextView()->events_list_items_views_for_test();
+  const auto& items = GetEventsListItemsViews();
   EXPECT_EQ(items.size(), 2u);
 
   EXPECT_EQ(std::get<0>(items[0])->GetText(),
@@ -258,7 +266,7 @@ TEST_F(GlanceablesTest, UpNextViewRendersCorrectlyIn24HrClockFormat) {
   SimulateCalendarEventsFetched();
 
   // Events list contains rendered event items inside.
-  const auto& items = GetUpNextView()->events_list_items_views_for_test();
+  const auto& items = GetEventsListItemsViews();
   EXPECT_EQ(items.size(), 2u);
 
   EXPECT_EQ(std::get<0>(items[0])->GetText(),
@@ -267,6 +275,26 @@ TEST_F(GlanceablesTest, UpNextViewRendersCorrectlyIn24HrClockFormat) {
 
   EXPECT_EQ(std::get<0>(items[1])->GetText(), u"Future event, later today");
   EXPECT_EQ(std::get<1>(items[1])->GetText(), u"21:30 – 22:30");
+}
+
+TEST_F(GlanceablesTest, UpNextViewShowsNoEventsLabel) {
+  ash::system::ScopedTimezoneSettings timezone_settings(u"GMT");
+  base::subtle::ScopedTimeClockOverrides time_override(
+      []() {
+        base::Time now;
+        // `SimulateCalendarEventsFetched()` call below won't have any events
+        // for this date/time.
+        EXPECT_TRUE(base::Time::FromString("12 Jan 2022 13:00 GMT", &now));
+        return now;
+      },
+      nullptr, nullptr);
+
+  controller_->CreateUi();
+  SimulateCalendarEventsFetched();
+
+  EXPECT_EQ(GetEventsListItemsViews().size(), 0u);
+  EXPECT_TRUE(GetNoEventsLabel());
+  EXPECT_EQ(GetNoEventsLabel()->GetText(), u"No events today");
 }
 
 TEST_F(GlanceablesTest, RestoreViewRendersScreenshot) {

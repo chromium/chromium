@@ -9,6 +9,7 @@
 #include <tuple>
 
 #include "ash/shell.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/system/model/clock_model.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/time/calendar_utils.h"
@@ -16,6 +17,7 @@
 #include "base/time/time.h"
 #include "google_apis/calendar/calendar_api_response_types.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/size.h"
@@ -23,6 +25,7 @@
 #include "ui/views/border.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/layout/flex_layout.h"
 #include "ui/views/view.h"
 
 namespace ash {
@@ -51,7 +54,7 @@ std::u16string GetFormattedEventTimeInterval(const CalendarEvent& event) {
 // - update existing `CalendarModel` and `CalendarEventFetch` to support 1-day
 //   fetches or consider implementing own simplified model (keep calendar-view
 //   team in the loop);
-// - add "Loading" / "Nothing for today" UI states;
+// - add "Loading" UI state;
 // - refetch events at 00:00 and decide how to pull new events for current day;
 // - correctly display multi-day events (limit to 00:00 and/or 23:59);
 // - limit events list height and switch to `views::ScrollView`;
@@ -60,7 +63,8 @@ std::u16string GetFormattedEventTimeInterval(const CalendarEvent& event) {
 
 GlanceablesUpNextView::GlanceablesUpNextView() {
   SetBorder(views::CreateEmptyBorder(gfx::Insets::VH(15, 0)));
-  SetLayoutManager(std::make_unique<views::BoxLayout>());
+  SetLayoutManager(std::make_unique<views::FlexLayout>());
+
   calendar_model_ = Shell::Get()->system_tray_model()->calendar_model();
   calendar_model_->AddObserver(this);
 }
@@ -89,7 +93,10 @@ void GlanceablesUpNextView::OnEventsFetched(
     }
   }
 
-  CreateEventsListView(up_next_events);
+  if (!up_next_events.empty())
+    CreateEventsListView(up_next_events);
+  else
+    AddNoEventsLabel();
 }
 
 void GlanceablesUpNextView::CreateEventsListItemView(
@@ -127,6 +134,15 @@ void GlanceablesUpNextView::CreateEventsListView(
 
   for (const auto& event : events)
     CreateEventsListItemView(event);
+}
+
+void GlanceablesUpNextView::AddNoEventsLabel() {
+  no_events_label_ = AddChildView(std::make_unique<views::Label>(
+      l10n_util::GetStringUTF16(IDS_GLANCEABLES_UP_NEXT_NO_EVENTS)));
+  no_events_label_->SetAutoColorReadabilityEnabled(false);
+  no_events_label_->SetEnabledColor(SK_ColorWHITE);
+  no_events_label_->SetHorizontalAlignment(
+      gfx::HorizontalAlignment::ALIGN_LEFT);
 }
 
 BEGIN_METADATA(GlanceablesUpNextView, views::View)
