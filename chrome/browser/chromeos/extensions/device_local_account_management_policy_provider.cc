@@ -7,6 +7,7 @@
 #include "base/dcheck_is_on.h"
 #include "base/immediate_crash.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/chromeos/extensions/extensions_permissions_tracker.h"
 #include "chrome/grit/generated_resources.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest.h"
@@ -48,6 +49,11 @@ bool DeviceLocalAccountManagementPolicyProvider::UserMayLoad(
     // TODO(isandrk): Remove when whitelisting work is done (crbug/651027).
     // Allow extension if its type is whitelisted for use in public sessions.
     if (extension->GetType() == extensions::Manifest::TYPE_HOSTED_APP) {
+      return true;
+    }
+
+    // Allow extension IDs in the MGS allowlist.
+    if (extensions::IsAllowlistedForManagedGuestSession(extension->id())) {
       return true;
     }
 

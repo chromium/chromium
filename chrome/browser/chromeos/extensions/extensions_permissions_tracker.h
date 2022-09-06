@@ -18,6 +18,9 @@ class BrowserContext;
 
 namespace extensions {
 
+// Returns true if the |extension_id| is allowed in managed guest sessions.
+bool IsAllowlistedForManagedGuestSession(const std::string& extension_id);
+
 // Used to track the installation of the force-installed extensions of the
 // managed-guest session to decide whether the permissions of the extensions
 // should trigger the full warning on the login screen or not. The result is

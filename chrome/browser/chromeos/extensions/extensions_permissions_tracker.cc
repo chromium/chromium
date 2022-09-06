@@ -170,13 +170,13 @@ const char* const kManagedGuestSessionAllowlist[] = {
     "hdkoikmfpncabbdniojdddokkomafcci",  // SSRS Reporting Fix for Chrome
 };
 
+}  // namespace
+
 bool IsAllowlistedForManagedGuestSession(const std::string& extension_id) {
   return std::find(std::begin(kManagedGuestSessionAllowlist),
                    std::end(kManagedGuestSessionAllowlist),
                    extension_id) != std::end(kManagedGuestSessionAllowlist);
 }
-
-}  // namespace
 
 ExtensionsPermissionsTracker::ExtensionsPermissionsTracker(
     ExtensionRegistry* registry,
