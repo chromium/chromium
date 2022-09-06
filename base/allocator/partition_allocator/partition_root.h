@@ -1357,6 +1357,14 @@ PA_ALWAYS_INLINE void PartitionRoot<thread_safe>::RawFree(
   RawFree(slot_start, slot_span);
 }
 
+#if defined(COMPILER_MSVC) && !defined(__clang__)
+// MSVC only supports inline assembly on x86. This preprocessor directive
+// is intended to be a replacement for the same.
+//
+// TODO(crbug.com/1351310): Make sure inlining doesn't degrade this into
+// a no-op or similar. The documentation doesn't say.
+#pragma optimize("", off)
+#endif
 template <bool thread_safe>
 PA_ALWAYS_INLINE void PartitionRoot<thread_safe>::RawFree(uintptr_t slot_start,
                                                           SlotSpan* slot_span) {
@@ -1391,11 +1399,16 @@ PA_ALWAYS_INLINE void PartitionRoot<thread_safe>::RawFree(uintptr_t slot_start,
   // OS page. No need to write to the second one as well.
   //
   // Do not move the store above inside the locked section.
+#if !(defined(COMPILER_MSVC) && !defined(__clang__))
   __asm__ __volatile__("" : : "r"(slot_start) : "memory");
+#endif
 
   ::partition_alloc::internal::ScopedGuard guard{lock_};
   FreeInSlotSpan(slot_start, slot_span);
 }
+#if defined(COMPILER_MSVC) && !defined(__clang__)
+#pragma optimize("", on)
+#endif
 
 template <bool thread_safe>
 PA_ALWAYS_INLINE void PartitionRoot<thread_safe>::RawFreeBatch(
