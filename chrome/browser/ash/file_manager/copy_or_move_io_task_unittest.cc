@@ -16,6 +16,7 @@
 #include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
+#include "chrome/browser/ash/file_manager/copy_or_move_io_task_impl.h"
 #include "chrome/browser/ash/file_manager/fake_disk_mount_manager.h"
 #include "chrome/browser/ash/file_manager/io_task.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
@@ -462,10 +463,8 @@ class CopyOrMoveIsCrossFileSystemTest : public testing::Test {
     storage::FileSystemURL source_url = PathToFileSystemURL(source_path);
     storage::FileSystemURL destination_url =
         PathToFileSystemURL(destination_path);
-    // Define a dummy CopyOrMoveOITask on which
-    // CopyOrMoveIOTask::IsCrossFileSystem can be called.
-    CopyOrMoveIOTask task({}, {}, {}, &profile_, {});
-    return task.IsCrossFileSystemForTesting(source_url, destination_url);
+    return CopyOrMoveIOTaskImpl::IsCrossFileSystemForTesting(
+        &profile_, source_url, destination_url);
   }
 
   content::BrowserTaskEnvironment task_environment_;
@@ -478,9 +477,6 @@ class CopyOrMoveIsCrossFileSystemTest : public testing::Test {
 };
 
 TEST_F(CopyOrMoveIsCrossFileSystemTest, NoRegisteredVolume) {
-  // Define a dummy CopyOrMoveOITask on which
-  // CopyOrMoveIOTask::IsCrossFileSystem can be called.
-  CopyOrMoveIOTask task({}, {}, {}, &profile_, {});
   // The profile path is not on any registered volume. When no volume is
   // registered for a given path, the result of IsCrossFileSystem is based on
   // the filesystem_ids of the source and the destination URLs.
@@ -496,7 +492,8 @@ TEST_F(CopyOrMoveIsCrossFileSystemTest, NoRegisteredVolume) {
       storage::FileSystemURL::CreateForTest(
           {}, {}, /* virtual_path */ path, {}, {}, /* cracked_path */ path,
           /* filesystem_id */ destination_mount_name, {});
-  ASSERT_TRUE(task.IsCrossFileSystemForTesting(source_url, destination_url));
+  ASSERT_TRUE(CopyOrMoveIOTaskImpl::IsCrossFileSystemForTesting(
+      &profile_, source_url, destination_url));
 
   // Define filesystem URLs with identical filesystem_id().
   source_mount_name = "mount-name-c";
@@ -507,7 +504,8 @@ TEST_F(CopyOrMoveIsCrossFileSystemTest, NoRegisteredVolume) {
   destination_url = storage::FileSystemURL::CreateForTest(
       {}, {}, /* virtual_path */ path, {}, {}, /* cracked_path */ path,
       /* filesystem_id */ destination_mount_name, {});
-  ASSERT_FALSE(task.IsCrossFileSystemForTesting(source_url, destination_url));
+  ASSERT_FALSE(CopyOrMoveIOTaskImpl::IsCrossFileSystemForTesting(
+      &profile_, source_url, destination_url));
 }
 
 TEST_F(CopyOrMoveIsCrossFileSystemTest, DifferentVolumes) {

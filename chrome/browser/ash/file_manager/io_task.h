@@ -17,8 +17,6 @@ namespace file_manager {
 
 namespace io_task {
 
-class IOTaskController;
-
 enum class State {
   // Task has been queued, but not yet started.
   kQueued,
@@ -151,15 +149,15 @@ class IOTask {
   // Gets the current progress status of the task.
   const ProgressStatus& progress() { return progress_; }
 
+  // Sets the task id.
+  void SetTaskID(IOTaskId task_id) { progress_.task_id = task_id; }
+
  protected:
   explicit IOTask(bool show_notification) {
     progress_.show_notification = show_notification;
   }
 
   ProgressStatus progress_;
-
-  // Task Controller can update `progress_`.
-  friend class IOTaskController;
 };
 
 // No-op IO Task for testing.
