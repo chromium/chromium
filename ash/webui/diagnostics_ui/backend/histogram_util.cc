@@ -17,12 +17,16 @@ namespace {
 
 constexpr char kProbeErrorMetricBatteryInfoSource[] =
     "ChromeOS.DiagnosticsUi.Error.CrosHealthdProbeError.BatteryInfo";
+constexpr char kProbeErrorMetricCpuInfoSource[] =
+    "ChromeOS.DiagnosticsUi.Error.CrosHealthdProbeError.CpuInfo";
 
 // Source type matches |type_name| from cros_healthd_helpers.
 const std::string GetMetricNameForSourceType(
     const base::StringPiece source_type) {
   if (source_type == "battery info")
     return kProbeErrorMetricBatteryInfoSource;
+  if (source_type == "cpu info")
+    return kProbeErrorMetricCpuInfoSource;
 
   return "";
 }

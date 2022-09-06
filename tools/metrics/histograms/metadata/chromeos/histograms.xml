@@ -695,6 +695,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
   <token key="ProbeErrorSourceStruct">
     <variant name="BatteryInfo"/>
+    <variant name="CpuInfo"/>
   </token>
 </histogram>
 
