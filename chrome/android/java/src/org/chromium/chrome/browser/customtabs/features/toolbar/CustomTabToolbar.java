@@ -726,6 +726,8 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
             // align with the security icon.
             setUrlBarHiddenIgnoreBranding(false);
             setShowTitleIgnoreBranding(false);
+
+            mAnimDelegate.setUseRotationSecurityButtonTransition(true);
             showBrandingIconAndText();
         }
 
@@ -747,6 +749,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
             mCurrentlyShowingBranding = false;
             recoverFromRegularState();
             runAfterBrandingRunnables();
+            mAnimDelegate.setUseRotationSecurityButtonTransition(false);
 
             int token = mBrowserControlsVisibilityDelegate.showControlsPersistent();
             PostTask.postDelayedTask(UiThreadTaskTraits.USER_VISIBLE,
