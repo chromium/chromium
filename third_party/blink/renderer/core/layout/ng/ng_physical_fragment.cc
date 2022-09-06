@@ -359,6 +359,7 @@ NGPhysicalFragment::NGPhysicalFragment(NGContainerFragmentBuilder* builder,
       has_collapsed_borders_(builder->has_collapsed_borders_),
       has_first_baseline_(false),
       has_last_baseline_(false),
+      use_last_baseline_for_inline_baseline_(false),
       has_fragmented_out_of_flow_data_(
           !builder->oof_positioned_fragmentainer_descendants_.IsEmpty() ||
           !builder->multicols_with_pending_oofs_.IsEmpty()),
@@ -447,6 +448,8 @@ NGPhysicalFragment::NGPhysicalFragment(const NGPhysicalFragment& other)
       has_collapsed_borders_(other.has_collapsed_borders_),
       has_first_baseline_(other.has_first_baseline_),
       has_last_baseline_(other.has_last_baseline_),
+      use_last_baseline_for_inline_baseline_(
+          other.use_last_baseline_for_inline_baseline_),
       has_fragmented_out_of_flow_data_(other.has_fragmented_out_of_flow_data_),
       has_out_of_flow_fragment_child_(other.has_out_of_flow_fragment_child_),
       has_out_of_flow_in_fragmentainer_subtree_(

@@ -435,6 +435,8 @@ NGPhysicalBoxFragment::NGPhysicalBoxFragment(
     has_last_baseline_ = false;
     last_baseline_ = LayoutUnit::Min();
   }
+  use_last_baseline_for_inline_baseline_ =
+      builder->use_last_baseline_for_inline_baseline_;
 
   has_descendants_for_table_part_ =
       const_num_children_ || NeedsOOFPositionedInfoPropagation();

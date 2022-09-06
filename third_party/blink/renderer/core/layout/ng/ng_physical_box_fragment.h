@@ -145,6 +145,10 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
     return absl::nullopt;
   }
 
+  bool UseLastBaselineForInlineBaseline() const {
+    return use_last_baseline_for_inline_baseline_;
+  }
+
   LogicalRect TableGridRect() const {
     return ComputeRareDataAddress()->table_grid_rect;
   }

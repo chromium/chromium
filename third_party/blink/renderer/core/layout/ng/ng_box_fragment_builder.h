@@ -554,12 +554,14 @@ class CORE_EXPORT NGBoxFragmentBuilder final
   absl::optional<LayoutUnit> Baseline() const { return first_baseline_; }
 
   // Sets the last baseline for this fragment.
-  void SetLastBaseline(LayoutUnit baseline) {
-    DCHECK_EQ(space_.BaselineAlgorithmType(),
-              NGBaselineAlgorithmType::kInlineBlock);
-    last_baseline_ = baseline;
-  }
+  void SetLastBaseline(LayoutUnit baseline) { last_baseline_ = baseline; }
   absl::optional<LayoutUnit> LastBaseline() const { return last_baseline_; }
+
+  // Lets the parent layout algorithm know if it should use the first or last
+  // baseline for the special inline-block baseline algorithm.
+  void SetUseLastBaselineForInlineBaseline() {
+    use_last_baseline_for_inline_baseline_ = true;
+  }
 
   // The inline block baseline is at the block end margin edge under some
   // circumstances. This function updates |LastBaseline| in such cases.
@@ -741,6 +743,7 @@ class CORE_EXPORT NGBoxFragmentBuilder final
   bool is_at_block_end_ = false;
   bool disable_oof_descendants_propagation_ = false;
   bool disable_simplified_layout = false;
+  bool use_last_baseline_for_inline_baseline_ = false;
   LayoutUnit block_offset_for_additional_columns_;
 
   LayoutUnit minimal_space_shortage_ = kIndefiniteSize;

@@ -18,11 +18,9 @@ FontHeight NGBoxFragment::BaselineMetrics(const NGLineBoxStrut& margins,
   if (physical_fragment_.Style().IsCheckboxOrRadioPart())
     return FontHeight(margins.line_over + BlockSize(), margins.line_under);
 
-  // TODO(ikilpatrick): Select baseline based on type.
-  absl::optional<LayoutUnit> baseline = LastBaseline();
-  if (!baseline)
-    baseline = FirstBaseline();
-
+  const auto baseline = PhysicalBoxFragment().UseLastBaselineForInlineBaseline()
+                            ? LastBaseline()
+                            : FirstBaseline();
   if (baseline) {
     FontHeight metrics = writing_direction_.IsFlippedLines()
                              ? FontHeight(BlockSize() - *baseline, *baseline)

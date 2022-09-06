@@ -1125,6 +1125,7 @@ void NGColumnLayoutAlgorithm::PropagateBaselineFromChild(
 
   if (auto baseline = logical_fragment.FirstBaseline())
     container_builder_.SetBaseline(block_offset + *baseline);
+  container_builder_.SetUseLastBaselineForInlineBaseline();
 }
 
 LayoutUnit NGColumnLayoutAlgorithm::CalculateBalancedColumnBlockSize(
