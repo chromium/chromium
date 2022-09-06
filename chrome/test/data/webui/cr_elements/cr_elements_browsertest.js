@@ -341,6 +341,7 @@ TEST_F('CrElementsPolicyPrefIndicatorTest', 'All', function() {
   mocha.run();
 });
 
+GEN('#if BUILDFLAG(IS_CHROMEOS_ASH)');
 var CrElementsPolicyIndicatorBehaviorTest =
     class extends CrElementsBrowserTest {
   /** @override */
@@ -350,6 +351,18 @@ var CrElementsPolicyIndicatorBehaviorTest =
 };
 
 TEST_F('CrElementsPolicyIndicatorBehaviorTest', 'All', function() {
+  mocha.run();
+});
+GEN('#endif');
+
+var CrElementsPolicyIndicatorMixinTest = class extends CrElementsBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://test/test_loader.html?module=cr_elements/cr_policy_indicator_mixin_tests.js';
+  }
+};
+
+TEST_F('CrElementsPolicyIndicatorMixinTest', 'All', function() {
   mocha.run();
 });
 

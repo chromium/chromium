@@ -75,7 +75,6 @@ js_library("network_apnlist") {
     ":network_shared_css",
     ":onc_mojo",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements/policy:cr_tooltip_icon",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:i18n_behavior.m",
     "//ui/webui/resources/js:load_time_data.m",
@@ -83,6 +82,7 @@ js_library("network_apnlist") {
   externs_list = [
     "$externs_path/metrics_private.js",
     "//ui/webui/resources/cr_elements/cr_button/cr_button_externs.js",
+    "//ui/webui/resources/cr_elements/policy/cr_tooltip_icon_externs.js",
   ]
 }
 
@@ -112,13 +112,13 @@ js_library("network_config") {
     "//third_party/polymer/v3_0/components-chromium/iron-icon:iron-icon",
     "//third_party/polymer/v3_0/components-chromium/paper-spinner:paper-spinner-lite",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements/policy:cr_policy_indicator",
     "//ui/webui/resources/js:i18n_behavior.m",
     "//ui/webui/resources/js:load_time_data.m",
   ]
   externs_list = [
     "//ui/webui/resources/cr_elements/cr_dialog/cr_dialog_externs.js",
     "//ui/webui/resources/cr_elements/cr_toggle/cr_toggle_externs.js",
+    "//ui/webui/resources/cr_elements/policy/cr_policy_indicator_externs.js",
   ]
 }
 
@@ -144,9 +144,10 @@ js_library("network_config_select") {
     ":network_config_element_behavior",
     ":network_shared_css",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements/policy:cr_tooltip_icon",
     "//ui/webui/resources/js:i18n_behavior.m",
   ]
+  externs_list =
+      [ "//ui/webui/resources/cr_elements/policy/cr_tooltip_icon_externs.js" ]
 }
 
 js_library("network_config_toggle") {
@@ -177,10 +178,11 @@ js_library("network_ip_config") {
     ":network_shared_css",
     ":onc_mojo",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements/policy:cr_policy_indicator",
   ]
-  externs_list =
-      [ "//ui/webui/resources/cr_elements/cr_toggle/cr_toggle_externs.js" ]
+  externs_list = [
+    "//ui/webui/resources/cr_elements/cr_toggle/cr_toggle_externs.js",
+    "//ui/webui/resources/cr_elements/policy/cr_policy_indicator_externs.js",
+  ]
 }
 
 js_library("network_list") {
@@ -225,12 +227,12 @@ js_library("network_nameservers") {
     ":network_shared_css",
     "//third_party/polymer/v3_0/components-chromium/iron-flex-layout:iron-flex-layout-classes",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements/policy:cr_policy_indicator",
     "//ui/webui/resources/js:i18n_behavior.m",
   ]
   externs_list = [
     "//ui/webui/resources/cr_elements/cr_input/cr_input_externs.js",
     "//ui/webui/resources/cr_elements/cr_radio_button/cr_radio_button_externs.js",
+    "//ui/webui/resources/cr_elements/policy/cr_policy_indicator_externs.js",
   ]
 }
 

@@ -9,37 +9,36 @@
 import '../cr_hidden_style.css.js';
 import './cr_tooltip_icon.js';
 
-import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {CrPolicyIndicatorBehavior, CrPolicyIndicatorBehaviorInterface, CrPolicyIndicatorType} from './cr_policy_indicator_behavior.js';
+import {assert} from '../../js/assert_ts.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {CrPolicyIndicatorBehaviorInterface}
- */
-const CrPolicyPrefIndicatorElementBase =
-    mixinBehaviors([CrPolicyIndicatorBehavior], PolymerElement);
+import {CrPolicyIndicatorMixin, CrPolicyIndicatorType} from './cr_policy_indicator_mixin.js';
+import {getTemplate} from './cr_policy_pref_indicator.html.js';
+import {CrTooltipIconElement} from './cr_tooltip_icon.js';
 
-/** @polymer */
-class CrPolicyPrefIndicatorElement extends CrPolicyPrefIndicatorElementBase {
+const CrPolicyPrefIndicatorElementBase = CrPolicyIndicatorMixin(PolymerElement);
+
+export interface CrPolicyPrefIndicatorElement {
+  $: {
+    tooltipIcon: CrTooltipIconElement,
+  };
+}
+
+export class CrPolicyPrefIndicatorElement extends
+    CrPolicyPrefIndicatorElementBase {
   static get is() {
     return 'cr-policy-pref-indicator';
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
     return {
       iconAriaLabel: String,
 
-      /**
-       * Which indicator type to show (or NONE).
-       * @type {CrPolicyIndicatorType}
-       * @override
-       */
       indicatorType: {
         type: String,
         value: CrPolicyIndicatorType.NONE,
@@ -55,7 +54,6 @@ class CrPolicyPrefIndicatorElement extends CrPolicyPrefIndicatorElementBase {
        * Optional preference object associated with the indicator. Initialized
        * to null so that computed functions will get called if this is never
        * set.
-       * @type {!chrome.settingsPrivate.PrefObject|undefined}
        */
       pref: Object,
 
@@ -63,17 +61,22 @@ class CrPolicyPrefIndicatorElement extends CrPolicyPrefIndicatorElementBase {
        * Optional value for the preference value this indicator is associated
        * with. If this is set, no indicator will be shown if it is a member
        * of |pref.userSelectableValues| and is not |pref.recommendedValue|.
-       * @type {*}
        */
       associatedValue: Object,
     };
   }
 
+  iconAriaLabel: string;
+  override indicatorType: CrPolicyIndicatorType;
+  indicatorTooltip: string;
+  pref?: chrome.settingsPrivate.PrefObject;
+  associatedValue?: any;
+
   /**
-   * @return {CrPolicyIndicatorType} The indicator type based on |pref| and
-   *    |associatedValue|.
+   * @return The indicator type based on |pref| and |associatedValue|.
    */
-  getIndicatorTypeForPref_() {
+  private getIndicatorTypeForPref_(): CrPolicyIndicatorType {
+    assert(this.pref);
     const {enforcement, userSelectableValues, controlledBy, recommendedValue} =
         this.pref;
     if (enforcement === chrome.settingsPrivate.Enforcement.RECOMMENDED) {
@@ -117,10 +120,9 @@ class CrPolicyPrefIndicatorElement extends CrPolicyPrefIndicatorElementBase {
   }
 
   /**
-   * @return {string} The tooltip text for |indicatorType|.
-   * @private
+   * @return The tooltip text for |indicatorType|.
    */
-  getIndicatorTooltipForPref_() {
+  private getIndicatorTooltipForPref_(): string {
     if (!this.pref) {
       return '';
     }
@@ -130,10 +132,14 @@ class CrPolicyPrefIndicatorElement extends CrPolicyPrefIndicatorElementBase {
         this.indicatorType, this.pref.controlledByName || '', matches);
   }
 
-  /** @return {!Element} */
-  getFocusableElement() {
-    return this.shadowRoot.querySelector('cr-tooltip-icon')
-        .getFocusableElement();
+  getFocusableElement(): HTMLElement {
+    return this.$.tooltipIcon.getFocusableElement();
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'cr-policy-pref-indicator': CrPolicyPrefIndicatorElement;
   }
 }
 

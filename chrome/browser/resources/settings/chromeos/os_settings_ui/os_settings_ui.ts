@@ -44,7 +44,6 @@ import {getTemplate} from './os_settings_ui.html.js';
 declare global {
   interface Window {
     settings: any;
-    CrPolicyStrings: {[key: string]: string};
   }
 }
 

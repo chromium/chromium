@@ -45,10 +45,6 @@ declare global {
   interface HTMLElementEventMap {
     'refresh-pref': CustomEvent<string>;
   }
-
-  interface Window {
-    CrPolicyStrings: {[key: string]: string};
-  }
 }
 
 export interface SettingsUiElement {

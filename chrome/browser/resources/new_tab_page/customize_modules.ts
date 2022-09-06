@@ -18,12 +18,6 @@ import {ChromeCartProxy} from './modules/cart/chrome_cart_proxy.js';
 import {ModuleRegistry} from './modules/module_registry.js';
 import {NewTabPageProxy} from './new_tab_page_proxy.js';
 
-declare global {
-  interface Window {
-    CrPolicyStrings: {[key: string]: string};
-  }
-}
-
 interface ModuleSetting {
   name: string;
   id: string;

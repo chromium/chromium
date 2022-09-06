@@ -66,15 +66,13 @@ if (include_polymer) {
   preprocess_if_expr("preprocess_src") {
     in_folder = "."
     out_folder = preprocess_folder
-    in_files = [
-      "cr_scrollable_behavior.js",
-      "policy/cr_policy_indicator_behavior.js",
-    ]
+    in_files = [ "cr_scrollable_behavior.js" ]
 
     if (is_chromeos_ash) {
       in_files += [
         "cr_container_shadow_behavior.js",
         "find_shortcut_behavior.js",
+        "policy/cr_policy_indicator_behavior.js",
       ]
     }
 
@@ -88,9 +86,6 @@ if (include_polymer) {
     out_manifest = "$target_gen_dir/$preprocess_gen_manifest"
     in_files = [
       "icons.m.js",
-      "policy/cr_policy_indicator.js",
-      "policy/cr_policy_pref_indicator.js",
-      "policy/cr_tooltip_icon.js",
       "shared_vars_css.m.js",
     ]
 
@@ -105,8 +100,11 @@ if (include_polymer) {
     deps = [
       # Targets for auto-generated Polymer 3 JS Modules
       ":cr_elements_module_resources",
-      "policy:closure_compile_module",
     ]
+
+    if (is_chromeos_ash) {
+      deps += [ "policy:closure_compile_module" ]
+    }
   }
 }
 
@@ -130,7 +128,6 @@ if (include_polymer) {
     public_deps = [
       ":icons_module",
       ":shared_vars_css_module",
-      "policy:web_components",
     ]
 
     if (is_chromeos) {
@@ -190,6 +187,7 @@ if (include_polymer) {
     in_folder = preprocess_folder
     out_folder = preprocess_folder
     in_files = polymer_html_files + icons_html_files
+    scheme = "relative"
     minify = optimize_webui
   }
 

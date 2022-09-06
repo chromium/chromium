@@ -8,8 +8,7 @@ import 'chrome://resources/cr_elements/policy/cr_tooltip_icon.js';
 import './cr_policy_strings.js';
 
 import {CrPolicyIndicatorElement} from 'chrome://resources/cr_elements/policy/cr_policy_indicator.js';
-import {CrPolicyIndicatorType} from 'chrome://resources/cr_elements/policy/cr_policy_indicator_behavior.js';
-import {isChromeOS} from 'chrome://resources/js/cr.m.js';
+import {CrPolicyIndicatorType} from 'chrome://resources/cr_elements/policy/cr_policy_indicator_mixin.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 // clang-format on
 
@@ -36,13 +35,12 @@ suite('CrPolicyIndicator', function() {
     assertEquals('cr20:domain', icon.iconClass);
     assertEquals('policy', icon.tooltipText);
 
-    if (isChromeOS) {
-      indicator.indicatorType = CrPolicyIndicatorType.OWNER;
-      indicator.indicatorSourceName = 'foo@example.com';
+    // <if expr="chromeos_ash">
+    indicator.indicatorType = CrPolicyIndicatorType.OWNER;
+    indicator.indicatorSourceName = 'foo@example.com';
 
-      assertEquals('cr:person', icon.iconClass);
-      assertEquals('owner: foo@example.com', icon.tooltipText);
-    }
+    assertEquals('cr:person', icon.iconClass);
+    assertEquals('owner: foo@example.com', icon.tooltipText);
 
     indicator.indicatorType = CrPolicyIndicatorType.PARENT;
 
@@ -55,5 +53,6 @@ suite('CrPolicyIndicator', function() {
     assertFalse(icon.hidden);
     assertEquals('cr20:kite', icon.iconClass);
     assertEquals('Restricted for child', icon.tooltipText);
+    // </if>
   });
 });

@@ -91,10 +91,6 @@ declare global {
   interface HTMLElementTagNameMap {
     'web-app-settings-app': WebAppSettingsAppElement;
   }
-
-  interface Window {
-    CrPolicyStrings: {[key: string]: string};
-  }
 }
 
 customElements.define(WebAppSettingsAppElement.is, WebAppSettingsAppElement);

@@ -36,9 +36,6 @@ declare global {
     'remove-print-job': RemovePrintJobEvent;
     'all-history-cleared': CustomEvent<void>;
   }
-  interface Window {
-    CrPolicyStrings: {[key: string]: string};
-  }
 }
 
 function comparePrintJobsReverseChronologically(

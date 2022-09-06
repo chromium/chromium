@@ -3,47 +3,14 @@
 # found in the LICENSE file.
 
 import("//third_party/closure_compiler/compile_js.gni")
-import("//tools/polymer/html_to_js.gni")
+
+assert(is_chromeos_ash)
 
 js_type_check("closure_compile_module") {
   is_polymer3 = true
-  deps = [
-    ":cr_policy_indicator",
-    ":cr_policy_indicator_behavior",
-    ":cr_policy_pref_indicator",
-    ":cr_tooltip_icon",
-  ]
-}
-
-js_library("cr_policy_indicator") {
-  deps = [
-    ":cr_policy_indicator_behavior",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
+  deps = [ ":cr_policy_indicator_behavior" ]
 }
 
 js_library("cr_policy_indicator_behavior") {
   deps = [ "//ui/webui/resources/js:assert.m" ]
-}
-
-js_library("cr_policy_pref_indicator") {
-  deps = [
-    ":cr_policy_indicator_behavior",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-  externs_list = [ "$externs_path/settings_private.js" ]
-}
-
-js_library("cr_tooltip_icon") {
-  deps = [
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-}
-
-html_to_js("web_components") {
-  js_files = [
-    "cr_policy_indicator.js",
-    "cr_policy_pref_indicator.js",
-    "cr_tooltip_icon.js",
-  ]
 }
