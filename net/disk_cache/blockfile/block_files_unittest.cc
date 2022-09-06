@@ -33,9 +33,6 @@ namespace disk_cache {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Flaky on ChromeOS: https://crbug.com/1156795
 #define MAYBE_BlockFiles_Grow DISABLED_BlockFiles_Grow
-#elif BUILDFLAG(IS_FUCHSIA)
-// Too slow on Fuchsia: https://crbug.com/1354793
-#define MAYBE_BlockFiles_Grow DISABLED_BlockFiles_Grow
 #else
 #define MAYBE_BlockFiles_Grow BlockFiles_Grow
 #endif
@@ -46,14 +43,21 @@ TEST_F(DiskCacheTest, MAYBE_BlockFiles_Grow) {
   BlockFiles files(cache_path_);
   ASSERT_TRUE(files.Init(true));
 
+#if BUILDFLAG(IS_FUCHSIA)
+  // Too slow on Fuchsia: https://crbug.com/1354793
+  const int kMaxSize = 3500;
+  const int kNumberOfFiles = 4;
+#else
   const int kMaxSize = 35000;
+  const int kNumberOfFiles = 6;
+#endif
   Addr address[kMaxSize];
 
   // Fill up the 32-byte block file (use three files).
   for (auto& addr : address) {
     EXPECT_TRUE(files.CreateBlock(RANKINGS, 4, &addr));
   }
-  EXPECT_EQ(6, NumberOfFiles(cache_path_));
+  EXPECT_EQ(kNumberOfFiles, NumberOfFiles(cache_path_));
 
   // Make sure we don't keep adding files.
   for (int i = 0; i < kMaxSize * 4; i += 2) {
@@ -61,7 +65,7 @@ TEST_F(DiskCacheTest, MAYBE_BlockFiles_Grow) {
     files.DeleteBlock(address[target], false);
     EXPECT_TRUE(files.CreateBlock(RANKINGS, 4, &address[target]));
   }
-  EXPECT_EQ(6, NumberOfFiles(cache_path_));
+  EXPECT_EQ(kNumberOfFiles, NumberOfFiles(cache_path_));
 }
 
 // We should be able to delete empty block files.
