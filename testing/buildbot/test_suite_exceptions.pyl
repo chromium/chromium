@@ -1048,6 +1048,12 @@
           'shards': 50,
         },
       },
+      # asan tests is slower.
+      'linux-lacros-asan-lsan-rel': {
+        'swarming': {
+          'shards': 20,
+        },
+      },
       'linux-lacros-tester-rel': {
         'swarming': {
           'quickrun_shards': 20,
