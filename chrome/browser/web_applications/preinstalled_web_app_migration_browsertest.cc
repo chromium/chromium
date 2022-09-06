@@ -2,6 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <map>
+#include <memory>
+#include <string>
+#include <utility>
+#include <vector>
+
 #include "base/files/file_path.h"
 #include "base/json/json_reader.h"
 #include "base/path_service.h"
@@ -27,11 +33,14 @@
 #include "chrome/browser/web_applications/test/app_registration_waiter.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
+#include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/url_loader_interceptor.h"
 #include "extensions/browser/app_sorting.h"
@@ -111,6 +120,27 @@ class PreinstalledWebAppMigrationBrowserTest
 
     extensions::ExtensionBrowserTest::SetUpOnMainThread();
     web_app::test::WaitUntilReady(WebAppProvider::GetForTest(profile()));
+  }
+
+  void TearDownOnMainThread() override {
+    // We uninstall all web apps, as Ash is not restarted between Lacros tests.
+    auto* const provider = WebAppProvider::GetForTest(profile());
+    const WebAppRegistrar& registrar = provider->registrar();
+    std::vector<AppId> app_ids = registrar.GetAppIds();
+    for (const auto& app_id : app_ids) {
+      if (!registrar.IsInstalled(app_id)) {
+        continue;
+      }
+
+      const WebApp* app = registrar.GetAppById(app_id);
+      DCHECK(app->CanUserUninstallWebApp());
+      AppRegistrationWaiter app_registration_waiter(
+          profile(), app_id, apps::Readiness::kUninstalledByUser);
+      web_app::test::UninstallWebApp(profile(), app_id);
+      app_registration_waiter.Await();
+    }
+
+    extensions::ExtensionBrowserTest::TearDownOnMainThread();
   }
 
   std::unique_ptr<net::test_server::HttpResponse> RequestHandlerOverride(
