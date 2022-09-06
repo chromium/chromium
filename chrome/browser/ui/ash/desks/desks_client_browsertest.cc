@@ -2590,7 +2590,8 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientLacrosTest, SystemUILaunchBrowser) {
 using SaveAndRecallBrowserTest = DesksTemplatesClientTest;
 
 IN_PROC_BROWSER_TEST_F(SaveAndRecallBrowserTest,
-                       SystemUIBlockingDialogAccepted) {
+                       // TODO(crbug.com/1360326): Re-enable this test
+                       DISABLED_SystemUIBlockingDialogAccepted) {
   SetupBrowserToConfirmClose(browser());
 
   // We'll now save the desk as Save & Recall. After saving desks, this
