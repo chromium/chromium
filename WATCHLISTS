@@ -2843,6 +2843,7 @@
                'robertshield+watch@chromium.org'],
     'runtime_enabled_features': ['jmedley+watch@chromium.org'],
     'safe_browsing': ['drubery+watch@chromium.org',
+                      'nwokedi+watch@chromium.org',
                       'vakh+safe_browsing_watch@chromium.org',
                       'xinghuilu+watch@chromium.org'],
     'sampling_profiler': ['wittman+watch@chromium.org',
