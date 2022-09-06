@@ -10,7 +10,7 @@
 #include "base/memory/ref_counted.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "net/base/network_delegate_impl.h"
-#include "net/cookies/same_party_context.h"
+#include "net/first_party_sets/same_party_context.h"
 
 class PrefService;
 

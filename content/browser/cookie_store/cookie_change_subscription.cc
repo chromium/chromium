@@ -11,7 +11,7 @@
 #include "content/public/common/content_client.h"
 #include "net/cookies/cookie_constants.h"
 #include "net/cookies/cookie_util.h"
-#include "net/cookies/same_party_context.h"
+#include "net/first_party_sets/same_party_context.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 
 namespace content {

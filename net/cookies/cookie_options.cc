@@ -10,7 +10,7 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "net/cookies/cookie_util.h"
-#include "net/cookies/same_party_context.h"
+#include "net/first_party_sets/same_party_context.h"
 
 namespace net {
 

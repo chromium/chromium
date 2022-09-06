@@ -5,7 +5,7 @@
 #include "net/base/network_delegate_impl.h"
 
 #include "net/base/net_errors.h"
-#include "net/cookies/same_party_context.h"
+#include "net/first_party_sets/same_party_context.h"
 
 namespace net {
 

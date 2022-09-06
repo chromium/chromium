@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef NET_COOKIES_SAME_PARTY_CONTEXT_H_
-#define NET_COOKIES_SAME_PARTY_CONTEXT_H_
+#ifndef NET_FIRST_PARTY_SETS_SAME_PARTY_CONTEXT_H_
+#define NET_FIRST_PARTY_SETS_SAME_PARTY_CONTEXT_H_
 
 #include <ostream>
 
@@ -48,4 +48,4 @@ NET_EXPORT std::ostream& operator<<(std::ostream& os,
 
 }  // namespace net
 
-#endif  // NET_COOKIES_SAME_PARTY_CONTEXT_H_
+#endif  // NET_FIRST_PARTY_SETS_SAME_PARTY_CONTEXT_H_
