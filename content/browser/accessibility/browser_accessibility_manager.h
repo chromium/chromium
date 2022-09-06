@@ -560,9 +560,6 @@ class CONTENT_EXPORT BrowserAccessibilityManager
                            TestShouldFireEventForNode);
   explicit BrowserAccessibilityManager(BrowserAccessibilityDelegate* delegate);
 
-  BrowserAccessibilityManager(const ui::AXTreeUpdate& initial_tree,
-                              BrowserAccessibilityDelegate* delegate);
-
   // Send platform-specific notifications to each of these objects that
   // their location has changed. This is called by OnLocationChanges
   // after it's updated the internal data structure.

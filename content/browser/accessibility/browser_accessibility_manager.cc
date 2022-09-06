@@ -153,14 +153,19 @@ BrowserAccessibilityFindInPageInfo::BrowserAccessibilityFindInPageInfo()
 BrowserAccessibilityManager* BrowserAccessibilityManager::Create(
     const ui::AXTreeUpdate& initial_tree,
     BrowserAccessibilityDelegate* delegate) {
-  return new BrowserAccessibilityManager(initial_tree, delegate);
+  BrowserAccessibilityManager* manager =
+      new BrowserAccessibilityManager(delegate);
+  manager->Initialize(initial_tree);
+  return manager;
 }
 
 // static
 BrowserAccessibilityManager* BrowserAccessibilityManager::Create(
     BrowserAccessibilityDelegate* delegate) {
-  return new BrowserAccessibilityManager(
-      BrowserAccessibilityManager::GetEmptyDocument(), delegate);
+  BrowserAccessibilityManager* manager =
+      new BrowserAccessibilityManager(delegate);
+  manager->Initialize(BrowserAccessibilityManager::GetEmptyDocument());
+  return manager;
 }
 #endif
 
@@ -185,22 +190,6 @@ BrowserAccessibilityManager::BrowserAccessibilityManager(
       connected_to_parent_tree_node_(false),
       device_scale_factor_(1.0f),
       use_custom_device_scale_factor_for_testing_(false) {}
-
-BrowserAccessibilityManager::BrowserAccessibilityManager(
-    const ui::AXTreeUpdate& initial_tree,
-    BrowserAccessibilityDelegate* delegate)
-    : AXPlatformTreeManager(ui::AXTreeIDUnknown(),
-                            std::make_unique<ui::AXSerializableTree>()),
-      WebContentsObserver(delegate
-                              ? WebContents::FromRenderFrameHost(
-                                    delegate->AccessibilityRenderFrameHost())
-                              : nullptr),
-      delegate_(delegate),
-      user_is_navigating_away_(false),
-      device_scale_factor_(1.0f),
-      use_custom_device_scale_factor_for_testing_(false) {
-  Initialize(initial_tree);
-}
 
 BrowserAccessibilityManager::~BrowserAccessibilityManager() {
   // If the root's parent is in another accessibility tree but it wasn't
