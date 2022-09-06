@@ -1775,32 +1775,40 @@ void MenuController::Accept(MenuItemView* item, int event_flags) {
       views::ElementTrackerViews::GetInstance()->NotifyViewActivated(id, item);
   }
 
+  // Setting `result_` now means that a future Cancel() call will include that
+  // `result_` in its delegate notification, and thus the clicked command will
+  // still be executed even if the menu is canceled during the close animation.
+  // See crbug.com/1251450. Note that we don't set the exit type at this point,
+  // because we want the Cancel's exit type to take precedence.
+  result_ = item;
+  accept_event_flags_ = event_flags;
+
 #if BUILDFLAG(IS_MAC)
   menu_closure_animation_ = std::make_unique<MenuClosureAnimationMac>(
       item, item->GetParentMenuItem()->GetSubmenu(),
-      base::BindOnce(&MenuController::ReallyAccept, base::Unretained(this),
-                     base::Unretained(item), event_flags));
+      base::BindOnce(&MenuController::ReallyAccept, base::Unretained(this)));
   menu_closure_animation_->Start();
 #else
-  ReallyAccept(item, event_flags);
+  ReallyAccept();
 #endif
 }
 
-void MenuController::ReallyAccept(MenuItemView* item, int event_flags) {
+void MenuController::ReallyAccept() {
   DCHECK(!for_drop_);
-  result_ = item;
 #if BUILDFLAG(IS_MAC)
   // Reset the closure animation since it's now finished - this also unblocks
   // input events for the menu.
   menu_closure_animation_.reset();
 #endif
-  if (item && !menu_stack_.empty() &&
-      !item->GetDelegate()->ShouldCloseAllMenusOnExecute(item->GetCommand())) {
+
+  if (result_ && !menu_stack_.empty() &&
+      !result_->GetDelegate()->ShouldCloseAllMenusOnExecute(
+          result_->GetCommand())) {
     SetExitType(ExitType::kOutermost);
   } else {
     SetExitType(ExitType::kAll);
   }
-  accept_event_flags_ = event_flags;
+
   ExitMenu();
 }
 
