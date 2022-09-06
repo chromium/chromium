@@ -138,11 +138,17 @@
     </message>
   </if>
   <if expr="is_linux">
-    <message name="IDS_SETTINGS_SYSTEM_THEME" desc="Text of the label describing the system (GTK+) browser theme on Linux">
-      GTK+
+    <message name="IDS_SETTINGS_GTK_THEME" desc="Text of the label describing the system (GTK) browser theme on Linux">
+      GTK
     </message>
-    <message name="IDS_SETTINGS_USE_SYSTEM_THEME" desc="Text of the button that switches the browser theme to the system (GTK+) theme on Linux">
-      Use GTK+
+    <message name="IDS_SETTINGS_USE_GTK_THEME" desc="Text of the button that switches the browser theme to the system (GTK) theme on Linux">
+      Use GTK
+    </message>
+    <message name="IDS_SETTINGS_QT_THEME" desc="Text of the label describing the system (QT) browser theme on Linux">
+      QT
+    </message>
+    <message name="IDS_SETTINGS_USE_QT_THEME" desc="Text of the button that switches the browser theme to the system (QT) theme on Linux">
+      Use QT
     </message>
     <message name="IDS_SETTINGS_CLASSIC_THEME" desc="Text of the label describing the classic browser theme on Linux">
       Classic

@@ -4,7 +4,7 @@
 
 // clang-format off
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import { AppearanceBrowserProxy, AppearanceBrowserProxyImpl,HomeUrlInputElement, SettingsAppearancePageElement} from 'chrome://settings/settings.js';
+import { AppearanceBrowserProxy, AppearanceBrowserProxyImpl,HomeUrlInputElement, SettingsAppearancePageElement, SystemTheme} from 'chrome://settings/settings.js';
 import { assertEquals,assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
@@ -22,7 +22,10 @@ class TestAppearanceBrowserProxy extends TestBrowserProxy implements
       'getThemeInfo',
       'isChildAccount',
       'useDefaultTheme',
-      'useSystemTheme',
+      // <if expr="is_linux">
+      'useGtkTheme',
+      'useQtTheme',
+      // </if>
       'validateStartupPage',
     ]);
   }
@@ -59,9 +62,15 @@ class TestAppearanceBrowserProxy extends TestBrowserProxy implements
     this.methodCalled('useDefaultTheme');
   }
 
-  useSystemTheme() {
-    this.methodCalled('useSystemTheme');
+  // <if expr="is_linux">
+  useGtkTheme() {
+    this.methodCalled('useGtkTheme');
   }
+
+  useQtTheme() {
+    this.methodCalled('useQtTheme');
+  }
+  // </if>
 
   setDefaultZoom(defaultZoom: number) {
     this.defaultZoom_ = defaultZoom;
@@ -104,8 +113,8 @@ function createAppearancePage() {
         id: {
           value: '',
         },
-        use_system: {
-          value: false,
+        system_theme: {
+          value: SystemTheme.DEFAULT,
         },
       },
     },
@@ -133,20 +142,20 @@ suite('AppearanceHandler', function() {
   const THEME_ID_PREF = 'prefs.extensions.theme.id.value';
 
   // <if expr="is_linux">
-  const USE_SYSTEM_PREF = 'prefs.extensions.theme.use_system.value';
+  const SYSTEM_THEME_PREF = 'prefs.extensions.theme.system_theme.value';
 
   test('useDefaultThemeLinux', function() {
     assertFalse(!!appearancePage.get(THEME_ID_PREF));
-    assertFalse(appearancePage.get(USE_SYSTEM_PREF));
+    assertEquals(appearancePage.get(SYSTEM_THEME_PREF), SystemTheme.DEFAULT);
     // No custom nor system theme in use; "USE CLASSIC" should be hidden.
     assertFalse(!!appearancePage.shadowRoot!.querySelector('#useDefault'));
 
-    appearancePage.set(USE_SYSTEM_PREF, true);
+    appearancePage.set(SYSTEM_THEME_PREF, SystemTheme.GTK);
     flush();
     // If the system theme is in use, "USE CLASSIC" should show.
     assertTrue(!!appearancePage.shadowRoot!.querySelector('#useDefault'));
 
-    appearancePage.set(USE_SYSTEM_PREF, false);
+    appearancePage.set(SYSTEM_THEME_PREF, SystemTheme.DEFAULT);
     appearancePage.set(THEME_ID_PREF, 'fake theme id');
     flush();
 
@@ -159,19 +168,19 @@ suite('AppearanceHandler', function() {
     return appearanceBrowserProxy.whenCalled('useDefaultTheme');
   });
 
-  test('useSystemThemeLinux', function() {
+  test('useGtkThemeLinux', function() {
     assertFalse(!!appearancePage.get(THEME_ID_PREF));
-    appearancePage.set(USE_SYSTEM_PREF, true);
+    appearancePage.set(SYSTEM_THEME_PREF, SystemTheme.GTK);
     flush();
     // The "USE GTK+" button shouldn't be showing if it's already in use.
-    assertFalse(!!appearancePage.shadowRoot!.querySelector('#useSystem'));
+    assertFalse(!!appearancePage.shadowRoot!.querySelector('#useGtk'));
 
     appearanceBrowserProxy.setIsChildAccount(true);
-    appearancePage.set(USE_SYSTEM_PREF, false);
+    appearancePage.set(SYSTEM_THEME_PREF, SystemTheme.DEFAULT);
     flush();
     // Child account users have their own theme and can't use GTK+ theme.
     assertFalse(!!appearancePage.shadowRoot!.querySelector('#useDefault'));
-    assertFalse(!!appearancePage.shadowRoot!.querySelector('#useSystem'));
+    assertFalse(!!appearancePage.shadowRoot!.querySelector('#useGtk'));
     // If there's no "USE" buttons, the container should be hidden.
     assertTrue(
         appearancePage.shadowRoot!
@@ -187,11 +196,11 @@ suite('AppearanceHandler', function() {
             .querySelector<HTMLElement>('#themesSecondaryActions')!.hidden);
 
     const button =
-        appearancePage.shadowRoot!.querySelector<HTMLElement>('#useSystem');
+        appearancePage.shadowRoot!.querySelector<HTMLElement>('#useGtk');
     assertTrue(!!button);
 
     button!.click();
-    return appearanceBrowserProxy.whenCalled('useSystemTheme');
+    return appearanceBrowserProxy.whenCalled('useGtkTheme');
   });
   // </if>
 

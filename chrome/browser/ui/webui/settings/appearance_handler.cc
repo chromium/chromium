@@ -5,12 +5,11 @@
 #include "chrome/browser/ui/webui/settings/appearance_handler.h"
 
 #include "base/bind.h"
-#include "base/notreached.h"
+#include "base/check.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "content/public/browser/web_ui.h"
 
@@ -19,7 +18,7 @@ namespace settings {
 AppearanceHandler::AppearanceHandler(content::WebUI* webui)
     : profile_(Profile::FromWebUI(webui)) {}
 
-AppearanceHandler::~AppearanceHandler() {}
+AppearanceHandler::~AppearanceHandler() = default;
 
 void AppearanceHandler::OnJavascriptAllowed() {}
 void AppearanceHandler::OnJavascriptDisallowed() {}
@@ -27,29 +26,24 @@ void AppearanceHandler::OnJavascriptDisallowed() {}
 void AppearanceHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
       "useDefaultTheme",
-      base::BindRepeating(&AppearanceHandler::HandleUseDefaultTheme,
-                          base::Unretained(this)));
+      base::BindRepeating(&AppearanceHandler::HandleUseTheme,
+                          base::Unretained(this), ui::SystemTheme::kDefault));
 #if BUILDFLAG(IS_LINUX)
   web_ui()->RegisterMessageCallback(
-      "useSystemTheme",
-      base::BindRepeating(&AppearanceHandler::HandleUseSystemTheme,
-                          base::Unretained(this)));
+      "useGtkTheme",
+      base::BindRepeating(&AppearanceHandler::HandleUseTheme,
+                          base::Unretained(this), ui::SystemTheme::kGtk));
+  web_ui()->RegisterMessageCallback(
+      "useQtTheme",
+      base::BindRepeating(&AppearanceHandler::HandleUseTheme,
+                          base::Unretained(this), ui::SystemTheme::kQt));
 #endif
 }
 
-void AppearanceHandler::HandleUseDefaultTheme(const base::Value::List& args) {
-  ThemeServiceFactory::GetForProfile(profile_)->UseDefaultTheme();
+void AppearanceHandler::HandleUseTheme(ui::SystemTheme system_theme,
+                                       const base::Value::List& args) {
+  DCHECK(system_theme != ui::SystemTheme::kDefault || !profile_->IsChild());
+  ThemeServiceFactory::GetForProfile(profile_)->UseTheme(system_theme);
 }
-
-// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#if BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS)
-void AppearanceHandler::HandleUseSystemTheme(const base::Value::List& args) {
-  if (profile_->IsChild())
-    NOTREACHED();
-  else
-    ThemeServiceFactory::GetForProfile(profile_)->UseSystemTheme();
-}
-#endif
 
 }  // namespace settings

@@ -58,6 +58,17 @@ export interface SettingsAppearancePageElement {
   };
 }
 
+// This must be kept in sync with the SystemTheme enum in
+// ui/color/system_theme.h.
+export enum SystemTheme {
+  // Either classic or web theme.
+  DEFAULT = 0,
+  // <if expr="is_linux">
+  GTK = 1,
+  QT = 2,
+  // </if>
+}
+
 const SettingsAppearancePageElementBase =
     I18nMixin(PrefsMixin(BaseMixin(PolymerElement)));
 
@@ -115,10 +126,9 @@ export class SettingsAppearancePageElement extends
 
       themeUrl_: String,
 
-      useSystemTheme_: {
-        type: Boolean,
-        value:
-            false,  // Can only be true on Linux, but value exists everywhere.
+      systemTheme_: {
+        type: Object,
+        value: SystemTheme.DEFAULT,
       },
 
       focusConfig_: {
@@ -172,11 +182,10 @@ export class SettingsAppearancePageElement extends
     return [
       'defaultFontSizeChanged_(prefs.webkit.webprefs.default_font_size.value)',
       'themeChanged_(' +
-          'prefs.extensions.theme.id.value, useSystemTheme_, isForcedTheme_)',
+          'prefs.extensions.theme.id.value, systemTheme_, isForcedTheme_)',
 
       // <if expr="is_linux">
-      // NOTE: this pref only exists on Linux.
-      'useSystemThemePrefChanged_(prefs.extensions.theme.use_system.value)',
+      'systemThemePrefChanged_(prefs.extensions.theme.system_theme.value)',
       // </if>
     ];
   }
@@ -189,7 +198,7 @@ export class SettingsAppearancePageElement extends
   private pageZoomLevels_: number[];
   private themeSublabel_: string;
   private themeUrl_: string;
-  private useSystemTheme_: boolean;
+  private systemTheme_: SystemTheme;
   private focusConfig_: Map<string, string>;
   private showReaderModeOption_: boolean;
   private isForcedTheme_: boolean;
@@ -237,7 +246,7 @@ export class SettingsAppearancePageElement extends
     return homepageValue || this.i18n('customWebAddress');
   }
 
-  private onCustomizeFontsTap_() {
+  private onCustomizeFontsClick_() {
     Router.getInstance().navigateTo(routes.FONTS);
   }
 
@@ -264,7 +273,7 @@ export class SettingsAppearancePageElement extends
     window.open(this.themeUrl_ || loadTimeData.getString('themesGalleryUrl'));
   }
 
-  private onUseDefaultTap_() {
+  private onUseDefaultClick_() {
     if (this.isForcedTheme_) {
       this.showManagedThemeDialog_ = true;
       return;
@@ -273,49 +282,61 @@ export class SettingsAppearancePageElement extends
   }
 
   // <if expr="is_linux">
-  private useSystemThemePrefChanged_(useSystemTheme: boolean) {
-    this.useSystemTheme_ = useSystemTheme;
+  private systemThemePrefChanged_(systemTheme: SystemTheme) {
+    this.systemTheme_ = systemTheme;
   }
 
   /** @return Whether to show the "USE CLASSIC" button. */
-  private showUseClassic_(themeId: string, useSystemTheme: boolean): boolean {
-    return !!themeId || useSystemTheme;
+  private showUseClassic_(themeId: string): boolean {
+    return !!themeId || this.systemTheme_ !== SystemTheme.DEFAULT;
   }
 
-  /** @return Whether to show the "USE GTK+" button. */
-  private showUseSystem_(themeId: string, useSystemTheme: boolean): boolean {
-    return (!!themeId || !useSystemTheme) &&
+  /** @return Whether to show the "USE GTK" button. */
+  private showUseGtk_(themeId: string): boolean {
+    return (!!themeId || this.systemTheme_ !== SystemTheme.GTK) &&
         !this.appearanceBrowserProxy_.isChildAccount();
   }
 
-  /**
-   * @return Whether to show the secondary area where "USE CLASSIC" and
-   *     "USE GTK+" buttons live.
-   */
-  private showThemesSecondary_(themeId: string, useSystemTheme: boolean):
-      boolean {
-    return this.showUseClassic_(themeId, useSystemTheme) ||
-        this.showUseSystem_(themeId, useSystemTheme);
+  /** @return Whether to show the "USE QT" button. */
+  private showUseQt_(themeId: string): boolean {
+    return (!!themeId || this.systemTheme_ !== SystemTheme.QT) &&
+        !this.appearanceBrowserProxy_.isChildAccount() &&
+        loadTimeData.getBoolean('allowQtTheme');
   }
 
-  private onUseSystemTap_() {
+  /**
+   * @return Whether to show the secondary area where "USE CLASSIC",
+   *     "USE GTK", and "USE QT" buttons live.
+   */
+  private showThemesSecondary_(themeId: string): boolean {
+    return !!themeId || !this.appearanceBrowserProxy_.isChildAccount();
+  }
+
+  private onUseGtkClick_() {
     if (this.isForcedTheme_) {
       this.showManagedThemeDialog_ = true;
       return;
     }
-    this.appearanceBrowserProxy_.useSystemTheme();
+    this.appearanceBrowserProxy_.useGtkTheme();
+  }
+
+  private onUseQtClick_() {
+    if (this.isForcedTheme_) {
+      this.showManagedThemeDialog_ = true;
+      return;
+    }
+    this.appearanceBrowserProxy_.useQtTheme();
   }
   // </if>
 
-  private themeChanged_(
-      themeId: string, useSystemTheme: boolean, isForcedTheme: boolean) {
-    if (this.prefs === undefined || useSystemTheme === undefined) {
+  private themeChanged_(themeId: string) {
+    if (this.prefs === undefined || this.systemTheme_ === undefined) {
       return;
     }
 
     if (themeId.length > 0 && themeId !== AUTOGENERATED_THEME_ID &&
-        !isForcedTheme) {
-      assert(!useSystemTheme);
+        !this.isForcedTheme_) {
+      assert(this.systemTheme_ === SystemTheme.DEFAULT);
 
       this.appearanceBrowserProxy_.getThemeInfo(themeId).then(info => {
         this.themeSublabel_ = info.name;
@@ -327,14 +348,24 @@ export class SettingsAppearancePageElement extends
 
     this.themeUrl_ = '';
 
-    if (themeId === AUTOGENERATED_THEME_ID || isForcedTheme) {
+    if (themeId === AUTOGENERATED_THEME_ID || this.isForcedTheme_) {
       this.themeSublabel_ = this.i18n('chromeColors');
       return;
     }
 
     let i18nId;
     // <if expr="is_linux">
-    i18nId = useSystemTheme ? 'systemTheme' : 'classicTheme';
+    switch (this.systemTheme_) {
+      case SystemTheme.GTK:
+        i18nId = 'gtkTheme';
+        break;
+      case SystemTheme.QT:
+        i18nId = 'qtTheme';
+        break;
+      default:
+        i18nId = 'classicTheme';
+        break;
+    }
     // </if>
     // <if expr="not is_linux">
     i18nId = 'chooseFromWebStore';

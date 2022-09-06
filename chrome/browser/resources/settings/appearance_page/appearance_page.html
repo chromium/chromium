@@ -30,7 +30,7 @@
 <if expr="not is_linux">
           <template is="dom-if" if="[[prefs.extensions.theme.id.value]]">
             <div class="separator"></div>
-            <cr-button id="useDefault" on-click="onUseDefaultTap_">
+            <cr-button id="useDefault" on-click="onUseDefaultClick_">
               $i18n{resetToDefaultTheme}
             </cr-button>
           </template>
@@ -38,19 +38,25 @@
 <if expr="is_linux">
           <div class="settings-row continuation"
               hidden="[[!showThemesSecondary_(
-                  prefs.extensions.theme.id.value, useSystemTheme_)]]"
+                  prefs.extensions.theme.id.value, systemTheme_)]]"
               id="themesSecondaryActions">
             <div class="separator"></div>
             <template is="dom-if" if="[[showUseClassic_(
-                prefs.extensions.theme.id.value, useSystemTheme_)]]" restamp>
-              <cr-button id="useDefault" on-click="onUseDefaultTap_">
+                prefs.extensions.theme.id.value, systemTheme_)]]" restamp>
+              <cr-button id="useDefault" on-click="onUseDefaultClick_">
                 $i18n{useClassicTheme}
               </cr-button>
             </template>
-            <template is="dom-if" if="[[showUseSystem_(
-                prefs.extensions.theme.id.value, useSystemTheme_)]]" restamp>
-              <cr-button id="useSystem" on-click="onUseSystemTap_">
-                $i18n{useSystemTheme}
+            <template is="dom-if" if="[[showUseGtk_(
+                prefs.extensions.theme.id.value, systemTheme_)]]" restamp>
+              <cr-button id="useGtk" on-click="onUseGtkClick_">
+                $i18n{useGtkTheme}
+              </cr-button>
+            </template>
+            <template is="dom-if" if="[[showUseQt_(
+                prefs.extensions.theme.id.value, systemTheme_)]]" restamp>
+              <cr-button id="useQt" on-click="onUseQtClick_">
+                $i18n{useQtTheme}
               </cr-button>
             </template>
           </div>
@@ -154,7 +160,7 @@
           </settings-dropdown-menu>
         </div>
         <cr-link-row class="hr" id="customize-fonts-subpage-trigger"
-            label="$i18n{customizeFonts}" on-click="onCustomizeFontsTap_"
+            label="$i18n{customizeFonts}" on-click="onCustomizeFontsClick_"
             role-description="$i18n{subpageArrowRoleDescription}">
         </cr-link-row>
         <div class="cr-row" hidden="[[!pageVisibility.pageZoom]]">

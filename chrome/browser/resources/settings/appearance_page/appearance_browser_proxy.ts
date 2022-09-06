@@ -17,7 +17,8 @@ export interface AppearanceBrowserProxy {
   useDefaultTheme(): void;
 
   // <if expr="is_linux">
-  useSystemTheme(): void;
+  useGtkTheme(): void;
+  useQtTheme(): void;
   // </if>
 
   validateStartupPage(url: string): Promise<boolean>;
@@ -45,8 +46,12 @@ export class AppearanceBrowserProxyImpl implements AppearanceBrowserProxy {
   }
 
   // <if expr="is_linux">
-  useSystemTheme() {
-    chrome.send('useSystemTheme');
+  useGtkTheme() {
+    chrome.send('useGtkTheme');
+  }
+
+  useQtTheme() {
+    chrome.send('useQtTheme');
   }
   // </if>
 

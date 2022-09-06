@@ -9,6 +9,7 @@
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
 
 namespace content {
@@ -35,15 +36,9 @@ class AppearanceHandler : public SettingsPageUIHandler {
   void OnJavascriptDisallowed() override;
 
  private:
-  // Changes the UI theme of the browser to the default theme.
-  void HandleUseDefaultTheme(const base::Value::List& args);
-
-// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Changes the UI theme of the browser to the system (GTK+) theme.
-  void HandleUseSystemTheme(const base::Value::List& args);
-#endif
+  // Changes the UI theme to the specified `system_theme`.
+  void HandleUseTheme(ui::SystemTheme system_theme,
+                      const base::Value::List& args);
 
   raw_ptr<Profile> profile_;  // Weak pointer.
 
