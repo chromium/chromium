@@ -18,6 +18,8 @@
 #include "chrome/updater/device_management/dm_client.h"
 #include "chrome/updater/device_management/dm_response_validator.h"
 #include "chrome/updater/device_management/dm_storage.h"
+#include "chrome/updater/policy/service.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace updater {
 
@@ -54,7 +56,7 @@ class DeviceManagementTask
                       base::OnceClosure callback) {
     scoped_refptr<DMStorage> dm_storage = GetDefaultDMStorage();
     is_enrollment_mandatory_ = dm_storage->IsEnrollmentMandatory();
-    fn(DMClient::CreateDefaultConfigurator(config_->GetPolicyService()),
+    fn(DMClient::CreateDefaultConfigurator(policy_service_proxy_configuration_),
        dm_storage,
        base::BindPostTask(
            main_task_runner_,
@@ -63,6 +65,8 @@ class DeviceManagementTask
 
   SEQUENCE_CHECKER(sequence_checker_);
   const scoped_refptr<Configurator> config_;
+  const absl::optional<PolicyServiceProxyConfiguration>
+      policy_service_proxy_configuration_;
   const scoped_refptr<base::SequencedTaskRunner> main_task_runner_;
   const scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner_;
   bool succeeded_ = false;

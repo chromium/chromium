@@ -20,12 +20,10 @@
 #include "chrome/updater/policy/service.h"
 
 namespace updater {
-
 namespace {
 
 scoped_refptr<base::SequencedTaskRunner> GetBlockingTaskRunner() {
   constexpr base::TaskTraits KMayBlockTraits = {base::MayBlock()};
-
 #if BUILDFLAG(IS_WIN)
   return base::ThreadPool::CreateCOMSTATaskRunner(KMayBlockTraits);
 #else
@@ -39,6 +37,8 @@ DeviceManagementTask::DeviceManagementTask(
     scoped_refptr<Configurator> config,
     scoped_refptr<base::SequencedTaskRunner> main_task_runner)
     : config_(config),
+      policy_service_proxy_configuration_(
+          PolicyServiceProxyConfiguration::Get(config->GetPolicyService())),
       main_task_runner_(main_task_runner),
       sequenced_task_runner_(GetBlockingTaskRunner()) {}
 
@@ -105,7 +105,8 @@ void DeviceManagementTask::OnFetchPolicyRequestComplete(
           FROM_HERE,
           base::BindOnce(
               &DMClient::ReportPolicyValidationErrors,
-              DMClient::CreateDefaultConfigurator(config_->GetPolicyService()),
+              DMClient::CreateDefaultConfigurator(
+                  policy_service_proxy_configuration_),
               GetDefaultDMStorage(), validation_result,
               base::BindOnce([](DMClient::RequestResult result) {
                 if (result != DMClient::RequestResult::kSuccess)

@@ -12,6 +12,7 @@
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/sequence_checker.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "chrome/updater/constants.h"
@@ -43,6 +44,8 @@ PolicyService::PolicyService(PolicyManagerVector managers)
 PolicyService::~PolicyService() = default;
 
 std::string PolicyService::source() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   // Returns the non-empty source combination of all active policy providers,
   // separated by ';'. For example: "group_policy;device_management".
   std::vector<std::string> sources;
@@ -58,6 +61,7 @@ std::string PolicyService::source() const {
 
 bool PolicyService::GetLastCheckPeriodMinutes(PolicyStatus<int>* policy_status,
                                               int* minutes) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return QueryPolicy(
       base::BindRepeating(&PolicyManagerInterface::GetLastCheckPeriodMinutes),
       policy_status, minutes);
@@ -66,6 +70,7 @@ bool PolicyService::GetLastCheckPeriodMinutes(PolicyStatus<int>* policy_status,
 bool PolicyService::GetUpdatesSuppressedTimes(
     PolicyStatus<UpdatesSuppressedTimes>* policy_status,
     UpdatesSuppressedTimes* suppressed_times) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return QueryPolicy(
       base::BindRepeating(&PolicyManagerInterface::GetUpdatesSuppressedTimes),
       policy_status, suppressed_times);
@@ -74,6 +79,7 @@ bool PolicyService::GetUpdatesSuppressedTimes(
 bool PolicyService::GetDownloadPreferenceGroupPolicy(
     PolicyStatus<std::string>* policy_status,
     std::string* download_preference) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return QueryPolicy(
       base::BindRepeating(
           &PolicyManagerInterface::GetDownloadPreferenceGroupPolicy),
@@ -83,6 +89,7 @@ bool PolicyService::GetDownloadPreferenceGroupPolicy(
 bool PolicyService::GetPackageCacheSizeLimitMBytes(
     PolicyStatus<int>* policy_status,
     int* cache_size_limit) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return QueryPolicy(
       base::BindRepeating(
           &PolicyManagerInterface::GetPackageCacheSizeLimitMBytes),
@@ -92,6 +99,7 @@ bool PolicyService::GetPackageCacheSizeLimitMBytes(
 bool PolicyService::GetPackageCacheExpirationTimeDays(
     PolicyStatus<int>* policy_status,
     int* cache_life_limit) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return QueryPolicy(
       base::BindRepeating(
           &PolicyManagerInterface::GetPackageCacheExpirationTimeDays),
@@ -102,6 +110,7 @@ bool PolicyService::GetEffectivePolicyForAppInstalls(
     const std::string& app_id,
     PolicyStatus<int>* policy_status,
     int* install_policy) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return QueryAppPolicy(
       base::BindRepeating(
           &PolicyManagerInterface::GetEffectivePolicyForAppInstalls),
@@ -112,6 +121,7 @@ bool PolicyService::GetEffectivePolicyForAppUpdates(
     const std::string& app_id,
     PolicyStatus<int>* policy_status,
     int* update_policy) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return QueryAppPolicy(
       base::BindRepeating(
           &PolicyManagerInterface::GetEffectivePolicyForAppUpdates),
@@ -121,6 +131,7 @@ bool PolicyService::GetEffectivePolicyForAppUpdates(
 bool PolicyService::GetTargetChannel(const std::string& app_id,
                                      PolicyStatus<std::string>* policy_status,
                                      std::string* channel) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return QueryAppPolicy(
       base::BindRepeating(&PolicyManagerInterface::GetTargetChannel), app_id,
       policy_status, channel);
@@ -130,6 +141,7 @@ bool PolicyService::GetTargetVersionPrefix(
     const std::string& app_id,
     PolicyStatus<std::string>* policy_status,
     std::string* target_version_prefix) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return QueryAppPolicy(
       base::BindRepeating(&PolicyManagerInterface::GetTargetVersionPrefix),
       app_id, policy_status, target_version_prefix);
@@ -139,6 +151,7 @@ bool PolicyService::IsRollbackToTargetVersionAllowed(
     const std::string& app_id,
     PolicyStatus<bool>* policy_status,
     bool* rollback_allowed) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return QueryAppPolicy(
       base::BindRepeating(
           &PolicyManagerInterface::IsRollbackToTargetVersionAllowed),
@@ -147,12 +160,14 @@ bool PolicyService::IsRollbackToTargetVersionAllowed(
 
 bool PolicyService::GetProxyMode(PolicyStatus<std::string>* policy_status,
                                  std::string* proxy_mode) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return QueryPolicy(base::BindRepeating(&PolicyManagerInterface::GetProxyMode),
                      policy_status, proxy_mode);
 }
 
 bool PolicyService::GetProxyPacUrl(PolicyStatus<std::string>* policy_status,
                                    std::string* proxy_pac_url) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return QueryPolicy(
       base::BindRepeating(&PolicyManagerInterface::GetProxyPacUrl),
       policy_status, proxy_pac_url);
@@ -160,6 +175,7 @@ bool PolicyService::GetProxyPacUrl(PolicyStatus<std::string>* policy_status,
 
 bool PolicyService::GetProxyServer(PolicyStatus<std::string>* policy_status,
                                    std::string* proxy_server) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return QueryPolicy(
       base::BindRepeating(&PolicyManagerInterface::GetProxyServer),
       policy_status, proxy_server);
@@ -168,6 +184,7 @@ bool PolicyService::GetProxyServer(PolicyStatus<std::string>* policy_status,
 bool PolicyService::GetForceInstallApps(
     PolicyStatus<std::vector<std::string>>* policy_status,
     std::vector<std::string>* force_install_apps) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return QueryPolicy(
       base::BindRepeating(&PolicyManagerInterface::GetForceInstallApps),
       policy_status, force_install_apps);
@@ -179,6 +196,7 @@ bool PolicyService::QueryPolicy(
         policy_query_callback,
     PolicyStatus<T>* policy_status,
     T* result) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   T value{};
   PolicyStatus<T> status;
   for (const std::unique_ptr<PolicyManagerInterface>& policy_manager :
@@ -206,6 +224,7 @@ bool PolicyService::QueryAppPolicy(
     const std::string& app_id,
     PolicyStatus<T>* policy_status,
     T* result) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   T value{};
   PolicyStatus<T> status;
   for (const std::unique_ptr<PolicyManagerInterface>& policy_manager :

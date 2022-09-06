@@ -12,6 +12,7 @@
 #include "base/callback_forward.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/sequence_checker.h"
 #include "chrome/updater/external_constants.h"
 #include "chrome/updater/policy/manager.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -61,6 +62,7 @@ class PolicyStatus {
 
 // The PolicyService returns policies for enterprise managed machines from the
 // source with the highest priority where the policy available.
+// This class is sequence affine and its instance is bound to the main sequence.
 // TODO(crbug.com/1358718) - modernize the public interface to return by value
 // instead of two out-params.
 class PolicyService : public base::RefCountedThreadSafe<PolicyService> {
@@ -120,6 +122,8 @@ class PolicyService : public base::RefCountedThreadSafe<PolicyService> {
 
  private:
   friend class base::RefCountedThreadSafe<PolicyService>;
+
+  SEQUENCE_CHECKER(sequence_checker_);
 
   // List of policy providers in descending order of priority. All managed
   // providers should be ahead of non-managed providers.

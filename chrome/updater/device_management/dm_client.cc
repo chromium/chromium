@@ -30,6 +30,7 @@
 #include "chrome/updater/updater_version.h"
 #include "chrome/updater/util.h"
 #include "components/update_client/network.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -73,7 +74,8 @@ constexpr int kHTTPStatusGone = 410;
 
 class DefaultConfigurator : public DMClient::Configurator {
  public:
-  explicit DefaultConfigurator(scoped_refptr<PolicyService> policy_service);
+  explicit DefaultConfigurator(absl::optional<PolicyServiceProxyConfiguration>
+                                   policy_service_proxy_configuration);
   ~DefaultConfigurator() override = default;
 
   std::string GetDMServerUrl() const override {
@@ -96,9 +98,10 @@ class DefaultConfigurator : public DMClient::Configurator {
 };
 
 DefaultConfigurator::DefaultConfigurator(
-    scoped_refptr<PolicyService> policy_service)
+    absl::optional<PolicyServiceProxyConfiguration>
+        policy_service_proxy_configuration)
     : network_fetcher_factory_(base::MakeRefCounted<NetworkFetcherFactory>(
-          PolicyServiceProxyConfiguration::Get(policy_service))) {}
+          policy_service_proxy_configuration)) {}
 
 std::string DefaultConfigurator::GetPlatformParameter() const {
   std::string os_name = base::SysInfo::OperatingSystemName();
@@ -405,8 +408,10 @@ void DMClient::ReportPolicyValidationErrors(
 }
 
 std::unique_ptr<DMClient::Configurator> DMClient::CreateDefaultConfigurator(
-    scoped_refptr<PolicyService> policy_service) {
-  return std::make_unique<DefaultConfigurator>(policy_service);
+    absl::optional<PolicyServiceProxyConfiguration>
+        policy_service_proxy_configuration) {
+  return std::make_unique<DefaultConfigurator>(
+      policy_service_proxy_configuration);
 }
 
 }  // namespace updater
