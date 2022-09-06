@@ -81,7 +81,6 @@
 #include "chrome/android/chrome_jni_headers/PushMessagingServiceObserver_jni.h"
 #include "chrome/browser/installable/installed_webapp_bridge.h"
 #include "components/permissions/android/android_permission_util.h"
-#include "components/prefs/pref_service.h"
 #endif
 
 using instance_id::InstanceID;
