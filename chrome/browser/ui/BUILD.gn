@@ -2598,6 +2598,8 @@ static_library("ui") {
       "webui/chromeos/cloud_upload/cloud_upload_dialog.h",
       "webui/chromeos/cloud_upload/cloud_upload_handler.cc",
       "webui/chromeos/cloud_upload/cloud_upload_handler.h",
+      "webui/chromeos/cloud_upload/cloud_upload_notification_manager.cc",
+      "webui/chromeos/cloud_upload/cloud_upload_notification_manager.h",
       "webui/chromeos/cloud_upload/cloud_upload_page_handler.cc",
       "webui/chromeos/cloud_upload/cloud_upload_page_handler.h",
       "webui/chromeos/cloud_upload/cloud_upload_ui.cc",

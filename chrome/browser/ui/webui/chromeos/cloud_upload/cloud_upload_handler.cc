@@ -80,6 +80,7 @@ CloudUploadHandler::CloudUploadHandler(Profile* profile,
           file_manager::util::GetFileManagerFileSystemContext(profile)),
       drive_integration_service_(
           drive::DriveIntegrationServiceFactory::FindForProfile(profile)),
+      notification_manager_(CloudUploadNotificationManager(profile)),
       source_url_(source_url) {
   observed_task_id_ = -1;
   upload_done_ = false;
@@ -166,6 +167,13 @@ void CloudUploadHandler::Run(UploadCallback callback) {
                          this, destination_folder_url))));
 }
 
+void CloudUploadHandler::UpdateProgressNotification() {
+  // The move progress and the syncing progress arbitrarily respectively account
+  // for 20% and 80% of the upload workflow.
+  int progress = move_progress_ * 0.2 + sync_progress_ * 0.8;
+  notification_manager_.ShowProgress(progress);
+}
+
 void CloudUploadHandler::OnDestinationDirectoryCreated(
     storage::FileSystemURL destination_folder_url,
     base::File::Error error) {
@@ -209,9 +217,10 @@ void CloudUploadHandler::OnIOTaskStatus(
   if (status.task_id != observed_task_id_) {
     return;
   }
-  // TODO (b/242685213) Add notification.
-  LOG(ERROR) << "total bytes: " << status.total_bytes
-             << " bytes transferred: " << status.bytes_transferred;
+  if (status.total_bytes > 0) {
+    move_progress_ = 100 * status.bytes_transferred / status.total_bytes;
+  }
+  UpdateProgressNotification();
   if (observed_relative_drive_path_.empty()) {
     // TODO (b/242685536) Define multiple-file handling.
     DCHECK_EQ(status.sources.size(), 1);
@@ -242,18 +251,21 @@ void CloudUploadHandler::OnSyncingStatusUpdate(
     if (base::FilePath(item->path) != observed_relative_drive_path_) {
       continue;
     }
-    // TODO (b/242685213) Add notification.
     switch (item->state) {
       case drivefs::mojom::ItemEvent::State::kQueued:
         LOG(ERROR) << "Drive -- QUEUED";
         return;
       case drivefs::mojom::ItemEvent::State::kInProgress:
-        LOG(ERROR) << "Drive -- INPROGRESS: " << item->bytes_transferred
-                   << " - " << item->bytes_to_transfer;
+        if (item->bytes_transferred > 0) {
+          sync_progress_ =
+              100 * item->bytes_transferred / item->bytes_to_transfer;
+        }
+        UpdateProgressNotification();
         return;
       case drivefs::mojom::ItemEvent::State::kCompleted:
-        LOG(ERROR) << "Drive -- COMPLETED: " << item->bytes_transferred << " - "
-                   << item->bytes_to_transfer;
+        sync_progress_ = 100;
+        UpdateProgressNotification();
+        LOG(ERROR) << "Drive -- COMPLETED";
         return;
       case drivefs::mojom::ItemEvent::State::kFailed:
         // TODO (b/243095484) Define error behavior.

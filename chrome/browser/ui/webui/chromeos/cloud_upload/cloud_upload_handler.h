@@ -15,6 +15,7 @@
 #include "chrome/browser/ash/file_manager/io_task_controller.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/chromeos/extensions/file_manager/scoped_suppress_drive_notifications_for_path.h"
+#include "chrome/browser/ui/webui/chromeos/cloud_upload/cloud_upload_notification_manager.h"
 #include "chromeos/ash/components/drivefs/drivefs_host_observer.h"
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
 #include "storage/browser/file_system/file_system_context.h"
@@ -56,6 +57,9 @@ class CloudUploadHandler
   // Starts the upload workflow. Initiated by the `UploadToCloud` static method.
   void Run(UploadCallback callback);
 
+  // Updates the progress notification for the upload workflow (move + syncing).
+  void UpdateProgressNotification();
+
   // Ends upload and runs Upload callback.
   void OnEndUpload(GURL hosted_url);
 
@@ -83,11 +87,14 @@ class CloudUploadHandler
   scoped_refptr<storage::FileSystemContext> file_system_context_;
   file_manager::io_task::IOTaskController* io_task_controller_;
   drive::DriveIntegrationService* const drive_integration_service_;
+  CloudUploadNotificationManager notification_manager_;
   const storage::FileSystemURL source_url_;
   file_manager::io_task::IOTaskId observed_task_id_;
   base::FilePath observed_relative_drive_path_;
   bool error_found_;
   bool upload_done_;
+  int move_progress_ = 0;
+  int sync_progress_ = 0;
   UploadCallback callback_;
   std::unique_ptr<file_manager::ScopedSuppressDriveNotificationsForPath>
       scoped_suppress_drive_notifications_for_path_ = nullptr;
