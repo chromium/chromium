@@ -5,6 +5,7 @@
 #include "components/exo/wayland/clients/test/client_version_test.h"
 
 #include <alpha-compositing-unstable-v1-client-protocol.h>
+#include <content-type-v1-server-protocol.h>
 #include <cursor-shapes-unstable-v1-server-protocol.h>
 #include <extended-drag-unstable-v1-server-protocol.h>
 #include <gaming-input-unstable-v2-server-protocol.h>
@@ -75,6 +76,7 @@ struct Globals {
       zwp_linux_explicit_synchronization_v1;
   std::unique_ptr<zcr_vsync_feedback_v1> zcr_vsync_feedback_v1;
   std::unique_ptr<wl_data_device_manager> wl_data_device_manager;
+  std::unique_ptr<wp_content_type_manager_v1> wp_content_type_manager_v1;
   std::unique_ptr<wp_viewporter> wp_viewporter;
   std::unique_ptr<zxdg_shell_v6> zxdg_shell_v6;
   std::unique_ptr<xdg_wm_base> xdg_wm_base;
@@ -166,6 +168,8 @@ void RegistryHandler(void* data,
                             zwp_linux_explicit_synchronization_v1),
           REGISTRY_CALLBACK(zcr_vsync_feedback_v1, zcr_vsync_feedback_v1),
           REGISTRY_CALLBACK(wl_data_device_manager, wl_data_device_manager),
+          REGISTRY_CALLBACK(wp_content_type_manager_v1,
+                            wp_content_type_manager_v1),
           REGISTRY_CALLBACK(wp_viewporter, wp_viewporter),
           REGISTRY_CALLBACK(zxdg_shell_v6, zxdg_shell_v6),
           REGISTRY_CALLBACK(xdg_wm_base, xdg_wm_base),

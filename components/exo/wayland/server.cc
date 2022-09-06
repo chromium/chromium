@@ -6,6 +6,7 @@
 
 #include <alpha-compositing-unstable-v1-server-protocol.h>
 #include <aura-shell-server-protocol.h>
+#include <content-type-v1-server-protocol.h>
 #include <cursor-shapes-unstable-v1-server-protocol.h>
 #include <extended-drag-unstable-v1-server-protocol.h>
 #include <gaming-input-unstable-v2-server-protocol.h>
@@ -83,6 +84,7 @@
 #include <idle-inhibit-unstable-v1-server-protocol.h>
 #include "ash/constants/ash_features.h"
 #include "base/system/sys_info.h"
+#include "components/exo/wayland/content_type.h"
 #include "components/exo/wayland/weston_test.h"
 #include "components/exo/wayland/wl_shell.h"
 #include "components/exo/wayland/xdg_shell.h"
@@ -335,6 +337,8 @@ void Server::Initialize() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   wl_global_create(wl_display_.get(), &wl_shell_interface, 1, display_,
                    bind_shell);
+  wl_global_create(wl_display_.get(), &wp_content_type_manager_v1_interface, 1,
+                   display_, bind_content_type);
   wl_global_create(wl_display_.get(), &zcr_cursor_shapes_v1_interface, 1,
                    display_, bind_cursor_shapes);
   wl_global_create(wl_display_.get(), &zcr_gaming_input_v2_interface, 3,
