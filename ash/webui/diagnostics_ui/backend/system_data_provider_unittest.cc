@@ -41,6 +41,7 @@ namespace {
 namespace healthd_mojom = cros_healthd::mojom;
 
 constexpr char kSystemDataError[] = "ChromeOS.DiagnosticsUi.Error.System";
+constexpr char kBatteryDataError[] = "ChromeOS.DiagnosticsUi.Error.Battery";
 
 constexpr char kProbeErrorBatteryInfo[] =
     "ChromeOS.DiagnosticsUi.Error.CrosHealthdProbeError.BatteryInfo";
@@ -474,6 +475,20 @@ void VerifySystemDataErrorBucketCounts(
   tester.ExpectBucketCount(kSystemDataError, metrics::DataError::kNotANumber,
                            expected_not_a_number_error);
   tester.ExpectBucketCount(kSystemDataError,
+                           metrics::DataError::kExpectationNotMet,
+                           expected_expectation_not_met_error);
+}
+
+void VerifyBatteryDataErrorBucketCounts(
+    const base::HistogramTester& tester,
+    size_t expected_no_data_error,
+    size_t expected_not_a_number_error,
+    size_t expected_expectation_not_met_error) {
+  tester.ExpectBucketCount(kBatteryDataError, metrics::DataError::kNoData,
+                           expected_no_data_error);
+  tester.ExpectBucketCount(kBatteryDataError, metrics::DataError::kNotANumber,
+                           expected_not_a_number_error);
+  tester.ExpectBucketCount(kBatteryDataError,
                            metrics::DataError::kExpectationNotMet,
                            expected_expectation_not_met_error);
 }
@@ -1558,6 +1573,88 @@ TEST_F(SystemDataProviderTest, RecordProbeError_SystemInfo) {
         run_loop.Quit();
       }));
   run_loop.Run();
+}
+
+// Validate expected metric ExpectationNotMet error triggered when
+// charge_full_design value from battery_info is zero.
+TEST_F(SystemDataProviderTest, RecordBatteryDataError_ChargeFullDesignZero) {
+  base::HistogramTester histogram_tester;
+  VerifyBatteryDataErrorBucketCounts(histogram_tester,
+                                     /*expected_no_data_error=*/0,
+                                     /*expected_not_a_number_error=*/0,
+                                     /*expected_expectation_not_met_error=*/0);
+
+  const std::string vendor = "fake_vendor";
+  healthd_mojom::BatteryInfoPtr battery_info_all_zero =
+      CreateCrosHealthdBatteryInfoResponse(vendor, /*charge_full_design*/ 0);
+  SetProbeTelemetryInfoResponse(std::move(battery_info_all_zero),
+                                /*cpu_info=*/nullptr,
+                                /*memory_info=*/nullptr,
+                                /*system_info=*/nullptr);
+
+  base::RunLoop run_loop;
+  system_data_provider_->GetBatteryInfo(
+      base::BindLambdaForTesting([&](mojom::BatteryInfoPtr ptr) {
+        ASSERT_TRUE(ptr);
+        VerifyBatteryDataErrorBucketCounts(
+            histogram_tester,
+            /*expected_no_data_error=*/0,
+            /*expected_not_a_number_error=*/0,
+            /*expected_expectation_not_met_error=*/1);
+
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+}
+
+// Validate expected metric ExpectationNotMet error triggered when
+// charge_full value from battery_info is zero.
+TEST_F(SystemDataProviderTest, RecordBatteryDataError_ChargeFullZero) {
+  base::HistogramTester histogram_tester;
+  VerifyBatteryDataErrorBucketCounts(histogram_tester,
+                                     /*expected_no_data_error=*/0,
+                                     /*expected_not_a_number_error=*/0,
+                                     /*expected_expectation_not_met_error=*/0);
+
+  const std::string vendor = "fake_vendor";
+  healthd_mojom::BatteryInfoPtr battery_info_charge_full_zero =
+      CreateCrosHealthdBatteryInfoResponse(vendor, /*charge_full_design*/ 1);
+  SetProbeTelemetryInfoResponse(std::move(battery_info_charge_full_zero),
+                                /*cpu_info=*/nullptr,
+                                /*memory_info=*/nullptr,
+                                /*system_info=*/nullptr);
+
+  // Registering as an observer should trigger one update.
+  FakeBatteryHealthObserver health_observer;
+  system_data_provider_->ObserveBatteryHealth(
+      health_observer.receiver.BindNewPipeAndPassRemote());
+  base::RunLoop().RunUntilIdle();
+
+  VerifyBatteryDataErrorBucketCounts(histogram_tester,
+                                     /*expected_no_data_error=*/0,
+                                     /*expected_not_a_number_error=*/0,
+                                     /*expected_expectation_not_met_error=*/1);
+}
+
+// Validate expected metric ExpectationNotMet error triggered when
+// has battery info mismatch from two sources.
+TEST_F(SystemDataProviderTest, RecordBatteryDataError_HasBatteryInfoMismatch) {
+  base::HistogramTester histogram_tester;
+  VerifyBatteryDataErrorBucketCounts(histogram_tester,
+                                     /*expected_no_data_error=*/0,
+                                     /*expected_not_a_number_error=*/0,
+                                     /*expected_expectation_not_met_error=*/0);
+
+  // Registering as an observer should trigger one update.
+  FakeBatteryChargeStatusObserver charge_status_observer;
+  system_data_provider_->ObserveBatteryChargeStatus(
+      charge_status_observer.receiver.BindNewPipeAndPassRemote());
+  base::RunLoop().RunUntilIdle();
+
+  VerifyBatteryDataErrorBucketCounts(histogram_tester,
+                                     /*expected_no_data_error=*/0,
+                                     /*expected_not_a_number_error=*/0,
+                                     /*expected_expectation_not_met_error=*/1);
 }
 
 }  // namespace ash::diagnostics

@@ -45,6 +45,8 @@ void EmitRoutineResult(mojom::RoutineType routine_type,
 
 void EmitSystemDataError(DataError error);
 
+void EmitBatteryDataError(DataError error);
+
 // Tracks type and source struct of errors from calls to cros_healthd probe
 // service. `source_type` matches the `type_name` lookup in
 // cros_healthd_helpers.

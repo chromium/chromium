@@ -121,6 +121,10 @@ void PopulateDeviceCapabilities(const healthd::TelemetryInfo& telemetry_info,
 
 void PopulateBatteryInfo(const healthd::BatteryInfo& battery_info,
                          mojom::BatteryInfo& out_battery_info) {
+  if (battery_info.charge_full_design == 0) {
+    LOG(ERROR) << "charge_full_design from battery_info should not be zero.";
+    EmitBatteryDataError(metrics::DataError::kExpectationNotMet);
+  }
   out_battery_info.manufacturer = battery_info.vendor;
   out_battery_info.charge_full_design_milliamp_hours =
       battery_info.charge_full_design * kMilliampsInAnAmp;
@@ -153,6 +157,11 @@ void PopulateBatteryChargeStatus(
 void PopulateBatteryHealth(const healthd::BatteryInfo& battery_info,
                            mojom::BatteryHealth& out_battery_health) {
   out_battery_health.cycle_count = battery_info.cycle_count;
+
+  if (battery_info.charge_full == 0) {
+    LOG(ERROR) << "charge_full from battery_info should not be zero.";
+    EmitBatteryDataError(metrics::DataError::kExpectationNotMet);
+  }
 
   // Handle values in battery_info which could cause a SIGFPE. See b/227485637.
   if (isnan(battery_info.charge_full) ||
@@ -519,8 +528,7 @@ void SystemDataProvider::OnBatteryChargeStatusUpdated(
         DoesDeviceHaveBattery(*power_supply_properties)) {
       LOG(ERROR)
           << "Sources should not disagree about whether there is a battery.";
-      // TODO(wenyu): Add metrics to track the occurrence of battery info
-      // inconsistency.
+      EmitBatteryDataError(metrics::DataError::kExpectationNotMet);
     }
     NotifyBatteryChargeStatusObservers(battery_charge_status);
     return;
