@@ -637,7 +637,7 @@ deps = {
       'packages': [
         {
           'package': 'chromium/third_party/updater/chrome_mac_universal',
-          'version': 'rQHDgHxj-eszT9vptAg6-jI6iiOgaGtGRF-SpwJO4WkC',
+          'version': 'mpzzXmEN9b2vcte69PubhmANQ9TX4M9lMN2QX_T0sg4C',
         },
       ],
   },
@@ -648,7 +648,7 @@ deps = {
       'packages': [
         {
           'package': 'chromium/third_party/updater/chrome_win_x86',
-          'version': 'tf5lWlrFfwXua5M7w01-jilWa2XEhQHZcHQWedp0nPUC',
+          'version': '8op6uucRcEgjY0vxC1cG9IVnldLGyOMK5RI7zfHu4gwC',
         },
       ],
   },
@@ -659,7 +659,7 @@ deps = {
       'packages': [
         {
           'package': 'chromium/third_party/updater/chrome_win_x86_64',
-          'version': 'rpLV4SB6iIviMKk1MBafge8bfWN9-mJRHx_EfUA2gkcC',
+          'version': 'NKPesfA3vjWxa8L_McuUJczuuGqGOVJnUhDrp8-f8ZsC',
         },
       ],
   },
@@ -671,7 +671,7 @@ deps = {
       'packages': [
         {
           'package': 'chromium/third_party/updater/chromium_mac_amd64',
-          'version': 'aky9DQ7bmk6pudL3GwnY__L9unj4fGSUrcgXMOg3_bcC',
+          'version': 'v72gXQjSMX8cSLGpTQD734U6N_X4_fxNYLM1VVoNpHIC',
         },
       ],
   },
@@ -683,7 +683,7 @@ deps = {
       'packages': [
         {
           'package': 'chromium/third_party/updater/chromium_mac_arm64',
-          'version': 'LGyRJoWS0jSpjayf1NKc3XRuW-WkKW25rXH-AjeKVzsC',
+          'version': 'LEXsel1Q4OCK47c7ptqErsc4uH5nRnBdsCiAc3-zY7EC',
         },
       ],
   },
@@ -694,7 +694,7 @@ deps = {
       'packages': [
         {
           'package': 'chromium/third_party/updater/chromium_win_x86',
-          'version': '0pPEkTkmTj0LatfM7MnGDYU4QmbMFHVvQXIZbsJScfoC',
+          'version': '6CUuNq-kbeJmvwdJXYVHBH1JFNHsm6hB5UMjGMjy99MC',
         },
       ],
   },
@@ -705,7 +705,7 @@ deps = {
       'packages': [
         {
           'package': 'chromium/third_party/updater/chromium_win_x86_64',
-          'version': '_75UmaprLCdYJugClDTFBAM2B80q4sjtl_z8J6p6nvgC',
+          'version': 'Mps7TqJSMkuFZLpoxlcsV0d_tJ4BMnBls1NdYSGl_N4C',
         },
       ],
   },
