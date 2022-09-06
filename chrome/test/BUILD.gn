@@ -8761,7 +8761,10 @@ test("unit_tests") {
       "../browser/ui/window_name_prompt/window_name_prompt_unittest.cc",
     ]
     if (is_linux) {
-      sources += [ "../browser/ui/views/frame/browser_frame_view_layout_linux_native_unittest.cc" ]
+      sources += [
+        "../browser/ui/views/frame/browser_frame_view_layout_linux_native_unittest.cc",
+        "../browser/ui/views/frame/browser_frame_view_layout_linux_unittest.cc",
+      ]
       deps += [ "//ui/linux:linux_ui" ]
     }
     if (enable_plugins) {

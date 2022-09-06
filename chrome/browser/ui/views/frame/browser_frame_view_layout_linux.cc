@@ -64,8 +64,13 @@ gfx::Insets BrowserFrameViewLayoutLinux::RestoredFrameBorderInsets() const {
                            tiled_edges.right ? 0 : shadow_radius);
     gfx::RectF shadow_extents;
     shadow_extents.Inset(-shadow_insets);
-    if (!tiled_edges.top)
+    if (!tiled_edges.top) {
       shadow_extents.set_y(shadow_extents.y() + shadow_value.y());
+      // If the bottom edge is tiled, fix the height to compensate the addition
+      // to the top inset made above.
+      if (tiled_edges.bottom)
+        shadow_extents.set_height(-shadow_extents.y());
+    }
     frame_extents.Union(gfx::ToEnclosingRect(shadow_extents));
   }
 

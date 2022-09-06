@@ -144,7 +144,7 @@ gfx::Insets OpaqueBrowserFrameViewLayout::FrameBorderInsets(
 
 int OpaqueBrowserFrameViewLayout::FrameTopBorderThickness(bool restored) const {
   int thickness = FrameBorderInsets(restored).top();
-  if (restored || !delegate_->IsFrameCondensed())
+  if ((restored || !delegate_->IsFrameCondensed()) && thickness > 0)
     thickness += NonClientExtraTopThickness();
   return thickness;
 }
