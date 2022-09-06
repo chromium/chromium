@@ -6,7 +6,24 @@
  * @fileoverview Polymer element for displaying material design offline login.
  */
 
-/* #js_imports_placeholder */
+import '//resources/cr_elements/cr_shared_style.css.js';
+import '//resources/cr_elements/cr_button/cr_button.js';
+import '//resources/cr_elements/cr_dialog/cr_dialog.js';
+import '//resources/cr_elements/cr_input/cr_input.js';
+import '../../components/gaia_header.m.js';
+import '../../components/gaia_input_form.m.js';
+import '../../components/gaia_button.m.js';
+import '../../components/common_styles/oobe_dialog_host_styles.m.js';
+import '../../components/dialogs/oobe_content_dialog.m.js';
+import '../../components/buttons/oobe_back_button.m.js';
+import '../../components/buttons/oobe_next_button.m.js';
+
+import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.m.js';
+import {OobeDialogHostBehavior} from '../../components/behaviors/oobe_dialog_host_behavior.m.js';
+import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/behaviors/oobe_i18n_behavior.m.js';
+
 
 const DEFAULT_EMAIL_DOMAIN = '@gmail.com';
 const INPUT_EMAIL_PATTERN = '^[a-zA-Z0-9.!#$%&\'*+=?^_`{|}~-]+(@[^\\s@]+)?$';
@@ -22,9 +39,9 @@ const LOGIN_SECTION = {
  * @implements {LoginScreenBehaviorInterface}
  * @implements {OobeI18nBehaviorInterface}
  */
-const OfflineLoginBase = Polymer.mixinBehaviors(
+const OfflineLoginBase = mixinBehaviors(
     [OobeI18nBehavior, OobeDialogHostBehavior, LoginScreenBehavior],
-    Polymer.Element);
+    PolymerElement);
 
 /**
  * @typedef {{
@@ -45,7 +62,9 @@ class OfflineLogin extends OfflineLoginBase {
     return 'offline-login-element';
   }
 
-  /* #html_template_placeholder */
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
   static get properties() {
     return {
@@ -83,17 +102,26 @@ class OfflineLogin extends OfflineLoginBase {
       /**
        * Current value of e-mail input field.
        */
-      email_: String,
+      email_: {
+        type: String,
+        value: '',
+      },
 
       /**
        * Current value of password input field.
        */
-      password_: String,
+      password_: {
+        type: String,
+        value: '',
+      },
 
       /**
        * Proper e-mail with domain, displayed on password page.
        */
-      fullEmail_: String,
+      fullEmail_: {
+        type: String,
+        value: '',
+      },
 
       activeSection: {
         type: String,
@@ -105,13 +133,6 @@ class OfflineLogin extends OfflineLoginBase {
         value: false,
       },
     };
-  }
-
-  constructor() {
-    super();
-    this.email_ = '';
-    this.password_ = '';
-    this.fullEmail_ = '';
   }
 
   /** Overridden from LoginScreenBehavior. */

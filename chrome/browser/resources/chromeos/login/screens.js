@@ -48,7 +48,7 @@ import './screens/login/gaia_password_changed.js';
 import './screens/login/lacros_data_backward_migration.js';
 import './screens/login/lacros_data_migration.js';
 import './screens/login/management_transition.js';
-import './screens/login/offline_login.m.js';
+import './screens/login/offline_login.js';
 import './screens/login/update_required_card.m.js';
 // SCREENS USED DURING THE OOBE FLOW
 import './screens/oobe/auto_enrollment_check.js';
