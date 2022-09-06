@@ -59,7 +59,7 @@ class VersionUpdaterMac : public VersionUpdater {
       VersionUpdater::StatusCallback status_callback,
       VersionUpdater::PromoteCallback promote_callback,
       updater::UpdaterScope scope,
-      updater::UpdateService::UpdateState update_state);
+      const updater::UpdateService::UpdateState& update_state);
 
   void UpdatePromotionStatusFromChromiumUpdater(
       VersionUpdater::PromoteCallback promote_callback,

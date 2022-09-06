@@ -9,6 +9,7 @@
 #include "base/base64.h"
 #include "base/check_op.h"
 #include "base/files/file_path.h"
+#include "base/logging.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
@@ -127,6 +128,8 @@ void PersistedData::SetAP(const std::string& id, const std::string& ap) {
 }
 
 void PersistedData::RegisterApp(const RegistrationRequest& rq) {
+  VLOG(2) << __func__ << ": Registering " << rq.app_id << " at version "
+          << rq.version;
   SetProductVersion(rq.app_id, rq.version);
   SetExistenceCheckerPath(rq.app_id, rq.existence_checker_path);
   SetBrandCode(rq.app_id, rq.brand_code);

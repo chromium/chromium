@@ -17,6 +17,7 @@
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/sys_string_conversions.h"
+#include "base/task/thread_pool.h"
 #include "chrome/browser/updater/browser_updater_client_util.h"
 #import "chrome/updater/app/server/mac/update_service_wrappers.h"
 #import "chrome/updater/mac/xpc_service_names.h"
@@ -201,19 +202,13 @@ BrowserUpdaterClientMac::BrowserUpdaterClientMac(
 
 BrowserUpdaterClientMac::~BrowserUpdaterClientMac() = default;
 
-void BrowserUpdaterClientMac::GetUpdaterVersion(
+void BrowserUpdaterClientMac::BeginGetUpdaterVersion(
     base::OnceCallback<void(const std::string&)> callback) {
   __block base::OnceCallback<void(const std::string&)> block_callback =
-      base::BindOnce(
-          [](base::OnceCallback<void(const std::string&)> callback,
-             scoped_refptr<BrowserUpdaterClientMac> keep_alive,
-             const std::string& version) { std::move(callback).Run(version); },
-          std::move(callback), base::WrapRefCounted(this));
+      std::move(callback);
 
   auto reply = ^(NSString* version) {
-    std::string result = base::SysNSStringToUTF8(version);
-    task_runner()->PostTask(FROM_HERE,
-                            base::BindOnce(std::move(block_callback), result));
+    std::move(block_callback).Run(base::SysNSStringToUTF8(version));
   };
 
   [client_ getVersionWithReply:reply];
@@ -227,10 +222,8 @@ void BrowserUpdaterClientMac::BeginRegister(
   __block updater::UpdateService::Callback block_callback = std::move(callback);
 
   auto reply = ^(int error) {
-    task_runner()->PostTask(
-        FROM_HERE,
-        base::BindOnce(std::move(block_callback),
-                       static_cast<updater::UpdateService::Result>(error)));
+    std::move(block_callback)
+        .Run(static_cast<updater::UpdateService::Result>(error));
   };
 
   [client_ registerForUpdatesWithAppId:GetAppIdForUpdaterAsNSString()
@@ -246,22 +239,21 @@ void BrowserUpdaterClientMac::BeginRegister(
 void BrowserUpdaterClientMac::BeginUpdateCheck(
     updater::UpdateService::StateChangeCallback state_update,
     updater::UpdateService::Callback callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   __block updater::UpdateService::Callback block_callback = std::move(callback);
 
   auto reply = ^(int error) {
-    task_runner()->PostTask(
-        FROM_HERE,
-        base::BindOnce(std::move(block_callback),
-                       static_cast<updater::UpdateService::Result>(error)));
+    std::move(block_callback)
+        .Run(static_cast<updater::UpdateService::Result>(error));
   };
 
   base::scoped_nsobject<CRUPriorityWrapper> priority_wrapper(
       [[CRUPriorityWrapper alloc]
           initWithPriority:updater::UpdateService::Priority::kForeground]);
   base::scoped_nsprotocol<id<CRUUpdateStateObserving>> state_observer(
-      [[CRUUpdateStateObserver alloc] initWithRepeatingCallback:state_update
-                                                 callbackRunner:task_runner()]);
+      [[CRUUpdateStateObserver alloc]
+          initWithRepeatingCallback:state_update
+                     callbackRunner:base::ThreadPool::CreateSequencedTaskRunner(
+                                        {})]);
   base::scoped_nsobject<CRUPolicySameVersionUpdateWrapper>
       policySameVersionUpdateWrapper([[CRUPolicySameVersionUpdateWrapper alloc]
           initWithPolicySameVersionUpdate:

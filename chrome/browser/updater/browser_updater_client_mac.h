@@ -24,8 +24,6 @@ class BrowserUpdaterClientMac : public BrowserUpdaterClient {
   explicit BrowserUpdaterClientMac(updater::UpdaterScope scope);
   explicit BrowserUpdaterClientMac(
       base::scoped_nsobject<CRUUpdateClientOnDemandImpl> client);
-  void GetUpdaterVersion(
-      base::OnceCallback<void(const std::string&)> callback) override;
 
  private:
   friend class UpdateClientMacTest;
@@ -42,6 +40,8 @@ class BrowserUpdaterClientMac : public BrowserUpdaterClient {
   void BeginUpdateCheck(
       updater::UpdateService::StateChangeCallback state_change,
       updater::UpdateService::Callback callback) override;
+  void BeginGetUpdaterVersion(
+      base::OnceCallback<void(const std::string&)> callback) override;
 
   base::scoped_nsobject<CRUUpdateClientOnDemandImpl> client_;
 };

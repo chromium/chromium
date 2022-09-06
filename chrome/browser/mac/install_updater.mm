@@ -45,13 +45,13 @@ int RunCommand(const base::FilePath& exe_path, const char* cmd_switch) {
 void InstallUpdaterAndRegisterBrowser() {
   // Only install the updater if the path of the browser is owned by the current
   // user.
-  base::ThreadPool::PostTask(
+  base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,
       {base::MayBlock(), base::WithBaseSyncPrimitives(),
        base::TaskPriority::BEST_EFFORT,
        base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
       base::BindOnce(
-          [](scoped_refptr<BrowserUpdaterClient> client) {
+          []() {
             if (CanInstallUpdater()) {
               // The updater executable should be in
               // BRANDING.app/Contents/Frameworks/BRANDING.framework/Versions/V/
@@ -63,7 +63,7 @@ void InstallUpdaterAndRegisterBrowser() {
 
               if (!base::PathExists(updater_executable_path)) {
                 VLOG(1) << "The updater does not exist in the bundle.";
-                return;
+                return false;
               }
 
               int exit_code =
@@ -71,11 +71,15 @@ void InstallUpdaterAndRegisterBrowser() {
               if (exit_code != 0) {
                 VLOG(1) << "Couldn't install the updater. Exit code: "
                         << exit_code;
-                return;
+                return false;
               }
             }
-
-            client->Register();
-          },
-          BrowserUpdaterClient::Create(updater::UpdaterScope::kUser)));
+            return true;
+          }),
+      base::BindOnce([](bool success) {
+        if (success) {
+          BrowserUpdaterClient::Create(updater::UpdaterScope::kUser)
+              ->Register();
+        }
+      }));
 }
