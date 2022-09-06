@@ -231,7 +231,7 @@ class WTF_EXPORT StringBuilder {
   void Swap(StringBuilder&);
 
  private:
-  static const unsigned kInlineBufferSize = 256;
+  static const unsigned kInlineBufferSize = 16;
   static unsigned InitialBufferSize() { return kInlineBufferSize; }
 
   typedef Vector<LChar, kInlineBufferSize / sizeof(LChar)> Buffer8;
