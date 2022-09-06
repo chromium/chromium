@@ -256,6 +256,8 @@ class CONTENT_EXPORT PrerenderHost : public WebContentsObserver {
     return attributes_.initiator_frame_tree_node_id;
   }
 
+  int initiator_ukm_id() const { return attributes_.initiator_ukm_id; }
+
   bool is_ready_for_activation() const { return is_ready_for_activation_; }
 
   const absl::optional<FinalStatus>& final_status() const {
