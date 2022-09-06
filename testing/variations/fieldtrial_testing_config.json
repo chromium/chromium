@@ -8373,9 +8373,31 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_28_3_20220721",
+                    "name": "Enabled_29_5_20220831",
                     "params": {
-                        "reporter_omaha_tag": "28.3"
+                        "reporter_omaha_tag": "29.5"
+                    },
+                    "enable_features": [
+                        "ClientSideDetectionTag"
+                    ]
+                }
+            ]
+        }
+    ],
+    "SafeBrowsingCSDDesktop": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_29_5_20220831",
+                    "params": {
+                        "reporter_omaha_tag": "29.5"
                     },
                     "enable_features": [
                         "ClientSideDetectionTag"
