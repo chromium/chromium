@@ -1963,12 +1963,6 @@ void FileManagerBrowserTestBase::SetUpCommandLine(
     disabled_features.push_back(arc::kEnableVirtioBlkForData);
   }
 
-  if (options.enable_filters_in_recents) {
-    enabled_features.push_back(chromeos::features::kFiltersInRecents);
-  } else {
-    disabled_features.push_back(chromeos::features::kFiltersInRecents);
-  }
-
   if (options.enable_filters_in_recents_v2) {
     enabled_features.push_back(chromeos::features::kFiltersInRecentsV2);
   } else {
@@ -2975,11 +2969,6 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
 
   if (name == "isBannersFrameworkEnabled") {
     *output = options.enable_banners_framework ? "true" : "false";
-    return;
-  }
-
-  if (name == "isFiltersInRecentsEnabled") {
-    *output = options.enable_filters_in_recents ? "true" : "false";
     return;
   }
 

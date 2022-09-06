@@ -1292,13 +1292,12 @@ export class FileManager extends EventTarget {
         this.namingController_, this.selectionHandler_, this.launchParams_);
 
     // Create file-type filter controller.
-    if (util.isRecentsFilterEnabled()) {
-      this.fileTypeFiltersController_ = new FileTypeFiltersController(
-          this.ui_.fileTypeFilterContainer, this.directoryModel_,
-          this.recentEntry_, /** @type {!A11yAnnounce} */ (this.ui_));
-      this.emptyFolderController_ = new EmptyFolderController(
-          this.ui_.emptyFolder, this.directoryModel_, this.recentEntry_);
-    }
+    this.fileTypeFiltersController_ = new FileTypeFiltersController(
+        this.ui_.fileTypeFilterContainer, this.directoryModel_,
+        this.recentEntry_, /** @type {!A11yAnnounce} */ (this.ui_));
+    this.emptyFolderController_ = new EmptyFolderController(
+        this.ui_.emptyFolder, this.directoryModel_, this.recentEntry_);
+
 
     return directoryTreePromise;
   }

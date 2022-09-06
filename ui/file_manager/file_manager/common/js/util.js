@@ -1270,14 +1270,6 @@ util.isCopyImageEnabled = () => {
 };
 
 /**
- * Returns true if filters in Recents view is enabled.
- * @return {boolean}
- */
-util.isRecentsFilterEnabled = () => {
-  return loadTimeData.getBoolean('FILTERS_IN_RECENTS_ENABLED');
-};
-
-/**
  * Returns true if filters in Recents view V2 is enabled.
  * @return {boolean}
  */

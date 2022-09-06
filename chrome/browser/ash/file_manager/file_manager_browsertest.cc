@@ -128,11 +128,6 @@ struct TestCase {
     return *this;
   }
 
-  TestCase& EnableFiltersInRecents() {
-    options.enable_filters_in_recents = true;
-    return *this;
-  }
-
   TestCase& EnableFiltersInRecentsV2() {
     options.enable_filters_in_recents_v2 = true;
     return *this;
@@ -205,9 +200,6 @@ struct TestCase {
 
     if (options.enable_trash)
       full_name += "_Trash";
-
-    if (options.enable_filters_in_recents)
-      full_name += "_FiltersInRecents";
 
     if (options.enable_filters_in_recents_v2)
       full_name += "_FiltersInRecentsV2";
@@ -762,7 +754,6 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("dirContextMenuUsbDcim"),
         TestCase("dirContextMenuUsbDcim").EnableSinglePartitionFormat(),
         TestCase("dirContextMenuMtp"),
-        TestCase("dirContextMenuMediaView").EnableArc(),
         TestCase("dirContextMenuMyDrive"),
         TestCase("dirContextMenuSharedDrive"),
         TestCase("dirContextMenuSharedWithMe"),
@@ -1154,107 +1145,53 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
     Recents, /* recents.js */
     FilesAppBrowserTest,
     ::testing::Values(
-        TestCase("recentsA11yMessages").EnableFiltersInRecents(),
-        TestCase("recentsAllowCutForDownloads")
-            .EnableFiltersInRecents()
-            .EnableFiltersInRecentsV2(),
-        TestCase("recentsAllowCutForDrive")
-            .EnableFiltersInRecents()
-            .EnableFiltersInRecentsV2(),
+        TestCase("recentsA11yMessages"),
+        TestCase("recentsAllowCutForDownloads").EnableFiltersInRecentsV2(),
+        TestCase("recentsAllowCutForDrive").EnableFiltersInRecentsV2(),
         TestCase("recentsAllowCutForPlayFiles")
             .EnableArc()
-            .EnableFiltersInRecents()
             .EnableFiltersInRecentsV2(),
-        TestCase("recentsAllowDeletion")
-            .EnableArc()
-            .EnableFiltersInRecents()
-            .EnableFiltersInRecentsV2(),
+        TestCase("recentsAllowDeletion").EnableArc().EnableFiltersInRecentsV2(),
         TestCase("recentsAllowMultipleFilesDeletion")
             .EnableArc()
-            .EnableFiltersInRecents()
             .EnableFiltersInRecentsV2(),
-        TestCase("recentsAllowRename")
-            .EnableArc()
-            .EnableFiltersInRecents()
-            .EnableFiltersInRecentsV2(),
-        TestCase("recentsEmptyFolderMessage")
-            .EnableFiltersInRecents()
-            .EnableFiltersInRecentsV2(),
+        TestCase("recentsAllowRename").EnableArc().EnableFiltersInRecentsV2(),
+        TestCase("recentsEmptyFolderMessage").EnableFiltersInRecentsV2(),
         TestCase("recentsEmptyFolderMessageAfterDeletion")
-            .EnableFiltersInRecents()
             .EnableFiltersInRecentsV2(),
         TestCase("recentsDownloads"),
-        TestCase("recentsDownloads").EnableFiltersInRecents(),
         TestCase("recentsDrive"),
-        TestCase("recentsDrive").EnableFiltersInRecents(),
         TestCase("recentsCrostiniNotMounted"),
-        TestCase("recentsCrostiniNotMounted").EnableFiltersInRecents(),
         TestCase("recentsCrostiniMounted"),
-        TestCase("recentsCrostiniMounted").EnableFiltersInRecents(),
         TestCase("recentsDownloadsAndDrive"),
-        TestCase("recentsDownloadsAndDrive").EnableFiltersInRecents(),
         TestCase("recentsDownloadsAndDriveAndPlayFiles").EnableArc(),
-        TestCase("recentsDownloadsAndDriveAndPlayFiles")
-            .EnableArc()
-            .EnableFiltersInRecents(),
         TestCase("recentsDownloadsAndDriveWithOverlap"),
-        TestCase("recentsDownloadsAndDriveWithOverlap")
-            .EnableFiltersInRecents(),
-        TestCase("recentsFilterResetToAll").EnableFiltersInRecents(),
+        TestCase("recentsFilterResetToAll"),
         TestCase("recentsNested"),
-        TestCase("recentsNested").EnableFiltersInRecents(),
         TestCase("recentsNoRenameForPlayFiles")
             .EnableArc()
-            .EnableFiltersInRecents()
             .EnableFiltersInRecentsV2(),
         TestCase("recentsPlayFiles").EnableArc(),
-        TestCase("recentsPlayFiles").EnableArc().EnableFiltersInRecents(),
-        TestCase("recentsReadOnlyHidden")
-            .EnableFiltersInRecents()
-            .EnableFiltersInRecentsV2(),
+        TestCase("recentsReadOnlyHidden").EnableFiltersInRecentsV2(),
         TestCase("recentsRespondToTimezoneChangeForGridView")
-            .EnableFiltersInRecents()
             .EnableFiltersInRecentsV2(),
         TestCase("recentsRespondToTimezoneChangeForListView")
-            .EnableFiltersInRecents()
             .EnableFiltersInRecentsV2(),
-        TestCase("recentsTimePeriodHeadings")
-            .EnableFiltersInRecents()
-            .EnableFiltersInRecentsV2(),
+        TestCase("recentsTimePeriodHeadings").EnableFiltersInRecentsV2(),
         TestCase("recentAudioDownloads"),
-        TestCase("recentAudioDownloads").EnableFiltersInRecents(),
         TestCase("recentAudioDownloadsAndDrive"),
-        TestCase("recentAudioDownloadsAndDrive").EnableFiltersInRecents(),
         TestCase("recentAudioDownloadsAndDriveAndPlayFiles").EnableArc(),
-        TestCase("recentAudioDownloadsAndDriveAndPlayFiles")
-            .EnableArc()
-            .EnableFiltersInRecents(),
-        TestCase("recentDocumentsDownloads")
-            .EnableFiltersInRecents()
-            .EnableFiltersInRecentsV2(),
-        TestCase("recentDocumentsDownloadsAndDrive")
-            .EnableFiltersInRecents()
-            .EnableFiltersInRecentsV2(),
+        TestCase("recentDocumentsDownloads").EnableFiltersInRecentsV2(),
+        TestCase("recentDocumentsDownloadsAndDrive").EnableFiltersInRecentsV2(),
         TestCase("recentDocumentsDownloadsAndDriveAndPlayFiles")
             .EnableArc()
-            .EnableFiltersInRecents()
             .EnableFiltersInRecentsV2(),
         TestCase("recentImagesDownloads"),
-        TestCase("recentImagesDownloads").EnableFiltersInRecents(),
         TestCase("recentImagesDownloadsAndDrive"),
-        TestCase("recentImagesDownloadsAndDrive").EnableFiltersInRecents(),
         TestCase("recentImagesDownloadsAndDriveAndPlayFiles").EnableArc(),
-        TestCase("recentImagesDownloadsAndDriveAndPlayFiles")
-            .EnableArc()
-            .EnableFiltersInRecents(),
         TestCase("recentVideosDownloads"),
-        TestCase("recentVideosDownloads").EnableFiltersInRecents(),
         TestCase("recentVideosDownloadsAndDrive"),
-        TestCase("recentVideosDownloadsAndDrive").EnableFiltersInRecents(),
-        TestCase("recentVideosDownloadsAndDriveAndPlayFiles").EnableArc(),
-        TestCase("recentVideosDownloadsAndDriveAndPlayFiles")
-            .EnableArc()
-            .EnableFiltersInRecents()));
+        TestCase("recentVideosDownloadsAndDriveAndPlayFiles").EnableArc()));
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     Metadata, /* metadata.js */

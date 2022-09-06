@@ -59,25 +59,14 @@ async function addPlayFileEntries() {
 }
 
 /**
- * Checks if the #file-filters-in-recents flag has been enabled or not.
- *
- * @return {!Promise<boolean>} Flag enabled or not.
- */
-async function isFiltersInRecentsEnabled() {
-  const isFiltersInRecentsEnabled =
-      await sendTestMessage({name: 'isFiltersInRecentsEnabled'});
-  return isFiltersInRecentsEnabled === 'true';
-}
-
-/**
  * Checks if the #file-filters-in-recents-v2 flag has been enabled or not.
  *
  * @return {!Promise<boolean>} Flag enabled or not.
  */
 async function isFiltersInRecentsV2Enabled() {
-  const isFiltersInRecentsEnabled =
+  const isFiltersInRecentsV2Enabled =
       await sendTestMessage({name: 'isFiltersInRecentsEnabledV2'});
-  return isFiltersInRecentsEnabled === 'true';
+  return isFiltersInRecentsV2Enabled === 'true';
 }
 
 /**
@@ -95,23 +84,17 @@ async function navigateToRecent(appId, type = RecentFilterType.ALL) {
     [RecentFilterType.DOCUMENT]: '/Documents',
   };
 
-  if (await isFiltersInRecentsEnabled()) {
-    await remoteCall.waitAndClickElement(appId, ['[root-type-icon="recent"]']);
-    // "All" button is activated by default, no need to click.
-    if (type !== RecentFilterType.ALL) {
-      await remoteCall.waitAndClickElement(
-          appId, [`[file-type-filter="${type}"]`]);
-    }
-    // Check the corresponding filter button is activated.
-    await remoteCall.waitForElement(
-        appId, [`[file-type-filter="${type}"].active`]);
-    // Breadcrumb should always be "/Recents" if the flag is on.
-    await verifyBreadcrumbsPath(appId, breadcrumbMap[RecentFilterType.ALL]);
-  } else {
+  await remoteCall.waitAndClickElement(appId, ['[root-type-icon="recent"]']);
+  // "All" button is activated by default, no need to click.
+  if (type !== RecentFilterType.ALL) {
     await remoteCall.waitAndClickElement(
-        appId, [`[root-type-icon="recent"][recent-file-type="${type}"]`]);
-    await verifyBreadcrumbsPath(appId, breadcrumbMap[type]);
+        appId, [`[file-type-filter="${type}"]`]);
   }
+  // Check the corresponding filter button is activated.
+  await remoteCall.waitForElement(
+      appId, [`[file-type-filter="${type}"].active`]);
+  // Breadcrumb should always be "/Recents" if the flag is on.
+  await verifyBreadcrumbsPath(appId, breadcrumbMap[RecentFilterType.ALL]);
 }
 
 /**

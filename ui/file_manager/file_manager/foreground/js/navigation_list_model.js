@@ -6,11 +6,11 @@ import {assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
 
 import {DialogType} from '../../common/js/dialog_type.js';
-import {EntryList, FakeEntryImpl, VolumeEntry} from '../../common/js/files_app_entry_types.js';
+import {EntryList, VolumeEntry} from '../../common/js/files_app_entry_types.js';
 import {TrashRootEntry} from '../../common/js/trash.js';
 import {str, util} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
-import {FakeEntry, FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
+import {FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
 import {VolumeInfo} from '../../externs/volume_info.js';
 import {VolumeManager} from '../../externs/volume_manager.js';
 
@@ -576,46 +576,11 @@ export class NavigationListModel extends EventTarget {
       return removableGroups;
     };
 
-    /**
-     * Creates a model item for a Recent view whose contents are filtered by
-     * their file types.
-     * @param {string} label
-     * @param {chrome.fileManagerPrivate.RecentFileType} fileType
-     * @param {VolumeManagerCommon.RootType} rootType
-     * @return {!NavigationModelFakeItem}
-     */
-    const createFilteredRecentModelItem = (label, fileType, rootType) => {
-      const entry = /** @type {!FakeEntry} */ (Object.assign(
-          Object.create(FakeEntryImpl.prototype), this.recentModelItem_.entry));
-      entry.recentFileType = fileType;
-      entry.rootType = rootType;
-      return new NavigationModelFakeItem(
-          label, NavigationModelItemType.RECENT, entry);
-    };
-
     // Items as per required order.
     this.navigationItems_ = [];
 
-    // If "Recents" are enabled, then the Unified Media Views
-    // (crbug.com/1033531), which are based on top of the "Recents"
-    // feature, are also added to the directory tree.
     if (this.recentModelItem_) {
       this.navigationItems_.push(this.recentModelItem_);
-      if (!util.isRecentsFilterEnabled()) {
-        // Unified Media View (Images, Videos and Audio).
-        this.navigationItems_.push(createFilteredRecentModelItem(
-            str('MEDIA_VIEW_AUDIO_ROOT_LABEL'),
-            chrome.fileManagerPrivate.RecentFileType.AUDIO,
-            VolumeManagerCommon.RootType.RECENT_AUDIO));
-        this.navigationItems_.push(createFilteredRecentModelItem(
-            str('MEDIA_VIEW_IMAGES_ROOT_LABEL'),
-            chrome.fileManagerPrivate.RecentFileType.IMAGE,
-            VolumeManagerCommon.RootType.RECENT_IMAGES));
-        this.navigationItems_.push(createFilteredRecentModelItem(
-            str('MEDIA_VIEW_VIDEOS_ROOT_LABEL'),
-            chrome.fileManagerPrivate.RecentFileType.VIDEO,
-            VolumeManagerCommon.RootType.RECENT_VIDEOS));
-      }
     }
 
     // Shortcuts.

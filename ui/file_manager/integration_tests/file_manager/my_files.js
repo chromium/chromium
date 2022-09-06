@@ -34,9 +34,6 @@ async function selectMyFiles(appId) {
 testcase.showMyFiles = async () => {
   const expectedElementLabels = [
     'Recent: FakeItem',
-    'Audio: FakeItem',
-    'Images: FakeItem',
-    'Videos: FakeItem',
     'My files: EntryListItem',
     'Downloads: SubDirectoryItem',
     'Linux files: FakeItem',

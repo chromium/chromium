@@ -193,9 +193,7 @@ testcase.toolbarRefreshButtonWithSelection = async () => {
 };
 
 /**
- * Tests that refresh button is not shown when any of the Recent views
- * (or views built on top of them, such as the Media Views) are
- * selected.
+ * Tests that refresh button is not shown when the Recent view is selected.
  */
 testcase.toolbarRefreshButtonHiddenInRecents = async () => {
   // Open files app.
@@ -206,14 +204,6 @@ testcase.toolbarRefreshButtonHiddenInRecents = async () => {
   await remoteCall.waitAndClickElement(
       appId, '#directory-tree [entry-label="Recent"]');
   await remoteCall.waitUntilCurrentDirectoryIsChanged(appId, '/Recent');
-
-  // Check that the button should be hidden.
-  await remoteCall.waitForElement(appId, '#refresh-button[hidden]');
-
-  // Navigate to Images.
-  await remoteCall.waitAndClickElement(
-      appId, '#directory-tree [entry-label="Images"]');
-  await remoteCall.waitUntilCurrentDirectoryIsChanged(appId, '/Images');
 
   // Check that the button should be hidden.
   await remoteCall.waitForElement(appId, '#refresh-button[hidden]');

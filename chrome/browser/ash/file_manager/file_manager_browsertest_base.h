@@ -130,9 +130,6 @@ class FileManagerBrowserTestBase : public content::DevToolsAgentHostObserver,
     // Whether test should run Android with the virtio-blk for /data.
     bool enable_virtio_blk_for_data = false;
 
-    // Whether test needs the files-filters-in-recents flag.
-    bool enable_filters_in_recents = false;
-
     // Whether test needs the files-filters-in-recents-v2 flag.
     bool enable_filters_in_recents_v2 = false;
 

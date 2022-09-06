@@ -1026,9 +1026,6 @@ void AddFileManagerFeatureStrings(const std::string& locale,
             base::FeatureList::IsEnabled(
                 chromeos::features::kDriveFsBidirectionalNativeMessaging));
   dict->Set(
-      "FILTERS_IN_RECENTS_ENABLED",
-      base::FeatureList::IsEnabled(chromeos::features::kFiltersInRecents));
-  dict->Set(
       "FILTERS_IN_RECENTS_V2_ENABLED",
       base::FeatureList::IsEnabled(chromeos::features::kFiltersInRecentsV2));
   dict->Set("FILES_SINGLE_PARTITION_FORMAT_ENABLED",
