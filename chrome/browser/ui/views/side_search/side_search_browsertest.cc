@@ -63,6 +63,7 @@ void SideSearchBrowserTest::SetUpOnMainThread() {
   config->SetGenerateSideSearchURLCallback(
       base::BindRepeating([](const GURL& url) { return url; }));
   SetIsSidePanelSRPAvailableAt(browser(), 0, true);
+  config->set_skip_on_template_url_changed_for_testing(true);
 }
 
 void SideSearchBrowserTest::TearDownOnMainThread() {

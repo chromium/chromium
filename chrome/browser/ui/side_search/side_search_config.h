@@ -88,6 +88,11 @@ class SideSearchConfig : public base::SupportsUserData::Data,
   // configuration on all supported platforms until tests are fully migrated.
   void ApplyGoogleSearchConfigurationForTesting();
 
+  void set_skip_on_template_url_changed_for_testing(
+      bool skip_on_template_url_changed) {
+    skip_on_template_url_changed_ = skip_on_template_url_changed;
+  }
+
  private:
   // Whether or not the service providing the SRP for the side panel is
   // available or not.
@@ -108,6 +113,11 @@ class SideSearchConfig : public base::SupportsUserData::Data,
   // The ID of the current default TemplateURL instance. Keep track of this so
   // we update the page action's favicon only when the default instance changes.
   TemplateURLID default_template_url_id_ = kInvalidTemplateURLID;
+
+  // Whether to skip resetting state on template url changed.
+  // Used to prevent flaky tests when template url changed in the middle of the
+  // test. (crbug.com/1348296).
+  bool skip_on_template_url_changed_ = false;
 
   base::ScopedObservation<TemplateURLService, TemplateURLServiceObserver>
       template_url_service_observation_{this};

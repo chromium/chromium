@@ -136,6 +136,9 @@ SideSearchConfig* SideSearchConfig::Get(content::BrowserContext* context) {
 }
 
 void SideSearchConfig::OnTemplateURLServiceChanged() {
+  if (skip_on_template_url_changed_)
+    return;
+
   const auto* default_template_url =
       TemplateURLServiceFactory::GetForProfile(profile_)
           ->GetDefaultSearchProvider();
