@@ -1,8 +1,4 @@
-PASS document.activeElement.id is "first"
-PASS successfullyParsed is true
-
-TEST COMPLETE
-
 This test passes if it does not crash.
+
  
  
