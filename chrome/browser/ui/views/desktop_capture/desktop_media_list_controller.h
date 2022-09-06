@@ -38,6 +38,7 @@ class DesktopMediaListController : public DesktopMediaListObserver,
     virtual void OnSourceNameChanged(size_t index) = 0;
     virtual void OnSourceThumbnailChanged(size_t index) = 0;
     virtual void OnSourcePreviewChanged(size_t index) = 0;
+    virtual void OnDelegatedSourceListSelection() = 0;
   };
 
   // The abstract interface implemented by any view controlled by this
@@ -124,6 +125,7 @@ class DesktopMediaListController : public DesktopMediaListObserver,
   void OnSourceNameChanged(int index) override;
   void OnSourceThumbnailChanged(int index) override;
   void OnSourcePreviewChanged(size_t index) override;
+  void OnDelegatedSourceListSelection() override;
 
   // ViewObserver:
   void OnViewIsDeleting(views::View* view) override;

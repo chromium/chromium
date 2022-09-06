@@ -240,3 +240,10 @@ void DesktopMediaListBase::ScheduleNextRefresh() {
                      true),
       update_period_);
 }
+
+void DesktopMediaListBase::OnDelegatedSourceListSelection() {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  DCHECK(IsSourceListDelegated());
+  if (observer_)
+    observer_->OnDelegatedSourceListSelection();
+}

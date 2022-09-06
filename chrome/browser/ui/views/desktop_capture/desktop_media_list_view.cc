@@ -237,6 +237,14 @@ void DesktopMediaListView::OnSourceThumbnailChanged(size_t index) {
 
 void DesktopMediaListView::OnSourcePreviewChanged(size_t index) {}
 
+void DesktopMediaListView::OnDelegatedSourceListSelection() {
+  // If the SourceList is delegated, we will only have one (or zero), sources.
+  // As long as we have one source, select it once we get notified that the user
+  // made a selection in the delegated source list.
+  if (!children().empty())
+    children().front()->RequestFocus();
+}
+
 void DesktopMediaListView::SetStyle(DesktopMediaSourceViewStyle* style) {
   active_style_ = style;
   controller_->SetThumbnailSize(style->image_rect.size());

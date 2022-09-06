@@ -67,6 +67,7 @@ class TabListModel : public ui::TableModel,
   void OnSourceNameChanged(size_t index) override;
   void OnSourceThumbnailChanged(size_t index) override;
   void OnSourcePreviewChanged(size_t index) override;
+  void OnDelegatedSourceListSelection() override;
 
  private:
   TabListModel(const TabListModel&) = delete;
@@ -136,6 +137,12 @@ void TabListModel::OnSourceThumbnailChanged(size_t index) {
 void TabListModel::OnSourcePreviewChanged(size_t index) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   preview_updated_callback_.Run(index);
+}
+
+void TabListModel::OnDelegatedSourceListSelection() {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  NOTREACHED()
+      << "Tab Lists are not delegated, so should not get a selection event.";
 }
 
 // TableViewObserver implementation that bridges between the actual TableView

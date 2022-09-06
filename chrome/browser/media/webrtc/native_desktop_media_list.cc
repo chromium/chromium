@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/hash/hash.h"
+#include "base/logging.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
@@ -147,7 +148,8 @@ const base::Feature kWindowCaptureMacV2{"WindowCaptureMacV2",
 }  // namespace
 
 class NativeDesktopMediaList::Worker
-    : public webrtc::DesktopCapturer::Callback {
+    : public webrtc::DesktopCapturer::Callback,
+      public webrtc::DelegatedSourceListController::Observer {
  public:
   Worker(scoped_refptr<base::SingleThreadTaskRunner> task_runner,
          base::WeakPtr<NativeDesktopMediaList> media_list,
@@ -200,6 +202,11 @@ class NativeDesktopMediaList::Worker
   void OnCaptureResult(webrtc::DesktopCapturer::Result result,
                        std::unique_ptr<webrtc::DesktopFrame> frame) override;
 
+  // webrtc::DelegatedSourceListController::Observer interface.
+  void OnSelection() override;
+  void OnCancelled() override;
+  void OnError() override;
+
   // Task runner used for capturing operations.
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 
@@ -242,6 +249,9 @@ NativeDesktopMediaList::Worker::~Worker() {
 void NativeDesktopMediaList::Worker::Start() {
   DCHECK(task_runner_->BelongsToCurrentThread());
   capturer_->Start(this);
+
+  if (capturer_->GetDelegatedSourceListController())
+    capturer_->GetDelegatedSourceListController()->Observe(this);
 }
 
 void NativeDesktopMediaList::Worker::Refresh(
@@ -481,6 +491,23 @@ void NativeDesktopMediaList::Worker::HideList() {
   // have been doing.
   if (capturer_->GetDelegatedSourceListController())
     capturer_->GetDelegatedSourceListController()->EnsureHidden();
+}
+
+void NativeDesktopMediaList::Worker::OnSelection() {
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(&NativeDesktopMediaList::OnDelegatedSourceListSelection,
+                     media_list_));
+}
+
+void NativeDesktopMediaList::Worker::OnCancelled() {
+  // TODO(https://crbug.com/1351577): Implement.
+  NOTIMPLEMENTED();
+}
+
+void NativeDesktopMediaList::Worker::OnError() {
+  // TODO(https://crbug.com/1351577): Implement.
+  NOTIMPLEMENTED();
 }
 
 NativeDesktopMediaList::NativeDesktopMediaList(

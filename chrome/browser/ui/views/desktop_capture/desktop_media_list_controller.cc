@@ -188,6 +188,13 @@ void DesktopMediaListController::OnSourcePreviewChanged(size_t index) {
   }
 }
 
+void DesktopMediaListController::OnDelegatedSourceListSelection() {
+  DCHECK(media_list_->IsSourceListDelegated());
+  if (view_) {
+    view_->GetSourceListListener()->OnDelegatedSourceListSelection();
+  }
+}
+
 void DesktopMediaListController::OnViewIsDeleting(views::View* view) {
   view_observations_.RemoveObservation(view);
   view_ = nullptr;

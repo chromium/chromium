@@ -88,6 +88,8 @@ class DesktopMediaListBase : public DesktopMediaList {
   // is null.  Postcondition: |refresh_callback_| is null.
   void OnRefreshComplete();
 
+  void OnDelegatedSourceListSelection();
+
   bool can_refresh() const { return !refresh_callback_.is_null(); }
 
   void SetPreviewedSource(
