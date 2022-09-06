@@ -1813,10 +1813,6 @@ id<GREYMatcher> EditDoneButton() {
 // matches with an existing credential results in showing a section alert for
 // the existing credential.
 - (void)testAddNewDuplicatedPasswordCredential {
-  // TODO(crbug.com/1351802): Re-enable when flake fixed.
-  if (@available(iOS 16, *)) {
-    EARL_GREY_TEST_DISABLED(@"Test consistently failing to tap save.");
-  }
   SaveExamplePasswordForm();
 
   OpenPasswordManager();
@@ -1876,10 +1872,6 @@ id<GREYMatcher> EditDoneButton() {
 // a credential that has the same website as that of an existing credential
 // (does not contain username).
 - (void)testDuplicatedCredentialWithNoUsername {
-  // TODO(crbug.com/1351802): Re-enable when flake fixed.
-  if (@available(iOS 16, *)) {
-    EARL_GREY_TEST_DISABLED(@"Test consistently failing to tap save.");
-  }
   OpenPasswordManager();
 
   [[EarlGrey selectElementWithMatcher:AddPasswordButton()]
