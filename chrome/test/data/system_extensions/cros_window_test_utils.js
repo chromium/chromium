@@ -123,6 +123,13 @@ async function minimizeAndTest() {
   await assertWindowState("minimized");
 }
 
+async function restoreAndTest() {
+  await assertSingleWindow();
+  let [window] = await chromeos.windowManagement.getWindows();
+  await window.restore();
+  await assertWindowState('normal');
+}
+
 async function focusAndTest() {
   await assertSingleWindow();
 

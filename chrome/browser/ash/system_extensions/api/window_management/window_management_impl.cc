@@ -231,6 +231,19 @@ void WindowManagementImpl::Minimize(const base::UnguessableToken& id,
   std::move(callback).Run(blink::mojom::CrosWindowManagementStatus::kSuccess);
 }
 
+void WindowManagementImpl::Restore(const base::UnguessableToken& id,
+                                   RestoreCallback callback) {
+  aura::Window* target = GetWindow(id);
+  if (!target) {
+    std::move(callback).Run(
+        blink::mojom::CrosWindowManagementStatus::kWindowNotFound);
+    return;
+  }
+
+  target->SetProperty(aura::client::kShowStateKey, ui::SHOW_STATE_NORMAL);
+  std::move(callback).Run(blink::mojom::CrosWindowManagementStatus::kSuccess);
+}
+
 void WindowManagementImpl::Focus(const base::UnguessableToken& id,
                                  FocusCallback callback) {
   aura::Window* target = GetWindow(id);

@@ -109,6 +109,12 @@ interface CrosWindowManagement {
   // Minimizes the window identified by id if one exists, else do nothing.
   Minimize(mojo_base.mojom.UnguessableToken id) => (CrosWindowManagementStatus value);
 
+  // Restores the window state from the current state to `kNormal`. As an
+  // example, if the current state is minimized, `Restore()` will change the
+  // window's state to `kNormal`. If the state is already `kNormal` the state
+  // won't change.
+  Restore(mojo_base.mojom.UnguessableToken id) => (CrosWindowManagementStatus value);
+
   // Allocates focus to the CrosWindow identified by id and brings to front.
   Focus(mojo_base.mojom.UnguessableToken id) => (CrosWindowManagementStatus value);
 

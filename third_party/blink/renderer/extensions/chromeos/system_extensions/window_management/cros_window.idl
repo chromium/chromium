@@ -75,6 +75,11 @@ interface CrosWindow {
   // minimizing. Promise rejects with an error if the window can't be minimized.
   [CallWith=ScriptState] Promise<void> minimize();
 
+  // Sets the window state from the current state to `normal`. As an example, if
+  // the current state is minimized, `restore()` will change the window's state
+  // to `normal`. If the state is already `kNormal` the state won't change.
+  [CallWith=ScriptState] Promise<void> restore();
+
   // Allocates focus to the CrosWindow identified by id and brings to front.
   [CallWith=ScriptState] Promise<void> focus();
 

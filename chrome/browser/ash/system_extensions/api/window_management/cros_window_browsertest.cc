@@ -493,6 +493,15 @@ IN_PROC_BROWSER_TEST_F(CrosWindowManagementBrowserTest, CrosWindowMinimize) {
   RunTest("cros_window_minimize.js");
 }
 
+IN_PROC_BROWSER_TEST_F(CrosWindowManagementBrowserTest, CrosWindowRestore) {
+  RunTest("cros_window_restore.js");
+}
+
+IN_PROC_BROWSER_TEST_F(CrosWindowManagementBrowserTest,
+                       CrosWindowRestoreWithHistory) {
+  RunTest("cros_window_restore_with_history.js");
+}
+
 IN_PROC_BROWSER_TEST_F(CrosWindowManagementBrowserTest, CrosWindowFocusSingle) {
   RunTest("cros_window_focus_single.js");
 }

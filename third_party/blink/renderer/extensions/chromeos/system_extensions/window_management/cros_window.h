@@ -49,6 +49,7 @@ class CrosWindow : public ScriptWrappable {
   ScriptPromise setFullscreen(ScriptState* script_state, bool fullscreen);
   ScriptPromise maximize(ScriptState* script_state);
   ScriptPromise minimize(ScriptState* script_state);
+  ScriptPromise restore(ScriptState* script_state);
   ScriptPromise focus(ScriptState* script_state);
   ScriptPromise close(ScriptState* script_state);
 

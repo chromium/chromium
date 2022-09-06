@@ -217,6 +217,19 @@ ScriptPromise CrosWindow::minimize(ScriptState* script_state) {
   return resolver->Promise();
 }
 
+ScriptPromise CrosWindow::restore(ScriptState* script_state) {
+  auto* cros_window_management =
+      window_management_->GetCrosWindowManagementOrNull();
+  if (!cros_window_management) {
+    return ScriptPromise();
+  }
+
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  cros_window_management->Restore(
+      window_->id, WTF::Bind(&OnResponse, WrapPersistent(resolver)));
+  return resolver->Promise();
+}
+
 ScriptPromise CrosWindow::focus(ScriptState* script_state) {
   auto* cros_window_management =
       window_management_->GetCrosWindowManagementOrNull();

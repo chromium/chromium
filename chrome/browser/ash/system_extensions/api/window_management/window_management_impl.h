@@ -65,6 +65,8 @@ class WindowManagementImpl : public WmDefaultLayoutManager,
                 MaximizeCallback callback) override;
   void Minimize(const base::UnguessableToken& id,
                 MinimizeCallback callback) override;
+  void Restore(const base::UnguessableToken& id,
+               RestoreCallback callback) override;
   void Focus(const base::UnguessableToken& id, FocusCallback callback) override;
   void Close(const base::UnguessableToken& id, CloseCallback callback) override;
   void GetAllScreens(GetAllScreensCallback callback) override;
