@@ -7,7 +7,7 @@
 #include <lib/ui/scenic/cpp/commands.h>
 
 #include "base/fuchsia/fuchsia_logging.h"
-#include "ui/ozone/platform/scenic/scenic_surface_factory.h"
+#include "base/location.h"
 
 namespace ui {
 
@@ -58,26 +58,27 @@ void ScenicOverlayView::Initialize(
                                    std::move(collection_token));
 }
 
-bool ScenicOverlayView::AddImages(uint32_t buffer_count,
-                                  const gfx::Size& size) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-
+uint32_t ScenicOverlayView::AddImage(uint32_t buffer_index,
+                                     const gfx::Size& size) {
+  uint32_t id = next_image_id_++;
   fuchsia::sysmem::ImageFormat_2 image_format = {};
   image_format.coded_width = size.width();
   image_format.coded_height = size.height();
-  for (uint32_t i = 0; i < buffer_count; ++i) {
-    // Image id cannot be 0, so add 1 to all buffer indices.
-    image_pipe_->AddImage(i + 1, kImagePipeBufferCollectionId, i, image_format);
-  }
-  return true;
+  image_pipe_->AddImage(id, kImagePipeBufferCollectionId, buffer_index,
+                        image_format);
+  return id;
 }
 
-bool ScenicOverlayView::PresentImage(uint32_t buffer_index,
+void ScenicOverlayView::RemoveImage(uint32_t image_id) {
+  image_pipe_->RemoveImage(image_id);
+}
+
+bool ScenicOverlayView::PresentImage(uint32_t image_id,
                                      std::vector<zx::event> acquire_fences,
                                      std::vector<zx::event> release_fences) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  image_pipe_->PresentImage(buffer_index + 1, zx_clock_get_monotonic(),
+  image_pipe_->PresentImage(image_id, zx_clock_get_monotonic(),
                             std::move(acquire_fences),
                             std::move(release_fences), [](auto) {});
   return true;

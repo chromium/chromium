@@ -303,7 +303,8 @@ bool SysmemBufferCollection::Initialize(
 }
 
 scoped_refptr<gfx::NativePixmap> SysmemBufferCollection::CreateNativePixmap(
-    size_t buffer_index) {
+    size_t buffer_index,
+    gfx::Size size) {
   CHECK_LT(buffer_index, num_buffers());
 
   gfx::NativePixmapHandle handle;
@@ -330,10 +331,10 @@ scoped_refptr<gfx::NativePixmap> SysmemBufferCollection::CreateNativePixmap(
   // The logic should match LogicalBufferCollection::Allocate().
   size_t stride =
       RoundUp(std::max(static_cast<size_t>(format.min_bytes_per_row),
-                       image_size_.width() * GetBytesPerPixel(format_)),
+                       size.width() * GetBytesPerPixel(format_)),
               format.bytes_per_row_divisor);
   size_t plane_offset = buffers_info_.buffers[buffer_index].vmo_usable_start;
-  size_t plane_size = stride * image_size_.height();
+  size_t plane_size = stride * size.height();
   handle.planes.emplace_back(stride, plane_offset, plane_size,
                              std::move(main_plane_vmo));
 
@@ -346,7 +347,7 @@ scoped_refptr<gfx::NativePixmap> SysmemBufferCollection::CreateNativePixmap(
     DCHECK_LE(uv_plane_offset + uv_plane_size, buffer_size_);
   }
 
-  return new SysmemNativePixmap(this, std::move(handle));
+  return new SysmemNativePixmap(this, std::move(handle), size);
 }
 
 bool SysmemBufferCollection::CreateVkImage(
@@ -591,23 +592,8 @@ bool SysmemBufferCollection::InitializeInternal(
   DCHECK_GE(buffers_info_.buffer_count, min_buffer_count);
   DCHECK(buffers_info_.settings.has_image_format_constraints);
 
-  // The logic should match LogicalBufferCollection::Allocate().
-  const fuchsia::sysmem::ImageFormatConstraints& format =
-      buffers_info_.settings.image_format_constraints;
-  size_t width =
-      RoundUp(std::max(format.min_coded_width, format.required_max_coded_width),
-              format.coded_width_divisor);
-  size_t height = RoundUp(
-      std::max(format.min_coded_height, format.required_max_coded_height),
-      format.coded_height_divisor);
-  image_size_ = gfx::Size(width, height);
   buffer_size_ = buffers_info_.settings.buffer_settings.size_bytes;
   is_protected_ = buffers_info_.settings.buffer_settings.is_secure;
-
-  // Add all images to Image pipe for presentation later.
-  if (scenic_overlay_view_) {
-    scenic_overlay_view_->AddImages(buffers_info_.buffer_count, image_size_);
-  }
 
   // CreateVkImage() should always be called on the same thread, but it may be
   // different from the thread that called Initialize().

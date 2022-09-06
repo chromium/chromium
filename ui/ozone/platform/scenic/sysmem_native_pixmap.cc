@@ -4,13 +4,8 @@
 
 #include "ui/ozone/platform/scenic/sysmem_native_pixmap.h"
 
-#include "base/fuchsia/fuchsia_logging.h"
-#include "base/logging.h"
-#include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/gpu_fence.h"
 #include "ui/gfx/overlay_plane_data.h"
-#include "ui/ozone/platform/scenic/scenic_surface.h"
-#include "ui/ozone/platform/scenic/scenic_surface_factory.h"
 
 namespace ui {
 
@@ -25,10 +20,14 @@ zx::event GpuFenceToZxEvent(gfx::GpuFence fence) {
 
 SysmemNativePixmap::SysmemNativePixmap(
     scoped_refptr<SysmemBufferCollection> collection,
-    gfx::NativePixmapHandle handle)
-    : collection_(collection), handle_(std::move(handle)) {}
+    gfx::NativePixmapHandle handle,
+    gfx::Size size)
+    : collection_(collection), handle_(std::move(handle)), size_(size) {}
 
-SysmemNativePixmap::~SysmemNativePixmap() = default;
+SysmemNativePixmap::~SysmemNativePixmap() {
+  if (overlay_image_id_)
+    collection_->scenic_overlay_view()->RemoveImage(overlay_image_id_);
+}
 
 bool SysmemNativePixmap::AreDmaBufFdsValid() const {
   return false;
@@ -74,7 +73,7 @@ gfx::BufferFormat SysmemNativePixmap::GetBufferFormat() const {
 }
 
 gfx::Size SysmemNativePixmap::GetBufferSize() const {
-  return collection_->size();
+  return size_;
 }
 
 uint32_t SysmemNativePixmap::GetUniqueId() const {
@@ -98,7 +97,11 @@ bool SysmemNativePixmap::ScheduleOverlayPlane(
     release_events.push_back(GpuFenceToZxEvent(std::move(fence)));
 
   overlay_view->SetBlendMode(overlay_plane_data.enable_blend);
-  overlay_view->PresentImage(handle_.buffer_index, std::move(acquire_events),
+
+  if (!overlay_image_id_)
+    overlay_image_id_ = overlay_view->AddImage(handle_.buffer_index, size_);
+
+  overlay_view->PresentImage(overlay_image_id_, std::move(acquire_events),
                              std::move(release_events));
 
   return true;

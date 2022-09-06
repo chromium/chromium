@@ -190,7 +190,7 @@ scoped_refptr<gfx::NativePixmap> ScenicSurfaceFactory::CreateNativePixmap(
   if (!collection)
     return nullptr;
 
-  return collection->CreateNativePixmap(0);
+  return collection->CreateNativePixmap(0, size);
 }
 
 void ScenicSurfaceFactory::CreateNativePixmapAsync(
@@ -215,7 +215,7 @@ ScenicSurfaceFactory::CreateNativePixmapFromHandle(
   if (!collection)
     return nullptr;
 
-  return collection->CreateNativePixmap(handle.buffer_index);
+  return collection->CreateNativePixmap(handle.buffer_index, size);
 }
 
 #if BUILDFLAG(ENABLE_VULKAN)

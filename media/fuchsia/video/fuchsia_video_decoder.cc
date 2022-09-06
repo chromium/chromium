@@ -78,7 +78,9 @@ class FuchsiaVideoDecoder::OutputMailbox {
   OutputMailbox(
       scoped_refptr<viz::RasterContextProvider> raster_context_provider,
       std::unique_ptr<gfx::GpuMemoryBuffer> gmb)
-      : raster_context_provider_(raster_context_provider), weak_factory_(this) {
+      : raster_context_provider_(raster_context_provider),
+        size_(gmb->GetSize()),
+        weak_factory_(this) {
     uint32_t usage = gpu::SHARED_IMAGE_USAGE_DISPLAY |
                      gpu::SHARED_IMAGE_USAGE_SCANOUT |
                      gpu::SHARED_IMAGE_USAGE_VIDEO_DECODE;
@@ -97,6 +99,8 @@ class FuchsiaVideoDecoder::OutputMailbox {
   }
 
   const gpu::Mailbox& mailbox() { return mailbox_; }
+
+  const gfx::Size& size() { return size_; }
 
   // Create a new video frame that wraps the mailbox. |reuse_callback| will be
   // called when the mailbox can be reused.
@@ -163,6 +167,8 @@ class FuchsiaVideoDecoder::OutputMailbox {
   }
 
   const scoped_refptr<viz::RasterContextProvider> raster_context_provider_;
+
+  gfx::Size size_;
 
   gpu::Mailbox mailbox_;
   gpu::SyncToken sync_token_;
@@ -449,6 +455,12 @@ void FuchsiaVideoDecoder::OnStreamProcessorOutputPacket(
 
   auto coded_size = gfx::Size(output_format_.primary_width_pixels,
                               output_format_.primary_height_pixels);
+
+  if (output_mailboxes_[buffer_index] &&
+      output_mailboxes_[buffer_index]->size() != coded_size) {
+    output_mailboxes_[buffer_index]->Release();
+    output_mailboxes_[buffer_index] = nullptr;
+  }
 
   if (!output_mailboxes_[buffer_index]) {
     gfx::GpuMemoryBufferHandle gmb_handle;

@@ -35,13 +35,17 @@ class ScenicOverlayView {
   void Initialize(fidl::InterfaceHandle<fuchsia::sysmem::BufferCollectionToken>
                       collection_token);
 
-  // Calls ImagePipe2::AddImage() on |image_pipe_| for all of |buffer_count|
-  // images from the initialized BufferCollection with the specified |size|.
-  bool AddImages(uint32_t buffer_count, const gfx::Size& size);
+  // Adds an image to the ImagePipe using the specified `buffer_index` and
+  // `size`. Returns a non-zero `image_id` that may be used in `PresentImage()`
+  // and `RemoveImage()`.
+  uint32_t AddImage(uint32_t buffer_index, const gfx::Size& size);
 
-  // Calls ImagePipe2::PresentImage() on |image_pipe_| for the image
+  // Removes image with the `image_id_` from the ImagePipe.
+  void RemoveImage(uint32_t image_id);
+
+  // Calls `ImagePipe2::PresentImage()` on `image_pipe_` for the `image_id`
   // corresponding to |buffer_index| from the initialized BufferCollection.
-  bool PresentImage(uint32_t buffer_index,
+  bool PresentImage(uint32_t image_id,
                     std::vector<zx::event> acquire_fences,
                     std::vector<zx::event> release_fences);
 
@@ -58,6 +62,8 @@ class ScenicOverlayView {
   absl::optional<scenic::View> view_;
   fuchsia::images::ImagePipe2Ptr image_pipe_;
   scenic::Material image_material_;
+
+  uint32_t next_image_id_ = 1;
 
   bool enable_blend_ = false;
 

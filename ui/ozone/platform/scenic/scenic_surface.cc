@@ -354,7 +354,7 @@ scoped_refptr<gfx::NativePixmap> ScenicSurface::AllocatePrimaryPlanePixmap(
   image_format.coded_height = size.height();
   image_pipe_->AddImage(image_id, image_id, 0, image_format);
 
-  return buffer_collection->CreateNativePixmap(0);
+  return buffer_collection->CreateNativePixmap(0, size);
 }
 
 void ScenicSurface::SetTextureToNewImagePipe(

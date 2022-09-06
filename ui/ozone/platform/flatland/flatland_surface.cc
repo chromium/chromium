@@ -141,10 +141,7 @@ void FlatlandSurface::Present(
     flatland_.flatland()->SetTranslation(transform_id, translation);
     flatland_.flatland()->SetImageDestinationSize(
         image_id, GfxSizeToFuchsiaSize(rounded_bounds.size()));
-    const gfx::Size image_size =
-        static_cast<FlatlandSysmemNativePixmap*>(overlay.pixmap.get())
-            ->sysmem_buffer_collection()
-            ->size();
+    const gfx::Size image_size = overlay.pixmap->GetBufferSize();
     gfx::RectF crop_rect = overlay.overlay_plane_data.crop_rect;
     crop_rect.Scale(image_size.width(), image_size.height());
     const auto rounded_crop_rect = gfx::ToRoundedRect(crop_rect);
@@ -281,7 +278,7 @@ FlatlandSurface::FlatlandIds FlatlandSurface::CreateOrGetFlatlandIds(
           ->sysmem_buffer_collection();
   DCHECK_EQ(collection->id(), ids.buffer_collection_id);
   fuchsia::ui::composition::ImageProperties image_properties;
-  image_properties.set_size(GfxSizeToFuchsiaSize(collection->size()));
+  image_properties.set_size(GfxSizeToFuchsiaSize(pixmap->GetBufferSize()));
   const fuchsia::ui::composition::ContentId image_id =
       flatland_.NextContentId();
   flatland_.flatland()->CreateImage(

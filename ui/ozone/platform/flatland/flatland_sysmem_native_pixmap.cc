@@ -12,8 +12,9 @@ namespace ui {
 
 FlatlandSysmemNativePixmap::FlatlandSysmemNativePixmap(
     scoped_refptr<FlatlandSysmemBufferCollection> collection,
-    gfx::NativePixmapHandle handle)
-    : collection_(collection), handle_(std::move(handle)) {}
+    gfx::NativePixmapHandle handle,
+    gfx::Size size)
+    : collection_(collection), handle_(std::move(handle)), size_(size) {}
 
 FlatlandSysmemNativePixmap::~FlatlandSysmemNativePixmap() = default;
 
@@ -63,7 +64,7 @@ gfx::BufferFormat FlatlandSysmemNativePixmap::GetBufferFormat() const {
 }
 
 gfx::Size FlatlandSysmemNativePixmap::GetBufferSize() const {
-  return collection_->size();
+  return size_;
 }
 
 uint32_t FlatlandSysmemNativePixmap::GetUniqueId() const {
