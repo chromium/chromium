@@ -104,28 +104,6 @@ void RegisterWebInstanceProductData() {
       kFeedbackAnnotationsNamespace);
 }
 
-// Returns the underlying channel if |directory| is a client endpoint for a
-// |fuchsia::io::Directory| protocol. Otherwise, returns an empty channel.
-zx::channel ValidateDirectoryAndTakeChannel(
-    fidl::InterfaceHandle<fuchsia::io::Directory> directory_handle) {
-  fidl::SynchronousInterfacePtr<fuchsia::io::Directory> directory =
-      directory_handle.BindSync();
-
-  fuchsia::io::NodeInfo info;
-  zx_status_t status = directory->Describe(&info);
-  if (status != ZX_OK) {
-    ZX_DLOG(ERROR, status) << "Describe()";
-    return {};
-  }
-
-  if (!info.is_directory()) {
-    DLOG(ERROR) << "Not a directory.";
-    return {};
-  }
-
-  return directory.Unbind().TakeChannel();
-}
-
 // Appends |value| to the value of |switch_name| in the |command_line|.
 // The switch is assumed to consist of comma-separated values. If |switch_name|
 // is already set in |command_line| then a comma will be appended, followed by
@@ -168,17 +146,10 @@ bool HandleDataDirectoryParam(fuchsia::web::CreateContextParams* params,
     return true;
   }
 
-  zx::channel data_directory_channel = ValidateDirectoryAndTakeChannel(
-      std::move(*params->mutable_data_directory()));
-  if (!data_directory_channel) {
-    LOG(ERROR) << "Invalid argument |data_directory| in CreateContextParams.";
-    return false;
-  }
-
   launch_info->flat_namespace->paths.push_back(
       base::kPersistedDataDirectoryPath);
   launch_info->flat_namespace->directories.push_back(
-      std::move(data_directory_channel));
+      params->mutable_data_directory()->TakeChannel());
   if (params->has_data_quota_bytes()) {
     launch_args->AppendSwitchNative(
         switches::kDataQuotaBytes,
@@ -196,18 +167,10 @@ bool HandleCdmDataDirectoryParam(fuchsia::web::CreateContextParams* params,
 
   const char kCdmDataPath[] = "/cdm_data";
 
-  zx::channel cdm_data_directory_channel = ValidateDirectoryAndTakeChannel(
-      std::move(*params->mutable_cdm_data_directory()));
-  if (!cdm_data_directory_channel) {
-    LOG(ERROR)
-        << "Invalid argument |cdm_data_directory| in CreateContextParams.";
-    return false;
-  }
-
   launch_args->AppendSwitchNative(switches::kCdmDataDirectory, kCdmDataPath);
   launch_info->flat_namespace->paths.push_back(kCdmDataPath);
   launch_info->flat_namespace->directories.push_back(
-      std::move(cdm_data_directory_channel));
+      params->mutable_cdm_data_directory()->TakeChannel());
   if (params->has_cdm_data_quota_bytes()) {
     launch_args->AppendSwitchNative(
         switches::kCdmDataQuotaBytes,
@@ -300,19 +263,11 @@ bool HandleContentDirectoriesParam(fuchsia::web::CreateContextParams* params,
       return false;
     }
 
-    zx::channel validated_channel = ValidateDirectoryAndTakeChannel(
-        std::move(*directory.mutable_directory()));
-    if (!validated_channel) {
-      DLOG(ERROR) << "Service directory handle not valid for directory: "
-                  << directory.name();
-      return false;
-    }
-
     const base::FilePath kContentDirectories("/content-directories");
     launch_info->flat_namespace->paths.push_back(
         kContentDirectories.Append(directory.name()).value());
     launch_info->flat_namespace->directories.push_back(
-        std::move(validated_channel));
+        directory.mutable_directory()->TakeChannel());
   }
 
   launch_args->AppendSwitch(switches::kEnableContentDirectories);
