@@ -53,6 +53,10 @@ Googlers, see also: go/chrome-binary-size-garderning
 * If the commit message's `Binary-Size:` footer clearly justifies the size
   increase, silence the alert.
 * If the commit is a revert / reland, silence the alert.
+* If the `android-binary-size` bot on the associated code review did not
+  detect a regression, and the size increase is from native code, then the
+  disparity is likely due to AFDO profiles not being active on perf bots.
+  Silence the alert.
 
 Otherwise, file a bug.
 
