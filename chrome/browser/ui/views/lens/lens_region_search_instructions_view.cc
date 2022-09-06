@@ -50,7 +50,8 @@ LensRegionSearchInstructionsView::LensRegionSearchInstructionsView(
     base::OnceClosure escape_callback)
     : views::BubbleDialogDelegateView(
           anchor_view,
-          views::BubbleBorder::Arrow::BOTTOM_CENTER) {
+          views::BubbleBorder::Arrow::BOTTOM_CENTER,
+          views::BubbleBorder::Shadow::STANDARD_SHADOW) {
   // The cancel close_callback is called when VKEY_ESCAPE is hit.
   SetCancelCallback(std::move(escape_callback));
 
