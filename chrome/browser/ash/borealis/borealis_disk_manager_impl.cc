@@ -102,7 +102,8 @@ BorealisDiskManagerImpl::BorealisDiskManagerImpl(const BorealisContext* context)
 }
 
 BorealisDiskManagerImpl::~BorealisDiskManagerImpl() {
-  if (DiskManagementVersion() == DiskManagementVersion::CROSDISK) {
+  if (base::FeatureList::IsEnabled(
+          chromeos::features::kBorealisDiskManagement)) {
     RecordBorealisDiskClientNumRequestsPerSessionHistogram(request_count_);
   }
   service_->DiskManagerDispatcher().RemoveDiskManagerDelegate(this);
@@ -529,12 +530,13 @@ void BorealisDiskManagerImpl::GetDiskInfo(
     base::OnceCallback<void(
         Expected<GetDiskInfoResponse, Described<BorealisGetDiskInfoResult>>)>
         callback) {
-  if (DiskManagementVersion() == DiskManagementVersion::BALLOON) {
+  if (!base::FeatureList::IsEnabled(
+          chromeos::features::kBorealisDiskManagement)) {
     std::move(callback).Run(
         Expected<GetDiskInfoResponse, Described<BorealisGetDiskInfoResult>>::
             Unexpected(Described<BorealisGetDiskInfoResult>(
                 BorealisGetDiskInfoResult::kInvalidRequest,
-                "GetDiskInfo failed: feature not compatible with ballooning")));
+                "GetDiskInfo failed: feature not enabled")));
     return;
   }
   auto disk_info = std::make_unique<BorealisDiskInfo>();
@@ -577,7 +579,8 @@ void BorealisDiskManagerImpl::BuildGetDiskInfoResponse(
   // disable it (after their disk has been converted to a fixed size). The
   // workaround for this is to reinstall the VM or use VMC to manually manage
   // the disk.
-  if (DiskManagementVersion() == DiskManagementVersion::CROSDISK) {
+  if (base::FeatureList::IsEnabled(
+          chromeos::features::kBorealisDiskManagement)) {
     if (disk_info_or_error.Value()->has_fixed_size) {
       response.available_bytes =
           ExcludeBufferBytes(disk_info_or_error.Value()->available_space);
@@ -698,7 +701,8 @@ void BorealisDiskManagerImpl::RequestSpace(
     uint64_t bytes_requested,
     base::OnceCallback<void(
         Expected<uint64_t, Described<BorealisResizeDiskResult>>)> callback) {
-  if (DiskManagementVersion() != DiskManagementVersion::CROSDISK) {
+  if (!base::FeatureList::IsEnabled(
+          chromeos::features::kBorealisDiskManagement)) {
     std::move(callback).Run(
         Expected<uint64_t, Described<BorealisResizeDiskResult>>::Unexpected(
             Described<BorealisResizeDiskResult>(
@@ -725,7 +729,8 @@ void BorealisDiskManagerImpl::ReleaseSpace(
     uint64_t bytes_to_release,
     base::OnceCallback<void(
         Expected<uint64_t, Described<BorealisResizeDiskResult>>)> callback) {
-  if (DiskManagementVersion() != DiskManagementVersion::CROSDISK) {
+  if (!base::FeatureList::IsEnabled(
+          chromeos::features::kBorealisDiskManagement)) {
     std::move(callback).Run(
         Expected<uint64_t, Described<BorealisResizeDiskResult>>::Unexpected(
             Described<BorealisResizeDiskResult>(
@@ -762,7 +767,8 @@ void BorealisDiskManagerImpl::SyncDiskSize(
     base::OnceCallback<void(Expected<BorealisSyncDiskSizeResult,
                                      Described<BorealisSyncDiskSizeResult>>)>
         callback) {
-  if (DiskManagementVersion() != DiskManagementVersion::CROSDISK) {
+  if (!base::FeatureList::IsEnabled(
+          chromeos::features::kBorealisDiskManagement)) {
     std::move(callback).Run(Expected<BorealisSyncDiskSizeResult,
                                      Described<BorealisSyncDiskSizeResult>>(
         BorealisSyncDiskSizeResult::kNoActionNeeded));

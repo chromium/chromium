@@ -1630,37 +1630,20 @@ TEST_F(BorealisDiskManagerTest, RequestsRecordedOnDestruction) {
       kBorealisDiskClientNumRequestsPerSessionHistogram, 1, 1);
 }
 
-TEST_F(BorealisDiskManagerTest,
-       GetDiskInfoReturns0ExpandableSpaceWhenFeatureDisabled) {
+TEST_F(BorealisDiskManagerTest, GetDiskInfoFailsWhenFeatureDisabled) {
   features_.Reset();
   features_.InitAndDisableFeature(chromeos::features::kBorealisDiskManagement);
-  EXPECT_CALL(*free_space_provider_, Get(_))
-      .WillOnce(
-          testing::Invoke([this](base::OnceCallback<void(int64_t)> callback) {
-            auto response = BuildValidListVmDisksResponse(
-                /*min_size=*/6 * kGiB, /*size=*/20 * kGiB,
-                /*available_space=*/3 * kGiB);
-            FakeConciergeClient()->set_list_vm_disks_response(response);
-            std::move(callback).Run(3 * kGiB);
-          }));
-
   DiskInfoCallbackFactory callback_factory;
   EXPECT_CALL(callback_factory, Call(_))
       .WillOnce(testing::Invoke(
           [](Expected<BorealisDiskManagerImpl::GetDiskInfoResponse,
                       Described<BorealisGetDiskInfoResult>> response_or_error) {
-            EXPECT_TRUE(response_or_error);
-            // 3GB of disk space, doesn't enforce buffer when feature is
-            // disabled.
-            EXPECT_EQ(response_or_error.Value().available_bytes, 3 * kGiB);
-            // 0GB of expandable space when the feature is disabled.
-            EXPECT_EQ(response_or_error.Value().expandable_bytes, 0 * kGiB);
+            EXPECT_FALSE(response_or_error);
+            EXPECT_EQ(response_or_error.Error().error(),
+                      BorealisGetDiskInfoResult::kInvalidRequest);
           }));
   disk_manager_->GetDiskInfo(callback_factory.BindOnce());
   run_loop()->RunUntilIdle();
-  histogram_tester_.ExpectUniqueSample(
-      kBorealisDiskClientGetDiskInfoResultHistogram,
-      BorealisGetDiskInfoResult::kSuccess, 1);
 }
 
 TEST_F(BorealisDiskManagerTest, RequestSpaceFailsWhenFeatureDisabled) {
