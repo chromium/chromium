@@ -1903,8 +1903,9 @@ web::HttpsUpgradeType GetFailedHttpsUpgradeType(
   }
 
     if (provisionalLoad) {
-      if (!navigationContext &&
-          web::RequiresProvisionalNavigationFailureWorkaround()) {
+      // TODO(crbug.com/973653): Remove this workaround when WebKit bug is
+      // fixed.
+      if (!navigationContext) {
         // It is likely that |navigationContext| is null because
         // didStartProvisionalNavigation: was not called with this WKNavigation
         // object. Do not call OnNavigationFinished() to avoid crash on null

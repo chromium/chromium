@@ -12,11 +12,6 @@
 
 namespace web {
 
-// Returns true if this iOS version is known to have
-// https://bugs.webkit.org/show_bug.cgi?id=198794 WebKit bug.
-// TODO(crbug.com/973653): Remove this workaround when WebKit bug is fixed.
-bool RequiresProvisionalNavigationFailureWorkaround();
-
 // Generates a PDF of the entire content of a |web_view| and invokes the
 // |callback| with the NSData of the PDF.
 void CreateFullPagePdf(WKWebView* web_view,

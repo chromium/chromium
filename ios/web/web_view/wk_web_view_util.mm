@@ -12,12 +12,6 @@
 
 namespace web {
 
-bool RequiresProvisionalNavigationFailureWorkaround() {
-  if (@available(iOS 12.2, *))
-    return true;
-  return false;
-}
-
 void CreateFullPagePdf(WKWebView* web_view,
                        base::OnceCallback<void(NSData*)> callback) {
 
