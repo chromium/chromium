@@ -857,6 +857,8 @@ v8::Maybe<bool> V8ScriptValueSerializer::WriteHostObject(
     return v8::Nothing<bool>();
   }
   ScriptWrappable* wrappable = ToScriptWrappable(object);
+  // TODO(crbug.com/1353299): Remove this CHECK after an investigation.
+  CHECK(wrappable);
   bool wrote_dom_object = WriteDOMObject(wrappable, exception_state);
   if (wrote_dom_object) {
     DCHECK(!exception_state.HadException());
