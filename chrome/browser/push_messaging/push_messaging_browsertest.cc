@@ -185,9 +185,11 @@ class PushMessagingBrowserTestBase : public InProcessBrowserTest {
     InProcessBrowserTest::SetUp();
   }
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    // Enable experimental features for subscription restrictions.
-    command_line->AppendSwitch(
-        switches::kEnableExperimentalWebPlatformFeatures);
+    if (exp_web_platform_features_enabled_) {
+      // Enable experimental features for subscription restrictions.
+      command_line->AppendSwitch(
+          switches::kEnableExperimentalWebPlatformFeatures);
+    }
 
     // HTTPS server only serves a valid cert for localhost, so this is needed to
     // load webby domains like "embedded.com" without an interstitial.
@@ -394,6 +396,7 @@ class PushMessagingBrowserTestBase : public InProcessBrowserTest {
   base::HistogramTester histogram_tester_;
 
   std::unique_ptr<NotificationDisplayServiceTester> notification_tester_;
+  bool exp_web_platform_features_enabled_ = true;
 
  private:
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
@@ -600,6 +603,21 @@ class PushMessagingBrowserTest : public PushMessagingBrowserTestBase {
  private:
   base::test::ScopedFeatureList feature_list_;
 };
+
+// This class is used to execute PushMessagingBrowserTest tests with
+// experimental web platform features both enabled/disabled.
+class PushMessagingExpWebFeaturesBrowserTest
+    : public PushMessagingBrowserTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  PushMessagingExpWebFeaturesBrowserTest() {
+    exp_web_platform_features_enabled_ = GetParam();
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(PushMessagingExpWebFeaturesBrowserTest,
+                         PushMessagingExpWebFeaturesBrowserTest,
+                         testing::Values(true, false));
 
 IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest,
                        SubscribeWithoutKeySuccessNotificationsGranted) {
@@ -2008,7 +2026,10 @@ IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest, PermissionStateSaysDenied) {
   EXPECT_EQ("permission status - denied", script_result);
 }
 
-IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest, CrossOriginFrame) {
+IN_PROC_BROWSER_TEST_P(PushMessagingExpWebFeaturesBrowserTest,
+                       CrossOriginFrame) {
+  bool storage_partitioned = base::FeatureList::IsEnabled(
+      net::features::kThirdPartyStoragePartitioning);
   const GURL kEmbedderURL = https_server()->GetURL(
       "embedder.com", "/push_messaging/framed_test.html");
   const GURL kRequesterURL = https_server()->GetURL("requester.com", "/");
@@ -2086,7 +2107,12 @@ IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest, CrossOriginFrame) {
 
   ASSERT_TRUE(content::ExecuteScriptAndExtractString(
       subframe, "documentSubscribePush()", &script_result));
-  ASSERT_NO_FATAL_FAILURE(EndpointToToken(script_result));
+  if (storage_partitioned) {
+    EXPECT_EQ("AbortError - Registration failed - storage error",
+              script_result);
+  } else {
+    ASSERT_NO_FATAL_FAILURE(EndpointToToken(script_result));
+  }
 }
 
 IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest, UnsubscribeSuccess) {
