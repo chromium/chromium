@@ -101,6 +101,7 @@
   X("ime")                                                               \
   X("IndexedDB")                                                         \
   X("input")                                                             \
+  X("catan_investigation")                                               \
   X("io")                                                                \
   X("ipc")                                                               \
   X("Java")                                                              \
