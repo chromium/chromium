@@ -464,6 +464,12 @@ const DrawQuad* SurfaceAggregator::FindQuadWithOverlayDamage(
   if (!target_quad)
     return nullptr;
 
+  // Surface damage for a render pass quad does not include damage from its
+  // children. We skip this quad to avoid the incomplete damage association.
+  if (target_quad->material == DrawQuad::Material::kCompositorRenderPass ||
+      target_quad->material == DrawQuad::Material::kSurfaceContent)
+    return nullptr;
+
   // Zero damage is not recorded in the surface_damage_rect_list_.
   // In this case, add an empty damage rect to the list so
   // |overlay_damage_index| can save this index.
