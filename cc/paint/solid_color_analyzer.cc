@@ -261,13 +261,13 @@ absl::optional<SkColor4f> SolidColorAnalyzer::DetermineIfSolidColor(
       continue;
     }
 
-    const PaintOp* op = *frame.iter;
+    const PaintOp& op = *frame.iter;
     PlaybackParams params(nullptr, SkM44(frame.original_ctm));
-    switch (op->GetType()) {
+    switch (op.GetType()) {
       case PaintOpType::DrawRecord: {
-        const DrawRecordOp* record_op = static_cast<const DrawRecordOp*>(op);
+        const auto& record_op = static_cast<const DrawRecordOp&>(op);
         stack.emplace_back(
-            PaintOpBuffer::CompositeIterator(record_op->record.get(), nullptr),
+            PaintOpBuffer::CompositeIterator(record_op.record.get(), nullptr),
             canvas.getLocalToDevice(), canvas.getSaveCount());
         continue;
       }
@@ -285,8 +285,8 @@ absl::optional<SkColor4f> SolidColorAnalyzer::DetermineIfSolidColor(
       case PaintOpType::DrawRRect: {
         if (++num_draw_ops > max_ops_to_analyze)
           return absl::nullopt;
-        const DrawRRectOp* rrect_op = static_cast<const DrawRRectOp*>(op);
-        CheckIfSolidShape(canvas, rrect_op->rrect, rrect_op->flags, &is_solid,
+        const auto& rrect_op = static_cast<const DrawRRectOp&>(op);
+        CheckIfSolidShape(canvas, rrect_op.rrect, rrect_op.flags, &is_solid,
                           &is_transparent, &color);
         break;
       }
@@ -303,9 +303,9 @@ absl::optional<SkColor4f> SolidColorAnalyzer::DetermineIfSolidColor(
       case PaintOpType::ClipPath:
         return absl::nullopt;
       case PaintOpType::ClipRRect: {
-        const ClipRRectOp* rrect_op = static_cast<const ClipRRectOp*>(op);
+        const auto& rrect_op = static_cast<const ClipRRectOp&>(op);
         bool does_cover_canvas =
-            CheckIfRRectClipCoversCanvas(canvas, rrect_op->rrect);
+            CheckIfRRectClipCoversCanvas(canvas, rrect_op.rrect);
         // If the clip covers the full canvas, we can treat it as if there's no
         // clip at all and continue, otherwise this is no longer a solid color.
         if (!does_cover_canvas)
@@ -315,16 +315,16 @@ absl::optional<SkColor4f> SolidColorAnalyzer::DetermineIfSolidColor(
       case PaintOpType::DrawRect: {
         if (++num_draw_ops > max_ops_to_analyze)
           return absl::nullopt;
-        const DrawRectOp* rect_op = static_cast<const DrawRectOp*>(op);
-        CheckIfSolidShape(canvas, rect_op->rect, rect_op->flags, &is_solid,
+        const auto& rect_op = static_cast<const DrawRectOp&>(op);
+        CheckIfSolidShape(canvas, rect_op.rect, rect_op.flags, &is_solid,
                           &is_transparent, &color);
         break;
       }
       case PaintOpType::DrawColor: {
         if (++num_draw_ops > max_ops_to_analyze)
           return absl::nullopt;
-        const DrawColorOp* color_op = static_cast<const DrawColorOp*>(op);
-        CheckIfSolidColor(canvas, color_op->color, color_op->mode, &is_solid,
+        const auto& color_op = static_cast<const DrawColorOp&>(op);
+        CheckIfSolidColor(canvas, color_op.color, color_op.mode, &is_solid,
                           &is_transparent, &color);
         break;
       }
@@ -333,10 +333,10 @@ absl::optional<SkColor4f> SolidColorAnalyzer::DetermineIfSolidColor(
         // SkNoPixelsDevice which says (without looking) that the canvas's
         // clip is always a rect.  So, if this clip could result in not
         // a rect, this is no longer solid color.
-        const ClipRectOp* clip_op = static_cast<const ClipRectOp*>(op);
-        if (clip_op->op == SkClipOp::kDifference)
+        const auto& clip_op = static_cast<const ClipRectOp&>(op);
+        if (clip_op.op == SkClipOp::kDifference)
           return absl::nullopt;
-        op->Raster(&canvas, params);
+        op.Raster(&canvas, params);
         break;
       }
 
@@ -355,7 +355,7 @@ absl::optional<SkColor4f> SolidColorAnalyzer::DetermineIfSolidColor(
       case PaintOpType::Rotate:
       case PaintOpType::Save:
       case PaintOpType::Translate:
-        op->Raster(&canvas, params);
+        op.Raster(&canvas, params);
         break;
     }
     ++frame.iter;

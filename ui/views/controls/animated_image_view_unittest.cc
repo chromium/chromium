@@ -29,13 +29,13 @@ using ::testing::NotNull;
 template <typename T>
 const T* FindPaintOp(const cc::PaintOpBuffer& paint_op_buffer,
                      cc::PaintOpType paint_op_type) {
-  for (const cc::PaintOp* op : cc::PaintOpBuffer::Iterator(&paint_op_buffer)) {
-    if (op->GetType() == paint_op_type)
-      return static_cast<const T*>(op);
+  for (const cc::PaintOp& op : cc::PaintOpBuffer::Iterator(&paint_op_buffer)) {
+    if (op.GetType() == paint_op_type)
+      return static_cast<const T*>(&op);
 
-    if (op->GetType() == cc::PaintOpType::DrawRecord) {
+    if (op.GetType() == cc::PaintOpType::DrawRecord) {
       const T* record_op_result = FindPaintOp<T>(
-          *static_cast<const cc::DrawRecordOp*>(op)->record, paint_op_type);
+          *static_cast<const cc::DrawRecordOp&>(op).record, paint_op_type);
       if (record_op_result)
         return static_cast<const T*>(record_op_result);
     }

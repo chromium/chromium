@@ -25,15 +25,15 @@ void ExtractLinks(const cc::PaintOpBuffer* buffer,
                   std::vector<std::pair<GURL, SkRect>>* links) {
   for (cc::PaintOpBuffer::Iterator it(buffer); it; ++it) {
     if (it->GetType() == cc::PaintOpType::Annotate) {
-      auto* annotate_op = static_cast<cc::AnnotateOp*>(*it);
+      const auto& annotate_op = static_cast<const cc::AnnotateOp&>(*it);
       links->push_back(std::make_pair(
           GURL(std::string(
-              reinterpret_cast<const char*>(annotate_op->data->data()),
-              annotate_op->data->size())),
-          annotate_op->rect));
+              reinterpret_cast<const char*>(annotate_op.data->data()),
+              annotate_op.data->size())),
+          annotate_op.rect));
     } else if (it->GetType() == cc::PaintOpType::DrawRecord) {
-      auto* record_op = static_cast<cc::DrawRecordOp*>(*it);
-      ExtractLinks(record_op->record.get(), links);
+      const auto& record_op = static_cast<const cc::DrawRecordOp&>(*it);
+      ExtractLinks(record_op.record.get(), links);
     }
   }
 }
@@ -43,18 +43,18 @@ size_t CountImagesOfType(const cc::PaintOpBuffer* buffer,
   size_t count = 0;
   for (cc::PaintOpBuffer::Iterator it(buffer); it; ++it) {
     if (it->GetType() == cc::PaintOpType::DrawImage) {
-      auto* image_op = static_cast<cc::DrawImageOp*>(*it);
-      if (image_op->image.GetImageHeaderMetadata()->image_type == image_type) {
+      const auto& image_op = static_cast<const cc::DrawImageOp&>(*it);
+      if (image_op.image.GetImageHeaderMetadata()->image_type == image_type) {
         ++count;
       }
     } else if (it->GetType() == cc::PaintOpType::DrawImageRect) {
-      auto* image_op = static_cast<cc::DrawImageRectOp*>(*it);
-      if (image_op->image.GetImageHeaderMetadata()->image_type == image_type) {
+      const auto& image_op = static_cast<const cc::DrawImageRectOp&>(*it);
+      if (image_op.image.GetImageHeaderMetadata()->image_type == image_type) {
         ++count;
       }
     } else if (it->GetType() == cc::PaintOpType::DrawRecord) {
-      auto* record_op = static_cast<cc::DrawRecordOp*>(*it);
-      count += CountImagesOfType(record_op->record.get(), image_type);
+      const auto& record_op = static_cast<const cc::DrawRecordOp&>(*it);
+      count += CountImagesOfType(record_op.record.get(), image_type);
     }
   }
   return count;

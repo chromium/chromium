@@ -62,11 +62,11 @@ void ViewPainterFixedBackgroundTest::RunFixedBackgroundTest(
       To<DrawingDisplayItem>(background_display_item)->GetPaintRecord();
   ASSERT_EQ(record->size(), 2u);
   cc::PaintOpBuffer::Iterator it(record.get());
-  ASSERT_EQ((*++it)->GetType(), cc::PaintOpType::DrawRect);
+  ASSERT_EQ((++it)->GetType(), cc::PaintOpType::DrawRect);
 
   // This is the dest_rect_ calculated by BackgroundImageGeometry. For a fixed
   // background in scrolling contents layer, its location is the scroll offset.
-  auto rect = gfx::SkRectToRectF(static_cast<const cc::DrawRectOp*>(*it)->rect);
+  auto rect = gfx::SkRectToRectF(static_cast<const cc::DrawRectOp&>(*it).rect);
   if (prefer_compositing_to_lcd_text) {
     EXPECT_EQ(gfx::RectF(0, 0, 800, 600), rect);
   } else {

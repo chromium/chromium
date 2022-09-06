@@ -91,8 +91,8 @@ class CC_PAINT_EXPORT DisplayItemList
     size_t offset = paint_op_buffer_.next_op_offset();
     if (usage_hint_ == kTopLevelDisplayItemList)
       offsets_.push_back(offset);
-    const T* op = paint_op_buffer_.push<T>(std::forward<Args>(args)...);
-    DCHECK(op->IsValid());
+    const T& op = paint_op_buffer_.push<T>(std::forward<Args>(args)...);
+    DCHECK(op.IsValid());
     return offset;
   }
 

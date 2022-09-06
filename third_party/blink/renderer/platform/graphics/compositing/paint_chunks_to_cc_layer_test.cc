@@ -42,8 +42,8 @@ void PrintTo(const Vector<cc::PaintOpType>& ops, std::ostream* os) {
 
 void PrintTo(const cc::PaintRecord& record, std::ostream* os) {
   Vector<cc::PaintOpType> ops;
-  for (const auto* op : cc::PaintOpBuffer::Iterator(&record))
-    ops.push_back(op->GetType());
+  for (const cc::PaintOp& op : cc::PaintOpBuffer::Iterator(&record))
+    ops.push_back(op.GetType());
   PrintTo(ops, os);
 }
 
@@ -75,12 +75,13 @@ class PaintRecordMatcher
                        testing::MatchResultListener* listener) const override {
     size_t index = 0;
     for (cc::PaintOpBuffer::Iterator it(&buffer); it; ++it, ++index) {
-      auto op = (*it)->GetType();
-      if (index < expected_ops_.size() && expected_ops_[index] == op)
+      cc::PaintOpType op_type = it->GetType();
+      if (index < expected_ops_.size() && expected_ops_[index] == op_type)
         continue;
 
       if (listener->IsInterested()) {
-        *listener << "unexpected op " << op << " at index " << index << ",";
+        *listener << "unexpected op " << op_type << " at index " << index
+                  << ",";
         if (index < expected_ops_.size())
           *listener << " expecting " << expected_ops_[index] << ".";
         else

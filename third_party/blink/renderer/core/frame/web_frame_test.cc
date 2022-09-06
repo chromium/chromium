@@ -13356,16 +13356,16 @@ void RecursiveCollectTextRunDOMNodeIds(
     DOMNodeId dom_node_id,
     std::vector<TextRunDOMNodeIdInfo>* text_runs) {
   for (cc::PaintOpBuffer::Iterator it(paint_record.get()); it; ++it) {
-    if ((*it)->GetType() == cc::PaintOpType::DrawRecord) {
-      cc::DrawRecordOp* draw_record_op = static_cast<cc::DrawRecordOp*>(*it);
-      RecursiveCollectTextRunDOMNodeIds(draw_record_op->record, dom_node_id,
+    if (it->GetType() == cc::PaintOpType::DrawRecord) {
+      const auto& draw_record_op = static_cast<const cc::DrawRecordOp&>(*it);
+      RecursiveCollectTextRunDOMNodeIds(draw_record_op.record, dom_node_id,
                                         text_runs);
-    } else if ((*it)->GetType() == cc::PaintOpType::SetNodeId) {
-      cc::SetNodeIdOp* set_node_id_op = static_cast<cc::SetNodeIdOp*>(*it);
-      dom_node_id = set_node_id_op->node_id;
-    } else if ((*it)->GetType() == cc::PaintOpType::DrawTextBlob) {
-      cc::DrawTextBlobOp* draw_text_op = static_cast<cc::DrawTextBlobOp*>(*it);
-      SkTextBlob::Iter iter(*draw_text_op->blob);
+    } else if (it->GetType() == cc::PaintOpType::SetNodeId) {
+      const auto& set_node_id_op = static_cast<const cc::SetNodeIdOp&>(*it);
+      dom_node_id = set_node_id_op.node_id;
+    } else if (it->GetType() == cc::PaintOpType::DrawTextBlob) {
+      const auto& draw_text_op = static_cast<const cc::DrawTextBlobOp&>(*it);
+      SkTextBlob::Iter iter(*draw_text_op.blob);
       SkTextBlob::Iter::Run run;
       while (iter.next(&run)) {
         TextRunDOMNodeIdInfo text_run_info;

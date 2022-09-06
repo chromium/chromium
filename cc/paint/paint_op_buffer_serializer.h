@@ -20,7 +20,7 @@ namespace cc {
 class CC_PAINT_EXPORT PaintOpBufferSerializer {
  public:
   using SerializeCallback =
-      base::RepeatingCallback<size_t(const PaintOp*,
+      base::RepeatingCallback<size_t(const PaintOp&,
                                      const PaintOp::SerializeOptions&,
                                      const PaintFlags*,
                                      const SkM44&,
@@ -91,16 +91,16 @@ class CC_PAINT_EXPORT PaintOpBufferSerializer {
                                  const std::vector<size_t>* offsets);
   // Returns whether searilization of |op| succeeded and we need to serialize
   // the next PaintOp in the PaintOpBuffer.
-  bool WillSerializeNextOp(const PaintOp* op,
+  bool WillSerializeNextOp(const PaintOp& op,
                            SkCanvas* canvas,
                            PlaybackParams params,
                            uint8_t alpha);
   bool SerializeOpWithFlags(SkCanvas* canvas,
-                            const PaintOpWithFlags* flags_op,
+                            const PaintOpWithFlags& flags_op,
                             const PlaybackParams& params,
                             uint8_t alpha);
   bool SerializeOp(SkCanvas* canvas,
-                   const PaintOp* op,
+                   const PaintOp& op,
                    const PaintFlags* flags_to_serialize,
                    const PlaybackParams& params);
   void Save(SkCanvas* canvas, const PlaybackParams& params);
@@ -111,7 +111,7 @@ class CC_PAINT_EXPORT PaintOpBufferSerializer {
                             const Preamble& preamble,
                             const PlaybackParams& params);
   void PlaybackOnAnalysisCanvas(SkCanvas* canvas,
-                                const PaintOp* op,
+                                const PaintOp& op,
                                 const PaintFlags* flags_to_serialize,
                                 const PlaybackParams& params);
 
@@ -132,7 +132,7 @@ class CC_PAINT_EXPORT SimpleBufferSerializer : public PaintOpBufferSerializer {
   size_t written() const { return written_; }
 
  private:
-  size_t SerializeToMemory(const PaintOp* op,
+  size_t SerializeToMemory(const PaintOp& op,
                            const PaintOp::SerializeOptions& options,
                            const PaintFlags* flags_to_serialize,
                            const SkM44& current_ctm,

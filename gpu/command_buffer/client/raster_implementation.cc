@@ -260,7 +260,7 @@ class RasterImplementation::PaintOpSerializer {
     DCHECK(!written_bytes_);
   }
 
-  size_t Serialize(const cc::PaintOp* op,
+  size_t Serialize(const cc::PaintOp& op,
                    const cc::PaintOp::SerializeOptions& options,
                    const cc::PaintFlags* flags_to_serialize,
                    const SkM44& current_ctm,
@@ -268,8 +268,8 @@ class RasterImplementation::PaintOpSerializer {
     if (!valid())
       return 0;
 
-    size_t size = op->Serialize(buffer_ + written_bytes_, free_bytes_, options,
-                                flags_to_serialize, current_ctm, original_ctm);
+    size_t size = op.Serialize(buffer_ + written_bytes_, free_bytes_, options,
+                               flags_to_serialize, current_ctm, original_ctm);
     size_t block_size = *max_op_size_hint_;
 
     if (!size) {
@@ -287,8 +287,8 @@ class RasterImplementation::PaintOpSerializer {
           return 0;
         }
 
-        size = op->Serialize(buffer_ + written_bytes_, free_bytes_, options,
-                             flags_to_serialize, current_ctm, original_ctm);
+        size = op.Serialize(buffer_ + written_bytes_, free_bytes_, options,
+                            flags_to_serialize, current_ctm, original_ctm);
         if (size) {
           *max_op_size_hint_ = std::max(size, *max_op_size_hint_);
           break;
