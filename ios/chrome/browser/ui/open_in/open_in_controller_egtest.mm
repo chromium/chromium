@@ -133,8 +133,11 @@ using base::test::ios::WaitUntilConditionOrTimeout;
 }
 
 // Tests that open in button do not appears when opening a MOV file.
-// TODO(crbug.com/1358830): Disabled due to flakiness. Re-enabled when fixed.
-- (void)DISABLED_testOpenInMOV {
+- (void)testOpenInMOV {
+#if !TARGET_IPHONE_SIMULATOR
+  // TODO(crbug.com/1358830): Disabled due to flakiness. Re-enabled when fixed.
+  EARL_GREY_TEST_SKIPPED(@"This test doesn't pass on device.");
+#endif
   [ChromeEarlGrey loadURL:self.testServer->GetURL(kMOVPath)];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::OpenInButton()]
       assertWithMatcher:grey_nil()];
