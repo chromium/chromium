@@ -6,10 +6,9 @@
 
 #include <array>
 
-#include "base/strings/strcat.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "components/segmentation_platform/internal/metadata/metadata_writer.h"
-#include "components/segmentation_platform/public/config.h"
+#include "components/segmentation_platform/public/constants.h"
 #include "components/segmentation_platform/public/model_provider.h"
 #include "components/segmentation_platform/public/proto/model_metadata.pb.h"
 
@@ -54,20 +53,8 @@ using proto::SegmentId;
 // Default parameters for Chrome Start model.
 constexpr SegmentId kFeedUserSegmentId =
     SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_FEED_USER;
-constexpr proto::TimeUnit kFeedUserTimeUnit = proto::TimeUnit::DAY;
-constexpr uint64_t kFeedUserBucketDuration = 1;
 constexpr int64_t kFeedUserSignalStorageLength = 28;
 constexpr int64_t kFeedUserMinSignalCollectionLength = 7;
-constexpr int64_t kFeedUserResultTTL = 1;
-
-// Discrete mapping parameters.
-constexpr char kFeedUserDiscreteMappingKey[] = "feed_user_segment";
-// All values greater than or equal to kNtpAndFeedEngaged will map to true.
-constexpr float kFeedUserDiscreteMappingMinResult =
-    RANK(FeedUserSubsegment::kNtpAndFeedEngaged);
-constexpr int64_t kFeedUserDiscreteMappingRank = 1;
-constexpr std::pair<float, int> kDiscreteMappings[] = {
-    {kFeedUserDiscreteMappingMinResult, kFeedUserDiscreteMappingRank}};
 
 // InputFeatures.
 
@@ -166,23 +153,13 @@ void FeedUserSegment::InitAndFetchModel(
     const ModelUpdatedCallback& model_updated_callback) {
   proto::SegmentationModelMetadata chrome_start_metadata;
   MetadataWriter writer(&chrome_start_metadata);
-  writer.SetSegmentationMetadataConfig(
-      kFeedUserTimeUnit, kFeedUserBucketDuration, kFeedUserSignalStorageLength,
-      kFeedUserMinSignalCollectionLength, kFeedUserResultTTL);
+  writer.SetDefaultSegmentationMetadataConfig(
+      kFeedUserMinSignalCollectionLength, kFeedUserSignalStorageLength);
 
-  // Set discrete mapping.
-  writer.AddDiscreteMappingEntries(kFeedUserDiscreteMappingKey,
-                                   kDiscreteMappings, 1);
-
-  // Add subsegment mapping.
-  std::vector<std::pair<float, int>> subsegment_mapping;
-  for (unsigned i = 1; i <= RANK(FeedUserSubsegment::kMaxValue); ++i) {
-    subsegment_mapping.emplace_back(i, i);
-  }
-  writer.AddDiscreteMappingEntries(
-      base::StrCat(
-          {kFeedUserDiscreteMappingKey, kSubsegmentDiscreteMappingSuffix}),
-      subsegment_mapping.data(), subsegment_mapping.size());
+  // All values greater than or equal to kNtpAndFeedEngaged will map to true.
+  writer.AddBooleanSegmentDiscreteMappingWithSubsegments(
+      kFeedUserSegmentationKey, RANK(FeedUserSubsegment::kNtpAndFeedEngaged),
+      RANK(FeedUserSubsegment::kMaxValue));
 
   // Set features.
   writer.AddUmaFeatures(kFeedUserUMAFeatures.data(),

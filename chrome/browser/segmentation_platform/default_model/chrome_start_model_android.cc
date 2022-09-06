@@ -9,8 +9,8 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
-#include "chrome/browser/ui/android/start_surface/start_surface_android.h"
 #include "components/segmentation_platform/internal/metadata/metadata_writer.h"
+#include "components/segmentation_platform/public/constants.h"
 #include "components/segmentation_platform/public/model_provider.h"
 #include "components/segmentation_platform/public/proto/model_metadata.pb.h"
 
@@ -22,18 +22,8 @@ using proto::SegmentId;
 // Default parameters for Chrome Start model.
 constexpr SegmentId kChromeStartSegmentId =
     SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_CHROME_START_ANDROID;
-constexpr proto::TimeUnit kChromeStartTimeUnit = proto::TimeUnit::DAY;
-constexpr uint64_t kChromeStartBucketDuration = 1;
 constexpr int64_t kChromeStartSignalStorageLength = 28;
 constexpr int64_t kChromeStartMinSignalCollectionLength = 1;
-constexpr int64_t kChromeStartResultTTL = 1;
-
-// Discrete mapping parameters.
-constexpr char kChromeStartDiscreteMappingKey[] = "chrome_start_android";
-constexpr float kChromeStartDiscreteMappingMinResult = 1;
-constexpr int64_t kChromeStartDiscreteMappingRank = 1;
-constexpr std::pair<float, int> kDiscreteMappings[] = {
-    {kChromeStartDiscreteMappingMinResult, kChromeStartDiscreteMappingRank}};
 
 // InputFeatures.
 constexpr int32_t kProfileSigninStatusEnums[] = {0 /* All profiles syncing */,
@@ -65,14 +55,11 @@ void ChromeStartModel::InitAndFetchModel(
     const ModelUpdatedCallback& model_updated_callback) {
   proto::SegmentationModelMetadata chrome_start_metadata;
   MetadataWriter writer(&chrome_start_metadata);
-  writer.SetSegmentationMetadataConfig(
-      kChromeStartTimeUnit, kChromeStartBucketDuration,
-      kChromeStartSignalStorageLength, kChromeStartMinSignalCollectionLength,
-      kChromeStartResultTTL);
+  writer.SetDefaultSegmentationMetadataConfig(
+      kChromeStartMinSignalCollectionLength, kChromeStartSignalStorageLength);
 
   // Set discrete mapping.
-  writer.AddDiscreteMappingEntries(kChromeStartDiscreteMappingKey,
-                                   kDiscreteMappings, 1);
+  writer.AddBooleanSegmentDiscreteMapping(kChromeStartAndroidSegmentationKey);
 
   // Set features.
   writer.AddUmaFeatures(kChromeStartUMAFeatures.data(),

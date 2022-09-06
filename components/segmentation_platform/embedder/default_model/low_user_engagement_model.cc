@@ -6,10 +6,9 @@
 
 #include <array>
 
-#include "base/logging.h"
 #include "base/threading/sequenced_task_runner_handle.h"
-#include "base/time/time.h"
 #include "components/segmentation_platform/internal/metadata/metadata_writer.h"
+#include "components/segmentation_platform/public/constants.h"
 
 namespace segmentation_platform {
 
@@ -20,18 +19,8 @@ using proto::SegmentId;
 // Default parameters for Chrome Start model.
 constexpr SegmentId kChromeStartSegmentId =
     SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_CHROME_LOW_USER_ENGAGEMENT;
-constexpr proto::TimeUnit kChromeStartTimeUnit = proto::TimeUnit::DAY;
-constexpr uint64_t kChromeStartBucketDuration = 1;
 constexpr int64_t kChromeStartSignalStorageLength = 28;
 constexpr int64_t kChromeStartMinSignalCollectionLength = 28;
-constexpr int64_t kChromeStartResultTTL = 1;
-
-// Discrete mapping parameters.
-constexpr char kChromeStartDiscreteMappingKey[] = "chrome_low_user_engagement";
-constexpr float kChromeStartDiscreteMappingMinResult = 1;
-constexpr int64_t kChromeStartDiscreteMappingRank = 1;
-constexpr std::pair<float, int> kDiscreteMappings[] = {
-    {kChromeStartDiscreteMappingMinResult, kChromeStartDiscreteMappingRank}};
 
 // InputFeatures.
 constexpr std::array<MetadataWriter::UMAFeature, 1> kChromeStartUMAFeatures = {
@@ -52,14 +41,12 @@ void LowUserEngagementModel::InitAndFetchModel(
     const ModelUpdatedCallback& model_updated_callback) {
   proto::SegmentationModelMetadata chrome_start_metadata;
   MetadataWriter writer(&chrome_start_metadata);
-  writer.SetSegmentationMetadataConfig(
-      kChromeStartTimeUnit, kChromeStartBucketDuration,
-      kChromeStartSignalStorageLength, kChromeStartMinSignalCollectionLength,
-      kChromeStartResultTTL);
+  writer.SetDefaultSegmentationMetadataConfig(
+      kChromeStartMinSignalCollectionLength, kChromeStartSignalStorageLength);
 
   // Set discrete mapping.
-  writer.AddDiscreteMappingEntries(kChromeStartDiscreteMappingKey,
-                                   kDiscreteMappings, 1);
+  writer.AddBooleanSegmentDiscreteMapping(
+      kChromeLowUserEngagementSegmentationKey);
 
   // Set features.
   writer.AddUmaFeatures(kChromeStartUMAFeatures.data(),

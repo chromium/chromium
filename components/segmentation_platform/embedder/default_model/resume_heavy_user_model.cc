@@ -8,6 +8,7 @@
 
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "components/segmentation_platform/internal/metadata/metadata_writer.h"
+#include "components/segmentation_platform/public/constants.h"
 #include "components/segmentation_platform/public/model_provider.h"
 #include "components/segmentation_platform/public/proto/model_metadata.pb.h"
 
@@ -18,10 +19,6 @@ using proto::SegmentId;
 
 // Default parameters for the model.
 constexpr SegmentId kSegmentId = SegmentId::RESUME_HEAVY_USER_SEGMENT;
-
-// Discrete mapping parameters.
-constexpr char kDiscreteMappingKey[] = "resume_heavy_user";
-constexpr std::pair<float, int> kDiscreteMappings[] = {{1, 1}};
 
 // InputFeatures.
 constexpr std::array<MetadataWriter::UMAFeature, 5> kUMAFeatures = {
@@ -43,12 +40,12 @@ void ResumeHeavyUserModel::InitAndFetchModel(
     const ModelUpdatedCallback& model_updated_callback) {
   proto::SegmentationModelMetadata metadata;
   MetadataWriter writer(&metadata);
-  writer.SetSegmentationMetadataConfig(
-      proto::TimeUnit::DAY, /*bucket_duration=*/1, /*signal_storage_length=*/14,
-      /*min_signal_collection_length=*/7, /*result_time_to_live=*/3);
+  writer.SetDefaultSegmentationMetadataConfig(
+      /*min_signal_collection_length_days=*/7,
+      /*signal_storage_length_days=*/14);
 
   // Set discrete mapping.
-  writer.AddDiscreteMappingEntries(kDiscreteMappingKey, kDiscreteMappings, 1);
+  writer.AddBooleanSegmentDiscreteMapping(kResumeHeavyUserKey);
 
   // Set features.
   writer.AddUmaFeatures(kUMAFeatures.data(), kUMAFeatures.size());

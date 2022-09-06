@@ -8,6 +8,7 @@
 
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "components/segmentation_platform/internal/metadata/metadata_writer.h"
+#include "components/segmentation_platform/public/constants.h"
 #include "components/segmentation_platform/public/model_provider.h"
 #include "components/segmentation_platform/public/proto/model_metadata.pb.h"
 
@@ -19,19 +20,9 @@ using proto::SegmentId;
 // Default parameters for query tiles model.
 constexpr SegmentId kQueryTilesSegmentId =
     SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_QUERY_TILES;
-constexpr proto::TimeUnit kQueryTilesTimeUnit = proto::TimeUnit::DAY;
-constexpr uint64_t kQueryTilesBucketDuration = 1;
 constexpr int64_t kQueryTilesSignalStorageLength = 28;
 constexpr int64_t kQueryTilesMinSignalCollectionLength = 7;
-constexpr int64_t kQueryTilesResultTTL = 1;
 constexpr int64_t kMvThreshold = 1;
-
-// Discrete mapping parameters.
-constexpr char kQueryTilesDiscreteMappingKey[] = "query_tiles";
-constexpr float kQueryTilesDiscreteMappingMinResult = 1;
-constexpr int64_t kQueryTilesDiscreteMappingRank = 1;
-constexpr std::pair<float, int> kDiscreteMappings[] = {
-    {kQueryTilesDiscreteMappingMinResult, kQueryTilesDiscreteMappingRank}};
 
 // InputFeatures.
 constexpr std::array<MetadataWriter::UMAFeature, 2> kQueryTilesUMAFeatures = {
@@ -48,14 +39,11 @@ void QueryTilesModel::InitAndFetchModel(
     const ModelUpdatedCallback& model_updated_callback) {
   proto::SegmentationModelMetadata query_tiles_metadata;
   MetadataWriter writer(&query_tiles_metadata);
-  writer.SetSegmentationMetadataConfig(
-      kQueryTilesTimeUnit, kQueryTilesBucketDuration,
-      kQueryTilesSignalStorageLength, kQueryTilesMinSignalCollectionLength,
-      kQueryTilesResultTTL);
+  writer.SetDefaultSegmentationMetadataConfig(
+      kQueryTilesMinSignalCollectionLength, kQueryTilesSignalStorageLength);
 
   // Set discrete mapping.
-  writer.AddDiscreteMappingEntries(kQueryTilesDiscreteMappingKey,
-                                   kDiscreteMappings, 1);
+  writer.AddBooleanSegmentDiscreteMapping(kQueryTilesSegmentationKey);
 
   // Set features.
   writer.AddUmaFeatures(kQueryTilesUMAFeatures.data(),

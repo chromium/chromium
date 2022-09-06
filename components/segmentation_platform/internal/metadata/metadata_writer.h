@@ -109,11 +109,17 @@ class MetadataWriter {
                                  const std::pair<float, int>* mappings,
                                  size_t mappings_size);
 
-  // Appends a boolean segmentation mapping. If the model records subsegments,
-  // then set the threshold to the cutoff segment value, and for any value
-  // strictly less than `threshold`, then the selection will return no.
-  void AddBooleanSegmentDiscreteMapping(const std::string& key,
-                                        float threshold = 1);
+  // Appends a boolean segmentation mapping, where the model returns 1 or 0 for
+  // segment selection.
+  void AddBooleanSegmentDiscreteMapping(const std::string& key);
+
+  // Appends a boolean mapping and a subsegment mapping. Set the threshold to
+  // the cutoff segment value, and for any value strictly less than `threshold`,
+  // then the selection will return no. The `max_value` is set to the max enum
+  // value returned by the model.
+  void AddBooleanSegmentDiscreteMappingWithSubsegments(const std::string& key,
+                                                       float threshold,
+                                                       int max_value);
 
   // Writes the model metadata with the given parameters.
   void SetSegmentationMetadataConfig(proto::TimeUnit time_unit,

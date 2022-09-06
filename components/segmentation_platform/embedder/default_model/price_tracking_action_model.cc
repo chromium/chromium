@@ -6,7 +6,7 @@
 
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "components/segmentation_platform/internal/metadata/metadata_writer.h"
-#include "components/segmentation_platform/public/config.h"
+#include "components/segmentation_platform/public/constants.h"
 #include "components/segmentation_platform/public/model_provider.h"
 #include "components/segmentation_platform/public/proto/model_metadata.pb.h"
 
@@ -19,19 +19,6 @@ using proto::SegmentId;
 constexpr SegmentId kPriceTrackingSegmentId =
     SegmentId::OPTIMIZATION_TARGET_CONTEXTUAL_PAGE_ACTION_PRICE_TRACKING;
 
-// TODO(shaktisahu): Are these required for on-demand model?
-constexpr proto::TimeUnit kTimeUnit = proto::TimeUnit::DAY;
-constexpr uint64_t kBucketDuration = 1;
-constexpr int64_t kSignalStorageLength = 1;
-constexpr int64_t kMinSignalCollectionLength = 1;
-constexpr int64_t kResultTTL = 1;
-
-// Discrete mapping parameters.
-constexpr float kDiscreteMappingMinResult = 1;
-constexpr int64_t kDiscreteMappingRank = 1;
-constexpr std::pair<float, int> kDiscreteMappings[] = {
-    {kDiscreteMappingMinResult, kDiscreteMappingRank}};
-
 }  // namespace
 
 PriceTrackingActionModel::PriceTrackingActionModel()
@@ -41,9 +28,9 @@ void PriceTrackingActionModel::InitAndFetchModel(
     const ModelUpdatedCallback& model_updated_callback) {
   proto::SegmentationModelMetadata metadata;
   MetadataWriter writer(&metadata);
-  writer.SetSegmentationMetadataConfig(kTimeUnit, kBucketDuration,
-                                       kSignalStorageLength,
-                                       kMinSignalCollectionLength, kResultTTL);
+  writer.SetDefaultSegmentationMetadataConfig(
+      /*min_signal_collection_length_days=*/1,
+      /*signal_storage_length_days=*/1);
 
   // Add price tracking custom input.
   writer.AddCustomInput(MetadataWriter::CustomInput{
@@ -52,8 +39,7 @@ void PriceTrackingActionModel::InitAndFetchModel(
       .name = "price_tracking"});
 
   // Set discrete mapping.
-  writer.AddDiscreteMappingEntries(kContextualPageActionsKey, kDiscreteMappings,
-                                   1);
+  writer.AddBooleanSegmentDiscreteMapping(kContextualPageActionsKey);
 
   constexpr int kModelVersion = 1;
   base::SequencedTaskRunnerHandle::Get()->PostTask(

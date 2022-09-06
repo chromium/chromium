@@ -5,6 +5,8 @@
 #include "components/segmentation_platform/internal/metadata/metadata_writer.h"
 
 #include "base/metrics/metrics_hashes.h"
+#include "base/strings/strcat.h"
+#include "components/segmentation_platform/public/constants.h"
 #include "components/segmentation_platform/public/proto/model_metadata.pb.h"
 
 namespace segmentation_platform {
@@ -72,11 +74,32 @@ void MetadataWriter::AddDiscreteMappingEntries(
   }
 }
 
-void MetadataWriter::AddBooleanSegmentDiscreteMapping(const std::string& key,
-                                                      float threshold) {
-  DCHECK_GT(threshold, 0);
-  const std::pair<float, int> mappings[]{{threshold, 1}};
+void MetadataWriter::AddBooleanSegmentDiscreteMapping(const std::string& key) {
+  const int selected_rank = 1;
+  const float model_score = 1;
+  const std::pair<float, int> mappings[]{{model_score, selected_rank}};
   AddDiscreteMappingEntries(key, mappings, 1);
+}
+
+void MetadataWriter::AddBooleanSegmentDiscreteMappingWithSubsegments(
+    const std::string& key,
+    float threshold,
+    int max_value) {
+  DCHECK_GT(threshold, 0);
+  // Should record at least 2 subsegments.
+  DCHECK_GT(max_value, 1);
+  const int selected_rank = 1;
+  const std::pair<float, int> mappings[]{{threshold, selected_rank}};
+  AddDiscreteMappingEntries(key, mappings, 1);
+
+  std::vector<std::pair<float, int>> subsegment_mapping;
+  for (int i = 1; i <= max_value; ++i) {
+    subsegment_mapping.emplace_back(i, i);
+  }
+  AddDiscreteMappingEntries(
+      base::StrCat(
+          {key, segmentation_platform::kSubsegmentDiscreteMappingSuffix}),
+      subsegment_mapping.data(), subsegment_mapping.size());
 }
 
 void MetadataWriter::SetSegmentationMetadataConfig(

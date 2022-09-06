@@ -8,6 +8,7 @@
 
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "components/segmentation_platform/internal/metadata/metadata_writer.h"
+#include "components/segmentation_platform/public/constants.h"
 #include "components/segmentation_platform/public/model_provider.h"
 #include "components/segmentation_platform/public/proto/model_metadata.pb.h"
 
@@ -19,28 +20,13 @@ using proto::SegmentId;
 // Default parameters for intentional user model.
 constexpr SegmentId kIntentionalUserSegmentId =
     SegmentId::INTENTIONAL_USER_SEGMENT;
-// Configuration for input storage and aggregation, we'll store our inputs in
-// buckets of 1 day.
-constexpr proto::TimeUnit kIntentionalUserTimeUnit = proto::TimeUnit::DAY;
-constexpr uint64_t kIntentionalUserBucketDuration = 1;
 // Store 28 buckets of input data (28 days).
 constexpr int64_t kIntentionalUserSignalStorageLength = 28;
 // Wait until we have 28 buckets of input data to run the model (28 days).
 constexpr int64_t kIntentionalUserMinSignalCollectionLength = 28;
-// Re-run the model every 1 day just to collect metrics, segments are updated
-// based on the config on segmentation_platform_config.cc.
-constexpr int64_t kIntentionalUserResultTTL = 1;
 // Threshold for our heuristic, if the user launched Chrome directly at least 2
 // times in the last 28 days then we consider them an intentional user.
 constexpr int64_t kIntentionalLaunchThreshold = 2;
-
-// Discrete mapping parameters.
-constexpr char kIntentionalUserDiscreteMappingKey[] = "intentional_user";
-constexpr float kIntentionalUserDiscreteMappingMinResult = 1;
-constexpr int64_t kIntentionalUserDiscreteMappingRank = 1;
-constexpr std::pair<float, int> kDiscreteMappings[] = {
-    {kIntentionalUserDiscreteMappingMinResult,
-     kIntentionalUserDiscreteMappingRank}};
 
 // InputFeatures.
 
@@ -73,14 +59,12 @@ void IntentionalUserModel::InitAndFetchModel(
     const ModelUpdatedCallback& model_updated_callback) {
   proto::SegmentationModelMetadata intentional_user_metadata;
   MetadataWriter writer(&intentional_user_metadata);
-  writer.SetSegmentationMetadataConfig(
-      kIntentionalUserTimeUnit, kIntentionalUserBucketDuration,
-      kIntentionalUserSignalStorageLength,
-      kIntentionalUserMinSignalCollectionLength, kIntentionalUserResultTTL);
+  writer.SetDefaultSegmentationMetadataConfig(
+      kIntentionalUserMinSignalCollectionLength,
+      kIntentionalUserSignalStorageLength);
 
   // Set discrete mapping.
-  writer.AddDiscreteMappingEntries(kIntentionalUserDiscreteMappingKey,
-                                   kDiscreteMappings, 1);
+  writer.AddBooleanSegmentDiscreteMapping(kIntentionalUserKey);
 
   // Set features.
   writer.AddUmaFeatures(kIntentionalUserUMAFeatures.data(),
