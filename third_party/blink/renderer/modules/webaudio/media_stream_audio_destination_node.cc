@@ -32,7 +32,7 @@
 #include "third_party/blink/renderer/modules/webaudio/audio_graph_tracer.h"
 #include "third_party/blink/renderer/modules/webaudio/media_stream_audio_destination_handler.h"
 #include "third_party/blink/renderer/platform/mediastream/webaudio_media_stream_source.h"
-#include "third_party/blink/renderer/platform/scheduler/public/thread.h"
+#include "third_party/blink/renderer/platform/scheduler/public/main_thread.h"
 #include "third_party/blink/renderer/platform/wtf/uuid.h"
 
 namespace blink {

@@ -45,9 +45,9 @@ class TaskTimeObserver;
 namespace blink {
 
 class FrameOrWorkerScheduler;
+class MainThread;
 class NonMainThread;
 class ThreadScheduler;
-class Platform;
 
 // Always an integer value.
 typedef uintptr_t PlatformThreadId;
@@ -82,9 +82,6 @@ class PLATFORM_EXPORT Thread {
   USING_FAST_MALLOC(Thread);
 
  public:
-  friend class Platform;  // For SetMainThread() and IsSimpleMainThread().
-  friend class ScopedMainThreadOverrider;  // For SetMainThread().
-
   // An IdleTask is expected to complete before the deadline it is passed.
   using IdleTask = base::OnceCallback<void(base::TimeTicks deadline)>;
 
@@ -99,7 +96,7 @@ class PLATFORM_EXPORT Thread {
   static Thread* Current();
 
   // Return an interface to the main thread.
-  static Thread* MainThread();
+  static blink::MainThread* MainThread();
 
   // Return an interface to the compositor thread (if initialized). This can be
   // null if the renderer was created with threaded rendering disabled.
@@ -151,18 +148,6 @@ class PLATFORM_EXPORT Thread {
 
  protected:
   static void UpdateThreadTLS(Thread* thread);
-
- private:
-  // For Platform and ScopedMainThreadOverrider. Return the thread object
-  // previously set (if any).
-  //
-  // This is done this way because we need to be able to "override" the main
-  // thread temporarily for ScopedTestingPlatformSupport.
-  static std::unique_ptr<Thread> SetMainThread(std::unique_ptr<Thread>);
-
-  // This is used to identify the actual Thread instance. This should be
-  // used only in Platform, and other users should ignore this.
-  virtual bool IsSimpleMainThread() const { return false; }
 };
 
 }  // namespace blink

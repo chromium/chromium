@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/platform/scheduler/main_thread/main_thread.h"
+#include "third_party/blink/renderer/platform/scheduler/main_thread/main_thread_impl.h"
 
 #include "base/location.h"
 #include "base/task/sequence_manager/task_queue.h"
@@ -11,26 +11,31 @@
 namespace blink {
 namespace scheduler {
 
-MainThread::MainThread(MainThreadSchedulerImpl* scheduler)
+MainThreadImpl::MainThreadImpl(MainThreadSchedulerImpl* scheduler)
     : task_runner_(scheduler->DefaultTaskRunner()), scheduler_(scheduler) {}
 
-MainThread::~MainThread() = default;
+MainThreadImpl::~MainThreadImpl() = default;
 
-blink::ThreadScheduler* MainThread::Scheduler() {
+blink::ThreadScheduler* MainThreadImpl::Scheduler() {
   return scheduler_;
 }
 
 scoped_refptr<base::SingleThreadTaskRunner>
-MainThread::GetDeprecatedTaskRunner() const {
+MainThreadImpl::GetDeprecatedTaskRunner() const {
   return task_runner_;
 }
 
-void MainThread::AddTaskTimeObserver(
+scoped_refptr<base::SingleThreadTaskRunner> MainThreadImpl::GetTaskRunner(
+    MainThreadTaskRunnerRestricted) const {
+  return task_runner_;
+}
+
+void MainThreadImpl::AddTaskTimeObserver(
     base::sequence_manager::TaskTimeObserver* task_time_observer) {
   scheduler_->AddTaskTimeObserver(task_time_observer);
 }
 
-void MainThread::RemoveTaskTimeObserver(
+void MainThreadImpl::RemoveTaskTimeObserver(
     base::sequence_manager::TaskTimeObserver* task_time_observer) {
   scheduler_->RemoveTaskTimeObserver(task_time_observer);
 }

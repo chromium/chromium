@@ -48,7 +48,7 @@
 #include "third_party/blink/renderer/platform/scheduler/common/throttling/task_queue_throttler.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/agent_group_scheduler_impl.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/frame_scheduler_impl.h"
-#include "third_party/blink/renderer/platform/scheduler/main_thread/main_thread.h"
+#include "third_party/blink/renderer/platform/scheduler/main_thread/main_thread_impl.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/page_scheduler_impl.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/pending_user_input.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/task_type_names.h"
@@ -630,8 +630,8 @@ void MainThreadSchedulerImpl::Shutdown() {
   was_shutdown_ = true;
 }
 
-std::unique_ptr<Thread> MainThreadSchedulerImpl::CreateMainThread() {
-  return std::make_unique<MainThread>(this);
+std::unique_ptr<MainThread> MainThreadSchedulerImpl::CreateMainThread() {
+  return std::make_unique<MainThreadImpl>(this);
 }
 
 scoped_refptr<WidgetScheduler>

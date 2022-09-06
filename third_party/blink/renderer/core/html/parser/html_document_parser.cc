@@ -74,6 +74,7 @@
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_base.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
+#include "third_party/blink/renderer/platform/wtf/wtf.h"
 
 namespace blink {
 
@@ -1385,7 +1386,7 @@ void HTMLDocumentParser::AppendBytes(const char* data, size_t length) {
   TRACE_EVENT2("blink", "HTMLDocumentParser::appendBytes", "size",
                (unsigned)length, "parser", (void*)this);
 
-  DCHECK(Thread::MainThread()->IsCurrentThread());
+  DCHECK(IsMainThread());
 
   if (!length || IsStopped())
     return;

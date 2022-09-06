@@ -11,6 +11,7 @@
 #include "build/build_config.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/platform.h"
+#include "third_party/blink/renderer/platform/scheduler/public/main_thread.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/scheduler/worker/compositor_thread.h"
 #include "third_party/blink/renderer/platform/scheduler/worker/compositor_thread_scheduler_impl.h"
@@ -36,8 +37,8 @@ Thread*& ThreadTLSSlot() {
   return *thread_tls_slot;
 }
 
-std::unique_ptr<Thread>& GetMainThread() {
-  DEFINE_STATIC_LOCAL(std::unique_ptr<Thread>, main_thread, ());
+std::unique_ptr<MainThread>& GetMainThread() {
+  DEFINE_STATIC_LOCAL(std::unique_ptr<MainThread>, main_thread, ());
   return main_thread;
 }
 
@@ -105,7 +106,7 @@ Thread* Thread::Current() {
   return ThreadTLSSlot();
 }
 
-Thread* Thread::MainThread() {
+MainThread* Thread::MainThread() {
   return GetMainThread().get();
 }
 
@@ -113,8 +114,8 @@ NonMainThread* Thread::CompositorThread() {
   return GetCompositorThread().get();
 }
 
-std::unique_ptr<Thread> Thread::SetMainThread(
-    std::unique_ptr<Thread> main_thread) {
+std::unique_ptr<MainThread> MainThread::SetMainThread(
+    std::unique_ptr<MainThread> main_thread) {
   ThreadTLSSlot() = main_thread.get();
   std::swap(GetMainThread(), main_thread);
   return main_thread;

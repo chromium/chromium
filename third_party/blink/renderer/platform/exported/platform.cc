@@ -63,9 +63,9 @@
 #include "third_party/blink/renderer/platform/language.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/common/simple_main_thread_scheduler.h"
+#include "third_party/blink/renderer/platform/scheduler/public/main_thread.h"
 #include "third_party/blink/renderer/platform/scheduler/public/non_main_thread.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
-#include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/theme/web_theme_engine_helper.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
@@ -142,7 +142,7 @@ Platform::~Platform() = default;
 
 namespace {
 
-class SimpleMainThread : public Thread {
+class SimpleMainThread : public MainThread {
  public:
   SimpleMainThread() = default;
 
@@ -170,6 +170,11 @@ class SimpleMainThread : public Thread {
       return main_thread_task_runner_for_testing_;
     DCHECK(WTF::IsMainThread());
     return base::ThreadTaskRunnerHandle::Get();
+  }
+
+  scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner(
+      MainThreadTaskRunnerRestricted) const override {
+    return GetDeprecatedTaskRunner();
   }
 
   void SetMainThreadTaskRunnerForTesting(
@@ -216,10 +221,11 @@ void Platform::CreateMainThreadAndInitialize(Platform* platform) {
   InitializeMainThreadCommon(platform, std::make_unique<SimpleMainThread>());
 }
 
-void Platform::InitializeMainThreadCommon(Platform* platform,
-                                          std::unique_ptr<Thread> main_thread) {
+void Platform::InitializeMainThreadCommon(
+    Platform* platform,
+    std::unique_ptr<MainThread> main_thread) {
   DCHECK(did_initialize_blink_);
-  Thread::SetMainThread(std::move(main_thread));
+  MainThread::SetMainThread(std::move(main_thread));
 
   ProcessHeap::Init();
 
@@ -276,7 +282,7 @@ void Platform::SetCurrentPlatformForTesting(Platform* platform) {
 
 void Platform::CreateMainThreadForTesting() {
   DCHECK(!Thread::MainThread());
-  Thread::SetMainThread(std::make_unique<SimpleMainThread>());
+  MainThread::SetMainThread(std::make_unique<SimpleMainThread>());
 }
 
 void Platform::SetMainThreadTaskRunnerForTesting() {

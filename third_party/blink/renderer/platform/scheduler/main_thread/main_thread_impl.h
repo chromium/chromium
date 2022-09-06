@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_MAIN_THREAD_MAIN_THREAD_H_
-#define THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_MAIN_THREAD_MAIN_THREAD_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_MAIN_THREAD_MAIN_THREAD_IMPL_H_
+#define THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_MAIN_THREAD_MAIN_THREAD_IMPL_H_
 
 #include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
-#include "third_party/blink/renderer/platform/scheduler/public/thread.h"
+#include "third_party/blink/renderer/platform/scheduler/public/main_thread.h"
 
 namespace blink {
 class ThreadScheduler;
@@ -18,15 +18,19 @@ namespace blink {
 namespace scheduler {
 class MainThreadSchedulerImpl;
 
-class PLATFORM_EXPORT MainThread : public Thread {
+class PLATFORM_EXPORT MainThreadImpl : public MainThread {
  public:
-  explicit MainThread(MainThreadSchedulerImpl* scheduler);
-  ~MainThread() override;
+  explicit MainThreadImpl(MainThreadSchedulerImpl* scheduler);
+  ~MainThreadImpl() override;
 
   // Thread implementation.
   ThreadScheduler* Scheduler() override;
   scoped_refptr<base::SingleThreadTaskRunner> GetDeprecatedTaskRunner()
       const override;
+
+  // MainThread implementation.
+  scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner(
+      MainThreadTaskRunnerRestricted) const override;
 
   void AddTaskTimeObserver(base::sequence_manager::TaskTimeObserver*) override;
   void RemoveTaskTimeObserver(
@@ -40,4 +44,4 @@ class PLATFORM_EXPORT MainThread : public Thread {
 }  // namespace scheduler
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_MAIN_THREAD_MAIN_THREAD_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_MAIN_THREAD_MAIN_THREAD_IMPL_H_

@@ -13,7 +13,7 @@
 #include "third_party/blink/public/platform/scheduler/test/web_mock_thread_scheduler.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/main_thread_scheduler_impl.h"
 #include "third_party/blink/renderer/platform/scheduler/public/dummy_schedulers.h"
-#include "third_party/blink/renderer/platform/scheduler/public/thread.h"
+#include "third_party/blink/renderer/platform/scheduler/public/main_thread.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 #include "third_party/blink/renderer/platform/wtf/wtf.h"
 
@@ -28,7 +28,7 @@ class SimpleMockMainThreadScheduler : public WebMockThreadScheduler {
       : simple_thread_scheduler_(CreateDummyWebMainThreadScheduler()) {}
   ~SimpleMockMainThreadScheduler() override = default;
 
-  std::unique_ptr<Thread> CreateMainThread() override {
+  std::unique_ptr<MainThread> CreateMainThread() override {
     return simple_thread_scheduler_->CreateMainThread();
   }
 

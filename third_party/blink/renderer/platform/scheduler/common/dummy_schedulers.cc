@@ -9,9 +9,9 @@
 #include "third_party/blink/renderer/platform/scheduler/main_thread/main_thread_scheduler_impl.h"
 #include "third_party/blink/renderer/platform/scheduler/public/agent_group_scheduler.h"
 #include "third_party/blink/renderer/platform/scheduler/public/frame_scheduler.h"
+#include "third_party/blink/renderer/platform/scheduler/public/main_thread.h"
 #include "third_party/blink/renderer/platform/scheduler/public/main_thread_scheduler.h"
 #include "third_party/blink/renderer/platform/scheduler/public/page_scheduler.h"
-#include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/scheduler/public/web_scheduling_priority.h"
 #include "third_party/blink/renderer/platform/scheduler/public/web_scheduling_task_queue.h"
 #include "third_party/blink/renderer/platform/scheduler/public/widget_scheduler.h"
@@ -190,7 +190,7 @@ class DummyPageScheduler : public PageScheduler {
 };
 
 // TODO(altimin,yutak): Merge with SimpleThread in platform.cc.
-class SimpleThread : public Thread {
+class SimpleThread : public MainThread {
  public:
   explicit SimpleThread(ThreadScheduler* scheduler) : scheduler_(scheduler) {}
   ~SimpleThread() override {}
@@ -200,6 +200,11 @@ class SimpleThread : public Thread {
 
   scoped_refptr<base::SingleThreadTaskRunner> GetDeprecatedTaskRunner()
       const override {
+    return base::ThreadTaskRunnerHandle::Get();
+  }
+
+  scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner(
+      MainThreadTaskRunnerRestricted) const override {
     return base::ThreadTaskRunnerHandle::Get();
   }
 
@@ -254,7 +259,7 @@ class DummyWebMainThreadScheduler : public WebThreadScheduler,
     return base::ThreadTaskRunnerHandle::Get();
   }
 
-  std::unique_ptr<Thread> CreateMainThread() override {
+  std::unique_ptr<MainThread> CreateMainThread() override {
     return std::make_unique<SimpleThread>(this);
   }
 

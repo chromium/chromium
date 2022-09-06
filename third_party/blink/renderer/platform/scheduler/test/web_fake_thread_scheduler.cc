@@ -18,7 +18,7 @@ WebFakeThreadScheduler::WebFakeThreadScheduler() = default;
 
 WebFakeThreadScheduler::~WebFakeThreadScheduler() = default;
 
-std::unique_ptr<Thread> WebFakeThreadScheduler::CreateMainThread() {
+std::unique_ptr<MainThread> WebFakeThreadScheduler::CreateMainThread() {
   return nullptr;
 }
 

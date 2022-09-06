@@ -16,7 +16,7 @@
 #include "third_party/blink/public/platform/web_common.h"
 
 namespace blink {
-class Thread;
+class MainThread;
 }  // namespace blink
 
 namespace blink {
@@ -59,7 +59,7 @@ class BLINK_PLATFORM_EXPORT WebThreadScheduler {
   DeprecatedDefaultTaskRunner();
 
   // Creates a WebThread implementation for the renderer main thread.
-  virtual std::unique_ptr<Thread> CreateMainThread();
+  virtual std::unique_ptr<MainThread> CreateMainThread();
 
   // Creates a WebAgentGroupScheduler implementation. Must be called from the
   // main thread.

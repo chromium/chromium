@@ -10,7 +10,7 @@
 #include "base/time/time.h"
 #include "base/trace_event/process_memory_dump.h"
 #include "third_party/blink/renderer/platform/graphics/parkable_image.h"
-#include "third_party/blink/renderer/platform/scheduler/public/thread.h"
+#include "third_party/blink/renderer/platform/scheduler/public/main_thread.h"
 #include "third_party/blink/renderer/platform/wtf/wtf.h"
 
 namespace blink {

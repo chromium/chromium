@@ -22,8 +22,8 @@
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/scheduler/public/main_thread.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
-#include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
@@ -253,6 +253,8 @@ void RendererResourceCoordinatorImpl::FireBackgroundTracingTrigger(
 
 RendererResourceCoordinatorImpl::RendererResourceCoordinatorImpl(
     mojo::PendingRemote<ProcessCoordinationUnit> remote) {
+  service_task_runner_ =
+      Thread::MainThread()->GetTaskRunner(MainThreadTaskRunnerRestricted());
   service_.Bind(std::move(remote));
 }
 
@@ -265,9 +267,10 @@ void RendererResourceCoordinatorImpl::DispatchOnV8ContextCreated(
   // collated the necessary data we bounce over to the main thread. Note that
   // posting "this" unretained is safe because the renderer resource coordinator
   // is a singleton that leaks at process shutdown.
-  if (!IsMainThread()) {
+
+  if (!service_task_runner_->RunsTasksInCurrentSequence()) {
     blink::PostCrossThreadTask(
-        *Thread::MainThread()->GetDeprecatedTaskRunner(), FROM_HERE,
+        *service_task_runner_, FROM_HERE,
         WTF::CrossThreadBindOnce(
             &RendererResourceCoordinatorImpl::DispatchOnV8ContextCreated,
             WTF::CrossThreadUnretained(this), std::move(v8_desc),
@@ -282,9 +285,9 @@ void RendererResourceCoordinatorImpl::DispatchOnV8ContextDetached(
     const blink::V8ContextToken& token) {
   DCHECK(service_);
   // See DispatchOnV8ContextCreated for why this is both needed and safe.
-  if (!IsMainThread()) {
+  if (!service_task_runner_->RunsTasksInCurrentSequence()) {
     blink::PostCrossThreadTask(
-        *Thread::MainThread()->GetDeprecatedTaskRunner(), FROM_HERE,
+        *service_task_runner_, FROM_HERE,
         WTF::CrossThreadBindOnce(
             &RendererResourceCoordinatorImpl::DispatchOnV8ContextDetached,
             WTF::CrossThreadUnretained(this), token));
@@ -296,9 +299,9 @@ void RendererResourceCoordinatorImpl::DispatchOnV8ContextDestroyed(
     const blink::V8ContextToken& token) {
   DCHECK(service_);
   // See DispatchOnV8ContextCreated for why this is both needed and safe.
-  if (!IsMainThread()) {
+  if (!service_task_runner_->RunsTasksInCurrentSequence()) {
     blink::PostCrossThreadTask(
-        *Thread::MainThread()->GetDeprecatedTaskRunner(), FROM_HERE,
+        *service_task_runner_, FROM_HERE,
         WTF::CrossThreadBindOnce(
             &RendererResourceCoordinatorImpl::DispatchOnV8ContextDestroyed,
             WTF::CrossThreadUnretained(this), token));
@@ -310,9 +313,9 @@ void RendererResourceCoordinatorImpl::DispatchOnV8ContextDestroyed(
 void RendererResourceCoordinatorImpl::DispatchFireBackgroundTracingTrigger(
     const String& trigger_name) {
   DCHECK(service_);
-  if (!IsMainThread()) {
+  if (!service_task_runner_->RunsTasksInCurrentSequence()) {
     blink::PostCrossThreadTask(
-        *Thread::MainThread()->GetDeprecatedTaskRunner(), FROM_HERE,
+        *service_task_runner_, FROM_HERE,
         WTF::CrossThreadBindOnce(&RendererResourceCoordinatorImpl::
                                      DispatchFireBackgroundTracingTrigger,
                                  WTF::CrossThreadUnretained(this),

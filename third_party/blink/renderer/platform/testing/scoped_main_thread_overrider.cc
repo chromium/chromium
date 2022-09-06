@@ -10,8 +10,8 @@
 namespace blink {
 
 ScopedMainThreadOverrider::ScopedMainThreadOverrider(
-    std::unique_ptr<Thread> main_thread)
-    : original_main_thread_(Thread::SetMainThread(std::move(main_thread))) {
+    std::unique_ptr<MainThread> main_thread)
+    : original_main_thread_(MainThread::SetMainThread(std::move(main_thread))) {
   // TODO(dtapuska): Remove once each AgentSchedulingGroup has their own
   // isolate.
   if (auto* scheduler =
@@ -21,7 +21,7 @@ ScopedMainThreadOverrider::ScopedMainThreadOverrider(
 }
 
 ScopedMainThreadOverrider::~ScopedMainThreadOverrider() {
-  Thread::SetMainThread(std::move(original_main_thread_));
+  MainThread::SetMainThread(std::move(original_main_thread_));
 }
 
 }  // namespace blink

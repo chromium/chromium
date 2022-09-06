@@ -156,7 +156,7 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
   ~MainThreadSchedulerImpl() override;
 
   // WebThreadScheduler implementation:
-  std::unique_ptr<Thread> CreateMainThread() override;
+  std::unique_ptr<MainThread> CreateMainThread() override;
   // Note: this is also shared by the ThreadScheduler interface.
   scoped_refptr<base::SingleThreadTaskRunner> NonWakingTaskRunner() override;
   scoped_refptr<base::SingleThreadTaskRunner> DeprecatedDefaultTaskRunner()

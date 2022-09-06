@@ -112,6 +112,7 @@ namespace blink {
 
 class BrowserInterfaceBrokerProxy;
 class MediaInspectorContext;
+class MainThread;
 class ThreadSafeBrowserInterfaceBrokerProxy;
 class Thread;
 class URLLoaderThrottle;
@@ -763,8 +764,9 @@ class BLINK_PLATFORM_EXPORT Platform {
       blink::WebVector<blink::WebContentSecurityPolicyHeader>* csp) {}
 
  private:
-  static void InitializeMainThreadCommon(Platform* platform,
-                                         std::unique_ptr<Thread> main_thread);
+  static void InitializeMainThreadCommon(
+      Platform* platform,
+      std::unique_ptr<MainThread> main_thread);
 };
 
 }  // namespace blink

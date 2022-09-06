@@ -10,7 +10,7 @@ namespace blink {
 
 namespace {
 
-class ThreadWithCustomScheduler : public Thread {
+class ThreadWithCustomScheduler : public MainThread {
  public:
   explicit ThreadWithCustomScheduler(ThreadScheduler* scheduler)
       : scheduler_(scheduler) {}
@@ -20,6 +20,11 @@ class ThreadWithCustomScheduler : public Thread {
 
   scoped_refptr<base::SingleThreadTaskRunner> GetDeprecatedTaskRunner()
       const override {
+    return scheduler_->DeprecatedDefaultTaskRunner();
+  }
+
+  scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner(
+      MainThreadTaskRunnerRestricted) const override {
     return scheduler_->DeprecatedDefaultTaskRunner();
   }
 

@@ -62,6 +62,7 @@ class CONTROLLER_EXPORT RendererResourceCoordinatorImpl final
 
   mojo::Remote<performance_manager::mojom::blink::ProcessCoordinationUnit>
       service_;
+  scoped_refptr<base::SequencedTaskRunner> service_task_runner_;
 };
 
 }  // namespace blink

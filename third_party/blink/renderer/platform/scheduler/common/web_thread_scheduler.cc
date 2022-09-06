@@ -53,7 +53,7 @@ WebThreadScheduler::DeprecatedDefaultTaskRunner() {
   return nullptr;
 }
 
-std::unique_ptr<Thread> WebThreadScheduler::CreateMainThread() {
+std::unique_ptr<MainThread> WebThreadScheduler::CreateMainThread() {
   NOTREACHED();
   return nullptr;
 }

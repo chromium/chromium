@@ -6,7 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_TESTING_SCOPED_MAIN_THREAD_OVERRIDER_H_
 
 #include <memory>
-#include "third_party/blink/renderer/platform/scheduler/public/thread.h"
+#include "third_party/blink/renderer/platform/scheduler/public/main_thread.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
@@ -23,11 +23,11 @@ class ScopedMainThreadOverrider final {
   USING_FAST_MALLOC(ScopedMainThreadOverrider);
 
  public:
-  explicit ScopedMainThreadOverrider(std::unique_ptr<Thread> main_thread);
+  explicit ScopedMainThreadOverrider(std::unique_ptr<MainThread> main_thread);
   ~ScopedMainThreadOverrider();
 
  private:
-  std::unique_ptr<Thread> original_main_thread_;
+  std::unique_ptr<MainThread> original_main_thread_;
 };
 
 }  // namespace blink
