@@ -4,6 +4,7 @@
 
 #include "chrome/browser/profiles/profile_destroyer.h"
 
+#include <vector>
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
@@ -30,7 +31,9 @@ class ProfileDestroyerTest : public testing::Test,
   void SetUp() override { ASSERT_TRUE(profile_manager_.SetUp()); }
 
   TestingProfile* original_profile() { return original_profile_; }
-  TestingProfile* otr_profile() { return otr_profile_; }
+  TestingProfile* OtrProfile(size_t i) {
+    return otr_profiles_.size() > i ? otr_profiles_[i] : nullptr;
+  }
 
   void CreateOriginalProfile() {
     original_profile_ = profile_manager_.CreateTestingProfile("foo");
@@ -43,17 +46,28 @@ class ProfileDestroyerTest : public testing::Test,
 
   void CreateOTRProfile() {
     Profile::OTRProfileID profile_id =
-        is_primary_otr_ ? Profile::OTRProfileID::PrimaryID()
-                        : Profile::OTRProfileID::CreateUniqueForTesting();
+        (is_primary_otr_ && otr_profiles_.size() == 0)
+            ? Profile::OTRProfileID::PrimaryID()
+            : Profile::OTRProfileID::CreateUniqueForTesting();
+
     TestingProfile::Builder builder;
     builder.SetPath(original_profile_->GetPath());
-    otr_profile_ = builder.BuildOffTheRecord(original_profile_, profile_id);
-    otr_profile_->SetProfileDestructionObserver(base::BindOnce(
-        &ProfileDestroyerTest::SetOTRProfileDestroyed, base::Unretained(this)));
+    TestingProfile* otr_profile =
+        builder.BuildOffTheRecord(original_profile_, profile_id);
+    otr_profile->SetProfileDestructionObserver(
+        base::BindOnce(&ProfileDestroyerTest::SetOTRProfileDestroyed,
+                       base::Unretained(this), base::Unretained(otr_profile)));
+    otr_profiles_.push_back(otr_profile);
   }
 
   void SetOriginalProfileDestroyed() { original_profile_ = nullptr; }
-  void SetOTRProfileDestroyed() { otr_profile_ = nullptr; }
+  void SetOTRProfileDestroyed(TestingProfile* destroyed_profile) {
+    for (auto& profile : otr_profiles_) {
+      if (profile == destroyed_profile) {
+        profile = nullptr;
+      }
+    }
+  }
 
   // Creates a render process host based on a new site instance given the
   // |profile| and mark it as used. Returns a reference to it.
@@ -89,7 +103,7 @@ class ProfileDestroyerTest : public testing::Test,
   content::RenderViewHostTestEnabler rvh_test_enabler_;
 
   raw_ptr<TestingProfile> original_profile_;
-  raw_ptr<TestingProfile> otr_profile_;
+  std::vector<raw_ptr<TestingProfile>> otr_profiles_;
 
   std::unique_ptr<ScopedProfileKeepAlive> original_profile_keep_alive_;
   std::vector<scoped_refptr<content::SiteInstance>> site_instances_;
@@ -103,18 +117,18 @@ TEST_P(ProfileDestroyerTest, DestroyOriginalProfileImmediately) {
 
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(original_profile());
-  EXPECT_TRUE(otr_profile());
+  EXPECT_TRUE(OtrProfile(0));
 
   StopKeepingAliveOriginalProfile();
   EXPECT_TRUE(original_profile());
-  EXPECT_TRUE(otr_profile());
+  EXPECT_TRUE(OtrProfile(0));
 
   // This doesn't really match real-world scenarios, because TestingProfile is
   // different from OffTheRecordProfileImpl. The real impl acquires a keepalive
   // on the parent profile, whereas OTR TestingProfile doesn't do that.
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(original_profile());
-  EXPECT_FALSE(otr_profile());
+  EXPECT_FALSE(OtrProfile(0));
 }
 
 TEST_P(ProfileDestroyerTest, DestroyOriginalProfileDeferedByRenderProcessHost) {
@@ -127,22 +141,22 @@ TEST_P(ProfileDestroyerTest, DestroyOriginalProfileDeferedByRenderProcessHost) {
 
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(original_profile());
-  EXPECT_TRUE(otr_profile());
+  EXPECT_TRUE(OtrProfile(0));
 
   // The original profile is not destroyed, because of the RenderProcessHost.
   StopKeepingAliveOriginalProfile();
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(original_profile());
-  EXPECT_TRUE(otr_profile());
+  EXPECT_TRUE(OtrProfile(0));
 
   // Releasing the RenderProcessHost triggers the deletion of the Profile. It
   // happens in a posted task.
   render_process_host->Cleanup();
   EXPECT_TRUE(original_profile());
-  EXPECT_TRUE(otr_profile());
+  EXPECT_TRUE(OtrProfile(0));
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(original_profile());
-  EXPECT_FALSE(otr_profile());
+  EXPECT_FALSE(OtrProfile(0));
 }
 
 TEST_P(ProfileDestroyerTest,
@@ -152,26 +166,26 @@ TEST_P(ProfileDestroyerTest,
   CreateOriginalProfile();
   CreateOTRProfile();
   content::RenderProcessHost* render_process_host =
-      CreatedRendererProcessHost(otr_profile());
+      CreatedRendererProcessHost(OtrProfile(0));
 
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(original_profile());
-  EXPECT_TRUE(otr_profile());
+  EXPECT_TRUE(OtrProfile(0));
 
   // The original profile is not destroyed, because of the RenderProcessHost.
   StopKeepingAliveOriginalProfile();
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(original_profile());
-  EXPECT_TRUE(otr_profile());
+  EXPECT_TRUE(OtrProfile(0));
 
   // Releasing the RenderProcessHost triggers the deletion of the Profile. It
   // happens in a posted task.
   render_process_host->Cleanup();
   EXPECT_TRUE(original_profile());
-  EXPECT_TRUE(otr_profile());
+  EXPECT_TRUE(OtrProfile(0));
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(original_profile());
-  EXPECT_FALSE(otr_profile());
+  EXPECT_FALSE(OtrProfile(0));
 }
 
 TEST_P(ProfileDestroyerTest,
@@ -181,38 +195,38 @@ TEST_P(ProfileDestroyerTest,
   CreateOriginalProfile();
   CreateOTRProfile();
   content::RenderProcessHost* rph_otr_profile =
-      CreatedRendererProcessHost(otr_profile());
+      CreatedRendererProcessHost(OtrProfile(0));
   content::RenderProcessHost* rph_original_profile =
       CreatedRendererProcessHost(original_profile());
 
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(original_profile());
-  EXPECT_TRUE(otr_profile());
+  EXPECT_TRUE(OtrProfile(0));
 
   // No profile are destroyed, because of the RenderProcessHosts.
   StopKeepingAliveOriginalProfile();
-  ProfileDestroyer::DestroyProfileWhenAppropriate(otr_profile());
+  ProfileDestroyer::DestroyProfileWhenAppropriate(OtrProfile(0));
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(original_profile());
-  EXPECT_TRUE(otr_profile());
+  EXPECT_TRUE(OtrProfile(0));
 
   // Release the first process. It causes the associated profile to be released.
   // This happens in a posted task.
   rph_otr_profile->Cleanup();
   EXPECT_TRUE(original_profile());
-  EXPECT_TRUE(otr_profile());
+  EXPECT_TRUE(OtrProfile(0));
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(original_profile());
-  EXPECT_FALSE(otr_profile());
+  EXPECT_FALSE(OtrProfile(0));
 
   // Release the second process. It causes the associated profile to be
   // released. This happens in a posted task.
   rph_original_profile->Cleanup();
   EXPECT_TRUE(original_profile());
-  EXPECT_FALSE(otr_profile());
+  EXPECT_FALSE(OtrProfile(0));
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(original_profile());
-  EXPECT_FALSE(otr_profile());
+  EXPECT_FALSE(OtrProfile(0));
 }
 
 // Expect immediate OTR profile destruction when no pending renderer
@@ -221,11 +235,11 @@ TEST_P(ProfileDestroyerTest, ImmediateOTRProfileDestruction) {
   CreateOriginalProfile();
   CreateOTRProfile();
   EXPECT_TRUE(original_profile());
-  EXPECT_TRUE(otr_profile());
+  EXPECT_TRUE(OtrProfile(0));
 
   // Ask for destruction of OTR profile, and expect immediate destruction.
-  ProfileDestroyer::DestroyProfileWhenAppropriate(otr_profile());
-  EXPECT_FALSE(otr_profile());
+  ProfileDestroyer::DestroyProfileWhenAppropriate(OtrProfile(0));
+  EXPECT_FALSE(OtrProfile(0));
 }
 
 // Expect pending renderer process hosts delay OTR profile destruction.
@@ -235,25 +249,25 @@ TEST_P(ProfileDestroyerTest, DelayedOTRProfileDestruction) {
 
   // Create two render process hosts.
   content::RenderProcessHost* render_process_host1 =
-      CreatedRendererProcessHost(otr_profile());
+      CreatedRendererProcessHost(OtrProfile(0));
   content::RenderProcessHost* render_process_host2 =
-      CreatedRendererProcessHost(otr_profile());
+      CreatedRendererProcessHost(OtrProfile(0));
 
   // Ask for destruction of OTR profile, but expect it to be delayed.
-  ProfileDestroyer::DestroyProfileWhenAppropriate(otr_profile());
-  EXPECT_TRUE(otr_profile());
+  ProfileDestroyer::DestroyProfileWhenAppropriate(OtrProfile(0));
+  EXPECT_TRUE(OtrProfile(0));
 
   // Destroy the first pending render process host, and expect it not to destroy
   // the OTR profile.
   render_process_host1->Cleanup();
   base::RunLoop().RunUntilIdle();
-  EXPECT_TRUE(otr_profile());
+  EXPECT_TRUE(OtrProfile(0));
 
   // Destroy the other renderer process, and expect destruction of OTR
   // profile.
   render_process_host2->Cleanup();
   base::RunLoop().RunUntilIdle();
-  EXPECT_FALSE(otr_profile());
+  EXPECT_FALSE(OtrProfile(0));
 }
 
 // Regression test for:
@@ -286,16 +300,75 @@ TEST_P(ProfileDestroyerTest, DestructionRequestedTwiceWhileDelayedOTRProfile) {
   CreateOTRProfile();
 
   content::RenderProcessHost* render_process_host =
-      CreatedRendererProcessHost(otr_profile());
+      CreatedRendererProcessHost(OtrProfile(0));
 
-  ProfileDestroyer::DestroyProfileWhenAppropriate(otr_profile());
-  EXPECT_TRUE(otr_profile());
-  ProfileDestroyer::DestroyProfileWhenAppropriate(otr_profile());
-  EXPECT_TRUE(otr_profile());
+  ProfileDestroyer::DestroyProfileWhenAppropriate(OtrProfile(0));
+  EXPECT_TRUE(OtrProfile(0));
+  ProfileDestroyer::DestroyProfileWhenAppropriate(OtrProfile(0));
+  EXPECT_TRUE(OtrProfile(0));
 
   render_process_host->Cleanup();
   base::RunLoop().RunUntilIdle();
-  EXPECT_FALSE(otr_profile());
+  EXPECT_FALSE(OtrProfile(0));
+}
+
+// Regression for: https://crbug.com/1357476
+// When two OTR profile are associated with the same original profile,
+// requesting the destruction of one, was incorrectly causing the
+// ProfileDestroyer to wait for the destruction of the RenderProcessHost of the
+// second OTR profile.
+TEST_P(ProfileDestroyerTest, MultipleOTRPRofile) {
+  CreateOriginalProfile();
+  CreateOTRProfile();
+  CreateOTRProfile();
+  CreateOTRProfile();
+
+  // Create a renderer process associated with every OTR profiles.
+  content::RenderProcessHost* render_process_host[3] = {
+      CreatedRendererProcessHost(OtrProfile(0)),
+      CreatedRendererProcessHost(OtrProfile(1)),
+      CreatedRendererProcessHost(OtrProfile(2)),
+  };
+
+  // Ask for the destruction of two of them. The destruction is delayed, because
+  // they are kept alive by two RenderProcessHost depending on them.
+  ProfileDestroyer::DestroyProfileWhenAppropriate(OtrProfile(0));
+  ProfileDestroyer::DestroyProfileWhenAppropriate(OtrProfile(1));
+  EXPECT_TRUE(original_profile());
+  EXPECT_TRUE(OtrProfile(0));
+  EXPECT_TRUE(OtrProfile(1));
+  EXPECT_TRUE(OtrProfile(2));
+
+  // Destroy the RenderProcessHost keeping alive the first OTR profile.
+  render_process_host[0]->Cleanup();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(original_profile());
+  EXPECT_FALSE(OtrProfile(0));
+  EXPECT_TRUE(OtrProfile(1));
+  EXPECT_TRUE(OtrProfile(2));
+
+  // Destroy the RenderProcessHost keeping alive the second OTR profile.
+  render_process_host[1]->Cleanup();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(original_profile());
+  EXPECT_FALSE(OtrProfile(0));
+  EXPECT_FALSE(OtrProfile(1));
+  EXPECT_TRUE(OtrProfile(2));
+
+  // Destroy the third RenderProcessHost.
+  render_process_host[2]->Cleanup();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(original_profile());
+  EXPECT_FALSE(OtrProfile(0));
+  EXPECT_FALSE(OtrProfile(1));
+  EXPECT_TRUE(OtrProfile(2));
+
+  // Allow the deletion of the last OTR profile:
+  ProfileDestroyer::DestroyProfileWhenAppropriate(OtrProfile(2));
+  EXPECT_TRUE(original_profile());
+  EXPECT_FALSE(OtrProfile(0));
+  EXPECT_FALSE(OtrProfile(1));
+  EXPECT_FALSE(OtrProfile(2));
 }
 
 INSTANTIATE_TEST_SUITE_P(AllOTRProfileTypes,
