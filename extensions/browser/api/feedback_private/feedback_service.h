@@ -58,6 +58,8 @@ class FeedbackService : public base::RefCountedThreadSafe<FeedbackService> {
                             scoped_refptr<feedback::FeedbackData> feedback_data,
                             SendFeedbackCallback callback);
 
+  FeedbackPrivateDelegate* GetFeedbackPrivateDelegate() { return delegate_; }
+
  protected:
   virtual ~FeedbackService();
 

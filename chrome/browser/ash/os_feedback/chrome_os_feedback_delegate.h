@@ -12,6 +12,8 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
+#include "components/feedback/system_logs/system_logs_source.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
@@ -50,12 +52,21 @@ class ChromeOsFeedbackDelegate : public OsFeedbackDelegate {
  private:
   void OnSendFeedbackDone(SendReportCallback callback, bool status);
   void OpenWebDialog(GURL url);
+  // Loading system logs could be slow. Preload them to reduce potential user
+  // wait time when sending reports.
+  void PreloadSystemLogs();
+  void PreloadSystemLogsDone(
+      base::TimeTicks fetch_start_time,
+      std::unique_ptr<system_logs::SystemLogsResponse> response);
 
   // TODO(xiangdongkong): make sure the profile_ cannot be destroyed while
   // operations are pending.
   raw_ptr<Profile> profile_;
   scoped_refptr<extensions::FeedbackService> feedback_service_;
   absl::optional<GURL> page_url_;
+  // Used to store system logs that may be needed when sending the report (i.e.,
+  // the user opted in to include system logs in the report).
+  std::unique_ptr<system_logs::SystemLogsResponse> system_logs_response_;
 
   base::WeakPtrFactory<ChromeOsFeedbackDelegate> weak_ptr_factory_{this};
 };

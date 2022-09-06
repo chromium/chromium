@@ -10,6 +10,11 @@ MockFeedbackService::MockFeedbackService(
     content::BrowserContext* browser_context)
     : FeedbackService(browser_context) {}
 
+MockFeedbackService::MockFeedbackService(
+    content::BrowserContext* browser_context,
+    FeedbackPrivateDelegate* delegate)
+    : FeedbackService(browser_context, delegate) {}
+
 MockFeedbackService::~MockFeedbackService() = default;
 
 }  // namespace extensions

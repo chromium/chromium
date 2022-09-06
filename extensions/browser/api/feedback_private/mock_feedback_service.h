@@ -14,6 +14,8 @@ namespace extensions {
 class MockFeedbackService : public FeedbackService {
  public:
   explicit MockFeedbackService(content::BrowserContext* browser_context);
+  MockFeedbackService(content::BrowserContext* browser_context,
+                      FeedbackPrivateDelegate* delegate);
 
   MOCK_METHOD(void,
               SendFeedback,

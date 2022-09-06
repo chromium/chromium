@@ -133,6 +133,8 @@ std::string ChromeOsFeedbackDelegate::GetApplicationLocale() {
 }
 
 absl::optional<GURL> ChromeOsFeedbackDelegate::GetLastActivePageUrl() {
+  // GetLastActivePageUrl will be called when the UI is about to be displayed.
+  PreloadSystemLogs();
   return page_url_;
 }
 
@@ -259,6 +261,18 @@ void ChromeOsFeedbackDelegate::SendReport(
   ash::os_feedback_ui::metrics::EmitFeedbackAppDescriptionLength(
       report->description.length());
 
+  // If system logs are included, get them from preloaded response.
+  if (feedback_params.load_system_info && system_logs_response_ &&
+      system_logs_response_->size() > 0) {
+    for (auto& itr : *system_logs_response_) {
+      if (FeedbackCommon::IncludeInSystemLogs(
+              itr.first, feedback_params.is_internal_email))
+        feedback_data->AddLog(std::move(itr.first), std::move(itr.second));
+    }
+    // Set to false so they won't be loaded again in feedback service.
+    feedback_params.load_system_info = false;
+  }
+
   feedback_service_->SendFeedback(
       feedback_params, feedback_data,
       base::BindOnce(&ChromeOsFeedbackDelegate::OnSendFeedbackDone,
@@ -317,6 +331,22 @@ void ChromeOsFeedbackDelegate::OpenWebDialog(GURL url) {
       /*can_minimize=*/true);
 
   child_dialog->Show();
+}
+
+void ChromeOsFeedbackDelegate::PreloadSystemLogs() {
+  base::TimeTicks fetch_start_time = base::TimeTicks::Now();
+  feedback_service_->GetFeedbackPrivateDelegate()->FetchSystemInformation(
+      profile_,
+      base::BindOnce(&ChromeOsFeedbackDelegate::PreloadSystemLogsDone,
+                     weak_ptr_factory_.GetWeakPtr(), fetch_start_time));
+}
+
+void ChromeOsFeedbackDelegate::PreloadSystemLogsDone(
+    base::TimeTicks fetch_start_time,
+    std::unique_ptr<system_logs::SystemLogsResponse> response) {
+  base::UmaHistogramMediumTimes("Feedback.Duration.FetchSystemInformation",
+                                base::TimeTicks::Now() - fetch_start_time);
+  system_logs_response_ = std::move(response);
 }
 
 }  // namespace ash
