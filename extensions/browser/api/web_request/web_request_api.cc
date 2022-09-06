@@ -1648,29 +1648,52 @@ void ExtensionWebRequestEventRouter::DispatchEventToListeners(
   DCHECK(IsWebRequestEvent(event_name));
 
   BrowserContextData& data = data_[browser_context];
-  Listeners& event_listeners = data.active_listeners[event_name];
-  Listeners* cross_event_listeners = nullptr;
+
+  // Gather all potential sources for listeners. They may be in:
+  // - The active listeners for this context.
+  // - The inactive listeners for this context.
+  // - The active listeners for the cross-browser context.
+  // - The inactive listeners for the cross-browser context.
+  Listeners& active_listeners = data.active_listeners[event_name];
+  Listeners& inactive_listeners = data.inactive_listeners[event_name];
+  Listeners* cross_active_listeners = nullptr;
+  Listeners* cross_inactive_listeners = nullptr;
   if (data.cross_context) {
-    cross_event_listeners =
-        &data_[data.cross_context].active_listeners[event_name];
+    auto& cross_data = data_[data.cross_context];
+    cross_active_listeners = &cross_data.active_listeners[event_name];
+    cross_inactive_listeners = &cross_data.inactive_listeners[event_name];
   }
 
   for (const EventListener::ID& id : *listener_ids) {
-    // It's possible that the listener is no longer present. Check to make sure
-    // it's still there.
-    const EventListener* listener =
-        FindEventListenerInContainer(id, event_listeners);
+    // Look for the event listener in the different listener sources.
+    bool is_active = id.render_process_id != -1;
+    Listeners* on_the_record_listeners =
+        is_active ? &active_listeners : &inactive_listeners;
+    Listeners* cross_listeners =
+        is_active ? cross_active_listeners : cross_inactive_listeners;
+
     bool crosses_incognito = false;
-    if (!listener && cross_event_listeners) {
-      listener = FindEventListenerInContainer(id, *cross_event_listeners);
+    const EventListener* listener =
+        FindEventListenerInContainer(id, *on_the_record_listeners);
+    if (!listener && cross_listeners) {
+      listener = FindEventListenerInContainer(id, *cross_listeners);
       crosses_incognito = true;
     }
+
+    // It's possible the listener was removed. If so, bail.
     if (!listener)
       continue;
 
-    auto* rph = content::RenderProcessHost::FromID(id.render_process_id);
-    if (!rph)
-      continue;
+    DCHECK(listener->id == id);
+
+    // Check that the listener's process is also still valid. This only applies
+    // for active listeners.
+    content::RenderProcessHost* render_process = nullptr;
+    if (is_active) {
+      render_process = content::RenderProcessHost::FromID(id.render_process_id);
+      if (!render_process)
+        continue;  // The process for an active listener shut down. Bail.
+    }
 
     // Filter out the optional keys that this listener didn't request.
     base::Value::List args_filtered;
@@ -1680,12 +1703,35 @@ void ExtensionWebRequestEventRouter::DispatchEventToListeners(
             listener->extra_info_spec, PermissionHelper::Get(browser_context),
             listener->id.extension_id, crosses_incognito)));
 
-    EventRouter::DispatchEventToSender(
-        rph, browser_context, listener->id.extension_id,
-        listener->histogram_value, listener->id.sub_event_name,
-        listener->id.render_process_id, listener->id.worker_thread_id,
-        listener->id.service_worker_version_id, std::move(args_filtered),
-        mojom::EventFilteringInfo::New());
+    if (is_active) {
+      DCHECK(render_process);
+      // Active listeners use a bespoke dispatching mechanism.
+      // TODO(devlin): Now that the webRequest API is entirely handled on the
+      // UI thread (it used to be on the IO thread), can we just use the
+      // regular event dispatching code for this case, as well?
+      // TODO(devlin): I think this is potentially the incorrect
+      // `browser_context` in the case of a listener that crosses incognito.
+      // This currently happens to work because we use the browser context to
+      // get the EventRouter, which has a shared instance in incognito and
+      // on-the-record contexts. This should probably use
+      // `listener->id.browser_context` instead.
+      EventRouter::DispatchEventToSender(
+          render_process, browser_context, listener->id.extension_id,
+          listener->histogram_value, listener->id.sub_event_name,
+          listener->id.render_process_id, listener->id.worker_thread_id,
+          listener->id.service_worker_version_id, std::move(args_filtered),
+          mojom::EventFilteringInfo::New());
+    } else {
+      DCHECK_EQ(-1, id.service_worker_version_id);
+      // In the event of a lazy listener, we go through normal extension
+      // event dispatching code, which is responsible for waking up the
+      // lazy context.
+      std::unique_ptr<Event> event =
+          std::make_unique<Event>(listener->histogram_value, id.sub_event_name,
+                                  std::move(args_filtered));
+      EventRouter::Get(id.browser_context)
+          ->DispatchEventToExtension(id.extension_id, std::move(event));
+    }
   }
 }
 
@@ -2101,111 +2147,6 @@ bool ExtensionWebRequestEventRouter::WasSignaled(
   return flag != signaled_requests_.end() && flag->second != 0;
 }
 
-void ExtensionWebRequestEventRouter::GetMatchingListenersImpl(
-    content::BrowserContext* browser_context,
-    const WebRequestInfo* request,
-    bool crosses_incognito,
-    const std::string& event_name,
-    bool is_request_from_extension,
-    int* extra_info_spec,
-    RawListeners* matching_listeners) {
-  std::string web_request_event_name(event_name);
-  if (request->is_web_view) {
-    web_request_event_name.replace(
-        0, sizeof(kWebRequestEventPrefix) - 1, webview::kWebViewEventPrefix);
-  }
-
-  Listeners& listeners =
-      data_[browser_context].active_listeners[web_request_event_name];
-  for (std::unique_ptr<EventListener>& listener : listeners) {
-    if (!content::RenderProcessHost::FromID(listener->id.render_process_id)) {
-      // The IPC sender has been deleted. This listener will be removed soon
-      // via a call to `CleanUpForListener()`. For now, just skip it.
-      continue;
-    }
-
-    if (request->is_web_view) {
-      // If this is a navigation request, then we can skip this check. IDs will
-      // be -1 and the request is trusted.
-      if (!request->is_navigation_request &&
-          (listener->id.render_process_id !=
-           request->web_view_embedder_process_id)) {
-        continue;
-      }
-
-      if (listener->id.web_view_instance_id != request->web_view_instance_id)
-        continue;
-    }
-
-    // Filter requests from other extensions / apps. This does not work for
-    // content scripts, or extension pages in non-extension processes.
-    if (is_request_from_extension &&
-        listener->id.render_process_id != request->render_process_id) {
-      continue;
-    }
-
-    if (!listener->filter.urls.is_empty() &&
-        !listener->filter.urls.MatchesURL(request->url)) {
-      continue;
-    }
-
-    // Check if the tab id and window id match, if they were set in the
-    // listener params.
-    if ((listener->filter.tab_id != -1 &&
-         request->frame_data.tab_id != listener->filter.tab_id) ||
-        (listener->filter.window_id != -1 &&
-         request->frame_data.window_id != listener->filter.window_id)) {
-      continue;
-    }
-
-    const std::vector<WebRequestResourceType>& types = listener->filter.types;
-    if (!types.empty() && !base::Contains(types, request->web_request_type)) {
-      continue;
-    }
-
-    if (!request->is_web_view) {
-      PermissionsData::PageAccess access =
-          WebRequestPermissions::CanExtensionAccessURL(
-              PermissionHelper::Get(browser_context), listener->id.extension_id,
-              request->url, request->frame_data.tab_id, crosses_incognito,
-              WebRequestPermissions::
-                  REQUIRE_HOST_PERMISSION_FOR_URL_AND_INITIATOR,
-              request->initiator, request->web_request_type);
-
-      if (access != PermissionsData::PageAccess::kAllowed) {
-        if (access == PermissionsData::PageAccess::kWithheld) {
-          DCHECK(ExtensionsAPIClient::Get());
-          ExtensionsAPIClient::Get()->NotifyWebRequestWithheld(
-              request->render_process_id, request->frame_routing_id,
-              listener->id.extension_id);
-        }
-        continue;
-      }
-    }
-
-    bool blocking_listener =
-        (listener->extra_info_spec &
-         (ExtraInfoSpec::BLOCKING | ExtraInfoSpec::ASYNC_BLOCKING)) != 0;
-
-    // We do not want to notify extensions about XHR requests that are
-    // triggered by themselves. This is a workaround to prevent deadlocks
-    // in case of synchronous XHR requests that block the extension renderer
-    // and therefore prevent the extension from processing the request
-    // handler. This is only a problem for blocking listeners.
-    // http://crbug.com/105656
-    bool synchronous_xhr_from_extension =
-        !request->is_async && is_request_from_extension &&
-        request->web_request_type == WebRequestResourceType::XHR;
-
-    // Only send webRequest events for URLs the extension has access to.
-    if (blocking_listener && synchronous_xhr_from_extension)
-      continue;
-
-    matching_listeners->push_back(listener.get());
-    *extra_info_spec |= listener->extra_info_spec;
-  }
-}
-
 ExtensionWebRequestEventRouter::RawListeners
 ExtensionWebRequestEventRouter::GetMatchingListeners(
     content::BrowserContext* browser_context,
@@ -2219,19 +2160,144 @@ ExtensionWebRequestEventRouter::GetMatchingListeners(
   bool is_request_from_extension =
       IsRequestFromExtension(*request, browser_context);
 
+  std::string web_request_event_name(event_name);
+  if (request->is_web_view) {
+    web_request_event_name.replace(
+        0, sizeof(kWebRequestEventPrefix) - 1, webview::kWebViewEventPrefix);
+  }
+
   RawListeners matching_listeners;
-  GetMatchingListenersImpl(browser_context, request, false, event_name,
-                           is_request_from_extension, extra_info_spec,
-                           &matching_listeners);
+
+  auto& browser_context_data = data_[browser_context];
+  GetMatchingListenersForRequest(
+      browser_context_data.active_listeners[web_request_event_name], *request,
+      *browser_context, is_request_from_extension,
+      /*crosses_incognito=*/false, &matching_listeners, extra_info_spec);
+  GetMatchingListenersForRequest(
+      browser_context_data.inactive_listeners[web_request_event_name], *request,
+      *browser_context, is_request_from_extension,
+      /*crosses_incognito=*/false, &matching_listeners, extra_info_spec);
+
   content::BrowserContext* cross_browser_context =
       GetCrossBrowserContext(browser_context);
   if (cross_browser_context) {
-    GetMatchingListenersImpl(cross_browser_context, request, true, event_name,
-                             is_request_from_extension, extra_info_spec,
-                             &matching_listeners);
+    auto& cross_context_data = data_[cross_browser_context];
+    GetMatchingListenersForRequest(
+        cross_context_data.active_listeners[web_request_event_name], *request,
+        *cross_browser_context, is_request_from_extension,
+        /*crosses_incognito=*/true, &matching_listeners, extra_info_spec);
+    GetMatchingListenersForRequest(
+        cross_context_data.inactive_listeners[web_request_event_name], *request,
+        *cross_browser_context, is_request_from_extension,
+        /*crosses_incognito=*/true, &matching_listeners, extra_info_spec);
   }
 
   return matching_listeners;
+}
+
+bool ExtensionWebRequestEventRouter::ListenerMatchesRequest(
+    const EventListener& listener,
+    const WebRequestInfo& request,
+    content::BrowserContext& browser_context,
+    bool is_request_from_extension,
+    bool crosses_incognito) {
+  if (!content::RenderProcessHost::FromID(listener.id.render_process_id) &&
+      listener.id.service_worker_version_id >= 0) {
+    // The IPC sender has been deleted. This listener will be removed soon
+    // via a call to `CleanUpForListener()`. For now, just skip it.
+    return false;
+  }
+
+  if (request.is_web_view) {
+    // If this is a navigation request, then we can skip this check. IDs will
+    // be -1 and the request is trusted.
+    if (!request.is_navigation_request &&
+        listener.id.render_process_id != request.web_view_embedder_process_id) {
+      return false;
+    }
+
+    if (listener.id.web_view_instance_id != request.web_view_instance_id)
+      return false;
+  }
+
+  // Filter requests from other extensions / apps. This does not work for
+  // content scripts, or extension pages in non-extension processes.
+  if (is_request_from_extension &&
+      listener.id.render_process_id != request.render_process_id) {
+    return false;
+  }
+
+  if (!listener.filter.urls.is_empty() &&
+      !listener.filter.urls.MatchesURL(request.url)) {
+    return false;
+  }
+
+  // Check if the tab id and window id match, if they were set in the
+  // listener params.
+  if ((listener.filter.tab_id != -1 &&
+       request.frame_data.tab_id != listener.filter.tab_id) ||
+      (listener.filter.window_id != -1 &&
+       request.frame_data.window_id != listener.filter.window_id)) {
+    return false;
+  }
+
+  const std::vector<WebRequestResourceType>& types = listener.filter.types;
+  if (!types.empty() && !base::Contains(types, request.web_request_type)) {
+    return false;
+  }
+
+  if (!request.is_web_view) {
+    PermissionsData::PageAccess access =
+        WebRequestPermissions::CanExtensionAccessURL(
+            PermissionHelper::Get(&browser_context), listener.id.extension_id,
+            request.url, request.frame_data.tab_id, crosses_incognito,
+            WebRequestPermissions::
+                REQUIRE_HOST_PERMISSION_FOR_URL_AND_INITIATOR,
+            request.initiator, request.web_request_type);
+
+    if (access != PermissionsData::PageAccess::kAllowed) {
+      if (access == PermissionsData::PageAccess::kWithheld) {
+        DCHECK(ExtensionsAPIClient::Get());
+        ExtensionsAPIClient::Get()->NotifyWebRequestWithheld(
+            request.render_process_id, request.frame_routing_id,
+            listener.id.extension_id);
+      }
+
+      return false;
+    }
+  }
+
+  bool blocking_listener =
+      (listener.extra_info_spec &
+       (ExtraInfoSpec::BLOCKING | ExtraInfoSpec::ASYNC_BLOCKING)) != 0;
+
+  // We do not want to notify extensions about XHR requests that are
+  // triggered by themselves. This is a workaround to prevent deadlocks
+  // in case of synchronous XHR requests that block the extension renderer
+  // and therefore prevent the extension from processing the request
+  // handler. This is only a problem for blocking listeners.
+  // http://crbug.com/105656
+  bool synchronous_xhr_from_extension =
+      !request.is_async && is_request_from_extension &&
+      request.web_request_type == WebRequestResourceType::XHR;
+  return !blocking_listener || !synchronous_xhr_from_extension;
+}
+
+void ExtensionWebRequestEventRouter::GetMatchingListenersForRequest(
+    const Listeners& listeners,
+    const WebRequestInfo& request,
+    content::BrowserContext& browser_context,
+    bool is_request_from_extension,
+    bool crosses_incognito,
+    RawListeners* listeners_out,
+    int* extra_info_spec_out) {
+  for (const auto& listener : listeners) {
+    if (ListenerMatchesRequest(*listener, request, browser_context,
+                               is_request_from_extension, crosses_incognito)) {
+      listeners_out->push_back(listener.get());
+      *extra_info_spec_out |= listener->extra_info_spec;
+    }
+  }
 }
 
 namespace {

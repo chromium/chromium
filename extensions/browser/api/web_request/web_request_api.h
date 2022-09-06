@@ -713,17 +713,26 @@ class ExtensionWebRequestEventRouter {
                                     const WebRequestInfo* request,
                                     int* extra_info_spec);
 
-  // Helper for the above functions. This is called twice: once for the
-  // browser_context of the event, the next time for the "cross" browser_context
-  // (i.e. the incognito browser_context if the event is originally for the
-  // normal browser_context, or vice versa).
-  void GetMatchingListenersImpl(content::BrowserContext* browser_context,
-                                const WebRequestInfo* request,
-                                bool crosses_incognito,
-                                const std::string& event_name,
-                                bool is_request_from_extension,
-                                int* extra_info_spec,
-                                RawListeners* matching_listeners);
+  // Returns true if the given `listener` matches the `request`.
+  // This needs to be a class method because `EventListener` is a private
+  // struct.
+  static bool ListenerMatchesRequest(const EventListener& listener,
+                                     const WebRequestInfo& request,
+                                     content::BrowserContext& browser_context,
+                                     bool is_request_from_extension,
+                                     bool crosses_incognito);
+
+  // Adds all listeners that match `request` from `listeners` into
+  // `listeners_out` and populates `extra_info_spec_out` with the set of all
+  // options on the matches listeners.
+  static void GetMatchingListenersForRequest(
+      const Listeners& listeners,
+      const WebRequestInfo& request,
+      content::BrowserContext& browser_context,
+      bool is_request_from_extension,
+      bool crosses_incognito,
+      RawListeners* listeners_out,
+      int* extra_info_spec_out);
 
   // Decrements the count of event handlers blocking the given request. When the
   // count reaches 0, we stop blocking the request and proceed it using the

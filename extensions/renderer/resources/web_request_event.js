@@ -9,12 +9,14 @@ var webRequestInternal = getInternalApi('webRequestInternal');
 const isServiceWorkerContext =
     requireNative('service_worker_natives').IsServiceWorkerContext();
 
+// Returns an ID that is either globally unique (in this process) or unique
+// within this given context. Note that we use separate prefixes ('g' and 's')
+// to ensure there are no collisions between these two groups.
 function getGloballyUniqueSubEventName(eventName) {
-  return eventName + '/' + idGeneratorNatives.GetNextId();
+  return eventName + '/g' + idGeneratorNatives.GetNextId();
 }
-
 function getScopedUniqueSubEventName(eventName) {
-  return eventName + '/' + idGeneratorNatives.GetNextScopedId();
+  return eventName + '/s' + idGeneratorNatives.GetNextScopedId();
 }
 
 // A sub-event-name uses a suffix with an additional identifier. For service
