@@ -530,14 +530,31 @@ String Color::SerializeAsCSSColor() const {
         result.Append("lch(");
       if (serialization_type_ == SerializationType::kOKLCH)
         result.Append("oklch(");
-      result.AppendNumber(param0_);
-      result.Append("% ");
-      result.AppendNumber(param1_);
+
+      if (param0_is_none_) {
+        result.Append("none ");
+      } else {
+        result.AppendNumber(param0_);
+        result.Append("% ");
+      }
+
+      if (param1_is_none_)
+        result.Append("none");
+      else
+        result.AppendNumber(param1_);
       result.Append(" ");
-      result.AppendNumber(param2_);
-      if (alpha_ != 1.0) {
+
+      if (param2_is_none_)
+        result.Append("none");
+      else
+        result.AppendNumber(param2_);
+
+      if (alpha_ != 1.0 || alpha_is_none_) {
         result.Append(" / ");
-        result.AppendNumber(alpha_);
+        if (alpha_is_none_)
+          result.Append("none");
+        else
+          result.AppendNumber(alpha_);
       }
       result.Append(")");
       return result.ToString();
@@ -545,15 +562,31 @@ String Color::SerializeAsCSSColor() const {
     case SerializationType::kColor:
       result.Append("color(");
       result.Append(ColorFunctionSpaceToString(color_function_space_));
+
       result.Append(" ");
-      result.AppendNumber(param0_);
+      if (param0_is_none_)
+        result.Append("none");
+      else
+        result.AppendNumber(param0_);
+
       result.Append(" ");
-      result.AppendNumber(param1_);
+      if (param1_is_none_)
+        result.Append("none");
+      else
+        result.AppendNumber(param1_);
+
       result.Append(" ");
-      result.AppendNumber(param2_);
-      if (alpha_ != 1.0) {
+      if (param2_is_none_)
+        result.Append("none");
+      else
+        result.AppendNumber(param2_);
+
+      if (alpha_ != 1.0 || alpha_is_none_) {
         result.Append(" / ");
-        result.AppendNumber(alpha_);
+        if (alpha_is_none_)
+          result.Append("none");
+        else
+          result.AppendNumber(alpha_);
       }
       result.Append(")");
       return result.ToString();
