@@ -739,6 +739,10 @@ bool ChromeAutofillClient::ShowFastCheckout(
     return false;
   }
 
+  // Don't show Fast Checkout surface while Autofill Assistant's UI is shown.
+  if (IsAutofillAssistantShowing())
+    return false;
+
   return FastCheckoutClient::GetOrCreateForWebContents(web_contents())
       ->Start(delegate, web_contents()->GetLastCommittedURL());
 #else
