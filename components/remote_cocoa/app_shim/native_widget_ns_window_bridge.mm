@@ -904,6 +904,27 @@ void NativeWidgetNSWindowBridge::SetCursor(const ui::Cursor& cursor) {
   SetCursor(ui::GetNativeCursor(cursor));
 }
 
+void NativeWidgetNSWindowBridge::EnableImmersiveFullscreen(
+    uint64_t fullscreen_overlay_widget_id,
+    EnableImmersiveFullscreenCallback callback) {
+  immersive_mode_controller_ = std::make_unique<ImmersiveModeController>(
+      ns_window(), GetFromId(fullscreen_overlay_widget_id)->ns_window(),
+      std::move(callback));
+}
+
+void NativeWidgetNSWindowBridge::DisableImmersiveFullscreen() {
+  immersive_mode_controller_.reset();
+}
+
+void NativeWidgetNSWindowBridge::UpdateToolbarVisibility(bool always_show) {
+  immersive_mode_controller_->UpdateToolbarVisibility(always_show);
+}
+
+void NativeWidgetNSWindowBridge::OnTopContainerViewBoundsChanged(
+    const gfx::Rect& bounds) {
+  immersive_mode_controller_->OnTopViewBoundsChanged(bounds);
+}
+
 void NativeWidgetNSWindowBridge::OnWindowWillClose() {
   fullscreen_controller_.OnWindowWillClose();
 

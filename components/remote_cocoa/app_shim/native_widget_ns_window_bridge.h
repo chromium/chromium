@@ -14,6 +14,8 @@
 
 #import "base/mac/scoped_nsobject.h"
 #import "components/remote_cocoa/app_shim/mouse_capture_delegate.h"
+
+#include "components/remote_cocoa/app_shim/immersive_mode_controller.h"
 #include "components/remote_cocoa/app_shim/native_widget_ns_window_fullscreen_controller.h"
 #include "components/remote_cocoa/app_shim/ns_view_ids.h"
 #include "components/remote_cocoa/app_shim/remote_cocoa_app_shim_export.h"
@@ -278,6 +280,12 @@ class REMOTE_COCOA_APP_SHIM_EXPORT NativeWidgetNSWindowBridge
   void RemoveWindowControlsOverlayNSView(
       const mojom::WindowControlsOverlayNSViewType overlay_type) override;
   void SetCursor(const ui::Cursor& cursor) override;
+  void EnableImmersiveFullscreen(
+      uint64_t fullscreen_overlay_widget_id,
+      EnableImmersiveFullscreenCallback callback) override;
+  void DisableImmersiveFullscreen() override;
+  void UpdateToolbarVisibility(bool always_show) override;
+  void OnTopContainerViewBoundsChanged(const gfx::Rect& bounds) override;
 
   // Return true if [NSApp updateWindows] needs to be called after updating the
   // TextInputClient.
@@ -401,6 +409,9 @@ class REMOTE_COCOA_APP_SHIM_EXPORT NativeWidgetNSWindowBridge
   // A blob representing the window's saved state, which is applied and cleared
   // on the first call to SetVisibilityState().
   std::vector<uint8_t> pending_restoration_data_;
+
+  // Manages immersive mode when in fullscreen.
+  std::unique_ptr<ImmersiveModeController> immersive_mode_controller_;
 
   // This tracks headless window visibility and fullscreen states.
   // In headless mode the platform window is never made visible or change its

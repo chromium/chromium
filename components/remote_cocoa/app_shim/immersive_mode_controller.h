@@ -7,6 +7,7 @@
 
 #include <AppKit/AppKit.h>
 
+#include "base/callback.h"
 #include "base/mac/scoped_nsobject.h"
 #include "components/remote_cocoa/app_shim/remote_cocoa_app_shim_export.h"
 
@@ -32,16 +33,15 @@ class REMOTE_COCOA_APP_SHIM_EXPORT ImmersiveModeController {
     virtual void TopViewDidAppear(NSView* content_view) = 0;
   };
 
-  explicit ImmersiveModeController(Delegate* delegate,
-                                   NSWindow* browser_widget,
-                                   NSWindow* overlay_widget);
+  explicit ImmersiveModeController(NSWindow* browser_widget,
+                                   NSWindow* overlay_widget,
+                                   base::OnceCallback<void()> callback);
   ~ImmersiveModeController();
 
   void OnTopViewBoundsChanged(const gfx::Rect& bounds);
-  void SetAlwaysShowFullscreenToolbar(bool show);
+  void UpdateToolbarVisibility(bool always_show);
 
  private:
-  Delegate* const delegate_;
   NSWindow* const browser_widget_;
   NSWindow* const overlay_widget_;
 

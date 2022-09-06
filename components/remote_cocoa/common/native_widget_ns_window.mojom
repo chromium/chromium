@@ -257,4 +257,23 @@ interface NativeWidgetNSWindow {
 
   // Set the cursor type to display.
   SetCursor(ui.mojom.Cursor cursor);
+
+  // Enables immersive fullscreen. Pass the id of the overlay widget which is
+  // hosting top chrome. The callback is run once the top chrome NSView has
+  // been reparented into the AppKit controlled fullscreen NSWindow, indicating
+  // the immersive transition has started.
+  EnableImmersiveFullscreen(uint64 fullscreen_overlay_widget_id) => ();
+
+  // Rollback the immersive transition. The top chrome NSView is reparented into
+  // the overlay widget.
+  DisableImmersiveFullscreen();
+
+  // Update the visibility of the toolbar (top chrome) while in immersive
+  // fullscreen. Typically this is used in response to the
+  // View -> "Always Show Toolbar in Full Screen" menu changing.
+  UpdateToolbarVisibility(bool always_show);
+
+  // Also used during immersive fullscreen. Update the bounds of the AppKit
+  // NSWindow hosting top chrome.
+  OnTopContainerViewBoundsChanged(gfx.mojom.Rect bounds);
 };

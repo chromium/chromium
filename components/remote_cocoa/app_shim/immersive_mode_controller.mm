@@ -27,25 +27,22 @@
 // Host of the overlay view.
 @interface ImmersiveModeTitlebarViewController
     : NSTitlebarAccessoryViewController {
-  base::mac::ScopedBlock<void (^)()> _view_will_appear_block;
-  base::mac::ScopedBlock<void (^)()> _view_did_appear_block;
+  base::OnceCallback<void()> _view_will_appear_callback;
 }
 @end
 
 @implementation ImmersiveModeTitlebarViewController
 
-- (instancetype)initWithHandlers:(void (^)())viewWillAppearBlock
-              viewDidAppearBlock:(void (^)())viewDidAppearBlock {
+- (instancetype)initWithViewWillAppearCallback:
+    (base::OnceCallback<void()>)viewWillAppearCallback {
   if ((self = [super init])) {
-    _view_will_appear_block.reset([viewWillAppearBlock copy]);
-    _view_did_appear_block.reset([viewDidAppearBlock copy]);
+    _view_will_appear_callback = std::move(viewWillAppearCallback);
   }
   return self;
 }
 
 - (void)viewWillAppear {
   [super viewWillAppear];
-  _view_will_appear_block.get()();
 
   // TODO(bur): Get the updated width from OnViewBoundsChanged
   NSView* tab_view = self.view;
@@ -57,11 +54,10 @@
       view.frame = tab_view.frame;
     }
   }
-}
 
-- (void)viewDidAppear {
-  [super viewDidAppear];
-  _view_did_appear_block.get()();
+  if (!_view_will_appear_callback.is_null()) {
+    std::move(_view_will_appear_callback).Run();
+  }
 }
 
 @end
@@ -107,23 +103,16 @@ bool IsNSToolbarFullScreenWindow(NSWindow* window) {
   return [window isKindOfClass:NSClassFromString(@"NSToolbarFullScreenWindow")];
 }
 
-ImmersiveModeController::ImmersiveModeController(Delegate* delegate,
-                                                 NSWindow* browser_widget,
-                                                 NSWindow* overlay_widget)
-    : delegate_(delegate),
-      browser_widget_(browser_widget),
-      overlay_widget_(overlay_widget) {
+ImmersiveModeController::ImmersiveModeController(
+    NSWindow* browser_widget,
+    NSWindow* overlay_widget,
+    base::OnceCallback<void()> callback)
+    : browser_widget_(browser_widget), overlay_widget_(overlay_widget) {
   // Create a new NSTitlebarAccessoryViewController that will host the
   // overlay_view_.
-  NSView* contentView = overlay_widget_.contentView;
   immersive_mode_titlebar_view_controller_.reset(
       [[ImmersiveModeTitlebarViewController alloc]
-          initWithHandlers:^() {
-            delegate_->TopViewWillAppear();
-          }
-          viewDidAppearBlock:^() {
-            delegate_->TopViewDidAppear(contentView);
-          }]);
+          initWithViewWillAppearCallback:std::move(callback)]);
 
   // Create a NSWindow delegate that will be used to map the AppKit created
   // NSWindow to the overlay view widget's NSWindow.
@@ -164,8 +153,8 @@ void ImmersiveModeController::OnTopViewBoundsChanged(const gfx::Rect& bounds) {
   immersive_mode_titlebar_view_controller_.get().view.frame = bounds.ToCGRect();
 }
 
-void ImmersiveModeController::SetAlwaysShowFullscreenToolbar(bool show) {
-  if (show) {
+void ImmersiveModeController::UpdateToolbarVisibility(bool always_show) {
+  if (always_show) {
     immersive_mode_titlebar_view_controller_.get().fullScreenMinHeight =
         immersive_mode_titlebar_view_controller_.get().view.frame.size.height;
     browser_widget_.styleMask &= ~NSWindowStyleMaskFullSizeContentView;

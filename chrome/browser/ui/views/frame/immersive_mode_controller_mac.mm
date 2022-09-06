@@ -18,8 +18,7 @@
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/remote_cocoa/app_shim/bridged_content_view.h"
-#include "components/remote_cocoa/app_shim/immersive_mode_controller.h"
-#include "components/remote_cocoa/app_shim/immersive_mode_delegate_mac.h"
+#include "components/remote_cocoa/app_shim/native_widget_ns_window_bridge.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/cocoa/native_widget_mac_ns_window_host.h"
 #include "ui/views/focus/focus_manager.h"
@@ -29,12 +28,10 @@
 #include "ui/views/widget/widget_utils_mac.h"
 
 namespace {
-class ImmersiveModeControllerMac
-    : public ImmersiveModeController,
-      public views::FocusChangeListener,
-      public views::ViewObserver,
-      public views::WidgetObserver,
-      public remote_cocoa::ImmersiveModeController::Delegate {
+class ImmersiveModeControllerMac : public ImmersiveModeController,
+                                   public views::FocusChangeListener,
+                                   public views::ViewObserver,
+                                   public views::WidgetObserver {
  public:
   class RevealedLock : public ImmersiveRevealedLock {
    public:
@@ -72,6 +69,9 @@ class ImmersiveModeControllerMac
   bool ShouldStayImmersiveAfterExitingFullscreen() override;
   void OnWidgetActivationChanged(views::Widget* widget, bool active) override;
 
+  // Immersive fullscreen has started.
+  void FullScreenOverlayViewWillAppear();
+
   // views::FocusChangeListener implementation.
   void OnWillChangeFocus(views::View* focused_before,
                          views::View* focused_now) override;
@@ -84,10 +84,6 @@ class ImmersiveModeControllerMac
   // views::WidgetObserver implementation
   void OnWidgetDestroying(views::Widget* widget) override;
 
-  // remote_cocoa::ImmersiveModeController::Delegate implementation:
-  void TopViewWillAppear() override;
-  void TopViewDidAppear(NSView* content_view) override;
-
  private:
   friend class RevealedLock;
 
@@ -96,17 +92,13 @@ class ImmersiveModeControllerMac
   void SetMenuRevealed(bool revealed);
 
   // Handler of show_fullscreen_toolbar_ changes.
-  void ShowFullscreenToolbar();
+  void UpdateToolbarVisibility();
 
   raw_ptr<BrowserView> browser_view_ = nullptr;  // weak
   std::unique_ptr<ImmersiveRevealedLock> focus_lock_;
   std::unique_ptr<ImmersiveRevealedLock> menu_lock_;
   bool enabled_ = false;
   int revealed_lock_count_ = 0;
-  // The remote_cocoa counterpart of this class.
-  // TODO(mek): Rather than directly accessing the class, interact via some
-  // kind of mojo interface.
-  std::unique_ptr<remote_cocoa::ImmersiveModeController> remote_controller_;
   base::ScopedObservation<views::View, views::ViewObserver>
       top_container_observation_{this};
   base::ScopedObservation<views::Widget, views::WidgetObserver>
@@ -116,6 +108,11 @@ class ImmersiveModeControllerMac
 
   // Used to keep track of the update of kShowFullscreenToolbar preference.
   BooleanPrefMember show_fullscreen_toolbar_;
+
+  // Used as a convenience to access
+  // NativeWidgetMacNSWindowHost::GetNSWindowMojo().
+  raw_ptr<remote_cocoa::mojom::NativeWidgetNSWindow> ns_window_mojo_ =
+      nullptr;  // weak
 
   base::WeakPtrFactory<ImmersiveModeControllerMac> weak_ptr_factory_;
 };
@@ -140,17 +137,18 @@ ImmersiveModeControllerMac::~ImmersiveModeControllerMac() {
 
 void ImmersiveModeControllerMac::Init(BrowserView* browser_view) {
   browser_view_ = browser_view;
+  ns_window_mojo_ = views::NativeWidgetMacNSWindowHost::GetFromNativeWindow(
+                        browser_view_->GetWidget()->GetNativeWindow())
+                        ->GetNSWindowMojo();
+
   show_fullscreen_toolbar_.Init(
       prefs::kShowFullscreenToolbar, browser_view->GetProfile()->GetPrefs(),
-      base::BindRepeating(&ImmersiveModeControllerMac::ShowFullscreenToolbar,
+      base::BindRepeating(&ImmersiveModeControllerMac::UpdateToolbarVisibility,
                           base::Unretained(this)));
 }
 
-void ImmersiveModeControllerMac::ShowFullscreenToolbar() {
-  if (remote_controller_) {
-    remote_controller_->SetAlwaysShowFullscreenToolbar(
-        *show_fullscreen_toolbar_);
-  }
+void ImmersiveModeControllerMac::UpdateToolbarVisibility() {
+  ns_window_mojo_->UpdateToolbarVisibility(*show_fullscreen_toolbar_);
 
   // TODO(bur): Re-layout so that "no show" -> "always show" will work
   // properly.
@@ -177,13 +175,14 @@ void ImmersiveModeControllerMac::SetEnabled(bool enabled) {
     browser_frame_observation_.Observe(browser_view_->GetWidget());
     overlay_widget_observation_.Observe(browser_view_->overlay_widget());
 
-    remote_controller_ =
-        std::make_unique<remote_cocoa::ImmersiveModeController>(
-            this,
-            browser_view_->GetWidget()->GetNativeWindow().GetNativeNSWindow(),
-            browser_view_->overlay_widget()
-                ->GetNativeWindow()
-                .GetNativeNSWindow());
+    views::NativeWidgetMacNSWindowHost* overlay_host =
+        views::NativeWidgetMacNSWindowHost::GetFromNativeWindow(
+            browser_view_->overlay_widget()->GetNativeWindow());
+    ns_window_mojo_->EnableImmersiveFullscreen(
+        overlay_host->bridged_native_widget_id(),
+        base::BindOnce(
+            &ImmersiveModeControllerMac::FullScreenOverlayViewWillAppear,
+            base::Unretained(this)));
 
     // TODO(bur): Figure out why this Show() is needed.
     // Overlay content view will not be displayed unless we call Show() on the
@@ -209,7 +208,7 @@ void ImmersiveModeControllerMac::SetEnabled(bool enabled) {
 
     // Rollback the view shuffling from enablement.
     browser_view_->overlay_widget()->Hide();
-    remote_controller_.reset();
+    ns_window_mojo_->DisableImmersiveFullscreen();
 
     menu_lock_.reset();
     focus_lock_.reset();
@@ -252,6 +251,17 @@ void ImmersiveModeControllerMac::OnWidgetActivationChanged(
     views::Widget* widget,
     bool active) {}
 
+void ImmersiveModeControllerMac::FullScreenOverlayViewWillAppear() {
+  SetMenuRevealed(true);
+  NSView* content_view = browser_view_->overlay_widget()
+                             ->GetNativeWindow()
+                             .GetNativeNSWindow()
+                             .contentView;
+  browser_view_->overlay_widget()->SetNativeWindowProperty(
+      views::NativeWidgetMacNSWindowHost::kImmersiveContentNSView,
+      content_view);
+}
+
 void ImmersiveModeControllerMac::OnWillChangeFocus(views::View* focused_before,
                                                    views::View* focused_now) {}
 
@@ -268,26 +278,12 @@ void ImmersiveModeControllerMac::OnDidChangeFocus(views::View* focused_before,
 void ImmersiveModeControllerMac::OnViewBoundsChanged(
     views::View* observed_view) {
   browser_view_->overlay_widget()->SetBounds(observed_view->bounds());
-  if (remote_controller_) {
-    remote_controller_->OnTopViewBoundsChanged(observed_view->bounds());
-  }
-  ShowFullscreenToolbar();
+  ns_window_mojo_->OnTopContainerViewBoundsChanged(observed_view->bounds());
+  UpdateToolbarVisibility();
 }
 
 void ImmersiveModeControllerMac::OnWidgetDestroying(views::Widget* widget) {
   SetEnabled(false);
-}
-
-void ImmersiveModeControllerMac::TopViewWillAppear() {
-  SetMenuRevealed(true);
-}
-
-void ImmersiveModeControllerMac::TopViewDidAppear(NSView* content_view) {
-  // TODO(mek): Figure out a way to do what this is doing without passing a
-  // NSView* instance back from the remote_cocoa side.
-  browser_view_->overlay_widget()->SetNativeWindowProperty(
-      views::NativeWidgetMacNSWindowHost::kImmersiveContentNSView,
-      content_view);
 }
 
 void ImmersiveModeControllerMac::LockDestroyed() {
