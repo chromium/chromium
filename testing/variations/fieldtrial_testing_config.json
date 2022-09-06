@@ -7587,6 +7587,25 @@
             ]
         }
     ],
+    "PreconnectInNetworkService": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20220906",
+                    "enable_features": [
+                        "PreconnectInNetworkService"
+                    ]
+                }
+            ]
+        }
+    ],
     "PreconnectToSearchDesktop": [
         {
             "platforms": [
