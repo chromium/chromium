@@ -1154,20 +1154,21 @@ GURL InterestGroupAuction::FillPostAuctionSignals(
   // TODO(qingxinwu): Round `winning_bid` and `highest_scoring_other_bid` to two
   // most-significant digits. Maybe same to corresponding browser signals of
   // reportWin()/reportResult().
-  std::string url_string = url.spec();
+  if (!url.has_query())
+    return url;
+
+  std::string query_string = url.query();
+  base::ReplaceSubstringsAfterOffset(&query_string, 0, "${winningBid}",
+                                     base::NumberToString(signals.winning_bid));
+
   base::ReplaceSubstringsAfterOffset(
-      &url_string, 0, base::EscapeExternalHandlerValue("${winningBid}"),
-      base::NumberToString(signals.winning_bid));
-  base::ReplaceSubstringsAfterOffset(
-      &url_string, 0, base::EscapeExternalHandlerValue("${madeWinningBid}"),
+      &query_string, 0, "${madeWinningBid}",
       signals.made_winning_bid ? "true" : "false");
   base::ReplaceSubstringsAfterOffset(
-      &url_string, 0,
-      base::EscapeExternalHandlerValue("${highestScoringOtherBid}"),
+      &query_string, 0, "${highestScoringOtherBid}",
       base::NumberToString(signals.highest_scoring_other_bid));
   base::ReplaceSubstringsAfterOffset(
-      &url_string, 0,
-      base::EscapeExternalHandlerValue("${madeHighestScoringOtherBid}"),
+      &query_string, 0, "${madeHighestScoringOtherBid}",
       signals.made_highest_scoring_other_bid ? "true" : "false");
 
   // For component auction sellers only, which get post auction signals from
@@ -1176,16 +1177,16 @@ GURL InterestGroupAuction::FillPostAuctionSignals(
   // (not second-price auction) and it does not need highest_scoring_other_bid.
   if (top_level_signals.has_value()) {
     base::ReplaceSubstringsAfterOffset(
-        &url_string, 0,
-        base::EscapeExternalHandlerValue("${topLevelWinningBid}"),
+        &query_string, 0, "${topLevelWinningBid}",
         base::NumberToString(top_level_signals->winning_bid));
     base::ReplaceSubstringsAfterOffset(
-        &url_string, 0,
-        base::EscapeExternalHandlerValue("${topLevelMadeWinningBid}"),
+        &query_string, 0, "${topLevelMadeWinningBid}",
         top_level_signals->made_winning_bid ? "true" : "false");
   }
 
-  return GURL(url_string);
+  GURL::Replacements replacements;
+  replacements.SetQueryStr(query_string);
+  return url.ReplaceComponents(replacements);
 }
 
 void InterestGroupAuction::TakeDebugReportUrls(

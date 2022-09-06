@@ -635,8 +635,9 @@ class CONTENT_EXPORT InterestGroupAuction
       base::OnceClosure worklet_available_callback,
       AuctionWorkletManager::FatalErrorCallback fatal_error_callback);
 
-  // Replace `${}` placeholders in debug report URLs for post auction signals
-  // if exist.
+  // Replaces `${}` placeholders in a debug report URL's query string for post
+  // auction signals if exist. Only replaces unescaped placeholder ${}, but
+  // not escaped placeholder (i.e., %24%7B%7D).
   static GURL FillPostAuctionSignals(const GURL& url,
                                      const PostAuctionSignals& signals,
                                      const absl::optional<PostAuctionSignals>&
