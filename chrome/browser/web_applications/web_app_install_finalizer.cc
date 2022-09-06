@@ -203,6 +203,10 @@ void WebAppInstallFinalizer::FinalizeInstall(
         options.system_web_app_data.value();
   }
 
+  if (options.isolation_data.has_value()) {
+    web_app->SetIsolationData(*options.isolation_data);
+  }
+
   web_app->SetAdditionalSearchTerms(web_app_info.additional_search_terms);
   web_app->AddSource(source);
   web_app->SetIsFromSyncAndPendingInstallation(false);

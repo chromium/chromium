@@ -412,7 +412,7 @@ TEST_F(InstallIsolatedAppCommandTest,
 }
 
 TEST_F(InstallIsolatedAppCommandTest,
-       InstallationFinalizedWithIsolatedAppDebInstallInstallSource) {
+       InstallationFinalizedWithIsolatedAppDevInstallInstallSource) {
   SetPrepareForLoadResultLoaded();
 
   ExpectLoadedForURL("http://test-url-example.com");
@@ -492,6 +492,21 @@ TEST_F(InstallIsolatedAppCommandTest,
   EXPECT_THAT(ExecuteCommand("http://test-url-example.com",
                              std::move(fake_data_retriever)),
               IsInstallationError(HasSubstr("Manifest is null")));
+}
+
+TEST_F(InstallIsolatedAppCommandTest, IsolationDataSentToFinalizer) {
+  SetPrepareForLoadResultLoaded();
+
+  std::string url("http://test-url-example.com/");
+  ExpectLoadedForURL(url);
+
+  EXPECT_THAT(ExecuteCommand(url), IsInstallationOk());
+
+  EXPECT_THAT(
+      install_finalizer().finalize_options_list(),
+      ElementsAre(Field(
+          &WebAppInstallFinalizer::FinalizeOptions::isolation_data,
+          Eq(IsolationData(IsolationData::DevModeProxy{.proxy_url = url})))));
 }
 
 using InstallIsolatedAppCommandManifestTest = InstallIsolatedAppCommandTest;

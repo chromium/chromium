@@ -17,6 +17,7 @@
 #include "base/traits_bag.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
+#include "chrome/browser/web_applications/isolation_data.h"
 #include "chrome/browser/web_applications/test/fake_os_integration_manager.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
@@ -422,6 +423,26 @@ TEST_F(WebAppInstallFinalizerUnitTest, InstallUrlSetInWebAppDB) {
   EXPECT_EQ(1u, it->second.install_urls.size());
   EXPECT_EQ(GURL("https://foo.example/installer"),
             *it->second.install_urls.begin());
+}
+
+TEST_F(WebAppInstallFinalizerUnitTest, IsolationDataSetInWebAppDB) {
+  WebAppInstallInfo info;
+  info.start_url = GURL("https://foo.example");
+  info.title = u"Foo Title";
+
+  const IsolationData isolation_data{IsolationData::DevModeBundle{.path = "p"}};
+  WebAppInstallFinalizer::FinalizeOptions options(
+      webapps::WebappInstallSource::EXTERNAL_POLICY);
+  options.isolation_data = isolation_data;
+
+  FinalizeInstallResult result = AwaitFinalizeInstall(info, options);
+
+  EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall, result.code);
+  EXPECT_EQ(result.installed_app_id,
+            GenerateAppId(/*manifest_id=*/absl::nullopt, info.start_url));
+
+  const WebApp* installed_app = registrar().GetAppById(result.installed_app_id);
+  EXPECT_EQ(isolation_data, installed_app->isolation_data());
 }
 
 }  // namespace web_app

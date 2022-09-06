@@ -21,6 +21,7 @@
 #include "base/types/expected.h"
 #include "base/values.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
+#include "chrome/browser/web_applications/isolation_data.h"
 #include "chrome/browser/web_applications/locks/shared_web_contents_with_app_lock.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/web_app_data_retriever.h"
@@ -216,12 +217,14 @@ void InstallIsolatedAppCommand::OnCheckInstallabilityAndRetrieveManifest(
 }
 
 void InstallIsolatedAppCommand::FinalizeInstall(const WebAppInstallInfo& info) {
+  WebAppInstallFinalizer::FinalizeOptions options(
+      webapps::WebappInstallSource::ISOLATED_APP_DEV_INSTALL);
+  // Treat all apps as Dev Mode proxying apps (rewriting URLs to HTTP) for now.
+  options.isolation_data =
+      IsolationData(IsolationData::DevModeProxy{.proxy_url = url_.spec()});
+
   install_finalizer_.FinalizeInstall(
-      info,
-      WebAppInstallFinalizer::FinalizeOptions{
-          /*install_surface=*/webapps::WebappInstallSource::
-              ISOLATED_APP_DEV_INSTALL,
-      },
+      info, options,
       base::BindOnce(&InstallIsolatedAppCommand::OnFinalizeInstall,
                      weak_factory_.GetWeakPtr()));
 }
