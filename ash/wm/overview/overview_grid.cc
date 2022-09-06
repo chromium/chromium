@@ -4,7 +4,6 @@
 
 #include "ash/wm/overview/overview_grid.h"
 
-#include <algorithm>
 #include <functional>
 #include <memory>
 #include <utility>
@@ -59,9 +58,10 @@
 #include "ash/wm/workspace/workspace_layout_manager.h"
 #include "ash/wm/workspace_controller.h"
 #include "base/bind.h"
-#include "base/containers/unique_ptr_adapters.h"
+#include "base/containers/adapters.h"
 #include "base/cxx17_backports.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/ranges/algorithm.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "components/app_restore/full_restore_utils.h"
 #include "ui/aura/client/aura_constants.h"
@@ -709,8 +709,8 @@ void OverviewGrid::RemoveItem(OverviewItem* overview_item,
   EndNudge();
 
   // Use reverse iterator to be efficient when removing all.
-  auto iter = std::find_if(window_list_.rbegin(), window_list_.rend(),
-                           base::MatchesUniquePtr(overview_item));
+  auto iter = base::ranges::find(base::Reversed(window_list_), overview_item,
+                                 &std::unique_ptr<OverviewItem>::get);
   DCHECK(iter != window_list_.rend());
 
   UpdateNumIncognitoUnsupportedWindows(overview_item->GetWindow(),
@@ -2388,8 +2388,8 @@ bool OverviewGrid::FitWindowRectsInBounds(
 }
 
 size_t OverviewGrid::GetOverviewItemIndex(OverviewItem* item) const {
-  auto iter = std::find_if(window_list_.begin(), window_list_.end(),
-                           base::MatchesUniquePtr(item));
+  auto iter = base::ranges::find(window_list_, item,
+                                 &std::unique_ptr<OverviewItem>::get);
   DCHECK(iter != window_list_.end());
   return iter - window_list_.begin();
 }

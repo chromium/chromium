@@ -4,7 +4,6 @@
 
 #include "ash/wm/desks/desks_bar_view.h"
 
-#include <algorithm>
 #include <iterator>
 #include <utility>
 
@@ -45,6 +44,7 @@
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/containers/contains.h"
+#include "base/ranges/algorithm.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -522,14 +522,10 @@ bool DesksBarView::IsDeskNameBeingModified() const {
 }
 
 int DesksBarView::GetMiniViewIndex(const DeskMiniView* mini_view) const {
-  auto begin_iter = mini_views_.cbegin();
-  auto end_iter = mini_views_.cend();
-  auto iter = std::find(begin_iter, end_iter, mini_view);
-
-  if (iter == end_iter)
-    return -1;
-
-  return std::distance(begin_iter, iter);
+  auto iter = base::ranges::find(mini_views_, mini_view);
+  return (iter == mini_views_.cend())
+             ? -1
+             : std::distance(mini_views_.cbegin(), iter);
 }
 
 void DesksBarView::OnHoverStateMayHaveChanged() {
@@ -704,8 +700,7 @@ void DesksBarView::ContinueDragDesk(DeskMiniView* mini_view,
   if (MaybeScrollByDraggedDesk())
     return;
 
-  const auto drag_view_iter =
-      std::find(mini_views_.cbegin(), mini_views_.cend(), drag_view_);
+  const auto drag_view_iter = base::ranges::find(mini_views_, drag_view_);
   DCHECK(drag_view_iter != mini_views_.cend());
 
   const int old_index = drag_view_iter - mini_views_.cbegin();
@@ -849,9 +844,7 @@ void DesksBarView::OnDeskAdded(const Desk* desk) {
 
 void DesksBarView::OnDeskRemoved(const Desk* desk) {
   DeskNameView::CommitChanges(GetWidget());
-  auto iter = std::find_if(
-      mini_views_.begin(), mini_views_.end(),
-      [desk](DeskMiniView* mini_view) { return desk == mini_view->desk(); });
+  auto iter = base::ranges::find(mini_views_, desk, &DeskMiniView::desk);
 
   // There are cases where a desk may be removed before the `desks_bar_view`
   // finishes initializing (i.e. removed on a separate root window before the
@@ -983,15 +976,9 @@ void DesksBarView::UpdateNewMiniViews(bool initializing_bar_view,
   // views so that they can be moved to make room for the new mini views in the
   // desks bar.
   auto left_partition_iter =
-      std::find_if(mini_views_.begin(), mini_views_.end(),
-                   [new_mini_views](DeskMiniView* mini_view) {
-                     return mini_view == new_mini_views.front();
-                   });
+      base::ranges::find(mini_views_, new_mini_views.front());
   auto right_partition_iter =
-      std::next(std::find_if(mini_views_.begin(), mini_views_.end(),
-                             [new_mini_views](DeskMiniView* mini_view) {
-                               return mini_view == new_mini_views.back();
-                             }));
+      std::next(base::ranges::find(mini_views_, new_mini_views.back()));
 
   // A vector between `left_partition_iter` and `right_partition_iter` should be
   // the same as `new_mini_views` if they were added correctly.

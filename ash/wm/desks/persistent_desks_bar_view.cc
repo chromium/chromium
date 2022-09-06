@@ -11,6 +11,7 @@
 #include "ash/wm/desks/persistent_desks_bar_button.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/containers/flat_set.h"
+#include "base/ranges/algorithm.h"
 #include "ui/views/background.h"
 
 namespace ash {
@@ -43,11 +44,8 @@ void PersistentDesksBarView::RefreshDeskButtons() {
   const size_t previous_desk_buttons_size = desk_buttons_.size();
   for (const auto& desk : desks) {
     const Desk* desk_ptr = desk.get();
-    auto iter =
-        std::find_if(to_be_removed.begin(), to_be_removed.end(),
-                     [desk_ptr](PersistentDesksBarDeskButton* desk_button) {
-                       return desk_ptr == desk_button->desk();
-                     });
+    auto iter = base::ranges::find(to_be_removed, desk_ptr,
+                                   &PersistentDesksBarDeskButton::desk);
     if (iter != to_be_removed.end()) {
       (*iter)->SetShouldPaintBackground(desk->is_active());
       (*iter)->UpdateText(desk->name());

@@ -57,6 +57,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -485,10 +486,7 @@ Desk* DesksController::GetPreviousDesk(bool use_target_active_desk) const {
 }
 
 Desk* DesksController::GetDeskByUuid(const base::GUID& desk_uuid) const {
-  auto it = std::find_if(desks_.begin(), desks_.end(),
-                         [&desk_uuid](const std::unique_ptr<Desk>& desk) {
-                           return desk->uuid() == desk_uuid;
-                         });
+  auto it = base::ranges::find(desks_, desk_uuid, &Desk::uuid);
   return it != desks_.end() ? it->get() : nullptr;
 }
 
@@ -1400,18 +1398,11 @@ void DesksController::OnAnimationFinished(DeskAnimationBase* animation) {
 }
 
 bool DesksController::HasDesk(const Desk* desk) const {
-  auto iter = std::find_if(
-      desks_.begin(), desks_.end(),
-      [desk](const std::unique_ptr<Desk>& d) { return d.get() == desk; });
-  return iter != desks_.end();
+  return base::Contains(desks_, desk, &std::unique_ptr<Desk>::get);
 }
 
 bool DesksController::HasDeskWithName(const std::u16string& desk_name) const {
-  auto iter = std::find_if(desks_.begin(), desks_.end(),
-                           [desk_name](const std::unique_ptr<Desk>& d) {
-                             return d->name() == desk_name;
-                           });
-  return iter != desks_.end();
+  return base::Contains(desks_, desk_name, &Desk::name);
 }
 
 void DesksController::ActivateDeskInternal(const Desk* desk,
@@ -1478,9 +1469,7 @@ void DesksController::RemoveDeskInternal(const Desk* desk,
 
   base::AutoReset<bool> in_progress(&are_desks_being_modified_, true);
 
-  auto iter = std::find_if(
-      desks_.begin(), desks_.end(),
-      [desk](const std::unique_ptr<Desk>& d) { return d.get() == desk; });
+  auto iter = base::ranges::find(desks_, desk, &std::unique_ptr<Desk>::get);
   DCHECK(iter != desks_.end());
 
   const int removed_desk_index = std::distance(desks_.begin(), iter);
@@ -1840,8 +1829,8 @@ void DesksController::RestackVisibleOnAllDesksWindowsOnActiveDesk() {
   auto mru_windows =
       Shell::Get()->mru_window_tracker()->BuildMruWindowList(kActiveDesk);
   for (auto* visible_on_all_desks_window : visible_on_all_desks_windows_) {
-    auto visible_on_all_desks_window_iter = std::find(
-        mru_windows.begin(), mru_windows.end(), visible_on_all_desks_window);
+    auto visible_on_all_desks_window_iter =
+        base::ranges::find(mru_windows, visible_on_all_desks_window);
     if (visible_on_all_desks_window_iter == mru_windows.end())
       continue;
 

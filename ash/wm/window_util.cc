@@ -30,6 +30,7 @@
 #include "ash/wm/wm_event.h"
 #include "base/bind.h"
 #include "base/containers/contains.h"
+#include "base/ranges/algorithm.h"
 #include "chromeos/ui/base/chromeos_ui_constants.h"
 #include "chromeos/ui/frame/interior_resize_handler_targeter.h"
 #include "ui/aura/client/aura_constants.h"
@@ -314,8 +315,7 @@ void ExpandArcPipWindow() {
     return;
 
   auto pip_window_iter =
-      std::find_if(pip_container->children().begin(),
-                   pip_container->children().end(), IsArcPipWindow);
+      base::ranges::find_if(pip_container->children(), IsArcPipWindow);
   if (pip_window_iter == pip_container->children().end())
     return;
 

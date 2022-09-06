@@ -824,10 +824,9 @@ TEST_F(SavedDeskTest, DesksTemplatesGridItems) {
     auto verify_template_grid_item = [&grid_items](const base::GUID& uuid,
                                                    const std::string& name) {
       auto iter =
-          std::find_if(grid_items.cbegin(), grid_items.cend(),
-                       [uuid](const SavedDeskItemView* v) {
-                         return SavedDeskItemViewTestApi(v).uuid() == uuid;
-                       });
+          base::ranges::find(grid_items, uuid, [](const SavedDeskItemView* v) {
+            return SavedDeskItemViewTestApi(v).uuid();
+          });
       ASSERT_NE(grid_items.end(), iter);
 
       SavedDeskItemView* item_view = *iter;
@@ -3462,10 +3461,9 @@ TEST_F(SavedDeskTest, TimeStrFormat) {
       GetItemViewsFromDeskLibrary(GetOverviewGridList().front().get());
   for (size_t i = 0; i < 3; i++) {
     auto iter =
-        std::find_if(grid_items.cbegin(), grid_items.cend(),
-                     [uuid, i](const SavedDeskItemView* v) {
-                       return SavedDeskItemViewTestApi(v).uuid() == uuid[i];
-                     });
+        base::ranges::find(grid_items, uuid[i], [](const SavedDeskItemView* v) {
+          return SavedDeskItemViewTestApi(v).uuid();
+        });
     ASSERT_NE(grid_items.end(), iter);
 
     SavedDeskItemView* item_view = *iter;

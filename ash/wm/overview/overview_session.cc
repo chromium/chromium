@@ -4,7 +4,6 @@
 
 #include "ash/wm/overview/overview_session.h"
 
-#include <algorithm>
 #include <functional>
 #include <utility>
 
@@ -53,6 +52,7 @@
 #include "base/containers/contains.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
+#include "base/ranges/algorithm.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/hit_test.h"
@@ -399,7 +399,7 @@ void OverviewSession::SelectWindow(OverviewItem* item) {
       Shell::Get()->metrics()->task_switch_metrics_recorder().OnTaskSwitch(
           TaskSwitchSource::OVERVIEW_MODE);
     }
-    const auto it = std::find(window_list.begin(), window_list.end(), window);
+    const auto it = base::ranges::find(window_list, window);
     if (it != window_list.end()) {
       // Record 1-based index so that selecting a top MRU window will record 1.
       UMA_HISTOGRAM_COUNTS_100("Ash.Overview.SelectionDepth",
@@ -970,10 +970,7 @@ void OverviewSession::OnHighlightedItemClosed(OverviewItem* item) {
 }
 
 void OverviewSession::OnRootWindowClosing(aura::Window* root) {
-  auto iter = std::find_if(grid_list_.begin(), grid_list_.end(),
-                           [root](std::unique_ptr<OverviewGrid>& grid) {
-                             return grid->root_window() == root;
-                           });
+  auto iter = base::ranges::find(grid_list_, root, &OverviewGrid::root_window);
   DCHECK(iter != grid_list_.end());
   (*iter)->Shutdown(OverviewEnterExitType::kImmediateExit);
   grid_list_.erase(iter);
