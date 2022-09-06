@@ -2203,8 +2203,6 @@ source_set("browser") {
     "webid/flags.h",
     "webid/idp_network_request_manager.cc",
     "webid/idp_network_request_manager.h",
-    "webid/redirect_uri_data.cc",
-    "webid/redirect_uri_data.h",
     "webid/webid_utils.cc",
     "webid/webid_utils.h",
     "webrtc/webrtc_connections_observer.cc",
