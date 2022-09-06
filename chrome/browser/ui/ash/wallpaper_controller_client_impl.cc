@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/ash/wallpaper_controller_client_impl.h"
 
-#include <algorithm>
 #include <string>
 #include <utility>
 #include <vector>
@@ -28,6 +27,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/path_service.h"
 #include "base/rand_util.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
@@ -831,8 +831,8 @@ void WallpaperControllerClientImpl::OnGooglePhotosDailyAlbumFetched(
   base::RandomShuffle(photos.begin(), photos.end());
 
   // Get the first photo from the shuffled set that is not in the LRU cache.
-  auto selected_itr = std::find_if(
-      photos.begin(), photos.end(),
+  auto selected_itr = base::ranges::find_if(
+      photos,
       [&ids](
           const ash::personalization_app::mojom::GooglePhotosPhotoPtr& photo) {
         return ids.Peek(base::PersistentHash(photo->id)) == ids.end();

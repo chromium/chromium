@@ -4,12 +4,12 @@
 
 #include "chrome/browser/ui/ash/shelf/app_window_shelf_item_controller.h"
 
-#include <algorithm>
 #include <iterator>
 #include <utility>
 
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/public/cpp/window_properties.h"
+#include "base/ranges/algorithm.h"
 #include "chrome/browser/ash/crosapi/browser_manager.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ui/ash/ash_util.h"
@@ -44,7 +44,7 @@ ash::ShelfAction ActivateOrAdvanceToNextAppWindow(
     const AppWindowShelfItemController::WindowList& windows) {
   DCHECK(window_to_show);
 
-  auto i = std::find(windows.begin(), windows.end(), window_to_show);
+  auto i = base::ranges::find(windows, window_to_show);
   if (i != windows.end()) {
     if (++i != windows.end())
       window_to_show = *i;
@@ -112,10 +112,7 @@ void AppWindowShelfItemController::AddWindow(AppWindowBase* app_window) {
 AppWindowShelfItemController::WindowList::iterator
 AppWindowShelfItemController::GetFromNativeWindow(aura::Window* window,
                                                   WindowList& list) {
-  return std::find_if(list.begin(), list.end(),
-                      [window](AppWindowBase* base_window) {
-                        return base_window->GetNativeWindow() == window;
-                      });
+  return base::ranges::find(list, window, &AppWindowBase::GetNativeWindow);
 }
 
 void AppWindowShelfItemController::RemoveWindow(AppWindowBase* app_window) {
@@ -125,12 +122,11 @@ void AppWindowShelfItemController::RemoveWindow(AppWindowBase* app_window) {
     observed_windows_.RemoveObservation(window);
   if (app_window == last_active_window_)
     last_active_window_ = nullptr;
-  auto iter = std::find(windows_.begin(), windows_.end(), app_window);
+  auto iter = base::ranges::find(windows_, app_window);
   if (iter != windows_.end()) {
     windows_.erase(iter);
   } else {
-    iter =
-        std::find(hidden_windows_.begin(), hidden_windows_.end(), app_window);
+    iter = base::ranges::find(hidden_windows_, app_window);
     if (iter == hidden_windows_.end())
       return;
     hidden_windows_.erase(iter);

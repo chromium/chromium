@@ -6,8 +6,10 @@
 
 #include "chrome/browser/ui/webui/access_code_cast/access_code_cast_handler.h"
 
+#include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/task_runner_util.h"
@@ -192,11 +194,9 @@ void AccessCodeCastHandler::CheckForDiscoveryCompletion() {
   DCHECK(media_route_starter_) << "Must have a MediaRouteStarter to complete!";
 
   // Verify that the sink is in QRM.
-  if (std::find_if(cast_mode_set_.begin(), cast_mode_set_.end(),
-                   [this](MediaCastMode cast_mode) {
-                     return media_route_starter_->SinkSupportsCastMode(
-                         *sink_id_, cast_mode);
-                   }) == cast_mode_set_.end()) {
+  if (base::ranges::find_if(cast_mode_set_, [this](MediaCastMode cast_mode) {
+        return media_route_starter_->SinkSupportsCastMode(*sink_id_, cast_mode);
+      }) == cast_mode_set_.end()) {
     // sink hasn't been added to QRM yet.
     return;
   }
@@ -342,16 +342,9 @@ void AccessCodeCastHandler::OnRouteResponse(MediaCastMode cast_mode,
 }
 
 bool AccessCodeCastHandler::HasActiveRoute(const MediaSink::Id& sink_id) {
-  if (!GetMediaRouter())
-    return false;
-  auto routes = GetMediaRouter()->GetCurrentRoutes();
-  auto route_it = std::find_if(routes.begin(), routes.end(),
-                               [&sink_id](const MediaRoute& route) {
-                                 return route.media_sink_id() == sink_id;
-                               });
-  if (route_it == routes.end())
-    return false;
-  return true;
+  return GetMediaRouter() &&
+         base::Contains(GetMediaRouter()->GetCurrentRoutes(), sink_id,
+                        &MediaRoute::media_sink_id);
 }
 
 }  // namespace media_router

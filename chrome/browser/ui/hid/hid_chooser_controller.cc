@@ -55,18 +55,16 @@ bool FilterMatch(const blink::mojom::HidDeviceFilterPtr& filter,
 
   if (filter->usage) {
     if (filter->usage->is_page()) {
-      const uint16_t usage_page = filter->usage->get_page();
-      auto find_it =
-          std::find_if(device.collections.begin(), device.collections.end(),
-                       [=](const device::mojom::HidCollectionInfoPtr& c) {
-                         return usage_page == c->usage->usage_page;
-                       });
-      if (find_it == device.collections.end())
+      if (!base::Contains(device.collections, filter->usage->get_page(),
+                          [](const device::mojom::HidCollectionInfoPtr& c) {
+                            return c->usage->usage_page;
+                          })) {
         return false;
+      }
     } else if (filter->usage->is_usage_and_page()) {
       const auto& usage_and_page = filter->usage->get_usage_and_page();
-      auto find_it = std::find_if(
-          device.collections.begin(), device.collections.end(),
+      auto find_it = base::ranges::find_if(
+          device.collections,
           [&usage_and_page](const device::mojom::HidCollectionInfoPtr& c) {
             return usage_and_page->usage_page == c->usage->usage_page &&
                    usage_and_page->usage == c->usage->usage;
@@ -233,7 +231,7 @@ void HidChooserController::OnDeviceAdded(
 void HidChooserController::OnDeviceRemoved(
     const device::mojom::HidDeviceInfo& device) {
   auto id = PhysicalDeviceIdFromDeviceInfo(device);
-  auto items_it = std::find(items_.begin(), items_.end(), id);
+  auto items_it = base::ranges::find(items_, id);
   if (items_it == items_.end())
     return;
   size_t index = std::distance(items_.begin(), items_it);

@@ -4,12 +4,13 @@
 
 #include "chrome/browser/ui/webui/chromeos/system_web_dialog_delegate.h"
 
-#include <algorithm>
 #include <list>
 
 #include "ash/public/cpp/shell_window_ids.h"
+#include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/no_destructor.h"
+#include "base/ranges/algorithm.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/views/chrome_web_dialog_view.h"
 #include "components/session_manager/core/session_manager.h"
@@ -67,19 +68,13 @@ const size_t SystemWebDialogDelegate::kDialogMarginForInternalScreenPx = 48;
 SystemWebDialogDelegate* SystemWebDialogDelegate::FindInstance(
     const std::string& id) {
   auto* instances = GetInstances();
-  auto iter =
-      std::find_if(instances->begin(), instances->end(),
-                   [id](SystemWebDialogDelegate* i) { return i->Id() == id; });
+  auto iter = base::ranges::find(*instances, id, &SystemWebDialogDelegate::Id);
   return iter == instances->end() ? nullptr : *iter;
 }
 
 // static
 bool SystemWebDialogDelegate::HasInstance(const GURL& url) {
-  auto* instances = GetInstances();
-  auto it = std::find_if(
-      instances->begin(), instances->end(),
-      [url](SystemWebDialogDelegate* dialog) { return dialog->gurl_ == url; });
-  return it != instances->end();
+  return base::Contains(*GetInstances(), url, &SystemWebDialogDelegate::gurl_);
 }
 
 // static

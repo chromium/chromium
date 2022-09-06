@@ -7,11 +7,13 @@
 #include <memory>
 #include <utility>
 
+#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/json/values_util.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/rand_util.h"
+#include "base/ranges/algorithm.h"
 #include "base/values.h"
 #include "base/version.h"
 #include "chrome/browser/browser_process.h"
@@ -479,11 +481,11 @@ void HatsService::RecordSurveyAsShown(std::string trigger_id) {
   // of the trigger ID itself, as the ID is specific to individual survey
   // versions. There should be a cooldown before a user is prompted to take a
   // survey from the same trigger, regardless of whether the survey was updated.
-  auto trigger_survey_config = std::find_if(
-      survey_configs_by_triggers_.begin(), survey_configs_by_triggers_.end(),
-      [&](const std::pair<std::string, SurveyConfig>& pair) {
-        return pair.second.trigger_id == trigger_id;
-      });
+  auto trigger_survey_config =
+      base::ranges::find(survey_configs_by_triggers_, trigger_id,
+                         [](const SurveyConfigs::value_type& pair) {
+                           return pair.second.trigger_id;
+                         });
 
   DCHECK(trigger_survey_config != survey_configs_by_triggers_.end());
   std::string trigger = trigger_survey_config->first;
@@ -820,10 +822,8 @@ void HatsService::CheckSurveyStatusAndMaybeShow(
   CHECK_EQ(product_specific_bits_data.size(),
            survey_config.product_specific_bits_data_fields.size());
   for (auto field_value : product_specific_bits_data) {
-    CHECK(std::find(survey_config.product_specific_bits_data_fields.begin(),
-                    survey_config.product_specific_bits_data_fields.end(),
-                    field_value.first) !=
-          survey_config.product_specific_bits_data_fields.end());
+    CHECK(base::Contains(survey_config.product_specific_bits_data_fields,
+                         field_value.first));
   }
 
   // Check that the |product_specific_string_data| matches the fields for this
@@ -831,10 +831,8 @@ void HatsService::CheckSurveyStatusAndMaybeShow(
   CHECK_EQ(product_specific_string_data.size(),
            survey_config.product_specific_string_data_fields.size());
   for (auto field_value : product_specific_string_data) {
-    CHECK(std::find(survey_config.product_specific_string_data_fields.begin(),
-                    survey_config.product_specific_string_data_fields.end(),
-                    field_value.first) !=
-          survey_config.product_specific_string_data_fields.end());
+    CHECK(base::Contains(survey_config.product_specific_string_data_fields,
+                         field_value.first));
   }
 
   // As soon as the HaTS Next dialog is created it will attempt to contact

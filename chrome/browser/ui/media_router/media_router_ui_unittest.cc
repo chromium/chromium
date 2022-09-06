@@ -659,10 +659,7 @@ TEST_F(MediaRouterViewsUITest, UpdateSinksWhenDialogMovesToAnotherDisplay) {
       .WillOnce(WithArg<0>([&](const CastDialogModel& model) {
         const auto& sinks = model.media_sinks();
         EXPECT_EQ(2u, sinks.size());
-        EXPECT_TRUE(std::find_if(sinks.begin(), sinks.end(),
-                                 [&](const UIMediaSink& sink) {
-                                   return sink.id == display_sink_id1;
-                                 }) == sinks.end());
+        EXPECT_FALSE(base::Contains(sinks, display_sink_id1, &UIMediaSink::id));
       }));
   ui_->UpdateSinks();
   Mock::VerifyAndClearExpectations(&observer);
@@ -673,10 +670,7 @@ TEST_F(MediaRouterViewsUITest, UpdateSinksWhenDialogMovesToAnotherDisplay) {
       .WillOnce(WithArg<0>([&](const CastDialogModel& model) {
         const auto& sinks = model.media_sinks();
         EXPECT_EQ(2u, sinks.size());
-        EXPECT_TRUE(std::find_if(sinks.begin(), sinks.end(),
-                                 [&](const UIMediaSink& sink) {
-                                   return sink.id == display_sink_id2;
-                                 }) == sinks.end());
+        EXPECT_FALSE(base::Contains(sinks, display_sink_id2, &UIMediaSink::id));
       }));
   display_observer->set_display(display2);
   ui_->UpdateSinks();

@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <algorithm>
+#include "chrome/browser/ui/login/login_handler.h"
+
 #include <list>
 #include <map>
 #include <tuple>
@@ -10,6 +11,7 @@
 #include "base/bind.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
@@ -22,7 +24,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
-#include "chrome/browser/ui/login/login_handler.h"
 #include "chrome/browser/ui/login/login_handler_test_utils.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -706,9 +707,8 @@ void MultiRealmLoginPromptBrowserTest::RunTest(const F& for_each_realm_func) {
   // Now confirm or cancel auth once per realm.
   std::set<std::string> seen_realms;
   for (int i = 0; i < kMultiRealmTestRealmCount; ++i) {
-    auto it = std::find_if(
-        login_prompt_observer_.handlers().begin(),
-        login_prompt_observer_.handlers().end(),
+    auto it = base::ranges::find_if(
+        login_prompt_observer_.handlers(),
         [&seen_realms](LoginHandler* handler) {
           return seen_realms.count(handler->auth_info().realm) == 0;
         });

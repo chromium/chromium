@@ -181,8 +181,8 @@ void WaitForItemInitialization(
   WaitForItemAddition(predicate);
 
   auto* model = ash::HoldingSpaceController::Get()->model();
-  auto item_it = std::find_if(
-      model->items().begin(), model->items().end(),
+  auto item_it = base::ranges::find_if(
+      model->items(),
       [&predicate](const auto& item) { return predicate.Run(item.get()); });
 
   DCHECK(item_it != model->items().end());

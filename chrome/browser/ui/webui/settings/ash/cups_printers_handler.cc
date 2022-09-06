@@ -17,6 +17,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/path_service.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/sequenced_task_runner_handle.h"
@@ -1169,9 +1170,9 @@ void CupsPrintersHandler::HandleGetEulaUrl(const base::Value::List& args) {
   const PpdProvider::ResolvedPrintersList& printers_for_manufacturer =
       resolved_printers_it->second;
 
-  auto printer_it = std::find_if(
-      printers_for_manufacturer.begin(), printers_for_manufacturer.end(),
-      [&ppd_model](const auto& elem) { return elem.name == ppd_model; });
+  auto printer_it =
+      base::ranges::find(printers_for_manufacturer, ppd_model,
+                         &PpdProvider::ResolvedPpdReference::name);
 
   if (printer_it == printers_for_manufacturer.end()) {
     // Unable to find the PpdReference, resolve promise with empty string.

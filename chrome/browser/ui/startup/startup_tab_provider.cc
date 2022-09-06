@@ -4,12 +4,12 @@
 
 #include "chrome/browser/ui/startup/startup_tab_provider.h"
 
-#include <algorithm>
 #include <string>
 
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/threading/thread_restrictions.h"
@@ -70,8 +70,8 @@ namespace {
 // Attempts to find an existing, non-empty tabbed browser for this profile.
 bool ProfileHasOtherTabbedBrowser(Profile* profile) {
   BrowserList* browser_list = BrowserList::GetInstance();
-  auto other_tabbed_browser = std::find_if(
-      browser_list->begin(), browser_list->end(), [profile](Browser* browser) {
+  auto other_tabbed_browser =
+      base::ranges::find_if(*browser_list, [profile](Browser* browser) {
         return browser->profile() == profile && browser->is_type_normal() &&
                !browser->tab_strip_model()->empty();
       });

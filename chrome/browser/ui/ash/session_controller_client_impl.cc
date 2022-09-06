@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/ash/session_controller_client_impl.h"
 
-#include <algorithm>
 #include <memory>
 #include <utility>
 
@@ -15,6 +14,7 @@
 #include "base/bind.h"
 #include "base/cxx17_backports.h"
 #include "base/logging.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "chrome/browser/app_mode/app_mode_utils.h"
@@ -457,10 +457,8 @@ void SessionControllerClientImpl::DoCycleActiveUser(
   AccountId account_id = UserManager::Get()->GetActiveUser()->GetAccountId();
 
   // Get an iterator positioned at the active user.
-  auto it = std::find_if(logged_in_users.begin(), logged_in_users.end(),
-                         [account_id](const User* user) {
-                           return user->GetAccountId() == account_id;
-                         });
+  auto it =
+      base::ranges::find(logged_in_users, account_id, &User::GetAccountId);
 
   // Active user not found.
   if (it == logged_in_users.end())

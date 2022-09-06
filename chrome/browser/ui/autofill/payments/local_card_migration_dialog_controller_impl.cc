@@ -5,11 +5,13 @@
 #include "chrome/browser/ui/autofill/payments/local_card_migration_dialog_controller_impl.h"
 
 #include <stddef.h>
+
 #include <string>
 #include <utility>
 #include <vector>
 
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/logging.h"
 #include "base/observer_list.h"
@@ -248,15 +250,11 @@ bool LocalCardMigrationDialogControllerImpl::AllCardsInvalid() const {
   // For kOffered state, the migration status of all cards are UNKNOWN,
   // so this function will return true as well. Need an early exit to avoid
   // it.
-  if (view_state_ == LocalCardMigrationDialogState::kOffered)
-    return false;
-
-  return std::find_if(
-             migratable_credit_cards_.begin(), migratable_credit_cards_.end(),
-             [](const auto& card) {
-               return card.migration_status() ==
-                      MigratableCreditCard::MigrationStatus::SUCCESS_ON_UPLOAD;
-             }) == migratable_credit_cards_.end();
+  return (view_state_ != LocalCardMigrationDialogState::kOffered) &&
+         !base::Contains(
+             migratable_credit_cards_,
+             MigratableCreditCard::MigrationStatus::SUCCESS_ON_UPLOAD,
+             &MigratableCreditCard::migration_status);
 }
 
 LocalCardMigrationDialog*
@@ -280,12 +278,10 @@ void LocalCardMigrationDialogControllerImpl::UpdateLocalCardMigrationIcon() {
 }
 
 bool LocalCardMigrationDialogControllerImpl::HasFailedCard() const {
-  return std::find_if(
-             migratable_credit_cards_.begin(), migratable_credit_cards_.end(),
-             [](const auto& card) {
-               return card.migration_status() ==
-                      MigratableCreditCard::MigrationStatus::FAILURE_ON_UPLOAD;
-             }) != migratable_credit_cards_.end();
+  return base::Contains(
+      migratable_credit_cards_,
+      MigratableCreditCard::MigrationStatus::FAILURE_ON_UPLOAD,
+      &MigratableCreditCard::migration_status);
 }
 
 void LocalCardMigrationDialogControllerImpl::

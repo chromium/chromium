@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/ash/clipboard_image_model_factory_impl.h"
 
+#include "base/ranges/algorithm.h"
 #include "chrome/browser/profiles/profile.h"
 
 ClipboardImageModelFactoryImpl::ClipboardImageModelFactoryImpl(
@@ -36,11 +37,8 @@ void ClipboardImageModelFactoryImpl::CancelRequest(
     return;
   }
 
-  auto iter =
-      std::find_if(pending_list_.begin(), pending_list_.end(),
-                   [&id](const ClipboardImageModelRequest::Params& params) {
-                     return id == params.id;
-                   });
+  auto iter = base::ranges::find(pending_list_, id,
+                                 &ClipboardImageModelRequest::Params::id);
   if (iter == pending_list_.end())
     return;
 

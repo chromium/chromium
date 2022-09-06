@@ -4,8 +4,11 @@
 
 #include "chrome/browser/ui/omnibox/omnibox_pedal_implementations.h"
 
+#include <algorithm>
+
 #include "base/bind.h"
 #include "base/memory/weak_ptr.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -18611,7 +18614,7 @@ class OmniboxPedalImplementationsTest : public testing::Test {
           sequence.ResetLinks();
           return pedal.second->IsConceptMatch(sequence);
         };
-        auto iter = std::find_if(pedals.begin(), pedals.end(), is_match);
+        auto iter = base::ranges::find_if(pedals, is_match);
         EXPECT_NE(iter, pedals.end()) << "Pedal not found for: " << expression;
         EXPECT_EQ(iter->second.get(), canonical_pedal)
             << "Found wrong Pedal for: " << expression;

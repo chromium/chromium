@@ -5,9 +5,8 @@
 #import <Cocoa/Cocoa.h>
 #include <stddef.h>
 
-#include <algorithm>
-
 #include "base/callback.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/pattern.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/task_manager/task_manager_browsertest_util.h"
@@ -101,10 +100,8 @@ class TaskManagerMacTest : public InProcessBrowserTest {
   // Looks up a tab based on its tab ID.
   content::WebContents* FindWebContentsByTabId(SessionID tab_id) {
     auto& all_tabs = AllTabContentses();
-    auto tab_id_matches = [tab_id](content::WebContents* web_contents) {
-      return sessions::SessionTabHelper::IdForTab(web_contents) == tab_id;
-    };
-    auto it = std::find_if(all_tabs.begin(), all_tabs.end(), tab_id_matches);
+    auto it = base::ranges::find(all_tabs, tab_id,
+                                 &sessions::SessionTabHelper::IdForTab);
 
     return (it == all_tabs.end()) ? nullptr : *it;
   }

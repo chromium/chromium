@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/media_router/media_router_ui.h"
 
-#include <algorithm>
 #include <string>
 #include <unordered_map>
 #include <utility>
@@ -389,10 +388,8 @@ void MediaRouterUI::OnSourceUpdated(std::u16string& source_name) {
 void MediaRouterUI::UpdateSinks() {
   std::vector<UIMediaSink> media_sinks;
   for (const MediaSinkWithCastModes& sink : GetEnabledSinks()) {
-    auto pred = [&sink](const MediaRoute& route) {
-      return route.media_sink_id() == sink.sink.id();
-    };
-    auto route_it = std::find_if(routes().begin(), routes().end(), pred);
+    auto route_it = base::ranges::find(routes(), sink.sink.id(),
+                                       &MediaRoute::media_sink_id);
     const MediaRoute* route = route_it == routes().end() ? nullptr : &*route_it;
     media_sinks.push_back(ConvertToUISink(sink, route, issue_));
   }
@@ -506,10 +503,8 @@ void MediaRouterUI::OnRoutesUpdated(const std::vector<MediaRoute>& routes) {
   }
 
   if (terminating_route_id_ &&
-      std::find_if(
-          routes.begin(), routes.end(), [this](const MediaRoute& route) {
-            return route.media_route_id() == terminating_route_id_.value();
-          }) == routes.end()) {
+      !base::Contains(routes, terminating_route_id_.value(),
+                      &MediaRoute::media_route_id)) {
     terminating_route_id_.reset();
   }
   UpdateSinks();

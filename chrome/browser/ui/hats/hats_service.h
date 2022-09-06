@@ -288,6 +288,8 @@ class HatsService : public KeyedService {
   friend class DelayedSurveyTask;
   FRIEND_TEST_ALL_PREFIXES(HatsServiceProbabilityOne, SingleHatsNextDialog);
 
+  using SurveyConfigs = base::flat_map<std::string, SurveyConfig>;
+
   void LaunchSurveyForWebContents(
       const std::string& trigger,
       content::WebContents* web_contents,
@@ -325,7 +327,7 @@ class HatsService : public KeyedService {
 
   std::set<DelayedSurveyTask> pending_tasks_;
 
-  base::flat_map<std::string, SurveyConfig> survey_configs_by_triggers_;
+  SurveyConfigs survey_configs_by_triggers_;
 
   // Whether a HaTS Next dialog currently exists (regardless of whether it
   // is being shown to the user).

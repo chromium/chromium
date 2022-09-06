@@ -13,6 +13,7 @@
 #include "ash/public/cpp/shelf_model.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
+#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/strings/stringprintf.h"
@@ -838,11 +839,9 @@ IN_PROC_BROWSER_TEST_F(AppServiceAppWindowArcAppBrowserTest, LogicalWindowId) {
 
   // The hidden window should be task_id 2.
   aura::Window* window1 =
-      (*(std::find_if_not(instances.begin(), instances.end(), is_hidden)))
-          ->Window();
+      (*(base::ranges::find_if_not(instances, is_hidden)))->Window();
   aura::Window* window2 =
-      (*(std::find_if(instances.begin(), instances.end(), is_hidden)))
-          ->Window();
+      (*(base::ranges::find_if(instances, is_hidden)))->Window();
 
   apps::InstanceState latest_state =
       app_service_proxy_->InstanceRegistry().GetState(window1);

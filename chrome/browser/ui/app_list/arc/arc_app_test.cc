@@ -14,8 +14,10 @@
 #include "ash/components/arc/test/fake_arc_session.h"
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/feature_list.h"
+#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/apps/app_service/publishers/arc_apps_factory.h"
@@ -328,11 +330,8 @@ void ArcAppTest::AddPackage(arc::mojom::ArcPackageInfoPtr package) {
 }
 
 void ArcAppTest::UpdatePackage(arc::mojom::ArcPackageInfoPtr updated_package) {
-  auto it = std::find_if(fake_packages_.begin(), fake_packages_.end(),
-                         [&updated_package](const auto& package) {
-                           return package->package_name ==
-                                  updated_package->package_name;
-                         });
+  auto it = base::ranges::find(fake_packages_, updated_package->package_name,
+                               &arc::mojom::ArcPackageInfo::package_name);
   if (it != fake_packages_.end()) {
     *it = std::move(updated_package);
   }
@@ -345,8 +344,6 @@ void ArcAppTest::RemovePackage(const std::string& package_name) {
 }
 
 bool ArcAppTest::FindPackage(const std::string& package_name) {
-  return std::find_if(fake_packages_.begin(), fake_packages_.end(),
-                      [package_name](const auto& package) {
-                        return package->package_name == package_name;
-                      }) != fake_packages_.end();
+  return base::Contains(fake_packages_, package_name,
+                        &arc::mojom::ArcPackageInfo::package_name);
 }

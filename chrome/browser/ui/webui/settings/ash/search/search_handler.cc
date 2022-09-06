@@ -4,8 +4,7 @@
 
 #include "chrome/browser/ui/webui/settings/ash/search/search_handler.h"
 
-#include <algorithm>
-
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/webui/settings/ash/hierarchy.h"
@@ -22,20 +21,18 @@ namespace {
 
 bool ContainsSectionResult(const std::vector<mojom::SearchResultPtr>& results,
                            mojom::Section section) {
-  return std::find_if(
-             results.begin(), results.end(), [section](const auto& result) {
-               return result->type == mojom::SearchResultType::kSection &&
-                      section == result->id->get_section();
-             }) != results.end();
+  return base::ranges::find_if(results, [section](const auto& result) {
+           return result->type == mojom::SearchResultType::kSection &&
+                  section == result->id->get_section();
+         }) != results.end();
 }
 
 bool ContainsSubpageResult(const std::vector<mojom::SearchResultPtr>& results,
                            mojom::Subpage subpage) {
-  return std::find_if(
-             results.begin(), results.end(), [subpage](const auto& result) {
-               return result->type == mojom::SearchResultType::kSubpage &&
-                      subpage == result->id->get_subpage();
-             }) != results.end();
+  return base::ranges::find_if(results, [subpage](const auto& result) {
+           return result->type == mojom::SearchResultType::kSubpage &&
+                  subpage == result->id->get_subpage();
+         }) != results.end();
 }
 
 }  // namespace

@@ -6,6 +6,7 @@
 
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
+#include "base/ranges/algorithm.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/profiles/profile.h"
@@ -153,20 +154,16 @@ void CastMediaNotificationProducer::OnRoutesUpdated(
   const bool had_items = HasActiveItems();
 
   base::EraseIf(items_, [&routes](const auto& item) {
-    return std::find_if(routes.begin(), routes.end(),
-                        [&item](const media_router::MediaRoute& route) {
-                          return item.first == route.media_route_id();
-                        }) == routes.end();
+    return !base::Contains(routes, item.first,
+                           &media_router::MediaRoute::media_route_id);
   });
 
   for (const auto& route : routes) {
     if (ShouldHideNotification(profile_, route))
       continue;
 
-    auto item_it =
-        std::find_if(items_.begin(), items_.end(), [&route](const auto& item) {
-          return item.first == route.media_route_id();
-        });
+    auto item_it = base::ranges::find(items_, route.media_route_id(),
+                                      &Items::value_type::first);
     if (item_it == items_.end()) {
       mojo::Remote<media_router::mojom::MediaController> controller_remote;
       mojo::PendingReceiver<media_router::mojom::MediaController>
@@ -200,7 +197,7 @@ bool CastMediaNotificationProducer::HasActiveItems() const {
 }
 
 bool CastMediaNotificationProducer::HasLocalMediaRoute() const {
-  return std::find_if(items_.begin(), items_.end(), [](const auto& item) {
-           return item.second.route_is_local();
-         }) != items_.end();
+  return base::ranges::any_of(items_,
+                              &CastMediaNotificationItem::route_is_local,
+                              &Items::value_type::second);
 }

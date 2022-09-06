@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/app_list/arc/arc_app_icon.h"
 
-#include <algorithm>
 #include <map>
 #include <memory>
 #include <utility>
@@ -17,6 +16,7 @@
 #include "base/lazy_instance.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
+#include "base/ranges/algorithm.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/image_decoder/image_decoder.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_icon_descriptor.h"
@@ -784,10 +784,8 @@ void ArcAppIcon::DiscardDecodeRequest(DecodeRequest* request,
                                       bool is_decode_success) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  auto it = std::find_if(decode_requests_.begin(), decode_requests_.end(),
-                         [request](const std::unique_ptr<DecodeRequest>& ptr) {
-                           return ptr.get() == request;
-                         });
+  auto it = base::ranges::find(decode_requests_, request,
+                               &std::unique_ptr<DecodeRequest>::get);
   DCHECK(it != decode_requests_.end());
   decode_requests_.erase(it);
 

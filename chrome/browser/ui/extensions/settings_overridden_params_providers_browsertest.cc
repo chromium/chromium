@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/extensions/settings_overridden_params_providers.h"
 
+#include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -64,15 +65,14 @@ class SettingsOverriddenParamsProvidersBrowserTest
     TemplateURLService* const template_url_service = GetTemplateURLService();
     TemplateURLService::TemplateURLVector template_urls =
         template_url_service->GetTemplateURLs();
-    auto iter =
-        std::find_if(template_urls.begin(), template_urls.end(),
-                     [template_url_service, new_search_shows_in_default_list](
-                         const TemplateURL* turl) {
-                       return !turl->HasGoogleBaseURLs(
-                                  template_url_service->search_terms_data()) &&
-                              template_url_service->ShowInDefaultList(turl) ==
-                                  new_search_shows_in_default_list;
-                     });
+    auto iter = base::ranges::find_if(
+        template_urls, [template_url_service, new_search_shows_in_default_list](
+                           const TemplateURL* turl) {
+          return !turl->HasGoogleBaseURLs(
+                     template_url_service->search_terms_data()) &&
+                 template_url_service->ShowInDefaultList(turl) ==
+                     new_search_shows_in_default_list;
+        });
     ASSERT_NE(template_urls.end(), iter);
     // iter != template_urls.end());
     template_url_service->SetUserSelectedDefaultSearchProvider(*iter);
@@ -282,14 +282,13 @@ IN_PROC_BROWSER_TEST_F(SettingsOverriddenParamsProvidersBrowserTest,
   TemplateURLService* const template_url_service = GetTemplateURLService();
   TemplateURLService::TemplateURLVector template_urls =
       template_url_service->GetTemplateURLs();
-  auto iter = std::find_if(template_urls.begin(), template_urls.end(),
-                           [template_url_service](const TemplateURL* turl) {
-                             // For the test, we can be a bit lazier and just
-                             // use HasGoogleBaseURLs() instead of getting the
-                             // full search URL.
-                             return !turl->HasGoogleBaseURLs(
-                                 template_url_service->search_terms_data());
-                           });
+  auto iter = base::ranges::find_if_not(
+      template_urls, [template_url_service](const TemplateURL* turl) {
+        // For the test, we can be a bit lazier and just use HasGoogleBaseURLs()
+        // instead of getting the full search URL.
+        return turl->HasGoogleBaseURLs(
+            template_url_service->search_terms_data());
+      });
   ASSERT_TRUE(iter != template_urls.end());
   template_url_service->SetUserSelectedDefaultSearchProvider(*iter);
 

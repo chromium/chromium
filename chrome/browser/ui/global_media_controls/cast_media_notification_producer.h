@@ -64,6 +64,8 @@ class CastMediaNotificationProducer
   bool HasLocalMediaRoute() const;
 
  private:
+  using Items = std::map<std::string, CastMediaNotificationItem>;
+
   bool HasActiveItems() const;
 
   const raw_ptr<Profile> profile_;
@@ -71,7 +73,7 @@ class CastMediaNotificationProducer
   const raw_ptr<global_media_controls::MediaItemManager> item_manager_;
 
   // Maps from notification item IDs to items.
-  std::map<std::string, CastMediaNotificationItem> items_;
+  Items items_;
 
   global_media_controls::MediaItemUIObserverSet item_ui_observer_set_;
 };
