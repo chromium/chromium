@@ -115,8 +115,6 @@ static_library("sandbox") {
     "src/signed_interception.h",
     "src/signed_policy.cc",
     "src/signed_policy.h",
-    "src/socket_dispatcher.cc",
-    "src/socket_dispatcher.h",
     "src/startup_information_helper.cc",
     "src/startup_information_helper.h",
     "src/target_interceptions.cc",
@@ -210,10 +208,7 @@ test("sbox_integration_tests") {
     ":sbox_integration_test_win_proc",
   ]
 
-  libs = [
-    "ktmw32.lib",
-    "iphlpapi.lib",
-  ]
+  libs = [ "ktmw32.lib" ]
 }
 
 group("maybe_set_appcontainer_acls") {

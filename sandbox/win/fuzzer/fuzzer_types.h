@@ -32,7 +32,6 @@ typedef uint32_t ULONG;
 typedef uint32_t* ULONG_PTR;
 typedef LONG NTSTATUS;
 typedef void PROCESS_INFORMATION;
-typedef uintptr_t SOCKET;
 
 // __stdcall is used in one place. TODO(wfh): replace with WINAPI.
 #define __stdcall

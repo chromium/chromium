@@ -232,15 +232,6 @@ ResultCode ConfigBase::AddRuleInternal(SubSystem subsystem,
       }
       break;
     }
-    case SubSystem::kSocket: {
-      // Only one semantic is supported for this subsystem; to allow socket
-      // brokering.
-      DCHECK_EQ(Semantics::kSocketAllowBroker, semantics);
-      // A very simple policy that just allows socket brokering if present.
-      PolicyRule socket_policy(ASK_BROKER);
-      policy_maker_->AddRule(IpcTag::WS2SOCKET, &socket_policy);
-      break;
-    }
     case SubSystem::kProcess: {
       return SBOX_ERROR_UNSUPPORTED;
     }

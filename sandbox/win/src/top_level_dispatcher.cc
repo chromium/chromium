@@ -19,7 +19,6 @@
 #include "sandbox/win/src/process_thread_dispatcher.h"
 #include "sandbox/win/src/sandbox_policy_base.h"
 #include "sandbox/win/src/signed_dispatcher.h"
-#include "sandbox/win/src/socket_dispatcher.h"
 
 namespace sandbox {
 
@@ -58,10 +57,6 @@ TopLevelDispatcher::TopLevelDispatcher(PolicyBase* policy) : policy_(policy) {
   dispatcher = new SignedDispatcher(policy_);
   ipc_targets_[static_cast<size_t>(IpcTag::NTCREATESECTION)] = dispatcher;
   signed_dispatcher_.reset(dispatcher);
-
-  dispatcher = new SocketDispatcher(policy_);
-  ipc_targets_[static_cast<size_t>(IpcTag::WS2SOCKET)] = dispatcher;
-  socket_dispatcher_.reset(dispatcher);
 }
 
 TopLevelDispatcher::~TopLevelDispatcher() {}

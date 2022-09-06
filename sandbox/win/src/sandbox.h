@@ -180,12 +180,6 @@ class [[clang::lto_visibility_public]] TargetServices {
   // LowerToken has been called or not.
   virtual ProcessState* GetState() = 0;
 
-  // Attempts to create a socket in the broker process, and duplicates it back
-  // to the target. The socket will be created with default flags and no group.
-  // Only TCP/UDP and IPV4/IPV6 sockets are supported by the broker.
-  // The socket will be created with WSA_FLAG_OVERLAPPED flags.
-  virtual SOCKET CreateBrokeredSocket(int af, int family, int protocol) = 0;
-
  protected:
   ~TargetServices() {}
 };

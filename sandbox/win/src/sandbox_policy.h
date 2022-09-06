@@ -28,7 +28,6 @@ enum class SubSystem {
   kProcess,         // Creation of child processes.
   kWin32kLockdown,  // Win32K Lockdown related policy.
   kSignedBinary,    // Signed binary policy.
-  kSocket           // Socket brokering policy.
 };
 
 // Allowable semantics when a rule is matched.
@@ -42,7 +41,6 @@ enum class Semantics {
                         // be used to allow the DLLs to load and initialize
                         // even if the process cannot access that subsystem.
   kSignedAllowLoad,     // Allows loading the module when CIG is enabled.
-  kSocketAllowBroker    // Allows brokering of sockets.
 };
 
 // Policy configuration that can be shared over multiple targets of the same tag
