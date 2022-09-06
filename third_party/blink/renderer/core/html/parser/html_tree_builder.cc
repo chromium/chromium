@@ -350,7 +350,7 @@ void HTMLTreeBuilder::ConstructTree(AtomicHTMLToken* token) {
   }
 
   token_producer_->SetForceNullCharacterReplacement(
-      insertion_mode_ == kTextMode || in_foreign_content);
+      GetInsertionMode() == kTextMode || in_foreign_content);
   token_producer_->SetShouldAllowCDATA(in_foreign_content);
 
   tree_.ExecuteQueuedTasks();
@@ -394,12 +394,12 @@ void HTMLTreeBuilder::ProcessToken(AtomicHTMLToken* token) {
 
 void HTMLTreeBuilder::ProcessDoctypeToken(AtomicHTMLToken* token) {
   DCHECK_EQ(token->GetType(), HTMLToken::DOCTYPE);
-  if (insertion_mode_ == kInitialMode) {
+  if (GetInsertionMode() == kInitialMode) {
     tree_.InsertDoctype(token);
     SetInsertionMode(kBeforeHTMLMode);
     return;
   }
-  if (insertion_mode_ == kInTableTextMode) {
+  if (GetInsertionMode() == kInTableTextMode) {
     DefaultForInTableText();
     ProcessDoctypeToken(token);
     return;
@@ -860,11 +860,11 @@ void HTMLTreeBuilder::ProcessStartTagForInBody(AtomicHTMLToken* token) {
       tree_.ReconstructTheActiveFormattingElements();
       tree_.InsertHTMLElement(token);
       frameset_ok_ = false;
-      if (insertion_mode_ == kInTableMode ||
-          insertion_mode_ == kInCaptionMode ||
-          insertion_mode_ == kInColumnGroupMode ||
-          insertion_mode_ == kInTableBodyMode ||
-          insertion_mode_ == kInRowMode || insertion_mode_ == kInCellMode)
+      if (GetInsertionMode() == kInTableMode ||
+          GetInsertionMode() == kInCaptionMode ||
+          GetInsertionMode() == kInColumnGroupMode ||
+          GetInsertionMode() == kInTableBodyMode ||
+          GetInsertionMode() == kInRowMode || GetInsertionMode() == kInCellMode)
         SetInsertionMode(kInSelectInTableMode);
       else
         SetInsertionMode(kInSelectMode);
@@ -1557,7 +1557,7 @@ bool HTMLTreeBuilder::ProcessBodyEndTagForInBody(AtomicHTMLToken* token) {
     return false;
   }
   // Emit a more specific parse error based on stack contents.
-  DVLOG(1) << "Not implmeneted.";
+  DVLOG(1) << "Not implemented.";
   SetInsertionMode(kAfterBodyMode);
   return true;
 }
@@ -2381,17 +2381,18 @@ void HTMLTreeBuilder::ProcessEndTag(AtomicHTMLToken* token) {
 
 void HTMLTreeBuilder::ProcessComment(AtomicHTMLToken* token) {
   DCHECK_EQ(token->GetType(), HTMLToken::kComment);
-  if (insertion_mode_ == kInitialMode || insertion_mode_ == kBeforeHTMLMode ||
-      insertion_mode_ == kAfterAfterBodyMode ||
-      insertion_mode_ == kAfterAfterFramesetMode) {
+  if (GetInsertionMode() == kInitialMode ||
+      GetInsertionMode() == kBeforeHTMLMode ||
+      GetInsertionMode() == kAfterAfterBodyMode ||
+      GetInsertionMode() == kAfterAfterFramesetMode) {
     tree_.InsertCommentOnDocument(token);
     return;
   }
-  if (insertion_mode_ == kAfterBodyMode) {
+  if (GetInsertionMode() == kAfterBodyMode) {
     tree_.InsertCommentOnHTMLHtmlElement(token);
     return;
   }
-  if (insertion_mode_ == kInTableTextMode) {
+  if (GetInsertionMode() == kInTableTextMode) {
     DefaultForInTableText();
     ProcessComment(token);
     return;
