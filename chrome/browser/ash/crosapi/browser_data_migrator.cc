@@ -265,21 +265,6 @@ bool BrowserDataMigratorImpl::MaybeRestartToMigrateInternal(
     return false;
   }
 
-  // If the user is a new user, then there shouldn't be anything to migrate.
-  // Also mark the user as migration completed.
-  if (user_manager::UserManager::Get()->IsCurrentUserNew()) {
-    crosapi::browser_util::RecordDataVer(local_state, user_id_hash,
-                                         version_info::GetVersion());
-
-    crosapi::browser_util::SetProfileMigrationCompletedForUser(
-        local_state, user_id_hash,
-        crosapi::browser_util::GetMigrationMode(user, policy_init_state));
-    // TODO(crbug.com/1277848): Once `BrowserDataMigrator` stabilises, remove
-    // this log message.
-    LOG(WARNING) << "Setting migration as completed since it is a new user.";
-    return false;
-  }
-
   int attempts = GetMigrationAttemptCountForUser(local_state, user_id_hash);
   // TODO(crbug.com/1178702): Once BrowserDataMigrator stabilises, reduce the
   // log level to VLOG(1).
