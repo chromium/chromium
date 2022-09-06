@@ -4,6 +4,8 @@
 
 #import "chrome/browser/ui/cocoa/fullscreen/fullscreen_toolbar_mouse_tracker.h"
 
+#include <memory>
+
 #import "chrome/browser/ui/cocoa/fullscreen/fullscreen_toolbar_controller.h"
 #include "chrome/browser/ui/cocoa/scoped_menu_bar_lock.h"
 #import "ui/base/cocoa/tracking_area.h"

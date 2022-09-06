@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_APP_RESTORE_APP_RESTORE_ARC_TEST_HELPER_H_
 #define CHROME_BROWSER_ASH_APP_RESTORE_APP_RESTORE_ARC_TEST_HELPER_H_
 
+#include <memory>
 #include <string>
 
 class ArcAppListPrefs;

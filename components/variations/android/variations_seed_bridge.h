@@ -6,6 +6,7 @@
 #define COMPONENTS_VARIATIONS_ANDROID_VARIATIONS_SEED_BRIDGE_H_
 
 #include <jni.h>
+#include <memory>
 #include <string>
 
 #include "base/component_export.h"
