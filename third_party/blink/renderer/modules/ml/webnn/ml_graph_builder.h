@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/core/typed_arrays/array_buffer_view_helpers.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer_view.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_operator.h"
+#include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
@@ -26,7 +27,7 @@ class MLOperandDescriptor;
 
 typedef HeapVector<std::pair<String, Member<MLOperand>>> MLNamedOperands;
 
-class MLGraphBuilder final : public ScriptWrappable {
+class MODULES_EXPORT MLGraphBuilder final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
