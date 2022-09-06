@@ -483,6 +483,9 @@ class TrashDirectoryReader {
         error(e);
         return;
       }
+      if (!entries.length) {
+        break;
+      }
       const infoEntryMap = {};
       for (const e of entries) {
         if (!e.isFile || !e.name.endsWith('.trashinfo')) {
@@ -514,9 +517,6 @@ class TrashDirectoryReader {
         if (trashEntry) {
           result.push(trashEntry);
         }
-      }
-      if (!parsedEntries.length || result.length) {
-        break;
       }
     }
     success(result);
