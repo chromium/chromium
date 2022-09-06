@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "ash/public/cpp/app_menu_constants.h"
+#include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/metrics/user_metrics.h"
 #include "base/time/time.h"
@@ -17,9 +18,11 @@
 #include "chrome/browser/apps/app_service/intent_util.h"
 #include "chrome/browser/apps/app_service/menu_util.h"
 #include "chrome/browser/apps/app_service/metrics/app_service_metrics.h"
+#include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service_factory.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_features.h"
+#include "chrome/browser/ash/plugin_vm/plugin_vm_files.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_manager_factory.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_pref_names.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -30,6 +33,8 @@
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "components/services/app_service/public/cpp/permission_utils.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
+#include "storage/browser/file_system/file_system_context.h"
+#include "storage/browser/file_system/file_system_url.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace {
@@ -287,6 +292,35 @@ void PluginVmApps::Launch(const std::string& app_id,
   }
 }
 
+void PluginVmApps::LaunchAppWithIntent(const std::string& app_id,
+                                       int32_t event_flags,
+                                       IntentPtr intent,
+                                       LaunchSource launch_source,
+                                       WindowInfoPtr window_info,
+                                       LaunchAppWithIntentCallback callback) {
+  // Retrieve URLs from the files in the intent.
+  std::vector<plugin_vm::LaunchArg> args;
+  if (intent && intent->files.size() > 0) {
+    args.reserve(intent->files.size());
+    storage::FileSystemContext* file_system_context =
+        file_manager::util::GetFileManagerFileSystemContext(profile_);
+    for (auto& file : intent->files) {
+      args.emplace_back(
+          file_system_context->CrackURLInFirstPartyContext(file->url));
+    }
+  }
+  plugin_vm::LaunchPluginVmApp(
+      profile_, app_id, args,
+      base::BindOnce(
+          [](LaunchAppWithIntentCallback callback,
+             plugin_vm::LaunchPluginVmAppResult result,
+             const std::string& failure_reason) {
+            std::move(callback).Run(
+                result == plugin_vm::LaunchPluginVmAppResult::SUCCESS);
+          },
+          std::move(callback)));
+}
+
 void PluginVmApps::LaunchAppWithParams(AppLaunchParams&& params,
                                        LaunchCallback callback) {
   Launch(params.app_id, ui::EF_NONE, apps::mojom::LaunchSource::kUnknown,
@@ -353,6 +387,17 @@ void PluginVmApps::Launch(const std::string& app_id,
   } else {
     plugin_vm::ShowPluginVmInstallerView(profile_);
   }
+}
+
+void PluginVmApps::LaunchAppWithIntent(
+    const std::string& app_id,
+    int32_t event_flags,
+    apps::mojom::IntentPtr intent,
+    apps::mojom::LaunchSource launch_source,
+    apps::mojom::WindowInfoPtr window_info,
+    PluginVmApps::LaunchAppWithIntentCallback callback) {
+  NOTIMPLEMENTED();
+  std::move(callback).Run(/*success=*/false);
 }
 
 void PluginVmApps::SetPermission(const std::string& app_id,

@@ -8,16 +8,27 @@
 #include <string>
 #include <vector>
 
+#include "base/files/file_util.h"
+#include "base/strings/escape.h"
+#include "base/test/bind.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/ash/file_manager/path_util.h"
+#include "chrome/browser/ash/plugin_vm/mock_plugin_vm_manager.h"
+#include "chrome/browser/ash/plugin_vm/plugin_vm_manager_factory.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_test_helper.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "chromeos/ash/components/dbus/chunneld/chunneld_client.h"
+#include "chromeos/ash/components/dbus/cicerone/fake_cicerone_client.h"
+#include "chromeos/ash/components/dbus/seneschal/seneschal_client.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "content/public/test/browser_task_environment.h"
+#include "storage/browser/file_system/external_mount_points.h"
+#include "storage/browser/file_system/file_system_url.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace apps {
@@ -34,25 +45,45 @@ class PluginVmAppsTest : public testing::Test {
   TestingProfile* profile() { return profile_.get(); }
 
   void SetUp() override {
-    ash::CiceroneClient::InitializeFake();
     profile_ = std::make_unique<TestingProfile>();
     app_service_proxy_ = AppServiceProxyFactory::GetForProfile(profile_.get());
     web_app::test::AwaitStartWebAppProviderAndSubsystems(profile_.get());
     test_helper_ =
         std::make_unique<plugin_vm::PluginVmTestHelper>(profile_.get());
     test_helper_->AllowPluginVm();
+    test_helper_->EnablePluginVm();
+    mount_points_ = storage::ExternalMountPoints::GetSystemInstance();
+    mount_name_ =
+        file_manager::util::GetDownloadsMountPointName(profile_.get());
+    mount_points_->RegisterFileSystem(
+        mount_name_, storage::kFileSystemTypeLocal,
+        storage::FileSystemMountOption(), GetMyFilesFolderPath());
   }
 
   void TearDown() override {
+    base::DeletePathRecursively(GetPvmDefaultPath());
+    mount_points_->RevokeAllFileSystems();
     test_helper_.reset();
     profile_.reset();
-    ash::CiceroneClient::Shutdown();
   }
 
-  // Set up the test Crostini app for our desired mime types.
+  base::FilePath GetMyFilesFolderPath() {
+    return file_manager::util::GetMyFilesFolderForProfile(profile_.get());
+  }
+
+  base::FilePath GetPvmDefaultPath() {
+    return GetMyFilesFolderPath().Append("PvmDefault");
+  }
+
+  storage::FileSystemURL GetMyFilesFileSystemURL(const std::string& path) {
+    return mount_points_->CreateExternalFileSystemURL(
+        blink::StorageKey(file_manager::util::GetFilesAppOrigin()), mount_name_,
+        base::FilePath(path));
+  }
+
+  // Set up the test PluginVm app for our desired mime types.
   std::string AddPluginVmAppWithExtensionTypes(
       std::string app_id,
-      std::string app_name,
       std::vector<std::string> extension_types) {
     vm_tools::apps::App app;
     for (std::string extension_type : extension_types) {
@@ -62,7 +93,7 @@ class PluginVmAppsTest : public testing::Test {
     vm_tools::apps::App::LocaleString::Entry* entry =
         app.mutable_name()->add_values();
     entry->set_locale(std::string());
-    entry->set_value(app_name);
+    entry->set_value(app_id);
     test_helper()->AddApp(app);
     return plugin_vm::PluginVmTestHelper::GenerateAppId(app.desktop_file_id());
   }
@@ -79,17 +110,34 @@ class PluginVmAppsTest : public testing::Test {
   }
 
  private:
+  struct ScopedDBusClients {
+    ScopedDBusClients() {
+      ash::CiceroneClient::InitializeFake();
+      ash::ConciergeClient::InitializeFake();
+      ash::SeneschalClient::InitializeFake();
+      ash::ChunneldClient::InitializeFake();
+    }
+    ~ScopedDBusClients() {
+      ash::ChunneldClient::Shutdown();
+      ash::SeneschalClient::Shutdown();
+      ash::ConciergeClient::Shutdown();
+      ash::CiceroneClient::Shutdown();
+    }
+  } dbus_clients_;
+
   AppServiceProxy* app_service_proxy_ = nullptr;
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<plugin_vm::PluginVmTestHelper> test_helper_;
+  storage::ExternalMountPoints* mount_points_;
+  std::string mount_name_;
 };
 
 TEST_F(PluginVmAppsTest, AppServiceHasPluginVmIntentFilters) {
   std::vector<std::string> extension_types = {"csv", "txt"};
 
   std::string app_id =
-      AddPluginVmAppWithExtensionTypes("app_id", "app_name", extension_types);
+      AddPluginVmAppWithExtensionTypes("app_id", extension_types);
   std::vector<std::unique_ptr<IntentFilter>> intent_filters =
       GetIntentFiltersForApp(app_id);
 
@@ -115,6 +163,47 @@ TEST_F(PluginVmAppsTest, AppServiceHasPluginVmIntentFilters) {
     ASSERT_EQ(condition->condition_values[0]->value, extension_types[0]);
     ASSERT_EQ(condition->condition_values[1]->value, extension_types[1]);
   }
+}
+
+TEST_F(PluginVmAppsTest, LaunchAppWithIntent) {
+  std::string app_id = AddPluginVmAppWithExtensionTypes("app_id", {"txt"});
+  apps::IntentPtr intent =
+      std::make_unique<apps::Intent>(apps_util::kIntentActionView);
+  std::vector<apps::IntentFilePtr> files;
+
+  // Add a file in the PvmDefault directory so that PluginVm has access to it.
+  files.push_back(std::make_unique<apps::IntentFile>(
+      GetMyFilesFileSystemURL("PvmDefault/file").ToGURL()));
+  intent->files = {std::move(files)};
+
+  using MockPluginVmManager =
+      testing::StrictMock<plugin_vm::test::MockPluginVmManager>;
+  auto& plugin_vm_manager = *static_cast<MockPluginVmManager*>(
+      plugin_vm::PluginVmManagerFactory::GetInstance()->SetTestingFactoryAndUse(
+          profile(),
+          base::BindRepeating(
+              [](content::BrowserContext*) -> std::unique_ptr<KeyedService> {
+                return std::make_unique<MockPluginVmManager>();
+              })));
+
+  // Retrieve the callback object when we reach the end of LaunchPluginVmApp().
+  plugin_vm::PluginVmManager::LaunchPluginVmCallback launch_plugin_vm_callback;
+  EXPECT_CALL(plugin_vm_manager, LaunchPluginVm(testing::_))
+      .WillOnce(testing::Invoke(
+          [&](plugin_vm::PluginVmManager::LaunchPluginVmCallback callback) {
+            EXPECT_TRUE(launch_plugin_vm_callback.is_null());
+            launch_plugin_vm_callback = std::move(callback);
+          }));
+
+  app_service_proxy()->LaunchAppWithIntent(
+      app_id, /*event_flags=*/0, std::move(intent), LaunchSource::kUnknown,
+      std::unique_ptr<WindowInfo>(), base::DoNothing());
+
+  // Check that the callback is not null, i.e. that we reached the end of
+  // LaunchPluginVmApp(). Getting to this point confirms that the arguments we
+  // took from LaunchAppWithIntent were converted successfully for
+  // LaunchPluginVmApp() to pass the validity checks inside LaunchPluginVmApp().
+  ASSERT_FALSE(launch_plugin_vm_callback.is_null());
 }
 
 }  // namespace apps

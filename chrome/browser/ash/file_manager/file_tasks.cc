@@ -724,7 +724,8 @@ bool ExecuteFileTask(Profile* profile,
       task.task_type == TASK_TYPE_WEB_APP ||
       task.task_type == TASK_TYPE_FILE_HANDLER ||
       (ash::features::ShouldArcAndGuestOsFileTasksUseAppService() &&
-       task.task_type == TASK_TYPE_CROSTINI_APP)) {
+       (task.task_type == TASK_TYPE_CROSTINI_APP ||
+        task.task_type == TASK_TYPE_PLUGIN_VM_APP))) {
     // TODO(petermarshall): Implement GetProfileForExtensionTask in Lacros if
     // necessary, for Chrome Apps.
     extensions::app_file_handler_util::MimeTypeCollector* mime_collector =

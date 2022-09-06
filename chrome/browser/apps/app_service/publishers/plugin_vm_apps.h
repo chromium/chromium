@@ -12,6 +12,7 @@
 #include "chrome/browser/apps/app_service/launch_result_type.h"
 #include "chrome/browser/apps/app_service/publishers/app_publisher.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service.h"
+#include "chrome/browser/ash/plugin_vm/plugin_vm_files.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_manager.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_util.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -67,6 +68,12 @@ class PluginVmApps : public apps::PublisherBase,
               int32_t event_flags,
               LaunchSource launch_source,
               WindowInfoPtr window_info) override;
+  void LaunchAppWithIntent(const std::string& app_id,
+                           int32_t event_flags,
+                           IntentPtr intent,
+                           LaunchSource launch_source,
+                           WindowInfoPtr window_info,
+                           LaunchAppWithIntentCallback callback) override;
   void LaunchAppWithParams(AppLaunchParams&& params,
                            LaunchCallback callback) override;
   void SetPermission(const std::string& app_id,
@@ -87,6 +94,12 @@ class PluginVmApps : public apps::PublisherBase,
               int32_t event_flags,
               apps::mojom::LaunchSource launch_source,
               apps::mojom::WindowInfoPtr window_info) override;
+  void LaunchAppWithIntent(const std::string& app_id,
+                           int32_t event_flags,
+                           apps::mojom::IntentPtr intent,
+                           apps::mojom::LaunchSource launch_source,
+                           apps::mojom::WindowInfoPtr window_info,
+                           LaunchAppWithIntentCallback callback) override;
   void SetPermission(const std::string& app_id,
                      apps::mojom::PermissionPtr permission) override;
   void Uninstall(const std::string& app_id,
