@@ -1263,7 +1263,8 @@ ScriptPromise CredentialsContainer::get(ScriptState* script_state,
       resolver->Detach();
       return ScriptPromise();
     }
-    if (!RuntimeEnabledFeatures::FedCmMultipleIdentityProvidersEnabled() &&
+    if (!RuntimeEnabledFeatures::FedCmMultipleIdentityProvidersEnabled(
+            context) &&
         options->identity()->providers().size() > 1) {
       exception_state.ThrowTypeError(
           "Multiple providers specified but FedCmMultipleIdentityProviders "

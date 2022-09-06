@@ -832,6 +832,9 @@ extern const char kFractionalScrollOffsetsDescription[];
 extern const char kFedCmName[];
 extern const char kFedCmDescription[];
 
+extern const char kFedCmMultiIdpName[];
+extern const char kFedCmMultiIdpDescription[];
+
 extern const char kFileHandlingAPIName[];
 extern const char kFileHandlingAPIDescription[];
 

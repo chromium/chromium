@@ -56109,6 +56109,7 @@ from previous Chrome versions.
   <int value="-2114831248" label="disable-new-ntp"/>
   <int value="-2114756847" label="SideSearchClearCacheWhenClosed:disabled"/>
   <int value="-2114740661" label="FastPairSubsequentPairingUX:disabled"/>
+  <int value="-2113946261" label="FedCmMultipleIdentityProviders:disabled"/>
   <int value="-2113783491" label="ArcFilePickerExperiment:enabled"/>
   <int value="-2113705745"
       label="CrossOriginMediaPlaybackRequiresUserGesture:enabled"/>
@@ -59677,6 +59678,7 @@ from previous Chrome versions.
   <int value="42881842" label="EnablePenetratingImageSelection:disabled"/>
   <int value="43949416" label="Journeys:enabled"/>
   <int value="43951968" label="DesktopPWAsCustomTabUI:enabled"/>
+  <int value="43995010" label="FedCmMultipleIdentityProviders:enabled"/>
   <int value="44088203" label="ExpensiveBackgroundTimerThrottling:enabled"/>
   <int value="44240181" label="SharingQRCodeGenerator:disabled"/>
   <int value="46334141"

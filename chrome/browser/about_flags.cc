@@ -8091,6 +8091,9 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(features::kFedCm,
                                     kFedCmFeatureVariations,
                                     "FedCmFeatureVariations")},
+    {"fedcm-multi-idp", flag_descriptions::kFedCmMultiIdpName,
+     flag_descriptions::kFedCmMultiIdpDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kFedCmMultipleIdentityProviders)},
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"bluetooth-sessionized-metrics",

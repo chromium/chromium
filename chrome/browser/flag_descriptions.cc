@@ -1491,6 +1491,11 @@ const char kFedCmName[] = "FedCM";
 const char kFedCmDescription[] =
     "Enables JavaScript API to intermediate federated identity requests.";
 
+const char kFedCmMultiIdpName[] = "FedCmMultiIdp";
+const char kFedCmMultiIdpDescription[] =
+    "Allows the FedCM API to request multiple identity providers "
+    "simultaneously. Requires FedCM to be enabled as well.";
+
 const char kFileHandlingAPIName[] = "File Handling API";
 const char kFileHandlingAPIDescription[] =
     "Enables the file handling API, allowing websites to register as file "

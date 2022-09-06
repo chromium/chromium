@@ -1004,6 +1004,7 @@
     },
     {
       name: "FedCmMultipleIdentityProviders",
+      depends_on: ["FedCm"],
       status: "test",
     },
     {

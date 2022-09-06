@@ -3460,8 +3460,13 @@
   },
   {
     "name": "fedcm",
-    "owners": [ "goto", "webid-core@google.com"],
-    "expiry_milestone": 110
+    "owners": [ "goto", "web-identity-eng@google.com"],
+    "expiry_milestone": 120
+  },
+  {
+    "name": "fedcm-multi-idp",
+    "owners": ["npm", "web-identity-eng@google.com"],
+    "expiry_milestone": 120
   },
   {
     "name": "feed-ablation",
