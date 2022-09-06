@@ -48,7 +48,7 @@ const NGLayoutResult* NGUnpositionedListMarker::Layout(
   // typical atomic-inline baseline.
   const NGLayoutResult* marker_layout_result = marker_node.LayoutAtomicInline(
       parent_space, parent_style, parent_space.UseFirstLineStyle(),
-      NGBaselineAlgorithmType::kFirstLine);
+      NGBaselineAlgorithmType::kDefault);
   DCHECK(marker_layout_result);
   return marker_layout_result;
 }

@@ -1891,7 +1891,7 @@ void NGFlexLayoutAlgorithm::AdjustButtonBaseline(
   NGBoxFragment fragment(space.GetWritingDirection(),
                          To<NGPhysicalBoxFragment>(*child.fragment));
   absl::optional<LayoutUnit> child_baseline =
-      space.BaselineAlgorithmType() == NGBaselineAlgorithmType::kFirstLine
+      space.BaselineAlgorithmType() == NGBaselineAlgorithmType::kDefault
           ? fragment.FirstBaseline()
           : fragment.LastBaseline();
   if (child_baseline)

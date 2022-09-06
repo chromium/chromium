@@ -50,17 +50,15 @@ enum NGAdjoiningObjectTypeValue {
 };
 typedef int NGAdjoiningObjectTypes;
 
-// Some layout algorithms (flow, tables) calculate their alignment baseline
-// differently if they are within an atomic-inline context.
-//
-// Other more modern layout algorithms (flex, grid) however ignore this flag
-// and always calculate the alignment baseline in the same way (returning the
-// "first-line").
+// The last baseline algorithm for an inline-blocks are complex. Depending on
+// the layout algorithm type it'll select the first (table, flex, grid) or last
+// (block-like) as the last baseline.
 enum class NGBaselineAlgorithmType {
-  // Compute the baseline of the first line box.
-  kFirstLine,
-  // Compute the baseline(s) for when we are within an inline-block context. If
-  // the child is block-flow it will produce both the first, and last baselines.
+  // Compute the baselines normally.
+  kDefault,
+  // Compute the baseline(s) for when we are within an inline-block context.
+  // This will select the first/last baseline as the "last" baseline depending
+  // on the layout algorithm.
   kInlineBlock
 };
 
@@ -1534,7 +1532,7 @@ class CORE_EXPORT NGConstraintSpace final {
           use_first_line_style(false),
           ancestor_has_clearance_past_adjoining_floats(false),
           baseline_algorithm_type(
-              static_cast<unsigned>(NGBaselineAlgorithmType::kFirstLine)),
+              static_cast<unsigned>(NGBaselineAlgorithmType::kDefault)),
           cache_slot(static_cast<unsigned>(NGCacheSlot::kLayout)),
           inline_auto_behavior(
               static_cast<unsigned>(NGAutoBehavior::kFitContent)),

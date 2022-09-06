@@ -2016,7 +2016,7 @@ void NGBlockNode::CopyBaselinesFromLegacyLayout(
     const NGConstraintSpace& constraint_space,
     NGBoxFragmentBuilder* builder) const {
   switch (constraint_space.BaselineAlgorithmType()) {
-    case NGBaselineAlgorithmType::kFirstLine: {
+    case NGBaselineAlgorithmType::kDefault: {
       LayoutUnit position = box_->FirstLineBoxBaseline();
       if (position != -1)
         builder->SetBaseline(position);

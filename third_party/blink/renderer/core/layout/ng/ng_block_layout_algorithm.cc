@@ -1027,8 +1027,8 @@ const NGLayoutResult* NGBlockLayoutAlgorithm::FinishLayout(
 
   // Adjust the position of the final baseline if needed.
   container_builder_.SetLastBaselineToBlockEndMarginEdgeIfNeeded();
-  if (ConstraintSpace().BaselineAlgorithmType() !=
-      NGBaselineAlgorithmType::kFirstLine) {
+  if (ConstraintSpace().BaselineAlgorithmType() ==
+      NGBaselineAlgorithmType::kInlineBlock) {
     container_builder_.SetUseLastBaselineForInlineBaseline();
   }
 
@@ -2746,7 +2746,7 @@ void NGBlockLayoutAlgorithm::PropagateBaselineFromChild(
   // Check if we've already found an appropriate baseline.
   if (container_builder_.Baseline() &&
       ConstraintSpace().BaselineAlgorithmType() ==
-          NGBaselineAlgorithmType::kFirstLine)
+          NGBaselineAlgorithmType::kDefault)
     return;
 
   if (child.IsLineBox()) {
@@ -2778,8 +2778,8 @@ void NGBlockLayoutAlgorithm::PropagateBaselineFromChild(
       container_builder_.SetBaseline(baseline);
 
     // Set the last baseline only if required.
-    if (ConstraintSpace().BaselineAlgorithmType() !=
-        NGBaselineAlgorithmType::kFirstLine)
+    if (ConstraintSpace().BaselineAlgorithmType() ==
+        NGBaselineAlgorithmType::kInlineBlock)
       container_builder_.SetLastBaseline(baseline);
 
     return;
@@ -2795,8 +2795,8 @@ void NGBlockLayoutAlgorithm::PropagateBaselineFromBlockChild(
 
   // When computing the baseline for an inline-block, table's don't contribute
   // to any baselines.
-  if (child.IsTableNG() && ConstraintSpace().BaselineAlgorithmType() !=
-                               NGBaselineAlgorithmType::kFirstLine) {
+  if (child.IsTableNG() && ConstraintSpace().BaselineAlgorithmType() ==
+                               NGBaselineAlgorithmType::kInlineBlock) {
     return;
   }
 
@@ -2810,8 +2810,8 @@ void NGBlockLayoutAlgorithm::PropagateBaselineFromBlockChild(
   }
 
   // Set the last baseline only if required.
-  if (ConstraintSpace().BaselineAlgorithmType() !=
-      NGBaselineAlgorithmType::kFirstLine) {
+  if (ConstraintSpace().BaselineAlgorithmType() ==
+      NGBaselineAlgorithmType::kInlineBlock) {
     const auto baseline = physical_fragment.UseLastBaselineForInlineBaseline()
                               ? fragment.LastBaseline()
                               : fragment.FirstBaseline();

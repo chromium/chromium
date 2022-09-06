@@ -1116,8 +1116,8 @@ void NGColumnLayoutAlgorithm::PropagateBaselineFromChild(
 
   // According to the spec, multicol containers have no "last baseline set", so,
   // unless we're looking for a "first baseline set", we have no work to do.
-  if (ConstraintSpace().BaselineAlgorithmType() !=
-      NGBaselineAlgorithmType::kFirstLine)
+  if (ConstraintSpace().BaselineAlgorithmType() ==
+      NGBaselineAlgorithmType::kInlineBlock)
     return;
 
   NGBoxFragment logical_fragment(ConstraintSpace().GetWritingDirection(),

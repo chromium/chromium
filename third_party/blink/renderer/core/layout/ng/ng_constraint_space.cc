@@ -100,7 +100,7 @@ NGConstraintSpace NGConstraintSpace::CreateFromLayoutObject(
     builder.SetBaselineAlgorithmType(block.IsInline() &&
                                              block.IsAtomicInlineLevel()
                                          ? NGBaselineAlgorithmType::kInlineBlock
-                                         : NGBaselineAlgorithmType::kFirstLine);
+                                         : NGBaselineAlgorithmType::kDefault);
   }
 
   if (block.IsAtomicInlineLevel() || block.IsFlexItem() || block.IsGridItem() ||
