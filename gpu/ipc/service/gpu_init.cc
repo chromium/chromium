@@ -477,7 +477,10 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
       VLOG(1) << "gl::init::InitializeStaticGLBindingsOneOff failed";
       return false;
     }
-
+#if BUILDFLAG(IS_WIN)
+    UMA_HISTOGRAM_BOOLEAN("GPU.AppHelpIsLoaded",
+                          static_cast<bool>(::GetModuleHandle(L"apphelp.dll")));
+#endif
     if (watchdog_thread_) {
       if (base::FeatureList::IsEnabled(
               features::kEnableWatchdogReportOnlyModeOnGpuInit)) {

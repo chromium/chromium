@@ -376,6 +376,26 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="GPU.AppHelpIsLoaded" enum="Boolean" expires_after="2023-02-19">
+  <owner>zmo@chromium.org</owner>
+  <owner>spvw@chromium.org</owner>
+  <owner>chrome-catan@google.com</owner>
+  <summary>
+    Records whether AppHelp.dll is loaded at GPU initialization. Only recorded
+    on Windows platform at GPU process launch time.
+
+    It is not yet known what exactly is triggering the load of AppHelp.dll, and
+    so we can't be sure that AppHelp.dll won't be loaded after this is
+    collected, even if this metric is false.
+
+    A bug tracking metric collection related to the application compatibility
+    layer can be found at crbug.com/1357617.
+
+    Part of a performance investigation that Catan is doing into GPU startup
+    time.
+  </summary>
+</histogram>
+
 <histogram name="GPU.BlocklistFeatureTestResults"
     enum="GPUBlocklistFeatureTestResults" expires_after="2023-03-05">
   <owner>vmiura@chromium.org</owner>
