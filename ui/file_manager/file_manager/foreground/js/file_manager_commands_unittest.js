@@ -27,9 +27,8 @@ export async function testToggleHoldingSpaceCommand(done) {
 
   // Enable the holding space feature and provide strings.
   loadTimeData.resetForTesting({
-    HOLDING_SPACE_ENABLED: true,
-    HOLDING_SPACE_PIN_TO_SHELF_COMMAND_LABEL: 'Pin to shelf',
-    HOLDING_SPACE_UNPIN_TO_SHELF_COMMAND_LABEL: 'Unpin to shelf',
+    HOLDING_SPACE_PIN_COMMAND_LABEL: 'Pin to shelf',
+    HOLDING_SPACE_UNPIN_COMMAND_LABEL: 'Unpin to shelf',
   });
   loadTimeData.getString = id => {
     return loadTimeData.data_[id] || id;

@@ -11,7 +11,6 @@
 #include "ash/system/time/calendar_utils.h"
 #include "ash/system/time/date_helper.h"
 #include "base/feature_list.h"
-#include "base/logging.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -28,7 +27,6 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/chromeos/strings/grit/ui_chromeos_strings.h"
-#include "ui/strings/grit/ui_strings.h"
 
 namespace {
 
@@ -331,10 +329,15 @@ void AddStringsForSharesheet(base::Value::Dict* dict) {
 }
 
 void AddStringsForHoldingSpace(base::Value::Dict* dict) {
-  SET_STRING("HOLDING_SPACE_PIN_TO_SHELF_COMMAND_LABEL",
-             IDS_FILE_BROWSER_HOLDING_SPACE_PIN_TO_SHELF_COMMAND_LABEL);
-  SET_STRING("HOLDING_SPACE_UNPIN_FROM_SHELF_COMMAND_LABEL",
-             IDS_FILE_BROWSER_HOLDING_SPACE_UNPIN_FROM_SHELF_COMMAND_LABEL);
+  SET_STRING("HOLDING_SPACE_PIN_COMMAND_LABEL",
+             ash::features::IsHoldingSpaceRebrandEnabled()
+                 ? IDS_FILE_BROWSER_HOLDING_SPACE_PIN_COMMAND_LABEL
+                 : IDS_FILE_BROWSER_HOLDING_SPACE_PIN_TO_SHELF_COMMAND_LABEL);
+  SET_STRING(
+      "HOLDING_SPACE_UNPIN_COMMAND_LABEL",
+      ash::features::IsHoldingSpaceRebrandEnabled()
+          ? IDS_FILE_BROWSER_HOLDING_SPACE_UNPIN_COMMAND_LABEL
+          : IDS_FILE_BROWSER_HOLDING_SPACE_UNPIN_FROM_SHELF_COMMAND_LABEL);
   SET_STRING("HOLDING_SPACE_WELCOME_DISMISS",
              IDS_FILE_BROWSER_HOLDING_SPACE_WELCOME_DISMISS);
   SET_STRING("HOLDING_SPACE_WELCOME_TEXT",

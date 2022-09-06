@@ -1943,8 +1943,8 @@ CommandHandler.COMMANDS_['toggle-holding-space'] =
         this.addsItems_ = selectedUrls.some(url => !itemsSet[url]);
 
         command.label = this.addsItems_ ?
-            str('HOLDING_SPACE_PIN_TO_SHELF_COMMAND_LABEL') :
-            str('HOLDING_SPACE_UNPIN_FROM_SHELF_COMMAND_LABEL');
+            str('HOLDING_SPACE_PIN_COMMAND_LABEL') :
+            str('HOLDING_SPACE_UNPIN_COMMAND_LABEL');
       }
     })();
 
