@@ -44,8 +44,6 @@
           android:layout_height="wrap_content"
           android:textAppearance="@style/TextAppearance.TextMedium.Primary" />
     </LinearLayout>
-    <!-- TODO(crbug.com/1355310): Decide how to make information about which item
-    is selected accessible. -->
     <ImageView
         android:id="@+id/fast_checkout_credit_card_item_selected_icon"
         android:layout_width="wrap_content"
@@ -53,7 +51,7 @@
         android:layout_marginStart="@dimen/fast_checkout_detail_sheet_selected_icon_margin_start"
         android:layout_marginEnd="@dimen/fast_checkout_detail_sheet_selected_icon_margin_end"
         android:layout_gravity="center_vertical"
-        android:importantForAccessibility="no"
+        android:contentDescription="@string/fast_checkout_detail_screen_selected_icon_description"
         app:tint="?attr/colorPrimary"
         app:srcCompat="@drawable/ic_check_circle_filled_green_24dp" />
 </LinearLayout>

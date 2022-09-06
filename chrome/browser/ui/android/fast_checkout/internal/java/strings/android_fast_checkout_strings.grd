@@ -209,6 +209,9 @@
       <message name="IDS_FAST_CHECKOUT_DETAIL_SCREEN_ADD_CREDIT_CARD_TEXT" desc="The text appearing on the element to add a new credit card on the detail sheet.">
         Add new credit card
       </message>
+      <message name="IDS_FAST_CHECKOUT_DETAIL_SCREEN_SELECTED_ICON_DESCRIPTION" desc="Accessibility string describing the icon that indicates that an Autofill profile or a credit card is the currently selected one.">
+        Selected item
+      </message>
       <message name="IDS_FAST_CHECKOUT_AUTOFILL_PROFILE_SHEET_TITLE" desc="Header of the autofill profile selection sheet.">
         Shipping address
       </message>
