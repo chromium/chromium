@@ -87,7 +87,7 @@ class MockWakeLockService : public mojom::blink::WakeLockService {
       const String& description,
       mojo::PendingReceiver<device::mojom::blink::WakeLock> receiver) override;
 
-  MockWakeLock mock_wake_lock_[kWakeLockTypeCount];
+  MockWakeLock mock_wake_lock_[V8WakeLockType::kEnumSize];
   mojo::ReceiverSet<mojom::blink::WakeLockService> receivers_;
 };
 
@@ -133,9 +133,9 @@ class MockPermissionService final : public mojom::blink::PermissionService {
   mojo::Receiver<mojom::blink::PermissionService> receiver_{this};
 
   absl::optional<mojom::blink::PermissionStatus>
-      permission_responses_[kWakeLockTypeCount];
+      permission_responses_[V8WakeLockType::kEnumSize];
 
-  base::OnceClosure request_permission_callbacks_[kWakeLockTypeCount];
+  base::OnceClosure request_permission_callbacks_[V8WakeLockType::kEnumSize];
 };
 
 // Overrides requests for WakeLockService with MockWakeLockService instances.

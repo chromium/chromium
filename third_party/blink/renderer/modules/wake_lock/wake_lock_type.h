@@ -16,12 +16,6 @@ namespace blink {
 // This header contains constants and utility functions for converting between
 // V8WakeLockType and device.mojom.WakeLockType.
 
-// Useful for creating arrays with size N, where N is the number of different
-// wake lock types.
-constexpr size_t kWakeLockTypeCount =
-    static_cast<size_t>(V8WakeLockType::Enum::kSystem) + 1;
-static_assert(kWakeLockTypeCount == 2);
-
 MODULES_EXPORT device::mojom::blink::WakeLockType ToMojomWakeLockType(
     V8WakeLockType::Enum type);
 

@@ -72,7 +72,7 @@ class MODULES_EXPORT WakeLock final : public ScriptWrappable,
   // https://w3c.github.io/screen-wake-lock/#dfn-activelocks
   // An ordered map of wake lock types to a list of WakeLockSentinel objects
   // associated with this Document.
-  Member<WakeLockManager> managers_[kWakeLockTypeCount];
+  Member<WakeLockManager> managers_[V8WakeLockType::kEnumSize];
 
   FRIEND_TEST_ALL_PREFIXES(WakeLockSentinelTest, ContextDestruction);
   FRIEND_TEST_ALL_PREFIXES(WakeLockTest, RequestWakeLockGranted);
