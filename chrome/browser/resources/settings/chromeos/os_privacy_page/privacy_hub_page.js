@@ -60,7 +60,7 @@ class SettingsPrivacyHubPage extends SettingsPrivacyHubPageBase {
   /** @override */
   ready() {
     super.ready();
-    assert(loadTimeData.getBoolean('showPrivacyHub'));
+    assert(loadTimeData.getBoolean('showPrivacyHubPage'));
     this.addWebUIListener('camera-hardware-toggle-changed', (enabled) => {
       this.setCameraHardwareToggleState_(enabled);
     });
@@ -140,6 +140,19 @@ class SettingsPrivacyHubPage extends SettingsPrivacyHubPageBase {
             'microphoneHardwareToggleActive_, ' +
             'microphoneForSimpleUsageAvailable_)',
       },
+
+      /**
+       * Whether the part of privacy hub for dogfooding should be displayed.
+       * @private
+       */
+      showPrivacyHubMVPPage_: {
+        type: Boolean,
+        readOnly: true,
+        value: function() {
+          return loadTimeData.getBoolean('showPrivacyHubMVPPage');
+        },
+      },
+
     };
   }
 

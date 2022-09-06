@@ -41,7 +41,7 @@
         </cr-link-row>
         <div class="hr"></div>
       </template>
-      <template is="dom-if" if="[[showPrivacyHub_]]" restamp>
+      <template is="dom-if" if="[[showPrivacyHubPage_]]" restamp>
         <cr-link-row id="privacyHubSubpageTrigger"
             on-click="onPrivacyHub_"
             label="$i18n{privacyHubTitle}"
@@ -73,7 +73,7 @@
       <div class="hr"></div>
     </template>
 </if>
-    <template is="dom-if" if="[[!showPrivacyHub_]]" restamp>
+    <template is="dom-if" if="[[!showPrivacyHubPage_]]" restamp>
       <settings-toggle-button
           id="suggested-content"
           pref="{{prefs.settings.suggested_content_enabled}}"

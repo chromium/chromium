@@ -746,6 +746,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsConsumerAutoUpdateToggleAllowed();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsCrosPrivacyHubEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsCrosPrivacyHubDogfoodEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsCrosPrivacyHubFutureEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS) bool IsCrosPrivacyHubMVPEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsCrosNextWMPEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsDesksCloseAllEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsCryptohomeRecoveryFlowEnabled();

@@ -13,7 +13,7 @@ import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {waitAfterNextRender} from 'chrome://test/test_util.js';
 
-import {assertEquals} from '../../chai_assert.js';
+import {assertEquals, assertNotReached} from '../../chai_assert.js';
 import {TestBrowserProxy} from '../../test_browser_proxy.js';
 
 /** @implements {PrivacyHubBrowserProxy} */
@@ -48,8 +48,42 @@ class TestPrivacyHubBrowserProxy extends TestBrowserProxy {
   }
 }
 
+const PrivacyHubVersion = {
+  Future: 'Privacy Hub with future (after MVP) features.',
+  MVP: 'Privacy Hub with MVP features.',
+  Dogfood: 'Privacy Hub with dogfooded features (camera and microphone only).',
+};
 
-suite('PrivacyHubSubpageTests', function() {
+function overridedValues(privacyHubVersion) {
+  switch (privacyHubVersion) {
+    case PrivacyHubVersion.Future: {
+      return {
+        showPrivacyHubPage: true,
+        showPrivacyHubMVPPage: true,
+        showPrivacyHubFuturePage: true,
+      };
+    }
+    case PrivacyHubVersion.Dogfood: {
+      return {
+        showPrivacyHubPage: true,
+        showPrivacyHubMVPPage: false,
+        showPrivacyHubFuturePage: false,
+      };
+    }
+    case PrivacyHubVersion.MVP: {
+      return {
+        showPrivacyHubPage: true,
+        showPrivacyHubMVPPage: true,
+        showPrivacyHubFuturePage: false,
+      };
+    }
+    default: {
+      assertNotReached(`Unsupported Privacy Hub version: {privacyHubVersion}`);
+    }
+  }
+}
+
+async function parametrizedPrivacyHubSubpageTestsuite(privacyHubVersion) {
   /** @type {SettingsPrivacyHubPage} */
   let privacyHubSubpage = null;
 
@@ -57,9 +91,7 @@ suite('PrivacyHubSubpageTests', function() {
   let privacyHubBrowserProxy = null;
 
   setup(async () => {
-    loadTimeData.overrideValues({
-      showPrivacyHub: true,
-    });
+    loadTimeData.overrideValues(overridedValues(privacyHubVersion));
 
     privacyHubBrowserProxy = new TestPrivacyHubBrowserProxy();
     PrivacyHubBrowserProxyImpl.setInstanceForTesting(privacyHubBrowserProxy);
@@ -110,21 +142,6 @@ suite('PrivacyHubSubpageTests', function() {
         'Microphone toggle should be focused for settingId=1117.');
   });
 
-  test('Deep link to Geolocation toggle on privacy hub', async () => {
-    const params = new URLSearchParams();
-    params.append('settingId', '1118');
-    Router.getInstance().navigateTo(routes.PRIVACY_HUB, params);
-
-    flush();
-
-    const deepLinkElement =
-        privacyHubSubpage.shadowRoot.querySelector('#geolocationToggle')
-            .shadowRoot.querySelector('cr-toggle');
-    await waitAfterNextRender(deepLinkElement);
-    assertEquals(
-        deepLinkElement, getDeepActiveElement(),
-        'Geolocation toggle should be focused for settingId=1118.');
-  });
 
   test('Update camera setting sub-label', async () => {
     const params = new URLSearchParams();
@@ -255,4 +272,36 @@ suite('PrivacyHubSubpageTests', function() {
         privacyHubSubpage.shadowRoot.querySelector('#suggested-content'));
     assertTrue(suggestedContent.checked);
   });
-});
+
+  test('Deep link to Geolocation toggle on privacy hub', async () => {
+    const params = new URLSearchParams();
+    params.append('settingId', '1118');
+    Router.getInstance().navigateTo(routes.PRIVACY_HUB, params);
+
+    flush();
+
+    const toggleElement =
+        privacyHubSubpage.shadowRoot.querySelector('#geolocationToggle');
+    if (privacyHubVersion === PrivacyHubVersion.Dogfood) {
+      assertEquals(toggleElement, null);
+    } else {
+      const deepLinkElement =
+          toggleElement.shadowRoot.querySelector('cr-toggle');
+      await waitAfterNextRender(deepLinkElement);
+      assertEquals(
+          deepLinkElement, getDeepActiveElement(),
+          'Geolocation toggle should be focused for settingId=1118.');
+    }
+  });
+  //}
+}
+
+suite(
+    'PrivacyHubDogfoodSubpageTests',
+    () => parametrizedPrivacyHubSubpageTestsuite(PrivacyHubVersion.Dogfood));
+suite(
+    'PrivacyHubMVPSubpageTests',
+    () => parametrizedPrivacyHubSubpageTestsuite(PrivacyHubVersion.MVP));
+suite(
+    'PrivacyHubFutureSubpageTests',
+    () => parametrizedPrivacyHubSubpageTestsuite(PrivacyHubVersion.Future));

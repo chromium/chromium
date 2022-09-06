@@ -342,10 +342,11 @@ void PrivacySection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   html_source->AddBoolean("isQuickDimEnabled",
                           ash::features::IsQuickDimEnabled());
 
-  html_source->AddBoolean("showPrivacyHub",
+  html_source->AddBoolean("showPrivacyHubPage",
                           ash::features::IsCrosPrivacyHubEnabled());
-
-  html_source->AddBoolean("showPrivacyHubFuture",
+  html_source->AddBoolean("showPrivacyHubMVPPage",
+                          ash::features::IsCrosPrivacyHubMVPEnabled());
+  html_source->AddBoolean("showPrivacyHubFuturePage",
                           ash::features::IsCrosPrivacyHubFutureEnabled());
 
   html_source->AddString(

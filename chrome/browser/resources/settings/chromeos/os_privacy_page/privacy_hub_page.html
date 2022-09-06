@@ -13,16 +13,19 @@
     sub-label="[[microphoneToggleSubLabel_]]"
     disabled="[[shouldDisableMicrophoneToggle_]]">
 </settings-toggle-button>
-<settings-toggle-button
-    pref="{{prefs.ash.user.geolocation_allowed}}"
-    id="geolocationToggle"
-    label="$i18n{geolocationToggleTitle}"
-    deep-link-focus-id$="[[Setting.kGeolocationOnOff]]">
-</settings-toggle-button>
-<settings-toggle-button
-    id="suggested-content"
-    pref="{{prefs.settings.suggested_content_enabled}}"
-    label="$i18n{enableSuggestedContent}"
-    sub-label="$i18n{enableSuggestedContentDesc}"
-    learn-more-url="$i18n{suggestedContentLearnMoreURL}">
-</settings-toggle-button>
+<!-- Location toggle is not to be shown in dogfooded version of Privacy Hub -->
+<template is="dom-if" if="[[showPrivacyHubMVPPage_]]" restamp>
+  <settings-toggle-button
+      pref="{{prefs.ash.user.geolocation_allowed}}"
+      id="geolocationToggle"
+      label="$i18n{geolocationToggleTitle}"
+      deep-link-focus-id$="[[Setting.kGeolocationOnOff]]">
+  </settings-toggle-button>
+</template>
+  <settings-toggle-button
+      id="suggested-content"
+      pref="{{prefs.settings.suggested_content_enabled}}"
+      label="$i18n{enableSuggestedContent}"
+      sub-label="$i18n{enableSuggestedContentDesc}"
+      learn-more-url="$i18n{suggestedContentLearnMoreURL}">
+  </settings-toggle-button>

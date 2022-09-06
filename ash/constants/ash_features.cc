@@ -1924,17 +1924,22 @@ bool IsConsumerAutoUpdateToggleAllowed() {
 }
 
 bool IsCrosPrivacyHubEnabled() {
-  return base::FeatureList::IsEnabled(kCrosPrivacyHub) ||
+  return IsCrosPrivacyHubDogfoodEnabled() || IsCrosPrivacyHubMVPEnabled() ||
          IsCrosPrivacyHubFutureEnabled();
 }
 
 bool IsCrosPrivacyHubDogfoodEnabled() {
   return base::FeatureList::IsEnabled(kCrosPrivacyHubDogfood) ||
-         IsCrosPrivacyHubEnabled();
+         IsCrosPrivacyHubMVPEnabled();
 }
 
 bool IsCrosPrivacyHubFutureEnabled() {
   return base::FeatureList::IsEnabled(kCrosPrivacyHubFuture);
+}
+
+bool IsCrosPrivacyHubMVPEnabled() {
+  return base::FeatureList::IsEnabled(kCrosPrivacyHub) ||
+         IsCrosPrivacyHubFutureEnabled();
 }
 
 bool IsCrosNextWMPEnabled() {

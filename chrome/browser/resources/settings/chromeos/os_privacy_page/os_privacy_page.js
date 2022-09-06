@@ -220,11 +220,11 @@ class OsSettingsPrivacyPageElement extends OsSettingsPrivacyPageElementBase {
        * Whether privacy hub should be displayed.
        * @private
        */
-      showPrivacyHub_: {
+      showPrivacyHubPage_: {
         type: Boolean,
         readOnly: true,
         value: function() {
-          return loadTimeData.getBoolean('showPrivacyHub');
+          return loadTimeData.getBoolean('showPrivacyHubPage');
         },
       },
 
