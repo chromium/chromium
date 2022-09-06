@@ -362,11 +362,9 @@
   [self.overscrollActionsController invalidate];
   [self configureOverscrollActionsController];
 
-  // If viewDidAppear, then we are just changing the NTP collection view. In
-  // that case, we apply the constraints here.
-  if (self.viewDidAppear) {
-    [self applyCollectionViewConstraints];
-  }
+  // Update NTP collection view constraints to ensure the layout adapts to
+  // changes in feed visibility.
+  [self applyCollectionViewConstraints];
 
   // If the feed is not visible, we control the delegate ourself (since it is
   // otherwise controlled by the feed service). The view is also layed out
