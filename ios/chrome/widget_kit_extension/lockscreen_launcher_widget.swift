@@ -78,8 +78,8 @@ import WidgetKit
             .foregroundColor(.white)
         }
         .widgetURL(configuration.widgetURL)
-        .accessibility(
-          label: Text(configuration.accessibilityLabel))
+        .accessibilityElement()
+        .accessibilityLabel(configuration.accessibilityLabel)
       }
     }
 
