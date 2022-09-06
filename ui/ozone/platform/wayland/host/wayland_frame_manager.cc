@@ -8,8 +8,10 @@
 #include <sync/sync.h>
 
 #include "base/containers/adapters.h"
+#include "base/containers/fixed_flat_set.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/size_conversions.h"
+#include "ui/gfx/overlay_priority_hint.h"
 #include "ui/ozone/platform/wayland/host/wayland_buffer_backing.h"
 #include "ui/ozone/platform/wayland/host/wayland_buffer_factory.h"
 #include "ui/ozone/platform/wayland/host/wayland_buffer_handle.h"
@@ -319,6 +321,9 @@ void WaylandFrameManager::ApplySurfaceConfigure(
   surface->SetRoundedClipBounds(config.rounded_clip_bounds);
   surface->SetOverlayPriority(config.priority_hint);
   surface->SetBackgroundColor(config.background_color);
+  surface->SetContainsVideo(
+      config.priority_hint == gfx::OverlayPriorityHint::kHardwareProtection ||
+      config.priority_hint == gfx::OverlayPriorityHint::kVideo);
   if (set_opaque_region) {
     std::vector<gfx::Rect> region_px = {
         gfx::Rect(gfx::ToRoundedSize(config.bounds_rect.size()))};

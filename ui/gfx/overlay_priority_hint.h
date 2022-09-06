@@ -19,6 +19,8 @@ enum OverlayPriorityHint {
   // The overlay contains protected content and requires to be promoted to
   // overlay.
   kHardwareProtection,
+  // The overlay contains a video. Can be a candidate for promotion.
+  kVideo,
 };
 
 }  // namespace gfx

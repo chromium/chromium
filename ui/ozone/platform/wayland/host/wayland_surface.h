@@ -158,6 +158,9 @@ class WaylandSurface {
   // side.
   void SetBackgroundColor(absl::optional<SkColor4f> background_color);
 
+  // Sets whether this surface contains a video.
+  void SetContainsVideo(bool contains_video);
+
   // Validates the |pending_state_| and generates the corresponding requests.
   // Then copy |pending_states_| to |states_|.
   void ApplyPendingState();
@@ -253,6 +256,9 @@ class WaylandSurface {
     // can be used by Wayland compositor to correctly display delegated textures
     // which require background color applied.
     absl::optional<SkColor4f> background_color;
+
+    // Whether or not this surface contains video, for wp_content_type_v1.
+    bool contains_video = false;
   };
 
   // Tracks the last sent src and dst values across wayland protocol s.t. we

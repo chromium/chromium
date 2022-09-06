@@ -2370,6 +2370,8 @@ TEST_P(WaylandBufferManagerTest, CanSubmitOverlayPriority) {
        OVERLAY_PRIORITIZED_SURFACE_OVERLAY_PRIORITY_NONE},
       {gfx::OverlayPriorityHint::kRegular,
        OVERLAY_PRIORITIZED_SURFACE_OVERLAY_PRIORITY_REGULAR},
+      {gfx::OverlayPriorityHint::kVideo,
+       OVERLAY_PRIORITIZED_SURFACE_OVERLAY_PRIORITY_REGULAR},
       {gfx::OverlayPriorityHint::kLowLatencyCanvas,
        OVERLAY_PRIORITIZED_SURFACE_OVERLAY_PRIORITY_PREFERRED_LOW_LATENCY_CANVAS},
       {gfx::OverlayPriorityHint::kHardwareProtection,

@@ -10,4 +10,5 @@ enum OverlayPriorityHint {
   kRegular,
   kLowLatencyCanvas,
   kHardwareProtection,
+  kVideo,
 };

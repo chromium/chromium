@@ -24,6 +24,8 @@ struct EnumTraits<gfx::mojom::OverlayPriorityHint, gfx::OverlayPriorityHint> {
         return gfx::mojom::OverlayPriorityHint::kLowLatencyCanvas;
       case gfx::OverlayPriorityHint::kHardwareProtection:
         return gfx::mojom::OverlayPriorityHint::kHardwareProtection;
+      case gfx::OverlayPriorityHint::kVideo:
+        return gfx::mojom::OverlayPriorityHint::kVideo;
     }
     NOTREACHED();
     return gfx::mojom::OverlayPriorityHint::kNone;
@@ -43,6 +45,9 @@ struct EnumTraits<gfx::mojom::OverlayPriorityHint, gfx::OverlayPriorityHint> {
         return true;
       case gfx::mojom::OverlayPriorityHint::kHardwareProtection:
         *out = gfx::OverlayPriorityHint::kHardwareProtection;
+        return true;
+      case gfx::mojom::OverlayPriorityHint::kVideo:
+        *out = gfx::OverlayPriorityHint::kVideo;
         return true;
     }
     NOTREACHED();

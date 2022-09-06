@@ -23,6 +23,7 @@
 #include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/gpu_fence.h"
 #include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/overlay_priority_hint.h"
 #include "ui/ozone/platform/wayland/common/wayland_util.h"
 #include "ui/ozone/platform/wayland/host/overlay_prioritizer.h"
 #include "ui/ozone/platform/wayland/host/surface_augmenter.h"
@@ -45,6 +46,7 @@ uint32_t TranslatePriority(gfx::OverlayPriorityHint priority_hint) {
       priority = OVERLAY_PRIORITIZED_SURFACE_OVERLAY_PRIORITY_NONE;
       break;
     case gfx::OverlayPriorityHint::kRegular:
+    case gfx::OverlayPriorityHint::kVideo:
       priority = OVERLAY_PRIORITIZED_SURFACE_OVERLAY_PRIORITY_REGULAR;
       break;
     case gfx::OverlayPriorityHint::kLowLatencyCanvas:
@@ -712,6 +714,7 @@ WaylandSurface::State& WaylandSurface::State::operator=(
   rounded_clip_bounds = other.rounded_clip_bounds;
   priority_hint = other.priority_hint;
   background_color = other.background_color;
+  contains_video = other.contains_video;
   return *this;
 }
 
@@ -799,6 +802,10 @@ void WaylandSurface::SetBackgroundColor(
     absl::optional<SkColor4f> background_color) {
   if (GetAugmentedSurface())
     pending_state_.background_color = background_color;
+}
+
+void WaylandSurface::SetContainsVideo(bool contains_video) {
+  pending_state_.contains_video = contains_video;
 }
 
 // static
