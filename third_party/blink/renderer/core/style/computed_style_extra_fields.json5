@@ -1137,6 +1137,7 @@
       // https://html.spec.whatwg.org/multipage/interaction.html#inert
       name: "IsInert",
       inherited: true,
+      independent: true,
       field_template: "primitive",
       type_name: "bool",
       default_value: "false",

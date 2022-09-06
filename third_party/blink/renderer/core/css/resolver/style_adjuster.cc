@@ -769,6 +769,7 @@ static void AdjustStyleForInert(ComputedStyle& style, Element* element) {
 
   if (element->IsInertRoot()) {
     style.SetIsInert(true);
+    style.SetIsInertIsInherited(false);
     return;
   }
 
@@ -778,10 +779,12 @@ static void AdjustStyleForInert(ComputedStyle& style, Element* element) {
     modal_element = Fullscreen::FullscreenElementFrom(document);
   if (modal_element == element) {
     style.SetIsInert(false);
+    style.SetIsInertIsInherited(false);
     return;
   }
   if (modal_element && element == document.documentElement()) {
     style.SetIsInert(true);
+    style.SetIsInertIsInherited(false);
     return;
   }
 }
