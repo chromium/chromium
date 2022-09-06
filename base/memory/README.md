@@ -60,8 +60,11 @@ object gets destroyed.
 
 This is Chrome's answer to `std::shared_ptr<T>`. It additionally requires T to
 inherit from `RefCounted` or `RefCountedThreadSafe`, since the ref counting
-happens in the object itself, unlike `shared_ptr<T>`. When possible, use
-`RefCountedThreadSafe`, especially if there are `scoped_refptr`s to the same
-object on different threads, since they can race. It's also important to know
-which thread has the last reference to the object, or you can end up with
-flakiness.
+happens in the object itself, unlike `shared_ptr<T>`. It's preferred for an
+object to remain on the same thread, as `RefCounted` is much cheaper. If there
+are `scoped_refptr`s to the same object on different threads, use
+`RedCountedThreadSafe`, since accesses to the reference count can race.
+In this case, without external synchronization, the destructor can run on any
+thread. If the destructor interacts with other systems it is important to
+control and know which thread has the last reference to the object, or you can
+end up with flakiness.
