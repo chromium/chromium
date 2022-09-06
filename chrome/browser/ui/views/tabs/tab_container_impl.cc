@@ -604,6 +604,7 @@ void TabContainerImpl::ExitTabClosingMode() {
 }
 
 void TabContainerImpl::SetTabSlotVisibility() {
+  std::set<tab_groups::TabGroupId> visibility_changed_groups;
   bool last_tab_visible = false;
   absl::optional<tab_groups::TabGroupId> last_tab_group = absl::nullopt;
   std::vector<Tab*> tabs = layout_helper_->GetTabs();
@@ -623,11 +624,26 @@ void TabContainerImpl::SetTabSlotVisibility() {
     // Collapsed tabs disappear once they've reached their minimum size. This
     // is different than very small non-collapsed tabs, because in that case
     // the tab (and its favicon) must still be visible.
-    bool is_collapsed = (current_group.has_value() &&
-                         controller_->IsGroupCollapsed(current_group.value()) &&
-                         tab->bounds().width() <= TabStyle::GetTabOverlap());
-    tab->SetVisible(is_collapsed ? false : last_tab_visible);
+    const bool is_collapsed =
+        (current_group.has_value() &&
+         controller_->IsGroupCollapsed(current_group.value()) &&
+         tab->bounds().width() <= TabStyle::GetTabOverlap());
+    const bool should_be_visible = is_collapsed ? false : last_tab_visible;
+
+    // If we change the visibility of a tab in a group, we must recalculate that
+    // group's underline bounds.
+    if (should_be_visible != tab->GetVisible() && tab->group().has_value())
+      visibility_changed_groups.insert(tab->group().value());
+
+    tab->SetVisible(should_be_visible);
   }
+
+  // Update bounds for any groups containing a modified tab. N.B. this method
+  // also updates the title and color of the group, but this should always be a
+  // no-op in practice, as changes to those immediately take effect via other
+  // notification channels.
+  for (const auto& group : visibility_changed_groups)
+    UpdateTabGroupVisuals(group);
 }
 
 bool TabContainerImpl::InTabClose() {

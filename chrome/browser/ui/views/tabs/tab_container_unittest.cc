@@ -7,6 +7,7 @@
 #include <memory>
 #include "base/memory/raw_ref.h"
 #include "chrome/browser/ui/layout_constants.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/tabs/fake_base_tab_strip_controller.h"
 #include "chrome/browser/ui/views/tabs/fake_tab_slot_controller.h"
 #include "chrome/browser/ui/views/tabs/tab_drag_context.h"
@@ -297,6 +298,14 @@ class TabContainerTest : public ChromeViewsTestBase {
     gfx::Size size(tab_container_width_, GetLayoutConstant(TAB_HEIGHT));
     widget_->SetSize(size);
     drag_context_->SetSize(size);
+    tab_container_->SetSize(size);
+  }
+
+  // An abridged version of the above that avoids calls to TabContainer::Layout
+  // from Widget::SetSize.
+  void SetTabContainerWidthSingleLayout(int width) {
+    tab_container_width_ = width;
+    gfx::Size size(tab_container_width_, GetLayoutConstant(TAB_HEIGHT));
     tab_container_->SetSize(size);
   }
 
@@ -762,6 +771,42 @@ TEST_F(TabContainerTest, GroupUnderlineBasics) {
   EXPECT_EQ(underline->bounds().right(),
             tab_container_->GetTabAtModelIndex(1)->bounds().right() +
                 TabGroupUnderline::kStrokeThickness);
+}
+
+TEST_F(TabContainerTest, UnderlineBoundsTabVisibilityChange) {
+  // Validates that group underlines are updated correctly in a single Layout
+  // call when the visibility of tabs in the group change. See crbug.com/1356177
+
+  // This test is only valid with scrolling off, since it pertains to tab
+  // visibility stuff that scrolling doesn't do.
+  ASSERT_FALSE(base::FeatureList::IsEnabled(features::kScrollableTabStrip));
+
+  SetTabContainerWidth(200);
+  // Add tabs to a single group until the last one is not visible.
+  tab_groups::TabGroupId group = tab_groups::TabGroupId::GenerateNew();
+  do {
+    AddTab(0);
+    AddTabToGroup(0, group);
+    tab_container_->CompleteAnimationAndLayout();
+  } while (tab_container_->GetTabAtModelIndex(tab_container_->GetTabCount() - 1)
+               ->GetVisible());
+
+  const TabGroupUnderline* underline = ListGroupViews()[0]->underline();
+  const gfx::Rect initial_bounds = underline->bounds();
+
+  // Shrink the TabContainer and verify that the underline bounds changed. Use
+  // the abridged version of the method to ensure TabContainer::Layout is called
+  // exactly once.
+  SetTabContainerWidthSingleLayout(100);
+  const gfx::Rect shrunk_bounds = underline->bounds();
+  EXPECT_NE(shrunk_bounds, initial_bounds);
+
+  // Re-expand the TabContainer and verify that the underline bounds changed.
+  // Use the abridged version of the method to ensure TabContainer::Layout is
+  // called exactly once.
+  SetTabContainerWidthSingleLayout(300);
+  EXPECT_NE(tab_container_->bounds(), initial_bounds);
+  EXPECT_NE(tab_container_->bounds(), shrunk_bounds);
 }
 
 TEST_F(TabContainerTest, GroupHighlightBasics) {
