@@ -367,6 +367,7 @@ TEST_F(CompositorFrameReportingControllerTest, ActiveReporterCounts) {
 
   // BF -> BMF -> BF -> Commit
   // Should stay same.
+  reporting_controller_.NotifyReadyToCommit(nullptr);
   reporting_controller_.WillCommit();
   reporting_controller_.DidCommit();
   EXPECT_EQ(2, reporting_controller_.ActiveReporters());
@@ -381,6 +382,7 @@ TEST_F(CompositorFrameReportingControllerTest, ActiveReporterCounts) {
   // for frame_2 in activate state.
   EXPECT_EQ(2, reporting_controller_.ActiveReporters());
 
+  reporting_controller_.NotifyReadyToCommit(nullptr);
   reporting_controller_.WillCommit();
   reporting_controller_.DidCommit();
   reporting_controller_.WillActivate();
@@ -550,6 +552,7 @@ TEST_F(CompositorFrameReportingControllerTest, DidNotProduceFrame) {
 
   reporting_controller_.WillBeginImplFrame(args_2);
   reporting_controller_.OnFinishImplFrame(current_id_2);
+  reporting_controller_.NotifyReadyToCommit(nullptr);
   reporting_controller_.WillCommit();
   reporting_controller_.DidCommit();
   reporting_controller_.WillActivate();
@@ -616,6 +619,7 @@ TEST_F(CompositorFrameReportingControllerTest,
                                            FrameSkippedReason::kWaitingOnMain);
 
   reporting_controller_.WillBeginImplFrame(args_3);
+  reporting_controller_.NotifyReadyToCommit(nullptr);
   reporting_controller_.WillCommit();
   reporting_controller_.DidCommit();
   reporting_controller_.WillActivate();
@@ -703,6 +707,7 @@ TEST_F(CompositorFrameReportingControllerTest, MainFrameAborted2) {
   reporting_controller_.WillBeginImplFrame(args_1);
   reporting_controller_.OnFinishImplFrame(current_id_1);
   reporting_controller_.WillBeginMainFrame(args_1);
+  reporting_controller_.NotifyReadyToCommit(nullptr);
   reporting_controller_.WillCommit();
   reporting_controller_.DidCommit();
   reporting_controller_.WillActivate();
@@ -789,6 +794,7 @@ TEST_F(CompositorFrameReportingControllerTest, LongMainFrame) {
   reporting_controller_.WillBeginImplFrame(args_1);
   reporting_controller_.OnFinishImplFrame(current_id_1);
   reporting_controller_.WillBeginMainFrame(args_1);
+  reporting_controller_.NotifyReadyToCommit(nullptr);
   reporting_controller_.WillCommit();
   reporting_controller_.DidCommit();
   reporting_controller_.WillActivate();
@@ -854,6 +860,7 @@ TEST_F(CompositorFrameReportingControllerTest, LongMainFrame) {
 
   reporting_controller_.WillBeginImplFrame(args_3);
   reporting_controller_.OnFinishImplFrame(current_id_3);
+  reporting_controller_.NotifyReadyToCommit(nullptr);
   reporting_controller_.WillCommit();
   reporting_controller_.DidCommit();
   reporting_controller_.WillActivate();
@@ -906,6 +913,7 @@ TEST_F(CompositorFrameReportingControllerTest, LongMainFrame2) {
   reporting_controller_.WillBeginImplFrame(args_1);
   reporting_controller_.OnFinishImplFrame(current_id_1);
   reporting_controller_.WillBeginMainFrame(args_1);
+  reporting_controller_.NotifyReadyToCommit(nullptr);
   reporting_controller_.WillCommit();
   reporting_controller_.DidCommit();
   reporting_controller_.WillActivate();
@@ -932,6 +940,7 @@ TEST_F(CompositorFrameReportingControllerTest, LongMainFrame2) {
   // The reporting for the second frame is delayed until activation happens.
   reporting_controller_.WillBeginImplFrame(args_2);
   reporting_controller_.WillBeginMainFrame(args_2);
+  reporting_controller_.NotifyReadyToCommit(nullptr);
   reporting_controller_.WillCommit();
   reporting_controller_.DidCommit();
   reporting_controller_.OnFinishImplFrame(current_id_2);
@@ -1059,6 +1068,7 @@ TEST_F(CompositorFrameReportingControllerTest, ReportingMissedDeadlineFrame1) {
   reporting_controller_.WillBeginImplFrame(args_);
   reporting_controller_.OnFinishImplFrame(current_id_);
   reporting_controller_.WillBeginMainFrame(args_);
+  reporting_controller_.NotifyReadyToCommit(nullptr);
   reporting_controller_.WillCommit();
   reporting_controller_.DidCommit();
   reporting_controller_.WillActivate();
@@ -1098,6 +1108,7 @@ TEST_F(CompositorFrameReportingControllerTest, ReportingMissedDeadlineFrame2) {
   reporting_controller_.WillBeginImplFrame(args_);
   reporting_controller_.OnFinishImplFrame(current_id_);
   reporting_controller_.WillBeginMainFrame(args_);
+  reporting_controller_.NotifyReadyToCommit(nullptr);
   reporting_controller_.WillCommit();
   reporting_controller_.DidCommit();
   reporting_controller_.WillActivate();
@@ -1575,6 +1586,7 @@ TEST_F(CompositorFrameReportingControllerTest,
   reporting_controller_.DidPresentCompositorFrame(1u, details);
 
   // The main-thread responds now, triggering a commit and activation.
+  reporting_controller_.NotifyReadyToCommit(nullptr);
   reporting_controller_.WillCommit();
   reporting_controller_.DidCommit();
   reporting_controller_.WillActivate();
@@ -2006,6 +2018,65 @@ TEST_F(CompositorFrameReportingControllerTest,
   SimulatePresentCompositorFrame();
   EXPECT_EQ(0u, dropped_counter_.total_smoothness_dropped());
   EXPECT_EQ(3u, dropped_counter_.total_frames());
+}
+
+TEST_F(CompositorFrameReportingControllerTest, MainFrameBeforeCommit) {
+  viz::BeginFrameArgs args1 = SimulateBeginFrameArgs({1, 1});
+  viz::BeginFrameArgs args2 = SimulateBeginFrameArgs({1, 2});
+  viz::BeginFrameArgs args3 = SimulateBeginFrameArgs({1, 3});
+  viz::BeginFrameArgs args4 = SimulateBeginFrameArgs({1, 4});
+
+  // Frame 1
+  reporting_controller_.WillBeginImplFrame(args1);
+  reporting_controller_.WillBeginMainFrame(args1);
+  reporting_controller_.NotifyReadyToCommit(nullptr);
+  // Frame 1 is ready to commit, so we can pipeline frame 2.
+  reporting_controller_.WillBeginImplFrame(args2);
+  reporting_controller_.WillBeginMainFrame(args2);
+  EXPECT_EQ(2, reporting_controller_.ActiveReporters());
+  EXPECT_TRUE(reporting_controller_.HasReporterAt(
+      CompositorFrameReportingController::PipelineStage::kBeginMainFrame));
+  EXPECT_TRUE(reporting_controller_.HasReporterAt(
+      CompositorFrameReportingController::PipelineStage::kReadyToCommit));
+
+  // Commit frame 1
+  reporting_controller_.WillCommit();
+  reporting_controller_.DidCommit();
+  // Frame 2 ready to commit
+  reporting_controller_.NotifyReadyToCommit(nullptr);
+  reporting_controller_.WillBeginImplFrame(args3);
+  EXPECT_EQ(3, reporting_controller_.ActiveReporters());
+  // Pipeline frame 3
+  reporting_controller_.WillBeginMainFrame(args3);
+  EXPECT_EQ(3, reporting_controller_.ActiveReporters());
+  EXPECT_TRUE(reporting_controller_.HasReporterAt(
+      CompositorFrameReportingController::PipelineStage::kBeginMainFrame));
+  EXPECT_TRUE(reporting_controller_.HasReporterAt(
+      CompositorFrameReportingController::PipelineStage::kReadyToCommit));
+  EXPECT_TRUE(reporting_controller_.HasReporterAt(
+      CompositorFrameReportingController::PipelineStage::kCommit));
+
+  // Activate frame 1
+  reporting_controller_.WillActivate();
+  reporting_controller_.DidActivate();
+  // Commit frame 2
+  reporting_controller_.WillCommit();
+  reporting_controller_.DidCommit();
+  // Frame 3 ready to commit
+  reporting_controller_.NotifyReadyToCommit(nullptr);
+  reporting_controller_.WillBeginImplFrame(args4);
+  EXPECT_EQ(4, reporting_controller_.ActiveReporters());
+  // Pipeline frame 4
+  reporting_controller_.WillBeginMainFrame(args4);
+  EXPECT_EQ(4, reporting_controller_.ActiveReporters());
+  EXPECT_TRUE(reporting_controller_.HasReporterAt(
+      CompositorFrameReportingController::PipelineStage::kBeginMainFrame));
+  EXPECT_TRUE(reporting_controller_.HasReporterAt(
+      CompositorFrameReportingController::PipelineStage::kReadyToCommit));
+  EXPECT_TRUE(reporting_controller_.HasReporterAt(
+      CompositorFrameReportingController::PipelineStage::kCommit));
+  EXPECT_TRUE(reporting_controller_.HasReporterAt(
+      CompositorFrameReportingController::PipelineStage::kActivate));
 }
 
 }  // namespace

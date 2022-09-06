@@ -182,16 +182,16 @@ void CompositorFrameReportingController::BeginMainFrameAborted(
 }
 
 void CompositorFrameReportingController::WillCommit() {
-  DCHECK(reporters_[PipelineStage::kBeginMainFrame]);
-  reporters_[PipelineStage::kBeginMainFrame]->StartStage(StageType::kCommit,
-                                                         Now());
+  DCHECK(reporters_[PipelineStage::kReadyToCommit]);
+  reporters_[PipelineStage::kReadyToCommit]->StartStage(StageType::kCommit,
+                                                        Now());
 }
 
 void CompositorFrameReportingController::DidCommit() {
-  DCHECK(reporters_[PipelineStage::kBeginMainFrame]);
-  reporters_[PipelineStage::kBeginMainFrame]->StartStage(
+  DCHECK(reporters_[PipelineStage::kReadyToCommit]);
+  reporters_[PipelineStage::kReadyToCommit]->StartStage(
       StageType::kEndCommitToActivation, Now());
-  AdvanceReporterStage(PipelineStage::kBeginMainFrame, PipelineStage::kCommit);
+  AdvanceReporterStage(PipelineStage::kReadyToCommit, PipelineStage::kCommit);
 }
 
 void CompositorFrameReportingController::WillInvalidateOnImplSide() {
@@ -591,6 +591,8 @@ void CompositorFrameReportingController::NotifyReadyToCommit(
   DCHECK(reporters_[PipelineStage::kBeginMainFrame]);
   reporters_[PipelineStage::kBeginMainFrame]->SetBlinkBreakdown(
       std::move(details), begin_main_frame_start_time_);
+  AdvanceReporterStage(PipelineStage::kBeginMainFrame,
+                       PipelineStage::kReadyToCommit);
 }
 
 void CompositorFrameReportingController::AddActiveTracker(
@@ -682,9 +684,18 @@ std::unique_ptr<CompositorFrameReporter>
 CompositorFrameReportingController::RestoreReporterAtBeginImpl(
     const viz::BeginFrameId& id) {
   auto& main_reporter = reporters_[PipelineStage::kBeginMainFrame];
+  auto& ready_to_commit_reporter = reporters_[PipelineStage::kReadyToCommit];
   auto& commit_reporter = reporters_[PipelineStage::kCommit];
-  if (main_reporter && main_reporter->frame_id() == id)
+  if (main_reporter && main_reporter->frame_id() == id) {
+    DCHECK(!ready_to_commit_reporter ||
+           ready_to_commit_reporter->frame_id() != id);
+    DCHECK(!commit_reporter || commit_reporter->frame_id() != id);
     return main_reporter->CopyReporterAtBeginImplStage();
+  }
+  if (ready_to_commit_reporter && ready_to_commit_reporter->frame_id() == id) {
+    DCHECK(!commit_reporter || commit_reporter->frame_id() != id);
+    return ready_to_commit_reporter->CopyReporterAtBeginImplStage();
+  }
   if (commit_reporter && commit_reporter->frame_id() == id)
     return commit_reporter->CopyReporterAtBeginImplStage();
   return nullptr;
@@ -722,6 +733,13 @@ CompositorFrameReportingController::GetOutstandingUpdatesFromMain(
   // that indicates some pending updates from the main thread.
   {
     const auto& reporter = reporters_[PipelineStage::kBeginMainFrame];
+    if (reporter && reporter->frame_id() < id &&
+        !reporter->did_abort_main_frame()) {
+      return reporter.get();
+    }
+  }
+  {
+    const auto& reporter = reporters_[PipelineStage::kReadyToCommit];
     if (reporter && reporter->frame_id() < id &&
         !reporter->did_abort_main_frame()) {
       return reporter.get();

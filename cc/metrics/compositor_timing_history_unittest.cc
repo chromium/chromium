@@ -416,5 +416,67 @@ TEST_F(CompositorTimingHistoryTest, BeginMainFrameQueueDuration) {
       timing_history_.bmf_queue_to_activate_critical_history().Percentile(0.));
 }
 
+TEST_F(CompositorTimingHistoryTest, MainFrameBeforeCommit) {
+  // Start first BMF
+  timing_history_.WillBeginMainFrame(GetFakeBeginFrameArg(true));
+  AdvanceNowBy(base::Milliseconds(1));
+  timing_history_.BeginMainFrameStarted(Now());
+  AdvanceNowBy(base::Milliseconds(1));
+  timing_history_.NotifyReadyToCommit();
+  AdvanceNowBy(base::Milliseconds(1));
+
+  // Start second BMF
+  timing_history_.WillBeginMainFrame(GetFakeBeginFrameArg(false));
+  AdvanceNowBy(base::Milliseconds(1));
+
+  // Advance first BMF
+  timing_history_.WillCommit();
+  AdvanceNowBy(base::Milliseconds(1));
+  timing_history_.DidCommit();
+  AdvanceNowBy(base::Milliseconds(1));
+
+  // Second BMF ready to commit
+  timing_history_.BeginMainFrameStarted(Now());
+  AdvanceNowBy(base::Milliseconds(1));
+  timing_history_.NotifyReadyToCommit();
+  AdvanceNowBy(base::Milliseconds(1));
+
+  // Start third BMF and abort it
+  timing_history_.WillBeginMainFrame(GetFakeBeginFrameArg(false));
+  AdvanceNowBy(base::Milliseconds(1));
+  timing_history_.BeginMainFrameAborted();
+  AdvanceNowBy(base::Milliseconds(1));
+
+  // Activate first tree
+  timing_history_.ReadyToActivate();
+  AdvanceNowBy(base::Milliseconds(1));
+  timing_history_.WillActivate();
+  AdvanceNowBy(base::Milliseconds(1));
+  timing_history_.DidActivate();
+  AdvanceNowBy(base::Milliseconds(1));
+
+  // Commit and activate second tree
+  timing_history_.WillCommit();
+  AdvanceNowBy(base::Milliseconds(1));
+  timing_history_.DidCommit();
+  AdvanceNowBy(base::Milliseconds(1));
+  timing_history_.ReadyToActivate();
+  AdvanceNowBy(base::Milliseconds(1));
+  timing_history_.WillActivate();
+  AdvanceNowBy(base::Milliseconds(1));
+  timing_history_.DidActivate();
+  AdvanceNowBy(base::Milliseconds(1));
+
+  // Should have one critical and one not-critical frame sample.
+  EXPECT_EQ(
+      1u,
+      timing_history_.bmf_queue_to_activate_critical_history().sample_count());
+  EXPECT_EQ(1u, timing_history_.bmf_start_to_ready_to_commit_critical_history()
+                    .sample_count());
+  EXPECT_EQ(1u,
+            timing_history_.bmf_start_to_ready_to_commit_not_critical_history()
+                .sample_count());
+}
+
 }  // namespace
 }  // namespace cc

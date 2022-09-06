@@ -1209,6 +1209,7 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, SyncedScrollAbortedCommit) {
   EXPECT_EQ(scroll_delta,
             synced_scroll->reflected_delta_in_main_tree().value());
 
+  std::unique_ptr<CompositorCommitData> commit_data2;
   gfx::Vector2dF scroll_delta2(-5, 27);
   root->ScrollBy(scroll_delta2);
   EXPECT_EQ(scroll_delta2, synced_scroll->UnsentDelta());

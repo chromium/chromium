@@ -38,12 +38,15 @@ void FakeCompositorFrameReportingController::BeginMainFrameAborted(
 }
 
 void FakeCompositorFrameReportingController::WillCommit() {
-  if (!HasReporterAt(PipelineStage::kBeginMainFrame)) {
-    viz::BeginFrameArgs args = viz::BeginFrameArgs();
-    args.frame_id = viz::BeginFrameId();
-    args.frame_time = Now();
-    args.interval = INTERVAL;
-    WillBeginMainFrame(args);
+  if (!HasReporterAt(PipelineStage::kReadyToCommit)) {
+    if (!HasReporterAt(PipelineStage::kBeginMainFrame)) {
+      viz::BeginFrameArgs args = viz::BeginFrameArgs();
+      args.frame_id = viz::BeginFrameId();
+      args.frame_time = Now();
+      args.interval = INTERVAL;
+      WillBeginMainFrame(args);
+    }
+    NotifyReadyToCommit(nullptr);
   }
   CompositorFrameReportingController::WillCommit();
 }

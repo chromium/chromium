@@ -41,6 +41,7 @@ class CC_EXPORT CompositorFrameReportingController {
   enum PipelineStage {
     kBeginImplFrame = 0,
     kBeginMainFrame,
+    kReadyToCommit,
     kCommit,
     kActivate,
     kNumPipelineStages
@@ -118,6 +119,8 @@ class CC_EXPORT CompositorFrameReportingController {
     begin_main_frame_start_time_ = begin_main_frame_start_time;
   }
 
+  bool HasReporterAt(PipelineStage stage) const;
+
  protected:
   struct SubmittedCompositorFrame {
     uint32_t frame_token;
@@ -130,7 +133,6 @@ class CC_EXPORT CompositorFrameReportingController {
   };
   base::TimeTicks Now() const;
 
-  bool HasReporterAt(PipelineStage stage) const;
   bool next_activate_has_invalidation() const {
     return next_activate_has_invalidation_;
   }
