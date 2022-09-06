@@ -3615,6 +3615,11 @@
     "expiry_milestone": 115
   },
   {
+    "name": "force-enable-fast-checkout-capabilities",
+    "owners": [ "vizcay", "bwolfgang", "jkeitel" ],
+    "expiry_milestone": 115
+  },
+  {
     "name": "force-enable-password-domain-capabilities",
     "owners": [ "vizcay", "treib", "brunobraga" ],
     "expiry_milestone": 110

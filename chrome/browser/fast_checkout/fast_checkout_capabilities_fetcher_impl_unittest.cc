@@ -11,6 +11,8 @@
 #include "base/test/gmock_move_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
+#include "chrome/browser/fast_checkout/fast_checkout_features.h"
 #include "components/autofill/core/common/signatures.h"
 #include "components/autofill_assistant/browser/public/autofill_assistant.h"
 #include "components/autofill_assistant/browser/public/mock_autofill_assistant.h"
@@ -283,6 +285,26 @@ TEST_F(FastCheckoutCapabilitiesFetcherImplTest,
   EXPECT_FALSE(fetcher()->IsTriggerFormSupported(origin1, kFormSignature3));
   EXPECT_FALSE(fetcher()->IsTriggerFormSupported(origin2, kFormSignature1));
   EXPECT_FALSE(fetcher()->IsTriggerFormSupported(origin2, kFormSignature2));
+  EXPECT_TRUE(fetcher()->IsTriggerFormSupported(origin2, kFormSignature3));
+}
+
+TEST_F(FastCheckoutCapabilitiesFetcherImplTest,
+       EnableFastCheckoutCapabilitiesFlag) {
+  // `kEnableFastCheckoutCapabilitiesFlag` flag is disabled,
+  // `IsTriggerFormSupported` returns the default value (false).
+  url::Origin origin1 = url::Origin::Create(GURL(kUrl1));
+  url::Origin origin2 = url::Origin::Create(GURL(kUrl2));
+
+  // The cache is empty.
+  EXPECT_FALSE(fetcher()->IsTriggerFormSupported(origin1, kFormSignature1));
+  EXPECT_FALSE(fetcher()->IsTriggerFormSupported(origin1, kFormSignature2));
+  EXPECT_FALSE(fetcher()->IsTriggerFormSupported(origin2, kFormSignature3));
+
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(features::kForceEnableFastCheckoutCapabilities);
+
+  EXPECT_TRUE(fetcher()->IsTriggerFormSupported(origin1, kFormSignature1));
+  EXPECT_TRUE(fetcher()->IsTriggerFormSupported(origin1, kFormSignature2));
   EXPECT_TRUE(fetcher()->IsTriggerFormSupported(origin2, kFormSignature3));
 }
 

@@ -2275,6 +2275,12 @@ const char kForceEnablePasswordDomainCapabilitiesDescription[] =
     "Force enables password change capabilities for every domain, regardless "
     "of the server response.";
 
+const char kForceEnableFastCheckoutCapabilitiesName[] =
+    "Force enable fast checkout capabilities";
+const char kForceEnableFastCheckoutCapabilitiesDescription[] =
+    "Force enables fast checkout capabilities for every domain, regardless "
+    "of the server response.";
+
 const char kPdfOcrName[] = "Performs OCR on inaccessible PDFs";
 const char kPdfOcrDescription[] =
     "Enables a feature whereby inaccessible (i.e. untagged) PDFs are made "

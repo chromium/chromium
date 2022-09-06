@@ -58186,6 +58186,7 @@ from previous Chrome versions.
   <int value="-885601782" label="enable-contextual-search"/>
   <int value="-885209667" label="FilesZipMount:disabled"/>
   <int value="-884864731" label="WebPaymentsSingleAppUiSkip:enabled"/>
+  <int value="-884783216" label="ForceEnableFastCheckoutCapabilities:enabled"/>
   <int value="-883694393" label="SyncPseudoUSSSupervisedUsers:disabled"/>
   <int value="-883608641" label="enable-cros-action-recorder"/>
   <int value="-882434910" label="EnableAggregatedMlSearchRanking:enabled"/>
@@ -59236,6 +59237,7 @@ from previous Chrome versions.
   <int value="-231642350" label="EnableWindowsGamingInputDataFetcher:disabled"/>
   <int value="-231426350" label="AutofillEnableToolbarStatusChip:enabled"/>
   <int value="-230824955" label="NTPMostLikelyFaviconsFromServer:enabled"/>
+  <int value="-226826278" label="ForceEnableFastCheckoutCapabilities:disabled"/>
   <int value="-225505731" label="CCTModule:enabled"/>
   <int value="-225228149" label="ContentSettingsRedesign:enabled"/>
   <int value="-222296540" label="VirtualKeyboardBorderedKey:disabled"/>

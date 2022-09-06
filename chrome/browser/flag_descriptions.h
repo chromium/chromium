@@ -1275,6 +1275,9 @@ extern const char kPasswordStrengthIndicatorDescription[];
 extern const char kForceEnablePasswordDomainCapabilitiesName[];
 extern const char kForceEnablePasswordDomainCapabilitiesDescription[];
 
+extern const char kForceEnableFastCheckoutCapabilitiesName[];
+extern const char kForceEnableFastCheckoutCapabilitiesDescription[];
+
 extern const char kPdfOcrName[];
 extern const char kPdfOcrDescription[];
 

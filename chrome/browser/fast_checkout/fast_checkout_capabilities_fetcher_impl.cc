@@ -12,6 +12,7 @@
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/time/time.h"
+#include "chrome/browser/fast_checkout/fast_checkout_features.h"
 #include "components/autofill/core/common/signatures.h"
 #include "components/autofill_assistant/browser/public/autofill_assistant.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -77,6 +78,10 @@ void FastCheckoutCapabilitiesFetcherImpl::FetchAvailability(
 bool FastCheckoutCapabilitiesFetcherImpl::IsTriggerFormSupported(
     const url::Origin& origin,
     autofill::FormSignature form_signature) {
+  if (base::FeatureList::IsEnabled(
+          features::kForceEnableFastCheckoutCapabilities)) {
+    return true;
+  }
   if (cache_.ContainsTriggerForm(origin, form_signature)) {
     base::UmaHistogramEnumeration(
         kUmaKeyCacheStateIsTriggerFormSupported,

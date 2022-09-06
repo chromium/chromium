@@ -10,6 +10,8 @@ namespace features {
 
 const base::Feature kFastCheckout{"FastCheckout",
                                   base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kForceEnableFastCheckoutCapabilities = {
+    "ForceEnableFastCheckoutCapabilities", base::FEATURE_DISABLED_BY_DEFAULT};
 #endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace features

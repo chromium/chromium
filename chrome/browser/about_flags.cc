@@ -8218,6 +8218,11 @@ const FeatureEntry kFeatureEntries[] = {
     {"fast-checkout", flag_descriptions::kFastCheckoutName,
      flag_descriptions::kFastCheckoutDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(features::kFastCheckout)},
+    {"force-enable-fast-checkout-capabilities",
+     flag_descriptions::kForceEnableFastCheckoutCapabilitiesName,
+     flag_descriptions::kForceEnableFastCheckoutCapabilitiesDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(features::kForceEnableFastCheckoutCapabilities)},
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
