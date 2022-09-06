@@ -15,10 +15,22 @@ namespace google_apis {
 namespace calendar {
 
 constexpr char kFieldsParameterName[] = "fields";
+
 // According to the docs
 // (https://developers.google.com/calendar/api/v3/reference/events/list), it
 // should return the participant/requester only as an attendee.
 constexpr int kMaxAttendees = 1;
+
+// Requested number of events returned on one result page.
+// The default value on the Calendar API side is 250 events per page and some
+// users have >250 events per month.
+// As a short term solution increasing the number of events per page to the
+// maximum allowed number (2500 / 30 = 80+ events per day should be more than
+// enough).
+// TODO(crbug.com/1359388): Implement pagination using `nextPageToken` from the
+// response.
+constexpr int kMaxResults = 2500;
+
 constexpr char kCalendarEventListFields[] =
     "timeZone,etag,kind,items(id,kind,summary,colorId,"
     "status,start(date),end(date),start(dateTime),end(dateTime),htmlLink,"
@@ -75,10 +87,10 @@ CalendarApiEventsRequest::CalendarApiEventsRequest(
 CalendarApiEventsRequest::~CalendarApiEventsRequest() = default;
 
 GURL CalendarApiEventsRequest::GetURLInternal() const {
-  return url_generator_.GetCalendarEventListUrl(
-      start_time_, end_time_,
-      /*single_events=*/true,
-      /*max_attendees=*/kMaxAttendees);
+  return url_generator_.GetCalendarEventListUrl(start_time_, end_time_,
+                                                /*single_events=*/true,
+                                                /*max_attendees=*/kMaxAttendees,
+                                                /*max_results=*/kMaxResults);
 }
 
 void CalendarApiEventsRequest::ProcessURLFetchResults(

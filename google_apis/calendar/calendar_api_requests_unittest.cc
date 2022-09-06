@@ -107,6 +107,7 @@ TEST_F(CalendarApiRequestsTest, GetEventListRequest) {
       "&timeMax=2021-06-16T10%3A00%3A00.000Z"
       "&singleEvents=true"
       "&maxAttendees=1"
+      "&maxResults=2500"
       "&fields=timeZone%2Cetag%2Ckind%2Citems(id%2Ckind%"
       "2Csummary%2CcolorId%2Cstatus%"
       "2Cstart(date)%2Cend(date)%"

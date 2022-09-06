@@ -35,10 +35,13 @@ class CalendarApiUrlGenerator {
   // |max_attendees| The maximum number of attendees to include in the response.
   //                 If there are more than the specified number of attendees,
   //                 only the participant is returned. Optional.
+  // |max_results|   Maximum number of events returned on one result page.
+  //                 Optional.
   GURL GetCalendarEventListUrl(const base::Time& start_time,
                                const base::Time& end_time,
                                bool single_events,
-                               absl::optional<int> max_attendees) const;
+                               absl::optional<int> max_attendees,
+                               absl::optional<int> max_results) const;
 
   // Returns a URL to fetch a map of calendar color id to color code.
   GURL GetCalendarColorListUrl() const;
