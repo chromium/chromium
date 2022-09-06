@@ -2,7 +2,8 @@
   "cast-binary-size": {
     "gn_args": {
       "dcheck_always_on": false,
-      "is_chromecast": true,
+      "enable_cast_receiver": true,
+      "is_castos": true,
       "is_component_build": false,
       "is_debug": false,
       "symbol_level": 1,

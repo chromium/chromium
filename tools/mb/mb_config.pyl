@@ -1980,7 +1980,7 @@
     ],
 
     'cast_binary_size': [
-      'cast', 'minimal_symbols', 'release_bot',
+      'cast_receiver', 'cast_os', 'minimal_symbols', 'release_bot',
     ],
 
     'cast_debug_bot': [
@@ -3813,10 +3813,6 @@
 
     'blink_enable_generated_code_formatting': {
       'gn_args': 'blink_enable_generated_code_formatting=true'
-    },
-
-    'cast': {
-      'gn_args': 'is_chromecast=true'
     },
 
     'cast_android': {
