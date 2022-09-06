@@ -283,12 +283,12 @@ IN_PROC_BROWSER_TEST_P(WebAppOfflineDarkModeTest,
         EvalJs(web_contents,
                "window.getComputedStyle(document.querySelector('div')).color")
             .ExtractString(),
-        "rgb(255, 255, 255)");
+        "rgb(227, 227, 227)");
     EXPECT_EQ(EvalJs(web_contents,
                      "window.getComputedStyle(document.querySelector('body'))."
                      "backgroundColor")
                   .ExtractString(),
-              "rgb(32, 33, 36)");
+              "rgb(31, 31, 31)");
   } else {
     EXPECT_TRUE(
         EvalJs(web_contents,
@@ -298,7 +298,7 @@ IN_PROC_BROWSER_TEST_P(WebAppOfflineDarkModeTest,
         EvalJs(web_contents,
                "window.getComputedStyle(document.querySelector('div')).color")
             .ExtractString(),
-        "rgb(32, 33, 36)");
+        "rgb(31, 31, 31)");
     EXPECT_EQ(EvalJs(web_contents,
                      "window.getComputedStyle(document.querySelector('body'))."
                      "backgroundColor")
@@ -330,12 +330,12 @@ IN_PROC_BROWSER_TEST_P(WebAppOfflineDarkModeTest,
         EvalJs(web_contents,
                "window.getComputedStyle(document.querySelector('div')).color")
             .ExtractString(),
-        "rgb(255, 255, 255)");
+        "rgb(227, 227, 227)");
     EXPECT_EQ(EvalJs(web_contents,
                      "window.getComputedStyle(document.querySelector('body'))."
                      "backgroundColor")
                   .ExtractString(),
-              "rgb(32, 33, 36)");
+              "rgb(31, 31, 31)");
   } else {
     // Expect that the default offline page is showing with light mode colors.
     EXPECT_TRUE(
@@ -346,7 +346,7 @@ IN_PROC_BROWSER_TEST_P(WebAppOfflineDarkModeTest,
         EvalJs(web_contents,
                "window.getComputedStyle(document.querySelector('div')).color")
             .ExtractString(),
-        "rgb(32, 33, 36)");
+        "rgb(31, 31, 31)");
     EXPECT_EQ(EvalJs(web_contents,
                      "window.getComputedStyle(document.querySelector('body'))."
                      "backgroundColor")
@@ -375,12 +375,12 @@ IN_PROC_BROWSER_TEST_P(WebAppOfflineDarkModeTest,
         EvalJs(web_contents,
                "window.getComputedStyle(document.querySelector('div')).color")
             .ExtractString(),
-        "rgb(255, 255, 255)");
+        "rgb(227, 227, 227)");
     EXPECT_EQ(EvalJs(web_contents,
                      "window.getComputedStyle(document.querySelector('body'))."
                      "backgroundColor")
                   .ExtractString(),
-              "rgb(32, 33, 36)");
+              "rgb(31, 31, 31)");
   } else {
     // Expect that the default offline page is showing with light mode colors.
     EXPECT_TRUE(
@@ -391,7 +391,7 @@ IN_PROC_BROWSER_TEST_P(WebAppOfflineDarkModeTest,
         EvalJs(web_contents,
                "window.getComputedStyle(document.querySelector('div')).color")
             .ExtractString(),
-        "rgb(32, 33, 36)");
+        "rgb(31, 31, 31)");
     EXPECT_EQ(EvalJs(web_contents,
                      "window.getComputedStyle(document.querySelector('body'))."
                      "backgroundColor")
