@@ -94,6 +94,8 @@ build_webui("build") {
     "shared/splash_pages_shared.css",
   ]
 
+  icons_html_files = [ "shared/icons.html" ]
+
   ts_composite = true
   ts_definitions = [
     "//tools/typescript/definitions/bookmarks.d.ts",

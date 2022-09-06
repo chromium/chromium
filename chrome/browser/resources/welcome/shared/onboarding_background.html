@@ -8,11 +8,13 @@
     --welcome-red: rgb(219, 68, 55);
     --welcome-yellow: rgb(251, 188, 4);
     --welcome-yellow-tinted: rgb(253, 214, 99);
+    --welcome-animation-play-state: running;
 
     display: flex;
     justify-content: center;
-    max-width: 100%;
+    max-width: 1100px;
     position: relative;
+    width: 100%;
   }
 
   @media (prefers-color-scheme: dark) {
@@ -26,6 +28,10 @@
       --welcome-yellow: rgb(251, 188, 4);
       --welcome-yellow-tinted: rgb(249, 171, 0);
     }
+  }
+
+  :host([force-paused_]) {
+    --welcome-animation-play-state: paused;
   }
 
   #container {
@@ -42,6 +48,7 @@
     min-height: 878px;
     min-width: 2728px;
     position: relative;
+    transform: scale(0.5);
   }
 
   #logo {
@@ -137,6 +144,7 @@
     -webkit-mask-position: 3px 0;
     -webkit-mask-size: 206px 12px;
     animation: dotted-line 1s infinite linear;
+    animation-play-state: var(--welcome-animation-play-state);
     background-color: var(--welcome-grey);
     height: 12px;
     left: 50%;
@@ -244,6 +252,7 @@
     --connectagon-shape-color: var(--welcome-yellow);
     --connectagon-connector-color: var(--welcome-yellow-tinted);
     animation: yellow-connectagon-translate 4s alternate infinite linear;
+    animation-play-state: var(--welcome-animation-play-state);
     left: 549px;
     top: 156px;
     transform: translate(-50%, -50%) rotate(51deg);
@@ -257,6 +266,7 @@
 
   #yellow-connectagon .connectagon {
     animation: yellow-connectagon-rotate 4s infinite linear;
+    animation-play-state: var(--welcome-animation-play-state);
     transform: rotate(0deg);
   }
 
@@ -269,6 +279,7 @@
   #green-triangle {
     -webkit-mask: url(../images/background_svgs/triangle.svg);
     animation: green-triangle 3s infinite cubic-bezier(.63,.03,.41,.98);
+    animation-play-state: var(--welcome-animation-play-state);
     background-color: var(--welcome-green);
     left: 1813px;
     top: 0;
@@ -286,6 +297,7 @@
     --connectagon-shape-color: var(--welcome-blue);
     --connectagon-connector-color: var(--welcome-blue-tinted);
     animation: blue-connectagon 4s alternate infinite linear;
+    animation-play-state: var(--welcome-animation-play-state);
     left: 2157px;
     top: 249px;
     transform: translate(-50%, -50%);
@@ -304,6 +316,7 @@
     --connectagon-shape-color: var(--welcome-green);
     --connectagon-connector-color: var(--welcome-green-tinted);
     animation: green-connectagon-translate 6s alternate infinite linear;
+    animation-play-state: var(--welcome-animation-play-state);
     left: 851px;
     top: 766px;
     transform: translate(-50%, -50%) rotate(139deg);
@@ -317,6 +330,7 @@
 
   #green-connectagon .connectagon {
     animation: green-connectagon-rotate 12s infinite linear;
+    animation-play-state: var(--welcome-animation-play-state);
     transform: rotate(0deg);
   }
 
@@ -329,6 +343,7 @@
   #square {
     -webkit-mask: url(../images/background_svgs/square.svg);
     animation: square 4s infinite linear;
+    animation-play-state: var(--welcome-animation-play-state);
     background-color: var(--welcome-yellow);
     left: 1822px;
     top: 716px;
@@ -382,6 +397,7 @@
     -webkit-mask-position: top left;
     -webkit-mask-size: 400px 400px;
     animation: password-field-input 2s steps(1) infinite;
+    animation-play-state: var(--welcome-animation-play-state);
     background-color: var(--welcome-green);
     left: 604px;
     top: 78px;
@@ -444,6 +460,7 @@
   #devices-circle-image {
     -webkit-mask: url(../images/background_svgs/streamer_circle.svg);
     animation: devices-circle 11s infinite linear;
+    animation-play-state: var(--welcome-animation-play-state);
     background-color: var(--welcome-green);
     height: 100%;
     width: 100%;
@@ -452,7 +469,39 @@
   @keyframes devices-circle {
     to { transform: rotate(-360deg); }
   }
+
+  #playPause {
+    --cr-icon-button-fill-color: var(--cr-secondary-text-color);
+    --cr-icon-button-icon-size: 24px;
+    bottom: 100px;
+    left: 90%;
+    margin: 0;
+    opacity: 0;
+    position: absolute;
+    transition: opacity 300ms linear 500ms;
+  }
+
+  :host-context([dir=rtl]) #playPause {
+    left: auto;
+    right: 90%;
+  }
+
+  :host(:hover) #playPause,
+  #playPause:focus-visible {
+    opacity: 1;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    :host {
+      --welcome-animation-play-state: paused;
+    }
+
+    #playPause {
+      display: none;
+    }
+  }
 </style>
+
 <div id="container">
   <div id="canvas">
     <div class="shape" id="logo" on-click="onLogoClick_"></div>
@@ -532,3 +581,8 @@
     <div id="overlay"></div>
   </div>
 </div>
+
+<cr-icon-button id="playPause" iron-icon="[[getPlayPauseIcon_(forcePaused_)]]"
+    on-click="onPlayPauseClick_"
+    aria-label="[[getPlayPauseLabel_(forcePaused_)]]">
+</cr-icon-button>
