@@ -3622,7 +3622,24 @@ void RenderFrameHostManager::CommitPending(
 
   if (focus_render_view) {
     if (is_main_frame) {
-      new_view->Focus();
+      // If the old page was focused, ensure the new one preserves
+      // focus. This needs to be done differently depending on whether the main
+      // frame is an outermost main frame or embedded in a nested FrameTree,
+      // such as for a <webview> guest.  In the outermost case, focus the root
+      // RenderWidgetHostView, which will also end up focusing the
+      // RenderWidgetHost.  For the nested main frame case this won't work,
+      // since the view will be a RenderWidgetHostViewChildFrame, and focusing
+      // it would end up trying to focus the root view. Instead, we need to
+      // focus the new main frame's RenderWidgetHost, which would set the new
+      // widget as focused and also propagate page-level focus to the
+      // corresponding renderer process. Note that for <webview> guests, this
+      // case is only reached when cross-process navigations are possible,
+      // which requires features::kSiteIsolationForGuests.
+      if (frame_tree_node_->GetParentOrOuterDocumentOrEmbedder()) {
+        render_frame_host_->GetRenderWidgetHost()->Focus();
+      } else {
+        new_view->Focus();
+      }
     } else {
       // The current WebContents has page-level focus, so we need to propagate
       // page-level focus to the subframe's renderer. Before doing that, also

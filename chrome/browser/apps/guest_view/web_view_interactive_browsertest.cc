@@ -46,11 +46,14 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/hit_test_region_observer.h"
+#include "content/public/test/test_frame_navigation_observer.h"
+#include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/text_input_test_utils.h"
 #include "extensions/browser/api/extensions_api_client.h"
 #include "extensions/browser/app_window/app_window.h"
 #include "extensions/browser/app_window/app_window_registry.h"
 #include "extensions/test/extension_test_message_listener.h"
+#include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "third_party/blink/public/common/switches.h"
 #include "ui/base/buildflags.h"
@@ -1688,3 +1691,81 @@ IN_PROC_BROWSER_TEST_F(WebViewFocusInteractiveTest,
       << popup_observer.view_bounds_in_screen().ToString();
 }
 #endif
+
+// Base class for interactive tests that enable site isolation in <webview>
+// guests.
+class SitePerProcessWebViewInteractiveTest : public WebViewInteractiveTest {
+ public:
+  SitePerProcessWebViewInteractiveTest() = default;
+  ~SitePerProcessWebViewInteractiveTest() override = default;
+  SitePerProcessWebViewInteractiveTest(
+      const SitePerProcessWebViewInteractiveTest&) = delete;
+  SitePerProcessWebViewInteractiveTest& operator=(
+      const SitePerProcessWebViewInteractiveTest&) = delete;
+
+  void SetUp() override {
+    feature_list_.InitAndEnableFeature(features::kSiteIsolationForGuests);
+    WebViewInteractiveTest::SetUp();
+  }
+
+  void SetUpOnMainThread() override {
+    host_resolver()->AddRule("*", "127.0.0.1");
+    WebViewInteractiveTest::SetUpOnMainThread();
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Check that when a focused <webview> navigates cross-process, the focus
+// is preserved in the new page. See https://crbug.com/1358210.
+IN_PROC_BROWSER_TEST_F(SitePerProcessWebViewInteractiveTest,
+                       FocusPreservedAfterCrossProcessNavigation) {
+  // Load and show a platform app with a <webview> on a data: URL.
+  ASSERT_TRUE(StartEmbeddedTestServer());
+  LoadAndLaunchPlatformApp("web_view/simple", "WebViewTest.LAUNCHED");
+  ASSERT_TRUE(ui_test_utils::ShowAndFocusNativeWindow(GetPlatformAppWindow()));
+  content::WebContents* embedder_web_contents = GetFirstAppWindowWebContents();
+  embedder_web_contents->Focus();
+
+  // Ensure that the guest is focused before the next navigation.  To do so,
+  // have the embedder focus the <webview> element.
+  content::RenderFrameHost* guest_rfh =
+      GetGuestViewManager()->WaitForSingleGuestRenderFrameHostCreated();
+  content::FrameFocusedObserver focus_observer(guest_rfh);
+  EXPECT_TRUE(content::ExecuteScript(
+      embedder_web_contents, "document.querySelector('webview').focus()"));
+  focus_observer.Wait();
+  ASSERT_TRUE(
+      content::IsRenderWidgetHostFocused(guest_rfh->GetRenderWidgetHost()));
+  EXPECT_EQ(guest_rfh, embedder_web_contents->GetFocusedFrame());
+
+  // Wait for guest's document to consider itself focused. This avoids
+  // flakiness on some platforms.
+  while (!content::EvalJs(guest_rfh, "document.hasFocus()").ExtractBool()) {
+    base::RunLoop run_loop;
+    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+        FROM_HERE, run_loop.QuitClosure(), TestTimeouts::tiny_timeout());
+    run_loop.Run();
+  }
+
+  // Perform a cross-process navigation in the <webview> and verify that the
+  // new RenderFrameHost's RenderWidgetHost remains focused.
+  const GURL guest_url =
+      embedded_test_server()->GetURL("a.test", "/title1.html");
+  content::TestFrameNavigationObserver observer(guest_rfh);
+  EXPECT_TRUE(
+      ExecuteScript(guest_rfh, "location.href = '" + guest_url.spec() + "';"));
+  observer.Wait();
+  EXPECT_TRUE(observer.last_navigation_succeeded());
+
+  content::RenderFrameHost* guest_rfh2 =
+      GetGuestViewManager()->GetLastGuestRenderFrameHostCreated();
+  EXPECT_NE(guest_rfh, guest_rfh2);
+  EXPECT_EQ(guest_url, guest_rfh2->GetLastCommittedURL());
+
+  EXPECT_TRUE(
+      content::IsRenderWidgetHostFocused(guest_rfh2->GetRenderWidgetHost()));
+  EXPECT_EQ(true, content::EvalJs(guest_rfh2, "document.hasFocus()"));
+  EXPECT_EQ(guest_rfh2, embedder_web_contents->GetFocusedFrame());
+}
