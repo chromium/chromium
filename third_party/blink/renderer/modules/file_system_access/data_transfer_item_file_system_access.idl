@@ -5,7 +5,7 @@
 // https://wicg.github.io/file-system-access/#drag-and-drop
 [
     ImplementedAs=DataTransferItemFileSystemAccess,
-    RuntimeEnabled=FileSystemAccess
+    RuntimeEnabled=FileSystemAccessLocal
 ] partial interface DataTransferItem {
     [CallWith=ScriptState, MeasureAs=FileSystemAccessDragAndDrop]
     Promise<FileSystemHandle?> getAsFileSystemHandle();
