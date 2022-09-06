@@ -145,7 +145,7 @@ LayoutView* LayoutObjectFactory::CreateView(Document& document,
       (LayoutView::ShouldUsePrintingLayout(document) &&
        !RuntimeEnabledFeatures::LayoutNGPrintingEnabled());
 
-  if (disable_ng_for_type)
+  if (disable_ng_for_type || !RuntimeEnabledFeatures::LayoutNGEnabled())
     return MakeGarbageCollected<LayoutView>(&document);
   return MakeGarbageCollected<LayoutNGView>(&document);
 }
