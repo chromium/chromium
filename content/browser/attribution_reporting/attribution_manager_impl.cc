@@ -13,6 +13,7 @@
 #include "base/callback_helpers.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
+#include "base/functional/overloaded.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -459,25 +460,24 @@ void AttributionManagerImpl::MaybeEnqueueEvent(SourceOrTrigger event) {
 }
 
 void AttributionManagerImpl::ProcessEvents() {
-  struct DebugCookieOriginGetter {
-    const url::Origin* operator()(const StorableSource& source) const {
-      return source.common_info().debug_key().has_value()
-                 ? &source.common_info().reporting_origin()
-                 : nullptr;
-    }
-
-    const url::Origin* operator()(const AttributionTrigger& trigger) const {
-      return trigger.debug_key().has_value() ? &trigger.reporting_origin()
-                                             : nullptr;
-    }
-  };
-
   // Process as many events not requiring a cookie check (synchronously) as
   // possible. Once reaching the first to require a cookie check, start the
   // async check and stop processing further events.
   while (!pending_events_.empty()) {
     const url::Origin* cookie_origin =
-        absl::visit(DebugCookieOriginGetter(), pending_events_.front());
+        absl::visit(base::Overloaded{
+                        [](const StorableSource& source) {
+                          return source.common_info().debug_key().has_value()
+                                     ? &source.common_info().reporting_origin()
+                                     : nullptr;
+                        },
+                        [](const AttributionTrigger& trigger) {
+                          return trigger.debug_key().has_value()
+                                     ? &trigger.reporting_origin()
+                                     : nullptr;
+                        },
+                    },
+                    pending_events_.front());
     if (cookie_origin) {
       cookie_checker_->IsDebugCookieSet(
           *cookie_origin,
@@ -500,63 +500,59 @@ void AttributionManagerImpl::ProcessEvents() {
 void AttributionManagerImpl::ProcessNextEvent(bool is_debug_cookie_set) {
   DCHECK(!pending_events_.empty());
 
-  struct EventStorer {
-    raw_ptr<AttributionManagerImpl> manager;
-    bool is_debug_cookie_set;
-
-    void operator()(StorableSource source) {
-      CommonSourceInfo& common_info = source.common_info();
-
-      bool allowed = IsOperationAllowed(
-          manager->storage_partition_.get(),
-          ContentBrowserClient::AttributionReportingOperation::kSource,
-          &common_info.source_origin(),
-          /*destination_origin=*/nullptr, &common_info.reporting_origin());
-      RecordRegisterImpressionAllowed(allowed);
-      if (!allowed) {
-        manager->OnSourceStored(
-            std::move(source),
-            AttributionStorage::StoreSourceResult(
-                StorableSource::Result::kProhibitedByBrowserPolicy));
-        return;
-      }
-
-      if (!is_debug_cookie_set)
-        common_info.ClearDebugKey();
-
-      manager->StoreSource(std::move(source));
-    }
-
-    void operator()(AttributionTrigger trigger) {
-      bool allowed = IsOperationAllowed(
-          manager->storage_partition_.get(),
-          ContentBrowserClient::AttributionReportingOperation::kTrigger,
-          /*source_origin=*/nullptr, &trigger.destination_origin(),
-          &trigger.reporting_origin());
-      RecordRegisterConversionAllowed(allowed);
-      if (!allowed) {
-        manager->OnReportStored(
-            std::move(trigger),
-            CreateReportResult(/*trigger_time=*/base::Time::Now(),
-                               AttributionTrigger::EventLevelResult::
-                                   kProhibitedByBrowserPolicy,
-                               AttributionTrigger::AggregatableResult::
-                                   kProhibitedByBrowserPolicy));
-        return;
-      }
-
-      if (!is_debug_cookie_set)
-        trigger.ClearDebugKey();
-
-      manager->StoreTrigger(std::move(trigger));
-    }
-  };
-
   SourceOrTrigger event = std::move(pending_events_.front());
   pending_events_.pop_front();
 
   absl::visit(
-      EventStorer{.manager = this, .is_debug_cookie_set = is_debug_cookie_set},
+      base::Overloaded{
+          [&](StorableSource source) {
+            CommonSourceInfo& common_info = source.common_info();
+
+            bool allowed = IsOperationAllowed(
+                this->storage_partition_.get(),
+                ContentBrowserClient::AttributionReportingOperation::kSource,
+                &common_info.source_origin(),
+                /*destination_origin=*/nullptr,
+                &common_info.reporting_origin());
+            RecordRegisterImpressionAllowed(allowed);
+            if (!allowed) {
+              this->OnSourceStored(
+                  std::move(source),
+                  AttributionStorage::StoreSourceResult(
+                      StorableSource::Result::kProhibitedByBrowserPolicy));
+              return;
+            }
+
+            if (!is_debug_cookie_set)
+              common_info.ClearDebugKey();
+
+            this->StoreSource(std::move(source));
+          },
+
+          [&](AttributionTrigger trigger) {
+            bool allowed = IsOperationAllowed(
+                this->storage_partition_.get(),
+                ContentBrowserClient::AttributionReportingOperation::kTrigger,
+                /*source_origin=*/nullptr, &trigger.destination_origin(),
+                &trigger.reporting_origin());
+            RecordRegisterConversionAllowed(allowed);
+            if (!allowed) {
+              this->OnReportStored(
+                  std::move(trigger),
+                  CreateReportResult(/*trigger_time=*/base::Time::Now(),
+                                     AttributionTrigger::EventLevelResult::
+                                         kProhibitedByBrowserPolicy,
+                                     AttributionTrigger::AggregatableResult::
+                                         kProhibitedByBrowserPolicy));
+              return;
+            }
+
+            if (!is_debug_cookie_set)
+              trigger.ClearDebugKey();
+
+            this->StoreTrigger(std::move(trigger));
+          },
+      },
       std::move(event));
 }
 

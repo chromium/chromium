@@ -17,6 +17,7 @@
 #include "base/check_op.h"
 #include "base/containers/flat_set.h"
 #include "base/files/file_util.h"
+#include "base/functional/overloaded.h"
 #include "base/guid.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
@@ -1549,31 +1550,28 @@ bool AttributionStorageSql::UpdateReportForSendFailure(
   if (!LazyInit(DbCreationPolicy::kIgnoreIfAbsent))
     return false;
 
-  struct Visitor {
-    raw_ptr<AttributionStorageSql> storage;
-    base::Time new_report_time;
-
-    bool operator()(AttributionReport::EventLevelData::Id id) {
-      DCHECK_CALLED_ON_VALID_SEQUENCE(storage->sequence_checker_);
-      static constexpr char kUpdateFailedReportSql[] =
-          ATTRIBUTION_UPDATE_FAILED_REPORT_SQL(ATTRIBUTION_CONVERSIONS_TABLE,
-                                               "report_id");
-      return storage->UpdateReportForSendFailure(
-          SQL_FROM_HERE, kUpdateFailedReportSql, *id, new_report_time);
-    }
-
-    bool operator()(AttributionReport::AggregatableAttributionData::Id id) {
-      DCHECK_CALLED_ON_VALID_SEQUENCE(storage->sequence_checker_);
-      static constexpr char kUpdateFailedReportSql[] =
-          ATTRIBUTION_UPDATE_FAILED_REPORT_SQL(
-              ATTRIBUTION_AGGREGATABLE_REPORT_METADATA_TABLE, "aggregation_id");
-      return storage->UpdateReportForSendFailure(
-          SQL_FROM_HERE, kUpdateFailedReportSql, *id, new_report_time);
-    }
-  };
-
   return absl::visit(
-      Visitor{.storage = this, .new_report_time = new_report_time}, report_id);
+      base::Overloaded{
+          [&](AttributionReport::EventLevelData::Id id) {
+            DCHECK_CALLED_ON_VALID_SEQUENCE(this->sequence_checker_);
+            static constexpr char kUpdateFailedReportSql[] =
+                ATTRIBUTION_UPDATE_FAILED_REPORT_SQL(
+                    ATTRIBUTION_CONVERSIONS_TABLE, "report_id");
+            return this->UpdateReportForSendFailure(
+                SQL_FROM_HERE, kUpdateFailedReportSql, *id, new_report_time);
+          },
+
+          [&](AttributionReport::AggregatableAttributionData::Id id) {
+            DCHECK_CALLED_ON_VALID_SEQUENCE(this->sequence_checker_);
+            static constexpr char kUpdateFailedReportSql[] =
+                ATTRIBUTION_UPDATE_FAILED_REPORT_SQL(
+                    ATTRIBUTION_AGGREGATABLE_REPORT_METADATA_TABLE,
+                    "aggregation_id");
+            return this->UpdateReportForSendFailure(
+                SQL_FROM_HERE, kUpdateFailedReportSql, *id, new_report_time);
+          },
+      },
+      report_id);
 }
 
 bool AttributionStorageSql::UpdateReportForSendFailure(

@@ -81,7 +81,8 @@ base::Time GetEventTime(const AttributionSimulationEventAndValue& event) {
           [](const AttributionSimulatorCookie& cookie) {
             return cookie.cookie.CreationDate();
           },
-          [](const AttributionDataClear& clear) { return clear.time; }},
+          [](const AttributionDataClear& clear) { return clear.time; },
+      },
       event.first);
 }
 

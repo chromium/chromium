@@ -13,6 +13,7 @@
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/containers/flat_map.h"
+#include "base/functional/overloaded.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/time/time.h"
@@ -110,45 +111,40 @@ attribution_internals::mojom::WebUIReportPtr WebUIReport(
     const AttributionReport& report,
     bool is_debug_report,
     ReportStatusPtr status) {
-  struct Visitor {
-    StoredSource::AttributionLogic attribution_logic;
-
-    attribution_internals::mojom::WebUIReportDataPtr operator()(
-        const AttributionReport::EventLevelData& event_level_data) {
-      return attribution_internals::mojom::WebUIReportData::NewEventLevelData(
-          attribution_internals::mojom::WebUIReportEventLevelData::New(
-              event_level_data.priority,
-              attribution_logic ==
-                  StoredSource::AttributionLogic::kTruthfully));
-    }
-
-    attribution_internals::mojom::WebUIReportDataPtr operator()(
-        const AttributionReport::AggregatableAttributionData&
-            aggregatable_data) {
-      std::vector<
-          attribution_internals::mojom::AggregatableHistogramContributionPtr>
-          contributions;
-      base::ranges::transform(
-          aggregatable_data.contributions, std::back_inserter(contributions),
-          [](const auto& contribution) {
-            return attribution_internals::mojom::
-                AggregatableHistogramContribution::New(
-                    HexEncodeAggregationKey(contribution.key()),
-                    contribution.value());
-          });
-      return attribution_internals::mojom::WebUIReportData::
-          NewAggregatableAttributionData(
-              attribution_internals::mojom::
-                  WebUIReportAggregatableAttributionData::New(
-                      std::move(contributions)));
-    }
-  };
+  namespace ai_mojom = attribution_internals::mojom;
 
   const AttributionInfo& attribution_info = report.attribution_info();
 
-  attribution_internals::mojom::WebUIReportDataPtr data = absl::visit(
-      Visitor{.attribution_logic = attribution_info.source.attribution_logic()},
+  ai_mojom::WebUIReportDataPtr data = absl::visit(
+      base::Overloaded{
+          [attribution_info](
+              const AttributionReport::EventLevelData& event_level_data) {
+            return ai_mojom::WebUIReportData::NewEventLevelData(
+                ai_mojom::WebUIReportEventLevelData::New(
+                    event_level_data.priority,
+                    attribution_info.source.attribution_logic() ==
+                        StoredSource::AttributionLogic::kTruthfully));
+          },
+
+          [](const AttributionReport::AggregatableAttributionData&
+                 aggregatable_data) {
+            std::vector<ai_mojom::AggregatableHistogramContributionPtr>
+                contributions;
+            base::ranges::transform(
+                aggregatable_data.contributions,
+                std::back_inserter(contributions),
+                [](const auto& contribution) {
+                  return ai_mojom::AggregatableHistogramContribution::New(
+                      HexEncodeAggregationKey(contribution.key()),
+                      contribution.value());
+                });
+            return ai_mojom::WebUIReportData::NewAggregatableAttributionData(
+                ai_mojom::WebUIReportAggregatableAttributionData::New(
+                    std::move(contributions)));
+          },
+      },
       report.data());
+
   return attribution_internals::mojom::WebUIReport::New(
       report.ReportId(), report.ReportURL(is_debug_report),
       /*trigger_time=*/attribution_info.time.ToJsTime(),
