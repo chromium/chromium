@@ -8,7 +8,6 @@
 #include "base/run_loop.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/browser/updater/extension_downloader_test_helper.h"
-#include "extensions/browser/updater/safe_manifest_parser.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

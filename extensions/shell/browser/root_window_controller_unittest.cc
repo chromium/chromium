@@ -13,7 +13,6 @@
 #include "extensions/browser/app_window/app_window.h"
 #include "extensions/browser/app_window/native_app_window.h"
 #include "extensions/common/extension_builder.h"
-#include "extensions/shell/browser/root_window_controller.h"
 #include "extensions/shell/browser/shell_app_window_client.h"
 #include "extensions/shell/browser/shell_native_app_window_aura.h"
 #include "extensions/shell/test/shell_test_base_aura.h"
