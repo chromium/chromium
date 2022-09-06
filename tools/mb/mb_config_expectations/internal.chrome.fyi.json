@@ -11,7 +11,7 @@
       "use_goma": true
     }
   },
-  "chromeos-arm-generic-cfi-thin-lto-chrome": {
+  "chromeos-arm-generic-cfi-thin-lto-chrome-reclient": {
     "args_file": "//build/args/chromeos/arm-generic.gni",
     "gn_args": {
       "dcheck_always_on": false,

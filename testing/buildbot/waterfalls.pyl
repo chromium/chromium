@@ -6641,7 +6641,7 @@
     'name': 'internal.chrome.fyi',
     'mixins': ['chrome-tester-service-account'],
     'machines': {
-      'chromeos-arm-generic-cfi-thin-lto-chrome': {
+      'chromeos-arm-generic-cfi-thin-lto-chrome-reclient': {
         'additional_compile_targets': [
           'chromiumos_preflight',
         ],
