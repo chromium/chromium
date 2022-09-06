@@ -18,6 +18,10 @@ extern const base::Feature kSingleNtp;
 // Feature to section the Content Suggestions into modules.
 extern const base::Feature kContentSuggestionsUIModuleRefresh;
 
+// Feature params for kContentSuggestionsUIModuleRefresh.
+extern const char kContentSuggestionsUIModuleRefreshMinimizeSpacingParam[];
+extern const char kContentSuggestionsUIModuleRefreshRemoveHeadersParam[];
+
 // Feature to show the Trending Queries module.
 extern const base::Feature kTrendingQueriesModule;
 
@@ -36,6 +40,14 @@ bool IsDiscoverFeedEnabled();
 
 // Whether the Content Suggestions UI Module Refresh feature is enabled.
 bool IsContentSuggestionsUIModuleRefreshEnabled();
+
+// Whether some spacing should be removed for the Content Suggestions UI Module
+// Refresh feature.
+bool ShouldMinimizeSpacingForModuleRefresh();
+
+// Whether the module header should not be shown for the Content Suggestions UI
+// Module Refresh feature.
+bool ShouldRemoveHeadersForModuleRefresh();
 
 // Whether the Trending Queries module feature is enabled.
 bool IsTrendingQueriesModuleEnabled();

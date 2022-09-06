@@ -354,6 +354,18 @@ const FeatureEntry::FeatureVariation kStartSurfaceVariations[] = {
      std::size(kStartSurfaceOneHourHideShortcutsReturnToRecentTab), nullptr},
 };
 
+const FeatureEntry::FeatureParam kModuleRefreshMinimizeSpacing[] = {
+    {kContentSuggestionsUIModuleRefreshMinimizeSpacingParam, "true"}};
+const FeatureEntry::FeatureParam kModuleRefreshNoHeaders[] = {
+    {kContentSuggestionsUIModuleRefreshRemoveHeadersParam, "true"}};
+
+const FeatureEntry::FeatureVariation kModuleRefreshVariations[] = {
+    {"Enabled with minimized spacing", kModuleRefreshMinimizeSpacing,
+     std::size(kModuleRefreshMinimizeSpacing), nullptr},
+    {"Enabled with no headers", kModuleRefreshNoHeaders,
+     std::size(kModuleRefreshNoHeaders), nullptr},
+};
+
 #if BUILDFLAG(IOS_BACKGROUND_MODE_ENABLED)
 // Feed Background Refresh Feature Params
 const FeatureEntry::FeatureParam kOneHourIntervalOneHourMaxAgeOnce[] = {
@@ -1110,7 +1122,10 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"content-suggestions-ui-module-refresh",
      flag_descriptions::kContentSuggestionsUIModuleRefreshName,
      flag_descriptions::kContentSuggestionsUIModuleRefreshDescription,
-     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kContentSuggestionsUIModuleRefresh)},
+     flags_ui::kOsIos,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(kContentSuggestionsUIModuleRefresh,
+                                    kModuleRefreshVariations,
+                                    "StartSurface")},
     {"3p-intents-in-incognito", flag_descriptions::kIOS3PIntentsInIncognitoName,
      flag_descriptions::kIOS3PIntentsInIncognitoDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kIOS3PIntentsInIncognito)},

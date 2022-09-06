@@ -203,7 +203,7 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
     // Return to Recent tab tile is only shown one time, so subtract it's
     // vertical space to preserve relative scroll position from top.
     CGFloat tileSectionHeight =
-        kReturnToRecentTabSize.height +
+        ReturnToRecentTabHeight() +
         content_suggestions::kReturnToRecentTabSectionBottomMargin;
     if (scrollPosition >
         tileSectionHeight +

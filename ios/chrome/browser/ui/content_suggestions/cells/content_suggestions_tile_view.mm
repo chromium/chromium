@@ -21,6 +21,7 @@ const NSInteger kLabelNumLines = 2;
 const CGFloat kSpaceIconTitle = 10;
 const CGFloat kIconSize = 56;
 const CGFloat kPreferredMaxWidth = 73;
+const CGFloat kPreferredMaxWidthWide = 83;
 
 }  // namespace
 
@@ -40,7 +41,13 @@ const CGFloat kPreferredMaxWidth = 73;
     _titleLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
     _titleLabel.font = [self titleLabelFont];
     _titleLabel.textAlignment = NSTextAlignmentCenter;
-    _titleLabel.preferredMaxLayoutWidth = kPreferredMaxWidth;
+    // Since modules are given more horizontal space on iPad, allow for more
+    // estimated width for the label to calculate content size.
+    _titleLabel.preferredMaxLayoutWidth =
+        self.traitCollection.horizontalSizeClass ==
+                UIUserInterfaceSizeClassRegular
+            ? kPreferredMaxWidthWide
+            : kPreferredMaxWidth;
     _titleLabel.numberOfLines = kLabelNumLines;
 
     _imageContainerView = [[UIView alloc] init];

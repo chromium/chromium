@@ -7,6 +7,9 @@
 
 #import <UIKit/UIKit.h>
 
+// Returns the default height of Return To Recent Tab tile depending on flags.
+CGFloat ReturnToRecentTabHeight();
+
 // Default size of the Return To Recent Tab tile.
 extern const CGSize kReturnToRecentTabSize;
 

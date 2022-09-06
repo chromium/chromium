@@ -6,6 +6,7 @@
 
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_cells_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_tile_layout_util.h"
+#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
 #import "ios/chrome/browser/ui/image_util/image_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -23,9 +24,11 @@ const float kContentHorizontalInset = 16.0f;
 
 // The vertical spacing between the title and the content of the module.
 const float kContentTitleVerticalSpacing = 12.0f;
+const float kContentTitleShortenedVerticalSpacing = 10.0f;
 
 // The top inset of the title label to this container.
 const float kTitleTopInset = 14.0f;
+const float kTitleShortenedTopInset = 11.0f;
 
 // The minimum width of the title label.
 const float kTitleMinimumWidth = 99.0f;
@@ -112,8 +115,9 @@ const float kTrendingQueriesContentHeight = 103;
         [self.title.leadingAnchor
             constraintEqualToAnchor:contentContainer.leadingAnchor
                            constant:kContentHorizontalInset],
-        [contentContainer.topAnchor constraintEqualToAnchor:self.title.topAnchor
-                                                   constant:-kTitleTopInset],
+        [contentContainer.topAnchor
+            constraintEqualToAnchor:self.title.topAnchor
+                           constant:-[self titleTopInset]],
         // Ensures placeholder for title is visible.
         [self.title.widthAnchor
             constraintGreaterThanOrEqualToConstant:kTitleMinimumWidth],
@@ -128,20 +132,24 @@ const float kTrendingQueriesContentHeight = 103;
                            constant:-kContentHorizontalInset],
         [contentView.bottomAnchor
             constraintEqualToAnchor:contentContainer.bottomAnchor],
-        [contentView.topAnchor
-            constraintEqualToAnchor:self.title.bottomAnchor
-                           constant:kContentTitleVerticalSpacing],
+        [contentView.topAnchor constraintEqualToAnchor:self.title.bottomAnchor
+                                              constant:[self titleSpacing]],
       ]];
     } else {
+      CGFloat horizontalInsets =
+          ShouldRemoveHeadersForModuleRefresh() ? kContentHorizontalInset : 0;
       [NSLayoutConstraint activateConstraints:@[
         [contentView.leadingAnchor
-            constraintEqualToAnchor:contentContainer.leadingAnchor],
+            constraintEqualToAnchor:contentContainer.leadingAnchor
+                           constant:horizontalInsets],
         [contentView.trailingAnchor
-            constraintEqualToAnchor:contentContainer.trailingAnchor],
+            constraintEqualToAnchor:contentContainer.trailingAnchor
+                           constant:-horizontalInsets],
         [contentView.bottomAnchor
             constraintEqualToAnchor:contentContainer.bottomAnchor],
         [contentView.topAnchor
-            constraintEqualToAnchor:contentContainer.topAnchor],
+            constraintEqualToAnchor:contentContainer.topAnchor
+                           constant:[self titleTopInset]],
       ]];
     }
     // Height constraint must be flexible since on launch before the Feed
@@ -160,11 +168,15 @@ const float kTrendingQueriesContentHeight = 103;
 - (NSString*)titleString {
   switch (self.type) {
     case ContentSuggestionsModuleTypeShortcuts:
-      return l10n_util::GetNSString(
-          IDS_IOS_CONTENT_SUGGESTIONS_SHORTCUTS_MODULE_TITLE);
+      return ShouldRemoveHeadersForModuleRefresh()
+                 ? @""
+                 : l10n_util::GetNSString(
+                       IDS_IOS_CONTENT_SUGGESTIONS_SHORTCUTS_MODULE_TITLE);
     case ContentSuggestionsModuleTypeMostVisited:
-      return l10n_util::GetNSString(
-          IDS_IOS_CONTENT_SUGGESTIONS_MOST_VISITED_MODULE_TITLE);
+      return ShouldRemoveHeadersForModuleRefresh()
+                 ? @""
+                 : l10n_util::GetNSString(
+                       IDS_IOS_CONTENT_SUGGESTIONS_MOST_VISITED_MODULE_TITLE);
     case ContentSuggestionsModuleTypeReturnToRecentTab:
       return @"";
     case ContentSuggestionsModuleTypeTrendingQueries:
@@ -210,12 +222,43 @@ const float kTrendingQueriesContentHeight = 103;
               .height;
       break;
     case ContentSuggestionsModuleTypeReturnToRecentTab:
-      return kReturnToRecentTabSize.height;
+      return ReturnToRecentTabHeight();
     case ContentSuggestionsModuleTypeTrendingQueries:
       contentHeight += kTrendingQueriesContentHeight;
   }
-  return kContentTitleVerticalSpacing + ceilf(self.title.font.lineHeight) +
-         kTitleTopInset + contentHeight;
+  if (!ShouldRemoveHeadersForModuleRefresh()) {
+    contentHeight += ceilf(self.title.font.lineHeight);
+  }
+  return [self titleSpacing] + [self titleTopInset] + contentHeight;
+}
+
+// Returns the spacing between the module edge and title. Also used to return
+// the spacing between the contents and the module edge if
+// ShouldRemoveHeadersForModuleRefresh() is YES where there are no headers for
+// modules.
+- (CGFloat)titleTopInset {
+  if (ShouldMinimizeSpacingForModuleRefresh()) {
+    return kTitleShortenedTopInset;
+  } else if (ShouldRemoveHeadersForModuleRefresh() &&
+             self.type != ContentSuggestionsModuleTypeTrendingQueries) {
+    return self.type == ContentSuggestionsModuleTypeReturnToRecentTab
+               ? 0
+               : kTitleTopInset;
+  } else {
+    return kTitleTopInset;
+  }
+}
+
+// Returns the spacing between the module and title and the content.
+- (CGFloat)titleSpacing {
+  if (ShouldMinimizeSpacingForModuleRefresh()) {
+    return kContentTitleShortenedVerticalSpacing;
+  } else if (ShouldRemoveHeadersForModuleRefresh() &&
+             self.type != ContentSuggestionsModuleTypeTrendingQueries) {
+    return 0;
+  } else {
+    return kContentTitleVerticalSpacing;
+  }
 }
 
 @end

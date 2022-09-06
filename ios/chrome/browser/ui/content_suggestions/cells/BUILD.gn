@@ -90,6 +90,7 @@ source_set("constants") {
 
   deps = [
     "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/browser/ui/content_suggestions:feature_flags",
     "//ios/chrome/browser/ui/icons:symbols",
     "//ui/base:base",
   ]

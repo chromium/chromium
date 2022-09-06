@@ -15,7 +15,8 @@ const int kContentSuggestionsTilesVerticalSpacing = 16;
 const int kContentSuggestionsTilesHorizontalSpacingRegular = 19;
 const int kContentSuggestionsTilesHorizontalSpacingCompact = 5;
 
-const CGSize kContentSuggestionsTileViewSizeSmall = {/*width=*/73, /*height=*/100};
+const CGSize kContentSuggestionsTileViewSizeSmall = {/*width=*/73,
+                                                     /*height=*/100};
 const CGSize kContentSuggestionsTileViewSizeMedium = {/*width=*/73, /*height=*/112};
 const CGSize kContentSuggestionsTileViewSizeLarge = {/*width=*/110, /*height=*/140};
 const CGSize kContentSuggestionsTileViewSizeExtraLarge = {/*width=*/146, /*height=*/150};
