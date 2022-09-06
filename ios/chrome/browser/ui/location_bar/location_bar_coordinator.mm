@@ -17,7 +17,6 @@
 #include "components/profile_metrics/browser_profile_type.h"
 #include "components/search_engines/util.h"
 #include "components/strings/grit/components_strings.h"
-#include "components/variations/net/variations_http_headers.h"
 #include "ios/chrome/browser/autocomplete/autocomplete_scheme_classifier_impl.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/browser_state_metrics/browser_state_metrics.h"
@@ -325,7 +324,8 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
       web_params.https_upgrade_type = web::HttpsUpgradeType::kOmnibox;
     }
     NSMutableDictionary* combinedExtraHeaders =
-        [[self variationHeadersForURL:url] mutableCopy];
+        [web_navigation_util::VariationHeadersForURL(
+            url, self.browserState->IsOffTheRecord()) mutableCopy];
     [combinedExtraHeaders addEntriesFromDictionary:web_params.extra_headers];
     web_params.extra_headers = [combinedExtraHeaders copy];
     UrlLoadParams params = UrlLoadParams::InCurrentTab(web_params);
@@ -495,27 +495,6 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
 }
 
 #pragma mark - private
-
-// Returns a dictionary with variation headers for qualified URLs. Can be empty.
-- (NSDictionary*)variationHeadersForURL:(const GURL&)URL {
-  network::ResourceRequest resource_request;
-  variations::AppendVariationsHeaderUnknownSignedIn(
-      URL,
-      self.browserState->IsOffTheRecord() ? variations::InIncognito::kYes
-                                          : variations::InIncognito::kNo,
-      &resource_request);
-  NSMutableDictionary* result = [NSMutableDictionary dictionary];
-  // The variations header appears in cors_exempt_headers rather than in
-  // headers.
-  net::HttpRequestHeaders::Iterator header_iterator(
-      resource_request.cors_exempt_headers);
-  while (header_iterator.GetNext()) {
-    NSString* name = base::SysUTF8ToNSString(header_iterator.name());
-    NSString* value = base::SysUTF8ToNSString(header_iterator.value());
-    result[name] = value;
-  }
-  return [result copy];
-}
 
 // Navigate to `query` from omnibox.
 - (void)loadURLForQuery:(const std::u16string&)query {
