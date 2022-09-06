@@ -51,24 +51,24 @@ const int kCurrentTrialVersion = 1;
 // Group names for the FRE redesign permissions trial.
 const char kDefaultGroup[] = "Default";
 // Group name for the FRE control group.
-const char kControlGroup[] = "Control-V1";
+const char kControlGroup[] = "Control-V2";
 // Group name for the FRE holdback group. This group holds back clients from the
 // kEnableFREUIModuleIOS behavior, which was launched in M103.
-const char kHoldbackGroup[] = "Disabled-V1";
+const char kHoldbackGroup[] = "Disabled-V2";
 // Group names for the default browser promo trial.
 const char kFREDefaultBrowserAndSmallDelayBeforeOtherPromosGroup[] =
-    "FREDefaultBrowserAndSmallDelayBeforeOtherPromos-V1";
+    "FREDefaultBrowserAndSmallDelayBeforeOtherPromos-V2";
 const char kFREDefaultBrowserAndDefaultDelayBeforeOtherPromosGroup[] =
-    "FREDefaultBrowserAndDefaultDelayBeforeOtherPromos-V1";
+    "FREDefaultBrowserAndDefaultDelayBeforeOtherPromos-V2";
 const char kDefaultBrowserPromoAtFirstRunOnlyGroup[] =
-    "DefaultBrowserPromoAtFirstRunOnly-V1";
+    "FREDefaultBrowserPromoAtFirstRunOnly-V2";
 // Group names for the new Mobile Identity Consistency FRE.
 const char kNewMICEFREWithUMADialogSetGroup[] =
-    "NewMobileIdentityConsistencyFREParamUMADialog-V1";
+    "NewMobileIdentityConsistencyFREParamUMADialog-V2";
 const char kNewMICEFREWithThreeStepsSetGroup[] =
-    "NewMobileIdentityConsistencyFREParamThreeSteps-V1";
+    "NewMobileIdentityConsistencyFREParamThreeSteps-V2";
 const char kNewMICEFREWithTwoStepsSetGroup[] =
-    "NewMobileIdentityConsistencyFREParamTwoSteps-V1";
+    "NewMobileIdentityConsistencyFREParamTwoSteps-V2";
 
 // Experiment IDs defined for the above field trial groups.
 const variations::VariationID kControlTrialID = 3348210;
@@ -173,29 +173,14 @@ NewMobileIdentityConsistencyFRE GetNewMobileIdentityConsistencyFRE() {
 // Returns the weight for each trial group according to the FRE variations.
 std::map<variations::VariationID, int> GetGroupWeightsForFREVariations() {
   std::map<variations::VariationID, int> weight_by_id = {
-      {kControlTrialID, 0},
+      {kControlTrialID, 25},
       {kHoldbackTrialID, 0},
       {kNewMICEFREWithUMADialogSetID, 0},
       {kNewMICEFREWithThreeStepsSetID, 0},
       {kNewMICEFREWithTwoStepsSetID, 0},
-      {kFREDefaultBrowserAndDefaultDelayBeforeOtherPromosID, 0},
-      {kFREDefaultBrowserAndSmallDelayBeforeOtherPromosID, 0},
-      {kFREDefaultBrowserPromoAtFirstRunOnlyID, 0}};
-  switch (GetChannel()) {
-    case version_info::Channel::UNKNOWN:
-    case version_info::Channel::CANARY:
-    case version_info::Channel::DEV:
-    case version_info::Channel::BETA:
-      std::for_each(
-          weight_by_id.begin(), weight_by_id.end(),
-          [&](auto& weight_by_id_pair) { weight_by_id_pair.second = 10; });
-      break;
-    case version_info::Channel::STABLE:
-      std::for_each(
-          weight_by_id.begin(), weight_by_id.end(),
-          [&](auto& weight_by_id_pair) { weight_by_id_pair.second = 8; });
-      break;
-  }
+      {kFREDefaultBrowserAndDefaultDelayBeforeOtherPromosID, 25},
+      {kFREDefaultBrowserAndSmallDelayBeforeOtherPromosID, 25},
+      {kFREDefaultBrowserPromoAtFirstRunOnlyID, 25}};
   return weight_by_id;
 }
 
