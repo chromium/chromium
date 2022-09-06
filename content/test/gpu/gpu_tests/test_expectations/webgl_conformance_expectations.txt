@@ -356,8 +356,10 @@ crbug.com/1145861 [ fuchsia fuchsia-board-astro ] conformance/textures/video/tex
 crbug.com/1145861 [ fuchsia fuchsia-board-astro ] conformance/textures/video/tex-2d-rgba-rgba-unsigned_byte.html [ Failure ]
 crbug.com/1145861 [ fuchsia fuchsia-board-astro ] conformance/textures/video/tex-2d-rgba-rgba-unsigned_short_4_4_4_4.html [ Failure ]
 crbug.com/1145861 [ fuchsia fuchsia-board-astro ] conformance/textures/video/tex-2d-rgba-rgba-unsigned_short_5_5_5_1.html [ Failure ]
+
 # OOM on hardware devices
 crbug.com/1146483 [ fuchsia fuchsia-board-astro ] conformance/textures/misc/texture-video-transparent.html [ Failure ]
+
 # Flaky tests
 [ fuchsia fuchsia-board-astro ] WebglExtension_EXT_float_blend [ Failure ]
 [ fuchsia fuchsia-board-sherlock ] WebglExtension_EXT_float_blend [ Failure ]
@@ -369,6 +371,11 @@ crbug.com/1210953 [ fuchsia fuchsia-board-astro ] conformance/textures/canvas/te
 crbug.com/1210953 [ fuchsia fuchsia-board-astro ] conformance/textures/canvas/tex-2d-alpha-alpha-unsigned_byte.html [ RetryOnFailure ]
 crbug.com/1210953 [ fuchsia fuchsia-board-astro ] conformance/textures/canvas/tex-2d-luminance_alpha-luminance_alpha-unsigned_byte.html [ RetryOnFailure ]
 crbug.com/1210953 [ fuchsia fuchsia-board-astro ] conformance/textures/canvas/tex-2d-luminance-luminance-unsigned_byte.html [ RetryOnFailure ]
+
+# GPU process crash
+crbug.com/1356275 [ fuchsia fuchsia-board-astro ] conformance/extensions/webgl-compressed-texture-astc.html [ Failure ]
+crbug.com/1356275 [ fuchsia fuchsia-board-astro ] conformance/rendering/rendering-stencil-large-viewport.html [ Failure ]
+crbug.com/1356275 [ fuchsia fuchsia-board-astro ] conformance/state/gl-enable-enum-test.html [ Failure ]
 
 # Flaky tests
 crbug.com/1136414 [ fuchsia fuchsia-board-qemu-x64 ] conformance/glsl/functions/glsl-function* [ Failure ]
