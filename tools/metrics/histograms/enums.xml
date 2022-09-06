@@ -52090,6 +52090,10 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
   <int value="3" label="Quick Actions Widget - Incognito"/>
   <int value="4" label="Quick Actions Widget - Voice Search"/>
   <int value="5" label="Quick Actions Widget - QR Reader"/>
+  <int value="6" label="Lockscreen Launcher Widget - Search"/>
+  <int value="7" label="Lockscreen Launcher Widget - Incognito"/>
+  <int value="8" label="Lockscreen Launcher Widget - Voice Search"/>
+  <int value="9" label="Lockscreen Launcher Widget - Dino Game"/>
 </enum>
 
 <enum name="IOSWidgetKitExtensionKind">
@@ -52097,6 +52101,10 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
   <int value="1" label="Search widget"/>
   <int value="2" label="Quick actions widget"/>
   <int value="3" label="A widget that has become obsolete"/>
+  <int value="4" label="Lockscreen launcher widget - Search"/>
+  <int value="5" label="Lockscreen launcher widget - Incognito"/>
+  <int value="6" label="Lockscreen launcher widget - Voice Search"/>
+  <int value="7" label="Lockscreen launcher widget - Dino Game"/>
 </enum>
 
 <enum name="IOSWKWebViewLinkPreviewAction">
