@@ -179,6 +179,11 @@ void MediaFoundationRenderer::Initialize(MediaResource* media_resource,
     }
   }
 
+  // debug, force mode to dcomp
+  if (force_dcomp_mode_for_testing_) {
+    rendering_mode_ = MediaFoundationRenderingMode::DirectComposition;
+  }
+
   MEDIA_LOG(INFO, media_log_)
       << "Starting MediaFoundationRenderingMode: " << rendering_mode_;
 
@@ -498,6 +503,9 @@ void MediaFoundationRenderer::SetMediaFoundationRenderingMode(
 
   if (mf_media_engine_->HasVideo()) {
     if (render_mode == MediaFoundationRenderingMode::FrameServer) {
+      // cannot change to frameserver if force_dcomp_mode_for_testing_ is true
+      DCHECK(!force_dcomp_mode_for_testing_);
+
       // Make sure we reinitialize the texture pool
       hr = InitializeTexturePool(native_video_size_);
     } else if (render_mode == MediaFoundationRenderingMode::DirectComposition) {
@@ -833,6 +841,10 @@ void MediaFoundationRenderer::OnPlaying() {
   OnBufferingStateChange(
       BufferingState::BUFFERING_HAVE_ENOUGH,
       BufferingStateChangeReason::BUFFERING_CHANGE_REASON_UNKNOWN);
+
+  // Earliest time to request first frame to screen
+  RequestNextFrame();
+
   // The OnPlaying callback from MediaEngineNotifyImpl lets us know that an
   // MF_MEDIA_ENGINE_EVENT_PLAYING message has been received. At this point we
   // can safely start sending Statistics as any asynchronous Flush action in
@@ -968,9 +980,7 @@ void MediaFoundationRenderer::OnError(PipelineStatus status,
     renderer_client_->OnError(new_status);
 }
 
-void MediaFoundationRenderer::RequestNextFrameBetweenTimestamps(
-    base::TimeTicks deadline_min,
-    base::TimeTicks deadline_max) {
+void MediaFoundationRenderer::RequestNextFrame() {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
   if (rendering_mode_ != MediaFoundationRenderingMode::FrameServer) {
     return;

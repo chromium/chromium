@@ -225,14 +225,6 @@ void MediaFoundationRendererClient::StartPlayingFrom(base::TimeDelta time) {
   SignalMediaPlayingStateChange(true);
   next_video_frame_.reset();
   mojo_renderer_->StartPlayingFrom(time);
-  // Request the first frame (if we are not in frame server mode this just
-  // gets dropped).
-  base::TimeTicks request_min = base::TimeTicks::Now();
-  base::TimeTicks request_max =
-      base::TimeTicks::Now() + GetPreferredRenderInterval();
-
-  renderer_extension_->RequestNextFrameBetweenTimestamps(request_min,
-                                                         request_max);
 }
 
 void MediaFoundationRendererClient::SetPlaybackRate(double playback_rate) {
@@ -356,22 +348,15 @@ scoped_refptr<VideoFrame> MediaFoundationRendererClient::Render(
     return nullptr;
   }
 
-  base::TimeTicks next_request_min = deadline_max;
-  base::TimeTicks next_request_max =
-      deadline_max + GetPreferredRenderInterval();
-
   auto callback =
-      [](base::TimeTicks deadline_min, base::TimeTicks deadline_max,
-         base::WeakPtr<MediaFoundationRendererClient> renderer_client) {
-        if (renderer_client.MaybeValid()) {
-          renderer_client->renderer_extension_
-              ->RequestNextFrameBetweenTimestamps(deadline_min, deadline_max);
+      [](base::WeakPtr<MediaFoundationRendererClient> renderer_client) {
+        if (renderer_client) {
+          renderer_client->renderer_extension_->RequestNextFrame();
         }
       };
 
   media_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(callback, next_request_min, next_request_max,
-                                weak_factory_.GetWeakPtr()));
+      FROM_HERE, base::BindOnce(callback, weak_factory_.GetWeakPtr()));
 
   // TODO(crbug.com/1298093): Need to report underflow when we don't have a
   // frame ready for presentation by calling OnBufferingStateChange
