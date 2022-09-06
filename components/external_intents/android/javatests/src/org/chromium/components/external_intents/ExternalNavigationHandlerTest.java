@@ -2686,6 +2686,12 @@ public class ExternalNavigationHandlerTest {
         checkUrl(YOUTUBE_MOBILE_URL)
                 .withRedirectHandler(redirectHandler)
                 .expecting(OverrideUrlLoadingResultType.NO_OVERRIDE, IGNORE);
+
+        mDelegate.setIsCallingAppTrusted(true);
+        checkUrl(YOUTUBE_MOBILE_URL)
+                .withRedirectHandler(redirectHandler)
+                .expecting(OverrideUrlLoadingResultType.OVERRIDE_WITH_EXTERNAL_INTENT,
+                        START_OTHER_ACTIVITY);
     }
 
     @Test
