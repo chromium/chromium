@@ -44,6 +44,8 @@ import org.chromium.chrome.features.start_surface.StartSurfaceUserData;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 
+import java.util.List;
+
 /** Mediator of the single tab tab switcher. */
 public class SingleTabSwitcherMediator implements TabSwitcher.Controller {
     @VisibleForTesting
@@ -103,6 +105,21 @@ public class SingleTabSwitcherMediator implements TabSwitcher.Controller {
                     return;
                 }
                 mTabSelectingListener.onTabSelecting(LayoutManagerImpl.time(), tab.getId());
+            }
+
+            @Override
+            public void tabPendingClosure(Tab tab) {
+                mBackPressChangedSupplier.set(shouldInterceptBackPress());
+            }
+
+            @Override
+            public void multipleTabsPendingClosure(List<Tab> tabs, boolean isAllTabs) {
+                mBackPressChangedSupplier.set(shouldInterceptBackPress());
+            }
+
+            @Override
+            public void tabClosureUndone(Tab tab) {
+                mBackPressChangedSupplier.set(shouldInterceptBackPress());
             }
         };
         mTabModelSelectorObserver = new TabModelSelectorObserver() {
