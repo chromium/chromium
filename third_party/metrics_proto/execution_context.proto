@@ -81,6 +81,9 @@ enum Thread {
   // WebRTC threads, e.g. WebRTC_Signaling,WebRTC_Network (in renderer process).
   WEBRTC_THREAD = 21;
 
+  // DRM threads (in GPU process).
+  DRM_THREAD = 22;
+
   // A Chrome thread not identified by any other enum. Defined for the benefit
   // of Chrome OS. Do not use for the Chrome sampling profiler; define a new
   // enum instead.
