@@ -210,6 +210,7 @@
 #include "ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
 #include "ash/webui/camera_app_ui/camera_app_helper.mojom.h"
 #include "ash/webui/camera_app_ui/camera_app_ui.h"
+#include "ash/webui/color_internals/color_internals_ui.h"
 #include "ash/webui/common/mojom/accessibility_features.mojom.h"
 #include "ash/webui/connectivity_diagnostics/connectivity_diagnostics_ui.h"
 #include "ash/webui/diagnostics_ui/diagnostics_ui.h"
@@ -893,6 +894,9 @@ void PopulateChromeWebUIFrameBinders(
       color_change_listener::mojom::PageHandler,
 #if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
       TabStripUI,
+#endif
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+      ash::ColorInternalsUI,
 #endif
       NewTabPageUI>(map);
 

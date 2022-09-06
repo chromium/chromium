@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {BrowserProxy} from 'chrome://resources/cr_components/color_change_listener/browser_proxy.js';
+import {refreshColorCss} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
+
 const CROS_TOKENS_JSON_URL = 'color_internals_tokens.json';
 
 interface Token {
@@ -62,7 +65,6 @@ function appendTokenRowToTable(
 
 // The list of tokens and color values are provided as JSON resource by the
 // backend.
-// TODO(b/222408581): re-request JSON and re-render table on themeChanged().
 async function requestJSON(): Promise<JSON> {
   return new Promise(function(resolve, reject) {
     const xhr = new XMLHttpRequest();
@@ -95,4 +97,10 @@ async function populateTokenTable() {
 
 window.onload = () => {
   populateTokenTable();
+  startColorChangeUpdater();
 };
+
+function startColorChangeUpdater() {
+  BrowserProxy.getInstance().callbackRouter.onColorProviderChanged.addListener(
+      refreshColorCss);
+}

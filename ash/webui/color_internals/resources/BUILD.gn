@@ -13,6 +13,7 @@ ts_library("color_internals_ts") {
   out_dir = "$target_gen_dir/tsc"
 
   in_files = [ "index.ts" ]
+  deps = [ "//ui/webui/resources/cr_components/color_change_listener:build_ts" ]
 
   composite = true
   tsconfig_base = "tsconfig_base.json"
