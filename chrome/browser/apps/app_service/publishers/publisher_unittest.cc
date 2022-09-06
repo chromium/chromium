@@ -411,10 +411,10 @@ class PublisherTest : public extensions::ExtensionServiceTestBase {
   }
 
   void VerifyCapabilityAccess(const std::string& app_id,
-                              apps::mojom::OptionalBool accessing_camera,
-                              apps::mojom::OptionalBool accessing_microphone) {
-    apps::mojom::OptionalBool camera = apps::mojom::OptionalBool::kUnknown;
-    apps::mojom::OptionalBool microphone = apps::mojom::OptionalBool::kUnknown;
+                              absl::optional<bool> accessing_camera,
+                              absl::optional<bool> accessing_microphone) {
+    absl::optional<bool> camera;
+    absl::optional<bool> microphone;
     apps::AppServiceProxyFactory::GetForProfile(profile())
         ->AppCapabilityAccessCache()
         .ForOneApp(app_id, [&camera, &microphone](
@@ -531,10 +531,9 @@ TEST_F(PublisherTest, ArcApps_CapabilityAccess) {
     arc_apps->OnPrivacyItemsChanged(std::move(privacy_items));
     AppServiceProxyFactory::GetForProfile(profile())
         ->FlushMojoCallsForTesting();
-    VerifyCapabilityAccess(
-        ArcAppTest::GetAppId(*fake_apps[0]),
-        /*accessing_camera=*/apps::mojom::OptionalBool::kTrue,
-        /*accessing_microphone=*/apps::mojom::OptionalBool::kUnknown);
+    VerifyCapabilityAccess(ArcAppTest::GetAppId(*fake_apps[0]),
+                           /*accessing_camera=*/true,
+                           /*accessing_microphone=*/absl::nullopt);
   }
 
   // Cancel accessing Camera for `package_name1`.
@@ -543,10 +542,9 @@ TEST_F(PublisherTest, ArcApps_CapabilityAccess) {
     arc_apps->OnPrivacyItemsChanged(std::move(privacy_items));
     AppServiceProxyFactory::GetForProfile(profile())
         ->FlushMojoCallsForTesting();
-    VerifyCapabilityAccess(
-        ArcAppTest::GetAppId(*fake_apps[0]),
-        /*accessing_camera=*/apps::mojom::OptionalBool::kFalse,
-        /*accessing_microphone=*/apps::mojom::OptionalBool::kFalse);
+    VerifyCapabilityAccess(ArcAppTest::GetAppId(*fake_apps[0]),
+                           /*accessing_camera=*/false,
+                           /*accessing_microphone=*/false);
   }
 
   // Set accessing Camera and Microphone for `package_name1`, and accessing
@@ -562,14 +560,12 @@ TEST_F(PublisherTest, ArcApps_CapabilityAccess) {
     arc_apps->OnPrivacyItemsChanged(std::move(privacy_items));
     AppServiceProxyFactory::GetForProfile(profile())
         ->FlushMojoCallsForTesting();
-    VerifyCapabilityAccess(
-        ArcAppTest::GetAppId(*fake_apps[0]),
-        /*accessing_camera=*/apps::mojom::OptionalBool::kTrue,
-        /*accessing_microphone=*/apps::mojom::OptionalBool::kTrue);
-    VerifyCapabilityAccess(
-        ArcAppTest::GetAppId(*fake_apps[1]),
-        /*accessing_camera=*/apps::mojom::OptionalBool::kTrue,
-        /*accessing_microphone=*/apps::mojom::OptionalBool::kUnknown);
+    VerifyCapabilityAccess(ArcAppTest::GetAppId(*fake_apps[0]),
+                           /*accessing_camera=*/true,
+                           /*accessing_microphone=*/true);
+    VerifyCapabilityAccess(ArcAppTest::GetAppId(*fake_apps[1]),
+                           /*accessing_camera=*/true,
+                           /*accessing_microphone=*/absl::nullopt);
   }
 
   // Cancel accessing Microphone for `package_name1`.
@@ -582,14 +578,12 @@ TEST_F(PublisherTest, ArcApps_CapabilityAccess) {
     arc_apps->OnPrivacyItemsChanged(std::move(privacy_items));
     AppServiceProxyFactory::GetForProfile(profile())
         ->FlushMojoCallsForTesting();
-    VerifyCapabilityAccess(
-        ArcAppTest::GetAppId(*fake_apps[0]),
-        /*accessing_camera=*/apps::mojom::OptionalBool::kTrue,
-        /*accessing_microphone=*/apps::mojom::OptionalBool::kFalse);
-    VerifyCapabilityAccess(
-        ArcAppTest::GetAppId(*fake_apps[1]),
-        /*accessing_camera=*/apps::mojom::OptionalBool::kTrue,
-        /*accessing_microphone=*/apps::mojom::OptionalBool::kFalse);
+    VerifyCapabilityAccess(ArcAppTest::GetAppId(*fake_apps[0]),
+                           /*accessing_camera=*/true,
+                           /*accessing_microphone=*/false);
+    VerifyCapabilityAccess(ArcAppTest::GetAppId(*fake_apps[1]),
+                           /*accessing_camera=*/true,
+                           /*accessing_microphone=*/false);
   }
 
   // Cancel accessing CAMERA for `package_name1` and `package_name2`.
@@ -598,14 +592,12 @@ TEST_F(PublisherTest, ArcApps_CapabilityAccess) {
     arc_apps->OnPrivacyItemsChanged(std::move(privacy_items));
     AppServiceProxyFactory::GetForProfile(profile())
         ->FlushMojoCallsForTesting();
-    VerifyCapabilityAccess(
-        ArcAppTest::GetAppId(*fake_apps[0]),
-        /*accessing_camera=*/apps::mojom::OptionalBool::kFalse,
-        /*accessing_microphone=*/apps::mojom::OptionalBool::kFalse);
-    VerifyCapabilityAccess(
-        ArcAppTest::GetAppId(*fake_apps[1]),
-        /*accessing_camera=*/apps::mojom::OptionalBool::kFalse,
-        /*accessing_microphone=*/apps::mojom::OptionalBool::kFalse);
+    VerifyCapabilityAccess(ArcAppTest::GetAppId(*fake_apps[0]),
+                           /*accessing_camera=*/false,
+                           /*accessing_microphone=*/false);
+    VerifyCapabilityAccess(ArcAppTest::GetAppId(*fake_apps[1]),
+                           /*accessing_camera=*/false,
+                           /*accessing_microphone=*/false);
   }
 
   arc_apps->Shutdown();

@@ -12,6 +12,7 @@
 #include "components/account_id/account_id.h"
 #include "components/services/app_service/public/cpp/capability_access.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace apps {
 
@@ -65,20 +66,23 @@ class COMPONENT_EXPORT(APP_UPDATE) CapabilityAccessUpdate {
 
   const std::string& AppId() const;
 
-  apps::mojom::OptionalBool Camera() const;
+  absl::optional<bool> Camera() const;
   bool CameraChanged() const;
 
-  apps::mojom::OptionalBool Microphone() const;
+  absl::optional<bool> Microphone() const;
   bool MicrophoneChanged() const;
 
   const ::AccountId& AccountId() const;
 
  private:
-  raw_ptr<const apps::mojom::CapabilityAccess> mojom_state_;
-  raw_ptr<const apps::mojom::CapabilityAccess> mojom_delta_;
+  // TODO(crbug.com/1253250): Remove when the non mojom struct is used.
+  bool ShouldUseNonMojomStruct() const;
 
-  raw_ptr<const CapabilityAccess> state_;
-  raw_ptr<const CapabilityAccess> delta_;
+  raw_ptr<const apps::mojom::CapabilityAccess> mojom_state_ = nullptr;
+  raw_ptr<const apps::mojom::CapabilityAccess> mojom_delta_ = nullptr;
+
+  raw_ptr<const CapabilityAccess> state_ = nullptr;
+  raw_ptr<const CapabilityAccess> delta_ = nullptr;
 
   const ::AccountId& account_id_;
 };

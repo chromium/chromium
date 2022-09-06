@@ -61,8 +61,10 @@ void AppCapabilityAccessCache::SetAccountId(const AccountId& account_id) {
 std::set<std::string> AppCapabilityAccessCache::GetAppsAccessingCamera() {
   std::set<std::string> app_ids;
   ForEachApp([&app_ids](const apps::CapabilityAccessUpdate& update) {
-    if (update.Camera() == apps::mojom::OptionalBool::kTrue)
+    auto camera = update.Camera();
+    if (camera.value_or(false)) {
       app_ids.insert(update.AppId());
+    }
   });
   return app_ids;
 }
@@ -70,8 +72,10 @@ std::set<std::string> AppCapabilityAccessCache::GetAppsAccessingCamera() {
 std::set<std::string> AppCapabilityAccessCache::GetAppsAccessingMicrophone() {
   std::set<std::string> app_ids;
   ForEachApp([&app_ids](const apps::CapabilityAccessUpdate& update) {
-    if (update.Microphone() == apps::mojom::OptionalBool::kTrue)
+    auto microphone = update.Microphone();
+    if (microphone.value_or(false)) {
       app_ids.insert(update.AppId());
+    }
   });
   return app_ids;
 }

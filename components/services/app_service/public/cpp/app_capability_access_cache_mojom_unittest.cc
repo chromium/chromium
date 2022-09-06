@@ -36,12 +36,14 @@ class AppCapabilityAccessCacheMojomTest
       const apps::CapabilityAccessUpdate& update) override {
     EXPECT_EQ(account_id_, update.AccountId());
     updated_ids_.insert(update.AppId());
-    if (update.Camera() == apps::mojom::OptionalBool::kTrue) {
+    auto camera = update.Camera();
+    if (camera.value_or(false)) {
       accessing_camera_apps_.insert(update.AppId());
     } else {
       accessing_camera_apps_.erase(update.AppId());
     }
-    if (update.Microphone() == apps::mojom::OptionalBool::kTrue) {
+    auto microphone = update.Microphone();
+    if (microphone.value_or(false)) {
       accessing_microphone_apps_.insert(update.AppId());
     } else {
       accessing_microphone_apps_.erase(update.AppId());
@@ -118,12 +120,14 @@ class CapabilityAccessRecursiveObserverMojom
     int num_apps = 0;
     cache_->ForEachApp(
         [this, &outer, &num_apps](const apps::CapabilityAccessUpdate& inner) {
-          if (inner.Camera() == apps::mojom::OptionalBool::kTrue) {
+          auto camera = inner.Camera();
+          if (camera.value_or(false)) {
             accessing_camera_apps_.insert(inner.AppId());
           } else {
             accessing_camera_apps_.erase(inner.AppId());
           }
-          if (inner.Microphone() == apps::mojom::OptionalBool::kTrue) {
+          auto microphone = inner.Microphone();
+          if (microphone.value_or(false)) {
             accessing_microphone_apps_.insert(inner.AppId());
           } else {
             accessing_microphone_apps_.erase(inner.AppId());
@@ -248,8 +252,8 @@ TEST_F(AppCapabilityAccessCacheMojomTest, ForEachApp) {
       "c", [&found_c](const apps::CapabilityAccessUpdate& update) {
         found_c = true;
         EXPECT_EQ("c", update.AppId());
-        EXPECT_EQ(apps::mojom::OptionalBool::kTrue, update.Camera());
-        EXPECT_EQ(apps::mojom::OptionalBool::kFalse, update.Microphone());
+        EXPECT_TRUE(update.Camera().value_or(false));
+        EXPECT_FALSE(update.Microphone().value_or(true));
       }));
   EXPECT_TRUE(found_c);
 

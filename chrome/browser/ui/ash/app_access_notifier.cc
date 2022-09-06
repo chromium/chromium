@@ -116,9 +116,8 @@ void AppAccessNotifier::OnCapabilityAccessUpdate(
     const apps::CapabilityAccessUpdate& update) {
   base::Erase(mic_using_app_ids[active_user_account_id_], update.AppId());
 
-  bool microphone_is_used =
-      update.Microphone() == apps::mojom::OptionalBool::kTrue;
-  bool camera_is_used = update.Camera() == apps::mojom::OptionalBool::kTrue;
+  bool microphone_is_used = update.Microphone().value_or(false);
+  bool camera_is_used = update.Camera().value_or(false);
 
   if (ash::features::IsPrivacyIndicatorsEnabled()) {
     auto app_id = update.AppId();

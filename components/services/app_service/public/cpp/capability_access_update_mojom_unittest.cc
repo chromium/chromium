@@ -4,6 +4,7 @@
 
 #include "components/services/app_service/public/cpp/capability_access_update.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 const char app_id[] = "abcdefgh";
@@ -11,10 +12,10 @@ const char app_id[] = "abcdefgh";
 
 class CapabilityAccessUpdateMojomTest : public testing::Test {
  protected:
-  apps::mojom::OptionalBool expect_camera_;
+  absl::optional<bool> expect_camera_;
   bool expect_camera_changed_;
 
-  apps::mojom::OptionalBool expect_microphone_;
+  absl::optional<bool> expect_microphone_;
   bool expect_microphone_changed_;
 
   AccountId account_id_ = AccountId::FromUserEmail("test@gmail.com");
@@ -41,23 +42,20 @@ class CapabilityAccessUpdateMojomTest : public testing::Test {
     EXPECT_EQ(app_id, u.AppId());
     EXPECT_EQ(state == nullptr, u.StateIsNull());
 
-    expect_camera_ = apps::mojom::OptionalBool::kUnknown;
-    expect_microphone_ = apps::mojom::OptionalBool::kUnknown;
-
     ExpectNoChange();
     CheckExpects(u);
 
     // IsAccessingCamera tests.
     if (state) {
       state->camera = apps::mojom::OptionalBool::kFalse;
-      expect_camera_ = apps::mojom::OptionalBool::kFalse;
+      expect_camera_ = false;
       expect_camera_changed_ = false;
       CheckExpects(u);
     }
 
     if (delta) {
       delta->camera = apps::mojom::OptionalBool::kTrue;
-      expect_camera_ = apps::mojom::OptionalBool::kTrue;
+      expect_camera_ = true;
       expect_camera_changed_ = true;
       CheckExpects(u);
     }
@@ -71,14 +69,14 @@ class CapabilityAccessUpdateMojomTest : public testing::Test {
     // IsAccessingMicrophone tests.
     if (state) {
       state->microphone = apps::mojom::OptionalBool::kFalse;
-      expect_microphone_ = apps::mojom::OptionalBool::kFalse;
+      expect_microphone_ = false;
       expect_microphone_changed_ = false;
       CheckExpects(u);
     }
 
     if (delta) {
       delta->microphone = apps::mojom::OptionalBool::kTrue;
-      expect_microphone_ = apps::mojom::OptionalBool::kTrue;
+      expect_microphone_ = true;
       expect_microphone_changed_ = true;
       CheckExpects(u);
     }
