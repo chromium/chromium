@@ -235,6 +235,11 @@ const base::Feature kPreinstalledWebAppDuplicationFixer{
     "PreinstalledWebAppDuplicationFixer", base::FEATURE_ENABLED_BY_DEFAULT};
 #endif
 
+// Generates customised default offline page that is shown when web app is
+// offline if no custom page is provided by developer.
+const base::Feature kPWAsDefaultOfflinePage{"PWAsDefaultOfflinePage",
+                                            base::FEATURE_DISABLED_BY_DEFAULT};
+
 // API that allows PWAs manually minimizing, maximizing and restoring windows.
 const base::Feature kDesktopPWAsAdditionalWindowingControls{
     "DesktopPWAsAdditionalWindowingControls",
@@ -244,16 +249,6 @@ const base::Feature kDesktopPWAsAdditionalWindowingControls{
 // to cache resources.
 const base::Feature kDesktopPWAsCacheDuringDefaultInstall{
     "DesktopPWAsCacheDuringDefaultInstall", base::FEATURE_ENABLED_BY_DEFAULT};
-
-// Generates customised default offline page that is shown when web app is
-// offline if no custom page is provided by developer.
-#if BUILDFLAG(IS_ANDROID)
-const base::Feature kAndroidPWAsDefaultOfflinePage{
-    "AndroidPWAsDefaultOfflinePage", base::FEATURE_DISABLED_BY_DEFAULT};
-#else
-const base::Feature kDesktopPWAsDefaultOfflinePage{
-    "DesktopPWAsDefaultOfflinePage", base::FEATURE_DISABLED_BY_DEFAULT};
-#endif  // BUILDFLAG(IS_ANDROID)
 
 // Moves the Extensions "puzzle piece" icon from the title bar into the app menu
 // for web app windows.

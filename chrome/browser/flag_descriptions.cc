@@ -75,11 +75,6 @@ const char kAllowInsecureLocalhostDescription[] =
     "Allows requests to localhost over HTTPS even when an invalid certificate "
     "is presented.";
 
-const char kAndroidPWAsDefaultOfflinePageName[] =
-    "Android PWAs default offline page";
-const char kAndroidPWAsDefaultOfflinePageDescription[] =
-    "Shows customised default offline page when web app is offline.";
-
 const char kWindowsFollowCursorName[] =
     "Windows open on the display with the cursor";
 const char kWindowsFollowCursorDescription[] =
@@ -942,11 +937,6 @@ const char kDesktopPWAsPrefixAppNameInWindowTitleDescription[] =
 const char kDesktopPWAsRemoveStatusBarName[] = "Desktop PWAs remove status bar";
 const char kDesktopPWAsRemoveStatusBarDescription[] =
     "Hides the status bar popup in Desktop PWA app windows.";
-
-const char kDesktopPWAsDefaultOfflinePageName[] =
-    "Desktop PWAs default offline page";
-const char kDesktopPWAsDefaultOfflinePageDescription[] =
-    "Shows customised default offline page when web app is offline.";
 
 const char kDesktopPWAsElidedExtensionsMenuName[] =
     "Desktop PWAs elided extensions menu";
@@ -2412,6 +2402,10 @@ const char kPullToRefreshName[] = "Pull-to-refresh gesture";
 const char kPullToRefreshDescription[] =
     "Pull-to-refresh gesture in response to vertical overscroll.";
 const char kPullToRefreshEnabledTouchscreen[] = "Enabled for touchscreen only";
+
+const char kPWAsDefaultOfflinePageName[] = "Default offline page for PWAs";
+const char kPWAsDefaultOfflinePageDescription[] =
+    "Shows customised default offline page when web app is offline.";
 
 const char kPwaUpdateDialogForAppIconName[] =
     "Enable PWA install update dialog for icon changes";

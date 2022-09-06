@@ -69,9 +69,6 @@ extern const char kAlignWakeUpsDescription[];
 extern const char kAllowInsecureLocalhostName[];
 extern const char kAllowInsecureLocalhostDescription[];
 
-extern const char kAndroidPWAsDefaultOfflinePageName[];
-extern const char kAndroidPWAsDefaultOfflinePageDescription[];
-
 extern const char kAnimatedImageResumeName[];
 extern const char kAnimatedImageResumeDescription[];
 
@@ -537,9 +534,6 @@ extern const char kDesktopPWAsPrefixAppNameInWindowTitleDescription[];
 
 extern const char kDesktopPWAsRemoveStatusBarName[];
 extern const char kDesktopPWAsRemoveStatusBarDescription[];
-
-extern const char kDesktopPWAsDefaultOfflinePageName[];
-extern const char kDesktopPWAsDefaultOfflinePageDescription[];
 
 extern const char kDesktopPWAsElidedExtensionsMenuName[];
 extern const char kDesktopPWAsElidedExtensionsMenuDescription[];
@@ -1350,6 +1344,9 @@ extern const char kProminentDarkModeActiveTabTitleDescription[];
 extern const char kPullToRefreshName[];
 extern const char kPullToRefreshDescription[];
 extern const char kPullToRefreshEnabledTouchscreen[];
+
+extern const char kPWAsDefaultOfflinePageName[];
+extern const char kPWAsDefaultOfflinePageDescription[];
 
 extern const char kPwaUpdateDialogForAppIconName[];
 extern const char kPwaUpdateDialogForAppIconDescription[];

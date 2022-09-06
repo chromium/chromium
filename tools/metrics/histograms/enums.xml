@@ -58665,7 +58665,6 @@ from previous Chrome versions.
   <int value="-599005750" label="ScanningUI:disabled"/>
   <int value="-598191408" label="OmniboxKeywordSpaceTriggeringSetting:enabled"/>
   <int value="-598050737" label="disable-es3-apis"/>
-  <int value="-597519760" label="AndroidPWAsDefaultOfflinePage:enabled"/>
   <int value="-596822155" label="AppManagementIntentSettings:enabled"/>
   <int value="-596337171" label="disable-ash-sidebar"/>
   <int value="-595819071"
@@ -59072,7 +59071,6 @@ from previous Chrome versions.
   <int value="-336768659" label="NtpPhotosModule:enabled"/>
   <int value="-335331552" label="TabGroupsForTablets:disabled"/>
   <int value="-334873793" label="MediaSessionNotification:enabled"/>
-  <int value="-334846826" label="DesktopPWAsDefaultOfflinePage:enabled"/>
   <int value="-333216449" label="MouseSubframeNoImplicitCapture:enabled"/>
   <int value="-332010491" label="RetailCoupons:enabled"/>
   <int value="-331952590" label="OmniboxTriggerForPrerender2:enabled"/>
@@ -60864,7 +60862,6 @@ from previous Chrome versions.
   <int value="773563826" label="CrostiniUsbSupport:disabled"/>
   <int value="773743944" label="show-android-files-in-files-app"/>
   <int value="773919225" label="disable-office-editing-component-extension"/>
-  <int value="774866229" label="AndroidPWAsDefaultOfflinePage:disabled"/>
   <int value="775075949" label="ImeInputLogicHmm:enabled"/>
   <int value="775148009" label="OsSettingsDeepLinking:disabled"/>
   <int value="777569794" label="FeedWebUi:enabled"/>
@@ -61232,6 +61229,7 @@ from previous Chrome versions.
   <int value="1008677979"
       label="AutofillUseImprovedLabelDisambiguation:disabled"/>
   <int value="1009437086" label="AutofillEnableOfferNotification:disabled"/>
+  <int value="1009596554" label="PWAsDefaultOfflinePage:enabled"/>
   <int value="1009976778" label="SidePanel:disabled"/>
   <int value="1011550878" label="MessagesForAndroidPermissionUpdate:disabled"/>
   <int value="1012643576" label="CommerceDeveloper:enabled"/>
@@ -62057,7 +62055,6 @@ from previous Chrome versions.
   <int value="1515196403" label="fast-user-switching"/>
   <int value="1515334367" label="ToolbarMicIphAndroid:disabled"/>
   <int value="1515472077" label="VirtualKeyboardRoundCorners:disabled"/>
-  <int value="1516258676" label="DesktopPWAsDefaultOfflinePage:disabled"/>
   <int value="1517863401" label="history-entry-requires-user-gesture"/>
   <int value="1517988103" label="FilesBannerFramework:disabled"/>
   <int value="1518752357" label="ContextualPageActionPriceTracking:enabled"/>
@@ -62345,6 +62342,7 @@ from previous Chrome versions.
   <int value="1706682238" label="ContextualSearchTranslations:disabled"/>
   <int value="1707283026" label="SyncPseudoUSSExtensions:disabled"/>
   <int value="1708118086" label="TextFragmentAnchor:disabled"/>
+  <int value="1708689134" label="PWAsDefaultOfflinePage:disabled"/>
   <int value="1709255374" label="DragAndDropAndroid:enabled"/>
   <int value="1710630380"
       label="AutofillEnableSupportForMoreStructureInNames:enabled"/>

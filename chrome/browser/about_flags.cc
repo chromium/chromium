@@ -4410,17 +4410,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kDesktopPWAsRemoveStatusBarName,
      flag_descriptions::kDesktopPWAsRemoveStatusBarDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kRemoveStatusBarInWebApps)},
-#if BUILDFLAG(IS_ANDROID)
-    {"enable-android-pwas-default-offline-page",
-     flag_descriptions::kAndroidPWAsDefaultOfflinePageName,
-     flag_descriptions::kAndroidPWAsDefaultOfflinePageDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(features::kAndroidPWAsDefaultOfflinePage)},
-#else
-    {"enable-desktop-pwas-default-offline-page",
-     flag_descriptions::kDesktopPWAsDefaultOfflinePageName,
-     flag_descriptions::kDesktopPWAsDefaultOfflinePageDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kDesktopPWAsDefaultOfflinePage)},
-#endif  // BUILDFLAG(IS_ANDROID)
+    {"enable-pwas-default-offline-page",
+     flag_descriptions::kPWAsDefaultOfflinePageName,
+     flag_descriptions::kPWAsDefaultOfflinePageDescription,
+     kOsAndroid | kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kPWAsDefaultOfflinePage)},
     {"enable-desktop-pwas-elided-extensions-menu",
      flag_descriptions::kDesktopPWAsElidedExtensionsMenuName,
      flag_descriptions::kDesktopPWAsElidedExtensionsMenuDescription, kOsDesktop,

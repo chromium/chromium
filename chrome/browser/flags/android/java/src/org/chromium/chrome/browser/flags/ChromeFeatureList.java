@@ -475,7 +475,7 @@ public abstract class ChromeFeatureList {
     public static final String PORTALS = "Portals";
     public static final String PORTALS_CROSS_ORIGIN = "PortalsCrossOrigin";
     public static final String POST_TASK_FOCUS_TAB = "PostTaskFocusTab";
-    public static final String PWA_DEFAULT_OFFLINE_PAGE = "AndroidPWAsDefaultOfflinePage";
+    public static final String PWA_DEFAULT_OFFLINE_PAGE = "PWAsDefaultOfflinePage";
     public static final String BOOKMARKS_IMPROVED_SAVE_FLOW = "BookmarksImprovedSaveFlow";
     public static final String BOOKMARKS_REFRESH = "BookmarksRefresh";
     public static final String PREEMPTIVE_LINK_TO_TEXT_GENERATION =

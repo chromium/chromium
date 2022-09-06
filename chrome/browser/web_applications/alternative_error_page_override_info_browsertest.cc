@@ -28,7 +28,7 @@ class AlternativeErrorPageOverrideInfoBrowserTest
     : public InProcessBrowserTest {
  public:
   AlternativeErrorPageOverrideInfoBrowserTest() {
-    feature_list_.InitWithFeatures({features::kDesktopPWAsDefaultOfflinePage,
+    feature_list_.InitWithFeatures({features::kPWAsDefaultOfflinePage,
                                     blink::features::kWebAppEnableDarkMode},
                                    {});
   }

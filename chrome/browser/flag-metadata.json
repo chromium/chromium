@@ -1644,11 +1644,6 @@
     "expiry_milestone": 115
   },
   {
-    "name": "enable-android-pwas-default-offline-page",
-    "owners": [ "finnur@google.com", "beverloo@google.com" ],
-    "expiry_milestone": 120
-  },
-  {
     "name": "enable-app-discovery-for-oobe",
     "owners": [ "melzhang", "tsergeant", "chromeos-apps-foundation-team" ],
     "expiry_milestone": 110
@@ -2787,6 +2782,11 @@
     "name": "enable-projector-local-playback",
     "owners": [ "tobyhuang", "cros-projector@google.com" ],
     "expiry_milestone": 108
+  },
+  {
+    "name": "enable-pwas-default-offline-page",
+    "owners": [ "finnur@google.com", "beverloo@google.com" ],
+    "expiry_milestone": 120
   },
   {
     "name": "enable-quic",

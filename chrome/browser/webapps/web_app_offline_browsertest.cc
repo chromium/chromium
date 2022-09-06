@@ -85,11 +85,9 @@ class WebAppOfflinePageTest
  public:
   WebAppOfflinePageTest() {
     if (GetParam() == PageFlagParam::kWithDefaultPageFlag) {
-      feature_list_.InitAndEnableFeature(
-          features::kDesktopPWAsDefaultOfflinePage);
+      feature_list_.InitAndEnableFeature(features::kPWAsDefaultOfflinePage);
     } else {
-      feature_list_.InitAndDisableFeature(
-          features::kDesktopPWAsDefaultOfflinePage);
+      feature_list_.InitAndDisableFeature(features::kPWAsDefaultOfflinePage);
     }
   }
 
@@ -227,7 +225,7 @@ class WebAppOfflineDarkModeTest
     disabled_features.push_back(ash::features::kNotificationsRefresh);
 #endif
 
-    feature_list_.InitWithFeatures({features::kDesktopPWAsDefaultOfflinePage,
+    feature_list_.InitWithFeatures({features::kPWAsDefaultOfflinePage,
                                     blink::features::kWebAppEnableDarkMode},
                                    {disabled_features});
   }
