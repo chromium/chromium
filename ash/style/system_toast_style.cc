@@ -43,10 +43,11 @@ constexpr int kToastTextMaximumWidth = 512;
 constexpr int kOneLineHorizontalSpacing = 16;
 constexpr int kTwoLineHorizontalSpacing = 24;
 constexpr int kSpacingBetweenLabelAndButton = 16;
-constexpr int kOnelineButtonRightSpacing = 2;
+constexpr int kOnelineButtonPadding = 2;
 constexpr int kTwolineButtonRightSpacing = 12;
 constexpr int kToastLabelVerticalSpacing = 8;
 constexpr int kManagedIconSize = 32;
+constexpr int kTwolineVerticalPadding = 12;
 
 // The label inside SystemToastStyle, which allows two lines at maximum.
 class SystemToastInnerLabel : public views::Label {
@@ -74,28 +75,18 @@ class SystemToastInnerLabel : public views::Label {
 BEGIN_METADATA(SystemToastInnerLabel, views::Label)
 END_METADATA
 
-// TODO(crbug/1294449): Handle the case when a word can't be fitted into
-// one-line where additional spaces need to be padded.
-bool FormatDisplayLabelText(views::Label* label,
-                            std::u16string& out_display_text) {
-  const gfx::FontList& font_list = label->font_list();
-  const std::u16string& text = label->GetText();
-  const int label_text_width = gfx::GetStringWidth(text, font_list);
-  out_display_text = text;
-  const bool two_line = label_text_width > kToastTextMaximumWidth;
-  if (two_line) {
-    // Find the index to split string into multiple lines so that the width of
-    // each row is within `kToastTextMaximumWidth` limit.
-    const int split_index =
-        text.length() * kToastTextMaximumWidth / label_text_width;
-    out_display_text = base::StrCat(
-        {text.substr(0, split_index), u"\n" + text.substr(split_index)});
-  }
+// Returns the vertical padding for the layout given button presence and
+// `two_line`.
+int ComputeVerticalSpacing(bool has_button, bool two_line) {
+  if (two_line)
+    return kTwolineVerticalPadding;
 
-  out_display_text = gfx::ElideText(
-      out_display_text, font_list, kToastTextMaximumWidth * 2, gfx::ELIDE_TAIL);
+  // For one line, the button is taller so it determines the height of the toast
+  // so we use the button's padding.
+  if (has_button)
+    return kOnelineButtonPadding;
 
-  return two_line;
+  return kToastLabelVerticalSpacing;
 }
 
 }  // namespace
@@ -119,10 +110,6 @@ SystemToastStyle::SystemToastStyle(base::RepeatingClosure dismiss_callback,
 
   label_ = AddChildView(std::make_unique<SystemToastInnerLabel>(text));
 
-  std::u16string display_text;
-  const bool two_line = FormatDisplayLabelText(label_, display_text);
-  label_->SetText(display_text);
-
   if (!dismiss_text.empty()) {
     button_ = AddChildView(std::make_unique<PillButton>(
         std::move(dismiss_callback), dismiss_text,
@@ -131,22 +118,18 @@ SystemToastStyle::SystemToastStyle(base::RepeatingClosure dismiss_callback,
     button_->SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY);
   }
 
-  int toast_height = kToastLabelVerticalSpacing * 2 + label_->GetLineHeight();
-  if (two_line)
-    toast_height += label_->GetLineHeight();
-
-  const int vertical_spacing =
-      button_
-          ? std::min(kToastLabelVerticalSpacing,
-                     (toast_height - button_->GetPreferredSize().height()) / 2)
-          : kToastLabelVerticalSpacing;
+  // Requesting size forces layout. Otherwise, we don't know how many lines
+  // are needed.
+  label_->GetPreferredSize();
+  const bool two_line = label_->GetRequiredLines() > 1;
+  const int vertical_spacing = ComputeVerticalSpacing(!!button_, two_line);
 
   auto insets =
       gfx::Insets::VH(vertical_spacing, two_line ? kTwoLineHorizontalSpacing
                                                  : kOneLineHorizontalSpacing);
   if (button_) {
     insets.set_right(two_line ? kTwolineButtonRightSpacing
-                              : kOnelineButtonRightSpacing);
+                              : kOnelineButtonPadding);
   }
 
   auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
@@ -156,7 +139,8 @@ SystemToastStyle::SystemToastStyle(base::RepeatingClosure dismiss_callback,
       views::BoxLayout::CrossAxisAlignment::kCenter);
   layout->SetFlexForView(label_, 1);
 
-  const int toast_corner_radius = toast_height / 2.f;
+  int toast_height = GetPreferredSize().height();
+  const float toast_corner_radius = toast_height / 2.0f;
   layer()->SetRoundedCornerRadius(gfx::RoundedCornersF(toast_corner_radius));
   if (features::IsDarkLightModeEnabled()) {
     SetBorder(std::make_unique<views::HighlightBorder>(
