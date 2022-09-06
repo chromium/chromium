@@ -184,7 +184,7 @@ bool DisplayLockUtilities::ActivateFindInPageMatchRangeIfNeeded(
   // This means we only need to traverse up from one node in the range, in this
   // case we are traversing from the start position of the range.
   Element* enclosing_block =
-      EnclosingBlock(range.StartPosition(), kCannotCrossEditingBoundary);
+      EnclosingBlock(range.StartPosition(), kCanCrossEditingBoundary);
   // Note that we don't check the `range.EndPosition()` since we just activate
   // the beginning of the range. In find-in-page cases, the end position is the
   // same since the matches cannot cross block boundaries. However, in
