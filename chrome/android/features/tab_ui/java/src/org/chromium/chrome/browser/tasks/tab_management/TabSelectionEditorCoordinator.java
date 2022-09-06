@@ -20,6 +20,7 @@ import org.chromium.base.TraceEvent;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.pseudotab.PseudoTab;
@@ -136,23 +137,33 @@ class TabSelectionEditorCoordinator {
 
     public TabSelectionEditorCoordinator(Context context, ViewGroup parentView,
             TabModelSelector tabModelSelector, TabContentManager tabContentManager,
-            @TabListMode int mode, ViewGroup rootView) {
+            @TabListMode int mode, ViewGroup rootView, boolean displayGroups) {
         try (TraceEvent e = TraceEvent.scoped("TabSelectionEditorCoordinator.constructor")) {
             mContext = context;
             mParentView = parentView;
             mTabModelSelector = tabModelSelector;
             assert mode == TabListCoordinator.TabListMode.GRID
                     || mode == TabListCoordinator.TabListMode.LIST;
+            assert !displayGroups
+                    || (displayGroups
+                            && ChromeFeatureList.isEnabled(
+                                    ChromeFeatureList.TAB_SELECTION_EDITOR_V2));
 
             mTabSelectionEditorLayout =
                     LayoutInflater.from(context)
                             .inflate(R.layout.tab_selection_editor_layout, parentView, false)
                             .findViewById(R.id.selectable_list);
 
-            // TODO(ckitagawa): Modify this initializer to support group selection
-            // if requested.
+            TabListMediator.ThumbnailProvider thumbnailProvider = displayGroups
+                    ? new MultiThumbnailCardProvider(context, tabContentManager, tabModelSelector)
+                    : tabContentManager::getTabThumbnailWithCallback;
+            PseudoTab.TitleProvider titleProvider = displayGroups ? this::getTitle : null;
+
+            // TODO(ckitagawa): Lazily instantiate the TabSelectionEditorCoordinator. When doing so,
+            // the Coordinator hosting the TabSelectionEditorCoordinator could share and reconfigure
+            // its TabListCoordinator to work with the editor as an optimization.
             mTabListCoordinator = new TabListCoordinator(mode, context, mTabModelSelector,
-                    tabContentManager::getTabThumbnailWithCallback, null, false, null, null,
+                    thumbnailProvider, titleProvider, displayGroups, null, null,
                     TabProperties.UiType.SELECTABLE, this::getSelectionDelegate, null,
                     mTabSelectionEditorLayout, false, COMPONENT_NAME, rootView, null);
 
@@ -197,7 +208,7 @@ class TabSelectionEditorCoordinator {
 
             mTabSelectionEditorMediator = new TabSelectionEditorMediator(mContext,
                     mTabModelSelector, this::resetWithListOfTabs, mModel, mSelectionDelegate,
-                    mTabSelectionEditorLayout.getToolbar());
+                    mTabSelectionEditorLayout.getToolbar(), displayGroups);
         }
     }
 
@@ -222,6 +233,15 @@ class TabSelectionEditorCoordinator {
             mTabListCoordinator.addSpecialListItem(preSelectedCount, TabProperties.UiType.DIVIDER,
                     new PropertyModel.Builder(CARD_TYPE).with(CARD_TYPE, OTHERS).build());
         }
+    }
+
+    private String getTitle(Context context, PseudoTab tab) {
+        int numRelatedTabs = PseudoTab.getRelatedTabs(context, tab, mTabModelSelector).size();
+
+        if (numRelatedTabs == 1) return tab.getTitle();
+
+        return context.getResources().getQuantityString(
+                R.plurals.bottom_tab_grid_title_placeholder, numRelatedTabs, numRelatedTabs);
     }
 
     /**

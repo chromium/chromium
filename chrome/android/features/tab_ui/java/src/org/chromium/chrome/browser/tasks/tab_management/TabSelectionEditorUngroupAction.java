@@ -38,6 +38,8 @@ public class TabSelectionEditorUngroupAction extends TabSelectionEditorAction {
     public void onSelectionStateChange(List<Integer> tabIds) {
         assert getTabModelSelector().getTabModelFilterProvider().getCurrentTabModelFilter()
                         instanceof TabGroupModelFilter;
+        assert !editorSupportsActionOnRelatedTabs()
+            : "Ungrouping is not supported when actions apply to related tabs.";
 
         setEnabledAndItemCount(!tabIds.isEmpty(), tabIds.size());
     }
@@ -46,6 +48,8 @@ public class TabSelectionEditorUngroupAction extends TabSelectionEditorAction {
     public void performAction(List<Tab> tabs) {
         assert getTabModelSelector().getTabModelFilterProvider().getCurrentTabModelFilter()
                         instanceof TabGroupModelFilter;
+        assert !editorSupportsActionOnRelatedTabs()
+            : "Ungrouping is not supported when actions apply to related tabs.";
 
         TabGroupModelFilter filter = (TabGroupModelFilter) getTabModelSelector()
                                              .getTabModelFilterProvider()

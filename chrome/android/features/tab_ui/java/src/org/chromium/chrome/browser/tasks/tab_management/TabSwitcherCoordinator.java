@@ -484,7 +484,7 @@ public class TabSwitcherCoordinator
         int selectionEditorMode = mMode == TabListMode.CAROUSEL ? TabListMode.GRID : mMode;
         mTabSelectionEditorCoordinator =
                 new TabSelectionEditorCoordinator(context, mCoordinatorView, mTabModelSelector,
-                        tabContentManager, selectionEditorMode, mRootView);
+                        tabContentManager, selectionEditorMode, mRootView, /*displayGroups=*/false);
     }
 
     private void setUpPriceTracking(Context context, ModalDialogManager modalDialogManager) {

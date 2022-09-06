@@ -190,7 +190,8 @@ public class TabSelectionEditorMenuTest extends BlankUiTestActivityTestCase {
             action.getPropertyModel().set(TabSelectionEditorActionProperties.ICON_TINT,
                     AppCompatResources.getColorStateList(
                             getActivity(), R.color.default_icon_color_tint_list));
-            action.configure(mTabModelSelector, mSelectionDelegate, mDelegate);
+            action.configure(mTabModelSelector, mSelectionDelegate, mDelegate,
+                    /*editorSupportsActionOnRelatedTabs=*/false);
             models.add(action.getPropertyModel());
         }
         mPropertyListModel.addAll(models, 0);

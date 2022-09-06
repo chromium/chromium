@@ -27,7 +27,7 @@ import java.util.Locale;
 
 /**
  * A controller that listens to
- * {@link TabGroupModelFilter.Observer#didCreateGroup(List, List, boolean)} and shows a
+ * {@link TabGroupModelFilter.Observer#didCreateGroup(List, List, List)} and shows a
  * undo snackbar.
  */
 public class UndoGroupSnackbarController implements SnackbarManager.SnackbarController {
@@ -63,14 +63,14 @@ public class UndoGroupSnackbarController implements SnackbarManager.SnackbarCont
         mTabGroupModelFilterObserver = new EmptyTabGroupModelFilterObserver() {
             @Override
             public void didCreateGroup(
-                    List<Tab> tabs, List<Integer> tabOriginalIndex, boolean isSameGroup) {
+                    List<Tab> tabs, List<Integer> tabOriginalIndex, List<Integer> originalRootId) {
                 assert tabs.size() == tabOriginalIndex.size();
 
                 List<TabUndoInfo> tabUndoInfo = new ArrayList<>();
                 for (int i = 0; i < tabs.size(); i++) {
                     Tab tab = tabs.get(i);
                     int index = tabOriginalIndex.get(i);
-                    int groupId = isSameGroup ? tabs.get(0).getId() : tab.getId();
+                    int groupId = originalRootId.get(i);
 
                     tabUndoInfo.add(new TabUndoInfo(tab, index, groupId));
                 }

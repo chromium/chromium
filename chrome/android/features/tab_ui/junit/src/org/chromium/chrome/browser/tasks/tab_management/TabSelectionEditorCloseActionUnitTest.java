@@ -22,12 +22,16 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.TabModelFilterProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.TabSelectionEditorAction.ActionDelegate;
 import org.chromium.chrome.browser.tasks.tab_management.TabSelectionEditorAction.ActionObserver;
 import org.chromium.chrome.browser.tasks.tab_management.TabSelectionEditorAction.ButtonType;
 import org.chromium.chrome.browser.tasks.tab_management.TabSelectionEditorAction.IconPosition;
 import org.chromium.chrome.browser.tasks.tab_management.TabSelectionEditorAction.ShowMode;
+import org.chromium.chrome.browser.tasks.tab_management.TabSelectionEditorActionUnitTestHelper.TabIdGroup;
+import org.chromium.chrome.browser.tasks.tab_management.TabSelectionEditorActionUnitTestHelper.TabListHolder;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
@@ -46,6 +50,10 @@ public class TabSelectionEditorCloseActionUnitTest {
     @Mock
     private TabModelSelector mTabModelSelector;
     @Mock
+    private TabModelFilterProvider mTabModelFilterProvider;
+    @Mock
+    private TabGroupModelFilter mGroupFilter;
+    @Mock
     private SelectionDelegate<Integer> mSelectionDelegate;
     @Mock
     private ActionDelegate mDelegate;
@@ -58,8 +66,13 @@ public class TabSelectionEditorCloseActionUnitTest {
         mAction = TabSelectionEditorCloseAction.createAction(
                 ShowMode.MENU_ONLY, ButtonType.TEXT, IconPosition.START);
         mTabModel = spy(new MockTabModel(false, null));
+        when(mTabModelFilterProvider.getCurrentTabModelFilter()).thenReturn(mGroupFilter);
+        when(mTabModelSelector.getTabModelFilterProvider()).thenReturn(mTabModelFilterProvider);
         when(mTabModelSelector.getCurrentModel()).thenReturn(mTabModel);
-        mAction.configure(mTabModelSelector, mSelectionDelegate, mDelegate);
+    }
+
+    private void configure(boolean actionOnRelatedTabs) {
+        mAction.configure(mTabModelSelector, mSelectionDelegate, mDelegate, actionOnRelatedTabs);
     }
 
     @Test
@@ -80,6 +93,7 @@ public class TabSelectionEditorCloseActionUnitTest {
     @Test
     @SmallTest
     public void testCloseActionNoTabs() {
+        configure(false);
         mAction.onSelectionStateChange(new ArrayList<Integer>());
         Assert.assertEquals(
                 false, mAction.getPropertyModel().get(TabSelectionEditorActionProperties.ENABLED));
@@ -90,6 +104,7 @@ public class TabSelectionEditorCloseActionUnitTest {
     @Test
     @SmallTest
     public void testCloseActionWithTabs() throws Exception {
+        configure(false);
         List<Integer> tabIds = new ArrayList<>();
         tabIds.add(5);
         tabIds.add(3);
@@ -127,5 +142,70 @@ public class TabSelectionEditorCloseActionUnitTest {
         verify(mTabModel, times(2)).closeMultipleTabs(tabs, true);
         verify(mDelegate, times(2)).hide();
         Assert.assertEquals(1, helper.getCallCount());
+    }
+
+    @Test
+    @SmallTest
+    public void testCloseActionWithTabGroups_ActionOnRelatedTabs() throws Exception {
+        final boolean actionOnRelatedTabs = true;
+        configure(actionOnRelatedTabs);
+        List<TabIdGroup> tabIdGroups = new ArrayList<>();
+        tabIdGroups.add(new TabIdGroup(new int[] {0}, false));
+        tabIdGroups.add(new TabIdGroup(new int[] {5, 3}, true));
+        tabIdGroups.add(new TabIdGroup(new int[] {4}, false));
+        tabIdGroups.add(new TabIdGroup(new int[] {8, 7, 6}, true));
+        tabIdGroups.add(new TabIdGroup(new int[] {1}, true));
+        TabListHolder holder = TabSelectionEditorActionUnitTestHelper.configureTabs(
+                mTabModel, mGroupFilter, mSelectionDelegate, tabIdGroups);
+
+        Assert.assertEquals(3, holder.getSelectedTabs().size());
+        Assert.assertEquals(5, holder.getSelectedTabs().get(0).getId());
+        Assert.assertEquals(8, holder.getSelectedTabs().get(1).getId());
+        Assert.assertEquals(1, holder.getSelectedTabs().get(2).getId());
+        mAction.onSelectionStateChange(holder.getSelectedTabIds());
+        Assert.assertEquals(
+                true, mAction.getPropertyModel().get(TabSelectionEditorActionProperties.ENABLED));
+        Assert.assertEquals(
+                6, mAction.getPropertyModel().get(TabSelectionEditorActionProperties.ITEM_COUNT));
+
+        Assert.assertEquals(6, holder.getSelectedAndRelatedTabs().size());
+        Assert.assertEquals(5, holder.getSelectedAndRelatedTabs().get(0).getId());
+        Assert.assertEquals(3, holder.getSelectedAndRelatedTabs().get(1).getId());
+        Assert.assertEquals(8, holder.getSelectedAndRelatedTabs().get(2).getId());
+        Assert.assertEquals(7, holder.getSelectedAndRelatedTabs().get(3).getId());
+        Assert.assertEquals(6, holder.getSelectedAndRelatedTabs().get(4).getId());
+        Assert.assertEquals(1, holder.getSelectedAndRelatedTabs().get(5).getId());
+        Assert.assertTrue(mAction.perform());
+        verify(mTabModel).closeMultipleTabs(holder.getSelectedAndRelatedTabs(), true);
+        verify(mDelegate).hide();
+    }
+
+    @Test
+    @SmallTest
+    public void testCloseActionWithTabGroups_NoActionOnRelatedTabs() throws Exception {
+        final boolean actionOnRelatedTabs = false;
+        configure(actionOnRelatedTabs);
+        List<TabIdGroup> tabIdGroups = new ArrayList<>();
+        tabIdGroups.add(new TabIdGroup(new int[] {0}, false));
+        tabIdGroups.add(new TabIdGroup(new int[] {5, 3}, true));
+        tabIdGroups.add(new TabIdGroup(new int[] {4}, false));
+        tabIdGroups.add(new TabIdGroup(new int[] {8, 7, 6}, true));
+        tabIdGroups.add(new TabIdGroup(new int[] {1}, true));
+        TabListHolder holder = TabSelectionEditorActionUnitTestHelper.configureTabs(
+                mTabModel, mGroupFilter, mSelectionDelegate, tabIdGroups);
+
+        Assert.assertEquals(3, holder.getSelectedTabs().size());
+        Assert.assertEquals(5, holder.getSelectedTabs().get(0).getId());
+        Assert.assertEquals(8, holder.getSelectedTabs().get(1).getId());
+        Assert.assertEquals(1, holder.getSelectedTabs().get(2).getId());
+        mAction.onSelectionStateChange(holder.getSelectedTabIds());
+        Assert.assertEquals(
+                true, mAction.getPropertyModel().get(TabSelectionEditorActionProperties.ENABLED));
+        Assert.assertEquals(
+                3, mAction.getPropertyModel().get(TabSelectionEditorActionProperties.ITEM_COUNT));
+
+        Assert.assertTrue(mAction.perform());
+        verify(mTabModel).closeMultipleTabs(holder.getSelectedTabs(), true);
+        verify(mDelegate).hide();
     }
 }

@@ -107,9 +107,10 @@ public class TabGroupModelFilter extends TabModelFilter {
          * TabSelectionEditor (Group tab menu item) or using drag and drop.
          * @param tabs The list of modified {@link Tab}s.
          * @param tabOriginalIndex The original tab index for each modified tab.
-         * @param isSameGroup Whether the given list is in a group already.
+         * @param tabOriginalRootId The original root id for each modified tab.
          */
-        void didCreateGroup(List<Tab> tabs, List<Integer> tabOriginalIndex, boolean isSameGroup);
+        void didCreateGroup(
+                List<Tab> tabs, List<Integer> tabOriginalIndex, List<Integer> tabOriginalRootId);
     }
 
     /**
@@ -347,6 +348,7 @@ public class TabGroupModelFilter extends TabModelFilter {
         int destinationGroupId = getRootId(destinationTab);
         int destinationIndexInTabModel = getTabModelDestinationIndex(destinationTab);
         List<Integer> originalIndexes = new ArrayList<>();
+        List<Integer> originalRootIds = new ArrayList<>();
 
         for (int i = 0; i < tabs.size(); i++) {
             Tab tab = tabs.get(i);
@@ -359,19 +361,31 @@ public class TabGroupModelFilter extends TabModelFilter {
             int index = TabModelUtils.getTabIndexById(getTabModel(), tab.getId());
             assert index != TabModel.INVALID_TAB_INDEX;
             originalIndexes.add(index);
+            originalRootIds.add(getRootId(tab));
 
             if (tab.getId() == destinationTab.getId()) continue;
 
             boolean isMergingBackward = index < destinationIndexInTabModel;
 
             setRootId(tab, destinationGroupId);
-            getTabModel().moveTab(tab.getId(),
-                    isMergingBackward ? destinationIndexInTabModel : destinationIndexInTabModel++);
+            if (index == destinationIndexInTabModel || index + 1 == destinationIndexInTabModel) {
+                // If the tab is not moved TabModelImpl will not invoke
+                // TabModelObserver#didMoveTab() and update events will not be triggered. Call the
+                // event manually.
+                didMoveTab(tab,
+                        isMergingBackward ? destinationIndexInTabModel
+                                          : destinationIndexInTabModel++,
+                        index);
+            } else {
+                getTabModel().moveTab(tab.getId(),
+                        isMergingBackward ? destinationIndexInTabModel
+                                          : destinationIndexInTabModel++);
+            }
         }
 
         if (notify) {
             for (Observer observer : mGroupFilterObserver) {
-                observer.didCreateGroup(tabs, originalIndexes, isSameGroup);
+                observer.didCreateGroup(tabs, originalIndexes, originalRootIds);
             }
         }
     }

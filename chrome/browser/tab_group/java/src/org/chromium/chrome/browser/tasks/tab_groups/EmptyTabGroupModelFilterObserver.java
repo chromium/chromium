@@ -32,5 +32,5 @@ public class EmptyTabGroupModelFilterObserver implements TabGroupModelFilter.Obs
 
     @Override
     public void didCreateGroup(
-            List<Tab> tabs, List<Integer> tabOriginalIndex, boolean isSameGroup) {}
+            List<Tab> tabs, List<Integer> tabOriginalIndex, List<Integer> tabOriginalRootId) {}
 }

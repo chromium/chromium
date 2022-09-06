@@ -115,7 +115,7 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
                                                      : TabListCoordinator.TabListMode.GRID;
                 mTabSelectionEditorCoordinator = new TabSelectionEditorCoordinator(context,
                         mDialogView.findViewById(R.id.dialog_container_view), tabModelSelector,
-                        tabContentManager, mode, mRootView);
+                        tabContentManager, mode, mRootView, false);
 
                 controller = mTabSelectionEditorCoordinator.getController();
             } else {

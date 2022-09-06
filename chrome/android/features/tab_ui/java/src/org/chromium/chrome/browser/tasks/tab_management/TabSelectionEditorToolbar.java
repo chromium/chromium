@@ -31,6 +31,15 @@ class TabSelectionEditorToolbar extends SelectableListToolbar<Integer> {
     @ColorInt
     private int mBackgroundColor;
     private int mActionButtonEnablingThreshold = 2;
+    private RelatedTabCountProvider mRelatedTabCountProvider;
+
+    public interface RelatedTabCountProvider {
+        /**
+         * @param tabIds the selected items.
+         * @returns the count of tabs including related tabs.
+         */
+        int getRelatedTabCount(List<Integer> tabIds);
+    }
 
     public TabSelectionEditorToolbar(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -72,6 +81,11 @@ class TabSelectionEditorToolbar extends SelectableListToolbar<Integer> {
         }
 
         mActionButton.setContentDescription(contentDescription);
+
+        if (mRelatedTabCountProvider == null) return;
+
+        int selectedCount = mRelatedTabCountProvider.getRelatedTabCount(selectedItems);
+        mNumberRollView.setNumber(selectedCount, /*animate=*/true);
     }
 
     @Override
@@ -162,5 +176,13 @@ class TabSelectionEditorToolbar extends SelectableListToolbar<Integer> {
      */
     public void setActionButtonVisibility(int visibility) {
         mActionButton.setVisibility(visibility);
+    }
+
+    /**
+     * Set provider for related tab count.
+     * @param relatedTabCountProvider The provider to call to get the related tab count.
+     */
+    public void setRelatedTabCountProvider(RelatedTabCountProvider relatedTabCountProvider) {
+        mRelatedTabCountProvider = relatedTabCountProvider;
     }
 }

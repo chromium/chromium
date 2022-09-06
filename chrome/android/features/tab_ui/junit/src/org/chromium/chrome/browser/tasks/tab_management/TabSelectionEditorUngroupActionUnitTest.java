@@ -67,7 +67,7 @@ public class TabSelectionEditorUngroupActionUnitTest {
         when(mTabModelFilterProvider.getCurrentTabModelFilter()).thenReturn(mGroupFilter);
         when(mTabModelSelector.getTabModelFilterProvider()).thenReturn(mTabModelFilterProvider);
         when(mTabModelSelector.getCurrentModel()).thenReturn(mTabModel);
-        mAction.configure(mTabModelSelector, mSelectionDelegate, mDelegate);
+        mAction.configure(mTabModelSelector, mSelectionDelegate, mDelegate, false);
     }
 
     @Test

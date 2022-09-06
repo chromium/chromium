@@ -26,6 +26,7 @@ import static org.hamcrest.Matchers.not;
 import static org.chromium.chrome.browser.tasks.tab_management.RecyclerViewMatcherUtils.atPosition;
 import static org.chromium.chrome.browser.tasks.tab_management.RecyclerViewMatcherUtils.atPositionWithViewHolder;
 import static org.chromium.chrome.browser.tasks.tab_management.RecyclerViewMatcherUtils.withItemType;
+import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
 import android.view.View;
 
@@ -202,7 +203,8 @@ public class TabSelectionEditorTestingRobot {
         }
 
         public TabSelectionEditorTestingRobot.Result verifyToolbarSelectionText(String text) {
-            onView(inTabSelectionEditor(withText(text))).check(matches(isDisplayed()));
+            // Text updates are animated. Wait for the right text if animations cannot be disabled.
+            onViewWaiting(inTabSelectionEditor(withText(text))).check(matches(isDisplayed()));
             return this;
         }
 

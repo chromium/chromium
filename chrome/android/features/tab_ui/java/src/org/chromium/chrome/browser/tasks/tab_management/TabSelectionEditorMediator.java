@@ -62,6 +62,7 @@ class TabSelectionEditorMediator
     private final PropertyModel mModel;
     private final SelectionDelegate<Integer> mSelectionDelegate;
     private final TabSelectionEditorToolbar mTabSelectionEditorToolbar;
+    private final boolean mActionOnRelatedTabs;
     private final TabModelSelectorTabModelObserver mTabModelObserver;
     private final TabModelSelectorObserver mTabModelSelectorObserver;
     private TabSelectionEditorActionProvider mActionProvider;
@@ -99,18 +100,25 @@ class TabSelectionEditorMediator
     TabSelectionEditorMediator(Context context, TabModelSelector tabModelSelector,
             ResetHandler resetHandler, PropertyModel model,
             SelectionDelegate<Integer> selectionDelegate,
-            TabSelectionEditorToolbar tabSelectionEditorToolbar) {
+            TabSelectionEditorToolbar tabSelectionEditorToolbar, boolean actionOnRelatedTabs) {
         mContext = context;
         mTabModelSelector = tabModelSelector;
         mResetHandler = resetHandler;
         mModel = model;
         mSelectionDelegate = selectionDelegate;
         mTabSelectionEditorToolbar = tabSelectionEditorToolbar;
+        mActionOnRelatedTabs = actionOnRelatedTabs;
 
         mModel.set(
                 TabSelectionEditorProperties.TOOLBAR_NAVIGATION_LISTENER, mNavigationClickListener);
         mModel.set(TabSelectionEditorProperties.TOOLBAR_ACTION_BUTTON_LISTENER,
                 mActionButtonOnClickListener);
+        if (mActionOnRelatedTabs) {
+            mModel.set(TabSelectionEditorProperties.RELATED_TAB_COUNT_PROVIDER, (tabIdList) -> {
+                return TabSelectionEditorAction.getTabCountIncludingRelatedTabs(
+                        mTabModelSelector, tabIdList);
+            });
+        }
 
         mTabModelObserver = new TabModelSelectorTabModelObserver(mTabModelSelector) {
             @Override
@@ -263,7 +271,7 @@ class TabSelectionEditorMediator
 
         mActionListModel.clear();
         for (TabSelectionEditorAction action : actions) {
-            action.configure(mTabModelSelector, mSelectionDelegate, this);
+            action.configure(mTabModelSelector, mSelectionDelegate, this, mActionOnRelatedTabs);
             mActionListModel.add(action.getPropertyModel());
         }
         if (navigationProvider != null) {

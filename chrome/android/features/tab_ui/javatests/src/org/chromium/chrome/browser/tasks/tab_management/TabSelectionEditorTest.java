@@ -51,6 +51,7 @@ import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.TabSelectionEditorAction.ButtonType;
 import org.chromium.chrome.browser.tasks.tab_management.TabSelectionEditorAction.IconPosition;
 import org.chromium.chrome.browser.tasks.tab_management.TabSelectionEditorAction.ShowMode;
@@ -112,11 +113,14 @@ public class TabSelectionEditorTest {
     public void setUp() throws Exception {
         mTabModelSelector = sActivityTestRule.getActivity().getTabModelSelector();
         mParentView = (ViewGroup) sActivityTestRule.getActivity().findViewById(R.id.coordinator);
+        final boolean displayGroups =
+                ChromeFeatureList.isEnabled(ChromeFeatureList.TAB_SELECTION_EDITOR_V2);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mTabSelectionEditorCoordinator = new TabSelectionEditorCoordinator(
                     sActivityTestRule.getActivity(), mParentView, mTabModelSelector,
                     sActivityTestRule.getActivity().getTabContentManager(), getMode(),
-                    sActivityTestRule.getActivity().getCompositorViewHolderForTesting());
+                    sActivityTestRule.getActivity().getCompositorViewHolderForTesting(),
+                    displayGroups);
 
             mTabSelectionEditorController = mTabSelectionEditorCoordinator.getController();
             mTabSelectionEditorLayout =
@@ -164,6 +168,27 @@ public class TabSelectionEditorTest {
         } else {
             TabUiTestHelper.prepareTabsWithThumbnail(sActivityTestRule, num, 0, "about:blank");
         }
+    }
+
+    private void prepareBlankTabGroup(int num, boolean isIncognito) {
+        for (int i = 0; i < num; i++) {
+            ChromeTabUtils.newTabFromMenu(InstrumentationRegistry.getInstrumentation(),
+                    sActivityTestRule.getActivity(), isIncognito, true);
+            sActivityTestRule.loadUrl("about:blank");
+        }
+        if (num == 1) return;
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            ArrayList<Tab> tabs = new ArrayList<>();
+            TabModel model = mTabModelSelector.getCurrentModel();
+            TabGroupModelFilter filter =
+                    (TabGroupModelFilter) mTabModelSelector.getTabModelFilterProvider()
+                            .getCurrentTabModelFilter();
+            for (int i = model.getCount() - num; i < model.getCount(); i++) {
+                tabs.add(model.getTabAt(i));
+            }
+            filter.mergeListOfTabsToGroup(tabs.subList(1, tabs.size()), tabs.get(0), false, true);
+        });
     }
 
     @Test
@@ -383,6 +408,43 @@ public class TabSelectionEditorTest {
         mRobot.actionRobot.clickItemAtAdapterPosition(0).clickToolbarActionView(closeId);
 
         assertEquals(1, getTabsInCurrentTabModel().size());
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures({ChromeFeatureList.TAB_SELECTION_EDITOR_V2})
+    public void testToolbarMenuItem_CloseActionView_WithGroups() {
+        prepareBlankTab(2, false);
+        prepareBlankTabGroup(3, false);
+        prepareBlankTabGroup(1, false);
+        prepareBlankTabGroup(2, false);
+        List<Tab> tabs = getTabsInCurrentTabModelFilter();
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            List<TabSelectionEditorAction> actions = new ArrayList<>();
+            actions.add(TabSelectionEditorCloseAction.createAction(
+                    ShowMode.IF_ROOM, ButtonType.TEXT, IconPosition.START));
+
+            mTabSelectionEditorController.configureToolbarWithMenuItems(actions, null);
+            mTabSelectionEditorController.show(tabs);
+        });
+
+        final int closeId = R.id.tab_selection_editor_close_menu_item;
+        mRobot.resultRobot.verifyToolbarActionViewDisabled(closeId);
+
+        mRobot.actionRobot.clickItemAtAdapterPosition(0)
+                .clickItemAtAdapterPosition(2)
+                .clickItemAtAdapterPosition(3);
+
+        mRobot.resultRobot.verifyToolbarActionViewEnabled(closeId).verifyToolbarSelectionText(
+                "5 selected");
+
+        View close = mTabSelectionEditorLayout.getToolbar().findViewById(closeId);
+        assertEquals("Close 5 selected tabs", close.getContentDescription());
+
+        mRobot.actionRobot.clickToolbarActionView(closeId);
+
+        assertEquals(3, getTabsInCurrentTabModel().size());
     }
 
     @Test
@@ -909,6 +971,19 @@ public class TabSelectionEditorTest {
         TabModel currentTabModel = mTabModelSelector.getCurrentModel();
         for (int i = 0; i < currentTabModel.getCount(); i++) {
             tabs.add(currentTabModel.getTabAt(i));
+        }
+
+        return tabs;
+    }
+
+    private List<Tab> getTabsInCurrentTabModelFilter() {
+        List<Tab> tabs = new ArrayList<>();
+
+        TabGroupModelFilter filter =
+                (TabGroupModelFilter) mTabModelSelector.getTabModelFilterProvider()
+                        .getCurrentTabModelFilter();
+        for (int i = 0; i < filter.getCount(); i++) {
+            tabs.add(filter.getTabAt(i));
         }
 
         return tabs;

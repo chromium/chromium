@@ -34,7 +34,10 @@ public class TabSelectionEditorCloseAction extends TabSelectionEditorAction {
 
     @Override
     public void onSelectionStateChange(List<Integer> tabIds) {
-        setEnabledAndItemCount(!tabIds.isEmpty(), tabIds.size());
+        int size = editorSupportsActionOnRelatedTabs()
+                ? getTabCountIncludingRelatedTabs(getTabModelSelector(), tabIds)
+                : tabIds.size();
+        setEnabledAndItemCount(!tabIds.isEmpty(), size);
     }
 
     @Override

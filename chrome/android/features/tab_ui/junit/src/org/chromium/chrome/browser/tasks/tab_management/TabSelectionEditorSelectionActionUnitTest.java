@@ -61,7 +61,8 @@ public class TabSelectionEditorSelectionActionUnitTest {
                 ButtonType.ICON_AND_TEXT, IconPosition.END, isIncognito);
         mTabModel = spy(new MockTabModel(isIncognito, null));
         when(mTabModelSelector.getCurrentModel()).thenReturn(mTabModel);
-        mAction.configure(mTabModelSelector, mSelectionDelegate, mDelegate);
+        // TODO(ckitagawa): Add tests for when this is true.
+        mAction.configure(mTabModelSelector, mSelectionDelegate, mDelegate, false);
     }
 
     @Test
