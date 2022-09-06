@@ -10,7 +10,7 @@
 #include <new>
 
 #include "base/allocator/buildflags.h"
-#include "base/bits.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/bits.h"
 #include "base/check_op.h"
 #include "base/memory/page_size.h"
 #include "base/threading/platform_thread.h"
@@ -241,7 +241,7 @@ ALWAYS_INLINE int ShimPosixMemalign(void** res, size_t alignment, size_t size) {
   // posix_memalign is supposed to check the arguments. See tc_posix_memalign()
   // in tc_malloc.cc.
   if (((alignment % sizeof(void*)) != 0) ||
-      !base::bits::IsPowerOfTwo(alignment)) {
+      !partition_alloc::internal::base::bits::IsPowerOfTwo(alignment)) {
     return EINVAL;
   }
   void* ptr = ShimMemalign(alignment, size, nullptr);
@@ -258,7 +258,8 @@ ALWAYS_INLINE void* ShimPvalloc(size_t size) {
   if (size == 0) {
     size = GetCachedPageSize();
   } else {
-    size = base::bits::AlignUp(size, GetCachedPageSize());
+    size = partition_alloc::internal::base::bits::AlignUp(size,
+                                                          GetCachedPageSize());
   }
   // The third argument is nullptr because pvalloc is glibc only and does not
   // exist on OSX/BSD systems.

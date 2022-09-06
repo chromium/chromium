@@ -4,7 +4,7 @@
 
 #include "base/allocator/partition_allocator/shim/winheap_stubs_win.h"
 
-#include "base/bits.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/bits.h"
 #include "base/check.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -12,9 +12,10 @@ namespace allocator_shim {
 namespace {
 
 bool IsPtrAligned(void* ptr, size_t alignment) {
-  CHECK(base::bits::IsPowerOfTwo(alignment));
+  CHECK(partition_alloc::internal::base::bits::IsPowerOfTwo(alignment));
   uintptr_t address = reinterpret_cast<uintptr_t>(ptr);
-  return base::bits::AlignUp(address, alignment) == address;
+  return partition_alloc::internal::base::bits::AlignUp(address, alignment) ==
+         address;
 }
 
 }  // namespace

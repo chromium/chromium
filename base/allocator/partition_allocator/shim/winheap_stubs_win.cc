@@ -15,7 +15,7 @@
 #include <algorithm>
 #include <limits>
 
-#include "base/bits.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/bits.h"
 #include "base/check_op.h"
 #include "base/numerics/safe_conversions.h"
 
@@ -117,7 +117,8 @@ void* AlignAllocation(void* ptr, size_t alignment) {
   alignment = std::max(alignment, alignof(AlignedPrefix));
 
   uintptr_t address = reinterpret_cast<uintptr_t>(ptr);
-  address = base::bits::AlignUp(address + sizeof(AlignedPrefix), alignment);
+  address = partition_alloc::internal::base::bits::AlignUp(
+      address + sizeof(AlignedPrefix), alignment);
 
   // Write the prefix.
   AlignedPrefix* prefix = reinterpret_cast<AlignedPrefix*>(address) - 1;
@@ -147,7 +148,7 @@ void* UnalignAllocation(void* ptr) {
 }  // namespace
 
 void* WinHeapAlignedMalloc(size_t size, size_t alignment) {
-  CHECK(base::bits::IsPowerOfTwo(alignment));
+  CHECK(partition_alloc::internal::base::bits::IsPowerOfTwo(alignment));
 
   size_t adjusted = AdjustedSize(size, alignment);
   if (adjusted >= kMaxWindowsAllocation)
@@ -161,7 +162,7 @@ void* WinHeapAlignedMalloc(size_t size, size_t alignment) {
 }
 
 void* WinHeapAlignedRealloc(void* ptr, size_t size, size_t alignment) {
-  CHECK(base::bits::IsPowerOfTwo(alignment));
+  CHECK(partition_alloc::internal::base::bits::IsPowerOfTwo(alignment));
 
   if (!ptr)
     return WinHeapAlignedMalloc(size, alignment);

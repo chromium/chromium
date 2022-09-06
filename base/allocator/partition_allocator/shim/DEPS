@@ -12,7 +12,6 @@ include_rules = [
     "+base/allocator/partition_alloc_features.h",
     "+base/base_export.h",
     "+base/bind.h",
-    "+base/bits.h",
     "+base/check.h",
     "+base/check_op.h",
     "+base/compiler_specific.h",

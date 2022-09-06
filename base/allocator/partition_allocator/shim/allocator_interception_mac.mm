@@ -27,9 +27,9 @@
 #include <new>
 
 #include "base/allocator/buildflags.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/bits.h"
 #include "base/allocator/partition_allocator/shim/malloc_zone_functions_mac.h"
 #include "base/bind.h"
-#include "base/bits.h"
 #include "base/logging.h"
 #include "base/mac/mach_logging.h"
 #include "base/process/memory.h"
@@ -170,7 +170,7 @@ void* oom_killer_memalign(struct _malloc_zone_t* zone,
   // other reasons why null might be returned. See posix_memalign() in 10.15's
   // https://opensource.apple.com/source/libmalloc/libmalloc-283/src/malloc.c .
   if (!result && size && alignment >= sizeof(void*) &&
-      base::bits::IsPowerOfTwo(alignment)) {
+      partition_alloc::internal::base::bits::IsPowerOfTwo(alignment)) {
     partition_alloc::TerminateBecauseOutOfMemory(size);
   }
   return result;
@@ -222,7 +222,7 @@ void* oom_killer_memalign_purgeable(struct _malloc_zone_t* zone,
   // other reasons why null might be returned. See posix_memalign() in 10.15's
   // https://opensource.apple.com/source/libmalloc/libmalloc-283/src/malloc.c .
   if (!result && size && alignment >= sizeof(void*) &&
-      base::bits::IsPowerOfTwo(alignment)) {
+      partition_alloc::internal::base::bits::IsPowerOfTwo(alignment)) {
     partition_alloc::TerminateBecauseOutOfMemory(size);
   }
   return result;

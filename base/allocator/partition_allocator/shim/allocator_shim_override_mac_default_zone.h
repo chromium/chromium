@@ -18,8 +18,8 @@
 #include <tuple>
 
 #include "base/allocator/early_zone_registration_mac.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/bits.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
-#include "base/bits.h"
 #include "base/logging.h"
 
 namespace partition_alloc {
@@ -49,7 +49,8 @@ kern_return_t MallocIntrospectionEnumerator(task_t task,
 }
 
 size_t MallocIntrospectionGoodSize(malloc_zone_t* zone, size_t size) {
-  return base::bits::AlignUp(size, partition_alloc::internal::kAlignment);
+  return partition_alloc::internal::base::bits::AlignUp(
+      size, partition_alloc::internal::kAlignment);
 }
 
 boolean_t MallocIntrospectionCheck(malloc_zone_t* zone) {

@@ -15,6 +15,7 @@
 #include "base/allocator/partition_allocator/allocation_guard.h"
 #include "base/allocator/partition_allocator/memory_reclaimer.h"
 #include "base/allocator/partition_allocator/partition_alloc.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/bits.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/no_destructor.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/threading/platform_thread.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
@@ -23,7 +24,6 @@
 #include "base/allocator/partition_allocator/partition_root.h"
 #include "base/allocator/partition_allocator/partition_stats.h"
 #include "base/allocator/partition_allocator/shim/allocator_shim_internals.h"
-#include "base/bits.h"
 #include "base/compiler_specific.h"
 #include "base/feature_list.h"
 #include "base/memory/nonscannable_memory.h"
@@ -260,7 +260,7 @@ void* AllocateAlignedMemory(size_t alignment, size_t size) {
   // mismatch. (see below the default_dispatch definition).
   if (alignment <= partition_alloc::internal::kAlignment) {
     // This is mandated by |posix_memalign()| and friends, so should never fire.
-    PA_CHECK(base::bits::IsPowerOfTwo(alignment));
+    PA_CHECK(partition_alloc::internal::base::bits::IsPowerOfTwo(alignment));
     // TODO(bartekn): See if the compiler optimizes branches down the stack on
     // Mac, where PartitionPageSize() isn't constexpr.
     return Allocator()->AllocWithFlagsNoHooks(
