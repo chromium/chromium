@@ -29,6 +29,7 @@ enum class WKNavigationState;
 @protocol CRWScrollableContent;
 @protocol CRWSwipeRecognizerProvider;
 @class CRWWebViewContentView;
+@protocol CRWWebViewDownload;
 @protocol CRWWebViewDownloadDelegate;
 @protocol CRWWebViewProxy;
 class GURL;
@@ -238,9 +239,12 @@ class WebStateImpl;
                      rect:(CGRect)rect;
 
 // Downloads the file from the `request` at `destination` path.
+// `completion_handler` is used to retrieve the created CRWWebViewDownload, so
+// the caller can manage the launched download.
 - (void)downloadCurrentPageWithRequest:(NSURLRequest*)request
                        destinationPath:(NSString*)destination
                               delegate:(id<CRWWebViewDownloadDelegate>)delegate
+                               handler:(void (^)(id<CRWWebViewDownload>))handler
     API_AVAILABLE(ios(14.5));
 
 #pragma mark Navigation Message Handlers

@@ -197,6 +197,9 @@ BOOL CreateDestinationDirectoryAndRemoveObsoleteFiles() {
 // Path where the downloaded file is saved.
 @property(nonatomic, strong) NSString* filePath;
 
+// CRWWebViewDownload instance that handle download interactions.
+@property(nonatomic, strong) id<CRWWebViewDownload> download;
+
 // SimpleURLLoader completion callback, when `urlLoader_` completes a request.
 - (void)urlLoadDidComplete:(const base::FilePath&)file_path;
 // Starts downloading the file at path `kDocumentsTemporaryPath` with the name
@@ -449,8 +452,12 @@ BOOL CreateDestinationDirectoryAndRemoveObsoleteFiles() {
   _downloadCanceled = NO;
 
   if (@available(iOS 14.5, *)) {
-    if (IsOpenInDownloadWithWKDownload()) {
-      _webState->DownloadCurrentPage(self.filePath, self);
+    if (IsOpenInDownloadEnabled()) {
+      __weak OpenInController* weakSelf = self;
+      _webState->DownloadCurrentPage(self.filePath, self,
+                                     ^(id<CRWWebViewDownload> download) {
+                                       weakSelf.download = download;
+                                     });
       return;
     }
   }
@@ -474,6 +481,12 @@ BOOL CreateDestinationDirectoryAndRemoveObsoleteFiles() {
 - (void)handleTapOnOverlayedView:(UIGestureRecognizer*)gestureRecognizer {
   if ([gestureRecognizer state] != UIGestureRecognizerStateEnded)
     return;
+
+  if (@available(iOS 14.5, *)) {
+    if (IsOpenInDownloadWithWKDownload()) {
+      [self.download cancelDownload];
+    }
+  }
 
   [self removeOverlayedView];
   if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET)

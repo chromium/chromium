@@ -11,7 +11,7 @@
 
 @class WKWebView;
 
-@interface CRWWebViewDownload : NSObject
+@interface CRWWebViewDownload : NSObject <CRWWebViewDownload>
 
 // Destination path where the file is saved.
 @property(nonatomic, strong) NSString* destinationPath;

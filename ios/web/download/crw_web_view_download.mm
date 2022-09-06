@@ -15,6 +15,9 @@
 // Request URL called for the download.
 @property(nonatomic, strong) NSURLRequest* request;
 
+// Download object of a web resource.
+@property(nonatomic, strong) WKDownload* download API_AVAILABLE(ios(14.5));
+
 @end
 
 @implementation CRWWebViewDownload
@@ -24,7 +27,7 @@
                      webview:(WKWebView*)webview
                     delegate:(id<CRWWebViewDownloadDelegate>)delegate
     API_AVAILABLE(ios(14.5)) {
-  self = [[CRWWebViewDownload alloc] init];
+  self = [super init];
   if (self) {
     self.destinationPath = destination;
     self.request = request;
@@ -38,7 +41,13 @@
   [self.webView startDownloadUsingRequest:self.request
                         completionHandler:^(WKDownload* download) {
                           download.delegate = self;
+                          self.download = download;
                         }];
+}
+
+- (void)cancelDownload API_AVAILABLE(ios(14.5)) {
+  [self.download cancel:^(NSData* resumeData){
+  }];
 }
 
 #pragma mark - WKDownloadDelegate

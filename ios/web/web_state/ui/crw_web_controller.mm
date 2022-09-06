@@ -203,9 +203,6 @@ using web::wk_navigation_util::IsWKInternalUrl;
 // interaction.
 @property(nonatomic, strong) UIDropInteraction* customDropInteraction;
 
-// CRWWebViewDownload instance that handle download interactions.
-@property(nonatomic, strong) CRWWebViewDownload* download;
-
 // Session Information
 // -------------------
 // The associated NavigationManagerImpl.
@@ -1043,13 +1040,16 @@ typedef void (^ViewportStateCompletion)(const web::PageViewportState*);
 
 - (void)downloadCurrentPageWithRequest:(NSURLRequest*)request
                        destinationPath:(NSString*)destination
-                              delegate:
-                                  (id<CRWWebViewDownloadDelegate>)delegate {
-  self.download = [[CRWWebViewDownload alloc] initWithPath:destination
-                                                   request:request
-                                                   webview:self.webView
-                                                  delegate:delegate];
-  [self.download startDownload];
+                              delegate:(id<CRWWebViewDownloadDelegate>)delegate
+                               handler:
+                                   (void (^)(id<CRWWebViewDownload>))handler {
+  CRWWebViewDownload* download =
+      [[CRWWebViewDownload alloc] initWithPath:destination
+                                       request:request
+                                       webview:self.webView
+                                      delegate:delegate];
+  [download startDownload];
+  handler(download);
 }
 
 #pragma mark - JavaScript

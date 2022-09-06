@@ -34,6 +34,7 @@ class GURL;
 @class CRWJSInjectionReceiver;
 @class CRWSessionStorage;
 @protocol CRWScrollableContent;
+@protocol CRWWebViewDownload;
 @protocol CRWWebViewDownloadDelegate;
 @protocol CRWWebViewProxy;
 typedef id<CRWWebViewProxy> CRWWebViewProxyType;
@@ -491,9 +492,12 @@ class WebState : public base::SupportsUserData {
   virtual NSDictionary<NSNumber*, NSNumber*>* GetStatesForAllPermissions() const
       API_AVAILABLE(ios(15.0)) = 0;
 
-  // Downloads the displayed webview at `dest_file`.
+  // Downloads the displayed webview at `destination_file`. `handler`
+  // is used to retrieve the CRWWebViewDownload, so the caller can manage the
+  // launched download.
   virtual void DownloadCurrentPage(NSString* destination_file,
-                                   id<CRWWebViewDownloadDelegate> delegate)
+                                   id<CRWWebViewDownloadDelegate> delegate,
+                                   void (^handler)(id<CRWWebViewDownload>))
       API_AVAILABLE(ios(14.5)) = 0;
 
  protected:

@@ -7,6 +7,14 @@
 
 #import <Foundation/Foundation.h>
 
+// Provides API for managing a web view download.
+@protocol CRWWebViewDownload <NSObject>
+
+// Cancels the download.
+- (void)cancelDownload API_AVAILABLE(ios(14.5));
+
+@end
+
 // Delegate for CRWWebViewDownload.
 @protocol CRWWebViewDownloadDelegate
 

@@ -666,14 +666,16 @@ void WebStateImpl::RemovePolicyDecider(WebStatePolicyDecider* decider) {
 }
 
 void WebStateImpl::DownloadCurrentPage(NSString* destination_file,
-                                       id<CRWWebViewDownloadDelegate> delegate)
+                                       id<CRWWebViewDownloadDelegate> delegate,
+                                       void (^handler)(id<CRWWebViewDownload>))
     API_AVAILABLE(ios(14.5)) {
   CRWWebController* web_controller = GetWebController();
   NSURLRequest* request =
       [NSURLRequest requestWithURL:net::NSURLWithGURL(GetLastCommittedURL())];
   [web_controller downloadCurrentPageWithRequest:request
                                  destinationPath:destination_file
-                                        delegate:delegate];
+                                        delegate:delegate
+                                         handler:handler];
 }
 
 #pragma mark - WebStateImpl private methods
