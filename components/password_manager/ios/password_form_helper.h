@@ -40,7 +40,9 @@ class WebState;
 // Called when the password form is submitted.
 - (void)formHelper:(PasswordFormHelper*)formHelper
      didSubmitForm:(const autofill::FormData&)form
-       inMainFrame:(BOOL)inMainFrame;
+       // TODO(crbug.com/1344776): Delete inMainFrame argument.
+       inMainFrame:(BOOL)inMainFrame
+           inFrame:(web::WebFrame*)frame;
 @end
 
 // Handles common form processing logic of password controller for both

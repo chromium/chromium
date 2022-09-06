@@ -39,9 +39,9 @@
 #include "components/password_manager/core/browser/password_generation_frame_helper.h"
 #include "components/password_manager/core/browser/password_manager.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
-#include "components/password_manager/core/browser/password_manager_driver.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/ios/account_select_fill_data.h"
+#import "components/password_manager/ios/password_controller_driver_helper.h"
 #import "components/password_manager/ios/password_form_helper.h"
 #import "components/password_manager/ios/password_suggestion_helper.h"
 #import "components/password_manager/ios/shared_password_controller.h"
@@ -81,27 +81,26 @@
 #error "This file requires ARC support."
 #endif
 
+using autofill::FieldRendererId;
 using autofill::FormActivityObserverBridge;
 using autofill::FormData;
-using autofill::PasswordFormGenerationData;
-using password_manager::PasswordForm;
 using autofill::FormRendererId;
-using autofill::FieldRendererId;
+using autofill::PasswordFormGenerationData;
 using base::SysNSStringToUTF16;
 using base::SysUTF16ToNSString;
 using base::SysUTF8ToNSString;
 using l10n_util::GetNSString;
 using l10n_util::GetNSStringF;
-using password_manager::metrics_util::LogPasswordDropdownShown;
-using password_manager::metrics_util::PasswordDropdownState;
 using password_manager::AccountSelectFillData;
 using password_manager::FillData;
 using password_manager::GetPageURLAndCheckTrustLevel;
+using password_manager::PasswordForm;
 using password_manager::PasswordFormManagerForUI;
 using password_manager::PasswordGenerationFrameHelper;
 using password_manager::PasswordManager;
 using password_manager::PasswordManagerClient;
-using password_manager::PasswordManagerDriver;
+using password_manager::metrics_util::LogPasswordDropdownShown;
+using password_manager::metrics_util::PasswordDropdownState;
 using web::WebFrame;
 using web::WebState;
 
@@ -152,7 +151,6 @@ BOOL IsPasswordManagerBrandingUpdateEnabled() {
 @implementation PasswordController {
   std::unique_ptr<PasswordManager> _passwordManager;
   std::unique_ptr<PasswordManagerClient> _passwordManagerClient;
-  std::unique_ptr<PasswordManagerDriver> _passwordManagerDriver;
 
   // The WebState this instance is observing. Will be null after
   // -webStateDestroyed: has been called.
@@ -195,14 +193,15 @@ BOOL IsPasswordManagerBrandingUpdateEnabled() {
         [[PasswordFormHelper alloc] initWithWebState:webState];
     PasswordSuggestionHelper* suggestionHelper =
         [[PasswordSuggestionHelper alloc] init];
+    PasswordControllerDriverHelper* driverHelper =
+        [[PasswordControllerDriverHelper alloc] initWithWebState:_webState];
     _sharedPasswordController = [[SharedPasswordController alloc]
         initWithWebState:_webState
                  manager:_passwordManager.get()
               formHelper:formHelper
-        suggestionHelper:suggestionHelper];
+        suggestionHelper:suggestionHelper
+            driverHelper:driverHelper];
     _sharedPasswordController.delegate = self;
-    _passwordManagerDriver.reset(new IOSPasswordManagerDriver(
-        _sharedPasswordController, _passwordManager.get()));
   }
   return self;
 }
@@ -222,10 +221,6 @@ BOOL IsPasswordManagerBrandingUpdateEnabled() {
 
 - (PasswordManagerClient*)passwordManagerClient {
   return _passwordManagerClient.get();
-}
-
-- (PasswordManagerDriver*)passwordManagerDriver {
-  return _passwordManagerDriver.get();
 }
 
 #pragma mark - CRWWebStateObserver
@@ -253,7 +248,6 @@ BOOL IsPasswordManagerBrandingUpdateEnabled() {
     _webStateObserverBridge.reset();
     _webState = nullptr;
   }
-  _passwordManagerDriver.reset();
   _passwordManager.reset();
   _passwordManagerClient.reset();
 }

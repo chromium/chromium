@@ -40,6 +40,7 @@
 #include "components/password_manager/core/browser/password_bubble_experiment.h"
 #include "components/password_manager/core/browser/password_form_manager.h"
 #include "components/password_manager/core/browser/password_form_manager_for_ui.h"
+#include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_manager_driver.h"
 #include "components/password_manager/core/browser/password_store_interface.h"
 #include "components/password_manager/core/browser/statistics_table.h"
@@ -880,6 +881,35 @@ TEST_P(PasswordManagerTest, ShowHideManualFallbackOnIOS) {
   EXPECT_CALL(client_, HideManualFallbackForSaving());
   manager()->UpdateStateOnUserInput(&driver_, form_data.unique_renderer_id,
                                     password_element, std::u16string());
+}
+
+// TODO(crbug.com/1344776): Remove this test when JavaScript recursion
+// for parsing and filling password forms is removed.
+// Tests that there is no manual fallback for saving when there is a mismatch
+// between the driver and the form manager. More precisely: the driver is tied
+// to the correspondent iframe, but the form manager is tied to the main frame.
+TEST_P(PasswordManagerTest,
+       NoManualFallbackForSavingForDriverAndFormManagerMismatchOnIOS) {
+  ON_CALL(client_, IsSavingAndFillingEnabled).WillByDefault(Return(true));
+
+  FormData form_data = MakeSimpleFormData();
+  FieldRendererId password_element = form_data.fields[1].unique_renderer_id;
+
+  // A form is found by PasswordManager.
+  EXPECT_CALL(*store_, GetLogins)
+      .WillRepeatedly(WithArg<1>(InvokeEmptyConsumerWithForms(store_.get())));
+  manager()->OnPasswordFormsParsed(&driver_, {form_data});
+
+  EXPECT_CALL(client_, ShowManualFallbackForSavingPtr(_, false, false))
+      .Times(0);
+  EXPECT_CALL(client_, HideManualFallbackForSaving()).Times(0);
+
+  std::u16string typed_password = u"password";
+  MockPasswordManagerDriver fake_driver;
+  ASSERT_NE(&fake_driver, &driver_);
+  manager()->UpdateStateOnUserInput(&fake_driver, form_data.unique_renderer_id,
+                                    password_element, typed_password);
+  Mock::VerifyAndClearExpectations(&client_);
 }
 #endif  // BUILDFLAG(IS_IOS)
 

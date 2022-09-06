@@ -185,7 +185,8 @@ constexpr char kCommandPrefix[] = "passwordForm";
 
   [self.delegate formHelper:self
               didSubmitForm:forms[0]
-                inMainFrame:formInMainFrame];
+                inMainFrame:formInMainFrame
+                    inFrame:frame];
 }
 
 #pragma mark - Private methods
@@ -211,7 +212,11 @@ constexpr char kCommandPrefix[] = "passwordForm";
   [self extractKnownFieldData:form];
 
   if (_webState && self.delegate) {
-    [self.delegate formHelper:self didSubmitForm:form inMainFrame:YES];
+    // TODO(crbug.com/1344776): Use the real frame.
+    [self.delegate formHelper:self
+                didSubmitForm:form
+                  inMainFrame:YES
+                      inFrame:web::GetMainFrame(_webState)];
     return YES;
   }
 

@@ -104,9 +104,10 @@ typedef void (^PasswordSuggestionsAvailableCompletion)(
   // -processWithPasswordFormFillData: is called.
   // For unsupported form, |completion| will be called immediately and
   // -suggestionHelperShouldTriggerFormExtraction: will be skipped.
+  web::WebFrame* frame =
+      web::GetWebFrameWithId(webState, SysNSStringToUTF8(formQuery.frameID));
+  // TODO(crbug.com/1344776): Process all frames.
   if (!isMainFrame) {
-    web::WebFrame* frame =
-        web::GetWebFrameWithId(webState, SysNSStringToUTF8(formQuery.frameID));
     if (!frame || webState->GetLastCommittedURL().DeprecatedGetOriginAsURL() !=
                       frame->GetSecurityOrigin()) {
       // Passwords is only supported on main frame and iframes with the same
@@ -128,7 +129,8 @@ typedef void (^PasswordSuggestionsAvailableCompletion)(
     };
     if (!_sentPasswordFormToPasswordManager) {
       // Form extraction is required for this check.
-      [self.delegate suggestionHelperShouldTriggerFormExtraction:self];
+      [self.delegate suggestionHelperShouldTriggerFormExtraction:self
+                                                         inFrame:frame];
     }
     return;
   }

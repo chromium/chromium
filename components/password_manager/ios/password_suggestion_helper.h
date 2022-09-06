@@ -26,6 +26,7 @@ struct FillData;
 
 namespace web {
 class WebState;
+class WebFrame;
 }  // namespace web
 
 // A protocol implemented by a delegate of PasswordSuggestionHelper.
@@ -34,7 +35,8 @@ class WebState;
 // Called when form extraction is required for checking suggestion availability.
 // The caller must trigger the form extraction in this method.
 - (void)suggestionHelperShouldTriggerFormExtraction:
-    (PasswordSuggestionHelper*)suggestionHelper;
+            (PasswordSuggestionHelper*)suggestionHelper
+                                            inFrame:(web::WebFrame*)frame;
 
 @end
 

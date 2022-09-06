@@ -20,18 +20,17 @@ class PasswordAutofillManager;
 class PasswordManager;
 }  // namespace password_manager
 
+namespace web {
+class WebFrame;
+}  // namespace web
+
 // An iOS implementation of password_manager::PasswordManagerDriver.
 class IOSPasswordManagerDriver
-    : public password_manager::PasswordManagerDriver {
+    : public password_manager::PasswordManagerDriver,
+      public base::RefCountedThreadSafe<IOSPasswordManagerDriver> {
  public:
-  explicit IOSPasswordManagerDriver(
-      id<PasswordManagerDriverBridge> bridge,
-      password_manager::PasswordManager* password_manager);
-
   IOSPasswordManagerDriver(const IOSPasswordManagerDriver&) = delete;
   IOSPasswordManagerDriver& operator=(const IOSPasswordManagerDriver&) = delete;
-
-  ~IOSPasswordManagerDriver() override;
 
   // password_manager::PasswordManagerDriver implementation.
   int GetId() const override;
@@ -58,10 +57,28 @@ class IOSPasswordManagerDriver
   const GURL& GetLastCommittedURL() const override;
 
  private:
+  // The constructor below is private so that no one uses it while trying to
+  // create/get a driver. However, IOSPasswordManagerWebFrameDriverHelper needs
+  // to be able to access it in the driver creation flow.
+  friend class IOSPasswordManagerWebFrameDriverHelper;
+  friend class base::RefCountedThreadSafe<IOSPasswordManagerDriver>;
+
+  // To create a new driver, use
+  // IOSPasswordManagerDriverFactory::FromWebStateAndWebFrame.
+  IOSPasswordManagerDriver(id<PasswordManagerDriverBridge> bridge,
+                           password_manager::PasswordManager* password_manager,
+                           web::WebFrame* web_frame,
+                           int driver_id);
+
+  ~IOSPasswordManagerDriver() override;
+
   __weak id<PasswordManagerDriverBridge> bridge_;  // (weak)
   password_manager::PasswordManager* password_manager_;
   std::unique_ptr<password_manager::PasswordGenerationFrameHelper>
       password_generation_helper_;
+  web::WebFrame* web_frame_;
+  int id_;
+  bool is_in_main_frame_;
 };
 
 #endif  // COMPONENTS_PASSWORD_MANAGER_IOS_IOS_PASSWORD_MANAGER_DRIVER_H_

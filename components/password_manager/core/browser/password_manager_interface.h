@@ -19,6 +19,8 @@
 
 namespace password_manager {
 
+class PasswordManagerClient;
+
 // Abstract interface for PasswordManagers.
 class PasswordManagerInterface : public FormSubmissionObserver {
  public:
@@ -52,6 +54,9 @@ class PasswordManagerInterface : public FormSubmissionObserver {
       autofill::FormRendererId form_id,
       autofill::FieldRendererId generation_element,
       autofill::password_generation::PasswordGenerationType type) = 0;
+
+  // Getter for the PasswordManagerClient.
+  virtual PasswordManagerClient* GetClient() = 0;
 
 #if BUILDFLAG(IS_IOS)
   // Handles a subframe form submission. In contrast to OnPasswordFormSubmitted

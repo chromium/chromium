@@ -27,6 +27,7 @@
 #include "components/password_manager/core/browser/password_manager.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #import "components/password_manager/ios/ios_password_manager_driver.h"
+#import "components/password_manager/ios/ios_password_manager_driver_factory.h"
 #import "components/password_manager/ios/shared_password_controller.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
@@ -105,8 +106,8 @@ class CWVAutofillControllerTest : public web::WebTest {
     auto password_manager = std::make_unique<password_manager::PasswordManager>(
         password_manager_client.get());
     password_controller_ = OCMClassMock([SharedPasswordController class]);
-    auto password_manager_driver = std::make_unique<IOSPasswordManagerDriver>(
-        password_controller_, password_manager.get());
+    IOSPasswordManagerDriverFactory::CreateForWebState(
+        password_controller_, password_manager.get(), &web_state_);
     password_manager_client_ = password_manager_client.get();
 
     auto autofill_client = std::make_unique<autofill::WebViewAutofillClientIOS>(
@@ -120,7 +121,6 @@ class CWVAutofillControllerTest : public web::WebTest {
                 autofillAgent:autofill_agent_
               passwordManager:std::move(password_manager)
         passwordManagerClient:std::move(password_manager_client)
-        passwordManagerDriver:std::move(password_manager_driver)
            passwordController:password_controller_
             applicationLocale:kApplicationLocale];
     form_activity_tab_helper_ =

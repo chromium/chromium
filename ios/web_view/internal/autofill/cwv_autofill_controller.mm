@@ -26,6 +26,7 @@
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/password_manager/core/browser/leak_detection_dialog_utils.h"
 #import "components/password_manager/ios/ios_password_manager_driver.h"
+#import "components/password_manager/ios/ios_password_manager_driver_factory.h"
 #import "components/password_manager/ios/shared_password_controller.h"
 #include "components/sync/driver/sync_service.h"
 #include "ios/web/public/js_messaging/web_frame.h"
@@ -77,7 +78,6 @@ using UserDecision =
   std::unique_ptr<password_manager::PasswordManager> _passwordManager;
   std::unique_ptr<ios_web_view::WebViewPasswordManagerClient>
       _passwordManagerClient;
-  std::unique_ptr<IOSPasswordManagerDriver> _passwordManagerDriver;
   SharedPasswordController* _passwordController;
 
   // The current credit card saver. Can be nil if no save attempt is pending.
@@ -110,8 +110,6 @@ using UserDecision =
     passwordManagerClient:
         (std::unique_ptr<ios_web_view::WebViewPasswordManagerClient>)
             passwordManagerClient
-    passwordManagerDriver:
-        (std::unique_ptr<IOSPasswordManagerDriver>)passwordManagerDriver
        passwordController:(SharedPasswordController*)passwordController
         applicationLocale:(const std::string&)applicationLocale {
   self = [super init];
@@ -138,7 +136,6 @@ using UserDecision =
     _passwordManagerClient = std::move(passwordManagerClient);
     _passwordManagerClient->set_bridge(self);
     _passwordManager = std::move(passwordManager);
-    _passwordManagerDriver = std::move(passwordManagerDriver);
     _passwordController = passwordController;
     _passwordController.delegate = self;
 
@@ -405,9 +402,15 @@ showUnmaskPromptForCard:(const autofill::CreditCard&)creditCard
 }
 
 - (void)propagateAutofillPredictionsForForms:
-    (const std::vector<autofill::FormStructure*>&)forms {
-  _passwordManager->ProcessAutofillPredictions(_passwordManagerDriver.get(),
-                                               forms);
+            (const std::vector<autofill::FormStructure*>&)forms
+                                     inFrame:(web::WebFrame*)frame {
+  IOSPasswordManagerDriver* driver =
+      IOSPasswordManagerDriverFactory::FromWebStateAndWebFrame(_webState,
+                                                               frame);
+  if (!driver) {
+    return;
+  }
+  _passwordManager->ProcessAutofillPredictions(driver, forms);
 }
 
 - (void)
@@ -570,7 +573,6 @@ showUnmaskPromptForCard:(const autofill::CreditCard&)creditCard
   _autofillClient.reset();
   _webState->RemoveObserver(_webStateObserverBridge.get());
   _webStateObserverBridge.reset();
-  _passwordManagerDriver.reset();
   _passwordManager.reset();
   _passwordManagerClient.reset();
   _webState = nullptr;
@@ -701,10 +703,6 @@ showUnmaskPromptForCard:(const autofill::CreditCard&)creditCard
 
 - (password_manager::PasswordManagerClient*)passwordManagerClient {
   return _passwordManagerClient.get();
-}
-
-- (password_manager::PasswordManagerDriver*)passwordManagerDriver {
-  return _passwordManagerDriver.get();
 }
 
 - (void)sharedPasswordController:(SharedPasswordController*)controller

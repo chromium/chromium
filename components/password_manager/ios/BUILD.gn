@@ -34,6 +34,10 @@ component("ios") {
   sources = [
     "ios_password_manager_driver.h",
     "ios_password_manager_driver.mm",
+    "ios_password_manager_driver_factory.h",
+    "ios_password_manager_driver_factory.mm",
+    "password_controller_driver_helper.h",
+    "password_controller_driver_helper.mm",
     "password_form_helper.h",
     "password_form_helper.mm",
     "password_generation_provider.h",
@@ -107,6 +111,9 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "account_select_fill_data_unittest.cc",
+    "ios_password_manager_driver_factory_unittest.mm",
+    "ios_password_manager_driver_unittest.mm",
+    "password_controller_driver_helper_unittest.mm",
     "password_form_helper_unittest.mm",
     "shared_password_controller_unittest.mm",
   ]

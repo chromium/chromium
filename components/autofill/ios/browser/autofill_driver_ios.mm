@@ -191,4 +191,8 @@ net::IsolationInfo AutofillDriverIOS::IsolationInfo() {
       net::SiteForCookies());
 }
 
+web::WebFrame* AutofillDriverIOS::web_frame() {
+  return web::GetWebFrameWithId(web_state_, web_frame_id_);
+}
+
 }  // namespace autofill

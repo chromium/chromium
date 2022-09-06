@@ -368,6 +368,10 @@ void PasswordManager::SetGenerationElementAndTypeForForm(
   }
 }
 
+PasswordManagerClient* PasswordManager::GetClient() {
+  return client_;
+}
+
 void PasswordManager::MarkWasUnblocklistedInFormManagers(
     CredentialCache* credential_cache) {
   if (owned_submitted_form_manager_) {
@@ -807,6 +811,20 @@ void PasswordManager::UpdateStateOnUserInput(
     FieldRendererId field_id,
     const std::u16string& field_value) {
   for (std::unique_ptr<PasswordFormManager>& manager : form_managers_) {
+    // TODO(crbug.com/1344776): Remove this check when JavaScript recursion
+    // for parsing and filling password forms is removed.
+    // The current method can be called with multiple drivers for the same
+    // form: for IOS, form managers are only created for the main frame for
+    // now, so form managers are tied only to the main frame (even if the form
+    // belongs to an iframe), while drivers are tied to their correspondent
+    // frame. Thus, a mismatch can occur between the driver and the form
+    // manager. When the JavaScript recurison for parsing and filling will be
+    // removed, form managers will be tied to their respective frames too, and
+    // this check will be removed.
+    if (!manager->DoesManage(form_id, driver)) {
+      continue;
+    }
+
     if (manager->UpdateStateOnUserInput(form_id, field_id, field_value)) {
       ProvisionallySaveForm(*manager->observed_form(), driver, true);
       if (manager->is_submitted() && !manager->HasGeneratedPassword()) {
@@ -830,8 +848,6 @@ void PasswordManager::OnPasswordFormRemoved(
     const FieldDataManager& field_data_manager,
     FormRendererId form_id) {
   for (auto& manager : form_managers_) {
-    if (driver && !manager->GetDriver())
-      manager->SetDriver(driver->AsWeakPtr());
     // Find a form with corresponding renderer id.
     if (manager->DoesManage(form_id, driver)) {
       DetectPotentialSubmission(manager.get(), field_data_manager, driver);
@@ -859,6 +875,13 @@ void PasswordManager::PropagateFieldDataManagerInfo(
     const FieldDataManager& field_data_manager,
     const PasswordManagerDriver* driver) {
   for (auto& manager : form_managers_) {
+    // The current method can be called with the same driver for different
+    // forms. If the forms are in different frames, then only some of them will
+    // match the driver, since each frame has its own driver. Thus, we return
+    // early if the driver doesn't match the frame of the form.
+    if (manager->GetDriver().get() != driver) {
+      continue;
+    }
     if (!client_->IsSavingAndFillingEnabled(manager->GetURL())) {
       RecordProvisionalSaveFailure(
           PasswordManagerMetricsRecorder::SAVING_DISABLED, manager->GetURL());
@@ -1294,12 +1317,6 @@ PasswordFormManager* PasswordManager::GetMatchedManager(
     PasswordManagerDriver* driver,
     FormRendererId form_id) {
   for (auto& form_manager : form_managers_) {
-// Until support of cross-origin iframes is implemented, there is only one
-// driver on iOS. It needs to be set in order for filling to work.
-#if BUILDFLAG(IS_IOS)
-    if (driver && !form_manager->GetDriver())
-      form_manager->SetDriver(driver->AsWeakPtr());
-#endif
     if (form_manager->DoesManage(form_id, driver))
       return form_manager.get();
   }

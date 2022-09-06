@@ -49,6 +49,8 @@
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
+#import "ios/web/public/test/fakes/fake_web_frame.h"
+#import "ios/web/public/test/fakes/fake_web_frames_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/scoped_testing_web_client.h"
 #import "ios/web/public/test/task_observer_util.h"
@@ -1289,6 +1291,10 @@ class PasswordControllerTestSimple : public PlatformTest {
 
     ON_CALL(*store_, GetLogins)
         .WillByDefault(WithArg<1>(InvokeEmptyConsumerWithForms(store_.get())));
+
+    auto web_frames_manager = std::make_unique<web::FakeWebFramesManager>();
+    web_frames_manager_ = web_frames_manager.get();
+    web_state_.SetWebFramesManager(std::move(web_frames_manager));
   }
 
   base::test::TaskEnvironment task_environment_;
@@ -1297,6 +1303,7 @@ class PasswordControllerTestSimple : public PlatformTest {
   scoped_refptr<password_manager::MockPasswordStoreInterface> store_;
   MockPasswordManagerClient* weak_client_;
   web::FakeWebState web_state_;
+  web::FakeWebFramesManager* web_frames_manager_;
 };
 
 TEST_F(PasswordControllerTestSimple, SaveOnNonHTMLLandingPage) {
@@ -1304,9 +1311,14 @@ TEST_F(PasswordControllerTestSimple, SaveOnNonHTMLLandingPage) {
   FormData formData = MakeSimpleFormData();
   SharedPasswordController* sharedPasswordController =
       passwordController_.sharedPasswordController;
+
+  auto web_frame = web::FakeWebFrame::CreateMainWebFrame(GURL::EmptyGURL());
+  web_frames_manager_->AddWebFrame(std::move(web_frame));
+
   [sharedPasswordController formHelper:sharedPasswordController.formHelper
                          didSubmitForm:formData
-                           inMainFrame:YES];
+                           inMainFrame:YES
+                               inFrame:web::GetMainFrame(&web_state_)];
 
   std::unique_ptr<PasswordFormManagerForUI> form_manager_to_save;
   EXPECT_CALL(*weak_client_, PromptUserToSaveOrUpdatePasswordPtr)
@@ -2064,8 +2076,10 @@ TEST_F(PasswordControllerTest,
                                      FieldRendererId(), std::string());
 }
 
+// TODO(crbug.com/1344776): Re-enable when the recursion in JavaScript will be
+// deleted.
 // Tests that submission is detected on removal of the form that had user input.
-TEST_F(PasswordControllerTest, DetectSubmissionOnIFrameDetach) {
+TEST_F(PasswordControllerTest, DISABLED_DetectSubmissionOnIFrameDetach) {
   ON_CALL(*store_, GetLogins)
       .WillByDefault(WithArg<1>(InvokeEmptyConsumerWithForms(store_.get())));
   EXPECT_TRUE(

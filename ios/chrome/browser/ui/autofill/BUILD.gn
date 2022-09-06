@@ -23,6 +23,7 @@ source_set("autofill") {
     "//components/leveldb_proto",
     "//components/password_manager/core/browser",
     "//components/password_manager/core/common",
+    "//components/password_manager/ios",
     "//components/prefs",
     "//components/security_state/ios",
     "//components/strings",

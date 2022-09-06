@@ -14,10 +14,6 @@ struct PasswordFormGenerationData;
 
 class GURL;
 
-namespace password_manager {
-class PasswordGenerationFrameHelper;
-}  // namespace password_manager
-
 // C++ to ObjC bridge for methods of PasswordManagerDriver.
 @protocol PasswordManagerDriverBridge
 
@@ -32,9 +28,6 @@ class PasswordGenerationFrameHelper;
 
 // Informs delegate that there are no saved credentials for the current page.
 - (void)onNoSavedCredentials;
-
-// Gets the PasswordGenerationFrameHelper owned by this delegate.
-- (password_manager::PasswordGenerationFrameHelper*)passwordGenerationHelper;
 
 // Informs delegate of form for password generation found.
 - (void)formEligibleForGenerationFound:

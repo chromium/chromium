@@ -1,0 +1,88 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#import "components/password_manager/ios/ios_password_manager_driver_factory.h"
+
+#include "components/password_manager/core/browser/password_manager.h"
+
+// static
+void IOSPasswordManagerDriverFactory::CreateForWebState(
+    id<PasswordManagerDriverBridge> bridge,
+    password_manager::PasswordManagerInterface* password_manager,
+    web::WebState* web_state) {
+  if (FromWebState(web_state))
+    return;
+
+  web_state->SetUserData(
+      UserDataKey(),
+      absl::WrapUnique(new IOSPasswordManagerDriverFactory(
+          bridge,
+          static_cast<password_manager::PasswordManager*>(password_manager))));
+}
+
+// static
+IOSPasswordManagerDriver*
+IOSPasswordManagerDriverFactory::FromWebStateAndWebFrame(
+    web::WebState* web_state,
+    web::WebFrame* web_frame) {
+  return !web_frame ? nullptr
+                    : IOSPasswordManagerDriverFactory::FromWebState(web_state)
+                          ->IOSPasswordManagerDriver(web_frame);
+}
+
+IOSPasswordManagerDriver*
+IOSPasswordManagerDriverFactory::IOSPasswordManagerDriver(
+    web::WebFrame* web_frame) {
+  IOSPasswordManagerWebFrameDriverHelper::CreateForWebFrame(
+      bridge_, password_manager_, web_frame, next_free_id++);
+  return !web_frame
+             ? nullptr
+             : IOSPasswordManagerWebFrameDriverHelper::FromWebFrame(web_frame)
+                   ->driver();
+}
+
+IOSPasswordManagerDriverFactory::IOSPasswordManagerDriverFactory(
+    id<PasswordManagerDriverBridge> bridge,
+    password_manager::PasswordManager* password_manager)
+    : bridge_(bridge), password_manager_(password_manager) {}
+
+IOSPasswordManagerDriverFactory::~IOSPasswordManagerDriverFactory() = default;
+
+// static
+scoped_refptr<IOSPasswordManagerDriver>
+IOSPasswordManagerDriverFactory::GetRetainableDriver(web::WebFrame* frame) {
+  return IOSPasswordManagerWebFrameDriverHelper::FromWebFrame(frame)
+      ->RetainableDriver();
+}
+
+WEB_STATE_USER_DATA_KEY_IMPL(IOSPasswordManagerDriverFactory)
+
+// static
+void IOSPasswordManagerWebFrameDriverHelper::CreateForWebFrame(
+    id<PasswordManagerDriverBridge> bridge,
+    password_manager::PasswordManager* password_manager,
+    web::WebFrame* web_frame,
+    int driver_id) {
+  if (!web_frame || FromWebFrame(web_frame))
+    return;
+
+  web_frame->SetUserData(
+      UserDataKey(),
+      absl::WrapUnique(new IOSPasswordManagerWebFrameDriverHelper(
+          bridge, password_manager, web_frame, driver_id)));
+}
+
+IOSPasswordManagerWebFrameDriverHelper::IOSPasswordManagerWebFrameDriverHelper(
+    id<PasswordManagerDriverBridge> bridge,
+    password_manager::PasswordManager* password_manager,
+    web::WebFrame* web_frame,
+    int driver_id)
+    : driver_(
+          base::WrapRefCounted(new IOSPasswordManagerDriver(bridge,
+                                                            password_manager,
+                                                            web_frame,
+                                                            driver_id))) {}
+
+IOSPasswordManagerWebFrameDriverHelper::
+    ~IOSPasswordManagerWebFrameDriverHelper() = default;
