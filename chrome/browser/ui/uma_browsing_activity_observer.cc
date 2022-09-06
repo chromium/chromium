@@ -127,6 +127,7 @@ void UMABrowsingActivityObserver::LogBrowserTabCount() const {
   int app_window_count = 0;
   int popup_window_count = 0;
   int tabbed_window_count = 0;
+  int pinned_tab_count = 0;
   std::map<base::StringPiece, int> unique_domain;
 
   for (auto* browser : *BrowserList::GetInstance()) {
@@ -141,7 +142,10 @@ void UMABrowsingActivityObserver::LogBrowserTabCount() const {
       base::StringPiece domain = tab_strip_model->GetWebContentsAt(i)
                                      ->GetLastCommittedURL()
                                      .host_piece();
-      unique_domain[domain] += 1;
+      unique_domain[domain]++;
+
+      if (tab_strip_model->IsTabPinned(i))
+        pinned_tab_count++;
     }
 
     if (tab_strip_model->group_model()) {
@@ -189,6 +193,9 @@ void UMABrowsingActivityObserver::LogBrowserTabCount() const {
 
   // Record how many tab groups (including zero) are open across all windows.
   UMA_HISTOGRAM_COUNTS_100("TabGroups.UserGroupCountPerLoad", tab_group_count);
+
+  UMA_HISTOGRAM_COUNTS_100("TabGroups.UserPinnedTabCountPerLoad",
+                           std::min(pinned_tab_count, 100));
 
   // Record how many tabs are in the current group. Records 0 if the active tab
   // is not in a group.
