@@ -43,6 +43,7 @@
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profile_selections.h"
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/renderer_host/chrome_navigation_ui_data.h"
 #include "chrome/browser/safe_browsing/extension_telemetry/extension_telemetry_service.h"
@@ -188,6 +189,37 @@ content::BrowserContext* ChromeExtensionsBrowserClient::GetOriginalContext(
     content::BrowserContext* context) {
   DCHECK(context);
   return static_cast<Profile*>(context)->GetOriginalProfile();
+}
+
+content::BrowserContext*
+ChromeExtensionsBrowserClient::GetRedirectedContextInIncognito(
+    content::BrowserContext* context,
+    bool force_guest_profile,
+    bool force_system_profile) {
+  const ProfileSelections selections =
+      ProfileSelections::BuildRedirectedInIncognito(force_guest_profile,
+                                                    force_system_profile);
+  return selections.ApplyProfileSelection(Profile::FromBrowserContext(context));
+}
+
+content::BrowserContext*
+ChromeExtensionsBrowserClient::GetContextForRegularAndIncognito(
+    content::BrowserContext* context,
+    bool force_guest_profile,
+    bool force_system_profile) {
+  const ProfileSelections selections =
+      ProfileSelections::BuildForRegularAndIncognito(force_guest_profile,
+                                                     force_system_profile);
+  return selections.ApplyProfileSelection(Profile::FromBrowserContext(context));
+}
+
+content::BrowserContext* ChromeExtensionsBrowserClient::GetRegularProfile(
+    content::BrowserContext* context,
+    bool force_guest_profile,
+    bool force_system_profile) {
+  const ProfileSelections selections = ProfileSelections::BuildDefault(
+      force_guest_profile, force_system_profile);
+  return selections.ApplyProfileSelection(Profile::FromBrowserContext(context));
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

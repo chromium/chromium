@@ -145,6 +145,34 @@ class ExtensionsBrowserClient {
   virtual content::BrowserContext* GetOriginalContext(
       content::BrowserContext* context) = 0;
 
+  // The below methods include a test for the experiment
+  // `kSystemProfileSelectionDefaultNone` and will include a similar experiment
+  // for Guest Profile, these two experiment can be bypassed by setting the
+  // force_* to true. The naming of the functions follows the logic of
+  // `ProfileSelections` predefined experimental builders.
+  // - `force_guest_profile`: to force Guest Profile selection in experiment.
+  // - `force_system_profile`: to force System Profile selection in experiment.
+  //
+  // Returns the Original Profile for Regular Profile and redirects Incognito
+  // to the Original Profile.
+  // Force values to have the same behavior for Guest and System Profile.
+  virtual content::BrowserContext* GetRedirectedContextInIncognito(
+      content::BrowserContext* context,
+      bool force_guest_profile,
+      bool force_system_profile) = 0;
+  // Returns Profile for Regular and Incognito.
+  // Force values to have the same behavior for Guest and System Profile.
+  virtual content::BrowserContext* GetContextForRegularAndIncognito(
+      content::BrowserContext* context,
+      bool force_guest_profile,
+      bool force_system_profile) = 0;
+  // Returns Profile only for Original Regular profile.
+  // Force values to have the same behavior for Guest and System Profile.
+  virtual content::BrowserContext* GetRegularProfile(
+      content::BrowserContext* context,
+      bool force_guest_profile,
+      bool force_system_profile) = 0;
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Returns a user id hash from |context| or an empty string if no hash could
   // be extracted.

@@ -9,7 +9,7 @@
 #include "components/profile_metrics/browser_profile_type.h"
 
 const base::Feature kSystemProfileSelectionDefaultNone{
-    "SystemProfileSlectionDefaultNone",
+    "SystemProfileSelectionDefaultNone",
     base::FeatureState::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kGuestProfileSelectionDefaultNone{
