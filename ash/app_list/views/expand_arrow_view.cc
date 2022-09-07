@@ -178,7 +178,8 @@ void ExpandArrowView::PaintButtonContents(gfx::Canvas* canvas) {
   for (size_t i = 0; i < kPointCount; ++i)
     arrow_points[i] = kPeekingPoints[i];
   SkColor circle_color =
-      AppListColorProvider::Get()->GetExpandArrowIconBackgroundColor();
+      AppListColorProvider::Get()->GetExpandArrowIconBackgroundColor(
+          GetWidget());
   const float progress = app_list_view_->GetAppListTransitionProgress(
       AppListView::kProgressFlagNone);
   circle_center.set_y(GetCircleCenterYForAppListProgress(progress));
@@ -225,9 +226,9 @@ void ExpandArrowView::PaintButtonContents(gfx::Canvas* canvas) {
     // Draw a pulse that expands around the circle.
     cc::PaintFlags pulse_flags;
     pulse_flags.setStyle(cc::PaintFlags::kStroke_Style);
-    pulse_flags.setColor(
-        SkColorSetA(AppListColorProvider::Get()->GetExpandArrowIconBaseColor(),
-                    static_cast<U8CPU>(255 * pulse_opacity_)));
+    pulse_flags.setColor(SkColorSetA(
+        AppListColorProvider::Get()->GetExpandArrowIconBaseColor(GetWidget()),
+        static_cast<U8CPU>(255 * pulse_opacity_)));
     pulse_flags.setAntiAlias(true);
     canvas->DrawCircle(circle_center, pulse_radius_, pulse_flags);
   }
@@ -247,7 +248,7 @@ void ExpandArrowView::PaintButtonContents(gfx::Canvas* canvas) {
   arrow_flags.setAntiAlias(true);
 
   arrow_flags.setColor(
-      AppListColorProvider::Get()->GetExpandArrowIconBaseColor());
+      AppListColorProvider::Get()->GetExpandArrowIconBaseColor(GetWidget()));
   arrow_flags.setStrokeWidth(kExpandArrowStrokeWidth);
   arrow_flags.setStrokeCap(cc::PaintFlags::Cap::kRound_Cap);
   arrow_flags.setStrokeJoin(cc::PaintFlags::Join::kRound_Join);

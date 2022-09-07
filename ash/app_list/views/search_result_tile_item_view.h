@@ -60,6 +60,7 @@ class ASH_EXPORT SearchResultTileItemView
   bool OnKeyPressed(const ui::KeyEvent& event) override;
   void StateChanged(ButtonState old_state) override;
   void PaintButtonContents(gfx::Canvas* canvas) override;
+  void OnThemeChanged() override;
 
   // Overridden from SearchResultObserver:
   void OnMetadataChanged() override;

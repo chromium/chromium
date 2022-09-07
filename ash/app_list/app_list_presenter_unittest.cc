@@ -4577,7 +4577,8 @@ TEST_F(AppListPresenterHomeLauncherTest, BackgroundOpacity) {
   const U8CPU tablet_background_opacity = static_cast<U8CPU>(0);
   EXPECT_EQ(SkColorSetA(AppListColorProvider::Get()->GetAppListBackgroundColor(
                             /*is_tablet_mode*/
-                            true, /*default_color*/ gfx::kGoogleGrey900),
+                            true, /*default_color*/ gfx::kGoogleGrey900,
+                            GetAppListView()->GetWidget()),
                         tablet_background_opacity),
             GetAppListView()->GetAppListBackgroundShieldColorForTest());
   EXPECT_EQ(1, GetAppListView()

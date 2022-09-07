@@ -422,9 +422,9 @@ void SearchBoxView::UpdatePlaceholderTextStyle() {
   search_box()->set_placeholder_text_color(
       is_search_box_active()
           ? AppListColorProvider::Get()->GetSearchBoxSecondaryTextColor(
-                kZeroQuerySearchboxColor)
+                kZeroQuerySearchboxColor, GetWidget())
           : AppListColorProvider::Get()->GetSearchBoxTextColor(
-                kDefaultSearchboxPlaceholderTextColor));
+                kDefaultSearchboxPlaceholderTextColor, GetWidget()));
 }
 
 void SearchBoxView::UpdateSearchBoxBorder() {
@@ -470,16 +470,17 @@ const char* SearchBoxView::GetClassName() const {
 
 void SearchBoxView::OnThemeChanged() {
   SearchBoxViewBase::OnThemeChanged();
+  const auto* app_list_widget = GetWidget();
   close_button()->SetImage(
       views::ImageButton::STATE_NORMAL,
       gfx::CreateVectorIcon(views::kIcCloseIcon, GetSearchBoxIconSize(),
                             AppListColorProvider::Get()->GetSearchBoxIconColor(
-                                gfx::kGoogleGrey700)));
+                                gfx::kGoogleGrey700, app_list_widget)));
   assistant_button()->SetImage(
       views::ImageButton::STATE_NORMAL,
       gfx::CreateVectorIcon(chromeos::kAssistantIcon, GetSearchBoxIconSize(),
                             AppListColorProvider::Get()->GetSearchBoxIconColor(
-                                gfx::kGoogleGrey700)));
+                                gfx::kGoogleGrey700, app_list_widget)));
   OnWallpaperColorsChanged();
 }
 
@@ -665,15 +666,19 @@ int SearchBoxView::GetSearchBoxBorderCornerRadiusForState(
 }
 
 SkColor SearchBoxView::GetBackgroundColorForState(AppListState state) const {
+  const auto* app_list_widget = GetWidget();
+
   if (state == AppListState::kStateSearchResults) {
     if ((features::IsDarkLightModeEnabled() ||
          features::IsProductivityLauncherEnabled()) &&
         search_result_page_visible_) {
       return SK_ColorTRANSPARENT;
     }
-    return AppListColorProvider::Get()->GetSearchBoxCardBackgroundColor();
+    return AppListColorProvider::Get()->GetSearchBoxCardBackgroundColor(
+        app_list_widget);
   }
-  return AppListColorProvider::Get()->GetSearchBoxBackgroundColor();
+  return AppListColorProvider::Get()->GetSearchBoxBackgroundColor(
+      app_list_widget);
 }
 
 void SearchBoxView::ShowZeroStateSuggestions() {
@@ -690,7 +695,7 @@ void SearchBoxView::OnWallpaperColorsChanged() {
 
   if (features::IsDarkLightModeEnabled()) {
     UpdateBackgroundColor(
-        AppListColorProvider::Get()->GetSearchBoxBackgroundColor());
+        AppListColorProvider::Get()->GetSearchBoxBackgroundColor(GetWidget()));
   }
   SchedulePaint();
 }
@@ -852,10 +857,10 @@ void SearchBoxView::UpdateSearchIcon() {
                                            : kGoogleBlackIcon;
   const gfx::VectorIcon& icon =
       search_engine_is_google ? google_icon : kSearchEngineNotGoogleIcon;
-  SetSearchIconImage(
-      gfx::CreateVectorIcon(icon, GetSearchBoxIconSize(),
-                            AppListColorProvider::Get()->GetSearchBoxIconColor(
-                                SkColorSetARGB(0xDE, 0x00, 0x00, 0x00))));
+  SetSearchIconImage(gfx::CreateVectorIcon(
+      icon, GetSearchBoxIconSize(),
+      AppListColorProvider::Get()->GetSearchBoxIconColor(
+          SkColorSetARGB(0xDE, 0x00, 0x00, 0x00), GetWidget())));
 }
 
 bool SearchBoxView::IsValidAutocompleteText(

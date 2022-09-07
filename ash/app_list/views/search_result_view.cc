@@ -403,10 +403,6 @@ SearchResultView::SearchResultView(
       SearchResultTextItem::OverflowBehavior::kNoElide);
 
   rating_star_ = SetupChildImageView(title_and_details_container_);
-  rating_star_->SetImage(gfx::CreateVectorIcon(
-      kBadgeRatingIcon, kSearchRatingStarSize,
-      AppListColorProvider::Get()->GetSearchBoxSecondaryTextColor(
-          kDeprecatedSearchBoxTextDefaultColor)));
   rating_star_->SetBorder(views::CreateEmptyBorder(
       gfx::Insets::TLBR(0, kSearchRatingStarPadding, 0, 0)));
 
@@ -910,6 +906,7 @@ void SearchResultView::StyleLabel(views::Label* label,
     }
   }
 
+  const auto* app_list_widget = GetWidget();
   switch (color_tag) {
     case SearchResult::Tag::NONE:
       ABSL_FALLTHROUGH_INTENDED;
@@ -919,9 +916,9 @@ void SearchResultView::StyleLabel(views::Label* label,
       label->SetEnabledColor(
           is_title_label
               ? AppListColorProvider::Get()->GetSearchBoxTextColor(
-                    kDeprecatedSearchBoxTextDefaultColor)
+                    kDeprecatedSearchBoxTextDefaultColor, app_list_widget)
               : AppListColorProvider::Get()->GetSearchBoxSecondaryTextColor(
-                    kDeprecatedSearchBoxTextDefaultColor));
+                    kDeprecatedSearchBoxTextDefaultColor, app_list_widget));
       break;
     case SearchResult::Tag::URL:
       label->SetEnabledColor(AppListColorProvider::Get()->GetTextColorURL());
@@ -1138,36 +1135,39 @@ void SearchResultView::PaintButtonContents(gfx::Canvas* canvas) {
 
   gfx::Rect content_rect(rect);
 
-    switch (view_type_) {
-      case SearchResultViewType::kDefault:
-      case SearchResultViewType::kClassic:
-        if (selected() && !actions_view()->HasSelectedAction()) {
-          canvas->FillRect(
-              content_rect,
-              AppListColorProvider::Get()->GetSearchResultViewHighlightColor());
-          PaintFocusBar(canvas, GetContentsBounds().origin(),
-                        /*height=*/GetContentsBounds().height());
-        }
-        break;
-      case SearchResultViewType::kAnswerCard: {
-        cc::PaintFlags flags;
-        flags.setAntiAlias(true);
-        flags.setColor(
-            AppListColorProvider::Get()->GetSearchResultViewHighlightColor());
-        canvas->DrawRoundRect(content_rect,
-                              kAnswerCardCardBackgroundCornerRadius, flags);
-        if (selected()) {
-          // Dynamically calculate the height of the answer card focus bar to
-          // accommodate different heights for multi-line results.
-          PaintFocusBar(canvas,
-                        gfx::Point(kAnswerCardFocusBarHorizontalOffset,
-                                   kAnswerCardFocusBarVerticalOffset),
-                        PreferredHeight() -
-                            kAnswerCardCardBackgroundCornerRadius * 2 -
-                            kAnswerCardFocusBarVerticalOffset);
-        }
-      } break;
-    }
+  const auto* app_list_widget = GetWidget();
+  switch (view_type_) {
+    case SearchResultViewType::kDefault:
+    case SearchResultViewType::kClassic:
+      if (selected() && !actions_view()->HasSelectedAction()) {
+        canvas->FillRect(
+            content_rect,
+            AppListColorProvider::Get()->GetSearchResultViewHighlightColor(
+                app_list_widget));
+        PaintFocusBar(canvas, GetContentsBounds().origin(),
+                      /*height=*/GetContentsBounds().height());
+      }
+      break;
+    case SearchResultViewType::kAnswerCard: {
+      cc::PaintFlags flags;
+      flags.setAntiAlias(true);
+      flags.setColor(
+          AppListColorProvider::Get()->GetSearchResultViewHighlightColor(
+              app_list_widget));
+      canvas->DrawRoundRect(content_rect, kAnswerCardCardBackgroundCornerRadius,
+                            flags);
+      if (selected()) {
+        // Dynamically calculate the height of the answer card focus bar to
+        // accommodate different heights for multi-line results.
+        PaintFocusBar(canvas,
+                      gfx::Point(kAnswerCardFocusBarHorizontalOffset,
+                                 kAnswerCardFocusBarVerticalOffset),
+                      PreferredHeight() -
+                          kAnswerCardCardBackgroundCornerRadius * 2 -
+                          kAnswerCardFocusBarVerticalOffset);
+      }
+    } break;
+  }
 }
 
 void SearchResultView::OnMouseEntered(const ui::MouseEvent& event) {
@@ -1205,20 +1205,21 @@ void SearchResultView::OnThemeChanged() {
   if (!keyboard_shortcut_container_tags_.empty())
     StyleKeyboardShortcutContainer();
 
+  const auto* app_list_widget = GetWidget();
   result_text_separator_label_->SetEnabledColor(
       AppListColorProvider::Get()->GetSearchBoxSecondaryTextColor(
-          kDeprecatedSearchBoxTextDefaultColor));
+          kDeprecatedSearchBoxTextDefaultColor, app_list_widget));
 
   rating_separator_label_->SetEnabledColor(
       AppListColorProvider::Get()->GetSearchBoxSecondaryTextColor(
-          kDeprecatedSearchBoxTextDefaultColor));
+          kDeprecatedSearchBoxTextDefaultColor, app_list_widget));
   rating_->SetEnabledColor(
       AppListColorProvider::Get()->GetSearchBoxSecondaryTextColor(
-          kDeprecatedSearchBoxTextDefaultColor));
+          kDeprecatedSearchBoxTextDefaultColor, app_list_widget));
   rating_star_->SetImage(gfx::CreateVectorIcon(
       kBadgeRatingIcon, kSearchRatingStarSize,
       AppListColorProvider::Get()->GetSearchBoxSecondaryTextColor(
-          kDeprecatedSearchBoxTextDefaultColor)));
+          kDeprecatedSearchBoxTextDefaultColor, app_list_widget)));
   views::View::OnThemeChanged();
 }
 

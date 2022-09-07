@@ -162,8 +162,8 @@ class ASH_EXPORT AppListPresenterImpl
   void OnTabletModeChanged(bool started);
 
  private:
-  // Sets the app list view and attempts to show it.
-  void SetView(AppListView* view);
+  // Configures the app list view and attempts to show it.
+  void ConfigureView();
 
   // Forgets the view.
   void ResetView();

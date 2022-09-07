@@ -545,7 +545,7 @@ void PagedAppsGridView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
 }
 
 void PagedAppsGridView::OnThemeChanged() {
-  views::View::OnThemeChanged();
+  AppsGridView::OnThemeChanged();
 
   for (auto& card : background_cards_)
     card.get()->SchedulePaint(card->parent()->bounds());
