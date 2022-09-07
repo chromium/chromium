@@ -714,26 +714,40 @@ bool EnumTraits<crosapi::mojom::UninstallSource, apps::UninstallSource>::
   return false;
 }
 
+// static
+crosapi::mojom::OptionalBool StructTraits<
+    crosapi::mojom::CapabilityAccessDataView,
+    apps::CapabilityAccessPtr>::camera(const apps::CapabilityAccessPtr& r) {
+  return ConvertOptionalBoolToMojomOptionalBool(r->camera);
+}
+
+// static
+crosapi::mojom::OptionalBool StructTraits<
+    crosapi::mojom::CapabilityAccessDataView,
+    apps::CapabilityAccessPtr>::microphone(const apps::CapabilityAccessPtr& r) {
+  return ConvertOptionalBoolToMojomOptionalBool(r->microphone);
+}
+
 bool StructTraits<crosapi::mojom::CapabilityAccessDataView,
-                  apps::mojom::CapabilityAccessPtr>::
+                  apps::CapabilityAccessPtr>::
     Read(crosapi::mojom::CapabilityAccessDataView data,
-         apps::mojom::CapabilityAccessPtr* out) {
+         apps::CapabilityAccessPtr* out) {
   std::string app_id;
   if (!data.ReadAppId(&app_id))
     return false;
 
-  apps::mojom::OptionalBool camera;
+  crosapi::mojom::OptionalBool camera;
   if (!data.ReadCamera(&camera))
     return false;
 
-  apps::mojom::OptionalBool microphone;
+  crosapi::mojom::OptionalBool microphone;
   if (!data.ReadMicrophone(&microphone))
     return false;
 
-  auto capability_access = apps::mojom::CapabilityAccess::New();
-  capability_access->app_id = std::move(app_id);
-  capability_access->camera = std::move(camera);
-  capability_access->microphone = std::move(microphone);
+  auto capability_access = std::make_unique<apps::CapabilityAccess>(app_id);
+  capability_access->camera = ConvertMojomOptionalBoolToOptionalBool(camera);
+  capability_access->microphone =
+      ConvertMojomOptionalBoolToOptionalBool(microphone);
   *out = std::move(capability_access);
   return true;
 }

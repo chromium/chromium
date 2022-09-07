@@ -30,6 +30,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chromeos/lacros/lacros_service.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
+#include "components/services/app_service/public/cpp/capability_access.h"
 #include "components/services/app_service/public/cpp/intent.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "content/public/browser/render_frame_host.h"
@@ -441,7 +442,9 @@ void LacrosWebAppsController::ModifyWebAppCapabilityAccess(
                  << " does not support OnCapabilityAccesses().";
     return;
   }
-  remote_publisher_->OnCapabilityAccesses(std::move(capability_accesses));
+  remote_publisher_->OnCapabilityAccesses(
+      apps::ConvertMojomCapabilityAccessesToCapabilityAccesses(
+          capability_accesses));
 }
 
 }  // namespace web_app

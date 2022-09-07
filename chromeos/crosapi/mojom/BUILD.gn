@@ -153,7 +153,7 @@ mojom("mojom") {
         },
         {
           mojom = "crosapi.mojom.CapabilityAccess"
-          cpp = "::apps::mojom::CapabilityAccessPtr"
+          cpp = "::apps::CapabilityAccessPtr"
           move_only = true
         },
         {
@@ -241,10 +241,10 @@ mojom("mojom") {
         "//chromeos/crosapi/mojom/browser_app_instance_registry_mojom_traits.h",
         "//components/services/app_service/public/cpp/app_launch_util.h",
         "//components/services/app_service/public/cpp/app_types.h",
+        "//components/services/app_service/public/cpp/capability_access.h",
         "//components/services/app_service/public/cpp/preferred_app.h",
         "//chromeos/crosapi/mojom/sharesheet_mojom_traits.h",
         "//components/services/app_service/public/cpp/icon_types.h",
-        "//components/services/app_service/public/mojom/types.mojom.h",
       ]
       traits_sources = [
         "//chromeos/crosapi/mojom/app_service_types_mojom_traits.cc",

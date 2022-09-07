@@ -521,7 +521,7 @@ void StandaloneBrowserExtensionApps::RegisterAppController(
 }
 
 void StandaloneBrowserExtensionApps::OnCapabilityAccesses(
-    std::vector<apps::mojom::CapabilityAccessPtr> deltas) {
+    std::vector<CapabilityAccessPtr> deltas) {
   // TODO(https://crbug.com/1225848): Implement.
   NOTIMPLEMENTED();
 }

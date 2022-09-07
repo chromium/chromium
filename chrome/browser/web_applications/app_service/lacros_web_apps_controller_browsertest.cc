@@ -55,6 +55,7 @@
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/app_types.h"
+#include "components/services/app_service/public/cpp/capability_access.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
@@ -93,8 +94,8 @@ class MockAppPublisher : public crosapi::mojom::AppPublisher {
 
   const std::vector<apps::AppPtr>& get_deltas() const { return app_deltas_; }
 
-  const std::vector<apps::mojom::CapabilityAccessPtr>&
-  get_capability_access_deltas() const {
+  const std::vector<apps::CapabilityAccessPtr>& get_capability_access_deltas()
+      const {
     return capability_access_deltas_;
   }
 
@@ -114,7 +115,7 @@ class MockAppPublisher : public crosapi::mojom::AppPublisher {
   }
 
   void OnCapabilityAccesses(
-      std::vector<apps::mojom::CapabilityAccessPtr> deltas) override {
+      std::vector<apps::CapabilityAccessPtr> deltas) override {
     capability_access_deltas_.insert(capability_access_deltas_.end(),
                                      std::make_move_iterator(deltas.begin()),
                                      std::make_move_iterator(deltas.end()));
@@ -122,7 +123,7 @@ class MockAppPublisher : public crosapi::mojom::AppPublisher {
   }
 
   std::vector<apps::AppPtr> app_deltas_;
-  std::vector<apps::mojom::CapabilityAccessPtr> capability_access_deltas_;
+  std::vector<apps::CapabilityAccessPtr> capability_access_deltas_;
   std::unique_ptr<base::RunLoop> run_loop_;
 };
 
@@ -458,22 +459,24 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest, MediaRequest) {
   EXPECT_EQ(mock_app_publisher.get_capability_access_deltas().size(), 1U);
   EXPECT_EQ(mock_app_publisher.get_capability_access_deltas().back()->app_id,
             app_id);
-  EXPECT_EQ(mock_app_publisher.get_capability_access_deltas().back()->camera,
-            apps::mojom::OptionalBool::kUnknown);
-  EXPECT_EQ(
-      mock_app_publisher.get_capability_access_deltas().back()->microphone,
-      apps::mojom::OptionalBool::kTrue);
+  EXPECT_FALSE(mock_app_publisher.get_capability_access_deltas()
+                   .back()
+                   ->camera.has_value());
+  EXPECT_TRUE(mock_app_publisher.get_capability_access_deltas()
+                  .back()
+                  ->microphone.value_or(false));
 
   browser->tab_strip_model()->CloseAllTabs();
   mock_app_publisher.Wait();
   EXPECT_EQ(mock_app_publisher.get_capability_access_deltas().size(), 2U);
   EXPECT_EQ(mock_app_publisher.get_capability_access_deltas().back()->app_id,
             app_id);
-  EXPECT_EQ(mock_app_publisher.get_capability_access_deltas().back()->camera,
-            apps::mojom::OptionalBool::kUnknown);
-  EXPECT_EQ(
-      mock_app_publisher.get_capability_access_deltas().back()->microphone,
-      apps::mojom::OptionalBool::kFalse);
+  EXPECT_FALSE(mock_app_publisher.get_capability_access_deltas()
+                   .back()
+                   ->camera.has_value());
+  EXPECT_FALSE(mock_app_publisher.get_capability_access_deltas()
+                   .back()
+                   ->microphone.value_or(true));
 }
 
 IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest, Launch) {

@@ -10,11 +10,11 @@
 #include "chromeos/crosapi/mojom/app_service_types.mojom.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/app_types.h"
+#include "components/services/app_service/public/cpp/capability_access.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
 #include "components/services/app_service/public/cpp/intent_filter.h"
 #include "components/services/app_service/public/cpp/permission.h"
 #include "components/services/app_service/public/cpp/preferred_app.h"
-#include "components/services/app_service/public/mojom/types.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
@@ -234,23 +234,19 @@ struct EnumTraits<crosapi::mojom::UninstallSource, apps::UninstallSource> {
 
 template <>
 struct StructTraits<crosapi::mojom::CapabilityAccessDataView,
-                    apps::mojom::CapabilityAccessPtr> {
-  static const std::string& app_id(const apps::mojom::CapabilityAccessPtr& r) {
+                    apps::CapabilityAccessPtr> {
+  static const std::string& app_id(const apps::CapabilityAccessPtr& r) {
     return r->app_id;
   }
 
-  static const apps::mojom::OptionalBool& camera(
-      const apps::mojom::CapabilityAccessPtr& r) {
-    return r->camera;
-  }
+  static crosapi::mojom::OptionalBool camera(
+      const apps::CapabilityAccessPtr& r);
 
-  static const apps::mojom::OptionalBool& microphone(
-      const apps::mojom::CapabilityAccessPtr& r) {
-    return r->microphone;
-  }
+  static crosapi::mojom::OptionalBool microphone(
+      const apps::CapabilityAccessPtr& r);
 
   static bool Read(crosapi::mojom::CapabilityAccessDataView,
-                   apps::mojom::CapabilityAccessPtr* out);
+                   apps::CapabilityAccessPtr* out);
 };
 
 template <>

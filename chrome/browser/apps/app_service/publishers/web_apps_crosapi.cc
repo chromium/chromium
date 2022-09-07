@@ -453,11 +453,12 @@ void WebAppsCrosapi::RegisterAppController(
 }
 
 void WebAppsCrosapi::OnCapabilityAccesses(
-    std::vector<apps::mojom::CapabilityAccessPtr> deltas) {
+    std::vector<CapabilityAccessPtr> deltas) {
   if (!web_app::IsWebAppsCrosapiEnabled())
     return;
   for (auto& subscriber : subscribers_) {
-    subscriber->OnCapabilityAccesses(apps_util::CloneStructPtrVector(deltas));
+    subscriber->OnCapabilityAccesses(
+        apps::ConvertCapabilityAccessesToMojomCapabilityAccesses(deltas));
   }
 }
 

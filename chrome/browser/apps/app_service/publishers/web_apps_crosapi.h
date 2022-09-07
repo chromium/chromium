@@ -18,6 +18,7 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/app_types.h"
+#include "components/services/app_service/public/cpp/capability_access.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
 #include "components/services/app_service/public/cpp/menu.h"
 #include "components/services/app_service/public/cpp/permission.h"
@@ -160,8 +161,7 @@ class WebAppsCrosapi : public KeyedService,
   void OnApps(std::vector<AppPtr> deltas) override;
   void RegisterAppController(
       mojo::PendingRemote<crosapi::mojom::AppController> controller) override;
-  void OnCapabilityAccesses(
-      std::vector<apps::mojom::CapabilityAccessPtr> deltas) override;
+  void OnCapabilityAccesses(std::vector<CapabilityAccessPtr> deltas) override;
 
   bool LogIfNotConnected(const base::Location& from_here);
 

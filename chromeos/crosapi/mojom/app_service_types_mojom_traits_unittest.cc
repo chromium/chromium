@@ -10,12 +10,12 @@
 #include "chromeos/crosapi/mojom/app_service_types_mojom_traits.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/app_types.h"
+#include "components/services/app_service/public/cpp/capability_access.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
 #include "components/services/app_service/public/cpp/intent_filter.h"
 #include "components/services/app_service/public/cpp/intent_filter_util.h"
 #include "components/services/app_service/public/cpp/permission.h"
 #include "components/services/app_service/public/cpp/shortcut.h"
-#include "components/services/app_service/public/mojom/types.mojom.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
@@ -1224,5 +1224,41 @@ TEST(AppServiceTypesMojomTraitsTest, RoundTripShortcuts) {
     ASSERT_TRUE(mojo::test::SerializeAndDeserialize<crosapi::mojom::Shortcut>(
         shortcut, output));
     EXPECT_EQ(*shortcut, *output);
+  }
+}
+
+TEST(AppServiceTypesMojomTraitsTest, RoundTripCapabilityAccess) {
+  {
+    auto capability_access = std::make_unique<apps::CapabilityAccess>("a");
+    apps::CapabilityAccessPtr output;
+    ASSERT_TRUE(
+        mojo::test::SerializeAndDeserialize<crosapi::mojom::CapabilityAccess>(
+            capability_access, output));
+    EXPECT_EQ("a", output->app_id);
+    EXPECT_FALSE(output->camera.has_value());
+    EXPECT_FALSE(output->microphone.has_value());
+  }
+  {
+    auto capability_access = std::make_unique<apps::CapabilityAccess>("b");
+    capability_access->camera = true;
+    apps::CapabilityAccessPtr output;
+    ASSERT_TRUE(
+        mojo::test::SerializeAndDeserialize<crosapi::mojom::CapabilityAccess>(
+            capability_access, output));
+    EXPECT_EQ("b", output->app_id);
+    EXPECT_TRUE(output->camera.value_or(false));
+    EXPECT_FALSE(output->microphone.has_value());
+  }
+  {
+    auto capability_access = std::make_unique<apps::CapabilityAccess>("c");
+    capability_access->camera = false;
+    capability_access->microphone = true;
+    apps::CapabilityAccessPtr output;
+    ASSERT_TRUE(
+        mojo::test::SerializeAndDeserialize<crosapi::mojom::CapabilityAccess>(
+            capability_access, output));
+    EXPECT_EQ("c", output->app_id);
+    EXPECT_FALSE(output->camera.value_or(true));
+    EXPECT_TRUE(output->microphone.value_or(false));
   }
 }
