@@ -58,6 +58,20 @@ class WriteBarrier final {
         break;
     }
   }
+
+  // Cannot refer to blink::Member and friends here due to cyclic includes.
+  template <typename T,
+            typename WeaknessTag,
+            typename WriteBarrierPolicy,
+            typename CheckingPolicy>
+  ALWAYS_INLINE static bool IsWriteBarrierNeeded(
+      cppgc::internal::
+          BasicMember<T, WeaknessTag, WriteBarrierPolicy, CheckingPolicy>*
+              element) {
+    HeapConsistency::WriteBarrierParams params;
+    return HeapConsistency::GetWriteBarrierType(*element, params) !=
+           HeapConsistency::WriteBarrierType::kNone;
+  }
 };
 
 }  // namespace blink

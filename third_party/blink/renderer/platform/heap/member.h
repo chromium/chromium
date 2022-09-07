@@ -197,6 +197,11 @@ class MemberConstructTraits {
   }
 
   static void NotifyNewElements(T* array, size_t len) {
+    // Checking the first element is sufficient for determining whether a
+    // marking or generational barrier is required.
+    if (LIKELY((len == 0) || !blink::WriteBarrier::IsWriteBarrierNeeded(array)))
+      return;
+
     while (len-- > 0) {
       blink::WriteBarrier::DispatchForObject(array);
       array++;
