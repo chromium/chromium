@@ -102,9 +102,9 @@ class AffiliationDatabaseTest : public testing::Test {
   void CloseDatabase() { db_.reset(); }
 
   void StoreInitialTestData() {
-    ASSERT_TRUE(db_->Store(TestEquivalenceClass1()));
-    ASSERT_TRUE(db_->Store(TestEquivalenceClass2()));
-    ASSERT_TRUE(db_->Store(TestEquivalenceClass3()));
+    ASSERT_TRUE(db_->Store(TestEquivalenceClass1(), GroupedFacets()));
+    ASSERT_TRUE(db_->Store(TestEquivalenceClass2(), GroupedFacets()));
+    ASSERT_TRUE(db_->Store(TestEquivalenceClass3(), GroupedFacets()));
   }
 
   AffiliationDatabase& db() { return *db_; }
@@ -130,7 +130,7 @@ TEST_F(AffiliationDatabaseTest, Store) {
     sql::test::ScopedErrorExpecter expecter;
     expecter.ExpectError(SQLITE_CONSTRAINT);
     AffiliatedFacetsWithUpdateTime duplicate = TestEquivalenceClass1();
-    EXPECT_FALSE(db().Store(duplicate));
+    EXPECT_FALSE(db().Store(duplicate, GroupedFacets()));
     EXPECT_TRUE(expecter.SawExpectedErrors());
   }
 
@@ -143,7 +143,7 @@ TEST_F(AffiliationDatabaseTest, Store) {
         {FacetURI::FromCanonicalSpec(kTestFacetURI3)},
         {FacetURI::FromCanonicalSpec(kTestFacetURI4)},
     };
-    EXPECT_FALSE(db().Store(intersecting));
+    EXPECT_FALSE(db().Store(intersecting, GroupedFacets()));
     EXPECT_TRUE(expecter.SawExpectedErrors());
   }
 }
@@ -211,7 +211,7 @@ TEST_F(AffiliationDatabaseTest, StoreAndRemoveConflicting) {
   // the last update timestamp is updated.
   {
     std::vector<AffiliatedFacetsWithUpdateTime> removed;
-    db().StoreAndRemoveConflicting(updated, &removed);
+    db().StoreAndRemoveConflicting(updated, GroupedFacets(), &removed);
     EXPECT_EQ(0u, removed.size());
 
     AffiliatedFacetsWithUpdateTime affiliation;
@@ -230,7 +230,7 @@ TEST_F(AffiliationDatabaseTest, StoreAndRemoveConflicting) {
         {FacetURI::FromCanonicalSpec(kTestFacetURI3)},
         {FacetURI::FromCanonicalSpec(kTestFacetURI4)},
     };
-    db().StoreAndRemoveConflicting(intersecting, &removed);
+    db().StoreAndRemoveConflicting(intersecting, GroupedFacets(), &removed);
 
     ASSERT_EQ(2u, removed.size());
     ExpectEquivalenceClassesIncludingBrandingInfoAreEqual(updated, removed[0]);
@@ -287,11 +287,11 @@ TEST_F(AffiliationDatabaseTest, CorruptDBIsRazedThenOpened) {
 // Verify that when the DB becomes corrupt after it has been opened, it gets
 // poisoned so that operations fail silently without side effects.
 TEST_F(AffiliationDatabaseTest, CorruptDBGetsPoisoned) {
-  ASSERT_TRUE(db().Store(TestEquivalenceClass1()));
+  ASSERT_TRUE(db().Store(TestEquivalenceClass1(), GroupedFacets()));
 
   ASSERT_TRUE(sql::test::CorruptSizeInHeader(db_path()));
 
-  EXPECT_FALSE(db().Store(TestEquivalenceClass2()));
+  EXPECT_FALSE(db().Store(TestEquivalenceClass2(), GroupedFacets()));
   std::vector<AffiliatedFacetsWithUpdateTime> affiliations;
   db().GetAllAffiliationsAndBranding(&affiliations);
   EXPECT_EQ(0u, affiliations.size());
@@ -434,6 +434,37 @@ TEST_F(AffiliationDatabaseTest, ClearUnusedCache) {
                                                         affiliations[0]);
   ExpectEquivalenceClassesIncludingBrandingInfoAreEqual(TestEquivalenceClass2(),
                                                         affiliations[1]);
+}
+
+TEST_F(AffiliationDatabaseTest, StoreAndRemoveConflictingUpdatesGrouping) {
+  AffiliatedFacetsWithUpdateTime affiliation;
+  affiliation.last_update_time = base::Time::FromInternalValue(kTestTimeUs1);
+  affiliation.facets = {
+      {FacetURI::FromCanonicalSpec(kTestFacetURI1)},
+  };
+
+  GroupedFacets group;
+  group.branding_info =
+      FacetBrandingInfo{kTestAndroidPlayName, GURL(kTestAndroidIconURL)};
+  group.facets = {
+      {FacetURI::FromCanonicalSpec(kTestFacetURI1)},
+      {FacetURI::FromCanonicalSpec(kTestFacetURI2)},
+      {FacetURI::FromCanonicalSpec(kTestFacetURI3)},
+  };
+
+  OpenDatabase();
+  db().Store(affiliation, group);
+
+  std::vector<GroupedFacets> groupings = db().GetAllGroups();
+  EXPECT_EQ(1u, groupings.size());
+  EXPECT_THAT(groupings[0].facets,
+              testing::UnorderedElementsAreArray(group.facets));
+  EXPECT_THAT(groupings[0].branding_info, testing::Eq(group.branding_info));
+
+  std::vector<AffiliatedFacetsWithUpdateTime> removed;
+  db().StoreAndRemoveConflicting(affiliation, GroupedFacets(), &removed);
+
+  EXPECT_EQ(0u, db().GetAllGroups().size());
 }
 
 }  // namespace password_manager

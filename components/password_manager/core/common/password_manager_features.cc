@@ -190,6 +190,11 @@ const base::Feature kPasswordReuseDetectionEnabled = {
 const base::Feature kPasswordScriptsFetching = {
     "PasswordScriptsFetching", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables requesting and saving passwords grouping information from the
+// affiliation service.
+const base::Feature kPasswordsGrouping = {"PasswordsGrouping",
+                                          base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables showing UI which allows users to easily revert their choice to
 // never save passwords on a certain website.
 const base::Feature kRecoverFromNeverSaveAndroid = {

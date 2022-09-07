@@ -20,8 +20,9 @@ namespace {
 bool IsFacetValidForAffiliation(const FacetURI& facet) {
   return facet.IsValidAndroidFacetURI() ||
          (facet.IsValidWebFacetURI() &&
-          base::FeatureList::IsEnabled(
-              password_manager::features::kFillingAcrossAffiliatedWebsites));
+          (base::FeatureList::IsEnabled(
+               features::kFillingAcrossAffiliatedWebsites) ||
+           base::FeatureList::IsEnabled(features::kPasswordsGrouping)));
 }
 
 }  // namespace

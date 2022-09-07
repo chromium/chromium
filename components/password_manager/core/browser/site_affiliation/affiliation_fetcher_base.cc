@@ -7,6 +7,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "components/password_manager/core/browser/android_affiliation/lookup_affiliation_response_parser.h"
+#include "components/password_manager/core/common/password_manager_features.h"
 #include "components/variations/net/variations_http_headers.h"
 #include "net/base/load_flags.h"
 #include "net/base/url_util.h"
@@ -65,8 +66,11 @@ affiliation_pb::LookupAffiliationMask CreateLookupMask(
   affiliation_pb::LookupAffiliationMask mask;
 
   mask.set_branding_info(request_info.branding_info);
+  bool grouping_enabled =
+      base::FeatureList::IsEnabled(features::kPasswordsGrouping);
   // Change password info requires grouping info enabled.
-  mask.set_grouping_info(request_info.change_password_info);
+  mask.set_grouping_info(request_info.change_password_info || grouping_enabled);
+  mask.set_group_branding_info(grouping_enabled);
   mask.set_change_password_info(request_info.change_password_info);
 
   return mask;

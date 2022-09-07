@@ -22,6 +22,7 @@
 #include "components/password_manager/core/browser/android_affiliation/affiliation_fetcher_interface.h"
 #include "components/password_manager/core/browser/android_affiliation/facet_manager.h"
 #include "components/password_manager/core/browser/site_affiliation/affiliation_fetcher_factory_impl.h"
+#include "components/password_manager/core/common/password_manager_features.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace password_manager {
@@ -160,6 +161,10 @@ void AffiliationBackend::TrimUnusedCache(std::vector<FacetURI> facet_uris) {
   cache_->RemoveMissingFacetURI(facet_uris);
 }
 
+std::vector<GroupedFacets> AffiliationBackend::GetAllGroups() const {
+  return cache_->GetAllGroups();
+}
+
 // static
 void AffiliationBackend::DeleteCache(const base::FilePath& db_path) {
   AffiliationDatabase::Delete(db_path);
@@ -238,13 +243,27 @@ void AffiliationBackend::OnFetchSucceeded(
   fetcher_.reset();
   throttler_->InformOfNetworkRequestComplete(true);
 
+  std::map<std::string, const GroupedFacets*> map_facet_to_group;
+  for (const GroupedFacets& grouped_facets : result->groupings) {
+    for (const Facet& facet : grouped_facets.facets) {
+      map_facet_to_group[facet.uri.canonical_spec()] = &grouped_facets;
+    }
+  }
+
   for (const AffiliatedFacets& affiliated_facets : result->affiliations) {
     AffiliatedFacetsWithUpdateTime affiliation;
     affiliation.facets = affiliated_facets;
     affiliation.last_update_time = clock_->Now();
-
     std::vector<AffiliatedFacetsWithUpdateTime> obsoleted_affiliations;
-    cache_->StoreAndRemoveConflicting(affiliation, &obsoleted_affiliations);
+    GroupedFacets group;
+    if (base::FeatureList::IsEnabled(features::kPasswordsGrouping) &&
+        map_facet_to_group.count(affiliated_facets[0].uri.canonical_spec())) {
+      // Affiliations are subset of group. So |map_facet_to_group| must hold a
+      // vector to the whole group.
+      group = *map_facet_to_group[affiliated_facets[0].uri.canonical_spec()];
+    }
+    cache_->StoreAndRemoveConflicting(affiliation, group,
+                                      &obsoleted_affiliations);
 
     // Cached data in contradiction with newly stored data automatically gets
     // removed from the DB, and will be stored into |obsoleted_affiliations|.

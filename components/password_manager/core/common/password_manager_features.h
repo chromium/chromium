@@ -66,6 +66,7 @@ extern const base::Feature kPasswordManagerRedesign;
 #endif
 extern const base::Feature kPasswordReuseDetectionEnabled;
 extern const base::Feature kPasswordScriptsFetching;
+extern const base::Feature kPasswordsGrouping;
 extern const base::Feature kPasswordStrengthIndicator;
 extern const base::Feature kRecoverFromNeverSaveAndroid;
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)

@@ -66,7 +66,8 @@ class AffiliationDatabase {
   // |affiliated_facets| to the DB and returns true unless it has a non-empty
   // subset with a preexisting class, in which case no changes are made and the
   // function returns false.
-  bool Store(const AffiliatedFacetsWithUpdateTime& affiliated_facets);
+  bool Store(const AffiliatedFacetsWithUpdateTime& affiliated_facets,
+             const GroupedFacets& group);
 
   // Stores the equivalence class and branding information defined by
   // |affiliated_facets| to the database, and removes any other equivalence
@@ -75,6 +76,7 @@ class AffiliationDatabase {
   // into |removed_affiliations|.
   void StoreAndRemoveConflicting(
       const AffiliatedFacetsWithUpdateTime& affiliated_facets,
+      const GroupedFacets& group,
       std::vector<AffiliatedFacetsWithUpdateTime>* removed_affiliations);
 
   // Removes all the stored equivalence classes and branding information which

@@ -24,6 +24,10 @@ class FakeAffiliationAPI {
   // the basis for calculating the fake API responses.
   void AddTestEquivalenceClass(const AffiliatedFacets& affiliated_facets);
 
+  // Adds |group| to the array of |groups_| that will form
+  // the basis for calculating the fake API responses.
+  void AddTestGrouping(const GroupedFacets& group);
+
   // Returns whether or not there is at least one pending fetch.
   bool HasPendingRequest();
 
@@ -50,6 +54,7 @@ class FakeAffiliationAPI {
  private:
   raw_ptr<FakeAffiliationFetcherFactory> fake_fetcher_factory_ = nullptr;
   std::vector<AffiliatedFacets> preset_equivalence_relation_;
+  std::vector<GroupedFacets> groups_;
 };
 
 }  // namespace password_manager

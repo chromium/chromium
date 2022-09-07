@@ -282,11 +282,13 @@ void AffiliationDatabase::DeleteAffiliationsAndBrandingForFacetURI(
 }
 
 bool AffiliationDatabase::Store(
-    const AffiliatedFacetsWithUpdateTime& affiliated_facets) {
+    const AffiliatedFacetsWithUpdateTime& affiliated_facets,
+    const GroupedFacets& group) {
   DCHECK(!affiliated_facets.facets.empty());
-
   sql::Statement statement_parent(sql_connection_->GetCachedStatement(
-      SQL_FROM_HERE, "INSERT INTO eq_classes(last_update_time) VALUES (?)"));
+      SQL_FROM_HERE,
+      "INSERT INTO eq_classes(last_update_time, group_display_name, "
+      "group_icon_url) VALUES (?, ?, ?)"));
 
   sql::Statement statement_child(sql_connection_->GetCachedStatement(
       SQL_FROM_HERE,
@@ -294,12 +296,19 @@ bool AffiliationDatabase::Store(
       "eq_class_members(facet_uri, facet_display_name, facet_icon_url, set_id) "
       "VALUES (?, ?, ?, ?)"));
 
+  sql::Statement statement_groups(sql_connection_->GetCachedStatement(
+      SQL_FROM_HERE,
+      "INSERT INTO eq_class_groups(facet_uri, set_id) VALUES (?, ?)"));
+
   sql::Transaction transaction(sql_connection_.get());
   if (!transaction.Begin())
     return false;
 
   statement_parent.BindInt64(
       0, affiliated_facets.last_update_time.ToInternalValue());
+  statement_parent.BindString(1, group.branding_info.name);
+  statement_parent.BindString(
+      2, group.branding_info.icon_url.possibly_invalid_spec());
   if (!statement_parent.Run())
     return false;
 
@@ -314,12 +323,20 @@ bool AffiliationDatabase::Store(
     if (!statement_child.Run())
       return false;
   }
+  for (const Facet& facet : group.facets) {
+    statement_groups.Reset(true);
+    statement_groups.BindString(0, facet.uri.canonical_spec());
+    statement_groups.BindInt64(1, eq_class_id);
+    if (!statement_groups.Run())
+      return false;
+  }
 
   return transaction.Commit();
 }
 
 void AffiliationDatabase::StoreAndRemoveConflicting(
     const AffiliatedFacetsWithUpdateTime& affiliation,
+    const GroupedFacets& group,
     std::vector<AffiliatedFacetsWithUpdateTime>* removed_affiliations) {
   DCHECK(!affiliation.facets.empty());
   DCHECK(removed_affiliations);
@@ -340,7 +357,7 @@ void AffiliationDatabase::StoreAndRemoveConflicting(
     }
   }
 
-  if (!Store(affiliation))
+  if (!Store(affiliation, group))
     NOTREACHED();
 
   transaction.Commit();
