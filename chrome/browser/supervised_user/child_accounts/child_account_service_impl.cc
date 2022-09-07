@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/supervised_user/child_accounts/child_account_service.h"
+#include "chrome/browser/supervised_user/child_accounts/child_account_service_impl.h"
 
 #include <memory>
 #include <utility>
@@ -16,6 +16,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/supervised_user/child_accounts/child_account_service.h"
 #include "chrome/browser/supervised_user/child_accounts/permission_request_creator_apiary.h"
 #include "chrome/browser/supervised_user/supervised_user_constants.h"
 #include "chrome/browser/supervised_user/supervised_user_service.h"
@@ -24,7 +25,6 @@
 #include "chrome/browser/supervised_user/supervised_user_settings_service_factory.h"
 #include "chrome/browser/supervised_user/web_approvals_manager.h"
 #include "chrome/common/pref_names.h"
-#include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -72,31 +72,15 @@ const net::BackoffEntry::Policy kFamilyFetchBackoffPolicy = {
     false,
 };
 
-ChildAccountService::ChildAccountService(Profile* profile)
+ChildAccountServiceImpl::ChildAccountServiceImpl(Profile* profile)
     : profile_(profile),
       active_(false),
       family_fetch_backoff_(&kFamilyFetchBackoffPolicy),
       identity_manager_(IdentityManagerFactory::GetForProfile(profile)) {}
 
-ChildAccountService::~ChildAccountService() {}
+ChildAccountServiceImpl::~ChildAccountServiceImpl() = default;
 
-// static
-bool ChildAccountService::IsChildAccountDetectionEnabled() {
-// Child account detection is always enabled on Android and ChromeOS, and
-// disabled in other platforms.
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
-  return true;
-#else
-  return false;
-#endif
-}
-
-void ChildAccountService::RegisterProfilePrefs(
-    user_prefs::PrefRegistrySyncable* registry) {
-  registry->RegisterBooleanPref(prefs::kChildAccountStatusKnown, false);
-}
-
-void ChildAccountService::Init() {
+void ChildAccountServiceImpl::Init() {
   SupervisedUserServiceFactory::GetForProfile(profile_)->SetDelegate(this);
   identity_manager_->AddObserver(this);
 
@@ -112,18 +96,18 @@ void ChildAccountService::Init() {
     OnExtendedAccountInfoUpdated(primary_account_info);
 }
 
-bool ChildAccountService::IsChildAccountStatusKnown() {
+bool ChildAccountServiceImpl::IsChildAccountStatusKnown() {
   return profile_->GetPrefs()->GetBoolean(prefs::kChildAccountStatusKnown);
 }
 
-void ChildAccountService::Shutdown() {
+void ChildAccountServiceImpl::Shutdown() {
   family_fetcher_.reset();
   identity_manager_->RemoveObserver(this);
   SupervisedUserServiceFactory::GetForProfile(profile_)->SetDelegate(nullptr);
   DCHECK(!active_);
 }
 
-void ChildAccountService::AddChildStatusReceivedCallback(
+void ChildAccountServiceImpl::AddChildStatusReceivedCallback(
     base::OnceClosure callback) {
   if (IsChildAccountStatusKnown())
     std::move(callback).Run();
@@ -131,7 +115,7 @@ void ChildAccountService::AddChildStatusReceivedCallback(
     status_received_callback_list_.push_back(std::move(callback));
 }
 
-ChildAccountService::AuthState ChildAccountService::GetGoogleAuthState() {
+ChildAccountService::AuthState ChildAccountServiceImpl::GetGoogleAuthState() {
   signin::AccountsInCookieJarInfo accounts_in_cookie_jar_info =
       identity_manager_->GetAccountsInCookieJar();
   if (!accounts_in_cookie_jar_info.accounts_are_fresh)
@@ -145,12 +129,12 @@ ChildAccountService::AuthState ChildAccountService::GetGoogleAuthState() {
                                      : AuthState::NOT_AUTHENTICATED;
 }
 
-base::CallbackListSubscription ChildAccountService::ObserveGoogleAuthState(
+base::CallbackListSubscription ChildAccountServiceImpl::ObserveGoogleAuthState(
     const base::RepeatingCallback<void()>& callback) {
   return google_auth_state_observers_.Add(callback);
 }
 
-void ChildAccountService::SetActive(bool active) {
+void ChildAccountServiceImpl::SetActive(bool active) {
   if (!profile_->IsChild() && !active_)
     return;
   if (active_ == active)
@@ -180,7 +164,7 @@ void ChildAccountService::SetActive(bool active) {
   }
 }
 
-void ChildAccountService::SetIsChildAccount(bool is_child_account) {
+void ChildAccountServiceImpl::SetIsChildAccount(bool is_child_account) {
   if (profile_->IsChild() != is_child_account) {
     if (is_child_account) {
       profile_->GetPrefs()->SetString(prefs::kSupervisedUserId,
@@ -199,7 +183,7 @@ void ChildAccountService::SetIsChildAccount(bool is_child_account) {
   status_received_callback_list_.clear();
 }
 
-void ChildAccountService::OnPrimaryAccountChanged(
+void ChildAccountServiceImpl::OnPrimaryAccountChanged(
     const signin::PrimaryAccountChangeEvent& event_details) {
   if (event_details.GetEventTypeFor(signin::ConsentLevel::kSignin) ==
       signin::PrimaryAccountChangeEvent::Type::kSet) {
@@ -213,7 +197,7 @@ void ChildAccountService::OnPrimaryAccountChanged(
   }
 }
 
-void ChildAccountService::OnExtendedAccountInfoUpdated(
+void ChildAccountServiceImpl::OnExtendedAccountInfoUpdated(
     const AccountInfo& info) {
   // This method may get called when the account info isn't complete yet.
   // We deliberately don't check for that, as we are only interested in the
@@ -233,7 +217,7 @@ void ChildAccountService::OnExtendedAccountInfoUpdated(
   SetIsChildAccount(info.is_child_account == signin::Tribool::kTrue);
 }
 
-void ChildAccountService::OnExtendedAccountInfoRemoved(
+void ChildAccountServiceImpl::OnExtendedAccountInfoRemoved(
     const AccountInfo& info) {
   // This class doesn't care about browser sync consent.
   if (info.account_id !=
@@ -243,7 +227,7 @@ void ChildAccountService::OnExtendedAccountInfoRemoved(
   SetIsChildAccount(false);
 }
 
-void ChildAccountService::OnGetFamilyMembersSuccess(
+void ChildAccountServiceImpl::OnGetFamilyMembersSuccess(
     const std::vector<FamilyInfoFetcher::FamilyMember>& members) {
   bool hoh_found = false;
   bool parent_found = false;
@@ -273,20 +257,20 @@ void ChildAccountService::OnGetFamilyMembersSuccess(
   ScheduleNextFamilyInfoUpdate(base::Seconds(kUpdateIntervalSeconds));
 }
 
-void ChildAccountService::OnFailure(FamilyInfoFetcher::ErrorCode error) {
+void ChildAccountServiceImpl::OnFailure(FamilyInfoFetcher::ErrorCode error) {
   DLOG(WARNING) << "GetFamilyMembers failed with code "
                 << static_cast<int>(error);
   family_fetch_backoff_.InformOfRequest(false);
   ScheduleNextFamilyInfoUpdate(family_fetch_backoff_.GetTimeUntilRelease());
 }
 
-void ChildAccountService::OnAccountsInCookieUpdated(
+void ChildAccountServiceImpl::OnAccountsInCookieUpdated(
     const signin::AccountsInCookieJarInfo& accounts_in_cookie_jar_info,
     const GoogleServiceAuthError& error) {
   google_auth_state_observers_.Notify();
 }
 
-void ChildAccountService::StartFetchingFamilyInfo() {
+void ChildAccountServiceImpl::StartFetchingFamilyInfo() {
   family_fetcher_ = std::make_unique<FamilyInfoFetcher>(
       this, identity_manager_,
       profile_->GetDefaultStoragePartition()
@@ -294,17 +278,18 @@ void ChildAccountService::StartFetchingFamilyInfo() {
   family_fetcher_->StartGetFamilyMembers();
 }
 
-void ChildAccountService::CancelFetchingFamilyInfo() {
+void ChildAccountServiceImpl::CancelFetchingFamilyInfo() {
   family_fetcher_.reset();
   family_fetch_timer_.Stop();
 }
 
-void ChildAccountService::ScheduleNextFamilyInfoUpdate(base::TimeDelta delay) {
-  family_fetch_timer_.Start(
-      FROM_HERE, delay, this, &ChildAccountService::StartFetchingFamilyInfo);
+void ChildAccountServiceImpl::ScheduleNextFamilyInfoUpdate(
+    base::TimeDelta delay) {
+  family_fetch_timer_.Start(FROM_HERE, delay, this,
+                            &ChildAccountServiceImpl::StartFetchingFamilyInfo);
 }
 
-void ChildAccountService::AssertChildStatusOfTheUser(bool is_child) {
+void ChildAccountServiceImpl::AssertChildStatusOfTheUser(bool is_child) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   user_manager::User* user =
       ash::ProfileHelper::Get()->GetUserByProfile(profile_);
@@ -320,7 +305,7 @@ void ChildAccountService::AssertChildStatusOfTheUser(bool is_child) {
 #endif
 }
 
-void ChildAccountService::SetFirstCustodianPrefs(
+void ChildAccountServiceImpl::SetFirstCustodianPrefs(
     const FamilyInfoFetcher::FamilyMember& custodian) {
   profile_->GetPrefs()->SetString(prefs::kSupervisedUserCustodianName,
                                   custodian.display_name);
@@ -336,7 +321,7 @@ void ChildAccountService::SetFirstCustodianPrefs(
       custodian.profile_image_url);
 }
 
-void ChildAccountService::SetSecondCustodianPrefs(
+void ChildAccountServiceImpl::SetSecondCustodianPrefs(
     const FamilyInfoFetcher::FamilyMember& custodian) {
   profile_->GetPrefs()->SetString(prefs::kSupervisedUserSecondCustodianName,
                                   custodian.display_name);
@@ -346,14 +331,13 @@ void ChildAccountService::SetSecondCustodianPrefs(
       prefs::kSupervisedUserSecondCustodianObfuscatedGaiaId,
       custodian.obfuscated_gaia_id);
   profile_->GetPrefs()->SetString(
-      prefs::kSupervisedUserSecondCustodianProfileURL,
-      custodian.profile_url);
+      prefs::kSupervisedUserSecondCustodianProfileURL, custodian.profile_url);
   profile_->GetPrefs()->SetString(
       prefs::kSupervisedUserSecondCustodianProfileImageURL,
       custodian.profile_image_url);
 }
 
-void ChildAccountService::ClearFirstCustodianPrefs() {
+void ChildAccountServiceImpl::ClearFirstCustodianPrefs() {
   profile_->GetPrefs()->ClearPref(prefs::kSupervisedUserCustodianName);
   profile_->GetPrefs()->ClearPref(prefs::kSupervisedUserCustodianEmail);
   profile_->GetPrefs()->ClearPref(
@@ -363,7 +347,7 @@ void ChildAccountService::ClearFirstCustodianPrefs() {
       prefs::kSupervisedUserCustodianProfileImageURL);
 }
 
-void ChildAccountService::ClearSecondCustodianPrefs() {
+void ChildAccountServiceImpl::ClearSecondCustodianPrefs() {
   profile_->GetPrefs()->ClearPref(prefs::kSupervisedUserSecondCustodianName);
   profile_->GetPrefs()->ClearPref(prefs::kSupervisedUserSecondCustodianEmail);
   profile_->GetPrefs()->ClearPref(

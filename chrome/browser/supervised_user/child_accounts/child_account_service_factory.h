@@ -7,8 +7,8 @@
 
 #include "base/memory/singleton.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
+#include "chrome/browser/supervised_user/child_accounts/child_account_service.h"
 
-class ChildAccountService;
 class Profile;
 
 class ChildAccountServiceFactory : public ProfileKeyedServiceFactory {
