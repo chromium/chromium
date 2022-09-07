@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/platform/scheduler/common/features.h"
 #include "third_party/blink/renderer/platform/scheduler/common/tracing_helper.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/main_thread_scheduler_impl.h"
+#include "third_party/blink/renderer/platform/scheduler/public/main_thread.h"
 
 namespace blink {
 namespace scheduler {
