@@ -1,6 +1,6 @@
 <!doctype html>
 <meta charset=utf-8>
-<title>Post Message: First Party to First Party, Different Partition</title>
+<title>postMessage: First-Party to First-Party, Cross-Partition</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <body>
@@ -19,8 +19,8 @@ async_test(t => {
   });
   // Step 1
   window.addEventListener("message", listener);
-  const site2Window = window.open("http://{{hosts[alt][]}}:{{ports[http][0]}}/html/browsers/windows/post-message/resources/first-party-to-first-party-different-partition-window.html", "", "noopener=false");
+  const site2Window = window.open("http://{{hosts[alt][]}}:{{ports[http][0]}}/html/browsers/windows/post-message/resources/first-party-to-first-party-cross-partition-window.html", "", "noopener=false");
   t.add_cleanup(() => site2Window.close());
-}, "Post Message: First Party to First Party, Different Partition");
+}, "postMessage: First-Party to First-Party, Cross-Partition");
 </script>
 </body>

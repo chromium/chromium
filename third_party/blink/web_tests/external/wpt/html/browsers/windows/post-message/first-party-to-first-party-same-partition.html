@@ -1,6 +1,6 @@
 <!doctype html>
 <meta charset=utf-8>
-<title>Post Message: First Party to First Party, Same Partition</title>
+<title>postMessage: First-Party to First-Party, Same-Partition</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <body>
@@ -21,6 +21,6 @@ async_test(t => {
   window.addEventListener("message", listener);
   const site1WindowB = window.open("/html/browsers/windows/post-message/resources/first-party-to-first-party-same-partition-window.html", "", "noopener=false");
   t.add_cleanup(() => site1WindowB.close());
-}, "Post Message: First Party to First Party, Same Partition");
+}, "postMessage: First-Party to First-Party, Same-Partition");
 </script>
 </body>

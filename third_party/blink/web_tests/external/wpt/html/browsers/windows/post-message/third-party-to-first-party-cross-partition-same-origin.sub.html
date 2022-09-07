@@ -1,6 +1,6 @@
 <!doctype html>
 <meta charset=utf-8>
-<title>Post Message: Third Party to First Party, Different Partition, Same Origin</title>
+<title>postMessage: Third-Party to First-Party, Cross-Partition, Same-Origin</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <body>
@@ -22,8 +22,8 @@ async_test(t => {
   // Step 1
   window.addEventListener("message", listener);
   const site2Frame = document.createElement("iframe");
-  site2Frame.src = "http://{{hosts[alt][]}}:{{ports[http][0]}}/html/browsers/windows/post-message/resources/third-party-to-first-party-different-partition-same-origin-iframe.sub.html";
+  site2Frame.src = "http://{{hosts[alt][]}}:{{ports[http][0]}}/html/browsers/windows/post-message/resources/third-party-to-first-party-cross-partition-same-origin-iframe.sub.html";
   document.body.appendChild(site2Frame);
-}, "Post Message: Third Party to First Party, Different Partition, Same Origin");
+}, "postMessage: Third-Party to First-Party, Cross-Partition, Same-Origin");
 </script>
 </body>

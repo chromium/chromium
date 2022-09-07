@@ -2,7 +2,7 @@
 <meta charset=utf-8>
 <body>
 <script>
-// Step 5
+// Step 5 (html/browsers/windows/post-message/third-party-to-third-party-same-partition.sub.html)
 let site2WindowB;
 const listener = e => {
   if (e.data === "Site 2 Frame B") {
@@ -10,7 +10,7 @@ const listener = e => {
     window.top.postMessage("Site 2 Frame A", "*");
   }
 };
-// Step 2
+// Step 2 (html/browsers/windows/post-message/third-party-to-third-party-same-partition.sub.html)
 window.addEventListener("message", listener);
 site2WindowB = window.open("http://{{host}}:{{ports[http][0]}}/html/browsers/windows/post-message/resources/third-party-to-third-party-same-partition-window.sub.html", "", "noopener=false");
 </script>
