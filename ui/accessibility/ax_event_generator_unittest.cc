@@ -7,6 +7,7 @@
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/accessibility/ax_enum_util.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_serializable_tree.h"
@@ -3300,6 +3301,26 @@ TEST(AXEventGeneratorTest, InsertUnderIgnoredTest) {
               UnorderedElementsAre(
                   HasEventAtNode(AXEventGenerator::Event::CHILDREN_CHANGED, 1),
                   HasEventAtNode(AXEventGenerator::Event::SUBTREE_CREATED, 5)));
+}
+
+TEST(AXEventGeneratorTest, ParseGeneratedEvent) {
+  AXEventGenerator::Event event = AXEventGenerator::Event::NONE;
+  for (int i = 0; i < static_cast<int>(AXEventGenerator::Event::MAX_VALUE);
+       i++) {
+    const char* val = ToString(static_cast<AXEventGenerator::Event>(i));
+    EXPECT_TRUE(MaybeParseGeneratedEvent(val, &event));
+    EXPECT_EQ(i, static_cast<int>(event));
+  }
+}
+
+TEST(AXEventGenerator, ParsingUnknownEvent) {
+  AXEventGenerator::Event event = AXEventGenerator::Event::CARET_BOUNDS_CHANGED;
+
+  // No crash.
+  EXPECT_FALSE(MaybeParseGeneratedEvent("kittens", &event));
+
+  // Event should not be changed
+  EXPECT_EQ(event, AXEventGenerator::Event::CARET_BOUNDS_CHANGED);
 }
 
 }  // namespace ui

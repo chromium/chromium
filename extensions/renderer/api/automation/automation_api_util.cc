@@ -11,6 +11,7 @@
 #include "third_party/blink/public/web/web_element.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_node.h"
+#include "ui/accessibility/ax_event_generator.h"
 
 namespace extensions {
 
@@ -178,6 +179,7 @@ bool ShouldIgnoreGeneratedEvent(ui::AXEventGenerator::Event event_type) {
       return false;
 
       // These enum values can be ignored and should not be mapped.
+    case ui::AXEventGenerator::Event::NONE:
     case ui::AXEventGenerator::Event::ATK_TEXT_OBJECT_ATTRIBUTE_CHANGED:
     case ui::AXEventGenerator::Event::WIN_IACCESSIBLE_STATE_CHANGED:
       return true;

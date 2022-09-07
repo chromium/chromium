@@ -542,6 +542,8 @@ enum Mutation {
   kSubtreeCreated,
   kNodeChanged,
   kNodeRemoved,
+  kTextChanged,
+  kSubtreeUpdateEnd,
 };
 
 // Next version: 2

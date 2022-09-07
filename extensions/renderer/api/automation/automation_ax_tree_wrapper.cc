@@ -7,10 +7,12 @@
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/no_destructor.h"
+#include "base/trace_event/common/trace_event_common.h"
+#include "base/trace_event/trace_event.h"
 #include "components/crash/core/common/crash_key.h"
-#include "extensions/common/extension_messages.h"
 #include "extensions/renderer/api/automation/automation_api_util.h"
 #include "extensions/renderer/api/automation/automation_internal_custom_bindings.h"
+#include "ui/accessibility/ax_event.h"
 #include "ui/accessibility/ax_language_detection.h"
 #include "ui/accessibility/ax_node_position.h"
 #include "ui/accessibility/ax_selection.h"
@@ -61,7 +63,10 @@ AutomationAXTreeWrapper* AutomationAXTreeWrapper::GetParentOfTreeId(
 }
 
 bool AutomationAXTreeWrapper::OnAccessibilityEvents(
-    const ExtensionMsg_AccessibilityEventBundleParams& event_bundle,
+    const ui::AXTreeID& tree_id,
+    const std::vector<ui::AXTreeUpdate>& updates,
+    const std::vector<ui::AXEvent>& events,
+    gfx::Point mouse_location,
     bool is_active_profile) {
   TRACE_EVENT0("accessibility",
                "AutomationAXTreeWrapper::OnAccessibilityEvents");
@@ -82,7 +87,7 @@ bool AutomationAXTreeWrapper::OnAccessibilityEvents(
   });
 
   // Unserialize all incoming data.
-  for (const auto& update : event_bundle.updates) {
+  for (const auto& update : updates) {
     deleted_node_ids_.clear();
     did_send_tree_change_during_unserialization_ = false;
 
@@ -98,17 +103,16 @@ bool AutomationAXTreeWrapper::OnAccessibilityEvents(
       owner_->SendNodesRemovedEvent(ax_tree(), deleted_node_ids_);
 
       if (update.nodes.size() && did_send_tree_change_during_unserialization_) {
-        owner_->SendTreeChangeEvent(
-            api::automation::TREE_CHANGE_TYPE_SUBTREEUPDATEEND, ax_tree(),
-            ax_tree_->root());
+        owner_->SendTreeChangeEvent(ax::mojom::Mutation::kSubtreeUpdateEnd,
+                                    ax_tree(), ax_tree_->root());
       }
     }
   }
 
   // Refresh child tree id  mappings.
-  for (const ui::AXTreeID& tree_id : ax_tree_->GetAllChildTreeIds()) {
-    DCHECK(!base::Contains(child_tree_id_reverse_map, tree_id));
-    child_tree_id_reverse_map.insert(std::make_pair(tree_id, this));
+  for (const ui::AXTreeID& child_tree_id : ax_tree_->GetAllChildTreeIds()) {
+    DCHECK(!base::Contains(child_tree_id_reverse_map, child_tree_id));
+    child_tree_id_reverse_map.insert(std::make_pair(child_tree_id, this));
   }
 
   // Exit early if this isn't the active profile.
@@ -125,7 +129,7 @@ bool AutomationAXTreeWrapper::OnAccessibilityEvents(
   // Currently language detection only runs once for initial load complete, any
   // content loaded after this will not have language detection performed for
   // it.
-  for (const auto& event : event_bundle.events) {
+  for (const auto& event : events) {
     if (event.event_type == ax::mojom::Event::kLoadComplete) {
       ax_tree_->language_detection_manager->DetectLanguages();
       ax_tree_->language_detection_manager->LabelLanguages();
@@ -142,7 +146,7 @@ bool AutomationAXTreeWrapper::OnAccessibilityEvents(
   }
 
   // Send all blur and focus events first.
-  owner_->MaybeSendFocusAndBlur(this, event_bundle);
+  owner_->MaybeSendFocusAndBlur(this, tree_id, updates, events, mouse_location);
 
   // Send auto-generated AXEventGenerator events.
   for (const auto& targeted_event : event_generator_) {
@@ -154,28 +158,26 @@ bool AutomationAXTreeWrapper::OnAccessibilityEvents(
     generated_event.event_from_action =
         targeted_event.event_params.event_from_action;
     generated_event.event_intents = targeted_event.event_params.event_intents;
-    owner_->SendAutomationEvent(event_bundle.tree_id,
-                                event_bundle.mouse_location, generated_event,
+    owner_->SendAutomationEvent(tree_id, mouse_location, generated_event,
                                 targeted_event.event_params.event);
   }
   event_generator_.ClearEvents();
 
-  for (const auto& event : event_bundle.events) {
+  for (const auto& event : events) {
     if (event.event_type == ax::mojom::Event::kFocus ||
         event.event_type == ax::mojom::Event::kBlur)
       continue;
 
     // Send some events directly.
     if (!ShouldIgnoreAXEvent(event.event_type)) {
-      owner_->SendAutomationEvent(event_bundle.tree_id,
-                                  event_bundle.mouse_location, event);
+      owner_->SendAutomationEvent(tree_id, mouse_location, event);
     }
   }
 
   if (previous_accessibility_focused_global_bounds.has_value() &&
       previous_accessibility_focused_global_bounds !=
           owner_->GetAccessibilityFocusedLocation()) {
-    owner_->SendAccessibilityFocusedLocationChange(event_bundle.mouse_location);
+    owner_->SendAccessibilityFocusedLocationChange(mouse_location);
   }
 
   return true;
@@ -306,13 +308,13 @@ AutomationAXTreeWrapper* AutomationAXTreeWrapper::GetParentTreeFromAnyAppID() {
 }
 
 void AutomationAXTreeWrapper::EventListenerAdded(
-    api::automation::EventType event_type,
+    const std::tuple<ax::mojom::Event, ui::AXEventGenerator::Event>& event_type,
     ui::AXNode* node) {
   node_id_to_events_[node->id()].insert(event_type);
 }
 
 void AutomationAXTreeWrapper::EventListenerRemoved(
-    api::automation::EventType event_type,
+    const std::tuple<ax::mojom::Event, ui::AXEventGenerator::Event>& event_type,
     ui::AXNode* node) {
   auto it = node_id_to_events_.find(node->id());
   if (it != node_id_to_events_.end()) {
@@ -323,7 +325,7 @@ void AutomationAXTreeWrapper::EventListenerRemoved(
 }
 
 bool AutomationAXTreeWrapper::HasEventListener(
-    api::automation::EventType event_type,
+    const std::tuple<ax::mojom::Event, ui::AXEventGenerator::Event>& event_type,
     ui::AXNode* node) {
   auto it = node_id_to_events_.find(node->id());
   if (it == node_id_to_events_.end())
@@ -442,7 +444,7 @@ void AutomationAXTreeWrapper::OnStringAttributeChanged(
 void AutomationAXTreeWrapper::OnNodeWillBeDeleted(ui::AXTree* tree,
                                                   ui::AXNode* node) {
   did_send_tree_change_during_unserialization_ |= owner_->SendTreeChangeEvent(
-      api::automation::TREE_CHANGE_TYPE_NODEREMOVED, tree, node);
+      ax::mojom::Mutation::kNodeRemoved, tree, node);
   deleted_node_ids_.push_back(node->id());
   node_id_to_events_.erase(node->id());
 
@@ -497,18 +499,18 @@ void AutomationAXTreeWrapper::OnAtomicUpdateFinished(
     switch (change.type) {
       case NODE_CREATED:
         did_send_tree_change_during_unserialization_ |=
-            owner_->SendTreeChangeEvent(
-                api::automation::TREE_CHANGE_TYPE_NODECREATED, tree, node);
+            owner_->SendTreeChangeEvent(ax::mojom::Mutation::kNodeCreated, tree,
+                                        node);
         break;
       case SUBTREE_CREATED:
         did_send_tree_change_during_unserialization_ |=
-            owner_->SendTreeChangeEvent(
-                api::automation::TREE_CHANGE_TYPE_SUBTREECREATED, tree, node);
+            owner_->SendTreeChangeEvent(ax::mojom::Mutation::kSubtreeCreated,
+                                        tree, node);
         break;
       case NODE_CHANGED:
         did_send_tree_change_during_unserialization_ |=
-            owner_->SendTreeChangeEvent(
-                api::automation::TREE_CHANGE_TYPE_NODECHANGED, tree, node);
+            owner_->SendTreeChangeEvent(ax::mojom::Mutation::kNodeChanged, tree,
+                                        node);
         break;
       // Unhandled.
       case NODE_REPARENTED:
@@ -519,8 +521,7 @@ void AutomationAXTreeWrapper::OnAtomicUpdateFinished(
 
   for (int id : text_changed_node_ids_) {
     did_send_tree_change_during_unserialization_ |= owner_->SendTreeChangeEvent(
-        api::automation::TREE_CHANGE_TYPE_TEXTCHANGED, tree,
-        tree->GetFromId(id));
+        ax::mojom::Mutation::kTextChanged, tree, tree->GetFromId(id));
   }
   text_changed_node_ids_.clear();
 }
@@ -528,10 +529,10 @@ void AutomationAXTreeWrapper::OnAtomicUpdateFinished(
 void AutomationAXTreeWrapper::OnIgnoredChanged(ui::AXTree* tree,
                                                ui::AXNode* node,
                                                bool is_ignored_new_value) {
-  owner_->SendTreeChangeEvent(
-      is_ignored_new_value ? api::automation::TREE_CHANGE_TYPE_NODEREMOVED
-                           : api::automation::TREE_CHANGE_TYPE_NODECREATED,
-      tree, node);
+  owner_->SendTreeChangeEvent(is_ignored_new_value
+                                  ? ax::mojom::Mutation::kNodeRemoved
+                                  : ax::mojom::Mutation::kNodeCreated,
+                              tree, node);
 }
 
 bool AutomationAXTreeWrapper::IsTreeIgnored() {

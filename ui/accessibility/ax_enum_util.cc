@@ -762,6 +762,10 @@ const char* ToString(ax::mojom::Mutation mutation) {
       return "nodeChanged";
     case ax::mojom::Mutation::kNodeRemoved:
       return "nodeRemoved";
+    case ax::mojom::Mutation::kTextChanged:
+      return "textChanged";
+    case ax::mojom::Mutation::kSubtreeUpdateEnd:
+      return "subtreeUpdateEnd";
   }
 
   return "";

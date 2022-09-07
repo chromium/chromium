@@ -5,12 +5,12 @@
 #ifndef EXTENSIONS_RENDERER_API_AUTOMATION_AUTOMATION_AX_TREE_WRAPPER_H_
 #define EXTENSIONS_RENDERER_API_AUTOMATION_AUTOMATION_AX_TREE_WRAPPER_H_
 
-#include "extensions/common/api/automation.h"
+#include "ui/accessibility/ax_enums.mojom-shared.h"
+#include "ui/accessibility/ax_event_generator.h"
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_tree.h"
 #include "ui/accessibility/ax_tree_manager.h"
-
-struct ExtensionMsg_AccessibilityEventBundleParams;
+#include "ui/accessibility/ax_tree_update.h"
 
 namespace extensions {
 
@@ -52,9 +52,11 @@ class AutomationAXTreeWrapper : public ui::AXTreeManager {
   // the AutomationAXTreeWrapper instance for the correct tree corresponding
   // to this event. Unserializes the tree update and calls back to
   // AutomationInternalCustomBindings to fire any automation events needed.
-  bool OnAccessibilityEvents(
-      const ExtensionMsg_AccessibilityEventBundleParams& events,
-      bool is_active_profile);
+  bool OnAccessibilityEvents(const ui::AXTreeID& tree_id,
+                             const std::vector<ui::AXTreeUpdate>& updates,
+                             const std::vector<ui::AXEvent>& events,
+                             gfx::Point mouse_location,
+                             bool is_active_profile);
 
   // Returns true if this is the desktop tree.
   bool IsDesktopTree() const;
@@ -94,12 +96,18 @@ class AutomationAXTreeWrapper : public ui::AXTreeManager {
   AutomationAXTreeWrapper* GetParentTreeFromAnyAppID();
 
   // Updates or gets this wrapper with the latest state of listeners in js.
-  void EventListenerAdded(api::automation::EventType event_type,
-                          ui::AXNode* node);
-  void EventListenerRemoved(api::automation::EventType event_type,
-                            ui::AXNode* node);
-  bool HasEventListener(api::automation::EventType event_type,
-                        ui::AXNode* node);
+  void EventListenerAdded(
+      const std::tuple<ax::mojom::Event, ui::AXEventGenerator::Event>&
+          event_type,
+      ui::AXNode* node);
+  void EventListenerRemoved(
+      const std::tuple<ax::mojom::Event, ui::AXEventGenerator::Event>&
+          event_type,
+      ui::AXNode* node);
+  bool HasEventListener(
+      const std::tuple<ax::mojom::Event, ui::AXEventGenerator::Event>&
+          event_type,
+      ui::AXNode* node);
   size_t EventListenerCount() const;
 
   // Indicates whether this tree is ignored due to a hosting ancestor tree/node
@@ -143,7 +151,9 @@ class AutomationAXTreeWrapper : public ui::AXTreeManager {
   bool did_send_tree_change_during_unserialization_ = false;
 
   // Maps a node to a set containing events for which the node has listeners.
-  std::map<int32_t, std::set<api::automation::EventType>> node_id_to_events_;
+  std::map<int32_t,
+           std::set<std::tuple<ax::mojom::Event, ui::AXEventGenerator::Event>>>
+      node_id_to_events_;
 
   // A collection of all nodes with
   // ax::mojom::StringAttribute::kAppId set.

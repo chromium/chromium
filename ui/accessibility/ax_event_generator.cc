@@ -5,7 +5,7 @@
 #include "ui/accessibility/ax_event_generator.h"
 
 #include "base/containers/contains.h"
-#include "base/ranges/algorithm.h"
+#include "base/no_destructor.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_event.h"
 #include "ui/accessibility/ax_live_region_tracker.h"
@@ -1213,6 +1213,8 @@ std::ostream& operator<<(std::ostream& os, AXEventGenerator::Event event) {
 
 const char* ToString(AXEventGenerator::Event event) {
   switch (event) {
+    case AXEventGenerator::Event::NONE:
+      return "none";
     case AXEventGenerator::Event::ACCESS_KEY_CHANGED:
       return "accessKeyChanged";
     case AXEventGenerator::Event::ACTIVE_DESCENDANT_CHANGED:
@@ -1366,6 +1368,42 @@ const char* ToString(AXEventGenerator::Event event) {
     case AXEventGenerator::Event::WIN_IACCESSIBLE_STATE_CHANGED:
       return "winIaccessibleStateChanged";
   }
+}
+
+// Convert from the string representation of an Event enum
+// into the enum value. The first time this is called, builds up a map.
+// Relies on the existence of ToString(enum).
+bool MaybeParseGeneratedEvent(const char* attribute,
+                              AXEventGenerator::Event* result) {
+  static base::NoDestructor<std::map<std::string, AXEventGenerator::Event>>
+      attr_map;
+  if (attr_map->empty()) {
+    (*attr_map)[""] = AXEventGenerator::Event::NONE;
+    for (int i = static_cast<int>(AXEventGenerator::Event::NONE);
+         i <= static_cast<int>(AXEventGenerator::Event::MAX_VALUE); i++) {
+      auto attr = static_cast<AXEventGenerator::Event>(i);
+      std::string str = ToString(attr);
+      if (!base::Contains(*attr_map, str))
+        (*attr_map)[str] = attr;
+    }
+  }
+  auto iter = attr_map->find(attribute);
+  if (iter != attr_map->end()) {
+    *result = iter->second;
+    return true;
+  }
+
+  return false;
+}
+
+AXEventGenerator::Event ParseGeneratedEvent(const char* attribute) {
+  AXEventGenerator::Event event;
+  if (MaybeParseGeneratedEvent(attribute, &event))
+    return event;
+
+  LOG(ERROR) << "Could not parse: " << attribute;
+  NOTREACHED();
+  return AXEventGenerator::Event::NONE;
 }
 
 }  // namespace ui

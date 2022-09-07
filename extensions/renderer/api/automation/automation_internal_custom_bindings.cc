@@ -24,12 +24,14 @@
 #include "base/values.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_thread.h"
+#include "extensions/common/api/automation.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_messages.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/manifest_handlers/automation.h"
 #include "extensions/common/manifest_handlers/background_info.h"
 #include "extensions/renderer/api/automation/automation_api_util.h"
+#include "extensions/renderer/api/automation/automation_ax_tree_wrapper.h"
 #include "extensions/renderer/api/automation/automation_position.h"
 #include "extensions/renderer/native_extension_bindings_system.h"
 #include "extensions/renderer/script_context.h"
@@ -41,6 +43,7 @@
 #include "ui/accessibility/ax_enum_util.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_event.h"
+#include "ui/accessibility/ax_event_generator.h"
 #include "ui/accessibility/ax_language_detection.h"
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_node_position.h"
@@ -106,6 +109,28 @@ api::automation::MarkerType ConvertMarkerTypeFromAXToAutomation(
   }
 }
 
+// TODO(crbug.com/1357889): Move this and other converters between
+// automation and AX types to a utility file.
+api::automation::TreeChangeType ConvertToAutomationTreeChangeType(
+    ax::mojom::Mutation change_type) {
+  switch (change_type) {
+    case ax::mojom::Mutation::kNone:
+      return api::automation::TREE_CHANGE_TYPE_NONE;
+    case ax::mojom::Mutation::kNodeCreated:
+      return api::automation::TREE_CHANGE_TYPE_NODECREATED;
+    case ax::mojom::Mutation::kSubtreeCreated:
+      return api::automation::TREE_CHANGE_TYPE_SUBTREECREATED;
+    case ax::mojom::Mutation::kNodeChanged:
+      return api::automation::TREE_CHANGE_TYPE_NODECHANGED;
+    case ax::mojom::Mutation::kTextChanged:
+      return api::automation::TREE_CHANGE_TYPE_TEXTCHANGED;
+    case ax::mojom::Mutation::kNodeRemoved:
+      return api::automation::TREE_CHANGE_TYPE_NODEREMOVED;
+    case ax::mojom::Mutation::kSubtreeUpdateEnd:
+      return api::automation::TREE_CHANGE_TYPE_SUBTREEUPDATEEND;
+  }
+}
+
 // Maps a key, a stringification of values in ui::AXEventGenerator::Event or
 // ax::mojom::Event into a value, automation::api::EventType. The runtime
 // invariant is that there should be exactly the same number of values in the
@@ -160,6 +185,18 @@ api::automation::EventType AXGeneratedEventToAutomationEventType(
   }
 
   return (*enum_map)[static_cast<int>(event_type)];
+}
+
+std::tuple<ax::mojom::Event, ui::AXEventGenerator::Event>
+AutomationEventTypeToAXEventTuple(api::automation::EventType event_type) {
+  const char* val = api::automation::ToString(event_type);
+  ax::mojom::Event ax_event = ax::mojom::Event::kNone;
+  ui::MaybeParseAXEnum<ax::mojom::Event>(val, &ax_event);
+  ui::AXEventGenerator::Event generated_event =
+      ui::AXEventGenerator::Event::NONE;
+  ui::MaybeParseGeneratedEvent(val, &generated_event);
+  return std::tuple<ax::mojom::Event, ui::AXEventGenerator::Event>(
+      ax_event, generated_event);
 }
 
 //
@@ -1732,7 +1769,8 @@ void AutomationInternalCustomBindings::AddRoutes() {
       [this](v8::Isolate* isolate, v8::ReturnValue<v8::Value> result,
              AutomationAXTreeWrapper* tree_wrapper, ui::AXNode* node,
              api::automation::EventType event_type) {
-        tree_wrapper->EventListenerAdded(event_type, node);
+        tree_wrapper->EventListenerAdded(
+            AutomationEventTypeToAXEventTuple(event_type), node);
         TreeEventListenersChanged(tree_wrapper);
       });
   RouteNodeIDPlusEventFunction(
@@ -1740,7 +1778,8 @@ void AutomationInternalCustomBindings::AddRoutes() {
       [this](v8::Isolate* isolate, v8::ReturnValue<v8::Value> result,
              AutomationAXTreeWrapper* tree_wrapper, ui::AXNode* node,
              api::automation::EventType event_type) {
-        tree_wrapper->EventListenerRemoved(event_type, node);
+        tree_wrapper->EventListenerRemoved(
+            AutomationEventTypeToAXEventTuple(event_type), node);
         TreeEventListenersChanged(tree_wrapper);
       });
 }
@@ -2466,7 +2505,9 @@ void AutomationInternalCustomBindings::OnAccessibilityEvents(
     tree_wrapper = iter->second.get();
   }
 
-  if (!tree_wrapper->OnAccessibilityEvents(event_bundle, is_active_profile)) {
+  if (!tree_wrapper->OnAccessibilityEvents(
+          event_bundle.tree_id, event_bundle.updates, event_bundle.events,
+          event_bundle.mouse_location, is_active_profile)) {
     DLOG(ERROR) << tree_wrapper->ax_tree()->error();
     base::Value::List args;
     args.Append(tree_id.ToString());
@@ -2518,7 +2559,7 @@ void AutomationInternalCustomBindings::OnAccessibilityLocationChange(
 }
 
 bool AutomationInternalCustomBindings::SendTreeChangeEvent(
-    api::automation::TreeChangeType change_type,
+    ax::mojom::Mutation change_type,
     ui::AXTree* tree,
     ui::AXNode* node) {
   // Don't send tree change events when it's not the active profile.
@@ -2554,7 +2595,7 @@ bool AutomationInternalCustomBindings::SendTreeChangeEvent(
     if (node->HasStringAttribute(
             ax::mojom::StringAttribute::kContainerLiveStatus) ||
         node->GetRole() == ax::mojom::Role::kAlert ||
-        change_type == api::automation::TREE_CHANGE_TYPE_SUBTREEUPDATEEND) {
+        change_type == ax::mojom::Mutation::kSubtreeUpdateEnd) {
       has_filter = true;
     }
   }
@@ -2583,7 +2624,7 @@ bool AutomationInternalCustomBindings::SendTreeChangeEvent(
         if (!node->HasStringAttribute(
                 ax::mojom::StringAttribute::kContainerLiveStatus) &&
             node->GetRole() != ax::mojom::Role::kAlert &&
-            change_type != api::automation::TREE_CHANGE_TYPE_SUBTREEUPDATEEND) {
+            change_type != ax::mojom::Mutation::kSubtreeUpdateEnd) {
           continue;
         }
         break;
@@ -2596,12 +2637,14 @@ bool AutomationInternalCustomBindings::SendTreeChangeEvent(
         break;
     }
 
+    api::automation::TreeChangeType automation_change_type =
+        ConvertToAutomationTreeChangeType(change_type);
     did_send_event = true;
     base::Value::List args;
     args.Append(observer.id);
     args.Append(tree_id.ToString());
     args.Append(node->id());
-    args.Append(ToString(change_type));
+    args.Append(ToString(automation_change_type));
     bindings_system_->DispatchEventInContext("automationInternal.onTreeChange",
                                              args, nullptr, context());
   }
@@ -2643,7 +2686,8 @@ void AutomationInternalCustomBindings::SendAutomationEvent(
     return;
 
   while (node && tree_wrapper && !fire_event) {
-    if (tree_wrapper->HasEventListener(automation_event_type, node)) {
+    if (tree_wrapper->HasEventListener(
+            AutomationEventTypeToAXEventTuple(automation_event_type), node)) {
       fire_event = true;
       break;
     }
@@ -2692,7 +2736,10 @@ void AutomationInternalCustomBindings::SendAutomationEvent(
 
 void AutomationInternalCustomBindings::MaybeSendFocusAndBlur(
     AutomationAXTreeWrapper* tree,
-    const ExtensionMsg_AccessibilityEventBundleParams& event_bundle) {
+    const ui::AXTreeID& tree_id,
+    const std::vector<ui::AXTreeUpdate>& updates,
+    const std::vector<ui::AXEvent>& events,
+    gfx::Point mouse_location) {
   ui::AXNode* old_node = nullptr;
   AutomationAXTreeWrapper* old_wrapper =
       GetAutomationAXTreeWrapperFromTreeID(focus_tree_id_);
@@ -2710,7 +2757,7 @@ void AutomationInternalCustomBindings::MaybeSendFocusAndBlur(
   ax::mojom::Action event_from_action = ax::mojom::Action::kNone;
   ui::AXNodeData::AXID raw_focus_target_id = ui::AXNodeData::kInvalidAXID;
   bool event_bundle_has_focus_or_blur = false;
-  for (const auto& event : event_bundle.events) {
+  for (const auto& event : events) {
     bool is_blur = event.event_type == ax::mojom::Event::kBlur;
     bool is_focus = event.event_type == ax::mojom::Event::kFocus;
     if (is_blur || is_focus) {
@@ -2761,8 +2808,7 @@ void AutomationInternalCustomBindings::MaybeSendFocusAndBlur(
     blur_event.event_from = event_from;
     blur_event.event_from_action = event_from_action;
     blur_event.event_type = ax::mojom::Event::kBlur;
-    SendAutomationEvent(old_wrapper->GetTreeID(), event_bundle.mouse_location,
-                        blur_event);
+    SendAutomationEvent(old_wrapper->GetTreeID(), mouse_location, blur_event);
 
     focus_id_ = -1;
     focus_tree_id_ = ui::AXTreeIDUnknown();
@@ -2775,8 +2821,7 @@ void AutomationInternalCustomBindings::MaybeSendFocusAndBlur(
     focus_event.event_from = event_from;
     focus_event.event_from_action = event_from_action;
     focus_event.event_type = ax::mojom::Event::kFocus;
-    SendAutomationEvent(new_wrapper->GetTreeID(), event_bundle.mouse_location,
-                        focus_event);
+    SendAutomationEvent(new_wrapper->GetTreeID(), mouse_location, focus_event);
     focus_id_ = new_node->id();
     focus_tree_id_ = new_wrapper->GetTreeID();
   }

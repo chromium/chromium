@@ -142,11 +142,8 @@ AX_BASE_EXPORT const char* ToString(ax::mojom::ImageAnnotationStatus status);
 // ax::mojom::Dropeffect
 AX_BASE_EXPORT const char* ToString(ax::mojom::Dropeffect dropeffect);
 
-// Convert from the string representation of an enum defined in ax_enums.mojom
-// into the enum value. The first time this is called, builds up a map.
-// Relies on the existence of ui::ToString(enum).
 template <typename T>
-T ParseAXEnum(const char* attribute) {
+bool MaybeParseAXEnum(const char* attribute, T* result) {
   static base::NoDestructor<std::map<std::string, T>> attr_map;
   if (attr_map->empty()) {
     (*attr_map)[""] = T::kNone;
@@ -159,8 +156,21 @@ T ParseAXEnum(const char* attribute) {
     }
   }
   auto iter = attr_map->find(attribute);
-  if (iter != attr_map->end())
-    return iter->second;
+  if (iter != attr_map->end()) {
+    *result = iter->second;
+    return true;
+  }
+  return false;
+}
+
+// Convert from the string representation of an enum defined in ax_enums.mojom
+// into the enum value. The first time this is called, builds up a map.
+// Relies on the existence of ui::ToString(enum).
+template <typename T>
+T ParseAXEnum(const char* attribute) {
+  T result;
+  if (MaybeParseAXEnum(attribute, &result))
+    return result;
 
   LOG(ERROR) << "Could not parse: " << attribute;
   NOTREACHED();

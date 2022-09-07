@@ -94,7 +94,7 @@ class AutomationInternalCustomBindings : public ObjectBackedNativeHandler {
   }
 
   void SendNodesRemovedEvent(ui::AXTree* tree, const std::vector<int>& ids);
-  bool SendTreeChangeEvent(api::automation::TreeChangeType change_type,
+  bool SendTreeChangeEvent(ax::mojom::Mutation change_type,
                            ui::AXTree* tree,
                            ui::AXNode* node);
   void SendAutomationEvent(
@@ -104,9 +104,11 @@ class AutomationInternalCustomBindings : public ObjectBackedNativeHandler {
       absl::optional<ui::AXEventGenerator::Event> generated_event_type =
           absl::optional<ui::AXEventGenerator::Event>());
 
-  void MaybeSendFocusAndBlur(
-      AutomationAXTreeWrapper* tree,
-      const ExtensionMsg_AccessibilityEventBundleParams& event_bundle);
+  void MaybeSendFocusAndBlur(AutomationAXTreeWrapper* tree,
+                             const ui::AXTreeID& tree_id,
+                             const std::vector<ui::AXTreeUpdate>& updates,
+                             const std::vector<ui::AXEvent>& events,
+                             gfx::Point mouse_location);
 
   absl::optional<gfx::Rect> GetAccessibilityFocusedLocation() const;
 

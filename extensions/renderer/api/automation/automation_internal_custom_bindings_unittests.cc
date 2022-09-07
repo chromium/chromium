@@ -14,6 +14,7 @@
 #include "extensions/renderer/native_extension_bindings_system_test_base.h"
 #include "extensions/renderer/script_context.h"
 #include "ui/accessibility/ax_enum_util.h"
+#include "ui/accessibility/ax_event_generator.h"
 #include "ui/accessibility/ax_tree_id.h"
 
 namespace extensions {
@@ -700,8 +701,11 @@ TEST_F(AutomationInternalCustomBindingsTest, FireEventsWithListeners) {
   auto* wrapper = GetTreeIDToTreeMap()[tree_data.tree_id].get();
   auto* tree = wrapper->ax_tree();
   // The button is id 2.
-  wrapper->EventListenerAdded(api::automation::EVENT_TYPE_ROLECHANGED,
-                              tree->GetFromId(2));
+  std::tuple<ax::mojom::Event, ui::AXEventGenerator::Event> event_type(
+      ax::mojom::Event::kNone, ui::AXEventGenerator::Event::ROLE_CHANGED);
+  wrapper->EventListenerAdded(event_type, tree->GetFromId(2));
+  EXPECT_EQ(1U, wrapper->EventListenerCount());
+  EXPECT_TRUE(wrapper->HasEventListener(event_type, tree->GetFromId(2)));
   tree_update.nodes[0].role = ax::mojom::Role::kButton;
   SendOnAccessibilityEvents(bundle, true /* active profile */);
 
@@ -711,12 +715,13 @@ TEST_F(AutomationInternalCustomBindingsTest, FireEventsWithListeners) {
   events.clear();
 
   // Now, remove the listener and do the same as above.
-  wrapper->EventListenerRemoved(api::automation::EVENT_TYPE_ROLECHANGED,
-                                tree->GetFromId(2));
+  wrapper->EventListenerRemoved(event_type, tree->GetFromId(2));
   // We have to add another listener to ensure we don't shut down (no event
   // listeners means this renderer closes).
-  wrapper->EventListenerAdded(api::automation::EVENT_TYPE_LOADCOMPLETE,
-                              tree->GetFromId(1));
+  wrapper->EventListenerAdded(
+      std::tuple<ax::mojom::Event, ui::AXEventGenerator::Event>(
+          ax::mojom::Event::kLoadComplete, ui::AXEventGenerator::Event::NONE),
+      tree->GetFromId(1));
   tree_update.nodes[0].role = ax::mojom::Role::kSwitch;
   SendOnAccessibilityEvents(bundle, true /* active profile */);
 
@@ -740,8 +745,10 @@ TEST_F(AutomationInternalCustomBindingsTest, FireEventsWithListeners) {
 
   // Now, add the click listener to the root, and fire the click event on the
   // button.
-  wrapper->EventListenerAdded(api::automation::EVENT_TYPE_CLICKED,
-                              tree->GetFromId(1));
+  wrapper->EventListenerAdded(
+      std::tuple<ax::mojom::Event, ui::AXEventGenerator::Event>(
+          ax::mojom::Event::kClicked, ui::AXEventGenerator::Event::NONE),
+      tree->GetFromId(1));
   SendOnAccessibilityEvents(bundle, true /* active profile */);
 
   ASSERT_EQ(1U, events.size());
