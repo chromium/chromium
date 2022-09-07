@@ -2396,8 +2396,12 @@ TEST_F(CrostiniManagerAnsibleInfraTest, StartContainerAnsibleInstallFailure) {
   ansible_management_test_helper_->SetUpAnsibleInstallation(
       vm_tools::cicerone::InstallLinuxPackageResponse::FAILED);
 
-  crostini_manager()->RestartCrostini(
-      DefaultContainerId(),
+  CrostiniManager::RestartOptions ansible_restart;
+  ansible_restart.ansible_playbook = profile_->GetPrefs()->GetFilePath(
+      prefs::kCrostiniAnsiblePlaybookFilePath);
+
+  crostini_manager()->RestartCrostiniWithOptions(
+      DefaultContainerId(), std::move(ansible_restart),
       base::BindOnce(&ExpectCrostiniResult, run_loop()->QuitClosure(),
                      CrostiniResult::CONTAINER_CONFIGURATION_FAILED),
       this);
@@ -2410,8 +2414,12 @@ TEST_F(CrostiniManagerAnsibleInfraTest, StartContainerInstallSignalFailure) {
       vm_tools::cicerone::InstallLinuxPackageResponse::STARTED);
   SetInstallAnsibleStatus(false);
 
-  crostini_manager()->RestartCrostini(
-      DefaultContainerId(),
+  CrostiniManager::RestartOptions ansible_restart;
+  ansible_restart.ansible_playbook = profile_->GetPrefs()->GetFilePath(
+      prefs::kCrostiniAnsiblePlaybookFilePath);
+
+  crostini_manager()->RestartCrostiniWithOptions(
+      DefaultContainerId(), std::move(ansible_restart),
       base::BindOnce(&ExpectCrostiniResult, run_loop()->QuitClosure(),
                      CrostiniResult::CONTAINER_CONFIGURATION_FAILED),
       this);
@@ -2425,8 +2433,12 @@ TEST_F(CrostiniManagerAnsibleInfraTest, StartContainerApplyFailure) {
   ansible_management_test_helper_->SetUpPlaybookApplication(
       vm_tools::cicerone::ApplyAnsiblePlaybookResponse::FAILED);
 
-  crostini_manager()->RestartCrostini(
-      DefaultContainerId(),
+  CrostiniManager::RestartOptions ansible_restart;
+  ansible_restart.ansible_playbook = profile_->GetPrefs()->GetFilePath(
+      prefs::kCrostiniAnsiblePlaybookFilePath);
+
+  crostini_manager()->RestartCrostiniWithOptions(
+      DefaultContainerId(), std::move(ansible_restart),
       base::BindOnce(&ExpectCrostiniResult, run_loop()->QuitClosure(),
                      CrostiniResult::CONTAINER_CONFIGURATION_FAILED),
       this);
@@ -2440,10 +2452,14 @@ TEST_F(CrostiniManagerAnsibleInfraTest, StartContainerApplySignalFailure) {
   ansible_management_test_helper_->SetUpPlaybookApplication(
       vm_tools::cicerone::ApplyAnsiblePlaybookResponse::STARTED);
 
+  CrostiniManager::RestartOptions ansible_restart;
+  ansible_restart.ansible_playbook = profile_->GetPrefs()->GetFilePath(
+      prefs::kCrostiniAnsiblePlaybookFilePath);
+
   SetApplyAnsibleStatus(false);
 
-  crostini_manager()->RestartCrostini(
-      DefaultContainerId(),
+  crostini_manager()->RestartCrostiniWithOptions(
+      DefaultContainerId(), std::move(ansible_restart),
       base::BindOnce(&ExpectCrostiniResult, run_loop()->QuitClosure(),
                      CrostiniResult::CONTAINER_CONFIGURATION_FAILED),
       this);
@@ -2457,8 +2473,12 @@ TEST_F(CrostiniManagerAnsibleInfraTest, StartContainerSuccess) {
   ansible_management_test_helper_->SetUpPlaybookApplication(
       vm_tools::cicerone::ApplyAnsiblePlaybookResponse::STARTED);
 
-  crostini_manager()->RestartCrostini(
-      DefaultContainerId(),
+  CrostiniManager::RestartOptions ansible_restart;
+  ansible_restart.ansible_playbook = profile_->GetPrefs()->GetFilePath(
+      prefs::kCrostiniAnsiblePlaybookFilePath);
+
+  crostini_manager()->RestartCrostiniWithOptions(
+      DefaultContainerId(), std::move(ansible_restart),
       base::BindOnce(&ExpectCrostiniResult, run_loop()->QuitClosure(),
                      CrostiniResult::SUCCESS),
       this);

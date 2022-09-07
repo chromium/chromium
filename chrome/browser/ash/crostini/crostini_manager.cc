@@ -547,14 +547,6 @@ void CrostiniManager::CrostiniRestarter::StartLxdContainerFinished(
   // If arc sideloading is enabled, configure the container for that.
   crostini_manager_->ConfigureForArcSideload();
 
-  // Additional setup might be required in case of default Crostini container
-  // such as installing Ansible in default container and applying
-  // pre-determined configuration to the default container.
-  if (container_id_ == DefaultContainerId() &&
-      ShouldConfigureDefaultContainer(profile_)) {
-    requests_[0].options.ansible_playbook = profile_->GetPrefs()->GetFilePath(
-        prefs::kCrostiniAnsiblePlaybookFilePath);
-  }
   if (requests_[0].options.ansible_playbook.has_value()) {
     // Check to see if there's any additional configuration via Ansible
     // required.

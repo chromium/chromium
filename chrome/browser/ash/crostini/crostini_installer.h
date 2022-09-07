@@ -21,8 +21,7 @@ namespace crostini {
 
 class CrostiniInstaller : public KeyedService,
                           public CrostiniManager::RestartObserver,
-                          public CrostiniInstallerUIDelegate,
-                          public AnsibleManagementService::Observer {
+                          public CrostiniInstallerUIDelegate {
  public:
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
@@ -104,13 +103,6 @@ class CrostiniInstaller : public KeyedService,
   void OnContainerSetup(bool success) override;
   void OnContainerStarted(crostini::CrostiniResult result) override;
 
-  // AnsibleManagementService::Observer:
-  void OnAnsibleSoftwareConfigurationStarted(
-      const guest_os::GuestId& container_id) override;
-  void OnAnsibleSoftwareConfigurationFinished(
-      const guest_os::GuestId& container_id,
-      bool success) override;
-
   // Return true if internal state allows starting installation.
   bool CanInstall();
 
@@ -164,10 +156,6 @@ class CrostiniInstaller : public KeyedService,
   ProgressCallback progress_callback_;
   ResultCallback result_callback_;
   base::OnceClosure cancel_callback_;
-
-  base::ScopedObservation<AnsibleManagementService,
-                          AnsibleManagementService::Observer>
-      ansible_management_service_observation_{this};
 
   base::WeakPtrFactory<CrostiniInstaller> weak_ptr_factory_{this};
 };
