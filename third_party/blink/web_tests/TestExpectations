@@ -1635,7 +1635,6 @@ crbug.com/1352931 fragmentation/repeating-thead-under-repeating-thead.html [ Fai
 
 ### With LayoutNGPrinting enabled:
 
-crbug.com/1121942 virtual/layout_ng_printing/printing/avoid-setting-header-offset-on-header.html [ Failure ]
 crbug.com/1121942 virtual/layout_ng_printing/printing/block-with-overflow-in-bottom-aligned-fixedpos.html [ Crash Failure ]
 crbug.com/1121942 virtual/layout_ng_printing/printing/fixed-positioned-but-static-headers-and-footers.html [ Crash Failure ]
 crbug.com/1121942 [ Debug Mac11 ] virtual/layout_ng_printing/printing/fixed-positioned-child-shouldnt-print.html [ Crash Failure Pass ]

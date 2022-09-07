@@ -300,20 +300,15 @@ bool CullRectUpdater::UpdateForSelf(Context& context, PaintLayer& layer) {
       context.current.container->GetLayoutObject().FirstFragment();
   auto& first_fragment =
       layer.GetLayoutObject().GetMutableForPainting().FirstFragment();
-  // If both |layer| and the container are fragmented and are inside
-  // the same pagination container, then try to match fragments from
-  // the container to |layer|, so that any fragment clip for
-  // |parent_painting_layer|'s fragment matches |layer|'s. Note we check both
-  // EnclosingPaginationLayer() and next fragment here because the former
-  // may return false even if |layer| is fragmented, e.g. for fixed-position
-  // objects in paged media, and the next fragment can be null even if the first
-  // fragment is actually in a fragmented context when the current layer appears
-  // in only one of the multiple fragments of the pagination container.
-  bool is_fragmented =
-      layer.EnclosingPaginationLayer() || first_fragment.NextFragment();
-  bool should_match_fragments =
-      is_fragmented && context.current.container->EnclosingPaginationLayer() ==
-                           layer.EnclosingPaginationLayer();
+  // If the containing layer is fragmented, try to match fragments from the
+  // container to |layer|, so that any fragment clip for
+  // |context.current.container|'s fragment matches |layer|'s.
+  //
+  // TODO(paint-dev): If nested fragmentation is involved, we're not matching
+  // correctly here. In order to fix that, we most likely need to move over to
+  // some sort of fragment tree traversal (rather than pure PaintLayer tree
+  // traversal).
+  bool should_match_fragments = first_parent_fragment.NextFragment();
   bool force_update_children = false;
   bool should_use_infinite_cull_rect =
       !context.current.subtree_is_out_of_cull_rect &&
