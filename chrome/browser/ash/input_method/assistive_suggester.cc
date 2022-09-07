@@ -42,7 +42,7 @@ using ime::TextSuggestionType;
 
 const char kMaxTextBeforeCursorLength = 50;
 
-constexpr base::TimeDelta kLongpressActivationDelay = base::Seconds(1);
+constexpr base::TimeDelta kLongpressActivationDelay = base::Milliseconds(500);
 
 // TODO(b/217560706): Make this different based on current engine after research
 // is conducted.
