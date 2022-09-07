@@ -119,7 +119,8 @@ def main():
   offset = 0
   if args.build_type == 'official':
     if os.name == 'nt':
-      with open('chrome/VERSION') as f:
+      version_path = os.path.join(THIS_DIR, os.pardir, 'chrome', 'VERSION')
+      with open(version_path) as f:
         patch_line = f.readlines()[3].strip()
         # Use the patch number as an offset to the build date so that multiple
         # versions with different patch numbers built from the same source code
