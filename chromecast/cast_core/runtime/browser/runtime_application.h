@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/callback.h"
+#include "components/cast_receiver/common/public/status.h"
 #include "third_party/cast_core/public/src/proto/common/application_config.pb.h"
 #include "third_party/cast_core/public/src/proto/runtime/runtime_service.grpc.pb.h"
 #include "url/gurl.h"
@@ -22,7 +23,7 @@ class CastWebContents;
 // For example, Launch needs to respond with SetApplicationStatus.
 class RuntimeApplication {
  public:
-  using StatusCallback = base::OnceCallback<void(grpc::Status)>;
+  using StatusCallback = base::OnceCallback<void(cast_receiver::Status)>;
 
   RuntimeApplication() = default;
   virtual ~RuntimeApplication() = 0;

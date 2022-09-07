@@ -8,7 +8,9 @@
 #include "chromecast/browser/cast_web_service.h"
 #include "chromecast/cast_core/runtime/browser/bindings_manager_web_runtime.h"
 #include "chromecast/cast_core/runtime/browser/grpc_webui_controller_factory.h"
+#include "chromecast/cast_core/runtime/browser/message_port_service.h"
 #include "chromecast/common/feature_constants.h"
+#include "components/url_rewrite/browser/url_request_rewrite_rules_manager.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
@@ -33,26 +35,28 @@ WebRuntimeApplication::~WebRuntimeApplication() {
   StopApplication(cast::common::StopReason::USER_REQUEST, net::OK);
 }
 
-cast::utils::GrpcStatusOr<cast::web::MessagePortStatus>
-WebRuntimeApplication::HandlePortMessage(cast::web::Message message) {
+bool WebRuntimeApplication::OnMessagePortMessage(cast::web::Message message) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!bindings_manager_) {
+    return false;
+  }
   return bindings_manager_->HandleMessage(std::move(message));
 }
 
-void WebRuntimeApplication::LaunchApplication() {
+void WebRuntimeApplication::OnApplicationLaunched() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  LOG(INFO) << "Launching application: " << *this;
 
   // Register GrpcWebUI for handling Cast apps with URLs in the form
   // chrome*://* that use WebUIs.
   const std::vector<std::string> hosts = {"home", "error", "cast_resources"};
   content::WebUIControllerFactory::RegisterFactory(
-      new GrpcWebUiControllerFactory(std::move(hosts), core_app_stub()));
+      application_platform()
+          .CreateWebUIControllerFactory(std::move(hosts))
+          .release());
 
-  auto call =
-      core_message_port_app_stub()
-          ->CreateCall<
-              cast::v2::CoreMessagePortApplicationServiceStub::GetAll>();
-  std::move(call).InvokeAsync(base::BindPostTask(
+  application_platform().GetAllBindingsAsync(base::BindPostTask(
       task_runner(),
       base::BindOnce(&WebRuntimeApplication::OnAllBindingsReceived,
                      weak_factory_.GetWeakPtr())));
@@ -101,7 +105,7 @@ void WebRuntimeApplication::MediaStartedPlaying(
     const MediaPlayerInfo& video_type,
     const content::MediaPlayerId& id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  NotifyMediaPlaybackChanged(true);
+  application_platform().NotifyMediaPlaybackChanged(true);
 }
 
 void WebRuntimeApplication::MediaStoppedPlaying(
@@ -109,14 +113,14 @@ void WebRuntimeApplication::MediaStoppedPlaying(
     const content::MediaPlayerId& id,
     content::WebContentsObserver::MediaStoppedReason reason) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  NotifyMediaPlaybackChanged(false);
+  application_platform().NotifyMediaPlaybackChanged(false);
 }
 
 void WebRuntimeApplication::OnAllBindingsReceived(
-    cast::utils::GrpcStatusOr<cast::bindings::GetAllResponse> response_or) {
+    absl::optional<cast::bindings::GetAllResponse> response) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!response_or.ok()) {
-    LOG(ERROR) << "Failed to get all bindings: " << response_or.ToString();
+  if (!response) {
+    LOG(ERROR) << "Failed to get all bindings";
     StopApplication(cast::common::StopReason::RUNTIME_ERROR, net::ERR_FAILED);
     return;
   }
@@ -124,11 +128,10 @@ void WebRuntimeApplication::OnAllBindingsReceived(
   content::WebContentsObserver::Observe(GetCastWebContents()->web_contents());
   cast_receiver::PageStateObserver::Observe(
       GetCastWebContents()->web_contents());
-  bindings_manager_ =
-      std::make_unique<BindingsManagerWebRuntime>(core_message_port_app_stub());
-  for (int i = 0; i < response_or->bindings_size(); ++i) {
-    bindings_manager_->AddBinding(
-        response_or->bindings(i).before_load_script());
+  bindings_manager_ = std::make_unique<BindingsManagerWebRuntime>(
+      application_platform().CreateMessagePortService());
+  for (int i = 0; i < response->bindings_size(); ++i) {
+    bindings_manager_->AddBinding(response->bindings(i).before_load_script());
   }
   GetCastWebContents()->ConnectToBindingsService(
       bindings_manager_->CreateRemote());

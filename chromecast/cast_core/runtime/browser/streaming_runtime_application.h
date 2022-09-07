@@ -35,9 +35,8 @@ class StreamingRuntimeApplication final
 
  private:
   // RuntimeApplicationBase implementation:
-  cast::utils::GrpcStatusOr<cast::web::MessagePortStatus> HandlePortMessage(
-      cast::web::Message message) override;
-  void LaunchApplication() override;
+  bool OnMessagePortMessage(cast::web::Message message) override;
+  void OnApplicationLaunched() override;
   void StopApplication(cast::common::StopReason::Type stop_reason,
                        int32_t net_error_code) override;
   bool IsStreamingApplication() const override;
@@ -50,8 +49,6 @@ class StreamingRuntimeApplication final
   void OnResolutionChanged(
       const gfx::Rect& size,
       const ::media::VideoTransformation& transformation) override;
-
-  void OnApplicationStateChanged(grpc::Status status);
 
   base::raw_ref<cast_receiver::ApplicationClient> const application_client_;
 

@@ -10,6 +10,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "chromecast/cast_core/runtime/browser/message_port_handler.h"
+#include "chromecast/cast_core/runtime/browser/message_port_service.h"
 #include "components/cast/message_port/blink_message_port_adapter.h"
 #include "components/cast/message_port/platform_message_port.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -17,8 +18,8 @@
 namespace chromecast {
 
 BindingsManagerWebRuntime::BindingsManagerWebRuntime(
-    cast::v2::CoreMessagePortApplicationServiceStub* core_app_stub)
-    : message_port_service_(core_app_stub) {}
+    std::unique_ptr<MessagePortService> message_port_service)
+    : message_port_service_(std::move(message_port_service)) {}
 
 BindingsManagerWebRuntime::~BindingsManagerWebRuntime() = default;
 
@@ -27,9 +28,9 @@ void BindingsManagerWebRuntime::AddBinding(base::StringPiece binding_script) {
   bindings_[base::NumberToString(id)] = std::string(binding_script);
 }
 
-cast::utils::GrpcStatusOr<cast::web::MessagePortStatus>
-BindingsManagerWebRuntime::HandleMessage(cast::web::Message message) {
-  return message_port_service_.HandleMessage(std::move(message));
+cast_receiver::Status BindingsManagerWebRuntime::HandleMessage(
+    cast::web::Message message) {
+  return message_port_service_->HandleMessage(std::move(message));
 }
 
 mojo::PendingRemote<mojom::ApiBindings>
@@ -66,7 +67,7 @@ void BindingsManagerWebRuntime::GetAll(GetAllCallback callback) {
 
 void BindingsManagerWebRuntime::Connect(const std::string& port_name,
                                         blink::MessagePortDescriptor port) {
-  message_port_service_.ConnectToPort(
+  message_port_service_->ConnectToPortAsync(
       port_name,
       cast_api_bindings::BlinkMessagePortAdapter::ToClientPlatformMessagePort(
           blink::WebMessagePort::Create(std::move(port))));

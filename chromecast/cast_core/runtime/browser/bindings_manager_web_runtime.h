@@ -11,13 +11,15 @@
 #include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
 #include "chromecast/bindings/public/mojom/api_bindings.mojom.h"
-#include "chromecast/cast_core/runtime/browser/message_port_service.h"
 #include "components/cast/api_bindings/manager.h"
+#include "components/cast_receiver/common/public/status.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "third_party/cast_core/public/src/proto/v2/core_message_port_application_service.castcore.pb.h"
 #include "third_party/cast_core/public/src/proto/web/message_channel.pb.h"
 
 namespace chromecast {
+
+class MessagePortService;
 
 // This class will be initialized with a set of bindings received over gRPC and
 // will inject them into the app's CastWebContents when the page loads.  It then
@@ -27,10 +29,8 @@ namespace chromecast {
 class BindingsManagerWebRuntime final : public cast_api_bindings::Manager,
                                         public chromecast::mojom::ApiBindings {
  public:
-  // |cast_web_contents|, |grpc_cq|, and |core_app_stub| all need to outlive
-  // |this|.
-  BindingsManagerWebRuntime(
-      cast::v2::CoreMessagePortApplicationServiceStub* core_app_stub);
+  explicit BindingsManagerWebRuntime(
+      std::unique_ptr<MessagePortService> message_port_service);
   ~BindingsManagerWebRuntime() override;
 
   BindingsManagerWebRuntime(const BindingsManagerWebRuntime&) = delete;
@@ -40,8 +40,7 @@ class BindingsManagerWebRuntime final : public cast_api_bindings::Manager,
   BindingsManagerWebRuntime& operator=(BindingsManagerWebRuntime&&) = delete;
 
   void AddBinding(base::StringPiece binding_script);
-  cast::utils::GrpcStatusOr<cast::web::MessagePortStatus> HandleMessage(
-      cast::web::Message message);
+  cast_receiver::Status HandleMessage(cast::web::Message message);
 
   // Returns a mojo::PendingRemote bound to |this|.
   // At most one bound remote can exist at the same time.
@@ -66,7 +65,7 @@ class BindingsManagerWebRuntime final : public cast_api_bindings::Manager,
   std::map<std::string, std::string> bindings_;
   mojo::Receiver<mojom::ApiBindings> receiver_{this};
 
-  MessagePortService message_port_service_;
+  std::unique_ptr<MessagePortService> message_port_service_;
 };
 
 }  // namespace chromecast

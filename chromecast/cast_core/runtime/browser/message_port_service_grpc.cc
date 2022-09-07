@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromecast/cast_core/runtime/browser/message_port_service.h"
+#include "chromecast/cast_core/runtime/browser/message_port_service_grpc.h"
 
 #include "base/logging.h"
 #include "base/task/bind_post_task.h"
@@ -11,38 +11,37 @@
 
 namespace chromecast {
 
-MessagePortService::MessagePortService(
+MessagePortServiceGrpc::MessagePortServiceGrpc(
     cast::v2::CoreMessagePortApplicationServiceStub* core_app_stub)
     : core_app_stub_(core_app_stub),
       task_runner_(base::SequencedTaskRunnerHandle::Get()) {
   DCHECK(core_app_stub_);
 }
 
-MessagePortService::~MessagePortService() = default;
+MessagePortServiceGrpc::~MessagePortServiceGrpc() = default;
 
-cast::utils::GrpcStatusOr<cast::web::MessagePortStatus>
-MessagePortService::HandleMessage(cast::web::Message message) {
+cast_receiver::Status MessagePortServiceGrpc::HandleMessage(
+    cast::web::Message message) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   cast::web::MessagePortStatus response;
   const uint32_t channel_id = message.channel().channel_id();
   auto entry = ports_.find(channel_id);
   if (entry == ports_.end()) {
+    // TODO(crbug.com/1360597): Add details of this failure to the new Status
+    // object returned.
     DLOG(INFO) << "Got message for unknown channel: " << channel_id;
-    response.set_status(cast::web::MessagePortStatus_Status_ERROR);
-  } else if (entry->second->HandleMessage(message)) {
-    response.set_status(cast::web::MessagePortStatus_Status_OK);
-  } else {
-    response.set_status(cast::web::MessagePortStatus_Status_ERROR);
+    return false;
   }
-  return response;
+
+  return entry->second->HandleMessage(message);
 }
 
-void MessagePortService::ConnectToPort(
+void MessagePortServiceGrpc::ConnectToPortAsync(
     base::StringPiece port_name,
     std::unique_ptr<cast_api_bindings::MessagePort> port) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DLOG(INFO) << "MessagePortService connecting to port '" << port_name
-             << "' as channel " << next_outgoing_channel_id_;
+  DLOG(INFO) << "Connecting to port '" << port_name << "' as channel "
+             << next_outgoing_channel_id_;
 
   const uint32_t channel_id = next_outgoing_channel_id_++;
   auto result = ports_.emplace(
@@ -61,11 +60,11 @@ void MessagePortService::ConnectToPort(
 
   std::move(call).InvokeAsync(base::BindPostTask(
       task_runner_,
-      base::BindOnce(&MessagePortService::OnPortConnectionEstablished,
+      base::BindOnce(&MessagePortServiceGrpc::OnPortConnectionEstablished,
                      weak_factory_.GetWeakPtr(), channel_id)));
 }
 
-uint32_t MessagePortService::RegisterOutgoingPort(
+uint32_t MessagePortServiceGrpc::RegisterOutgoingPort(
     std::unique_ptr<cast_api_bindings::MessagePort> port) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   uint32_t channel_id = next_outgoing_channel_id_++;
@@ -74,7 +73,7 @@ uint32_t MessagePortService::RegisterOutgoingPort(
   return channel_id;
 }
 
-void MessagePortService::RegisterIncomingPort(
+void MessagePortServiceGrpc::RegisterIncomingPort(
     uint32_t channel_id,
     std::unique_ptr<cast_api_bindings::MessagePort> port) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -83,12 +82,13 @@ void MessagePortService::RegisterIncomingPort(
   DCHECK(result.second);
 }
 
-void MessagePortService::Remove(uint32_t channel_id) {
+void MessagePortServiceGrpc::Remove(uint32_t channel_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   ports_.erase(channel_id);
 }
 
-std::unique_ptr<MessagePortHandler> MessagePortService::MakeMessagePortHandler(
+std::unique_ptr<MessagePortHandler>
+MessagePortServiceGrpc::MakeMessagePortHandler(
     uint32_t channel_id,
     std::unique_ptr<cast_api_bindings::MessagePort> port) {
   auto port_handler = std::make_unique<MessagePortHandler>(
@@ -96,7 +96,7 @@ std::unique_ptr<MessagePortHandler> MessagePortService::MakeMessagePortHandler(
   return port_handler;
 }
 
-void MessagePortService::OnPortConnectionEstablished(
+void MessagePortServiceGrpc::OnPortConnectionEstablished(
     uint32_t channel_id,
     cast::utils::GrpcStatusOr<cast::bindings::ConnectResponse> response_or) {
   if (!response_or.ok()) {

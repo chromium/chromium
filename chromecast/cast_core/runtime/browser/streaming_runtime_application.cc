@@ -53,9 +53,12 @@ StreamingRuntimeApplication::~StreamingRuntimeApplication() {
   StopApplication(cast::common::StopReason::USER_REQUEST, net::OK);
 }
 
-cast::utils::GrpcStatusOr<cast::web::MessagePortStatus>
-StreamingRuntimeApplication::HandlePortMessage(cast::web::Message message) {
+bool StreamingRuntimeApplication::OnMessagePortMessage(
+    cast::web::Message message) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!message_port_service_) {
+    return false;
+  }
   return message_port_service_->HandleMessage(std::move(message));
 }
 
@@ -75,8 +78,8 @@ void StreamingRuntimeApplication::StartAvSettingsQuery(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Connect the port to allow for sending messages. Querying will be done by
   // the associated |receiver_session_client_|.
-  message_port_service_->ConnectToPort(kMediaCapabilitiesBindingName,
-                                       std::move(message_port));
+  message_port_service_->ConnectToPortAsync(kMediaCapabilitiesBindingName,
+                                            std::move(message_port));
 }
 
 void StreamingRuntimeApplication::OnResolutionChanged(
@@ -86,18 +89,17 @@ void StreamingRuntimeApplication::OnResolutionChanged(
   application_client_->OnStreamingResolutionChanged(size, transformation);
 }
 
-void StreamingRuntimeApplication::LaunchApplication() {
+void StreamingRuntimeApplication::OnApplicationLaunched() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  message_port_service_ =
-      std::make_unique<MessagePortService>(core_message_port_app_stub());
+  message_port_service_ = application_platform().CreateMessagePortService();
 
   // Bind Cast Transport.
   std::unique_ptr<cast_api_bindings::MessagePort> server_port;
   std::unique_ptr<cast_api_bindings::MessagePort> client_port;
   cast_api_bindings::CreatePlatformMessagePortPair(&client_port, &server_port);
-  message_port_service_->ConnectToPort(kCastTransportBindingName,
-                                       std::move(client_port));
+  message_port_service_->ConnectToPortAsync(kCastTransportBindingName,
+                                            std::move(client_port));
 
   // Initialize the streaming receiver.
   receiver_session_client_ = std::make_unique<StreamingReceiverSessionClient>(

@@ -28,12 +28,11 @@ class WebRuntimeApplication final : public RuntimeApplicationBase,
 
  private:
   void OnAllBindingsReceived(
-      cast::utils::GrpcStatusOr<cast::bindings::GetAllResponse> response_or);
+      absl::optional<cast::bindings::GetAllResponse> response);
 
   // RuntimeApplicationBase implementation:
-  cast::utils::GrpcStatusOr<cast::web::MessagePortStatus> HandlePortMessage(
-      cast::web::Message message) override;
-  void LaunchApplication() override;
+  bool OnMessagePortMessage(cast::web::Message message) override;
+  void OnApplicationLaunched() override;
   bool IsStreamingApplication() const override;
 
   // cast_receiver::PageStateObserver implementation:

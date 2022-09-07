@@ -8,13 +8,15 @@ cast_source_set("message_port") {
   sources = [
     "message_port_handler.cc",
     "message_port_handler.h",
-    "message_port_service.cc",
     "message_port_service.h",
+    "message_port_service_grpc.cc",
+    "message_port_service_grpc.h",
   ]
 
   public_deps = [
     "//base",
     "//components/cast/message_port",
+    "//components/cast_receiver/common",
     "//third_party/cast_core/public/src/proto/v2:core_message_port_application_service_proto_castcore",
     "//third_party/cast_core/public/src/proto/web:message_channel_proto",
   ]
@@ -107,6 +109,7 @@ cast_source_set("runtime_application") {
 
   public_deps = [
     "//base",
+    "//components/cast_receiver/common",
     "//third_party/cast_core/public/src/proto/common:application_config_proto",
     "//third_party/cast_core/public/src/proto/runtime:runtime_service_proto",
     "//url",
@@ -166,6 +169,9 @@ cast_source_set("runtime_application_dispatcher") {
     "runtime_application_base.h",
     "runtime_application_dispatcher.cc",
     "runtime_application_dispatcher.h",
+    "runtime_application_platform.h",
+    "runtime_application_platform_grpc.cc",
+    "runtime_application_platform_grpc.h",
     "streaming_runtime_application.cc",
     "streaming_runtime_application.h",
     "web_runtime_application.cc",
@@ -181,6 +187,7 @@ cast_source_set("runtime_application_dispatcher") {
     "//chromecast/common:feature_constants",
     "//components/cast_receiver/browser",
     "//components/cast_receiver/browser:page_state_observer",
+    "//components/cast_receiver/common",
     "//components/cast_streaming/public/mojom",
     "//components/url_rewrite/browser",
     "//third_party/abseil-cpp:absl",

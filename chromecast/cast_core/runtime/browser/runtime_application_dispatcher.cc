@@ -279,7 +279,7 @@ void RuntimeApplicationDispatcher::HandleStopMetricsRecorder(
 void RuntimeApplicationDispatcher::OnApplicationLoaded(
     std::string session_id,
     cast::runtime::RuntimeServiceHandler::LoadApplication::Reactor* reactor,
-    grpc::Status status) {
+    cast_receiver::Status success) {
   auto* app = GetApp(session_id);
   if (!app) {
     LOG(ERROR) << "Application doesn't exist anymore: session_id" << session_id;
@@ -288,11 +288,11 @@ void RuntimeApplicationDispatcher::OnApplicationLoaded(
     return;
   }
 
-  if (!status.ok()) {
-    LOG(ERROR) << "Failed to load application: " << *app
-               << ", status=" << cast::utils::GrpcStatusToString(status);
+  if (!success) {
+    LOG(ERROR) << "Failed to load application: " << *app;
     ResetApp(session_id);
-    reactor->Write(status);
+    reactor->Write(
+        grpc::Status(grpc::StatusCode::UNKNOWN, "Failed to load application"));
     return;
   }
 
@@ -305,7 +305,7 @@ void RuntimeApplicationDispatcher::OnApplicationLoaded(
 void RuntimeApplicationDispatcher::OnApplicationLaunching(
     std::string session_id,
     cast::runtime::RuntimeServiceHandler::LaunchApplication::Reactor* reactor,
-    grpc::Status status) {
+    cast_receiver::Status success) {
   auto* app = GetApp(session_id);
   if (!app) {
     LOG(ERROR) << "Application doesn't exist anymore: session_id" << session_id;
@@ -314,11 +314,11 @@ void RuntimeApplicationDispatcher::OnApplicationLaunching(
     return;
   }
 
-  if (!status.ok()) {
-    LOG(ERROR) << "Failed to launch application: " << *app
-               << ", status=" << cast::utils::GrpcStatusToString(status);
+  if (!success) {
+    LOG(ERROR) << "Failed to launch application: " << *app;
     ResetApp(session_id);
-    reactor->Write(status);
+    reactor->Write(grpc::Status(grpc::StatusCode::UNKNOWN,
+                                "Failed to launch application"));
     return;
   }
 

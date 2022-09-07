@@ -5,79 +5,55 @@
 #ifndef CHROMECAST_CAST_CORE_RUNTIME_BROWSER_MESSAGE_PORT_SERVICE_H_
 #define CHROMECAST_CAST_CORE_RUNTIME_BROWSER_MESSAGE_PORT_SERVICE_H_
 
-#include <vector>
+#include <memory>
 
 #include "base/callback.h"
-#include "base/containers/flat_map.h"
-#include "base/memory/weak_ptr.h"
-#include "base/sequence_checker.h"
-#include "base/task/sequenced_task_runner.h"
-#include "components/cast/message_port/message_port.h"
-#include "third_party/cast_core/public/src/proto/v2/core_message_port_application_service.castcore.pb.h"
+#include "base/strings/string_piece.h"
+#include "components/cast_receiver/common/public/status.h"
 #include "third_party/cast_core/public/src/proto/web/message_channel.pb.h"
+
+namespace cast_api_bindings {
+class MessagePort;
+}  // namespace cast_api_bindings
 
 namespace chromecast {
 
-class MessagePortHandler;
-
+// This class defines a wrapper around MessagePort functionality to handle
+// communicating with message ports, as well as their registration.
 class MessagePortService {
  public:
   using CreatePairCallback = base::RepeatingCallback<void(
       std::unique_ptr<cast_api_bindings::MessagePort>*,
       std::unique_ptr<cast_api_bindings::MessagePort>*)>;
 
-  // |core_app_stub| must outlive |this|.
-  MessagePortService(
-      cast::v2::CoreMessagePortApplicationServiceStub* core_app_stub);
-  ~MessagePortService();
+  virtual ~MessagePortService() = default;
 
-  // Handles a message incoming from the gRPC API.  The message will be routed
-  // to the appropriate MessagePortHandler based on its channel ID. |response|
-  // is set to |OK| if MessagePortHandler reports success and |ERROR|
-  // otherwise, including the case that there's no MessagePortHandler for the
-  // incoming channel ID.
-  cast::utils::GrpcStatusOr<cast::web::MessagePortStatus> HandleMessage(
-      cast::web::Message message);
+  // Handles a message incoming over RPC. The message will be routed to the
+  // appropriate destination based on its channel ID. Returns |true| in the case
+  // that this message was successfully processed, and false in all other cases
+  // including the case that there's no handler for the incoming channel ID.
+  virtual cast_receiver::Status HandleMessage(cast::web::Message message) = 0;
 
-  // Connects |port| to the remote port with name |port_name|. Calls the
-  // callback with grpc::Status code.
-  void ConnectToPort(base::StringPiece port_name,
-                     std::unique_ptr<cast_api_bindings::MessagePort> port);
+  // Connects |port| to the remote port with name |port_name| asynchronously.
+  virtual void ConnectToPortAsync(
+      base::StringPiece port_name,
+      std::unique_ptr<cast_api_bindings::MessagePort> port) = 0;
 
-  // Registers a port opened locally via a port transfer.  This allocates a
-  // |channel_id| for the port in order to send it over gRPC.
-  uint32_t RegisterOutgoingPort(
-      std::unique_ptr<cast_api_bindings::MessagePort> port);
+  // Registers a port opened locally via a port transfer. This allocates a new
+  // |channel_id| for the port, which is returned by the function.
+  virtual uint32_t RegisterOutgoingPort(
+      std::unique_ptr<cast_api_bindings::MessagePort> port) = 0;
 
-  // Registers a port opened by the peer via a port transfer.  |channel_id| is
+  // Registers a port opened by the peer via a port transfer. |channel_id| is
   // provided by the peer.
-  void RegisterIncomingPort(
+  virtual void RegisterIncomingPort(
       uint32_t channel_id,
-      std::unique_ptr<cast_api_bindings::MessagePort> port);
+      std::unique_ptr<cast_api_bindings::MessagePort> port) = 0;
 
-  // Removes the MessagePortHandler for |channel_id|.  Note that this will
-  // destroy it.
-  void Remove(uint32_t channel_id);
-
- private:
-  std::unique_ptr<MessagePortHandler> MakeMessagePortHandler(
-      uint32_t channel_id,
-      std::unique_ptr<cast_api_bindings::MessagePort> port);
-
-  // Callback invoked when AsyncConnect gets a gRPC result.
-  void OnPortConnectionEstablished(
-      uint32_t channel_id,
-      cast::utils::GrpcStatusOr<cast::bindings::ConnectResponse> response_or);
-
-  cast::v2::CoreMessagePortApplicationServiceStub* const core_app_stub_;
-  scoped_refptr<base::SequencedTaskRunner> task_runner_;
-
-  int next_outgoing_channel_id_{0};
-  // NOTE: Keyed by channel_id of cast::web::MessageChannelDescriptor.
-  base::flat_map<uint32_t, std::unique_ptr<MessagePortHandler>> ports_;
-
-  SEQUENCE_CHECKER(sequence_checker_);
-  base::WeakPtrFactory<MessagePortService> weak_factory_{this};
+  // Removes the handler for |channel_id|. Note that this will destroy it. May
+  // only be called on a valid |channel_id| already assocaited with a previously
+  // registered |port|.
+  virtual void Remove(uint32_t channel_id) = 0;
 };
 
 }  // namespace chromecast

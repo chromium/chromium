@@ -12,12 +12,10 @@
 #include "chromecast/browser/cast_web_service.h"
 #include "chromecast/browser/cast_web_view_factory.h"
 #include "chromecast/browser/visibility_types.h"
-#include "chromecast/cast_core/grpc/grpc_status_or.h"
 #include "chromecast/cast_core/runtime/browser/url_rewrite/url_request_rewrite_type_converters.h"
 #include "chromecast/common/feature_constants.h"
 
 namespace chromecast {
-
 namespace {
 
 // Parses renderer features.
@@ -40,11 +38,15 @@ RuntimeApplicationBase::RuntimeApplicationBase(
     mojom::RendererType renderer_type_used,
     CastWebService* web_service,
     scoped_refptr<base::SequencedTaskRunner> task_runner)
-    : cast_session_id_(std::move(cast_session_id)),
+    : platform_(RuntimeApplicationPlatform::Create(task_runner,
+                                                   cast_session_id,
+                                                   *this)),
+      cast_session_id_(std::move(cast_session_id)),
       app_config_(std::move(app_config)),
       web_service_(web_service),
       task_runner_(std::move(task_runner)),
       renderer_type_(renderer_type_used) {
+  DCHECK(platform_);
   DCHECK(web_service_);
   DCHECK(task_runner_);
 }
@@ -69,111 +71,54 @@ const std::string& RuntimeApplicationBase::GetCastSessionId() const {
 }
 
 void RuntimeApplicationBase::Load(cast::runtime::LoadApplicationRequest request,
-                                  StatusCallback callback) {
+                                  RuntimeApplication::StatusCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!grpc_server_);
+  platform_->Load(
+      std::move(request),
+      base::BindOnce(&RuntimeApplicationBase::OnApplicationLoading,
+                     weak_factory_.GetWeakPtr(), std::move(callback)));
+}
 
-  if (request.runtime_application_service_info().grpc_endpoint().empty()) {
-    std::move(callback).Run(
-        grpc::Status(grpc::StatusCode::INVALID_ARGUMENT,
-                     "Application service endpoint is missing"));
+void RuntimeApplicationBase::OnApplicationLoading(
+    RuntimeApplication::StatusCallback callback,
+    cast_receiver::Status success) {
+  if (!success) {
+    // TODO(crbug.com/1360597): Add details of this failure to the new Status
+    // object returned.
+    std::move(callback).Run(false);
     return;
   }
 
-  LOG(INFO) << "Loading application: " << *this;
   is_application_running_ = true;
-
-  // Start the gRPC server.
-  grpc_server_.emplace();
-  grpc_server_->SetHandler<
-      cast::v2::RuntimeApplicationServiceHandler::SetUrlRewriteRules>(
-      base::BindPostTask(
-          task_runner_,
-          base::BindRepeating(&RuntimeApplicationBase::HandleSetUrlRewriteRules,
-                              weak_factory_.GetWeakPtr())));
-  grpc_server_
-      ->SetHandler<cast::v2::RuntimeApplicationServiceHandler::SetMediaState>(
-          base::BindPostTask(
-              task_runner_,
-              base::BindRepeating(&RuntimeApplicationBase::HandleSetMediaState,
-                                  weak_factory_.GetWeakPtr())));
-  grpc_server_
-      ->SetHandler<cast::v2::RuntimeApplicationServiceHandler::SetVisibility>(
-          base::BindPostTask(
-              task_runner_,
-              base::BindRepeating(&RuntimeApplicationBase::HandleSetVisibility,
-                                  weak_factory_.GetWeakPtr())));
-  grpc_server_
-      ->SetHandler<cast::v2::RuntimeApplicationServiceHandler::SetTouchInput>(
-          base::BindPostTask(
-              task_runner_,
-              base::BindRepeating(&RuntimeApplicationBase::HandleSetTouchInput,
-                                  weak_factory_.GetWeakPtr())));
-  grpc_server_->SetHandler<
-      cast::v2::RuntimeMessagePortApplicationServiceHandler::PostMessage>(
-      base::BindPostTask(
-          task_runner_,
-          base::BindRepeating(&RuntimeApplicationBase::HandlePostMessage,
-                              weak_factory_.GetWeakPtr())));
-  grpc_server_->Start(
-      request.runtime_application_service_info().grpc_endpoint());
-  LOG(INFO) << "Runtime application server started: " << *this << ", endpoint="
-            << request.runtime_application_service_info().grpc_endpoint();
-
-  // Initialize web view.
   cast_web_view_ = CreateCastWebView();
 
-  // Set initial URL rewrite rules.
-  url_rewrite::mojom::UrlRequestRewriteRulesPtr mojom_rules =
-      mojo::ConvertTo<url_rewrite::mojom::UrlRequestRewriteRulesPtr>(
-          request.url_rewrite_rules());
-  GetCastWebContents()->SetUrlRewriteRules(std::move(mojom_rules));
+  LOG(INFO) << "Loaded application" << *this;
+  std::move(callback).Run(true);
+}
 
-  LOG(INFO) << "Successfully loaded: " << *this;
-  std::move(callback).Run(grpc::Status::OK);
+void RuntimeApplicationBase::OnApplicationLaunching(
+    RuntimeApplication::StatusCallback callback,
+    cast_receiver::Status success) {
+  std::move(callback).Run(success);
+  if (success) {
+    LOG(INFO) << "Launched application" << *this;
+    OnApplicationLaunched();
+  }
+}
+
+void RuntimeApplicationBase::OnUrlRewriteRulesSet(
+    url_rewrite::mojom::UrlRequestRewriteRulesPtr mojom_rules) {
+  GetCastWebContents()->SetUrlRewriteRules(std::move(mojom_rules));
 }
 
 void RuntimeApplicationBase::Launch(
     cast::runtime::LaunchApplicationRequest request,
-    StatusCallback callback) {
+    RuntimeApplication::StatusCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (!cast_web_view_ || !cast_web_view_->window()) {
-    std::move(callback).Run(grpc::Status(grpc::StatusCode::INTERNAL,
-                                         "Cast web view is not initialized"));
-    return;
-  }
-  if (request.core_application_service_info().grpc_endpoint().empty()) {
-    std::move(callback).Run(
-        grpc::Status(grpc::StatusCode::INVALID_ARGUMENT,
-                     "Core application service endpoint is missing"));
-    return;
-  }
-  if (request.cast_media_service_info().grpc_endpoint().empty()) {
-    std::move(callback).Run(grpc::Status(grpc::StatusCode::INVALID_ARGUMENT,
-                                         "Media service endpoint is missing"));
-    return;
-  }
-
-  LOG(INFO) << "Launching application: " << *this;
-
-  // Create stubs for Core*ApplicationServices.
-  auto core_channel = grpc::CreateChannel(
-      request.core_application_service_info().grpc_endpoint(),
-      grpc::InsecureChannelCredentials());
-  core_app_stub_.emplace(core_channel);
-  core_message_port_app_stub_.emplace(core_channel);
-
-  // TODO(b/244455581): Configure multizone.
-
-  SetMediaState(request.media_state());
-  SetVisibility(request.visibility());
-  SetTouchInput(request.touch_input());
-
-  // Report that Cast application launch is initiated.
-  std::move(callback).Run(grpc::Status::OK);
-
-  LaunchApplication();
+  platform_->Launch(
+      std::move(request),
+      base::BindOnce(&RuntimeApplicationBase::OnApplicationLaunching,
+                     weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 base::Value RuntimeApplicationBase::GetRendererFeatures() const {
@@ -340,73 +285,7 @@ void RuntimeApplicationBase::OnPageLoaded() {
                                            VisibilityPriority::HIDDEN);
   }
 
-  NotifyApplicationStarted();
-}
-
-void RuntimeApplicationBase::HandlePostMessage(
-    cast::web::Message request,
-    cast::v2::RuntimeMessagePortApplicationServiceHandler::PostMessage::Reactor*
-        reactor) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!is_application_running_) {
-    reactor->Write(grpc::Status(grpc::StatusCode::NOT_FOUND,
-                                "No active cast session for PostMessage"));
-    return;
-  }
-
-  auto response_or = HandlePortMessage(std::move(request));
-  if (response_or.ok()) {
-    reactor->Write(std::move(response_or).value());
-  } else {
-    reactor->Write(response_or.status());
-  }
-}
-
-void RuntimeApplicationBase::HandleSetUrlRewriteRules(
-    cast::v2::SetUrlRewriteRulesRequest request,
-    cast::v2::RuntimeApplicationServiceHandler::SetUrlRewriteRules::Reactor*
-        reactor) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!is_application_running_) {
-    reactor->Write(
-        grpc::Status(grpc::StatusCode::NOT_FOUND,
-                     "No active cast session for SetUrlRewriteRules"));
-    return;
-  }
-  if (request.has_rules()) {
-    url_rewrite::mojom::UrlRequestRewriteRulesPtr mojom_rules =
-        mojo::ConvertTo<url_rewrite::mojom::UrlRequestRewriteRulesPtr>(
-            request.rules());
-    GetCastWebContents()->SetUrlRewriteRules(std::move(mojom_rules));
-  }
-  reactor->Write(cast::v2::SetUrlRewriteRulesResponse());
-}
-
-void RuntimeApplicationBase::HandleSetMediaState(
-    cast::v2::SetMediaStateRequest request,
-    cast::v2::RuntimeApplicationServiceHandler::SetMediaState::Reactor*
-        reactor) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  SetMediaState(request.media_state());
-  reactor->Write(cast::v2::SetMediaStateResponse());
-}
-
-void RuntimeApplicationBase::HandleSetVisibility(
-    cast::v2::SetVisibilityRequest request,
-    cast::v2::RuntimeApplicationServiceHandler::SetVisibility::Reactor*
-        reactor) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  SetVisibility(request.visibility());
-  reactor->Write(cast::v2::SetVisibilityResponse());
-}
-
-void RuntimeApplicationBase::HandleSetTouchInput(
-    cast::v2::SetTouchInputRequest request,
-    cast::v2::RuntimeApplicationServiceHandler::SetTouchInput::Reactor*
-        reactor) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  SetTouchInput(request.touch_input());
-  reactor->Write(cast::v2::SetTouchInputResponse());
+  platform_->NotifyApplicationStarted();
 }
 
 CastWebView::Scoped RuntimeApplicationBase::CreateCastWebView() {
@@ -423,7 +302,7 @@ CastWebView::Scoped RuntimeApplicationBase::CreateCastWebView() {
   return web_service_->CreateWebViewInternal(std::move(params));
 }
 
-void RuntimeApplicationBase::SetMediaState(
+void RuntimeApplicationBase::OnMediaStateSet(
     cast::common::MediaState::Type media_state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (media_state == cast::common::MediaState::UNDEFINED) {
@@ -460,7 +339,7 @@ void RuntimeApplicationBase::SetMediaState(
   }
 }
 
-void RuntimeApplicationBase::SetVisibility(
+void RuntimeApplicationBase::OnVisibilitySet(
     cast::common::Visibility::Type visibility) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (visibility == cast::common::Visibility::UNDEFINED) {
@@ -494,7 +373,7 @@ void RuntimeApplicationBase::SetVisibility(
   }
 }
 
-void RuntimeApplicationBase::SetTouchInput(
+void RuntimeApplicationBase::OnTouchInputSet(
     cast::common::TouchInput::Type touch_input) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (touch_input == cast::common::TouchInput::UNDEFINED) {
@@ -515,11 +394,14 @@ void RuntimeApplicationBase::SetTouchInput(
                                              cast::common::TouchInput::ENABLED);
 }
 
+bool RuntimeApplicationBase::IsApplicationRunning() {
+  return is_application_running_;
+}
+
 void RuntimeApplicationBase::StopApplication(
     cast::common::StopReason::Type stop_reason,
     int32_t net_error_code) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(grpc_server_);
 
   if (!is_application_running_) {
     return;
@@ -534,12 +416,7 @@ void RuntimeApplicationBase::StopApplication(
     }
   }
 
-  if (core_app_stub_) {
-    NotifyApplicationStopped(stop_reason, net_error_code);
-  }
-
-  grpc_server_->Stop();
-  grpc_server_.reset();
+  platform_->NotifyApplicationStopped(stop_reason, net_error_code);
 
   LOG(INFO) << "Application is stopped: stop_reason="
             << cast::common::StopReason::Type_Name(stop_reason) << ", "
@@ -561,61 +438,6 @@ void RuntimeApplicationBase::OnVisibilityChange(
       GetCastWebContents()->SetWebVisibilityAndPaint(false);
       break;
   }
-}
-
-void RuntimeApplicationBase::NotifyApplicationStarted() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(core_app_stub_);
-
-  auto call = core_app_stub_->CreateCall<
-      cast::v2::CoreApplicationServiceStub::ApplicationStarted>();
-  call.request().set_cast_session_id(GetCastSessionId());
-  std::move(call).InvokeAsync(base::BindOnce(
-      [](cast::utils::GrpcStatusOr<cast::v2::ApplicationStartedResponse>
-             response_or) {
-        LOG_IF(ERROR, !response_or.ok())
-            << "Failed to report that application started: "
-            << response_or.ToString();
-      }));
-}
-
-void RuntimeApplicationBase::NotifyApplicationStopped(
-    cast::common::StopReason::Type stop_reason,
-    int32_t net_error_code) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(core_app_stub_);
-
-  auto call = core_app_stub_->CreateCall<
-      cast::v2::CoreApplicationServiceStub::ApplicationStopped>();
-  call.request().set_cast_session_id(GetCastSessionId());
-  call.request().set_stop_reason(stop_reason);
-  call.request().set_error_code(net_error_code);
-  std::move(call).InvokeAsync(base::BindOnce(
-      [](cast::utils::GrpcStatusOr<cast::v2::ApplicationStoppedResponse>
-             response_or) {
-        LOG_IF(ERROR, !response_or.ok())
-            << "Failed to report that application stopped: "
-            << response_or.ToString();
-      }));
-}
-
-void RuntimeApplicationBase::NotifyMediaPlaybackChanged(bool playing) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(core_app_stub_);
-
-  auto call = core_app_stub_->CreateCall<
-      cast::v2::CoreApplicationServiceStub::MediaPlaybackChanged>();
-  call.request().set_cast_session_id(GetCastSessionId());
-  call.request().set_media_playback_state(
-      playing ? cast::common::MediaPlaybackState::PLAYING
-              : cast::common::MediaPlaybackState::STOPPED);
-  std::move(call).InvokeAsync(base::BindOnce(
-      [](cast::utils::GrpcStatusOr<cast::v2::MediaPlaybackChangedResponse>
-             response_or) {
-        LOG_IF(ERROR, !response_or.ok())
-            << "Failed to report media playback changed state: "
-            << response_or.ToString();
-      }));
 }
 
 }  // namespace chromecast

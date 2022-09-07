@@ -18,6 +18,7 @@
 #include "chromecast/cast_core/runtime/browser/cast_runtime_action_recorder.h"
 #include "chromecast/cast_core/runtime/browser/cast_runtime_metrics_recorder.h"
 #include "chromecast/cast_core/runtime/browser/cast_runtime_metrics_recorder_service.h"
+#include "components/cast_receiver/common/public/status.h"
 #include "components/cast_streaming/browser/public/network_context_getter.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cast_core/public/src/proto/metrics/metrics_recorder.castcore.pb.h"
@@ -71,15 +72,20 @@ class RuntimeApplicationDispatcher final {
       cast::runtime::RuntimeServiceHandler::StopMetricsRecorder::Reactor*
           reactor);
 
-  // Helper methods.
+  // Callbacks for HandleLoadApplication() and HandleLaunchApplication().
+  //
+  // TODO(crbug.com/1360597): Add details of this failure to the new Status
+  // object provided to these callback methods.
   void OnApplicationLoaded(
       std::string session_id,
       cast::runtime::RuntimeServiceHandler::LoadApplication::Reactor* reactor,
-      grpc::Status status);
+      cast_receiver::Status success);
   void OnApplicationLaunching(
       std::string session_id,
       cast::runtime::RuntimeServiceHandler::LaunchApplication::Reactor* reactor,
-      grpc::Status status);
+      cast_receiver::Status success);
+
+  // Further helpers.
   void SendHeartbeat();
   void OnHeartbeatSent(
       cast::utils::GrpcStatusOr<
