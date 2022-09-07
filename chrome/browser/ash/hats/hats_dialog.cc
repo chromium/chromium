@@ -88,29 +88,23 @@ bool HatsDialog::HandleClientTriggeredAction(
   return false;
 }
 
-void HatsDialog::Show(const std::string& site_context) {
+HatsDialog::HatsDialog(const std::string& trigger_id,
+                       const std::string& histogram_name,
+                       const std::string& site_context)
+    : trigger_id_(trigger_id), histogram_name_(histogram_name) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  // Link the trigger ID to fetch the correct survey.
   url_ = std::string(kCrOSHaTSURL) + "?" + site_context +
          "&trigger=" + trigger_id_;
-
-  chrome::ShowWebDialog(nullptr, user_profile_, this);
-}
-
-HatsDialog::HatsDialog(const std::string& trigger_id,
-                       Profile* user_profile,
-                       const std::string& histogram_name)
-    : trigger_id_(trigger_id),
-      user_profile_(user_profile),
-      histogram_name_(histogram_name) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   set_can_resize(false);
 }
 
-HatsDialog::~HatsDialog() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(user_profile_);
+void HatsDialog::Show(const std::string& trigger_id,
+                      const std::string& histogram_name,
+                      const std::string& site_context) {
+  // HatsDialog is self-deleting via OnDialogClosed().
+  chrome::ShowWebDialog(
+      nullptr, ProfileManager::GetActiveUserProfile(),
+      new HatsDialog(trigger_id, histogram_name, site_context));
 }
 
 ui::ModalType HatsDialog::GetDialogModalType() const {
@@ -140,7 +134,9 @@ void HatsDialog::OnCloseContents(WebContents* source, bool* out_close_dialog) {
   *out_close_dialog = true;
 }
 
-void HatsDialog::OnDialogClosed(const std::string& json_retval) {}
+void HatsDialog::OnDialogClosed(const std::string& json_retval) {
+  delete this;
+}
 
 void HatsDialog::OnLoadingStateChanged(WebContents* source) {
   const std::string ref = source->GetURL().ref();
