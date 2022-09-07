@@ -166,6 +166,15 @@ export interface ZoomLevelEntry {
   zoom: string;
 }
 
+/**
+ * The notification permission information passed from
+ * site_settings_handler.cc.
+ */
+export interface NotificationPermission {
+  origin: string;
+  notificationInfoString: string;
+}
+
 export interface SiteSettingsPrefsBrowserProxy {
   /**
    * Sets the default value for a site settings category.
@@ -438,6 +447,9 @@ export interface SiteSettingsPrefsBrowserProxy {
    * @param action number.
    */
   recordAction(action: number): void;
+
+  /** Gets the site list that send a lot of notifications. */
+  getReviewNotificationPermissions(): Promise<NotificationPermission[]>;
 }
 
 export class SiteSettingsPrefsBrowserProxyImpl implements
@@ -590,6 +602,10 @@ export class SiteSettingsPrefsBrowserProxyImpl implements
 
   recordAction(action: number) {
     chrome.send('recordAction', [action]);
+  }
+
+  getReviewNotificationPermissions() {
+    return sendWithPromise('getReviewNotificationPermissions');
   }
 
   static getInstance(): SiteSettingsPrefsBrowserProxy {

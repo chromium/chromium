@@ -4,10 +4,10 @@
 
 // clang-format off
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {PrivacyPageBrowserProxyImpl, SettingsReviewNotificationPermissionsElement} from 'chrome://settings/settings.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
+import {SettingsReviewNotificationPermissionsElement, SiteSettingsPrefsBrowserProxyImpl } from 'chrome://settings/lazy_load.js';
 
-import {TestPrivacyPageBrowserProxy} from './test_privacy_page_browser_proxy.js';
+import {TestSiteSettingsPrefsBrowserProxy} from './test_site_settings_prefs_browser_proxy.js';
 
 // clang-format on
 
@@ -15,7 +15,7 @@ suite('CrSettingsReviewNotificationPermissionsTest', function() {
   /**
    * The mock proxy object to use during test.
    */
-  let browserProxy: TestPrivacyPageBrowserProxy;
+  let browserProxy: TestSiteSettingsPrefsBrowserProxy;
 
   let testElement: SettingsReviewNotificationPermissionsElement;
 
@@ -25,13 +25,13 @@ suite('CrSettingsReviewNotificationPermissionsTest', function() {
   const detail_2 = 'About 1 notification a day';
 
   setup(function() {
-    browserProxy = new TestPrivacyPageBrowserProxy();
+    browserProxy = new TestSiteSettingsPrefsBrowserProxy();
     const mock_data = [
       {origin: origin_1, notificationInfoString: detail_1},
       {origin: origin_2, notificationInfoString: detail_2},
     ];
     browserProxy.setReviewNotificationPermissions(mock_data);
-    PrivacyPageBrowserProxyImpl.setInstance(browserProxy);
+    SiteSettingsPrefsBrowserProxyImpl.setInstance(browserProxy);
 
     document.body.innerHTML = '';
     testElement = document.createElement('review-notification-permissions');

@@ -5,7 +5,7 @@
 // clang-format off
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
-import {AppProtocolEntry, ChooserType, ContentSetting, ContentSettingsTypes, HandlerEntry, ProtocolEntry, RawChooserException, RawSiteException, RecentSitePermissions, SiteGroup, SiteSettingSource, SiteSettingsPrefsBrowserProxy, ZoomLevelEntry} from 'chrome://settings/lazy_load.js';
+import {AppProtocolEntry, ChooserType, ContentSetting, ContentSettingsTypes, HandlerEntry, NotificationPermission, ProtocolEntry, RawChooserException, RawSiteException, RecentSitePermissions, SiteGroup, SiteSettingSource, SiteSettingsPrefsBrowserProxy, ZoomLevelEntry} from 'chrome://settings/lazy_load.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 import {createOriginInfo, createSiteGroup,createSiteSettingsPrefs, getContentSettingsTypeFromChooserType, SiteSettingsPref} from './test_util.js';
@@ -30,6 +30,7 @@ export class TestSiteSettingsPrefsBrowserProxy extends TestBrowserProxy
   private isPatternValidForType_: boolean = true;
   private cookieSettingDesciption_: string = '';
   private recentSitePermissions_: RecentSitePermissions[] = [];
+  private reviewNotificationList_: NotificationPermission[] = [];
 
   constructor() {
     super([
@@ -66,6 +67,7 @@ export class TestSiteSettingsPrefsBrowserProxy extends TestBrowserProxy
       'recordAction',
       'getCookieSettingDescription',
       'getRecentSitePermissions',
+      'getReviewNotificationPermissions',
     ]);
 
 
@@ -101,35 +103,7 @@ export class TestSiteSettingsPrefsBrowserProxy extends TestBrowserProxy
       ContentSettingsTypes.WINDOW_PLACEMENT,
     ];
 
-    /** @private {!SiteSettingsPref} */
     this.prefs_ = createSiteSettingsPrefs([], [], []);
-
-    /** @private {!Array<ZoomLevelEntry>} */
-    this.zoomList_ = [];
-
-    /** @private {!Array<!AppProtocolEntry>} */
-    this.appAllowedProtocolHandlers_ = [];
-
-    /** @private {!Array<!AppProtocolEntry>} */
-    this.appDisallowedProtocolHandlers_ = [];
-
-    /** @private {!Array<!ProtocolEntry>} */
-    this.protocolHandlers_ = [];
-
-    /** @private {!Array<!HandlerEntry>} */
-    this.ignoredProtocols_ = [];
-
-    /** @private {boolean} */
-    this.isOriginValid_ = true;
-
-    /** @private {boolean} */
-    this.isPatternValidForType_ = true;
-
-    /** @private {string} */
-    this.cookieSettingDesciption_ = '';
-
-    /** @private {!Array<!RecentSitePermissions>} */
-    this.recentSitePermissions_ = [];
   }
 
   /**
@@ -625,5 +599,15 @@ export class TestSiteSettingsPrefsBrowserProxy extends TestBrowserProxy
   /** @override */
   setProtocolHandlerDefault(value: boolean) {
     this.methodCalled('setProtocolHandlerDefault', value);
+  }
+
+  getReviewNotificationPermissions(): Promise<NotificationPermission[]> {
+    this.methodCalled('getReviewNotificationPermissions');
+    return Promise.resolve(this.reviewNotificationList_.slice());
+  }
+
+  setReviewNotificationPermissions(reviewNotificationList:
+                                       NotificationPermission[]) {
+    this.reviewNotificationList_ = reviewNotificationList;
   }
 }

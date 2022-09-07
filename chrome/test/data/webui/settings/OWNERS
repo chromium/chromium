@@ -10,6 +10,7 @@ per-file personalization_options_test.ts=sauski@google.com
 per-file privacy_page_test.ts=sauski@google.com
 per-file privacy_guide_page_test.ts=rainhard@chromium.org,sauski@google.com
 per-file recent_site_permissions_test.ts=sauski@google.com
+per-file review_notification_permissions_test.ts=rainhard@chromium.org
 per-file safety_check_page_test.ts=rainhard@chromium.org,sauski@google.com
 per-file secure_dns_interactive_test.ts=sauski@google.com
 per-file secure_dns_test.ts=sauski@google.com

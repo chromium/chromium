@@ -14,10 +14,10 @@ import {PaperTooltipElement} from 'chrome://resources/polymer/v3_0/paper-tooltip
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BaseMixin} from '../base_mixin.js';
-import {SiteSettingsMixin} from '../site_settings/site_settings_mixin.js';
 
-import {NotificationPermission, PrivacyPageBrowserProxyImpl} from './privacy_page_browser_proxy.js';
 import {getTemplate} from './review_notification_permissions.html.js';
+import {SiteSettingsMixin} from './site_settings_mixin.js';
+import {NotificationPermission, SiteSettingsPrefsBrowserProxyImpl} from './site_settings_prefs_browser_proxy.js';
 
 export interface SettingsReviewNotificationPermissionsElement {
   $: {
@@ -116,7 +116,7 @@ export class SettingsReviewNotificationPermissionsElement extends
    * trigger the update of the display list.
    */
   private async populateList_() {
-    const browserProxy = PrivacyPageBrowserProxyImpl.getInstance();
+    const browserProxy = SiteSettingsPrefsBrowserProxyImpl.getInstance();
     this.reviewNotificationPermissionsList_ =
         await browserProxy.getReviewNotificationPermissions();
   }

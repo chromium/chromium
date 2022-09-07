@@ -45,15 +45,6 @@ export interface SecureDnsSetting {
   managementMode: SecureDnsUiManagementMode;
 }
 
-/**
- * The notification permission information passed from
- * site_settings_handler.cc.
- */
-export interface NotificationPermission {
-  origin: string;
-  notificationInfoString: string;
-}
-
 export interface PrivacyPageBrowserProxy {
   // <if expr="_google_chrome and not chromeos_ash">
   getMetricsReporting(): Promise<MetricsReporting>;
@@ -90,9 +81,6 @@ export interface PrivacyPageBrowserProxy {
    */
   recordUserDropdownInteraction(oldSelection: string, newSelection: string):
       void;
-
-  /** Gets the site list that send a lot of notifications. */
-  getReviewNotificationPermissions(): Promise<NotificationPermission[]>;
 }
 
 export class PrivacyPageBrowserProxyImpl implements PrivacyPageBrowserProxy {
@@ -135,10 +123,6 @@ export class PrivacyPageBrowserProxyImpl implements PrivacyPageBrowserProxy {
 
   recordUserDropdownInteraction(oldSelection: string, newSelection: string) {
     chrome.send('recordUserDropdownInteraction', [oldSelection, newSelection]);
-  }
-
-  getReviewNotificationPermissions() {
-    return sendWithPromise('getReviewNotificationPermissions');
   }
 
   static getInstance(): PrivacyPageBrowserProxy {
