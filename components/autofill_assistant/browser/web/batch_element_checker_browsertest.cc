@@ -247,8 +247,16 @@ IN_PROC_BROWSER_TEST_F(BatchElementCheckerBrowserTest,
       /* max_wait_time= */ base::Milliseconds(1));
 }
 
+// TODO(crbug.com/1360532): Flaky on Android.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_ObserverBatchElementCheckerDynamicElements \
+  DISABLED_ObserverBatchElementCheckerDynamicElements
+#else
+#define MAYBE_ObserverBatchElementCheckerDynamicElements \
+  ObserverBatchElementCheckerDynamicElements
+#endif
 IN_PROC_BROWSER_TEST_F(BatchElementCheckerBrowserTest,
-                       ObserverBatchElementCheckerDynamicElements) {
+                       MAYBE_ObserverBatchElementCheckerDynamicElements) {
   RunObserverBatchElementChecker({{
       // A selector that only matches for ~200ms.
       Match(Selector({".dynamic.about-2-seconds"})),
