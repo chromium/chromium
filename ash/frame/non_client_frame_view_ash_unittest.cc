@@ -49,6 +49,7 @@
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_unittest_util.h"
 #include "ui/gfx/vector_icon_types.h"
+#include "ui/views/test/views_test_utils.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/views/window/caption_button_layout_constants.h"
@@ -563,7 +564,7 @@ TEST_F(NonClientFrameViewAshTest, FrameVisibility) {
   EXPECT_EQ(client_bounds, widget->client_view()->GetLocalBounds().size());
 
   non_client_frame_view->SetFrameEnabled(false);
-  widget->GetRootView()->Layout();
+  views::test::RunScheduledLayout(widget->GetRootView());
   EXPECT_EQ(gfx::Size(200, 100),
             widget->client_view()->GetLocalBounds().size());
   EXPECT_FALSE(non_client_frame_view->GetFrameEnabled());
@@ -572,7 +573,7 @@ TEST_F(NonClientFrameViewAshTest, FrameVisibility) {
       non_client_frame_view->GetClientBoundsForWindowBounds(window_bounds));
 
   non_client_frame_view->SetFrameEnabled(true);
-  widget->GetRootView()->Layout();
+  views::test::RunScheduledLayout(widget->GetRootView());
   EXPECT_EQ(client_bounds, widget->client_view()->GetLocalBounds().size());
   EXPECT_TRUE(non_client_frame_view->GetFrameEnabled());
   EXPECT_EQ(32, delegate->GetNonClientFrameViewTopBorderHeight());
@@ -767,20 +768,20 @@ TEST_F(NonClientFrameViewAshTest, WideFrameButton) {
                test_api.size_button()->icon_definition_for_test()->name);
 
   widget->SetFullscreen(true);
-  header_view->Layout();
+  views::test::RunScheduledLayout(header_view);
   EXPECT_STREQ(views::kWindowControlRestoreIcon.name,
                test_api.size_button()->icon_definition_for_test()->name);
   {
     WMEvent event(WM_EVENT_PIN);
     WindowState::Get(widget->GetNativeWindow())->OnWMEvent(&event);
-    header_view->Layout();
+    views::test::RunScheduledLayout(header_view);
     EXPECT_STREQ(views::kWindowControlRestoreIcon.name,
                  test_api.size_button()->icon_definition_for_test()->name);
   }
   {
     WMEvent event(WM_EVENT_TRUSTED_PIN);
     WindowState::Get(widget->GetNativeWindow())->OnWMEvent(&event);
-    header_view->Layout();
+    views::test::RunScheduledLayout(header_view);
     EXPECT_STREQ(views::kWindowControlRestoreIcon.name,
                  test_api.size_button()->icon_definition_for_test()->name);
   }
