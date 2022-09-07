@@ -2,11 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_OPTIMIZATION_GUIDE_CONTENT_BROWSER_PAGE_CONTENT_ANNOTATIONS_WEB_CONTENTS_OBSERVER_H_
-#define COMPONENTS_OPTIMIZATION_GUIDE_CONTENT_BROWSER_PAGE_CONTENT_ANNOTATIONS_WEB_CONTENTS_OBSERVER_H_
+#ifndef CHROME_BROWSER_OPTIMIZATION_GUIDE_PAGE_CONTENT_ANNOTATIONS_WEB_CONTENTS_OBSERVER_H_
+#define CHROME_BROWSER_OPTIMIZATION_GUIDE_PAGE_CONTENT_ANNOTATIONS_WEB_CONTENTS_OBSERVER_H_
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "components/continuous_search/browser/search_result_extractor_client.h"
+#include "components/continuous_search/browser/search_result_extractor_client_status.h"
+#include "components/continuous_search/common/public/mojom/continuous_search.mojom.h"
 #include "components/optimization_guide/content/browser/salient_image_retriever.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
@@ -37,6 +40,8 @@ class PageContentAnnotationsWebContentsObserver
       public content::WebContentsUserData<
           PageContentAnnotationsWebContentsObserver> {
  public:
+  static void MaybeCreateForWebContents(content::WebContents* web_contents);
+
   ~PageContentAnnotationsWebContentsObserver() override;
 
   PageContentAnnotationsWebContentsObserver(
@@ -61,6 +66,7 @@ class PageContentAnnotationsWebContentsObserver
   void DidFinishNavigation(content::NavigationHandle* handle) override;
   void TitleWasSet(content::NavigationEntry* navigation_entry) override;
   void DocumentOnLoadCompletedInPrimaryMainFrame() override;
+  void DidStopLoading() override;
 
   // Callback invoked when the page metadata has been received from
   // |optimization_guide_decider_| for |visit|.
@@ -68,7 +74,17 @@ class PageContentAnnotationsWebContentsObserver
                                     OptimizationGuideDecision decision,
                                     const OptimizationMetadata& metadata);
 
-  void DidStopLoading() override;
+  // Persists the related searches that are extracted in |results| for |visit|.
+  void PersistRelatedSearches(
+      const HistoryVisit& visit,
+      continuous_search::SearchResultExtractorClientStatus status,
+      continuous_search::mojom::CategoryResultsPtr results);
+
+  void SetSearchResultExtractorClientForTesting(
+      std::unique_ptr<continuous_search::SearchResultExtractorClient>
+          search_result_extractor_client) {
+    search_result_extractor_client_ = std::move(search_result_extractor_client);
+  }
 
   // Not owned. Guaranteed to outlive |this|.
   raw_ptr<PageContentAnnotationsService> page_content_annotations_service_;
@@ -89,6 +105,11 @@ class PageContentAnnotationsWebContentsObserver
   // Not owned. Guaranteed to outlive |this|.
   raw_ptr<prerender::NoStatePrefetchManager> no_state_prefetch_manager_;
 
+  // The client of continuous_search::mojom::SearchResultExtractor interface
+  // used for extracting data from the main frame of Google SRP |web_contents|.
+  std::unique_ptr<continuous_search::SearchResultExtractorClient>
+      search_result_extractor_client_;
+
   base::WeakPtrFactory<PageContentAnnotationsWebContentsObserver>
       weak_ptr_factory_{this};
 
@@ -97,4 +118,4 @@ class PageContentAnnotationsWebContentsObserver
 
 }  // namespace optimization_guide
 
-#endif  // COMPONENTS_OPTIMIZATION_GUIDE_CONTENT_BROWSER_PAGE_CONTENT_ANNOTATIONS_WEB_CONTENTS_OBSERVER_H_
+#endif  // CHROME_BROWSER_OPTIMIZATION_GUIDE_PAGE_CONTENT_ANNOTATIONS_WEB_CONTENTS_OBSERVER_H_

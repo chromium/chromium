@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_OPTIMIZATION_GUIDE_CONTENT_BROWSER_PAGE_CONTENT_ANNOTATIONS_MODEL_MANAGER_H_
-#define COMPONENTS_OPTIMIZATION_GUIDE_CONTENT_BROWSER_PAGE_CONTENT_ANNOTATIONS_MODEL_MANAGER_H_
+#ifndef COMPONENTS_OPTIMIZATION_GUIDE_CORE_PAGE_CONTENT_ANNOTATIONS_MODEL_MANAGER_H_
+#define COMPONENTS_OPTIMIZATION_GUIDE_CORE_PAGE_CONTENT_ANNOTATIONS_MODEL_MANAGER_H_
 
 #include "base/memory/raw_ptr.h"
-#include "components/optimization_guide/content/browser/page_content_annotator.h"
 #include "components/optimization_guide/core/entity_metadata.h"
 #include "components/optimization_guide/core/model_info.h"
 #include "components/optimization_guide/core/page_content_annotation_job.h"
 #include "components/optimization_guide/core/page_content_annotations_common.h"
+#include "components/optimization_guide/core/page_content_annotator.h"
 #include "components/optimization_guide/core/page_topics_model_executor.h"
 #include "components/optimization_guide/core/page_visibility_model_executor.h"
 #include "net/base/priority_queue.h"
@@ -18,13 +18,9 @@
 
 namespace optimization_guide {
 
+class EntityMetadataProvider;
 class OptimizationGuideModelProvider;
 class PageEntitiesModelExecutor;
-
-// Callback to inform the caller that the metadata for an entity ID has been
-// retrieved.
-using EntityMetadataRetrievedCallback =
-    base::OnceCallback<void(const absl::optional<EntityMetadata>&)>;
 
 // Manages the loading and execution of models used to annotate page content.
 class PageContentAnnotationsModelManager : public PageContentAnnotator {
@@ -52,10 +48,7 @@ class PageContentAnnotationsModelManager : public PageContentAnnotator {
       AnnotationType type,
       base::OnceCallback<void(bool)> callback) override;
 
-  // Retrieves the metadata associated with |entity_id|. Invokes |callback|
-  // when done.
-  void GetMetadataForEntityId(const std::string& entity_id,
-                              EntityMetadataRetrievedCallback callback);
+  EntityMetadataProvider* GetEntityMetadataProvider() const;
 
  private:
   friend class PageContentAnnotationsModelManagerTest;
@@ -143,4 +136,4 @@ class PageContentAnnotationsModelManager : public PageContentAnnotator {
 
 }  // namespace optimization_guide
 
-#endif  // COMPONENTS_OPTIMIZATION_GUIDE_CONTENT_BROWSER_PAGE_CONTENT_ANNOTATIONS_MODEL_MANAGER_H_
+#endif  // COMPONENTS_OPTIMIZATION_GUIDE_CORE_PAGE_CONTENT_ANNOTATIONS_MODEL_MANAGER_H_

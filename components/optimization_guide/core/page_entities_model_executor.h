@@ -10,6 +10,7 @@
 
 #include "base/callback.h"
 #include "components/optimization_guide/core/entity_metadata.h"
+#include "components/optimization_guide/core/entity_metadata_provider.h"
 #include "components/optimization_guide/core/model_info.h"
 #include "components/optimization_guide/core/page_content_annotation_job_executor.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -19,9 +20,10 @@ namespace optimization_guide {
 
 // The PageEntitiesModelExecutor is responsible for executing the PAGE_ENTITIES
 // model.
-class PageEntitiesModelExecutor : public PageContentAnnotationJobExecutor {
+class PageEntitiesModelExecutor : public PageContentAnnotationJobExecutor,
+                                  public EntityMetadataProvider {
  public:
-  virtual ~PageEntitiesModelExecutor() = default;
+  ~PageEntitiesModelExecutor() override = default;
 
   using PageEntitiesMetadataModelExecutedCallback = base::OnceCallback<void(
       const absl::optional<std::vector<ScoredEntityMetadata>>&)>;
@@ -35,12 +37,6 @@ class PageEntitiesModelExecutor : public PageContentAnnotationJobExecutor {
 
   using PageEntitiesModelEntityMetadataRetrievedCallback =
       base::OnceCallback<void(const absl::optional<EntityMetadata>&)>;
-
-  // Retrieves the metadata associated with |entity_id|. Invokes |callback|
-  // when done.
-  virtual void GetMetadataForEntityId(
-      const std::string& entity_id,
-      PageEntitiesModelEntityMetadataRetrievedCallback callback) = 0;
 
   // Runs |callback| now if a model is loaded or the next time |OnModelUpdated|
   // is called.

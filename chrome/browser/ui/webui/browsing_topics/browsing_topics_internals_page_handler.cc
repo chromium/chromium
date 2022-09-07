@@ -11,7 +11,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "components/browsing_topics/browsing_topics_service.h"
 #include "components/browsing_topics/mojom/browsing_topics_internals.mojom.h"
-#include "components/optimization_guide/content/browser/page_content_annotations_service.h"
+#include "components/optimization_guide/core/page_content_annotations_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "content/public/common/content_features.h"
 #include "third_party/blink/public/common/features.h"

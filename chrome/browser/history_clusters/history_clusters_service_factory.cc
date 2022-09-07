@@ -14,8 +14,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "components/history_clusters/core/history_clusters_service.h"
 #include "components/keyed_service/core/service_access_type.h"
-#include "components/optimization_guide/content/browser/page_content_annotations_service.h"
 #include "components/optimization_guide/core/new_optimization_guide_decider.h"
+#include "components/optimization_guide/core/page_content_annotations_service.h"
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "content/public/browser/storage_partition.h"
 

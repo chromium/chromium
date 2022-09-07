@@ -12,7 +12,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/browsing_topics/util.h"
 #include "components/history/core/browser/history_service.h"
-#include "components/optimization_guide/content/browser/page_content_annotations_service.h"
+#include "components/optimization_guide/core/page_content_annotations_service.h"
 #include "components/privacy_sandbox/canonical_topic.h"
 #include "components/privacy_sandbox/privacy_sandbox_settings.h"
 #include "content/public/browser/browsing_topics_site_data_manager.h"

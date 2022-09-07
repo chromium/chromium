@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/optimization_guide/content/browser/page_content_annotations_model_manager.h"
+#include "components/optimization_guide/core/page_content_annotations_model_manager.h"
 
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
@@ -15,8 +15,6 @@
 #include "components/optimization_guide/core/optimization_guide_model_provider.h"
 #include "components/optimization_guide/core/page_entities_model_executor.h"
 #include "components/optimization_guide/optimization_guide_buildflags.h"
-#include "content/public/browser/browser_task_traits.h"
-#include "content/public/browser/browser_thread.h"
 
 #if BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
 #include "components/optimization_guide/core/page_entities_model_executor_impl.h"
@@ -106,16 +104,9 @@ void PageContentAnnotationsModelManager::SetUpPageVisibilityModel(
           absl::nullopt);
 }
 
-void PageContentAnnotationsModelManager::GetMetadataForEntityId(
-    const std::string& entity_id,
-    EntityMetadataRetrievedCallback callback) {
-  if (page_entities_model_executor_) {
-    page_entities_model_executor_->GetMetadataForEntityId(entity_id,
-                                                          std::move(callback));
-    return;
-  }
-
-  std::move(callback).Run(absl::nullopt);
+EntityMetadataProvider*
+PageContentAnnotationsModelManager::GetEntityMetadataProvider() const {
+  return page_entities_model_executor_.get();
 }
 
 void PageContentAnnotationsModelManager::RequestAndNotifyWhenModelAvailable(

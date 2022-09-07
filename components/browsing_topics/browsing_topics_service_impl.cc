@@ -13,7 +13,7 @@
 #include "components/browsing_topics/browsing_topics_page_load_data_tracker.h"
 #include "components/browsing_topics/mojom/browsing_topics_internals.mojom.h"
 #include "components/browsing_topics/util.h"
-#include "components/optimization_guide/content/browser/page_content_annotations_service.h"
+#include "components/optimization_guide/core/page_content_annotations_service.h"
 #include "content/public/browser/browsing_topics_site_data_manager.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "services/metrics/public/cpp/ukm_builders.h"

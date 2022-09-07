@@ -1,0 +1,4 @@
+include_rules = [
+  "+components/continuous_search/browser",
+  "+components/continuous_search/common/public/mojom",
+]
