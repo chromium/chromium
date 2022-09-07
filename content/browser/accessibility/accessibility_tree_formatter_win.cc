@@ -23,9 +23,9 @@
 #include "content/browser/accessibility/accessibility_tree_formatter_blink.h"
 #include "content/browser/accessibility/accessibility_tree_formatter_uia_win.h"
 #include "content/browser/accessibility/browser_accessibility_manager.h"
-#include "content/browser/accessibility/browser_accessibility_win.h"
 #include "content/public/browser/ax_inspect_factory.h"
 #include "third_party/iaccessible2/ia2_api_all.h"
+#include "ui/accessibility/platform/ax_platform_node_base.h"
 #include "ui/accessibility/platform/inspect/ax_inspect_utils.h"
 #include "ui/accessibility/platform/inspect/ax_inspect_utils_win.h"
 #include "ui/base/win/atl_module.h"
@@ -104,11 +104,11 @@ GetIAObject(ui::AXPlatformNodeDelegate* node, LONG& root_x, LONG& root_y) {
   base::win::ScopedVariant variant_self(CHILDID_SELF);
   LONG root_width, root_height;
   BrowserAccessibility* root = root_manager->GetBrowserAccessibilityRoot();
-  HRESULT hr = ToBrowserAccessibilityWin(root)->GetCOM()->accLocation(
+  HRESULT hr = root->GetNativeViewAccessible()->accLocation(
       &root_x, &root_y, &root_width, &root_height, variant_self);
   DCHECK(SUCCEEDED(hr));
 
-  return ToBrowserAccessibilityComWin(node_internal);
+  return node->GetNativeViewAccessible();
 }
 
 base::Value AccessibilityTreeFormatterWin::BuildNode(
