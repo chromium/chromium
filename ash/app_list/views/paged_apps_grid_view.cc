@@ -34,13 +34,13 @@
 #include "ui/compositor/animation_throughput_reporter.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/paint_recorder.h"
-#include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/events/event.h"
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/geometry/transform_util.h"
@@ -127,6 +127,18 @@ int GetFadeoutMaskHeight() {
   // fadeout mask is not shown, return 0 here so the apps grid is not shown in
   // the fadeout zone during drag.
   return features::IsBackgroundBlurEnabled() ? kDefaultFadeoutMaskHeight : 0;
+}
+
+// Apply `transform` to `bounds` at an origin of (0,0) so that the scaling
+// part of the transform does not modify the position.
+gfx::Rect ApplyTransformAtOrigin(gfx::Rect bounds, gfx::Transform transform) {
+  gfx::Vector2d origin_offset = bounds.OffsetFromOrigin();
+
+  gfx::RectF bounds_f(gfx::SizeF(bounds.size()));
+  transform.TransformRect(&bounds_f);
+  bounds_f.Offset(origin_offset);
+
+  return gfx::ToRoundedRect(bounds_f);
 }
 
 }  // namespace
@@ -1247,8 +1259,16 @@ void PagedAppsGridView::AnimateAppListItemsForCardifiedState(
   for (size_t i = 0; i < view_model()->view_size(); ++i) {
     AppListItemView* entry_view = view_model()->view_at(i);
     // Reposition view bounds to compensate for the translation offset.
-    gfx::Rect current_bounds = entry_view->bounds();
+    gfx::Rect current_bounds =
+        items_container()->GetMirroredRect(entry_view->bounds());
     current_bounds.Offset(translate_offset);
+
+    if (entry_view->layer()) {
+      // Apply the current layer transform to current bounds, for the case where
+      // `entry_view` is already transformed by a layer animation.
+      current_bounds = ApplyTransformAtOrigin(current_bounds,
+                                              entry_view->layer()->transform());
+    }
 
     entry_view->EnsureLayer();
 
@@ -1279,7 +1299,7 @@ void PagedAppsGridView::AnimateAppListItemsForCardifiedState(
     // transition transform when needed.
     gfx::Transform transform = gfx::TransformBetweenRects(
         gfx::RectF(items_container()->GetMirroredRect(target_bounds)),
-        gfx::RectF(items_container()->GetMirroredRect(current_bounds)));
+        gfx::RectF(current_bounds));
     entry_view->layer()->SetTransform(transform);
 
     animation_sequence->SetTransform(entry_view->layer(), gfx::Transform(),
