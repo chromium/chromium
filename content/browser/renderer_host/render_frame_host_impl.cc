@@ -3084,10 +3084,8 @@ void RenderFrameHostImpl::InitializePolicyContainerHost(
     // frames arguably are renderer-created.
     //
     // TODO(https://crbug.com/1194421): Address the prerendering case.
-    // TODO(crbug.com/1316388): With MPArch there may be embedded main frames
-    // and so is_main_frame should not be used to identify all embedded frames.
-    // Follow up to confirm correctness.
-    if (IsOutermostMainFrame() && !renderer_initiated_creation_of_main_frame &&
+    DCHECK(IsOutermostMainFrame());
+    if (!renderer_initiated_creation_of_main_frame &&
         lifecycle_state_ != LifecycleStateImpl::kPrerendering) {
       policies.ip_address_space = network::mojom::IPAddressSpace::kLocal;
     }
