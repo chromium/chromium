@@ -144,7 +144,6 @@ void ToolbarActionHoverCardController::UpdateHoverCard(
     HideHoverCard();
 }
 
-// TODO(crbug.com/1351778): Fix inkdrop when hovering over `action_view`.
 void ToolbarActionHoverCardController::UpdateOrShowHoverCard(
     ToolbarActionView* action_view,
     ToolbarActionHoverCardUpdateType update_type) {

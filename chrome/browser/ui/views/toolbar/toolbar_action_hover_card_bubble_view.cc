@@ -329,6 +329,10 @@ ToolbarActionHoverCardBubbleView::ToolbarActionHoverCardBubbleView(
 
   set_fixed_width(kHoverCardWidth);
 
+  // Let anchor point handle its own highlight, since the hover card is the
+  // same for multiple anchor points.
+  set_highlight_button_when_shown(false);
+
   // Set up content.
   title_label_ = AddChildView(std::make_unique<FadeLabel>(
       CONTEXT_TAB_HOVER_CARD_TITLE, kHoverCardTitleMaxLines));
