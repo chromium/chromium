@@ -9,7 +9,7 @@
 
 #include "base/bind.h"
 #include "base/containers/contains.h"
-#include "base/containers/flat_set.h"
+#include "base/containers/fixed_flat_set.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
@@ -88,15 +88,11 @@ bool IsNonStandardUrlScheme(const GURL& effective_url) {
 
 bool IsAlwaysAllowedHost(const GURL& effective_url) {
   // Allow navigations to allowed origins.
-  static const char* const kAllowedHosts[] = {
-      "accounts.google.com", "families.google.com", "familylink.google.com",
-      "myaccount.google.com", "support.google.com"};
+  constexpr auto kAllowedHosts = base::MakeFixedFlatSet<base::StringPiece>(
+      {"accounts.google.com", "families.google.com", "familylink.google.com",
+       "myaccount.google.com", "policies.google.com", "support.google.com"});
 
-  for (const char* allowedHost : kAllowedHosts) {
-    if (allowedHost == effective_url.host_piece())
-      return true;
-  }
-  return false;
+  return base::Contains(kAllowedHosts, effective_url.host_piece());
 }
 
 bool IsAlwaysAllowedUrlPrefix(const GURL& effective_url) {
