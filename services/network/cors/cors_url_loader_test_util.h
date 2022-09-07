@@ -291,6 +291,14 @@ class CorsURLLoaderTestBase : public testing::Test {
       const std::vector<net::NetLogEntry>& entries,
       net::NetLogEventType type);
 
+  static net::RedirectInfo CreateRedirectInfo(
+      int status_code,
+      base::StringPiece method,
+      const GURL& url,
+      base::StringPiece referrer = base::StringPiece(),
+      net::ReferrerPolicy referrer_policy = net::ReferrerPolicy::NO_REFERRER,
+      net::SiteForCookies site_for_cookies = net::SiteForCookies());
+
  private:
   // Test environment.
   base::test::TaskEnvironment task_environment_;

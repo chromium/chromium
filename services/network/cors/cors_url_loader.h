@@ -15,6 +15,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/log/net_log_with_source.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "net/url_request/redirect_info.h"
 #include "services/network/cors/preflight_controller.h"
 #include "services/network/public/cpp/cors/cors_error_status.h"
 #include "services/network/public/cpp/cross_origin_embedder_policy.h"
@@ -158,6 +159,11 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoader
 
   bool PassesTimingAllowOriginCheck(
       const mojom::URLResponseHead& response) const;
+
+  bool PassesTimingAllowOriginCheck(const mojom::URLResponseHead& response,
+                                    const GURL&) const;
+
+  void CheckTainted(const net::RedirectInfo&);
 
   // Returns the client security state that applies to this request.
   // May return nullptr.

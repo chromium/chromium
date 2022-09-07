@@ -507,6 +507,10 @@ void ServiceWorkerSubresourceLoader::StartResponse(
       response_head_->load_timing.receive_headers_start;
   response_source_ = response->response_source;
 
+  // Constructed subresource responses are always same-origin as the requesting
+  // client.
+  response_head_->timing_allow_passed = true;
+
   // Handle a redirect response. ComputeRedirectInfo returns non-null redirect
   // info if the given response is a redirect.
   redirect_info_ = blink::ServiceWorkerLoaderHelpers::ComputeRedirectInfo(

@@ -204,6 +204,12 @@ void FetchEvent::OnNavigationPreloadComplete(
   resource_response.SetEncodedBodyLength(encoded_body_length);
   resource_response.SetDecodedBodyLength(decoded_body_length);
 
+  // Navigation preload is always same-origin, so its timing information should
+  // be visible to the service worker. Note that if the preloaded response is
+  // used, the main document doesn't see the preloaded timing, but rather the
+  // timing of the fetch that initiated this FetchEvent.
+  resource_response.SetTimingAllowPassed(true);
+
   ResourceLoadTiming* timing = resource_response.GetResourceLoadTiming();
   // |timing| can be null, see https://crbug.com/817691.
   base::TimeTicks request_time =

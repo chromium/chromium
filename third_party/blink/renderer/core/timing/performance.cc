@@ -430,66 +430,6 @@ void Performance::setBackForwardCacheRestorationBufferSizeForTest(
   back_forward_cache_restoration_buffer_size_limit_ = size;
 }
 
-bool Performance::PassesTimingAllowCheck(
-    const ResourceResponse& response,
-    const ResourceResponse& next_response,
-    const SecurityOrigin& initiator_security_origin,
-    ExecutionContext* context,
-    bool* response_tainting_not_basic,
-    bool* tainted_origin_flag) {
-  DCHECK(response_tainting_not_basic);
-  DCHECK(tainted_origin_flag);
-  const KURL& response_url = response.ResponseUrl();
-  scoped_refptr<const SecurityOrigin> resource_origin =
-      SecurityOrigin::Create(response_url);
-  bool is_same_origin =
-      resource_origin->IsSameOriginWith(&initiator_security_origin);
-  if (!*response_tainting_not_basic && is_same_origin)
-    return true;
-  *response_tainting_not_basic = true;
-
-  const AtomicString& timing_allow_origin_string =
-      response.HttpHeaderField(http_names::kTimingAllowOrigin);
-  network::mojom::blink::TimingAllowOriginPtr tao =
-      ParseTimingAllowOrigin(timing_allow_origin_string);
-
-  if (!tao)
-    return false;
-
-  if (tao->which() == network::mojom::blink::TimingAllowOrigin::Tag::kAll) {
-    UseCounter::Count(context, WebFeature::kStarInTimingAllowOrigin);
-    return true;
-  }
-
-  const Vector<String>& timing_allowed_origins = tao->get_serialized_origins();
-  if (timing_allowed_origins.size() == 1) {
-    UseCounter::Count(context, WebFeature::kSingleOriginInTimingAllowOrigin);
-  } else if (timing_allowed_origins.size() > 1u) {
-    UseCounter::Count(context, WebFeature::kMultipleOriginsInTimingAllowOrigin);
-  }
-
-  bool is_next_resource_same_origin = true;
-  // Only do the origin check if |next_response| is not equal to |response|.
-  if (&next_response != &response) {
-    is_next_resource_same_origin =
-        SecurityOrigin::Create(next_response.ResponseUrl())
-            ->IsSameOriginWith(resource_origin.get());
-  }
-  if (!is_same_origin && !is_next_resource_same_origin)
-    *tainted_origin_flag = true;
-  // We already checked if 'star' is present, so fail if tainted origin flag is
-  // set.
-  if (*tainted_origin_flag)
-    return false;
-
-  const String& serialized_origin = initiator_security_origin.ToString();
-  for (const String& timing_allowed_origin : timing_allowed_origins) {
-    if (serialized_origin == timing_allowed_origin)
-      return true;
-  }
-  return false;
-}
-
 bool Performance::ShouldReportResponseStatus(
     const ResourceResponse& response,
     const SecurityOrigin& initiator_security_origin,
@@ -502,32 +442,6 @@ bool Performance::ShouldReportResponseStatus(
   bool is_same_origin =
       response_origin->IsSameOriginWith(&initiator_security_origin);
   return is_same_origin;
-}
-
-bool Performance::AllowsTimingRedirect(
-    const Vector<ResourceResponse>& redirect_chain,
-    const ResourceResponse& final_response,
-    const SecurityOrigin& initiator_security_origin,
-    ExecutionContext* context) {
-  bool response_tainting_not_basic = false;
-  bool tainted_origin_flag = false;
-
-  for (unsigned i = 0; i < redirect_chain.size(); ++i) {
-    const ResourceResponse& response = redirect_chain[i];
-    const ResourceResponse& next_response =
-        i + 1 < redirect_chain.size() ? redirect_chain[i + 1] : final_response;
-    if (!PassesTimingAllowCheck(
-            response, next_response, initiator_security_origin, context,
-            &response_tainting_not_basic, &tainted_origin_flag))
-      return false;
-  }
-  if (!PassesTimingAllowCheck(
-          final_response, final_response, initiator_security_origin, context,
-          &response_tainting_not_basic, &tainted_origin_flag)) {
-    return false;
-  }
-
-  return true;
 }
 
 void Performance::GenerateAndAddResourceTiming(
@@ -570,9 +484,7 @@ mojom::blink::ResourceTimingInfoPtr Performance::GenerateResourceTiming(
   result->context_type = info.ContextType();
   result->request_destination = info.RequestDestination();
 
-  result->allow_timing_details =
-      AllowsTimingRedirect(info.RedirectChain(), final_response,
-                           destination_origin, &context_for_use_counter);
+  result->allow_timing_details = final_response.TimingAllowPassed();
 
   const Vector<ResourceResponse>& redirect_chain = info.RedirectChain();
   if (!redirect_chain.IsEmpty()) {

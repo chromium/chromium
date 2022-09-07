@@ -23,6 +23,7 @@
 #include "content/common/fetch/fetch_request_type_converters.h"
 #include "content/public/browser/browser_thread.h"
 #include "services/network/public/cpp/features.h"
+#include "services/network/public/cpp/timing_allow_origin_parser.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/service_worker/service_worker_loader_helpers.h"
@@ -358,6 +359,15 @@ void ServiceWorkerMainResourceLoader::StartResponse(
       fetch_event_timing_->dispatch_event_time;
   response_head_->load_timing.service_worker_respond_with_settled =
       fetch_event_timing_->respond_with_settled_time;
+
+  if (resource_request_.request_initiator &&
+      (resource_request_.request_initiator->IsSameOriginWith(
+           resource_request_.url) ||
+       network::TimingAllowOriginCheck(
+           response_head_->parsed_headers->timing_allow_origin,
+           *resource_request_.request_initiator))) {
+    response_head_->timing_allow_passed = true;
+  }
 
   // Make the navigated page inherit the SSLInfo from its controller service
   // worker's script. This affects the HTTPS padlock, etc, shown by the
