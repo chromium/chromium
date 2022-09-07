@@ -21,8 +21,6 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "printing/metafile_skia.h"
 #include "printing/mojom/print.mojom.h"
-#include "printing/page_number.h"
-#include "printing/page_range.h"
 #include "printing/print_settings.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "skia/ext/platform_canvas.h"
@@ -31,7 +29,6 @@
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
 #include "third_party/blink/public/mojom/clipboard/clipboard.mojom.h"
 #include "third_party/blink/public/platform/platform.h"
-#include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/public/web/web_frame.h"
 #include "third_party/blink/public/web/web_frame_widget.h"
 #include "third_party/blink/public/web/web_local_frame.h"
@@ -43,8 +40,7 @@
 
 namespace content {
 
-SkBitmap PrintFrameToBitmap(blink::WebLocalFrame* web_frame,
-                            const printing::PageRanges& page_ranges) {
+SkBitmap PrintFrameToBitmap(blink::WebLocalFrame* web_frame) {
   auto* frame_widget = web_frame->LocalRoot()->FrameWidget();
   frame_widget->UpdateAllLifecyclePhases(blink::DocumentUpdateReason::kTest);
 
@@ -52,11 +48,8 @@ SkBitmap PrintFrameToBitmap(blink::WebLocalFrame* web_frame,
 
   uint32_t page_count =
       web_frame->PrintBegin(page_size_in_pixels, blink::WebNode());
-
-  blink::WebVector<uint32_t> pages(
-      printing::PageNumber::GetPages(page_ranges, page_count));
   gfx::Size spool_size =
-      web_frame->SpoolSizeInPixelsForTesting(page_size_in_pixels, pages);
+      web_frame->SpoolSizeInPixelsForTesting(page_size_in_pixels, page_count);
 
   bool is_opaque = false;
 
@@ -72,8 +65,7 @@ SkBitmap PrintFrameToBitmap(blink::WebLocalFrame* web_frame,
                                   printing::PrintSettings::NewCookie());
   cc::SkiaPaintCanvas canvas(bitmap);
   canvas.SetPrintingMetafile(&metafile);
-  web_frame->PrintPagesForTesting(&canvas, page_size_in_pixels, spool_size,
-                                  &pages);
+  web_frame->PrintPagesForTesting(&canvas, page_size_in_pixels, spool_size);
   web_frame->PrintEnd();
   return bitmap;
 }

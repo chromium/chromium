@@ -5,8 +5,6 @@
 #ifndef CONTENT_WEB_TEST_RENDERER_PIXEL_DUMP_H_
 #define CONTENT_WEB_TEST_RENDERER_PIXEL_DUMP_H_
 
-#include "printing/page_range.h"
-
 class SkBitmap;
 
 namespace blink {
@@ -17,8 +15,7 @@ namespace content {
 
 // Goes through a test-only path to dump the frame's pixel output as if it was
 // printed.
-SkBitmap PrintFrameToBitmap(blink::WebLocalFrame* web_frame,
-                            const printing::PageRanges& pages);
+SkBitmap PrintFrameToBitmap(blink::WebLocalFrame* web_frame);
 
 }  // namespace content
 
