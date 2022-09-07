@@ -10,6 +10,7 @@
 #include "base/component_export.h"
 #include "base/memory/weak_ptr.h"
 #include "base/unguessable_token.h"
+#include "components/web_package/web_bundle_url_loader_factory.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/cross_origin_embedder_policy.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -17,13 +18,7 @@
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace web_package {
-class WebBundleURLLoaderFactory;
-}  // namespace web_package
-
 namespace network {
-
-struct WebBundlePendingSubresourceRequest;
 
 // WebBundleManager manages the lifetime of a WebBundleURLLoaderFactory object,
 // which is created for each WebBundle. And also manages the quota of memory
@@ -74,13 +69,23 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebBundleManager {
     max_memory_per_process_ = max_memory_per_process;
   }
 
+  void CleanUpWillBeDeletedURLLoader(
+      Key key,
+      web_package::WebBundleURLLoaderFactory::URLLoader*
+          will_be_deleted_url_loader);
+
+  bool IsPendingLoadersEmptyForTesting(Key key) const {
+    return pending_loaders_.find(key) == pending_loaders_.end();
+  }
+
   std::map<Key, std::unique_ptr<web_package::WebBundleURLLoaderFactory>>
       factories_;
-  // Pending subresource requests for each key, which should be processed when
+  // Pending subresource loaders for each key, which should be processed when
   // a request for the bundle arrives later.
   std::map<Key,
-           std::vector<std::unique_ptr<WebBundlePendingSubresourceRequest>>>
-      pending_requests_;
+           std::vector<base::WeakPtr<
+               web_package::WebBundleURLLoaderFactory::URLLoader>>>
+      pending_loaders_;
 
   uint64_t max_memory_per_process_;
   std::map<int32_t, uint64_t> memory_usage_per_process_;

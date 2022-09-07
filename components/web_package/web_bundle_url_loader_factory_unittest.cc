@@ -211,11 +211,11 @@ class WebBundleURLLoaderFactoryTest : public ::testing::Test {
   StartRequestResult StartRequest(const network::ResourceRequest& request) {
     StartRequestResult result;
     result.client = std::make_unique<network::TestURLLoaderClient>();
-    factory_->StartSubresourceRequest(
+    factory_->StartLoader(WebBundleURLLoaderFactory::CreateURLLoader(
         result.loader.BindNewPipeAndPassReceiver(), request,
         result.client->CreateRemote(),
         mojo::Remote<network::mojom::TrustedHeaderClient>(), base::Time::Now(),
-        base::TimeTicks::Now());
+        base::TimeTicks::Now(), base::DoNothing()));
     return result;
   }
 

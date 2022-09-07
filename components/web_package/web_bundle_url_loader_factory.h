@@ -25,6 +25,8 @@ class WebBundleMemoryQuotaConsumer;
 
 class WebBundleURLLoaderFactory {
  public:
+  class URLLoader;
+
   // Used for UMA. Append-only.
   enum class SubresourceWebBundleLoadResult {
     kSuccess = 0,
@@ -62,19 +64,20 @@ class WebBundleURLLoaderFactory {
   mojo::PendingRemote<network::mojom::URLLoaderClient> MaybeWrapURLLoaderClient(
       mojo::PendingRemote<network::mojom::URLLoaderClient> wrapped);
 
-  void StartSubresourceRequest(
+  static base::WeakPtr<URLLoader> CreateURLLoader(
       mojo::PendingReceiver<network::mojom::URLLoader> receiver,
       const network::ResourceRequest& url_request,
       mojo::PendingRemote<network::mojom::URLLoaderClient> client,
       mojo::Remote<network::mojom::TrustedHeaderClient> trusted_header_client,
       base::Time request_start_time,
-      base::TimeTicks request_start_time_ticks);
+      base::TimeTicks request_start_time_ticks,
+      base::OnceCallback<void(URLLoader*)> will_be_deleted_callback);
 
+  void StartLoader(base::WeakPtr<URLLoader> loader);
   void OnWebBundleFetchFailed();
 
  private:
   class BundleDataSource;
-  class URLLoader;
 
   bool HasError() const;
 

@@ -126,10 +126,10 @@ StartSubresourceLoad(web_package::WebBundleURLLoaderFactory& factory) {
   request.request_initiator = url::Origin::Create(GURL(kInitiatorUrl));
   request.web_bundle_token_params = ResourceRequest::WebBundleTokenParams();
   request.web_bundle_token_params->bundle_url = GURL(kBundleUrl);
-  factory.StartSubresourceRequest(loader.BindNewPipeAndPassReceiver(), request,
-                                  client->CreateRemote(),
-                                  mojo::Remote<mojom::TrustedHeaderClient>(),
-                                  base::Time::Now(), base::TimeTicks::Now());
+  factory.StartLoader(web_package::WebBundleURLLoaderFactory::CreateURLLoader(
+      loader.BindNewPipeAndPassReceiver(), request, client->CreateRemote(),
+      mojo::Remote<mojom::TrustedHeaderClient>(), base::Time::Now(),
+      base::TimeTicks::Now(), base::DoNothing()));
   return std::forward_as_tuple(std::move(loader), std::move(client));
 }
 
@@ -144,6 +144,11 @@ class WebBundleManagerTest : public testing::Test {
   void SetMaxMemoryPerProces(WebBundleManager& manager,
                              uint64_t max_memory_per_process) {
     manager.set_max_memory_per_process_for_testing(max_memory_per_process);
+  }
+
+  bool IsPendingLoadersEmpty(const WebBundleManager& manager,
+                             WebBundleManager::Key key) const {
+    return manager.IsPendingLoadersEmptyForTesting(key);
   }
 
   base::WeakPtr<web_package::WebBundleURLLoaderFactory>
@@ -338,6 +343,46 @@ TEST_F(WebBundleManagerTest,
         mojo::BlockingCopyToString(req.client->response_body_release(), &body));
     EXPECT_EQ("body", body);
   }
+}
+
+TEST_F(WebBundleManagerTest, CleanUpPendingLoadersIfWebBundleRequestIsBlocked) {
+  // The test is similar to
+  // WebBundleManagerTest::SubresourceRequestArrivesEarlierThanBundleRequest.
+  // The difference is that a request for a WebBundle doesn't reach to Network
+  // Service. See crbug.com/1355162 for the context.
+  //
+  // Ensure that pending subresource URL Loaders are surely cleaned up from
+  // WebBundleManager even if a request for the WebBundle never comes to the
+  // Network Service.
+
+  WebBundleManager manager;
+  base::UnguessableToken token = base::UnguessableToken::Create();
+  int32_t process_id = mojom::kInvalidProcessId;
+
+  network::ResourceRequest request;
+  request.url = GURL(kResourceUrl);
+  request.method = "GET";
+  request.request_initiator = url::Origin::Create(GURL(kInitiatorUrl));
+  request.web_bundle_token_params = ResourceRequest::WebBundleTokenParams(
+      GURL(kBundleUrl), token, process_id);
+
+  mojo::Remote<network::mojom::URLLoader> loader;
+  auto client = std::make_unique<network::TestURLLoaderClient>();
+
+  manager.StartSubresourceRequest(
+      loader.BindNewPipeAndPassReceiver(), request, client->CreateRemote(),
+      mojom::kInvalidProcessId, mojo::Remote<mojom::TrustedHeaderClient>());
+
+  ASSERT_FALSE(IsPendingLoadersEmpty(manager, {process_id, token}));
+
+  // Let the subresource request fails, simulating that a renderer cancels a
+  // subresource loader when they know the bundle is blocked before the bundle
+  // request reaches to the Network Service.
+  loader.reset();
+
+  client->RunUntilDisconnect();
+
+  EXPECT_TRUE(IsPendingLoadersEmpty(manager, {process_id, token}));
 }
 
 TEST_F(WebBundleManagerTest, MemoryQuota_StartRequestAfterError) {
