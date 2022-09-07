@@ -32,11 +32,6 @@ class DIPSStorage {
   // Record that the user interacted on |url|.
   void RecordInteraction(const GURL& url, base::Time time, DIPSCookieMode mode);
 
-  // Returns an opaque value representing the "privacy boundary" that the URL
-  // belongs to. Currently returns eTLD+1, but this is an implementation detail
-  // and will change (e.g. after adding support for First-Party Sets).
-  static std::string GetSite(const GURL& url);
-
   // Empty method intended for testing use only.
   void DoNothing() {}
 

@@ -10,6 +10,7 @@
 #include "base/strings/string_piece_forward.h"
 #include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "url/gurl.h"
 
 namespace base {
 class TimeDelta;
@@ -62,5 +63,10 @@ struct StateValue {
 // Return the number of seconds in `td`, clamped to [0, 10].
 // i.e. 11 linearly-sized buckets.
 int64_t BucketizeBounceDelay(base::TimeDelta delta);
+
+// Returns an opaque value representing the "privacy boundary" that the URL
+// belongs to. Currently returns eTLD+1, but this is an implementation detail
+// and will change (e.g. after adding support for First-Party Sets).
+std::string GetDIPSSite(const GURL& url);
 
 #endif  // CHROME_BROWSER_DIPS_DIPS_UTILS_H_

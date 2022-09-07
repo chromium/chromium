@@ -6,7 +6,7 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
-#include "net/base/registry_controlled_domains/registry_controlled_domain.h"
+#include "chrome/browser/dips/dips_utils.h"
 #include "url/gurl.h"
 
 namespace {
@@ -43,7 +43,7 @@ DIPSStorage::~DIPSStorage() {
 
 DIPSState DIPSStorage::Read(const GURL& url) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  std::string site = GetSite(url);
+  std::string site = GetDIPSSite(url);
   auto iter = map_.find(site);
   if (iter == map_.end()) {
     return DIPSState(this, std::move(site));
@@ -99,12 +99,4 @@ void DIPSStorage::RecordInteraction(const GURL& url,
   // interaction, so overwrite any existing timestamp. (If interaction happened
   // a long time ago, it may no longer be relevant.)
   state.set_user_interaction_time(time);
-}
-
-/* static */
-std::string DIPSStorage::GetSite(const GURL& url) {
-  // TODO(crbug.com/1306935): use privacy boundary instead of eTLD+1
-  const auto domain = net::registry_controlled_domains::GetDomainAndRegistry(
-      url, net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
-  return domain.empty() ? url.host() : domain;
 }

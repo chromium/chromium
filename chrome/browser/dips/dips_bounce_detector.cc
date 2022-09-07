@@ -20,7 +20,6 @@
 #include "content/public/browser/cookie_access_details.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/navigation_handle_user_data.h"
-#include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "third_party/blink/public/mojom/site_engagement/site_engagement.mojom-shared.h"
@@ -62,12 +61,6 @@ NAVIGATION_HANDLE_USER_DATA_KEY_IMPL(ServerBounceDetectionState);
 // global so that browser tests (which don't call the DIPSBounceDetector
 // constructor directly) can inject a fake clock.
 base::TickClock* g_clock = nullptr;
-
-std::string GetSite(const GURL& url) {
-  const auto domain = net::registry_controlled_domains::GetDomainAndRegistry(
-      url, net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
-  return domain.empty() ? url.host() : domain;
-}
 
 RedirectCategory ClassifyRedirect(CookieAccessType access,
                                   EngagementLevel engagement) {
@@ -162,9 +155,9 @@ DIPSRedirectChainInfo::DIPSRedirectChainInfo(const GURL& initial_url,
                                              const GURL& final_url,
                                              int length)
     : initial_url(initial_url),
-      initial_site(GetSite(initial_url)),
+      initial_site(GetDIPSSite(initial_url)),
       final_url(final_url),
-      final_site(GetSite(final_url)),
+      final_site(GetDIPSSite(final_url)),
       initial_and_final_sites_same(initial_site == final_site),
       length(length) {}
 
@@ -268,7 +261,7 @@ void DIPSRedirectContext::EndChain(GURL url) {
 
 void DIPSBounceDetector::HandleRedirect(const DIPSRedirectInfo& redirect,
                                         const DIPSRedirectChainInfo& chain) {
-  const std::string site = GetSite(redirect.url);
+  const std::string site = GetDIPSSite(redirect.url);
   EngagementLevel level =
       site_engagement_service_->GetEngagementLevel(redirect.url);
   bool initial_site_same = (site == chain.initial_site);
@@ -361,7 +354,7 @@ void DIPSBounceDetector::OnCookiesAccessed(
   }
 
   if (client_detection_state_ &&
-      GetSite(details.url) == client_detection_state_->current_site) {
+      GetDIPSSite(details.url) == client_detection_state_->current_site) {
     client_detection_state_->cookie_access_type =
         client_detection_state_->cookie_access_type |
         (details.type == content::CookieAccessDetails::Type::kChange
@@ -399,7 +392,7 @@ void DIPSBounceDetector::DidFinishNavigation(
   if (navigation_handle->HasCommitted()) {
     client_detection_state_ = ClientBounceDetectionState(
         navigation_handle->GetPreviousPrimaryMainFrameURL(),
-        GetSite(navigation_handle->GetURL()), now);
+        GetDIPSSite(navigation_handle->GetURL()), now);
   }
 
   auto* server_state =
