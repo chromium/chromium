@@ -2,60 +2,20 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//chrome/common/features.gni")
-import("//tools/grit/grit_rule.gni")
-import("//tools/polymer/html_to_wrapper.gni")
-import("//tools/typescript/ts_library.gni")
-import("//ui/webui/resources/tools/generate_grd.gni")
-import("./identity_internals.gni")
+import("//chrome/browser/resources/tools/build_webui.gni")
 
 assert(!is_android)
 
-html_to_wrapper("html_wrapper_files") {
-  in_files = html_files
-  template = "native"
-}
-
-copy("copy_src") {
-  sources = ts_files
-  outputs = [ "$target_gen_dir/{{source_file_part}}" ]
-}
-
-ts_library("build_ts") {
-  root_dir = target_gen_dir
-  out_dir = "$target_gen_dir/tsc"
-  in_files = ts_files + html_wrapper_files
-  deps = [ "//ui/webui/resources:library" ]
-  extra_deps = [
-    ":copy_src",
-    ":html_wrapper_files",
-  ]
-  definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]
-}
-
-generate_grd("build_grd") {
+build_webui("build") {
   grd_prefix = "identity_internals"
-  out_grd = "$target_gen_dir/resources.grd"
-  input_files = [
+  static_files = [
     "identity_internals.css",
     "identity_internals.html",
   ]
-  input_files_base_dir = rebase_path(".", "//")
-  manifest_files =
-      filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
-  deps = [ ":build_ts" ]
-}
-
-grit("resources") {
-  source = "$target_gen_dir/resources.grd"
-  deps = [ ":build_grd" ]
-  enable_input_discovery_for_gn_analyze = false
-  defines = chrome_grit_defines
-  outputs = [
-    "grit/identity_internals_resources.h",
-    "grit/identity_internals_resources_map.cc",
-    "grit/identity_internals_resources_map.h",
-    "identity_internals_resources.pak",
-  ]
-  output_dir = "$root_gen_dir/chrome"
+  web_component_files = [ "token_list_item.ts" ]
+  non_web_component_files = [ "identity_internals.ts" ]
+  html_to_wrapper_template = "native"
+  ts_deps = [ "//ui/webui/resources:library" ]
+  ts_definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]
+  ts_use_local_config = false
 }

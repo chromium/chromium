@@ -2,83 +2,37 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//tools/grit/grit_rule.gni")
-import("//tools/polymer/html_to_wrapper.gni")
-import("//tools/typescript/ts_library.gni")
-import("//ui/webui/resources/tools/generate_grd.gni")
+import("//chrome/browser/resources/tools/build_webui.gni")
 
-resources_grd_file = "$target_gen_dir/resources.grd"
+build_webui("build") {
+  grd_prefix = "usb_internals"
 
-grit("resources") {
-  enable_input_discovery_for_gn_analyze = false
-  source = resources_grd_file
-  outputs = [
-    "grit/usb_internals_resources.h",
-    "grit/usb_internals_resources_map.cc",
-    "grit/usb_internals_resources_map.h",
-    "usb_internals_resources.pak",
+  static_files = [
+    "usb_internals.css",
+    "usb_internals.html",
   ]
-  output_dir = "$root_gen_dir/chrome"
-  deps = [ ":build_grd" ]
-}
 
-html_wrapper_files = [ "app.html.ts" ]
-ts_files = [
-  "app.ts",
-  "descriptor_panel.ts",
-  "devices_page.ts",
-]
+  web_component_files = [ "app.ts" ]
+  non_web_component_files = [
+    "descriptor_panel.ts",
+    "devices_page.ts",
+  ]
 
-html_to_wrapper("html_wrapper_files") {
-  in_files = [ "app.html" ]
-  template = "native"
-}
-
-copy("copy_files") {
-  deps = [
+  mojo_files_deps = [
     "//chrome/browser/ui/webui/usb_internals:mojo_bindings_webui_js",
     "//services/device/public/mojom:usb_test_js",
     "//services/device/public/mojom:usb_webui_js",
   ]
-  sources = ts_files + [
-              "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/usb_internals/usb_internals.mojom-webui.js",
-              "$root_gen_dir/mojom-webui/services/device/public/mojom/usb_device.mojom-webui.js",
-              "$root_gen_dir/mojom-webui/services/device/public/mojom/usb_manager.mojom-webui.js",
-              "$root_gen_dir/mojom-webui/services/device/public/mojom/usb_manager_test.mojom-webui.js",
-            ]
-  outputs = [ "$target_gen_dir/{{source_file_part}}" ]
-}
+  mojo_files = [
+    "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/usb_internals/usb_internals.mojom-webui.js",
+    "$root_gen_dir/mojom-webui/services/device/public/mojom/usb_device.mojom-webui.js",
+    "$root_gen_dir/mojom-webui/services/device/public/mojom/usb_manager.mojom-webui.js",
+    "$root_gen_dir/mojom-webui/services/device/public/mojom/usb_manager_test.mojom-webui.js",
+  ]
 
-ts_library("build_ts") {
-  root_dir = target_gen_dir
-  in_files = ts_files + html_wrapper_files + [
-               "usb_internals.mojom-webui.js",
-               "usb_device.mojom-webui.js",
-               "usb_manager.mojom-webui.js",
-               "usb_manager_test.mojom-webui.js",
-             ]
-  out_dir = "$target_gen_dir/tsc"
-  tsconfig_base = "tsconfig_base.json"
-
-  deps = [
+  ts_deps = [
     "//ui/webui/resources:library",
     "//ui/webui/resources/mojo:library",
   ]
-  extra_deps = [
-    ":copy_files",
-    ":html_wrapper_files",
-  ]
-}
-
-generate_grd("build_grd") {
-  grd_prefix = "usb_internals"
-  out_grd = resources_grd_file
-  deps = [ ":build_ts" ]
-  manifest_files =
-      filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
-  input_files = [
-    "usb_internals.css",
-    "usb_internals.html",
-  ]
-  input_files_base_dir = rebase_path(".", "//")
+  html_to_wrapper_template = "native"
 }
