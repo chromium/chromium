@@ -568,12 +568,6 @@ static_library("browser") {
     "geolocation/geolocation_permission_context_delegate.h",
     "geolocation/geolocation_permission_context_extensions.cc",
     "geolocation/geolocation_permission_context_extensions.h",
-    "google/google_brand.cc",
-    "google/google_brand.h",
-    "google/google_search_domain_mixing_metrics_emitter.cc",
-    "google/google_search_domain_mixing_metrics_emitter.h",
-    "google/google_search_domain_mixing_metrics_emitter_factory.cc",
-    "google/google_search_domain_mixing_metrics_emitter_factory.h",
     "gpu/chrome_browser_main_extra_parts_gpu.cc",
     "gpu/chrome_browser_main_extra_parts_gpu.h",
     "gpu/gpu_mode_manager.cc",
@@ -1902,6 +1896,7 @@ static_library("browser") {
   allow_circular_includes_from = [
     "//chrome/browser/devtools",
     "//chrome/browser/favicon",
+    "//chrome/browser/google",
     "//chrome/browser/profiling_host",
 
     # TODO(crbug.com/1335199): break this dep when favicon is in its own target
@@ -1920,6 +1915,7 @@ static_library("browser") {
 
   public_deps = [
     "//base",
+    "//chrome/browser/google",
     "//chrome/common",
     "//chrome/common:buildflags",
     "//chrome/common:constants",
@@ -2506,7 +2502,6 @@ static_library("browser") {
   if (is_posix || is_fuchsia) {
     sources += [
       "download/trusted_sources_manager_posix.cc",
-      "google/google_update_settings_posix.cc",
       "performance_monitor/metric_evaluator_helper_posix.cc",
       "performance_monitor/metric_evaluator_helper_posix.h",
     ]
@@ -4822,10 +4817,6 @@ static_library("browser") {
       "enterprise/reporting/android_app_info_generator.h",
       "feedback/system_logs/log_sources/lacros_log_files_log_source.cc",
       "feedback/system_logs/log_sources/lacros_log_files_log_source.h",
-      "google/google_brand_chromeos.cc",
-      "google/google_brand_chromeos.h",
-      "google/google_brand_code_map_chromeos.cc",
-      "google/google_brand_code_map_chromeos.h",
       "icon_loader_chromeos.cc",
       "lifetime/application_lifetime_chromeos.cc",
       "lifetime/application_lifetime_chromeos.h",
@@ -5869,8 +5860,6 @@ static_library("browser") {
       "font_prewarmer_tab_helper.cc",
       "font_prewarmer_tab_helper.h",
       "fullscreen_win.cc",
-      "google/did_run_updater_win.cc",
-      "google/did_run_updater_win.h",
       "hang_monitor/hang_crash_dump_win.cc",
       "icon_loader_win.cc",
       "importer/firefox_profile_lock_win.cc",
@@ -6069,14 +6058,6 @@ static_library("browser") {
       sources += [
         "component_updater/third_party_module_list_component_installer_win.cc",
         "component_updater/third_party_module_list_component_installer_win.h",
-        "google/google_update_policy_fetcher_win.cc",
-        "google/google_update_policy_fetcher_win.h",
-        "google/google_update_policy_fetcher_win_util.cc",
-        "google/google_update_policy_fetcher_win_util.h",
-        "google/google_update_win.cc",
-        "google/google_update_win.h",
-        "google/switches.cc",
-        "google/switches.h",
         "policy/status_provider/updater_status_and_value_provider.cc",
         "policy/status_provider/updater_status_and_value_provider.h",
         "win/conflicts/incompatible_applications_updater.cc",
