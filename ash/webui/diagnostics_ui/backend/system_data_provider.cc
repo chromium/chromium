@@ -455,6 +455,7 @@ void SystemDataProvider::OnBatteryInfoProbeResponse(
       diagnostics::GetBatteryInfo(*info_ptr);
   if (!battery_info_ptr) {
     LOG(ERROR) << "BatteryInfo requested by device does not have a battery.";
+    EmitBatteryDataError(metrics::DataError::kNoData);
     std::move(callback).Run(std::move(battery_info));
     return;
   }
@@ -518,6 +519,8 @@ void SystemDataProvider::OnBatteryChargeStatusUpdated(
 
   if (!power_supply_properties.has_value()) {
     LOG(ERROR) << "Null response from power_manager_client::GetLastStatus.";
+    // TODO(wenyu): Add unit test to below emit behavior.
+    EmitBatteryDataError(metrics::DataError::kNoData);
     NotifyBatteryChargeStatusObservers(battery_charge_status);
     return;
   }

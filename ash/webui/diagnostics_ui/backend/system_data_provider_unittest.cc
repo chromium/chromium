@@ -1454,6 +1454,32 @@ TEST_F(SystemDataProviderTest, RecordProbeError_BatteryInfo) {
   run_loop.Run();
 }
 
+// Validate expected metric NoData error triggered when request for SystemInfo
+// returns no battery info data.
+TEST_F(SystemDataProviderTest, RecordBatteryDataError_BatteryInfoNoDataError) {
+  base::HistogramTester histogram_tester;
+  VerifyBatteryDataErrorBucketCounts(histogram_tester,
+                                     /*expected_no_data_error=*/0,
+                                     /*expected_not_a_number_error=*/0,
+                                     /*expected_expectation_not_met_error=*/0);
+
+  // Intentionally do not set any battery info.
+
+  base::RunLoop run_loop;
+  system_data_provider_->GetBatteryInfo(
+      base::BindLambdaForTesting([&](mojom::BatteryInfoPtr ptr) {
+        ASSERT_TRUE(ptr);
+        VerifyBatteryDataErrorBucketCounts(
+            histogram_tester,
+            /*expected_no_data_error=*/1,
+            /*expected_not_a_number_error=*/0,
+            /*expected_expectation_not_met_error=*/0);
+
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+}
+
 // Validate expected metric triggered when request for CpuInfo returns a
 // ProbeError.
 TEST_F(SystemDataProviderTest, RecordProbeError_CpuInfo) {
