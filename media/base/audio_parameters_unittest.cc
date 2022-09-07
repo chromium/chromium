@@ -53,6 +53,24 @@ TEST(AudioParameters, Constructor_ParameterValues) {
   EXPECT_EQ(expected_samples, params.frames_per_buffer());
 }
 
+TEST(AudioParameters, Constructor_OldParameterValues) {
+  AudioParameters::Format expected_format =
+      AudioParameters::AUDIO_PCM_LOW_LATENCY;
+  int expected_channels = 6;
+  ChannelLayout expected_channel_layout = CHANNEL_LAYOUT_5_1;
+  int expected_rate = 44100;
+  int expected_samples = 880;
+
+  AudioParameters params(expected_format, expected_channel_layout,
+                         expected_rate, expected_samples);
+
+  EXPECT_EQ(expected_format, params.format());
+  EXPECT_EQ(expected_channels, params.channels());
+  EXPECT_EQ(expected_channel_layout, params.channel_layout());
+  EXPECT_EQ(expected_rate, params.sample_rate());
+  EXPECT_EQ(expected_samples, params.frames_per_buffer());
+}
+
 TEST(AudioParameters, GetBytesPerBuffer) {
   EXPECT_EQ(100, AudioParameters(AudioParameters::AUDIO_PCM_LINEAR,
                                  ChannelLayoutConfig::Mono(), 1000, 100)
@@ -68,6 +86,24 @@ TEST(AudioParameters, GetBytesPerBuffer) {
                      .GetBytesPerBuffer(kSampleFormatU8));
   EXPECT_EQ(800, AudioParameters(AudioParameters::AUDIO_PCM_LINEAR,
                                  ChannelLayoutConfig::Stereo(), 1000, 200)
+                     .GetBytesPerBuffer(kSampleFormatS16));
+}
+
+TEST(AudioParameters, OldGetBytesPerBuffer) {
+  EXPECT_EQ(100, AudioParameters(AudioParameters::AUDIO_PCM_LINEAR,
+                                 CHANNEL_LAYOUT_MONO, 1000, 100)
+                     .GetBytesPerBuffer(kSampleFormatU8));
+  EXPECT_EQ(200, AudioParameters(AudioParameters::AUDIO_PCM_LINEAR,
+                                 CHANNEL_LAYOUT_MONO, 1000, 100)
+                     .GetBytesPerBuffer(kSampleFormatS16));
+  EXPECT_EQ(200, AudioParameters(AudioParameters::AUDIO_PCM_LINEAR,
+                                 CHANNEL_LAYOUT_STEREO, 1000, 100)
+                     .GetBytesPerBuffer(kSampleFormatU8));
+  EXPECT_EQ(200, AudioParameters(AudioParameters::AUDIO_PCM_LINEAR,
+                                 CHANNEL_LAYOUT_MONO, 1000, 200)
+                     .GetBytesPerBuffer(kSampleFormatU8));
+  EXPECT_EQ(800, AudioParameters(AudioParameters::AUDIO_PCM_LINEAR,
+                                 CHANNEL_LAYOUT_STEREO, 1000, 200)
                      .GetBytesPerBuffer(kSampleFormatS16));
 }
 
@@ -122,6 +158,57 @@ TEST(AudioParameters, Compare) {
   }
 }
 
+TEST(AudioParameters, OldCompare) {
+  AudioParameters values[] = {
+      AudioParameters(AudioParameters::AUDIO_PCM_LINEAR, CHANNEL_LAYOUT_MONO,
+                      1000, 100),
+      AudioParameters(AudioParameters::AUDIO_PCM_LINEAR, CHANNEL_LAYOUT_MONO,
+                      1000, 200),
+      AudioParameters(AudioParameters::AUDIO_PCM_LINEAR, CHANNEL_LAYOUT_MONO,
+                      2000, 100),
+      AudioParameters(AudioParameters::AUDIO_PCM_LINEAR, CHANNEL_LAYOUT_MONO,
+                      2000, 200),
+
+      AudioParameters(AudioParameters::AUDIO_PCM_LINEAR, CHANNEL_LAYOUT_STEREO,
+                      1000, 100),
+      AudioParameters(AudioParameters::AUDIO_PCM_LINEAR, CHANNEL_LAYOUT_STEREO,
+                      1000, 200),
+      AudioParameters(AudioParameters::AUDIO_PCM_LINEAR, CHANNEL_LAYOUT_STEREO,
+                      2000, 100),
+      AudioParameters(AudioParameters::AUDIO_PCM_LINEAR, CHANNEL_LAYOUT_STEREO,
+                      2000, 200),
+
+      AudioParameters(AudioParameters::AUDIO_PCM_LOW_LATENCY,
+                      CHANNEL_LAYOUT_MONO, 1000, 100),
+      AudioParameters(AudioParameters::AUDIO_PCM_LOW_LATENCY,
+                      CHANNEL_LAYOUT_MONO, 1000, 200),
+      AudioParameters(AudioParameters::AUDIO_PCM_LOW_LATENCY,
+                      CHANNEL_LAYOUT_MONO, 2000, 100),
+      AudioParameters(AudioParameters::AUDIO_PCM_LOW_LATENCY,
+                      CHANNEL_LAYOUT_MONO, 2000, 200),
+
+      AudioParameters(AudioParameters::AUDIO_PCM_LOW_LATENCY,
+                      CHANNEL_LAYOUT_STEREO, 1000, 100),
+      AudioParameters(AudioParameters::AUDIO_PCM_LOW_LATENCY,
+                      CHANNEL_LAYOUT_STEREO, 1000, 200),
+      AudioParameters(AudioParameters::AUDIO_PCM_LOW_LATENCY,
+                      CHANNEL_LAYOUT_STEREO, 2000, 100),
+      AudioParameters(AudioParameters::AUDIO_PCM_LOW_LATENCY,
+                      CHANNEL_LAYOUT_STEREO, 2000, 200),
+  };
+
+  for (size_t i = 0; i < std::size(values); ++i) {
+    for (size_t j = 0; j < std::size(values); ++j) {
+      SCOPED_TRACE("i=" + base::NumberToString(i) +
+                   " j=" + base::NumberToString(j));
+      EXPECT_EQ(i < j, values[i] < values[j]);
+    }
+
+    // Verify that a value is never less than itself.
+    EXPECT_FALSE(values[i] < values[i]);
+  }
+}
+
 TEST(AudioParameters, Constructor_ValidChannelCounts) {
   int expected_channels = 8;
   ChannelLayout expected_layout = CHANNEL_LAYOUT_DISCRETE;
@@ -130,6 +217,18 @@ TEST(AudioParameters, Constructor_ValidChannelCounts) {
 
   AudioParameters params(AudioParameters::AUDIO_PCM_LOW_LATENCY,
                          channel_layout_config, 44100, 880);
+  EXPECT_EQ(expected_channels, params.channels());
+  EXPECT_EQ(expected_layout, params.channel_layout());
+  EXPECT_TRUE(params.IsValid());
+}
+
+TEST(AudioParameters, Constructor_OldValidChannelCounts) {
+  int expected_channels = 8;
+  ChannelLayout expected_layout = CHANNEL_LAYOUT_DISCRETE;
+
+  AudioParameters params(AudioParameters::AUDIO_PCM_LOW_LATENCY,
+                         expected_layout, 44100, 880);
+  params.set_channels_for_discrete(expected_channels);
   EXPECT_EQ(expected_channels, params.channels());
   EXPECT_EQ(expected_layout, params.channel_layout());
   EXPECT_TRUE(params.IsValid());
@@ -168,14 +267,6 @@ TEST(AudioParameters, Constructor_CopyChannelLayoutConfig) {
   EXPECT_EQ(expected_channels, params2.channels());
   EXPECT_EQ(expected_layout, params2.channel_layout());
   EXPECT_TRUE(params2.IsValid());
-}
-
-TEST(AudioParameters, ShouldCheckDiscreteWithNoChannels) {
-  ASSERT_DEATH(
-      {
-        ChannelLayoutConfig channel_layout_config(CHANNEL_LAYOUT_DISCRETE, 0);
-      },
-      "");
 }
 
 TEST(AudioParameters, ChannelLayoutConfig_Guess) {

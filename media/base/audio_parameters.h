@@ -237,11 +237,30 @@ class MEDIA_SHMEM_EXPORT AudioParameters {
                   int frames_per_buffer,
                   const HardwareCapabilities& hardware_capabilities);
 
+  // TODO(1286281): Remove these old constructors once the new constructors are
+  // used everywhere.
+  AudioParameters(Format format,
+                  ChannelLayout channel_layout,
+                  int sample_rate,
+                  int frames_per_buffer);
+  AudioParameters(Format format,
+                  ChannelLayout channel_layout,
+                  int sample_rate,
+                  int frames_per_buffer,
+                  const HardwareCapabilities& hardware_capabilities);
+
   ~AudioParameters();
 
   // Re-initializes all members except for |hardware_capabilities_|.
   void Reset(Format format,
              ChannelLayoutConfig channel_layout_config,
+             int sample_rate,
+             int frames_per_buffer);
+
+  // TODO(1286281): Remove this old overload once the new version is used
+  // everywhere.
+  void Reset(Format format,
+             ChannelLayout channel_layout,
              int sample_rate,
              int frames_per_buffer);
 
@@ -291,6 +310,16 @@ class MEDIA_SHMEM_EXPORT AudioParameters {
     return channel_layout_config_.channel_layout();
   }
 
+  // TODO(1286281): Remove this method once the new constructors are used
+  // everywhere. The number of channels is usually computed from
+  // channel_layout_. Setting this explicitly is only required with
+  // CHANNEL_LAYOUT_DISCRETE.
+  void set_channels_for_discrete(int channels) {
+    DCHECK(channel_layout() == CHANNEL_LAYOUT_DISCRETE ||
+           channel_layout() == CHANNEL_LAYOUT_5_1_4_DOWNMIX ||
+           channels == ChannelLayoutToChannelCount(channel_layout()));
+    SetChannelLayoutConfig(channel_layout(), channels);
+  }
   int channels() const { return channel_layout_config_.channels(); }
 
   void set_sample_rate(int sample_rate) { sample_rate_ = sample_rate; }

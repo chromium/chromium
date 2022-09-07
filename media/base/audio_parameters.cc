@@ -17,7 +17,8 @@ namespace {
 
 int ComputeChannelCount(ChannelLayout channel_layout, int channels) {
   if (channel_layout == CHANNEL_LAYOUT_DISCRETE) {
-    CHECK_NE(0, channels);
+    // TODO(1286281): Assert that channels is not 0 once the new constructors
+    // are used everywhere.
     return channels;
   } else if (channel_layout == CHANNEL_LAYOUT_5_1_4_DOWNMIX && channels != 0) {
     // For CHANNEL_LAYOUT_5_1_4_DOWNMIX we can set a custom number of channels,
@@ -164,6 +165,25 @@ AudioParameters::AudioParameters(
   Reset(format, channel_layout_config, sample_rate, frames_per_buffer);
 }
 
+AudioParameters::AudioParameters(Format format,
+                                 ChannelLayout channel_layout,
+                                 int sample_rate,
+                                 int frames_per_buffer)
+    : latency_tag_(AudioLatency::LATENCY_COUNT) {
+  Reset(format, channel_layout, sample_rate, frames_per_buffer);
+}
+
+AudioParameters::AudioParameters(
+    Format format,
+    ChannelLayout channel_layout,
+    int sample_rate,
+    int frames_per_buffer,
+    const HardwareCapabilities& hardware_capabilities)
+    : latency_tag_(AudioLatency::LATENCY_COUNT),
+      hardware_capabilities_(hardware_capabilities) {
+  Reset(format, channel_layout, sample_rate, frames_per_buffer);
+}
+
 AudioParameters::~AudioParameters() = default;
 
 AudioParameters::AudioParameters(const AudioParameters&) = default;
@@ -179,6 +199,14 @@ void AudioParameters::Reset(Format format,
   frames_per_buffer_ = frames_per_buffer;
   effects_ = NO_EFFECTS;
   mic_positions_.clear();
+}
+
+void AudioParameters::Reset(Format format,
+                            ChannelLayout channel_layout,
+                            int sample_rate,
+                            int frames_per_buffer) {
+  Reset(format, {channel_layout, ChannelLayoutToChannelCount(channel_layout)},
+        sample_rate, frames_per_buffer);
 }
 
 bool AudioParameters::IsValid() const {
