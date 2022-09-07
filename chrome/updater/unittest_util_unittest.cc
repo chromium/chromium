@@ -59,8 +59,4 @@ TEST(UnitTestUtil, Processes) {
 #endif  // IS_WIN
 }
 
-TEST(UnitTestUtil, GetTestName) {
-  EXPECT_EQ(GetTestName(), "UnitTestUtil.GetTestName");
-}
-
 }  // namespace updater::test
