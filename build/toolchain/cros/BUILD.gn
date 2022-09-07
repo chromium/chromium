@@ -134,6 +134,9 @@ cros_toolchain("nacl_bootstrap") {
     cc = cros_nacl_helper_arm32_cc
     cxx = cros_nacl_helper_arm32_cxx
     ld = cros_nacl_helper_arm32_ld
+    # Avoid accidental use of Arm64 sysroot because of SYSROOT
+    # env variable set in ChromeOS builds.
+    toolchain_args.sysroot = cros_nacl_helper_arm32_sysroot
   }
 }
 
