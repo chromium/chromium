@@ -542,9 +542,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.DirectComposition.CreateSwapChainForComposition"
-    enum="Hresult" expires_after="2022-10-01">
+    enum="Hresult" expires_after="2023-04-01">
   <owner>magchen@chromium.org</owner>
   <owner>zmo@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
   <summary>
     HRESULT return value of IDXGIFactory2::CreateSwapChainForComposition.
   </summary>
@@ -595,9 +596,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.DirectComposition.DcompDeviceCreateSurface" enum="Hresult"
-    expires_after="2022-10-01">
+    expires_after="2023-04-01">
   <owner>magchen@chromium.org</owner>
   <owner>zmo@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
   <summary>
     HRESULT return value of IDCompositionDevice2::CreateSurface.
   </summary>
@@ -1568,9 +1570,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.WatchdogThread.Event{ThreadType}"
-    enum="GpuWatchdogThreadEvent" expires_after="2022-10-01">
+    enum="GpuWatchdogThreadEvent" expires_after="2023-04-01">
   <owner>magchen@chromium.org</owner>
   <owner>zmo@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
   <summary>
     Recorded for each time the GPU watchdog thread starts, crashes and ends.
   </summary>
@@ -1582,9 +1585,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.WatchdogThread.Timeout{WatchdogStage}{ThreadType}"
-    enum="GpuWatchdogTimeoutEvent" expires_after="2022-10-01">
+    enum="GpuWatchdogTimeoutEvent" expires_after="2023-04-01">
   <owner>magchen@chromium.org</owner>
   <owner>zmo@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
   <summary>
     Recorded timeout events when the GPU watchdog enters OnWatchdogTimeout.
   </summary>
