@@ -277,11 +277,10 @@ void AppViewGuest::LaunchAppAndFireEvent(
       std::make_unique<ResponseInfo>(extension, weak_ptr_factory_.GetWeakPtr(),
                                      std::move(callback))));
 
-  std::unique_ptr<base::DictionaryValue> embed_request(
-      new base::DictionaryValue());
-  embed_request->SetIntKey(appview::kGuestInstanceID, guest_instance_id());
-  embed_request->SetStringKey(appview::kEmbedderID, owner_host());
-  embed_request->SetKey(appview::kData, base::Value(std::move(data)));
+  base::Value::Dict embed_request;
+  embed_request.Set(appview::kGuestInstanceID, guest_instance_id());
+  embed_request.Set(appview::kEmbedderID, owner_host());
+  embed_request.Set(appview::kData, std::move(data));
   AppRuntimeEventRouter::DispatchOnEmbedRequestedEvent(
       browser_context(), std::move(embed_request), extension);
 }

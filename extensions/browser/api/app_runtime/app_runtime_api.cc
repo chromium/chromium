@@ -12,7 +12,6 @@
 
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
-#include "base/values.h"
 #include "components/services/app_service/public/mojom/types.mojom-shared.h"
 #include "extensions/browser/entry_info.h"
 #include "extensions/browser/event_router.h"
@@ -34,11 +33,10 @@ namespace {
 
 void DispatchOnEmbedRequestedEventImpl(
     const std::string& extension_id,
-    std::unique_ptr<base::DictionaryValue> app_embedding_request_data,
+    base::Value::Dict app_embedding_request_data,
     content::BrowserContext* context) {
   base::Value::List args;
-  args.Append(
-      base::Value::FromUniquePtrValue(std::move(app_embedding_request_data)));
+  args.Append(std::move(app_embedding_request_data));
   auto event = std::make_unique<Event>(
       events::APP_RUNTIME_ON_EMBED_REQUESTED,
       app_runtime::OnEmbedRequested::kEventName, std::move(args), context);
@@ -49,28 +47,25 @@ void DispatchOnEmbedRequestedEventImpl(
       ->SetLastLaunchTime(extension_id, base::Time::Now());
 }
 
-void DispatchOnLaunchedEventImpl(
-    const std::string& extension_id,
-    app_runtime::LaunchSource source,
-    std::unique_ptr<base::DictionaryValue> launch_data,
-    BrowserContext* context) {
+void DispatchOnLaunchedEventImpl(const std::string& extension_id,
+                                 app_runtime::LaunchSource source,
+                                 base::Value::Dict launch_data,
+                                 BrowserContext* context) {
   UMA_HISTOGRAM_ENUMERATION("Extensions.AppLaunchSource", source,
                             app_runtime::LaunchSource::LAUNCH_SOURCE_LAST + 1);
 
-  launch_data->SetBoolKey("isDemoSession",
-                          ExtensionsBrowserClient::Get()->IsInDemoMode());
+  launch_data.Set("isDemoSession",
+                  ExtensionsBrowserClient::Get()->IsInDemoMode());
 
   // "Forced app mode" is true for Chrome OS kiosk mode.
-  launch_data->SetBoolKey(
-      "isKioskSession",
-      ExtensionsBrowserClient::Get()->IsRunningInForcedAppMode());
+  launch_data.Set("isKioskSession",
+                  ExtensionsBrowserClient::Get()->IsRunningInForcedAppMode());
 
-  launch_data->SetBoolKey(
-      "isPublicSession",
-      ExtensionsBrowserClient::Get()->IsLoggedInAsPublicAccount());
+  launch_data.Set("isPublicSession",
+                  ExtensionsBrowserClient::Get()->IsLoggedInAsPublicAccount());
 
   base::Value::List args;
-  args.Append(base::Value::FromUniquePtrValue(std::move(launch_data)));
+  args.Append(std::move(launch_data));
   auto event = std::make_unique<Event>(events::APP_RUNTIME_ON_LAUNCHED,
                                        app_runtime::OnLaunched::kEventName,
                                        std::move(args), context);
@@ -137,7 +132,7 @@ app_runtime::LaunchSource GetLaunchSourceEnum(
 // static
 void AppRuntimeEventRouter::DispatchOnEmbedRequestedEvent(
     content::BrowserContext* context,
-    std::unique_ptr<base::DictionaryValue> embed_app_data,
+    base::Value::Dict embed_app_data,
     const Extension* extension) {
   DispatchOnEmbedRequestedEventImpl(extension->id(), std::move(embed_app_data),
                                     context);
@@ -148,16 +143,17 @@ void AppRuntimeEventRouter::DispatchOnLaunchedEvent(
     BrowserContext* context,
     const Extension* extension,
     extensions::AppLaunchSource source,
-    std::unique_ptr<app_runtime::LaunchData> launch_data) {
+    absl::optional<app_runtime::LaunchData> launch_data) {
   if (!launch_data)
-    launch_data = std::make_unique<app_runtime::LaunchData>();
+    launch_data.emplace();
   app_runtime::LaunchSource source_enum = GetLaunchSourceEnum(source);
   if (extensions::FeatureSwitch::trace_app_source()->IsEnabled()) {
     launch_data->source = source_enum;
   }
 
   DispatchOnLaunchedEventImpl(extension->id(), source_enum,
-                              launch_data->ToValue(), context);
+                              std::move(launch_data->ToValue()->GetDict()),
+                              context);
 }
 
 // static
@@ -179,39 +175,38 @@ void AppRuntimeEventRouter::DispatchOnLaunchedEventWithFileEntries(
     const std::string& handler_id,
     const std::vector<EntryInfo>& entries,
     const std::vector<GrantedFileEntry>& file_entries,
-    std::unique_ptr<app_runtime::ActionData> action_data) {
+    absl::optional<app_runtime::ActionData> action_data) {
   app_runtime::LaunchSource source_enum = GetLaunchSourceEnum(source);
 
   // TODO(sergeygs): Use the same way of creating an event (using the generated
   // boilerplate) as below in DispatchOnLaunchedEventWithUrl.
-  std::unique_ptr<base::DictionaryValue> launch_data(new base::DictionaryValue);
-  launch_data->SetStringKey("id", handler_id);
+  base::Value::Dict launch_data;
+  launch_data.Set("id", handler_id);
 
   if (extensions::FeatureSwitch::trace_app_source()->IsEnabled()) {
-    launch_data->SetStringKey("source", app_runtime::ToString(source_enum));
+    launch_data.Set("source", app_runtime::ToString(source_enum));
   }
 
   if (action_data)
-    launch_data->SetKey(
-        "actionData", base::Value::FromUniquePtrValue(action_data->ToValue()));
+    launch_data.Set("actionData",
+                    base::Value::FromUniquePtrValue(action_data->ToValue()));
 
-  base::Value items(base::Value::Type::LIST);
+  base::Value::List items;
   DCHECK(file_entries.size() == entries.size());
   for (size_t i = 0; i < file_entries.size(); ++i) {
-    std::unique_ptr<base::DictionaryValue> launch_item(
-        new base::DictionaryValue);
+    base::Value::Dict launch_item;
 
     // TODO: The launch item type should be documented in the idl so that this
     // entire function can be strongly typed and built using an
     // app_runtime::LaunchData instance.
-    launch_item->SetStringKey("fileSystemId", file_entries[i].filesystem_id);
-    launch_item->SetStringKey("baseName", file_entries[i].registered_name);
-    launch_item->SetStringKey("mimeType", entries[i].mime_type);
-    launch_item->SetStringKey("entryId", file_entries[i].id);
-    launch_item->SetBoolKey("isDirectory", entries[i].is_directory);
-    items.Append(std::move(*launch_item));
+    launch_item.Set("fileSystemId", file_entries[i].filesystem_id);
+    launch_item.Set("baseName", file_entries[i].registered_name);
+    launch_item.Set("mimeType", entries[i].mime_type);
+    launch_item.Set("entryId", file_entries[i].id);
+    launch_item.Set("isDirectory", entries[i].is_directory);
+    items.Append(std::move(launch_item));
   }
-  launch_data->SetKey("items", std::move(items));
+  launch_data.Set("items", std::move(items));
   DispatchOnLaunchedEventImpl(extension->id(), source_enum,
                               std::move(launch_data), context);
 }
@@ -233,7 +228,8 @@ void AppRuntimeEventRouter::DispatchOnLaunchedEventWithUrl(
     launch_data.source = source_enum;
   }
   DispatchOnLaunchedEventImpl(extension->id(), source_enum,
-                              launch_data.ToValue(), context);
+                              std::move(launch_data.ToValue()->GetDict()),
+                              context);
 }
 
 }  // namespace extensions

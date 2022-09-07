@@ -72,7 +72,7 @@ void LaunchPlatformAppWithFilePaths(
 void LaunchPlatformAppWithAction(
     content::BrowserContext* context,
     const extensions::Extension* app,
-    std::unique_ptr<extensions::api::app_runtime::ActionData> action_data);
+    extensions::api::app_runtime::ActionData action_data);
 
 // Launches the platform app |app|. |source| tells us how the app is launched.
 void LaunchPlatformApp(content::BrowserContext* context,

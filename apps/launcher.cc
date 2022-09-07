@@ -127,7 +127,7 @@ class PlatformAppPathLauncher
   PlatformAppPathLauncher(const PlatformAppPathLauncher&) = delete;
   PlatformAppPathLauncher& operator=(const PlatformAppPathLauncher&) = delete;
 
-  void set_action_data(std::unique_ptr<app_runtime::ActionData> action_data) {
+  void set_action_data(absl::optional<app_runtime::ActionData> action_data) {
     action_data_ = std::move(action_data);
   }
 
@@ -213,11 +213,18 @@ class PlatformAppPathLauncher
     if (!app)
       return;
 
-    std::unique_ptr<app_runtime::LaunchData> launch_data =
-        std::make_unique<app_runtime::LaunchData>();
-    launch_data->action_data = std::move(action_data_);
+    app_runtime::LaunchData launch_data;
+
+    // TODO(crbug.com/1354063): This conditional block is being added here
+    // temporarily, and should be removed once the underlying type of
+    // |launch_data.action_data| is wrapped with absl::optional<T>.
+    if (action_data_) {
+      launch_data.action_data =
+          std::make_unique<app_runtime::ActionData>(std::move(*action_data_));
+      action_data_.reset();
+    }
     if (!handler_id_.empty())
-      launch_data->id = handler_id_;
+      launch_data.id = handler_id_;
 
     AppRuntimeEventRouter::DispatchOnLaunchedEvent(
         context_, app, launch_source_, std::move(launch_data));
@@ -346,7 +353,7 @@ class PlatformAppPathLauncher
   const std::string extension_id;
   extensions::AppLaunchSource launch_source_ =
       extensions::AppLaunchSource::kSourceFileHandler;
-  std::unique_ptr<app_runtime::ActionData> action_data_;
+  absl::optional<app_runtime::ActionData> action_data_;
   // A list of files and directories to be passed through to the app.
   std::vector<base::FilePath> entry_paths_;
   // A corresponding list with EntryInfo for every base::FilePath in
@@ -407,10 +414,9 @@ void LaunchPlatformAppWithCommandLineAndLaunchId(
   // causes problems on the bots.
   if (args.empty() || (command_line.HasSwitch(switches::kTestType) &&
                        args[0] == about_blank_url)) {
-    std::unique_ptr<app_runtime::LaunchData> launch_data =
-        std::make_unique<app_runtime::LaunchData>();
+    app_runtime::LaunchData launch_data;
     if (!launch_id.empty())
-      launch_data->id = launch_id;
+      launch_data.id = launch_id;
     AppRuntimeEventRouter::DispatchOnLaunchedEvent(context, app, source,
                                                    std::move(launch_data));
     return;
@@ -439,12 +445,11 @@ void LaunchPlatformAppWithFilePaths(
   launcher->Launch();
 }
 
-void LaunchPlatformAppWithAction(
-    content::BrowserContext* context,
-    const extensions::Extension* app,
-    std::unique_ptr<app_runtime::ActionData> action_data) {
-  CHECK(!action_data || !action_data->is_lock_screen_action ||
-        !*action_data->is_lock_screen_action ||
+void LaunchPlatformAppWithAction(content::BrowserContext* context,
+                                 const extensions::Extension* app,
+                                 app_runtime::ActionData action_data) {
+  CHECK(!action_data.is_lock_screen_action ||
+        !*action_data.is_lock_screen_action ||
         app->permissions_data()->HasAPIPermission(
             extensions::mojom::APIPermissionID::kLockScreen))
       << "Launching lock screen action handler requires lockScreen permission.";
@@ -500,7 +505,8 @@ void RestartPlatformApp(content::BrowserContext* context,
 
   if (listening_to_launch && had_windows) {
     AppRuntimeEventRouter::DispatchOnLaunchedEvent(
-        context, app, extensions::AppLaunchSource::kSourceRestart, nullptr);
+        context, app, extensions::AppLaunchSource::kSourceRestart,
+        absl::nullopt);
   }
 }
 

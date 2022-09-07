@@ -290,12 +290,11 @@ bool AppManagerImpl::LaunchLockScreenApp() {
     return false;
   }
 
-  auto action_data =
-      std::make_unique<extensions::api::app_runtime::ActionData>();
-  action_data->action_type =
+  extensions::api::app_runtime::ActionData action_data;
+  action_data.action_type =
       extensions::api::app_runtime::ActionType::ACTION_TYPE_NEW_NOTE;
-  action_data->is_lock_screen_action = true;
-  action_data->restore_last_action_state =
+  action_data.is_lock_screen_action = true;
+  action_data.restore_last_action_state =
       primary_profile_->GetPrefs()->GetBoolean(
           prefs::kRestoreLastLockScreenNote);
   apps::LaunchPlatformAppWithAction(lock_screen_profile_, app,

@@ -27,8 +27,8 @@ IN_PROC_BROWSER_TEST_F(ActionHandlersBrowserTest, LaunchAppWithNewNote) {
 
   // Fire a "new_note" action type, assert that app has received it.
   ExtensionTestMessageListener new_note("hasNewNote = true");
-  auto action_data = std::make_unique<app_runtime::ActionData>();
-  action_data->action_type = app_runtime::ActionType::ACTION_TYPE_NEW_NOTE;
+  app_runtime::ActionData action_data;
+  action_data.action_type = app_runtime::ActionType::ACTION_TYPE_NEW_NOTE;
   apps::LaunchPlatformAppWithAction(profile(), app, std::move(action_data));
   EXPECT_TRUE(new_note.WaitUntilSatisfied());
 }

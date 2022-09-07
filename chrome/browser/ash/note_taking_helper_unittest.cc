@@ -479,10 +479,10 @@ class NoteTakingHelperTest : public BrowserWithTestWindowTest {
   // Callback registered with the helper to record Chrome app launch requests.
   void LaunchChromeApp(content::BrowserContext* passed_context,
                        const extensions::Extension* extension,
-                       std::unique_ptr<app_runtime::ActionData> action_data) {
+                       app_runtime::ActionData action_data) {
     EXPECT_EQ(profile(), passed_context);
     EXPECT_EQ(app_runtime::ActionType::ACTION_TYPE_NEW_NOTE,
-              action_data->action_type);
+              action_data.action_type);
     launched_chrome_apps_.push_back(ChromeAppLaunchInfo{extension->id()});
   }
 

@@ -670,8 +670,8 @@ NoteTakingHelper::LaunchResult NoteTakingHelper::LaunchAppInternal(
     LOG(WARNING) << "Failed to find note-taking app " << app_id;
     return LaunchResult::CHROME_APP_MISSING;
   }
-  auto action_data = std::make_unique<app_runtime::ActionData>();
-  action_data->action_type = app_runtime::ActionType::ACTION_TYPE_NEW_NOTE;
+  app_runtime::ActionData action_data;
+  action_data.action_type = app_runtime::ActionType::ACTION_TYPE_NEW_NOTE;
   launch_chrome_app_callback_.Run(profile, app, std::move(action_data));
   return LaunchResult::CHROME_SUCCESS;
 }
