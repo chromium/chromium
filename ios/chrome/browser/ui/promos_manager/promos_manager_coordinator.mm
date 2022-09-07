@@ -15,14 +15,24 @@
 #import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
 #import "ios/chrome/browser/ui/promos_manager/promos_manager_mediator.h"
 #import "ios/chrome/browser/ui/promos_manager/promos_manager_scene_agent.h"
+#import "ios/chrome/browser/ui/promos_manager/standard_promo_display_handler.h"
+#import "ios/chrome/browser/ui/promos_manager/standard_promo_view_provider.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
-#pragma mark - Public methods
+@interface PromosManagerCoordinator () <PromosManagerCommands> {
+  // Promos that conform to the StandardPromoDisplayHandler protocol.
+  base::small_map<
+      std::map<promos_manager::Promo, id<StandardPromoDisplayHandler>>>
+      _displayHandlerPromos;
 
-@interface PromosManagerCoordinator () <PromosManagerCommands>
+  // Promos that conform to the StandardPromoViewProvider protocol.
+  base::small_map<
+      std::map<promos_manager::Promo, id<StandardPromoViewProvider>>>
+      _viewProviderPromos;
+}
 
 // A mediator that observes when it's a good time to display a promo.
 @property(nonatomic, strong) PromosManagerMediator* mediator;
@@ -31,7 +41,11 @@
 
 @implementation PromosManagerCoordinator
 
+#pragma mark - Public
+
 - (void)start {
+  [self registerPromos];
+
   [self.browser->GetCommandDispatcher()
       startDispatchingToTarget:self
                    forProtocol:@protocol(PromosManagerCommands)];
@@ -55,7 +69,6 @@
 
 - (void)stop {
   [self.browser->GetCommandDispatcher() stopDispatchingToTarget:self];
-
   self.mediator = nil;
 }
 
@@ -67,6 +80,16 @@
   // the coordinator
   // 2. Call the proper view provider or display handler.
   // 3. Let the mediator know that `promo` was displayed.
+}
+
+#pragma mark - Private
+
+- (void)registerPromos {
+  // Add StandardPromoDisplayHandler promos here. For example:
+  // TODO(crbug.com/1360880): Create first StandardPromoDisplayHandler promo.
+
+  // Add StandardPromoViewProvider promos here. For example:
+  // TODO(crbug.com/1360881): Create first StandardPromoViewProvider promo.
 }
 
 - (base::small_map<std::map<promos_manager::Promo, NSArray<ImpressionLimit*>*>>)
