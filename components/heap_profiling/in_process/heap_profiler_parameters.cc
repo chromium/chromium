@@ -10,11 +10,15 @@
 #include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
+#include "base/json/json_reader.h"
+#include "base/json/json_value_converter.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/strings/string_split.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "components/metrics/call_stack_profile_params.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace heap_profiling {
 
@@ -70,6 +74,35 @@ constexpr base::FeatureParam<int> kCollectionIntervalMinutes{
     &kHeapProfilerReporting, "heap-profiler-collection-interval-minutes",
     kDefaultCollectionIntervalInMinutes};
 
+// TODO(crbug.com/1327069): Replace the above FeatureParam's with a single
+// "default-params" in the same JSON format as the following per-process
+// parameters to reduce duplication.
+
+// JSON-encoded parameter map that will override the default parameters for the
+// browser process.
+constexpr base::FeatureParam<std::string> kBrowserProcessParameters{
+    &kHeapProfilerReporting, "browser-process-params", ""};
+
+// JSON-encoded parameter map that will override the default parameters for
+// renderer processes.
+constexpr base::FeatureParam<std::string> kRendererProcessParameters{
+    &kHeapProfilerReporting, "renderer-process-params", ""};
+
+// JSON-encoded parameter map that will override the default parameters for the
+// GPU process.
+constexpr base::FeatureParam<std::string> kGPUProcessParameters{
+    &kHeapProfilerReporting, "gpu-process-params", ""};
+
+// JSON-encoded parameter map that will override the default parameters for
+// utility processes.
+constexpr base::FeatureParam<std::string> kUtilityProcessParameters{
+    &kHeapProfilerReporting, "utility-process-params", ""};
+
+// JSON-encoded parameter map that will override the default parameters for the
+// network process.
+constexpr base::FeatureParam<std::string> kNetworkProcessParameters{
+    &kHeapProfilerReporting, "network-process-params", ""};
+
 // Returns the string to use in the kSupportedProcesses feature param for
 // `process_type`, or nullptr if the process is not supported.
 const char* ProcessParamString(
@@ -93,10 +126,45 @@ const char* ProcessParamString(
   }
 }
 
+// Interprets `value` as a positive number of minutes, and writes the converted
+// value to `result`. If `value` contains anything other than a positive
+// integer, returns false to indicate a conversion failure.
+bool ConvertCollectionInterval(const base::Value* value,
+                               base::TimeDelta* result) {
+  if (!value) {
+    // Missing values are ok, so report success without updating `result`.
+    return true;
+  }
+  if (value->is_int()) {
+    const int minutes = value->GetInt();
+    if (minutes > 0) {
+      *result = base::Minutes(minutes);
+      return true;
+    }
+  }
+  return false;
+}
+
 }  // namespace
 
 constexpr base::Feature kHeapProfilerReporting CONSTINIT{
     "HeapProfilerReporting", base::FEATURE_ENABLED_BY_DEFAULT};
+
+// static
+void HeapProfilerParameters::RegisterJSONConverter(
+    base::JSONValueConverter<HeapProfilerParameters>* converter) {
+  converter->RegisterBoolField("is-supported",
+                               &HeapProfilerParameters::is_supported);
+  converter->RegisterDoubleField("stable-probability",
+                                 &HeapProfilerParameters::stable_probability);
+  converter->RegisterDoubleField(
+      "nonstable-probability", &HeapProfilerParameters::nonstable_probability);
+  converter->RegisterIntField("sampling-rate-bytes",
+                              &HeapProfilerParameters::sampling_rate_bytes);
+  converter->RegisterCustomValueField(
+      "collection-interval-minutes",
+      &HeapProfilerParameters::collection_interval, &ConvertCollectionInterval);
+}
 
 HeapProfilerParameters GetDefaultHeapProfilerParameters() {
   return {
@@ -127,8 +195,44 @@ HeapProfilerParameters GetHeapProfilerParametersForProcess(
     params.is_supported = base::Contains(supported_processes, process_string);
   }
 
-  // TODO(crbug.com/1327069): Add additional feature flags to override the
-  // other members of `params` for the given `process_type`.
+  // Override with per-process parameters if any are set.
+  using Process = metrics::CallStackProfileParams::Process;
+  std::string param_string;
+  switch (process_type) {
+    case Process::kBrowser:
+      param_string = kBrowserProcessParameters.Get();
+      break;
+    case Process::kRenderer:
+      param_string = kRendererProcessParameters.Get();
+      break;
+    case Process::kGpu:
+      param_string = kGPUProcessParameters.Get();
+      break;
+    case Process::kUtility:
+      param_string = kUtilityProcessParameters.Get();
+      break;
+    case Process::kNetworkService:
+      param_string = kNetworkProcessParameters.Get();
+      break;
+    case Process::kUnknown:
+    default:
+      // Do nothing. Profiler hasn't been tested in these process types.
+      break;
+  }
+  if (!param_string.empty()) {
+    // Overwrite the defaults with any parameters set in `param_string`. Missing
+    // parameters will not be touched.
+    base::JSONValueConverter<HeapProfilerParameters> converter;
+    absl::optional<base::Value> value =
+        base::JSONReader::Read(param_string, base::JSON_ALLOW_TRAILING_COMMAS);
+    if (!value || !converter.Convert(*value, &params)) {
+      // Error reading JSON params. Disable the heap sampler. This will be
+      // reported as HeapProfilerController logs
+      // HeapProfiling.InProcess.Enabled.
+      params.is_supported = false;
+    }
+  }
+
   return params;
 }
 

@@ -6,6 +6,7 @@
 #define COMPONENTS_HEAP_PROFILING_IN_PROCESS_HEAP_PROFILER_PARAMETERS_H_
 
 #include "base/feature_list.h"
+#include "base/json/json_value_converter.h"
 #include "base/time/time.h"
 #include "components/metrics/call_stack_profile_params.h"
 
@@ -37,14 +38,17 @@ struct HeapProfilerParameters {
 
   // Mean time between snapshots.
   base::TimeDelta collection_interval;
+
+  static void RegisterJSONConverter(
+      base::JSONValueConverter<HeapProfilerParameters>* converter);
 };
 
 // Returns a default set of parameters to use if not overridden for a
 // specific process.
 HeapProfilerParameters GetDefaultHeapProfilerParameters();
 
-// Returns the set of process parameters to use for `process_type`. This
-// will be identical to the result of GetDefaultProcessParameterMap() unless
+// Returns the set of process parameters to use for `process_type`. This will be
+// identical to the result of GetDefaultHeapProfilerParameters() unless
 // overridden by a field trial.
 HeapProfilerParameters GetHeapProfilerParametersForProcess(
     metrics::CallStackProfileParams::Process process_type);

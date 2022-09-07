@@ -200,6 +200,8 @@ void HeapProfilerController::StartIfEnabled() {
     return;
   HeapProfilerParameters profiler_params =
       GetHeapProfilerParametersForProcess(process_type_);
+  // DecideIfCollectionIsEnabled() should return false if not supported.
+  DCHECK(profiler_params.is_supported);
   if (profiler_params.sampling_rate_bytes > 0) {
     base::SamplingHeapProfiler::Get()->SetSamplingInterval(
         profiler_params.sampling_rate_bytes);
