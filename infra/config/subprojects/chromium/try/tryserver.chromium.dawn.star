@@ -186,6 +186,11 @@ try_.builder(
 try_.builder(
     name = "win-dawn-rel",
     os = os.WINDOWS_ANY,
+    mirrors = [
+        "ci/Dawn Win10 x64 Builder",
+        "ci/Dawn Win10 x64 Release (Intel HD 630)",
+        "ci/Dawn Win10 x64 Release (NVIDIA)",
+    ],
     test_presentation = resultdb.test_presentation(
         grouping_keys = ["status", "v.test_suite", "v.gpu"],
     ),
@@ -194,6 +199,11 @@ try_.builder(
 try_.builder(
     name = "dawn-try-win10-x86-rel",
     os = os.WINDOWS_ANY,
+    mirrors = [
+        "ci/Dawn Win10 x86 Builder",
+        "ci/Dawn Win10 x86 Release (Intel HD 630)",
+        "ci/Dawn Win10 x86 Release (NVIDIA)",
+    ],
     test_presentation = resultdb.test_presentation(
         grouping_keys = ["status", "v.test_suite", "v.gpu"],
     ),
@@ -202,6 +212,9 @@ try_.builder(
 try_.builder(
     name = "dawn-try-win10-x64-asan-rel",
     os = os.WINDOWS_ANY,
+    mirrors = [
+        "ci/Dawn Win10 x64 ASAN Release",
+    ],
     test_presentation = resultdb.test_presentation(
         grouping_keys = ["status", "v.test_suite", "v.gpu"],
     ),
