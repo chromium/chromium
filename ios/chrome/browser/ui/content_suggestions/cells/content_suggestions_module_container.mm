@@ -42,9 +42,11 @@ const float kPlaceholderTitleCornerRadius = 2.0f;
 // The corner radius of this container.
 const float kCornerRadius = 16;
 
-// The shadow offsets of this container.
-const CGFloat kHorizontalShadowOffset = 40;
-const CGFloat kVerticalShadowOffset = 50;
+// The shadow radius of this container.
+const float kShadowRadius = 5;
+
+// The shadow opacity of this container.
+const float kShadowOpacity = 0.06;
 
 // Vertical space allocated to the Trending Queries module content.
 const float kTrendingQueriesContentHeight = 103;
@@ -75,29 +77,15 @@ const float kTrendingQueriesContentHeight = 103;
     self.backgroundColor =
         [UIColor colorNamed:kGroupedSecondaryBackgroundColor];
 
-    // Create content container with same background as this view so that a
-    // shadow view can be placed under it to create a shadow effect.
-    UIImageView* shadow = [[UIImageView alloc]
-        initWithImage:StretchableImageNamed(@"module_shadow")];
-    shadow.translatesAutoresizingMaskIntoConstraints = NO;
-    [self addSubview:shadow];
-    AddSameConstraintsToSidesWithInsets(
-        shadow, self,
-        LayoutSides::kTop | LayoutSides::kLeading | LayoutSides::kBottom |
-            LayoutSides::kTrailing,
-        {-kHorizontalShadowOffset, -kVerticalShadowOffset,
-         -kVerticalShadowOffset, -kHorizontalShadowOffset});
-
-    UIView* contentContainer = [[UIView alloc] init];
-    contentContainer.backgroundColor =
-        [UIColor colorNamed:kGroupedSecondaryBackgroundColor];
-    contentContainer.layer.cornerRadius = kCornerRadius;
-    contentContainer.translatesAutoresizingMaskIntoConstraints = NO;
-    [self addSubview:contentContainer];
-    AddSameConstraints(self, contentContainer);
+      self.layer.shadowColor = [UIColor blackColor].CGColor;
+          self.layer.shadowRadius = kShadowRadius;
+          self.layer.shadowOpacity = kShadowOpacity;
+      // Render shadow as bitmap to improve snapshot render layout performance.
+      self.layer.shouldRasterize = YES;
+      self.layer.rasterizationScale = UIScreen.mainScreen.scale;
 
     contentView.translatesAutoresizingMaskIntoConstraints = NO;
-    [contentContainer addSubview:contentView];
+    [self addSubview:contentView];
 
     NSString* titleString = [self titleString];
     if ([titleString length] > 0) {
@@ -109,13 +97,13 @@ const float kTrendingQueriesContentHeight = 103;
       self.title.accessibilityTraits |= UIAccessibilityTraitHeader;
       self.title.accessibilityIdentifier = [self titleString];
       self.title.translatesAutoresizingMaskIntoConstraints = NO;
-      [contentContainer addSubview:self.title];
+      [self addSubview:self.title];
       [NSLayoutConstraint activateConstraints:@[
         // Title constraints.
         [self.title.leadingAnchor
-            constraintEqualToAnchor:contentContainer.leadingAnchor
+            constraintEqualToAnchor:self.leadingAnchor
                            constant:kContentHorizontalInset],
-        [contentContainer.topAnchor
+        [self.topAnchor
             constraintEqualToAnchor:self.title.topAnchor
                            constant:-[self titleTopInset]],
         // Ensures placeholder for title is visible.
@@ -125,13 +113,13 @@ const float kTrendingQueriesContentHeight = 103;
             constraintGreaterThanOrEqualToConstant:kTitleMinimumHeight],
         // contentView constraints.
         [contentView.leadingAnchor
-            constraintEqualToAnchor:contentContainer.leadingAnchor
+            constraintEqualToAnchor:self.leadingAnchor
                            constant:kContentHorizontalInset],
         [contentView.trailingAnchor
-            constraintEqualToAnchor:contentContainer.trailingAnchor
+            constraintEqualToAnchor:self.trailingAnchor
                            constant:-kContentHorizontalInset],
         [contentView.bottomAnchor
-            constraintEqualToAnchor:contentContainer.bottomAnchor],
+            constraintEqualToAnchor:self.bottomAnchor],
         [contentView.topAnchor constraintEqualToAnchor:self.title.bottomAnchor
                                               constant:[self titleSpacing]],
       ]];
@@ -140,15 +128,15 @@ const float kTrendingQueriesContentHeight = 103;
           ShouldRemoveHeadersForModuleRefresh() ? kContentHorizontalInset : 0;
       [NSLayoutConstraint activateConstraints:@[
         [contentView.leadingAnchor
-            constraintEqualToAnchor:contentContainer.leadingAnchor
+            constraintEqualToAnchor:self.leadingAnchor
                            constant:horizontalInsets],
         [contentView.trailingAnchor
-            constraintEqualToAnchor:contentContainer.trailingAnchor
+            constraintEqualToAnchor:self.trailingAnchor
                            constant:-horizontalInsets],
         [contentView.bottomAnchor
-            constraintEqualToAnchor:contentContainer.bottomAnchor],
+            constraintEqualToAnchor:self.bottomAnchor],
         [contentView.topAnchor
-            constraintEqualToAnchor:contentContainer.topAnchor
+            constraintEqualToAnchor:self.topAnchor
                            constant:[self titleTopInset]],
       ]];
     }
