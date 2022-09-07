@@ -74,6 +74,8 @@ GetPlatformSupportedVideoDecoderConfigs(
     const gpu::GPUInfo& gpu_info,
     base::OnceCallback<SupportedVideoDecoderConfigs()> get_vda_configs) {
   SupportedVideoDecoderConfigs supported_configs;
+  if (gpu_preferences.disable_accelerated_video_decode)
+    return supported_configs;
   if (ShouldUseD3D11VideoDecoder(gpu_workarounds)) {
     supported_configs = D3D11VideoDecoder::GetSupportedVideoDecoderConfigs(
         gpu_preferences, gpu_workarounds, GetD3D11DeviceCallback());
