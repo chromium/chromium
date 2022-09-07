@@ -114,7 +114,6 @@ class MetricReportingManager : public policy::ManagedSessionService::Observer,
 
   void InitPeriodicEventCollector(const std::string& sampler_name,
                                   std::unique_ptr<EventDetector> event_detector,
-                                  std::vector<Sampler*> additional_samplers,
                                   MetricReportQueue* metric_report_queue,
                                   const std::string& rate_setting_path,
                                   base::TimeDelta default_rate,

@@ -340,7 +340,6 @@ void MetricReportingManager::InitPeriodicCollector(
 void MetricReportingManager::InitPeriodicEventCollector(
     const std::string& sampler_name,
     std::unique_ptr<EventDetector> event_detector,
-    std::vector<Sampler*> additional_samplers,
     MetricReportQueue* metric_report_queue,
     const std::string& rate_setting_path,
     base::TimeDelta default_rate,
@@ -356,7 +355,7 @@ void MetricReportingManager::InitPeriodicEventCollector(
       telemetry_sampler_map_.at(sampler_name).get();
   periodic_collectors_.emplace_back(delegate_->CreatePeriodicEventCollector(
       configured_sampler->GetSampler(), std::move(event_detector),
-      std::move(additional_samplers), metric_report_queue, &reporting_settings_,
+      /*sampler_pool=*/this, metric_report_queue, &reporting_settings_,
       configured_sampler->GetEnableSettingPath(),
       configured_sampler->GetSettingEnabledDefaultValue(), rate_setting_path,
       default_rate, rate_unit_to_ms));
@@ -417,7 +416,7 @@ void MetricReportingManager::InitNetworkCollectors(Profile* profile) {
   // HttpsLatency events.
   InitPeriodicEventCollector(
       kSamplerHttpsLatency, std::make_unique<HttpsLatencyEventDetector>(),
-      /*additional_samplers=*/{}, event_report_queue_.get(),
+      event_report_queue_.get(),
       ::ash::kReportDeviceNetworkTelemetryEventCheckingRateMs,
       metrics::GetDefaultEventCheckingRate(
           metrics::kDefaultNetworkTelemetryEventCheckingRate));

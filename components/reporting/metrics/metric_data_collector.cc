@@ -8,11 +8,14 @@
 
 #include "base/bind.h"
 #include "base/logging.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/task/bind_post_task.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "components/reporting/metrics/event_driven_telemetry_sampler_pool.h"
 #include "components/reporting/metrics/metric_rate_controller.h"
 #include "components/reporting/metrics/metric_report_queue.h"
 #include "components/reporting/metrics/metric_reporting_controller.h"
+#include "components/reporting/metrics/multi_samplers_collector.h"
 #include "components/reporting/util/status.h"
 
 namespace reporting {
@@ -140,52 +143,10 @@ void PeriodicCollector::StopPeriodicCollection() {
   rate_controller_->Stop();
 }
 
-AdditionalSamplersCollector::AdditionalSamplersCollector(
-    std::vector<Sampler*> samplers)
-    : samplers_(std::move(samplers)) {
-  DETACH_FROM_SEQUENCE(sequence_checker_);
-}
-
-AdditionalSamplersCollector::~AdditionalSamplersCollector() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-}
-
-void AdditionalSamplersCollector::CollectAll(
-    OptionalMetricCallback on_all_collected_cb,
-    MetricData metric_data) const {
-  CollectAdditionalMetricData(
-      /*sampler_index=*/0, std::move(on_all_collected_cb),
-      std::move(metric_data), /*new_metric_data=*/absl::nullopt);
-}
-
-void AdditionalSamplersCollector::CollectAdditionalMetricData(
-    uint64_t sampler_index,
-    OptionalMetricCallback on_all_collected_cb,
-    MetricData metric_data,
-    absl::optional<MetricData> new_metric_data) const {
-  CHECK(base::SequencedTaskRunnerHandle::IsSet());
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (new_metric_data.has_value()) {
-    metric_data.CheckTypeAndMergeFrom(new_metric_data.value());
-  }
-  if (sampler_index == samplers_.size()) {
-    std::move(on_all_collected_cb).Run(std::move(metric_data));
-    return;
-  }
-
-  auto on_collected_cb =
-      base::BindOnce(&AdditionalSamplersCollector::CollectAdditionalMetricData,
-                     weak_ptr_factory_.GetWeakPtr(), sampler_index + 1,
-                     std::move(on_all_collected_cb), std::move(metric_data));
-  samplers_[sampler_index]->MaybeCollect(base::BindPostTask(
-      base::SequencedTaskRunnerHandle::Get(), std::move(on_collected_cb)));
-}
-
 PeriodicEventCollector::PeriodicEventCollector(
     Sampler* sampler,
     std::unique_ptr<EventDetector> event_detector,
-    std::vector<Sampler*> additional_samplers,
+    EventDrivenTelemetrySamplerPool* sampler_pool,
     MetricReportQueue* metric_report_queue,
     ReportingSettings* reporting_settings,
     const std::string& enable_setting_path,
@@ -202,9 +163,7 @@ PeriodicEventCollector::PeriodicEventCollector(
                         default_rate,
                         rate_unit_to_ms),
       event_detector_(std::move(event_detector)),
-      additional_samplers_collector_(
-          std::make_unique<AdditionalSamplersCollector>(
-              std::move(additional_samplers))) {}
+      sampler_pool_(sampler_pool) {}
 
 PeriodicEventCollector::~PeriodicEventCollector() = default;
 
@@ -224,21 +183,25 @@ void PeriodicEventCollector::OnMetricDataCollected(
   }
   last_collected_data_.mutable_event_data()->set_type(event.value());
 
-  additional_samplers_collector_->CollectAll(
-      base::BindOnce(&PeriodicEventCollector::OnAdditionalMetricDataCollected,
-                     base::Unretained(this)),
-      /*metric_data=*/last_collected_data_);
-}
-
-void PeriodicEventCollector::OnAdditionalMetricDataCollected(
-    absl::optional<MetricData> metric_data) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!metric_data.has_value()) {
-    NOTREACHED() << "Metric data is unexpectedly empty after additional metric "
-                 << "collection.";
-    return;
+  std::vector<ConfiguredSampler*> telemetry_samplers;
+  if (sampler_pool_) {
+    telemetry_samplers = sampler_pool_->GetTelemetrySamplers(event.value());
   }
-
-  ReportMetricData(std::move(metric_data.value()));
+  auto collect_cb = base::BindOnce(&PeriodicEventCollector::MergeAndReport,
+                                   event_weak_ptr_factory_.GetWeakPtr(),
+                                   last_collected_data_);
+  MultiSamplersCollector::CollectAll(telemetry_samplers, std::move(collect_cb));
 }
+
+void PeriodicEventCollector::MergeAndReport(
+    MetricData event_metric_data,
+    absl::optional<MetricData> telemetry_metric_data) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (telemetry_metric_data.has_value()) {
+    event_metric_data.CheckTypeAndMergeFrom(telemetry_metric_data.value());
+  }
+  ReportMetricData(std::move(event_metric_data));
+}
+
 }  // namespace reporting

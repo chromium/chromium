@@ -75,7 +75,7 @@ class MetricReportingManagerDelegateBase {
   virtual std::unique_ptr<CollectorBase> CreatePeriodicEventCollector(
       Sampler* sampler,
       std::unique_ptr<EventDetector> event_detector,
-      std::vector<Sampler*> additional_samplers,
+      EventDrivenTelemetrySamplerPool* sampler_pool,
       MetricReportQueue* metric_report_queue,
       ReportingSettings* reporting_settings,
       const std::string& enable_setting_path,

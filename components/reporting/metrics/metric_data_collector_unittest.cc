@@ -13,6 +13,7 @@
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "components/reporting/metrics/fake_event_driven_telemetry_sampler_pool.h"
 #include "components/reporting/metrics/fake_metric_report_queue.h"
 #include "components/reporting/metrics/fake_reporting_settings.h"
 #include "components/reporting/metrics/fake_sampler.h"
@@ -27,7 +28,8 @@ namespace test {
 
 class FakeEventDetector : public EventDetector {
  public:
-  FakeEventDetector() = default;
+  explicit FakeEventDetector(MetricEventType event_type)
+      : event_type_(event_type) {}
 
   FakeEventDetector(const FakeEventDetector& other) = delete;
   FakeEventDetector& operator=(const FakeEventDetector& other) = delete;
@@ -42,7 +44,7 @@ class FakeEventDetector : public EventDetector {
     if (!has_event_) {
       return absl::nullopt;
     }
-    return MetricEventType::NETWORK_HTTPS_LATENCY_CHANGE;
+    return event_type_;
   }
 
   void SetHasEvent(bool has_event) { has_event_ = has_event; }
@@ -56,6 +58,8 @@ class FakeEventDetector : public EventDetector {
   bool has_event_ = false;
 
   std::vector<std::unique_ptr<const MetricData>> previous_metric_list_;
+
+  const MetricEventType event_type_;
 };
 }  // namespace test
 
@@ -415,7 +419,7 @@ TEST_F(MetricDataCollectorTest, PeriodicCollector_DefaultDisabled) {
   EXPECT_TRUE(metric_report_queue_->GetMetricDataReported().empty());
 }
 
-TEST_F(MetricDataCollectorTest, PeriodicEventCollector_NoAdditionalSamplers) {
+TEST_F(MetricDataCollectorTest, PeriodicEventCollector) {
   constexpr int interval = 10000;
   settings_->SetBoolean(kEnableSettingPath, true);
   settings_->SetInteger(kRateSettingPath, interval);
@@ -425,13 +429,15 @@ TEST_F(MetricDataCollectorTest, PeriodicEventCollector_NoAdditionalSamplers) {
   metric_data[1].mutable_telemetry_data();
   metric_data[2].mutable_info_data();
 
-  auto event_detector = std::make_unique<test::FakeEventDetector>();
+  auto event_detector = std::make_unique<test::FakeEventDetector>(
+      MetricEventType::NETWORK_HTTPS_LATENCY_CHANGE);
   auto* event_detector_ptr = event_detector.get();
 
   sampler_->SetMetricData(metric_data[0]);
   PeriodicEventCollector collector(sampler_.get(), std::move(event_detector),
-                                   {}, metric_report_queue_.get(),
-                                   settings_.get(), kEnableSettingPath,
+                                   /*sampler_pool=*/nullptr,
+                                   metric_report_queue_.get(), settings_.get(),
+                                   kEnableSettingPath,
                                    /*setting_enabled_default_value=*/false,
                                    kRateSettingPath, base::Milliseconds(15000));
 
@@ -470,7 +476,9 @@ TEST_F(MetricDataCollectorTest, PeriodicEventCollector_NoAdditionalSamplers) {
   EXPECT_TRUE(previous_metric_list[2]->has_timestamp_ms());
   EXPECT_FALSE(previous_metric_list[2]->has_info_data());
   EXPECT_TRUE(previous_metric_list[2]->has_telemetry_data());
-  EXPECT_TRUE(previous_metric_list[2]->has_event_data());
+  ASSERT_TRUE(previous_metric_list[2]->has_event_data());
+  EXPECT_THAT(previous_metric_list[2]->event_data().type(),
+              testing::Eq(MetricEventType::NETWORK_HTTPS_LATENCY_CHANGE));
 
   const auto& metric_data_reported =
       metric_report_queue_->GetMetricDataReported();
@@ -479,51 +487,56 @@ TEST_F(MetricDataCollectorTest, PeriodicEventCollector_NoAdditionalSamplers) {
   EXPECT_TRUE(metric_data_reported[0]->has_timestamp_ms());
   EXPECT_FALSE(metric_data_reported[0]->has_info_data());
   EXPECT_TRUE(metric_data_reported[0]->has_telemetry_data());
-  EXPECT_TRUE(metric_data_reported[0]->has_event_data());
+  ASSERT_TRUE(metric_data_reported[0]->has_event_data());
+  EXPECT_THAT(metric_data_reported[0]->event_data().type(),
+              testing::Eq(MetricEventType::NETWORK_HTTPS_LATENCY_CHANGE));
 }
 
-TEST_F(MetricDataCollectorTest, PeriodicEventCollector_WithAdditionalSamplers) {
+TEST_F(MetricDataCollectorTest, PeriodicEventCollector_EventDrivenTelemetry) {
   settings_->SetBoolean(kEnableSettingPath, true);
 
-  MetricData metric_data;
-  metric_data.mutable_telemetry_data();
+  auto sampler_pool =
+      std::make_unique<test::FakeEventDrivenTelemetrySamplerPool>();
+  std::vector<std::string> telemetry_paths = {"path1", "path2", "path3"};
 
-  MetricData additional_metric_data[3];
-  additional_metric_data[0]
-      .mutable_telemetry_data()
-      ->mutable_networks_telemetry()
-      ->mutable_https_latency_data()
-      ->set_verdict(RoutineVerdict::PROBLEM);
-  additional_metric_data[1]
-      .mutable_telemetry_data()
-      ->mutable_networks_telemetry()
-      ->mutable_https_latency_data()
-      ->set_problem(HttpsLatencyProblem::HIGH_LATENCY);
-  additional_metric_data[2]
-      .mutable_telemetry_data()
-      ->mutable_networks_telemetry()
-      ->mutable_https_latency_data()
-      ->set_latency_ms(1500);
+  std::vector<std::unique_ptr<ConfiguredSampler>> configured_samplers;
+  MetricData telemetry_data[3];
 
-  test::FakeSampler additional_samplers[3];
-  std::vector<Sampler*> additional_sampler_ptrs;
-  for (int i = 0; i < 3; ++i) {
-    additional_samplers[i].SetMetricData(additional_metric_data[i]);
-    additional_sampler_ptrs.emplace_back(additional_samplers + i);
+  telemetry_data[0].mutable_telemetry_data()->mutable_audio_telemetry();
+  telemetry_data[1].mutable_telemetry_data()->mutable_peripherals_telemetry();
+  telemetry_data[2]
+      .mutable_telemetry_data()
+      ->mutable_boot_performance_telemetry();
+
+  for (size_t i = 0; i < telemetry_paths.size(); ++i) {
+    auto sampler = std::make_unique<test::FakeSampler>();
+    sampler->SetMetricData(std::move(telemetry_data[i]));
+    configured_samplers.push_back(std::make_unique<ConfiguredSampler>(
+        std::move(sampler), telemetry_paths[i],
+        /*setting_enabled_default_value=*/false, settings_.get()));
+    sampler_pool->AddEventSampler(MetricEventType::NETWORK_HTTPS_LATENCY_CHANGE,
+                                  configured_samplers.at(i).get());
   }
-  test::FakeSampler empty_additional_sampler;
-  additional_sampler_ptrs.emplace_back(&empty_additional_sampler);
+  settings_->SetBoolean(telemetry_paths[0], true);
+  // Disable second sampler collection.
+  settings_->SetBoolean(telemetry_paths[1], false);
+  settings_->SetBoolean(telemetry_paths[2], true);
 
-  auto event_detector = std::make_unique<test::FakeEventDetector>();
+  auto event_detector = std::make_unique<test::FakeEventDetector>(
+      MetricEventType::NETWORK_HTTPS_LATENCY_CHANGE);
 
-  sampler_->SetMetricData(std::move(metric_data));
+  MetricData event_data;
+  event_data.mutable_telemetry_data()
+      ->mutable_networks_telemetry()
+      ->mutable_https_latency_data();
+
+  sampler_->SetMetricData(std::move(event_data));
   event_detector->SetHasEvent(true);
-  PeriodicEventCollector collector(sampler_.get(), std::move(event_detector),
-                                   std::move(additional_sampler_ptrs),
-                                   metric_report_queue_.get(), settings_.get(),
-                                   kEnableSettingPath,
-                                   /*setting_enabled_default_value=*/false,
-                                   kRateSettingPath, base::Milliseconds(15000));
+  PeriodicEventCollector collector(
+      sampler_.get(), std::move(event_detector), sampler_pool.get(),
+      metric_report_queue_.get(), settings_.get(), kEnableSettingPath,
+      /*setting_enabled_default_value=*/false, kRateSettingPath,
+      base::Milliseconds(15000));
 
   // Data collected and reported.
   EXPECT_EQ(sampler_->GetNumCollectCalls(), 1);
@@ -534,34 +547,26 @@ TEST_F(MetricDataCollectorTest, PeriodicEventCollector_WithAdditionalSamplers) {
 
   ASSERT_THAT(metric_data_reported, ::testing::SizeIs(1));
   EXPECT_TRUE(metric_data_reported[0]->has_timestamp_ms());
-  EXPECT_TRUE(metric_data_reported[0]->has_event_data());
+  ASSERT_TRUE(metric_data_reported[0]->has_event_data());
+  EXPECT_THAT(metric_data_reported[0]->event_data().type(),
+              testing::Eq(MetricEventType::NETWORK_HTTPS_LATENCY_CHANGE));
   ASSERT_TRUE(metric_data_reported[0]->has_telemetry_data());
   ASSERT_TRUE(
       metric_data_reported[0]->telemetry_data().has_networks_telemetry());
-  ASSERT_TRUE(metric_data_reported[0]
+  // Event originated telemetry data.
+  EXPECT_TRUE(metric_data_reported[0]
                   ->telemetry_data()
                   .networks_telemetry()
                   .has_https_latency_data());
-
-  auto https_latency_data = metric_data_reported[0]
-                                ->telemetry_data()
-                                .networks_telemetry()
-                                .https_latency_data();
-  EXPECT_EQ(https_latency_data.verdict(), additional_metric_data[0]
-                                              .telemetry_data()
-                                              .networks_telemetry()
-                                              .https_latency_data()
-                                              .verdict());
-  EXPECT_EQ(https_latency_data.problem(), additional_metric_data[1]
-                                              .telemetry_data()
-                                              .networks_telemetry()
-                                              .https_latency_data()
-                                              .problem());
-  EXPECT_EQ(https_latency_data.latency_ms(), additional_metric_data[2]
-                                                 .telemetry_data()
-                                                 .networks_telemetry()
-                                                 .https_latency_data()
-                                                 .latency_ms());
+  // Event driven telemetry data.
+  EXPECT_TRUE(metric_data_reported[0]->telemetry_data().has_audio_telemetry());
+  EXPECT_TRUE(metric_data_reported[0]
+                  ->telemetry_data()
+                  .has_boot_performance_telemetry());
+  // Sampler reporting is disabled.
+  EXPECT_FALSE(
+      metric_data_reported[0]->telemetry_data().has_peripherals_telemetry());
 }
+
 }  // namespace
 }  // namespace reporting
