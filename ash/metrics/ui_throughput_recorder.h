@@ -7,7 +7,9 @@
 
 #include "ash/ash_export.h"
 #include "base/sequence_checker.h"
+#include "base/time/time.h"
 #include "cc/metrics/custom_metrics_recorder.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -37,6 +39,16 @@ class ASH_EXPORT UiThroughputRecorder : public cc::CustomMetricRecorder {
 
   State state_ = State::kBeforeLogin;
   SEQUENCE_CHECKER(sequence_checker_);
+
+  // True when trying to determine session init time by checking ADF numbers.
+  bool check_session_init_ = false;
+
+  // Whether session is considered as fully initialized. This flag is set after
+  // observing good ADF for 5s during login.
+  bool session_initialized_ = false;
+
+  absl::optional<base::TimeTicks> user_logged_in_time_;
+  absl::optional<base::TimeTicks> last_good_dropped_frame_time_;
 };
 
 }  // namespace ash

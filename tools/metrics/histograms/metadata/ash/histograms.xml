@@ -2525,6 +2525,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.Login.TimeUntilGoodADF" units="ms"
+    expires_after="2023-08-07">
+  <owner>xiyuan@chromium.org</owner>
+  <owner>chromeos-perfmetrics-eng@google.com</owner>
+  <summary>
+    Time between user logged in (i.e. a successful cryptohome mount) and when
+    good ADF (&lt;= 20%) is observed for more than 5 seconds.
+  </summary>
+</histogram>
+
 <histogram base="true" name="Ash.LoginAnimation.Duration" units="ms"
     expires_after="2023-06-02">
   <owner>oshima@chromium.org</owner>
@@ -3977,7 +3987,9 @@ chromium-metrics-reviews@google.com.
     <variant name=".BeforeLogin" summary="before login"/>
     <variant name=".DuringLogin"
         summary="after cryptohome mount but before login animations finish"/>
-    <variant name=".InSession" summary="for active user session"/>
+    <variant name=".InSession" summary="after post-login animation finishes"/>
+    <variant name=".InSession2"
+        summary="after observing good ADF for 5 seconds"/>
   </token>
 </histogram>
 
