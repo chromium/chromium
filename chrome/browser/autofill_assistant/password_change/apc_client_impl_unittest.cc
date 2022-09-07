@@ -23,9 +23,11 @@
 #include "components/autofill_assistant/browser/public/mock_headless_script_controller.h"
 #include "components/autofill_assistant/browser/public/mock_runtime_manager.h"
 #include "components/autofill_assistant/browser/public/password_change/mock_website_login_manager.h"
+#include "components/autofill_assistant/browser/public/prefs.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_manager_client_helper.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/test_renderer_host.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -206,7 +208,7 @@ class ApcClientImplTest : public ChromeRenderViewHostTestHarness {
   }
 
   void SetUp() override {
-    content::RenderViewHostTestHarness::SetUp();
+    ChromeRenderViewHostTestHarness::SetUp();
 
     test_apc_client_ = TestApcClientImpl::CreateForWebContents(web_contents());
 
@@ -286,6 +288,8 @@ class ApcClientImplTest : public ChromeRenderViewHostTestHarness {
   autofill_assistant::MockRuntimeManager* runtime_manager() {
     return mock_runtime_manager_.get();
   }
+
+  PrefService* GetPrefs() { return profile()->GetPrefs(); }
 
  private:
   // Necessary to turn on the unified sidepanel.
@@ -564,6 +568,32 @@ TEST_F(ApcClientImplTest, CreateAndStartApcFlow_WithUnifiedSidePanelDisabled) {
   // Starting it does not work.
   client->Start(GURL(kUrl1), kUsername1, /*skip_login=*/true,
                 /*callback=*/base::DoNothing(),
+                /*debug_run_information=*/absl::nullopt);
+  EXPECT_FALSE(client->IsRunning());
+}
+
+TEST_F(ApcClientImplTest, CreateAndStartApcFlow_WithAutofillAssistantDisabled) {
+  GetPrefs()->SetBoolean(autofill_assistant::prefs::kAutofillAssistantEnabled,
+                         false);
+  raw_ptr<ApcClient> client =
+      ApcClient::GetOrCreateForWebContents(web_contents());
+
+  // There is one client per WebContents.
+  EXPECT_EQ(client, apc_client());
+
+  // The `ApcClient` is paused.
+  EXPECT_FALSE(client->IsRunning());
+
+  EXPECT_CALL(*runtime_manager(),
+              SetUIState(autofill_assistant::UIState::kShown))
+      .Times(0);
+
+  base::MockCallback<ApcClient::ResultCallback> result_callback;
+  EXPECT_CALL(result_callback, Run(false));
+
+  // Starting it does not work.
+  client->Start(GURL(kUrl1), kUsername1, /*skip_login=*/true,
+                /*callback=*/result_callback.Get(),
                 /*debug_run_information=*/absl::nullopt);
   EXPECT_FALSE(client->IsRunning());
 }

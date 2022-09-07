@@ -355,6 +355,7 @@ static_library("browser") {
       "password_scripts_fetcher_impl.cc",
       "password_scripts_fetcher_impl.h",
     ]
+    deps += [ "//components/autofill_assistant/browser/public" ]
   }
 
   if (!is_android && !is_ios) {

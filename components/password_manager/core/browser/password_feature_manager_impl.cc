@@ -4,12 +4,17 @@
 
 #include "components/password_manager/core/browser/password_feature_manager_impl.h"
 
+#include "build/build_config.h"
 #include "components/password_manager/core/browser/password_manager_features_util.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync/driver/sync_service.h"
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#include "components/autofill_assistant/browser/public/prefs.h"
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 namespace password_manager {
 
@@ -31,8 +36,19 @@ bool PasswordFeatureManagerImpl::IsGenerationEnabled() const {
 
 bool PasswordFeatureManagerImpl::
     AreRequirementsForAutomatedPasswordChangeFulfilled() const {
-  // TODO(crbug.com/1349782): Re-enable for account store users once adjustments
-  // to script fetchers and WebsiteLoginManager are made.
+  // Only offer APC if Autofill Assistant is not disabled (by user choice
+  // or by enterprise policy).
+  // TODO(crbug.com/1359959): Also enable for Android once prefs are migrated to
+  // profile prefs.
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  if (!pref_service_->GetBoolean(
+          autofill_assistant::prefs::kAutofillAssistantEnabled)) {
+    return false;
+  }
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+
+  // TODO(crbug.com/1349782): Re-enable for account store users once
+  // adjustments to script fetchers and WebsiteLoginManager are made.
   switch (password_manager_util::GetPasswordSyncState(sync_service_)) {
     case SyncState::kNotSyncing:
     case SyncState::kAccountPasswordsActiveNormalEncryption:

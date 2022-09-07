@@ -10,6 +10,7 @@
 
 #include "base/bind.h"
 #include "base/feature_list.h"
+#include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/autofill_assistant/common_dependencies_chrome.h"
 #include "chrome/browser/autofill_assistant/password_change/apc_external_action_delegate.h"
@@ -23,8 +24,10 @@
 #include "components/autofill_assistant/browser/public/autofill_assistant_factory.h"
 #include "components/autofill_assistant/browser/public/headless_script_controller.h"
 #include "components/autofill_assistant/browser/public/password_change/website_login_manager_impl.h"
+#include "components/autofill_assistant/browser/public/prefs.h"
 #include "components/autofill_assistant/browser/public/public_script_parameters.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
@@ -51,17 +54,31 @@ void ApcClientImpl::Start(
   // If the unified side panel is not enabled, trying to register an entry in it
   // later on will crash.
   if (!base::FeatureList::IsEnabled(features::kUnifiedSidePanel)) {
+    DVLOG(0) << "Unified side panel disabled, stopping APC.";
+    std::move(callback).Run(false);
+    return;
+  }
+
+  // If Autofill Assistant is disabled, do not start.
+  PrefService* pref_service =
+      Profile::FromBrowserContext(GetWebContents().GetBrowserContext())
+          ->GetPrefs();
+  if (!pref_service->GetBoolean(
+          autofill_assistant::prefs::kAutofillAssistantEnabled)) {
+    DVLOG(0) << "Autofill Assistant pref is false, stopping APC.";
     std::move(callback).Run(false);
     return;
   }
 
   if (GetPasswordManagerClient() == nullptr) {
+    DVLOG(0) << "Cannot obtain password manager client, stopping APC.";
     std::move(callback).Run(false);
     return;
   }
 
   // Ensure that only one run is ongoing.
   if (is_running_) {
+    DVLOG(0) << "APC already ongoing, not starting a new run.";
     std::move(callback).Run(false);
     return;
   }
