@@ -7,6 +7,7 @@
 #include <alpha-compositing-unstable-v1-client-protocol.h>
 #include <aura-shell-client-protocol.h>
 #include <chrome-color-management-client-protocol.h>
+#include <content-type-v1-client-protocol.h>
 #include <cursor-shapes-unstable-v1-client-protocol.h>
 #include <extended-drag-unstable-v1-client-protocol.h>
 #include <gtk-primary-selection-client-protocol.h>
@@ -210,6 +211,8 @@ IMPLEMENT_WAYLAND_OBJECT_TRAITS(wp_presentation)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(wp_presentation_feedback)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(wp_viewport)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(wp_viewporter)
+IMPLEMENT_WAYLAND_OBJECT_TRAITS(wp_content_type_v1)
+IMPLEMENT_WAYLAND_OBJECT_TRAITS(wp_content_type_manager_v1)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(xdg_activation_v1)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(xdg_activation_token_v1)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(xdg_popup)

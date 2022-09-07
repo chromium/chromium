@@ -120,6 +120,9 @@ class WaylandConnection {
   // version binded).
   uint32_t compositor_version() const { return compositor_version_; }
   wl_subcompositor* subcompositor() const { return subcompositor_.get(); }
+  wp_content_type_manager_v1* content_type_manager_v1() const {
+    return content_type_manager_v1_.get();
+  }
   wp_viewporter* viewporter() const { return viewporter_.get(); }
   zcr_alpha_compositing_v1* alpha_compositing() const {
     return alpha_compositing_.get();
@@ -372,6 +375,7 @@ class WaylandConnection {
   wl::Object<wl_subcompositor> subcompositor_;
   wl::Object<xdg_wm_base> shell_;
   wl::Object<zxdg_shell_v6> shell_v6_;
+  wl::Object<wp_content_type_manager_v1> content_type_manager_v1_;
   wl::Object<wp_presentation> presentation_;
   wl::Object<wp_viewporter> viewporter_;
   wl::Object<zcr_alpha_compositing_v1> alpha_compositing_;

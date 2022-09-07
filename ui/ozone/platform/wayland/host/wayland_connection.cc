@@ -4,12 +4,14 @@
 
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 
+#include <content-type-v1-client-protocol.h>
 #include <extended-drag-unstable-v1-client-protocol.h>
 #include <presentation-time-client-protocol.h>
 #include <xdg-shell-client-protocol.h>
 #include <xdg-shell-unstable-v6-client-protocol.h>
 
 #include <algorithm>
+#include <cstdint>
 #include <memory>
 #include <vector>
 
@@ -89,6 +91,7 @@ constexpr uint32_t kMaxExtendedDragVersion = 1;
 constexpr uint32_t kMaxXdgOutputManagerVersion = 3;
 constexpr uint32_t kMaxKeyboardShortcutsInhibitManagerVersion = 1;
 constexpr uint32_t kMaxStylusVersion = 2;
+constexpr uint32_t kMaxWpContentTypeVersion = 1;
 
 int64_t ConvertTimespecToMicros(const struct timespec& ts) {
   // On 32-bit systems, the calculation cannot overflow int64_t.
@@ -483,6 +486,14 @@ void WaylandConnection::Global(void* data,
             registry, name, std::min(version, kMaxExplicitSyncVersion));
     if (!connection->linux_explicit_synchronization_) {
       LOG(ERROR) << "Failed to bind zwp_linux_explicit_synchronization_v1";
+      return;
+    }
+  } else if (!connection->content_type_manager_v1_ &&
+             (strcmp(interface, "wp_content_type_manager_v1") == 0)) {
+    connection->content_type_manager_v1_ = wl::Bind<wp_content_type_manager_v1>(
+        registry, name, std::min(version, kMaxWpContentTypeVersion));
+    if (!connection->content_type_manager_v1_) {
+      LOG(ERROR) << "Failed to bind wp_content_type_v1";
       return;
     }
   } else if (!connection->presentation_ &&

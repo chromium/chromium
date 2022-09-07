@@ -23,6 +23,7 @@
 #include "ui/gfx/overlay_transform.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
 
+struct wp_content_type_v1;
 struct zwp_keyboard_shortcuts_inhibitor_v1;
 struct zwp_linux_buffer_release_v1;
 struct zcr_blending_v1;
@@ -298,6 +299,7 @@ class WaylandSurface {
   wl::Object<zwp_linux_surface_synchronization_v1> surface_sync_;
   wl::Object<overlay_prioritized_surface> overlay_priority_surface_;
   wl::Object<augmented_surface> augmented_surface_;
+  wl::Object<wp_content_type_v1> content_type_;
   base::flat_map<zwp_linux_buffer_release_v1*, ExplicitReleaseInfo>
       linux_buffer_releases_;
   ExplicitReleaseCallback next_explicit_release_request_;

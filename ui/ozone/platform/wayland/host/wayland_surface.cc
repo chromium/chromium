@@ -5,6 +5,7 @@
 #include "ui/ozone/platform/wayland/host/wayland_surface.h"
 
 #include <alpha-compositing-unstable-v1-client-protocol.h>
+#include <content-type-v1-client-protocol.h>
 #include <keyboard-shortcuts-inhibit-unstable-v1-client-protocol.h>
 #include <linux-explicit-synchronization-unstable-v1-client-protocol.h>
 #include <overlay-prioritizer-client-protocol.h>
@@ -159,6 +160,17 @@ bool WaylandSurface::Initialize() {
     }
   } else {
     LOG(WARNING) << "Server doesn't support surface_augmenter.";
+  }
+
+  if (auto* content_type_manager = connection_->content_type_manager_v1()) {
+    content_type_.reset(wp_content_type_manager_v1_get_surface_content_type(
+        content_type_manager, surface()));
+    if (!content_type_) {
+      LOG(ERROR)
+          << "Failed to create wp_content_type_v1. Continuing without it.";
+    }
+  } else {
+    LOG(WARNING) << "Server doesn't support wp_content_type_v1";
   }
 
   return true;
@@ -504,6 +516,14 @@ void WaylandSurface::ApplyPendingState() {
                   .GetCornerRadii(gfx::RRectF::Corner::kLowerLeft)
                   .x()));
     }
+  }
+
+  if (content_type_ &&
+      (pending_state_.contains_video != state_.contains_video)) {
+    wp_content_type_v1_set_content_type(content_type_.get(),
+                                        pending_state_.contains_video
+                                            ? WP_CONTENT_TYPE_V1_TYPE_VIDEO
+                                            : WP_CONTENT_TYPE_V1_TYPE_NONE);
   }
 
   // Buffer-local coordinates are in pixels, surface coordinates are in DIP.
