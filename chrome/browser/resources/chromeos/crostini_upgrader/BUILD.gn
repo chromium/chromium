@@ -8,7 +8,9 @@ import("//tools/polymer/html_to_js.gni")
 js_type_check("closure_compile") {
   is_polymer3 = true
   closure_flags = default_closure_args + [
-                    "js_module_root=../../chrome/browser/resources/chromeos/crostini_upgrader/",
+                    "js_module_root=" + rebase_path(
+                            "//chrome/browser/resources/chromeos/crostini_upgrader/",
+                            root_build_dir),
                     "js_module_root=./gen/chrome/browser/resources/chromeos/crostini_upgrader/",
                   ]
   deps = [

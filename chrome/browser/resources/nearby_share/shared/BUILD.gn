@@ -89,7 +89,9 @@ js_type_check("closure_compile_module") {
   is_polymer3 = true
   closure_flags =
       default_closure_args + [
-        "js_module_root=../../chrome/browser/resources/nearby_share/shared/",
+        "js_module_root=" +
+            rebase_path("//chrome/browser/resources/nearby_share/shared/",
+                        root_build_dir),
         "js_module_root=./gen/chrome/browser/resources/nearby_share/shared/",
       ]
 

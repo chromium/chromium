@@ -14,14 +14,25 @@ preprocess_if_expr("preprocess") {
 js_type_check("closure_compile") {
   is_polymer3 = true
   closure_flags = default_closure_args + [
-                    "browser_resolver_prefix_replacements=\"chrome://chrome-signin/gaia_auth_host/=../../chrome/browser/resources/gaia_auth_host/\"",
-                    "browser_resolver_prefix_replacements=\"chrome://chrome-signin/arc_account_picker/=../../chrome/browser/resources/chromeos/arc_account_picker/\"",
-                    "browser_resolver_prefix_replacements=\"chrome://chrome-signin/=../../chrome/browser/resources/inline_login/\"",
-                    "js_module_root=../../chrome/test/data/webui/",
+                    "browser_resolver_prefix_replacements=\"chrome://chrome-signin/gaia_auth_host/=" + rebase_path(
+                            "//chrome/browser/resources/gaia_auth_host/",
+                            root_build_dir) + "\"",
+                    "browser_resolver_prefix_replacements=\"chrome://chrome-signin/arc_account_picker/=" + rebase_path(
+                            "//chrome/browser/resources/chromeos/arc_account_picker/",
+                            root_build_dir) + "\"",
+                    "browser_resolver_prefix_replacements=\"chrome://chrome-signin/=" + rebase_path(
+                            "//chrome/browser/resources/inline_login/",
+                            root_build_dir) + "\"",
+                    "js_module_root=" + rebase_path("//chrome/test/data/webui/",
+                                                    root_build_dir),
                     "js_module_root=./gen/chrome/test/data/webui/",
-                    "js_module_root=../../chrome/browser/resources/",
+                    "js_module_root=" +
+                        rebase_path("//chrome/browser/resources/",
+                                    root_build_dir),
                     "js_module_root=./gen/chrome/browser/resources/",
-                    "js_module_root=../../chrome/browser/resources/inline_login/",
+                    "js_module_root=" +
+                        rebase_path("//chrome/browser/resources/inline_login/",
+                                    root_build_dir),
                     "js_module_root=./gen/chrome/browser/resources/inline_login/",
                     "js_module_root=./gen/chrome/browser/resources/inline_login/preprocessed/",
                   ]

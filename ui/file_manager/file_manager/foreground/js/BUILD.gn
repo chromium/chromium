@@ -97,7 +97,8 @@ js_type_check("closure_compile_jsmodules") {
                     "language_in=ECMASCRIPT_2020",
                     "js_module_root=gen/ui/file_manager/tsc/",
                     "js_module_root=gen/ui/file_manager/",
-                    "js_module_root=../../ui/file_manager/",
+                    "js_module_root=" +
+                        rebase_path("//ui/file_manager/", root_build_dir),
                     "browser_resolver_prefix_replacements=\"chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/=./file_manager/\"",
                     "browser_resolver_prefix_replacements=\"chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp/=./image_loader/\"",
                   ]
@@ -1417,7 +1418,8 @@ js_test_type_check("js_test_type_check") {
                     "generate_exports=false",
                     "js_module_root=gen/ui/file_manager/tsc/",
                     "js_module_root=./gen/ui",
-                    "js_module_root=../../ui/file_manager/",
+                    "js_module_root=" +
+                        rebase_path("//ui/file_manager/", root_build_dir),
                     "js_module_root=./gen/ui/file_manager/",
                     "jscomp_off=duplicate",
                     "browser_resolver_prefix_replacements=\"chrome://webui-test/=./\"",

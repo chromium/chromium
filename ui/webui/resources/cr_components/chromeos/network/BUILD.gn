@@ -39,10 +39,6 @@ js_type_check("closure_compile_module") {
     ":onc_mojo",
     ":sim_lock_dialogs",
   ]
-
-  # closure_flags = default_closure_args + [
-  #                   "js_module_root=../../ui/webui/resources/js/",
-  #                   "js_module_root=./gen/ui/webui/resources/js/"]
 }
 
 js_library("mojo_interface_provider") {

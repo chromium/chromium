@@ -82,7 +82,9 @@ if (is_chromeos_ash && include_js_tests) {
 js_type_check("closure_compile") {
   closure_flags =
       default_closure_args + [
-        "js_module_root=../../chrome/browser/resources/gaia_auth_host/",
+        "js_module_root=" +
+            rebase_path("//chrome/browser/resources/gaia_auth_host/",
+                        root_build_dir),
         "js_module_root=./gen/chrome/browser/resources/gaia_auth_host/",
       ]
   deps = [

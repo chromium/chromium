@@ -79,7 +79,7 @@ js_type_check("closure_compile_jsmodules") {
       strict_error_checking_closure_args + [
         "language_in=ECMASCRIPT_2020",
         "js_module_root=./gen/ui",
-        "js_module_root=../../ui",
+        "js_module_root=" + rebase_path("//ui", root_build_dir),
         "browser_resolver_prefix_replacements=\"chrome://webui-test/=./\"",
         "hide_warnings_for=third_party/",
       ]
@@ -101,7 +101,7 @@ js_type_check("test_support_modules_type_check") {
       strict_error_checking_closure_args + [
         "language_in=ECMASCRIPT_2020",
         "js_module_root=./gen/ui",
-        "js_module_root=../../ui",
+        "js_module_root=" + rebase_path("//ui", root_build_dir),
         "browser_resolver_prefix_replacements=\"chrome://webui-test/=./\"",
         "hide_warnings_for=third_party/",
       ]
@@ -779,7 +779,7 @@ js_test_type_check("js_test_type_check") {
       strict_error_checking_closure_args + [
         "language_in=ECMASCRIPT_2020",
         "js_module_root=./gen/ui",
-        "js_module_root=../../ui",
+        "js_module_root=" + rebase_path("//ui", root_build_dir),
         "browser_resolver_prefix_replacements=\"chrome://webui-test/=./\"",
         "hide_warnings_for=third_party/",
       ]

@@ -54,12 +54,14 @@ js_type_check("closure_compile") {
     "//ui/webui/resources/js:cr",
     "//ui/webui/resources/js:load_time_data",
   ]
-  closure_flags = default_closure_args + mojom_js_args + [
-                    "js_module_root=" + rebase_path(".", root_build_dir),
-                    "js_module_root=" +
-                        rebase_path(mojom_webui_folder, root_build_dir),
-                    "browser_resolver_prefix_replacements=\"chrome://file-manager/=../../ui/file_manager/file_manager/\"",
-                  ]
+  closure_flags =
+      default_closure_args + mojom_js_args + [
+        "js_module_root=" + rebase_path(".", root_build_dir),
+        "js_module_root=" + rebase_path(mojom_webui_folder, root_build_dir),
+        "browser_resolver_prefix_replacements=\"chrome://file-manager/=" +
+            rebase_path("//ui/file_manager/file_manager/", root_build_dir) +
+            "\"",
+      ]
 }
 
 action("gen_main_html") {

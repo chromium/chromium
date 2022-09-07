@@ -8,11 +8,16 @@ assert(is_chromeos, "Nearby Share is CrOS only")
 
 js_type_check("closure_compile") {
   is_polymer3 = true
-  closure_flags = default_closure_args + [
-                    "browser_resolver_prefix_replacements=\"chrome://nearby/=../../chrome/browser/resources/nearby_share/\"",
-                    "js_module_root=../../chrome/browser/resources/nearby_share/",
-                    "js_module_root=./gen/chrome/browser/resources/nearby_share/",
-                  ]
+  closure_flags =
+      default_closure_args + [
+        "browser_resolver_prefix_replacements=\"chrome://nearby/=" +
+            rebase_path("//chrome/browser/resources/nearby_share/",
+                        root_build_dir) + "\"",
+        "js_module_root=" +
+            rebase_path("//chrome/browser/resources/nearby_share/",
+                        root_build_dir),
+        "js_module_root=./gen/chrome/browser/resources/nearby_share/",
+      ]
   deps = [
     ":fake_nearby_contact_manager",
     ":fake_nearby_share_settings",

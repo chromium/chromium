@@ -46,7 +46,7 @@ legacy_modules_args = [
 ]
 
 js_modules_args = [
-  "js_module_root=../../ui/webui/resources/",
+  "js_module_root=" + rebase_path("//ui/webui/resources/", root_build_dir),
   "js_module_root=gen/ui/webui/resources/",
 
   # chrome://resources maps to root, since both ../../ui/webui/resources and
@@ -58,7 +58,8 @@ js_modules_args = [
 
 if (is_chromeos_ash) {
   js_modules_args += [
-    "js_module_root=../../ash/webui/common/resources/",
+    "js_module_root=" +
+        rebase_path("//ash/webui/common/resources/", root_build_dir),
     "js_module_root=gen/ash/webui/common/resources/",
     "browser_resolver_prefix_replacements=\"chrome://resources/ash/common/=./\"",
     "browser_resolver_prefix_replacements=\"//resources/ash/common/=./\"",
@@ -87,10 +88,18 @@ mojom_js_args = [
 
 polymer3_args = [
   "browser_resolver_prefix_replacements=\"../polymer/polymer_bundled.min.js=../polymer/polymer_bundled.js\"",
-  "browser_resolver_prefix_replacements=\"chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js=../../third_party/polymer/v3_0/components-chromium/polymer/polymer_bundled.js\"",
-  "browser_resolver_prefix_replacements=\"//resources/polymer/v3_0/polymer/polymer_bundled.min.js=../../third_party/polymer/v3_0/components-chromium/polymer/polymer_bundled.js\"",
-  "browser_resolver_prefix_replacements=\"chrome://resources/polymer/v3_0/=../../third_party/polymer/v3_0/components-chromium/\"",
-  "browser_resolver_prefix_replacements=\"//resources/polymer/v3_0/=../../third_party/polymer/v3_0/components-chromium/\"",
+  "browser_resolver_prefix_replacements=\"chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js=" + rebase_path(
+          "//third_party/polymer/v3_0/components-chromium/polymer/polymer_bundled.js",
+          root_build_dir) + "\"",
+  "browser_resolver_prefix_replacements=\"//resources/polymer/v3_0/polymer/polymer_bundled.min.js=" + rebase_path(
+          "//third_party/polymer/v3_0/components-chromium/polymer/polymer_bundled.js",
+          root_build_dir) + "\"",
+  "browser_resolver_prefix_replacements=\"chrome://resources/polymer/v3_0/=" +
+      rebase_path("//third_party/polymer/v3_0/components-chromium/",
+                  root_build_dir) + "\"",
+  "browser_resolver_prefix_replacements=\"//resources/polymer/v3_0/=" +
+      rebase_path("//third_party/polymer/v3_0/components-chromium/",
+                  root_build_dir) + "\"",
 
   "hide_warnings_for=externs.zip",
 

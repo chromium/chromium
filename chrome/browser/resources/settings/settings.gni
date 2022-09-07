@@ -8,6 +8,7 @@ assert(!is_android, "Android does not use these settings")
 
 settings_closure_flags =
     default_closure_args + [
-      "js_module_root=../../chrome/browser/resources/settings/",
+      "js_module_root=" +
+          rebase_path("//chrome/browser/resources/settings/", root_build_dir),
       "js_module_root=./gen/chrome/browser/resources/settings/",
     ]

@@ -7,7 +7,10 @@ import("//ui/webui/resources/tools/js_modulizer.gni")
 
 js_type_check("closure_compile") {
   is_polymer3 = true
-  closure_flags = default_closure_args + mojom_js_args + [ "browser_resolver_prefix_replacements=\"chrome://connectivity-diagnostics/=../../ash/webui/connectivity_diagnostics/resources/\"" ]
+  closure_flags = default_closure_args + mojom_js_args + [ "browser_resolver_prefix_replacements=\"chrome://connectivity-diagnostics/=" + rebase_path(
+                                                               "//ash/webui/connectivity_diagnostics/resources/",
+                                                               root_build_dir) +
+                                                           "\"" ]
   deps = [
     ":fake_network_diagnostics_routines",
     ":network_diagnostics_test",

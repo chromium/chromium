@@ -33,10 +33,14 @@ preprocess_if_expr("preprocess_generated") {
 js_type_check("closure_compile") {
   is_polymer3 = true
   closure_flags = default_closure_args + [
-                    "js_module_root=../../chrome/browser/resources/inline_login/",
+                    "js_module_root=" +
+                        rebase_path("//chrome/browser/resources/inline_login/",
+                                    root_build_dir),
                     "js_module_root=./gen/chrome/browser/resources/inline_login/",
                     "js_module_root=./gen/chrome/browser/resources/inline_login/preprocessed/",
-                    "js_module_root=../../chrome/browser/resources/",
+                    "js_module_root=" +
+                        rebase_path("//chrome/browser/resources/",
+                                    root_build_dir),
                     "js_module_root=./gen/chrome/browser/resources/",
                   ]
   deps = [

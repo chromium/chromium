@@ -368,7 +368,8 @@ gen_ts_files = gen_web_component_files + web_component_html_wrapper_files +
 # from ../../shared/* to resolve to ../../../nearby_share/shared/* for closure
 # purposes.
 nearby_share_closure_flags = [
-  "js_module_root=../../chrome/browser/resources/nearby_share",
+  "js_module_root=" +
+      rebase_path("//chrome/browser/resources/nearby_share", root_build_dir),
   "js_module_root=./gen/chrome/browser/resources/nearby_share",
   "browser_resolver_prefix_replacements=\"../../shared/=../../../nearby_share/shared/\"",
 ]

@@ -6,11 +6,15 @@ import("//third_party/closure_compiler/compile_js.gni")
 
 js_type_check("closure_compile") {
   is_polymer3 = true
-  closure_flags = default_closure_args + [
-                    "browser_resolver_prefix_replacements=\"chrome://accessory-update/=../../ash/webui/firmware_update_ui/resources/\"",
-                    "js_module_root=../../chrome/test/data/webui/",
-                    "js_module_root=./gen/chrome/test/data/webui/",
-                  ]
+  closure_flags =
+      default_closure_args + [
+        "browser_resolver_prefix_replacements=\"chrome://accessory-update/=" +
+            rebase_path("//ash/webui/firmware_update_ui/resources/",
+                        root_build_dir) + "\"",
+        "js_module_root=" +
+            rebase_path("//chrome/test/data/webui/", root_build_dir),
+        "js_module_root=./gen/chrome/test/data/webui/",
+      ]
   deps = [
     ":fake_update_controller_test",
     ":fake_update_provider_test",

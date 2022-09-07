@@ -39,12 +39,15 @@ grit("resources") {
 
 js_type_check("closure_compile") {
   is_polymer3 = true
-  closure_flags = default_closure_args + [
-                    "js_module_root=../../chrome/browser/resources/chromeos/",
-                    "js_module_root=./gen/chrome/browser/resources/chromeos/",
-                    "js_module_root=../../chrome/browser/resources/",
-                    "js_module_root=./gen/chrome/browser/resources/",
-                  ]
+  closure_flags =
+      default_closure_args + [
+        "js_module_root=" +
+            rebase_path("//chrome/browser/resources/chromeos/", root_build_dir),
+        "js_module_root=./gen/chrome/browser/resources/chromeos/",
+        "js_module_root=" +
+            rebase_path("//chrome/browser/resources/", root_build_dir),
+        "js_module_root=./gen/chrome/browser/resources/",
+      ]
   deps = [ ":gaia_action_buttons" ]
 }
 
