@@ -185,6 +185,12 @@ class ServiceConnectionImpl : public ServiceConnection {
   void ProbeProcessInfo(pid_t process_id,
                         mojom::CrosHealthdProbeService::ProbeProcessInfoCallback
                             callback) override;
+  void ProbeMultipleProcessInfo(
+      const absl::optional<std::vector<uint32_t>>& process_ids,
+      bool ignore_single_process_info,
+      mojom::CrosHealthdProbeService::ProbeMultipleProcessInfoCallback callback)
+      override;
+
   void GetDiagnosticsService(
       mojo::PendingReceiver<mojom::CrosHealthdDiagnosticsService> service)
       override;
@@ -647,6 +653,16 @@ void ServiceConnectionImpl::ProbeProcessInfo(
   BindCrosHealthdProbeServiceIfNeeded();
   cros_healthd_probe_service_->ProbeProcessInfo(
       static_cast<uint32_t>(process_id), std::move(callback));
+}
+
+void ServiceConnectionImpl::ProbeMultipleProcessInfo(
+    const absl::optional<std::vector<uint32_t>>& process_ids,
+    bool ignore_single_process_info,
+    mojom::CrosHealthdProbeService::ProbeMultipleProcessInfoCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  BindCrosHealthdProbeServiceIfNeeded();
+  cros_healthd_probe_service_->ProbeMultipleProcessInfo(
+      process_ids, ignore_single_process_info, std::move(callback));
 }
 
 void ServiceConnectionImpl::GetDiagnosticsService(

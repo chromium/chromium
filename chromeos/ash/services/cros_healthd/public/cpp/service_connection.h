@@ -344,6 +344,15 @@ class ServiceConnection {
       pid_t process_id,
       mojom::CrosHealthdProbeService::ProbeProcessInfoCallback callback) = 0;
 
+  // Gathers information about multiple/ all processes on the device. See
+  // src/chromeos/ash/services/cros_healthd/public/mojom/cros_healthd.mojom for
+  // details.
+  virtual void ProbeMultipleProcessInfo(
+      const absl::optional<std::vector<uint32_t>>& process_ids,
+      bool ignore_single_process_info,
+      mojom::CrosHealthdProbeService::ProbeMultipleProcessInfoCallback
+          callback) = 0;
+
   // Binds |service| to an implementation of CrosHealthdDiagnosticsService. In
   // production, this implementation is provided by cros_healthd. See
   // src/chromeos/ash/services/cros_healthd/public/mojom/cros_healthd.mojom for

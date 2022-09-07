@@ -112,6 +112,11 @@ void FakeCrosHealthd::SetProbeProcessInfoResponseForTesting(
   process_response_.Swap(&result);
 }
 
+void FakeCrosHealthd::SetProbeMultipleProcessInfoResponseForTesting(
+    mojom::MultipleProcessResultPtr& result) {
+  multiple_process_response_.Swap(&result);
+}
+
 void FakeCrosHealthd::SetCallbackDelay(base::TimeDelta delay) {
   callback_delay_ = delay;
 }
@@ -704,6 +709,16 @@ void FakeCrosHealthd::ProbeProcessInfo(const uint32_t process_id,
                                        ProbeProcessInfoCallback callback) {
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE, base::BindOnce(std::move(callback), process_response_.Clone()),
+      callback_delay_);
+}
+
+void FakeCrosHealthd::ProbeMultipleProcessInfo(
+    const absl::optional<std::vector<uint32_t>>& process_ids,
+    bool ignore_single_process_error,
+    ProbeMultipleProcessInfoCallback callback) {
+  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(std::move(callback), multiple_process_response_.Clone()),
       callback_delay_);
 }
 

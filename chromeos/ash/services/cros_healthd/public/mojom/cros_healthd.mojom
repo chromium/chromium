@@ -539,7 +539,7 @@ interface CrosHealthdEventService {
 
 // Probe interface exposed by the cros_healthd daemon.
 //
-// NextMinVersion: 1, NextIndex: 2
+// NextMinVersion: 2, NextIndex: 3
 interface CrosHealthdProbeService {
   // Returns information about a specific process running on the device.
   //
@@ -562,6 +562,27 @@ interface CrosHealthdProbeService {
   //                      will be non-null.
   ProbeTelemetryInfo@1(array<ProbeCategoryEnum> categories)
       => (TelemetryInfo telemetry_info);
+
+  // Returns information about multiple specified or all processes running on
+  // the device. Can ignore individual errors by request.
+  //
+  // The request:
+  // * |process_ids| - List of PIDs of the processes whose information are
+  //                   requested, leaving it null will return information of all
+  //                   currently existing processes.
+  // * |ignore_single_process_error| - Set to true if want to ignore individual
+  //                                   errors occurred for single processes
+  //                                   (e.g., parsing related errors). General
+  //                                   errors (e.g., can't read /proc in the
+  //                                   first place) won't be ignored despite
+  //                                   setting this value to true.
+  //
+  // The response:
+  // * |multiple_process_info| - Information about the requested processes and
+  //                             errors if any occurred and not skipped.
+  [MinVersion=1] ProbeMultipleProcessInfo@2(array<uint32>? process_ids,
+    bool ignore_single_process_error)
+    => (MultipleProcessResult multiple_process_info);
 };
 
 // Contains data about the current service instance of cros_healthd.

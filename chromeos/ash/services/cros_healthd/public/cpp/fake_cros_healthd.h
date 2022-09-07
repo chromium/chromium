@@ -83,6 +83,11 @@ class FakeCrosHealthd final : public mojom::CrosHealthdServiceFactory,
   // ProbeProcessInfo IPCs received.
   void SetProbeProcessInfoResponseForTesting(mojom::ProcessResultPtr& result);
 
+  // Set the MultipleProcessResultPtr that will be used in the response to any
+  // ProbeMultipleProcessInfo IPCs received.
+  void SetProbeMultipleProcessInfoResponseForTesting(
+      mojom::MultipleProcessResultPtr& result);
+
   // Adds a delay before the passed callback is called.
   void SetCallbackDelay(base::TimeDelta delay);
 
@@ -294,6 +299,10 @@ class FakeCrosHealthd final : public mojom::CrosHealthdServiceFactory,
       ProbeTelemetryInfoCallback callback) override;
   void ProbeProcessInfo(const uint32_t process_id,
                         ProbeProcessInfoCallback callback) override;
+  void ProbeMultipleProcessInfo(
+      const absl::optional<std::vector<uint32_t>>& process_ids,
+      bool ignore_single_process_error,
+      ProbeMultipleProcessInfoCallback callback) override;
 
   // CrosHealthdSystemService overrides:
   void GetServiceStatus(GetServiceStatusCallback callback) override;
@@ -315,6 +324,9 @@ class FakeCrosHealthd final : public mojom::CrosHealthdServiceFactory,
   // Used as the response to any ProbeProcessInfo IPCs received.
   mojom::ProcessResultPtr process_response_{
       mojom::ProcessResult::NewProcessInfo(mojom::ProcessInfo::New())};
+  // Used as the response to any ProbeMultipleProcessInfo IPCs received.
+  mojom::MultipleProcessResultPtr multiple_process_response_{
+      mojom::MultipleProcessResult::New()};
 
   // Allows the remote end to call the probe, diagnostics and event service
   // methods.

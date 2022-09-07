@@ -115,6 +115,21 @@ union ProcessResult {
   ProbeError error;
 };
 
+// Multiple process probe results. Including successfully fetched process_info
+// and errors if any occurred and not ignored.
+//
+// NextMinVersion: 1, NextIndex: 2
+[Stable]
+struct MultipleProcessResult {
+  // map of valid ProcessInfo, with process id as key and ProcessInfo as value.
+  // Can be empty if no processes are successfully fetched.
+  map<uint32, ProcessInfo> process_infos@0;
+  // map of errors that occurred when retrieving ProcessInfo, with process id as
+  // key and ProbeError as value. Can be empty if no errors occur or if errors
+  // are ignored.
+  map<uint32, ProbeError> errors@1;
+};
+
 // Information related to a particular process.
 //
 // NextMinVersion: 3, NextIndex: 21
