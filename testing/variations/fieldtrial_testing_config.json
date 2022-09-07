@@ -3384,7 +3384,8 @@
     "DefaultPassthroughCommandDecoder": [
         {
             "platforms": [
-                "android"
+                "android",
+                "chromeos"
             ],
             "experiments": [
                 {

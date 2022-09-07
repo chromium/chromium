@@ -806,6 +806,9 @@ crbug.com/1232446 [ chromeos chromeos-board-amd64-generic ] conformance/renderin
 crbug.com/1271227 [ chromeos chromeos-board-amd64-generic ] conformance/attribs/gl-bindAttribLocation-aliasing.html [ RetryOnFailure ]
 crbug.com/1357064 [ chromeos chromeos-board-amd64-generic no-passthrough ] conformance/rendering/blending.html [ Failure ]
 
+# Need to investigate failure on basically all devices with passthrough on CrOS.
+crbug.com/angleproject/5038 [ chromeos passthrough ] conformance/extensions/ext-color-buffer-half-float.html [ Failure ]
+
 # Failures on validating command decoder only; won't fix.
 crbug.com/angleproject/5038 [ chromeos no-passthrough ] conformance/extensions/ext-color-buffer-half-float.html [ Failure ]
 
