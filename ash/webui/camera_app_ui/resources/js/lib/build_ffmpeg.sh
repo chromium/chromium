@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -101,7 +101,7 @@ do_emcc() {
 do_add_header() {
   mv ffmpeg.js ffmpeg.orig.js
   cat <<'EOF' > ffmpeg.js
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
