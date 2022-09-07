@@ -112,6 +112,7 @@ DEFINE_TEST_CLIENT_TEST_WITH_PIPE(ReadPlatformFile, PlatformWrapperTest, h) {
   EXPECT_EQ(file.ReadAtCurrentPos(data.data(), static_cast<int>(data.size())),
             static_cast<int>(data.size()));
   EXPECT_TRUE(std::equal(message.begin(), message.end(), data.begin()));
+  EXPECT_EQ(MOJO_RESULT_OK, MojoClose(h));
 }
 
 TEST_F(PlatformWrapperTest, WrapPlatformSharedMemoryRegion) {
@@ -229,6 +230,7 @@ DEFINE_TEST_CLIENT_TEST_WITH_PIPE(ReadPlatformSharedBuffer,
       reinterpret_cast<MojoSharedBufferGuid*>(guid_bytes.data());
   EXPECT_EQ(expected_guid->high, mojo_guid.high);
   EXPECT_EQ(expected_guid->low, mojo_guid.low);
+  EXPECT_EQ(MOJO_RESULT_OK, MojoClose(h));
 }
 
 TEST_F(PlatformWrapperTest, InvalidHandle) {

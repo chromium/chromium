@@ -417,8 +417,11 @@ Core* Core::Get() {
 }
 
 void InitializeCore() {
-  static base::NoDestructor<Core> core_instance;
-  g_core = core_instance.get();
+  g_core = new Core();
+}
+
+void ShutDownCore() {
+  delete std::exchange(g_core, nullptr);
 }
 
 const MojoSystemThunks2& GetSystemThunks() {

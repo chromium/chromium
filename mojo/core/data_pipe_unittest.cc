@@ -1880,6 +1880,7 @@ DEFINE_TEST_CLIENT_TEST_WITH_PIPE(MultiprocessClient, DataPipeTest, client_mp) {
 
   // Wait to receive a "quit" message before exiting.
   EXPECT_EQ("quit", ReadMessage(client_mp));
+  EXPECT_EQ(MOJO_RESULT_OK, MojoClose(client_mp));
 }
 
 DEFINE_TEST_CLIENT_TEST_WITH_PIPE(WriteAndCloseProducer, DataPipeTest, h) {
@@ -1897,6 +1898,7 @@ DEFINE_TEST_CLIENT_TEST_WITH_PIPE(WriteAndCloseProducer, DataPipeTest, h) {
 
   // Wait for a quit message.
   EXPECT_EQ("quit", ReadMessage(h));
+  EXPECT_EQ(MOJO_RESULT_OK, MojoClose(h));
 }
 
 DEFINE_TEST_CLIENT_TEST_WITH_PIPE(ReadAndCloseConsumer, DataPipeTest, h) {
@@ -1919,6 +1921,7 @@ DEFINE_TEST_CLIENT_TEST_WITH_PIPE(ReadAndCloseConsumer, DataPipeTest, h) {
 
   // Wait for a quit message.
   EXPECT_EQ("quit", ReadMessage(h));
+  EXPECT_EQ(MOJO_RESULT_OK, MojoClose(h));
 }
 
 TEST_F(DataPipeTest, SendConsumerAndCloseProducer) {
@@ -1962,6 +1965,7 @@ DEFINE_TEST_CLIENT_TEST_WITH_PIPE(CreateAndWrite, DataPipeTest, h) {
 
   // Wait for a quit message.
   EXPECT_EQ("quit", ReadMessage(h));
+  EXPECT_EQ(MOJO_RESULT_OK, MojoClose(h));
 }
 
 TEST_F(DataPipeTest, CreateInChild) {
@@ -2051,6 +2055,7 @@ DEFINE_TEST_CLIENT_TEST_WITH_PIPE(DataPipeStatusChangeInTransitClient,
 
   for (size_t i = 0; i < 6; ++i)
     CloseHandle(handles[i]);
+  EXPECT_EQ(MOJO_RESULT_OK, MojoClose(parent));
 }
 
 TEST_F(DataPipeTest, StatusChangeInTransit) {
@@ -2089,6 +2094,7 @@ DEFINE_TEST_CLIENT_TEST_WITH_PIPE(CreateOversizedChild, DataPipeTest, h) {
 
   // Wait for a quit message.
   EXPECT_EQ("quit", ReadMessage(h));
+  EXPECT_EQ(MOJO_RESULT_OK, MojoClose(h));
 }
 
 TEST_F(DataPipeTest, CreateOversizedInChild) {

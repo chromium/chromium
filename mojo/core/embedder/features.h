@@ -37,6 +37,9 @@ extern const base::Feature kMojoInlineMessagePayloads;
 COMPONENT_EXPORT(MOJO_CORE_EMBEDDER_FEATURES)
 extern const base::Feature kMojoAvoidRandomPipeId;
 
+COMPONENT_EXPORT(MOJO_CORE_EMBEDDER_FEATURES)
+extern const base::Feature kMojoIpcz;
+
 }  // namespace core
 }  // namespace mojo
 

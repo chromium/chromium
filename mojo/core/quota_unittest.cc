@@ -99,6 +99,8 @@ TEST_F(QuotaTest, BasicReceiveQueueLength) {
                            &limit, &usage));
   EXPECT_EQ(kTestLimit, limit);
   EXPECT_EQ(1u, usage);
+  EXPECT_EQ(MOJO_RESULT_OK, MojoClose(a));
+  EXPECT_EQ(MOJO_RESULT_OK, MojoClose(b));
 }
 
 TEST_F(QuotaTest, BasicReceiveQueueMemorySize) {

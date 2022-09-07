@@ -237,6 +237,7 @@ DEFINE_TEST_CLIENT_TEST_WITH_PIPE(BasicTransmitClient,
   TestMessage(kMessage4).Transmit(*transport);
   EXPECT_EQ(kMessage1, listener.WaitForNextMessage().as_string());
   EXPECT_EQ(kMessage2, listener.WaitForNextMessage().as_string());
+  EXPECT_EQ(MOJO_RESULT_OK, MojoClose(h));
 }
 
 TEST_F(MojoIpczTransportTest, BasicTransmit) {
@@ -289,6 +290,7 @@ DEFINE_TEST_CLIENT_TEST_WITH_PIPE(TransmitHandleClient,
   TestMessage(kMessage4).Transmit(*new_transport2);
   EXPECT_EQ(kMessage1, listener1.WaitForNextMessage().as_string());
   EXPECT_EQ(kMessage2, listener2.WaitForNextMessage().as_string());
+  EXPECT_EQ(MOJO_RESULT_OK, MojoClose(h));
 }
 
 TEST_F(MojoIpczTransportTest, TransmitHandle) {
@@ -347,6 +349,7 @@ DEFINE_TEST_CLIENT_TEST_WITH_PIPE(TransmitSerializedTransportClient,
   TestMessage(kMessage4).Transmit(*new_transport);
   EXPECT_EQ(kMessage1, listener.WaitForNextMessage().as_string());
   EXPECT_EQ(kMessage2, listener.WaitForNextMessage().as_string());
+  EXPECT_EQ(MOJO_RESULT_OK, MojoClose(h));
 }
 
 TEST_F(MojoIpczTransportTest, TransmitSerializedTransport) {
@@ -385,6 +388,7 @@ DEFINE_TEST_CLIENT_TEST_WITH_PIPE(TransmitFileClient,
   std::vector<char> data(file.GetLength());
   file.Read(0, data.data(), data.size());
   EXPECT_EQ(kMessage1, std::string(data.begin(), data.end()));
+  EXPECT_EQ(MOJO_RESULT_OK, MojoClose(h));
 }
 
 TEST_F(MojoIpczTransportTest, TransmitFile) {
@@ -420,6 +424,7 @@ DEFINE_TEST_CLIENT_TEST_WITH_PIPE(TransmitMemoryClient,
   auto contents = std::string_view(static_cast<const char*>(mapping.memory()),
                                    kMemoryMessage.size());
   EXPECT_EQ(kMemoryMessage, contents);
+  EXPECT_EQ(MOJO_RESULT_OK, MojoClose(h));
 }
 
 TEST_F(MojoIpczTransportTest, TransmitMemory) {

@@ -31,5 +31,7 @@ const base::Feature kMojoInlineMessagePayloads{
 const base::Feature kMojoAvoidRandomPipeId{"MojoAvoidRandomPipeId",
                                            base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kMojoIpcz{"MojoIpcz", base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace core
 }  // namespace mojo

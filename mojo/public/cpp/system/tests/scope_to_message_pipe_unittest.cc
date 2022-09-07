@@ -57,12 +57,13 @@ TEST_F(ScopeToMessagePipeTest, PipeClosedOnPeerClosure) {
   base::RunLoop wait_for_pipe_closure;
   MessagePipe pipe;
   SimpleWatcher watcher(FROM_HERE, SimpleWatcher::ArmingPolicy::AUTOMATIC);
-  watcher.Watch(pipe.handle1.get(), MOJO_HANDLE_SIGNAL_READABLE,
+  watcher.Watch(pipe.handle0.get(), MOJO_HANDLE_SIGNAL_READABLE,
                 MOJO_TRIGGER_CONDITION_SIGNALS_SATISFIED,
                 base::BindLambdaForTesting(
                     [&](MojoResult result, const HandleSignalsState& state) {
-                      EXPECT_EQ(result, MOJO_RESULT_CANCELLED);
-                      wait_for_pipe_closure.Quit();
+                      if (result == MOJO_RESULT_CANCELLED) {
+                        wait_for_pipe_closure.Quit();
+                      }
                     }));
 
   ScopeToMessagePipe(42, std::move(pipe.handle0));

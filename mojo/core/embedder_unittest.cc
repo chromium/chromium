@@ -263,6 +263,7 @@ DEFINE_TEST_CLIENT_TEST_WITH_PIPE(MultiprocessChannelsClient,
   ASSERT_FALSE(state.satisfiable_signals & MOJO_HANDLE_SIGNAL_READABLE);
   ASSERT_FALSE(state.satisfiable_signals & MOJO_HANDLE_SIGNAL_WRITABLE);
   ASSERT_EQ(MOJO_RESULT_OK, MojoClose(mp1));
+  ASSERT_EQ(MOJO_RESULT_OK, MojoClose(client_mp));
 }
 
 TEST_F(EmbedderTest, MultiprocessBaseSharedMemory) {
@@ -341,6 +342,7 @@ DEFINE_TEST_CLIENT_TEST_WITH_PIPE(MultiprocessSharedMemoryClient,
   // 6. Close |sb1|. Should fail because |ExtractRegionFromSharedBuffer()|
   // should have closed the handle.
   EXPECT_EQ(MOJO_RESULT_INVALID_ARGUMENT, MojoClose(sb1));
+  ASSERT_EQ(MOJO_RESULT_OK, MojoClose(client_mp));
 }
 
 #if BUILDFLAG(IS_MAC)
@@ -418,6 +420,7 @@ DEFINE_TEST_CLIENT_TEST_WITH_PIPE(MultiprocessMixMachAndFdsClient,
 
   // 3. Say bye!
   WriteMessage(client_mp, "bye");
+  ASSERT_EQ(MOJO_RESULT_OK, MojoClose(client_mp));
 }
 
 #endif  // BUILDFLAG(IS_MAC)

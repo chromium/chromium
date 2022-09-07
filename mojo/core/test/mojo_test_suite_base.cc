@@ -4,14 +4,17 @@
 
 #include "mojo/core/test/mojo_test_suite_base.h"
 
+#include "base/base_switches.h"
+#include "base/check.h"
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/strings/string_util.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "mojo/core/test/scoped_mojo_support.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace mojo {
-namespace core {
-namespace test {
+namespace mojo::core::test {
 
 namespace {
 
@@ -37,6 +40,30 @@ class SkipManualTests : public testing::EmptyTestEventListener {
   }
 };
 
+// Ensures that every test gets its own freshly initialized Mojo Core instance
+// and IO dedicated thread.
+class MojoSupportForEachTest : public testing::EmptyTestEventListener {
+ public:
+  MojoSupportForEachTest() = default;
+  ~MojoSupportForEachTest() override = default;
+
+  MojoSupportForEachTest(const MojoSupportForEachTest&) = delete;
+  MojoSupportForEachTest& operator=(const MojoSupportForEachTest&) = delete;
+
+  void OnTestStart(const testing::TestInfo& test_info) override {
+    // base::TestSuite hooks should have already initialized this.
+    CHECK(base::FeatureList::GetInstance());
+    mojo_support_ = std::make_unique<ScopedMojoSupport>();
+  }
+
+  void OnTestEnd(const testing::TestInfo& test_info) override {
+    mojo_support_.reset();
+  }
+
+ private:
+  std::unique_ptr<ScopedMojoSupport> mojo_support_;
+};
+
 }  // namespace
 
 MojoTestSuiteBase::MojoTestSuiteBase(int argc, char** argv)
@@ -47,12 +74,41 @@ MojoTestSuiteBase::MojoTestSuiteBase(int argc, wchar_t** argv)
     : base::TestSuite(argc, argv) {}
 #endif  // BUILDFLAG(IS_WIN)
 
+MojoTestSuiteBase::~MojoTestSuiteBase() = default;
+
 void MojoTestSuiteBase::Initialize() {
   base::TestSuite::Initialize();
-  testing::UnitTest::GetInstance()->listeners().Append(
-      std::make_unique<SkipManualTests>().release());
+
+  auto& listeners = testing::UnitTest::GetInstance()->listeners();
+  listeners.Append(std::make_unique<SkipManualTests>().release());
+  listeners.Append(std::make_unique<MojoSupportForEachTest>().release());
+
+  MaybeInitializeChildProcessEnvironment();
 }
 
-}  // namespace test
-}  // namespace core
-}  // namespace mojo
+void MojoTestSuiteBase::Shutdown() {
+  child_mojo_support_.reset();
+  child_feature_list_.reset();
+}
+
+void MojoTestSuiteBase::MaybeInitializeChildProcessEnvironment() {
+  const auto& command_line = *base::CommandLine::ForCurrentProcess();
+  const char kDeathTestSwitch[] = "gtest_internal_run_death_test";
+  if (!command_line.HasSwitch(switches::kTestChildProcess) &&
+      !command_line.HasSwitch(kDeathTestSwitch)) {
+    // Not in a child process. Do nothing.
+    return;
+  }
+
+  const std::string enabled =
+      command_line.GetSwitchValueASCII(switches::kEnableFeatures);
+  const std::string disabled =
+      command_line.GetSwitchValueASCII(switches::kDisableFeatures);
+
+  child_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
+  child_feature_list_->InitFromCommandLine(enabled, disabled);
+
+  child_mojo_support_ = std::make_unique<ScopedMojoSupport>();
+}
+
+}  // namespace mojo::core::test

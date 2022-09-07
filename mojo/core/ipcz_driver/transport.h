@@ -42,6 +42,11 @@ class MOJO_SYSTEM_IMPL_EXPORT Transport : public Object<Transport>,
   static std::pair<scoped_refptr<Transport>, scoped_refptr<Transport>>
   CreatePair(Destination first_destination, Destination second_destination);
 
+  // Accessors for a global TaskRunner to use for Transport I/O.
+  static void SetIOTaskRunner(
+      scoped_refptr<base::SingleThreadTaskRunner> runner);
+  static const scoped_refptr<base::SingleThreadTaskRunner>& GetIOTaskRunner();
+
   static constexpr Type object_type() { return kTransport; }
 
   Destination destination() const { return destination_; }

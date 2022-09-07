@@ -532,6 +532,7 @@ DEFINE_TEST_CLIENT(SendInvitationMultiplePipesClient) {
   ASSERT_EQ(MOJO_RESULT_OK,
             MojoExtractMessagePipeFromInvitation(invitation, &pipe_names[1], 4,
                                                  nullptr, &pipes[1]));
+  EXPECT_EQ(MOJO_RESULT_OK, MojoClose(invitation));
 
   WaitForSignals(pipes[0], MOJO_HANDLE_SIGNAL_READABLE);
   WaitForSignals(pipes[1], MOJO_HANDLE_SIGNAL_READABLE);
@@ -541,6 +542,8 @@ DEFINE_TEST_CLIENT(SendInvitationMultiplePipesClient) {
   WriteMessage(pipes[1], kTestMessage4);
   WaitForSignals(pipes[0], MOJO_HANDLE_SIGNAL_PEER_CLOSED);
   WaitForSignals(pipes[1], MOJO_HANDLE_SIGNAL_PEER_CLOSED);
+  EXPECT_EQ(MOJO_RESULT_OK, MojoClose(pipes[0]));
+  EXPECT_EQ(MOJO_RESULT_OK, MojoClose(pipes[1]));
 }
 
 #if !BUILDFLAG(IS_FUCHSIA)
@@ -678,6 +681,8 @@ TEST_F(InvitationTest, ProcessErrors) {
       child_process, TestTimeouts::action_timeout(), &wait_result);
   child_process.Close();
   EXPECT_EQ(0, wait_result);
+
+  EXPECT_EQ(MOJO_RESULT_OK, MojoClose(pipe));
 }
 
 DEFINE_TEST_CLIENT(ProcessErrorsClient) {
@@ -695,6 +700,7 @@ DEFINE_TEST_CLIENT(ProcessErrorsClient) {
   // Wait for our goodbye before exiting.
   WaitForSignals(pipe, MOJO_HANDLE_SIGNAL_READABLE);
   EXPECT_EQ(kDisconnectMessage, ReadMessage(pipe));
+  EXPECT_EQ(MOJO_RESULT_OK, MojoClose(pipe));
 }
 
 // Temporary removed support for reinvitation for non-isolated connections.
@@ -882,6 +888,8 @@ DEFINE_TEST_CLIENT(SendMultipleIsolatedInvitationsClient) {
   invitation = AcceptInvitation(MOJO_ACCEPT_INVITATION_FLAG_ISOLATED,
                                 kSecondaryChannelHandleSwitch);
   WaitForSignals(primordial_pipe, MOJO_HANDLE_SIGNAL_PEER_CLOSED);
+  EXPECT_EQ(MOJO_RESULT_OK, MojoClose(primordial_pipe));
+
   primordial_pipe = MOJO_HANDLE_INVALID;
   ASSERT_EQ(MOJO_RESULT_OK,
             MojoExtractMessagePipeFromInvitation(invitation, &pipe_name, 4,
@@ -913,6 +921,8 @@ TEST_F(InvitationTest, SendIsolatedInvitationWithDuplicateName) {
       MOJO_SEND_INVITATION_FLAG_ISOLATED, nullptr, 0, kConnectionName);
 
   WaitForSignals(pipe0, MOJO_HANDLE_SIGNAL_PEER_CLOSED);
+  EXPECT_EQ(MOJO_RESULT_OK, MojoClose(pipe0));
+  EXPECT_EQ(MOJO_RESULT_OK, MojoClose(pipe1));
 }
 
 TEST_F(InvitationTest, SendIsolatedInvitationToSelf) {

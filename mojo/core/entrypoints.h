@@ -14,6 +14,9 @@ namespace core {
 // Initializes the global Core object.
 MOJO_SYSTEM_IMPL_EXPORT void InitializeCore();
 
+// Destroys the global Core object.
+MOJO_SYSTEM_IMPL_EXPORT void ShutDownCore();
+
 // Returns a MojoSystemThunks2 struct populated with the EDK's implementation
 // of each function. This may be used by embedders to populate thunks for
 // application loading.

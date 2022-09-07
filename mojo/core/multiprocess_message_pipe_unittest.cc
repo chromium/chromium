@@ -391,6 +391,7 @@ TEST_F(MultiprocessMessagePipeTest, SharedBufferPassing) {
               WaitForSignals(h, MOJO_HANDLE_SIGNAL_READABLE, &hss));
     ASSERT_FALSE(hss.satisfied_signals & MOJO_HANDLE_SIGNAL_READABLE);
     ASSERT_FALSE(hss.satisfiable_signals & MOJO_HANDLE_SIGNAL_READABLE);
+    EXPECT_EQ(MOJO_RESULT_OK, MojoClose(shared_buffer));
   });
 }
 
@@ -600,6 +601,7 @@ TEST_P(MultiprocessMessagePipeTestWithPeerSupport, MessagePipeTwoPassing) {
              MOJO_RESULT_OK);
     read_buffer.resize(read_buffer_size);
     CHECK_EQ(read_buffer, std::string("world"));
+    MojoClose(mp1);
   });
 }
 
@@ -765,6 +767,7 @@ DEFINE_TEST_CLIENT_WITH_PIPE(EchoServiceClient,
       break;
     WriteMessage(p, message);
   }
+  CloseHandle(p);
   return 0;
 }
 
@@ -908,6 +911,7 @@ DEFINE_TEST_CLIENT_TEST_WITH_PIPE(PingPongPipeClient,
   WriteMessage(p1, "bye");
   MojoClose(p1);
   EXPECT_EQ("quit", ReadMessage(h));
+  MojoClose(h);
 }
 
 TEST_P(MultiprocessMessagePipeTestWithPeerSupport, PingPongPipe) {
@@ -930,6 +934,7 @@ TEST_P(MultiprocessMessagePipeTestWithPeerSupport, PingPongPipe) {
 
   // We should still be able to observe peer closure from the other end.
   EXPECT_EQ(MOJO_RESULT_OK, WaitForSignals(p0, MOJO_HANDLE_SIGNAL_PEER_CLOSED));
+  MojoClose(p0);
 }
 
 // Parses commands from the parent pipe and does whatever it's asked to do.
@@ -1116,6 +1121,8 @@ DEFINE_TEST_CLIENT_TEST_WITH_PIPE(ReceivePipeWithClosedPeer,
   MojoHandle p;
   EXPECT_EQ("foo", ReadMessageWithHandles(h, &p, 1));
   EXPECT_EQ(MOJO_RESULT_OK, WaitForSignals(p, MOJO_HANDLE_SIGNAL_PEER_CLOSED));
+  MojoClose(p);
+  MojoClose(h);
 }
 
 TEST_P(MultiprocessMessagePipeTestWithPeerSupport, SendPipeThenClosePeer) {
@@ -1148,6 +1155,8 @@ DEFINE_TEST_CLIENT_TEST_WITH_PIPE(SendOtherChildPipeWithClosedPeer,
 
   // Wait for quit.
   EXPECT_EQ("quit", ReadMessage(h));
+  EXPECT_EQ(MOJO_RESULT_OK, MojoClose(h));
+  EXPECT_EQ(MOJO_RESULT_OK, MojoClose(application_proxy));
 }
 
 DEFINE_TEST_CLIENT_TEST_WITH_PIPE(ReceivePipeWithClosedPeerFromOtherChild,
@@ -1168,6 +1177,7 @@ DEFINE_TEST_CLIENT_TEST_WITH_PIPE(ReceivePipeWithClosedPeerFromOtherChild,
 
   EXPECT_EQ(MOJO_RESULT_OK, MojoClose(service_client));
   EXPECT_EQ(MOJO_RESULT_OK, MojoClose(application_client));
+  EXPECT_EQ(MOJO_RESULT_OK, MojoClose(h));
 }
 
 #if BUILDFLAG(IS_ANDROID)
@@ -1212,6 +1222,9 @@ TEST_P(MultiprocessMessagePipeTestWithPeerSupport, SendClosePeerSend) {
 
   // We should be able to detect peer closure on |a|.
   EXPECT_EQ(MOJO_RESULT_OK, WaitForSignals(a, MOJO_HANDLE_SIGNAL_PEER_CLOSED));
+  MojoClose(a);
+  MojoClose(c);
+  MojoClose(d);
 }
 
 DEFINE_TEST_CLIENT_TEST_WITH_PIPE(WriteCloseSendPeerClient,
@@ -1237,6 +1250,9 @@ DEFINE_TEST_CLIENT_TEST_WITH_PIPE(WriteCloseSendPeerClient,
   WriteMessageWithHandles(h, "bar", &pipe[1], 1);
 
   EXPECT_EQ("quit", ReadMessage(h));
+  MojoClose(h);
+  MojoClose(c);
+  MojoClose(d);
 }
 
 TEST_P(MultiprocessMessagePipeTestWithPeerSupport, WriteCloseSendPeer) {
@@ -1259,6 +1275,7 @@ TEST_P(MultiprocessMessagePipeTestWithPeerSupport, WriteCloseSendPeer) {
               WaitForSignals(p, MOJO_HANDLE_SIGNAL_PEER_CLOSED));
 
     WriteMessage(h, "quit");
+    MojoClose(p);
   });
 }
 
@@ -1307,6 +1324,7 @@ DEFINE_TEST_CLIENT_TEST_WITH_PIPE(MessagePipeStatusChangeInTransitClient,
 
   for (size_t i = 0; i < 4; ++i)
     CloseHandle(handles[i]);
+  CloseHandle(parent);
 }
 
 TEST_P(MultiprocessMessagePipeTestWithPeerSupport,
@@ -1318,6 +1336,7 @@ TEST_P(MultiprocessMessagePipeTestWithPeerSupport,
     MojoHandle receiver;
     EXPECT_EQ("receiver", ReadMessageWithHandles(child, &receiver, 1));
     EXPECT_EQ("ok", ReadMessage(receiver));
+    EXPECT_EQ(MOJO_RESULT_OK, MojoClose(receiver));
   });
 }
 
@@ -1336,6 +1355,8 @@ DEFINE_TEST_CLIENT_TEST_WITH_PIPE(SpotaneouslyDyingProcess,
   WaitForSignals(sender, MOJO_HANDLE_SIGNAL_PEER_REMOTE);
 
   WriteMessage(sender, "ok");
+  MojoClose(sender);
+  MojoClose(parent);
 
   // Here process termination is imminent. If the bug reappears this test will
   // fail flakily.

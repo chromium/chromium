@@ -26,6 +26,8 @@ TEST_F(SignalsTest, QueryInvalidArguments) {
   CreateMessagePipe(&a, &b);
   EXPECT_EQ(MOJO_RESULT_INVALID_ARGUMENT,
             MojoQueryHandleSignalsState(a, nullptr));
+  EXPECT_EQ(MOJO_RESULT_OK, MojoClose(a));
+  EXPECT_EQ(MOJO_RESULT_OK, MojoClose(b));
 }
 
 TEST_F(SignalsTest, QueryMessagePipeSignals) {
@@ -80,6 +82,7 @@ TEST_F(SignalsTest, QueryMessagePipeSignals) {
   EXPECT_EQ(MOJO_HANDLE_SIGNAL_PEER_CLOSED, state.satisfied_signals);
   EXPECT_EQ(MOJO_HANDLE_SIGNAL_PEER_CLOSED | MOJO_HANDLE_SIGNAL_QUOTA_EXCEEDED,
             state.satisfiable_signals);
+  EXPECT_EQ(MOJO_RESULT_OK, MojoClose(b));
 }
 
 TEST_F(SignalsTest, LocalPeers) {
@@ -191,6 +194,8 @@ TEST_F(SignalsTest, RemotePeers) {
                              MOJO_TRIGGER_CONDITION_SIGNALS_UNSATISFIED));
     EXPECT_EQ(MOJO_RESULT_OK, MojoQueryHandleSignalsState(a, &state));
     EXPECT_FALSE(state.satisfied_signals & MOJO_HANDLE_SIGNAL_PEER_REMOTE);
+    EXPECT_EQ(MOJO_RESULT_OK, MojoClose(a));
+    EXPECT_EQ(MOJO_RESULT_OK, MojoClose(b));
   });
 }
 
@@ -213,6 +218,7 @@ DEFINE_TEST_CLIENT_TEST_WITH_PIPE(RemotePeersClient, SignalsTest, h) {
 
   // Now send |b| back home.
   WriteMessageWithHandles(h, "O_O", &b, 1);
+  EXPECT_EQ(MOJO_RESULT_OK, MojoClose(h));
 }
 
 #endif  // !BUILDFLAG(IS_IOS)

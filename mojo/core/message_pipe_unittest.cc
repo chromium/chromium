@@ -329,6 +329,7 @@ DEFINE_TEST_CLIENT_TEST_WITH_PIPE(HandlePingPong, MessagePipeTest, h) {
   char msg[4];
   uint32_t num_bytes = 4;
   EXPECT_EQ(MOJO_RESULT_OK, ReadMessage(h, msg, &num_bytes));
+  EXPECT_EQ(MOJO_RESULT_OK, MojoClose(h));
 }
 
 // This test is flaky: http://crbug.com/585784

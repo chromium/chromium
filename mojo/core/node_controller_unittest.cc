@@ -35,6 +35,7 @@ DEFINE_TEST_CLIENT_TEST_WITH_PIPE(SendInvalidAcceptInvitation,
   NodeController* controller = Core::Get()->GetNodeController();
   scoped_refptr<NodeChannel> channel = controller->GetBrokerChannel();
   channel->AcceptInvitation(ports::NodeName{0, 0}, ports::NodeName{0, 0});
+  MojoClose(h);
 }
 
 }  // namespace

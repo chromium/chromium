@@ -128,6 +128,13 @@ TEST(ServiceManagerTestSupport, TestConnectorFactoryUniqueService) {
   base::RunLoop loop;
   c->C(loop.QuitClosure());
   loop.Run();
+
+  // Give the service a chance to process disconnection and clean up.
+  c.reset();
+  base::RunLoop cleanup_loop;
+  base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE,
+                                                   cleanup_loop.QuitClosure());
+  cleanup_loop.Run();
 }
 
 TEST(ServiceManagerTestSupport, TestConnectorFactoryMultipleServices) {
@@ -153,6 +160,12 @@ TEST(ServiceManagerTestSupport, TestConnectorFactoryMultipleServices) {
     c->C(loop.QuitClosure());
     loop.Run();
   }
+
+  // Give the services a chance to process disconnection and clean up.
+  base::RunLoop cleanup_loop;
+  base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE,
+                                                   cleanup_loop.QuitClosure());
+  cleanup_loop.Run();
 }
 
 }  // namespace service_manager

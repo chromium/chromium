@@ -736,6 +736,7 @@ DEFINE_TEST_CLIENT_TEST_WITH_PIPE(InvitationSingleAttachmentClient,
                                   h) {
   InvitationDetails details;
   ReceiveInvitationTransport(h, details);
+  EXPECT_EQ(MOJO_RESULT_OK, MojoClose(h));
 
   MojoHandle invitation;
   EXPECT_EQ(MOJO_RESULT_OK,
@@ -780,6 +781,7 @@ DEFINE_TEST_CLIENT_TEST_WITH_PIPE(InvitationMultipleAttachmentsClient,
                                   h) {
   InvitationDetails details;
   ReceiveInvitationTransport(h, details);
+  EXPECT_EQ(MOJO_RESULT_OK, MojoClose(h));
 
   MojoHandle invitation;
   EXPECT_EQ(MOJO_RESULT_OK,

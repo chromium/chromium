@@ -6,6 +6,7 @@
 
 #include <functional>
 #include <set>
+#include <string>
 #include <utility>
 
 #include "base/base_paths.h"
@@ -13,6 +14,7 @@
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/lazy_instance.h"
 #include "base/memory/ref_counted.h"
@@ -98,6 +100,13 @@ ScopedMessagePipeHandle MultiprocessTestHelper::StartChildWithExtraSwitch(
   std::set<std::string> uninherited_args;
   uninherited_args.insert("mojo-platform-channel-handle");
   uninherited_args.insert(switches::kTestChildProcess);
+
+  std::string enable_overrides;
+  std::string disable_overrides;
+  base::FeatureList::GetInstance()->GetCommandLineFeatureOverrides(
+      &enable_overrides, &disable_overrides);
+  command_line.AppendSwitchASCII(switches::kEnableFeatures, enable_overrides);
+  command_line.AppendSwitchASCII(switches::kDisableFeatures, disable_overrides);
 
   // Copy commandline switches from the parent process, except for the
   // multiprocess client name and mojo message pipe handle; this allows test

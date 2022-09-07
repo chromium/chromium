@@ -730,6 +730,7 @@ TEST_F(TrapTest, ArmWithTriggerConditionAlreadySatisfied) {
 
   EXPECT_EQ(MOJO_RESULT_OK, MojoClose(t));
   EXPECT_EQ(MOJO_RESULT_OK, MojoClose(b));
+  EXPECT_EQ(MOJO_RESULT_OK, MojoClose(a));
 }
 
 TEST_F(TrapTest, ArmWithTriggerConditionAlreadyUnsatisfiable) {
@@ -944,6 +945,9 @@ TEST_F(TrapTest, ActivateOtherTriggerFromEventHandler) {
   // trigger. The second event handler will signal |wait|.
   WriteMessage(b, kTestMessageToA);
   wait.Wait();
+  EXPECT_EQ(MOJO_RESULT_OK, MojoClose(t));
+  EXPECT_EQ(MOJO_RESULT_OK, MojoClose(a));
+  EXPECT_EQ(MOJO_RESULT_OK, MojoClose(b));
 }
 
 TEST_F(TrapTest, ActivateSameTriggerFromEventHandler) {
@@ -988,6 +992,8 @@ TEST_F(TrapTest, ActivateSameTriggerFromEventHandler) {
   // happen until |expected_notifications| reaches 0.
   WriteMessage(b, kTestMessageToA);
   wait.Wait();
+  EXPECT_EQ(MOJO_RESULT_OK, MojoClose(a));
+  EXPECT_EQ(MOJO_RESULT_OK, MojoClose(b));
 }
 
 TEST_F(TrapTest, ImplicitRemoveOtherTriggerWithinEventHandler) {
@@ -1405,8 +1411,9 @@ TEST_F(TrapTest, OtherThreadRemovesTriggerDuringEventHandler) {
   WriteMessage(b, kTestMessageToA);
   runner.Join();
 
-  EXPECT_EQ(MOJO_RESULT_OK, MojoClose(b));
   EXPECT_EQ(MOJO_RESULT_OK, MojoClose(t));
+  EXPECT_EQ(MOJO_RESULT_OK, MojoClose(a));
+  EXPECT_EQ(MOJO_RESULT_OK, MojoClose(b));
 }
 
 TEST_F(TrapTest, TriggersRemoveEachOtherWithinEventHandlers) {
