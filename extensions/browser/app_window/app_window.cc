@@ -669,7 +669,7 @@ void AppWindow::OSFullscreen() {
 }
 
 void AppWindow::ForcedFullscreen() {
-  SetFullscreen(FULLSCREEN_TYPE_FORCED, true);
+  SetFullscreen(FULLSCREEN_TYPE_OS, true);
 }
 
 void AppWindow::SetContentSizeConstraints(const gfx::Size& min_size,

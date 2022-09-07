@@ -1095,7 +1095,7 @@ bool DevToolsWindow::AllowDevToolsFor(Profile* profile,
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kKioskMode))
     return false;
 
-  return ChromeDevToolsManagerDelegate::AllowInspection(profile, web_contents);
+  return true;
 }
 
 // static
