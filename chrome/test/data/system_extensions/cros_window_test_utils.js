@@ -4,17 +4,14 @@
 
 // If we are running using SystemExtensionsApiBrowserTest then import the
 // test interface.
-// TODO(b/242264794): Remove once all tests use ApiBrowserTest.
-if (typeof systemExtensionsTest !== 'undefined') {
-  importScripts(
-      'keyboard_codes.mojom-lite.js', 'event_constants.mojom-lite.js',
-      'geometry.mojom-lite.js',
-      'cros_window_management_test_helper.test-mojom-lite.js')
+importScripts(
+  'keyboard_codes.mojom-lite.js', 'event_constants.mojom-lite.js',
+  'geometry.mojom-lite.js',
+  'cros_window_management_test_helper.test-mojom-lite.js')
 
-  globalThis.testHelper =
-      new systemExtensionsTest.mojom.CrosWindowManagementTestHelperRemote;
-  testHelper.$.bindNewPipeAndPassReceiver().bindInBrowser('process');
-}
+globalThis.testHelper =
+  new systemExtensionsTest.mojom.CrosWindowManagementTestHelperRemote;
+testHelper.$.bindNewPipeAndPassReceiver().bindInBrowser('process');
 
 // We assume a single window only and apply cros_window API methods at index 0.
 async function assertSingleWindow() {
@@ -169,23 +166,4 @@ async function assertWindowBounds(x, y, width, height) {
   assert_equals(window.screenTop, window.screenY);
   assert_equals(window.width, width);
   assert_equals(window.height, height);
-}
-
-/**
- * Notifies when the event `type` has fired.
- * @param {EventTarget} target The object to listen for the event.
- * @param {string} type The type of event to listen for.
- * @param {object} options Characteristics about the event listener.
- * @returns {Promise<Event>} Resolves when an event of `type` has fired.
- * TODO(b/242264794): Move to use testharness.js EventWaiter once we move to a
- * js test model.
- */
-function eventPromise(target, type, options) {
-  return new Promise(resolve => {
-    let wrapper = function(event) {
-      target.removeEventListener(type, wrapper);
-      resolve(event);
-    };
-    target.addEventListener(type, wrapper, options);
-  });
 }

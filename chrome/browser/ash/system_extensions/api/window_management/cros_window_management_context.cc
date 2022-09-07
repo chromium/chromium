@@ -159,16 +159,15 @@ void CrosWindowManagementContext::Create(
   const content::ServiceWorkerVersionBaseInfo& service_worker_version_info =
       factory_receivers_.current_context();
 
-  // TODO(b/242264794): Change this to a DCHECK once we stop running tests
-  // without an installed System Extension.
+  // The System Extension might have been uninstalled by the time its Service
+  // Worker starts. Ignore the bind request in that case.
   const auto* system_extension =
       system_extensions_registry_->GetByUrl(service_worker_version_info.scope);
+  if (!system_extension)
+    return;
 
-  // TODO(b/242264794): Remove the ternary operator once we stop running tests
-  // without an installed System Extension.
   SystemExtensionsServiceWorkerInfo service_worker_info{
-      .system_extension_id =
-          system_extension ? system_extension->id : SystemExtensionId(),
+      .system_extension_id = system_extension->id,
       .service_worker_version_id = service_worker_version_info.version_id,
       .service_worker_process_id = service_worker_version_info.process_id};
 
@@ -185,10 +184,7 @@ void CrosWindowManagementContext::Create(
       service_worker_info, cros_window_management_ptr);
   DCHECK(inserted);
 
-  // TODO(b/242264794): Remove once we stop running tests without an
-  // installed System Extension.
-  if (system_extension)
-    RunPendingTasks(system_extension->id, *cros_window_management_ptr);
+  RunPendingTasks(system_extension->id, *cros_window_management_ptr);
 }
 
 void CrosWindowManagementContext::OnRegisterServiceWorker(
