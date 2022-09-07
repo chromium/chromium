@@ -39,9 +39,6 @@ class SensorReadingSharedBufferReader {
   explicit SensorReadingSharedBufferReader(
       base::ReadOnlySharedMemoryMapping mapping);
 
-  static bool TryReadFromBuffer(const SensorReadingSharedBuffer* buffer,
-                                SensorReading* result);
-
   base::ReadOnlySharedMemoryMapping mapping_;
 };
 

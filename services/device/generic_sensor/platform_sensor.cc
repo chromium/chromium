@@ -147,9 +147,6 @@ bool PlatformSensor::UpdateSharedBuffer(const SensorReading& reading,
     last_raw_reading_ = reading;
   }
 
-  ReadingBuffer* buffer = reading_buffer_;
-  auto& seqlock = buffer->seqlock.value();
-
   // Round the reading to guard user privacy. See https://crbug.com/1018180.
   SensorReading rounded_reading = reading;
   RoundSensorReading(&rounded_reading, type_);
@@ -167,9 +164,10 @@ bool PlatformSensor::UpdateSharedBuffer(const SensorReading& reading,
     // Save rounded value for next comparison.
     last_rounded_reading_ = rounded_reading;
   }
-  seqlock.WriteBegin();
-  buffer->reading = rounded_reading;
-  seqlock.WriteEnd();
+  reading_buffer_->seqlock.value().WriteBegin();
+  device::OneWriterSeqLock::AtomicWriterMemcpy(
+      &reading_buffer_->reading, &rounded_reading, sizeof(SensorReading));
+  reading_buffer_->seqlock.value().WriteEnd();
   return true;
 }
 

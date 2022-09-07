@@ -59,33 +59,17 @@ bool SensorReadingSharedBufferReader::GetReading(
     SensorReading* result) {
   DCHECK(buffer);
 
-  int read_attempts = 0;
-  while (!TryReadFromBuffer(buffer, result)) {
-    // Only try to read this many times before failing to avoid waiting here
-    // very long in case of contention with the writer.
-    if (++read_attempts == kMaxReadAttemptsCount) {
-      // Failed to successfully read, presumably because the hardware
-      // thread was taking unusually long. Data in |result| was not updated
-      // and was simply left what was there before.
-      return false;
-    }
-  }
+  uint32_t retries = 0;
+  int32_t version;
+  do {
+    version = buffer->seqlock.value().ReadBegin();
+    device::OneWriterSeqLock::AtomicReaderMemcpy(result, &buffer->reading,
+                                                 sizeof(SensorReading));
+  } while (buffer->seqlock.value().ReadRetry(version) &&
+           ++retries < kMaxReadAttemptsCount);
 
-  return true;
-}
-
-// static
-bool SensorReadingSharedBufferReader::TryReadFromBuffer(
-    const SensorReadingSharedBuffer* buffer,
-    SensorReading* result) {
-  DCHECK(buffer);
-
-  auto version = buffer->seqlock.value().ReadBegin();
-  SensorReading temp_reading_data = buffer->reading;
-  if (buffer->seqlock.value().ReadRetry(version))
-    return false;
-  *result = temp_reading_data;
-  return true;
+  // Consider the number of retries less than kMaxRetries as success.
+  return retries < kMaxReadAttemptsCount;
 }
 
 }  // namespace device
