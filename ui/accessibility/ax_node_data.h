@@ -297,6 +297,9 @@ struct AX_BASE_EXPORT AXNodeData {
   // Return a string representation of this data, for debugging.
   virtual std::string ToString() const;
 
+  // Returns the approximate size in bytes.
+  size_t ByteSize() const;
+
   // Return a string representation of |aria-dropeffect| values, for testing
   // and debugging.
   // aria-dropeffect is deprecated in WAI-ARIA 1.1.
