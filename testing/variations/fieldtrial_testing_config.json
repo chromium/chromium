@@ -6420,6 +6420,23 @@
             ]
         }
     ],
+    "NewEvSignalsEnabled": [
+        {
+            "platforms": [
+                "windows",
+                "mac",
+                "linux"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "NewEvSignalsEnabled"
+                    ]
+                }
+            ]
+        }
+    ],
     "NewSigninRequestHeaderCheckOrder": [
         {
             "platforms": [
