@@ -52,11 +52,14 @@ using ::base::BucketsAre;
 using ::base::test::IsNotNullCallback;
 using ::base::test::RunOnceCallback;
 using ::testing::_;
+using ::testing::Action;
 using ::testing::AllOf;
 using ::testing::Contains;
+using ::testing::DoAll;
 using ::testing::Eq;
 using ::testing::Field;
 using ::testing::HasSubstr;
+using ::testing::Invoke;
 using ::testing::IsEmpty;
 using ::testing::IsFalse;
 using ::testing::IsNull;
@@ -69,6 +72,7 @@ using ::testing::Pointee;
 using ::testing::Property;
 using ::testing::ResultOf;
 using ::testing::UnorderedElementsAre;
+using ::testing::WithArg;
 
 blink::mojom::ManifestPtr CreateDefaultManifest(
     base::StringPiece application_url) {
@@ -86,6 +90,23 @@ GURL CreateDefaultManifestURL(base::StringPiece application_url) {
   return GURL{application_url}.Resolve("/manifest.webmanifest");
 }
 
+auto ReturnManifest(const blink::mojom::ManifestPtr& manifest,
+                    GURL manifest_url,
+                    bool is_installable = true) {
+  constexpr int kCallbackArgumentIndex = 2;
+
+  return DoAll(
+      WithArg<kCallbackArgumentIndex>(
+          [](const WebAppDataRetriever::CheckInstallabilityCallback& callback) {
+            DCHECK(!callback.is_null());
+          }),
+      RunOnceCallback<kCallbackArgumentIndex>(
+          /*manifest=*/manifest.Clone(),
+          /*manifest_url=*/manifest_url,
+          /*valid_manifest_for_web_app=*/true,
+          /*is_installable=*/is_installable));
+}
+
 std::unique_ptr<MockDataRetriever> CreateDefaultDataRetriever(
     base::StringPiece application_url) {
   std::unique_ptr<MockDataRetriever> fake_data_retriever =
@@ -93,13 +114,9 @@ std::unique_ptr<MockDataRetriever> CreateDefaultDataRetriever(
 
   EXPECT_CALL(*fake_data_retriever, GetWebAppInstallInfo).Times(0);
 
-  ON_CALL(*fake_data_retriever,
-          CheckInstallabilityAndRetrieveManifest(_, _, IsNotNullCallback()))
-      .WillByDefault(RunOnceCallback<2>(
-          /*manifest=*/CreateDefaultManifest(application_url),
-          /*manifest_url=*/CreateDefaultManifestURL(application_url),
-          /*valid_manifest_for_web_app=*/true,
-          /*is_installable=*/true));
+  ON_CALL(*fake_data_retriever, CheckInstallabilityAndRetrieveManifest)
+      .WillByDefault(ReturnManifest(CreateDefaultManifest(application_url),
+                                    CreateDefaultManifestURL(application_url)));
 
   std::map<GURL, std::vector<SkBitmap>> icons = {};
 
@@ -200,12 +217,9 @@ class InstallIsolatedAppCommandTest : public ::testing::Test {
     std::unique_ptr<MockDataRetriever> fake_data_retriever =
         CreateDefaultDataRetriever(application_url);
 
-    ON_CALL(*fake_data_retriever,
-            CheckInstallabilityAndRetrieveManifest(_, _, IsNotNullCallback()))
-        .WillByDefault(RunOnceCallback<2>(
-            manifest.Clone(), CreateDefaultManifestURL(application_url),
-            /*valid_manifest_for_web_app=*/true,
-            /*is_installable=*/true));
+    ON_CALL(*fake_data_retriever, CheckInstallabilityAndRetrieveManifest)
+        .WillByDefault(ReturnManifest(
+            manifest, CreateDefaultManifestURL(application_url)));
 
     return ExecuteCommand(application_url, std::move(fake_data_retriever));
   }
@@ -289,16 +303,12 @@ TEST_F(InstallIsolatedAppCommandTest,
   std::unique_ptr<MockDataRetriever> fake_data_retriever =
       CreateDefaultDataRetriever("http://test-url-example.com");
 
-  EXPECT_CALL(
-      *fake_data_retriever,
-      CheckInstallabilityAndRetrieveManifest(
-          _, /*bypass_service_worker_check=*/IsTrue(), IsNotNullCallback()))
-      .WillOnce(RunOnceCallback<2>(
-          /*manifest=*/CreateDefaultManifest("http://test-url-example.com"),
-          /*manifest_url=*/
-          CreateDefaultManifestURL("http://test-url-example.com"),
-          /*valid_manifest_for_web_app=*/true,
-          /*is_installable=*/true));
+  EXPECT_CALL(*fake_data_retriever,
+              CheckInstallabilityAndRetrieveManifest(
+                  _, /*bypass_service_worker_check=*/IsTrue(), _))
+      .WillOnce(ReturnManifest(
+          CreateDefaultManifest("http://test-url-example.com"),
+          CreateDefaultManifestURL("http://test-url-example.com")));
 
   EXPECT_THAT(ExecuteCommand("http://test-url-example.com",
                              std::move(fake_data_retriever)),
@@ -444,14 +454,11 @@ TEST_F(InstallIsolatedAppCommandTest,
   std::unique_ptr<MockDataRetriever> fake_data_retriever =
       CreateDefaultDataRetriever("http://test-url-example.com");
 
-  ON_CALL(*fake_data_retriever,
-          CheckInstallabilityAndRetrieveManifest(_, _, IsNotNullCallback()))
-      .WillByDefault(RunOnceCallback<2>(
-          /*manifest=*/blink::mojom::Manifest::New(),
-          /*manifest_url=*/
-          GURL{"http://test-url-example.com/manifest.json"},
-          /*valid_manifest_for_web_app=*/true,
-          /*is_installable=*/false));
+  ON_CALL(*fake_data_retriever, CheckInstallabilityAndRetrieveManifest)
+      .WillByDefault(
+          ReturnManifest(blink::mojom::Manifest::New(),
+                         GURL{"http://test-url-example.com/manifest.json"},
+                         /*is_installable=*/false));
 
   EXPECT_THAT(ExecuteCommand("http://test-url-example.com",
                              std::move(fake_data_retriever)),
@@ -480,14 +487,10 @@ TEST_F(InstallIsolatedAppCommandTest,
   std::unique_ptr<MockDataRetriever> fake_data_retriever =
       CreateDefaultDataRetriever("http://test-url-example.com");
 
-  ON_CALL(*fake_data_retriever,
-          CheckInstallabilityAndRetrieveManifest(_, _, IsNotNullCallback()))
-      .WillByDefault(RunOnceCallback<2>(
+  ON_CALL(*fake_data_retriever, CheckInstallabilityAndRetrieveManifest)
+      .WillByDefault(ReturnManifest(
           /*manifest=*/nullptr,
-          /*manifest_url=*/
-          CreateDefaultManifestURL("http://test-url-example.com"),
-          /*valid_manifest_for_web_app=*/true,
-          /*is_installable=*/true));
+          CreateDefaultManifestURL("http://test-url-example.com")));
 
   EXPECT_THAT(ExecuteCommand("http://test-url-example.com",
                              std::move(fake_data_retriever)),
@@ -679,13 +682,9 @@ class InstallIsolatedAppCommandManifestIconsTest
 
     EXPECT_CALL(*fake_data_retriever, GetWebAppInstallInfo).Times(0);
 
-    ON_CALL(*fake_data_retriever,
-            CheckInstallabilityAndRetrieveManifest(_, _, IsNotNullCallback()))
-        .WillByDefault(RunOnceCallback<2>(
-            /*manifest=*/manifest.Clone(),
-            /*manifest_url=*/CreateDefaultManifestURL(kSomeTestApplicationUrl),
-            /*valid_manifest_for_web_app=*/true,
-            /*is_installable=*/true));
+    ON_CALL(*fake_data_retriever, CheckInstallabilityAndRetrieveManifest)
+        .WillByDefault(ReturnManifest(
+            manifest, CreateDefaultManifestURL(kSomeTestApplicationUrl)));
 
     return fake_data_retriever;
   }
@@ -720,13 +719,9 @@ TEST_F(InstallIsolatedAppCommandManifestIconsTest, ManifestIconIsDownloaded) {
   std::unique_ptr<MockDataRetriever> fake_data_retriever =
       CreateFakeDataRetriever(manifest.Clone());
 
-  ON_CALL(*fake_data_retriever,
-          CheckInstallabilityAndRetrieveManifest(_, _, IsNotNullCallback()))
-      .WillByDefault(RunOnceCallback<2>(
-          /*manifest=*/manifest.Clone(),
-          /*manifest_url=*/CreateDefaultManifestURL(kSomeTestApplicationUrl),
-          /*valid_manifest_for_web_app=*/true,
-          /*is_installable=*/true));
+  ON_CALL(*fake_data_retriever, CheckInstallabilityAndRetrieveManifest)
+      .WillByDefault(ReturnManifest(
+          manifest, CreateDefaultManifestURL(kSomeTestApplicationUrl)));
 
   std::map<GURL, std::vector<SkBitmap>> icons = {{
       GURL{"http://test-icon-url.com/icon.png"},
@@ -771,13 +766,9 @@ TEST_F(InstallIsolatedAppCommandManifestIconsTest,
   std::unique_ptr<MockDataRetriever> fake_data_retriever =
       CreateFakeDataRetriever(manifest.Clone());
 
-  ON_CALL(*fake_data_retriever,
-          CheckInstallabilityAndRetrieveManifest(_, _, IsNotNullCallback()))
-      .WillByDefault(RunOnceCallback<2>(
-          /*manifest=*/manifest.Clone(),
-          /*manifest_url=*/CreateDefaultManifestURL(kSomeTestApplicationUrl),
-          /*valid_manifest_for_web_app=*/true,
-          /*is_installable=*/true));
+  ON_CALL(*fake_data_retriever, CheckInstallabilityAndRetrieveManifest)
+      .WillByDefault(ReturnManifest(
+          manifest, CreateDefaultManifestURL(kSomeTestApplicationUrl)));
 
   std::map<GURL, std::vector<SkBitmap>> icons = {};
 
@@ -834,14 +825,11 @@ TEST_F(InstallIsolatedAppCommandMetricsTest,
   std::unique_ptr<MockDataRetriever> fake_data_retriever =
       CreateDefaultDataRetriever("http://test-url-example.com");
 
-  ON_CALL(*fake_data_retriever,
-          CheckInstallabilityAndRetrieveManifest(_, _, IsNotNullCallback()))
-      .WillByDefault(RunOnceCallback<2>(
-          /*manifest=*/blink::mojom::Manifest::New(),
-          /*manifest_url=*/
-          GURL{"http://test-url-example.com/manifest.json"},
-          /*valid_manifest_for_web_app=*/true,
-          /*is_installable=*/false));
+  ON_CALL(*fake_data_retriever, CheckInstallabilityAndRetrieveManifest)
+      .WillByDefault(
+          ReturnManifest(blink::mojom::Manifest::New(),
+                         GURL{"http://test-url-example.com/manifest.json"},
+                         /*is_installable=*/false));
 
   base::HistogramTester histogram_tester;
 
@@ -861,13 +849,10 @@ TEST_F(InstallIsolatedAppCommandMetricsTest, ReportFailureWhenManifestIsNull) {
   std::unique_ptr<MockDataRetriever> fake_data_retriever =
       CreateDefaultDataRetriever("http://test-url-example.com");
 
-  ON_CALL(*fake_data_retriever,
-          CheckInstallabilityAndRetrieveManifest(_, _, IsNotNullCallback()))
-      .WillByDefault(RunOnceCallback<2>(
+  ON_CALL(*fake_data_retriever, CheckInstallabilityAndRetrieveManifest)
+      .WillByDefault(ReturnManifest(
           /*manifest=*/nullptr,
-          /*manifest_url=*/
           CreateDefaultManifestURL("http://test-url-example.com"),
-          /*valid_manifest_for_web_app=*/true,
           /*is_installable=*/false));
 
   base::HistogramTester histogram_tester;
