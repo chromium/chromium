@@ -64,6 +64,13 @@ class CONTENT_EXPORT PrefetchDocumentManager
   bool HaveCanaryChecksStarted() const { return have_canary_checks_started_; }
   void OnCanaryChecksStarted() { have_canary_checks_started_ = true; }
 
+  // A page can only start |PrefetchServiceMaximumNumberOfPrefetchesPerPage|
+  // number of prefetch requests.
+  int GetNumberOfPrefetchRequestAttempted() const {
+    return number_prefetch_request_attempted_;
+  }
+  void OnPrefetchRequestAttempted() { number_prefetch_request_attempted_++; }
+
   // Returns metrics for prefetches requested by the associated page load.
   PrefetchReferringPageMetrics& GetReferringPageMetrics() {
     return referring_page_metrics_;
@@ -98,6 +105,10 @@ class CONTENT_EXPORT PrefetchDocumentManager
 
   // Stores whether or not canary checks have been started for this page.
   bool have_canary_checks_started_{false};
+
+  // The number of prefetch requests that have been attempted for prefetches
+  // requested by this page.
+  int number_prefetch_request_attempted_{0};
 
   // Metrics related to the prefetches requested by this page load.
   PrefetchReferringPageMetrics referring_page_metrics_;
