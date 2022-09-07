@@ -62,7 +62,7 @@ class CloudUploadHandler
   void UpdateProgressNotification();
 
   // Ends upload and runs Upload callback.
-  void OnEndUpload(GURL hosted_url);
+  void OnEndUpload(GURL hosted_url, std::string error_message = "");
 
   void OnDestinationDirectoryCreated(
       storage::FileSystemURL destination_folder_url,
@@ -90,11 +90,10 @@ class CloudUploadHandler
   scoped_refptr<storage::FileSystemContext> file_system_context_;
   file_manager::io_task::IOTaskController* io_task_controller_;
   drive::DriveIntegrationService* const drive_integration_service_;
-  CloudUploadNotificationManager notification_manager_;
+  scoped_refptr<CloudUploadNotificationManager> notification_manager_;
   const storage::FileSystemURL source_url_;
   file_manager::io_task::IOTaskId observed_task_id_;
   base::FilePath observed_relative_drive_path_;
-  bool error_found_;
   bool upload_done_;
   int move_progress_ = 0;
   int sync_progress_ = 0;

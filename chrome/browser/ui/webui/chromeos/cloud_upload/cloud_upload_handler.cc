@@ -80,43 +80,11 @@ CloudUploadHandler::CloudUploadHandler(Profile* profile,
           file_manager::util::GetFileManagerFileSystemContext(profile)),
       drive_integration_service_(
           drive::DriveIntegrationServiceFactory::FindForProfile(profile)),
-      notification_manager_(CloudUploadNotificationManager(profile)),
+      notification_manager_(
+          base::MakeRefCounted<CloudUploadNotificationManager>(profile)),
       source_url_(source_url) {
   observed_task_id_ = -1;
   upload_done_ = false;
-  error_found_ = false;
-
-  if (!profile_) {
-    LOG(ERROR) << "No profile";
-    error_found_ = true;
-    return;
-  }
-
-  file_manager::VolumeManager* volume_manager =
-      (file_manager::VolumeManager::Get(profile));
-  if (!volume_manager) {
-    LOG(ERROR) << "No volume manager";
-    error_found_ = true;
-    return;
-  }
-  io_task_controller_ = volume_manager->io_task_controller();
-  if (!io_task_controller_) {
-    LOG(ERROR) << "No volume_manager or task_controller";
-    error_found_ = true;
-    return;
-  }
-
-  if (!drive_integration_service_) {
-    LOG(ERROR) << "No drive integration service";
-    error_found_ = true;
-    return;
-  }
-
-  // Observe IO tasks updates.
-  io_task_controller_->AddObserver(this);
-
-  // Observe Drive updates.
-  drive_integration_service_->GetDriveFsHost()->AddObserver(this);
 }
 
 CloudUploadHandler::~CloudUploadHandler() {
@@ -136,25 +104,47 @@ void CloudUploadHandler::Run(UploadCallback callback) {
   DCHECK(!callback_);
   callback_ = std::move(callback);
 
-  if (error_found_) {
-    OnEndUpload(GURL());
+  if (!profile_) {
+    OnEndUpload(GURL(), "No profile");
     return;
   }
+
+  file_manager::VolumeManager* volume_manager =
+      (file_manager::VolumeManager::Get(profile_));
+  if (!volume_manager) {
+    OnEndUpload(GURL(), "No volume manager");
+    return;
+  }
+  io_task_controller_ = volume_manager->io_task_controller();
+  if (!io_task_controller_) {
+    OnEndUpload(GURL(), "No task_controller");
+    return;
+  }
+
+  if (!drive_integration_service_) {
+    OnEndUpload(GURL(), "No drive integration service");
+    return;
+  }
+
+  // Observe IO tasks updates.
+  io_task_controller_->AddObserver(this);
+
+  // Observe Drive updates.
+  drive_integration_service_->GetDriveFsHost()->AddObserver(this);
 
   // Destination url.
   base::FilePath destination_folder_path = GenerateUploadFolderPath(profile_);
   if (destination_folder_path.empty()) {
-    LOG(ERROR) << "Unable to generate destination folder path, the drive "
-                  "integration service might not be available";
-    OnEndUpload(GURL());
+    OnEndUpload(GURL(),
+                "Unable to generate destination folder path, the drive "
+                "integration service might not be available");
     return;
   }
   storage::FileSystemURL destination_folder_url = FilePathToFileSystemURL(
       profile_, file_system_context_, destination_folder_path);
   // TODO (b/243095484) Define error behavior.
   if (!destination_folder_url.is_valid()) {
-    LOG(ERROR) << "Unable to generate destination folder URL";
-    OnEndUpload(GURL());
+    OnEndUpload(GURL(), "Unable to generate destination folder URL");
     return;
   }
 
@@ -171,14 +161,24 @@ void CloudUploadHandler::UpdateProgressNotification() {
   // The move progress and the syncing progress arbitrarily respectively account
   // for 20% and 80% of the upload workflow.
   int progress = move_progress_ * 0.2 + sync_progress_ * 0.8;
-  notification_manager_.ShowProgress(progress);
+  notification_manager_->ShowProgress(progress);
 }
 
-void CloudUploadHandler::OnEndUpload(GURL hosted_url) {
+void CloudUploadHandler::OnEndUpload(GURL hosted_url,
+                                     std::string error_message) {
   // TODO (b/243095484) Define error behavior on invalid hosted URL.
   observed_relative_drive_path_.clear();
   // Stop suppressing Drive events for the observed file.
   scoped_suppress_drive_notifications_for_path_.reset();
+  // Resolve notifications.
+  if (notification_manager_) {
+    if (hosted_url.is_valid()) {
+      notification_manager_->Completed();
+    } else if (!error_message.empty()) {
+      LOG(ERROR) << "Cloud upload: " << error_message;
+      notification_manager_->ShowError(error_message);
+    }
+  }
   if (callback_) {
     std::move(callback_).Run(hosted_url);
   }
@@ -188,14 +188,11 @@ void CloudUploadHandler::OnDestinationDirectoryCreated(
     storage::FileSystemURL destination_folder_url,
     base::File::Error error) {
   if (error != base::File::FILE_OK) {
-    // TODO (b/243095484) Define error behavior.
-    LOG(ERROR) << "Unable to create destination folder";
-    OnEndUpload(GURL());
+    OnEndUpload(GURL(), "Unable to create destination folder");
     return;
   }
   if (!destination_folder_url.is_valid()) {
-    LOG(ERROR) << "Received destination URL is invalid";
-    OnEndUpload(GURL());
+    OnEndUpload(GURL(), "Received destination URL is invalid");
     return;
   }
 
@@ -259,8 +256,7 @@ void CloudUploadHandler::OnIOTaskStatus(
         DCHECK_EQ(status.outputs.size(), 1);
 
         if (!drive_integration_service_) {
-          LOG(ERROR) << "No drive integration service";
-          OnEndUpload(GURL());
+          OnEndUpload(GURL(), "No drive integration service");
           return;
         }
 
@@ -285,13 +281,13 @@ void CloudUploadHandler::OnIOTaskStatus(
                          weak_ptr_factory_.GetWeakPtr()));
       return;
     case file_manager::io_task::State::kCancelled:
-      LOG(ERROR) << "Move -- CANCELLED";
-      OnEndUpload(GURL());
+      OnEndUpload(GURL(), "Move error: kCancelled");
       return;
     case file_manager::io_task::State::kError:
+      OnEndUpload(GURL(), "Move error: kError");
+      return;
     case file_manager::io_task::State::kNeedPassword:
-      LOG(ERROR) << "Move -- ERROR";
-      OnEndUpload(GURL());
+      OnEndUpload(GURL(), "Move error: kNeedPassword");
       return;
   }
 }
@@ -306,7 +302,6 @@ void CloudUploadHandler::OnSyncingStatusUpdate(
     }
     switch (item->state) {
       case drivefs::mojom::ItemEvent::State::kQueued:
-        LOG(ERROR) << "Drive -- QUEUED";
         return;
       case drivefs::mojom::ItemEvent::State::kInProgress:
         if (item->bytes_transferred > 0) {
@@ -320,13 +315,10 @@ void CloudUploadHandler::OnSyncingStatusUpdate(
         UpdateProgressNotification();
         return;
       case drivefs::mojom::ItemEvent::State::kFailed:
-        // TODO (b/243095484) Define error behavior.
-        LOG(ERROR) << "Drive -- FAILED";
-        OnEndUpload(GURL());
+        OnEndUpload(GURL(), "Drive sync error: kFailed");
         return;
       default:
-        LOG(ERROR) << "Drive -- Invalid state";
-        OnEndUpload(GURL());
+        OnEndUpload(GURL(), "Drive sync error + invalid sync state");
         return;
     }
   }
@@ -349,8 +341,7 @@ void CloudUploadHandler::OnFilesChanged(
     }
 
     if (!drive_integration_service_) {
-      LOG(ERROR) << "No drive integration service";
-      OnEndUpload(GURL());
+      OnEndUpload(GURL(), "No drive integration service");
       return;
     }
     drive_integration_service_->GetDriveFsInterface()->GetMetadata(
@@ -364,19 +355,16 @@ void CloudUploadHandler::OnError(const drivefs::mojom::DriveError& error) {
   if (base::FilePath(error.path) != observed_relative_drive_path_) {
     return;
   }
-  // TODO (b/243095484) Define error behavior.
-  LOG(ERROR) << "Drive -- FAILED";
   switch (error.type) {
     case drivefs::mojom::DriveError::Type::kCantUploadStorageFull:
-      LOG(ERROR) << "type: kCantUploadStorageFull";
+      OnEndUpload(GURL(), "Drive error: kCantUploadStorageFull");
       break;
     case drivefs::mojom::DriveError::Type::kPinningFailedDiskFull:
-      LOG(ERROR) << "type: kPinningFailedDiskFull";
+      OnEndUpload(GURL(), "Drive error: kPinningFailedDiskFull");
       break;
     default:
-      LOG(ERROR) << "Invalid type";
+      OnEndUpload(GURL(), "Drive error + invalid error type...");
   }
-  OnEndUpload(GURL());
 }
 
 void CloudUploadHandler::OnGetDriveMetadata(
