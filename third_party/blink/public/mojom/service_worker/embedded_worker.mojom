@@ -149,7 +149,7 @@ struct EmbeddedWorkerStartParams {
   WorkerMainScriptLoadParams? main_script_load_params;
 
   // A container for several security policies to be applied to the worker.
-  PolicyContainer policy_container;
+  PolicyContainer? policy_container;
 };
 
 // Holds timing information about the start worker sequence for UMA.
