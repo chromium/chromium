@@ -70,14 +70,13 @@ IN_PROC_BROWSER_TEST_F(WebAppUninstallDialogViewBrowserTest,
   base::RunLoop().RunUntilIdle();
 
   base::RunLoop run_loop;
-  bool was_uninstalled = false;
-  dialog->ConfirmUninstall(app_id, webapps::WebappUninstallSource::kAppMenu,
-                           base::BindLambdaForTesting([&](bool uninstalled) {
-                             was_uninstalled = uninstalled;
-                             run_loop.Quit();
-                           }));
+  dialog->ConfirmUninstall(
+      app_id, webapps::WebappUninstallSource::kAppMenu,
+      base::BindLambdaForTesting([&](webapps::UninstallResultCode code) {
+        EXPECT_EQ(code, webapps::UninstallResultCode::kCancelled);
+        run_loop.Quit();
+      }));
   run_loop.Run();
-  EXPECT_FALSE(was_uninstalled);
 }
 
 #if BUILDFLAG(IS_MAC)
@@ -101,17 +100,16 @@ IN_PROC_BROWSER_TEST_F(WebAppUninstallDialogViewBrowserTest,
   base::RunLoop().RunUntilIdle();
 
   base::RunLoop run_loop;
-  bool was_uninstalled = false;
-  dialog->ConfirmUninstall(app_id, webapps::WebappUninstallSource::kAppMenu,
-                           base::BindLambdaForTesting([&](bool uninstalled) {
-                             was_uninstalled = uninstalled;
-                             run_loop.Quit();
-                           }));
+  dialog->ConfirmUninstall(
+      app_id, webapps::WebappUninstallSource::kAppMenu,
+      base::BindLambdaForTesting([&](webapps::UninstallResultCode code) {
+        EXPECT_EQ(code, webapps::UninstallResultCode::kCancelled);
+        run_loop.Quit();
+      }));
 
   // Kill parent window.
   browser()->window()->Close();
   run_loop.Run();
-  EXPECT_FALSE(was_uninstalled);
 }
 
 // Uninstalling with no browser window open can cause the view to be destroyed
@@ -132,14 +130,13 @@ IN_PROC_BROWSER_TEST_F(WebAppUninstallDialogViewBrowserTest,
   base::RunLoop().RunUntilIdle();
 
   base::RunLoop run_loop;
-  bool was_uninstalled = false;
-  dialog->ConfirmUninstall(app_id, webapps::WebappUninstallSource::kAppMenu,
-                           base::BindLambdaForTesting([&](bool uninstalled) {
-                             was_uninstalled = uninstalled;
-                             run_loop.Quit();
-                           }));
+  dialog->ConfirmUninstall(
+      app_id, webapps::WebappUninstallSource::kAppMenu,
+      base::BindLambdaForTesting([&](webapps::UninstallResultCode code) {
+        EXPECT_EQ(code, webapps::UninstallResultCode::kSuccess);
+        run_loop.Quit();
+      }));
   run_loop.Run();
-  EXPECT_TRUE(was_uninstalled);
 }
 
 #if BUILDFLAG(IS_MAC)
@@ -162,7 +159,6 @@ IN_PROC_BROWSER_TEST_F(WebAppUninstallDialogViewBrowserTest,
   base::RunLoop().RunUntilIdle();
 
   base::RunLoop run_loop;
-  bool was_uninstalled = true;
   // ScopedKeepAlive is used by `UninstallWebAppWithDialogFromStartupSwitch`.
   // ScopedKeepAlive's destruction triggers browser shutdown when there is no
   // open window. This verifies the destruction doesn't race with the dialog
@@ -173,14 +169,14 @@ IN_PROC_BROWSER_TEST_F(WebAppUninstallDialogViewBrowserTest,
 
   chrome::CloseWindow(browser());
 
-  dialog->ConfirmUninstall(app_id, webapps::WebappUninstallSource::kAppMenu,
-                           base::BindLambdaForTesting([&](bool uninstalled) {
-                             was_uninstalled = uninstalled;
-                             scoped_keep_alive.reset();
-                             run_loop.Quit();
-                           }));
+  dialog->ConfirmUninstall(
+      app_id, webapps::WebappUninstallSource::kAppMenu,
+      base::BindLambdaForTesting([&](webapps::UninstallResultCode code) {
+        EXPECT_EQ(code, webapps::UninstallResultCode::kCancelled);
+        scoped_keep_alive.reset();
+        run_loop.Quit();
+      }));
   run_loop.Run();
-  EXPECT_FALSE(was_uninstalled);
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppUninstallDialogViewBrowserTest,
@@ -195,16 +191,15 @@ IN_PROC_BROWSER_TEST_F(WebAppUninstallDialogViewBrowserTest,
   base::RunLoop run_loop;
   auto callback =
       base::BarrierClosure(/*num_closures=*/2, run_loop.QuitClosure());
-  bool was_uninstalled = false;
 
   dialog.SetDialogShownCallbackForTesting(callback);
-  dialog.ConfirmUninstall(app_id, webapps::WebappUninstallSource::kAppMenu,
-                          base::BindLambdaForTesting([&](bool uninstalled) {
-                            was_uninstalled = uninstalled;
-                            callback.Run();
-                          }));
+  dialog.ConfirmUninstall(
+      app_id, webapps::WebappUninstallSource::kAppMenu,
+      base::BindLambdaForTesting([&](webapps::UninstallResultCode code) {
+        EXPECT_EQ(code, webapps::UninstallResultCode::kCancelled);
+        callback.Run();
+      }));
   run_loop.Run();
-  EXPECT_FALSE(was_uninstalled);
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppUninstallDialogViewBrowserTest,
@@ -219,17 +214,16 @@ IN_PROC_BROWSER_TEST_F(WebAppUninstallDialogViewBrowserTest,
   base::RunLoop run_loop;
   auto callback =
       base::BarrierClosure(/*num_closures=*/2, run_loop.QuitClosure());
-  bool was_uninstalled = false;
 
   dialog.SetDialogShownCallbackForTesting(callback);
-  dialog.ConfirmUninstall(app_id, webapps::WebappUninstallSource::kAppMenu,
-                          base::BindLambdaForTesting([&](bool uninstalled) {
-                            was_uninstalled = uninstalled;
-                            callback.Run();
-                          }));
+  dialog.ConfirmUninstall(
+      app_id, webapps::WebappUninstallSource::kAppMenu,
+      base::BindLambdaForTesting([&](webapps::UninstallResultCode code) {
+        EXPECT_EQ(code, webapps::UninstallResultCode::kSuccess);
+        callback.Run();
+      }));
 
   run_loop.Run();
-  EXPECT_TRUE(was_uninstalled);
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

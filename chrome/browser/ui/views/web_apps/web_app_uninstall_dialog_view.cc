@@ -296,16 +296,14 @@ WebAppUninstallDialogViews::UninstallStarted() {
   view_ = nullptr;
   return base::BindOnce(
       [](OnWebAppUninstallDialogClosed callback,
-         webapps::UninstallResultCode code) {
-        std::move(callback).Run(code == webapps::UninstallResultCode::kSuccess);
-      },
+         webapps::UninstallResultCode code) { std::move(callback).Run(code); },
       std::move(closed_callback_));
 }
 
 void WebAppUninstallDialogViews::UninstallCancelled() {
   DCHECK(closed_callback_);
   view_ = nullptr;
-  std::move(closed_callback_).Run(/*uninstalled=*/false);
+  std::move(closed_callback_).Run(webapps::UninstallResultCode::kCancelled);
 }
 
 // static

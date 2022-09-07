@@ -14,6 +14,7 @@
 class Profile;
 
 namespace webapps {
+enum class UninstallResultCode;
 enum class WebappUninstallSource;
 }
 
@@ -36,7 +37,7 @@ class WebAppUninstallDialog {
 
   // Called when the dialog closes.
   using OnWebAppUninstallDialogClosed =
-      base::OnceCallback<void(bool uninstalled)>;
+      base::OnceCallback<void(webapps::UninstallResultCode code)>;
 
   // Starts the process of showing a confirmation UI.
   virtual void ConfirmUninstall(

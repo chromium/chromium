@@ -18,6 +18,7 @@ class BrowserWindow;
 class Profile;
 
 namespace webapps {
+enum class UninstallResultCode;
 enum class WebappUninstallSource;
 }
 
@@ -32,7 +33,7 @@ class WebAppDialogManager {
   WebAppDialogManager& operator=(const WebAppDialogManager&) = delete;
   ~WebAppDialogManager();
 
-  using Callback = base::OnceCallback<void(bool success)>;
+  using Callback = base::OnceCallback<void(webapps::UninstallResultCode code)>;
 
   bool CanUserUninstallWebApp(const AppId& app_id) const;
   // The uninstall dialog will be modal to |parent_window|, or a non-modal if
@@ -50,7 +51,7 @@ class WebAppDialogManager {
  private:
   void OnWebAppUninstallDialogClosed(WebAppUninstallDialog* dialog,
                                      Callback callback,
-                                     bool uninstalled);
+                                     webapps::UninstallResultCode code);
 
   // All owned dialogs, running in parallel.
   base::flat_set<std::unique_ptr<WebAppUninstallDialog>,

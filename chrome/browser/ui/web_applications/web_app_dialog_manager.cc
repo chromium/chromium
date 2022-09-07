@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/web_applications/web_app_uninstall_dialog.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "components/webapps/browser/uninstall_result_code.h"
 
 namespace web_app {
 
@@ -61,11 +62,11 @@ void WebAppDialogManager::UninstallWebApp(
 void WebAppDialogManager::OnWebAppUninstallDialogClosed(
     WebAppUninstallDialog* dialog,
     Callback callback,
-    bool uninstalled) {
+    webapps::UninstallResultCode code) {
   DCHECK(dialogs_.contains(dialog));
   dialogs_.erase(dialog);
 
-  std::move(callback).Run(/*success=*/uninstalled);
+  std::move(callback).Run(code);
 }
 
 }  // namespace web_app

@@ -38,6 +38,7 @@
 #include "components/services/app_service/public/cpp/features.h"
 #include "components/services/app_service/public/cpp/types_util.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
+#include "components/webapps/browser/uninstall_result_code.h"
 #include "extensions/browser/app_sorting.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
@@ -93,7 +94,7 @@ void UninstallWebAppWithDialogFromStartupSwitch(const AppId& app_id,
         app_id, webapps::WebappUninstallSource::kOsSettings,
         gfx::kNullNativeWindow,
         base::BindOnce([](std::unique_ptr<ScopedKeepAlive> scoped_keep_alive,
-                          bool success) {},
+                          webapps::UninstallResultCode code) {},
                        std::move(scoped_keep_alive)));
   } else {
     // There is a chance that a previous invalid uninstall operation (due

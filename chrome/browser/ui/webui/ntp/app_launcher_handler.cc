@@ -991,7 +991,7 @@ void AppLauncherHandler::HandleUninstallApp(const base::Value::List& args) {
     } else {
       auto uninstall_success_callback = base::BindOnce(
           [](base::WeakPtr<AppLauncherHandler> app_launcher_handler,
-             bool success) {
+             webapps::UninstallResultCode code) {
             if (app_launcher_handler) {
               app_launcher_handler->CleanupAfterUninstall();
             }

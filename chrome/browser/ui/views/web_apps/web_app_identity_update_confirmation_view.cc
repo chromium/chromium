@@ -178,9 +178,11 @@ void WebAppIdentityUpdateConfirmationView::OnDialogAccepted() {
 }
 
 void WebAppIdentityUpdateConfirmationView::OnWebAppUninstallDialogClosed(
-    bool uninstalled) {
-  if (uninstalled)
+    webapps::UninstallResultCode code) {
+  if (code == webapps::UninstallResultCode::kSuccess ||
+      code == webapps::UninstallResultCode::kNoAppToUninstall) {
     GetWidget()->Close();  // An uninstall is already in progress.
+  }
 }
 
 bool WebAppIdentityUpdateConfirmationView::Cancel() {

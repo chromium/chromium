@@ -58,7 +58,7 @@ class WebAppIdentityUpdateConfirmationView
   bool Cancel() override;
 
   void OnDialogAccepted();
-  void OnWebAppUninstallDialogClosed(bool uninstalled);
+  void OnWebAppUninstallDialogClosed(webapps::UninstallResultCode code);
 
   const raw_ptr<Profile> profile_;
 
