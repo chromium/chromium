@@ -440,15 +440,14 @@ crbug.com/982292 [ mac release intel-0x3e9b ] Pixel_BackgroundImage [ RetryOnFai
 crbug.com/982292 [ mac release intel-0x3e9b ] Pixel_Video_MP4_FourColors_Rot_270 [ RetryOnFailure ]
 
 # Flaking on Linux FYI Release (AMD RX 5500 XT)
-crbug.com/1340081 [ linux release amd-0x7340 ] Pixel_ScissorTestWithPreserveDrawingBuffer [ RetryOnFailure ]
-crbug.com/1340081 [ linux release amd-0x7340 renderer-skia-vulkan ] Pixel_WebGL* [ RetryOnFailure ]
+crbug.com/1340081 [ linux release amd-0x7340 renderer-skia-vulkan ] Pixel_2DCanvasWebGL [ RetryOnFailure ]
 crbug.com/1340081 [ linux release amd-0x7340 renderer-skia-vulkan ] Pixel_CSS3DBlueBox [ RetryOnFailure ]
-crbug.com/1340081 [ linux release amd-0x7340 renderer-skia-vulkan ] Pixel_CanvasLowLatencyWebGLAlphaFalse [ RetryOnFailure ]
-crbug.com/1340081 [ linux release amd-0x7340 renderer-skia-vulkan ] Pixel_CanvasLowLatencyWebGLDrawImage [ RetryOnFailure ]
+crbug.com/1340081 [ linux release amd-0x7340 renderer-skia-vulkan ] Pixel_CanvasLowLatencyWebGL* [ RetryOnFailure ]
 crbug.com/1340081 [ linux release amd-0x7340 renderer-skia-vulkan ] Pixel_RepeatedWebGLTo2D [ RetryOnFailure ]
-crbug.com/1340081 [ linux release amd-0x7340 renderer-skia-vulkan ] Pixel_VideoStreamFrom2DCanvas [ RetryOnFailure ]
-crbug.com/1340081 [ linux release amd-0x7340 renderer-skia-vulkan ] Pixel_VideoStreamFromWebGLAlphaCanvas_TwoCopy_CpuReadback [ RetryOnFailure ]
-crbug.com/1340081 [ linux release amd-0x7340 renderer-skia-vulkan ] Pixel_Video_Context_Loss_VP9 [ RetryOnFailure ]
+crbug.com/1340081 [ linux release amd-0x7340 renderer-skia-vulkan ] Pixel_ScissorTestWithPreserveDrawingBuffer [ RetryOnFailure ]
+crbug.com/1340081 [ linux release amd-0x7340 renderer-skia-vulkan ] Pixel_VideoStreamFrom* [ RetryOnFailure ]
+crbug.com/1340081 [ linux release amd-0x7340 renderer-skia-vulkan ] Pixel_Video_Context_Loss_* [ RetryOnFailure ]
+crbug.com/1340081 [ linux release amd-0x7340 renderer-skia-vulkan ] Pixel_WebGL* [ RetryOnFailure ]
 
 crbug.com/1345777 [ android ] Pixel_VideoStreamFromWebGLCanvas [ Skip ]
 

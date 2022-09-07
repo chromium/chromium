@@ -199,8 +199,8 @@ crbug.com/1278028 [ android android-nexus-5x ] TraceTest_Video_VP9_DXVA [ RetryO
 # Flaking on Linux FYI Release (AMD RX 5500 XT)
 crbug.com/1340081 [ linux release amd-0x7340 renderer-skia-vulkan ] TraceTest_ReflectedDiv [ RetryOnFailure ]
 crbug.com/1340081 [ linux release amd-0x7340 renderer-skia-vulkan ] TraceTest_WebGL* [ RetryOnFailure ]
-crbug.com/1340081 [ linux release amd-0x7340 renderer-skia-vulkan ] TraceTest_Video_MP4_DXVA [ RetryOnFailure ]
-crbug.com/1340081 [ linux release amd-0x7340 renderer-skia-vulkan ] TraceTest_Video_VP9 [ RetryOnFailure ]
+crbug.com/1340081 [ linux release amd-0x7340 renderer-skia-vulkan ] TraceTest_Video_* [ RetryOnFailure ]
+crbug.com/1340081 [ linux release amd-0x7340 renderer-skia-vulkan ] TraceTest_Canvas2DTabSwitch [ RetryOnFailure ]
 
 # WebGL's accelerated canvas capture is currently only supported on Win, Mac, ChromeOS.
 crbug.com/1345777 [ android ] WebGLCanvasCaptureTraceTest_VideoStreamFromWebGLCanvas* [ Skip ]
