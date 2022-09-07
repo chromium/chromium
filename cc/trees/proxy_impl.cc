@@ -325,6 +325,7 @@ void ProxyImpl::NotifyReadyToCommitOnImpl(
     const ThreadUnsafeCommitState* unsafe_state,
     base::TimeTicks main_thread_start_time,
     const viz::BeginFrameArgs& commit_args,
+    bool scroll_and_viewport_changes_synced,
     CommitTimestamps* commit_timestamps,
     bool commit_timeout) {
   {
@@ -366,8 +367,8 @@ void ProxyImpl::NotifyReadyToCommitOnImpl(
 
   auto& begin_main_frame_metrics = commit_state->begin_main_frame_metrics;
 
-  host_impl_->ReadyToCommit(commit_args, begin_main_frame_metrics.get(),
-                            commit_timeout);
+  host_impl_->ReadyToCommit(commit_args, scroll_and_viewport_changes_synced,
+                            begin_main_frame_metrics.get(), commit_timeout);
 
   data_for_commit_ = std::make_unique<DataForCommit>(
       std::make_unique<ScopedCommitCompletionEvent>(
@@ -378,6 +379,11 @@ void ProxyImpl::NotifyReadyToCommitOnImpl(
   // Extract metrics data from the layer tree host and send them to the
   // scheduler to pass them to the compositor_timing_history object.
   scheduler_->NotifyReadyToCommit(std::move(begin_main_frame_metrics));
+
+  // If scroll offsets were not synchronized by this commit we need another main
+  // frame to sync them.
+  if (!scroll_and_viewport_changes_synced)
+    scheduler_->SetNeedsBeginMainFrame();
 }
 
 void ProxyImpl::DidLoseLayerTreeFrameSinkOnImplThread() {

@@ -3042,5 +3042,65 @@ class PreventRecreatingTilingDuringScroll : public LayerTreeHostScrollTest {
 };
 
 MULTI_THREAD_TEST_F(PreventRecreatingTilingDuringScroll);
+
+class CommitWithoutSynchronizingScrollOffsets : public LayerTreeHostScrollTest {
+ public:
+  CommitWithoutSynchronizingScrollOffsets() {}
+
+  void BeginTest() override {}
+
+  void WillBeginMainFrame() override {
+    Layer* scroll_layer =
+        layer_tree_host()->OuterViewportScrollLayerForTesting();
+
+    switch (layer_tree_host()->SourceFrameNumber()) {
+      case 0:
+        break;
+      case 1:
+        ASSERT_TRUE(layer_tree_host()->IsDeferringCommits());
+        EXPECT_POINTF_EQ(gfx::PointF(0, 0), CurrentScrollOffset(scroll_layer));
+        layer_tree_host()->SetNeedsCommit();
+        layer_tree_host()->StopDeferringCommits(
+            PaintHoldingCommitTrigger::kTimeoutFCP);
+        break;
+      case 2:
+        EXPECT_POINTF_EQ(gfx::PointF(10, 10),
+                         CurrentScrollOffset(scroll_layer));
+        EndTest();
+        break;
+      default:
+        break;
+    }
+  }
+
+  void WillActivateTreeOnThread(LayerTreeHostImpl* impl) override {
+    LayerImpl* scroll_layer =
+        impl->pending_tree()->OuterViewportScrollLayerForTesting();
+    if (impl->sync_tree()->source_frame_number() == 0) {
+      ASSERT_EQ(gfx::PointF(0, 0), CurrentScrollOffset(scroll_layer));
+    } else {
+      ASSERT_EQ(gfx::PointF(10, 10), CurrentScrollOffset(scroll_layer));
+    }
+  }
+
+  void DidActivateTreeOnThread(LayerTreeHostImpl* impl) override {
+    if (impl->active_tree()->source_frame_number() != 0)
+      return;
+
+    // Ask the main thread to defer commits so the state is deferred before the
+    // next BeginMainFrame.
+    PostDeferringCommitsStatusToMainThread(true);
+
+    // Initiate a scroll on the compositor thread.
+    LayerImpl* scroll_layer =
+        impl->active_tree()->OuterViewportScrollLayerForTesting();
+    scroll_layer->ScrollBy(gfx::Vector2dF(10, 10));
+    ASSERT_EQ(gfx::PointF(10, 10), CurrentScrollOffset(scroll_layer));
+    PostSetNeedsCommitToMainThread();
+  }
+};
+
+MULTI_THREAD_TEST_F(CommitWithoutSynchronizingScrollOffsets);
+
 }  // namespace
 }  // namespace cc
