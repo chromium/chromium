@@ -576,7 +576,7 @@ class WPTResultsProcessor(object):
             report = json.load(report_file)
         report_filename = self.fs.basename(report_path)
         artifact_path = self.fs.join(self.artifacts_dir, report_filename)
-        if report['run_info'].get('used_upstream'):
+        if not report['run_info'].get('used_upstream'):
             report['results'] = self._compact_wpt_results(report['results'])
         with self.fs.open_text_file_for_writing(artifact_path) as report_file:
             json.dump(report, report_file, separators=(',', ':'))

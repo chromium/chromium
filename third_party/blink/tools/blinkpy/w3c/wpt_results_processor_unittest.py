@@ -109,7 +109,7 @@ class WPTResultsProcessorTest(LoggingTestCase):
                 'version': '18.04',
                 'product': 'chrome',
                 'revision': '57a5dfb2d7d6253fbb7dbd7c43e7588f9339f431',
-                'used_upstream': False,
+                'used_upstream': True,
             },
             'results': [{
                 'test':
@@ -913,7 +913,7 @@ class WPTResultsProcessorTest(LoggingTestCase):
 
     def test_process_wpt_report_compact(self):
         report_src = self.fs.join('out', 'Default', 'wpt_report.json')
-        self.wpt_report['run_info']['used_upstream'] = True
+        self.wpt_report['run_info']['used_upstream'] = False
         self.fs.write_text_file(report_src, json.dumps(self.wpt_report))
         self.processor.process_wpt_report(report_src)
         artifacts = self.processor.sink.invocation_level_artifacts
@@ -929,7 +929,7 @@ class WPTResultsProcessorTest(LoggingTestCase):
                 'version': '18.04',
                 'product': 'chrome',
                 'revision': '57a5dfb2d7d6253fbb7dbd7c43e7588f9339f431',
-                'used_upstream': True,
+                'used_upstream': False,
             })
         self.assertEqual(report['results'], [{
             'test':
