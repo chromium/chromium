@@ -30,7 +30,11 @@
 
 #define EXPECT_MAIN_FRAME_STATE(expected)               \
   EXPECT_ENUM_EQ(BeginMainFrameStateToString, expected, \
-                 state.BeginMainFrameState())
+                 state.GetBeginMainFrameState())
+
+#define EXPECT_NEXT_MAIN_FRAME_STATE(expected)          \
+  EXPECT_ENUM_EQ(BeginMainFrameStateToString, expected, \
+                 state.GetNextBeginMainFrameState())
 
 #define EXPECT_ACTION(expected) \
   EXPECT_ENUM_EQ(ActionToString, expected, state.NextAction())
@@ -160,8 +164,11 @@ class StateMachine : public SchedulerStateMachine {
   void SetBeginMainFrameState(BeginMainFrameState cs) {
     begin_main_frame_state_ = cs;
   }
-  BeginMainFrameState BeginMainFrameState() const {
+  BeginMainFrameState GetBeginMainFrameState() const {
     return begin_main_frame_state_;
+  }
+  BeginMainFrameState GetNextBeginMainFrameState() const {
+    return next_begin_main_frame_state_;
   }
 
   ForcedRedrawOnTimeoutState ForcedRedrawState() const {
@@ -1257,7 +1264,6 @@ TEST(SchedulerStateMachineTest, AbortedMainFrameDoesNotResetPendingTree) {
 TEST(SchedulerStateMachineTest, TestFullCycleWithCommitToActive) {
   SchedulerSettings scheduler_settings;
   scheduler_settings.commit_to_active_tree = true;
-  scheduler_settings.main_frame_before_activation_enabled = false;
   StateMachine state(scheduler_settings);
   SET_UP_STATE(state);
 
@@ -1535,6 +1541,95 @@ TEST(SchedulerStateMachineTest, TestAbortBeginMainFrameBecauseCommitNotNeeded) {
   EXPECT_MAIN_FRAME_STATE(SchedulerStateMachine::BeginMainFrameState::IDLE);
   state.IssueNextBeginImplFrame();
   EXPECT_ACTION(SchedulerStateMachine::Action::SEND_BEGIN_MAIN_FRAME);
+}
+
+TEST(SchedulerStateMachineTest, TestMainFrameBeforeCommit) {
+  SchedulerSettings default_scheduler_settings;
+  default_scheduler_settings.main_frame_before_commit_enabled = true;
+  StateMachine state(default_scheduler_settings);
+  state.SetVisible(true);
+  EXPECT_ACTION_UPDATE_STATE(
+      SchedulerStateMachine::Action::BEGIN_LAYER_TREE_FRAME_SINK_CREATION);
+  EXPECT_ACTION_UPDATE_STATE(SchedulerStateMachine::Action::NONE);
+  state.DidCreateAndInitializeLayerTreeFrameSink();
+  state.SetCanDraw(true);
+
+  // Get into a begin frame / commit state.
+  state.SetNeedsBeginMainFrame();
+  state.IssueNextBeginImplFrame();
+  EXPECT_MAIN_FRAME_STATE(SchedulerStateMachine::BeginMainFrameState::IDLE);
+  EXPECT_NEXT_MAIN_FRAME_STATE(
+      SchedulerStateMachine::BeginMainFrameState::IDLE);
+  EXPECT_ACTION_UPDATE_STATE(
+      SchedulerStateMachine::Action::SEND_BEGIN_MAIN_FRAME);
+  EXPECT_MAIN_FRAME_STATE(SchedulerStateMachine::BeginMainFrameState::SENT);
+  EXPECT_NEXT_MAIN_FRAME_STATE(
+      SchedulerStateMachine::BeginMainFrameState::IDLE);
+  EXPECT_ACTION(SchedulerStateMachine::Action::NONE);
+
+  // The secondary BeginMainFrame can't be sent until the first one completes
+  state.IssueNextBeginImplFrame();
+  state.SetNeedsBeginMainFrame();
+  EXPECT_ACTION(SchedulerStateMachine::Action::NONE);
+
+  // Abort the primary BeginMainFrame; the next BeginMainFrame should also be
+  // primary.
+  state.BeginMainFrameAborted(CommitEarlyOutReason::FINISHED_NO_UPDATES);
+  state.IssueNextBeginImplFrame();
+  EXPECT_ACTION_UPDATE_STATE(
+      SchedulerStateMachine::Action::SEND_BEGIN_MAIN_FRAME);
+  EXPECT_MAIN_FRAME_STATE(SchedulerStateMachine::BeginMainFrameState::SENT);
+  EXPECT_NEXT_MAIN_FRAME_STATE(
+      SchedulerStateMachine::BeginMainFrameState::IDLE);
+
+  // Complete the primary BeginMainFrame; the next BeginMainFrame should be
+  // secondary, and it should be sent *before* commit of the primary.
+  state.NotifyReadyToCommit();
+  EXPECT_MAIN_FRAME_STATE(
+      SchedulerStateMachine::BeginMainFrameState::READY_TO_COMMIT);
+  EXPECT_NEXT_MAIN_FRAME_STATE(
+      SchedulerStateMachine::BeginMainFrameState::IDLE);
+
+  // Secondary BeginMainFrame can be sent while primary is READY_TO_COMMIT
+  state.SetNeedsBeginMainFrame();
+  state.IssueNextBeginImplFrame();
+  EXPECT_ACTION_UPDATE_STATE(
+      SchedulerStateMachine::Action::SEND_BEGIN_MAIN_FRAME);
+  EXPECT_MAIN_FRAME_STATE(
+      SchedulerStateMachine::BeginMainFrameState::READY_TO_COMMIT);
+  EXPECT_NEXT_MAIN_FRAME_STATE(
+      SchedulerStateMachine::BeginMainFrameState::SENT);
+
+  // No more than two main frames in flight at a time; we should not send
+  // this main frame until the next NotifyReadyToCommit().
+  state.SetNeedsBeginMainFrame();
+
+  // Complete the commit; the secondary BeginMainFrame gets promoted to primary.
+  EXPECT_ACTION_UPDATE_STATE(SchedulerStateMachine::Action::COMMIT);
+  EXPECT_MAIN_FRAME_STATE(SchedulerStateMachine::BeginMainFrameState::SENT);
+  EXPECT_NEXT_MAIN_FRAME_STATE(
+      SchedulerStateMachine::BeginMainFrameState::IDLE);
+
+  // Activate to vacate pending tree for another commit
+  EXPECT_ACTION_UPDATE_STATE(SchedulerStateMachine::Action::POST_COMMIT);
+  // Cannot send the next main frame until the previous one is ready to commit
+  state.IssueNextBeginImplFrame();
+  EXPECT_ACTION(SchedulerStateMachine::Action::NONE);
+  state.NotifyReadyToActivate();
+  EXPECT_ACTION_UPDATE_STATE(SchedulerStateMachine::Action::ACTIVATE_SYNC_TREE);
+
+  // Create a secondary BeginMainFrame and abort it; should not affect the
+  // primary.
+  state.NotifyReadyToCommit();
+  state.IssueNextBeginImplFrame();
+  EXPECT_ACTION_UPDATE_STATE(
+      SchedulerStateMachine::Action::SEND_BEGIN_MAIN_FRAME);
+  state.BeginMainFrameAborted(CommitEarlyOutReason::FINISHED_NO_UPDATES);
+  EXPECT_MAIN_FRAME_STATE(
+      SchedulerStateMachine::BeginMainFrameState::READY_TO_COMMIT);
+  EXPECT_NEXT_MAIN_FRAME_STATE(
+      SchedulerStateMachine::BeginMainFrameState::IDLE);
+  EXPECT_ACTION(SchedulerStateMachine::Action::COMMIT);
 }
 
 TEST(SchedulerStateMachineTest, TestFirstContextCreation) {

@@ -1007,6 +1007,7 @@ class CORE_EXPORT WebFrameWidgetImpl
 
   // Metrics for gathering time for commit of compositor frame.
   absl::optional<base::TimeTicks> commit_compositor_frame_start_time_;
+  absl::optional<base::TimeTicks> next_commit_compositor_frame_start_time_;
 
   // Present when emulation is enabled, only on a main frame's WebFrameWidget.
   // Used to override values given from the browser such as ScreenInfo,

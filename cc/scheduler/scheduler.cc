@@ -223,6 +223,7 @@ void Scheduler::NotifyReadyToCommit(
     compositor_frame_reporting_controller_->NotifyReadyToCommit(
         std::move(details));
     state_machine_.NotifyReadyToCommit();
+    next_commit_origin_frame_args_ = last_dispatched_begin_main_frame_args_;
   }
   ProcessScheduledActions();
 }
@@ -917,7 +918,7 @@ void Scheduler::ProcessScheduledActions() {
         compositor_timing_history_->DidCommit();
         compositor_frame_reporting_controller_->DidCommit();
         state_machine_.DidCommit();
-        last_commit_origin_frame_args_ = last_dispatched_begin_main_frame_args_;
+        last_commit_origin_frame_args_ = next_commit_origin_frame_args_;
         break;
       case SchedulerStateMachine::Action::POST_COMMIT:
         client_->ScheduledActionPostCommit();

@@ -317,6 +317,7 @@ class CC_EXPORT Scheduler : public viz::BeginFrameObserverBase {
   // |last_activate_origin_frame_args_| is then set to that BeginFrameArgs when
   // the committed change is activated.
   viz::BeginFrameArgs last_dispatched_begin_main_frame_args_;
+  viz::BeginFrameArgs next_commit_origin_frame_args_;
   viz::BeginFrameArgs last_commit_origin_frame_args_;
   viz::BeginFrameArgs last_activate_origin_frame_args_;
 

@@ -29,6 +29,10 @@ class CC_EXPORT SchedulerSettings {
   // compositor, and enabled for renderers (unless there are too few cores).
   bool main_frame_before_activation_enabled = false;
 
+  // Whether a BeginMainFrame should be issued while there is a previous commit
+  // still waiting to be processed.
+  bool main_frame_before_commit_enabled = false;
+
   // Whether commits should happen directly to the active tree, skipping the
   // pending tree. This is turned on only for the UI compositor (and in some
   // tests).

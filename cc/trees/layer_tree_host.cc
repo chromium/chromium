@@ -476,10 +476,11 @@ bool LayerTreeHost::IsUsingLayerLists() const {
 }
 
 void LayerTreeHost::CommitComplete(const CommitTimestamps& commit_timestamps) {
-  // This DCHECK ensures that commit_completion_event_.Wait() will not block.
   DCHECK(IsMainThread());
-  DCHECK(!in_commit());
-  WaitForCommitCompletion(/* for_protected_sequence */ false);
+  // At this point, commit_completion_event_ could be for the *next* commit, and
+  // may not yet have been signaled.
+  if (commit_completion_event_ && commit_completion_event_->IsSignaled())
+    WaitForCommitCompletion(/* for_protected_sequence */ false);
   client_->DidCommit(commit_timestamps.start, commit_timestamps.finish);
   if (did_complete_scale_animation_) {
     client_->DidCompletePageScaleAnimation();

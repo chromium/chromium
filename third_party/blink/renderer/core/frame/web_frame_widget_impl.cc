@@ -2160,7 +2160,11 @@ void WebFrameWidgetImpl::BeginMainFrame(base::TimeTicks last_frame_time) {
 }
 
 void WebFrameWidgetImpl::BeginCommitCompositorFrame() {
-  commit_compositor_frame_start_time_.emplace(base::TimeTicks::Now());
+  if (commit_compositor_frame_start_time_.has_value()) {
+    next_commit_compositor_frame_start_time_.emplace(base::TimeTicks::Now());
+  } else {
+    commit_compositor_frame_start_time_.emplace(base::TimeTicks::Now());
+  }
   probe::LayerTreePainted(LocalRootImpl()->GetFrame());
   if (ForTopMostMainFrame()) {
     Document* doc = local_root_->GetFrame()->GetDocument();
@@ -2194,7 +2198,8 @@ void WebFrameWidgetImpl::EndCommitCompositorFrame(
       ->EnsureUkmAggregator()
       .RecordImplCompositorSample(commit_compositor_frame_start_time_.value(),
                                   commit_start_time, commit_finish_time);
-  commit_compositor_frame_start_time_.reset();
+  commit_compositor_frame_start_time_ =
+      std::move(next_commit_compositor_frame_start_time_);
 }
 
 void WebFrameWidgetImpl::ApplyViewportChanges(

@@ -109,6 +109,8 @@ ProxyImpl::ProxyImpl(
   last_raster_priority_ = SAME_PRIORITY_FOR_BOTH_TREES;
 
   SchedulerSettings scheduler_settings(settings->ToSchedulerSettings());
+  scheduler_settings.main_frame_before_commit_enabled =
+      base::FeatureList::IsEnabled(features::kNonBlockingCommit);
 
   std::unique_ptr<CompositorTimingHistory> compositor_timing_history(
       new CompositorTimingHistory(

@@ -406,6 +406,9 @@ class CC_EXPORT SchedulerStateMachine {
       LayerTreeFrameSinkState::NONE;
   BeginImplFrameState begin_impl_frame_state_ = BeginImplFrameState::IDLE;
   BeginMainFrameState begin_main_frame_state_ = BeginMainFrameState::IDLE;
+  // This tracks a BMF sent to the main thread before we're finished processing
+  // the previous BMF (tracked by begin_main_frame_state_) on the impl thread.
+  BeginMainFrameState next_begin_main_frame_state_ = BeginMainFrameState::IDLE;
 
   // A redraw is forced when too many checkerboarded-frames are produced during
   // an animation.

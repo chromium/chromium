@@ -2567,6 +2567,14 @@ class LayerTreeHostScrollTestImplSideInvalidation
     }
   }
 
+  void CommitCompleteOnThread(LayerTreeHostImpl* host_impl) override {
+    // If the third main frame was sent before the second main frame finished
+    // commit, then the impl side invalidation flag set in
+    // DidSendBeginMainFrameOnThread got clobbered, so set it again here.
+    if (++num_of_commits_ == 2 && num_of_main_frames_ == 3)
+      host_impl->RequestImplSideInvalidationForCheckerImagedTiles();
+  }
+
   void BeginMainFrameAbortedOnThread(
       LayerTreeHostImpl* host_impl,
       CommitEarlyOutReason reason,
@@ -2635,6 +2643,7 @@ class LayerTreeHostScrollTestImplSideInvalidation
   // Impl thread.
   int num_of_activations_ = 0;
   int num_of_main_frames_ = 0;
+  int num_of_commits_ = 0;
   bool invalidated_on_impl_thread_ = false;
   raw_ptr<CompletionEvent> impl_side_invalidation_event_ = nullptr;
 

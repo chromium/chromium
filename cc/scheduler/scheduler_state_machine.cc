@@ -334,7 +334,8 @@ bool SchedulerStateMachine::ShouldBeginLayerTreeFrameSinkCreation() const {
 
   // We only want to start output surface initialization after the
   // previous commit is complete.
-  if (begin_main_frame_state_ != BeginMainFrameState::IDLE) {
+  if (begin_main_frame_state_ != BeginMainFrameState::IDLE ||
+      next_begin_main_frame_state_ != BeginMainFrameState::IDLE) {
     return false;
   }
 
@@ -453,8 +454,10 @@ bool SchedulerStateMachine::ShouldNotifyBeginMainFrameNotExpectedUntil() const {
   // Don't notify if a BeginMainFrame has already been requested or is in
   // progress.
   if (needs_begin_main_frame_ ||
-      begin_main_frame_state_ != BeginMainFrameState::IDLE)
+      begin_main_frame_state_ != BeginMainFrameState::IDLE ||
+      next_begin_main_frame_state_ != BeginMainFrameState::IDLE) {
     return false;
+  }
 
   // Only notify when we're visible.
   if (!visible_)
@@ -495,7 +498,8 @@ bool SchedulerStateMachine::ShouldNotifyBeginMainFrameNotExpectedSoon() const {
   // Don't notify if a BeginMainFrame has already been requested or is in
   // progress.
   if (needs_begin_main_frame_ ||
-      begin_main_frame_state_ != BeginMainFrameState::IDLE) {
+      begin_main_frame_state_ != BeginMainFrameState::IDLE ||
+      next_begin_main_frame_state_ != BeginMainFrameState::IDLE) {
     return false;
   }
 
@@ -544,8 +548,18 @@ bool SchedulerStateMachine::ShouldSendBeginMainFrame() const {
   // Other parts of the state machine indirectly defer the BeginMainFrame
   // by transitioning to WAITING commit states rather than going
   // immediately to IDLE.
-  if (begin_main_frame_state_ != BeginMainFrameState::IDLE)
-    return false;
+  switch (begin_main_frame_state_) {
+    case BeginMainFrameState::IDLE:
+      break;
+    case BeginMainFrameState::SENT:
+      return false;
+    case BeginMainFrameState::READY_TO_COMMIT:
+      if (!settings_.main_frame_before_commit_enabled ||
+          next_begin_main_frame_state_ != BeginMainFrameState::IDLE) {
+        return false;
+      }
+      break;
+  }
 
   // MFBA is disabled and we are waiting for previous activation, or the current
   // pending tree is impl-side.
@@ -609,6 +623,7 @@ bool SchedulerStateMachine::ShouldCommit() const {
   // We must not finish the commit until the pending tree is free.
   if (has_pending_tree_) {
     DCHECK(settings_.main_frame_before_activation_enabled ||
+           settings_.main_frame_before_commit_enabled ||
            current_pending_tree_is_impl_side_);
     return false;
   }
@@ -838,9 +853,19 @@ void SchedulerStateMachine::WillSendBeginMainFrame() {
   DCHECK(visible_);
   DCHECK(!begin_frame_source_paused_);
   DCHECK(!did_send_begin_main_frame_for_current_frame_);
-  begin_main_frame_state_ = BeginMainFrameState::SENT;
+  if (begin_main_frame_state_ == BeginMainFrameState::IDLE) {
+    begin_main_frame_state_ = BeginMainFrameState::SENT;
+  } else {
+    // We are sending BMF to the main thread while the previous BMF has not yet
+    // finished commit on the impl thread.
+    DCHECK(settings_.main_frame_before_commit_enabled);
+    DCHECK_EQ(begin_main_frame_state_, BeginMainFrameState::READY_TO_COMMIT);
+    DCHECK_EQ(next_begin_main_frame_state_, BeginMainFrameState::IDLE);
+    next_begin_main_frame_state_ = BeginMainFrameState::SENT;
+  }
   needs_begin_main_frame_ = false;
   did_send_begin_main_frame_for_current_frame_ = true;
+  // TODO(szager): Make sure this doesn't break perfetto
   last_frame_number_begin_main_frame_sent_ = current_frame_number_;
 }
 
@@ -864,11 +889,27 @@ void SchedulerStateMachine::WillCommit(bool commit_has_no_updates) {
   bool can_have_pending_tree =
       commit_has_no_updates &&
       (settings_.main_frame_before_activation_enabled ||
+       settings_.main_frame_before_commit_enabled ||
        current_pending_tree_is_impl_side_);
   DCHECK(!has_pending_tree_ || can_have_pending_tree);
+  DCHECK(settings_.main_frame_before_commit_enabled ||
+         next_begin_main_frame_state_ == BeginMainFrameState::IDLE);
+  DCHECK_LT(next_begin_main_frame_state_, BeginMainFrameState::READY_TO_COMMIT);
   commit_count_++;
+  if (commit_has_no_updates) {
+    // Primary BMF was aborted, cannot have a pipelined BMF
+    DCHECK_EQ(next_begin_main_frame_state_, BeginMainFrameState::IDLE);
+    begin_main_frame_state_ = BeginMainFrameState::IDLE;
+  } else {
+    // Move the pipelined BMF state into the primary slot being vacated.
+    DCHECK(settings_.main_frame_before_commit_enabled ||
+           next_begin_main_frame_state_ == BeginMainFrameState::IDLE);
+    DCHECK_NE(next_begin_main_frame_state_,
+              BeginMainFrameState::READY_TO_COMMIT);
+    begin_main_frame_state_ = next_begin_main_frame_state_;
+    next_begin_main_frame_state_ = BeginMainFrameState::IDLE;
+  }
   last_commit_had_no_updates_ = commit_has_no_updates;
-  begin_main_frame_state_ = BeginMainFrameState::IDLE;
   did_commit_during_frame_ = true;
 
   if (!commit_has_no_updates) {
@@ -1043,6 +1084,7 @@ void SchedulerStateMachine::WillBeginLayerTreeFrameSinkCreation() {
   // The pipeline should be flushed entirely before we start output
   // surface creation to avoid complicated corner cases.
   DCHECK(begin_main_frame_state_ == BeginMainFrameState::IDLE);
+  DCHECK(next_begin_main_frame_state_ == BeginMainFrameState::IDLE);
   DCHECK(!has_pending_tree_);
   DCHECK(!active_tree_needs_first_draw_);
 }
@@ -1429,33 +1471,50 @@ void SchedulerStateMachine::NotifyReadyToCommit() {
   begin_main_frame_state_ = BeginMainFrameState::READY_TO_COMMIT;
   // In commit_to_active_tree mode, commit should happen right after BeginFrame,
   // meaning when this function is called, next action should be commit.
-  if (settings_.commit_to_active_tree)
-    DCHECK(ShouldCommit());
+  DCHECK(!settings_.commit_to_active_tree || ShouldCommit());
 }
 
 void SchedulerStateMachine::BeginMainFrameAborted(CommitEarlyOutReason reason) {
-  DCHECK_EQ(begin_main_frame_state_, BeginMainFrameState::SENT);
+  if (begin_main_frame_state_ == BeginMainFrameState::SENT) {
+    DCHECK_EQ(next_begin_main_frame_state_, BeginMainFrameState::IDLE);
 
-  // If the main thread aborted, it doesn't matter if the  main thread missed
-  // the last deadline since it didn't have an update anyway.
-  main_thread_missed_last_deadline_ = false;
+    // If the main thread aborted, it doesn't matter if the  main thread missed
+    // the last deadline since it didn't have an update anyway.
+    main_thread_missed_last_deadline_ = false;
 
-  switch (reason) {
-    case CommitEarlyOutReason::ABORTED_NOT_VISIBLE:
-    case CommitEarlyOutReason::ABORTED_DEFERRED_MAIN_FRAME_UPDATE:
-    case CommitEarlyOutReason::ABORTED_DEFERRED_COMMIT:
-      // TODO(schenney) For ABORTED_DEFERRED_COMMIT we will need to do
-      // something different because we have updated the main frame, but
-      // we have not committed it. So we do not need a begin main frame
-      // but we might need a commit.
-      // We might have top split the compositor commit code from frame updates,
-      // or track a pending commit separately from a pending main frame update.
-      begin_main_frame_state_ = BeginMainFrameState::IDLE;
-      SetNeedsBeginMainFrame();
-      return;
-    case CommitEarlyOutReason::FINISHED_NO_UPDATES:
-      WillCommit(/*commit_had_no_updates=*/true);
-      return;
+    switch (reason) {
+      case CommitEarlyOutReason::ABORTED_NOT_VISIBLE:
+      case CommitEarlyOutReason::ABORTED_DEFERRED_MAIN_FRAME_UPDATE:
+      case CommitEarlyOutReason::ABORTED_DEFERRED_COMMIT:
+        // TODO(schenney) For ABORTED_DEFERRED_COMMIT we will need to do
+        // something different because we have updated the main frame, but
+        // we have not committed it. So we do not need a begin main frame
+        // but we might need a commit.
+        // We might have top split the compositor commit code from frame
+        // updates, or track a pending commit separately from a pending main
+        // frame update.
+        begin_main_frame_state_ = BeginMainFrameState::IDLE;
+        SetNeedsBeginMainFrame();
+        break;
+      case CommitEarlyOutReason::FINISHED_NO_UPDATES:
+        WillCommit(/*commit_had_no_updates=*/true);
+        break;
+    }
+  } else {
+    DCHECK(settings_.main_frame_before_commit_enabled);
+    DCHECK_EQ(next_begin_main_frame_state_, BeginMainFrameState::SENT);
+    DCHECK_EQ(begin_main_frame_state_, BeginMainFrameState::READY_TO_COMMIT);
+    next_begin_main_frame_state_ = BeginMainFrameState::IDLE;
+    switch (reason) {
+      case CommitEarlyOutReason::ABORTED_NOT_VISIBLE:
+      case CommitEarlyOutReason::ABORTED_DEFERRED_MAIN_FRAME_UPDATE:
+      case CommitEarlyOutReason::ABORTED_DEFERRED_COMMIT:
+        SetNeedsBeginMainFrame();
+        break;
+      case CommitEarlyOutReason::FINISHED_NO_UPDATES:
+        commit_count_++;
+        break;
+    }
   }
 }
 

@@ -30,7 +30,7 @@ class HudWithRootLayerChange : public HeadsUpDisplayTest {
     PostSetNeedsCommitToMainThread();
   }
 
-  void DidCommit() override {
+  void DidBeginMainFrame() override {
     ++num_commits_;
 
     ASSERT_TRUE(layer_tree_host()->hud_layer());

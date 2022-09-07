@@ -129,7 +129,6 @@ void ProxyMain::BeginMainFrame(
     std::unique_ptr<BeginMainFrameAndCommitState> begin_main_frame_state) {
   DCHECK(IsMainThread());
   DCHECK_EQ(NO_PIPELINE_STAGE, current_pipeline_stage_);
-  DCHECK(!layer_tree_host_->in_commit());
 
   {
     TRACE_EVENT_WITH_FLOW0(
@@ -264,6 +263,11 @@ void ProxyMain::BeginMainFrame(
   // Updates cc animations on the main-thread. This is necessary in order
   // to track animation states such that they are cleaned up properly.
   layer_tree_host_->AnimateLayers(frame_args.frame_time);
+
+  // If NonBlockingCommit is enabled, and the previous BeginMainFrame has not
+  // yet completed commit on the impl thread, then the above call to
+  // AnimateLayers should have blocked until the previous commit finished.
+  DCHECK(!layer_tree_host_->in_commit());
 
   // Recreates all UI resources if the compositor thread evicted UI resources
   // because it became invisible or there was a lost context when the compositor
