@@ -23,6 +23,10 @@ namespace tab_groups {
 class TabGroupId;
 }
 
+namespace ui {
+class ElementContext;
+}
+
 // Collection of functions to find Browsers based on various criteria.
 
 namespace chrome {
@@ -72,6 +76,10 @@ Browser* FindBrowserWithWebContents(const content::WebContents* web_contents);
 // found within the given |profile|. If the profile is not specified, find any
 // browser containing the group.
 Browser* FindBrowserWithGroup(tab_groups::TabGroupId group, Profile* profile);
+
+// Find the browser for the given element context. Returns NULL if no such
+// browser currently exists.
+Browser* FindBrowserWithUiElementContext(ui::ElementContext context);
 
 // Returns the Browser object owned by |profile| whose window was most recently
 // active. If no such Browsers exist, returns NULL.

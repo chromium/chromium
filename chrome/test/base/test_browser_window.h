@@ -260,6 +260,10 @@ class TestBrowserWindow : public BrowserWindow {
   void set_is_active(bool active) { is_active_ = active; }
   void set_is_minimized(bool minimized) { is_minimized_ = minimized; }
 
+  void set_element_context(ui::ElementContext element_context) {
+    element_context_ = element_context;
+  }
+
  protected:
   void DestroyBrowser() override {}
 
@@ -303,6 +307,7 @@ class TestBrowserWindow : public BrowserWindow {
   std::unique_ptr<user_education::FeaturePromoController>
       feature_promo_controller_;
 
+  ui::ElementContext element_context_;
   base::OnceClosure close_callback_;
 };
 

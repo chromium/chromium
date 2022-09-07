@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "content/public/browser/navigation_controller.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 
@@ -251,6 +252,15 @@ Browser* FindBrowserWithGroup(tab_groups::TabGroupId group, Profile* profile) {
         browser->tab_strip_model() &&
         browser->tab_strip_model()->group_model() &&
         browser->tab_strip_model()->group_model()->ContainsTabGroup(group)) {
+      return browser;
+    }
+  }
+  return nullptr;
+}
+
+Browser* FindBrowserWithUiElementContext(ui::ElementContext context) {
+  for (auto* browser : *BrowserList::GetInstance()) {
+    if (browser->window()->GetElementContext() == context) {
       return browser;
     }
   }

@@ -126,7 +126,7 @@ const ui::ColorProvider* TestBrowserWindow::GetColorProvider() const {
 }
 
 ui::ElementContext TestBrowserWindow::GetElementContext() {
-  return ui::ElementContext();
+  return element_context_;
 }
 
 int TestBrowserWindow::GetTopControlsHeight() const {
