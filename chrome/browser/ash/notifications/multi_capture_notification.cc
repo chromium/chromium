@@ -60,13 +60,11 @@ namespace ash {
 
 MultiCaptureNotification::MultiCaptureNotification() {
   DCHECK(Shell::HasInstance());
-  Shell::Get()->multi_capture_service_client()->AddObserver(this);
+  multi_capture_service_client_observation_.Observe(
+      Shell::Get()->multi_capture_service_client());
 }
 
-MultiCaptureNotification::~MultiCaptureNotification() {
-  DCHECK(Shell::HasInstance());
-  Shell::Get()->multi_capture_service_client()->RemoveObserver(this);
-}
+MultiCaptureNotification::~MultiCaptureNotification() = default;
 
 void MultiCaptureNotification::MultiCaptureStarted(const std::string& label,
                                                    const url::Origin& origin) {
@@ -78,5 +76,9 @@ void MultiCaptureNotification::MultiCaptureStarted(const std::string& label,
 }
 
 void MultiCaptureNotification::MultiCaptureStopped(const std::string& label) {}
+
+void MultiCaptureNotification::MultiCaptureServiceClientDestroyed() {
+  multi_capture_service_client_observation_.Reset();
+}
 
 }  // namespace ash

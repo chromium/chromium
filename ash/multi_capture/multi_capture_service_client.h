@@ -34,6 +34,7 @@ class ASH_EXPORT MultiCaptureServiceClient
     virtual void MultiCaptureStarted(const std::string& label,
                                      const url::Origin& origin) = 0;
     virtual void MultiCaptureStopped(const std::string& label) = 0;
+    virtual void MultiCaptureServiceClientDestroyed() = 0;
 
    protected:
     ~Observer() override = default;

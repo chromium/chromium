@@ -42,11 +42,16 @@ class ASH_EXPORT ScreenCaptureTrayItemView
   void MultiCaptureStarted(const std::string& label,
                            const url::Origin& origin) override;
   void MultiCaptureStopped(const std::string& label) override;
+  void MultiCaptureServiceClientDestroyed() override;
 
  private:
   void Refresh();
 
   base::flat_set<std::string> request_ids_;
+
+  base::ScopedObservation<MultiCaptureServiceClient,
+                          MultiCaptureServiceClient::Observer>
+      multi_capture_service_client_observation_{this};
 
   base::WeakPtrFactory<ScreenCaptureTrayItemView> weak_ptr_factory_{this};
 };

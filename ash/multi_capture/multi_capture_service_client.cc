@@ -16,7 +16,10 @@ MultiCaptureServiceClient::MultiCaptureServiceClient(
       multi_capture_service_observer_receiver_.BindNewPipeAndPassRemote());
 }
 
-MultiCaptureServiceClient::~MultiCaptureServiceClient() = default;
+MultiCaptureServiceClient::~MultiCaptureServiceClient() {
+  for (Observer& observer : observers_)
+    observer.MultiCaptureServiceClientDestroyed();
+}
 
 void MultiCaptureServiceClient::AddObserver(Observer* observer) {
   observers_.AddObserver(observer);

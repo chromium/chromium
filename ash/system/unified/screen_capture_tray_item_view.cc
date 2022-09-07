@@ -27,13 +27,12 @@ ScreenCaptureTrayItemView::ScreenCaptureTrayItemView(Shelf* shelf)
       AshColorProvider::Get()->GetContentLayerColor(
           AshColorProvider::ContentLayerType::kIconColorAlert))));
 
-  Shell::Get()->multi_capture_service_client()->AddObserver(this);
+  multi_capture_service_client_observation_.Observe(
+      Shell::Get()->multi_capture_service_client());
   Refresh();
 }
 
-ScreenCaptureTrayItemView::~ScreenCaptureTrayItemView() {
-  Shell::Get()->multi_capture_service_client()->RemoveObserver(this);
-}
+ScreenCaptureTrayItemView::~ScreenCaptureTrayItemView() = default;
 
 const char* ScreenCaptureTrayItemView::GetClassName() const {
   return "ScreenCaptureTrayItemView";
@@ -64,4 +63,7 @@ void ScreenCaptureTrayItemView::MultiCaptureStopped(const std::string& label) {
   Refresh();
 }
 
+void ScreenCaptureTrayItemView::MultiCaptureServiceClientDestroyed() {
+  multi_capture_service_client_observation_.Reset();
+}
 }  // namespace ash
