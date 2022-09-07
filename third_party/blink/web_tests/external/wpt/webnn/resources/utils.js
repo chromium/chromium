@@ -1,5 +1,10 @@
 'use strict';
 
+const ExecutionArray = ['async', 'sync'];
+
+// https://webmachinelearning.github.io/webnn/#enumdef-mldevicetype
+const DeviceTypeArray = ['cpu', 'gpu'];
+
 /**
  * Get bitwise of the given value.
  * @param {number} value

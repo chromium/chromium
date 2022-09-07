@@ -1,6 +1,6 @@
 This is a testharness.js-based test.
-Found 386 tests; 151 PASS, 235 FAIL, 0 TIMEOUT, 0 NOTRUN.
-FAIL idl_test setup promise_test: Unhandled rejection with value: object "TypeError: Failed to construct 'MLGraphBuilder': parameter 1 is not of type 'MLContext'."
+Found 388 tests; 152 PASS, 236 FAIL, 0 TIMEOUT, 0 NOTRUN.
+PASS idl_test setup
 PASS idl_test validation
 PASS Partial interface MLContext: original interface defined
 PASS Partial interface MLContext: member names are unique
@@ -142,6 +142,8 @@ FAIL MLOperand must be primary interface of input assert_equals: Unexpected exce
 FAIL Stringification of input assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: input is not defined"
 FAIL MLOperand must be primary interface of filter assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: filter is not defined"
 FAIL Stringification of filter assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: filter is not defined"
+FAIL MLOperand must be primary interface of output assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: output is not defined"
+FAIL Stringification of output assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: output is not defined"
 PASS MLOperator interface: existence and properties of interface object
 PASS MLOperator interface object length
 PASS MLOperator interface object name

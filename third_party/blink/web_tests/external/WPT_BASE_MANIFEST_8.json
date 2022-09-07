@@ -93991,6 +93991,19 @@
        {}
       ]
      ],
+     "at-supports-selector-detecting-invalid-in-forgiving-argument.html": [
+      "74648440d5eba13eaa1d22f36e022ee625b3e390",
+      [
+       null,
+       [
+        [
+         "/css/css-conditional/at-supports-selector-detecting-invalid-in-forgiving-argument-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "css-supports-001.xht": [
       "9221309d45fd637e613a1c11519a09fa105a4830",
       [
@@ -268261,6 +268274,10 @@
       "9d1fbaaf47b97cb82dc3003ffd2d46268100774e",
       []
      ],
+     "at-supports-selector-detecting-invalid-in-forgiving-argument-ref.html": [
+      "681ef4bcefe672c22a0828f09cfb8038404f00fb",
+      []
+     ],
      "js": {
       "CSS-supports-CSSStyleDeclaration-expected.txt": [
        "2e621a2f0ec3509e414ecdf7693d621c4de5c361",
@@ -313820,6 +313837,22 @@
       },
       "post-message": {
        "resources": {
+        "first-party-to-first-party-different-partition-window.html": [
+         "55c94b5d947f00491628be9494f76283e0f6ea8a",
+         []
+        ],
+        "first-party-to-first-party-same-partition-window.html": [
+         "fcbb59ddbe9959e8bcd0e19c454be73db8bbcc3d",
+         []
+        ],
+        "first-party-to-third-party-different-partition-different-origin-iframe.https.html": [
+         "0a536f8c55806af391f5abd9eb1df8c39951c564",
+         []
+        ],
+        "first-party-to-third-party-different-partition-different-origin-window.sub.https.html": [
+         "39a0702a28cfdb8e21632a2f422c20a473488b4d",
+         []
+        ],
         "first-party-to-third-party-different-partition-same-origin-iframe.html": [
          "d8064b8023ec7c4c819ccb17afc4da34db486ff4",
          []
@@ -313828,12 +313861,32 @@
          "9727bcf966214d9684e3358068930c8180d7aff0",
          []
         ],
+        "third-party-to-first-party-different-partition-different-origin-iframe.sub.html": [
+         "173f7f394d114e03e80788bf2f57671e1007bf86",
+         []
+        ],
+        "third-party-to-first-party-different-partition-different-origin-window.https.html": [
+         "2e8062fdd758290943513269920e9b4869dacc94",
+         []
+        ],
         "third-party-to-first-party-different-partition-same-origin-iframe.sub.html": [
          "d62419759ac40ae1ec8ba9c19eda858cf2d71561",
          []
         ],
         "third-party-to-first-party-different-partition-same-origin-window.html": [
          "4f2678c67d13389932141b86cf9f070eae24bfe6",
+         []
+        ],
+        "third-party-to-third-party-different-partition-different-origin-iframe-a.sub.html": [
+         "00a76421fce3a712cdda86a0a2ad5dace284cfe1",
+         []
+        ],
+        "third-party-to-third-party-different-partition-different-origin-iframe-b.https.html": [
+         "67ee9beb2eeb361f6deb1dcf77dfc8e8dddbc084",
+         []
+        ],
+        "third-party-to-third-party-different-partition-different-origin-window.sub.https.html": [
+         "2fb605474d6ccb16c7862e842c873c5d68c22ab6",
          []
         ],
         "third-party-to-third-party-different-partition-same-origin-iframe-a.sub.https.html": [
@@ -313846,6 +313899,18 @@
         ],
         "third-party-to-third-party-different-partition-same-origin-window.sub.https.html": [
          "661304acd9bdabe6abe93aec8da0b3559fb32a9b",
+         []
+        ],
+        "third-party-to-third-party-same-partition-iframe-a.sub.html": [
+         "4a62e0d2b54d0dc86259e9ab4e466bf8dd9fcce4",
+         []
+        ],
+        "third-party-to-third-party-same-partition-iframe-b.html": [
+         "d473afbbe2e70f4a831e70720473559e9146cbcd",
+         []
+        ],
+        "third-party-to-third-party-same-partition-window.sub.html": [
+         "a4a2b7876e6066a71351044fcbd4bde639b1b6c2",
          []
         ]
        }
@@ -323493,10 +323558,6 @@
        ]
       },
       "constraints": {
-       "form-validation-validity-patternMismatch-expected.txt": [
-        "df1338f90958d2f67e2301bc52fabb634221e689",
-        []
-       ],
        "support": {
         "validator.js": [
          "aa43b3a2f6afd63b745bdb78fefc1b086628e5ef",
@@ -347235,16 +347296,16 @@
      []
     ],
     "idlharness.https.any-expected.txt": [
-     "e690e792606c100eb72ead2b77f7e255c70950cc",
+     "074ef3e13b0632e1caa2a68abd1ff1d39ed10440",
      []
     ],
     "idlharness.https.any.worker-expected.txt": [
-     "53c04a27703fe53fe16940e0b838228b5c303acc",
+     "35fa52373807655ca92d33aee8681ee8d05908b1",
      []
     ],
     "resources": {
      "utils.js": [
-      "5754de2d5d993ed87a37836855ce365dcd24fc6b",
+      "b8fbbb2372899e0f4f493baf4324ecde672527c4",
       []
      ]
     }
@@ -388365,6 +388426,13 @@
       ],
       "CSS-supports-L5.html": [
        "77947bf22845f8b7ad146bc90540e335989ca404",
+       [
+        null,
+        {}
+       ]
+      ],
+      "CSS-supports-selector-detecting-invalid-in-forgiving-argument.html": [
+       "4b83afc20b5843585819c8736fe98542ecf753c2",
        [
         null,
         {}
@@ -457896,8 +457964,36 @@
        ]
       ],
       "post-message": {
+       "first-party-to-first-party-different-partition.sub.html": [
+        "aa99b1229068e5f9924834a0c197cb8bfd5d4eed",
+        [
+         null,
+         {}
+        ]
+       ],
+       "first-party-to-first-party-same-partition.html": [
+        "70091a17e8f02bdbac9e7d34a3e1ee386f874705",
+        [
+         null,
+         {}
+        ]
+       ],
+       "first-party-to-third-party-different-partition-different-origin.sub.html": [
+        "3f726565520fc9a16d1b4509a93838e7df088982",
+        [
+         null,
+         {}
+        ]
+       ],
        "first-party-to-third-party-different-partition-same-origin.sub.html": [
         "6cc145b4a66017151cf023663282c28dcbfa9128",
+        [
+         null,
+         {}
+        ]
+       ],
+       "third-party-to-first-party-different-partition-different-origin.sub.html": [
+        "643b7fb7c1f386d268753ef0999281b9e197c419",
         [
          null,
          {}
@@ -457910,8 +458006,22 @@
          {}
         ]
        ],
+       "third-party-to-third-party-different-partition-different-origin.sub.html": [
+        "06c704b54bb415671fd030226dfd1bcf3423edb6",
+        [
+         null,
+         {}
+        ]
+       ],
        "third-party-to-third-party-different-partition-same-origin.sub.html": [
         "2d9cfb06db1f4896cd0232f110d1e1a9f80a1dee",
+        [
+         null,
+         {}
+        ]
+       ],
+       "third-party-to-third-party-same-partition.sub.html": [
+        "2a24243c05625d20da16b4533b77fb009be2df6e",
         [
          null,
          {}
@@ -570134,7 +570244,7 @@
    },
    "webnn": {
     "idlharness.https.any.js": [
-     "203c3ccc24e4f5894b633146a4f021d698b7fa3e",
+     "cce10ca9434f474f506a6ca7bea54e603baf7213",
      [
       "webnn/idlharness.https.any.html",
       {
@@ -570150,6 +570260,10 @@
         [
          "script",
          "/resources/idlharness.js"
+        ],
+        [
+         "script",
+         "./resources/utils.js"
         ],
         [
          "timeout",
@@ -570174,6 +570288,10 @@
         [
          "script",
          "/resources/idlharness.js"
+        ],
+        [
+         "script",
+         "./resources/utils.js"
         ],
         [
          "timeout",

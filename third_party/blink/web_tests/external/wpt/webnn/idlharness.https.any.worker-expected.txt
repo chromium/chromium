@@ -1,6 +1,6 @@
 This is a testharness.js-based test.
-Found 388 tests; 96 PASS, 292 FAIL, 0 TIMEOUT, 0 NOTRUN.
-FAIL idl_test setup promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of undefined (reading 'createContext')"
+Found 390 tests; 97 PASS, 293 FAIL, 0 TIMEOUT, 0 NOTRUN.
+PASS idl_test setup
 PASS idl_test validation
 PASS Partial interface MLContext: original interface defined
 PASS Partial interface MLContext: member names are unique
@@ -139,6 +139,8 @@ FAIL MLOperand must be primary interface of input assert_equals: Unexpected exce
 FAIL Stringification of input assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: input is not defined"
 FAIL MLOperand must be primary interface of filter assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: filter is not defined"
 FAIL Stringification of filter assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: filter is not defined"
+FAIL MLOperand must be primary interface of output assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: output is not defined"
+FAIL Stringification of output assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: output is not defined"
 FAIL MLOperator interface: existence and properties of interface object assert_own_property: self does not have own property "MLOperator" expected property "MLOperator" missing
 FAIL MLOperator interface object length assert_own_property: self does not have own property "MLOperator" expected property "MLOperator" missing
 FAIL MLOperator interface object name assert_own_property: self does not have own property "MLOperator" expected property "MLOperator" missing
