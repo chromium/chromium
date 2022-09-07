@@ -80,7 +80,17 @@ class TransparentButton : public views::Button {
   explicit TransparentButton(PressedCallback callback,
                              DownloadBubbleRowView* row_view)
       : Button(callback), row_view_(row_view) {
-    views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::OFF);
+    views::InstallRectHighlightPathGenerator(this);
+    views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
+    views::InkDrop::UseInkDropForFloodFillRipple(views::InkDrop::Get(this),
+                                                 /*highlight_on_hover=*/true,
+                                                 /*highlight_on_focus=*/true);
+    views::InkDrop::Get(this)->SetBaseColorCallback(base::BindRepeating(
+        [](views::View* host) {
+          return views::style::GetColor(*host, views::style::CONTEXT_BUTTON,
+                                        views::style::STYLE_SECONDARY);
+        },
+        this));
   }
   ~TransparentButton() override = default;
 
@@ -262,24 +272,9 @@ DownloadBubbleRowView::DownloadBubbleRowView(
       row_list_view_(row_list_view),
       bubble_controller_(bubble_controller),
       navigation_handler_(navigation_handler),
-      browser_(browser),
-      inkdrop_container_(
-          AddChildView(std::make_unique<views::InkDropContainerView>())) {
+      browser_(browser) {
   model_->SetDelegate(this);
   SetBorder(views::CreateEmptyBorder(GetLayoutInsets(DOWNLOAD_ROW)));
-
-  views::InkDrop::Install(this, std::make_unique<views::InkDropHost>(this));
-  views::InstallRectHighlightPathGenerator(this);
-  views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
-  views::InkDrop::UseInkDropForFloodFillRipple(views::InkDrop::Get(this),
-                                               /*highlight_on_hover=*/true,
-                                               /*highlight_on_focus=*/true);
-  views::InkDrop::Get(this)->SetBaseColorCallback(base::BindRepeating(
-      [](views::View* host) {
-        return views::style::GetColor(*host, views::style::CONTEXT_BUTTON,
-                                      views::style::STYLE_SECONDARY);
-      },
-      this));
 
   const int icon_label_spacing = ChromeLayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_RELATED_LABEL_HORIZONTAL);
@@ -308,8 +303,6 @@ DownloadBubbleRowView::DownloadBubbleRowView(
                     views::TableLayout::ColumnSize::kUsePreferred, 0, 0);
   // Three rows, one for name, one for status, and one for the progress bar.
   layout->AddRows(3, 1.0f);
-
-  layout->SetChildViewIgnoredByLayout(inkdrop_container_, true);
 
   transparent_button_ = AddChildView(std::make_unique<TransparentButton>(
       base::BindRepeating(&DownloadBubbleRowView::OnMainButtonPressed,
@@ -493,14 +486,6 @@ gfx::Size DownloadBubbleRowView::CalculatePreferredSize() const {
                         views::DISTANCE_BUBBLE_PREFERRED_WIDTH) -
                     GetLayoutInsets(DOWNLOAD_ROW).width();
   return {fixed_width, GetHeightForWidth(fixed_width)};
-}
-
-void DownloadBubbleRowView::AddLayerBeneathView(ui::Layer* layer) {
-  inkdrop_container_->AddLayerBeneathView(layer);
-}
-
-void DownloadBubbleRowView::RemoveLayerBeneathView(ui::Layer* layer) {
-  inkdrop_container_->RemoveLayerBeneathView(layer);
 }
 
 void DownloadBubbleRowView::OnWillChangeFocus(views::View* before,
