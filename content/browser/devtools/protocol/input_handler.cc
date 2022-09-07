@@ -1626,8 +1626,7 @@ void InputHandler::SynthesizeScrollGesture(
 
   SyntheticSmoothScrollGestureParams gesture_params;
   gesture_params.from_devtools_debugger = true;
-  const bool kDefaultPreventFling = true;
-  const int kDefaultSpeed = 800;
+  gesture_params.granularity = ui::ScrollGranularity::kScrollByPrecisePixel;
 
   gesture_params.anchor = CssPixelsToPointF(x, y, ScaleFactor());
   if (!PointIsWithinContents(gesture_params.anchor)) {
@@ -1635,6 +1634,8 @@ void InputHandler::SynthesizeScrollGesture(
     return;
   }
 
+  const bool kDefaultPreventFling = true;
+  const int kDefaultSpeed = 800;
   gesture_params.prevent_fling =
       prevent_fling.fromMaybe(kDefaultPreventFling);
   gesture_params.speed_in_pixels_s = speed.fromMaybe(kDefaultSpeed);
