@@ -58,7 +58,7 @@ std::unique_ptr<WebAppInstallInfo> ScanningSystemAppDelegate::GetWebAppInfo()
 }
 
 bool ScanningSystemAppDelegate::ShouldShowInLauncher() const {
-  return false;
+  return true;
 }
 
 bool ScanningSystemAppDelegate::ShouldCaptureNavigations() const {

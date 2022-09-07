@@ -353,10 +353,6 @@ IN_PROC_BROWSER_TEST_F(SystemFeaturesPolicyTest,
 
   // Disable and block apps.
   expected_visibility = GetVisibilityFlags(false /* is_hidden */);
-  // We never show scanning in the launcher.
-  VisibilityFlags scanning_expected_visibility =
-      GetVisibilityFlags(false /* is_hidden */);
-  scanning_expected_visibility.show_in_launcher = false;
   // Crosh is never shown.
   VisibilityFlags crosh_expected_visibility =
       GetVisibilityFlags(true /* is_hidden */);
@@ -365,7 +361,7 @@ IN_PROC_BROWSER_TEST_F(SystemFeaturesPolicyTest,
   VerifyAppState(web_app::kCameraAppId, apps::Readiness::kDisabledByPolicy,
                  true, expected_visibility);
   VerifyAppState(web_app::kScanningAppId, apps::Readiness::kDisabledByPolicy,
-                 true, scanning_expected_visibility);
+                 true, expected_visibility);
   VerifyExtensionAppState(extensions::kWebStoreAppId,
                           apps::Readiness::kDisabledByPolicy, true,
                           expected_visibility);
@@ -379,7 +375,7 @@ IN_PROC_BROWSER_TEST_F(SystemFeaturesPolicyTest,
   VerifyAppState(web_app::kCameraAppId, apps::Readiness::kReady, false,
                  expected_visibility);
   VerifyAppState(web_app::kScanningAppId, apps::Readiness::kReady, false,
-                 scanning_expected_visibility);
+                 expected_visibility);
   VerifyExtensionAppState(extensions::kWebStoreAppId, apps::Readiness::kReady,
                           false, expected_visibility);
   VerifyAppState(web_app::kCanvasAppId, apps::Readiness::kReady, false,
