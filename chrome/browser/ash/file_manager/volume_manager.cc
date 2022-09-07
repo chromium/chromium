@@ -196,7 +196,7 @@ std::string GenerateVolumeId(const Volume& volume) {
                        volume.mount_path().BaseName().AsUTF8Unsafe()});
 }
 
-std::string FuseBoxADPSubdir(const std::string& authority,
+std::string FuseBoxSubdirADP(const std::string& authority,
                              const std::string& root_id) {
   // Hash the authority and ID
   // - because the ID can be quite long (400+ bytes) and
@@ -205,17 +205,26 @@ std::string FuseBoxADPSubdir(const std::string& authority,
       crypto::SHA256HashString(base::StrCat({authority, "/", root_id}));
   std::string b64;
   base::Base64UrlEncode(hash, base::Base64UrlEncodePolicy::OMIT_PADDING, &b64);
-  return base::StrCat({"adp.", b64});
+  return base::StrCat({util::kFuseBoxSubdirPrefixADP, b64});
 }
 
-std::string FuseBoxMTPSubdir(const std::string& device_id) {
+std::string FuseBoxSubdirFSP(
+    const ash::file_system_provider::ProvidedFileSystemInfo& file_system_info) {
+  std::string hash =
+      crypto::SHA256HashString(file_system_info.mount_path().value());
+  std::string b64;
+  base::Base64UrlEncode(hash, base::Base64UrlEncodePolicy::OMIT_PADDING, &b64);
+  return base::StrCat({util::kFuseBoxSubdirPrefixFSP, b64});
+}
+
+std::string FuseBoxSubdirMTP(const std::string& device_id) {
   // Derive the subdir name from the MTP device ID (which is stable even after
   // unplugging and replugging a phone). It's a hash of the ID, not the ID
   // itself, to avoid sharing the device's unique ID in the file system.
   std::string hash = crypto::SHA256HashString(device_id);
   std::string b64;
   base::Base64UrlEncode(hash, base::Base64UrlEncodePolicy::OMIT_PADDING, &b64);
-  return base::StrCat({"mtp.", b64});
+  return base::StrCat({util::kFuseBoxSubdirPrefixMTP, b64});
 }
 
 std::string GetMountPointNameForMediaStorage(
@@ -1327,7 +1336,7 @@ void VolumeManager::OnProvidedFileSystemMount(
   DCHECK(fsp_file_system_url.is_valid());
 
   // Attach the FSP storage device to the fusebox daemon.
-  const std::string subdir = "fsp:" + fsid;
+  const std::string subdir = FuseBoxSubdirFSP(file_system_info);
   fusebox_mounter_->AttachStorage(
       subdir, url, !file_system_info.writable(),
       base::BindOnce(&VolumeManager::OnFuseboxAttachStorageProvidedFileSystem,
@@ -1354,8 +1363,10 @@ void VolumeManager::OnFuseboxAttachStorageProvidedFileSystem(
   // Register the fusebox FSP storage device with chrome::storage.
   auto* mount_points = storage::ExternalMountPoints::GetSystemInstance();
   bool result = mount_points->RegisterFileSystem(
-      /*prefixed*/ util::kFuseBox + fsid, storage::kFileSystemTypeFuseBox,
-      storage::FileSystemMountOption(), volume->mount_path());
+      base::StrCat(
+          {util::kFuseBoxMountNamePrefix, util::kFuseBoxSubdirPrefixFSP, fsid}),
+      storage::kFileSystemTypeFuseBox, storage::FileSystemMountOption(),
+      volume->mount_path());
   DCHECK(result);
 
   // Mount the fusebox FSP storage device in files app.
@@ -1394,7 +1405,7 @@ void VolumeManager::OnProvidedFileSystemUnmount(
   // Get FSP chrome::storage |fsid| and fusebox daemon |subdir|.
   const std::string fsid =
       file_system_info.mount_path().BaseName().AsUTF8Unsafe();
-  const std::string subdir = "fsp:" + fsid;
+  const std::string subdir = FuseBoxSubdirFSP(file_system_info);
 
   // Unmount the fusebox FSP storage device in files app.
   const base::FilePath mount_path =
@@ -1406,7 +1417,8 @@ void VolumeManager::OnProvidedFileSystemUnmount(
 
   // Remove the fusebox FSP storage device from chrome::storage.
   auto* mount_points = storage::ExternalMountPoints::GetSystemInstance();
-  mount_points->RevokeFileSystem(util::kFuseBox + fsid);
+  mount_points->RevokeFileSystem(base::StrCat(
+      {util::kFuseBoxMountNamePrefix, util::kFuseBoxSubdirPrefixFSP, fsid}));
 
   // Detach the fusebox FSP storage device from the fusebox daemon.
   fusebox_mounter_->DetachStorage(subdir, base::DoNothing());
@@ -1584,7 +1596,7 @@ void VolumeManager::DoAttachMtpStorage(
   DCHECK(mtp_file_system_url.is_valid());
 
   // Attach the MTP storage device to the fusebox daemon.
-  std::string subdir = FuseBoxMTPSubdir(info.device_id());
+  std::string subdir = FuseBoxSubdirMTP(info.device_id());
   fusebox_mounter_->AttachStorage(
       subdir, url, read_only,
       base::BindOnce(&VolumeManager::OnFuseboxAttachStorageMTP,
@@ -1661,7 +1673,7 @@ void VolumeManager::OnRemovableStorageDetached(
   mount_points->RevokeFileSystem(util::kFuseBox + fsid);
 
   // Detach the fusebox MTP storage device from the fusebox daemon.
-  fusebox_mounter_->DetachStorage(FuseBoxMTPSubdir(info.device_id()),
+  fusebox_mounter_->DetachStorage(FuseBoxSubdirMTP(info.device_id()),
                                   base::DoNothing());
 }
 
@@ -1693,7 +1705,7 @@ void VolumeManager::OnDocumentsProviderRootAdded(
   const std::string url = adp_file_system_url.ToGURL().spec();
 
   // Attach the ADP storage device to the fusebox daemon.
-  std::string subdir = FuseBoxADPSubdir(authority, root_id);
+  std::string subdir = FuseBoxSubdirADP(authority, root_id);
   fusebox_mounter_->AttachStorage(
       subdir, url, read_only,
       base::BindOnce(&VolumeManager::OnFuseboxAttachStorageADP,
@@ -1753,7 +1765,7 @@ void VolumeManager::OnDocumentsProviderRootRemoved(
     DoUnmountEvent(*volume);
 
   // Remove the fusebox ADP storage device from chrome::storage.
-  std::string subdir = FuseBoxADPSubdir(authority, root_id);
+  std::string subdir = FuseBoxSubdirADP(authority, root_id);
   auto* mount_points = storage::ExternalMountPoints::GetSystemInstance();
   mount_points->RevokeFileSystem(
       base::StrCat({util::kFuseBoxMountNamePrefix, subdir}));

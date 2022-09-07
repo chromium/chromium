@@ -465,29 +465,17 @@ FileManagerPrivateInternalGetEntryPropertiesFunction::Run() {
     const storage::FileSystemURL file_system_url =
         file_system_context->CrackURLInFirstPartyContext(url);
 
-    constexpr auto is_fusebox_fsp = [](const storage::FileSystemURL& url) {
-      if (url.type() != storage::kFileSystemTypeFuseBox)
-        return false;
-      if (!base::StartsWith(url.filesystem_id(), file_manager::util::kFuseBox))
-        return false;
-      static const base::FilePath::CharType kFuseBoxMediaPathFSPSuffix[] =
-          FILE_PATH_LITERAL("/media/fuse/fusebox/fsp:");
-      if (!base::StartsWith(url.path().value(), kFuseBoxMediaPathFSPSuffix))
-        return false;
-      return true;
-    };
-
     storage::FileSystemType file_system_type = file_system_url.type();
     if (file_system_type == storage::kFileSystemTypeFuseBox) {
       base::StringPiece path(file_system_url.path().value());
       if (base::StartsWith(path, file_manager::util::kFuseBoxMediaSlashPath)) {
         path.remove_prefix(strlen(file_manager::util::kFuseBoxMediaSlashPath));
-        if (base::StartsWith(path, "adp")) {
+        if (base::StartsWith(path,
+                             file_manager::util::kFuseBoxSubdirPrefixADP)) {
           file_system_type = storage::kFileSystemTypeArcDocumentsProvider;
-        } else if (base::StartsWith(path, "fsp")) {
-          // TODO(crbug.com/1292825): delete is_fusebox_fsp (above) and its use
-          // (below), replacing it with:
-          // file_system_type = storage::kFileSystemTypeProvided;
+        } else if (base::StartsWith(
+                       path, file_manager::util::kFuseBoxSubdirPrefixFSP)) {
+          file_system_type = storage::kFileSystemTypeProvided;
         }
       }
     }
@@ -511,13 +499,6 @@ FileManagerPrivateInternalGetEntryPropertiesFunction::Run() {
             file_system_url, profile, std::move(callback));
         break;
       default:
-        // Handle FuseBox provided storage::kFileSystemTypeProvided file system.
-        if (is_fusebox_fsp(file_system_url)) {
-          SingleEntryPropertiesGetterForFileSystemProvider::Start(
-              file_system_url, names_as_set, std::move(callback));
-          break;
-        }
-
         // TODO(yawano) Change this to support other voluems (e.g. local) ,and
         // integrate fileManagerPrivate.getMimeType to this method.
         LOG(ERROR) << "Not supported file system type.";

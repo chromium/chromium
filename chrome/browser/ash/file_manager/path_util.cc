@@ -272,7 +272,22 @@ const char kFuseBox[] = "fusebox";
 // message (e.g. in a storage::FileSystemURL's debug string form), code-
 // searching for that string should quickly find this definition here (and the
 // kFuseBoxMountNamePrefix name that code-search can find references for).
+//
+// This is just a prefix. The complete mount name (for FuseBox mounts, not for
+// storage::ExternalMountPoints generally) looks like "fubomona:volumetype.etc"
+// where the volumetype (e.g. "adp", "fsp") acts like a namespace so that ADP's
+// "etc" format won't accidentally conflict with FSP's "etc" format.
+//
+// This means that the "volumetype.etc" string value *can* be the same as a
+// FuseBox subdir string value, as they're both prefixed with "volumetype.",
+// but they don't *have* to be. Specifically, the "etc" may contain identifiers
+// that other in-process Chromium code wants to parse but those identifiers
+// might be longer than Linux's NAME_MAX.
 const char kFuseBoxMountNamePrefix[] = "fubomona:";
+
+const char kFuseBoxSubdirPrefixADP[] = "adp.";
+const char kFuseBoxSubdirPrefixFSP[] = "fsp.";
+const char kFuseBoxSubdirPrefixMTP[] = "mtp.";
 
 const char kShareCacheMountPointName[] = "ShareCache";
 
