@@ -227,21 +227,18 @@ void PrintLog(UpdaterScope scope) {
   std::string contents;
   absl::optional<base::FilePath> path = GetDataDirPath(scope);
   EXPECT_TRUE(path);
+  VLOG(0) << "Contents of updater.log for " << GetTestName() << " in "
+          << path.value() << ":";
   if (path &&
       base::ReadFileToString(path->AppendASCII("updater.log"), &contents)) {
     const std::string demarcation(72, '=');
     VLOG(0) << demarcation;
-    VLOG(0) << "Contents of updater.log in " << path.value() << ":";
     VLOG(0) << contents;
     VLOG(0) << "End contents of updater.log.";
     VLOG(0) << demarcation;
   } else {
     VLOG(0) << "Failed to read updater.log file.";
   }
-}
-
-const testing::TestInfo* GetTestInfo() {
-  return testing::UnitTest::GetInstance()->current_test_info();
 }
 
 base::FilePath GetLogDestinationDir() {
@@ -256,10 +253,8 @@ void CopyLog(const base::FilePath& src_dir) {
   base::FilePath dest_dir = GetLogDestinationDir();
   if (!dest_dir.empty() && base::PathExists(dest_dir) &&
       base::PathExists(src_dir)) {
-    base::FilePath test_name_path = dest_dir.AppendASCII(base::StrCat(
-        {GetTestInfo()->test_suite_name(), ".", GetTestInfo()->name()}));
+    base::FilePath test_name_path = dest_dir.AppendASCII(GetTestName());
     EXPECT_TRUE(base::CreateDirectory(test_name_path));
-
     base::FilePath dest_file_path = test_name_path.AppendASCII("updater.log");
     base::FilePath log_path = src_dir.AppendASCII("updater.log");
     VLOG(0) << "Copying updater.log file. From: " << log_path

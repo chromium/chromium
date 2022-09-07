@@ -4,15 +4,18 @@
 
 #include "chrome/updater/unittest_util.h"
 
+#include <string>
 #include <utility>
 
 #include "base/files/file_path.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/process/kill.h"
 #include "base/process/process_iterator.h"
+#include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "chrome/updater/policy/manager.h"
 #include "chrome/updater/policy/service.h"
+#include "testing/gtest/include/gtest/gtest.h"
 
 namespace updater::test {
 
@@ -36,6 +39,12 @@ scoped_refptr<PolicyService> CreateTestPolicyService() {
   PolicyService::PolicyManagerVector managers;
   managers.push_back(GetDefaultValuesPolicyManager());
   return base::MakeRefCounted<PolicyService>(std::move(managers));
+}
+
+std::string GetTestName() {
+  const ::testing::TestInfo* test_info =
+      ::testing::UnitTest::GetInstance()->current_test_info();
+  return base::StrCat({test_info->test_suite_name(), ".", test_info->name()});
 }
 
 }  // namespace updater::test
