@@ -294,6 +294,13 @@ void ExecuteScriptInMainWorld(
                             user_gesture);
 }
 
+const char* ViewBackgroundLayerName() {
+  return RuntimeEnabledFeatures::LayoutNGViewEnabled() &&
+                 RuntimeEnabledFeatures::LayoutNGEnabled()
+             ? "Scrolling background of LayoutNGView #document"
+             : "Scrolling background of LayoutView #document";
+}
+
 }  // namespace
 
 const int kTouchPointPadding = 32;
@@ -6728,10 +6735,7 @@ class CompositedSelectionBoundsTest
   static int LayerIdFromNode(const cc::Layer* root_layer, blink::Node* node) {
     Vector<const cc::Layer*> layers;
     if (node->IsDocumentNode()) {
-      layers = CcLayersByName(
-          root_layer, RuntimeEnabledFeatures::LayoutNGViewEnabled()
-                          ? "Scrolling background of LayoutNGView #document"
-                          : "Scrolling background of LayoutView #document");
+      layers = CcLayersByName(root_layer, ViewBackgroundLayerName());
     } else {
       DCHECK(node->IsElementNode());
       layers = CcLayersByDOMElementId(root_layer,
@@ -8795,11 +8799,7 @@ TEST_F(WebFrameTest, WebXrImmersiveOverlay) {
   EXPECT_TRUE(document->IsXrOverlay());
 
   const cc::Layer* root_layer = layer_tree_host->root_layer();
-  const char* view_background_layer_name =
-      RuntimeEnabledFeatures::LayoutNGViewEnabled()
-          ? "Scrolling background of LayoutNGView #document"
-          : "Scrolling background of LayoutView #document";
-  EXPECT_EQ(1u, CcLayersByName(root_layer, view_background_layer_name).size());
+  EXPECT_EQ(1u, CcLayersByName(root_layer, ViewBackgroundLayerName()).size());
   EXPECT_EQ(1u, CcLayersByDOMElementId(root_layer, "other").size());
   // The overlay is not composited when it's not in full screen.
   EXPECT_EQ(0u, CcLayersByDOMElementId(root_layer, "overlay").size());
@@ -8811,7 +8811,7 @@ TEST_F(WebFrameTest, WebXrImmersiveOverlay) {
   EXPECT_TRUE(!layer_tree_host->background_color().isOpaque());
 
   root_layer = layer_tree_host->root_layer();
-  EXPECT_EQ(0u, CcLayersByName(root_layer, view_background_layer_name).size());
+  EXPECT_EQ(0u, CcLayersByName(root_layer, ViewBackgroundLayerName()).size());
   EXPECT_EQ(0u, CcLayersByDOMElementId(root_layer, "other").size());
   EXPECT_EQ(1u, CcLayersByDOMElementId(root_layer, "overlay").size());
   EXPECT_EQ(1u, CcLayersByDOMElementId(root_layer, "inner").size());
@@ -8823,7 +8823,7 @@ TEST_F(WebFrameTest, WebXrImmersiveOverlay) {
   document->SetIsXrOverlay(false, overlay);
 
   root_layer = layer_tree_host->root_layer();
-  EXPECT_EQ(1u, CcLayersByName(root_layer, view_background_layer_name).size());
+  EXPECT_EQ(1u, CcLayersByName(root_layer, ViewBackgroundLayerName()).size());
   EXPECT_EQ(1u, CcLayersByDOMElementId(root_layer, "other").size());
   // The overlay is not composited when it's not in full screen.
   EXPECT_EQ(0u, CcLayersByDOMElementId(root_layer, "overlay").size());

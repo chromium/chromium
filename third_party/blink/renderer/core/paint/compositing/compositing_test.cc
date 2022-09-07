@@ -39,6 +39,17 @@
 
 namespace blink {
 
+namespace {
+
+const char* ViewLayerName() {
+  return RuntimeEnabledFeatures::LayoutNGViewEnabled() &&
+                 RuntimeEnabledFeatures::LayoutNGEnabled()
+             ? "LayoutNGView #document"
+             : "LayoutView #document";
+}
+
+}  // namespace
+
 // Tests the integration between blink and cc where a layer list is sent to cc.
 class CompositingTest : public PaintTestConfigurations, public testing::Test {
  public:
@@ -458,10 +469,7 @@ TEST_P(CompositingTest, BackgroundColorInScrollingContentsLayer) {
   // The root layer and root scrolling contents layer get background_color by
   // blending the CSS background-color of the <html> element with
   // LocalFrameView::BaseBackgroundColor(), which is white by default.
-  auto* layer = CcLayersByName(RootCcLayer(),
-                               RuntimeEnabledFeatures::LayoutNGViewEnabled()
-                                   ? "LayoutNGView #document"
-                                   : "LayoutView #document")[0];
+  auto* layer = CcLayersByName(RootCcLayer(), ViewLayerName())[0];
   SkColor4f expected_color = SkColor4f::FromColor(SkColorSetRGB(10, 20, 30));
   EXPECT_EQ(layer->background_color(), SkColors::kTransparent);
   auto* scrollable_area = GetLocalFrameView()->LayoutViewport();
@@ -523,10 +531,7 @@ TEST_P(CompositingTest, BackgroundColorInGraphicsLayer) {
   // background is painted into the root graphics layer, the root scrolling
   // contents layer should not checkerboard, so its background color should be
   // transparent.
-  auto* layer = CcLayersByName(RootCcLayer(),
-                               RuntimeEnabledFeatures::LayoutNGViewEnabled()
-                                   ? "LayoutNGView #document"
-                                   : "LayoutView #document")[0];
+  auto* layer = CcLayersByName(RootCcLayer(), ViewLayerName())[0];
   EXPECT_EQ(layer->background_color(), SkColors::kWhite);
   auto* scrollable_area = GetLocalFrameView()->LayoutViewport();
   layer = ScrollingContentsCcLayerByScrollElementId(
