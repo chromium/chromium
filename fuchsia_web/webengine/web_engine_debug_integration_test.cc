@@ -19,6 +19,8 @@
 
 #if defined(USE_CFV1_LAUNCHER)
 #include "fuchsia_web/webengine/test/context_provider_for_test_v1.h"  // nogncheck
+#else
+#include "fuchsia_web/webengine/test/context_provider_for_test_v2.h"  // nogncheck
 #endif
 
 namespace {

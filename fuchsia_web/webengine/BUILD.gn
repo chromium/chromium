@@ -662,6 +662,58 @@ test("web_engine_unittests") {
   ]
 }
 
+test("web_engine_integration_tests") {
+  sources = [
+    "test_debug_listener.cc",
+    "test_debug_listener.h",
+    "web_engine_debug_integration_test.cc",
+    "web_engine_integration_logging_test.cc",
+    "web_engine_integration_test.cc",
+    "web_engine_integration_test_base.cc",
+    "web_engine_integration_test_base.h",
+  ]
+  data = [ "test/data" ]
+  deps = [
+    ":browsertest_core",
+    ":context_provider_component",
+    "//base",
+    "//base:test_log_listener_safe",
+    "//base/test:test_support",
+    "//components/version_info",
+    "//fuchsia_web/common/test:run_all_integration_tests",
+    "//fuchsia_web/common/test:test_support",
+    "//fuchsia_web/webengine/test:integration",
+    "//fuchsia_web/webinstance_host:webinstance_host_integration_test",
+    "//media",
+    "//media/fuchsia/audio:test_support",
+    "//media/fuchsia/camera:test_support",
+    "//net",
+    "//net:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/abseil-cpp:absl",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.logger",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.mediacodec",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.mem",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.web",
+  ]
+  package_deps = [ [
+        ":web_engine",
+        "web_engine",
+      ] ]
+  use_cfv1 = false
+  additional_manifest_fragments = [
+    "//build/config/fuchsia/test/archivist.shard.test-cml",
+    "//build/config/fuchsia/test/audio_output.shard.test-cml",
+    "//build/config/fuchsia/test/fonts.shard.test-cml",
+    "//build/config/fuchsia/test/network.shard.test-cml",
+    "//build/config/fuchsia/test/web_instance_host.shard.test-cml",
+    "//fuchsia_web/webengine/web_engine_integration_tests.shard.test-cml",
+    "//third_party/fuchsia-sdk/sdk/pkg/sys/component/realm_builder_absolute.shard.cml",
+    "//third_party/fuchsia-sdk/sdk/pkg/vulkan/client.shard.cml",
+  ]
+}
+
 test("web_engine_integration_tests_cfv1") {
   sources = [
     "test_debug_listener.cc",
