@@ -31,6 +31,9 @@ export interface ProfileCustomizationBrowserProxy {
   // Called when the user clicks the skip button.
   skip(): void;
 
+  // Called when the user clicks the delete profile button.
+  deleteProfile(): void;
+
   setAvatarIcon(avatarIndex: number): void;
 }
 
@@ -50,6 +53,10 @@ export class ProfileCustomizationBrowserProxyImpl implements
 
   skip() {
     chrome.send('skip');
+  }
+
+  deleteProfile() {
+    chrome.send('deleteProfile');
   }
 
   setAvatarIcon(avatarIndex: number) {

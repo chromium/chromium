@@ -159,6 +159,10 @@
     min-width: 76px;
   }
 
+  .in-dialog-design #deleteProfileButton {
+    margin-inline-end: 12px;
+  }
+
   cr-profile-avatar-selector {
     --avatar-size: 72px;
     --avatar-spacing: 18px;
@@ -258,7 +262,7 @@
 
       <cr-input id="nameInput" pattern=".*\\S.*" value="{{profileName_}}"
         aria-label="$i18n{profileCustomizationInputLabel}" auto-validate
-        placeholder="$i18n{profileCustomizationInputPlaceholder}"
+        placeholder="$i18n{profileCustomizationInputPlaceholder}" autofocus
         error-message="$i18n{profileCustomizationInputErrorMessage}"
         required spellcheck="false">
       </cr-input>
@@ -271,13 +275,19 @@
       <div class="action-container">
         <cr-button id="doneButton" class="action-button"
             disabled="[[isDoneButtonDisabled_(profileName_)]]"
-            on-click="onDoneCustomizationClicked_" autofocus>
+            on-click="onDoneCustomizationClicked_">
           $i18n{profileCustomizationDoneLabel}
         </cr-button>
         <template is="dom-if" if="[[shouldShowCancelButton_()]]">
           <cr-button id="skipButton" class="cancel-button"
               on-click="onSkipCustomizationClicked_">
             $i18n{profileCustomizationSkipLabel}
+          </cr-button>
+        </template>
+        <template is="dom-if" if="[[isLocalProfileCreation_]]">
+          <cr-button id="deleteProfileButton" class="cancel-button"
+              on-click="onDeleteProfileClicked_">
+            $i18n{profileCustomizationDeleteProfileLabel}
           </cr-button>
         </template>
       </div>

@@ -70,6 +70,8 @@ ProfileCustomizationUI::ProfileCustomizationUI(content::WebUI* web_ui)
       {"profileCustomizationTitle", IDS_PROFILE_CUSTOMIZATION_TITLE_V2},
       {"localProfileCreationTitle",
        IDS_PROFILE_CUSTOMIZATION_LOCAL_PROFILE_CREATION_TITLE},
+      {"profileCustomizationDeleteProfileLabel",
+       IDS_PROFILE_CUSTOMIZATION_DELETE_PROFILE_BUTTON_LABEL},
       {"profileCustomizationCustomizeAvatarLabel",
        IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_LOCAL_PROFILE_CREATION_CUSTOMIZE_AVATAR_BUTTON_LABEL},
       {"profileCustomizationAvatarSelectionTitle",

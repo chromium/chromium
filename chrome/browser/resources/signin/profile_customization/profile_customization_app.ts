@@ -166,6 +166,13 @@ export class ProfileCustomizationAppElement extends
     this.profileCustomizationBrowserProxy_.skip();
   }
 
+  private onDeleteProfileClicked_() {
+    // Unsaved theme color changes cause an error in `ProfileCustomizationUI`
+    // destructor when deleting the profile.
+    this.$.themeSelector.confirmThemeChanges();
+    this.profileCustomizationBrowserProxy_.deleteProfile();
+  }
+
   private getDialogDesignClass_(inDialogDesign: boolean): string {
     return inDialogDesign ? 'in-dialog-design' : '';
   }

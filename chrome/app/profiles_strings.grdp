@@ -511,6 +511,9 @@
     <message name="IDS_PROFILE_CUSTOMIZATION_SKIP_BUTTON_LABEL" desc="Text for the Skip button on the profile customization dialog">
       Skip
     </message>
+    <message name="IDS_PROFILE_CUSTOMIZATION_DELETE_PROFILE_BUTTON_LABEL" desc="Text for the Delete profile button on the profile customization dialog for local profile creation. This aborts the ongoing profile creation process.">
+      Delete profile
+    </message>
     <message name="IDS_PROFILE_CUSTOMIZATION_LOCAL_PROFILE_CREATION_TITLE" desc="Title of the profile customization dialog for local profile creation (user is not signed-in)">
       Welcome!
     </message>

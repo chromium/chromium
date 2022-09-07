@@ -10,8 +10,14 @@ export class TestProfileCustomizationBrowserProxy extends TestBrowserProxy
   private profileInfo_: ProfileInfo;
 
   constructor() {
-    super(
-        ['done', 'initialized', 'getAvailableIcons', 'skip', 'setAvatarIcon']);
+    super([
+      'done',
+      'initialized',
+      'getAvailableIcons',
+      'skip',
+      'deleteProfile',
+      'setAvatarIcon',
+    ]);
 
     this.profileInfo_ = {
       backgroundColor: '',
@@ -41,6 +47,10 @@ export class TestProfileCustomizationBrowserProxy extends TestBrowserProxy
 
   skip() {
     this.methodCalled('skip');
+  }
+
+  deleteProfile() {
+    this.methodCalled('deleteProfile');
   }
 
   setAvatarIcon(avatarIndex: number) {

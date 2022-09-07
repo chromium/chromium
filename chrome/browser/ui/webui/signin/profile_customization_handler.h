@@ -57,6 +57,7 @@ class ProfileCustomizationHandler : public content::WebUIMessageHandler,
   void HandleGetAvailableIcons(const base::Value::List& args);
   void HandleDone(const base::Value::List& args);
   void HandleSkip(const base::Value::List& args);
+  void HandleDeleteProfile(const base::Value::List& args);
   void HandleSetAvatarIcon(const base::Value::List& args);
 
   // Sends an updated profile info (avatar and colors) to the WebUI.

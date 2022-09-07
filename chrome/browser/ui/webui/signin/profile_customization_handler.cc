@@ -17,6 +17,8 @@
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/profile_picker.h"
 #include "chrome/browser/ui/signin/profile_colors_util.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
@@ -57,6 +59,10 @@ void ProfileCustomizationHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
       "skip", base::BindRepeating(&ProfileCustomizationHandler::HandleSkip,
                                   base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "deleteProfile",
+      base::BindRepeating(&ProfileCustomizationHandler::HandleDeleteProfile,
+                          base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
       "setAvatarIcon",
       base::BindRepeating(&ProfileCustomizationHandler::HandleSetAvatarIcon,
@@ -150,6 +156,20 @@ void ProfileCustomizationHandler::HandleSkip(const base::Value::List& args) {
 
   if (completion_callback_)
     std::move(completion_callback_).Run(CustomizationResult::kSkip);
+}
+
+void ProfileCustomizationHandler::HandleDeleteProfile(
+    const base::Value::List& args) {
+  CHECK_EQ(0u, args.size());
+
+  DCHECK(GetProfileEntry()->IsEphemeral());
+  ProfilePicker::Show(ProfilePicker::Params::FromEntryPoint(
+      ProfilePicker::EntryPoint::kOpenNewWindowAfterProfileDeletion));
+  // Since the profile is ephemeral, closing all browser windows triggers the
+  // deletion.
+  BrowserList::CloseAllBrowsersWithProfile(
+      profile_, BrowserList::CloseCallback(), BrowserList::CloseCallback(),
+      /*skip_beforeunload=*/true);
 }
 
 void ProfileCustomizationHandler::HandleSetAvatarIcon(

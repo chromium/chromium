@@ -140,6 +140,12 @@ import {TestProfileCustomizationBrowserProxy} from './test_profile_customization
       assertEquals(inDialogDesign, isChildVisible(app, '#skipButton'));
     });
 
+    // Checks that there is no Delete Profile button in the default Profile
+    // Customization page.
+    test('DeleteProfileButtonNotVisible', function() {
+      assertFalse(isChildVisible(app, '#deleteProfileButton'));
+    });
+
     // Checks that clicking the Skip button triggers the correct browser proxy
     // method.
     if (inDialogDesign) {
@@ -184,6 +190,7 @@ suite(`LocalProfileCreationTest`, function() {
     assertEquals(app.$.title.innerText, WELCOME_TITLE);
     assertFalse(isChildVisible(app, '#workBadge'));
     assertTrue(isChildVisible(app, '#customizeAvatarIcon'));
+    assertTrue(isChildVisible(app, '#deleteProfileButton'));
     assertFalse(isChildVisible(app, '#skipButton'));
 
     const activeView = 'active';
@@ -208,5 +215,13 @@ suite(`LocalProfileCreationTest`, function() {
     selectAvatarCancelButton.click();
     assertTrue(profileCustomizationDialog.classList.contains(activeView));
     assertFalse(avatarSelectionDialog.classList.contains(activeView));
+  });
+
+  test('ClickDeleteProfileButton', function() {
+    assertTrue(isChildVisible(app, '#deleteProfileButton'));
+    const deleteProfileButton =
+        app.shadowRoot!.querySelector<CrButtonElement>('#deleteProfileButton')!;
+    deleteProfileButton.click();
+    return browserProxy.whenCalled('deleteProfile');
   });
 });
