@@ -8,6 +8,9 @@ import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
 
+import org.chromium.components.autofill_assistant.guided_browsing.GuidedBrowsingMetrics;
+import org.chromium.components.autofill_assistant.guided_browsing.metrics.ParseSingleTagXmlActionEvent;
+
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
@@ -22,7 +25,13 @@ public class AssistantParseSingleTagXmlUtil {
      * numeric string.
      */
     public static boolean isXmlSigned(String xmlString) {
-        return xmlString.matches("[0-9]+");
+        boolean isSigned = xmlString.matches("[0-9]+");
+        if (isSigned) {
+            GuidedBrowsingMetrics.recordParseSingleTagXmlActionEvent(
+                    ParseSingleTagXmlActionEvent.SINGLE_TAG_XML_PARSE_SIGNED_DATA);
+        }
+
+        return isSigned;
     }
 
     /**
@@ -33,6 +42,9 @@ public class AssistantParseSingleTagXmlUtil {
      *    then it returns empty String array.
      */
     public static String[] extractValuesFromSingleTagXml(String xmlString, String[] attributes) {
+        GuidedBrowsingMetrics.recordParseSingleTagXmlActionEvent(
+                ParseSingleTagXmlActionEvent.SINGLE_TAG_XML_PARSE_START);
+
         boolean canReadNextXmlTag = true; // To check if the given XML only has a single tag.
         ArrayList<String> attributeValues = new ArrayList<String>();
 
@@ -51,6 +63,8 @@ public class AssistantParseSingleTagXmlUtil {
 
                 if (!canReadNextXmlTag) {
                     // More than one tag in the given XML. Therefore it is not a single tag XML.
+                    GuidedBrowsingMetrics.recordParseSingleTagXmlActionEvent(
+                            ParseSingleTagXmlActionEvent.SINGLE_TAG_XML_PARSE_INCORRECT_DATA);
                     return new String[0];
                 }
 
@@ -59,6 +73,8 @@ public class AssistantParseSingleTagXmlUtil {
                             parser.getAttributeValue(/* namespace= */ null, attribute);
                     if (attributeValue == null) {
                         // Given attribute was not found in the XML.
+                        GuidedBrowsingMetrics.recordParseSingleTagXmlActionEvent(
+                                ParseSingleTagXmlActionEvent.SINGLE_TAG_XML_PARSE_SOME_KEY_MISSING);
                         return new String[0];
                     }
 
@@ -70,9 +86,13 @@ public class AssistantParseSingleTagXmlUtil {
             }
         } catch (XmlPullParserException | IOException e) {
             // Given input was not a XML or there were some issues in reading it.
+            GuidedBrowsingMetrics.recordParseSingleTagXmlActionEvent(
+                    ParseSingleTagXmlActionEvent.SINGLE_TAG_XML_PARSE_INCORRECT_DATA);
             return new String[0];
         }
 
+        GuidedBrowsingMetrics.recordParseSingleTagXmlActionEvent(
+                ParseSingleTagXmlActionEvent.SINGLE_TAG_XML_PARSE_SUCCESS);
         return attributeValues.toArray(new String[attributeValues.size()]);
     }
 }

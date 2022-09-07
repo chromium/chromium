@@ -6024,6 +6024,32 @@ others/histograms.xml -->
   <int value="2" label="Failure"/>
 </enum>
 
+<enum name="AutofillAssistantGuidedBrowsingCameraPermissionEvent">
+  <int value="0" label="CHECKING_CAMERA_PERMISSION"/>
+  <int value="1" label="ALREADY_HAD_CAMERA_PERMISSION"/>
+  <int value="2" label="CAN_PROMPT_CAMERA_PERMISSION"/>
+  <int value="3" label="CANNOT_PROMPT_CAMERA_PERMISSION"/>
+  <int value="4" label="CAMERA_PERMISSION_GRANTED_VIA_PROMPT"/>
+  <int value="5" label="CAMERA_PERMISSION_GRANTED_VIA_SETTINGS"/>
+</enum>
+
+<enum name="AutofillAssistantGuidedBrowsingParseSingleTagXmlActionEvent">
+  <int value="0" label="SINGLE_TAG_XML_PARSE_START"/>
+  <int value="1" label="SINGLE_TAG_XML_PARSE_SIGNED_DATA"/>
+  <int value="2" label="SINGLE_TAG_XML_PARSE_INCORRECT_DATA"/>
+  <int value="3" label="SINGLE_TAG_XML_PARSE_SOME_KEY_MISSING"/>
+  <int value="4" label="SINGLE_TAG_XML_PARSE_SUCCESS"/>
+</enum>
+
+<enum name="AutofillAssistantGuidedBrowsingReadImagesPermissionEvent">
+  <int value="0" label="CHECKING_READ_IMAGES_PERMISSION"/>
+  <int value="1" label="ALREADY_HAD_READ_IMAGES_PERMISSION"/>
+  <int value="2" label="CAN_PROMPT_READ_IMAGES_PERMISSION"/>
+  <int value="3" label="CANNOT_PROMPT_READ_IMAGES_PERMISSION"/>
+  <int value="4" label="READ_IMAGES_PERMISSION_GRANTED_VIA_PROMPT"/>
+  <int value="5" label="READ_IMAGES_PERMISSION_GRANTED_VIA_SETTINGS"/>
+</enum>
+
 <enum name="AutofillAssistantInChromeTriggerAction">
   <int value="0" label="Other"/>
   <int value="1" label="User denylisted domain"/>
