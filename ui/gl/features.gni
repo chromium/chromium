@@ -31,5 +31,6 @@ declare_args() {
                         (is_mac && use_egl) || is_chromeos_ash || is_fuchsia) &&
                        (target_cpu == "x86" || target_cpu == "x64" ||
                         target_cpu == "arm" || target_cpu == "arm64" ||
-                        target_cpu == "mipsel" || target_cpu == "mips64el")
+                        target_cpu == "mipsel" || target_cpu == "mips64el" ||
+                        target_cpu == "riscv64")
 }
