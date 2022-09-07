@@ -40,5 +40,6 @@ PASS getDisplayMedia({"video":{"height":{"max":-1}}}) must fail with Overconstra
 PASS getDisplayMedia({"video":{"frameRate":{"max":-1}}}) must fail with OverconstrainedError
 PASS getDisplayMedia() resolves with stream with video track
 PASS getDisplayMedia() with getSettings
+PASS displaySurface is supported
 Harness: the test ran to completion.
 

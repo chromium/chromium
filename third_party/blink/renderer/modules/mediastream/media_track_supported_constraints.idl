@@ -5,7 +5,7 @@
 // https://w3c.github.io/mediacapture-main/#idl-def-mediatracksupportedconstraints
 
 // NOTE: The names of this dictionary MUST be kept aligned with those in
-// MediaTrackConstraintSet.idl.
+// media_track_constraint_set.idl.
 
 dictionary MediaTrackSupportedConstraints {
     boolean width = true;
@@ -48,4 +48,7 @@ dictionary MediaTrackSupportedConstraints {
 
     // W3C Media Capture Extensions
     [RuntimeEnabled=MediaCaptureBackgroundBlur] boolean backgroundBlur = true;
+
+    // https://github.com/w3c/mediacapture-screen-share/pull/186/files
+    [RuntimeEnabled=DisplaySurfaceConstraint] boolean displaySurface = true;
 };

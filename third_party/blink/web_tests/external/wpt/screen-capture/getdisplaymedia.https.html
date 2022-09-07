@@ -208,4 +208,14 @@ promise_test(async t => {
   assert_any(assert_equals, settings.cursor, ['never', 'always', 'motion']);
 }, 'getDisplayMedia() with getSettings');
 
+{
+  const properties = ["displaySurface"];
+  properties.forEach((property) => {
+    test(() => {
+      const supportedConstraints =
+        navigator.mediaDevices.getSupportedConstraints();
+      assert_true(supportedConstraints[property]);
+    }, property + " is supported");
+  });
+}
 </script>
