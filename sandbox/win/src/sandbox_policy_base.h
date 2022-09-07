@@ -33,6 +33,7 @@
 namespace sandbox {
 
 class BrokerServicesBase;
+enum class Desktop;
 class Dispatcher;
 class LowLevelPolicy;
 class PolicyDiagnostic;
@@ -244,18 +245,10 @@ class PolicyBase final : public TargetPolicy {
   // The policy takes ownership of a target as it is applied to it.
   std::unique_ptr<TargetProcess> target_;
   // The user-defined global policy settings.
-  bool use_alternate_desktop_;
-  bool use_alternate_winstation_;
+  Desktop desktop_;
   HANDLE stdout_handle_;
   HANDLE stderr_handle_;
   std::unique_ptr<Dispatcher> dispatcher_;
-
-  static HDESK alternate_desktop_handle_;
-  static HWINSTA alternate_winstation_handle_;
-  static HDESK alternate_desktop_local_winstation_handle_;
-  static IntegrityLevel alternate_desktop_integrity_level_label_;
-  static IntegrityLevel
-      alternate_desktop_local_winstation_integrity_level_label_;
 
   // Contains the list of handles being shared with the target process.
   // This list contains handles other than the stderr/stdout handles which are

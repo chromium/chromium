@@ -38,6 +38,7 @@
 #include "sandbox/win/src/top_level_dispatcher.h"
 #include "sandbox/win/src/window.h"
 
+namespace sandbox {
 namespace {
 
 // The standard windows size for one memory page.
@@ -69,24 +70,104 @@ bool IsInheritableHandle(HANDLE handle) {
   return handle_type == FILE_TYPE_DISK || handle_type == FILE_TYPE_PIPE;
 }
 
-}  // namespace
+// Holds handles and integrity levels about alternate desktops.
+class AlternateDesktop {
+ public:
+  AlternateDesktop()
+      : desktop_(nullptr),
+        winstation_(nullptr),
+        integrity_(INTEGRITY_LEVEL_SYSTEM) {}
+  ~AlternateDesktop() {
+    if (desktop_) {
+      ::CloseDesktop(desktop_);
+      desktop_ = nullptr;
+    }
+    if (winstation_) {
+      ::CloseWindowStation(winstation_);
+      winstation_ = nullptr;
+    }
+  }
+  AlternateDesktop(const AlternateDesktop&) = delete;
+  AlternateDesktop& operator=(const AlternateDesktop&) = delete;
 
-namespace sandbox {
+  // Updates the desktop token's integrity level to be no higher than
+  // `integrity_level`.
+  ResultCode UpdateDesktopIntegrity(IntegrityLevel integrity_level) {
+    // Integrity label enum is reversed (higher level is a lower value).
+    static_assert(INTEGRITY_LEVEL_SYSTEM < INTEGRITY_LEVEL_UNTRUSTED,
+                  "Integrity level ordering reversed.");
+    DCHECK(integrity_level != INTEGRITY_LEVEL_LAST);
+    // Skip if desktop handle is not set yet.
+    if (desktop_ && integrity_ < integrity_level) {
+      DWORD result = SetObjectIntegrityLabel(
+          desktop_, SecurityObjectType::kWindow, 0, integrity_level);
+      if (ERROR_SUCCESS != result)
+        return SBOX_ERROR_CANNOT_SET_DESKTOP_INTEGRITY;
+      integrity_ = integrity_level;
+    }
+    return SBOX_ALL_OK;
+  }
+
+  // Populate this object, creating a winstation if `alternate_winstation` is
+  // true.
+  ResultCode Initialize(bool alternate_winstation) {
+    DCHECK(!desktop_ && !winstation_);
+    if (alternate_winstation) {
+      // Create the window station.
+      ResultCode result = CreateAltWindowStation(&winstation_);
+      if (SBOX_ALL_OK != result)
+        return result;
+
+      // Verify that everything is fine.
+      if (!winstation_ || base::win::GetWindowObjectName(winstation_).empty()) {
+        return SBOX_ERROR_CANNOT_CREATE_DESKTOP;
+      }
+    }
+    ResultCode result = CreateAltDesktop(winstation_, &desktop_);
+    if (SBOX_ALL_OK != result)
+      return result;
+
+    // Verify that everything is fine.
+    if (!desktop_ || base::win::GetWindowObjectName(desktop_).empty()) {
+      return SBOX_ERROR_CANNOT_CREATE_DESKTOP;
+    }
+    return SBOX_ALL_OK;
+  }
+
+  std::wstring GetDesktopName() {
+    if (!desktop_)
+      return std::wstring();
+    return GetFullDesktopName(winstation_, desktop_);
+  }
+
+ private:
+  // Handle for the alternate desktop.
+  HDESK desktop_;
+  // Winstation for the alternate desktop, or nullptr if not used.
+  HWINSTA winstation_;
+  // Last set integrity level of the desktop.
+  IntegrityLevel integrity_;
+};
+
+// Handles for the alternate winstation (desktop==kAlternateWinstation).
+std::unique_ptr<AlternateDesktop> g_alt_winstation;
+// Handles for the same winstation as the parent (desktop==kAlternateDesktop).
+std::unique_ptr<AlternateDesktop> g_alt_desktop;
+
+}  // namespace
 
 SANDBOX_INTERCEPT IntegrityLevel g_shared_delayed_integrity_level;
 SANDBOX_INTERCEPT MitigationFlags g_shared_delayed_mitigations;
 
-// Initializes static members. alternate_desktop_handle_ is a desktop on
-// alternate_winstation_handle_, alternate_desktop_local_winstation_handle_ is a
-// desktop on the same winstation as the parent process.
-HWINSTA PolicyBase::alternate_winstation_handle_ = nullptr;
-HDESK PolicyBase::alternate_desktop_handle_ = nullptr;
-HDESK PolicyBase::alternate_desktop_local_winstation_handle_ = nullptr;
-IntegrityLevel PolicyBase::alternate_desktop_integrity_level_label_ =
-    INTEGRITY_LEVEL_SYSTEM;
-IntegrityLevel
-    PolicyBase::alternate_desktop_local_winstation_integrity_level_label_ =
-        INTEGRITY_LEVEL_SYSTEM;
+// Desktop used to launch child, controls GetAlternateDesktop().
+enum class Desktop {
+  // Child is launched without changing the desktop.
+  kDefault,
+  // Child is launched using the alternate desktop.
+  kAlternateDesktop,
+  // Child is launched using the anternate desktop and window station.
+  kAlternateWinstation,
+};
 
 ConfigBase::ConfigBase() noexcept
     :
@@ -422,8 +503,7 @@ PolicyBase::PolicyBase(base::StringPiece tag)
     : tag_(tag),
       config_(),
       config_ptr_(nullptr),
-      use_alternate_desktop_(false),
-      use_alternate_winstation_(false),
+      desktop_(Desktop::kDefault),
       stdout_handle_(INVALID_HANDLE_VALUE),
       stderr_handle_(INVALID_HANDLE_VALUE),
       effective_token_(nullptr),
@@ -465,102 +545,62 @@ bool PolicyBase::SetConfig(TargetConfig* config) {
 }
 
 ResultCode PolicyBase::SetAlternateDesktop(bool alternate_winstation) {
-  use_alternate_desktop_ = true;
-  use_alternate_winstation_ = alternate_winstation;
+  desktop_ = alternate_winstation ? Desktop::kAlternateWinstation
+                                  : Desktop::kAlternateDesktop;
+
   return CreateAlternateDesktop(alternate_winstation);
 }
 
 std::wstring PolicyBase::GetAlternateDesktop() const {
   // No alternate desktop or winstation. Return an empty string.
-  if (!use_alternate_desktop_ && !use_alternate_winstation_) {
+  if (desktop_ == Desktop::kDefault)
     return std::wstring();
-  }
 
-  if (use_alternate_winstation_) {
+  if (desktop_ == Desktop::kAlternateWinstation) {
     // The desktop and winstation should have been created by now.
     // If we hit this scenario, it means that the user ignored the failure
     // during SetAlternateDesktop, so we ignore it here too.
-    if (!alternate_desktop_handle_ || !alternate_winstation_handle_)
+    if (!g_alt_winstation)
       return std::wstring();
 
-    return GetFullDesktopName(alternate_winstation_handle_,
-                              alternate_desktop_handle_);
+    return g_alt_winstation->GetDesktopName();
   }
 
-  if (!alternate_desktop_local_winstation_handle_)
+  if (!g_alt_desktop)
     return std::wstring();
 
-  return GetFullDesktopName(nullptr,
-                            alternate_desktop_local_winstation_handle_);
+  return g_alt_desktop->GetDesktopName();
 }
 
 ResultCode PolicyBase::CreateAlternateDesktop(bool alternate_winstation) {
   if (alternate_winstation) {
-    // Check if it's already created.
-    if (alternate_winstation_handle_ && alternate_desktop_handle_)
+    // If already populated keep going.
+    if (g_alt_winstation)
       return SBOX_ALL_OK;
-
-    DCHECK(!alternate_winstation_handle_);
-    // Create the window station.
-    ResultCode result = CreateAltWindowStation(&alternate_winstation_handle_);
-    if (SBOX_ALL_OK != result)
-      return result;
-
-    // Verify that everything is fine.
-    if (!alternate_winstation_handle_ ||
-        base::win::GetWindowObjectName(alternate_winstation_handle_).empty())
-      return SBOX_ERROR_CANNOT_CREATE_DESKTOP;
-
-    // Create the destkop.
-    result = CreateAltDesktop(alternate_winstation_handle_,
-                              &alternate_desktop_handle_);
-    if (SBOX_ALL_OK != result)
-      return result;
-
-    // Verify that everything is fine.
-    if (!alternate_desktop_handle_ ||
-        base::win::GetWindowObjectName(alternate_desktop_handle_).empty()) {
-      return SBOX_ERROR_CANNOT_CREATE_DESKTOP;
-    }
+    g_alt_winstation = std::make_unique<AlternateDesktop>();
+    ResultCode result = g_alt_winstation->Initialize(alternate_winstation);
+    if (result != SBOX_ALL_OK)
+      g_alt_winstation.reset();
+    return result;
   } else {
-    // Check if it already exists.
-    if (alternate_desktop_local_winstation_handle_)
+    // If already populated keep going.
+    if (g_alt_desktop)
       return SBOX_ALL_OK;
-
-    // Create the destkop.
-    ResultCode result =
-        CreateAltDesktop(nullptr, &alternate_desktop_local_winstation_handle_);
-    if (SBOX_ALL_OK != result)
-      return result;
-
-    // Verify that everything is fine.
-    if (!alternate_desktop_local_winstation_handle_ ||
-        base::win::GetWindowObjectName(
-            alternate_desktop_local_winstation_handle_)
-            .empty()) {
-      return SBOX_ERROR_CANNOT_CREATE_DESKTOP;
-    }
+    g_alt_desktop = std::make_unique<AlternateDesktop>();
+    ResultCode result = g_alt_desktop->Initialize(alternate_winstation);
+    if (result != SBOX_ALL_OK)
+      g_alt_desktop.reset();
+    return result;
   }
-
-  return SBOX_ALL_OK;
 }
 
 void PolicyBase::DestroyAlternateDesktop() {
-  if (use_alternate_winstation_) {
-    if (alternate_desktop_handle_) {
-      ::CloseDesktop(alternate_desktop_handle_);
-      alternate_desktop_handle_ = nullptr;
-    }
-
-    if (alternate_winstation_handle_) {
-      ::CloseWindowStation(alternate_winstation_handle_);
-      alternate_winstation_handle_ = nullptr;
-    }
+  if (desktop_ == Desktop::kAlternateWinstation) {
+    g_alt_winstation.reset();
   } else {
-    if (alternate_desktop_local_winstation_handle_) {
-      ::CloseDesktop(alternate_desktop_local_winstation_handle_);
-      alternate_desktop_local_winstation_handle_ = nullptr;
-    }
+    // TODO(crbug.com/549319) Change API to only destroy if desktop_ ==
+    // Desktop::kAlternateDesktop.
+    g_alt_desktop.reset();
   }
 }
 
@@ -651,38 +691,19 @@ ResultCode PolicyBase::MakeTokens(base::win::ScopedHandle* initial,
   if (ERROR_SUCCESS != result)
     return SBOX_ERROR_CANNOT_CREATE_RESTRICTED_TOKEN;
 
-  // If we're launching on the alternate desktop we need to make sure the
+  // If we're launching on an alternate desktop we need to make sure the
   // integrity label on the object is no higher than the sandboxed process's
-  // integrity level. So, we lower the label on the desktop process if it's
+  // integrity level. So, we lower the label on the desktop handle if it's
   // not already low enough for our process.
-  if (use_alternate_desktop_ && integrity_level != INTEGRITY_LEVEL_LAST) {
-    // Integrity label enum is reversed (higher level is a lower value).
-    static_assert(INTEGRITY_LEVEL_SYSTEM < INTEGRITY_LEVEL_UNTRUSTED,
-                  "Integrity level ordering reversed.");
-    HDESK desktop_handle = nullptr;
-    IntegrityLevel desktop_integrity_level_label;
-    if (use_alternate_winstation_) {
-      desktop_handle = alternate_desktop_handle_;
-      desktop_integrity_level_label = alternate_desktop_integrity_level_label_;
-    } else {
-      desktop_handle = alternate_desktop_local_winstation_handle_;
-      desktop_integrity_level_label =
-          alternate_desktop_local_winstation_integrity_level_label_;
+  if (integrity_level != INTEGRITY_LEVEL_LAST) {
+    ResultCode result_code = SBOX_ALL_OK;
+    if (desktop_ == Desktop::kAlternateWinstation && g_alt_winstation) {
+      result_code = g_alt_winstation->UpdateDesktopIntegrity(integrity_level);
+    } else if (desktop_ == Desktop::kAlternateDesktop && g_alt_desktop) {
+      result_code = g_alt_desktop->UpdateDesktopIntegrity(integrity_level);
     }
-    // If the desktop_handle hasn't been created for any reason, skip this.
-    if (desktop_handle && desktop_integrity_level_label < integrity_level) {
-      result = SetObjectIntegrityLabel(
-          desktop_handle, SecurityObjectType::kWindow, 0, integrity_level);
-      if (ERROR_SUCCESS != result)
-        return SBOX_ERROR_CANNOT_SET_DESKTOP_INTEGRITY;
-
-      if (use_alternate_winstation_) {
-        alternate_desktop_integrity_level_label_ = integrity_level;
-      } else {
-        alternate_desktop_local_winstation_integrity_level_label_ =
-            integrity_level;
-      }
-    }
+    if (result_code != SBOX_ALL_OK)
+      return result_code;
   }
 
   AppContainerBase* app_container = config()->app_container();
