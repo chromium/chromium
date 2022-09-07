@@ -302,7 +302,8 @@ class WebKioskAppServiceLauncherTest : public BrowserWithTestWindowTest {
   bool install_placeholder_ = false;
 };
 
-TEST_F(WebKioskAppServiceLauncherTest, NormalFlowNotInstalled) {
+// TODO(crbug.com/1361035): Fix flaky test
+TEST_F(WebKioskAppServiceLauncherTest, DISABLED_NormalFlowNotInstalled) {
   base::HistogramTester histogram;
 
   SetupAppData(/*installed=*/false);
@@ -326,7 +327,8 @@ TEST_F(WebKioskAppServiceLauncherTest, NormalFlowNotInstalled) {
       webapps::InstallResultCode::kSuccessNewInstall, 1);
 }
 
-TEST_F(WebKioskAppServiceLauncherTest, NormalFlowAlreadyInstalled) {
+// TODO(crbug.com/1360965): Fix flaky test
+TEST_F(WebKioskAppServiceLauncherTest, DISABLED_NormalFlowAlreadyInstalled) {
   base::HistogramTester histogram;
 
   SetupAppData(/*installed=*/true);
