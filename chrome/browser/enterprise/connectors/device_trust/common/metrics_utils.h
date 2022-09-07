@@ -57,6 +57,8 @@ void LogAttestationResponseLatency(base::TimeTicks start_time, bool success);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 void LogOrigin(DTOrigin origin);
+
+void LogEnrollmentStatus();
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace enterprise_connectors

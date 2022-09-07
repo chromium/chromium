@@ -28909,6 +28909,11 @@ Called by update_document_policy_enum.py.-->
   <int value="9" label="Success"/>
 </enum>
 
+<enum name="DTEnrollmentStatus">
+  <int value="0" label="Managed"/>
+  <int value="1" label="Unmanaged"/>
+</enum>
+
 <enum name="DTKeyRotationResult">
   <int value="0" label="Succeeded"/>
   <int value="1" label="Failed"/>

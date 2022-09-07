@@ -731,6 +731,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Enterprise.DeviceTrust.EnrollmentStatus"
+    enum="DTEnrollmentStatus" expires_after="2023-08-01">
+  <owner>lmasopust@google.com</owner>
+  <owner>rodmartin@google.com</owner>
+  <owner>cbe-device-trust-eng@google.com</owner>
+  <summary>
+    Recorded when a device starts the device trust attestation flow with a
+    partner website. This captures the enrollment status of the device where the
+    attestation flow is happening.
+  </summary>
+</histogram>
+
 <histogram name="Enterprise.DeviceTrust.Key.TrustLevel" enum="DTKeyTrustLevel"
     expires_after="2023-08-01">
   <owner>hmare@google.com</owner>

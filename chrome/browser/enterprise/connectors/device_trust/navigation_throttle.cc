@@ -108,6 +108,7 @@ DeviceTrustNavigationThrottle::AddHeadersIfNeeded() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     LogOrigin(GetAttestationFlowOrigin(
         navigation_handle()->GetWebContents()->GetBrowserContext()));
+    LogEnrollmentStatus();
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
     LogAttestationFunnelStep(DTAttestationFunnelStep::kAttestationFlowStarted);
     navigation_handle()->SetRequestHeader(kDeviceTrustHeader,
