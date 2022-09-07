@@ -18,6 +18,14 @@ public class Flag {
     private final boolean mIsBaseFeature;
 
     /**
+     * Creates a Flag which represents a {@code base::Feature}. Flags created with this method
+     * overload will not have a user-visible flag description.
+     */
+    public static Flag baseFeature(@NonNull String name) {
+        return new Flag(name, /*description=*/"", /*enabledStateValue=*/null, true);
+    }
+
+    /**
      * Creates a Flag which represents a {@code base::Feature}.
      */
     public static Flag baseFeature(@NonNull String name, @NonNull String description) {
