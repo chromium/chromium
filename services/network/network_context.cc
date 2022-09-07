@@ -22,7 +22,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/current_thread.h"
@@ -31,6 +30,7 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
+#include "base/types/optional_util.h"
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
 #include "build/chromeos_buildflags.h"
@@ -2938,7 +2938,7 @@ void NetworkContext::ComputeFirstPartySetMetadata(
 
   if (absl::optional<net::FirstPartySetMetadata> sync_metadata =
           first_party_sets_access_delegate_.ComputeMetadata(
-              site, base::OptionalOrNullptr(top_frame_site),
+              site, base::OptionalToPtr(top_frame_site),
               std::set<net::SchemefulSite>(party_context.begin(),
                                            party_context.end()),
               std::move(callbacks.first));

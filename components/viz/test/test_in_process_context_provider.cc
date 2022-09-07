@@ -10,7 +10,6 @@
 #include <utility>
 
 #include "base/lazy_instance.h"
-#include "base/stl_util.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/types/optional_util.h"
 #include "components/viz/common/gpu/context_cache_controller.h"

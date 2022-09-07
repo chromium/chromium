@@ -9,7 +9,7 @@
 #include "base/debug/task_trace.h"
 #include "base/feature_list.h"
 #include "base/notreached.h"
-#include "base/stl_util.h"
+#include "base/types/optional_util.h"
 #include "build/build_config.h"
 #include "components/content_settings/core/common/features.h"
 #include "net/base/features.h"
@@ -112,8 +112,7 @@ bool CookieSettingsBase::IsFullCookieAccessAllowed(
     QueryReason query_reason) const {
   ContentSetting setting = GetCookieSettingInternal(
       url,
-      GetFirstPartyURL(site_for_cookies,
-                       base::OptionalOrNullptr(top_frame_origin)),
+      GetFirstPartyURL(site_for_cookies, base::OptionalToPtr(top_frame_origin)),
       IsThirdPartyRequest(url, site_for_cookies), nullptr, query_reason);
   return IsAllowed(setting);
 }

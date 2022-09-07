@@ -45,19 +45,6 @@ T* OptionalToPtr(absl::optional<T>& optional) {
   return optional.has_value() ? &optional.value() : nullptr;
 }
 
-// Deprecated synonyms for `OptionalToPtr()`. These were the original names,
-// but the naming does not match `OptionalFromPtr`.
-// TODO(https://crbug.com/1356184): Remove the deprecated synonyms.
-template <class T>
-T* OptionalOrNullptr(absl::optional<T>& optional) {
-  return optional.has_value() ? &optional.value() : nullptr;
-}
-
-template <class T>
-const T* OptionalOrNullptr(const absl::optional<T>& optional) {
-  return optional.has_value() ? &optional.value() : nullptr;
-}
-
 // Helper for creating an `absl::optional<T>` from a `T*` which may be null.
 template <class T>
 absl::optional<T> OptionalFromPtr(const T* value) {
