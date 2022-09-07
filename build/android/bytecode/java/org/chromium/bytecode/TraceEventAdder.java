@@ -71,9 +71,12 @@ public class TraceEventAdder extends ByteCodeRewriter {
     @Override
     protected boolean shouldRewriteClass(ClassReader classReader) {
         mMethodsToTrace = new ArrayList<>(Arrays.asList(
+                new MethodDescription(
+                        "dispatchTouchEvent", "(Landroid/view/MotionEvent;)Z", Opcodes.ACC_PUBLIC),
                 new MethodDescription("draw", "(Landroid/graphics/Canvas;)V", Opcodes.ACC_PUBLIC),
                 new MethodDescription("onMeasure", "(II)V", Opcodes.ACC_PROTECTED),
-                new MethodDescription("onLayout", "(ZIIII)V", Opcodes.ACC_PROTECTED)));
+                new MethodDescription("onLayout", "(ZIIII)V", Opcodes.ACC_PROTECTED),
+                new MethodDescription("scrollStep", "(II[I)V", 0)));
 
         // This adapter will modify mMethodsToTrace to indicate which methods already exist in the
         // class and which ones need to be overridden. In case the class is not an Android view

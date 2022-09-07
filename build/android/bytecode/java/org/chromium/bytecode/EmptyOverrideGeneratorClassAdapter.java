@@ -75,6 +75,7 @@ class EmptyOverrideGeneratorClassAdapter extends ClassVisitor {
      */
     private void writeOverrideCode(
             MethodVisitor mv, final int access, final String name, final String descriptor) {
+        assert access != 0;
         Type[] argTypes = Type.getArgumentTypes(descriptor);
         Type returnType = Type.getReturnType(descriptor);
 
