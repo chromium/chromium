@@ -18,6 +18,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/types/expected.h"
+#include "content/public/common/content_features.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/base/schemeful_site.h"
 #include "net/first_party_sets/first_party_set_entry.h"
@@ -70,7 +71,7 @@ absl::optional<net::SchemefulSite> Canonicalize(base::StringPiece origin_string,
 struct SubsetDescriptor {
   std::string field_name;
   net::SiteType site_type;
-  bool keep_indices;
+  absl::optional<int> size_limit;
 };
 
 const char kFirstPartySetPrimaryField[] = "primary";
@@ -182,7 +183,7 @@ base::expected<Aliases, ParseError> ParseCctlds(
 absl::optional<ParseError> ParseSubset(
     const base::Value::Dict& set_declaration,
     const net::SchemefulSite& primary,
-    bool keep_indices,
+    bool exempt_from_limits,
     const SubsetDescriptor& descriptor,
     const base::flat_set<net::SchemefulSite>& other_sets_sites,
     std::vector<std::pair<net::SchemefulSite, net::FirstPartySetEntry>>&
@@ -200,13 +201,19 @@ absl::optional<ParseError> ParseSubset(
         ParseSiteAndValidate(item, set_entries, other_sets_sites);
     if (!site_or_error.has_value())
       return site_or_error.error();
-    set_entries.emplace_back(
-        site_or_error.value(),
-        net::FirstPartySetEntry(
-            primary, descriptor.site_type,
-            keep_indices && descriptor.keep_indices
-                ? absl::make_optional(net::FirstPartySetEntry::SiteIndex(index))
-                : absl::nullopt));
+    if (exempt_from_limits || !descriptor.size_limit.has_value() ||
+        static_cast<int>(index) < descriptor.size_limit.value()) {
+      set_entries.emplace_back(
+          site_or_error.value(),
+          net::FirstPartySetEntry(
+              primary, descriptor.site_type,
+              !exempt_from_limits && descriptor.size_limit.has_value()
+                  ? absl::make_optional(
+                        net::FirstPartySetEntry::SiteIndex(index))
+                  : absl::nullopt));
+    }
+    // Continue parsing even after we've reached the size limit (if there is
+    // one), in order to surface malformed input domains as errors.
     ++index;
   }
 
@@ -228,7 +235,7 @@ absl::optional<ParseError> ParseSubset(
 // returns an appropriate FirstPartySetParser::ParseError.
 base::expected<SetsAndAliases, ParseError> ParseSet(
     const base::Value& value,
-    bool keep_indices,
+    bool exempt_from_limits,
     base::flat_set<net::SchemefulSite>& elements) {
   if (!value.is_dict())
     return base::unexpected(ParseError::kInvalidType);
@@ -257,17 +264,18 @@ base::expected<SetsAndAliases, ParseError> ParseSet(
            SubsetDescriptor{
                .field_name = kFirstPartySetAssociatedSitesField,
               .site_type = net::SiteType::kAssociated,
-              .keep_indices = true,
+              .size_limit = absl::make_optional(
+                  features::kFirstPartySetsMaxAssociatedSites.Get()),
            },
            {
                .field_name = kFirstPartySetServiceSitesField,
               .site_type = net::SiteType::kService,
-              .keep_indices = false,
+              .size_limit = absl::nullopt,
            },
        }) {
     if (absl::optional<ParseError> error =
-            ParseSubset(set_declaration, primary, keep_indices, descriptor,
-                        elements, set_entries);
+            ParseSubset(set_declaration, primary, exempt_from_limits,
+                        descriptor, elements, set_entries);
         error.has_value()) {
       return base::unexpected(error.value());
     }
@@ -312,7 +320,7 @@ GetPolicySetsFromList(const base::Value::List* policy_sets,
   std::vector<FirstPartySetParser::SingleSet> parsed_sets;
   for (int i = 0; i < static_cast<int>(policy_sets->size()); i++) {
     base::expected<SetsAndAliases, ParseError> parsed =
-        ParseSet((*policy_sets)[i], /*keep_indices=*/false, elements);
+        ParseSet((*policy_sets)[i], /*exempt_from_limits=*/true, elements);
     if (!parsed.has_value()) {
       return base::unexpected(
           FirstPartySetParser::PolicyParsingError{parsed.error(), set_type, i});
@@ -443,7 +451,7 @@ SetsAndAliases FirstPartySetParser::ParseSetsFromStream(std::istream& input) {
     if (!maybe_value.has_value())
       return {};
     base::expected<SetsAndAliases, ParseError> parsed =
-        ParseSet(*maybe_value, /*keep_indices=*/true, elements);
+        ParseSet(*maybe_value, /*exempt_from_limits=*/false, elements);
     if (!parsed.has_value()) {
       if (parsed.error() == ParseError::kInvalidOrigin) {
         // Ignore sets that include an invalid domain (which might have been

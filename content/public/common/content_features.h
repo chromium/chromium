@@ -95,6 +95,8 @@ CONTENT_EXPORT extern const base::Feature kFedCmManifestValidation;
 CONTENT_EXPORT extern const base::Feature kFedCmMultipleIdentityProviders;
 CONTENT_EXPORT extern const base::Feature kFirstPartySets;
 CONTENT_EXPORT extern const base::FeatureParam<bool> kFirstPartySetsIsDogfooder;
+CONTENT_EXPORT extern const base::FeatureParam<int>
+    kFirstPartySetsMaxAssociatedSites;
 CONTENT_EXPORT extern const base::Feature kFontManagerEarlyInit;
 CONTENT_EXPORT extern const base::Feature kFontSrcLocalMatching;
 #if !BUILDFLAG(IS_ANDROID)

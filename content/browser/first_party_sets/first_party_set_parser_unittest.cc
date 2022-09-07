@@ -7,6 +7,8 @@
 #include <sstream>
 
 #include "base/json/json_reader.h"
+#include "base/test/scoped_feature_list.h"
+#include "content/public/common/content_features.h"
 #include "net/base/schemeful_site.h"
 #include "net/first_party_sets/first_party_set_entry.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -1199,6 +1201,133 @@ TEST(FirstPartySets_ParseSetsFromEnterprisePolicyTest,
                 net::FirstPartySetEntry(primary2, net::SiteType::kAssociated,
                                         absl::nullopt)},
            })},
+          {}));
+}
+
+class FirstPartySetParserTest : public ::testing::Test {
+ public:
+  FirstPartySetParserTest() {
+    features_.InitWithFeaturesAndParameters(
+        {{features::kFirstPartySets,
+          {{features::kFirstPartySetsMaxAssociatedSites.name, "1"}}}},
+        {});
+  }
+
+ private:
+  base::test::ScopedFeatureList features_;
+};
+
+TEST_F(FirstPartySetParserTest, RespectsAssociatedSiteLimit) {
+  net::SchemefulSite example(GURL("https://example.test"));
+  net::SchemefulSite a(GURL("https://a.test"));
+
+  std::istringstream stream(
+      R"({"primary": "https://example.test",)"
+      R"("associatedSites": ["https://a.test", "https://b.test"],)"
+      R"(})");
+  EXPECT_THAT(FirstPartySetParser::ParseSetsFromStream(stream),
+              Pair(UnorderedElementsAre(
+                       Pair(example, net::FirstPartySetEntry(
+                                         example, net::SiteType::kPrimary,
+                                         absl::nullopt)),
+                       Pair(a, net::FirstPartySetEntry(
+                                   example, net::SiteType::kAssociated, 0))),
+                   IsEmpty()));
+}
+
+TEST_F(FirstPartySetParserTest, DetectsErrorsPastAssociatedSiteLimit) {
+  std::istringstream stream(
+      R"({"primary": "https://example.test",)"
+      R"("associatedSites": ["https://a.test", "not a domain"],)"
+      R"(})");
+  EXPECT_THAT(FirstPartySetParser::ParseSetsFromStream(stream),
+              Pair(IsEmpty(), IsEmpty()));
+}
+
+TEST_F(FirstPartySetParserTest,
+       ServiceSitesAreNotCountedAgainstAssociatedSiteLimit) {
+  net::SchemefulSite example(GURL("https://example.test"));
+  net::SchemefulSite a(GURL("https://a.test"));
+  net::SchemefulSite b(GURL("https://b.test"));
+  net::SchemefulSite c(GURL("https://c.test"));
+
+  std::istringstream stream(
+      R"({)"
+      R"("primary": "https://example.test",)"
+      R"("associatedSites": ["https://a.test"],)"
+      R"("serviceSites": ["https://b.test", "https://c.test"],)"
+      R"(})");
+  EXPECT_THAT(
+      FirstPartySetParser::ParseSetsFromStream(stream),
+      Pair(UnorderedElementsAre(
+               Pair(example,
+                    net::FirstPartySetEntry(example, net::SiteType::kPrimary,
+                                            absl::nullopt)),
+               Pair(a, net::FirstPartySetEntry(example,
+                                               net::SiteType::kAssociated, 0)),
+               Pair(b, net::FirstPartySetEntry(example, net::SiteType::kService,
+                                               absl::nullopt)),
+               Pair(c, net::FirstPartySetEntry(example, net::SiteType::kService,
+                                               absl::nullopt))),
+           IsEmpty()));
+}
+
+TEST_F(FirstPartySetParserTest,
+       AliasesAreNotCountedAgainstAssociatedSiteLimit) {
+  net::SchemefulSite example(GURL("https://example.test"));
+  net::SchemefulSite a(GURL("https://a.test"));
+  net::SchemefulSite a_cctld1(GURL("https://a.cctld1"));
+  net::SchemefulSite a_cctld2(GURL("https://a.cctld2"));
+
+  std::istringstream stream(
+      R"({)"
+      R"("primary": "https://example.test",)"
+      R"("associatedSites": ["https://a.test", "https://b.test"],)"
+      R"("ccTLDs": {)"
+      R"(  "https://a.test": ["https://a.cctld1", "https://a.cctld2"])"
+      R"(})"
+      R"(})");
+  EXPECT_THAT(FirstPartySetParser::ParseSetsFromStream(stream),
+              Pair(UnorderedElementsAre(
+                       Pair(example, net::FirstPartySetEntry(
+                                         example, net::SiteType::kPrimary,
+                                         absl::nullopt)),
+                       Pair(a, net::FirstPartySetEntry(
+                                   example, net::SiteType::kAssociated, 0))),
+                   UnorderedElementsAre(Pair(a_cctld1, a), Pair(a_cctld2, a))));
+}
+
+TEST_F(FirstPartySetParserTest,
+       EnterprisePolicies_ExemptFromAssociatedSiteLimit) {
+  net::SchemefulSite primary1(GURL("https://primary1.test"));
+  net::SchemefulSite associated1(GURL("https://associated1.test"));
+  net::SchemefulSite associated2(GURL("https://associated2.test"));
+
+  base::Value policy_value = base::JSONReader::Read(R"(
+             {
+                "replacements": [
+                  {
+                    "primary": "https://primary1.test",
+                    "associatedSites": ["https://associated1.test", "https://associated2.test"]
+                  }
+                ]
+              }
+            )")
+                                 .value();
+  EXPECT_THAT(
+      FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value.GetDict())
+          .value(),
+      FirstPartySetParser::ParsedPolicySetLists(
+          {FirstPartySetParser::SetsMap({
+              {primary1, net::FirstPartySetEntry(
+                             primary1, net::SiteType::kPrimary, absl::nullopt)},
+              {associated1,
+               net::FirstPartySetEntry(primary1, net::SiteType::kAssociated,
+                                       absl::nullopt)},
+              {associated2,
+               net::FirstPartySetEntry(primary1, net::SiteType::kAssociated,
+                                       absl::nullopt)},
+          })},
           {}));
 }
 

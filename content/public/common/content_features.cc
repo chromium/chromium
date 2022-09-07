@@ -367,6 +367,11 @@ constexpr base::Feature kFirstPartySets{"FirstPartySets",
 const base::FeatureParam<bool> kFirstPartySetsIsDogfooder{
     &kFirstPartySets, "FirstPartySetsIsDogfooder", false};
 
+// Controls how many sites are allowed to be in the Associated subset (ignoring
+// ccTLD aliases).
+const base::FeatureParam<int> kFirstPartySetsMaxAssociatedSites{
+    &kFirstPartySets, "FirstPartySetsMaxAssociatedSites", 3};
+
 // Whether to initialize the font manager when the renderer starts on a
 // background thread.
 const base::Feature kFontManagerEarlyInit{"FontManagerEarlyInit",
