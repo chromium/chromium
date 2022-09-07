@@ -1093,11 +1093,9 @@ void WebGPUDecoderImpl::RequestAdapterImpl(
   if (gr_context_type_ != GrContextType::kVulkan &&
       use_webgpu_adapter_ != WebGPUAdapterName::kCompat) {
 #if BUILDFLAG(IS_LINUX)
-    callback(WGPURequestAdapterStatus_Unavailable, nullptr,
-             "WebGPU on Linux requires command-line flag "
-             "--enable-features=Vulkan",
-             userdata);
-    return;
+    DLOG(ERROR) << "WebGPU on Linux requires GrContextType to be Vulkan. "
+                   "Falling back to SwiftShader.";
+    force_fallback_adapter = true;
 #endif  // BUILDFLAG(IS_LINUX)
   }
 
@@ -1277,19 +1275,18 @@ void WebGPUDecoderImpl::DiscoverAdapters() {
   }
 #endif
 #if BUILDFLAG(IS_WIN)
+  // On Windows, only discover the D3D adapter ANGLE is using.
   Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device =
       gl::QueryD3D11DeviceObjectFromANGLE();
-  if (!d3d11_device) {
-    // In the case where the d3d11 device is nullptr, we want to return a null
-    // adapter
-    return;
+  if (d3d11_device) {
+    Microsoft::WRL::ComPtr<IDXGIDevice> dxgi_device;
+    d3d11_device.As(&dxgi_device);
+    Microsoft::WRL::ComPtr<IDXGIAdapter> dxgi_adapter;
+    dxgi_device->GetAdapter(&dxgi_adapter);
+    dawn::native::d3d12::AdapterDiscoveryOptions options(
+        std::move(dxgi_adapter));
+    dawn_instance_->DiscoverAdapters(&options);
   }
-  Microsoft::WRL::ComPtr<IDXGIDevice> dxgi_device;
-  d3d11_device.As(&dxgi_device);
-  Microsoft::WRL::ComPtr<IDXGIAdapter> dxgi_adapter;
-  dxgi_device->GetAdapter(&dxgi_adapter);
-  dawn::native::d3d12::AdapterDiscoveryOptions options(std::move(dxgi_adapter));
-  dawn_instance_->DiscoverAdapters(&options);
 
   // Also discover the SwiftShader adapter. It will be discovered by default
   // for other OSes in DiscoverDefaultAdapters.
@@ -1324,7 +1321,8 @@ void WebGPUDecoderImpl::DiscoverAdapters() {
         dawn_adapters_.push_back(adapter);
       }
     } else if (adapterProperties.backendType != WGPUBackendType_Null &&
-               adapterProperties.backendType != WGPUBackendType_OpenGL) {
+               adapterProperties.backendType != WGPUBackendType_OpenGL &&
+               adapterProperties.backendType != WGPUBackendType_OpenGLES) {
       dawn_adapters_.push_back(adapter);
     }
   }
