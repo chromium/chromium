@@ -369,6 +369,7 @@ using base::UserMetricsAction;
         }
         UIImage* image = optionalImage.value().ToUIImage();
         [weakSelf loadImageQuery:image];
+        [weakSelf.omniboxCommandsHandler cancelOmniboxEdit];
       }));
 }
 

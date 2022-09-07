@@ -738,6 +738,12 @@ UIWindow* GetAnyKeyWindow();
 // URL is currently in the pasteboard.
 - (GURL)pasteboardURL;
 
+// Clears the pasteboard.
+- (void)clearPasteboard;
+
+// Copies `text` into the clipboard from the app's perspective.
+- (void)copyTextToPasteboard:(NSString*)text;
+
 #pragma mark - Context Menus Utilities (EG2)
 
 // Taps on the Copy Link context menu action and verifies that the |text| has

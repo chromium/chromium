@@ -1433,6 +1433,14 @@ UIWindow* GetAnyKeyWindow() {
                         : GURL::EmptyGURL();
 }
 
+- (void)clearPasteboard {
+  [ChromeEarlGreyAppInterface clearPasteboard];
+}
+
+- (void)copyTextToPasteboard:(NSString*)text {
+  [ChromeEarlGreyAppInterface copyTextToPasteboard:text];
+}
+
 #pragma mark - Context Menus Utilities (EG2)
 
 - (void)verifyCopyLinkActionWithText:(NSString*)text {

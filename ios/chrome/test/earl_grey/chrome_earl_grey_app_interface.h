@@ -613,6 +613,9 @@
 // Clears the URLs stored in the pasteboard, from the tested app's perspective.
 + (void)clearPasteboardURLs;
 
+// Clears the pasteboard, from the tested app's perspective.
++ (void)clearPasteboard;
+
 // Retrieves the currently stored strings on the pasteboard from the tested
 // app's perspective.
 + (NSArray<NSString*>*)pasteboardStrings;
@@ -620,6 +623,9 @@
 // Retrieves the currently stored URL on the pasteboard from the tested app's
 // perspective.
 + (NSString*)pasteboardURLSpec;
+
+// Copies `text` into the clipboard from the app's perspective.
++ (void)copyTextToPasteboard:(NSString*)text;
 
 #pragma mark - Watcher utilities
 

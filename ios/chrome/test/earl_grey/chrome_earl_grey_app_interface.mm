@@ -1211,12 +1211,20 @@ NSString* SerializedValue(const base::Value* value) {
   [[UIPasteboard generalPasteboard] setURLs:nil];
 }
 
++ (void)clearPasteboard {
+  [[UIPasteboard generalPasteboard] setItems:@[]];
+}
+
 + (NSArray<NSString*>*)pasteboardStrings {
   return [UIPasteboard generalPasteboard].strings;
 }
 
 + (NSString*)pasteboardURLSpec {
   return [UIPasteboard generalPasteboard].URL.absoluteString;
+}
+
++ (void)copyTextToPasteboard:(NSString*)text {
+  [UIPasteboard.generalPasteboard setString:text];
 }
 
 #pragma mark - Watcher utilities
