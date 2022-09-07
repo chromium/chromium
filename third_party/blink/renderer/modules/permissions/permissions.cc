@@ -342,7 +342,9 @@ absl::optional<PermissionType> Permissions::GetPermissionType(
       descriptor.extension && descriptor.extension->is_camera_device() &&
           descriptor.extension->get_camera_device()->panTiltZoom,
       descriptor.extension && descriptor.extension->is_clipboard() &&
-          descriptor.extension->get_clipboard()->allowWithoutSanitization);
+          descriptor.extension->get_clipboard()->will_be_sanitized,
+      descriptor.extension && descriptor.extension->is_clipboard() &&
+          descriptor.extension->get_clipboard()->has_user_gesture);
 }
 
 mojom::blink::PermissionDescriptorPtr

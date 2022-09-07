@@ -87,7 +87,7 @@ class ClipboardPromise final : public GarbageCollected<ClipboardPromise>,
   mojom::blink::PermissionService* GetPermissionService();
   void RequestPermission(
       mojom::blink::PermissionName permission,
-      bool allow_without_sanitization,
+      bool will_be_sanitized,
       base::OnceCallback<void(::blink::mojom::PermissionStatus)> callback);
 
   scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner();

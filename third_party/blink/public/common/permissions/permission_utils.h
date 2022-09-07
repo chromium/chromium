@@ -79,11 +79,11 @@ PermissionDescriptorToPermissionType(
 // information for making the decision and the caller needs to extract it from
 // the descriptor and provide it.
 BLINK_COMMON_EXPORT absl::optional<PermissionType>
-PermissionDescriptorInfoToPermissionType(
-    mojom::PermissionName name,
-    bool midi_sysex,
-    bool camera_ptz,
-    bool clipboard_allow_without_sanitization);
+PermissionDescriptorInfoToPermissionType(mojom::PermissionName name,
+                                         bool midi_sysex,
+                                         bool camera_ptz,
+                                         bool clipboard_will_be_sanitized,
+                                         bool clipboard_has_user_gesture);
 
 }  // namespace blink
 

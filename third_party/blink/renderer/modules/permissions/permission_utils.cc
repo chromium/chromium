@@ -123,11 +123,11 @@ PermissionDescriptorPtr CreateMidiPermissionDescriptor(bool sysex) {
 
 PermissionDescriptorPtr CreateClipboardPermissionDescriptor(
     PermissionName name,
-    bool allow_without_gesture,
-    bool allow_without_sanitization) {
+    bool has_user_gesture,
+    bool will_be_sanitized) {
   auto descriptor = CreatePermissionDescriptor(name);
   auto clipboard_extension = mojom::blink::ClipboardPermissionDescriptor::New(
-      allow_without_gesture, allow_without_sanitization);
+      has_user_gesture, will_be_sanitized);
   descriptor->extension =
       mojom::blink::PermissionDescriptorExtension::NewClipboard(
           std::move(clipboard_extension));
@@ -235,8 +235,10 @@ PermissionDescriptorPtr ParsePermissionDescriptor(
             script_state->GetIsolate(), raw_descriptor.V8Value(),
             exception_state);
     return CreateClipboardPermissionDescriptor(
-        permission_name, clipboard_permission->allowWithoutGesture(),
-        clipboard_permission->allowWithoutSanitization());
+        permission_name,
+        /*has_user_gesture=*/!clipboard_permission->allowWithoutGesture(),
+        /*will_be_sanitized=*/
+        !clipboard_permission->allowWithoutSanitization());
   }
   if (name == "payment-handler")
     return CreatePermissionDescriptor(PermissionName::PAYMENT_HANDLER);

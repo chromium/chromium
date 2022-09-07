@@ -33,8 +33,8 @@ mojom::blink::PermissionDescriptorPtr CreateMidiPermissionDescriptor(
 
 mojom::blink::PermissionDescriptorPtr CreateClipboardPermissionDescriptor(
     mojom::blink::PermissionName,
-    bool allow_without_gesture,
-    bool allow_without_sanitization);
+    bool has_user_gesture,
+    bool will_be_sanitized);
 
 mojom::blink::PermissionDescriptorPtr CreateVideoCapturePermissionDescriptor(
     bool pan_tilt_zoom);

@@ -54,14 +54,17 @@ absl::optional<PermissionType> PermissionDescriptorToPermissionType(
       descriptor->extension && descriptor->extension->is_camera_device() &&
           descriptor->extension->get_camera_device()->panTiltZoom,
       descriptor->extension && descriptor->extension->is_clipboard() &&
-          descriptor->extension->get_clipboard()->allowWithoutSanitization);
+          descriptor->extension->get_clipboard()->will_be_sanitized,
+      descriptor->extension && descriptor->extension->is_clipboard() &&
+          descriptor->extension->get_clipboard()->has_user_gesture);
 }
 
 absl::optional<PermissionType> PermissionDescriptorInfoToPermissionType(
     mojom::PermissionName name,
     bool midi_sysex,
     bool camera_ptz,
-    bool clipboard_allow_without_sanitization) {
+    bool clipboard_will_be_sanitized,
+    bool clipboard_has_user_gesture) {
   switch (name) {
     case PermissionName::GEOLOCATION:
       return PermissionType::GEOLOCATION;
@@ -98,13 +101,15 @@ absl::optional<PermissionType> PermissionDescriptorInfoToPermissionType(
       return PermissionType::ACCESSIBILITY_EVENTS;
     case PermissionName::CLIPBOARD_READ:
       return PermissionType::CLIPBOARD_READ_WRITE;
-    case PermissionName::CLIPBOARD_WRITE: {
-      if (clipboard_allow_without_sanitization) {
-        return PermissionType::CLIPBOARD_READ_WRITE;
-      } else {
+    case PermissionName::CLIPBOARD_WRITE:
+      // If the write is both sanitized (i.e. plain text or known-format
+      // images), and a user gesture is present, use CLIPBOARD_SANITIZED_WRITE,
+      // which Chrome grants by default.
+      if (clipboard_will_be_sanitized && clipboard_has_user_gesture) {
         return PermissionType::CLIPBOARD_SANITIZED_WRITE;
+      } else {
+        return PermissionType::CLIPBOARD_READ_WRITE;
       }
-    }
     case PermissionName::PAYMENT_HANDLER:
       return PermissionType::PAYMENT_HANDLER;
     case PermissionName::BACKGROUND_FETCH:

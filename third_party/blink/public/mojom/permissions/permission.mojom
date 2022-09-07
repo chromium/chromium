@@ -37,8 +37,10 @@ struct MidiPermissionDescriptor {
 };
 
 struct ClipboardPermissionDescriptor {
-  bool allowWithoutGesture;
-  bool allowWithoutSanitization;
+  // True if the clipboard action came with a user activation.
+  bool has_user_gesture;
+  // True if the clipboard action will be a standard format such as plain text.
+  bool will_be_sanitized;
 };
 
 struct CameraDevicePermissionDescriptor {
