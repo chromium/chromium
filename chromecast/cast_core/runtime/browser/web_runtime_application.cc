@@ -112,69 +112,6 @@ void WebRuntimeApplication::MediaStoppedPlaying(
   NotifyMediaPlaybackChanged(false);
 }
 
-void WebRuntimeApplication::DidFinishLoad(
-    content::RenderFrameHost* render_frame_host,
-    const GURL& validated_url) {
-  // This logic is a subset of that for DidFinishLoad() in CastWebContentsImpl.
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  int http_status_code = 0;
-  content::NavigationEntry* nav_entry =
-      web_contents()->GetController().GetVisibleEntry();
-  if (nav_entry) {
-    http_status_code = nav_entry->GetHttpStatusCode();
-  }
-
-  if (http_status_code != 0 && http_status_code / 100 != 2) {
-    DLOG(INFO) << "Stopping after receiving http failure status code: "
-               << http_status_code;
-    StopApplication(cast::common::StopReason::HTTP_ERROR,
-                    net::ERR_HTTP_RESPONSE_CODE_FAILURE);
-    return;
-  }
-
-  OnPageLoaded();
-}
-
-void WebRuntimeApplication::DidFailLoad(
-    content::RenderFrameHost* render_frame_host,
-    const GURL& validated_url,
-    int error_code) {
-  // This logic is a subset of that for DidFailLoad() in CastWebContentsImpl.
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (render_frame_host->GetParent()) {
-    DLOG(ERROR) << "Got error on sub-iframe: url=" << validated_url.spec()
-                << ", error=" << error_code;
-    return;
-  }
-  if (error_code == net::ERR_ABORTED) {
-    // ERR_ABORTED means download was aborted by the app, typically this happens
-    // when flinging URL for direct playback, the initial URLRequest gets
-    // cancelled/aborted and then the same URL is requested via the buffered
-    // data source for media::Pipeline playback.
-    DLOG(INFO) << "Load canceled: url=" << validated_url.spec();
-
-    // We consider the page to be fully loaded in this case, since the app has
-    // intentionally entered this state. If the app wanted to stop, it would
-    // have called window.close() instead.
-    OnPageLoaded();
-    return;
-  }
-
-  StopApplication(cast::common::StopReason::HTTP_ERROR, error_code);
-}
-
-void WebRuntimeApplication::WebContentsDestroyed() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  content::WebContentsObserver::Observe(nullptr);
-  StopApplication(cast::common::StopReason::APPLICATION_REQUEST, net::OK);
-}
-
-void WebRuntimeApplication::PrimaryMainFrameRenderProcessGone(
-    base::TerminationStatus status) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  StopApplication(cast::common::StopReason::HTTP_ERROR, net::ERR_UNEXPECTED);
-}
-
 void WebRuntimeApplication::OnAllBindingsReceived(
     cast::utils::GrpcStatusOr<cast::bindings::GetAllResponse> response_or) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -185,6 +122,8 @@ void WebRuntimeApplication::OnAllBindingsReceived(
   }
 
   content::WebContentsObserver::Observe(GetCastWebContents()->web_contents());
+  cast_receiver::PageStateObserver::Observe(
+      GetCastWebContents()->web_contents());
   bindings_manager_ =
       std::make_unique<BindingsManagerWebRuntime>(core_message_port_app_stub());
   for (int i = 0; i < response_or->bindings_size(); ++i) {
@@ -196,6 +135,28 @@ void WebRuntimeApplication::OnAllBindingsReceived(
 
   // Application is initialized now - we can load the URL.
   LoadPage(app_url_);
+}
+
+void WebRuntimeApplication::OnPageLoadComplete() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  OnPageLoaded();
+}
+
+void WebRuntimeApplication::OnPageStopped(StopReason reason,
+                                          int32_t error_code) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  switch (reason) {
+    case cast_receiver::PageStateObserver::StopReason::kUnknown:
+      StopApplication(cast::common::StopReason::RUNTIME_ERROR, error_code);
+      break;
+    case cast_receiver::PageStateObserver::StopReason::kApplicationRequest:
+      StopApplication(cast::common::StopReason::APPLICATION_REQUEST,
+                      error_code);
+      break;
+    case cast_receiver::PageStateObserver::StopReason::kHttpError:
+      StopApplication(cast::common::StopReason::HTTP_ERROR, error_code);
+      break;
+  }
 }
 
 }  // namespace chromecast

@@ -180,6 +180,7 @@ cast_source_set("runtime_application_dispatcher") {
     "//chromecast/browser:browser_base",
     "//chromecast/common:feature_constants",
     "//components/cast_receiver/browser",
+    "//components/cast_receiver/browser:page_state_observer",
     "//components/cast_streaming/public/mojom",
     "//components/url_rewrite/browser",
     "//third_party/abseil-cpp:absl",

@@ -5,7 +5,9 @@
 #ifndef CHROMECAST_CAST_CORE_RUNTIME_BROWSER_WEB_RUNTIME_APPLICATION_H_
 #define CHROMECAST_CAST_CORE_RUNTIME_BROWSER_WEB_RUNTIME_APPLICATION_H_
 
+#include "chromecast/cast_core/runtime/browser/bindings_manager_web_runtime.h"
 #include "chromecast/cast_core/runtime/browser/runtime_application_base.h"
+#include "components/cast_receiver/browser/page_state_observer.h"
 #include "content/public/browser/web_contents_observer.h"
 
 namespace chromecast {
@@ -14,7 +16,8 @@ class BindingsManagerWebRuntime;
 class CastWebService;
 
 class WebRuntimeApplication final : public RuntimeApplicationBase,
-                                    public content::WebContentsObserver {
+                                    public content::WebContentsObserver,
+                                    public cast_receiver::PageStateObserver {
  public:
   // |web_service| is expected to exist for the lifetime of this instance.
   WebRuntimeApplication(std::string cast_session_id,
@@ -24,11 +27,18 @@ class WebRuntimeApplication final : public RuntimeApplicationBase,
   ~WebRuntimeApplication() override;
 
  private:
+  void OnAllBindingsReceived(
+      cast::utils::GrpcStatusOr<cast::bindings::GetAllResponse> response_or);
+
   // RuntimeApplicationBase implementation:
   cast::utils::GrpcStatusOr<cast::web::MessagePortStatus> HandlePortMessage(
       cast::web::Message message) override;
   void LaunchApplication() override;
   bool IsStreamingApplication() const override;
+
+  // cast_receiver::PageStateObserver implementation:
+  void OnPageLoadComplete() override;
+  void OnPageStopped(StopReason reason, int32_t error_code) override;
 
   // content::WebContentsObserver implementation:
   void InnerWebContentsCreated(
@@ -39,17 +49,6 @@ class WebRuntimeApplication final : public RuntimeApplicationBase,
       const MediaPlayerInfo& video_type,
       const content::MediaPlayerId& id,
       content::WebContentsObserver::MediaStoppedReason reason) override;
-  void DidFinishLoad(content::RenderFrameHost* render_frame_host,
-                     const GURL& validated_url) override;
-  void DidFailLoad(content::RenderFrameHost* render_frame_host,
-                   const GURL& validated_url,
-                   int error_code) override;
-  void WebContentsDestroyed() override;
-  void PrimaryMainFrameRenderProcessGone(
-      base::TerminationStatus status) override;
-
-  void OnAllBindingsReceived(
-      cast::utils::GrpcStatusOr<cast::bindings::GetAllResponse> response_or);
 
   const GURL app_url_;
   std::unique_ptr<BindingsManagerWebRuntime> bindings_manager_;

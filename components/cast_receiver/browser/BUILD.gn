@@ -13,10 +13,24 @@ source_set("browser") {
   friend = [ ":unit_tests" ]
 }
 
+# TODO(crbug.com/1359579): Limit visibility to just this component.
+source_set("page_state_observer") {
+  deps = [
+    "//base",
+    "//content",
+    "//net",
+  ]
+  sources = [
+    "page_state_observer.cc",
+    "page_state_observer.h",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
   deps = [
     ":browser",
+    ":page_state_observer",
     "//media",
     "//testing/gmock",
     "//testing/gtest",
