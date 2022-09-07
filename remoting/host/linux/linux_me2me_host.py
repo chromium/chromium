@@ -418,7 +418,6 @@ class Desktop(abc.ABC):
     self.host_proc = None
     self.child_env = None
     self.host_ready = False
-    self.server_supports_exact_resize = False
     self.server_inhibitor = server_inhibitor
     self.session_inhibitor = session_inhibitor
     self.host_inhibitor = host_inhibitor
@@ -512,8 +511,6 @@ class Desktop(abc.ABC):
     args = [HOST_BINARY_PATH, "--host-config=-"]
     if self.audio_pipe:
       args.append("--audio-pipe-name=%s" % self.audio_pipe)
-    if self.server_supports_exact_resize:
-      args.append("--server-supports-exact-resize")
     if self.ssh_auth_sockname:
       args.append("--ssh-auth-sockname=%s" % self.ssh_auth_sockname)
 
@@ -1061,7 +1058,6 @@ class XDesktop(Desktop):
                                 stderr=subprocess.DEVNULL)
     if exit_code == 0:
       # RandR is supported
-      self.server_supports_exact_resize = True
       self.server_supports_randr = True
       self.randr_add_sizes = True
 
@@ -1071,7 +1067,6 @@ class XDesktop(Desktop):
         suffix=".conf", delete=False) as config_file:
       config_file.write(gen_xorg_config().encode())
 
-    self.server_supports_exact_resize = True
     self.server_supports_randr = True
     self.randr_add_sizes = True
     self.xorg_conf = config_file.name

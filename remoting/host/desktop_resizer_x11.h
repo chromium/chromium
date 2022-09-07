@@ -7,7 +7,6 @@
 
 #include <string.h>
 
-#include "base/command_line.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "remoting/base/logging.h"
@@ -52,12 +51,8 @@ class DesktopResizerX11 : public DesktopResizer {
 
  private:
   // Add a mode matching the specified resolution and switch to it.
-  void SetResolutionNewMode(x11::RandR::Output output,
-                            const ScreenResolution& resolution);
-
-  // Attempt to switch to an existing mode matching the specified resolution
-  // using RandR, if such a resolution exists. Otherwise, do nothing.
-  void SetResolutionExistingMode(const ScreenResolution& resolution);
+  void SetResolutionForOutput(x11::RandR::Output output,
+                              const ScreenResolution& resolution);
 
   // Create a mode, and attach it to the output. If the mode already exists, it
   // is left unchanged. Returns the new mode ID, or None (0) on failure.
@@ -75,7 +70,6 @@ class DesktopResizerX11 : public DesktopResizer {
   const raw_ptr<const x11::Screen> screen_ = nullptr;
   x11::Window root_;
   ScreenResources resources_;
-  bool exact_resize_;
   bool has_randr_;
 };
 
