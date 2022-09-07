@@ -25,6 +25,8 @@
 
 namespace content {
 
+using AncestorFrameType = blink::mojom::AncestorFrameType;
+
 namespace {
 
 // Keeps track of the most recent |site_instance| passed to
@@ -134,7 +136,8 @@ TEST_F(ServiceWorkerProcessManagerTest,
       process_manager_->AllocateWorkerProcess(
           kEmbeddedWorkerId, script_url_,
           network::mojom::CrossOriginEmbedderPolicyValue::kNone,
-          true /* can_use_existing_process */, &process_info);
+          true /* can_use_existing_process */, AncestorFrameType::kNormalFrame,
+          &process_info);
 
   // An existing process should be allocated to the worker.
   EXPECT_EQ(blink::ServiceWorkerStatusCode::kOk, status);
@@ -178,7 +181,8 @@ TEST_F(ServiceWorkerProcessManagerTest,
       process_manager_->AllocateWorkerProcess(
           kEmbeddedWorkerId, script_url_,
           network::mojom::CrossOriginEmbedderPolicyValue::kNone,
-          false /* can_use_existing_process */, &process_info);
+          false /* can_use_existing_process */, AncestorFrameType::kNormalFrame,
+          &process_info);
 
   // A new process should be allocated to the worker.
   EXPECT_EQ(blink::ServiceWorkerStatusCode::kOk, status);
@@ -207,7 +211,8 @@ TEST_F(ServiceWorkerProcessManagerTest, AllocateWorkerProcess_InShutdown) {
   blink::ServiceWorkerStatusCode status =
       process_manager_->AllocateWorkerProcess(
           1, script_url_, network::mojom::CrossOriginEmbedderPolicyValue::kNone,
-          true /* can_use_existing_process */, &process_info);
+          true /* can_use_existing_process */, AncestorFrameType::kNormalFrame,
+          &process_info);
 
   // Allocating a process in shutdown should abort.
   EXPECT_EQ(blink::ServiceWorkerStatusCode::kErrorAbort, status);
@@ -231,7 +236,8 @@ TEST_F(ServiceWorkerProcessManagerTest,
         process_manager_->AllocateWorkerProcess(
             kEmbeddedWorkerId, script_url_,
             network::mojom::CrossOriginEmbedderPolicyValue::kNone,
-            true /* can_use_existing_process */, &process_info);
+            true /* can_use_existing_process */,
+            AncestorFrameType::kNormalFrame, &process_info);
     EXPECT_EQ(blink::ServiceWorkerStatusCode::kOk, status);
     EXPECT_EQ(
         GURL("http://example.com"),
@@ -273,7 +279,8 @@ TEST_F(ServiceWorkerProcessManagerTest,
         process_manager_->AllocateWorkerProcess(
             kEmbeddedWorkerId, script_url_,
             network::mojom::CrossOriginEmbedderPolicyValue::kNone,
-            true /* can_use_existing_process */, &process_info);
+            true /* can_use_existing_process */,
+            AncestorFrameType::kNormalFrame, &process_info);
     EXPECT_EQ(blink::ServiceWorkerStatusCode::kOk, status);
     EXPECT_EQ(guest_site_instance->GetStoragePartitionConfig(),
               render_process_host_factory_->last_site_instance_used()

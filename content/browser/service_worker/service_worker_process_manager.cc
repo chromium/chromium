@@ -17,6 +17,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/site_instance.h"
+#include "content/public/browser/site_isolation_policy.h"
 #include "content/public/common/child_process_host.h"
 #include "url/gurl.h"
 
@@ -89,6 +90,7 @@ ServiceWorkerProcessManager::AllocateWorkerProcess(
     const GURL& script_url,
     network::mojom::CrossOriginEmbedderPolicyValue coep_value,
     bool can_use_existing_process,
+    blink::mojom::AncestorFrameType ancestor_frame_type,
     AllocatedProcessInfo* out_info) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
@@ -120,6 +122,9 @@ ServiceWorkerProcessManager::AllocateWorkerProcess(
   // TODO(alexmos): Support CrossOriginIsolated for guests.
   DCHECK(storage_partition_);
   const bool is_guest = storage_partition_->is_guest();
+  const bool is_fenced =
+      ancestor_frame_type == blink::mojom::AncestorFrameType::kFencedFrame &&
+      SiteIsolationPolicy::IsProcessIsolationForFencedFramesEnabled();
   const bool is_coop_coep_cross_origin_isolated =
       !is_guest && network::CompatibleWithCrossOriginIsolated(coep_value);
   UrlInfo url_info(
@@ -131,8 +136,9 @@ ServiceWorkerProcessManager::AllocateWorkerProcess(
                         url::Origin::Create(script_url))
                   : WebExposedIsolationInfo::CreateNonIsolated()));
   scoped_refptr<SiteInstanceImpl> site_instance =
-      SiteInstanceImpl::CreateForServiceWorker(
-          browser_context_, url_info, can_use_existing_process, is_guest);
+      SiteInstanceImpl::CreateForServiceWorker(browser_context_, url_info,
+                                               can_use_existing_process,
+                                               is_guest, is_fenced);
 
   // Get the process from the SiteInstance.
   RenderProcessHost* rph = site_instance->GetProcess();

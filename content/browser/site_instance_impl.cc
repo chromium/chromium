@@ -163,7 +163,8 @@ scoped_refptr<SiteInstanceImpl> SiteInstanceImpl::CreateForServiceWorker(
     BrowserContext* browser_context,
     const UrlInfo& url_info,
     bool can_reuse_process,
-    bool is_guest) {
+    bool is_guest,
+    bool is_fenced) {
   DCHECK(!url_info.url.SchemeIs(kChromeErrorScheme));
   DCHECK(url_info.storage_partition_config.has_value());
   scoped_refptr<SiteInstanceImpl> site_instance;
@@ -173,14 +174,11 @@ scoped_refptr<SiteInstanceImpl> SiteInstanceImpl::CreateForServiceWorker(
                                    url_info.storage_partition_config.value());
   } else {
     // This will create a new SiteInstance and BrowsingInstance.
-    // TODO(crbug.com/1340662): Plumb value for is_fenced based on the
-    // AncestorFrameType of the worker.
     scoped_refptr<BrowsingInstance> instance(
         new BrowsingInstance(browser_context,
                              url_info.web_exposed_isolation_info.value_or(
                                  WebExposedIsolationInfo::CreateNonIsolated()),
-                             is_guest,
-                             /*is_fenced=*/false));
+                             is_guest, is_fenced));
 
     // We do NOT want to allow the default site instance here because workers
     // need to be kept separate from other sites.

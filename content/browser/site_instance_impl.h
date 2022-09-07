@@ -84,11 +84,14 @@ class CONTENT_EXPORT SiteInstanceImpl final : public SiteInstance {
   //                       same process as the renderer for `url_info`.
   // `is_guest` - Set to true if the new SiteInstance is for a <webview>
   // guest.
+  // `is_fenced` - Set to true if the new SiteInstance is for a service worker
+  // initialized by a fenced frame.
   static scoped_refptr<SiteInstanceImpl> CreateForServiceWorker(
       BrowserContext* browser_context,
       const UrlInfo& url_info,
       bool can_reuse_process = false,
-      bool is_guest = false);
+      bool is_guest = false,
+      bool is_fenced = false);
 
   // Creates a SiteInstance for |url| like CreateForUrlInfo() would except the
   // instance that is returned has its process_reuse_policy set to

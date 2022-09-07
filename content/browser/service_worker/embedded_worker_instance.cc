@@ -284,7 +284,8 @@ void EmbeddedWorkerInstance::Start(
       process_manager->AllocateWorkerProcess(
           embedded_worker_id(), params->script_url,
           owner_version_->cross_origin_embedder_policy_value(),
-          can_use_existing_process, process_info.get());
+          can_use_existing_process, owner_version_->ancestor_frame_type(),
+          process_info.get());
   if (status != blink::ServiceWorkerStatusCode::kOk) {
     OnSetupFailed(std::move(callback), status);
     return;
