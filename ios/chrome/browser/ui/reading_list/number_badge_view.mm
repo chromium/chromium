@@ -15,7 +15,7 @@
 #endif
 
 namespace {
-const CGFloat kAnimationDuration = ios::material::kDuration3;
+const CGFloat kAnimationDuration = kMaterialDuration3;
 // The margin on all sides of the label.
 const CGFloat kLabelMargin = 2.5f;
 }  // namespace

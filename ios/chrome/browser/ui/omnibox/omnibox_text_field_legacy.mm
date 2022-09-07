@@ -277,18 +277,18 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
   BOOL isFadingIn = (style == OMNIBOX_TEXT_FIELD_FADE_STYLE_IN);
   CGFloat beginOpacity = isFadingIn ? 0.0 : 1.0;
   CGFloat endOpacity = isFadingIn ? 1.0 : 0.0;
-  CAMediaTimingFunction* opacityTiming = ios::material::TimingFunction(
-      isFadingIn ? ios::material::CurveEaseOut : ios::material::CurveEaseIn);
-  CFTimeInterval delay = isFadingIn ? ios::material::kDuration8 : 0.0;
+  CAMediaTimingFunction* opacityTiming = MaterialTimingFunction(
+      isFadingIn ? MaterialCurveEaseOut : MaterialCurveEaseIn);
+  CFTimeInterval delay = isFadingIn ? kMaterialDuration8 : 0.0;
 
   CAAnimation* labelAnimation = OpacityAnimationMake(beginOpacity, endOpacity);
   labelAnimation.duration =
-      isFadingIn ? ios::material::kDuration6 : ios::material::kDuration8;
+      isFadingIn ? kMaterialDuration6 : kMaterialDuration8;
   labelAnimation.timingFunction = opacityTiming;
   labelAnimation = DelayedAnimationMake(labelAnimation, delay);
   CAAnimation* auxillaryViewAnimation =
       OpacityAnimationMake(beginOpacity, endOpacity);
-  auxillaryViewAnimation.duration = ios::material::kDuration8;
+  auxillaryViewAnimation.duration = kMaterialDuration8;
   auxillaryViewAnimation.timingFunction = opacityTiming;
   auxillaryViewAnimation = DelayedAnimationMake(auxillaryViewAnimation, delay);
 

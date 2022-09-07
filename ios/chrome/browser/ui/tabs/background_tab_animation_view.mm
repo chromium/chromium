@@ -68,7 +68,7 @@ CGFloat kRotationAngleInRadians = 20.0 / 180 * M_PI;
   [CATransaction setCompletionBlock:^{
     completion();
   }];
-  CAMediaTimingFunction* easeIn = TimingFunction(ios::material::CurveEaseIn);
+  CAMediaTimingFunction* easeIn = MaterialTimingFunction(MaterialCurveEaseIn);
   CGFloat timing =
       [self animationDurationWithParentSize:self.superview.frame.size
                                       xDiff:xDiff

@@ -41,7 +41,7 @@ CGFloat GetFinalFullscreenProgressForAnimation(FullscreenAnimatorStyle style) {
               controlPoint2:CGPointMake(0.2, 0.1)];
   DCHECK_GE(startProgress, 0.0);
   DCHECK_LE(startProgress, 1.0);
-  self = [super initWithDuration:ios::material::kDuration1
+  self = [super initWithDuration:kMaterialDuration1
                 timingParameters:timingParams];
   if (self) {
     DCHECK_GE(startProgress, 0.0);

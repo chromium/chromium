@@ -211,7 +211,7 @@ const CGFloat kUpdateDisplayedBadgeAnimationDamping = 0.85;
   self.view.alpha = 0;
   self.view.transform = CGAffineTransformMakeScale(0.1, 0.1);
   [self.stackView addArrangedSubview:_displayedBadge];
-  [UIView animateWithDuration:ios::material::kDuration2
+  [UIView animateWithDuration:kMaterialDuration2
                         delay:0
        usingSpringWithDamping:kUpdateDisplayedBadgeAnimationDamping
         initialSpringVelocity:0

@@ -184,7 +184,7 @@ const CGFloat kDamping = 0.85;
 // Animate the `animations` then execute `completion`.
 - (void)animate:(void (^)(void))animation
     withCompletion:(void (^)(BOOL finished))completion {
-  [UIView animateWithDuration:ios::material::kDuration1
+  [UIView animateWithDuration:kMaterialDuration1
                         delay:0
        usingSpringWithDamping:kDamping
         initialSpringVelocity:0

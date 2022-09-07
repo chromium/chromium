@@ -23,7 +23,7 @@
   }
 
   [UIView transitionWithView:self
-                    duration:ios::material::kDuration8
+                    duration:kMaterialDuration8
                      options:UIViewAnimationOptionCurveEaseInOut
                   animations:^{
                     for (UIView* view in highlightViews) {

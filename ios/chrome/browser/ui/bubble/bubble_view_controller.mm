@@ -13,7 +13,7 @@
 #endif
 
 namespace {
-const CGFloat kAnimationDuration = ios::material::kDuration3;
+const CGFloat kAnimationDuration = kMaterialDuration3;
 // The vertical offset distance used in the sink-down animation.
 const CGFloat kVerticalOffset = 8.0f;
 

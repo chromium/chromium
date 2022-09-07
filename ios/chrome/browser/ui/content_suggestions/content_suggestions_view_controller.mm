@@ -691,7 +691,7 @@ CGFloat ModuleVerticalSpacing() {
     }
     BOOL touchBegan = state == UIGestureRecognizerStateBegan;
     [UIView transitionWithView:returnToRecentTabView
-                      duration:ios::material::kDuration8
+                      duration:kMaterialDuration8
                        options:UIViewAnimationOptionCurveEaseInOut
                     animations:^{
                       weakRecentTabView.backgroundColor =

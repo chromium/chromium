@@ -245,7 +245,7 @@ UIColor* SelectionCircleColor() {
   }];
 
   CAMediaTimingFunction* timing =
-      ios::material::TimingFunction(ios::material::CurveEaseInOut);
+      MaterialTimingFunction(MaterialCurveEaseInOut);
   CABasicAnimation* scaleAnimation =
       [CABasicAnimation animationWithKeyPath:@"transform"];
   scaleAnimation.fromValue =

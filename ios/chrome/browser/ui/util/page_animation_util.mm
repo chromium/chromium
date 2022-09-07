@@ -11,8 +11,6 @@
 #error "This file requires ARC support."
 #endif
 
-using ios::material::TimingFunction;
-
 namespace {
 
 // When animating out, a card shrinks slightly.
@@ -54,8 +52,8 @@ void AnimateOutWithCompletion(UIView* view, void (^completion)(void)) {
   if (completion)
     [CATransaction setCompletionBlock:completion];
 
-  [CATransaction setAnimationDuration:ios::material::kDuration6];
-  CAMediaTimingFunction* timing = TimingFunction(ios::material::CurveEaseIn);
+  [CATransaction setAnimationDuration:kMaterialDuration6];
+  CAMediaTimingFunction* timing = MaterialTimingFunction(MaterialCurveEaseIn);
   [CATransaction setAnimationTimingFunction:timing];
 
   CABasicAnimation* scaleAnimation =

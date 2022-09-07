@@ -9,19 +9,49 @@
 #import <QuartzCore/QuartzCore.h>
 #import <UIKit/UIKit.h>
 
+extern const CGFloat kMaterialDuration0;
+extern const CGFloat kMaterialDuration1;
+extern const CGFloat kMaterialDuration2;
+extern const CGFloat kMaterialDuration3;
+extern const CGFloat kMaterialDuration4;
+extern const CGFloat kMaterialDuration5;
+extern const CGFloat kMaterialDuration6;
+extern const CGFloat kMaterialDuration7;
+extern const CGFloat kMaterialDuration8;
+
+// Type of material timing curve.
+typedef NS_ENUM(NSUInteger, MaterialCurve) {
+  MaterialCurveEaseInOut,
+  MaterialCurveEaseOut,
+  MaterialCurveEaseIn,
+  MaterialCurveLinear,
+};
+
+// Per material spec, a motion curve with "follow through".
+CAMediaTimingFunction* MaterialTransformCurve2();
+
+// Returns a timing function related to the given |curve|.
+CAMediaTimingFunction* MaterialTimingFunction(MaterialCurve curve);
+
+@interface UIView (CrMaterialAnimations)
+
+// Performs a standard UIView animation using a material timing |curve|.
+// Note: any curve option specified in |options| will be ignored in favor of the
+// specified curve value.
+// See also: +[UIView animateWithDuration:delay:animations:completion].
++ (void)cr_animateWithDuration:(NSTimeInterval)duration
+                         delay:(NSTimeInterval)delay
+                 materialCurve:(MaterialCurve)materialCurve
+                       options:(UIViewAnimationOptions)options
+                    animations:(void (^)(void))animations
+                    completion:(void (^)(BOOL finished))completion;
+
+@end
+
+// Temporarily keep these old enum and function around to aid in the transition
+// process to the constant version above;
 namespace ios {
 namespace material {
-
-extern const CGFloat kDuration0;
-extern const CGFloat kDuration1;
-extern const CGFloat kDuration2;
-extern const CGFloat kDuration3;
-extern const CGFloat kDuration4;
-extern const CGFloat kDuration5;
-extern const CGFloat kDuration6;
-extern const CGFloat kDuration7;
-extern const CGFloat kDuration8;
-
 // Type of material timing curve.
 typedef NS_ENUM(NSUInteger, Curve) {
   CurveEaseInOut,
@@ -29,17 +59,10 @@ typedef NS_ENUM(NSUInteger, Curve) {
   CurveEaseIn,
   CurveLinear,
 };
+}  // namespace material
+}  // namespace ios
 
-// Per material spec, a motion curve with "follow through".
-CAMediaTimingFunction* TransformCurve2();
-
-// Returns a timing function related to the given |curve|.
-CAMediaTimingFunction* TimingFunction(Curve curve);
-
-}  // material
-}  // ios
-
-@interface UIView (CrMaterialAnimations)
+@interface UIView (CrMaterialAnimations2)
 
 // Performs a standard UIView animation using a material timing |curve|.
 // Note: any curve option specified in |options| will be ignored in favor of the

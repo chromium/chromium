@@ -139,7 +139,7 @@ void AnimatedScopedFullscreenDisabler::StartAnimation() {
     base::RepeatingClosure animation_completed = base::BindRepeating(
         &AnimatedScopedFullscreenDisabler::OnAnimationCompletion, weak_ptr);
 
-    [UIView animateWithDuration:ios::material::kDuration1
+    [UIView animateWithDuration:kMaterialDuration1
         animations:^{
           if (!animation_started.IsCancelled())
             animation_started.Run();

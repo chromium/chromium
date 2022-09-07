@@ -110,7 +110,7 @@
     [self.editViewAnimatee setLeadingIconFaded:YES];
     [self.editViewAnimatee setClearButtonFaded:YES];
 
-    CGFloat duration = ios::material::kDuration1;
+    CGFloat duration = kMaterialDuration1;
 
     self.inProgressAnimationCount += 1;
     [UIView animateWithDuration:duration
@@ -189,8 +189,7 @@
     [self.locationBarAnimatee setSteadyViewFaded:YES];
     [self.editViewAnimatee setLeadingIconFaded:NO];
     [self.editViewAnimatee setClearButtonFaded:NO];
-
-    CGFloat duration = ios::material::kDuration1;
+    CGFloat duration = kMaterialDuration1;
 
     self.inProgressAnimationCount += 1;
     [UIView animateWithDuration:duration
@@ -260,7 +259,7 @@
     // Use UIView animateWithDuration instead of UIViewPropertyAnimator to
     // avoid UIKit bug. See https://crbug.com/856155.
     self.inProgressAnimationCount += 1;
-    [UIView animateWithDuration:ios::material::kDuration1
+    [UIView animateWithDuration:kMaterialDuration1
                           delay:0
                         options:UIViewAnimationCurveEaseInOut
                      animations:expansion
@@ -269,7 +268,7 @@
                      }];
 
     self.inProgressAnimationCount += 1;
-    [UIView animateWithDuration:ios::material::kDuration2
+    [UIView animateWithDuration:kMaterialDuration2
                           delay:0
                         options:UIViewAnimationCurveEaseInOut
                      animations:hideControls
@@ -300,10 +299,8 @@
   if (animated) {
     // Use UIView animateWithDuration instead of UIViewPropertyAnimator to
     // avoid UIKit bug. See https://crbug.com/856155.
-    CGFloat totalDuration =
-        ios::material::kDuration1 + ios::material::kDuration2;
-    CGFloat relativeDurationAnimation1 =
-        ios::material::kDuration1 / totalDuration;
+    CGFloat totalDuration = kMaterialDuration1 + kMaterialDuration2;
+    CGFloat relativeDurationAnimation1 = kMaterialDuration1 / totalDuration;
     self.inProgressAnimationCount += 1;
     [UIView animateKeyframesWithDuration:totalDuration
         delay:0
