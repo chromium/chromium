@@ -2140,25 +2140,6 @@
             ]
         }
     ],
-    "BreakupLongOmniboxTasks": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "clear_focus_asynchronously": "true"
-                    },
-                    "enable_features": [
-                        "ClearOmniboxFocusAfterNavigation",
-                        "PostTaskFocusTab"
-                    ]
-                }
-            ]
-        }
-    ],
     "BrowserSwitcherNoneIsGreylist": [
         {
             "platforms": [
@@ -6743,6 +6724,27 @@
             ]
         }
     ],
+    "OmniboxNavigationLatencyImprovements": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "LaunchTarget",
+                    "params": {
+                        "clear_focus_asynchronously": "true"
+                    },
+                    "enable_features": [
+                        "CacheDeprecatedSystemLocationSetting",
+                        "ClearOmniboxFocusAfterNavigation",
+                        "OptimizeGeolocationHeaderGeneration",
+                        "PostTaskFocusTab"
+                    ]
+                }
+            ]
+        }
+    ],
     "OmniboxPrerender": [
         {
             "platforms": [
@@ -6895,22 +6897,6 @@
                     },
                     "enable_features": [
                         "OptimizationHintsFetching"
-                    ]
-                }
-            ]
-        }
-    ],
-    "OptimizeGeolocationHeaderGeneration": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "CacheDeprecatedSystemLocationSetting",
-                        "OptimizeGeolocationHeaderGeneration"
                     ]
                 }
             ]
