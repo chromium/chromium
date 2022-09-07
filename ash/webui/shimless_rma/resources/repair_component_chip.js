@@ -99,6 +99,14 @@ export class RepairComponentChip extends RepairComponentChipBase {
             this.shadowRoot.querySelector('#componentButton')),
         this.isFirstClickableComponent);
   }
+
+  /**
+   * @return {string}
+   * @protected
+   */
+  isAriaPressed_() {
+    return this.checked.toString();
+  }
 }
 
 customElements.define(RepairComponentChip.is, RepairComponentChip);

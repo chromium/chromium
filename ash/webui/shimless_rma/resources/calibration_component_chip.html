@@ -61,7 +61,8 @@
 </style>
 
 <cr-button id="componentButton" on-click="onComponentButtonClicked_"
-    disabled="[[disabled]]" aria-labelledby="componentName componentId">
+    disabled="[[disabled]]" aria-labelledby="componentName componentId"
+    aria-pressed$="[[isAriaPressed_(checked)]]">
   <div id="labelDiv" aria-hidden="true">
     <iron-icon id="infoIcon" icon="shimless-icon:info" hidden="[[!failed]]"
         class="small-icon">

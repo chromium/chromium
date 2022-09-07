@@ -104,6 +104,14 @@ export class CalibrationComponentChipElement extends PolymerElement {
             this.shadowRoot.querySelector('#componentButton')),
         this.isFirstClickableComponent);
   }
+
+  /**
+   * @return {string}
+   * @protected
+   */
+  isAriaPressed_() {
+    return this.checked.toString();
+  }
 }
 
 customElements.define(
