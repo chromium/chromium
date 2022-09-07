@@ -2366,11 +2366,8 @@ ChildProcessSecurityPolicyImpl::LookupOriginIsolationState(
     return nullptr;
   }
   auto& origin_list = it_isolation_by_browsing_instance->second;
-  auto it_origin_list =
-      std::find_if(origin_list.begin(), origin_list.end(),
-                   [&origin](const OriginAgentClusterOptInEntry entry) {
-                     return entry.origin == origin;
-                   });
+  auto it_origin_list = base::ranges::find(
+      origin_list, origin, &OriginAgentClusterOptInEntry::origin);
   if (it_origin_list != origin_list.end())
     return &(it_origin_list->oac_isolation_state);
   return nullptr;
@@ -2569,10 +2566,8 @@ void ChildProcessSecurityPolicyImpl::AddOriginIsolationStateForBrowsingInstance(
   // We only support adding new entries, not modifying existing ones. If at
   // some point in the future we allow isolation status to change during the
   // lifetime of a BrowsingInstance, then this will need to be updated.
-  if (std::find_if(it->second.begin(), it->second.end(),
-                   [&origin](const OriginAgentClusterOptInEntry entry) {
-                     return entry.origin == origin;
-                   }) == it->second.end()) {
+  if (!base::Contains(it->second, origin,
+                      &OriginAgentClusterOptInEntry::origin)) {
     it->second.emplace_back(
         is_origin_agent_cluster
             ? OriginAgentClusterIsolationState::CreateForOriginAgentCluster(

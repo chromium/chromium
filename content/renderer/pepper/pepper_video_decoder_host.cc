@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/unsafe_shared_memory_region.h"
+#include "base/ranges/algorithm.h"
 #include "build/build_config.h"
 #include "content/common/pepper_file_util.h"
 #include "content/public/common/content_client.h"
@@ -565,10 +566,8 @@ bool PepperVideoDecoderHost::TryFallbackToSoftwareDecoder() {
 
 PepperVideoDecoderHost::PendingDecodeList::iterator
 PepperVideoDecoderHost::GetPendingDecodeById(int32_t decode_id) {
-  return std::find_if(pending_decodes_.begin(), pending_decodes_.end(),
-                      [decode_id](const PendingDecode& item) {
-                        return item.decode_id == decode_id;
-                      });
+  return base::ranges::find(pending_decodes_, decode_id,
+                            &PendingDecode::decode_id);
 }
 
 }  // namespace content

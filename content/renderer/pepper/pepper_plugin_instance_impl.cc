@@ -8,10 +8,12 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/containers/contains.h"
 #include "base/i18n/char_iterator.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_offset_string_conversions.h"
@@ -907,9 +909,8 @@ bool PepperPluginInstanceImpl::
   // Set the composition target.
   for (size_t i = 0; i < ime_text_spans.size(); ++i) {
     if (ime_text_spans[i].thickness == ui::ImeTextSpan::Thickness::kThick) {
-      auto it = std::find(event.composition_segment_offsets.begin(),
-                          event.composition_segment_offsets.end(),
-                          utf8_offsets[2 * i + 2]);
+      auto it = base::ranges::find(event.composition_segment_offsets,
+                                   utf8_offsets[2 * i + 2]);
       if (it != event.composition_segment_offsets.end()) {
         event.composition_target_segment =
             it - event.composition_segment_offsets.begin();
@@ -2652,10 +2653,8 @@ void PepperPluginInstanceImpl::ConvertDIPToViewport(gfx::Rect* rect) const {
 void PepperPluginInstanceImpl::IncrementTextureReferenceCount(
     const viz::TransferableResource& resource) {
   auto it =
-      std::find_if(texture_ref_counts_.begin(), texture_ref_counts_.end(),
-                   [&resource](const MailboxRefCount& ref_count) {
-                     return ref_count.first == resource.mailbox_holder.mailbox;
-                   });
+      base::ranges::find(texture_ref_counts_, resource.mailbox_holder.mailbox,
+                         &MailboxRefCount::first);
   if (it == texture_ref_counts_.end()) {
     texture_ref_counts_.emplace_back(resource.mailbox_holder.mailbox, 1);
     return;
@@ -2667,10 +2666,8 @@ void PepperPluginInstanceImpl::IncrementTextureReferenceCount(
 bool PepperPluginInstanceImpl::DecrementTextureReferenceCount(
     const viz::TransferableResource& resource) {
   auto it =
-      std::find_if(texture_ref_counts_.begin(), texture_ref_counts_.end(),
-                   [&resource](const MailboxRefCount& ref_count) {
-                     return ref_count.first == resource.mailbox_holder.mailbox;
-                   });
+      base::ranges::find(texture_ref_counts_, resource.mailbox_holder.mailbox,
+                         &MailboxRefCount::first);
   DCHECK(it != texture_ref_counts_.end());
 
   if (it->second == 1) {
@@ -2684,12 +2681,8 @@ bool PepperPluginInstanceImpl::DecrementTextureReferenceCount(
 
 bool PepperPluginInstanceImpl::IsTextureInUse(
     const viz::TransferableResource& resource) const {
-  auto it =
-      std::find_if(texture_ref_counts_.begin(), texture_ref_counts_.end(),
-                   [&resource](const MailboxRefCount& ref_count) {
-                     return ref_count.first == resource.mailbox_holder.mailbox;
-                   });
-  return it != texture_ref_counts_.end();
+  return base::Contains(texture_ref_counts_, resource.mailbox_holder.mailbox,
+                        &MailboxRefCount::first);
 }
 
 void PepperPluginInstanceImpl::OnImeSetComposition(

@@ -4,7 +4,6 @@
 
 #include "content/browser/indexed_db/indexed_db_context_impl.h"
 
-#include <algorithm>
 #include <memory>
 #include <string>
 #include <utility>
@@ -19,6 +18,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
@@ -768,10 +768,7 @@ absl::optional<storage::BucketLocator> IndexedDBContextImpl::LookUpBucket(
     storage::BucketId bucket_id) {
   DCHECK(IDBTaskRunner()->RunsTasksInCurrentSequence());
   auto bucket_locator =
-      std::find_if(bucket_set_.begin(), bucket_set_.end(),
-                   [&bucket_id](const storage::BucketLocator& locator) {
-                     return locator.id == bucket_id;
-                   });
+      base::ranges::find(bucket_set_, bucket_id, &storage::BucketLocator::id);
   if (bucket_locator == bucket_set_.end())
     return absl::nullopt;
 

@@ -4,7 +4,6 @@
 
 #include "content/browser/renderer_host/render_view_host_impl.h"
 
-#include <algorithm>
 #include <set>
 #include <string>
 #include <unordered_map>
@@ -22,6 +21,7 @@
 #include "base/metrics/field_trial.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -173,11 +173,10 @@ class PerProcessRenderViewHostSet : public base::SupportsUserData::Data {
   }
 
   bool HasNonBackForwardCachedInstances() const {
-    return std::find_if(render_view_host_instances_.begin(),
-                        render_view_host_instances_.end(),
-                        [](const RenderViewHostImpl* rvh) {
-                          return !rvh->is_in_back_forward_cache();
-                        }) != render_view_host_instances_.end();
+    return base::ranges::find_if_not(
+               render_view_host_instances_,
+               &RenderViewHostImpl::is_in_back_forward_cache) !=
+           render_view_host_instances_.end();
   }
 
  private:

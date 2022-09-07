@@ -6,9 +6,8 @@
 
 #include <stddef.h>
 
-#include <algorithm>
-
 #include "base/check.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/web/web_text_checking_result.h"
@@ -28,8 +27,7 @@ bool WebTestGrammarChecker::CheckGrammarOfString(
     std::vector<blink::WebTextCheckingResult>* results) {
   DCHECK(results);
   std::u16string string_text = text.Utf16();
-  if (std::find_if(string_text.begin(), string_text.end(), IsASCIIAlpha) ==
-      string_text.end())
+  if (base::ranges::find_if(string_text, IsASCIIAlpha) == string_text.end())
     return true;
 
   // Find matching grammatical errors from known ones. This function has to

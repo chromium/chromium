@@ -8,6 +8,7 @@
 
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
+#include "base/containers/contains.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
@@ -262,11 +263,8 @@ std::string BackForwardCacheBrowserTest::DepictFrameTree(FrameTreeNode* node) {
 bool BackForwardCacheBrowserTest::HistogramContainsIntValue(
     base::HistogramBase::Sample sample,
     std::vector<base::Bucket> histogram_values) {
-  auto it = std::find_if(histogram_values.begin(), histogram_values.end(),
-                         [sample](const base::Bucket& bucket) {
-                           return bucket.min == static_cast<int>(sample);
-                         });
-  return it != histogram_values.end();
+  return base::Contains(histogram_values, static_cast<int>(sample),
+                        &base::Bucket::min);
 }
 
 void BackForwardCacheBrowserTest::EvictByJavaScript(RenderFrameHostImpl* rfh) {

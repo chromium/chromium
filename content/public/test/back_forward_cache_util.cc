@@ -7,6 +7,8 @@
 #include <map>
 #include <set>
 
+#include "base/containers/contains.h"
+#include "base/ranges/algorithm.h"
 #include "content/browser/renderer_host/back_forward_cache_impl.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/web_contents.h"
@@ -75,12 +77,10 @@ DefaultEnabledBackForwardCacheParametersForTests(
   // make a new featureparam with the combined features, otherwise just add the
   // additional feature as is.
   for (auto feature_and_params : additional_params) {
-    auto default_feature_and_param = std::find_if(
-        default_features_and_params.begin(), default_features_and_params.end(),
-        [&feature_and_params](
-            const ScopedFeatureList::FeatureAndParams default_feature) {
-          return default_feature.feature.name ==
-                 feature_and_params.feature.name;
+    auto default_feature_and_param = base::ranges::find(
+        default_features_and_params, feature_and_params.feature.name,
+        [](const ScopedFeatureList::FeatureAndParams default_feature) {
+          return default_feature.feature.name;
         });
     if (default_feature_and_param != default_features_and_params.end()) {
       base::FieldTrialParams combined_params;
@@ -96,14 +96,11 @@ DefaultEnabledBackForwardCacheParametersForTests(
   }
   // Add any default features we didn't have additional params for.
   for (auto feature_and_params : default_features_and_params) {
-    auto default_param = std::find_if(
-        final_params.begin(), final_params.end(),
-        [&feature_and_params](
-            const ScopedFeatureList::FeatureAndParams default_feature) {
-          return default_feature.feature.name ==
-                 feature_and_params.feature.name;
-        });
-    if (default_param == final_params.end()) {
+    if (!base::Contains(
+            final_params, feature_and_params.feature.name,
+            [](const ScopedFeatureList::FeatureAndParams default_feature) {
+              return default_feature.feature.name;
+            })) {
       final_params.emplace_back(feature_and_params);
     }
   }

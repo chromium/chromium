@@ -5,10 +5,9 @@
 #include "content/browser/accessibility/browser_accessibility.h"
 
 #include <cstddef>
-
-#include <algorithm>
 #include <iterator>
 
+#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -918,7 +917,7 @@ BrowserAccessibility::GetTargetNodesForRelation(
   std::vector<ui::AXPlatformNode*> nodes;
   for (int32_t target_id : target_ids) {
     if (ui::AXPlatformNode* node = GetFromNodeID(target_id)) {
-      if (std::find(nodes.begin(), nodes.end(), node) == nodes.end())
+      if (!base::Contains(nodes, node))
         nodes.push_back(node);
     }
   }
@@ -2467,10 +2466,7 @@ ui::TextAttributeMap BrowserAccessibility::ComputeTextAttributeMap(
 // static
 bool BrowserAccessibility::HasInvalidAttribute(
     const ui::TextAttributeList& attributes) {
-  return std::find_if(attributes.begin(), attributes.end(),
-                      [](const ui::TextAttribute& attribute) {
-                        return attribute.first == "invalid";
-                      }) != attributes.end();
+  return base::Contains(attributes, "invalid", &ui::TextAttribute::first);
 }
 
 static bool HasListAncestor(const BrowserAccessibility* node) {

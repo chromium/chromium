@@ -17,6 +17,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/ranges/algorithm.h"
 #include "base/token.h"
 #include "build/build_config.h"
 #include "content/browser/renderer_host/media/media_stream_manager.h"
@@ -482,8 +483,7 @@ void VideoCaptureController::ReturnBuffer(
     return;
   }
   auto buffers_in_use_entry_iter =
-      std::find(std::begin(client->buffers_in_use),
-                std::end(client->buffers_in_use), buffer_id);
+      base::ranges::find(client->buffers_in_use, buffer_id);
   if (buffers_in_use_entry_iter == std::end(client->buffers_in_use)) {
     NOTREACHED();
     return;
@@ -906,19 +906,16 @@ VideoCaptureController::ControllerClient* VideoCaptureController::FindClient(
 std::vector<VideoCaptureController::BufferContext>::iterator
 VideoCaptureController::FindBufferContextFromBufferContextId(
     int buffer_context_id) {
-  return std::find_if(buffer_contexts_.begin(), buffer_contexts_.end(),
-                      [buffer_context_id](const BufferContext& entry) {
-                        return entry.buffer_context_id() == buffer_context_id;
-                      });
+  return base::ranges::find(buffer_contexts_, buffer_context_id,
+                            &BufferContext::buffer_context_id);
 }
 
 std::vector<VideoCaptureController::BufferContext>::iterator
 VideoCaptureController::FindUnretiredBufferContextFromBufferId(int buffer_id) {
-  return std::find_if(buffer_contexts_.begin(), buffer_contexts_.end(),
-                      [buffer_id](const BufferContext& entry) {
-                        return (entry.buffer_id() == buffer_id) &&
-                               (entry.is_retired() == false);
-                      });
+  return base::ranges::find_if(
+      buffer_contexts_, [buffer_id](const BufferContext& entry) {
+        return (entry.buffer_id() == buffer_id) && !entry.is_retired();
+      });
 }
 
 void VideoCaptureController::OnClientFinishedConsumingBuffer(
@@ -942,9 +939,9 @@ void VideoCaptureController::ReleaseBufferContext(
   for (const auto& client : controller_clients_) {
     if (client->session_closed)
       continue;
-    auto entry_iter = std::find(std::begin(client->known_buffer_context_ids),
-                                std::end(client->known_buffer_context_ids),
-                                buffer_context_iter->buffer_context_id());
+    auto entry_iter =
+        base::ranges::find(client->known_buffer_context_ids,
+                           buffer_context_iter->buffer_context_id());
     if (entry_iter != std::end(client->known_buffer_context_ids)) {
       client->known_buffer_context_ids.erase(entry_iter);
       client->event_handler->OnBufferDestroyed(

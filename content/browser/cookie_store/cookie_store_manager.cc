@@ -4,11 +4,11 @@
 
 #include "content/browser/cookie_store/cookie_store_manager.h"
 
-#include <algorithm>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/ranges/algorithm.h"
 #include "base/sequence_checker.h"
 #include "content/browser/cookie_store/cookie_change_subscriptions.pb.h"
 #include "content/browser/service_worker/embedded_worker_status.h"
@@ -231,11 +231,9 @@ void CookieStoreManager::AddSubscriptions(
     auto new_subscription = std::make_unique<CookieChangeSubscription>(
         std::move(mojo_subscription), service_worker_registration->id());
 
-    auto existing_subscription_it = std::find_if(
-        subscriptions.begin(), subscriptions.end(),
-        [&](const std::unique_ptr<CookieChangeSubscription>& other) -> bool {
-          return *new_subscription == *other;
-        });
+    auto existing_subscription_it = base::ranges::find(
+        subscriptions, *new_subscription,
+        &std::unique_ptr<CookieChangeSubscription>::operator*);
     if (existing_subscription_it == subscriptions.end())
       subscriptions.push_back(std::move(new_subscription));
   }
@@ -330,11 +328,9 @@ void CookieStoreManager::RemoveSubscriptions(
   }
 
   for (auto& subscription : all_subscriptions) {
-    auto target_subscription_it = std::find_if(
-        target_subscriptions.begin(), target_subscriptions.end(),
-        [&](const std::unique_ptr<CookieChangeSubscription>& other) -> bool {
-          return *subscription == *other;
-        });
+    auto target_subscription_it = base::ranges::find(
+        target_subscriptions, *subscription,
+        &std::unique_ptr<CookieChangeSubscription>::operator*);
     if (target_subscription_it == target_subscriptions.end()) {
       // The subscription is not marked for deletion.
       live_subscriptions.push_back(std::move(subscription));

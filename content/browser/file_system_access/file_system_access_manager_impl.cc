@@ -4,7 +4,6 @@
 
 #include "content/browser/file_system_access/file_system_access_manager_impl.h"
 
-#include <algorithm>
 #include <string>
 
 #include "base/bind.h"
@@ -16,6 +15,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/notreached.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/escape.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
@@ -234,9 +234,7 @@ bool IsValidIdChar(const char c) {
 
 bool IsValidId(const std::string& id) {
   return id.size() <= 32 &&
-         std::find_if(id.begin(), id.end(), [](const char c) {
-           return !IsValidIdChar(c);
-         }) == id.end();
+         base::ranges::find_if_not(id, &IsValidIdChar) == id.end();
 }
 
 ui::SelectFileDialog::Type GetSelectFileDialogType(

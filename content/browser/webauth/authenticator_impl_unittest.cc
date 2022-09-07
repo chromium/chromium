@@ -7325,10 +7325,10 @@ class ResidentKeyTestAuthenticatorRequestDelegate
 
     EXPECT_EQ(config_.expected_accounts, base::JoinString(string_reps, "/"));
 
-    const auto selected = std::find_if(
-        responses.begin(), responses.end(),
-        [this](const device::AuthenticatorGetAssertionResponse& response) {
-          return response.user_entity->id == config_.selected_user_id;
+    const auto selected = base::ranges::find(
+        responses, config_.selected_user_id,
+        [](const device::AuthenticatorGetAssertionResponse& response) {
+          return response.user_entity->id;
         });
     ASSERT_TRUE(selected != responses.end());
 

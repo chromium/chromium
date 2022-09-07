@@ -13,6 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/ranges/algorithm.h"
 #include "base/timer/timer.h"
 #include "content/browser/preloading/prefetch/prefetch_document_manager.h"
 #include "content/browser/preloading/prefetch/prefetch_features.h"
@@ -500,8 +501,8 @@ base::WeakPtr<PrefetchContainer> PrefetchService::PopNextPrefetchContainer() {
 
   // Get the first prefetch that is from an active render frame host and in a
   // visible WebContents.
-  auto prefetch_iter = std::find_if(
-      prefetch_queue_.begin(), prefetch_queue_.end(),
+  auto prefetch_iter = base::ranges::find_if(
+      prefetch_queue_,
       [](const base::WeakPtr<PrefetchContainer>& prefetch_container) {
         RenderFrameHost* rfh = RenderFrameHost::FromID(
             prefetch_container->GetReferringRenderFrameHostId());

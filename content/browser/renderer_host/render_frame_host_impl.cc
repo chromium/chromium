@@ -4,7 +4,6 @@
 
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 
-#include <algorithm>
 #include <memory>
 #include <tuple>
 #include <unordered_map>
@@ -2120,10 +2119,7 @@ void RenderFrameHostImpl::OnPortalCreatedForTesting(
 
 Portal* RenderFrameHostImpl::FindPortalByToken(
     const blink::PortalToken& portal_token) {
-  auto it =
-      std::find_if(portals_.begin(), portals_.end(), [&](const auto& portal) {
-        return portal->portal_token() == portal_token;
-      });
+  auto it = base::ranges::find(portals_, portal_token, &Portal::portal_token);
   return it == portals_.end() ? nullptr : it->get();
 }
 

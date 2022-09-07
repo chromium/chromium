@@ -5,7 +5,7 @@
 #include "content/browser/cache_storage/cache_storage_cache.h"
 
 #include <stddef.h>
-#include <algorithm>
+
 #include <functional>
 #include <limits>
 #include <memory>
@@ -23,6 +23,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/checked_math.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -234,9 +235,8 @@ bool VaryMatches(const blink::FetchAPIRequestHeadersMap& request,
   if (response_type == network::mojom::FetchResponseType::kOpaque)
     return true;
 
-  auto vary_iter = std::find_if(
-      response.begin(), response.end(),
-      [](const ResponseHeaderMap::value_type& pair) -> bool {
+  auto vary_iter = base::ranges::find_if(
+      response, [](const ResponseHeaderMap::value_type& pair) {
         return base::CompareCaseInsensitiveASCII(pair.first, "vary") == 0;
       });
   if (vary_iter == response.end())

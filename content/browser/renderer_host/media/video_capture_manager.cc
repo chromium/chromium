@@ -4,7 +4,6 @@
 
 #include "content/browser/renderer_host/media/video_capture_manager.h"
 
-#include <algorithm>
 #include <memory>
 #include <set>
 #include <utility>
@@ -18,6 +17,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/observer_list.h"
+#include "base/ranges/algorithm.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/task_runner_util.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -247,13 +247,7 @@ void VideoCaptureManager::DoStopDevice(VideoCaptureController* controller) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
                "VideoCaptureManager::DoStopDevice");
-  // TODO(mcasas): use a helper function https://crbug.com/624854.
-  DCHECK(std::find_if(
-             controllers_.begin(), controllers_.end(),
-             [controller](
-                 const scoped_refptr<VideoCaptureController>& device_entry) {
-               return device_entry.get() == controller;
-             }) != controllers_.end());
+  DCHECK(base::Contains(controllers_, controller));
 
   // If start request has not yet started processing, i.e. if it is not at the
   // beginning of the queue, remove it from the queue.
@@ -805,12 +799,8 @@ void VideoCaptureManager::DestroyControllerIfNoClients(
     // VideoCaptureController, and VideoCaptureDevice.
     DoStopDevice(controller);
     // TODO(mcasas): use a helper function https://crbug.com/624854.
-    auto controller_iter = std::find_if(
-        controllers_.begin(), controllers_.end(),
-        [controller](
-            const scoped_refptr<VideoCaptureController>& device_entry) {
-          return device_entry.get() == controller;
-        });
+    auto controller_iter = base::ranges::find(
+        controllers_, controller, &scoped_refptr<VideoCaptureController>::get);
     controllers_.erase(controller_iter);
     // Check if there are any associated pending callbacks and delete them.
     base::EraseIf(photo_request_queue_,

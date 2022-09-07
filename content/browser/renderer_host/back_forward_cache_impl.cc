@@ -4,7 +4,6 @@
 
 #include "content/browser/renderer_host/back_forward_cache_impl.h"
 
-#include <algorithm>
 #include <string>
 #include <vector>
 
@@ -14,6 +13,7 @@
 #include "base/containers/cxx20_erase.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/trace_event/typed_macros.h"
@@ -1116,12 +1116,10 @@ std::unique_ptr<BackForwardCacheImpl::Entry> BackForwardCacheImpl::RestoreEntry(
           kYesInBrowser_BackForwardCache_RestoreEntry_Attempt);
 
   // Select the RenderFrameHostImpl matching the navigation entry.
-  auto matching_entry =
-      std::find_if(entries_.begin(), entries_.end(),
-                   [navigation_entry_id](std::unique_ptr<Entry>& entry) {
-                     return entry->render_frame_host()->nav_entry_id() ==
-                            navigation_entry_id;
-                   });
+  auto matching_entry = base::ranges::find(
+      entries_, navigation_entry_id, [](std::unique_ptr<Entry>& entry) {
+        return entry->render_frame_host()->nav_entry_id();
+      });
 
   // Not found.
   if (matching_entry == entries_.end())
@@ -1240,12 +1238,10 @@ BackForwardCacheImpl::GetEntries() {
 
 BackForwardCacheImpl::Entry* BackForwardCacheImpl::GetEntry(
     int navigation_entry_id) {
-  auto matching_entry =
-      std::find_if(entries_.begin(), entries_.end(),
-                   [navigation_entry_id](std::unique_ptr<Entry>& entry) {
-                     return entry->render_frame_host()->nav_entry_id() ==
-                            navigation_entry_id;
-                   });
+  auto matching_entry = base::ranges::find(
+      entries_, navigation_entry_id, [](std::unique_ptr<Entry>& entry) {
+        return entry->render_frame_host()->nav_entry_id();
+      });
 
   if (matching_entry == entries_.end())
     return nullptr;
