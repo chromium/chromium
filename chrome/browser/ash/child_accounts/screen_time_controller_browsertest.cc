@@ -10,6 +10,7 @@
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "chrome/browser/ash/child_accounts/screen_time_controller.h"
 #include "chrome/browser/ash/child_accounts/screen_time_controller_factory.h"
 #include "chrome/browser/ash/child_accounts/time_limit_override.h"
@@ -432,7 +433,13 @@ IN_PROC_BROWSER_TEST_F(ScreenTimeControllerTest, UnlockDailyLimitWithDuration) {
 }
 
 // Tests the default time window limit.
-IN_PROC_BROWSER_TEST_F(ScreenTimeControllerTest, DefaultBedtime) {
+// TODO(crbug.com/1358216): Flaky on Linux
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_DefaultBedtime DISABLED_DefaultBedtime
+#else
+#define MAYBE_DefaultBedtime DefaultBedtime
+#endif
+IN_PROC_BROWSER_TEST_F(ScreenTimeControllerTest, MAYBE_DefaultBedtime) {
   LogInChildAndSetupClockWithTime("1 Jan 2018 10:00:00 GMT");
   ScreenLockerTester().Lock();
 
