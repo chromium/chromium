@@ -1414,187 +1414,22 @@ TransformationMatrix& TransformationMatrix::Multiply(
   ST_DP(v_tmp_m1, &(matrix_[2][2]));
   ST_DP(v_tmp_m2, &(matrix_[3][0]));
   ST_DP(v_tmp_m3, &(matrix_[3][2]));
-#elif defined(ARCH_CPU_X86_64)
-  // x86_64 has 16 XMM registers which is enough to do the multiplication fully
-  // in registers.
-  __m128d matrix_block_a = _mm_loadu_pd(&(matrix_[0][0]));
-  __m128d matrix_block_c = _mm_loadu_pd(&(matrix_[1][0]));
-  __m128d matrix_block_e = _mm_loadu_pd(&(matrix_[2][0]));
-  __m128d matrix_block_g = _mm_loadu_pd(&(matrix_[3][0]));
-
-  // First column.
-  __m128d other_matrix_first_param = _mm_set1_pd(mat.matrix_[0][0]);
-  __m128d other_matrix_second_param = _mm_set1_pd(mat.matrix_[0][1]);
-  __m128d other_matrix_third_param = _mm_set1_pd(mat.matrix_[0][2]);
-  __m128d other_matrix_fourth_param = _mm_set1_pd(mat.matrix_[0][3]);
-
-  // output00 and output01.
-  __m128d accumulator = _mm_mul_pd(matrix_block_a, other_matrix_first_param);
-  __m128d temp1 = _mm_mul_pd(matrix_block_c, other_matrix_second_param);
-  __m128d temp2 = _mm_mul_pd(matrix_block_e, other_matrix_third_param);
-  __m128d temp3 = _mm_mul_pd(matrix_block_g, other_matrix_fourth_param);
-
-  __m128d matrix_block_b = _mm_loadu_pd(&(matrix_[0][2]));
-  __m128d matrix_block_d = _mm_loadu_pd(&(matrix_[1][2]));
-  __m128d matrix_block_f = _mm_loadu_pd(&(matrix_[2][2]));
-  __m128d matrix_block_h = _mm_loadu_pd(&(matrix_[3][2]));
-
-  accumulator = _mm_add_pd(accumulator, temp1);
-  accumulator = _mm_add_pd(accumulator, temp2);
-  accumulator = _mm_add_pd(accumulator, temp3);
-  _mm_storeu_pd(&matrix_[0][0], accumulator);
-
-  // output02 and output03.
-  accumulator = _mm_mul_pd(matrix_block_b, other_matrix_first_param);
-  temp1 = _mm_mul_pd(matrix_block_d, other_matrix_second_param);
-  temp2 = _mm_mul_pd(matrix_block_f, other_matrix_third_param);
-  temp3 = _mm_mul_pd(matrix_block_h, other_matrix_fourth_param);
-
-  accumulator = _mm_add_pd(accumulator, temp1);
-  accumulator = _mm_add_pd(accumulator, temp2);
-  accumulator = _mm_add_pd(accumulator, temp3);
-  _mm_storeu_pd(&matrix_[0][2], accumulator);
-
-  // Second column.
-  other_matrix_first_param = _mm_set1_pd(mat.matrix_[1][0]);
-  other_matrix_second_param = _mm_set1_pd(mat.matrix_[1][1]);
-  other_matrix_third_param = _mm_set1_pd(mat.matrix_[1][2]);
-  other_matrix_fourth_param = _mm_set1_pd(mat.matrix_[1][3]);
-
-  // output10 and output11.
-  accumulator = _mm_mul_pd(matrix_block_a, other_matrix_first_param);
-  temp1 = _mm_mul_pd(matrix_block_c, other_matrix_second_param);
-  temp2 = _mm_mul_pd(matrix_block_e, other_matrix_third_param);
-  temp3 = _mm_mul_pd(matrix_block_g, other_matrix_fourth_param);
-
-  accumulator = _mm_add_pd(accumulator, temp1);
-  accumulator = _mm_add_pd(accumulator, temp2);
-  accumulator = _mm_add_pd(accumulator, temp3);
-  _mm_storeu_pd(&matrix_[1][0], accumulator);
-
-  // output12 and output13.
-  accumulator = _mm_mul_pd(matrix_block_b, other_matrix_first_param);
-  temp1 = _mm_mul_pd(matrix_block_d, other_matrix_second_param);
-  temp2 = _mm_mul_pd(matrix_block_f, other_matrix_third_param);
-  temp3 = _mm_mul_pd(matrix_block_h, other_matrix_fourth_param);
-
-  accumulator = _mm_add_pd(accumulator, temp1);
-  accumulator = _mm_add_pd(accumulator, temp2);
-  accumulator = _mm_add_pd(accumulator, temp3);
-  _mm_storeu_pd(&matrix_[1][2], accumulator);
-
-  // Third column.
-  other_matrix_first_param = _mm_set1_pd(mat.matrix_[2][0]);
-  other_matrix_second_param = _mm_set1_pd(mat.matrix_[2][1]);
-  other_matrix_third_param = _mm_set1_pd(mat.matrix_[2][2]);
-  other_matrix_fourth_param = _mm_set1_pd(mat.matrix_[2][3]);
-
-  // output20 and output21.
-  accumulator = _mm_mul_pd(matrix_block_a, other_matrix_first_param);
-  temp1 = _mm_mul_pd(matrix_block_c, other_matrix_second_param);
-  temp2 = _mm_mul_pd(matrix_block_e, other_matrix_third_param);
-  temp3 = _mm_mul_pd(matrix_block_g, other_matrix_fourth_param);
-
-  accumulator = _mm_add_pd(accumulator, temp1);
-  accumulator = _mm_add_pd(accumulator, temp2);
-  accumulator = _mm_add_pd(accumulator, temp3);
-  _mm_storeu_pd(&matrix_[2][0], accumulator);
-
-  // output22 and output23.
-  accumulator = _mm_mul_pd(matrix_block_b, other_matrix_first_param);
-  temp1 = _mm_mul_pd(matrix_block_d, other_matrix_second_param);
-  temp2 = _mm_mul_pd(matrix_block_f, other_matrix_third_param);
-  temp3 = _mm_mul_pd(matrix_block_h, other_matrix_fourth_param);
-
-  accumulator = _mm_add_pd(accumulator, temp1);
-  accumulator = _mm_add_pd(accumulator, temp2);
-  accumulator = _mm_add_pd(accumulator, temp3);
-  _mm_storeu_pd(&matrix_[2][2], accumulator);
-
-  // Fourth column.
-  other_matrix_first_param = _mm_set1_pd(mat.matrix_[3][0]);
-  other_matrix_second_param = _mm_set1_pd(mat.matrix_[3][1]);
-  other_matrix_third_param = _mm_set1_pd(mat.matrix_[3][2]);
-  other_matrix_fourth_param = _mm_set1_pd(mat.matrix_[3][3]);
-
-  // output30 and output31.
-  accumulator = _mm_mul_pd(matrix_block_a, other_matrix_first_param);
-  temp1 = _mm_mul_pd(matrix_block_c, other_matrix_second_param);
-  temp2 = _mm_mul_pd(matrix_block_e, other_matrix_third_param);
-  temp3 = _mm_mul_pd(matrix_block_g, other_matrix_fourth_param);
-
-  accumulator = _mm_add_pd(accumulator, temp1);
-  accumulator = _mm_add_pd(accumulator, temp2);
-  accumulator = _mm_add_pd(accumulator, temp3);
-  _mm_storeu_pd(&matrix_[3][0], accumulator);
-
-  // output32 and output33.
-  accumulator = _mm_mul_pd(matrix_block_b, other_matrix_first_param);
-  temp1 = _mm_mul_pd(matrix_block_d, other_matrix_second_param);
-  temp2 = _mm_mul_pd(matrix_block_f, other_matrix_third_param);
-  temp3 = _mm_mul_pd(matrix_block_h, other_matrix_fourth_param);
-
-  accumulator = _mm_add_pd(accumulator, temp1);
-  accumulator = _mm_add_pd(accumulator, temp2);
-  accumulator = _mm_add_pd(accumulator, temp3);
-  _mm_storeu_pd(&matrix_[3][2], accumulator);
 #else
-  Matrix4 tmp;
+  auto c0 = Col(0);
+  auto c1 = Col(1);
+  auto c2 = Col(2);
+  auto c3 = Col(3);
 
-  tmp[0][0] =
-      (mat.matrix_[0][0] * matrix_[0][0] + mat.matrix_[0][1] * matrix_[1][0] +
-       mat.matrix_[0][2] * matrix_[2][0] + mat.matrix_[0][3] * matrix_[3][0]);
-  tmp[0][1] =
-      (mat.matrix_[0][0] * matrix_[0][1] + mat.matrix_[0][1] * matrix_[1][1] +
-       mat.matrix_[0][2] * matrix_[2][1] + mat.matrix_[0][3] * matrix_[3][1]);
-  tmp[0][2] =
-      (mat.matrix_[0][0] * matrix_[0][2] + mat.matrix_[0][1] * matrix_[1][2] +
-       mat.matrix_[0][2] * matrix_[2][2] + mat.matrix_[0][3] * matrix_[3][2]);
-  tmp[0][3] =
-      (mat.matrix_[0][0] * matrix_[0][3] + mat.matrix_[0][1] * matrix_[1][3] +
-       mat.matrix_[0][2] * matrix_[2][3] + mat.matrix_[0][3] * matrix_[3][3]);
+  auto compute = [&](Double4 r) {
+    return c0 * r.s0 + c1 * r.s1 + c2 * r.s2 + c3 * r.s3;
+  };
 
-  tmp[1][0] =
-      (mat.matrix_[1][0] * matrix_[0][0] + mat.matrix_[1][1] * matrix_[1][0] +
-       mat.matrix_[1][2] * matrix_[2][0] + mat.matrix_[1][3] * matrix_[3][0]);
-  tmp[1][1] =
-      (mat.matrix_[1][0] * matrix_[0][1] + mat.matrix_[1][1] * matrix_[1][1] +
-       mat.matrix_[1][2] * matrix_[2][1] + mat.matrix_[1][3] * matrix_[3][1]);
-  tmp[1][2] =
-      (mat.matrix_[1][0] * matrix_[0][2] + mat.matrix_[1][1] * matrix_[1][2] +
-       mat.matrix_[1][2] * matrix_[2][2] + mat.matrix_[1][3] * matrix_[3][2]);
-  tmp[1][3] =
-      (mat.matrix_[1][0] * matrix_[0][3] + mat.matrix_[1][1] * matrix_[1][3] +
-       mat.matrix_[1][2] * matrix_[2][3] + mat.matrix_[1][3] * matrix_[3][3]);
-
-  tmp[2][0] =
-      (mat.matrix_[2][0] * matrix_[0][0] + mat.matrix_[2][1] * matrix_[1][0] +
-       mat.matrix_[2][2] * matrix_[2][0] + mat.matrix_[2][3] * matrix_[3][0]);
-  tmp[2][1] =
-      (mat.matrix_[2][0] * matrix_[0][1] + mat.matrix_[2][1] * matrix_[1][1] +
-       mat.matrix_[2][2] * matrix_[2][1] + mat.matrix_[2][3] * matrix_[3][1]);
-  tmp[2][2] =
-      (mat.matrix_[2][0] * matrix_[0][2] + mat.matrix_[2][1] * matrix_[1][2] +
-       mat.matrix_[2][2] * matrix_[2][2] + mat.matrix_[2][3] * matrix_[3][2]);
-  tmp[2][3] =
-      (mat.matrix_[2][0] * matrix_[0][3] + mat.matrix_[2][1] * matrix_[1][3] +
-       mat.matrix_[2][2] * matrix_[2][3] + mat.matrix_[2][3] * matrix_[3][3]);
-
-  tmp[3][0] =
-      (mat.matrix_[3][0] * matrix_[0][0] + mat.matrix_[3][1] * matrix_[1][0] +
-       mat.matrix_[3][2] * matrix_[2][0] + mat.matrix_[3][3] * matrix_[3][0]);
-  tmp[3][1] =
-      (mat.matrix_[3][0] * matrix_[0][1] + mat.matrix_[3][1] * matrix_[1][1] +
-       mat.matrix_[3][2] * matrix_[2][1] + mat.matrix_[3][3] * matrix_[3][1]);
-  tmp[3][2] =
-      (mat.matrix_[3][0] * matrix_[0][2] + mat.matrix_[3][1] * matrix_[1][2] +
-       mat.matrix_[3][2] * matrix_[2][2] + mat.matrix_[3][3] * matrix_[3][2]);
-  tmp[3][3] =
-      (mat.matrix_[3][0] * matrix_[0][3] + mat.matrix_[3][1] * matrix_[1][3] +
-       mat.matrix_[3][2] * matrix_[2][3] + mat.matrix_[3][3] * matrix_[3][3]);
-
-  SetMatrix(tmp);
+  SetCol(0, compute(mat.Col(0)));
+  SetCol(1, compute(mat.Col(1)));
+  SetCol(2, compute(mat.Col(2)));
+  SetCol(3, compute(mat.Col(3)));
 #endif
+
   return *this;
 }
 

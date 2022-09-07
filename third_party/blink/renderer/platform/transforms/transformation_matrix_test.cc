@@ -139,25 +139,41 @@ TEST(TransformationMatrixTest, ApplyTransformOrigin) {
 }
 
 TEST(TransformationMatrixTest, Multiplication) {
-  TransformationMatrix a(1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4);
-  // [ 1 2 3 4 ]
-  // [ 1 2 3 4 ]
-  // [ 1 2 3 4 ]
-  // [ 1 2 3 4 ]
+  // clang-format off
+  TransformationMatrix a(1, 1, 1, 1,
+                         2, 2, 2, 2,
+                         3, 3, 3, 3,
+                         4, 4, 4, 4);
+  TransformationMatrix b(1, 2, 3, 5,
+                         1, 2, 3, 4,
+                         1, 2, 3, 4,
+                         1, 2, 3, 4);
+  TransformationMatrix expected_a_times_b(34, 34, 34, 34,
+                                          30, 30, 30, 30,
+                                          30, 30, 30, 30,
+                                          30, 30, 30, 30);
+  // clang-format on
 
-  TransformationMatrix b(1, 2, 3, 5, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4);
-  // [ 1 1 1 1 ]
-  // [ 2 2 2 2 ]
-  // [ 3 3 3 3 ]
-  // [ 5 4 4 4 ]
-
-  TransformationMatrix expected_atimes_b(34, 34, 34, 34, 30, 30, 30, 30, 30, 30,
-                                         30, 30, 30, 30, 30, 30);
-
-  EXPECT_EQ(expected_atimes_b, a * b);
+  EXPECT_EQ(expected_a_times_b, a * b);
 
   a.Multiply(b);
-  EXPECT_EQ(expected_atimes_b, a);
+  EXPECT_EQ(expected_a_times_b, a);
+}
+
+TEST(TransformationMatrixTest, MultiplicationSelf) {
+  // clang-format off
+  TransformationMatrix a(1, 2, 3, 4,
+                         5, 6, 7, 8,
+                         9, 10, 11, 12,
+                         13, 14, 15, 16);
+  TransformationMatrix expected_a_times_a(90, 100, 110, 120,
+                                          202, 228, 254, 280,
+                                          314, 356, 398, 440,
+                                          426, 484, 542, 600);
+  // clang-format on
+
+  a.Multiply(a);
+  EXPECT_EQ(expected_a_times_a, a);
 }
 
 TEST(TransformationMatrixTest, ValidRangedMatrix) {
