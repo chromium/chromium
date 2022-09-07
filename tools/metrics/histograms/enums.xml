@@ -79491,6 +79491,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="12" label="kDefaultAppAndAppsToReplaceUninstalled"/>
   <int value="13" label="kReplacingAppUninstalledByUser"/>
   <int value="14" label="kStylusRequired"/>
+  <int value="15" label="kPreinstalledAppUninstalledByUserNoOverride"/>
 </enum>
 
 <enum name="PreloadedListCheckResult">

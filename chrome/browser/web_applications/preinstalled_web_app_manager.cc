@@ -103,7 +103,8 @@ enum class DisabledReason {
   kDefaultAppAndAppsToReplaceUninstalled = 12,
   kReplacingAppUninstalledByUser = 13,
   kStylusRequired = 14,
-  kMaxValue = kStylusRequired
+  kPreinstalledAppUninstalledByUserNoOverride = 15,
+  kMaxValue = kPreinstalledAppUninstalledByUserNoOverride
 };
 
 struct LoadedConfig {
@@ -430,19 +431,22 @@ absl::optional<std::string> GetDisableReason(
              "touchscreen with stylus support.";
     }
   }
-  base::UmaHistogramEnumeration(kHistogramMigrationDisabledReason,
-                                DisabledReason::kNotDisabled);
 
   // Remove from install configs of preinstalled_apps
   // if it was uninstalled by user and if |override_previous_user_uninstall| is
   // false.
   if (was_previously_uninstalled_by_user &&
       !options.override_previous_user_uninstall) {
+    base::UmaHistogramEnumeration(
+        kHistogramMigrationDisabledReason,
+        DisabledReason::kPreinstalledAppUninstalledByUserNoOverride);
     return options.install_url.spec() +
            " is not being installed because it was previously uninstalled "
            "by user.";
   }
 
+  base::UmaHistogramEnumeration(kHistogramMigrationDisabledReason,
+                                DisabledReason::kNotDisabled);
   return absl::nullopt;
 }
 

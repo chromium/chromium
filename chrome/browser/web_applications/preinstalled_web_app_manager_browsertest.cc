@@ -13,6 +13,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -714,6 +715,7 @@ IN_PROC_BROWSER_TEST_P(
 IN_PROC_BROWSER_TEST_P(PreinstalledWebAppManagerTestWithExternalPrefRead,
                        DisableForPreinstalledAppsInConfig) {
   PreinstalledWebAppManager::BypassOfflineManifestRequirementForTesting();
+  base::HistogramTester tester;
   ASSERT_TRUE(embedded_test_server()->Start());
 
   const auto manifest = base::ReplaceStringPlaceholders(
@@ -742,6 +744,15 @@ IN_PROC_BROWSER_TEST_P(PreinstalledWebAppManagerTestWithExternalPrefRead,
   EXPECT_FALSE(registrar().IsInstalled(app_id));
   EXPECT_EQ(disabled_configs.size(), 1u);
   EXPECT_EQ(disabled_configs.back().second, GetAppUrl().spec() + kErrorMessage);
+
+  // Verify that only the kPreinstalledAppUninstalledByUserNoOverride enum is
+  // filled, which is sample 15. Check enum DisabledReason in
+  // preinstalled_web_app_manager.cc for more information.
+  tester.ExpectBucketCount("WebApp.Preinstalled.DisabledReason",
+                           /*kPreinstalledAppUninstalledByUserNoOverride=*/15,
+                           /*expected_count=*/1);
+  tester.ExpectTotalCount("WebApp.Preinstalled.DisabledReason",
+                          /*expected_count=*/1);
 }
 
 // Preinstalled apps which are user uninstalled are included
