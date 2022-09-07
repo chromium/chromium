@@ -13,10 +13,12 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsUtils;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.banners.SwipableOverlayView;
 import org.chromium.components.infobars.InfoBar;
 import org.chromium.components.infobars.InfoBarAnimationListener;
@@ -28,7 +30,8 @@ import org.chromium.ui.display.DisplayUtil;
 /**
  * The {@link View} for the {@link InfoBarContainer}.
  */
-public class InfoBarContainerView extends SwipableOverlayView {
+public class InfoBarContainerView
+        extends SwipableOverlayView implements BrowserControlsStateProvider.Observer {
     /**
      * Observes container view changes.
      */
@@ -77,10 +80,15 @@ public class InfoBarContainerView extends SwipableOverlayView {
      */
     InfoBarContainerView(@NonNull Context context,
             @NonNull ContainerViewObserver containerViewObserver,
-            @NonNull BrowserControlsStateProvider browserControlsStateProvider, boolean isTablet) {
-        super(context, null);
+            @Nullable BrowserControlsStateProvider browserControlsStateProvider, boolean isTablet) {
+        super(context, null,
+                !ChromeFeatureList.isEnabled(ChromeFeatureList.INFOBAR_SCROLL_OPTIMIZATION));
         mContainerViewObserver = containerViewObserver;
         mBrowserControlsStateProvider = browserControlsStateProvider;
+        if (mBrowserControlsStateProvider != null
+                && ChromeFeatureList.isEnabled(ChromeFeatureList.INFOBAR_SCROLL_OPTIMIZATION)) {
+            mBrowserControlsStateProvider.addObserver(this);
+        }
 
         // TODO(newt): move this workaround into the infobar views if/when they're scrollable.
         // Workaround for http://crbug.com/407149. See explanation in onMeasure() below.
@@ -108,6 +116,10 @@ public class InfoBarContainerView extends SwipableOverlayView {
     }
 
     void destroy() {
+        if (mBrowserControlsStateProvider != null
+                && ChromeFeatureList.isEnabled(ChromeFeatureList.INFOBAR_SCROLL_OPTIMIZATION)) {
+            mBrowserControlsStateProvider.removeObserver(this);
+        }
         removeFromParentView();
     }
 
@@ -172,6 +184,17 @@ public class InfoBarContainerView extends SwipableOverlayView {
         super.setTranslationY(translationY);
         float shownFraction = getHeight() > 0 ? 1f - (translationY / getHeight()) : 0;
         mContainerViewObserver.onShownRatioChanged(shownFraction);
+    }
+
+    // BrowserControlsStateProvider.Observer implementation.
+    @Override
+    public void onControlsOffsetChanged(int topOffset, int topControlsMinHeightOffset,
+            int bottomOffset, int bottomControlsMinHeightOffset, boolean needsAnimate) {
+        if (!isAllowedToAutoHide()) {
+            return;
+        }
+        setTranslationY(getTotalHeight() * 1.0f * Math.abs(topOffset)
+                / mBrowserControlsStateProvider.getTopControlsHeight());
     }
 
     /**

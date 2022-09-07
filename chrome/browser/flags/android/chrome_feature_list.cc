@@ -246,6 +246,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kImmersiveUiMode,
     &kIncognitoReauthenticationForAndroid,
     &kIncognitoScreenshot,
+    &kInfobarScrollOptimization,
     &kInstanceSwitcher,
     &kInstantStart,
     &kIsVoiceSearchEnabledCache,
@@ -698,6 +699,9 @@ const base::Feature kIncognitoReauthenticationForAndroid{
 
 const base::Feature kIncognitoScreenshot{"IncognitoScreenshot",
                                          base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kInfobarScrollOptimization{
+    "InfobarScrollOptimization", base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kInstantStart{"InstantStart",
                                   base::FEATURE_DISABLED_BY_DEFAULT};

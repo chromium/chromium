@@ -18,6 +18,7 @@ import android.view.animation.Interpolator;
 import android.widget.FrameLayout;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.Nullable;
 
 import org.chromium.base.MathUtils;
 import org.chromium.content_public.browser.GestureListenerManager;
@@ -58,7 +59,8 @@ public abstract class SwipableOverlayView extends FrameLayout {
     private static final long ANIMATION_DURATION_MS = 250;
 
     /** Detects when the user is dragging the WebContents. */
-    private final GestureStateListenerWithScroll mGestureStateListener;
+    @Nullable
+    protected final GestureStateListenerWithScroll mGestureStateListener;
 
     /** Listens for changes in the layout. */
     private final View.OnLayoutChangeListener mLayoutChangeListener;
@@ -93,8 +95,19 @@ public abstract class SwipableOverlayView extends FrameLayout {
      * @param attrs Attributes from the XML layout inflation.
      */
     public SwipableOverlayView(Context context, AttributeSet attrs) {
+        this(context, attrs, true);
+    }
+
+    /**
+     * Creates a SwipableOverlayView.
+     * @param context Context for acquiring resources.
+     * @param attrs Attributes from the XML layout inflation.
+     * @param hideOnScroll Whether this view should observe user's gesture and then auto-hide when
+     *                     page is scrolled down.
+     */
+    public SwipableOverlayView(Context context, AttributeSet attrs, boolean hideOnScroll) {
         super(context, attrs);
-        mGestureStateListener = createGestureStateListener();
+        mGestureStateListener = hideOnScroll ? createGestureStateListener() : null;
         mGestureState = Gesture.NONE;
         mLayoutChangeListener = createLayoutChangeListener();
         mInterpolator = new DecelerateInterpolator(1.0f);
@@ -121,6 +134,10 @@ public abstract class SwipableOverlayView extends FrameLayout {
 
     public WebContents getWebContents() {
         return mWebContents;
+    }
+
+    protected int getTotalHeight() {
+        return mTotalHeight;
     }
 
     protected void addToParentView(ViewGroup parentView) {
@@ -202,7 +219,7 @@ public abstract class SwipableOverlayView extends FrameLayout {
 
         // Adding a listener to GestureListenerManager results in extra IPCs on every frame, which
         // is very costly. Only attach the listener if needed.
-        if (mWebContents != null) {
+        if (mWebContents != null && mGestureStateListener != null) {
             if (mTotalHeight > 0) {
                 GestureListenerManager.fromWebContents(mWebContents)
                         .addListener(mGestureStateListener);
