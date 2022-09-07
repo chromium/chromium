@@ -25,8 +25,8 @@ namespace ash {
 
 namespace {
 
-// Maps dlp::FileAction proto enum to DlpWarnDialog::FilesAction enum.
-policy::DlpWarnDialog::FilesAction MapProtoToFilesAction(
+// Maps dlp::FileAction proto enum to DlpFilesController::FileAction enum.
+policy::DlpFilesController::FileAction MapProtoToFileAction(
     dlp::FileAction file_action) {
   switch (file_action) {
     case dlp::FileAction::UPLOAD:
@@ -34,7 +34,7 @@ policy::DlpWarnDialog::FilesAction MapProtoToFilesAction(
     case dlp::FileAction::OPEN:
     // TODO(crbug.com/1356109): Return open FileAction.
     case dlp::FileAction::TRANSFER:
-      return policy::DlpWarnDialog::FilesAction::kTransfer;
+      return policy::DlpFilesController::FileAction::kTransfer;
   }
 }
 
@@ -164,10 +164,10 @@ void DlpFilesPolicyServiceProvider::IsFilesTransferRestricted(
     destination.emplace(request.destination_url());
   }
 
-  policy::DlpWarnDialog::FilesAction files_action =
-      policy::DlpWarnDialog::FilesAction::kTransfer;
+  policy::DlpFilesController::FileAction files_action =
+      policy::DlpFilesController::FileAction::kTransfer;
   if (request.has_file_action())
-    files_action = MapProtoToFilesAction(request.file_action());
+    files_action = MapProtoToFileAction(request.file_action());
 
   files_controller->IsFilesTransferRestricted(
       std::move(files_info), std::move(destination.value()), files_action,

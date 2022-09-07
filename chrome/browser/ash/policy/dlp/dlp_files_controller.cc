@@ -291,7 +291,7 @@ void DlpFilesController::CheckIfDownloadAllowed(
   FileDaemonInfo file_info({}, base::FilePath(""), download_url.spec());
   IsFilesTransferRestricted(
       {std::move(file_info)}, DlpFileDestination(file_path.value()),
-      DlpWarnDialog::FilesAction::kDownload,
+      FileAction::kDownload,
       base::BindOnce(
           [](CheckIfDownloadAllowedCallback result_callback,
              const std::vector<FileDaemonInfo>& restricted_files) {
@@ -304,7 +304,7 @@ void DlpFilesController::CheckIfDownloadAllowed(
 void DlpFilesController::IsFilesTransferRestricted(
     const std::vector<FileDaemonInfo>& transferred_files,
     const DlpFileDestination& destination,
-    DlpWarnDialog::FilesAction files_action,
+    FileAction files_action,
     IsFilesTransferRestrictedCallback result_callback) {
   policy::DlpRulesManager* dlp_rules_manager =
       policy::DlpRulesManagerFactory::GetForPrimaryProfile();
@@ -349,7 +349,7 @@ void DlpFilesController::IsFilesTransferRestricted(
       restricted_files.push_back(file);
     } else if (level == DlpRulesManager::Level::kWarn) {
       warned_files.push_back(file);
-      if (files_action != DlpWarnDialog::FilesAction::kDownload) {
+      if (files_action != FileAction::kDownload) {
         dialog_files.Add(
             // TODO(crbug.com/1357593): Pass the proper |dark_background|
             chromeos::GetIconForPath(file.path, /*dark_background=*/false),

@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/ash/policy/dlp/dlp_files_controller.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_confidential_contents.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_warn_dialog.h"
 #include "ui/views/widget/widget.h"
@@ -52,7 +53,7 @@ class DlpWarnNotifier : public views::WidgetObserver {
   void ShowDlpFilesWarningDialog(
       OnDlpRestrictionCheckedCallback callback,
       const DlpConfidentialContents& confidential_contents,
-      DlpWarnDialog::FilesAction files_action);
+      DlpFilesController::FileAction files_action);
 
   // Shows a warning dialog that informs the user that screen sharing is not
   // recommended due to |confidential_contents| visible. Calls |callback| and

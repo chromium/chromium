@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/callback_forward.h"
+#include "chrome/browser/ash/policy/dlp/dlp_files_controller.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_confidential_contents.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -38,10 +39,6 @@ class DlpWarnDialog : public views::DialogDelegateView {
     kFiles
   };
 
-  // Type of the files action for which the dialog with kFiles restriction is
-  // created, used to determine the text shown in the dialog.
-  enum class FilesAction { kDownload, kTransfer };
-
   // A structure to keep track of optional and configurable parameters of a
   // DlpWarnDialog.
   struct DlpWarnDialogOptions {
@@ -54,7 +51,7 @@ class DlpWarnDialog : public views::DialogDelegateView {
                          const std::u16string& application_title);
     DlpWarnDialogOptions(Restriction restriction,
                          DlpConfidentialContents confidential_contents,
-                         FilesAction files_action);
+                         DlpFilesController::FileAction files_action);
     DlpWarnDialogOptions(const DlpWarnDialogOptions& other);
     DlpWarnDialogOptions& operator=(const DlpWarnDialogOptions& other);
     ~DlpWarnDialogOptions();
@@ -78,7 +75,7 @@ class DlpWarnDialog : public views::DialogDelegateView {
     absl::optional<std::u16string> application_title;
 
     // Has value only if the |restriction| is kFiles.
-    absl::optional<FilesAction> files_action;
+    absl::optional<DlpFilesController::FileAction> files_action;
   };
 
   DlpWarnDialog() = delete;

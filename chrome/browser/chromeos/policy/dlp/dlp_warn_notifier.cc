@@ -55,7 +55,7 @@ void DlpWarnNotifier::ShowDlpVideoCaptureWarningDialog(
 void DlpWarnNotifier::ShowDlpFilesWarningDialog(
     OnDlpRestrictionCheckedCallback callback,
     const DlpConfidentialContents& confidential_contents,
-    DlpWarnDialog::FilesAction files_action) {
+    DlpFilesController::FileAction files_action) {
   ShowDlpWarningDialog(
       std::move(callback),
       DlpWarnDialog::DlpWarnDialogOptions(DlpWarnDialog::Restriction::kFiles,

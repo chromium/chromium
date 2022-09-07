@@ -12,8 +12,6 @@
 #include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
-#include "chrome/browser/chromeos/policy/dlp/dlp_warn_dialog.h"
-#include "chrome/browser/chromeos/policy/dlp/dlp_warn_notifier.h"
 #include "chromeos/dbus/dlp/dlp_service.pb.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "third_party/blink/public/mojom/choosers/file_chooser.mojom-forward.h"
@@ -25,11 +23,17 @@ class FileSystemURL;
 
 namespace policy {
 
+class DlpWarnNotifier;
+
 // DlpFilesController is responsible for deciding whether file transfers are
 // allowed according to the files sources saved in the DLP daemon and the rules
 // of the Data leak prevention policy set by the admin.
 class DlpFilesController {
  public:
+  // Types of file actions. These actions are used when warning dialogs are
+  // shown because of files restrictions.
+  enum class FileAction { kDownload = 1, kTransfer = 2, kMaxValue = kTransfer };
+
   // DlpFileMetadata keeps metadata about a file, such as whether it's managed
   // or not and the source URL, if it exists.
   struct DlpFileMetadata {
@@ -159,7 +163,7 @@ class DlpFilesController {
   void IsFilesTransferRestricted(
       const std::vector<FileDaemonInfo>& transferred_files,
       const DlpFileDestination& destination,
-      DlpWarnDialog::FilesAction files_action,
+      FileAction files_action,
       IsFilesTransferRestrictedCallback result_callback);
 
   // Returns restriction information for `sourceUrl`.

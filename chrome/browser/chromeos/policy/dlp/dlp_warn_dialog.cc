@@ -9,8 +9,8 @@
 #include <utility>
 
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/ash/policy/dlp/dlp_files_controller.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_confidential_contents.h"
-#include "chrome/browser/chromeos/policy/dlp/dlp_warn_notifier.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -82,36 +82,38 @@ constexpr int kConfidentialContentListMaxHeight = 240;
 
 // Returns the OK button label for |files_action|.
 const std::u16string GetDialogButtonOkLabelForFiles(
-    DlpWarnDialog::FilesAction files_action) {
+    DlpFilesController::FileAction files_action) {
   switch (files_action) {
-    case DlpWarnDialog::FilesAction::kDownload:
+    case DlpFilesController::FileAction::kDownload:
       return l10n_util::GetStringUTF16(
           IDS_POLICY_DLP_FILES_DOWNLOAD_WARN_CONTINUE_BUTTON);
-    case DlpWarnDialog::FilesAction::kTransfer:
+    case DlpFilesController::FileAction::kTransfer:
       return l10n_util::GetStringUTF16(
           IDS_POLICY_DLP_FILES_TRANSFER_WARN_CONTINUE_BUTTON);
   }
 }
 
 // Returns the title for |files_action|.
-const std::u16string GetTitleForFiles(DlpWarnDialog::FilesAction files_action,
-                                      int files_number) {
+const std::u16string GetTitleForFiles(
+    DlpFilesController::FileAction files_action,
+    int files_number) {
   switch (files_action) {
-    case DlpWarnDialog::FilesAction::kDownload:
+    case DlpFilesController::FileAction::kDownload:
       return l10n_util::GetPluralStringFUTF16(
           // Download action is only allowed for one file.
           IDS_POLICY_DLP_FILES_DOWNLOAD_WARN_TITLE, 1);
-    case DlpWarnDialog::FilesAction::kTransfer:
+    case DlpFilesController::FileAction::kTransfer:
       return l10n_util::GetPluralStringFUTF16(
           IDS_POLICY_DLP_FILES_TRANSFER_WARN_TITLE, files_number);
   }
 }
 
 // Returns the message for |files_action|.
-const std::u16string GetMessageForFiles(DlpWarnDialog::FilesAction files_action,
-                                        int files_number) {
+const std::u16string GetMessageForFiles(
+    DlpFilesController::FileAction files_action,
+    int files_number) {
   switch (files_action) {
-    case DlpWarnDialog::FilesAction::kDownload:
+    case DlpFilesController::FileAction::kDownload:
       return base::ReplaceStringPlaceholders(
           l10n_util::GetPluralStringFUTF16(
               // Download action is only allowed for one file.
@@ -119,7 +121,7 @@ const std::u16string GetMessageForFiles(DlpWarnDialog::FilesAction files_action,
           // TODO(crbug.com/1350978) Change to the actual destination string.
           u"External storage",
           /*offset=*/nullptr);
-    case DlpWarnDialog::FilesAction::kTransfer:
+    case DlpFilesController::FileAction::kTransfer:
       return base::ReplaceStringPlaceholders(
           l10n_util::GetPluralStringFUTF16(
               IDS_POLICY_DLP_FILES_TRANSFER_WARN_MESSAGE, files_number),
@@ -370,7 +372,7 @@ DlpWarnDialog::DlpWarnDialogOptions::DlpWarnDialogOptions(
 DlpWarnDialog::DlpWarnDialogOptions::DlpWarnDialogOptions(
     Restriction restriction,
     DlpConfidentialContents confidential_contents,
-    FilesAction files_action)
+    DlpFilesController::FileAction files_action)
     : restriction(restriction),
       confidential_contents(confidential_contents),
       files_action(files_action) {}
