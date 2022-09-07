@@ -17,6 +17,7 @@
 #include "components/account_id/account_id.h"
 #include "components/services/app_service/public/cpp/capability_access.h"
 #include "components/services/app_service/public/cpp/capability_access_update.h"
+#include "components/services/app_service/public/cpp/features.h"
 
 namespace apps {
 
@@ -131,6 +132,30 @@ class COMPONENT_EXPORT(APP_UPDATE) AppCapabilityAccessCache {
   void ForEachApp(FunctionType f) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(my_sequence_checker_);
 
+    if (base::FeatureList::IsEnabled(kAppServiceCapabilityAccessWithoutMojom)) {
+      for (const auto& s_iter : states_) {
+        const CapabilityAccess* state = s_iter.second.get();
+
+        auto d_iter = deltas_in_progress_.find(s_iter.first);
+        const CapabilityAccess* delta =
+            (d_iter != deltas_in_progress_.end()) ? d_iter->second : nullptr;
+
+        f(CapabilityAccessUpdate(state, delta, account_id_));
+      }
+
+      for (const auto& d_iter : deltas_in_progress_) {
+        const CapabilityAccess* delta = d_iter.second;
+
+        auto s_iter = states_.find(d_iter.first);
+        if (s_iter != states_.end()) {
+          continue;
+        }
+
+        f(CapabilityAccessUpdate(nullptr, delta, account_id_));
+      }
+      return;
+    }
+
     for (const auto& s_iter : mojom_states_) {
       const apps::mojom::CapabilityAccess* state = s_iter.second.get();
 
@@ -165,6 +190,22 @@ class COMPONENT_EXPORT(APP_UPDATE) AppCapabilityAccessCache {
   template <typename FunctionType>
   bool ForOneApp(const std::string& app_id, FunctionType f) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(my_sequence_checker_);
+
+    if (base::FeatureList::IsEnabled(kAppServiceCapabilityAccessWithoutMojom)) {
+      auto s_iter = states_.find(app_id);
+      const CapabilityAccess* state =
+          (s_iter != states_.end()) ? s_iter->second.get() : nullptr;
+
+      auto d_iter = deltas_in_progress_.find(app_id);
+      const CapabilityAccess* delta =
+          (d_iter != deltas_in_progress_.end()) ? d_iter->second : nullptr;
+
+      if (state || delta) {
+        f(CapabilityAccessUpdate(state, delta, account_id_));
+        return true;
+      }
+      return false;
+    }
 
     auto s_iter = mojom_states_.find(app_id);
     const apps::mojom::CapabilityAccess* state =

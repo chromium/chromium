@@ -309,7 +309,6 @@ class InitializedObserver : public apps::AppRegistryCache::Observer {
 }  // namespace
 
 class AppRegistryCacheTest : public testing::Test,
-                             public testing::WithParamInterface<bool>,
                              public AppRegistryCache::Observer {
  public:
   void CallForEachApp(AppRegistryCache& cache) {
