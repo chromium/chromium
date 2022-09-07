@@ -1375,27 +1375,12 @@ ui::TextEditCommand GetTextEditCommandForMenuAction(SEL action) {
 - (NSAttributedString*)attributedSubstringForProposedRange:(NSRange)range
                                                actualRange:
                                                    (NSRangePointer)actualRange {
-  // NSRange uses uint64 but gfx::Range uses uint32 limits. This mismatch might
-  // cause DCHECK in gfx::Range ctor during type conversion.
-  // Speculatively treat out of uint32 limit NSRange as NSNotFound.
-  // See https://crbug.com/1345195.
-  constexpr size_t gfx_range_max = std::numeric_limits<uint32_t>::max();
-  if (range.location > gfx_range_max) {
-    range.location = NSNotFound;
-    // On TouchBar Macs, the IME subsystem sometimes sends an invalid range with
-    // a non-zero length. This will cause a DCHECK in gfx::Range, so repair it
-    // here. See https://crbug.com/888782.
-    range.length = 0;
-  } else {
-    // Clamp lengths to avoid overflow, which will cause a checkfailure.
-    range.length = std::min(range.length, gfx_range_max - range.location);
-  }
-
   std::u16string substring;
   gfx::Range actual_range = gfx::Range::InvalidRange();
   if (_bridge) {
     _bridge->text_input_host()->GetAttributedSubstringForRange(
-        gfx::Range(range), &substring, &actual_range);
+        gfx::Range::FromPossiblyInvalidNSRange(range), &substring,
+        &actual_range);
   }
   if (actualRange) {
     // To maintain consistency with NSTextView, return range {0,0} for an out of

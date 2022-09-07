@@ -1855,7 +1855,7 @@ extern NSString* NSTextInputReplacementRangeAttributeName;
   gfx::Range gfxActualRange;
   bool success = false;
   if (actualRange)
-    gfxActualRange = gfx::Range(*actualRange);
+    gfxActualRange = gfx::Range::FromPossiblyInvalidNSRange(*actualRange);
   _host->SyncGetFirstRectForRange(gfx::Range(theRange), &gfxRect,
                                   &gfxActualRange, &success);
   if (!success) {

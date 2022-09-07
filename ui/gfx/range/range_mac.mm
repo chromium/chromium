@@ -9,11 +9,25 @@
 #include <limits>
 
 #include "base/check_op.h"
+#include "base/numerics/checked_math.h"
 
 namespace gfx {
 
 Range::Range(const NSRange& range) {
   *this = range;
+}
+
+Range Range::FromPossiblyInvalidNSRange(const NSRange& range) {
+  uint32_t end;
+  if (range.location == NSNotFound ||
+      !base::IsValueInRangeForNumericType<uint32_t>(range.location) ||
+      !base::IsValueInRangeForNumericType<uint32_t>(range.length) ||
+      !base::CheckAdd<uint32_t>(range.location, range.length)
+           .AssignIfValid(&end)) {
+    return InvalidRange();
+  }
+
+  return Range(range.location, end);
 }
 
 Range& Range::operator=(const NSRange& range) {
