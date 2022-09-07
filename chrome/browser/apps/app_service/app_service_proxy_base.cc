@@ -975,6 +975,11 @@ void AppServiceProxyBase::OnApps(std::vector<apps::mojom::AppPtr> deltas,
 }
 
 void AppServiceProxyBase::OnCapabilityAccesses(
+    std::vector<CapabilityAccessPtr> deltas) {
+  app_capability_access_cache_.OnCapabilityAccesses(std::move(deltas));
+}
+
+void AppServiceProxyBase::OnCapabilityAccesses(
     std::vector<apps::mojom::CapabilityAccessPtr> deltas) {
   app_capability_access_cache_.OnCapabilityAccesses(std::move(deltas));
 }

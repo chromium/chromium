@@ -68,6 +68,7 @@
 #include "components/app_restore/app_launch_info.h"
 #include "components/app_restore/full_restore_utils.h"
 #include "components/policy/core/common/policy_pref_names.h"
+#include "components/services/app_service/public/cpp/features.h"
 #include "components/services/app_service/public/cpp/instance.h"
 #include "components/services/app_service/public/cpp/intent.h"
 #include "components/services/app_service/public/cpp/intent_filter.h"
@@ -494,8 +495,15 @@ void ExtensionAppsChromeOs::OnExtensionUninstalled(
   paused_apps_.MaybeRemoveApp(extension->id());
 
   auto result = media_requests_.RemoveRequests(extension->id());
-  ModifyCapabilityAccess(subscribers(), extension->id(), result.camera,
-                         result.microphone);
+
+  if (base::FeatureList::IsEnabled(
+          apps::kAppServiceCapabilityAccessWithoutMojom)) {
+    apps::AppPublisher::ModifyCapabilityAccess(extension->id(), result.camera,
+                                               result.microphone);
+  } else {
+    PublisherBase::ModifyCapabilityAccess(subscribers(), extension->id(),
+                                          result.camera, result.microphone);
+  }
 
   ExtensionAppsBase::OnExtensionUninstalled(browser_context, extension, reason);
 }
@@ -569,8 +577,15 @@ void ExtensionAppsChromeOs::OnRequestUpdate(
 
   auto result =
       media_requests_.UpdateRequests(app_id, web_contents, stream_type, state);
-  ModifyCapabilityAccess(subscribers(), app_id, result.camera,
-                         result.microphone);
+
+  if (base::FeatureList::IsEnabled(
+          apps::kAppServiceCapabilityAccessWithoutMojom)) {
+    apps::AppPublisher::ModifyCapabilityAccess(app_id, result.camera,
+                                               result.microphone);
+  } else {
+    PublisherBase::ModifyCapabilityAccess(subscribers(), app_id, result.camera,
+                                          result.microphone);
+  }
 }
 
 void ExtensionAppsChromeOs::OnWebContentsDestroyed(
@@ -589,8 +604,14 @@ void ExtensionAppsChromeOs::OnWebContentsDestroyed(
   }
 
   auto result = media_requests_.OnWebContentsDestroyed(app_id, web_contents);
-  ModifyCapabilityAccess(subscribers(), app_id, result.camera,
-                         result.microphone);
+  if (base::FeatureList::IsEnabled(
+          apps::kAppServiceCapabilityAccessWithoutMojom)) {
+    apps::AppPublisher::ModifyCapabilityAccess(app_id, result.camera,
+                                               result.microphone);
+  } else {
+    PublisherBase::ModifyCapabilityAccess(subscribers(), app_id, result.camera,
+                                          result.microphone);
+  }
 }
 
 void ExtensionAppsChromeOs::OnNotificationDisplayed(

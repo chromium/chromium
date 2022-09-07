@@ -340,6 +340,10 @@ class AppServiceProxyBase : public KeyedService,
                       AppType app_type,
                       bool should_notify_initialized);
 
+  // Called by an app publisher to inform the proxy of a change in
+  // CapabilityAccess.
+  void OnCapabilityAccesses(std::vector<CapabilityAccessPtr> deltas);
+
  protected:
   // An adapter, presenting an IconLoader interface based on the underlying
   // Mojo service (or on a fake implementation for testing).

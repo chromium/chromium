@@ -21,6 +21,7 @@
 #include "components/services/app_service/public/cpp/menu.h"
 #include "components/services/app_service/public/cpp/permission.h"
 #include "components/services/app_service/public/cpp/preferred_app.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace apps {
 
@@ -225,6 +226,11 @@ class AppPublisher {
   void Publish(std::vector<AppPtr> apps,
                AppType app_type,
                bool should_notify_initialized);
+
+  // Modifies CapabilityAccess for `app_id`.
+  void ModifyCapabilityAccess(const std::string& app_id,
+                              absl::optional<bool> accessing_camera,
+                              absl::optional<bool> accessing_microphone);
 #endif
 
   AppServiceProxy* proxy() { return proxy_; }

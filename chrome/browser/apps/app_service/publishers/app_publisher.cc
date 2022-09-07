@@ -6,6 +6,7 @@
 
 #include "base/notreached.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "components/services/app_service/public/cpp/capability_access.h"
 
 namespace apps {
 
@@ -134,6 +135,22 @@ void AppPublisher::Publish(std::vector<AppPtr> apps,
     return;
   }
   proxy_->OnApps(std::move(apps), app_type, should_notify_initialized);
+}
+
+void AppPublisher::ModifyCapabilityAccess(
+    const std::string& app_id,
+    absl::optional<bool> accessing_camera,
+    absl::optional<bool> accessing_microphone) {
+  if (!accessing_camera.has_value() && !accessing_microphone.has_value()) {
+    return;
+  }
+
+  std::vector<CapabilityAccessPtr> capability_accesses;
+  auto capability_access = std::make_unique<CapabilityAccess>(app_id);
+  capability_access->camera = accessing_camera;
+  capability_access->microphone = accessing_microphone;
+  capability_accesses.push_back(std::move(capability_access));
+  proxy_->OnCapabilityAccesses(std::move(capability_accesses));
 }
 #endif
 
