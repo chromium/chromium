@@ -301,7 +301,7 @@ void BlinkGCPluginConsumer::CheckDefaultMalloc(RecordInfo* info) {
     return;
   }
 
-  if (info->name().find("Traits") != std::string::npos ||
+  if (info->name() == "" || info->name().find("Traits") != std::string::npos ||
       info->name().find("_Test") != std::string::npos) {
     return;
   }

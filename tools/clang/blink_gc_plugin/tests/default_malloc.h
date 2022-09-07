@@ -27,6 +27,11 @@ class DefaultMallocWithNonDefaultConstructor {
 
  private:
   int a_ = 0;
+
+  // This is OK.
+  struct {
+    int b = 0;
+  } b_;
 };
 
 // This is OK.
