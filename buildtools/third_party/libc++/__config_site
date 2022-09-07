@@ -41,8 +41,6 @@
 // We set them here since we want them to take effect everywhere,
 // unconditionally.
 
-#define _LIBCPP_ENABLE_NODISCARD_EXT
-
 // Prevent libc++ from embedding linker flags to try to automatically link
 // against its runtime library. This is unnecessary with our build system,
 // and can also result in build failures if libc++'s name for a library
