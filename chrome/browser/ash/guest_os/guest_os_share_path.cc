@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/guest_os/guest_os_share_path.h"
 
+#include "ash/components/arc/arc_features.h"
 #include "ash/components/arc/arc_util.h"
 #include "base/atomic_ref_count.h"
 #include "base/bind.h"
@@ -248,7 +249,7 @@ void GuestOsSharePath::CallSeneschalSharePath(const std::string& vm_name,
   bool allowed_path = false;
   base::FilePath my_files =
       file_manager::util::GetMyFilesFolderForProfile(profile_);
-  base::FilePath android_files(file_manager::util::kAndroidFilesPath);
+  base::FilePath android_files(file_manager::util::GetAndroidFilesPath());
   base::FilePath removable_media(file_manager::util::kRemovableMediaPath);
   base::FilePath linux_files =
       file_manager::util::GetCrostiniMountDirectory(profile_);
@@ -318,7 +319,9 @@ void GuestOsSharePath::CallSeneschalSharePath(const std::string& vm_name,
     // Allow Android files and subdirs.
     allowed_path = true;
     request.set_storage_location(
-        vm_tools::seneschal::SharePathRequest::PLAY_FILES);
+        base::FeatureList::IsEnabled(arc::kEnableVirtioBlkForData)
+            ? vm_tools::seneschal::SharePathRequest::PLAY_FILES_GUEST_OS
+            : vm_tools::seneschal::SharePathRequest::PLAY_FILES);
   } else if (removable_media.AppendRelativePath(path, &relative_path)) {
     // Allow subdirs of /media/removable.
     allowed_path = true;
