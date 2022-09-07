@@ -91,10 +91,10 @@ void HtmlAudioElementCapturerSource::OnAudioBus(
   if (sample_rate != last_sample_rate_ ||
       audio_bus->channels() != last_num_channels_ ||
       audio_bus->frames() != last_bus_frames_) {
-    blink::MediaStreamAudioSource::SetFormat(
-        media::AudioParameters(media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
-                               media::GuessChannelLayout(audio_bus->channels()),
-                               sample_rate, audio_bus->frames()));
+    blink::MediaStreamAudioSource::SetFormat(media::AudioParameters(
+        media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
+        media::ChannelLayoutConfig::Guess(audio_bus->channels()), sample_rate,
+        audio_bus->frames()));
     last_sample_rate_ = sample_rate;
     last_num_channels_ = audio_bus->channels();
     last_bus_frames_ = audio_bus->frames();
