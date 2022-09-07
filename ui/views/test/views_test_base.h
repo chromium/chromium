@@ -78,15 +78,6 @@ class ViewsTestBase : public PlatformTest {
 
   void RunPendingMessages();
 
-  // Ensure that the entire Widget root view is properly laid out. This will
-  // call Widget::LayoutRootViewIfNecessary().
-  void RunScheduledLayout(Widget* widget);
-
-  // Ensure the given view is properly laid out. If the view is in a Widget view
-  // tree, invoke RunScheduledLayout(widget). Otherwise lay out the
-  // root parent view.
-  void RunScheduledLayout(View* view);
-
   // Returns CreateParams for a widget of type |type|.  This is used by
   // CreateParamsForTestWidget() and thus by CreateTestWidget(), and may also be
   // used directly.  The default implementation sets the context to

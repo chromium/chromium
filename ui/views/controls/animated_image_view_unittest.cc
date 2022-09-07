@@ -18,6 +18,7 @@
 #include "ui/lottie/animation.h"
 #include "ui/views/paint_info.h"
 #include "ui/views/test/views_test_base.h"
+#include "ui/views/test/views_test_utils.h"
 #include "ui/views/widget/widget.h"
 
 namespace views {
@@ -95,7 +96,7 @@ TEST_F(AnimatedImageViewTest, PaintsWithAdditionalTranslation) {
   view_->SetAnimatedImage(CreateAnimationWithSize(gfx::Size(80, 80)));
   view_->SetVerticalAlignment(ImageViewBase::Alignment::kCenter);
   view_->SetHorizontalAlignment(ImageViewBase::Alignment::kCenter);
-  RunScheduledLayout(view_);
+  views::test::RunScheduledLayout(view_);
   view_->Play();
 
   static constexpr float kExpectedDefaultOrigin =

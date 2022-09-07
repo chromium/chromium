@@ -30,6 +30,7 @@
 #include "ui/views/style/platform_style.h"
 #include "ui/views/test/focus_manager_test.h"
 #include "ui/views/test/views_test_base.h"
+#include "ui/views/test/views_test_utils.h"
 #include "ui/views/widget/unique_widget_ptr.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
@@ -462,7 +463,7 @@ class TableViewTest : public ViewsTestBase,
     params.bounds = gfx::Rect(0, 0, 650, 650);
     params.delegate = GetWidgetDelegate(widget_.get());
     widget_->Init(std::move(params));
-    RunScheduledLayout(
+    test::RunScheduledLayout(
         widget_->GetRootView()->AddChildView(std::move(scroll_view)));
     widget_->Show();
   }

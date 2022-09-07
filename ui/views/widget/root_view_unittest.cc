@@ -17,6 +17,7 @@
 #include "ui/views/context_menu_controller.h"
 #include "ui/views/test/test_views.h"
 #include "ui/views/test/views_test_base.h"
+#include "ui/views/test/views_test_utils.h"
 #include "ui/views/view_targeter.h"
 #include "ui/views/widget/widget_deletion_observer.h"
 #include "ui/views/window/dialog_delegate.h"
@@ -862,7 +863,7 @@ TEST_F(RootViewTest, AnnounceTextTest) {
   const std::u16string kText = u"Text";
   root_view->AnnounceText(kText);
   EXPECT_EQ(2U, root_view->children().size());
-  RunScheduledLayout(root_view);
+  views::test::RunScheduledLayout(root_view);
   EXPECT_FALSE(root_view->children()[0]->size().IsEmpty());
   EXPECT_TRUE(root_view->children()[1]->size().IsEmpty());
   View* const hidden_view = root_view->children()[1];

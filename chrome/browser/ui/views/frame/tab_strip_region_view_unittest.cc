@@ -22,6 +22,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/animation/animation_test_api.h"
 #include "ui/views/layout/flex_layout.h"
+#include "ui/views/test/views_test_utils.h"
 #include "ui/views/view.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
@@ -72,7 +73,7 @@ class TabStripRegionViewTestBase : public ChromeViewsTestBase {
  protected:
   int GetInactiveTabWidth() { return tab_strip_->GetInactiveTabWidth(); }
   void CompleteAnimationAndLayout() {
-    RunScheduledLayout(tab_strip_region_view_);
+    views::test::RunScheduledLayout(tab_strip_region_view_);
   }
 
   // Owned by TabStrip.

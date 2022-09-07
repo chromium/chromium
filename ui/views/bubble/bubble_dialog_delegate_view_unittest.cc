@@ -32,6 +32,7 @@
 #include "ui/views/test/test_views.h"
 #include "ui/views/test/test_widget_observer.h"
 #include "ui/views/test/views_test_base.h"
+#include "ui/views/test/views_test_utils.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
@@ -619,7 +620,7 @@ TEST_F(BubbleDialogDelegateViewTest, CustomTitle) {
   bubble_delegate->show_close_button();
   bubble_frame->ResetWindowControls();
   bubble_frame->InvalidateLayout();
-  RunScheduledLayout(bubble_frame);
+  views::test::RunScheduledLayout(bubble_frame);
 
   Button* close_button = bubble_frame->GetCloseButtonForTesting();
   // Title moves over for the close button.

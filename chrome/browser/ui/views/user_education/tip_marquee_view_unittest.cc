@@ -23,6 +23,7 @@
 #include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/layout/layout_types.h"
 #include "ui/views/test/views_test_base.h"
+#include "ui/views/test/views_test_utils.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
@@ -119,45 +120,45 @@ class TipMarqueeViewTest : public views::ViewsTestBase {
 };
 
 TEST_F(TipMarqueeViewTest, NotVisibleWhenNoTip) {
-  RunScheduledLayout(marquee_);
+  views::test::RunScheduledLayout(marquee_);
   EXPECT_FALSE(marquee_->GetVisible());
 }
 
 TEST_F(TipMarqueeViewTest, VisibleWhenTipSet) {
   marquee_->SetAndShowTip(u"Tip Text");
-  RunScheduledLayout(marquee_);
+  views::test::RunScheduledLayout(marquee_);
   EXPECT_TRUE(marquee_->GetVisible());
 }
 
 TEST_F(TipMarqueeViewTest, ClearTipHidesView) {
   marquee_->SetAndShowTip(u"Tip Text");
-  RunScheduledLayout(marquee_);
+  views::test::RunScheduledLayout(marquee_);
   EXPECT_TRUE(marquee_->GetVisible());
   EXPECT_EQ(marquee_->GetPreferredSize(), marquee_->size());
   marquee_->ClearAndHideTip();
-  RunScheduledLayout(marquee_);
+  views::test::RunScheduledLayout(marquee_);
   EXPECT_FALSE(marquee_->GetVisible());
 }
 
 TEST_F(TipMarqueeViewTest, TipStartsExpanded) {
   marquee_->SetAndShowTip(u"Tip Text");
-  RunScheduledLayout(marquee_);
+  views::test::RunScheduledLayout(marquee_);
   EXPECT_GT(marquee_->width(), marquee_->GetMinimumSize().width());
 }
 
 TEST_F(TipMarqueeViewTest, TipCollapsesWhenNotEnoughSpace) {
   marquee_->SetAndShowTip(u"Tip Text");
-  RunScheduledLayout(marquee_);
+  views::test::RunScheduledLayout(marquee_);
   gfx::Size spacer_size = spacer_->size();
   spacer_size.Enlarge(1, 0);
   spacer_->SetPreferredSize(spacer_size);
-  RunScheduledLayout(marquee_);
+  views::test::RunScheduledLayout(marquee_);
   EXPECT_EQ(marquee_->width(), marquee_->GetMinimumSize().width());
 }
 
 TEST_F(TipMarqueeViewTest, TipCollapsesAndExpandsWhenIconIsClicked) {
   marquee_->SetAndShowTip(u"Tip Text");
-  RunScheduledLayout(marquee_);
+  views::test::RunScheduledLayout(marquee_);
 
   // This location should be comfortably inside the icon area.
   constexpr gfx::Point kPressPoint(10, 10);
@@ -166,37 +167,37 @@ TEST_F(TipMarqueeViewTest, TipCollapsesAndExpandsWhenIconIsClicked) {
   marquee_->OnMousePressed(ui::MouseEvent(
       ui::ET_MOUSE_PRESSED, kPressPoint, kPressPoint, ui::EventTimeForNow(),
       ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON));
-  RunScheduledLayout(marquee_);
+  views::test::RunScheduledLayout(marquee_);
   EXPECT_EQ(marquee_->width(), marquee_->GetMinimumSize().width());
 
   // Expand.
   marquee_->OnMousePressed(ui::MouseEvent(
       ui::ET_MOUSE_PRESSED, kPressPoint, kPressPoint, ui::EventTimeForNow(),
       ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON));
-  RunScheduledLayout(marquee_);
+  views::test::RunScheduledLayout(marquee_);
   EXPECT_GT(marquee_->width(), marquee_->GetMinimumSize().width());
 }
 
 TEST_F(TipMarqueeViewTest, TipDoesNotExpandWhenInsufficientSpace) {
   marquee_->SetAndShowTip(u"Tip Text");
-  RunScheduledLayout(marquee_);
+  views::test::RunScheduledLayout(marquee_);
   gfx::Size spacer_size = spacer_->size();
   spacer_size.Enlarge(1, 0);
   spacer_->SetPreferredSize(spacer_size);
-  RunScheduledLayout(marquee_);
+  views::test::RunScheduledLayout(marquee_);
   EXPECT_EQ(marquee_->width(), marquee_->GetMinimumSize().width());
 
   // This location should be comfortably inside the icon area.
   constexpr gfx::Point kPressPoint(10, 10);
   SimulateMarqueeClick(kPressPoint);
-  RunScheduledLayout(marquee_);
+  views::test::RunScheduledLayout(marquee_);
   EXPECT_EQ(marquee_->width(), marquee_->GetMinimumSize().width());
 }
 
 TEST_F(TipMarqueeViewTest, ClickLearnMoreLink) {
   LearnMoreCallback callback;
   marquee_->SetAndShowTip(u"Tip Text", callback.Callback());
-  RunScheduledLayout(marquee_);
+  views::test::RunScheduledLayout(marquee_);
   EXPECT_GT(marquee_->width(), marquee_->GetMinimumSize().width());
 
   // This location should be comfortably inside the "learn more" link.
@@ -209,7 +210,7 @@ TEST_F(TipMarqueeViewTest, ClickLearnMoreLink) {
 TEST_F(TipMarqueeViewTest, ClickNotInLearnMoreLinkHasNoEffect) {
   LearnMoreCallback callback;
   marquee_->SetAndShowTip(u"Tip Text", callback.Callback());
-  RunScheduledLayout(marquee_);
+  views::test::RunScheduledLayout(marquee_);
   EXPECT_GT(marquee_->width(), marquee_->GetMinimumSize().width());
 
   // This location should be comfortably inside the tip text but not the link.
@@ -223,11 +224,11 @@ TEST_F(TipMarqueeViewTest, ClickNotInLearnMoreLinkHasNoEffect) {
 TEST_F(TipMarqueeViewTest, ClickWhenForcedCollapsedCallsLearnMore) {
   LearnMoreCallback callback;
   marquee_->SetAndShowTip(u"Tip Text", callback.Callback());
-  RunScheduledLayout(marquee_);
+  views::test::RunScheduledLayout(marquee_);
   gfx::Size spacer_size = spacer_->size();
   spacer_size.Enlarge(1, 0);
   spacer_->SetPreferredSize(spacer_size);
-  RunScheduledLayout(marquee_);
+  views::test::RunScheduledLayout(marquee_);
   EXPECT_EQ(marquee_->width(), marquee_->GetMinimumSize().width());
 
   // This location should be comfortably inside the icon area.
@@ -239,11 +240,11 @@ TEST_F(TipMarqueeViewTest, ClickWhenForcedCollapsedCallsLearnMore) {
 
 TEST_F(TipMarqueeViewTest, ClickWhenForcedCollapsedDisplaysOverflow) {
   marquee_->SetAndShowTip(u"Tip Text");
-  RunScheduledLayout(marquee_);
+  views::test::RunScheduledLayout(marquee_);
   gfx::Size spacer_size = spacer_->size();
   spacer_size.Enlarge(1, 0);
   spacer_->SetPreferredSize(spacer_size);
-  RunScheduledLayout(marquee_);
+  views::test::RunScheduledLayout(marquee_);
   ASSERT_EQ(marquee_->width(), marquee_->GetMinimumSize().width());
 
   // This location should be comfortably inside the icon area.
@@ -256,11 +257,11 @@ TEST_F(TipMarqueeViewTest, ClickWhenForcedCollapsedDisplaysOverflow) {
 
 TEST_F(TipMarqueeViewTest, OverflowBubbleCancelDoesNotDismissTip) {
   marquee_->SetAndShowTip(u"Tip Text");
-  RunScheduledLayout(marquee_);
+  views::test::RunScheduledLayout(marquee_);
   gfx::Size spacer_size = spacer_->size();
   spacer_size.Enlarge(1, 0);
   spacer_->SetPreferredSize(spacer_size);
-  RunScheduledLayout(marquee_);
+  views::test::RunScheduledLayout(marquee_);
   ASSERT_EQ(marquee_->width(), marquee_->GetMinimumSize().width());
 
   // This location should be comfortably inside the icon area.
@@ -279,11 +280,11 @@ TEST_F(TipMarqueeViewTest, OverflowBubbleCancelDoesNotDismissTip) {
 
 TEST_F(TipMarqueeViewTest, OverflowBubbleGotItDismissesTip) {
   marquee_->SetAndShowTip(u"Tip Text");
-  RunScheduledLayout(marquee_);
+  views::test::RunScheduledLayout(marquee_);
   gfx::Size spacer_size = spacer_->size();
   spacer_size.Enlarge(1, 0);
   spacer_->SetPreferredSize(spacer_size);
-  RunScheduledLayout(marquee_);
+  views::test::RunScheduledLayout(marquee_);
   ASSERT_EQ(marquee_->width(), marquee_->GetMinimumSize().width());
 
   // This location should be comfortably inside the icon area.

@@ -23,6 +23,7 @@
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/test/ax_event_counter.h"
 #include "ui/views/test/views_test_base.h"
+#include "ui/views/test/views_test_utils.h"
 #include "ui/views/widget/widget.h"
 
 namespace {
@@ -102,7 +103,7 @@ TEST_P(ImageViewTest, CenterAlignment) {
   bitmap.allocN32Pixels(kImageSkiaSize, kImageSkiaSize);
   gfx::ImageSkia image_skia = gfx::ImageSkia::CreateFrom1xBitmap(bitmap);
   image_view()->SetImage(image_skia);
-  RunScheduledLayout(image_view());
+  views::test::RunScheduledLayout(image_view());
   EXPECT_NE(gfx::Size(), image_skia.size());
 
   // With no changes to the size / padding of |image_view|, the origin of
@@ -112,11 +113,11 @@ TEST_P(ImageViewTest, CenterAlignment) {
   // Test insets are always respected in LTR and RTL.
   constexpr int kInset = 5;
   image_view()->SetBorder(CreateEmptyBorder(kInset));
-  RunScheduledLayout(image_view());
+  views::test::RunScheduledLayout(image_view());
   EXPECT_EQ(kInset, CurrentImageOriginForParam());
 
   SetRTL(true);
-  RunScheduledLayout(image_view());
+  views::test::RunScheduledLayout(image_view());
   EXPECT_EQ(kInset, CurrentImageOriginForParam());
 
   // Check this still holds true when the insets are asymmetrical.
@@ -124,11 +125,11 @@ TEST_P(ImageViewTest, CenterAlignment) {
   constexpr int kTrailingInset = 6;
   image_view()->SetBorder(CreateEmptyBorder(gfx::Insets::TLBR(
       kLeadingInset, kLeadingInset, kTrailingInset, kTrailingInset)));
-  RunScheduledLayout(image_view());
+  views::test::RunScheduledLayout(image_view());
   EXPECT_EQ(kLeadingInset, CurrentImageOriginForParam());
 
   SetRTL(false);
-  RunScheduledLayout(image_view());
+  views::test::RunScheduledLayout(image_view());
   EXPECT_EQ(kLeadingInset, CurrentImageOriginForParam());
 }
 

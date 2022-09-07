@@ -16,6 +16,7 @@
 #include "ui/linux/window_frame_provider.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/image_button.h"
+#include "ui/views/test/views_test_utils.h"
 
 namespace {
 
@@ -256,7 +257,7 @@ TEST_F(BrowserFrameViewLayoutLinuxNativeTest, NativeNavButtons) {
   layout_manager_->SetButtonOrdering(leading_buttons, trailing_buttons);
   ResetNativeNavButtonImagesFromButtonProvider();
 
-  RunScheduledLayout(root_view_);
+  views::test::RunScheduledLayout(root_view_);
 
   const int frame_top_thickness = FrameInsets().top();
 

@@ -25,6 +25,7 @@
 #include "ui/views/test/button_test_api.h"
 #include "ui/views/test/test_layout_provider.h"
 #include "ui/views/test/test_views.h"
+#include "ui/views/test/views_test_utils.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/dialog_delegate.h"
@@ -73,7 +74,7 @@ class DialogClientViewTest : public test::WidgetTest {
   void SizeAndLayoutWidget() {
     Widget* dialog = widget();
     dialog->SetSize(dialog->GetContentsView()->GetPreferredSize());
-    RunScheduledLayout(dialog);
+    views::test::RunScheduledLayout(dialog);
   }
 
   // Makes sure that the content view is sized correctly. Width must be at least

@@ -18,6 +18,7 @@
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/style/platform_style.h"
 #include "ui/views/test/views_test_base.h"
+#include "ui/views/test/views_test_utils.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/dialog_delegate.h"
@@ -378,7 +379,7 @@ TEST_F(DialogTest, ActualBoundsMatchPreferredBounds) {
   gfx::Size preferred_size(root_view->GetPreferredSize());
   EXPECT_FALSE(preferred_size.IsEmpty());
   root_view->SizeToPreferredSize();
-  RunScheduledLayout(root_view);
+  views::test::RunScheduledLayout(root_view);
   EXPECT_EQ(preferred_size, root_view->size());
 }
 
