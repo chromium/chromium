@@ -318,12 +318,6 @@ NotificationViewBase::NotificationViewBase(const Notification& notification)
 
 NotificationViewBase::~NotificationViewBase() {
   RemovePreTargetHandler(click_activator_.get());
-
-  // `inline_reply_` might still be accessed by
-  // `AshNotificationView::ActionButtonPressed()` after dtor, so we explicitly
-  // reset that pointer here to avoid using invalid pointer.
-  actions_row()->RemoveChildViewT(inline_reply_);
-  inline_reply_ = nullptr;
 }
 
 void NotificationViewBase::Layout() {
@@ -835,10 +829,18 @@ void NotificationViewBase::ActionButtonPressed(size_t index,
     inline_reply_->textfield()->RequestFocus();
     Layout();
     SchedulePaint();
-  } else {
+
+    OnInlineReplyUpdated();
+    return;
+  }
+
     MessageCenter::Get()->ClickOnNotificationButton(notification_id(),
                                                     static_cast<int>(index));
-  }
+    // `this` may be deleted after handling the click. See crbug/1316656.
+}
+
+void NotificationViewBase::OnInlineReplyUpdated() {
+  // Not implemented by default.
 }
 
 bool NotificationViewBase::HasInlineReply(

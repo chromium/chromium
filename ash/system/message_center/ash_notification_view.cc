@@ -731,11 +731,7 @@ void AshNotificationView::AnimateSingleToGroup(
 void AshNotificationView::ToggleExpand() {
   SetManuallyExpandedOrCollapsed(true);
 
-  // Here we need to check if `inline_reply()` is still valid since user
-  // can click the expand button when the view is being destructed, which
-  // invalidate `inline_reply()`.
   if (inline_reply() && inline_reply()->GetVisible()) {
-    // If inline reply is visible, fade it out then set expanded.
     message_center_utils::FadeOutView(
         inline_reply(),
         base::BindOnce(
@@ -1293,38 +1289,31 @@ void AshNotificationView::ToggleInlineSettings(const ui::Event& event) {
   PreferredSizeChanged();
 }
 
-void AshNotificationView::ActionButtonPressed(size_t index,
-                                              const ui::Event& event) {
-  NotificationViewBase::ActionButtonPressed(index, event);
+void AshNotificationView::OnInlineReplyUpdated() {
+  DCHECK(inline_reply() && inline_reply()->GetVisible());
+  // Fade out actions button and then fade in inline reply.
+  message_center_utils::InitLayerForAnimations(action_buttons_row());
+  message_center_utils::FadeOutView(
+      action_buttons_row(),
+      base::BindOnce(
+          [](base::WeakPtr<ash::AshNotificationView> parent,
+             views::View* action_buttons_row) {
+            if (parent) {
+              action_buttons_row->layer()->SetOpacity(1.0f);
+              action_buttons_row->SetVisible(false);
+            }
+          },
+          weak_factory_.GetWeakPtr(), action_buttons_row()),
+      /*delay_in_ms=*/0, kActionButtonsFadeOutAnimationDurationMs,
+      gfx::Tween::LINEAR,
+      "Ash.NotificationView.ActionButtonsRow.FadeOut.AnimationSmoothness");
 
-  // If inline reply is visible, fade out actions button and then fade in inline
-  // reply. Here we need to check if `inline_reply()` is still valid since user
-  // can click an action button when the view is being destructed, which
-  // invalidate `inline_reply()`.
-  if (inline_reply() && inline_reply()->GetVisible()) {
-    message_center_utils::InitLayerForAnimations(action_buttons_row());
-    message_center_utils::FadeOutView(
-        action_buttons_row(),
-        base::BindOnce(
-            [](base::WeakPtr<ash::AshNotificationView> parent,
-               views::View* action_buttons_row) {
-              if (parent) {
-                action_buttons_row->layer()->SetOpacity(1.0f);
-                action_buttons_row->SetVisible(false);
-              }
-            },
-            weak_factory_.GetWeakPtr(), action_buttons_row()),
-        /*delay_in_ms=*/0, kActionButtonsFadeOutAnimationDurationMs,
-        gfx::Tween::LINEAR,
-        "Ash.NotificationView.ActionButtonsRow.FadeOut.AnimationSmoothness");
-
-    // Delay for the action buttons to fade out, then fade in inline reply.
-    message_center_utils::InitLayerForAnimations(inline_reply());
-    message_center_utils::FadeInView(
-        inline_reply(), kActionButtonsFadeOutAnimationDurationMs,
-        kInlineReplyFadeInAnimationDurationMs, gfx::Tween::LINEAR,
-        "Ash.NotificationView.InlineReply.FadeIn.AnimationSmoothness");
-  }
+  // Delay for the action buttons to fade out, then fade in inline reply.
+  message_center_utils::InitLayerForAnimations(inline_reply());
+  message_center_utils::FadeInView(
+      inline_reply(), kActionButtonsFadeOutAnimationDurationMs,
+      kInlineReplyFadeInAnimationDurationMs, gfx::Tween::LINEAR,
+      "Ash.NotificationView.InlineReply.FadeIn.AnimationSmoothness");
 }
 
 views::View* AshNotificationView::FindGroupNotificationView(

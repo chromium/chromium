@@ -225,9 +225,12 @@ class MESSAGE_CENTER_EXPORT NotificationViewBase
   // inline settings or vice versa.
   virtual void ToggleInlineSettings(const ui::Event& event);
 
-  // This function is called when user clicks on the notification action
-  // buttons.
+  // Called when a user clicks on a notification action button, identified by
+  // `index`.
   virtual void ActionButtonPressed(size_t index, const ui::Event& event);
+
+  // Called after `inline_reply_` is updated for custom handling.
+  virtual void OnInlineReplyUpdated();
 
   // Whether `notification` is configured to have an inline reply field.
   bool HasInlineReply(const Notification& notification) const;

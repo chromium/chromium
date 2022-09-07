@@ -16,6 +16,8 @@
 #include "ash/root_window_controller.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
+#include "ash/system/status_area_widget.h"
+#include "ash/system/unified/unified_system_tray.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/overview/overview_controller.h"
@@ -27,8 +29,13 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/message_center_constants.h"
+#include "ui/message_center/public/cpp/notification_delegate.h"
+#include "ui/message_center/public/cpp/notification_types.h"
 #include "ui/message_center/views/message_popup_collection.h"
 #include "ui/message_center/views/message_popup_view.h"
+#include "ui/message_center/views/message_view.h"
+#include "ui/message_center/views/notification_view_base.h"
+#include "ui/views/controls/button/label_button.h"
 
 namespace ash {
 namespace {
@@ -118,6 +125,10 @@ class AshMessagePopupCollectionTest : public AshTestBase,
     popup_collection_ = std::move(delegate);
     UpdateWorkArea(popup_collection_.get(),
                    display::Screen::GetScreen()->GetPrimaryDisplay());
+  }
+
+  message_center::MessagePopupView* GetLastPopUpAdded() {
+    return popup_collection()->last_pop_up_added_;
   }
 
   Position GetPositionInDisplay(const gfx::Point& point) {
@@ -431,6 +442,72 @@ TEST_P(AshMessagePopupCollectionTest, BaselineInOverview) {
   EXPECT_FALSE(overview_controller->InOverviewSession());
   const int baseline_no_overview = popup_collection()->GetBaseline();
   EXPECT_EQ(baseline_no_overview, baseline_with_hidden_shelf);
+}
+
+class NotificationDestructingNotificationDelegate
+    : public message_center::NotificationDelegate {
+ public:
+  NotificationDestructingNotificationDelegate() = default;
+  NotificationDestructingNotificationDelegate(
+      const NotificationDestructingNotificationDelegate&) = delete;
+  NotificationDestructingNotificationDelegate& operator=(
+      const NotificationDestructingNotificationDelegate&) = delete;
+
+ private:
+  ~NotificationDestructingNotificationDelegate() override = default;
+
+  // NotificationObserver:
+  void Click(const absl::optional<int>& button_index,
+             const absl::optional<std::u16string>& reply) override {
+    // Show the UnifiedSystemTrayBubble, which will force all popups to be
+    // destroyed.
+    Shell::Get()
+        ->GetPrimaryRootWindowController()
+        ->GetStatusAreaWidget()
+        ->unified_system_tray()
+        ->ShowBubble();
+  }
+};
+
+// Regression test for crbug/1316656. Tests that pressing a button resulting in
+// the notification popup getting destroyed does not crash.
+TEST_P(AshMessagePopupCollectionTest, PopupDestroyedDuringClick) {
+  // Create a Notification popup with 1 action button.
+  message_center::RichNotificationData notification_data;
+  std::u16string button_text = u"BUTTON_TEXT";
+  notification_data.buttons.emplace_back(button_text);
+
+  auto to_be_destroyed_notification(
+      std::make_unique<message_center::Notification>(
+          message_center::NOTIFICATION_TYPE_SIMPLE, "id1",
+          u"Test Web Notification", u"Notification message body.",
+          ui::ImageModel(), u"www.test.org", GURL(),
+          message_center::NotifierId(), notification_data,
+          new NotificationDestructingNotificationDelegate()));
+  message_center::MessageCenter::Get()->AddNotification(
+      std::move(to_be_destroyed_notification));
+  EXPECT_TRUE(GetLastPopUpAdded());
+
+  // Get the view for the button added earlier.
+  auto* message_view = GetLastPopUpAdded()->message_view();
+  auto* action_button =
+      message_view
+          ->GetViewByID(
+              message_center::NotificationViewBase::ViewId::kActionButtonsRow)
+          ->children()[0];
+  EXPECT_EQ(static_cast<views::LabelButton*>(action_button)->GetText(),
+            button_text);
+
+  // Click the action button.
+  // `NotificationDestructingNotificationDelegate::Click()` will destroy the
+  // popup during `NotificationViewBase::ActionButtonPressed()`. There should be
+  // no crash.
+  auto* event_generator = GetEventGenerator();
+  event_generator->MoveMouseTo(
+      action_button->GetBoundsInScreen().CenterPoint());
+  event_generator->ClickLeftButton();
+
+  EXPECT_FALSE(GetLastPopUpAdded());
 }
 
 }  // namespace ash
