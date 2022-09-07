@@ -39,6 +39,10 @@ enum WindowShowState {
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 // Specifies which edges of the window are tiled.
+//
+// Wayland can notify the application if certain edge of the window is
+// "tiled": https://wayland.app/protocols/xdg-shell#xdg_toplevel:enum:state.
+// Chromium should not draw frame decorations for the tiled edges.
 struct WindowTiledEdges {
   bool left{false};
   bool right{false};

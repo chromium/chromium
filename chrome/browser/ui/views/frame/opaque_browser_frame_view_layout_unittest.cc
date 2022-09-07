@@ -91,10 +91,7 @@ class TestLayoutDelegate : public OpaqueBrowserFrameViewLayoutDelegate {
   bool IsTranslucentWindowOpacitySupported() const override { return true; }
   bool ShouldDrawRestoredFrameShadow() const override { return true; }
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
-  OpaqueBrowserFrameViewLayoutDelegate::TiledEdges GetTiledEdges()
-      const override {
-    return {};
-  }
+  ui::WindowTiledEdges GetTiledEdges() const override { return {}; }
 #endif
 
  private:

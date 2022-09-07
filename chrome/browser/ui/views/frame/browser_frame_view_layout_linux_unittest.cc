@@ -48,13 +48,10 @@ class TestLayoutDelegate : public OpaqueBrowserFrameViewLayoutDelegate {
   bool IsTranslucentWindowOpacitySupported() const override { return true; }
   bool ShouldDrawRestoredFrameShadow() const override { return true; }
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
-  OpaqueBrowserFrameViewLayoutDelegate::TiledEdges GetTiledEdges()
-      const override {
-    return tiled_edges_;
-  }
+  ui::WindowTiledEdges GetTiledEdges() const override { return tiled_edges_; }
 #endif
 
-  OpaqueBrowserFrameViewLayoutDelegate::TiledEdges tiled_edges_;
+  ui::WindowTiledEdges tiled_edges_;
 };
 
 }  // namespace

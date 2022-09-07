@@ -115,7 +115,7 @@ class OpaqueBrowserFrameView : public BrowserNonClientFrameView,
   bool IsTranslucentWindowOpacitySupported() const override;
   bool ShouldDrawRestoredFrameShadow() const override;
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
-  TiledEdges GetTiledEdges() const override;
+  ui::WindowTiledEdges GetTiledEdges() const override;
 #endif
 
  protected:

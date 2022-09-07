@@ -10,6 +10,10 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "ui/base/ui_base_types.h"
+#endif
+
 namespace gfx {
 class Size;
 class Rect;
@@ -26,18 +30,6 @@ class OpaqueBrowserFrameViewLayoutDelegate {
     // Regular old ImageButton.
     kImageButton,
   };
-
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Wayland can notify the application if certain edge of the window is
-  // "tiled": https://wayland.app/protocols/xdg-shell#xdg_toplevel:enum:state.
-  // Chromium should not draw frame decorations for the tiled edges.
-  struct TiledEdges {
-    bool left = false;
-    bool right = false;
-    bool top = false;
-    bool bottom = false;
-  };
-#endif
 
   // Controls the visual placement of the window icon/title in non-tabstrip
   // mode.
@@ -107,7 +99,7 @@ class OpaqueBrowserFrameViewLayoutDelegate {
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
   // Returns which edges of the window are snapped to the edges of the desktop
   // (or "tiled").
-  virtual TiledEdges GetTiledEdges() const = 0;
+  virtual ui::WindowTiledEdges GetTiledEdges() const = 0;
 #endif
 
  protected:
