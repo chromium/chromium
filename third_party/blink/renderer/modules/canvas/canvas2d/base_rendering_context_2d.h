@@ -511,7 +511,7 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
 
   bool ShouldDrawImageAntialiased(const gfx::RectF& dest_rect) const;
 
-  void SetTransform(const TransformationMatrix&);
+  void SetTransform(const AffineTransform&);
 
   TransformationMatrix GetTransform() const override;
 
@@ -874,7 +874,7 @@ void BaseRenderingContext2D::AdjustRectForCanvas(T& x,
 }
 
 ALWAYS_INLINE void BaseRenderingContext2D::SetTransform(
-    const TransformationMatrix& matrix) {
+    const AffineTransform& matrix) {
   GetState().SetTransform(matrix);
   SetIsTransformInvertible(matrix.IsInvertible());
 }

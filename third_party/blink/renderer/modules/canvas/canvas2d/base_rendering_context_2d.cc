@@ -341,7 +341,8 @@ void BaseRenderingContext2D::RestoreMatrixClipStack(cc::PaintCanvas* c) const {
     c->setMatrix(SkM44());
     if (curr_state->Get()) {
       curr_state->Get()->PlaybackClips(c);
-      c->setMatrix(curr_state->Get()->GetTransform().ToSkM44());
+      c->setMatrix(
+          AffineTransformToSkMatrix(curr_state->Get()->GetTransform()));
     }
     c->save();
   }
@@ -827,7 +828,7 @@ void BaseRenderingContext2D::scale(double sx, double sy) {
     identifiability_study_helper_.UpdateBuilder(CanvasOps::kScale, sx, sy);
   }
 
-  TransformationMatrix new_transform = GetState().GetTransform();
+  AffineTransform new_transform = GetState().GetTransform();
   float fsx = ClampTo<float>(sx);
   float fsy = ClampTo<float>(sy);
   new_transform.ScaleNonUniform(fsx, fsy);
@@ -854,7 +855,7 @@ void BaseRenderingContext2D::rotate(double angle_in_radians) {
                                                 angle_in_radians);
   }
 
-  TransformationMatrix new_transform = GetState().GetTransform();
+  AffineTransform new_transform = GetState().GetTransform();
   new_transform.Rotate(Rad2deg(angle_in_radians));
   if (GetState().GetTransform() == new_transform)
     return;
@@ -882,7 +883,7 @@ void BaseRenderingContext2D::translate(double tx, double ty) {
     identifiability_study_helper_.UpdateBuilder(CanvasOps::kTranslate, tx, ty);
   }
 
-  TransformationMatrix new_transform = GetState().GetTransform();
+  AffineTransform new_transform = GetState().GetTransform();
   // clamp to float to avoid float cast overflow when used as SkScalar
   float ftx = ClampTo<float>(tx);
   float fty = ClampTo<float>(ty);
@@ -904,9 +905,6 @@ void BaseRenderingContext2D::transform(double m11,
                                        double m22,
                                        double dx,
                                        double dy) {
-  // TODO(crbug.com/1140535) Investigate the performance implications of simply
-  // calling the 3d version above with:
-  // transform(m11, m12, 0, 0, m21, m22, 0, 0, 0, 0, 1, 0, dx, dy, 0, 1);
   cc::PaintCanvas* c = GetOrCreatePaintCanvas();
   if (!c)
     return;
@@ -927,8 +925,8 @@ void BaseRenderingContext2D::transform(double m11,
                                                 fm12, fm21, fm22, fdx, fdy);
   }
 
-  TransformationMatrix transform(fm11, fm12, fm21, fm22, fdx, fdy);
-  TransformationMatrix new_transform = GetState().GetTransform() * transform;
+  AffineTransform transform(fm11, fm12, fm21, fm22, fdx, fdy);
+  AffineTransform new_transform = GetState().GetTransform() * transform;
   if (GetState().GetTransform() == new_transform)
     return;
 
@@ -936,7 +934,7 @@ void BaseRenderingContext2D::transform(double m11,
   if (!IsTransformInvertible())
     return;
 
-  c->concat(transform.ToSkM44());
+  c->concat(AffineTransformToSkMatrix(transform));
   path_.Transform(transform.Inverse());
 }
 
@@ -948,7 +946,7 @@ void BaseRenderingContext2D::resetTransform() {
     identifiability_study_helper_.UpdateBuilder(CanvasOps::kResetTransform);
   }
 
-  TransformationMatrix ctm = GetState().GetTransform();
+  AffineTransform ctm = GetState().GetTransform();
   bool invertible_ctm = IsTransformInvertible();
   // It is possible that CTM is identity while CTM is not invertible.
   // When CTM becomes non-invertible, realizeSaves() can make CTM identity.
@@ -995,7 +993,7 @@ void BaseRenderingContext2D::setTransform(DOMMatrixInit* transform,
 }
 
 DOMMatrix* BaseRenderingContext2D::getTransform() {
-  const TransformationMatrix& t = GetState().GetTransform();
+  const AffineTransform& t = GetState().GetTransform();
   DOMMatrix* m = DOMMatrix::Create();
   m->setA(t.A());
   m->setB(t.B());
@@ -1007,7 +1005,7 @@ DOMMatrix* BaseRenderingContext2D::getTransform() {
 }
 
 TransformationMatrix BaseRenderingContext2D::GetTransform() const {
-  return GetState().GetTransform();
+  return TransformationMatrix(GetState().GetTransform());
 }
 
 void BaseRenderingContext2D::beginPath() {
@@ -1274,7 +1272,7 @@ bool BaseRenderingContext2D::IsPointInPathInternal(
   if (!std::isfinite(x) || !std::isfinite(y))
     return false;
   gfx::PointF point(ClampTo<float>(x), ClampTo<float>(y));
-  TransformationMatrix ctm = GetState().GetTransform();
+  AffineTransform ctm = GetState().GetTransform();
   gfx::PointF transformed_point = ctm.Inverse().MapPoint(point);
 
   return path.Contains(transformed_point,
@@ -1303,7 +1301,7 @@ bool BaseRenderingContext2D::IsPointInStrokeInternal(const Path& path,
   if (!std::isfinite(x) || !std::isfinite(y))
     return false;
   gfx::PointF point(ClampTo<float>(x), ClampTo<float>(y));
-  AffineTransform ctm = GetState().GetAffineTransform();
+  const AffineTransform& ctm = GetState().GetTransform();
   gfx::PointF transformed_point = ctm.Inverse().MapPoint(point);
 
   StrokeData stroke_data;

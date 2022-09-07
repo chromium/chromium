@@ -348,7 +348,7 @@ void CanvasRenderingContext2D::ScrollPathIntoViewInternal(const Path& path) {
 
   // Apply transformation and get the bounding rect
   Path transformed_path = path;
-  transformed_path.Transform(GetState().GetAffineTransform());
+  transformed_path.Transform(GetState().GetTransform());
   gfx::RectF bounding_rect = transformed_path.BoundingRect();
 
   // We first map canvas coordinates to layout coordinates.
@@ -1193,7 +1193,7 @@ void CanvasRenderingContext2D::UpdateElementAccessibility(const Path& path,
 
   // Get the transformed path.
   Path transformed_path = path;
-  transformed_path.Transform(GetState().GetAffineTransform());
+  transformed_path.Transform(GetState().GetTransform());
 
   // Add border and padding to the bounding rect.
   LayoutRect element_rect =
