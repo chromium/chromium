@@ -533,7 +533,7 @@ class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
                            verbose=False,
                            resultDB=False):
         """Returns a list of commands to run in parallel to de-duplicate baselines."""
-        flag_spec_test_list = collections.defaultdict(set)
+        test_set = set()
         baseline_subset = self._filter_baseline_set_builders(test_baseline_set)
         for test, build, step_name, _ in baseline_subset:
             if not self._can_optimize(build.builder_name):
@@ -548,47 +548,36 @@ class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
                     test, build, step_name)
             if suffixes == set():
                 continue
-
-            flag_spec = self._tool.builders.flag_specific_option(
-                build.builder_name, step_name)
-            if flag_spec is None:
-                flag_spec = 'default'
-            flag_spec_test_list[flag_spec].add(test)
+            test_set.add(test)
 
         # Process the test_list so that each list caps at MAX_TESTS_IN_OPTIMIZE_CMDLINE tests
-        capped_test_list = collections.defaultdict(list)
-        for flag_spec, test_set in flag_spec_test_list.items():
-            capped_tests_per_flag = []
-            test_list = list(test_set)
-            for i in range(0, len(test_list), MAX_TESTS_IN_OPTIMIZE_CMDLINE):
-                capped_tests_per_flag.append(
-                    test_list[i:i + MAX_TESTS_IN_OPTIMIZE_CMDLINE])
-            if capped_tests_per_flag:
-                capped_test_list[flag_spec].extend(capped_tests_per_flag)
+        capped_test_list = []
+        test_list = list(test_set)
+        for i in range(0, len(test_set), MAX_TESTS_IN_OPTIMIZE_CMDLINE):
+            capped_test_list.append(test_list[i:i +
+                                              MAX_TESTS_IN_OPTIMIZE_CMDLINE])
 
-        optimize_commands = collections.defaultdict(lambda: [])
+        optimize_commands = []
         cwd = self._tool.git().checkout_root
         path_to_blink_tool = self._tool.path()
 
         # Build one optimize-baselines invocation command for each flag_spec.
         # All the tests in the test list will be optimized iteratively.
-        for flag_spec, test_list_flag in capped_test_list.items():
-            for test_list in test_list_flag:
-                command = [
-                    self._tool.executable,
-                    path_to_blink_tool,
-                    'optimize-baselines',
-                    # FIXME: We should propagate the platform options as well.
-                    # Prevent multiple baseline optimizer to race updating the manifest.
-                    # The manifest has already been updated when listing tests.
-                    '--no-manifest-update',
-                ]
-                if verbose:
-                    command.append('--verbose')
-                if flag_spec != 'default':
-                    command.extend(['--flag-specific', flag_spec])
-                command.extend(test_list)
-                optimize_commands[flag_spec].append((command, cwd))
+        for test_list in capped_test_list:
+            command = [
+                self._tool.executable,
+                path_to_blink_tool,
+                'optimize-baselines',
+                # FIXME: We should propagate the platform options as well.
+                # Prevent multiple baseline optimizer to race updating the manifest.
+                # The manifest has already been updated when listing tests.
+                '--no-manifest-update',
+            ]
+            if verbose:
+                command.append('--verbose')
+
+            command.extend(test_list)
+            optimize_commands.append((command, cwd))
 
         return optimize_commands
 
@@ -702,10 +691,9 @@ class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
             else:
                 optimize_commands = self._optimize_commands(
                     test_baseline_set, options.verbose, options.resultDB)
-                for _, cmd_list in optimize_commands.items():
-                    for (cmd, cwd) in cmd_list:
-                        output = self._tool.executive.run_command(cmd, cwd)
-                        print(output)
+                for (cmd, cwd) in optimize_commands:
+                    output = self._tool.executive.run_command(cmd, cwd)
+                    print(output)
 
         if not self._dry_run:
             self._tool.git().add_list(self.unstaged_baselines())

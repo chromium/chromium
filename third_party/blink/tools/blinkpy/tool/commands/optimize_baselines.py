@@ -29,7 +29,6 @@ class OptimizeBaselines(AbstractRebaseliningCommand):
         super(OptimizeBaselines, self).__init__(options=[
             self.suffixes_option,
             self.port_name_option,
-            self.flag_specific_option,
             self.all_option,
         ] + self.platform_options + self.wpt_options)
 

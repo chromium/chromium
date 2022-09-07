@@ -552,8 +552,7 @@ class BaselineOptimizerTest(unittest.TestCase):
             }, {
                 'fast/canvas': '1',
             },
-            baseline_dirname='fast/canvas',
-            options={'flag_specific': 'highdpi'})
+            baseline_dirname='fast/canvas')
 
     def test_flag_specific_virtual_falls_back_to_virtual_base(self):
         self._assert_optimization(
@@ -567,8 +566,7 @@ class BaselineOptimizerTest(unittest.TestCase):
                 'virtual/gpu/fast/canvas': '2',
                 'flag-specific/highdpi/fast/canvas': '3',
             },
-            baseline_dirname='virtual/gpu/fast/canvas',
-            options={'flag_specific': 'highdpi'})
+            baseline_dirname='virtual/gpu/fast/canvas')
 
     def test_flag_specific_virtual_falls_back_to_flag_specific(self):
         self._assert_optimization(
@@ -580,8 +578,7 @@ class BaselineOptimizerTest(unittest.TestCase):
                 'fast/canvas': '1',
                 'flag-specific/highdpi/fast/canvas': '2',
             },
-            baseline_dirname='virtual/gpu/fast/canvas',
-            options={'flag_specific': 'highdpi'})
+            baseline_dirname='virtual/gpu/fast/canvas')
 
     def test_both_flag_specific_falls_back_to_base(self):
         self._assert_optimization(
@@ -592,8 +589,7 @@ class BaselineOptimizerTest(unittest.TestCase):
             }, {
                 'fast/canvas': '1',
             },
-            baseline_dirname='virtual/gpu/fast/canvas',
-            options={'flag_specific': 'highdpi'})
+            baseline_dirname='virtual/gpu/fast/canvas')
 
     # Tests for protected methods - pylint: disable=protected-access
 

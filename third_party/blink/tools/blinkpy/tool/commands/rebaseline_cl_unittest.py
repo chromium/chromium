@@ -753,15 +753,6 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
             'python', 'echo', 'optimize-baselines', '--no-manifest-update',
             'one/text-fail.html'
         ])
-        self.assertEqual(self.tool.executive.calls[3], [
-            'python', 'echo', 'optimize-baselines', '--no-manifest-update',
-            '--flag-specific', 'disable-layout-ng', 'one/text-fail.html'
-        ])
-        self.assertEqual(self.tool.executive.calls[4], [
-            'python', 'echo', 'optimize-baselines', '--no-manifest-update',
-            '--flag-specific', 'disable-site-isolation-trials',
-            'one/text-fail.html'
-        ])
 
     def test_execute_missing_results_with_no_fill_missing_prompts(self):
         self.tool.results_fetcher.set_results(

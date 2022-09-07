@@ -39,12 +39,13 @@ class BaselineOptimizer(object):
     def __init__(self, host, default_port, port_names):
         self._filesystem = host.filesystem
         self._default_port = default_port
-        # To ensure the flag-specific baselines join the fallback graph in the
-        # same location each time the optimizer runs, we create a separate port.
-        self._flag_spec_port = self._make_flag_spec_port(host, default_port)
+        self._host = host
+        self._flag_specific_configs = set()
         self._ports = {}
         for port_name in port_names:
             self._ports[port_name] = host.port_factory.get(port_name)
+            self._flag_specific_configs.update(
+                host.builders.flag_specific_options_for_port_name(port_name))
 
         self._web_tests_dir = default_port.web_tests_dir()
         self._parent_of_tests = self._filesystem.dirname(self._web_tests_dir)
@@ -54,13 +55,13 @@ class BaselineOptimizer(object):
         # Only used by unit tests.
         self.new_results_by_directory = []
 
-    def _make_flag_spec_port(self, host, default_port):
-        option = default_port.flag_specific_config_name()
-        if not option:
+    def _make_flag_spec_port(self, host, flag_specific_config):
+        if not flag_specific_config:
             return None
-        port_name = host.builders.port_name_for_flag_specific_option(option)
+        port_name = host.builders.port_name_for_flag_specific_option(
+            flag_specific_config)
         port = host.port_factory.get(port_name)
-        port.set_option_default('flag_specific', option)
+        port.set_option_default('flag_specific', flag_specific_config)
         return port
 
     def optimize(self, test_name, suffix):
@@ -82,9 +83,7 @@ class BaselineOptimizer(object):
         extension = '.' + suffix
         succeeded = True
 
-        if self._flag_spec_port:
-            self._optimize_flag_specific_baselines(test_name, extension)
-            return True
+        self._optimize_flag_specific_baselines(test_name, extension)
 
         baseline_name = self._default_port.output_filename(
             test_name, self._default_port.BASELINE_SUFFIX, extension)
@@ -101,7 +100,6 @@ class BaselineOptimizer(object):
                 extension)
             self._optimize_virtual_root(test_name, extension, baseline_name,
                                         non_virtual_baseline_name)
-
         else:
             # The given baseline is already non-virtual.
             non_virtual_baseline_name = baseline_name
@@ -117,21 +115,27 @@ class BaselineOptimizer(object):
 
     def _optimize_flag_specific_baselines(self, test_name, extension):
         """Optimize flag-specific baselines."""
-        flag_specific = self._flag_spec_port.flag_specific_config_name()
-        non_virtual_test_name = self._virtual_test_base(test_name)
-        if non_virtual_test_name:
+        for flag_specific in self._flag_specific_configs:
+            # To ensure the flag-specific baselines join the fallback graph in the
+            # same location each time the optimizer runs, we create a separate port.
+            flag_spec_port = self._make_flag_spec_port(self._host,
+                                                       flag_specific)
+            if not flag_spec_port:
+                continue
+            non_virtual_test_name = self._virtual_test_base(test_name)
+            if non_virtual_test_name:
+                _log.debug(
+                    'Optimizing flag-specific virtual fallback path '
+                    'for "%s".', flag_specific)
+                self._optimize_single_baseline(test_name, extension,
+                                               flag_spec_port)
+            else:
+                non_virtual_test_name = test_name
             _log.debug(
-                'Optimizing flag-specific virtual fallback path '
+                'Optimizing flag-specific non-virtual fallback path '
                 'for "%s".', flag_specific)
-            self._optimize_single_baseline(test_name, extension,
-                                           self._flag_spec_port)
-        else:
-            non_virtual_test_name = test_name
-        _log.debug(
-            'Optimizing flag-specific non-virtual fallback path '
-            'for "%s".', flag_specific)
-        self._optimize_single_baseline(non_virtual_test_name, extension,
-                                       self._flag_spec_port)
+            self._optimize_single_baseline(non_virtual_test_name, extension,
+                                           flag_spec_port)
 
     def _get_baseline_paths(self, test_name, extension, port):
         """Get paths to baselines that the provided port would search.
