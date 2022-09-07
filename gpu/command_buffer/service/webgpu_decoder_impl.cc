@@ -477,6 +477,10 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
       // If we have write access, flush any writes by uploading
       // into the SkSurface.
       if ((usage_ & kAllowedWritableMailboxTextureUsages) != 0) {
+        // Before using the shared context, ensure it is current if we're on GL.
+        if (shared_context_state_->GrContextIsGL()) {
+          shared_context_state_->MakeCurrent(/* gl_surface */ nullptr);
+        }
         if (UploadContentsToSkia()) {
           // Upload to skia was successful. Mark the contents as initialized.
           representation_->SetCleared();
@@ -1546,6 +1550,11 @@ WebGPUDecoderImpl::AssociateMailboxUsingSkiaFallback(const Mailbox& mailbox,
                                                      MailboxFlags flags,
                                                      WGPUDevice device,
                                                      WGPUTextureUsage usage) {
+  // Before using the shared context, ensure it is current if we're on GL.
+  if (shared_context_state_->GrContextIsGL()) {
+    shared_context_state_->MakeCurrent(/* gl_surface */ nullptr);
+  }
+
   // Produce a Skia image from the mailbox.
   std::unique_ptr<SkiaImageRepresentation> shared_image =
       shared_image_representation_factory_->ProduceSkia(

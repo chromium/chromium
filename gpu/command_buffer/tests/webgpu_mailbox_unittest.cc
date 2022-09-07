@@ -16,8 +16,11 @@
 
 #if BUILDFLAG(IS_MAC)
 #include "gpu/command_buffer/tests/gl_manager.h"
+#endif  // BUILDFLAG(IS_MAC)
+
 #include "ui/gl/gl_context.h"
-#endif
+#include "ui/gl/gl_utils.h"
+#include "ui/gl/init/gl_factory.h"
 
 namespace gpu {
 namespace {
@@ -167,7 +170,7 @@ class WebGPUMailboxTest
 
   void InitializeTextureColor(wgpu::Device device,
                               const Mailbox& mailbox,
-                              wgpu::Color clearColor) {
+                              wgpu::Color clearValue) {
     gpu::webgpu::ReservedTexture reservation =
         webgpu()->ReserveTexture(device.Get());
 
@@ -182,7 +185,7 @@ class WebGPUMailboxTest
     color_desc.view = texture.CreateView();
     color_desc.loadOp = wgpu::LoadOp::Clear;
     color_desc.storeOp = wgpu::StoreOp::Store;
-    color_desc.clearColor = clearColor;
+    color_desc.clearValue = clearValue;
 
     wgpu::RenderPassDescriptor render_pass_desc = {};
     render_pass_desc.colorAttachmentCount = 1;
@@ -190,7 +193,7 @@ class WebGPUMailboxTest
 
     wgpu::CommandEncoder encoder = device.CreateCommandEncoder();
     wgpu::RenderPassEncoder pass = encoder.BeginRenderPass(&render_pass_desc);
-    pass.EndPass();
+    pass.End();
     wgpu::CommandBuffer commands = encoder.Finish();
 
     wgpu::Queue queue = device.GetQueue();
@@ -619,7 +622,7 @@ TEST_P(WebGPUMailboxTest, ReadWritableUninitializedSharedImage) {
 
   wgpu::CommandEncoder encoder = device.CreateCommandEncoder();
   wgpu::RenderPassEncoder pass = encoder.BeginRenderPass(&render_pass_desc);
-  pass.EndPass();
+  pass.End();
 
   // Copy the texture in a mappable buffer.
   wgpu::BufferDescriptor buffer_desc;
@@ -915,6 +918,112 @@ TEST_P(WebGPUMailboxTest, ReflectionOfDescriptor) {
   ASSERT_EQ(desc2.dimension, texture2.GetDimension());
   ASSERT_EQ(desc2.sampleCount, texture2.GetSampleCount());
   ASSERT_EQ(desc2.mipLevelCount, texture2.GetMipLevelCount());
+}
+
+// Test that if some other GL context is current when
+// Associate/DissociateMailbox occurs, the operations do not fail. Some WebGPU
+// shared image backings rely on GL and need to be responsible for making the
+// context current.
+TEST_P(WebGPUMailboxTest, AssociateDissociateMailboxWhenNotCurrent) {
+  if (!WebGPUSupported()) {
+    LOG(ERROR) << "Test skipped because WebGPU isn't supported";
+    return;
+  }
+  if (!WebGPUSharedImageSupported()) {
+    LOG(ERROR) << "Test skipped because WebGPUSharedImage isn't supported";
+    return;
+  }
+
+  // Create the shared image
+  SharedImageInterface* sii = GetSharedImageInterface();
+  Mailbox mailbox = sii->CreateSharedImage(
+      GetParam().format, {1, 1}, gfx::ColorSpace::CreateSRGB(),
+      kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, SHARED_IMAGE_USAGE_WEBGPU,
+      kNullSurfaceHandle);
+
+  wgpu::Device device = GetNewDevice();
+
+  scoped_refptr<gl::GLContext> gl_context1;
+  scoped_refptr<gl::GLContext> gl_context2;
+  scoped_refptr<gl::GLSurface> gl_surface1;
+  scoped_refptr<gl::GLSurface> gl_surface2;
+
+  // Create and make a new gl context current.
+  // Contexts must be created on the GPU thread, so this creates it on the GPU
+  // thread and sets a scoped_refptr on the main thread.
+  auto CreateAndMakeGLContextCurrent =
+      [&](scoped_refptr<gl::GLContext>* gl_context_out,
+          scoped_refptr<gl::GLSurface>* gl_surface_out) {
+        GetGpuServiceHolder()->ScheduleGpuTask(base::BindOnce(
+            [](scoped_refptr<gl::GLContext>* gl_context_out,
+               scoped_refptr<gl::GLSurface>* gl_surface_out) {
+              auto gl_surface = gl::init::CreateOffscreenGLSurface(
+                  gl::GetDefaultDisplay(), gfx::Size(4, 4));
+              auto gl_context = gl::init::CreateGLContext(
+                  nullptr, gl_surface.get(), gl::GLContextAttribs());
+
+              EXPECT_TRUE(gl_context->MakeCurrent(gl_surface.get()))
+                  << "Failed to make GL context current";
+
+              *gl_context_out = std::move(gl_context);
+              *gl_surface_out = std::move(gl_surface);
+            },
+            gl_context_out, gl_surface_out));
+        GetGpuServiceHolder()
+            ->gpu_thread_task_runner()
+            ->RunsTasksInCurrentSequence();
+      };
+
+  webgpu::ReservedTexture reservation = webgpu()->ReserveTexture(device.Get());
+
+  // Create a GL context and make it current.
+  CreateAndMakeGLContextCurrent(&gl_context1, &gl_surface1);
+
+  webgpu()->AssociateMailbox(
+      reservation.deviceId, reservation.deviceGeneration, reservation.id,
+      reservation.generation, WGPUTextureUsage_RenderAttachment,
+      webgpu::WEBGPU_MAILBOX_NONE, reinterpret_cast<const GLbyte*>(&mailbox));
+  wgpu::Texture texture = wgpu::Texture::Acquire(reservation.texture);
+
+  // Clear the texture using a render pass.
+  wgpu::RenderPassColorAttachment color_desc = {};
+  color_desc.view = texture.CreateView();
+  color_desc.loadOp = wgpu::LoadOp::Clear;
+  color_desc.storeOp = wgpu::StoreOp::Store;
+  color_desc.clearValue = {0.0, 1.0, 0.0, 1.0};
+
+  wgpu::RenderPassDescriptor render_pass_desc = {};
+  render_pass_desc.colorAttachmentCount = 1;
+  render_pass_desc.colorAttachments = &color_desc;
+
+  wgpu::CommandEncoder encoder = device.CreateCommandEncoder();
+  wgpu::RenderPassEncoder pass = encoder.BeginRenderPass(&render_pass_desc);
+  pass.End();
+  wgpu::CommandBuffer commands = encoder.Finish();
+
+  wgpu::Queue queue = device.GetQueue();
+  queue.Submit(1, &commands);
+
+  WaitForCompletion(device);
+
+  // Create another context and make it current.
+  // This is a distinct context to catch errors where Associate/Dissociate
+  // always use the current context, and in the test, these just so happen to be
+  // identical.
+  CreateAndMakeGLContextCurrent(&gl_context2, &gl_surface2);
+
+  webgpu()->DissociateMailbox(reservation.id, reservation.generation);
+
+  WaitForCompletion(device);
+
+  // Delete the GL contexts on the GPU thread.
+  GetGpuServiceHolder()->ScheduleGpuTask(
+      base::BindOnce([](scoped_refptr<gl::GLContext> gl_context1,
+                        scoped_refptr<gl::GLContext> gl_context2,
+                        scoped_refptr<gl::GLSurface> gl_surface1,
+                        scoped_refptr<gl::GLSurface> gl_surface2) {},
+                     std::move(gl_context1), std::move(gl_context2),
+                     std::move(gl_surface1), std::move(gl_surface2)));
 }
 
 INSTANTIATE_TEST_SUITE_P(,
