@@ -91,6 +91,37 @@ base::OnceClosure UpdaterInternalCallback::Disconnect() {
   return std::move(callback_);
 }
 
+// Creates an instance of COM server in the COM STA apartment.
+HRESULT CreateUpdaterInternal(
+    UpdaterScope scope,
+    Microsoft::WRL::ComPtr<IUpdaterInternal>& updater_internal) {
+  ::Sleep(kCreateUpdaterInstanceDelayMs);
+
+  Microsoft::WRL::ComPtr<IUnknown> unknown;
+  HRESULT hr = ::CoCreateInstance(
+      scope == UpdaterScope::kSystem ? __uuidof(UpdaterInternalSystemClass)
+                                     : __uuidof(UpdaterInternalUserClass),
+      nullptr, CLSCTX_LOCAL_SERVER, IID_PPV_ARGS(&unknown));
+
+  if (FAILED(hr)) {
+    VLOG(2) << "Failed to instantiate the update internal server: " << std::hex
+            << hr;
+    return hr;
+  }
+
+  hr = unknown.As(&updater_internal);
+
+  // TODO(crbug.com/1341471) - revert the CL that introduced the check after
+  // the bug is resolved.
+  if (hr == TYPE_E_CANTLOADLIBRARY) {
+    CheckComInterfaceTypeLib(scope, true);
+    CheckComInterfaceTypeLib(scope, false);
+    NOTREACHED();
+  }
+
+  return hr;
+}
+
 }  // namespace
 
 scoped_refptr<UpdateServiceInternal> CreateUpdateServiceInternalProxy(
@@ -110,6 +141,24 @@ UpdateServiceInternalProxy::~UpdateServiceInternalProxy() = default;
 
 void UpdateServiceInternalProxy::Uninitialize() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_main_);
+
+  com_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&UpdateServiceInternalProxy::UninitializeOnSTA, this));
+}
+
+HRESULT UpdateServiceInternalProxy::InitializeSTA() {
+  DCHECK(com_task_runner_->BelongsToCurrentThread());
+
+  if (updater_internal_)
+    return S_OK;
+  return CreateUpdaterInternal(scope_, updater_internal_);
+}
+
+void UpdateServiceInternalProxy::UninitializeOnSTA() {
+  DCHECK(com_task_runner_->BelongsToCurrentThread());
+
+  updater_internal_ = nullptr;
 }
 
 void UpdateServiceInternalProxy::Run(base::OnceClosure callback) {
@@ -117,50 +166,23 @@ void UpdateServiceInternalProxy::Run(base::OnceClosure callback) {
   VLOG(1) << __func__;
 
   com_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&UpdateServiceInternalProxy::RunOnSTA, this,
-                                base::BindPostTask(main_task_runner_,
-                                                   std::move(callback))));
+      FROM_HERE,
+      base::BindOnce(&UpdateServiceInternalProxy::InitializeSTA, this)
+          .Then(base::BindOnce(
+              &UpdateServiceInternalProxy::RunOnSTA, this,
+              base::BindPostTask(main_task_runner_, std::move(callback)))));
 }
 
-CLSID UpdateServiceInternalProxy::GetInternalClass() const {
-  switch (scope_) {
-    case UpdaterScope::kUser:
-      return __uuidof(UpdaterInternalUserClass);
-    case UpdaterScope::kSystem:
-      return __uuidof(UpdaterInternalSystemClass);
-  }
-}
-
-void UpdateServiceInternalProxy::RunOnSTA(base::OnceClosure callback) {
+void UpdateServiceInternalProxy::RunOnSTA(base::OnceClosure callback,
+                                          HRESULT prev_hr) {
   DCHECK(com_task_runner_->BelongsToCurrentThread());
 
-  ::Sleep(kCreateUpdaterInstanceDelayMs);
-  Microsoft::WRL::ComPtr<IUnknown> server;
-  HRESULT hr = ::CoCreateInstance(GetInternalClass(), nullptr,
-                                  CLSCTX_LOCAL_SERVER, IID_PPV_ARGS(&server));
-  if (FAILED(hr)) {
-    VLOG(2) << "Failed to instantiate the updater internal server. " << std::hex
-            << hr;
+  if (FAILED(prev_hr)) {
     std::move(callback).Run();
     return;
   }
 
-  Microsoft::WRL::ComPtr<IUpdaterInternal> updater_internal;
-  hr = server.As(&updater_internal);
-
-  // TODO(crbug.com/1341471) - revert the CL that introduced the check after
-  // the bug is resolved.
-  if (hr == TYPE_E_CANTLOADLIBRARY) {
-    CheckComInterfaceTypeLib(scope_, true);
-    CheckComInterfaceTypeLib(scope_, false);
-    NOTREACHED();
-  }
-  if (FAILED(hr)) {
-    VLOG(2) << "Failed to query the updater_internal interface. " << std::hex
-            << hr;
-    std::move(callback).Run();
-    return;
-  }
+  CHECK(updater_internal_);
 
   // The COM RPC takes ownership of the `rpc_callback` and owns a reference to
   // the `updater_internal` object as well. As long as the `rpc_callback`
@@ -171,8 +193,8 @@ void UpdateServiceInternalProxy::RunOnSTA(base::OnceClosure callback) {
   // released as well, which causes the destruction of the `updater_internal`
   // object.
   auto rpc_callback = Microsoft::WRL::Make<UpdaterInternalCallback>(
-      updater_internal, std::move(callback));
-  hr = updater_internal->Run(rpc_callback.Get());
+      updater_internal_, std::move(callback));
+  HRESULT hr = updater_internal_->Run(rpc_callback.Get());
   if (FAILED(hr)) {
     VLOG(2) << "Failed to call IUpdaterInternal::Run" << std::hex << hr;
 
@@ -192,47 +214,27 @@ void UpdateServiceInternalProxy::InitializeUpdateService(
 
   com_task_runner_->PostTask(
       FROM_HERE,
-      base::BindOnce(
-          &UpdateServiceInternalProxy::InitializeUpdateServiceOnSTA, this,
-          base::BindPostTask(main_task_runner_, std::move(callback))));
+      base::BindOnce(&UpdateServiceInternalProxy::InitializeSTA, this)
+          .Then(base::BindOnce(
+              &UpdateServiceInternalProxy::InitializeUpdateServiceOnSTA, this,
+              base::BindPostTask(main_task_runner_, std::move(callback)))));
 }
 
 void UpdateServiceInternalProxy::InitializeUpdateServiceOnSTA(
-    base::OnceClosure callback) {
+    base::OnceClosure callback,
+    HRESULT prev_hr) {
   DCHECK(com_task_runner_->BelongsToCurrentThread());
 
-  ::Sleep(kCreateUpdaterInstanceDelayMs);
-  Microsoft::WRL::ComPtr<IUnknown> server;
-  HRESULT hr = ::CoCreateInstance(GetInternalClass(), nullptr,
-                                  CLSCTX_LOCAL_SERVER, IID_PPV_ARGS(&server));
-  if (FAILED(hr)) {
-    VLOG(2) << "Failed to instantiate the updater internal server. " << std::hex
-            << hr;
+  if (FAILED(prev_hr)) {
     std::move(callback).Run();
     return;
   }
 
-  Microsoft::WRL::ComPtr<IUpdaterInternal> updater_internal;
-  hr = server.As(&updater_internal);
-
-  // TODO(crbug.com/1341471) - revert the CL that introduced the check after
-  // the bug is resolved.
-  if (hr == TYPE_E_CANTLOADLIBRARY) {
-    CheckComInterfaceTypeLib(scope_, true);
-    CheckComInterfaceTypeLib(scope_, false);
-    NOTREACHED();
-  }
-
-  if (FAILED(hr)) {
-    VLOG(2) << "Failed to query the updater_internal interface. " << std::hex
-            << hr;
-    std::move(callback).Run();
-    return;
-  }
+  CHECK(updater_internal_);
 
   auto rpc_callback = Microsoft::WRL::Make<UpdaterInternalCallback>(
-      updater_internal, std::move(callback));
-  hr = updater_internal->InitializeUpdateService(rpc_callback.Get());
+      updater_internal_, std::move(callback));
+  HRESULT hr = updater_internal_->InitializeUpdateService(rpc_callback.Get());
   if (FAILED(hr)) {
     VLOG(2) << "Failed to call IUpdaterInternal::InitializeUpdateService"
             << std::hex << hr;

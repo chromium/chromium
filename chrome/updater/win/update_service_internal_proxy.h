@@ -5,9 +5,12 @@
 #ifndef CHROME_UPDATER_WIN_UPDATE_SERVICE_INTERNAL_PROXY_H_
 #define CHROME_UPDATER_WIN_UPDATE_SERVICE_INTERNAL_PROXY_H_
 
+#include <wrl/client.h>
+
 #include "base/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
+#include "chrome/updater/app/server/win/updater_internal_idl.h"
 #include "chrome/updater/update_service_internal.h"
 #include "chrome/updater/updater_scope.h"
 
@@ -30,10 +33,15 @@ class UpdateServiceInternalProxy : public UpdateServiceInternal {
  private:
   ~UpdateServiceInternalProxy() override;
 
-  // These function are invoked on the |com_task_runner_|.
-  CLSID GetInternalClass() const;
-  void RunOnSTA(base::OnceClosure callback);
-  void InitializeUpdateServiceOnSTA(base::OnceClosure callback);
+  // These functions run on the `com_task_runner_`.
+  HRESULT InitializeSTA();
+  void UninitializeOnSTA();
+
+  // These functions run on the `com_task_runner_`. `prev_hr` contains the
+  // result of the previous callback invocation in a `Then` chain.
+  void RunOnSTA(base::OnceClosure callback, HRESULT prev_hr);
+  void InitializeUpdateServiceOnSTA(base::OnceClosure callback,
+                                    HRESULT prev_hr);
 
   // Bound to the main sequence.
   SEQUENCE_CHECKER(sequence_checker_main_);
@@ -46,6 +54,10 @@ class UpdateServiceInternalProxy : public UpdateServiceInternal {
   // Runs the tasks which involve outbound COM calls and inbound COM callbacks.
   // This task runner is thread-affine with the COM STA.
   scoped_refptr<base::SingleThreadTaskRunner> com_task_runner_;
+
+  // IUpdaterInternal COM server instance owned by the STA. That means the
+  // instance must be created and destroyed on the com_task_runner_.
+  Microsoft::WRL::ComPtr<IUpdaterInternal> updater_internal_;
 };
 
 }  // namespace updater
