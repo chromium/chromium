@@ -6646,6 +6646,11 @@
           'chromiumos_preflight',
         ],
       },
+      'lacros-arm-generic-chrome-fyi-reclient': {
+        'additional_compile_targets': [
+          'chrome',
+        ],
+      },
       'linux-chrome-reclient': {
         'additional_compile_targets': [
            # same build target as linux-chrome even if it doesn't run the tests
