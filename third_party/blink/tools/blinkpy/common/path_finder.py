@@ -56,6 +56,18 @@ def add_blinkpy_thirdparty_dir_to_sys_path():
         sys.path.insert(0, path)
 
 
+def add_testing_dir_to_sys_path():
+    path = get_testing_dir()
+    if path not in sys.path:
+        sys.path.insert(0, path)
+
+
+def add_build_android_to_sys_path():
+    path = get_build_android_dir()
+    if path not in sys.path:
+        sys.path.insert(0, path)
+
+
 def bootstrap_wpt_imports():
     """Bootstrap the availability of all wpt-vended packages."""
     path = os.path.join(get_wpt_tools_wpt_dir(), 'tools')
@@ -93,6 +105,14 @@ def get_depot_tools_dir():
 def get_source_dir():
     return os.path.join(get_chromium_src_dir(), 'third_party', 'blink',
                         'renderer')
+
+
+def get_testing_dir():
+    return os.path.join(get_chromium_src_dir(), 'testing')
+
+
+def get_build_android_dir():
+    return os.path.join(get_chromium_src_dir(), 'build', 'android')
 
 
 def get_typ_dir():

@@ -12,29 +12,7 @@ import os
 import shutil
 import sys
 
-BLINK_TOOLS_DIR = os.path.abspath(os.path.dirname(__file__))
-SRC_DIR = os.path.realpath(os.path.join(BLINK_TOOLS_DIR, '..', '..', '..'))
-
-sys.path.append(os.path.join(SRC_DIR, 'testing'))
-
-from scripts import wpt_common
-
-# Add src/testing/ into sys.path for importing common without pylint errors.
-sys.path.append(
-    os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir)))
-from scripts import common
-
-logger = logging.getLogger(__name__)
-
-BUILD_ANDROID = os.path.join(SRC_DIR, 'build', 'android')
-UPSTREAM_GIT_URL = 'https://github.com/web-platform-tests/wpt.git'
-
-if BLINK_TOOLS_DIR not in sys.path:
-    sys.path.append(BLINK_TOOLS_DIR)
-
-if BUILD_ANDROID not in sys.path:
-    sys.path.append(BUILD_ANDROID)
-
+from blinkpy.common import path_finder
 from blinkpy.common.path_finder import PathFinder
 from blinkpy.web_tests.port.android import (
     PRODUCTS,
@@ -44,6 +22,16 @@ from blinkpy.web_tests.port.android import (
     CHROME_ANDROID,
     ANDROID_DISABLED_TESTS,
 )
+
+path_finder.add_testing_dir_to_sys_path()
+path_finder.add_build_android_to_sys_path()
+
+from scripts import wpt_common
+from scripts import common
+
+logger = logging.getLogger(__name__)
+
+UPSTREAM_GIT_URL = 'https://github.com/web-platform-tests/wpt.git'
 
 try:
     # This import adds `devil` to `sys.path`.
@@ -759,22 +747,6 @@ class ChromeAndroidBase(Product):
             yield
 
 
-@contextlib.contextmanager
-def _install_webview_from_release(device, channel, python_executable=None):
-    script_path = os.path.join(SRC_DIR, 'clank', 'bin', 'install_webview.py')
-    python_executable = python_executable or sys.executable
-    command = [
-        python_executable, script_path, '-s', device.serial, '--channel',
-        channel
-    ]
-    exit_code = common.run_command(command)
-    if exit_code != 0:
-        raise Exception('failed to install webview from release '
-                        '(serial: %r, channel: %r, exit code: %d)' %
-                        (device.serial, channel, exit_code))
-    yield
-
-
 class WebLayer(ChromeAndroidBase):
     name = ANDROID_WEBLAYER
     aliases = ['weblayer']
@@ -807,9 +779,7 @@ class WebView(ChromeAndroidBase):
             return webview_app.UseWebViewProvider(
                 device, self._options.webview_provider)
         assert self._options.release_channel, 'no webview install method'
-        return _install_webview_from_release(device,
-                                             self._options.release_channel,
-                                             self._python_executable)
+        return self._install_webview_from_release(device)
 
     def _validate_options(self):
         super()._validate_options()
@@ -836,6 +806,22 @@ class WebView(ChromeAndroidBase):
     def _provision_device(self, device):
         with self._install_webview(device), super()._provision_device(device):
             yield
+
+    @contextlib.contextmanager
+    def _install_webview_from_release(self, device):
+        script_path = self._path_finder.path_from_chromium_base(
+            'clank', 'bin', 'install_webview.py')
+        command = [
+            self._python_executable, script_path, '-s', device.serial,
+            '--channel', self._options.release_channel
+        ]
+        exit_code = common.run_command(command)
+        if exit_code != 0:
+            raise Exception(
+                'failed to install webview from release '
+                '(serial: %r, channel: %r, exit code: %d)' %
+                (device.serial, self._options.release_channel, exit_code))
+        yield
 
 
 class ChromeAndroid(ChromeAndroidBase):
