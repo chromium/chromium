@@ -5152,6 +5152,8 @@ static_library("ui") {
       "views/web_apps/web_app_info_image_source.h",
       "views/web_apps/web_app_uninstall_dialog_view.cc",
       "views/web_apps/web_app_uninstall_dialog_view.h",
+      "views/web_apps/web_app_views_utils.cc",
+      "views/web_apps/web_app_views_utils.h",
       "views/webauthn/authenticator_bio_enrollment_sheet_view.cc",
       "views/webauthn/authenticator_bio_enrollment_sheet_view.h",
       "views/webauthn/authenticator_client_pin_entry_sheet_view.cc",

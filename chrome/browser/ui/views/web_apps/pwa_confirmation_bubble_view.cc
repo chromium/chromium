@@ -17,11 +17,11 @@
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
-#include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "chrome/browser/ui/views/web_apps/web_app_info_image_source.h"
+#include "chrome/browser/ui/views/web_apps/web_app_views_utils.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
@@ -31,7 +31,6 @@
 #include "components/feature_engagement/public/event_constants.h"
 #include "components/feature_engagement/public/tracker.h"
 #include "components/strings/grit/components_strings.h"
-#include "components/url_formatter/elide_url.h"
 #include "content/public/common/content_features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/image/image_skia.h"
@@ -60,33 +59,6 @@ std::unique_ptr<views::ImageView> CreateIconView(
   auto icon_image_view = std::make_unique<views::ImageView>();
   icon_image_view->SetImage(image);
   return icon_image_view;
-}
-
-// Returns a label containing the app name.
-std::unique_ptr<views::Label> CreateNameLabel(const std::u16string& name) {
-  auto name_label = std::make_unique<views::Label>(
-      name, views::style::CONTEXT_DIALOG_BODY_TEXT,
-      views::style::TextStyle::STYLE_PRIMARY);
-  name_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  name_label->SetElideBehavior(gfx::ELIDE_TAIL);
-  return name_label;
-}
-
-std::unique_ptr<views::Label> CreateOriginLabel(const url::Origin& origin) {
-  auto origin_label = std::make_unique<views::Label>(
-      FormatOriginForSecurityDisplay(
-          origin, url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS),
-      CONTEXT_DIALOG_BODY_TEXT_SMALL, views::style::STYLE_SECONDARY);
-
-  origin_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-
-  // Elide from head to prevent origin spoofing.
-  origin_label->SetElideBehavior(gfx::ELIDE_HEAD);
-
-  // Multiline breaks elision, so explicitly disable multiline.
-  origin_label->SetMultiLine(false);
-
-  return origin_label;
 }
 
 }  // namespace
@@ -154,10 +126,11 @@ PWAConfirmationBubbleView::PWAConfirmationBubbleView(
   labels->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
 
-  labels->AddChildView(CreateNameLabel(web_app_info_->title).release());
   labels->AddChildView(
-      CreateOriginLabel(url::Origin::Create(web_app_info_->start_url))
-          .release());
+      web_app::CreateNameLabel(web_app_info_->title).release());
+  labels->AddChildView(web_app::CreateOriginLabel(
+                           url::Origin::Create(web_app_info_->start_url), false)
+                           .release());
 
   if (base::FeatureList::IsEnabled(features::kDesktopPWAsTabStrip) &&
       base::FeatureList::IsEnabled(features::kDesktopPWAsTabStripSettings)) {
