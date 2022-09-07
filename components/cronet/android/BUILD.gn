@@ -1000,6 +1000,7 @@ if (!is_component_build) {
       "test/javatests/src/org/chromium/net/BrotliTest.java",
       "test/javatests/src/org/chromium/net/Criteria.java",
       "test/javatests/src/org/chromium/net/CronetEngineBuilderTest.java",
+      "test/javatests/src/org/chromium/net/CronetOnboardingTest.java",
       "test/javatests/src/org/chromium/net/CronetStressTest.java",
       "test/javatests/src/org/chromium/net/CronetTestRuleTest.java",
       "test/javatests/src/org/chromium/net/CronetUploadTest.java",
