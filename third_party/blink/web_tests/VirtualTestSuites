@@ -1210,6 +1210,14 @@
     "args": ["--enable-features=PendingBeaconAPI"]
   },
   {
+    "prefix": "pending-beacon-origin-trial",
+    "platforms": ["Linux"],
+    "bases": [
+      "http/tests/origin_trials/webexposed/pending-beacon-origin-trial-interfaces.html"
+    ],
+    "args": ["--enable-features=PendingBeaconAPI:requires_origin_trial/true"]
+  },
+  {
     "prefix": "pretokenize-css",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [

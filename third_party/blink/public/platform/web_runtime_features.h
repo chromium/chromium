@@ -255,6 +255,7 @@ class WebRuntimeFeatures {
   BLINK_PLATFORM_EXPORT static void EnableGetDisplayMediaSet(bool);
   BLINK_PLATFORM_EXPORT static void
   EnableGetDisplayMediaSetAutoSelectAllScreens(bool);
+  BLINK_PLATFORM_EXPORT static void EnablePendingBeaconAPI(bool);
 
  private:
   WebRuntimeFeatures();

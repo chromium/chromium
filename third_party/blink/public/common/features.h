@@ -832,7 +832,17 @@ BLINK_COMMON_EXPORT extern const base::Feature kCSSParserSelectorArena;
 
 // Whether the pending beacon API is enabled or not.
 // https://github.com/WICG/unload-beacon/blob/main/README.md
+// - kPendingBeaconAPI = {true: {"requires_origin_trial": false}} to enable the
+//   features globally.
+// - kPendingBeaconAPI = {true: {"requires_origin_trial": true}} to enable the
+//   features only for execution context with OT token.
 BLINK_COMMON_EXPORT extern const base::Feature kPendingBeaconAPI;
+// If true, the execution context from client request needs to have OT token in
+// it, in addition to `kPendingBeaconAPI` being set to true, such that the API
+// can be enabled. If false, setting `kPendingBeaconAPI` to true enable the API
+// both in Chromium & in Blink.
+BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
+    kPendingBeaconAPIRequiresOriginTrial;
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
 // If enabled, font lookup tables will be prefetched on renderer startup.

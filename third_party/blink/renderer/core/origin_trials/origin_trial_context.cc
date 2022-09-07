@@ -507,6 +507,10 @@ bool OriginTrialContext::CanEnableTrialFromName(const StringView& trial_name) {
         features::kSpeculationRulesPrefetchProxy);
   }
 
+  if (trial_name == "PendingBeaconAPI") {
+    return base::FeatureList::IsEnabled(features::kPendingBeaconAPI);
+  }
+
   return true;
 }
 

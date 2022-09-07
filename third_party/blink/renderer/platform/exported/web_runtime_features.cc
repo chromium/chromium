@@ -715,4 +715,8 @@ void WebRuntimeFeatures::EnablePrefixedStorageInfo(bool enable) {
   RuntimeEnabledFeatures::SetPrefixedStorageInfoEnabled(enable);
 }
 
+void WebRuntimeFeatures::EnablePendingBeaconAPI(bool enable) {
+  RuntimeEnabledFeatures::SetPendingBeaconAPIEnabled(enable);
+}
+
 }  // namespace blink
