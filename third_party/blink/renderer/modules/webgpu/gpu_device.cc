@@ -29,6 +29,7 @@
 #include "third_party/blink/renderer/modules/webgpu/gpu_compute_pipeline.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_device_lost_info.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_external_texture.h"
+#include "third_party/blink/renderer/modules/webgpu/gpu_internal_error.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_out_of_memory_error.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_pipeline_layout.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_query_set.h"
@@ -259,6 +260,9 @@ void GPUDevice::OnUncapturedError(WGPUErrorType errorType,
         StringFromASCIIAndUTF8(message)));
   } else if (errorType == WGPUErrorType_OutOfMemory) {
     init->setError(MakeGarbageCollected<GPUOutOfMemoryError>(
+        StringFromASCIIAndUTF8(message)));
+  } else if (errorType == WGPUErrorType_Internal) {
+    init->setError(MakeGarbageCollected<GPUInternalError>(
         StringFromASCIIAndUTF8(message)));
   } else {
     return;
@@ -573,6 +577,10 @@ void GPUDevice::OnPopErrorScopeCallback(ScriptPromiseResolver* resolver,
       break;
     case WGPUErrorType_Validation:
       resolver->Resolve(MakeGarbageCollected<GPUValidationError>(
+          StringFromASCIIAndUTF8(message)));
+      break;
+    case WGPUErrorType_Internal:
+      resolver->Resolve(MakeGarbageCollected<GPUInternalError>(
           StringFromASCIIAndUTF8(message)));
       break;
     case WGPUErrorType_Unknown:

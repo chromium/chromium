@@ -893,6 +893,8 @@ WGPUErrorFilter AsDawnEnum(const V8GPUErrorFilter& webgpu_enum) {
       return WGPUErrorFilter_OutOfMemory;
     case V8GPUErrorFilter::Enum::kValidation:
       return WGPUErrorFilter_Validation;
+    case V8GPUErrorFilter::Enum::kInternal:
+      return WGPUErrorFilter_Internal;
   }
 }
 

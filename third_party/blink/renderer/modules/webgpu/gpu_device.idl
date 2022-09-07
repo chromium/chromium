@@ -48,7 +48,8 @@ GPUDevice includes GPUObjectBase;
 
 enum GPUErrorFilter {
     "out-of-memory",
-    "validation"
+    "validation",
+    "internal",
 };
 
 typedef sequence<(GPUBuffer or ArrayBuffer)> GPUMappedBuffer;
