@@ -6,13 +6,10 @@
 
 #include <stddef.h>
 
-#include "ash/components/arc/arc_util.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
-#include "ash/public/cpp/app_list/app_list_switches.h"
 #include "base/metrics/field_trial_params.h"
-#include "base/strings/string_util.h"
 #include "base/time/default_clock.h"
 #include "build/build_config.h"
 #include "chrome/browser/ash/arc/arc_util.h"
@@ -33,7 +30,6 @@
 #include "chrome/browser/ui/app_list/search/help_app_provider.h"
 #include "chrome/browser/ui/app_list/search/help_app_zero_state_provider.h"
 #include "chrome/browser/ui/app_list/search/keyboard_shortcut_provider.h"
-#include "chrome/browser/ui/app_list/search/mixer.h"
 #include "chrome/browser/ui/app_list/search/omnibox_lacros_provider.h"
 #include "chrome/browser/ui/app_list/search/omnibox_provider.h"
 #include "chrome/browser/ui/app_list/search/os_settings_provider.h"
@@ -42,12 +38,7 @@
 #include "chrome/browser/ui/app_list/search/search_controller_impl.h"
 #include "chrome/browser/ui/app_list/search/search_controller_impl_new.h"
 #include "chrome/browser/ui/app_list/search/search_features.h"
-#include "chrome/common/chrome_features.h"
-#include "chrome/common/chrome_switches.h"
-#include "chromeos/ash/services/assistant/public/cpp/features.h"
 #include "components/session_manager/core/session_manager.h"
-#include "content/public/browser/browser_context.h"
-#include "content/public/browser/storage_partition.h"
 
 namespace app_list {
 
@@ -172,12 +163,9 @@ std::unique_ptr<SearchController> CreateSearchController(
             session_manager::SessionManager::Get()));
   }
 
-  if (app_list_features::IsLauncherSettingsSearchEnabled()) {
-    size_t os_settings_search_group_id =
-        controller->AddGroup(kGenericMaxResults);
-    controller->AddProvider(os_settings_search_group_id,
-                            std::make_unique<OsSettingsProvider>(profile));
-  }
+  size_t os_settings_search_group_id = controller->AddGroup(kGenericMaxResults);
+  controller->AddProvider(os_settings_search_group_id,
+                          std::make_unique<OsSettingsProvider>(profile));
 
   if (ash::features::IsProductivityLauncherEnabled() &&
       base::GetFieldTrialParamByFeatureAsBool(

@@ -41,9 +41,6 @@ ASH_PUBLIC_EXPORT extern const base::Feature kEnableFuzzyAppSearch;
 // Enables using exact string search for non latin locales.
 ASH_PUBLIC_EXPORT extern const base::Feature kEnableExactMatchForNonLatinLocale;
 
-// Enables launcher search results for OS settings.
-ASH_PUBLIC_EXPORT extern const base::Feature kLauncherSettingsSearch;
-
 // Enables categorical search in the launcher.
 ASH_PUBLIC_EXPORT extern const base::Feature kCategoricalSearch;
 
@@ -77,7 +74,6 @@ ASH_PUBLIC_EXPORT bool IsAppListLaunchRecordingEnabled();
 ASH_PUBLIC_EXPORT bool IsFuzzyAppSearchEnabled();
 ASH_PUBLIC_EXPORT bool IsExactMatchForNonLatinLocaleEnabled();
 ASH_PUBLIC_EXPORT bool IsForceShowContinueSectionEnabled();
-ASH_PUBLIC_EXPORT bool IsLauncherSettingsSearchEnabled();
 ASH_PUBLIC_EXPORT bool IsAggregatedMlSearchRankingEnabled();
 ASH_PUBLIC_EXPORT bool IsLauncherSearchNormalizationEnabled();
 ASH_PUBLIC_EXPORT bool IsCategoricalSearchEnabled();

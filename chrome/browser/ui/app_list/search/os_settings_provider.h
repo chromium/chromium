@@ -16,9 +16,7 @@
 #include "chrome/browser/ui/webui/settings/ash/search/search.mojom.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
-#include "components/services/app_service/public/mojom/types.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
-#include "mojo/public/cpp/bindings/remote.h"
 
 class Profile;
 
@@ -113,7 +111,7 @@ class OsSettingsProvider
 
   void OnLoadIcon(apps::IconValuePtr icon_value);
 
-  // Scoring and filtering parameters controlled from Finch.
+  // Scoring and filtering parameters.
   bool accept_alternate_matches_ = false;
   size_t min_query_length_ = 4u;
   size_t min_query_length_for_alternates_ = 4u;
