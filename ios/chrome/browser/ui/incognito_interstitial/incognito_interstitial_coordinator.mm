@@ -40,6 +40,8 @@
   self.incognitoInterstitialViewController.URLLoaderDelegate = self;
   self.incognitoInterstitialViewController.URLText =
       base::SysUTF8ToNSString(self.urlLoadParams.web_params.url.spec());
+  self.incognitoInterstitialViewController.modalPresentationStyle =
+      UIModalPresentationFormSheet;
 
   [self.baseViewController
       presentViewController:self.incognitoInterstitialViewController
