@@ -233,6 +233,8 @@ const NSString* kScribbleFakeboxElementId = @"fakebox";
   [super viewDidLoad];
 
   if (!self.headerView) {
+    self.view.translatesAutoresizingMaskIntoConstraints = NO;
+
     CGFloat width = self.view.frame.size.width;
 
     self.headerView = [[ContentSuggestionsHeaderView alloc] init];

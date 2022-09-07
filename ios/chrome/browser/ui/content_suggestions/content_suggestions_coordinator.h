@@ -11,7 +11,6 @@ namespace web {
 class WebState;
 }
 
-@class ContentSuggestionsHeaderViewController;
 @class ContentSuggestionsViewController;
 @protocol FeedDelegate;
 @protocol NewTabPageControllerDelegate;
