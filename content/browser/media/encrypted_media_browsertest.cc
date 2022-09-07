@@ -273,7 +273,16 @@ IN_PROC_BROWSER_TEST_P(EncryptedMediaTest, Playback_VideoAudio_WebM_Opus) {
   TestSimplePlayback("bear-320x240-opus-av_enc-av.webm");
 }
 
-IN_PROC_BROWSER_TEST_P(EncryptedMediaTest, Playback_VideoClearAudio_WebM_Opus) {
+// TODO(crbug.com/1360765): Flaky on Android.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_Playback_VideoClearAudio_WebM_Opus \
+  DISABLED_Playback_VideoClearAudio_WebM_Opus
+#else
+#define MAYBE_Playback_VideoClearAudio_WebM_Opus \
+  Playback_VideoClearAudio_WebM_Opus
+#endif
+IN_PROC_BROWSER_TEST_P(EncryptedMediaTest,
+                       MAYBE_Playback_VideoClearAudio_WebM_Opus) {
 #if BUILDFLAG(IS_ANDROID)
   if (!media::MediaCodecUtil::IsOpusDecoderAvailable())
     GTEST_SKIP() << "Opus decoder not available";
@@ -342,7 +351,16 @@ IN_PROC_BROWSER_TEST_P(EncryptedMediaTest, Playback_VideoOnly_WebM_AV1) {
   TestSimplePlayback("bear-av1-cenc.webm");
 }
 
-IN_PROC_BROWSER_TEST_P(EncryptedMediaTest, Playback_VideoOnly_WebM_AV1_10bit) {
+// TODO(crbug.com/1360665): Flaky on Android.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_Playback_VideoOnly_WebM_AV1_10bit \
+  DISABLED_Playback_VideoOnly_WebM_AV1_10bit
+#else
+#define MAYBE_Playback_VideoOnly_WebM_AV1_10bit \
+  Playback_VideoOnly_WebM_AV1_10bit
+#endif
+IN_PROC_BROWSER_TEST_P(EncryptedMediaTest,
+                       MAYBE_Playback_VideoOnly_WebM_AV1_10bit) {
   TestSimplePlayback("bear-av1-320x180-10bit-cenc.webm");
 }
 
@@ -412,7 +430,13 @@ IN_PROC_BROWSER_TEST_P(EncryptedMediaTest, Playback_Encryption_CBC1) {
                       media::kErrorTitle);
 }
 
-IN_PROC_BROWSER_TEST_P(EncryptedMediaTest, Playback_Encryption_CENS) {
+// TODO(crbug.com/1360698): Flaky on Android.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_Playback_Encryption_CENS DISABLED_Playback_Encryption_CENS
+#else
+#define MAYBE_Playback_Encryption_CENS Playback_Encryption_CENS
+#endif
+IN_PROC_BROWSER_TEST_P(EncryptedMediaTest, MAYBE_Playback_Encryption_CENS) {
   RunMultipleFileTest("bear-640x360-v_frag-cens.mp4", std::string(),
                       media::kErrorTitle);
 }
