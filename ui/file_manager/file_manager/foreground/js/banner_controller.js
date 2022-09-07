@@ -395,8 +395,8 @@ export class BannerController extends EventTarget {
 
     // When navigating to a different volume, refresh the volume size stats
     // when first navigating. A listener will keep this in sync.
-    if (this.currentVolume_ && previousVolume &&
-        previousVolume.volumeId !== this.currentVolume_.volumeId &&
+    if (this.currentVolume_ &&
+        previousVolume?.volumeId !== this.currentVolume_.volumeId &&
         this.volumeSizeObservers_[this.currentVolume_.volumeType]) {
       this.pendingVolumeSizeUpdates_.add(this.currentVolume_);
       this.updateVolumeSizeStatsDebounced_.runImmediately();
