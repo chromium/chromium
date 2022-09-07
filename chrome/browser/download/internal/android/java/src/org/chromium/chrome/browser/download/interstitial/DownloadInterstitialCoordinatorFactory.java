@@ -17,13 +17,14 @@ public class DownloadInterstitialCoordinatorFactory {
      * @param contextSupplier Supplier which provides the context of the parent tab.
      * @param downloadUrl Url spec used for matching and binding the correct offline item.
      * @param windowAndroid The {@link WindowAndroid} associated with the activity.
+     * @param reloadCallback Callback run to reload the tab therefore restarting the download.
      * @return A new {@link DownloadInterstitialCoordinatorImpl} instance.
      */
-    public static DownloadInterstitialCoordinator create(
-            Supplier<Context> contextSupplier, String downloadUrl, WindowAndroid windowAndroid) {
+    public static DownloadInterstitialCoordinator create(Supplier<Context> contextSupplier,
+            String downloadUrl, WindowAndroid windowAndroid, Runnable reloadCallback) {
         return new DownloadInterstitialCoordinatorImpl(contextSupplier, downloadUrl,
                 OfflineContentAggregatorFactory.get(), SnackbarManagerProvider.from(windowAndroid),
-                () -> NewDownloadTab.closeExistingNewDownloadTab(windowAndroid));
+                reloadCallback);
     }
 
     private DownloadInterstitialCoordinatorFactory() {}

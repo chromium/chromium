@@ -70,6 +70,7 @@ import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.widget.Toast;
+import org.chromium.url.GURL;
 
 import java.io.File;
 
@@ -487,6 +488,12 @@ public class DownloadUtils {
         // Mapping generic MIME type to android openable type based on URL and file extension.
         String newMimeType = MimeUtils.remapGenericMimeType(mimeType, originalUrl, filePath);
         Activity activity = ApplicationStatus.getLastTrackedFocusedActivity();
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.CCT_NEW_DOWNLOAD_TAB)
+                && DownloadManagerService.getDownloadManagerService()
+                           .getMessageUiController(null)
+                           .isDownloadInterstitialItem(new GURL(originalUrl), downloadGuid)) {
+            return;
+        }
         boolean canOpen = DownloadUtils.openFile(filePath, newMimeType, downloadGuid, otrProfileID,
                 originalUrl, referer, source,
                 activity == null ? ContextUtils.getApplicationContext() : activity);

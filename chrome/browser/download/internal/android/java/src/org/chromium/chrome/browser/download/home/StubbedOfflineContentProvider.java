@@ -120,6 +120,11 @@ public class StubbedOfflineContentProvider implements OfflineContentProvider {
         if (mObserver != null) mObserver.onItemUpdated(findItem(id), null);
     }
 
+    /** Triggers the onItemRemoved method of any observer. */
+    protected void notifyObserversOfRemoval(ContentId id) {
+        if (mObserver != null) mObserver.onItemRemoved(id);
+    }
+
     /** @return an offline item with matching {@link ContentId} if it exists and null otherwise. */
     protected OfflineItem findItem(ContentId id) {
         for (OfflineItem item : mItems) {

@@ -54,16 +54,20 @@ public class CustomTabDownloadObserver extends EmptyTabObserver {
         }
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.CCT_NEW_DOWNLOAD_TAB)
                 && navigation.isDownload()) {
+            Runnable urlRegistration = ()
+                    -> DownloadManagerService.getDownloadManagerService()
+                               .getMessageUiController(/* otrProfileId */ null)
+                               .addDownloadInterstitialSource(tab.getOriginalUrl());
+
             DownloadInterstitialCoordinator coordinator =
                     DownloadInterstitialCoordinatorFactory.create(tab::getContext,
-                            tab.getOriginalUrl().getSpec(), tab.getWindowAndroid());
+                            tab.getOriginalUrl().getSpec(), tab.getWindowAndroid(), () -> {
+                                tab.reload();
+                                urlRegistration.run();
+                            });
             // Register the download's original URL to prevent messages UI showing in
             // interstitial.
-            DeferredStartupHandler.getInstance().addDeferredTask(
-                    ()
-                            -> DownloadManagerService.getDownloadManagerService()
-                                       .getMessageUiController(/* otrProfileId */ null)
-                                       .addDownloadInterstitialSource(tab.getOriginalUrl()));
+            DeferredStartupHandler.getInstance().addDeferredTask(urlRegistration);
             NewDownloadTab.from(tab, coordinator, mActivity).show();
         }
     }

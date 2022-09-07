@@ -94,6 +94,11 @@ public class OMADownloadHandlerTest {
         public void addDownloadInterstitialSource(GURL originalUrl) {}
 
         @Override
+        public boolean isDownloadInterstitialItem(GURL originalUrl, String guid) {
+            return false;
+        }
+
+        @Override
         public void onItemsAdded(List<OfflineItem> items) {}
 
         @Override

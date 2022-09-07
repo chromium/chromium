@@ -296,6 +296,9 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
     // paused items.
     private final Set<ContentId> mIgnoredItems = new HashSet<>();
 
+    // Keeps track of the items which are being downloaded in an interstitial.
+    private final Set<ContentId> mInterstitialItems = new HashSet<>();
+
     // Used to calculate which items are being handled by a download interstitial.
     private final Set<GURL> mDownloadInterstitialSources = new HashSet<>();
 
@@ -402,6 +405,25 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
         mDownloadInterstitialSources.add(originalUrl);
     }
 
+    /**
+     * Returns true if the given download information matches an interstitial download.
+     * @param originalUrl The URL of the download.
+     * @param guid Unique GUID of the download.
+     */
+    @Override
+    public boolean isDownloadInterstitialItem(GURL originalUrl, String guid) {
+        if (mDownloadInterstitialSources.contains(originalUrl)) {
+            return true;
+        }
+        for (ContentId id : mInterstitialItems) {
+            if (id.id.equals(guid)) {
+                mInterstitialItems.remove(id);
+                return true;
+            }
+        }
+        return false;
+    }
+
     @Override
     public void onItemsAdded(List<OfflineItem> items) {
         for (OfflineItem item : items) {
@@ -423,7 +445,10 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
     public void onItemUpdated(OfflineItem item, UpdateDelta updateDelta) {
         if (mDownloadInterstitialSources.contains(item.originalUrl)) {
             mDownloadInterstitialSources.remove(item.originalUrl);
-            mIgnoredItems.add(item.id);
+            mInterstitialItems.add(item.id);
+        }
+        if (item.state == OfflineItemState.COMPLETE) {
+            mInterstitialItems.remove(item.id);
         }
         if (!isVisibleToUser(item)) return;
 
@@ -486,7 +511,11 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
      */
     private void computeNextStepForUpdate(OfflineItem updatedItem, boolean forceShowDownloadStarted,
             boolean userCancel, boolean itemWasRemoved) {
-        if (updatedItem != null && mIgnoredItems.contains(updatedItem.id)) return;
+        if (updatedItem != null
+                && (mIgnoredItems.contains(updatedItem.id)
+                        || mInterstitialItems.contains(updatedItem.id))) {
+            return;
+        }
 
         preProcessUpdatedItem(updatedItem);
         boolean isNewDownload = forceShowDownloadStarted

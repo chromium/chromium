@@ -10,8 +10,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 /** View binder for DownloadInterstitialView. */
 public class DownloadInterstitialViewBinder {
     public static void bind(PropertyModel model, DownloadInterstitialView view, PropertyKey key) {
-        if (key.equals(DownloadInterstitialProperties.DOWNLOAD_ITEM)
-                || key.equals(DownloadInterstitialProperties.STATE)) {
+        if (key.equals(DownloadInterstitialProperties.DOWNLOAD_ITEM)) {
             view.updateFileInfo(model.get(DownloadInterstitialProperties.DOWNLOAD_ITEM), model);
         } else if (key.equals(DownloadInterstitialProperties.TITLE_TEXT)) {
             view.setTitleText(model.get(DownloadInterstitialProperties.TITLE_TEXT));
@@ -35,8 +34,14 @@ public class DownloadInterstitialViewBinder {
             view.setSecondaryButtonCallback(
                     model.get(DownloadInterstitialProperties.SECONDARY_BUTTON_CALLBACK)
                             .bind(model.get(DownloadInterstitialProperties.DOWNLOAD_ITEM)));
-        } else if (key.equals(DownloadInterstitialProperties.SHOULD_REMOVE_PENDING_MESSAGE)) {
-            view.removePendingMessage();
+        } else if (key.equals(DownloadInterstitialProperties.PENDING_MESSAGE_IS_VISIBLE)) {
+            view.setPendingMessageIsVisible(
+                    model.get(DownloadInterstitialProperties.PENDING_MESSAGE_IS_VISIBLE));
+        } else if (key.equals(DownloadInterstitialProperties.STATE)
+                && model.get(DownloadInterstitialProperties.STATE)
+                        == DownloadInterstitialProperties.State.CANCELLED) {
+            view.switchToCancelledViewHolder(
+                    model.get(DownloadInterstitialProperties.DOWNLOAD_ITEM), model);
         }
     }
 }
