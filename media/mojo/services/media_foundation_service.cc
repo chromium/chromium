@@ -319,6 +319,10 @@ absl::optional<CdmCapability> GetCdmCapability(
       // assume all relevant profiles are supported.
       VideoCodecInfo video_codec_info;
 
+      // `supports_clear_lead` should be set to false until detection for clear
+      // lead support is fixed and the query works as expected.
+      video_codec_info.supports_clear_lead = false;
+
 #if BUILDFLAG(ENABLE_PLATFORM_DOLBY_VISION) && BUILDFLAG(ENABLE_PLATFORM_HEVC)
       // Dolby Vision on Windows only support profile 4/5/8 now.
       if (video_codec == VideoCodec::kDolbyVision) {
