@@ -2,8 +2,8 @@
 <html class="reftest-wait">
 <link rel="help" href="https://drafts.csswg.org/css-backgrounds-3/#background-color">
 <link rel="match" href="background-color-animation-with-blur-ref.html">
-<!-- Allow off by one errors on rgb color channels -->
-<meta name=fuzzy content="maxDifference=1;totalPixels=10000">
+<!-- Allow off by one errors on each color channel. -->
+<meta name=fuzzy content="maxDifference=0-1;totalPixels=0-12100">
 <style>
   @keyframes colorize {
     0%   { background-color:  blue; }
@@ -11,7 +11,7 @@
     100% { background-color:  red; }
   }
   #target {
-    height:  100px;
+    height: 100px;
     width:  100px;
     animation-name: colorize;
     animation-duration: 100000s;
