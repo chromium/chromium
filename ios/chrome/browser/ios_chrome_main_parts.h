@@ -40,10 +40,10 @@ class IOSChromeMainParts : public web::WebMainParts {
 
   // Sets up the field trials and related initialization. Call only after
   // about:flags have been converted to switches. However,
-  // |command_line_variation_ids| should be the value of the
+  // `command_line_variation_ids` should be the value of the
   // "--force-variation-ids" switch before it is mutated. See
   // VariationsFieldTrialCreator::SetUpFieldTrials() for the format of
-  // |command_line_variation_ids|.
+  // `command_line_variation_ids`.
   void SetUpFieldTrials(const std::string& command_line_variation_ids);
 
   // Constructs the metrics service and initializes metrics recording.

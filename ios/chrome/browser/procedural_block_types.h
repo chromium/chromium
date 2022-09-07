@@ -9,7 +9,7 @@
 
 class GURL;
 
-// A generic procedural block type that takes a |GURL| and returns nothing.
+// A generic procedural block type that takes a GURL and returns nothing.
 typedef void (^ProceduralBlockWithURL)(const GURL&);
 
 // A block that takes a bool and returns nothing, as used for UIView animation

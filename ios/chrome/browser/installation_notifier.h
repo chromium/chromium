@@ -9,7 +9,7 @@
 #include <stdint.h>
 
 // Protocol used to mock the delayed dispatching for the unit tests.
-// Calls |block| after |delayInNSec|.
+// Calls `block` after `delayInNSec`.
 @protocol DispatcherProtocol<NSObject>
 - (void)dispatchAfter:(int64_t)delayInNSec withBlock:(dispatch_block_t)block;
 @end
@@ -18,14 +18,14 @@
 // Returns singleton instance.
 + (InstallationNotifier*)sharedInstance;
 
-// Registers |observer| to be sent a notification named |scheme| when a URL
-// with |scheme| can be opened. |observer| must not be nil. If |scheme| is nil
-// or an empty string, |observer| is not registered for anything.
+// Registers `observer` to be sent a notification named `scheme` when a URL
+// with `scheme` can be opened. `observer` must not be nil. If `scheme` is nil
+// or an empty string, `observer` is not registered for anything.
 - (void)registerForInstallationNotifications:(id)observer
                                 withSelector:(SEL)notificationSelector
                                    forScheme:(NSString*)scheme;
 
-// Unregisters all the NSNotifications ever asked by |observer|.
+// Unregisters all the NSNotifications ever asked by `observer`.
 - (void)unregisterForNotifications:(id)observer;
 
 // Performs a check for installed apps right away and restarts the polling.

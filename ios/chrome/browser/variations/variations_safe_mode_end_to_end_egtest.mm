@@ -45,7 +45,7 @@ std::unique_ptr<ScopedAllowCrashOnStartup> gAllowCrashOnStartup;
 // the only field trials after the relaunch, if any, are client-side field
 // trials.
 //
-// Change the |allow_crash_on_startup| field of the returned config to afford
+// Change the `allow_crash_on_startup` field of the returned config to afford
 // the app an opportunity to crash on restart.
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
@@ -65,7 +65,7 @@ std::unique_ptr<ScopedAllowCrashOnStartup> gAllowCrashOnStartup;
   return config;
 }
 
-// Checks that the variations crash streak is |value|.
+// Checks that the variations crash streak is `value`.
 - (void)checkCrashStreakValue:(int)value {
   int actualStreak = [VariationsAppInterface crashStreak];
   GREYAssertEqual(actualStreak, value,
@@ -110,7 +110,7 @@ std::unique_ptr<ScopedAllowCrashOnStartup> gAllowCrashOnStartup;
 }
 
 - (void)setUp {
-  // |ChromeTestCase:isStartupTest| must be true before calling [super setUp] in
+  // `ChromeTestCase:isStartupTest` must be true before calling [super setUp] in
   // order to avoid opening a new tab on startup. While not strictly necessary,
   // this let's the test run a little faster.
   [[self class] testForStartup];
@@ -171,7 +171,7 @@ std::unique_ptr<ScopedAllowCrashOnStartup> gAllowCrashOnStartup;
   GREYAssertTrue([VariationsAppInterface hasSafeSeed],
                  @"The variations safe seed pref should be set.");
   GREYAssertTrue([VariationsAppInterface fieldTrialExistsForTestSeed],
-                 @"There should be field trials from |kTestSeedData|.");
+                 @"There should be field trials from kTestSeedData.");
   [self checkCrashStreakValue:variations::kCrashStreakThreshold];
 }
 

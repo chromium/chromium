@@ -118,7 +118,7 @@ class IOSThreadProfiler {
       scoped_refptr<base::SingleThreadTaskRunner> owning_thread_task_runner =
           scoped_refptr<base::SingleThreadTaskRunner>());
 
-  // Posts a task on |owning_thread_task_runner| to start the next periodic
+  // Posts a task on `owning_thread_task_runner` to start the next periodic
   // sampling collection on the completion of the previous collection.
   static void OnPeriodicCollectionCompleted(
       scoped_refptr<base::SingleThreadTaskRunner> owning_thread_task_runner,

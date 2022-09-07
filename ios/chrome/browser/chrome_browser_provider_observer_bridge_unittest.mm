@@ -85,7 +85,7 @@ class ChromeBrowserProviderObserverBridgeTest : public PlatformTest {
   TestChromeBrowserProviderObserver* test_observer_;
 };
 
-// Tests that |OnChromeIdentityServiceDidChange| is forwarded.
+// Tests that `OnChromeIdentityServiceDidChange` is forwarded.
 TEST_F(ChromeBrowserProviderObserverBridgeTest,
        ChromeIdentityServiceDidChange) {
   std::unique_ptr<ios::ChromeIdentityService> identity_service;
@@ -96,7 +96,7 @@ TEST_F(ChromeBrowserProviderObserverBridgeTest,
   EXPECT_EQ(identity_service.get(), GetTestObserver().identityService);
 }
 
-// Tests that |OnChromeBrowserProviderWillBeDestroyed| is forwarded.
+// Tests that `OnChromeBrowserProviderWillBeDestroyed` is forwarded.
 TEST_F(ChromeBrowserProviderObserverBridgeTest,
        ChromeBrowserProviderWillBeDestroyed) {
   ASSERT_FALSE(GetTestObserver().chromeBrowserProviderWillBeDestroyedCalled);

@@ -26,7 +26,7 @@ namespace ios {
 // ChromeBrowserState.
 class WebDataServiceFactory : public BrowserStateKeyedServiceFactory {
  public:
-  // Returns the AutofillWebDataService associated with |browser_state|.
+  // Returns the AutofillWebDataService associated with `browser_state`.
   static WebDataServiceWrapper* GetForBrowserState(
       ChromeBrowserState* browser_state,
       ServiceAccessType access_type);
@@ -34,23 +34,23 @@ class WebDataServiceFactory : public BrowserStateKeyedServiceFactory {
       ChromeBrowserState* browser_state,
       ServiceAccessType access_type);
 
-  // Returns the AutofillWebDataService associated with |browser_state|.
+  // Returns the AutofillWebDataService associated with `browser_state`.
   static scoped_refptr<autofill::AutofillWebDataService>
   GetAutofillWebDataForBrowserState(ChromeBrowserState* browser_state,
                                     ServiceAccessType access_type);
 
   // Returns the account-scoped AutofillWebDataService associated with the
-  // |browser_state|.
+  // `browser_state`.
   static scoped_refptr<autofill::AutofillWebDataService>
   GetAutofillWebDataForAccount(ChromeBrowserState* browser_state,
                                ServiceAccessType access_type);
 
-  // Returns the KeywordWebDataService associated with |browser_state|.
+  // Returns the KeywordWebDataService associated with `browser_state`.
   static scoped_refptr<KeywordWebDataService> GetKeywordWebDataForBrowserState(
       ChromeBrowserState* browser_state,
       ServiceAccessType access_type);
 
-  // Returns the TokenWebData associated with |browser_state|.
+  // Returns the TokenWebData associated with `browser_state`.
   static scoped_refptr<TokenWebData> GetTokenWebDataForBrowserState(
       ChromeBrowserState* browser_state,
       ServiceAccessType access_type);

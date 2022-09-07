@@ -73,15 +73,15 @@ class NotificationPromo {
   // Flush given parameters to prefs for storage.
   void WritePrefs(int promo_id, double first_view_time, int views, bool closed);
 
-  // Tests views_ against max_views_.
-  // When max_views_ is 0, we don't cap the number of views.
+  // Tests `views_` against `max_views_`.
+  // When `max_views_` is 0, we don't cap the number of views.
   bool ExceedsMaxViews() const;
 
-  // Tests |first_view_time_| + |max_seconds_| and -now().
+  // Tests `first_view_time_ + max_seconds_` < now().
   // When either is 0, we don't cap the number of seconds.
   bool ExceedsMaxSeconds() const;
 
-  // Returns whether the parameter associated with |param_name| is inside the
+  // Returns whether the parameter associated with `param_name` is inside the
   // payload.
   bool IsPayloadParam(const std::string& param_name) const;
 

@@ -13,8 +13,8 @@ namespace ios {
 
 // Get the path to the user's cache directory. Note that Chrome on iOS cache
 // directories are actually subdirectories of this directory with names like
-// "Cache". This will always fill in |result| with a directory, sometimes
-// just |browser_state_dir|.
+// "Cache". This will always fill in `result` with a directory, sometimes
+// just `browser_state_dir`.
 void GetUserCacheDirectory(const base::FilePath& browser_state_dir,
                            base::FilePath* result);
 

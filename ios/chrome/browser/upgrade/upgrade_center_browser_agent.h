@@ -18,7 +18,7 @@ class UpgradeCenterBrowserAgent
       public WebStateListObserver,
       public BrowserUserData<UpgradeCenterBrowserAgent> {
  public:
-  // Creates an UpgradeCenterBrowserAgent scoped to |browser|.
+  // Creates an UpgradeCenterBrowserAgent scoped to `browser`.
   static void CreateForBrowser(Browser* browser, UpgradeCenter* upgradeCenter);
 
   UpgradeCenterBrowserAgent(const UpgradeCenterBrowserAgent&) = delete;

@@ -195,10 +195,10 @@ void ApplicationContextImpl::StartTearDown() {
   // Need to clear browser states before the IO thread.
   chrome_browser_state_manager_.reset();
 
-  // The policy providers managed by |browser_policy_connector_| need to shut
+  // The policy providers managed by `browser_policy_connector_` need to shut
   // down while the IO threads is still alive. The monitoring framework owned by
-  // |browser_policy_connector_| relies on |gcm_driver_|, so this must be
-  // shutdown before |gcm_driver_| below.
+  // `browser_policy_connector_` relies on `gcm_driver_`, so this must be
+  // shutdown before `gcm_driver_` below.
   if (browser_policy_connector_)
     browser_policy_connector_->Shutdown();
 

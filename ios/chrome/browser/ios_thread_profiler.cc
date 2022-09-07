@@ -64,8 +64,8 @@ const base::RepeatingClosure GetApplyPerSampleMetadataCallback(
 
 // The scheduler works by splitting execution time into repeated periods such
 // that the time to take one collection represents
-// |fraction_of_execution_time_to_sample| of the period, and the time not spent
-// sampling represents 1 - |fraction_of_execution_time_to_sample| of the period.
+// `fraction_of_execution_time_to_sample` of the period, and the time not spent
+// sampling represents 1 - `fraction_of_execution_time_to_sample` of the period.
 // The collection start time is chosen randomly within each period such that the
 // entire collection is contained within the period.
 //

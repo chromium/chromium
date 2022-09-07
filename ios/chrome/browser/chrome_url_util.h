@@ -12,17 +12,17 @@
 class ChromeBrowserState;
 class GURL;
 
-// Returns whether |url| is an external file reference.
+// Returns whether `url` is an external file reference.
 bool UrlIsExternalFileReference(const GURL& url);
 
 // Returns true if the scheme has a chrome scheme.
 bool UrlHasChromeScheme(const GURL& url);
 bool UrlHasChromeScheme(NSURL* url);
 
-// Returns YES if |url| matches chrome://newtab.
+// Returns YES if `url` matches chrome://newtab.
 bool IsURLNtp(const GURL& url);
 
-// Returns true if |scheme| is handled in Chrome, or by default handlers in
+// Returns true if `scheme` is handled in Chrome, or by default handlers in
 // net::URLRequest.
 bool IsHandledProtocol(const std::string& scheme);
 

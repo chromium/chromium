@@ -97,8 +97,8 @@
 
 namespace {
 
-// Sets |level| value for NSURLFileProtectionKey key for the URL with given
-// |local_state_path|.
+// Sets `level` value for NSURLFileProtectionKey key for the URL with given
+// `local_state_path`.
 void SetProtectionLevel(const base::FilePath& file_path, id level) {
   NSString* file_path_string = base::SysUTF8ToNSString(file_path.value());
   NSURL* file_path_url = [NSURL fileURLWithPath:file_path_string
@@ -315,7 +315,7 @@ void IOSChromeMainParts::PreMainMessageLoopRun() {
   ChromeBrowserState* last_used_browser_state =
       browser_state_manager->GetLastUsedBrowserState();
 
-  // This must occur at PreMainMessageLoopRun because |SetupMetrics()| uses the
+  // This must occur at PreMainMessageLoopRun because `SetupMetrics()` uses the
   // blocking pool, which is disabled until the CreateThreads phase of startup.
   // TODO(crbug.com/786494): Investigate whether metrics recording can be
   // initialized consistently across iOS and non-iOS platforms

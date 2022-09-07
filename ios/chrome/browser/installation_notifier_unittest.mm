@@ -200,7 +200,7 @@ TEST_F(InstallationNotifierTest, RegisterAndThenUnregister) {
 
 TEST_F(InstallationNotifierTest, TestExponentialBackoff) {
   OCMStub([application_ canOpenURL:[OCMArg any]]).andReturn(NO);
-  // Making sure that delay is multiplied by |multiplyFactor| every time.
+  // Making sure that delay is multiplied by `multiplyFactor` every time.
   [dispatcher_ executeAfter:0
                       block:^{
                         VerifyDelay(0);

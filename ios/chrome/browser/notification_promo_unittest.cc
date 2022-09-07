@@ -253,12 +253,12 @@ class NotificationPromoTest : public PlatformTest {
     const double now = base::Time::Now().ToDoubleT();
     const double margin = 60;
 
-    // Current time is before the |first_view_time_| + |max_seconds_|.
+    // Current time is before the `first_view_time_` + `max_seconds_`.
     notification_promo_.first_view_time_ = now - margin;
     notification_promo_.max_seconds_ = margin + 1;
     EXPECT_TRUE(notification_promo_.CanShow());
 
-    // Current time as after the |first_view_time_| + |max_seconds_|.
+    // Current time as after the `first_view_time_` + `max_seconds_`.
     notification_promo_.first_view_time_ = now - margin;
     notification_promo_.max_seconds_ = margin - 1;
     EXPECT_FALSE(notification_promo_.CanShow());

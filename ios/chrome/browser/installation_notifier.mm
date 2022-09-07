@@ -43,15 +43,15 @@ const net::BackoffEntry::Policy kPollingBackoffPolicy = {
 
 @interface InstallationNotifier ()
 // Registers for a notification and gives the option to not immediately start
-// polling. |scheme| must not be nil nor an empty string.
+// polling.
 - (void)registerForInstallationNotifications:(id)observer
                                 withSelector:(SEL)notificationSelector
                                    forScheme:(NSString*)scheme
                                 startPolling:(BOOL)poll;
 // Dispatches a block with an exponentially increasing delay.
 - (void)dispatchInstallationNotifierBlock;
-// Dispatched blocks cannot be cancelled. Instead, each block has a |blockId|.
-// If |blockId| is different from |lastCreatedBlockId_|, then the block does
+// Dispatched blocks cannot be cancelled. Instead, each block has a `blockId`.
+// If `blockId` is different from `lastCreatedBlockId_`, then the block does
 // not execute anything.
 @property(nonatomic, readonly) int lastCreatedBlockId;
 @end
@@ -104,7 +104,7 @@ const net::BackoffEntry::Policy kPollingBackoffPolicy = {
                                 withSelector:(SEL)notificationSelector
                                    forScheme:(NSString*)scheme
                                 startPolling:(BOOL)poll {
-  // Workaround a crash caused by calls to this function with a nil |scheme|.
+  // Workaround a crash caused by calls to this function with a nil `scheme`.
   if (![scheme length])
     return;
   DCHECK([observer respondsToSelector:notificationSelector]);

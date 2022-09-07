@@ -57,7 +57,7 @@ void NotificationPromo::InitFromVariations() {
     return;
   }
 
-  // Build dictionary of parameters to pass to |InitFromJson|. Some parameters
+  // Build dictionary of parameters to pass to `InitFromJson`. Some parameters
   // are stored in a payload subdictionary, so two dictionaries are
   // built: one to represent the payload and one to represent all of the
   // paremeters. The payload is then added to the overall dictionary. This code
@@ -163,7 +163,7 @@ void NotificationPromo::WritePrefs(int promo_id,
 }
 
 void NotificationPromo::InitFromPrefs() {
-  // If |promo_id_| is not set, do nothing.
+  // If `promo_id_` is not set, do nothing.
   if (promo_id_ == -1)
     return;
 
