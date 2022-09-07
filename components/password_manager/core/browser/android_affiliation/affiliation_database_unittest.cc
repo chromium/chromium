@@ -30,6 +30,8 @@ const char kTestFacetURI3[] = "https://gamma.example.com";
 const char kTestFacetURI4[] = "https://delta.example.com";
 const char kTestFacetURI5[] = "https://epsilon.example.com";
 const char kTestFacetURI6[] = "https://zeta.example.com";
+const char kTestFacetURI7[] = "https://theta.example.com";
+const char kTestWebsiteName[] = "Example.com";
 
 const char kTestAndroidFacetURI[] = "android://hash@com.example.android";
 const char kTestAndroidPlayName[] = "Test Android App";
@@ -322,7 +324,7 @@ TEST_F(AffiliationDatabaseTest, MigrateFromVersion1) {
   OpenDatabase();
 
   // Check that migration was successful and existing data was untouched.
-  EXPECT_EQ(2, db().GetDatabaseVersionForTesting());
+  EXPECT_EQ(3, db().GetDatabaseVersionForTesting());
   std::vector<AffiliatedFacetsWithUpdateTime> affiliations;
   db().GetAllAffiliationsAndBranding(&affiliations);
   ASSERT_EQ(3u, affiliations.size());
@@ -372,6 +374,45 @@ TEST_F(AffiliationDatabaseTest, InitializeFromVersion2) {
                                                         affiliations[2]);
   EXPECT_EQ(TestEquivalenceClass3().facets[0].branding_info,
             affiliations[2].facets[0].branding_info);
+}
+
+TEST_F(AffiliationDatabaseTest, InitializeFromVersion3) {
+  // Close and delete the current database and create it from scratch with the
+  // SQLite statement stored in affiliation_db_v3.sql.
+  CloseDatabase();
+  AffiliationDatabase::Delete(db_path());
+  base::FilePath src_root_dir;
+  ASSERT_TRUE(base::PathService::Get(base::DIR_SOURCE_ROOT, &src_root_dir));
+  base::FilePath sql_path_v3 = src_root_dir.AppendASCII("components")
+                                   .AppendASCII("test")
+                                   .AppendASCII("data")
+                                   .AppendASCII("password_manager")
+                                   .AppendASCII("affiliation_db_v3.sql");
+  ASSERT_TRUE(sql::test::CreateDatabaseFromSQL(db_path(), sql_path_v3));
+
+  // Expect the migration to be a no-op that does not modify the existing data.
+  OpenDatabase();
+  std::vector<GroupedFacets> groupings = db().GetAllGroups();
+  ASSERT_EQ(3u, groupings.size());
+  std::vector<Facet> group1 = {{FacetURI::FromCanonicalSpec(kTestFacetURI1)},
+                               {FacetURI::FromCanonicalSpec(kTestFacetURI2)},
+                               {FacetURI::FromCanonicalSpec(kTestFacetURI3)}};
+  EXPECT_THAT(groupings[0].facets, testing::UnorderedElementsAreArray(group1));
+  EXPECT_THAT(groupings[0].branding_info,
+              testing::Eq(FacetBrandingInfo{kTestWebsiteName,
+                                            GURL(kTestAndroidIconURL)}));
+
+  std::vector<Facet> group2 = {{FacetURI::FromCanonicalSpec(kTestFacetURI4)},
+                               {FacetURI::FromCanonicalSpec(kTestFacetURI5)},
+                               {FacetURI::FromCanonicalSpec(kTestFacetURI7)}};
+  EXPECT_THAT(groupings[1].facets, testing::UnorderedElementsAreArray(group2));
+  EXPECT_THAT(groupings[1].branding_info, testing::Eq(FacetBrandingInfo()));
+  std::vector<Facet> group3 = {
+      {FacetURI::FromCanonicalSpec(kTestAndroidFacetURI)}};
+  EXPECT_THAT(groupings[2].facets, testing::UnorderedElementsAreArray(group3));
+  EXPECT_THAT(groupings[2].branding_info,
+              testing::Eq(FacetBrandingInfo{kTestAndroidPlayName,
+                                            GURL(kTestAndroidIconURL)}));
 }
 
 TEST_F(AffiliationDatabaseTest, ClearUnusedCache) {

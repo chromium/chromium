@@ -55,6 +55,9 @@ class AffiliationDatabase {
   void GetAllAffiliationsAndBranding(
       std::vector<AffiliatedFacetsWithUpdateTime>* results) const;
 
+  // Retrieves all stored groups.
+  std::vector<GroupedFacets> GetAllGroups() const;
+
   // Removes the stored equivalence class and branding information, if any,
   // containing |facet_uri|.
   void DeleteAffiliationsAndBrandingForFacetURI(const FacetURI& facet_uri);
@@ -87,23 +90,6 @@ class AffiliationDatabase {
   int GetDatabaseVersionForTesting();
 
  private:
-  // Initializes the passed in table builders and defines the structure of the
-  // tables.
-  static void InitializeTableBuilders(
-      SQLTableBuilder* eq_classes_builder,
-      SQLTableBuilder* eq_class_members_builder);
-
-  // Creates the tables in the database using the provided table builders.
-  // Returns |false| on error, |true| on success.
-  bool CreateTables(const SQLTableBuilder& eq_classes_builder,
-                    const SQLTableBuilder& eq_class_members_builder);
-
-  // Migrates an existing database from an earlier |version| using the provided
-  // table builders. Returns |false| on error, |true| on success.
-  bool MigrateTablesFrom(const SQLTableBuilder& eq_classes_builder,
-                         const SQLTableBuilder& eq_class_members_builder,
-                         unsigned version);
-
   // Called when SQLite encounters an error.
   void SQLErrorCallback(int error_number, sql::Statement* statement);
 
