@@ -26,7 +26,8 @@
 #include "url/origin.h"
 
 namespace autofill_assistant {
-using ::autofill_assistant::SupportsScriptResponseProto;
+using RoutineScript =
+    GetNoRoundTripScriptsByHashPrefixResponseProto::MatchInfo::RoutineScript;
 
 namespace {
 constexpr uint32_t kHashPrefixLength = 15;
@@ -50,14 +51,10 @@ ServiceRequestSender::AuthMode GetDefaultAuthMode() {
              : ServiceRequestSender::AuthMode::API_KEY;
 }
 
-std::vector<
-    GetNoRoundTripScriptsByHashPrefixResponseProto::MatchInfo::RoutineScript>
-CreateRoutines(
+std::vector<RoutineScript> CreateRoutines(
     const autofill_assistant::
         GetNoRoundTripScriptsByHashPrefixResponseProto_MatchInfo& match) {
-  std::vector<
-      GetNoRoundTripScriptsByHashPrefixResponseProto::MatchInfo::RoutineScript>
-      routines;
+  std::vector<RoutineScript> routines;
   routines.reserve(match.routine_scripts_size());
   for (const auto& routine_script : match.routine_scripts()) {
     routines.push_back(routine_script);
@@ -66,12 +63,9 @@ CreateRoutines(
 }
 
 std::unique_ptr<LocalScriptStore> CreateStoreFromMatch(
-    const autofill_assistant::
-        GetNoRoundTripScriptsByHashPrefixResponseProto_MatchInfo& match) {
+    const GetNoRoundTripScriptsByHashPrefixResponseProto_MatchInfo& match) {
   const std::string domain = match.domain();
-  const std::vector<
-      GetNoRoundTripScriptsByHashPrefixResponseProto::MatchInfo::RoutineScript>
-      routines = CreateRoutines(match);
+  const std::vector<RoutineScript> routines = CreateRoutines(match);
   const SupportsScriptResponseProto supports_site_response =
       match.supports_site_response();
   return std::make_unique<LocalScriptStore>(routines, domain,

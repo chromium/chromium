@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/autofill_assistant/browser/client.h"
 #include "components/autofill_assistant/browser/service.pb.h"
@@ -27,16 +28,6 @@ namespace autofill_assistant {
 // serves scripts without roundtrips.
 class NoRoundTripService : public Service {
  public:
-  // Constructs a NoRoundTripService, does not make any call to the server, the
-  // calls are instead made in the first call to GetScripts.
-  NoRoundTripService(std::unique_ptr<ServiceRequestSender> request_sender,
-                     const GURL& get_scripts_endpoint,
-                     Client* client);
-
-  NoRoundTripService(const NoRoundTripService&) = delete;
-  NoRoundTripService& operator=(const NoRoundTripService&) = delete;
-  ~NoRoundTripService() override;
-
   // Factory methods to create a NoRoundTrip service, all endpoint are
   // initialised, but no RPC is made.
   [[nodiscard]] static std::unique_ptr<NoRoundTripService> Create(
@@ -46,6 +37,20 @@ class NoRoundTripService : public Service {
       content::BrowserContext* context,
       Client* client,
       const ServerUrlFetcher& url_fetcher);
+
+  // Constructs a NoRoundTripService, does not make any call to the server, the
+  // calls are instead made in the first call to GetScripts.
+  NoRoundTripService(std::unique_ptr<ServiceRequestSender> request_sender,
+                     const GURL& get_scripts_endpoint,
+                     Client* client);
+
+  // Initializes a NoRoundTripService, only used for testing purposes.
+  // Does not initializes RPC endpoints and the client.
+  explicit NoRoundTripService(std::unique_ptr<LocalScriptStore> script_store);
+
+  NoRoundTripService(const NoRoundTripService&) = delete;
+  NoRoundTripService& operator=(const NoRoundTripService&) = delete;
+  ~NoRoundTripService() override;
 
   // Runs an RPC to GetNoRoundTripScriptsByHash, stores the results in the local
   // store and finally calls the callback with a fabricated GetActionsResponse
@@ -100,10 +105,6 @@ class NoRoundTripService : public Service {
 
   // Retrieves the script store, used for testing.
   const LocalScriptStore* GetStore() const;
-
-  // Initializes a NoRoundTripService, only used for testing purposes.
-  // Does not initializes RPC endpoints and the client.
-  explicit NoRoundTripService(std::unique_ptr<LocalScriptStore> script_store);
 
  private:
   // Callback to run on receiving a response from

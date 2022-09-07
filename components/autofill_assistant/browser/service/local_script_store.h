@@ -5,16 +5,10 @@
 #ifndef COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_SERVICE_LOCAL_SCRIPT_STORE_H_
 #define COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_SERVICE_LOCAL_SCRIPT_STORE_H_
 
-#include <memory>
 #include <string>
 #include <vector>
 
-#include "base/memory/weak_ptr.h"
-#include "components/autofill_assistant/browser/client.h"
 #include "components/autofill_assistant/browser/service.pb.h"
-#include "components/autofill_assistant/browser/service/server_url_fetcher.h"
-#include "components/autofill_assistant/browser/trigger_context.h"
-#include "content/public/browser/browser_context.h"
 
 namespace autofill_assistant {
 
@@ -35,7 +29,7 @@ class LocalScriptStore {
   GetRoutines() const;
 
   // Returns the domain that this LocalScriptStore is valid for.
-  [[nodiscard]] const std::string GetDomain() const;
+  [[nodiscard]] const std::string& GetDomain() const;
 
   // Returns the results of SupportsScript for this domain/Intent match.
   [[nodiscard]] const SupportsScriptResponseProto GetSupportsSiteResponse()
@@ -61,4 +55,5 @@ class LocalScriptStore {
 };
 
 }  // namespace autofill_assistant
+
 #endif  // COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_SERVICE_LOCAL_SCRIPT_STORE_H_

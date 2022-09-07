@@ -16,6 +16,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace autofill_assistant {
+
 class LocalScriptStoreTest : public testing::Test {
  public:
   std::unique_ptr<LocalScriptStore> GetStore() {
@@ -34,7 +35,7 @@ class LocalScriptStoreTest : public testing::Test {
 TEST_F(LocalScriptStoreTest, IsEmptyWithoutRoutines) {
   domain_ = "test";
   EXPECT_TRUE(GetStore()->empty());
-  EXPECT_EQ(GetStore()->size(), 0ul);
+  EXPECT_EQ(GetStore()->size(), 0u);
 }
 
 TEST_F(LocalScriptStoreTest, IsEmptyWithoutDomain) {

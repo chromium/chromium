@@ -54,8 +54,8 @@ class ProtocolUtils {
   // Note: Only a subset of allowed fields from |client_context| will be sent to
   // the server.
   static std::string CreateGetNoRoundTripScriptsByHashRequest(
-      const uint32_t hash_prefix_length,
-      const uint64_t hash_prefix,
+      uint32_t hash_prefix_length,
+      uint64_t hash_prefix,
       const ClientContextProto& client_context,
       const ScriptParameters& script_parameters);
 

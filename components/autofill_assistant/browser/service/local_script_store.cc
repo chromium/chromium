@@ -7,18 +7,7 @@
 #include <memory>
 #include <numeric>
 
-#include "base/bind.h"
-#include "base/command_line.h"
-#include "components/autofill_assistant/browser/protocol_utils.h"
-#include "components/autofill_assistant/browser/public/autofill_assistant.h"
-#include "components/autofill_assistant/browser/script_parameters.h"
 #include "components/autofill_assistant/browser/service.pb.h"
-#include "components/autofill_assistant/browser/service/api_key_fetcher.h"
-#include "components/autofill_assistant/browser/service/service_request_sender_impl.h"
-#include "components/autofill_assistant/browser/switches.h"
-#include "components/version_info/version_info.h"
-#include "net/http/http_status_code.h"
-#include "url/origin.h"
 
 namespace autofill_assistant {
 
@@ -39,7 +28,7 @@ LocalScriptStore::GetRoutines() const {
   return routines_;
 }
 
-const std::string LocalScriptStore::GetDomain() const {
+const std::string& LocalScriptStore::GetDomain() const {
   return domain_;
 }
 
