@@ -337,7 +337,7 @@ class PageLoadTracker : public PageLoadMetricsUpdateDispatcher::Client,
   PageEndReason page_end_reason() const { return page_end_reason_; }
   base::TimeTicks page_end_time() const { return page_end_time_; }
 
-  void AddObserver(std::unique_ptr<PageLoadMetricsObserver> observer);
+  void AddObserver(std::unique_ptr<PageLoadMetricsObserverInterface> observer);
   base::WeakPtr<PageLoadMetricsObserverInterface> FindObserver(
       char const* name);
 
@@ -459,9 +459,6 @@ class PageLoadTracker : public PageLoadMetricsUpdateDispatcher::Client,
   void InvokeAndPruneObservers(const char* trace_name,
                                InvokeCallback callback,
                                bool permit_forwarding);
-
-  void AddObserverInterface(
-      std::unique_ptr<PageLoadMetricsObserverInterface> observer);
 
   // Whether we stopped tracking this navigation after it was initiated. We may
   // stop tracking a navigation if it doesn't meet the criteria for tracking

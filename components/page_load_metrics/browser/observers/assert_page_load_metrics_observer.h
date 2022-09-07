@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_PAGE_LOAD_METRICS_BROWSER_OBSERVERS_ASSERT_PAGE_LOAD_METRICS_OBSERVER_H_
 #define COMPONENTS_PAGE_LOAD_METRICS_BROWSER_OBSERVERS_ASSERT_PAGE_LOAD_METRICS_OBSERVER_H_
 
-#include "components/page_load_metrics/browser/page_load_metrics_observer.h"
+#include "components/page_load_metrics/browser/page_load_metrics_observer_interface.h"
 
 // Asserts the constraints of methods of PageLoadMetricsObserver using
 // ovserver-level forwarding (i.e. PageLoadMetricsForwardObserver) as code and
@@ -15,14 +15,23 @@
 //
 // The list of methods are not complete. For most ones among missing ones, we
 // have no (non trivial) assumption on callback timings.
+//
+// Note that this inherits PageLoadMetricsObserverInterface rather than
+// PageLoadMetricsObserver to encourage to write assertions for newly added
+// methods.
 class AssertPageLoadMetricsObserver final
-    : public page_load_metrics::PageLoadMetricsObserver {
+    : public page_load_metrics::PageLoadMetricsObserverInterface {
  public:
   AssertPageLoadMetricsObserver();
   ~AssertPageLoadMetricsObserver() override;
 
   // PageLoadMetricsObserverInterface implementation:
   const char* GetObserverName() const override;
+
+  const page_load_metrics::PageLoadMetricsObserverDelegate& GetDelegate()
+      const override;
+  void SetDelegate(
+      page_load_metrics::PageLoadMetricsObserverDelegate*) override;
 
   // Initialization and redirect
   ObservePolicy OnStart(content::NavigationHandle* navigation_handle,
@@ -126,8 +135,73 @@ class AssertPageLoadMetricsObserver final
       content::RenderFrameHost* render_frame_host) override;
   void OnSubFrameDeleted(int frame_tree_node_id) override;
 
+  // The method below are not well investigated.
+  //
+  // TODO(https://crbug.com/1350891): Add more assertions.
+  void OnRestoreFromBackForwardCache(
+      const page_load_metrics::mojom::PageLoadTiming& timing,
+      content::NavigationHandle* navigation_handle) override {}
+  void OnSoftNavigationCountUpdated() override {}
+  void OnMobileFriendlinessUpdate(
+      const blink::MobileFriendliness& mobile_friendliness) override {}
+  void OnCpuTimingUpdate(
+      content::RenderFrameHost* subframe_rfh,
+      const page_load_metrics::mojom::CpuTiming& timing) override {}
+  void OnLoadingBehaviorObserved(content::RenderFrameHost* rfh,
+                                 int behavior_flags) override {}
+  void OnFeaturesUsageObserved(
+      content::RenderFrameHost* rfh,
+      const std::vector<blink::UseCounterFeature>& features) override {}
+  void SetUpSharedMemoryForSmoothness(
+      const base::ReadOnlySharedMemoryRegion& shared_memory) override {}
+  void OnResourceDataUseObserved(
+      content::RenderFrameHost* rfh,
+      const std::vector<page_load_metrics::mojom::ResourceDataUpdatePtr>&
+          resources) override {}
+  void MediaStartedPlaying(
+      const content::WebContentsObserver::MediaPlayerInfo& video_type,
+      content::RenderFrameHost* render_frame_host) override {}
+  void OnMainFrameIntersectionRectChanged(
+      content::RenderFrameHost* rfh,
+      const gfx::Rect& main_frame_intersection_rect) override {}
+  void OnMainFrameViewportRectChanged(
+      const gfx::Rect& main_frame_viewport_rect) override {}
+  void OnLoadedResource(const page_load_metrics::ExtraRequestCompleteInfo&
+                            extra_request_complete_info) override {}
+  void FrameReceivedUserActivation(
+      content::RenderFrameHost* render_frame_host) override {}
+  void FrameDisplayStateChanged(content::RenderFrameHost* render_frame_host,
+                                bool is_display_none) override {}
+  void FrameSizeChanged(content::RenderFrameHost* render_frame_host,
+                        const gfx::Size& frame_size) override {}
+  void OnCookiesRead(const GURL& url,
+                     const GURL& first_party_url,
+                     const net::CookieList& cookie_list,
+                     bool blocked_by_policy) override {}
+  void OnCookieChange(const GURL& url,
+                      const GURL& first_party_url,
+                      const net::CanonicalCookie& cookie,
+                      bool blocked_by_policy) override {}
+  void OnStorageAccessed(const GURL& url,
+                         const GURL& first_party_url,
+                         bool blocked_by_policy,
+                         page_load_metrics::StorageType access_type) override {}
+  void OnPrefetchLikely() override {}
+  void DidActivatePortal(base::TimeTicks activation_time) override {}
+  void OnV8MemoryChanged(const std::vector<page_load_metrics::MemoryUpdate>&
+                             memory_updates) override {}
+  void OnSharedStorageWorkletHostCreated() override {}
+
+  // Reference implementations duplicated from PageLoadMetricsObserver
+  ObservePolicy ShouldObserveMimeTypeByDefault(
+      const std::string& mime_type) const;
+  ObservePolicy OnEnterBackForwardCacheByDefault(
+      const page_load_metrics::mojom::PageLoadTiming& timing);
+
  private:
   bool IsPrerendered() const;
+
+  raw_ptr<page_load_metrics::PageLoadMetricsObserverDelegate> delegate_;
 
   bool started_ = false;
   // Same to `GetDelegate().DidCommit()`

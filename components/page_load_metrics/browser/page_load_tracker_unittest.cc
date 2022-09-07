@@ -123,7 +123,8 @@ class PageLoadTrackerTest : public PageLoadMetricsObserverContentTestHarness {
       return;
 
     EXPECT_FALSE(is_observer_passed_);
-    tracker->AddObserver(std::unique_ptr<PageLoadMetricsObserver>(observer_));
+    tracker->AddObserver(
+        std::unique_ptr<PageLoadMetricsObserverInterface>(observer_));
     is_observer_passed_ = true;
   }
 

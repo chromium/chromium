@@ -24,6 +24,18 @@ const char* PageLoadMetricsForwardObserver::GetObserverName() const {
   return nullptr;
 }
 
+const PageLoadMetricsObserverDelegate&
+PageLoadMetricsForwardObserver::GetDelegate() const {
+  NOTREACHED();
+  const PageLoadMetricsObserverDelegate* null_value = nullptr;
+  return *null_value;
+}
+
+void PageLoadMetricsForwardObserver::SetDelegate(
+    PageLoadMetricsObserverDelegate* delegate) {
+  // No need to set. Ignore.
+}
+
 // Registration and initialization of PageLoadMetricsForwardObserver is
 // different from ones of other PageLoadMetricsObserver subclasses.
 // PageLoadMetricsForwardObserver is registered in

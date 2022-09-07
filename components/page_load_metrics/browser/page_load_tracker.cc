@@ -649,13 +649,9 @@ void PageLoadTracker::StopTracking() {
 }
 
 void PageLoadTracker::AddObserver(
-    std::unique_ptr<PageLoadMetricsObserver> observer) {
-  observer->SetDelegate(this);
-  AddObserverInterface(std::move(observer));
-}
-
-void PageLoadTracker::AddObserverInterface(
     std::unique_ptr<PageLoadMetricsObserverInterface> observer) {
+  observer->SetDelegate(this);
+
   if (observer->GetObserverName()) {
     DCHECK(observers_map_.find(observer->GetObserverName()) ==
            observers_map_.end())
@@ -665,6 +661,7 @@ void PageLoadTracker::AddObserverInterface(
            "the test. See also constructor of PageLoadMetricsTestWaiter.";
     observers_map_.emplace(observer->GetObserverName(), observer.get());
   }
+
   observers_.push_back(std::move(observer));
 }
 
@@ -1254,7 +1251,7 @@ void PageLoadTracker::InvokeAndPruneObservers(
   for (auto& observer : forward_observers) {
     DCHECK(observers_map_.find(observer->GetObserverName()) ==
            observers_map_.end());
-    AddObserverInterface(std::move(observer));
+    AddObserver(std::move(observer));
   }
 }
 
