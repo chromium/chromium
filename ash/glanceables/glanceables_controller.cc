@@ -47,9 +47,17 @@ bool IsWindowOnAnyDesk(aura::Window* window) {
 
 }  // namespace
 
-GlanceablesController::GlanceablesController() {
+GlanceablesController::GlanceablesController()
+    : start_of_month_utc_(
+          calendar_utils::GetStartOfMonthUTC(base::Time::Now())) {
   Shell::Get()->activation_client()->AddObserver(this);
   Shell::Get()->tablet_mode_controller()->AddObserver(this);
+
+  // Adding current month to the set of *non-prunable* months will trigger
+  // another fetch and `OnEventsFetched` call. Otherwise, the default behavior
+  // is that *prunable* months are cached and do not trigger another fetch.
+  Shell::Get()->system_tray_model()->calendar_model()->AddNonPrunableMonth(
+      start_of_month_utc_);
 }
 
 GlanceablesController::~GlanceablesController() {
@@ -163,7 +171,7 @@ void GlanceablesController::FetchData() {
       ->FetchWeather();
 
   Shell::Get()->system_tray_model()->calendar_model()->FetchEvents(
-      calendar_utils::GetStartOfMonthUTC(base::Time::Now()));
+      start_of_month_utc_);
 }
 
 void GlanceablesController::ApplyBackdrop() const {

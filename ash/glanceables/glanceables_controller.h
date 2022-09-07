@@ -9,6 +9,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/public/cpp/tablet_mode_observer.h"
+#include "base/time/time.h"
 #include "ui/wm/public/activation_change_observer.h"
 
 namespace views {
@@ -80,6 +81,11 @@ class ASH_EXPORT GlanceablesController : public wm::ActivationChangeObserver,
 
   // Hides windows while glanceables are showing.
   std::unique_ptr<GlanceablesWindowHider> window_hider_;
+
+  // The start of current month in UTC. Used for fetching calendar events.
+  // TODO(crbug.com/1353495): Update value at the beginning of the next month
+  // and trigger another fetch.
+  base::Time start_of_month_utc_;
 };
 
 }  // namespace ash
