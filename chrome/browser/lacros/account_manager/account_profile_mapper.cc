@@ -25,6 +25,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_metrics.h"
 #include "components/account_manager_core/account.h"
+#include "components/account_manager_core/chromeos/account_manager_facade_factory.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "google_apis/gaia/oauth2_access_token_fetcher.h"
 #include "google_apis/gaia/oauth2_access_token_fetcher_immediate_error.h"
@@ -665,10 +666,12 @@ bool AccountProfileMapper::ShouldDeleteProfile(
 
   if (Profile::IsMainProfilePath(entry->GetPath())) {
     // Never delete the main profile.
-    if (primary_account_deleted) {
+    if (primary_account_deleted && !MaybeGetAshAccountManagerForTests()) {
       // Primary account of the main profile must never be deleted. A CHECK here
       // can possibly put a device in a crash loop, so upload a crash report
       // silently instead.
+      // Do not emit these in tests, as some tests don't have an account in the
+      // main profile, in particular if they are shared with desktop platforms.
       DLOG(ERROR) << "Primary account has been removed from the main profile";
       base::debug::DumpWithoutCrashing();
     }
