@@ -701,8 +701,16 @@ void GLImageBacking::GLTextureImageRepresentationEndAccess(bool readonly) {
   // between the CPU and GPU. The next time this texture is accessed we will
   // call BindTexImage to signal a LockIOSurface call before rendering to it via
   // the CPU.
-  if (IsPassthrough() &&
-      gl::GetANGLEImplementation() == gl::ANGLEImplementation::kSwiftShader &&
+  // Similarly, when ANGLE's metal backend is used, we have to signal a call to
+  // waitUntilScheduled() using the same method on EndAccess to ensure IOSurface
+  // synchronization.
+  // TODO(https://anglebug.com/7626): Enable on Metal only when CPU_READ or
+  // SCANOUT is specified.
+  bool needs_synchronization =
+      IsPassthrough() &&
+      (gl::GetANGLEImplementation() == gl::ANGLEImplementation::kSwiftShader ||
+       gl::GetANGLEImplementation() == gl::ANGLEImplementation::kMetal);
+  if (needs_synchronization &&
       image_->ShouldBindOrCopy() == gl::GLImage::BIND) {
     const GLenum target = GetGLTarget();
     gl::ScopedTextureBinder binder(target, passthrough_texture_->service_id());
