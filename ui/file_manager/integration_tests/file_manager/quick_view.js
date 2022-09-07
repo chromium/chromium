@@ -705,6 +705,36 @@ testcase.openQuickViewAndroid = async () => {
 };
 
 /**
+ * Tests opening Quick View on an Android file on GuestOS.
+ */
+testcase.openQuickViewAndroidGuestOs = async () => {
+  // Open Files app on Android files.
+  const appId = await openNewWindow(RootPath.ANDROID_FILES);
+
+  // Add files to the Android files volume.
+  const entrySet = BASIC_ANDROID_ENTRY_SET.concat([ENTRIES.documentsText]);
+  await addEntries(['android_files'], entrySet);
+
+  // Wait for the file list to appear.
+  await remoteCall.waitForElement(appId, '#file-list');
+
+  // Check: the basic Android file set should appear in the file list.
+  let files = TestEntryInfo.getExpectedRows(BASIC_ANDROID_ENTRY_SET);
+  await remoteCall.waitForFiles(appId, files, {ignoreLastModifiedTime: true});
+
+  // Navigate to the Android files '/Documents' directory.
+  await navigateWithDirectoryTree(appId, '/My files/Play files/Documents');
+
+  // Check: the 'android.txt' file should appear in the file list.
+  files = [ENTRIES.documentsText.getExpectedRow()];
+  await remoteCall.waitForFiles(appId, files, {ignoreLastModifiedTime: true});
+
+  // Open the Android file in Quick View.
+  const documentsFileName = ENTRIES.documentsText.nameText;
+  await openQuickView(appId, documentsFileName);
+};
+
+/**
  * Tests opening Quick View on a DocumentsProvider root.
  */
 testcase.openQuickViewDocumentsProvider = async () => {

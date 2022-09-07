@@ -633,6 +633,9 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("openQuickViewDrive"),
         TestCase("openQuickViewSmbfs"),
         TestCase("openQuickViewAndroid"),
+        TestCase("openQuickViewAndroidGuestOs")
+            .EnableGuestOsFiles()
+            .EnableVirtioBlkForData(),
         TestCase("openQuickViewDocumentsProvider")
             .EnableGenericDocumentsProvider(),
         TestCase("openQuickViewCrostini"),
