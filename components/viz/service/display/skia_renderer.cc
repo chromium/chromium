@@ -3452,6 +3452,9 @@ void SkiaRenderer::PrepareRenderPassOverlay(
         quad->render_pass_id, quad, buffer_format, color_space, buffer_size);
   }
   DCHECK(overlay_params);
+  UMA_HISTOGRAM_BOOLEAN(
+      "Compositing.SkiaRenderer.SkipOverlayRenderPassDrawQuad",
+      can_skip_render_pass);
 
   const RenderPassBacking& dst_overlay_backing =
       overlay_params->render_pass_backing;
