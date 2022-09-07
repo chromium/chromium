@@ -797,6 +797,10 @@ Shell::~Shell() {
   // Close all widgets (including the shelf) and destroy all window containers.
   CloseAllRootWindowChildWindows();
 
+  // Glanceables has a dependency on `tablet_mode_controller_`. Should be
+  // destroyed first to remove the tablet mode observer.
+  glanceables_controller_.reset();
+
   multitask_menu_nudge_controller_.reset();
   tablet_mode_controller_.reset();
   login_screen_controller_.reset();
@@ -862,7 +866,6 @@ Shell::~Shell() {
   policy_recommendation_restorer_.reset();
   ime_controller_.reset();
   back_gesture_event_handler_.reset();
-  glanceables_controller_.reset();
 
   // Balances the Install() in Initialize().
   views::FocusManagerFactory::Install(nullptr);

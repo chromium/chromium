@@ -177,6 +177,14 @@ TEST_F(GlanceablesTest, CreateAndDestroyUi) {
   EXPECT_EQ(1, GetTestDelegate()->on_glanceables_closed_count());
 }
 
+TEST_F(GlanceablesTest, HidesInTabletMode) {
+  controller_->CreateUi();
+  ASSERT_TRUE(controller_->IsShowing());
+
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+  EXPECT_FALSE(controller_->IsShowing());
+}
+
 TEST_F(GlanceablesTest, GlanceablesViewCreatesChildViews) {
   controller_->CreateUi();
 

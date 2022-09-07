@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "ash/ash_export.h"
+#include "ash/public/cpp/tablet_mode_observer.h"
 #include "ui/wm/public/activation_change_observer.h"
 
 namespace views {
@@ -21,7 +22,8 @@ class GlanceablesView;
 class GlanceablesWindowHider;
 
 // Controls the "welcome back" glanceables screen shown on login.
-class ASH_EXPORT GlanceablesController : public wm::ActivationChangeObserver {
+class ASH_EXPORT GlanceablesController : public wm::ActivationChangeObserver,
+                                         public TabletModeObserver {
  public:
   GlanceablesController();
   GlanceablesController(const GlanceablesController&) = delete;
@@ -56,6 +58,9 @@ class ASH_EXPORT GlanceablesController : public wm::ActivationChangeObserver {
   void OnWindowActivated(wm::ActivationChangeObserver::ActivationReason reason,
                          aura::Window* gained_focus,
                          aura::Window* lost_focus) override;
+
+  // TabletModeObserver:
+  void OnTabletModeStarted() override;
 
  private:
   friend class GlanceablesTest;

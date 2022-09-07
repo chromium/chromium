@@ -19,6 +19,7 @@
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/time/calendar_utils.h"
 #include "ash/wm/desks/desks_util.h"
+#include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/time/time.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/ui_base_types.h"
@@ -48,9 +49,11 @@ bool IsWindowOnAnyDesk(aura::Window* window) {
 
 GlanceablesController::GlanceablesController() {
   Shell::Get()->activation_client()->AddObserver(this);
+  Shell::Get()->tablet_mode_controller()->AddObserver(this);
 }
 
 GlanceablesController::~GlanceablesController() {
+  Shell::Get()->tablet_mode_controller()->RemoveObserver(this);
   Shell::Get()->activation_client()->RemoveObserver(this);
 }
 
@@ -64,12 +67,22 @@ void GlanceablesController::Init(
 }
 
 void GlanceablesController::ShowOnLogin() {
+  if (Shell::Get()->IsInTabletMode()) {
+    // TODO(crbug.com/1360528): Implement tablet mode support.
+    return;
+  }
+
   show_session_restore_ = true;
   CreateUi();
   FetchData();
 }
 
 void GlanceablesController::ShowFromOverview() {
+  if (Shell::Get()->IsInTabletMode()) {
+    // TODO(crbug.com/1360528): Implement tablet mode support.
+    return;
+  }
+
   // Hide any open windows.
   window_hider_ = std::make_unique<GlanceablesWindowHider>();
   show_session_restore_ = false;
@@ -132,6 +145,14 @@ void GlanceablesController::OnWindowActivated(
   // browser windows, PWA windows, ARC windows, etc.
   if (IsWindowOnAnyDesk(gained_focus) && IsShowing())
     DestroyUi();
+}
+
+void GlanceablesController::OnTabletModeStarted() {
+  if (!IsShowing())
+    return;
+
+  // TODO(crbug.com/1360528): Implement tablet mode support.
+  DestroyUi();
 }
 
 void GlanceablesController::FetchData() {
