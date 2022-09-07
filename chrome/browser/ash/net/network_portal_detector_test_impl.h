@@ -35,10 +35,6 @@ class NetworkPortalDetectorTestImpl : public NetworkPortalDetector {
   // Returns the GUID of the network the detector considers to be default.
   std::string GetDefaultNetworkGuid() const;
 
-  // Registers a callback that will be run when portal detection is requested by
-  // StartPortalDetection().
-  void RegisterPortalDetectionStartCallback(base::OnceClosure callback);
-
   // NetworkPortalDetector implementation:
   void AddObserver(Observer* observer) override;
   void AddAndFireObserver(Observer* observer) override;
@@ -60,8 +56,6 @@ class NetworkPortalDetectorTestImpl : public NetworkPortalDetector {
   // Set when StartPortalDetection() is called - it will be reset when observers
   // are notified using NotifyObserversForTesting().
   bool portal_detection_in_progress_ = false;
-
-  std::vector<base::OnceClosure> start_detection_callbacks_;
 };
 
 }  // namespace ash

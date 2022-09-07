@@ -23,8 +23,8 @@ class MockVersionUpdaterDelegate : public VersionUpdater::Delegate {
   MOCK_METHOD0(OnWaitForRebootTimeElapsed, void());
   MOCK_METHOD0(PrepareForUpdateCheck, void());
   MOCK_METHOD3(UpdateErrorMessage,
-               void(const NetworkPortalDetector::CaptivePortalStatus status,
-                    const NetworkError::ErrorState& error_state,
+               void(NetworkState::PortalState state,
+                    NetworkError::ErrorState error_state,
                     const std::string& network_name));
   MOCK_METHOD0(ShowErrorMessage, void());
   MOCK_METHOD0(DelayErrorMessage, void());

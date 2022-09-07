@@ -102,15 +102,6 @@ void NetworkPortalDetectorMixin::SimulateDefaultNetworkState(
   network_portal_detector_->NotifyObserversForTesting();
 }
 
-void NetworkPortalDetectorMixin::WaitForPortalDetectionRequest() {
-  if (network_portal_detector_->portal_detection_in_progress())
-    return;
-  base::RunLoop run_loop;
-  network_portal_detector_->RegisterPortalDetectionStartCallback(
-      run_loop.QuitClosure());
-  run_loop.Run();
-}
-
 void NetworkPortalDetectorMixin::SetUpOnMainThread() {
   // Setup network portal detector to return online for the default network.
   network_portal_detector_ = new NetworkPortalDetectorTestImpl();
@@ -135,6 +126,7 @@ void NetworkPortalDetectorMixin::SetShillDefaultNetwork(
 
   ShillServiceClient::Get()->GetTestInterface()->ClearServices();
   if (network_guid.empty()) {
+    base::RunLoop().RunUntilIdle();
     return;
   }
 

@@ -18,7 +18,9 @@
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/dbus/update_engine/update_engine_client.h"
-#include "chromeos/ash/components/network/network_state.h"
+#include "chromeos/ash/components/network/network_handler.h"
+#include "chromeos/ash/components/network/network_state_handler.h"
+#include "chromeos/ash/components/network/portal_detector/network_portal_detector.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace ash {
@@ -59,13 +61,12 @@ VersionUpdater::VersionUpdater(VersionUpdater::Delegate* delegate)
 
 VersionUpdater::~VersionUpdater() {
   UpdateEngineClient::Get()->RemoveObserver(this);
-  if (network_portal_detector::IsInitialized())
-    network_portal_detector::GetInstance()->RemoveObserver(this);
+  if (NetworkHandler::IsInitialized())
+    NetworkHandler::Get()->network_state_handler()->RemoveObserver(this);
 }
 
 void VersionUpdater::Init() {
   time_estimator_ = UpdateTimeEstimator();
-  is_first_detection_notification_ = true;
   update_info_ = UpdateInfo();
 }
 
@@ -80,8 +81,16 @@ void VersionUpdater::StartNetworkCheck() {
   update_info_.state = State::STATE_FIRST_PORTAL_CHECK;
   delegate_->UpdateInfoChanged(update_info_);
 
-  is_first_detection_notification_ = true;
-  network_portal_detector::GetInstance()->AddAndFireObserver(this);
+  if (NetworkHandler::IsInitialized()) {
+    NetworkStateHandler* handler =
+        NetworkHandler::Get()->network_state_handler();
+    if (!handler->HasObserver(this))
+      handler->AddObserver(this);
+    const NetworkState* default_network = handler->DefaultNetwork();
+    PortalStateChanged(default_network,
+                       default_network ? default_network->GetPortalState()
+                                       : NetworkState::PortalState::kUnknown);
+  }
 }
 
 void VersionUpdater::StartUpdateCheck() {
@@ -116,7 +125,8 @@ void VersionUpdater::RebootAfterUpdate() {
 
 void VersionUpdater::StartExitUpdate(Result result) {
   UpdateEngineClient::Get()->RemoveObserver(this);
-  network_portal_detector::GetInstance()->RemoveObserver(this);
+  if (NetworkHandler::IsInitialized())
+    NetworkHandler::Get()->network_state_handler()->RemoveObserver(this);
   delegate_->FinishExitUpdate(result);
   // Reset internal state, because in case of error user may make another
   // update attempt.
@@ -153,7 +163,8 @@ void VersionUpdater::RequestUpdateCheck() {
   update_info_.update_size = 0;
   delegate_->UpdateInfoChanged(update_info_);
 
-  network_portal_detector::GetInstance()->RemoveObserver(this);
+  if (NetworkHandler::IsInitialized())
+    NetworkHandler::Get()->network_state_handler()->RemoveObserver(this);
   UpdateEngineClient::Get()->AddObserver(this);
   VLOG(1) << "Initiate update check";
   UpdateEngineClient::Get()->RequestUpdateCheck(base::BindOnce(
@@ -276,46 +287,31 @@ void VersionUpdater::RefreshTimeLeftEstimation() {
   delegate_->UpdateInfoChanged(update_info_);
 }
 
-void VersionUpdater::OnPortalDetectionCompleted(
-    const NetworkState* network,
-    const NetworkPortalDetector::CaptivePortalStatus status) {
-  VLOG(1) << "VersionUpdater::OnPortalDetectionCompleted(): "
-          << "network=" << (network ? network->path() : "") << ", "
-          << "status=" << status;
+void VersionUpdater::PortalStateChanged(const NetworkState* network,
+                                        const NetworkState::PortalState state) {
+  VLOG(1) << "VersionUpdater::PortalStateChanged(): "
+          << "network=" << (network ? network->path() : "")
+          << ", portal state=" << state;
 
   // Wait for sane detection results.
-  if (network &&
-      status == NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_UNKNOWN) {
+  if (network && state == NetworkState::PortalState::kUnknown) {
     return;
   }
-
-  // Restart portal detection for the first notification about offline state.
-  if ((!network ||
-       status == NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_OFFLINE) &&
-      is_first_detection_notification_) {
-    is_first_detection_notification_ = false;
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, base::BindOnce([]() {
-          network_portal_detector::GetInstance()->StartPortalDetection();
-        }));
-    return;
-  }
-  is_first_detection_notification_ = false;
 
   if (update_info_.state == State::STATE_ERROR) {
     // In the case of online state hide error message and proceed to
     // the update stage. Otherwise, update error message content.
-    if (status == NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE)
+    if (state == NetworkState::PortalState::kOnline)
       StartUpdateCheck();
     else
-      UpdateErrorMessage(network, status);
+      UpdateErrorMessage(network, state);
   } else if (update_info_.state == State::STATE_FIRST_PORTAL_CHECK) {
     // In the case of online state immediately proceed to the update
     // stage. Otherwise, prepare and show error message.
-    if (status == NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE) {
+    if (state == NetworkState::PortalState::kOnline) {
       StartUpdateCheck();
     } else {
-      UpdateErrorMessage(network, status);
+      UpdateErrorMessage(network, state);
 
       // StartUpdateCheck, which gets called when the error clears up, will add
       // the update engine observer back.
@@ -323,41 +319,49 @@ void VersionUpdater::OnPortalDetectionCompleted(
 
       update_info_.state = State::STATE_ERROR;
       delegate_->UpdateInfoChanged(update_info_);
-      if (status == NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_PORTAL)
+      if (state == NetworkState::PortalState::kPortal ||
+          state == NetworkState::PortalState::kPortalSuspected) {
         delegate_->DelayErrorMessage();
-      else
+      } else {
         delegate_->ShowErrorMessage();
+      }
     }
   }
+}
+
+void VersionUpdater::OnShuttingDown() {
+  NetworkHandler::Get()->network_state_handler()->RemoveObserver(this);
 }
 
 void VersionUpdater::OnWaitForRebootTimeElapsed() {
   delegate_->OnWaitForRebootTimeElapsed();
 }
 
-void VersionUpdater::UpdateErrorMessage(
-    const NetworkState* network,
-    const NetworkPortalDetector::CaptivePortalStatus status) {
+void VersionUpdater::UpdateErrorMessage(const NetworkState* network,
+                                        NetworkState::PortalState state) {
   std::string network_name = std::string();
   NetworkError::ErrorState error_state;
-  switch (status) {
-    case NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_UNKNOWN:
-    case NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_OFFLINE:
+  switch (state) {
+    case NetworkState::PortalState::kUnknown:
+      [[fallthrough]];
+    case NetworkState::PortalState::kNoInternet:
       error_state = NetworkError::ERROR_STATE_OFFLINE;
       break;
-    case NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_PORTAL:
+    case NetworkState::PortalState::kPortal:
+      [[fallthrough]];
+    case NetworkState::PortalState::kPortalSuspected:
       DCHECK(network);
       error_state = NetworkError::ERROR_STATE_PORTAL;
       network_name = network->name();
       break;
-    case NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_PROXY_AUTH_REQUIRED:
+    case NetworkState::PortalState::kProxyAuthRequired:
       error_state = NetworkError::ERROR_STATE_PROXY;
       break;
-    default:
+    case NetworkState::PortalState::kOnline:
       NOTREACHED();
       return;
   }
-  delegate_->UpdateErrorMessage(status, error_state, network_name);
+  delegate_->UpdateErrorMessage(state, error_state, network_name);
 }
 
 void VersionUpdater::OnSetUpdateOverCellularOneTimePermission(bool success) {

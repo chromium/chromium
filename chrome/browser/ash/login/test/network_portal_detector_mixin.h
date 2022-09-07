@@ -43,11 +43,6 @@ class NetworkPortalDetectorMixin : public InProcessBrowserTestMixin {
   void SimulateDefaultNetworkState(
       NetworkPortalDetector::CaptivePortalStatus status);
 
-  // Runs loop until the NetworkPortalDetector is requested to start portal
-  // detection. It will return immediately if a detection is already in
-  // progress.
-  void WaitForPortalDetectionRequest();
-
   // InProcessBrowserTestMixin:
   void SetUpOnMainThread() override;
   void TearDownOnMainThread() override;

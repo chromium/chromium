@@ -17,12 +17,12 @@
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
-#include "chrome/browser/ash/login/test/network_portal_detector_mixin.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/version_updater/version_updater.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
+#include "chrome/browser/ash/net/network_portal_detector_test_impl.h"
 #include "chrome/browser/ash/policy/core/device_policy_builder.h"
 #include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
 #include "chrome/browser/ash/policy/handlers/minimum_version_policy_test_helpers.h"
@@ -201,8 +201,6 @@ class UpdateRequiredScreenTest : public OobeBaseTest {
   // Error screen - owned by OobeUI.
   // Version updater - owned by `update_required_screen_`.
   VersionUpdater* version_updater_ = nullptr;
-  // For testing captive portal
-  NetworkPortalDetectorMixin network_portal_detector_{&mixin_host_};
 
   // Handles network connections
   std::unique_ptr<NetworkStateTestHelper> network_state_test_helper_;
@@ -215,9 +213,12 @@ class UpdateRequiredScreenTest : public OobeBaseTest {
 IN_PROC_BROWSER_TEST_F(UpdateRequiredScreenTest, TestCaptivePortal) {
   ShowUpdateRequiredScreen();
 
-  network_portal_detector_.SetDefaultNetwork(
-      "wfii1_guid", shill::kTypeWifi,
-      NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_PORTAL);
+  network_state_test_helper_->ResetDevicesAndServices();
+  std::string wifi_path =
+      network_state_test_helper_->ConfigureWiFi(shill::kStateRedirectFound);
+
+  network_portal_detector::InitializeForTesting(
+      new NetworkPortalDetectorTestImpl());
 
   static_cast<UpdateRequiredScreen*>(
       WizardController::default_controller()->current_screen())
@@ -244,8 +245,8 @@ IN_PROC_BROWSER_TEST_F(UpdateRequiredScreenTest, TestCaptivePortal) {
 
   // If network goes back online, the error screen should be hidden and update
   // process should start.
-  network_portal_detector_.SimulateDefaultNetworkState(
-      NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE);
+  network_state_test_helper_->SetServiceProperty(
+      wifi_path, shill::kStateProperty, base::Value(shill::kStateOnline));
   EXPECT_EQ(ash::OOBE_SCREEN_UNKNOWN.AsId(), error_screen->GetParentScreen());
 
   SetUpdateEngineStatus(update_engine::Operation::CHECKING_FOR_UPDATE);
@@ -253,6 +254,7 @@ IN_PROC_BROWSER_TEST_F(UpdateRequiredScreenTest, TestCaptivePortal) {
 
   test::OobeJS().ExpectVisiblePath(kUpdateRequiredScreen);
   test::OobeJS().ExpectVisiblePath(kUpdateProcessStep);
+  network_portal_detector::Shutdown();
 }
 
 IN_PROC_BROWSER_TEST_F(UpdateRequiredScreenTest, TestEolReached) {

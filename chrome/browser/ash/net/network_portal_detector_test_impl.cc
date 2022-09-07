@@ -57,11 +57,6 @@ std::string NetworkPortalDetectorTestImpl::GetDefaultNetworkGuid() const {
   return default_network_->guid();
 }
 
-void NetworkPortalDetectorTestImpl::RegisterPortalDetectionStartCallback(
-    base::OnceClosure callback) {
-  start_detection_callbacks_.push_back(std::move(callback));
-}
-
 void NetworkPortalDetectorTestImpl::AddObserver(Observer* observer) {
   if (observer && !observers_.HasObserver(observer))
     observers_.AddObserver(observer);
@@ -103,16 +98,7 @@ bool NetworkPortalDetectorTestImpl::IsEnabled() {
 void NetworkPortalDetectorTestImpl::Enable() {}
 
 void NetworkPortalDetectorTestImpl::StartPortalDetection() {
-  if (portal_detection_in_progress_)
-    return;
-
   portal_detection_in_progress_ = true;
-  std::vector<base::OnceClosure> callbacks =
-      std::move(start_detection_callbacks_);
-  for (auto& callback : callbacks)
-    std::move(callback).Run();
-
-  return;
 }
 
 }  // namespace ash

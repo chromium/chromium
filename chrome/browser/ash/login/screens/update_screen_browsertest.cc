@@ -655,22 +655,12 @@ IN_PROC_BROWSER_TEST_P(UpdateScreenTest, TestTwoOfflineNetworks) {
 
 IN_PROC_BROWSER_TEST_P(UpdateScreenTest, TestVoidNetwork) {
   network_portal_detector_.SimulateNoNetwork();
-
-  // First portal detection attempt returns NULL network and undefined
-  // results, so detection is restarted.
   ShowUpdateScreen();
-
-  EXPECT_FALSE(update_screen_->GetErrorMessageTimerForTesting()->IsRunning());
-
-  network_portal_detector_.WaitForPortalDetectionRequest();
-  network_portal_detector_.SimulateNoNetwork();
 
   EXPECT_FALSE(update_screen_->GetErrorMessageTimerForTesting()->IsRunning());
   ASSERT_EQ(UpdateView::kScreenId.AsId(), error_screen_->GetParentScreen());
   EXPECT_FALSE(update_screen_->GetShowTimerForTesting()->IsRunning());
 
-  // Second portal detection also returns NULL network and undefined
-  // results.  In this case, offline message should be displayed.
   OobeScreenWaiter error_screen_waiter(ErrorScreenView::kScreenId);
   error_screen_waiter.set_assert_next_screen();
   error_screen_waiter.Wait();
