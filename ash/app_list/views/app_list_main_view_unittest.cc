@@ -30,6 +30,7 @@
 #include "ui/events/types/event_type.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/test/button_test_api.h"
+#include "ui/views/test/views_test_utils.h"
 #include "ui/views/view_model.h"
 
 namespace ash {
@@ -145,7 +146,7 @@ class AppListMainViewTest : public AshTestBase,
     // Prepare single folder with a single item in it.
     AppListFolderItem* folder_item =
         GetTestModel()->CreateSingleItemFolder("single_item_folder", "single");
-    GetRootGridView()->Layout();
+    views::test::RunScheduledLayout(GetRootGridView());
     EXPECT_EQ(folder_item,
               GetTestModel()->FindFolderItem("single_item_folder"));
     EXPECT_EQ(AppListFolderItem::kItemType, folder_item->GetItemType());
@@ -268,7 +269,7 @@ TEST_P(AppListMainViewTest, DragReparentItemOntoPageSwitcher) {
   // 20).
   const size_t kNumApps = 30;
   GetTestModel()->PopulateApps(kNumApps);
-  GetRootGridView()->Layout();
+  views::test::RunScheduledLayout(GetRootGridView());
 
   EXPECT_EQ(1u, GetFolderViewModel()->view_size());
   EXPECT_EQ(kNumApps + 1, GetRootViewModel()->view_size());

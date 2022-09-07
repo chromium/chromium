@@ -63,6 +63,7 @@
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/test/views_test_base.h"
+#include "ui/views/test/views_test_utils.h"
 #include "ui/views/view_model.h"
 
 namespace ash {
@@ -289,7 +290,7 @@ class AppListViewTest : public views::ViewsTestBase {
     else
       contents_view->SetActiveState(state);
 
-    contents_view->Layout();
+    views::test::RunScheduledLayout(contents_view);
     return IsStateShown(state);
   }
 
@@ -2414,7 +2415,7 @@ TEST_F(AppListViewPeekingTest, PageSwitchingAnimationTest) {
   ContentsView* contents_view = main_view->contents_view();
 
   contents_view->SetActiveState(ash::AppListState::kStateApps);
-  contents_view->Layout();
+  views::test::RunScheduledLayout(contents_view);
   EXPECT_TRUE(IsStateShown(ash::AppListState::kStateApps));
 
   // Change pages. Animation start triggers layout, and updates the page UI.
@@ -2449,7 +2450,7 @@ TEST_F(AppListViewTest, DISABLED_SearchResultsTest) {
 
   // Show the search results.
   contents_view->ShowSearchResults(true);
-  contents_view->Layout();
+  views::test::RunScheduledLayout(contents_view);
   EXPECT_TRUE(
       contents_view->IsStateActive(ash::AppListState::kStateSearchResults));
 
@@ -2457,12 +2458,12 @@ TEST_F(AppListViewTest, DISABLED_SearchResultsTest) {
 
   // Hide the search results.
   contents_view->ShowSearchResults(false);
-  contents_view->Layout();
+  views::test::RunScheduledLayout(contents_view);
 
   // Check that we return to the page that we were on before the search.
   EXPECT_TRUE(IsStateShown(ash::AppListState::kStateApps));
 
-  view_->Layout();
+  views::test::RunScheduledLayout(view_);
   EXPECT_TRUE(IsStateShown(ash::AppListState::kStateApps));
 
   std::u16string search_text = u"test";
@@ -2473,7 +2474,7 @@ TEST_F(AppListViewTest, DISABLED_SearchResultsTest) {
   // Check that the current search is using |search_text|.
   EXPECT_EQ(search_text, main_view->search_box_view()->search_box()->GetText());
   EXPECT_EQ(search_text, main_view->search_box_view()->current_query());
-  contents_view->Layout();
+  views::test::RunScheduledLayout(contents_view);
   EXPECT_TRUE(
       contents_view->IsStateActive(ash::AppListState::kStateSearchResults));
   EXPECT_TRUE(CheckSearchBoxWidget(contents_view->GetSearchBoxBounds(
@@ -2481,7 +2482,7 @@ TEST_F(AppListViewTest, DISABLED_SearchResultsTest) {
 
   // Check that typing into the search box triggers the search page.
   EXPECT_TRUE(SetAppListState(ash::AppListState::kStateApps));
-  contents_view->Layout();
+  views::test::RunScheduledLayout(contents_view);
   EXPECT_TRUE(IsStateShown(ash::AppListState::kStateApps));
   EXPECT_TRUE(CheckSearchBoxWidget(
       contents_view->GetSearchBoxBounds(ash::AppListState::kStateApps)));
@@ -2495,7 +2496,7 @@ TEST_F(AppListViewTest, DISABLED_SearchResultsTest) {
   EXPECT_EQ(new_search_text,
             main_view->search_box_view()->search_box()->GetText());
   EXPECT_EQ(search_text, main_view->search_box_view()->current_query());
-  contents_view->Layout();
+  views::test::RunScheduledLayout(contents_view);
   EXPECT_TRUE(IsStateShown(ash::AppListState::kStateSearchResults));
   EXPECT_TRUE(CheckSearchBoxWidget(contents_view->GetSearchBoxBounds(
       ash::AppListState::kStateSearchResults)));

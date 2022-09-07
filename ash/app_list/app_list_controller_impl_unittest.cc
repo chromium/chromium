@@ -63,6 +63,7 @@
 #include "ui/message_center/views/message_popup_view.h"
 #include "ui/views/accessibility/accessibility_paint_checks.h"
 #include "ui/views/controls/textfield/textfield_test_api.h"
+#include "ui/views/test/views_test_utils.h"
 #include "ui/views/test/widget_animation_waiter.h"
 
 namespace ash {
@@ -666,7 +667,7 @@ TEST_F(AppListControllerImplTest, DragItemFromAppsGridView) {
   GetAppListModel()->AddItem(std::make_unique<AppListItem>(app_id));
 
   AppsGridView* apps_grid_view = GetAppsGridView();
-  apps_grid_view->Layout();
+  views::test::RunScheduledLayout(apps_grid_view);
 
   AppListItemView* app_list_item_view =
       test::AppsGridViewTestApi(apps_grid_view).GetViewAtIndex(GridIndex(0, 0));
