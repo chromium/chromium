@@ -47,6 +47,8 @@ class EmailInputType final : public BaseTextInputType {
                                               const String&);
   CORE_EXPORT static ScriptRegexp* CreateEmailRegexp();
 
+  static Vector<String> ParseMultipleValues(const String& value);
+
   bool TypeMismatchFor(const String&) const;
 
  private:

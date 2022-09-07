@@ -57,6 +57,7 @@ class BaseTextInputType : public TextFieldInputType {
   int MinLength() const final;
   bool SupportsPlaceholder() const final;
   bool SupportsSelectionAPI() const override;
+  bool PatternMismatchPerValue(const String&) const;
 
   // regexp_ and pattern_for_regexp_ are mutable because they are kinds of
   // cache.

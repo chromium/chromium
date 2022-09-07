@@ -41,25 +41,35 @@
 #include <unicode/char16ptr.h>
 #endif
 
-namespace blink {
+namespace {
 
 // http://www.whatwg.org/specs/web-apps/current-work/multipage/states-of-the-type-attribute.html#valid-e-mail-address
-static const char kLocalPartCharacters[] =
+const char kLocalPartCharacters[] =
     "abcdefghijklmnopqrstuvwxyz0123456789!#$%&'*+/=?^_`{|}~.-";
-static const char kEmailPattern[] =
+const char kEmailPattern[] =
     "[a-z0-9!#$%&'*+/=?^_`{|}~.-]+"  // local part
     "@"
     "[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?"  // domain part
     "(?:\\.[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?)*";
 
 // RFC5321 says the maximum total length of a domain name is 255 octets.
-static const int32_t kMaximumDomainNameLength = 255;
+const int32_t kMaximumDomainNameLength = 255;
 // Use the same option as in url/url_canon_icu.cc
-static const int32_t kIdnaConversionOption = UIDNA_CHECK_BIDI;
+const int32_t kIdnaConversionOption = UIDNA_CHECK_BIDI;
+
+}  // namespace
+
+namespace blink {
 
 ScriptRegexp* EmailInputType::CreateEmailRegexp() {
   return MakeGarbageCollected<ScriptRegexp>(kEmailPattern,
                                             kTextCaseUnicodeInsensitive);
+}
+
+Vector<String> EmailInputType::ParseMultipleValues(const String& value) {
+  Vector<String> values;
+  value.Split(',', true, values);
+  return values;
 }
 
 String EmailInputType::ConvertEmailAddressToASCII(const ScriptRegexp& regexp,
@@ -188,8 +198,7 @@ String EmailInputType::FindInvalidAddress(const String& value) const {
                ? String()
                : value;
   }
-  Vector<String> addresses;
-  value.Split(',', true, addresses);
+  Vector<String> addresses = ParseMultipleValues(value);
   for (const auto& address : addresses) {
     String stripped = StripLeadingAndTrailingHTMLSpaces(address);
     if (!IsValidEmailAddress(GetElement().GetDocument().EnsureEmailRegexp(),
@@ -269,8 +278,7 @@ String EmailInputType::SanitizeValue(const String& proposed_value) const {
   String no_line_break_value = proposed_value.RemoveCharacters(IsHTMLLineBreak);
   if (!GetElement().Multiple())
     return StripLeadingAndTrailingHTMLSpaces(no_line_break_value);
-  Vector<String> addresses;
-  no_line_break_value.Split(',', true, addresses);
+  Vector<String> addresses = ParseMultipleValues(no_line_break_value);
   StringBuilder stripped_value;
   for (wtf_size_t i = 0; i < addresses.size(); ++i) {
     if (i > 0)
@@ -287,8 +295,7 @@ String EmailInputType::ConvertFromVisibleValue(
     return ConvertEmailAddressToASCII(
         GetElement().GetDocument().EnsureEmailRegexp(), sanitized_value);
   }
-  Vector<String> addresses;
-  sanitized_value.Split(',', true, addresses);
+  Vector<String> addresses = ParseMultipleValues(sanitized_value);
   StringBuilder builder;
   builder.ReserveCapacity(sanitized_value.length());
   for (wtf_size_t i = 0; i < addresses.size(); ++i) {
@@ -305,8 +312,7 @@ String EmailInputType::VisibleValue() const {
   if (!GetElement().Multiple())
     return ConvertEmailAddressToUnicode(value);
 
-  Vector<String> addresses;
-  value.Split(',', true, addresses);
+  Vector<String> addresses = ParseMultipleValues(value);
   StringBuilder builder;
   builder.ReserveCapacity(value.length());
   for (wtf_size_t i = 0; i < addresses.size(); ++i) {
