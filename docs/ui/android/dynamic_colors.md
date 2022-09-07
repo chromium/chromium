@@ -51,7 +51,7 @@ Color state lists are defined using the `<selector>` tag and are usually used to
 
 ### Surface colors
 
-[Surface colors](https://m3.material.io/styles/color/the-color-system/color-roles#c0cdc1ba-7e67-4d6a-b294-218f659ff648) represent `?attr/colorSurface` at different surface levels or elevation values. These colors are calculated at runtime, so there is no macro or attribute that can be used to retrieve surface colors. For this reason, there are currently 2 ways to calculate surface colors.
+[Surface colors](https://m3.material.io/styles/color/the-color-system/color-roles#c0cdc1ba-7e67-4d6a-b294-218f659ff648) represent `?attr/colorSurface` at different surface levels or elevation values. With the exception of Surface-0 (just route through `?attr/colorSurface`), the rest of the surface colors must be calculated at runtime. This means there is no macro or attribute that can be used to retrieve surface colors. For this reason, there are currently 2 ways to calculate surface colors.
 
 
 #### ChromeColors#getSurfaceColor()
