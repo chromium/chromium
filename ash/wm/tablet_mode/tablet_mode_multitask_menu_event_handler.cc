@@ -8,6 +8,7 @@
 #include "ash/wm/tablet_mode/tablet_mode_multitask_menu.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
+#include "base/bind.h"
 #include "ui/events/event.h"
 #include "ui/events/event_target.h"
 #include "ui/wm/core/coordinate_conversion.h"
@@ -112,8 +113,11 @@ void TabletModeMultitaskMenuEventHandler::OnGestureEvent(
 
 void TabletModeMultitaskMenuEventHandler::ShowMultitaskMenu(
     aura::Window* active_window) {
-  multitask_menu_ =
-      std::make_unique<TabletModeMultitaskMenu>(this, active_window);
+  multitask_menu_ = std::make_unique<TabletModeMultitaskMenu>(
+      this, active_window,
+      base::BindRepeating(
+          &TabletModeMultitaskMenuEventHandler::CloseMultitaskMenu,
+          base::Unretained(this)));
   multitask_menu_->Show();
 }
 

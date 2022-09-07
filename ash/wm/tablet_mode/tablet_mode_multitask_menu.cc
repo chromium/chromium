@@ -10,6 +10,7 @@
 #include "ash/wm/window_state.h"
 #include "base/bind.h"
 #include "base/callback_forward.h"
+#include "base/callback_helpers.h"
 #include "chromeos/ui/frame/multitask_menu/multitask_menu_view.h"
 #include "chromeos/ui/wm/window_util.h"
 #include "ui/aura/window.h"
@@ -94,7 +95,8 @@ END_METADATA
 
 TabletModeMultitaskMenu::TabletModeMultitaskMenu(
     TabletModeMultitaskMenuEventHandler* event_handler,
-    aura::Window* window)
+    aura::Window* window,
+    base::RepeatingClosure hide_menu)
     : event_handler_(event_handler), window_(window) {
   // Start observing the window.
   DCHECK(window);
@@ -111,15 +113,14 @@ TabletModeMultitaskMenu::TabletModeMultitaskMenu(
 
   multitask_menu_widget_->Init(std::move(params));
   auto* view = multitask_menu_widget_->SetContentsView(
-      std::make_unique<TabletModeMultitaskMenuView>(
-          window_,
-          base::BindRepeating(&TabletModeMultitaskMenu::CloseMultitaskMenu,
-                              base::Unretained(this))));
+      std::make_unique<TabletModeMultitaskMenuView>(window_, hide_menu));
   const gfx::Size widget_size = view->GetPreferredSize();
   const gfx::Rect widget_bounds(
       window_->bounds().CenterPoint().x() - widget_size.width() / 2,
       kMultitaskMenuVerticalPadding, widget_size.width(), widget_size.height());
   multitask_menu_widget_->SetBounds(widget_bounds);
+
+  widget_observation_.Observe(multitask_menu_widget_.get());
 }
 
 TabletModeMultitaskMenu::~TabletModeMultitaskMenu() = default;
@@ -132,6 +133,15 @@ void TabletModeMultitaskMenu::OnWindowDestroying(aura::Window* window) {
 
   // Destroys `this`.
   event_handler_->CloseMultitaskMenu();
+}
+
+void TabletModeMultitaskMenu::OnWidgetActivationChanged(views::Widget* widget,
+                                                        bool active) {
+  // `widget` gets deactivated when the window state changes.
+  DCHECK(widget_observation_.IsObservingSource(widget));
+  if (!active) {
+    CloseMultitaskMenu();
+  }
 }
 
 void TabletModeMultitaskMenu::Show() {

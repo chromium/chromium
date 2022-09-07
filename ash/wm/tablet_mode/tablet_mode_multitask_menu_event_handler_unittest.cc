@@ -186,9 +186,7 @@ TEST_F(TabletModeMultitaskMenuEventHandlerTest, HideMultitaskMenuInOverview) {
   EnterOverview();
 
   // Verify that the menu is hidden.
-  EXPECT_FALSE(event_handler->multitask_menu_for_testing()
-                   ->multitask_menu_widget()
-                   ->IsVisible());
+  EXPECT_FALSE(GetMultitaskMenu());
 }
 
 // Tests that the multitask menu gets updated after a button is pressed.
@@ -232,6 +230,20 @@ TEST_F(TabletModeMultitaskMenuEventHandlerTest, ButtonFunctionality) {
                 ->GetBoundsInScreen()
                 .CenterPoint()
                 .x());
+}
+
+// Tests that tap outside the menu will close the menu.
+TEST_F(TabletModeMultitaskMenuEventHandlerTest, CloseMultitaskMenuOnTap) {
+  // Create a display and window that is bigger than the menu.
+  UpdateDisplay("1600x1000");
+  auto window = CreateAppWindow();
+
+  ShowMultitaskMenu(window.get());
+  ASSERT_TRUE(GetMultitaskMenu());
+
+  // Tap outside the menu. Verify that we close the menu.
+  GetEventGenerator()->GestureTapAt(window->GetBoundsInScreen().CenterPoint());
+  EXPECT_FALSE(GetMultitaskMenu());
 }
 
 // Tests that if a window cannot be snapped or floated, the buttons will not be

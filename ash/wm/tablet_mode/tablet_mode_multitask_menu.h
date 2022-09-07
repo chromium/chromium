@@ -10,6 +10,7 @@
 #include "base/scoped_observation.h"
 #include "ui/aura/window.h"
 #include "ui/views/widget/unique_widget_ptr.h"
+#include "ui/views/widget/widget_observer.h"
 
 namespace chromeos {
 class MultitaskMenuView;
@@ -21,10 +22,12 @@ class TabletModeMultitaskMenuEventHandler;
 
 // The container of the multitask menu. Creates and owns the multitask menu
 // widget.
-class ASH_EXPORT TabletModeMultitaskMenu : aura::WindowObserver {
+class ASH_EXPORT TabletModeMultitaskMenu : aura::WindowObserver,
+                                           public views::WidgetObserver {
  public:
   TabletModeMultitaskMenu(TabletModeMultitaskMenuEventHandler* event_handler,
-                          aura::Window* window);
+                          aura::Window* window,
+                          base::RepeatingClosure hide_menu);
 
   TabletModeMultitaskMenu(const TabletModeMultitaskMenu&) = delete;
   TabletModeMultitaskMenu& operator=(const TabletModeMultitaskMenu&) = delete;
@@ -33,6 +36,9 @@ class ASH_EXPORT TabletModeMultitaskMenu : aura::WindowObserver {
 
   // aura::WindowObserver:
   void OnWindowDestroying(aura::Window* window) override;
+
+  // views::WidgetObserver:
+  void OnWidgetActivationChanged(views::Widget* widget, bool active) override;
 
   void Show();
   void CloseMultitaskMenu();
@@ -56,6 +62,9 @@ class ASH_EXPORT TabletModeMultitaskMenu : aura::WindowObserver {
   // Window observer for `window_`.
   base::ScopedObservation<aura::Window, aura::WindowObserver> observed_window_{
       this};
+
+  base::ScopedObservation<views::Widget, views::WidgetObserver>
+      widget_observation_{this};
 
   views::UniqueWidgetPtr multitask_menu_widget_ =
       std::make_unique<views::Widget>();
