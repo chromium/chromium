@@ -113,13 +113,7 @@ class CORE_EXPORT NGFlexLayoutAlgorithm
       LayoutUnit block_offset,
       absl::optional<LayoutUnit>* fallback_baseline);
 
-  class FlexFractionParts;
-  std::tuple<NGFlexLayoutAlgorithm::FlexFractionParts,
-             NGFlexLayoutAlgorithm::FlexFractionParts,
-             bool>
-  FindLargestFractions() const;
-
-  MinMaxSizesResult ComputeMinMaxSizeOfSingleLineRowContainer();
+  MinMaxSizesResult ComputeMinMaxSizeOfRowContainer();
   MinMaxSizesResult ComputeMinMaxSizeOfMultilineColumnContainer();
   // This implements 9.9.3. Flex Item Intrinsic Size Contributions, from
   // https://drafts.csswg.org/css-flexbox/#intrinsic-item-contributions.
