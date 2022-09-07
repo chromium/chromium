@@ -306,6 +306,7 @@ public class ContentTextSelectionTest {
     @Test
     @SmallTest
     @Feature({"TextInput"})
+    @DisabledTest(message = "https://crbug.com/1360509")
     public void testPastePopupCanSelectAllNonEmptyInput() throws Throwable {
         // Clipboard has to be non-empty for this test to work on SDK < M.
         copyStringToClipboard("SampleTextToCopy");
