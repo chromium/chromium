@@ -96,8 +96,10 @@ export enum PasswordViewPageInteractions {
   PASSWORD_EDIT_BUTTON_CLICKED = 6,
   PASSWORD_DELETE_BUTTON_CLICKED = 7,
   CREDENTIAL_EDITED = 8,
+  TIMED_OUT_IN_EDIT_DIALOG = 9,
+  TIMED_OUT_IN_VIEW_PAGE = 10,
   // Must be last.
-  COUNT = 9,
+  COUNT = 11,
 }
 
 export class PasswordViewElement extends PasswordViewElementBase {
@@ -156,11 +158,17 @@ export class PasswordViewElement extends PasswordViewElementBase {
     super.connectedCallback();
 
     this.passwordManagerAuthTimeoutListener_ = () => {
-      if (Router.getInstance().getCurrentRoute() === routes.PASSWORD_VIEW) {
-        const params = new URLSearchParams();
-        params.set(PASSWORD_MANAGER_AUTH_TIMEOUT_PARAM, 'true');
-        Router.getInstance().navigateTo(routes.PASSWORDS, params);
+      if (Router.getInstance().getCurrentRoute() !== routes.PASSWORD_VIEW) {
+        return;
       }
+      recordPasswordViewInteraction(
+          this.showEditDialog_ ?
+              PasswordViewPageInteractions.TIMED_OUT_IN_EDIT_DIALOG :
+              PasswordViewPageInteractions.TIMED_OUT_IN_VIEW_PAGE);
+
+      const params = new URLSearchParams();
+      params.set(PASSWORD_MANAGER_AUTH_TIMEOUT_PARAM, 'true');
+      Router.getInstance().navigateTo(routes.PASSWORDS, params);
     };
 
     PasswordManagerImpl.getInstance().addPasswordManagerAuthTimeoutListener(

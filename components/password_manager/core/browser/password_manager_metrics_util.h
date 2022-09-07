@@ -616,7 +616,13 @@ enum class PasswordViewPageInteractions {
   // The credential's username, password or note is edited in settings password
   // view page.
   kCredentialEdited = 8,
-  kMaxValue = kCredentialEdited,
+  // The password view page is closed while the edit dialog is open after
+  // an authentication timeout.
+  kTimedOutInEditDialog = 9,
+  // The password view page is closed while the edit dialog is closed after
+  // an authentication timeout.
+  kTimedOutInViewPage = 10,
+  kMaxValue = kTimedOutInViewPage,
 };
 
 std::string GetPasswordAccountStorageUsageLevelHistogramSuffix(
