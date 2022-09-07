@@ -49,19 +49,26 @@ def _git_log(git_log_args):
   return ret
 
 
-def _query_size(review_url):
-  cmd = ['bb', 'ls', '-json', '-p']
+def _query_size(review_url, internal):
   change_num = posixpath.basename(review_url)
+  if internal:
+    project = 'chrome'
+    builder = 'android-internal-binary-size'
+  else:
+    project = 'chromium'
+    builder = 'android-binary-size'
+
+  cmd = ['bb', 'ls', '-json', '-p']
   # Request results for all patchsets, assuming fewer than 30.
   for patchset in range(1, 30):
     cmd += [
         '-predicate',
         """{
-"builder":{"project":"chromium","bucket":"try","builder":"android-binary-size"},
+"builder":{"project":"%s","bucket":"try","builder":"%s"},
 "gerrit_changes":[{
     "host":"chromium-review.googlesource.com","project":"chromium/src",
     "change":"%s","patchset":"%d"}
-]}""" % (change_num, patchset)
+]}""" % (project, builder, change_num, patchset)
     ]
   result = subprocess.run(cmd,
                           check=False,
@@ -89,6 +96,9 @@ def _query_size(review_url):
 def main():
   parser = argparse.ArgumentParser(description=__doc__)
   parser.add_argument('--csv', action='store_true', help='Print as CSV')
+  parser.add_argument('--internal',
+                      action='store_true',
+                      help='Query android-internal-binary-size (Googlers only)')
   args, git_log_args = parser.parse_known_args()
 
   # Ensure user has authenticated.
@@ -113,7 +123,10 @@ def main():
 
   print_func(('Commit #', 'Git Hash', 'Size', 'Date', 'Subject'))
   with concurrent.futures.ThreadPoolExecutor(max_workers=20) as pool:
-    sizes = [pool.submit(_query_size, info.review_url) for info in commit_infos]
+    sizes = [
+        pool.submit(_query_size, info.review_url, args.internal)
+        for info in commit_infos
+    ]
     for info, size in zip(commit_infos, sizes):
       size_str = size.result().replace(' bytes', '').lstrip('+')
       print_func((info.cr_position, info.git_hash[:12], size_str, info.date,
