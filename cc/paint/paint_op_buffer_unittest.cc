@@ -42,13 +42,14 @@
 #include "third_party/skia/include/private/chromium/SkChromeRemoteGlyphCache.h"
 #include "ui/gfx/geometry/test/geometry_util.h"
 
-using testing::_;
-using testing::AtLeast;
-using testing::Contains;
-using testing::Key;
-using testing::Mock;
-using testing::NiceMock;
-using testing::NotNull;
+using ::testing::_;
+using ::testing::AtLeast;
+using ::testing::Contains;
+using ::testing::ElementsAre;
+using ::testing::Key;
+using ::testing::Mock;
+using ::testing::NiceMock;
+using ::testing::NotNull;
 
 namespace cc {
 namespace {
@@ -4248,6 +4249,39 @@ TEST(PaintOpBufferTest, PathCaching) {
   SkPath cached_path;
   EXPECT_TRUE(options_provider.service_paint_cache()->GetPath(
       path.getGenerationID(), &cached_path));
+}
+
+TEST(IteratorTest, IterationTest) {
+  PaintOpBuffer buffer;
+  buffer.push<SaveOp>();
+  buffer.push<RestoreOp>();
+  EXPECT_THAT(PaintOpBuffer::Iterator(&buffer),
+              ElementsAre(SaveOp(), RestoreOp()));
+}
+
+TEST(IteratorTest, OffsetIterationTest) {
+  PaintOpBuffer buffer;
+  const PaintOp& op1 = buffer.push<SaveOp>();
+  const PaintOp& op2 = buffer.push<RestoreOp>();
+  const PaintOp& op3 = buffer.push<NoopOp>();
+
+  std::vector<size_t> offsets = {0, static_cast<size_t>(op1.skip + op2.skip)};
+  EXPECT_THAT(PaintOpBuffer::OffsetIterator(&buffer, &offsets),
+              ElementsAre(op1, op3));
+}
+
+TEST(IteratorTest, CompositeIterationTest) {
+  PaintOpBuffer buffer;
+  const PaintOp& op1 = buffer.push<SaveOp>();
+  const PaintOp& op2 = buffer.push<RestoreOp>();
+  const PaintOp& op3 = buffer.push<NoopOp>();
+  std::vector<size_t> offsets = {0, static_cast<size_t>(op1.skip + op2.skip)};
+
+  EXPECT_THAT(PaintOpBuffer::CompositeIterator(&buffer, /*offsets=*/nullptr),
+              ElementsAre(op1, op2, op3));
+
+  EXPECT_THAT(PaintOpBuffer::CompositeIterator(&buffer, &offsets),
+              ElementsAre(op1, op3));
 }
 
 }  // namespace cc

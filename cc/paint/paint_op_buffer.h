@@ -1249,14 +1249,15 @@ class CC_PAINT_EXPORT PaintOpBuffer : public SkRefCnt {
 
   class CC_PAINT_EXPORT Iterator {
    public:
+    using value_type = PaintOp;
     explicit Iterator(const PaintOpBuffer* buffer)
         : Iterator(buffer, buffer->data_.get(), 0u) {}
 
     PaintOp* get() const { return reinterpret_cast<PaintOp*>(ptr_); }
     PaintOp* operator->() const { return get(); }
     PaintOp& operator*() const { return *get(); }
-    Iterator begin() { return Iterator(buffer_); }
-    Iterator end() {
+    Iterator begin() const { return Iterator(buffer_); }
+    Iterator end() const {
       return Iterator(buffer_, buffer_->data_.get() + buffer_->used_,
                       buffer_->used_);
     }
@@ -1292,6 +1293,7 @@ class CC_PAINT_EXPORT PaintOpBuffer : public SkRefCnt {
 
   class CC_PAINT_EXPORT OffsetIterator {
    public:
+    using value_type = PaintOp;
     // Offsets and paint op buffer must come from the same DisplayItemList.
     OffsetIterator(const PaintOpBuffer* buffer,
                    const std::vector<size_t>* offsets)
@@ -1308,8 +1310,8 @@ class CC_PAINT_EXPORT PaintOpBuffer : public SkRefCnt {
     PaintOp* get() const { return reinterpret_cast<PaintOp*>(ptr_); }
     PaintOp* operator->() const { return get(); }
     PaintOp& operator*() const { return *get(); }
-    OffsetIterator begin() { return OffsetIterator(buffer_, offsets_); }
-    OffsetIterator end() {
+    OffsetIterator begin() const { return OffsetIterator(buffer_, offsets_); }
+    OffsetIterator end() const {
       return OffsetIterator(buffer_, buffer_->data_.get() + buffer_->used_,
                             buffer_->used_, offsets_);
     }
@@ -1364,6 +1366,7 @@ class CC_PAINT_EXPORT PaintOpBuffer : public SkRefCnt {
 
   class CC_PAINT_EXPORT CompositeIterator {
    public:
+    using value_type = PaintOp;
     // Offsets and paint op buffer must come from the same DisplayItemList.
     CompositeIterator(const PaintOpBuffer* buffer,
                       const std::vector<size_t>* offsets);
@@ -1375,6 +1378,14 @@ class CC_PAINT_EXPORT PaintOpBuffer : public SkRefCnt {
     }
     PaintOp* operator->() const { return get(); }
     PaintOp& operator*() const { return *get(); }
+    CompositeIterator begin() const {
+      return using_offsets_ ? CompositeIterator(offset_iter_->begin())
+                            : CompositeIterator(iter_->begin());
+    }
+    CompositeIterator end() const {
+      return using_offsets_ ? CompositeIterator(offset_iter_->end())
+                            : CompositeIterator(iter_->end());
+    }
     bool operator==(const CompositeIterator& other) {
       if (using_offsets_ != other.using_offsets_)
         return false;
@@ -1396,6 +1407,10 @@ class CC_PAINT_EXPORT PaintOpBuffer : public SkRefCnt {
     }
 
    private:
+    explicit CompositeIterator(OffsetIterator offset_iter)
+        : using_offsets_(true), offset_iter_(std::move(offset_iter)) {}
+    explicit CompositeIterator(Iterator iter) : iter_(std::move(iter)) {}
+
     bool using_offsets_ = false;
     absl::optional<OffsetIterator> offset_iter_;
     absl::optional<Iterator> iter_;
