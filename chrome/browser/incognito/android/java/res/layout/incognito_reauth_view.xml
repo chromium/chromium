@@ -56,9 +56,11 @@
         <org.chromium.ui.widget.ButtonCompat
             android:id="@+id/incognito_reauth_unlock_incognito_button"
             style="@style/FilledButton.Flat"
+            android:backgroundTint="@color/filled_button_bg_color_light"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/incognito_reauth_page_unlock_incognito_button_label" />
+            android:text="@string/incognito_reauth_page_unlock_incognito_button_label"
+            app:buttonTextColor="@color/default_text_color_on_accent1_dark" />
 
         <org.chromium.ui.widget.ButtonCompat
             android:id="@+id/incognito_reauth_see_other_tabs_label"
