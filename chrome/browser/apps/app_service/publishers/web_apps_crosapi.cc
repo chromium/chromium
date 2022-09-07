@@ -23,6 +23,7 @@
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/services/app_service/public/cpp/crosapi_utils.h"
+#include "components/services/app_service/public/cpp/features.h"
 #include "components/services/app_service/public/cpp/instance_registry.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "extensions/common/constants.h"
@@ -454,8 +455,16 @@ void WebAppsCrosapi::RegisterAppController(
 
 void WebAppsCrosapi::OnCapabilityAccesses(
     std::vector<CapabilityAccessPtr> deltas) {
-  if (!web_app::IsWebAppsCrosapiEnabled())
+  if (!web_app::IsWebAppsCrosapiEnabled()) {
     return;
+  }
+
+  if (base::FeatureList::IsEnabled(
+          apps::kAppServiceCapabilityAccessWithoutMojom)) {
+    proxy()->OnCapabilityAccesses(std::move(deltas));
+    return;
+  }
+
   for (auto& subscriber : subscribers_) {
     subscriber->OnCapabilityAccesses(
         apps::ConvertCapabilityAccessesToMojomCapabilityAccesses(deltas));
