@@ -134,6 +134,10 @@ class NetworkListNetworkItemViewTest : public AshTestBase {
     EXPECT_EQ(base::UTF8ToUTF16(a11ydescription), description);
   }
 
+  void NetworkIconChanged() {
+    network_list_network_item_view()->NetworkIconChanged();
+  }
+
   NetworkListNetworkItemView* network_list_network_item_view() {
     return network_list_network_item_view_;
   }
@@ -657,6 +661,36 @@ TEST_F(NetworkListNetworkItemViewTest, HasExpectedDescriptionForWiFi) {
       }
     }
   }
+}
+
+TEST_F(NetworkListNetworkItemViewTest, NetworkIconAnimating) {
+  NetworkStatePropertiesPtr wifi_network = CreateStandaloneNetworkProperties(
+      kWiFiName, NetworkType::kWiFi, ConnectionStateType::kConnecting);
+
+  UpdateViewForNetwork(wifi_network);
+
+  EXPECT_FALSE(static_cast<views::ImageView*>(
+                   network_list_network_item_view()->left_view())
+                   ->GetImage()
+                   .isNull());
+
+  // Override current icon with an empty icon, check it is updated when
+  // animation starts.
+  static_cast<views::ImageView*>(network_list_network_item_view()->left_view())
+      ->SetImage(gfx::ImageSkia());
+
+  EXPECT_TRUE(static_cast<views::ImageView*>(
+                  network_list_network_item_view()->left_view())
+                  ->GetImage()
+                  .isNull());
+
+  // Simulate icon animation observer being called.
+  NetworkIconChanged();
+
+  EXPECT_FALSE(static_cast<views::ImageView*>(
+                   network_list_network_item_view()->left_view())
+                   ->GetImage()
+                   .isNull());
 }
 
 }  // namespace ash
