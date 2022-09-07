@@ -15,7 +15,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/autofill_assistant/password_change/assistant_onboarding_controller.h"
 #include "chrome/browser/ui/autofill_assistant/password_change/assistant_onboarding_prompt.h"
-#include "chrome/common/pref_names.h"
+#include "components/autofill_assistant/browser/public/prefs.h"
 #include "components/consent_auditor/consent_auditor.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/consent_level.h"
@@ -67,7 +67,8 @@ void ApcOnboardingCoordinatorImpl::PerformOnboarding(Callback callback) {
 void ApcOnboardingCoordinatorImpl::RevokeConsent(
     const std::vector<int>& description_grd_ids) {
   sync_pb::UserConsentTypes::AutofillAssistantConsent consent;
-  GetPrefs()->SetBoolean(prefs::kAutofillAssistantOnDesktopConsent, false);
+  GetPrefs()->SetBoolean(autofill_assistant::prefs::kAutofillAssistantConsent,
+                         false);
   consent.set_status(sync_pb::UserConsentTypes::ConsentStatus::
                          UserConsentTypes_ConsentStatus_NOT_GIVEN);
   consent.mutable_description_grd_ids()->Assign(description_grd_ids.cbegin(),
@@ -89,7 +90,8 @@ ApcOnboardingCoordinatorImpl::CreateOnboardingPrompt(
 }
 
 bool ApcOnboardingCoordinatorImpl::IsOnboardingAlreadyAccepted() {
-  return GetPrefs()->GetBoolean(prefs::kAutofillAssistantOnDesktopConsent);
+  return GetPrefs()->GetBoolean(
+      autofill_assistant::prefs::kAutofillAssistantConsent);
 }
 
 void ApcOnboardingCoordinatorImpl::OpenOnboardingDialog() {
@@ -110,7 +112,8 @@ void ApcOnboardingCoordinatorImpl::OnControllerResponseReceived(
     absl::optional<int> confirmation_grd_id,
     const std::vector<int>& description_grd_ids) {
   if (success) {
-    GetPrefs()->SetBoolean(prefs::kAutofillAssistantOnDesktopConsent, true);
+    GetPrefs()->SetBoolean(autofill_assistant::prefs::kAutofillAssistantConsent,
+                           true);
     CHECK(confirmation_grd_id.has_value());
     RecordConsentGiven(confirmation_grd_id.value(), description_grd_ids);
   }
