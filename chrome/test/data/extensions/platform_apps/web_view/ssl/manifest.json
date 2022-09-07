@@ -1,7 +1,7 @@
 {
-  "name": "<webview> interstitial page check.",
+  "name": "<webview> SSL error page check.",
   "manifest_version": 2,
-  "description": "Check teardown path of guest while interstitial page is shown",
+  "description": "Check <webview>'s behavior when a SSL error is encountered in the guest.",
   "version": "1",
   "permissions": [
     "webview"

@@ -125,6 +125,7 @@
 #include "ui/display/display_switches.h"
 #include "ui/events/gesture_detection/gesture_configuration.h"
 #include "ui/gfx/geometry/point.h"
+#include "url/url_constants.h"
 
 #if defined(USE_AURA)
 #include "ui/aura/env.h"
@@ -712,46 +713,6 @@ class WebViewTestBase : public extensions::PlatformAppBrowserTest {
                            "}",
                            test_name.c_str()));
     ASSERT_TRUE(done_listener.WaitUntilSatisfied());
-  }
-
-  // Helper to load interstitial page in a <webview>.
-  void InterstitialTestHelper() {
-    // Start a HTTPS server so we can load an interstitial page inside guest.
-    net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
-    https_server.SetSSLConfig(net::EmbeddedTestServer::CERT_MISMATCHED_NAME);
-    https_server.ServeFilesFromSourceDirectory(GetChromeTestDataDir());
-    ASSERT_TRUE(https_server.Start());
-
-    net::HostPortPair host_and_port = https_server.host_port_pair();
-
-    LoadAndLaunchPlatformApp("web_view/interstitial_teardown",
-                             "EmbedderLoaded");
-
-    // Create the guest.
-    content::WebContents* embedder_web_contents =
-        GetFirstAppWindowWebContents();
-    ExtensionTestMessageListener guest_added("GuestAddedToDom");
-    EXPECT_TRUE(content::ExecuteScript(embedder_web_contents,
-                                       base::StringPrintf("createGuest();\n")));
-    ASSERT_TRUE(guest_added.WaitUntilSatisfied());
-
-    // Now load the guest.
-    ExtensionTestMessageListener guest_loaded("GuestLoaded");
-    EXPECT_TRUE(content::ExecuteScript(
-        embedder_web_contents,
-        base::StringPrintf("loadGuest(%d);\n", host_and_port.port())));
-    ASSERT_TRUE(guest_loaded.WaitUntilSatisfied());
-
-    // Wait for interstitial page to be shown in guest.
-    auto* guest_rfh =
-        GetGuestViewManager()->WaitForSingleGuestRenderFrameHostCreated();
-    ASSERT_TRUE(guest_rfh->GetProcess()->IsForGuestsOnly());
-    GURL target_url = https_server.GetURL(
-        "/extensions/platform_apps/web_view/interstitial_teardown/"
-        "https_page.html");
-    content::TestNavigationObserver observer(target_url);
-    observer.WatchExistingWebContents();
-    observer.WaitForNavigationFinished();
   }
 
   // Runs media_access/allow tests.
@@ -2144,104 +2105,178 @@ IN_PROC_BROWSER_TEST_P(WebViewSizeTest, Shim_TestResizeWebviewResizesContent) {
              NO_TEST_SERVER);
 }
 
-// Test makes sure that interstitial pages renders in <webview>.
+class WebViewSSLErrorTest : public WebViewTest {
+ public:
+  WebViewSSLErrorTest() = default;
+  ~WebViewSSLErrorTest() override = default;
+
+  // Loads the guest at "web_view/ssl/https_page.html" with an SSL error, and
+  // asserts the security interstitial is not displayed for guest through the
+  // embedder's WebContents.
+  void SSLTestHelper() {
+    // Starts a HTTPS server so we can load a page with a SSL error inside
+    // guest.
+    net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
+    https_server.SetSSLConfig(net::EmbeddedTestServer::CERT_MISMATCHED_NAME);
+    https_server.ServeFilesFromSourceDirectory(GetChromeTestDataDir());
+    ASSERT_TRUE(https_server.Start());
+
+    LoadAndLaunchPlatformApp("web_view/ssl", "EmbedderLoaded");
+
+    LoadEmptyGuest();
+
+    const auto target_url = https_server.GetURL(
+        "/extensions/platform_apps/web_view/ssl/https_page.html");
+    SetGuestURL(target_url, /*expect_successful_navigation=*/false);
+
+    // Guest's `target_url` is served by an HTTP server with a cert error.
+    // A security error within a guest should not cause an interstitial to be
+    // shown in the embedder.
+    ASSERT_FALSE(IsShowingInterstitial(GetFirstAppWindowWebContents()));
+  }
+
+  void LoadEmptyGuest() {
+    // Creates the guest, and asserts its successful creation.
+    content::WebContents* embedder_web_contents =
+        GetFirstAppWindowWebContents();
+    ExtensionTestMessageListener guest_added("GuestAddedToDom");
+    EXPECT_TRUE(
+        content::ExecuteScript(embedder_web_contents, "createGuest();"));
+    ASSERT_TRUE(guest_added.WaitUntilSatisfied());
+    auto* guest_main_frame =
+        GetGuestViewManager()->WaitForSingleGuestRenderFrameHostCreated();
+    ASSERT_TRUE(guest_main_frame->GetProcess()->IsForGuestsOnly());
+  }
+
+  // Loads the `guest_url` by settings the `src` of the guest. This helper
+  // assumes the app is loaded, and assumes the app already has a guest created.
+  void SetGuestURL(const GURL& guest_url, bool expect_successful_navigation) {
+    auto* embedder_web_contents = GetFirstAppWindowWebContents();
+    ASSERT_TRUE(embedder_web_contents);
+    auto* guest_main_frame =
+        GetGuestViewManager()->GetLastGuestRenderFrameHostCreated();
+    ASSERT_TRUE(guest_main_frame);
+
+    content::TestFrameNavigationObserver guest_navi_obs(guest_main_frame);
+    ASSERT_TRUE(content::ExecuteScript(
+        embedder_web_contents,
+        content::JsReplace("loadGuestUrl($1);", guest_url)));
+    guest_navi_obs.Wait();
+
+    // Do not dereference `guest_main_frame` beyond here as it can be destroyed
+    // at this point.
+
+    ASSERT_EQ(guest_navi_obs.last_navigation_succeeded(),
+              expect_successful_navigation);
+    if (expect_successful_navigation) {
+      ASSERT_EQ(guest_navi_obs.last_net_error_code(), net::Error::OK);
+      ASSERT_EQ(guest_navi_obs.last_committed_url(), guest_url);
+    } else {
+      // `https_server` in `WebViewSSLErrorTest::SSLTestHelper` is configured
+      // with `CERT_MISMATCHED_NAME`.
+      ASSERT_EQ(guest_navi_obs.last_net_error_code(),
+                net::Error::ERR_CERT_COMMON_NAME_INVALID);
+      // `TestFrameNavigationObserver`'s `last_committed_url_` is only set if
+      // the navigation does not result in an error page.
+      ASSERT_EQ(guest_navi_obs.last_committed_url(), GURL());
+    }
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(WebViewSSLErrorTests,
+                         WebViewSSLErrorTest,
+                         testing::Bool(),
+                         WebViewTest::DescribeParams);
+
+// Test makes sure that an error document is shown in `<webview>` with an SSL
+// error.
 // Flaky on Win dbg: crbug.com/779973
 #if BUILDFLAG(IS_WIN) && !defined(NDEBUG)
-#define MAYBE_InterstitialPage DISABLED_InterstitialPage
+#define MAYBE_ShowErrorDocForSSLError DISABLED_ShowErrorDocForSSLError
 #else
-#define MAYBE_InterstitialPage InterstitialPage
+#define MAYBE_ShowErrorDocForSSLError ShowErrorDocForSSLError
 #endif
-
-IN_PROC_BROWSER_TEST_P(WebViewTest, MAYBE_InterstitialPage) {
-  // This test tests that a inner WebContents' InterstitialPage is properly
-  // connected to an outer WebContents through a CrossProcessFrameConnector.
-
-  InterstitialTestHelper();
-
-  content::WebContents* guest_web_contents =
-      GetGuestViewManager()->DeprecatedWaitForSingleGuestCreated();
-  EXPECT_TRUE(IsShowingInterstitial(guest_web_contents));
+IN_PROC_BROWSER_TEST_P(WebViewSSLErrorTest, MAYBE_ShowErrorDocForSSLError) {
+  SSLTestHelper();
+  ASSERT_TRUE(GetGuestViewManager()
+                  ->GetLastGuestRenderFrameHostCreated()
+                  ->IsErrorDocument());
 }
 
-// Test makes sure that interstitial pages are registered in the
-// RenderWidgetHostInputEventRouter when inside a <webview>.
+// Test makes sure that the error document is registered in the
+// `RenderWidgetHostInputEventRouter` when inside a `<webview>`.
 // Flaky on Win dbg: crbug.com/779973
 #if BUILDFLAG(IS_WIN) && !defined(NDEBUG)
-#define MAYBE_InterstitialPageRouteEvents DISABLED_InterstitialPageRouteEvents
+#define MAYBE_ErrorPageRouteEvents DISABLED_ErrorPageRouteEvents
 #else
-#define MAYBE_InterstitialPageRouteEvents InterstitialPageRouteEvents
+#define MAYBE_ErrorPageRouteEvents ErrorPageRouteEvents
 #endif
-
-IN_PROC_BROWSER_TEST_P(WebViewTest, MAYBE_InterstitialPageRouteEvents) {
-  // This test tests that a inner WebContents' InterstitialPage is properly
-  // connected to an outer WebContents through a CrossProcessFrameConnector.
-
-  InterstitialTestHelper();
-
-  content::WebContents* web_contents = GetFirstAppWindowWebContents();
+IN_PROC_BROWSER_TEST_P(WebViewSSLErrorTest, MAYBE_ErrorPageRouteEvents) {
+  SSLTestHelper();
 
   std::vector<content::RenderWidgetHostView*> hosts =
-      content::GetInputEventRouterRenderWidgetHostViews(web_contents);
+      content::GetInputEventRouterRenderWidgetHostViews(
+          GetFirstAppWindowWebContents());
 
-  EXPECT_TRUE(
-      base::Contains(hosts, web_contents->GetPrimaryMainFrame()->GetView()));
+  ASSERT_TRUE(base::Contains(
+      hosts, GetFirstAppWindowWebContents()->GetPrimaryMainFrame()->GetView()));
+
+  auto* guest_main_frame =
+      GetGuestViewManager()->GetLastGuestRenderFrameHostCreated();
+  ASSERT_TRUE(guest_main_frame);
+  ASSERT_TRUE(base::Contains(hosts, guest_main_frame->GetView()));
 }
 
-// Test makes sure that the browser does not crash when a <webview> navigates
-// out of an interstitial.
+// Test makes sure that the browser does not crash when a `<webview>` navigates
+// out of an error page caused by a SSL error.
 // Flaky on Win dbg: crbug.com/779973
 #if BUILDFLAG(IS_WIN) && !defined(NDEBUG)
-#define MAYBE_InterstitialPageDetach DISABLED_InterstitialPageDetach
+#define MAYBE_ErrorPageDetach DISABLED_ErrorPageDetach
 #else
-#define MAYBE_InterstitialPageDetach InterstitialPageDetach
+#define MAYBE_ErrorPageDetach ErrorPageDetach
 #endif
+IN_PROC_BROWSER_TEST_P(WebViewSSLErrorTest, MAYBE_ErrorPageDetach) {
+  SSLTestHelper();
 
-IN_PROC_BROWSER_TEST_P(WebViewTest, MAYBE_InterstitialPageDetach) {
-  InterstitialTestHelper();
+  auto* guest_main_frame =
+      GetGuestViewManager()->GetLastGuestRenderFrameHostCreated();
+  ASSERT_TRUE(guest_main_frame->IsErrorDocument());
 
-  content::WebContents* guest_web_contents =
-      GetGuestViewManager()->DeprecatedWaitForSingleGuestCreated();
-  EXPECT_TRUE(IsShowingInterstitial(guest_web_contents));
-
-  // Navigate to about:blank.
-  content::TestNavigationObserver load_observer(guest_web_contents);
-  auto* embedder_web_contents = GetFirstAppWindowWebContents();
-  EXPECT_TRUE(content::ExecuteScript(embedder_web_contents,
-                                     "loadGuestUrl('about:blank');"));
-  load_observer.Wait();
+  // Navigate to about:blank
+  const GURL blank(url::kAboutBlankURL);
+  SetGuestURL(blank, /*expect_successful_navigation=*/true);
 }
 
 // This test makes sure the browser process does not crash if app is closed
-// while an interstitial page is being shown in guest.
+// while an error page is being shown in guest.
 // Flaky on Win dbg: crbug.com/779973
 #if BUILDFLAG(IS_WIN) && !defined(NDEBUG)
-#define MAYBE_InterstitialTeardown DISABLED_InterstitialTeardown
+#define MAYBE_ErrorPageTearDown DISABLED_ErrorPageTearDown
 #else
-#define MAYBE_InterstitialTeardown InterstitialTeardown
+#define MAYBE_ErrorPageTearDown ErrorPageTearDown
 #endif
+IN_PROC_BROWSER_TEST_P(WebViewSSLErrorTest, MAYBE_ErrorPageTearDown) {
+  SSLTestHelper();
 
-IN_PROC_BROWSER_TEST_P(WebViewTest, MAYBE_InterstitialTeardown) {
-  InterstitialTestHelper();
-
-  // Now close the app while interstitial page being shown in guest.
+  // Now close the app while error page being shown in guest.
   extensions::AppWindow* window = GetFirstAppWindow();
   window->GetBaseWindow()->Close();
 }
 
 // This test makes sure the browser process does not crash if browser is shut
-// down while an interstitial page is being shown in guest.
+// down while an error page is being shown in guest.
 // Flaky. http://crbug.com/627962.
-IN_PROC_BROWSER_TEST_P(WebViewTest,
-                       DISABLED_InterstitialTeardownOnBrowserShutdown) {
-  InterstitialTestHelper();
+IN_PROC_BROWSER_TEST_P(WebViewSSLErrorTest,
+                       DISABLED_ErrorPageTearDownOnBrowserShutdown) {
+  SSLTestHelper();
 
-  // Now close the app while interstitial page being shown in guest.
+  // Now close the app while error page being shown in guest.
   extensions::AppWindow* window = GetFirstAppWindow();
   window->GetBaseWindow()->Close();
 
-  // InterstitialPage is not destroyed immediately, so the
-  // RenderWidgetHostViewGuest for it is still there, closing all
-  // renderer processes will cause the RWHVGuest's RenderProcessGone()
+  // The error page is not destroyed immediately, so the
+  // `RenderWidgetHostViewChildFrame` for it is still there, closing all
+  // renderer processes will cause the RWHVGuest's `RenderProcessGone()`
   // shutdown path to be exercised.
   chrome::CloseAllBrowsers();
 }
@@ -2304,39 +2339,12 @@ IN_PROC_BROWSER_TEST_P(WebViewSafeBrowsingTest,
   TestHelper("testLoadAbortSafeBrowsing", "web_view/shim", NO_TEST_SERVER);
 }
 
-class WebViewHttpsFirstModeTest : public WebViewTest {
+class WebViewHttpsFirstModeTest : public WebViewSSLErrorTest {
  public:
   WebViewHttpsFirstModeTest() {
     feature_list_.InitAndEnableFeature(features::kHttpsOnlyMode);
   }
-
   ~WebViewHttpsFirstModeTest() override = default;
-
-  void LoadUrlInGuest(const GURL& guest_url) {
-    // Create the guest.
-    auto* embedder_web_contents = GetFirstAppWindowWebContents();
-    ExtensionTestMessageListener guest_added("GuestAddedToDom");
-    EXPECT_TRUE(content::ExecuteScript(embedder_web_contents,
-                                       base::StringPrintf("createGuest();\n")));
-    ASSERT_TRUE(guest_added.WaitUntilSatisfied());
-
-    // Now load the guest.
-    content::TestNavigationObserver observer(guest_url);
-    ExtensionTestMessageListener guest_loaded("GuestLoaded");
-    std::string command =
-        base::StringPrintf("loadGuestUrl('%s');\n", guest_url.spec().c_str());
-    EXPECT_TRUE(content::ExecuteScript(embedder_web_contents, command));
-    ASSERT_TRUE(guest_loaded.WaitUntilSatisfied());
-
-    // Wait for guest navigation to complete.
-    auto* guest_web_contents =
-        GetGuestViewManager()->DeprecatedWaitForSingleGuestCreated();
-    ASSERT_TRUE(guest_web_contents->GetPrimaryMainFrame()
-                    ->GetProcess()
-                    ->IsForGuestsOnly());
-    observer.WatchExistingWebContents();
-    observer.WaitForNavigationFinished();
-  }
 
  private:
   base::test::ScopedFeatureList feature_list_;
@@ -2348,7 +2356,7 @@ INSTANTIATE_TEST_SUITE_P(WebViewTests,
                          WebViewTest::DescribeParams);
 
 // Tests that loading an HTTPS page in a guest <webview> with HTTPS-First Mode
-// enabled doesn't crash and doesn't trigger the interstitial.
+// enabled doesn't crash nor shows error page.
 // Regression test for crbug.com/1233889
 IN_PROC_BROWSER_TEST_P(WebViewHttpsFirstModeTest, GuestLoadsHttpsWithoutError) {
   browser()->profile()->GetPrefs()->SetBoolean(prefs::kHttpsOnlyModeEnabled,
@@ -2358,35 +2366,42 @@ IN_PROC_BROWSER_TEST_P(WebViewHttpsFirstModeTest, GuestLoadsHttpsWithoutError) {
   https_server.ServeFilesFromSourceDirectory(GetChromeTestDataDir());
   ASSERT_TRUE(https_server.Start());
   GURL guest_url = https_server.GetURL("/simple.html");
-  LoadAndLaunchPlatformApp("web_view/interstitial_teardown", "EmbedderLoaded");
-  LoadUrlInGuest(guest_url);
+  LoadAndLaunchPlatformApp("web_view/ssl", "EmbedderLoaded");
+  LoadEmptyGuest();
+  SetGuestURL(guest_url, /*expect_successful_navigation=*/true);
 
-  // Page should load without any interstitial (and no crashing).
-  auto* embedder_web_contents = GetFirstAppWindowWebContents();
-  auto* guest_web_contents =
-      GetGuestViewManager()->DeprecatedWaitForSingleGuestCreated();
-  EXPECT_FALSE(IsShowingInterstitial(guest_web_contents));
-  EXPECT_FALSE(IsShowingInterstitial(embedder_web_contents));
+  // Page should load without any error / crash.
+  auto* embedder_main_frame =
+      GetFirstAppWindowWebContents()->GetPrimaryMainFrame();
+  auto* guest_main_frame =
+      GetGuestViewManager()->GetLastGuestRenderFrameHostCreated();
+
+  ASSERT_FALSE(guest_main_frame->IsErrorDocument());
+  ASSERT_FALSE(embedder_main_frame->IsErrorDocument());
+  ASSERT_FALSE(IsShowingInterstitial(GetFirstAppWindowWebContents()));
 }
 
 // Tests that loading an HTTP page in a guest <webview> with HTTPS-First Mode
-// enabled doesn't crash and doesn't trigger the interstitial.
-// Regression test for crbug.com/1233889
+// enabled doesn't crash and doesn't trigger the error page.
 IN_PROC_BROWSER_TEST_P(WebViewHttpsFirstModeTest, GuestLoadsHttpWithoutError) {
   browser()->profile()->GetPrefs()->SetBoolean(prefs::kHttpsOnlyModeEnabled,
                                                true);
 
   ASSERT_TRUE(StartEmbeddedTestServer());
   GURL guest_url = embedded_test_server()->GetURL("/simple.html");
-  LoadAndLaunchPlatformApp("web_view/interstitial_teardown", "EmbedderLoaded");
-  LoadUrlInGuest(guest_url);
+  LoadAndLaunchPlatformApp("web_view/ssl", "EmbedderLoaded");
+  LoadEmptyGuest();
+  SetGuestURL(guest_url, /*expect_successful_navigation=*/true);
 
-  // Page should load without any interstitial (and no crashing).
-  auto* embedder_web_contents = GetFirstAppWindowWebContents();
-  auto* guest_web_contents =
-      GetGuestViewManager()->DeprecatedWaitForSingleGuestCreated();
-  EXPECT_FALSE(IsShowingInterstitial(guest_web_contents));
-  EXPECT_FALSE(IsShowingInterstitial(embedder_web_contents));
+  // Page should load without any error / crash.
+  auto* embedder_main_frame =
+      GetFirstAppWindowWebContents()->GetPrimaryMainFrame();
+  auto* guest_main_frame =
+      GetGuestViewManager()->GetLastGuestRenderFrameHostCreated();
+
+  ASSERT_FALSE(guest_main_frame->IsErrorDocument());
+  ASSERT_FALSE(embedder_main_frame->IsErrorDocument());
+  ASSERT_FALSE(IsShowingInterstitial(GetFirstAppWindowWebContents()));
 }
 
 IN_PROC_BROWSER_TEST_P(WebViewTest, ShimSrcAttribute) {

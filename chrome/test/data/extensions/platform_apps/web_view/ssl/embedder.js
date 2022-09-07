@@ -7,25 +7,14 @@ var webview;
 window.createGuest = function() {
   webview = document.createElement('webview');
   webview.src = 'about:blank';
+  // Delay the message to `loadstop` so that the test listenser does
+  // not pick up the `DidStopLoading` from the initial navigation to
+  // `about:blank`.
+  webview.addEventListener('loadstop', function() {
+    chrome.test.sendMessage('GuestAddedToDom');
+  });
   document.body.appendChild(webview);
-  chrome.test.sendMessage('GuestAddedToDom');
 }
-
-window.loadGuest = function(port) {
-  window.console.log('embedder.loadGuest: ' + port);
-
-  // This page is not loaded, we just need a https URL.
-  var guestSrcHTTPS = 'https://localhost:' + port +
-      '/extensions/platform_apps/web_view/' +
-      'interstitial_teardown/https_page.html';
-  window.console.log('guestSrcHTTPS: ' + guestSrcHTTPS);
-  webview.setAttribute('src', guestSrcHTTPS);
-  webview.style.position = 'fixed';
-  webview.style.left = '0px';
-  webview.style.top = '0px';
-
-  chrome.test.sendMessage('GuestLoaded');
-};
 
 window.loadGuestUrl = function(url) {
   window.console.log('embedder.loadGuest: ' + url);
@@ -33,7 +22,6 @@ window.loadGuestUrl = function(url) {
   webview.style.position = 'fixed';
   webview.style.left = '0px';
   webview.style.top = '0px';
-  chrome.test.sendMessage('GuestLoaded');
 };
 
 window.onload = function() {
