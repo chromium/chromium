@@ -6321,7 +6321,7 @@ void RenderFrameHostImpl::SendAccessibilityEventsToManager(
   if (!browser_accessibility_manager_)
     return;
 
-  DCHECK(delegate_->GetAccessibilityMode().has_mode(ui::kAXModeBasic.mode()));
+  DCHECK(delegate_->GetAccessibilityMode().has_mode(ui::AXMode::kNativeAPIs));
   if (!browser_accessibility_manager_->OnAccessibilityEvents(details)) {
     // OnAccessibilityEvents returns false in IPC error conditions.
     AccessibilityFatalError();
@@ -9847,7 +9847,7 @@ RenderFrameHostImpl::GetOrCreateBrowserAccessibilityManager() {
   // Never create a BrowserAccessibilityManager unless needed for the AXMode.
   // At least basic mode is required; it contains kWebContents and KNativeAPIs.
   ui::AXMode accessibility_mode = delegate_->GetAccessibilityMode();
-  if (!accessibility_mode.has_mode(ui::kAXModeBasic.mode())) {
+  if (!accessibility_mode.has_mode(ui::AXMode::kNativeAPIs)) {
     DCHECK(!browser_accessibility_manager_);
     return nullptr;
   }
