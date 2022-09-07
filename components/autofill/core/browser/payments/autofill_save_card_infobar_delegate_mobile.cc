@@ -14,7 +14,7 @@
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_experiments.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
-#include "components/autofill/core/browser/metrics/payments/save_credit_card_prompt_metrics.h"
+#include "components/autofill/core/browser/metrics/payments/credit_card_save_metrics.h"
 #include "components/autofill/core/browser/payments/autofill_save_card_ui_utils_mobile.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -75,8 +75,9 @@ AutofillSaveCardInfoBarDelegateMobile::
     RunSaveCardPromptCallback(
         AutofillClient::SaveCardOfferUserDecision::kIgnored,
         /*user_provided_details=*/{});
-    LogSaveCreditCardPromptResult(SaveCreditCardPromptResult::kIgnored, upload_,
-                                  options_);
+    LogSaveCreditCardPromptResult(
+        autofill_metrics::SaveCreditCardPromptResult::kIgnored, upload_,
+        options_);
     LogUserAction(AutofillMetrics::INFOBAR_IGNORED);
   }
 }
@@ -156,8 +157,8 @@ void AutofillSaveCardInfoBarDelegateMobile::InfoBarDismissed() {
       AutofillClient::SaveCardOfferUserDecision::kDeclined,
       /*user_provided_details=*/{});
   LogUserAction(AutofillMetrics::INFOBAR_DENIED);
-  LogSaveCreditCardPromptResult(SaveCreditCardPromptResult::kDenied, upload_,
-                                options_);
+  LogSaveCreditCardPromptResult(
+      autofill_metrics::SaveCreditCardPromptResult::kDenied, upload_, options_);
 }
 
 bool AutofillSaveCardInfoBarDelegateMobile::Cancel() {
@@ -165,8 +166,8 @@ bool AutofillSaveCardInfoBarDelegateMobile::Cancel() {
       AutofillClient::SaveCardOfferUserDecision::kDeclined,
       /*user_provided_details=*/{});
   LogUserAction(AutofillMetrics::INFOBAR_DENIED);
-  LogSaveCreditCardPromptResult(SaveCreditCardPromptResult::kDenied, upload_,
-                                options_);
+  LogSaveCreditCardPromptResult(
+      autofill_metrics::SaveCreditCardPromptResult::kDenied, upload_, options_);
   return true;
 }
 
@@ -202,8 +203,9 @@ bool AutofillSaveCardInfoBarDelegateMobile::Accept() {
   // 2. or when we don't need more info in order to upload.
   if (!upload_ || (!options_.should_request_name_from_user &&
                    !options_.should_request_expiration_date_from_user)) {
-    LogSaveCreditCardPromptResult(SaveCreditCardPromptResult::kAccepted,
-                                  upload_, options_);
+    LogSaveCreditCardPromptResult(
+        autofill_metrics::SaveCreditCardPromptResult::kAccepted, upload_,
+        options_);
   }
   RunSaveCardPromptCallback(
       AutofillClient::SaveCardOfferUserDecision::kAccepted,

@@ -41,6 +41,7 @@
 #include "components/autofill/core/browser/metrics/form_events/credit_card_form_event_logger.h"
 #include "components/autofill/core/browser/metrics/form_events/form_events.h"
 #include "components/autofill/core/browser/metrics/form_interactions_counter.h"
+#include "components/autofill/core/browser/metrics/payments/credit_card_save_metrics.h"
 #include "components/autofill/core/browser/payments/credit_card_access_manager.h"
 #include "components/autofill/core/browser/payments/test_credit_card_save_manager.h"
 #include "components/autofill/core/browser/payments/test_payments_client.h"
@@ -8780,9 +8781,9 @@ TEST_F(AutofillMetricsTest, RecordCardUploadDecisionMetric) {
   int upload_decision = 1;
   autofill_client_->set_form_origin(url);
 
-  AutofillMetrics::LogCardUploadDecisionsUkm(test_ukm_recorder_,
-                                             autofill_client_->GetUkmSourceId(),
-                                             url, upload_decision);
+  autofill_metrics::LogCardUploadDecisionsUkm(
+      test_ukm_recorder_, autofill_client_->GetUkmSourceId(), url,
+      upload_decision);
   auto entries = test_ukm_recorder_->GetEntriesByName(
       UkmCardUploadDecisionType::kEntryName);
   EXPECT_EQ(1u, entries.size());
@@ -8828,7 +8829,7 @@ TEST_F(AutofillMetricsTest, RecordDeveloperEngagementMetric) {
 TEST_F(AutofillMetricsTest, RecordCardUploadDecisionMetric_InvalidUrl) {
   GURL url("");
   test_ukm_recorder_->Purge();
-  AutofillMetrics::LogCardUploadDecisionsUkm(test_ukm_recorder_, -1, url, 1);
+  autofill_metrics::LogCardUploadDecisionsUkm(test_ukm_recorder_, -1, url, 1);
   EXPECT_EQ(0ul, test_ukm_recorder_->sources_count());
   EXPECT_EQ(0ul, test_ukm_recorder_->entries_count());
 }
@@ -8837,7 +8838,7 @@ TEST_F(AutofillMetricsTest, RecordCardUploadDecisionMetric_InvalidUrl) {
 TEST_F(AutofillMetricsTest, RecordCardUploadDecisionMetric_NoUkmService) {
   GURL url("https://www.google.com");
   test_ukm_recorder_->Purge();
-  AutofillMetrics::LogCardUploadDecisionsUkm(nullptr, -1, url, 1);
+  autofill_metrics::LogCardUploadDecisionsUkm(nullptr, -1, url, 1);
   EXPECT_EQ(0ul, test_ukm_recorder_->sources_count());
   EXPECT_EQ(0ul, test_ukm_recorder_->entries_count());
 }

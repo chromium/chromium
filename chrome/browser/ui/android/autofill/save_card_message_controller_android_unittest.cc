@@ -13,7 +13,7 @@
 #include "chrome/browser/ui/android/autofill/save_card_controller_metrics_android.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/autofill/core/browser/autofill_client.h"
-#include "components/autofill/core/browser/metrics/payments/save_credit_card_prompt_metrics.h"
+#include "components/autofill/core/browser/metrics/payments/credit_card_save_metrics.h"
 #include "components/autofill/core/browser/test_personal_data_manager.h"
 #include "components/messages/android/mock_message_dispatcher_bridge.h"
 #include "components/strings/grit/components_strings.h"
@@ -201,8 +201,9 @@ TEST_F(SaveCardMessageControllerAndroidTest, DismissOnPrimaryButtonClickLocal) {
   DismissMessage();
   histogram_tester.ExpectBucketCount(kLocalPrefix, MessageMetrics::kAccepted,
                                      1);
-  histogram_tester.ExpectBucketCount(kLocalResultPrefix,
-                                     SaveCreditCardPromptResult::kAccepted, 1);
+  histogram_tester.ExpectBucketCount(
+      kLocalResultPrefix,
+      autofill_metrics::SaveCreditCardPromptResult::kAccepted, 1);
 }
 
 TEST_F(SaveCardMessageControllerAndroidTest,
@@ -228,8 +229,9 @@ TEST_F(SaveCardMessageControllerAndroidTest,
   histogram_tester.ExpectBucketCount(
       base::StrCat({kLocalPrefix, ".FromDynamicChangeForm"}),
       MessageMetrics::kDenied, 1);
-  histogram_tester.ExpectBucketCount(kLocalResultPrefix,
-                                     SaveCreditCardPromptResult::kDenied, 1);
+  histogram_tester.ExpectBucketCount(
+      kLocalResultPrefix, autofill_metrics::SaveCreditCardPromptResult::kDenied,
+      1);
 }
 
 TEST_F(SaveCardMessageControllerAndroidTest,
@@ -255,8 +257,9 @@ TEST_F(SaveCardMessageControllerAndroidTest,
   histogram_tester.ExpectBucketCount(
       base::StrCat({kLocalPrefix, ".FromNonFocusableForm"}),
       MessageMetrics::kDenied, 1);
-  histogram_tester.ExpectBucketCount(kLocalResultPrefix,
-                                     SaveCreditCardPromptResult::kDenied, 1);
+  histogram_tester.ExpectBucketCount(
+      kLocalResultPrefix, autofill_metrics::SaveCreditCardPromptResult::kDenied,
+      1);
 }
 
 TEST_F(SaveCardMessageControllerAndroidTest,
@@ -278,8 +281,9 @@ TEST_F(SaveCardMessageControllerAndroidTest,
   ExpectDismiss();
   EnqueueAnotherMessage({}, mock_local_callback_receiver2.Get());
   histogram_tester.ExpectBucketCount(kLocalPrefix, MessageMetrics::kIgnored, 1);
-  histogram_tester.ExpectBucketCount(kLocalResultPrefix,
-                                     SaveCreditCardPromptResult::kIgnored, 1);
+  histogram_tester.ExpectBucketCount(
+      kLocalResultPrefix,
+      autofill_metrics::SaveCreditCardPromptResult::kIgnored, 1);
   DismissMessage();
 }
 
@@ -294,8 +298,9 @@ TEST_F(SaveCardMessageControllerAndroidTest, IgnoreMessageLocal) {
   EnqueueMessage({}, mock_local_callback_receiver.Get(), {});
   DismissMessage(messages::DismissReason::TIMER);
   histogram_tester.ExpectBucketCount(kLocalPrefix, MessageMetrics::kIgnored, 1);
-  histogram_tester.ExpectBucketCount(kLocalResultPrefix,
-                                     SaveCreditCardPromptResult::kIgnored, 1);
+  histogram_tester.ExpectBucketCount(
+      kLocalResultPrefix,
+      autofill_metrics::SaveCreditCardPromptResult::kIgnored, 1);
 }
 
 // --- server save test ---
@@ -365,8 +370,9 @@ TEST_F(SaveCardMessageControllerAndroidTest,
   histogram_tester.ExpectBucketCount(
       base::StrCat({kServerPrefix, ".FromDynamicChangeForm"}),
       MessageMetrics::kDenied, 1);
-  histogram_tester.ExpectBucketCount(kServerResultPrefix,
-                                     SaveCreditCardPromptResult::kDenied, 1);
+  histogram_tester.ExpectBucketCount(
+      kServerResultPrefix,
+      autofill_metrics::SaveCreditCardPromptResult::kDenied, 1);
 }
 
 TEST_F(SaveCardMessageControllerAndroidTest,
@@ -391,8 +397,9 @@ TEST_F(SaveCardMessageControllerAndroidTest,
   histogram_tester.ExpectBucketCount(
       base::StrCat({kServerPrefix, ".FromNonFocusableForm"}),
       MessageMetrics::kDenied, 1);
-  histogram_tester.ExpectBucketCount(kServerResultPrefix,
-                                     SaveCreditCardPromptResult::kDenied, 1);
+  histogram_tester.ExpectBucketCount(
+      kServerResultPrefix,
+      autofill_metrics::SaveCreditCardPromptResult::kDenied, 1);
 }
 
 // 3. Accept Dialog UI
@@ -429,11 +436,12 @@ TEST_F(SaveCardMessageControllerAndroidTest,
       base::StrCat(
           {kDialogPrefix, ".RequestingCardholderName", ".DidClickLinks"}),
       MessageDialogPromptMetrics::kAccepted, 0);
-  histogram_tester.ExpectBucketCount(kServerResultPrefix,
-                                     SaveCreditCardPromptResult::kAccepted, 1);
+  histogram_tester.ExpectBucketCount(
+      kServerResultPrefix,
+      autofill_metrics::SaveCreditCardPromptResult::kAccepted, 1);
   histogram_tester.ExpectBucketCount(
       base::StrCat({kServerResultPrefix, ".RequestingCardholderName"}),
-      SaveCreditCardPromptResult::kAccepted, 1);
+      autofill_metrics::SaveCreditCardPromptResult::kAccepted, 1);
 }
 
 TEST_F(SaveCardMessageControllerAndroidTest, DismissOnConfirmDateAcceptUpload) {
@@ -468,11 +476,12 @@ TEST_F(SaveCardMessageControllerAndroidTest, DismissOnConfirmDateAcceptUpload) {
       base::StrCat(
           {kDialogPrefix, ".RequestingExpirationDate", ".DidClickLinks"}),
       MessageDialogPromptMetrics::kAccepted, 0);
-  histogram_tester.ExpectBucketCount(kServerResultPrefix,
-                                     SaveCreditCardPromptResult::kAccepted, 1);
+  histogram_tester.ExpectBucketCount(
+      kServerResultPrefix,
+      autofill_metrics::SaveCreditCardPromptResult::kAccepted, 1);
   histogram_tester.ExpectBucketCount(
       base::StrCat({kServerResultPrefix, ".RequestingExpirationDate"}),
-      SaveCreditCardPromptResult::kAccepted, 1);
+      autofill_metrics::SaveCreditCardPromptResult::kAccepted, 1);
 }
 
 TEST_F(SaveCardMessageControllerAndroidTest,
@@ -500,8 +509,9 @@ TEST_F(SaveCardMessageControllerAndroidTest,
       MessageMetrics::kAccepted, 1);
   histogram_tester.ExpectBucketCount(kServerPrefix, MessageMetrics::kAccepted,
                                      1);
-  histogram_tester.ExpectBucketCount(kServerResultPrefix,
-                                     SaveCreditCardPromptResult::kAccepted, 1);
+  histogram_tester.ExpectBucketCount(
+      kServerResultPrefix,
+      autofill_metrics::SaveCreditCardPromptResult::kAccepted, 1);
 }
 
 // 4. Decline Dialog UI
@@ -529,8 +539,8 @@ TEST_F(SaveCardMessageControllerAndroidTest, DismissOnPromoDismissedUpload) {
       base::StrCat({kDialogPrefix, ".ConfirmInfo", ".DidClickLinks"}),
       MessageDialogPromptMetrics::kIgnored, 0);
   histogram_tester.ExpectBucketCount(
-      kServerResultPrefix, SaveCreditCardPromptResult::kInteractedAndIgnored,
-      1);
+      kServerResultPrefix,
+      autofill_metrics::SaveCreditCardPromptResult::kInteractedAndIgnored, 1);
 }
 
 TEST_F(SaveCardMessageControllerAndroidTest,
@@ -559,8 +569,8 @@ TEST_F(SaveCardMessageControllerAndroidTest,
       base::StrCat({kDialogPrefix, ".ConfirmInfo", ".DidClickLinks"}),
       MessageDialogPromptMetrics::kIgnored, 0);
   histogram_tester.ExpectBucketCount(
-      kServerResultPrefix, SaveCreditCardPromptResult::kInteractedAndIgnored,
-      1);
+      kServerResultPrefix,
+      autofill_metrics::SaveCreditCardPromptResult::kInteractedAndIgnored, 1);
 
   // Trigger another message and dismiss it to test that no more dialog
   // related metric is record.
@@ -583,11 +593,13 @@ TEST_F(SaveCardMessageControllerAndroidTest,
       base::StrCat({kDialogPrefix, ".ConfirmInfo", ".DidClickLinks"}),
       MessageDialogPromptMetrics::kIgnored, 0);  // expect no change.
   histogram_tester.ExpectBucketCount(
-      kServerResultPrefix, SaveCreditCardPromptResult::kInteractedAndIgnored,
+      kServerResultPrefix,
+      autofill_metrics::SaveCreditCardPromptResult::kInteractedAndIgnored,
       1);  // expect no change.
-  histogram_tester.ExpectBucketCount(kServerResultPrefix,
-                                     SaveCreditCardPromptResult::kIgnored,
-                                     1);  // new change.
+  histogram_tester.ExpectBucketCount(
+      kServerResultPrefix,
+      autofill_metrics::SaveCreditCardPromptResult::kIgnored,
+      1);  // new change.
 }
 
 // -- Others --
@@ -628,11 +640,12 @@ TEST_F(SaveCardMessageControllerAndroidTest, DialogRestoredOnTabSwitching) {
       base::StrCat(
           {kDialogPrefix, ".RequestingExpirationDate", ".DidClickLinks"}),
       MessageDialogPromptMetrics::kAccepted, 1);
-  histogram_tester.ExpectBucketCount(kServerResultPrefix,
-                                     SaveCreditCardPromptResult::kAccepted, 1);
+  histogram_tester.ExpectBucketCount(
+      kServerResultPrefix,
+      autofill_metrics::SaveCreditCardPromptResult::kAccepted, 1);
   histogram_tester.ExpectBucketCount(
       base::StrCat({kServerResultPrefix, ".RequestingExpirationDate"}),
-      SaveCreditCardPromptResult::kAccepted, 1);
+      autofill_metrics::SaveCreditCardPromptResult::kAccepted, 1);
 }
 
 TEST_F(SaveCardMessageControllerAndroidTest,
@@ -659,11 +672,12 @@ TEST_F(SaveCardMessageControllerAndroidTest,
   histogram_tester.ExpectBucketCount(
       base::StrCat({kDialogPrefix, ".RequestingExpirationDate"}),
       MessageDialogPromptMetrics::kIgnored, 0);
-  histogram_tester.ExpectBucketCount(kServerResultPrefix,
-                                     SaveCreditCardPromptResult::kIgnored, 1);
+  histogram_tester.ExpectBucketCount(
+      kServerResultPrefix,
+      autofill_metrics::SaveCreditCardPromptResult::kIgnored, 1);
   histogram_tester.ExpectBucketCount(
       base::StrCat({kServerResultPrefix, ".RequestingExpirationDate"}),
-      SaveCreditCardPromptResult::kIgnored, 0);
+      autofill_metrics::SaveCreditCardPromptResult::kIgnored, 0);
   DismissMessage();
 }
 
@@ -680,11 +694,12 @@ TEST_F(SaveCardMessageControllerAndroidTest, IgnoreMessageUpload) {
   histogram_tester.ExpectBucketCount(
       base::StrCat({kDialogPrefix, ".RequestingExpirationDate"}),
       MessageDialogPromptMetrics::kIgnored, 0);
-  histogram_tester.ExpectBucketCount(kServerResultPrefix,
-                                     SaveCreditCardPromptResult::kIgnored, 1);
+  histogram_tester.ExpectBucketCount(
+      kServerResultPrefix,
+      autofill_metrics::SaveCreditCardPromptResult::kIgnored, 1);
   histogram_tester.ExpectBucketCount(
       base::StrCat({kServerResultPrefix, ".RequestingExpirationDate"}),
-      SaveCreditCardPromptResult::kIgnored, 0);
+      autofill_metrics::SaveCreditCardPromptResult::kIgnored, 0);
 }
 
 }  // namespace autofill

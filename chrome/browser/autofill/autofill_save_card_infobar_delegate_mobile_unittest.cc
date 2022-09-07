@@ -14,7 +14,7 @@
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
-#include "components/autofill/core/browser/metrics/payments/save_credit_card_prompt_metrics.h"
+#include "components/autofill/core/browser/metrics/payments/credit_card_save_metrics.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/test_personal_data_manager.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
@@ -184,7 +184,7 @@ TEST_F(AutofillSaveCardInfoBarDelegateMobileTest, Metrics_Local_Main) {
                                         AutofillMetrics::INFOBAR_ACCEPTED, 1);
     histogram_tester.ExpectUniqueSample(
         "Autofill.CreditCardSaveFlowResult.Local",
-        SaveCreditCardPromptResult::kAccepted, 1);
+        autofill_metrics::SaveCreditCardPromptResult::kAccepted, 1);
   }
 
   // Dismiss the infobar.
@@ -198,7 +198,7 @@ TEST_F(AutofillSaveCardInfoBarDelegateMobileTest, Metrics_Local_Main) {
                                         AutofillMetrics::INFOBAR_DENIED, 1);
     histogram_tester.ExpectUniqueSample(
         "Autofill.CreditCardSaveFlowResult.Local",
-        SaveCreditCardPromptResult::kDenied, 1);
+        autofill_metrics::SaveCreditCardPromptResult::kDenied, 1);
   }
 
   // Ignore the infobar.
@@ -212,7 +212,7 @@ TEST_F(AutofillSaveCardInfoBarDelegateMobileTest, Metrics_Local_Main) {
                                         AutofillMetrics::INFOBAR_IGNORED, 1);
     histogram_tester.ExpectUniqueSample(
         "Autofill.CreditCardSaveFlowResult.Local",
-        SaveCreditCardPromptResult::kIgnored, 1);
+        autofill_metrics::SaveCreditCardPromptResult::kIgnored, 1);
   }
 }
 
@@ -260,7 +260,7 @@ TEST_F(AutofillSaveCardInfoBarDelegateMobileTest, Metrics_Server_Main) {
                                         AutofillMetrics::INFOBAR_ACCEPTED, 1);
     histogram_tester.ExpectUniqueSample(
         "Autofill.CreditCardSaveFlowResult.Server",
-        SaveCreditCardPromptResult::kAccepted, 1);
+        autofill_metrics::SaveCreditCardPromptResult::kAccepted, 1);
   }
 
   // Accept the infobar which should request an expiration date.
@@ -284,10 +284,10 @@ TEST_F(AutofillSaveCardInfoBarDelegateMobileTest, Metrics_Server_Main) {
     // recorded when all data is collected.
     histogram_tester.ExpectUniqueSample(
         "Autofill.CreditCardSaveFlowResult.Server",
-        SaveCreditCardPromptResult::kAccepted, 0);
+        autofill_metrics::SaveCreditCardPromptResult::kAccepted, 0);
     histogram_tester.ExpectUniqueSample(
         "Autofill.CreditCardSaveFlowResult.Server.RequestingExpirationDate",
-        SaveCreditCardPromptResult::kAccepted, 0);
+        autofill_metrics::SaveCreditCardPromptResult::kAccepted, 0);
   }
 
   // Accept the infobar which should request a cardholder name.
@@ -311,10 +311,10 @@ TEST_F(AutofillSaveCardInfoBarDelegateMobileTest, Metrics_Server_Main) {
     // recorded when all data is collected.
     histogram_tester.ExpectUniqueSample(
         "Autofill.CreditCardSaveFlowResult.Server",
-        SaveCreditCardPromptResult::kAccepted, 0);
+        autofill_metrics::SaveCreditCardPromptResult::kAccepted, 0);
     histogram_tester.ExpectUniqueSample(
         "Autofill.CreditCardSaveFlowResult.Server.RequestingCardholderName",
-        SaveCreditCardPromptResult::kAccepted, 0);
+        autofill_metrics::SaveCreditCardPromptResult::kAccepted, 0);
   }
 
   // Dismiss the infobar which doesn't request any data from user.
@@ -328,7 +328,7 @@ TEST_F(AutofillSaveCardInfoBarDelegateMobileTest, Metrics_Server_Main) {
                                         AutofillMetrics::INFOBAR_DENIED, 1);
     histogram_tester.ExpectUniqueSample(
         "Autofill.CreditCardSaveFlowResult.Server",
-        SaveCreditCardPromptResult::kDenied, 1);
+        autofill_metrics::SaveCreditCardPromptResult::kDenied, 1);
   }
 
   // Dismiss the infobar which should request an expiration date.
@@ -348,10 +348,10 @@ TEST_F(AutofillSaveCardInfoBarDelegateMobileTest, Metrics_Server_Main) {
         AutofillMetrics::INFOBAR_DENIED, 1);
     histogram_tester.ExpectUniqueSample(
         "Autofill.CreditCardSaveFlowResult.Server",
-        SaveCreditCardPromptResult::kDenied, 1);
+        autofill_metrics::SaveCreditCardPromptResult::kDenied, 1);
     histogram_tester.ExpectUniqueSample(
         "Autofill.CreditCardSaveFlowResult.Server.RequestingExpirationDate",
-        SaveCreditCardPromptResult::kDenied, 1);
+        autofill_metrics::SaveCreditCardPromptResult::kDenied, 1);
   }
 
   // Dismiss the infobar which should request a cardholder name.
@@ -371,10 +371,10 @@ TEST_F(AutofillSaveCardInfoBarDelegateMobileTest, Metrics_Server_Main) {
         AutofillMetrics::INFOBAR_DENIED, 1);
     histogram_tester.ExpectUniqueSample(
         "Autofill.CreditCardSaveFlowResult.Server",
-        SaveCreditCardPromptResult::kDenied, 1);
+        autofill_metrics::SaveCreditCardPromptResult::kDenied, 1);
     histogram_tester.ExpectUniqueSample(
         "Autofill.CreditCardSaveFlowResult.Server.RequestingCardholderName",
-        SaveCreditCardPromptResult::kDenied, 1);
+        autofill_metrics::SaveCreditCardPromptResult::kDenied, 1);
   }
 
   // Ignore the infobar which doesn't request any data from user.
@@ -388,7 +388,7 @@ TEST_F(AutofillSaveCardInfoBarDelegateMobileTest, Metrics_Server_Main) {
                                         AutofillMetrics::INFOBAR_IGNORED, 1);
     histogram_tester.ExpectUniqueSample(
         "Autofill.CreditCardSaveFlowResult.Server",
-        SaveCreditCardPromptResult::kIgnored, 1);
+        autofill_metrics::SaveCreditCardPromptResult::kIgnored, 1);
   }
 
   // Ignore the infobar which should request an expiration date.
@@ -408,10 +408,10 @@ TEST_F(AutofillSaveCardInfoBarDelegateMobileTest, Metrics_Server_Main) {
         AutofillMetrics::INFOBAR_IGNORED, 1);
     histogram_tester.ExpectUniqueSample(
         "Autofill.CreditCardSaveFlowResult.Server",
-        SaveCreditCardPromptResult::kIgnored, 1);
+        autofill_metrics::SaveCreditCardPromptResult::kIgnored, 1);
     histogram_tester.ExpectUniqueSample(
         "Autofill.CreditCardSaveFlowResult.Server.RequestingExpirationDate",
-        SaveCreditCardPromptResult::kIgnored, 1);
+        autofill_metrics::SaveCreditCardPromptResult::kIgnored, 1);
   }
 
   // Ignore the infobar which should request a cardholder name.
@@ -431,10 +431,10 @@ TEST_F(AutofillSaveCardInfoBarDelegateMobileTest, Metrics_Server_Main) {
         AutofillMetrics::INFOBAR_IGNORED, 1);
     histogram_tester.ExpectUniqueSample(
         "Autofill.CreditCardSaveFlowResult.Server",
-        SaveCreditCardPromptResult::kIgnored, 1);
+        autofill_metrics::SaveCreditCardPromptResult::kIgnored, 1);
     histogram_tester.ExpectUniqueSample(
         "Autofill.CreditCardSaveFlowResult.Server.RequestingCardholderName",
-        SaveCreditCardPromptResult::kIgnored, 1);
+        autofill_metrics::SaveCreditCardPromptResult::kIgnored, 1);
   }
 }
 

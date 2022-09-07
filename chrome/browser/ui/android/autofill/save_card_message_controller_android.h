@@ -10,7 +10,7 @@
 #include "chrome/browser/ui/android/autofill/save_card_message_confirm_controller.h"
 #include "chrome/browser/ui/android/autofill/save_card_message_confirm_delegate.h"
 #include "components/autofill/core/browser/autofill_client.h"
-#include "components/autofill/core/browser/metrics/payments/save_credit_card_prompt_metrics.h"
+#include "components/autofill/core/browser/metrics/payments/credit_card_save_metrics.h"
 #include "components/messages/android/message_enums.h"
 #include "components/messages/android/message_wrapper.h"
 #include "content/public/browser/web_contents.h"
@@ -87,7 +87,7 @@ class SaveCardMessageControllerAndroid : public SaveCardMessageConfirmDelegate {
   // |user_provided_details| are handled separately, so if either of them are
   // empty the current Card values will be used in their place.
   void OnPromptCompleted(
-      SaveCreditCardPromptResult save_result,
+      autofill_metrics::SaveCreditCardPromptResult save_result,
       AutofillClient::UserProvidedCardDetails user_provided_details);
 
   // Did the user ever explicitly accept or dismiss this message?

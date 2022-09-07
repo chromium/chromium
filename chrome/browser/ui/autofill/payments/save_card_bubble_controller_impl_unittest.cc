@@ -28,6 +28,7 @@
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
+#include "components/autofill/core/browser/metrics/payments/credit_card_save_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/manage_cards_prompt_metrics.h"
 #include "components/autofill/core/browser/sync_utils.h"
 #include "components/autofill/core/browser/test_autofill_clock.h"
@@ -264,7 +265,7 @@ TEST_P(SaveCardBubbleSingletonTest, OnlyOneActiveBubble) {
 
   histogram_tester.ExpectUniqueSample(
       "Autofill.SaveCreditCardPromptOffer" + suffix,
-      AutofillMetrics::SAVE_CARD_PROMPT_SHOWN, 1);
+      autofill_metrics::SaveCardPromptOffer::kShown, 1);
 }
 
 // Note that even though in prod the four options in the SaveCreditCardOptions
@@ -384,7 +385,7 @@ TEST_P(SaveCardBubbleLoggingTest, Metrics_ShowBubble) {
 
   histogram_tester.ExpectUniqueSample(
       "Autofill.SaveCreditCardPromptOffer" + GetHistogramNameSuffix(),
-      AutofillMetrics::SAVE_CARD_PROMPT_SHOWN, 1);
+      autofill_metrics::SaveCardPromptOffer::kShown, 1);
 }
 
 TEST_P(SaveCardBubbleLoggingTest, Metrics_ShowIconOnly) {
@@ -397,7 +398,7 @@ TEST_P(SaveCardBubbleLoggingTest, Metrics_ShowIconOnly) {
 
   histogram_tester.ExpectUniqueSample(
       "Autofill.SaveCreditCardPromptOffer" + GetHistogramNameSuffix(),
-      AutofillMetrics::SAVE_CARD_PROMPT_NOT_SHOWN_MAX_STRIKES_REACHED, 1);
+      autofill_metrics::SaveCardPromptOffer::kNotShownMaxStrikesReached, 1);
 }
 
 TEST_P(SaveCardBubbleLoggingTest, Metrics_SaveButton) {
@@ -408,7 +409,7 @@ TEST_P(SaveCardBubbleLoggingTest, Metrics_SaveButton) {
 
   histogram_tester.ExpectUniqueSample(
       "Autofill.SaveCreditCardPromptResult" + GetHistogramNameSuffix(),
-      AutofillMetrics::SAVE_CARD_PROMPT_ACCEPTED, 1);
+      autofill_metrics::SaveCardPromptResult::kAccepted, 1);
 }
 
 TEST_P(SaveCardBubbleLoggingTest, Metrics_CancelButton) {
@@ -419,7 +420,7 @@ TEST_P(SaveCardBubbleLoggingTest, Metrics_CancelButton) {
 
   histogram_tester.ExpectUniqueSample(
       "Autofill.SaveCreditCardPromptResult" + GetHistogramNameSuffix(),
-      AutofillMetrics::SAVE_CARD_PROMPT_CANCELLED, 1);
+      autofill_metrics::SaveCardPromptResult::kCancelled, 1);
 }
 
 TEST_P(SaveCardBubbleLoggingTest, Metrics_Closed) {
@@ -429,7 +430,7 @@ TEST_P(SaveCardBubbleLoggingTest, Metrics_Closed) {
 
   histogram_tester.ExpectUniqueSample(
       "Autofill.SaveCreditCardPromptResult" + GetHistogramNameSuffix(),
-      AutofillMetrics::SAVE_CARD_PROMPT_CLOSED, 1);
+      autofill_metrics::SaveCardPromptResult::kClosed, 1);
 }
 
 TEST_P(SaveCardBubbleLoggingTest, Metrics_NotInteracted) {
@@ -439,7 +440,7 @@ TEST_P(SaveCardBubbleLoggingTest, Metrics_NotInteracted) {
 
   histogram_tester.ExpectUniqueSample(
       "Autofill.SaveCreditCardPromptResult" + GetHistogramNameSuffix(),
-      AutofillMetrics::SAVE_CARD_PROMPT_NOT_INTERACTED, 1);
+      autofill_metrics::SaveCardPromptResult::kNotInteracted, 1);
 }
 
 TEST_P(SaveCardBubbleLoggingTest, Metrics_LostFocus) {
@@ -449,7 +450,7 @@ TEST_P(SaveCardBubbleLoggingTest, Metrics_LostFocus) {
 
   histogram_tester.ExpectUniqueSample(
       "Autofill.SaveCreditCardPromptResult" + GetHistogramNameSuffix(),
-      AutofillMetrics::SAVE_CARD_PROMPT_LOST_FOCUS, 1);
+      autofill_metrics::SaveCardPromptResult::kLostFocus, 1);
 }
 
 TEST_P(SaveCardBubbleLoggingTest, Metrics_Unknown) {
@@ -459,7 +460,7 @@ TEST_P(SaveCardBubbleLoggingTest, Metrics_Unknown) {
 
   histogram_tester.ExpectUniqueSample(
       "Autofill.SaveCreditCardPromptResult" + GetHistogramNameSuffix(),
-      AutofillMetrics::SAVE_CARD_PROMPT_RESULT_UNKNOWN, 1);
+      autofill_metrics::SaveCardPromptResult::kUnknown, 1);
 }
 
 TEST_P(SaveCardBubbleLoggingTest, Metrics_SecurityLevel) {
@@ -471,7 +472,7 @@ TEST_P(SaveCardBubbleLoggingTest, Metrics_SecurityLevel) {
 
   histogram_tester.ExpectUniqueSample(
       "Autofill.SaveCreditCardPromptOffer." + destination_ + ".SECURE",
-      AutofillMetrics::SAVE_CARD_PROMPT_SHOWN, expected_count);
+      autofill_metrics::SaveCardPromptOffer::kShown, expected_count);
 }
 
 TEST_P(SaveCardBubbleLoggingTest, Metrics_LegalMessageLinkedClicked) {

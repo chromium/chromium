@@ -182,11 +182,11 @@ void CreditCardSaveManager::AttemptToOfferCardUploadSave(
 
   if (has_non_focusable_field_) {
     upload_decision_metrics_ |=
-        AutofillMetrics::UPLOAD_OFFERED_FROM_NON_FOCUSABLE_FIELD;
+        autofill_metrics::UPLOAD_OFFERED_FROM_NON_FOCUSABLE_FIELD;
   }
   if (submitted_form.value_from_dynamic_change_form()) {
     upload_decision_metrics_ |=
-        AutofillMetrics::UPLOAD_OFFERED_FROM_DYNAMIC_CHANGE_FORM;
+        autofill_metrics::UPLOAD_OFFERED_FROM_DYNAMIC_CHANGE_FORM;
   }
   if (upload_request_.cvc.empty()) {
     // Apply the CVC decision to |upload_decision_metrics_| to denote a problem
@@ -206,7 +206,7 @@ void CreditCardSaveManager::AttemptToOfferCardUploadSave(
   should_request_name_from_user_ = false;
   if (upload_request_.detected_values & DetectedValue::USER_PROVIDED_NAME) {
     upload_decision_metrics_ |=
-        AutofillMetrics::USER_REQUESTED_TO_PROVIDE_CARDHOLDER_NAME;
+        autofill_metrics::USER_REQUESTED_TO_PROVIDE_CARDHOLDER_NAME;
     should_request_name_from_user_ = true;
   }
 
@@ -217,7 +217,7 @@ void CreditCardSaveManager::AttemptToOfferCardUploadSave(
   if (upload_request_.detected_values &
       DetectedValue::USER_PROVIDED_EXPIRATION_DATE) {
     upload_decision_metrics_ |=
-        AutofillMetrics::USER_REQUESTED_TO_PROVIDE_EXPIRATION_DATE;
+        autofill_metrics::USER_REQUESTED_TO_PROVIDE_EXPIRATION_DATE;
 #if BUILDFLAG(IS_IOS)
     // iOS should always provide a valid expiration date when attempting to
     // upload a Saved Card. Calling LogSaveCardRequestExpirationDateReasonMetric
@@ -332,7 +332,7 @@ void CreditCardSaveManager::OnDidUploadCard(
 
   if (result == AutofillClient::PaymentsRpcResult::kSuccess &&
       upload_request_.card.HasFirstAndLastName()) {
-    AutofillMetrics::LogSaveCardWithFirstAndLastNameComplete(
+    autofill_metrics::LogSaveCardWithFirstAndLastNameComplete(
         /*is_local=*/false);
   }
 
@@ -435,7 +435,7 @@ void CreditCardSaveManager::OnDidGetUploadDetails(
                                     upload_request_.card);
       }
       upload_decision_metrics_ |=
-          AutofillMetrics::UPLOAD_NOT_OFFERED_INVALID_LEGAL_MESSAGE;
+          autofill_metrics::UPLOAD_NOT_OFFERED_INVALID_LEGAL_MESSAGE;
       LogCardUploadDecisions(upload_decision_metrics_);
       return;
     }
@@ -452,7 +452,7 @@ void CreditCardSaveManager::OnDidGetUploadDetails(
                                     upload_request_.card);
       }
       upload_decision_metrics_ |=
-          AutofillMetrics::UPLOAD_NOT_OFFERED_UNSUPPORTED_BIN_RANGE;
+          autofill_metrics::UPLOAD_NOT_OFFERED_UNSUPPORTED_BIN_RANGE;
       LogCardUploadDecisions(upload_decision_metrics_);
       return;
     }
@@ -486,7 +486,7 @@ void CreditCardSaveManager::OnDidGetUploadDetails(
                                   upload_request_.card);
     }
     upload_decision_metrics_ |=
-        AutofillMetrics::UPLOAD_NOT_OFFERED_GET_UPLOAD_DETAILS_FAILED;
+        autofill_metrics::UPLOAD_NOT_OFFERED_GET_UPLOAD_DETAILS_FAILED;
     LogCardUploadDecisions(upload_decision_metrics_);
   }
 }
@@ -514,11 +514,11 @@ void CreditCardSaveManager::OfferCardLocalSave() {
                        weak_ptr_factory_.GetWeakPtr()));
     // Log metrics.
     if (local_card_save_candidate_.HasFirstAndLastName())
-      AutofillMetrics::LogSaveCardWithFirstAndLastNameOffered(
+      autofill_metrics::LogSaveCardWithFirstAndLastNameOffered(
           /*is_local=*/true);
   }
   if (show_save_prompt_.has_value() && !show_save_prompt_.value()) {
-    AutofillMetrics::LogCreditCardSaveNotOfferedDueToMaxStrikesMetric(
+    autofill_metrics::LogCreditCardSaveNotOfferedDueToMaxStrikesMetric(
         AutofillMetrics::SaveTypeMetric::LOCAL);
   }
 }
@@ -557,20 +557,20 @@ void CreditCardSaveManager::OfferCardUploadSave() {
         uploading_local_card_ ? AutofillMetrics::OFFERING_UPLOAD_OF_LOCAL_CARD
                               : AutofillMetrics::OFFERING_UPLOAD_OF_NEW_CARD);
     if (upload_request_.card.HasFirstAndLastName()) {
-      AutofillMetrics::LogSaveCardWithFirstAndLastNameOffered(
+      autofill_metrics::LogSaveCardWithFirstAndLastNameOffered(
           /*is_local=*/false);
     }
     // Set that upload was offered.
-    upload_decision_metrics_ |= AutofillMetrics::UPLOAD_OFFERED;
+    upload_decision_metrics_ |= autofill_metrics::UPLOAD_OFFERED;
   } else {
     // Set that upload was abandoned due to the Autofill StrikeDatabase
     // returning too many strikes for a mobile infobar to be displayed.
     upload_decision_metrics_ |=
-        AutofillMetrics::UPLOAD_NOT_OFFERED_MAX_STRIKES_ON_MOBILE;
+        autofill_metrics::UPLOAD_NOT_OFFERED_MAX_STRIKES_ON_MOBILE;
   }
   LogCardUploadDecisions(upload_decision_metrics_);
   if (show_save_prompt_.has_value() && !show_save_prompt_.value()) {
-    AutofillMetrics::LogCreditCardSaveNotOfferedDueToMaxStrikesMetric(
+    autofill_metrics::LogCreditCardSaveNotOfferedDueToMaxStrikesMetric(
         AutofillMetrics::SaveTypeMetric::SERVER);
   }
 }
@@ -580,7 +580,7 @@ void CreditCardSaveManager::OnUserDidDecideOnLocalSave(
   switch (user_decision) {
     case AutofillClient::SaveCardOfferUserDecision::kAccepted:
       if (local_card_save_candidate_.HasFirstAndLastName())
-        AutofillMetrics::LogSaveCardWithFirstAndLastNameComplete(
+        autofill_metrics::LogSaveCardWithFirstAndLastNameComplete(
             /*is_local=*/true);
       // Log how many CreditCardSave strikes the card had when it was saved.
       LogStrikesPresentWhenCardSaved(
@@ -647,8 +647,8 @@ void CreditCardSaveManager::SetProfilesForCreditCardUpload(
   if (candidate_profiles.empty()) {
     upload_decision_metrics_ |=
         has_profile
-            ? AutofillMetrics::UPLOAD_NOT_OFFERED_NO_RECENTLY_USED_ADDRESS
-            : AutofillMetrics::UPLOAD_NOT_OFFERED_NO_ADDRESS_PROFILE;
+            ? autofill_metrics::UPLOAD_NOT_OFFERED_NO_RECENTLY_USED_ADDRESS
+            : autofill_metrics::UPLOAD_NOT_OFFERED_NO_ADDRESS_PROFILE;
   }
 
   // If any of the names on the card or the addresses don't match the
@@ -678,14 +678,14 @@ void CreditCardSaveManager::SetProfilesForCreditCardUpload(
     }
     if (found_conflicting_names) {
       upload_decision_metrics_ |=
-          AutofillMetrics::UPLOAD_NOT_OFFERED_CONFLICTING_NAMES;
+          autofill_metrics::UPLOAD_NOT_OFFERED_CONFLICTING_NAMES;
     }
   }
 
   // If neither the card nor any of the addresses have a name associated with
   // them, the candidate set is invalid.
   if (verified_name.empty()) {
-    upload_decision_metrics_ |= AutofillMetrics::UPLOAD_NOT_OFFERED_NO_NAME;
+    upload_decision_metrics_ |= autofill_metrics::UPLOAD_NOT_OFFERED_NO_NAME;
   }
 
   // If any of the candidate addresses have a non-empty zip that doesn't match
@@ -710,7 +710,7 @@ void CreditCardSaveManager::SetProfilesForCreditCardUpload(
         if (!(StartsWith(verified_zip, zip, base::CompareCase::SENSITIVE) ||
               StartsWith(zip, verified_zip, base::CompareCase::SENSITIVE))) {
           upload_decision_metrics_ |=
-              AutofillMetrics::UPLOAD_NOT_OFFERED_CONFLICTING_ZIPS;
+              autofill_metrics::UPLOAD_NOT_OFFERED_CONFLICTING_ZIPS;
           break;
         }
       }
@@ -720,7 +720,8 @@ void CreditCardSaveManager::SetProfilesForCreditCardUpload(
   // If none of the candidate addresses have a zip, the candidate set is
   // invalid.
   if (verified_zip.empty() && !candidate_profiles.empty())
-    upload_decision_metrics_ |= AutofillMetrics::UPLOAD_NOT_OFFERED_NO_ZIP_CODE;
+    upload_decision_metrics_ |=
+        autofill_metrics::UPLOAD_NOT_OFFERED_NO_ZIP_CODE;
 
   // Set up |upload_request->profiles|.
   upload_request->profiles.assign(candidate_profiles.begin(),
@@ -741,7 +742,7 @@ int CreditCardSaveManager::GetDetectedValues() const {
            .GetInfo(AutofillType(CREDIT_CARD_NAME_FULL), app_locale_)
            .empty() &&
       !(upload_decision_metrics_ &
-        AutofillMetrics::UPLOAD_NOT_OFFERED_CONFLICTING_NAMES)) {
+        autofill_metrics::UPLOAD_NOT_OFFERED_CONFLICTING_NAMES)) {
     detected_values |= DetectedValue::CARDHOLDER_NAME;
   }
 
@@ -753,12 +754,12 @@ int CreditCardSaveManager::GetDetectedValues() const {
   for (const AutofillProfile& profile : upload_request_.profiles) {
     if (!profile.GetInfo(NAME_FULL, app_locale_).empty() &&
         !(upload_decision_metrics_ &
-          AutofillMetrics::UPLOAD_NOT_OFFERED_CONFLICTING_NAMES)) {
+          autofill_metrics::UPLOAD_NOT_OFFERED_CONFLICTING_NAMES)) {
       detected_values |= DetectedValue::ADDRESS_NAME;
     }
     if (!profile.GetInfo(ADDRESS_HOME_ZIP, app_locale_).empty() &&
         !(upload_decision_metrics_ &
-          AutofillMetrics::UPLOAD_NOT_OFFERED_CONFLICTING_ZIPS)) {
+          autofill_metrics::UPLOAD_NOT_OFFERED_CONFLICTING_ZIPS)) {
       detected_values |= DetectedValue::POSTAL_CODE;
     }
     if (!profile.GetInfo(ADDRESS_HOME_LINE1, app_locale_).empty()) {
@@ -1002,22 +1003,22 @@ void CreditCardSaveManager::OnStrikeChangeComplete(const int num_strikes) {
     observer_for_testing_->OnStrikeChangeComplete();
 }
 
-AutofillMetrics::CardUploadDecisionMetric
+autofill_metrics::CardUploadDecision
 CreditCardSaveManager::GetCVCCardUploadDecisionMetric() const {
   // This function assumes a valid CVC was not found.
   if (found_cvc_field_) {
-    return found_value_in_cvc_field_ ? AutofillMetrics::INVALID_CVC_VALUE
-                                     : AutofillMetrics::CVC_VALUE_NOT_FOUND;
+    return found_value_in_cvc_field_ ? autofill_metrics::INVALID_CVC_VALUE
+                                     : autofill_metrics::CVC_VALUE_NOT_FOUND;
   }
   return found_cvc_value_in_non_cvc_field_
-             ? AutofillMetrics::FOUND_POSSIBLE_CVC_VALUE_IN_NON_CVC_FIELD
-             : AutofillMetrics::CVC_FIELD_NOT_FOUND;
+             ? autofill_metrics::FOUND_POSSIBLE_CVC_VALUE_IN_NON_CVC_FIELD
+             : autofill_metrics::CVC_FIELD_NOT_FOUND;
 }
 
 void CreditCardSaveManager::LogCardUploadDecisions(
     int upload_decision_metrics) {
-  AutofillMetrics::LogCardUploadDecisionMetrics(upload_decision_metrics);
-  AutofillMetrics::LogCardUploadDecisionsUkm(
+  autofill_metrics::LogCardUploadDecisionMetrics(upload_decision_metrics);
+  autofill_metrics::LogCardUploadDecisionsUkm(
       client_->GetUkmRecorder(), client_->GetUkmSourceId(),
       pending_upload_request_origin_.GetURL(), upload_decision_metrics);
   pending_upload_request_origin_ = url::Origin();
@@ -1029,7 +1030,7 @@ void CreditCardSaveManager::LogCardUploadDecisionsToAutofillInternals(
   LogManager* log_manager = client_->GetLogManager();
 
   auto final_decision =
-      (upload_decision_metrics_ & AutofillMetrics::UPLOAD_OFFERED)
+      (upload_decision_metrics_ & autofill_metrics::UPLOAD_OFFERED)
           ? LogMessage::kCardUploadDecisionUploadOffered
           : LogMessage::kCardUploadDecisionUploadNotOffered;
 
@@ -1039,69 +1040,69 @@ void CreditCardSaveManager::LogCardUploadDecisionsToAutofillInternals(
                  << Tag{"td"} << "Decision Metrics:" << CTag{"td"} << Tag{"td"}
                  << Tag{"table"};
 
-  for (int i = 0; i < AutofillMetrics::kNumCardUploadDecisionMetrics; i++) {
-    AutofillMetrics::CardUploadDecisionMetric currentBitmaskValue =
-        static_cast<AutofillMetrics::CardUploadDecisionMetric>(1 << i);
+  for (int i = 0; i < autofill_metrics::kNumCardUploadDecisionMetrics; i++) {
+    autofill_metrics::CardUploadDecision currentBitmaskValue =
+        static_cast<autofill_metrics::CardUploadDecision>(1 << i);
     if (!(upload_decision_metrics & currentBitmaskValue))
       continue;
 
     std::string result;
     switch (currentBitmaskValue) {
-      case AutofillMetrics::UPLOAD_OFFERED:
+      case autofill_metrics::UPLOAD_OFFERED:
         result = "UPLOAD_OFFERED";
         break;
-      case AutofillMetrics::CVC_FIELD_NOT_FOUND:
+      case autofill_metrics::CVC_FIELD_NOT_FOUND:
         result = "CVC_FIELD_NOT_FOUND";
         break;
-      case AutofillMetrics::CVC_VALUE_NOT_FOUND:
+      case autofill_metrics::CVC_VALUE_NOT_FOUND:
         result = "CVC_VALUE_NOT_FOUND";
         break;
-      case AutofillMetrics::INVALID_CVC_VALUE:
+      case autofill_metrics::INVALID_CVC_VALUE:
         result = "INVALID_CVC_VALUE";
         break;
-      case AutofillMetrics::FOUND_POSSIBLE_CVC_VALUE_IN_NON_CVC_FIELD:
+      case autofill_metrics::FOUND_POSSIBLE_CVC_VALUE_IN_NON_CVC_FIELD:
         result = "FOUND_POSSIBLE_CVC_VALUE_IN_NON_CVC_FIELD";
         break;
-      case AutofillMetrics::UPLOAD_NOT_OFFERED_NO_ADDRESS_PROFILE:
+      case autofill_metrics::UPLOAD_NOT_OFFERED_NO_ADDRESS_PROFILE:
         result = "UPLOAD_NOT_OFFERED_NO_ADDRESS_PROFILE";
         break;
-      case AutofillMetrics::UPLOAD_NOT_OFFERED_NO_RECENTLY_USED_ADDRESS:
+      case autofill_metrics::UPLOAD_NOT_OFFERED_NO_RECENTLY_USED_ADDRESS:
         result = "UPLOAD_NOT_OFFERED_NO_RECENTLY_USED_ADDRESS";
         break;
-      case AutofillMetrics::UPLOAD_NOT_OFFERED_NO_ZIP_CODE:
+      case autofill_metrics::UPLOAD_NOT_OFFERED_NO_ZIP_CODE:
         result = "UPLOAD_NOT_OFFERED_NO_ZIP_CODE";
         break;
-      case AutofillMetrics::UPLOAD_NOT_OFFERED_CONFLICTING_ZIPS:
+      case autofill_metrics::UPLOAD_NOT_OFFERED_CONFLICTING_ZIPS:
         result = "UPLOAD_NOT_OFFERED_CONFLICTING_ZIPS";
         break;
-      case AutofillMetrics::UPLOAD_NOT_OFFERED_NO_NAME:
+      case autofill_metrics::UPLOAD_NOT_OFFERED_NO_NAME:
         result = "UPLOAD_NOT_OFFERED_NO_NAME";
         break;
-      case AutofillMetrics::UPLOAD_NOT_OFFERED_CONFLICTING_NAMES:
+      case autofill_metrics::UPLOAD_NOT_OFFERED_CONFLICTING_NAMES:
         result = "UPLOAD_NOT_OFFERED_CONFLICTING_NAMES";
         break;
-      case AutofillMetrics::UPLOAD_NOT_OFFERED_GET_UPLOAD_DETAILS_FAILED:
+      case autofill_metrics::UPLOAD_NOT_OFFERED_GET_UPLOAD_DETAILS_FAILED:
         result = "UPLOAD_NOT_OFFERED_GET_UPLOAD_DETAILS_FAILED";
         break;
-      case AutofillMetrics::USER_REQUESTED_TO_PROVIDE_CARDHOLDER_NAME:
+      case autofill_metrics::USER_REQUESTED_TO_PROVIDE_CARDHOLDER_NAME:
         result = "USER_REQUESTED_TO_PROVIDE_CARDHOLDER_NAME";
         break;
-      case AutofillMetrics::UPLOAD_NOT_OFFERED_MAX_STRIKES_ON_MOBILE:
+      case autofill_metrics::UPLOAD_NOT_OFFERED_MAX_STRIKES_ON_MOBILE:
         result = "UPLOAD_NOT_OFFERED_MAX_STRIKES_ON_MOBILE";
         break;
-      case AutofillMetrics::USER_REQUESTED_TO_PROVIDE_EXPIRATION_DATE:
+      case autofill_metrics::USER_REQUESTED_TO_PROVIDE_EXPIRATION_DATE:
         result = "USER_REQUESTED_TO_PROVIDE_EXPIRATION_DATE";
         break;
-      case AutofillMetrics::UPLOAD_OFFERED_FROM_NON_FOCUSABLE_FIELD:
+      case autofill_metrics::UPLOAD_OFFERED_FROM_NON_FOCUSABLE_FIELD:
         result = "UPLOAD_OFFERED_FROM_NON_FOCUSABLE_FIELD";
         break;
-      case AutofillMetrics::UPLOAD_NOT_OFFERED_UNSUPPORTED_BIN_RANGE:
+      case autofill_metrics::UPLOAD_NOT_OFFERED_UNSUPPORTED_BIN_RANGE:
         result = "UPLOAD_NOT_OFFERED_UNSUPPORTED_BIN_RANGE";
         break;
-      case AutofillMetrics::UPLOAD_OFFERED_FROM_DYNAMIC_CHANGE_FORM:
+      case autofill_metrics::UPLOAD_OFFERED_FROM_DYNAMIC_CHANGE_FORM:
         result = "UPLOAD_OFFERED_FROM_DYNAMIC_CHANGE_FORM";
         break;
-      case AutofillMetrics::UPLOAD_NOT_OFFERED_INVALID_LEGAL_MESSAGE:
+      case autofill_metrics::UPLOAD_NOT_OFFERED_INVALID_LEGAL_MESSAGE:
         result = "UPLOAD_NOT_OFFERED_INVALID_LEGAL_MESSAGE";
         break;
     }
@@ -1122,16 +1123,16 @@ void CreditCardSaveManager::LogSaveCardRequestExpirationDateReasonMetric() {
           .empty();
 
   if (is_month_empty && is_year_empty) {
-    AutofillMetrics::LogSaveCardRequestExpirationDateReasonMetric(
-        AutofillMetrics::SaveCardRequestExpirationDateReasonMetric::
+    autofill_metrics::LogSaveCardRequestExpirationDateReasonMetric(
+        autofill_metrics::SaveCardRequestExpirationDateReason::
             kMonthAndYearMissing);
   } else if (is_month_empty) {
-    AutofillMetrics::LogSaveCardRequestExpirationDateReasonMetric(
-        AutofillMetrics::SaveCardRequestExpirationDateReasonMetric::
+    autofill_metrics::LogSaveCardRequestExpirationDateReasonMetric(
+        autofill_metrics::SaveCardRequestExpirationDateReason::
             kMonthMissingOnly);
   } else if (is_year_empty) {
-    AutofillMetrics::LogSaveCardRequestExpirationDateReasonMetric(
-        AutofillMetrics::SaveCardRequestExpirationDateReasonMetric::
+    autofill_metrics::LogSaveCardRequestExpirationDateReasonMetric(
+        autofill_metrics::SaveCardRequestExpirationDateReason::
             kYearMissingOnly);
   } else {
     int month = 0, year = 0;
@@ -1146,8 +1147,8 @@ void CreditCardSaveManager::LogSaveCardRequestExpirationDateReasonMetric() {
     DCHECK(parsable);
     // Month and year are not empty, so they must be expired.
     DCHECK(!IsValidCreditCardExpirationDate(year, month, AutofillClock::Now()));
-    AutofillMetrics::LogSaveCardRequestExpirationDateReasonMetric(
-        AutofillMetrics::SaveCardRequestExpirationDateReasonMetric::
+    autofill_metrics::LogSaveCardRequestExpirationDateReasonMetric(
+        autofill_metrics::SaveCardRequestExpirationDateReason::
             kExpirationDatePresentButExpired);
   }
 }

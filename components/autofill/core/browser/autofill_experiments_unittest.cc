@@ -9,6 +9,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
+#include "components/autofill/core/browser/metrics/payments/credit_card_save_metrics.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
@@ -68,10 +69,10 @@ TEST_F(AutofillExperimentsTest, IsCardUploadEnabled_FeatureEnabled) {
       AutofillSyncSigninState::kSignedInAndSyncFeatureEnabled));
   histogram_tester.ExpectUniqueSample(
       "Autofill.CardUploadEnabled",
-      AutofillMetrics::CardUploadEnabledMetric::ENABLED_BY_FLAG, 1);
+      autofill_metrics::CardUploadEnabled::kEnabledByFlag, 1);
   histogram_tester.ExpectUniqueSample(
       "Autofill.CardUploadEnabled.SignedInAndSyncFeatureEnabled",
-      AutofillMetrics::CardUploadEnabledMetric::ENABLED_BY_FLAG, 1);
+      autofill_metrics::CardUploadEnabled::kEnabledByFlag, 1);
 }
 
 TEST_F(AutofillExperimentsTest, IsCardUploadEnabled_UnsupportedCountry) {
@@ -81,10 +82,10 @@ TEST_F(AutofillExperimentsTest, IsCardUploadEnabled_UnsupportedCountry) {
       AutofillSyncSigninState::kSignedInAndSyncFeatureEnabled));
   histogram_tester.ExpectUniqueSample(
       "Autofill.CardUploadEnabled",
-      AutofillMetrics::CardUploadEnabledMetric::UNSUPPORTED_COUNTRY, 1);
+      autofill_metrics::CardUploadEnabled::kUnsupportedCountry, 1);
   histogram_tester.ExpectUniqueSample(
       "Autofill.CardUploadEnabled.SignedInAndSyncFeatureEnabled",
-      AutofillMetrics::CardUploadEnabledMetric::UNSUPPORTED_COUNTRY, 1);
+      autofill_metrics::CardUploadEnabled::kUnsupportedCountry, 1);
 }
 
 TEST_F(AutofillExperimentsTest, IsCardUploadEnabled_SupportedCountry) {
@@ -97,24 +98,22 @@ TEST_F(AutofillExperimentsTest, IsCardUploadEnabled_SupportedCountry) {
       AutofillSyncSigninState::kSignedInAndSyncFeatureEnabled));
   histogram_tester.ExpectUniqueSample(
       "Autofill.CardUploadEnabled",
-      AutofillMetrics::CardUploadEnabledMetric::ENABLED_FOR_COUNTRY, 1);
+      autofill_metrics::CardUploadEnabled::kEnabledForCountry, 1);
   histogram_tester.ExpectUniqueSample(
       "Autofill.CardUploadEnabled.SignedInAndSyncFeatureEnabled",
-      AutofillMetrics::CardUploadEnabledMetric::ENABLED_FOR_COUNTRY, 1);
+      autofill_metrics::CardUploadEnabled::kEnabledForCountry, 1);
 }
 
 TEST_F(AutofillExperimentsTest, IsCardUploadEnabled_AuthError) {
   sync_service_.SetAuthError(
       GoogleServiceAuthError(GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS));
   EXPECT_FALSE(IsCreditCardUploadEnabled(AutofillSyncSigninState::kSyncPaused));
-  histogram_tester.ExpectUniqueSample("Autofill.CardUploadEnabled",
-                                      AutofillMetrics::CardUploadEnabledMetric::
-                                          SYNC_SERVICE_PERSISTENT_AUTH_ERROR,
-                                      1);
-  histogram_tester.ExpectUniqueSample("Autofill.CardUploadEnabled.SyncPaused",
-                                      AutofillMetrics::CardUploadEnabledMetric::
-                                          SYNC_SERVICE_PERSISTENT_AUTH_ERROR,
-                                      1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.CardUploadEnabled",
+      autofill_metrics::CardUploadEnabled::kSyncServicePersistentAuthError, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.CardUploadEnabled.SyncPaused",
+      autofill_metrics::CardUploadEnabled::kSyncServicePersistentAuthError, 1);
 }
 
 TEST_F(AutofillExperimentsTest,
@@ -124,13 +123,13 @@ TEST_F(AutofillExperimentsTest,
       AutofillSyncSigninState::kSignedInAndSyncFeatureEnabled));
   histogram_tester.ExpectUniqueSample(
       "Autofill.CardUploadEnabled",
-      AutofillMetrics::CardUploadEnabledMetric::
-          SYNC_SERVICE_MISSING_AUTOFILL_WALLET_DATA_ACTIVE_TYPE,
+      autofill_metrics::CardUploadEnabled::
+          kSyncServiceMissingAutofillWalletDataActiveType,
       1);
   histogram_tester.ExpectUniqueSample(
       "Autofill.CardUploadEnabled.SignedInAndSyncFeatureEnabled",
-      AutofillMetrics::CardUploadEnabledMetric::
-          SYNC_SERVICE_MISSING_AUTOFILL_WALLET_DATA_ACTIVE_TYPE,
+      autofill_metrics::CardUploadEnabled::
+          kSyncServiceMissingAutofillWalletDataActiveType,
       1);
 }
 
@@ -142,13 +141,13 @@ TEST_F(AutofillExperimentsTest,
       AutofillSyncSigninState::kSignedInAndSyncFeatureEnabled));
   histogram_tester.ExpectUniqueSample(
       "Autofill.CardUploadEnabled",
-      AutofillMetrics::CardUploadEnabledMetric::
-          SYNC_SERVICE_MISSING_AUTOFILL_PROFILE_ACTIVE_TYPE,
+      autofill_metrics::CardUploadEnabled::
+          kSyncServiceMissingAutofillProfileActiveType,
       1);
   histogram_tester.ExpectUniqueSample(
       "Autofill.CardUploadEnabled.SignedInAndSyncFeatureEnabled",
-      AutofillMetrics::CardUploadEnabledMetric::
-          SYNC_SERVICE_MISSING_AUTOFILL_PROFILE_ACTIVE_TYPE,
+      autofill_metrics::CardUploadEnabled::
+          kSyncServiceMissingAutofillProfileActiveType,
       1);
 }
 
@@ -159,12 +158,10 @@ TEST_F(AutofillExperimentsTest,
       AutofillSyncSigninState::kSignedInAndSyncFeatureEnabled));
   histogram_tester.ExpectUniqueSample(
       "Autofill.CardUploadEnabled",
-      AutofillMetrics::CardUploadEnabledMetric::USING_EXPLICIT_SYNC_PASSPHRASE,
-      1);
+      autofill_metrics::CardUploadEnabled::kUsingExplicitSyncPassphrase, 1);
   histogram_tester.ExpectUniqueSample(
       "Autofill.CardUploadEnabled.SignedInAndSyncFeatureEnabled",
-      AutofillMetrics::CardUploadEnabledMetric::USING_EXPLICIT_SYNC_PASSPHRASE,
-      1);
+      autofill_metrics::CardUploadEnabled::kUsingExplicitSyncPassphrase, 1);
 }
 
 TEST_F(AutofillExperimentsTest,
@@ -174,12 +171,10 @@ TEST_F(AutofillExperimentsTest,
       AutofillSyncSigninState::kSignedInAndSyncFeatureEnabled));
   histogram_tester.ExpectUniqueSample(
       "Autofill.CardUploadEnabled",
-      AutofillMetrics::CardUploadEnabledMetric::PAYMENTS_INTEGRATION_DISABLED,
-      1);
+      autofill_metrics::CardUploadEnabled::kPaymentsIntegrationDisabled, 1);
   histogram_tester.ExpectUniqueSample(
       "Autofill.CardUploadEnabled.SignedInAndSyncFeatureEnabled",
-      AutofillMetrics::CardUploadEnabledMetric::PAYMENTS_INTEGRATION_DISABLED,
-      1);
+      autofill_metrics::CardUploadEnabled::kPaymentsIntegrationDisabled, 1);
 }
 
 TEST_F(AutofillExperimentsTest, IsCardUploadEnabled_EmptyUserEmail) {
@@ -187,10 +182,10 @@ TEST_F(AutofillExperimentsTest, IsCardUploadEnabled_EmptyUserEmail) {
       "", AutofillSyncSigninState::kSignedInAndSyncFeatureEnabled));
   histogram_tester.ExpectUniqueSample(
       "Autofill.CardUploadEnabled",
-      AutofillMetrics::CardUploadEnabledMetric::EMAIL_EMPTY, 1);
+      autofill_metrics::CardUploadEnabled::kEmailEmpty, 1);
   histogram_tester.ExpectUniqueSample(
       "Autofill.CardUploadEnabled.SignedInAndSyncFeatureEnabled",
-      AutofillMetrics::CardUploadEnabledMetric::EMAIL_EMPTY, 1);
+      autofill_metrics::CardUploadEnabled::kEmailEmpty, 1);
 }
 
 TEST_F(AutofillExperimentsTest, IsCardUploadEnabled_TransportModeOnly) {
@@ -205,10 +200,10 @@ TEST_F(AutofillExperimentsTest, IsCardUploadEnabled_TransportModeOnly) {
       AutofillSyncSigninState::kSignedInAndSyncFeatureEnabled));
   histogram_tester.ExpectUniqueSample(
       "Autofill.CardUploadEnabled",
-      AutofillMetrics::CardUploadEnabledMetric::ENABLED_FOR_COUNTRY, 1);
+      autofill_metrics::CardUploadEnabled::kEnabledForCountry, 1);
   histogram_tester.ExpectUniqueSample(
       "Autofill.CardUploadEnabled.SignedInAndSyncFeatureEnabled",
-      AutofillMetrics::CardUploadEnabledMetric::ENABLED_FOR_COUNTRY, 1);
+      autofill_metrics::CardUploadEnabled::kEnabledForCountry, 1);
 }
 
 TEST_F(
@@ -229,10 +224,10 @@ TEST_F(
       AutofillSyncSigninState::kSignedInAndSyncFeatureEnabled));
   histogram_tester.ExpectUniqueSample(
       "Autofill.CardUploadEnabled",
-      AutofillMetrics::CardUploadEnabledMetric::ENABLED_FOR_COUNTRY, 1);
+      autofill_metrics::CardUploadEnabled::kEnabledForCountry, 1);
   histogram_tester.ExpectUniqueSample(
       "Autofill.CardUploadEnabled.SignedInAndSyncFeatureEnabled",
-      AutofillMetrics::CardUploadEnabledMetric::ENABLED_FOR_COUNTRY, 1);
+      autofill_metrics::CardUploadEnabled::kEnabledForCountry, 1);
 }
 
 TEST_F(AutofillExperimentsTest,
@@ -251,10 +246,10 @@ TEST_F(AutofillExperimentsTest,
       AutofillSyncSigninState::kSignedInAndSyncFeatureEnabled));
   histogram_tester.ExpectUniqueSample(
       "Autofill.CardUploadEnabled",
-      AutofillMetrics::CardUploadEnabledMetric::ENABLED_FOR_COUNTRY, 4);
+      autofill_metrics::CardUploadEnabled::kEnabledForCountry, 4);
   histogram_tester.ExpectUniqueSample(
       "Autofill.CardUploadEnabled.SignedInAndSyncFeatureEnabled",
-      AutofillMetrics::CardUploadEnabledMetric::ENABLED_FOR_COUNTRY, 4);
+      autofill_metrics::CardUploadEnabled::kEnabledForCountry, 4);
 }
 
 TEST_F(AutofillExperimentsTest,
@@ -275,10 +270,10 @@ TEST_F(AutofillExperimentsTest,
       AutofillSyncSigninState::kSignedInAndSyncFeatureEnabled));
   histogram_tester.ExpectUniqueSample(
       "Autofill.CardUploadEnabled",
-      AutofillMetrics::CardUploadEnabledMetric::ENABLED_FOR_COUNTRY, 4);
+      autofill_metrics::CardUploadEnabled::kEnabledForCountry, 4);
   histogram_tester.ExpectUniqueSample(
       "Autofill.CardUploadEnabled.SignedInAndSyncFeatureEnabled",
-      AutofillMetrics::CardUploadEnabledMetric::ENABLED_FOR_COUNTRY, 4);
+      autofill_metrics::CardUploadEnabled::kEnabledForCountry, 4);
 }
 
 TEST_F(
@@ -300,10 +295,10 @@ TEST_F(
       AutofillSyncSigninState::kSignedInAndSyncFeatureEnabled));
   histogram_tester.ExpectUniqueSample(
       "Autofill.CardUploadEnabled",
-      AutofillMetrics::CardUploadEnabledMetric::EMAIL_DOMAIN_NOT_SUPPORTED, 4);
+      autofill_metrics::CardUploadEnabled::kEmailDomainNotSupported, 4);
   histogram_tester.ExpectUniqueSample(
       "Autofill.CardUploadEnabled.SignedInAndSyncFeatureEnabled",
-      AutofillMetrics::CardUploadEnabledMetric::EMAIL_DOMAIN_NOT_SUPPORTED, 4);
+      autofill_metrics::CardUploadEnabled::kEmailDomainNotSupported, 4);
 }
 
 TEST_F(AutofillExperimentsTest,
@@ -324,10 +319,10 @@ TEST_F(AutofillExperimentsTest,
       AutofillSyncSigninState::kSignedInAndSyncFeatureEnabled));
   histogram_tester.ExpectUniqueSample(
       "Autofill.CardUploadEnabled",
-      AutofillMetrics::CardUploadEnabledMetric::ENABLED_FOR_COUNTRY, 4);
+      autofill_metrics::CardUploadEnabled::kEnabledForCountry, 4);
   histogram_tester.ExpectUniqueSample(
       "Autofill.CardUploadEnabled.SignedInAndSyncFeatureEnabled",
-      AutofillMetrics::CardUploadEnabledMetric::ENABLED_FOR_COUNTRY, 4);
+      autofill_metrics::CardUploadEnabled::kEnabledForCountry, 4);
 }
 
 TEST_F(AutofillExperimentsTest,
@@ -350,10 +345,10 @@ TEST_F(AutofillExperimentsTest,
       AutofillSyncSigninState::kSignedInAndSyncFeatureEnabled));
   histogram_tester.ExpectUniqueSample(
       "Autofill.CardUploadEnabled",
-      AutofillMetrics::CardUploadEnabledMetric::EMAIL_DOMAIN_NOT_SUPPORTED, 4);
+      autofill_metrics::CardUploadEnabled::kEmailDomainNotSupported, 4);
   histogram_tester.ExpectUniqueSample(
       "Autofill.CardUploadEnabled.SignedInAndSyncFeatureEnabled",
-      AutofillMetrics::CardUploadEnabledMetric::EMAIL_DOMAIN_NOT_SUPPORTED, 4);
+      autofill_metrics::CardUploadEnabled::kEmailDomainNotSupported, 4);
 }
 
 }  // namespace autofill

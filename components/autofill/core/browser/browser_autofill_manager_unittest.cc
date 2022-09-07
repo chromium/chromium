@@ -819,7 +819,7 @@ class BrowserAutofillManagerTest : public testing::Test {
   raw_ptr<TestFormDataImporter> test_form_data_importer_;
 
  private:
-  int ToHistogramSample(AutofillMetrics::CardUploadDecisionMetric metric) {
+  int ToHistogramSample(autofill_metrics::CardUploadDecision metric) {
     for (int sample = 0; sample < metric + 1; ++sample)
       if (metric & (1 << sample))
         return sample;

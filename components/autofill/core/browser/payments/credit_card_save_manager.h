@@ -18,6 +18,7 @@
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
+#include "components/autofill/core/browser/metrics/payments/credit_card_save_metrics.h"
 #include "components/autofill/core/browser/payments/credit_card_save_strike_database.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
 #include "components/autofill/core/browser/payments/local_card_migration_strike_database.h"
@@ -282,8 +283,7 @@ class CreditCardSaveManager {
   // |found_cvc_field_|, |found_value_in_cvc_field_| and
   // |found_cvc_value_in_non_cvc_field_|. Only called when a valid CVC was NOT
   // found.
-  AutofillMetrics::CardUploadDecisionMetric GetCVCCardUploadDecisionMetric()
-      const;
+  autofill_metrics::CardUploadDecision GetCVCCardUploadDecisionMetric() const;
 
   // Logs the card upload decisions in UKM and UMA.
   // |upload_decision_metrics| is a bitmask of
