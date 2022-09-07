@@ -441,6 +441,15 @@ FromGWSPageLoadMetricsObserver::OnFencedFramesStart(
 }
 
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
+FromGWSPageLoadMetricsObserver::OnPrerenderStart(
+    content::NavigationHandle* navigation_handle,
+    const GURL& currently_committed_url) {
+  // This class focuses on measuring pages outside the current scope of
+  // Prerendering: cross-origin/cross-site.
+  return STOP_OBSERVING;
+}
+
+page_load_metrics::PageLoadMetricsObserver::ObservePolicy
 FromGWSPageLoadMetricsObserver::OnCommit(
     content::NavigationHandle* navigation_handle) {
   // If this is a side panel initiated navigation the bit determining whether
