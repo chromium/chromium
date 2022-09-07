@@ -305,10 +305,10 @@ void FormStructureRationalizer::RationalizeStreetAddressAndAddressLine(
 void FormStructureRationalizer::RationalizePhoneNumbersInSection(
     const Section& section) {
   std::vector<AutofillField*> fields;
-  for (size_t i = 0; i < fields_.size(); ++i) {
-    if (fields_[i]->section != section)
+  for (const auto& field : fields_) {
+    if (field->section != section)
       continue;
-    fields.push_back(fields_[i].get());
+    fields.push_back(field.get());
   }
   rationalization_util::RationalizePhoneNumberFields(fields);
 }
