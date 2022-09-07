@@ -630,6 +630,7 @@ void AuctionRunner::Auction::OnInterestGroupRead(
       std::remove_if(interest_groups.begin(), interest_groups.end(),
                      [](const StorageInterestGroup& bidder) {
                        return !bidder.interest_group.bidding_url ||
+                              !bidder.interest_group.ads ||
                               bidder.interest_group.ads->empty();
                      }),
       interest_groups.end());

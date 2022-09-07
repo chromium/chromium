@@ -4327,6 +4327,23 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
           /*user_bidding_signals=*/R"({"some":"json","stuff":{"here":[1,2]}})",
           /*ads=*/{{{ad3_url, /*metadata=*/absl::nullopt}}},
           /*ad_components=*/absl::nullopt)));
+  EXPECT_EQ(
+      kSuccess,
+      JoinInterestGroupAndVerify(blink::InterestGroup(
+          /*expiry=*/base::Time(),
+          /*owner=*/test_origin,
+          /*name=*/"jetskis",
+          /*priority=*/0.0, /*execution_mode=*/
+          blink::InterestGroup::ExecutionMode::kCompatibilityMode,
+          /*bidding_url=*/
+          https_server_->GetURL("a.test", "/interest_group/bidding_logic.js"),
+          /*bidding_wasm_helper_url=*/absl::nullopt,
+          /*daily_update_url=*/absl::nullopt,
+          /*trusted_bidding_signals_url=*/absl::nullopt,
+          /*trusted_bidding_signals_keys=*/absl::nullopt,
+          /*user_bidding_signals=*/R"({"some":"json","stuff":{"here":[1,2]}})",
+          /*ads=*/absl::nullopt,
+          /*ad_components=*/absl::nullopt)));
 
   std::string auction_config = JsReplace(
       R"({
