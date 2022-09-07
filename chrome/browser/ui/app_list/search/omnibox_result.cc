@@ -8,8 +8,6 @@
 #include "ash/public/cpp/app_list/vector_icons/vector_icons.h"
 #include "ash/public/cpp/style/dark_light_mode_controller.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_util.h"
-#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/bitmap_fetcher/bitmap_fetcher.h"
 #include "chrome/browser/chromeos/launcher_search/search_util.h"
 #include "chrome/browser/profiles/profile.h"
@@ -26,10 +24,8 @@
 #include "extensions/common/image_util.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "url/gurl.h"
-#include "url/url_canon.h"
 
 using CrosApiSearchResult = crosapi::mojom::SearchResult;
 
@@ -224,11 +220,17 @@ void OmniboxResult::UpdateTitleAndDetails() {
                                           search_result_->contents_type));
 
     if (IsRichEntity()) {
-      SetDetails(description_);
+      // Append the search engine to the description.
+      const std::u16string description_with_search_context =
+          l10n_util::GetStringFUTF16(
+              IDS_APP_LIST_QUERY_SEARCH_DESCRIPTION, description_,
+              GetDefaultSearchEngineName(
+                  TemplateURLServiceFactory::GetForProfile(profile_)));
+      SetDetails(description_with_search_context);
       SetDetailsTags(TagsForTextWithMatchTags(
           query_, description_, search_result_->description_type));
 
-      // Append the search engine to the accessible name only.
+      // Append the search engine to the accessible name.
       const std::u16string accessible_name =
           details().empty() ? title()
                             : base::StrCat({title(), u", ", details()});

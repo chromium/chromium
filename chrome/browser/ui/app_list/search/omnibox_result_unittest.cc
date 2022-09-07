@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
-#include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/app_list/app_list_metrics.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/app_list/vector_icons/vector_icons.h"
@@ -22,7 +21,6 @@
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/chromeos/launcher_search/search_util.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
-#include "chrome/browser/ui/app_list/app_list_test_util.h"
 #include "chrome/browser/ui/app_list/search/chrome_search_result.h"
 #include "chrome/browser/ui/app_list/search/common/icon_constants.h"
 #include "chrome/browser/ui/app_list/test/test_app_list_controller_delegate.h"
@@ -42,7 +40,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
-#include "third_party/skia/include/core/SkRect.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -457,12 +454,15 @@ TEST_F(OmniboxResultTest, RichEntityText) {
       "https://example.com", AutocompleteMatchType::SEARCH_SUGGEST_ENTITY,
       GURL("https://example.com/icon.png"));
 
+  const std::u16string expected_description =
+      std::u16string(kExampleDescription) + u" - Google Search";
+
   // Both contents and description should be displayed.
   EXPECT_TRUE(IsSingletonTextVector(result->title_text_vector(),
                                     kExampleContents,
                                     kExpectedExampleContentsTags));
   EXPECT_TRUE(IsSingletonTextVector(result->details_text_vector(),
-                                    kExampleDescription,
+                                    expected_description,
                                     kExpectedExampleDescriptionTags));
 
   // Accessible name should be set.

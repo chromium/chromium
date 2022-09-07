@@ -11523,7 +11523,10 @@ Please help our engineers fix this problem. Tell us what happened right before y
         <message name="IDS_APP_ACTION_SHORTCUT_ACCESSIBILITY_NAME" desc="Hint text for the search result that performs a specific action with an app.">
           <ph name="ACTION_NAME">$1<ex>Compose</ex></ph> with <ph name="APP_NAME">$2<ex>GMail</ex></ph> App
         </message>
-        <message name="IDS_APP_LIST_QUERY_SEARCH_ACCESSIBILITY_NAME" desc="Hint text for the search result that will invoke a query search poweredy by the default search engine.">
+        <message name="IDS_APP_LIST_QUERY_SEARCH_DESCRIPTION" desc="Description text for the search result that will invoke a query search powered by the default search engine.">
+          <ph name="QUERY_NAME">$1<ex>Harry Potter</ex></ph> - <ph name="DEFAULT_SEARCH_ENGINE_NAME">$2<ex>Google</ex></ph> Search
+        </message>
+        <message name="IDS_APP_LIST_QUERY_SEARCH_ACCESSIBILITY_NAME" desc="Hint text for the search result that will invoke a query search powered by the default search engine.">
           <ph name="QUERY_NAME">$1<ex>Harry Potter</ex></ph>, <ph name="DEFAULT_SEARCH_ENGINE_NAME">$2<ex>Google</ex></ph> Search
         </message>
         <message name="IDS_APP_LIST_REMOVE_SUGGESTION_ACCESSIBILITY_NAME" desc="The spoken feedback for removing suggestion button">
