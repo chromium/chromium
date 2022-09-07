@@ -34,12 +34,6 @@ using testing::Return;
 namespace reporting {
 namespace {
 
-constexpr char kSamplerAudioTelemetry[] = "audio_telemetry";
-constexpr char kSamplerBootPerformance[] = "boot_performance";
-constexpr char kSamplerHttpsLatency[] = "https_latency";
-constexpr char kSamplerNetworkTelemetry[] = "network_telemetry";
-constexpr char kSamplerPeripheralTelemetry[] = "peripheral_telemetry";
-
 class FakeMetricEventObserver : public MetricEventObserver {
  public:
   FakeMetricEventObserver() = default;
@@ -302,72 +296,6 @@ TEST_F(MetricReportingManagerTest, InitiallyDeprovisioned) {
   EXPECT_EQ(periodic_collector_count, 0);
   EXPECT_EQ(periodic_event_collector_count, 0);
   EXPECT_EQ(observer_manager_count, 0);
-}
-
-TEST_F(MetricReportingManagerTest, TelemetrySamplers_NonAffiliatedUser) {
-  auto mock_delegate = std::make_unique<::testing::NiceMock<MockDelegate>>();
-  ON_CALL(*mock_delegate, IsDeprovisioned).WillByDefault(Return(false));
-  ON_CALL(*mock_delegate, IsAffiliated).WillByDefault(Return(false));
-  auto metric_reporting_manager = MetricReportingManager::CreateForTesting(
-      std::move(mock_delegate), nullptr);
-
-  EXPECT_THAT(metric_reporting_manager->GetConfiguredTelemetrySampler(
-                  kSamplerBootPerformance),
-              Ne(nullptr));
-
-  metric_reporting_manager->OnLogin(nullptr);
-
-  EXPECT_THAT(metric_reporting_manager->GetConfiguredTelemetrySampler(
-                  kSamplerAudioTelemetry),
-              Eq(nullptr));
-  EXPECT_THAT(metric_reporting_manager->GetConfiguredTelemetrySampler(
-                  kSamplerHttpsLatency),
-              Eq(nullptr));
-  EXPECT_THAT(metric_reporting_manager->GetConfiguredTelemetrySampler(
-                  kSamplerNetworkTelemetry),
-              Eq(nullptr));
-  EXPECT_THAT(metric_reporting_manager->GetConfiguredTelemetrySampler(
-                  kSamplerPeripheralTelemetry),
-              Eq(nullptr));
-}
-
-TEST_F(MetricReportingManagerTest, TelemetrySamplers_AffiliatedUser) {
-  auto mock_delegate = std::make_unique<::testing::NiceMock<MockDelegate>>();
-  ON_CALL(*mock_delegate, IsDeprovisioned).WillByDefault(Return(false));
-  ON_CALL(*mock_delegate, IsAffiliated).WillByDefault(Return(true));
-  auto metric_reporting_manager = MetricReportingManager::CreateForTesting(
-      std::move(mock_delegate), nullptr);
-
-  EXPECT_THAT(metric_reporting_manager->GetConfiguredTelemetrySampler(
-                  kSamplerBootPerformance),
-              Ne(nullptr));
-  EXPECT_THAT(metric_reporting_manager->GetConfiguredTelemetrySampler(
-                  kSamplerAudioTelemetry),
-              Eq(nullptr));
-  EXPECT_THAT(metric_reporting_manager->GetConfiguredTelemetrySampler(
-                  kSamplerHttpsLatency),
-              Eq(nullptr));
-  EXPECT_THAT(metric_reporting_manager->GetConfiguredTelemetrySampler(
-                  kSamplerNetworkTelemetry),
-              Eq(nullptr));
-  EXPECT_THAT(metric_reporting_manager->GetConfiguredTelemetrySampler(
-                  kSamplerPeripheralTelemetry),
-              Eq(nullptr));
-
-  metric_reporting_manager->OnLogin(nullptr);
-
-  EXPECT_THAT(metric_reporting_manager->GetConfiguredTelemetrySampler(
-                  kSamplerAudioTelemetry),
-              Ne(nullptr));
-  EXPECT_THAT(metric_reporting_manager->GetConfiguredTelemetrySampler(
-                  kSamplerHttpsLatency),
-              Ne(nullptr));
-  EXPECT_THAT(metric_reporting_manager->GetConfiguredTelemetrySampler(
-                  kSamplerNetworkTelemetry),
-              Ne(nullptr));
-  EXPECT_THAT(metric_reporting_manager->GetConfiguredTelemetrySampler(
-                  kSamplerPeripheralTelemetry),
-              Ne(nullptr));
 }
 
 class MetricReportingManagerInfoTest : public MetricReportingManagerTest {};

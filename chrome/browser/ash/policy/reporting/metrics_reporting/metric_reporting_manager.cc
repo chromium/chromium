@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "ash/components/settings/cros_settings_names.h"
 #include "base/check.h"
@@ -105,14 +106,10 @@ void MetricReportingManager::DeviceSettingsUpdated() {
   }
 }
 
-ConfiguredSampler* MetricReportingManager::GetConfiguredTelemetrySampler(
-    base::StringPiece sampler_name) {
+std::vector<ConfiguredSampler*> MetricReportingManager::GetTelemetrySamplers(
+    MetricEventType event_type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (!base::Contains(telemetry_sampler_map_, sampler_name)) {
-    return nullptr;
-  }
-  return telemetry_sampler_map_.at(sampler_name).get();
+  return {};
 }
 
 MetricReportingManager::MetricReportingManager(
