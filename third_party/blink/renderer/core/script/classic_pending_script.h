@@ -58,9 +58,7 @@ class CORE_EXPORT ClassicPendingScript final
                        const String& source_text_for_inline_script,
                        ScriptSourceLocationType,
                        const ScriptFetchOptions&,
-                       bool is_external,
-                       bool is_eligible_for_delay,
-                       bool is_eligible_for_selective_in_order);
+                       bool is_external);
   ~ClassicPendingScript() override;
 
   void Trace(Visitor*) const override;
@@ -78,16 +76,6 @@ class CORE_EXPORT ClassicPendingScript final
 
   // ScriptCacheConsumerClient:
   void NotifyCacheConsumeFinished() override;
-
-  // Check if this script is eligible for DelayAsyncScriptExecution
-  // (see crbug/1340837).
-  bool IsEligibleForDelay() const override;
-
-  // Check if this script is eligible for SelectiveInOrderScript
-  // (see crbug/1356396).
-  bool IsEligibleForSelectiveInOrder() const override {
-    return is_eligible_for_selective_in_order_;
-  }
 
  private:
   // See AdvanceReadyState implementation for valid state transitions.
@@ -135,12 +123,6 @@ class CORE_EXPORT ClassicPendingScript final
   const ScriptSourceLocationType source_location_type_;
   const bool is_external_;
   ReadyState ready_state_;
-  // Describes if this script is eligible for DelayAsyncScriptExecution
-  // (see crbug/1340837).
-  const bool is_eligible_for_delay_;
-  // Describes if this script is eligible for SelectiveInOrderScript
-  // (see crbug/1356396).
-  const bool is_eligible_for_selective_in_order_;
 
   // The request is intervened by document.write() intervention.
   bool intervened_ = false;

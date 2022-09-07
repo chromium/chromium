@@ -107,7 +107,9 @@ class ScriptRunnerTest : public testing::Test {
   }
 
   void QueueScriptForExecution(MockPendingScript* pending_script) {
-    script_runner_->QueueScriptForExecution(pending_script);
+    script_runner_->QueueScriptForExecution(
+        pending_script, static_cast<ScriptRunner::DelayReasons>(
+                            ScriptRunner::DelayReason::kLoad));
   }
 
   std::unique_ptr<DummyPageHolder> page_holder_;

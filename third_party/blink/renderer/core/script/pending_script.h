@@ -132,9 +132,6 @@ class CORE_EXPORT PendingScript : public GarbageCollected<PendingScript>,
   // This is virtual only for testing.
   virtual void ExecuteScriptBlock();
 
-  virtual bool IsEligibleForDelay() const { return false; }
-  virtual bool IsEligibleForSelectiveInOrder() const { return false; }
-
   bool IsWatchingForLoad() const { return client_; }
 
  protected:

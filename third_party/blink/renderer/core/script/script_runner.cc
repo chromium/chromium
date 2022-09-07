@@ -97,37 +97,15 @@ ScriptRunner::ScriptRunner(Document* document)
   DCHECK(document);
 }
 
-ScriptRunner::DelayReasons ScriptRunner::DetermineDelayReasonsToWait(
-    PendingScript* pending_script) {
-  DelayReasons reasons = static_cast<DelayReasons>(DelayReason::kLoad);
-
-  if (pending_script->IsEligibleForDelay() &&
-      (active_delay_reasons_ &
-       static_cast<DelayReasons>(DelayReason::kMilestone))) {
-    reasons |= static_cast<DelayReasons>(DelayReason::kMilestone);
-  }
-
-  if (base::FeatureList::IsEnabled(features::kForceDeferScriptIntervention)) {
-    if (active_delay_reasons_ &
-        static_cast<DelayReasons>(DelayReason::kForceDefer)) {
-      reasons |= static_cast<DelayReasons>(DelayReason::kForceDefer);
-    }
-  }
-
-  return reasons;
-}
-
-void ScriptRunner::QueueScriptForExecution(
-    PendingScript* pending_script,
-    absl::optional<DelayReasons> delay_reasons_override_for_test) {
+void ScriptRunner::QueueScriptForExecution(PendingScript* pending_script,
+                                           DelayReasons delay_reasons) {
   DCHECK(pending_script);
+  DCHECK(delay_reasons & static_cast<DelayReasons>(DelayReason::kLoad));
   document_->IncrementLoadEventDelayCount();
+
   switch (pending_script->GetSchedulingType()) {
     case ScriptSchedulingType::kAsync:
-      pending_async_scripts_.insert(
-          pending_script, delay_reasons_override_for_test
-                              ? *delay_reasons_override_for_test
-                              : DetermineDelayReasonsToWait(pending_script));
+      pending_async_scripts_.insert(pending_script, delay_reasons);
       break;
 
     case ScriptSchedulingType::kInOrder:
@@ -149,12 +127,12 @@ void ScriptRunner::QueueScriptForExecution(
 }
 
 void ScriptRunner::AddDelayReason(DelayReason delay_reason) {
-  DCHECK(!(active_delay_reasons_ & static_cast<DelayReasons>(delay_reason)));
+  DCHECK(!IsActive(delay_reason));
   active_delay_reasons_ |= static_cast<DelayReasons>(delay_reason);
 }
 
 void ScriptRunner::RemoveDelayReason(DelayReason delay_reason) {
-  DCHECK(active_delay_reasons_ & static_cast<DelayReasons>(delay_reason));
+  DCHECK(IsActive(delay_reason));
   active_delay_reasons_ &= ~static_cast<DelayReasons>(delay_reason);
 
   HeapVector<Member<PendingScript>> pending_async_scripts;

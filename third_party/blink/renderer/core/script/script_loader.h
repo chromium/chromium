@@ -106,8 +106,6 @@ class CORE_EXPORT ScriptLoader final : public ResourceFinishObserver,
   void HandleAsyncAttribute();
   void Removed();
 
-  void SetFetchDocWrittenScriptDeferIdle();
-
  private:
   // ResourceFinishObserver. This should be used only for managing
   // `resource_keep_alive_` lifetime and shouldn't be used for script
@@ -120,11 +118,6 @@ class CORE_EXPORT ScriptLoader final : public ResourceFinishObserver,
   PendingScript* TakePendingScript(ScriptSchedulingType);
   // Get the effective script text (after Trusted Types checking).
   String GetScriptText() const;
-  void FetchClassicScript(const KURL&,
-                          Document&,
-                          const ScriptFetchOptions&,
-                          CrossOriginAttributeValue,
-                          const WTF::TextEncoding&);
   void FetchModuleScriptTree(const KURL&,
                              ResourceFetcher*,
                              Modulator*,

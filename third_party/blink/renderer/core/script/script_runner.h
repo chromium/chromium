@@ -56,9 +56,9 @@ class CORE_EXPORT ScriptRunner final : public GarbageCollected<ScriptRunner>,
   // be at most one active `ScriptRunnerDelayer` for each `ScriptRunnerDelayer`
   // for each `ScriptRunner`.
   //
-  // Each script can choose to wait or not to wait for each `DelayReason` (See
-  // `DetermineDelayReasonsToWait()`), and are evaluated after all of its
-  // relevant `ScriptRunnerDelayer`s are deactivated.
+  // Each script can choose to wait or not to wait for each `DelayReason`, and
+  // are evaluated after all of its relevant `ScriptRunnerDelayer`s are
+  // deactivated.
   //
   // This can be spec-conformant (pretending that the loading of async scripts
   // are not completed until `ScriptRunnerDelayer`s are deactivated), but be
@@ -79,10 +79,10 @@ class CORE_EXPORT ScriptRunner final : public GarbageCollected<ScriptRunner>,
   };
   using DelayReasons = std::underlying_type<DelayReason>::type;
 
-  void QueueScriptForExecution(
-      PendingScript*,
-      absl::optional<DelayReasons> delay_reason_override_for_test =
-          absl::nullopt);
+  void QueueScriptForExecution(PendingScript*, DelayReasons);
+  bool IsActive(DelayReason delay_reason) const {
+    return active_delay_reasons_ & static_cast<DelayReasons>(delay_reason);
+  }
 
   void SetTaskRunnerForTesting(base::SingleThreadTaskRunner* task_runner) {
     task_runner_ = task_runner;
@@ -110,7 +110,6 @@ class CORE_EXPORT ScriptRunner final : public GarbageCollected<ScriptRunner>,
   friend class ScriptRunnerDelayer;
   void AddDelayReason(DelayReason);
   void RemoveDelayReason(DelayReason);
-  DelayReasons DetermineDelayReasonsToWait(PendingScript*);
   void RemoveDelayReasonFromScript(PendingScript*, DelayReason);
 
   Member<Document> document_;
