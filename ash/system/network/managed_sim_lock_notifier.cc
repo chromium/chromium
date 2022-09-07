@@ -76,7 +76,8 @@ void ManagedSimLockNotifier::OnGetDeviceStateList(
 
   // Remove Notification and reset |primary_iccid_| if no cellular device or
   // the cellular device is currently not enabled.
-  if (!cellular_device ||
+  if (!cellular_device || !cellular_device->sim_lock_status ||
+      !cellular_device->sim_infos ||
       cellular_device->device_state !=
           chromeos::network_config::mojom::DeviceStateType::kEnabled) {
     primary_iccid_.clear();
