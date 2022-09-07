@@ -12,7 +12,7 @@ import "ui/gfx/geometry/mojom/geometry.mojom";
 // them e.g. get the size of the shelf, open new windows, etc.
 interface CrosWindowManagementTestHelper {
   // Opens a test System Web App window. The C++ part of the test needs to call
-  // `swa_installation().WaitForAppInstall()`  to unsure the test SWA is
+  // `swa_installation().WaitForAppInstall()` to ensure the test SWA is
   // installed before opening with this method.
   OpenSystemWebAppWindow() => (string window_id);
 
