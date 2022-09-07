@@ -10,7 +10,7 @@
 #import "base/ios/block_types.h"
 
 // Detects freezes of the main thread.
-// This class that the main thread runloop is run at least every
+// This class checks that the main thread runloop is run at least every
 // `TimeoutForMainThreadFreezeDetection`. If this is not the case, a
 // NSUserDefault flag is raised and a crash report is generated capturing the
 // stack of the main frame at that time.
