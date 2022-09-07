@@ -4,9 +4,13 @@
 
 #import "ios/chrome/app/main_application_delegate.h"
 
-#include "base/ios/ios_util.h"
-#include "base/mac/foundation_util.h"
-#include "base/metrics/user_metrics.h"
+#import <UserNotifications/UserNotifications.h>
+
+#import "base/ios/ios_util.h"
+#import "base/mac/foundation_util.h"
+#import "base/metrics/histogram_functions.h"
+#import "base/metrics/user_metrics.h"
+#import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/application_delegate/browser_launcher.h"
 #import "ios/chrome/app/application_delegate/memory_warning_helper.h"
@@ -20,7 +24,8 @@
 #import "ios/chrome/app/chrome_overlay_window.h"
 #import "ios/chrome/app/main_application_delegate_testing.h"
 #import "ios/chrome/app/main_controller.h"
-#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/push_notification/push_notification_delegate.h"
+#import "ios/chrome/browser/push_notification/push_notification_util.h"
 #import "ios/chrome/browser/ui/main/scene_controller.h"
 #import "ios/chrome/browser/ui/main/scene_delegate.h"
 #import "ios/chrome/browser/ui/main/scene_state.h"
@@ -54,6 +59,9 @@ const int kMainIntentCheckDelay = 1;
   // The set of "scene sessions" that needs to be discarded. See
   // -applicatiopn:didDiscardSceneSessions: for details.
   NSSet<UISceneSession*>* _sceneSessionsToDiscard;
+  // Delegate that handles delivered push notification
+  // workflows.
+  PushNotificationDelegate* _pushNotificationDelegate;
 }
 
 // YES if application:didFinishLaunchingWithOptions: was called. Used to
@@ -73,6 +81,7 @@ const int kMainIntentCheckDelay = 1;
     [_mainController setMetricsMediator:_metricsMediator];
     _browserLauncher = _mainController;
     _startupInformation = _mainController;
+    _pushNotificationDelegate = [[PushNotificationDelegate alloc] init];
     _appState = [[AppState alloc] initWithBrowserLauncher:_browserLauncher
                                        startupInformation:_startupInformation
                                       applicationDelegate:self];
@@ -136,6 +145,17 @@ const int kMainIntentCheckDelay = 1;
              name:UIApplicationWillEnterForegroundNotification
            object:nil];
 
+  UNUserNotificationCenter* center =
+      UNUserNotificationCenter.currentNotificationCenter;
+  center.delegate = _pushNotificationDelegate;
+
+  [PushNotificationUtil
+      getPermissionSettings:^(UNNotificationSettings* settings) {
+        if (settings.authorizationStatus == UNAuthorizationStatusAuthorized) {
+          [PushNotificationUtil registerDeviceWithAPNS];
+        }
+      }];
+
   return requiresHandling;
 }
 
@@ -190,6 +210,42 @@ const int kMainIntentCheckDelay = 1;
   }
   // Apply a no-op mask by default.
   return UIInterfaceOrientationMaskAll;
+}
+
+- (void)application:(UIApplication*)application
+    didReceiveRemoteNotification:(NSDictionary*)userInfo
+          fetchCompletionHandler:
+              (void (^)(UIBackgroundFetchResult result))completionHandler {
+  // This method is invoked by iOS to process an incoming remote push
+  // notification for the application and fetch any additional data.
+
+  // According to the documentation, iOS invokes this function whether the
+  // application is in the foreground or background. In addition, iOS will
+  // launch the application and place it in background mode to invoke this
+  // function. However, iOS will not do this if the user has force-quit the
+  // application. In that case, the user must relaunch the application or must
+  // restart the device before the system will launch the application and invoke
+  // this function.
+  UIBackgroundFetchResult result = [_pushNotificationDelegate
+      applicationWillProcessIncomingRemoteNotification:userInfo];
+  if (completionHandler) {
+    completionHandler(result);
+  }
+}
+
+- (void)application:(UIApplication*)application
+    didRegisterForRemoteNotificationsWithDeviceToken:(NSData*)deviceToken {
+  // This method is invoked by iOS on the successful registration of the app to
+  // APNS and retrieval of the device's APNS token.
+  [_pushNotificationDelegate applicationDidRegisterWithAPNS:deviceToken];
+}
+
+- (void)application:(UIApplication*)application
+    didFailToRegisterForRemoteNotificationsWithError:(NSError*)error {
+  // This method is invoked by iOS to inform the application that the attempt to
+  // obtain the device's APNS token from APNS failed
+  base::UmaHistogramBoolean("IOS.PushNotification.APNSDeviceRegistration",
+                            false);
 }
 
 #pragma mark - Scenes lifecycle

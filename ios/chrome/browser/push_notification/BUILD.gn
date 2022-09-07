@@ -7,6 +7,8 @@ source_set("push_notification_service") {
   sources = [
     "push_notification_configuration.h",
     "push_notification_configuration.mm",
+    "push_notification_delegate.h",
+    "push_notification_delegate.mm",
     "push_notification_service.h",
     "push_notification_service.mm",
     "push_notification_util.h",
@@ -15,6 +17,8 @@ source_set("push_notification_service") {
   deps = [
     ":push_notification_client_manager",
     "//base",
+    "//ios/chrome/browser/application_context:application_context",
+    "//ios/chrome/browser/browser_state:browser_state",
   ]
 }
 source_set("push_notification_client_manager") {

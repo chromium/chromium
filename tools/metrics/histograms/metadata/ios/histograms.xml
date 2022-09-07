@@ -1383,6 +1383,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.PushNotification.APNSDeviceRegistration"
+    enum="BooleanSuccess" expires_after="2023-07-01">
+  <owner>ajuma@google.com</owner>
+  <owner>danieltwhite@google.com</owner>
+  <summary>
+    Logs whether the user's device was or was not able to successfully register
+    with APNS and retrieve an APNS device token. An APNS device token is needed
+    to successfully register the user's device with Chime. This histogram is
+    logged during application startup and each time the user signs into an
+    account.
+  </summary>
+</histogram>
+
 <histogram name="IOS.PushNotification.ChimeDeviceRegistration"
     enum="BooleanSuccess" expires_after="2023-07-01">
   <owner>ajuma@google.com</owner>
@@ -1393,6 +1406,23 @@ chromium-metrics-reviews@google.com.
     start-up if the difference between the previous time the device was
     registered with Chime and the current application start-up is greater than
     the predefined time interval threshold (currently set at one day).
+  </summary>
+</histogram>
+
+<histogram name="IOS.PushNotification.IncomingNotificationProcessingTime"
+    units="ms" expires_after="2023-07-01">
+  <owner>ajuma@google.com</owner>
+  <owner>danieltwhite@google.com</owner>
+  <summary>
+    Logs the amount of time it takes for Chrome to process an incoming
+    notification. iOS allows applications to process notifications and fetch any
+    additional data needed for up to 30 seconds. iOS tracks the amount of power
+    Chrome uses, the time it takes for it to finish processing the incoming
+    notification, and data costs for background downloads. According to the
+    documentation, if iOS determines that Chrome uses significant amounts of
+    power when processing remote notifications, iOS may not always wake up
+    Chrome early to process future notifications. Thus, this histogram uses
+    processing time as a proxy for iOS' three parameters.
   </summary>
 </histogram>
 

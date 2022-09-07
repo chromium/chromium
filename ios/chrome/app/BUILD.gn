@@ -395,6 +395,7 @@ source_set("app_internal") {
     "//ios/chrome/browser/ntp:features",
     "//ios/chrome/browser/omaha",
     "//ios/chrome/browser/passwords",
+    "//ios/chrome/browser/push_notification:push_notification_service",
     "//ios/chrome/browser/reading_list",
     "//ios/chrome/browser/screenshot",
     "//ios/chrome/browser/search_engines",

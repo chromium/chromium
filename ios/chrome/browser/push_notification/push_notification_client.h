@@ -6,6 +6,7 @@
 #define IOS_CHROME_BROWSER_PUSH_NOTIFICATION_PUSH_NOTIFICATION_CLIENT_H_
 
 #import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
 #import <UserNotifications/UserNotifications.h>
 #import <string>
 
@@ -22,13 +23,15 @@ class PushNotificationClient {
 
   // When the user interacts with a push notification, this function is called
   // to route the user to the appropriate destination.
-  virtual void HandleInteractedNotification(
+  virtual void HandleNotificationInteraction(
       UNNotificationResponse* notification_response) = 0;
 
   // When the device receives a push notification, this function is called to
-  // allow the client to process any logic needed at this point in time.
-  virtual void HandleReceivedNotification(
-      NSDictionary<NSString*, id>* notification) = 0;
+  // allow the client to process any logic needed at this point in time. The
+  // function's return value represents the state of data that the
+  // PushNotificationClient fetched.
+  virtual UIBackgroundFetchResult HandleNotificationReception(
+      NSDictionary<NSString*, id>* user_info) = 0;
 
   // Actionable Notifications are push notifications that provide the user
   // with predetermined actions that the user can select to manipulate the

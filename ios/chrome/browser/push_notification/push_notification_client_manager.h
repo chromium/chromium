@@ -5,6 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_PUSH_NOTIFICATION_PUSH_NOTIFICATION_CLIENT_MANAGER_H_
 #define IOS_CHROME_BROWSER_PUSH_NOTIFICATION_PUSH_NOTIFICATION_CLIENT_MANAGER_H_
 
+#import <UIKit/UIKit.h>
 #import <UserNotifications/UserNotifications.h>
 #import <memory>
 #import <unordered_map>
@@ -31,17 +32,19 @@ class PushNotificationClientManager {
       PushNotificationClientId client_id,
       std::unique_ptr<PushNotificationClient> client);
 
-  // This function is called when the user interacts with the delievered
+  // This function is called when the user interacts with the delivered
   // notification. This function identifies and delegates the interacted with
   // notification to the appropriate PushNotificationClient.
-  void OnNotificationInteraction(UNNotificationResponse* notification_response);
+  void HandleNotificationInteraction(
+      UNNotificationResponse* notification_response);
 
-  // When a push notification is sent from the server and delievered to the
+  // When a push notification is sent from the server and delivered to the
   // device, UIApplicationDelegate::didReceiveRemoteNotification is invoked.
   // During that invocation, this function is called. This function identifies
-  // and delegates the delievered notification to the appropriate
+  // and delegates the delivered notification to the appropriate
   // PushNotificationClient.
-  void OnNotificationReceived(NSDictionary<NSString*, id>* notification);
+  UIBackgroundFetchResult HandleNotificationReception(
+      NSDictionary<NSString*, id>* user_info);
 
  private:
   // A list of features that support push notifications.

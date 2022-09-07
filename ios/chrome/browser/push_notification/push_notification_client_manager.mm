@@ -25,29 +25,32 @@ void PushNotificationClientManager::AddPushNotificationClient(
   clients_.insert(std::make_pair(client_id, std::move(client)));
 }
 
-void PushNotificationClientManager::OnNotificationInteraction(
+void PushNotificationClientManager::HandleNotificationInteraction(
     UNNotificationResponse* notification_response) {
-  NSDictionary* notification =
+  NSDictionary* user_info =
       notification_response.notification.request.content.userInfo;
 
   PushNotificationClientId client_id =
-      static_cast<PushNotificationClientId>([[notification
+      static_cast<PushNotificationClientId>([[user_info
           objectForKey:kClientIdPushNotificationDictionaryKey] integerValue]);
 
   auto it = clients_.find(client_id);
   if (it != clients_.end()) {
-    it->second->HandleInteractedNotification(notification_response);
+    it->second->HandleNotificationInteraction(notification_response);
   }
 }
 
-void PushNotificationClientManager::OnNotificationReceived(
-    NSDictionary<NSString*, id>* notification) {
+UIBackgroundFetchResult
+PushNotificationClientManager::HandleNotificationReception(
+    NSDictionary<NSString*, id>* user_info) {
   PushNotificationClientId client_id =
-      static_cast<PushNotificationClientId>([[notification
+      static_cast<PushNotificationClientId>([[user_info
           objectForKey:kClientIdPushNotificationDictionaryKey] integerValue]);
 
   auto it = clients_.find(client_id);
   if (it != clients_.end()) {
-    it->second->HandleReceivedNotification(notification);
+    return it->second->HandleNotificationReception(user_info);
   }
+
+  return UIBackgroundFetchResultNoData;
 }

@@ -20,7 +20,7 @@
 // was successfully registered with APNS. If the device's registration was
 // unsuccessful, then AppDelegate's didRegisterForNotificationsWithError
 // function is called.
-+ (void)registerDeviceWithAPNS:(UIApplication*)application;
++ (void)registerDeviceWithAPNS;
 
 // This function displays a permission request system prompt. On display of this
 // prompt, the user must decide whether or not to allow iOS to notify them of
