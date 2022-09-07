@@ -36,6 +36,8 @@ import org.chromium.net.NetError;
 import org.chromium.ui.widget.Toast;
 import org.chromium.url.GURL;
 
+import java.util.List;
+
 import javax.inject.Inject;
 
 /**
@@ -144,9 +146,14 @@ public class QualityEnforcer {
                 if (type == QualityEnforcementViolationType.DIGITAL_ASSET_LINK) {
                     packageName = mClientPackageNameProvider.get();
                     PackageManager pm = mActivity.getPackageManager();
-                    signature =
-                            PackageUtils.getCertificateSHA256FingerprintForPackage(pm, packageName)
-                                    .get(0);
+                    List<String> signatures =
+                            PackageUtils.getCertificateSHA256FingerprintForPackage(pm, packageName);
+
+                    // Sometimes information about the current package cannot be found - perhaps
+                    // the user uninstalled the TWA while using it? See https://crbug.com/1358864.
+                    if (signatures != null && signatures.size() > 0) {
+                        signature = signatures.get(0);
+                    }
                 }
 
                 QualityEnforcerJni.get().reportDevtoolsIssue(tab.getWebContents().getMainFrame(),
