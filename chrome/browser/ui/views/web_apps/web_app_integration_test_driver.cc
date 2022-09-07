@@ -226,23 +226,23 @@ base::flat_map<Site, SiteConfig> g_site_configs = {
       .icon_color = SK_ColorGREEN,
       .alternate_titles = {"Site A - Updated name"}}},
     {Site::kMinimalUi,
-     {.relative_scope_url = "/web_apps/minimal_ui/",
-      .relative_start_url = "/web_apps/minimal_ui/basic.html",
-      .relative_manifest_id = "web_apps/minimal_ui/basic.html",
+     {.relative_scope_url = "/webapps_integration/minimal_ui/",
+      .relative_start_url = "/webapps_integration/minimal_ui/basic.html",
+      .relative_manifest_id = "webapps_integration/minimal_ui/basic.html",
       .app_name = "Site B",
       .wco_not_enabled_title = u"Site B",
       .icon_color = SK_ColorBLACK}},
     {Site::kNotPromotable,
-     {.relative_scope_url = "/web_apps/not_promotable/",
-      .relative_start_url = "/web_apps/not_promotable/basic.html",
-      .relative_manifest_id = "web_apps/not_promotable/basic.html",
+     {.relative_scope_url = "/webapps_integration/not_promotable/",
+      .relative_start_url = "/webapps_integration/not_promotable/basic.html",
+      .relative_manifest_id = "webapps_integration/not_promotable/basic.html",
       .app_name = "Site C",
       .wco_not_enabled_title = u"Site C",
       .icon_color = SK_ColorTRANSPARENT}},
     {Site::kWco,
-     {.relative_scope_url = "/web_apps/wco/",
-      .relative_start_url = "/web_apps/wco/basic.html",
-      .relative_manifest_id = "web_apps/wco/basic.html",
+     {.relative_scope_url = "/webapps_integration/wco/",
+      .relative_start_url = "/webapps_integration/wco/basic.html",
+      .relative_manifest_id = "webapps_integration/wco/basic.html",
       .app_name = "Site WCO",
       .wco_not_enabled_title = u"Site WCO",
       .icon_color = SK_ColorGREEN}},
@@ -272,16 +272,18 @@ base::flat_map<Site, SiteConfig> g_site_configs = {
       .wco_not_enabled_title = u"Isolated App",
       .icon_color = SK_ColorGREEN}},
     {Site::kFileHandler,
-     {.relative_scope_url = "/web_apps/file_handler/",
-      .relative_start_url = "/web_apps/file_handler/basic.html",
-      .relative_manifest_id = "web_apps/file_handler/basic.html",
+     {.relative_scope_url = "/webapps_integration/file_handler/",
+      .relative_start_url = "/webapps_integration/file_handler/basic.html",
+      .relative_manifest_id = "webapps_integration/file_handler/basic.html",
       .app_name = "File Handler",
       .wco_not_enabled_title = u"File Handler",
       .icon_color = SK_ColorBLACK}},
     {Site::kNoServiceWorker,
-     {.relative_scope_url = "/web_apps/site_no_service_worker/",
-      .relative_start_url = "/web_apps/site_no_service_worker/basic.html",
-      .relative_manifest_id = "web_apps/site_no_service_worker/basic.html",
+     {.relative_scope_url = "/webapps_integration/site_no_service_worker/",
+      .relative_start_url =
+          "/webapps_integration/site_no_service_worker/basic.html",
+      .relative_manifest_id =
+          "webapps_integration/site_no_service_worker/basic.html",
       .app_name = "Site NoServiceWorker",
       .wco_not_enabled_title = u"Site NoServiceWorker",
       .icon_color = SK_ColorGREEN}},
@@ -1355,9 +1357,9 @@ std::vector<base::FilePath> WebAppIntegrationTestDriver::GetTestFilePaths(
     FilesOptions files_options) {
   std::vector<base::FilePath> file_paths;
   base::FilePath txt_file_path = GetResourceFile(
-      FILE_PATH_LITERAL("web_apps/files/file_handler_test.txt"));
+      FILE_PATH_LITERAL("webapps_integration/files/file_handler_test.txt"));
   base::FilePath png_file_path = GetResourceFile(
-      FILE_PATH_LITERAL("web_apps/files/file_handler_test.png"));
+      FILE_PATH_LITERAL("webapps_integration/files/file_handler_test.png"));
   switch (files_options) {
     case FilesOptions::kOneTextFile:
       file_paths.push_back(txt_file_path);

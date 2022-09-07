@@ -12,7 +12,7 @@
       "type": "image/png"
     }
   ],
-  "start_url": "/web_apps/site_no_service_worker/basic.html",
-  "scope": "/web_apps/site_no_service_worker/",
+  "start_url": "/webapps_integration/site_no_service_worker/basic.html",
+  "scope": "/webapps_integration/site_no_service_worker/",
   "display": "standalone"
 }

@@ -1,5 +1,5 @@
 {
-  "name": "File Handler",
+  "name": "Site B",
   "icons": [
     {
       "src": "basic-48.png",
@@ -12,12 +12,12 @@
       "type": "image/png"
     }
   ],
-  "start_url": "/web_apps/file_handler/basic.html",
-  "scope": "/web_apps/file_handler/",
+  "start_url": "/webapps_integration/minimal_ui/basic.html",
+  "scope": "/webapps_integration/minimal_ui/",
   "display": "minimal-ui",
   "file_handlers": [
     {
-      "action": "/web_apps/file_handler/text_handler.html",
+      "action": "/webapps_integration/minimal_ui/text_handler.html",
       "name": "Plain Text",
       "accept": {
         "text/plain": [".txt", ".md", ".csv", ".text"],
@@ -25,7 +25,7 @@
       }
     },
     {
-      "action": "/web_apps/file_handler/image_handler.html",
+      "action": "/webapps_integration/minimal_ui/image_handler.html",
       "accept": {
         "image/png": [".png"]
       },
