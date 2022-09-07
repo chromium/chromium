@@ -166,7 +166,7 @@ TEST_F(OsIntegrationManagerTest, UninstallOsHooksEverything) {
   EXPECT_CALL(manager, UnregisterProtocolHandlers(app_id, testing::_)).Times(1);
   EXPECT_CALL(manager, UnregisterUrlHandlers(app_id)).Times(1);
   EXPECT_CALL(manager, UnregisterWebAppOsUninstallation(app_id)).Times(1);
-  EXPECT_CALL(manager, UnregisterShortcutsMenu(app_id))
+  EXPECT_CALL(manager, UnregisterShortcutsMenu(app_id, testing::_))
       .WillOnce(testing::Return(true));
   EXPECT_CALL(manager,
               UnregisterRunOnOsLogin(app_id, base::FilePath(kFakeProfilePath),

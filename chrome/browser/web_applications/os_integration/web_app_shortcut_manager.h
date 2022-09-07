@@ -76,9 +76,6 @@ class WebAppShortcutManager {
       ShortcutLocationCallback callback,
       std::unique_ptr<ShortcutInfo> shortcut_info);
 
-  // TODO(crbug.com/1098471): Move this into web_app_shortcuts_menu_win.cc when
-  // a callback is integrated into the Shortcuts Menu registration flow.
-  using RegisterShortcutsMenuCallback = base::OnceCallback<void(Result result)>;
   // Registers a shortcuts menu for a web app after reading its shortcuts menu
   // icons from disk.
   //
@@ -86,18 +83,17 @@ class WebAppShortcutManager {
   // RegisterShortcutsMenuWithOs() below.
   void ReadAllShortcutsMenuIconsAndRegisterShortcutsMenu(
       const AppId& app_id,
-      RegisterShortcutsMenuCallback callback);
+      ResultCallback callback);
 
   // Registers a shortcuts menu for the web app's icon with the OS.
-  //
-  // TODO(crbug.com/1098471): Add a callback as part of the Shortcuts Menu
-  // registration flow.
   void RegisterShortcutsMenuWithOs(
       const AppId& app_id,
       const std::vector<WebAppShortcutsMenuItemInfo>& shortcuts_menu_item_infos,
-      const ShortcutsMenuIconBitmaps& shortcuts_menu_icon_bitmaps);
+      const ShortcutsMenuIconBitmaps& shortcuts_menu_icon_bitmaps,
+      ResultCallback callback);
 
-  void UnregisterShortcutsMenuWithOs(const AppId& app_id);
+  void UnregisterShortcutsMenuWithOs(const AppId& app_id,
+                                     ResultCallback callback);
 
   // Builds initial ShortcutInfo without |ShortcutInfo::favicon| being read.
   // virtual for testing.
@@ -143,7 +139,7 @@ class WebAppShortcutManager {
 
   void OnShortcutsMenuIconsReadRegisterShortcutsMenu(
       const AppId& app_id,
-      RegisterShortcutsMenuCallback callback,
+      ResultCallback callback,
       ShortcutsMenuIconBitmaps shortcuts_menu_icon_bitmaps);
 
   std::unique_ptr<ShortcutInfo> BuildShortcutInfoForWebApp(const WebApp* app);

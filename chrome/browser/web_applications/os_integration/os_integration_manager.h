@@ -260,7 +260,8 @@ class OsIntegrationManager : public AppRegistrarObserver {
                                               const std::string& name);
 
   // Uninstallation:
-  virtual bool UnregisterShortcutsMenu(const AppId& app_id);
+  virtual bool UnregisterShortcutsMenu(const AppId& app_id,
+                                       ResultCallback callback);
   virtual void UnregisterRunOnOsLogin(const AppId& app_id,
                                       const base::FilePath& profile_path,
                                       const std::u16string& shortcut_title,
@@ -278,7 +279,8 @@ class OsIntegrationManager : public AppRegistrarObserver {
 
   // Update:
   virtual void UpdateShortcutsMenu(const AppId& app_id,
-                                   const WebAppInstallInfo& web_app_info);
+                                   const WebAppInstallInfo& web_app_info,
+                                   ResultCallback callback);
 
   // Utility methods:
   virtual std::unique_ptr<ShortcutInfo> BuildShortcutInfo(const AppId& app_id);

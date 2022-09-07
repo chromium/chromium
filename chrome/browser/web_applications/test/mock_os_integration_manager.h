@@ -79,7 +79,10 @@ class MockOsIntegrationManager : public OsIntegrationManager {
               UninstallAllOsHooks,
               (const AppId& app_id, UninstallOsHooksCallback callback),
               (override));
-  MOCK_METHOD(bool, UnregisterShortcutsMenu, (const AppId& app_id), (override));
+  MOCK_METHOD(bool,
+              UnregisterShortcutsMenu,
+              (const AppId& app_id, ResultCallback callback),
+              (override));
   MOCK_METHOD(void,
               UnregisterRunOnOsLogin,
               (const AppId& app_id,

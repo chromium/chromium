@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 
@@ -15,6 +16,8 @@ class FilePath;
 }
 
 namespace web_app {
+
+using RegisterShortcutsMenuCallback = base::OnceCallback<void(Result result)>;
 
 // Returns true if Shortcuts Menu is managed externally by the operating system,
 // and Chrome supports Shortcuts Menu on this operating system.
@@ -26,12 +29,14 @@ void RegisterShortcutsMenuWithOs(
     const base::FilePath& profile_path,
     const base::FilePath& shortcut_data_dir,
     const std::vector<WebAppShortcutsMenuItemInfo>& shortcuts_menu_item_infos,
-    const ShortcutsMenuIconBitmaps& shortcuts_menu_icon_bitmaps);
+    const ShortcutsMenuIconBitmaps& shortcuts_menu_icon_bitmaps,
+    RegisterShortcutsMenuCallback callback);
 
 // Deletes the ShortcutsMenu from the OS. This should be called during the
 // uninstallation process. Returns true if there were no errors.
 bool UnregisterShortcutsMenuWithOs(const AppId& app_id,
-                                   const base::FilePath& profile_path);
+                                   const base::FilePath& profile_path,
+                                   RegisterShortcutsMenuCallback callback);
 
 }  // namespace web_app
 

@@ -178,6 +178,8 @@ std::vector<std::wstring> GetFileExtensionsForProgId(
 
 namespace web_app {
 
+using ::base::BucketsAre;
+
 class WebAppBrowserTest : public WebAppControllerBrowserTest {
  public:
   GURL GetSecureAppURL() {
@@ -1287,21 +1289,22 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest,
 #endif
 
 #if BUILDFLAG(IS_WIN)
-IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_ShortcutMenu, ShortcutsMenu) {
-  struct ShortcutsMenuItem {
-   public:
-    ShortcutsMenuItem() : command_line(base::CommandLine::NO_PROGRAM) {}
 
-    // The string to be displayed in a shortcut menu item.
-    std::u16string title;
+struct ShortcutsMenuItem {
+ public:
+  ShortcutsMenuItem() : command_line(base::CommandLine::NO_PROGRAM) {}
 
-    // Used for storing and appending command-line arguments.
-    base::CommandLine command_line;
+  // The string to be displayed in a shortcut menu item.
+  std::u16string title;
 
-    // The absolute path to an icon to be displayed in a shortcut menu item.
-    base::FilePath icon_path;
-  };
+  // Used for storing and appending command-line arguments.
+  base::CommandLine command_line;
 
+  // The absolute path to an icon to be displayed in a shortcut menu item.
+  base::FilePath icon_path;
+};
+
+IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_ShortcutMenu, ShortcutsMenuSuccess) {
   os_hooks_suppress_.reset();
   base::ScopedAllowBlockingForTesting allow_blocking;
 
@@ -1331,10 +1334,16 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_ShortcutMenu, ShortcutsMenu) {
   SetUpdateJumpListForTesting(SaveJumpList);
 
   // Wait for OS hooks and installation to complete and the app to launch.
+  base::HistogramTester tester;
   base::RunLoop run_loop_install;
   WebAppInstallManagerObserverAdapter observer(profile());
-  observer.SetWebAppInstalledWithOsHooksDelegate(base::BindLambdaForTesting(
-      [&](const AppId& installed_app_id) { run_loop_install.Quit(); }));
+  observer.SetWebAppInstalledWithOsHooksDelegate(
+      base::BindLambdaForTesting([&](const AppId& installed_app_id) {
+        EXPECT_THAT(
+            tester.GetAllSamples("WebApp.ShortcutsMenuRegistration.Result"),
+            BucketsAre(base::Bucket(true, 1)));
+        run_loop_install.Quit();
+      }));
   content::WindowedNotificationObserver app_loaded_observer(
       content::NOTIFICATION_LOAD_COMPLETED_MAIN_FRAME,
       content::NotificationService::AllSources());
@@ -1369,10 +1378,78 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_ShortcutMenu, ShortcutsMenu) {
       app_id, webapps::WebappUninstallSource::kAppMenu,
       base::BindLambdaForTesting([&](webapps::UninstallResultCode code) {
         EXPECT_EQ(code, webapps::UninstallResultCode::kSuccess);
+        EXPECT_THAT(
+            tester.GetAllSamples("WebApp.ShortcutsMenuUnregistered.Result"),
+            BucketsAre(base::Bucket(true, 1)));
         run_loop_uninstall.Quit();
       }));
   run_loop_uninstall.Run();
 }
+
+IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_ShortcutMenu,
+                       ShortcutsMenuRegistrationWithNoShortcuts) {
+  os_hooks_suppress_.reset();
+  base::ScopedAllowBlockingForTesting allow_blocking;
+
+  std::unique_ptr<ShortcutOverrideForTesting::BlockingRegistration>
+      registration = ShortcutOverrideForTesting::OverrideForTesting();
+  NavigateToURLAndWait(
+      browser(),
+      https_server()->GetURL("/banners/"
+                             "manifest_test_page.html?manifest=manifest.json"));
+
+  std::vector<ShortcutsMenuItem> shortcuts_menu_items;
+
+  auto SaveJumpList = base::BindLambdaForTesting(
+      [&](std::wstring,
+          const std::vector<scoped_refptr<ShellLinkItem>>& link_items) -> bool {
+        for (auto& shell_item : link_items) {
+          ShortcutsMenuItem item;
+          item.title = shell_item->title();
+          item.icon_path = shell_item->icon_path();
+          item.command_line = *shell_item->GetCommandLine();
+          shortcuts_menu_items.push_back(item);
+        }
+        return true;
+      });
+
+  SetUpdateJumpListForTesting(SaveJumpList);
+
+  // Wait for OS hooks and installation to complete and the app to launch.
+  base::HistogramTester tester;
+  base::RunLoop run_loop_install;
+  WebAppInstallManagerObserverAdapter observer(profile());
+  observer.SetWebAppInstalledWithOsHooksDelegate(
+      base::BindLambdaForTesting([&](const AppId& installed_app_id) {
+        // The result is false because there are no shortcuts for registration.
+        EXPECT_THAT(
+            tester.GetAllSamples("WebApp.ShortcutsMenuRegistration.Result"),
+            BucketsAre(base::Bucket(false, 1)));
+        run_loop_install.Quit();
+      }));
+  content::WindowedNotificationObserver app_loaded_observer(
+      content::NOTIFICATION_LOAD_COMPLETED_MAIN_FRAME,
+      content::NotificationService::AllSources());
+  const AppId app_id = test::InstallPwaForCurrentUrl(browser());
+  run_loop_install.Run();
+  app_loaded_observer.Wait();
+
+  // No shortcuts should be read.
+  EXPECT_TRUE(shortcuts_menu_items.empty());
+
+  base::RunLoop run_loop_uninstall;
+  WebAppProvider::GetForTest(profile())->install_finalizer().UninstallWebApp(
+      app_id, webapps::WebappUninstallSource::kAppMenu,
+      base::BindLambdaForTesting([&](webapps::UninstallResultCode code) {
+        EXPECT_EQ(code, webapps::UninstallResultCode::kSuccess);
+        EXPECT_THAT(
+            tester.GetAllSamples("WebApp.ShortcutsMenuUnregistered.Result"),
+            BucketsAre(base::Bucket(true, 1)));
+        run_loop_uninstall.Quit();
+      }));
+  run_loop_uninstall.Run();
+}
+
 #endif
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)

@@ -16,6 +16,7 @@
 #include "base/feature_list.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
 #include "base/task/task_traits.h"
 #include "base/threading/sequenced_task_runner_handle.h"
@@ -250,7 +251,9 @@ void OsIntegrationManager::UninstallOsHooks(const AppId& app_id,
       os_hooks_errors, std::move(callback));
 
   if (os_hooks[OsHookType::kShortcutsMenu]) {
-    bool success = UnregisterShortcutsMenu(app_id);
+    bool success = UnregisterShortcutsMenu(
+        app_id,
+        barrier->CreateBarrierCallbackForType(OsHookType::kShortcutsMenu));
     if (!success)
       barrier->OnError(OsHookType::kShortcutsMenu);
   }
@@ -317,7 +320,9 @@ void OsIntegrationManager::UpdateOsHooks(
                   base::BindOnce(barrier->CreateBarrierCallbackForType(
                                      OsHookType::kShortcuts),
                                  Result::kOk));
-  UpdateShortcutsMenu(app_id, web_app_info);
+  UpdateShortcutsMenu(app_id, web_app_info,
+                      base::BindOnce(barrier->CreateBarrierCallbackForType(
+                          OsHookType::kShortcutsMenu)));
   UpdateUrlHandlers(
       app_id,
       base::BindOnce(
@@ -469,13 +474,17 @@ void OsIntegrationManager::RegisterShortcutsMenu(
     return;
   }
 
+  ResultCallback metrics_callback =
+      base::BindOnce([](Result result) {
+        base::UmaHistogramBoolean("WebApp.ShortcutsMenuRegistration.Result",
+                                  (result == Result::kOk));
+        return result;
+      }).Then(std::move(callback));
+
   DCHECK(shortcut_manager_);
   shortcut_manager_->RegisterShortcutsMenuWithOs(
-      app_id, shortcuts_menu_item_infos, shortcuts_menu_icon_bitmaps);
-
-  // TODO(https://crbug.com/1098471): fix RegisterShortcutsMenuWithOs to
-  // take callback.
-  std::move(callback).Run(Result::kOk);
+      app_id, shortcuts_menu_item_infos, shortcuts_menu_icon_bitmaps,
+      std::move(metrics_callback));
 }
 
 void OsIntegrationManager::ReadAllShortcutsMenuIconsAndRegisterShortcutsMenu(
@@ -486,8 +495,15 @@ void OsIntegrationManager::ReadAllShortcutsMenuIconsAndRegisterShortcutsMenu(
     return;
   }
 
+  ResultCallback metrics_callback =
+      base::BindOnce([](Result result) {
+        base::UmaHistogramBoolean("WebApp.ShortcutsMenuRegistration.Result",
+                                  (result == Result::kOk));
+        return result;
+      }).Then(std::move(callback));
+
   shortcut_manager_->ReadAllShortcutsMenuIconsAndRegisterShortcutsMenu(
-      app_id, std::move(callback));
+      app_id, std::move(metrics_callback));
 }
 
 void OsIntegrationManager::RegisterRunOnOsLogin(const AppId& app_id,
@@ -521,10 +537,22 @@ void OsIntegrationManager::RegisterWebAppOsUninstallation(
   }
 }
 
-bool OsIntegrationManager::UnregisterShortcutsMenu(const AppId& app_id) {
-  if (!ShouldRegisterShortcutsMenuWithOs())
+bool OsIntegrationManager::UnregisterShortcutsMenu(const AppId& app_id,
+                                                   ResultCallback callback) {
+  if (!ShouldRegisterShortcutsMenuWithOs()) {
+    std::move(callback).Run(Result::kOk);
     return true;
-  return UnregisterShortcutsMenuWithOs(app_id, profile_->GetPath());
+  }
+
+  ResultCallback metrics_callback =
+      base::BindOnce([](Result result) {
+        base::UmaHistogramBoolean("WebApp.ShortcutsMenuUnregistered.Result",
+                                  (result == Result::kOk));
+        return result;
+      }).Then(std::move(callback));
+
+  return UnregisterShortcutsMenuWithOs(app_id, profile_->GetPath(),
+                                       std::move(metrics_callback));
 }
 
 void OsIntegrationManager::UnregisterRunOnOsLogin(
@@ -605,14 +633,14 @@ void OsIntegrationManager::UpdateShortcuts(const AppId& app_id,
 
 void OsIntegrationManager::UpdateShortcutsMenu(
     const AppId& app_id,
-    const WebAppInstallInfo& web_app_info) {
-  DCHECK(shortcut_manager_);
+    const WebAppInstallInfo& web_app_info,
+    ResultCallback callback) {
   if (web_app_info.shortcuts_menu_item_infos.empty()) {
-    shortcut_manager_->UnregisterShortcutsMenuWithOs(app_id);
+    UnregisterShortcutsMenu(app_id, std::move(callback));
   } else {
-    shortcut_manager_->RegisterShortcutsMenuWithOs(
-        app_id, web_app_info.shortcuts_menu_item_infos,
-        web_app_info.shortcuts_menu_icon_bitmaps);
+    RegisterShortcutsMenu(app_id, web_app_info.shortcuts_menu_item_infos,
+                          web_app_info.shortcuts_menu_icon_bitmaps,
+                          std::move(callback));
   }
 }
 

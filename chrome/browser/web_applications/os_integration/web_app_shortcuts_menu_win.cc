@@ -22,6 +22,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/shell_integration_win.h"
+#include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
@@ -121,7 +122,7 @@ bool ShouldRegisterShortcutsMenuWithOs() {
   return true;
 }
 
-void RegisterShortcutsMenuWithOsTask(
+bool RegisterShortcutsMenuWithOsTask(
     const AppId& app_id,
     const base::FilePath& profile_path,
     const base::FilePath& shortcut_data_dir,
@@ -133,7 +134,7 @@ void RegisterShortcutsMenuWithOsTask(
   // shortcuts vector.
   if (!WriteShortcutsMenuIconsToIcoFiles(shortcut_data_dir,
                                          shortcuts_menu_icon_bitmaps)) {
-    return;
+    return false;
   }
 
   ShellLinkItemList shortcut_list;
@@ -163,7 +164,14 @@ void RegisterShortcutsMenuWithOsTask(
     shortcut_list.push_back(std::move(shortcut_link));
   }
 
-  UpdateJumpList(GenerateAppUserModelId(profile_path, app_id), shortcut_list);
+  return UpdateJumpList(GenerateAppUserModelId(profile_path, app_id),
+                        shortcut_list);
+}
+
+void OnShortcutsMenuRegistrationComplete(RegisterShortcutsMenuCallback callback,
+                                         bool registration_successful) {
+  std::move(callback).Run(registration_successful ? Result::kOk
+                                                  : Result::kError);
 }
 
 void RegisterShortcutsMenuWithOs(
@@ -171,20 +179,30 @@ void RegisterShortcutsMenuWithOs(
     const base::FilePath& profile_path,
     const base::FilePath& shortcut_data_dir,
     const std::vector<WebAppShortcutsMenuItemInfo>& shortcuts_menu_item_infos,
-    const ShortcutsMenuIconBitmaps& shortcuts_menu_icon_bitmaps) {
-  base::ThreadPool::PostTask(
+    const ShortcutsMenuIconBitmaps& shortcuts_menu_icon_bitmaps,
+    RegisterShortcutsMenuCallback callback) {
+  base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskShutdownBehavior::BLOCK_SHUTDOWN},
       base::BindOnce(&RegisterShortcutsMenuWithOsTask, app_id, profile_path,
                      shortcut_data_dir, shortcuts_menu_item_infos,
-                     shortcuts_menu_icon_bitmaps));
+                     shortcuts_menu_icon_bitmaps),
+      base::BindOnce(&OnShortcutsMenuRegistrationComplete,
+                     std::move(callback)));
 }
 
 bool UnregisterShortcutsMenuWithOs(const AppId& app_id,
-                                   const base::FilePath& profile_path) {
-  if (!JumpListUpdater::IsEnabled())
-    return true;
-  return JumpListUpdater::DeleteJumpList(
-      GenerateAppUserModelId(profile_path, app_id));
+                                   const base::FilePath& profile_path,
+                                   RegisterShortcutsMenuCallback callback) {
+  bool unregistration_successful = false;
+  if (!JumpListUpdater::IsEnabled()) {
+    unregistration_successful = true;
+  } else {
+    unregistration_successful = JumpListUpdater::DeleteJumpList(
+        GenerateAppUserModelId(profile_path, app_id));
+  }
+  std::move(callback).Run(unregistration_successful ? Result::kOk
+                                                    : Result::kError);
+  return unregistration_successful;
 }
 
 namespace internals {

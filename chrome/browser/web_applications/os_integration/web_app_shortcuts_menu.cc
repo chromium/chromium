@@ -20,16 +20,20 @@ void RegisterShortcutsMenuWithOs(
     const base::FilePath& profile_path,
     const base::FilePath& shortcut_data_dir,
     const std::vector<WebAppShortcutsMenuItemInfo>& shortcuts_menu_item_infos,
-    const ShortcutsMenuIconBitmaps& shortcuts_menu_icon_bitmaps) {
+    const ShortcutsMenuIconBitmaps& shortcuts_menu_icon_bitmaps,
+    RegisterShortcutsMenuCallback callback) {
   NOTIMPLEMENTED();
   DCHECK(ShouldRegisterShortcutsMenuWithOs());
+  std::move(callback).Run(Result::kOk);
 }
 
 bool UnregisterShortcutsMenuWithOs(const AppId& app_id,
-                                   const base::FilePath& profile_path) {
+                                   const base::FilePath& profile_path,
+                                   RegisterShortcutsMenuCallback callback) {
   NOTIMPLEMENTED();
   DCHECK(ShouldRegisterShortcutsMenuWithOs());
 
+  std::move(callback).Run(Result::kOk);
   return true;
 }
 #endif  // !BUILDFLAG(IS_WIN)
