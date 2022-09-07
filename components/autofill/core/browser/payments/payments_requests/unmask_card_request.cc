@@ -10,6 +10,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
+#include "components/autofill/core/browser/payments/autofill_error_dialog_context.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 
 namespace autofill {
@@ -260,6 +261,37 @@ void UnmaskCardRequest::ParseResponse(const base::Value& response) {
         AutofillClient::PaymentsRpcCardType::kServerCard;
   } else {
     NOTREACHED();
+  }
+
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillEnableMerchantOptOutErrorDialog)) {
+    const base::Value* decline_details = response.FindKeyOfType(
+        "decline_details", base::Value::Type::DICTIONARY);
+    if (decline_details) {
+      AutofillErrorDialogContext autofill_error_dialog_context;
+
+      const std::string* user_message_title =
+          decline_details->FindStringKey("user_message_title");
+      if (user_message_title && !user_message_title->empty()) {
+        autofill_error_dialog_context.server_returned_title =
+            *user_message_title;
+      }
+
+      const std::string* user_message_description =
+          decline_details->FindStringKey("user_message_description");
+      if (user_message_description && !user_message_description->empty()) {
+        autofill_error_dialog_context.server_returned_description =
+            *user_message_description;
+      }
+
+      // Only set the |autofill_error_dialog_context| in |response_details_| if
+      // both the title and description were returned from the server.
+      if (autofill_error_dialog_context.server_returned_title &&
+          autofill_error_dialog_context.server_returned_description) {
+        response_details_.autofill_error_dialog_context =
+            autofill_error_dialog_context;
+      }
+    }
   }
 }
 

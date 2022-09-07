@@ -5,6 +5,10 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_AUTOFILL_ERROR_DIALOG_CONTEXT_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_AUTOFILL_ERROR_DIALOG_CONTEXT_H_
 
+#include <string>
+
+#include "third_party/abseil-cpp/absl/types/optional.h"
+
 namespace autofill {
 
 // Keep in sync with `AutofillErrorDialogType` in enums.xml.
@@ -28,8 +32,27 @@ enum class AutofillErrorDialogType {
 
 // The context for the autofill error dialog.
 struct AutofillErrorDialogContext {
+  AutofillErrorDialogContext();
+  AutofillErrorDialogContext(const AutofillErrorDialogContext& other);
+  AutofillErrorDialogContext& operator=(const AutofillErrorDialogContext&);
+  ~AutofillErrorDialogContext();
+
   // The type of autofill error dialog that will be displayed.
   AutofillErrorDialogType type = AutofillErrorDialogType::kTypeUnknown;
+
+  // Autofill error dialog title returned from the server. Present in situations
+  // where the server returns an error, and wants to display a detailed title
+  // related to the error to the user. This should be preferred for the title of
+  // the autofill error dialog if a value is present. The language is based on
+  // the client's locale.
+  absl::optional<std::string> server_returned_title;
+
+  // Autofill error dialog description returned from the server. Present in
+  // situations where the server returns an error, and wants to display a
+  // detailed description related to the error to the user. This should be
+  // preferred for the description of the autofill error dialog if a value is
+  // present. The language is based on the client's locale.
+  absl::optional<std::string> server_returned_description;
 };
 
 }  // namespace autofill

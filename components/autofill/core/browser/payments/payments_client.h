@@ -18,6 +18,7 @@
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/payments/autofill_error_dialog_context.h"
 #include "components/autofill/core/browser/payments/card_unmask_challenge_option.h"
 #include "components/autofill/core/browser/payments/card_unmask_delegate.h"
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_flow.h"
@@ -161,6 +162,12 @@ class PaymentsClient {
     // The type of the returned credit card.
     AutofillClient::PaymentsRpcCardType card_type =
         AutofillClient::PaymentsRpcCardType::kUnknown;
+
+    // Context for the error dialog that is returned from the Payments server.
+    // If present, that means this response was an error, and these fields
+    // should be used for the autofill error dialog as they will provide detail
+    // into the specific error that occurred.
+    absl::optional<AutofillErrorDialogContext> autofill_error_dialog_context;
   };
 
   // Information required to either opt-in or opt-out a user for FIDO

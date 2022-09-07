@@ -274,6 +274,7 @@ static_library("browser") {
     "metrics/shadow_prediction_metrics.cc",
     "metrics/shadow_prediction_metrics.h",
     "payments/account_info_getter.h",
+    "payments/autofill_error_dialog_context.cc",
     "payments/autofill_error_dialog_context.h",
     "payments/autofill_offer_manager.cc",
     "payments/autofill_offer_manager.h",

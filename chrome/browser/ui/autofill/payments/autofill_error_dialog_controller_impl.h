@@ -50,6 +50,11 @@ class AutofillErrorDialogControllerImpl : public AutofillErrorDialogController {
   raw_ptr<content::WebContents> web_contents_;
   // The context of the error dialog that is being displayed. Contains
   // information such as the type of the error dialog that is being displayed.
+  // |error_dialog_context_| may also contain extra information such as a
+  // detailed title and description returned from the server. If
+  // |error_dialog_context_| contains this information, the fields in
+  // |error_dialog_context_| should be preferred when displaying the error
+  // dialog.
   AutofillErrorDialogContext error_dialog_context_;
   // View that displays the error dialog.
   raw_ptr<AutofillErrorDialogView> autofill_error_dialog_view_ = nullptr;
