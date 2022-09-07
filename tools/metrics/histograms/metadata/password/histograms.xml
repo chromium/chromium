@@ -176,7 +176,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="KeyboardAccessory.DisabledSavingAccessoryImpressions"
-    enum="BooleanShown" expires_after="M108">
+    enum="BooleanShown" expires_after="M112">
   <owner>ioanap@chromium.org</owner>
   <owner>fhorschig@chromium.org</owner>
   <summary>
@@ -189,7 +189,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="KeyboardAccessory.GenerationDialogChoice.{GenerationType}"
-    enum="GenerationDialogChoice" expires_after="M108">
+    enum="GenerationDialogChoice" expires_after="M112">
   <owner>ioanap@chromium.org</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>
@@ -1063,6 +1063,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PasswordManager.BulkCheck.PasswordCheckReferrerAndroid"
     enum="PasswordCheckReferrerAndroid" expires_after="2023-02-19">
+  <obsolete>
+    Deprecated in M107. Replaced by
+    PasswordManager.BulkCheck.PasswordCheckReferrerAndroid2 since 103.0.5060.22.
+  </obsolete>
   <owner>ioanap@chromium.org</owner>
   <owner>fhorschig@chromium.org</owner>
   <summary>
@@ -1075,7 +1079,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.BulkCheck.PasswordCheckReferrerAndroid2"
-    enum="PasswordCheckReferrerAndroid" expires_after="2022-10-16">
+    enum="PasswordCheckReferrerAndroid" expires_after="M112">
   <owner>ioanap@chromium.org</owner>
   <owner>fhorschig@chromium.org</owner>
   <summary>
@@ -1246,7 +1250,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.CredentialEntryActions.{CredentialEntryType}"
-    enum="CredentialEntryAction" expires_after="M108">
+    enum="CredentialEntryAction" expires_after="M112">
   <owner>ioanap@chromium.org</owner>
   <owner>fhorschig@chromium.org</owner>
   <summary>
@@ -1262,7 +1266,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PasswordManager.CredentialManager.{ProfileType}.GetIntent.Error"
-    enum="CredentialManagerError" expires_after="M108">
+    enum="CredentialManagerError" expires_after="M112">
   <owner>ioanap@chromium.org</owner>
   <owner>fhorschig@chromium.org</owner>
   <summary>
@@ -1276,7 +1280,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PasswordManager.CredentialManager.{ProfileType}.GetIntent.Latency"
-    units="ms" expires_after="M108">
+    units="ms" expires_after="M112">
   <owner>ioanap@chromium.org</owner>
   <owner>fhorschig@chromium.org</owner>
   <summary>
@@ -1291,7 +1295,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PasswordManager.CredentialManager.{ProfileType}.GetIntent.Success"
-    enum="BooleanSuccess" expires_after="M108">
+    enum="BooleanSuccess" expires_after="M112">
   <owner>ioanap@chromium.org</owner>
   <owner>fhorschig@chromium.org</owner>
   <summary>
@@ -1304,7 +1308,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PasswordManager.CredentialManager.{ProfileType}.Launch.Success"
-    enum="BooleanSuccess" expires_after="M108">
+    enum="BooleanSuccess" expires_after="M112">
   <owner>ioanap@chromium.org</owner>
   <owner>fhorschig@chromium.org</owner>
   <summary>
@@ -3091,7 +3095,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PasswordManager.SyncControllerDelegateNotifiesCredentialManager.APIErrorCode"
-    enum="CredentialManagerAPIError" expires_after="M108">
+    enum="CredentialManagerAPIError" expires_after="M112">
   <owner>kazinova@google.com</owner>
   <owner>ioanap@chromium.org</owner>
   <summary>
@@ -3103,7 +3107,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PasswordManager.SyncControllerDelegateNotifiesCredentialManager.ErrorCode"
-    enum="PasswordStoreAndroidBackendError" expires_after="2023-01-15">
+    enum="PasswordStoreAndroidBackendError" expires_after="M112">
   <owner>kazinova@google.com</owner>
   <owner>ioanap@chromium.org</owner>
   <summary>
@@ -3117,7 +3121,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PasswordManager.SyncControllerDelegateNotifiesCredentialManager.Success"
-    enum="Boolean" expires_after="2023-01-15">
+    enum="Boolean" expires_after="M112">
   <owner>kazinova@google.com</owner>
   <owner>ioanap@chromium.org</owner>
   <summary>

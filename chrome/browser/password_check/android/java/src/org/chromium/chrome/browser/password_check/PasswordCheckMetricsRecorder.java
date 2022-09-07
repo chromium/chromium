@@ -15,9 +15,6 @@ public final class PasswordCheckMetricsRecorder {
     public static void recordPasswordCheckReferrer(
             @PasswordCheckReferrer int passwordCheckReferrer) {
         RecordHistogram.recordEnumeratedHistogram(
-                "PasswordManager.BulkCheck.PasswordCheckReferrerAndroid", passwordCheckReferrer,
-                PasswordCheckReferrer.COUNT);
-        RecordHistogram.recordEnumeratedHistogram(
                 "PasswordManager.BulkCheck.PasswordCheckReferrerAndroid2", passwordCheckReferrer,
                 PasswordCheckReferrer.COUNT);
     }
