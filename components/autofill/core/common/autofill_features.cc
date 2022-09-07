@@ -449,7 +449,7 @@ const base::Feature kAutofillProbableFormSubmissionInBrowser{
 // TODO(crbug.com/1101280): Remove once feature is tested.
 const base::Feature kAutofillProfileImportFromUnfocusableFields{
     "AutofillProfileImportFromUnfocusableFields",
-    base::FEATURE_DISABLED_BY_DEFAULT};
+    base::FEATURE_ENABLED_BY_DEFAULT};
 
 // If we observe a sequence of fields of (street address, address line 2), these
 // get rationalized to (address line 1, address line 2).
