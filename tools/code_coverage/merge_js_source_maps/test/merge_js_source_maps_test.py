@@ -77,6 +77,7 @@ class MergeSourceMapsTest(unittest.TestCase):
     ])
 
     source_map = None
+    num_sourcemaps = 0
     with open(output_file_name, encoding='utf-8') as f:
       merged_source_map_lines = f.readlines()
       for line in merged_source_map_lines:
@@ -85,9 +86,15 @@ class MergeSourceMapsTest(unittest.TestCase):
           source_map = base64.b64decode(
               stripped_line.replace(_SOURCE_MAPPING_DATA_URL_PREFIX,
                                     '')).decode('utf-8')
-          break
-      else:
-        self.fail('Failed to identify a merged sourcemap')
+          num_sourcemaps += 1
+
+    # In the event of an error (in both the source map pipeline and/or merging)
+    # the original file is simply copied over to the new directory to get out of
+    # the way of subsequent steps. This will leave multiple inlined sourcemaps,
+    # verify the merging actually succeeded before continuing.
+    if num_sourcemaps != 1:
+      self.fail('Number of sourcemaps invalid, got: %d, want: 1' %
+                num_sourcemaps)
 
     # The sources key must refer to the original file name.
     self.assertEqual(original_file_name, json.loads(source_map)['sources'][0])
@@ -108,6 +115,28 @@ class MergeSourceMapsTest(unittest.TestCase):
     line, column = self._translate(source_map, 27, 8)
     self.assertEqual(line, 31)
     self.assertEqual(column, 0)
+
+    # Expect the sources array to have both the intermediate file and original
+    # file. When remapping the VLQ mappings reference only the original file but
+    # in the case some explicit mappings happen in the intermediate file it is
+    # included.
+    json_source_map = json.loads(source_map)
+    self.assertEqual(len(json_source_map['sources']), 2)
+
+    source_idx = json_source_map['sources'].index(original_file_name)
+
+    with open(os.path.join(_HERE_DIR, original_file_name),
+              encoding='utf-8') as f:
+      original_file_lines = f.readlines()
+      source_file_lines = json_source_map['sourcesContent'][source_idx].split(
+          '\n')
+      for line_num in range(len(original_file_lines)):
+        stripped_original_line = original_file_lines[line_num].strip()
+        stripped_source_line = source_file_lines[line_num].strip()
+
+        # Verify line by line that the sourceContent matches the actual source.
+        # This ensures the file are appropriately passed along the pipeline.
+        self.assertEqual(stripped_original_line, stripped_source_line)
 
   def testManifestFilesAreRewritten(self):
     """ Tests that when `manifest-files` are supplied the results are rewritten

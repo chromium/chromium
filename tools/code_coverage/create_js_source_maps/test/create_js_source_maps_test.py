@@ -86,8 +86,9 @@ class CreateSourceMapsTest(unittest.TestCase):
                                                  suffix=".js")
     os.write(input_fd, file_after_preprocess)
     os.close(input_fd)
-    original_file_name = "input.js"
+    original_file_name = os.path.join(self._out_folder, "input.js")
     output_file_name = input_file_name + ".out"
+    shutil.copyfile(os.path.join(_HERE_DIR, "input.js"), original_file_name)
     node.RunNode([
         str(_SOURCE_MAP_PROCESSOR),
         original_file_name,

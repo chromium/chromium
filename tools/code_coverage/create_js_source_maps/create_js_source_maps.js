@@ -95,6 +95,10 @@ function processOneFile(
     }
   }
 
+  // Inline the source content.
+  map.setSourceContent(
+      originalFileName, fs.readFileSync(originalFileName).toString());
+
   if (!inlineSourcemaps) {
     fs.writeFileSync(outputFileName, map.toString());
   } else {
