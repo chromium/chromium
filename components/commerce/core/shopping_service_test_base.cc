@@ -213,7 +213,7 @@ ShoppingServiceTestBase::ShoppingServiceTestBase()
       identity_test_env_->identity_manager(),
       base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
           test_url_loader_factory_.get()),
-      nullptr);
+      nullptr, nullptr);
 }
 
 ShoppingServiceTestBase::~ShoppingServiceTestBase() = default;

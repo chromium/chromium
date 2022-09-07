@@ -20,6 +20,7 @@ MockShoppingService::MockShoppingService()
                                 nullptr,
                                 nullptr,
                                 nullptr,
+                                nullptr,
                                 nullptr) {}
 
 MockShoppingService::~MockShoppingService() = default;

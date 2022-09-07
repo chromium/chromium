@@ -60,7 +60,7 @@ std::unique_ptr<KeyedService> ShoppingServiceFactory::BuildServiceInstanceFor(
           chrome_state),
       OptimizationGuideServiceFactory::GetForBrowserState(chrome_state),
       pref_service, IdentityManagerFactory::GetForBrowserState(chrome_state),
-      chrome_state->GetSharedURLLoaderFactory(), nullptr);
+      chrome_state->GetSharedURLLoaderFactory(), nullptr, nullptr);
 }
 
 web::BrowserState* ShoppingServiceFactory::GetBrowserStateToUse(

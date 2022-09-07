@@ -24,6 +24,7 @@
 #include "components/commerce/core/proto/merchant_trust.pb.h"
 #include "components/commerce/core/proto/price_tracking.pb.h"
 #include "components/commerce/core/shopping_bookmark_model_observer.h"
+#include "components/commerce/core/shopping_power_bookmark_data_provider.h"
 #include "components/commerce/core/subscriptions/commerce_subscription.h"
 #include "components/commerce/core/subscriptions/subscriptions_manager.h"
 #include "components/commerce/core/web_wrapper.h"
@@ -31,9 +32,10 @@
 #include "components/optimization_guide/core/new_optimization_guide_decider.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/hints.pb.h"
+#include "components/power_bookmarks/core/power_bookmark_service.h"
 #include "components/power_bookmarks/core/power_bookmark_utils.h"
 #include "components/power_bookmarks/core/proto/power_bookmark_meta.pb.h"
-#include "components/prefs/pref_registry_simple.h"
+#include "components/power_bookmarks/core/proto/shopping_specifics.pb.h"
 #include "components/session_proto_db/session_proto_storage.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -65,10 +67,12 @@ ShoppingService::ShoppingService(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     SessionProtoStorage<
         commerce_subscription_db::CommerceSubscriptionContentProto>*
-        subscription_proto_db)
+        subscription_proto_db,
+    power_bookmarks::PowerBookmarkService* power_bookmark_service)
     : opt_guide_(opt_guide),
       pref_service_(pref_service),
       bookmark_model_(bookmark_model),
+      power_bookmark_service_(power_bookmark_service),
       weak_ptr_factory_(this) {
   // Register for the types of information we're allowed to receive from
   // optimization guide.
@@ -102,6 +106,12 @@ ShoppingService::ShoppingService(
   if (bookmark_model) {
     shopping_bookmark_observer_ =
         std::make_unique<ShoppingBookmarkModelObserver>(bookmark_model, this);
+  }
+
+  if (power_bookmark_service_ && IsProductInfoApiEnabled()) {
+    shopping_power_bookmark_data_provider_ =
+        std::make_unique<ShoppingPowerBookmarkDataProvider>(
+            power_bookmark_service_, this);
   }
 }
 

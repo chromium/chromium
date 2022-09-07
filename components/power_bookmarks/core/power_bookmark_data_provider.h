@@ -15,6 +15,9 @@ class PowerBookmarkMeta;
 
 class PowerBookmarkDataProvider {
  public:
+  PowerBookmarkDataProvider() = default;
+  virtual ~PowerBookmarkDataProvider() = default;
+
   // Allow features the opportunity to add metadata to `meta` when a bookmark
   // `node` is created. The `meta` object is attached to and stored with the
   // bookmark.

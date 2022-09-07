@@ -53,7 +53,10 @@ if (is_android) {
 source_set("unit_tests") {
   testonly = true
 
-  sources = [ "power_bookmark_utils_unittest.cc" ]
+  sources = [
+    "power_bookmark_service_unittest.cc",
+    "power_bookmark_utils_unittest.cc",
+  ]
 
   deps = [
     ":core",

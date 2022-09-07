@@ -7,14 +7,17 @@
 
 #include <vector>
 
+#include "components/bookmarks/browser/base_bookmark_model_observer.h"
+#include "components/bookmarks/browser/bookmark_model.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/power_bookmarks/core/power_bookmark_data_provider.h"
 
 namespace power_bookmarks {
 
-class PowerBookmarkService : public KeyedService {
+class PowerBookmarkService : public KeyedService,
+                             public bookmarks::BaseBookmarkModelObserver {
  public:
-  PowerBookmarkService();
+  explicit PowerBookmarkService(bookmarks::BookmarkModel* model);
   ~PowerBookmarkService() override;
 
   // Allow features to receive notification when a bookmark node is created to
@@ -23,7 +26,16 @@ class PowerBookmarkService : public KeyedService {
   void AddDataProvider(PowerBookmarkDataProvider* data_provider);
   void RemoveDataProvider(PowerBookmarkDataProvider* data_provider);
 
+  // BaseBookmarkModelObserver
+  void BookmarkNodeAdded(bookmarks::BookmarkModel* model,
+                         const bookmarks::BookmarkNode* parent,
+                         size_t index,
+                         bool newly_added) override;
+  void BookmarkModelChanged() override {}
+
  private:
+  bookmarks::BookmarkModel* model_;
+
   std::vector<PowerBookmarkDataProvider*> data_providers_;
 };
 

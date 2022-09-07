@@ -1,5 +1,6 @@
 include_rules = [
   "+components/bookmarks/browser",
+  "+components/power_bookmarks/core",
   "+components/bookmarks/test",
   "+components/endpoint_fetcher",
   "+components/flags_ui",

@@ -936,36 +936,6 @@ ScopedJavaLocalRef<jobject> BookmarkBridge::AddBookmark(
   const BookmarkNode* new_node = bookmark_model_->AddNewURL(
       parent, static_cast<size_t>(index),
       base::android::ConvertJavaStringToUTF16(env, j_title), *url);
-
-  commerce::ShoppingService* service =
-      commerce::ShoppingServiceFactory::GetForBrowserContext(profile_);
-
-  // TODO(crbug.com/1247352): Move to platform-independent location.
-  // TODO(1345462): This should be implemented as a data provider for bookmarks
-  //                once it is available.
-  if (service && base::FeatureList::IsEnabled(commerce::kShoppingList)) {
-    absl::optional<commerce::ProductInfo> info =
-        service->GetAvailableProductInfoForUrl(*url.get());
-    if (info.has_value()) {
-      std::unique_ptr<power_bookmarks::PowerBookmarkMeta> meta =
-          std::make_unique<power_bookmarks::PowerBookmarkMeta>();
-      meta->mutable_lead_image()->set_url(info->image_url.spec());
-
-      power_bookmarks::ShoppingSpecifics* specifics =
-          meta->mutable_shopping_specifics();
-      specifics->set_title(info->title);
-      specifics->mutable_current_price()->set_amount_micros(
-          info->amount_micros);
-      specifics->mutable_current_price()->set_currency_code(
-          info->currency_code);
-      specifics->set_product_cluster_id(info->product_cluster_id);
-      specifics->set_offer_id(info->offer_id);
-      specifics->set_country_code(info->country_code);
-
-      power_bookmarks::SetNodePowerBookmarkMeta(bookmark_model_, new_node,
-                                                std::move(meta));
-    }
-  }
   DCHECK(new_node);
   ScopedJavaLocalRef<jobject> new_java_obj = JavaBookmarkIdCreateBookmarkId(
       env, new_node->id(), GetBookmarkType(new_node));

@@ -8,6 +8,7 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/persisted_state_db/session_proto_db_factory.h"
+#include "chrome/browser/power_bookmarks/power_bookmark_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/commerce/content/browser/commerce_tab_helper.h"
@@ -53,6 +54,7 @@ ShoppingServiceFactory::ShoppingServiceFactory()
   DependsOn(SessionProtoDBFactory<
             commerce_subscription_db::CommerceSubscriptionContentProto>::
                 GetInstance());
+  DependsOn(PowerBookmarkServiceFactory::GetInstance());
 }
 
 KeyedService* ShoppingServiceFactory::BuildServiceInstanceFor(
@@ -66,7 +68,8 @@ KeyedService* ShoppingServiceFactory::BuildServiceInstanceFor(
           ->GetURLLoaderFactoryForBrowserProcess(),
       SessionProtoDBFactory<commerce_subscription_db::
                                 CommerceSubscriptionContentProto>::GetInstance()
-          ->GetForProfile(context));
+          ->GetForProfile(context),
+      PowerBookmarkServiceFactory::GetForBrowserContext(context));
 }
 
 bool ShoppingServiceFactory::ServiceIsCreatedWithBrowserContext() const {

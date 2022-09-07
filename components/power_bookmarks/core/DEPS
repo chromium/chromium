@@ -2,4 +2,5 @@ include_rules = [
   "+components/bookmarks",
   "+components/keyed_service",
   "+ui/base",
+  "+components/keyed_service",
 ]

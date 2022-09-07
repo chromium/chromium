@@ -151,6 +151,8 @@ static_library("shopping_service") {
     "price_tracking_utils.h",
     "shopping_bookmark_model_observer.cc",
     "shopping_bookmark_model_observer.h",
+    "shopping_power_bookmark_data_provider.cc",
+    "shopping_power_bookmark_data_provider.h",
     "shopping_service.cc",
     "shopping_service.h",
     "web_wrapper.h",
