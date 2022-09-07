@@ -38,6 +38,7 @@
 #include "ui/compositor/test/test_utils.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/image/image_skia_operations.h"
+#include "ui/views/test/views_test_utils.h"
 #include "ui/views/widget/widget.h"
 
 namespace {
@@ -363,9 +364,7 @@ IN_PROC_BROWSER_TEST_F(AppListSortBrowserTest,
 
   // Move apps to one folder.
   app_list_test_api_.CreateFolderWithApps({app1_id_, app2_id_, app3_id_});
-  app_list_test_api_.GetTopLevelAppsGridView()
-      ->GetWidget()
-      ->LayoutRootViewIfNecessary();
+  views::test::RunScheduledLayout(app_list_test_api_.GetTopLevelAppsGridView());
   ReorderTopLevelAppsGridAndWaitForCompletion(
       ash::AppListSortOrder::kNameAlphabetical,
       MenuType::kAppListNonFolderItemMenu);
@@ -391,7 +390,7 @@ IN_PROC_BROWSER_TEST_F(AppListSortBrowserTest,
 
   // Move apps to one folder.
   app_list_test_api_.CreateFolderWithApps({app1_id_, app2_id_, app3_id_});
-  app_list_test_api_.GetTopLevelAppsGridView()->Layout();
+  views::test::RunScheduledLayout(app_list_test_api_.GetTopLevelAppsGridView());
 
   ReorderTopLevelAppsGridAndWaitForCompletion(
       ash::AppListSortOrder::kNameAlphabetical,
@@ -416,7 +415,7 @@ IN_PROC_BROWSER_TEST_F(AppListSortBrowserTest,
   app_list_test_api_.CreateFolderWithApps({app1_id_, app2_id_});
   ash::AppsGridView* top_level_grid =
       app_list_test_api_.GetTopLevelAppsGridView();
-  top_level_grid->Layout();
+  views::test::RunScheduledLayout(top_level_grid);
 
   // Click on the folder to open it.
   base::RunLoop run_loop;
@@ -455,7 +454,7 @@ IN_PROC_BROWSER_TEST_F(AppListSortBrowserTest,
       app_list_test_api_.CreateFolderWithApps({app1_id_, app2_id_});
   ash::AppsGridView* top_level_grid =
       app_list_test_api_.GetTopLevelAppsGridView();
-  top_level_grid->Layout();
+  views::test::RunScheduledLayout(top_level_grid);
 
   // Order apps grid to transition to temporary sort order.
   ReorderTopLevelAppsGridAndWaitForCompletion(
@@ -503,7 +502,7 @@ IN_PROC_BROWSER_TEST_F(AppListSortBrowserTest,
   app_list_test_api_.CreateFolderWithApps({app1_id_, app2_id_});
   ash::AppsGridView* top_level_grid =
       app_list_test_api_.GetTopLevelAppsGridView();
-  top_level_grid->Layout();
+  views::test::RunScheduledLayout(top_level_grid);
 
   // Click on the folder to open it.
   base::RunLoop run_loop;
@@ -542,7 +541,7 @@ IN_PROC_BROWSER_TEST_F(AppListSortBrowserTest,
       app_list_test_api_.CreateFolderWithApps({app1_id_, app2_id_});
   ash::AppsGridView* top_level_grid =
       app_list_test_api_.GetTopLevelAppsGridView();
-  top_level_grid->Layout();
+  views::test::RunScheduledLayout(top_level_grid);
 
   // Order apps grid to transition to temporary sort order.
   base::HistogramTester histograms;
@@ -691,9 +690,7 @@ IN_PROC_BROWSER_TEST_F(AppListSortBrowserTest, UndoTemporarySortingClamshell) {
       ash::kClamshellReorderAnimationSmoothnessHistogram, 1);
 
   // Ensure that the reorder undo toast's bounds update.
-  app_list_test_api_.GetTopLevelAppsGridView()
-      ->GetWidget()
-      ->LayoutRootViewIfNecessary();
+  views::test::RunScheduledLayout(app_list_test_api_.GetTopLevelAppsGridView());
 
   // The toast should be visible.
   EXPECT_EQ(ash::AppListToastType::kReorderUndo,
@@ -790,9 +787,7 @@ IN_PROC_BROWSER_TEST_F(AppListSortBrowserTest, TransitionToTabletCommitsSort) {
             std::vector<std::string>({app1_id_, app2_id_, app3_id_}));
 
   // Ensure that the reorder undo toast's bounds update.
-  app_list_test_api_.GetTopLevelAppsGridView()
-      ->GetWidget()
-      ->LayoutRootViewIfNecessary();
+  views::test::RunScheduledLayout(app_list_test_api_.GetTopLevelAppsGridView());
 
   // The toast should be visible.
   EXPECT_EQ(ash::AppListToastType::kReorderUndo,
