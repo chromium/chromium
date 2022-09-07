@@ -51,6 +51,8 @@ const base::Feature kIPHSideSearchAutoTriggeringFeature{
     "IPH_SideSearchAutoTriggering", base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kIPHSideSearchFeature{"IPH_SideSearch",
                                           base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kIPHSideSearchPageActionLabelFeature{
+    "IPH_SideSearchPageActionLabel", base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kIPHTabSearchFeature{"IPH_TabSearch",
                                          base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kIPHWebUITabStripFeature{"IPH_WebUITabStrip",

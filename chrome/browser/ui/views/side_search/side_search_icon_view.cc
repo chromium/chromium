@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/side_search/side_search_icon_view.h"
 
 #include "chrome/browser/feature_engagement/tracker_factory.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/side_search/side_search_config.h"
@@ -67,6 +68,10 @@ void SideSearchIconView::SetLabelVisibilityForTesting(bool visible) {
   label()->SetVisible(visible);
 }
 
+bool SideSearchIconView::IsLabelVisibleForTesting() const {
+  return label()->GetVisible();
+}
+
 void SideSearchIconView::UpdateImpl() {
   content::WebContents* active_contents = GetWebContents();
   if (!active_contents)
@@ -98,17 +103,12 @@ void SideSearchIconView::UpdateImpl() {
       !side_search::IsSideSearchToggleOpen(browser_view);
   SetVisible(should_show);
 
-  if (should_show && !was_visible) {
-    if (ShouldShowPageActionLabel()) {
-      SetPageActionLabelShown();
-      should_extend_label_shown_duration_ = true;
-      AnimateIn(absl::nullopt);
-    } else if (tab_contents_helper->returned_to_previous_srp_count() > 0) {
-      // If we are not animating-in the label text make a request to show the
-      // IPH if we detect the user may be engaging in a pogo-sticking journey.
-      browser_view->MaybeShowFeaturePromo(
-          feature_engagement::kIPHSideSearchFeature);
-    }
+  if (should_show && !was_visible && !MaybeShowPageActionLabel() &&
+      tab_contents_helper->returned_to_previous_srp_count() > 0) {
+    // If we are not animating-in the label text make a request to show the
+    // IPH if we detect the user may be engaging in a pogo-sticking journey.
+    browser_view->MaybeShowFeaturePromo(
+        feature_engagement::kIPHSideSearchFeature);
   }
 
   if (!should_show) {
@@ -187,51 +187,27 @@ void SideSearchIconView::AnimationProgressed(const gfx::Animation* animation) {
   }
 }
 
-bool SideSearchIconView::ShouldShowPageActionLabel() const {
-  content::WebContents* active_contents = GetWebContents();
-  DCHECK(active_contents);
+bool SideSearchIconView::MaybeShowPageActionLabel() {
+  auto* tracker = feature_engagement::TrackerFactory::GetForBrowserContext(
+      browser_->profile());
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser_);
 
-  auto* tab_contents_helper =
-      SideSearchTabContentsHelper::FromWebContents(active_contents);
-  DCHECK(tab_contents_helper);
-
-  if (!tab_contents_helper->GetAndResetCanShowPageActionLabel())
+  if (!browser_view || !tracker ||
+      !tracker->ShouldTriggerHelpUI(
+          feature_engagement::kIPHSideSearchPageActionLabelFeature)) {
     return false;
-
-  const int max_label_show_count =
-      features::kSideSearchPageActionLabelAnimationMaxCount.Get();
-
-  switch (features::kSideSearchPageActionLabelAnimationType.Get()) {
-    case features::kSideSearchLabelAnimationTypeOption::kProfile: {
-      auto* side_search_config =
-          SideSearchConfig::Get(active_contents->GetBrowserContext());
-      return side_search_config->page_action_label_shown_count() <
-             max_label_show_count;
-    }
-    case features::kSideSearchLabelAnimationTypeOption::kWindow: {
-      return page_action_label_shown_count_ < max_label_show_count;
-    }
-    case features::kSideSearchLabelAnimationTypeOption::kTab: {
-      return tab_contents_helper->page_action_label_shown_count() <
-             max_label_show_count;
-    }
   }
-}
 
-void SideSearchIconView::SetPageActionLabelShown() {
-  content::WebContents* active_contents = GetWebContents();
-  DCHECK(active_contents);
+  should_extend_label_shown_duration_ = true;
+  AnimateIn(absl::nullopt);
 
-  auto* side_search_config =
-      SideSearchConfig::Get(active_contents->GetBrowserContext());
-  side_search_config->DidShowPageActionLabel();
-
-  ++page_action_label_shown_count_;
-
-  auto* tab_contents_helper =
-      SideSearchTabContentsHelper::FromWebContents(active_contents);
-  DCHECK(tab_contents_helper);
-  tab_contents_helper->DidShowPageActionLabel();
+  // Note that `Dismiss()` in this case does not dismiss the UI. It's telling
+  // the FE backend that the promo is done so that other promos can run. The
+  // side panel showing should not block other promos from displaying.
+  tracker->Dismissed(feature_engagement::kIPHSideSearchPageActionLabelFeature);
+  tracker->NotifyEvent(
+      feature_engagement::events::kSideSearchPageActionLabelShown);
+  return true;
 }
 
 void SideSearchIconView::HidePageActionLabel() {

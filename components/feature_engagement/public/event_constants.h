@@ -53,8 +53,10 @@ extern const char kFocusModeConditionsMet[];
 
 // The side search panel was automatically triggered.
 extern const char kSideSearchAutoTriggered[];
-// The Side search panel was opened by the user.
+// The side search panel was opened by the user.
 extern const char kSideSearchOpened[];
+// The side search page action icon label was shown.
+extern const char kSideSearchPageActionLabelShown[];
 
 // Tab Search tab strip was opened by the user.
 extern const char kTabSearchOpened[];

@@ -131,6 +131,7 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHReopenTabFeature,
     &kIPHSideSearchAutoTriggeringFeature,
     &kIPHSideSearchFeature,
+    &kIPHSideSearchPageActionLabelFeature,
     &kIPHTabSearchFeature,
     &kIPHWebUITabStripFeature,
     &kIPHDesktopPwaInstallFeature,

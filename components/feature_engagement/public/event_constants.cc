@@ -31,6 +31,8 @@ const char kFocusModeConditionsMet[] = "focus_mode_conditions_met";
 
 const char kSideSearchAutoTriggered[] = "side_search_auto_triggered";
 const char kSideSearchOpened[] = "side_search_opened";
+const char kSideSearchPageActionLabelShown[] =
+    "side_search_page_action_label_shown";
 
 const char kTabSearchOpened[] = "tab_search_opened";
 

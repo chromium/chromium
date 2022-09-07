@@ -120,15 +120,6 @@ class SideSearchTabContentsHelper
   bool toggled_open() const { return toggled_open_; }
   void set_toggled_open(bool toggled_open) { toggled_open_ = toggled_open; }
 
-  // Called when the page action label is shown.
-  void DidShowPageActionLabel();
-  int page_action_label_shown_count() const {
-    return page_action_label_shown_count_;
-  }
-
-  // Gets `can_show_page_action_label_` and resets the value to false.
-  bool GetAndResetCanShowPageActionLabel();
-
   void SetSidePanelContentsForTesting(
       std::unique_ptr<content::WebContents> side_panel_contents);
 

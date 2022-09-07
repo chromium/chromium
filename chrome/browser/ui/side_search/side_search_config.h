@@ -78,12 +78,6 @@ class SideSearchConfig : public base::SupportsUserData::Data,
   // changes.
   void ResetStateAndNotifyConfigChanged();
 
-  // Called when the page action label is shown.
-  void DidShowPageActionLabel();
-  int page_action_label_shown_count() const {
-    return page_action_label_shown_count_;
-  }
-
   // TODO(crbug.com/1304513): Allow tests to specify the Google Search
   // configuration on all supported platforms until tests are fully migrated.
   void ApplyGoogleSearchConfigurationForTesting();
@@ -97,10 +91,6 @@ class SideSearchConfig : public base::SupportsUserData::Data,
   // Whether or not the service providing the SRP for the side panel is
   // available or not.
   bool is_side_panel_srp_available_ = false;
-
-  // Tracks the number of times the page action icon has animated-in its label
-  // text for the config's associated profile.
-  int page_action_label_shown_count_ = 0;
 
   raw_ptr<Profile> const profile_;
 
