@@ -413,11 +413,12 @@ DlpFilesController::GetDlpRestrictionDetails(const std::string& sourceUrl) {
   return result;
 }
 
-bool DlpFilesController::IsDlpPolicyMatched(const std::string& source_url) {
+bool DlpFilesController::IsDlpPolicyMatched(const FileDaemonInfo& file) {
   bool restricted = false;
 
   policy::DlpRulesManager::Level level = rules_manager_.IsRestrictedByAnyRule(
-      GURL(source_url), policy::DlpRulesManager::Restriction::kFiles);
+      GURL(file.source_url.spec()),
+      policy::DlpRulesManager::Restriction::kFiles);
 
   switch (level) {
     case policy::DlpRulesManager::Level::kBlock:
@@ -430,7 +431,7 @@ bool DlpFilesController::IsDlpPolicyMatched(const std::string& source_url) {
       break;
   }
 
-  MaybeReportEvent(source_url, {}, level);
+  MaybeReportEvent(file.source_url.spec(), {}, level);
 
   return restricted;
 }

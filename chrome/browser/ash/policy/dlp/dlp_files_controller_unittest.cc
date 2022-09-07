@@ -75,10 +75,12 @@ constexpr char kExampleUrl4[] = "https://example4.com/";
 constexpr ino_t kInode1 = 1;
 constexpr ino_t kInode2 = 2;
 constexpr ino_t kInode3 = 3;
+constexpr ino_t kInode4 = 4;
 
 constexpr char kFilePath1[] = "test1.txt";
 constexpr char kFilePath2[] = "test2.txt";
 constexpr char kFilePath3[] = "test3.txt";
+constexpr char kFilePath4[] = "test4.txt";
 
 bool CreateDummyFile(const base::FilePath& path) {
   return WriteFile(path, "42", sizeof("42")) == sizeof("42");
@@ -528,10 +530,18 @@ TEST_F(DlpFilesControllerTest, CheckReportingOnIsDlpPolicyMatched) {
 
   EXPECT_CALL(*rules_manager_, GetReportingManager).Times(testing::AnyNumber());
 
-  ASSERT_TRUE(files_controller_->IsDlpPolicyMatched(kExampleUrl1));
-  ASSERT_FALSE(files_controller_->IsDlpPolicyMatched(kExampleUrl2));
-  ASSERT_FALSE(files_controller_->IsDlpPolicyMatched(kExampleUrl3));
-  ASSERT_FALSE(files_controller_->IsDlpPolicyMatched(kExampleUrl4));
+  ASSERT_TRUE(
+      files_controller_->IsDlpPolicyMatched(DlpFilesController::FileDaemonInfo(
+          kInode1, base::FilePath(kFilePath1), kExampleUrl1)));
+  ASSERT_FALSE(
+      files_controller_->IsDlpPolicyMatched(DlpFilesController::FileDaemonInfo(
+          kInode2, base::FilePath(kFilePath2), kExampleUrl2)));
+  ASSERT_FALSE(
+      files_controller_->IsDlpPolicyMatched(DlpFilesController::FileDaemonInfo(
+          kInode3, base::FilePath(kFilePath3), kExampleUrl3)));
+  ASSERT_FALSE(
+      files_controller_->IsDlpPolicyMatched(DlpFilesController::FileDaemonInfo(
+          kInode4, base::FilePath(kFilePath4), kExampleUrl4)));
 
   ASSERT_EQ(events.size(), 3u);
   EXPECT_THAT(events[0], IsDlpPolicyEvent(CreateDlpPolicyEvent(

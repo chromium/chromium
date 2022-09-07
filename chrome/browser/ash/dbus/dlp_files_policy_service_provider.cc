@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/files/file_path.h"
 #include "base/logging.h"
 #include "chrome/browser/ash/policy/dlp/dlp_files_controller.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
@@ -97,9 +98,13 @@ void DlpFilesPolicyServiceProvider::IsDlpPolicyMatched(
   policy::DlpFilesController* files_controller =
       rules_manager->GetDlpFilesController();
 
+  // TODO(crbug.com/1360005): Add actual file path.
   bool restricted =
       files_controller
-          ? files_controller->IsDlpPolicyMatched(request.source_url())
+          ? files_controller->IsDlpPolicyMatched(
+                policy::DlpFilesController::FileDaemonInfo(
+                    request.file_metadata().inode(), base::FilePath(),
+                    request.file_metadata().source_url()))
           : false;
 
   dlp::IsDlpPolicyMatchedResponse response_proto;

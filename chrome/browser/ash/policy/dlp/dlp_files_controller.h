@@ -166,8 +166,8 @@ class DlpFilesController {
   std::vector<DlpFileRestrictionDetails> GetDlpRestrictionDetails(
       const std::string& sourceUrl);
 
-  // Returns whether a dlp policy matches for the `source_url`.
-  bool IsDlpPolicyMatched(const std::string& source_url);
+  // Returns whether a dlp policy matches for the `file`.
+  bool IsDlpPolicyMatched(const FileDaemonInfo& file);
 
   void SetWarnNotifierForTesting(
       std::unique_ptr<DlpWarnNotifier> warn_notifier);
