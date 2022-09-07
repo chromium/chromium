@@ -11,6 +11,7 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerP
 import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.IS_INCOGNITO;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.IS_VISIBLE;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.SHADOW_TOP_OFFSET;
+import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.TAB_LIST_ITEM_ANIMATOR_ENABLED;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.TOP_MARGIN;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.VISIBILITY_LISTENER;
 
@@ -924,14 +925,14 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
         mCustomView = customView;
         mCustomViewBackPressRunnable = backPressRunnable;
         notifyBackPressStateChangedInternal();
+
+        // Disable the animation on the tab list during the time period of the custom view.
+        mContainerViewModel.set(TAB_LIST_ITEM_ANIMATOR_ENABLED, false);
     }
 
     /**
      * A method to handle signal from outside world that a client is requesting to remove the custom
      * view from the tab switcher.
-     *
-     * TODO(crbug.com/1227656): Transitions needs to be handled correctly to not leak the Incognito
-     * content.
      *
      * @param customView A {@link View} view that needs to be removed.
      */
@@ -943,6 +944,8 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
         mCustomView = null;
         mCustomViewBackPressRunnable = null;
         notifyBackPressStateChangedInternal();
+
+        mContainerViewModel.set(TAB_LIST_ITEM_ANIMATOR_ENABLED, true);
     }
 
     /**
