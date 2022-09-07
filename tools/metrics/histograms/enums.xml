@@ -35532,6 +35532,9 @@ Called by update_extension_histograms.py.-->
   <int value="1701" label="PASSWORDSPRIVATE_EXTENDAUTHVALIDITY"/>
   <int value="1702" label="AUTOTESTPRIVATE_GETDESKSINFO"/>
   <int value="1703" label="ENTERPRISEREPORTINGPRIVATE_GETSETTINGS"/>
+  <int value="1704" label="WMDESKSPRIVATE_SAVEACTIVEDESK"/>
+  <int value="1705" label="WMDESKSPRIVATE_DELETESAVEDDESK"/>
+  <int value="1706" label="WMDESKSPRIVATE_RECALLSAVEDDESK"/>
 </enum>
 
 <enum name="ExtensionIconState">

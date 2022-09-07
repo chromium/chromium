@@ -56,15 +56,14 @@ class DesksClient : public ash::SessionObserver {
   using CaptureActiveDeskAndSaveTemplateCallback =
       base::OnceCallback<void(std::unique_ptr<ash::DeskTemplate>,
                               std::string error)>;
-  // Captures the active desk as a template and saves the template to storage.
-  // If such template can be created and saved, |callback| will be invoked with
-  // |""| as the error string with the pointer to the captured desk template,
-  // otherwise, |callback| will be invoked with a description of the error as
-  // the |error| with a nullptr.
-  // TODO(crbug.com/1286515): This will be removed with the extension. Avoid
-  // further uses of this method.
+  // Captures the active desk and saves it as template or saved desk for later
+  // use. If such desk can be saved, `callback` will be invoked
+  // with `""` as the error string with the pointer to the captured desk
+  // template, otherwise, `callback` will be invoked with a description of the
+  // error as the `error` with a nullptr.
   void CaptureActiveDeskAndSaveTemplate(
-      CaptureActiveDeskAndSaveTemplateCallback callback);
+      CaptureActiveDeskAndSaveTemplateCallback callback,
+      ash::DeskTemplateType template_type);
 
   using UpdateDeskTemplateCallback =
       base::OnceCallback<void(std::string error)>;
@@ -192,6 +191,11 @@ class DesksClient : public ash::SessionObserver {
   // called as a |desks_storage::DeleteEntryCallback|
   void OnDeleteDeskTemplate(DeleteDeskTemplateCallback callback,
                             desks_storage::DeskModel::DeleteEntryStatus status);
+  // Callback function that is run after a saved desk called and moved from
+  // library.
+  void OnRecallSavedDesk(DesksClient::LaunchDeskCallback callback,
+                         const base::GUID& desk_id,
+                         desks_storage::DeskModel::DeleteEntryStatus status);
 
   // Callback function that allows the |UpdateDeskTemplateCallback| to be called
   // as a |desks_storage::AddOrUpdateEntryCallback|.
