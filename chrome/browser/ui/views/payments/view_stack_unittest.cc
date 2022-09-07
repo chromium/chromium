@@ -191,7 +191,6 @@ TEST_F(ViewStackTest, TestLayoutUpdatesAnimations) {
           new gfx::TestAnimationDelegate()));
 
   view_stack_->SetBounds(10, 10, 30, 30);
-  view_stack_->Layout();
 
   base::RunLoop().Run();
   AssertViewOnTopOfStack(view_ptr);
