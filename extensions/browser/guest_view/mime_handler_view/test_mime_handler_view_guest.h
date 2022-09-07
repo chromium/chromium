@@ -50,6 +50,15 @@ class TestMimeHandlerViewGuest : public MimeHandlerViewGuest {
                          WebContentsCreatedCallback callback) override;
   void DidAttachToEmbedder() override;
 
+  // In preparation for the migration of guest view from inner WebContents to
+  // MPArch (crbug/1261928), individual tests should avoid accessing the guest's
+  // inner WebContents. The direct access is centralized in this helper function
+  // for easier migration.
+  //
+  // TODO(crbug/1261928): Update this implementation for MPArch, and consider
+  // relocate it to `content/public/test/browser_test_utils.h`.
+  static void WaitForGuestLoadStartThenStop(GuestViewBase* guest_view);
+
  private:
   explicit TestMimeHandlerViewGuest(content::WebContents* owner_web_contents);
   ~TestMimeHandlerViewGuest() override;

@@ -203,26 +203,6 @@ void WaitForPluginServiceToLoad() {
   run_loop.Run();
 }
 
-// In preparation for the migration of guest view from inner WebContents to
-// MPArch (crbug/1261928), individual tests should avoid accessing the guest's
-// inner WebContents. The direct access is centralized in this helper function
-// for easier migration.
-//
-// TODO(crbug/1261928): Update this implementation for MPArch, and consider
-// relocate it to `content/public/test/browser_test_utils.h`.
-void WaitForGuestLoadStartThenStop(GuestViewBase* guest_view) {
-  auto* guest_contents = guest_view->web_contents();
-
-  while (!guest_contents->IsLoading() &&
-         !guest_contents->GetController().GetLastCommittedEntry()) {
-    base::RunLoop run_loop;
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-        FROM_HERE, run_loop.QuitClosure(), TestTimeouts::tiny_timeout());
-    run_loop.Run();
-  }
-
-  ASSERT_TRUE(content::WaitForLoadStop(guest_contents));
-}
 }  // namespace
 
 // Using ASSERT_TRUE deliberately instead of ASSERT_EQ or ASSERT_STREQ
@@ -441,7 +421,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTest, PdfInMainFrameHasFocus) {
   auto* guest_view = GetGuestViewManager()->WaitForSingleGuestViewCreated();
   ASSERT_TRUE(guest_view);
   ASSERT_NE(primary_main_frame, guest_view->GetGuestMainFrame());
-  WaitForGuestLoadStartThenStop(guest_view);
+  TestMimeHandlerViewGuest::WaitForGuestLoadStartThenStop(guest_view);
 
   // Make sure the guest WebContents has focus.
   ASSERT_EQ(GetActiveWebContents()->GetFocusedFrame(),
@@ -464,7 +444,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTest, PdfExtensionLoadedInGuest) {
   auto* guest_view = GetGuestViewManager()->WaitForSingleGuestViewCreated();
   ASSERT_TRUE(guest_view);
   EXPECT_NE(primary_main_frame, guest_view->GetGuestMainFrame());
-  WaitForGuestLoadStartThenStop(guest_view);
+  TestMimeHandlerViewGuest::WaitForGuestLoadStartThenStop(guest_view);
 
   // Verify we loaded the extension.
   const GURL extension_url(
@@ -541,7 +521,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTest, PdfExtensionLoadedWhileOldPdfCloses) {
   auto* guest_view = GetGuestViewManager()->WaitForSingleGuestViewCreated();
   ASSERT_TRUE(guest_view);
   EXPECT_NE(primary_main_frame, guest_view->GetGuestMainFrame());
-  WaitForGuestLoadStartThenStop(guest_view);
+  TestMimeHandlerViewGuest::WaitForGuestLoadStartThenStop(guest_view);
 
   // Verify we loaded the extension.
   const GURL extension_url(
@@ -588,7 +568,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTest, PdfExtensionLoadedWhileOldPdfCloses) {
   auto* guest_view2 = GetGuestViewManager()->WaitForSingleGuestViewCreated();
   ASSERT_TRUE(guest_view2);
   EXPECT_NE(primary_main_frame, guest_view2->GetGuestMainFrame());
-  WaitForGuestLoadStartThenStop(guest_view2);
+  TestMimeHandlerViewGuest::WaitForGuestLoadStartThenStop(guest_view2);
 
   // Verify we loaded the extension.
   EXPECT_EQ(extension_url,
@@ -611,7 +591,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTest, CSPDoesNotBlockEmbedStyles) {
   ASSERT_TRUE(guest_view);
   auto* guest_main_frame = guest_view->GetGuestMainFrame();
   EXPECT_NE(primary_main_frame, guest_main_frame);
-  WaitForGuestLoadStartThenStop(guest_view);
+  TestMimeHandlerViewGuest::WaitForGuestLoadStartThenStop(guest_view);
 
   // Verify the extension was loaded.
   const GURL extension_url(
@@ -641,7 +621,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTest, CSPWithSandboxDoesNotBlockPDF) {
   auto* guest_view = GetGuestViewManager()->WaitForSingleGuestViewCreated();
   ASSERT_TRUE(guest_view);
   EXPECT_NE(primary_main_frame, guest_view->GetGuestMainFrame());
-  WaitForGuestLoadStartThenStop(guest_view);
+  TestMimeHandlerViewGuest::WaitForGuestLoadStartThenStop(guest_view);
 
   // Verify the extension was loaded.
   const GURL extension_url(
@@ -686,7 +666,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTest,
   auto* guest_view = GetGuestViewManager()->WaitForSingleGuestViewCreated();
   ASSERT_TRUE(guest_view);
   EXPECT_NE(primary_main_frame, guest_view->GetGuestMainFrame());
-  WaitForGuestLoadStartThenStop(guest_view);
+  TestMimeHandlerViewGuest::WaitForGuestLoadStartThenStop(guest_view);
 
   // Verify the extension was loaded.
   const GURL extension_url(
@@ -4572,7 +4552,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionPrerenderAndFencedFrameTest,
 
   auto* guest_view = GetGuestViewManager()->WaitForSingleGuestViewCreated();
   ASSERT_TRUE(guest_view);
-  WaitForGuestLoadStartThenStop(guest_view);
+  TestMimeHandlerViewGuest::WaitForGuestLoadStartThenStop(guest_view);
 
   // Ensure that the fenced frame's navigation should not abort the PDF stream.
   EXPECT_EQ(1U, GetGuestViewManager()->GetNumGuestsActive());
