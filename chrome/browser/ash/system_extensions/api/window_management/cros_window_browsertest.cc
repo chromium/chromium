@@ -12,6 +12,7 @@
 #include "base/files/file_util.h"
 #include "base/json/json_reader.h"
 #include "base/path_service.h"
+#include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece_forward.h"
 #include "base/strings/stringprintf.h"
@@ -47,6 +48,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#include "mojo/public/cpp/bindings/unique_receiver_set.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_delegate.h"
 #include "ui/display/test/display_manager_test_api.h"
@@ -192,7 +194,10 @@ class InstanceRegistryEventWaiter : public apps::InstanceRegistry::Observer {
                           apps::InstanceRegistry::Observer>
       instance_registry_observation_{this};
 
-  base::RunLoop run_loop_;
+  // This waiter is used from within Mojo method implementations which would
+  // result in nested run loops which would hang the test. Allow nestable tasks
+  // to get around this.
+  base::RunLoop run_loop_{base::RunLoop::Type::kNestableTasksAllowed};
   absl::optional<base::UnguessableToken> window_id_;
 };
 
@@ -217,8 +222,18 @@ static constexpr const char kManifestTemplate[] = R"(
 class CrosWindowManagementTestHelper
     : public system_extensions_test::mojom::CrosWindowManagementTestHelper {
  public:
-  CrosWindowManagementTestHelper() = default;
+  explicit CrosWindowManagementTestHelper(
+      TestSystemWebAppInstallation& swa_installation)
+      : swa_installation_(swa_installation) {}
   ~CrosWindowManagementTestHelper() override = default;
+
+  void OpenSystemWebAppWindow(
+      OpenSystemWebAppWindowCallback callback) override {
+    InstanceRegistryEventWaiter waiter;
+    ash::LaunchSystemWebAppAsync(GetProfile(), swa_installation_->GetType());
+    base::UnguessableToken window_id = waiter.WaitForCreation();
+    std::move(callback).Run(window_id.ToString());
+  }
 
   void OpenBrowserWindow(OpenBrowserWindowCallback callback) override {
     InstanceRegistryEventWaiter waiter;
@@ -283,6 +298,9 @@ class CrosWindowManagementTestHelper
 
     std::move(callback).Run();
   }
+
+ private:
+  raw_ref<TestSystemWebAppInstallation> swa_installation_;
 };
 
 class CrosWindowManagementBrowserTest : public SystemExtensionsApiBrowserTest {
@@ -301,15 +319,28 @@ class CrosWindowManagementBrowserTest : public SystemExtensionsApiBrowserTest {
                  "gen/ui/events/mojom/event_constants.mojom-lite.js",
                  "gen/ui/gfx/geometry/mojom/geometry.mojom-lite.js",
              }}) {
+    installation_ =
+        TestSystemWebAppInstallation::SetUpStandaloneSingleWindowApp();
+
     AddRendererInterface(base::BindLambdaForTesting(
-        [](mojo::PendingReceiver<
-            system_extensions_test::mojom::CrosWindowManagementTestHelper>
-               pending_receiver) {
-          mojo::MakeSelfOwnedReceiver(
-              std::make_unique<CrosWindowManagementTestHelper>(),
-              std::move(pending_receiver));
+        [this](mojo::PendingReceiver<
+               system_extensions_test::mojom::CrosWindowManagementTestHelper>
+                   pending_receiver) {
+          auto test_helper = std::make_unique<CrosWindowManagementTestHelper>(
+              this->swa_installation());
+          this->test_helpers_.Add(std::move(test_helper),
+                                  std::move(pending_receiver));
         }));
   }
+
+ protected:
+  TestSystemWebAppInstallation& swa_installation() { return *installation_; }
+
+ private:
+  mojo::UniqueReceiverSet<
+      system_extensions_test::mojom::CrosWindowManagementTestHelper>
+      test_helpers_;
+  std::unique_ptr<TestSystemWebAppInstallation> installation_;
 };
 
 // Deprecated. Use CrosWindowManagementBrowserTest instead.
@@ -319,9 +350,6 @@ class CrosWindowLegacyBrowserTest : public InProcessBrowserTest {
  public:
   CrosWindowLegacyBrowserTest() {
     feature_list_.InitAndEnableFeature(features::kSystemExtensions);
-
-    installation_ =
-        TestSystemWebAppInstallation::SetUpStandaloneSingleWindowApp();
   }
   ~CrosWindowLegacyBrowserTest() override = default;
 
@@ -519,59 +547,12 @@ IN_PROC_BROWSER_TEST_F(CrosWindowManagementBrowserTest,
   RunTest("cache_get_windows_returns_property.js");
 }
 
-IN_PROC_BROWSER_TEST_F(CrosWindowLegacyBrowserTest, CrosWindowSWACrashTest) {
-  // Finish installation of Sample SWA.
-  installation_->WaitForAppInstall();
-
-  // Wait for Sample SWA window to open.
-  content::TestNavigationObserver navigation_observer(
-      installation_->GetAppUrl());
-  navigation_observer.StartWatchingNewWebContents();
-
-  ash::LaunchSystemWebAppAsync(browser()->profile(), installation_->GetType());
-
-  navigation_observer.Wait();
-
-  // Initial window contains service worker. Track new window as test subject.
-  aura::Window* initial = browser()->window()->GetNativeWindow();
-  aura::Window* new_window =
-      BrowserList::GetInstance()->GetLastActive()->window()->GetNativeWindow();
-
-  ASSERT_NE(initial, new_window);
-
-  // Set target id to crosWindow id of newly opened window as per instance
-  // registry.
-  std::string target_id;
-
-  apps::AppServiceProxy* proxy =
-      apps::AppServiceProxyFactory::GetForProfile(browser()->profile());
-  proxy->InstanceRegistry().ForEachInstance(
-      [&target_id, &new_window](const apps::InstanceUpdate& update) {
-        if (update.Window()->GetToplevelWindow() == new_window) {
-          CHECK(target_id.empty());
-          target_id = update.InstanceId().ToString();
-        }
-      });
-
-  std::string test_code = base::StringPrintf(R"(
-async function cros_test() {
-  let windows = await chromeos.windowManagement.getWindows();
-  assert_equals(windows.length, 2);
-
-  let swa_window = windows.find(window => window.id === "%1$s");
-  assert_not_equals(undefined, swa_window,
-      `Could not find window with id: (%1$s);`);
-
-  await swa_window.minimize();
-  await swa_window.focus();
-  await swa_window.maximize();
-  await swa_window.setFullscreen(true);
-  await swa_window.close();
-}
-  )",
-                                             target_id.c_str());
-
-  RunTest(test_code);
+IN_PROC_BROWSER_TEST_F(CrosWindowManagementBrowserTest,
+                       CrosWindowSWACrashTest) {
+  // Calling this from inside a Mojo method implementation causes a nested loop
+  // and the test hangs. Call it here instead.
+  swa_installation().WaitForAppInstall();
+  RunTest("cros_window_swa_crash_test.js");
 }
 
 IN_PROC_BROWSER_TEST_F(CrosWindowManagementBrowserTest,

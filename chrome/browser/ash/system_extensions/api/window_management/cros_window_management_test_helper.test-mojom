@@ -11,6 +11,11 @@ import "ui/gfx/geometry/mojom/geometry.mojom";
 // Interface that allows tests to perform browser-side actions on behalf of
 // them e.g. get the size of the shelf, open new windows, etc.
 interface CrosWindowManagementTestHelper {
+  // Opens a test System Web App window. The C++ part of the test needs to call
+  // `swa_installation().WaitForAppInstall()`  to unsure the test SWA is
+  // installed before opening with this method.
+  OpenSystemWebAppWindow() => (string window_id);
+
   // Opens a new browser window. Returns the id of the new window.
   OpenBrowserWindow() => (string window_id);
 
