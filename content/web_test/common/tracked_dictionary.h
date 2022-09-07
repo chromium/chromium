@@ -40,6 +40,7 @@ class TrackedDictionary {
 
   // Type-specific setter for convenience.
   void SetBoolean(const std::string& path, bool new_value);
+  void SetInteger(const std::string& path, int new_value);
   void SetString(const std::string& path, const std::string& new_value);
 
  private:

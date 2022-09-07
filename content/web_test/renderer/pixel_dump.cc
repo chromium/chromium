@@ -44,11 +44,10 @@
 namespace content {
 
 SkBitmap PrintFrameToBitmap(blink::WebLocalFrame* web_frame,
+                            const gfx::Size& page_size_in_pixels,
                             const printing::PageRanges& page_ranges) {
   auto* frame_widget = web_frame->LocalRoot()->FrameWidget();
   frame_widget->UpdateAllLifecyclePhases(blink::DocumentUpdateReason::kTest);
-
-  gfx::Size page_size_in_pixels = frame_widget->Size();
 
   uint32_t page_count =
       web_frame->PrintBegin(page_size_in_pixels, blink::WebNode());

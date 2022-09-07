@@ -130,6 +130,11 @@ class TestRunner {
   // can be done locally in the renderer via DumpPixelsInRenderer().
   bool CanDumpPixelsFromRenderer() const;
 
+  // Returns the page size to be used for printing. This is either the size that
+  // was explicitly set via SetPrintingSize or the size of the frame if no size
+  // was set.
+  gfx::Size GetPrintingPageSize(blink::WebLocalFrame* frame) const;
+
   // Returns the page ranges to be printed. This is specified in the document
   // via a tag of the form <meta name=reftest-pages content="1,2-3,5-">. If no
   // tag is found, print all pages.
@@ -459,6 +464,7 @@ class TestRunner {
   // Causes layout to happen as if targetted to printed pages.
   void SetPrinting();
   void SetPrintingForFrame(const std::string& frame_name);
+  void SetPrintingSize(int width, int height);
 
   void SetShouldStayOnPageAfterHandlingBeforeUnload(bool value);
 

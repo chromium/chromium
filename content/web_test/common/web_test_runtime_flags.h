@@ -37,6 +37,15 @@ class WebTestRuntimeFlags {
   }                                                         \
   void set_##name(bool new_value) { dict_.SetBoolean(#name, new_value); }
 
+#define DEFINE_INT_WEB_TEST_RUNTIME_FLAG(name)             \
+  int name() const {                                       \
+    absl::optional<int> result =                           \
+        dict_.current_values().FindIntByDottedPath(#name); \
+    DCHECK(result);                                        \
+    return *result;                                        \
+  }                                                        \
+  void set_##name(int new_value) { dict_.SetInteger(#name, new_value); }
+
 #define DEFINE_STRING_WEB_TEST_RUNTIME_FLAG(name)             \
   std::string name() const {                                  \
     const std::string* result =                               \
@@ -73,6 +82,11 @@ class WebTestRuntimeFlags {
   // If this is non-empty and is_printing is true, pixel dump will be for the
   // named frame printed.
   DEFINE_STRING_WEB_TEST_RUNTIME_FLAG(printing_frame)
+
+  // Width and height of the pages to print to. Set both to 0 in order to use
+  // the frame width / height.
+  DEFINE_INT_WEB_TEST_RUNTIME_FLAG(printing_width)
+  DEFINE_INT_WEB_TEST_RUNTIME_FLAG(printing_height)
 
   // If true, don't dump output until notifyDone is called.
   DEFINE_BOOL_WEB_TEST_RUNTIME_FLAG(wait_until_done)

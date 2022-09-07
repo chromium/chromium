@@ -97,6 +97,11 @@ namespace content {
 
 namespace {
 
+// Default page dimensions for WPT print reftests (5x3 inches at 72 DPI
+// with 0.5 inch margins).
+const int kWPTPrintWidth = 4 * 72;
+const int kWPTPrintHeight = 2 * 72;
+
 // A V8 callback with bound arguments, and the ability to pass additional
 // arguments at time of calling Run().
 using BoundV8Callback =
@@ -347,6 +352,7 @@ class TestRunnerBindings : public gin::Wrappable<TestRunnerBindings> {
   void SetPopupBlockingEnabled(bool block_popups);
   void SetPrinting();
   void SetPrintingForFrame(const std::string& frame_name);
+  void SetPrintingSize(int width, int height);
   void SetScriptsAllowed(bool allowed);
   void SetShouldGeneratePixelResults(bool);
   void SetShouldStayOnPageAfterHandlingBeforeUnload(bool value);
@@ -762,6 +768,7 @@ gin::ObjectTemplateBuilder TestRunnerBindings::GetObjectTemplateBuilder(
       .SetMethod("setPrinting", &TestRunnerBindings::SetPrinting)
       .SetMethod("setPrintingForFrame",
                  &TestRunnerBindings::SetPrintingForFrame)
+      .SetMethod("setPrintingSize", &TestRunnerBindings::SetPrintingSize)
       .SetMethod("setScriptsAllowed", &TestRunnerBindings::SetScriptsAllowed)
       .SetMethod("setScrollbarPolicy", &TestRunnerBindings::NotImplemented)
       .SetMethod("setShouldGeneratePixelResults",
@@ -1567,6 +1574,12 @@ void TestRunnerBindings::SetPrintingForFrame(const std::string& frame_name) {
   runner_->SetPrintingForFrame(frame_name);
 }
 
+void TestRunnerBindings::SetPrintingSize(int width, int height) {
+  if (invalid_)
+    return;
+  runner_->SetPrintingSize(width, height);
+}
+
 void TestRunnerBindings::ClearTrustTokenState(
     v8::Local<v8::Function> v8_callback) {
   if (invalid_)
@@ -1900,7 +1913,8 @@ void TestRunnerBindings::CapturePrintingPixelsThen(
     return;
   blink::WebLocalFrame* frame = GetWebFrame();
   SkBitmap bitmap =
-      PrintFrameToBitmap(frame, runner_->GetPrintingPageRanges(frame));
+      PrintFrameToBitmap(frame, runner_->GetPrintingPageSize(frame),
+                         runner_->GetPrintingPageRanges(frame));
 
   v8::Isolate* isolate = blink::MainThreadIsolate();
   v8::HandleScope handle_scope(isolate);
@@ -2456,6 +2470,19 @@ bool TestRunner::CanDumpPixelsFromRenderer() const {
          web_test_runtime_flags_.is_printing();
 }
 
+gfx::Size TestRunner::GetPrintingPageSize(blink::WebLocalFrame* frame) const {
+  const int printing_width = web_test_runtime_flags_.printing_width();
+  const int printing_height = web_test_runtime_flags_.printing_height();
+
+  if (printing_width > 0 && printing_height > 0) {
+    return gfx::Size(printing_width, printing_height);
+  }
+
+  blink::WebFrameWidget* widget = frame->LocalRoot()->FrameWidget();
+  widget->UpdateAllLifecyclePhases(blink::DocumentUpdateReason::kTest);
+  return widget->Size();
+}
+
 static std::string GetPageRangesStringFromMetadata(
     blink::WebLocalFrame* frame) {
   blink::WebElementCollection meta_iter =
@@ -2557,7 +2584,8 @@ SkBitmap TestRunner::DumpPixelsInRenderer(blink::WebLocalFrame* main_frame) {
     if (frame_to_print && frame_to_print->IsWebLocalFrame())
       target_frame = frame_to_print->ToWebLocalFrame();
   }
-  return PrintFrameToBitmap(target_frame, GetPrintingPageRanges(target_frame));
+  return PrintFrameToBitmap(target_frame, GetPrintingPageSize(target_frame),
+                            GetPrintingPageRanges(target_frame));
 #else
   NOTREACHED();
   return SkBitmap();
@@ -2924,8 +2952,16 @@ void TestRunner::SetMainWindowAndTestConfiguration(
   if (spec.find("/loading/") != std::string::npos)
     SetShouldDumpFrameLoadCallbacks(true);
 
-  if (IsWebPlatformTest(spec))
+  if (IsWebPlatformTest(spec)) {
     SetIsWebPlatformTestsMode();
+
+    if (spec.find("/print/") != std::string::npos ||
+        spec.find("-print.html") != std::string::npos) {
+      // This is a WPT print test so set default format for convenience.
+      SetPrinting();
+      SetPrintingSize(kWPTPrintWidth, kWPTPrintHeight);
+    }
+  }
 
   view->GetSettings()->SetV8CacheOptions(
       is_devtools_test ? blink::mojom::V8CacheOptions::kNone
@@ -3156,6 +3192,12 @@ void TestRunner::SetPrinting() {
 void TestRunner::SetPrintingForFrame(const std::string& frame_name) {
   web_test_runtime_flags_.set_printing_frame(frame_name);
   web_test_runtime_flags_.set_is_printing(true);
+  OnWebTestRuntimeFlagsChanged();
+}
+
+void TestRunner::SetPrintingSize(int width, int height) {
+  web_test_runtime_flags_.set_printing_width(width);
+  web_test_runtime_flags_.set_printing_height(height);
   OnWebTestRuntimeFlagsChanged();
 }
 
