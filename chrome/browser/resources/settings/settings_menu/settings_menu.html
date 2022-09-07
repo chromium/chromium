@@ -108,6 +108,15 @@
             <paper-ripple></paper-ripple>
           </a>
           <div class="menu-separator"></div>
+          <template is="dom-if" if="[[performanceFeaturesAvailable_]]">
+            <a role="menuitem" id="performance" href="/performance"
+                class="cr-nav-menu-item"
+                hidden="[[!pageVisibility.performance]]">
+              <iron-icon icon="settings:performance"></iron-icon>
+              $i18n{performancePageTitle}
+              <paper-ripple></paper-ripple>
+            </a>
+          </template>
           <a role="menuitem" id="languages" href="/languages"
               class="cr-nav-menu-item"
               hidden="[[!pageVisibility.languages]]">

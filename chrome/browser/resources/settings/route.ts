@@ -235,6 +235,14 @@ function createBrowserSettingsRoutes(): Partial<SettingsRoutes> {
       }
       // </if>
     }
+
+    if (visibility.performance !== false &&
+        ((loadTimeData.getBoolean('highEfficiencyModeAvailable')) ||
+         (loadTimeData.getBoolean('batterySaverModeAvailable')))) {
+      r.PERFORMANCE = r.ADVANCED!.createSection(
+          '/performance', 'performance',
+          loadTimeData.getString('performancePageTitle'));
+    }
   }
   return r;
 }

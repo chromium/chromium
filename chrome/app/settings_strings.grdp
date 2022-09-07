@@ -1372,6 +1372,11 @@
     Please enter a shorter URL
   </message>
 
+  <!-- Performance Page -->
+  <message name="IDS_SETTINGS_PERFORMANCE_PAGE_TITLE" desc="Title of the performance page">
+    Performance
+  </message>
+
   <!-- Languages Page -->
   <message name="IDS_SETTINGS_LANGUAGES_PAGE_TITLE" desc="Name of the settings page which displays language preferences.">
     Languages

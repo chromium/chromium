@@ -17,6 +17,7 @@ import '../icons.html.js';
 import '../settings_shared.css.js';
 
 import {assert} from 'chrome://resources/js/assert_ts.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {IronSelectorElement} from 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -51,6 +52,14 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
        * Dictionary defining page visibility.
        */
       pageVisibility: Object,
+
+      performanceFeaturesAvailable_: {
+        type: Boolean,
+        value: function() {
+          return loadTimeData.getBoolean('highEfficiencyModeAvailable') ||
+              loadTimeData.getBoolean('batterySaverModeAvailable');
+        },
+      },
     };
   }
 

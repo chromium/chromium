@@ -730,6 +730,13 @@ void AddImportDataStrings(content::WebUIDataSource* html_source) {
 }
 #endif
 
+void AddPerformanceStrings(content::WebUIDataSource* html_source) {
+  static constexpr webui::LocalizedString kLocalizedStrings[] = {
+      {"performancePageTitle", IDS_SETTINGS_PERFORMANCE_PAGE_TITLE},
+  };
+  html_source->AddLocalizedStrings(kLocalizedStrings);
+}
+
 void AddLanguagesStrings(content::WebUIDataSource* html_source,
                          Profile* profile) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
@@ -3163,6 +3170,7 @@ void AddLocalizedStrings(content::WebUIDataSource* html_source,
   AddCommonStrings(html_source, profile);
   AddDownloadsStrings(html_source);
   AddExtensionsStrings(html_source);
+  AddPerformanceStrings(html_source);
   AddLanguagesStrings(html_source, profile);
   AddOnStartupStrings(html_source);
   AddPeopleStrings(html_source, profile);

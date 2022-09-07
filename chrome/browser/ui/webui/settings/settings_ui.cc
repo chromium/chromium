@@ -16,6 +16,7 @@
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/performance_manager/public/user_tuning/user_performance_tuning_manager.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -69,6 +70,7 @@
 #include "components/account_manager_core/account_manager_facade.h"
 #include "components/favicon_base/favicon_url_parser.h"
 #include "components/password_manager/core/common/password_manager_features.h"
+#include "components/performance_manager/public/features.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/common/features.h"
@@ -406,6 +408,19 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
   html_source->AddBoolean(
       "safetyCheckPermissionsEnabled",
       base::FeatureList::IsEnabled(features::kSafetyCheckPermissions));
+
+  // Performance
+  html_source->AddBoolean(
+      "highEfficiencyModeAvailable",
+      base::FeatureList::IsEnabled(
+          performance_manager::features::kHighEfficiencyModeAvailable));
+  html_source->AddBoolean(
+      "batterySaverModeAvailable",
+      base::FeatureList::IsEnabled(
+          performance_manager::features::kBatterySaverModeAvailable) &&
+          performance_manager::user_tuning::UserPerformanceTuningManager::
+              GetInstance()
+                  ->DeviceHasBattery());
 
   TryShowHatsSurveyWithTimeout();
 }

@@ -36,6 +36,7 @@ export interface SettingsRoutes {
   DEVICE_PASSWORDS: Route;
   PAYMENTS: Route;
   PEOPLE: Route;
+  PERFORMANCE: Route;
   PRIVACY: Route;
   PRIVACY_GUIDE: Route;
   RESET: Route;

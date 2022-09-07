@@ -18,6 +18,7 @@ export interface PageVisibility {
   languages?: boolean;
   onStartup?: boolean;
   people?: boolean;
+  performance?: boolean;
   privacy?: boolean|PrivacyPageVisibility;
   reset?: boolean;
   safetyCheck?: boolean;
@@ -57,6 +58,7 @@ if (loadTimeData.getBoolean('isGuest')) {
     languages: false,
     onStartup: false,
     people: false,
+    performance: false,
     privacy: false,
     reset: false,
     safetyCheck: false,
@@ -86,6 +88,7 @@ if (loadTimeData.getBoolean('isGuest')) {
     a11y: true,
     extensions: false,
     languages: true,
+    performance: false,
   };
   // </if>
 }
