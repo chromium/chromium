@@ -12,6 +12,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -36,6 +37,7 @@
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/instance.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "content/public/browser/web_contents.h"
@@ -301,6 +303,8 @@ class WebKioskAppServiceLauncherTest : public BrowserWithTestWindowTest {
 };
 
 TEST_F(WebKioskAppServiceLauncherTest, NormalFlowNotInstalled) {
+  base::HistogramTester histogram;
+
   SetupAppData(/*installed=*/false);
 
   EXEC_AND_WAIT_FOR_CALL(launcher()->Initialize(), *delegate(),
@@ -314,18 +318,33 @@ TEST_F(WebKioskAppServiceLauncherTest, NormalFlowNotInstalled) {
 
   EXPECT_EQ(app_data()->status(), WebKioskAppData::Status::kInstalled);
   EXPECT_EQ(app_data()->launch_url(), kAppLaunchUrl);
+
+  histogram.ExpectUniqueSample(KioskAppServiceLauncher::kLaunchAppReadinessUMA,
+                               apps::Readiness::kReady, 1);
+  histogram.ExpectUniqueSample(
+      WebKioskAppServiceLauncher::kWebAppInstallResultUMA,
+      webapps::InstallResultCode::kSuccessNewInstall, 1);
 }
 
 TEST_F(WebKioskAppServiceLauncherTest, NormalFlowAlreadyInstalled) {
+  base::HistogramTester histogram;
+
   SetupAppData(/*installed=*/true);
 
   EXEC_AND_WAIT_FOR_CALL(launcher()->Initialize(), *delegate(),
                          OnAppPrepared());
 
   EXEC_AND_WAIT_FOR_CALL(launcher()->LaunchApp(), *delegate(), OnAppLaunched());
+
+  histogram.ExpectUniqueSample(KioskAppServiceLauncher::kLaunchAppReadinessUMA,
+                               apps::Readiness::kReady, 1);
+  histogram.ExpectTotalCount(
+      WebKioskAppServiceLauncher::kWebAppInstallResultUMA, 0);
 }
 
 TEST_F(WebKioskAppServiceLauncherTest, FailedToInstall) {
+  base::HistogramTester histogram;
+
   SetupAppData(/*installed=*/false);
 
   EXEC_AND_WAIT_FOR_CALL(launcher()->Initialize(), *delegate(),
@@ -339,9 +358,15 @@ TEST_F(WebKioskAppServiceLauncherTest, FailedToInstall) {
       OnLaunchFailed(KioskAppLaunchError::Error::kUnableToInstall));
 
   EXPECT_NE(app_data()->status(), WebKioskAppData::Status::kInstalled);
+
+  histogram.ExpectUniqueSample(
+      WebKioskAppServiceLauncher::kWebAppInstallResultUMA,
+      webapps::InstallResultCode::kInstallURLLoadFailed, 1);
 }
 
 TEST_F(WebKioskAppServiceLauncherTest, PlaceholderReplaced) {
+  base::HistogramTester histogram;
+
   set_install_placeholder(true);
   SetupAppData(/*installed=*/true);
   EXPECT_TRUE(web_app_provider()->registrar().LookupPlaceholderAppId(
@@ -362,6 +387,14 @@ TEST_F(WebKioskAppServiceLauncherTest, PlaceholderReplaced) {
   EXPECT_EQ(app_data()->launch_url(), kAppLaunchUrl);
   EXPECT_FALSE(web_app_provider()->registrar().LookupPlaceholderAppId(
       GURL(kAppInstallUrl), web_app::WebAppManagement::Type::kKiosk));
+
+  histogram.ExpectUniqueSample(KioskAppServiceLauncher::kLaunchAppReadinessUMA,
+                               apps::Readiness::kReady, 1);
+  histogram.ExpectUniqueSample(
+      WebKioskAppServiceLauncher::kWebAppInstallResultUMA,
+      webapps::InstallResultCode::kSuccessNewInstall, 1);
+  histogram.ExpectUniqueSample(
+      WebKioskAppServiceLauncher::kWebAppIsPlaceholderUMA, true, 1);
 }
 
 }  // namespace ash

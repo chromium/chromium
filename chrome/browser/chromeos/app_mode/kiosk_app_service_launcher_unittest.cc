@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "ash/constants/app_types.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -100,15 +101,22 @@ class KioskAppServiceLauncherTest : public BrowserWithTestWindowTest {
 };
 
 TEST_F(KioskAppServiceLauncherTest, ShouldFailIfAppInInvalidReadiness) {
+  base::HistogramTester histogram;
+
   base::MockCallback<KioskAppServiceLauncher::AppLaunchedCallback>
       launched_callback;
 
   UpdateAppReadiness(apps::Readiness::kUninstalledByUser);
   EXPECT_CALL(launched_callback, Run(false)).Times(1);
   launcher_->CheckAndMaybeLaunchApp(kTestAppId, launched_callback.Get());
+
+  histogram.ExpectUniqueSample(KioskAppServiceLauncher::kLaunchAppReadinessUMA,
+                               apps::Readiness::kUninstalledByUser, 1);
 }
 
 TEST_F(KioskAppServiceLauncherTest, ShouldWaitIfAppNotExist) {
+  base::HistogramTester histogram;
+
   base::MockCallback<KioskAppServiceLauncher::AppLaunchedCallback>
       launched_callback;
 
@@ -118,9 +126,14 @@ TEST_F(KioskAppServiceLauncherTest, ShouldWaitIfAppNotExist) {
 
   EXPECT_CALL(launched_callback, Run(true)).Times(1);
   UpdateAppReadiness(apps::Readiness::kReady);
+
+  histogram.ExpectUniqueSample(KioskAppServiceLauncher::kLaunchAppReadinessUMA,
+                               apps::Readiness::kUnknown, 1);
 }
 
 TEST_F(KioskAppServiceLauncherTest, ShouldWaitIfAppNotReady) {
+  base::HistogramTester histogram;
+
   base::MockCallback<KioskAppServiceLauncher::AppLaunchedCallback>
       launched_callback;
 
@@ -131,15 +144,23 @@ TEST_F(KioskAppServiceLauncherTest, ShouldWaitIfAppNotReady) {
 
   EXPECT_CALL(launched_callback, Run(true)).Times(1);
   UpdateAppReadiness(apps::Readiness::kReady);
+
+  histogram.ExpectUniqueSample(KioskAppServiceLauncher::kLaunchAppReadinessUMA,
+                               apps::Readiness::kUnknown, 1);
 }
 
 TEST_F(KioskAppServiceLauncherTest, ShouldLaunchIfAppReady) {
+  base::HistogramTester histogram;
+
   base::MockCallback<KioskAppServiceLauncher::AppLaunchedCallback>
       launched_callback;
 
   UpdateAppReadiness(apps::Readiness::kReady);
   EXPECT_CALL(launched_callback, Run(true)).Times(1);
   launcher_->CheckAndMaybeLaunchApp(kTestAppId, launched_callback.Get());
+
+  histogram.ExpectUniqueSample(KioskAppServiceLauncher::kLaunchAppReadinessUMA,
+                               apps::Readiness::kReady, 1);
 }
 
 }  // namespace ash

@@ -32,6 +32,14 @@ class WebKioskAppData;
 // destroyed upon successful app launch.
 class WebKioskAppServiceLauncher : public KioskAppLauncher {
  public:
+  // Histogram to log the installed web app is a placeholder.
+  static constexpr char kWebAppIsPlaceholderUMA[] =
+      "Kiosk.AppService.WebApp.IsPlaceholder";
+
+  // Histogram to log the web app install result code.
+  static constexpr char kWebAppInstallResultUMA[] =
+      "Kiosk.AppService.WebApp.InstallResult";
+
   WebKioskAppServiceLauncher(Profile* profile,
                              KioskAppLauncher::Delegate* delegate,
                              const AccountId& account_id);

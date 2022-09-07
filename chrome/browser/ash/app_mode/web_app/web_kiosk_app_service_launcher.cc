@@ -7,6 +7,7 @@
 
 #include "base/bind.h"
 #include "base/check.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/syslog_logging.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
@@ -63,8 +64,10 @@ void WebKioskAppServiceLauncher::OnWebAppInitializled() {
 
   // If the installed app is a placeholder (similar to failed installation in
   // the old launcher), try to install again to replace it.
-  if (web_app_provider_->registrar().IsPlaceholderApp(
-          app_id.value(), web_app::WebAppManagement::Type::kKiosk)) {
+  bool is_placeholder_app = web_app_provider_->registrar().IsPlaceholderApp(
+      app_id.value(), web_app::WebAppManagement::Type::kKiosk);
+  base::UmaHistogramBoolean(kWebAppIsPlaceholderUMA, is_placeholder_app);
+  if (is_placeholder_app) {
     SYSLOG(INFO) << "Placeholder app installed. Trying to reinstall...";
     delegate_->InitializeNetwork();
     return;
@@ -100,6 +103,7 @@ void WebKioskAppServiceLauncher::InstallApp() {
 void WebKioskAppServiceLauncher::OnExternalInstallCompleted(
     const GURL& app_url,
     web_app::ExternallyManagedAppManager::InstallResult result) {
+  base::UmaHistogramEnumeration(kWebAppInstallResultUMA, result.code);
   if (!webapps::IsSuccess(result.code)) {
     SYSLOG(ERROR) << "Failed to install Kiosk web app, code " << result.code;
     delegate_->OnLaunchFailed(KioskAppLaunchError::Error::kUnableToInstall);

@@ -39,6 +39,10 @@ class KioskAppServiceLauncher :
   // failed. Corresponds to |KioskLaunchController::OnAppLaunched()|.
   using AppLaunchedCallback = base::OnceCallback<void(bool)>;
 
+  // Histogram to log the app readiness while launching app.
+  static constexpr char kLaunchAppReadinessUMA[] =
+      "Kiosk.AppService.Launch.AppReadiness";
+
   explicit KioskAppServiceLauncher(Profile* profile);
   KioskAppServiceLauncher(const KioskAppServiceLauncher&) = delete;
   KioskAppServiceLauncher& operator=(const KioskAppServiceLauncher&) = delete;

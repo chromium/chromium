@@ -8,7 +8,7 @@
 
 #include "base/bind.h"
 #include "base/check.h"
-#include "base/notreached.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/stl_util.h"
 #include "base/syslog_logging.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
@@ -42,6 +42,7 @@ void KioskAppServiceLauncher::CheckAndMaybeLaunchApp(
       app_id_,
       [&readiness](apps::AppUpdate update) { readiness = update.Readiness(); });
 
+  base::UmaHistogramEnumeration(kLaunchAppReadinessUMA, readiness);
   switch (readiness) {
     case apps::Readiness::kUnknown:
     case apps::Readiness::kTerminated:

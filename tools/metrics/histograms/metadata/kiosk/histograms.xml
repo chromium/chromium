@@ -22,6 +22,37 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<histogram name="Kiosk.AppService.Launch.AppReadiness" enum="AppReadiness"
+    expires_after="2023-09-01">
+  <owner>yixie@chromium.org</owner>
+  <owner>chromeos-kiosk-eng@google.com</owner>
+  <summary>
+    ChromeOS only. Records the readiness of the app while attempting to launch
+    the Kiosk app via App Service.
+  </summary>
+</histogram>
+
+<histogram name="Kiosk.AppService.WebApp.InstallResult"
+    enum="WebAppInstallResultCode" expires_after="2023-09-01">
+  <owner>yixie@chromium.org</owner>
+  <owner>chromeos-kiosk-eng@google.com</owner>
+  <summary>
+    ChromeOS only. Records the install result code from Kiosk apps installed as
+    externally managed apps in a web Kiosk.
+  </summary>
+</histogram>
+
+<histogram name="Kiosk.AppService.WebApp.IsPlaceholder" enum="BooleanYesNo"
+    expires_after="2023-09-01">
+  <owner>yixie@chromium.org</owner>
+  <owner>chromeos-kiosk-eng@google.com</owner>
+  <summary>
+    ChromeOS only. Records whether the web app installed in web app platform is
+    a placeholder, which happens when the app metadata cannot be fetched due to
+    external authentication or network error while launching web Kiosk.
+  </summary>
+</histogram>
+
 <histogram name="Kiosk.ChromeProcessCount" units="processes"
     expires_after="2023-08-23">
   <owner>vkovalova@chromium.org</owner>
