@@ -9,6 +9,7 @@
 #include "components/variations/variations_associated_data.h"
 
 class PrefService;
+class PrefRegistrySimple;
 
 extern const char kTrendingQueriesFieldTrialName[];
 
@@ -35,6 +36,9 @@ namespace trending_queries_field_trial {
 void Create(const base::FieldTrial::EntropyProvider& low_entropy_provider,
             base::FeatureList* feature_list,
             PrefService* local_state);
+
+// Registers the local state pref used to manage grouping for this field trial.
+void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 
 // Exposes CreateTrendingQueriesTrial() for testing FieldTrial set-up.
 void CreateTrendingQueriesTrialForTesting(
