@@ -25,6 +25,10 @@
 #include "ash/test/ash_test_base.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "chromeos/ash/components/audio/audio_device.h"
+#include "chromeos/ash/components/audio/cras_audio_handler.h"
+#include "chromeos/ash/components/dbus/audio/audio_node.h"
+#include "chromeos/ash/components/dbus/audio/fake_cras_audio_client.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/events/event.h"
@@ -83,6 +87,12 @@ class UnifiedSystemTrayTest : public AshTestBase,
   UnifiedSliderBubbleController::SliderType GetSliderBubbleType() {
     return GetPrimaryUnifiedSystemTray()
         ->slider_bubble_controller_->slider_type_;
+  }
+
+  bool IsMicrophoneMuteToastShown() {
+    return IsSliderBubbleShown() &&
+           GetSliderBubbleType() ==
+               UnifiedSliderBubbleController::SLIDER_TYPE_MIC;
   }
 
   UnifiedSystemTrayBubble* GetUnifiedSystemTrayBubble() {
@@ -532,6 +542,46 @@ TEST_P(UnifiedSystemTrayTest, CalendarGoesToMainView) {
   tray->message_center_bubble()->ExpandMessageCenter();
   EXPECT_FALSE(message_center_view->collapsed());
   EXPECT_FALSE(tray->IsShowingCalendarView());
+}
+
+// Tests microphone mute toast is visible only when the device has an
+// internal/external microphone attached.
+TEST_P(UnifiedSystemTrayTest, MicrophoneMuteToastVisibility) {
+  // Creating an input device for simple usage.
+  AudioNode internal_mic;
+  internal_mic.is_input = true;
+  internal_mic.id = 1;
+  internal_mic.stable_device_id_v1 = internal_mic.id;
+  internal_mic.type = AudioDevice::GetTypeString(AudioDeviceType::kInternalMic);
+
+  // Creating an output device.
+  AudioNode internal_speaker;
+  internal_speaker.is_input = false;
+  internal_speaker.id = 2;
+  internal_speaker.stable_device_id_v1 = internal_speaker.id;
+  internal_speaker.type =
+      AudioDevice::GetTypeString(AudioDeviceType::kInternalSpeaker);
+
+  // The microphone mute toast should not be visible initially.
+  EXPECT_FALSE(IsMicrophoneMuteToastShown());
+
+  FakeCrasAudioClient* fake_cras_audio_client = FakeCrasAudioClient::Get();
+  CrasAudioHandler* cras_audio_handler = CrasAudioHandler::Get();
+
+  fake_cras_audio_client->SetAudioNodesAndNotifyObserversForTesting(
+      {internal_speaker, internal_mic});
+  cras_audio_handler->SetInputMute(!cras_audio_handler->IsInputMuted());
+  // The toast should be visible as the input mute has changed and there is a
+  // microphone for simple usage attached to the device.
+  EXPECT_TRUE(IsMicrophoneMuteToastShown());
+
+  fake_cras_audio_client->SetAudioNodesAndNotifyObserversForTesting(
+      {internal_speaker});
+  cras_audio_handler->SetInputMute(!cras_audio_handler->IsInputMuted());
+  // There is no microphone for simple usage attached to the device. The toast
+  // should not be displayed even though the input mute has changed in the
+  // backend.
+  EXPECT_FALSE(IsMicrophoneMuteToastShown());
 }
 
 }  // namespace ash
