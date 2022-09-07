@@ -27,6 +27,9 @@ class PromosManager {
   explicit PromosManager(PrefService* local_state);
   ~PromosManager();
 
+  // Records the impression of `promo` in the impression history.
+  void RecordImpression(promos_manager::Promo promo);
+
   // Ingests promo-specific impression limits and stores them in-memory for
   // later reference.
   void InitializePromoImpressionLimits(
@@ -224,6 +227,7 @@ class PromosManager {
       RegistersAlreadyRegisteredPromoForSingleDisplayForEmptyActivePromos);
   FRIEND_TEST_ALL_PREFIXES(PromosManagerTest,
                            RegistersPromoSpecificImpressionLimits);
+  FRIEND_TEST_ALL_PREFIXES(PromosManagerTest, RecordsImpression);
 };
 
 #endif  // IOS_CHROME_BROWSER_PROMOS_MANAGER_PROMOS_MANAGER_H_

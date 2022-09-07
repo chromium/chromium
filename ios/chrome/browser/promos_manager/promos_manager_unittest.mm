@@ -9,6 +9,7 @@
 #import <vector>
 
 #import "base/test/scoped_feature_list.h"
+#import "base/values.h"
 #import "components/prefs/pref_registry_simple.h"
 #import "components/prefs/testing_pref_service.h"
 #import "ios/chrome/browser/prefs/pref_names.h"
@@ -930,4 +931,37 @@ TEST_F(PromosManagerTest, RegistersPromoSpecificImpressionLimits) {
   EXPECT_EQ(promos_manager_->PromoImpressionLimits(
                 promos_manager::Promo::CredentialProviderExtension),
             credentialProviderLimits);
+}
+
+// Tests PromosManager::RecordImpression() correctly records a new impression.
+TEST_F(PromosManagerTest, RecordsImpression) {
+  CreatePromosManager();
+  promos_manager_->RecordImpression(promos_manager::Promo::DefaultBrowser);
+
+  EXPECT_EQ(
+      local_state_->GetValueList(prefs::kIosPromosManagerImpressions).size(),
+      (size_t)1);
+
+  promos_manager_->RecordImpression(
+      promos_manager::Promo::CredentialProviderExtension);
+
+  const auto& impression_history =
+      local_state_->GetValueList(prefs::kIosPromosManagerImpressions);
+  const base::Value::Dict& first_impression = impression_history[0].GetDict();
+  const base::Value::Dict& second_impression = impression_history[1].GetDict();
+
+  EXPECT_EQ(impression_history.size(), (size_t)2);
+  EXPECT_EQ(*first_impression.FindString(promos_manager::kImpressionPromoKey),
+            "promos_manager::Promo::DefaultBrowser");
+  EXPECT_TRUE(
+      first_impression.FindInt(promos_manager::kImpressionDayKey).has_value());
+  EXPECT_EQ(first_impression.FindInt(promos_manager::kImpressionDayKey).value(),
+            TodaysDay());
+  EXPECT_EQ(*second_impression.FindString(promos_manager::kImpressionPromoKey),
+            "promos_manager::Promo::CredentialProviderExtension");
+  EXPECT_TRUE(
+      second_impression.FindInt(promos_manager::kImpressionDayKey).has_value());
+  EXPECT_EQ(
+      second_impression.FindInt(promos_manager::kImpressionDayKey).value(),
+      TodaysDay());
 }
