@@ -4817,6 +4817,7 @@ if (is_chromeos_lacros) {
       "data/extensions/",
       "data/media/",
       "data/policy/test_certs/",
+      "data/webapps_integration/",
       "data/web_app_shortcuts/",
       "data/web_apps/",
       "data/web_share_target/",
@@ -10178,6 +10179,7 @@ if (!is_android) {
     data = [
       "//chrome/test/data/password/",
       "//chrome/test/data/sync/",
+      "//chrome/test/data/webapps_integration/",
       "//chrome/test/data/web_apps/",
       "//chrome/test/data/banners/",
       "//net/tools/testserver/",

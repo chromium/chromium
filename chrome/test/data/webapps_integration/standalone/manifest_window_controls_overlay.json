@@ -7,7 +7,7 @@
       "type": "image/png"
     },
     {
-      "src": "128x128-red.png",
+      "src": "128x128-green.png",
       "sizes": "128x128",
       "type": "image/png"
     },
@@ -22,7 +22,10 @@
       "type": "image/png"
     }
   ],
-  "start_url": "/web_apps/standalone/basic.html",
-  "scope": "/web_apps/standalone/",
-  "display": "standalone"
+  "start_url": "/webapps_integration/standalone/basic.html",
+  "scope": "/webapps_integration/standalone/",
+  "display": "standalone",
+  "display_override": [
+    "window-controls-overlay"
+  ]
 }

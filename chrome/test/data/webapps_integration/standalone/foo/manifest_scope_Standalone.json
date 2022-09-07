@@ -12,7 +12,7 @@
       "type": "image/png"
     }
   ],
-  "start_url": "/web_apps/standalone/foo/basic.html",
-  "scope": "/web_apps/standalone/foo/",
+  "start_url": "/webapps_integration/standalone/foo/basic.html",
+  "scope": "/webapps_integration/standalone/",
   "display": "standalone"
 }

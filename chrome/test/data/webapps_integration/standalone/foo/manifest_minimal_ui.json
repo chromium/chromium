@@ -1,5 +1,5 @@
 {
-  "name": "Site A Foo",
+  "name": "Site A",
   "icons": [
     {
       "src": "48x48-green.png",
@@ -12,7 +12,7 @@
       "type": "image/png"
     }
   ],
-  "start_url": "/web_apps/standalone/foo/basic.html",
-  "scope": "/web_apps/standalone/",
-  "display": "standalone"
+  "start_url": "/webapps_integration/standalone/foo/basic.html",
+  "scope": "/webapps_integration/standalone/foo/",
+  "display": "minimal-ui"
 }

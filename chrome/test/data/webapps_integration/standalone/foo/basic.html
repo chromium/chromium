@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Site A Bar</title>
+  <title>Site A Foo</title>
     <script src="/web_apps/test_utils.js"></script>
     <script>
       // If a "manifest=/path/to/manifest.json" query argument is provided to
@@ -10,8 +10,8 @@
       addManifestLinkTag();
     </script>
 </head>
-<body onload="startWorker('../service_worker.js', { scope: '/web_apps/standalone/' })">
-  <h1>Site A Bar</h1>
+<body onload="startWorker('../service_worker.js', { scope: '/webapps_integration/standalone/' })">
+  <h1>Site A Foo</h1>
   Service worker returns a response object if it's offline, so the page
   supports the offline environment.
 </body>

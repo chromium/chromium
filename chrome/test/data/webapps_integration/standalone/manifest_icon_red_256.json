@@ -2,13 +2,8 @@
   "name": "Site A",
   "icons": [
     {
-      "src": "48x48-red.png",
+      "src": "48x48-green.png",
       "sizes": "48x48",
-      "type": "image/png"
-    },
-    {
-      "src": "128x128-green.png",
-      "sizes": "128x128",
       "type": "image/png"
     },
     {
@@ -17,12 +12,12 @@
       "type": "image/png"
     },
     {
-      "src": "256x256-green.png",
+      "src": "256x256-red.png",
       "sizes": "256x256",
       "type": "image/png"
     }
   ],
-  "start_url": "/web_apps/standalone/basic.html",
-  "scope": "/web_apps/standalone/",
+  "start_url": "/webapps_integration/standalone/basic.html",
+  "scope": "/webapps_integration/standalone/",
   "display": "standalone"
 }

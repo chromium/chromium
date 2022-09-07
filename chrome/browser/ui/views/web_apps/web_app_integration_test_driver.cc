@@ -214,9 +214,9 @@ struct SiteConfig {
 
 base::flat_map<Site, SiteConfig> g_site_configs = {
     {Site::kStandalone,
-     {.relative_scope_url = "/web_apps/standalone/",
-      .relative_start_url = "/web_apps/standalone/basic.html",
-      .relative_manifest_id = "web_apps/standalone/basic.html",
+     {.relative_scope_url = "/webapps_integration/standalone/",
+      .relative_start_url = "/webapps_integration/standalone/basic.html",
+      .relative_manifest_id = "webapps_integration/standalone/basic.html",
       .app_name = "Site A",
       // WCO disabled is the defaulting state so the title when disabled should
       // match with the app's name.
@@ -245,24 +245,24 @@ base::flat_map<Site, SiteConfig> g_site_configs = {
       .wco_not_enabled_title = u"Site WCO",
       .icon_color = SK_ColorGREEN}},
     {Site::kStandaloneNestedA,
-     {.relative_scope_url = "/web_apps/standalone/foo/",
-      .relative_start_url = "/web_apps/standalone/foo/basic.html",
-      .relative_manifest_id = "web_apps/standalone/foo/basic.html",
+     {.relative_scope_url = "/webapps_integration/standalone/foo/",
+      .relative_start_url = "/webapps_integration/standalone/foo/basic.html",
+      .relative_manifest_id = "webapps_integration/standalone/foo/basic.html",
       .app_name = "Site A Foo",
       .wco_not_enabled_title = u"Site A Foo",
       .icon_color = SK_ColorGREEN}},
     {Site::kStandaloneNestedB,
-     {.relative_scope_url = "/web_apps/standalone/bar/",
-      .relative_start_url = "/web_apps/standalone/bar/basic.html",
-      .relative_manifest_id = "web_apps/standalone/bar/basic.html",
+     {.relative_scope_url = "/webapps_integration/standalone/bar/",
+      .relative_start_url = "/webapps_integration/standalone/bar/basic.html",
+      .relative_manifest_id = "webapps_integration/standalone/bar/basic.html",
       .app_name = "Site A Bar",
       .wco_not_enabled_title = u"Site A Bar",
       .icon_color = SK_ColorGREEN}},
     {Site::kIsolated,
-     {.relative_scope_url = "/web_apps/isolated_app/",
-      // This file actually lives in /web_apps/isolated_app/. We serve this
-      // directory as root in a special test server to allow the isolated app
-      // to live at the root scope.
+     {.relative_scope_url = "/webapps_integration/isolated_app/",
+      // This file actually lives in /webapps_integration/isolated_app/. We
+      // serve this directory as root in a special test server to allow the
+      // isolated app to live at the root scope.
       .relative_start_url = "/basic.html",
       // same note for this file
       .relative_manifest_id = "basic.html",
@@ -648,7 +648,7 @@ WebAppIntegrationTestDriver::~WebAppIntegrationTestDriver() = default;
 void WebAppIntegrationTestDriver::SetUp() {
   isolated_app_test_server_ = std::make_unique<net::EmbeddedTestServer>();
   isolated_app_test_server_->AddDefaultHandlers(base::FilePath(
-      FILE_PATH_LITERAL("chrome/test/data/web_apps/isolated_app/")));
+      FILE_PATH_LITERAL("chrome/test/data/webapps_integration/isolated_app/")));
   CHECK(isolated_app_test_server_->Start());
 
   webapps::TestAppBannerManagerDesktop::SetUp();
