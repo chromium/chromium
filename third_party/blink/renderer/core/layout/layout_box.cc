@@ -1269,7 +1269,9 @@ void LayoutBox::UpdateAfterLayout() {
 
   Document& document = GetDocument();
   document.IncLayoutCallsCounter();
-  document.GetFrame()->GetInputMethodController().DidUpdateLayout(*this);
+  GetFrame()->GetInputMethodController().DidUpdateLayout(*this);
+  if (IsPositioned())
+    GetFrame()->GetInputMethodController().DidLayoutSubtree(*this);
   if (IsLayoutNGObject())
     document.IncLayoutCallsCounterNG();
 }

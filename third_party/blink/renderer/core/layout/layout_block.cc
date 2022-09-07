@@ -955,11 +955,8 @@ void LayoutBlock::LayoutPositionedObject(LayoutBox* positioned_object,
         layout_invalidation_reason::kAncestorMoved, kMarkOnlyThis);
   }
 
-  bool did_update_layout = false;
-  if (positioned_object->NeedsLayout()) {
+  if (positioned_object->NeedsLayout())
     positioned_object->UpdateLayout();
-    did_update_layout = true;
-  }
 
   LayoutObject* parent = positioned_object->Parent();
   bool layout_changed = false;
@@ -977,19 +974,12 @@ void LayoutBlock::LayoutPositionedObject(LayoutBox* positioned_object,
     // reposition?
     positioned_object->ForceLayout();
     layout_changed = true;
-    did_update_layout = true;
   }
 
   // Lay out again if our estimate was wrong.
   if (!layout_changed && needs_block_direction_location_set_before_layout &&
       logical_top_estimate != LogicalTopForChild(*positioned_object)) {
     positioned_object->ForceLayout();
-    did_update_layout = true;
-  }
-
-  if (did_update_layout) {
-    GetDocument().GetFrame()->GetInputMethodController().DidLayoutSubtree(
-        *positioned_object);
   }
 
   if (is_paginated)
