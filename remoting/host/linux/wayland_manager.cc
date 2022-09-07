@@ -23,6 +23,8 @@ WaylandManager* WaylandManager::Get() {
 void WaylandManager::Init(
     scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner) {
   ui_task_runner_ = ui_task_runner;
+  wayland_connection_ =
+      std::make_unique<WaylandConnection>(getenv("WAYLAND_DISPLAY"));
 }
 
 void WaylandManager::AddCapturerMetadataCallback(
@@ -50,6 +52,10 @@ void WaylandManager::OnDesktopCapturerMetadata(
   }
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   capturer_metadata_callbacks_.Notify(std::move(metadata));
+}
+
+DesktopDisplayInfo WaylandManager::GetCurrentDisplayInfo() {
+  return wayland_connection_->GetCurrentDisplayInfo();
 }
 
 }  // namespace remoting

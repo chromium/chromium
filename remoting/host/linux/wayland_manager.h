@@ -5,10 +5,14 @@
 #ifndef REMOTING_HOST_LINUX_WAYLAND_MANAGER_H_
 #define REMOTING_HOST_LINUX_WAYLAND_MANAGER_H_
 
+#include <memory>
+
 #include "base/callback.h"
 #include "base/callback_list.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
+#include "remoting/host/linux/wayland_connection.h"
+#include "remoting/host/linux/wayland_display.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_metadata.h"
 
 namespace remoting {
@@ -38,10 +42,14 @@ class WaylandManager {
   // Invoked by the desktop capturer(s), upon successful start.
   void OnDesktopCapturerMetadata(webrtc::DesktopCaptureMetadata metadata);
 
+  // Gets the current information about displays available on the host.
+  DesktopDisplayInfo GetCurrentDisplayInfo();
+
  private:
   SEQUENCE_CHECKER(sequence_checker_);
 
   scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner_;
+  std::unique_ptr<WaylandConnection> wayland_connection_;
   base::OnceCallbackList<DesktopMetadataCallbackSignature>
       capturer_metadata_callbacks_ GUARDED_BY_CONTEXT(sequence_checker_);
 };

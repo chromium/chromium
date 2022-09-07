@@ -510,12 +510,21 @@ static_library("common") {
       "linux/remote_desktop_portal.h",
       "linux/remote_desktop_portal_injector.cc",
       "linux/remote_desktop_portal_injector.h",
+      "linux/wayland_connection.cc",
+      "linux/wayland_connection.h",
       "linux/wayland_desktop_capturer.cc",
       "linux/wayland_desktop_capturer.h",
+      "linux/wayland_display.cc",
+      "linux/wayland_display.h",
+      "linux/wayland_display_info.cc",
+      "linux/wayland_display_info.h",
       "linux/wayland_manager.cc",
       "linux/wayland_manager.h",
     ]
-    public_deps += [ "//third_party/wayland-protocols:xdg_shell_protocol" ]
+    public_deps += [
+      "//third_party/wayland-protocols:xdg_output_protocol",
+      "//third_party/wayland-protocols:xdg_shell_protocol",
+    ]
   }
 
   if (is_linux && (!remoting_use_x11 || is_chromeos)) {
