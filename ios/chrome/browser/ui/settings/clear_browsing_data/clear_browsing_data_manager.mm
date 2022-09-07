@@ -111,10 +111,8 @@ UIImage* SymbolForItemType(ClearBrowsingDataItemType itemType) {
                                                   kSymbolPointSize);
       break;
     case ItemTypeDataTypeSavedPasswords:
-      // TODO(crbug.com/1315544): update this case when the custom symbol is
-      // done.
-      symbol = DefaultSymbolTemplateWithPointSize(kClockArrowSymbol,
-                                                  kSymbolPointSize);
+      symbol =
+          CustomSymbolTemplateWithPointSize(kPasswordSymbol, kSymbolPointSize);
       break;
     case ItemTypeDataTypeCache:
       symbol = DefaultSymbolTemplateWithPointSize(kCachedDataSymbol,

@@ -100,6 +100,7 @@ source_set("symbols") {
     "//ios/chrome/browser/ui/icons/resources:incognito_circle_fill",
     "//ios/chrome/browser/ui/icons/resources:language",
     "//ios/chrome/browser/ui/icons/resources:laptopcomputer_and_phone",
+    "//ios/chrome/browser/ui/icons/resources:password",
     "//ios/chrome/browser/ui/icons/resources:photo_badge_magnifyingglass",
     "//ios/chrome/browser/ui/icons/resources:photo_badge_plus",
     "//ios/chrome/browser/ui/icons/resources:plus_circle_fill",

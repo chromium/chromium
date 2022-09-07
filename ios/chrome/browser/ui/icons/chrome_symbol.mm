@@ -60,6 +60,7 @@ NSString* const kPhotoBadgeMagnifyingglassSymbol =
 NSString* const kReadingListSymbol = @"square_bullet_square";
 NSString* const kRecentTabsSymbol = @"laptopcomputer_and_phone";
 NSString* const kLanguageSymbol = @"language";
+NSString* const kPasswordSymbol = @"password";
 
 // Default symbol names.
 NSString* const kCreditCardSymbol = @"creditcard";

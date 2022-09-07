@@ -25,6 +25,13 @@ symbolset("incognito_circle_fill") {
   ]
 }
 
+symbolset("password") {
+  sources = [
+    "password.symbolset/Contents.json",
+    "password.symbolset/password.cr.svg",
+  ]
+}
+
 symbolset("square_number") {
   sources = [
     "square_number.symbolset/Contents.json",

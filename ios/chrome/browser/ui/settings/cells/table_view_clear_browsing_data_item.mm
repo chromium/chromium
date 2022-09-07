@@ -95,6 +95,7 @@ const CGFloat kImageHeight = 30;
     self.isAccessibilityElement = YES;
 
     _imageView = [[UIImageView alloc] init];
+    _imageView.contentMode = UIViewContentModeCenter;
     _imageView.translatesAutoresizingMaskIntoConstraints = NO;
     [self.contentView addSubview:_imageView];
 
