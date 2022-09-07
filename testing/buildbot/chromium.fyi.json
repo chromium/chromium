@@ -59400,6 +59400,62 @@
       }
     ]
   },
+  "ios-wpt-fyi-rel": {
+    "isolated_scripts": [
+      {
+        "args": [
+          "--child-processes=8",
+          "--run-by-dir=0",
+          "--no-restart-on-new-group",
+          "--product=chrome_ios",
+          "--out-dir",
+          "${ISOLATED_OUTDIR}",
+          "--xcode-build-version",
+          "14a5294gwp",
+          "--xctest"
+        ],
+        "experiment_percentage": 100,
+        "isolate_name": "wpt_tests_isolate",
+        "merge": {
+          "args": [
+            "--verbose"
+          ],
+          "script": "//third_party/blink/tools/merge_web_test_results.py"
+        },
+        "name": "wpt_tests_suite",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "results_handler": "layout tests",
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "cipd_packages": [
+            {
+              "cipd_package": "infra/tools/mac_toolchain/${platform}",
+              "location": ".",
+              "revision": "git_revision:723fc1a6c8cdf2631a57851f5610e598db0c1de1"
+            }
+          ],
+          "dimension_sets": [
+            {
+              "cpu": "x86-64",
+              "os": "Mac-12"
+            }
+          ],
+          "named_caches": [
+            {
+              "name": "xcode_ios_14a5294gwp",
+              "path": "Xcode.app"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 15
+        },
+        "test_id_prefix": "ninja://:wpt_tests_isolate/"
+      }
+    ]
+  },
   "ios15-beta-simulator": {
     "additional_compile_targets": [
       "all"

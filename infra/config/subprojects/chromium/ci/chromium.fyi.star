@@ -815,6 +815,32 @@ ci.builder(
     reclient_instance = reclient.instance.DEFAULT_TRUSTED,
 )
 
+fyi_ios_builder(
+    name = "ios-wpt-fyi-rel",
+    builderless = False,
+    # TODO(crbug.com/1351820): Enable scheduler when machine has been allocated.
+    schedule = "triggered",
+    triggered_by = [],
+    console_view_entry = consoles.console_view_entry(
+        category = "mac",
+    ),
+    builder_spec = builder_config.builder_spec(
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "mb",
+                "mac_toolchain",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+            target_platform = "ios",
+        ),
+        gclient_config = builder_config.gclient_config(
+            config = "ios",
+        ),
+    ),
+)
+
 # This is launching & collecting entirely isolated tests.
 # OS shouldn't matter.
 ci.thin_tester(

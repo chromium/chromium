@@ -5235,6 +5235,29 @@
         'experiment_percentage': 100,
       },
     },
+
+    'wpt_web_tests_ios': {
+      'wpt_tests_suite': {
+        'args': [
+          '--child-processes=8',
+          '--run-by-dir=0',
+          '--no-restart-on-new-group',
+          '--product=chrome_ios'
+        ],
+        'merge': {
+          'args': [
+            '--verbose',
+          ],
+          'script': '//third_party/blink/tools/merge_web_test_results.py',
+        },
+        'isolate_name': 'wpt_tests_isolate',
+        'results_handler': 'layout tests',
+        'swarming': {
+          'shards': 15,
+        },
+        'experiment_percentage': 100,
+      },
+    },
   },
 
   ##############################################################################

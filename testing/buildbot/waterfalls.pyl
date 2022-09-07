@@ -3398,6 +3398,19 @@
           'isolated_scripts': 'ios_webkit_tot_tests',
         },
       },
+      'ios-wpt-fyi-rel': {
+        'mixins': [
+          'has_native_resultdb_integration',
+          'mac_12_x64',
+          'mac_toolchain',
+          'out_dir_arg',
+          'xcode_14_main',
+          'xctest',
+        ],
+        'test_suites': {
+          'isolated_scripts': 'wpt_web_tests_ios',
+        },
+      },
       'ios15-beta-simulator': {
         'additional_compile_targets': [
           'all',
