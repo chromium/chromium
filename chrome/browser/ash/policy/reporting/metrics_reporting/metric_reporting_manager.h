@@ -123,8 +123,7 @@ class MetricReportingManager : public policy::ManagedSessionService::Observer,
   void InitEventObserverManager(
       std::unique_ptr<MetricEventObserver> event_observer,
       const std::string& enable_setting_path,
-      bool setting_enabled_default_value,
-      std::vector<Sampler*> additional_samplers = {});
+      bool setting_enabled_default_value);
 
   void UploadTelemetry();
 

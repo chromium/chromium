@@ -365,15 +365,14 @@ void MetricReportingManager::InitPeriodicEventCollector(
 void MetricReportingManager::InitEventObserverManager(
     std::unique_ptr<MetricEventObserver> event_observer,
     const std::string& enable_setting_path,
-    bool setting_enabled_default_value,
-    std::vector<Sampler*> additional_samplers) {
+    bool setting_enabled_default_value) {
   if (!event_report_queue_) {
     return;
   }
   event_observer_managers_.emplace_back(delegate_->CreateEventObserverManager(
       std::move(event_observer), event_report_queue_.get(),
       &reporting_settings_, enable_setting_path, setting_enabled_default_value,
-      std::move(additional_samplers)));
+      /*sampler_pool=*/this));
 }
 
 void MetricReportingManager::UploadTelemetry() {
@@ -473,7 +472,7 @@ void MetricReportingManager::InitPeripheralsCollectors() {
       peripheral_events_and_telemetry_report_queue_.get(), &reporting_settings_,
       ::ash::kReportDevicePeripherals,
       metrics::kReportDevicePeripheralsDefaultValue,
-      /*additional_samplers=*/std::vector<Sampler*>()));
+      /*sampler_pool=*/this));
 
   // Peripheral telemetry
   InitOneShotTelemetryCollector(

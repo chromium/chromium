@@ -8,11 +8,25 @@
 #include "base/sequence_checker.h"
 #include "base/task/bind_post_task.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "components/reporting/metrics/configured_sampler.h"
 #include "components/reporting/metrics/multi_samplers_collector.h"
 #include "components/reporting/metrics/sampler.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace reporting {
+
+// static
+void MultiSamplersCollector::CollectAll(
+    const std::vector<ConfiguredSampler*>& configured_samplers,
+    OptionalMetricCallback metric_callback) {
+  auto multi_collector =
+      base::MakeRefCounted<MultiSamplersCollector>(std::move(metric_callback));
+  for (auto* sampler : configured_samplers) {
+    if (sampler->IsReportingEnabled()) {
+      multi_collector->Collect(sampler->GetSampler());
+    }
+  }
+}
 
 MultiSamplersCollector::MultiSamplersCollector(
     OptionalMetricCallback metric_callback)

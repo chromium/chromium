@@ -14,9 +14,9 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "components/reporting/metrics/event_driven_telemetry_sampler_pool.h"
 #include "components/reporting/metrics/fake_metric_report_queue.h"
 #include "components/reporting/metrics/fake_reporting_settings.h"
-#include "components/reporting/metrics/fake_sampler.h"
 #include "components/reporting/metrics/metric_data_collector.h"
 #include "components/reporting/metrics/metric_event_observer_manager.h"
 #include "components/reporting/metrics/metric_report_queue.h"
@@ -53,11 +53,11 @@ class FakeMetricEventObserverManager : public MetricEventObserverManager {
   FakeMetricEventObserverManager(ReportingSettings* reporting_settings,
                                  int* observer_manager_count)
       : MetricEventObserverManager(std::make_unique<FakeMetricEventObserver>(),
-                                   nullptr,
+                                   /*metric_report_queue=*/nullptr,
                                    reporting_settings,
-                                   "",
-                                   false,
-                                   {}),
+                                   /*enable_setting_path=*/"",
+                                   /*setting_enabled_default_value=*/false,
+                                   /*sampler_pool=*/nullptr),
         observer_manager_count_(observer_manager_count) {
     ++(*observer_manager_count_);
   }
@@ -165,7 +165,7 @@ class MockDelegate : public MetricReportingManager::Delegate {
                ReportingSettings* reporting_settings,
                const std::string& enable_setting_path,
                bool setting_enabled_default_value,
-               std::vector<Sampler*> additional_samplers),
+               EventDrivenTelemetrySamplerPool* sampler_pool),
               (override));
 };
 

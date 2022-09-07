@@ -7,6 +7,7 @@
 #include "chrome/browser/chromeos/reporting/metric_default_utils.h"
 #include "chrome/browser/enterprise/util/affiliation.h"
 #include "components/reporting/client/report_queue_factory.h"
+#include "components/reporting/metrics/event_driven_telemetry_sampler_pool.h"
 #include "components/reporting/metrics/metric_report_queue.h"
 
 namespace reporting::metrics {
@@ -112,11 +113,10 @@ MetricReportingManagerDelegateBase::CreateEventObserverManager(
     ReportingSettings* reporting_settings,
     const std::string& enable_setting_path,
     bool setting_enabled_default_value,
-    std::vector<Sampler*> additional_samplers) {
+    EventDrivenTelemetrySamplerPool* sampler_pool) {
   return std::make_unique<MetricEventObserverManager>(
       std::move(event_observer), metric_report_queue, reporting_settings,
-      enable_setting_path, setting_enabled_default_value,
-      std::move(additional_samplers));
+      enable_setting_path, setting_enabled_default_value, sampler_pool);
 }
 
 bool MetricReportingManagerDelegateBase::IsAffiliated(Profile* profile) const {

@@ -4,14 +4,21 @@
 
 #include "components/reporting/metrics/metric_event_observer_manager.h"
 
+#include <algorithm>
+#include <utility>
+#include <vector>
+
 #include "base/bind.h"
 #include "base/logging.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/task/bind_post_task.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
-#include "components/reporting/metrics/metric_data_collector.h"
+#include "components/reporting/metrics/configured_sampler.h"
+#include "components/reporting/metrics/event_driven_telemetry_sampler_pool.h"
 #include "components/reporting/metrics/metric_report_queue.h"
 #include "components/reporting/metrics/metric_reporting_controller.h"
+#include "components/reporting/metrics/multi_samplers_collector.h"
 #include "components/reporting/metrics/reporting_settings.h"
 #include "components/reporting/metrics/sampler.h"
 #include "components/reporting/util/status.h"
@@ -24,12 +31,10 @@ MetricEventObserverManager::MetricEventObserverManager(
     ReportingSettings* reporting_settings,
     const std::string& enable_setting_path,
     bool setting_enabled_default_value,
-    std::vector<Sampler*> additional_samplers)
+    EventDrivenTelemetrySamplerPool* sampler_pool)
     : event_observer_(std::move(event_observer)),
       metric_report_queue_(metric_report_queue),
-      additional_samplers_collector_(
-          std::make_unique<AdditionalSamplersCollector>(
-              std::move(additional_samplers))) {
+      sampler_pool_(sampler_pool) {
   CHECK(base::SequencedTaskRunnerHandle::IsSet());
   DETACH_FROM_SEQUENCE(sequence_checker_);
 
@@ -67,18 +72,25 @@ void MetricEventObserverManager::OnEventObserved(MetricData metric_data) {
 
   metric_data.set_timestamp_ms(base::Time::Now().ToJavaTime());
 
-  additional_samplers_collector_->CollectAll(
-      base::BindOnce(&MetricEventObserverManager::Report,
-                     base::Unretained(this)),
-      std::move(metric_data));
+  std::vector<ConfiguredSampler*> telemetry_samplers;
+  if (sampler_pool_) {
+    telemetry_samplers =
+        sampler_pool_->GetTelemetrySamplers(metric_data.event_data().type());
+  }
+  auto collect_cb =
+      base::BindOnce(&MetricEventObserverManager::MergeAndReport,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(metric_data));
+  MultiSamplersCollector::CollectAll(telemetry_samplers, std::move(collect_cb));
 }
 
-void MetricEventObserverManager::Report(
-    absl::optional<MetricData> metric_data) {
+void MetricEventObserverManager::MergeAndReport(
+    MetricData event_data,
+    absl::optional<MetricData> telemetry_data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!metric_data.has_value()) {
-    NOTREACHED() << "Reporting requested for empty metric data.";
-    return;
+
+  MetricData metric_data = std::move(event_data);
+  if (telemetry_data.has_value()) {
+    metric_data.CheckTypeAndMergeFrom(telemetry_data.value());
   }
 
   auto enqueue_cb = base::BindOnce([](Status status) {
@@ -89,7 +101,7 @@ void MetricEventObserverManager::Report(
     }
   });
   metric_report_queue_->Enqueue(
-      std::make_unique<MetricData>(std::move(metric_data.value())),
+      std::make_unique<MetricData>(std::move(metric_data)),
       std::move(enqueue_cb));
 }
 }  // namespace reporting

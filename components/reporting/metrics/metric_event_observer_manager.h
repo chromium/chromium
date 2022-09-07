@@ -17,13 +17,12 @@
 
 namespace reporting {
 
+class EventDrivenTelemetrySamplerPool;
 class MetricData;
 class MetricEventObserver;
 class MetricReportingController;
 class MetricReportQueue;
-class AdditionalSamplersCollector;
 class ReportingSettings;
-class Sampler;
 
 // Class to manage report
 class MetricEventObserverManager {
@@ -34,7 +33,7 @@ class MetricEventObserverManager {
       ReportingSettings* reporting_settings,
       const std::string& enable_setting_path,
       bool setting_enabled_default_value,
-      std::vector<Sampler*> additional_samplers = {});
+      EventDrivenTelemetrySamplerPool* sampler_pool);
 
   MetricEventObserverManager(const MetricEventObserverManager& other) = delete;
   MetricEventObserverManager& operator=(
@@ -47,14 +46,14 @@ class MetricEventObserverManager {
 
   void OnEventObserved(MetricData metric_data);
 
-  void Report(absl::optional<MetricData> metric_data);
+  void MergeAndReport(MetricData event_metric_data,
+                      absl::optional<MetricData> telemetry_metric_data);
 
   const std::unique_ptr<MetricEventObserver> event_observer_;
 
   const raw_ptr<MetricReportQueue> metric_report_queue_;
 
-  const std::unique_ptr<AdditionalSamplersCollector>
-      additional_samplers_collector_;
+  const raw_ptr<EventDrivenTelemetrySamplerPool> sampler_pool_;
 
   std::unique_ptr<MetricReportingController> reporting_controller_;
 

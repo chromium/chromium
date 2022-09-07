@@ -9,6 +9,7 @@
 
 #include "chrome/browser/profiles/profile.h"
 #include "components/reporting/client/report_queue_configuration.h"
+#include "components/reporting/metrics/event_driven_telemetry_sampler_pool.h"
 #include "components/reporting/metrics/metric_data_collector.h"
 #include "components/reporting/metrics/metric_event_observer_manager.h"
 #include "components/reporting/metrics/metric_report_queue.h"
@@ -93,7 +94,7 @@ class MetricReportingManagerDelegateBase {
       ReportingSettings* reporting_settings,
       const std::string& enable_setting_path,
       bool setting_enabled_default_value,
-      std::vector<Sampler*> additional_samplers);
+      EventDrivenTelemetrySamplerPool* sampler_pool);
 
   // Checks for profile affiliation and returns true if affiliated. False
   // otherwise.

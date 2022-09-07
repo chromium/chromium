@@ -14,6 +14,8 @@
 
 namespace reporting {
 
+class ConfiguredSampler;
+
 // Class to collect data from multiple samplers async. Response callback is
 // invoked on destruction. Each sampling callback passed to a sampler will hold
 // reference to the class instance, so the final class instance response will
@@ -22,6 +24,10 @@ namespace reporting {
 class MultiSamplersCollector
     : public base::RefCountedDeleteOnSequence<MultiSamplersCollector> {
  public:
+  static void CollectAll(
+      const std::vector<ConfiguredSampler*>& configured_samplers,
+      OptionalMetricCallback metric_callback);
+
   explicit MultiSamplersCollector(OptionalMetricCallback metric_callback);
 
   MultiSamplersCollector(const MultiSamplersCollector& other) = delete;
