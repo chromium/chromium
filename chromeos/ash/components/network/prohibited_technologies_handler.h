@@ -44,6 +44,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ProhibitedTechnologiesHandler
   std::vector<std::string> GetCurrentlyProhibitedTechnologies();
 
  private:
+  friend class ManagedNetworkConfigurationHandlerTest;
   friend class NetworkHandler;
   friend class ProhibitedTechnologiesHandlerTest;
 

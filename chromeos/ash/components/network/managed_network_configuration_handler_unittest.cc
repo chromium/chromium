@@ -34,18 +34,21 @@
 #include "chromeos/ash/components/network/network_policy_observer.h"
 #include "chromeos/ash/components/network/network_profile_handler.h"
 #include "chromeos/ash/components/network/network_state.h"
+#include "chromeos/ash/components/network/prohibited_technologies_handler.h"
 #include "chromeos/ash/components/network/proxy/ui_proxy_config_service.h"
 #include "chromeos/ash/components/network/test_cellular_esim_profile_handler.h"
 #include "chromeos/components/onc/onc_signature.h"
 #include "chromeos/components/onc/onc_test_utils.h"
 #include "chromeos/components/onc/onc_utils.h"
 #include "chromeos/components/onc/onc_validator.h"
+#include "chromeos/login/login_state/login_state.h"
 #include "components/onc/onc_pref_names.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/proxy_config/pref_proxy_config_tracker_impl.h"
 #include "components/proxy_config/proxy_config_dictionary.h"
 #include "components/proxy_config/proxy_config_pref_names.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
@@ -53,6 +56,9 @@ namespace test_utils = ::chromeos::onc::test_utils;
 using base::test::DictionaryHasValues;
 
 namespace ash {
+
+using testing::ElementsAre;
+using testing::IsEmpty;
 
 namespace {
 
@@ -138,6 +144,8 @@ class ManagedNetworkConfigurationHandlerTest : public testing::Test {
 
   // testing::Test:
   void SetUp() override {
+    LoginState::Initialize();
+
     shill_clients::InitializeFakes();
     hermes_clients::InitializeFakes();
 
@@ -170,6 +178,8 @@ class ManagedNetworkConfigurationHandlerTest : public testing::Test {
         network_connection_handler_.get(), network_profile_handler_.get(),
         network_state_handler_.get());
     cellular_policy_handler_ = std::make_unique<CellularPolicyHandler>();
+    // ProhibitedTechnologiesHandler's ctor is private.
+    prohibited_technologies_handler_.reset(new ProhibitedTechnologiesHandler);
 
     managed_cellular_pref_handler_ =
         std::make_unique<ManagedCellularPrefHandler>();
@@ -194,7 +204,7 @@ class ManagedNetworkConfigurationHandlerTest : public testing::Test {
         cellular_policy_handler_.get(), managed_cellular_pref_handler_.get(),
         network_state_handler_.get(), network_profile_handler_.get(),
         network_configuration_handler_.get(), network_device_handler_.get(),
-        nullptr /* no ProhibitedTechnologiesHandler */);
+        prohibited_technologies_handler_.get());
     managed_network_configuration_handler_->set_ui_proxy_config_service(
         ui_proxy_config_service_.get());
     managed_network_configuration_handler_->AddObserver(&policy_observer_);
@@ -203,6 +213,9 @@ class ManagedNetworkConfigurationHandlerTest : public testing::Test {
         network_profile_handler_.get(), network_state_handler_.get(),
         managed_cellular_pref_handler_.get(),
         managed_network_configuration_handler_.get());
+    prohibited_technologies_handler_->Init(
+        managed_network_configuration_handler_.get(),
+        network_state_handler_.get());
 
     base::RunLoop().RunUntilIdle();
   }
@@ -226,6 +239,8 @@ class ManagedNetworkConfigurationHandlerTest : public testing::Test {
 
     hermes_clients::Shutdown();
     shill_clients::Shutdown();
+
+    LoginState::Shutdown();
   }
 
   TestNetworkPolicyObserver* policy_observer() { return &policy_observer_; }
@@ -319,6 +334,7 @@ class ManagedNetworkConfigurationHandlerTest : public testing::Test {
   void ResetManagedNetworkConfigurationHandler() {
     if (!managed_network_configuration_handler_)
       return;
+    prohibited_technologies_handler_.reset();
     managed_network_configuration_handler_->RemoveObserver(&policy_observer_);
     managed_network_configuration_handler_.reset();
   }
@@ -341,6 +357,10 @@ class ManagedNetworkConfigurationHandlerTest : public testing::Test {
     task_environment_.FastForwardBy(2 * kProfileRefreshCallbackDelay);
   }
 
+  ProhibitedTechnologiesHandler* prohibited_technologies_handler() {
+    return prohibited_technologies_handler_.get();
+  }
+
  protected:
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
@@ -361,6 +381,8 @@ class ManagedNetworkConfigurationHandlerTest : public testing::Test {
   std::unique_ptr<FakeNetworkConnectionHandler> network_connection_handler_;
   std::unique_ptr<CellularESimInstaller> cellular_esim_installer_;
   std::unique_ptr<CellularPolicyHandler> cellular_policy_handler_;
+  std::unique_ptr<ProhibitedTechnologiesHandler>
+      prohibited_technologies_handler_;
 
   sync_preferences::TestingPrefServiceSyncable user_prefs_;
   TestingPrefServiceSimple local_state_, device_prefs_;
@@ -545,6 +567,40 @@ TEST_F(ManagedNetworkConfigurationHandlerTest, VariableDoesNotAffectPolicy) {
 
   // No policy re-application should be in progress.
   EXPECT_FALSE(managed_handler()->IsAnyPolicyApplicationRunning());
+}
+
+TEST_F(ManagedNetworkConfigurationHandlerTest, SetPolicyProhibitedTechnology) {
+  const char* const empty =
+      "policy/policy_empty_global_network_configuration.onc";
+  const char* const prohibit_wifi =
+      "policy/policy_global_network_configuration_prohibit_wifi.onc";
+
+  // Technologies prohibited by policy are only enforced if the user policy has
+  // been applied and we are in an active user session.
+  LoginState::Get()->SetLoggedInState(
+      LoginState::LoggedInState::LOGGED_IN_ACTIVE,
+      LoginState::LoggedInUserType::LOGGED_IN_USER_REGULAR);
+  prohibited_technologies_handler()->PoliciesApplied(kUser1);
+
+  SetPolicy(::onc::ONC_SOURCE_DEVICE_POLICY, std::string(), empty);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_THAT(
+      prohibited_technologies_handler()->GetCurrentlyProhibitedTechnologies(),
+      IsEmpty());
+
+  SetPolicy(::onc::ONC_SOURCE_DEVICE_POLICY, std::string(), prohibit_wifi);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_THAT(
+      prohibited_technologies_handler()->GetCurrentlyProhibitedTechnologies(),
+      ElementsAre(shill::kTypeWifi));
+
+  // Not explicitly prohibiting any technology should result in all technologies
+  // being explicitly allowed.
+  SetPolicy(::onc::ONC_SOURCE_DEVICE_POLICY, std::string(), empty);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_THAT(
+      prohibited_technologies_handler()->GetCurrentlyProhibitedTechnologies(),
+      IsEmpty());
 }
 
 TEST_F(ManagedNetworkConfigurationHandlerTest, SetPolicyManagedCellular) {

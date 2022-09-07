@@ -512,17 +512,21 @@ void ManagedNetworkConfigurationHandlerImpl::SetPolicy(
   ProfilePolicies* policies = GetOrCreatePoliciesForUser(userhash);
   policies->SetGlobalNetworkConfig(global_network_config);
 
-  // Update prohibited technologies.
-  if (prohibited_technologies_handler_) {
+  // Update prohibited technologies if this is a device policy.
+  if (onc_source == ::onc::ONC_SOURCE_DEVICE_POLICY &&
+      prohibited_technologies_handler_) {
     const base::Value* prohibited_list =
         policies->GetGlobalNetworkConfig()->FindListKey(
             ::onc::global_network_config::kDisableNetworkTypes);
     if (prohibited_list) {
-      // Prohibited technologies are only allowed in device policy.
-      DCHECK_EQ(::onc::ONC_SOURCE_DEVICE_POLICY, onc_source);
-
       prohibited_technologies_handler_->SetProhibitedTechnologies(
           *prohibited_list);
+    } else {
+      // An empty list is provided to guarantee that all technologies are
+      // explicitly allowed if the policy being applied is a device policy that
+      // does not specifically prohibit any technologies.
+      prohibited_technologies_handler_->SetProhibitedTechnologies(
+          base::Value(base::Value::Type::LIST));
     }
   }
 
