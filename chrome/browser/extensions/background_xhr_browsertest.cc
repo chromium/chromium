@@ -19,7 +19,6 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "components/network_session_configurator/common/network_switches.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
@@ -103,44 +102,19 @@ IN_PROC_BROWSER_TEST_F(BackgroundXhrTest, HttpAuth) {
       "test_http_auth.html", embedded_test_server()->GetURL("/auth-basic")));
 }
 
-constexpr char kWebstoreAppBaseURL[] = "https://chrome.google.com/";
-constexpr char kWebstorePath[] = "/webstore/mock_store.html";
-
-class BackgroundXhrWebstoreTest : public ExtensionApiTestWithManagementPolicy {
+class BackgroundXhrPolicyTest : public ExtensionApiTestWithManagementPolicy {
  public:
-  BackgroundXhrWebstoreTest() = default;
-
-  BackgroundXhrWebstoreTest(const BackgroundXhrWebstoreTest&) = delete;
-  BackgroundXhrWebstoreTest& operator=(const BackgroundXhrWebstoreTest&) =
-      delete;
-
-  ~BackgroundXhrWebstoreTest() override = default;
-
-  void SetUp() override {
-    UseHttpsTestServer();
-    // Add the extensions directory to the test server as it has a /webstore/
-    // directory to serve files from, which the webstore hosted app requires as
-    // part of the URL it is associated with.
-    embedded_test_server()->ServeFilesFromSourceDirectory(
-        "chrome/test/data/extensions");
-    ExtensionApiTestWithManagementPolicy::SetUp();
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    ExtensionApiTest::SetUpCommandLine(command_line);
+    // Note: we need to start the embedded test server here specifically as it
+    // needs to come after SetUp has been run in the superclass, but before any
+    // subclasses need it in their own SetUpCommandLine functions.
+    ASSERT_TRUE(embedded_test_server()->Start());
   }
 
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    // Note: we need to start the embedded test server here specifically as it
-    // needs to come after SetUp has been run in the superclass, but before we
-    // get the host port pair from it below in this function.
-    ASSERT_TRUE(embedded_test_server()->Start());
-    ExtensionApiTest::SetUpCommandLine(command_line);
-    // Ignore cert errors so the EmbeddedTestServer can serve up https URLs
-    // without needing to define a cert for each.
-    command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
-    // Add a host resolver rule to map all outgoing requests to the test server.
-    // This allows us to use "real" hostnames and standard ports in URLs (i.e.,
-    // without having to inject the port number into all URLs).
-    command_line->AppendSwitchASCII(
-        network::switches::kHostResolverRules,
-        "MAP * " + embedded_test_server()->host_port_pair().ToString());
+  void SetUpOnMainThread() override {
+    ExtensionApiTest::SetUpOnMainThread();
+    host_resolver()->AddRule("*", "127.0.0.1");
   }
 
   std::string ExecuteFetch(const Extension* extension, const GURL& url) {
@@ -197,47 +171,9 @@ class BackgroundXhrWebstoreTest : public ExtensionApiTestWithManagementPolicy {
   }
 };
 
-// Extensions should not be able to XHR to the webstore.
-IN_PROC_BROWSER_TEST_F(BackgroundXhrWebstoreTest, XHRToWebstore) {
-  const Extension* extension = LoadXhrExtension("<all_urls>");
-
-  GURL webstore_url_to_fetch = GURL(kWebstoreAppBaseURL).Resolve(kWebstorePath);
-
-  EXPECT_EQ("ERROR: TypeError: Failed to fetch",
-            ExecuteFetch(extension, webstore_url_to_fetch));
-
-  // Sanity check: the extension should be able to fetch the page if it's not on
-  // the webstore.
-  GURL google_url = GURL("https://google.com").Resolve(kWebstorePath);
-  EXPECT_THAT(ExecuteFetch(extension, google_url),
-              ::testing::HasSubstr("<body>blank</body>"));
-}
-
-// Extensions should not be able to XHR to the webstore regardless of policy.
-IN_PROC_BROWSER_TEST_F(BackgroundXhrWebstoreTest, XHRToWebstorePolicy) {
-  {
-    ExtensionManagementPolicyUpdater pref(&policy_provider_);
-    pref.AddPolicyAllowedHost(
-        "*", "*://" + extension_urls::GetWebstoreLaunchURL().host());
-  }
-
-  const Extension* extension = LoadXhrExtension("<all_urls>");
-
-  GURL webstore_url_to_fetch = GURL(kWebstoreAppBaseURL).Resolve(kWebstorePath);
-
-  EXPECT_EQ("ERROR: TypeError: Failed to fetch",
-            ExecuteFetch(extension, webstore_url_to_fetch));
-
-  // Sanity check: the extension should be able to fetch the page if it's not on
-  // the webstore.
-  GURL google_url = GURL("https://google.com").Resolve(kWebstorePath);
-  EXPECT_THAT(ExecuteFetch(extension, google_url),
-              ::testing::HasSubstr("<body>blank</body>"));
-}
-
 // Extensions should not be able to bypass same-origin despite declaring
 // <all_urls> for hosts restricted by enterprise policy.
-IN_PROC_BROWSER_TEST_F(BackgroundXhrWebstoreTest, PolicyBlockedXHR) {
+IN_PROC_BROWSER_TEST_F(BackgroundXhrPolicyTest, PolicyBlockedXHR) {
   {
     ExtensionManagementPolicyUpdater pref(&policy_provider_);
     pref.AddPolicyBlockedHost("*", "*://*.example.com");
@@ -261,7 +197,7 @@ IN_PROC_BROWSER_TEST_F(BackgroundXhrWebstoreTest, PolicyBlockedXHR) {
 
 // Make sure the blocklist and allowlist update for both Default and Individual
 // scope policies. Testing with all host permissions granted (<all_urls>).
-IN_PROC_BROWSER_TEST_F(BackgroundXhrWebstoreTest, PolicyUpdateXHR) {
+IN_PROC_BROWSER_TEST_F(BackgroundXhrPolicyTest, PolicyUpdateXHR) {
   const Extension* extension = LoadXhrExtension("<all_urls>");
 
   GURL example_url =
@@ -313,7 +249,7 @@ IN_PROC_BROWSER_TEST_F(BackgroundXhrWebstoreTest, PolicyUpdateXHR) {
 // Make sure the allowlist entries added due to host permissions are removed
 // when a more generic blocklist policy is updated and contains them.
 // This tests the default policy scope update.
-IN_PROC_BROWSER_TEST_F(BackgroundXhrWebstoreTest, PolicyUpdateDefaultXHR) {
+IN_PROC_BROWSER_TEST_F(BackgroundXhrPolicyTest, PolicyUpdateDefaultXHR) {
   const Extension* extension = LoadXhrExtension("*://public.example.com/*");
 
   GURL example_url =
@@ -342,7 +278,7 @@ IN_PROC_BROWSER_TEST_F(BackgroundXhrWebstoreTest, PolicyUpdateDefaultXHR) {
 // Make sure the allowlist entries added due to host permissions are removed
 // when a more generic blocklist policy is updated and contains them.
 // This tests an individual policy scope update.
-IN_PROC_BROWSER_TEST_F(BackgroundXhrWebstoreTest, PolicyUpdateIndividualXHR) {
+IN_PROC_BROWSER_TEST_F(BackgroundXhrPolicyTest, PolicyUpdateIndividualXHR) {
   const Extension* extension = LoadXhrExtension("*://public.example.com/*");
 
   GURL example_url =
@@ -368,8 +304,8 @@ IN_PROC_BROWSER_TEST_F(BackgroundXhrWebstoreTest, PolicyUpdateIndividualXHR) {
             ExecuteFetch(extension, public_example_url));
 }
 
-IN_PROC_BROWSER_TEST_F(BackgroundXhrWebstoreTest, XHRAnyPortPermission) {
-  const Extension* extension = LoadXhrExtension("https://example.com:*/*");
+IN_PROC_BROWSER_TEST_F(BackgroundXhrPolicyTest, XHRAnyPortPermission) {
+  const Extension* extension = LoadXhrExtension("http://example.com:*/*");
 
   GURL permitted_url_to_fetch =
       embedded_test_server()->GetURL("example.com", "/simple.html");
@@ -378,10 +314,10 @@ IN_PROC_BROWSER_TEST_F(BackgroundXhrWebstoreTest, XHRAnyPortPermission) {
               ::testing::HasSubstr("<head><title>OK</title></head>"));
 }
 
-IN_PROC_BROWSER_TEST_F(BackgroundXhrWebstoreTest,
+IN_PROC_BROWSER_TEST_F(BackgroundXhrPolicyTest,
                        XHRPortSpecificPermissionAllow) {
   const Extension* extension = LoadXhrExtension(
-      "https://example.com:" +
+      "http://example.com:" +
       base::NumberToString(embedded_test_server()->port()) + "/*");
 
   GURL permitted_url_to_fetch =
@@ -391,7 +327,7 @@ IN_PROC_BROWSER_TEST_F(BackgroundXhrWebstoreTest,
               ::testing::HasSubstr("<head><title>OK</title></head>"));
 }
 
-IN_PROC_BROWSER_TEST_F(BackgroundXhrWebstoreTest,
+IN_PROC_BROWSER_TEST_F(BackgroundXhrPolicyTest,
                        XHRPortSpecificPermissionBlock) {
   const Extension* extension = LoadXhrExtension(
       "https://example.com:" +
@@ -403,5 +339,97 @@ IN_PROC_BROWSER_TEST_F(BackgroundXhrWebstoreTest,
   EXPECT_EQ("ERROR: TypeError: Failed to fetch",
             ExecuteFetch(extension, not_permitted_url_to_fetch));
 }
+
+// URL the new webstore is associated with in production.
+constexpr char kNewWebstoreURL[] = "https://webstore.google.com/";
+// URL the webstore hosted app is associated with in production, minus the
+// /webstore/ path which is added in the tests themselves.
+constexpr char kWebstoreAppBaseURL[] = "https://chrome.google.com/";
+// URL to test the command line override for the webstore.
+constexpr char kWebstoreOverrideURL[] = "https://chrome.webstore.test.com/";
+constexpr char kNonWebstoreURL[] = "https://google.com";
+constexpr char kWebstorePath[] = "/webstore/mock_store.html";
+
+class BackgroundXhrWebstoreTest : public BackgroundXhrPolicyTest,
+                                  public testing::WithParamInterface<GURL> {
+ public:
+  BackgroundXhrWebstoreTest() {
+    UseHttpsTestServer();
+    // Override the test server SSL config with the webstore domain under test
+    // and another non-webstore domain used in the tests.
+    net::EmbeddedTestServer::ServerCertificateConfig cert_config;
+    cert_config.dns_names = {GetParam().host(), "google.com"};
+    embedded_test_server()->SetSSLConfig(cert_config);
+    // Add the extensions directory to the test server as it has a /webstore/
+    // directory to serve files from, which the webstore hosted app requires as
+    // part of the URL it is associated with.
+    embedded_test_server()->ServeFilesFromSourceDirectory(
+        "chrome/test/data/extensions");
+  }
+  ~BackgroundXhrWebstoreTest() override = default;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    BackgroundXhrPolicyTest::SetUpCommandLine(command_line);
+    // Add a host resolver rule to map all outgoing requests to the test server.
+    // This allows us to use "real" hostnames and standard ports in URLs (i.e.,
+    // without having to inject the port number into all URLs).
+    command_line->AppendSwitchASCII(
+        network::switches::kHostResolverRules,
+        "MAP * " + embedded_test_server()->host_port_pair().ToString());
+    // Only override the webstore URL if this test case is testing the override.
+    if (GetParam().spec() == kWebstoreOverrideURL) {
+      command_line->AppendSwitchASCII(::switches::kAppsGalleryURL,
+                                      kWebstoreOverrideURL);
+    }
+  }
+};
+
+// Extensions should not be able to XHR to the webstore.
+IN_PROC_BROWSER_TEST_P(BackgroundXhrWebstoreTest, XHRToWebstore) {
+  const Extension* extension = LoadXhrExtension("<all_urls>");
+
+  GURL webstore_url_to_fetch = GetParam().Resolve(kWebstorePath);
+
+  EXPECT_EQ("ERROR: TypeError: Failed to fetch",
+            ExecuteFetch(extension, webstore_url_to_fetch));
+
+  // Sanity check: the extension should be able to fetch the page if it's not on
+  // the webstore.
+  GURL non_webstore_url = GURL(kNonWebstoreURL).Resolve(kWebstorePath);
+  EXPECT_THAT(ExecuteFetch(extension, non_webstore_url),
+              ::testing::HasSubstr("<body>blank</body>"));
+}
+
+// Extensions should not be able to XHR to the webstore regardless of policy.
+IN_PROC_BROWSER_TEST_P(BackgroundXhrWebstoreTest, XHRToWebstorePolicy) {
+  {
+    ExtensionManagementPolicyUpdater pref(&policy_provider_);
+    pref.AddPolicyAllowedHost(
+        "*", "*://" + extension_urls::GetWebstoreLaunchURL().host());
+  }
+
+  const Extension* extension = LoadXhrExtension("<all_urls>");
+
+  GURL webstore_url_to_fetch = GetParam().Resolve(kWebstorePath);
+
+  EXPECT_EQ("ERROR: TypeError: Failed to fetch",
+            ExecuteFetch(extension, webstore_url_to_fetch));
+
+  // Sanity check: the extension should be able to fetch the page if it's not on
+  // the webstore.
+  GURL non_webstore_url = GURL(kNonWebstoreURL).Resolve(kWebstorePath);
+  EXPECT_THAT(ExecuteFetch(extension, non_webstore_url),
+              ::testing::HasSubstr("<body>blank</body>"));
+}
+
+INSTANTIATE_TEST_SUITE_P(WebstoreNewURL,
+                         BackgroundXhrWebstoreTest,
+                         testing::Values(GURL(kNewWebstoreURL)));
+INSTANTIATE_TEST_SUITE_P(WebstoreHostedAppURL,
+                         BackgroundXhrWebstoreTest,
+                         testing::Values(GURL(kWebstoreAppBaseURL)));
+INSTANTIATE_TEST_SUITE_P(WebstoreOverrideURL,
+                         BackgroundXhrWebstoreTest,
+                         testing::Values(GURL(kWebstoreOverrideURL)));
 
 }  // namespace extensions
