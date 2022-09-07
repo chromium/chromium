@@ -583,15 +583,7 @@ std::unique_ptr<net::test_server::HttpResponse> WindowLocationHashHandlers(
 
 // Tests that navigating forward from NTP works when resuming from session
 // restore. This is a regression test for https://crbug.com/814790.
-// TODO(crbug.com/1353093): failing on small devices on simulator
-#if TARGET_IPHONE_SIMULATOR
-#define MAYBE_testRestoreHistoryToNTPAndNavigateForward \
-  DISABLED_testRestoreHistoryToNTPAndNavigateForward
-#else
-#define MAYBE_testRestoreHistoryToNTPAndNavigateForward \
-  testRestoreHistoryToNTPAndNavigateForward
-#endif
-- (void)MAYBE_testRestoreHistoryToNTPAndNavigateForward {
+- (void)testRestoreHistoryToNTPAndNavigateForward {
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
   const GURL destinationURL = self.testServer->GetURL(kSimpleFileBasedTestURL);
   [ChromeEarlGrey loadURL:destinationURL];

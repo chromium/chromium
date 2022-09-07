@@ -385,13 +385,7 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
 // Tests that tapping Close All shows no tabs, shows Undo button, and displays
 // the empty state. Then tests tapping Undo shows Close All button again.
 // Validates this case when Tab Grid Bulk Actions feature is enabled.
-// TODO(crbug.com/1353093): failing on small devices on simulator
-#if TARGET_IPHONE_SIMULATOR
-#define MAYBE_testCloseAllAndUndoCloseAll DISABLED_testCloseAllAndUndoCloseAll
-#else
-#define MAYBE_testCloseAllAndUndoCloseAll testCloseAllAndUndoCloseAll
-#endif
-- (void)MAYBE_testCloseAllAndUndoCloseAll {
+- (void)testCloseAllAndUndoCloseAll {
   [ChromeEarlGreyUI openTabGrid];
 
   // Close all tabs
