@@ -6287,9 +6287,8 @@ IN_PROC_BROWSER_TEST_F(WebViewWithDefaultSiteInstanceTest, IsolatedOrigin) {
 
   // Load an app with a <webview> guest that starts at a data: URL.
   LoadAppWithGuest("web_view/simple");
-  content::WebContents* guest = GetGuestWebContents();
-  ASSERT_TRUE(guest);
-  content::RenderFrameHost* main_frame = guest->GetPrimaryMainFrame();
+  content::RenderFrameHost* main_frame = GetGuestRenderFrameHost();
+  ASSERT_TRUE(main_frame);
   auto original_id = main_frame->GetGlobalId();
   scoped_refptr<content::SiteInstance> starting_instance =
       main_frame->GetSiteInstance();
@@ -6310,13 +6309,14 @@ IN_PROC_BROWSER_TEST_F(WebViewWithDefaultSiteInstanceTest, IsolatedOrigin) {
   const GURL start_url =
       embedded_test_server()->GetURL("isolated.com", "/iframe.html");
   {
-    content::TestNavigationObserver load_observer(guest);
-    EXPECT_TRUE(
-        ExecuteScript(guest, "location.href = '" + start_url.spec() + "';"));
+    content::TestFrameNavigationObserver load_observer(main_frame);
+    EXPECT_TRUE(ExecuteScript(main_frame,
+                              "location.href = '" + start_url.spec() + "';"));
     load_observer.Wait();
   }
 
-  main_frame = guest->GetPrimaryMainFrame();
+  main_frame = GetGuestRenderFrameHost();
+  ASSERT_TRUE(main_frame);
   EXPECT_NE(main_frame->GetGlobalId(), original_id);
   EXPECT_NE(starting_instance, main_frame->GetSiteInstance());
   EXPECT_TRUE(main_frame->GetSiteInstance()->RequiresDedicatedProcess());
@@ -6327,8 +6327,15 @@ IN_PROC_BROWSER_TEST_F(WebViewWithDefaultSiteInstanceTest, IsolatedOrigin) {
   // different unlocked process.
   const GURL frame_url =
       embedded_test_server()->GetURL("b.test", "/title1.html");
-  EXPECT_TRUE(NavigateIframeToURL(guest, "test", frame_url));
   content::RenderFrameHost* subframe = content::ChildFrameAt(main_frame, 0);
+  {
+    content::TestFrameNavigationObserver subframe_load_observer(subframe);
+    EXPECT_TRUE(
+        ExecuteScript(subframe, "location.href = '" + frame_url.spec() + "';"));
+    subframe_load_observer.Wait();
+  }
+  subframe = content::ChildFrameAt(main_frame, 0);
+  ASSERT_TRUE(subframe);
   EXPECT_NE(main_frame->GetSiteInstance(), subframe->GetSiteInstance());
   EXPECT_NE(main_frame->GetProcess(), subframe->GetProcess());
   EXPECT_TRUE(subframe->GetSiteInstance()->IsGuest());
