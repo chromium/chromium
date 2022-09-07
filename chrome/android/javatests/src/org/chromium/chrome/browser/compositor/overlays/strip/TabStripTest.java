@@ -538,6 +538,7 @@ public class TabStripTest {
     @LargeTest
     @Restriction(UiRestriction.RESTRICTION_TYPE_TABLET)
     @Feature({"TabStrip"})
+    @DisabledTest(message = "https://crbug.com/1360472")
     public void testSwitchStripStackersWithIncognito() throws Exception {
         // Open an incognito tab to switch to the incognito model.
         sActivityTestRule.newIncognitoTabFromMenu();
@@ -613,6 +614,7 @@ public class TabStripTest {
     @LargeTest
     @Restriction(UiRestriction.RESTRICTION_TYPE_TABLET)
     @Feature({"TabStrip"})
+    @DisabledTest(message = "https://crbug.com/1360472")
     public void testSwitchStripStackersWithFirstTabSelected() throws Exception {
         // Open enough regular tabs to cause the tabs to cascade or the strip to scroll depending
         // on which stacker is being used.
