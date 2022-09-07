@@ -10,6 +10,7 @@
 #include <string>
 #include <utility>
 #include <vector>
+#include <cstdio>
 
 #include "base/allocator/allocator_extension.h"
 #include "base/at_exit.h"
@@ -145,6 +146,7 @@
 #include "third_party/blink/public/web/web_script_controller.h"
 #include "third_party/blink/public/web/web_security_policy.h"
 #include "third_party/blink/public/web/web_view.h"
+#include "third_party/blink/renderer/bindings/core/v8/record_replay_interface.h"
 #include "third_party/boringssl/src/include/openssl/evp.h"
 #include "third_party/skia/include/core/SkGraphics.h"
 #include "ui/base/layout.h"
@@ -1415,6 +1417,19 @@ void RenderThreadImpl::WriteClangProfilingProfile(
 
 void RenderThreadImpl::SetIsCrossOriginIsolated(bool value) {
   blink::SetIsCrossOriginIsolated(value);
+}
+
+void RenderThreadImpl::RecordReplayBrowserEvent(
+    const std::string& name,
+    base::Value value) {
+  fprintf(stderr, "RecordReplayBrowserEvent %s\n", name.c_str());
+  // Forward this to the RecordReplay V8 instrumentation code.
+  base::DictionaryValue* dict = nullptr;
+  if (!value.GetAsDictionary(&dict)) {
+    fprintf(stderr, "RecordReplayBrowserEvent not a dictionary\n");
+    return;
+  }
+  blink::RecordReplayDispatchBrowserEvent(name, dict);
 }
 
 bool RenderThreadImpl::GetRendererMemoryMetrics(

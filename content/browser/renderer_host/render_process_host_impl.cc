@@ -67,6 +67,7 @@
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/memory_dump_provider.h"
 #include "base/trace_event/trace_event.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "cc/base/switches.h"
@@ -2218,6 +2219,11 @@ void RenderProcessHostImpl::WriteIntoTracedValue(
   dict.Add("process_lock", ChildProcessSecurityPolicyImpl::GetInstance()
                                ->GetProcessLock(GetID())
                                .ToString());
+}
+void RenderProcessHostImpl::SendRecordReplayBrowserEvent(
+    const std::string& name,
+    base::Value&& value) {
+  GetRendererInterface()->RecordReplayBrowserEvent(name, std::move(value));
 }
 
 void RenderProcessHostImpl::RegisterMojoInterfaces() {

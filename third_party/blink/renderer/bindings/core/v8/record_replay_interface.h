@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_RECORD_REPLAY_INTERFACE_H_
 
 #include "third_party/blink/renderer/core/events/error_event.h"
+#include "base/values.h"
 #include "v8/include/v8.h"
 
 namespace blink {
@@ -18,6 +19,10 @@ void RecordReplayOnErrorEvent(ErrorEvent* error_event);
 
 // Notify record/replay about new inspectors that have been created.
 void RecordReplayRegisterV8Inspector(v8_inspector::V8Inspector* inspector);
+
+// Notify record/replay about a browser event.
+void RecordReplayDispatchBrowserEvent(
+  const std::string& name, base::DictionaryValue* info);
 
 } // namespace blink
 
