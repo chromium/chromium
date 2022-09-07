@@ -58,10 +58,10 @@ TEST_F(PermissionsParserTest, RemoveOverlappingHostPermissions) {
   // Check that required hosts have not changed at all while
   // "https://google.com/maps" is removed from optional hosts as it is a strict
   // subset of hosts specified as required.
-  EXPECT_THAT(*required_hosts.ToStringVector(),
+  EXPECT_THAT(required_hosts.ToStringVector(),
               testing::UnorderedElementsAre("https://example.com/*",
                                             "https://*.google.com/*"));
-  EXPECT_THAT(*optional_hosts.ToStringVector(),
+  EXPECT_THAT(optional_hosts.ToStringVector(),
               testing::UnorderedElementsAre("*://chromium.org/*"));
 }
 
@@ -86,10 +86,10 @@ TEST_F(PermissionsParserTest, RemoveOverlappingHostPermissions_ManifestV3) {
   // Check that required hosts have not changed at all while
   // "https://google.com/maps" is removed from optional hosts as it is a strict
   // subset of hosts specified as required.
-  EXPECT_THAT(*required_hosts.ToStringVector(),
+  EXPECT_THAT(required_hosts.ToStringVector(),
               testing::UnorderedElementsAre("https://example.com/*",
                                             "https://*.google.com/*"));
-  EXPECT_THAT(*optional_hosts.ToStringVector(),
+  EXPECT_THAT(optional_hosts.ToStringVector(),
               testing::UnorderedElementsAre("*://chromium.org/*"));
 }
 
@@ -106,7 +106,7 @@ TEST_F(PermissionsParserTest, RequiredHostPermissionsAllURLs) {
 
   // Since we specified <all_urls> as a required host permission,
   // there should be no optional host permissions.
-  EXPECT_THAT(*optional_hosts.ToStringVector(), testing::IsEmpty());
+  EXPECT_THAT(optional_hosts.ToStringVector(), testing::IsEmpty());
 }
 
 TEST_F(PermissionsParserTest, OptionalHostPermissionsAllURLs) {
@@ -124,10 +124,10 @@ TEST_F(PermissionsParserTest, OptionalHostPermissionsAllURLs) {
   // This time, required permissions are a subset of optional permissions
   // so we make sure that permissions remain the same
   // as what's specified in the manifest.
-  EXPECT_THAT(*required_hosts.ToStringVector(),
+  EXPECT_THAT(required_hosts.ToStringVector(),
               testing::UnorderedElementsAre("https://*.google.com/*"));
 
-  EXPECT_THAT(*optional_hosts.ToStringVector(),
+  EXPECT_THAT(optional_hosts.ToStringVector(),
               testing::UnorderedElementsAre("*://*/*"));
 }
 
@@ -156,7 +156,7 @@ TEST_F(PermissionsParserTest, HostPermissionsKey) {
       PermissionsParser::GetRequiredPermissions(extension.get())
           .explicit_hosts();
 
-  EXPECT_THAT(*required_hosts.ToStringVector(),
+  EXPECT_THAT(required_hosts.ToStringVector(),
               testing::UnorderedElementsAre("https://example.com/*"));
 
   // Expect that the host specified in |optional_host_permissions| is parsed.
@@ -164,7 +164,7 @@ TEST_F(PermissionsParserTest, HostPermissionsKey) {
       PermissionsParser::GetOptionalPermissions(extension.get())
           .explicit_hosts();
 
-  EXPECT_THAT(*optional_hosts.ToStringVector(),
+  EXPECT_THAT(optional_hosts.ToStringVector(),
               testing::UnorderedElementsAre("https://optional.com/*"));
 }
 

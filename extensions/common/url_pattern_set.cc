@@ -10,7 +10,6 @@
 #include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/stl_util.h"
-#include "base/values.h"
 #include "extensions/common/error_utils.h"
 #include "extensions/common/url_pattern.h"
 #include "url/gurl.h"
@@ -263,14 +262,14 @@ bool URLPatternSet::OverlapsWith(const URLPatternSet& other) const {
   return false;
 }
 
-std::unique_ptr<base::ListValue> URLPatternSet::ToValue() const {
-  std::unique_ptr<base::ListValue> value(new base::ListValue);
-  for (auto i = patterns_.cbegin(); i != patterns_.cend(); ++i) {
-    base::Value pattern_str_value(i->GetAsString());
-    if (!base::Contains(value->GetList(), pattern_str_value))
-      value->Append(std::move(pattern_str_value));
+base::Value::List URLPatternSet::ToValue() const {
+  base::Value::List result;
+  for (const auto& pattern : patterns_) {
+    base::Value pattern_str_value(pattern.GetAsString());
+    if (!base::Contains(result, pattern_str_value))
+      result.Append(std::move(pattern_str_value));
   }
-  return value;
+  return result;
 }
 
 bool URLPatternSet::Populate(const std::vector<std::string>& patterns,
@@ -298,21 +297,20 @@ bool URLPatternSet::Populate(const std::vector<std::string>& patterns,
   return true;
 }
 
-std::unique_ptr<std::vector<std::string>> URLPatternSet::ToStringVector()
-    const {
-  std::unique_ptr<std::vector<std::string>> value(new std::vector<std::string>);
-  for (auto i = patterns_.cbegin(); i != patterns_.cend(); ++i) {
-    value->push_back(i->GetAsString());
+std::vector<std::string> URLPatternSet::ToStringVector() const {
+  std::vector<std::string> result;
+  for (const auto& pattern : patterns_) {
+    result.push_back(pattern.GetAsString());
   }
-  return value;
+  return result;
 }
 
-bool URLPatternSet::Populate(const base::ListValue& value,
+bool URLPatternSet::Populate(const base::Value::List& value,
                              int valid_schemes,
                              bool allow_file_access,
                              std::string* error) {
   std::vector<std::string> patterns;
-  for (const base::Value& pattern : value.GetList()) {
+  for (const base::Value& pattern : value) {
     const std::string* item = pattern.GetIfString();
     if (!item)
       return false;

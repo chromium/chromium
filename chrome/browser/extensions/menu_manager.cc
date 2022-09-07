@@ -217,10 +217,8 @@ base::Value::Dict MenuItem::ToValue() const {
     DCHECK_EQ(0, parent_id_->uid);
     value.Set(kParentUIDKey, parent_id_->string_uid);
   }
-  value.Set(kDocumentURLPatternsKey,
-            base::Value::FromUniquePtrValue(document_url_patterns_.ToValue()));
-  value.Set(kTargetURLPatternsKey,
-            base::Value::FromUniquePtrValue(target_url_patterns_.ToValue()));
+  value.Set(kDocumentURLPatternsKey, document_url_patterns_.ToValue());
+  value.Set(kTargetURLPatternsKey, target_url_patterns_.ToValue());
   return value;
 }
 

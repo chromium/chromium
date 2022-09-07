@@ -8,17 +8,12 @@
 #include <stddef.h>
 
 #include <iosfwd>
-#include <memory>
 #include <set>
 
+#include "base/values.h"
 #include "extensions/common/url_pattern.h"
 
 class GURL;
-
-namespace base {
-class ListValue;
-class Value;
-}
 
 namespace url {
 class Origin;
@@ -142,14 +137,14 @@ class URLPatternSet {
   bool OverlapsWith(const URLPatternSet& other) const;
 
   // Converts to and from Value for serialization to preferences.
-  std::unique_ptr<base::ListValue> ToValue() const;
-  bool Populate(const base::ListValue& value,
+  base::Value::List ToValue() const;
+  bool Populate(const base::Value::List& value,
                 int valid_schemes,
                 bool allow_file_access,
                 std::string* error);
 
   // Converts to and from a vector of strings.
-  std::unique_ptr<std::vector<std::string>> ToStringVector() const;
+  std::vector<std::string> ToStringVector() const;
   bool Populate(const std::vector<std::string>& patterns,
                 int valid_schemes,
                 bool allow_file_access,

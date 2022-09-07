@@ -265,10 +265,10 @@ TEST(URLPatternSetTest, CreateIntersection_Detailed) {
         set2, set1, URLPatternSet::IntersectionBehavior::kDetailed);
 
     EXPECT_THAT(
-        *intersection1.ToStringVector(),
+        intersection1.ToStringVector(),
         testing::UnorderedElementsAreArray(test_case.expected_intersection));
     EXPECT_THAT(
-        *intersection2.ToStringVector(),
+        intersection2.ToStringVector(),
         testing::UnorderedElementsAreArray(test_case.expected_intersection));
   }
 }
@@ -358,8 +358,8 @@ TEST(URLPatternSetTest, ToValueAndPopulate) {
 
   std::string error;
   bool allow_file_access = false;
-  std::unique_ptr<base::ListValue> value(set1.ToValue());
-  set2.Populate(*value, URLPattern::SCHEME_ALL, allow_file_access, &error);
+  base::Value::List value = set1.ToValue();
+  set2.Populate(value, URLPattern::SCHEME_ALL, allow_file_access, &error);
   EXPECT_EQ(set1, set2);
 
   set2.ClearPatterns();
@@ -404,12 +404,12 @@ TEST(URLPatternSetTest, ToStringVector) {
   AddPattern(&set, "https://google.com/");
   AddPattern(&set, "https://yahoo.com/");
 
-  std::unique_ptr<std::vector<std::string>> string_vector(set.ToStringVector());
+  std::vector<std::string> string_vector = set.ToStringVector();
 
-  EXPECT_EQ(2UL, string_vector->size());
+  EXPECT_EQ(2UL, string_vector.size());
 
-  EXPECT_TRUE(base::Contains(*string_vector, "https://google.com/"));
-  EXPECT_TRUE(base::Contains(*string_vector, "https://yahoo.com/"));
+  EXPECT_TRUE(base::Contains(string_vector, "https://google.com/"));
+  EXPECT_TRUE(base::Contains(string_vector, "https://yahoo.com/"));
 }
 
 TEST(URLPatternSetTest, MatchesHost) {

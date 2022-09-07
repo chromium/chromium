@@ -774,7 +774,8 @@ bool ExtensionPrefs::ReadPrefAsURLPatternSet(const std::string& extension_id,
   }
 
   bool allow_file_access = AllowFileAccess(extension_id);
-  return result->Populate(*value, valid_schemes, allow_file_access, nullptr);
+  return result->Populate(value->GetList(), valid_schemes, allow_file_access,
+                          nullptr);
 }
 
 void ExtensionPrefs::SetExtensionPrefURLPatternSet(
@@ -782,7 +783,8 @@ void ExtensionPrefs::SetExtensionPrefURLPatternSet(
     base::StringPiece pref_key,
     const URLPatternSet& set) {
   // Clear the |pref_key| in case |set| is empty.
-  std::unique_ptr<base::Value> value = set.is_empty() ? nullptr : set.ToValue();
+  std::unique_ptr<base::Value> value =
+      std::make_unique<base::Value>(set.ToValue());
   UpdateExtensionPref(extension_id, pref_key, std::move(value));
 }
 

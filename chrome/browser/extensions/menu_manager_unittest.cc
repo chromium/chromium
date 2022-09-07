@@ -257,14 +257,12 @@ TEST_F(MenuManagerTest, PopulateFromValue) {
   value.Set("enabled", enabled);
   value.Set("contexts", contexts_value);
   URLPatternSet document_url_pattern_set;
-  document_url_pattern_set.Populate(
-      base::Value::AsListValue(base::Value(document_url_patterns.Clone())),
-      URLPattern::SCHEME_ALL, true, &error);
+  document_url_pattern_set.Populate(document_url_patterns,
+                                    URLPattern::SCHEME_ALL, true, &error);
   value.Set("document_url_patterns", std::move(document_url_patterns));
   URLPatternSet target_url_pattern_set;
-  target_url_pattern_set.Populate(
-      base::Value::AsListValue(base::Value(target_url_patterns.Clone())),
-      URLPattern::SCHEME_ALL, true, &error);
+  target_url_pattern_set.Populate(target_url_patterns, URLPattern::SCHEME_ALL,
+                                  true, &error);
   value.Set("target_url_patterns", std::move(target_url_patterns));
 
   std::unique_ptr<MenuItem> item(
