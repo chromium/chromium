@@ -71,7 +71,7 @@ const AtomicString& TextTrack::MetadataKeyword() {
 TextTrack::TextTrack(const AtomicString& kind,
                      const AtomicString& label,
                      const AtomicString& language,
-                     HTMLElement* source_element,
+                     HTMLElement& source_element,
                      const AtomicString& id,
                      TextTrackType type)
     : TrackBase(WebMediaPlayer::kTextTrack, kind, label, language, id),
@@ -361,8 +361,7 @@ const AtomicString& TextTrack::InterfaceName() const {
 }
 
 ExecutionContext* TextTrack::GetExecutionContext() const {
-  if (!source_element_)
-    return nullptr;
+  DCHECK(source_element_);
   DCHECK(!MediaElement() || source_element_->GetExecutionContext() ==
                                 MediaElement()->GetExecutionContext());
   return source_element_->GetExecutionContext();

@@ -34,7 +34,7 @@ LoadableTextTrack::LoadableTextTrack(HTMLTrackElement* track)
     : TextTrack(SubtitlesKeyword(),
                 g_empty_atom,
                 g_empty_atom,
-                track,
+                *track,
                 g_empty_atom,
                 kTrackElement),
       track_element_(track) {

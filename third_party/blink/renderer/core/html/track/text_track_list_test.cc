@@ -21,7 +21,7 @@ TEST(TextTrackListTest, InvalidateTrackIndexes) {
   TextTrack* text_tracks[kNumTextTracks];
   for (size_t i = 0; i < kNumTextTracks; ++i) {
     text_tracks[i] =
-        MakeGarbageCollected<TextTrack>("subtitles", "", "", list->Owner());
+        MakeGarbageCollected<TextTrack>("subtitles", "", "", *list->Owner());
     list->Append(text_tracks[i]);
   }
 

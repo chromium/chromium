@@ -60,7 +60,7 @@ class CORE_EXPORT TextTrack : public EventTargetWithInlineData,
   TextTrack(const AtomicString& kind,
             const AtomicString& label,
             const AtomicString& language,
-            HTMLElement* source_element,
+            HTMLElement& source_element,
             const AtomicString& id = g_empty_atom,
             TextTrackType = kAddTrack);
   ~TextTrack() override;

@@ -60,7 +60,7 @@ const AtomicString& TextTrackKindToString(WebInbandTextTrack::Kind kind) {
 }  // namespace
 
 InbandTextTrack::InbandTextTrack(WebInbandTextTrack* web_track,
-                                 HTMLElement* source_element)
+                                 HTMLElement& source_element)
     : TextTrack(TextTrackKindToString(web_track->GetKind()),
                 web_track->Label(),
                 web_track->Language(),
