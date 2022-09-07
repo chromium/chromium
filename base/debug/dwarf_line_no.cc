@@ -4,19 +4,17 @@
 
 #include "base/debug/dwarf_line_no.h"
 
-#include "base/memory/raw_ptr.h"
-
 #ifdef USE_SYMBOLIZE
-#include "base/debug/buffered_dwarf_reader.h"
-
-#include "base/third_party/symbolize/symbolize.h"
-
 #include <algorithm>
+#include <cstdint>
 #include <limits>
 
-#include <cstdint>
-
 #include <unistd.h>
+
+#include "base/debug/buffered_dwarf_reader.h"
+#include "base/debug/stack_trace.h"
+#include "base/memory/raw_ptr.h"
+#include "base/third_party/symbolize/symbolize.h"
 
 namespace base {
 namespace debug {
@@ -1112,12 +1110,12 @@ void SerializeLineNumberInfoToString(int fd,
   }
 
   out[out_pos - 1] = ':';
-  char* tmp = google::itoa_r(static_cast<intptr_t>(info.line), out + out_pos,
-                             out_size - out_pos, 10, 0);
+  char* tmp = internal::itoa_r(static_cast<intptr_t>(info.line), out + out_pos,
+                               out_size - out_pos, 10, 0);
   out_pos += strlen(tmp) + 1;
   out[out_pos - 1] = ':';
-  tmp = google::itoa_r(static_cast<intptr_t>(info.column), out + out_pos,
-                       out_size - out_pos, 10, 0);
+  tmp = internal::itoa_r(static_cast<intptr_t>(info.column), out + out_pos,
+                         out_size - out_pos, 10, 0);
   out_pos += strlen(tmp) + 1;
 }
 
@@ -1271,13 +1269,11 @@ bool GetDwarfSourceLineNumber(void* pc,
                               size_t out_size) {
   uint64_t pc0 = reinterpret_cast<uint64_t>(pc);
   uint64_t object_start_address = 0;
-  uint64_t object_end_address = 0;
   uint64_t object_base_address = 0;
 
   google::FileDescriptor object_fd(google::FileDescriptor(
       google::OpenObjectFileContainingPcAndGetStartAddress(
-          pc0, object_start_address, object_end_address, object_base_address,
-          nullptr, 0)));
+          pc0, object_start_address, object_base_address, nullptr, 0)));
 
   if (!object_fd.get()) {
     return false;
@@ -1313,30 +1309,23 @@ void GetDwarfCompileUnitOffsets(void* const* trace,
   std::sort_heap(&frame_info[0], &frame_info[num_frames - 1], pc_comparator);
 
   // Walk the frame_info one compilation unit at a time.
-  size_t cur_frame = 0;
-  while (cur_frame < num_frames) {
+  for (size_t cur_frame = 0; cur_frame < num_frames; ++cur_frame) {
     uint64_t object_start_address = 0;
-    uint64_t object_end_address = 0;
     uint64_t object_base_address = 0;
     google::FileDescriptor object_fd(google::FileDescriptor(
         google::OpenObjectFileContainingPcAndGetStartAddress(
-            frame_info[cur_frame].pc, object_start_address, object_end_address,
-            object_base_address, nullptr, 0)));
+            frame_info[cur_frame].pc, object_start_address, object_base_address,
+            nullptr, 0)));
 
-    // Find the last frame that is contained in the current object.
-    size_t first_frame_in_next_object = cur_frame + 1;
-    while (first_frame_in_next_object < num_frames &&
-           frame_info[first_frame_in_next_object].pc < object_end_address) {
-      first_frame_in_next_object++;
-    }
+    // TODO(https://crbug.com/1335630): Consider exposing the end address so a
+    // range of frames can be bulk-populated. This was originally implemented,
+    // but line number symbolization is currently broken by default (and also
+    // broken in sandboxed processes). The various issues will be addressed
+    // incrementally in follow-up patches, and the optimization here restored if
+    // needed.
 
-    // Populate the cu_offsets for each of the frames from [cur_frame,
-    // last_frame_in_object] inclusive.
-    PopulateCompileUnitOffsets(object_fd.get(), &frame_info[cur_frame],
-                               first_frame_in_next_object - cur_frame,
+    PopulateCompileUnitOffsets(object_fd.get(), &frame_info[cur_frame], 1,
                                object_base_address);
-
-    cur_frame = first_frame_in_next_object;
   }
 }
 

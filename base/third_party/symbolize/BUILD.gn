@@ -13,6 +13,13 @@ declare_args() {
   print_unsymbolized_stack_traces = is_asan || is_lsan || is_msan || is_tsan
 }
 
+config("symbolize_config") {
+  defines = [
+    # Only built for Linux and ChromeOS so no special export magic needed.
+    "GLOG_EXPORT=",
+  ]
+}
+
 static_library("symbolize") {
   visibility = [ "//base/*" ]
   sources = [
@@ -27,10 +34,13 @@ static_library("symbolize") {
   ]
 
   defines = []
+
   if (print_unsymbolized_stack_traces) {
     defines += [ "PRINT_UNSYMBOLIZED_STACK_TRACES" ]
   }
 
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [ "//build/config/compiler:no_chromium_code" ]
+
+  public_configs = [ ":symbolize_config" ]
 }

@@ -606,9 +606,11 @@ class SandboxSymbolizeHelper {
   // (including the null terminator).
   // IMPORTANT: This function must be async-signal-safe because it can be
   // called from a signal handler (symbolizing stack frames for a crash).
-  static int OpenObjectFileContainingPc(uint64_t pc, uint64_t& start_address,
-                                        uint64_t& base_address, char* file_path,
-                                        int file_path_size) {
+  static int OpenObjectFileContainingPc(uint64_t pc,
+                                        uint64_t& start_address,
+                                        uint64_t& base_address,
+                                        char* file_path,
+                                        size_t file_path_size) {
     // This method can only be called after the singleton is instantiated.
     // This is ensured by the following facts:
     // * This is the only static method in this class, it is private, and
@@ -628,10 +630,9 @@ class SandboxSymbolizeHelper {
         start_address = region.start;
         base_address = region.base;
         if (file_path && file_path_size > 0) {
-          const size_t size = static_cast<size_t>(file_path_size);
-          strncpy(file_path, region.path.c_str(), size);
+          strncpy(file_path, region.path.c_str(), file_path_size);
           // Ensure null termination.
-          file_path[size - 1] = '\0';
+          file_path[file_path_size - 1] = '\0';
         }
         return instance->GetFileDescriptor(region.path.c_str());
       }

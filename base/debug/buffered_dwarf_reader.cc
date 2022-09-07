@@ -176,11 +176,11 @@ bool BufferedDwarfReader::BufferedRead(void* out, const size_t bytes) {
   while (bytes_left > 0) {
     // Refresh the buffer.
     if (unconsumed_amount_ == 0) {
-      if (!base::IsValueInRangeForNumericType<off_t>(next_chunk_start_))
+      if (!base::IsValueInRangeForNumericType<size_t>(next_chunk_start_))
         return false;
       const ssize_t unconsumed_amount = google::ReadFromOffset(
-          fd_, buf_, sizeof(buf_), static_cast<off_t>(next_chunk_start_));
-      if (unconsumed_amount_ <= 0) {
+          fd_, buf_, sizeof(buf_), static_cast<size_t>(next_chunk_start_));
+      if (unconsumed_amount <= 0) {
         // Read error.
         return false;
       }
