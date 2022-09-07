@@ -1485,16 +1485,14 @@ void MediaStreamManager::StopStreamDevice(
   }
 }
 
-void MediaStreamManager::KeepDeviceAliveForTransfer(
+bool MediaStreamManager::KeepDeviceAliveForTransfer(
     int render_process_id,
     int render_frame_id,
     int requester_id,
     const base::UnguessableToken& session_id,
-    const base::UnguessableToken& transfer_id,
-    KeepDeviceAliveForTransferCallback keep_device_alive_cb) {
+    const base::UnguessableToken& transfer_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   DCHECK(base::FeatureList::IsEnabled(features::kMediaStreamTrackTransfer));
-  DCHECK(keep_device_alive_cb);
 
   for (const LabeledDeviceRequest& device_request : requests_) {
     DeviceRequest* const request = device_request.second.get();
@@ -1514,14 +1512,13 @@ void MediaStreamManager::KeepDeviceAliveForTransfer(
 
           UpdateDeviceTransferStatus(request, device, transfer_id,
                                      TransferState::KEPT_ALIVE);
-          std::move(keep_device_alive_cb).Run(/*device_found=*/true);
-          return;
+          return true;
         }
         break;
     }
   }
 
-  std::move(keep_device_alive_cb).Run(/*device_found=*/false);
+  return false;
 }
 
 base::UnguessableToken MediaStreamManager::VideoDeviceIdToSessionId(

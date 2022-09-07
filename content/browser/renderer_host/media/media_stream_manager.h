@@ -137,9 +137,6 @@ class CONTENT_EXPORT MediaStreamManager
   using GenerateStreamTestCallback =
       base::OnceCallback<bool(const blink::StreamControls&)>;
 
-  using KeepDeviceAliveForTransferCallback =
-      base::OnceCallback<void(bool device_found)>;
-
   // Adds |message| to native logs for outstanding device requests, for use by
   // render processes hosts whose corresponding render processes are requesting
   // logging from webrtcLoggingPrivate API. Safe to call from any thread.
@@ -414,14 +411,13 @@ class CONTENT_EXPORT MediaStreamManager
   void OnStreamStarted(const std::string& label);
 
   // Keeps MediaStreamDevice alive to allow transferred tracks to successfully
-  // find and clone it.
-  void KeepDeviceAliveForTransfer(
-      int render_process_id,
-      int render_frame_id,
-      int requester_id,
-      const base::UnguessableToken& session_id,
-      const base::UnguessableToken& transfer_id,
-      KeepDeviceAliveForTransferCallback keep_device_alive_cb);
+  // find and clone it. Returns whether the specified device was found and
+  // successfully kept alive.
+  bool KeepDeviceAliveForTransfer(int render_process_id,
+                                  int render_frame_id,
+                                  int requester_id,
+                                  const base::UnguessableToken& session_id,
+                                  const base::UnguessableToken& transfer_id);
 
   void OnRegionCaptureRectChanged(
       const base::UnguessableToken& session_id,

@@ -608,9 +608,9 @@ void MediaStreamDispatcherHost::KeepDeviceAliveForTransfer(
     std::move(callback).Run(/*device_found=*/false);
     return;
   }
-  media_stream_manager_->KeepDeviceAliveForTransfer(
+  std::move(callback).Run(media_stream_manager_->KeepDeviceAliveForTransfer(
       render_process_id_, render_frame_id_, requester_id_, session_id,
-      transfer_id, std::move(callback));
+      transfer_id));
 }
 
 #if !BUILDFLAG(IS_ANDROID)
