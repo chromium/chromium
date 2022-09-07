@@ -1141,7 +1141,7 @@ int ExtensionWebRequestEventRouter::OnBeforeRequest(
       request->id, base::TimeTicks::Now(), has_listener,
       HasExtraHeadersListenerForRequest(browser_context, request));
 
-  const bool is_incognito_context = IsIncognitoBrowserContext(browser_context);
+  const bool is_incognito_context = browser_context->IsOffTheRecord();
 
   // CRX requests information can be intercepted here.
   // May be null for browser-initiated requests such as navigations.
@@ -1295,7 +1295,7 @@ int ExtensionWebRequestEventRouter::OnBeforeSendHeaders(
 
   BlockedRequest& blocked_request = blocked_requests_[request->id];
   blocked_request.event = kOnBeforeSendHeaders;
-  blocked_request.is_incognito |= IsIncognitoBrowserContext(browser_context);
+  blocked_request.is_incognito |= browser_context->IsOffTheRecord();
   blocked_request.request = request;
   blocked_request.before_send_headers_callback = std::move(callback);
   blocked_request.request_headers = headers;
@@ -1381,7 +1381,7 @@ int ExtensionWebRequestEventRouter::OnHeadersReceived(
 
   BlockedRequest& blocked_request = blocked_requests_[request->id];
   blocked_request.event = kOnHeadersReceived;
-  blocked_request.is_incognito |= IsIncognitoBrowserContext(browser_context);
+  blocked_request.is_incognito |= browser_context->IsOffTheRecord();
   blocked_request.request = request;
   blocked_request.callback = std::move(callback);
   blocked_request.override_response_headers = override_response_headers;
@@ -1426,7 +1426,7 @@ ExtensionWebRequestEventRouter::OnAuthRequired(
                     std::move(event_details))) {
     BlockedRequest& blocked_request = blocked_requests_[request->id];
     blocked_request.event = kOnAuthRequired;
-    blocked_request.is_incognito |= IsIncognitoBrowserContext(browser_context);
+    blocked_request.is_incognito |= browser_context->IsOffTheRecord();
     blocked_request.request = request;
     blocked_request.auth_callback = std::move(callback);
     blocked_request.auth_credentials = credentials;
@@ -1626,7 +1626,7 @@ bool ExtensionWebRequestEventRouter::DispatchEvent(
   if (num_handlers_blocking > 0) {
     BlockedRequest& blocked_request = blocked_requests_[request->id];
     blocked_request.request = request;
-    blocked_request.is_incognito |= IsIncognitoBrowserContext(browser_context);
+    blocked_request.is_incognito |= browser_context->IsOffTheRecord();
     blocked_request.num_handlers_blocking += num_handlers_blocking;
     blocked_request.blocking_time = base::Time::Now();
     return true;
@@ -2022,7 +2022,6 @@ void ExtensionWebRequestEventRouter::OnOTRBrowserContextCreated(
   data_[original_browser_context].cross_context = otr_browser_context;
   auto& otr_data = data_[otr_browser_context];
   otr_data.cross_context = original_browser_context;
-  otr_data.is_incognito = true;
 }
 
 void ExtensionWebRequestEventRouter::OnOTRBrowserContextDestroyed(
@@ -2055,8 +2054,8 @@ bool ExtensionWebRequestEventRouter::HasExtraHeadersListenerForRequest(
   // Check declarative net request API rulesets.
   return declarative_net_request::RulesMonitorService::Get(browser_context)
       ->ruleset_manager()
-      ->HasExtraHeadersMatcherForRequest(
-          *request, IsIncognitoBrowserContext(browser_context));
+      ->HasExtraHeadersMatcherForRequest(*request,
+                                         browser_context->IsOffTheRecord());
 }
 
 bool ExtensionWebRequestEventRouter::HasAnyExtraHeadersListener(
@@ -2129,16 +2128,6 @@ content::BrowserContext* ExtensionWebRequestEventRouter::GetCrossBrowserContext(
   if (iter == data_.end())
     return nullptr;
   return iter->second.cross_context;
-}
-
-bool ExtensionWebRequestEventRouter::IsIncognitoBrowserContext(
-    content::BrowserContext* browser_context) const {
-  // TODO(devlin): Well, this method is silly. We have
-  // BrowserContext::IsOffTheRecord(). Just use that.
-  auto iter = data_.find(browser_context);
-  if (iter == data_.end())
-    return false;
-  return iter->second.is_incognito;
 }
 
 bool ExtensionWebRequestEventRouter::WasSignaled(
@@ -2701,7 +2690,7 @@ bool ExtensionWebRequestEventRouter::ProcessDeclarativeRules(
     BlockedRequest& blocked_request = blocked_requests_[request->id];
     blocked_request.num_handlers_blocking++;
     blocked_request.request = request;
-    blocked_request.is_incognito |= IsIncognitoBrowserContext(browser_context);
+    blocked_request.is_incognito |= browser_context->IsOffTheRecord();
     blocked_request.blocking_time = base::Time::Now();
     blocked_request.original_response_headers = original_response_headers;
     return true;

@@ -614,9 +614,6 @@ class ExtensionWebRequestEventRouter {
     // events. Modified through `IncrementExtraHeadersListenerCount()` and
     // `DecrementExtraHeadersListenerCount()`.
     int extra_headers_count = 0;
-    // Whether the browser context is incognito.
-    // TODO(devlin): Remove this. BrowserContexts know if they're incognito.
-    bool is_incognito = false;
     // The corresponding incognito or on-the-record context for this
     // BrowserContext. That is, if this context is incognito, `cross_context`
     // will point to the original context; if this context is the original,
@@ -797,12 +794,6 @@ class ExtensionWebRequestEventRouter {
   // Returns the matching cross browser_context (the regular browser_context if
   // |browser_context| is OTR and vice versa).
   content::BrowserContext* GetCrossBrowserContext(
-      content::BrowserContext* browser_context) const;
-
-  // Determines whether the specified browser_context is an incognito
-  // browser_context (based on the contents of the cross-browser_context table
-  // and without dereferencing the browser_context pointer).
-  bool IsIncognitoBrowserContext(
       content::BrowserContext* browser_context) const;
 
   // Returns true if |request| was already signaled to some event handlers.
