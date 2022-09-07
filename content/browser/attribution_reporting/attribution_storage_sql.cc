@@ -417,15 +417,14 @@ DestinationLimitResult GetDestinationLimitResult(
   }
 }
 
+bool g_run_in_memory = false;
+
 }  // namespace
 
 // static
 void AttributionStorageSql::RunInMemoryForTesting() {
-  g_run_in_memory_ = true;
+  g_run_in_memory = true;
 }
-
-// static
-bool AttributionStorageSql::g_run_in_memory_ = false;
 
 // static
 bool AttributionStorageSql::DeleteStorageForTesting(
@@ -436,8 +435,8 @@ bool AttributionStorageSql::DeleteStorageForTesting(
 AttributionStorageSql::AttributionStorageSql(
     const base::FilePath& path_to_database,
     std::unique_ptr<AttributionStorageDelegate> delegate)
-    : path_to_database_(g_run_in_memory_ ? base::FilePath(kInMemoryPath)
-                                         : DatabasePath(path_to_database)),
+    : path_to_database_(g_run_in_memory ? base::FilePath(kInMemoryPath)
+                                        : DatabasePath(path_to_database)),
       delegate_(std::move(delegate)),
       rate_limit_table_(delegate_.get()) {
   DCHECK(delegate_);
@@ -1945,7 +1944,7 @@ void AttributionStorageSql::HandleInitializationFailure(
 
 bool AttributionStorageSql::LazyInit(DbCreationPolicy creation_policy) {
   if (!db_init_status_) {
-    if (g_run_in_memory_) {
+    if (g_run_in_memory) {
       db_init_status_ = DbStatus::kDeferringCreation;
     } else {
       db_init_status_ = base::PathExists(path_to_database_)

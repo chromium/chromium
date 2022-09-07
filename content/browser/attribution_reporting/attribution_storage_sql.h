@@ -367,8 +367,6 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
       AttributionReport::AggregatableAttributionData::Id report_id)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
-  static bool g_run_in_memory_;
-
   // If set, database errors will not crash the client when run in debug mode.
   bool ignore_errors_for_testing_ = false;
 
