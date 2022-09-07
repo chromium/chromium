@@ -32,6 +32,10 @@ void SetMetricsClientId(const char* client_id);
 // process. False otherwise.
 bool IsBrowserProcess();
 
+// Returns true if we set the PROCESS_MITIGATION_EXTENSION_POINT_DISABLE_POLICY
+// was set
+bool IsExtensionPointDisableSet();
+
 }  // extern "C"
 
 #endif  // CHROME_CHROME_ELF_CHROME_ELF_MAIN_H_

@@ -181,6 +181,7 @@ source_set("security") {
   deps = [
     ":constants",
     ":nt_registry",
+    "//base:base",
     "//chrome/install_static:install_static_util",
   ]
 }
@@ -257,6 +258,7 @@ test("chrome_elf_unittests") {
   ]
   include_dirs = [ "$target_gen_dir" ]
   deps = [
+    ":chrome_elf",
     ":constants",
     ":crash",
     ":hook_util",

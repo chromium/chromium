@@ -98,3 +98,7 @@ void SetMetricsClientId(const char* client_id) {
 bool IsBrowserProcess() {
   return install_static::IsBrowserProcess();
 }
+
+bool IsExtensionPointDisableSet() {
+  return elf_security::IsExtensionPointDisableSet();
+}

@@ -113,3 +113,7 @@ void DisableHook() {}
 int32_t GetApplyHookResult() {
   return 0;
 }
+
+bool IsExtensionPointDisableSet() {
+  return false;
+}

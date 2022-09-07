@@ -25,6 +25,7 @@ EXPORTS
   GetUserDataDirectoryThunk
   SignalChromeElf
   SignalInitializeCrashReporting
+  IsExtensionPointDisableSet
 
   ; From chrome/install_static
   GetInstallDetailsPayload
