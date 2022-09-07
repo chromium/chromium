@@ -1141,7 +1141,6 @@
       field_template: "primitive",
       type_name: "bool",
       default_value: "false",
-      field_group: "*",
     },
     {
       // We need to go through LayoutObject::SetStyle with

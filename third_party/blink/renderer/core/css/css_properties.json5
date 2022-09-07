@@ -5584,7 +5584,7 @@
     {
       name: "white-space",
       property_methods: ["CSSValueFromComputedStyleInternal"],
-      independent: true,
+      independent: false,  // Actually true, but setting it to false saves a precious bit in ComputedStyleBase.
       inherited: true,
       field_template: "bitset_keyword",
       keywords: [

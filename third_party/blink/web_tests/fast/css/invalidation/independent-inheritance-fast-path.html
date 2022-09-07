@@ -15,7 +15,6 @@ var independent_properties = [
     // [Property name, [list of valid keywords]]. Each keyword is tested in consecutive pairs.
     ["pointerEvents", ["none", "auto", "stroke", "fill", "painted", "visible", "visiblestroke", "visiblefill", "visiblepainted", "bounding-box", "all"]],
     ["visibility", ["visible", "hidden", "collapse"]],
-    ["whiteSpace", ["normal", "pre", "pre-wrap", "pre-line", "nowrap"]],
     ["borderCollapse", ["separate", "collapse"]],
     ["emptyCells", ["show", "hide"]],
     ["captionSide", ["top", "bottom"]],
@@ -95,7 +94,7 @@ independent_properties.forEach(function(test_data)
 
             // Clear for next test.
             outer.remove();
-        }, "Changing " + propertyName + ", an independent inherited property, propagates correctly with a single style recalc.");
+        }, "Changing " + propertyName + ", an independent inherited property, propagates correctly with a single style recalc. Value: " + value1);
     }
 })
 </script>
