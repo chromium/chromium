@@ -389,7 +389,15 @@ TEST_F(NudgeTrackerTest, IsSyncRequired) {
   nudge_tracker_.RecordRemoteInvalidation(PREFERENCES,
                                           BuildInvalidation(1, "hint"));
   EXPECT_TRUE(nudge_tracker_.IsSyncRequired(ModelTypeSet::All()));
+
+  // Invalidation is added to GetUpdates trigger message and processed, so
+  // after RecordSuccessfulSyncCycle() it'll be deleted.
+  sync_pb::GetUpdateTriggers gu_trigger;
+  nudge_tracker_.FillProtoMessage(PREFERENCES, &gu_trigger);
+  ASSERT_EQ(1, gu_trigger.notification_hint_size());
+
   nudge_tracker_.RecordSuccessfulSyncCycle(ModelTypeSet::All());
+
   EXPECT_FALSE(nudge_tracker_.IsSyncRequired(ModelTypeSet::All()));
 }
 
@@ -422,7 +430,15 @@ TEST_F(NudgeTrackerTest, IsGetUpdatesRequired) {
   nudge_tracker_.RecordRemoteInvalidation(PREFERENCES,
                                           BuildInvalidation(1, "hint"));
   EXPECT_TRUE(nudge_tracker_.IsGetUpdatesRequired(ModelTypeSet::All()));
+
+  // Invalidation is added to GetUpdates trigger message and processed, so
+  // after RecordSuccessfulSyncCycle() it'll be deleted.
+  sync_pb::GetUpdateTriggers gu_trigger;
+  nudge_tracker_.FillProtoMessage(PREFERENCES, &gu_trigger);
+  ASSERT_EQ(1, gu_trigger.notification_hint_size());
+
   nudge_tracker_.RecordSuccessfulSyncCycle(ModelTypeSet::All());
+
   EXPECT_FALSE(nudge_tracker_.IsGetUpdatesRequired(ModelTypeSet::All()));
 }
 
@@ -914,6 +930,12 @@ TEST_F(NudgeTrackerAckTrackingTest, SimpleAcknowledgement) {
 
   EXPECT_TRUE(IsInvalidationUnacknowledged(inv_id));
 
+  // Invalidations are acknowledged if they were used in
+  // GetUpdates proto message. To check the acknowledged invalidation,
+  // force invalidation to be used in proto message.
+  sync_pb::GetUpdateTriggers gu_trigger;
+  nudge_tracker_.FillProtoMessage(BOOKMARKS, &gu_trigger);
+
   nudge_tracker_.RecordSuccessfulSyncCycle(ModelTypeSet::All());
   EXPECT_TRUE(IsInvalidationAcknowledged(inv_id));
 
@@ -929,6 +951,11 @@ TEST_F(NudgeTrackerAckTrackingTest, ManyAcknowledgements) {
   EXPECT_TRUE(IsInvalidationUnacknowledged(inv1_id));
   EXPECT_TRUE(IsInvalidationUnacknowledged(inv2_id));
   EXPECT_TRUE(IsInvalidationUnacknowledged(inv3_id));
+
+  sync_pb::GetUpdateTriggers bm_gu_trigger;
+  nudge_tracker_.FillProtoMessage(BOOKMARKS, &bm_gu_trigger);
+  sync_pb::GetUpdateTriggers pf_gu_trigger;
+  nudge_tracker_.FillProtoMessage(PREFERENCES, &pf_gu_trigger);
 
   nudge_tracker_.RecordSuccessfulSyncCycle(ModelTypeSet::All());
   EXPECT_TRUE(IsInvalidationAcknowledged(inv1_id));
@@ -960,6 +987,9 @@ TEST_F(NudgeTrackerAckTrackingTest, OverflowAndRecover) {
   int inv100_id = SendInvalidation(BOOKMARKS, 100, "new_hint");
   EXPECT_TRUE(IsInvalidationDropped(inv10_id));
 
+  sync_pb::GetUpdateTriggers gu_trigger;
+  nudge_tracker_.FillProtoMessage(BOOKMARKS, &gu_trigger);
+
   // This should recover from the drop and bring us back into sync.
   nudge_tracker_.RecordSuccessfulSyncCycle(ModelTypeSet::All());
 
@@ -975,6 +1005,8 @@ TEST_F(NudgeTrackerAckTrackingTest, OverflowAndRecover) {
 TEST_F(NudgeTrackerAckTrackingTest, UnknownVersionFromServer_Simple) {
   int inv_id = SendUnknownVersionInvalidation(BOOKMARKS);
   EXPECT_TRUE(IsInvalidationUnacknowledged(inv_id));
+  sync_pb::GetUpdateTriggers gu_trigger;
+  nudge_tracker_.FillProtoMessage(BOOKMARKS, &gu_trigger);
   nudge_tracker_.RecordSuccessfulSyncCycle(ModelTypeSet::All());
   EXPECT_TRUE(IsInvalidationAcknowledged(inv_id));
   EXPECT_TRUE(AllInvalidationsAccountedFor());
@@ -997,6 +1029,9 @@ TEST_F(NudgeTrackerAckTrackingTest, UnknownVersionFromServer_Complex) {
   EXPECT_TRUE(IsInvalidationUnacknowledged(inv4_id));
   EXPECT_TRUE(IsInvalidationUnacknowledged(inv5_id));
 
+  sync_pb::GetUpdateTriggers gu_trigger;
+  nudge_tracker_.FillProtoMessage(BOOKMARKS, &gu_trigger);
+
   // Finish the sync cycle and expect all remaining invalidations to be acked.
   nudge_tracker_.RecordSuccessfulSyncCycle(ModelTypeSet::All());
   EXPECT_TRUE(IsInvalidationAcknowledged(inv1_id));
@@ -1005,6 +1040,70 @@ TEST_F(NudgeTrackerAckTrackingTest, UnknownVersionFromServer_Complex) {
   EXPECT_TRUE(IsInvalidationAcknowledged(inv4_id));
   EXPECT_TRUE(IsInvalidationAcknowledged(inv5_id));
 
+  EXPECT_TRUE(AllInvalidationsAccountedFor());
+}
+
+TEST_F(NudgeTrackerAckTrackingTest, AckInvalidationsAddedDuringSyncCycle) {
+  // Invalidations that are not used in FillProtoMessage() persist until
+  // next RecordSuccessfulSyncCycle().
+  int inv1_id = SendInvalidation(BOOKMARKS, 10, "hint");
+  int inv2_id = SendInvalidation(BOOKMARKS, 14, "hint2");
+
+  nudge_tracker_.RecordSuccessfulSyncCycle(ModelTypeSet::All());
+
+  EXPECT_FALSE(IsInvalidationAcknowledged(inv1_id));
+  EXPECT_FALSE(IsInvalidationAcknowledged(inv2_id));
+
+  // Fill proto message with the invalidations inv1_id and inv2_id.
+  sync_pb::GetUpdateTriggers gu_trigger_1;
+  nudge_tracker_.FillProtoMessage(BOOKMARKS, &gu_trigger_1);
+  ASSERT_EQ(2, gu_trigger_1.notification_hint_size());
+
+  int inv3_id = SendInvalidation(BOOKMARKS, 100, "hint3");
+
+  nudge_tracker_.RecordSuccessfulSyncCycle(ModelTypeSet::All());
+
+  EXPECT_TRUE(IsInvalidationAcknowledged(inv1_id));
+  EXPECT_TRUE(IsInvalidationAcknowledged(inv2_id));
+  EXPECT_FALSE(IsInvalidationAcknowledged(inv3_id));
+
+  // Be sure that invalidations are not used twice in proto messages.
+  // Invalidations are expected to be deleted in RecordSuccessfulSyncCycle
+  // after being processed in proto message.
+  sync_pb::GetUpdateTriggers gu_trigger_2;
+  nudge_tracker_.FillProtoMessage(BOOKMARKS, &gu_trigger_2);
+  ASSERT_EQ(1, gu_trigger_2.notification_hint_size());
+
+  nudge_tracker_.RecordSuccessfulSyncCycle(ModelTypeSet::All());
+  EXPECT_TRUE(AllInvalidationsAccountedFor());
+}
+
+// Test invalidations that are used in several proto messages.
+TEST_F(NudgeTrackerAckTrackingTest, MultipleGetUpdates) {
+  int inv1_id = SendInvalidation(BOOKMARKS, 1, "hint1");
+  int inv2_id = SendInvalidation(BOOKMARKS, 2, "hint2");
+
+  nudge_tracker_.RecordSuccessfulSyncCycle(ModelTypeSet::All());
+
+  EXPECT_FALSE(IsInvalidationAcknowledged(inv1_id));
+  EXPECT_FALSE(IsInvalidationAcknowledged(inv2_id));
+
+  sync_pb::GetUpdateTriggers gu_trigger_1;
+  nudge_tracker_.FillProtoMessage(BOOKMARKS, &gu_trigger_1);
+  ASSERT_EQ(2, gu_trigger_1.notification_hint_size());
+
+  int inv3_id = SendInvalidation(BOOKMARKS, 100, "hint3");
+
+  EXPECT_FALSE(IsInvalidationAcknowledged(inv1_id));
+  EXPECT_FALSE(IsInvalidationAcknowledged(inv2_id));
+  EXPECT_FALSE(IsInvalidationAcknowledged(inv3_id));
+  // As they are not acknowledged yet, inv1_id, inv2_id and inv3_id
+  // should be included in next proto message.
+  sync_pb::GetUpdateTriggers gu_trigger_2;
+  nudge_tracker_.FillProtoMessage(BOOKMARKS, &gu_trigger_2);
+  ASSERT_EQ(3, gu_trigger_2.notification_hint_size());
+
+  nudge_tracker_.RecordSuccessfulSyncCycle(ModelTypeSet::All());
   EXPECT_TRUE(AllInvalidationsAccountedFor());
 }
 

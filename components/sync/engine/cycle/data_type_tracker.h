@@ -137,7 +137,7 @@ class DataTypeTracker {
   // Fills some type-specific contents of a GetUpdates request protobuf.  These
   // messages provide the server with the information it needs to decide how to
   // handle a request.
-  void FillGetUpdatesTriggersMessage(sync_pb::GetUpdateTriggers* msg) const;
+  void FillGetUpdatesTriggersMessage(sync_pb::GetUpdateTriggers* msg);
 
   // Returns true if the type is currently throttled or backed off.
   bool IsBlocked() const;
@@ -187,6 +187,22 @@ class DataTypeTracker {
       absl::optional<base::TimeDelta> depleted_quota_nudge_delay);
 
  private:
+  struct PendingInvalidation {
+    PendingInvalidation();
+    PendingInvalidation(const PendingInvalidation&) = delete;
+    PendingInvalidation& operator=(const PendingInvalidation&) = delete;
+    PendingInvalidation(PendingInvalidation&&);
+    PendingInvalidation& operator=(PendingInvalidation&&);
+    PendingInvalidation(std::unique_ptr<SyncInvalidation> invalidation,
+                        bool is_processed);
+    ~PendingInvalidation();
+
+    std::unique_ptr<SyncInvalidation> pending_invalidation;
+    // is_processed is true, if the invalidation included to GetUpdates message
+    // trigger.
+    bool is_processed = false;
+  };
+
   friend class SyncSchedulerImplTest;
 
   const ModelType type_;
@@ -204,7 +220,7 @@ class DataTypeTracker {
   // drop_tracker_.IsRecoveringFromDropEvent() and server_payload_overflow_.
   //
   // This list takes ownership of its contents.
-  std::vector<std::unique_ptr<SyncInvalidation>> pending_invalidations_;
+  std::vector<PendingInvalidation> pending_invalidations_;
 
   size_t payload_buffer_size_;
 
