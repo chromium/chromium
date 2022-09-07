@@ -85,6 +85,10 @@ void AppSessionBrowserWindowHandler::HandleNewSettingsWindow(
         ui::PageTransition::PAGE_TRANSITION_AUTO_TOPLEVEL);
     nav_params.disposition = WindowOpenDisposition::NEW_POPUP;
     Navigate(&nav_params);
+
+    // We do not save the newly created browser to the |settings_browser_| here
+    // because this new browser will be handled by this function after creation,
+    // and it will be saved there.
     return;
   }
 
