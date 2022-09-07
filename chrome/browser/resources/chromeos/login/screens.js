@@ -56,7 +56,7 @@ import './screens/oobe/demo_preferences.m.js';
 import './screens/oobe/demo_setup.m.js';
 import './screens/oobe/enable_debugging.m.js';
 import './screens/oobe/enterprise_enrollment.m.js';
-import './screens/oobe/hid_detection.m.js';
+import './screens/oobe/hid_detection.js';
 import './screens/oobe/oobe_network.m.js';
 import './screens/oobe/packaged_license.m.js';
 import './screens/oobe/quick_start.m.js';
