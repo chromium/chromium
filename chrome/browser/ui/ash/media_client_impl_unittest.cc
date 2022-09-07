@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "ash/public/cpp/media_controller.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/chromeos/extensions/media_player_api.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -18,6 +19,7 @@
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_registry_cache_wrapper.h"
 #include "components/services/app_service/public/cpp/app_types.h"
+#include "components/services/app_service/public/cpp/features.h"
 #include "components/services/app_service/public/mojom/types.mojom-forward.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -154,7 +156,10 @@ class MediaClientTest : public BrowserWithTestWindowTest {
 
 class MediaClientAppUsingCameraTest : public testing::Test {
  public:
-  MediaClientAppUsingCameraTest() = default;
+  MediaClientAppUsingCameraTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        apps::kAppServiceCapabilityAccessWithoutMojom);
+  }
   MediaClientAppUsingCameraTest(const MediaClientAppUsingCameraTest&) = delete;
   MediaClientAppUsingCameraTest& operator=(
       const MediaClientAppUsingCameraTest&) = delete;
@@ -178,30 +183,31 @@ class MediaClientAppUsingCameraTest : public testing::Test {
     return app;
   }
 
-  static apps::mojom::CapabilityAccessPtr MakeCapabilityAccess(
+  static apps::CapabilityAccessPtr MakeCapabilityAccess(
       const char* app_id,
-      apps::mojom::OptionalBool camera) {
-    apps::mojom::CapabilityAccessPtr access =
-        apps::mojom::CapabilityAccess::New();
-    access->app_id = app_id;
+      absl::optional<bool> camera) {
+    apps::CapabilityAccessPtr access =
+        std::make_unique<apps::CapabilityAccess>(app_id);
     access->camera = camera;
-    access->microphone = apps::mojom::OptionalBool::kFalse;
+    access->microphone = false;
     return access;
   }
 
   void LaunchApp(const char* id,
                  const char* name,
-                 apps::mojom::OptionalBool use_camera) {
+                 absl::optional<bool> use_camera) {
     std::vector<apps::AppPtr> registry_deltas;
     registry_deltas.push_back(MakeApp(id, name));
     registry_cache_.OnApps(std::move(registry_deltas), apps::AppType::kUnknown,
                            /* should_notify_initialized = */ false);
 
-    std::vector<apps::mojom::CapabilityAccessPtr> capability_access_deltas;
+    std::vector<apps::CapabilityAccessPtr> capability_access_deltas;
     capability_access_deltas.push_back(MakeCapabilityAccess(id, use_camera));
     capability_access_cache_.OnCapabilityAccesses(
         std::move(capability_access_deltas));
   }
+
+  base::test::ScopedFeatureList scoped_feature_list_;
 
   const std::string kPrimaryProfileName = "primary_profile";
   const AccountId account_id_ = AccountId::FromUserEmail(kPrimaryProfileName);
@@ -288,7 +294,7 @@ TEST_F(MediaClientAppUsingCameraTest, NoAppsLaunched) {
 }
 
 TEST_F(MediaClientAppUsingCameraTest, AppLaunchedNotUsingCamaera) {
-  LaunchApp("id_rose", "name_rose", apps::mojom::OptionalBool::kFalse);
+  LaunchApp("id_rose", "name_rose", /*use_camera=*/false);
 
   // Should return an empty string.
   std::u16string app_name = MediaClientImpl::GetNameOfAppAccessingCamera(
@@ -297,7 +303,7 @@ TEST_F(MediaClientAppUsingCameraTest, AppLaunchedNotUsingCamaera) {
 }
 
 TEST_F(MediaClientAppUsingCameraTest, AppLaunchedUsingCamera) {
-  LaunchApp("id_rose", "name_rose", apps::mojom::OptionalBool::kTrue);
+  LaunchApp("id_rose", "name_rose", /*use_camera=*/true);
 
   // Should return the name of our app.
   std::u16string app_name = MediaClientImpl::GetNameOfAppAccessingCamera(
@@ -307,10 +313,10 @@ TEST_F(MediaClientAppUsingCameraTest, AppLaunchedUsingCamera) {
 }
 
 TEST_F(MediaClientAppUsingCameraTest, MultipleAppsLaunchedUsingCamera) {
-  LaunchApp("id_rose", "name_rose", apps::mojom::OptionalBool::kTrue);
-  LaunchApp("id_mars", "name_mars", apps::mojom::OptionalBool::kTrue);
-  LaunchApp("id_zara", "name_zara", apps::mojom::OptionalBool::kTrue);
-  LaunchApp("id_oscar", "name_oscar", apps::mojom::OptionalBool::kFalse);
+  LaunchApp("id_rose", "name_rose", /*use_camera=*/true);
+  LaunchApp("id_mars", "name_mars", /*use_camera=*/true);
+  LaunchApp("id_zara", "name_zara", /*use_camera=*/true);
+  LaunchApp("id_oscar", "name_oscar", /*use_camera=*/false);
 
   // Because AppCapabilityAccessCache::GetAppsAccessingCamera (invoked by
   // GetNameOfAppAccessingCamera) returns a set, we have no guarantee of

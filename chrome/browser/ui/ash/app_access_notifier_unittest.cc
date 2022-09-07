@@ -22,6 +22,8 @@
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_registry_cache_wrapper.h"
 #include "components/services/app_service/public/cpp/app_types.h"
+#include "components/services/app_service/public/cpp/capability_access.h"
+#include "components/services/app_service/public/cpp/features.h"
 #include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
@@ -144,13 +146,11 @@ class AppAccessNotifierBaseTest : public testing::Test {
     return app;
   }
 
-  static apps::mojom::CapabilityAccessPtr MakeCapabilityAccess(
+  static apps::CapabilityAccessPtr MakeCapabilityAccess(
       const std::string app_id,
-      apps::mojom::OptionalBool camera,
-      apps::mojom::OptionalBool microphone) {
-    apps::mojom::CapabilityAccessPtr access =
-        apps::mojom::CapabilityAccess::New();
-    access->app_id = app_id;
+      absl::optional<bool> camera,
+      absl::optional<bool> microphone) {
+    auto access = std::make_unique<apps::CapabilityAccess>(app_id);
     access->camera = camera;
     access->microphone = microphone;
     return access;
@@ -175,13 +175,9 @@ class AppAccessNotifierBaseTest : public testing::Test {
     reg_cache->OnApps(std::move(registry_deltas), apps::AppType::kUnknown,
                       /*should_notify_initialized=*/false);
 
-    std::vector<apps::mojom::CapabilityAccessPtr> capability_access_deltas;
-    capability_access_deltas.push_back(MakeCapabilityAccess(
-        id,
-        use_camera ? apps::mojom::OptionalBool::kTrue
-                   : apps::mojom::OptionalBool::kFalse,
-        use_microphone ? apps::mojom::OptionalBool::kTrue
-                       : apps::mojom::OptionalBool::kFalse));
+    std::vector<apps::CapabilityAccessPtr> capability_access_deltas;
+    capability_access_deltas.push_back(
+        MakeCapabilityAccess(id, use_camera, use_microphone));
     cap_cache->OnCapabilityAccesses(std::move(capability_access_deltas));
   }
 
@@ -229,8 +225,16 @@ class AppAccessNotifierParameterizedTest
 
   // AppAccessNotifierBaseTest:
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatureState(
-        ash::features::kPrivacyIndicators, IsPrivacyIndicatorsFeatureEnabled());
+    if (IsPrivacyIndicatorsFeatureEnabled()) {
+      scoped_feature_list_.InitWithFeatures(
+          {apps::kAppServiceCapabilityAccessWithoutMojom,
+           ash::features::kPrivacyIndicators},
+          {});
+    } else {
+      scoped_feature_list_.InitWithFeatures(
+          {apps::kAppServiceCapabilityAccessWithoutMojom},
+          {ash::features::kPrivacyIndicators});
+    }
     AppAccessNotifierBaseTest::SetUp();
   }
 
@@ -251,8 +255,10 @@ class AppAccessNotifierPrivacyIndicatorTest : public AppAccessNotifierBaseTest {
 
   // AppAccessNotifierBaseTest:
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatureState(ash::features::kPrivacyIndicators,
-                                              true);
+    scoped_feature_list_.InitWithFeatures(
+        {apps::kAppServiceCapabilityAccessWithoutMojom,
+         ash::features::kPrivacyIndicators},
+        {});
     AppAccessNotifierBaseTest::SetUp();
   }
 
