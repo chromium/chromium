@@ -120,6 +120,8 @@ class CORE_EXPORT ImageElementTiming final
 
     base::TimeTicks load_time_;
     bool is_painted_ = false;
+
+    DISALLOW_NEW();
   };
   typedef std::pair<const LayoutObject*, const ImageResourceContent*> RecordId;
   // Hashmap of pairs of elements, LayoutObjects (for the elements) and

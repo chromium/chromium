@@ -31,6 +31,9 @@ class CollapsedBorderPainter {
   const LayoutTable& table_;
 
   struct Border {
+    STACK_ALLOCATED();
+
+   public:
     // This will be set to null if we don't need to paint this border.
     const CollapsedBorderValue* value = nullptr;
     int inner_width = 0;

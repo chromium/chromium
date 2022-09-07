@@ -16,6 +16,8 @@ class ComputedStyle;
 // Represents a [decorating box].
 // [decorating box]: https://drafts.csswg.org/css-text-decor-3/#decorating-box
 class CORE_EXPORT NGDecoratingBox {
+  DISALLOW_NEW();
+
  public:
   NGDecoratingBox(const PhysicalOffset& content_offset_in_container,
                   const ComputedStyle& style,

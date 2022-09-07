@@ -229,6 +229,9 @@ class CORE_EXPORT TextDecorationInfo {
   const bool antialias_ = false;
 
   struct LineData {
+    STACK_ALLOCATED();
+
+   public:
     TextDecorationLine line;
     float line_offset;
     float double_offset;

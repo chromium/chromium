@@ -106,6 +106,9 @@ static bool SetIfHigher(const PaintLayer*& first, const PaintLayer* second) {
 
 // For finding the proper z-order of reparented overlay overflow controls.
 struct PaintLayerStackingNode::HighestLayers {
+  STACK_ALLOCATED();
+
+ public:
   enum LayerType {
     kAbsolutePosition,
     kFixedPosition,

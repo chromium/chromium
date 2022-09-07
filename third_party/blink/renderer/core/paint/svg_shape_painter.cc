@@ -139,6 +139,8 @@ void SVGShapePainter::Paint(const PaintInfo& paint_info) {
 }
 
 class PathWithTemporaryWindingRule {
+  STACK_ALLOCATED();
+
  public:
   PathWithTemporaryWindingRule(Path& path, SkPathFillType fill_type)
       : path_(const_cast<SkPath&>(path.GetSkPath())) {

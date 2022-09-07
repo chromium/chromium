@@ -654,6 +654,9 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
                         const FragmentData* root_fragment = nullptr) const;
 
   struct HitTestRecursionData {
+    STACK_ALLOCATED();
+
+   public:
     const PhysicalRect& rect;
     // Whether location.Intersects(rect) returns true.
     const HitTestLocation& location;

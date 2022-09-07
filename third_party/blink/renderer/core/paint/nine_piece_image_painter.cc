@@ -39,6 +39,7 @@ struct TileParameters {
   float scale_factor;
   float phase;
   float spacing;
+  STACK_ALLOCATED();
 };
 
 absl::optional<TileParameters> ComputeTileParameters(

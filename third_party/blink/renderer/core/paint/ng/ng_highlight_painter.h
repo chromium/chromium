@@ -103,6 +103,7 @@ class CORE_EXPORT NGHighlightPainter {
     struct SelectionRect {
       PhysicalRect physical;
       PhysicalRect rotated;
+      STACK_ALLOCATED();
     };
 
     // Lazy init |selection_rect_| only when needed, such as when we need to
@@ -197,6 +198,9 @@ class CORE_EXPORT NGHighlightPainter {
 
  private:
   struct LayerPaintState {
+    DISALLOW_NEW();
+
+   public:
     LayerPaintState(NGHighlightOverlay::HighlightLayer id,
                     scoped_refptr<const ComputedStyle> style,
                     TextPaintStyle text_style)

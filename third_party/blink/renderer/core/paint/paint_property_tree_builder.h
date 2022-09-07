@@ -317,6 +317,9 @@ struct NGPrePaintInfo {
 };
 
 struct PaintPropertiesChangeInfo {
+  STACK_ALLOCATED();
+
+ public:
   PaintPropertyChangeType transform_changed =
       PaintPropertyChangeType::kUnchanged;
   PaintPropertyChangeType clip_changed = PaintPropertyChangeType::kUnchanged;

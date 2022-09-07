@@ -35,6 +35,7 @@ enum class RectEdge {
 struct BoundEdges {
   RectEdge start;
   RectEdge end;
+  DISALLOW_NEW();
 };
 
 // Based on the given WritingMode and direction, return the pair of start and

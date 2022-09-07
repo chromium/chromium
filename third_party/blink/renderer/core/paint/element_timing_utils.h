@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_ELEMENT_TIMING_UTILS_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_ELEMENT_TIMING_UTILS_H_
 
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+
 namespace gfx {
 class Rect;
 class RectF;
@@ -18,6 +20,8 @@ class PropertyTreeStateOrAlias;
 // Class containing methods shared between ImageElementTiming and
 // TextElementTiming.
 class ElementTimingUtils {
+  STATIC_ONLY(ElementTimingUtils);
+
  public:
   // Computes the part a rect in a local transform space that is visible in the
   // specified frame, and returns a result in DIPs.

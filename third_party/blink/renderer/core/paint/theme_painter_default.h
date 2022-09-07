@@ -38,6 +38,8 @@ class GraphicsContextStateSaver;
 class LayoutThemeDefault;
 
 class ThemePainterDefault final : public ThemePainter {
+  DISALLOW_NEW();
+
  public:
   explicit ThemePainterDefault(LayoutThemeDefault&);
 

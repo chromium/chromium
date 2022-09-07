@@ -24,6 +24,8 @@ inline AutoDarkMode PaintAutoDarkMode(DarkModeFilter::ElementRole role,
 }
 
 class ImageClassifierHelper {
+  STATIC_ONLY(ImageClassifierHelper);
+
  public:
   CORE_EXPORT static ImageAutoDarkMode GetImageAutoDarkMode(
       LocalFrame& local_frame,

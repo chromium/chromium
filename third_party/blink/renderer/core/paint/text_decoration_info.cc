@@ -150,6 +150,7 @@ struct WavyParams {
   float resolved_thickness;
   bool spelling_grammar;
   Color color;
+  DISALLOW_NEW();
 };
 
 float WavyDecorationSizing(const WavyParams& params) {
@@ -621,6 +622,7 @@ void TextDecorationInfo::ComputeWavyLineData(
     WavyParams key;
     gfx::RectF pattern_rect;
     sk_sp<cc::PaintRecord> tile_record;
+    DISALLOW_NEW();
   };
 
   DEFINE_STATIC_LOCAL(absl::optional<WavyCache>, wavy_cache, (absl::nullopt));

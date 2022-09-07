@@ -45,6 +45,7 @@ class CORE_EXPORT OutlinePainter {
   struct Line {
     SkPoint start;
     SkPoint end;
+    DISALLOW_NEW();
   };
   static void IterateRightAnglePathForTesting(
       const SkPath&,

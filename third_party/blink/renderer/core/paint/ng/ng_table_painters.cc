@@ -381,6 +381,8 @@ PhysicalRect ComputeColumnsRect(const NGPhysicalBoxFragment& fragment) {
 // background to prevent it from covering the collapsed borders around the cell.
 // TODO(crbug.com/1181813): Investigate other methods.
 class TableCellBackgroundClipper {
+  STACK_ALLOCATED();
+
  public:
   TableCellBackgroundClipper(
       GraphicsContext& context,

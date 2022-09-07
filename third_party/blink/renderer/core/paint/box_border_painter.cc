@@ -363,7 +363,10 @@ const unsigned kSidePriority[] = {
 // Edges sharing the same opacity. Stores both a side list and an edge bitfield
 // to support constant time iteration + membership tests.
 struct OpacityGroup {
-  OpacityGroup(unsigned alpha) : edge_flags(0), alpha(alpha) {}
+  DISALLOW_NEW();
+
+ public:
+  explicit OpacityGroup(unsigned alpha) : edge_flags(0), alpha(alpha) {}
 
   Vector<BoxSide, 4> sides;
   BorderEdgeFlags edge_flags;
@@ -710,6 +713,9 @@ void FindIntersection(const gfx::PointF& p1,
 
 // Holds edges grouped by opacity and sorted in paint order.
 struct BoxBorderPainter::ComplexBorderInfo {
+  STACK_ALLOCATED();
+
+ public:
   explicit ComplexBorderInfo(const BoxBorderPainter& border_painter) {
     Vector<BoxSide, 4> sorted_sides;
 

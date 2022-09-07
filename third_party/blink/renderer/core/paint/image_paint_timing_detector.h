@@ -31,6 +31,8 @@ class Image;
 // TODO(crbug/960502): we should limit the access of these properties.
 // TODO(yoav): Rename all mentions of "image" to "media"
 class ImageRecord : public base::SupportsWeakPtr<ImageRecord> {
+  USING_FAST_MALLOC(ImageRecord);
+
  public:
   ImageRecord(DOMNodeId new_node_id,
               const MediaTiming* new_media_timing,

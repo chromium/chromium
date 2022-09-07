@@ -54,6 +54,8 @@ class PaintArtifactCompositor;
 
 class CORE_EXPORT LinkHighlightImpl final : public CompositorAnimationDelegate,
                                             public CompositorAnimationClient {
+  USING_FAST_MALLOC(LinkHighlightImpl);
+
  public:
   explicit LinkHighlightImpl(Node*);
   ~LinkHighlightImpl() override;
@@ -99,6 +101,8 @@ class CORE_EXPORT LinkHighlightImpl final : public CompositorAnimationDelegate,
   void UpdateOpacity(float opacity);
 
   class LinkHighlightFragment : private cc::ContentLayerClient {
+    DISALLOW_NEW();
+
    public:
     LinkHighlightFragment();
     ~LinkHighlightFragment() override;

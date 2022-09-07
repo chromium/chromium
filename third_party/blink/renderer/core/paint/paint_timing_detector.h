@@ -319,6 +319,8 @@ inline void PaintTimingDetector::NotifyTextPaint(
 }
 
 class LCPRectInfo {
+  USING_FAST_MALLOC(LCPRectInfo);
+
  public:
   LCPRectInfo(const gfx::Rect& frame_rect_info, const gfx::Rect& root_rect_info)
       : frame_rect_info_(frame_rect_info), root_rect_info_(root_rect_info) {}
