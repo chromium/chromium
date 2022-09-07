@@ -2267,7 +2267,6 @@ crbug.com/1050754 external/wpt/fetch/metadata/trailing-dot.https.sub.any.worker.
 crbug.com/1050754 external/wpt/fetch/metadata/window-open.https.sub.html [ Failure Timeout ]
 crbug.com/1050754 external/wpt/fetch/nosniff/parsing-nosniff.window.html [ Failure Pass ]
 crbug.com/1050754 external/wpt/fetch/origin/assorted.window.html [ Pass Timeout ]
-crbug.com/1050754 external/wpt/fetch/range/general.any.sharedworker.html [ Failure ]
 crbug.com/1050754 external/wpt/fetch/range/general.window.html [ Failure Pass ]
 crbug.com/1050754 external/wpt/fetch/range/sw.https.window.html [ Failure Pass ]
 crbug.com/1050754 external/wpt/fetch/security/embedded-credentials.tentative.sub.html [ Timeout ]

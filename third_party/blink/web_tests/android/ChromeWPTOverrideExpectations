@@ -784,7 +784,6 @@ crbug.com/1050754 external/wpt/fetch/metadata/trailing-dot.https.sub.any.sharedw
 crbug.com/1050754 external/wpt/fetch/metadata/trailing-dot.https.sub.any.worker.html [ Failure ]
 crbug.com/1050754 external/wpt/fetch/metadata/window-open.https.sub.html [ Crash Pass ]
 crbug.com/1050754 external/wpt/fetch/private-network-access/idlharness.tentative.any.sharedworker.html [ Failure ]
-crbug.com/1050754 external/wpt/fetch/range/general.any.sharedworker.html [ Failure ]
 crbug.com/1050754 external/wpt/fetch/security/embedded-credentials.tentative.sub.html [ Crash Pass ]
 crbug.com/1050754 external/wpt/fetch/stale-while-revalidate/fetch-sw.https.html [ Failure ]
 crbug.com/1050754 external/wpt/fetch/stale-while-revalidate/fetch.any.html [ Failure ]
