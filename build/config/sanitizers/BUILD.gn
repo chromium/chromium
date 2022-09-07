@@ -432,6 +432,7 @@ config("ubsan_flags") {
       "-fsanitize=float-divide-by-zero",
       "-fsanitize=integer-divide-by-zero",
       "-fsanitize=null",
+      "-fsanitize=nonnull-attribute",
       "-fsanitize=object-size",
       "-fsanitize=return",
       "-fsanitize=returns-nonnull-attribute",
