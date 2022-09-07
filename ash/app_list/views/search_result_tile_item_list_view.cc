@@ -98,6 +98,8 @@ SearchResultTileItemListView::SearchResultTileItemListView(
     SearchResultTileItemView* tile_item =
         AddChildView(std::make_unique<SearchResultTileItemView>(view_delegate));
     tile_item->set_index_in_container(i);
+    tile_item->SetParentBackgroundColor(
+        AppListColorProvider::Get()->GetSearchBoxCardBackgroundColor());
     tile_views_.push_back(tile_item);
     AddObservedResultView(tile_item);
   }
@@ -334,16 +336,6 @@ void SearchResultTileItemListView::OnShownChanged() {
       continue;
     }
   }
-}
-
-void SearchResultTileItemListView::OnThemeChanged() {
-  SearchResultContainerView::OnThemeChanged();
-
-  const auto parent_background_color =
-      AppListColorProvider::Get()->GetSearchBoxCardBackgroundColor(GetWidget());
-
-  for (auto* tile_view : tile_views_)
-    tile_view->SetParentBackgroundColor(parent_background_color);
 }
 
 void SearchResultTileItemListView::VisibilityChanged(View* starting_from,

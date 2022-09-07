@@ -180,9 +180,10 @@ void AppListPresenterImpl::Show(AppListViewState preferred_state,
   RequestPresentationTime(display_id, event_time_stamp);
 
   if (!view_) {
-    view_ = new AppListView(controller_);
-    view_->InitView(controller_->GetContainerForDisplayId(display_id));
-    ConfigureView();
+    AppListView* view = new AppListView(controller_);
+    view->InitView(controller_->GetContainerForDisplayId(display_id));
+    SetView(view);
+    view_->GetWidget()->GetNativeWindow()->TrackOcclusionState();
   }
 
   controller_->UpdateLauncherContainer(display_id);
@@ -506,13 +507,13 @@ void AppListPresenterImpl::OnTabletModeChanged(bool started) {
 ////////////////////////////////////////////////////////////////////////////////
 // AppListPresenterImpl, private:
 
-void AppListPresenterImpl::ConfigureView() {
-  DCHECK(view_);
+void AppListPresenterImpl::SetView(AppListView* view) {
+  DCHECK(view_ == nullptr);
   DCHECK(is_target_visibility_show_);
 
+  view_ = view;
   views::Widget* widget = view_->GetWidget();
   widget->AddObserver(this);
-  widget->GetNativeWindow()->TrackOcclusionState();
   aura::client::GetFocusClient(widget->GetNativeView())->AddObserver(this);
   view_->GetAppsPaginationModel()->AddObserver(this);
 

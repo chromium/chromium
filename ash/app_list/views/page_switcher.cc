@@ -94,7 +94,7 @@ class PageSwitcherButton : public IconButton {
   PaintButtonInfo BuildPaintButtonInfo() {
     PaintButtonInfo info;
     info.color = AppListColorProvider::Get()->GetPageSwitcherButtonColor(
-        is_root_app_grid_page_switcher_, GetWidget());
+        is_root_app_grid_page_switcher_);
     if (selected_) {
       info.style = cc::PaintFlags::kFill_Style;
       info.radius = SkIntToScalar(kSelectedButtonRadius);

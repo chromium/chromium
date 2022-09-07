@@ -135,7 +135,9 @@ class ZeroWidthVerticalScrollBar : public views::OverlayScrollBar {
 
 class SearchResultPageBackground : public views::Background {
  public:
-  SearchResultPageBackground() = default;
+  explicit SearchResultPageBackground(SkColor color) {
+    SetNativeControlColor(color);
+  }
   SearchResultPageBackground(const SearchResultPageBackground&) = delete;
   SearchResultPageBackground& operator=(const SearchResultPageBackground&) =
       delete;
@@ -204,7 +206,11 @@ SearchResultPageView::SearchResultPageView() : contents_view_(new views::View) {
   // Hides this view behind the search box by using the same color and
   // background border corner radius. All child views' background should be
   // set transparent so that the rounded corner is not overwritten.
-  SetBackground(std::make_unique<SearchResultPageBackground>());
+  SetBackground(std::make_unique<SearchResultPageBackground>(
+      features::IsProductivityLauncherEnabled()
+          ? ColorProvider::Get()->GetBaseLayerColor(
+                ColorProvider::BaseLayerType::kTransparent80)
+          : AppListColorProvider::Get()->GetSearchBoxCardBackgroundColor()));
   if (features::IsProductivityLauncherEnabled()) {
     layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
     layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
@@ -389,8 +395,7 @@ void SearchResultPageView::OnThemeChanged() {
       features::IsProductivityLauncherEnabled()
           ? ColorProvider::Get()->GetBaseLayerColor(
                 ColorProvider::BaseLayerType::kTransparent80)
-          : AppListColorProvider::Get()->GetSearchBoxCardBackgroundColor(
-                GetWidget()));
+          : AppListColorProvider::Get()->GetSearchBoxCardBackgroundColor());
   // SchedulePaint() marks the entire SearchResultPageView's bounds as dirty.
   SchedulePaint();
   AppListPage::OnThemeChanged();
@@ -754,12 +759,9 @@ bool SearchResultPageView::CanSelectSearchResults() const {
 
 SkColor SearchResultPageView::GetBackgroundColorForState(
     AppListState state) const {
-  const auto* app_list_widget = GetWidget();
   if (state == AppListState::kStateSearchResults)
-    return AppListColorProvider::Get()->GetSearchBoxCardBackgroundColor(
-        app_list_widget);
-  return AppListColorProvider::Get()->GetSearchBoxBackgroundColor(
-      app_list_widget);
+    return AppListColorProvider::Get()->GetSearchBoxCardBackgroundColor();
+  return AppListColorProvider::Get()->GetSearchBoxBackgroundColor();
 }
 
 PrivacyContainerView* SearchResultPageView::GetPrivacyContainerViewForTest() {

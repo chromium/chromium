@@ -9,7 +9,6 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/color_palette.h"
-#include "ui/views/widget/widget.h"
 
 namespace ash {
 
@@ -25,40 +24,23 @@ class ASH_PUBLIC_EXPORT AppListColorProvider {
   static AppListColorProvider* Get();
 
   // |default_color| will be used when dark/light mode is disabled.
-  virtual SkColor GetExpandArrowIconBaseColor(
-      const views::Widget* app_list_widget) const = 0;
-  virtual SkColor GetExpandArrowIconBackgroundColor(
-      const views::Widget* app_list_widget) const = 0;
-  virtual SkColor GetAppListBackgroundColor(
-      bool is_tablet_mode,
-      SkColor default_color,
-      const views::Widget* app_list_widget) const = 0;
-  virtual SkColor GetSearchBoxBackgroundColor(
-      const views::Widget* app_list_widget) const = 0;
-  virtual SkColor GetSearchBoxTextColor(
-      SkColor default_color,
-      const views::Widget* app_list_widget) const = 0;
+  virtual SkColor GetExpandArrowIconBaseColor() const = 0;
+  virtual SkColor GetExpandArrowIconBackgroundColor() const = 0;
+  virtual SkColor GetAppListBackgroundColor(bool is_tablet_mode,
+                                            SkColor default_color) const = 0;
+  virtual SkColor GetSearchBoxBackgroundColor() const = 0;
+  virtual SkColor GetSearchBoxTextColor(SkColor default_color) const = 0;
   virtual SkColor GetSearchBoxSecondaryTextColor(
-      SkColor default_color,
-      const views::Widget* app_list_widget) const = 0;
+      SkColor default_color) const = 0;
   virtual SkColor GetSearchBoxSuggestionTextColor(
-      SkColor default_color,
-      const views::Widget* app_list_widget) const = 0;
-  virtual SkColor GetSuggestionChipBackgroundColor(
-      const views::Widget* app_list_widget) const = 0;
-  virtual SkColor GetSuggestionChipTextColor(
-      const views::Widget* app_list_widget) const = 0;
-  virtual SkColor GetAppListItemTextColor(
-      bool is_in_folder,
-      const views::Widget* app_list_widget) const = 0;
+      SkColor default_color) const = 0;
+  virtual SkColor GetSuggestionChipBackgroundColor() const = 0;
+  virtual SkColor GetSuggestionChipTextColor() const = 0;
+  virtual SkColor GetAppListItemTextColor(bool is_in_folder) const = 0;
   virtual SkColor GetPageSwitcherButtonColor(
-      bool is_root_app_grid_page_switcher,
-      const views::Widget* app_list_widget) const = 0;
-  virtual SkColor GetSearchBoxIconColor(
-      SkColor default_color,
-      const views::Widget* app_list_widget) const = 0;
-  virtual SkColor GetSearchBoxCardBackgroundColor(
-      const views::Widget* app_list_widget) const = 0;
+      bool is_root_app_grid_page_switcher) const = 0;
+  virtual SkColor GetSearchBoxIconColor(SkColor default_color) const = 0;
+  virtual SkColor GetSearchBoxCardBackgroundColor() const = 0;
   virtual SkColor GetFolderBackgroundColor() const = 0;
   virtual SkColor GetFolderBubbleColor() const = 0;
   virtual SkColor GetFolderTitleTextColor() const = 0;
@@ -75,8 +57,7 @@ class ASH_PUBLIC_EXPORT AppListColorProvider {
       SkColor bg_color = gfx::kPlaceholderColor) const = 0;
   virtual float GetInkDropOpacity(
       SkColor bg_color = gfx::kPlaceholderColor) const = 0;
-  virtual SkColor GetSearchResultViewHighlightColor(
-      const views::Widget* app_list_widget) const = 0;
+  virtual SkColor GetSearchResultViewHighlightColor() const = 0;
   virtual SkColor GetTextColorURL() const = 0;
 
  protected:

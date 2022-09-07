@@ -101,8 +101,7 @@ int PrivacyInfoView::GetHeightForWidth(int width) const {
 void PrivacyInfoView::OnPaintBackground(gfx::Canvas* canvas) {
   if (selected_action_ == Action::kCloseButton) {
     const AppListColorProvider* color_provider = AppListColorProvider::Get();
-    const SkColor bg_color =
-        color_provider->GetSearchBoxBackgroundColor(GetWidget());
+    const SkColor bg_color = color_provider->GetSearchBoxBackgroundColor();
     cc::PaintFlags flags;
     flags.setAntiAlias(true);
     flags.setColor(
@@ -207,14 +206,6 @@ views::View* PrivacyInfoView::GetSelectedView() {
   }
 }
 
-void PrivacyInfoView::OnThemeChanged() {
-  SearchResultBaseView::OnThemeChanged();
-  views::StyledLabel::RangeStyleInfo style;
-  style.override_color = AppListColorProvider::Get()->GetSearchBoxTextColor(
-      kDeprecatedSearchBoxTextDefaultColor, GetWidget());
-  text_view_->AddStyleRange(gfx::Range(0, text_offset_), style);
-}
-
 void PrivacyInfoView::OnButtonPressed() {
   CloseButtonPressed();
 }
@@ -256,14 +247,20 @@ void PrivacyInfoView::InitInfoIcon() {
 
 void PrivacyInfoView::InitText() {
   const std::u16string link = l10n_util::GetStringUTF16(link_string_id_);
+  size_t offset;
   const std::u16string text =
-      l10n_util::GetStringFUTF16(info_string_id_, link, &text_offset_);
+      l10n_util::GetStringFUTF16(info_string_id_, link, &offset);
   text_view_ = AddChildView(std::make_unique<PrivacyTextView>(this));
   text_view_->SetText(text);
   text_view_->SetAutoColorReadabilityEnabled(false);
   text_view_->SetFocusBehavior(FocusBehavior::ALWAYS);
   // Make the whole text view behave as a link for accessibility.
   text_view_->GetViewAccessibility().OverrideRole(ax::mojom::Role::kLink);
+
+  views::StyledLabel::RangeStyleInfo style;
+  style.override_color = AppListColorProvider::Get()->GetSearchBoxTextColor(
+      kDeprecatedSearchBoxTextDefaultColor);
+  text_view_->AddStyleRange(gfx::Range(0, offset), style);
 
   // Create a custom view for the link portion of the text. This allows an
   // underline font style to be applied when the link is focused. This is done
@@ -276,8 +273,8 @@ void PrivacyInfoView::InitText() {
   link_style.custom_view = custom_view.get();
   link_view_ = custom_view.get();
   text_view_->AddCustomView(std::move(custom_view));
-  text_view_->AddStyleRange(
-      gfx::Range(text_offset_, text_offset_ + link.length()), link_style);
+  text_view_->AddStyleRange(gfx::Range(offset, offset + link.length()),
+                            link_style);
 }
 
 void PrivacyInfoView::InitCloseButton() {

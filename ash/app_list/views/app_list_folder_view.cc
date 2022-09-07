@@ -261,7 +261,7 @@ class FolderItemTitleAnimation : public AppListFolderView::Animation,
         folder_view_(folder_view),
         folder_item_view_(folder_item_view) {
     SkColor title_color = AppListColorProvider::Get()->GetAppListItemTextColor(
-        /*is_in_folder=*/false, folder_view_->GetWidget());
+        /*is_in_folder=*/false);
     // Calculate the source and target states.
     from_color_ = show_ ? title_color : SK_ColorTRANSPARENT;
     to_color_ = show_ ? SK_ColorTRANSPARENT : title_color;
@@ -1020,7 +1020,7 @@ void AppListFolderView::ResetState(bool restore_folder_item_view_state) {
     folder_item_view_->SetIconVisible(true);
     folder_item_view_->title()->SetEnabledColor(
         AppListColorProvider::Get()->GetAppListItemTextColor(
-            /*is_in_folder=*/false, GetWidget()));
+            /*is_in_folder=*/false));
   }
 
   folder_item_view_observer_.Reset();

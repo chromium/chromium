@@ -45,7 +45,6 @@ class ASH_EXPORT SearchResultTileItemListView
 
   // Overridden from SearchResultContainerView:
   void OnShownChanged() override;
-  void OnThemeChanged() override;
 
  protected:
   // View overrides:

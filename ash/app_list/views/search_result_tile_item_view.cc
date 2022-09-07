@@ -21,7 +21,6 @@
 #include "ash/public/cpp/ash_typography.h"
 #include "ash/public/cpp/pagination/pagination_model.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/style/ash_color_id.h"
 #include "base/bind.h"
 #include "base/i18n/number_formatting.h"
 #include "base/metrics/histogram_macros.h"
@@ -31,7 +30,6 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/themed_vector_icon.h"
-#include "ui/chromeos/styles/cros_styles.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/rect_conversions.h"
@@ -110,14 +108,18 @@ SearchResultTileItemView::SearchResultTileItemView(
   badge_->SetVisible(false);
 
   title_ = AddChildView(std::make_unique<views::Label>());
-  title_->SetEnabledColorId(cros_tokens::kTextColorSecondary);
   title_->SetAutoColorReadabilityEnabled(false);
+  title_->SetEnabledColor(AppListColorProvider::Get()->GetSearchBoxTextColor(
+      /*default_color*/ SK_ColorWHITE));
   title_->SetLineHeight(kTileTextLineHeight);
   title_->SetHorizontalAlignment(gfx::ALIGN_CENTER);
   title_->SetHandlesTooltips(false);
   title_->SetAllowCharacterBreak(true);
 
   rating_ = AddChildView(std::make_unique<views::Label>());
+  rating_->SetEnabledColor(
+      AppListColorProvider::Get()->GetSearchBoxSecondaryTextColor(
+          /*default_color*/ gfx::kGoogleGrey700));
   rating_->SetLineHeight(kTileTextLineHeight);
   rating_->SetHorizontalAlignment(gfx::ALIGN_RIGHT);
   rating_->SetVisible(false);
@@ -125,10 +127,16 @@ SearchResultTileItemView::SearchResultTileItemView(
   rating_star_ = AddChildView(std::make_unique<views::ImageView>());
   rating_star_->SetCanProcessEventsWithinSubtree(false);
   rating_star_->SetVerticalAlignment(views::ImageView::Alignment::kLeading);
+  rating_star_->SetImage(gfx::CreateVectorIcon(
+      kBadgeRatingIcon, kSearchRatingStarSize,
+      AppListColorProvider::Get()->GetSearchBoxSecondaryTextColor(
+          gfx::kGoogleGrey700)));
   rating_star_->SetVisible(false);
 
   price_ = AddChildView(std::make_unique<views::Label>());
-  price_->SetEnabledColorId(cros_tokens::kTextColorSecondary);
+  price_->SetEnabledColor(
+      AppListColorProvider::Get()->GetSearchBoxSecondaryTextColor(
+          /*default_color*/ gfx::kGoogleGreen600));
   price_->SetLineHeight(kTileTextLineHeight);
   price_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   price_->SetVisible(false);
@@ -183,7 +191,9 @@ void SearchResultTileItemView::OnResultChanged() {
   } else {
     title_->SetFontList(font);
   }
-  title_->SetEnabledColorId(cros_tokens::kTextColorPrimary);
+  title_->SetEnabledColor(AppListColorProvider::Get()->GetSearchBoxTextColor(
+      /*default_color*/ gfx::kGoogleGrey900));
+
   title_->SetMaxLines(2);
   title_->SetMultiLine(
       (result()->display_type() == SearchResultDisplayType::kTile ||
@@ -258,14 +268,6 @@ void SearchResultTileItemView::PaintButtonContents(gfx::Canvas* canvas) {
   gfx::RectF selection_ring = GetSelectionRingBounds();
   selection_ring.Inset(gfx::InsetsF::VH(kSelectionRingWidth / 2.0, 0));
   canvas->DrawRoundRect(selection_ring, kIconSelectedCornerRadius, flags);
-}
-
-void SearchResultTileItemView::OnThemeChanged() {
-  SearchResultBaseView::OnThemeChanged();
-  rating_star_->SetImage(gfx::CreateVectorIcon(
-      kBadgeRatingIcon, kSearchRatingStarSize,
-      AppListColorProvider::Get()->GetSearchBoxSecondaryTextColor(
-          gfx::kGoogleGrey700, GetWidget())));
 }
 
 gfx::RectF SearchResultTileItemView::GetSelectionRingBounds() const {

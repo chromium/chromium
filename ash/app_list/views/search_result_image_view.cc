@@ -30,6 +30,11 @@ SearchResultImageView::SearchResultImageView(std::string dummy_result_id) {
   SetLayoutManager(std::make_unique<views::FillLayout>());
   result_image_ = AddChildView(std::make_unique<views::ImageView>());
   result_image_->SetCanProcessEventsWithinSubtree(false);
+  // TODO(crbug.com/1352636) remove placeholder image.
+  result_image_->SetImage(
+      gfx::CreateVectorIcon(vector_icons::kGoogleColorIcon, kIconSize,
+                            AppListColorProvider::Get()->GetSearchBoxIconColor(
+                                SkColorSetARGB(0xDE, 0x00, 0x00, 0x00))));
   result_image_->SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
       kTopBottomMargin, kLeftRightMargin, kTopBottomMargin, kLeftRightMargin)));
 
@@ -43,16 +48,6 @@ void SearchResultImageView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->SetName("Search Result Image View");
   // TODO(crbug.com/1352636) update with internationalized accessible name if we
   // launch this feature.
-}
-
-void SearchResultImageView::OnThemeChanged() {
-  SearchResultBaseView::OnThemeChanged();
-
-  // TODO(crbug.com/1352636) remove placeholder image.
-  result_image_->SetImage(gfx::CreateVectorIcon(
-      vector_icons::kGoogleColorIcon, kIconSize,
-      AppListColorProvider::Get()->GetSearchBoxIconColor(
-          SkColorSetARGB(0xDE, 0x00, 0x00, 0x00), GetWidget())));
 }
 
 SearchResultImageView::~SearchResultImageView() = default;

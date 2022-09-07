@@ -291,6 +291,8 @@ AppListItemView::AppListItemView(const AppListConfig* app_list_config,
   title->SetHandlesTooltips(false);
   title->SetFontList(app_list_config_->app_title_font());
   title->SetHorizontalAlignment(gfx::ALIGN_CENTER);
+  title->SetEnabledColor(AppListColorProvider::Get()->GetAppListItemTextColor(
+      grid_delegate_->IsInFolder()));
 
   icon_ = AddChildView(std::make_unique<IconImageView>());
 
@@ -1002,7 +1004,7 @@ void AppListItemView::OnThemeChanged() {
     notification_indicator_->SetColor(item_weak_->GetNotificationBadgeColor());
   }
   title_->SetEnabledColor(AppListColorProvider::Get()->GetAppListItemTextColor(
-      grid_delegate_->IsInFolder(), GetWidget()));
+      grid_delegate_->IsInFolder()));
   SchedulePaint();
 }
 
