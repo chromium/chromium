@@ -107,6 +107,15 @@ class FormDataImporter : public PersonalDataManagerObserver {
     return form_associator_.GetFormAssociations(form_signature);
   }
 
+  ImportedCreditCardRecordType imported_credit_card_record_type_for_testing()
+      const {
+    return imported_credit_card_record_type_;
+  }
+  void set_imported_credit_card_record_type_for_testing(
+      ImportedCreditCardRecordType imported_credit_card_record_type) {
+    imported_credit_card_record_type_ = imported_credit_card_record_type;
+  }
+
  protected:
   // Exposed for testing.
   void set_credit_card_save_manager(
@@ -317,7 +326,6 @@ class FormDataImporter : public PersonalDataManagerObserver {
   friend class SaveCardBubbleViewsFullFormBrowserTest;
   friend class SaveCardInfobarEGTestHelper;
   friend class ::SaveCardOfferObserver;
-  FRIEND_TEST_ALL_PREFIXES(AutofillMergeTest, MergeProfiles);
   FRIEND_TEST_ALL_PREFIXES(FormDataImporterNonParameterizedTest,
                            ProcessCreditCardImportCandidate_EmptyCreditCard);
   FRIEND_TEST_ALL_PREFIXES(
@@ -325,84 +333,6 @@ class FormDataImporter : public PersonalDataManagerObserver {
       ProcessCreditCardImportCandidate_VirtualCardEligible);
   FRIEND_TEST_ALL_PREFIXES(FormDataImporterNonParameterizedTest,
                            ShouldOfferUploadCardOrLocalCardSave);
-  FRIEND_TEST_ALL_PREFIXES(FormDataImporterTest,
-                           AllowDuplicateMaskedServerCardIfFlagEnabled);
-  FRIEND_TEST_ALL_PREFIXES(
-      FormDataImporterTest,
-      DuplicateFullServerCardWhileContainingLocalCardCopies);
-  FRIEND_TEST_ALL_PREFIXES(FormDataImporterTest, DuplicateMaskedServerCard);
-  FRIEND_TEST_ALL_PREFIXES(
-      FormDataImporterTest,
-      ImportCreditCard_DuplicateServerCards_ExtractFullCard);
-  FRIEND_TEST_ALL_PREFIXES(
-      FormDataImporterTest,
-      ImportCreditCard_DuplicateServerCards_ExtractMaskedCard);
-  FRIEND_TEST_ALL_PREFIXES(FormDataImporterTest,
-                           ImportFormData_AddressesDisabledOneCreditCard);
-  FRIEND_TEST_ALL_PREFIXES(FormDataImporterTest,
-                           ImportFormData_AddressCreditCardDisabled);
-  FRIEND_TEST_ALL_PREFIXES(FormDataImporterTest,
-                           ImportFormData_HiddenCreditCardFormAfterEntered);
-  FRIEND_TEST_ALL_PREFIXES(
-      FormDataImporterTest,
-      ImportFormData_ImportCreditCardRecordType_FullServerCard);
-  FRIEND_TEST_ALL_PREFIXES(FormDataImporterTest,
-                           ImportFormData_ImportCreditCardRecordType_LocalCard);
-  FRIEND_TEST_ALL_PREFIXES(
-      FormDataImporterTest,
-      ImportFormData_ImportCreditCardRecordType_MaskedServerCard);
-  FRIEND_TEST_ALL_PREFIXES(FormDataImporterTest,
-                           ImportFormData_ImportCreditCardRecordType_NewCard);
-  FRIEND_TEST_ALL_PREFIXES(
-      FormDataImporterTest,
-      ImportFormData_ImportCreditCardRecordType_NoCard_ExpiredCard_EditableExpDateOff);
-  FRIEND_TEST_ALL_PREFIXES(
-      FormDataImporterTest,
-      ImportFormData_ImportCreditCardRecordType_NewCard_ExpiredCard_WithExpDateFixFlow);
-  FRIEND_TEST_ALL_PREFIXES(
-      FormDataImporterTest,
-      ImportFormData_ImportCreditCardRecordType_NoCard_InvalidCardNumber);
-  FRIEND_TEST_ALL_PREFIXES(
-      FormDataImporterTest,
-      ImportFormData_ImportCreditCardRecordType_NoCard_VirtualCard);
-  FRIEND_TEST_ALL_PREFIXES(
-      FormDataImporterTest,
-      ImportFormData_ImportCreditCardRecordType_NoCard_NoCardOnForm);
-  FRIEND_TEST_ALL_PREFIXES(FormDataImporterTest,
-                           ImportFormData_OneAddressCreditCardDisabled);
-  FRIEND_TEST_ALL_PREFIXES(FormDataImporterTest,
-                           ImportFormData_OneAddressOneCreditCard);
-  FRIEND_TEST_ALL_PREFIXES(
-      FormDataImporterTest,
-      ImportFormData_SecondImportResetsCreditCardRecordType);
-  FRIEND_TEST_ALL_PREFIXES(FormDataImporterTest,
-                           ImportFormData_TwoAddressesOneCreditCard);
-  FRIEND_TEST_ALL_PREFIXES(FormDataImporterTest,
-                           ImportFormData_DontSetUpiIdWhenOnlyCreditCardExists);
-  FRIEND_TEST_ALL_PREFIXES(
-      FormDataImporterTest,
-      Metrics_SubmittedServerCardExpirationStatus_FullServerCardMatch);
-  FRIEND_TEST_ALL_PREFIXES(
-      FormDataImporterTest,
-      Metrics_SubmittedServerCardExpirationStatus_FullServerCardMismatch);
-  FRIEND_TEST_ALL_PREFIXES(
-      FormDataImporterTest,
-      Metrics_SubmittedServerCardExpirationStatus_MaskedServerCardMatch);
-  FRIEND_TEST_ALL_PREFIXES(
-      FormDataImporterTest,
-      Metrics_SubmittedServerCardExpirationStatus_MaskedServerCardMismatch);
-  FRIEND_TEST_ALL_PREFIXES(
-      FormDataImporterTest,
-      Metrics_SubmittedServerCardExpirationStatus_EmptyExpirationMonth);
-  FRIEND_TEST_ALL_PREFIXES(
-      FormDataImporterTest,
-      Metrics_SubmittedServerCardExpirationStatus_EmptyExpirationYear);
-  FRIEND_TEST_ALL_PREFIXES(
-      FormDataImporterTest,
-      Metrics_SubmittedDifferentServerCardExpirationStatus_EmptyExpirationYear);
-  FRIEND_TEST_ALL_PREFIXES(FormDataImporterTest, ImportUpiId);
-  FRIEND_TEST_ALL_PREFIXES(FormDataImporterTest, ImportUpiIdDisabled);
-  FRIEND_TEST_ALL_PREFIXES(FormDataImporterTest, ImportUpiIdIgnoreNonUpiId);
 };
 
 }  // namespace autofill

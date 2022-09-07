@@ -2798,7 +2798,8 @@ TEST_P(FormDataImporterTest,
   EXPECT_THAT(*results[0], ComparesEqual(credit_card));
 }
 
-// Ensures that |imported_credit_card_record_type_| is set and reset correctly.
+// Ensures that `FormDataImporterTest::imported_credit_card_record_type_` is set
+// and reset correctly.
 TEST_P(FormDataImporterTest,
        ImportFormData_SecondImportResetsCreditCardRecordType) {
   // Start with a single valid credit card stored via the preferences.
@@ -2831,13 +2832,15 @@ TEST_P(FormDataImporterTest,
       /*should_return_local_card=*/true, &imported_credit_card,
       &imported_upi_id));
   ASSERT_TRUE(imported_credit_card);
-  // |imported_credit_card_record_type_| should be LOCAL_CARD because upload was
-  // offered and the card is a local card already on the device.
-  ASSERT_TRUE(form_data_importer_->imported_credit_card_record_type_ ==
-              FormDataImporter::ImportedCreditCardRecordType::LOCAL_CARD);
+  // `FormDataImporterTest::imported_credit_card_record_type_` should be
+  // LOCAL_CARD because upload was offered and the card is a local card already
+  // on the device.
+  ASSERT_TRUE(
+      form_data_importer_->imported_credit_card_record_type_for_testing() ==
+      FormDataImporter::ImportedCreditCardRecordType::LOCAL_CARD);
 
   // Second form is filled with a new card so
-  // |imported_credit_card_record_type_| should be reset.
+  // `FormDataImporterTest::imported_credit_card_record_type_` should be reset.
   // Simulate a form submission with a new card.
   FormData form2;
   form2.url = GURL("https://wwww.foo.com");
@@ -2854,15 +2857,17 @@ TEST_P(FormDataImporterTest,
       /*should_return_local_card=*/true, &imported_credit_card2,
       &imported_upi_id));
   ASSERT_TRUE(imported_credit_card2);
-  // |imported_credit_card_record_type_| should be NEW_CARD because the imported
-  // card is not already on the device.
-  ASSERT_TRUE(form_data_importer_->imported_credit_card_record_type_ ==
-              FormDataImporter::ImportedCreditCardRecordType::NEW_CARD);
+  // `FormDataImporterTest::imported_credit_card_record_type_` should be
+  // NEW_CARD because the imported card is not already on the device.
+  ASSERT_TRUE(
+      form_data_importer_->imported_credit_card_record_type_for_testing() ==
+      FormDataImporter::ImportedCreditCardRecordType::NEW_CARD);
 
   // Third form is an address form and set |credit_card_autofill_enabled| to be
   // false so that the ImportCreditCard won't be called.
-  // |imported_credit_card_record_type_| should still be reset even if
-  // ImportCreditCard is not called. Simulate a form submission with no card.
+  // `FormDataImporterTest::imported_credit_card_record_type_` should still be
+  // reset even if ImportCreditCard is not called. Simulate a form submission
+  // with no card.
   FormData form3;
   form3.url = GURL("https://wwww.foo.com");
 
@@ -2893,13 +2898,15 @@ TEST_P(FormDataImporterTest,
       /*credit_card_autofill_enabled=*/false,
       /*should_return_local_card=*/true, &imported_credit_card3,
       &imported_upi_id));
-  // |imported_credit_card_record_type_| should be NO_CARD because no valid card
-  // was imported from the form.
-  ASSERT_TRUE(form_data_importer_->imported_credit_card_record_type_ ==
-              FormDataImporter::ImportedCreditCardRecordType::NO_CARD);
+  // `FormDataImporterTest::imported_credit_card_record_type_` should be NO_CARD
+  // because no valid card was imported from the form.
+  ASSERT_TRUE(
+      form_data_importer_->imported_credit_card_record_type_for_testing() ==
+      FormDataImporter::ImportedCreditCardRecordType::NO_CARD);
 }
 
-// Ensures that |imported_credit_card_record_type_| is set correctly.
+// Ensures that `FormDataImporterTest::imported_credit_card_record_type_` is set
+// correctly.
 TEST_P(FormDataImporterTest,
        ImportFormData_ImportCreditCardRecordType_NewCard) {
   // Simulate a form submission with a new credit card.
@@ -2919,13 +2926,14 @@ TEST_P(FormDataImporterTest,
       /*should_return_local_card=*/true, &imported_credit_card,
       &imported_upi_id));
   ASSERT_TRUE(imported_credit_card);
-  // |imported_credit_card_record_type_| should be NEW_CARD because the imported
-  // card is not already on the device.
-  ASSERT_TRUE(form_data_importer_->imported_credit_card_record_type_ ==
-              FormDataImporter::ImportedCreditCardRecordType::NEW_CARD);
+  // `FormDataImporterTest::imported_credit_card_record_type_` should be
+  // NEW_CARD because the imported card is not already on the device.
+  ASSERT_TRUE(
+      form_data_importer_->imported_credit_card_record_type_for_testing() ==
+      FormDataImporter::ImportedCreditCardRecordType::NEW_CARD);
 }
 
-// Ensures that |imported_credit_card_record_type_| is set correctly.
+// Ensures that `imported_credit_card_record_type_` is set correctly.
 TEST_P(FormDataImporterTest,
        ImportFormData_ImportCreditCardRecordType_LocalCard) {
   // Start with a single valid credit card stored via the preferences.
@@ -2958,13 +2966,16 @@ TEST_P(FormDataImporterTest,
       /*should_return_local_card=*/true, &imported_credit_card,
       &imported_upi_id));
   ASSERT_TRUE(imported_credit_card);
-  // |imported_credit_card_record_type_| should be LOCAL_CARD because upload was
-  // offered and the card is a local card already on the device.
-  ASSERT_TRUE(form_data_importer_->imported_credit_card_record_type_ ==
-              FormDataImporter::ImportedCreditCardRecordType::LOCAL_CARD);
+  // `FormDataImporterTest::imported_credit_card_record_type_` should be
+  // LOCAL_CARD because upload was offered and the card is a local card already
+  // on the device.
+  ASSERT_TRUE(
+      form_data_importer_->imported_credit_card_record_type_for_testing() ==
+      FormDataImporter::ImportedCreditCardRecordType::LOCAL_CARD);
 }
 
-// Ensures that |imported_credit_card_record_type_| is set correctly.
+// Ensures that `FormDataImporterTest::imported_credit_card_record_type_` is set
+// correctly.
 TEST_P(FormDataImporterTest,
        ImportFormData_ImportCreditCardRecordType_MaskedServerCard) {
   // Add a masked server card.
@@ -2997,12 +3008,15 @@ TEST_P(FormDataImporterTest,
       /*should_return_local_card=*/true, &imported_credit_card,
       &imported_upi_id));
   ASSERT_TRUE(imported_credit_card);
-  // |imported_credit_card_record_type_| should be SERVER_CARD.
-  ASSERT_TRUE(form_data_importer_->imported_credit_card_record_type_ ==
-              FormDataImporter::ImportedCreditCardRecordType::SERVER_CARD);
+  // `FormDataImporterTest::imported_credit_card_record_type_` should be
+  // SERVER_CARD.
+  ASSERT_TRUE(
+      form_data_importer_->imported_credit_card_record_type_for_testing() ==
+      FormDataImporter::ImportedCreditCardRecordType::SERVER_CARD);
 }
 
-// Ensures that |imported_credit_card_record_type_| is set correctly.
+// Ensures that `FormDataImporterTest::imported_credit_card_record_type_` is set
+// correctly.
 TEST_P(FormDataImporterTest,
        ImportFormData_ImportCreditCardRecordType_FullServerCard) {
   // Add a full server card.
@@ -3035,12 +3049,15 @@ TEST_P(FormDataImporterTest,
       /*should_return_local_card=*/true, &imported_credit_card,
       &imported_upi_id));
   ASSERT_TRUE(imported_credit_card);
-  // |imported_credit_card_record_type_| should be SERVER_CARD.
-  ASSERT_TRUE(form_data_importer_->imported_credit_card_record_type_ ==
-              FormDataImporter::ImportedCreditCardRecordType::SERVER_CARD);
+  // `FormDataImporterTest::imported_credit_card_record_type_` should be
+  // SERVER_CARD.
+  ASSERT_TRUE(
+      form_data_importer_->imported_credit_card_record_type_for_testing() ==
+      FormDataImporter::ImportedCreditCardRecordType::SERVER_CARD);
 }
 
-// Ensures that |imported_credit_card_record_type_| is set correctly.
+// Ensures that `FormDataImporterTest::imported_credit_card_record_type_` is set
+// correctly.
 TEST_P(FormDataImporterTest,
        ImportFormData_ImportCreditCardRecordType_NoCard_InvalidCardNumber) {
   // Simulate a form submission using a credit card with an invalid card number.
@@ -3060,13 +3077,15 @@ TEST_P(FormDataImporterTest,
       /*should_return_local_card=*/true, &imported_credit_card,
       &imported_upi_id));
   ASSERT_FALSE(imported_credit_card);
-  // |imported_credit_card_record_type_| should be NO_CARD because no valid card
-  // was successfully imported from the form.
-  ASSERT_TRUE(form_data_importer_->imported_credit_card_record_type_ ==
-              FormDataImporter::ImportedCreditCardRecordType::NO_CARD);
+  // `FormDataImporterTest::imported_credit_card_record_type_` should be NO_CARD
+  // because no valid card was successfully imported from the form.
+  ASSERT_TRUE(
+      form_data_importer_->imported_credit_card_record_type_for_testing() ==
+      FormDataImporter::ImportedCreditCardRecordType::NO_CARD);
 }
 
-// Ensures that |imported_credit_card_record_type_| is set correctly.
+// Ensures that `FormDataImporterTest::imported_credit_card_record_type_` is set
+// correctly.
 TEST_P(FormDataImporterTest,
        ImportFormData_ImportCreditCardRecordType_NoCard_VirtualCard) {
   // Simulate a form submission using a credit card that is known as a virtual
@@ -3087,13 +3106,15 @@ TEST_P(FormDataImporterTest,
       /*should_return_local_card=*/true, &imported_credit_card,
       &imported_upi_id));
   ASSERT_FALSE(imported_credit_card);
-  // |imported_credit_card_record_type_| should be NO_CARD because the card
-  // imported from the form was a virtual card.
-  ASSERT_TRUE(form_data_importer_->imported_credit_card_record_type_ ==
-              FormDataImporter::ImportedCreditCardRecordType::NO_CARD);
+  // `FormDataImporterTest::imported_credit_card_record_type_` should be NO_CARD
+  // because the card imported from the form was a virtual card.
+  ASSERT_TRUE(
+      form_data_importer_->imported_credit_card_record_type_for_testing() ==
+      FormDataImporter::ImportedCreditCardRecordType::NO_CARD);
 }
 
-// Ensures that |imported_credit_card_record_type_| is set correctly.
+// Ensures that `FormDataImporterTest::imported_credit_card_record_type_` is set
+// correctly.
 TEST_P(
     FormDataImporterTest,
     ImportFormData_ImportCreditCardRecordType_NewCard_ExpiredCard_WithExpDateFixFlow) {
@@ -3114,13 +3135,16 @@ TEST_P(
       /*should_return_local_card=*/true, &imported_credit_card,
       &imported_upi_id));
   ASSERT_TRUE(imported_credit_card);
-  // |imported_credit_card_record_type_| should be NEW_CARD because card was
-  // successfully imported from the form via the expiration date fix flow.
-  ASSERT_TRUE(form_data_importer_->imported_credit_card_record_type_ ==
-              FormDataImporter::ImportedCreditCardRecordType::NEW_CARD);
+  // `FormDataImporterTest::imported_credit_card_record_type_` should be
+  // NEW_CARD because card was successfully imported from the form via the
+  // expiration date fix flow.
+  ASSERT_TRUE(
+      form_data_importer_->imported_credit_card_record_type_for_testing() ==
+      FormDataImporter::ImportedCreditCardRecordType::NEW_CARD);
 }
 
-// Ensures that |imported_credit_card_record_type_| is set correctly.
+// Ensures that `FormDataImporterTest::imported_credit_card_record_type_` is set
+// correctly.
 TEST_P(FormDataImporterTest,
        ImportFormData_ImportCreditCardRecordType_NoCard_NoCardOnForm) {
   // Simulate a form submission with no credit card on form.
@@ -3157,10 +3181,11 @@ TEST_P(FormDataImporterTest,
       /*should_return_local_card=*/true, &imported_credit_card,
       &imported_upi_id));
   ASSERT_FALSE(imported_credit_card);
-  // |imported_credit_card_record_type_| should be NO_CARD because the form
-  // doesn't have credit card section.
-  ASSERT_TRUE(form_data_importer_->imported_credit_card_record_type_ ==
-              FormDataImporter::ImportedCreditCardRecordType::NO_CARD);
+  // `FormDataImporterTest::imported_credit_card_record_type_` should be NO_CARD
+  // because the form doesn't have credit card section.
+  ASSERT_TRUE(
+      form_data_importer_->imported_credit_card_record_type_for_testing() ==
+      FormDataImporter::ImportedCreditCardRecordType::NO_CARD);
 }
 
 // ImportFormData tests (both addresses and credit cards).
@@ -4505,12 +4530,12 @@ TEST_F(FormDataImporterNonParameterizedTest,
   std::unique_ptr<FormStructure> form_structure =
       ConstructDefaultCreditCardFormStructure();
 
-  // |form_data_importer_|'s |imported_credit_card_record_type_| is set to
+  // `form_data_importer_`'s `imported_credit_card_record_type_` is set to
   // LOCAL_CARD because we need to make sure we do not return early in the
   // NEW_CARD case, and LOCAL_CARD with upstream enabled but empty
   // |imported_credit_card| is the most likely scenario for a crash.
-  form_data_importer_->imported_credit_card_record_type_ =
-      FormDataImporter::ImportedCreditCardRecordType::LOCAL_CARD;
+  form_data_importer_->set_imported_credit_card_record_type_for_testing(
+      FormDataImporter::ImportedCreditCardRecordType::LOCAL_CARD);
 
   // We need a sync service so that
   // LocalCardMigrationManager::ShouldOfferLocalCardMigration() does not crash.
@@ -4536,8 +4561,8 @@ TEST_F(FormDataImporterNonParameterizedTest,
   std::unique_ptr<FormStructure> form_structure =
       ConstructDefaultCreditCardFormStructure();
 
-  form_data_importer_->imported_credit_card_record_type_ =
-      FormDataImporter::ImportedCreditCardRecordType::SERVER_CARD;
+  form_data_importer_->set_imported_credit_card_record_type_for_testing(
+      FormDataImporter::ImportedCreditCardRecordType::SERVER_CARD);
   form_data_importer_->SetFetchedCardInstrumentId(2222);
 
   // We need a sync service so that
@@ -4582,8 +4607,8 @@ TEST_F(FormDataImporterNonParameterizedTest,
   imported_credit_card = std::make_unique<CreditCard>(test::GetCreditCard());
 
   // Should not offer save for local cards if upstream is not enabled.
-  form_data_importer_->imported_credit_card_record_type_ =
-      FormDataImporter::ImportedCreditCardRecordType::LOCAL_CARD;
+  form_data_importer_->set_imported_credit_card_record_type_for_testing(
+      FormDataImporter::ImportedCreditCardRecordType::LOCAL_CARD);
   EXPECT_FALSE(form_data_importer_->ShouldOfferUploadCardOrLocalCardSave(
       imported_credit_card.get(), /*is_credit_card_upload_enabled=*/false));
 
@@ -4592,15 +4617,15 @@ TEST_F(FormDataImporterNonParameterizedTest,
       imported_credit_card.get(), /*is_credit_card_upload_enabled=*/true));
 
   // Should not offer save for server cards.
-  form_data_importer_->imported_credit_card_record_type_ =
-      FormDataImporter::ImportedCreditCardRecordType::SERVER_CARD;
+  form_data_importer_->set_imported_credit_card_record_type_for_testing(
+      FormDataImporter::ImportedCreditCardRecordType::SERVER_CARD);
   EXPECT_FALSE(form_data_importer_->ShouldOfferUploadCardOrLocalCardSave(
       imported_credit_card.get(), /*is_credit_card_upload_enabled=*/true));
 
   // Should always offer save for new cards; upload save if it is enabled, local
   // save otherwise.
-  form_data_importer_->imported_credit_card_record_type_ =
-      FormDataImporter::ImportedCreditCardRecordType::NEW_CARD;
+  form_data_importer_->set_imported_credit_card_record_type_for_testing(
+      FormDataImporter::ImportedCreditCardRecordType::NEW_CARD);
   EXPECT_TRUE(form_data_importer_->ShouldOfferUploadCardOrLocalCardSave(
       imported_credit_card.get(), /*is_credit_card_upload_enabled=*/true));
   EXPECT_TRUE(form_data_importer_->ShouldOfferUploadCardOrLocalCardSave(
