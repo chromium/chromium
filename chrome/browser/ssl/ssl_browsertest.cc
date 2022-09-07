@@ -4758,13 +4758,14 @@ IN_PROC_BROWSER_TEST_F(SSLNetworkTimeBrowserTest,
 
 class CommonNameMismatchBrowserTest : public CertVerifierBrowserTest {
  public:
-  CommonNameMismatchBrowserTest() : CertVerifierBrowserTest() {}
+  CommonNameMismatchBrowserTest() : CertVerifierBrowserTest() {
+    // Enable finch experiment for SSL common name mismatch handling.
+    base::FieldTrialList::CreateFieldTrial("SSLCommonNameMismatchHandling",
+                                           "Enabled");
+  }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     CertVerifierBrowserTest::SetUpCommandLine(command_line);
-    // Enable finch experiment for SSL common name mismatch handling.
-    command_line->AppendSwitchASCII(switches::kForceFieldTrials,
-                                    "SSLCommonNameMismatchHandling/Enabled/");
   }
 
   void SetUpOnMainThread() override {
