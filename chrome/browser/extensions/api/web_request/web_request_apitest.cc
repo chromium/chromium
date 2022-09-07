@@ -283,10 +283,11 @@ absl::optional<std::string> ExecuteScriptAndReturnString(
 }
 
 // Returns the current count of a variable stored in the |extension| background
-// page. Returns -1 if something goes awry.
-int GetCountFromBackgroundPage(const Extension* extension,
-                               content::BrowserContext* context,
-                               const std::string& variable_name) {
+// script context (either background page or service worker). Returns -1 if
+// something goes awry.
+int GetCountFromBackgroundScript(const Extension* extension,
+                                 content::BrowserContext* context,
+                                 const std::string& variable_name) {
   const std::string script = base::StringPrintf(
       "chrome.test.sendScriptResult(%s)", variable_name.c_str());
   base::Value value =
@@ -297,21 +298,23 @@ int GetCountFromBackgroundPage(const Extension* extension,
 }
 
 // Returns the current count of webRequests received by the |extension| in
-// the background page (assumes the extension stores a value on the window
-// object). Returns -1 if something goes awry.
-int GetWebRequestCountFromBackgroundPage(const Extension* extension,
-                                         content::BrowserContext* context) {
-  return GetCountFromBackgroundPage(extension, context, "self.webRequestCount");
+// the background script, either background page or service worker. Assumes the
+// extension stores a value on the `self` object. Returns -1 if something goes
+// awry.
+int GetWebRequestCountFromBackgroundScript(const Extension* extension,
+                                           content::BrowserContext* context) {
+  return GetCountFromBackgroundScript(extension, context,
+                                      "self.webRequestCount");
 }
 
-// Returns true if the |extension|'s background page saw an event for a request
-// with the given |hostname| (|hostname| should exclude port).
-bool HasSeenWebRequestInBackgroundPage(const Extension* extension,
-                                       content::BrowserContext* context,
-                                       const std::string& hostname) {
+// Returns true if the |extension|'s background script saw an event for a
+// request with the given |hostname| (|hostname| should exclude port).
+bool HasSeenWebRequestInBackgroundScript(const Extension* extension,
+                                         content::BrowserContext* context,
+                                         const std::string& hostname) {
   const std::string script = base::StringPrintf(
       R"(chrome.test.sendScriptResult(
-                 self.requestedHostnames.includes('%s'));)",
+             self.requestedHostnames.includes('%s'));)",
       hostname.c_str());
   base::Value value =
       ExecuteScriptAndReturnValue(extension->id(), context, script);
@@ -1352,7 +1355,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
   // The extension shouldn't have currently received any webRequest events,
   // since it doesn't have any permissions.
   {
-    EXPECT_EQ(0, GetWebRequestCountFromBackgroundPage(extension, profile()));
+    EXPECT_EQ(0, GetWebRequestCountFromBackgroundScript(extension, profile()));
 
     content::RenderFrameHostWrapper main_frame(
         web_contents->GetPrimaryMainFrame());
@@ -1365,7 +1368,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
     // doesn't have any permissions.
     PerformXhrInFrame(main_frame.get(), kHost, port, kXhrPath);
     PerformXhrInFrame(child_frame.get(), kChildHost, port, kXhrPath);
-    EXPECT_EQ(0, GetWebRequestCountFromBackgroundPage(extension, profile()));
+    EXPECT_EQ(0, GetWebRequestCountFromBackgroundScript(extension, profile()));
     EXPECT_EQ(BLOCKED_ACTION_WEB_REQUEST,
               runner->GetBlockedActions(extension->id()));
 
@@ -1386,29 +1389,30 @@ IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
   const std::string kChildHost = child_frame->GetLastCommittedURL().host();
 
   ASSERT_TRUE(child_frame);
-  EXPECT_TRUE(HasSeenWebRequestInBackgroundPage(extension, profile(), "a.com"));
+  EXPECT_TRUE(
+      HasSeenWebRequestInBackgroundScript(extension, profile(), "a.com"));
   EXPECT_FALSE(
-      HasSeenWebRequestInBackgroundPage(extension, profile(), "b.com"));
+      HasSeenWebRequestInBackgroundScript(extension, profile(), "b.com"));
   EXPECT_FALSE(
-      HasSeenWebRequestInBackgroundPage(extension, profile(), "c.com"));
+      HasSeenWebRequestInBackgroundScript(extension, profile(), "c.com"));
 
   // The withheld sub-frame requests should not show up as a blocked action.
   EXPECT_EQ(BLOCKED_ACTION_NONE, runner->GetBlockedActions(extension->id()));
 
   int request_count =
-      GetWebRequestCountFromBackgroundPage(extension, profile());
+      GetWebRequestCountFromBackgroundScript(extension, profile());
 
   // ... and the extension should receive future events.
   PerformXhrInFrame(main_frame.get(), kHost, port, kXhrPath);
   ++request_count;
   EXPECT_EQ(request_count,
-            GetWebRequestCountFromBackgroundPage(extension, profile()));
+            GetWebRequestCountFromBackgroundScript(extension, profile()));
 
   // However, activeTab only grants access to the main frame, not to child
   // frames. As such, trying to XHR in the child frame should still fail.
   PerformXhrInFrame(child_frame.get(), kChildHost, port, kXhrPath);
   EXPECT_EQ(request_count,
-            GetWebRequestCountFromBackgroundPage(extension, profile()));
+            GetWebRequestCountFromBackgroundScript(extension, profile()));
   // But since there's no way for the user to currently grant access to child
   // frames, this shouldn't show up as a blocked action.
   EXPECT_EQ(BLOCKED_ACTION_NONE, runner->GetBlockedActions(extension->id()));
@@ -1430,7 +1434,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
   EXPECT_EQ(web_contents, action_updated_waiter.last_web_contents());
 
   EXPECT_EQ(request_count,
-            GetWebRequestCountFromBackgroundPage(extension, profile()));
+            GetWebRequestCountFromBackgroundScript(extension, profile()));
   EXPECT_EQ(BLOCKED_ACTION_WEB_REQUEST,
             runner->GetBlockedActions(extension->id()));
 }
@@ -1457,8 +1461,8 @@ IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
                      "a.com", "/extensions/cross_site_script.html")));
 
   const std::string kCrossSiteHost("b.com");
-  EXPECT_FALSE(
-      HasSeenWebRequestInBackgroundPage(extension, profile(), kCrossSiteHost));
+  EXPECT_FALSE(HasSeenWebRequestInBackgroundScript(extension, profile(),
+                                                   kCrossSiteHost));
 
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -1480,8 +1484,8 @@ IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
   EXPECT_TRUE(content::WaitForLoadStop(web_contents));
   EXPECT_EQ(BLOCKED_ACTION_NONE, runner->GetBlockedActions(extension->id()));
 
-  EXPECT_TRUE(
-      HasSeenWebRequestInBackgroundPage(extension, profile(), kCrossSiteHost));
+  EXPECT_TRUE(HasSeenWebRequestInBackgroundScript(extension, profile(),
+                                                  kCrossSiteHost));
 }
 
 // Tests behavior when an extension has withheld access to a request's URL, but
@@ -1539,7 +1543,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
   // wants to run, because example.com is not a requested host.
   EXPECT_EQ(BLOCKED_ACTION_NONE, runner->GetBlockedActions(extension->id()));
   EXPECT_FALSE(
-      HasSeenWebRequestInBackgroundPage(extension, profile(), "b.com"));
+      HasSeenWebRequestInBackgroundScript(extension, profile(), "b.com"));
 
   // Navigating to b.com (so that the script is hosted on the same origin as
   // the WebContents) should show the extension wants to run.
@@ -1566,12 +1570,12 @@ IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
   EXPECT_TRUE(listener.WaitUntilSatisfied());
 
   auto get_clients_google_request_count = [this, extension]() {
-    return GetCountFromBackgroundPage(extension, profile(),
-                                      "self.clientsGoogleWebRequestCount");
+    return GetCountFromBackgroundScript(extension, profile(),
+                                        "self.clientsGoogleWebRequestCount");
   };
   auto get_yahoo_request_count = [this, extension]() {
-    return GetCountFromBackgroundPage(extension, profile(),
-                                      "self.yahooWebRequestCount");
+    return GetCountFromBackgroundScript(extension, profile(),
+                                        "self.yahooWebRequestCount");
   };
 
   EXPECT_EQ(0, get_clients_google_request_count());
@@ -1674,12 +1678,12 @@ IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
       browser(), GURL("http://does.not.resolve.test/title2.html")));
 
   // The extension should not have seen the PAC request.
-  EXPECT_EQ(0, GetCountFromBackgroundPage(extension, profile(),
-                                          "self.pacRequestCount"));
+  EXPECT_EQ(0, GetCountFromBackgroundScript(extension, profile(),
+                                            "self.pacRequestCount"));
 
   // The extension should have seen the request for the main frame.
-  EXPECT_EQ(1, GetCountFromBackgroundPage(extension, profile(),
-                                          "self.title2RequestCount"));
+  EXPECT_EQ(1, GetCountFromBackgroundScript(extension, profile(),
+                                            "self.title2RequestCount"));
 
   // The PAC request should have succeeded, as should the subsequent URL
   // request.
@@ -1771,10 +1775,10 @@ IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
             test_webcontents_observer.control_header_value());
 
   // Check that the Dice header cannot be read by the extension.
-  EXPECT_EQ(0, GetCountFromBackgroundPage(extension, profile(),
-                                          "self.diceResponseHeaderCount"));
-  EXPECT_EQ(1, GetCountFromBackgroundPage(extension, profile(),
-                                          "self.controlResponseHeaderCount"));
+  EXPECT_EQ(0, GetCountFromBackgroundScript(extension, profile(),
+                                            "self.diceResponseHeaderCount"));
+  EXPECT_EQ(1, GetCountFromBackgroundScript(extension, profile(),
+                                            "self.controlResponseHeaderCount"));
 
   // Navigate to a non-Gaia URL intercepted by the extension.
   test_webcontents_observer.Clear();
@@ -1791,10 +1795,10 @@ IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
             test_webcontents_observer.control_header_value());
 
   // Check that the Dice header can be read by the extension.
-  EXPECT_EQ(1, GetCountFromBackgroundPage(extension, profile(),
-                                          "self.diceResponseHeaderCount"));
-  EXPECT_EQ(2, GetCountFromBackgroundPage(extension, profile(),
-                                          "self.controlResponseHeaderCount"));
+  EXPECT_EQ(1, GetCountFromBackgroundScript(extension, profile(),
+                                            "self.diceResponseHeaderCount"));
+  EXPECT_EQ(2, GetCountFromBackgroundScript(extension, profile(),
+                                            "self.controlResponseHeaderCount"));
 }
 
 // Test that the webRequest events are dispatched for the WebSocket handshake
@@ -2107,8 +2111,8 @@ IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
     // Run a script in the extensions background page to ensure that we have
     // received the initiator message from the extension.
     ASSERT_EQ(expected_requests_intercepted_count,
-              GetCountFromBackgroundPage(extension, profile(),
-                                         "self.requestsIntercepted"));
+              GetCountFromBackgroundScript(extension, profile(),
+                                           "self.requestsIntercepted"));
 
     if (testcase.expected_initiator.empty()) {
       EXPECT_FALSE(initiator_listener.was_satisfied());
@@ -2523,8 +2527,8 @@ IN_PROC_BROWSER_TEST_P(WebRequestApiTestWithManagementPolicy,
   // the extension's background page under this variable name.
   const std::string request_counter_name = "self.protectedOriginCount";
 
-  EXPECT_EQ(0, GetCountFromBackgroundPage(extension, profile(),
-                                          request_counter_name));
+  EXPECT_EQ(0, GetCountFromBackgroundScript(extension, profile(),
+                                            request_counter_name));
 
   // Wait until all remote Javascript files have been blocked / pulled down.
   ui_test_utils::NavigateToURLWithDisposition(
@@ -2538,8 +2542,8 @@ IN_PROC_BROWSER_TEST_P(WebRequestApiTestWithManagementPolicy,
   EXPECT_TRUE(BrowsedTo(example2_com));
 
   // The request was seen by the extension.
-  EXPECT_EQ(1, GetCountFromBackgroundPage(extension, profile(),
-                                          request_counter_name));
+  EXPECT_EQ(1, GetCountFromBackgroundScript(extension, profile(),
+                                            request_counter_name));
 
   // Clear the list of domains the server has seen.
   ClearRequestLog();
@@ -2564,8 +2568,8 @@ IN_PROC_BROWSER_TEST_P(WebRequestApiTestWithManagementPolicy,
   EXPECT_TRUE(BrowsedTo(example2_com));
 
   // The request was hidden from the extension.
-  EXPECT_EQ(1, GetCountFromBackgroundPage(extension, profile(),
-                                          request_counter_name));
+  EXPECT_EQ(1, GetCountFromBackgroundScript(extension, profile(),
+                                            request_counter_name));
 }
 
 // Tests that the webRequest events aren't dispatched when the URL of the
@@ -2661,10 +2665,10 @@ IN_PROC_BROWSER_TEST_P(WebRequestApiTestWithManagementPolicy,
 
   // The extension shouldn't have currently received any webRequest events,
   // since it doesn't have permission (and shouldn't receive any from an XHR).
-  EXPECT_EQ(0, GetWebRequestCountFromBackgroundPage(extension, profile()));
+  EXPECT_EQ(0, GetWebRequestCountFromBackgroundScript(extension, profile()));
   PerformXhrInFrame(web_contents->GetPrimaryMainFrame(), protected_domain, port,
                     kXhrPath);
-  EXPECT_EQ(0, GetWebRequestCountFromBackgroundPage(extension, profile()));
+  EXPECT_EQ(0, GetWebRequestCountFromBackgroundScript(extension, profile()));
 
   // Grant activeTab permission, and perform another XHR. The extension should
   // still be blocked due to ExtensionSettings policy on example.com.
@@ -2676,14 +2680,14 @@ IN_PROC_BROWSER_TEST_P(WebRequestApiTestWithManagementPolicy,
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(content::WaitForLoadStop(web_contents));
   EXPECT_EQ(BLOCKED_ACTION_NONE, runner->GetBlockedActions(extension->id()));
-  int xhr_count = GetWebRequestCountFromBackgroundPage(extension, profile());
+  int xhr_count = GetWebRequestCountFromBackgroundScript(extension, profile());
   // ... which means that we should have a non-zero xhr count if the policy
   // didn't block the events.
   EXPECT_EQ(0, xhr_count);
   // And the extension should also block future events.
   PerformXhrInFrame(web_contents->GetPrimaryMainFrame(), protected_domain, port,
                     kXhrPath);
-  EXPECT_EQ(0, GetWebRequestCountFromBackgroundPage(extension, profile()));
+  EXPECT_EQ(0, GetWebRequestCountFromBackgroundScript(extension, profile()));
 }
 
 // A test fixture which mocks the Time::Now() function to ensure that the
@@ -2876,9 +2880,10 @@ IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
                     embedded_test_server()->host_port_pair().host(),
                     embedded_test_server()->port(), "redirect-and-wait");
   EXPECT_EQ(
-      GetCountFromBackgroundPage(extension, profile(), "self.requestCount"), 1);
+      GetCountFromBackgroundScript(extension, profile(), "self.requestCount"),
+      1);
   EXPECT_EQ(
-      GetCountFromBackgroundPage(extension, profile(), "self.locationCount"),
+      GetCountFromBackgroundScript(extension, profile(), "self.locationCount"),
       0);
 }
 
@@ -3668,7 +3673,8 @@ IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
                     https_test_server.host_port_pair().host(),
                     https_test_server.port(), "echo");
   EXPECT_GT(
-      GetCountFromBackgroundPage(extension, profile(), "self.headerCount"), 0);
+      GetCountFromBackgroundScript(extension, profile(), "self.headerCount"),
+      0);
 }
 
 // Ensure that when an extension blocks a main-frame request, the resultant
@@ -4098,15 +4104,15 @@ IN_PROC_BROWSER_TEST_P(SubresourceWebBundlesWebRequestApiTest,
   // extension intercepted the request.
   EXPECT_EQ(expected_title, title_watcher.WaitAndGetTitle());
 
-  EXPECT_EQ(1, GetCountFromBackgroundPage(extension, profile(),
-                                          "self.numMainResourceRequests"));
-  EXPECT_EQ(1, GetCountFromBackgroundPage(extension, profile(),
-                                          "self.numWebBundleRequests"));
-  EXPECT_EQ(1, GetCountFromBackgroundPage(extension, profile(),
-                                          "self.numScriptRequests"));
-  EXPECT_EQ(1,
-            GetCountFromBackgroundPage(extension, profile(),
-                                       "self.numUUIDInPackageScriptRequests"));
+  EXPECT_EQ(1, GetCountFromBackgroundScript(extension, profile(),
+                                            "self.numMainResourceRequests"));
+  EXPECT_EQ(1, GetCountFromBackgroundScript(extension, profile(),
+                                            "self.numWebBundleRequests"));
+  EXPECT_EQ(1, GetCountFromBackgroundScript(extension, profile(),
+                                            "self.numScriptRequests"));
+  EXPECT_EQ(
+      1, GetCountFromBackgroundScript(extension, profile(),
+                                      "self.numUUIDInPackageScriptRequests"));
 }
 
 // Ensure web request API can block the requests for the subresources inside the
@@ -4243,14 +4249,14 @@ IN_PROC_BROWSER_TEST_P(SubresourceWebBundlesWebRequestApiTest,
 
   EXPECT_FALSE(TryLoadScript(cancel_uuid_in_package_js_url));
 
-  EXPECT_EQ(1, GetCountFromBackgroundPage(extension, profile(),
-                                          "self.numPassScriptRequests"));
-  EXPECT_EQ(1, GetCountFromBackgroundPage(extension, profile(),
-                                          "self.numCancelScriptRequests"));
+  EXPECT_EQ(1, GetCountFromBackgroundScript(extension, profile(),
+                                            "self.numPassScriptRequests"));
+  EXPECT_EQ(1, GetCountFromBackgroundScript(extension, profile(),
+                                            "self.numCancelScriptRequests"));
   EXPECT_EQ(
-      1, GetCountFromBackgroundPage(extension, profile(),
-                                    "self.numUUIDInPackagePassScriptRequests"));
-  EXPECT_EQ(1, GetCountFromBackgroundPage(
+      1, GetCountFromBackgroundScript(
+             extension, profile(), "self.numUUIDInPackagePassScriptRequests"));
+  EXPECT_EQ(1, GetCountFromBackgroundScript(
                    extension, profile(),
                    "self.numUUIDInPackageCancelScriptRequests"));
 }
@@ -5141,14 +5147,14 @@ IN_PROC_BROWSER_TEST_P(ProxyCORSWebRequestApiTest,
       &success));
   EXPECT_TRUE(success);
   EXPECT_TRUE(preflight_listener.WaitUntilSatisfied());
-  EXPECT_EQ(1, GetCountFromBackgroundPage(
+  EXPECT_EQ(1, GetCountFromBackgroundScript(
                    extension, profile(), "self.preflightHeadersReceivedCount"));
-  EXPECT_EQ(1,
-            GetCountFromBackgroundPage(extension, profile(),
-                                       "self.preflightProxyAuthRequiredCount"));
-  EXPECT_EQ(1, GetCountFromBackgroundPage(
+  EXPECT_EQ(
+      1, GetCountFromBackgroundScript(extension, profile(),
+                                      "self.preflightProxyAuthRequiredCount"));
+  EXPECT_EQ(1, GetCountFromBackgroundScript(
                    extension, profile(), "self.preflightResponseStartedCount"));
-  EXPECT_EQ(1, GetCountFromBackgroundPage(
+  EXPECT_EQ(1, GetCountFromBackgroundScript(
                    extension, profile(),
                    "self.preflightResponseStartedSuccessfullyCount"));
 }
@@ -5473,10 +5479,10 @@ IN_PROC_BROWSER_TEST_F(ManifestV3WebRequestApiTest,
 
   // Convenience lambdas for checking the count received in each listener.
   auto get_first_count = [this, extension]() {
-    return GetCountFromBackgroundPage(extension, profile(), "firstCount");
+    return GetCountFromBackgroundScript(extension, profile(), "firstCount");
   };
   auto get_second_count = [this, extension]() {
-    return GetCountFromBackgroundPage(extension, profile(), "secondCount");
+    return GetCountFromBackgroundScript(extension, profile(), "secondCount");
   };
   auto get_third_count = [page_host]() {
     int count = -1;
@@ -5826,10 +5832,10 @@ IN_PROC_BROWSER_TEST_F(ManifestV3WebRequestApiTest,
       browser(),
       embedded_test_server()->GetURL("example.com", "/simple.html")));
 
-  EXPECT_EQ(0, GetCountFromBackgroundPage(extension, profile(),
-                                          "firstListenerCount"));
-  EXPECT_EQ(1, GetCountFromBackgroundPage(extension, profile(),
-                                          "secondListenerCount"));
+  EXPECT_EQ(0, GetCountFromBackgroundScript(extension, profile(),
+                                            "firstListenerCount"));
+  EXPECT_EQ(1, GetCountFromBackgroundScript(extension, profile(),
+                                            "secondListenerCount"));
 }
 
 // Tests listeners in multiple contexts with lazy event disptaching.
@@ -5892,7 +5898,7 @@ IN_PROC_BROWSER_TEST_F(ManifestV3WebRequestApiTest,
 
   // Convenience lambdas for checking the count received in each listener.
   auto get_worker_event_count = [this, extension]() {
-    return GetCountFromBackgroundPage(extension, profile(), "eventCount");
+    return GetCountFromBackgroundScript(extension, profile(), "eventCount");
   };
   auto get_page_event_count = [page_host]() {
     int count = -1;
