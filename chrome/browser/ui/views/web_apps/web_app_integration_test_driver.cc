@@ -1117,12 +1117,12 @@ void WebAppIntegrationTestDriver::LaunchFromLaunchIcon(Site site) {
   ASSERT_TRUE(IntentPickerBubbleView::intent_picker_bubble());
   EXPECT_TRUE(IntentPickerBubbleView::intent_picker_bubble()->GetVisible());
 
-  LOG(INFO) << "Launching app window";
   IntentPickerBubbleView::intent_picker_bubble()->AcceptDialog();
   browser_added_waiter.Wait();
   app_browser_ = browser_added_waiter.browser_added();
   ActivateBrowserAndWait(app_browser_);
-  CHECK(app_browser_->is_type_app());
+  ASSERT_TRUE(app_browser_->is_type_app());
+  ASSERT_TRUE(AppBrowserController::IsForWebApp(app_browser_, app_id));
   active_app_id_ = app_browser()->app_controller()->app_id();
   AfterStateChangeAction();
 }
@@ -2446,7 +2446,7 @@ AppId WebAppIntegrationTestDriver::GetAppIdBySiteMode(Site site) {
   std::string manifest_id = site_config.relative_manifest_id;
   auto relative_start_url = site_config.relative_start_url;
   GURL start_url = GetTestServerForSiteMode(site).GetURL(relative_start_url);
-  CHECK(start_url.is_valid());
+  DCHECK(start_url.is_valid());
 
   return GenerateAppId(manifest_id, start_url);
 }
