@@ -206,7 +206,7 @@ TEST_F(AuthPerformerTest, KnowledgeKeyNoFallbackOnPin) {
   // Check that the error is present, and user context is passed back.
   ASSERT_TRUE(result.Get<0>());
   ASSERT_TRUE(result.Get<1>().has_value());
-  ASSERT_EQ(result.Get<1>().value().error_code,
+  ASSERT_EQ(result.Get<1>().value().get_cryptohome_code(),
             user_data_auth::CRYPTOHOME_ERROR_AUTHORIZATION_KEY_NOT_FOUND);
 }
 
@@ -252,7 +252,7 @@ TEST_F(AuthPerformerTest, AuthenticateWithPasswordBadLabel) {
   // Check that error is triggered
   ASSERT_TRUE(result.Get<0>());
   ASSERT_TRUE(result.Get<1>().has_value());
-  ASSERT_EQ(result.Get<1>().value().error_code,
+  ASSERT_EQ(result.Get<1>().value().get_cryptohome_code(),
             user_data_auth::CRYPTOHOME_ERROR_KEY_NOT_FOUND);
 }
 
@@ -282,7 +282,7 @@ TEST_F(AuthPerformerTest, AuthSessionStatusOnError) {
   ASSERT_TRUE(result.Get<2>());
   // Error is passed
   ASSERT_TRUE(result.Get<3>().has_value());
-  ASSERT_EQ(result.Get<3>().value().error_code,
+  ASSERT_EQ(result.Get<3>().value().get_cryptohome_code(),
             user_data_auth::CRYPTOHOME_ERROR_TPM_NEEDS_REBOOT);
 }
 

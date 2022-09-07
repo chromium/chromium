@@ -25,7 +25,7 @@ class Textfield;
 
 namespace ash {
 
-struct AuthenticationError;
+class AuthenticationError;
 
 // To be used for in-session authentication. Currently, only password
 // is supported, however, there are plans to enrich this dialog to eventually

@@ -195,7 +195,7 @@ void AuthSessionAuthenticator::DoCompleteLogin(
                                    : AuthFailure::COULD_NOT_MOUNT_CRYPTOHOME);
   if (error.has_value()) {
     LOGIN_LOG(ERROR) << "Error starting authsession for Regular user "
-                     << error.value().error_code;
+                     << error.value().get_cryptohome_code();
     std::move(error_callback).Run(std::move(context), error.value());
     return;
   }
@@ -320,7 +320,7 @@ void AuthSessionAuthenticator::DoLoginAsExistingUser(
                                    : AuthFailure::COULD_NOT_MOUNT_CRYPTOHOME);
   if (error.has_value()) {
     LOGIN_LOG(ERROR) << "Error starting authsession for Regular user "
-                     << error.value().error_code;
+                     << error.value().get_cryptohome_code();
     std::move(error_callback).Run(std::move(context), error.value());
     return;
   }
@@ -434,7 +434,7 @@ void AuthSessionAuthenticator::DoLoginAsPublicSession(
 
   if (error.has_value()) {
     LOGIN_LOG(ERROR) << "Error starting authsession for MGS "
-                     << error.value().error_code;
+                     << error.value().get_cryptohome_code();
     std::move(error_callback).Run(std::move(context), error.value());
     return;
   }
@@ -511,7 +511,7 @@ void AuthSessionAuthenticator::DoLoginAsKiosk(
                                    : AuthFailure::COULD_NOT_MOUNT_CRYPTOHOME);
   if (error.has_value()) {
     LOGIN_LOG(ERROR) << "Error starting authsession for Kiosk "
-                     << error.value().error_code;
+                     << error.value().get_cryptohome_code();
     std::move(error_callback).Run(std::move(context), error.value());
     return;
   }
@@ -665,7 +665,8 @@ void AuthSessionAuthenticator::PrepareForNewAttempt(
 bool AuthSessionAuthenticator::ResolveCryptohomeError(
     AuthFailure::FailureReason default_error,
     AuthenticationError& error) {
-  switch (error.error_code) {
+  DCHECK_EQ(error.get_origin(), AuthenticationError::Origin::kCryptohome);
+  switch (error.get_cryptohome_code()) {
     // Not an error:
     case user_data_auth::CRYPTOHOME_ERROR_NOT_SET:
     // Some errors need to be handled explicitly and can not be resolved to
@@ -701,19 +702,19 @@ bool AuthSessionAuthenticator::ResolveCryptohomeError(
       return false;
 
     case user_data_auth::CRYPTOHOME_ERROR_ACCOUNT_NOT_FOUND:
-      error.failure_reason = AuthFailure::MISSING_CRYPTOHOME;
+      error.ResolveToFailure(AuthFailure::MISSING_CRYPTOHOME);
       break;
     case user_data_auth::CRYPTOHOME_ERROR_NOT_IMPLEMENTED:
     case user_data_auth::CRYPTOHOME_ERROR_INVALID_ARGUMENT:
     case user_data_auth::CRYPTOHOME_TOKEN_SERIALIZATION_FAILED:
       // Fatal implementation errors
-      error.failure_reason = default_error;
+      error.ResolveToFailure(default_error);
       break;
     case user_data_auth::CRYPTOHOME_ERROR_FINGERPRINT_ERROR_INTERNAL:
     case user_data_auth::CRYPTOHOME_ERROR_FINGERPRINT_RETRY_REQUIRED:
     case user_data_auth::CRYPTOHOME_ERROR_FINGERPRINT_DENIED:
       // Fingerprint errors
-      error.failure_reason = default_error;
+      error.ResolveToFailure(default_error);
       break;
     case user_data_auth::CRYPTOHOME_ERROR_MOUNT_FATAL:
     case user_data_auth::CRYPTOHOME_ERROR_KEY_QUOTA_EXCEEDED:
@@ -722,7 +723,7 @@ bool AuthSessionAuthenticator::ResolveCryptohomeError(
     case user_data_auth::CRYPTOHOME_ERROR_INSTALL_ATTRIBUTES_GET_FAILED:
     case user_data_auth::CRYPTOHOME_ERROR_INSTALL_ATTRIBUTES_SET_FAILED:
       // Fatal system state errors
-      error.failure_reason = default_error;
+      error.ResolveToFailure(default_error);
       break;
     case user_data_auth::CRYPTOHOME_ERROR_AUTHORIZATION_KEY_NOT_FOUND:
     case user_data_auth::CRYPTOHOME_ERROR_KEY_NOT_FOUND:
@@ -734,35 +735,35 @@ bool AuthSessionAuthenticator::ResolveCryptohomeError(
     case user_data_auth::CRYPTOHOME_ERROR_UPDATE_SIGNATURE_INVALID:
     case user_data_auth::CRYPTOHOME_ERROR_UNKNOWN_LEGACY:
       // Assumptions about key are not correct
-      error.failure_reason = default_error;
+      error.ResolveToFailure(default_error);
       break;
     case user_data_auth::CRYPTOHOME_INVALID_AUTH_SESSION_TOKEN:
     case user_data_auth::CRYPTOHOME_ERROR_UNAUTHENTICATED_AUTH_SESSION:
       // Auth session expired, might need to handle it separately later.
-      error.failure_reason = default_error;
+      error.ResolveToFailure(default_error);
       break;
     case user_data_auth::CRYPTOHOME_ERROR_TPM_COMM_ERROR:
     case user_data_auth::CRYPTOHOME_ERROR_TPM_NEEDS_REBOOT:
-      error.failure_reason = AuthFailure::TPM_ERROR;
+      error.ResolveToFailure(AuthFailure::TPM_ERROR);
       break;
     case user_data_auth::CRYPTOHOME_ERROR_TPM_DEFEND_LOCK:
       // PIN is locked out, for now mark it as auth failure, and pin lockout
       // would be detected by PinStorageCryptohome.
-      error.failure_reason = default_error;
+      error.ResolveToFailure(default_error);
       break;
     case user_data_auth::CRYPTOHOME_ERROR_MOUNT_MOUNT_POINT_BUSY:
       // Assumption about system state is not correct
-      error.failure_reason = default_error;
+      error.ResolveToFailure(default_error);
       break;
     case user_data_auth::CRYPTOHOME_ERROR_REMOVE_FAILED:
-      error.failure_reason = AuthFailure::DATA_REMOVAL_FAILED;
+      error.ResolveToFailure(AuthFailure::DATA_REMOVAL_FAILED);
       break;
     case user_data_auth::CRYPTOHOME_ERROR_TPM_UPDATE_REQUIRED:
-      error.failure_reason = AuthFailure::TPM_UPDATE_REQUIRED;
+      error.ResolveToFailure(AuthFailure::TPM_UPDATE_REQUIRED);
       break;
     case user_data_auth::CRYPTOHOME_ERROR_VAULT_UNRECOVERABLE:
     case user_data_auth::CRYPTOHOME_ERROR_UNUSABLE_VAULT:
-      error.failure_reason = AuthFailure::UNRECOVERABLE_CRYPTOHOME;
+      error.ResolveToFailure(AuthFailure::UNRECOVERABLE_CRYPTOHOME);
       break;
     case user_data_auth::CryptohomeErrorCode_INT_MIN_SENTINEL_DO_NOT_USE_:
     case user_data_auth::CryptohomeErrorCode_INT_MAX_SENTINEL_DO_NOT_USE_:
@@ -776,7 +777,7 @@ bool AuthSessionAuthenticator::ResolveCryptohomeError(
       // any of them hit the default block.
       NOTREACHED() << "Unhandled CryptohomeErrorCode in ProcessCryptohomeError"
                       ": "
-                   << static_cast<int>(error.error_code);
+                   << static_cast<int>(error.get_cryptohome_code());
       return false;
   }
   return true;
@@ -788,30 +789,35 @@ void AuthSessionAuthenticator::ProcessCryptohomeError(
     AuthenticationError error) {
   if (!consumer_)
     return;
-  DCHECK_NE(error.error_code, user_data_auth::CRYPTOHOME_ERROR_NOT_SET);
+  DCHECK_EQ(error.get_origin(), AuthenticationError::Origin::kCryptohome);
+  DCHECK_NE(error.get_cryptohome_code(),
+            user_data_auth::CRYPTOHOME_ERROR_NOT_SET);
 
-  if (error.error_code == user_data_auth::CRYPTOHOME_ADD_CREDENTIALS_FAILED) {
+  if (error.get_cryptohome_code() ==
+      user_data_auth::CRYPTOHOME_ADD_CREDENTIALS_FAILED) {
     // for now treat it as login failed:
-    error.failure_reason = default_error;
-    NotifyFailure(error.failure_reason, std::move(context));
+    error.ResolveToFailure(default_error);
+    NotifyFailure(error.get_resolved_failure(), std::move(context));
     return;
   }
   bool handled = ResolveCryptohomeError(default_error, error);
   if (!handled) {
-    NOTREACHED() << "Unhandled cryptohome error: " << error.error_code;
-    SCOPED_CRASH_KEY_NUMBER("Cryptohome", "error_code", error.error_code);
+    NOTREACHED() << "Unhandled cryptohome error: "
+                 << error.get_cryptohome_code();
+    SCOPED_CRASH_KEY_NUMBER("Cryptohome", "error_code",
+                            error.get_cryptohome_code());
     base::debug::DumpWithoutCrashing();
-    error.failure_reason = default_error;
+    error.ResolveToFailure(default_error);
   }
 
-  NotifyFailure(error.failure_reason, std::move(context));
+  NotifyFailure(error.get_resolved_failure(), std::move(context));
 }
 
 void AuthSessionAuthenticator::HandlePasswordChangeDetected(
     AuthErrorCallback fallback,
     std::unique_ptr<UserContext> context,
     AuthenticationError error) {
-  if (error.error_code ==
+  if (error.get_cryptohome_code() ==
       user_data_auth::CRYPTOHOME_ERROR_AUTHORIZATION_KEY_FAILED) {
     LOGIN_LOG(EVENT) << "Password change detected";
     if (!consumer_)
@@ -827,9 +833,10 @@ void AuthSessionAuthenticator::HandleMigrationRequired(
     std::unique_ptr<UserContext> context,
     AuthenticationError error) {
   const bool migration_required =
-      error.error_code == user_data_auth::CRYPTOHOME_ERROR_MOUNT_OLD_ENCRYPTION;
+      error.get_cryptohome_code() ==
+      user_data_auth::CRYPTOHOME_ERROR_MOUNT_OLD_ENCRYPTION;
   const bool incomplete_migration =
-      error.error_code ==
+      error.get_cryptohome_code() ==
       user_data_auth::CRYPTOHOME_ERROR_MOUNT_PREVIOUS_MIGRATION_INCOMPLETE;
   if (migration_required || incomplete_migration) {
     LOGIN_LOG(EVENT) << "Old encryption detected";
@@ -905,7 +912,7 @@ void AuthSessionAuthenticator::OnUnmountForNonOwner(
     // Crash if could not unmount home directory, and let session_manager
     // handle it.
     LOG(FATAL) << "Failed to unmount non-owner home directory "
-               << error->error_code;
+               << error->get_cryptohome_code();
   } else {
     NotifyFailure(AuthFailure::OWNER_REQUIRED, std::move(context));
   }

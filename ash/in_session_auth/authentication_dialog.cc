@@ -174,9 +174,9 @@ void AuthenticationDialog::ValidateAuthFactor() {
 
 void AuthenticationDialog::OnAuthFactorValidityChecked(
     std::unique_ptr<UserContext> user_context,
-    absl::optional<AuthenticationError> cryptohome_error) {
-  if (cryptohome_error.has_value()) {
-    if (cryptohome_error.value().error_code ==
+    absl::optional<AuthenticationError> authentication_error) {
+  if (authentication_error.has_value()) {
+    if (authentication_error.value().get_cryptohome_code() ==
         user_data_auth::CRYPTOHOME_INVALID_AUTH_SESSION_TOKEN) {
       // Auth session expired for some reason, start it again and reattempt
       // authentication.
@@ -191,7 +191,7 @@ void AuthenticationDialog::OnAuthFactorValidityChecked(
     }
     LOG(ERROR) << "An error happened during the attempt to validate"
                   "the password: "
-               << cryptohome_error.value().error_code;
+               << authentication_error.value().get_cryptohome_code();
     password_field_->SetInvalid(true);
     password_field_->SelectAll(false);
     invalid_password_label_->SetText(
@@ -229,18 +229,19 @@ void AuthenticationDialog::ConfigureChildViews() {
 void AuthenticationDialog::OnAuthSessionInvalid(
     bool user_exists,
     std::unique_ptr<UserContext> user_context,
-    absl::optional<AuthenticationError> cryptohome_error) {
-  OnAuthSessionStarted(user_exists, std::move(user_context), cryptohome_error);
+    absl::optional<AuthenticationError> authentication_error) {
+  OnAuthSessionStarted(user_exists, std::move(user_context),
+                       authentication_error);
   ValidateAuthFactor();
 }
 
 void AuthenticationDialog::OnAuthSessionStarted(
     bool user_exists,
     std::unique_ptr<UserContext> user_context,
-    absl::optional<AuthenticationError> cryptohome_error) {
-  if (cryptohome_error.has_value()) {
+    absl::optional<AuthenticationError> authentication_error) {
+  if (authentication_error.has_value()) {
     LOG(ERROR) << "Error starting authsession for in session authentication: "
-               << cryptohome_error.value().error_code;
+               << authentication_error.value().get_cryptohome_code();
     CancelAuthAttempt();
   } else if (!user_exists) {
     LOG(ERROR) << "Attempting to authenticate a user which does not exist. "
