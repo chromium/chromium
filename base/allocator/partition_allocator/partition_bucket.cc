@@ -682,9 +682,13 @@ PartitionBucket<thread_safe>::AllocNewSlotSpan(PartitionRoot<thread_safe>* root,
 }
 
 template <bool thread_safe>
-PA_ALWAYS_INLINE uintptr_t PartitionBucket<thread_safe>::AllocNewSuperPage(
+uintptr_t PartitionBucket<thread_safe>::AllocNewSuperPageSpan(
     PartitionRoot<thread_safe>* root,
+    size_t super_page_count,
     unsigned int flags) {
+  PA_CHECK(super_page_count > 0);
+  PA_CHECK(super_page_count <=
+           std::numeric_limits<size_t>::max() / kSuperPageSize);
   // Need a new super page. We want to allocate super pages in a contiguous
   // address region as much as possible. This is important for not causing
   // page table bloat and not fragmenting address spaces in 32 bit
@@ -693,17 +697,39 @@ PA_ALWAYS_INLINE uintptr_t PartitionBucket<thread_safe>::AllocNewSuperPage(
   // Allocate from GigaCage. Route to the appropriate GigaCage pool based on
   // BackupRefPtr support.
   pool_handle pool = root->ChoosePool();
-  uintptr_t super_page =
-      ReserveMemoryFromGigaCage(pool, requested_address, kSuperPageSize);
-  if (PA_UNLIKELY(!super_page)) {
+  uintptr_t super_page_span_start = ReserveMemoryFromGigaCage(
+      pool, requested_address, super_page_count * kSuperPageSize);
+  if (PA_UNLIKELY(!super_page_span_start)) {
     if (flags & AllocFlags::kReturnNull)
       return 0;
 
     // Didn't manage to get a new uncommitted super page -> address space issue.
-    ScopedUnlockGuard unlock{root->lock_};
+    ::partition_alloc::internal::ScopedUnlockGuard unlock{root->lock_};
     PartitionOutOfMemoryMappingFailure(root, kSuperPageSize);
   }
 
+  uintptr_t super_page_span_end =
+      super_page_span_start + super_page_count * kSuperPageSize;
+  for (uintptr_t super_page = super_page_span_start;
+       super_page < super_page_span_end; super_page += kSuperPageSize) {
+    InitializeSuperPage(root, super_page, 0);
+  }
+  return super_page_span_start;
+}
+
+template <bool thread_safe>
+PA_ALWAYS_INLINE uintptr_t PartitionBucket<thread_safe>::AllocNewSuperPage(
+    PartitionRoot<thread_safe>* root,
+    unsigned int flags) {
+  auto super_page = AllocNewSuperPageSpan(root, 1, flags);
+  return SuperPagePayloadBegin(super_page, root->IsQuarantineAllowed());
+}
+
+template <bool thread_safe>
+PA_ALWAYS_INLINE uintptr_t PartitionBucket<thread_safe>::InitializeSuperPage(
+    PartitionRoot<thread_safe>* root,
+    uintptr_t super_page,
+    uintptr_t requested_address) {
   *ReservationOffsetPointer(super_page) = kOffsetTagNormalBuckets;
 
   root->total_size_of_super_pages.fetch_add(kSuperPageSize,
@@ -740,18 +766,19 @@ PA_ALWAYS_INLINE uintptr_t PartitionBucket<thread_safe>::AllocNewSuperPage(
   // also a tiny amount of extent metadata.
   {
     ScopedSyscallTimer timer{root};
-    RecommitSystemPages(
-        super_page + SystemPageSize(),
+    RecommitSystemPages(super_page + SystemPageSize(),
 #if BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)
-        // If PUT_REF_COUNT_IN_PREVIOUS_SLOT is on, and if the BRP pool is used,
-        // allocate 2 SystemPages, one for SuperPage metadata and the other for
-        // RefCount bitmap.
-        (pool == GetBRPPool()) ? SystemPageSize() * 2 : SystemPageSize(),
+                        // If PUT_REF_COUNT_IN_PREVIOUS_SLOT is on, and if the
+                        // BRP pool is used, allocate 2 SystemPages, one for
+                        // SuperPage metadata and the other for RefCount bitmap.
+                        (root->ChoosePool() == GetBRPPool())
+                            ? SystemPageSize() * 2
+                            : SystemPageSize(),
 #else
-        SystemPageSize(),
+                        SystemPageSize(),
 #endif
-        PageAccessibilityConfiguration::kReadWrite,
-        PageAccessibilityDisposition::kRequireUpdate);
+                        PageAccessibilityConfiguration::kReadWrite,
+                        PageAccessibilityDisposition::kRequireUpdate);
   }
 
   // If we were after a specific address, but didn't get it, assume that
@@ -1400,6 +1427,20 @@ uintptr_t PartitionBucket<thread_safe>::SlowPathAlloc(
   // the free list for the newly provisioned slots.
   PA_DCHECK(new_slot_span->num_unprovisioned_slots);
   return ProvisionMoreSlotsAndAllocOne(root, new_slot_span);
+}
+
+template <bool thread_safe>
+uintptr_t PartitionBucket<thread_safe>::AllocNewSuperPageSpanForGwpAsan(
+    PartitionRoot<thread_safe>* root,
+    size_t super_page_count,
+    unsigned int flags) {
+  return AllocNewSuperPageSpan(root, super_page_count, flags);
+}
+
+template <bool thread_safe>
+void PartitionBucket<thread_safe>::InitializeSlotSpanForGwpAsan(
+    SlotSpanMetadata<thread_safe>* slot_span) {
+  InitializeSlotSpan(slot_span);
 }
 
 template struct PartitionBucket<ThreadSafe>;

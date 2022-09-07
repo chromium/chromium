@@ -10,7 +10,9 @@
 #include <utility>
 #include <vector>
 
+#include "base/allocator/buildflags.h"
 #include "base/bits.h"
+#include "base/callback_helpers.h"
 #include "base/memory/page_size.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
@@ -23,12 +25,15 @@ namespace gwp_asan {
 namespace internal {
 
 static constexpr size_t kMaxMetadata = AllocatorState::kMaxMetadata;
-static constexpr size_t kMaxSlots = AllocatorState::kMaxSlots;
+static constexpr size_t kMaxSlots = AllocatorState::kMaxRequestedSlots;
 
 class BaseGpaTest : public testing::Test {
  protected:
-  BaseGpaTest(size_t max_allocated_pages, bool is_partition_alloc) {
-    gpa_.Init(max_allocated_pages, kMaxMetadata, kMaxSlots,
+  BaseGpaTest(size_t max_allocated_pages,
+              size_t max_metadata,
+              size_t max_slots,
+              bool is_partition_alloc) {
+    gpa_.Init(max_allocated_pages, max_metadata, max_slots,
               base::BindLambdaForTesting(
                   [&](size_t allocations) { allocator_oom_ = true; }),
               is_partition_alloc);
@@ -41,7 +46,8 @@ class BaseGpaTest : public testing::Test {
 class GuardedPageAllocatorTest : public BaseGpaTest,
                                  public testing::WithParamInterface<bool> {
  protected:
-  GuardedPageAllocatorTest() : BaseGpaTest(kMaxMetadata, GetParam()) {}
+  GuardedPageAllocatorTest()
+      : BaseGpaTest(kMaxMetadata, kMaxMetadata, kMaxSlots, GetParam()) {}
 
   // Get a left- or right- aligned allocation (or nullptr on error.)
   char* GetAlignedAllocation(bool left_aligned, size_t sz, size_t align = 0) {
@@ -172,7 +178,8 @@ class GuardedPageAllocatorParamTest
     : public BaseGpaTest,
       public testing::WithParamInterface<size_t> {
  protected:
-  GuardedPageAllocatorParamTest() : BaseGpaTest(GetParam(), false) {}
+  GuardedPageAllocatorParamTest()
+      : BaseGpaTest(GetParam(), kMaxMetadata, kMaxSlots, false) {}
 };
 
 TEST_P(GuardedPageAllocatorParamTest, AllocDeallocAllPages) {
@@ -321,7 +328,8 @@ TEST_P(GuardedPageAllocatorTest, ThreadedHighContention) {
 
 class GuardedPageAllocatorPartitionAllocTest : public BaseGpaTest {
  protected:
-  GuardedPageAllocatorPartitionAllocTest() : BaseGpaTest(kMaxMetadata, true) {}
+  GuardedPageAllocatorPartitionAllocTest()
+      : BaseGpaTest(kMaxMetadata, kMaxMetadata, kMaxSlots, true) {}
 };
 
 TEST_F(GuardedPageAllocatorPartitionAllocTest,
@@ -349,6 +357,36 @@ TEST_F(GuardedPageAllocatorPartitionAllocTest,
 
   EXPECT_EQ(intersection.size(), 0u);
 }
+
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_GWP_ASAN_STORE)
+constexpr size_t kSmallMaxSlots = kMaxMetadata;
+class GuardedPageAllocatorRawPtrTest : public BaseGpaTest {
+ protected:
+  GuardedPageAllocatorRawPtrTest()
+      // For these tests the number of available slots has to be equal to
+      // the number of metadata entries. We don't want to end up in a
+      // situation where an allocation attempt fails because there's nowhere to
+      // store metadata while there are still available allocation slots.
+      : BaseGpaTest(kSmallMaxSlots, kSmallMaxSlots, kSmallMaxSlots, false) {}
+};
+
+TEST_F(GuardedPageAllocatorRawPtrTest, DeferDeallocation) {
+  for (size_t i = 0; i < kSmallMaxSlots - 1; i++)
+    EXPECT_NE(gpa_.Allocate(1), nullptr);
+
+  raw_ptr<void> ptr = gpa_.Allocate(1);
+  gpa_.Deallocate(ptr);
+
+  // Dangling raw_ptr should prevent the allocation from being reused.
+  EXPECT_EQ(gpa_.Allocate(1), nullptr);
+
+  ptr = nullptr;
+  // Now we should get one slot back...
+  EXPECT_NE(gpa_.Allocate(1), nullptr);
+  // But just one.
+  EXPECT_EQ(gpa_.Allocate(1), nullptr);
+}
+#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_GWP_ASAN_STORE)
 
 }  // namespace internal
 }  // namespace gwp_asan

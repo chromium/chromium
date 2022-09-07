@@ -139,9 +139,11 @@ GWP_ASAN_EXPORT absl::optional<AllocatorSettings> GetAllocatorSettings(
   if (!base::FeatureList::IsEnabled(feature))
     return absl::nullopt;
 
-  static_assert(AllocatorState::kMaxSlots <= std::numeric_limits<int>::max(),
-                "kMaxSlots out of range");
-  constexpr int kMaxSlots = static_cast<int>(AllocatorState::kMaxSlots);
+  static_assert(
+      AllocatorState::kMaxRequestedSlots <= std::numeric_limits<int>::max(),
+      "kMaxRequestedSlots out of range");
+  constexpr int kMaxRequestedSlots =
+      static_cast<int>(AllocatorState::kMaxRequestedSlots);
 
   static_assert(AllocatorState::kMaxMetadata <= std::numeric_limits<int>::max(),
                 "kMaxMetadata out of range");
@@ -149,7 +151,7 @@ GWP_ASAN_EXPORT absl::optional<AllocatorSettings> GetAllocatorSettings(
 
   int total_pages = GetFieldTrialParamByFeatureAsInt(feature, "TotalPages",
                                                      kDefaultTotalPages);
-  if (total_pages < 1 || total_pages > kMaxSlots) {
+  if (total_pages < 1 || total_pages > kMaxRequestedSlots) {
     DLOG(ERROR) << "GWP-ASan TotalPages is out-of-range: " << total_pages;
     return absl::nullopt;
   }

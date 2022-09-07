@@ -8,6 +8,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/allocator/partition_allocator/gwp_asan_support.h"
 #include "base/bits.h"
 #include "base/debug/stack_trace.h"
 #include "base/logging.h"
@@ -85,6 +86,15 @@ void GuardedPageAllocator::SimpleFreeList<T>::Initialize(T max_entries) {
 }
 
 template <typename T>
+void GuardedPageAllocator::SimpleFreeList<T>::Initialize(
+    T max_entries,
+    std::vector<T>&& free_list) {
+  max_entries_ = max_entries;
+  num_used_entries_ = max_entries;
+  free_list_ = std::move(free_list);
+}
+
+template <typename T>
 bool GuardedPageAllocator::SimpleFreeList<T>::Allocate(T* out,
                                                        const char* type) {
   if (num_used_entries_ < max_entries_) {
@@ -114,12 +124,28 @@ void GuardedPageAllocator::PartitionAllocSlotFreeList::Initialize(
   type_mapping_.reserve(max_entries);
 }
 
+void GuardedPageAllocator::PartitionAllocSlotFreeList::Initialize(
+    AllocatorState::SlotIdx max_entries,
+    std::vector<AllocatorState::SlotIdx>&& free_list) {
+  max_entries_ = max_entries;
+  num_used_entries_ = max_entries;
+  type_mapping_.resize(max_entries);
+  initial_free_list_ = std::move(free_list);
+}
+
 bool GuardedPageAllocator::PartitionAllocSlotFreeList::Allocate(
     AllocatorState::SlotIdx* out,
     const char* type) {
   if (num_used_entries_ < max_entries_) {
     type_mapping_.push_back(type);
     *out = num_used_entries_++;
+    return true;
+  }
+
+  if (!initial_free_list_.empty()) {
+    *out = initial_free_list_.back();
+    type_mapping_[*out] = type;
+    initial_free_list_.pop_back();
     return true;
   }
 
@@ -148,16 +174,30 @@ void GuardedPageAllocator::Init(size_t max_alloced_pages,
   CHECK_LE(max_alloced_pages, num_metadata);
   CHECK_LE(num_metadata, AllocatorState::kMaxMetadata);
   CHECK_LE(num_metadata, total_pages);
-  CHECK_LE(total_pages, AllocatorState::kMaxSlots);
+  CHECK_LE(total_pages, AllocatorState::kMaxRequestedSlots);
   max_alloced_pages_ = max_alloced_pages;
   state_.num_metadata = num_metadata;
-  state_.total_pages = total_pages;
+  state_.total_requested_pages = total_pages;
   oom_callback_ = std::move(oom_callback);
   is_partition_alloc_ = is_partition_alloc;
 
   state_.page_size = base::GetPageSize();
 
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_GWP_ASAN_STORE)
+  std::vector<AllocatorState::SlotIdx> free_list_indices;
+  void* region = partition_alloc::GwpAsanSupport::MapRegion(total_pages,
+                                                            free_list_indices);
+  CHECK(!free_list_indices.empty());
+  AllocatorState::SlotIdx highest_idx = free_list_indices.back();
+  DCHECK_EQ(highest_idx, *std::max_element(free_list_indices.begin(),
+                                           free_list_indices.end()));
+  state_.total_reserved_pages = highest_idx + 1;
+  CHECK_LE(state_.total_reserved_pages, AllocatorState::kMaxReservedSlots);
+#else   // BUILDFLAG(USE_PARTITION_ALLOC_AS_GWP_ASAN_STORE)
+  state_.total_reserved_pages = total_pages;
   void* region = MapRegion();
+#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_GWP_ASAN_STORE)
+
   if (!region)
     PLOG(FATAL) << "Failed to reserve allocator region";
 
@@ -169,17 +209,22 @@ void GuardedPageAllocator::Init(size_t max_alloced_pages,
     // Obtain this lock exclusively to satisfy the thread-safety annotations,
     // there should be no risk of a race here.
     base::AutoLock lock(lock_);
-    free_metadata_.Initialize(num_metadata);
+    free_metadata_.Initialize(state_.num_metadata);
     if (is_partition_alloc_)
       free_slots_ = std::make_unique<PartitionAllocSlotFreeList>();
     else
       free_slots_ = std::make_unique<SimpleFreeList<AllocatorState::SlotIdx>>();
-    free_slots_->Initialize(total_pages);
+#if BUILDFLAG(USE_PARTITION_ALLOC) && BUILDFLAG(USE_BACKUP_REF_PTR)
+    free_slots_->Initialize(state_.total_reserved_pages,
+                            std::move(free_list_indices));
+#else   // BUILDFLAG(USE_PARTITION_ALLOC) && BUILDFLAG(USE_BACKUP_REF_PTR)
+    free_slots_->Initialize(state_.total_reserved_pages);
+#endif  // BUILDFLAG(USE_PARTITION_ALLOC) && BUILDFLAG(USE_BACKUP_REF_PTR)
   }
 
-  slot_to_metadata_idx_.resize(total_pages);
-  for (size_t i = 0; i < total_pages; i++)
-    slot_to_metadata_idx_[i] = AllocatorState::kInvalidMetadataIdx;
+  slot_to_metadata_idx_.resize(state_.total_reserved_pages);
+  std::fill(slot_to_metadata_idx_.begin(), slot_to_metadata_idx_.end(),
+            AllocatorState::kInvalidMetadataIdx);
   state_.slot_to_metadata_addr =
       reinterpret_cast<uintptr_t>(&slot_to_metadata_idx_.front());
 
@@ -199,20 +244,25 @@ void GuardedPageAllocator::Init(size_t max_alloced_pages,
 std::vector<std::pair<void*, size_t>>
 GuardedPageAllocator::GetInternalMemoryRegions() {
   std::vector<std::pair<void*, size_t>> regions;
-  regions.push_back(std::make_pair(&state_, sizeof(state_)));
-  regions.push_back(std::make_pair(
-      metadata_.get(),
-      sizeof(AllocatorState::SlotMetadata) * state_.num_metadata));
-  regions.push_back(
-      std::make_pair(slot_to_metadata_idx_.data(),
-                     sizeof(AllocatorState::MetadataIdx) * state_.total_pages));
+  regions.emplace_back(&state_, sizeof(state_));
+  regions.emplace_back(metadata_.get(), sizeof(AllocatorState::SlotMetadata) *
+                                            state_.num_metadata);
+  regions.emplace_back(
+      slot_to_metadata_idx_.data(),
+      sizeof(AllocatorState::MetadataIdx) * state_.total_reserved_pages);
   return regions;
 }
 
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_GWP_ASAN_STORE)
+// TODO(glazunov): Add PartitionAlloc-specific `UnmapRegion()` when PA
+// supports reclaiming super pages.
+GuardedPageAllocator::~GuardedPageAllocator() = default;
+#else   // BUILDFLAG(USE_PARTITION_ALLOC_AS_GWP_ASAN_STORE)
 GuardedPageAllocator::~GuardedPageAllocator() {
-  if (state_.total_pages)
+  if (state_.total_requested_pages)
     UnmapRegion();
 }
+#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_GWP_ASAN_STORE)
 
 void* GuardedPageAllocator::MapRegionHint() const {
 #if defined(ARCH_CPU_64_BITS)
@@ -334,7 +384,7 @@ size_t GuardedPageAllocator::GetRequestedSize(const void* ptr) const {
 }
 
 size_t GuardedPageAllocator::RegionSize() const {
-  return (2 * state_.total_pages + 1) * state_.page_size;
+  return (2 * state_.total_reserved_pages + 1) * state_.page_size;
 }
 
 bool GuardedPageAllocator::ReserveSlotAndMetadata(
@@ -355,6 +405,18 @@ bool GuardedPageAllocator::ReserveSlotAndMetadata(
     return false;
   }
 
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_GWP_ASAN_STORE)
+  if (!partition_alloc::GwpAsanSupport::CanReuse(state_.SlotToAddr(*slot))) {
+    // The selected slot is still referenced by a dangling raw_ptr. Put it back
+    // and reject the current allocation request. This is expected to occur
+    // rarely so retrying isn't necessary.
+    // TODO(glazunov): Evaluate whether this change makes catching UAFs more or
+    // less likely.
+    free_slots_->Free(*slot);
+    return false;
+  }
+#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_GWP_ASAN_STORE)
+
   CHECK(free_metadata_.Allocate(metadata_idx, nullptr));
   if (metadata_[*metadata_idx].alloc_ptr) {
     // Overwrite the outdated slot_to_metadata_idx mapping from the previous use
@@ -374,7 +436,7 @@ bool GuardedPageAllocator::ReserveSlotAndMetadata(
 void GuardedPageAllocator::FreeSlotAndMetadata(
     AllocatorState::SlotIdx slot,
     AllocatorState::MetadataIdx metadata_idx) {
-  DCHECK_LT(slot, state_.total_pages);
+  DCHECK_LT(slot, state_.total_reserved_pages);
   DCHECK_LT(metadata_idx, state_.num_metadata);
 
   base::AutoLock lock(lock_);

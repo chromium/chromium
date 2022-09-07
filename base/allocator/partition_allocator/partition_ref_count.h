@@ -212,6 +212,23 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRefCount {
     return alive;
   }
 
+  // GWP-ASan slots are assigned an extra reference (note `kPtrInc` below) to
+  // make sure the `raw_ptr<T>` release operation will never attempt to call the
+  // PA `free` on such a slot. GWP-ASan takes the extra reference into account
+  // when determining whether the slot can be reused.
+  PA_ALWAYS_INLINE void InitalizeForGwpAsan() {
+#if defined(PA_REF_COUNT_CHECK_COOKIE)
+    brp_cookie_ = CalculateCookie();
+#endif
+    count_.store(kPtrInc | kMemoryHeldByAllocatorBit,
+                 std::memory_order_release);
+  }
+
+  PA_ALWAYS_INLINE bool CanBeReusedByGwpAsan() {
+    return count_.load(std::memory_order_acquire) ==
+           (kPtrInc | kMemoryHeldByAllocatorBit);
+  }
+
 #if defined(PA_REF_COUNT_STORE_REQUESTED_SIZE)
   PA_ALWAYS_INLINE void SetRequestedSize(size_t size) {
     requested_size_ = static_cast<uint32_t>(size);

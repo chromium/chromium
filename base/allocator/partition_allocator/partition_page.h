@@ -501,19 +501,31 @@ PA_ALWAYS_INLINE uintptr_t SuperPageFreeSlotBitmapAddr(uintptr_t super_page) {
 }
 #endif
 
-PA_ALWAYS_INLINE uintptr_t SuperPagePayloadBegin(uintptr_t super_page,
-                                                 bool with_quarantine) {
-  PA_DCHECK(!(super_page % kSuperPageAlignment));
-  return super_page + PartitionPageSize() +
-         (IsManagedByNormalBuckets(super_page)
-              ? ReservedTagBitmapSize() + ReservedFreeSlotBitmapSize()
+PA_ALWAYS_INLINE uintptr_t
+SuperPagePayloadStartOffset(bool is_managed_by_normal_buckets,
+                            bool with_quarantine) {
+  return PartitionPageSize() +
+         (is_managed_by_normal_buckets
+              ? (ReservedTagBitmapSize() + ReservedFreeSlotBitmapSize())
               : 0) +
          (with_quarantine ? ReservedStateBitmapSize() : 0);
 }
 
+PA_ALWAYS_INLINE uintptr_t SuperPagePayloadBegin(uintptr_t super_page,
+                                                 bool with_quarantine) {
+  PA_DCHECK(!(super_page % kSuperPageAlignment));
+  return super_page +
+         SuperPagePayloadStartOffset(IsManagedByNormalBuckets(super_page),
+                                     with_quarantine);
+}
+
+PA_ALWAYS_INLINE uintptr_t SuperPagePayloadEndOffset() {
+  return kSuperPageSize - PartitionPageSize();
+}
+
 PA_ALWAYS_INLINE uintptr_t SuperPagePayloadEnd(uintptr_t super_page) {
   PA_DCHECK(!(super_page % kSuperPageAlignment));
-  return super_page + kSuperPageSize - PartitionPageSize();
+  return super_page + SuperPagePayloadEndOffset();
 }
 
 PA_ALWAYS_INLINE size_t SuperPagePayloadSize(uintptr_t super_page,

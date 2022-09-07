@@ -67,8 +67,9 @@ class SamplingMallocShimsTest : public base::MultiProcessTest {
 #endif  // BUILDFLAG(IS_APPLE)
     crash_reporter::InitializeCrashKeys();
     InstallMallocHooks(AllocatorState::kMaxMetadata,
-                       AllocatorState::kMaxMetadata, AllocatorState::kMaxSlots,
-                       kSamplingFrequency, base::DoNothing());
+                       AllocatorState::kMaxMetadata,
+                       AllocatorState::kMaxRequestedSlots, kSamplingFrequency,
+                       base::DoNothing());
   }
 
  protected:

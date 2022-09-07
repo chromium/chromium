@@ -161,7 +161,23 @@ struct PartitionBucket {
   // Sort the active slot span list in ascending freelist length.
   PA_COMPONENT_EXPORT(PARTITION_ALLOC) void SortActiveSlotSpans();
 
+  // We need `AllocNewSuperPageSpan` and `InitializeSlotSpan` to stay
+  // PA_ALWAYS_INLINE for speed, but we also need to use them from a separate
+  // compilation unit.
+  uintptr_t AllocNewSuperPageSpanForGwpAsan(PartitionRoot<thread_safe>* root,
+                                            size_t super_page_count,
+                                            unsigned int flags)
+      PA_EXCLUSIVE_LOCKS_REQUIRED(root->lock_);
+  void InitializeSlotSpanForGwpAsan(SlotSpanMetadata<thread_safe>* slot_span);
+
  private:
+  // Allocates several consecutive super pages. Returns the address of the first
+  // super page.
+  PA_ALWAYS_INLINE uintptr_t AllocNewSuperPageSpan(
+      PartitionRoot<thread_safe>* root,
+      size_t super_page_count,
+      unsigned int flags) PA_EXCLUSIVE_LOCKS_REQUIRED(root->lock_);
+
   // Allocates a new slot span with size |num_partition_pages| from the
   // current extent. Metadata within this slot span will be initialized.
   // Returns nullptr on error.
@@ -186,6 +202,12 @@ struct PartitionBucket {
   // freelist.
   PA_ALWAYS_INLINE void InitializeSlotSpan(
       SlotSpanMetadata<thread_safe>* slot_span);
+
+  // Initializes a super page. Returns the address of the super page's payload.
+  PA_ALWAYS_INLINE uintptr_t InitializeSuperPage(
+      PartitionRoot<thread_safe>* root,
+      uintptr_t super_page,
+      uintptr_t requested_address) PA_EXCLUSIVE_LOCKS_REQUIRED(root->lock_);
 
   // Commit 1 or more pages in |slot_span|, enough to get the next slot, which
   // is returned by this function. If more slots fit into the committed pages,

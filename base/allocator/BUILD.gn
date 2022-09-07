@@ -20,6 +20,8 @@ buildflag_header("buildflags") {
   # BackupRefPtr(BRP) build flags.
   _use_backup_ref_ptr = use_backup_ref_ptr && use_partition_alloc && !is_nacl
 
+  _use_partition_alloc_as_gwp_asan_store = _use_backup_ref_ptr
+
   # MTECheckedPtr is exclusive against BRP (asserted at declaration).
   # MTECheckedPtr requires 64-bit pointers (not available in NaCl).
   _use_mte_checked_ptr = use_mte_checked_ptr && !is_nacl
@@ -31,6 +33,7 @@ buildflag_header("buildflags") {
 
     "USE_BACKUP_REF_PTR=$_use_backup_ref_ptr",
     "USE_ASAN_BACKUP_REF_PTR=$use_asan_backup_ref_ptr",
+    "USE_PARTITION_ALLOC_AS_GWP_ASAN_STORE=$_use_partition_alloc_as_gwp_asan_store",
 
     # Not to be used directly - see `partition_alloc_config.h`.
     "USE_MTE_CHECKED_PTR=$_use_mte_checked_ptr",
