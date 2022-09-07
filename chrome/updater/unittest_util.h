@@ -5,6 +5,8 @@
 #ifndef CHROME_UPDATER_UNITTEST_UTIL_H_
 #define CHROME_UPDATER_UNITTEST_UTIL_H_
 
+#include <string>
+
 #include "base/files/file_path.h"
 #include "base/memory/scoped_refptr.h"
 
@@ -36,6 +38,10 @@ bool KillProcesses(const base::FilePath::StringType& executable_name,
 
 // A policy service with default values.
 scoped_refptr<PolicyService> CreateTestPolicyService();
+
+// Returns the current test name in the format "TestSuiteName.TestName" or "?.?"
+// if the test name is not available.
+std::string GetTestName();
 
 }  // namespace updater::test
 

@@ -16,6 +16,7 @@
 #include "build/build_config.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/updater/test/integration_test_commands.h"
+#include "chrome/updater/unittest_util.h"
 
 #if BUILDFLAG(IS_WIN)
 #include <shlobj.h>
@@ -133,11 +134,20 @@ namespace {
 
 void MaybeIncreaseTestTimeouts(int argc, char** argv) {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+
+  // The minimum and the default value when unspecified is 45000.
   if (!command_line->HasSwitch(switches::kTestLauncherTimeout)) {
-    command_line->AppendSwitchASCII(switches::kTestLauncherTimeout, "60000");
+    command_line->AppendSwitchASCII(switches::kTestLauncherTimeout, "90000");
   }
+
+  // The minimum and the default value when unspecified is 30000.
+  if (!command_line->HasSwitch(switches::kUiTestActionMaxTimeout)) {
+    command_line->AppendSwitchASCII(switches::kUiTestActionMaxTimeout, "45000");
+  }
+
+  // The minimum and the default value when unspecified is 10000.
   if (!command_line->HasSwitch(switches::kUiTestActionTimeout)) {
-    command_line->AppendSwitchASCII(switches::kUiTestActionTimeout, "30000");
+    command_line->AppendSwitchASCII(switches::kUiTestActionTimeout, "40000");
   }
 }
 
@@ -190,6 +200,8 @@ int main(int argc, char** argv) {
                              true,    // enable_thread_id
                              true,    // enable_timestamp
                              false);  // enable_tickcount
+        LOG(ERROR) << "A test timeout has occured in "
+                   << updater::test::GetTestName();
         updater::test::CreateIntegrationTestCommands()->PrintLog();
       }),
       base::BindOnce(&base::TestSuite::Run, base::Unretained(&test_suite)));

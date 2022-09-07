@@ -4,6 +4,7 @@
 
 #include "chrome/updater/unittest_util.h"
 
+#include "base/logging.h"
 #include "base/path_service.h"
 #include "base/test/test_timeouts.h"
 #include "base/version.h"
@@ -57,6 +58,21 @@ TEST(UnitTestUtil, Processes) {
     EXPECT_EQ(exit_code, kExitCode);
   }
 #endif  // IS_WIN
+}
+
+TEST(UnitTestUtil, GetTestName) {
+  EXPECT_EQ(GetTestName(), "UnitTestUtil.GetTestName");
+}
+
+// Enable the test to print the effective values for the test timeouts when
+// debugging timeout issues.
+TEST(UnitTestUtil, DISABLED_PrintTestTimeouts) {
+  VLOG(0) << "action-timeout:"
+          << TestTimeouts::action_timeout().InMilliseconds()
+          << ", action-max-timeout:"
+          << TestTimeouts::action_max_timeout().InMilliseconds()
+          << ", test-launcher-timeout:"
+          << TestTimeouts::test_launcher_timeout().InMilliseconds();
 }
 
 }  // namespace updater::test
