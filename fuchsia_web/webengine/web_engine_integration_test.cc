@@ -27,6 +27,11 @@
 #include "media/fuchsia/camera/fake_fuchsia_camera.h"
 #include "net/http/http_request_headers.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+
+#if defined(USE_CFV1_LAUNCHER)
+#include "fuchsia_web/webengine/test/context_provider_for_test_v1.h"  // nogncheck
+#endif
 
 namespace {
 
@@ -51,13 +56,21 @@ class WebEngineIntegrationTest : public WebEngineIntegrationTestBase {
  protected:
   WebEngineIntegrationTest() = default;
 
-  void SetUp() override {
-    WebEngineIntegrationTestBase::SetUp();
+  void StartWebEngine(base::CommandLine command_line) override {
+    context_provider_.emplace(
+        ContextProviderForTest::Create(std::move(command_line)));
+    context_provider_->ptr().set_error_handler(
+        [](zx_status_t status) { ADD_FAILURE(); });
+  }
 
-    StartWebEngine(base::CommandLine(base::CommandLine::NO_PROGRAM));
+  fuchsia::web::ContextProvider* GetContextProvider() override {
+    return context_provider_->get();
   }
 
   void RunPermissionTest(bool grant);
+
+ private:
+  absl::optional<ContextProviderForTest> context_provider_;
 };
 
 class WebEngineIntegrationUserAgentTest : public WebEngineIntegrationTest {
@@ -98,6 +111,7 @@ class WebEngineIntegrationUserAgentTest : public WebEngineIntegrationTest {
 // Although this does not need to be an integration test, all other user agent
 // tests are here.
 TEST_F(WebEngineIntegrationUserAgentTest, Default) {
+  StartWebEngine(base::CommandLine(base::CommandLine::NO_PROGRAM));
   // Create a Context with no values specified.
   fuchsia::web::CreateContextParams create_params = TestContextParams();
   CreateContextAndFrameAndLoadUrl(std::move(create_params),
@@ -115,6 +129,7 @@ TEST_F(WebEngineIntegrationUserAgentTest, Default) {
 }
 
 TEST_F(WebEngineIntegrationUserAgentTest, ValidProductOnly) {
+  StartWebEngine(base::CommandLine(base::CommandLine::NO_PROGRAM));
   // Create a Context with just an embedder product specified.
   fuchsia::web::CreateContextParams create_params = TestContextParams();
   create_params.set_user_agent_product(kValidUserAgentProduct);
@@ -138,6 +153,7 @@ TEST_F(WebEngineIntegrationUserAgentTest, ValidProductOnly) {
 }
 
 TEST_F(WebEngineIntegrationUserAgentTest, ValidProductAndVersion) {
+  StartWebEngine(base::CommandLine(base::CommandLine::NO_PROGRAM));
   // Create a Context with both product and version specified.
   fuchsia::web::CreateContextParams create_params = TestContextParams();
   create_params.set_user_agent_product(kValidUserAgentProduct);
@@ -167,6 +183,7 @@ TEST_F(WebEngineIntegrationUserAgentTest, ValidProductAndVersion) {
 }
 
 TEST_F(WebEngineIntegrationUserAgentTest, InvalidProduct) {
+  StartWebEngine(base::CommandLine(base::CommandLine::NO_PROGRAM));
   // Try to create a Context with an invalid embedder product tag.
   fuchsia::web::CreateContextParams create_params = TestContextParams();
   create_params.set_user_agent_product(kInvalidUserAgentProduct);
@@ -174,6 +191,7 @@ TEST_F(WebEngineIntegrationUserAgentTest, InvalidProduct) {
 }
 
 TEST_F(WebEngineIntegrationUserAgentTest, VersionOnly) {
+  StartWebEngine(base::CommandLine(base::CommandLine::NO_PROGRAM));
   // Try to create a Context with an embedder version but no product.
   fuchsia::web::CreateContextParams create_params = TestContextParams();
   create_params.set_user_agent_version(kValidUserAgentVersion);
@@ -181,6 +199,7 @@ TEST_F(WebEngineIntegrationUserAgentTest, VersionOnly) {
 }
 
 TEST_F(WebEngineIntegrationUserAgentTest, ValidProductAndInvalidVersion) {
+  StartWebEngine(base::CommandLine(base::CommandLine::NO_PROGRAM));
   // Try to create a Context with valid product tag, but invalid version.
   fuchsia::web::CreateContextParams create_params = TestContextParams();
   create_params.set_user_agent_product(kValidUserAgentProduct);
@@ -189,6 +208,7 @@ TEST_F(WebEngineIntegrationUserAgentTest, ValidProductAndInvalidVersion) {
 }
 
 TEST_F(WebEngineIntegrationTest, CreateFrameWithUnclonableFrameParamsFails) {
+  StartWebEngine(base::CommandLine(base::CommandLine::NO_PROGRAM));
   CreateContext(TestContextParams());
 
   zx_rights_t kReadRightsWithoutDuplicate =
@@ -224,6 +244,7 @@ TEST_F(WebEngineIntegrationTest, CreateFrameWithUnclonableFrameParamsFails) {
 // - DevTools becomes available when the first debuggable Frame is created.
 // - DevTools closes when the last debuggable Frame is closed.
 TEST_F(WebEngineIntegrationTest, RemoteDebuggingPort) {
+  StartWebEngine(base::CommandLine(base::CommandLine::NO_PROGRAM));
   // Create a Context with remote debugging enabled via an ephemeral port.
   fuchsia::web::CreateContextParams create_params = TestContextParams();
   create_params.set_remote_debugging_port(0);
@@ -292,6 +313,7 @@ TEST_F(WebEngineIntegrationTest, RemoteDebuggingPort) {
 // Check that remote debugging requests for Frames in non-debuggable Contexts
 // cause an error to be reported.
 TEST_F(WebEngineIntegrationTest, RequestDebuggableFrameInNonDebuggableContext) {
+  StartWebEngine(base::CommandLine(base::CommandLine::NO_PROGRAM));
   fuchsia::web::CreateFrameParams create_frame_params;
   create_frame_params.set_enable_remote_debugging(true);
   CreateContext(TestContextParams());
@@ -311,6 +333,7 @@ TEST_F(WebEngineIntegrationTest, ContentDirectoryProvider) {
   const GURL kUrl("fuchsia-dir://testdata/title1.html");
   constexpr char kTitle[] = "title 1";
 
+  StartWebEngine(base::CommandLine(base::CommandLine::NO_PROGRAM));
   CreateContextAndFrame(TestContextParamsWithTestData());
 
   // Navigate to test1.html and verify that the resource was correctly
@@ -366,6 +389,7 @@ class WebEngineIntegrationMediaTest : public WebEngineIntegrationTest {
 };
 
 TEST_F(WebEngineIntegrationMediaTest, PlayAudioToAudioRenderer) {
+  StartWebEngine(base::CommandLine(base::CommandLine::NO_PROGRAM));
   CreateContextAndFrame(ContextParamsWithAudioAndTestData());
 
   ASSERT_NO_FATAL_FAILURE(
@@ -379,6 +403,7 @@ TEST_F(WebEngineIntegrationMediaTest, PlayAudioToAudioRenderer) {
 }
 
 TEST_F(WebEngineIntegrationMediaTest, PlayAudioToAudioConsumer) {
+  StartWebEngine(base::CommandLine(base::CommandLine::NO_PROGRAM));
   CreateContextAndFrame(ContextParamsWithAudioAndTestData());
 
   // Send `FrameMediaSettings` with `audio_consumer_session_id`. This enables
@@ -410,6 +435,7 @@ TEST_F(WebEngineIntegrationMediaTest, PlayAudioToAudioConsumer) {
 // Check that audio cannot play when the AUDIO ContextFeatureFlag is not
 // provided.
 TEST_F(WebEngineIntegrationMediaTest, PlayAudio_NoFlag) {
+  StartWebEngine(base::CommandLine(base::CommandLine::NO_PROGRAM));
   // Both FilteredServiceDirectory and test data are needed.
   fuchsia::web::CreateContextParams create_params =
       TestContextParamsWithTestData();
@@ -427,6 +453,7 @@ TEST_F(WebEngineIntegrationMediaTest, PlayAudio_NoFlag) {
 }
 
 TEST_F(WebEngineIntegrationMediaTest, PlayVideo) {
+  StartWebEngine(base::CommandLine(base::CommandLine::NO_PROGRAM));
   CreateContextAndFrame(ContextParamsWithAudioAndTestData());
 
   ASSERT_NO_FATAL_FAILURE(LoadUrlAndExpectResponse(
@@ -454,16 +481,19 @@ void WebEngineIntegrationTest::RunPermissionTest(bool grant) {
 }
 
 TEST_F(WebEngineIntegrationTest, PermissionDenied) {
+  StartWebEngine(base::CommandLine(base::CommandLine::NO_PROGRAM));
   RunPermissionTest(false);
 }
 
 TEST_F(WebEngineIntegrationTest, PermissionGranted) {
+  StartWebEngine(base::CommandLine(base::CommandLine::NO_PROGRAM));
   RunPermissionTest(true);
 }
 
 // TODO(crbug.com/1299352): Flaky.
 TEST_F(WebEngineIntegrationMediaTest,
        DISABLED_MicrophoneAccess_WithPermission) {
+  StartWebEngine(base::CommandLine(base::CommandLine::NO_PROGRAM));
   CreateContextAndFrame(ContextParamsWithAudioAndTestData());
 
   GrantPermission(
@@ -477,6 +507,7 @@ TEST_F(WebEngineIntegrationMediaTest,
 }
 
 TEST_F(WebEngineIntegrationMediaTest, MicrophoneAccess_WithoutPermission) {
+  StartWebEngine(base::CommandLine(base::CommandLine::NO_PROGRAM));
   CreateContextAndFrame(ContextParamsWithAudioAndTestData());
 
   ASSERT_NO_FATAL_FAILURE(LoadUrlAndExpectResponse(
@@ -486,6 +517,7 @@ TEST_F(WebEngineIntegrationMediaTest, MicrophoneAccess_WithoutPermission) {
 }
 
 TEST_F(WebEngineIntegrationMediaTest, SetBlockMediaLoading_Blocked) {
+  StartWebEngine(base::CommandLine(base::CommandLine::NO_PROGRAM));
   CreateContextAndFrame(ContextParamsWithAudioAndTestData());
 
   frame_->SetBlockMediaLoading(true);
@@ -504,6 +536,7 @@ TEST_F(WebEngineIntegrationMediaTest, SetBlockMediaLoading_Blocked) {
 // Initially, set media blocking to be true. When media is unblocked, check that
 // it begins playing, since autoplay=true.
 TEST_F(WebEngineIntegrationMediaTest, SetBlockMediaLoading_AfterUnblock) {
+  StartWebEngine(base::CommandLine(base::CommandLine::NO_PROGRAM));
   CreateContextAndFrame(ContextParamsWithAudioAndTestData());
 
   frame_->SetBlockMediaLoading(true);
@@ -525,6 +558,7 @@ TEST_F(WebEngineIntegrationMediaTest, SetBlockMediaLoading_AfterUnblock) {
 // element has started loading that media will play when play() is called.
 TEST_F(WebEngineIntegrationMediaTest,
        SetBlockMediaLoading_SetBlockedAfterLoading) {
+  StartWebEngine(base::CommandLine(base::CommandLine::NO_PROGRAM));
   CreateContextAndFrame(ContextParamsWithAudioAndTestData());
 
   ASSERT_NO_FATAL_FAILURE(LoadUrlAndExpectResponse(
@@ -537,6 +571,7 @@ TEST_F(WebEngineIntegrationMediaTest,
 }
 
 TEST_F(WebEngineIntegrationTest, WebGLContextAbsentWithoutVulkanFeature) {
+  StartWebEngine(base::CommandLine(base::CommandLine::NO_PROGRAM));
   CreateContextAndFrame(TestContextParams());
 
   ASSERT_NO_FATAL_FAILURE(LoadUrlAndExpectResponse(
@@ -559,6 +594,7 @@ class MAYBE_VulkanWebEngineIntegrationTest
 
 TEST_F(MAYBE_VulkanWebEngineIntegrationTest,
        WebGLContextPresentWithVulkanFeature) {
+  StartWebEngine(base::CommandLine(base::CommandLine::NO_PROGRAM));
   fuchsia::web::CreateContextParams create_params = TestContextParams();
   *create_params.mutable_features() |=
       fuchsia::web::ContextFeatureFlags::VULKAN;
@@ -572,9 +608,7 @@ TEST_F(MAYBE_VulkanWebEngineIntegrationTest,
   EXPECT_EQ(navigation_listener()->title(), "present");
 }
 
-// Does not start WebEngine automatically as one of the tests requires manually
-// starting it.
-class WebEngineIntegrationCameraTest : public WebEngineIntegrationTestBase {
+class WebEngineIntegrationCameraTest : public WebEngineIntegrationTest {
  protected:
   WebEngineIntegrationCameraTest() = default;
 
@@ -624,6 +658,7 @@ TEST_F(WebEngineIntegrationCameraTest, CameraNoVideoCaptureProcess) {
 // provided that the CodecFactory service is connected to.
 TEST_F(MAYBE_VulkanWebEngineIntegrationTest,
        HardwareVideoDecoderFlag_Provided) {
+  StartWebEngine(base::CommandLine(base::CommandLine::NO_PROGRAM));
   // Check that the CodecFactory service is requested.
   base::RunLoop codec_connected_run_loop;
   auto* outgoing_directory = filtered_service_directory().outgoing_directory();
@@ -652,6 +687,7 @@ TEST_F(MAYBE_VulkanWebEngineIntegrationTest,
 // HARDWARE_VIDEO_DECODER is not provided.
 // The video should use software decoders and still play.
 TEST_F(WebEngineIntegrationMediaTest, HardwareVideoDecoderFlag_NotProvided) {
+  StartWebEngine(base::CommandLine(base::CommandLine::NO_PROGRAM));
   bool is_requested = false;
   auto* outgoing_directory = filtered_service_directory().outgoing_directory();
   outgoing_directory->RemovePublicService<fuchsia::mediacodec::CodecFactory>();

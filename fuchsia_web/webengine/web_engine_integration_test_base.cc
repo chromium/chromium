@@ -14,7 +14,6 @@
 #include "base/path_service.h"
 #include "base/strings/string_piece.h"
 #include "fuchsia_web/common/test/frame_test_util.h"
-#include "fuchsia_web/webengine/test/context_provider_test_connector.h"
 #include "net/test/embedded_test_server/default_handlers.h"
 
 namespace {
@@ -57,14 +56,6 @@ void WebEngineIntegrationTestBase::SetUp() {
   CHECK(embedded_test_server_.Start());
 }
 
-void WebEngineIntegrationTestBase::StartWebEngine(
-    base::CommandLine command_line) {
-  web_context_provider_ = ConnectContextProvider(
-      web_engine_controller_.NewRequest(), std::move(command_line));
-  web_context_provider_.set_error_handler(
-      [](zx_status_t status) { ADD_FAILURE(); });
-}
-
 fuchsia::web::NavigationControllerPtr
 WebEngineIntegrationTestBase::CreateNavigationController() {
   CHECK(frame_);
@@ -98,8 +89,8 @@ WebEngineIntegrationTestBase::TestContextParamsWithTestData() {
 void WebEngineIntegrationTestBase::CreateContext(
     fuchsia::web::CreateContextParams context_params) {
   CHECK(!context_);
-  web_context_provider_->Create(std::move(context_params),
-                                context_.NewRequest());
+  GetContextProvider()->Create(std::move(context_params),
+                               context_.NewRequest());
   context_.set_error_handler([](zx_status_t status) { ADD_FAILURE(); });
 }
 
@@ -130,7 +121,7 @@ void WebEngineIntegrationTestBase::CreateContextAndExpectError(
     fuchsia::web::CreateContextParams params,
     zx_status_t expected_error) {
   CHECK(!context_);
-  web_context_provider_->Create(std::move(params), context_.NewRequest());
+  GetContextProvider()->Create(std::move(params), context_.NewRequest());
   base::RunLoop run_loop;
   context_.set_error_handler([&run_loop, expected_error](zx_status_t status) {
     EXPECT_EQ(status, expected_error);

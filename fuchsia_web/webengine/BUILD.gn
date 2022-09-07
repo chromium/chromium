@@ -664,8 +664,6 @@ test("web_engine_unittests") {
 
 test("web_engine_integration_tests_cfv1") {
   sources = [
-    "test/context_provider_test_connector.cc",
-    "test/context_provider_test_connector.h",
     "test_debug_listener.cc",
     "test_debug_listener.h",
     "web_engine_debug_integration_test.cc",
@@ -683,6 +681,7 @@ test("web_engine_integration_tests_cfv1") {
     "//components/version_info",
     "//fuchsia_web/common/test:run_all_integration_tests",
     "//fuchsia_web/common/test:test_support",
+    "//fuchsia_web/webengine/test:cfv1_integration",
     "//fuchsia_web/webinstance_host:webinstance_host_integration_test",
     "//media",
     "//media/fuchsia/audio:test_support",
@@ -691,9 +690,10 @@ test("web_engine_integration_tests_cfv1") {
     "//net:test_support",
     "//testing/gmock",
     "//testing/gtest",
+    "//third_party/abseil-cpp:absl",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.logger",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.mediacodec",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.mem",
-    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.sys",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.web",
   ]
   package_deps = [ [

@@ -7,15 +7,17 @@
 #include <cstring>
 
 #include "base/containers/contains.h"
-#include "base/fuchsia/fuchsia_logging.h"
-#include "base/fuchsia/process_context.h"
 #include "base/fuchsia/test_log_listener_safe.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
-#include "base/test/bind.h"
 #include "fuchsia_web/common/test/frame_test_util.h"
-#include "fuchsia_web/webengine/test/context_provider_test_connector.h"
 #include "fuchsia_web/webengine/web_engine_integration_test_base.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+
+#if defined(USE_CFV1_LAUNCHER)
+#include "fuchsia_web/webengine/test/context_provider_for_test_v1.h"  // nogncheck
+#include "fuchsia_web/webengine/test/isolated_archivist_v1.h"  // nogncheck
+#endif
 
 namespace {
 
@@ -45,78 +47,32 @@ std::string NormalizeConsoleLogMessage(base::StringPiece original) {
 class WebEngineIntegrationLoggingTest : public WebEngineIntegrationTestBase {
  protected:
   WebEngineIntegrationLoggingTest()
-      : isolated_archivist_service_dir_(
-            StartIsolatedArchivist(archivist_controller_.NewRequest())) {
-    // Redirect the LogSink service to an isolated archivist instance.
-    zx_status_t status = filtered_service_directory()
-                             .outgoing_directory()
-                             ->RemovePublicService<fuchsia::logger::LogSink>();
-    ZX_CHECK(status == ZX_OK, status) << "RemovePublicService";
+      : isolated_archivist_(
+            *filtered_service_directory().outgoing_directory()) {}
 
-    status =
-        filtered_service_directory().outgoing_directory()->AddPublicService(
-            fidl::InterfaceRequestHandler<fuchsia::logger::LogSink>(
-                [this](auto request) {
-                  isolated_archivist_service_dir_.Connect(std::move(request));
-                }));
-    ZX_CHECK(status == ZX_OK, status) << "AddPublicService";
-  }
-
-  void SetUp() override {
-    WebEngineIntegrationTestBase::SetUp();
-    StartWebEngineForLoggingTest(
-        base::CommandLine(base::CommandLine::NO_PROGRAM));
-
-    log_ = isolated_archivist_service_dir_.Connect<fuchsia::logger::Log>();
-  }
-
-  fuchsia::logger::Log* log() { return log_.get(); }
-
- private:
-  // Starts WebEngine without redirecting its logs.
-  void StartWebEngineForLoggingTest(base::CommandLine command_line) {
-    web_context_provider_ = ConnectContextProviderForLoggingTest(
-        web_engine_controller_.NewRequest(), std::move(command_line));
-    web_context_provider_.set_error_handler(
+  void StartWebEngine(base::CommandLine command_line) override {
+    context_provider_.emplace(
+        ContextProviderForTest::Create(std::move(command_line)));
+    context_provider_->ptr().set_error_handler(
         [](zx_status_t status) { ADD_FAILURE(); });
   }
 
-  // Starts an isolated instance of Archivist to receive and dump log statements
-  // via the fuchsia.logger.Log* APIs.
-  fidl::InterfaceHandle<fuchsia::io::Directory> StartIsolatedArchivist(
-      fidl::InterfaceRequest<fuchsia::sys::ComponentController>
-          component_controller_request) {
-    const char kArchivistUrl[] =
-        "fuchsia-pkg://fuchsia.com/archivist-for-embedding#meta/"
-        "archivist-for-embedding.cmx";
-
-    fuchsia::sys::LaunchInfo launch_info;
-    launch_info.url = kArchivistUrl;
-
-    fidl::InterfaceHandle<fuchsia::io::Directory> archivist_services_dir;
-    launch_info.directory_request =
-        archivist_services_dir.NewRequest().TakeChannel();
-
-    auto launcher = base::ComponentContextForProcess()
-                        ->svc()
-                        ->Connect<fuchsia::sys::Launcher>();
-    launcher->CreateComponent(std::move(launch_info),
-                              std::move(component_controller_request));
-
-    return archivist_services_dir;
+  fuchsia::web::ContextProvider* GetContextProvider() override {
+    return context_provider_->get();
   }
 
-  fuchsia::sys::ComponentControllerPtr archivist_controller_;
-  sys::ServiceDirectory isolated_archivist_service_dir_;
+  fuchsia::logger::Log& log() { return isolated_archivist_.log(); }
 
-  fuchsia::logger::LogPtr log_;
+  IsolatedArchivist isolated_archivist_;
+  absl::optional<ContextProviderForTest> context_provider_;
 };
 
 // Verifies that calling messages from console.debug() calls go to the Fuchsia
 // system log when the script log level is set to DEBUG.
 TEST_F(WebEngineIntegrationLoggingTest, SetJavaScriptLogLevel_DEBUG) {
+  StartWebEngine(base::CommandLine(base::CommandLine::NO_PROGRAM));
   base::SimpleTestLogListener log_listener;
-  log_listener.ListenToLog(log(), nullptr);
+  log_listener.ListenToLog(&log(), nullptr);
 
   // Create the Context & Frame with all log severities enabled.
   CreateContext(TestContextParams());
