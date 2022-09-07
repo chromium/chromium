@@ -172,6 +172,7 @@ public class TabGridIphTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/1360235")
     public void testIphItemShowingInIncognito() {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
 
