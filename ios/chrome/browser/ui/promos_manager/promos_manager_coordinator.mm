@@ -4,6 +4,10 @@
 
 #import "ios/chrome/browser/ui/promos_manager/promos_manager_coordinator.h"
 
+#import <Foundation/Foundation.h>
+#import <map>
+
+#import "base/containers/small_map.h"
 #import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/commands/promos_manager_commands.h"
@@ -37,6 +41,7 @@
 
   self.mediator = [[PromosManagerMediator alloc]
       initWithPromosManager:GetApplicationContext()->GetPromosManager()
+      promoImpressionLimits:[self promoImpressionLimits]
                     handler:handler];
 
   SceneState* sceneState =
@@ -62,6 +67,16 @@
   // the coordinator
   // 2. Call the proper view provider or display handler.
   // 3. Let the mediator know that `promo` was displayed.
+}
+
+- (base::small_map<std::map<promos_manager::Promo, NSArray<ImpressionLimit*>*>>)
+    promoImpressionLimits {
+  // TODO(crbug.com/1360507): Loop over feature teams' providers/handlers and
+  // construct promo-specific impression limits map.
+  base::small_map<std::map<promos_manager::Promo, NSArray<ImpressionLimit*>*>>
+      result;
+
+  return result;
 }
 
 @end

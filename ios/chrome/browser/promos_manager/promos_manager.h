@@ -6,9 +6,11 @@
 #define IOS_CHROME_BROWSER_PROMOS_MANAGER_PROMOS_MANAGER_H_
 
 #import <Foundation/Foundation.h>
+#import <map>
 #import <set>
 #import <vector>
 
+#import "base/containers/small_map.h"
 #import "base/values.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/promos_manager/constants.h"
@@ -24,6 +26,13 @@ class PromosManager {
  public:
   explicit PromosManager(PrefService* local_state);
   ~PromosManager();
+
+  // Ingests promo-specific impression limits and stores them in-memory for
+  // later reference.
+  void InitializePromoImpressionLimits(
+      base::small_map<
+          std::map<promos_manager::Promo, NSArray<ImpressionLimit*>*>>
+          promo_impression_limits);
 
   // Returns the next promo for display, if any.
   absl::optional<promos_manager::Promo> NextPromoForDisplay() const;
@@ -52,6 +61,11 @@ class PromosManager {
 
   // The impression history sorted by `day` (most recent -> least recent).
   std::vector<promos_manager::Impression> impression_history_;
+
+  // Promo-specific impression limits (promos_manager::Promo : [Impression
+  // Limits]).
+  base::small_map<std::map<promos_manager::Promo, NSArray<ImpressionLimit*>*>>
+      promo_impression_limits_;
 
   // `promo`-specific impression limits, if defined. May return an empty
   // NSArray, indicating no promo-specific impression limits were defined for
@@ -208,6 +222,8 @@ class PromosManager {
   FRIEND_TEST_ALL_PREFIXES(
       PromosManagerTest,
       RegistersAlreadyRegisteredPromoForSingleDisplayForEmptyActivePromos);
+  FRIEND_TEST_ALL_PREFIXES(PromosManagerTest,
+                           RegistersPromoSpecificImpressionLimits);
 };
 
 #endif  // IOS_CHROME_BROWSER_PROMOS_MANAGER_PROMOS_MANAGER_H_

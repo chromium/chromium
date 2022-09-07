@@ -41,8 +41,10 @@ source_set("promos_manager") {
     "promos_manager_mediator.h",
     "promos_manager_mediator.mm",
   ]
+  frameworks = [ "Foundation.framework" ]
   public_deps = [
     ":promos",
+    "//base",
     "//ios/chrome/browser/promos_manager",
     "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/coordinators:chrome_coordinators",

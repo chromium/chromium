@@ -4,6 +4,10 @@
 
 #import "ios/chrome/browser/ui/promos_manager/promos_manager_mediator.h"
 
+#import <Foundation/Foundation.h>
+#import <map>
+
+#import "base/containers/small_map.h"
 #import "ios/chrome/browser/promos_manager/constants.h"
 #import "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -13,10 +17,18 @@
 
 @implementation PromosManagerMediator
 
-- (instancetype)initWithPromosManager:(PromosManager*)promosManager
-                              handler:(id<PromosManagerCommands>)handler {
+- (instancetype)
+    initWithPromosManager:(PromosManager*)promosManager
+    promoImpressionLimits:
+        (base::small_map<
+            std::map<promos_manager::Promo, NSArray<ImpressionLimit*>*>>)
+            promoImpressionLimits
+                  handler:(id<PromosManagerCommands>)handler {
   if (self = [super init]) {
     _promosManager = promosManager;
+    _promosManager->InitializePromoImpressionLimits(
+        std::move(promoImpressionLimits));
+
     _handler = handler;
   }
 

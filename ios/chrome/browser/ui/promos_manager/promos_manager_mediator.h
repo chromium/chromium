@@ -5,6 +5,10 @@
 #ifndef IOS_CHROME_BROWSER_UI_PROMOS_MANAGER_PROMOS_MANAGER_MEDIATOR_H_
 #define IOS_CHROME_BROWSER_UI_PROMOS_MANAGER_PROMOS_MANAGER_MEDIATOR_H_
 
+#import <Foundation/Foundation.h>
+#import <map>
+
+#import "base/containers/small_map.h"
 #import "ios/chrome/browser/promos_manager/promos_manager.h"
 #import "ios/chrome/browser/ui/commands/promos_manager_commands.h"
 #import "ios/chrome/browser/ui/promos_manager/promos_manager_scene_availability_observer.h"
@@ -19,8 +23,13 @@
     : NSObject <PromosManagerSceneAvailabilityObserver>
 
 // Designated initializer.
-- (instancetype)initWithPromosManager:(PromosManager*)promosManager
-                              handler:(id<PromosManagerCommands>)handler
+- (instancetype)
+    initWithPromosManager:(PromosManager*)promosManager
+    promoImpressionLimits:
+        (base::small_map<
+            std::map<promos_manager::Promo, NSArray<ImpressionLimit*>*>>)
+            promoImpressionLimits
+                  handler:(id<PromosManagerCommands>)handler
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

@@ -94,6 +94,12 @@ void PromosManager::RegisterPromoForSingleDisplay(promos_manager::Promo promo) {
       promo, prefs::kIosPromosManagerSingleDisplayActivePromos, local_state_);
 }
 
+void PromosManager::InitializePromoImpressionLimits(
+    base::small_map<std::map<promos_manager::Promo, NSArray<ImpressionLimit*>*>>
+        promo_impression_limits) {
+  promo_impression_limits_ = std::move(promo_impression_limits);
+}
+
 absl::optional<promos_manager::Promo> PromosManager::NextPromoForDisplay()
     const {
   // Construct a superset including active (1) single-display and
@@ -174,8 +180,12 @@ std::set<promos_manager::Promo> PromosManager::ActivePromos(
 
 NSArray<ImpressionLimit*>* PromosManager::PromoImpressionLimits(
     promos_manager::Promo promo) const {
-  // TODO(crbug.com/1354665): Return `promo`-specific limits.
-  return @[];
+  auto it = promo_impression_limits_.find(promo);
+
+  if (it == promo_impression_limits_.end())
+    return @[];
+
+  return it->second;
 }
 
 NSArray<ImpressionLimit*>* PromosManager::GlobalImpressionLimits() const {

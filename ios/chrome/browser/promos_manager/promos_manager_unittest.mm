@@ -269,6 +269,8 @@ TEST_F(PromosManagerTest, DetectsNoImpressionLimitTriggered) {
 // Tests PromosManager::CanShowPromo() correctly allows a promo to be shown
 // because it hasn't met any impression limits.
 TEST_F(PromosManagerTest, DecidesCanShowPromo) {
+  CreatePromosManager();
+
   const std::vector<promos_manager::Impression> zeroImpressions = {};
   EXPECT_EQ(promos_manager_->CanShowPromo(promos_manager::Promo::Test,
                                           zeroImpressions),
@@ -278,6 +280,8 @@ TEST_F(PromosManagerTest, DecidesCanShowPromo) {
 // Tests PromosManager::CanShowPromo() correctly denies promos from being shown
 // as they've triggered impression limits.
 TEST_F(PromosManagerTest, DecidesCannotShowPromo) {
+  CreatePromosManager();
+
   int today = TodaysDay();
 
   const std::vector<promos_manager::Impression> impressions = {
@@ -892,4 +896,38 @@ TEST_F(PromosManagerTest,
                 prefs::kIosPromosManagerSingleDisplayActivePromos)[0],
             promos_manager::NameForPromo(
                 promos_manager::Promo::CredentialProviderExtension));
+}
+
+// Tests PromosManager::InitializePromoImpressionLimits() correctly registers
+// promo-specific impression limits.
+TEST_F(PromosManagerTest, RegistersPromoSpecificImpressionLimits) {
+  CreatePromosManager();
+
+  ImpressionLimit* onceEveryTwoDays = [[ImpressionLimit alloc] initWithLimit:1
+                                                                  forNumDays:2];
+  ImpressionLimit* thricePerWeek = [[ImpressionLimit alloc] initWithLimit:3
+                                                               forNumDays:7];
+  NSArray<ImpressionLimit*>* defaultBrowserLimits = @[
+    onceEveryTwoDays,
+  ];
+
+  NSArray<ImpressionLimit*>* credentialProviderLimits = @[
+    thricePerWeek,
+  ];
+
+  base::small_map<std::map<promos_manager::Promo, NSArray<ImpressionLimit*>*>>
+      promoImpressionLimits;
+  promoImpressionLimits[promos_manager::Promo::DefaultBrowser] =
+      defaultBrowserLimits;
+  promoImpressionLimits[promos_manager::Promo::CredentialProviderExtension] =
+      credentialProviderLimits;
+  promos_manager_->InitializePromoImpressionLimits(
+      std::move(promoImpressionLimits));
+
+  EXPECT_EQ(promos_manager_->PromoImpressionLimits(
+                promos_manager::Promo::DefaultBrowser),
+            defaultBrowserLimits);
+  EXPECT_EQ(promos_manager_->PromoImpressionLimits(
+                promos_manager::Promo::CredentialProviderExtension),
+            credentialProviderLimits);
 }
