@@ -320,6 +320,7 @@ constexpr CGFloat kNonProfileImageHeightWidth = 56.0;
   }
   _promoViewStyle = promoViewStyle;
   [self updateLayoutForStyle];
+  [self layoutIfNeeded];
 }
 
 // Sets mode and updates promo accordingly.
@@ -543,7 +544,6 @@ constexpr CGFloat kNonProfileImageHeightWidth = 56.0;
   [NSLayoutConstraint deactivateConstraints:self.currentLayoutConstraints];
   self.currentLayoutConstraints = constraintsToActivate;
   [NSLayoutConstraint activateConstraints:self.currentLayoutConstraints];
-  [self layoutIfNeeded];
 }
 
 // Updates image size constraints based on if it is a profile avatar.
