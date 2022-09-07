@@ -243,8 +243,6 @@ void WaylandToplevelWindow::Activate() {
   // user.
   //
   // Exo provides activation through aura-shell, Mutter--through gtk-shell.
-  //
-  // TODO(crbug.com/1175327): add support for xdg-activation.
   if (aura_surface_ && zaura_surface_get_version(aura_surface_.get()) >=
                            ZAURA_SURFACE_ACTIVATE_SINCE_VERSION) {
     zaura_surface_activate(aura_surface_.get());
