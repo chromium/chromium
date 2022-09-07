@@ -185,10 +185,11 @@ IN_PROC_BROWSER_TEST_F(UtilityProcessHostBrowserTest, LaunchProcess) {
 
 // Disabled because it crashes on android-arm64-tests:
 // https://crbug.com/1358585.
-IN_PROC_BROWSER_TEST_F(UtilityProcessHostBrowserTest,
-                       DISABLED_LaunchProcessAndCrash) {
+#if !(BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_ARM64))
+IN_PROC_BROWSER_TEST_F(UtilityProcessHostBrowserTest, LaunchProcessAndCrash) {
   RunUtilityProcess(/*elevated=*/false, /*crash=*/true, /*fail_launch=*/false);
 }
+#endif
 
 // This test won't work as-is on POSIX platforms, where fork()+exec() is used to
 // launch child processes, failure does not happen until exec(), therefore the
