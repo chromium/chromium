@@ -134,9 +134,10 @@ DesktopDisplayInfoMonitor* BasicDesktopEnvironment::GetDisplayInfoMonitor() {
 }
 
 std::unique_ptr<webrtc::MouseCursorMonitor>
-BasicDesktopEnvironment::CreateMouseCursorMonitor() {
+BasicDesktopEnvironment::CreateMouseCursorMonitor(
+    const webrtc::DesktopCaptureOptions& capture_options) {
   return std::make_unique<MouseCursorMonitorProxy>(video_capture_task_runner_,
-                                                   desktop_capture_options());
+                                                   capture_options);
 }
 
 std::unique_ptr<KeyboardLayoutMonitor>
@@ -174,14 +175,15 @@ uint32_t BasicDesktopEnvironment::GetDesktopSessionId() const {
 }
 
 std::unique_ptr<DesktopAndCursorConditionalComposer>
-BasicDesktopEnvironment::CreateComposingVideoCapturer() {
+BasicDesktopEnvironment::CreateComposingVideoCapturer(
+    protocol::ClientStub* client_stub) {
 #if BUILDFLAG(IS_APPLE)
   // Mac includes the mouse cursor in the captured image in curtain mode.
   if (options_.enable_curtaining())
     return nullptr;
 #endif
-  return std::make_unique<DesktopAndCursorConditionalComposer>(
-      CreateVideoCapturer());
+  return composing_capturer_cursor_monitor_manager_
+      ->CreateComposingVideoCapturer(client_stub);
 }
 
 std::unique_ptr<RemoteWebAuthnStateChangeNotifier>
@@ -189,8 +191,8 @@ BasicDesktopEnvironment::CreateRemoteWebAuthnStateChangeNotifier() {
   return std::make_unique<RemoteWebAuthnExtensionNotifier>();
 }
 
-std::unique_ptr<DesktopCapturer>
-BasicDesktopEnvironment::CreateVideoCapturer() {
+std::unique_ptr<DesktopCapturer> BasicDesktopEnvironment::CreateVideoCapturer(
+    const webrtc::DesktopCaptureOptions& capture_options) {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
 
   // TODO(joedow): Determine whether we can migrate additional platforms to
@@ -213,8 +215,13 @@ BasicDesktopEnvironment::CreateVideoCapturer() {
       std::make_unique<DesktopCapturerProxy>(std::move(capture_task_runner));
 #endif  // !BUILDFLAG(IS_LINUX) || defined(REMOTING_USE_WAYLAND)
 
-  desktop_capturer->CreateCapturer(desktop_capture_options());
+  desktop_capturer->CreateCapturer(capture_options);
   return std::move(desktop_capturer);
+}
+
+const webrtc::DesktopCaptureOptions& BasicDesktopEnvironment::CaptureOptions()
+    const {
+  return desktop_capture_options();
 }
 
 BasicDesktopEnvironment::BasicDesktopEnvironment(
@@ -229,7 +236,9 @@ BasicDesktopEnvironment::BasicDesktopEnvironment(
       input_task_runner_(input_task_runner),
       ui_task_runner_(ui_task_runner),
       client_session_control_(client_session_control),
-      options_(options) {
+      options_(options),
+      composing_capturer_cursor_monitor_manager_(
+          ComposingCapturerCursorMonitorManager::Create(this)) {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
 #if defined(REMOTING_USE_X11)
   // TODO(yuweih): The watchdog is just to test the hypothesis.

@@ -50,7 +50,6 @@
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_types.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
 #include "third_party/webrtc/modules/desktop_capture/mouse_cursor.h"
-#include "third_party/webrtc/modules/desktop_capture/mouse_cursor_monitor.h"
 #include "ui/events/event.h"
 
 namespace remoting {
@@ -60,7 +59,6 @@ class DesktopEnvironment;
 class DesktopEnvironmentFactory;
 class InputInjector;
 class KeyboardLayoutMonitor;
-class MouseShapePump;
 class RemoteOpenUrlMessageHandler;
 class RemoteWebAuthnMessageHandler;
 class ScreenControls;
@@ -78,7 +76,6 @@ class ClientSession : public protocol::HostStub,
                       public ClientSessionDetails,
                       public ClientSessionEvents,
                       public DesktopAndCursorComposerNotifier::EventHandler,
-                      public webrtc::MouseCursorMonitor::Callback,
                       public mojom::ChromotingSessionServices {
  public:
   // Callback interface for passing events to the ChromotingHost.
@@ -178,10 +175,6 @@ class ClientSession : public protocol::HostStub,
 
   // DesktopAndCursorComposerNotifier::EventHandler interface
   void SetComposeEnabled(bool enabled) override;
-
-  // webrtc::MouseCursorMonitor::Callback implementation.
-  void OnMouseCursor(webrtc::MouseCursor* mouse_cursor) override;
-  void OnMouseCursorPosition(const webrtc::DesktopVector& position) override;
 
   // mojom::ChromotingSessionServices implementation.
   void BindWebAuthnProxy(
@@ -403,8 +396,7 @@ class ClientSession : public protocol::HostStub,
   // Used to manage extension functionality.
   std::unique_ptr<HostExtensionSessionManager> extension_manager_;
 
-  // Objects to monitor and send updates for mouse shape and keyboard layout.
-  std::unique_ptr<MouseShapePump> mouse_shape_pump_;
+  // Object to monitor and send updates for keyboard layout.
   std::unique_ptr<KeyboardLayoutMonitor> keyboard_layout_monitor_;
 
   base::WeakPtr<RemoteWebAuthnMessageHandler> remote_webauthn_message_handler_;

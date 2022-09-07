@@ -407,7 +407,8 @@ void DesktopSessionAgent::Start(
 
   // Start the video capturer and mouse cursor monitor.
   video_capturer_ = std::make_unique<DesktopAndCursorConditionalComposer>(
-      desktop_environment_->CreateVideoCapturer());
+      desktop_environment_->CreateVideoCapturer(
+          desktop_environment_->CaptureOptions()));
   video_capturer_->Start(this);
   video_capturer_->SetSharedMemoryFactory(
       std::make_unique<SharedMemoryFactoryImpl>(
@@ -419,7 +420,8 @@ void DesktopSessionAgent::Start(
               caller_task_runner_,
               base::BindRepeating(
                   &DesktopSessionAgent::OnSharedMemoryRegionReleased, this))));
-  mouse_cursor_monitor_ = desktop_environment_->CreateMouseCursorMonitor();
+  mouse_cursor_monitor_ = desktop_environment_->CreateMouseCursorMonitor(
+      desktop_environment_->CaptureOptions());
   mouse_cursor_monitor_->Init(this,
                               webrtc::MouseCursorMonitor::SHAPE_AND_POSITION);
   // Unretained is sound because callback will never be invoked after
