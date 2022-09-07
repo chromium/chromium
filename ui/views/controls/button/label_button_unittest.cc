@@ -64,6 +64,8 @@ class TestLabelButton : public LabelButton {
   TestLabelButton(const TestLabelButton&) = delete;
   TestLabelButton& operator=(const TestLabelButton&) = delete;
 
+  void SetMultiLine(bool multi_line) { label()->SetMultiLine(multi_line); }
+
   using LabelButton::GetVisualState;
   using LabelButton::image;
   using LabelButton::label;
@@ -220,27 +222,37 @@ TEST_F(LabelButtonTest, LabelPreferredSizeWithMaxWidth) {
       10, 30, 50, 70, 90, 110, 130, 170, 200, 500,
   };
 
-  for (bool set_image = false; button_->GetImage(Button::STATE_NORMAL).isNull();
-       set_image = true) {
-    if (set_image)
-      button_->SetImage(Button::STATE_NORMAL, CreateTestImage(16, 16));
+  for (bool is_multiline : {false, true}) {
+    button_->SetMultiLine(is_multiline);
+    for (bool set_image : {false, true}) {
+      if (set_image)
+        button_->SetImage(Button::STATE_NORMAL, CreateTestImage(16, 16));
 
-    bool preferred_size_is_sometimes_narrower_than_max = false;
+      bool preferred_size_is_sometimes_narrower_than_max = false;
+      bool preferred_height_shrinks_as_max_width_grows = false;
 
-    for (size_t i = 0; i < std::size(text_cases); ++i) {
-      for (size_t j = 0; j < std::size(width_cases); ++j) {
-        button_->SetText(ASCIIToUTF16(text_cases[i]));
-        button_->SetMaxSize(gfx::Size(width_cases[j], 30));
+      for (size_t i = 0; i < std::size(text_cases); ++i) {
+        for (size_t j = 0; j < std::size(width_cases); ++j) {
+          const gfx::Size old_preferred_size = button_->GetPreferredSize();
 
-        const gfx::Size preferred_size = button_->GetPreferredSize();
-        EXPECT_LE(preferred_size.width(), width_cases[j]);
+          button_->SetText(ASCIIToUTF16(text_cases[i]));
+          button_->SetMaxSize(gfx::Size(width_cases[j], 30));
 
-        if (preferred_size.width() < width_cases[j])
-          preferred_size_is_sometimes_narrower_than_max = true;
+          const gfx::Size preferred_size = button_->GetPreferredSize();
+          EXPECT_LE(preferred_size.width(), width_cases[j]);
+
+          if (preferred_size.width() < width_cases[j])
+            preferred_size_is_sometimes_narrower_than_max = true;
+
+          if (preferred_size.height() < old_preferred_size.height())
+            preferred_height_shrinks_as_max_width_grows = true;
+        }
       }
-    }
 
-    EXPECT_TRUE(preferred_size_is_sometimes_narrower_than_max);
+      EXPECT_TRUE(preferred_size_is_sometimes_narrower_than_max);
+      if (is_multiline)
+        EXPECT_TRUE(preferred_height_shrinks_as_max_width_grows);
+    }
   }
 }
 

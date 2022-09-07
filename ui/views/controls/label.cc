@@ -361,6 +361,8 @@ void Label::SetMultiLine(bool multi_line) {
   if (this->GetMultiLine() == multi_line)
     return;
   multi_line_ = multi_line;
+  // `max_width_` and `max_width_single_line_` are mutually exclusive.
+  max_width_single_line_ = 0;
   full_text_->SetMultiline(multi_line);
   ClearDisplayText();
   OnPropertyChanged(&multi_line_, kPropertyEffectsPreferredSizeChanged);
