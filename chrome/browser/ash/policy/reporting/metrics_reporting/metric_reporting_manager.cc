@@ -404,7 +404,8 @@ void MetricReportingManager::InitTelemetryConfiguredSampler(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   auto configured_sampler = std::make_unique<ConfiguredSampler>(
-      std::move(sampler), enable_setting_path, default_value);
+      std::move(sampler), enable_setting_path, default_value,
+      &reporting_settings_);
   telemetry_sampler_map_.insert({sampler_name, std::move(configured_sampler)});
 }
 
