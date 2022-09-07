@@ -53,6 +53,8 @@ class COMPONENT_EXPORT(CICERONE) FakeCiceroneClient : public CiceroneClient {
   bool IsStartLxdProgressSignalConnected() override;
   bool IsFileWatchTriggeredSignalConnected() override;
   bool IsLowDiskSpaceTriggeredSignalConnected() override;
+  bool IsInhibitScreensaverSignalConencted() override;
+  bool IsUninhibitScreensaverSignalConencted() override;
   void LaunchContainerApplication(
       const vm_tools::cicerone::LaunchContainerApplicationRequest& request,
       chromeos::DBusMethodCallback<
@@ -495,6 +497,8 @@ class COMPONENT_EXPORT(CICERONE) FakeCiceroneClient : public CiceroneClient {
   bool is_start_lxd_progress_signal_connected_ = true;
   bool is_file_watch_triggered_signal_connected_ = true;
   bool is_low_disk_space_triggered_signal_connected_ = true;
+  bool is_inhibit_screensaver_signal_connected_ = true;
+  bool is_uninhibit_screensaver_signal_connected_ = true;
 
   std::string last_container_username_;
 

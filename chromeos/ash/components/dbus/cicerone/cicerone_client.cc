@@ -125,6 +125,14 @@ class CiceroneClientImpl : public CiceroneClient {
     return is_low_disk_space_triggered_signal_connected_;
   }
 
+  bool IsInhibitScreensaverSignalConencted() override {
+    return is_inhibit_screensaver_signal_connected_;
+  }
+
+  bool IsUninhibitScreensaverSignalConencted() override {
+    return is_uninhibit_screensaver_signal_connected_;
+  }
+
   void LaunchContainerApplication(
       const vm_tools::cicerone::LaunchContainerApplicationRequest& request,
       chromeos::DBusMethodCallback<
@@ -920,6 +928,22 @@ class CiceroneClientImpl : public CiceroneClient {
                             weak_ptr_factory_.GetWeakPtr()),
         base::BindOnce(&CiceroneClientImpl::OnSignalConnected,
                        weak_ptr_factory_.GetWeakPtr()));
+
+    cicerone_proxy_->ConnectToSignal(
+        vm_tools::cicerone::kVmCiceroneInterface,
+        vm_tools::cicerone::kInhibitScreensaverSignal,
+        base::BindRepeating(&CiceroneClientImpl::OnInhibitScreensaverSignal,
+                            weak_ptr_factory_.GetWeakPtr()),
+        base::BindOnce(&CiceroneClientImpl::OnSignalConnected,
+                       weak_ptr_factory_.GetWeakPtr()));
+
+    cicerone_proxy_->ConnectToSignal(
+        vm_tools::cicerone::kVmCiceroneInterface,
+        vm_tools::cicerone::kUninhibitScreensaverSignal,
+        base::BindRepeating(&CiceroneClientImpl::OnUninhibitScreensaverSignal,
+                            weak_ptr_factory_.GetWeakPtr()),
+        base::BindOnce(&CiceroneClientImpl::OnSignalConnected,
+                       weak_ptr_factory_.GetWeakPtr()));
   }
 
  private:
@@ -1170,6 +1194,30 @@ class CiceroneClientImpl : public CiceroneClient {
     }
   }
 
+  void OnInhibitScreensaverSignal(dbus::Signal* signal) {
+    vm_tools::cicerone::InhibitScreensaverSignal proto;
+    dbus::MessageReader reader(signal);
+    if (!reader.PopArrayOfBytesAsProto(&proto)) {
+      LOG(ERROR) << "Failed to parse proto from DBus Signal";
+      return;
+    }
+    for (auto& observer : observer_list_) {
+      observer.OnInhibitScreensaver(proto);
+    }
+  }
+
+  void OnUninhibitScreensaverSignal(dbus::Signal* signal) {
+    vm_tools::cicerone::UninhibitScreensaverSignal proto;
+    dbus::MessageReader reader(signal);
+    if (!reader.PopArrayOfBytesAsProto(&proto)) {
+      LOG(ERROR) << "Failed to parse proto from DBus Signal";
+      return;
+    }
+    for (auto& observer : observer_list_) {
+      observer.OnUninhibitScreensaver(proto);
+    }
+  }
+
   void OnSignalConnected(const std::string& interface_name,
                          const std::string& signal_name,
                          bool is_connected) {
@@ -1223,6 +1271,10 @@ class CiceroneClientImpl : public CiceroneClient {
     } else if (signal_name ==
                vm_tools::cicerone::kLowDiskSpaceTriggeredSignal) {
       is_low_disk_space_triggered_signal_connected_ = is_connected;
+    } else if (signal_name == vm_tools::cicerone::kInhibitScreensaverSignal) {
+      is_inhibit_screensaver_signal_connected_ = is_connected;
+    } else if (signal_name == vm_tools::cicerone::kUninhibitScreensaverSignal) {
+      is_uninhibit_screensaver_signal_connected_ = is_connected;
     } else {
       NOTREACHED();
     }
@@ -1250,6 +1302,8 @@ class CiceroneClientImpl : public CiceroneClient {
   bool is_start_lxd_progress_signal_connected_ = false;
   bool is_file_watch_triggered_signal_connected_ = false;
   bool is_low_disk_space_triggered_signal_connected_ = false;
+  bool is_inhibit_screensaver_signal_connected_ = false;
+  bool is_uninhibit_screensaver_signal_connected_ = false;
 
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.

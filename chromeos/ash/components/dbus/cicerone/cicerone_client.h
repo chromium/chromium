@@ -114,6 +114,16 @@ class COMPONENT_EXPORT(CICERONE) CiceroneClient : public chromeos::DBusClient {
     virtual void OnLowDiskSpaceTriggered(
         const vm_tools::cicerone::LowDiskSpaceTriggeredSignal& signal) {}
 
+    // This is signaled from Cicerone when the VM is requesting to inhibit
+    // sleep.
+    virtual void OnInhibitScreensaver(
+        const vm_tools::cicerone::InhibitScreensaverSignal& signal) {}
+
+    // This is signaled from Cicerone when the VM is requesting to uninhibit
+    // sleep.
+    virtual void OnUninhibitScreensaver(
+        const vm_tools::cicerone::UninhibitScreensaverSignal& signal) {}
+
    protected:
     virtual ~Observer() = default;
   };
@@ -189,6 +199,14 @@ class COMPONENT_EXPORT(CICERONE) CiceroneClient : public chromeos::DBusClient {
   // This should be true before expecting to receive
   // LowDiskSpaceTriggeredSignal.
   virtual bool IsLowDiskSpaceTriggeredSignalConnected() = 0;
+
+  // This should be true before expecting to receive
+  // InhibitScreensaverSignal
+  virtual bool IsInhibitScreensaverSignalConencted() = 0;
+
+  // This should be true before expecting to receive
+  // UninhibitScreensaverSignal.
+  virtual bool IsUninhibitScreensaverSignalConencted() = 0;
 
   // Launches an application inside a running Container.
   // |callback| is called after the method call finishes.

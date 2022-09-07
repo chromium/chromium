@@ -166,6 +166,14 @@ bool FakeCiceroneClient::IsLowDiskSpaceTriggeredSignalConnected() {
   return is_low_disk_space_triggered_signal_connected_;
 }
 
+bool FakeCiceroneClient::IsInhibitScreensaverSignalConencted() {
+  return is_inhibit_screensaver_signal_connected_;
+}
+
+bool FakeCiceroneClient::IsUninhibitScreensaverSignalConencted() {
+  return is_uninhibit_screensaver_signal_connected_;
+}
+
 // Currently no tests need to change the output of this method. If you want to
 // add one, make it return a variable like the above examples.
 bool FakeCiceroneClient::IsPendingAppListUpdatesSignalConnected() {
