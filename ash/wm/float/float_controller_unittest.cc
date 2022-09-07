@@ -13,6 +13,7 @@
 #include "ash/screen_util.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/wm/cursor_manager_chromeos.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_test_util.h"
 #include "ash/wm/splitview/split_view_metrics_controller.h"
@@ -217,6 +218,40 @@ TEST_F(WindowFloatTest, WindowFloatingResize) {
   // Window back to snapped state.
   EXPECT_EQ(chromeos::WindowStateType::kSecondarySnapped,
             window_state2->GetStateType());
+}
+
+// Tests that after we drag a floated window to another display and then
+// maximize, the window is on the correct display. Regression test for
+// https://crbug.com/1360551.
+TEST_F(WindowFloatTest, DragToOtherDisplayThenMaximize) {
+  UpdateDisplay("1200x800,1201+0-1200x800");
+
+  std::unique_ptr<aura::Window> window = CreateFloatedWindow();
+  ASSERT_EQ(Shell::GetAllRootWindows()[0], window->GetRootWindow());
+
+  // Drag the window to the secondary display. Note that the event generator
+  // does not update the display associated with the cursor, so we have to
+  // manually do it here.
+  auto* frame = NonClientFrameViewAsh::Get(window.get());
+  HeaderView* header_view = frame->GetHeaderView();
+  auto* event_generator = GetEventGenerator();
+  event_generator->set_current_screen_location(
+      header_view->GetBoundsInScreen().CenterPoint());
+  const gfx::Point point(1600, 400);
+  Shell::Get()->cursor_manager()->SetDisplay(
+      display::Screen::GetScreen()->GetDisplayNearestPoint(point));
+  event_generator->DragMouseTo(point);
+
+  // Tests that the floated window is on the secondary display and remained
+  // floated.
+  ASSERT_EQ(Shell::GetAllRootWindows()[1], window->GetRootWindow());
+  WindowState* window_state = WindowState::Get(window.get());
+  ASSERT_TRUE(window_state->IsFloated());
+
+  // Maximize the window. Test that it stays on the secondary display.
+  const WMEvent maximize(WM_EVENT_MAXIMIZE);
+  window_state->OnWMEvent(&maximize);
+  EXPECT_EQ(Shell::GetAllRootWindows()[1], window->GetRootWindow());
 }
 
 using TabletWindowFloatTest = WindowFloatTest;

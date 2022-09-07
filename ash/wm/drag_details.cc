@@ -63,11 +63,7 @@ gfx::Rect GetRestoreBoundsInParent(aura::Window* window, int window_component) {
   if (window_component != HTCAPTION)
     return gfx::Rect();
 
-  // Ignore the restore bounds of a floated window as we don't want its size to
-  // change during dragging.
   WindowState* window_state = WindowState::Get(window);
-  if (window_state->IsFloated())
-    return gfx::Rect();
 
   // TODO(xdai): Move these logic to WindowState::GetRestoreBoundsInScreen()
   // and let it return the right value.
@@ -81,7 +77,7 @@ gfx::Rect GetRestoreBoundsInParent(aura::Window* window, int window_component) {
   } else if (window_state->IsSnapped() || window_state->IsMaximized()) {
     DCHECK(window_state->HasRestoreBounds());
     restore_bounds = window_state->GetRestoreBoundsInParent();
-  } else if (window_state->IsNormalStateType() &&
+  } else if ((window_state->IsNormalStateType() || window_state->IsFloated()) &&
              window_state->HasRestoreBounds()) {
     restore_bounds = window_state->GetRestoreBoundsInParent();
   }

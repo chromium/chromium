@@ -399,7 +399,10 @@ gfx::Size WindowResizer::GetSizeForDrag(int* delta_x, int* delta_y) {
                              : gfx::Size();
     size.SetSize(GetWidthForDrag(min_size.width(), delta_x),
                  GetHeightForDrag(min_size.height(), delta_y));
-  } else if (!details().restore_bounds_in_parent.IsEmpty()) {
+  } else if (!details().restore_bounds_in_parent.IsEmpty() &&
+             !window_state_->IsFloated()) {
+    // Floated windows remain the same size while dragging regardless of
+    // restored bounds.
     size = details().restore_bounds_in_parent.size();
   }
   return size;
