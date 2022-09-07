@@ -680,6 +680,7 @@
 <translation id="1632756664321977232">«Եզրատում» գործիք</translation>
 <translation id="163309982320328737">Գրանշանի սկզբնական լայնությունը՝ լիալայնք</translation>
 <translation id="1633947793238301227">Անջատել Google Օգնականը</translation>
+<translation id="1634224622052500893">Գտնվել է Wi-Fi ցանց</translation>
 <translation id="1634783886312010422">Դուք արդեն փոխե՞լ եք այս գաղտնաբառը <ph name="WEBSITE" /> կայքում</translation>
 <translation id="1636212173818785548">Լավ</translation>
 <translation id="163712950892155760"><ph name="BEGIN_PARAGRAPH1" />Հավելվածների տվյալները բոլոր այն տվյալներն են, որոնք հավելվածները պահել են սարքում ծրագրավորողների կարգավորումների հիման վրա։ Այդ տվյալները կարող են ներառել կոնտակտներ, հաղորդագրություններ և լուսանկարներ։ Պահուստավորված տվյալները Drive-ում տարածք չեն զբաղեցնի։<ph name="END_PARAGRAPH1" />
@@ -1356,6 +1357,7 @@
 <translation id="2251218783371366160">Բացել համակարգի դիտակով</translation>
 <translation id="225163402930830576">Թարմացնել ցանցերը</translation>
 <translation id="2251809247798634662">Նոր ինկոգնիտո պատուհան</translation>
+<translation id="2252017960592955005">Անվտանգ դիտում (բետա)</translation>
 <translation id="225240747099314620">Օգտագործել նույնացուցիչները պաշտպանված բովանդակության համար (կարող է անհրաժեշտ լինել, որ համակարգիչը վերագործարկվի)</translation>
 <translation id="2255077166240162850">Այս սարքն արդեն կողպվել է այլ տիրույթում կամ ռեժիմում։</translation>
 <translation id="2255317897038918278">Microsoft ժամադրոշմ</translation>
@@ -2013,6 +2015,7 @@
 <translation id="2839032553903800133">Ծանուցումներն արգելափակված են</translation>
 <translation id="2841013758207633010">Ժամանակ</translation>
 <translation id="2841837950101800123">Մատակարար</translation>
+<translation id="2842013086666334835">Մուտք գործեք «<ph name="NETWORK_ID" />» ցանց</translation>
 <translation id="2843560154284403323">Լինուքսի կարգավորումն ավարտելու համար թարմացրեք ChromeOS-ը և նորից փորձեք։</translation>
 <translation id="2844169650293029770">USB-C սարք (առջևի ձախակողմյան միացք)</translation>
 <translation id="2844809857160214557">Դիտեք և կառավարեք տպելու առաջադրանքները</translation>
@@ -2113,6 +2116,7 @@
 <translation id="2927017729816812676">Հիշապահեստ</translation>
 <translation id="2928795416630981206">Թույլատրվում է հետագծել ձեր տեսախցիկի դիրքը</translation>
 <translation id="2931157624143513983">Տեղավորել տպվող հատվածում</translation>
+<translation id="2931342457001070961">Միացված խոսափող չկա</translation>
 <translation id="2932085390869194046">Ստեղծել գաղտնաբառ…</translation>
 <translation id="2932483646085333864">Դուրս եկեք հաշվից ու նորից մուտք գործեք՝ համաժամացումը սկսելու համար</translation>
 <translation id="2932883381142163287">Հաղորդել չարաշահման մասին</translation>
@@ -2176,6 +2180,7 @@
 <translation id="2996286169319737844">Տվյալները գաղտնագրվել են ձեր համաժամացման անցաբառով: Գաղտնագրումը չի կիրառվում վճարման եղանակների և Google Pay-ի հասցեների համար։</translation>
 <translation id="2996722619877761919">Շրջել երկար եզրի կողմով</translation>
 <translation id="2996932914629936323">Մաքրում է ձեր բոլոր համաժամացված սարքերի պատմությունը</translation>
+<translation id="2998267783395280091">Գտնվել է ցանց</translation>
 <translation id="3000378525979847272">Տրված թույլտվություններ՝ <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /></translation>
 <translation id="3000461861112256445">Մոնո</translation>
 <translation id="3001144475369593262">Երեխաների հաշիվներ</translation>
@@ -2327,6 +2332,7 @@
 <translation id="3142562627629111859">Նոր խումբ</translation>
 <translation id="3143515551205905069">Չեղարկել համաժամացումը</translation>
 <translation id="3143754809889689516">Նվագարկել սկզբից</translation>
+<translation id="3143937294861726703">Հիշողության տնտեսումը միացված է</translation>
 <translation id="3144647712221361880">Բացել հղումը որպես</translation>
 <translation id="3149510190863420837">Chrome-ի հավելվածներ</translation>
 <translation id="3150693969729403281">Անցնել անվտանգության ստուգում</translation>
@@ -5534,7 +5540,6 @@
 <translation id="6276210637549544171"><ph name="PROXY_SERVER" /> պրոքսիի օգտագործման համար անհրաժեշտ է մուտքագրել օգտանուն և գաղտնաբառ։</translation>
 <translation id="6277105963844135994">Ցանցի ժամասպառում</translation>
 <translation id="6277518330158259200">Ստեղ&amp;ծել սքրինշոթ</translation>
-<translation id="6278057325678116358">Օգտագործել GTK+ թեման</translation>
 <translation id="6278428485366576908">Թեմա</translation>
 <translation id="6278776436938569440">Փոխել վայրը</translation>
 <translation id="6279183038361895380">Նշորդը ցուցադրելու համար սեղմեք |<ph name="ACCELERATOR" />|</translation>
@@ -6404,7 +6409,6 @@
 <translation id="7090160970140261931">Դուք կարող եք լրացուցիչ հաշիվներ ավելացնել ձեր <ph name="DEVICE_TYPE" /> սարքում՝ կայքերի և Android-ի համար նախատեսված հավելվածների հետ օգտագործելու համար։ Կարող եք նաև նշել, թե որ հաշիվները պետք է օգտագործվեն այդ հավելվածների հետ։</translation>
 <translation id="7093220653036489319">Արագ պատասխաններ</translation>
 <translation id="7093416310351037609">Տվյալների անվտանգությունն ապահովելու համար ձեր կազմակերպությունը պահանջում է, որ բոլոր ներբեռնումները պահվեն ձեր կազմակերպության <ph name="WEB_DRIVE" /> հաշվում։</translation>
-<translation id="7093434536568905704">GTK+</translation>
 <translation id="7093866338626856921">Փոխանակել տվյալները հետևյալ անուններով սարքերի հետ՝ <ph name="HOSTNAMES" /></translation>
 <translation id="7098389117866926363">USB-C սարք (հետևի ձախ միացք)</translation>
 <translation id="7098447629416471489">Պահված մյուս որոնիչները կցուցադրվեն այստեղ</translation>

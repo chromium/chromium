@@ -138,7 +138,6 @@
 <translation id="1812527064848182527">ležeče</translation>
 <translation id="1829244130665387512">Poiščite na strani</translation>
 <translation id="1834891354138622109">Stolpec</translation>
-<translation id="1845944666972354496">Za aktiviranje se dvakrat dotaknite.</translation>
 <translation id="1846771122725914429">Zaslon braille Bluetooth</translation>
 <translation id="1852018405765032699">Če se zaslona dotaknete s štirimi prsti, odprete in zaprete menije ChromeVoxa. V teh menijih so koristne informacije o ukazih in bližnjicah. Ko so meniji odprti, se lahko po elementih pomikate tako, da povlečete z enim prstom, elemente pa aktivirate tako, da se jih dvakrat dotaknete. Če želite nadaljevati, se dotaknite zaslona s štirimi prsti.</translation>
 <translation id="1865601187525349519">Konec besedila</translation>
@@ -226,7 +225,6 @@
 <translation id="2497706219848005458">Zelenorumena</translation>
 <translation id="2523609930580546572">Vadnica za ChromeVox</translation>
 <translation id="2525706221823668172">Bližnjične tipke za Chromebook</translation>
-<translation id="2543973100702367007">Dvakrat se dotaknite za to: <ph name="LABEL" /></translation>
 <translation id="2553108862507765288">slovnična napaka</translation>
 <translation id="2556326187583116255">Dotaknite se z dvema prstoma, če želite ustaviti kateri koli trenutni govor.</translation>
 <translation id="2573256689920773241">Osnovno pomikanje</translation>
@@ -599,7 +597,6 @@
 <translation id="4993152509206108683">Hitrost: <ph name="PERCENT" /> %</translation>
 <translation id="4994420463726586413">Najava trenutnega stanja akumulatorja</translation>
 <translation id="4997282455736854877">Izbirni gumb <ph name="NAME" /> je izbran</translation>
-<translation id="5011664330025416377">Pritisnite tipko za iskanje + preslednico, če želite aktivirati</translation>
 <translation id="5012724933919010465"><ph name="NAME" />, izbran je izbirni gumb menijskega elementa</translation>
 <translation id="5020651427400641814">Omogočanje zapisovanja dnevnikov govora</translation>
 <translation id="5041394372352067729">Premik Braillove vrstice na vrh strani</translation>
@@ -764,6 +761,7 @@
 <translation id="6100239002225743044">Premik navzgor za eno vrstico</translation>
 <translation id="6118126368611144850">Aplikacije Android za Chrome. Če imate v napravi Trgovino Play, si lahko z aplikacijami za Android pred izdajo ogledate ChromeVox. Preskusite poskusno podporo, tako da iz Trgovine Play prenesete delovno različico Google Chroma.</translation>
 <translation id="611827076493383239">obs</translation>
+<translation id="6119846243427417423">aktiviraj</translation>
 <translation id="6122013438240733403">bgmb</translation>
 <translation id="6132506484792346370">Polje s seznamom ali kombinirano polje</translation>
 <translation id="613344593214611552">brisanje prejšnjega stavka</translation>
@@ -1117,7 +1115,6 @@
 <translation id="8693391540059827073">Moj priljubljeni letni čas</translation>
 <translation id="8696284982970258155">Zelenkasta</translation>
 <translation id="8697111817566059991">{COUNT,plural, =1{navpičnica}one{# navpičnica}two{# navpičnici}few{# navpičnice}other{# navpičnic}}</translation>
-<translation id="8733397807344284494">Pritisnite tipko za iskanje in preslednico, če želite to: <ph name="LABEL" /></translation>
 <translation id="8741370088760768424">Namig: Če želite aktivirati trenutni element, pritisnite tipko za iskanje + preslednico.</translation>
 <translation id="8743786158317878347">odpiranje strukturirane vsebine, npr. tabele</translation>
 <translation id="8746846427395705317">premik na prejšnjo besedo</translation>

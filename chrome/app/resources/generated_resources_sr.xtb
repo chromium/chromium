@@ -106,6 +106,7 @@
 <translation id="1094607894174825014">Операција читања или писања је захтевана уз неважеће смањење на: „<ph name="DEVICE_NAME" />“.</translation>
 <translation id="1095761715416917775">Уверите се да увек можете да приступате синхронизованим подацима</translation>
 <translation id="109647177154844434">Ако деинсталирате Parallels Desktop, избрисаћете слику Windows-а. То обухвата њене апликације, подешавања и податке. Желите ли стварно да наставите?</translation>
+<translation id="1097016918605049747">Превођење ове странице није успело</translation>
 <translation id="1097658378307015415">Пре пријављивања приступите као гост да бисте активирали мрежу <ph name="NETWORK_ID" /></translation>
 <translation id="1099383081182863812">Можете ли да видите Chromecast у <ph name="BEGIN_LINK" />апликацији Google Home<ph name="END_LINK" />?</translation>
 <translation id="1099962274138857708">Слика је копирана са уређаја <ph name="DEVICE_NAME" /></translation>
@@ -677,6 +678,7 @@
 <translation id="1632756664321977232">Алатка за опсецање</translation>
 <translation id="163309982320328737">Почетна ширина знакова је „пуна“</translation>
 <translation id="1633947793238301227">Онемогућите Google помоћник</translation>
+<translation id="1634224622052500893">Пронађена је WiFi мрежа</translation>
 <translation id="1634783886312010422">Да ли сте већ променили ову лозинку на <ph name="WEBSITE" />?</translation>
 <translation id="1636212173818785548">Потврди</translation>
 <translation id="163712950892155760"><ph name="BEGIN_PARAGRAPH1" />Подаци апликација могу да буду било који подаци које је апликација сачувала (на основу подешавања програмера), укључујући податке као што су контакти, поруке и слике. Резервне копије података не улазе у квоту простора на диску.<ph name="END_PARAGRAPH1" />
@@ -779,6 +781,7 @@
 <translation id="1730917990259790240"><ph name="BEGIN_PARAGRAPH1" />Да бисте уклонили апликације, идите у одељак Подешавања &gt; Google Play продавница &gt; Управљајте Android подешавањима &gt; Апликације или Менаџер апликација. Додирните апликацију коју желите да деинсталирате (можда ћете морати да превучете надесно или налево да бисте пронашли апликацију). Онда додирните Деинсталирај или Онемогући.<ph name="END_PARAGRAPH1" /></translation>
 <translation id="1730989807608739928">Скролујте ка последњој картици</translation>
 <translation id="1731911755844941020">Шаље се захтев...</translation>
+<translation id="1732445923934584865">Питајте лично</translation>
 <translation id="1733383495376208985">Шифрујте синхронизоване податке помоћу сопствене <ph name="BEGIN_LINK" />приступне фразе за синхронизацију<ph name="END_LINK" />. То не обухвата начине плаћања и адресе из Google Pay-а.</translation>
 <translation id="1734212868489994726">Светлоплава</translation>
 <translation id="1734230530703461088">Није успело учитавање додатака у оквиру временског ограничења. Обратите се администратору.</translation>
@@ -1304,6 +1307,7 @@
 <translation id="2203088913459920044">Слова, бројеви и специјални знакови могу да се користе у називу</translation>
 <translation id="220321590587754225">Повезивање није успело. Пробајте поново.</translation>
 <translation id="2204034823255629767">Читање и мењање свега што уносите</translation>
+<translation id="2204387456724731099">Превођење овог избора није успело</translation>
 <translation id="220858061631308971">Унесите овај PIN кôд на уређају „<ph name="DEVICE_NAME" />“:</translation>
 <translation id="2210462644007531147">Довршавање инсталирања није успело</translation>
 <translation id="2212565012507486665">Дозволи колачиће</translation>
@@ -2010,6 +2014,7 @@
 <translation id="2839032553903800133">Обавештења су блокирана</translation>
 <translation id="2841013758207633010">Време</translation>
 <translation id="2841837950101800123">Добављач</translation>
+<translation id="2842013086666334835">Пријавите се на „<ph name="NETWORK_ID" />“</translation>
 <translation id="2843560154284403323">Да бисте завршили подешавање Linux-а, ажурирајте Chrome ОС и пробајте поново.</translation>
 <translation id="2844169650293029770">Уређај са USB прикључком типа C (леви предњи порт)</translation>
 <translation id="2844809857160214557">Прегледајте задатке штампања и управљајте њима</translation>
@@ -2110,6 +2115,7 @@
 <translation id="2927017729816812676">Меморијски простор кеша</translation>
 <translation id="2928795416630981206">Дозвољено им је да прате положај камере</translation>
 <translation id="2931157624143513983">Прилагоди подручју за штампање</translation>
+<translation id="2931342457001070961">Није повезан ниједан микрофон</translation>
 <translation id="2932085390869194046">Предложи лозинку...</translation>
 <translation id="2932483646085333864">Одјавите се, па се поново пријавите да бисте започели синхронизацију</translation>
 <translation id="2932883381142163287">Пријави злоупотребу</translation>
@@ -2173,6 +2179,7 @@
 <translation id="2996286169319737844">Подаци се шифрују помоћу приступне фразе за синхронизацију. То не обухвата начине плаћања и адресе из Google Pay-а.</translation>
 <translation id="2996722619877761919">Окрени по дужој ивици</translation>
 <translation id="2996932914629936323">Брише историју са свих синхронизованих уређаја</translation>
+<translation id="2998267783395280091">Пронађена је мрежа</translation>
 <translation id="3000378525979847272">Дозвољено је: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /></translation>
 <translation id="3000461861112256445">Моно звук</translation>
 <translation id="3001144475369593262">Дечји налози</translation>
@@ -2324,6 +2331,7 @@
 <translation id="3142562627629111859">Нова група</translation>
 <translation id="3143515551205905069">Откажи синхронизацију</translation>
 <translation id="3143754809889689516">Пусти испочетка</translation>
+<translation id="3143937294861726703">Уштеда меморије је укључена</translation>
 <translation id="3144647712221361880">Отворите линк као</translation>
 <translation id="3149510190863420837">Chrome апликације</translation>
 <translation id="3150693969729403281">Обавите безбедносну проверу одмах</translation>
@@ -5124,6 +5132,7 @@
 <translation id="5884474295213649357">Ова картица је повезана са USB уређајем.</translation>
 <translation id="5885314688092915589">Организација ће управљати овим профилом</translation>
 <translation id="5886009770935151472">Прст 1</translation>
+<translation id="5886384907280980632">Искључи</translation>
 <translation id="5889282057229379085">Највећи број посредничких CA: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5891688036610113830">Примарне WiFi мреже</translation>
 <translation id="5895138241574237353">Покрени поново</translation>
@@ -5224,6 +5233,7 @@
 <translation id="5975792506968920132">Проценат напуњености батерије</translation>
 <translation id="5976160379964388480">Други</translation>
 <translation id="5978277834170881274">&amp;Користи основну проверу правописа</translation>
+<translation id="5978395054855988504">Уштеда батерије је укључена</translation>
 <translation id="5978493744931296692">Администратор је онемогућио друге профиле</translation>
 <translation id="5979084224081478209">Провери лозинке</translation>
 <translation id="5979156418378918004">{NUM_EXTENSIONS,plural, =1{Поново сте укључили 1 потенцијално штетан додатак}one{Поново сте укључили {NUM_EXTENSIONS} потенцијално штетан додатак}few{Поново сте укључили {NUM_EXTENSIONS} потенцијално штетна додатка}other{Поново сте укључили {NUM_EXTENSIONS} потенцијално штетних додатака}}</translation>
@@ -5529,7 +5539,6 @@
 <translation id="6276210637549544171">Прокси <ph name="PROXY_SERVER" /> захтева корисничко име и лозинку.</translation>
 <translation id="6277105963844135994">Временско ограничење мреже</translation>
 <translation id="6277518330158259200">С&amp;ними екран</translation>
-<translation id="6278057325678116358">Користи GTK+</translation>
 <translation id="6278428485366576908">Тема</translation>
 <translation id="6278776436938569440">Промени локацију</translation>
 <translation id="6279183038361895380">Притисните |<ph name="ACCELERATOR" />| да бисте приказали показивач</translation>
@@ -6400,7 +6409,6 @@
 <translation id="7090160970140261931">Можете да додајете додатне налоге на <ph name="DEVICE_TYPE" /> које ћете користити са веб-сајтовима и Android апликацијама. Можете и да контролишете који налози се користе са Android апликацијама.</translation>
 <translation id="7093220653036489319">Брзи одговори</translation>
 <translation id="7093416310351037609">Да би подаци били сигурни и безбедни, ваша организација захтева да се сва преузимања која испуњавају услове чувају на <ph name="WEB_DRIVE" /> налогу организације.</translation>
-<translation id="7093434536568905704">GTK+</translation>
 <translation id="7093866338626856921">Размена података са уређајима следећих назива: <ph name="HOSTNAMES" /></translation>
 <translation id="7098389117866926363">Уређај са USB прикључком типа C (леви задњи порт)</translation>
 <translation id="7098447629416471489">Други сачувани претраживачи ће се појавити овде</translation>
@@ -8436,6 +8444,7 @@
 <translation id="9048745018038487540">Изабери све фонтове</translation>
 <translation id="9050666287014529139">Приступна фраза</translation>
 <translation id="9052404922357793350">Настави са блокирањем</translation>
+<translation id="90528604757378587">Активност у позадини и неки визуелни ефекти, на пример, глатко скроловање, могу да буду ограничени.</translation>
 <translation id="9053563360605707198">Штампај двострано</translation>
 <translation id="9055636786322918818">Примењује RC4 шифровање. Коришћење ове опције вас излаже већем ризику јер су RC4 шифре небезбедне.</translation>
 <translation id="9056810968620647706">Није пронађено ниједно подударање.</translation>

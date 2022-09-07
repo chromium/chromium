@@ -138,7 +138,6 @@
 <translation id="1812527064848182527">vodoravno</translation>
 <translation id="1829244130665387512">Pronađi na stranici</translation>
 <translation id="1834891354138622109">Stupac</translation>
-<translation id="1845944666972354496">Dodirnite dvaput da aktivirate</translation>
 <translation id="1846771122725914429">Bluetooth Brailleov ekran</translation>
 <translation id="1852018405765032699">Dodirivanjem ekrana s četiri prsta otvaraju se i zatvaraju meniji ChromeVoxa. Ovi meniji sadržavaju korisne informacije o komandama i prečicama. Nakon otvaranja menija možete prevlačiti jednim prstom da se krećete kroz stavke i dvaput ih dodirnuti da ih aktivirate. Da nastavite, dodirnite ekran s četiri prsta.</translation>
 <translation id="1865601187525349519">Kraj teksta</translation>
@@ -226,7 +225,6 @@
 <translation id="2497706219848005458">Zelenožuta</translation>
 <translation id="2523609930580546572">Vodič za ChromeVox</translation>
 <translation id="2525706221823668172">Tipkovni prečaci na Chromebooku</translation>
-<translation id="2543973100702367007">Dodirnite dvaput da učinite sljedeće: <ph name="LABEL" /></translation>
 <translation id="2553108862507765288">gramatička greška</translation>
 <translation id="2556326187583116255">Dodirnite s 2 prsta da zaustavite trenutni govor</translation>
 <translation id="2573256689920773241">Osnovna navigacija</translation>
@@ -530,6 +528,7 @@
 <translation id="4479068155583208887">Žarkocrvena</translation>
 <translation id="4482330759234983253">Prethodna tablica</translation>
 <translation id="4491109536499578614">Slika</translation>
+<translation id="4507332368061453500">Dugi klik na trenutnu stavku</translation>
 <translation id="4511186779140817916">Bežbraon</translation>
 <translation id="451510441928265982">Nema prethodnog naslova 2. nivoa</translation>
 <translation id="4515799157838123044">Zasjeni sadržaj u pozadini</translation>
@@ -598,7 +597,6 @@
 <translation id="4993152509206108683">Stopa <ph name="PERCENT" /> posto</translation>
 <translation id="4994420463726586413">Najava trenutnog statusa baterije</translation>
 <translation id="4997282455736854877">Odabrali ste dugme za izbor <ph name="NAME" /></translation>
-<translation id="5011664330025416377">Pritisnite tipku za pretraživanje + razmak da aktivirate</translation>
 <translation id="5012724933919010465">Odabrano je dugme za izbor stavke menija <ph name="NAME" /></translation>
 <translation id="5020651427400641814">Omogući zapisivanje govora</translation>
 <translation id="5041394372352067729">Pomjeranje Brailleovog ekrana na vrh stranice</translation>
@@ -763,6 +761,7 @@
 <translation id="6100239002225743044">Pomjeri nagore za jedan red</translation>
 <translation id="6118126368611144850">Android aplikacije za Chrome Ako imate Play trgovinu na uređaju, zavirite u ChromeVox s Android aplikacijama. Isprobajte eksperimentalnu podršku preuzimanjem preglednika Google Chrome Canary u Play trgovini.</translation>
 <translation id="611827076493383239">pst</translation>
+<translation id="6119846243427417423">aktiviraj</translation>
 <translation id="6122013438240733403">dgm</translation>
 <translation id="6132506484792346370">Okvir s listom ili kombinirani okvir</translation>
 <translation id="613344593214611552">briši prethodnu rečenicu</translation>
@@ -1116,7 +1115,6 @@
 <translation id="8693391540059827073">Moje omiljeno godišnje doba</translation>
 <translation id="8696284982970258155">svijetlozelena</translation>
 <translation id="8697111817566059991">{COUNT,plural, =1{uspravna crta}one{# uspravna crta}few{# uspravne crte}other{# uspravnih crta}}</translation>
-<translation id="8733397807344284494">Pritisnite tipku za pretraživanje i tipku za razmak da učinite sljedeće: <ph name="LABEL" /></translation>
 <translation id="8741370088760768424">Savjet: pritisnite tipke za pretraživanje i razmak da aktivirate trenutno odabranu stavku.</translation>
 <translation id="8743786158317878347">unos strukturiranog sadržaja, kao što su tabele</translation>
 <translation id="8746846427395705317">vrati na prethodnu riječ</translation>

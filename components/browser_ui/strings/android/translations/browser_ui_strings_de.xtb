@@ -30,6 +30,7 @@
 <translation id="1717218214683051432">Bewegungssensoren</translation>
 <translation id="1743802530341753419">Nachfragen, bevor Websites eine Verbindung zu einem Gerät herstellen (empfohlen)</translation>
 <translation id="1779089405699405702">Bild-Decodierer</translation>
+<translation id="1785415724048343560">Für eine optimale Nutzung empfohlen</translation>
 <translation id="1818308510395330587">Damit <ph name="APP_NAME" /> AR verwenden kann, muss die Kameraberechtigung auch in den <ph name="BEGIN_LINK" />Android-Einstellungen<ph name="END_LINK" /> aktiviert sein.</translation>
 <translation id="1864927262126810325">Quelle: <ph name="SOURCE_NAME" /></translation>
 <translation id="1887786770086287077">Der Standortzugriff ist für dieses Gerät deaktiviert. Du kannst ihn in den <ph name="BEGIN_LINK" />Android-Einstellungen<ph name="END_LINK" /> aktivieren.</translation>
@@ -169,6 +170,7 @@
 <translation id="4751476147751820511">Bewegungs- oder Lichtsensoren</translation>
 <translation id="4811450222531576619">Informationen zur Quelle und zum Thema</translation>
 <translation id="4836046166855586901">Nachfragen, wenn eine Website Informationen zu deiner aktiven Nutzung dieses Geräts abrufen möchte</translation>
+<translation id="483914009762354899">Alle Websites unter dieser Domain einschließen</translation>
 <translation id="4883854917563148705">Verwaltete Einstellungen können nicht zurückgesetzt werden</translation>
 <translation id="4887024562049524730">Nachfragen, bevor Websites erlaubt wird, mein Virtual-Reality-Gerät und meine Virtual-Reality-Daten zu verwenden (empfohlen)</translation>
 <translation id="4962975101802056554">Alle Berechtigungen für Gerät entziehen</translation>
@@ -309,6 +311,7 @@
 <translation id="7791543448312431591">Hinzufügen</translation>
 <translation id="780301667611848630">Kein Interesse</translation>
 <translation id="7804248752222191302">Eine Website verwendet deine Kamera</translation>
+<translation id="7816129586531226979">Ähnliche Websites erinnern sich möglicherweise websiteübergreifend an dich</translation>
 <translation id="7817023149356982970">Du wirst von dieser Website abgemeldet.</translation>
 <translation id="7828557259026017104">Cookies sind Dateien, die von Websites erstellt werden, die du besuchst. Sie werden zum Speichern deiner Einstellungen verwendet. Drittanbieter-Cookies werden von anderen Websites erstellt. Diesen Websites gehören einige der Inhalte, wie z. B. Werbeanzeigen oder Bilder, die du auf der besuchten Webseite siehst.</translation>
 <translation id="7835852323729233924">Medien werden wiedergegeben</translation>

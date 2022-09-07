@@ -138,7 +138,6 @@
 <translation id="1812527064848182527">အလျားလိုက်</translation>
 <translation id="1829244130665387512">စာမျက်နှာတွင် ရှာရန်</translation>
 <translation id="1834891354138622109">ကော်လံ</translation>
-<translation id="1845944666972354496">စတင်ရန် နှစ်ချက်တို့ပါ</translation>
 <translation id="1846771122725914429">ဘလူးတုသ် မျက်မမြင်စာဖတ်ကိရိယာ</translation>
 <translation id="1852018405765032699">ဖန်သားပြင်ကို လက်လေးချောင်းဖြင့် တို့၍ ChromeVox မီနူးများကို ဖွင့်ခြင်း၊ ပိတ်ခြင်းတို့ ပြုလုပ်နိုင်မည်။ ဤမီနူးများတွင် ကွန်မန်းများ၊ ဖြတ်လမ်းလင့်ခ်များနှင့် ပတ်သက်သော အသုံးဝင်သည့် အချက်အလက်များ ပါဝင်သည်။ မီနူးများပွင့်သွားလျှင် အကြောင်းအရာများသို့ သွားရန် လက်တစ်ချောင်းဖြင့် ပွတ်ဆွဲနိုင်သည်၊ ၎င်းတို့ကို ဖွင့်ရန် နှစ်ချက်တို့နိုင်သည်။ ရှေ့ဆက်ရန် ဖန်သားပြင်ကို လက်လေးချောင်းဖြင့် တို့ပါ။</translation>
 <translation id="1865601187525349519">စာတိုအဆုံး</translation>
@@ -226,7 +225,6 @@
 <translation id="2497706219848005458">စိမ်းဝါ</translation>
 <translation id="2523609930580546572">ChromeVox သင်ခန်းစာ</translation>
 <translation id="2525706221823668172">Chromebook ကီးဘုတ်ဖြတ်လမ်းများ</translation>
-<translation id="2543973100702367007"><ph name="LABEL" /> ရန် နှစ်ချက်တို့ပါ</translation>
 <translation id="2553108862507765288">သဒ္ဒါ အမှား</translation>
 <translation id="2556326187583116255">လက်ရှိပြောဆိုမှုမှန်သမျှကို ရပ်ရန် လက် ၂ ချောင်းဖြင့် တို့ပါ</translation>
 <translation id="2573256689920773241">အခြေခံ ရွှေ့ကြည့်ခြင်း</translation>
@@ -598,7 +596,6 @@
 <translation id="4993152509206108683"><ph name="PERCENT" /> ရာခိုင်နှုန်း အဆင့်သတ်မှတ်ရန်</translation>
 <translation id="4994420463726586413">လက်ရှိဘက်ထရီ အခြေအနေကို ကြေညာရန်</translation>
 <translation id="4997282455736854877"><ph name="NAME" />၊ ရေဒီယို ခလုတ် ရွေးထား</translation>
-<translation id="5011664330025416377">စဖွင့်သတ်မှတ်ရန် Search+Space ကို နှိပ်ပါ</translation>
 <translation id="5012724933919010465"><ph name="NAME" />၊ မီနူး အကြောင်းအရာ ရေဒီယိုခလုတ်ကို ရွေးထားသည်</translation>
 <translation id="5020651427400641814">စကားသံမှတ်သားခြင်းကို ဖွင့်ရန်</translation>
 <translation id="5041394372352067729">မျက်မမြင်စာကို စာမျက်နှာ၏ အပေါ်သို့ ပို့ရန်</translation>
@@ -763,6 +760,7 @@
 <translation id="6100239002225743044">အပေါ်သို့ တစ်ကြောင်းတက်ရန်</translation>
 <translation id="6118126368611144850">Chrome အတွက် Android အက်ပ်များ။ သင့်စက်ပစ္စည်းပေါ်တွင် Play စတိုးရှိလျှင် Android အက်ပ်များဖြင့် ChromeVox ကို စမ်းကြည့်နိုင်ပါသည်။ Play စတိုးမှနေ၍ Google Chrome Canary ကို ဒေါင်းလုဒ်လုပ်၍ စမ်းသပ်ထောက်ပံ့မှုကို စမ်းကြည့်ပါ။</translation>
 <translation id="611827076493383239">vtd</translation>
+<translation id="6119846243427417423">ဖွင့်သုံးရန်</translation>
 <translation id="6122013438240733403">btn</translation>
 <translation id="6132506484792346370">စာရင်းအကွက် သို့မဟုတ် ပူးပေါင်းအကွက်</translation>
 <translation id="613344593214611552">ယခင်ဝါကျကို ဖျက်ပါ</translation>
@@ -1116,7 +1114,6 @@
 <translation id="8693391540059827073">ကျွန်ုပ်အကြိုက်ဆုံး ရာသီဥတု</translation>
 <translation id="8696284982970258155">သခွားမွှေး</translation>
 <translation id="8697111817566059991">{COUNT,plural, =1{ပိုက်}other{# ဒေါင်လိုက်ပိုက်များ}}</translation>
-<translation id="8733397807344284494"><ph name="LABEL" /> ရန် Search+Space နှိပ်ပါ</translation>
 <translation id="8741370088760768424">သဲလွန်စ- လက်ရှိအရာကို စတင်ရန် 'ရှာဖွေရေး + နေရာခြားခလုတ်' ကို နှိပ်ပါ။</translation>
 <translation id="8743786158317878347">ဇယားများလို ပုံစံချထားသည့် အကြောင်းအရာသို့ ၐင်ရန်</translation>
 <translation id="8746846427395705317">ယခင်စကားလုံးသို့ ရွှေ့ပါ</translation>

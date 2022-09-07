@@ -684,6 +684,7 @@
 <translation id="1632756664321977232">Інструмент обрізування</translation>
 <translation id="163309982320328737">Початкова ширина символів – повна</translation>
 <translation id="1633947793238301227">Вимкнути Google Асистента</translation>
+<translation id="1634224622052500893">Знайдено мережу Wi-Fi</translation>
 <translation id="1634783886312010422">Ви вже змінили пароль на сайті <ph name="WEBSITE" />?</translation>
 <translation id="1636212173818785548">OK</translation>
 <translation id="163712950892155760"><ph name="BEGIN_PARAGRAPH1" />Даними додатків може бути будь-яка інформація, яку вони зберігають (залежно від налаштувань розробника), зокрема такі відомості, як контакти, повідомлення та фотографії. Резервні копії даних не займають простір на Диску.<ph name="END_PARAGRAPH1" />
@@ -2029,6 +2030,7 @@
 <translation id="2839032553903800133">Сповіщення заблоковано</translation>
 <translation id="2841013758207633010">Час</translation>
 <translation id="2841837950101800123">Постачальник</translation>
+<translation id="2842013086666334835">Увійдіть у мережу "<ph name="NETWORK_ID" />"</translation>
 <translation id="2843560154284403323">Щоб завершити налаштування Linux, оновіть ОС Chrome і повторіть спробу.</translation>
 <translation id="2844169650293029770">Пристрій, під’єднаний до порту USB-C (ліворуч на передній панелі)</translation>
 <translation id="2844809857160214557">Перегляд завдань друку й керування ними</translation>
@@ -2129,6 +2131,7 @@
 <translation id="2927017729816812676">Кеш-пам’ять</translation>
 <translation id="2928795416630981206">Дозволено відстежувати положення камери</translation>
 <translation id="2931157624143513983">За розміром області друку</translation>
+<translation id="2931342457001070961">Мікрофон не підключено</translation>
 <translation id="2932085390869194046">Запропонувати пароль…</translation>
 <translation id="2932483646085333864">Щоб почати синхронізацію, вийдіть з облікового запису та ввійдіть у нього знову</translation>
 <translation id="2932883381142163287">Повідомити про порушення</translation>
@@ -2192,6 +2195,7 @@
 <translation id="2996286169319737844">Дані зашифровано за допомогою парольної фрази для синхронізації. Це не стосується способів оплати й адрес із Google Pay.</translation>
 <translation id="2996722619877761919">Перевертати за довгим краєм</translation>
 <translation id="2996932914629936323">Буде видалено історію на всіх синхронізованих пристроях</translation>
+<translation id="2998267783395280091">Знайдено мережу</translation>
 <translation id="3000378525979847272">Дозволено: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /></translation>
 <translation id="3000461861112256445">Монофонічне аудіо</translation>
 <translation id="3001144475369593262">Облікові записи дитини</translation>
@@ -2343,6 +2347,7 @@
 <translation id="3142562627629111859">Нова група</translation>
 <translation id="3143515551205905069">Скасувати синхронізацію</translation>
 <translation id="3143754809889689516">Відтворити з початку</translation>
+<translation id="3143937294861726703">Заощадження пам’яті ввімкнено</translation>
 <translation id="3144647712221361880">Відкрити посилання як</translation>
 <translation id="3149510190863420837">Додатки Chrome</translation>
 <translation id="3150693969729403281">Виконати перевірку безпеки</translation>
@@ -5546,7 +5551,6 @@
 <translation id="6276210637549544171">Щоб отримати доступ до проксі <ph name="PROXY_SERVER" />, введіть ім'я користувача та пароль.</translation>
 <translation id="6277105963844135994">Час очікування мережі минув</translation>
 <translation id="6277518330158259200">З&amp;робити знімок екрана</translation>
-<translation id="6278057325678116358">Вибрати тему GTK+</translation>
 <translation id="6278428485366576908">Тема</translation>
 <translation id="6278776436938569440">Змінити місце</translation>
 <translation id="6279183038361895380">Натисніть |<ph name="ACCELERATOR" />|, щоб побачити курсор</translation>
@@ -5639,7 +5643,7 @@
 <translation id="6367097275976877956">Активувати ChromeVox, вбудовану програму зчитування з екрана для ОС Chrome? Щоб зробити це, натисніть пробіл.</translation>
 <translation id="6367985768157257101">Отримати дані через функцію "Передавання поблизу"?</translation>
 <translation id="6368276408895187373">Увімкнено – <ph name="VARIATION_NAME" /></translation>
-<translation id="636850387210749493">Реєстрація підприємства</translation>
+<translation id="636850387210749493">Корпоративна реєстрація</translation>
 <translation id="6370021412472292592">Не вдалося завантажити маніфест.</translation>
 <translation id="6374077068638737855">Iceweasel</translation>
 <translation id="6374469231428023295">Повторити спробу</translation>
@@ -6419,7 +6423,6 @@
 <translation id="7090160970140261931">Ви можете додати інші облікові записи, через які <ph name="DEVICE_TYPE" /> матиме доступ до веб-сайтів і додатків для Android. Також можна визначати, які облікові записи використовуються в додатках для Android.</translation>
 <translation id="7093220653036489319">Швидкі відповіді</translation>
 <translation id="7093416310351037609">З міркувань захисту даних адміністратор вашої організації вимагає, щоб дозволені завантажені файли зберігалися в обліковому записі організації в сервісі <ph name="WEB_DRIVE" />.</translation>
-<translation id="7093434536568905704">Тема GTK+</translation>
 <translation id="7093866338626856921">Обмінюватися даними з пристроями з назвами: <ph name="HOSTNAMES" /></translation>
 <translation id="7098389117866926363">Пристрій, під’єднаний до порту USB-C (ліворуч на задній панелі)</translation>
 <translation id="7098447629416471489">Тут відображатимуться інші збережені пошукові системи</translation>

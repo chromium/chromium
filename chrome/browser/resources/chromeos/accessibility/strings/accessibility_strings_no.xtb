@@ -138,7 +138,6 @@ For å åpne Chrome-menyen, trykk på Alt+F.</translation>
 <translation id="1812527064848182527">liggende</translation>
 <translation id="1829244130665387512">Finn på side</translation>
 <translation id="1834891354138622109">Kolonne</translation>
-<translation id="1845944666972354496">Dobbelttrykk for å aktivere</translation>
 <translation id="1846771122725914429">Bluetooth-leselist</translation>
 <translation id="1852018405765032699">Trykk på skjermen med fire fingre for å åpne og lukke ChromeVox-menyene. Disse menyene inneholder nyttig informasjon om kommandoer og snarveier. Når menyene er åpne, kan du sveipe med én finger for å navigere gjennom elementer og dobbelttrykke for å aktivere elementer. For å fortsette, trykk på skjermen med fire fingre.</translation>
 <translation id="1865601187525349519">Slutt på teksten</translation>
@@ -226,7 +225,6 @@ For å åpne Chrome-menyen, trykk på Alt+F.</translation>
 <translation id="2497706219848005458">Grønngul</translation>
 <translation id="2523609930580546572">ChromeVox-veiledning</translation>
 <translation id="2525706221823668172">Hurtigtaster på Chromebook</translation>
-<translation id="2543973100702367007">Dobbelttrykk for å <ph name="LABEL" /></translation>
 <translation id="2553108862507765288">grammatical mistake</translation>
 <translation id="2556326187583116255">Trykk med to fingre for å stoppe eventuell høytlesning som pågår</translation>
 <translation id="2573256689920773241">Generell navigering</translation>
@@ -598,7 +596,6 @@ For å åpne Chrome-menyen, trykk på Alt+F.</translation>
 <translation id="4993152509206108683">Hastighet – <ph name="PERCENT" /> prosent</translation>
 <translation id="4994420463726586413">Les opp gjeldende batteristatus</translation>
 <translation id="4997282455736854877"><ph name="NAME" />, alternativknappen valgt</translation>
-<translation id="5011664330025416377">Trykk på Søk + mellomrom for å aktivere</translation>
 <translation id="5012724933919010465"><ph name="NAME" />, menyelement med alternativknapp som er valgt</translation>
 <translation id="5020651427400641814">Slå på loggføring av tale</translation>
 <translation id="5041394372352067729">Flytt leselisten til toppen av siden</translation>
@@ -714,7 +711,7 @@ For å åpne Chrome-menyen, trykk på Alt+F.</translation>
 <translation id="5761219715606611783">Bra! Du har lært det grunnleggende som trengs for å bruke ChromeVox-berøring. Du kan gå gjennom veiledningen på nytt eller avslutte denne veiledningen med knappene under.</translation>
 <translation id="5776001898637896684">Google Enhanced Network-utvidelse for tekst til tale</translation>
 <translation id="5805940204952508776">Trykk med to fingre</translation>
-<translation id="5819072574982403430">Treelementet</translation>
+<translation id="5819072574982403430">Treelement</translation>
 <translation id="5822819874379903994">Mørk turkis</translation>
 <translation id="5824976764713185207">Les siden automatisk når den er ferdig lastet inn</translation>
 <translation id="5826479389509458994">rad <ph name="ROW" /> kolonne <ph name="COL" /></translation>
@@ -763,6 +760,7 @@ For å åpne Chrome-menyen, trykk på Alt+F.</translation>
 <translation id="6100239002225743044">Flytt opp én linje</translation>
 <translation id="6118126368611144850">Android-apper for Chrome. Hvis du har Play Butikk på enheten din, kan du ta en sniktitt på ChromeVox med Android-apper. Prøv den eksperimentelle støtten ved å laste ned Google Chrome Canary fra Play-butikken.</translation>
 <translation id="611827076493383239">vtd</translation>
+<translation id="6119846243427417423">aktiver</translation>
 <translation id="6122013438240733403">btn</translation>
 <translation id="6132506484792346370">En listeboks eller et kombinasjonsfelt</translation>
 <translation id="613344593214611552">slett forrige setning</translation>
@@ -1116,7 +1114,6 @@ For å åpne Chrome-menyen, trykk på Alt+F.</translation>
 <translation id="8693391540059827073">Favorittsesongen min</translation>
 <translation id="8696284982970258155">Honningmelon</translation>
 <translation id="8697111817566059991">{COUNT,plural, =1{loddrett strek}other{# loddrette streker}}</translation>
-<translation id="8733397807344284494">Trykk på Søk + mellomrom for å <ph name="LABEL" /></translation>
 <translation id="8741370088760768424">Tips: Trykk på søketasten + mellomrom for å aktivere det gjeldende elementet.</translation>
 <translation id="8743786158317878347">åpne strukturert innhold, for eksempel tabeller</translation>
 <translation id="8746846427395705317">gå til forrige ord</translation>

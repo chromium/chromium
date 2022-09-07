@@ -138,7 +138,6 @@
 <translation id="1812527064848182527">லேண்ட்ஸ்கேப்</translation>
 <translation id="1829244130665387512">இந்தப் பக்கத்தில் தேடு</translation>
 <translation id="1834891354138622109">நெடுவரிசை</translation>
-<translation id="1845944666972354496">செயல்படுத்த, இருமுறை தட்டவும்</translation>
 <translation id="1846771122725914429">புளூடூத் பிரெய்ல் காட்சி</translation>
 <translation id="1852018405765032699">நான்கு விரல்களால் திரையைத் தட்டினால் ChromeVox மெனுக்கள் திறக்கப்படும் மூடப்படும். கட்டளைகள் &amp; ஷார்ட்கட்கள் குறித்த உதவிகரமான தகவல்கள் அவற்றில் இருக்கும். மெனுக்கள் திறக்கப்பட்டதும் அவற்றில் உள்ளவற்றைப் பார்க்க ஒரு விரலால் ஸ்வைப் செய்யலாம், அவற்றைச் செயல்படுத்த இருமுறை தட்டலாம். தொடர, நான்கு விரல்களால் திரையைத் தட்டவும்.</translation>
 <translation id="1865601187525349519">உரையின் இறுதி</translation>
@@ -226,7 +225,6 @@
 <translation id="2497706219848005458">க்ரீன் எல்லோ</translation>
 <translation id="2523609930580546572">ChromeVox பயிற்சி</translation>
 <translation id="2525706221823668172">Chromebook கீபோர்டு ஷார்ட்கட்கள்</translation>
-<translation id="2543973100702367007"><ph name="LABEL" /> செய்ய இருமுறை தட்டவும்</translation>
 <translation id="2553108862507765288">இலக்கணப் பிழை</translation>
 <translation id="2556326187583116255">தற்போது வாசித்துக் காட்டப்படுவதை நிறுத்த, இரண்டு விரல்களால் தட்டவும்</translation>
 <translation id="2573256689920773241">அடிப்படை வழிசெலுத்துதல்</translation>
@@ -598,7 +596,6 @@
 <translation id="4993152509206108683">பேச்சு விகிதம் <ph name="PERCENT" /> சதவீதம்</translation>
 <translation id="4994420463726586413">தற்போதைய பேட்டரி நிலையைத் தெரிவிக்கும்</translation>
 <translation id="4997282455736854877"><ph name="NAME" />, ரேடியோ பட்டன் தேர்ந்தெடுக்கப்பட்டது</translation>
-<translation id="5011664330025416377">செயல்படுத்த, Search+Space விசைகளை அழுத்தவும்</translation>
 <translation id="5012724933919010465"><ph name="NAME" />, மெனு விருப்பம் ரேடியோ பட்டனுக்கான தேர்வு செய்யப்பட்டுள்ளது</translation>
 <translation id="5020651427400641814">பேச்சுப் பதிவை இயக்கவும்</translation>
 <translation id="5041394372352067729">பக்கத்தின் மேல்பகுதிக்கு பிரெய்ல் காட்சியை நகர்த்து</translation>
@@ -763,6 +760,7 @@
 <translation id="6100239002225743044">முந்தைய வரிக்குச் செல்</translation>
 <translation id="6118126368611144850">Chromeக்கான Android ஆப்ஸ். உங்கள் சாதனத்தில் Play Store இருந்தால், Android பயன்பாடுகளுடன்கூடிய ChromeVox இல் புத்தம்புதிய அம்சங்களைப் பெறுங்கள் (பொதுவில் வெளியாவதற்கு முன்பே). Play Storeரிலிருந்து Google Chrome Canaryஐப் பதிவிறக்கி, பரிசோதனைக்குரிய ஆதரவைப் பயன்படுத்திப் பார்க்கவும்.</translation>
 <translation id="611827076493383239">vtd</translation>
+<translation id="6119846243427417423">செயல்படுத்து</translation>
 <translation id="6122013438240733403">btn</translation>
 <translation id="6132506484792346370">பட்டியல்பெட்டி அல்லது சேர்க்கைப் பெட்டி</translation>
 <translation id="613344593214611552">முந்தைய வாக்கியத்தை நீக்கு</translation>
@@ -1116,7 +1114,6 @@
 <translation id="8693391540059827073">எனக்குப் பிடித்த பருவகாலம்</translation>
 <translation id="8696284982970258155">ஹனிடியூ</translation>
 <translation id="8697111817566059991">{COUNT,plural, =1{குத்துக் கோடு}other{# செங்குத்தான குத்துக் கோடுகள்}}</translation>
-<translation id="8733397807344284494"><ph name="LABEL" /> செய்ய Search+Space அழுத்தவும்</translation>
 <translation id="8741370088760768424">குறிப்பு: தற்போதைய உறுப்பைச் செயல்படுத்த, Search + Space விசைகளை அழுத்துங்கள்.</translation>
 <translation id="8743786158317878347">அட்டவணைகள் போன்ற கட்டமைக்கப்பட்ட உள்ளடக்கத்தை உள்ளிடும்</translation>
 <translation id="8746846427395705317">முந்தைய வார்த்தைக்குச் செல்</translation>

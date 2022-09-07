@@ -138,7 +138,6 @@
 <translation id="1812527064848182527">লেণ্ডস্কে’প</translation>
 <translation id="1829244130665387512">পৃষ্ঠাত বিচাৰক</translation>
 <translation id="1834891354138622109">স্তম্ভ</translation>
-<translation id="1845944666972354496">সক্ৰিয় কৰিবলৈ দুবাৰ টিপক</translation>
 <translation id="1846771122725914429">ব্লুটুথ ব্ৰেইল ডিছপ্লে</translation>
 <translation id="1852018405765032699">চাৰিটা আঙুলিৰে স্ক্ৰীনখনত টিপিলে ChromeVox মেনু খুলিব আৰু বন্ধ হ’ব। এই মেনুত নিৰ্দেশ আৰু শ্বৰ্টকাটৰ বিষয়ে সহায়ক তথ্য থাকে। মেনু খোলাৰ পাছত আপুনি বস্তুবোৰৰ মাজত নেভিগে’ট কৰিবলৈ এটা আঙুলিৰে ছোৱাইপ কৰিব পাৰে আৰু কোনো বস্তু সক্ৰিয় কৰিবলৈ তাত দুবাৰ টিপিব পাৰে। অব্যাহত ৰাখিবলৈ চাৰিটা আঙুলিৰে স্ক্ৰীনখনত টিপক।</translation>
 <translation id="1865601187525349519">পাঠৰ সমাপ্তি</translation>
@@ -226,7 +225,6 @@
 <translation id="2497706219848005458">সেউজ হালধীয়া</translation>
 <translation id="2523609930580546572">ChromeVox প্ৰশিক্ষণ</translation>
 <translation id="2525706221823668172">Chromebook কী’বর্ডৰ শ্বৰ্টকাট</translation>
-<translation id="2543973100702367007"><ph name="LABEL" /> কৰিবলৈ দুবাৰ টিপক</translation>
 <translation id="2553108862507765288">ব্যাকৰণৰ ভুল</translation>
 <translation id="2556326187583116255">বৰ্তমানৰ যিকোনো কথন বন্ধ কৰিবলৈ ২ টা আঙুলিৰে টিপক</translation>
 <translation id="2573256689920773241">প্ৰাথমিক নেভিগেশ্বন</translation>
@@ -598,7 +596,6 @@
 <translation id="4993152509206108683">হাৰ <ph name="PERCENT" /> শতাংশ</translation>
 <translation id="4994420463726586413">বৰ্তমানৰ বেটাৰীৰ স্থিতিৰ বিষয়ে ঘোষণা কৰক</translation>
 <translation id="4997282455736854877"><ph name="NAME" />, ৰেডিঅ’ বুটাম বাছনি কৰা হৈছে</translation>
-<translation id="5011664330025416377">সক্ৰিয় কৰিবলৈ Search+Space টিপক</translation>
 <translation id="5012724933919010465"><ph name="NAME" />, মেনুৰ বস্তুৰ ৰেডিঅ’ বুটাম বাছনি কৰা হৈছে</translation>
 <translation id="5020651427400641814">কথনৰ দ্বাৰা লগিং সক্ষম কৰক</translation>
 <translation id="5041394372352067729">ব্ৰেইল ডিছপ্লে' পৃষ্ঠাৰ ওপৰলৈ নিয়ক</translation>
@@ -763,6 +760,7 @@
 <translation id="6100239002225743044">এটা শাৰী ওপৰলৈ যাওক</translation>
 <translation id="6118126368611144850">Chromeৰ বাবে Android এপ্‌ সেৱা। যদি আপোনাৰ নিজৰ ডিভাইচত Play Store আছে তেন্তে Android এপৰ জৰিয়তে ChromeVoxৰ এটা আভাস পাওক। Play Storeৰ পৰা Google Chrome Canary ডাউনল'ড কৰি পৰীক্ষণমূলক সহায় সেৱা ব্যৱহাৰ কৰি চাওক।</translation>
 <translation id="611827076493383239">vtd</translation>
+<translation id="6119846243427417423">সক্ৰিয় কৰক</translation>
 <translation id="6122013438240733403">btn</translation>
 <translation id="6132506484792346370">কোনো লিষ্টবক্স বা কম্ব’ বক্স</translation>
 <translation id="613344593214611552">পূৰ্বৱৰ্তী বাক্যটো মচক</translation>
@@ -1116,7 +1114,6 @@
 <translation id="8693391540059827073">মোৰ প্ৰিয় ঋতু</translation>
 <translation id="8696284982970258155">HoneyDew</translation>
 <translation id="8697111817566059991">{COUNT,plural, =1{পাইপ}one{#ডাল উলম্ব পাইপ}other{#ডাল উলম্ব পাইপ}}</translation>
-<translation id="8733397807344284494"><ph name="LABEL" /> কৰিবলৈ Search+Space টিপক</translation>
 <translation id="8741370088760768424">ইংগিত: বৰ্তমানৰ বস্তুটো সক্ৰিয় কৰিবলৈ ছাৰ্চ + স্পেছ টিপক।</translation>
 <translation id="8743786158317878347">সুসংগত সমল দিয়ক, যেনে তালিকা</translation>
 <translation id="8746846427395705317">পূৰ্বৱৰ্তী শব্দটোলৈ নিয়ক</translation>

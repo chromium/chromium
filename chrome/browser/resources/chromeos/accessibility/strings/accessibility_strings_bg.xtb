@@ -138,7 +138,6 @@
 <translation id="1812527064848182527">хоризонтална ориентация</translation>
 <translation id="1829244130665387512">Търсене в страницата</translation>
 <translation id="1834891354138622109">Графа</translation>
-<translation id="1845944666972354496">Докоснете двукратно, за да активирате</translation>
 <translation id="1846771122725914429">Екран за брайлово писмо с Bluetooth</translation>
 <translation id="1852018405765032699">Можете да докоснете с четири пръста, за да отворите или затворите менютата на ChromeVox. В тях ще намерите полезна информация за командите и преките пътища. След като менютата са отворени, имате възможност да навигирате между елементите с прекарване на пръст и да ги активирате чрез двукратно докосване. За да продължите, докоснете екрана с четири пръста.</translation>
 <translation id="1865601187525349519">Край на текста</translation>
@@ -226,7 +225,6 @@
 <translation id="2497706219848005458">яркозелено</translation>
 <translation id="2523609930580546572">Урок за ChromeVox</translation>
 <translation id="2525706221823668172">Клавишни комбинации на Chromebook</translation>
-<translation id="2543973100702367007">Докоснете двукратно за <ph name="LABEL" /></translation>
 <translation id="2553108862507765288">grammatical mistake</translation>
 <translation id="2556326187583116255">Докоснете с два пръста, за да спрете говора.</translation>
 <translation id="2573256689920773241">Основни положения при придвижване</translation>
@@ -598,7 +596,6 @@
 <translation id="4993152509206108683">Скорост: <ph name="PERCENT" /> процента</translation>
 <translation id="4994420463726586413">Съобщаване на текущото състояние на батерията</translation>
 <translation id="4997282455736854877">„<ph name="NAME" />“, маркиран бутон за избор</translation>
-<translation id="5011664330025416377">За активиране натиснете клавиша „търсене“ + интервал</translation>
 <translation id="5012724933919010465"><ph name="NAME" />, маркиран бутон за избор на елемент от меню</translation>
 <translation id="5020651427400641814">Активиране на регистрирането за говора</translation>
 <translation id="5041394372352067729">Преместване на брайловия дисплей в горната част на страницата</translation>
@@ -763,6 +760,7 @@
 <translation id="6100239002225743044">Преместване нагоре с един ред</translation>
 <translation id="6118126368611144850">Приложения за Android в Chrome: Ако имате Google Play Магазин на устройството си, изтеглете Google Chrome Canary оттам, за да изпробвате експерименталната поддръжка за ChromeVox в приложения за Android.</translation>
 <translation id="611827076493383239">vtd</translation>
+<translation id="6119846243427417423">активиране</translation>
 <translation id="6122013438240733403">бутон</translation>
 <translation id="6132506484792346370">Списъчно поле или разгъващ се списък</translation>
 <translation id="613344593214611552">изтриване на предишното изречение</translation>
@@ -1116,7 +1114,6 @@
 <translation id="8693391540059827073">Моят любим сезон</translation>
 <translation id="8696284982970258155">медена роса</translation>
 <translation id="8697111817566059991">{COUNT,plural, =1{вертикална черта}other{# вертикални черти}}</translation>
-<translation id="8733397807344284494">Натиснете клавиша „търсене“ + интервал за <ph name="LABEL" /></translation>
 <translation id="8741370088760768424">Съвет: Натиснете клавиша „търсене“ + интервал, за да активирате текущия елемент.</translation>
 <translation id="8743786158317878347">вход в структурирано съдържание, като например таблици</translation>
 <translation id="8746846427395705317">преминаване към предишната дума</translation>

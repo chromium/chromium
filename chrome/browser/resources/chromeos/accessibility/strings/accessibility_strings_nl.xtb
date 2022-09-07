@@ -138,7 +138,6 @@
 <translation id="1812527064848182527">liggend</translation>
 <translation id="1829244130665387512">Zoeken op pagina</translation>
 <translation id="1834891354138622109">Kolom</translation>
-<translation id="1845944666972354496">Dubbeltik om te activeren</translation>
 <translation id="1846771122725914429">Bluetooth-brailleleesregel</translation>
 <translation id="1852018405765032699">Je opent of sluit de ChromeVox-menu's door met 4 vingers op het scherm te tikken. In deze menu's vind je nuttige informatie over opdrachten en sneltoetsen. Als de menu's eenmaal open zijn, kun je met 1 vinger swipen om door items te navigeren. Een item activeer je door erop te dubbeltikken. Tik met 4 vingers op het scherm om verder te gaan.</translation>
 <translation id="1865601187525349519">Einde van tekst</translation>
@@ -226,7 +225,6 @@
 <translation id="2497706219848005458">Groengeel</translation>
 <translation id="2523609930580546572">ChromeVox-handleiding</translation>
 <translation id="2525706221823668172">Sneltoetsen op de Chromebook</translation>
-<translation id="2543973100702367007">Dubbeltik om te <ph name="LABEL" /></translation>
 <translation id="2553108862507765288">grammaticafout</translation>
 <translation id="2556326187583116255">Tik met 2 vingers om de huidige spraak te stoppen</translation>
 <translation id="2573256689920773241">Basisnavigatie</translation>
@@ -530,6 +528,7 @@
 <translation id="4479068155583208887">Signaalrood</translation>
 <translation id="4482330759234983253">Vorige tabel</translation>
 <translation id="4491109536499578614">Afbeelding</translation>
+<translation id="4507332368061453500">Lang klikken op huidig item</translation>
 <translation id="4511186779140817916">Gebleekte amandel</translation>
 <translation id="451510441928265982">Geen vorige kop van niveau 2</translation>
 <translation id="4515799157838123044">Content op de achtergrond vervagen</translation>
@@ -598,7 +597,6 @@
 <translation id="4993152509206108683">Snelheid <ph name="PERCENT" /> procent</translation>
 <translation id="4994420463726586413">Huidige batterijstatus aankondigen</translation>
 <translation id="4997282455736854877"><ph name="NAME" />, keuzerondje geselecteerd</translation>
-<translation id="5011664330025416377">Druk op Zoeken plus spatiebalk om te activeren</translation>
 <translation id="5012724933919010465"><ph name="NAME" />, keuzerondje voor menu-item geselecteerd</translation>
 <translation id="5020651427400641814">Spraakregistratie aanzetten</translation>
 <translation id="5041394372352067729">Brailleweergave naar bovenkant pagina verplaatsen</translation>
@@ -763,6 +761,7 @@
 <translation id="6100239002225743044">Eén regel omhoog gaan</translation>
 <translation id="6118126368611144850">Android-apps voor Chrome. Als de Play Store op je apparaat staat, kun je een voorproefje van ChromeVox met Android-apps krijgen. Probeer de experimentele ondersteuning door Google Chrome Canary te downloaden vanuit de Play Store.</translation>
 <translation id="611827076493383239">vtd</translation>
+<translation id="6119846243427417423">Activeren</translation>
 <translation id="6122013438240733403">knop</translation>
 <translation id="6132506484792346370">Een keuzelijst of een keuzelijst met invoervak</translation>
 <translation id="613344593214611552">verwijder de vorige zin</translation>
@@ -1115,7 +1114,6 @@
 <translation id="8693391540059827073">Mijn favoriete seizoen</translation>
 <translation id="8696284982970258155">Honinggeel</translation>
 <translation id="8697111817566059991">{COUNT,plural, =1{pijpteken}other{# verticale pijptekens}}</translation>
-<translation id="8733397807344284494">Druk op Zoeken plus spatiebalk om te <ph name="LABEL" /></translation>
 <translation id="8741370088760768424">Hint: Druk op Zoeken plus de spatiebalk om het huidige item te activeren.</translation>
 <translation id="8743786158317878347">gestructureerde content openen, zoals tabellen</translation>
 <translation id="8746846427395705317">ga naar het vorige woord</translation>

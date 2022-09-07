@@ -138,7 +138,6 @@
 <translation id="1812527064848182527">橫向</translation>
 <translation id="1829244130665387512">在網頁中尋找</translation>
 <translation id="1834891354138622109">欄</translation>
-<translation id="1845944666972354496">輕按兩下即可啟用</translation>
 <translation id="1846771122725914429">藍牙點字顯示器</translation>
 <translation id="1852018405765032699">以四指輕按螢幕，即可開啟及關閉 ChromeVox 選單。這些選單包含關於指令和快速鍵的實用資料。開啟選單後，您可以單指滑動來瀏覽各個項目，輕按兩下即可啟用項目。如要繼續，請以四指輕按螢幕。</translation>
 <translation id="1865601187525349519">文字結尾</translation>
@@ -226,7 +225,6 @@
 <translation id="2497706219848005458">綠黃色</translation>
 <translation id="2523609930580546572">ChromeVox 教學課程</translation>
 <translation id="2525706221823668172">Chromebook 鍵盤快速鍵</translation>
-<translation id="2543973100702367007">輕按兩下即可<ph name="LABEL" /></translation>
 <translation id="2553108862507765288">grammatical mistake</translation>
 <translation id="2556326187583116255">用兩指輕按即可停止目前的任何朗讀</translation>
 <translation id="2573256689920773241">基本導覽操作</translation>
@@ -599,7 +597,6 @@
 <translation id="4993152509206108683">速度為百分之 <ph name="PERCENT" /></translation>
 <translation id="4994420463726586413">讀出目前的電池狀態</translation>
 <translation id="4997282455736854877">已選取「<ph name="NAME" />」圓形按鈕</translation>
-<translation id="5011664330025416377">按下 Search + 空格鍵即可啟用控制項</translation>
 <translation id="5012724933919010465">已選取「<ph name="NAME" />」選單項目圓形按鈕</translation>
 <translation id="5020651427400641814">啟用語音記錄功能</translation>
 <translation id="5041394372352067729">將點字顯示畫面移至頁首</translation>
@@ -764,6 +761,7 @@
 <translation id="6100239002225743044">上移一行</translation>
 <translation id="6118126368611144850">Chrome 上專用的 Android 應用程式：如果您的裝置上有「Play 商店」，可透過 Android 應用程式率先體驗 ChromeVox。只要從「Play 商店」下載 Google Chrome Canary 版，即可體驗實驗功能。</translation>
 <translation id="611827076493383239">vtd</translation>
+<translation id="6119846243427417423">啟動</translation>
 <translation id="6122013438240733403">按鈕</translation>
 <translation id="6132506484792346370">清單方塊或下拉式方塊</translation>
 <translation id="613344593214611552">刪除上一句句子</translation>
@@ -1116,7 +1114,6 @@
 <translation id="8693391540059827073">我的最愛季節</translation>
 <translation id="8696284982970258155">蜜瓜綠色</translation>
 <translation id="8697111817566059991">{COUNT,plural, =1{1 個直立線符號}other{# 個直立線符號}}</translation>
-<translation id="8733397807344284494">按下搜尋鍵 + 空格鍵即可<ph name="LABEL" /></translation>
 <translation id="8741370088760768424">提示：㩒搜尋鍵加空白鍵就可以啟用目前嘅項目。</translation>
 <translation id="8743786158317878347">進入結構化內容，例如表格</translation>
 <translation id="8746846427395705317">移去上一個字詞</translation>

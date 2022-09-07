@@ -138,7 +138,6 @@
 <translation id="1812527064848182527">peisaj</translation>
 <translation id="1829244130665387512">Găsește în pagină</translation>
 <translation id="1834891354138622109">Coloană</translation>
-<translation id="1845944666972354496">Atinge de două ori pentru a activa</translation>
 <translation id="1846771122725914429">Afișajul Braille prin Bluetooth</translation>
 <translation id="1852018405765032699">Dacă atingi ecranul cu patru degete, meniurile ChromeVox se deschid sau închid. Aceste meniuri conțin informații utile despre comenzi și comenzi rapide. După deschiderea meniurilor, poți să glisezi cu un deget pentru a naviga prin elemente și să atingi de două ori ca să le activezi. Pentru a continua, atinge ecranul cu patru degete.</translation>
 <translation id="1865601187525349519">Sfârșitul textului</translation>
@@ -226,7 +225,6 @@
 <translation id="2497706219848005458">Galben verzui</translation>
 <translation id="2523609930580546572">Tutorial ChromeVox</translation>
 <translation id="2525706221823668172">Comenzile rapide de la tastatură pentru Chromebook</translation>
-<translation id="2543973100702367007">Atinge de două ori ca să <ph name="LABEL" /></translation>
 <translation id="2553108862507765288">greșeală gramaticală</translation>
 <translation id="2556326187583116255">Atinge cu două degete ca să oprești citirea</translation>
 <translation id="2573256689920773241">Navigarea de bază</translation>
@@ -530,6 +528,7 @@
 <translation id="4479068155583208887">Roșu cărămiziu</translation>
 <translation id="4482330759234983253">Tabelul anterior</translation>
 <translation id="4491109536499578614">Imagine</translation>
+<translation id="4507332368061453500">Dă clic lung pe elementul actual</translation>
 <translation id="4511186779140817916">Alb migdală</translation>
 <translation id="451510441928265982">Nu există un titlu de nivel 2 anterior</translation>
 <translation id="4515799157838123044">Estompează conținutul din fundal</translation>
@@ -598,7 +597,6 @@
 <translation id="4993152509206108683">Rată de <ph name="PERCENT" />%</translation>
 <translation id="4994420463726586413">Anunță starea actuală a bateriei</translation>
 <translation id="4997282455736854877"><ph name="NAME" />, buton radio selectat</translation>
-<translation id="5011664330025416377">Apasă pe tasta de căutare + tasta de spațiu pentru a activa</translation>
 <translation id="5012724933919010465"><ph name="NAME" />, butonul radio al elementului de meniu este selectat</translation>
 <translation id="5020651427400641814">Activează înregistrarea vocală</translation>
 <translation id="5041394372352067729">Deplasează afișajul Braille în partea de sus a paginii</translation>
@@ -763,6 +761,7 @@
 <translation id="6100239002225743044">Mută în sus cu un rând</translation>
 <translation id="6118126368611144850">Aplicații Android pentru Chrome. Dacă ai Magazinul Play pe dispozitiv, încearcă în avans ChromeVox cu aplicații Android. Testează compatibilitatea experimentală descărcând Google Chrome Canary din Magazinul Play.</translation>
 <translation id="611827076493383239">accesat</translation>
+<translation id="6119846243427417423">activează</translation>
 <translation id="6122013438240733403">buton</translation>
 <translation id="6132506484792346370">O casetă de tip listă sau combo</translation>
 <translation id="613344593214611552">șterge propoziția anterioară</translation>
@@ -1116,7 +1115,6 @@
 <translation id="8693391540059827073">Anotimpul meu preferat</translation>
 <translation id="8696284982970258155">Pepene galben</translation>
 <translation id="8697111817566059991">{COUNT,plural, =1{bară verticală}few{# bare verticale}other{# de bare verticale}}</translation>
-<translation id="8733397807344284494">Apasă pe tasta de căutare + tasta de spațiu pentru <ph name="LABEL" /></translation>
 <translation id="8741370088760768424">Sfat: apasă tasta de căutare + Space pentru a activa elementul actual.</translation>
 <translation id="8743786158317878347">intrați în conținut structurat, cum ar fi tabelele</translation>
 <translation id="8746846427395705317">treci la cuvântul anterior</translation>

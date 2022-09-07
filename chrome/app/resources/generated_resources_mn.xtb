@@ -678,6 +678,7 @@
 <translation id="1632756664321977232">Тайралтын хэрэгсэл</translation>
 <translation id="163309982320328737">Эхний тэмдэгтийн өргөн Бүрэн</translation>
 <translation id="1633947793238301227">Google Туслахыг идэвхгүй болгох</translation>
+<translation id="1634224622052500893">Wi-Fi сүлжээ олдлоо</translation>
 <translation id="1634783886312010422">Та энэ нууц үгийг <ph name="WEBSITE" /> дээр аль хэдийн өөрчилсөн үү?</translation>
 <translation id="1636212173818785548">ОК</translation>
 <translation id="163712950892155760"><ph name="BEGIN_PARAGRAPH1" />Аппын өгөгдөл нь харилцагчид, мессеж болон зураг зэрэг аппын хадгалсан аливаа өгөгдөл (хөгжүүлэгчийн тохиргоонд тулгуурлан) байж болно. Нөөцөлсөн өгөгдлийг таны Драйвын хадгалах сангийн квотод тооцохгүй.<ph name="END_PARAGRAPH1" />
@@ -2025,6 +2026,7 @@
 <translation id="2839032553903800133">Мэдэгдлийг хориглосон</translation>
 <translation id="2841013758207633010">Цаг</translation>
 <translation id="2841837950101800123">Үйлчилгээ олгогч</translation>
+<translation id="2842013086666334835">"<ph name="NETWORK_ID" />" рүү нэвтрэх</translation>
 <translation id="2843560154284403323">Linux-г тохируулж дуусгахын тулд ChromeOS-г шинэчлээд, дахин оролдоно уу.</translation>
 <translation id="2844169650293029770">USB-C төхөөрөмж (урд талын портын зүүн тал)</translation>
 <translation id="2844809857160214557">Хэвлэх ажлуудыг харах болон удирдах</translation>
@@ -2125,6 +2127,7 @@
 <translation id="2927017729816812676">Нөөшийн сан</translation>
 <translation id="2928795416630981206">Таны камерын байрлалыг хянахыг зөвшөөрсөн</translation>
 <translation id="2931157624143513983">Хэвлэх талбайн хэмжээнд тааруулах</translation>
+<translation id="2931342457001070961">Микрофон холбоогүй байна</translation>
 <translation id="2932085390869194046">Нууц үг санал болгох...</translation>
 <translation id="2932483646085333864">Синкийг эхлүүлэхийн тулд гараад, буцаж нэвтэрнэ үү</translation>
 <translation id="2932883381142163287">Зөрчлийг мэдэгдэх</translation>
@@ -2188,6 +2191,7 @@
 <translation id="2996286169319737844">Өгөгдлийг таны синкийн нэвтрэх үгтэй шифрлэдэг. Үүнд Google Pay-н төлбөрийн хэрэгслүүд болон хаягуудыг агуулдаггүй.</translation>
 <translation id="2996722619877761919">Цаасыг эргүүлж, урт ирмэг (long edge) дээр нь хэвлэх</translation>
 <translation id="2996932914629936323">Синк хийсэн бүх төхөөрөмжөөс түүхийг арилгана</translation>
+<translation id="2998267783395280091">Сүлжээ олдлоо</translation>
 <translation id="3000378525979847272"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />-г зөвшөөрсөн</translation>
 <translation id="3000461861112256445">Моно аудио</translation>
 <translation id="3001144475369593262">Хүүхдийн бүртгэл</translation>
@@ -2339,6 +2343,7 @@
 <translation id="3142562627629111859">Шинэ бүлэг</translation>
 <translation id="3143515551205905069">Синкийг цуцлах</translation>
 <translation id="3143754809889689516">Эхнээс нь тоглуулах</translation>
+<translation id="3143937294861726703">Санах ой хэмнэгч асаалттай байна</translation>
 <translation id="3144647712221361880">Холбоосыг нээх</translation>
 <translation id="3149510190863420837">Chrome Аппликейшнууд</translation>
 <translation id="3150693969729403281">Аюулгүй байдлын шалгалтыг одоо хийх</translation>
@@ -5546,7 +5551,6 @@
 <translation id="6276210637549544171"><ph name="PROXY_SERVER" /> прокси нь хэрэглэгчийн нэр, нууц үг шаарддаг.</translation>
 <translation id="6277105963844135994">Сүлжээний завсарлагаа</translation>
 <translation id="6277518330158259200">Дэлгэцийн зураг авах</translation>
-<translation id="6278057325678116358">GTK+-г ашиглах</translation>
 <translation id="6278428485366576908">Загвар</translation>
 <translation id="6278776436938569440">Байршлыг өөрчлөх</translation>
 <translation id="6279183038361895380">Курсороо харуулахын тулд |<ph name="ACCELERATOR" />|-г дарна уу</translation>
@@ -6413,7 +6417,6 @@
 <translation id="7090160970140261931">Та өөрийн <ph name="DEVICE_TYPE" />-д вебсайтууд болон Android аппуудтай ашиглах нэмэлт бүртгэлүүд нэмэх боломжтой. Та мөн аль бүртгэлийг Android аппуудтай ашиглахыг хянах боломжтой.</translation>
 <translation id="7093220653036489319">Шуурхай хариулт</translation>
 <translation id="7093416310351037609">Өгөгдлийн аюулгүй байдал болон хамгаалалтын үүднээс танай байгууллага эрх бүхий бүх таталтыг танай байгуулагын <ph name="WEB_DRIVE" /> бүртгэлд хадгалахыг шаардана.</translation>
-<translation id="7093434536568905704">GTK+</translation>
 <translation id="7093866338626856921">: <ph name="HOSTNAMES" /> нэртэй төхөөрөмжүүдийг ашиглан мэдээлэл солилцоорой</translation>
 <translation id="7098389117866926363">USB-C төхөөрөмж (ард талын зүүн порт)</translation>
 <translation id="7098447629416471489">Бусад хадгалсан хайлтын систем энд харагдана</translation>

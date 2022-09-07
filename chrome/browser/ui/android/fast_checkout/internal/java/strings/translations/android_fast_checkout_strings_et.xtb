@@ -2,9 +2,11 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="et">
 <translation id="1068168522143272502">Aadresside ja maksevalikute loend, mis täidetakse ostuvoos, on avatud poolel kõrgusel.</translation>
+<translation id="248973266728004341">Uue krediitkaardi lisamine</translation>
 <translation id="2501278716633472235">Mine tagasi</translation>
 <translation id="312532069930005172">Automaattäite profiili seadete avamine</translation>
 <translation id="4401440167302712543">Kassas makstes lisatakse tarne- ja makseteave automaatselt</translation>
+<translation id="4526274353008646337">Uue aadressi lisamine</translation>
 <translation id="567079066552447069">Aadresside ja maksevalikute loend, mis täidetakse ostuvoos, on suletud.</translation>
 <translation id="780301667611848630">Ei, aitäh</translation>
 <translation id="8264703973415044493">Aadresside ja maksevalikute loend, mis täidetakse ostuvoos, on avatud täiskõrgusel.</translation>
@@ -12,5 +14,6 @@
 <translation id="884264119367021077">Tarneaadress</translation>
 <translation id="8873105120914375071">Kas soovite kiiremini maksta?</translation>
 <translation id="9032876013752408138">Lisa minu teave automaatselt</translation>
+<translation id="9130271303738808219">Krediitkaardi seadete avamine</translation>
 <translation id="984275831282074731">Makseviisid</translation>
 </translationbundle>

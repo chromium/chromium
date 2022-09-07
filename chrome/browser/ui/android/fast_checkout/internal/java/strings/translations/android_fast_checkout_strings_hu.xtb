@@ -2,9 +2,11 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="hu">
 <translation id="1068168522143272502">A fizetési folyamat során használandó címek és fizetési lehetőségek listája meg van nyitva félmagasságban.</translation>
+<translation id="248973266728004341">Új bankkártya hozzáadása</translation>
 <translation id="2501278716633472235">Visszalépés</translation>
 <translation id="312532069930005172">Profil automatikus kitöltéssel kapcsolatos beállításainak megnyitása</translation>
 <translation id="4401440167302712543">Szállítási és fizetési adatok automatikus kitöltése fizetéskor</translation>
+<translation id="4526274353008646337">Új cím hozzáadása</translation>
 <translation id="567079066552447069">A fizetési folyamat során használandó címek és fizetési lehetőségek listája be van zárva.</translation>
 <translation id="780301667611848630">Köszönöm, nem</translation>
 <translation id="8264703973415044493">A fizetési folyamat során használandó címek és fizetési lehetőségek listája meg van nyitva teljes magasságban.</translation>
@@ -12,5 +14,6 @@
 <translation id="884264119367021077">Szállítási cím</translation>
 <translation id="8873105120914375071">Gyorsabban szeretne fizetni?</translation>
 <translation id="9032876013752408138">Adatok automatikus kitöltése</translation>
+<translation id="9130271303738808219">Bankkártya-beállítások megnyitása</translation>
 <translation id="984275831282074731">Fizetési módok</translation>
 </translationbundle>

@@ -138,7 +138,6 @@
 <translation id="1812527064848182527">водоравно</translation>
 <translation id="1829244130665387512">Пронађи на страници</translation>
 <translation id="1834891354138622109">Колона</translation>
-<translation id="1845944666972354496">Додирните двапут ради активирања</translation>
 <translation id="1846771122725914429">Bluetooth Брајев екран</translation>
 <translation id="1852018405765032699">Ако додирнете екран помоћу четири прста, можете да отварате и затварате ChromeVox меније. Ти менији садрже корисне информације о командама и пречицама. Када отворите меније, можете да превлачите помоћу једног прста да бисте се кретали кроз ставке и да двапут додирнете да бисте активирали ставке. Да бисте наставили, додирните екран помоћу четири прста.</translation>
 <translation id="1865601187525349519">Крај текста</translation>
@@ -226,7 +225,6 @@
 <translation id="2497706219848005458">Зеленожута</translation>
 <translation id="2523609930580546572">Водич за ChromeVox</translation>
 <translation id="2525706221823668172">Тастерске пречице за Chromebook</translation>
-<translation id="2543973100702367007">Двапут додирните да бисте <ph name="LABEL" /></translation>
 <translation id="2553108862507765288">граматичка грешка</translation>
 <translation id="2556326187583116255">Додирните са 2 прста да бисте зауставили актуелни говор</translation>
 <translation id="2573256689920773241">Основно кретање</translation>
@@ -598,7 +596,6 @@
 <translation id="4993152509206108683">Брзина у процентима: <ph name="PERCENT" /></translation>
 <translation id="4994420463726586413">Описује тренутни статус батерије</translation>
 <translation id="4997282455736854877">Дугме за избор <ph name="NAME" /> је изабрано</translation>
-<translation id="5011664330025416377">За активирање притисните тастер за претрагу + тастер за размак</translation>
 <translation id="5012724933919010465"><ph name="NAME" />, изабрано је дугме за избор ставке менија</translation>
 <translation id="5020651427400641814">Омогући евидентирање говора</translation>
 <translation id="5041394372352067729">Померање екрана са Брајевом азбуком у врх странице</translation>
@@ -763,6 +760,7 @@
 <translation id="6100239002225743044">Помери нагоре за један ред</translation>
 <translation id="6118126368611144850">Android апликације за Chrome. Ако имате Play продавницу на уређају, погледајте ChromeVox са Android апликацијама пре званичног објављивања. Испробајте експерименталну подршку тако што ћете преузети Google Chrome Canary из Play продавнице.</translation>
 <translation id="611827076493383239">посећено</translation>
+<translation id="6119846243427417423">активирај</translation>
 <translation id="6122013438240733403">дугме</translation>
 <translation id="6132506484792346370">Оквир са листом или комбиновани оквир</translation>
 <translation id="613344593214611552">избриши претходну реченицу</translation>
@@ -1116,7 +1114,6 @@
 <translation id="8693391540059827073">Моје омиљено годишње доба</translation>
 <translation id="8696284982970258155">Бледа отворенозелена</translation>
 <translation id="8697111817566059991">{COUNT,plural, =1{усправна црта}one{# усправна црта}few{# усправне црте}other{# усправних црта}}</translation>
-<translation id="8733397807344284494">Притисните тастер за претрагу + тастер за размак да бисте <ph name="LABEL" /></translation>
 <translation id="8741370088760768424">Савет: Притисните тастер за претрагу + тастер за размак да бисте активирали актуелну ставку.</translation>
 <translation id="8743786158317878347">уђите у структурирани садржај, попут табела</translation>
 <translation id="8746846427395705317">пређи на претходну реч</translation>

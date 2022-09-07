@@ -679,6 +679,7 @@ Los permisos que hayas dado a aplicaciones se pueden aplicar a esta cuenta. Pued
 <translation id="1632756664321977232">Herramienta de recorte</translation>
 <translation id="163309982320328737">La configuración inicial de los caracteres es de ancho completo.</translation>
 <translation id="1633947793238301227">Inhabilitar Asistente de Google</translation>
+<translation id="1634224622052500893">Red Wi-Fi encontrada</translation>
 <translation id="1634783886312010422">¿Has cambiado esta contraseña en <ph name="WEBSITE" />?</translation>
 <translation id="1636212173818785548">Aceptar</translation>
 <translation id="163712950892155760"><ph name="BEGIN_PARAGRAPH1" />Los datos de aplicaciones abarcan cualquier tipo de información que guarde una aplicación (en función de la configuración de los desarrolladores), incluidos datos como contactos, mensajes y fotos. Los datos de las copias de seguridad no se tienen en cuenta para calcular la cuota de almacenamiento de tu Drive.<ph name="END_PARAGRAPH1" />
@@ -2015,6 +2016,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2839032553903800133">Notificaciones bloqueadas</translation>
 <translation id="2841013758207633010">Hora</translation>
 <translation id="2841837950101800123">Proveedor</translation>
+<translation id="2842013086666334835">Iniciar sesión en "<ph name="NETWORK_ID" />"</translation>
 <translation id="2843560154284403323">Para terminar de configurar Linux, actualiza ChromeOS y vuelve a intentarlo.</translation>
 <translation id="2844169650293029770">Dispositivo USB tipo C (puerto frontal izquierdo)</translation>
 <translation id="2844809857160214557">Visualiza y gestiona trabajos de impresión</translation>
@@ -2115,6 +2117,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2927017729816812676">Almacenamiento en caché</translation>
 <translation id="2928795416630981206">Puede monitorizar la posición de la cámara</translation>
 <translation id="2931157624143513983">Ajustar al área de impresión</translation>
+<translation id="2931342457001070961">No hay micrófonos conectados</translation>
 <translation id="2932085390869194046">Sugerir contraseña...</translation>
 <translation id="2932483646085333864">Cierra sesión y vuelve a iniciarla para empezar la sincronización</translation>
 <translation id="2932883381142163287">Notificar uso inadecuado</translation>
@@ -2178,6 +2181,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2996286169319737844">Se han cifrado los datos con tu contraseña de Google. El cifrado no incluye los métodos de pago ni las direcciones de Google Pay.</translation>
 <translation id="2996722619877761919">Cambiar a borde largo</translation>
 <translation id="2996932914629936323">Borra el historial de todos los dispositivos sincronizados</translation>
+<translation id="2998267783395280091">Red encontrada</translation>
 <translation id="3000378525979847272">Con permiso: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /></translation>
 <translation id="3000461861112256445">Audio en mono</translation>
 <translation id="3001144475369593262">Cuentas infantiles</translation>
@@ -2329,6 +2333,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3142562627629111859">Nuevo grupo</translation>
 <translation id="3143515551205905069">Cancelar sincronización</translation>
 <translation id="3143754809889689516">Reproducir desde el principio</translation>
+<translation id="3143937294861726703">Ahorro de memoria activado</translation>
 <translation id="3144647712221361880">Abrir enlace como</translation>
 <translation id="3149510190863420837">Aplicaciones de Chrome</translation>
 <translation id="3150693969729403281">Comprobar seguridad ahora</translation>
@@ -5535,7 +5540,6 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6276210637549544171">El proxy <ph name="PROXY_SERVER" /> requiere un nombre de usuario y una contraseña.</translation>
 <translation id="6277105963844135994">Tiempo de espera de red agotado</translation>
 <translation id="6277518330158259200">H&amp;acer captura de pantalla</translation>
-<translation id="6278057325678116358">Utilizar GTK+</translation>
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6278776436938569440">Cambiar ubicación</translation>
 <translation id="6279183038361895380">Pulsa |<ph name="ACCELERATOR" />| para mostrar el cursor</translation>
@@ -6402,7 +6406,6 @@ Tienes # contraseñas vulneradas más. El gestor de contraseñas de Google te re
 <translation id="7090160970140261931">Puedes añadir cuentas adicionales a tu <ph name="DEVICE_TYPE" /> para usarlas con sitios web y aplicaciones Android. También puedes controlar qué cuentas se usan con aplicaciones Android.</translation>
 <translation id="7093220653036489319">Respuestas rápidas</translation>
 <translation id="7093416310351037609">Por motivos de seguridad de los datos, tu organización requiere que todas las descargas aptas se guarden en la cuenta de <ph name="WEB_DRIVE" /> de tu organización.</translation>
-<translation id="7093434536568905704">GTK+</translation>
 <translation id="7093866338626856921">Intercambiar datos con los dispositivos denominados <ph name="HOSTNAMES" /></translation>
 <translation id="7098389117866926363">Dispositivo USB tipo C (puerto izquierdo situado en la parte trasera)</translation>
 <translation id="7098447629416471489">Otros motores de búsqueda guardados aparecerán aquí</translation>

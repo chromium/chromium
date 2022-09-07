@@ -138,7 +138,6 @@ Chrome arakatzaileko menua irekitzeko, sakatu Alt tekla eta F.</translation>
 <translation id="1812527064848182527">horizontala</translation>
 <translation id="1829244130665387512">Bilatu orrian</translation>
 <translation id="1834891354138622109">Zutabea</translation>
-<translation id="1845944666972354496">Sakatu birritan aktibatzeko</translation>
 <translation id="1846771122725914429">Bluetooth bidezko braille-pantaila</translation>
 <translation id="1852018405765032699">Pantaila lau hatzekin sakatuz gero, ChromeVox-eko menuak ireki eta itxiko dira. Menu horietan, agindu eta lasterbideei buruzko informazio lagungarria duzu. Menuak irekita daudenean, pasatu hatza elementuen artean nabigatzeko. Elementuak aktibatzeko, berriz, saka itzazu birritan. Aurrera egiteko, sakatu pantaila lau hatzekin.</translation>
 <translation id="1865601187525349519">Testuaren amaiera</translation>
@@ -226,7 +225,6 @@ Chrome arakatzaileko menua irekitzeko, sakatu Alt tekla eta F.</translation>
 <translation id="2497706219848005458">Berde horixka</translation>
 <translation id="2523609930580546572">ChromeVox tutoriala</translation>
 <translation id="2525706221823668172">Chromebook-eko lasterbideak</translation>
-<translation id="2543973100702367007">Sakatu birritan <ph name="LABEL" /></translation>
 <translation id="2553108862507765288">gramatika-akatsa</translation>
 <translation id="2556326187583116255">Sakatu bi hatzekin hizketa gelditzeko</translation>
 <translation id="2573256689920773241">Oinarrizko nabigazioa</translation>
@@ -598,7 +596,6 @@ Chrome arakatzaileko menua irekitzeko, sakatu Alt tekla eta F.</translation>
 <translation id="4993152509206108683">Hizketaren abiadura: ehuneko <ph name="PERCENT" /></translation>
 <translation id="4994420463726586413">Iragarri oraingo bateria-maila</translation>
 <translation id="4997282455736854877"><ph name="NAME" /> aukera-botoia hautatu da</translation>
-<translation id="5011664330025416377">Aktibatzeko, sakatu Bilaketa + Zuriune-barra</translation>
 <translation id="5012724933919010465">Menuko <ph name="NAME" /> elementuaren aukera-botoia hautatuta dago</translation>
 <translation id="5020651427400641814">Gaitu hizketa erregistratzeko aukera</translation>
 <translation id="5041394372352067729">Eraman braille-pantaila orriaren goiko aldera</translation>
@@ -763,6 +760,7 @@ Chrome arakatzaileko menua irekitzeko, sakatu Alt tekla eta F.</translation>
 <translation id="6100239002225743044">Igo lerro bat</translation>
 <translation id="6118126368611144850">Chrome-rako Android-erako aplikazioak. Gailuan Play Store badaukazu, eman begiratu bat Android aplikazioekin ChromeVox erabiltzeko aukerari. Probatu eginbide esperimentala Play Store dendatik Google Chrome Canary deskargatuta.</translation>
 <translation id="611827076493383239">vtd</translation>
+<translation id="6119846243427417423">aktibatu</translation>
 <translation id="6122013438240733403">btn</translation>
 <translation id="6132506484792346370">Zerrendako koadro bat edo koadro konbinatu bat</translation>
 <translation id="613344593214611552">ezabatu aurreko esaldia</translation>
@@ -1115,7 +1113,6 @@ Chrome arakatzaileko menua irekitzeko, sakatu Alt tekla eta F.</translation>
 <translation id="8693391540059827073">Gogoko dudan urte-sasoia</translation>
 <translation id="8696284982970258155">Ezti-ihintzaren kolorekoa</translation>
 <translation id="8697111817566059991">{COUNT,plural, =1{barra}other{# barra bertikal}}</translation>
-<translation id="8733397807344284494">Sakatu Bilaketa + zuriune-barra <ph name="LABEL" /></translation>
 <translation id="8741370088760768424">Aholkua: sakatu bilaketa-tekla eta zuriune-barra elementua aktibatzeko.</translation>
 <translation id="8743786158317878347">sartu egituratutako edukian, adibidez, tauletan</translation>
 <translation id="8746846427395705317">joan aurreko hitzera</translation>

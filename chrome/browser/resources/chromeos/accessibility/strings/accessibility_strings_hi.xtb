@@ -138,7 +138,6 @@ Chrome ब्राउज़र मेन्यू खोलने के लि
 <translation id="1812527064848182527">लैंडस्केप</translation>
 <translation id="1829244130665387512">पेज में ढूंढें</translation>
 <translation id="1834891354138622109">स्तंभ</translation>
-<translation id="1845944666972354496">चालू करने के लिए दो बार टैप करें</translation>
 <translation id="1846771122725914429">ब्लूटूथ ब्रेल डिसप्ले</translation>
 <translation id="1852018405765032699">ChromeVox के मेन्यू खोलने और बंद करने के लिए, स्क्रीन पर चार उंगलियों से टैप करना होगा. इन मेन्यू में कमांड और शॉर्टकट से जुड़ी काम की जानकारी होती है. जब मेन्यू खुले हों, तब आप एक आइटम से दूसरे आइटम पर जाने के लिए, एक उंगली से स्वाइप कर सकते हैं. साथ ही, आइटम चालू करने के लिए दो बार टैप कर सकते हैं. जारी रखने के लिए, स्क्रीन पर चार उंगलियों से टैप करें.</translation>
 <translation id="1865601187525349519">लेख का अंत</translation>
@@ -226,7 +225,6 @@ Chrome ब्राउज़र मेन्यू खोलने के लि
 <translation id="2497706219848005458">पीला-हरा</translation>
 <translation id="2523609930580546572">ChromeVox ट्यूटोरियल</translation>
 <translation id="2525706221823668172">Chromebook कीबोर्ड शॉर्टकट</translation>
-<translation id="2543973100702367007"><ph name="LABEL" /> के लिए दो बार टैप करें</translation>
 <translation id="2553108862507765288">व्याकरण की गलती</translation>
 <translation id="2556326187583116255">ChromeVox को बोलने से रोकने के लिए, दो उंगलियों से टैप करें</translation>
 <translation id="2573256689920773241">बेसिक नेविगेशन</translation>
@@ -598,7 +596,6 @@ Chrome ब्राउज़र मेन्यू खोलने के लि
 <translation id="4993152509206108683">दर <ph name="PERCENT" /> प्रतिशत</translation>
 <translation id="4994420463726586413">बैटरी की मौजूदा स्थिति बताएं</translation>
 <translation id="4997282455736854877"><ph name="NAME" />, रेडियो बटन चयनित</translation>
-<translation id="5011664330025416377">चालू करने के लिए Search+Space दबाएं</translation>
 <translation id="5012724933919010465"><ph name="NAME" />, मेन्यू आइटम रेडियो बटन चुना गया</translation>
 <translation id="5020651427400641814">'बोलकर लॉग करना' चालू करें</translation>
 <translation id="5041394372352067729">ब्रेल डिसप्ले को पेज के ऊपर वाले हिस्से में ले जाएं</translation>
@@ -763,6 +760,7 @@ Chrome ब्राउज़र मेन्यू खोलने के लि
 <translation id="6100239002225743044">एक पंक्ति ऊपर ले जाएं</translation>
 <translation id="6118126368611144850">Chrome के लिए Android ऐप. अगर आपके डिवाइस पर Play Store मौजूद है, तो Android ऐप के ज़रिए ChromeVox पर एक नज़र डालें. Play Store से Google Chrome कैनरी डाउनलोड करके प्रयोग के तौर पर दी गई सुविधा को आज़माकर देखें.</translation>
 <translation id="611827076493383239">vtd</translation>
+<translation id="6119846243427417423">सक्रिय करें</translation>
 <translation id="6122013438240733403">btn</translation>
 <translation id="6132506484792346370">सूची बॉक्स या कॉम्‍बो बॉक्‍स</translation>
 <translation id="613344593214611552">पिछला वाक्य मिटाएं</translation>
@@ -1115,7 +1113,6 @@ Chrome ब्राउज़र मेन्यू खोलने के लि
 <translation id="8693391540059827073">मेरा पसंदीदा मौसम</translation>
 <translation id="8696284982970258155">खरबूजा</translation>
 <translation id="8697111817566059991">{COUNT,plural, =1{पाइप}one{# लम्बवत पाइप}other{# लम्बवत पाइप}}</translation>
-<translation id="8733397807344284494"><ph name="LABEL" /> के लिए Search+Space दबाएं</translation>
 <translation id="8741370088760768424">ध्यान दें: मौजूदा आइटम को चालू करने के लिए, खोज बटन और स्पेसबार दबाएं.</translation>
 <translation id="8743786158317878347">संरचित सामग्री, जैसे तालिकाएं डालें</translation>
 <translation id="8746846427395705317">पिछले शब्द पर जाएं</translation>

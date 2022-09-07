@@ -138,7 +138,6 @@
 <translation id="1812527064848182527">લૅન્ડસ્કેપ</translation>
 <translation id="1829244130665387512">આ પેજમાં શોધો</translation>
 <translation id="1834891354138622109">કૉલમ</translation>
-<translation id="1845944666972354496">સક્રિય કરવા માટે બે વાર ટૅપ કરો</translation>
 <translation id="1846771122725914429">બ્લૂટૂથનું બ્રેઇલ પ્રદર્શન</translation>
 <translation id="1852018405765032699">સ્ક્રીન પર ચાર આંગળી વડે ટૅપ કરવાથી ChromeVox મેનૂ ખુલશે અને બંધ થશે. આ મેનૂમાં આદેશો અને શૉર્ટકટ વિશે સહાયરૂપ માહિતી શામેલ છે. એકવાર મેનૂ ખૂલે પછી, આઇટમ પર નૅવિગેટ કરવા માટે તમે એક આંગળી વડે સ્વાઇપ કરી અને આઇટમ સક્રિય કરવા માટે બે વાર ટૅપ કરી શકો છો. ચાલુ રાખવા માટે, સ્ક્રીન પર ચાર આંગળી વડે ટૅપ કરો.</translation>
 <translation id="1865601187525349519">ટેક્સ્ટના અંતે</translation>
@@ -226,7 +225,6 @@
 <translation id="2497706219848005458">લીલો પીળો</translation>
 <translation id="2523609930580546572">ChromeVox ટયૂટૉરિઅલ</translation>
 <translation id="2525706221823668172">Chromebook કીબોર્ડ શૉર્ટકટ્સ</translation>
-<translation id="2543973100702367007"><ph name="LABEL" /> કરવા બે વાર ટેપ કરો</translation>
 <translation id="2553108862507765288">વ્યાકરણની ભૂલ</translation>
 <translation id="2556326187583116255">કોઈપણ વર્તમાન સ્પીચ રોકવા માટે 2 આંગળી વડે ટૅપ કરો</translation>
 <translation id="2573256689920773241">મૂળભૂત નૅવિગેશન</translation>
@@ -530,6 +528,7 @@
 <translation id="4479068155583208887">આગમાંની ઈંટ જેવો</translation>
 <translation id="4482330759234983253">પાછલું કોષ્ટક</translation>
 <translation id="4491109536499578614">છબી</translation>
+<translation id="4507332368061453500">વર્તમાન આઇટમ પર લાંબો સમય ક્લિક કરો</translation>
 <translation id="4511186779140817916">આછો બદામી</translation>
 <translation id="451510441928265982">કોઈ પાછલું 'લેવલ 2' મથાળું નથી</translation>
 <translation id="4515799157838123044">બૅકગ્રાઉન્ડના કન્ટેન્ટનો રંગ ઝાંખો કરો</translation>
@@ -598,7 +597,6 @@
 <translation id="4993152509206108683">દર <ph name="PERCENT" /> ટકા</translation>
 <translation id="4994420463726586413">બૅટરીનું હાલનું સ્ટેટસ જણાવો</translation>
 <translation id="4997282455736854877"><ph name="NAME" />, રેડિયો બટન પસંદ કર્યું</translation>
-<translation id="5011664330025416377">સક્રિય કરવા માટે Search+Space દબાવો</translation>
 <translation id="5012724933919010465"><ph name="NAME" />, મેનૂ આઇટમ રેડિયો બટન પસંદ કર્યું</translation>
 <translation id="5020651427400641814">સ્પીચ લૉગ ઇન ચાલુ કરો</translation>
 <translation id="5041394372352067729">બ્રેઇલ ડિસ્પ્લેને પેજમાં સૌથી ઉપર ખસેડો</translation>
@@ -763,6 +761,7 @@
 <translation id="6100239002225743044">એક લાઇન ઉપર ખસેડો</translation>
 <translation id="6118126368611144850">Chrome માટેની Android ઍપ. જો તમારા ડિવાઇસમાં Play Store હોય, તો Android ઍપ ધરાવતા ChromeVoxની ઝલક મેળવો. Play Store પરથી Google Chrome Canary ડાઉનલોડ કરીને પ્રયોગાત્મક સહાયનો અનુભવ મેળવો.</translation>
 <translation id="611827076493383239">vtd</translation>
+<translation id="6119846243427417423">સક્રિય કરો</translation>
 <translation id="6122013438240733403">btn</translation>
 <translation id="6132506484792346370">સૂચિબોક્સ અથવા કોમ્બો બોક્સ</translation>
 <translation id="613344593214611552">પાછલું વાક્ય ડિલીટ કરો</translation>
@@ -1116,7 +1115,6 @@
 <translation id="8693391540059827073">મારી મનપસંદ ઋતુ</translation>
 <translation id="8696284982970258155">હનીડ્યૂ</translation>
 <translation id="8697111817566059991">{COUNT,plural, =1{પાઇપ}one{# વર્ટિકલ પાઇપ}other{# વર્ટિકલ પાઇપ}}</translation>
-<translation id="8733397807344284494"><ph name="LABEL" /> કરવા Search+Space દબાવો</translation>
 <translation id="8741370088760768424">હિન્ટ: વર્તમાન આઇટમને સક્રિય કરવા માટે Search + Space દબાવો.</translation>
 <translation id="8743786158317878347">ગણિત કે ટેબલ જેવું કન્ટેન્ટ દાખલ કરો</translation>
 <translation id="8746846427395705317">પાછલા શબ્દ પર ખસેડો</translation>

@@ -138,7 +138,6 @@
 <translation id="1812527064848182527">horitzontal</translation>
 <translation id="1829244130665387512">Cerca a la pàgina</translation>
 <translation id="1834891354138622109">Columna</translation>
-<translation id="1845944666972354496">Fes doble toc per activar</translation>
 <translation id="1846771122725914429">Pantalla braille amb connexió Bluetooth</translation>
 <translation id="1852018405765032699">Toca la pantalla amb quatre dits per obrir i tancar els menús de ChromeVox. Aquests menús contenen informació útil sobre ordres i dreceres. Quan els menús estiguin oberts, pots fer lliscar un dit per navegar pels elements i fer-hi doble toc per activar-los. Per continuar, toca la pantalla amb quatre dits.</translation>
 <translation id="1865601187525349519">Fi del text</translation>
@@ -226,7 +225,6 @@
 <translation id="2497706219848005458">Groc verdós</translation>
 <translation id="2523609930580546572">Tutorial de ChromeVox</translation>
 <translation id="2525706221823668172">Tecles de drecera de Chromebook</translation>
-<translation id="2543973100702367007">Fes doble toc per <ph name="LABEL" /></translation>
 <translation id="2553108862507765288">error gramatical</translation>
 <translation id="2556326187583116255">Toca amb 2 dits per aturar qualsevol entrada de veu en curs</translation>
 <translation id="2573256689920773241">Navegació bàsica</translation>
@@ -598,7 +596,6 @@
 <translation id="4993152509206108683">Taxa d'un <ph name="PERCENT" /> per cent</translation>
 <translation id="4994420463726586413">Anuncia l'estat actual de la bateria</translation>
 <translation id="4997282455736854877"><ph name="NAME" />, botó d'opció seleccionat</translation>
-<translation id="5011664330025416377">Prem Cerca+Espai per activar l'opció</translation>
 <translation id="5012724933919010465"><ph name="NAME" />, botó d'opció seleccionat de l'element de menú</translation>
 <translation id="5020651427400641814">Activa el registre de veu</translation>
 <translation id="5041394372352067729">Mou la pantalla Braille a la part superior de la pàgina.</translation>
@@ -763,6 +760,7 @@
 <translation id="6100239002225743044">Puja una línia</translation>
 <translation id="6118126368611144850">Aplicacions d'Android per a Chrome. Si tens Play Store al dispositiu, dona un cop d'ull a ChromeVox amb les aplicacions d'Android. Baixa Google Chrome Canary de Play Store per provar aquesta compatibilitat experimental.</translation>
 <translation id="611827076493383239">vtd</translation>
+<translation id="6119846243427417423">activa</translation>
 <translation id="6122013438240733403">botó</translation>
 <translation id="6132506484792346370">Un quadre de llista o combinat</translation>
 <translation id="613344593214611552">suprimeix la frase anterior</translation>
@@ -1116,7 +1114,6 @@
 <translation id="8693391540059827073">La meva estació preferida</translation>
 <translation id="8696284982970258155">Verd pàl·lid</translation>
 <translation id="8697111817566059991">{COUNT,plural, =1{barra}other{# barres verticals}}</translation>
-<translation id="8733397807344284494">Prem Cerca+Espai per <ph name="LABEL" /></translation>
 <translation id="8741370088760768424">Suggeriment: per activar l'element actual, prem Cerca+barra espaiadora.</translation>
 <translation id="8743786158317878347">entra al contingut estructurat, com ara les taules</translation>
 <translation id="8746846427395705317">mou a la paraula anterior</translation>

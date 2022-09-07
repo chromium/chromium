@@ -5830,20 +5830,6 @@ Se questo criterio viene impostato su Falso, <ph name="PRODUCT_NAME" /> non util
       La configurazione di un elenco di URL in questo criterio equivale a impostare il flag della riga di comando unsafely-treat-insecure-origin-as-secure su un elenco separato da virgole degli stessi URL. Il criterio sovrascrive il flag della riga di comando e UnsafelyTreatInsecureOriginAsSecure, se presenti.
 
       Per ulteriori informazioni sui contesti sicuri, visita la pagina https://www.w3.org/TR/secure-contexts.</translation>
-<translation id="7034831650852513978">Questo criterio consente di stabilire il valore dell'<ph name="IPP_ATTRIBUTE" /> <ph name="IPP_PROTOCOL" /> (<ph name="INTERNET_PRINTING_PROTOCOL" />) <ph name="CLIENT_INFO_IPP_ATTRIBUTE" /> nei processi di stampa.
-
-      Se il criterio viene impostato su una stringa, viene aggiunto un ulteriore elemento <ph name="CLIENT_INFO_IPP_ATTRIBUTE" /> a ogni processo di stampa. Il membro <ph name="CLIENT_NAME_IPP_ATTRIBUTE" /> dell'elemento <ph name="CLIENT_INFO_IPP_ATTRIBUTE" /> aggiunto verrà impostato sul valore del criterio dopo la sostituzione delle variabili.
-
-      Le variabili supportate sono <ph name="DIRECTORY_ID_PLACEHOLDER" />, <ph name="SERIAL_NUMBER_PLACEHOLDER" />, <ph name="ASSET_ID_PLACEHOLDER" />, <ph name="ANNOTATED_LOCATION_PLACEHOLDER" />, <ph name="USER_EMAIL_PLACEHOLDER" />, <ph name="USER_EMAIL_NAME_PLACEHOLDER" /> e <ph name="USER_EMAIL_DOMAIN" />. Le variabili segnaposto non supportate non verranno espanse.
-
-      Il valore ottenuto dopo la sostituzione delle variabili viene considerato valido se è costituito soltanto da caratteri stampabili <ph name="ASCII" /> e non supera i 255 caratteri.
-
-      Tieni presente che, per motivi di privacy, questo criterio si applica soltanto in caso di comunicazione con una stampante usando i protocolli <ph name="IPPS_PROTOCOL" />, <ph name="HTTPS_PROTOCOL" />, <ph name="USB_PROTOCOL" /> o <ph name="IPP_USB_PROTOCOL" />. Tieni inoltre presente che questo criterio si applica soltanto alle stampanti che supportano <ph name="CLIENT_NAME_IPP_ATTRIBUTE" />.
-
-      Il criterio viene applicato solo agli utenti affiliati.
-
-      Se il criterio non viene configurato oppure se viene impostato un valore vuoto o non valido, non verrà aggiunto un ulteriore elemento <ph name="CLIENT_INFO_PLACEHOLDER" /> alle richieste di processi di stampa.
-      </translation>
 <translation id="703672323011778742">Questo criterio è deprecato in M88 e Flash non è più supportato da Chrome. Se il criterio viene impostato su 1, puoi decidere se tutti i siti web possono eseguire automaticamente il plug-in <ph name="FLASH_PLUGIN_NAME" />. Se il criterio viene impostato su 2, il plug-in viene negato per tutti i siti web. Click-to-play consente di eseguire il plug-in <ph name="FLASH_PLUGIN_NAME" />, ma gli utenti fanno clic sul segnaposto per avviarne l'esecuzione.
 
       Se il criterio non viene configurato, viene utilizzato <ph name="BLOCK_PLUGINS_POLICY_NAME" /> e gli utenti possono cambiare l'impostazione.

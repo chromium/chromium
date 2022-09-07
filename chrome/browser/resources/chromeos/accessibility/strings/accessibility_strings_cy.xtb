@@ -138,7 +138,6 @@
 <translation id="1812527064848182527">llorweddol</translation>
 <translation id="1829244130665387512">Chwilio'r dudalen</translation>
 <translation id="1834891354138622109">Colofn</translation>
-<translation id="1845944666972354496">Tapiwch ddwywaith i weithredu</translation>
 <translation id="1846771122725914429">Sgrîn Braille Bluetooth</translation>
 <translation id="1852018405765032699">Bydd tapio'r sgrîn gyda phedwar bys yn agor ac yn cau dewislenni ChromeVox. Mae'r dewislenni hyn yn cynnwys gwybodaeth ddefnyddiol am orchmynion a llwybrau byr. Unwaith y bydd y dewislenni ar agor, gallwch sweipio gydag un bys i lywio drwy eitemau, a thapio ddwywaith i weithredu eitemau. I barhau, tapiwch y sgrîn gyda phedwar bys.</translation>
 <translation id="1865601187525349519">Diwedd y testun</translation>
@@ -226,7 +225,6 @@
 <translation id="2497706219848005458">Melyn Gwyrdd</translation>
 <translation id="2523609930580546572">Tiwtorial ChromeVox</translation>
 <translation id="2525706221823668172">Llwybrau byr bysellfwrdd Chromebook</translation>
-<translation id="2543973100702367007">Tapiwch ddwywaith i <ph name="LABEL" /></translation>
 <translation id="2553108862507765288">camgymeriad gramadegol</translation>
 <translation id="2556326187583116255">Tapiwch gyda 2 fys i atal unrhyw leferydd presennol</translation>
 <translation id="2573256689920773241">Llywio sylfaenol</translation>
@@ -598,7 +596,6 @@
 <translation id="4993152509206108683">Cyfradd <ph name="PERCENT" /> y cant</translation>
 <translation id="4994420463726586413">Cyhoeddi statws presennol y batri</translation>
 <translation id="4997282455736854877"><ph name="NAME" />, botwm radio wedi'i ddewis</translation>
-<translation id="5011664330025416377">Pwyswch Search+Space i weithredu</translation>
 <translation id="5012724933919010465"><ph name="NAME" />, botwm radio eitem dewislen wedi'i ddewis</translation>
 <translation id="5020651427400641814">Galluogi cofnodi lleferydd</translation>
 <translation id="5041394372352067729">Symud y sgrîn braille i frig y dudalen</translation>
@@ -763,6 +760,7 @@
 <translation id="6100239002225743044">Symud i fyny un llinell</translation>
 <translation id="6118126368611144850">Apiau Android ar gyfer Chrome. Os oes gennych Play Store ar eich dyfais, gallwch gael gipolwg ar ChromeVox gydag apiau Android. Rhowch gynnig ar y cymorth arbrofol drwy lawrlwytho Google Chrome Canary o'r Play Store.</translation>
 <translation id="611827076493383239">ymwld</translation>
+<translation id="6119846243427417423">gweithredu</translation>
 <translation id="6122013438240733403">btm</translation>
 <translation id="6132506484792346370">Blwch rhestr neu flwch cyfun</translation>
 <translation id="613344593214611552">dilëwch y frawddeg flaenorol</translation>
@@ -1116,7 +1114,6 @@
 <translation id="8693391540059827073">Fy hoff dymor</translation>
 <translation id="8696284982970258155">Gwyrdd golau</translation>
 <translation id="8697111817566059991">{COUNT,plural, =1{pibell}zero{# pibell fertigol}two{# bibell fertigol}few{# pibell fertigol}many{# phibell fertigol}other{# pibell fertigol}}</translation>
-<translation id="8733397807344284494">Pwyswch Search+Space i <ph name="LABEL" /></translation>
 <translation id="8741370088760768424">Awgrym: Pwyswch Search + Space i weithredu'r eitem bresennol.</translation>
 <translation id="8743786158317878347">dechrau cynnwys strwythuredig, megis tablau</translation>
 <translation id="8746846427395705317">symudwch i'r gair blaenorol</translation>

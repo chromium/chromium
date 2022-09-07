@@ -1032,6 +1032,7 @@ As permissões que você já concedeu a apps podem ser aplicadas a essa conta. V
 <translation id="1931152874660185993">Nenhum componente instalado.</translation>
 <translation id="1931410639376954712">Instalando o <ph name="DEVICE_OS" /></translation>
 <translation id="1932098463447129402">Não antes</translation>
+<translation id="1933489278505808700">Com permissão para ler e mudar</translation>
 <translation id="1935303383381416800">Permitir o acesso à localização</translation>
 <translation id="1936157145127842922">Mostrar na pasta</translation>
 <translation id="1936931585862840749">Use um número para indicar quantas cópias serão impressas (1 a <ph name="MAX_COPIES" />).</translation>
@@ -3554,6 +3555,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="4310132194679586591">Selecione um app no seu dispositivo para abrir este link</translation>
 <translation id="4310139701823742692">O arquivo está no formato errado. Verifique o arquivo PPD e tente novamente.</translation>
 <translation id="431076611119798497">&amp;Detalhes</translation>
+<translation id="4311284648179069796">Sem permissão para ler e mudar</translation>
 <translation id="4312701113286993760">{COUNT,plural, =1{1 Conta do Google}one{<ph name="EXTRA_ACCOUNTS" /> Conta do Google}other{<ph name="EXTRA_ACCOUNTS" /> Contas do Google}}</translation>
 <translation id="4312866146174492540">Bloquear (padrão)</translation>
 <translation id="4314497418046265427">Melhore sua produtividade conectando o smartphone ao <ph name="DEVICE_TYPE" /></translation>
@@ -3745,6 +3747,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="4504940961672722399">Para usar esta extensão, clique neste ícone ou pressione <ph name="EXTENSION_SHORTCUT" />.</translation>
 <translation id="450552327874992444">Palavra já adicionada</translation>
 <translation id="4507128560633489176">Dados limpos.</translation>
+<translation id="4507373251891673233">Você bloqueou todas as extensões do <ph name="HOST" /></translation>
 <translation id="450867954911715010">Configurações de acessibilidade</translation>
 <translation id="4508765956121923607">Exibir &amp;código fonte</translation>
 <translation id="4509421746503122514">Reiniciar para atualizar</translation>
@@ -4018,6 +4021,7 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="4763408175235639573">Os cookies a seguir foram definidos quando você visualizou esta página</translation>
 <translation id="4765524037138975789">{MONTHS,plural, =1{Este dispositivo vai ser salvo por 1 mês e você vai poder se conectar sem um código na próxima vez. Isso é definido pelo seu administrador.}one{Este dispositivo vai ser salvo por {MONTHS} mês e você vai poder se conectar sem um código na próxima vez. Isso é definido pelo seu administrador.}other{Este dispositivo vai ser salvo por {MONTHS} meses e você vai poder se conectar sem um código na próxima vez. Isso é definido pelo seu administrador.}}</translation>
 <translation id="4765582662863429759">Permite que o Android Mensagens transmita mensagens de texto do smartphone para o Chromebook</translation>
+<translation id="4766598565665644999">Todas as extensões podem ler e mudar o <ph name="HOST" /></translation>
 <translation id="4768332406694066911">Você tem certificados das seguintes empresas que identificam você</translation>
 <translation id="4770119228883592393">Permissão solicitada. Pressione ⌘ + Option + seta para baixo para responder</translation>
 <translation id="4773112038801431077">Fazer upgrade do Linux</translation>
@@ -5192,6 +5196,7 @@ Não exponha nenhuma informação confidencial.</translation>
     <ph name="LINE_BREAK" />
     Essa imagem será exibida na tela de login e na tela de bloqueio do Chromebook.</translation>
 <translation id="5925147183566400388">Indicador de Declaração de Práticas de Certificação</translation>
+<translation id="5927232971138258197">Esta extensão pode ler e mudar o <ph name="HOST" /></translation>
 <translation id="592740088639760830">Interromper contêiner</translation>
 <translation id="592880897588170157">Fazer o download de arquivos PDF em vez de abri-los automaticamente no Chrome</translation>
 <translation id="592919310198008711">Quando eu clicar na extensão</translation>
@@ -5559,7 +5564,6 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6276210637549544171">O proxy <ph name="PROXY_SERVER" /> exige um nome de usuário e uma senha.</translation>
 <translation id="6277105963844135994">Tempo limite de rede</translation>
 <translation id="6277518330158259200">T&amp;irar captura de tela</translation>
-<translation id="6278057325678116358">Usar GTK+</translation>
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6278776436938569440">Mudar local</translation>
 <translation id="6279183038361895380">Pressione |<ph name="ACCELERATOR" />| para exibir seu cursor</translation>
@@ -6300,6 +6304,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="6973611239564315524">O upgrade para o Debian 10 (Buster) está disponível</translation>
 <translation id="69739764870135975">Se o Google também for seu mecanismo de pesquisa padrão, você vai receber sugestões melhores e relevantes para o contexto</translation>
 <translation id="697508444536771064">Encerrar o Linux</translation>
+<translation id="6975361011348772931">Permissão para ler e mudar solicitada</translation>
 <translation id="6978121630131642226">Mecanismos de pesquisa</translation>
 <translation id="6979044105893951891">Iniciar e sair de Sessões de Visitante gerenciadas</translation>
 <translation id="6979158407327259162">Google Drive</translation>
@@ -6428,7 +6433,6 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="7090160970140261931">É possível adicionar mais contas ao <ph name="DEVICE_TYPE" /> para serem usadas com sites e apps Android. Você também pode controlar quais contas são usadas em apps Android.</translation>
 <translation id="7093220653036489319">Respostas rápidas</translation>
 <translation id="7093416310351037609">Para proteger os dados, sua organização exige que todos os downloads qualificados sejam salvos na conta dela no <ph name="WEB_DRIVE" />.</translation>
-<translation id="7093434536568905704">GTK+</translation>
 <translation id="7093866338626856921">Trocar dados com os dispositivos chamados: <ph name="HOSTNAMES" /></translation>
 <translation id="7098389117866926363">Dispositivo USB-C (porta traseira da esquerda)</translation>
 <translation id="7098447629416471489">Outros mecanismos de pesquisa salvos serão exibidos aqui</translation>
@@ -7299,6 +7303,7 @@ Pressione um interruptor ou tecla atribuídos para remover a atribuição.</tran
 <translation id="793531125873261495">Erro ao fazer o download da máquina virtual. Tente novamente.</translation>
 <translation id="7935451262452051102"><ph name="PERCENT" />% concluído</translation>
 <translation id="7939062555109487992">Opções avançadas</translation>
+<translation id="7939073735115504773">Clique no ícone desta extensão para ler e mudar o <ph name="HOST" /></translation>
 <translation id="7939328347457537652">Gerenciar certificados do dispositivo</translation>
 <translation id="7939412583708276221">Manter assim mesmo</translation>
 <translation id="7941179291434537290">Prontidão do tethering:</translation>

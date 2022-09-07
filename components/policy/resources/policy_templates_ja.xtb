@@ -5481,20 +5481,6 @@
       このポリシーで URL のリストを設定すると、コマンドライン フラグ「--unsafely-treat-insecure-origin-as-secure」で同じ URL をカンマ区切りリストで設定した場合と同じ結果が得られます。このポリシーは、このコマンドライン フラグと UnsafelyTreatInsecureOriginAsSecure（設定されている場合）よりも優先されます。
 
       安全なコンテキストについて詳しくは、https://www.w3.org/TR/secure-contexts をご覧ください。</translation>
-<translation id="7034831650852513978">このポリシーは、印刷ジョブにおける <ph name="CLIENT_INFO_IPP_ATTRIBUTE" /> <ph name="IPP_PROTOCOL" />（<ph name="INTERNET_PRINTING_PROTOCOL" />）<ph name="IPP_ATTRIBUTE" />の値を制御します。
-
-      このポリシーを文字列に設定した場合、すべての印刷ジョブに <ph name="CLIENT_INFO_IPP_ATTRIBUTE" /> アイテムが追加されます。追加された <ph name="CLIENT_INFO_IPP_ATTRIBUTE" /> アイテムの <ph name="CLIENT_NAME_IPP_ATTRIBUTE" /> メンバーは、変数を置換後、ポリシーの値に設定されます。
-
-      サポートされている変数は、<ph name="DIRECTORY_ID_PLACEHOLDER" />、<ph name="SERIAL_NUMBER_PLACEHOLDER" />、<ph name="ASSET_ID_PLACEHOLDER" />、<ph name="ANNOTATED_LOCATION_PLACEHOLDER" />、<ph name="USER_EMAIL_PLACEHOLDER" />、<ph name="USER_EMAIL_NAME_PLACEHOLDER" />、<ph name="USER_EMAIL_DOMAIN" /> です。サポートされていないプレースホルダ変数は展開されません。
-
-      変数置換後の値は、<ph name="ASCII" /> で印刷可能な文字のみで構成され、かつ長さが 255 文字以下の場合に有効とみなされます。
-
-      なお、プライバシー上の理由から、このポリシーは、<ph name="IPPS_PROTOCOL" />、<ph name="HTTPS_PROTOCOL" />、<ph name="USB_PROTOCOL" />、または <ph name="IPP_USB_PROTOCOL" /> プロトコルを使用したプリンタと通信する場合にのみ適用されます。また、このポリシーが適用されるのは <ph name="CLIENT_NAME_IPP_ATTRIBUTE" /> をサポートするプリンタに限られます。
-
-      このポリシーは、関連のあるユーザーにのみ適用されます。
-
-      このポリシーを設定しないか、空の値または無効な値が設定されている場合、<ph name="CLIENT_INFO_PLACEHOLDER" /> は印刷ジョブ リクエストに追加されません。
-      </translation>
 <translation id="703672323011778742">このポリシーは M88 でサポートが終了しています。Flash は Chrome でご利用いただけなくなりました。このポリシーを 1 に設定すると、<ph name="FLASH_PLUGIN_NAME" /> プラグインをすべてのウェブサイトで自動実行できるかどうかを設定できます。このポリシーを 2 に設定した場合、このプラグインはすべてのウェブサイトで拒否されます。「クリックして再生」の場合、<ph name="FLASH_PLUGIN_NAME" /> プラグインは実行できますが、ユーザーがプレースホルダをクリックしないと開始されません。
 
       このポリシーを未設定のままにした場合、<ph name="BLOCK_PLUGINS_POLICY_NAME" /> が使用され、ユーザーがこの設定を変更することもできます。

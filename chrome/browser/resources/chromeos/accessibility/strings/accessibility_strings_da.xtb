@@ -1,7 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="da">
-<translation id="1009046985747440431">Tryk på pil op eller pil ned for at navigere, eller skriv for at aktivere</translation>
+<translation id="1009046985747440431">Tryk på pil op eller pil ned for at navigere, og tryk på Enter for at aktivere</translation>
 <translation id="1011903154582639569">Find en tast, og løft fingeren for at skrive</translation>
 <translation id="1012173283529841972">Punkt på listen</translation>
 <translation id="1013742170491673792">srched</translation>
@@ -138,7 +138,6 @@
 <translation id="1812527064848182527">landskab</translation>
 <translation id="1829244130665387512">Find på siden</translation>
 <translation id="1834891354138622109">Kolonne</translation>
-<translation id="1845944666972354496">Tryk to gange for at aktivere</translation>
 <translation id="1846771122725914429">Brailleskærm via Bluetooth</translation>
 <translation id="1852018405765032699">Du kan lukke ChromeVox-menuerne ved at trykke på skærmen med fire fingre. Disse menuer indeholder nyttige oplysninger om kommandoer og genveje. Når du har åbnet menuerne, kan du stryge med én finger for at navigere mellem elementer og trykke to gange for interagere med elementer. Tryk på skærmen med fire fingre for at fortsætte.</translation>
 <translation id="1865601187525349519">Slutning af ​​tekst</translation>
@@ -226,7 +225,6 @@
 <translation id="2497706219848005458">Grøngul</translation>
 <translation id="2523609930580546572">ChromeVox-selvstudie</translation>
 <translation id="2525706221823668172">Tastaturgenveje på Chromebook</translation>
-<translation id="2543973100702367007">Tryk to gange for at <ph name="LABEL" /></translation>
 <translation id="2553108862507765288">grammatisk fejl</translation>
 <translation id="2556326187583116255">Tryk med to fingre for at stoppe igangværende oplæsning</translation>
 <translation id="2573256689920773241">Grundlæggende navigation</translation>
@@ -598,7 +596,6 @@
 <translation id="4993152509206108683">Tempo <ph name="PERCENT" /> procent</translation>
 <translation id="4994420463726586413">Oplæs aktuel batteristatus</translation>
 <translation id="4997282455736854877">Alternativknappen <ph name="NAME" /> er valgt</translation>
-<translation id="5011664330025416377">Tryk på søgetasten+mellemrumstasten for at aktivere</translation>
 <translation id="5012724933919010465">Alternativknappen <ph name="NAME" /> til menupunktet er valgt</translation>
 <translation id="5020651427400641814">Aktivér talelogning</translation>
 <translation id="5041394372352067729">Flyt braille-visningen til toppen af siden</translation>
@@ -763,6 +760,7 @@
 <translation id="6100239002225743044">Gå én linje op</translation>
 <translation id="6118126368611144850">Android-apps til Chrome. Hvis du har Google Play Butik på din enhed, kan du få et smugkig på ChromeVox med Android-apps. Prøv eksperimentel understøttelse ved at downloade Google Chrome Canary i Play Butik.</translation>
 <translation id="611827076493383239">vtd</translation>
+<translation id="6119846243427417423">aktivér</translation>
 <translation id="6122013438240733403">knp</translation>
 <translation id="6132506484792346370">Et listefelt eller kombifelt</translation>
 <translation id="613344593214611552">slet den forrige sætning</translation>
@@ -1116,7 +1114,6 @@
 <translation id="8693391540059827073">Min foretrukne årstid</translation>
 <translation id="8696284982970258155">Honningmelon</translation>
 <translation id="8697111817566059991">{COUNT,plural, =1{streg}one{# lodrette streger}other{# lodrette streger}}</translation>
-<translation id="8733397807344284494">Tryk på søgetasten+mellemrumstasten for at <ph name="LABEL" /></translation>
 <translation id="8741370088760768424">Tip! Tryk på søgetasten+mellemrumstasten for at aktivere det aktuelle element.</translation>
 <translation id="8743786158317878347">angiv struktureret indhold, f.eks. tabeller</translation>
 <translation id="8746846427395705317">gå til det forrige ord</translation>

@@ -138,7 +138,6 @@
 <translation id="1812527064848182527">альбомная</translation>
 <translation id="1829244130665387512">Пошук на старонцы</translation>
 <translation id="1834891354138622109">Слупок</translation>
-<translation id="1845944666972354496">Каб актываваць, націсніце двойчы</translation>
 <translation id="1846771122725914429">Дысплэй Брайля з падключэннем праз Bluetooth</translation>
 <translation id="1852018405765032699">Закрываць і адкрываць меню ChromeVox можна, дакрануўшыся да экрана чатырма пальцамі. Гэтыя меню змяшчаюць карысную інфармацыю пра каманды і кіраванне. Калі меню адкрыецца, для пераходу па яго пунктах праводзьце па экране адным пальцам, для актывацыі пункта меню дакраніцеся да яго двойчы. Каб працягнуць, націсніце на экран чатырма пальцамі.</translation>
 <translation id="1865601187525349519">Канец тэксту</translation>
@@ -226,7 +225,6 @@
 <translation id="2497706219848005458">Зялёна-жоўты</translation>
 <translation id="2523609930580546572">Дапаможнік па ChromeVox</translation>
 <translation id="2525706221823668172">Спалучэнні клавіш у Chromebook</translation>
-<translation id="2543973100702367007">Каб <ph name="LABEL" />, націсніце двойчы</translation>
 <translation id="2553108862507765288">граматычная памылка</translation>
 <translation id="2556326187583116255">Каб спыніць зачытванне тэксту ўголас, дакраніцеся да экрана двума пальцамі</translation>
 <translation id="2573256689920773241">Асноўныя спосабы навігацыі</translation>
@@ -598,7 +596,6 @@
 <translation id="4993152509206108683">Хуткасць у працэнтах: <ph name="PERCENT" /></translation>
 <translation id="4994420463726586413">Агучыць бягучы стан акумулятара</translation>
 <translation id="4997282455736854877"><ph name="NAME" />, выбрана кнопка-пераключальнік</translation>
-<translation id="5011664330025416377">Націсніце клавішы Пошук + Прабел, каб актываваць</translation>
 <translation id="5012724933919010465"><ph name="NAME" />, кнопка-пераключальнік у пункце меню выбрана</translation>
 <translation id="5020651427400641814">Уключыць вядзенне журнала маўлення</translation>
 <translation id="5041394372352067729">Перамясціць дысплэй Брайля ўверх старонкі</translation>
@@ -763,6 +760,7 @@
 <translation id="6100239002225743044">Перамясціць на адзін радок вышэй</translation>
 <translation id="6118126368611144850">Праграмы Android для Chrome. Калі ў вас на прыладзе ёсць Крама Play, вы можаце зірнуць на працу ChromeVox з праграмамі Android. Паспрабуйце эксперыментальную падтрымку: спампуйце Google Chrome Canary з Крамы Play.</translation>
 <translation id="611827076493383239">наведана</translation>
+<translation id="6119846243427417423">актываваць</translation>
 <translation id="6122013438240733403">кнопка</translation>
 <translation id="6132506484792346370">Звычайны ці камбінаваны спіс</translation>
 <translation id="613344593214611552">выдаліць папярэдні сказ</translation>
@@ -1116,7 +1114,6 @@
 <translation id="8693391540059827073">Мая любімая пара года</translation>
 <translation id="8696284982970258155">Зімовая дыня</translation>
 <translation id="8697111817566059991">{COUNT,plural, =1{вертыкальная лінія}one{# вертыкальная лінія}few{# вертыкальныя лініі}many{# вертыкальных ліній}other{# вертыкальнай лініі}}</translation>
-<translation id="8733397807344284494">Каб <ph name="LABEL" />, націсніце Пошук + Прабел</translation>
 <translation id="8741370088760768424">Падказка: каб актываваць бягучы аб'ект, націсніце Пошук + Прабел.</translation>
 <translation id="8743786158317878347">увод структураванага змесціва, напрыклад табліц</translation>
 <translation id="8746846427395705317">перайсці да папярэдняга слова</translation>

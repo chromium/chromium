@@ -5894,20 +5894,6 @@ Estas políticas te permiten configurar el comportamiento de <ph name="PRODUCT_O
       Definir la lista de URLs de esta política tiene el mismo resultado que asignar la instrucción de línea de comandos --unsafely-treat-insecure-origin-as-secure a una lista con las mismas URL separadas por comas. Esta política anula tanto la instrucción de línea de comandos como UnsafelyTreatInsecureOriginAsSecure si está presente.
 
       Para obtener más información sobre los contextos seguros, consulta la página Secure Contexts (https://www.w3.org/TR/secure-contexts).</translation>
-<translation id="7034831650852513978">Esta política controla el valor del <ph name="IPP_ATTRIBUTE" /> <ph name="IPP_PROTOCOL" /> (<ph name="INTERNET_PRINTING_PROTOCOL" />) <ph name="CLIENT_INFO_IPP_ATTRIBUTE" /> en los trabajos de impresión.
-
-      Si se define esta política en una cadena, se añadirá un elemento <ph name="CLIENT_INFO_IPP_ATTRIBUTE" /> adicional a cada trabajo de impresión. Al miembro <ph name="CLIENT_NAME_IPP_ATTRIBUTE" /> del elemento <ph name="CLIENT_INFO_IPP_ATTRIBUTE" /> añadido se le asignará el valor de la política después de sustituir las variables.
-
-      Las variables admitidas son <ph name="DIRECTORY_ID_PLACEHOLDER" />, <ph name="SERIAL_NUMBER_PLACEHOLDER" />, <ph name="ASSET_ID_PLACEHOLDER" />, <ph name="ANNOTATED_LOCATION_PLACEHOLDER" />, <ph name="USER_EMAIL_PLACEHOLDER" />, <ph name="USER_EMAIL_NAME_PLACEHOLDER" /> y <ph name="USER_EMAIL_DOMAIN" />. Las variables de marcador de posición no admitidas no se sustituirán.
-
-      El valor resultante después de sustituir las variables se considera válido si contiene solo caracteres <ph name="ASCII" /> que se puedan imprimir y su longitud no es superior a 255.
-
-      Ten en cuenta que, por motivos de privacidad, esta política solo se aplica para comunicarse con una impresora mediante los protocolos <ph name="IPPS_PROTOCOL" />, <ph name="HTTPS_PROTOCOL" />, <ph name="USB_PROTOCOL" /> o <ph name="IPP_USB_PROTOCOL" />. Asimismo, esta política solo se aplica a las impresoras compatibles con <ph name="CLIENT_NAME_IPP_ATTRIBUTE" />.
-
-      La política solo se aplica a usuarios afiliados.
-
-      Si no se define esta política o se le asigna un valor vacío o no válido, no se añadirá un <ph name="CLIENT_INFO_PLACEHOLDER" /> adicional a las solicitudes de trabajos de impresión.
-      </translation>
 <translation id="703672323011778742">Esta política está obsoleta en M88. Chrome ya no es compatible con Flash. Si asignas el valor 1 a esta política, podrás establecer si todos los sitios pueden ejecutar automáticamente el complemento <ph name="FLASH_PLUGIN_NAME" />. Si se le asigna el valor 2, se denegará este complemento en todos los sitios. La opción de hacer clic para reproducir permite que se ejecute el complemento <ph name="FLASH_PLUGIN_NAME" />, pero los usuarios tendrán que hacer clic en el marcador de posición para iniciar la ejecución.
 
       Si no se le asigna ningún valor, se usará la política <ph name="BLOCK_PLUGINS_POLICY_NAME" /> y los usuarios podrán cambiar esta opción.

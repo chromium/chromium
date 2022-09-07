@@ -69,7 +69,7 @@
 <translation id="1161325031994447685">Wifi-sarera berriro konektatu.</translation>
 <translation id="1165039591588034296">Errorea</translation>
 <translation id="1165174597379888365">Orri bat bisitatu da</translation>
-<translation id="1165852471352757509">Telebistako dokumentalak eta ez-fikziozko telesaioak</translation>
+<translation id="1165852471352757509">Telebistako dokumentalak eta ez-fikziozko saioak</translation>
 <translation id="1174723505405632867"><ph name="TOP_LEVEL_URL" /> webguneko cookieak eta datuak erabiltzeko baimena eman nahi diozu <ph name="EMBEDDED_URL" /> webguneari?
 
 Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin, erabili duzun edukiak behar bezala funtzionatuko du, baina baliteke <ph name="EMBEDDED_URL" /> webguneak zure jardueren jarraipena egin ahal izatea.</translation>
@@ -1748,7 +1748,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="5610807607761827392"><ph name="BEGIN_LINK" />Ezarpenak<ph name="END_LINK" /> atalean kudea ditzakezu txartelak eta helbideak.</translation>
 <translation id="561165882404867731">Itzuli orria Google Translate-rekin</translation>
 <translation id="5612720917913232150"><ph name="URL" /> webguneak ordenagailuaren kokapena erabili nahi du</translation>
-<translation id="561669346091975195">Zientzia-fikziozko eta fantasiazko telesaioak</translation>
+<translation id="561669346091975195">Zientzia-fikziozko eta fantasiazko saioak</translation>
 <translation id="5617949217645503996"><ph name="HOST_NAME" /> webguneak gehiegitan birbideratu zaitu.</translation>
 <translation id="5624120631404540903">Kudeatu pasahitzak</translation>
 <translation id="5629630648637658800">Ezin izan dira kargatu gidalerroen ezarpenak</translation>
@@ -2198,7 +2198,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="6916954549222464607">Finantzen planifikazioa eta kudeaketa</translation>
 <translation id="6917795328362592458">Erabili berri duzun pasahitza datuen isilpekotasunaren urratze batean aurkitu da. Kontuak babesteko, Pasahitz-kudeatzailea aplikazioak gordeta dauzkazun pasahitzak seguruak direla egiaztatzea gomendatzen du.</translation>
 <translation id="6934672428414710184">Izen hori Google-ko kontukoa da</translation>
-<translation id="6939469646605424232">Telesaio dramatikoak</translation>
+<translation id="6939469646605424232">Saio dramatikoak</translation>
 <translation id="6944692733090228304"><ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> erakundeak kudeatzen ez duen webgune batean idatzi duzu pasahitza. Kontua babesteko, ez erabili berriro pasahitz hori beste aplikazio eta webguneetan.</translation>
 <translation id="6945221475159498467">Hautatu</translation>
 <translation id="6946722113367118030">Pentsatzen</translation>
@@ -2370,7 +2370,7 @@ Xehetasun gehiago:
 <translation id="7378594059915113390">Multimedia-edukia kontrolatzeko aukerak</translation>
 <translation id="7378627244592794276">Ez</translation>
 <translation id="7378810950367401542">/</translation>
-<translation id="7378877318020334501">Komedia-telesaioak</translation>
+<translation id="7378877318020334501">Komedia-saioak</translation>
 <translation id="738439098860678026">Haur-hezkuntza goiztiarra</translation>
 <translation id="7386364858855961704">Ez aplikagarria</translation>
 <translation id="7388594495505979117">{0,plural, =1{1 minutu barru berrabiaraziko da gailua}other{# minutu barru berrabiaraziko da gailua}}</translation>
@@ -2450,7 +2450,7 @@ Xehetasun gehiago:
 <translation id="7552846755917812628">Saiatu hauek egiten:</translation>
 <translation id="7554475479213504905">Kargatu berriro eta erakutsi, hala ere</translation>
 <translation id="7554791636758816595">Fitxa berria</translation>
-<translation id="7555777498260651025">Familientzako telesaioak</translation>
+<translation id="7555777498260651025">Familientzako saioak</translation>
 <translation id="7559278538486662777">Ezin zaio aldatu tamaina aplikazio honi.</translation>
 <translation id="7564049878696755256"><ph name="ORG_NAME" /> konturako sarbidea gal zenezake, edo kontua lapur liezazukete. Pasahitza aldatzea gomendatzen dizu Chrome-k.</translation>
 <translation id="7564680668369175887">Familiarrak</translation>
@@ -2983,7 +2983,7 @@ Xehetasun gehiago:
 <translation id="9089260154716455634">Gidalerroak zorroztasun txikiagoa duen denbora tartea:</translation>
 <translation id="9095388113577226029">Hizkuntza gehiago…</translation>
 <translation id="9096425087209440047"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />: sakatu tabuladorea eta, ondoren, sakatu "Sartu" Chrome sistemaren arakatzaile lehenetsi gisa ezartzeko iOS-en ezarpenetan</translation>
-<translation id="9096679202588811390">Telesaioak eta programak</translation>
+<translation id="9096679202588811390">Saioak eta programak</translation>
 <translation id="9101630580131696064">1. erretilua</translation>
 <translation id="9102081333385212048">Kopiatzen edo mugitzen dituzun fitxategiak Google Cloud-i edo hirugarrenei bidaltzen zaizkie, azter ditzaten. Adibidez, baliteke fitxategiak eskaneatzea kontuzko datuak edo malwarea duten ikusteko.</translation>
 <translation id="9103537084693478942">Bideo-softwareak</translation>

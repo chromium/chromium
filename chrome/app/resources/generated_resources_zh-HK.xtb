@@ -106,7 +106,7 @@
 <translation id="1094607894174825014">已在「<ph name="DEVICE_NAME" />」上作出包含無效偏移的讀取或寫入操作請求。</translation>
 <translation id="1095761715416917775">請確保您可隨時存取同步處理的資料</translation>
 <translation id="109647177154844434">解除安裝 Parallels Desktop 將會刪除您的 Windows 映像檔，包括其應用程式、設定和資料。您確定要繼續嗎？</translation>
-<translation id="1097016918605049747">無法翻譯這個網頁</translation>
+<translation id="1097016918605049747">翻譯唔到呢個頁面</translation>
 <translation id="1097658378307015415">請在登入前以訪客身分進入，啟用網絡 <ph name="NETWORK_ID" /></translation>
 <translation id="1099383081182863812">您可以在
     <ph name="BEGIN_LINK" />
@@ -1321,7 +1321,7 @@
 <translation id="2203088913459920044">名稱可以使用字母、數字和特殊字元</translation>
 <translation id="220321590587754225">無法連接。請再試一次。</translation>
 <translation id="2204034823255629767">讀取及變更您輸入的任何設定</translation>
-<translation id="2204387456724731099">無法翻譯這個選取的項目</translation>
+<translation id="2204387456724731099">翻譯唔到呢個揀咗嘅項目</translation>
 <translation id="220858061631308971">請在「<ph name="DEVICE_NAME" />」上輸入以下 PIN：</translation>
 <translation id="2210462644007531147">無法完成安裝</translation>
 <translation id="2212565012507486665">允許 Cookie</translation>
@@ -5252,7 +5252,7 @@
 <translation id="5975792506968920132">電池充電百分比</translation>
 <translation id="5976160379964388480">其他</translation>
 <translation id="5978277834170881274">使用基本拼字檢查功能(&amp;U)</translation>
-<translation id="5978395054855988504">省電模式已開啟</translation>
+<translation id="5978395054855988504">省電模式開咗</translation>
 <translation id="5978493744931296692">管理員已停用其他設定檔</translation>
 <translation id="5979084224081478209">檢查密碼</translation>
 <translation id="5979156418378918004">{NUM_EXTENSIONS,plural, =1{您已重新開啟 1 個可能有害的擴充程式}other{您已重新開啟 {NUM_EXTENSIONS} 個可能有害的擴充程式}}</translation>
@@ -5559,7 +5559,6 @@
 <translation id="6276210637549544171">Proxy <ph name="PROXY_SERVER" /> 要求您提供使用者名稱和密碼。</translation>
 <translation id="6277105963844135994">網絡逾時</translation>
 <translation id="6277518330158259200">擷取螢幕畫面(&amp;A)</translation>
-<translation id="6278057325678116358">使用 GTK+</translation>
 <translation id="6278428485366576908">主題背景</translation>
 <translation id="6278776436938569440">變更位置</translation>
 <translation id="6279183038361895380">按下 |<ph name="ACCELERATOR" />| 即可顯示游標</translation>
@@ -6427,7 +6426,6 @@
 <translation id="7090160970140261931">您可新增其他帳戶至「<ph name="DEVICE_TYPE" />」，以便透過帳戶使用網站或 Android 應用程式。您亦可控制要透過哪個帳戶使用 Android 應用程式。</translation>
 <translation id="7093220653036489319">快速解答</translation>
 <translation id="7093416310351037609">為了保護資料和系統安全，您的機構要求將所有符合資格的下載項目儲存到機構的「<ph name="WEB_DRIVE" />」帳戶。</translation>
-<translation id="7093434536568905704">GTK+</translation>
 <translation id="7093866338626856921">與名稱為「<ph name="HOSTNAMES" />」的裝置交換數據</translation>
 <translation id="7098389117866926363">USB-C 裝置 (後方左側連接埠)</translation>
 <translation id="7098447629416471489">已儲存的搜尋引擎將會在這裡顯示</translation>
@@ -8463,7 +8461,7 @@
 <translation id="9048745018038487540">選取所有字型</translation>
 <translation id="9050666287014529139">複雜密碼</translation>
 <translation id="9052404922357793350">繼續封鎖</translation>
-<translation id="90528604757378587">背景活動和某些視覺效果 (例如平滑捲動) 可能會受到限制。</translation>
+<translation id="90528604757378587">背景活動及部分視覺效果 (例如平滑捲動) 可能會受到限制。</translation>
 <translation id="9053563360605707198">雙面列印</translation>
 <translation id="9055636786322918818">強制執行 RC4 加密。由於 RC4 加密不安全，因此使用此選項會提高風險。</translation>
 <translation id="9056810968620647706">找不到相符的項目。</translation>

@@ -138,7 +138,6 @@
 <translation id="1812527064848182527">orientacja pozioma</translation>
 <translation id="1829244130665387512">Znajdź na stronie</translation>
 <translation id="1834891354138622109">Kolumna</translation>
-<translation id="1845944666972354496">Kliknij dwukrotnie, by użyć</translation>
 <translation id="1846771122725914429">Monitor brajlowski Bluetooth</translation>
 <translation id="1852018405765032699">Dotknięcie ekranu czterema palcami otwiera i zamyka różne menu czytnika ChromeVox. Zawierają one przydatne informacje o poleceniach i skrótach. Gdy menu są otwarte, możesz przechodzić między elementami, przesuwając jednym palcem, i uaktywniać elementy, dotykając dwukrotnie. Aby przejść dalej, dotknij ekranu czterema palcami.</translation>
 <translation id="1865601187525349519">Koniec tekstu</translation>
@@ -226,7 +225,6 @@
 <translation id="2497706219848005458">Zielonożółty</translation>
 <translation id="2523609930580546572">Samouczek ChromeVox</translation>
 <translation id="2525706221823668172">Skróty klawiszowe na Chromebooku</translation>
-<translation id="2543973100702367007">Kliknij dwukrotnie, aby <ph name="LABEL" /></translation>
 <translation id="2553108862507765288">błąd gramatyczny</translation>
 <translation id="2556326187583116255">Dotknij ekranu 2 palcami, by zatrzymać odczytywanie</translation>
 <translation id="2573256689920773241">Nawigacja podstawowa</translation>
@@ -530,6 +528,7 @@
 <translation id="4479068155583208887">Ceglasty</translation>
 <translation id="4482330759234983253">Poprzednia tabela</translation>
 <translation id="4491109536499578614">Obraz</translation>
+<translation id="4507332368061453500">Kliknij i przytrzymaj bieżący element</translation>
 <translation id="4511186779140817916">Blanszowane migdały</translation>
 <translation id="451510441928265982">Nie ma poprzedniego nagłówka poziomu 2</translation>
 <translation id="4515799157838123044">Przyciemnij zawartość w tle</translation>
@@ -598,7 +597,6 @@
 <translation id="4993152509206108683">Szybkość: <ph name="PERCENT" /> procent</translation>
 <translation id="4994420463726586413">Informuj głosowo o stanie baterii</translation>
 <translation id="4997282455736854877"><ph name="NAME" />, wybrany przycisk opcji</translation>
-<translation id="5011664330025416377">Naciśnij klawisz wyszukiwania + spację, by aktywować</translation>
 <translation id="5012724933919010465"><ph name="NAME" />, wybrany przycisk opcji pozycji menu</translation>
 <translation id="5020651427400641814">Włącz rejestrowanie mowy</translation>
 <translation id="5041394372352067729">Przenieś wyświetlacz brajlowski na górę strony</translation>
@@ -763,6 +761,7 @@
 <translation id="6100239002225743044">Przejdź jeden wiersz wyżej</translation>
 <translation id="6118126368611144850">Aplikacje na Androida dla Chrome. Jeśli na urządzeniu masz zainstalowany Sklep Play, możesz sprawdzić, jak ChromeVox współpracuje z aplikacjami na Androida. Przekonaj się, jak działa eksperymentalna obsługa – pobierz Google Chrome Canary ze Sklepu Play.</translation>
 <translation id="611827076493383239">vtd</translation>
+<translation id="6119846243427417423">aktywuj</translation>
 <translation id="6122013438240733403">btn</translation>
 <translation id="6132506484792346370">Pole listy lub pole złożone</translation>
 <translation id="613344593214611552">Usuń poprzednie zdanie</translation>
@@ -1115,7 +1114,6 @@
 <translation id="8693391540059827073">Moja ulubiona pora roku</translation>
 <translation id="8696284982970258155">Spadziowy</translation>
 <translation id="8697111817566059991">{COUNT,plural, =1{kreska pionowa}few{# kreski pionowe}many{# kresek pionowych}other{# vertical pipes}}</translation>
-<translation id="8733397807344284494">Naciśnij Wyszukaj + spację, aby <ph name="LABEL" /></translation>
 <translation id="8741370088760768424">Wskazówka: naciśnij klawisz wyszukiwania i spację, by aktywować bieżący element.</translation>
 <translation id="8743786158317878347">otwórz treści strukturalne, na przykład tabele</translation>
 <translation id="8746846427395705317">Przejdź do poprzedniego słowa</translation>

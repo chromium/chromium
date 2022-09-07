@@ -138,7 +138,6 @@
 <translation id="1812527064848182527">ಲ್ಯಾಂಡ್‌ಸ್ಕೇಪ್</translation>
 <translation id="1829244130665387512">ಪುಟದಲ್ಲಿ ಹುಡುಕಿ</translation>
 <translation id="1834891354138622109">ಕಾಲಮ್</translation>
-<translation id="1845944666972354496">ಸಕ್ರಿಯಗೊಳಿಸಲು ಡಬಲ್ ಟ್ಯಾಪ್ ಮಾಡಿ</translation>
 <translation id="1846771122725914429">ಬ್ಲೂಟೂತ್ ಬ್ರೈಲ್ ಡಿಸ್‌ಪ್ಲೇ</translation>
 <translation id="1852018405765032699">ನಾಲ್ಕು ಬೆರಳುಗಳಿಂದ ಸ್ಕ್ರೀನ್ ಟ್ಯಾಪ್ ಮಾಡುವುದರಿಂದ ChromeVox ಮೆನುಗಳನ್ನು ತೆರೆಯುತ್ತದೆ ಹಾಗೂ ಮುಚ್ಚುತ್ತದೆ. ಈ ಮೆನುಗಳಲ್ಲಿ ಕಮಾಂಡ್‌ಗಳು ಮತ್ತು ಶಾರ್ಟ್‌ಕಟ್‌ಗಳ ಕುರಿತು ಉಪಯುಕ್ತವಾದ ಮಾಹಿತಿಯಿದೆ. ಮೆನುಗಳನ್ನು ತೆರೆದ ನಂತರ, ಐಟಂಗಳ ಮೂಲಕ ನ್ಯಾವಿಗೇಟ್ ಮಾಡಲು ನೀವು ಒಂದು ಬೆರಳಿನಿಂದ ಸ್ವೈಪ್ ಮಾಡಬಹುದು ಮತ್ತು ಐಟಂಗಳನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಲು ಡಬಲ್-ಟ್ಯಾಪ್ ಮಾಡಿ. ಮುಂದುವರಿಸಲು, ನಾಲ್ಕು ಬೆರಳುಗಳಿಂದ ಸ್ಕ್ರೀನ್ ಅನ್ನು ಟ್ಯಾಪ್ ಮಾಡಿ.</translation>
 <translation id="1865601187525349519">ಪಠ್ಯದ ಕೊನೆ</translation>
@@ -226,7 +225,6 @@
 <translation id="2497706219848005458">ಹಸಿರು ಹಳದಿ</translation>
 <translation id="2523609930580546572">ChromeVox ಟುಟೋರಿಯಲ್</translation>
 <translation id="2525706221823668172">Chromebook ಕೀಬೋರ್ಡ್ ಶಾರ್ಟ್‌ಕಟ್‌ಗಳು</translation>
-<translation id="2543973100702367007"><ph name="LABEL" /> ಮಾಡಲು ಡಬಲ್ ಟ್ಯಾಪ್ ಮಾಡಿ</translation>
 <translation id="2553108862507765288">ವ್ಯಾಕರಣ ದೋಷ</translation>
 <translation id="2556326187583116255">ಯಾವುದೇ ಪ್ರಸ್ತುತ ಧ್ವನಿಯನ್ನು ನಿಲ್ಲಿಸಲು 2 ಬೆರಳುಗಳಿಂದ ಟ್ಯಾಪ್ ಮಾಡಿ</translation>
 <translation id="2573256689920773241">ಬೇಸಿಕ್ ನ್ಯಾವಿಗೇಶನ್</translation>
@@ -598,7 +596,6 @@
 <translation id="4993152509206108683">ದರ <ph name="PERCENT" /> ಶೇಕಡಾ</translation>
 <translation id="4994420463726586413">ಪ್ರಸ್ತುತ ಬ್ಯಾಟರಿ ಸ್ಥಿತಿಯನ್ನು ಪ್ರಕಟಿಸಿ</translation>
 <translation id="4997282455736854877"><ph name="NAME" />, ರೇಡಿಯೊ ಬಟನ್ ಅನ್ನು ಆಯ್ಕೆಮಾಡಲಾಗಿದೆ</translation>
-<translation id="5011664330025416377">ಸಕ್ರಿಯಗೊಳಿಸಲು, Search+Space ಕೀ ಅನ್ನು ಒತ್ತಿರಿ</translation>
 <translation id="5012724933919010465"><ph name="NAME" />, ಮೆನು ಐಟಂ ರೇಡಿಯೋ ಬಟನ್ ಆಯ್ಕೆಮಾಡಲಾಗಿದೆ</translation>
 <translation id="5020651427400641814">ಮಾತಿನ ಲಾಗಿಂಗ್ ಅನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಿ</translation>
 <translation id="5041394372352067729">ಬ್ರೈಲ್‌ ಡಿಸ್‌ಪ್ಲೇಯನ್ನು ಪುಟದ ಮೇಲ್ಭಾಗಕ್ಕೆ ಸರಿಸು</translation>
@@ -763,6 +760,7 @@
 <translation id="6100239002225743044">ಒಂದು ಸಾಲು ಮೇಲಕ್ಕೆ ಸರಿಸಿ</translation>
 <translation id="6118126368611144850">Chrome ಗಾಗಿ Android ಅಪ್ಲಿಕೇಶನ್‌ಗಳು. ನಿಮ್ಮ ಸಾಧನದಲ್ಲಿ ನೀವು Play Store  ಅನ್ನು ಹೊಂದಿದ್ದರೆ, Android ಅಪ್ಲಿಕೇಶನ್‌ಗಳೊಂದಿಗೆ ChromeVox ನಲ್ಲಿ ಸ್ನೀಕ್ ಪೀಕ್ ಅನ್ನು ಪಡೆದುಕೊಳ್ಳಿ. Play Store ‌ನಿಂದ Google Chrome Canary ಅನ್ನು ಡೌನ್‌ಲೋಡ್ ಮಾಡುವ ಮೂಲಕ ಪ್ರಾಯೋಗಿಕ ಬೆಂಬಲವನ್ನು ಬಳಸಿ ನೋಡಿ.</translation>
 <translation id="611827076493383239">vtd</translation>
+<translation id="6119846243427417423">ಸಕ್ರಿಯಗೊಳಿಸು</translation>
 <translation id="6122013438240733403">btn</translation>
 <translation id="6132506484792346370">ಪಟ್ಟಿ ಬಾಕ್ಸ್ ಅಥವಾ ಕಾಂಬೊ ಬಾಕ್ಸ್</translation>
 <translation id="613344593214611552">ಹಿಂದಿನ ವಾಕ್ಯವನ್ನು ಅಳಿಸಿ</translation>
@@ -1115,7 +1113,6 @@
 <translation id="8693391540059827073">ನನ್ನ ನೆಚ್ಚಿನ ಋತು</translation>
 <translation id="8696284982970258155">ಹನಿಡ್ಯೂ</translation>
 <translation id="8697111817566059991">{COUNT,plural, =1{ಪೈಪ್}one{# ಲಂಬ ಪೈಪ್‌ಗಳು}other{# ಲಂಬ ಪೈಪ್‌ಗಳು}}</translation>
-<translation id="8733397807344284494"><ph name="LABEL" /> ಮಾಡಲು ಹುಡುಕಾಟ+ಸ್ಪೇಸ್ ಒತ್ತಿ</translation>
 <translation id="8741370088760768424">ಸುಳಿವು: ಪ್ರಸ್ತುತ ಐಟಂ ಅನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಲು ಹುಡುಕಾಟ + ಸ್ಪೇಸ್‌ ಅನ್ನು ಒತ್ತಿರಿ.</translation>
 <translation id="8743786158317878347">ಕೋಷ್ಟಕಗಳಂತಹ, ವ್ಯವಸ್ಥಿತಗೊಳಿಸಿದ ವಿಷಯ ನಮೂದಿಸಿ</translation>
 <translation id="8746846427395705317">ಹಿಂದಿನ ಪದಕ್ಕೆ ಸರಿಸಿ</translation>

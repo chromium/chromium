@@ -5783,20 +5783,6 @@ Als je dit beleid instelt op een lege lijst of niet instelt, zijn er geen URL's 
       Als er een lijst met URL's wordt ingesteld in dit beleid, heeft dit hetzelfde effect als wanneer de opdrachtregelmarkering '--unsafely-treat-insecure-origin-as-secure' wordt ingesteld voor een door komma's gescheiden lijst met dezelfde URL's. Het beleid overschrijft de opdrachtregelmarkering en UnsafelyTreatInsecureOriginAsSecure, indien aanwezig.
 
       Voor meer informatie over een veilige context ga je naar https://www.w3.org/TR/secure-contexts.</translation>
-<translation id="7034831650852513978">Met dit beleid bepaal je de waarde van <ph name="CLIENT_INFO_IPP_ATTRIBUTE" /> <ph name="IPP_PROTOCOL" /> (<ph name="INTERNET_PRINTING_PROTOCOL" />) <ph name="IPP_ATTRIBUTE" /> in afdruktaken.
-
-      Als je dit beleid instelt op een tekenreeks, wordt aan elke afdruktaak een extra <ph name="CLIENT_INFO_IPP_ATTRIBUTE" />-item toegevoegd. Het <ph name="CLIENT_NAME_IPP_ATTRIBUTE" />-element van het toegevoegde <ph name="CLIENT_INFO_IPP_ATTRIBUTE" />-item wordt ingesteld op de waarde van het beleid na vervanging van variabelen.
-
-      Ondersteunde variabelen zijn <ph name="DIRECTORY_ID_PLACEHOLDER" />, <ph name="SERIAL_NUMBER_PLACEHOLDER" />, <ph name="ASSET_ID_PLACEHOLDER" />, <ph name="ANNOTATED_LOCATION_PLACEHOLDER" />, <ph name="USER_EMAIL_PLACEHOLDER" />, <ph name="USER_EMAIL_NAME_PLACEHOLDER" />, <ph name="USER_EMAIL_DOMAIN" />. Niet-ondersteunde tijdelijke variabelen worden niet uitgebreid.
-
-      De resulterende waarde na vervanging van variabelen wordt als geldig beschouwd als deze alleen bestaat uit <ph name="ASCII" /> afdrukbare tekens en de lengte niet langer is dan 255.
-
-      Vanwege privacyredenen is dit beleid alleen van toepassing als er wordt gecommuniceerd met een printer via de protocollen <ph name="IPPS_PROTOCOL" />, <ph name="HTTPS_PROTOCOL" />, <ph name="USB_PROTOCOL" /> of <ph name="IPP_USB_PROTOCOL" />. Houd er ook rekening mee dat dit beleid alleen geldt voor printers die <ph name="CLIENT_NAME_IPP_ATTRIBUTE" /> ondersteunen.
-
-      Het beleid geldt alleen voor aangesloten gebruikers.
-
-      Als je het beleid niet instelt of dit instelt op een lege of ongeldige waarde, wordt er geen extra <ph name="CLIENT_INFO_PLACEHOLDER" /> toegevoegd aan verzoeken voor afdruktaken.
-      </translation>
 <translation id="703672323011778742">Dit beleid is beëindigd in M88. Flash wordt niet meer ondersteund door Chrome. Als je het beleid instelt op 1, kun je instellen of alle websites automatisch de <ph name="FLASH_PLUGIN_NAME" />-plug-in mogen uitvoeren. Als je het beleid instelt op 2, wordt deze plug-in geblokkeerd voor alle websites. Via click-to-play kan de <ph name="FLASH_PLUGIN_NAME" />-plug-in worden uitgevoerd maar moeten gebruikers op de tijdelijke aanduiding klikken om deze te starten.
 
       Als je het beleid niet instelt, wordt <ph name="BLOCK_PLUGINS_POLICY_NAME" /> gebruikt en kunnen gebruikers deze instelling wijzigen.

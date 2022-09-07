@@ -138,7 +138,6 @@
 <translation id="1812527064848182527">альбомдық</translation>
 <translation id="1829244130665387512">Беттен табу</translation>
 <translation id="1834891354138622109">Баған</translation>
-<translation id="1845944666972354496">Іске қосу үшін екі рет түртіңіз</translation>
 <translation id="1846771122725914429">Bluetooth Брайль дисплейі</translation>
 <translation id="1852018405765032699">Экранды төрт саусақпен түрту арқылы ChromeVox мәзірлерін ашуға және жабуға болады. Бұл мәзірлерде пәрмендер мен таңбашалар туралы пайдалы ақпарат қамтылған. Мәзірлер ашылған кезде, элементтер арасында жылжу үшін бір саусақпен сырғытуыңызға, элементтерді белсендіру үшін екі рет түртуіңізге болады. Жалғастыру үшін экранды төрт саусағыңызбен түртіңіз.</translation>
 <translation id="1865601187525349519">Мәтіннің соңы</translation>
@@ -226,7 +225,6 @@
 <translation id="2497706219848005458">Жасыл сары</translation>
 <translation id="2523609930580546572">ChromeVox оқулығы</translation>
 <translation id="2525706221823668172">Chromebook пернелер тіркесімдері</translation>
-<translation id="2543973100702367007"><ph name="LABEL" /> үшін екі рет түртіңіз.</translation>
 <translation id="2553108862507765288">grammatical mistake</translation>
 <translation id="2556326187583116255">Қазір оқылып жатқан кез келген сөзді тоқтату үшін 2 саусақпен түртіңіз.</translation>
 <translation id="2573256689920773241">Негізгі навигация</translation>
@@ -598,7 +596,6 @@
 <translation id="4993152509206108683"><ph name="PERCENT" /> пайыз бағамы</translation>
 <translation id="4994420463726586413">Ағымдағы батарея күйін жариялау</translation>
 <translation id="4997282455736854877"><ph name="NAME" />, радио түйме таңдалды</translation>
-<translation id="5011664330025416377">Іске қосу үшін "Іздеу" + "Бос орын" пернелерін басыңыз.</translation>
 <translation id="5012724933919010465"><ph name="NAME" /> мәзір элементінің ауыстырып қосқышы таңдалған</translation>
 <translation id="5020651427400641814">Дауыспен енгізу арқылы кіру функциясын қосу</translation>
 <translation id="5041394372352067729">Брайль дисплейін беттің жоғарғы жағына жылжыту</translation>
@@ -763,6 +760,7 @@
 <translation id="6100239002225743044">Бір жол жоғары көтерілу</translation>
 <translation id="6118126368611144850">Chrome браузеріне арналған Android қолданбалары. Құрылғыңызда Play Store дүкені болса, Google Chrome Canary браузерін жүктеп алып, Android қолданбаларымен ChromeVox мүмкіндігін пайдаланып көріңіз.</translation>
 <translation id="611827076493383239">vtd</translation>
+<translation id="6119846243427417423">белсендіру</translation>
 <translation id="6122013438240733403">btn</translation>
 <translation id="6132506484792346370">Тізім терезесі немесе тізімді өріс</translation>
 <translation id="613344593214611552">алдыңғы сөйлемді өшіру</translation>
@@ -1115,7 +1113,6 @@
 <translation id="8693391540059827073">Сүйікті маусымым</translation>
 <translation id="8696284982970258155">Бал реңкті</translation>
 <translation id="8697111817566059991">{COUNT,plural, =1{құбыр}other{# тік құбыр}}</translation>
-<translation id="8733397807344284494"><ph name="LABEL" /> үшін Search және бос орын түймелерін басыңыз.</translation>
 <translation id="8741370088760768424">Сөзкөмек: қазіргі элементті белсендіру үшін "Іздеу + бос орын" пернелерін басыңыз.</translation>
 <translation id="8743786158317878347">кестелер сияқты құрылымдық мазмұнды енгізу</translation>
 <translation id="8746846427395705317">алдыңғы сөзге жылжу</translation>

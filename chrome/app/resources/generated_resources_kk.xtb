@@ -675,6 +675,7 @@
 <translation id="1632756664321977232">Қию құралы</translation>
 <translation id="163309982320328737">Бастапқы таңба ені толық</translation>
 <translation id="1633947793238301227">Google Assistant қолданбасын өшіру</translation>
+<translation id="1634224622052500893">Wi-Fi желісі табылды</translation>
 <translation id="1634783886312010422"><ph name="WEBSITE" /> сайтында құпия сөзіңізді өзгерттіңіз бе?</translation>
 <translation id="1636212173818785548">Жарайды</translation>
 <translation id="163712950892155760"><ph name="BEGIN_PARAGRAPH1" />Қолданба деректеріне контактілер, хабарлар және фотосуреттер сияқты қолданба сақтаған (әзірлеуші параметрлеріне байланысты) кез келген дерек жатуы мүмкін. Сақтық көшірме деректері Drive жадында орын алмайды.<ph name="END_PARAGRAPH1" />
@@ -1350,6 +1351,7 @@
 <translation id="2251218783371366160">Жүйелік көру құралымен ашу</translation>
 <translation id="225163402930830576">Желілерді жаңарту</translation>
 <translation id="2251809247798634662">Жаңа инкогнито терезесі</translation>
+<translation id="2252017960592955005">Қауіпсіз қарау режимі (бета)</translation>
 <translation id="225240747099314620">Қорғалған мазмұнға арналған идентификаторларға рұқсат ету (компьютерді қайта іске қосу қажет болуы мүмкін)</translation>
 <translation id="2255077166240162850">Бұл құрылғыны басқа домен немесе режим құлыптаған.</translation>
 <translation id="2255317897038918278">Microsoft Time Stamping</translation>
@@ -2007,6 +2009,7 @@
 <translation id="2839032553903800133">Хабарландырулар бөгелді.</translation>
 <translation id="2841013758207633010">Уақыт</translation>
 <translation id="2841837950101800123">Провайдер</translation>
+<translation id="2842013086666334835">"<ph name="NETWORK_ID" />" желісіне кіріңіз.</translation>
 <translation id="2843560154284403323">Linux жүйесін реттеуді аяқтау үшін ChromeOS жүйесін жаңартып, әрекетті қайталаңыз.</translation>
 <translation id="2844169650293029770">USB-C құрылғысы (сол жақ алдыңғы порты)</translation>
 <translation id="2844809857160214557">Баспа жұмыстарын көру және басқару</translation>
@@ -2107,6 +2110,7 @@
 <translation id="2927017729816812676">Кэш жады</translation>
 <translation id="2928795416630981206">Камераңыздың орнын қадағалауға рұқсаты барлар</translation>
 <translation id="2931157624143513983">Басып шығару аймағына сәйкестендіру</translation>
+<translation id="2931342457001070961">Ешқандай микрофон жалғанбаған.</translation>
 <translation id="2932085390869194046">Құпия сөз жасау...</translation>
 <translation id="2932483646085333864">Синхрондауды бастау үшін жүйеден шығып, қайта кіріп көріңіз</translation>
 <translation id="2932883381142163287">Бұзақылық туралы хабарлау</translation>
@@ -2170,6 +2174,7 @@
 <translation id="2996286169319737844">Деректер өзіңіздің синхрондау құпия фразаңызбен шифрланады. Google Pay қызметіндегі төлеу әдістері мен мекенжайлар құпия фразамен шифрланбайды.</translation>
 <translation id="2996722619877761919">Екі бетіне басып шығару (кітап)</translation>
 <translation id="2996932914629936323">Барлық синхрондалған құрылғыдағы тарихты өшіреді.</translation>
+<translation id="2998267783395280091">Желі табылды</translation>
 <translation id="3000378525979847272"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> рұқсат етілді.</translation>
 <translation id="3000461861112256445">Моно аудио</translation>
 <translation id="3001144475369593262">Баланың аккаунттары</translation>
@@ -2321,6 +2326,7 @@
 <translation id="3142562627629111859">Жаңа топ</translation>
 <translation id="3143515551205905069">Синхрондаудан бас тарту</translation>
 <translation id="3143754809889689516">Басынан бастап ойнату</translation>
+<translation id="3143937294861726703">Жад сақтау параметрі қосулы.</translation>
 <translation id="3144647712221361880">Сілтемені басқа атпен ашу</translation>
 <translation id="3149510190863420837">Chrome Apps</translation>
 <translation id="3150693969729403281">Қауіпсіздік шарасын қазір іске қосу</translation>
@@ -5523,7 +5529,6 @@
 <translation id="6276210637549544171"><ph name="PROXY_SERVER" /> прокси-серверіне пайдаланушы аты мен құпия сөз керек.</translation>
 <translation id="6277105963844135994">Желіні күту уақыты</translation>
 <translation id="6277518330158259200">Скриншот т&amp;үсіру</translation>
-<translation id="6278057325678116358">GTK+ пайдалану</translation>
 <translation id="6278428485366576908">Тақырып</translation>
 <translation id="6278776436938569440">Орналасқан жерін өзгерту</translation>
 <translation id="6279183038361895380">Курсорды көрсету үшін |<ph name="ACCELERATOR" />| басыңыз</translation>
@@ -6390,7 +6395,6 @@
 <translation id="7090160970140261931">Веб-сайттармен және Android қолданбаларымен пайдалану үшін <ph name="DEVICE_TYPE" /> құрылғысына қосымша аккаунттар қосуға болады. Сондай-ақ Android қолданбаларымен пайдаланылатын аккаунттарды таңдай аласыз.</translation>
 <translation id="7093220653036489319">Жылдам жауаптар</translation>
 <translation id="7093416310351037609">Деректің қауіпсіздігі үшін ұйым барлық жүктеп алынған файлдың өзінің <ph name="WEB_DRIVE" /> аккаунтына сақталуын талап етеді.</translation>
-<translation id="7093434536568905704">GTK+</translation>
 <translation id="7093866338626856921">Деректерді мына құрылғылармен ауыстыру: <ph name="HOSTNAMES" /></translation>
 <translation id="7098389117866926363">USB-C құрылғысы (артқы сол жақ порты)</translation>
 <translation id="7098447629416471489">Басқа сақталған іздеу жүйелері осында шығады</translation>

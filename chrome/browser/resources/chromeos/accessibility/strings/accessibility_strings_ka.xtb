@@ -138,7 +138,6 @@
 <translation id="1812527064848182527">პეიზაჟი</translation>
 <translation id="1829244130665387512">გვერდზე ძებნა</translation>
 <translation id="1834891354138622109">სვეტი</translation>
-<translation id="1845944666972354496">გასააქტიურებლად შეეხეთ ორმაგად</translation>
 <translation id="1846771122725914429">ბრაილის Bluetooth ეკრანი</translation>
 <translation id="1852018405765032699">ეკრანზე ოთხი თითით შეხება გახსნის და დახურავს ChromeVox მენიუებს. ეს მენიუები შეიცავს სასარგებლო ინფორმაციას ბრძანებებისა და მალსახმობების შესახებ. მენიუების გახსნის შემდეგ ერთეულებში გადასაადგილებლად გადაფურცლეთ ერთი თითით, ხოლო ერთეულების გასააქტიურებლად — შეეხეთ ორმაგად. გასაგრძელებლად შეეხეთ ეკრანს ოთხი თითით.</translation>
 <translation id="1865601187525349519">ტექსტის დასასრული</translation>
@@ -226,7 +225,6 @@
 <translation id="2497706219848005458">მომწვანო ყვითელი</translation>
 <translation id="2523609930580546572">ChromeVox-ის სახელმძღვანელო</translation>
 <translation id="2525706221823668172">Chromebook-ის კლავიატურის მალსახმობები</translation>
-<translation id="2543973100702367007">შეეხეთ ორმაგად, რომ მოხდეს <ph name="LABEL" /></translation>
 <translation id="2553108862507765288">გრამატიკული შეცდომა</translation>
 <translation id="2556326187583116255">მეტყველების შესაჩერებლად შეეხეთ 2 თითით</translation>
 <translation id="2573256689920773241">ძირითადი ნავიგაცია</translation>
@@ -530,6 +528,7 @@
 <translation id="4479068155583208887">აგურისფერი</translation>
 <translation id="4482330759234983253">წინა ცხრილი</translation>
 <translation id="4491109536499578614">გამოსახულება</translation>
+<translation id="4507332368061453500">ამჟამინდელ ერთეულზე ხანგრძლივად შეხება</translation>
 <translation id="4511186779140817916">გარჩეული ნუშისფერი</translation>
 <translation id="451510441928265982">წინა მე-2 დონის სათაური არ არის</translation>
 <translation id="4515799157838123044">ფონური კონტენტის დაჩრდილვა</translation>
@@ -598,7 +597,6 @@
 <translation id="4993152509206108683">შეფასება <ph name="PERCENT" /> პროცენტი</translation>
 <translation id="4994420463726586413">ბატარეის ამჟამინდელი სტატუსის გამოცხადება</translation>
 <translation id="4997282455736854877"><ph name="NAME" />, რადიო ღილაკი არჩეულია</translation>
-<translation id="5011664330025416377">გასააქტიურებლად დააჭირეთ კლავიშთა შემდეგ კომბინაციას: Search+შორისი</translation>
 <translation id="5012724933919010465"><ph name="NAME" />, მენიუს ერთეული არჩევანის ღილაკი არჩეული</translation>
 <translation id="5020651427400641814">მეტყველების აღრიცხვის ჩართვა</translation>
 <translation id="5041394372352067729">გადაადგილეთ ბრაილი ეკრანის საწყის გვერდზე</translation>
@@ -763,6 +761,7 @@
 <translation id="6100239002225743044">ერთი ხაზით ზემოთ გადასვლა</translation>
 <translation id="6118126368611144850">Android აპები Chrome-ისთვის. ახლა Android-ის აპები აღჭურვილია ChromeVox-ის ექსპერიმენტული მხარდაჭერით, რაც შეგიძლიათ თავად ცადოთ Play Store-იდან Google Chrome Canary-ს ჩამოტვირთვით.</translation>
 <translation id="611827076493383239">vtd</translation>
+<translation id="6119846243427417423">გააქტიურება</translation>
 <translation id="6122013438240733403">ღილაკი</translation>
 <translation id="6132506484792346370">სიის ველი ან კომბო-ველი</translation>
 <translation id="613344593214611552">წინა წინადადების წაშლა</translation>
@@ -1115,7 +1114,6 @@
 <translation id="8693391540059827073">ჩემი საყვარელი წელიწადის დრო</translation>
 <translation id="8696284982970258155">ცვარტკბილისფერი</translation>
 <translation id="8697111817566059991">{COUNT,plural, =1{მილი}other{# ვერტიკალური მილები}}</translation>
-<translation id="8733397807344284494">დააჭირეთ კლავიშთა კომბინაციას Search+შორისი, რომ მოხდეს <ph name="LABEL" /></translation>
 <translation id="8741370088760768424">მინიშნება: მიმდინარე ერთეულის გასააქტიურებლად გამოიყენეთ კლავიშთა კომბინაცია Search + შორისი.</translation>
 <translation id="8743786158317878347">სტრუქტურირებული შიგთავსის შეყვანა, როგორიცაა ცხრილები</translation>
 <translation id="8746846427395705317">წინა სიტყვაზე გადასვლა</translation>
