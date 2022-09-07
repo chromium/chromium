@@ -1709,14 +1709,8 @@ void ExtensionWebRequestEventRouter::DispatchEventToListeners(
       // TODO(devlin): Now that the webRequest API is entirely handled on the
       // UI thread (it used to be on the IO thread), can we just use the
       // regular event dispatching code for this case, as well?
-      // TODO(devlin): I think this is potentially the incorrect
-      // `browser_context` in the case of a listener that crosses incognito.
-      // This currently happens to work because we use the browser context to
-      // get the EventRouter, which has a shared instance in incognito and
-      // on-the-record contexts. This should probably use
-      // `listener->id.browser_context` instead.
       EventRouter::DispatchEventToSender(
-          render_process, browser_context, listener->id.extension_id,
+          render_process, id.browser_context, listener->id.extension_id,
           listener->histogram_value, listener->id.sub_event_name,
           listener->id.render_process_id, listener->id.worker_thread_id,
           listener->id.service_worker_version_id, std::move(args_filtered),
