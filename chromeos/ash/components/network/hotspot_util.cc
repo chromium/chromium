@@ -21,6 +21,13 @@ namespace {
 // TODO (jiajunz): Use shill constants after they are added.
 const char kShillTetheringBand2_4GHz[] = "2.4GHz";
 const char kShillTetheringBand5GHz[] = "5GHz";
+const char kShillInvalidProperties[] = "invalid_properties";
+const char kShillUpstreamNotReady[] = "upstream_not_ready";
+const char kShillNetworkingFailure[] = "network_failure";
+const char kShillWifiDriverFailure[] = "wifi_driver_failure";
+const char kShillCellularAttachFailure[] = "cellular_attach_failure";
+const char kShillNoUpstreamConnection[] = "no_upstream";
+const char kShillEnableTetheringSuccess[] = "success";
 
 hotspot_config::mojom::WiFiBand ShillBandToMojom(
     const std::string& shill_band) {
@@ -166,6 +173,37 @@ base::Value MojomConfigToShillConfig(
   result.GetDict().Set(shill::kTetheringConfPassphraseProperty,
                        base::Value(mojom_config->passphrase));
   return result;
+}
+
+chromeos::hotspot_config::mojom::HotspotControlResult
+SetTetheringEnabledResultToMojom(const std::string& shill_enabled_result) {
+  using hotspot_config::mojom::HotspotControlResult;
+
+  if (shill_enabled_result == kShillEnableTetheringSuccess) {
+    return HotspotControlResult::kSuccess;
+  }
+  if (shill_enabled_result == kShillInvalidProperties) {
+    return HotspotControlResult::kInvalidConfiguration;
+  }
+  if (shill_enabled_result == kShillUpstreamNotReady) {
+    return HotspotControlResult::kUpstreamNotReady;
+  }
+  if (shill_enabled_result == kShillNetworkingFailure) {
+    return HotspotControlResult::kNetworkSetupFailure;
+  }
+  if (shill_enabled_result == kShillWifiDriverFailure) {
+    return HotspotControlResult::kWifiDriverFailure;
+  }
+  if (shill_enabled_result == kShillCellularAttachFailure) {
+    return HotspotControlResult::kCellularAttachFailure;
+  }
+  if (shill_enabled_result == kShillNoUpstreamConnection) {
+    return HotspotControlResult::kNoUpstreamConnection;
+  }
+
+  NET_LOG(ERROR) << "Unknown enable/disable tethering error: "
+                 << shill_enabled_result;
+  return HotspotControlResult::kUnknownFailure;
 }
 
 }  // namespace ash

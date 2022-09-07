@@ -66,3 +66,26 @@ enum HotspotAllowStatus {
   kDisallowedByPolicy,
   kAllowed,
 };
+
+// Result code when enabling/disabling hotspot.
+enum HotspotControlResult {
+  // Operation succeeded.
+  kSuccess,
+  // Hotspot capabilities not allowed.
+  kNotAllowed,
+  // Tethering readiness check failed.
+  kReadinessCheckFailed,
+  // Invalid tethering configuration.
+  kInvalidConfiguration,
+  // Upstream is not ready.
+  kUpstreamNotReady,
+  // Network setup failure
+  kNetworkSetupFailure,
+  // Wifi driver setup failure.
+  kWifiDriverFailure,
+  // Cellular attach failure.
+  kCellularAttachFailure,
+  // No upstream cellular connection.
+  kNoUpstreamConnection,
+  kUnknownFailure,
+};

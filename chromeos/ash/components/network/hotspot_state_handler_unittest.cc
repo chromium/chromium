@@ -120,6 +120,18 @@ class HotspotStateHandlerTest : public ::testing::Test {
     return result;
   }
 
+  HotspotStateHandler::CheckTetheringReadinessResult CheckTetheringReadiness() {
+    base::RunLoop run_loop;
+    HotspotStateHandler::CheckTetheringReadinessResult return_result;
+    hotspot_state_handler_->CheckTetheringReadiness(base::BindLambdaForTesting(
+        [&](HotspotStateHandler::CheckTetheringReadinessResult result) {
+          return_result = result;
+          run_loop.QuitClosure();
+        }));
+    run_loop.RunUntilIdle();
+    return return_result;
+  }
+
   void LoginToRegularUser() {
     LoginState::Get()->SetLoggedInState(LoginState::LOGGED_IN_ACTIVE,
                                         LoginState::LOGGED_IN_USER_REGULAR);
@@ -386,6 +398,40 @@ TEST_F(HotspotStateHandlerTest, SetAndGetHotspotConfig) {
   Logout();
   ASSERT_FALSE(hotspot_state_handler_->GetHotspotConfig());
   EXPECT_EQ(2u, observer_.hotspot_status_changed_count());
+}
+
+TEST_F(HotspotStateHandlerTest, CheckTetheringReadiness) {
+  network_state_test_helper_.manager_test()
+      ->SetSimulateCheckTetheringReadinessResult(
+          FakeShillSimulatedResult::kSuccess, shill::kTetheringReadinessReady);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(CheckTetheringReadiness(),
+            HotspotStateHandler::CheckTetheringReadinessResult::kReady);
+
+  network_state_test_helper_.manager_test()
+      ->SetSimulateCheckTetheringReadinessResult(
+          FakeShillSimulatedResult::kSuccess,
+          shill::kTetheringReadinessNotAllowed);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(CheckTetheringReadiness(),
+            HotspotStateHandler::CheckTetheringReadinessResult::kNotAllowed);
+
+  network_state_test_helper_.manager_test()
+      ->SetSimulateCheckTetheringReadinessResult(
+          FakeShillSimulatedResult::kSuccess,
+          /*readiness_result=*/std::string());
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(CheckTetheringReadiness(),
+            HotspotStateHandler::CheckTetheringReadinessResult::kNotAllowed);
+
+  network_state_test_helper_.manager_test()
+      ->SetSimulateCheckTetheringReadinessResult(
+          FakeShillSimulatedResult::kFailure,
+          /*readiness_result=*/std::string());
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(CheckTetheringReadiness(),
+            HotspotStateHandler::CheckTetheringReadinessResult::
+                kShillOperationFailed);
 }
 
 }  // namespace ash

@@ -37,6 +37,12 @@ COMPONENT_EXPORT(CHROMEOS_NETWORK)
 base::Value MojomConfigToShillConfig(
     const chromeos::hotspot_config::mojom::HotspotConfigPtr mojom_config);
 
+// Convert enable or disable tethering result string from shill to
+// mojom::HotspotControlResult
+COMPONENT_EXPORT(CHROMEOS_NETWORK)
+chromeos::hotspot_config::mojom::HotspotControlResult
+SetTetheringEnabledResultToMojom(const std::string& shill_enabled_result);
+
 }  // namespace ash
 
 #endif  // CHROMEOS_ASH_COMPONENTS_NETWORK_HOTSPOT_UTIL_H_

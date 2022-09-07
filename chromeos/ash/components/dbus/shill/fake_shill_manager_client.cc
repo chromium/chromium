@@ -512,7 +512,8 @@ void FakeShillManagerClient::SetTetheringEnabled(bool enabled,
       return;
     case FakeShillSimulatedResult::kFailure:
       base::ThreadTaskRunnerHandle::Get()->PostTask(
-          FROM_HERE, base::BindOnce(std::move(error_callback), "Error",
+          FROM_HERE, base::BindOnce(std::move(error_callback),
+                                    simulate_enable_tethering_error_,
                                     "Simulated failure"));
       return;
     case FakeShillSimulatedResult::kTimeout:
@@ -835,8 +836,12 @@ void FakeShillManagerClient::SetSimulateConfigurationResult(
 }
 
 void FakeShillManagerClient::SetSimulateTetheringEnableResult(
-    FakeShillSimulatedResult tethering_enable_result) {
+    FakeShillSimulatedResult tethering_enable_result,
+    const std::string& tethering_enable_error) {
   simulate_tethering_enable_result_ = tethering_enable_result;
+  if (simulate_tethering_enable_result_ == FakeShillSimulatedResult::kFailure) {
+    simulate_enable_tethering_error_ = tethering_enable_error;
+  }
 }
 
 void FakeShillManagerClient::SetSimulateCheckTetheringReadinessResult(

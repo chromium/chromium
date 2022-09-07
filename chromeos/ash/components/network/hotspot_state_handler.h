@@ -60,6 +60,13 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotStateHandler
         allowed_security_modes;
   };
 
+  // Represents the check tethering readiness result.
+  enum class CheckTetheringReadinessResult {
+    kReady = 0,
+    kNotAllowed = 1,
+    kShillOperationFailed = 2,
+  };
+
   HotspotStateHandler();
   HotspotStateHandler(const HotspotStateHandler&) = delete;
   HotspotStateHandler& operator=(const HotspotStateHandler&) = delete;
@@ -85,6 +92,11 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotStateHandler
       chromeos::hotspot_config::mojom::HotspotConfigPtr config,
       SetHotspotConfigCallback callback);
 
+  using CheckTetheringReadinessCallback =
+      base::OnceCallback<void(CheckTetheringReadinessResult result)>;
+  // Check tethering readiness and update the hotspot_capabilities_ if
+  // necessary. |callback| is called with check readiness result.
+  void CheckTetheringReadiness(CheckTetheringReadinessCallback callback);
   // Set whether Hotspot should be allowed/disallowed by policy.
   void SetPolicyAllowHotspot(bool allow);
 
@@ -144,10 +156,12 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotStateHandler
   void UpdateHotspotCapabilities(const base::Value& capabilities);
 
   // Callback when the CheckTetheringReadiness operation succeeded.
-  void OnCheckReadinessSuccess(const std::string& result);
+  void OnCheckReadinessSuccess(CheckTetheringReadinessCallback callback,
+                               const std::string& result);
 
   // Callback when the CheckTetheringReadiness operation failed.
-  void OnCheckReadinessFailure(const std::string& error_name,
+  void OnCheckReadinessFailure(CheckTetheringReadinessCallback callback,
+                               const std::string& error_name,
                                const std::string& error_message);
 
   // Update the hotspot_capabilities_ with the given |new_allow_status|
