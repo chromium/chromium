@@ -35,6 +35,19 @@
 
 namespace blink {
 
+// static
+absl::optional<LogicalSize>
+NGOutOfFlowLayoutPart::InitialContainingBlockFixedSize(NGBlockNode container) {
+  if (!container.GetLayoutBox()->IsLayoutView() ||
+      container.GetDocument().Printing())
+    return absl::nullopt;
+  const auto* frame_view = container.GetDocument().View();
+  DCHECK(frame_view);
+  PhysicalSize size(
+      frame_view->LayoutViewport()->ExcludeScrollbars(frame_view->Size()));
+  return size.ConvertToLogical(container.Style().GetWritingMode());
+}
+
 NGOutOfFlowLayoutPart::NGOutOfFlowLayoutPart(
     const NGBlockNode& container_node,
     const NGConstraintSpace& container_space,
@@ -43,7 +56,8 @@ NGOutOfFlowLayoutPart::NGOutOfFlowLayoutPart(
                             container_node.IsFixedContainer(),
                             container_node.IsGrid(),
                             container_space,
-                            container_builder) {}
+                            container_builder,
+                            InitialContainingBlockFixedSize(container_node)) {}
 
 NGOutOfFlowLayoutPart::NGOutOfFlowLayoutPart(
     bool is_absolute_container,

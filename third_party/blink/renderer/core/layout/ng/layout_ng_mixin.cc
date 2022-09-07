@@ -364,16 +364,9 @@ void LayoutNGMixin<Base>::UpdateOutOfFlowBlockLayout() {
       NGBlockNode(this), static_position,
       DynamicTo<LayoutInline>(css_container));
 
-  absl::optional<LogicalSize> initial_containing_block_fixed_size;
-  auto* layout_view = DynamicTo<LayoutView>(container);
-  if (layout_view && !Base::GetDocument().Printing()) {
-    if (LocalFrameView* frame_view = layout_view->GetFrameView()) {
-      PhysicalSize size(
-          frame_view->LayoutViewport()->ExcludeScrollbars(frame_view->Size()));
-      initial_containing_block_fixed_size =
-          size.ConvertToLogical(container->Style()->GetWritingMode());
-    }
-  }
+  absl::optional<LogicalSize> initial_containing_block_fixed_size =
+      NGOutOfFlowLayoutPart::InitialContainingBlockFixedSize(
+          NGBlockNode(container));
   // We really only want to lay out ourselves here, so we pass |this| to
   // Run(). Otherwise, NGOutOfFlowLayoutPart may also lay out other objects
   // it discovers that are part of the same containing block, but those

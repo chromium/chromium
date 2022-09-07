@@ -58,8 +58,7 @@ class CORE_EXPORT NGOutOfFlowLayoutPart {
       bool is_grid_container,
       const NGConstraintSpace& container_space,
       NGBoxFragmentBuilder* container_builder,
-      absl::optional<LogicalSize> initial_containing_block_fixed_size =
-          absl::nullopt);
+      absl::optional<LogicalSize> initial_containing_block_fixed_size);
 
   // Normally this function lays out and positions all out-of-flow objects from
   // the container_builder and additional ones it discovers through laying out
@@ -256,6 +255,9 @@ class CORE_EXPORT NGOutOfFlowLayoutPart {
 
     void Trace(Visitor* visitor) const;
   };
+
+  static absl::optional<LogicalSize> InitialContainingBlockFixedSize(
+      NGBlockNode container);
 
  private:
   bool SweepLegacyCandidates(
