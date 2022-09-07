@@ -1645,21 +1645,6 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_LazyAds",
-                    "params": {
-                        "allowed_websites": "https://www.youtube.com|/embed,https://www.google.com|/maps/embed",
-                        "strategy": "allow_list",
-                        "timeout": "0"
-                    },
-                    "enable_features": [
-                        "AutomaticLazyFrameLoadingToAds",
-                        "AutomaticLazyFrameLoadingToEmbedUrls"
-                    ],
-                    "disable_features": [
-                        "AutomaticLazyFrameLoadingToEmbeds"
-                    ]
-                },
-                {
                     "name": "Enabled_LazyEmbeds0_20220809",
                     "params": {
                         "allowed_websites": "https://www.youtube.com|/embed,https://www.google.com|/maps/embed",
