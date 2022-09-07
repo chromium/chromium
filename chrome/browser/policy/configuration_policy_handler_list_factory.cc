@@ -55,6 +55,7 @@
 #include "components/autofill/core/browser/autofill_address_policy_handler.h"
 #include "components/autofill/core/browser/autofill_credit_card_policy_handler.h"
 #include "components/autofill/core/browser/autofill_policy_handler.h"
+#include "components/autofill_assistant/browser/public/prefs.h"
 #include "components/blocked_content/pref_names.h"
 #include "components/bookmarks/common/bookmark_pref_names.h"
 #include "components/bookmarks/managed/managed_bookmarks_policy_handler.h"
@@ -316,6 +317,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kAmbientAuthenticationInPrivateModesEnabled,
     prefs::kAmbientAuthenticationInPrivateModesEnabled,
     base::Value::Type::INTEGER },
+  { key::kAssistantWebEnabled,
+    autofill_assistant::prefs::kAutofillAssistantEnabled,
+    base::Value::Type::BOOLEAN },
   { key::kAudioCaptureAllowed,
     prefs::kAudioCaptureAllowed,
     base::Value::Type::BOOLEAN },

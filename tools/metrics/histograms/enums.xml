@@ -32398,6 +32398,7 @@ Called by update_document_policy_enum.py.-->
   <int value="1008" label="ReportDeviceSignalStrengthEventDrivenTelemetry"/>
   <int value="1009" label="BatterySaverModeAvailability"/>
   <int value="1010" label="TabDiscardingExceptions"/>
+  <int value="1011" label="AssistantWebEnabled"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">
