@@ -14,9 +14,11 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/callback_helpers.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/task/cancelable_task_tracker.h"
 #include "base/time/time.h"
 #include "content/common/content_export.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
@@ -141,6 +143,9 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet {
     GenerateBidTask();
     ~GenerateBidTask();
 
+    base::CancelableTaskTracker::TaskId task_id =
+        base::CancelableTaskTracker::kBadTaskId;
+
     mojom::BidderWorkletNonSharedParamsPtr bidder_worklet_non_shared_params;
     url::Origin interest_group_join_origin;
     absl::optional<std::string> auction_signals_json;
@@ -254,6 +259,7 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet {
         base::Time auction_start_time,
         scoped_refptr<TrustedSignals::Result> trusted_bidding_signals_result,
         uint64_t trace_id,
+        base::ScopedClosureRunner cleanup_generate_bid_task,
         GenerateBidCallbackInternal callback);
 
     void ConnectDevToolsAgent(
@@ -351,6 +357,11 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet {
       PrivateAggregationRequests pa_requests,
       std::vector<std::string> error_msgs);
 
+  // Removes `task` from `generate_bid_tasks_` only. Used in case where the
+  // V8 work for task was cancelled only (via the `cleanup_generate_bid_task`
+  // parameter getting destroyed).
+  void CleanUpBidTaskOnUserThread(GenerateBidTaskList::iterator task);
+
   // Invokes the `callback` of `task` with the provided values, and removes
   // `task` from `report_win_tasks_`.
   void DeliverReportWinOnUserThread(
@@ -403,6 +414,8 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet {
 
   // Errors that occurred while loading the code, if any.
   std::vector<std::string> load_code_error_msgs_;
+
+  base::CancelableTaskTracker cancelable_task_tracker_;
 
   SEQUENCE_CHECKER(user_sequence_checker_);
 

@@ -4271,6 +4271,119 @@ TEST_F(BidderWorkletTest, ExecutionModeGroupByOrigin) {
   EXPECT_EQ(2, bid_->bid);
 }
 
+// Test that cancelling the worklet before it runs but after the execution was
+// queued actually cancels the execution. This is done by trying to run a
+// while(true) {} script with a timeout that's bigger than the test timeout, so
+// if it doesn't get cancelled the *test* will timeout.
+TEST_F(BidderWorkletTest, Cancelation) {
+  per_buyer_timeout_ = base::Days(360);
+
+  AddJavascriptResponse(&url_loader_factory_, interest_group_bidding_url_,
+                        "while(true) {}");
+
+  mojo::Remote<mojom::BidderWorklet> bidder_worklet = CreateWorklet();
+  // Let the script load.
+  task_environment_.RunUntilIdle();
+
+  // Now we no longer need it for parsing JS, wedge the V8 thread so we get a
+  // chance to cancel the script *before* it actually tries running.
+  base::WaitableEvent* event_handle = WedgeV8Thread(v8_helper_.get());
+
+  GenerateBidClientWithCallbacks client(
+      GenerateBidClientWithCallbacks::GenerateBidNeverInvokedCallback());
+  mojo::AssociatedReceiver<mojom::GenerateBidClient> client_receiver(&client);
+  GenerateBid(bidder_worklet.get(),
+              client_receiver.BindNewEndpointAndPassRemote());
+
+  // Spin the event loop to let the signals negotiation go through. This is
+  // for this thread only since the V8 thread is wedged, but it's enough since
+  // all mojo objects live here.  This should queue the V8 thread task for
+  // execution.
+  base::RunLoop().RunUntilIdle();
+
+  // Cancel and then unwedge.
+  client_receiver.reset();
+  base::RunLoop().RunUntilIdle();
+  event_handle->Signal();
+
+  // Make sure cancellation happens before ~BidderWorklet.
+  task_environment_.RunUntilIdle();
+}
+
+// Test that queued tasks get cancelled at worklet destruction.
+TEST_F(BidderWorkletTest, CancelationDtor) {
+  per_buyer_timeout_ = base::Days(360);
+  // ReportWin timeout isn't configurable the way generateBid is.
+  v8_helper_->v8_runner()->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          [](scoped_refptr<AuctionV8Helper> v8_helper) {
+            v8_helper->set_script_timeout_for_testing(base::Days(360));
+          },
+          v8_helper_));
+
+  AddJavascriptResponse(&url_loader_factory_, interest_group_bidding_url_,
+                        "while(true) {}");
+
+  mojo::Remote<mojom::BidderWorklet> bidder_worklet = CreateWorklet();
+  // Let the script load.
+  task_environment_.RunUntilIdle();
+
+  // Now we no longer need it for parsing JS, wedge the V8 thread so we get a
+  // chance to cancel the script *before* it actually tries running.
+  base::WaitableEvent* event_handle = WedgeV8Thread(v8_helper_.get());
+
+  GenerateBid(bidder_worklet.get());
+  bidder_worklet->ReportWin(
+      interest_group_name_, auction_signals_, per_buyer_signals_,
+      seller_signals_, browser_signal_render_url_, browser_signal_bid_,
+      browser_signal_highest_scoring_other_bid_,
+      browser_signal_made_highest_scoring_other_bid_,
+      browser_signal_seller_origin_, browser_signal_top_level_seller_origin_,
+      data_version_.value_or(0), data_version_.has_value(),
+      /*trace_id=*/1,
+      base::BindOnce([](const absl::optional<GURL>& report_url,
+                        const base::flat_map<std::string, GURL>& ad_beacon_map,
+                        PrivateAggregationRequests pa_requests,
+                        const std::vector<std::string>& errors) {
+        ADD_FAILURE() << "Callback should not be invoked.";
+      }));
+
+  // Spin the event loop to let the signals negotiation go through. This is
+  // for this thread only since the V8 thread is wedged, but it's enough since
+  // all mojo objects live here.  This should queue the V8 thread task for
+  // execution.
+  base::RunLoop().RunUntilIdle();
+
+  // Destroy the worklet, then unwedge.
+  bidder_worklet.reset();
+  base::RunLoop().RunUntilIdle();
+  event_handle->Signal();
+}
+
+// Test that cancelling execution before the script is fetched doesn't run it.
+TEST_F(BidderWorkletTest, CancelBeforeFetch) {
+  per_buyer_timeout_ = base::Days(360);
+
+  mojo::Remote<mojom::BidderWorklet> bidder_worklet = CreateWorklet();
+  GenerateBidClientWithCallbacks client(
+      GenerateBidClientWithCallbacks::GenerateBidNeverInvokedCallback());
+  mojo::AssociatedReceiver<mojom::GenerateBidClient> client_receiver(&client);
+  GenerateBid(bidder_worklet.get(),
+              client_receiver.BindNewEndpointAndPassRemote());
+
+  // Let them talk about trusted signals.
+  task_environment_.RunUntilIdle();
+
+  // Cancel and then make the script available.
+  client_receiver.reset();
+  AddJavascriptResponse(&url_loader_factory_, interest_group_bidding_url_,
+                        "while (true) {}");
+
+  // Make sure cancellation happens before ~BidderWorklet.
+  task_environment_.RunUntilIdle();
+}
+
 class BidderWorkletBiddingAndScoringDebugReportingAPIEnabledTest
     : public BidderWorkletTest {
  public:

@@ -18,6 +18,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
+#include "base/task/bind_post_task.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
@@ -472,9 +473,14 @@ void BidderWorklet::V8State::GenerateBid(
     base::Time auction_start_time,
     scoped_refptr<TrustedSignals::Result> trusted_bidding_signals_result,
     uint64_t trace_id,
+    base::ScopedClosureRunner cleanup_generate_bid_task,
     GenerateBidCallbackInternal callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(v8_sequence_checker_);
   TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "post_v8_task", trace_id);
+
+  // Don't need to run `cleanup_generate_bid_task` if this method is invoked;
+  // it's bound to the closure to clean things up if this method got cancelled.
+  cleanup_generate_bid_task.ReplaceClosure(base::OnceClosure());
 
   // Can't make a bid without any ads.
   if (!bidder_worklet_non_shared_params->ads) {
@@ -941,18 +947,20 @@ void BidderWorklet::OnTrustedBiddingSignalsDownloaded(
 
 void BidderWorklet::OnGenerateBidClientDestroyed(
     GenerateBidTaskList::iterator task) {
-  // If the task hasn't received the signals called callback, it hasn't posted a
-  // task to run off-thread, so can be safely deleted, as everything else,
-  // including fetching trusted bidding signals, can be safely cancelled.
-  //
-  // Otherwise, there may be a pending V8 call. In that case, just let it run
-  // and invoke the GenerateBidClient's OnGenerateBidComplete() method, which
-  // will safely do nothing since the pipe is now closed.
-  //
-  // TODO(mmenke): Consider supporting cancellation after the task to run V8 has
-  // been posted.
-  if (!task->signals_received_callback_invoked)
+  // If the task hasn't received the signals called callback or the code hasn't
+  // loaded, it hasn't posted a task to run off-thread, so can be safely
+  // deleted, as everything else, including fetching trusted bidding signals,
+  // can be safely cancelled.
+  if (!task->signals_received_callback_invoked || !IsCodeReady()) {
     generate_bid_tasks_.erase(task);
+  } else {
+    // Otherwise, there should be a pending V8 call. Try to cancel that, but if
+    // it already started, it will just run and invoke the GenerateBidClient's
+    // OnGenerateBidComplete() method, which will safely do nothing since the
+    // pipe is now closed.
+    DCHECK_NE(task->task_id, base::CancelableTaskTracker::kBadTaskId);
+    cancelable_task_tracker_.TryCancel(task->task_id);
+  }
 }
 
 void BidderWorklet::SignalsReceivedCallback(
@@ -976,16 +984,27 @@ void BidderWorklet::GenerateBidIfReady(GenerateBidTaskList::iterator task) {
                                   task->trace_id);
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("fledge", "post_v8_task", task->trace_id);
 
-  // Other than the client field, no fields of `task` are needed after this
-  // point, so can consume them instead of copying them.
+  // Normally the PostTask below will eventually get `task` cleaned up once it
+  // posts back to DeliverBidCallbackOnUserThread with its results, but that
+  // won't happen if it gets cancelled. To deal with that, a ScopedClosureRunner
+  // is passed to ask for `task` to get cleaned up in case the
+  // V8State::GenerateBid closure gets destroyed without running.
+  base::OnceClosure cleanup_generate_bid_task = base::BindPostTask(
+      base::SequencedTaskRunnerHandle::Get(),
+      base::BindOnce(&BidderWorklet::CleanUpBidTaskOnUserThread,
+                     weak_ptr_factory_.GetWeakPtr(), task));
+
+  // Other than the `generate_bid_client` and `task_id` fields, no fields of
+  // `task` are needed after this point, so can consume them instead of copying
+  // them.
   //
-  // Since `signals_received_callback_invoked` is true, the GenerateBidTask
-  // won't be deleted on the main thread during this call, even if the
-  // GenerateBidClient pipe is deleted by the caller (unless the BidderWorklet
-  // itself is deleted). Therefore, it's safe to post a callback with the `task`
-  // iterator the v8 thread.
-  v8_runner_->PostTask(
-      FROM_HERE,
+  // Since `signals_received_callback_invoked` and IsCodeReady() are true, the
+  // GenerateBidTask won't be deleted on the main thread during this call, even
+  // if the GenerateBidClient pipe is deleted by the caller (unless the
+  // BidderWorklet  itself is deleted). Therefore, it's safe to post a callback
+  // with the `task`  iterator the v8 thread.
+  task->task_id = cancelable_task_tracker_.PostTask(
+      v8_runner_.get(), FROM_HERE,
       base::BindOnce(
           &BidderWorklet::V8State::GenerateBid,
           base::Unretained(v8_state_.get()),
@@ -998,6 +1017,7 @@ void BidderWorklet::GenerateBidIfReady(GenerateBidTaskList::iterator task) {
           std::move(task->browser_signal_top_level_seller_origin),
           std::move(task->bidding_browser_signals), task->auction_start_time,
           std::move(task->trusted_bidding_signals_result), task->trace_id,
+          base::ScopedClosureRunner(std::move(cleanup_generate_bid_task)),
           base::BindOnce(&BidderWorklet::DeliverBidCallbackOnUserThread,
                          weak_ptr_factory_.GetWeakPtr(), task)));
 }
@@ -1011,8 +1031,8 @@ void BidderWorklet::RunReportWin(ReportWinTaskList::iterator task) {
 
   // Other than the callback field, no fields of `task` are needed after this
   // point, so can consume them instead of copying them.
-  v8_runner_->PostTask(
-      FROM_HERE,
+  cancelable_task_tracker_.PostTask(
+      v8_runner_.get(), FROM_HERE,
       base::BindOnce(
           &BidderWorklet::V8State::ReportWin, base::Unretained(v8_state_.get()),
           std::move(task->interest_group_name),
@@ -1052,6 +1072,12 @@ void BidderWorklet::DeliverBidCallbackOnUserThread(
       bidding_signals_data_version.has_value(), debug_loss_report_url,
       debug_win_report_url, set_priority.value_or(0), set_priority.has_value(),
       std::move(pa_requests), error_msgs);
+  generate_bid_tasks_.erase(task);
+}
+
+void BidderWorklet::CleanUpBidTaskOnUserThread(
+    GenerateBidTaskList::iterator task) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(user_sequence_checker_);
   generate_bid_tasks_.erase(task);
 }
 
