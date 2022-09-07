@@ -20,7 +20,7 @@ runs an isolated font provider, but serves the fonts present on the system.
 For tests that use the fonts in `//third_party/test_fonts` by way of
 `//skia:test_fonts_cfv2`.
 
-#### jit_capabilities.test-cmx and mark_vmo_executable.shard.test-cml
+#### mark_vmo_executable.shard.test-cml
 Required by tests that execute JavaScript. Should only be required in a small
 number of tests.
 
