@@ -1112,106 +1112,157 @@ void NGOutOfFlowLayoutPart::LayoutFragmentainerDescendants(
                         container_builder_->BorderScrollbarPadding())
           .block_size;
 
-  NGLogicalAnchorQuery stitched_anchor_query;
-  stitched_anchor_query.SetAsStitched(
-      container_builder_->Children(),
-      container_builder_->GetWritingDirection());
-
+  NGLogicalAnchorQueryForFragmentation stitched_anchor_queries;
   HeapVector<HeapVector<NodeToLayout>> descendants_to_layout;
   ClearCollectionScope<HeapVector<HeapVector<NodeToLayout>>>
       descendants_to_layout_scope(&descendants_to_layout);
   while (descendants->size() > 0) {
     ComputeInlineContainingBlocksForFragmentainer(*descendants);
 
-    // Sort the descendants by fragmentainer index in |descendants_to_layout|.
-    // This will ensure that the descendants are laid out in the correct order.
-    for (auto& descendant : *descendants) {
-      if (GetFragmentainerType() == kFragmentColumn) {
-        auto* containing_block = To<LayoutBox>(
-            descendant.containing_block.Fragment()->GetLayoutObject());
-        DCHECK(containing_block);
+    // Update anchor queries for the CSS Anchor Positioning.
+    stitched_anchor_queries.Update(container_builder_->Children(), *descendants,
+                                   *container_builder_->Node().GetLayoutBox(),
+                                   container_builder_->GetWritingDirection());
 
-        // We may try to lay out an OOF once we reach a column spanner or when
-        // column balancing. However, if the containing block has not finished
-        // layout, we should wait to lay out the OOF in case its position is
-        // dependent on its containing block's final size.
-        if (containing_block->PhysicalFragments().back().BreakToken()) {
-          delayed_descendants_.push_back(descendant);
-          continue;
+    // When there are anchor queries, each containing block should be laid out
+    // separately. This loop chunks |descendants| by their containing blocks, if
+    // they have anchor queries.
+    base::span<NGLogicalOOFNodeForFragmentation> descendants_span =
+        base::make_span(*descendants);
+    bool has_new_descendants_span;
+    do {
+      has_new_descendants_span = false;
+      // The CSS containing block of the last descendant, to group |descendants|
+      // by the CSS containing block.
+      const LayoutObject* last_css_containing_block = nullptr;
+      const NGLogicalAnchorQuery* stitched_anchor_query = nullptr;
+
+      // Sort the descendants by fragmentainer index in |descendants_to_layout|.
+      // This will ensure that the descendants are laid out in the correct
+      // order.
+      DCHECK(!descendants_span.empty());
+      for (auto& descendant : descendants_span) {
+        if (GetFragmentainerType() == kFragmentColumn) {
+          auto* containing_block = To<LayoutBox>(
+              descendant.containing_block.Fragment()->GetLayoutObject());
+          DCHECK(containing_block);
+
+          // We may try to lay out an OOF once we reach a column spanner or when
+          // column balancing. However, if the containing block has not finished
+          // layout, we should wait to lay out the OOF in case its position is
+          // dependent on its containing block's final size.
+          if (containing_block->PhysicalFragments().back().BreakToken()) {
+            delayed_descendants_.push_back(descendant);
+            continue;
+          }
         }
+
+        // Ensure each containing block is laid out before laying out other
+        // containing blocks. The CSS Anchor Positioning may evaluate
+        // differently when the containing block is different, and may refer to
+        // other containing blocks that were already laid out.
+        //
+        // Use |LayoutObject::Container|, not |LayoutObject::ContainingBlock|.
+        // The latter is not the CSS containing block for inline boxes. See the
+        // comment of |LayoutObject::ContainingBlock|.
+        //
+        // Note |descendant.containing_block.fragment| is |ContainingBlock|, not
+        // the CSS containing block.
+        if (!stitched_anchor_queries.IsEmpty()) {
+          const LayoutObject* css_containing_block =
+              descendant.box->Container();
+          DCHECK(css_containing_block);
+          if (css_containing_block != last_css_containing_block) {
+            // Chunking the layout of OOFs by the containing blocks is done only
+            // if it has anchor query, for the performance reasons to minimize
+            // the number of rebuilding fragmentainer fragments.
+            if (last_css_containing_block && stitched_anchor_query) {
+              has_new_descendants_span = true;
+              descendants_span = descendants_span.subspan(
+                  &descendant - descendants_span.data());
+              break;
+            }
+            last_css_containing_block = css_containing_block;
+            stitched_anchor_query = stitched_anchor_queries.StitchedAnchorQuery(
+                *css_containing_block);
+          }
+        }
+
+        NodeInfo node_info = SetupNodeInfo(descendant);
+        NodeToLayout node_to_layout = {
+            node_info,
+            CalculateOffset(node_info, /* only_layout */ nullptr,
+                            /* is_first_run */ true, stitched_anchor_query)};
+        node_to_layout.containing_block_fragment =
+            descendant.containing_block.Fragment();
+        node_to_layout.offset_info.original_offset =
+            node_to_layout.offset_info.offset;
+
+        DCHECK(node_to_layout.offset_info.block_estimate);
+
+        // Determine in which fragmentainer this OOF element will start its
+        // layout and adjust the offset to be relative to that fragmentainer.
+        wtf_size_t start_index = 0;
+        ComputeStartFragmentIndexAndRelativeOffset(
+            node_info.default_writing_direction.GetWritingMode(),
+            *node_to_layout.offset_info.block_estimate, &start_index,
+            &node_to_layout.offset_info.offset);
+        if (start_index >= descendants_to_layout.size())
+          descendants_to_layout.resize(start_index + 1);
+        descendants_to_layout[start_index].emplace_back(node_to_layout);
       }
-      NodeInfo node_info = SetupNodeInfo(descendant);
-      NodeToLayout node_to_layout = {
-          node_info,
-          CalculateOffset(node_info, /* only_layout */ nullptr,
-                          /* is_first_run */ true, &stitched_anchor_query)};
-      node_to_layout.containing_block_fragment =
-          descendant.containing_block.Fragment();
-      node_to_layout.offset_info.original_offset =
-          node_to_layout.offset_info.offset;
 
-      DCHECK(node_to_layout.offset_info.block_estimate);
+      HeapVector<NodeToLayout> fragmented_descendants;
+      ClearCollectionScope<HeapVector<NodeToLayout>>
+          fragmented_descendants_scope(&fragmented_descendants);
+      fragmentainer_consumed_block_size_ = LayoutUnit();
+      auto& children = FragmentationContextChildren();
+      wtf_size_t num_children = children.size();
 
-      // Determine in which fragmentainer this OOF element will start its layout
-      // and adjust the offset to be relative to that fragmentainer.
-      wtf_size_t start_index = 0;
-      ComputeStartFragmentIndexAndRelativeOffset(
-          node_info.default_writing_direction.GetWritingMode(),
-          *node_to_layout.offset_info.block_estimate, &start_index,
-          &node_to_layout.offset_info.offset);
-      if (start_index >= descendants_to_layout.size())
-        descendants_to_layout.resize(start_index + 1);
-      descendants_to_layout[start_index].emplace_back(node_to_layout);
-    }
-
-    HeapVector<NodeToLayout> fragmented_descendants;
-    ClearCollectionScope<HeapVector<NodeToLayout>> fragmented_descendants_scope(
-        &fragmented_descendants);
-    fragmentainer_consumed_block_size_ = LayoutUnit();
-    auto& children = FragmentationContextChildren();
-    wtf_size_t num_children = children.size();
-
-    // Layout the OOF descendants in order of fragmentainer index.
-    for (wtf_size_t index = 0; index < descendants_to_layout.size(); index++) {
-      const NGPhysicalFragment* fragment = nullptr;
-      if (index < num_children)
-        fragment = children[index].fragment;
-      else if (column_balancing_info_)
-        column_balancing_info_->num_new_columns++;
-
-      // Skip over any column spanners.
-      if (!fragment || fragment->IsFragmentainerBox()) {
-        HeapVector<NodeToLayout>& pending_descendants =
-            descendants_to_layout[index];
-        LayoutOOFsInFragmentainer(pending_descendants, index,
-                                  fragmentainer_progression,
-                                  &fragmented_descendants);
-        // Retrieve the updated or newly added fragmentainer, and add its block
-        // contribution to the consumed block size. Skip this if we are column
-        // balancing, though, since this is only needed when adding OOFs to the
-        // builder in the true layout pass.
-        if (!column_balancing_info_) {
+      // Layout the OOF descendants in order of fragmentainer index.
+      for (wtf_size_t index = 0; index < descendants_to_layout.size();
+           index++) {
+        const NGPhysicalFragment* fragment = nullptr;
+        if (index < num_children)
           fragment = children[index].fragment;
-          fragmentainer_consumed_block_size_ +=
-              fragment->Size()
-                  .ConvertToLogical(
-                      container_builder_->Style().GetWritingMode())
-                  .block_size;
-        }
-      }
+        else if (column_balancing_info_)
+          column_balancing_info_->num_new_columns++;
 
-      // Extend |descendants_to_layout| if an OOF element fragments into a
-      // fragmentainer at an index that does not yet exist in
-      // |descendants_to_layout|.
-      if (index == descendants_to_layout.size() - 1 &&
-          !fragmented_descendants.IsEmpty())
-        descendants_to_layout.resize(index + 2);
-    }
+        // Skip over any column spanners.
+        if (!fragment || fragment->IsFragmentainerBox()) {
+          HeapVector<NodeToLayout>& pending_descendants =
+              descendants_to_layout[index];
+          LayoutOOFsInFragmentainer(pending_descendants, index,
+                                    fragmentainer_progression,
+                                    &fragmented_descendants);
+          // Retrieve the updated or newly added fragmentainer, and add its
+          // block contribution to the consumed block size. Skip this if we are
+          // column balancing, though, since this is only needed when adding
+          // OOFs to the builder in the true layout pass.
+          if (!column_balancing_info_) {
+            fragment = children[index].fragment;
+            fragmentainer_consumed_block_size_ +=
+                fragment->Size()
+                    .ConvertToLogical(
+                        container_builder_->Style().GetWritingMode())
+                    .block_size;
+          }
+        }
+
+        // Extend |descendants_to_layout| if an OOF element fragments into a
+        // fragmentainer at an index that does not yet exist in
+        // |descendants_to_layout|.
+        if (index == descendants_to_layout.size() - 1 &&
+            !fragmented_descendants.IsEmpty())
+          descendants_to_layout.resize(index + 2);
+      }
+      descendants_to_layout.Shrink(0);
+    } while (has_new_descendants_span);
+
     // Sweep any descendants that might have been bubbled up from the fragment
     // to the |container_builder_|. This happens when we have nested absolute
     // position elements.
     descendants->Shrink(0);
-    descendants_to_layout.Shrink(0);
     container_builder_->SwapOutOfFlowFragmentainerDescendants(descendants);
   }
 }

@@ -319,6 +319,8 @@ struct CORE_EXPORT NGLogicalOOFNodeForFragmentation final
     is_for_fragmentation = true;
   }
 
+  const LayoutObject* CssContainingBlock() const { return box->Container(); }
+
   void TraceAfterDispatch(Visitor* visitor) const;
 };
 

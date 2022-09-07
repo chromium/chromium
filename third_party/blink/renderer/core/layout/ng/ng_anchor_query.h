@@ -15,15 +15,19 @@
 #include "third_party/blink/renderer/platform/geometry/anchor_query_enums.h"
 #include "third_party/blink/renderer/platform/geometry/length.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string_hash.h"
 
 namespace blink {
 
+class LayoutBox;
+class LayoutObject;
 class NGLogicalAnchorQuery;
 class NGPhysicalFragment;
 struct NGLogicalAnchorReference;
 struct NGLogicalLink;
+struct NGLogicalOOFNodeForFragmentation;
 
 struct CORE_EXPORT NGPhysicalAnchorReference
     : public GarbageCollected<NGPhysicalAnchorReference> {
@@ -100,12 +104,11 @@ class CORE_EXPORT NGLogicalAnchorQuery
   void Set(const AtomicString& name,
            const NGPhysicalFragment& fragment,
            const LogicalRect& rect);
+  void Set(const AtomicString& name, NGLogicalAnchorReference* reference);
   void SetFromPhysical(const NGPhysicalAnchorQuery& physical_query,
                        const WritingModeConverter& converter,
                        const LogicalOffset& additional_offset,
                        bool is_invalid);
-  void SetAsStitched(base::span<const NGLogicalLink> children,
-                     WritingDirectionMode writing_direction);
 
   // Evaluate the |anchor_name| for the |anchor_value|. Returns |nullopt| if
   // the query is invalid (e.g., no targets or wrong axis.)
@@ -127,10 +130,35 @@ class CORE_EXPORT NGLogicalAnchorQuery
  private:
   friend class NGPhysicalAnchorQuery;
 
-  void Set(const AtomicString& name, NGLogicalAnchorReference* reference);
-
   HeapHashMap<AtomicString, Member<NGLogicalAnchorReference>>
       anchor_references_;
+};
+
+// This computes anchor queries for each containing block for when
+// block-fragmented. When block-fragmented, all OOFs are added to their
+// fragmentainers instead of their containing blocks, but anchor queries can be
+// different for each containing block.
+class CORE_EXPORT NGLogicalAnchorQueryForFragmentation {
+  STACK_ALLOCATED();
+
+ public:
+  bool IsEmpty() const { return queries_.IsEmpty(); }
+
+  // Get |NGLogicalAnchorQuery| in the stitched coordinate system for the given
+  // containing block.
+  const NGLogicalAnchorQuery* StitchedAnchorQuery(
+      const LayoutObject& containing_block) const;
+
+  // Update the internal map of anchor queries for containing blocks from the
+  // |children| of the fragmentation context.
+  void Update(
+      const base::span<const NGLogicalLink>& children,
+      const base::span<const NGLogicalOOFNodeForFragmentation>& oof_nodes,
+      const LayoutBox& root,
+      WritingDirectionMode writing_direction);
+
+ private:
+  HeapHashMap<const LayoutObject*, Member<NGLogicalAnchorQuery>> queries_;
 };
 
 class CORE_EXPORT NGAnchorEvaluatorImpl : public Length::AnchorEvaluator {

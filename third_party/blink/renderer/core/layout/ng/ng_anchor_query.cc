@@ -5,10 +5,217 @@
 #include "third_party/blink/renderer/core/layout/ng/ng_anchor_query.h"
 
 #include "third_party/blink/renderer/core/layout/geometry/writing_mode_converter.h"
+#include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_cursor.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_logical_link.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_physical_fragment.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
 
 namespace blink {
+
+namespace {
+
+// Represents a fragmentainer. This is in the logical coordinate system
+// because the size of the fragmentation context may not have determined yet.
+// In that case, physical coordinates can't be computed yet.
+struct FragmentainerContext {
+  STACK_ALLOCATED();
+
+ public:
+  LogicalOffset offset;
+  // The block offset when all fragments are stitched in the block direction.
+  // That is, the sum of block offsets of preceding fragments.
+  LayoutUnit stitched_offset;
+  WritingModeConverter converter;
+};
+
+// This struct is a variation of |NGAnchorReference|, using the stitched
+// coordinate system for the block-fragmented out-of-flow positioned objects.
+struct NGStitchedAnchorReference
+    : public GarbageCollected<NGStitchedAnchorReference> {
+  NGStitchedAnchorReference(NGPhysicalAnchorReference* reference,
+                            const LogicalRect& rect,
+                            const FragmentainerContext& fragmentainer)
+      : reference(reference),
+        rect_in_first_fragmentainer(rect),
+        first_fragmentainer_offset(fragmentainer.offset),
+        first_fragmentainer_stitched_offset(fragmentainer.stitched_offset) {}
+
+  LogicalRect StitchedRect() const {
+    LogicalRect stitched_rect = rect_in_first_fragmentainer;
+    stitched_rect.offset.block_offset += first_fragmentainer_stitched_offset;
+    return stitched_rect;
+  }
+
+  NGLogicalAnchorReference* StitchedAnchorReference() const {
+    return MakeGarbageCollected<NGLogicalAnchorReference>(
+        *reference->fragment, StitchedRect(), /* is_invalid */ false);
+  }
+
+  void Unite(const LogicalRect& other_rect,
+             const LogicalOffset& fragmentainer_offset) {
+    // To unite fragments in the physical coordinate system as defined in the
+    // spec while keeping the |reference.rect| relative to the first
+    // fragmentainer, make the |fragmentainer_offset| relative to the first
+    // fragmentainer.
+    const LogicalRect other_rect_in_first_fragmentainer =
+        other_rect + (fragmentainer_offset - first_fragmentainer_offset);
+    rect_in_first_fragmentainer.Unite(other_rect_in_first_fragmentainer);
+  }
+
+  void Trace(Visitor* visitor) const { visitor->Trace(reference); }
+
+  Member<NGPhysicalAnchorReference> reference;
+  // The |rect_in_first_fragmentainer| is relative to the first fragmentainer,
+  // so that it can a) unite following fragments in the physical coordinate
+  // system, and b) compute the result in the stitched coordinate system.
+  LogicalRect rect_in_first_fragmentainer;
+  LogicalOffset first_fragmentainer_offset;
+  // The block offset when all fragments are stitched in the block direction.
+  LayoutUnit first_fragmentainer_stitched_offset;
+};
+
+// This creates anchor queries in the stitched coordinate system. The result
+// can be converted to a |NGLogicalAnchorQuery|.
+struct NGStitchedAnchorQuery : public GarbageCollected<NGStitchedAnchorQuery> {
+  // Convert |this| to a |NGLogicalAnchorQuery|. The result is a regular
+  // |NGLogicalAnchorQuery| except that its coordinate system is stitched
+  // (i.e., as if they weren't fragmented.)
+  NGLogicalAnchorQuery* StitchedAnchorQuery() const {
+    auto* anchor_query = MakeGarbageCollected<NGLogicalAnchorQuery>();
+    for (const auto& it : references)
+      anchor_query->Set(it.key, it.value->StitchedAnchorReference());
+    return anchor_query;
+  }
+
+  void AddChild(const NGPhysicalFragment& fragment,
+                const PhysicalOffset& offset_from_fragmentainer,
+                const FragmentainerContext& fragmentainer) {
+    const NGPhysicalAnchorQuery* anchor_query = fragment.AnchorQuery();
+    if (!anchor_query)
+      return;
+    for (const auto& it : *anchor_query) {
+      const PhysicalRect physical_rect_in_fragmentainer =
+          it.value->rect + offset_from_fragmentainer;
+      const LogicalRect rect_in_fragmentainer =
+          fragmentainer.converter.ToLogical(physical_rect_in_fragmentainer);
+      auto* new_value = MakeGarbageCollected<NGStitchedAnchorReference>(
+          it.value, rect_in_fragmentainer, fragmentainer);
+      const auto result = references.insert(it.key, new_value);
+      if (result.is_new_entry)
+        continue;
+
+      // If this is the same anchor-name on a different box, ignore it. The
+      // first one in the pre-order wins.
+      NGStitchedAnchorReference* existing = result.stored_value->value;
+      if (existing->reference->fragment->GetLayoutObject() !=
+          new_value->reference->fragment->GetLayoutObject()) {
+        continue;
+      }
+
+      // If this is a fragment of the same box, unite it.
+      existing->Unite(rect_in_fragmentainer, fragmentainer.offset);
+    }
+  }
+
+  void Trace(Visitor* visitor) const { visitor->Trace(references); }
+
+  HeapHashMap<AtomicString, Member<NGStitchedAnchorReference>> references;
+};
+
+// This collects |NGStitchedAnchorQuery| for each containing block.
+struct NGStitchedAnchorQueries {
+  STACK_ALLOCATED();
+
+ public:
+  explicit NGStitchedAnchorQueries(
+      const HeapHashSet<Member<const LayoutObject>>&
+          anchored_oof_containers_and_ancestors)
+      : anchored_oof_containers_and_ancestors_(
+            anchored_oof_containers_and_ancestors) {}
+
+  void AddFragmentainerChildren(base::span<const NGLogicalLink> children,
+                                WritingDirectionMode writing_direction) {
+    LayoutUnit fragmentainer_stitched_offset;
+    for (const NGLogicalLink& child : children) {
+      if (child->IsFragmentainerBox()) {
+        const FragmentainerContext fragmentainer{
+            child.offset,
+            fragmentainer_stitched_offset,
+            {writing_direction, child->Size()}};
+        AddChild(*child, /* offset_from_fragmentainer */ {}, fragmentainer);
+        fragmentainer_stitched_offset +=
+            child->Size()
+                .ConvertToLogical(writing_direction.GetWritingMode())
+                .block_size;
+        continue;
+      }
+      // TODO(kojii): column-spanner not supported yet.
+    }
+  }
+
+  void AddChild(const NGPhysicalFragment& fragment,
+                const PhysicalOffset& offset_from_fragmentainer,
+                const FragmentainerContext& fragmentainer) {
+    if (const auto* box = DynamicTo<NGPhysicalBoxFragment>(&fragment))
+      AddBoxChild(*box, offset_from_fragmentainer, fragmentainer);
+  }
+
+  void AddBoxChild(const NGPhysicalBoxFragment& fragment,
+                   const PhysicalOffset& offset_from_fragmentainer,
+                   const FragmentainerContext& fragmentainer) {
+    // TODO(kojii): Anchors on OOF boxes is not supported yet.
+    // TODO(kojii): nested multicol is not supported yet.
+
+    // Return early if the |fragment| doesn't have any anchors. No need to
+    // traverse descendants.
+    const NGPhysicalAnchorQuery* anchor_query = fragment.AnchorQuery();
+    if (!anchor_query)
+      return;
+
+    // Create |NGStitchedAnchorQuery| if this is a containing block.
+    if (const LayoutObject* layout_object = fragment.GetLayoutObject()) {
+      if (!anchored_oof_containers_and_ancestors_.Contains(layout_object))
+        return;
+      if (layout_object->CanContainAbsolutePositionObjects() ||
+          layout_object->CanContainFixedPositionObjects()) {
+        const auto result = anchor_queries_.insert(
+            layout_object, MakeGarbageCollected<NGStitchedAnchorQuery>());
+        NGStitchedAnchorQuery* stitched_query = result.stored_value->value;
+        stitched_query->AddChild(fragment, offset_from_fragmentainer,
+                                 fragmentainer);
+      }
+    }
+
+    // Add inline children if any.
+    if (const NGFragmentItems* items = fragment.Items()) {
+      for (NGInlineCursor cursor(fragment, *items); cursor;
+           cursor.MoveToNext()) {
+        if (cursor.Current().IsInlineBox()) {
+          DCHECK(cursor.Current().BoxFragment());
+          AddBoxChild(*cursor.Current().BoxFragment(),
+                      offset_from_fragmentainer +
+                          cursor.Current()->OffsetInContainerFragment(),
+                      fragmentainer);
+        }
+      }
+    }
+
+    // Add block children if any.
+    for (const NGLink& child : fragment.Children()) {
+      const auto child_offset_from_fragmentainer =
+          offset_from_fragmentainer + child.offset;
+      AddChild(*child, child_offset_from_fragmentainer, fragmentainer);
+    }
+  }
+
+  HeapHashMap<const LayoutObject*, Member<NGStitchedAnchorQuery>>
+      anchor_queries_;
+  // The set of |LayoutObject| to traverse. When adding children, children not
+  // in this set are skipped.
+  const HeapHashSet<Member<const LayoutObject>>&
+      anchored_oof_containers_and_ancestors_;
+};
+
+}  // namespace
 
 NGPhysicalAnchorReference::NGPhysicalAnchorReference(
     const NGLogicalAnchorReference& logical_reference,
@@ -161,92 +368,69 @@ void NGLogicalAnchorQuery::SetFromPhysical(
   }
 }
 
-void NGLogicalAnchorQuery::SetAsStitched(
-    base::span<const NGLogicalLink> children,
+const NGLogicalAnchorQuery*
+NGLogicalAnchorQueryForFragmentation::StitchedAnchorQuery(
+    const LayoutObject& containing_block) const {
+  DCHECK(&containing_block);
+  DCHECK(containing_block.CanContainAbsolutePositionObjects() ||
+         containing_block.CanContainFixedPositionObjects());
+  const auto& it = queries_.find(&containing_block);
+  if (it != queries_.end())
+    return it->value;
+  return nullptr;
+}
+
+void NGLogicalAnchorQueryForFragmentation::Update(
+    const base::span<const NGLogicalLink>& children,
+    const base::span<const NGLogicalOOFNodeForFragmentation>& oof_nodes,
+    const LayoutBox& root,
     WritingDirectionMode writing_direction) {
-  // This struct is a variation of |NGAnchorReference|, using the stitched
-  // coordinate system for the block-fragmented out-of-flow positioned objects.
-  struct NGStitchedAnchorReference
-      : public GarbageCollected<NGStitchedAnchorReference> {
-    NGStitchedAnchorReference(NGPhysicalAnchorReference* reference,
-                              const LogicalRect& rect,
-                              LogicalOffset first_container_offset,
-                              LayoutUnit first_container_stitched_offset)
-        : reference(reference),
-          rect(rect),
-          first_container_offset(first_container_offset),
-          first_container_stitched_offset(first_container_stitched_offset) {}
+  DCHECK(&root);
 
-    LogicalRect StitchedRect() const {
-      LogicalRect stitched_rect = rect;
-      stitched_rect.offset.block_offset += first_container_stitched_offset;
-      return stitched_rect;
-    }
-
-    NGLogicalAnchorReference* StitchedAnchorReference() const {
-      return MakeGarbageCollected<NGLogicalAnchorReference>(
-          *reference->fragment, StitchedRect(), /* is_invalid */ false);
-    }
-
-    void Unite(const LogicalRect& other_rect,
-               const LogicalOffset& container_offset) {
-      // To unite fragments in the physical coordinate system as defined in the
-      // spec while keeping the |reference.rect| relative to the first
-      // container, make the |container_offset| relative to the first container.
-      const LogicalRect other_rect_in_first_container =
-          other_rect + (container_offset - first_container_offset);
-      rect.Unite(other_rect_in_first_container);
-    }
-
-    void Trace(Visitor* visitor) const { visitor->Trace(reference); }
-
-    // The |rect| is relative to the first container, so that it can a) unite
-    // following fragments in the physical coordinate system, and b) compute the
-    // result in the stitched coordinate system.
-    Member<NGPhysicalAnchorReference> reference;
-    LogicalRect rect;
-    LogicalOffset first_container_offset;
-    LayoutUnit first_container_stitched_offset;
-  };
-
-  struct NGStitchedAnchorQuery
-      : public GarbageCollected<NGStitchedAnchorQuery> {
-    void AddChild(const NGLogicalLink& child,
-                  const LayoutUnit stitched_offset,
-                  WritingDirectionMode writing_direction) {
-      const NGPhysicalAnchorQuery* anchor_query = child->AnchorQuery();
-      if (!anchor_query)
-        return;
-      DCHECK_EQ(child->Style().GetWritingDirection(), writing_direction);
-      const WritingModeConverter converter(writing_direction, child->Size());
-      for (const auto& it : *anchor_query) {
-        const LogicalRect rect = converter.ToLogical(it.value->rect);
-        const auto result = references.insert(
-            it.key, MakeGarbageCollected<NGStitchedAnchorReference>(
-                        it.value, rect, child.offset, stitched_offset));
-        if (!result.is_new_entry)
-          result.stored_value->value->Unite(rect, child.offset);
-      }
-    }
-
-    void Trace(Visitor* visitor) const { visitor->Trace(references); }
-
-    HeapHashMap<AtomicString, Member<NGStitchedAnchorReference>> references;
-  };
-
-  auto* stitched_anchor_query = MakeGarbageCollected<NGStitchedAnchorQuery>();
-  LayoutUnit stitched_offset;
+  // Early return before expensive work if there are no anchor queries.
+  bool has_anchor_queries = false;
   for (const NGLogicalLink& child : children) {
-    stitched_anchor_query->AddChild(child, stitched_offset, writing_direction);
-    stitched_offset += child->Size()
-                           .ConvertToLogical(writing_direction.GetWritingMode())
-                           .block_size;
+    if (child->AnchorQuery()) {
+      has_anchor_queries = true;
+      break;
+    }
+  }
+  if (!has_anchor_queries) {
+    queries_.clear();
+    return;
   }
 
-  // Convert the united anchor references to the stitched coordinate system.
-  DCHECK(IsEmpty());
-  for (const auto& it : stitched_anchor_query->references)
-    Set(it.key, it.value->StitchedAnchorReference());
+  // Compute descendants to collect anchor queries from. This helps reducing the
+  // number of descendants to traverse.
+  HeapHashSet<Member<const LayoutObject>> anchored_oof_containers_and_ancestors;
+  for (const NGLogicalOOFNodeForFragmentation& oof_node : oof_nodes) {
+    DCHECK(oof_node.box->IsOutOfFlowPositioned());
+    // Only OOF nodes that have `anchor*()` functions are needed, but computing
+    // it is not cheap. Adding unnecessary nodes is not expensive, because
+    // |NGStitchedAnchorQueries| checks if the node has `AnchorQuery()` and
+    // return early if not.
+    for (const LayoutObject* parent = oof_node.box->Container();
+         parent && parent != &root; parent = parent->Parent()) {
+      const auto result = anchored_oof_containers_and_ancestors.insert(parent);
+      if (!result.is_new_entry)
+        break;
+    }
+  }
+
+  // Traverse descendants and collect anchor queries for each containing block.
+  NGStitchedAnchorQueries stitched_anchor_queries(
+      anchored_oof_containers_and_ancestors);
+  stitched_anchor_queries.AddFragmentainerChildren(children, writing_direction);
+
+  // TODO(kojii): Currently this clears and rebuilds all anchor queries on
+  // incremental updates. It may be possible to reduce the computation when
+  // there are previous results.
+  queries_.clear();
+  for (const auto& it : stitched_anchor_queries.anchor_queries_) {
+    const auto result =
+        queries_.insert(it.key, it.value->StitchedAnchorQuery());
+    DCHECK(result.is_new_entry);
+  }
 }
 
 absl::optional<LayoutUnit> NGLogicalAnchorQuery::EvaluateAnchor(
