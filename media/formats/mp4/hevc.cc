@@ -75,20 +75,18 @@ bool HEVCDecoderConfigurationRecord::ParseInternal(BufferReader* reader,
   uint32_t general_constraint_indicator_flags_hi = 0;
   uint16_t general_constraint_indicator_flags_lo = 0;
   uint8_t misc = 0;
-  RCHECK(reader->Read1(&configurationVersion) && configurationVersion == 1 &&
+  RCHECK(reader->Read1(&configurationVersion) &&
+         (configurationVersion == 0 || configurationVersion == 1) &&
          reader->Read1(&profile_indication) &&
          reader->Read4(&general_profile_compatibility_flags) &&
          reader->Read4(&general_constraint_indicator_flags_hi) &&
          reader->Read2(&general_constraint_indicator_flags_lo) &&
          reader->Read1(&general_level_idc) &&
          reader->Read2(&min_spatial_segmentation_idc) &&
-         reader->Read1(&parallelismType) &&
-         reader->Read1(&chromaFormat) &&
+         reader->Read1(&parallelismType) && reader->Read1(&chromaFormat) &&
          reader->Read1(&bitDepthLumaMinus8) &&
-         reader->Read1(&bitDepthChromaMinus8) &&
-         reader->Read2(&avgFrameRate) &&
-         reader->Read1(&misc) &&
-         reader->Read1(&numOfArrays));
+         reader->Read1(&bitDepthChromaMinus8) && reader->Read2(&avgFrameRate) &&
+         reader->Read1(&misc) && reader->Read1(&numOfArrays));
 
   general_profile_space = profile_indication >> 6;
   general_tier_flag = (profile_indication >> 5) & 1;
