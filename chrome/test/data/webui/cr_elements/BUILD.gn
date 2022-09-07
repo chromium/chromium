@@ -42,7 +42,7 @@ non_preprocessed_files = [
   "cr_radio_button_test.ts",
   "cr_radio_group_test.ts",
   "cr_search_field_tests.ts",
-  "cr_scrollable_behavior_tests.ts",
+  "cr_scrollable_mixin_tests.ts",
   "cr_slider_test.ts",
   "cr_splitter_test.ts",
   "cr_tabs_test.ts",
@@ -62,6 +62,7 @@ if (is_chromeos_ash) {
   non_preprocessed_files += [
     "cr_container_shadow_behavior_test.ts",
     "cr_policy_indicator_behavior_tests.ts",
+    "cr_scrollable_behavior_tests.ts",
     "cr_searchable_drop_down_tests.ts",
     "find_shortcut_behavior_test.ts",
   ]

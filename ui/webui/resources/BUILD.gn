@@ -142,12 +142,11 @@ group("closure_compile") {
     "js:closure_compile_modules",
   ]
 
-  if (include_polymer) {
-    deps += [ "cr_elements:closure_compile" ]
-
-    if (is_chromeos_ash) {
-      deps += [ "cr_components/chromeos:closure_compile" ]
-    }
+  if (include_polymer && is_chromeos_ash) {
+    deps += [
+      "cr_components/chromeos:closure_compile",
+      "cr_elements:closure_compile",
+    ]
   }
 }
 

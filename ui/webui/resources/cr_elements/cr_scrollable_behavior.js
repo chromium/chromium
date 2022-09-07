@@ -32,6 +32,9 @@
  * NOTE: If 'container' is not fixed size, it is important to call
  * updateScrollableContents() when [[items]] changes, otherwise the container
  * will not be sized correctly.
+ *
+ * NOTE: This file is deprecated in favor of cr_scrollable_mixin.ts. Don't use
+ * it in new code.
  */
 
 // clang-format off

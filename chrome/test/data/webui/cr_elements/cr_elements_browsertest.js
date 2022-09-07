@@ -228,6 +228,7 @@ TEST_F('CrElementsRadioGroupTest', 'All', function() {
   mocha.run();
 });
 
+GEN('#if BUILDFLAG(IS_CHROMEOS_ASH)');
 var CrElementsScrollableBehaviorTest = class extends CrElementsBrowserTest {
   /** @override */
   get browsePreload() {
@@ -236,6 +237,18 @@ var CrElementsScrollableBehaviorTest = class extends CrElementsBrowserTest {
 };
 
 TEST_F('CrElementsScrollableBehaviorTest', 'All', function() {
+  mocha.run();
+});
+GEN('#endif');
+
+var CrElementsScrollableMixinTest = class extends CrElementsBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://test/test_loader.html?module=cr_elements/cr_scrollable_mixin_tests.js';
+  }
+};
+
+TEST_F('CrElementsScrollableMixinTest', 'All', function() {
   mocha.run();
 });
 

@@ -16,10 +16,10 @@ import '../settings_shared.css.js';
 
 import {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
-import {CrScrollableBehavior} from 'chrome://resources/cr_elements/cr_scrollable_behavior.js';
+import {CrScrollableMixin} from 'chrome://resources/cr_elements/cr_scrollable_mixin.js';
 import {CrSearchFieldElement} from 'chrome://resources/cr_elements/cr_search_field/cr_search_field.js';
-import {FindShortcutMixin, FindShortcutMixinInterface} from 'chrome://resources/cr_elements/find_shortcut_mixin.js';
-import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {FindShortcutMixin} from 'chrome://resources/cr_elements/find_shortcut_mixin.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './add_languages_dialog.html.js';
 import {LanguageHelper} from './languages_types.js';
@@ -38,8 +38,7 @@ interface Repeaterevent extends Event {
 }
 
 const SettingsAddLanguagesDialogElementBase =
-    mixinBehaviors([CrScrollableBehavior], FindShortcutMixin(PolymerElement)) as
-    {new (): PolymerElement & FindShortcutMixinInterface};
+    CrScrollableMixin(FindShortcutMixin(PolymerElement));
 
 export class SettingsAddLanguagesDialogElement extends
     SettingsAddLanguagesDialogElementBase {

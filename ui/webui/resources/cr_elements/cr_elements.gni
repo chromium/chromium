@@ -98,6 +98,7 @@ if (include_polymer) {
     "cr_container_shadow_mixin.ts",
     "cr_menu_selector/cr_menu_selector.ts",
     "cr_radio_button/cr_radio_button_mixin.ts",
+    "cr_scrollable_mixin.ts",
     "cr_search_field/cr_search_field_mixin.ts",
     "find_shortcut_mixin.ts",
     "mouse_hoverable_mixin.ts",

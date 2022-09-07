@@ -36,7 +36,7 @@
         </cr-search-field>
       </div>
       <div id="dialog-body" slot="body" scrollable>
-        <iron-list class="ripple-padding" scroll-target="[[$$('[slot=body]')]]"
+        <iron-list class="ripple-padding" scroll-target="dialog-body"
             items="[[getLanguages_(filterValue_)]]">
           <template>
             <cr-checkbox class="list-item no-outline"
