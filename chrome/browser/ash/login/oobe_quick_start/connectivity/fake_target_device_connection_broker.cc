@@ -48,10 +48,22 @@ void FakeTargetDeviceConnectionBroker::StopAdvertising(
 void FakeTargetDeviceConnectionBroker::InitiateConnection(
     const std::string& source_device_id) {
   auto random_session_id = RandomSessionId();
-  fake_incomming_connection_ =
+  auto fake_incomming_connection =
       std::make_unique<FakeIncommingConnection>(random_session_id);
   connection_lifecycle_listener_->OnIncomingConnectionInitiated(
-      source_device_id, fake_incomming_connection_->AsWeakPtr());
+      source_device_id, fake_incomming_connection->AsWeakPtr());
+  fake_connection_ = std::move(fake_incomming_connection);
+}
+
+void FakeTargetDeviceConnectionBroker::AuthenticateConnection(
+    const std::string& source_device_id) {
+  fake_connection_.reset();
+  auto fake_authenticated_connection =
+      std::make_unique<FakeAuthenticatedConnection>();
+  connection_lifecycle_listener_->OnConnectionAuthenticated(
+      source_device_id, fake_authenticated_connection->AsWeakPtr());
+
+  fake_connection_ = std::move(fake_authenticated_connection);
 }
 
 }  // namespace ash::quick_start

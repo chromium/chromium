@@ -43,6 +43,8 @@ class FakeObserver : public Observer {
 
 class TargetDeviceBootstrapControllerTest : public testing::Test {
  public:
+  static constexpr char kSourceDeviceId[] = "fake-source-device-id";
+
   TargetDeviceBootstrapControllerTest() = default;
   TargetDeviceBootstrapControllerTest(TargetDeviceBootstrapControllerTest&) =
       delete;
@@ -115,12 +117,22 @@ TEST_F(TargetDeviceBootstrapControllerTest, InitiateConnection) {
   connection_broker()->on_start_advertising_callback().Run(/*success=*/true);
   ASSERT_EQ(fake_observer_->last_status.step, Step::ADVERTISING);
 
-  constexpr char kSourceDeviceId[] = "fake-source-device-id";
   connection_broker()->InitiateConnection(kSourceDeviceId);
 
-  ASSERT_EQ(fake_observer_->last_status.step, Step::QR_CODE_VERIFICATION);
+  EXPECT_EQ(fake_observer_->last_status.step, Step::QR_CODE_VERIFICATION);
   using QRCodePixelData =
       ash::quick_start::TargetDeviceBootstrapController::QRCodePixelData;
-  ASSERT_TRUE(absl::holds_alternative<QRCodePixelData>(
+  EXPECT_TRUE(absl::holds_alternative<QRCodePixelData>(
+      fake_observer_->last_status.payload));
+}
+
+TEST_F(TargetDeviceBootstrapControllerTest, AuthenticateConnection) {
+  bootstrap_controller_->StartAdvertising();
+  connection_broker()->on_start_advertising_callback().Run(/*success=*/true);
+  connection_broker()->InitiateConnection(kSourceDeviceId);
+  connection_broker()->AuthenticateConnection(kSourceDeviceId);
+
+  EXPECT_EQ(fake_observer_->last_status.step, Step::CONNECTED);
+  EXPECT_TRUE(absl::holds_alternative<absl::monostate>(
       fake_observer_->last_status.payload));
 }

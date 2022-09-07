@@ -103,8 +103,13 @@ void TargetDeviceBootstrapController::OnIncomingConnectionInitiated(
 void TargetDeviceBootstrapController::OnConnectionAuthenticated(
     const std::string& source_device_id,
     base::WeakPtr<AuthenticatedConnection> connection) {
-  // TODO(b/239855593): Implement
-  NOTIMPLEMENTED();
+  constexpr Step kPossibleSteps[] = {Step::QR_CODE_VERIFICATION};
+  DCHECK(base::Contains(kPossibleSteps, status_.step));
+  DCHECK(incoming_connection_.WasInvalidated());
+
+  status_.step = Step::CONNECTED;
+  status_.payload.emplace<absl::monostate>();
+  NotifyObservers();
 }
 
 void TargetDeviceBootstrapController::OnConnectionRejected(

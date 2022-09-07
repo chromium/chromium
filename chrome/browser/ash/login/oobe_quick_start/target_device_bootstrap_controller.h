@@ -33,6 +33,7 @@ class TargetDeviceBootstrapController
     ERROR,
     ADVERTISING,
     QR_CODE_VERIFICATION,
+    CONNECTED,
   };
 
   enum class ErrorCode {
