@@ -380,7 +380,7 @@ const NGLayoutResult* NGMathUnderOverLayoutAlgorithm::Layout() {
     descent += under_margins.block_end;
   }
 
-  container_builder_.SetBaseline(ascent);
+  container_builder_.SetBaselines(ascent);
   descent = descent.ClampNegativeToZero();
   descent += BorderScrollbarPadding().block_end;
 

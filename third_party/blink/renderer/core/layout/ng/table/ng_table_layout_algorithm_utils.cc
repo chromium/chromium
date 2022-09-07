@@ -747,11 +747,11 @@ void NGTableAlgorithmUtils::FinalizeTableCellLayout(
       // table-cell vertical alignment.
     case EVerticalAlign::kBaseline:
       // Table-cells (with baseline vertical alignment) always produce a
-      // baseline of their end-content edge (even if the content doesn't have
-      // any baselines).
+      // first/last baseline of their end-content edge (even if the content
+      // doesn't have any baselines).
       if (!builder->Baseline() || node.ShouldApplyLayoutContainment()) {
-        builder->SetBaseline(unconstrained_intrinsic_block_size -
-                             builder->BorderScrollbarPadding().block_end);
+        builder->SetBaselines(unconstrained_intrinsic_block_size -
+                              builder->BorderScrollbarPadding().block_end);
       }
 
       // Only adjust if we have *inflow* children. If we only have

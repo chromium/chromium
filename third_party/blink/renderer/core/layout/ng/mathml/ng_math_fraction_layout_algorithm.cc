@@ -231,7 +231,7 @@ const NGLayoutResult* NGMathFractionLayoutAlgorithm::Layout() {
       BorderScrollbarPadding().block_end;
   LayoutUnit intrinsic_block_size = fraction_ascent + fraction_descent;
 
-  container_builder_.SetBaseline(fraction_ascent);
+  container_builder_.SetBaselines(fraction_ascent);
 
   LogicalOffset numerator_offset;
   LogicalOffset denominator_offset;

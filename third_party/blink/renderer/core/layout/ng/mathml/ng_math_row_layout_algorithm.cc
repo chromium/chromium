@@ -213,7 +213,7 @@ const NGLayoutResult* NGMathRowLayoutAlgorithm::Layout() {
     child_data.child.StoreMargins(ConstraintSpace(), child_data.margins);
   }
 
-  container_builder_.SetBaseline(adjust_offset.block_offset);
+  container_builder_.SetBaselines(adjust_offset.block_offset);
 
   auto intrinsic_block_size =
       max_row_size.block_size + BorderScrollbarPadding().BlockSum();

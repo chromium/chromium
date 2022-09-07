@@ -180,7 +180,7 @@ const NGLayoutResult* NGMathRadicalLayoutAlgorithm::Layout() {
     index.StoreMargins(ConstraintSpace(), index_margins);
   }
 
-  container_builder_.SetBaseline(ascent);
+  container_builder_.SetBaselines(ascent);
 
   auto total_block_size = ascent + descent + BorderScrollbarPadding().block_end;
   LayoutUnit block_size = ComputeBlockSizeForFragment(

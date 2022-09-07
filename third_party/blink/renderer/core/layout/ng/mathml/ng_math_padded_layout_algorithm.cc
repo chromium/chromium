@@ -106,7 +106,7 @@ const NGLayoutResult* NGMathPaddedLayoutAlgorithm::Layout() {
   container_builder_.SetIntrinsicBlockSize(total_block_size);
   container_builder_.SetFragmentsTotalBlockSize(total_block_size);
 
-  container_builder_.SetBaseline(ascent);
+  container_builder_.SetBaselines(ascent);
 
   NGOutOfFlowLayoutPart(Node(), ConstraintSpace(), &container_builder_).Run();
 

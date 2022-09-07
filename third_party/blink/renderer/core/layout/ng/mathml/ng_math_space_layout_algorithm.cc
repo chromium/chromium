@@ -27,7 +27,7 @@ const NGLayoutResult* NGMathSpaceLayoutAlgorithm::Layout() {
   container_builder_.SetIntrinsicBlockSize(intrinsic_block_size);
   container_builder_.SetFragmentsTotalBlockSize(block_size);
 
-  container_builder_.SetBaseline(
+  container_builder_.SetBaselines(
       BorderScrollbarPadding().block_start +
       ValueForLength(Style().GetMathBaseline(), LayoutUnit()));
   return container_builder_.ToBoxFragment();

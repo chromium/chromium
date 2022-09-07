@@ -557,6 +557,12 @@ class CORE_EXPORT NGBoxFragmentBuilder final
   void SetLastBaseline(LayoutUnit baseline) { last_baseline_ = baseline; }
   absl::optional<LayoutUnit> LastBaseline() const { return last_baseline_; }
 
+  // Sets both the first and last baseline to the same value.
+  void SetBaselines(LayoutUnit baseline) {
+    first_baseline_ = baseline;
+    last_baseline_ = baseline;
+  }
+
   // Lets the parent layout algorithm know if it should use the first or last
   // baseline for the special inline-block baseline algorithm.
   void SetUseLastBaselineForInlineBaseline() {

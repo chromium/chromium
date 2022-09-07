@@ -816,10 +816,8 @@ const NGLayoutResult* NGBlockLayoutAlgorithm::FinishLayout(
         To<LayoutBlock>(Node().GetLayoutBox());
     if (auto baseline_offset = layout_block->BaselineForEmptyLine(
             layout_block->IsHorizontalWritingMode() ? kHorizontalLine
-                                                    : kVerticalLine)) {
-      container_builder_.SetBaseline(*baseline_offset);
-      container_builder_.SetLastBaseline(*baseline_offset);
-    }
+                                                    : kVerticalLine))
+      container_builder_.SetBaselines(*baseline_offset);
   }
 
   // Collapse annotation overflow and padding.

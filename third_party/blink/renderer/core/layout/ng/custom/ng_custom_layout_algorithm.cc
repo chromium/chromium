@@ -168,10 +168,12 @@ const NGLayoutResult* NGCustomLayoutAlgorithm::Layout() {
       ConstraintSpace(), Style(), BorderPadding(), auto_block_size,
       container_builder_.InitialBorderBoxSize().inline_size);
 
+  // TODO(ikilpatrick): Allow setting both the first/last baseline instead of a
+  // general baseline.
   if (fragment_result_options->hasBaseline()) {
     LayoutUnit baseline =
         LayoutUnit::FromDoubleRound(fragment_result_options->baseline());
-    container_builder_.SetBaseline(baseline);
+    container_builder_.SetBaselines(baseline);
   }
 
   container_builder_.SetCustomLayoutData(std::move(fragment_result_data));

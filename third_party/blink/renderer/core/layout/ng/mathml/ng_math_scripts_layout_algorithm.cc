@@ -398,7 +398,7 @@ const NGLayoutResult* NGMathScriptsLayoutAlgorithm::Layout() {
     inline_offset += space + sub_sup_pair_inline_size;
   }
 
-  container_builder_.SetBaseline(ascent);
+  container_builder_.SetBaselines(ascent);
 
   LayoutUnit intrinsic_block_size = ascent + descent;
 

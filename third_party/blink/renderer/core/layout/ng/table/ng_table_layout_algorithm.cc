@@ -1440,10 +1440,12 @@ const NGLayoutResult* NGTableLayoutAlgorithm::GenerateFragment(
   container_builder_.SetFragmentsTotalBlockSize(block_size);
 
   if (RuntimeEnabledFeatures::MathMLCoreEnabled() && Node().GetDOMNode() &&
-      Node().GetDOMNode()->HasTagName(mathml_names::kMtableTag))
-    table_baseline = MathTableBaseline(Style(), child_block_offset);
-  if (table_baseline)
+      Node().GetDOMNode()->HasTagName(mathml_names::kMtableTag)) {
+    container_builder_.SetBaselines(
+        MathTableBaseline(Style(), child_block_offset));
+  } else if (table_baseline) {
     container_builder_.SetBaseline(*table_baseline);
+  }
 
   container_builder_.SetIsTableNGPart();
 
