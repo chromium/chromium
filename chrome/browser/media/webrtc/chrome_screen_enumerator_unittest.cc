@@ -86,12 +86,12 @@ TEST_F(ChromeScreenEnumeratorTest, NoScreen) {
 TEST_F(ChromeScreenEnumeratorTest, MultiScreenSorting) {
   std::vector<int> expected_ids_order = {3, 1, 5, 4, 2, 6};
   std::vector<aura::Window*> screens_list = GenerateScreensList({
-      gfx::Rect(20, 10, 1024, 768),  // Expected as 3rd.
-      gfx::Rect(30, 20, 1024, 768),  // Expected as 1st.
-      gfx::Rect(32, 5, 1024, 768),   // Expected as 5th.
-      gfx::Rect(25, 20, 1024, 768),  // Expected as 4th.
-      gfx::Rect(22, 20, 1024, 768),  // Expected as 2nd.
-      gfx::Rect(1, 50, 1024, 768),   // Expected as 6th.
+      gfx::Rect(10, 20, 1024, 768),  // Expected as 3rd.
+      gfx::Rect(20, 30, 1024, 768),  // Expected as 1st.
+      gfx::Rect(5, 32, 1024, 768),   // Expected as 5th.
+      gfx::Rect(20, 25, 1024, 768),  // Expected as 4th.
+      gfx::Rect(20, 22, 1024, 768),  // Expected as 2nd.
+      gfx::Rect(50, 1, 1024, 768),   // Expected as 6th.
   });
   SetRootWindowsForTesting(&screens_list);
 
