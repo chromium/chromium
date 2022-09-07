@@ -821,7 +821,8 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
     const int row_bytes = crop.width() / sample_size.width() * sample_bytes;
     const int rows = crop.height() / sample_size.height();
     libyuv::CopyPlane(buffer.data() + src_layout.Offset(i),
-                      static_cast<int>(src_layout.Stride(i)), frame->data(i),
+                      static_cast<int>(src_layout.Stride(i)),
+                      frame->writable_data(i),
                       static_cast<int>(frame->stride(i)), row_bytes, rows);
   }
 

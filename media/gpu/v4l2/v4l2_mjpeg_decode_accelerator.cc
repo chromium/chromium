@@ -900,7 +900,7 @@ bool V4L2MjpegDecodeAccelerator::ConvertOutputImage(
   std::array<uint8_t*, VideoFrame::kMaxPlanes> dst_ptrs{};
   std::array<int, VideoFrame::kMaxPlanes> dst_strides{};
   for (size_t i = 0; i < dst_frame->layout().num_planes(); i++) {
-    dst_ptrs[i] = dst_frame->visible_data(i);
+    dst_ptrs[i] = dst_frame->GetWritableVisibleData(i);
     dst_strides[i] = base::checked_cast<int>(dst_frame->stride(i));
   }
 

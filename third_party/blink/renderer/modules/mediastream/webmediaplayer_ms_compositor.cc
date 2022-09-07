@@ -111,15 +111,15 @@ scoped_refptr<media::VideoFrame> CopyFrame(
                        frame->stride(media::VideoFrame::kYPlane),
                        frame->data(media::VideoFrame::kUVPlane),
                        frame->stride(media::VideoFrame::kUVPlane),
-                       new_frame->data(media::VideoFrame::kYPlane),
+                       new_frame->writable_data(media::VideoFrame::kYPlane),
                        new_frame->stride(media::VideoFrame::kYPlane),
-                       new_frame->data(media::VideoFrame::kUVPlane),
+                       new_frame->writable_data(media::VideoFrame::kUVPlane),
                        new_frame->stride(media::VideoFrame::kUVPlane),
                        coded_size.width(), coded_size.height());
     } else if (frame->format() == media::PIXEL_FORMAT_ARGB) {
       libyuv::ARGBCopy(frame->data(media::VideoFrame::kARGBPlane),
                        frame->stride(media::VideoFrame::kARGBPlane),
-                       new_frame->data(media::VideoFrame::kARGBPlane),
+                       new_frame->writable_data(media::VideoFrame::kARGBPlane),
                        new_frame->stride(media::VideoFrame::kARGBPlane),
                        coded_size.width(), coded_size.height());
     } else {
@@ -129,18 +129,18 @@ scoped_refptr<media::VideoFrame> CopyFrame(
                        frame->stride(media::VideoFrame::kUPlane),
                        frame->data(media::VideoFrame::kVPlane),
                        frame->stride(media::VideoFrame::kVPlane),
-                       new_frame->data(media::VideoFrame::kYPlane),
+                       new_frame->writable_data(media::VideoFrame::kYPlane),
                        new_frame->stride(media::VideoFrame::kYPlane),
-                       new_frame->data(media::VideoFrame::kUPlane),
+                       new_frame->writable_data(media::VideoFrame::kUPlane),
                        new_frame->stride(media::VideoFrame::kUPlane),
-                       new_frame->data(media::VideoFrame::kVPlane),
+                       new_frame->writable_data(media::VideoFrame::kVPlane),
                        new_frame->stride(media::VideoFrame::kVPlane),
                        coded_size.width(), coded_size.height());
     }
     if (frame->format() == media::PIXEL_FORMAT_I420A) {
       libyuv::CopyPlane(frame->data(media::VideoFrame::kAPlane),
                         frame->stride(media::VideoFrame::kAPlane),
-                        new_frame->data(media::VideoFrame::kAPlane),
+                        new_frame->writable_data(media::VideoFrame::kAPlane),
                         new_frame->stride(media::VideoFrame::kAPlane),
                         coded_size.width(), coded_size.height());
     }

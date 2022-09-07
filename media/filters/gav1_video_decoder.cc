@@ -162,7 +162,7 @@ libgav1::StatusCode GetFrameBufferImpl(void* callback_private_data,
   for (int i = 0; i < 3; i++) {
     // frame_buffer->plane[i] points to the first byte of the frame proper,
     // not the first byte of the buffer.
-    frame_buffer->plane[i] = video_frame->visible_data(i);
+    frame_buffer->plane[i] = video_frame->GetWritableVisibleData(i);
     frame_buffer->stride[i] = video_frame->stride(i);
   }
   if (image_format == libgav1::kImageFormatMonochrome400) {
@@ -175,11 +175,11 @@ libgav1::StatusCode GetFrameBufferImpl(void* callback_private_data,
       // and V samples in video_frame to the blank value.
       if (bitdepth == 8) {
         constexpr uint8_t kBlankUV = 256 / 2;
-        memset(video_frame->visible_data(i), kBlankUV, size_needed);
+        memset(video_frame->GetWritableVisibleData(i), kBlankUV, size_needed);
       } else {
         const uint16_t kBlankUV = (1 << bitdepth) / 2;
         uint16_t* data =
-            reinterpret_cast<uint16_t*>(video_frame->visible_data(i));
+            reinterpret_cast<uint16_t*>(video_frame->GetWritableVisibleData(i));
         std::fill(data, data + size_needed / 2, kBlankUV);
       }
     }

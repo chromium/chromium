@@ -358,8 +358,9 @@ void ImageDecoderCore::MaybeDecodeToYuv() {
       return;
   }
 
-  void* planes[cc::kNumYUVPlanes] = {yuv_frame_->data(0), yuv_frame_->data(1),
-                                     yuv_frame_->data(2)};
+  void* planes[cc::kNumYUVPlanes] = {yuv_frame_->writable_data(0),
+                                     yuv_frame_->writable_data(1),
+                                     yuv_frame_->writable_data(2)};
   wtf_size_t row_bytes[cc::kNumYUVPlanes] = {
       static_cast<wtf_size_t>(yuv_frame_->stride(0)),
       static_cast<wtf_size_t>(yuv_frame_->stride(1)),

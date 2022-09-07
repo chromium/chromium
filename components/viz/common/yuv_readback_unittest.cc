@@ -249,7 +249,10 @@ class YUVReadbackTest : public testing::Test {
     return ret;
   }
 
-  void PrintPlane(unsigned char* plane, int xsize, int stride, int ysize) {
+  void PrintPlane(const unsigned char* plane,
+                  int xsize,
+                  int stride,
+                  int ysize) {
     for (int y = 0; y < std::min(24, ysize); y++) {
       std::string formatted;
       for (int x = 0; x < std::min(24, xsize); x++) {
@@ -261,9 +264,9 @@ class YUVReadbackTest : public testing::Test {
 
   // Compare two planes make sure that each component of each pixel
   // is no more than |maxdiff| apart.
-  void ComparePlane(unsigned char* truth,
+  void ComparePlane(const unsigned char* truth,
                     int truth_stride,
-                    unsigned char* other,
+                    const unsigned char* other,
                     int other_stride,
                     int maxdiff,
                     int xsize,
@@ -375,11 +378,11 @@ class YUVReadbackTest : public testing::Test {
     yuv_reader->ReadbackYUV(
         src_texture, gfx::Size(xsize, ysize), gfx::Rect(0, 0, xsize, ysize),
         output_frame->stride(media::VideoFrame::kYPlane),
-        output_frame->data(media::VideoFrame::kYPlane),
+        output_frame->writable_data(media::VideoFrame::kYPlane),
         output_frame->stride(media::VideoFrame::kUPlane),
-        output_frame->data(media::VideoFrame::kUPlane),
+        output_frame->writable_data(media::VideoFrame::kUPlane),
         output_frame->stride(media::VideoFrame::kVPlane),
-        output_frame->data(media::VideoFrame::kVPlane),
+        output_frame->writable_data(media::VideoFrame::kVPlane),
         gfx::Point(xmargin, ymargin),
         base::BindOnce(run_quit_closure, run_loop.QuitClosure()));
 
@@ -392,9 +395,12 @@ class YUVReadbackTest : public testing::Test {
       FlipSKBitmap(&input_pixels);
     }
 
-    unsigned char* Y = truth_frame->visible_data(media::VideoFrame::kYPlane);
-    unsigned char* U = truth_frame->visible_data(media::VideoFrame::kUPlane);
-    unsigned char* V = truth_frame->visible_data(media::VideoFrame::kVPlane);
+    unsigned char* Y =
+        truth_frame->GetWritableVisibleData(media::VideoFrame::kYPlane);
+    unsigned char* U =
+        truth_frame->GetWritableVisibleData(media::VideoFrame::kUPlane);
+    unsigned char* V =
+        truth_frame->GetWritableVisibleData(media::VideoFrame::kVPlane);
     int32_t y_stride = truth_frame->stride(media::VideoFrame::kYPlane);
     int32_t u_stride = truth_frame->stride(media::VideoFrame::kUPlane);
     int32_t v_stride = truth_frame->stride(media::VideoFrame::kVPlane);

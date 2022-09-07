@@ -150,14 +150,14 @@ void InitializeYV12Frame(VideoFrame* frame, double white_to_black) {
   EXPECT_EQ(PIXEL_FORMAT_YV12, frame->format());
   const int first_black_row =
       static_cast<int>(frame->coded_size().height() * white_to_black);
-  uint8_t* y_plane = frame->data(VideoFrame::kYPlane);
+  uint8_t* y_plane = frame->writable_data(VideoFrame::kYPlane);
   for (int row = 0; row < frame->coded_size().height(); ++row) {
     int color = (row < first_black_row) ? 0xFF : 0x00;
     memset(y_plane, color, frame->stride(VideoFrame::kYPlane));
     y_plane += frame->stride(VideoFrame::kYPlane);
   }
-  uint8_t* u_plane = frame->data(VideoFrame::kUPlane);
-  uint8_t* v_plane = frame->data(VideoFrame::kVPlane);
+  uint8_t* u_plane = frame->writable_data(VideoFrame::kUPlane);
+  uint8_t* v_plane = frame->writable_data(VideoFrame::kVPlane);
   for (int row = 0; row < frame->coded_size().height(); row += 2) {
     memset(u_plane, 0x80, frame->stride(VideoFrame::kUPlane));
     memset(v_plane, 0x80, frame->stride(VideoFrame::kVPlane));
@@ -229,7 +229,7 @@ void ExpectFrameExtents(VideoPixelFormat format, const char* expected_hash) {
     EXPECT_TRUE(frame->row_bytes(plane));
     EXPECT_TRUE(frame->columns(plane));
 
-    memset(frame->data(plane), kFillByte,
+    memset(frame->writable_data(plane), kFillByte,
            frame->stride(plane) * frame->rows(plane));
   }
 
@@ -336,14 +336,14 @@ TEST(VideoFrame, CreateBlackFrame) {
   EXPECT_EQ(kHeight, frame->coded_size().height());
 
   // Test frames themselves.
-  uint8_t* y_plane = frame->data(VideoFrame::kYPlane);
+  uint8_t* y_plane = frame->writable_data(VideoFrame::kYPlane);
   for (int y = 0; y < frame->coded_size().height(); ++y) {
     EXPECT_EQ(0, memcmp(kExpectedYRow, y_plane, std::size(kExpectedYRow)));
     y_plane += frame->stride(VideoFrame::kYPlane);
   }
 
-  uint8_t* u_plane = frame->data(VideoFrame::kUPlane);
-  uint8_t* v_plane = frame->data(VideoFrame::kVPlane);
+  uint8_t* u_plane = frame->writable_data(VideoFrame::kUPlane);
+  uint8_t* v_plane = frame->writable_data(VideoFrame::kVPlane);
   for (int y = 0; y < frame->coded_size().height() / 2; ++y) {
     EXPECT_EQ(0, memcmp(kExpectedUVRow, u_plane, std::size(kExpectedUVRow)));
     EXPECT_EQ(0, memcmp(kExpectedUVRow, v_plane, std::size(kExpectedUVRow)));

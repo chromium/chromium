@@ -24,7 +24,7 @@ scoped_refptr<VideoFrame> CreateFrame(const uint8_t* y_plane_data,
   scoped_refptr<VideoFrame> result = VideoFrame::CreateFrame(
       PIXEL_FORMAT_I420, size, gfx::Rect(size), size, base::TimeDelta());
   for (int y = 0, y_end = size.height(); y < y_end; ++y) {
-    memcpy(result->visible_data(VideoFrame::kYPlane) +
+    memcpy(result->GetWritableVisibleData(VideoFrame::kYPlane) +
                y * result->stride(VideoFrame::kYPlane),
            y_plane_data + y * size.width(), size.width());
   }

@@ -416,9 +416,9 @@ void VideoCaptureOverlay::Sprite::Blend(const gfx::Rect& src_rect,
       // Likewise, start |dst| at the upper-left-most pixel within the video
       // frame's Y plane that will be SrcOver'ed.
       int dst_stride = frame->stride(VideoFrame::kYPlane);
-      uint8_t* dst =
-          PositionPointerInPlane(frame->visible_data(VideoFrame::kYPlane),
-                                 dst_stride, dst_rect.origin());
+      uint8_t* dst = PositionPointerInPlane(
+          frame->GetWritableVisibleData(VideoFrame::kYPlane), dst_stride,
+          dst_rect.origin());
       BlitOntoPlane(dst_rect.size(), src_stride, src, under_weight, dst_stride,
                     dst);
 
@@ -434,14 +434,16 @@ void VideoCaptureOverlay::Sprite::Blend(const gfx::Rect& src_rect,
       const gfx::Rect chroma_blit_rect(dst_rect.x() / 2, dst_rect.y() / 2,
                                        dst_rect.width() / 2,
                                        dst_rect.height() / 2);
-      dst = PositionPointerInPlane(frame->visible_data(VideoFrame::kUPlane),
-                                   dst_stride, chroma_blit_rect.origin());
+      dst = PositionPointerInPlane(
+          frame->GetWritableVisibleData(VideoFrame::kUPlane), dst_stride,
+          chroma_blit_rect.origin());
       BlitOntoPlane(chroma_blit_rect.size(), src_stride, src, under_weight,
                     dst_stride, dst);
       src += num_chroma_pixels;
       dst_stride = frame->stride(VideoFrame::kVPlane);
-      dst = PositionPointerInPlane(frame->visible_data(VideoFrame::kVPlane),
-                                   dst_stride, chroma_blit_rect.origin());
+      dst = PositionPointerInPlane(
+          frame->GetWritableVisibleData(VideoFrame::kVPlane), dst_stride,
+          chroma_blit_rect.origin());
       BlitOntoPlane(chroma_blit_rect.size(), src_stride, src, under_weight,
                     dst_stride, dst);
 
@@ -459,9 +461,9 @@ void VideoCaptureOverlay::Sprite::Blend(const gfx::Rect& src_rect,
       // frame that will be SrcOver'ed.
       const int dst_stride = frame->stride(VideoFrame::kARGBPlane);
       DCHECK_EQ(dst_stride % sizeof(uint32_t), 0u);
-      uint8_t* dst =
-          PositionPointerARGB(frame->visible_data(VideoFrame::kARGBPlane),
-                              dst_stride, dst_rect.origin());
+      uint8_t* dst = PositionPointerARGB(
+          frame->GetWritableVisibleData(VideoFrame::kARGBPlane), dst_stride,
+          dst_rect.origin());
       DCHECK_EQ((dst - frame->visible_data(VideoFrame::kARGBPlane)) %
                     sizeof(uint32_t),
                 0u);

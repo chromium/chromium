@@ -349,12 +349,13 @@ bool VpxVideoDecoder::VpxDecode(const DecoderBuffer* buffer,
     return false;
 
   if (vpx_image_alpha && config_.codec() == VideoCodec::kVP8) {
-    libyuv::CopyPlane(vpx_image_alpha->planes[VPX_PLANE_Y],
-                      vpx_image_alpha->stride[VPX_PLANE_Y],
-                      (*video_frame)->visible_data(VideoFrame::kAPlane),
-                      (*video_frame)->stride(VideoFrame::kAPlane),
-                      (*video_frame)->visible_rect().width(),
-                      (*video_frame)->visible_rect().height());
+    libyuv::CopyPlane(
+        vpx_image_alpha->planes[VPX_PLANE_Y],
+        vpx_image_alpha->stride[VPX_PLANE_Y],
+        (*video_frame)->GetWritableVisibleData(VideoFrame::kAPlane),
+        (*video_frame)->stride(VideoFrame::kAPlane),
+        (*video_frame)->visible_rect().width(),
+        (*video_frame)->visible_rect().height());
   }
 
   (*video_frame)->set_timestamp(buffer->timestamp());
@@ -592,10 +593,11 @@ bool VpxVideoDecoder::CopyVpxImageToVideoFrame(
     return false;
 
   for (int plane = 0; plane < 3; plane++) {
-    libyuv::CopyPlane(
-        vpx_image->planes[plane], vpx_image->stride[plane],
-        (*video_frame)->visible_data(plane), (*video_frame)->stride(plane),
-        (*video_frame)->row_bytes(plane), (*video_frame)->rows(plane));
+    libyuv::CopyPlane(vpx_image->planes[plane], vpx_image->stride[plane],
+                      (*video_frame)->GetWritableVisibleData(plane),
+                      (*video_frame)->stride(plane),
+                      (*video_frame)->row_bytes(plane),
+                      (*video_frame)->rows(plane));
   }
 
   return true;

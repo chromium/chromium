@@ -144,7 +144,8 @@ void StaticBitmapImageToVideoFrameCopier::ReadARGBPixelsSync(
       is_opaque ? kPremul_SkAlphaType : kUnpremul_SkAlphaType);
   if (!paint_image.readPixels(
           image_info,
-          temp_argb_frame->visible_data(media::VideoFrame::kARGBPlane),
+          temp_argb_frame->GetWritableVisibleData(
+              media::VideoFrame::kARGBPlane),
           temp_argb_frame->stride(media::VideoFrame::kARGBPlane), 0 /*srcX*/,
           0 /*srcY*/)) {
     DLOG(ERROR) << "Couldn't read pixels from PaintImage";
@@ -191,7 +192,7 @@ void StaticBitmapImageToVideoFrameCopier::ReadARGBPixelsAsync(
   context_provider->RasterInterface()->ReadbackARGBPixelsAsync(
       mailbox_holder.mailbox, mailbox_holder.texture_target, image_origin, info,
       temp_argb_frame->stride(media::VideoFrame::kARGBPlane),
-      temp_argb_frame->visible_data(media::VideoFrame::kARGBPlane),
+      temp_argb_frame->GetWritableVisibleData(media::VideoFrame::kARGBPlane),
       WTF::Bind(&StaticBitmapImageToVideoFrameCopier::OnARGBPixelsReadAsync,
                 weak_ptr_factory_.GetWeakPtr(), image, temp_argb_frame,
                 std::move(callback)));
@@ -220,11 +221,12 @@ void StaticBitmapImageToVideoFrameCopier::ReadYUVPixelsAsync(
       mailbox_holder.mailbox, mailbox_holder.texture_target, image_size,
       gfx::Rect(image_size), !image->IsOriginTopLeft(),
       output_frame->stride(media::VideoFrame::kYPlane),
-      output_frame->visible_data(media::VideoFrame::kYPlane),
+      output_frame->GetWritableVisibleData(media::VideoFrame::kYPlane),
       output_frame->stride(media::VideoFrame::kUPlane),
-      output_frame->visible_data(media::VideoFrame::kUPlane),
+      output_frame->GetWritableVisibleData(media::VideoFrame::kUPlane),
       output_frame->stride(media::VideoFrame::kVPlane),
-      output_frame->visible_data(media::VideoFrame::kVPlane), gfx::Point(0, 0),
+      output_frame->GetWritableVisibleData(media::VideoFrame::kVPlane),
+      gfx::Point(0, 0),
       WTF::Bind(&StaticBitmapImageToVideoFrameCopier::OnReleaseMailbox,
                 weak_ptr_factory_.GetWeakPtr(), image),
       WTF::Bind(&StaticBitmapImageToVideoFrameCopier::OnYUVPixelsReadAsync,

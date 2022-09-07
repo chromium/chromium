@@ -132,7 +132,8 @@ void BackgroundReadback::ReadbackRGBTextureBackedFrameToMemory(
     return;
   }
 
-  uint8_t* dst_pixels = result->visible_data(media::VideoFrame::kARGBPlane);
+  uint8_t* dst_pixels =
+      result->GetWritableVisibleData(media::VideoFrame::kARGBPlane);
   int rgba_stide = result->stride(media::VideoFrame::kARGBPlane);
   DCHECK_GT(rgba_stide, 0);
 

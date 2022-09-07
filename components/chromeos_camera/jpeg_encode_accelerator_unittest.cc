@@ -626,11 +626,11 @@ void JpegClient::SaveToFile(TestImage* test_image,
             << out_filename_hw.MaybeAsASCII();
 
   ASSERT_EQ(static_cast<int>(hw_size),
-            base::WriteFile(
-                out_filename_hw,
-                static_cast<char*>(hw_out_frame_ ? hw_out_frame_->data(0)
-                                                 : hw_out_mapping_.memory()),
-                hw_size));
+            base::WriteFile(out_filename_hw,
+                            static_cast<const char*>(
+                                hw_out_frame_ ? hw_out_frame_->data(0)
+                                              : hw_out_mapping_.memory()),
+                            hw_size));
 
   base::FilePath out_filename_sw = out_filename_hw.InsertBeforeExtension("_sw");
   LOG(INFO) << "Writing SW encode results to "

@@ -343,21 +343,26 @@ void Av1VideoEncoder::Encode(scoped_refptr<VideoFrame> frame,
                                                          : AOM_IMG_FMT_I420;
   aom_image_t* image = aom_img_wrap(&image_, fmt, options_.frame_size.width(),
                                     options_.frame_size.height(), 1,
-                                    frame->data(VideoFrame::kYPlane));
+                                    frame->writable_data(VideoFrame::kYPlane));
   DCHECK_EQ(image, &image_);
 
   switch (frame->format()) {
     case PIXEL_FORMAT_I420:
-      image->planes[AOM_PLANE_Y] = frame->visible_data(VideoFrame::kYPlane);
-      image->planes[AOM_PLANE_U] = frame->visible_data(VideoFrame::kUPlane);
-      image->planes[AOM_PLANE_V] = frame->visible_data(VideoFrame::kVPlane);
+      image->planes[AOM_PLANE_Y] =
+          frame->GetWritableVisibleData(VideoFrame::kYPlane);
+      image->planes[AOM_PLANE_U] =
+          frame->GetWritableVisibleData(VideoFrame::kUPlane);
+      image->planes[AOM_PLANE_V] =
+          frame->GetWritableVisibleData(VideoFrame::kVPlane);
       image->stride[AOM_PLANE_Y] = frame->stride(VideoFrame::kYPlane);
       image->stride[AOM_PLANE_U] = frame->stride(VideoFrame::kUPlane);
       image->stride[AOM_PLANE_V] = frame->stride(VideoFrame::kVPlane);
       break;
     case PIXEL_FORMAT_NV12:
-      image->planes[AOM_PLANE_Y] = frame->visible_data(VideoFrame::kYPlane);
-      image->planes[AOM_PLANE_U] = frame->visible_data(VideoFrame::kUVPlane);
+      image->planes[AOM_PLANE_Y] =
+          frame->GetWritableVisibleData(VideoFrame::kYPlane);
+      image->planes[AOM_PLANE_U] =
+          frame->GetWritableVisibleData(VideoFrame::kUVPlane);
       image->planes[AOM_PLANE_V] = nullptr;
       image->stride[AOM_PLANE_Y] = frame->stride(VideoFrame::kYPlane);
       image->stride[AOM_PLANE_U] = frame->stride(VideoFrame::kUVPlane);

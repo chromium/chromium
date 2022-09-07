@@ -1223,7 +1223,8 @@ int VideoFrame::columns(size_t plane) const {
   return Columns(plane, format(), coded_size().width());
 }
 
-const uint8_t* VideoFrame::visible_data(size_t plane) const {
+template <typename T>
+T VideoFrame::GetVisibleDataInternal(T data, size_t plane) const {
   DCHECK(IsValidPlane(format(), plane));
   DCHECK(IsMappable());
 
@@ -1236,15 +1237,18 @@ const uint8_t* VideoFrame::visible_data(size_t plane) const {
   const gfx::Size subsample = SampleSize(format(), plane);
   DCHECK(offset.x() % subsample.width() == 0);
   DCHECK(offset.y() % subsample.height() == 0);
-  return data(plane) +
+  return data +
          stride(plane) * (offset.y() / subsample.height()) +  // Row offset.
          BytesPerElement(format(), plane) *                   // Column offset.
              (offset.x() / subsample.width());
 }
 
-uint8_t* VideoFrame::visible_data(size_t plane) {
-  return const_cast<uint8_t*>(
-      static_cast<const VideoFrame*>(this)->visible_data(plane));
+const uint8_t* VideoFrame::visible_data(size_t plane) const {
+  return GetVisibleDataInternal<const uint8_t*>(data(plane), plane);
+}
+
+uint8_t* VideoFrame::GetWritableVisibleData(size_t plane) {
+  return GetVisibleDataInternal<uint8_t*>(writable_data(plane), plane);
 }
 
 const gpu::MailboxHolder& VideoFrame::mailbox_holder(

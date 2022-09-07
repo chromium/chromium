@@ -929,7 +929,7 @@ bool V4L2ImageProcessorBackend::EnqueueInputRecord(
                                   input_config_.size)
                 .GetArea();
         buffer.SetPlaneBytesUsed(i, bytes_used);
-        user_ptrs[i] = job_record->input_frame->data(i);
+        user_ptrs[i] = job_record->input_frame->writable_data(i);
       }
       std::move(buffer).QueueUserPtr(user_ptrs);
       break;

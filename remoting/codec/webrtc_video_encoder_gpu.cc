@@ -266,9 +266,9 @@ void WebrtcVideoEncoderGpu::Core::Encode(
 
   // H264 encoder on Windows uses NV12 so convert here.
   libyuv::ARGBToNV12(frame->data(), frame->stride(),
-                     video_frame->data(VideoFrame::kYPlane),
+                     video_frame->writable_data(VideoFrame::kYPlane),
                      video_frame->stride(VideoFrame::kYPlane),
-                     video_frame->data(VideoFrame::kUVPlane),
+                     video_frame->writable_data(VideoFrame::kUVPlane),
                      video_frame->stride(VideoFrame::kUVPlane),
                      video_frame->visible_rect().width(),
                      video_frame->visible_rect().height());

@@ -115,17 +115,19 @@ class VideoEncodeAcceleratorAdapterTest
                                          gfx::Rect(size), size, timestamp);
 
     // Green I420 frame (Y:0x96, U:0x40, V:0x40)
-    libyuv::I420Rect(
-        frame->data(VideoFrame::kYPlane), frame->stride(VideoFrame::kYPlane),
-        frame->data(VideoFrame::kUPlane), frame->stride(VideoFrame::kUPlane),
-        frame->data(VideoFrame::kVPlane), frame->stride(VideoFrame::kVPlane),
-        0,                               // left
-        0,                               // top
-        frame->visible_rect().width(),   // right
-        frame->visible_rect().height(),  // bottom
-        0x96,                            // Y color
-        0x40,                            // U color
-        0x40);                           // V color
+    libyuv::I420Rect(frame->writable_data(VideoFrame::kYPlane),
+                     frame->stride(VideoFrame::kYPlane),
+                     frame->writable_data(VideoFrame::kUPlane),
+                     frame->stride(VideoFrame::kUPlane),
+                     frame->writable_data(VideoFrame::kVPlane),
+                     frame->stride(VideoFrame::kVPlane),
+                     0,                               // left
+                     0,                               // top
+                     frame->visible_rect().width(),   // right
+                     frame->visible_rect().height(),  // bottom
+                     0x96,                            // Y color
+                     0x40,                            // U color
+                     0x40);                           // V color
 
     return frame;
   }
@@ -136,7 +138,7 @@ class VideoEncodeAcceleratorAdapterTest
                                          gfx::Rect(size), size, timestamp);
 
     // Green XRGB frame (R:0x3B, G:0xD9, B:0x24)
-    libyuv::ARGBRect(frame->data(VideoFrame::kARGBPlane),
+    libyuv::ARGBRect(frame->writable_data(VideoFrame::kARGBPlane),
                      frame->stride(VideoFrame::kARGBPlane),
                      0,                               // left
                      0,                               // top

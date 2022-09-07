@@ -90,7 +90,8 @@ void RenderLineOfText(const std::string& line, int top, VideoFrame* frame) {
   const int stride = frame->stride(kPlane);
   uint8_t* p_ul =
       // Start at the first pixel in the first row...
-      frame->visible_data(kPlane) + (stride * top)
+      frame->GetWritableVisibleData(kPlane) +
+      (stride * top)
       // ...now move to the right edge of the visible part of the frame...
       + frame->visible_rect().width()
       // ...now move left to where line[0] would be rendered...
@@ -258,7 +259,7 @@ scoped_refptr<VideoFrame> MaybeRenderPerformanceMetricsOverlay(
         plane, source->format(), source->visible_rect().width());
     const uint8_t* src = source->visible_data(plane);
     const int src_stride = source->stride(plane);
-    uint8_t* dst = frame->visible_data(plane);
+    uint8_t* dst = frame->GetWritableVisibleData(plane);
     const int dst_stride = frame->stride(plane);
     for (size_t row = 0; row < row_count;
          ++row, src += src_stride, dst += dst_stride) {

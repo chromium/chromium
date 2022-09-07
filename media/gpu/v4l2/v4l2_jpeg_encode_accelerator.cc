@@ -666,9 +666,9 @@ bool V4L2JpegEncodeAccelerator::EncodedInstance::EnqueueInputRecord() {
   DCHECK(!input_record.at_device);
 
   // Copy image from user memory to MMAP memory.
-  uint8_t* src_y = job_record->input_frame->data(VideoFrame::kYPlane);
-  uint8_t* src_u = job_record->input_frame->data(VideoFrame::kUPlane);
-  uint8_t* src_v = job_record->input_frame->data(VideoFrame::kVPlane);
+  const uint8_t* src_y = job_record->input_frame->data(VideoFrame::kYPlane);
+  const uint8_t* src_u = job_record->input_frame->data(VideoFrame::kUPlane);
+  const uint8_t* src_v = job_record->input_frame->data(VideoFrame::kVPlane);
   size_t src_y_stride = job_record->input_frame->stride(VideoFrame::kYPlane);
   size_t src_u_stride = job_record->input_frame->stride(VideoFrame::kUPlane);
   size_t src_v_stride = job_record->input_frame->stride(VideoFrame::kVPlane);

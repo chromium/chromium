@@ -292,7 +292,7 @@ void LetterboxPlane(VideoFrame* frame,
                     uint8_t fill_byte) {
   uint8_t* ptr = nullptr;
   if (frame->IsMappable()) {
-    ptr = frame->data(plane);
+    ptr = frame->writable_data(plane);
   } else if (frame->HasGpuMemoryBuffer()) {
     ptr = static_cast<uint8_t*>(frame->GetGpuMemoryBuffer()->memory(plane));
   }
@@ -305,11 +305,14 @@ void LetterboxPlane(VideoFrame* frame,
 }  // namespace
 
 void FillYUV(VideoFrame* frame, uint8_t y, uint8_t u, uint8_t v) {
-  libyuv::I420Rect(
-      frame->data(VideoFrame::kYPlane), frame->stride(VideoFrame::kYPlane),
-      frame->data(VideoFrame::kUPlane), frame->stride(VideoFrame::kUPlane),
-      frame->data(VideoFrame::kVPlane), frame->stride(VideoFrame::kVPlane), 0,
-      0, frame->coded_size().width(), frame->coded_size().height(), y, u, v);
+  libyuv::I420Rect(frame->writable_data(VideoFrame::kYPlane),
+                   frame->stride(VideoFrame::kYPlane),
+                   frame->writable_data(VideoFrame::kUPlane),
+                   frame->stride(VideoFrame::kUPlane),
+                   frame->writable_data(VideoFrame::kVPlane),
+                   frame->stride(VideoFrame::kVPlane), 0, 0,
+                   frame->coded_size().width(), frame->coded_size().height(), y,
+                   u, v);
 }
 
 void FillYUVA(VideoFrame* frame, uint8_t y, uint8_t u, uint8_t v, uint8_t a) {
@@ -317,7 +320,7 @@ void FillYUVA(VideoFrame* frame, uint8_t y, uint8_t u, uint8_t v, uint8_t a) {
   FillYUV(frame, y, u, v);
 
   // Fill the A plane.
-  libyuv::SetPlane(frame->data(VideoFrame::kAPlane),
+  libyuv::SetPlane(frame->writable_data(VideoFrame::kAPlane),
                    frame->stride(VideoFrame::kAPlane),
                    frame->row_bytes(VideoFrame::kAPlane),
                    frame->rows(VideoFrame::kAPlane), a);
@@ -674,11 +677,11 @@ bool I420CopyWithPadding(const VideoFrame& src_frame, VideoFrame* dst_frame) {
                        src_frame.stride(VideoFrame::kUPlane),
                        src_frame.visible_data(VideoFrame::kVPlane),
                        src_frame.stride(VideoFrame::kVPlane),
-                       dst_frame->data(VideoFrame::kYPlane),
+                       dst_frame->writable_data(VideoFrame::kYPlane),
                        dst_frame->stride(VideoFrame::kYPlane),
-                       dst_frame->data(VideoFrame::kUPlane),
+                       dst_frame->writable_data(VideoFrame::kUPlane),
                        dst_frame->stride(VideoFrame::kUPlane),
-                       dst_frame->data(VideoFrame::kVPlane),
+                       dst_frame->writable_data(VideoFrame::kVPlane),
                        dst_frame->stride(VideoFrame::kVPlane),
                        src_frame.visible_rect().width(),
                        src_frame.visible_rect().height()))
@@ -686,19 +689,19 @@ bool I420CopyWithPadding(const VideoFrame& src_frame, VideoFrame* dst_frame) {
 
   // Padding the region outside the visible rect with the repeated last
   // column / row of the visible rect. This can improve the coding efficiency.
-  FillRegionOutsideVisibleRect(dst_frame->data(VideoFrame::kYPlane),
+  FillRegionOutsideVisibleRect(dst_frame->writable_data(VideoFrame::kYPlane),
                                dst_frame->stride(VideoFrame::kYPlane),
                                dst_frame->coded_size(),
                                src_frame.visible_rect().size());
   FillRegionOutsideVisibleRect(
-      dst_frame->data(VideoFrame::kUPlane),
+      dst_frame->writable_data(VideoFrame::kUPlane),
       dst_frame->stride(VideoFrame::kUPlane),
       VideoFrame::PlaneSize(PIXEL_FORMAT_I420, VideoFrame::kUPlane,
                             dst_frame->coded_size()),
       VideoFrame::PlaneSize(PIXEL_FORMAT_I420, VideoFrame::kUPlane,
                             src_frame.visible_rect().size()));
   FillRegionOutsideVisibleRect(
-      dst_frame->data(VideoFrame::kVPlane),
+      dst_frame->writable_data(VideoFrame::kVPlane),
       dst_frame->stride(VideoFrame::kVPlane),
       VideoFrame::PlaneSize(PIXEL_FORMAT_I420, VideoFrame::kVPlane,
                             dst_frame->coded_size()),
@@ -739,7 +742,7 @@ scoped_refptr<VideoFrame> ReadbackTextureBackedFrameToMemorySync(
   for (size_t plane = 0; plane < planes; plane++) {
     gfx::Rect src_rect(0, 0, txt_frame.columns(plane), txt_frame.rows(plane));
     if (!ReadbackTexturePlaneToMemorySync(
-            txt_frame, plane, src_rect, result->data(plane),
+            txt_frame, plane, src_rect, result->writable_data(plane),
             result->stride(plane), ri, gr_context)) {
       return nullptr;
     }
@@ -825,11 +828,12 @@ EncoderStatus ConvertAndScaleFrame(const VideoFrame& src_frame,
                             ? libyuv::ABGRToI420
                             : libyuv::ARGBToI420;
       int error = convert_fn(
-          src_data, src_stride, dst_frame.visible_data(VideoFrame::kYPlane),
+          src_data, src_stride,
+          dst_frame.GetWritableVisibleData(VideoFrame::kYPlane),
           dst_frame.stride(VideoFrame::kYPlane),
-          dst_frame.visible_data(VideoFrame::kUPlane),
+          dst_frame.GetWritableVisibleData(VideoFrame::kUPlane),
           dst_frame.stride(VideoFrame::kUPlane),
-          dst_frame.visible_data(VideoFrame::kVPlane),
+          dst_frame.GetWritableVisibleData(VideoFrame::kVPlane),
           dst_frame.stride(VideoFrame::kVPlane),
           dst_frame.visible_rect().width(), dst_frame.visible_rect().height());
       if (error)
@@ -839,7 +843,7 @@ EncoderStatus ConvertAndScaleFrame(const VideoFrame& src_frame,
         // Convert alpha channel separately
         libyuv::ARGBExtractAlpha(
             src_data, src_stride,
-            dst_frame.visible_data(media::VideoFrame::kAPlane),
+            dst_frame.GetWritableVisibleData(media::VideoFrame::kAPlane),
             dst_frame.stride(media::VideoFrame::kAPlane),
             dst_frame.visible_rect().width(),
             dst_frame.visible_rect().height());
@@ -853,9 +857,10 @@ EncoderStatus ConvertAndScaleFrame(const VideoFrame& src_frame,
                           ? libyuv::ABGRToNV12
                           : libyuv::ARGBToNV12;
     int error = convert_fn(
-        src_data, src_stride, dst_frame.visible_data(VideoFrame::kYPlane),
+        src_data, src_stride,
+        dst_frame.GetWritableVisibleData(VideoFrame::kYPlane),
         dst_frame.stride(VideoFrame::kYPlane),
-        dst_frame.visible_data(VideoFrame::kUVPlane),
+        dst_frame.GetWritableVisibleData(VideoFrame::kUVPlane),
         dst_frame.stride(VideoFrame::kUVPlane),
         dst_frame.visible_rect().width(), dst_frame.visible_rect().height());
     if (error)
@@ -876,7 +881,7 @@ EncoderStatus ConvertAndScaleFrame(const VideoFrame& src_frame,
           src_frame.visible_data(VideoFrame::kAPlane),
           src_frame.stride(VideoFrame::kAPlane),
           src_frame.visible_rect().width(), src_frame.visible_rect().height(),
-          dst_frame.data(VideoFrame::kAPlane),
+          dst_frame.writable_data(VideoFrame::kAPlane),  // TODO: Is this right?
           dst_frame.stride(VideoFrame::kAPlane), dst_frame.coded_size().width(),
           dst_frame.coded_size().height(), kDefaultFiltering);
     }
@@ -888,11 +893,11 @@ EncoderStatus ConvertAndScaleFrame(const VideoFrame& src_frame,
         src_frame.visible_data(VideoFrame::kVPlane),
         src_frame.stride(VideoFrame::kVPlane), src_frame.visible_rect().width(),
         src_frame.visible_rect().height(),
-        dst_frame.visible_data(VideoFrame::kYPlane),
+        dst_frame.GetWritableVisibleData(VideoFrame::kYPlane),
         dst_frame.stride(VideoFrame::kYPlane),
-        dst_frame.visible_data(VideoFrame::kUPlane),
+        dst_frame.GetWritableVisibleData(VideoFrame::kUPlane),
         dst_frame.stride(VideoFrame::kUPlane),
-        dst_frame.visible_data(VideoFrame::kVPlane),
+        dst_frame.GetWritableVisibleData(VideoFrame::kVPlane),
         dst_frame.stride(VideoFrame::kVPlane), dst_frame.visible_rect().width(),
         dst_frame.visible_rect().height(), kDefaultFiltering);
     if (error)
@@ -909,9 +914,9 @@ EncoderStatus ConvertAndScaleFrame(const VideoFrame& src_frame,
         src_frame.visible_data(VideoFrame::kUVPlane),
         src_frame.stride(VideoFrame::kUVPlane),
         src_frame.visible_rect().width(), src_frame.visible_rect().height(),
-        dst_frame.visible_data(VideoFrame::kYPlane),
+        dst_frame.GetWritableVisibleData(VideoFrame::kYPlane),
         dst_frame.stride(VideoFrame::kYPlane),
-        dst_frame.visible_data(VideoFrame::kUVPlane),
+        dst_frame.GetWritableVisibleData(VideoFrame::kUVPlane),
         dst_frame.stride(VideoFrame::kUVPlane),
         dst_frame.visible_rect().width(), dst_frame.visible_rect().height(),
         kDefaultFiltering);
@@ -930,11 +935,11 @@ EncoderStatus ConvertAndScaleFrame(const VideoFrame& src_frame,
           src_frame.stride(VideoFrame::kYPlane),
           src_frame.visible_data(VideoFrame::kUVPlane),
           src_frame.stride(VideoFrame::kUVPlane),
-          dst_frame.visible_data(VideoFrame::kYPlane),
+          dst_frame.GetWritableVisibleData(VideoFrame::kYPlane),
           dst_frame.stride(VideoFrame::kYPlane),
-          dst_frame.visible_data(VideoFrame::kUPlane),
+          dst_frame.GetWritableVisibleData(VideoFrame::kUPlane),
           dst_frame.stride(VideoFrame::kUPlane),
-          dst_frame.visible_data(VideoFrame::kVPlane),
+          dst_frame.GetWritableVisibleData(VideoFrame::kVPlane),
           dst_frame.stride(VideoFrame::kVPlane),
           dst_frame.visible_rect().width(), dst_frame.visible_rect().height());
       if (error)
@@ -967,11 +972,11 @@ EncoderStatus ConvertAndScaleFrame(const VideoFrame& src_frame,
           tmp_v,  // Temporary V-plane for src UV-plane.
           tmp_uv_width, src_frame.visible_rect().width(),
           src_frame.visible_rect().height(),
-          dst_frame.visible_data(VideoFrame::kYPlane),
+          dst_frame.GetWritableVisibleData(VideoFrame::kYPlane),
           dst_frame.stride(VideoFrame::kYPlane),
-          dst_frame.visible_data(VideoFrame::kUPlane),
+          dst_frame.GetWritableVisibleData(VideoFrame::kUPlane),
           dst_frame.stride(VideoFrame::kUPlane),
-          dst_frame.visible_data(VideoFrame::kVPlane),
+          dst_frame.GetWritableVisibleData(VideoFrame::kVPlane),
           dst_frame.stride(VideoFrame::kVPlane),
           dst_frame.visible_rect().width(), dst_frame.visible_rect().height(),
           kDefaultFiltering);
@@ -993,9 +998,9 @@ EncoderStatus ConvertAndScaleFrame(const VideoFrame& src_frame,
           src_frame.stride(VideoFrame::kUPlane),
           src_frame.visible_data(VideoFrame::kVPlane),
           src_frame.stride(VideoFrame::kVPlane),
-          dst_frame.visible_data(VideoFrame::kYPlane),
+          dst_frame.GetWritableVisibleData(VideoFrame::kYPlane),
           dst_frame.stride(VideoFrame::kYPlane),
-          dst_frame.visible_data(VideoFrame::kUVPlane),
+          dst_frame.GetWritableVisibleData(VideoFrame::kUVPlane),
           dst_frame.stride(VideoFrame::kUVPlane),
           dst_frame.visible_rect().width(), dst_frame.visible_rect().height());
       if (error)
@@ -1027,9 +1032,9 @@ EncoderStatus ConvertAndScaleFrame(const VideoFrame& src_frame,
           tmp_uv,     // Temporary for merged UV-plane
           stride_uv,  // Temporary stride
           src_frame.visible_rect().width(), src_frame.visible_rect().height(),
-          dst_frame.visible_data(VideoFrame::kYPlane),
+          dst_frame.GetWritableVisibleData(VideoFrame::kYPlane),
           dst_frame.stride(VideoFrame::kYPlane),
-          dst_frame.visible_data(VideoFrame::kUVPlane),
+          dst_frame.GetWritableVisibleData(VideoFrame::kUVPlane),
           dst_frame.stride(VideoFrame::kUVPlane),
           dst_frame.visible_rect().width(), dst_frame.visible_rect().height(),
           kDefaultFiltering);

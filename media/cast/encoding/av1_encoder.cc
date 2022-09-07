@@ -191,15 +191,15 @@ void Av1Encoder::Encode(scoped_refptr<media::VideoFrame> video_frame,
   aom_image_t aom_image;
   aom_image_t* const result = aom_img_wrap(
       &aom_image, aom_format, frame_size.width(), frame_size.height(), 1,
-      video_frame->data(VideoFrame::kYPlane));
+      video_frame->writable_data(VideoFrame::kYPlane));
   DCHECK_EQ(result, &aom_image);
 
   aom_image.planes[AOM_PLANE_Y] =
-      video_frame->visible_data(VideoFrame::kYPlane);
+      video_frame->GetWritableVisibleData(VideoFrame::kYPlane);
   aom_image.planes[AOM_PLANE_U] =
-      video_frame->visible_data(VideoFrame::kUPlane);
+      video_frame->GetWritableVisibleData(VideoFrame::kUPlane);
   aom_image.planes[AOM_PLANE_V] =
-      video_frame->visible_data(VideoFrame::kVPlane);
+      video_frame->GetWritableVisibleData(VideoFrame::kVPlane);
   aom_image.stride[AOM_PLANE_Y] = video_frame->stride(VideoFrame::kYPlane);
   aom_image.stride[AOM_PLANE_U] = video_frame->stride(VideoFrame::kUPlane);
   aom_image.stride[AOM_PLANE_V] = video_frame->stride(VideoFrame::kVPlane);

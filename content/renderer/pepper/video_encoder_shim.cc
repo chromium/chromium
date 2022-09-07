@@ -300,14 +300,14 @@ void VideoEncoderShim::EncoderImpl::DoEncode() {
     vpx_image_t* const result = vpx_img_wrap(
         &vpx_image, VPX_IMG_FMT_I420, frame.frame->visible_rect().width(),
         frame.frame->visible_rect().height(), 1,
-        frame.frame->data(media::VideoFrame::kYPlane));
+        frame.frame->writable_data(media::VideoFrame::kYPlane));
     DCHECK_EQ(result, &vpx_image);
     vpx_image.planes[VPX_PLANE_Y] =
-        frame.frame->visible_data(media::VideoFrame::kYPlane);
+        frame.frame->GetWritableVisibleData(media::VideoFrame::kYPlane);
     vpx_image.planes[VPX_PLANE_U] =
-        frame.frame->visible_data(media::VideoFrame::kUPlane);
+        frame.frame->GetWritableVisibleData(media::VideoFrame::kUPlane);
     vpx_image.planes[VPX_PLANE_V] =
-        frame.frame->visible_data(media::VideoFrame::kVPlane);
+        frame.frame->GetWritableVisibleData(media::VideoFrame::kVPlane);
     vpx_image.stride[VPX_PLANE_Y] =
         frame.frame->stride(media::VideoFrame::kYPlane);
     vpx_image.stride[VPX_PLANE_U] =

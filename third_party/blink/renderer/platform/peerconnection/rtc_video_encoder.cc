@@ -1412,19 +1412,19 @@ void RTCVideoEncoder::Impl::EncodeOneFrame() {
       // TODO(magjed): Downscale with an image pyramid instead.
       rtc::scoped_refptr<webrtc::I420BufferInterface> i420_buffer =
           next_frame->video_frame_buffer()->ToI420();
-      if (libyuv::I420Scale(i420_buffer->DataY(), i420_buffer->StrideY(),
-                            i420_buffer->DataU(), i420_buffer->StrideU(),
-                            i420_buffer->DataV(), i420_buffer->StrideV(),
-                            next_frame->width(), next_frame->height(),
-                            frame->visible_data(media::VideoFrame::kYPlane),
-                            frame->stride(media::VideoFrame::kYPlane),
-                            frame->visible_data(media::VideoFrame::kUPlane),
-                            frame->stride(media::VideoFrame::kUPlane),
-                            frame->visible_data(media::VideoFrame::kVPlane),
-                            frame->stride(media::VideoFrame::kVPlane),
-                            frame->visible_rect().width(),
-                            frame->visible_rect().height(),
-                            libyuv::kFilterBox)) {
+      if (libyuv::I420Scale(
+              i420_buffer->DataY(), i420_buffer->StrideY(),
+              i420_buffer->DataU(), i420_buffer->StrideU(),
+              i420_buffer->DataV(), i420_buffer->StrideV(), next_frame->width(),
+              next_frame->height(),
+              frame->GetWritableVisibleData(media::VideoFrame::kYPlane),
+              frame->stride(media::VideoFrame::kYPlane),
+              frame->GetWritableVisibleData(media::VideoFrame::kUPlane),
+              frame->stride(media::VideoFrame::kUPlane),
+              frame->GetWritableVisibleData(media::VideoFrame::kVPlane),
+              frame->stride(media::VideoFrame::kVPlane),
+              frame->visible_rect().width(), frame->visible_rect().height(),
+              libyuv::kFilterBox)) {
         LogAndNotifyError(FROM_HERE, "Failed to copy buffer",
                           media::VideoEncodeAccelerator::kPlatformFailureError);
         async_encode_event_.SetAndReset(WEBRTC_VIDEO_CODEC_ERROR);

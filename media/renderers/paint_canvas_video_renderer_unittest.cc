@@ -241,11 +241,11 @@ static scoped_refptr<VideoFrame> CreateCroppedFrame() {
   };
 
   libyuv::I420Copy(cropped_y_plane, 16, cropped_u_plane, 8, cropped_v_plane, 8,
-                   cropped_frame->data(VideoFrame::kYPlane),
+                   cropped_frame->writable_data(VideoFrame::kYPlane),
                    cropped_frame->stride(VideoFrame::kYPlane),
-                   cropped_frame->data(VideoFrame::kUPlane),
+                   cropped_frame->writable_data(VideoFrame::kUPlane),
                    cropped_frame->stride(VideoFrame::kUPlane),
-                   cropped_frame->data(VideoFrame::kVPlane),
+                   cropped_frame->writable_data(VideoFrame::kVPlane),
                    cropped_frame->stride(VideoFrame::kVPlane), 16, 16);
 
   return cropped_frame;
@@ -428,10 +428,11 @@ TEST_F(PaintCanvasVideoRendererTest, CroppedFrameToRGBParallel) {
                     cropped_frame()->data(1), cropped_frame()->stride(1),
                     cropped_frame()->data(2), cropped_frame()->stride(2),
                     cropped_frame()->coded_size().width(),
-                    cropped_frame()->coded_size().height(), test_frame->data(0),
-                    test_frame->stride(0), test_frame->data(1),
-                    test_frame->stride(1), test_frame->data(2),
-                    test_frame->stride(2), test_frame->coded_size().width(),
+                    cropped_frame()->coded_size().height(),
+                    test_frame->writable_data(0), test_frame->stride(0),
+                    test_frame->writable_data(1), test_frame->stride(1),
+                    test_frame->writable_data(2), test_frame->stride(2),
+                    test_frame->coded_size().width(),
                     test_frame->coded_size().height(), libyuv::kFilterNone);
 
   const gfx::Size visible_size = test_frame->visible_rect().size();
@@ -621,8 +622,8 @@ TEST_F(PaintCanvasVideoRendererTest, HighBitDepth) {
     for (int plane = VideoFrame::kYPlane; plane <= VideoFrame::kVPlane;
          ++plane) {
       int width = cropped_frame()->row_bytes(plane);
-      uint16_t* dst = reinterpret_cast<uint16_t*>(frame->data(plane));
-      uint8_t* src = cropped_frame()->data(plane);
+      uint16_t* dst = reinterpret_cast<uint16_t*>(frame->writable_data(plane));
+      const uint8_t* src = cropped_frame()->data(plane);
       for (int row = 0; row < cropped_frame()->rows(plane); row++) {
         for (int col = 0; col < width; col++) {
           dst[col] = src[col] << (param.bit_depth - 8);

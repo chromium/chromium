@@ -333,7 +333,7 @@ TEST_F(Dav1dVideoDecoderTest, FrameValidAfterPoolDestruction) {
 
   // Write to the Y plane. The memory tools should detect a
   // use-after-free if the storage was actually removed by pool destruction.
-  memset(output_frames_.front()->data(VideoFrame::kYPlane), 0xff,
+  memset(output_frames_.front()->writable_data(VideoFrame::kYPlane), 0xff,
          output_frames_.front()->rows(VideoFrame::kYPlane) *
              output_frames_.front()->stride(VideoFrame::kYPlane));
 }

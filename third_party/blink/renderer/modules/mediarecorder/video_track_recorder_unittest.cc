@@ -232,9 +232,9 @@ class VideoTrackRecorderTest
     // Fade to black.
     const uint8_t kBlackY = 0x00;
     const uint8_t kBlackUV = 0x80;
-    memset(static_cast<uint8_t*>(video_frame2->data(0)), kBlackY,
+    memset(video_frame2->writable_data(0), kBlackY,
            video_frame2->stride(0) * frame_size.height());
-    memset(static_cast<uint8_t*>(video_frame2->data(1)), kBlackUV,
+    memset(video_frame2->writable_data(1), kBlackUV,
            video_frame2->stride(1) * (frame_size.height() / 2));
     if (frame_type == TestFrameType::kNv12GpuMemoryBuffer)
       return video_frame;

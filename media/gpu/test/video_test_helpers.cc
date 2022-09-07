@@ -584,9 +584,9 @@ void AlignedDataHelper::InitializeGpuMemoryBufferFrames(
     LOG_ASSERT(!!memory_frame) << "Failed creating VideoFrame";
     for (size_t j = 0; j < num_planes; j++) {
       libyuv::CopyPlane(src_frame_ptr + src_layout.planes()[j].offset,
-                        src_layout.planes()[j].stride, memory_frame->data(j),
-                        memory_frame->stride(j), src_layout.planes()[j].stride,
-                        src_plane_rows[j]);
+                        src_layout.planes()[j].stride,
+                        memory_frame->writable_data(j), memory_frame->stride(j),
+                        src_layout.planes()[j].stride, src_plane_rows[j]);
     }
     src_frame_ptr += src_video_frame_size;
     auto frame = CloneVideoFrame(

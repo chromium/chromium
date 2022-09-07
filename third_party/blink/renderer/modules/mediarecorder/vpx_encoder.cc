@@ -191,12 +191,12 @@ void VpxEncoder::EncodeOnEncodingTaskRunner(scoped_refptr<VideoFrame> frame,
 
 void VpxEncoder::DoEncode(vpx_codec_ctx_t* const encoder,
                           const gfx::Size& frame_size,
-                          uint8_t* const data,
-                          uint8_t* const y_plane,
+                          const uint8_t* data,
+                          const uint8_t* y_plane,
                           int y_stride,
-                          uint8_t* const u_plane,
+                          const uint8_t* u_plane,
                           int u_stride,
-                          uint8_t* const v_plane,
+                          const uint8_t* v_plane,
                           int v_stride,
                           const base::TimeDelta& duration,
                           bool force_keyframe,
@@ -209,11 +209,11 @@ void VpxEncoder::DoEncode(vpx_codec_ctx_t* const encoder,
   vpx_image_t vpx_image;
   vpx_image_t* const result =
       vpx_img_wrap(&vpx_image, img_fmt, frame_size.width(), frame_size.height(),
-                   1 /* align */, data);
+                   1 /* align */, const_cast<uint8_t*>(data));
   DCHECK_EQ(result, &vpx_image);
-  vpx_image.planes[VPX_PLANE_Y] = y_plane;
-  vpx_image.planes[VPX_PLANE_U] = u_plane;
-  vpx_image.planes[VPX_PLANE_V] = v_plane;
+  vpx_image.planes[VPX_PLANE_Y] = const_cast<uint8_t*>(y_plane);
+  vpx_image.planes[VPX_PLANE_U] = const_cast<uint8_t*>(u_plane);
+  vpx_image.planes[VPX_PLANE_V] = const_cast<uint8_t*>(v_plane);
   vpx_image.stride[VPX_PLANE_Y] = y_stride;
   vpx_image.stride[VPX_PLANE_U] = u_stride;
   vpx_image.stride[VPX_PLANE_V] = v_stride;

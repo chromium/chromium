@@ -1384,7 +1384,7 @@ bool V4L2VideoEncodeAccelerator::EnqueueInputRecord(
     case V4L2_MEMORY_USERPTR: {
       std::vector<void*> user_ptrs;
       for (size_t i = 0; i < num_planes; ++i)
-        user_ptrs.push_back(frame->data(i));
+        user_ptrs.push_back(frame->writable_data(i));
       std::move(input_buf).QueueUserPtr(std::move(user_ptrs));
       break;
     }

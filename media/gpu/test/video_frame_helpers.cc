@@ -93,9 +93,9 @@ bool ConvertVideoFrameToI420(const VideoFrame* src_frame,
   const auto& visible_rect = src_frame->visible_rect();
   const int width = visible_rect.width();
   const int height = visible_rect.height();
-  uint8_t* const dst_y = dst_frame->visible_data(VideoFrame::kYPlane);
-  uint8_t* const dst_u = dst_frame->visible_data(VideoFrame::kUPlane);
-  uint8_t* const dst_v = dst_frame->visible_data(VideoFrame::kVPlane);
+  uint8_t* const dst_y = dst_frame->GetWritableVisibleData(VideoFrame::kYPlane);
+  uint8_t* const dst_u = dst_frame->GetWritableVisibleData(VideoFrame::kUPlane);
+  uint8_t* const dst_v = dst_frame->GetWritableVisibleData(VideoFrame::kVPlane);
   const int dst_stride_y = dst_frame->stride(VideoFrame::kYPlane);
   const int dst_stride_u = dst_frame->stride(VideoFrame::kUPlane);
   const int dst_stride_v = dst_frame->stride(VideoFrame::kVPlane);
@@ -145,9 +145,9 @@ bool ConvertVideoFrameToYUV420P10(const VideoFrame* src_frame,
   const auto& visible_rect = src_frame->visible_rect();
   const int width = visible_rect.width();
   const int height = visible_rect.height();
-  uint8_t* const dst_y = dst_frame->visible_data(VideoFrame::kYPlane);
-  uint8_t* const dst_u = dst_frame->visible_data(VideoFrame::kUPlane);
-  uint8_t* const dst_v = dst_frame->visible_data(VideoFrame::kVPlane);
+  uint8_t* const dst_y = dst_frame->GetWritableVisibleData(VideoFrame::kYPlane);
+  uint8_t* const dst_u = dst_frame->GetWritableVisibleData(VideoFrame::kUPlane);
+  uint8_t* const dst_v = dst_frame->GetWritableVisibleData(VideoFrame::kVPlane);
   const int dst_stride_y = dst_frame->stride(VideoFrame::kYPlane);
   const int dst_stride_u = dst_frame->stride(VideoFrame::kUPlane);
   const int dst_stride_v = dst_frame->stride(VideoFrame::kVPlane);
@@ -169,7 +169,8 @@ bool ConvertVideoFrameToARGB(const VideoFrame* src_frame,
   const auto& visible_rect = src_frame->visible_rect();
   const int width = visible_rect.width();
   const int height = visible_rect.height();
-  uint8_t* const dst_argb = dst_frame->visible_data(VideoFrame::kARGBPlane);
+  uint8_t* const dst_argb =
+      dst_frame->GetWritableVisibleData(VideoFrame::kARGBPlane);
   const int dst_stride = dst_frame->stride(VideoFrame::kARGBPlane);
 
   switch (src_frame->format()) {
@@ -239,7 +240,7 @@ bool CopyVideoFrame(const VideoFrame* src_frame,
         VideoFrame::PlaneSize(dst_frame->format(), i, dst_frame->coded_size());
     libyuv::CopyPlane(
         src_frame->data(i), src_frame->layout().planes()[i].stride,
-        dst_frame->data(i), dst_frame->layout().planes()[i].stride,
+        dst_frame->writable_data(i), dst_frame->layout().planes()[i].stride,
         plane_size.width(), plane_size.height());
   }
   return true;
@@ -303,9 +304,9 @@ scoped_refptr<VideoFrame> ScaleVideoFrame(const VideoFrame* src_frame,
       src_frame->visible_data(VideoFrame::kUVPlane),
       src_frame->stride(VideoFrame::kUVPlane),
       src_frame->visible_rect().width(), src_frame->visible_rect().height(),
-      scaled_frame->visible_data(VideoFrame::kYPlane),
+      scaled_frame->GetWritableVisibleData(VideoFrame::kYPlane),
       scaled_frame->stride(VideoFrame::kYPlane),
-      scaled_frame->visible_data(VideoFrame::kUVPlane),
+      scaled_frame->GetWritableVisibleData(VideoFrame::kUVPlane),
       scaled_frame->stride(VideoFrame::kUVPlane), dst_resolution.width(),
       dst_resolution.height(), libyuv::FilterMode::kFilterBilinear);
   if (fail_scaling) {

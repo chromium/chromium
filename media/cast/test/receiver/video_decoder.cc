@@ -158,16 +158,17 @@ class VideoDecoder::Vp8Impl final : public VideoDecoder::ImplBase {
         video_frame_pool_.CreateFrame(PIXEL_FORMAT_I420, frame_size,
                                       gfx::Rect(frame_size), frame_size,
                                       base::TimeDelta());
-    libyuv::I420Copy(image->planes[VPX_PLANE_Y], image->stride[VPX_PLANE_Y],
-                     image->planes[VPX_PLANE_U], image->stride[VPX_PLANE_U],
-                     image->planes[VPX_PLANE_V], image->stride[VPX_PLANE_V],
-                     decoded_frame->visible_data(media::VideoFrame::kYPlane),
-                     decoded_frame->stride(media::VideoFrame::kYPlane),
-                     decoded_frame->visible_data(media::VideoFrame::kUPlane),
-                     decoded_frame->stride(media::VideoFrame::kUPlane),
-                     decoded_frame->visible_data(media::VideoFrame::kVPlane),
-                     decoded_frame->stride(media::VideoFrame::kVPlane),
-                     frame_size.width(), frame_size.height());
+    libyuv::I420Copy(
+        image->planes[VPX_PLANE_Y], image->stride[VPX_PLANE_Y],
+        image->planes[VPX_PLANE_U], image->stride[VPX_PLANE_U],
+        image->planes[VPX_PLANE_V], image->stride[VPX_PLANE_V],
+        decoded_frame->GetWritableVisibleData(media::VideoFrame::kYPlane),
+        decoded_frame->stride(media::VideoFrame::kYPlane),
+        decoded_frame->GetWritableVisibleData(media::VideoFrame::kUPlane),
+        decoded_frame->stride(media::VideoFrame::kUPlane),
+        decoded_frame->GetWritableVisibleData(media::VideoFrame::kVPlane),
+        decoded_frame->stride(media::VideoFrame::kVPlane), frame_size.width(),
+        frame_size.height());
     return decoded_frame;
   }
 

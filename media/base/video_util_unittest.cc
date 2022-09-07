@@ -44,16 +44,16 @@ scoped_refptr<media::VideoFrame> CreateFrameWithPatternFilled(
   scoped_refptr<media::VideoFrame> frame(media::VideoFrame::CreateFrame(
       format, coded_size, visible_rect, natural_size, timestamp));
 
-  FillPlaneWithPattern(frame->data(media::VideoFrame::kYPlane),
+  FillPlaneWithPattern(frame->writable_data(media::VideoFrame::kYPlane),
                        frame->stride(media::VideoFrame::kYPlane),
                        frame->visible_rect().size());
   FillPlaneWithPattern(
-      frame->data(media::VideoFrame::kUPlane),
+      frame->writable_data(media::VideoFrame::kUPlane),
       frame->stride(media::VideoFrame::kUPlane),
       media::VideoFrame::PlaneSize(format, media::VideoFrame::kUPlane,
                                    frame->visible_rect().size()));
   FillPlaneWithPattern(
-      frame->data(media::VideoFrame::kVPlane),
+      frame->writable_data(media::VideoFrame::kVPlane),
       frame->stride(media::VideoFrame::kVPlane),
       media::VideoFrame::PlaneSize(format, media::VideoFrame::kVPlane,
                                    frame->visible_rect().size()));
@@ -637,7 +637,7 @@ TEST_F(VideoUtilTest, WrapAsI420VideoFrame) {
   // ASAN.
   src_frame.reset();
   for (auto plane : planes)
-    memset(dst_frame->data(plane), 1, dst_frame->stride(plane));
+    memset(dst_frame->writable_data(plane), 1, dst_frame->stride(plane));
 }
 
 }  // namespace media

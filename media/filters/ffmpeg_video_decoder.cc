@@ -208,7 +208,7 @@ int FFmpegVideoDecoder::GetVideoBuffer(struct AVCodecContext* codec_context,
   }
 
   for (size_t i = 0; i < VideoFrame::NumPlanes(video_frame->format()); i++) {
-    frame->data[i] = video_frame->data(i);
+    frame->data[i] = video_frame->writable_data(i);
     frame->linesize[i] = video_frame->stride(i);
   }
 

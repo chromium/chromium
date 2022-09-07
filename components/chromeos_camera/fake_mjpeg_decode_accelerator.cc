@@ -98,7 +98,7 @@ void FakeMjpegDecodeAccelerator::DecodeOnDecoderThread(
   // Instead, just fill the output buffer with zeros.
   size_t allocation_size = media::VideoFrame::AllocationSize(
       media::PIXEL_FORMAT_I420, video_frame->coded_size());
-  memset(video_frame->data(0), 0, allocation_size);
+  memset(video_frame->writable_data(0), 0, allocation_size);
 
   client_task_runner_->PostTask(
       FROM_HERE,

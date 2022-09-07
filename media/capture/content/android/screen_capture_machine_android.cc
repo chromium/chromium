@@ -76,14 +76,15 @@ void ScreenCaptureMachineAndroid::OnRGBAFrameAvailable(
 
   const int offset = top * row_stride + left * 4;
   // ABGR little endian (rgba in memory) to I420.
-  libyuv::ABGRToI420(
-      src + offset, row_stride, temp_frame->visible_data(VideoFrame::kYPlane),
-      temp_frame->stride(VideoFrame::kYPlane),
-      temp_frame->visible_data(VideoFrame::kUPlane),
-      temp_frame->stride(VideoFrame::kUPlane),
-      temp_frame->visible_data(VideoFrame::kVPlane),
-      temp_frame->stride(VideoFrame::kVPlane),
-      temp_frame->visible_rect().width(), temp_frame->visible_rect().height());
+  libyuv::ABGRToI420(src + offset, row_stride,
+                     temp_frame->GetWritableVisibleData(VideoFrame::kYPlane),
+                     temp_frame->stride(VideoFrame::kYPlane),
+                     temp_frame->GetWritableVisibleData(VideoFrame::kUPlane),
+                     temp_frame->stride(VideoFrame::kUPlane),
+                     temp_frame->GetWritableVisibleData(VideoFrame::kVPlane),
+                     temp_frame->stride(VideoFrame::kVPlane),
+                     temp_frame->visible_rect().width(),
+                     temp_frame->visible_rect().height());
 
   if (temp_frame != frame) {
     libyuv::I420Scale(
@@ -94,11 +95,11 @@ void ScreenCaptureMachineAndroid::OnRGBAFrameAvailable(
         temp_frame->visible_data(VideoFrame::kVPlane),
         temp_frame->stride(VideoFrame::kVPlane),
         temp_frame->visible_rect().width(), temp_frame->visible_rect().height(),
-        frame->visible_data(VideoFrame::kYPlane),
+        frame->GetWritableVisibleData(VideoFrame::kYPlane),
         frame->stride(VideoFrame::kYPlane),
-        frame->visible_data(VideoFrame::kUPlane),
+        frame->GetWritableVisibleData(VideoFrame::kUPlane),
         frame->stride(VideoFrame::kUPlane),
-        frame->visible_data(VideoFrame::kVPlane),
+        frame->GetWritableVisibleData(VideoFrame::kVPlane),
         frame->stride(VideoFrame::kVPlane), frame->visible_rect().width(),
         frame->visible_rect().height(), libyuv::kFilterBilinear);
   }
@@ -160,11 +161,11 @@ void ScreenCaptureMachineAndroid::OnI420FrameAvailable(
   libyuv::Android420ToI420(
       y_src + y_offset, y_stride, u_src + uv_offset, uv_row_stride,
       v_src + uv_offset, uv_row_stride, uv_pixel_stride,
-      temp_frame->visible_data(VideoFrame::kYPlane),
+      temp_frame->GetWritableVisibleData(VideoFrame::kYPlane),
       temp_frame->stride(VideoFrame::kYPlane),
-      temp_frame->visible_data(VideoFrame::kUPlane),
+      temp_frame->GetWritableVisibleData(VideoFrame::kUPlane),
       temp_frame->stride(VideoFrame::kUPlane),
-      temp_frame->visible_data(VideoFrame::kVPlane),
+      temp_frame->GetWritableVisibleData(VideoFrame::kVPlane),
       temp_frame->stride(VideoFrame::kVPlane),
       temp_frame->visible_rect().width(), temp_frame->visible_rect().height());
 
@@ -177,11 +178,11 @@ void ScreenCaptureMachineAndroid::OnI420FrameAvailable(
         temp_frame->visible_data(VideoFrame::kVPlane),
         temp_frame->stride(VideoFrame::kVPlane),
         temp_frame->visible_rect().width(), temp_frame->visible_rect().height(),
-        frame->visible_data(VideoFrame::kYPlane),
+        frame->GetWritableVisibleData(VideoFrame::kYPlane),
         frame->stride(VideoFrame::kYPlane),
-        frame->visible_data(VideoFrame::kUPlane),
+        frame->GetWritableVisibleData(VideoFrame::kUPlane),
         frame->stride(VideoFrame::kUPlane),
-        frame->visible_data(VideoFrame::kVPlane),
+        frame->GetWritableVisibleData(VideoFrame::kVPlane),
         frame->stride(VideoFrame::kVPlane), frame->visible_rect().width(),
         frame->visible_rect().height(), libyuv::kFilterBilinear);
   }
@@ -304,11 +305,11 @@ void ScreenCaptureMachineAndroid::MaybeCaptureForRefresh() {
       lastFrame_->visible_data(VideoFrame::kVPlane),
       lastFrame_->stride(VideoFrame::kVPlane),
       lastFrame_->visible_rect().width(), lastFrame_->visible_rect().height(),
-      frame->visible_data(VideoFrame::kYPlane),
+      frame->GetWritableVisibleData(VideoFrame::kYPlane),
       frame->stride(VideoFrame::kYPlane),
-      frame->visible_data(VideoFrame::kUPlane),
+      frame->GetWritableVisibleData(VideoFrame::kUPlane),
       frame->stride(VideoFrame::kUPlane),
-      frame->visible_data(VideoFrame::kVPlane),
+      frame->GetWritableVisibleData(VideoFrame::kVPlane),
       frame->stride(VideoFrame::kVPlane), frame->visible_rect().width(),
       frame->visible_rect().height(), libyuv::kFilterBilinear);
 

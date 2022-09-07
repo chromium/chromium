@@ -284,19 +284,20 @@ void VEAEncoder::EncodeOnEncodingTaskRunner(scoped_refptr<VideoFrame> frame,
       NotifyError(media::VideoEncodeAccelerator::kPlatformFailureError);
       return;
     }
-    libyuv::I420Copy(frame->visible_data(media::VideoFrame::kYPlane),
-                     frame->stride(media::VideoFrame::kYPlane),
-                     frame->visible_data(media::VideoFrame::kUPlane),
-                     frame->stride(media::VideoFrame::kUPlane),
-                     frame->visible_data(media::VideoFrame::kVPlane),
-                     frame->stride(media::VideoFrame::kVPlane),
-                     video_frame->visible_data(media::VideoFrame::kYPlane),
-                     video_frame->stride(media::VideoFrame::kYPlane),
-                     video_frame->visible_data(media::VideoFrame::kUPlane),
-                     video_frame->stride(media::VideoFrame::kUPlane),
-                     video_frame->visible_data(media::VideoFrame::kVPlane),
-                     video_frame->stride(media::VideoFrame::kVPlane),
-                     input_visible_size_.width(), input_visible_size_.height());
+    libyuv::I420Copy(
+        frame->visible_data(media::VideoFrame::kYPlane),
+        frame->stride(media::VideoFrame::kYPlane),
+        frame->visible_data(media::VideoFrame::kUPlane),
+        frame->stride(media::VideoFrame::kUPlane),
+        frame->visible_data(media::VideoFrame::kVPlane),
+        frame->stride(media::VideoFrame::kVPlane),
+        video_frame->GetWritableVisibleData(media::VideoFrame::kYPlane),
+        video_frame->stride(media::VideoFrame::kYPlane),
+        video_frame->GetWritableVisibleData(media::VideoFrame::kUPlane),
+        video_frame->stride(media::VideoFrame::kUPlane),
+        video_frame->GetWritableVisibleData(media::VideoFrame::kVPlane),
+        video_frame->stride(media::VideoFrame::kVPlane),
+        input_visible_size_.width(), input_visible_size_.height());
     video_frame->BackWithSharedMemory(&input_buffer->region);
     video_frame->AddDestructionObserver(media::BindToCurrentLoop(
         WTF::Bind(&VEAEncoder::FrameFinished, WrapRefCounted(this),

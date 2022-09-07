@@ -1166,14 +1166,14 @@ void FrameSinkVideoCapturerImpl::DidCopyFrame(
     DCHECK_EQ(content_rect.height() % 2, 0);
     // Populate the VideoFrame from the CopyOutputResult.
     const int y_stride = frame->stride(VideoFrame::kYPlane);
-    uint8_t* const y = frame->visible_data(VideoFrame::kYPlane) +
+    uint8_t* const y = frame->GetWritableVisibleData(VideoFrame::kYPlane) +
                        content_rect.y() * y_stride + content_rect.x();
     const int u_stride = frame->stride(VideoFrame::kUPlane);
-    uint8_t* const u = frame->visible_data(VideoFrame::kUPlane) +
+    uint8_t* const u = frame->GetWritableVisibleData(VideoFrame::kUPlane) +
                        (content_rect.y() / 2) * u_stride +
                        (content_rect.x() / 2);
     const int v_stride = frame->stride(VideoFrame::kVPlane);
-    uint8_t* const v = frame->visible_data(VideoFrame::kVPlane) +
+    uint8_t* const v = frame->GetWritableVisibleData(VideoFrame::kVPlane) +
                        (content_rect.y() / 2) * v_stride +
                        (content_rect.x() / 2);
     bool success =
@@ -1192,8 +1192,9 @@ void FrameSinkVideoCapturerImpl::DidCopyFrame(
   } else if (pixel_format_ == media::PIXEL_FORMAT_ARGB) {
     int stride = frame->stride(VideoFrame::kARGBPlane);
     DCHECK_EQ(media::PIXEL_FORMAT_ARGB, pixel_format_);
-    uint8_t* const pixels = frame->visible_data(VideoFrame::kARGBPlane) +
-                            content_rect.y() * stride + content_rect.x() * 4;
+    uint8_t* const pixels =
+        frame->GetWritableVisibleData(VideoFrame::kARGBPlane) +
+        content_rect.y() * stride + content_rect.x() * 4;
     bool success = result->ReadRGBAPlane(pixels, stride);
     if (success) {
       frame->set_color_space(result->GetRGBAColorSpace());

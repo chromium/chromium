@@ -193,14 +193,15 @@ void ImageCaptureFrameGrabber::SingleShotFrameHandler::ConvertAndDeliverFrame(
           media::PIXEL_FORMAT_I420, original_size, gfx::Rect(original_size),
           original_size, base::TimeDelta());
 
-      libyuv::NV12ToI420(y_plane, y_stride, uv_plane, uv_stride,
-                         i420_frame->visible_data(media::VideoFrame::kYPlane),
-                         i420_frame->stride(media::VideoFrame::kYPlane),
-                         i420_frame->visible_data(media::VideoFrame::kUPlane),
-                         i420_frame->stride(media::VideoFrame::kUPlane),
-                         i420_frame->visible_data(media::VideoFrame::kVPlane),
-                         i420_frame->stride(media::VideoFrame::kVPlane),
-                         original_size.width(), original_size.height());
+      libyuv::NV12ToI420(
+          y_plane, y_stride, uv_plane, uv_stride,
+          i420_frame->GetWritableVisibleData(media::VideoFrame::kYPlane),
+          i420_frame->stride(media::VideoFrame::kYPlane),
+          i420_frame->GetWritableVisibleData(media::VideoFrame::kUPlane),
+          i420_frame->stride(media::VideoFrame::kUPlane),
+          i420_frame->GetWritableVisibleData(media::VideoFrame::kVPlane),
+          i420_frame->stride(media::VideoFrame::kVPlane), original_size.width(),
+          original_size.height());
     } else {
       switch (destination_pixel_format) {
         case libyuv::FOURCC_ABGR:
@@ -252,11 +253,11 @@ void ImageCaptureFrameGrabber::SingleShotFrameHandler::ConvertAndDeliverFrame(
           i420_frame->stride(media::VideoFrame::kUPlane),
           i420_frame->visible_data(media::VideoFrame::kVPlane),
           i420_frame->stride(media::VideoFrame::kVPlane),
-          rotated_frame->visible_data(media::VideoFrame::kYPlane),
+          rotated_frame->GetWritableVisibleData(media::VideoFrame::kYPlane),
           rotated_frame->stride(media::VideoFrame::kYPlane),
-          rotated_frame->visible_data(media::VideoFrame::kUPlane),
+          rotated_frame->GetWritableVisibleData(media::VideoFrame::kUPlane),
           rotated_frame->stride(media::VideoFrame::kUPlane),
-          rotated_frame->visible_data(media::VideoFrame::kVPlane),
+          rotated_frame->GetWritableVisibleData(media::VideoFrame::kVPlane),
           rotated_frame->stride(media::VideoFrame::kVPlane),
           original_size.width(), original_size.height(), libyuv_rotate);
       i420_frame = std::move(rotated_frame);

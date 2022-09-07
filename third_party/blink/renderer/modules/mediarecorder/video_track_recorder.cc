@@ -491,29 +491,30 @@ void VideoTrackRecorderImpl::Encoder::RetrieveFrameOnEncodingTaskRunner(
 #else
     const uint32_t source_pixel_format = libyuv::FOURCC_ARGB;
 #endif
-    if (libyuv::ConvertToI420(static_cast<uint8_t*>(pixmap.writable_addr()),
-                              pixmap.computeByteSize(),
-                              frame->visible_data(media::VideoFrame::kYPlane),
-                              frame->stride(media::VideoFrame::kYPlane),
-                              frame->visible_data(media::VideoFrame::kUPlane),
-                              frame->stride(media::VideoFrame::kUPlane),
-                              frame->visible_data(media::VideoFrame::kVPlane),
-                              frame->stride(media::VideoFrame::kVPlane),
-                              0 /* crop_x */, 0 /* crop_y */, pixmap.width(),
-                              pixmap.height(), old_visible_size.width(),
-                              old_visible_size.height(),
-                              MediaVideoRotationToRotationMode(video_rotation),
-                              source_pixel_format) != 0) {
+    if (libyuv::ConvertToI420(
+            static_cast<uint8_t*>(pixmap.writable_addr()),
+            pixmap.computeByteSize(),
+            frame->GetWritableVisibleData(media::VideoFrame::kYPlane),
+            frame->stride(media::VideoFrame::kYPlane),
+            frame->GetWritableVisibleData(media::VideoFrame::kUPlane),
+            frame->stride(media::VideoFrame::kUPlane),
+            frame->GetWritableVisibleData(media::VideoFrame::kVPlane),
+            frame->stride(media::VideoFrame::kVPlane), 0 /* crop_x */,
+            0 /* crop_y */, pixmap.width(), pixmap.height(),
+            old_visible_size.width(), old_visible_size.height(),
+            MediaVideoRotationToRotationMode(video_rotation),
+            source_pixel_format) != 0) {
       DLOG(ERROR) << "Error converting frame to I420";
       return;
     }
     if (!is_opaque) {
       // Alpha has the same alignment for both ABGR and ARGB.
-      libyuv::ARGBExtractAlpha(static_cast<uint8_t*>(pixmap.writable_addr()),
-                               static_cast<int>(pixmap.rowBytes()) /* stride */,
-                               frame->visible_data(media::VideoFrame::kAPlane),
-                               frame->stride(media::VideoFrame::kAPlane),
-                               pixmap.width(), pixmap.height());
+      libyuv::ARGBExtractAlpha(
+          static_cast<uint8_t*>(pixmap.writable_addr()),
+          static_cast<int>(pixmap.rowBytes()) /* stride */,
+          frame->GetWritableVisibleData(media::VideoFrame::kAPlane),
+          frame->stride(media::VideoFrame::kAPlane), pixmap.width(),
+          pixmap.height());
     }
   }
 
@@ -561,13 +562,12 @@ VideoTrackRecorderImpl::Encoder::ConvertToI420ForSoftwareEncoder(
       media::VideoPixelFormat::PIXEL_FORMAT_I420, frame->coded_size(),
       frame->visible_rect(), frame->natural_size(), frame->timestamp());
   auto ret = libyuv::NV12ToI420(
-      static_cast<const uint8_t*>(frame->data(0)), frame->stride(0),
-      static_cast<const uint8_t*>(frame->data(1)), frame->stride(1),
-      i420_frame->data(media::VideoFrame::kYPlane),
+      frame->data(0), frame->stride(0), frame->data(1), frame->stride(1),
+      i420_frame->writable_data(media::VideoFrame::kYPlane),
       i420_frame->stride(media::VideoFrame::kYPlane),
-      i420_frame->data(media::VideoFrame::kUPlane),
+      i420_frame->writable_data(media::VideoFrame::kUPlane),
       i420_frame->stride(media::VideoFrame::kUPlane),
-      i420_frame->data(media::VideoFrame::kVPlane),
+      i420_frame->writable_data(media::VideoFrame::kVPlane),
       i420_frame->stride(media::VideoFrame::kVPlane),
       frame->coded_size().width(), frame->coded_size().height());
   if (ret)

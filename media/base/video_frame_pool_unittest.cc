@@ -120,7 +120,7 @@ TEST_F(VideoFramePoolTest, FrameValidAfterPoolDestruction) {
 
   // Write to the Y plane. The memory tools should detect a
   // use-after-free if the storage was actually removed by pool destruction.
-  memset(frame->data(VideoFrame::kYPlane), 0xff,
+  memset(frame->writable_data(VideoFrame::kYPlane), 0xff,
          frame->rows(VideoFrame::kYPlane) * frame->stride(VideoFrame::kYPlane));
 }
 
