@@ -20,7 +20,6 @@
 #include "base/functional/overloaded.h"
 #include "base/guid.h"
 #include "base/logging.h"
-#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
@@ -1550,38 +1549,27 @@ bool AttributionStorageSql::UpdateReportForSendFailure(
   if (!LazyInit(DbCreationPolicy::kIgnoreIfAbsent))
     return false;
 
-  return absl::visit(
+  auto [statement_id, sql_query, report_id_int] = absl::visit(
       base::Overloaded{
-          [&](AttributionReport::EventLevelData::Id id) {
-            DCHECK_CALLED_ON_VALID_SEQUENCE(this->sequence_checker_);
+          [](AttributionReport::EventLevelData::Id id) {
             static constexpr char kUpdateFailedReportSql[] =
                 ATTRIBUTION_UPDATE_FAILED_REPORT_SQL(
                     ATTRIBUTION_CONVERSIONS_TABLE, "report_id");
-            return this->UpdateReportForSendFailure(
-                SQL_FROM_HERE, kUpdateFailedReportSql, *id, new_report_time);
+            return std::make_tuple(SQL_FROM_HERE, kUpdateFailedReportSql, *id);
           },
-
-          [&](AttributionReport::AggregatableAttributionData::Id id) {
-            DCHECK_CALLED_ON_VALID_SEQUENCE(this->sequence_checker_);
+          [](AttributionReport::AggregatableAttributionData::Id id) {
             static constexpr char kUpdateFailedReportSql[] =
                 ATTRIBUTION_UPDATE_FAILED_REPORT_SQL(
                     ATTRIBUTION_AGGREGATABLE_REPORT_METADATA_TABLE,
                     "aggregation_id");
-            return this->UpdateReportForSendFailure(
-                SQL_FROM_HERE, kUpdateFailedReportSql, *id, new_report_time);
+            return std::make_tuple(SQL_FROM_HERE, kUpdateFailedReportSql, *id);
           },
       },
       report_id);
-}
 
-bool AttributionStorageSql::UpdateReportForSendFailure(
-    sql::StatementID id,
-    const char* sql,
-    int64_t report_id,
-    base::Time new_report_time) {
-  sql::Statement statement(db_->GetCachedStatement(id, sql));
+  sql::Statement statement(db_->GetCachedStatement(statement_id, sql_query));
   statement.BindTime(0, new_report_time);
-  statement.BindInt64(1, report_id);
+  statement.BindInt64(1, report_id_int);
   return statement.Run() && db_->GetLastChangeCount() == 1;
 }
 

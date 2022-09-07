@@ -219,12 +219,6 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
       base::Time max_report_time,
       int limit) VALID_CONTEXT_REQUIRED(sequence_checker_);
 
-  [[nodiscard]] bool UpdateReportForSendFailure(sql::StatementID id,
-                                                const char* sql,
-                                                int64_t report_id,
-                                                base::Time new_report_time)
-      VALID_CONTEXT_REQUIRED(sequence_checker_);
-
   absl::optional<base::Time> GetNextReportTime(sql::StatementID id,
                                                const char* sql,
                                                base::Time time)
