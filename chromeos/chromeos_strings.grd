@@ -2888,6 +2888,9 @@ Try tapping the mic to ask me anything.
       <message name="IDS_SHIMLESS_RMA_RSU_CODE_INSTRUCTIONS" translateable="false" desc="Instructions for the RSU challenge page.">
         Use this QR code to get the 8 character unlock code. You can also manually type <ph name="LINK_BEGIN">&lt;a id="rsuCodeDialogLink"&gt;</ph>this URL to get the RSU code.<ph name="LINK_END">&lt;/a&gt;</ph>
       </message>
+      <message name="IDS_SHIMLESS_RMA_RSU_CODE_INSTRUCTIONS_ARIA" translateable="false" desc="Instructions for the RSU challenge page used as an ARIA description.">
+        Use this QR code to get the 8 character unlock code. You can also manually type this URL.
+      </message>
       <message name="IDS_SHIMLESS_RMA_RSU_CODE_LABEL" translateable="false" desc="Label for the RSU code input box.">
         Enter the 8-characters
       </message>

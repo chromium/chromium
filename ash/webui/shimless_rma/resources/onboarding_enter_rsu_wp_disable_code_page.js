@@ -275,6 +275,15 @@ export class OnboardingEnterRsuWpDisableCodePage extends
     return this.rsuCodeInvalid_ ? this.i18n('rsuCodeErrorLabelText') :
                                   this.i18n('rsuCodeLabelText');
   }
+
+  /**
+   * @return {string}
+   * @protected
+   */
+  getRsuAriaDescription_() {
+    return `${this.getRsuCodeLabelText_()} ${
+        this.i18n('rsuCodeInstructionsAriaText')}`;
+  }
 }
 
 customElements.define(

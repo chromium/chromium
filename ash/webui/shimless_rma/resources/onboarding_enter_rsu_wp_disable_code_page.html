@@ -64,7 +64,9 @@
           maxlength="[[rsuCodeExpectedLength_]]"
           invalid="[[rsuCodeInvalid_]]"
           disabled="[[allButtonsDisabled]]"
-          error-message="[[i18n('rsuCodeErrorLabelText')]]">
+          error-message="[[i18n('rsuCodeErrorLabelText')]]"
+          aria-label="[[i18n('rsuCodePageTitleText')]]"
+          aria-description="[[getRsuAriaDescription_(rsuCodeInvalid_)]]">
       </cr-input>
       <div id="inputValidationLabel">
         [[getRsuCodeLabelText_(rsuCodeInvalid_)]]
