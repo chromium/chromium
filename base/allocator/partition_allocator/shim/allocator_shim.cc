@@ -11,7 +11,7 @@
 
 #include "base/allocator/buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/bits.h"
-#include "base/check_op.h"
+#include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/memory/page_size.h"
 #include "base/threading/platform_thread.h"
 #include "build/build_config.h"
@@ -119,11 +119,11 @@ void InsertAllocatorDispatch(AllocatorDispatch* dispatch) {
     }
   }
 
-  CHECK(false);  // Too many retries, this shouldn't happen.
+  PA_CHECK(false);  // Too many retries, this shouldn't happen.
 }
 
 void RemoveAllocatorDispatchForTesting(AllocatorDispatch* dispatch) {
-  DCHECK_EQ(GetChainHead(), dispatch);
+  PA_DCHECK(GetChainHead() == dispatch);
   g_chain_head.store(dispatch->next, std::memory_order_relaxed);
 }
 

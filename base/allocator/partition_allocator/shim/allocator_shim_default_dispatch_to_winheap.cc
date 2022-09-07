@@ -6,8 +6,8 @@
 
 #include <ostream>
 
+#include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/allocator/partition_allocator/shim/winheap_stubs_win.h"
-#include "base/check.h"
 
 namespace {
 
@@ -39,7 +39,7 @@ void* DefaultWinHeapMemalignImpl(const AllocatorDispatch* self,
                                  size_t alignment,
                                  size_t size,
                                  void* context) {
-  CHECK(false) << "The windows heap does not support memalign.";
+  PA_CHECK(false) << "The windows heap does not support memalign.";
   return nullptr;
 }
 
