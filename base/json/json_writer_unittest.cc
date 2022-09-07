@@ -177,10 +177,10 @@ TEST(JSONWriterTest, StackOverflow) {
   // We cannot just let deep_list tear down since it
   // would cause a stack overflow. Therefore, we tear
   // down the deep list manually.
-  deep_list = std::move(deep_list_value.GetList());
+  deep_list = std::move(deep_list_value).TakeList();
   while (!deep_list.empty()) {
     DCHECK_EQ(deep_list.size(), 1u);
-    Value::List inner_list = std::move(deep_list[0].GetList());
+    Value::List inner_list = std::move(deep_list[0]).TakeList();
     deep_list = std::move(inner_list);
   }
 }

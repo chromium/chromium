@@ -748,7 +748,7 @@ class ClipboardHistoryPasteTypeBrowserTest
     EXPECT_TRUE(result.error.empty());
     auto paste_list_value = result.ExtractList();
     EXPECT_TRUE(paste_list_value.is_list());
-    return std::move(paste_list_value.GetList());
+    return std::move(paste_list_value).TakeList();
   }
 
   content::WebContents* web_contents_ = nullptr;

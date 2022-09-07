@@ -354,6 +354,10 @@ Value::List& Value::GetList() {
   return absl::get<List>(data_);
 }
 
+Value::List Value::TakeList() && {
+  return std::move(GetList());
+}
+
 Value::Dict::Dict() = default;
 
 Value::Dict::Dict(Dict&&) noexcept = default;

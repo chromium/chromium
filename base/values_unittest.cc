@@ -1764,6 +1764,29 @@ TEST(ValuesTest, Clone) {
   EXPECT_TRUE(copy_nested_dictionary->Find("key"));
 }
 
+TEST(ValuesTest, TakeList) {
+  Value::List list;
+  list.Append(true);
+  list.Append(123);
+  Value value(std::move(list));
+  Value clone = value.Clone();
+
+  Value::List taken = std::move(value).TakeList();
+  EXPECT_EQ(taken, clone);
+}
+
+// Check that the value can still be used after `TakeList()` was called, as long
+// as a new value was assigned to it.
+TEST(ValuesTest, PopulateAfterTakeList) {
+  Value::List list;
+  list.Append("hello");
+  Value value(std::move(list));
+  Value::List taken = std::move(value).TakeList();
+
+  value = Value(false);
+  EXPECT_EQ(value, Value(false));
+}
+
 TEST(ValuesTest, SpecializedEquals) {
   std::vector<Value> values;
   values.emplace_back(false);

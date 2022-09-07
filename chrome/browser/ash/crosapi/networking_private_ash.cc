@@ -130,7 +130,7 @@ SplitListValueAdapterCallback(ListValueSuccessOrFailureCallback callback) {
                  std::unique_ptr<base::ListValue> result) {
                 std::move(callback).Run(
                     mojom::ListValueSuccessOrErrorReturn::NewSuccessResult(
-                        std::move(result->GetList())));
+                        std::move(*result).TakeList()));
               },
               std::move(success)),
           base::BindOnce(
@@ -170,7 +170,7 @@ ValueDelegateCallback ValueListAdapterCallback(
   return base::BindOnce(
       [](ValueListMojoCallback callback, std::unique_ptr<base::Value> result) {
         if (result) {
-          std::move(callback).Run(std::move(result->GetList()));
+          std::move(callback).Run(std::move(*result).TakeList());
         } else {
           std::move(callback).Run(absl::nullopt);
         }
