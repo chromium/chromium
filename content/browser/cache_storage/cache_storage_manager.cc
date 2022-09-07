@@ -800,9 +800,6 @@ void CacheStorageManager::DeleteStorageKeyDataGotAllBucketInfo(
   }
 }
 
-// TODO(https://crbug.com/1218097): Delete this method in favor of the one that
-// takes in a `BucketLocator` once `StoragePolicyUpdate` uses more than just
-// origin. Note: This only deletes data associated with the default bucket.
 void CacheStorageManager::DeleteStorageKeyData(
     const blink::StorageKey& storage_key,
     storage::mojom::CacheStorageOwner owner,
@@ -919,9 +916,6 @@ void CacheStorageManager::DeleteBucketDataDidGetExists(
                      std::move(callback), base::WrapUnique(cache_storage)));
 }
 
-// TODO(https://crbug.com/1218097): Delete this method in favor of the one that
-// takes in a `BucketLocator` if we can convert `StoragePolicyUpdate` to
-// provide enough info to reconstruct a `storage::BucketLocator`.
 // Note: This only deletes data associated with the default bucket for a given
 // `blink::StorageKey`.
 void CacheStorageManager::DeleteStorageKeyData(

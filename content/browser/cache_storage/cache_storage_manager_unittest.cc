@@ -1838,12 +1838,6 @@ TEST_P(CacheStorageManagerStorageKeyAndBucketTestP,
   EXPECT_TRUE(
       CachePut(callback_cache_handle_.value(), GURL("http://example.com/foo")));
 
-  // TODO(awillia): GetAllStorageKeysUsage() won't work for third-party storage
-  // keys until a later CL, so skip for now.
-  if (storage_key1_.IsThirdPartyContext()) {
-    return;
-  }
-
   auto usage = GetAllStorageKeysUsage();
   ASSERT_EQ(1ULL, usage.size());
   int64_t unpadded_size = usage[0]->total_size_bytes;
