@@ -94,10 +94,14 @@
 
 - (base::small_map<std::map<promos_manager::Promo, NSArray<ImpressionLimit*>*>>)
     promoImpressionLimits {
-  // TODO(crbug.com/1360507): Loop over feature teams' providers/handlers and
-  // construct promo-specific impression limits map.
   base::small_map<std::map<promos_manager::Promo, NSArray<ImpressionLimit*>*>>
       result;
+
+  for (auto const& [promo, handler] : _displayHandlerPromos)
+    result[promo] = handler.impressionLimits;
+
+  for (auto const& [promo, provider] : _viewProviderPromos)
+    result[promo] = provider.impressionLimits;
 
   return result;
 }
