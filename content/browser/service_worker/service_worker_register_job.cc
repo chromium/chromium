@@ -99,7 +99,11 @@ ServiceWorkerRegisterJob::ServiceWorkerRegisterJob(
       force_bypass_cache_(force_bypass_cache),
       skip_script_comparison_(skip_script_comparison),
       promise_resolved_status_(blink::ServiceWorkerStatusCode::kOk),
-      ancestor_frame_type_(registration->ancestor_frame_type()) {
+      ancestor_frame_type_(registration->ancestor_frame_type()),
+      creator_policy_container_policies_(registration->GetNewestVersion()
+                                             ->policy_container_host()
+                                             ->policies()
+                                             .Clone()) {
   DCHECK(context_);
   DCHECK(outside_fetch_client_settings_object_);
   internal_.registration = registration;
@@ -554,7 +558,14 @@ void ServiceWorkerRegisterJob::UpdateAndContinue() {
   SetPhase(UPDATE);
 
   scoped_refptr<network::SharedURLLoaderFactory> loader_factory =
-      context_->wrapper()->GetLoaderFactoryForUpdateCheck(scope_);
+      context_->wrapper()->GetLoaderFactoryForUpdateCheck(
+          scope_,
+          network::mojom::ClientSecurityState::New(
+              creator_policy_container_policies_.cross_origin_embedder_policy,
+              creator_policy_container_policies_.is_web_secure_context,
+              creator_policy_container_policies_.ip_address_space,
+              DerivePrivateNetworkRequestPolicy(
+                  creator_policy_container_policies_)));
   if (!loader_factory) {
     // We can't continue with update checking appropriately without
     // |loader_factory|. Null |loader_factory| means that the storage partition

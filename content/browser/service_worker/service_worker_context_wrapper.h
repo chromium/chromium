@@ -374,7 +374,8 @@ class CONTENT_EXPORT ServiceWorkerContextWrapper
       scoped_refptr<network::SharedURLLoaderFactory> loader_factory);
   // Returns nullptr on failure.
   scoped_refptr<network::SharedURLLoaderFactory> GetLoaderFactoryForUpdateCheck(
-      const GURL& scope);
+      const GURL& scope,
+      network::mojom::ClientSecurityStatePtr client_security_state);
 
   // Returns nullptr on failure.
   // Note: This is currently only used for plzServiceWorker.
