@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "gpu/ipc/client/gpu_channel_host.h"
@@ -162,6 +163,9 @@ void MojoVideoEncodeAccelerator::Encode(scoped_refptr<VideoFrame> frame,
             frame->layout().num_planes());
   DCHECK(vea_.is_bound());
 
+  UMA_HISTOGRAM_ENUMERATION("Media.MojoVideoEncodeAccelerator.InputStorageType",
+                            frame->storage_type(),
+                            static_cast<int>(VideoFrame::STORAGE_MAX) + 1);
   if (frame->format() != PIXEL_FORMAT_I420 &&
       frame->format() != PIXEL_FORMAT_NV12) {
     DLOG(ERROR) << "Unexpected pixel format: "

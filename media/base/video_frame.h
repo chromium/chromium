@@ -71,6 +71,8 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
     kAPlane = 3,
   };
 
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
   // Defines the pixel storage type. Differentiates between directly accessible
   // |data_| and pixels that are only indirectly accessible and not via mappable
   // memory.
@@ -90,7 +92,7 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
     STORAGE_DMABUFS = 5,  // Each plane is stored into a DmaBuf.
 #endif
     STORAGE_GPU_MEMORY_BUFFER = 6,
-    STORAGE_LAST = STORAGE_GPU_MEMORY_BUFFER,
+    STORAGE_MAX = STORAGE_GPU_MEMORY_BUFFER,
   };
 
   // CB to be called on the mailbox backing this frame and its GpuMemoryBuffers

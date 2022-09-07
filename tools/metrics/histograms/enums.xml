@@ -99885,6 +99885,16 @@ Full version information for the fingerprint enum values:
   <int value="9" label="UYVY"/>
 </enum>
 
+<enum name="VideoFrameStorageType">
+  <int value="0" label="Invalid"/>
+  <int value="1" label="Unknown"/>
+  <int value="2" label="External, non owned memory"/>
+  <int value="3" label="Internal, owned memory"/>
+  <int value="4" label="Read-only shared memory region"/>
+  <int value="5" label="Dmabuf file descriptor"/>
+  <int value="7" label="GpuMemoryBuffer"/>
+</enum>
+
 <enum name="VideoFullscreenOrientationLockMetadataAvailability">
   <int value="0" label="Available"/>
   <int value="1" label="Missing"/>
