@@ -247,6 +247,7 @@ void ProxyImpl::BeginMainFrameAbortedOnImpl(
   host_impl_->BeginMainFrameAborted(
       reason, std::move(swap_promises),
       scheduler_->last_dispatched_begin_main_frame_args(),
+      static_cast<bool>(data_for_commit_.get()),
       scroll_and_viewport_changes_synced);
   scheduler_->NotifyBeginMainFrameStarted(main_thread_start_time);
   scheduler_->BeginMainFrameAborted(reason);
@@ -697,7 +698,10 @@ void ProxyImpl::ScheduledActionSendBeginMainFrame(
   std::unique_ptr<BeginMainFrameAndCommitState> begin_main_frame_state(
       new BeginMainFrameAndCommitState);
   begin_main_frame_state->begin_frame_args = args;
-  begin_main_frame_state->commit_data = host_impl_->ProcessCompositorDeltas();
+  DCHECK(!data_for_commit_ || data_for_commit_->unsafe_state->mutator_host);
+  begin_main_frame_state->commit_data = host_impl_->ProcessCompositorDeltas(
+      data_for_commit_ ? data_for_commit_->unsafe_state->mutator_host
+                       : nullptr);
   begin_main_frame_state->completed_image_decode_requests =
       host_impl_->TakeCompletedImageDecodeRequests();
   begin_main_frame_state->finished_transition_request_sequence_ids =

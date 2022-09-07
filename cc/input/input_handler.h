@@ -468,7 +468,9 @@ class CC_EXPORT InputHandler : public InputDelegateForCompositor {
   // =========== InputDelegateForCompositor Interface - This section implements
   // the interface that LayerTreeHostImpl uses to communicate with the input
   // system.
-  void ProcessCommitDeltas(CompositorCommitData* commit_data) override;
+  void ProcessCommitDeltas(
+      CompositorCommitData* commit_data,
+      const MutatorHost* main_thread_mutator_host) override;
   void TickAnimations(base::TimeTicks monotonic_time) override;
   void WillShutdown() override;
   void WillDraw() override;

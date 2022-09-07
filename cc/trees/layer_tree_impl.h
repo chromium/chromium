@@ -361,6 +361,7 @@ class CC_EXPORT LayerTreeImpl {
   void ClearCurrentlyScrollingNode();
 
   void ApplySentScrollAndScaleDeltasFromAbortedCommit(
+      bool next_bmf,
       bool main_frame_applied_deltas);
 
   SkColor4f background_color() const { return background_color_; }

@@ -699,7 +699,8 @@ TEST_F(TreeSynchronizerTest, SynchronizeScrollTreeScrollOffsetMap) {
   std::unique_ptr<CompositorCommitData> commit_data(new CompositorCommitData());
   scroll_tree.CollectScrollDeltas(
       commit_data.get(), ElementId(), settings.commit_fractional_scroll_deltas,
-      base::flat_map<ElementId, TargetSnapAreaElementIds>());
+      base::flat_map<ElementId, TargetSnapAreaElementIds>(),
+      /* main_thread_mutator_host */ nullptr);
   host_->proxy()->SetNeedsCommit();
   host_->ApplyCompositorChanges(commit_data.get());
   EXPECT_EQ(gfx::PointF(20, 30), scroll_layer->scroll_offset());
@@ -723,7 +724,7 @@ TEST_F(TreeSynchronizerTest, SynchronizeScrollTreeScrollOffsetMap) {
   EXPECT_EQ(scroll_layer->scroll_tree_index(),
             host_impl->active_tree()->CurrentlyScrollingNode()->id);
   scroll_layer_offset->SetCurrent(gfx::PointF(20, 30));
-  scroll_layer_offset->PullDeltaForMainThread();
+  scroll_layer_offset->PullDeltaForMainThread(/* next_bmf */ false);
   scroll_layer_offset->SetCurrent(gfx::PointF(40, 50));
   scroll_layer_offset->PushMainToPending(gfx::PointF(100, 100));
   scroll_layer_offset->PushPendingToActive();
@@ -815,7 +816,8 @@ TEST_F(TreeSynchronizerTest, RoundedScrollDeltasOnCommit) {
   // When we collect the scroll deltas, we should have truncated the fractional
   // part because the commit_fractional_scroll_deltas setting is enabled.
   std::unique_ptr<CompositorCommitData> commit_data =
-      host_impl->ProcessCompositorDeltas();
+      host_impl->ProcessCompositorDeltas(
+          /* main_thread_mutator_host */ nullptr);
   ASSERT_EQ(1u, commit_data->scrolls.size());
   EXPECT_EQ(2.f, commit_data->scrolls[0].scroll_delta.y());
 }
@@ -841,7 +843,8 @@ TEST_F(TreeSynchronizerTest, PreserveFractionalScrollDeltasOnCommit) {
   // When we collect the scroll deltas, we should keep the fractional part
   // because the commit_fractional_scroll_deltas setting is disabled.
   std::unique_ptr<CompositorCommitData> commit_data =
-      host_impl->ProcessCompositorDeltas();
+      host_impl->ProcessCompositorDeltas(
+          /* main_thread_mutator_host */ nullptr);
   ASSERT_EQ(1u, commit_data->scrolls.size());
   EXPECT_EQ(1.75f, commit_data->scrolls[0].scroll_delta.y());
 }

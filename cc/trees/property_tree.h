@@ -525,11 +525,13 @@ class CC_EXPORT ScrollTree final : public PropertyTree<ScrollNode> {
       ElementId inner_viewport_scroll_element_id,
       bool use_fractional_deltas,
       const base::flat_map<ElementId, TargetSnapAreaElementIds>&
-          snapped_elements);
+          snapped_elements,
+      const MutatorHost* main_thread_mutator_host);
 
   // Applies deltas sent in the previous main frame onto the impl thread state.
   // Should only be called on the impl thread side PropertyTrees.
-  void ApplySentScrollDeltasFromAbortedCommit(bool main_frame_applied_deltas);
+  void ApplySentScrollDeltasFromAbortedCommit(bool next_bmf,
+                                              bool main_frame_applied_deltas);
 
   // Pushes scroll updates from the ScrollTree on the main thread onto the
   // impl thread associated state.
@@ -617,7 +619,8 @@ class CC_EXPORT ScrollTree final : public PropertyTree<ScrollNode> {
   base::WeakPtr<ScrollCallbacks> callbacks_;
 
   gfx::Vector2dF PullDeltaForMainThread(SyncedScrollOffset* scroll_offset,
-                                        bool use_fractional_deltas);
+                                        bool use_fractional_deltas,
+                                        bool next_bmf);
 };
 
 constexpr int kInvalidUpdateNumber = -1;

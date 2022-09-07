@@ -1606,13 +1606,14 @@ const gfx::PointF ScrollTree::GetPixelSnappedScrollOffset(
 
 gfx::Vector2dF ScrollTree::PullDeltaForMainThread(
     SyncedScrollOffset* scroll_offset,
-    bool use_fractional_deltas) {
+    bool use_fractional_deltas,
+    bool next_bmf) {
   DCHECK(property_trees()->is_active());
 
   // Once this setting is enabled, all the complicated rounding logic below can
   // go away.
   if (use_fractional_deltas)
-    return scroll_offset->PullDeltaForMainThread();
+    return scroll_offset->PullDeltaForMainThread(next_bmf);
 
   // TODO(flackr): We should pass the fractional scroll deltas when Blink fully
   // supports fractional scrolls. crbug.com/414283.
@@ -1628,7 +1629,7 @@ gfx::Vector2dF ScrollTree::PullDeltaForMainThread(
   gfx::Vector2dF diff_active_base =
       active_base - gfx::PointF(gfx::ToRoundedPoint(active_base));
   scroll_offset->SetCurrent(rounded_offset + diff_active_base);
-  gfx::Vector2dF delta = scroll_offset->PullDeltaForMainThread();
+  gfx::Vector2dF delta = scroll_offset->PullDeltaForMainThread(next_bmf);
   scroll_offset->SetCurrent(current_offset);
   return delta;
 }
@@ -1637,13 +1638,26 @@ void ScrollTree::CollectScrollDeltas(
     CompositorCommitData* commit_data,
     ElementId inner_viewport_scroll_element_id,
     bool use_fractional_deltas,
-    const base::flat_map<ElementId, TargetSnapAreaElementIds>&
-        snapped_elements) {
+    const base::flat_map<ElementId, TargetSnapAreaElementIds>& snapped_elements,
+    const MutatorHost* main_thread_mutator_host) {
   DCHECK(!property_trees()->is_main_thread());
   TRACE_EVENT0("cc", "ScrollTree::CollectScrollDeltas");
   for (auto map_entry : synced_scroll_offset_map_) {
-    gfx::Vector2dF scroll_delta =
-        PullDeltaForMainThread(map_entry.second.get(), use_fractional_deltas);
+    // The presence of a non-null mutator_host indicates that there is a
+    // ready-to-commit main frame, hence we are pipelining this main frame.
+    bool pipeline = main_thread_mutator_host;
+    gfx::Vector2dF scroll_delta;
+    // If the ready-to-commit main frame is going to clobber the scroll offset
+    // in the active tree, then we shouldn't send a delta down to the main
+    // thread.
+    bool clobber =
+        main_thread_mutator_host &&
+        main_thread_mutator_host->ScrollOffsetAnimationWasInterrupted(
+            map_entry.first);
+    if (!clobber) {
+      scroll_delta = PullDeltaForMainThread(map_entry.second.get(),
+                                            use_fractional_deltas, pipeline);
+    }
 
     ElementId id = map_entry.first;
 
@@ -1674,7 +1688,8 @@ void ScrollTree::CollectScrollDeltas(
 
 void ScrollTree::CollectScrollDeltasForTesting(bool use_fractional_deltas) {
   for (auto map_entry : synced_scroll_offset_map_) {
-    PullDeltaForMainThread(map_entry.second.get(), use_fractional_deltas);
+    PullDeltaForMainThread(map_entry.second.get(), use_fractional_deltas,
+                           /* next_bmf */ false);
   }
 }
 
@@ -1761,10 +1776,11 @@ void ScrollTree::PushScrollUpdatesFromPendingTree(
 }
 
 void ScrollTree::ApplySentScrollDeltasFromAbortedCommit(
+    bool next_bmf,
     bool main_frame_applied_deltas) {
   DCHECK(property_trees()->is_active());
   for (auto& map_entry : synced_scroll_offset_map_)
-    map_entry.second->AbortCommit(main_frame_applied_deltas);
+    map_entry.second->AbortCommit(next_bmf, main_frame_applied_deltas);
 }
 
 void ScrollTree::SetBaseScrollOffset(ElementId id,

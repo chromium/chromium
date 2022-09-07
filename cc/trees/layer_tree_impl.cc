@@ -1484,20 +1484,23 @@ gfx::Rect LayerTreeImpl::RootScrollLayerDeviceViewportBounds() const {
 }
 
 void LayerTreeImpl::ApplySentScrollAndScaleDeltasFromAbortedCommit(
+    bool next_bmf,
     bool main_frame_applied_deltas) {
   DCHECK(IsActiveTree());
 
-  page_scale_factor()->AbortCommit(main_frame_applied_deltas);
-  top_controls_shown_ratio()->AbortCommit(main_frame_applied_deltas);
-  bottom_controls_shown_ratio()->AbortCommit(main_frame_applied_deltas);
-  elastic_overscroll()->AbortCommit(main_frame_applied_deltas);
+  page_scale_factor()->AbortCommit(next_bmf, main_frame_applied_deltas);
+  top_controls_shown_ratio()->AbortCommit(next_bmf, main_frame_applied_deltas);
+  bottom_controls_shown_ratio()->AbortCommit(next_bmf,
+                                             main_frame_applied_deltas);
+  elastic_overscroll()->AbortCommit(next_bmf, main_frame_applied_deltas);
 
   if (layer_list_.empty())
     return;
 
   property_trees()
       ->scroll_tree_mutable()
-      .ApplySentScrollDeltasFromAbortedCommit(main_frame_applied_deltas);
+      .ApplySentScrollDeltasFromAbortedCommit(next_bmf,
+                                              main_frame_applied_deltas);
 }
 
 void LayerTreeImpl::SetViewportPropertyIds(const ViewportPropertyIds& ids) {

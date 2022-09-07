@@ -213,9 +213,10 @@ class LayerTreeHostImplForTesting : public LayerTreeHostImpl {
       CommitEarlyOutReason reason,
       std::vector<std::unique_ptr<SwapPromise>> swap_promises,
       const viz::BeginFrameArgs& args,
+      bool next_bmf,
       bool scroll_and_viewport_changes_synced) override {
     LayerTreeHostImpl::BeginMainFrameAborted(
-        reason, std::move(swap_promises), args,
+        reason, std::move(swap_promises), args, next_bmf,
         scroll_and_viewport_changes_synced);
     test_hooks_->BeginMainFrameAbortedOnThread(
         this, reason, scroll_and_viewport_changes_synced);

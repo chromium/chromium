@@ -1014,7 +1014,9 @@ void InputHandler::NotifyInputEvent() {
 // =========== InputDelegateForCompositor Interface
 //
 
-void InputHandler::ProcessCommitDeltas(CompositorCommitData* commit_data) {
+void InputHandler::ProcessCommitDeltas(
+    CompositorCommitData* commit_data,
+    const MutatorHost* main_thread_mutator_host) {
   DCHECK(commit_data);
   if (ActiveTree().LayerListIsEmpty())
     return;
@@ -1036,7 +1038,7 @@ void InputHandler::ProcessCommitDeltas(CompositorCommitData* commit_data) {
   GetScrollTree().CollectScrollDeltas(
       commit_data, inner_viewport_scroll_element_id,
       compositor_delegate_.GetSettings().commit_fractional_scroll_deltas,
-      snapped_elements);
+      snapped_elements, main_thread_mutator_host);
 
   // Record and reset scroll source flags.
   DCHECK(!commit_data->manipulation_info);
