@@ -205,7 +205,14 @@ void ExtendedDragSource::Drag(Surface* dragged_surface,
   dragged_window_holder_ =
       std::make_unique<DraggedWindowHolder>(dragged_surface, drag_offset, this);
 
-  // Drag process will be started once OnDragStarted gets called.
+  // Drag process will be started once OnDragStarted gets called, unless a
+  // OnToplevelWindowDragStarted() got called for a visible window being dragged
+  // prior to this call.
+  if (pending_drag_start_ &&
+      dragged_window_holder_->toplevel_window() == drag_source_window_) {
+    StartDrag(dragged_window_holder_->toplevel_window());
+    pending_drag_start_ = false;
+  }
 }
 
 bool ExtendedDragSource::IsActive() const {
@@ -226,6 +233,8 @@ void ExtendedDragSource::OnToplevelWindowDragStarted(
   if (dragged_window_holder_ && dragged_window_holder_->toplevel_window() &&
       dragged_window_holder_->toplevel_window()->IsVisible()) {
     StartDrag(dragged_window_holder_->toplevel_window());
+  } else {
+    pending_drag_start_ = true;
   }
 }
 
@@ -399,6 +408,7 @@ void ExtendedDragSource::Cleanup() {
   if (drag_source_window_)
     drag_source_window_->RemoveObserver(this);
   drag_source_window_ = nullptr;
+  pending_drag_start_ = false;
   UnlockCursor();
 }
 

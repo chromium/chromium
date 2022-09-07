@@ -118,6 +118,7 @@ class ExtendedDragSource : public DataSourceObserver,
   std::unique_ptr<DraggedWindowHolder> dragged_window_holder_;
   std::unique_ptr<aura::ScopedWindowEventTargetingBlocker> event_blocker_;
   aura::Window* drag_source_window_ = nullptr;
+  bool pending_drag_start_ = false;
 
   base::ObserverList<Observer>::Unchecked observers_;
 
