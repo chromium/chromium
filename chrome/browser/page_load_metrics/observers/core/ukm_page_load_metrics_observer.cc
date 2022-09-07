@@ -394,14 +394,15 @@ UkmPageLoadMetricsObserver::ObservePolicy UkmPageLoadMetricsObserver::OnHidden(
     was_hidden_ = true;
   }
 
-  // Record the CLS and LCP metrics when the tab is first hidden after it is
-  // first shown in foreground, in case that OnComplete is not called.
+  // Record the CLS, LCP and INP metrics when the tab is first hidden after it
+  // is first shown in foreground, in case that OnComplete is not called.
   // last_time_shown_ is set when the page starts in the foreground or the page
   // becomes foregrounded.
   if (!was_hidden_after_first_show_in_foreground &&
       !last_time_shown_.is_null()) {
     ReportLayoutInstabilityAfterFirstForeground();
     ReportLargestContentfulPaintAfterFirstForeground();
+    ReportResponsivenessAfterFirstForeground();
     was_hidden_after_first_show_in_foreground = true;
   }
   return CONTINUE_OBSERVING;
@@ -1127,6 +1128,37 @@ void UkmPageLoadMetricsObserver::
         all_frames_largest_contentful_paint.Time().value());
     builder.Record(ukm::UkmRecorder::Get());
   }
+}
+
+void UkmPageLoadMetricsObserver::ReportResponsivenessAfterFirstForeground() {
+  DCHECK(!last_time_shown_.is_null());
+
+  ukm::builders::PageLoad builder(GetDelegate().GetPageUkmSourceId());
+  const page_load_metrics::NormalizedResponsivenessMetrics&
+      normalized_responsiveness_metrics =
+          GetDelegate().GetNormalizedResponsivenessMetrics();
+  auto& max_event_durations =
+      normalized_responsiveness_metrics.normalized_max_event_durations;
+  if (normalized_responsiveness_metrics.num_user_interactions) {
+    builder
+        .SetInteractiveTiming_UserInteractionLatencyAtFirstOnHidden_HighPercentile2_MaxEventDuration(
+            page_load_metrics::ResponsivenessMetricsNormalization::
+                ApproximateHighPercentile(
+                    normalized_responsiveness_metrics.num_user_interactions,
+                    max_event_durations.worst_ten_latencies)
+                    .InMilliseconds());
+
+    UmaHistogramCustomTimes(
+        "PageLoad.InteractiveTiming.UserInteractionLatencyAtFirstOnHidden."
+        "HighPercentile2."
+        "MaxEventDuration",
+        page_load_metrics::ResponsivenessMetricsNormalization::
+            ApproximateHighPercentile(
+                normalized_responsiveness_metrics.num_user_interactions,
+                max_event_durations.worst_ten_latencies),
+        base::Milliseconds(1), base::Seconds(60), 50);
+  }
+  builder.Record(ukm::UkmRecorder::Get());
 }
 
 void UkmPageLoadMetricsObserver::RecordAbortMetrics(

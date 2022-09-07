@@ -2207,7 +2207,12 @@ chromium-metrics-reviews@google.com.
     {UserInteractionLatency} within the user interaction.
 
     Recorded at the end of the page load lifetime, such as when users navigate
-    to a new web page.
+    to a new web page, except
+    UserInteractionLatencyAtFirstOnHidden.HighPercentile2, which is recorded
+    when a page is moved from the foreground to the background for the first
+    time. UserInteractionLatencyAtFirstOnHidden.HighPercentile2 is trying to
+    record the INP values which are not able to be recorded in
+    UserInteractionLatency.HighPercentile2 for some reasons.
   </summary>
   <token key="Bfcache">
     <variant name=""/>
@@ -2219,6 +2224,7 @@ chromium-metrics-reviews@google.com.
     <variant name="SlowUserInteractionLatencyOverBudget.HighPercentile2"/>
     <variant name="SumOfUserInteractionLatencyOverBudget"/>
     <variant name="UserInteractionLatency.HighPercentile2"/>
+    <variant name="UserInteractionLatencyAtFirstOnHidden.HighPercentile2"/>
     <variant name="WorstUserInteractionLatency"/>
     <variant name="WorstUserInteractionLatencyOverBudget"/>
   </token>

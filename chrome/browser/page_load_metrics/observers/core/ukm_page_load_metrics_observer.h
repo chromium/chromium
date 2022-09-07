@@ -209,6 +209,10 @@ class UkmPageLoadMetricsObserver
   // the background.
   void ReportLargestContentfulPaintAfterFirstForeground();
 
+  // Record some Responsiveness metrics that have occurred on the page until
+  // the first time the page moves from the foreground to the background.
+  void ReportResponsivenessAfterFirstForeground();
+
   // Guaranteed to be non-null during the lifetime of |this|.
   raw_ptr<network::NetworkQualityTracker> network_quality_tracker_;
 

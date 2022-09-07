@@ -14361,6 +14361,19 @@ be describing additional metrics about the same event.
       interactions by Responsiveness.UserInteraction.MaxEventDuration.
     </summary>
   </metric>
+  <metric
+      name="InteractiveTiming.UserInteractionLatencyAtFirstOnHidden.HighPercentile2.MaxEventDuration">
+    <summary>
+      An approximation of a high percentile of user interaction latency of a
+      page load, in ms. For this metric, we measure the latency of user
+      interactions by Responsiveness.UserInteraction.MaxEventDuration. We record
+      it when a page is moved from the foreground to the background for the
+      first time. This metric is trying to record the INP values which are not
+      able to be recorded in
+      InteractiveTiming.UserInteractionLatency.HighPercentile2.MaxEventDuration
+      for some reasons.
+    </summary>
+  </metric>
   <metric name="InteractiveTiming.WorstUserInteractionLatency.MaxEventDuration">
     <summary>
       The maximum value of user interaction latency of a page load, in ms. For

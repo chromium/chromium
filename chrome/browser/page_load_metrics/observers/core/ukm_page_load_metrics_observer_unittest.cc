@@ -1281,6 +1281,45 @@ TEST_F(UkmPageLoadMetricsObserverTest, NormalizedUserInteractionLatencies) {
 }
 
 TEST_F(UkmPageLoadMetricsObserverTest,
+       NormalizedUserInteractionLatenciesRecordOnHidden) {
+  NavigateAndCommit(GURL(kTestUrl1));
+
+  page_load_metrics::mojom::InputTiming input_timing;
+  input_timing.num_interactions = 3;
+  input_timing.max_event_durations =
+      UserInteractionLatencies::NewUserInteractionLatencies({});
+  auto& max_event_durations =
+      input_timing.max_event_durations->get_user_interaction_latencies();
+
+  max_event_durations.emplace_back(UserInteractionLatency::New(
+      base::Milliseconds(50), UserInteractionType::kKeyboard));
+
+  tester()->SimulateInputTimingUpdate(input_timing);
+
+  // Simulate hiding the tab (the new INP metrics should be recorded at the
+  // first hide).
+  web_contents()->WasHidden();
+
+  const auto& ukm_recorder = tester()->test_ukm_recorder();
+  std::map<ukm::SourceId, ukm::mojom::UkmEntryPtr> merged_entries =
+      ukm_recorder.GetMergedEntriesByName(PageLoad::kEntryName);
+  EXPECT_EQ(1ul, merged_entries.size());
+
+  const ukm::mojom::UkmEntry* entry = merged_entries.begin()->second.get();
+  ukm_recorder.ExpectEntrySourceHasUrl(entry, GURL(kTestUrl1));
+  ukm_recorder.ExpectEntryMetric(
+      entry,
+      PageLoad::
+          kInteractiveTiming_UserInteractionLatencyAtFirstOnHidden_HighPercentile2_MaxEventDurationName,
+      50);
+  EXPECT_THAT(tester()->histogram_tester().GetAllSamples(
+                  "PageLoad.InteractiveTiming."
+                  "UserInteractionLatencyAtFirstOnHidden.HighPercentile2."
+                  "MaxEventDuration"),
+              testing::ElementsAre(base::Bucket(50, 1)));
+}
+
+TEST_F(UkmPageLoadMetricsObserverTest,
        FirstInputDelayAndTimestampAndProcessingTime) {
   page_load_metrics::mojom::PageLoadTiming timing;
   page_load_metrics::InitPageLoadTimingForTest(&timing);
