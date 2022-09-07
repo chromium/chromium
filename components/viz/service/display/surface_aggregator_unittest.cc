@@ -8631,6 +8631,13 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, DelegatedInkMetadataTest) {
   EXPECT_TRUE(actual_metadata);
   ExpectDelegatedInkMetadataIsEqual(*actual_metadata.get(), metadata);
 
+  // Send a compositor frame with no delegated ink metadata.
+  CompositorFrame blank_frame = MakeEmptyCompositorFrame();
+  AddPasses(&blank_frame.render_pass_list, child_passes,
+            &blank_frame.metadata.referenced_surfaces);
+  child_sink_->SubmitCompositorFrame(child_surface_id.local_surface_id(),
+                                     std::move(blank_frame));
+
   // Then confirm that the |delegated_ink_metadata| was reset and a new
   // aggregated frame does not contain any delegated ink metadata.
   auto new_aggregated_frame = AggregateFrame(root_surface_id_);
@@ -8764,6 +8771,13 @@ TEST_F(SurfaceAggregatorValidSurfaceTest,
   EXPECT_TRUE(actual_metadata);
   ExpectDelegatedInkMetadataIsEqual(*actual_metadata.get(), metadata);
 
+  // Send a compositor frame with no delegated ink metadata.
+  CompositorFrame blank_frame = MakeEmptyCompositorFrame();
+  AddPasses(&blank_frame.render_pass_list, greatgrandchild_passes,
+            &blank_frame.metadata.referenced_surfaces);
+  greatgrand_child_support->SubmitCompositorFrame(
+      great_grandchild_surface_id.local_surface_id(), std::move(blank_frame));
+
   // Then confirm that the |delegated_ink_metadata| was reset and a new
   // aggregated frame does not contain any delegated ink metadata.
   auto new_aggregated_frame = AggregateFrame(root_surface_id_);
@@ -8878,6 +8892,13 @@ TEST_F(SurfaceAggregatorValidSurfaceTest,
       std::move(aggregated_frame.delegated_ink_metadata);
   EXPECT_TRUE(actual_metadata);
   ExpectDelegatedInkMetadataIsEqual(*actual_metadata.get(), metadata);
+
+  // Send a compositor frame with no delegated ink metadata.
+  CompositorFrame blank_frame = MakeEmptyCompositorFrame();
+  AddPasses(&blank_frame.render_pass_list, child_2_passes,
+            &blank_frame.metadata.referenced_surfaces);
+  child_2_support->SubmitCompositorFrame(child_2_surface_id.local_surface_id(),
+                                         std::move(blank_frame));
 
   // Then confirm that the |delegated_ink_metadata| was reset and a new
   // aggregated frame does not contain any delegated ink metadata.
@@ -9010,9 +9031,29 @@ TEST_F(SurfaceAggregatorValidSurfaceTest,
   EXPECT_TRUE(actual_metadata);
   ExpectDelegatedInkMetadataIsEqual(*actual_metadata.get(), expected_metadata);
 
-  // Then confirm that the |delegated_ink_metadata| was reset and a new
-  // aggregated frame does not contain any delegated ink metadata.
+  // Send a compositor frame for child_3 with no delegated ink metadata.
+  CompositorFrame blank_frame = MakeEmptyCompositorFrame();
+  AddPasses(&blank_frame.render_pass_list, child_3_passes,
+            &blank_frame.metadata.referenced_surfaces);
+  child_3_support->SubmitCompositorFrame(child_3_surface_id.local_surface_id(),
+                                         std::move(blank_frame));
+
+  // Then confirm that the |delegated_ink_metadata| was  not reset because the
+  // compositor frame metadata for child_2 still contains delegated ink
+  // metadata.
   auto new_aggregated_frame = AggregateFrame(root_surface_id_);
+  EXPECT_TRUE(new_aggregated_frame.delegated_ink_metadata);
+
+  // Send a compositor frame for child_2 with no delegated ink metadata.
+  blank_frame = MakeEmptyCompositorFrame();
+  AddPasses(&blank_frame.render_pass_list, child_2_passes,
+            &blank_frame.metadata.referenced_surfaces);
+  child_2_support->SubmitCompositorFrame(child_2_surface_id.local_surface_id(),
+                                         std::move(blank_frame));
+
+  // Now confirm that the |delegated_ink_metadata| was reset and a new
+  // aggregated frame does not contain any delegated ink metadata.
+  new_aggregated_frame = AggregateFrame(root_surface_id_);
   EXPECT_FALSE(new_aggregated_frame.delegated_ink_metadata);
 }
 

@@ -71,7 +71,7 @@ void DelegatedInkTrailData::AddPoint(const gfx::DelegatedInkPoint& point) {
   // Fail-safe to prevent storing excessive points if they are being sent but
   // never filtered and used, like if the renderer has stalled during a long
   // running script.
-  if (points_.size() == kMaximumDelegatedInkPointsStored)
+  if (points_.size() == gfx::kMaximumNumberOfDelegatedInkPoints)
     points_.erase(points_.begin());
 
   points_.insert({point.timestamp(), point.point()});

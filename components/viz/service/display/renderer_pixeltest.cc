@@ -5189,8 +5189,8 @@ TEST_P(DelegatedInkWithPredictionTest, DrawOneTrailAndErase) {
   // DelegatedInkPoint sent.
   CreateAndSendMetadata(kFirstPoint, 3.5f, SkColors::kBlack, kFirstTimestamp,
                         gfx::RectF(0, 0, 175, 172));
-
-  // Confirm that the trail was drawn.
+  // Confirm that the trail was drawn. Test three times as
+  // the trail will persist for two more frames before being erased.
   EXPECT_TRUE(
       DrawAndTestTrail(FILE_PATH_LITERAL("delegated_ink_one_trail.png")));
 
@@ -5406,6 +5406,39 @@ TEST_P(DelegatedInkWithPredictionTest, DrawTrailsWithDifferentPointerIds) {
   // is no trail after another draw.
   EXPECT_TRUE(DrawAndTestTrail(FILE_PATH_LITERAL("white.png")));
 }
+
+// Draw a single trail and erase it, making sure that no bits of trail are left
+// behind.
+TEST_P(DelegatedInkWithPredictionTest,
+       IdenticalTrailDrawnAfterSameMetadataReceived) {
+  // Send some DelegatedInkPoints, numbers arbitrary. This will predict no
+  // points, so a trail made of 3 points will be drawn.
+  const gfx::PointF kFirstPoint(10, 10);
+  const base::TimeTicks kFirstTimestamp = base::TimeTicks::Now();
+  CreateAndSendPoint(kFirstPoint, kFirstTimestamp);
+  CreateAndSendPointFromLastPoint(gfx::PointF(75, 62));
+  CreateAndSendPointFromLastPoint(gfx::PointF(124, 45));
+
+  // Provide the metadata required to draw the trail, matching the first
+  // DelegatedInkPoint sent.
+  CreateAndSendMetadata(kFirstPoint, 3.5f, SkColors::kBlack, kFirstTimestamp,
+                        gfx::RectF(0, 0, 175, 172));
+  // Confirm that the trail was drawn. Test three times as
+  // the trail will persist for two more frames before being erased.
+  EXPECT_TRUE(
+      DrawAndTestTrail(FILE_PATH_LITERAL("delegated_ink_one_trail.png")));
+
+  // Send metadata again and expect the same trail to be drawn.
+  CreateAndSendMetadata(kFirstPoint, 3.5f, SkColors::kBlack, kFirstTimestamp,
+                        gfx::RectF(0, 0, 175, 172));
+  EXPECT_TRUE(
+      DrawAndTestTrail(FILE_PATH_LITERAL("delegated_ink_one_trail.png")));
+
+  // The metadata should have been cleared after drawing, so confirm that there
+  // is no trail after another draw.
+  EXPECT_TRUE(DrawAndTestTrail(FILE_PATH_LITERAL("white.png")));
+}
+
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace

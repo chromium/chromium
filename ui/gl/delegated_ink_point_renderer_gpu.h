@@ -33,13 +33,6 @@ namespace gl {
 
 namespace {
 
-// Maximum number of points that can be drawn. This is used to limit the total
-// number of ink trail tokens that we will store, and the total number of points
-// that we will store to provide to the Direct Composition APIs. It should match
-// the exact number of points that the OS Compositor will store to draw as part
-// of a trail.
-constexpr int kMaximumNumberOfPoints = 128;
-
 // Maximum number of pointer ids that will be considered for drawing. Number is
 // chosen arbitrarily, as it seems unlikely that the total number of input
 // sources using delegated ink trails would exceed 10, but it can be raised if
@@ -370,7 +363,7 @@ class DelegatedInkPointRendererGpu<InkTrailDevice,
     // StartNewTrail is called. If we get to the maximum number of points that
     // we will store, start erasing the oldest ones first. This matches what the
     // OS compositor does internally when it hits the max number of points.
-    if (token_map.size() == kMaximumNumberOfPoints)
+    if (token_map.size() == gfx::kMaximumNumberOfDelegatedInkPoints)
       token_map.erase(token_map.begin());
     token_map.insert({point, absl::nullopt});
 

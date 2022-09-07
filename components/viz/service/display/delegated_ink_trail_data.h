@@ -26,10 +26,6 @@ class InputPredictor;
 }  // namespace ui
 
 namespace viz {
-// The maximum number of delegated ink points that will be stored at a time.
-// When this is hit, the oldest one will be removed each time a new one is
-// added.
-constexpr int kMaximumDelegatedInkPointsStored = 10;
 
 class VIZ_SERVICE_EXPORT DelegatedInkTrailData {
  public:

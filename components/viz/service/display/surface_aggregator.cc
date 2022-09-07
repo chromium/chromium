@@ -783,7 +783,7 @@ void SurfaceAggregator::EmitSurfaceContent(
     // generated.
     TransformAndStoreDelegatedInkMetadata(
         gfx::Transform(dest_pass->transform_to_root_target, combined_transform),
-        surface->TakeDelegatedInkMetadata());
+        frame.metadata.delegated_ink_metadata.get());
   }
 
   // TODO(fsamuel): Move this to a separate helper function.
@@ -1384,7 +1384,7 @@ void SurfaceAggregator::CopyPasses(const ResolvedFrameData& resolved_frame) {
     TransformAndStoreDelegatedInkMetadata(
         gfx::Transform(source_pass_list.back()->transform_to_root_target,
                        surface_transform),
-        surface->TakeDelegatedInkMetadata());
+        frame.metadata.delegated_ink_metadata.get());
   }
 
   bool apply_surface_transform_to_root_pass = true;
@@ -2234,7 +2234,7 @@ bool SurfaceAggregator::IsRootSurface(const Surface* surface) const {
 // aggregated frame, after which the member is then cleared.
 void SurfaceAggregator::TransformAndStoreDelegatedInkMetadata(
     const gfx::Transform& parent_quad_to_root_target_transform,
-    std::unique_ptr<gfx::DelegatedInkMetadata> metadata) {
+    const gfx::DelegatedInkMetadata* metadata) {
   if (delegated_ink_metadata_) {
     // This member could already be populated in two scenarios:
     //   1. The delegated ink metadata was committed to a frame's metadata that

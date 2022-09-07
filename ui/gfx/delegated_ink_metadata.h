@@ -14,6 +14,13 @@
 
 namespace gfx {
 
+// Maximum number of points that can be drawn. This is used to limit the total
+// number of ink trail tokens that we will store, and the total number of points
+// that we will store to provide to the Direct Composition APIs. It should match
+// the exact number of points that the OS Compositor will store to draw as part
+// of a trail.
+inline constexpr int kMaximumNumberOfDelegatedInkPoints = 128;
+
 // This class stores all the metadata that is gathered when the WebAPI
 // updateInkTrailStartPoint is called. This metadata flows from blink,
 // through cc, and into viz in order to produce a delegated ink trail on the

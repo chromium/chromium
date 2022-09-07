@@ -4798,10 +4798,10 @@ TEST_F(SkiaDelegatedInkRendererTest, SkiaDelegatedInkRendererFilteringPoints) {
   const int kPointsBeyondMaxAllowed = 2;
   StoreAlreadyCreatedDelegatedInkPoints();
   while (ink_points_size() <
-         kMaximumDelegatedInkPointsStored + kPointsBeyondMaxAllowed)
+         gfx::kMaximumNumberOfDelegatedInkPoints + kPointsBeyondMaxAllowed)
     CreateAndStoreDelegatedInkPointFromPreviousPoint(kPointerId);
 
-  EXPECT_EQ(kMaximumDelegatedInkPointsStored,
+  EXPECT_EQ(gfx::kMaximumNumberOfDelegatedInkPoints,
             StoredPointsForPointerId(kPointerId));
   EXPECT_EQ(ink_point(kPointsBeyondMaxAllowed).point(),
             GetPointsForPointerId(kPointerId).begin()->second);

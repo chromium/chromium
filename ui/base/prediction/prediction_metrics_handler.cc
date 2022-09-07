@@ -28,6 +28,19 @@ void PredictionMetricsHandler::AddRealEvent(const gfx::PointF& pos,
   // but it has a timestamp earlier than 3, so a DCHECK would fail. Early out
   // here will not impact correctness since 2 already exists in |events_queue_|.
   if (!events_queue_.empty() && time_stamp <= events_queue_.back().time_stamp) {
+    // There can be situations where the metadata does not arrive in time for
+    // the vsync. Rather than skipping drawing for that frame, the metadata is
+    // kept and the trail is drawn from the metadata point to the latest
+    // point in the trail. However, the metadata and points relatively near it
+    // can be cleared from events_queue_ during ComputeMetrics(). Therefore the
+    // following DCHECK is hit when the older points are re-added as real
+    // events. Since those points are not relevant to the front of the trail,
+    // where the prediction happens, they can safely be exempt from the
+    // following DCHECK. Only points that are at or later than the front of the
+    // events_queue_ need to be verified.
+    if (time_stamp < events_queue_.front().time_stamp)
+      return;
+
     // Confirm that the above assertion is true, and that timestamp 2 (from
     // the above example) exists in |events_queue_|.
     bool event_exists = false;
