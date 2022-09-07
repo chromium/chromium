@@ -73,7 +73,7 @@ const base::Feature kAutofillEnableManualFallbackForVirtualCards{
 // out.
 const base::Feature kAutofillEnableMerchantOptOutErrorDialog{
     "AutofillEnableMerchantOptOutErrorDialog",
-    base::FEATURE_ENABLED_BY_DEFAULT};
+    base::FEATURE_DISABLED_BY_DEFAULT};
 
 // When enabled, card product name (instead of issuer network) will be shown in
 // Payments UI.
