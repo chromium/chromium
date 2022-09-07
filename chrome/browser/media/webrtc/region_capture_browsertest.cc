@@ -403,8 +403,16 @@ IN_PROC_BROWSER_TEST_F(RegionCaptureBrowserTest,
   EXPECT_TRUE(tab.CropTo(crop_target, Frame::kTopLevelDocument));
 }
 
+// TODO(crbug.com/1359258): Flaky on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_CropToAllowedIfTopLevelCropsToElementInEmbedded \
+  DISABLED_CropToAllowedIfTopLevelCropsToElementInEmbedded
+#else
+#define MAYBE_CropToAllowedIfTopLevelCropsToElementInEmbedded \
+  CropToAllowedIfTopLevelCropsToElementInEmbedded
+#endif
 IN_PROC_BROWSER_TEST_F(RegionCaptureBrowserTest,
-                       CropToAllowedIfTopLevelCropsToElementInEmbedded) {
+                       MAYBE_CropToAllowedIfTopLevelCropsToElementInEmbedded) {
   SetUpTest(Frame::kTopLevelDocument, /*self_capture=*/true);
   TabInfo& tab = tabs_[kMainTab];
 
