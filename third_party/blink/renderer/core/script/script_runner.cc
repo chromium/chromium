@@ -106,6 +106,7 @@ void ScriptRunner::QueueScriptForExecution(PendingScript* pending_script,
   switch (pending_script->GetSchedulingType()) {
     case ScriptSchedulingType::kAsync:
       pending_async_scripts_.insert(pending_script, delay_reasons);
+      number_of_async_scripts_not_evaluated_yet_++;
       break;
 
     case ScriptSchedulingType::kInOrder:
@@ -178,8 +179,8 @@ void ScriptRunner::RemoveDelayReasonFromScript(PendingScript* pending_script,
   // Script is really ready to evaluate.
   pending_async_scripts_.erase(it);
   base::OnceClosure task =
-      WTF::Bind(&ScriptRunner::ExecutePendingScript, WrapWeakPersistent(this),
-                WrapPersistent(pending_script));
+      WTF::Bind(&ScriptRunner::ExecuteAsyncPendingScript,
+                WrapWeakPersistent(this), WrapPersistent(pending_script));
   if (base::FeatureList::IsEnabled(
           features::kLowPriorityAsyncScriptExecution)) {
     PostTaskWithLowPriorityUntilTimeout(
@@ -188,6 +189,20 @@ void ScriptRunner::RemoveDelayReasonFromScript(PendingScript* pending_script,
         low_priority_task_runner_, task_runner_);
   } else {
     task_runner_->PostTask(FROM_HERE, std::move(task));
+  }
+}
+
+void ScriptRunner::ExecuteAsyncPendingScript(PendingScript* pending_script) {
+  DCHECK_GT(number_of_async_scripts_not_evaluated_yet_, 0u);
+  ExecutePendingScript(pending_script);
+  number_of_async_scripts_not_evaluated_yet_--;
+  if (base::FeatureList::IsEnabled(
+          features::kDOMContentLoadedWaitForAsyncScript) &&
+      !HasAsyncScripts()) {
+    if (ScriptableDocumentParser* parser =
+            document_->GetScriptableDocumentParser()) {
+      parser->NotifyNoRemainingAsyncScripts();
+    }
   }
 }
 

@@ -959,6 +959,12 @@
     "args": ["--enable-features=DelayAsyncScriptExecution:delay_type/finished_parsing/limit/1m"]
   },
   {
+    "prefix": "async-script-scheduling-finished-parsing-with-dom-content-loaded-wait-for-async-script",
+    "platforms": ["Linux", "Mac", "Win"],
+    "bases": ["wpt_internal/async-script-scheduling"],
+    "args": ["--enable-features=DelayAsyncScriptExecution:delay_type/finished_parsing/limit/1m,DOMContentLoadedWaitForAsyncScript"]
+  },
+  {
     "prefix": "async-script-scheduling-first-paint-or-finished-parsing",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["wpt_internal/async-script-scheduling"],

@@ -789,6 +789,11 @@ BLINK_COMMON_EXPORT extern const base::Feature kLowPriorityAsyncScriptExecution;
 BLINK_COMMON_EXPORT extern const base::FeatureParam<base::TimeDelta>
     kTimeoutForLowPriorityAsyncScriptExecution;
 
+// If enabled, DOMContentLoaded will be fired after all async scripts are
+// executed.
+BLINK_COMMON_EXPORT extern const base::Feature
+    kDOMContentLoadedWaitForAsyncScript;
+
 // If enabled, parser-blocking scripts are force-deferred.
 // https://crbug.com/1339112
 BLINK_COMMON_EXPORT extern const base::Feature kForceDeferScriptIntervention;

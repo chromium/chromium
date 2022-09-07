@@ -1344,6 +1344,7 @@ class CORE_EXPORT Document : public ContainerNode,
   void MarkFirstPaint();
   void OnPaintFinished();
   void OnLargestContentfulPaintUpdated();
+  void OnPrepareToStopParsing();
   void FinishedParsing();
 
   void SetEncodingData(const DocumentEncodingData& new_data);
