@@ -17,7 +17,7 @@
 #include "chrome/browser/ash/login/screens/base_screen.h"
 #include "chrome/browser/ash/login/screens/error_screen.h"
 #include "chrome/browser/ash/login/screens/network_error.h"
-#include "chromeos/ash/components/network/portal_detector/network_portal_detector.h"
+#include "chromeos/ash/components/network/network_state_handler_observer.h"
 
 namespace ash {
 
@@ -27,7 +27,7 @@ namespace ash {
 // the error screen upon failures. Similar to a screen controller, but it
 // doesn't actually drive a dedicated screen.
 class AutoEnrollmentCheckScreen : public BaseScreen,
-                                  public NetworkPortalDetector::Observer {
+                                  public NetworkStateHandlerObserver {
  public:
   enum class Result {
     NEXT,
@@ -61,10 +61,11 @@ class AutoEnrollmentCheckScreen : public BaseScreen,
     exit_callback_ = callback;
   }
 
-  // NetworkPortalDetector::Observer implementation:
-  void OnPortalDetectionCompleted(
-      const NetworkState* network,
-      const NetworkPortalDetector::CaptivePortalStatus status) override;
+  // NetworkStateHandlerObserver
+  void PortalStateChanged(
+      const NetworkState* default_network,
+      const NetworkState::PortalState portal_state) override;
+  void OnShuttingDown() override;
 
  protected:
   // BaseScreen:
@@ -82,12 +83,12 @@ class AutoEnrollmentCheckScreen : public BaseScreen,
   void OnAutoEnrollmentCheckProgressed(policy::AutoEnrollmentState state);
 
   // Handles a state update, updating the UI and saving the state.
-  void UpdateState();
+  void UpdateState(NetworkState::PortalState new_captive_portal_state);
 
-  // Configures the UI to reflect `new_captive_portal_status`. Returns true if
-  // and only if a UI change has been made.
-  bool UpdateCaptivePortalStatus(
-      NetworkPortalDetector::CaptivePortalStatus new_captive_portal_status);
+  // Configures the UI to reflect the updated captive portal state.
+  // Returns true if a UI change has been made.
+  bool UpdateCaptivePortalState(
+      NetworkState::PortalState new_captive_portal_state);
 
   // Configures the UI to reflect `new_auto_enrollment_state`. Returns true if
   // and only if a UI change has been made.
@@ -125,8 +126,10 @@ class AutoEnrollmentCheckScreen : public BaseScreen,
 
   base::CallbackListSubscription auto_enrollment_progress_subscription_;
 
-  NetworkPortalDetector::CaptivePortalStatus captive_portal_status_;
-  policy::AutoEnrollmentState auto_enrollment_state_;
+  NetworkState::PortalState captive_portal_state_ =
+      NetworkState::PortalState::kUnknown;
+  policy::AutoEnrollmentState auto_enrollment_state_ =
+      policy::AUTO_ENROLLMENT_STATE_IDLE;
 
   std::unique_ptr<ErrorScreensHistogramHelper> histogram_helper_;
 

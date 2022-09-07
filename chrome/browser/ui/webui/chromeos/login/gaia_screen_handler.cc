@@ -226,13 +226,13 @@ std::string GetChromeType() {
   }
 }
 
-void UpdateAuthParams(base::Value* params, bool is_restrictive_proxy) {
+void UpdateAuthParams(base::Value* params) {
   CrosSettings* cros_settings = CrosSettings::Get();
   bool allow_new_user = true;
   cros_settings->GetBoolean(kAccountsPrefAllowNewUser, &allow_new_user);
 
   // nosignup flow if new users are not allowed.
-  if (!allow_new_user || is_restrictive_proxy)
+  if (!allow_new_user)
     params->SetStringKey("flow", "nosignup");
 }
 
@@ -246,10 +246,6 @@ bool ShouldCheckUserTypeBeforeAllowing() {
                             &family_link_allowed);
 
   return family_link_allowed;
-}
-
-bool IsOnline(NetworkPortalDetector::CaptivePortalStatus status) {
-  return status == NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE;
 }
 
 void GetVersionAndConsent(std::string* out_version, bool* out_consent) {
@@ -336,10 +332,6 @@ GaiaScreenHandler::~GaiaScreenHandler() {
     GetLoginScreenPinDialogManager()->RemovePinDialogHost(this);
 }
 
-void GaiaScreenHandler::DisableRestrictiveProxyCheckForTest() {
-  disable_restrictive_proxy_check_for_test_ = true;
-}
-
 void GaiaScreenHandler::LoadGaia(const login::GaiaContext& context) {
   auto partition_call = login::GetStartSigninSession(
       web_ui(), base::BindOnce(&GaiaScreenHandler::LoadGaiaWithPartition,
@@ -417,7 +409,7 @@ void GaiaScreenHandler::LoadGaiaWithPartitionAndVersionAndConsent(
   params.SetBoolKey("readOnlyEmail", true);
   params.SetStringKey("email", context.email);
 
-  UpdateAuthParams(&params, IsRestrictiveProxy());
+  UpdateAuthParams(&params);
 
   screen_mode_ = GetGaiaScreenMode(context.email);
   params.SetIntKey("screenMode", screen_mode_);
@@ -685,23 +677,6 @@ void GaiaScreenHandler::RegisterMessages() {
   AddCallback("passwordEntered", &GaiaScreenHandler::HandlePasswordEntered);
 
   BaseScreenHandler::RegisterMessages();
-}
-
-void GaiaScreenHandler::OnPortalDetectionCompleted(
-    const NetworkState* network,
-    const NetworkPortalDetector::CaptivePortalStatus status) {
-  VLOG(1) << "OnPortalDetectionCompleted "
-          << NetworkPortalDetector::CaptivePortalStatusString(status);
-
-  const NetworkPortalDetector::CaptivePortalStatus previous_status =
-      captive_portal_status_;
-  captive_portal_status_ = status;
-  if (IsOnline(captive_portal_status_) == IsOnline(previous_status) ||
-      disable_restrictive_proxy_check_for_test_ ||
-      GetCurrentScreen() != kScreenId)
-    return;
-
-  LoadAuthExtension(true /* force */);
 }
 
 void GaiaScreenHandler::HandleIdentifierEntered(const std::string& user_email) {
@@ -1408,11 +1383,6 @@ void GaiaScreenHandler::LoadAuthExtension(bool force) {
 void GaiaScreenHandler::UpdateState(NetworkError::ErrorReason reason) {
   if (signin_screen_handler_ && !hidden_)
     signin_screen_handler_->UpdateState(reason);
-}
-
-bool GaiaScreenHandler::IsRestrictiveProxy() const {
-  return !disable_restrictive_proxy_check_for_test_ &&
-         !IsOnline(captive_portal_status_);
 }
 
 void GaiaScreenHandler::OnGaiaReauthTokenFetched(

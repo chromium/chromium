@@ -71,8 +71,6 @@ class GaiaView : public base::SupportsWeakPtr<GaiaView> {
 
   virtual ~GaiaView() = default;
 
-  virtual void DisableRestrictiveProxyCheckForTest() = 0;
-
   // Loads Gaia into the webview. Depending on internal state, the Gaia will
   // either be loaded immediately or after an asynchronous clean-up process that
   // cleans DNS cache and cookies. If available, `account_id` is used for
@@ -102,7 +100,6 @@ class GaiaView : public base::SupportsWeakPtr<GaiaView> {
 // A class that handles WebUI hooks in Gaia screen.
 class GaiaScreenHandler : public BaseScreenHandler,
                           public GaiaView,
-                          public NetworkPortalDetector::Observer,
                           public SecurityTokenPinDialogHost {
  public:
   using TView = GaiaView;
@@ -132,7 +129,6 @@ class GaiaScreenHandler : public BaseScreenHandler,
   ~GaiaScreenHandler() override;
 
   // GaiaView:
-  void DisableRestrictiveProxyCheckForTest() override;
   void LoadGaiaAsync(const AccountId& account_id) override;
   void Show() override;
   void Hide() override;
@@ -197,11 +193,6 @@ class GaiaScreenHandler : public BaseScreenHandler,
 
   // WebUIMessageHandler implementation:
   void RegisterMessages() override;
-
-  // NetworkPortalDetector::Observer implementation.
-  void OnPortalDetectionCompleted(
-      const NetworkState* network,
-      const NetworkPortalDetector::CaptivePortalStatus status) override;
 
   // WebUI message handlers.
   void HandleWebviewLoadAborted(int error_code);
@@ -294,9 +285,6 @@ class GaiaScreenHandler : public BaseScreenHandler,
     signin_screen_handler_ = handler;
   }
 
-  // Are we on a restrictive proxy?
-  bool IsRestrictiveProxy() const;
-
   // Returns temporary unused device Id.
   std::string GetTemporaryDeviceId();
 
@@ -367,12 +355,6 @@ class GaiaScreenHandler : public BaseScreenHandler,
   // Test result of userInfo.
   std::string test_services_;
   bool test_expects_complete_login_ = false;
-
-  // True if proxy doesn't allow access to google.com/generate_204.
-  NetworkPortalDetector::CaptivePortalStatus captive_portal_status_ =
-      NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE;
-
-  bool disable_restrictive_proxy_check_for_test_ = false;
 
   // Non-owning ptr to SigninScreenHandler instance. Should not be used
   // in dtor.
