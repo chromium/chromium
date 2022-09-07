@@ -401,7 +401,16 @@ void NGContainerFragmentBuilder::PropagateOOFPositionedInfo(
           relative_offset - fixedpos_containing_block->RelativeOffset();
       if (fixedpos_inline_container)
         static_position.offset -= fixedpos_inline_container->relative_offset;
-      if (fixedpos_containing_block && fixedpos_containing_block->Fragment()) {
+      // The containing block for fixed-positioned elements should normally
+      // already be laid out, and therefore have a fragment - with one
+      // exception: If this is the pagination root, it obviously won't have a
+      // fragment, since it hasn't finished layout yet. But we still need to
+      // propagate the fixed-positioned descendant, so that it gets laid out
+      // inside the fragmentation context (and repeated on every page), instead
+      // of becoming a direct child of the LayoutNGView fragment (and thus a
+      // sibling of the page fragments).
+      if (fixedpos_containing_block &&
+          (fixedpos_containing_block->Fragment() || node_.IsPaginatedRoot())) {
         NGInlineContainer<LogicalOffset> new_fixedpos_inline_container;
         if (fixedpos_inline_container)
           new_fixedpos_inline_container = *fixedpos_inline_container;

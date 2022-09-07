@@ -189,6 +189,10 @@ class CORE_EXPORT NGLayoutInputNode {
     return IsBlock() && box_->IsScrollContainer();
   }
 
+  // Return true if this is the document root and it is paginated. A paginated
+  // root establishes a fragmentation context.
+  bool IsPaginatedRoot() const;
+
   bool CreatesNewFormattingContext() const {
     return IsBlock() && box_->CreatesNewFormattingContext();
   }

@@ -1232,8 +1232,11 @@ void NGOutOfFlowLayoutPart::LayoutFragmentainerDescendants(
         if (!fragment || fragment->IsFragmentainerBox()) {
           HeapVector<NodeToLayout>& pending_descendants =
               descendants_to_layout[index];
+          bool is_last_fragmentainer_with_oof_descendants =
+              index + 1 == descendants_to_layout.size();
           LayoutOOFsInFragmentainer(pending_descendants, index,
                                     fragmentainer_progression,
+                                    is_last_fragmentainer_with_oof_descendants,
                                     &fragmented_descendants);
           // Retrieve the updated or newly added fragmentainer, and add its
           // block contribution to the consumed block size. Skip this if we are
@@ -1367,7 +1370,8 @@ NGOutOfFlowLayoutPart::NodeInfo NGOutOfFlowLayoutPart::SetupNodeInfo(
 const NGLayoutResult* NGOutOfFlowLayoutPart::LayoutOOFNode(
     NodeToLayout& oof_node_to_layout,
     const LayoutBox* only_layout,
-    const NGConstraintSpace* fragmentainer_constraint_space) {
+    const NGConstraintSpace* fragmentainer_constraint_space,
+    bool is_known_to_be_last_fragmentainer) {
   const NodeInfo& node_info = oof_node_to_layout.node_info;
   OffsetInfo& offset_info = oof_node_to_layout.offset_info;
   if (offset_info.has_cached_layout_result) {
@@ -1378,7 +1382,8 @@ const NGLayoutResult* NGOutOfFlowLayoutPart::LayoutOOFNode(
   NGBoxStrut scrollbars_before =
       ComputeScrollbarsForNonAnonymous(node_info.node);
   const NGLayoutResult* layout_result =
-      Layout(oof_node_to_layout, fragmentainer_constraint_space);
+      Layout(oof_node_to_layout, fragmentainer_constraint_space,
+             is_known_to_be_last_fragmentainer);
   NGBoxStrut scrollbars_after =
       ComputeScrollbarsForNonAnonymous(node_info.node);
 
@@ -1428,8 +1433,8 @@ const NGLayoutResult* NGOutOfFlowLayoutPart::LayoutOOFNode(
                                       /* is_first_run */ false);
       }
 
-      layout_result =
-          Layout(oof_node_to_layout, fragmentainer_constraint_space);
+      layout_result = Layout(oof_node_to_layout, fragmentainer_constraint_space,
+                             is_known_to_be_last_fragmentainer);
 
       scrollbars_after = ComputeScrollbarsForNonAnonymous(node_info.node);
       DCHECK(!freeze_horizontal || !freeze_vertical ||
@@ -1631,7 +1636,8 @@ bool NGOutOfFlowLayoutPart::TryCalculateOffset(
 
 const NGLayoutResult* NGOutOfFlowLayoutPart::Layout(
     const NodeToLayout& oof_node_to_layout,
-    const NGConstraintSpace* fragmentainer_constraint_space) {
+    const NGConstraintSpace* fragmentainer_constraint_space,
+    bool is_known_to_be_last_fragmentainer) {
   const NodeInfo& node_info = oof_node_to_layout.node_info;
   const WritingDirectionMode candidate_writing_direction =
       node_info.node.Style().GetWritingDirection();
@@ -1660,12 +1666,25 @@ const NGLayoutResult* NGOutOfFlowLayoutPart::Layout(
     if (fragmentainer_constraint_space && offset_info.initial_layout_result)
       should_use_fixed_block_size = false;
 
+    RepeatMode repeat_mode = kNotRepeated;
+    if (container_builder_->Node().IsPaginatedRoot() &&
+        node_info.node.Style().GetPosition() == EPosition::kFixed &&
+        !oof_node_to_layout.containing_block_fragment) {
+      // Fixed-positioned elements are repeated when paginated, if contained by
+      // the initial containing block (i.e. when not contained by a transformed
+      // element or similar).
+      if (is_known_to_be_last_fragmentainer)
+        repeat_mode = kRepeatedLast;
+      else
+        repeat_mode = kMayRepeatAgain;
+    }
+
     layout_result = GenerateFragment(
         node_info.node, container_content_size_in_candidate_writing_mode,
         offset_info.block_estimate, offset_info.node_dimensions,
         offset.block_offset, oof_node_to_layout.break_token,
         fragmentainer_constraint_space, should_use_fixed_block_size,
-        node_info.requires_content_before_breaking);
+        node_info.requires_content_before_breaking, repeat_mode);
   }
 
   if (layout_result->Status() != NGLayoutResult::kSuccess) {
@@ -1729,7 +1748,8 @@ const NGLayoutResult* NGOutOfFlowLayoutPart::GenerateFragment(
     const NGBlockBreakToken* break_token,
     const NGConstraintSpace* fragmentainer_constraint_space,
     bool should_use_fixed_block_size,
-    bool requires_content_before_breaking) {
+    bool requires_content_before_breaking,
+    RepeatMode repeat_mode) {
   const auto& style = node.Style();
 
   LayoutUnit inline_size = node_dimensions.size.inline_size;
@@ -1743,6 +1763,7 @@ const NGLayoutResult* NGOutOfFlowLayoutPart::GenerateFragment(
       ToPhysicalSize(logical_size, style.GetWritingMode());
   LogicalSize available_size =
       physical_size.ConvertToLogical(ConstraintSpace().GetWritingMode());
+  bool is_repeatable = false;
 
   NGConstraintSpaceBuilder builder(ConstraintSpace(),
                                    style.GetWritingDirection(),
@@ -1754,9 +1775,18 @@ const NGLayoutResult* NGOutOfFlowLayoutPart::GenerateFragment(
   if (should_use_fixed_block_size)
     builder.SetIsFixedBlockSize(true);
   if (fragmentainer_constraint_space) {
-    SetupSpaceBuilderForFragmentation(
-        *fragmentainer_constraint_space, node, block_offset, &builder,
-        /* is_new_fc */ true, requires_content_before_breaking);
+    if (repeat_mode != kNotRepeated) {
+      // Paginated fixed-positioned elements are repeated on every page, and may
+      // therefore not fragment.
+      DCHECK(container_builder_->Node().IsPaginatedRoot());
+      DCHECK_EQ(node.Style().GetPosition(), EPosition::kFixed);
+      builder.SetShouldRepeat(repeat_mode != kRepeatedLast);
+      is_repeatable = true;
+    } else {
+      SetupSpaceBuilderForFragmentation(
+          *fragmentainer_constraint_space, node, block_offset, &builder,
+          /* is_new_fc */ true, requires_content_before_breaking);
+    }
   } else if (container_builder_->IsInitialColumnBalancingPass()) {
     SetupSpaceBuilderForFragmentation(
         ConstraintSpace(), node, block_offset, &builder, /* is_new_fc */ true,
@@ -1765,6 +1795,8 @@ const NGLayoutResult* NGOutOfFlowLayoutPart::GenerateFragment(
   DeferredShapingMinimumTopScope minimum_top_scope(node, block_offset);
   NGConstraintSpace space = builder.ToConstraintSpace();
 
+  if (is_repeatable)
+    return node.LayoutRepeatableRoot(space, break_token);
   return node.Layout(space, break_token);
 }
 
@@ -1772,10 +1804,13 @@ void NGOutOfFlowLayoutPart::LayoutOOFsInFragmentainer(
     HeapVector<NodeToLayout>& pending_descendants,
     wtf_size_t index,
     LogicalOffset fragmentainer_progression,
+    bool is_last_fragmentainer_with_oof_descendants,
     HeapVector<NodeToLayout>* fragmented_descendants) {
   auto& children = FragmentationContextChildren();
   wtf_size_t num_children = children.size();
   bool is_new_fragment = index >= num_children;
+  bool is_known_to_have_more_fragmentainers =
+      index + 1 < num_children || !is_last_fragmentainer_with_oof_descendants;
 
   DCHECK(fragmented_descendants);
   HeapVector<NodeToLayout> descendants_continued;
@@ -1824,27 +1859,59 @@ void NGOutOfFlowLayoutPart::LayoutOOFsInFragmentainer(
                                  previous_break_token,
                                  /* early_break */ nullptr);
 
-  // |algorithm| corresponds to the "mutable copy" of our original
-  // fragmentainer. As long as this "copy" hasn't been laid out via
-  // NGSimplifiedOOFLayoutAlgorithm::Layout, we can append new items to it.
-  NGSimplifiedOOFLayoutAlgorithm algorithm(params, *fragment, is_new_fragment);
+  bool is_known_to_be_last_fragmentainer = false;
 
-  // Layout any OOF elements that are a continuation of layout first.
-  for (auto& descendant : descendants_continued) {
-    AddOOFToFragmentainer(descendant, &space, fragmentainer_offset, index,
-                          &algorithm, fragmented_descendants);
-  }
-  // Once we've laid out the OOF elements that are a continuation of layout, we
-  // can layout the OOF elements that start layout in the current fragmentainer.
-  for (auto& descendant : pending_descendants) {
-    AddOOFToFragmentainer(descendant, &space, fragmentainer_offset, index,
-                          &algorithm, fragmented_descendants);
-  }
+  do {
+    // |algorithm| corresponds to the "mutable copy" of our original
+    // fragmentainer. As long as this "copy" hasn't been laid out via
+    // NGSimplifiedOOFLayoutAlgorithm::Layout, we can append new items to it.
+    NGSimplifiedOOFLayoutAlgorithm algorithm(params, *fragment,
+                                             is_new_fragment);
+    // Layout any OOF elements that are a continuation of layout first.
+    for (auto& descendant : descendants_continued) {
+      AddOOFToFragmentainer(descendant, &space, fragmentainer_offset, index,
+                            is_known_to_be_last_fragmentainer, &algorithm,
+                            fragmented_descendants);
+    }
+    // Once we've laid out the OOF elements that are a continuation of layout,
+    // we can layout the OOF elements that start layout in the current
+    // fragmentainer.
+    for (auto& descendant : pending_descendants) {
+      AddOOFToFragmentainer(descendant, &space, fragmentainer_offset, index,
+                            is_known_to_be_last_fragmentainer, &algorithm,
+                            fragmented_descendants);
+    }
 
-  // Finalize layout on the cloned fragmentainer and replace all existing
-  // references to the old result.
-  ReplaceFragmentainer(index, fragmentainer_offset, is_new_fragment,
-                       &algorithm);
+    if (container_builder_->Node().IsPaginatedRoot() &&
+        !is_known_to_have_more_fragmentainers &&
+        !fragmented_descendants->IsEmpty()) {
+      // This will be the last fragmentainer, unless we have regular
+      // (i.e. non-repeated) out-of-flow positioned elements that fragmented.
+      bool has_descendant_with_break = false;
+      for (const auto& descendant : *fragmented_descendants) {
+        DCHECK(descendant.break_token);
+        if (!descendant.break_token->IsRepeated()) {
+          has_descendant_with_break = true;
+          break;
+        }
+      }
+      if (!has_descendant_with_break) {
+        // This turned out to be the last fragmentainer. We didn't know that
+        // up-front, so that all repeated fixed positioned fragments created a
+        // repeat break token. But they are not going to repeat any further, so
+        // we now need a re-layout with that in mind (so that they don't get
+        // outgoing break tokens).
+        is_known_to_be_last_fragmentainer = true;
+        fragmented_descendants->clear();
+        continue;
+      }
+    }
+    // Finalize layout on the cloned fragmentainer and replace all existing
+    // references to the old result.
+    ReplaceFragmentainer(index, fragmentainer_offset, is_new_fragment,
+                         &algorithm);
+    break;
+  } while (true);
 }
 
 void NGOutOfFlowLayoutPart::AddOOFToFragmentainer(
@@ -1852,10 +1919,12 @@ void NGOutOfFlowLayoutPart::AddOOFToFragmentainer(
     const NGConstraintSpace* fragmentainer_space,
     LogicalOffset fragmentainer_offset,
     wtf_size_t index,
+    bool is_known_to_be_last_fragmentainer,
     NGSimplifiedOOFLayoutAlgorithm* algorithm,
     HeapVector<NodeToLayout>* fragmented_descendants) {
   const NGLayoutResult* result =
-      LayoutOOFNode(descendant, /* only_layout */ nullptr, fragmentainer_space);
+      LayoutOOFNode(descendant, /* only_layout */ nullptr, fragmentainer_space,
+                    is_known_to_be_last_fragmentainer);
 
   if (result->Status() != NGLayoutResult::kSuccess) {
     DCHECK_EQ(result->Status(), NGLayoutResult::kOutOfFragmentainerSpace);
@@ -1919,11 +1988,13 @@ void NGOutOfFlowLayoutPart::AddOOFToFragmentainer(
       To<NGPhysicalBoxFragment>(result->PhysicalFragment());
   const NGBlockBreakToken* break_token = physical_fragment.BreakToken();
   if (break_token) {
+    DCHECK(!is_known_to_be_last_fragmentainer);
     // We must continue layout in the next fragmentainer. Update any information
     // in NodeToLayout, and add the node to |fragmented_descendants|.
     NodeToLayout fragmented_descendant = descendant;
     fragmented_descendant.break_token = break_token;
-    fragmented_descendant.offset_info.offset.block_offset = LayoutUnit();
+    if (!break_token->IsRepeated())
+      fragmented_descendant.offset_info.offset.block_offset = LayoutUnit();
     fragmented_descendants->emplace_back(fragmented_descendant);
   }
 
