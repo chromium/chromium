@@ -20,7 +20,8 @@ class AccountSelectionView {
    public:
     virtual ~Delegate() = default;
     // Informs the controller that the user has made a selection.
-    virtual void OnAccountSelected(const Account& account) = 0;
+    virtual void OnAccountSelected(const GURL& idp_config_url,
+                                   const Account& account) = 0;
     // Informs the controller that the user has dismissed the sheet with reason
     // `dismiss_reason`.
     virtual void OnDismiss(

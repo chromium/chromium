@@ -354,7 +354,8 @@ void OnManifestListParsed(
   std::move(callback).Run(FetchStatus::kSuccess, urls);
 }
 
-void OnManifestParsed(absl::optional<int> idp_brand_icon_ideal_size,
+void OnManifestParsed(const GURL& provider,
+                      absl::optional<int> idp_brand_icon_ideal_size,
                       absl::optional<int> idp_brand_icon_minimum_size,
                       IdpNetworkRequestManager::FetchManifestCallback callback,
                       FetchStatus fetch_status,
@@ -383,6 +384,7 @@ void OnManifestParsed(absl::optional<int> idp_brand_icon_ideal_size,
 
   const base::Value* idp_metadata_value = response.FindKey(kIdpBrandingKey);
   IdentityProviderMetadata idp_metadata;
+  idp_metadata.config_url = provider;
   if (idp_metadata_value) {
     ParseIdentityProviderMetadata(*idp_metadata_value,
                                   idp_brand_icon_ideal_size,
@@ -572,7 +574,7 @@ void IdpNetworkRequestManager::FetchManifest(
   DownloadJsonAndParse(
       std::move(resource_request),
       /*url_encoded_post_data=*/absl::nullopt,
-      base::BindOnce(&OnManifestParsed, idp_brand_icon_ideal_size,
+      base::BindOnce(&OnManifestParsed, provider, idp_brand_icon_ideal_size,
                      idp_brand_icon_minimum_size, std::move(callback)),
       maxResponseSizeInKiB * 1024);
 }

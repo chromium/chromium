@@ -924,8 +924,7 @@ void FederatedAuthRequestImpl::OnAccountsResponseReceived(
           rp_web_contents, rp_url_for_display, identity_providers_data,
           is_auto_sign_in ? SignInMode::kAuto : SignInMode::kExplicit,
           base::BindOnce(&FederatedAuthRequestImpl::OnAccountSelected,
-                         weak_ptr_factory_.GetWeakPtr(),
-                         idp_info_[idp_info.provider.config_url]),
+                         weak_ptr_factory_.GetWeakPtr()),
           base::BindOnce(&FederatedAuthRequestImpl::OnDialogDismissed,
                          weak_ptr_factory_.GetWeakPtr()));
       return;
@@ -979,11 +978,11 @@ void FederatedAuthRequestImpl::ComputeLoginStateAndReorderAccounts(
   });
 }
 
-void FederatedAuthRequestImpl::OnAccountSelected(
-    const IdentityProviderInfo& idp_info,
-    const std::string& account_id,
-    bool is_sign_in) {
+void FederatedAuthRequestImpl::OnAccountSelected(const GURL& idp_config_url,
+                                                 const std::string& account_id,
+                                                 bool is_sign_in) {
   DCHECK(!account_id.empty());
+  const IdentityProviderInfo& idp_info = idp_info_[idp_config_url];
 
   // Check if the user has disabled the FedCM API after the FedCM UI is
   // displayed. This ensures that requests are not wrongfully sent to IDPs when

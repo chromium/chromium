@@ -8,6 +8,7 @@ import org.chromium.chrome.browser.ui.android.webid.data.Account;
 import org.chromium.chrome.browser.ui.android.webid.data.ClientIdMetadata;
 import org.chromium.chrome.browser.ui.android.webid.data.IdentityProviderMetadata;
 import org.chromium.content.webid.IdentityRequestDialogDismissReason;
+import org.chromium.url.GURL;
 
 import java.util.List;
 
@@ -25,7 +26,7 @@ public interface AccountSelectionComponent {
          * Called when the user select one of the accounts shown in the
          * AccountSelectionComponent.
          */
-        void onAccountSelected(Account account);
+        void onAccountSelected(GURL idpConfigUrl, Account account);
 
         /**
          * Called when the user dismisses the AccountSelectionComponent. Not called if a suggestion

@@ -27,7 +27,8 @@ void FakeIdentityRequestDialogController::ShowAccountsDialog(
   DCHECK_GT(accounts.size(), 0ul);
   // Use the provided account, if any. Otherwise use the first one.
   std::move(on_selected)
-      .Run(selected_account_ ? *selected_account_ : accounts[0].id,
+      .Run(identity_provider_data[0].idp_metadata.config_url,
+           selected_account_ ? *selected_account_ : accounts[0].id,
            /* is_sign_in= */ true);
 }
 

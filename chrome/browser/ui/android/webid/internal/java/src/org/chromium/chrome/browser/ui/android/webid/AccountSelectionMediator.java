@@ -327,7 +327,7 @@ class AccountSelectionMediator {
             return;
         }
 
-        mDelegate.onAccountSelected(selectedAccount);
+        mDelegate.onAccountSelected(mIdpMetadata.getConfigUrl(), selectedAccount);
         showVerifySheet(selectedAccount);
         updateBackPressBehavior();
     }

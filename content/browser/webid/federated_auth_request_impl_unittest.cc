@@ -414,10 +414,12 @@ class TestIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
     endpoints.client_metadata = config_.manifest.client_metadata_endpoint;
     endpoints.revocation = config_.manifest.revocation_endpoint;
 
+    IdentityProviderMetadata idp_metadata;
+    idp_metadata.config_url = provider;
     base::SequencedTaskRunnerHandle::Get()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(callback), config_.manifest.fetch_status,
-                       endpoints, IdentityProviderMetadata()));
+                       endpoints, idp_metadata));
   }
 
   void FetchClientMetadata(const GURL& endpoint,
@@ -783,7 +785,9 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
                   base::SequencedTaskRunnerHandle::Get()->PostTask(
                       FROM_HERE,
                       base::BindOnce(
-                          std::move(on_selected), accounts[0].id,
+                          std::move(on_selected),
+                          identity_provider_data[0].idp_metadata.config_url,
+                          accounts[0].id,
                           accounts[0].login_state == LoginState::kSignIn));
                 }));
       }
@@ -1309,7 +1313,9 @@ TEST_F(FederatedAuthRequestImplTest, AutoSignInForReturningUser) {
             base::span<const content::IdentityRequestAccount> accounts =
                 identity_provider_data[0].accounts;
             displayed_accounts = AccountList(accounts.begin(), accounts.end());
-            std::move(on_selected).Run(accounts[0].id, /*is_sign_in=*/true);
+            std::move(on_selected)
+                .Run(identity_provider_data[0].idp_metadata.config_url,
+                     accounts[0].id, /*is_sign_in=*/true);
           }));
 
   ASSERT_EQ(kConfigurationValid.accounts.size(), 1u);
@@ -1342,7 +1348,9 @@ TEST_F(FederatedAuthRequestImplTest, AutoSignInForFirstTimeUser) {
             base::span<const content::IdentityRequestAccount> accounts =
                 identity_provider_data[0].accounts;
             displayed_accounts = AccountList(accounts.begin(), accounts.end());
-            std::move(on_selected).Run(accounts[0].id, /*is_sign_in=*/true);
+            std::move(on_selected)
+                .Run(identity_provider_data[0].idp_metadata.config_url,
+                     accounts[0].id, /*is_sign_in=*/true);
           }));
 
   RequestParameters request_parameters = kDefaultRequestParameters;
@@ -1386,7 +1394,9 @@ TEST_F(FederatedAuthRequestImplTest, AutoSignInWithScreenReader) {
             base::span<const content::IdentityRequestAccount> accounts =
                 identity_provider_data[0].accounts;
             displayed_accounts = AccountList(accounts.begin(), accounts.end());
-            std::move(on_selected).Run(accounts[0].id, /*is_sign_in=*/true);
+            std::move(on_selected)
+                .Run(identity_provider_data[0].idp_metadata.config_url,
+                     accounts[0].id, /*is_sign_in=*/true);
           }));
 
   EXPECT_EQ(kConfigurationValid.accounts.size(), 1u);
@@ -1912,7 +1922,9 @@ TEST_F(FederatedAuthRequestImplTest, ApiDisabledAfterAccountsDialogShown) {
 
             base::span<const content::IdentityRequestAccount> accounts =
                 identity_provider_data[0].accounts;
-            std::move(on_selected).Run(accounts[0].id, /*is_sign_in=*/false);
+            std::move(on_selected)
+                .Run(identity_provider_data[0].idp_metadata.config_url,
+                     accounts[0].id, /*is_sign_in=*/false);
           }));
 
   base::RunLoop ukm_loop;

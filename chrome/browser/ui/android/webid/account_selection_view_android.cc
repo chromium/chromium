@@ -49,7 +49,8 @@ ScopedJavaLocalRef<jobject> ConvertToJavaIdentityProviderMetadata(
   return Java_IdentityProviderMetadata_Constructor(
       env, ui::OptionalSkColorToJavaColor(metadata.brand_text_color),
       ui::OptionalSkColorToJavaColor(metadata.brand_background_color),
-      java_brand_icon_url);
+      java_brand_icon_url,
+      url::GURLAndroid::FromNativeGURL(env, metadata.config_url));
 }
 
 ScopedJavaLocalRef<jobject> ConvertToJavaClientIdMetadata(
@@ -151,11 +152,14 @@ void AccountSelectionViewAndroid::ShowFailureDialog(
 
 void AccountSelectionViewAndroid::OnAccountSelected(
     JNIEnv* env,
+    const JavaParamRef<jobject>& idp_config_url,
     const JavaParamRef<jobjectArray>& account_string_fields,
     const JavaParamRef<jobject>& account_picture_url,
     bool is_sign_in) {
-  delegate_->OnAccountSelected(ConvertFieldsToAccount(
-      env, account_string_fields, account_picture_url, is_sign_in));
+  GURL config_url = *url::GURLAndroid::ToNativeGURL(env, idp_config_url);
+  delegate_->OnAccountSelected(
+      config_url, ConvertFieldsToAccount(env, account_string_fields,
+                                         account_picture_url, is_sign_in));
 }
 
 void AccountSelectionViewAndroid::OnDismiss(JNIEnv* env, jint dismiss_reason) {

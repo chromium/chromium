@@ -98,7 +98,7 @@ public class AccountSelectionIntegrationTest {
     private static final Account BOB = new Account("Bob", "", "Bob", "", TEST_PROFILE_PIC, false);
 
     private static final IdentityProviderMetadata IDP_METADATA =
-            new IdentityProviderMetadata(Color.BLACK, Color.BLACK, null);
+            new IdentityProviderMetadata(Color.BLACK, Color.BLACK, null, null);
 
     private AccountSelectionComponent mAccountSelection;
 
@@ -145,7 +145,7 @@ public class AccountSelectionIntegrationTest {
         Espresso.pressBack();
 
         waitForEvent(mMockBridge).onDismissed(IdentityRequestDialogDismissReason.OTHER);
-        verify(mMockBridge, never()).onAccountSelected(any());
+        verify(mMockBridge, never()).onAccountSelected(any(), any());
     }
 
     private void testClickOnConsentLink(int linkIndex, String expectedUrl) {
@@ -211,7 +211,7 @@ public class AccountSelectionIntegrationTest {
                     Arrays.asList(ANA, BOB), IDP_METADATA, mClientIdMetadata, false);
         });
         waitForEvent(mMockBridge).onDismissed(IdentityRequestDialogDismissReason.OTHER);
-        verify(mMockBridge, never()).onAccountSelected(any());
+        verify(mMockBridge, never()).onAccountSelected(any(), any());
         Espresso.onView(withText("Another bottom sheet content")).check(matches(isDisplayed()));
 
         runOnUiThreadBlocking(

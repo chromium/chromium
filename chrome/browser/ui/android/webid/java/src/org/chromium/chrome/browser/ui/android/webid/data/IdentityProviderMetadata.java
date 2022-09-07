@@ -8,6 +8,7 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.ui.util.ColorUtils;
+import org.chromium.url.GURL;
 
 /**
  * Holds data used to represent identity provider for display in the "account chooser" dialog.
@@ -16,10 +17,11 @@ public class IdentityProviderMetadata {
     private final Integer mBrandTextColor;
     private final Integer mBrandBackgroundColor;
     private final String mBrandIconUrl;
+    private final GURL mConfigUrl;
 
     @CalledByNative
     public IdentityProviderMetadata(
-            long brandTextColor, long brandBackgroundColor, String brandIconUrl) {
+            long brandTextColor, long brandBackgroundColor, String brandIconUrl, GURL configUrl) {
         // Parameters are longs because ColorUtils.INVALID_COLOR does not fit in an int.
         mBrandTextColor =
                 (brandTextColor == ColorUtils.INVALID_COLOR) ? null : (int) brandTextColor;
@@ -27,6 +29,7 @@ public class IdentityProviderMetadata {
                 ? null
                 : (int) brandBackgroundColor;
         mBrandIconUrl = brandIconUrl;
+        mConfigUrl = configUrl;
     }
 
     public @Nullable Integer getBrandTextColor() {
@@ -39,5 +42,9 @@ public class IdentityProviderMetadata {
 
     public String getBrandIconUrl() {
         return mBrandIconUrl;
+    }
+
+    public GURL getConfigUrl() {
+        return mConfigUrl;
     }
 }

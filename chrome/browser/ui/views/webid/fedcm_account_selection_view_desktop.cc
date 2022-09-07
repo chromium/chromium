@@ -169,7 +169,7 @@ void FedCmAccountSelectionView::OnAccountSelected(
                : State::VERIFYING;
   if (state_ == State::VERIFYING) {
     notify_delegate_of_dismiss_ = false;
-    delegate_->OnAccountSelected(account);
+    delegate_->OnAccountSelected(idp_data.idp_metadata_.config_url, account);
 
     GetBubbleView()->ShowVerifyingSheet(account, idp_data);
     return;

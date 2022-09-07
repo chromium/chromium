@@ -28,6 +28,7 @@ class AccountSelectionViewAndroid : public AccountSelectionView {
 
   void OnAccountSelected(
       JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& idp_config_url,
       const base::android::JavaParamRef<jobjectArray>& account_string_fields,
       const base::android::JavaParamRef<jobject>& account_picture_url,
       bool is_sign_in);

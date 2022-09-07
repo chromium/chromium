@@ -51,7 +51,8 @@ class IdentityDialogController
                          DismissCallback dismiss_callback) override;
 
   // AccountSelectionView::Delegate:
-  void OnAccountSelected(const Account& account) override;
+  void OnAccountSelected(const GURL& idp_config_url,
+                         const Account& account) override;
   void OnDismiss(DismissReason dismiss_reason) override;
   gfx::NativeView GetNativeView() override;
   content::WebContents* GetWebContents() override;

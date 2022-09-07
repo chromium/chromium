@@ -64,6 +64,7 @@ import java.util.Collections;
 @Config(shadows = {ShadowGURL.class})
 public class AccountSelectionViewTest {
     private static final GURL TEST_PROFILE_PIC = JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL);
+    private static final GURL TEST_CONFIG_URL = JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_1);
 
     private static final Account ANA =
             new Account("Ana", "ana@email.example", "Ana Doe", "Ana", TEST_PROFILE_PIC, true);
@@ -250,7 +251,7 @@ public class AccountSelectionViewTest {
     public void testContinueButtonBranding() {
         final int expectedTextColor = Color.BLUE;
         IdentityProviderMetadata idpMetadata = new IdentityProviderMetadata(expectedTextColor,
-                /*brandBackgroundColor*/ Color.GREEN, "https://icon-url.example");
+                /*brandBackgroundColor*/ Color.GREEN, "https://icon-url.example", TEST_CONFIG_URL);
 
         mModel.set(ItemProperties.CONTINUE_BUTTON, buildContinueButton(ANA, idpMetadata));
 

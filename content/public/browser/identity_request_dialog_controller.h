@@ -82,6 +82,10 @@ struct CONTENT_EXPORT IdentityProviderMetadata {
   absl::optional<SkColor> brand_text_color;
   absl::optional<SkColor> brand_background_color;
   GURL brand_icon_url;
+  // The URL of the configuration endpoint. This is stored in
+  // IdentityProviderMetadata so that the UI code can pass it along when an
+  // Account is selected by the user.
+  GURL config_url;
 };
 
 struct CONTENT_EXPORT IdentityProviderData {
@@ -116,7 +120,8 @@ class CONTENT_EXPORT IdentityRequestDialogController {
   };
 
   using AccountSelectionCallback =
-      base::OnceCallback<void(const std::string& /*account_id*/,
+      base::OnceCallback<void(const GURL& idp_config_url,
+                              const std::string& /*account_id*/,
                               bool /*is_sign_in*/)>;
   using DismissCallback =
       base::OnceCallback<void(DismissReason dismiss_reason)>;

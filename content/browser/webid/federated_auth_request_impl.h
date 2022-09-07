@@ -143,7 +143,7 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
       const IdentityProviderInfo& idp_info,
       IdpNetworkRequestManager::FetchStatus status,
       IdpNetworkRequestManager::AccountList accounts);
-  void OnAccountSelected(const IdentityProviderInfo& idp_info,
+  void OnAccountSelected(const GURL& idp_config_url,
                          const std::string& account_id,
                          bool is_sign_in);
   void OnDismissFailureDialog(

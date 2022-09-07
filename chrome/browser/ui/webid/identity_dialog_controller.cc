@@ -50,10 +50,11 @@ void IdentityDialogController::ShowFailureDialog(
   account_view_->ShowFailureDialog(rp_for_display, idp_for_display);
 }
 
-void IdentityDialogController::OnAccountSelected(const Account& account) {
+void IdentityDialogController::OnAccountSelected(const GURL& idp_config_url,
+                                                 const Account& account) {
   on_dismiss_.Reset();
   std::move(on_account_selection_)
-      .Run(account.id,
+      .Run(idp_config_url, account.id,
            account.login_state ==
                content::IdentityRequestAccount::LoginState::kSignIn);
 }

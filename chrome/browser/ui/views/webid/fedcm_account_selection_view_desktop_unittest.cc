@@ -112,7 +112,8 @@ class MockAccountSelectionViewDelegate : public AccountSelectionView::Delegate {
   MockAccountSelectionViewDelegate& operator=(
       const MockAccountSelectionViewDelegate&) = delete;
 
-  MOCK_METHOD1(OnAccountSelected, void(const content::IdentityRequestAccount&));
+  MOCK_METHOD2(OnAccountSelected,
+               void(const GURL&, const content::IdentityRequestAccount&));
   MOCK_METHOD1(OnDismiss,
                void(content::IdentityRequestDialogController::DismissReason));
   MOCK_METHOD0(GetNativeView, gfx::NativeView());

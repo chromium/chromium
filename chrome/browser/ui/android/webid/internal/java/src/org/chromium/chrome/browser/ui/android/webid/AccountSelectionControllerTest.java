@@ -93,6 +93,7 @@ public class AccountSelectionControllerTest {
             JUnitTestGURLs.getGURL(JUnitTestGURLs.RED_2);
     private static final GURL TEST_IDP_BRAND_ICON_URL =
             JUnitTestGURLs.getGURL(JUnitTestGURLs.RED_3);
+    private static final GURL TEST_CONFIG_URL = JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_2);
 
     private static final Account ANA = new Account(
             "Ana", "ana@one.test", "Ana Doe", "Ana", TEST_PROFILE_PIC, /*isSignIn=*/true);
@@ -128,7 +129,7 @@ public class AccountSelectionControllerTest {
     public AccountSelectionControllerTest() {
         MockitoAnnotations.initMocks(this);
         IDP_METADATA = new IdentityProviderMetadata(
-                Color.BLACK, Color.BLACK, TEST_IDP_BRAND_ICON_URL.getSpec());
+                Color.BLACK, Color.BLACK, TEST_IDP_BRAND_ICON_URL.getSpec(), TEST_CONFIG_URL);
     }
 
     @Before
@@ -198,7 +199,7 @@ public class AccountSelectionControllerTest {
     @Test
     public void testNoBrandIconUrl() {
         IdentityProviderMetadata idpMetadataNoBrandIconUrl =
-                new IdentityProviderMetadata(Color.BLACK, Color.BLACK, "");
+                new IdentityProviderMetadata(Color.BLACK, Color.BLACK, "", TEST_CONFIG_URL);
         mMediator.showAccounts(TEST_ETLD_PLUS_ONE, TEST_ETLD_PLUS_ONE_1, Arrays.asList(ANA),
                 idpMetadataNoBrandIconUrl, CLIENT_ID_METADATA, false /* isAutoSignIn */);
 
@@ -315,7 +316,7 @@ public class AccountSelectionControllerTest {
         mModel.get(ItemProperties.CONTINUE_BUTTON)
                 .get(ContinueButtonProperties.ON_CLICK_LISTENER)
                 .onResult(ANA);
-        verify(mMockDelegate).onAccountSelected(ANA);
+        verify(mMockDelegate).onAccountSelected(TEST_CONFIG_URL, ANA);
         assertFalse(mMediator.wasDismissed());
         mMediator.close();
         assertTrue(mMediator.wasDismissed());
@@ -330,7 +331,7 @@ public class AccountSelectionControllerTest {
         assertNotNull(mSheetAccountItems.get(0).model.get(AccountProperties.ON_CLICK_LISTENER));
 
         mSheetAccountItems.get(0).model.get(AccountProperties.ON_CLICK_LISTENER).onResult(CARL);
-        verify(mMockDelegate).onAccountSelected(CARL);
+        verify(mMockDelegate).onAccountSelected(TEST_CONFIG_URL, CARL);
         assertFalse(mMediator.wasDismissed());
         mMediator.close();
         assertTrue(mMediator.wasDismissed());
@@ -362,7 +363,7 @@ public class AccountSelectionControllerTest {
         mMediator.showAccounts(TEST_ETLD_PLUS_ONE, TEST_ETLD_PLUS_ONE_1, Arrays.asList(ANA, BOB),
                 IDP_METADATA, CLIENT_ID_METADATA, false);
         mMediator.onAccountSelected(ANA);
-        verify(mMockDelegate).onAccountSelected(ANA);
+        verify(mMockDelegate).onAccountSelected(TEST_CONFIG_URL, ANA);
         assertFalse(mMediator.wasDismissed());
         mMediator.close();
         assertTrue(mMediator.wasDismissed());
@@ -379,7 +380,7 @@ public class AccountSelectionControllerTest {
         assertTrue(containsItemOfType(mModel, ItemProperties.DATA_SHARING_CONSENT));
         assertEquals(1, mSheetAccountItems.size());
 
-        verify(mMockDelegate, never()).onAccountSelected(NEW_USER);
+        verify(mMockDelegate, never()).onAccountSelected(TEST_CONFIG_URL, NEW_USER);
     }
 
     @Test
@@ -397,7 +398,7 @@ public class AccountSelectionControllerTest {
         pressBack();
         assertTrue(mMediator.wasDismissed());
 
-        verify(mMockDelegate, never()).onAccountSelected(NEW_USER);
+        verify(mMockDelegate, never()).onAccountSelected(TEST_CONFIG_URL, NEW_USER);
     }
 
     @Test
@@ -407,7 +408,7 @@ public class AccountSelectionControllerTest {
                 IDP_METADATA, CLIENT_ID_METADATA, true);
         // Auto signs in if no action is taken.
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
-        verify(mMockDelegate).onAccountSelected(ANA);
+        verify(mMockDelegate).onAccountSelected(TEST_CONFIG_URL, ANA);
         assertFalse(mMediator.wasDismissed());
         mMediator.close();
         assertTrue(mMediator.wasDismissed());
