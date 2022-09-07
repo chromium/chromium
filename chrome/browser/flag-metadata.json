@@ -5196,12 +5196,12 @@
   {
     "name": "paint-preview-demo",
     "owners": [ "ckitagawa", "fredmello", "chrome-fdt@google.com" ],
-    "expiry_milestone": 106
+    "expiry_milestone": 109
   },
   {
     "name": "paint-preview-startup",
     "owners": [ "ckitagawa", "fredmello", "chrome-fdt@google.com" ],
-    "expiry_milestone": 106
+    "expiry_milestone": 109
   },
   {
     "name": "partial-split",
