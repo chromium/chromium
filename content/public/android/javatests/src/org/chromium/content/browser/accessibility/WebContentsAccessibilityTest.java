@@ -1021,6 +1021,7 @@ public class WebContentsAccessibilityTest {
      */
     @Test
     @LargeTest
+    @DisabledTest(message = "https://crbug.com/1360585")
     public void testEvent_contenteditable_SelectionON_CharacterGranularity() throws Throwable {
         setupTestWithHTML("<div contenteditable>Testing</div>");
 
