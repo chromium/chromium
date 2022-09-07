@@ -109,6 +109,28 @@ UIPasteControl* OmniboxAssistiveKeyboardPasteControl(
     [pasteControl.widthAnchor constraintEqualToConstant:kPasteButtonSize],
     [pasteControl.heightAnchor constraintEqualToConstant:kPasteButtonSize]
   ]];
+  // Hide `pasteControl` when there is no content in the pasteboard or when the
+  // content cannot be pasted into the omnibox.
+  __weak UIPasteControl* weakControl = pasteControl;
+  void (^setPasteButtonHiddenState)(NSNotification*) =
+      ^(NSNotification* notification) {
+        BOOL pasteButtonShouldBeVisible =
+            [UIPasteboard.generalPasteboard hasStrings] ||
+            [UIPasteboard.generalPasteboard hasURLs] ||
+            [UIPasteboard.generalPasteboard hasImages];
+        [weakControl setHidden:!pasteButtonShouldBeVisible];
+      };
+  setPasteButtonHiddenState(nil);
+  [[NSNotificationCenter defaultCenter]
+      addObserverForName:UIPasteboardChangedNotification
+                  object:nil
+                   queue:nil
+              usingBlock:setPasteButtonHiddenState];
+  [[NSNotificationCenter defaultCenter]
+      addObserverForName:UIApplicationDidBecomeActiveNotification
+                  object:nil
+                   queue:nil
+              usingBlock:setPasteButtonHiddenState];
   return pasteControl;
 }
 #endif  // defined(__IPHONE_16_0)
