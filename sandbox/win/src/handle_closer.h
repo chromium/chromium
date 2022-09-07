@@ -53,9 +53,11 @@ class HandleCloser {
   // Adds a handle that will be closed in the target process after lockdown.
   // A nullptr value for handle_name indicates all handles of the specified
   // type. An empty string for handle_name indicates the handle is unnamed.
+  // Note: this cannot be called after InitializeTargetHandles().
   ResultCode AddHandle(const wchar_t* handle_type, const wchar_t* handle_name);
 
   // Serializes and copies the closer table into the target process.
+  // Note: this can be called multiple times for different targets.
   bool InitializeTargetHandles(TargetProcess& target);
 
  private:
@@ -70,6 +72,7 @@ class HandleCloser {
   bool SetupHandleList(void* buffer, size_t buffer_bytes);
 
   HandleMap handles_to_close_;
+  std::vector<uint8_t> serialized_map_;
 };
 
 }  // namespace sandbox
