@@ -7,6 +7,7 @@
 #include "base/callback_helpers.h"
 #include "base/containers/span.h"
 #include "base/notreached.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "net/base/net_errors.h"
 #include "third_party/blink/public/mojom/direct_sockets/direct_sockets.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits.h"

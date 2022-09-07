@@ -22,6 +22,7 @@
 #include "chrome/browser/media/webrtc/webrtc_text_log_handler.h"
 #include "chrome/common/media/webrtc_logging.mojom.h"
 #include "content/public/browser/render_process_host.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
 class WebRtcLogUploader;

@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/file_system_access/file_system_underlying_sink.h"
 
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/system/string_data_source.h"
 #include "net/base/net_errors.h"
 #include "third_party/blink/public/common/blob/blob_utils.h"

@@ -10,6 +10,7 @@
 #include "chromeos/ash/components/local_search_service/public/mojom/local_search_service.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 
 namespace chromeos {

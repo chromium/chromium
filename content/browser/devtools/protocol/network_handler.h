@@ -14,6 +14,7 @@
 #include "base/unguessable_token.h"
 #include "content/browser/devtools/protocol/devtools_domain_handler.h"
 #include "content/browser/devtools/protocol/network.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "net/base/net_errors.h"
 #include "net/cookies/canonical_cookie.h"

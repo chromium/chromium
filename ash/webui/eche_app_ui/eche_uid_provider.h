@@ -9,6 +9,7 @@
 
 #include "ash/webui/eche_app_ui/mojom/eche_app.mojom.h"
 #include "base/containers/span.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/boringssl/src/include/openssl/curve25519.h"

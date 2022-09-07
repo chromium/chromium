@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_MEDIA_SESSION_MOCK_MEDIA_SESSION_SERVICE_IMPL_H_
 
 #include "content/browser/media/session/media_session_service_impl.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/mojom/mediasession/media_session.mojom.h"
 

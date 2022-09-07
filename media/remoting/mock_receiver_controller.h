@@ -13,6 +13,7 @@
 #include "media/mojo/mojom/media_types.mojom.h"
 #include "media/mojo/mojom/remoting.mojom.h"
 #include "media/remoting/receiver_controller.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/size.h"

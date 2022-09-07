@@ -6,6 +6,7 @@
 #define SERVICES_DEVICE_HID_HID_CONNECTION_IMPL_H_
 
 #include "base/memory/ref_counted.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/device/hid/hid_connection.h"
 #include "services/device/public/mojom/hid.mojom.h"

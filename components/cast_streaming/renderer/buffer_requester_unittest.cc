@@ -17,6 +17,7 @@
 #include "media/base/sample_format.h"
 #include "media/mojo/common/media_type_converters.h"
 #include "media/mojo/common/mojo_data_pipe_read_write.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"

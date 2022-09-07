@@ -17,6 +17,7 @@
 #include "base/sequence_checker.h"
 #include "base/threading/sequence_bound.h"
 #include "base/timer/timer.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/tracing/public/mojom/perfetto_service.mojom.h"
 #include "third_party/perfetto/include/perfetto/ext/tracing/core/consumer.h"

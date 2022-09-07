@@ -31,6 +31,7 @@
 #include "components/services/app_service/public/mojom/app_service.mojom.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "ui/gfx/native_widget_types.h"

@@ -15,6 +15,7 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "net/base/test_completion_callback.h"
 #include "net/cert/cert_status_flags.h"
 #include "net/cert/cert_verifier.h"

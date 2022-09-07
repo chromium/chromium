@@ -15,6 +15,7 @@
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "content/public/common/content_switches.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"

@@ -7,6 +7,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/loader/code_cache.mojom.h"
 #include "third_party/blink/public/platform/url_conversion.h"

@@ -13,6 +13,7 @@
 #include "components/media_message_center/media_notification_item.h"
 #include "components/media_router/common/media_route.h"
 #include "components/media_router/common/mojom/media_status.mojom.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "services/media_session/public/cpp/media_metadata.h"
 
 namespace global_media_controls {

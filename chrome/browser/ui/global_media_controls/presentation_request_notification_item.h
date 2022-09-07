@@ -12,6 +12,7 @@
 #include "components/media_message_center/media_notification_item.h"
 #include "components/media_router/browser/presentation/start_presentation_context.h"
 #include "content/public/browser/presentation_request.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
 #include "ui/gfx/image/image_skia.h"
 

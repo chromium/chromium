@@ -18,6 +18,7 @@
 #include "media/base/audio_renderer_sink.h"
 #include "media/mojo/mojom/audio_stream_factory.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "services/audio/public/cpp/output_device.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
 

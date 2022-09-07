@@ -11,6 +11,7 @@
 #include "build/build_config.h"
 #include "media/mojo/mojom/audio_stream_factory.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "services/audio/public/mojom/audio_service.mojom.h"
 #include "services/audio/public/mojom/debug_recording.mojom.h"
 #include "services/audio/public/mojom/device_notifications.mojom.h"

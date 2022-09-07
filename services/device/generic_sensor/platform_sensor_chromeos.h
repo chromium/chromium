@@ -12,6 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "chromeos/components/sensors/mojom/sensor.mojom.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/device/generic_sensor/platform_sensor.h"
 

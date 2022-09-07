@@ -9,6 +9,7 @@
 #include "base/scoped_observation.h"
 #include "chrome/services/qrcode_generator/public/cpp/qrcode_generator_service.h"
 #include "chrome/test/views/chrome_views_test_base.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/views/controls/button/label_button.h"

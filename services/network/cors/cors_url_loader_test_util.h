@@ -15,6 +15,7 @@
 #include "base/check.h"
 #include "base/memory/weak_ptr.h"
 #include "base/test/task_environment.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "net/http/http_request_headers.h"
 #include "net/log/test_net_log.h"
 #include "services/network/public/cpp/cors/origin_access_list.h"

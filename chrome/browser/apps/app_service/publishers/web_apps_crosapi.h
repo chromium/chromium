@@ -25,6 +25,7 @@
 #include "components/services/app_service/public/mojom/app_service.mojom-forward.h"
 #include "components/services/app_service/public/mojom/types.mojom-forward.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 

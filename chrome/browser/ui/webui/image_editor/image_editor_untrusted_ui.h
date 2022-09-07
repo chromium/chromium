@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/webui/image_editor/image_editor.mojom.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "content/public/browser/webui_config.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "ui/webui/untrusted_web_ui_controller.h"
 
 namespace image_editor {

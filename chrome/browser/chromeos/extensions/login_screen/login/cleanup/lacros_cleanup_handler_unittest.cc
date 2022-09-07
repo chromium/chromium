@@ -13,6 +13,7 @@
 #include "base/test/test_future.h"
 #include "chromeos/crosapi/mojom/login.mojom.h"
 #include "content/public/test/browser_task_environment.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

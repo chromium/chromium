@@ -27,6 +27,7 @@
 #include "chromeos/ash/components/dbus/audio/volume_state.h"
 #include "media/base/video_facing.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/media_session/public/mojom/media_controller.mojom.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"

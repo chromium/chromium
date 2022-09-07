@@ -11,6 +11,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/tracing/tracing_tls.h"
 #include "build/build_config.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/system/data_pipe_drainer.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_producer.h"
 #include "services/tracing/public/cpp/perfetto/shared_memory.h"

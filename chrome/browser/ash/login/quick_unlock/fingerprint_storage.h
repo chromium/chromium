@@ -10,6 +10,7 @@
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_utils.h"
 #include "chromeos/ash/components/feature_usage/feature_usage_metrics.h"
 #include "chromeos/dbus/power/power_manager_client.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/device/public/mojom/fingerprint.mojom.h"
 

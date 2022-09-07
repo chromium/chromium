@@ -20,6 +20,7 @@
 #include "ipc/ipc_listener.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/shared_associated_remote.h"
 #include "services/service_manager/public/cpp/binder_registry.h"

@@ -13,6 +13,7 @@
 #include "chrome/browser/sharesheet/sharesheet_service.h"
 #include "chromeos/components/sharesheet/constants.h"
 #include "components/services/app_service/public/cpp/intent.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "ui/aura/env.h"
 #include "ui/aura/env_observer.h"

@@ -12,6 +12,7 @@
 #include "components/history/core/browser/history_service.h"
 #include "components/history_clusters/core/history_clusters_service.h"
 #include "components/history_clusters/history_clusters_internals/webui/history_clusters_internals.mojom.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
 // Handler for the internals page to receive and forward the log messages.

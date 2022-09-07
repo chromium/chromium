@@ -14,6 +14,7 @@
 #include "chromeos/lacros/lacros_service.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "crypto/scoped_nss_types.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/cert/cert_database.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/cached_metadata_handler.h"
 
 #include "base/test/task_environment.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/loader/code_cache.mojom.h"
 #include "third_party/blink/public/platform/url_conversion.h"

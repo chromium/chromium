@@ -11,6 +11,7 @@
 #include "chromeos/ash/services/bluetooth_config/adapter_state_controller.h"
 #include "chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom.h"
 #include "device/bluetooth/chromeos/bluetooth_utils.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
 namespace chromeos {

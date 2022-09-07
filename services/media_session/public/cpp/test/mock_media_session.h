@@ -12,6 +12,7 @@
 #include "base/containers/flat_map.h"
 #include "base/run_loop.h"
 #include "base/unguessable_token.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 #include "services/media_session/public/cpp/media_metadata.h"

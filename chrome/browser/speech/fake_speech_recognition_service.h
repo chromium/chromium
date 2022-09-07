@@ -12,6 +12,7 @@
 #include "media/mojo/mojom/audio_data.mojom.h"
 #include "media/mojo/mojom/speech_recognition.mojom.h"
 #include "media/mojo/mojom/speech_recognition_service.mojom.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
 

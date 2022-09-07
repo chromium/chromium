@@ -47,6 +47,7 @@
 #include "content/public/test/attribution_config.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/test/test_content_browser_client.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/attribution_reporting/constants.h"

@@ -24,6 +24,7 @@
 #include "base/timer/timer.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/viz/privileged/mojom/compositing/frame_sink_video_capture.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

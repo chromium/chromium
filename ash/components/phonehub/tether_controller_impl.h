@@ -10,6 +10,7 @@
 #include "ash/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/services/network_config/public/cpp/cros_network_config_observer.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
 namespace ash {

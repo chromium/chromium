@@ -10,6 +10,7 @@
 #include "base/gtest_prod_util.h"
 #include "chromeos/services/network_config/public/cpp/cros_network_config_observer.h"
 #include "components/prefs/pref_service.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
 class PrefRegistrySimple;

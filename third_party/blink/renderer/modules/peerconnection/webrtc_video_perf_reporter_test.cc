@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <memory>
-
 #include "third_party/blink/renderer/modules/peerconnection/webrtc_video_perf_reporter.h"
+
+#include <memory>
 
 #include "base/run_loop.h"
 #include "media/mojo/mojom/webrtc_video_perf.mojom-blink.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"

@@ -9,6 +9,7 @@
 
 #include "media/capture/capture_export.h"
 #include "media/capture/video/chromeos/mojom/camera_app.mojom.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 
 namespace media {

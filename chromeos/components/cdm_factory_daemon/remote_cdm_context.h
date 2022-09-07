@@ -16,6 +16,7 @@
 #include "media/base/cdm_context.h"
 #include "media/mojo/mojom/stable/stable_video_decoder.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
 namespace chromeos {

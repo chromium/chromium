@@ -22,6 +22,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/completion_once_callback.h"
 #include "testing/gtest/include/gtest/gtest.h"
