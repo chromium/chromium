@@ -388,6 +388,17 @@ TEST_F(GlanceablesTest, ShowFromOverview) {
   EXPECT_FALSE(Shell::Get()->overview_controller()->InOverviewSession());
 }
 
+TEST_F(GlanceablesTest, OverviewDoesNotHaveUpNextButtonForSecondaryUser) {
+  // Sign in a secondary user.
+  SimulateUserLogin("user@test.com");
+  ASSERT_FALSE(Shell::Get()->session_controller()->IsUserPrimary());
+
+  // Overview mode does not have the "Up next" button.
+  EnterOverview();
+  const DesksBarView* desks_bar_view = GetPrimaryRootDesksBarView();
+  EXPECT_FALSE(desks_bar_view->up_next_button());
+}
+
 TEST_F(GlanceablesTest, ShowFromOverviewHidesAppWindows) {
   // Create windows, back to front.
   std::unique_ptr<aura::Window> back_window = CreateAppWindow();
