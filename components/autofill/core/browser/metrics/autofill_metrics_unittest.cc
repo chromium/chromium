@@ -10731,4 +10731,199 @@ TEST_F(AutofillMetricsSeamlessnessTest,
        }});
 }
 
+// TODO(crbug.com/1352826) Delete this after collecting the metrics.
+struct LaxLocalHeuristicsTestCase {
+  autofill::test::FormDataDescription form;
+  std::vector<ServerFieldType> heuristic_types;
+  std::vector<ServerFieldType> server_types;
+  bool change_form_after_filling = false;
+  std::string affected_metric;
+  std::vector<Bucket> expected_buckets;
+};
+
+// TODO(crbug.com/1352826) Delete this after collecting the metrics.
+class AutofillMetricsTestForLaxLocalHeuristics
+    : public AutofillMetricsTest,
+      public ::testing::WithParamInterface<LaxLocalHeuristicsTestCase> {};
+
+TEST_P(AutofillMetricsTestForLaxLocalHeuristics, TestHistogramReporting) {
+  SCOPED_TRACE(GetParam().form.description_for_logging);
+  RecreateCreditCards(/*include_local_credit_card=*/true,
+                      /*include_masked_server_credit_card=*/false,
+                      /*include_full_server_credit_card=*/false,
+                      /*masked_card_is_enrolled_for_virtual_card=*/false);
+  // Set up our form data.
+  FormData form = test::GetFormData(GetParam().form);
+  bool is_cc_form = AutofillType(GetParam().form.fields[0].role).group() ==
+                    FieldTypeGroup::kCreditCard;
+  autofill_manager().AddSeenForm(form, GetParam().heuristic_types,
+                                 GetParam().server_types);
+  // User interacted with form.
+  autofill_manager().OnAskForValuesToFillTest(form, form.fields[0]);
+  // Simulate seeing a suggestion.
+  autofill_manager().DidShowSuggestions(
+      /*has_autofill_suggestions=*/true, form, form.fields[0]);
+  // Simulate filling the form.
+  std::string guid("10000000-0000-0000-0000-000000000001");
+  autofill_manager().FillOrPreviewForm(
+      mojom::RendererFormDataAction::kFill, /*query_id=*/0, form,
+      form.fields.front(),
+      is_cc_form
+          ? autofill_manager().suggestion_generator()->MakeFrontendId(
+                Suggestion::BackendId(guid), Suggestion::BackendId())
+          : autofill_manager().suggestion_generator()->MakeFrontendId(
+                Suggestion::BackendId(), Suggestion::BackendId(kTestGuid)));
+
+  if (GetParam().change_form_after_filling)
+    ChangeTextField(form, form.fields[0]);
+
+  base::HistogramTester histogram_tester;
+  SubmitForm(form);
+  EXPECT_THAT(histogram_tester.GetAllSamples(GetParam().affected_metric),
+              BucketsAre(GetParam().expected_buckets));
+}
+
+// TODO(crbug.com/1352826) Delete this after collecting the metrics.
+INSTANTIATE_TEST_SUITE_P(
+    AutofillMetricsTestForLaxLocalHeuristics,
+    AutofillMetricsTestForLaxLocalHeuristics,
+    testing::Values(
+        // Because the local heuristic classifies 3 dictinct field types, we
+        // don't expect any metrics. This form is not eligible.
+        LaxLocalHeuristicsTestCase{
+            .form = {.description_for_logging = "Three different field types",
+                     .fields = {{.role = ServerFieldType::NAME_FULL},
+                                {.role = ServerFieldType::ADDRESS_HOME_LINE1},
+                                {.role = ServerFieldType::ADDRESS_HOME_CITY}}},
+            .heuristic_types = {NAME_FULL, ADDRESS_HOME_LINE1,
+                                ADDRESS_HOME_CITY},
+            .server_types = {NO_SERVER_DATA, NO_SERVER_DATA, NO_SERVER_DATA},
+            .affected_metric = "Autofill.FormAffectedByLaxLocalHeuristicRule."
+                               "FillingAcceptance.Address",
+            .expected_buckets = {}},
+        // This is a case where we don't have 3 distinct field types and we
+        // would expect that the filling acceptance is reported.
+        LaxLocalHeuristicsTestCase{
+            .form = {.description_for_logging = "Repeated field types",
+                     .fields = {{.role = ServerFieldType::NAME_FULL},
+                                {.role = ServerFieldType::ADDRESS_HOME_LINE1},
+                                {.role = ServerFieldType::ADDRESS_HOME_CITY}}},
+            .heuristic_types = {NAME_FULL, ADDRESS_HOME_LINE1,
+                                ADDRESS_HOME_LINE1},
+            .server_types = {NO_SERVER_DATA, NO_SERVER_DATA, NO_SERVER_DATA},
+            .affected_metric = "Autofill.FormAffectedByLaxLocalHeuristicRule."
+                               "FillingAcceptance.Address",
+            .expected_buckets = {Bucket(true, 1)}},
+        // Here we would not expect any reports because the server overrides
+        // would mean that a change to the heuristics would have no effect.
+        LaxLocalHeuristicsTestCase{
+            .form = {.description_for_logging = "All overridden by server",
+                     .fields = {{.role = ServerFieldType::NAME_FULL},
+                                {.role = ServerFieldType::ADDRESS_HOME_LINE1},
+                                {.role = ServerFieldType::ADDRESS_HOME_CITY}}},
+            .heuristic_types = {NAME_FULL, ADDRESS_HOME_LINE1,
+                                ADDRESS_HOME_LINE1},
+            .server_types = {NAME_FULL, ADDRESS_HOME_LINE1, ADDRESS_HOME_LINE2},
+            .affected_metric = "Autofill.FormAffectedByLaxLocalHeuristicRule."
+                               "FillingAcceptance.Address",
+            .expected_buckets = {}},
+        // Here we would expect metrics because the first field is only
+        // classified by the heuristic, the server does not know it.
+        LaxLocalHeuristicsTestCase{
+            .form = {.description_for_logging = "Server misses field",
+                     .fields = {{.role = ServerFieldType::NAME_FULL},
+                                {.role = ServerFieldType::ADDRESS_HOME_LINE1},
+                                {.role = ServerFieldType::ADDRESS_HOME_CITY}}},
+            .heuristic_types = {NAME_FULL, ADDRESS_HOME_LINE1,
+                                ADDRESS_HOME_LINE1},
+            .server_types = {NO_SERVER_DATA, ADDRESS_HOME_LINE1,
+                             ADDRESS_HOME_LINE2},
+            .affected_metric = "Autofill.FormAffectedByLaxLocalHeuristicRule."
+                               "FillingAcceptance.Address",
+            .expected_buckets = {Bucket(true, 1)}},
+        // This is a special case of the previous because email addresses are
+        // always classified by the local heuristic. They don't require the
+        // minimum number of classified fields. Therefore, a more stricter
+        // heuristic would not make any difference and we expect no metrics.
+        LaxLocalHeuristicsTestCase{
+            .form = {.description_for_logging = "Email address exception",
+                     .fields = {{.role = ServerFieldType::EMAIL_ADDRESS},
+                                {.role = ServerFieldType::ADDRESS_HOME_LINE1},
+                                {.role = ServerFieldType::ADDRESS_HOME_CITY}}},
+            .heuristic_types = {EMAIL_ADDRESS, ADDRESS_HOME_LINE1,
+                                ADDRESS_HOME_LINE1},
+            .server_types = {NO_SERVER_DATA, ADDRESS_HOME_LINE1,
+                             ADDRESS_HOME_LINE2},
+            .affected_metric = "Autofill.FormAffectedByLaxLocalHeuristicRule."
+                               "FillingAcceptance.Address",
+            .expected_buckets = {}},
+        // This is a special case of the previous because promo codes are
+        // always classified by the local heuristic. They don't require the
+        // minimum number of classified fields. Therefore, a more stricter
+        // heuristic would not make any difference and we expect no metrics.
+        LaxLocalHeuristicsTestCase{
+            .form = {.description_for_logging = "Promo code exception",
+                     .fields = {{.role = ServerFieldType::MERCHANT_PROMO_CODE},
+                                {.role = ServerFieldType::ADDRESS_HOME_LINE1},
+                                {.role = ServerFieldType::ADDRESS_HOME_CITY}}},
+            .heuristic_types = {MERCHANT_PROMO_CODE, ADDRESS_HOME_LINE1,
+                                ADDRESS_HOME_LINE1},
+            .server_types = {NO_SERVER_DATA, ADDRESS_HOME_LINE1,
+                             ADDRESS_HOME_LINE2},
+            .affected_metric = "Autofill.FormAffectedByLaxLocalHeuristicRule."
+                               "FillingAcceptance.Address",
+            .expected_buckets = {}},
+        // Check that this also works for credit card fields.
+        LaxLocalHeuristicsTestCase{
+            .form = {.description_for_logging = "Credit card",
+                     .fields = {{.role = CREDIT_CARD_NAME_FULL},
+                                {.role = CREDIT_CARD_NUMBER},
+                                {.role = CREDIT_CARD_VERIFICATION_CODE}}},
+            .heuristic_types = {CREDIT_CARD_NAME_FULL, CREDIT_CARD_NUMBER,
+                                CREDIT_CARD_NUMBER},
+            .server_types = {NO_SERVER_DATA, NO_SERVER_DATA, NO_SERVER_DATA},
+            .affected_metric = "Autofill.FormAffectedByLaxLocalHeuristicRule."
+                               "FillingAcceptance.CreditCard",
+            .expected_buckets = {Bucket(true, 1)}},
+        // Ensure that the correctness is properly reported if the user edits
+        // a field.
+        LaxLocalHeuristicsTestCase{
+            .form = {.description_for_logging = "Correctness of edited form",
+                     .fields = {{.role = ServerFieldType::NAME_FULL},
+                                {.role = ServerFieldType::ADDRESS_HOME_LINE1},
+                                {.role = ServerFieldType::ADDRESS_HOME_CITY}}},
+            .heuristic_types = {NAME_FULL, ADDRESS_HOME_LINE1,
+                                ADDRESS_HOME_LINE1},
+            .server_types = {NO_SERVER_DATA, NO_SERVER_DATA, NO_SERVER_DATA},
+            .change_form_after_filling = true,
+            .affected_metric = "Autofill.FormAffectedByLaxLocalHeuristicRule."
+                               "FillingCorrectness.Address",
+            .expected_buckets = {Bucket(false, 1)}},
+        // Ensure that the correctness is properly reported if the user does
+        // not edit a field.
+        LaxLocalHeuristicsTestCase{
+            .form = {.description_for_logging = "Correctness of edited form",
+                     .fields = {{.role = ServerFieldType::NAME_FULL},
+                                {.role = ServerFieldType::ADDRESS_HOME_LINE1},
+                                {.role = ServerFieldType::ADDRESS_HOME_CITY}}},
+            .heuristic_types = {NAME_FULL, ADDRESS_HOME_LINE1,
+                                ADDRESS_HOME_LINE1},
+            .server_types = {NO_SERVER_DATA, NO_SERVER_DATA, NO_SERVER_DATA},
+            .change_form_after_filling = false,
+            .affected_metric = "Autofill.FormAffectedByLaxLocalHeuristicRule."
+                               "FillingCorrectness.Address",
+            .expected_buckets = {Bucket(true, 1)}},
+        // Ensure that forms with two fields don't emit metrics.
+        LaxLocalHeuristicsTestCase{
+            .form = {.description_for_logging = "Two field form",
+                     .fields = {{.role = ServerFieldType::ADDRESS_HOME_LINE1},
+                                {.role = ServerFieldType::ADDRESS_HOME_CITY}}},
+            .heuristic_types = {ADDRESS_HOME_LINE1, ADDRESS_HOME_LINE1},
+            .server_types = {NO_SERVER_DATA, NO_SERVER_DATA},
+            .change_form_after_filling = false,
+            .affected_metric = "Autofill.FormAffectedByLaxLocalHeuristicRule."
+                               "FillingCorrectness.Address",
+            .expected_buckets = {},
+        }));
+
 }  // namespace autofill
