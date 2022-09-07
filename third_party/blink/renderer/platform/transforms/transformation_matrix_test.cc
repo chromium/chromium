@@ -460,6 +460,26 @@ TEST(TransformationMatrix, IsInvertible) {
                    .IsInvertible());
 }
 
+TEST(TransformationMatrix, Inverse) {
+  EXPECT_EQ(TransformationMatrix(), TransformationMatrix().Scale(0).Inverse());
+  EXPECT_EQ(TransformationMatrix(), TransformationMatrix().Inverse());
+  EXPECT_EQ(TransformationMatrix().Translate3d(-10, 20, -30),
+            TransformationMatrix().Translate3d(10, -20, 30).Inverse());
+  EXPECT_EQ(TransformationMatrix().Scale3d(2, -4, 0.5),
+            TransformationMatrix().Scale3d(0.5, -0.25, 2).Inverse());
+  EXPECT_TRANSFORMATION_MATRIX(TransformationMatrix()
+                                   .Rotate3d(0, 0, -30)
+                                   .Rotate3d(0, 10, 0)
+                                   .Rotate3d(20, 0, 0)
+                                   .ApplyPerspective(100),
+                               TransformationMatrix()
+                                   .ApplyPerspective(-100)
+                                   .Rotate3d(-20, 0, 0)
+                                   .Rotate3d(0, -10, 0)
+                                   .Rotate3d(0, 0, 30)
+                                   .Inverse());
+}
+
 TEST(TransformationMatrixTest, Blend2dXFlipTest) {
   // Test 2D x-flip (crbug.com/797472).
   TransformationMatrix from;
@@ -550,7 +570,10 @@ double ComputeDecompRecompError(const TransformationMatrix& transform_matrix) {
   return sse;
 }
 
-TEST(TransformationMatrixTest, RoundTripTest) {
+TEST(TransformationMatrixTest, DecomposeRecompose) {
+  // Result of Recompose(Decompose(identity)) should be exactly identity.
+  EXPECT_EQ(0, ComputeDecompRecompError(TransformationMatrix()));
+
   // rotateZ(90deg)
   EXPECT_NEAR(0,
               ComputeDecompRecompError(TransformationMatrix(0, 1, -1, 0, 0, 0)),

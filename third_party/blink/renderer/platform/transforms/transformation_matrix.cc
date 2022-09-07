@@ -57,443 +57,8 @@ namespace blink {
 
 using gfx::Quaternion;
 
-//
-// Supporting Math Functions
-//
-// This is a set of function from various places (attributed inline) to do
-// things like inversion and decomposition of a 4x4 matrix. They are used
-// throughout the code
-//
-
-//
-// Adapted from Matrix Inversion by Richard Carling, Graphics Gems
-// <http://tog.acm.org/GraphicsGems/index.html>.
-
-// EULA: The Graphics Gems code is copyright-protected. In other words, you
-// cannot claim the text of the code as your own and resell it. Using the code
-// is permitted in any program, product, or library, non-commercial or
-// commercial. Giving credit is not required, though is a nice gesture. The code
-// comes as-is, and if there are any flaws or problems with any Gems code,
-// nobody involved with Gems - authors, editors, publishers, or webmasters - are
-// to be held responsible. Basically, don't be a jerk, and remember that
-// anything free comes with no guarantee.
-
 typedef double Vector4[4];
 typedef double Vector3[3];
-
-// inverse(original_matrix, inverse_matrix)
-//
-// calculate the inverse of a 4x4 matrix
-//
-// -1
-// A  = ___1__ adjoint A
-//       det A
-
-//  double = determinant2x2(double a, double b, double c, double d)
-//
-//  calculate the determinant of a 2x2 matrix.
-
-static double Determinant2x2(double a, double b, double c, double d) {
-  return a * d - b * c;
-}
-
-//  double = determinant3x3(a1, a2, a3, b1, b2, b3, c1, c2, c3)
-//
-//  Calculate the determinant of a 3x3 matrix
-//  in the form
-//
-//      | a1,  b1,  c1 |
-//      | a2,  b2,  c2 |
-//      | a3,  b3,  c3 |
-
-static double Determinant3x3(double a1,
-                             double a2,
-                             double a3,
-                             double b1,
-                             double b2,
-                             double b3,
-                             double c1,
-                             double c2,
-                             double c3) {
-  return a1 * Determinant2x2(b2, b3, c2, c3) -
-         b1 * Determinant2x2(a2, a3, c2, c3) +
-         c1 * Determinant2x2(a2, a3, b2, b3);
-}
-
-//  double = determinant4x4(matrix)
-//
-//  calculate the determinant of a 4x4 matrix.
-
-static double Determinant4x4(const TransformationMatrix::Matrix4& m) {
-  // Assign to individual variable names to aid selecting
-  // correct elements
-
-  double a1 = m[0][0];
-  double b1 = m[0][1];
-  double c1 = m[0][2];
-  double d1 = m[0][3];
-
-  double a2 = m[1][0];
-  double b2 = m[1][1];
-  double c2 = m[1][2];
-  double d2 = m[1][3];
-
-  double a3 = m[2][0];
-  double b3 = m[2][1];
-  double c3 = m[2][2];
-  double d3 = m[2][3];
-
-  double a4 = m[3][0];
-  double b4 = m[3][1];
-  double c4 = m[3][2];
-  double d4 = m[3][3];
-
-  return a1 * Determinant3x3(b2, b3, b4, c2, c3, c4, d2, d3, d4) -
-         b1 * Determinant3x3(a2, a3, a4, c2, c3, c4, d2, d3, d4) +
-         c1 * Determinant3x3(a2, a3, a4, b2, b3, b4, d2, d3, d4) -
-         d1 * Determinant3x3(a2, a3, a4, b2, b3, b4, c2, c3, c4);
-}
-
-#if !defined(ARCH_CPU_ARM64) && !HAVE_MIPS_MSA_INTRINSICS
-// adjoint( original_matrix, inverse_matrix )
-//
-//   calculate the adjoint of a 4x4 matrix
-//
-//    Let  a   denote the minor determinant of matrix A obtained by
-//         ij
-//
-//    deleting the ith row and jth column from A.
-//
-//                  i+j
-//   Let  b   = (-1)    a
-//        ij            ji
-//
-//  The matrix B = (b  ) is the adjoint of A
-//                   ij
-
-static inline void Adjoint(const TransformationMatrix::Matrix4& matrix,
-                           TransformationMatrix::Matrix4& result) {
-  // Assign to individual variable names to aid
-  // selecting correct values
-  double a1 = matrix[0][0];
-  double b1 = matrix[0][1];
-  double c1 = matrix[0][2];
-  double d1 = matrix[0][3];
-
-  double a2 = matrix[1][0];
-  double b2 = matrix[1][1];
-  double c2 = matrix[1][2];
-  double d2 = matrix[1][3];
-
-  double a3 = matrix[2][0];
-  double b3 = matrix[2][1];
-  double c3 = matrix[2][2];
-  double d3 = matrix[2][3];
-
-  double a4 = matrix[3][0];
-  double b4 = matrix[3][1];
-  double c4 = matrix[3][2];
-  double d4 = matrix[3][3];
-
-  // Row column labeling reversed since we transpose rows & columns
-  result[0][0] = Determinant3x3(b2, b3, b4, c2, c3, c4, d2, d3, d4);
-  result[1][0] = -Determinant3x3(a2, a3, a4, c2, c3, c4, d2, d3, d4);
-  result[2][0] = Determinant3x3(a2, a3, a4, b2, b3, b4, d2, d3, d4);
-  result[3][0] = -Determinant3x3(a2, a3, a4, b2, b3, b4, c2, c3, c4);
-
-  result[0][1] = -Determinant3x3(b1, b3, b4, c1, c3, c4, d1, d3, d4);
-  result[1][1] = Determinant3x3(a1, a3, a4, c1, c3, c4, d1, d3, d4);
-  result[2][1] = -Determinant3x3(a1, a3, a4, b1, b3, b4, d1, d3, d4);
-  result[3][1] = Determinant3x3(a1, a3, a4, b1, b3, b4, c1, c3, c4);
-
-  result[0][2] = Determinant3x3(b1, b2, b4, c1, c2, c4, d1, d2, d4);
-  result[1][2] = -Determinant3x3(a1, a2, a4, c1, c2, c4, d1, d2, d4);
-  result[2][2] = Determinant3x3(a1, a2, a4, b1, b2, b4, d1, d2, d4);
-  result[3][2] = -Determinant3x3(a1, a2, a4, b1, b2, b4, c1, c2, c4);
-
-  result[0][3] = -Determinant3x3(b1, b2, b3, c1, c2, c3, d1, d2, d3);
-  result[1][3] = Determinant3x3(a1, a2, a3, c1, c2, c3, d1, d2, d3);
-  result[2][3] = -Determinant3x3(a1, a2, a3, b1, b2, b3, d1, d2, d3);
-  result[3][3] = Determinant3x3(a1, a2, a3, b1, b2, b3, c1, c2, c3);
-}
-#endif
-
-// Returns false if the matrix is not invertible
-static bool Inverse(const TransformationMatrix::Matrix4& matrix,
-                    TransformationMatrix::Matrix4& result) {
-  // Calculate the 4x4 determinant
-  // If 1/determinant is not finite, then the inverse matrix is not unique.
-  const double det = Determinant4x4(matrix);
-  if (!std::isnormal(det))
-    return false;
-  const double inv_det = 1 / det;
-
-#if defined(ARCH_CPU_ARM64)
-  const double* mat = &(matrix[0][0]);
-  double* pr = &(result[0][0]);
-  asm volatile(
-      // mat: v16 - v23
-      // m11, m12, m13, m14
-      // m21, m22, m23, m24
-      // m31, m32, m33, m34
-      // m41, m42, m43, m44
-      "ld1 {v16.2d - v19.2d}, [%[mat]], 64  \n\t"
-      "ld1 {v20.2d - v23.2d}, [%[mat]]      \n\t"
-      "ins v30.d[0], %[inv_det]         \n\t"
-      // Determinant: right mat2x2
-      "trn1 v0.2d, v17.2d, v21.2d    \n\t"
-      "trn2 v1.2d, v19.2d, v23.2d    \n\t"
-      "trn2 v2.2d, v17.2d, v21.2d    \n\t"
-      "trn1 v3.2d, v19.2d, v23.2d    \n\t"
-      "trn2 v5.2d, v21.2d, v23.2d    \n\t"
-      "trn1 v4.2d, v17.2d, v19.2d    \n\t"
-      "trn2 v6.2d, v17.2d, v19.2d    \n\t"
-      "trn1 v7.2d, v21.2d, v23.2d    \n\t"
-      "trn2 v25.2d, v23.2d, v21.2d   \n\t"
-      "trn1 v27.2d, v23.2d, v21.2d   \n\t"
-      "fmul v0.2d, v0.2d, v1.2d      \n\t"
-      "fmul v1.2d, v4.2d, v5.2d      \n\t"
-      "fmls v0.2d, v2.2d, v3.2d      \n\t"
-      "fmul v2.2d, v4.2d, v25.2d     \n\t"
-      "fmls v1.2d, v6.2d, v7.2d      \n\t"
-      "fmls v2.2d, v6.2d, v27.2d     \n\t"
-      // Adjoint:
-      // v24: A11A12, v25: A13A14
-      // v26: A21A22, v27: A23A24
-      "fmul v3.2d, v18.2d, v0.d[1]   \n\t"
-      "fmul v4.2d, v16.2d, v0.d[1]   \n\t"
-      "fmul v5.2d, v16.2d, v1.d[1]   \n\t"
-      "fmul v6.2d, v16.2d, v2.d[1]   \n\t"
-      "fmls v3.2d, v20.2d, v1.d[1]   \n\t"
-      "fmls v4.2d, v20.2d, v2.d[0]   \n\t"
-      "fmls v5.2d, v18.2d, v2.d[0]   \n\t"
-      "fmls v6.2d, v18.2d, v1.d[0]   \n\t"
-      "fmla v3.2d, v22.2d, v2.d[1]   \n\t"
-      "fmla v4.2d, v22.2d, v1.d[0]   \n\t"
-      "fmla v5.2d, v22.2d, v0.d[0]   \n\t"
-      "fmla v6.2d, v20.2d, v0.d[0]   \n\t"
-      "fneg v3.2d, v3.2d             \n\t"
-      "fneg v5.2d, v5.2d             \n\t"
-      "trn1 v26.2d, v3.2d, v4.2d     \n\t"
-      "trn1 v27.2d, v5.2d, v6.2d     \n\t"
-      "trn2 v24.2d, v3.2d, v4.2d     \n\t"
-      "trn2 v25.2d, v5.2d, v6.2d     \n\t"
-      "fneg v24.2d, v24.2d           \n\t"
-      "fneg v25.2d, v25.2d           \n\t"
-      // Inverse
-      // v24: I11I12, v25: I13I14
-      // v26: I21I22, v27: I23I24
-      "fmul v24.2d, v24.2d, v30.d[0] \n\t"
-      "fmul v25.2d, v25.2d, v30.d[0] \n\t"
-      "fmul v26.2d, v26.2d, v30.d[0] \n\t"
-      "fmul v27.2d, v27.2d, v30.d[0] \n\t"
-      "st1 {v24.2d - v27.2d}, [%[pr]], 64 \n\t"
-      // Determinant: left mat2x2
-      "trn1 v0.2d, v16.2d, v20.2d    \n\t"
-      "trn2 v1.2d, v18.2d, v22.2d    \n\t"
-      "trn2 v2.2d, v16.2d, v20.2d    \n\t"
-      "trn1 v3.2d, v18.2d, v22.2d    \n\t"
-      "trn2 v5.2d, v20.2d, v22.2d    \n\t"
-      "trn1 v4.2d, v16.2d, v18.2d    \n\t"
-      "trn2 v6.2d, v16.2d, v18.2d    \n\t"
-      "trn1 v7.2d, v20.2d, v22.2d    \n\t"
-      "trn2 v25.2d, v22.2d, v20.2d   \n\t"
-      "trn1 v27.2d, v22.2d, v20.2d   \n\t"
-      "fmul v0.2d, v0.2d, v1.2d      \n\t"
-      "fmul v1.2d, v4.2d, v5.2d      \n\t"
-      "fmls v0.2d, v2.2d, v3.2d      \n\t"
-      "fmul v2.2d, v4.2d, v25.2d     \n\t"
-      "fmls v1.2d, v6.2d, v7.2d      \n\t"
-      "fmls v2.2d, v6.2d, v27.2d     \n\t"
-      // Adjoint:
-      // v24: A31A32, v25: A33A34
-      // v26: A41A42, v27: A43A44
-      "fmul v3.2d, v19.2d, v0.d[1]   \n\t"
-      "fmul v4.2d, v17.2d, v0.d[1]   \n\t"
-      "fmul v5.2d, v17.2d, v1.d[1]   \n\t"
-      "fmul v6.2d, v17.2d, v2.d[1]   \n\t"
-      "fmls v3.2d, v21.2d, v1.d[1]   \n\t"
-      "fmls v4.2d, v21.2d, v2.d[0]   \n\t"
-      "fmls v5.2d, v19.2d, v2.d[0]   \n\t"
-      "fmls v6.2d, v19.2d, v1.d[0]   \n\t"
-      "fmla v3.2d, v23.2d, v2.d[1]   \n\t"
-      "fmla v4.2d, v23.2d, v1.d[0]   \n\t"
-      "fmla v5.2d, v23.2d, v0.d[0]   \n\t"
-      "fmla v6.2d, v21.2d, v0.d[0]   \n\t"
-      "fneg v3.2d, v3.2d             \n\t"
-      "fneg v5.2d, v5.2d             \n\t"
-      "trn1 v26.2d, v3.2d, v4.2d     \n\t"
-      "trn1 v27.2d, v5.2d, v6.2d     \n\t"
-      "trn2 v24.2d, v3.2d, v4.2d     \n\t"
-      "trn2 v25.2d, v5.2d, v6.2d     \n\t"
-      "fneg v24.2d, v24.2d           \n\t"
-      "fneg v25.2d, v25.2d           \n\t"
-      // Inverse
-      // v24: I31I32, v25: I33I34
-      // v26: I41I42, v27: I43I44
-      "fmul v24.2d, v24.2d, v30.d[0] \n\t"
-      "fmul v25.2d, v25.2d, v30.d[0] \n\t"
-      "fmul v26.2d, v26.2d, v30.d[0] \n\t"
-      "fmul v27.2d, v27.2d, v30.d[0] \n\t"
-      "st1 {v24.2d - v27.2d}, [%[pr]] \n\t"
-      : [mat] "+r"(mat), [pr] "+r"(pr)
-      : [inv_det] "r"(inv_det)
-      : "memory", "v0", "v1", "v2", "v3", "v4", "v5", "v6", "v7", "v16", "v17",
-        "v18", "v19", "v20", "v21", "v22", "v23", "v24", "v25", "v26", "v27",
-        "v28", "v29", "v30");
-#elif defined(HAVE_MIPS_MSA_INTRINSICS)
-  const double* mat = &(matrix[0][0]);
-  v2f64 mat0, mat1, mat2, mat3, mat4, mat5, mat6, mat7;
-  v2f64 rev2, rev3, rev4, rev5, rev6, rev7;
-  v2f64 tmp0, tmp1, tmp2, tmp3, tmp4, tmp5, tmp6, tmp7;
-  v2f64 det0, det1, det2, tmp8, tmp9, tmp10, tmp11;
-  const v2f64 rdet = COPY_DOUBLE_TO_VECTOR(inv_det);
-  // mat0 mat1 --> m00 m01 m02 m03
-  // mat2 mat3 --> m10 m11 m12 m13
-  // mat4 mat5 --> m20 m21 m22 m23
-  // mat6 mat7 --> m30 m31 m32 m33
-  LD_DP8(mat, 2, mat0, mat1, mat2, mat3, mat4, mat5, mat6, mat7);
-
-  // Right half
-  rev3 = SLDI_D(mat3, mat3, 8);  // m13 m12
-  rev5 = SLDI_D(mat5, mat5, 8);  // m23 m22
-  rev7 = SLDI_D(mat7, mat7, 8);  // m33 m32
-
-  // 2*2 Determinants
-  // for A00 & A01
-  tmp0 = mat5 * rev7;
-  tmp1 = mat3 * rev7;
-  tmp2 = mat3 * rev5;
-  // for A10 & A11
-  tmp3 = mat1 * rev7;
-  tmp4 = mat1 * rev5;
-  // for A20 & A21
-  tmp5 = mat1 * rev3;
-  // for A30 & A31
-  tmp6 = (v2f64)__msa_ilvr_d((v2i64)tmp1, (v2i64)tmp0);
-  tmp7 = (v2f64)__msa_ilvl_d((v2i64)tmp1, (v2i64)tmp0);
-  det0 = tmp6 - tmp7;
-  tmp6 = (v2f64)__msa_ilvr_d((v2i64)tmp3, (v2i64)tmp2);
-  tmp7 = (v2f64)__msa_ilvl_d((v2i64)tmp3, (v2i64)tmp2);
-  det1 = tmp6 - tmp7;
-  tmp6 = (v2f64)__msa_ilvr_d((v2i64)tmp5, (v2i64)tmp4);
-  tmp7 = (v2f64)__msa_ilvl_d((v2i64)tmp5, (v2i64)tmp4);
-  det2 = tmp6 - tmp7;
-
-  // Co-factors
-  tmp0 = mat0 * (v2f64)__msa_splati_d((v2i64)det0, 0);
-  tmp1 = mat0 * (v2f64)__msa_splati_d((v2i64)det0, 1);
-  tmp2 = mat0 * (v2f64)__msa_splati_d((v2i64)det1, 0);
-  tmp3 = mat2 * (v2f64)__msa_splati_d((v2i64)det0, 0);
-  tmp4 = mat2 * (v2f64)__msa_splati_d((v2i64)det1, 1);
-  tmp5 = mat2 * (v2f64)__msa_splati_d((v2i64)det2, 0);
-  tmp6 = mat4 * (v2f64)__msa_splati_d((v2i64)det0, 1);
-  tmp7 = mat4 * (v2f64)__msa_splati_d((v2i64)det1, 1);
-  tmp8 = mat4 * (v2f64)__msa_splati_d((v2i64)det2, 1);
-  tmp9 = mat6 * (v2f64)__msa_splati_d((v2i64)det1, 0);
-  tmp10 = mat6 * (v2f64)__msa_splati_d((v2i64)det2, 0);
-  tmp11 = mat6 * (v2f64)__msa_splati_d((v2i64)det2, 1);
-
-  tmp0 -= tmp7;
-  tmp1 -= tmp4;
-  tmp2 -= tmp5;
-  tmp3 -= tmp6;
-  tmp0 += tmp10;
-  tmp1 += tmp11;
-  tmp2 += tmp8;
-  tmp3 += tmp9;
-
-  // Multiply with 1/det
-  tmp0 *= rdet;
-  tmp1 *= rdet;
-  tmp2 *= rdet;
-  tmp3 *= rdet;
-
-  // Inverse: Upper half
-  result[0][0] = tmp3[1];
-  result[0][1] = -tmp0[1];
-  result[0][2] = tmp1[1];
-  result[0][3] = -tmp2[1];
-  result[1][0] = -tmp3[0];
-  result[1][1] = tmp0[0];
-  result[1][2] = -tmp1[0];
-  result[1][3] = tmp2[0];
-  // Left half
-  rev2 = SLDI_D(mat2, mat2, 8);  // m13 m12
-  rev4 = SLDI_D(mat4, mat4, 8);  // m23 m22
-  rev6 = SLDI_D(mat6, mat6, 8);  // m33 m32
-
-  // 2*2 Determinants
-  // for A00 & A01
-  tmp0 = mat4 * rev6;
-  tmp1 = mat2 * rev6;
-  tmp2 = mat2 * rev4;
-  // for A10 & A11
-  tmp3 = mat0 * rev6;
-  tmp4 = mat0 * rev4;
-  // for A20 & A21
-  tmp5 = mat0 * rev2;
-  // for A30 & A31
-  tmp6 = (v2f64)__msa_ilvr_d((v2i64)tmp1, (v2i64)tmp0);
-  tmp7 = (v2f64)__msa_ilvl_d((v2i64)tmp1, (v2i64)tmp0);
-  det0 = tmp6 - tmp7;
-  tmp6 = (v2f64)__msa_ilvr_d((v2i64)tmp3, (v2i64)tmp2);
-  tmp7 = (v2f64)__msa_ilvl_d((v2i64)tmp3, (v2i64)tmp2);
-  det1 = tmp6 - tmp7;
-  tmp6 = (v2f64)__msa_ilvr_d((v2i64)tmp5, (v2i64)tmp4);
-  tmp7 = (v2f64)__msa_ilvl_d((v2i64)tmp5, (v2i64)tmp4);
-  det2 = tmp6 - tmp7;
-
-  // Co-factors
-  tmp0 = mat3 * (v2f64)__msa_splati_d((v2i64)det0, 0);
-  tmp1 = mat1 * (v2f64)__msa_splati_d((v2i64)det0, 1);
-  tmp2 = mat1 * (v2f64)__msa_splati_d((v2i64)det0, 0);
-  tmp3 = mat1 * (v2f64)__msa_splati_d((v2i64)det1, 0);
-  tmp4 = mat3 * (v2f64)__msa_splati_d((v2i64)det1, 1);
-  tmp5 = mat3 * (v2f64)__msa_splati_d((v2i64)det2, 0);
-  tmp6 = mat5 * (v2f64)__msa_splati_d((v2i64)det0, 1);
-  tmp7 = mat5 * (v2f64)__msa_splati_d((v2i64)det1, 1);
-  tmp8 = mat5 * (v2f64)__msa_splati_d((v2i64)det2, 1);
-  tmp9 = mat7 * (v2f64)__msa_splati_d((v2i64)det1, 0);
-  tmp10 = mat7 * (v2f64)__msa_splati_d((v2i64)det2, 0);
-  tmp11 = mat7 * (v2f64)__msa_splati_d((v2i64)det2, 1);
-  tmp0 -= tmp6;
-  tmp1 -= tmp4;
-  tmp2 -= tmp7;
-  tmp3 -= tmp5;
-  tmp0 += tmp9;
-  tmp1 += tmp11;
-  tmp2 += tmp10;
-  tmp3 += tmp8;
-
-  // Multiply with 1/det
-  tmp0 *= rdet;
-  tmp1 *= rdet;
-  tmp2 *= rdet;
-  tmp3 *= rdet;
-
-  // Inverse: Lower half
-  result[2][0] = tmp0[1];
-  result[2][1] = -tmp2[1];
-  result[2][2] = tmp1[1];
-  result[2][3] = -tmp3[1];
-  result[3][0] = -tmp0[0];
-  result[3][1] = tmp2[0];
-  result[3][2] = -tmp1[0];
-  result[3][3] = tmp3[0];
-#else
-  // Calculate the adjoint matrix
-  Adjoint(matrix, result);
-
-  // Scale the adjoint matrix to get the inverse
-  for (int i = 0; i < 4; i++)
-    for (int j = 0; j < 4; j++)
-      result[i][j] = result[i][j] * inv_det;
-#endif
-  return true;
-}
-
-// End of code adapted from Matrix Inversion by Richard Carling
 
 // Perform a decomposition on the passed matrix, return false if unsuccessful
 // From Graphics Gems: unmatrix.c
@@ -561,12 +126,22 @@ static void V3Cross(const Vector3 a, const Vector3 b, Vector3 result) {
 // implementation in ui/gfx/geometry/transform_util with the main difference
 // being the representation of the underlying matrix. These implementations
 // should be consolidated.
-static bool Decompose(const TransformationMatrix::Matrix4& mat,
-                      TransformationMatrix::DecomposedType& result) {
+bool TransformationMatrix::Decompose(DecomposedType& result) const {
+  if (IsIdentity()) {
+    result.translate_x = result.translate_y = result.translate_z = 0.0;
+    result.scale_x = result.scale_y = result.scale_z = 1.0;
+    result.skew_xy = result.skew_xz = result.skew_yz = 0.0;
+    result.quaternion_x = result.quaternion_y = result.quaternion_z = 0.0;
+    result.quaternion_w = 1.0;
+    result.perspective_x = result.perspective_y = result.perspective_z = 0.0;
+    result.perspective_w = 1.0;
+    return true;
+  }
+
   // https://www.w3.org/TR/css-transforms-2/#decomposing-a-3d-matrix.
 
   TransformationMatrix::Matrix4 local_matrix;
-  memcpy(&local_matrix, &mat, sizeof(TransformationMatrix::Matrix4));
+  memcpy(&local_matrix, &matrix_, sizeof(TransformationMatrix::Matrix4));
 
   // Normalize the matrix.
   if (local_matrix[3][3] == 0)
@@ -577,16 +152,16 @@ static bool Decompose(const TransformationMatrix::Matrix4& mat,
     for (j = 0; j < 4; j++)
       local_matrix[i][j] /= local_matrix[3][3];
 
-  // perspectiveMatrix is used to solve for perspective, but it also provides
+  // perspective is used to solve for perspective, but it also provides
   // an easy way to test for singularity of the upper 3x3 component.
-  TransformationMatrix::Matrix4 perspective_matrix;
-  memcpy(&perspective_matrix, &local_matrix,
-         sizeof(TransformationMatrix::Matrix4));
+  TransformationMatrix perspective;
+  perspective.SetMatrix(local_matrix);
   for (i = 0; i < 3; i++)
-    perspective_matrix[i][3] = 0;
-  perspective_matrix[3][3] = 1;
+    perspective.matrix_[i][3] = 0;
+  perspective.matrix_[3][3] = 1;
 
-  if (!std::isnormal(Determinant4x4(perspective_matrix)))
+  TransformationMatrix inverse_perspective;
+  if (!perspective.InternalInverse(&inverse_perspective))
     return false;
 
   // First, isolate perspective.  This is the messiest.
@@ -599,14 +174,11 @@ static bool Decompose(const TransformationMatrix::Matrix4& mat,
     right_hand_side[2] = local_matrix[2][3];
     right_hand_side[3] = local_matrix[3][3];
 
-    // Solve the equation by inverting perspectiveMatrix and multiplying
-    // rightHandSide by the inverse.  (This is the easiest way, not
+    // Solve the equation by inverting perspective and multiplying
+    // right_hand_side by the inverse.  (This is the easiest way, not
     // necessarily the best.)
-    TransformationMatrix::Matrix4 inverse_perspective_matrix,
-        transposed_inverse_perspective_matrix;
-    if (!Inverse(perspective_matrix, inverse_perspective_matrix))
-      return false;
-    TransposeMatrix4(inverse_perspective_matrix,
+    Matrix4 transposed_inverse_perspective_matrix;
+    TransposeMatrix4(inverse_perspective.matrix_,
                      transposed_inverse_perspective_matrix);
 
     Vector4 perspective_point;
@@ -789,8 +361,6 @@ void Slerp(TransformationMatrix::DecomposedType& from_decomp,
   from_decomp.quaternion_z = qc.z();
   from_decomp.quaternion_w = qc.w();
 }
-
-// End of Supporting Math Functions
 
 TransformationMatrix::TransformationMatrix(const gfx::Transform& t) {
   const auto& matrix = t.matrix();
@@ -1482,29 +1052,111 @@ gfx::QuadF TransformationMatrix::InternalMapQuad(const gfx::QuadF& q) const {
                     InternalMapPoint(q.p3()), InternalMapPoint(q.p4()));
 }
 
-bool TransformationMatrix::IsInvertible() const {
-  return IsIdentityOrTranslation() ||
-         std::isnormal(blink::Determinant4x4(matrix_));
-}
-
-TransformationMatrix TransformationMatrix::Inverse() const {
+// This is based on
+// https://github.com/niswegmann/small-matrix-inverse/blob/master/invert4x4_llvm.h,
+// which is based on Intel AP-928 "Streaming SIMD Extensions - Inverse of 4x4
+// Matrix": https://drive.google.com/file/d/0B9rh9tVI0J5mX1RUam5nZm85OFE/view.
+bool TransformationMatrix::InternalInverse(TransformationMatrix* result) const {
   if (IsIdentityOrTranslation()) {
-    // identity matrix
-    if (matrix_[3][0] == 0 && matrix_[3][1] == 0 && matrix_[3][2] == 0)
-      return TransformationMatrix();
+    // Identity matrix.
+    if (matrix_[3][0] == 0 && matrix_[3][1] == 0 && matrix_[3][2] == 0) {
+      if (result)
+        result->MakeIdentity();
+      return true;
+    }
 
-    // translation
-    return TransformationMatrix(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0,
-                                -matrix_[3][0], -matrix_[3][1], -matrix_[3][2],
-                                1);
+    // Translation.
+    if (result) {
+      result->SetMatrix(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, -matrix_[3][0],
+                        -matrix_[3][1], -matrix_[3][2], 1);
+    }
+    return true;
   }
 
-  TransformationMatrix inv_mat;
-  bool inverted = blink::Inverse(matrix_, inv_mat.matrix_);
-  if (!inverted)
-    return TransformationMatrix();
+  Double4 c0 = Col(0);
+  Double4 c1 = Col(1);
+  Double4 c2 = Col(2);
+  Double4 c3 = Col(3);
 
-  return inv_mat;
+  // Note that r1 and r3 have components 2/3 and 0/1 swapped.
+  Double4 r0 = {c0.s0, c1.s0, c2.s0, c3.s0};
+  Double4 r1 = {c2.s1, c3.s1, c0.s1, c1.s1};
+  Double4 r2 = {c0.s2, c1.s2, c2.s2, c3.s2};
+  Double4 r3 = {c2.s3, c3.s3, c0.s3, c1.s3};
+
+  auto swap_hi_lo = [](Double4 v) -> Double4 { return v.s2301; };
+  auto swap_in_pairs = [](Double4 v) -> Double4 { return v.s1032; };
+
+  Double4 t = swap_in_pairs(r2 * r3);
+  c0 = r1 * t;
+  c1 = r0 * t;
+
+  t = swap_hi_lo(t);
+  c0 = r1 * t - c0;
+  c1 = swap_hi_lo(r0 * t - c1);
+
+  t = swap_in_pairs(r1 * r2);
+  c0 += r3 * t;
+  c3 = r0 * t;
+
+  t = swap_hi_lo(t);
+  c0 -= r3 * t;
+  c3 = swap_hi_lo(r0 * t - c3);
+
+  t = swap_in_pairs(swap_hi_lo(r1) * r3);
+  r2 = swap_hi_lo(r2);
+  c0 += r2 * t;
+  c2 = r0 * t;
+
+  t = swap_hi_lo(t);
+  c0 -= r2 * t;
+
+  Double4 det = r0 * c0;
+  det += swap_hi_lo(det);
+  det += swap_in_pairs(det);
+  if (!std::isnormal(det.x))
+    return false;
+  if (!result)
+    return true;
+
+  c2 = swap_hi_lo(r0 * t - c2);
+
+  t = swap_in_pairs(r0 * r1);
+  c2 = r3 * t + c2;
+  c3 = r2 * t - c3;
+
+  t = swap_hi_lo(t);
+  c2 = r3 * t - c2;
+  c3 -= r2 * t;
+
+  t = swap_in_pairs(r0 * r3);
+  c1 -= r2 * t;
+  c2 = r1 * t + c2;
+
+  t = swap_hi_lo(t);
+  c1 = r2 * t + c1;
+  c2 -= r1 * t;
+
+  t = swap_in_pairs(r0 * r2);
+  c1 = r3 * t + c1;
+  c3 -= r1 * t;
+
+  t = swap_hi_lo(t);
+  c1 -= r3 * t;
+  c3 = r1 * t + c3;
+
+  det = 1 / det;
+  c0 *= det;
+  c1 *= det;
+  c2 *= det;
+  c3 *= det;
+
+  DCHECK(result);
+  result->SetCol(0, c0);
+  result->SetCol(1, c1);
+  result->SetCol(2, c2);
+  result->SetCol(3, c3);
+  return true;
 }
 
 void TransformationMatrix::MakeAffine() {
@@ -1627,20 +1279,6 @@ void TransformationMatrix::Blend2D(const TransformationMatrix& from,
 
   // Recompose.
   Recompose2D(from_decomp);
-}
-
-bool TransformationMatrix::Decompose(DecomposedType& decomp) const {
-  if (IsIdentity()) {
-    memset(&decomp, 0, sizeof(decomp));
-    decomp.perspective_w = 1;
-    decomp.scale_x = 1;
-    decomp.scale_y = 1;
-    decomp.scale_z = 1;
-  }
-
-  if (!blink::Decompose(matrix_, decomp))
-    return false;
-  return true;
 }
 
 // Decompose a 2D transformation matrix of the form:
