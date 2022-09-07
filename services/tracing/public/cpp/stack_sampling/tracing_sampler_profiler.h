@@ -125,7 +125,7 @@ class COMPONENT_EXPORT(TRACING_CPP) TracingSamplerProfiler {
 #if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
     void SetIsStartupTracing(bool is_startup_tracing) {
       is_startup_tracing_ = is_startup_tracing;
-    };
+    }
 #else
     void SetTraceWriter(std::unique_ptr<perfetto::TraceWriter> trace_writer);
 #endif
