@@ -157,7 +157,7 @@ NGSimplifiedLayoutAlgorithm::NGSimplifiedLayoutAlgorithm(
     container_builder_.SetIsHiddenForPaint(true);
 
   if (auto first_baseline = physical_fragment.FirstBaseline())
-    container_builder_.SetBaseline(*first_baseline);
+    container_builder_.SetFirstBaseline(*first_baseline);
   if (auto last_baseline = physical_fragment.LastBaseline())
     container_builder_.SetLastBaseline(*last_baseline);
   if (physical_fragment.UseLastBaselineForInlineBaseline())

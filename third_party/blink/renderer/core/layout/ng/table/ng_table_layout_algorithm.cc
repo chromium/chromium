@@ -1444,7 +1444,7 @@ const NGLayoutResult* NGTableLayoutAlgorithm::GenerateFragment(
     container_builder_.SetBaselines(
         MathTableBaseline(Style(), child_block_offset));
   } else if (table_baseline) {
-    container_builder_.SetBaseline(*table_baseline);
+    container_builder_.SetFirstBaseline(*table_baseline);
   }
 
   container_builder_.SetIsTableNGPart();

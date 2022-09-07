@@ -140,7 +140,7 @@ const NGLayoutResult* NGTableSectionLayoutAlgorithm::Layout() {
   container_builder_.SetFragmentsTotalBlockSize(block_size);
 
   if (section_baseline)
-    container_builder_.SetBaseline(*section_baseline);
+    container_builder_.SetFirstBaseline(*section_baseline);
   container_builder_.SetIsTableNGPart();
 
   // Store the collapsed-borders row geometry on this section fragment.

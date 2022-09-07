@@ -550,8 +550,8 @@ class CORE_EXPORT NGBoxFragmentBuilder final
   }
 
   // Sets the first baseline for this fragment.
-  void SetBaseline(LayoutUnit baseline) { first_baseline_ = baseline; }
-  absl::optional<LayoutUnit> Baseline() const { return first_baseline_; }
+  void SetFirstBaseline(LayoutUnit baseline) { first_baseline_ = baseline; }
+  absl::optional<LayoutUnit> FirstBaseline() const { return first_baseline_; }
 
   // Sets the last baseline for this fragment.
   void SetLastBaseline(LayoutUnit baseline) { last_baseline_ = baseline; }

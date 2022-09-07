@@ -276,7 +276,7 @@ const NGLayoutResult* NGTableRowLayoutAlgorithm::Layout() {
                 container_builder_.FragmentBlockSize()));
   }
 
-  container_builder_.SetBaseline(row_baseline_tabulator.ComputeBaseline(
+  container_builder_.SetFirstBaseline(row_baseline_tabulator.ComputeBaseline(
       container_builder_.FragmentBlockSize()));
 
   NGOutOfFlowLayoutPart(Node(), ConstraintSpace(), &container_builder_).Run();

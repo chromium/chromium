@@ -749,7 +749,7 @@ void NGTableAlgorithmUtils::FinalizeTableCellLayout(
       // Table-cells (with baseline vertical alignment) always produce a
       // first/last baseline of their end-content edge (even if the content
       // doesn't have any baselines).
-      if (!builder->Baseline() || node.ShouldApplyLayoutContainment()) {
+      if (!builder->FirstBaseline() || node.ShouldApplyLayoutContainment()) {
         builder->SetBaselines(unconstrained_intrinsic_block_size -
                               builder->BorderScrollbarPadding().block_end);
       }
@@ -759,7 +759,7 @@ void NGTableAlgorithmUtils::FinalizeTableCellLayout(
       if (has_inflow_children) {
         if (auto alignment_baseline = space.TableCellAlignmentBaseline()) {
           builder->MoveChildrenInBlockDirection(*alignment_baseline -
-                                                *builder->Baseline());
+                                                *builder->FirstBaseline());
         }
       }
       break;

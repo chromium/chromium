@@ -2019,14 +2019,14 @@ void NGBlockNode::CopyBaselinesFromLegacyLayout(
     case NGBaselineAlgorithmType::kDefault: {
       LayoutUnit position = box_->FirstLineBoxBaseline();
       if (position != -1)
-        builder->SetBaseline(position);
+        builder->SetFirstBaseline(position);
       break;
     }
     case NGBaselineAlgorithmType::kInlineBlock: {
       LayoutUnit position =
           AtomicInlineBaselineFromLegacyLayout(constraint_space);
       if (position != -1)
-        builder->SetBaseline(position);
+        builder->SetFirstBaseline(position);
       break;
     }
   }

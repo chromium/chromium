@@ -2742,7 +2742,7 @@ void NGBlockLayoutAlgorithm::PropagateBaselineFromChild(
     const NGPhysicalFragment& child,
     LayoutUnit block_offset) {
   // Check if we've already found an appropriate baseline.
-  if (container_builder_.Baseline() &&
+  if (container_builder_.FirstBaseline() &&
       ConstraintSpace().BaselineAlgorithmType() ==
           NGBaselineAlgorithmType::kDefault)
     return;
@@ -2772,8 +2772,8 @@ void NGBlockLayoutAlgorithm::PropagateBaselineFromChild(
         block_offset + (Style().IsFlippedLinesWritingMode() ? metrics.descent
                                                             : metrics.ascent);
 
-    if (!container_builder_.Baseline())
-      container_builder_.SetBaseline(baseline);
+    if (!container_builder_.FirstBaseline())
+      container_builder_.SetFirstBaseline(baseline);
 
     // Set the last baseline only if required.
     if (ConstraintSpace().BaselineAlgorithmType() ==
@@ -2802,9 +2802,9 @@ void NGBlockLayoutAlgorithm::PropagateBaselineFromBlockChild(
   NGBoxFragment fragment(ConstraintSpace().GetWritingDirection(),
                          physical_fragment);
 
-  if (!container_builder_.Baseline()) {
+  if (!container_builder_.FirstBaseline()) {
     if (auto baseline = fragment.FirstBaseline())
-      container_builder_.SetBaseline(block_offset + *baseline);
+      container_builder_.SetFirstBaseline(block_offset + *baseline);
   }
 
   // Set the last baseline only if required.
@@ -3084,7 +3084,7 @@ void NGBlockLayoutAlgorithm::HandleRubyText(NGBlockNode ruby_text_child) {
   // RubyText provides baseline if RubyBase didn't.
   // This behavior doesn't make much sense, but it's compatible with the legacy
   // layout.
-  if (!container_builder_.Baseline())
+  if (!container_builder_.FirstBaseline())
     PropagateBaselineFromChild(ruby_text_fragment, ruby_text_box_top);
 }
 
@@ -3126,7 +3126,7 @@ void NGBlockLayoutAlgorithm::HandleTextControlPlaceholder(
   }
   // Usually another child provides the baseline. However it doesn't if
   // another child is out-of-flow.
-  if (!container_builder_.Baseline()) {
+  if (!container_builder_.FirstBaseline()) {
     container_builder_.AddResult(*result, offset);
     return;
   }
@@ -3138,7 +3138,7 @@ void NGBlockLayoutAlgorithm::HandleTextControlPlaceholder(
   // |fragment| has no FirstBaseline() if it consists of only white-spaces.
   if (fragment.FirstBaseline().has_value()) {
     offset.block_offset =
-        *container_builder_.Baseline() - *fragment.FirstBaseline();
+        *container_builder_.FirstBaseline() - *fragment.FirstBaseline();
   }
   container_builder_.AddResult(*result, offset);
 

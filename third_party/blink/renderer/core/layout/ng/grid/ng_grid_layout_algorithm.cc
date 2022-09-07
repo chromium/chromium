@@ -2978,7 +2978,7 @@ void NGGridLayoutAlgorithm::PlaceGridItems(
 
   // Propagate the baseline from the appropriate child.
   if (auto baseline = baseline_accumulator.Baseline())
-    container_builder_.SetBaseline(*baseline);
+    container_builder_.SetFirstBaseline(*baseline);
 }
 
 // This is only used in NGGridLayoutAlgorithm::PlaceGridItemsForFragmentation(),
@@ -3370,7 +3370,7 @@ void NGGridLayoutAlgorithm::PlaceGridItemsForFragmentation(
 
   // Propagate the baseline from the appropriate child.
   if (auto baseline = baseline_accumulator.Baseline())
-    container_builder_.SetBaseline(*baseline);
+    container_builder_.SetFirstBaseline(*baseline);
 
   if (fragmentainer_space != kIndefiniteSize)
     *consumed_grid_block_size += fragmentainer_space;

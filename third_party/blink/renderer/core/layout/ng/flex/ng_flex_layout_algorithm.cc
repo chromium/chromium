@@ -1344,8 +1344,8 @@ NGLayoutResult::EStatus NGFlexLayoutAlgorithm::GiveItemsFinalPositionAndSize(
   // Set the baseline to the fallback, if we didn't find any children with
   // baseline alignment.
   if (!InvolvedInBlockFragmentation(container_builder_) &&
-      !container_builder_.Baseline() && fallback_baseline)
-    container_builder_.SetBaseline(*fallback_baseline);
+      !container_builder_.FirstBaseline() && fallback_baseline)
+    container_builder_.SetFirstBaseline(*fallback_baseline);
 
   // TODO(crbug.com/1131352): Avoid control-specific handling.
   if (Node().IsButton()) {
@@ -1787,8 +1787,8 @@ NGFlexLayoutAlgorithm::GiveItemsFinalPositionAndSizeForFragmentation(
 
   // Set the baseline to the fallback, if we didn't find any children with
   // baseline alignment.
-  if (!container_builder_.Baseline() && fallback_baseline)
-    container_builder_.SetBaseline(*fallback_baseline);
+  if (!container_builder_.FirstBaseline() && fallback_baseline)
+    container_builder_.SetFirstBaseline(*fallback_baseline);
 
   // Update the |total_intrinsic_block_size_| in case things expanded.
   total_intrinsic_block_size_ =
@@ -1850,7 +1850,7 @@ void NGFlexLayoutAlgorithm::AdjustButtonBaseline(
     LayoutUnit final_content_cross_size) {
   // See LayoutButton::BaselinePosition()
   if (!Node().HasLineIfEmpty() && !Node().ShouldApplyLayoutContainment() &&
-      !container_builder_.Baseline()) {
+      !container_builder_.FirstBaseline()) {
     // To ensure that we have a consistent baseline when we have no children,
     // even when we have the anonymous LayoutBlock child, we calculate the
     // baseline for the empty case manually here.
@@ -1878,7 +1878,7 @@ void NGFlexLayoutAlgorithm::AdjustButtonBaseline(
     absl::optional<LayoutUnit> baseline = layout_block->BaselineForEmptyLine(
         layout_block->IsHorizontalWritingMode() ? kHorizontalLine
                                                 : kVerticalLine);
-    if (container_builder_.Baseline() != baseline) {
+    if (container_builder_.FirstBaseline() != baseline) {
       UseCounter::Count(Node().GetDocument(),
                         WebFeature::kWrongBaselineOfEmptyLineButton);
     }
@@ -1896,7 +1896,7 @@ void NGFlexLayoutAlgorithm::AdjustButtonBaseline(
           : fragment.LastBaseline();
   if (child_baseline)
     child_baseline = *child_baseline + child.offset.block_offset;
-  if (container_builder_.Baseline() != child_baseline) {
+  if (container_builder_.FirstBaseline() != child_baseline) {
     UseCounter::Count(Node().GetDocument(),
                       WebFeature::kWrongBaselineOfMultiLineButton);
     String text = Node().GetDOMNode()->textContent();
@@ -1914,7 +1914,7 @@ void NGFlexLayoutAlgorithm::PropagateBaselineFromChild(
     LayoutUnit block_offset,
     absl::optional<LayoutUnit>* fallback_baseline) {
   // Check if we've already found an appropriate baseline.
-  if (container_builder_.Baseline())
+  if (container_builder_.FirstBaseline())
     return;
 
   const auto baseline_type = Style().GetFontBaseline();
@@ -1927,7 +1927,7 @@ void NGFlexLayoutAlgorithm::PropagateBaselineFromChild(
   if (FlexLayoutAlgorithm::AlignmentForChild(Style(), flex_item_style) ==
           ItemPosition::kBaseline &&
       !FlexItem::HasAutoMarginsInCrossAxis(flex_item_style, &algorithm_)) {
-    container_builder_.SetBaseline(baseline_offset);
+    container_builder_.SetFirstBaseline(baseline_offset);
     return;
   }
 

@@ -412,8 +412,10 @@ NGBreakStatus NGFieldsetLayoutAlgorithm::LayoutFieldsetContent(
 
     const auto& fragment =
         To<NGPhysicalBoxFragment>(result->PhysicalFragment());
-    if (auto first_baseline = fragment.FirstBaseline())
-      container_builder_.SetBaseline(offset.block_offset + *first_baseline);
+    if (auto first_baseline = fragment.FirstBaseline()) {
+      container_builder_.SetFirstBaseline(offset.block_offset +
+                                          *first_baseline);
+    }
     if (auto last_baseline = fragment.LastBaseline())
       container_builder_.SetLastBaseline(offset.block_offset + *last_baseline);
     if (fragment.UseLastBaselineForInlineBaseline())
