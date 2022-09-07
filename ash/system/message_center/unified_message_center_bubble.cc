@@ -208,6 +208,8 @@ void UnifiedMessageCenterBubble::UpdatePosition() {
                     kUnifiedMessageCenterBubbleSpacing);
   bubble_view_->ChangeAnchorRect(anchor_rect);
 
+  message_center_view_->UpdateNotificationBar();
+
   if (!features::IsNotificationsRefreshEnabled()) {
     bubble_view_->layer()->StackAtTop(border_->layer());
     border_->layer()->SetBounds(message_center_view_->GetContentsBounds());

@@ -130,8 +130,10 @@ void UnifiedMessageCenterView::Init() {
 
   if (is_notifications_refresh_enabled_)
     AddChildView(notification_bar_);
+}
 
-  notification_bar_->Update(
+bool UnifiedMessageCenterView::UpdateNotificationBar() {
+  return notification_bar_->Update(
       message_list_view_->GetTotalNotificationCount(),
       message_list_view_->GetTotalPinnedNotificationCount(),
       GetStackedNotifications());
@@ -204,10 +206,7 @@ bool UnifiedMessageCenterView::IsScrollBarVisible() const {
 
 void UnifiedMessageCenterView::OnNotificationSlidOut() {
   if (notification_bar_->GetVisible()) {
-    notification_bar_->Update(
-        message_list_view_->GetTotalNotificationCount(),
-        message_list_view_->GetTotalPinnedNotificationCount(),
-        GetStackedNotifications());
+    UpdateNotificationBar();
     if (!notification_bar_->GetVisible())
       StartHideStackingBarAnimation();
   }
@@ -320,10 +319,7 @@ void UnifiedMessageCenterView::OnMessageCenterScrolled() {
   model_->set_notification_target_mode(
       UnifiedSystemTrayModel::NotificationTargetMode::LAST_POSITION);
 
-  bool was_count_updated = notification_bar_->Update(
-      message_list_view_->GetTotalNotificationCount(),
-      message_list_view_->GetTotalPinnedNotificationCount(),
-      GetStackedNotifications());
+  bool was_count_updated = UpdateNotificationBar();
   if (was_count_updated) {
     const int previous_y = scroller_->y();
     // Adjust scroll position when counter visibility is changed so that
@@ -419,11 +415,6 @@ void UnifiedMessageCenterView::UpdateVisibility() {
   SessionControllerImpl* session_controller =
       Shell::Get()->session_controller();
 
-  notification_bar_->Update(
-      message_list_view_->GetTotalNotificationCount(),
-      message_list_view_->GetTotalPinnedNotificationCount(),
-      GetStackedNotifications());
-
   SetVisible(
       available_height_ >= kUnifiedNotificationMinimumHeight &&
       (animation_state_ == UnifiedMessageCenterAnimationState::COLLAPSE ||
@@ -496,10 +487,7 @@ void UnifiedMessageCenterView::ScrollToTarget() {
   }
 
   scroller_->ScrollToPosition(scroll_bar_, position);
-  notification_bar_->Update(
-      message_list_view_->GetTotalNotificationCount(),
-      message_list_view_->GetTotalPinnedNotificationCount(),
-      GetStackedNotifications());
+  UpdateNotificationBar();
   last_scroll_position_from_bottom_ =
       scroll_bar_->GetMaxPosition() - scroller_->GetVisibleRect().y();
 }

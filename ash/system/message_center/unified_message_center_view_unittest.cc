@@ -108,7 +108,7 @@ class UnifiedMessageCenterViewTest : public AshTestBase,
   }
 
  protected:
-  std::string AddNotification(bool pinned) {
+  std::string AddNotification(bool pinned = false) {
     std::string id = base::NumberToString(id_++);
     message_center::RichNotificationData data;
     data.pinned = pinned;
@@ -139,6 +139,7 @@ class UnifiedMessageCenterViewTest : public AshTestBase,
     message_center_view->SetAvailableHeight(max_height);
     OnViewPreferredSizeChanged(message_center_view.get());
     size_changed_count_ = 0;
+    message_center_view->UpdateNotificationBar();
 
     return message_center_view;
   }
@@ -214,6 +215,23 @@ class UnifiedMessageCenterViewTest : public AshTestBase,
     return message_center_view()->notification_bar_->expand_all_button_;
   }
 
+  int total_notification_count() {
+    return GetNotificationBar()->total_notification_count_;
+  }
+
+  int pinned_notification_count() {
+    return GetNotificationBar()->pinned_notification_count_;
+  }
+
+  int unpinned_notification_count() {
+    return GetNotificationBar()->total_notification_count_ -
+           GetNotificationBar()->pinned_notification_count_;
+  }
+
+  int stacked_notification_count() {
+    return GetNotificationBar()->stacked_notification_count_;
+  }
+
   message_center::MessageView* ToggleFocusToMessageView(size_t index,
                                                         bool reverse) {
     auto* focus_manager = message_center_view()->GetFocusManager();
@@ -243,6 +261,14 @@ class UnifiedMessageCenterViewTest : public AshTestBase,
     // TrayBubbleView as the parent, so we need to explicitly call Layout()
     // in some circumstances.
     message_center_view_->Layout();
+  }
+
+  void UpdateNotificationBarForTest() {
+    // TODO(crbug/1357232): Refactor so this code mirrors production better.
+    // Outside of tests, the notification bar is updated with a call to
+    // UnifiedMessageCenterBubble::UpdatePosition(), but this function is not
+    // triggered when adding notifications in tests.
+    message_center_view_->UpdateNotificationBar();
   }
 
   virtual TestUnifiedMessageCenterView* message_center_view() {
@@ -305,7 +331,7 @@ TEST_P(UnifiedMessageCenterViewTest, DISABLED_AddAndRemoveNotification) {
   CreateMessageCenterView();
   EXPECT_FALSE(message_center_view()->GetVisible());
 
-  auto id0 = AddNotification(false /* pinned */);
+  auto id0 = AddNotification();
   EXPECT_TRUE(message_center_view()->GetVisible());
 
   // The notification first slides out of the list.
@@ -336,7 +362,7 @@ TEST_P(UnifiedMessageCenterViewTest, RemoveNotificationAtTail) {
 
   // The message center should autoscroll to the bottom of the list after adding
   // a new notification.
-  auto id_to_remove = AddNotification(false /* pinned */);
+  auto id_to_remove = AddNotification();
   RelayoutMessageCenterViewForTest();
   int scroll_position = GetScroller()->GetVisibleRect().y();
   EXPECT_EQ(GetMessageListView()->height() - GetScroller()->height(),
@@ -384,7 +410,7 @@ TEST_P(UnifiedMessageCenterViewTest, ContentsRelayout) {
 
 TEST_P(UnifiedMessageCenterViewTest, InsufficientHeight) {
   CreateMessageCenterView();
-  AddNotification(false /* pinned */);
+  AddNotification();
   EXPECT_TRUE(message_center_view()->GetVisible());
 
   message_center_view()->SetAvailableHeight(kUnifiedNotificationMinimumHeight -
@@ -404,8 +430,8 @@ TEST_P(UnifiedMessageCenterViewTest, NotVisibleWhenLocked) {
 
   ASSERT_FALSE(AshMessageCenterLockScreenController::IsEnabled());
 
-  AddNotification(false /* pinned */);
-  AddNotification(false /* pinned */);
+  AddNotification();
+  AddNotification();
 
   BlockUserSession(BLOCKED_BY_LOCK_SCREEN);
   CreateMessageCenterView();
@@ -427,8 +453,8 @@ TEST_P(UnifiedMessageCenterViewTest, VisibleWhenLocked) {
 
   ASSERT_TRUE(AshMessageCenterLockScreenController::IsEnabled());
 
-  AddNotification(false /* pinned */);
-  AddNotification(false /* pinned */);
+  AddNotification();
+  AddNotification();
 
   BlockUserSession(BLOCKED_BY_LOCK_SCREEN);
   CreateMessageCenterView();
@@ -437,8 +463,8 @@ TEST_P(UnifiedMessageCenterViewTest, VisibleWhenLocked) {
 }
 
 TEST_P(UnifiedMessageCenterViewTest, ClearAllPressed) {
-  AddNotification(false /* pinned */);
-  AddNotification(false /* pinned */);
+  AddNotification();
+  AddNotification();
   CreateMessageCenterView();
   EXPECT_TRUE(message_center_view()->GetVisible());
   EXPECT_TRUE(GetNotificationBar()->GetVisible());
@@ -451,8 +477,8 @@ TEST_P(UnifiedMessageCenterViewTest, ClearAllPressed) {
 }
 
 TEST_P(UnifiedMessageCenterViewTest, InitialPosition) {
-  AddNotification(false /* pinned */);
-  AddNotification(false /* pinned */);
+  AddNotification();
+  AddNotification();
   CreateMessageCenterView();
   EXPECT_TRUE(message_center_view()->GetVisible());
 
@@ -472,8 +498,8 @@ TEST_P(UnifiedMessageCenterViewTest, InitialPositionMaxOut) {
 }
 
 TEST_P(UnifiedMessageCenterViewTest, InitialPositionWithLargeNotification) {
-  AddNotification(false /* pinned */);
-  AddNotification(false /* pinned */);
+  AddNotification();
+  AddNotification();
   CreateMessageCenterView(60 /* max_height */);
   EXPECT_TRUE(message_center_view()->GetVisible());
 
@@ -720,10 +746,10 @@ TEST_P(UnifiedMessageCenterViewTest,
 TEST_P(UnifiedMessageCenterViewTest, StackingCounterLabelRelaidOutOnScroll) {
   // Open the message center at the top of the notification list so the stacking
   // bar is hidden by default.
-  std::string id = AddNotification(false /* pinned */);
+  std::string id = AddNotification();
   int total_notifications = 30;
   for (int i = 0; i < total_notifications; ++i)
-    AddNotification(false /* pinned */);
+    AddNotification();
   model()->SetTargetNotification(id);
 
   CreateMessageCenterView();
@@ -763,8 +789,8 @@ TEST_P(UnifiedMessageCenterViewTest, StackingCounterLabelRelaidOutOnScroll) {
 }
 
 TEST_P(UnifiedMessageCenterViewTest, StackingCounterVisibility) {
-  std::string id0 = AddNotification(false /* pinned */);
-  std::string id1 = AddNotification(false /* pinned */);
+  std::string id0 = AddNotification();
+  std::string id1 = AddNotification();
   CreateMessageCenterView();
 
   // The bar should be visible with 2 unpinned notifications.
@@ -800,7 +826,7 @@ TEST_P(UnifiedMessageCenterViewTest, StackingCounterVisibility) {
     EXPECT_FALSE(GetNotificationBarClearAllButton()->GetVisible());
 
   // Add 1 unpinned notifications. Clear all should now be shown.
-  AddNotification(false /* pinned */);
+  AddNotification();
   RelayoutMessageCenterViewForTest();
   EXPECT_TRUE(GetNotificationBarClearAllButton()->GetVisible());
 }
@@ -818,8 +844,8 @@ TEST_P(UnifiedMessageCenterViewInWidgetTest,
   widget()->Show();
 
   // Add notifications and focus on a child view in the last notification.
-  AddNotification(false /* pinned */);
-  auto id1 = AddNotification(false /* pinned */);
+  AddNotification();
+  auto id1 = AddNotification();
 
   // Toggle focus to the last notification MessageView.
   auto* focused_message_view = ToggleFocusToMessageView(
@@ -835,8 +861,8 @@ TEST_P(UnifiedMessageCenterViewInWidgetTest,
 }
 
 TEST_P(UnifiedMessageCenterViewTest, CollapseAndExpand_NonAnimated) {
-  AddNotification(false /* pinned */);
-  AddNotification(false /* pinned */);
+  AddNotification();
+  AddNotification();
   CreateMessageCenterView();
   EXPECT_TRUE(GetScroller()->GetVisible());
   EXPECT_TRUE(GetNotificationBarClearAllButton()->GetVisible());
@@ -857,8 +883,8 @@ TEST_P(UnifiedMessageCenterViewTest, CollapseAndExpand_NonAnimated) {
 }
 
 TEST_P(UnifiedMessageCenterViewTest, CollapseAndExpand_Animated) {
-  AddNotification(false /* pinned */);
-  AddNotification(false /* pinned */);
+  AddNotification();
+  AddNotification();
   CreateMessageCenterView();
   EXPECT_TRUE(GetScroller()->GetVisible());
 
@@ -899,8 +925,8 @@ TEST_P(UnifiedMessageCenterViewTest, CollapseAndExpand_NoNotifications) {
 }
 
 TEST_P(UnifiedMessageCenterViewTest, ClearAllButtonHeight) {
-  std::string id0 = AddNotification(false /* pinned */);
-  std::string id1 = AddNotification(false /* pinned */);
+  std::string id0 = AddNotification();
+  std::string id1 = AddNotification();
   CreateMessageCenterView();
   EXPECT_TRUE(message_center_view()->GetVisible());
   EXPECT_TRUE(GetNotificationBar()->GetVisible());
@@ -916,6 +942,25 @@ TEST_P(UnifiedMessageCenterViewTest, ClearAllButtonHeight) {
   // ClearAll Button height should remain the same.
   EXPECT_EQ(previous_button_height,
             GetNotificationBarClearAllButton()->height());
+}
+
+TEST_P(UnifiedMessageCenterViewTest, StackedNotificationCount) {
+  // There should not be any stacked notifications in the expanded message
+  // center with just one notification added.
+  AddNotification();
+  CreateMessageCenterView();
+  message_center_view()->SetExpanded();
+  EXPECT_TRUE(message_center_view()->GetVisible());
+  EXPECT_EQ(1, total_notification_count());
+  EXPECT_EQ(0, stacked_notification_count());
+
+  // There should be at least one stacked notification in the expanded message
+  // center with many notifications added.
+  AddManyNotifications();
+  RelayoutMessageCenterViewForTest();
+  UpdateNotificationBarForTest();
+  EXPECT_EQ(11, total_notification_count());
+  EXPECT_LT(0, stacked_notification_count());
 }
 
 }  // namespace ash

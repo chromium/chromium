@@ -75,6 +75,11 @@ class ASH_EXPORT UnifiedMessageCenterView
   // Should be called after ctor.
   void Init();
 
+  // Calls the notification bar `Update` function with the current unpinned,
+  // pinned and stacked notification counts. Returns true if the state of the
+  // bar has changed.
+  bool UpdateNotificationBar();
+
   // Sets the maximum height that the view can take.
   // TODO(tengs): The layout of this view is heavily dependant on this max
   // height (equal to the height of the entire tray), but we should refactor and

@@ -263,7 +263,7 @@ StackedNotificationBar::StackedNotificationBar(
           views::BoxLayout::Orientation::kHorizontal,
           features::IsNotificationsRefreshEnabled() ? kNotificationBarPadding
                                                     : gfx::Insets()))) {
-  SetVisible(false);
+  UpdateVisibility();
 
   layout_manager_->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kStretch);
