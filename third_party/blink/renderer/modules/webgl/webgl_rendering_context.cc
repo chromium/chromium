@@ -130,6 +130,10 @@ CanvasRenderingContext* WebGLRenderingContext::Factory::Create(
     host->HostDispatchEvent(
         WebGLContextEvent::Create(event_type_names::kWebglcontextcreationerror,
                                   "Could not create a WebGL context."));
+    // We must dispose immediately so that when rendering_context is
+    // garbage-collected, it will not interfere with a subsequently created
+    // rendering context.
+    rendering_context->Dispose();
     return nullptr;
   }
   rendering_context->InitializeNewContext();
