@@ -149,17 +149,9 @@ IN_PROC_BROWSER_TEST_F(SideSearchV2Test,
   EXPECT_FALSE(GetSidePanelFor(browser())->GetVisible());
 }
 
-#if BUILDFLAG(IS_MAC)
-// TODO(crbug.com/1340387): Test is flaky on Mac.
-#define MAYBE_SidePanelStatePreservedWhenMovingTabsAcrossBrowserWindows \
-  DISABLED_SidePanelStatePreservedWhenMovingTabsAcrossBrowserWindows
-#else
-#define MAYBE_SidePanelStatePreservedWhenMovingTabsAcrossBrowserWindows \
-  SidePanelStatePreservedWhenMovingTabsAcrossBrowserWindows
-#endif
 IN_PROC_BROWSER_TEST_F(
     SideSearchV2Test,
-    MAYBE_SidePanelStatePreservedWhenMovingTabsAcrossBrowserWindows) {
+    SidePanelStatePreservedWhenMovingTabsAcrossBrowserWindows) {
   NavigateToMatchingSearchPageAndOpenSidePanel(browser());
 
   Browser* browser2 = CreateBrowser(browser()->profile());
@@ -179,16 +171,8 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(GetSidePanelFor(browser())->GetVisible());
 }
 
-#if BUILDFLAG(IS_MAC)
-// TODO(crbug.com/1348296): Test is flaky on Mac.
-#define MAYBE_SidePanelTogglesCorrectlyMultipleTabs \
-  DISABLED_SidePanelTogglesCorrectlyMultipleTabs
-#else
-#define MAYBE_SidePanelTogglesCorrectlyMultipleTabs \
-  SidePanelTogglesCorrectlyMultipleTabs
-#endif
 IN_PROC_BROWSER_TEST_F(SideSearchV2Test,
-                       MAYBE_SidePanelTogglesCorrectlyMultipleTabs) {
+                       SidePanelTogglesCorrectlyMultipleTabs) {
   // Navigate to a matching search URL followed by a non-matching URL in two
   // independent browser tabs such that both have the side panel ready. The
   // side panel should respect the state-per-tab flag.
@@ -264,14 +248,7 @@ IN_PROC_BROWSER_TEST_F(SideSearchV2Test,
   EXPECT_FALSE(side_panel->GetVisible());
 }
 
-#if BUILDFLAG(IS_MAC)
-// TODO(crbug.com/1347306): This test is flakey on macOS.
-#define MAYBE_SidePanelCrashesCloseSidePanel \
-  DISABLED_SidePanelCrashesCloseSidePanel
-#else
-#define MAYBE_SidePanelCrashesCloseSidePanel SidePanelCrashesCloseSidePanel
-#endif
-IN_PROC_BROWSER_TEST_F(SideSearchV2Test, MAYBE_SidePanelCrashesCloseSidePanel) {
+IN_PROC_BROWSER_TEST_F(SideSearchV2Test, SidePanelCrashesCloseSidePanel) {
   auto* browser_view = BrowserViewFor(browser());
   auto* coordinator = browser_view->side_panel_coordinator();
   coordinator->SetNoDelaysForTesting();
@@ -356,14 +333,7 @@ IN_PROC_BROWSER_TEST_F(SideSearchV2Test, SwitchSidePanelInSingleTab) {
             coordinator->GetCurrentSidePanelEntryForTesting()->key().id());
 }
 
-#if BUILDFLAG(IS_MAC)
-// TODO(crbug.com/1341272): Test is flaky on Mac.
-#define MAYBE_SwitchTabsWithGlobalSidePanel \
-  DISABLED_SwitchTabsWithGlobalSidePanel
-#else
-#define MAYBE_SwitchTabsWithGlobalSidePanel SwitchTabsWithGlobalSidePanel
-#endif
-IN_PROC_BROWSER_TEST_F(SideSearchV2Test, MAYBE_SwitchTabsWithGlobalSidePanel) {
+IN_PROC_BROWSER_TEST_F(SideSearchV2Test, SwitchTabsWithGlobalSidePanel) {
   auto* browser_view = BrowserViewFor(browser());
   auto* coordinator = browser_view->side_panel_coordinator();
   coordinator->SetNoDelaysForTesting();
@@ -419,15 +389,7 @@ IN_PROC_BROWSER_TEST_F(SideSearchV2Test, MAYBE_SwitchTabsWithGlobalSidePanel) {
             coordinator->GetCurrentSidePanelEntryForTesting()->key().id());
 }
 
-#if BUILDFLAG(IS_MAC)
-// TODO(crbug.com/1340387): Test is flaky on Mac.
-#define MAYBE_SwitchTabsWithoutGlobalSidePanel \
-  DISABLED_SwitchTabsWithoutGlobalSidePanel
-#else
-#define MAYBE_SwitchTabsWithoutGlobalSidePanel SwitchTabsWithoutGlobalSidePanel
-#endif
-IN_PROC_BROWSER_TEST_F(SideSearchV2Test,
-                       MAYBE_SwitchTabsWithoutGlobalSidePanel) {
+IN_PROC_BROWSER_TEST_F(SideSearchV2Test, SwitchTabsWithoutGlobalSidePanel) {
   auto* browser_view = BrowserViewFor(browser());
   auto* coordinator = browser_view->side_panel_coordinator();
 
@@ -477,14 +439,7 @@ IN_PROC_BROWSER_TEST_F(SideSearchV2Test,
   EXPECT_EQ(nullptr, coordinator->GetCurrentSidePanelEntryForTesting());
 }
 
-#if BUILDFLAG(IS_MAC)
-// TODO(crbug.com/1340387): Test is flaky on Mac.
-#define MAYBE_CloseSidePanelShouldClearCache \
-  DISABLED_CloseSidePanelShouldClearCache
-#else
-#define MAYBE_CloseSidePanelShouldClearCache CloseSidePanelShouldClearCache
-#endif
-IN_PROC_BROWSER_TEST_F(SideSearchV2Test, MAYBE_CloseSidePanelShouldClearCache) {
+IN_PROC_BROWSER_TEST_F(SideSearchV2Test, CloseSidePanelShouldClearCache) {
   auto* browser_view = BrowserViewFor(browser());
   NavigateActiveTab(browser(), GetMatchingSearchUrl());
   NavigateActiveTab(browser(), GetNonMatchingUrl());
@@ -507,18 +462,9 @@ IN_PROC_BROWSER_TEST_F(SideSearchV2Test, MAYBE_CloseSidePanelShouldClearCache) {
   EXPECT_EQ(nullptr, tab_contents_helper->side_panel_contents_for_testing());
 }
 
-#if BUILDFLAG(IS_MAC)
-// TODO(crbug.com/1340387): Test is flaky on Mac.
-#define MAYBE_NewForegroundTabShouldNotDestroySidePanelContents \
-  DISABLED_NewForegroundTabShouldNotDestroySidePanelContents
-#else
-#define MAYBE_NewForegroundTabShouldNotDestroySidePanelContents \
-  NewForegroundTabShouldNotDestroySidePanelContents
-#endif
 // Test added for crbug.com/1349687 .
-IN_PROC_BROWSER_TEST_F(
-    SideSearchV2Test,
-    MAYBE_NewForegroundTabShouldNotDestroySidePanelContents) {
+IN_PROC_BROWSER_TEST_F(SideSearchV2Test,
+                       NewForegroundTabShouldNotDestroySidePanelContents) {
   auto* browser_view = BrowserViewFor(browser());
   NavigateActiveTab(browser(), GetMatchingSearchUrl());
   NavigateActiveTab(browser(), GetNonMatchingUrl());
@@ -547,17 +493,9 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_NE(nullptr, tab_contents_helper->side_panel_contents_for_testing());
 }
 
-#if BUILDFLAG(IS_MAC)
-// TODO(crbug.com/1340387): Test is flaky on Mac.
-#define MAYBE_CloseTabWithSideSearchOpenShouldNotCrash \
-  DISABLED_CloseTabWithSideSearchOpenShouldNotCrash
-#else
-#define MAYBE_CloseTabWithSideSearchOpenShouldNotCrash \
-  CloseTabWithSideSearchOpenShouldNotCrash
-#endif
 // Test added for crbug.com/1356966 .
 IN_PROC_BROWSER_TEST_F(SideSearchV2Test,
-                       MAYBE_CloseTabWithSideSearchOpenShouldNotCrash) {
+                       CloseTabWithSideSearchOpenShouldNotCrash) {
   auto* browser_view = BrowserViewFor(browser());
   NavigateActiveTab(browser(), GetMatchingSearchUrl());
   NavigateActiveTab(browser(), GetNonMatchingUrl());
