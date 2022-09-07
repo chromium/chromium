@@ -6908,5 +6908,8 @@ virtual/gpu/fast/canvas/disconnected-canvas-lost-gpu-context.html [ Skip ]
 # Sheriff 2022-09-06
 crbug.com/1358298 external/wpt/html/cross-origin-embedder-policy/require-corp.https.html [ Failure Pass ]
 
+# Disable more gpu test on linux dbg
+crbug.com/1356664 [ Debug Linux ] virtual/no-alloc-direct-call/fast/canvas/disconnected-canvas-lost-gpu-context.html [ Failure Pass ]
+
 # Sheriff 2022-09-07
 crbug.com/1360691 [ Debug Linux ] fast/canvas/disconnected-canvas-lost-gpu-context.html [ Failure ]
