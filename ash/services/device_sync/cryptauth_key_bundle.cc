@@ -9,6 +9,7 @@
 #include "ash/services/device_sync/value_string_encoding.h"
 #include "base/containers/contains.h"
 #include "base/no_destructor.h"
+#include "base/ranges/algorithm.h"
 #include "base/values.h"
 
 namespace ash {
@@ -138,11 +139,11 @@ CryptAuthKeyBundle::CryptAuthKeyBundle(const CryptAuthKeyBundle&) = default;
 CryptAuthKeyBundle::~CryptAuthKeyBundle() = default;
 
 const CryptAuthKey* CryptAuthKeyBundle::GetActiveKey() const {
-  const auto& it = std::find_if(
-      handle_to_key_map_.begin(), handle_to_key_map_.end(),
-      [](const std::pair<std::string, CryptAuthKey>& handle_key_pair) -> bool {
-        return handle_key_pair.second.status() == CryptAuthKey::Status::kActive;
-      });
+  const auto& it =
+      base::ranges::find(handle_to_key_map_, CryptAuthKey::Status::kActive,
+                         [](const HandleToKeyMap::value_type& handle_key_pair) {
+                           return handle_key_pair.second.status();
+                         });
 
   if (it == handle_to_key_map_.end())
     return nullptr;

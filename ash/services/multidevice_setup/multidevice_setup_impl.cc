@@ -31,6 +31,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/ranges/algorithm.h"
 #include "base/time/default_clock.h"
 
 namespace ash {
@@ -385,8 +386,8 @@ bool MultiDeviceSetupImpl::AttemptSetHost(
   multidevice::RemoteDeviceRefList eligible_devices =
       eligible_host_devices_provider_->GetEligibleHostDevices();
 
-  auto it = std::find_if(
-      eligible_devices.begin(), eligible_devices.end(),
+  auto it = base::ranges::find_if(
+      eligible_devices,
       [&host_instance_id_or_legacy_device_id](const auto& eligible_device) {
         if (features::ShouldUseV1DeviceSync()) {
           return eligible_device.instance_id() ==

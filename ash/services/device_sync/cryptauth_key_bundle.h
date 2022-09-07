@@ -108,8 +108,9 @@ class CryptAuthKeyBundle {
   bool operator!=(const CryptAuthKeyBundle& other) const;
 
  private:
+  using HandleToKeyMap = base::flat_map<std::string, CryptAuthKey>;
   Name name_;
-  base::flat_map<std::string, CryptAuthKey> handle_to_key_map_;
+  HandleToKeyMap handle_to_key_map_;
   absl::optional<cryptauthv2::KeyDirective> key_directive_;
 };
 

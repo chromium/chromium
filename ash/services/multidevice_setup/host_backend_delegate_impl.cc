@@ -4,7 +4,6 @@
 
 #include "ash/services/multidevice_setup/host_backend_delegate_impl.h"
 
-#include <algorithm>
 #include <sstream>
 
 #include "ash/components/multidevice/logging/logging.h"
@@ -16,6 +15,7 @@
 #include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
+#include "base/ranges/algorithm.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 
@@ -320,13 +320,11 @@ absl::optional<multidevice::RemoteDeviceRef>
 HostBackendDelegateImpl::GetHostFromDeviceSync() {
   multidevice::RemoteDeviceRefList synced_devices =
       device_sync_client_->GetSyncedDevices();
-  auto it = std::find_if(
-      synced_devices.begin(), synced_devices.end(),
+  auto it = base::ranges::find(
+      synced_devices, multidevice::SoftwareFeatureState::kEnabled,
       [](const auto& remote_device) {
-        multidevice::SoftwareFeatureState host_state =
-            remote_device.GetSoftwareFeatureState(
-                multidevice::SoftwareFeature::kBetterTogetherHost);
-        return host_state == multidevice::SoftwareFeatureState::kEnabled;
+        return remote_device.GetSoftwareFeatureState(
+            multidevice::SoftwareFeature::kBetterTogetherHost);
       });
 
   if (it == synced_devices.end())

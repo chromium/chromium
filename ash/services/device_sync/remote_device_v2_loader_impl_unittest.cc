@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <algorithm>
 #include <memory>
 #include <string>
 #include <utility>
@@ -14,6 +13,7 @@
 #include "ash/services/device_sync/proto/cryptauth_v2_test_util.h"
 #include "ash/services/device_sync/remote_device_v2_loader_impl.h"
 #include "base/bind.h"
+#include "base/ranges/algorithm.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
@@ -165,11 +165,8 @@ class DeviceSyncRemoteDeviceV2LoaderImplTest : public testing::Test {
 
     for (const auto& expected_device : expected_remote_devices) {
       std::string expected_instance_id = expected_device.instance_id;
-      auto it = std::find_if(
-          remote_devices_->begin(), remote_devices_->end(),
-          [&expected_instance_id](const multidevice::RemoteDevice& device) {
-            return device.instance_id == expected_instance_id;
-          });
+      auto it = base::ranges::find(*remote_devices_, expected_instance_id,
+                                   &multidevice::RemoteDevice::instance_id);
 
       ASSERT_FALSE(it == remote_devices_->end());
       multidevice::RemoteDevice remote_device = *it;

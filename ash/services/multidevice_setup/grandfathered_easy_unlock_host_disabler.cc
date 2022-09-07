@@ -9,6 +9,7 @@
 #include "ash/services/device_sync/public/cpp/device_sync_client.h"
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
+#include "base/ranges/algorithm.h"
 #include "base/timer/timer.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -205,8 +206,8 @@ GrandfatheredEasyUnlockHostDisabler::GetEasyUnlockHostToDisable() {
 
   multidevice::RemoteDeviceRefList synced_devices =
       device_sync_client_->GetSyncedDevices();
-  auto it = std::find_if(
-      synced_devices.begin(), synced_devices.end(),
+  auto it = base::ranges::find_if(
+      synced_devices,
       [&legacy_device_id, &instance_id](const auto& remote_device) {
         return (legacy_device_id != kNoDevice &&
                 remote_device.GetDeviceId() == legacy_device_id) ||

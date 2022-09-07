@@ -12,6 +12,7 @@
 #include "ash/services/device_sync/mock_cryptauth_client.h"
 #include "ash/services/device_sync/proto/enum_util.h"
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -164,23 +165,14 @@ class DeviceSyncSoftwareFeatureManagerImplTest
     EXPECT_TRUE(result_eligible_devices_.size() > 0);
     EXPECT_TRUE(result_ineligible_devices_.size() > 0);
     for (const auto& device_info : result_eligible_devices_) {
-      EXPECT_TRUE(
-          std::find_if(
-              test_eligible_external_devices_infos_.begin(),
-              test_eligible_external_devices_infos_.end(),
-              [&device_info](const cryptauth::ExternalDeviceInfo& device) {
-                return device.public_key() == device_info.public_key();
-              }) != test_eligible_external_devices_infos_.end());
+      EXPECT_TRUE(base::Contains(test_eligible_external_devices_infos_,
+                                 device_info.public_key(),
+                                 &cryptauth::ExternalDeviceInfo::public_key));
     }
     for (const auto& ineligible_device : result_ineligible_devices_) {
-      EXPECT_TRUE(
-          std::find_if(test_ineligible_external_devices_infos_.begin(),
-                       test_ineligible_external_devices_infos_.end(),
-                       [&ineligible_device](
-                           const cryptauth::ExternalDeviceInfo& device) {
-                         return device.public_key() ==
-                                ineligible_device.device().public_key();
-                       }) != test_ineligible_external_devices_infos_.end());
+      EXPECT_TRUE(base::Contains(test_ineligible_external_devices_infos_,
+                                 ineligible_device.device().public_key(),
+                                 &cryptauth::ExternalDeviceInfo::public_key));
     }
     result_eligible_devices_.clear();
     result_ineligible_devices_.clear();

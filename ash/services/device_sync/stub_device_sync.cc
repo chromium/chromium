@@ -14,6 +14,7 @@
 #include "ash/services/device_sync/public/mojom/device_sync.mojom.h"
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
+#include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -172,14 +173,13 @@ class StubDeviceSync : public DeviceSyncBase {
   multidevice::RemoteDevice* GetRemoteDevice(
       const absl::optional<std::string>& device_public_key,
       const absl::optional<std::string>& device_instance_id) {
-    auto it = std::find_if(synced_devices_.begin(), synced_devices_.end(),
-                           [&](const auto& device) {
-                             if (device_public_key.has_value())
-                               return device.public_key == device_public_key;
-                             if (device_instance_id.has_value())
-                               return device.instance_id == device_instance_id;
-                             return false;
-                           });
+    auto it = base::ranges::find_if(synced_devices_, [&](const auto& device) {
+      if (device_public_key.has_value())
+        return device.public_key == device_public_key;
+      if (device_instance_id.has_value())
+        return device.instance_id == device_instance_id;
+      return false;
+    });
     if (it == synced_devices_.end()) {
       return nullptr;
     }

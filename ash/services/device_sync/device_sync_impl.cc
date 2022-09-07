@@ -37,6 +37,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/ranges/algorithm.h"
 #include "base/time/default_clock.h"
 #include "base/timer/timer.h"
 #include "base/unguessable_token.h"
@@ -299,10 +300,8 @@ DeviceSyncImpl::PendingSetSoftwareFeatureRequest::
 bool DeviceSyncImpl::PendingSetSoftwareFeatureRequest::IsFulfilled() const {
   const auto& synced_devices = remote_device_provider_->GetSyncedDevices();
   const auto devices_it =
-      std::find_if(synced_devices.begin(), synced_devices.end(),
-                   [this](const auto& remote_device) {
-                     return device_public_key_ == remote_device.public_key;
-                   });
+      base::ranges::find(synced_devices, device_public_key_,
+                         &multidevice::RemoteDevice::public_key);
 
   // If the device to edit no longer exists, the request is not fulfilled.
   if (devices_it == synced_devices.end())
@@ -1113,10 +1112,8 @@ DeviceSyncImpl::GetSyncedDeviceWithPublicKey(
       << "DeviceSyncImpl::GetSyncedDeviceWithPublicKey() called before ready.";
 
   const auto& synced_devices = remote_device_provider_->GetSyncedDevices();
-  const auto it = std::find_if(synced_devices.begin(), synced_devices.end(),
-                               [&public_key](const auto& remote_device) {
-                                 return public_key == remote_device.public_key;
-                               });
+  const auto it = base::ranges::find(synced_devices, public_key,
+                                     &multidevice::RemoteDevice::public_key);
 
   if (it == synced_devices.end())
     return absl::nullopt;

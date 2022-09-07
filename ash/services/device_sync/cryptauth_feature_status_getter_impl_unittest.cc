@@ -24,6 +24,7 @@
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/no_destructor.h"
+#include "base/ranges/algorithm.h"
 #include "base/timer/mock_timer.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -314,28 +315,20 @@ TEST_F(DeviceSyncCryptAuthFeatureStatusGetterImplTest,
                 ->second);
 
   // Ensure that BetterTogether host is marked as not supported in the response.
-  auto beto_host_supported_it = std::find_if(
-      status.mutable_feature_statuses()->begin(),
-      status.mutable_feature_statuses()->end(),
-      [](const cryptauthv2::DeviceFeatureStatus::FeatureStatus&
-             feature_status) {
-        return feature_status.feature_type() ==
-               CryptAuthFeatureTypeToString(
-                   CryptAuthFeatureType::kBetterTogetherHostSupported);
-      });
+  auto beto_host_supported_it = base::ranges::find(
+      *status.mutable_feature_statuses(),
+      CryptAuthFeatureTypeToString(
+          CryptAuthFeatureType::kBetterTogetherHostSupported),
+      &cryptauthv2::DeviceFeatureStatus::FeatureStatus::feature_type);
   EXPECT_FALSE(beto_host_supported_it->enabled());
 
   // Erroneously mark the BetterTogether host feature state as enabled in the
   // response though it is not supported.
-  auto beto_host_enabled_it = std::find_if(
-      status.mutable_feature_statuses()->begin(),
-      status.mutable_feature_statuses()->end(),
-      [](const cryptauthv2::DeviceFeatureStatus::FeatureStatus&
-             feature_status) {
-        return feature_status.feature_type() ==
-               CryptAuthFeatureTypeToString(
-                   CryptAuthFeatureType::kBetterTogetherHostEnabled);
-      });
+  auto beto_host_enabled_it = base::ranges::find(
+      *status.mutable_feature_statuses(),
+      CryptAuthFeatureTypeToString(
+          CryptAuthFeatureType::kBetterTogetherHostEnabled),
+      &cryptauthv2::DeviceFeatureStatus::FeatureStatus::feature_type);
   beto_host_enabled_it->set_enabled(true);
 
   cryptauthv2::BatchGetFeatureStatusesResponse response;
