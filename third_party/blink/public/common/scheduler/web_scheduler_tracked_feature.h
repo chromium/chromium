@@ -131,6 +131,8 @@ static_assert(static_cast<uint32_t>(WebSchedulerTrackedFeature::kMaxValue) < 64,
 
 BLINK_COMMON_EXPORT std::string FeatureToHumanReadableString(
     WebSchedulerTrackedFeature feature);
+BLINK_COMMON_EXPORT std::string FeatureToShortString(
+    WebSchedulerTrackedFeature feature);
 
 BLINK_COMMON_EXPORT absl::optional<WebSchedulerTrackedFeature> StringToFeature(
     const std::string& str);

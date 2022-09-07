@@ -32,6 +32,15 @@ std::string DescribeFeatures(BlockListedFeatures blocklisted_features) {
   return base::JoinString(features, ", ");
 }
 
+std::vector<std::string> FeaturesToStringVector(
+    BlockListedFeatures blocklisted_features) {
+  std::vector<std::string> features;
+  for (WebSchedulerTrackedFeature feature : blocklisted_features) {
+    features.push_back(blink::scheduler::FeatureToShortString(feature));
+  }
+  return features;
+}
+
 const char* BrowsingInstanceSwapResultToString(
     absl::optional<ShouldSwapBrowsingInstance> reason) {
   if (!reason)
@@ -304,7 +313,13 @@ BackForwardCacheCanStoreDocumentResult::GetStringReasons() const {
   std::vector<std::string> reason_strs;
   for (BackForwardCacheMetrics::NotRestoredReason reason :
        not_restored_reasons_) {
-    reason_strs.push_back(NotRestoredReasonToReportString(reason));
+    switch (reason) {
+      case Reason::kBlocklistedFeatures:
+        reason_strs = FeaturesToStringVector(blocklisted_features_);
+        break;
+      default:
+        reason_strs.push_back(NotRestoredReasonToReportString(reason));
+    }
   }
   return reason_strs;
 }
@@ -488,8 +503,6 @@ BackForwardCacheCanStoreDocumentResult::NotRestoredReasonToReportString(
     case Reason::kErrorDocument:
     case Reason::kFencedFramesEmbedder:
       return "Other";
-    // Return a matching string for blocklisted feature, so that we can test
-    // with a dummy feature in tests.
     case Reason::kBlocklistedFeatures:
       return DescribeFeatures(blocklisted_features_);
   }

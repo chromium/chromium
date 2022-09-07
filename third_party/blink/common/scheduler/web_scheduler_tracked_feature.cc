@@ -155,6 +155,10 @@ std::string FeatureToHumanReadableString(WebSchedulerTrackedFeature feature) {
   return FeatureToNames(feature).human_readable;
 }
 
+std::string FeatureToShortString(WebSchedulerTrackedFeature feature) {
+  return FeatureToNames(feature).short_name;
+}
+
 absl::optional<WebSchedulerTrackedFeature> StringToFeature(
     const std::string& str) {
   auto map = ShortStringToFeatureMap();

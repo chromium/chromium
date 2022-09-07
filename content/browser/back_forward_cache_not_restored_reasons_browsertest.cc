@@ -123,7 +123,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithNotRestoredReasons,
   // Expect that NotRestoredReasons are reported.
   auto rfh_a_details = MatchesSameOriginDetails(
       /*id=*/"", /*name=*/"", /*src=*/"",
-      /*url=*/rfh_a_url, /*reasons=*/{"Dummy for testing"}, /*children=*/{});
+      /*url=*/rfh_a_url, /*reasons=*/{"Dummy"}, /*children=*/{});
   auto rfh_a_result = MatchesNotRestoredReasons(
       /*blocked=*/true, &rfh_a_details);
   EXPECT_THAT(current_frame_host()->NotRestoredReasonsForTesting(),
@@ -235,13 +235,13 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithNotRestoredReasons,
 
   auto rfh_a_2_details = MatchesSameOriginDetails(
       /*id=*/"child-0", /*name=*/"", /*src=*/rfh_a_2_url, /*url=*/rfh_a_2_url,
-      /*reasons=*/{"Dummy for testing"},
+      /*reasons=*/{"Dummy"},
       /*children=*/{});
   auto rfh_a_2_result = MatchesNotRestoredReasons(
       /*blocked=*/true, &rfh_a_2_details);
   auto rfh_a_4_details = MatchesSameOriginDetails(
       /*id=*/"child-0", /*name=*/"", /*src=*/rfh_a_4_url, /*url=*/rfh_a_4_url,
-      /*reasons=*/{"Dummy for testing"},
+      /*reasons=*/{"Dummy"},
       /*children=*/{});
   auto rfh_a_4_result = MatchesNotRestoredReasons(
       /*blocked=*/true, &rfh_a_4_details);
@@ -253,7 +253,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithNotRestoredReasons,
       /*blocked=*/false, &rfh_a_3_details);
   auto rfh_a_1_details = MatchesSameOriginDetails(
       /*id=*/"", /*name=*/"", /*src=*/"", /*url=*/rfh_a_1_url,
-      /*reasons=*/{"Dummy for testing"},
+      /*reasons=*/{"Dummy"},
       /*children=*/{rfh_a_2_result, rfh_a_3_result});
   auto rfh_a_1_result = MatchesNotRestoredReasons(
       /*blocked=*/true, &rfh_a_1_details);
