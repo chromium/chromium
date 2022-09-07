@@ -54,10 +54,12 @@ void SetButtonIconWithColor(HoverButton* button,
                             SkColor disabled_icon_color) {
   const int icon_size = ChromeLayoutProvider::Get()->GetDistanceMetric(
       DISTANCE_EXTENSIONS_MENU_BUTTON_ICON_SIZE);
-  button->SetImage(views::Button::STATE_NORMAL,
-                   gfx::CreateVectorIcon(icon, icon_size, icon_color));
-  button->SetImage(views::Button::STATE_DISABLED,
-                   gfx::CreateVectorIcon(icon, icon_size, disabled_icon_color));
+  button->SetImageModel(
+      views::Button::STATE_NORMAL,
+      ui::ImageModel::FromVectorIcon(icon, icon_color, icon_size));
+  button->SetImageModel(
+      views::Button::STATE_DISABLED,
+      ui::ImageModel::FromVectorIcon(icon, disabled_icon_color, icon_size));
 }
 
 }  // namespace

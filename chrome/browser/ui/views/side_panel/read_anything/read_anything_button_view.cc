@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_button_view.h"
 
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_constants.h"
+#include "ui/base/models/image_model.h"
 #include "ui/views/layout/box_layout.h"
 
 ReadAnythingButtonView::ReadAnythingButtonView(
@@ -27,7 +28,8 @@ ReadAnythingButtonView::ReadAnythingButtonView(
   auto button = std::make_unique<views::ImageButton>(std::move(callback));
   button->SetImageHorizontalAlignment(views::ImageButton::ALIGN_CENTER);
   button->SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);
-  button->SetImage(views::Button::STATE_NORMAL, icon);
+  button->SetImageModel(views::Button::STATE_NORMAL,
+                        ui::ImageModel::FromImageSkia(icon));
   button->SetTooltipText(tooltip);
 
   // Add the button to the view.

@@ -38,6 +38,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/models/image_model.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/favicon_size.h"
 #include "ui/gfx/geometry/insets.h"
@@ -408,8 +409,9 @@ void ZoomBubbleView::Init() {
     image_button->SetTooltipText(
         l10n_util::GetStringFUTF16(IDS_TOOLTIP_ZOOM_EXTENSION_ICON,
                                    base::UTF8ToUTF16(extension_info_.name)));
-    image_button->SetImage(views::Button::STATE_NORMAL,
-                           &extension_info_.icon_image->image_skia());
+    image_button->SetImageModel(views::Button::STATE_NORMAL,
+                                ui::ImageModel::FromImageSkia(
+                                    extension_info_.icon_image->image_skia()));
     image_button_ = AddChildView(std::move(image_button));
   }
 

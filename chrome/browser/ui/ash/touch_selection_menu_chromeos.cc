@@ -12,6 +12,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/ash/ash_util.h"
 #include "chrome/browser/ui/ash/touch_selection_menu_runner_chromeos.h"
+#include "ui/base/models/image_model.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/image/image_skia.h"
@@ -61,7 +62,8 @@ void TouchSelectionMenuChromeOS::CreateButtons() {
       gfx::ImageSkia icon = gfx::ImageSkiaOperations::CreateResizedImage(
           original, skia::ImageOperations::RESIZE_BEST,
           gfx::Size(kSmallIconSizeInDip, kSmallIconSizeInDip));
-      button->SetImage(views::Button::ButtonState::STATE_NORMAL, icon);
+      button->SetImageModel(views::Button::ButtonState::STATE_NORMAL,
+                            ui::ImageModel::FromImageSkia(icon));
     }
   }
 
