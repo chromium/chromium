@@ -8606,6 +8606,11 @@ test("unit_tests") {
       "../common/channel_info_unittest.cc",
     ]
 
+    if (is_linux || is_win || is_mac) {
+      sources +=
+          [ "../browser/ui/views/policy/enterprise_startup_dialog_unittest.cc" ]
+    }
+
     deps += [ "//components/enterprise:test_support" ]
   }
 
