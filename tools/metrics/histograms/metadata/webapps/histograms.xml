@@ -689,6 +689,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebApp.Preinstalled.CorruptUserUninstallPrefsCount"
+    units="apps" expires_after="2023-02-12">
+  <owner>alancutter@chromium.org</owner>
+  <owner>dibyapal@chromium.org</owner>
+  <owner>desktop-pwas-team@google.com</owner>
+  <summary>
+    Records how many preinstalled web app configs have an entry in
+    UserUninstalledPreinstalledWebAppPrefs while the associated web app is still
+    installed by default. This state is an error state caused by:
+    https://crbug.com/1359205 This is recorded at start up.
+  </summary>
+</histogram>
+
 <histogram name="WebApp.Preinstalled.DisabledCount" units="apps"
     expires_after="2023-02-26">
   <owner>alancutter@chromium.org</owner>

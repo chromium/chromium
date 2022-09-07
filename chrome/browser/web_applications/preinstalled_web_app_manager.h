@@ -65,6 +65,7 @@ class PreinstalledWebAppManager {
   static const char* kHistogramEnabledCount;
   static const char* kHistogramDisabledCount;
   static const char* kHistogramConfigErrorCount;
+  static const char* kHistogramCorruptUserUninstallPrefsCount;
   static const char* kHistogramInstallResult;
   static const char* kHistogramUninstallAndReplaceCount;
   static const char* kHistogramAppToReplaceStillInstalledCount;

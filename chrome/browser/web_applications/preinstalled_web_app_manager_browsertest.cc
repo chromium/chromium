@@ -777,6 +777,38 @@ IN_PROC_BROWSER_TEST_P(PreinstalledWebAppManagerTestWithExternalPrefRead,
   EXPECT_EQ(disabled_configs.size(), 0u);
 }
 
+IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
+                       IgnoreCorruptUserUninstalledPreinstalledWebAppPrefs) {
+  PreinstalledWebAppManager::BypassOfflineManifestRequirementForTesting();
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  constexpr char kAppConfigTemplate[] =
+      R"({
+        "app_url": "$1",
+        "launch_container": "window",
+        "user_type": ["unmanaged"]
+      })";
+  std::string app_config = base::ReplaceStringPlaceholders(
+      kAppConfigTemplate, {GetAppUrl().spec()}, nullptr);
+  EXPECT_EQ(SyncPreinstalledAppConfig(GetAppUrl(), app_config),
+            webapps::InstallResultCode::kSuccessNewInstall);
+
+  AppId app_id = GenerateAppId(/*manifest_id=*/absl::nullopt, GetAppUrl());
+  EXPECT_TRUE(registrar().IsInstalledByDefaultManagement(app_id));
+
+  // Simulate the effects of https://crbug.com/1359205 by adding an installed
+  // preinstalled web app to the "has been uninstalled by the user" pref even
+  // though the web app is still kDefault installed.
+  UserUninstalledPreinstalledWebAppPrefs(profile()->GetPrefs())
+      .Add(app_id, {GetAppUrl()});
+
+  // Check that the PreinstalledWebAppManager doesn't uninstall the web app
+  // just because the prefs say it's uninstalled.
+  EXPECT_EQ(SyncPreinstalledAppConfig(GetAppUrl(), app_config),
+            webapps::InstallResultCode::kSuccessAlreadyInstalled);
+  EXPECT_TRUE(registrar().IsInstalledByDefaultManagement(app_id));
+}
+
 // The offline manifest JSON config functionality is only available on Chrome
 // OS.
 #if BUILDFLAG(IS_CHROMEOS)
