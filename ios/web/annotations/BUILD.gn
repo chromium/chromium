@@ -3,11 +3,11 @@
 # found in the LICENSE file.
 
 import("//ios/build/config.gni")
-import("//ios/web/public/js_messaging/optimize_js.gni")
+import("//ios/web/public/js_messaging/optimize_ts.gni")
 
 source_set("annotations") {
   deps = [
-    ":annotations_js",
+    ":annotations_ts",
     "//base",
     "//components/shared_highlighting/ios",
     "//ios/web/common",
@@ -30,10 +30,13 @@ source_set("annotations") {
   configs += [ "//build/config/compiler:enable_arc" ]
 }
 
-optimize_js("annotations_js") {
+optimize_ts("annotations_ts") {
   visibility = [ ":annotations" ]
 
-  primary_script = "resources/annotations.js"
+  sources = [ "resources/annotations.ts" ]
 
-  sources = [ "resources/annotations.js" ]
+  deps = [
+    "//ios/web/public/js_messaging:gcrweb",
+    "//ios/web/public/js_messaging:util_scripts",
+  ]
 }
