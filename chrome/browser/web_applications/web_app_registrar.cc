@@ -5,6 +5,7 @@
 #include "chrome/browser/web_applications/web_app_registrar.h"
 
 #include <algorithm>
+#include <bitset>
 #include <utility>
 #include <vector>
 
@@ -28,6 +29,7 @@
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app_prefs_utils.h"
+#include "chrome/browser/web_applications/web_app_sources.h"
 #include "chrome/browser/web_applications/web_app_translation_manager.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_features.h"
@@ -632,8 +634,16 @@ absl::optional<AppId> WebAppRegistrar::LookUpAppIdByInstallUrl(
 
 bool WebAppRegistrar::IsInstalled(const AppId& app_id) const {
   const WebApp* web_app = GetAppById(app_id);
-  return web_app && !web_app->is_from_sync_and_pending_installation() &&
-         !web_app->is_uninstalling();
+  if (!web_app || web_app->is_uninstalling())
+    return false;
+
+  // `is_from_sync_and_pending_installation()` should be treated as 'not
+  // installed' only if there are no other sources that have installed the web
+  // app.
+  WebAppSources sources_except_sync = web_app->GetSources();
+  sources_except_sync.set(WebAppManagement::kSync, false);
+  return !(web_app->is_from_sync_and_pending_installation() &&
+           sources_except_sync.none());
 }
 
 bool WebAppRegistrar::IsUninstalling(const AppId& app_id) const {
