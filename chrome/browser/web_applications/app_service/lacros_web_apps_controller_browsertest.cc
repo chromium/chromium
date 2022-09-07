@@ -54,6 +54,7 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
@@ -66,6 +67,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/features.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/message_center/public/cpp/notification.h"
@@ -89,9 +91,7 @@ class MockAppPublisher : public crosapi::mojom::AppPublisher {
     run_loop_ = std::make_unique<base::RunLoop>();
   }
 
-  const std::vector<apps::mojom::AppPtr>& get_deltas() const {
-    return app_deltas_;
-  }
+  const std::vector<apps::AppPtr>& get_deltas() const { return app_deltas_; }
 
   const std::vector<apps::mojom::CapabilityAccessPtr>&
   get_capability_access_deltas() const {
@@ -101,9 +101,9 @@ class MockAppPublisher : public crosapi::mojom::AppPublisher {
  private:
   // crosapi::mojom::AppPublisher:
   void OnApps(std::vector<apps::AppPtr> deltas) override {
-    for (const auto& delta : deltas) {
+    for (auto& delta : deltas) {
       if (delta)
-        app_deltas_.push_back(apps::ConvertAppToMojomApp(delta));
+        app_deltas_.push_back(std::move(delta));
     }
     run_loop_->Quit();
   }
@@ -121,7 +121,7 @@ class MockAppPublisher : public crosapi::mojom::AppPublisher {
     run_loop_->Quit();
   }
 
-  std::vector<apps::mojom::AppPtr> app_deltas_;
+  std::vector<apps::AppPtr> app_deltas_;
   std::vector<apps::mojom::CapabilityAccessPtr> capability_access_deltas_;
   std::unique_ptr<base::RunLoop> run_loop_;
 };
@@ -136,7 +136,7 @@ content::EvalJsResult ReadTextContent(content::WebContents* web_contents,
 // Returns whether there are file view filters among the given list of intent
 // filters.
 bool HasFileViewFilters(
-    const std::vector<apps::mojom::IntentFilterPtr>& intent_filters) {
+    const std::vector<apps::IntentFilterPtr>& intent_filters) {
   for (const auto& intent_filter : intent_filters) {
     bool has_action_view = false;
     bool has_mime_type = false;
@@ -144,20 +144,20 @@ bool HasFileViewFilters(
 
     for (const auto& condition : intent_filter->conditions) {
       switch (condition->condition_type) {
-        case apps::mojom::ConditionType::kAction:
+        case apps::ConditionType::kAction:
           if (condition->condition_values.size() == 1 &&
               condition->condition_values.back()->value ==
                   apps_util::kIntentActionView) {
             has_action_view = true;
           }
           break;
-        case apps::mojom::ConditionType::kFile:
+        case apps::ConditionType::kFile:
           for (const auto& condition_value : condition->condition_values) {
             if (condition_value->match_type ==
-                apps::mojom::PatternMatchType::kMimeType) {
+                apps::PatternMatchType::kMimeType) {
               has_mime_type = true;
             } else if (condition_value->match_type ==
-                       apps::mojom::PatternMatchType::kFileExtension) {
+                       apps::PatternMatchType::kFileExtension) {
               has_file_extension = true;
             }
           }
@@ -214,10 +214,9 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest, PublishApps) {
   EXPECT_EQ(app_deltas.back()->app_id, app_id);
   bool found_ready_with_icon = false;
   // The order of those three updates is not important
-  for (std::vector<apps::mojom::AppPtr>::size_type i = 2; i < app_deltas.size();
-       i++) {
+  for (std::vector<apps::AppPtr>::size_type i = 2; i < app_deltas.size(); i++) {
     EXPECT_EQ(app_deltas[i]->app_id, app_id);
-    if (app_deltas[i]->readiness == apps::mojom::Readiness::kReady) {
+    if (app_deltas[i]->readiness == apps::Readiness::kReady) {
       EXPECT_EQ(app_deltas[i]->icon_key->icon_effects,
                 IconEffects::kRoundCorners | IconEffects::kCrOsStandardIcon);
       found_ready_with_icon = true;
@@ -237,7 +236,7 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest, PublishApps) {
     mock_app_publisher.Wait();
     EXPECT_EQ(mock_app_publisher.get_deltas().back()->app_id, app_id);
     EXPECT_EQ(mock_app_publisher.get_deltas().back()->readiness,
-              apps::mojom::Readiness::kUninstalledByUser);
+              apps::Readiness::kUninstalledByUser);
   }
 }
 
@@ -412,21 +411,21 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest, ContentSettings) {
   mock_app_publisher.Wait();
   EXPECT_EQ(mock_app_publisher.get_deltas().size(), 3U);
   EXPECT_EQ(mock_app_publisher.get_deltas().back()->app_type,
-            apps::mojom::AppType::kWeb);
+            apps::AppType::kWeb);
   EXPECT_EQ(mock_app_publisher.get_deltas().back()->app_id, app_id);
 
-  const std::vector<apps::mojom::PermissionPtr>& permissions =
+  const std::vector<apps::PermissionPtr>& permissions =
       mock_app_publisher.get_deltas().back()->permissions;
-  auto camera_permission =
-      std::find_if(permissions.begin(), permissions.end(),
-                   [](const apps::mojom::PermissionPtr& permission) {
-                     return permission->permission_type ==
-                            apps::mojom::PermissionType::kCamera;
-                   });
+  auto camera_permission = std::find_if(
+      permissions.begin(), permissions.end(),
+      [](const apps::PermissionPtr& permission) {
+        return permission->permission_type == apps::PermissionType::kCamera;
+      });
   ASSERT_TRUE(camera_permission != permissions.end());
-  EXPECT_TRUE((*camera_permission)->value->is_tristate_value());
-  EXPECT_EQ((*camera_permission)->value->get_tristate_value(),
-            apps::mojom::TriState::kAllow);
+  EXPECT_TRUE(absl::holds_alternative<apps::TriState>(
+      (*camera_permission)->value->value));
+  EXPECT_EQ(absl::get<apps::TriState>((*camera_permission)->value->value),
+            apps::TriState::kAllow);
 }
 
 IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest, MediaRequest) {
@@ -555,34 +554,30 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest, PauseUnpause) {
   mock_app_publisher.Wait();
   EXPECT_EQ(mock_app_publisher.get_deltas().size(), 3U);
 
-  EXPECT_EQ(mock_app_publisher.get_deltas()[1]->app_type,
-            apps::mojom::AppType::kWeb);
+  EXPECT_EQ(mock_app_publisher.get_deltas()[1]->app_type, apps::AppType::kWeb);
   EXPECT_EQ(mock_app_publisher.get_deltas()[1]->app_id, app_id);
   EXPECT_EQ(mock_app_publisher.get_deltas()[1]->icon_key->icon_effects,
             IconEffects::kRoundCorners | IconEffects::kCrOsStandardIcon |
                 IconEffects::kPaused);
 
   EXPECT_EQ(mock_app_publisher.get_deltas().back()->app_type,
-            apps::mojom::AppType::kWeb);
+            apps::AppType::kWeb);
   EXPECT_EQ(mock_app_publisher.get_deltas().back()->app_id, app_id);
-  EXPECT_EQ(mock_app_publisher.get_deltas().back()->paused,
-            apps::mojom::OptionalBool::kTrue);
+  EXPECT_TRUE(mock_app_publisher.get_deltas().back()->paused.value_or(false));
 
   lacros_web_apps_controller.UnpauseApp(app_id);
   mock_app_publisher.Wait();
   EXPECT_EQ(mock_app_publisher.get_deltas().size(), 5U);
 
-  EXPECT_EQ(mock_app_publisher.get_deltas()[3]->app_type,
-            apps::mojom::AppType::kWeb);
+  EXPECT_EQ(mock_app_publisher.get_deltas()[3]->app_type, apps::AppType::kWeb);
   EXPECT_EQ(mock_app_publisher.get_deltas()[3]->app_id, app_id);
   EXPECT_EQ(mock_app_publisher.get_deltas()[3]->icon_key->icon_effects,
             IconEffects::kRoundCorners | IconEffects::kCrOsStandardIcon);
 
   EXPECT_EQ(mock_app_publisher.get_deltas().back()->app_type,
-            apps::mojom::AppType::kWeb);
+            apps::AppType::kWeb);
   EXPECT_EQ(mock_app_publisher.get_deltas().back()->app_id, app_id);
-  EXPECT_EQ(mock_app_publisher.get_deltas().back()->paused,
-            apps::mojom::OptionalBool::kFalse);
+  EXPECT_FALSE(mock_app_publisher.get_deltas().back()->paused.value_or(true));
 }
 
 IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest, GetMenuModel) {
@@ -697,14 +692,14 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest, WindowMode) {
 
   EXPECT_EQ(mock_app_publisher.get_deltas().size(), 1U);
   EXPECT_EQ(mock_app_publisher.get_deltas().back()->window_mode,
-            apps::mojom::WindowMode::kWindow);
+            apps::WindowMode::kWindow);
 
   lacros_web_apps_controller.SetWindowMode(app_id, apps::WindowMode::kBrowser);
   mock_app_publisher.Wait();
 
   EXPECT_GE(mock_app_publisher.get_deltas().size(), 2U);
   EXPECT_EQ(mock_app_publisher.get_deltas().back()->window_mode,
-            apps::mojom::WindowMode::kBrowser);
+            apps::WindowMode::kBrowser);
 }
 
 IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest, Notification) {
@@ -718,8 +713,8 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest, Notification) {
   lacros_web_apps_controller.Init();
   mock_app_publisher.Wait();
   EXPECT_EQ(mock_app_publisher.get_deltas().size(), 1U);
-  EXPECT_EQ(mock_app_publisher.get_deltas().back()->has_badge,
-            apps::mojom::OptionalBool::kFalse);
+  EXPECT_FALSE(
+      mock_app_publisher.get_deltas().back()->has_badge.value_or(true));
 
   const GURL origin = app_url.DeprecatedGetOriginAsURL();
   const std::string notification_id = "notification-id";
@@ -737,8 +732,8 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest, Notification) {
       std::move(metadata));
   mock_app_publisher.Wait();
   EXPECT_EQ(mock_app_publisher.get_deltas().size(), 2U);
-  EXPECT_EQ(mock_app_publisher.get_deltas().back()->has_badge,
-            apps::mojom::OptionalBool::kTrue);
+  EXPECT_TRUE(
+      mock_app_publisher.get_deltas().back()->has_badge.value_or(false));
 }
 
 IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest, DisabledState) {
