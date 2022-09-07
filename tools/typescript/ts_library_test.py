@@ -23,7 +23,7 @@ class TsLibraryTest(unittest.TestCase):
     if self._out_folder:
       shutil.rmtree(self._out_folder)
 
-  def _build_project1(self):
+  def _build_project1(self, tsconfig_base=None):
     gen_dir = os.path.join(self._out_folder, 'project1')
 
     # Generate definition .d.ts file for legacy JS file.
@@ -39,7 +39,7 @@ class TsLibraryTest(unittest.TestCase):
     ])
 
     # Build project1, which includes a mix of TS and definition files.
-    ts_library.main([
+    args = [
         '--output_suffix',
         'build_ts',
         '--root_dir',
@@ -53,7 +53,12 @@ class TsLibraryTest(unittest.TestCase):
         '--definitions',
         'legacy_file.d.ts',
         '--composite',
-    ])
+    ]
+
+    if tsconfig_base:
+      args += ['--tsconfig_base', tsconfig_base]
+
+    ts_library.main(args)
     return gen_dir
 
   def _assert_project1_output(self, gen_dir):
@@ -312,6 +317,26 @@ class TsLibraryTest(unittest.TestCase):
           str(err).startswith('Invalid |composite| flag detected in '))
     else:
       self.fail('Failed to detect error')
+
+
+  def testSourceRootIncludedWhenSourceMapFlagUsed(self):
+    self._out_folder = tempfile.mkdtemp(dir=_HERE_DIR)
+    root_dir = os.path.join(_HERE_DIR, 'tests', 'project1')
+    gen_dir = os.path.join(self._out_folder, 'project1')
+
+    # Build project1 which contains a tsconfig_base_sourcemap.json that enables
+    # sourcemaps generated as separate files, i.e. a file called foo.js.map will
+    # be created.
+    self._build_project1(tsconfig_base=os.path.relpath(
+        os.path.join(root_dir, 'tsconfig_base_sourcemap.json'), gen_dir))
+
+    # Ensure the sourcemap file was generated and the sourceRoot key exists and
+    # refers to the correct directory.
+    sourcemap_file = os.path.join(gen_dir, 'foo.js.map')
+    self.assertTrue(os.path.exists(sourcemap_file))
+    with open(sourcemap_file, encoding='utf-8') as f:
+      json_sourcemap = json.load(f)
+      self.assertTrue(os.path.samefile(json_sourcemap['sourceRoot'], root_dir))
 
 
 if __name__ == '__main__':

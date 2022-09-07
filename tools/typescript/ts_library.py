@@ -28,16 +28,26 @@ def _write_tsconfig_json(gen_dir, tsconfig, tsconfig_file):
   return
 
 
-def _validate_tsconfig_json(tsconfig_file):
-  with io.open(tsconfig_file, encoding='utf-8', mode='r') as f:
-    tsconfig = json.loads(f.read())
-
-    if 'compilerOptions' in tsconfig and \
-        'composite' in tsconfig['compilerOptions']:
-      return False, f'Invalid |composite| flag detected in {tsconfig_file}.' + \
-          ' Use the dedicated |composite=true| attribute in ts_library() ' + \
-          'instead.'
+def _validate_tsconfig_json(tsconfig, tsconfig_file):
+  if 'compilerOptions' in tsconfig and \
+      'composite' in tsconfig['compilerOptions']:
+    return False, f'Invalid |composite| flag detected in {tsconfig_file}.' + \
+        ' Use the dedicated |composite=true| attribute in ts_library() ' + \
+        'instead.'
   return True, None
+
+
+def _is_sourcemap_enabled(tsconfig):
+  if 'compilerOptions' in tsconfig:
+    if 'sourceMap' in tsconfig['compilerOptions'] and \
+        tsconfig['compilerOptions']['sourceMap']:
+      return True
+
+    if 'inlineSourceMap' in tsconfig['compilerOptions'] and \
+        tsconfig['compilerOptions']['inlineSourceMap']:
+      return True
+
+  return False
 
 
 def main(argv):
@@ -68,11 +78,22 @@ def main(argv):
   tsconfig_base_file = os.path.normpath(
       os.path.join(args.gen_dir, tsconfig['extends']))
 
-  is_tsconfig_valid, error = _validate_tsconfig_json(tsconfig_base_file)
-  if not is_tsconfig_valid:
-    raise AssertionError(error)
-
   tsconfig['compilerOptions'] = collections.OrderedDict()
+
+  with io.open(tsconfig_base_file, encoding='utf-8', mode='r') as f:
+    tsconfig_base = json.loads(f.read())
+
+    is_tsconfig_valid, error = _validate_tsconfig_json(tsconfig_base,
+                                                       tsconfig_base_file)
+    if not is_tsconfig_valid:
+      raise AssertionError(error)
+
+    # If "sourceMap" or "inlineSourceMap" option have been provided in the
+    # tsconfig file, include the "sourceRoot" key.
+    if _is_sourcemap_enabled(tsconfig_base):
+      tsconfig['compilerOptions']['sourceRoot'] = os.path.realpath(
+          os.path.join(_CWD, args.gen_dir, root_dir))
+
   tsconfig['compilerOptions']['rootDir'] = root_dir
   tsconfig['compilerOptions']['outDir'] = out_dir
 
