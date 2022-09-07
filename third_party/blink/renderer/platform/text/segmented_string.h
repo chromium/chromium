@@ -25,6 +25,7 @@
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/deque.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_view.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_position.h"
 #include "third_party/blink/renderer/platform/wtf/text/unicode.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -132,8 +133,8 @@ class PLATFORM_EXPORT SegmentedSubstring {
     return is_8bit_ ? *++data_.string8_ptr : *++data_.string16_ptr;
   }
 
-  String CurrentSubString(unsigned len) const {
-    return string_.Substring(offset(), len);
+  StringView CurrentSubString(unsigned len) const {
+    return StringView(string_, offset(), len);
   }
 
   ALWAYS_INLINE int offset() const {
@@ -317,9 +318,9 @@ class PLATFORM_EXPORT SegmentedString {
   inline LookAheadResult LookAheadInline(const String& string,
                                          TextCaseSensitivity case_sensitivity) {
     if (string.length() <= static_cast<unsigned>(current_string_.length())) {
-      String current_substring =
+      StringView current_substring =
           current_string_.CurrentSubString(string.length());
-      if (current_substring.StartsWith(string, case_sensitivity))
+      if (string.StartsWith(current_substring, case_sensitivity))
         return kDidMatch;
       return kDidNotMatch;
     }
