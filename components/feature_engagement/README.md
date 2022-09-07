@@ -519,12 +519,13 @@ into the same field trial.
 *   `event_used` __REQUIRED__
     *   Relates to what the in-product help wants to highlight, i.e. teach the
         user about and increase usage of.
-    *   This is typically the action that the In-Product Help should stimulate
-        usage of.
+    *   This is typically recorded during the action that the In-Product Help
+        should stimulate usage of.
     *   Special UMA is tracked for this.
     *   See [EventConfig](#EventConfig) below for details.
 *   `event_trigger` __REQUIRED__
     *   Relates to the times in-product help is triggered.
+    *   Automatically increments when the in-product help is triggered.
     *   Special UMA is tracked for this.
     *   See [EventConfig](#EventConfig) below for details.
 *   `event_???`
@@ -855,6 +856,52 @@ When adding new test suites, also remember to add the suite to the filter file:
 
 See
 [this doc](https://docs.google.com/document/d/1EhQe3G9juBiw-otuRnGf5gzTsfHZVZiSKrgF6r7Sz4E/edit#heading=h.la5fs7q2klme)
+
+## Example
+
+Let's image you want to add an in-product help to increase the use of the "Save
+password" infobar. The in-product help will be shown at most once per year, when
+the user is shown an infobar, if the user ignored the infobar 3 times in the
+past 60 days and accepted it less than 2 times in the past two years.
+
+The configuration will look like this:
+
+ ```
+{
+  "availability": ">=0",
+  "session_rate": "<1",
+  "event_used": "name:password_infobar_accepted;comparator:<=2;window:720;storage:720",
+  "event_trigger": "name:password_infobar_iph_trigger;comparator:==0;window:360;storage:360",
+  "event_1": "name:password_infobar_ignored;comparator:>=3;window:60;storage:60"
+}
+```
+
+In `//components/feature_engagement/public/feature_constants.h`:
+
+```c++
+extern const base::Feature kIPHPasswordInfobarFeature;
+extern const char kPasswordInfobarIgnored[];  // "password_infobar_ignored"
+extern const char kPasswordInfobarAccepted[];  // "password_infobar_accepted"
+```
+
+In the Password Infobar code (example code):
+
+```c++
+void PasswordInfobar::OnInfobarIgnored() {
+  tracker->NotifyEvent(kPasswordInfobarIgnored);
+}
+
+void PasswordInfobar::OnInfobarAccepted() {
+  tracker->NotifyEvent(kPasswordInfobarAccepted);
+}
+
+void PasswordInfobar::OnInfobarPresented() {
+  if (tracker->ShouldTriggerHelpUI(kIPHPasswordInfobarFeature)) {
+    // Display the IPH.
+  }
+}
+```
+
 
 [field-trial-testing-configuration]: https://chromium.googlesource.com/chromium/src/+/main/testing/variations/README.md
 [GetClientSideFeatureConfig]: https://source.chromium.org/chromium/chromium/src/+/main:components/feature_engagement/public/feature_configurations.cc?q=GetClientSideFeatureConfig
