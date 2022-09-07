@@ -526,39 +526,19 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
 // Remove all SessionSections from `self.tableViewModel` and `self.tableView`
 // Needs to be called inside a performBatchUpdates block.
 - (void)removeSessionSections {
-  // `_displayedTabs` has been updated by now, that means that
-  // `self.tableViewModel` does not reflect `_displayedTabs` data.
-  NSInteger firstSessionSectionIndex = 0;
-  NSInteger sectionCountToRemove = [self.tableViewModel numberOfSections];
-  if ([self.tableViewModel
-          hasSectionForSectionIdentifier:SectionIdentifierRecentlyClosedTabs]) {
-    sectionCountToRemove--;
-    // Recently closed section is before the remote session sections, do not
-    // remove it.
-    firstSessionSectionIndex++;
-  }
-  if ([self.tableViewModel
-          hasSectionForSectionIdentifier:SectionIdentifierSuggestedActions]) {
-    sectionCountToRemove--;
-  }
-
-  NSInteger sectionIndexToDelete = firstSessionSectionIndex;
-  for (NSInteger sessionSection = 0; sessionSection < sectionCountToRemove;
-       sessionSection++) {
-    NSInteger sectionIdentifierToRemove =
-        kFirstSessionSectionIdentifier + sessionSection;
-    // A SectionIdentifier could've been deleted previously, do not rely on
-    // these being in sequential order at this point.
-    if ([self.tableViewModel
-            hasSectionForSectionIdentifier:sectionIdentifierToRemove]) {
-      [self.tableView
-            deleteSections:[NSIndexSet indexSetWithIndex:sectionIndexToDelete]
-          withRowAnimation:UITableViewRowAnimationNone];
-      sectionIndexToDelete++;
-      [self.tableViewModel
-          removeSectionWithIdentifier:sectionIdentifierToRemove];
+  NSMutableIndexSet* indexesToBeDeleted = [NSMutableIndexSet indexSet];
+  for (NSInteger index = 0; index < [self.tableViewModel numberOfSections];
+       index++) {
+    NSInteger sectionIdentifier =
+        [self.tableViewModel sectionIdentifierForSectionIndex:index];
+    if (sectionIdentifier >= kFirstSessionSectionIdentifier) {
+      [self.tableViewModel removeSectionWithIdentifier:sectionIdentifier];
+      [indexesToBeDeleted addIndex:index];
     }
   }
+
+  [self.tableView deleteSections:indexesToBeDeleted
+                withRowAnimation:UITableViewRowAnimationNone];
 }
 
 #pragma mark Other Devices Section
