@@ -265,21 +265,16 @@ All files in Chromium start with a common license header. That header should
 look like this:
 
 ```c++
-// Copyright $YEAR The Chromium Authors.
+// Copyright $YEAR The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 ```
 
 Some important notes about this header:
-  * There is no `(c)` after `Copyright`.
   * `$YEAR` should be set to the current year at the time a file is created, and
     not changed thereafter.
   * For files specific to ChromiumOS, replace the word Chromium with the phrase
     ChromiumOS.
-  * If the style changes, don't bother to update existing files to comply with
-    the new style. For the same reason, don't just blindly copy an existing
-    file's header when creating a new file, since the existing file may use an
-    outdated style.
   * The Chromium project hosts mirrors of some upstream open-source projects.
     When contributing to these portions of the repository, retain the existing
     file headers.
