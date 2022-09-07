@@ -17,8 +17,7 @@
 #include "ui/color/color_provider_manager.h"
 
 struct CoreAccountInfo;
-class ProfilePickerDiceSignInToolbar;
-class ProfilePickerView;
+class ProfilePickerWebContentsHost;
 
 namespace content {
 struct ContextMenuParams;
@@ -45,8 +44,7 @@ class ProfilePickerDiceSignInProvider
                               std::unique_ptr<content::WebContents>,
                               bool is_saml)>;
 
-  ProfilePickerDiceSignInProvider(ProfilePickerView* host,
-                                  ProfilePickerDiceSignInToolbar* toolbar);
+  explicit ProfilePickerDiceSignInProvider(ProfilePickerWebContentsHost* host);
   ~ProfilePickerDiceSignInProvider() override;
   ProfilePickerDiceSignInProvider(const ProfilePickerDiceSignInProvider&) =
       delete;
@@ -120,9 +118,8 @@ class ProfilePickerDiceSignInProvider
 
   content::WebContents* contents() const { return contents_.get(); }
 
-  // The host and toolbar objects, must outlive this object.
-  const raw_ptr<ProfilePickerView> host_;
-  const raw_ptr<ProfilePickerDiceSignInToolbar> toolbar_;
+  // The host must outlive this object.
+  const raw_ptr<ProfilePickerWebContentsHost> host_;
   // Sign-in callback, valid until it's called.
   SignedInCallback callback_;
 

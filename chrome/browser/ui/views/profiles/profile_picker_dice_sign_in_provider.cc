@@ -6,7 +6,6 @@
 
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
-#include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -14,14 +13,12 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_encryption_keys_tab_helper.h"
 #include "chrome/browser/themes/custom_theme_supplier.h"
-#include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_navigator.h"
-#include "chrome/browser/ui/color/chrome_color_id.h"
-#include "chrome/browser/ui/views/profiles/profile_picker_dice_sign_in_toolbar.h"
+#include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_view.h"
+#include "chrome/browser/ui/views/profiles/profile_picker_web_contents_host.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
@@ -32,8 +29,6 @@
 #include "google_apis/gaia/gaia_urls.h"
 #include "net/base/url_util.h"
 #include "third_party/blink/public/mojom/window_features/window_features.mojom.h"
-#include "ui/base/theme_provider.h"
-#include "ui/color/color_provider.h"
 #include "ui/views/controls/webview/web_contents_set_background_color.h"
 
 namespace {
@@ -58,9 +53,8 @@ bool IsExternalURL(const GURL& url) {
 }  // namespace
 
 ProfilePickerDiceSignInProvider::ProfilePickerDiceSignInProvider(
-    ProfilePickerView* host,
-    ProfilePickerDiceSignInToolbar* toolbar)
-    : host_(host), toolbar_(toolbar) {}
+    ProfilePickerWebContentsHost* host)
+    : host_(host) {}
 
 ProfilePickerDiceSignInProvider::~ProfilePickerDiceSignInProvider() {
   // Handle unfinished signed-in profile creation (i.e. when callback was not
@@ -91,7 +85,7 @@ void ProfilePickerDiceSignInProvider::SwitchToSignIn(
     // Do not load any url because the desired sign-in screen is still loaded in
     // `contents()`.
     host_->ShowScreen(contents(), GURL());
-    toolbar_->SetVisible(true);
+    host_->SetNativeToolbarVisible(true);
     return;
   }
 
@@ -128,7 +122,7 @@ void ProfilePickerDiceSignInProvider::NavigateBack() {
   // Do not load any url because the desired screen is still loaded in the
   // picker contents.
   host_->ShowScreenInPickerContents(GURL());
-  toolbar_->SetVisible(false);
+  host_->SetNativeToolbarVisible(false);
 }
 
 ui::ColorProviderManager::ThemeInitializerSupplier*
@@ -268,17 +262,14 @@ void ProfilePickerDiceSignInProvider::OnProfileInitialized(
   // Make sure the web contents used for sign-in has proper background to match
   // the toolbar (for dark mode).
   views::WebContentsSetBackgroundColor::CreateForWebContentsWithColor(
-      contents(), host_->GetColorProvider()->GetColor(kColorToolbar));
-
-  toolbar_->BuildToolbar(base::BindRepeating(
-      &ProfilePickerDiceSignInProvider::NavigateBack, base::Unretained(this)));
+      contents(), host_->GetPreferredBackgroundColor());
 
   host_->ShowScreen(
       contents(), GetSigninURL(host_->ShouldUseDarkColors()),
-      base::BindOnce(&ProfilePickerDiceSignInToolbar::SetVisible,
-                     // Unretained is enough as the callback is
-                     // called by the owner of the toolbar.
-                     base::Unretained(toolbar_), /*visible=*/true));
+      base::BindOnce(&ProfilePickerWebContentsHost::SetNativeToolbarVisible,
+                     // Unretained is enough as the callback is called by the
+                     // host itself.
+                     base::Unretained(host_), /*visible=*/true));
 }
 
 Profile* ProfilePickerDiceSignInProvider::GetInitializedProfile() {
@@ -291,11 +282,8 @@ bool ProfilePickerDiceSignInProvider::IsInitialized() const {
 
 void ProfilePickerDiceSignInProvider::FinishFlow(bool is_saml) {
   DCHECK(IsInitialized());
-  // Stop listening to notifications.
+  host_->SetNativeToolbarVisible(false);
   contents()->SetDelegate(nullptr);
   identity_manager_observation_.Reset();
-  // Stop the sign-in: hide and clear the toolbar.
-  toolbar_->ClearToolbar();
-  toolbar_->SetVisible(false);
   std::move(callback_).Run(profile_.get(), std::move(contents_), is_saml);
 }

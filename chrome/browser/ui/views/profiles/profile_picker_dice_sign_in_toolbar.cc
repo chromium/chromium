@@ -8,9 +8,7 @@
 
 #include "base/check.h"
 #include "chrome/app/vector_icons/vector_icons.h"
-#include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
-#include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/vector_icons/vector_icons.h"
@@ -67,10 +65,6 @@ void ProfilePickerDiceSignInToolbar::BuildToolbar(
       std::make_unique<SimpleBackButton>(std::move(on_back_callback));
   AddChildView(std::move(back_button));
   UpdateToolbarColor();
-}
-
-void ProfilePickerDiceSignInToolbar::ClearToolbar() {
-  RemoveAllChildViews();
 }
 
 void ProfilePickerDiceSignInToolbar::OnThemeChanged() {

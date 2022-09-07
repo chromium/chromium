@@ -22,10 +22,6 @@ class ProfilePickerDiceSignInToolbar : public views::View {
   // Builds the actual toolbar, before calling this function, it remains empty.
   void BuildToolbar(base::RepeatingClosure on_back_callback);
 
-  // Removes the views on the toolbar, basically undoing BuildToolbar(). This
-  // must be called before calling BuildToolbar again.
-  void ClearToolbar();
-
   // views::View:
   void OnThemeChanged() override;
 

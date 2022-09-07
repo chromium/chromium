@@ -6,7 +6,6 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/callback_helpers.h"
 #include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
@@ -25,18 +24,13 @@
 #include "chrome/browser/signin/signin_promo.h"
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/themes/theme_service.h"
-#include "chrome/browser/ui/browser_navigator.h"
-#include "chrome/browser/ui/browser_navigator_params.h"
-#include "chrome/browser/ui/layout_constants.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/views/accelerator_table.h"
 #include "chrome/browser/ui/views/profiles/profile_creation_signed_in_flow_controller.h"
 #include "chrome/browser/ui/webui/signin/profile_picker_ui.h"
-#include "chrome/browser/ui/webui/signin/signin_web_dialog_ui.h"
-#include "chrome/browser/ui/webui/signin/sync_confirmation_ui.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/chromium_strings.h"
-#include "chrome/grit/generated_resources.h"
 #include "chrome/grit/google_chrome_strings.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/prefs/pref_service.h"
@@ -46,21 +40,16 @@
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
-#include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
-#include "net/base/url_util.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/theme_provider.h"
-#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/webview/webview.h"
-#include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
 #include "url/gurl.h"
-#include "url/url_constants.h"
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 #include "chrome/browser/ui/views/profiles/profile_picker_dice_sign_in_provider.h"
@@ -79,6 +68,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/browser/ui/views/profiles/lacros_first_run_signed_in_flow_controller.h"
+#include "chrome/grit/generated_resources.h"
 #endif
 
 namespace {
@@ -456,6 +446,25 @@ bool ProfilePickerView::ShouldUseDarkColors() const {
   return GetNativeTheme()->ShouldUseDarkColors();
 }
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+void ProfilePickerView::SetNativeToolbarVisible(bool visible) {
+  if (!visible) {
+    toolbar_->SetVisible(false);
+    return;
+  }
+
+  if (toolbar_->children().empty()) {
+    toolbar_->BuildToolbar(base::BindRepeating(&ProfilePickerView::NavigateBack,
+                                               base::Unretained(this)));
+  }
+  toolbar_->SetVisible(true);
+}
+
+SkColor ProfilePickerView::GetPreferredBackgroundColor() const {
+  return GetColorProvider()->GetColor(kColorToolbar);
+}
+#endif
+
 bool ProfilePickerView::HandleKeyboardEvent(
     content::WebContents* source,
     const content::NativeWebKeyboardEvent& event) {
@@ -655,7 +664,7 @@ void ProfilePickerView::SwitchToDiceSignIn(
 
   if (!dice_sign_in_provider_) {
     dice_sign_in_provider_ =
-        std::make_unique<ProfilePickerDiceSignInProvider>(this, toolbar_);
+        std::make_unique<ProfilePickerDiceSignInProvider>(this);
   }
 
   dice_sign_in_provider_->SwitchToSignIn(
@@ -846,7 +855,7 @@ void ProfilePickerView::BuildLayout() {
   auto toolbar = std::make_unique<ProfilePickerDiceSignInToolbar>();
   toolbar_ = AddChildView(std::move(toolbar));
   // Toolbar gets built and set visible once we it's needed for the Dice signin.
-  toolbar_->SetVisible(false);
+  SetNativeToolbarVisible(false);
 #endif
 
   auto web_view = std::make_unique<views::WebView>();
@@ -866,10 +875,6 @@ void ProfilePickerView::ShowScreenFinished(
 
   if (navigation_finished_closure)
     std::move(navigation_finished_closure).Run();
-}
-
-void ProfilePickerView::BackButtonPressed(const ui::Event& event) {
-  NavigateBack();
 }
 
 void ProfilePickerView::NavigateBack() {

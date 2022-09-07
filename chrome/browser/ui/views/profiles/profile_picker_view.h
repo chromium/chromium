@@ -6,20 +6,16 @@
 #define CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_PICKER_VIEW_H_
 
 #include "base/callback_forward.h"
-#include "base/cancelable_callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "build/buildflag.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/chrome_web_modal_dialog_manager_delegate.h"
 #include "chrome/browser/ui/profile_picker.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_force_signin_dialog_host.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_web_contents_host.h"
-#include "chrome/browser/ui/webui/signin/enterprise_profile_welcome_ui.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
-#include "components/signin/public/identity_manager/identity_manager.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/webview/unhandled_keyboard_event_handler.h"
@@ -80,6 +76,11 @@ class ProfilePickerView : public views::WidgetDelegateView,
           base::OnceClosure()) override;
   void Clear() override;
   bool ShouldUseDarkColors() const override;
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  void SetNativeToolbarVisible(bool visible) override;
+  SkColor GetPreferredBackgroundColor() const override;
+#endif
 
   // content::WebContentsDelegate:
   bool HandleKeyboardEvent(
@@ -182,13 +183,10 @@ class ProfilePickerView : public views::WidgetDelegateView,
   // Builds the views hieararchy.
   void BuildLayout();
 
-  void UpdateToolbarColor();
-
   void ShowScreenFinished(
       content::WebContents* contents,
       base::OnceClosure navigation_finished_closure = base::OnceClosure());
 
-  void BackButtonPressed(const ui::Event& event);
   void NavigateBack();
 
   // Register basic keyboard accelerators such as closing the window (Alt-F4
