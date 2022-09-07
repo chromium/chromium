@@ -18,17 +18,18 @@
 #include "content/public/test/browser_test.h"
 #include "third_party/blink/public/common/features.h"
 
-// Ash doesn't support System Profile.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
 namespace {
 
-// Constructs the Original System Profile for testing.
-Profile* GetSystemOriginalProfile() {
+// Creates a Profile and it's underlying OTR Profile for testing.
+// Waits for all tasks to be done to get as much services created as possible.
+// Returns the Original Profile.
+Profile* CreateProfileAndWaitForAllTaks(const base::FilePath& profile_path) {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   ProfileWaiter profile_waiter;
-  profile_manager->CreateProfileAsync(ProfileManager::GetSystemProfilePath(),
-                                      {});
+  profile_manager->CreateProfileAsync(profile_path, {});
   Profile* system_profile = profile_waiter.WaitForProfileAdded();
+  // Wait for Profile creation, and potentially other services that will be
+  // created after all tasks are done.
   content::RunAllTasksUntilIdle();
   return system_profile;
 }
@@ -192,13 +193,10 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceBrowserTest,
   };
   // clang-format on
 
-  Profile* system_profile = GetSystemOriginalProfile();
+  Profile* system_profile =
+      CreateProfileAndWaitForAllTaks(ProfileManager::GetSystemProfilePath());
   ASSERT_TRUE(system_profile->HasAnyOffTheRecordProfile());
-  std::vector<Profile*> otr_profiles =
-      system_profile->GetAllOffTheRecordProfiles();
-  ASSERT_EQ(otr_profiles.size(), 1u);
-
-  Profile* system_profile_otr = otr_profiles[0];
+  Profile* system_profile_otr = system_profile->GetPrimaryOTRProfile(false);
   ASSERT_TRUE(system_profile_otr->IsOffTheRecord());
   ASSERT_TRUE(system_profile_otr->IsSystemProfile());
   TestKeyedProfileServicesActives(system_profile_otr,
@@ -430,9 +428,310 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceBrowserTest,
   };
   // clang-format on
 
-  Profile* system_profile = GetSystemOriginalProfile();
+  Profile* system_profile =
+      CreateProfileAndWaitForAllTaks(ProfileManager::GetSystemProfilePath());
   ASSERT_FALSE(system_profile->IsOffTheRecord());
   ASSERT_TRUE(system_profile->IsSystemProfile());
   TestKeyedProfileServicesActives(system_profile, system_active_services);
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+
+IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceBrowserTest,
+                       GuestProfileOTR_NeededServices) {
+  // clang-format off
+  std::set<std::string> guest_otr_active_services {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    "CleanupManagerLacros",
+    "DownloadCoreService",
+#endif // BUILDFLAG(IS_CHROMEOS_LACROS)
+    "AlarmManager",
+    "BackgroundContentsService",
+    "BackgroundSyncService",
+    "BluetoothApiSocketManager",
+    "BluetoothSocketEventDispatcher",
+    "BrowsingDataLifetimeManager",
+    "CookieSettings",
+    "ExtensionSystem",
+    "ExtensionURLLoaderFactory::BrowserContextShutdownNotifierFactory",
+    "FeedbackPrivateAPI",
+    "FileSystemAccessPermissionContext",
+    "GeneratedPrefs",
+    "HeavyAdService",
+    "HidDeviceManager",
+    "HostContentSettingsMap",
+    "LastTabStandingTrackerKeyedService",
+    "MediaRouterUIService",
+    "NotificationDisplayService",
+    "OptimizationGuideKeyedService",
+    "PlatformNotificationService",
+    "PrefWatcher",
+    "PrivacySandboxSettings",
+    "ProcessManager",
+    "ProfileNetworkContextService",
+    "RealtimeReportingClient",
+    "RendererUpdater",
+    "ResumableTCPServerSocketManager",
+    "ResumableTCPSocketManager",
+    "ResumableUDPSocketManager",
+    "RulesRegistryService",
+    "SafeBrowsingPrivateEventRouter",
+    "SerialConnectionManager",
+    "SettingsPrivateEventRouter",
+    "SiteDataCacheFacadeFactory",
+    "SiteEngagementService",
+    "SocketManager",
+    "StorageNotificationService",
+    "TCPServerSocketEventDispatcher",
+    "TCPSocketEventDispatcher",
+    "TabGroupsEventRouter",
+    "ToolbarActionsModel",
+    "UDPSocketEventDispatcher",
+    "UkmBackgroundRecorderService",
+    "UsbDeviceManager",
+    "UsbDeviceResourceManager",
+    "sct_reporting::Factory"
+  };
+  // clang-format on
+
+  Profile* guest_profile =
+      CreateProfileAndWaitForAllTaks(ProfileManager::GetGuestProfilePath());
+  ASSERT_TRUE(guest_profile->HasAnyOffTheRecordProfile());
+  Profile* guest_profile_otr = guest_profile->GetPrimaryOTRProfile(false);
+  ASSERT_TRUE(guest_profile_otr->IsOffTheRecord());
+  ASSERT_TRUE(guest_profile_otr->IsGuestSession());
+  TestKeyedProfileServicesActives(guest_profile_otr, guest_otr_active_services);
+}
+
+IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceBrowserTest,
+                       GuestProfileParent_NeededServices) {
+  // clang-format off
+  std::set<std::string> guest_active_services {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    "ChildAccountService",
+    "CleanupManagerLacros",
+    "ClipboardAPI",
+    "ExternalLogoutRequestEventHandler",
+    "ManualTestHeartbeatEvent",
+    "SessionStateChangedEventDispatcher",
+    "SupervisedUserService",
+#else // !BUILDFLAG(IS_CHROMEOS_LACROS)
+    "SystemIndicatorManager",
+    "WebAppAdjustments",
+    "WebAppProvider",
+#endif
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
+    "SpellcheckService",
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
+    "AboutSigninInternals",
+    "AboutThisSiteServiceFactory",
+    "AccessibilityLabelsService",
+    "AccountInvestigator",
+    "AccountPasswordStore",
+    "AccountReconcilor",
+    "ActivityLog",
+    "ActivityLogPrivateAPI",
+    "AdaptiveQuietNotificationPermissionUiEnabler",
+    "AdvancedProtectionStatusManager",
+    "AffiliationService",
+    "AlarmManager",
+    "AnnouncementNotificationService",
+    "AppLifetimeMonitor",
+    "AppLoadService",
+    "AppRestoreService",
+    "AppServiceProxy",
+    "AppShortcutManager",
+    "AppTerminationObserver",
+    "AppWindowRegistry",
+    "AudioAPI",
+    "AutofillImageFetcher",
+    "AutofillPrivateEventRouter",
+    "AutofillStrikeDatabase",
+    "BackgroundContentsService",
+    "BackgroundFetchService",
+    "BackgroundSyncService",
+    "Blocklist",
+    "BluetoothAPI",
+    "BluetoothApiSocketManager",
+    "BluetoothLowEnergyAPI",
+    "BluetoothPrivateAPI",
+    "BluetoothSocketEventDispatcher",
+    "BookmarkManagerPrivateAPI",
+    "BookmarkModel",
+    "BookmarkSyncServiceFactory",
+    "BookmarkUndoService",
+    "BookmarksAPI",
+    "BookmarksApiWatcher",
+    "BrailleDisplayPrivateAPI",
+    "BreadcrumbManagerService",
+    "BrowsingTopicsService",
+    "ChromeSigninClient",
+    "CommandService",
+    "ConsentAuditor",
+    "ContentIndexProvider",
+    "ContentSettingsService",
+    "CookieSettings",
+    "CookiesAPI",
+    "CredentialsCleanerRunner",
+    "DeveloperPrivateAPI",
+    "DeviceInfoSyncService",
+    "DownloadCoreService",
+    "EventRouter",
+    "ExtensionActionAPI",
+    "ExtensionActionManager",
+    "ExtensionCommandsGlobalRegistry",
+    "ExtensionGCMAppHandler",
+    "ExtensionGarbageCollector",
+    "ExtensionHostRegistry",
+    "ExtensionManagement",
+    "ExtensionPrefValueMap",
+    "ExtensionPrefs",
+    "ExtensionRegistry",
+    "ExtensionSyncService",
+    "ExtensionSystem",
+    "ExtensionSystemShared",
+    "ExtensionURLLoaderFactory::BrowserContextShutdownNotifierFactory",
+    "ExtensionWebUIOverrideRegistrar",
+    "FaviconService",
+    "FeedbackPrivateAPI",
+    "FileSystemAccessPermissionContext",
+    "FontPrefChangeNotifier",
+    "FontSettingsAPI",
+    "GAIAInfoUpdateService",
+    "GCMProfileService",
+    "GeneratedPrefs",
+    "HeavyAdService",
+    "HidDeviceManager",
+    "HistoryAPI",
+    "HistoryService",
+    "HostContentSettingsMap",
+    "HttpEngagementKeyService",
+    "IdentityAPI",
+    "IdentityManager",
+    "IdleManager",
+    "InstallStageTracker",
+    "InstallTracker",
+    "InstallVerifier",
+    "InstanceIDProfileService",
+    "InvalidationService",
+    "LanguageSettingsPrivateDelegate",
+    "LastTabStandingTrackerKeyedService",
+    "LazyBackgroundTaskQueue",
+    "LiveCaptionController",
+    "LoginUIServiceFactory",
+    "MDnsAPI",
+    "ManagedBookmarkService",
+    "ManagedConfigurationAPI",
+    "ManagementAPI",
+    "MediaRouter",
+    "MediaRouterUIService",
+    "MenuManager",
+    "ModelTypeStoreService",
+    "NavigationPredictorKeyedService",
+    "NetworkingPrivateEventRouter",
+    "NotificationDisplayService",
+    "NotifierStateTracker",
+    "OmniboxAPI",
+    "OptimizationGuideKeyedService",
+    "PageContentAnnotationsService",
+    "PasswordStore",
+    "PasswordsPrivateEventRouter",
+    "PermissionHelper",
+    "PermissionsManager",
+    "PermissionsUpdaterShutdownFactory",
+    "PersonalDataManager",
+    "PinnedTabService",
+    "PlatformNotificationService",
+    "PluginManager",
+    "PluginPrefs",
+    "PrefMetricsService",
+    "PrefWatcher",
+    "PreferenceAPI",
+    "PrimaryAccountPolicyManager",
+  #if BUILDFLAG(IS_CHROMEOS) && defined(USE_CUPS)
+    "PrintingMetricsService",
+  #endif // BUILDFLAG(IS_CHROMEOS) && defined(USE_CUPS)
+    "PrivacyMetricsService",
+    "PrivacySandboxService",
+    "PrivacySandboxSettings",
+    "ProcessManager",
+    "ProcessMap",
+    "ProcessesAPI",
+    "ProfileNetworkContextService",
+    "ProfileThemeUpdateServiceFactory",
+    "ProtocolHandlerRegistry",
+    "ReadingListModel",
+    "RealtimeReportingClient",
+    "RendererStartupHelper",
+    "RendererUpdater",
+    "ResumableTCPServerSocketManager",
+    "ResumableTCPSocketManager",
+    "ResumableUDPSocketManager",
+    "RulesMonitorService",
+    "RulesRegistryService",
+    "RuntimeAPI",
+    "SafeBrowsingMetricsCollector",
+    "SafeBrowsingNetworkContextService",
+    "SafeBrowsingPrivateEventRouter",
+    "SafeBrowsingTailoredSecurityService",
+    "SecurityEventRecorder",
+    "SendTabToSelfClientService",
+    "SendTabToSelfSyncService",
+    "SerialConnectionManager",
+    "SessionDataService",
+    "SessionProtoDBFactory",
+    "SessionSyncService",
+    "SessionsAPI",
+    "SettingsOverridesAPI",
+    "SettingsPrivateEventRouter",
+    "SharingMessageBridge",
+    "SharingService",
+    "ShoppingService",
+    "SidePanelService",
+    "SigninErrorController",
+    "SigninManager",
+    "SigninProfileAttributesUpdater",
+    "SiteDataCacheFacadeFactory",
+    "SiteEngagementService",
+    "SocketManager",
+    "StorageFrontend",
+    "StorageNotificationService",
+    "SyncInvalidationsService",
+    "SyncService",
+    "SyncSessionsWebContentsRouter",
+    "SystemInfoAPI",
+    "TCPServerSocketEventDispatcher",
+    "TCPSocketEventDispatcher",
+    "TabGroupsEventRouter",
+    "TabsWindowsAPI",
+    "TemplateURLServiceFactory",
+    "ThemeService",
+    "ToolbarActionsModel",
+    "TranslateRanker",
+    "TriggeredProfileResetter",
+    "TtsAPI",
+    "UDPSocketEventDispatcher",
+    "UkmBackgroundRecorderService",
+    "UnifiedConsentService",
+    "UsbDeviceManager",
+    "UsbDeviceResourceManager",
+    "UserCloudPolicyInvalidator",
+    "UserEventService",
+    "UserPolicySigninService",
+    "WarningBadgeService",
+    "WarningService",
+    "WebAuthenticationProxyAPI",
+    "WebDataService",
+    "WebNavigationAPI",
+    "WebRequestAPI",
+    "WebRtcEventLogManagerKeyedService",
+    "WebrtcAudioPrivateEventService",
+    "feedback::FeedbackUploaderChrome",
+    "sct_reporting::Factory"
+  };
+  // clang-format on
+
+  Profile* guest_profile =
+      CreateProfileAndWaitForAllTaks(ProfileManager::GetGuestProfilePath());
+  ASSERT_FALSE(guest_profile->IsOffTheRecord());
+  ASSERT_TRUE(guest_profile->IsGuestSession());
+  TestKeyedProfileServicesActives(guest_profile, guest_active_services);
+}
