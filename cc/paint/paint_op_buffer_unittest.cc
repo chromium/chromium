@@ -100,20 +100,20 @@ TEST(PaintOpBufferTest, Empty) {
   PaintOpBuffer buffer;
   EXPECT_EQ(buffer.size(), 0u);
   EXPECT_EQ(buffer.bytes_used(), sizeof(PaintOpBuffer));
-  EXPECT_EQ(PaintOpBuffer::Iterator(&buffer), false);
+  EXPECT_FALSE(PaintOpBuffer::Iterator(&buffer));
 
   buffer.Reset();
   EXPECT_EQ(buffer.size(), 0u);
   EXPECT_EQ(buffer.bytes_used(), sizeof(PaintOpBuffer));
-  EXPECT_EQ(PaintOpBuffer::Iterator(&buffer), false);
+  EXPECT_FALSE(PaintOpBuffer::Iterator(&buffer));
 
   PaintOpBuffer buffer2(std::move(buffer));
   EXPECT_EQ(buffer.size(), 0u);
   EXPECT_EQ(buffer.bytes_used(), sizeof(PaintOpBuffer));
-  EXPECT_EQ(PaintOpBuffer::Iterator(&buffer), false);
+  EXPECT_FALSE(PaintOpBuffer::Iterator(&buffer));
   EXPECT_EQ(buffer2.size(), 0u);
   EXPECT_EQ(buffer2.bytes_used(), sizeof(PaintOpBuffer));
-  EXPECT_EQ(PaintOpBuffer::Iterator(&buffer2), false);
+  EXPECT_FALSE(PaintOpBuffer::Iterator(&buffer2));
 }
 
 class PaintOpAppendTest : public ::testing::Test {
@@ -199,7 +199,7 @@ TEST_F(PaintOpAppendTest, MoveThenDestructOperatorEq) {
   // Original should be empty, and safe to destruct.
   EXPECT_EQ(original.size(), 0u);
   EXPECT_EQ(original.bytes_used(), sizeof(PaintOpBuffer));
-  EXPECT_EQ(PaintOpBuffer::Iterator(&original), false);
+  EXPECT_FALSE(PaintOpBuffer::Iterator(&original));
 }
 
 TEST_F(PaintOpAppendTest, MoveThenReappend) {
@@ -1337,7 +1337,7 @@ class DeserializerIterator {
     return *this;
   }
 
-  operator bool() const { return remaining_ == 0u; }
+  explicit operator bool() const { return remaining_ > 0u; }
   const PaintOp* operator->() const { return deserialized_op_; }
   const PaintOp& operator*() const { return *deserialized_op_; }
 
@@ -4282,6 +4282,57 @@ TEST(IteratorTest, CompositeIterationTest) {
 
   EXPECT_THAT(PaintOpBuffer::CompositeIterator(&buffer, &offsets),
               ElementsAre(op1, op3));
+}
+
+TEST(IteratorTest, EqualityTest) {
+  PaintOpBuffer buffer;
+  buffer.push<SaveOp>();
+  buffer.push<RestoreOp>();
+  PaintOpBuffer::Iterator iter1(&buffer);
+  PaintOpBuffer::Iterator iter2(&buffer);
+  EXPECT_TRUE(iter1 == iter2);
+  EXPECT_FALSE(iter1 == ++iter2);
+}
+
+TEST(IteratorTest, OffsetEqualityTest) {
+  PaintOpBuffer buffer;
+  size_t offset = 0;
+  offset += buffer.push<SaveOp>().skip;
+  offset += buffer.push<RestoreOp>().skip;
+  buffer.push<NoopOp>();
+
+  std::vector<size_t> offsets = {0, offset};
+  PaintOpBuffer::OffsetIterator iter1(&buffer, &offsets);
+  PaintOpBuffer::OffsetIterator iter2(&buffer, &offsets);
+
+  EXPECT_TRUE(iter1 == iter2);
+  EXPECT_FALSE(iter1 == ++iter2);
+}
+
+TEST(IteratorTest, CompositeEqualityTest) {
+  PaintOpBuffer buffer;
+  buffer.push<SaveOp>();
+  buffer.push<RestoreOp>();
+
+  PaintOpBuffer::CompositeIterator iter1(&buffer, /*offsets=*/nullptr);
+  PaintOpBuffer::CompositeIterator iter2(&buffer, /*offsets=*/nullptr);
+  EXPECT_TRUE(iter1 == iter2);
+  EXPECT_FALSE(iter1 == ++iter2);
+}
+
+TEST(IteratorTest, CompositeOffsetEqualityTest) {
+  PaintOpBuffer buffer;
+  size_t offset = 0;
+  offset += buffer.push<SaveOp>().skip;
+  offset += buffer.push<RestoreOp>().skip;
+  buffer.push<NoopOp>();
+
+  std::vector<size_t> offsets = {0, offset};
+  PaintOpBuffer::CompositeIterator iter1(&buffer, &offsets);
+  PaintOpBuffer::CompositeIterator iter2(&buffer, &offsets);
+
+  EXPECT_TRUE(iter1 == iter2);
+  EXPECT_FALSE(iter1 == ++iter2);
 }
 
 }  // namespace cc
