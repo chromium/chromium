@@ -166,6 +166,13 @@ export class NotificationTester extends PolymerElement {
         type: Array,
         value: FormSelectOptions.WARNING_LEVEL_OPTIONS,
       },
+      /*
+       * @private
+       */
+      timestampSelectList: {
+        type: Array,
+        value: FormSelectOptions.TIME_STAMP_OPTIONS,
+      },
     };
   }
 
@@ -233,6 +240,7 @@ export class NotificationTester extends PolymerElement {
     this.set(
         'notifMetadata.richDataPriority',
         NotificationPriority.DEFAULT_PRIORITY);
+    this.set('notifMetadata.richDataTimestamp', 0);
     this.set('notifMetadata.richDataPinned', false);
     this.set('notifMetadata.richDataShowSnooze', false);
     this.set('notifMetadata.richDataShowSettings', false);

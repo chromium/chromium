@@ -183,7 +183,7 @@
       <h2> Rich Notification Data (optional fields) </h2>
 
       <select-custom select-value="{{notifMetadata.richDataImage}}"
-        display-label="Image" select-elements="[[imageSelectList]]"
+      display-label="Image" select-elements="[[imageSelectList]]"
         selectid="image" no-custom-input="true"></select-custom>
 
       <select-custom select-value="{{notifMetadata.richDataSmallImage}}"
@@ -193,6 +193,10 @@
       <select-custom select-value="{{notifMetadata.richDataPriority}}"
         display-label="Priority" select-elements="[[prioritySelectList]]"
         selectid="priority" no-custom-input="true"></select-custom>
+
+      <select-custom select-value="{{notifMetadata.richDataTimestamp}}"
+        display-label="Timestamp" select-elements="[[timestampSelectList]]"
+        selectid="timestamp" no-custom-input="true"></select-custom>
 
       <div class="form-item">
         <label for="never-timeout">Never Timeout</label>

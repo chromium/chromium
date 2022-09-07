@@ -201,6 +201,12 @@ NotificationTesterHandler::DictToOptionalFields(
   DCHECK(priority);
   optional_fields.priority = priority.value();
 
+  absl::optional<int> num_mins_since_received =
+      notifObj->FindInt("richDataTimestamp");
+  DCHECK(num_mins_since_received);
+  optional_fields.timestamp =
+      base::Time::Now() - base::Minutes(num_mins_since_received.value());
+
   absl::optional<bool> pinned = notifObj->FindBool("richDataPinned");
   DCHECK(pinned);
   optional_fields.pinned = pinned.value();

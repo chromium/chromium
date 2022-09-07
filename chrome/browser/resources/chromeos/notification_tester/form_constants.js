@@ -225,6 +225,14 @@ export const FormSelectOptions = {
       value: SystemNotificationWarningLevel.CRITICAL_WARNING,
     },
   ],
+  // Value represents the # of mins prior to now to set the timestamp to.
+  TIME_STAMP_OPTIONS: [
+    {displayText: 'Now', value: 0},
+    {displayText: '5 minutes ago', value: 5},
+    {displayText: '1 hour ago', value: 60},
+    {displayText: '1 day ago', value: 1440},
+    {displayText: '1 week ago', value: 10080},
+  ],
 };
 
 // Constant notification objects based on the notification spec:
@@ -254,6 +262,7 @@ const TEXT_NOTIFICATION = {
   richDataProgressStatus: '',
   richDataNumButtons: 0,
   richDataNumNotifItems: 0,
+  richDataTimestamp: 0,
 };
 
 
@@ -281,6 +290,7 @@ const TEXT_AND_BIG_PICTURE_NOTIFICATION = {
   richDataProgressStatus: '',
   richDataNumButtons: 0,
   richDataNumNotifItems: 0,
+  richDataTimestamp: 0,
 };
 
 /*
@@ -307,6 +317,7 @@ const TEXT_AND_PROGRESS_NOTIFICATION = {
   richDataProgressStatus: 'Sample Progress Status',
   richDataNumButtons: 0,
   richDataNumNotifItems: 0,
+  richDataTimestamp: 0,
 };
 
 /*
@@ -333,6 +344,7 @@ const TEXT_AND_AVATAR_NOTIFICATION = {
   richDataProgressStatus: '',
   richDataNumButtons: 0,
   richDataNumNotifItems: 0,
+  richDataTimestamp: 0,
 };
 
 /*
@@ -359,6 +371,7 @@ const TEXT_GROUP_NOTIFICATION_A = {
   richDataProgressStatus: '',
   richDataNumButtons: 0,
   richDataNumNotifItems: 0,
+  richDataTimestamp: 0,
 };
 const TEXT_GROUP_NOTIFICATION_B = {
   id: 'random',
@@ -381,6 +394,7 @@ const TEXT_GROUP_NOTIFICATION_B = {
   richDataProgressStatus: '',
   richDataNumButtons: 0,
   richDataNumNotifItems: 0,
+  richDataTimestamp: 0,
 };
 const TEXT_GROUP_NOTIFICATION_C = {
   id: 'random',
@@ -403,6 +417,7 @@ const TEXT_GROUP_NOTIFICATION_C = {
   richDataProgressStatus: '',
   richDataNumButtons: 0,
   richDataNumNotifItems: 0,
+  richDataTimestamp: 0,
 };
 
 /*
