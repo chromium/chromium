@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/wm/desks/persistent_desks_bar_button.h"
+#include "ash/wm/desks/persistent_desks_bar/persistent_desks_bar_button.h"
 
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
@@ -10,7 +10,7 @@
 #include "ash/style/style_util.h"
 #include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desks_controller.h"
-#include "ash/wm/desks/persistent_desks_bar_context_menu.h"
+#include "ash/wm/desks/persistent_desks_bar/persistent_desks_bar_context_menu.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/paint_vector_icon.h"
