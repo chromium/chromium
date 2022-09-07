@@ -477,6 +477,12 @@
       status: "test",
     },
     {
+      // https://drafts.csswg.org/css-conditional-4/#support-definition-ext
+      // https://github.com/w3c/csswg-drafts/issues/7280#issuecomment-1143852187
+      name: "CSSAtSupportsAlwaysNonForgivingParsing",
+      status: "experimental",
+    },
+    {
       // Support CSS Values Level 4 calc simplification and serialization
       // as specified in the specs below.
       // https://drafts.csswg.org/css-values-4/#calc-simplification

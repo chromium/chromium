@@ -95,12 +95,17 @@ class CORE_EXPORT CSSSelectorParser {
   // Consumes a complex selector list if inside_compound_pseudo_ is false,
   // otherwise consumes a compound selector list.
   CSSSelectorList ConsumeNestedSelectorList(CSSParserTokenRange&);
-  CSSSelectorList ConsumeForgivingNestedSelectorList(CSSParserTokenRange&);
+  absl::optional<CSSSelectorList> ConsumeForgivingNestedSelectorList(
+      CSSParserTokenRange&);
   // https://drafts.csswg.org/selectors/#typedef-forgiving-selector-list
-  CSSSelectorList ConsumeForgivingComplexSelectorList(CSSParserTokenRange&);
-  CSSSelectorList ConsumeForgivingCompoundSelectorList(CSSParserTokenRange&);
+  absl::optional<CSSSelectorList> ConsumeForgivingComplexSelectorList(
+      CSSParserTokenRange&);
+  absl::optional<CSSSelectorList> ConsumeForgivingCompoundSelectorList(
+      CSSParserTokenRange&);
   // https://drafts.csswg.org/selectors/#typedef-relative-selector-list
-  CSSSelectorList ConsumeForgivingRelativeSelectorList(CSSParserTokenRange&);
+  absl::optional<CSSSelectorList> ConsumeForgivingRelativeSelectorList(
+      CSSParserTokenRange&);
+  CSSSelectorList ConsumeRelativeSelectorList(CSSParserTokenRange&);
 
   SelectorReturnType ConsumeRelativeSelector(CSSParserTokenRange&);
   SelectorReturnType ConsumeComplexSelector(CSSParserTokenRange&);
@@ -157,6 +162,8 @@ class CORE_EXPORT CSSSelectorParser {
   static bool ContainsUnknownWebkitPseudoElements(
       const CSSSelector& complex_selector);
 
+  void SetInSupportsParsing() { in_supports_parsing_ = true; }
+
   const CSSParserContext* context_;
   const StyleSheetContents* style_sheet_;
 
@@ -194,6 +201,8 @@ class CORE_EXPORT CSSSelectorParser {
   // complex selector in :has() argument while parsing.
   bool found_complex_logical_combinations_in_has_argument_ = false;
   bool is_inside_logical_combination_in_has_argument_ = false;
+
+  bool in_supports_parsing_ = false;
 
   // Used for temporary allocations of CSSParserSelector; anytime we have
   // an ArenaUniquePtr<CSSParserSelector>, they are allocated on this arena.

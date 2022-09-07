@@ -92,10 +92,12 @@ absl::optional<CSSSelectorList> CSSSelectorParser<UseArena>::ParseScopeBoundary(
   DisallowPseudoElementsScope disallow_pseudo_elements(&parser);
 
   range.ConsumeWhitespace();
-  CSSSelectorList result = parser.ConsumeForgivingComplexSelectorList(range);
+  absl::optional<CSSSelectorList> result =
+      parser.ConsumeForgivingComplexSelectorList(range);
+  DCHECK(result);
   if (!range.AtEnd())
     return absl::nullopt;
-  for (const CSSSelector* current = result.First(); current;
+  for (const CSSSelector* current = result->First(); current;
        current = current->TagHistory()) {
     RecordUsageAndDeprecationsOneSelector(current, context);
   }
@@ -110,6 +112,7 @@ bool CSSSelectorParser<UseArena>::SupportsComplexSelector(
   range.ConsumeWhitespace();
   Arena arena;
   CSSSelectorParser parser(context, nullptr, arena);
+  parser.SetInSupportsParsing();
   auto parser_selector = parser.ConsumeComplexSelector(range);
   if (parser.failed_parsing_ || !range.AtEnd() || !parser_selector)
     return false;
@@ -219,7 +222,8 @@ CSSSelectorList CSSSelectorParser<UseArena>::ConsumeNestedSelectorList(
 }
 
 template <bool UseArena>
-CSSSelectorList CSSSelectorParser<UseArena>::ConsumeForgivingNestedSelectorList(
+absl::optional<CSSSelectorList>
+CSSSelectorParser<UseArena>::ConsumeForgivingNestedSelectorList(
     CSSParserTokenRange& range) {
   if (inside_compound_pseudo_)
     return ConsumeForgivingCompoundSelectorList(range);
@@ -227,9 +231,18 @@ CSSSelectorList CSSSelectorParser<UseArena>::ConsumeForgivingNestedSelectorList(
 }
 
 template <bool UseArena>
-CSSSelectorList
+absl::optional<CSSSelectorList>
 CSSSelectorParser<UseArena>::ConsumeForgivingComplexSelectorList(
     CSSParserTokenRange& range) {
+  if (RuntimeEnabledFeatures::CSSAtSupportsAlwaysNonForgivingParsingEnabled() &&
+      in_supports_parsing_) {
+    CSSSelectorVector<UseArena> selector_list =
+        ConsumeComplexSelectorList(range);
+    if (selector_list.IsEmpty())
+      return absl::nullopt;
+    return CSSSelectorList::AdoptSelectorVector<UseArena>(selector_list);
+  }
+
   CSSSelectorVector<UseArena> selector_list;
 
   while (!range.AtEnd()) {
@@ -250,9 +263,17 @@ CSSSelectorParser<UseArena>::ConsumeForgivingComplexSelectorList(
 }
 
 template <bool UseArena>
-CSSSelectorList
+absl::optional<CSSSelectorList>
 CSSSelectorParser<UseArena>::ConsumeForgivingCompoundSelectorList(
     CSSParserTokenRange& range) {
+  if (RuntimeEnabledFeatures::CSSAtSupportsAlwaysNonForgivingParsingEnabled() &&
+      in_supports_parsing_) {
+    CSSSelectorList selector_list = ConsumeCompoundSelectorList(range);
+    if (!selector_list.IsValid())
+      return absl::nullopt;
+    return selector_list;
+  }
+
   CSSSelectorVector<UseArena> selector_list;
 
   while (!range.AtEnd()) {
@@ -274,9 +295,17 @@ CSSSelectorParser<UseArena>::ConsumeForgivingCompoundSelectorList(
 }
 
 template <bool UseArena>
-CSSSelectorList
+absl::optional<CSSSelectorList>
 CSSSelectorParser<UseArena>::ConsumeForgivingRelativeSelectorList(
     CSSParserTokenRange& range) {
+  if (RuntimeEnabledFeatures::CSSAtSupportsAlwaysNonForgivingParsingEnabled() &&
+      in_supports_parsing_) {
+    CSSSelectorList selector_list = ConsumeRelativeSelectorList(range);
+    if (!selector_list.IsValid())
+      return absl::nullopt;
+    return selector_list;
+  }
+
   CSSSelectorVector<UseArena> selector_list;
 
   while (!range.AtEnd()) {
@@ -289,6 +318,40 @@ CSSSelectorParser<UseArena>::ConsumeForgivingRelativeSelectorList(
       break;
     range.ConsumeIncludingWhitespace();
   }
+
+  // :has() is not allowed in the pseudos accepting only compound selectors, or
+  // not allowed after pseudo elements.
+  // (e.g. '::slotted(:has(.a))', '::part(foo):has(:hover)')
+  if (inside_compound_pseudo_ ||
+      restricting_pseudo_element_ != CSSSelector::kPseudoUnknown ||
+      selector_list.IsEmpty()) {
+    // TODO(blee@igalia.com) Workaround to make :has() unforgiving to avoid
+    // JQuery :has() issue: https://github.com/w3c/csswg-drafts/issues/7676
+    // Should return empty CSSSelectorList. (return CSSSelectorList())
+    return absl::nullopt;
+  }
+
+  return CSSSelectorList::AdoptSelectorVector<UseArena>(selector_list);
+}
+
+template <bool UseArena>
+CSSSelectorList CSSSelectorParser<UseArena>::ConsumeRelativeSelectorList(
+    CSSParserTokenRange& range) {
+  CSSSelectorVector<UseArena> selector_list;
+  SelectorReturnType selector = ConsumeRelativeSelector(range);
+  if (!selector)
+    return CSSSelectorList();
+  selector_list.push_back(std::move(selector));
+  while (!range.AtEnd() && range.Peek().GetType() == kCommaToken) {
+    range.ConsumeIncludingWhitespace();
+    selector = ConsumeRelativeSelector(range);
+    if (!selector)
+      return CSSSelectorList();
+    selector_list.push_back(std::move(selector));
+  }
+
+  if (failed_parsing_)
+    return CSSSelectorList();
 
   // :has() is not allowed in the pseudos accepting only compound selectors, or
   // not allowed after pseudo elements.
@@ -975,12 +1038,12 @@ CSSSelectorParser<UseArena>::ConsumePseudo(CSSParserTokenRange& range) {
           &is_inside_logical_combination_in_has_argument_,
           is_inside_has_argument_);
 
-      std::unique_ptr<CSSSelectorList> selector_list =
-          std::make_unique<CSSSelectorList>();
-      *selector_list = ConsumeForgivingNestedSelectorList(block);
-      if (!block.AtEnd())
+      absl::optional<CSSSelectorList> selector_list =
+          ConsumeForgivingNestedSelectorList(block);
+      if (!selector_list || !block.AtEnd())
         return nullptr;
-      selector->SetSelectorList(std::move(selector_list));
+      selector->SetSelectorList(std::move(
+          std::make_unique<CSSSelectorList>(std::move(*selector_list))));
       return selector;
     }
     case CSSSelector::kPseudoWhere: {
@@ -990,12 +1053,12 @@ CSSSelectorParser<UseArena>::ConsumePseudo(CSSParserTokenRange& range) {
           &is_inside_logical_combination_in_has_argument_,
           is_inside_has_argument_);
 
-      std::unique_ptr<CSSSelectorList> selector_list =
-          std::make_unique<CSSSelectorList>();
-      *selector_list = ConsumeForgivingNestedSelectorList(block);
-      if (!block.AtEnd())
+      absl::optional<CSSSelectorList> selector_list =
+          ConsumeForgivingNestedSelectorList(block);
+      if (!selector_list || !block.AtEnd())
         return nullptr;
-      selector->SetSelectorList(std::move(selector_list));
+      selector->SetSelectorList(std::move(
+          std::make_unique<CSSSelectorList>(std::move(*selector_list))));
       return selector;
     }
     case CSSSelector::kPseudoHost:
@@ -1039,20 +1102,12 @@ CSSSelectorParser<UseArena>::ConsumePseudo(CSSParserTokenRange& range) {
       base::AutoReset<bool> found_complex_logical_combinations_in_has_argument(
           &found_complex_logical_combinations_in_has_argument_, false);
 
-      std::unique_ptr<CSSSelectorList> selector_list =
-          std::make_unique<CSSSelectorList>();
-      *selector_list = ConsumeForgivingRelativeSelectorList(block);
-
-      // TODO(blee@igalia.com) Workaround to make :has() unforgiving to avoid
-      // JQuery :has() issue: https://github.com/w3c/csswg-drafts/issues/7676
-      // Should not check IsValid().
-      if (!selector_list->IsValid())
+      absl::optional<CSSSelectorList> selector_list =
+          ConsumeForgivingRelativeSelectorList(block);
+      if (!selector_list || !block.AtEnd())
         return nullptr;
-
-      if (!block.AtEnd())
-        return nullptr;
-
-      selector->SetSelectorList(std::move(selector_list));
+      selector->SetSelectorList(std::move(
+          std::make_unique<CSSSelectorList>(std::move(*selector_list))));
       if (found_pseudo_in_has_argument_)
         selector->SetContainsPseudoInsideHasPseudoClass();
       if (found_complex_logical_combinations_in_has_argument_)
