@@ -1,6 +1,9 @@
-# Copyright 2014 The Chromium Authors. All rights reserved.
+# Copyright 2022 The Chromium Authors.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
+
+PRESUBMIT_VERSION = '2.0.0'
+USE_PYTHON3 = True
 
 def CheckTastIsRequested(input_api, output_api):
   """Checks that the user did add the tast trybot to the description
@@ -14,13 +17,3 @@ def CheckTastIsRequested(input_api, output_api):
         + ' to your CL description')]
 
   return []
-
-
-def CheckChange(input_api, output_api):
-    results = []
-    results += CheckTastIsRequested(input_api,output_api)
-    return results
-def CheckChangeOnUpload(input_api, output_api):
-    return CheckChange(input_api, output_api)
-def CheckChangeOnCommit(input_api, output_api):
-    return CheckChange(input_api, output_api)
