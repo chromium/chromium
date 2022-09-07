@@ -4,6 +4,7 @@
 
 #include "mojo/core/core_ipcz.h"
 
+#include <algorithm>
 #include <cstddef>
 #include <cstdint>
 #include <map>
@@ -21,6 +22,7 @@
 #include "base/synchronization/lock.h"
 #include "base/time/time.h"
 #include "mojo/core/ipcz_api.h"
+#include "mojo/core/ipcz_driver/data_pipe.h"
 #include "mojo/core/ipcz_driver/invitation.h"
 #include "mojo/core/ipcz_driver/mojo_trap.h"
 #include "mojo/core/ipcz_driver/shared_buffer.h"
@@ -72,7 +74,7 @@ class MojoMessage {
   base::span<uint8_t> data() { return data_; }
   std::vector<IpczHandle>& handles() { return handles_; }
 
-  void SetContents(std::vector<uint8_t> data, std::vector<IpczHandle> handles) {
+  bool SetContents(std::vector<uint8_t> data, std::vector<IpczHandle> handles) {
     const size_t size = data.size();
     if (size >= kMinBufferSize) {
       data_storage_ = std::move(data);
@@ -80,8 +82,45 @@ class MojoMessage {
       data_storage_.resize(kMinBufferSize);
       std::copy(data.begin(), data.end(), data_storage_.begin());
     }
+
     data_ = base::make_span(data_storage_).first(size);
+    if (handles.empty()) {
+      return true;
+    }
+
+    // If there are any serialized DataPipe objects, accumulate them so we can
+    // pluck their portals off the end of `handles`. Their portals were
+    // attached the end of `handles` when the sender finalized the message in
+    // MojoWriteMessageIpcz().
+    std::vector<ipcz_driver::DataPipe*> data_pipes;
+    for (IpczHandle handle : handles) {
+      if (auto* data_pipe = ipcz_driver::DataPipe::FromBox(handle)) {
+        data_pipes.push_back(data_pipe);
+      }
+    }
+
+    if (handles.size() / 2 < data_pipes.size()) {
+      // There must be at least enough handles for each DataPipe box AND its
+      // portal.
+      return false;
+    }
+
+    // The last N handles are portals for the pipes in `data_pipes`, in order.
+    // Remove them from the message's handles and give them to their data pipes.
+    const size_t first_data_pipe_portal = handles.size() - data_pipes.size();
+    for (size_t i = 0; i < data_pipes.size(); ++i) {
+      const IpczHandle handle = handles[first_data_pipe_portal + i];
+      if (ipcz_driver::ObjectBase::FromBox(handle)) {
+        // The handle in this position needs to be a portal. If it's a driver
+        // object, something is wrong.
+        return false;
+      }
+
+      data_pipes[i]->AdoptPortal(handle);
+    }
+    handles.resize(first_data_pipe_portal);
     handles_ = std::move(handles);
+    return true;
   }
 
   MojoResult AppendData(uint32_t additional_num_bytes,
@@ -138,6 +177,19 @@ class MojoMessage {
     std::copy(handles_.begin(), handles_.end(), handles);
     handles_.clear();
     return MOJO_RESULT_OK;
+  }
+
+  // Finalizes the Message by ensuring that any attached DataPipe objects also
+  // attach their portals alongside the existing attachments. This operation is
+  // balanced within SetContents(), where DataPipes extract their portals from
+  // the tail end of the attached handles.
+  void AttachDataPipePortals() {
+    const size_t base_num_handles = handles_.size();
+    for (size_t i = 0; i < base_num_handles; ++i) {
+      if (auto* data_pipe = ipcz_driver::DataPipe::FromBox(handles_[i])) {
+        handles_.push_back(data_pipe->TakePortal());
+      }
+    }
   }
 
  private:
@@ -225,6 +277,22 @@ MojoResult MojoCloseIpcz(MojoHandle handle) {
 MojoResult MojoQueryHandleSignalsStateIpcz(
     MojoHandle handle,
     MojoHandleSignalsState* signals_state) {
+  if (handle == MOJO_HANDLE_INVALID || !signals_state) {
+    return MOJO_RESULT_INVALID_ARGUMENT;
+  }
+
+  // If `handle` refers to a data pipe, its exposed signals differ slightly from
+  // those of a message pipe.
+  auto* data_pipe = ipcz_driver::DataPipe::FromBox(handle);
+  scoped_refptr<ipcz_driver::DataPipe::PortalWrapper> data_portal;
+  if (data_pipe) {
+    data_portal = data_pipe->GetPortal();
+    if (!data_portal) {
+      return MOJO_RESULT_INVALID_ARGUMENT;
+    }
+    handle = data_portal->handle();
+  }
+
   IpczPortalStatus status = {sizeof(status)};
   IpczResult result =
       GetIpczAPI().QueryPortalStatus(handle, IPCZ_NO_FLAGS, nullptr, &status);
@@ -232,22 +300,36 @@ MojoResult MojoQueryHandleSignalsStateIpcz(
     return result;
   }
 
-  // TODO: These signals aren't quite accurate for data pipe handles.
   signals_state->satisfiable_signals = MOJO_HANDLE_SIGNAL_PEER_CLOSED;
+  if (!data_pipe) {
+    // Data pipes do not expose signals related to message quotas.
+    signals_state->satisfiable_signals |= MOJO_HANDLE_SIGNAL_QUOTA_EXCEEDED;
+  }
   signals_state->satisfied_signals = 0;
   if (status.flags & IPCZ_PORTAL_STATUS_PEER_CLOSED) {
     signals_state->satisfied_signals |= MOJO_HANDLE_SIGNAL_PEER_CLOSED;
   } else {
-    signals_state->satisfiable_signals |= MOJO_HANDLE_SIGNAL_WRITABLE |
-                                          MOJO_HANDLE_SIGNAL_QUOTA_EXCEEDED |
-                                          MOJO_HANDLE_SIGNAL_PEER_REMOTE;
-    signals_state->satisfied_signals |= MOJO_HANDLE_SIGNAL_WRITABLE;
+    signals_state->satisfiable_signals |= MOJO_HANDLE_SIGNAL_PEER_REMOTE;
+    if (!data_pipe || data_pipe->is_producer()) {
+      signals_state->satisfiable_signals |= MOJO_HANDLE_SIGNAL_WRITABLE;
+    }
+    if (!data_pipe || status.num_remote_bytes < data_pipe->byte_capacity()) {
+      signals_state->satisfied_signals |= MOJO_HANDLE_SIGNAL_WRITABLE;
+    }
   }
   if ((status.flags & IPCZ_PORTAL_STATUS_DEAD) == 0) {
-    signals_state->satisfiable_signals |= MOJO_HANDLE_SIGNAL_READABLE;
+    if (!data_pipe) {
+      signals_state->satisfiable_signals |= MOJO_HANDLE_SIGNAL_READABLE;
+    } else if (data_pipe->is_consumer()) {
+      signals_state->satisfiable_signals |=
+          MOJO_HANDLE_SIGNAL_READABLE | MOJO_HANDLE_SIGNAL_NEW_DATA_READABLE;
+    }
   }
   if (status.num_local_parcels > 0) {
     signals_state->satisfied_signals |= MOJO_HANDLE_SIGNAL_READABLE;
+    if (data_pipe && data_pipe->is_consumer() && data_pipe->HasNewData()) {
+      signals_state->satisfied_signals |= MOJO_HANDLE_SIGNAL_NEW_DATA_READABLE;
+    }
   }
   return MOJO_RESULT_OK;
 }
@@ -268,6 +350,7 @@ MojoResult MojoWriteMessageIpcz(MojoHandle message_pipe_handle,
     return MOJO_RESULT_INVALID_ARGUMENT;
   }
 
+  m->AttachDataPipePortals();
   IpczResult result = GetIpczAPI().Put(
       message_pipe_handle, m->data().data(), m->data().size(),
       m->handles().data(), m->handles().size(), IPCZ_NO_FLAGS, nullptr);
@@ -276,7 +359,7 @@ MojoResult MojoWriteMessageIpcz(MojoHandle message_pipe_handle,
   }
 
   if (result == IPCZ_RESULT_OK) {
-    // Ensure the hadles don't get freed on MojoMessage destruction, as their
+    // Ensure the handles don't get freed on MojoMessage destruction, as their
     // ownership was relinquished in Put() above.
     m->handles().clear();
   }
@@ -313,7 +396,10 @@ MojoResult MojoReadMessageIpcz(MojoHandle message_pipe_handle,
   }
 
   auto m = std::make_unique<MojoMessage>();
-  m->SetContents(std::move(data), std::move(handles));
+  if (!m->SetContents(std::move(data), std::move(handles))) {
+    return MOJO_RESULT_INVALID_ARGUMENT;
+  }
+
   *message = m.release()->handle();
   return MOJO_RESULT_OK;
 }
@@ -400,47 +486,100 @@ MojoResult MojoNotifyBadMessageIpcz(
 MojoResult MojoCreateDataPipeIpcz(const MojoCreateDataPipeOptions* options,
                                   MojoHandle* data_pipe_producer_handle,
                                   MojoHandle* data_pipe_consumer_handle) {
-  return MOJO_RESULT_UNIMPLEMENTED;
+  using DataPipe = ipcz_driver::DataPipe;
+
+  // Mojo Core defaults to 64 kB capacity and 1-byte elements, and many callers
+  // assume these defaults.
+  constexpr uint32_t kDefaultCapacity = 64 * 1024;
+  DataPipe::Config config = {.element_size = 1,
+                             .byte_capacity = kDefaultCapacity};
+  if (options) {
+    config.element_size = options->element_num_bytes;
+    if (options->capacity_num_bytes) {
+      config.byte_capacity = options->capacity_num_bytes;
+    }
+  }
+  DataPipe::Pair pipe = DataPipe::CreatePair(config);
+  *data_pipe_producer_handle = DataPipe::Box(std::move(pipe.producer));
+  *data_pipe_consumer_handle = DataPipe::Box(std::move(pipe.consumer));
+  return MOJO_RESULT_OK;
 }
 
 MojoResult MojoWriteDataIpcz(MojoHandle data_pipe_producer_handle,
                              const void* elements,
-                             uint32_t* num_elements,
+                             uint32_t* num_bytes,
                              const MojoWriteDataOptions* options) {
-  return MOJO_RESULT_UNIMPLEMENTED;
+  auto* pipe = ipcz_driver::DataPipe::FromBox(data_pipe_producer_handle);
+  if (!pipe || !num_bytes || pipe->byte_capacity() == 0) {
+    return MOJO_RESULT_INVALID_ARGUMENT;
+  }
+  return GetMojoWriteResultForIpczPut(
+      pipe->WriteData(elements, *num_bytes,
+                      options ? options->flags : MOJO_WRITE_DATA_FLAG_NONE));
 }
 
 MojoResult MojoBeginWriteDataIpcz(MojoHandle data_pipe_producer_handle,
                                   const MojoBeginWriteDataOptions* options,
                                   void** buffer,
-                                  uint32_t* buffer_num_elements) {
-  return MOJO_RESULT_UNIMPLEMENTED;
+                                  uint32_t* buffer_num_bytes) {
+  auto* pipe = ipcz_driver::DataPipe::FromBox(data_pipe_producer_handle);
+  if (!pipe || !buffer || !buffer_num_bytes || pipe->byte_capacity() == 0) {
+    return MOJO_RESULT_INVALID_ARGUMENT;
+  }
+  if (options && options->struct_size < sizeof(*options)) {
+    return MOJO_RESULT_INVALID_ARGUMENT;
+  }
+
+  const MojoBeginWriteDataFlags flags =
+      options ? options->flags : MOJO_BEGIN_WRITE_DATA_FLAG_NONE;
+  return GetMojoWriteResultForIpczPut(
+      pipe->BeginWriteData(*buffer, *buffer_num_bytes, flags));
 }
 
 MojoResult MojoEndWriteDataIpcz(MojoHandle data_pipe_producer_handle,
-                                uint32_t num_elements_written,
+                                uint32_t num_bytes_produced,
                                 const MojoEndWriteDataOptions* options) {
-  return MOJO_RESULT_UNIMPLEMENTED;
+  auto* pipe = ipcz_driver::DataPipe::FromBox(data_pipe_producer_handle);
+  if (!pipe || pipe->byte_capacity() == 0) {
+    return MOJO_RESULT_INVALID_ARGUMENT;
+  }
+  return GetMojoWriteResultForIpczPut(pipe->EndWriteData(num_bytes_produced));
 }
 
 MojoResult MojoReadDataIpcz(MojoHandle data_pipe_consumer_handle,
                             const MojoReadDataOptions* options,
                             void* elements,
-                            uint32_t* num_elements) {
-  return MOJO_RESULT_UNIMPLEMENTED;
+                            uint32_t* num_bytes) {
+  const MojoReadDataFlags flags =
+      options ? options->flags : MOJO_READ_DATA_FLAG_NONE;
+  auto* pipe = ipcz_driver::DataPipe::FromBox(data_pipe_consumer_handle);
+  if (!pipe || !num_bytes || pipe->byte_capacity() > 0) {
+    return MOJO_RESULT_INVALID_ARGUMENT;
+  }
+  return GetMojoReadResultForIpczGet(
+      pipe->ReadData(elements, *num_bytes, flags));
 }
 
 MojoResult MojoBeginReadDataIpcz(MojoHandle data_pipe_consumer_handle,
                                  const MojoBeginReadDataOptions* options,
                                  const void** buffer,
-                                 uint32_t* buffer_num_elements) {
-  return MOJO_RESULT_UNIMPLEMENTED;
+                                 uint32_t* buffer_num_bytes) {
+  auto* pipe = ipcz_driver::DataPipe::FromBox(data_pipe_consumer_handle);
+  if (!pipe || !buffer || !buffer_num_bytes || pipe->byte_capacity() > 0) {
+    return MOJO_RESULT_INVALID_ARGUMENT;
+  }
+  return GetMojoReadResultForIpczGet(
+      pipe->BeginReadData(*buffer, *buffer_num_bytes));
 }
 
 MojoResult MojoEndReadDataIpcz(MojoHandle data_pipe_consumer_handle,
-                               uint32_t num_elements_read,
+                               uint32_t num_bytes_consumed,
                                const MojoEndReadDataOptions* options) {
-  return MOJO_RESULT_UNIMPLEMENTED;
+  auto* pipe = ipcz_driver::DataPipe::FromBox(data_pipe_consumer_handle);
+  if (!pipe || pipe->byte_capacity() > 0) {
+    return MOJO_RESULT_INVALID_ARGUMENT;
+  }
+  return GetMojoReadResultForIpczGet(pipe->EndReadData(num_bytes_consumed));
 }
 
 MojoResult MojoCreateSharedBufferIpcz(

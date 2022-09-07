@@ -50,6 +50,9 @@ class ObjectBase : public base::RefCountedThreadSafe<ObjectBase> {
     // something transmissible during serialization.
     kWrappedPlatformHandle,
 
+    // A DataPipe instance used to emulate Mojo data pipes over ipcz portals.
+    kDataPipe,
+
     // A MojoTrap instance used to emulate a Mojo trap. These objects are not
     // serializable and cannot be transmitted over a Transport.
     kMojoTrap,
@@ -83,6 +86,12 @@ class ObjectBase : public base::RefCountedThreadSafe<ObjectBase> {
       object->Release();
     }
     return object;
+  }
+
+  // Peeks at `box` and returns a pointer to its underlying object. Does not
+  // invalidate `box`.
+  static ObjectBase* FromBox(IpczHandle box) {
+    return FromHandle(PeekBox(box));
   }
 
   // Boxes a reference to `object` and returns an IpczHandle for the box.

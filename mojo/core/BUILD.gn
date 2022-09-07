@@ -97,6 +97,8 @@ template("core_impl_source_set") {
       "handle_table.cc",
       "invitation_dispatcher.cc",
       "ipcz_api.cc",
+      "ipcz_driver/data_pipe.cc",
+      "ipcz_driver/data_pipe.h",
       "ipcz_driver/driver.cc",
       "ipcz_driver/invitation.cc",
       "ipcz_driver/mojo_trap.cc",

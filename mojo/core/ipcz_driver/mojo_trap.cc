@@ -12,22 +12,39 @@
 #include "base/memory/ref_counted.h"
 #include "base/notreached.h"
 #include "mojo/core/ipcz_api.h"
+#include "mojo/core/ipcz_driver/data_pipe.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/ipcz/include/ipcz/ipcz.h"
 
 namespace mojo::core::ipcz_driver {
 
 namespace {
 
-// Translates Mojo signal conditions to equivalent IpczTrapConditions.
+// Translates Mojo signal conditions to equivalent IpczTrapConditions. If
+// `data_pipe` is non-null then the conditions refer to a portal owned by that
+// DataPipe instance; otherwise they refer to a portal being used as a message
+// pipe endpoint.
 void GetConditionsForSignals(MojoHandleSignals signals,
-                             IpczTrapConditions* conditions) {
+                             IpczTrapConditions* conditions,
+                             DataPipe* data_pipe) {
   conditions->flags |= IPCZ_TRAP_DEAD;
 
   if (signals & MOJO_HANDLE_SIGNAL_WRITABLE) {
-    // TODO: Portals should be able to set default put limits that apply to all
-    // of their put operations unless overridden. For now this hack effectively
-    // gives all data pipes 2 MB of capacity.
-    conditions->flags |= IPCZ_TRAP_BELOW_MAX_REMOTE_BYTES;
-    conditions->max_remote_bytes = 2 * 1024 * 1024;
+    if (data_pipe && data_pipe->byte_capacity() > 0) {
+      conditions->flags |= IPCZ_TRAP_BELOW_MAX_REMOTE_BYTES;
+      conditions->max_remote_bytes = data_pipe->byte_capacity();
+    } else {
+      // Watching message pipes (which have no limited write capacity) for
+      // writability should yield a trigger which can never be armed, because
+      // message pipes are always writable. This effectively achieves that.
+      //
+      // TODO(https://crbug.com/1299283): We should consider an alternative trap
+      // condition for something that's always satisfied, because monitoring
+      // remote queue state incurs overhead. On the other hand this should be
+      // very rare in practice, so it's not that important.
+      conditions->flags |= IPCZ_TRAP_BELOW_MAX_REMOTE_PARCELS;
+      conditions->max_remote_parcels = std::numeric_limits<size_t>::max();
+    }
   }
 
   if (signals & MOJO_HANDLE_SIGNAL_READABLE) {
@@ -35,9 +52,11 @@ void GetConditionsForSignals(MojoHandleSignals signals,
     // zero parcels available to retrieve from a portal.
     conditions->flags |= IPCZ_TRAP_ABOVE_MIN_LOCAL_PARCELS;
     conditions->min_local_parcels = 0;
-  } else if (signals & MOJO_HANDLE_SIGNAL_NEW_DATA_READABLE) {
-    // Data pipe consumers often use the edge-triggered NEW_DATA_READABLE
-    // signal, which is effectively equivalent to NEW_LOCAL_PARCEL in ipcz.
+  }
+
+  if (signals & MOJO_HANDLE_SIGNAL_NEW_DATA_READABLE) {
+    // MOJO_HANDLE_SIGNAL_NEW_DATA_READABLE is an edge-triggered condition which
+    // is effectively equivalent to IPCZ_TRAP_NEW_LOCAL_PARCEL.
     conditions->flags |= IPCZ_TRAP_NEW_LOCAL_PARCEL;
   }
 
@@ -48,20 +67,20 @@ void GetConditionsForSignals(MojoHandleSignals signals,
 
 // Given an ipcz trap event resulting from an installed trigger, this translates
 // the event into an equivalent Mojo trap event for the containing Mojo trap.
+// If `data_pipe` is non-null then this event refers to a portal owned by that
+// DataPipe instance; otherwise the portal is being used as a message pipe
+// endpoint.
 void TranslateIpczToMojoEvent(MojoHandleSignals trigger_signals,
                               uintptr_t trigger_context,
+                              DataPipe* data_pipe,
                               IpczTrapConditionFlags current_condition_flags,
                               const IpczPortalStatus& current_status,
                               MojoTrapEvent* event) {
   event->flags = 0;
   event->trigger_context = trigger_context;
 
-  // In practice handles are watched for one or the other of READABALE or
-  // NEW_DATA_READABLE, but never both.
-  const MojoHandleSignals kRead =
-      (trigger_signals & MOJO_HANDLE_SIGNAL_NEW_DATA_READABLE)
-          ? MOJO_HANDLE_SIGNAL_NEW_DATA_READABLE
-          : MOJO_HANDLE_SIGNAL_READABLE;
+  const MojoHandleSignals kRead = MOJO_HANDLE_SIGNAL_READABLE;
+  const MojoHandleSignals kNewDataRead = MOJO_HANDLE_SIGNAL_NEW_DATA_READABLE;
   const MojoHandleSignals kWrite = MOJO_HANDLE_SIGNAL_WRITABLE;
   const MojoHandleSignals kPeerClosed = MOJO_HANDLE_SIGNAL_PEER_CLOSED;
 
@@ -69,20 +88,38 @@ void TranslateIpczToMojoEvent(MojoHandleSignals trigger_signals,
   MojoHandleSignals& satisfiable = event->signals_state.satisfiable_signals;
 
   satisfied = 0;
-  satisfiable = kPeerClosed | MOJO_HANDLE_SIGNAL_QUOTA_EXCEEDED |
-                MOJO_HANDLE_SIGNAL_PEER_REMOTE;
-  if (!(current_status.flags & IPCZ_PORTAL_STATUS_DEAD)) {
-    satisfiable |= kRead | kPeerClosed;
+  satisfiable = kPeerClosed;
+  if (!data_pipe) {
+    // Only message pipes support quota signals.
+    satisfiable |= MOJO_HANDLE_SIGNAL_QUOTA_EXCEEDED;
   }
+
+  if (!(current_status.flags & IPCZ_PORTAL_STATUS_DEAD)) {
+    if (!data_pipe) {
+      satisfiable |= kRead;
+    } else if (data_pipe->is_consumer()) {
+      satisfiable |= kRead | kNewDataRead;
+    }
+  }
+
   if (current_status.flags & IPCZ_PORTAL_STATUS_PEER_CLOSED) {
     satisfied |= kPeerClosed;
   } else {
-    satisfied |= kWrite;
-    satisfiable |= kWrite;
+    satisfiable |= MOJO_HANDLE_SIGNAL_PEER_REMOTE;
+    if (!data_pipe || data_pipe->is_producer()) {
+      satisfiable |= kWrite;
+    }
+    if (!data_pipe ||
+        current_status.num_remote_bytes < data_pipe->byte_capacity()) {
+      satisfied |= kWrite;
+    }
   }
 
   if (current_status.num_local_parcels > 0) {
     satisfied |= kRead;
+  }
+  if (data_pipe && data_pipe->is_consumer() && data_pipe->HasNewData()) {
+    satisfied |= (satisfiable & kNewDataRead);
   }
 
   DCHECK((satisfied & satisfiable) == satisfied);
@@ -100,12 +137,20 @@ void TranslateIpczToMojoEvent(MojoHandleSignals trigger_signals,
 // trap is armed, each of its Triggers has installed a unique ipcz trap to watch
 // for its conditions.
 struct MojoTrap::Trigger : public base::RefCountedThreadSafe<Trigger> {
+  // Constructs a new trigger for the given MojoTrap to observe `handle` for
+  // any of `signals` to be satisfied. `context` is the opaque context value
+  // given to the corresponding MojoAddTrigger() call. If `data_pipe` is
+  // non-null then it points to the DataPipe instance which owns the portal
+  // identified by `handle`; otherwise `handle` refers to a portal which is
+  // being used as a message pipe endpoint.
   Trigger(scoped_refptr<MojoTrap> mojo_trap,
           MojoHandle handle,
+          DataPipe* data_pipe,
           MojoHandleSignals signals,
           uintptr_t trigger_context)
       : mojo_trap(std::move(mojo_trap)),
         handle(handle),
+        data_pipe(base::WrapRefCounted(data_pipe)),
         signals(signals),
         trigger_context(trigger_context) {}
 
@@ -115,8 +160,16 @@ struct MojoTrap::Trigger : public base::RefCountedThreadSafe<Trigger> {
     return *reinterpret_cast<Trigger*>(event.context);
   }
 
+  bool is_for_data_producer() const {
+    return data_pipe && data_pipe->byte_capacity() > 0;
+  }
+  bool is_for_data_consumer() const {
+    return data_pipe && data_pipe->byte_capacity() == 0;
+  }
+
   const scoped_refptr<MojoTrap> mojo_trap;
   const MojoHandle handle;
+  const scoped_refptr<DataPipe> data_pipe;
   const MojoHandleSignals signals;
   const uintptr_t trigger_context;
   IpczTrapConditions conditions = {.size = sizeof(conditions), .flags = 0};
@@ -139,12 +192,27 @@ MojoResult MojoTrap::AddTrigger(MojoHandle handle,
                                 MojoHandleSignals signals,
                                 MojoTriggerCondition condition,
                                 uintptr_t trigger_context) {
-  if (!handle) {
+  if (handle == MOJO_HANDLE_INVALID) {
     return MOJO_RESULT_INVALID_ARGUMENT;
   }
 
-  auto trigger =
-      base::MakeRefCounted<Trigger>(this, handle, signals, trigger_context);
+  // If `handle` is a boxed DataPipe rather than a portal, we need to install a
+  // trap on the underlying portal.
+  auto* data_pipe = DataPipe::FromBox(handle);
+  scoped_refptr<DataPipe::PortalWrapper> data_portal;
+  if (data_pipe) {
+    data_portal = data_pipe->GetPortal();
+    if (!data_portal) {
+      return MOJO_RESULT_INVALID_ARGUMENT;
+    }
+    handle = data_portal->handle();
+  } else if (ObjectBase::FromBox(handle)) {
+    // Any other type of driver object cannot have traps installed.
+    return MOJO_RESULT_INVALID_ARGUMENT;
+  }
+
+  auto trigger = base::MakeRefCounted<Trigger>(this, handle, data_pipe, signals,
+                                               trigger_context);
 
   if (condition == MOJO_TRIGGER_CONDITION_SIGNALS_UNSATISFIED) {
     // There's only one user of MOJO_TRIGGER_CONDITION_SIGNALS_UNSATISFIED. It's
@@ -153,7 +221,7 @@ MojoResult MojoTrap::AddTrigger(MojoHandle handle,
     // for unsatisfied signals.
     trigger->conditions.flags = IPCZ_NO_FLAGS;
   } else {
-    GetConditionsForSignals(signals, &trigger->conditions);
+    GetConditionsForSignals(signals, &trigger->conditions, data_pipe);
   }
 
   IpczTrapConditionFlags flags;
@@ -198,7 +266,8 @@ MojoResult MojoTrap::AddTrigger(MojoHandle handle,
   }
 
   MojoTrapEvent event = {.struct_size = sizeof(event)};
-  TranslateIpczToMojoEvent(signals, trigger_context, flags, status, &event);
+  TranslateIpczToMojoEvent(signals, trigger_context, data_pipe, flags, status,
+                           &event);
   event.flags = MOJO_TRAP_EVENT_FLAG_WITHIN_API_CALL;
   handler_(&event);
   return MOJO_RESULT_OK;
@@ -284,9 +353,11 @@ MojoResult MojoTrap::Arm(MojoTrapEvent* blocking_events,
       return MOJO_RESULT_FAILED_PRECONDITION;
     }
 
-    TranslateIpczToMojoEvent(trigger->signals, trigger->trigger_context, flags,
-                             status, &blocking_events[num_events_returned++]);
-  } while (next_trigger != end_trigger && num_events_returned < event_capacity);
+    auto& event = blocking_events[num_events_returned++];
+    TranslateIpczToMojoEvent(trigger->signals, trigger->trigger_context,
+                             trigger->data_pipe.get(), flags, status, &event);
+  } while (next_trigger != end_trigger &&
+           (num_events_returned == 0 || num_events_returned < event_capacity));
 
   if (next_trigger != end_trigger) {
     next_trigger_ = next_trigger;
@@ -342,12 +413,15 @@ void MojoTrap::TrapRemovalEventHandler(const IpczTrapEvent* event) {
 }
 
 void MojoTrap::HandleEvent(const IpczTrapEvent& event) {
-  Trigger& trigger = Trigger::FromEvent(event);
+  // Transfer the trap's implied Trigger reference to the local stack.
+  scoped_refptr<Trigger> trigger = WrapRefCounted(&Trigger::FromEvent(event));
+  trigger->Release();
+
   {
     base::AutoLock lock(lock_);
-    const bool trigger_active = armed_ && trigger.armed && !trigger.removed;
+    const bool trigger_active = armed_ && trigger->armed && !trigger->removed;
     const bool is_removal = (event.condition_flags & IPCZ_TRAP_REMOVED) != 0;
-    trigger.armed = false;
+    trigger->armed = false;
     if (!trigger_active || is_removal) {
       // Removal events are handled separately by ipcz traps established at
       // trigger creation, allowing handle closure to trigger an event even when
@@ -358,13 +432,16 @@ void MojoTrap::HandleEvent(const IpczTrapEvent& event) {
     armed_ = false;
   }
 
-  MojoTrapEvent mojo_event = {.struct_size = sizeof(mojo_event)};
-  TranslateIpczToMojoEvent(trigger.signals, trigger.trigger_context,
-                           event.condition_flags, *event.status, &mojo_event);
-  mojo_event.flags |= MOJO_TRAP_EVENT_FLAG_WITHIN_API_CALL;
+  if (trigger->data_pipe &&
+      (event.condition_flags & IPCZ_TRAP_NEW_LOCAL_PARCEL)) {
+    trigger->data_pipe->SetHasNewData();
+  }
 
-  // Balanced by AddRef when installing the trigger's ipcz trap.
-  trigger.Release();
+  MojoTrapEvent mojo_event = {.struct_size = sizeof(mojo_event)};
+  TranslateIpczToMojoEvent(trigger->signals, trigger->trigger_context,
+                           trigger->data_pipe.get(), event.condition_flags,
+                           *event.status, &mojo_event);
+  mojo_event.flags |= MOJO_TRAP_EVENT_FLAG_WITHIN_API_CALL;
 
   handler_(&mojo_event);
 }
@@ -393,6 +470,32 @@ IpczResult MojoTrap::ArmTrigger(Trigger& trigger,
   lock_.AssertAcquired();
   if (trigger.armed) {
     return IPCZ_RESULT_OK;
+  }
+
+  const bool watching_writable =
+      trigger.conditions.flags &
+      (IPCZ_TRAP_BELOW_MAX_REMOTE_BYTES | IPCZ_TRAP_BELOW_MAX_REMOTE_PARCELS);
+  const bool watching_readable =
+      trigger.conditions.flags &
+      (IPCZ_TRAP_ABOVE_MIN_LOCAL_PARCELS | IPCZ_TRAP_ABOVE_MIN_LOCAL_BYTES);
+  const bool watching_new_data =
+      trigger.conditions.flags & IPCZ_TRAP_NEW_LOCAL_PARCEL;
+  const bool watching_anything_else =
+      trigger.conditions.flags != 0 &&
+      !(watching_writable || watching_readable || watching_new_data);
+  if (trigger.is_for_data_producer() &&
+      (watching_readable || watching_new_data) && !watching_anything_else) {
+    return IPCZ_RESULT_FAILED_PRECONDITION;
+  }
+
+  if (trigger.is_for_data_consumer()) {
+    if (watching_writable && !watching_anything_else) {
+      return IPCZ_RESULT_FAILED_PRECONDITION;
+    }
+
+    if (watching_new_data && trigger.data_pipe->HasNewData()) {
+      return IPCZ_RESULT_FAILED_PRECONDITION;
+    }
   }
 
   // Bump the ref count on the Trigger. This ref is effectively owned by the

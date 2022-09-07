@@ -14,6 +14,7 @@
 #include "base/process/process.h"
 #include "build/build_config.h"
 #include "mojo/core/core.h"
+#include "mojo/core/ipcz_driver/data_pipe.h"
 #include "mojo/core/ipcz_driver/object.h"
 #include "mojo/core/ipcz_driver/shared_buffer.h"
 #include "mojo/core/ipcz_driver/transmissible_platform_handle.h"
@@ -358,6 +359,10 @@ IpczResult Transport::DeserializeObject(
 
     case ObjectBase::kWrappedPlatformHandle:
       object = WrappedPlatformHandle::Deserialize(object_data, object_handles);
+      break;
+
+    case ObjectBase::kDataPipe:
+      object = DataPipe::Deserialize(object_data, object_handles);
       break;
 
     default:

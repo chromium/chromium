@@ -262,8 +262,7 @@ MojoWriteData(MojoHandle data_pipe_producer_handle,
 // If MOJO_RESULT_BEGIN_WRITE_DATA_FLAG_ALL_OR_NONE is provided in
 // `options->flags`, then this hint is a minimum requirement for the operation
 // to succeed, and on success the output value of `*buffer_num_bytes` will be
-// at least as large as the input value. The flag is invalid to specify if the
-// input value of `*buffer_num_bytes` is zero.
+// at least as large as the input value.
 //
 // During a two-phase write, |data_pipe_producer_handle| is *not* writable.
 // If another caller tries to write to it by calling |MojoWriteData()| or

@@ -135,7 +135,7 @@ class CoreIpczTest : public test::MojoTestBase {
     EXPECT_EQ(MOJO_RESULT_OK, mojo().WriteMessage(pipe, message, nullptr));
   }
 
-  std::string ReadFromMessagePipe(MojoHandle pipe) {
+  void WaitForReadable(MojoHandle pipe) {
     base::WaitableEvent ready;
     MojoHandle trap;
     auto handler = +[](const MojoTrapEvent* event) {
@@ -154,6 +154,11 @@ class CoreIpczTest : public test::MojoTestBase {
       ready.Wait();
     }
     EXPECT_EQ(MOJO_RESULT_OK, mojo().Close(trap));
+  }
+
+  std::string ReadFromMessagePipe(MojoHandle pipe,
+                                  base::span<MojoHandle> handles = {}) {
+    WaitForReadable(pipe);
 
     MojoMessageHandle message;
     EXPECT_EQ(MOJO_RESULT_OK, mojo().ReadMessage(pipe, nullptr, &message));
@@ -161,13 +166,31 @@ class CoreIpczTest : public test::MojoTestBase {
 
     void* buffer;
     uint32_t buffer_size;
+    uint32_t num_handles = static_cast<uint32_t>(handles.size());
     EXPECT_EQ(MOJO_RESULT_OK,
               mojo().GetMessageData(message, nullptr, &buffer, &buffer_size,
-                                    nullptr, nullptr));
+                                    handles.data(), &num_handles));
+    EXPECT_EQ(num_handles, handles.size());
 
     std::string contents(static_cast<char*>(buffer), buffer_size);
     EXPECT_EQ(MOJO_RESULT_OK, mojo().DestroyMessage(message));
     return contents;
+  }
+
+  // Validates a handle's signaling state against a set of expectations.
+  struct SignalExpectations {
+    MojoHandleSignals satisfiable = 0;
+    MojoHandleSignals not_satisfiable = 0;
+    MojoHandleSignals satisfied = 0;
+    MojoHandleSignals not_satisfied = 0;
+  };
+  void CheckSignals(MojoHandle handle, const SignalExpectations& e) {
+    MojoHandleSignalsState state;
+    EXPECT_EQ(MOJO_RESULT_OK, mojo().QueryHandleSignalsState(handle, &state));
+    EXPECT_EQ(e.satisfiable, state.satisfiable_signals & e.satisfiable);
+    EXPECT_EQ(0u, state.satisfiable_signals & e.not_satisfiable);
+    EXPECT_EQ(e.satisfied, state.satisfied_signals & e.satisfied);
+    EXPECT_EQ(0u, state.satisfied_signals & e.not_satisfied);
   }
 
  private:
@@ -309,23 +332,16 @@ TEST_F(CoreIpczTest, MessagePipes) {
   EXPECT_EQ(MOJO_RESULT_OK,
             mojo().WriteMessage(a, CreateMessage(kMessage), nullptr));
 
-  MojoHandleSignalsState state;
-  EXPECT_EQ(MOJO_RESULT_OK, mojo().QueryHandleSignalsState(b, &state));
-  EXPECT_TRUE(state.satisfied_signals & MOJO_HANDLE_SIGNAL_READABLE);
-  EXPECT_TRUE(state.satisfied_signals & MOJO_HANDLE_SIGNAL_WRITABLE);
-  EXPECT_FALSE(state.satisfied_signals & MOJO_HANDLE_SIGNAL_PEER_CLOSED);
-  EXPECT_TRUE(state.satisfiable_signals & MOJO_HANDLE_SIGNAL_READABLE);
-  EXPECT_TRUE(state.satisfiable_signals & MOJO_HANDLE_SIGNAL_WRITABLE);
-  EXPECT_TRUE(state.satisfiable_signals & MOJO_HANDLE_SIGNAL_PEER_CLOSED);
+  constexpr SignalExpectations kReadablePipeExpecations = {
+      .satisfiable = MOJO_HANDLE_SIGNAL_READABLE | MOJO_HANDLE_SIGNAL_WRITABLE |
+                     MOJO_HANDLE_SIGNAL_PEER_CLOSED,
+      .satisfied = MOJO_HANDLE_SIGNAL_READABLE | MOJO_HANDLE_SIGNAL_WRITABLE,
+      .not_satisfied = MOJO_HANDLE_SIGNAL_PEER_CLOSED,
+  };
 
+  CheckSignals(b, kReadablePipeExpecations);
   EXPECT_EQ(MOJO_RESULT_OK, mojo().FuseMessagePipes(b, c, nullptr));
-  EXPECT_EQ(MOJO_RESULT_OK, mojo().QueryHandleSignalsState(d, &state));
-  EXPECT_TRUE(state.satisfied_signals & MOJO_HANDLE_SIGNAL_READABLE);
-  EXPECT_TRUE(state.satisfied_signals & MOJO_HANDLE_SIGNAL_WRITABLE);
-  EXPECT_FALSE(state.satisfied_signals & MOJO_HANDLE_SIGNAL_PEER_CLOSED);
-  EXPECT_TRUE(state.satisfiable_signals & MOJO_HANDLE_SIGNAL_READABLE);
-  EXPECT_TRUE(state.satisfiable_signals & MOJO_HANDLE_SIGNAL_WRITABLE);
-  EXPECT_TRUE(state.satisfiable_signals & MOJO_HANDLE_SIGNAL_PEER_CLOSED);
+  CheckSignals(d, kReadablePipeExpecations);
 
   EXPECT_EQ(MOJO_RESULT_OK, mojo().ReadMessage(d, nullptr, &message));
   EXPECT_NE(MOJO_MESSAGE_HANDLE_INVALID, message);
@@ -551,6 +567,159 @@ TEST_F(CoreIpczTest, SharedBufferDuplicateUnsafe) {
   EXPECT_EQ(MOJO_RESULT_OK, mojo().Close(buffer));
 }
 
+TEST_F(CoreIpczTest, DataPipeReadWriteQeury) {
+  MojoHandle p, c;
+  MojoCreateDataPipeOptions options = {
+      .struct_size = sizeof(options),
+      .element_num_bytes = 1,
+      .capacity_num_bytes = 5,
+  };
+  EXPECT_EQ(MOJO_RESULT_OK, mojo().CreateDataPipe(&options, &p, &c));
+
+  // First check for valid initial signaling state on producer and the consumer.
+  CheckSignals(p, {
+                      .satisfiable = MOJO_HANDLE_SIGNAL_WRITABLE |
+                                     MOJO_HANDLE_SIGNAL_PEER_CLOSED,
+                      .not_satisfiable = MOJO_HANDLE_SIGNAL_READABLE |
+                                         MOJO_HANDLE_SIGNAL_NEW_DATA_READABLE,
+                      .satisfied = MOJO_HANDLE_SIGNAL_WRITABLE,
+                      .not_satisfied = MOJO_HANDLE_SIGNAL_READABLE |
+                                       MOJO_HANDLE_SIGNAL_NEW_DATA_READABLE |
+                                       MOJO_HANDLE_SIGNAL_PEER_CLOSED,
+                  });
+  CheckSignals(c, {
+                      .satisfiable = MOJO_HANDLE_SIGNAL_READABLE |
+                                     MOJO_HANDLE_SIGNAL_NEW_DATA_READABLE |
+                                     MOJO_HANDLE_SIGNAL_PEER_CLOSED,
+                      .not_satisfiable = MOJO_HANDLE_SIGNAL_WRITABLE,
+                      .not_satisfied = MOJO_HANDLE_SIGNAL_READABLE |
+                                       MOJO_HANDLE_SIGNAL_NEW_DATA_READABLE |
+                                       MOJO_HANDLE_SIGNAL_WRITABLE |
+                                       MOJO_HANDLE_SIGNAL_PEER_CLOSED,
+                  });
+
+  // Basic capacity limits are enforced.
+  MojoWriteDataOptions write_options = {
+      .struct_size = sizeof(write_options),
+      .flags = MOJO_WRITE_DATA_FLAG_ALL_OR_NONE,
+  };
+  constexpr base::StringPiece kTestMessage = "hello, world!";
+  uint32_t num_bytes = static_cast<uint32_t>(kTestMessage.size());
+  EXPECT_EQ(
+      MOJO_RESULT_OUT_OF_RANGE,
+      mojo().WriteData(p, kTestMessage.data(), &num_bytes, &write_options));
+
+  // Partial writes can succeed when short on capacity.
+  write_options.flags = MOJO_WRITE_DATA_FLAG_NONE;
+  num_bytes = static_cast<uint32_t>(kTestMessage.size());
+  EXPECT_EQ(MOJO_RESULT_OK, mojo().WriteData(p, kTestMessage.data(), &num_bytes,
+                                             &write_options));
+  EXPECT_EQ(5u, num_bytes);
+
+  // Writability should no longer be signaled, but should still be possible in
+  // the future.
+  CheckSignals(p, {
+                      .satisfiable = MOJO_HANDLE_SIGNAL_WRITABLE,
+                      .not_satisfied = MOJO_HANDLE_SIGNAL_WRITABLE,
+                  });
+  CheckSignals(c, {.satisfied = MOJO_HANDLE_SIGNAL_READABLE});
+
+  // Query only requests the number of available bytes. No data is consumed or
+  // copied and no buffer is required.
+  MojoReadDataOptions read_options = {
+      .struct_size = sizeof(read_options),
+      .flags = MOJO_READ_DATA_FLAG_QUERY,
+  };
+  EXPECT_EQ(MOJO_RESULT_OK,
+            mojo().ReadData(c, &read_options, nullptr, &num_bytes));
+  EXPECT_EQ(5u, num_bytes);
+  CheckSignals(c, {.satisfied = MOJO_HANDLE_SIGNAL_READABLE});
+
+  // Peek requires a buffer and copies data into it, but does not consume
+  // anything from the pipe.
+  read_options.flags = MOJO_READ_DATA_FLAG_PEEK;
+  EXPECT_EQ(MOJO_RESULT_INVALID_ARGUMENT,
+            mojo().ReadData(c, &read_options, nullptr, &num_bytes));
+
+  char buffer[kTestMessage.size()];
+  num_bytes = std::size(buffer);
+  EXPECT_EQ(MOJO_RESULT_OK,
+            mojo().ReadData(c, &read_options, buffer, &num_bytes));
+  EXPECT_EQ("hello", base::StringPiece(buffer, num_bytes));
+  CheckSignals(c, {.satisfied = MOJO_HANDLE_SIGNAL_READABLE});
+
+  // Discard does not require a buffer and copies no data, but it does consume
+  // bytes from the pipe.
+  read_options.flags = MOJO_READ_DATA_FLAG_DISCARD;
+  num_bytes = 1;
+  EXPECT_EQ(MOJO_RESULT_OK,
+            mojo().ReadData(c, &read_options, nullptr, &num_bytes));
+  CheckSignals(p, {.satisfied = MOJO_HANDLE_SIGNAL_WRITABLE});
+  CheckSignals(c, {.satisfied = MOJO_HANDLE_SIGNAL_READABLE});
+
+  // An all-or-none read fails if all the data isn't available.
+  read_options.flags = MOJO_READ_DATA_FLAG_ALL_OR_NONE;
+  num_bytes = std::size(buffer);
+  EXPECT_EQ(MOJO_RESULT_OUT_OF_RANGE,
+            mojo().ReadData(c, &read_options, buffer, &num_bytes));
+  CheckSignals(c, {.satisfied = MOJO_HANDLE_SIGNAL_READABLE});
+
+  // Try again with data in range.
+  num_bytes = 3;
+  EXPECT_EQ(MOJO_RESULT_OK,
+            mojo().ReadData(c, &read_options, buffer, &num_bytes));
+  EXPECT_EQ("ell", base::StringPiece(buffer, num_bytes));
+  CheckSignals(c, {.satisfied = MOJO_HANDLE_SIGNAL_READABLE});
+
+  // Finally, default options allow for short reads.
+  char bigger_buffer[100];
+  num_bytes = std::size(bigger_buffer);
+  read_options.flags = MOJO_READ_DATA_FLAG_NONE;
+  EXPECT_EQ(MOJO_RESULT_OK,
+            mojo().ReadData(c, &read_options, bigger_buffer, &num_bytes));
+  CheckSignals(c, {.not_satisfied = MOJO_HANDLE_SIGNAL_READABLE});
+
+  EXPECT_EQ("o", base::StringPiece(bigger_buffer, num_bytes));
+
+  EXPECT_EQ(MOJO_RESULT_OK, mojo().Close(p));
+  CheckSignals(c, {.not_satisfiable = MOJO_HANDLE_SIGNAL_READABLE |
+                                      MOJO_HANDLE_SIGNAL_NEW_DATA_READABLE,
+                   .satisfied = MOJO_HANDLE_SIGNAL_PEER_CLOSED});
+  EXPECT_EQ(MOJO_RESULT_OK, mojo().Close(c));
+}
+
+TEST_F(CoreIpczTest, DataPipeTwoPhase) {
+  MojoHandle p, c;
+  MojoCreateDataPipeOptions options = {
+      .struct_size = sizeof(options),
+      .element_num_bytes = 1,
+      .capacity_num_bytes = 5,
+  };
+  EXPECT_EQ(MOJO_RESULT_OK, mojo().CreateDataPipe(&options, &p, &c));
+
+  const base::StringPiece kTestMessage = "hello, world!";
+
+  void* buffer;
+  uint32_t num_bytes = static_cast<uint32_t>(kTestMessage.size());
+  EXPECT_EQ(MOJO_RESULT_OK,
+            mojo().BeginWriteData(p, nullptr, &buffer, &num_bytes));
+  EXPECT_EQ(5u, num_bytes);
+  EXPECT_TRUE(buffer);
+
+  memcpy(buffer, kTestMessage.data(), num_bytes);
+  EXPECT_EQ(MOJO_RESULT_OK, mojo().EndWriteData(p, num_bytes, nullptr));
+
+  const void* in_buffer;
+  EXPECT_EQ(MOJO_RESULT_OK,
+            mojo().BeginReadData(c, nullptr, &in_buffer, &num_bytes));
+  EXPECT_EQ(5u, num_bytes);
+  EXPECT_EQ("hello",
+            base::StringPiece(static_cast<const char*>(in_buffer), num_bytes));
+
+  EXPECT_EQ(MOJO_RESULT_OK, mojo().Close(p));
+  EXPECT_EQ(MOJO_RESULT_OK, mojo().Close(c));
+}
+
 #if !BUILDFLAG(IS_IOS)
 
 constexpr base::StringPiece kAttachmentName = "interesting pipe name";
@@ -652,6 +821,98 @@ TEST_F(CoreIpczTest, InvitationMultipleAttachments) {
           WriteToMessagePipe(pipes[i], kTestMessages[i]);
           EXPECT_EQ(MOJO_RESULT_OK, mojo().Close(pipes[i]));
         }
+      });
+}
+
+constexpr base::StringPiece kDataPipeMessage = "hello, world!";
+constexpr size_t kDataPipeCapacity = 8;
+static_assert(kDataPipeCapacity < kDataPipeMessage.size(),
+              "Test requires a data pipe smaller than the test message.");
+
+DEFINE_TEST_CLIENT_TEST_WITH_PIPE(DataPipeTransferClient,
+                                  CoreIpczTestClient,
+                                  h) {
+  InvitationDetails details;
+  ReceiveInvitationTransport(h, details);
+  EXPECT_EQ(MOJO_RESULT_OK, MojoClose(h));
+
+  MojoHandle invitation;
+  EXPECT_EQ(MOJO_RESULT_OK,
+            mojo().AcceptInvitation(&details.endpoint, nullptr, &invitation));
+
+  MojoHandle new_pipe;
+  EXPECT_EQ(MOJO_RESULT_OK, mojo().ExtractMessagePipeFromInvitation(
+                                invitation, kAttachmentName.data(),
+                                kAttachmentName.size(), nullptr, &new_pipe));
+  EXPECT_EQ(MOJO_RESULT_OK, mojo().Close(invitation));
+
+  MojoHandle consumer;
+  EXPECT_EQ("", ReadFromMessagePipe(new_pipe, {&consumer, 1}));
+  EXPECT_NE(MOJO_HANDLE_INVALID, consumer);
+
+  WaitForReadable(consumer);
+
+  const void* data;
+  uint32_t num_bytes;
+  EXPECT_EQ(MOJO_RESULT_OK,
+            mojo().BeginReadData(consumer, nullptr, &data, &num_bytes));
+  EXPECT_EQ(kDataPipeCapacity, num_bytes);
+  EXPECT_EQ(kDataPipeMessage.substr(0, kDataPipeCapacity),
+            std::string(static_cast<const char*>(data), num_bytes));
+  EXPECT_EQ(MOJO_RESULT_OK, mojo().EndReadData(consumer, 0, nullptr));
+  EXPECT_EQ(MOJO_RESULT_OK, mojo().Close(consumer));
+  EXPECT_EQ(MOJO_RESULT_OK, mojo().Close(new_pipe));
+}
+
+TEST_F(CoreIpczTest, DataPipeTransfer) {
+  RunTestClientWithController(
+      "DataPipeTransferClient", [&](ClientController& c) {
+        InvitationDetails details;
+        CreateAndShareInvitationTransport(c.pipe(), c.process(), details);
+
+        MojoHandle new_pipe;
+        MojoHandle invitation;
+        EXPECT_EQ(MOJO_RESULT_OK,
+                  mojo().CreateInvitation(nullptr, &invitation));
+        EXPECT_EQ(MOJO_RESULT_OK,
+                  mojo().AttachMessagePipeToInvitation(
+                      invitation, kAttachmentName.data(),
+                      kAttachmentName.size(), nullptr, &new_pipe));
+        EXPECT_EQ(MOJO_RESULT_OK, mojo().SendInvitation(
+                                      invitation, &details.process,
+                                      &details.endpoint, nullptr, 0, nullptr));
+
+        const MojoCreateDataPipeOptions options = {
+            .struct_size = sizeof(options),
+            .element_num_bytes = 1,
+            .capacity_num_bytes = kDataPipeCapacity,
+        };
+        MojoHandle producer;
+        MojoHandle consumer;
+        EXPECT_EQ(MOJO_RESULT_OK,
+                  mojo().CreateDataPipe(&options, &producer, &consumer));
+        EXPECT_EQ(MOJO_RESULT_OK,
+                  mojo().WriteMessage(
+                      new_pipe, CreateMessage("", {&consumer, 1}), nullptr));
+        EXPECT_EQ(MOJO_RESULT_OK, mojo().Close(new_pipe));
+
+        // First attempt an oversized write, which should fail because this
+        // producer has a smaller capacity than required.
+        const MojoWriteDataOptions write_all = {
+            .struct_size = sizeof(options),
+            .flags = MOJO_WRITE_DATA_FLAG_ALL_OR_NONE,
+        };
+        uint32_t num_bytes = static_cast<uint32_t>(kDataPipeMessage.size());
+        EXPECT_EQ(MOJO_RESULT_OUT_OF_RANGE,
+                  mojo().WriteData(producer, kDataPipeMessage.data(),
+                                   &num_bytes, &write_all));
+
+        // Now let the write proceed with as much data as possible.
+        EXPECT_EQ(MOJO_RESULT_OK,
+                  mojo().WriteData(producer, kDataPipeMessage.data(),
+                                   &num_bytes, nullptr));
+        EXPECT_EQ(kDataPipeCapacity, num_bytes);
+        EXPECT_EQ(MOJO_RESULT_OK, mojo().Close(producer));
       });
 }
 
