@@ -2248,14 +2248,14 @@ export class Output {
       const isWithinVirtualKeyboard = AutomationUtil.getAncestors(node).find(
           n => n.role === RoleType.KEYBOARD);
       if (AutomationPredicate.clickable(node) && !isWithinVirtualKeyboard) {
-        if (node.doDefaultLabel) {
-          ret.push({
-            msgId: 'hint_double_tap_with_label',
-            subs: [node.doDefaultLabel],
-          });
-        } else {
-          ret.push({msgId: 'hint_double_tap'});
-        }
+        ret.push({
+          msgId: 'hint_actionable',
+          subs: [
+            Msgs.getMsg('action_double_tap', []),
+            node.doDefaultLabel ? node.doDefaultLabel :
+                                  Msgs.getMsg('label_activate', []),
+          ],
+        });
       }
 
       const enteredVirtualKeyboard =
@@ -2300,12 +2300,14 @@ export class Output {
     if (AutomationPredicate.checkable(node)) {
       ret.push({msgId: 'hint_checkable'});
     } else if (AutomationPredicate.clickable(node)) {
-      if (node.doDefaultLabel) {
-        ret.push(
-            {msgId: 'hint_clickable_with_label', subs: [node.doDefaultLabel]});
-      } else {
-        ret.push({msgId: 'hint_clickable'});
-      }
+      ret.push({
+        msgId: 'hint_actionable',
+        subs: [
+          Msgs.getMsg('action_search_plus_space', []),
+          node.doDefaultLabel ? node.doDefaultLabel :
+                                Msgs.getMsg('label_activate', []),
+        ],
+      });
     }
 
     if (node.autoComplete === 'list' || node.autoComplete === 'both' ||

@@ -112,6 +112,10 @@ ChromeVoxOutputE2ETest = class extends ChromeVoxNextE2ETest {
     await importModule('TtsCategory', '/chromevox/common/tts_interface.js');
     await importModule(
         'AutomationPredicate', '/common/automation_predicate.js');
+    await importModule(
+        'EventSourceState', '/chromevox/background/event_source.js');
+    await importModule(
+        'EventSourceType', '/chromevox/common/event_source_type.js');
 
     window.Dir = AutomationUtil.Dir;
     this.forceContextualLastOutput();
@@ -1387,6 +1391,38 @@ AX_TEST_F(
           {
             string_: 'OK|Press Search+Space to click label',
             spans_: [{value: {delay: true}, start: 3, end: 36}],
+          },
+          o.speechOutputForTest);
+    });
+
+AX_TEST_F(
+    'ChromeVoxOutputE2ETest', 'DelayHintVariantsWithTouch', async function() {
+      const site = `<button>OK</button>`;
+      const root = await this.runWithLoadedTree(site);
+      const button = root.children[0];
+      const range = CursorRange.fromNode(button);
+
+      // Force a few properties to be set so that hints are triggered.
+      Object.defineProperty(button, 'clickable', {get: () => true});
+      EventSourceState.set(EventSourceType.TOUCH_GESTURE);
+
+      o = new Output().withSpeech(range, null, 'navigate');
+      assertEqualsJSON(
+          {
+            string_: 'OK|Double tap to activate',
+            spans_: [
+              {value: {delay: true}, start: 3, end: 25},
+            ],
+          },
+          o.speechOutputForTest);
+
+      Object.defineProperty(button, 'doDefaultLabel', {get: () => 'tap label'});
+
+      o = new Output().withSpeech(range, null, 'navigate');
+      assertEqualsJSON(
+          {
+            string_: 'OK|Double tap to tap label',
+            spans_: [{value: {delay: true}, start: 3, end: 26}],
           },
           o.speechOutputForTest);
     });

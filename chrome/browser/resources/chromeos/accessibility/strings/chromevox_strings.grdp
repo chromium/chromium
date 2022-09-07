@@ -2330,14 +2330,17 @@
   <message desc="A hint to the user that the current control is checkable." name="IDS_CHROMEVOX_HINT_CHECKABLE">
     Press Search+Space to toggle
   </message>
-  <message desc="A hint to the user that the current control is clickable." name="IDS_CHROMEVOX_HINT_CLICKABLE">
-    Press Search+Space to activate
+  <message desc="A hint to the user that the current control is actionable. When user do the 'action', 'label' will be performed." name="IDS_CHROMEVOX_HINT_ACTIONABLE" is_accessibility_with_no_ui="true">
+    <ph name="action">$1<ex>Press Search + Space</ex></ph> to <ph name="label">$2<ex>activate</ex></ph>
   </message>
-  <message desc="A hint to the user that the current control is clickable. 'label' will explain what will happen when the user clicks." name="IDS_CHROMEVOX_HINT_CLICKABLE_WITH_LABEL" is_accessibility_with_no_ui="true">
-    Press Search+Space to <ph name="label">$1<ex>switch</ex></ph>
+  <message desc="The action to double tap the screen. This is used to announce a hint to the user controls that can be double tapped. e.g. Double tap to activate" name="IDS_CHROMEVOX_ACTION_DOUBLE_TAP" is_accessibility_with_no_ui="true">
+    Double tap
   </message>
-  <message desc="A hint to the user that the current control can be double tapped. 'label' will explain what will happen when the user double taps." name="IDS_CHROMEVOX_HINT_DOUBLE_TAP_WITH_LABEL" is_accessibility_with_no_ui="true">
-    Double tap to <ph name="label">$1<ex>switch</ex></ph>
+  <message desc="The action to press search key and space key at the same time. This is used to announce a hint to the user that the current control is clickable. e.g. Press Search+Space to activate" name="IDS_CHROMEVOX_ACTION_SEARCH_PLUS_SPACE" is_accessibility_with_no_ui="true">
+    Press Search+Space
+  </message>
+  <message desc="The action to activate the current focus. This is used to announce a hint to the user that the current control is clickable e.g. Press Search+Space to activate" name="IDS_CHROMEVOX_LABEL_ACTIVATE" is_accessibility_with_no_ui="true">
+    activate
   </message>
   <message desc="A hint to the user that the current control has a list of auto completions." name="IDS_CHROMEVOX_HINT_AUTOCOMPLETE_LIST">
     Press up or down arrow for auto completions
@@ -2380,9 +2383,6 @@
   </message>
   <message desc="A hint to the user about the special behavior of the Search key with arrows within a text field. This text will be spoken using text to speech along with a description of the text field's name and value. The text is intentionally in fragments to reduce the time needed to convey this information via text to speech. Keys are capitalized and do not contain plus separators because it adds to the spoken announcement's duration. As a general guide, try to read the string aloud." name="IDS_CHROMEVOX_HINT_SEARCH_WITHIN_TEXT_FIELD">
     Use Search Left or Right for Home or End, Search Control Left or Right for Control Home or End, Search Up or Down for Page Up or Down
-  </message>
-  <message desc="A hint to the user controls that can be double tapped." name="IDS_CHROMEVOX_HINT_DOUBLE_TAP">
-    Double tap to activate
   </message>
   <message desc="Shown to the user in braille and speech when the device goes into landscape orientation." name="IDS_CHROMEVOX_DEVICE_LANDSCAPE">
     landscape
