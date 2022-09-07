@@ -8465,7 +8465,6 @@ test("unit_tests") {
       "../browser/plugins/plugin_finder_unittest.cc",
       "../browser/plugins/plugin_info_host_impl_unittest.cc",
       "../browser/plugins/plugin_installer_unittest.cc",
-      "../browser/plugins/plugin_metadata_unittest.cc",
       "../browser/plugins/plugin_prefs_unittest.cc",
     ]
   }

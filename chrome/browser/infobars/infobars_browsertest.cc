@@ -267,9 +267,9 @@ void InfoBarUiTest::ShowUi(const std::string& name) {
     case IBD::OUTDATED_PLUGIN_INFOBAR_DELEGATE:
       OutdatedPluginInfoBarDelegate::Create(
           GetInfoBarManager(), nullptr,
-          std::make_unique<PluginMetadata>("test-plugin", u"Test Plugin", true,
-                                           GURL(), GURL(), u"Test",
-                                           std::string(), false));
+          std::make_unique<PluginMetadata>(
+              "test-plugin", u"Test Plugin", u"Test",
+              PluginMetadata::SECURITY_STATUS_OUT_OF_DATE));
       break;
 
     case IBD::RELOAD_PLUGIN_INFOBAR_DELEGATE:

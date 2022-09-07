@@ -46,12 +46,6 @@ static std::u16string GetGroupName(const content::WebPluginInfo& plugin) {
 std::unique_ptr<PluginMetadata> CreatePluginMetadata(
     const std::string& identifier,
     const base::Value::Dict& plugin_dict) {
-  std::string url;
-  if (const std::string* ptr = plugin_dict.FindString("url"))
-    url = *ptr;
-  std::string help_url;
-  if (const std::string* ptr = plugin_dict.FindString("help_url"))
-    help_url = *ptr;
   std::u16string name;
   bool success = true;
   if (const std::string* ptr = plugin_dict.FindString("name"))
@@ -59,51 +53,16 @@ std::unique_ptr<PluginMetadata> CreatePluginMetadata(
   else
     success = false;
   DCHECK(success);
-  bool display_url = plugin_dict.FindBool("displayurl").value_or(true);
   std::u16string group_name_matcher;
   if (const std::string* ptr = plugin_dict.FindString("group_name_matcher"))
     group_name_matcher = base::UTF8ToUTF16(*ptr);
   else
     success = false;
   DCHECK(success);
-  std::string language_str;
-  if (const std::string* ptr = plugin_dict.FindString("lang"))
-    language_str = *ptr;
-  bool plugin_is_deprecated =
-      plugin_dict.FindBool("plugin_is_deprecated").value_or(false);
 
-  std::unique_ptr<PluginMetadata> plugin = std::make_unique<PluginMetadata>(
-      identifier, name, display_url, GURL(url), GURL(help_url),
-      group_name_matcher, language_str, plugin_is_deprecated);
-  const base::Value::List* versions = plugin_dict.FindList("versions");
-  if (versions) {
-    for (const auto& entry : *versions) {
-      if (!entry.is_dict()) {
-        NOTREACHED();
-        continue;
-      }
-      const base::Value::Dict& version_dict = entry.GetDict();
-      std::string version;
-      success = true;
-      if (const std::string* ptr = version_dict.FindString("version"))
-        version = *ptr;
-      else
-        success = false;
-      DCHECK(success);
-      std::string status_str;
-      if (const std::string* ptr = version_dict.FindString("status"))
-        status_str = *ptr;
-      else
-        success = false;
-      DCHECK(success);
-      PluginMetadata::SecurityStatus status =
-          PluginMetadata::SECURITY_STATUS_UP_TO_DATE;
-      success = PluginMetadata::ParseSecurityStatus(status_str, &status);
-      DCHECK(success);
-      plugin->AddVersion(base::Version(version), status);
-    }
-  }
-  return plugin;
+  return std::make_unique<PluginMetadata>(
+      identifier, name, group_name_matcher,
+      PluginMetadata::SECURITY_STATUS_FULLY_TRUSTED);
 }
 
 }  // namespace
@@ -143,8 +102,7 @@ PluginFinder::PluginFinder() {
   }
 }
 
-PluginFinder::~PluginFinder() {
-}
+PluginFinder::~PluginFinder() = default;
 
 bool PluginFinder::FindPluginWithIdentifier(
     const std::string& identifier,
@@ -176,16 +134,13 @@ std::unique_ptr<PluginMetadata> PluginFinder::GetPluginMetadata(
   }
 
   // The plugin metadata was not found, create a dummy one holding
-  // the name, identifier and group name only. Dummy plugin is not deprecated.
+  // the name, identifier and group name only. Dummy plugin always requires
+  // authorization.
   std::string identifier = GetIdentifier(plugin);
-  auto metadata =
-      std::make_unique<PluginMetadata>(identifier, GetGroupName(plugin),
-                                       /*url_for_display=*/false,
-                                       /*plugin_url=*/GURL(),
-                                       /*help_url=*/GURL(),
-                                       /*group_name_matcher=*/plugin.name,
-                                       /*language=*/std::string(),
-                                       /*plugin_is_deprecated=*/false);
+  auto metadata = std::make_unique<PluginMetadata>(
+      identifier, GetGroupName(plugin),
+      /*group_name_matcher=*/plugin.name,
+      PluginMetadata::SECURITY_STATUS_REQUIRES_AUTHORIZATION);
 
   DCHECK(metadata->MatchesPlugin(plugin));
   if (identifier_plugin_.find(identifier) != identifier_plugin_.end())

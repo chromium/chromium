@@ -197,10 +197,10 @@ void PluginInfoHostImpl::PluginsLoaded(
                                  &output->plugin, &output->actual_mime_type,
                                  &plugin_metadata)) {
     // TODO(crbug.com/1167278): Simplify this once PDF is the only "plugin."
-    context_.DecidePluginStatus(
-        params.url, params.main_frame_origin, output->plugin,
-        plugin_metadata->GetSecurityStatus(output->plugin),
-        plugin_metadata->identifier(), &output->status);
+    context_.DecidePluginStatus(params.url, params.main_frame_origin,
+                                output->plugin,
+                                plugin_metadata->security_status(),
+                                plugin_metadata->identifier(), &output->status);
   }
 
   GetPluginInfoFinish(params, std::move(output), std::move(callback),

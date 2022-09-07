@@ -7,9 +7,7 @@
 #include <memory>
 #include <string>
 
-#include "base/files/file_path.h"
 #include "chrome/browser/plugins/plugin_metadata.h"
-#include "content/public/common/webplugininfo.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 TEST(PluginFinderTest, FindPluginWithIdentifier) {
@@ -18,8 +16,6 @@ TEST(PluginFinderTest, FindPluginWithIdentifier) {
       "google-chrome-pdf", nullptr, &pdf));
   ASSERT_TRUE(pdf);
 
-  content::WebPluginInfo fake_pdf(u"Chrome PDF Viewer", base::FilePath(), u"0",
-                                  std::u16string());
   EXPECT_EQ(PluginMetadata::SECURITY_STATUS_FULLY_TRUSTED,
-            pdf->GetSecurityStatus(fake_pdf));
+            pdf->security_status());
 }

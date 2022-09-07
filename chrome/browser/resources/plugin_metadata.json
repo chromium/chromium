@@ -1,45 +1,17 @@
 {
   "google-chrome-pdf": {
-    "versions": [
-      {
-        "version": "0",
-        "status": "fully_trusted",
-        "comment": "Google Chrome PDF Viewer has no version information."
-      }
-    ],
     "name": "Chrome PDF Viewer",
     "group_name_matcher": "*Chrome PDF Viewer*"
   },
   "chromium-pdf": {
-    "versions": [
-      {
-        "version": "0",
-        "status": "fully_trusted",
-        "comment": "Chromium PDF Viewer has no version information."
-      }
-    ],
     "name": "Chromium PDF Viewer",
     "group_name_matcher": "*Chromium PDF Viewer*"
   },
   "google-chrome-pdf-plugin": {
-    "versions": [
-      {
-        "version": "0",
-        "status": "fully_trusted",
-        "comment": "Google Chrome PDF Plugin has no version information."
-      }
-    ],
     "name": "Chrome PDF Plugin",
     "group_name_matcher": "*Chrome PDF Plugin*"
   },
   "chromium-pdf-plugin": {
-    "versions": [
-      {
-        "version": "0",
-        "status": "fully_trusted",
-        "comment": "Chromium PDF Plugin has no version information."
-      }
-    ],
     "name": "Chromium PDF Plugin",
     "group_name_matcher": "*Chromium PDF Plugin*"
   }
