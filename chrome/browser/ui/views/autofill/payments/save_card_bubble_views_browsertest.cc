@@ -863,8 +863,17 @@ IN_PROC_BROWSER_TEST_F(SaveCardBubbleViewsFullFormBrowserTestSettings,
 // dismissed and then immediately torn down (e.g. by closing browser window)
 // before the asynchronous close completes. Regression test for
 // https://crbug.com/842577 .
+//
+// TODO(crbug.com/1360234): Flaky on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_Local_SynchronousCloseAfterAsynchronousClose \
+  DISABLED_Local_SynchronousCloseAfterAsynchronousClose
+#else
+#define MAYBE_Local_SynchronousCloseAfterAsynchronousClose \
+  Local_SynchronousCloseAfterAsynchronousClose
+#endif
 IN_PROC_BROWSER_TEST_F(SaveCardBubbleViewsFullFormBrowserTest,
-                       Local_SynchronousCloseAfterAsynchronousClose) {
+                       MAYBE_Local_SynchronousCloseAfterAsynchronousClose) {
   FillForm();
   SubmitFormAndWaitForCardLocalSaveBubble();
 
