@@ -9,6 +9,8 @@
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/ui/commands/browser_commands.h"
 #import "ios/chrome/browser/ui/commands/reading_list_add_command.h"
+#import "ios/chrome/browser/ui/icons/action_icon.h"
+#import "ios/chrome/browser/ui/icons/chrome_symbol.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 #import "url/gurl.h"
@@ -59,6 +61,10 @@ NSString* const kReadingListActivityType =
 }
 
 - (UIImage*)activityImage {
+  if (UseSymbols()) {
+    return DefaultSymbolWithPointSize(kReadLaterActionSymbol,
+                                      kSymbolActionPointSize);
+  }
   return [UIImage imageNamed:@"activity_services_read_later"];
 }
 

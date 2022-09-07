@@ -9,6 +9,8 @@
 #include "base/metrics/user_metrics_action.h"
 #import "ios/chrome/browser/ui/activity_services/data/share_to_data.h"
 #import "ios/chrome/browser/ui/commands/browser_coordinator_commands.h"
+#import "ios/chrome/browser/ui/icons/action_icon.h"
+#import "ios/chrome/browser/ui/icons/chrome_symbol.h"
 #include "ios/chrome/grit/ios_strings.h"
 #include "ui/base/l10n/l10n_util_mac.h"
 
@@ -53,6 +55,9 @@ NSString* const kSendTabToSelfActivityType =
 }
 
 - (UIImage*)activityImage {
+  if (UseSymbols()) {
+    return CustomSymbolWithPointSize(kRecentTabsSymbol, kSymbolActionPointSize);
+  }
   return [UIImage imageNamed:@"activity_services_send_tab_to_self"];
 }
 

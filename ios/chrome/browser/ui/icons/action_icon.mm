@@ -29,3 +29,5 @@ NSString* const kFindInPageActionSymbol = @"doc.text.magnifyingglass";
 NSString* const kZoomTextActionSymbol = @"plus.magnifyingglass";
 NSString* const kSaveImageActionSymbol = @"square.and.arrow.down";
 NSString* const kOpenImageActionSymbol = @"arrow.up.right.square";
+NSString* const kQRCodeSymbol = @"qrcode";
+NSString* const kPrinterSymbol = @"printer";

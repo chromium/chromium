@@ -12,6 +12,8 @@
 #import "ios/chrome/browser/ui/commands/bookmark_add_command.h"
 #import "ios/chrome/browser/ui/commands/bookmarks_commands.h"
 #import "ios/chrome/browser/ui/commands/browser_commands.h"
+#import "ios/chrome/browser/ui/icons/action_icon.h"
+#import "ios/chrome/browser/ui/icons/chrome_symbol.h"
 #import "ios/chrome/browser/ui/popup_menu/public/features.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
@@ -76,6 +78,16 @@ NSString* const kBookmarkActivityType = @"com.google.chrome.bookmarkActivity";
 }
 
 - (UIImage*)activityImage {
+  if (UseSymbols()) {
+    if (self.bookmarked) {
+      // TODO(crbug.com/1315544): Update this one once created.
+      return DefaultSymbolWithPointSize(kAddBookmarkActionSymbol,
+                                        kSymbolActionPointSize);
+    }
+    return DefaultSymbolWithPointSize(kAddBookmarkActionSymbol,
+                                      kSymbolActionPointSize);
+  }
+
   if (self.bookmarked)
     return [UIImage imageNamed:@"activity_services_edit_bookmark"];
   return [UIImage imageNamed:@"activity_services_add_bookmark"];

@@ -7,6 +7,8 @@
 #import "ios/chrome/browser/ui/activity_services/data/share_image_data.h"
 #import "ios/chrome/browser/ui/activity_services/data/share_to_data.h"
 #import "ios/chrome/browser/ui/commands/browser_coordinator_commands.h"
+#import "ios/chrome/browser/ui/icons/action_icon.h"
+#import "ios/chrome/browser/ui/icons/chrome_symbol.h"
 #include "ios/chrome/grit/ios_strings.h"
 #include "ui/base/l10n/l10n_util_mac.h"
 
@@ -67,6 +69,9 @@ NSString* const kPrintActivityType = @"com.google.chrome.printActivity";
 }
 
 - (UIImage*)activityImage {
+  if (UseSymbols()) {
+    return DefaultSymbolWithPointSize(kPrinterSymbol, kSymbolActionPointSize);
+  }
   return [UIImage imageNamed:@"activity_services_print"];
 }
 

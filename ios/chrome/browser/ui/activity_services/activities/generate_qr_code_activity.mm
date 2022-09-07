@@ -6,6 +6,8 @@
 
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
+#import "ios/chrome/browser/ui/icons/action_icon.h"
+#import "ios/chrome/browser/ui/icons/chrome_symbol.h"
 #include "ios/chrome/grit/ios_strings.h"
 #include "ui/base/l10n/l10n_util_mac.h"
 
@@ -51,6 +53,9 @@ NSString* const kGenerateQrCodeActivityType =
 }
 
 - (UIImage*)activityImage {
+  if (UseSymbols()) {
+    return DefaultSymbolWithPointSize(kQRCodeSymbol, kSymbolActionPointSize);
+  }
   return [UIImage imageNamed:@"activity_services_generate_qr_code"];
 }
 
