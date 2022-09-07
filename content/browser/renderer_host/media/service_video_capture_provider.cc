@@ -35,7 +35,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
 #include "base/trace_event/common/trace_event_common.h"
-#include "content/public/common/content_features.h"
 #endif
 
 namespace {

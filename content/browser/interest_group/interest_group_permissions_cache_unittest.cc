@@ -11,7 +11,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
-#include "content/browser/interest_group/interest_group_permissions_cache.h"
 #include "net/base/network_isolation_key.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
