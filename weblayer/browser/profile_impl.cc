@@ -299,13 +299,7 @@ void ProfileImpl::ClearBrowsingData(
         remove_mask |= BrowsingDataRemoverDelegate::DATA_TYPE_ISOLATED_ORIGINS;
         remove_mask |= BrowsingDataRemoverDelegate::DATA_TYPE_FAVICONS;
         remove_mask |= BrowsingDataRemoverDelegate::DATA_TYPE_AD_INTERVENTIONS;
-        remove_mask |= content::BrowsingDataRemover::DATA_TYPE_TRUST_TOKENS;
-        remove_mask |=
-            content::BrowsingDataRemover::DATA_TYPE_ATTRIBUTION_REPORTING;
-        remove_mask |=
-            content::BrowsingDataRemover::DATA_TYPE_AGGREGATION_SERVICE;
-        remove_mask |= content::BrowsingDataRemover::
-            DATA_TYPE_PRIVATE_AGGREGATION_INTERNAL;
+        remove_mask |= content::BrowsingDataRemover::DATA_TYPE_PRIVACY_SANDBOX;
         break;
       case BrowsingDataType::CACHE:
         remove_mask |= content::BrowsingDataRemover::DATA_TYPE_CACHE;
