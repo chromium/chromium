@@ -15,7 +15,6 @@
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
 #include "chrome/browser/ash/login/test/logged_in_user_mixin.h"
-#include "chrome/browser/ash/login/test/network_portal_detector_mixin.h"
 #include "chrome/browser/ash/login/test/test_condition_waiter.h"
 #include "chrome/browser/ash/login/users/test_users.h"
 #include "chrome/browser/ash/policy/affiliation/affiliation_test_helper.h"
@@ -685,10 +684,6 @@ class ProxyAuthLockscreenWebUiTest : public LockscreenWebUiTest {
   // Configure settings which are neccesarry for `NetworkStateInformer` to
   // report `NetworkStateInformer::PROXY_AUTH_REQUIRED` in the tests.
   void ConfigureNetworkBehindProxy() {
-    network_portal_detector_.SetDefaultNetwork(
-        kEthServicePath,
-        NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_PROXY_AUTH_REQUIRED);
-
     base::Value proxy_config = ProxyConfigDictionary::CreateFixedServers(
         proxy_server_.host_port_pair().ToString(), "");
 
@@ -710,7 +705,6 @@ class ProxyAuthLockscreenWebUiTest : public LockscreenWebUiTest {
     return true;
   }
 
-  NetworkPortalDetectorMixin network_portal_detector_{&mixin_host_};
   net::SpawnedTestServer proxy_server_;
   std::unique_ptr<content::WindowedNotificationObserver> auth_needed_observer_;
   // Used for proxy server authentication.

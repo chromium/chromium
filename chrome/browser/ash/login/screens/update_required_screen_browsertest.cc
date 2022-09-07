@@ -215,7 +215,8 @@ class UpdateRequiredScreenTest : public OobeBaseTest {
 IN_PROC_BROWSER_TEST_F(UpdateRequiredScreenTest, TestCaptivePortal) {
   ShowUpdateRequiredScreen();
 
-  network_portal_detector_.SimulateDefaultNetworkState(
+  network_portal_detector_.SetDefaultNetwork(
+      "wfii1_guid", shill::kTypeWifi,
       NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_PORTAL);
 
   static_cast<UpdateRequiredScreen*>(
@@ -227,8 +228,7 @@ IN_PROC_BROWSER_TEST_F(UpdateRequiredScreenTest, TestCaptivePortal) {
   // Click update button to trigger the update process.
   test::OobeJS().ClickOnPath(kUpdateNowButton);
 
-  // If the network is a captive portal network, error message is shown with a
-  // delay.
+  // If the network is a captive portal network, the error message is shown.
   OobeScreenWaiter error_screen_waiter(ErrorScreenView::kScreenId);
   error_screen_waiter.set_assert_next_screen();
   error_screen_waiter.Wait();

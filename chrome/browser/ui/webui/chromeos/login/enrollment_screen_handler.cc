@@ -810,7 +810,7 @@ void EnrollmentScreenHandler::UpdateStateInternal(
   const bool is_frame_error = reason == NetworkError::ERROR_REASON_FRAME_ERROR;
 
   LOG(WARNING) << "EnrollmentScreenHandler::UpdateState(): "
-               << "state=" << NetworkStateInformer::StatusString(state) << ", "
+               << "state=" << state << ", "
                << "reason=" << NetworkError::ErrorReasonString(reason);
 
   if (is_online || !is_behind_captive_portal)

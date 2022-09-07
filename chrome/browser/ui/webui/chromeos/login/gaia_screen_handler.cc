@@ -585,8 +585,7 @@ void GaiaScreenHandler::ReloadGaia(bool force_reload) {
   NetworkStateInformer::State state = network_state_informer_->state();
   if (state != NetworkStateInformer::ONLINE &&
       !signin_screen_handler_->proxy_auth_dialog_need_reload_) {
-    VLOG(1) << "Skipping reloading of Gaia since network state="
-            << NetworkStateInformer::StatusString(state);
+    VLOG(1) << "Skipping reloading of Gaia since network state=" << state;
     return;
   }
 

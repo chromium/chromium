@@ -54,7 +54,7 @@ constexpr const base::TimeDelta kWaitBeforeRebootTime = base::Seconds(2);
 // its login page before error message appears.
 constexpr const base::TimeDelta kDelayErrorMessage = base::Seconds(10);
 
-constexpr const base::TimeDelta kShowDelay = base::Microseconds(400);
+constexpr const base::TimeDelta kDefaultShowDelay = base::Microseconds(400);
 
 // When battery percent is lower and DISCHARGING warn user about it.
 const double kInsufficientBatteryPercent = 50;
@@ -117,6 +117,7 @@ UpdateScreen::UpdateScreen(base::WeakPtr<UpdateView> view,
           std::make_unique<ErrorScreensHistogramHelper>("Update")),
       version_updater_(std::make_unique<VersionUpdater>(this)),
       wait_before_reboot_time_(kWaitBeforeRebootTime),
+      show_delay_(kDefaultShowDelay),
       tick_clock_(base::DefaultTickClock::GetInstance()) {}
 
 UpdateScreen::~UpdateScreen() = default;
@@ -170,7 +171,7 @@ void UpdateScreen::ShowImpl() {
   if (is_opt_out_enabled_) {
     MakeSureScreenIsShown();
   } else {
-    show_timer_.Start(FROM_HERE, kShowDelay,
+    show_timer_.Start(FROM_HERE, show_delay_,
                       base::BindOnce(&UpdateScreen::MakeSureScreenIsShown,
                                      weak_factory_.GetWeakPtr()));
   }

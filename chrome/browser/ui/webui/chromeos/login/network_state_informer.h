@@ -16,9 +16,9 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/login/screens/network_error.h"
 #include "chrome/browser/ash/login/ui/captive_portal_window_proxy.h"
+#include "chromeos/ash/components/network/network_state.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/network/network_state_handler_observer.h"
-#include "chromeos/ash/components/network/portal_detector/network_portal_detector.h"
 
 namespace base {
 class Value;
@@ -30,7 +30,6 @@ namespace chromeos {
 // State is considered changed if connection or the active network has been
 // changed. Also, it answers to the requests about current network state.
 class NetworkStateInformer : public chromeos::NetworkStateHandlerObserver,
-                             public chromeos::NetworkPortalDetector::Observer,
                              public base::RefCounted<NetworkStateInformer> {
  public:
   enum State {
@@ -41,6 +40,7 @@ class NetworkStateInformer : public chromeos::NetworkStateHandlerObserver,
     PROXY_AUTH_REQUIRED,
     UNKNOWN
   };
+  friend std::ostream& operator<<(std::ostream& stream, const State& state);
 
   class NetworkStateInformerObserver {
    public:
@@ -63,16 +63,12 @@ class NetworkStateInformer : public chromeos::NetworkStateHandlerObserver,
 
   // NetworkStateHandlerObserver implementation:
   void DefaultNetworkChanged(const NetworkState* network) override;
-
-  // NetworkPortalDetector::Observer implementation:
-  void OnPortalDetectionCompleted(
-      const NetworkState* network,
-      const NetworkPortalDetector::CaptivePortalStatus status) override;
+  void PortalStateChanged(const NetworkState* network,
+                          const NetworkState::PortalState state) override;
 
   State state() const { return state_; }
   std::string network_path() const { return network_path_; }
 
-  static const char* StatusString(State state);
   static std::string GetNetworkName(const std::string& service_path);
   static bool IsOnline(State state, NetworkError::ErrorReason reason);
   static bool IsBehindCaptivePortal(State state,
@@ -84,9 +80,9 @@ class NetworkStateInformer : public chromeos::NetworkStateHandlerObserver,
 
   ~NetworkStateInformer() override;
 
-  bool UpdateState();
-  bool UpdateProxyConfig();
-  void UpdateStateAndNotify();
+  bool UpdateState(const NetworkState* network);
+  bool UpdateProxyConfig(const NetworkState* network);
+  void UpdateStateAndNotify(const NetworkState* network);
   void SendStateToObservers(NetworkError::ErrorReason reason);
 
   State state_;
@@ -101,6 +97,9 @@ class NetworkStateInformer : public chromeos::NetworkStateHandlerObserver,
 
   base::WeakPtrFactory<NetworkStateInformer> weak_ptr_factory_{this};
 };
+
+std::ostream& operator<<(std::ostream& stream,
+                         const NetworkStateInformer::State& state);
 
 }  // namespace chromeos
 

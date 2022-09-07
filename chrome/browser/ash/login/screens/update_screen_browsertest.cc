@@ -545,6 +545,8 @@ IN_PROC_BROWSER_TEST_P(UpdateScreenTest, TestErrorUpdating) {
 }
 
 IN_PROC_BROWSER_TEST_P(UpdateScreenTest, TestTemporaryPortalNetwork) {
+  update_screen_->set_show_delay_for_testing(kTimeAdvanceSeconds10);
+
   // Change ethernet state to offline.
   network_portal_detector_.SimulateDefaultNetworkState(
       NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_PORTAL);
@@ -565,7 +567,7 @@ IN_PROC_BROWSER_TEST_P(UpdateScreenTest, TestTemporaryPortalNetwork) {
   status.set_current_operation(update_engine::Operation::CHECKING_FOR_UPDATE);
   update_engine_client()->set_default_status(status);
   update_engine_client()->NotifyObserversThatStatusChanged(status);
-  tick_clock_.Advance(kTimeAdvanceMicroseconds200);
+  tick_clock_.Advance(kTimeAdvanceSeconds10);
 
   if (!GetParam().is_eu || !features::IsConsumerAutoUpdateToggleAllowed())
     EXPECT_TRUE(update_screen_->GetShowTimerForTesting()->IsRunning());
@@ -636,7 +638,7 @@ IN_PROC_BROWSER_TEST_P(UpdateScreenTest, TestTwoOfflineNetworks) {
 
   // Change active network to the wifi behind proxy.
   network_portal_detector_.SetDefaultNetwork(
-      kStubWifiGuid,
+      kStubWifiGuid, shill::kTypeWifi,
       NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_PROXY_AUTH_REQUIRED);
 
   test::OobeJS().ExpectVisiblePath(

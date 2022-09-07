@@ -55,7 +55,8 @@ AutoEnrollmentCheckScreen::AutoEnrollmentCheckScreen(
       histogram_helper_(new ErrorScreensHistogramHelper("Enrollment")) {}
 
 AutoEnrollmentCheckScreen::~AutoEnrollmentCheckScreen() {
-  network_portal_detector::GetInstance()->RemoveObserver(this);
+  if (network_portal_detector::IsInitialized())
+    network_portal_detector::GetInstance()->RemoveObserver(this);
 }
 
 void AutoEnrollmentCheckScreen::ClearState() {

@@ -59,7 +59,8 @@ VersionUpdater::VersionUpdater(VersionUpdater::Delegate* delegate)
 
 VersionUpdater::~VersionUpdater() {
   UpdateEngineClient::Get()->RemoveObserver(this);
-  network_portal_detector::GetInstance()->RemoveObserver(this);
+  if (network_portal_detector::IsInitialized())
+    network_portal_detector::GetInstance()->RemoveObserver(this);
 }
 
 void VersionUpdater::Init() {

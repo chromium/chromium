@@ -11,7 +11,6 @@
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
-#include "chrome/browser/ash/net/network_portal_detector_test_impl.h"
 #include "chromeos/ash/components/dbus/shill/shill_clients.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_handler_test_helper.h"
@@ -26,6 +25,7 @@
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/cros_system_api/dbus/service_constants.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/chromeos/resources/grit/ui_chromeos_resources.h"
@@ -174,27 +174,11 @@ class EduAccountLoginHandlerTest : public testing::Test {
     base::RunLoop().RunUntilIdle();
   }
 
-  void SetupNetwork(bool network_status_online = true) {
-    const NetworkState* default_network =
-        NetworkHandler::Get()->network_state_handler()->DefaultNetwork();
-    const std::string guid =
-        default_network ? default_network->guid() : std::string();
-
-    network_portal_detector::InitializeForTesting(&network_portal_detector_);
-    network_portal_detector_.SetDefaultNetworkForTesting(guid);
-    NetworkPortalDetector::CaptivePortalStatus status;
-    int response_code = -1;
-    if (network_status_online) {
-      status = NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE;
-      response_code = 204;  // No content
-    } else {
-      status = NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_PORTAL;
-      response_code = 200;  // OK
-    }
-    if (!guid.empty()) {
-      network_portal_detector_.SetDetectionResultsForTesting(guid, status,
-                                                             response_code);
-    }
+  void SetupNetwork(bool online = true) {
+    std::string state =
+        online ? shill::kStateOnline : shill::kStateRedirectFound;
+    network_handler_test_helper_->ResetDevicesAndServices();
+    network_handler_test_helper_->ConfigureWiFi(state);
 
     mock_image_fetcher_ = std::make_unique<image_fetcher::MockImageFetcher>();
     handler_ = std::make_unique<MockEduAccountLoginHandler>(base::DoNothing());
@@ -203,7 +187,6 @@ class EduAccountLoginHandlerTest : public testing::Test {
 
   void TearDown() override {
     handler_.reset();
-    network_portal_detector::InitializeForTesting(nullptr);
     network_handler_test_helper_.reset();
   }
 
@@ -230,7 +213,6 @@ class EduAccountLoginHandlerTest : public testing::Test {
 
  private:
   base::test::SingleThreadTaskEnvironment task_environment_;
-  NetworkPortalDetectorTestImpl network_portal_detector_;
   std::unique_ptr<image_fetcher::MockImageFetcher> mock_image_fetcher_;
   std::unique_ptr<MockEduAccountLoginHandler> handler_;
   content::TestWebUI web_ui_;

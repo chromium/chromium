@@ -113,6 +113,10 @@ class UpdateScreen : public BaseScreen,
     wait_before_reboot_time_ = wait_before_reboot_time;
   }
 
+  void set_show_delay_for_testing(base::TimeDelta show_delay) {
+    show_delay_ = show_delay;
+  }
+
   base::OneShotTimer* GetWaitRebootTimerForTesting() {
     return &wait_reboot_timer_;
   }
@@ -222,6 +226,9 @@ class UpdateScreen : public BaseScreen,
 
   // Time in seconds after which we initiate reboot.
   base::TimeDelta wait_before_reboot_time_;
+
+  // Time to delay showing the screen.
+  base::TimeDelta show_delay_;
 
   const base::TickClock* tick_clock_;
 

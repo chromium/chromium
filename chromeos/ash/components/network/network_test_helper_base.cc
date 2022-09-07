@@ -8,6 +8,7 @@
 #include "base/json/json_reader.h"
 #include "base/logging.h"
 #include "base/run_loop.h"
+#include "base/strings/stringprintf.h"
 #include "chromeos/ash/components/dbus/hermes/hermes_clients.h"
 #include "chromeos/ash/components/dbus/shill/shill_clients.h"
 #include "chromeos/ash/components/network/device_state.h"
@@ -118,6 +119,20 @@ std::string NetworkTestHelperBase::ConfigureService(
   base::RunLoop().RunUntilIdle();
 
   return last_created_service_path_;
+}
+
+std::string NetworkTestHelperBase::ConfigureWiFi(const std::string& state) {
+  // ResetDevicesAndServices already adds a WiFi device.
+  std::string path = base::StringPrintf("/service/wifi_%d", wifi_index_);
+  std::string guid = base::StringPrintf("wifi_guid_%d", wifi_index_);
+  std::string ssid = base::StringPrintf("wifi%d", wifi_index_);
+  service_test()->AddService(path, guid, ssid, shill::kTypeWifi, state,
+                             /*visible=*/true);
+  profile_test()->AddService(NetworkProfileHandler::GetSharedProfilePath(),
+                             path);
+  base::RunLoop().RunUntilIdle();
+  wifi_index_++;
+  return path;
 }
 
 void NetworkTestHelperBase::ConfigureCallback(const dbus::ObjectPath& result) {

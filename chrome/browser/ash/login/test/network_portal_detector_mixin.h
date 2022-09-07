@@ -7,10 +7,14 @@
 
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chromeos/ash/components/network/portal_detector/network_portal_detector.h"
-// TODO(https://crbug.com/1164001): move to forward declaration.
-#include "chrome/browser/ash/net/network_portal_detector_test_impl.h"
 
 namespace ash {
+
+class NetworkPortalDetectorTestImpl;
+
+// DEPRECATED, DO NOT USE IN NEW TESTS. NetworkStateHandler should be used
+// to track portal state. This mixin is maintained for compatibility with
+// existing tests. See NetworkStateTestHelper for testing with NetworkState.
 
 // An InBrowserProcessTestMixin that provides utility methods for faking
 // network captive portal detector state.
@@ -27,6 +31,7 @@ class NetworkPortalDetectorMixin : public InProcessBrowserTestMixin {
   // state and notifies NetworkPortalDetector observers of the portal detection
   // completion.
   void SetDefaultNetwork(const std::string& network_guid,
+                         const std::string& network_type,
                          NetworkPortalDetector::CaptivePortalStatus status);
 
   // Simulates no network state. It notifies NetworkPortalDetector observers of
@@ -44,11 +49,17 @@ class NetworkPortalDetectorMixin : public InProcessBrowserTestMixin {
   void WaitForPortalDetectionRequest();
 
   // InProcessBrowserTestMixin:
-  void SetUpInProcessBrowserTestFixture() override;
-  void TearDownInProcessBrowserTestFixture() override;
+  void SetUpOnMainThread() override;
+  void TearDownOnMainThread() override;
 
  private:
+  void SetShillDefaultNetwork(
+      const std::string& network_guid,
+      const std::string& network_type,
+      NetworkPortalDetector::CaptivePortalStatus status);
+
   NetworkPortalDetectorTestImpl* network_portal_detector_ = nullptr;
+  std::string default_network_guid_;
 };
 
 }  // namespace ash
