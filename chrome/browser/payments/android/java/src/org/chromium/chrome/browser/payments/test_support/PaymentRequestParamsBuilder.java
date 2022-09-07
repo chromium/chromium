@@ -128,11 +128,6 @@ public class PaymentRequestParamsBuilder implements ChromePaymentRequestService.
     }
 
     @Override
-    public boolean skipUiForBasicCard() {
-        return false;
-    }
-
-    @Override
     public BrowserPaymentRequest createBrowserPaymentRequest(
             PaymentRequestService paymentRequestService) {
         return new ChromePaymentRequestService(paymentRequestService, mDelegate);

@@ -68,7 +68,6 @@ public class PaymentRequestShowPromiseDigitalGoodsTest implements MainActivitySt
                 "https://bobpay.com", AppPresence.HAVE_APPS, FactorySpeed.FAST_FACTORY);
         mRule.openPage();
         mRule.executeJavaScriptAndWaitForResult("create('https://bobpay.com');");
-        mRule.enableSkipUIForBasicCard();
 
         mRule.openPageAndClickNodeAndWait("buy", mRule.getDismissed());
 
@@ -83,7 +82,6 @@ public class PaymentRequestShowPromiseDigitalGoodsTest implements MainActivitySt
                 FactorySpeed.SLOW_FACTORY, AppSpeed.SLOW_APP);
         mRule.openPage();
         mRule.executeJavaScriptAndWaitForResult("create('https://bobpay.com');");
-        mRule.enableSkipUIForBasicCard();
 
         mRule.openPageAndClickNodeAndWait("buy", mRule.getDismissed());
 

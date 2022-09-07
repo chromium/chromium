@@ -83,12 +83,6 @@ public class ChromePaymentRequestService
     /** The delegate of this class */
     public interface Delegate extends PaymentRequestService.Delegate {
         /**
-         * @return True if the UI can be skipped for "basic-card" scenarios. This will only ever be
-         *         true in tests.
-         */
-        boolean skipUiForBasicCard();
-
-        /**
          * Create PaymentUiService.
          * @param delegate The delegate of this instance.
          * @param webContents The WebContents of the merchant page.
@@ -258,9 +252,7 @@ public class ChromePaymentRequestService
                 PaymentRequestService.isUrlPaymentMethodIdentifiersSupported(
                         mSpec.getMethodData().keySet());
         // Only allowing payment apps that own their own UIs.
-        // This excludes AutofillPaymentInstrument as its UI is rendered inline in
-        // the app selector UI, thus can't be skipped.
-        if (!urlPaymentMethodIdentifiersSupported && !mDelegate.skipUiForBasicCard()
+        if (!urlPaymentMethodIdentifiersSupported
                 && !mSpec.isSecurePaymentConfirmationRequested()) {
             shouldSkipAppSelector = false;
         }

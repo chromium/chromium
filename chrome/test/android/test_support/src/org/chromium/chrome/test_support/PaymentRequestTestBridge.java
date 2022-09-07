@@ -39,17 +39,9 @@ public class PaymentRequestTestBridge {
      */
     private static class ChromePaymentRequestDelegateForTest
             extends PaymentRequestDelegateForTest implements ChromePaymentRequestService.Delegate {
-        private final boolean mSkipUiForBasicCard;
-
         ChromePaymentRequestDelegateForTest(boolean isOffTheRecord, boolean isValidSsl,
-                boolean prefsCanMakePayment, String twaPackageName, boolean skipUiForBasicCard) {
+                boolean prefsCanMakePayment, String twaPackageName) {
             super(isOffTheRecord, isValidSsl, prefsCanMakePayment, twaPackageName);
-            mSkipUiForBasicCard = skipUiForBasicCard;
-        }
-
-        @Override
-        public boolean skipUiForBasicCard() {
-            return mSkipUiForBasicCard;
         }
 
         @Override
@@ -225,16 +217,10 @@ public class PaymentRequestTestBridge {
     private static final String TAG = "PaymentRequestTestBridge";
 
     @CalledByNative
-    private static void setUseDelegateForTest(boolean useDelegate, boolean isOffTheRecord,
-            boolean isValidSsl, boolean prefsCanMakePayment, boolean skipUiForBasicCard,
-            String twaPackageName) {
-        if (useDelegate) {
-            ChromePaymentRequestFactory.sDelegateForTest =
-                    new ChromePaymentRequestDelegateForTest(isOffTheRecord, isValidSsl,
-                            prefsCanMakePayment, twaPackageName, skipUiForBasicCard);
-        } else {
-            ChromePaymentRequestFactory.sDelegateForTest = null;
-        }
+    private static void setUseDelegateForTest(boolean isOffTheRecord, boolean isValidSsl,
+            boolean prefsCanMakePayment, String twaPackageName) {
+        ChromePaymentRequestFactory.sDelegateForTest = new ChromePaymentRequestDelegateForTest(
+                isOffTheRecord, isValidSsl, prefsCanMakePayment, twaPackageName);
     }
 
     @CalledByNative

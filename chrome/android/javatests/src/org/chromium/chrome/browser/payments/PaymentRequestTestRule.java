@@ -922,12 +922,6 @@ public class PaymentRequestTestRule extends ChromeTabbedActivityTestRule
                 () -> mUI.getEditorDialog().findViewById(R.id.editor_container));
     }
 
-    /** Allows to skip UI into paymenthandler for"basic-card". */
-    protected void enableSkipUIForBasicCard() {
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> mChromePaymentRequestDelegateImpl.setSkipUiForBasicCard());
-    }
-
     @Override
     public void onPaymentRequestReadyForInput(PaymentRequestUI ui) {
         ThreadUtils.assertOnUiThread();
