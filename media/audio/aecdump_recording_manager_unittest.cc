@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/audio/aecdump_recording_manager.h"
+#include "media/audio/aecdump_recording_manager.h"
 
 #include "base/bind.h"
 #include "base/files/file_path.h"
@@ -17,7 +17,7 @@ using testing::InSequence;
 using testing::NiceMock;
 using testing::Sequence;
 
-namespace audio {
+namespace media {
 namespace {
 
 class MockAecdumpRecordingSource : public AecdumpRecordingSource {
@@ -235,4 +235,4 @@ TEST_F(AecdumpRecordingManagerTest,
 }
 
 }  // namespace
-}  // namespace audio
+}  // namespace media

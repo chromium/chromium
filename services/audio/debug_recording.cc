@@ -8,16 +8,16 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "media/audio/aecdump_recording_manager.h"
 #include "media/audio/audio_debug_recording_manager.h"
 #include "media/audio/audio_manager.h"
-#include "services/audio/aecdump_recording_manager.h"
 
 namespace audio {
 
 DebugRecording::DebugRecording(
     mojo::PendingReceiver<mojom::DebugRecording> receiver,
     media::AudioManager* audio_manager,
-    AecdumpRecordingManager* aecdump_recording_manager)
+    media::AecdumpRecordingManager* aecdump_recording_manager)
     : audio_manager_(audio_manager),
       aecdump_recording_manager_(aecdump_recording_manager),
       receiver_(this, std::move(receiver)) {

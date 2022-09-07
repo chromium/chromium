@@ -10,8 +10,6 @@ import("//testing/test.gni")
 
 source_set("audio") {
   sources = [
-    "aecdump_recording_manager.cc",
-    "aecdump_recording_manager.h",
     "audio_manager_power_user.h",
     "concurrent_stream_metric_reporter.cc",
     "concurrent_stream_metric_reporter.h",
@@ -156,7 +154,6 @@ source_set("tests") {
   testonly = true
 
   sources = [
-    "aecdump_recording_manager_unittest.cc",
     "debug_recording_unittest.cc",
     "delay_buffer_unittest.cc",
     "device_listener_output_stream_unittest.cc",

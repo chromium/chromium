@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/audio/aecdump_recording_manager.h"
+#include "media/audio/aecdump_recording_manager.h"
 
 #include "base/bind.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 
-namespace audio {
+namespace media {
 namespace {
 void CloseFileWithoutBlocking(base::File file) {
   // Post as a low-priority task to a thread pool to avoid blocking the
@@ -121,4 +121,4 @@ void AecdumpRecordingManager::StartRecordingIfValidPointer(
   // Recording has been stopped and we are responsible for closing the file.
   CloseFileWithoutBlocking(std::move(file));
 }
-}  // namespace audio
+}  // namespace media

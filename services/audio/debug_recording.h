@@ -13,19 +13,19 @@
 #include "services/audio/public/mojom/debug_recording.mojom.h"
 
 namespace media {
+class AecdumpRecordingManager;
 class AudioManager;
 enum class AudioDebugRecordingStreamType;
 }  // namespace media
 
 namespace audio {
-class AecdumpRecordingManager;
 
 // Implementation for controlling audio debug recording.
 class DebugRecording : public mojom::DebugRecording {
  public:
   DebugRecording(mojo::PendingReceiver<mojom::DebugRecording> receiver,
                  media::AudioManager* audio_manager,
-                 AecdumpRecordingManager* aecdump_recording_manager);
+                 media::AecdumpRecordingManager* aecdump_recording_manager);
 
   DebugRecording(const DebugRecording&) = delete;
   DebugRecording& operator=(const DebugRecording&) = delete;
@@ -54,7 +54,7 @@ class DebugRecording : public mojom::DebugRecording {
   bool IsEnabled();
 
   const raw_ptr<media::AudioManager> audio_manager_;
-  const raw_ptr<AecdumpRecordingManager> aecdump_recording_manager_;
+  const raw_ptr<media::AecdumpRecordingManager> aecdump_recording_manager_;
   mojo::Receiver<mojom::DebugRecording> receiver_;
   mojo::Remote<mojom::DebugRecordingFileProvider> file_provider_;
 

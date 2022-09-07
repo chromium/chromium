@@ -52,6 +52,8 @@ source_set("audio") {
     "//media/base/android",
   ]
   sources = [
+    "aecdump_recording_manager.cc",
+    "aecdump_recording_manager.h",
     "agc_audio_stream.h",
     "alive_checker.cc",
     "alive_checker.h",
@@ -394,6 +396,7 @@ static_library("test_support") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "aecdump_recording_manager_unittest.cc",
     "alive_checker_unittest.cc",
     "audio_debug_file_writer_unittest.cc",
     "audio_debug_recording_helper_unittest.cc",

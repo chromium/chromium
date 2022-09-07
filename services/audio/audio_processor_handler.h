@@ -9,11 +9,11 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
+#include "media/audio/aecdump_recording_manager.h"
 #include "media/base/audio_processing.h"
 #include "media/mojo/mojom/audio_processing.mojom.h"
 #include "media/webrtc/audio_processor.h"
 #include "mojo/public/cpp/bindings/receiver.h"
-#include "services/audio/aecdump_recording_manager.h"
 #include "services/audio/reference_output.h"
 
 namespace media {
@@ -39,7 +39,7 @@ namespace audio {
 // destruction.
 class AudioProcessorHandler final : public ReferenceOutput::Listener,
                                     public media::mojom::AudioProcessorControls,
-                                    public AecdumpRecordingSource {
+                                    public media::AecdumpRecordingSource {
  public:
   using DeliverProcessedAudioCallback =
       media::AudioProcessor::DeliverProcessedAudioCallback;
@@ -66,7 +66,7 @@ class AudioProcessorHandler final : public ReferenceOutput::Listener,
       DeliverProcessedAudioCallback deliver_processed_audio_callback,
       mojo::PendingReceiver<media::mojom::AudioProcessorControls>
           controls_receiver,
-      AecdumpRecordingManager* aecdump_recording_manager);
+      media::AecdumpRecordingManager* aecdump_recording_manager);
 
   AudioProcessorHandler(const AudioProcessorHandler&) = delete;
   AudioProcessorHandler& operator=(const AudioProcessorHandler&) = delete;
@@ -101,7 +101,7 @@ class AudioProcessorHandler final : public ReferenceOutput::Listener,
   void GetStats(GetStatsCallback callback) final;
   void SetPreferredNumCaptureChannels(int32_t num_preferred_channels) final;
 
-  // AecdumpRecordingSource implementation.
+  // media::AecdumpRecordingSource implementation.
   void StartAecdump(base::File aecdump_file) final;
   void StopAecdump() final;
 
@@ -116,7 +116,7 @@ class AudioProcessorHandler final : public ReferenceOutput::Listener,
       GUARDED_BY_CONTEXT(owning_sequence_);
 
   // Used to deregister as an aecdump recording source upon destruction.
-  const raw_ptr<AecdumpRecordingManager> aecdump_recording_manager_
+  const raw_ptr<media::AecdumpRecordingManager> aecdump_recording_manager_
       GUARDED_BY_CONTEXT(owning_sequence_);
 
   // The number of channels preferred by consumers of the captured audio.

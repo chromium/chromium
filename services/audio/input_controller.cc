@@ -187,7 +187,7 @@ InputController::InputController(
     media::UserInputMonitor* user_input_monitor,
     InputStreamActivityMonitor* activity_monitor,
     DeviceOutputListener* device_output_listener,
-    AecdumpRecordingManager* aecdump_recording_manager,
+    media::AecdumpRecordingManager* aecdump_recording_manager,
     media::mojom::AudioProcessingConfigPtr processing_config,
     const media::AudioParameters& output_params,
     const media::AudioParameters& device_params,
@@ -223,7 +223,7 @@ void InputController::MaybeSetUpAudioProcessing(
     const media::AudioParameters& processing_output_params,
     const media::AudioParameters& device_params,
     DeviceOutputListener* device_output_listener,
-    AecdumpRecordingManager* aecdump_recording_manager) {
+    media::AecdumpRecordingManager* aecdump_recording_manager) {
   if (!device_output_listener)
     return;
 
@@ -300,7 +300,7 @@ std::unique_ptr<InputController> InputController::Create(
     media::UserInputMonitor* user_input_monitor,
     InputStreamActivityMonitor* activity_monitor,
     DeviceOutputListener* device_output_listener,
-    AecdumpRecordingManager* aecdump_recording_manager,
+    media::AecdumpRecordingManager* aecdump_recording_manager,
     media::mojom::AudioProcessingConfigPtr processing_config,
     const media::AudioParameters& params,
     const std::string& device_id,

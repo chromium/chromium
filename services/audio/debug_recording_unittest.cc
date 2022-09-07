@@ -9,13 +9,13 @@
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/test/task_environment.h"
+#include "media/audio/aecdump_recording_manager.h"
 #include "media/audio/audio_debug_recording_test.h"
 #include "media/audio/mock_audio_debug_recording_manager.h"
 #include "media/audio/mock_audio_manager.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "services/audio/aecdump_recording_manager.h"
 #include "services/audio/public/cpp/debug_recording_session.h"
 #include "services/audio/public/mojom/debug_recording.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -70,7 +70,7 @@ class MockFileProvider : public mojom::DebugRecordingFileProvider {
   mojo::Receiver<mojom::DebugRecordingFileProvider> receiver_;
 };
 
-class MockAecdumpRecordingManager : public AecdumpRecordingManager {
+class MockAecdumpRecordingManager : public media::AecdumpRecordingManager {
  public:
   explicit MockAecdumpRecordingManager(
       scoped_refptr<base::SingleThreadTaskRunner> task_runner)

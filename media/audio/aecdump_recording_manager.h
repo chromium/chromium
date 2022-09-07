@@ -2,20 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SERVICES_AUDIO_AECDUMP_RECORDING_MANAGER_H_
-#define SERVICES_AUDIO_AECDUMP_RECORDING_MANAGER_H_
+#ifndef MEDIA_AUDIO_AECDUMP_RECORDING_MANAGER_H_
+#define MEDIA_AUDIO_AECDUMP_RECORDING_MANAGER_H_
 
 #include <map>
 
 #include "base/callback.h"
 #include "base/files/file.h"
 #include "base/memory/weak_ptr.h"
+#include "media/base/media_export.h"
 
 namespace base {
 class SingleThreadTaskRunner;
 }
 
-namespace audio {
+namespace media {
+
 class AecdumpRecordingSource {
  public:
   // Starts recording an aecdump to |aecdump_file|. If a recording is already
@@ -33,7 +35,7 @@ class AecdumpRecordingSource {
 // register/deregister with the AecdumpRecordingManager.
 // All operations, including creation and destruction, must happen on the same
 // thread as the |task_runner| provided in the constructor.
-class AecdumpRecordingManager {
+class MEDIA_EXPORT AecdumpRecordingManager {
  public:
   using CreateFileCallback = base::RepeatingCallback<
       void(uint32_t id, base::OnceCallback<void(base::File)> reply_callback)>;
@@ -86,6 +88,6 @@ class AecdumpRecordingManager {
   base::WeakPtrFactory<AecdumpRecordingManager> weak_factory_{this};
 };
 
-}  // namespace audio
+}  // namespace media
 
-#endif  // SERVICES_AUDIO_AECDUMP_RECORDING_MANAGER_H_
+#endif  // MEDIA_AUDIO_AECDUMP_RECORDING_MANAGER_H_

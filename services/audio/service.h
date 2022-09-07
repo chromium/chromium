@@ -28,13 +28,13 @@ class SystemMonitor;
 }  // namespace base
 
 namespace media {
+class AecdumpRecordingManager;
 class AudioDeviceListenerMac;
 class AudioManager;
 class AudioLogFactory;
 }  // namespace media
 
 namespace audio {
-class AecdumpRecordingManager;
 class DebugRecording;
 class DeviceNotifier;
 class LogFactoryManager;
@@ -126,7 +126,7 @@ class Service final : public mojom::AudioService {
 
   // Manages starting / stopping of diagnostic audio processing recordings. Must
   // outlive |debug_recording_| and |stream_factory_|, if instantiated.
-  std::unique_ptr<AecdumpRecordingManager> aecdump_recording_manager_;
+  std::unique_ptr<media::AecdumpRecordingManager> aecdump_recording_manager_;
 
   std::unique_ptr<DebugRecording> debug_recording_;
   absl::optional<StreamFactory> stream_factory_;
