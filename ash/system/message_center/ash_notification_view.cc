@@ -30,6 +30,7 @@
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -1318,14 +1319,12 @@ void AshNotificationView::OnInlineReplyUpdated() {
 
 views::View* AshNotificationView::FindGroupNotificationView(
     const std::string& notification_id) {
-  auto id_match = [&notification_id](views::View* notification_view) {
-    return notification_id ==
-           static_cast<AshNotificationView*>(notification_view)
-               ->notification_id();
-  };
-  auto notification = std::find_if(
-      grouped_notifications_container_->children().begin(),
-      grouped_notifications_container_->children().end(), id_match);
+  auto notification = base::ranges::find(
+      grouped_notifications_container_->children(), notification_id,
+      [](views::View* notification_view) {
+        return static_cast<AshNotificationView*>(notification_view)
+            ->notification_id();
+      });
   return notification == grouped_notifications_container_->children().end()
              ? nullptr
              : *notification;

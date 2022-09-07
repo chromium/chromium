@@ -18,6 +18,8 @@
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/unified/date_tray.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
+#include "base/containers/adapters.h"
+#include "base/ranges/algorithm.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/gfx/animation/tween.h"
@@ -190,8 +192,8 @@ bool StatusAreaWidgetDelegate::CanActivate() const {
 }
 
 void StatusAreaWidgetDelegate::CalculateTargetBounds() {
-  const auto it = std::find_if(children().crbegin(), children().crend(),
-                               [](const View* v) { return v->GetVisible(); });
+  const auto it =
+      base::ranges::find(base::Reversed(children()), true, &View::GetVisible);
   const View* last_visible_child = it == children().crend() ? nullptr : *it;
 
   // Set the border for each child, with a different border for the edge child.

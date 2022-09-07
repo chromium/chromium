@@ -4,13 +4,12 @@
 
 #include "ash/system/toast/toast_manager_impl.h"
 
-#include <algorithm>
-
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
@@ -44,9 +43,7 @@ void ToastManagerImpl::Show(const ToastData& data) {
   const std::string& id = data.id;
   DCHECK(!id.empty());
 
-  auto existing_toast =
-      std::find_if(queue_.begin(), queue_.end(),
-                   [&id](const ToastData& data) { return data.id == id; });
+  auto existing_toast = base::ranges::find(queue_, id, &ToastData::id);
 
   if (existing_toast != queue_.end()) {
     // Assigns given `data` to existing queued toast, but keeps the existing
@@ -77,9 +74,7 @@ void ToastManagerImpl::Cancel(const std::string& id) {
     return;
   }
 
-  auto cancelled_toast =
-      std::find_if(queue_.begin(), queue_.end(),
-                   [&id](const ToastData& data) { return data.id == id; });
+  auto cancelled_toast = base::ranges::find(queue_, id, &ToastData::id);
   if (cancelled_toast != queue_.end())
     queue_.erase(cancelled_toast);
 }
@@ -123,10 +118,8 @@ void ToastManagerImpl::ShowLatest() {
   DCHECK(!overlay_);
   DCHECK(!current_toast_data_);
 
-  auto it = locked_ ? std::find_if(queue_.begin(), queue_.end(),
-                                   [](const auto& data) {
-                                     return data.visible_on_lock_screen;
-                                   })
+  auto it = locked_ ? base::ranges::find(queue_, true,
+                                         &ToastData::visible_on_lock_screen)
                     : queue_.begin();
   if (it == queue_.end())
     return;

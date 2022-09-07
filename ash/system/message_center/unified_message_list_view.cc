@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ash/system/message_center/unified_message_list_view.h"
+
 #include <string>
 
 #include "ash/constants/ash_features.h"
@@ -20,9 +21,11 @@
 #include "base/auto_reset.h"
 #include "base/callback_forward.h"
 #include "base/callback_helpers.h"
+#include "base/containers/adapters.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "ui/compositor/compositor.h"
 #include "ui/gfx/animation/linear_animation.h"
@@ -659,10 +662,9 @@ gfx::Rect UnifiedMessageListView::GetLastNotificationBounds() const {
 
 gfx::Rect UnifiedMessageListView::GetNotificationBoundsBelowY(
     int y_offset) const {
-  const auto it = std::find_if(children().cbegin(), children().cend(),
-                               [y_offset](const views::View* v) {
-                                 return v->bounds().bottom() >= y_offset;
-                               });
+  const auto it = base::ranges::lower_bound(
+      children(), y_offset, {},
+      [](const views::View* v) { return v->bounds().bottom(); });
   return (it == children().cend()) ? gfx::Rect() : (*it)->bounds();
 }
 
@@ -686,13 +688,12 @@ void UnifiedMessageListView::AnimateResize() {
 
 message_center::MessageView*
 UnifiedMessageListView::GetMessageViewForNotificationId(const std::string& id) {
-  auto it =
-      std::find_if(children().begin(), children().end(), [&](auto* child) {
-        DCHECK(child->GetClassName() == kMessageViewContainerClassName);
-        return static_cast<MessageViewContainer*>(child)
-                   ->message_view()
-                   ->notification_id() == id;
-      });
+  auto it = base::ranges::find(children(), id, [](auto* child) {
+    DCHECK(child->GetClassName() == kMessageViewContainerClassName);
+    return static_cast<MessageViewContainer*>(child)
+        ->message_view()
+        ->notification_id();
+  });
 
   if (it == children().end())
     return nullptr;
@@ -946,24 +947,23 @@ UnifiedMessageListView::MessageViewContainer* UnifiedMessageListView::AsMVC(
 
 const UnifiedMessageListView::MessageViewContainer*
 UnifiedMessageListView::GetNotificationById(const std::string& id) const {
-  const auto i = std::find_if(
-      children().cbegin(), children().cend(),
-      [id](const auto* v) { return AsMVC(v)->GetNotificationId() == id; });
+  const auto i = base::ranges::find(children(), id, [](const auto* v) {
+    return AsMVC(v)->GetNotificationId();
+  });
   return (i == children().cend()) ? nullptr : AsMVC(*i);
 }
 
 UnifiedMessageListView::MessageViewContainer*
 UnifiedMessageListView::GetNextRemovableNotification() {
   if (is_notifications_refresh_enabled_) {
-    const auto i =
-        std::find_if(children().rbegin(), children().rend(),
-                     [](const auto* v) { return !AsMVC(v)->IsPinned(); });
+    const auto i = base::ranges::find_if_not(
+        base::Reversed(children()),
+        [](const auto* v) { return AsMVC(v)->IsPinned(); });
     return (i == children().rend()) ? nullptr : AsMVC(*i);
   }
 
-  const auto i =
-      std::find_if(children().cbegin(), children().cend(),
-                   [](const auto* v) { return !AsMVC(v)->IsPinned(); });
+  const auto i = base::ranges::find_if_not(
+      children(), [](const auto* v) { return AsMVC(v)->IsPinned(); });
   return (i == children().cend()) ? nullptr : AsMVC(*i);
 }
 
