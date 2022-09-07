@@ -178,9 +178,14 @@ void WorkerThreadDispatcher::UpdateBindingsOnWorkerThread(
     const ExtensionId& extension_id) {
   DCHECK(worker_thread_util::IsWorkerThread());
   DCHECK(!extension_id.empty());
-  GetBindingsSystem()->UpdateBindings(extension_id,
-                                      true /* permissions_changed */,
-                                      Dispatcher::GetWorkerScriptContextSet());
+
+  ServiceWorkerData* data = WorkerThreadDispatcher::GetServiceWorkerData();
+  // Bail out if the worker was destroyed.
+  if (!data)
+    return;
+  data->bindings_system()->UpdateBindings(
+      extension_id, true /* permissions_changed */,
+      Dispatcher::GetWorkerScriptContextSet());
 }
 
 // static
