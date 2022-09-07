@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/autofill/payments/autofill_error_dialog_controller_impl.h"
 
 #include "base/metrics/histogram_functions.h"
+#include "components/autofill/core/browser/payments/autofill_error_dialog_context.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -19,14 +20,15 @@ AutofillErrorDialogControllerImpl::~AutofillErrorDialogControllerImpl() {
 }
 
 void AutofillErrorDialogControllerImpl::Show(
-    AutofillErrorDialogController::AutofillErrorDialogType error_dialog_type) {
+    const AutofillErrorDialogContext& autofill_error_dialog_context) {
   if (autofill_error_dialog_view_)
     Dismiss();
 
   DCHECK(autofill_error_dialog_view_ == nullptr);
-  error_dialog_type_ = error_dialog_type;
+  error_dialog_context_ = autofill_error_dialog_context;
   autofill_error_dialog_view_ = AutofillErrorDialogView::CreateAndShow(this);
-  base::UmaHistogramEnumeration("Autofill.ErrorDialogShown", error_dialog_type);
+  base::UmaHistogramEnumeration("Autofill.ErrorDialogShown",
+                                autofill_error_dialog_context.type);
 }
 
 void AutofillErrorDialogControllerImpl::OnDismissed() {
@@ -37,18 +39,21 @@ void AutofillErrorDialogControllerImpl::OnDismissed() {
 
 const std::u16string AutofillErrorDialogControllerImpl::GetTitle() {
   int title_string_resource_id = 0;
-  switch (error_dialog_type_) {
-    case VIRTUAL_CARD_TEMPORARY_ERROR:
+  switch (error_dialog_context_.type) {
+    case AutofillErrorDialogType::kVirtualCardTemporaryError:
       title_string_resource_id =
           IDS_AUTOFILL_VIRTUAL_CARD_TEMPORARY_ERROR_TITLE;
       break;
-    case VIRTUAL_CARD_PERMANENT_ERROR:
+    case AutofillErrorDialogType::kVirtualCardPermanentError:
       title_string_resource_id =
           IDS_AUTOFILL_VIRTUAL_CARD_PERMANENT_ERROR_TITLE;
       break;
-    case VIRTUAL_CARD_NOT_ELIGIBLE_ERROR:
+    case AutofillErrorDialogType::kVirtualCardNotEligibleError:
       title_string_resource_id =
           IDS_AUTOFILL_VIRTUAL_CARD_NOT_ELIGIBLE_ERROR_TITLE;
+      break;
+    case AutofillErrorDialogType::kTypeUnknown:
+      NOTREACHED();
       break;
   }
   return title_string_resource_id != 0
@@ -58,18 +63,21 @@ const std::u16string AutofillErrorDialogControllerImpl::GetTitle() {
 
 const std::u16string AutofillErrorDialogControllerImpl::GetDescription() {
   int description_string_resource_id = 0;
-  switch (error_dialog_type_) {
-    case VIRTUAL_CARD_TEMPORARY_ERROR:
+  switch (error_dialog_context_.type) {
+    case AutofillErrorDialogType::kVirtualCardTemporaryError:
       description_string_resource_id =
           IDS_AUTOFILL_VIRTUAL_CARD_TEMPORARY_ERROR_DESCRIPTION;
       break;
-    case VIRTUAL_CARD_PERMANENT_ERROR:
+    case AutofillErrorDialogType::kVirtualCardPermanentError:
       description_string_resource_id =
           IDS_AUTOFILL_VIRTUAL_CARD_PERMANENT_ERROR_DESCRIPTION;
       break;
-    case VIRTUAL_CARD_NOT_ELIGIBLE_ERROR:
+    case AutofillErrorDialogType::kVirtualCardNotEligibleError:
       description_string_resource_id =
           IDS_AUTOFILL_VIRTUAL_CARD_NOT_ELIGIBLE_ERROR_DESCRIPTION;
+      break;
+    case AutofillErrorDialogType::kTypeUnknown:
+      NOTREACHED();
       break;
   }
   return description_string_resource_id != 0

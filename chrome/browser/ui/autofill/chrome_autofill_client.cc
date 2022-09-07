@@ -55,6 +55,7 @@
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
 #include "components/autofill/core/browser/form_data_importer.h"
+#include "components/autofill/core/browser/payments/autofill_error_dialog_context.h"
 #include "components/autofill/core/browser/payments/card_unmask_challenge_option.h"
 #include "components/autofill/core/browser/payments/credit_card_cvc_authenticator.h"
 #include "components/autofill/core/browser/payments/credit_card_otp_authenticator.h"
@@ -132,9 +133,6 @@
 #endif  // BUILDFLAG(IS_ANDROID)
 
 namespace autofill {
-
-using AutofillErrorDialogType =
-    AutofillErrorDialogController::AutofillErrorDialogType;
 
 using AutoselectFirstSuggestion =
     AutofillClient::PopupOpenArgs::AutoselectFirstSuggestion;
@@ -971,11 +969,11 @@ void ChromeAutofillClient::OnVirtualCardDataAvailable(
 }
 
 void ChromeAutofillClient::ShowVirtualCardErrorDialog(bool is_permanent_error) {
-  AutofillErrorDialogType error_dialog_type =
-      is_permanent_error
-          ? AutofillErrorDialogType::VIRTUAL_CARD_PERMANENT_ERROR
-          : AutofillErrorDialogType::VIRTUAL_CARD_TEMPORARY_ERROR;
-  autofill_error_dialog_controller_.Show(error_dialog_type);
+  AutofillErrorDialogContext context;
+  context.type = is_permanent_error
+                     ? AutofillErrorDialogType::kVirtualCardPermanentError
+                     : AutofillErrorDialogType::kVirtualCardTemporaryError;
+  autofill_error_dialog_controller_.Show(context);
 }
 
 void ChromeAutofillClient::ShowAutofillProgressDialog(

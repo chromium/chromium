@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/autofill/payments/autofill_error_dialog_controller.h"
 #include "chrome/browser/ui/autofill/payments/autofill_error_dialog_view.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "components/autofill/core/browser/payments/autofill_error_dialog_context.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -31,13 +32,14 @@ class AutofillErrorDialogControllerImplTest
 
 TEST_F(AutofillErrorDialogControllerImplTest, MetricsTest) {
   base::HistogramTester histogram_tester;
-  controller()->Show(
-      AutofillErrorDialogController::VIRTUAL_CARD_TEMPORARY_ERROR);
+  AutofillErrorDialogContext context;
+  context.type = AutofillErrorDialogType::kVirtualCardTemporaryError;
+  controller()->Show(context);
 
   // Verify that the metric for shown is incremented.
   histogram_tester.ExpectUniqueSample(
       "Autofill.ErrorDialogShown",
-      AutofillErrorDialogController::VIRTUAL_CARD_TEMPORARY_ERROR, 1);
+      AutofillErrorDialogType::kVirtualCardTemporaryError, 1);
 }
 
 }  // namespace autofill

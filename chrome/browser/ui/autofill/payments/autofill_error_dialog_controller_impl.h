@@ -10,6 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/autofill/payments/autofill_error_dialog_controller.h"
 #include "chrome/browser/ui/autofill/payments/autofill_error_dialog_view.h"
+#include "components/autofill/core/browser/payments/autofill_error_dialog_context.h"
 #include "content/public/browser/web_contents.h"
 
 namespace autofill {
@@ -28,9 +29,8 @@ class AutofillErrorDialogControllerImpl : public AutofillErrorDialogController {
   AutofillErrorDialogControllerImpl& operator=(
       const AutofillErrorDialogControllerImpl&) = delete;
 
-  // Show the error dialog for the given `AutofillErrorDialogType`
-  void Show(
-      AutofillErrorDialogController::AutofillErrorDialogType error_dialog_type);
+  // Show the error dialog for the given |autofill_error_dialog_context|.
+  void Show(const AutofillErrorDialogContext& autofill_error_dialog_context);
 
   // AutofillErrorDialogController.
   void OnDismissed() override;
@@ -48,8 +48,9 @@ class AutofillErrorDialogControllerImpl : public AutofillErrorDialogController {
   void Dismiss();
 
   raw_ptr<content::WebContents> web_contents_;
-  // The type of the error dialog that is being displayed.
-  AutofillErrorDialogController::AutofillErrorDialogType error_dialog_type_;
+  // The context of the error dialog that is being displayed. Contains
+  // information such as the type of the error dialog that is being displayed.
+  AutofillErrorDialogContext error_dialog_context_;
   // View that displays the error dialog.
   raw_ptr<AutofillErrorDialogView> autofill_error_dialog_view_ = nullptr;
 };

@@ -6789,6 +6789,7 @@ others/histograms.xml -->
   <int value="0" label="VIRTUAL_CARD_TEMPORARY_ERROR"/>
   <int value="1" label="VIRTUAL_CARD_PERMANENT_ERROR"/>
   <int value="2" label="VIRTUAL_CARD_NOT_ELIGIBLE_ERROR"/>
+  <int value="3" label="UNKNOWN"/>
 </enum>
 
 <enum name="AutofillExperimentId">

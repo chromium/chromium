@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/autofill/payments/autofill_error_dialog_view_native_views.h"
+#include "components/autofill/core/browser/payments/autofill_error_dialog_context.h"
 #include "content/public/test/browser_test.h"
 
 namespace autofill {
@@ -29,22 +30,22 @@ class AutofillErrorDialogViewNativeViewsBrowserTest : public DialogBrowserTest {
   }
 
   void ShowUi(const std::string& name) override {
-    AutofillErrorDialogController::AutofillErrorDialogType dialog_type;
+    AutofillErrorDialogContext autofill_error_dialog_context;
     if (name == "temporary") {
-      dialog_type = AutofillErrorDialogController::AutofillErrorDialogType::
-          VIRTUAL_CARD_TEMPORARY_ERROR;
+      autofill_error_dialog_context.type =
+          AutofillErrorDialogType::kVirtualCardTemporaryError;
     } else if (name == "permanent") {
-      dialog_type = AutofillErrorDialogController::AutofillErrorDialogType::
-          VIRTUAL_CARD_PERMANENT_ERROR;
+      autofill_error_dialog_context.type =
+          AutofillErrorDialogType::kVirtualCardPermanentError;
     } else if (name == "eligibility") {
-      dialog_type = AutofillErrorDialogController::AutofillErrorDialogType::
-          VIRTUAL_CARD_NOT_ELIGIBLE_ERROR;
+      autofill_error_dialog_context.type =
+          AutofillErrorDialogType::kVirtualCardNotEligibleError;
     } else {
       NOTREACHED();
       return;
     }
 
-    controller()->Show(dialog_type);
+    controller()->Show(autofill_error_dialog_context);
   }
 
   AutofillErrorDialogViewNativeViews* GetDialogViews() {
