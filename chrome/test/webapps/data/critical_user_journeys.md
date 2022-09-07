@@ -236,8 +236,8 @@ The tables are parsed in this file as critical user journeys. Lines are consider
 ## In-Browser UX (install icon, launch icon, etc)
 | #Platforms | Test -> | | | | | | | | | | | | | | | | |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| WMLC | install_or_shortcut_windowed(StandaloneNestedA) | navigate_browser(StandaloneNestedB) | check_install_icon_shown | 
-| WMLC | install_or_shortcut_windowed(StandaloneNestedA) | navigate_browser(StandaloneNestedB) | check_launch_icon_not_shown | 
+| WMLC | install_or_shortcut_windowed(StandaloneNestedA) | navigate_browser(NotInstalled) | check_install_icon_shown | 
+| WMLC | install_or_shortcut_windowed(StandaloneNestedA) | navigate_browser(NotInstalled) | check_launch_icon_not_shown | 
 | WMLC | install_or_shortcut_windowed | navigate_browser(StandaloneNestedA) | check_install_icon_not_shown | 
 | WMLC | install_or_shortcut_windowed | navigate_browser(StandaloneNestedA) | check_launch_icon_shown | 
 | WMLC | install_or_shortcut_by_user_windowed | navigate_browser(MinimalUi) | check_install_icon_shown | 

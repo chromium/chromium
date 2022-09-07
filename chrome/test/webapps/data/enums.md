@@ -20,8 +20,8 @@ The tables in this file are parsed as action templates for critical user journey
 
 | #Enum Name | Values (* = default) |  |  |  |  |  |  |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| Site | Standalone*  | StandaloneSubSite | MinimalUi | NotPromotable | StandaloneNestedA | StandaloneNestedB | Wco | Isolated | FileHandler | |
-| PromotableSite | Standalone* | MinimalUi | StandaloneNestedA | StandaloneNestedB | Wco |  |  |
+| Site | Standalone*  | StandaloneSubSite | MinimalUi | NotPromotable | StandaloneNestedA | StandaloneNestedB | Wco | Isolated | FileHandler | NotInstalled | |
+| PromotableSite | Standalone* | MinimalUi | StandaloneNestedA | StandaloneNestedB | Wco | NotInstalled |  |
 | Title | StandaloneOriginal | StandaloneUpdated |  |  |  |  |  |
 | Color | Red | Green |  |  |  |  |  |
 | ProfileClient | Client2* | Client1 |  |  |  |  |  |

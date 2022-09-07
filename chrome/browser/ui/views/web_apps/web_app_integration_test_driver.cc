@@ -173,6 +173,8 @@ Site InstallableSiteToSite(InstallableSite site) {
       return Site::kFileHandler;
     case InstallableSite::kNoServiceWorker:
       return Site::kNoServiceWorker;
+    case InstallableSite::kNotInstalled:
+      return Site::kNotInstalled;
   }
 }
 
@@ -283,6 +285,13 @@ base::flat_map<Site, SiteConfig> g_site_configs = {
       .app_name = "Site NoServiceWorker",
       .wco_not_enabled_title = u"Site NoServiceWorker",
       .icon_color = SK_ColorGREEN}},
+    {Site::kNotInstalled,
+     {.relative_scope_url = "/webapps_integration/not_installed/",
+      .relative_start_url = "/webapps_integration/not_installed/basic.html",
+      .relative_manifest_id = "webapps_integration/not_installed/basic.html",
+      .app_name = "Not Installed",
+      .wco_not_enabled_title = u"Not Installed",
+      .icon_color = SK_ColorBLUE}},
 };
 
 struct DisplayConfig {

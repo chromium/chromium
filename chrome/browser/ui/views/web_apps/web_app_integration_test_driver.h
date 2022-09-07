@@ -51,6 +51,7 @@ enum class Site {
   kIsolated,
   kFileHandler,
   kNoServiceWorker,
+  kNotInstalled,
 };
 
 enum class InstallableSite {
@@ -62,6 +63,7 @@ enum class InstallableSite {
   kIsolated,
   kFileHandler,
   kNoServiceWorker,
+  kNotInstalled,
 };
 
 enum class Title { kStandaloneOriginal, kStandaloneUpdated };
