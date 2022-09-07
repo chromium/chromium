@@ -148,7 +148,6 @@ cros_toolchain("nacl_helper_arm32") {
     current_os = "chromeos"
     use_debug_fission = false
     use_gold = false
-    needs_gomacc_path_arg = false
     sysroot = cros_nacl_helper_arm32_sysroot
 
     # Disable some uses of libraries that this build does not require. The
@@ -164,6 +163,15 @@ cros_toolchain("nacl_helper_arm32") {
   cxx = cros_nacl_helper_arm32_cxx
   ld = cros_nacl_helper_arm32_ld
   readelf = cros_nacl_helper_arm32_readelf
+
+  extra_cflags = ""
+  extra_cppflags = ""
+  extra_cxxflags = ""
+  extra_ldflags = ""
+
+  if (!lacros_use_chromium_toolchain) {
+    toolchain_args.needs_gomacc_path_arg = true
+  }
 }
 
 cros_toolchain("host") {
