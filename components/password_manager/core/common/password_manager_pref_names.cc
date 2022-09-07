@@ -97,6 +97,8 @@ const char kPasswordChangeSuccessTrackerVersion[] =
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 const char kBiometricAuthenticationBeforeFilling[] =
     "password_manager.biometric_authentication_filling";
+const char kHadBiometricsAvailable[] =
+    "password_manager.had_biometrics_available";
 #endif
 
 }  // namespace prefs

@@ -14,6 +14,7 @@
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/password_manager/ios/password_manager_ios_util.h"
+#import "ios/web_view/internal/app/application_context.h"
 #import "ios/web_view/internal/passwords/web_view_account_password_store_factory.h"
 #import "ios/web_view/internal/passwords/web_view_password_change_success_tracker_factory.h"
 #import "ios/web_view/internal/passwords/web_view_password_manager_log_router_factory.h"
@@ -186,6 +187,10 @@ WebViewPasswordManagerClient::GetPasswordFeatureManager() const {
 
 PrefService* WebViewPasswordManagerClient::GetPrefs() const {
   return pref_service_;
+}
+
+PrefService* WebViewPasswordManagerClient::GetLocalStatePrefs() const {
+  return ApplicationContext::GetInstance()->GetLocalState();
 }
 
 const syncer::SyncService* WebViewPasswordManagerClient::GetSyncService()

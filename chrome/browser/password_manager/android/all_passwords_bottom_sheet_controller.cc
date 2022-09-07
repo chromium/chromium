@@ -105,7 +105,8 @@ void AllPasswordsBottomSheetController::OnCredentialSelected(
         client_->GetBiometricAuthenticator();
     if (password_manager_util::CanUseBiometricAuth(
             authenticator.get(),
-            device_reauth::BiometricAuthRequester::kAllPasswordsList)) {
+            device_reauth::BiometricAuthRequester::kAllPasswordsList,
+            client_)) {
       authenticator_ = std::move(authenticator);
       authenticator_->Authenticate(
           device_reauth::BiometricAuthRequester::kAllPasswordsList,

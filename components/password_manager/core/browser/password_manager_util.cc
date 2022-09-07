@@ -389,18 +389,45 @@ PasswordForm MakeNormalizedBlocklistedForm(
   return result;
 }
 
-bool CanUseBiometricAuth(device_reauth::BiometricAuthenticator* authenticator,
-                         device_reauth::BiometricAuthRequester requester) {
-  return authenticator && authenticator->CanAuthenticate(requester) &&
-         (base::FeatureList::IsEnabled(
-              password_manager::features::kBiometricTouchToFill)
-// TODO(crbug.com/1354081): Use settings toggle to check if biometric reauth is
-// enabled.
 #if BUILDFLAG(IS_MAC)
-          || base::FeatureList::IsEnabled(
-                 password_manager::features::kBiometricAuthenticationForFilling)
+bool IsBiometricAuthenticationForFillingEnabled(
+    password_manager::PasswordManagerClient* client) {
+  // This checking order is important to ensure balanced experiment groups.
+  // First check for `kHadBiometricsAvailable` ensures that user have biometric
+  // scanner on their devices, shrinking down the amount of affected users.
+  // Check for the feature flag happens for everyone no matter whether they
+  // are/aren't using this feature, assuming they could use it(biometric scanner
+  // is available). Final check `kBiometricAuthenticationBeforeFilling` ensures
+  // that toggle in settings that manages this feature is turned on.
+  return client && client->GetLocalStatePrefs() &&
+         client->GetLocalStatePrefs()->GetBoolean(
+             password_manager::prefs::kHadBiometricsAvailable) &&
+         base::FeatureList::IsEnabled(
+             password_manager::features::kBiometricAuthenticationForFilling) &&
+         client->GetPrefs() &&
+         client->GetPrefs()->GetBoolean(
+             password_manager::prefs::kBiometricAuthenticationBeforeFilling);
+}
 #endif
-         );
+
+bool CanUseBiometricAuth(device_reauth::BiometricAuthenticator* authenticator,
+                         device_reauth::BiometricAuthRequester requester,
+                         password_manager::PasswordManagerClient* client) {
+#if BUILDFLAG(IS_MAC)
+  if (!client || !client->GetLocalStatePrefs() || !client->GetPrefs() ||
+      !authenticator) {
+    return false;
+  }
+  if (authenticator->CanAuthenticate(requester)) {
+    client->GetLocalStatePrefs()->SetBoolean(
+        password_manager::prefs::kHadBiometricsAvailable, true);
+  }
+  return IsBiometricAuthenticationForFillingEnabled(client);
+#else
+  return authenticator && authenticator->CanAuthenticate(requester) &&
+         base::FeatureList::IsEnabled(
+             password_manager::features::kBiometricTouchToFill);
+#endif
 }
 
 GURL StripAuthAndParams(const GURL& gurl) {

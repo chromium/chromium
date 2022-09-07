@@ -182,6 +182,10 @@ PrefService* IOSChromePasswordManagerClient::GetPrefs() const {
   return (bridge_.browserState)->GetPrefs();
 }
 
+PrefService* IOSChromePasswordManagerClient::GetLocalStatePrefs() const {
+  return GetApplicationContext()->GetLocalState();
+}
+
 const syncer::SyncService* IOSChromePasswordManagerClient::GetSyncService()
     const {
   return GetSyncServiceForBrowserState(bridge_.browserState);

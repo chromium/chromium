@@ -55,6 +55,10 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/build_info.h"
+#elif BUILDFLAG(IS_MAC)
+#include "components/password_manager/core/common/password_manager_pref_names.h"
+#include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/testing_pref_service.h"
 #endif
 
 // The name of the username/password element in the form.
@@ -93,6 +97,7 @@ using UkmEntry = ukm::builders::PageWithPassword;
 
 namespace autofill {
 class AutofillPopupDelegate;
+class PrefService;
 }
 
 namespace password_manager {
@@ -185,6 +190,8 @@ class TestPasswordManagerClient : public StubPasswordManagerClient {
               GetWebAuthnCredentialsDelegateForDriver,
               (PasswordManagerDriver*),
               (override));
+  MOCK_METHOD(PrefService*, GetPrefs, (), (const, override));
+  MOCK_METHOD(PrefService*, GetLocalStatePrefs, (), (const, override));
 
  private:
   MockPasswordManagerDriver driver_;
@@ -317,6 +324,18 @@ class PasswordAutofillManagerTest : public testing::Test {
 
     webauthn_credentials_delegate_ =
         std::make_unique<MockWebAuthnCredentialsDelegate>();
+
+#if BUILDFLAG(IS_MAC)
+    test_pref_service_ = std::make_unique<TestingPrefServiceSimple>();
+    test_pref_service_->registry()->RegisterBooleanPref(
+        password_manager::prefs::kBiometricAuthenticationBeforeFilling, true);
+    test_pref_service_->registry()->RegisterBooleanPref(
+        password_manager::prefs::kHadBiometricsAvailable, true);
+    ON_CALL(*client, GetPrefs())
+        .WillByDefault(Return(test_pref_service_.get()));
+    ON_CALL(*client, GetLocalStatePrefs())
+        .WillByDefault(Return(test_pref_service_.get()));
+#endif
     ON_CALL(*client, GetWebAuthnCredentialsDelegateForDriver)
         .WillByDefault(Return(webauthn_credentials_delegate_.get()));
     ON_CALL(*webauthn_credentials_delegate_, IsWebAuthnAutofillEnabled)
@@ -366,6 +385,9 @@ class PasswordAutofillManagerTest : public testing::Test {
   // The TestAutofillDriver uses a SequencedWorkerPool which expects the
   // existence of a MessageLoop.
   base::test::SingleThreadTaskEnvironment task_environment_;
+#if BUILDFLAG(IS_MAC)
+  std::unique_ptr<TestingPrefServiceSimple> test_pref_service_;
+#endif
 };
 
 TEST_F(PasswordAutofillManagerTest, FillSuggestion) {

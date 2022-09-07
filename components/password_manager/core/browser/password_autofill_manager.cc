@@ -41,6 +41,7 @@
 #include "components/password_manager/core/browser/password_ui_utils.h"
 #include "components/password_manager/core/browser/webauthn_credentials_delegate.h"
 #include "components/password_manager/core/common/password_manager_features.h"
+#include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/strings/grit/components_strings.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -505,7 +506,8 @@ void PasswordAutofillManager::DidAcceptSuggestion(
     // platforms, the `authenticator` will be null.
     if (!password_manager_util::CanUseBiometricAuth(
             authenticator.get(),
-            device_reauth::BiometricAuthRequester::kAutofillSuggestion)) {
+            device_reauth::BiometricAuthRequester::kAutofillSuggestion,
+            password_client_)) {
       bool success =
           FillSuggestion(GetUsernameFromSuggestion(value), frontend_id);
       DCHECK(success);

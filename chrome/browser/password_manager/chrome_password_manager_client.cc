@@ -702,6 +702,10 @@ PrefService* ChromePasswordManagerClient::GetPrefs() const {
   return profile_->GetPrefs();
 }
 
+PrefService* ChromePasswordManagerClient::GetLocalStatePrefs() const {
+  return g_browser_process->local_state();
+}
+
 const syncer::SyncService* ChromePasswordManagerClient::GetSyncService() const {
   return GetSyncServiceForProfile(profile_);
 }

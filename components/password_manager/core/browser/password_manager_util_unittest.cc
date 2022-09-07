@@ -20,6 +20,7 @@
 #include "components/autofill/core/browser/payments/local_card_migration_manager.h"
 #include "components/autofill/core/browser/ui/popup_types.h"
 #include "components/autofill/core/common/password_generation_util.h"
+#include "components/device_reauth/mock_biometric_authenticator.h"
 #include "components/password_manager/core/browser/mock_password_feature_manager.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
@@ -63,6 +64,8 @@ class MockPasswordManagerClient
                    password_manager::PasswordManagerClient::ReauthSucceeded)>),
               (override));
   MOCK_METHOD(void, GeneratePassword, (PasswordGenerationType), (override));
+  MOCK_METHOD(PrefService*, GetPrefs, (), (const, override));
+  MOCK_METHOD(PrefService*, GetLocalStatePrefs, (), (const, override));
 };
 
 class MockAutofillClient : public autofill::AutofillClient {
@@ -317,6 +320,8 @@ using testing::Return;
 class PasswordManagerUtilTest : public testing::Test {
  public:
   PasswordManagerUtilTest() {
+    authenticator_ =
+        base::MakeRefCounted<device_reauth::MockBiometricAuthenticator>();
     pref_service_.registry()->RegisterBooleanPref(
         password_manager::prefs::kCredentialsEnableService, true);
     pref_service_.registry()->RegisterBooleanPref(
@@ -327,9 +332,33 @@ class PasswordManagerUtilTest : public testing::Test {
     pref_service_.registry()->RegisterBooleanPref(
         password_manager::prefs::kAutoSignInEnabledGMS, true);
 #endif
+#if BUILDFLAG(IS_MAC)
+    pref_service_.registry()->RegisterBooleanPref(
+        password_manager::prefs::kBiometricAuthenticationBeforeFilling, false);
+    pref_service_.registry()->RegisterBooleanPref(
+        password_manager::prefs::kHadBiometricsAvailable, false);
+    ON_CALL(mock_client_, GetLocalStatePrefs())
+        .WillByDefault(Return(&pref_service_));
+    ON_CALL(mock_client_, GetPrefs()).WillByDefault(Return(&pref_service_));
+    ON_CALL(*authenticator_, CanAuthenticate).WillByDefault(Return(true));
+#endif
+  }
+#if BUILDFLAG(IS_MAC)
+  void SetHadBiometricsAvailable(bool available) {
+    pref_service_.SetBoolean(password_manager::prefs::kHadBiometricsAvailable,
+                             available);
   }
 
+  void SetBiometricAuthenticationBeforeFilling(bool available) {
+    pref_service_.SetBoolean(
+        password_manager::prefs::kBiometricAuthenticationBeforeFilling,
+        available);
+  }
+#endif
+
  protected:
+  MockPasswordManagerClient mock_client_;
+  scoped_refptr<device_reauth::MockBiometricAuthenticator> authenticator_;
   TestingPrefServiceSimple pref_service_;
   syncer::TestSyncService sync_service_;
 };
@@ -849,5 +878,47 @@ TEST(PasswordManagerUtil, CheckGpmBrandedNamingNotSyncing) {
   EXPECT_FALSE(use_branding);
 #endif
 }
+
+#if BUILDFLAG(IS_MAC)
+TEST_F(PasswordManagerUtilTest, CanUseBiometricAuth) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      password_manager::features::kBiometricAuthenticationForFilling);
+
+  SetHadBiometricsAvailable(/*available=*/false);
+  SetBiometricAuthenticationBeforeFilling(/*available=*/false);
+  EXPECT_FALSE(CanUseBiometricAuth(
+      authenticator_.get(),
+      device_reauth::BiometricAuthRequester::kAutofillSuggestion,
+      &mock_client_));
+
+  SetHadBiometricsAvailable(/*available=*/false);
+  SetBiometricAuthenticationBeforeFilling(/*available=*/true);
+  EXPECT_FALSE(CanUseBiometricAuth(
+      authenticator_.get(),
+      device_reauth::BiometricAuthRequester::kAutofillSuggestion,
+      &mock_client_));
+
+  SetHadBiometricsAvailable(/*available=*/true);
+  EXPECT_FALSE(CanUseBiometricAuth(
+      authenticator_.get(),
+      device_reauth::BiometricAuthRequester::kAutofillSuggestion,
+      &mock_client_));
+
+  scoped_feature_list.Reset();
+  scoped_feature_list.InitAndEnableFeature(
+      password_manager::features::kBiometricAuthenticationForFilling);
+  EXPECT_TRUE(CanUseBiometricAuth(
+      authenticator_.get(),
+      device_reauth::BiometricAuthRequester::kAutofillSuggestion,
+      &mock_client_));
+
+  SetBiometricAuthenticationBeforeFilling(/*available=*/false);
+  EXPECT_FALSE(CanUseBiometricAuth(
+      authenticator_.get(),
+      device_reauth::BiometricAuthRequester::kAutofillSuggestion,
+      &mock_client_));
+}
+#endif  // BUILDFLAG(IS_MAC)
 
 }  // namespace password_manager_util

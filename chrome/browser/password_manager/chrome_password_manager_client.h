@@ -188,6 +188,7 @@ class ChromePasswordManagerClient
       base::OnceCallback<void(ReauthSucceeded)> reauth_callback) override;
   void TriggerSignIn(signin_metrics::AccessPoint access_point) override;
   PrefService* GetPrefs() const override;
+  PrefService* GetLocalStatePrefs() const override;
   const syncer::SyncService* GetSyncService() const override;
   password_manager::PasswordStoreInterface* GetProfilePasswordStore()
       const override;

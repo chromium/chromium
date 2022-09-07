@@ -28,6 +28,14 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
+#if BUILDFLAG(IS_MAC)
+#include "components/password_manager/core/common/password_manager_pref_names.h"
+#include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/testing_pref_service.h"
+#endif
+
+class PrefService;
+
 using autofill::FieldRendererId;
 using autofill::FormData;
 using autofill::FormRendererId;
@@ -70,6 +78,8 @@ class MockPasswordManagerClient : public StubPasswordManagerClient {
               GetWebAuthnCredentialsDelegateForDriver,
               (PasswordManagerDriver*),
               (override));
+  MOCK_METHOD(PrefService*, GetPrefs, (), (const, override));
+  MOCK_METHOD(PrefService*, GetLocalStatePrefs, (), (const, override));
 };
 
 // Matcher for PasswordAndMetadata.
@@ -124,6 +134,18 @@ class PasswordFormFillingTest : public testing::Test {
         .WillByDefault(Return(&webauthn_credentials_delegate_));
     ON_CALL(webauthn_credentials_delegate_, IsWebAuthnAutofillEnabled)
         .WillByDefault(Return(false));
+
+#if BUILDFLAG(IS_MAC)
+    test_pref_service_ = std::make_unique<TestingPrefServiceSimple>();
+    test_pref_service_->registry()->RegisterBooleanPref(
+        password_manager::prefs::kBiometricAuthenticationBeforeFilling, true);
+    test_pref_service_->registry()->RegisterBooleanPref(
+        password_manager::prefs::kHadBiometricsAvailable, true);
+    ON_CALL(client_, GetPrefs())
+        .WillByDefault(Return(test_pref_service_.get()));
+    ON_CALL(client_, GetLocalStatePrefs())
+        .WillByDefault(Return(test_pref_service_.get()));
+#endif
   }
 
  protected:
@@ -135,6 +157,9 @@ class PasswordFormFillingTest : public testing::Test {
   scoped_refptr<PasswordFormMetricsRecorder> metrics_recorder_;
   std::vector<const PasswordForm*> federated_matches_;
   MockWebAuthnCredentialsDelegate webauthn_credentials_delegate_;
+#if BUILDFLAG(IS_MAC)
+  std::unique_ptr<TestingPrefServiceSimple> test_pref_service_;
+#endif
 };
 
 TEST_F(PasswordFormFillingTest, NoSavedCredentials) {

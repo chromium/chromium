@@ -67,6 +67,10 @@ PrefService* StubPasswordManagerClient::GetPrefs() const {
   return nullptr;
 }
 
+PrefService* StubPasswordManagerClient::GetLocalStatePrefs() const {
+  return nullptr;
+}
+
 const syncer::SyncService* StubPasswordManagerClient::GetSyncService() const {
   return nullptr;
 }

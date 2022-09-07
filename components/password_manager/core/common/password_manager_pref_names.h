@@ -168,6 +168,9 @@ extern const char kPasswordChangeSuccessTrackerVersion[];
 // Boolean indicating whether user enabled biometric authentication before
 // filling.
 extern const char kBiometricAuthenticationBeforeFilling[];
+// Boolean indicating whether user had ever biometrics available on their
+// device.
+extern const char kHadBiometricsAvailable[];
 #endif
 
 }  // namespace prefs

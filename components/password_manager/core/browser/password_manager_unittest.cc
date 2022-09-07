@@ -204,6 +204,7 @@ class MockPasswordManagerClient : public StubPasswordManagerClient {
               (std::unique_ptr<PasswordFormManagerForUI>),
               (override));
   MOCK_METHOD(PrefService*, GetPrefs, (), (const, override));
+  MOCK_METHOD(PrefService*, GetLocalStatePrefs, (), (const, override));
   MOCK_METHOD(const GURL&, GetLastCommittedURL, (), (const, override));
   MOCK_METHOD(bool, IsCommittedMainFrameSecure, (), (const, override));
   MOCK_METHOD(const MockStoreResultFilter*,
@@ -442,6 +443,10 @@ class PasswordManagerTest : public testing::TestWithParam<bool> {
         prefs::kProfileStoreDateLastUsedForFilling, base::Time());
     prefs_->registry()->RegisterTimePref(
         prefs::kAccountStoreDateLastUsedForFilling, base::Time());
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+    prefs_->registry()->RegisterBooleanPref(
+        password_manager::prefs::kBiometricAuthenticationBeforeFilling, true);
+#endif
     ON_CALL(client_, GetPrefs()).WillByDefault(Return(prefs_.get()));
 
     // When waiting for predictions is on, it makes tests more complicated.

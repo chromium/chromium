@@ -306,6 +306,9 @@ void PasswordManager::RegisterLocalPrefs(PrefRegistrySimple* registry) {
   registry->RegisterInt64Pref(prefs::kOsPasswordLastChanged, 0);
   registry->RegisterBooleanPref(prefs::kOsPasswordBlank, false);
 #endif
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+  registry->RegisterBooleanPref(prefs::kHadBiometricsAvailable, false);
+#endif
 }
 
 PasswordManager::PasswordManager(PasswordManagerClient* client)

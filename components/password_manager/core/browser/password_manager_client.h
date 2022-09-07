@@ -300,6 +300,9 @@ class PasswordManagerClient {
   // Gets prefs associated with this embedder.
   virtual PrefService* GetPrefs() const = 0;
 
+  // Gets local state prefs.
+  virtual PrefService* GetLocalStatePrefs() const = 0;
+
   // Gets the sync service associated with this client.
   virtual const syncer::SyncService* GetSyncService() const = 0;
 

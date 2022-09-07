@@ -166,9 +166,15 @@ const password_manager::PasswordForm* GetMatchForUpdating(
 password_manager::PasswordForm MakeNormalizedBlocklistedForm(
     password_manager::PasswordFormDigest digest);
 
+#if BUILDFLAG(IS_MAC)
+bool IsBiometricAuthenticationForFillingEnabled(
+    password_manager::PasswordManagerClient* client);
+#endif
+
 // Helper which checks if biometric authentication is available.
 bool CanUseBiometricAuth(device_reauth::BiometricAuthenticator* authenticator,
-                         device_reauth::BiometricAuthRequester requester);
+                         device_reauth::BiometricAuthRequester requester,
+                         password_manager::PasswordManagerClient* client);
 
 // Strips any authentication data, as well as query and ref portions of URL.
 GURL StripAuthAndParams(const GURL& gurl);

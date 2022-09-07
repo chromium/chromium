@@ -126,6 +126,8 @@ class MockPasswordManagerClient : public StubPasswordManagerClient {
 
   PrefService* GetPrefs() const override { return prefs_.get(); }
 
+  PrefService* GetLocalStatePrefs() const override { return prefs_.get(); }
+
   const PasswordManager* GetPasswordManager() const override {
     return &password_manager_;
   }

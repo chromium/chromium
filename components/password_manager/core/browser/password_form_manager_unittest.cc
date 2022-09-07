@@ -338,6 +338,10 @@ class PasswordFormManagerTest : public testing::Test,
         true);
     pref_service_.registry()->RegisterStringPref(
         autofill::prefs::kAutofillUploadEncodingSeed, "seed");
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+    pref_service_.registry()->RegisterBooleanPref(
+        password_manager::prefs::kBiometricAuthenticationBeforeFilling, true);
+#endif
 
     form_manager_->set_wait_for_server_predictions_for_filling(true);
 

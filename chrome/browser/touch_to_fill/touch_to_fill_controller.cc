@@ -174,7 +174,8 @@ void TouchToFillController::OnCredentialSelected(
       .Record(ukm::UkmRecorder::Get());
   if (!password_manager_util::CanUseBiometricAuth(
           authenticator_.get(),
-          device_reauth::BiometricAuthRequester::kTouchToFill)) {
+          device_reauth::BiometricAuthRequester::kTouchToFill,
+          password_client_)) {
     FillCredential(credential);
     return;
   }
