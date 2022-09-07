@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "chrome/browser/apps/intent_helper/intent_picker_features.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -32,8 +33,12 @@ class IntentPickerBubbleViewBrowserTest
       public ::testing::WithParamInterface<std::string> {
  public:
   IntentPickerBubbleViewBrowserTest() {
-    // TODO(schenney): Stop disabling Paint Holding. crbug.com/1001189
-    scoped_feature_list_.InitAndDisableFeature(blink::features::kPaintHolding);
+    auto disabled_features = {
+        // TODO(schenney): Stop disabling Paint Holding. crbug.com/1001189
+        blink::features::kPaintHolding,
+        // TODO(crbug.com/1357905): Run relevant tests against the updated UI.
+        apps::features::kLinkCapturingUiUpdate};
+    scoped_feature_list_.InitWithFeatures({}, disabled_features);
   }
 
   void OpenNewTab(const GURL& url) {
@@ -356,7 +361,6 @@ class IntentPickerBubbleViewFencedFrameBrowserTest
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
   content::test::FencedFrameTestHelper fenced_frame_helper_;
 };
 

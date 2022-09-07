@@ -80,8 +80,10 @@ class IntentChipButtonBrowserTest
     : public web_app::WebAppNavigationBrowserTest {
  public:
   IntentChipButtonBrowserTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        apps::features::kLinkCapturingUiUpdate);
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{apps::features::kLinkCapturingUiUpdate},
+        /*disabled_features=*/{apps::features::kIntentChipSkipsPicker,
+                               apps::features::kIntentChipAppIcon});
   }
 
   void SetUpOnMainThread() override {

@@ -57,7 +57,9 @@ using content::Referrer;
 
 class IntentPickerBubbleViewTest : public TestWithBrowserView {
  public:
-  IntentPickerBubbleViewTest() = default;
+  IntentPickerBubbleViewTest() {
+    feature_list_.InitAndDisableFeature(apps::features::kLinkCapturingUiUpdate);
+  }
 
   IntentPickerBubbleViewTest(const IntentPickerBubbleViewTest&) = delete;
   IntentPickerBubbleViewTest& operator=(const IntentPickerBubbleViewTest&) =
@@ -174,6 +176,8 @@ class IntentPickerBubbleViewTest : public TestWithBrowserView {
     last_close_reason_ = close_reason;
     last_selection_should_persist_ = should_persist;
   }
+
+  base::test::ScopedFeatureList feature_list_;
 
   raw_ptr<IntentPickerBubbleView> bubble_ = nullptr;
   raw_ptr<views::View> anchor_view_;
@@ -351,7 +355,7 @@ class IntentPickerBubbleViewLayoutTest
     : public IntentPickerBubbleViewTest,
       public ::testing::WithParamInterface<BubbleInterfaceType> {
  public:
-  void SetUp() override {
+  IntentPickerBubbleViewLayoutTest() {
     if (GetParam() == BubbleInterfaceType::kGridView) {
       feature_list_.InitAndEnableFeature(
           apps::features::kLinkCapturingUiUpdate);
@@ -359,8 +363,6 @@ class IntentPickerBubbleViewLayoutTest
       feature_list_.InitAndDisableFeature(
           apps::features::kLinkCapturingUiUpdate);
     }
-
-    IntentPickerBubbleViewTest::SetUp();
   }
 
  private:

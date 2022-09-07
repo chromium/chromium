@@ -18,6 +18,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/intent_helper/intent_picker_features.h"
 #include "chrome/browser/apps/intent_helper/metrics/intent_handling_metrics.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
@@ -132,6 +133,11 @@ class WidgetDestroyedWaiter : public views::WidgetObserver {
 
 class IntentPickerBubbleViewBrowserTestChromeOS : public InProcessBrowserTest {
  public:
+  IntentPickerBubbleViewBrowserTestChromeOS() {
+    // TODO(crbug.com/1357905): Run relevant tests against the updated UI.
+    feature_list_.InitAndDisableFeature(apps::features::kLinkCapturingUiUpdate);
+  }
+
   void SetUpCommandLine(base::CommandLine* command_line) override {
     arc::SetArcAvailableCommandLineForTesting(command_line);
   }
@@ -322,6 +328,7 @@ class IntentPickerBubbleViewBrowserTestChromeOS : public InProcessBrowserTest {
   }
 
  private:
+  base::test::ScopedFeatureList feature_list_;
   apps::AppServiceProxy* app_service_proxy_ = nullptr;
   std::unique_ptr<arc::FakeIntentHelperInstance> intent_helper_instance_;
   std::unique_ptr<arc::FakeAppInstance> app_instance_;
@@ -1206,14 +1213,15 @@ IN_PROC_BROWSER_TEST_F(IntentPickerBubbleViewBrowserTestChromeOS,
       apps::IntentHandlingMetrics::LinkCapturingEvent::kSettingsChanged, 1);
 }
 
-class IntentPickerBrowserTestPrerendering
+class IntentPickerBubbleViewPrerenderingBrowserTestChromeOS
     : public IntentPickerBubbleViewBrowserTestChromeOS {
  public:
-  IntentPickerBrowserTestPrerendering()
+  IntentPickerBubbleViewPrerenderingBrowserTestChromeOS()
       : prerender_helper_(base::BindRepeating(
-            &IntentPickerBrowserTestPrerendering::web_contents,
+            &IntentPickerBubbleViewPrerenderingBrowserTestChromeOS::
+                web_contents,
             base::Unretained(this))) {}
-  ~IntentPickerBrowserTestPrerendering() override = default;
+  ~IntentPickerBubbleViewPrerenderingBrowserTestChromeOS() override = default;
 
  protected:
   content::WebContents* web_contents() {
@@ -1226,7 +1234,7 @@ class IntentPickerBrowserTestPrerendering
 // Simulates prerendering an app URL that the user has opted into always
 // launching an app window for. In this case, the prerender should be canceled
 // and the app shouldn't be opened.
-IN_PROC_BROWSER_TEST_F(IntentPickerBrowserTestPrerendering,
+IN_PROC_BROWSER_TEST_F(IntentPickerBubbleViewPrerenderingBrowserTestChromeOS,
                        AppLaunchURLCancelsPrerendering) {
   // Prerendering is currently limited to same-origin pages so we need to start
   // it from an arbitrary page on the same origin, rather than about:blank.

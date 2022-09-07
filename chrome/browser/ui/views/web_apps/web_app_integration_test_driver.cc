@@ -29,6 +29,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/intent_helper/intent_picker_features.h"
 #include "chrome/browser/banners/test_app_banner_manager_desktop.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -2961,6 +2962,10 @@ WebAppIntegrationTest::WebAppIntegrationTest() : helper_(this) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   disabled_features.push_back(features::kWebAppsCrosapi);
   disabled_features.push_back(chromeos::features::kLacrosPrimary);
+#endif
+#if BUILDFLAG(IS_CHROMEOS)
+  // TODO(crbug.com/1357905): Update test driver to work with new UI.
+  disabled_features.push_back(apps::features::kLinkCapturingUiUpdate);
 #endif
   scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
 }
