@@ -14,7 +14,6 @@ include_rules = [
     "+base/bind.h",
     "+base/compiler_specific.h",
     "+base/feature_list.h",
-    "+base/immediate_crash.h",
     "+base/ios/ios_util.h",
     "+base/logging.h",
     "+base/mac/mac_util.h",

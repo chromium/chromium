@@ -8,8 +8,8 @@
 #include <malloc/malloc.h>
 #include <stddef.h>
 
+#include "base/allocator/partition_allocator/partition_alloc_base/immediate_crash.h"
 #include "base/base_export.h"
-#include "base/immediate_crash.h"
 #include "third_party/apple_apsl/malloc.h"
 
 namespace allocator_shim {
@@ -93,7 +93,7 @@ inline MallocZoneFunctions& GetFunctionsForZone(void* zone) {
     if (g_malloc_zones[i].context == zone)
       return g_malloc_zones[i];
   }
-  IMMEDIATE_CRASH();
+  PA_IMMEDIATE_CRASH();
 }
 
 }  // namespace allocator_shim
