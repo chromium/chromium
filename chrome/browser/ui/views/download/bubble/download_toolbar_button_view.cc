@@ -38,6 +38,7 @@
 namespace {
 
 constexpr int kProgressRingRadius = 9;
+constexpr int kProgressRingRadiusTouchMode = 12;
 constexpr float kProgressRingStrokeWidth = 1.7f;
 // 7.5 rows * 60 px per row = 450;
 constexpr int kMaxHeightForRowList = 450;
@@ -92,9 +93,12 @@ void DownloadToolbarButtonView::PaintButtonContents(gfx::Canvas* canvas) {
           ? GetForegroundColor(ButtonState::STATE_DISABLED)
           : GetColorProvider()->GetColor(kColorDownloadToolbarButtonActive);
 
-  int x = width() / 2 - kProgressRingRadius;
-  int y = height() / 2 - kProgressRingRadius;
-  int diameter = 2 * kProgressRingRadius;
+  int ring_radius = ui::TouchUiController::Get()->touch_ui()
+                        ? kProgressRingRadiusTouchMode
+                        : kProgressRingRadius;
+  int x = width() / 2 - ring_radius;
+  int y = height() / 2 - ring_radius;
+  int diameter = 2 * ring_radius;
   gfx::RectF ring_bounds(x, y, /*width=*/diameter, /*height=*/diameter);
 
   if (icon_info.icon_state == download::DownloadIconState::kDeepScanning ||
@@ -180,11 +184,14 @@ void DownloadToolbarButtonView::UpdateIcon() {
       icon_info.is_active
           ? GetColorProvider()->GetColor(kColorDownloadToolbarButtonActive)
           : GetColorProvider()->GetColor(kColorDownloadToolbarButtonInactive);
+  bool is_touch_mode = ui::TouchUiController::Get()->touch_ui();
   if (icon_info.icon_state == download::DownloadIconState::kProgress ||
       icon_info.icon_state == download::DownloadIconState::kDeepScanning) {
-    new_icon = &kDownloadInProgressIcon;
+    new_icon = is_touch_mode ? &kDownloadInProgressTouchIcon
+                             : &kDownloadInProgressIcon;
   } else {
-    new_icon = &kDownloadToolbarButtonIcon;
+    new_icon = is_touch_mode ? &kDownloadToolbarButtonTouchIcon
+                             : &kDownloadToolbarButtonIcon;
   }
 
   SetImageModel(ButtonState::STATE_NORMAL,
