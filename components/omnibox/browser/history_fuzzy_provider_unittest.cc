@@ -33,24 +33,23 @@ void SwapRemoveElement(Container& container, const Item& item) {
   container.pop_back();
 }
 
-// This operator implementation is for debugging.
-std::ostream& operator<<(std::ostream& os,
-                         const fuzzy::Correction& correction) {
+// These operator implementations are for debugging.
+std::ostream& operator<<(std::ostream& os, const fuzzy::Edit& edit) {
   os << '{';
-  switch (correction.kind) {
-    case fuzzy::Correction::Kind::KEEP: {
+  switch (edit.kind) {
+    case fuzzy::Edit::Kind::KEEP: {
       os << 'K';
       break;
     }
-    case fuzzy::Correction::Kind::DELETE: {
+    case fuzzy::Edit::Kind::DELETE: {
       os << 'D';
       break;
     }
-    case fuzzy::Correction::Kind::INSERT: {
+    case fuzzy::Edit::Kind::INSERT: {
       os << 'I';
       break;
     }
-    case fuzzy::Correction::Kind::REPLACE: {
+    case fuzzy::Edit::Kind::REPLACE: {
       os << 'R';
       break;
     }
@@ -59,11 +58,18 @@ std::ostream& operator<<(std::ostream& os,
       break;
     }
   }
-  os << "," << correction.at << "," << static_cast<char>(correction.new_char)
-     << "}";
-  if (correction.next) {
-    os << "~" << *correction.next;
+  os << "," << edit.at << "," << static_cast<char>(edit.new_char) << "}";
+  return os;
+}
+
+std::ostream& operator<<(std::ostream& os,
+                         const fuzzy::Correction& correction) {
+  os << '[';
+  for (size_t i = 0; i < correction.edit_count; i++) {
+    os << correction.edits[i];
+    os << " <- ";
   }
+  os << ']';
   return os;
 }
 
@@ -237,24 +243,6 @@ TEST_F(HistoryFuzzyProviderTest, ReplacementWorksAnywhere) {
           false,
           {
               u"abcdef",
-          },
-      },
-      {
-          4,
-          u"____xyz",
-          false,
-          {
-              u"abcdxyz",
-              u"tuvwxyz",
-          },
-      },
-      {
-          4,
-          u"abc____",
-          false,
-          {
-              u"abcdefg",
-              u"abcdxyz",
           },
       },
   };

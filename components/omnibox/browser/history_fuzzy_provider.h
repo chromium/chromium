@@ -26,15 +26,10 @@
 // below.
 namespace fuzzy {
 
-// Corrections are linked lists of character substitutions required to change
-// an input string that escapes the trie into a string that is contained by it.
-// These lists are expected to be extremely short, usually a single node with
-// null `next`, so dynamic allocations are minimal but allowed for the sake
-// of algorithm robustness.
-// If the `replacement` character is 0, it is interpreted as deletion.
-struct Correction {
+// An `Edit` represents a single character change to a string.
+struct Edit {
   // The kind of change to apply to text. Note, KEEP essentially means
-  // no edit, and will never be applied or kept as part of a correction chain.
+  // no edit, and will never be applied or kept as part of a `Correction`.
   enum class Kind {
     KEEP,
     DELETE,
@@ -42,35 +37,43 @@ struct Correction {
     REPLACE,
   };
 
-  Correction(const Correction&);
-  Correction(Correction&&);
-  Correction& operator=(Correction&&) = default;
-  Correction(Kind kind, size_t at, char16_t new_char);
-  Correction(Kind kind,
-             size_t at,
-             char16_t new_char,
-             std::unique_ptr<Correction> next);
-  ~Correction();
+  Edit(Kind kind, size_t at, char16_t new_char);
 
-  // Applies this correction to given text, mutating it in place.
+  // Applies this edit to given text, mutating it in place.
   void ApplyTo(std::u16string& text) const;
 
-  // This is a utility method to eliminate the need for allocation of
-  // non-applicable corrections. It returns a copy of this, or `next` if
-  // this `kind` is KEEP.
-  std::unique_ptr<Correction> GetApplicableCorrection();
-
-  // This correction's edit operation.
+  // The edit operation, the kind of change to make to text.
   Kind kind;
-
-  // Text index at which to apply correction.
-  size_t at;
 
   // Character data; relevant only for REPLACE and INSERT.
   char16_t new_char;
 
-  // A short chain of additional related corrections to apply with this one.
-  std::unique_ptr<Correction> next;
+  // Text index at which to apply change.
+  size_t at;
+};
+
+// A `Correction` is a short list of `Edit`s required to change
+// an input string that escapes the trie into a string that is contained by it.
+struct Correction {
+  // Tolerance schedules must use a `limit` of no more than `kMaxEdits`.
+  const static int kMaxEdits = 3;
+
+  // Creates a new correction including this one plus a given `Edit`.
+  Correction WithEdit(Edit edit) const;
+
+  // Applies this edit to given text, mutating it in place.
+  void ApplyTo(std::u16string& text) const;
+
+  // Number of edits to apply for the full correction.
+  size_t edit_count = 0;
+
+  // The actual edits to apply; only the first `edit_count` elements are valid.
+  // This is a fixed-size in-struct array instead of a vector because
+  // finding and building corrections is performance critical and keeping this
+  // struct simple on the stack is much faster than pounding on the allocator.
+  Edit edits[kMaxEdits] = {{Edit::Kind::KEEP, 0, '_'},
+                           {Edit::Kind::KEEP, 0, '_'},
+                           {Edit::Kind::KEEP, 0, '_'}};
 };
 
 // This utility struct defines how tolerance changes across the length
@@ -98,6 +101,7 @@ struct ToleranceSchedule {
   int step_length = 0;
 
   // Regardless of index, tolerance will not exceed this limit.
+  // Note, `limit` must not exceed `Correction::kMaxEdits`.
   int limit = 0;
 };
 

@@ -150,29 +150,10 @@ bool ShouldBypassForLowEndDevice() {
 
 namespace fuzzy {
 
-Correction::Correction(const Correction& other) {
-  kind = other.kind;
-  at = other.at;
-  new_char = other.new_char;
-  if (other.next) {
-    next = std::make_unique<Correction>(*other.next.get());
-  }
-}
+Edit::Edit(Kind kind, size_t at, char16_t new_char)
+    : kind(kind), new_char(new_char), at(at) {}
 
-Correction::Correction(Correction&&) = default;
-
-Correction::Correction(Kind kind, size_t at, char16_t new_char)
-    : kind(kind), at(at), new_char(new_char) {}
-
-Correction::Correction(Kind kind,
-                       size_t at,
-                       char16_t new_char,
-                       std::unique_ptr<Correction> next)
-    : kind(kind), at(at), new_char(new_char), next(std::move(next)) {}
-
-Correction::~Correction() = default;
-
-void Correction::ApplyTo(std::u16string& text) const {
+void Edit::ApplyTo(std::u16string& text) const {
   switch (kind) {
     case Kind::DELETE: {
       text.erase(at, 1);
@@ -192,39 +173,41 @@ void Correction::ApplyTo(std::u16string& text) const {
       break;
     }
   }
-  if (next) {
-    next->ApplyTo(text);
+}
+
+Correction Correction::WithEdit(Edit edit) const {
+  DCHECK(edit_count < Correction::kMaxEdits);
+  Correction correction = *this;
+  correction.edits[edit_count] = edit;
+  correction.edit_count++;
+  return correction;
+}
+
+void Correction::ApplyTo(std::u16string& text) const {
+  size_t i = edit_count;
+  while (i > 0) {
+    i--;
+    edits[i].ApplyTo(text);
   }
 }
 
-std::unique_ptr<Correction> Correction::GetApplicableCorrection() {
-  if (kind == Kind::KEEP) {
-    // Because this function eliminates KEEP corrections as the chain is built,
-    // it doesn't need to work recursively; a single elimination is sufficient.
-    DCHECK(!next || next->kind != Kind::KEEP);
-    return next ? std::make_unique<Correction>(*next) : nullptr;
-  } else {
-    return std::make_unique<Correction>(*this);
-  }
-}
-
-// This operator implementation is for debugging.
-std::ostream& operator<<(std::ostream& os, const Correction& correction) {
+// These operator implementations are for debugging.
+std::ostream& operator<<(std::ostream& os, const Edit& edit) {
   os << '{';
-  switch (correction.kind) {
-    case Correction::Kind::KEEP: {
+  switch (edit.kind) {
+    case Edit::Kind::KEEP: {
       os << 'K';
       break;
     }
-    case Correction::Kind::DELETE: {
+    case Edit::Kind::DELETE: {
       os << 'D';
       break;
     }
-    case Correction::Kind::INSERT: {
+    case Edit::Kind::INSERT: {
       os << 'I';
       break;
     }
-    case Correction::Kind::REPLACE: {
+    case Edit::Kind::REPLACE: {
       os << 'R';
       break;
     }
@@ -233,8 +216,17 @@ std::ostream& operator<<(std::ostream& os, const Correction& correction) {
       break;
     }
   }
-  os << "," << correction.at << "," << static_cast<char>(correction.new_char)
-     << "}";
+  os << "," << edit.at << "," << static_cast<char>(edit.new_char) << "}";
+  return os;
+}
+
+std::ostream& operator<<(std::ostream& os, const Correction& correction) {
+  os << '[';
+  for (size_t i = 0; i < correction.edit_count; i++) {
+    os << correction.edits[i];
+    os << " <- ";
+  }
+  os << ']';
   return os;
 }
 
@@ -288,6 +280,7 @@ bool Node::FindCorrections(const std::u16string& text,
   DVLOG(1) << "FindCorrections(" << text << ", " << tolerance_schedule.limit
            << ")";
   DCHECK(corrections.empty());
+  DCHECK(tolerance_schedule.limit <= Correction::kMaxEdits);
 
   if (text.length() == 0) {
     return true;
@@ -335,10 +328,9 @@ bool Node::FindCorrections(const std::u16string& text,
   };
 
   std::priority_queue<Step> pq;
-  pq.push({this, 0, 0, 0, {Correction::Kind::KEEP, 0, '_'}});
+  pq.push({this, 0, 0, 0, Correction()});
 
-  Step best{
-      nullptr, INT_MAX, SIZE_MAX, INT_MAX, {Correction::Kind::KEEP, 0, '_'}};
+  Step best{nullptr, INT_MAX, SIZE_MAX, INT_MAX, Correction()};
   int i = 0;
   // Find and return all equally-distant results as soon as distance increases
   // beyond that of first found results. Length is also considered to
@@ -370,18 +362,18 @@ bool Node::FindCorrections(const std::u16string& text,
         corrections.clear();
         // Dereference is safe because nonzero distance implies presence of
         // nontrivial correction.
-        corrections.emplace_back(*best.correction.GetApplicableCorrection());
+        corrections.emplace_back(best.correction);
       } else {
         // Equal distance.
         // Strictly greater should not be possible for this comparison.
         if (step.length >= best.length) {
           // Dereference is safe because this is another equally
           // distant correction, necessarily discovered after the first.
-          corrections.emplace_back(*step.correction.GetApplicableCorrection());
+          corrections.emplace_back(step.correction);
         }
 #if DCHECK_ALWAYS_ON
         std::u16string corrected = text;
-        step.correction.GetApplicableCorrection()->ApplyTo(corrected);
+        step.correction.ApplyTo(corrected);
         DCHECK_EQ(corrected.length(), static_cast<size_t>(step.length))
             << corrected;
 #endif
@@ -391,40 +383,35 @@ bool Node::FindCorrections(const std::u16string& text,
     int tolerance = tolerance_schedule.ToleranceAt(step.index);
     if (step.distance < tolerance) {
       // Delete
-      pq.push({step.node,
-               step.distance + 1,
-               step.index + 1,
-               step.length,
-               {Correction::Kind::DELETE, step.index, '_',
-                step.correction.GetApplicableCorrection()}});
+      pq.push(
+          {step.node, step.distance + 1, step.index + 1, step.length,
+           step.correction.WithEdit({Edit::Kind::DELETE, step.index, '_'})});
     }
     for (const auto& entry : step.node->next) {
       if (entry.first == text[step.index]) {
         // Keep
-        pq.push({entry.second.get(),
-                 step.distance,
-                 step.index + 1,
-                 step.length + 1,
-                 {Correction::Kind::KEEP, step.index, '_',
-                  step.correction.GetApplicableCorrection()}});
+        pq.push({entry.second.get(), step.distance, step.index + 1,
+                 step.length + 1, step.correction});
       } else if (step.distance < tolerance) {
         // Insert
-        pq.push({entry.second.get(),
-                 step.distance + 1,
-                 step.index,
+        pq.push({entry.second.get(), step.distance + 1, step.index,
                  step.length + 1,
-                 {Correction::Kind::INSERT, step.index, entry.first,
-                  step.correction.GetApplicableCorrection()}});
+                 step.correction.WithEdit(
+                     {Edit::Kind::INSERT, step.index, entry.first})});
         // Replace. Note, we do not replace at the same position as a previous
         // insertion because doing so could produce unnecessary duplicates.
-        if (step.correction.kind != Correction::Kind::INSERT ||
-            step.correction.at != step.index) {
-          pq.push({entry.second.get(),
-                   step.distance + 1,
-                   step.index + 1,
+
+        const Edit& step_edit =
+            step.correction.edit_count > 0
+                ? step.correction.edits[step.correction.edit_count - 1]
+                : Edit(Edit::Kind::KEEP, 0, '_');
+
+        if (step_edit.kind != Edit::Kind::INSERT ||
+            step_edit.at != step.index) {
+          pq.push({entry.second.get(), step.distance + 1, step.index + 1,
                    step.length + 1,
-                   {Correction::Kind::REPLACE, step.index, entry.first,
-                    step.correction.GetApplicableCorrection()}});
+                   step.correction.WithEdit(
+                       {Edit::Kind::REPLACE, step.index, entry.first})});
         }
       }
     }
