@@ -24,6 +24,17 @@ namespace cc {
 // transition to occur.
 class CC_EXPORT DocumentTransitionRequest {
  public:
+  struct CC_EXPORT SharedElementInfo {
+    SharedElementInfo();
+    ~SharedElementInfo();
+
+    viz::CompositorRenderPassId render_pass_id;
+    viz::SharedElementResourceId resource_id;
+  };
+
+  using SharedElementMap =
+      std::map<DocumentTransitionSharedElementId, SharedElementInfo>;
+
   // Creates a Type::kCapture type of request.
   static std::unique_ptr<DocumentTransitionRequest> CreateCapture(
       uint32_t document_tag,
@@ -52,19 +63,11 @@ class CC_EXPORT DocumentTransitionRequest {
     return std::move(commit_callback_);
   }
 
-  struct CC_EXPORT SharedElementInfo {
-    SharedElementInfo();
-    ~SharedElementInfo();
-
-    viz::CompositorRenderPassId render_pass_id;
-    viz::SharedElementResourceId resource_id;
-  };
   // This constructs a viz directive. Note that repeated calls to this function
   // would create a new sequence id for the directive, which means it would be
   // processed again by viz.
   viz::CompositorFrameTransitionDirective ConstructDirective(
-      const std::map<DocumentTransitionSharedElementId, SharedElementInfo>&
-          shared_element_render_pass_id_map) const;
+      const SharedElementMap& shared_element_render_pass_id_map) const;
 
   // Returns the sequence id for this request.
   uint32_t sequence_id() const { return sequence_id_; }

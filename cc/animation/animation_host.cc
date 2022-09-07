@@ -13,6 +13,7 @@
 #include "base/callback.h"
 #include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
+#include "base/ranges/algorithm.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
 #include "cc/animation/animation.h"
@@ -763,8 +764,8 @@ void AnimationHost::AddToTicking(scoped_refptr<Animation> animation) {
 }
 
 void AnimationHost::RemoveFromTicking(scoped_refptr<Animation> animation) {
-  auto to_erase = std::find(ticking_animations_.Write(*this).begin(),
-                            ticking_animations_.Write(*this).end(), animation);
+  auto to_erase =
+      base::ranges::find(ticking_animations_.Write(*this), animation);
   if (to_erase != ticking_animations_.Write(*this).end())
     ticking_animations_.Write(*this).erase(to_erase);
 }
@@ -787,9 +788,8 @@ void AnimationHost::SetLayerTreeMutator(
 
 WorkletAnimation* AnimationHost::FindWorkletAnimation(WorkletAnimationId id) {
   // TODO(majidvp): Use a map to make lookup O(1)
-  auto animation = std::find_if(
-      ticking_animations_.Read(*this).begin(),
-      ticking_animations_.Read(*this).end(), [id](auto& it) {
+  auto animation =
+      base::ranges::find_if(ticking_animations_.Read(*this), [id](auto& it) {
         return it->IsWorkletAnimation() &&
                ToWorkletAnimation(it.get())->worklet_animation_id() == id;
       });

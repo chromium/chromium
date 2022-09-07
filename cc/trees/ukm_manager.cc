@@ -4,10 +4,10 @@
 
 #include "cc/trees/ukm_manager.h"
 
-#include <algorithm>
 #include <utility>
 
 #include "base/notreached.h"
+#include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "cc/metrics/compositor_frame_reporter.h"
 #include "cc/metrics/throughput_ukm_reporter.h"
@@ -356,11 +356,9 @@ void UkmManager::RecordEventLatencyUKM(
     // a begin-impl, and the event was handled on the renderer before that frame
     // ended). To handle such cases, find the first stage that happens after the
     // event's processing finished on the renderer.
-    auto stage_it = std::find_if(
-        stage_history.begin(), stage_history.end(),
-        [dispatch_timestamp](const CompositorFrameReporter::StageData& stage) {
-          return stage.start_time >= dispatch_timestamp;
-        });
+    auto stage_it = base::ranges::lower_bound(
+        stage_history, dispatch_timestamp, {},
+        &CompositorFrameReporter::StageData::start_time);
     // TODO(crbug.com/1330903): Ideally, at least the start time of
     // SubmitCompositorFrameToPresentationCompositorFrame stage should be
     // greater than or equal to the final event dispatch timestamp, but

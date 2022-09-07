@@ -7,17 +7,18 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include <algorithm>
 #include <limits>
 #include <string>
 
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/ranges/algorithm.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/threading/thread_checker.h"
 #include "base/trace_event/traced_value.h"
@@ -230,10 +231,7 @@ void InsertNodeForTask(TaskGraph* graph,
                        uint16_t category,
                        uint16_t priority,
                        size_t dependencies) {
-  DCHECK(std::find_if(graph->nodes.begin(), graph->nodes.end(),
-                      [&task](const TaskGraph::Node& node) {
-                        return node.task == task;
-                      }) == graph->nodes.end());
+  DCHECK(!base::Contains(graph->nodes, task, &TaskGraph::Node::task));
   graph->nodes.emplace_back(task, category, priority, dependencies);
 }
 
@@ -275,10 +273,8 @@ void InsertNodesForRasterTask(TaskGraph* graph,
     dependencies++;
 
     // Add decode task if it doesn't already exist in graph.
-    auto decode_it = std::find_if(graph->nodes.begin(), graph->nodes.end(),
-                                  [decode_task](const TaskGraph::Node& node) {
-                                    return node.task == decode_task;
-                                  });
+    auto decode_it =
+        base::ranges::find(graph->nodes, decode_task, &TaskGraph::Node::task);
 
     // In rare circumstances, a background category task may come in before a
     // foreground category task. In these cases, upgrade any background category
@@ -1132,10 +1128,8 @@ void TileManager::ScheduleTasks(PrioritizedWorkToSchedule work_to_schedule) {
   work_to_schedule.extra_prepaint_images.clear();
 
   for (auto& task : new_locked_image_tasks) {
-    auto decode_it = std::find_if(graph_.nodes.begin(), graph_.nodes.end(),
-                                  [&task](const TaskGraph::Node& node) {
-                                    return node.task == task.get();
-                                  });
+    auto decode_it =
+        base::ranges::find(graph_.nodes, task.get(), &TaskGraph::Node::task);
     // If this task is already in the graph, then we don't have to insert it.
     if (decode_it != graph_.nodes.end())
       continue;

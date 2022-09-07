@@ -24,6 +24,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/trace_event/trace_event.h"
@@ -1737,10 +1738,8 @@ LayerImpl* LayerTreeImpl::LayerById(int id) const {
 // TODO(masonf): If this shows up on profiles, this could use
 // a layer_element_map_ approach similar to LayerById().
 LayerImpl* LayerTreeImpl::LayerByElementId(ElementId element_id) const {
-  auto it =
-      std::find_if(rbegin(), rend(), [&element_id](LayerImpl* layer_impl) {
-        return layer_impl->element_id() == element_id;
-      });
+  auto it = base::ranges::find(base::Reversed(*this), element_id,
+                               &LayerImpl::element_id);
   if (it == rend())
     return nullptr;
   return *it;
@@ -2139,7 +2138,7 @@ void LayerTreeImpl::RegisterPictureLayerImpl(PictureLayerImpl* layer) {
 }
 
 void LayerTreeImpl::UnregisterPictureLayerImpl(PictureLayerImpl* layer) {
-  auto it = std::find(picture_layers_.begin(), picture_layers_.end(), layer);
+  auto it = base::ranges::find(picture_layers_, layer);
   DCHECK(it != picture_layers_.end());
   picture_layers_.erase(it);
 

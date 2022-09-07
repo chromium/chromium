@@ -4,7 +4,6 @@
 
 #include "cc/document_transition/document_transition_request.h"
 
-#include <algorithm>
 #include <map>
 #include <memory>
 #include <sstream>
@@ -14,6 +13,7 @@
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/memory/ptr_util.h"
+#include "base/ranges/algorithm.h"
 #include "cc/document_transition/document_transition_shared_element_id.h"
 #include "components/viz/common/quads/compositor_frame_transition_directive.h"
 #include "components/viz/common/quads/compositor_render_pass.h"
@@ -82,17 +82,14 @@ DocumentTransitionRequest::~DocumentTransitionRequest() = default;
 
 viz::CompositorFrameTransitionDirective
 DocumentTransitionRequest::ConstructDirective(
-    const std::map<DocumentTransitionSharedElementId, SharedElementInfo>&
-        shared_element_render_pass_id_map) const {
+    const SharedElementMap& shared_element_render_pass_id_map) const {
   std::vector<viz::CompositorFrameTransitionDirective::SharedElement>
       shared_elements(shared_element_count_);
   auto capture_resource_ids = capture_resource_ids_;
   for (uint32_t i = 0; i < shared_elements.size(); ++i) {
-    auto it = std::find_if(
-        shared_element_render_pass_id_map.begin(),
-        shared_element_render_pass_id_map.end(),
-        [this, i](const std::pair<const DocumentTransitionSharedElementId,
-                                  SharedElementInfo>& value) {
+    auto it = base::ranges::find_if(
+        shared_element_render_pass_id_map,
+        [this, i](const SharedElementMap::value_type& value) {
           return value.first.Matches(document_tag_, i);
         });
     if (it == shared_element_render_pass_id_map.end())

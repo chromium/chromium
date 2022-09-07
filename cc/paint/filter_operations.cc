@@ -5,10 +5,12 @@
 #include "cc/paint/filter_operations.h"
 
 #include <stddef.h>
+
 #include <cmath>
 #include <numeric>
 #include <utility>
 
+#include "base/containers/contains.h"
 #include "base/trace_event/traced_value.h"
 #include "base/values.h"
 #include "cc/paint/filter_operation.h"
@@ -190,10 +192,7 @@ bool FilterOperations::HasReferenceFilter() const {
 }
 
 bool FilterOperations::HasFilterOfType(FilterOperation::FilterType type) const {
-  return operations_.end() !=
-         std::find_if(
-             operations_.begin(), operations_.end(),
-             [type](const FilterOperation& op) { return op.type() == type; });
+  return base::Contains(operations_, type, &FilterOperation::type);
 }
 
 FilterOperations FilterOperations::Blend(const FilterOperations& from,

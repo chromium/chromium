@@ -241,6 +241,11 @@ class CC_EXPORT LayerTreeImpl {
       ++it_;
       return *this;
     }
+    IteratorAdapter operator++(int) {
+      IteratorAdapter other(*this);
+      ++*this;
+      return other;
+    }
 
    private:
     Iterator it_;

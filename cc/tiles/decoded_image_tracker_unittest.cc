@@ -2,14 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "cc/tiles/decoded_image_tracker.h"
+
 #include <unordered_map>
 #include <vector>
 
 #include "base/bind.h"
+#include "base/containers/contains.h"
+#include "base/ranges/algorithm.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "cc/paint/paint_image_builder.h"
 #include "cc/test/skia_common.h"
-#include "cc/tiles/decoded_image_tracker.h"
 #include "cc/tiles/image_controller.h"
 #include "cc/tiles/software_image_decode_cache.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -21,12 +24,8 @@ class TestImageController : public ImageController {
   TestImageController() : ImageController(nullptr, nullptr) {}
 
   void UnlockImageDecode(ImageDecodeRequestId id) override {
-    auto it = std::find_if(
-        locked_ids_.begin(), locked_ids_.end(),
-        [id](const std::pair<const ImageDecodeRequestId,
-                             SoftwareImageDecodeCache::CacheKey>& item) {
-          return item.first == id;
-        });
+    auto it =
+        base::ranges::find(locked_ids_, id, &LockedIds::value_type::first);
     ASSERT_FALSE(it == locked_ids_.end());
     locked_ids_.erase(it);
   }
@@ -46,21 +45,16 @@ class TestImageController : public ImageController {
     SoftwareImageDecodeCache::CacheKey key =
         SoftwareImageDecodeCache::CacheKey::FromDrawImage(
             image, kRGBA_8888_SkColorType);
-    return std::find_if(
-               locked_ids_.begin(), locked_ids_.end(),
-               [&key](
-                   const std::pair<const ImageDecodeRequestId,
-                                   SoftwareImageDecodeCache::CacheKey>& item) {
-                 return item.second == key;
-               }) != locked_ids_.end();
+    return base::Contains(locked_ids_, key, &LockedIds::value_type::second);
   }
 
   size_t num_locked_images() { return locked_ids_.size(); }
 
  private:
+  using LockedIds = std::unordered_map<ImageDecodeRequestId,
+                                       SoftwareImageDecodeCache::CacheKey>;
   ImageDecodeRequestId next_id_ = 1;
-  std::unordered_map<ImageDecodeRequestId, SoftwareImageDecodeCache::CacheKey>
-      locked_ids_;
+  LockedIds locked_ids_;
 };
 
 class DecodedImageTrackerTest : public testing::Test {

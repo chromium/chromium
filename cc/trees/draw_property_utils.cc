@@ -5,6 +5,7 @@
 #include "cc/trees/draw_property_utils.h"
 
 #include <stddef.h>
+
 #include <algorithm>
 #include <utility>
 #include <vector>
@@ -14,6 +15,7 @@
 #include "base/containers/stack.h"
 #include "base/logging.h"
 #include "base/notreached.h"
+#include "base/ranges/algorithm.h"
 #include "build/build_config.h"
 #include "cc/base/math_util.h"
 #include "cc/layers/draw_properties.h"
@@ -1624,10 +1626,9 @@ bool LogDoubleBackgroundBlur(const LayerTreeImpl& layer_tree_impl,
           gfx::Rect screen_space_rect = MathUtil::MapEnclosingClippedRect(
               render_surface->screen_space_transform(),
               render_surface->content_rect());
-          auto it = std::find_if(
-              rects.begin(), rects.end(),
-              [&screen_space_rect](
-                  const std::pair<const LayerImpl*, gfx::Rect>& r) {
+          auto it = base::ranges::find_if(
+              rects, [&screen_space_rect](
+                         const std::pair<const LayerImpl*, gfx::Rect>& r) {
                 return r.second.Intersects(screen_space_rect);
               });
           if (rects.end() == it) {
