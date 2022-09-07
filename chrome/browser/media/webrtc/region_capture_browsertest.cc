@@ -447,8 +447,16 @@ IN_PROC_BROWSER_TEST_F(RegionCaptureBrowserTest, CropToAllowedToUncrop) {
   EXPECT_TRUE(tab.CropTo("undefined", Frame::kTopLevelDocument));
 }
 
+// TODO(crbug.com/1360552): Flaky on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_CropToForUncroppingAllowedOnUncroppedTracks \
+  DISABLED_CropToForUncroppingAllowedOnUncroppedTracks
+#else
+#define MAYBE_CropToForUncroppingAllowedOnUncroppedTracks \
+  CropToForUncroppingAllowedOnUncroppedTracks
+#endif
 IN_PROC_BROWSER_TEST_F(RegionCaptureBrowserTest,
-                       CropToForUncroppingAllowedOnUncroppedTracks) {
+                       MAYBE_CropToForUncroppingAllowedOnUncroppedTracks) {
   SetUpTest(Frame::kTopLevelDocument, /*self_capture=*/true);
   TabInfo& tab = tabs_[kMainTab];
 
