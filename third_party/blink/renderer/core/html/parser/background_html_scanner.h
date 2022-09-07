@@ -52,22 +52,21 @@ class CORE_EXPORT BackgroundHTMLScanner {
     static std::unique_ptr<ScriptTokenScanner> Create(
         ScriptableDocumentParser* parser);
 
+    struct OptimizationParams {
+      scoped_refptr<base::SequencedTaskRunner> task_runner;
+      wtf_size_t min_size = 0;
+      bool enabled = false;
+    };
     ScriptTokenScanner(ScriptableDocumentParser* parser,
-                       scoped_refptr<base::SequencedTaskRunner> task_runner,
-                       bool precompile_scripts,
-                       bool pretokenize_css);
+                       OptimizationParams precompile_scripts_params,
+                       OptimizationParams pretokenize_css_params);
 
     void ScanToken(const HTMLToken& token);
 
     void set_first_script_in_scan(bool value) { first_script_in_scan_ = value; }
 
-    void UseTaskRunnerForCSSForTesting() {
-      use_task_runner_for_css_for_testing_ = true;
-    }
-
    private:
     CrossThreadWeakPersistent<ScriptableDocumentParser> parser_;
-    scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
     enum class InsideTag { kNone, kScript, kStyle };
     InsideTag in_tag_ = InsideTag::kNone;
@@ -75,10 +74,8 @@ class CORE_EXPORT BackgroundHTMLScanner {
     HashSet<wtf_size_t> css_text_hashes_;
 
     bool first_script_in_scan_ = false;
-    bool precompile_scripts_;
-    bool pretokenize_css_;
-
-    bool use_task_runner_for_css_for_testing_ = false;
+    OptimizationParams precompile_scripts_params_;
+    OptimizationParams pretokenize_css_params_;
   };
 
   // Creates a sequence bound BackgroundHTMLScanner which will live on a
