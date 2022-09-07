@@ -6139,21 +6139,20 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessWebViewTest, SubframeProcessReuse) {
 
   // Load an app with a <webview> guest that starts at a data: URL.
   LoadAppWithGuest("web_view/simple");
-  content::WebContents* guest = GetGuestWebContents();
+  guest_view::GuestViewBase* guest = GetGuestView();
   ASSERT_TRUE(guest);
 
   // Navigate <webview> to a cross-site page with a same-site iframe.
   const GURL start_url =
       embedded_test_server()->GetURL("a.test", "/iframe.html");
-  EXPECT_TRUE(BrowserInitNavigationToUrl(GetGuestView(), start_url));
+  EXPECT_TRUE(BrowserInitNavigationToUrl(guest, start_url));
 
   // Navigate <webview> subframe cross-site.
   const GURL frame_url =
       embedded_test_server()->GetURL("b.test", "/title1.html");
-  EXPECT_TRUE(NavigateIframeToURL(guest, "test", frame_url));
   content::RenderFrameHost* subframe =
-      content::ChildFrameAt(guest->GetPrimaryMainFrame(), 0);
-
+      content::ChildFrameAt(guest->GetGuestMainFrame(), 0);
+  EXPECT_TRUE(NavigateToURLFromRenderer(subframe, frame_url));
   // Attach a second <webview>.
   ASSERT_TRUE(content::ExecuteScript(
       GetEmbedderWebContents(),
@@ -6162,32 +6161,33 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessWebViewTest, SubframeProcessReuse) {
                          "document.body.appendChild(w);",
                          start_url.spec().c_str())));
   GetGuestViewManager()->WaitForNumGuestsCreated(2u);
-  auto* guest2 = GetGuestViewManager()->DeprecatedGetLastGuestCreated();
-  EXPECT_TRUE(content::WaitForLoadStop(guest2));
+  auto* guest2 = GetGuestViewManager()->GetLastGuestViewCreated();
   ASSERT_NE(guest, guest2);
 
   // Navigate second <webview> cross-site.  Use NavigateToURL() to swap
   // BrowsingInstances.
   const GURL second_guest_url =
       embedded_test_server()->GetURL("c.test", "/iframe.html");
-  EXPECT_TRUE(BrowserInitNavigationToUrl(
-      GetGuestViewManager()->GetLastGuestViewCreated(), second_guest_url));
-  EXPECT_NE(guest->GetPrimaryMainFrame()->GetSiteInstance(),
-            guest2->GetPrimaryMainFrame()->GetSiteInstance());
-  EXPECT_NE(guest->GetPrimaryMainFrame()->GetProcess(),
-            guest2->GetPrimaryMainFrame()->GetProcess());
+  EXPECT_TRUE(BrowserInitNavigationToUrl(guest2, second_guest_url));
+  EXPECT_NE(guest->GetGuestMainFrame()->GetSiteInstance(),
+            guest2->GetGuestMainFrame()->GetSiteInstance());
+  EXPECT_NE(guest->GetGuestMainFrame()->GetProcess(),
+            guest2->GetGuestMainFrame()->GetProcess());
   EXPECT_FALSE(
-      guest->GetPrimaryMainFrame()->GetSiteInstance()->IsRelatedSiteInstance(
-          guest2->GetPrimaryMainFrame()->GetSiteInstance()));
-
+      guest->GetGuestMainFrame()->GetSiteInstance()->IsRelatedSiteInstance(
+          guest2->GetGuestMainFrame()->GetSiteInstance()));
   // Navigate second <webview> subframe to the same site as the first <webview>
   // subframe, ending up with A(B) in `guest` and C(B) in `guest2`.  These
   // subframes should be in the same (guest's) StoragePartition, but different
   // SiteInstances and BrowsingInstances. Nonetheless, due to the subframe
   // reuse policy, they should share the same process.
-  EXPECT_TRUE(NavigateIframeToURL(guest2, "test", frame_url));
   content::RenderFrameHost* subframe2 =
-      content::ChildFrameAt(guest2->GetPrimaryMainFrame(), 0);
+      content::ChildFrameAt(guest2->GetGuestMainFrame(), 0);
+  ASSERT_TRUE(subframe2);
+  EXPECT_TRUE(NavigateToURLFromRenderer(subframe2, frame_url));
+
+  subframe = content::ChildFrameAt(guest->GetGuestMainFrame(), 0);
+  subframe2 = content::ChildFrameAt(guest2->GetGuestMainFrame(), 0);
   EXPECT_NE(subframe->GetSiteInstance(), subframe2->GetSiteInstance());
   EXPECT_EQ(subframe->GetSiteInstance()->GetStoragePartitionConfig(),
             subframe2->GetSiteInstance()->GetStoragePartitionConfig());
