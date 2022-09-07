@@ -191,7 +191,6 @@ void VideoRendererImpl::Initialize(
   }
 
   low_delay_ = ShouldUseLowDelayMode(demuxer_stream_);
-  UMA_HISTOGRAM_BOOLEAN("Media.VideoRenderer.LowDelay", low_delay_);
   if (low_delay_) {
     MEDIA_LOG(DEBUG, media_log_) << "Video rendering in low delay mode.";
 
