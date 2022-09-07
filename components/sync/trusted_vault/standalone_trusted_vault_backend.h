@@ -70,7 +70,7 @@ class StandaloneTrustedVaultBackend
   void WriteDegradedRecoverabilityState(
       const sync_pb::LocalTrustedVaultDegradedRecoverabilityState&
           degraded_recoverability_state) override;
-  void OnDegradedRecoverabilityChanged(bool value) override;
+  void OnDegradedRecoverabilityChanged() override;
 
   // Restores state saved in |file_path_|, should be called before using the
   // object.

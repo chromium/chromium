@@ -214,10 +214,8 @@ void StandaloneTrustedVaultBackend::WriteDegradedRecoverabilityState(
   WriteToDisk(data_, file_path_);
 }
 
-void StandaloneTrustedVaultBackend::OnDegradedRecoverabilityChanged(
-    bool value) {
-  // TODO(crbug.com/1247990): To be implemented.
-  NOTIMPLEMENTED();
+void StandaloneTrustedVaultBackend::OnDegradedRecoverabilityChanged() {
+  delegate_->NotifyRecoverabilityDegradedChanged();
 }
 
 void StandaloneTrustedVaultBackend::ReadDataFromDisk() {

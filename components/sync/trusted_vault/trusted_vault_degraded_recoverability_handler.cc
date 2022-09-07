@@ -108,6 +108,7 @@ void TrustedVaultDegradedRecoverabilityHandler::Refresh() {
 void TrustedVaultDegradedRecoverabilityHandler::
     OnRecoverabilityIsDegradedDownloaded(
         TrustedVaultRecoverabilityStatus status) {
+  bool old_is_recoverability_degraded = is_recoverability_degraded_;
   switch (status) {
     case TrustedVaultRecoverabilityStatus::kDegraded:
       is_recoverability_degraded_ = true;
@@ -118,6 +119,9 @@ void TrustedVaultDegradedRecoverabilityHandler::
     case TrustedVaultRecoverabilityStatus::kError:
       // TODO(crbug.com/1247990): To be handled.
       break;
+  }
+  if (is_recoverability_degraded_ != old_is_recoverability_degraded) {
+    delegate_->OnDegradedRecoverabilityChanged();
   }
   last_refresh_time_ = base::TimeTicks::Now();
   delegate_->WriteDegradedRecoverabilityState(MakeDegradedRecoverabilityState(

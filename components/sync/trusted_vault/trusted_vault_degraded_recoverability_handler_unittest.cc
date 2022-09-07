@@ -84,7 +84,7 @@ class MockDelegate
               WriteDegradedRecoverabilityState,
               (const sync_pb::LocalTrustedVaultDegradedRecoverabilityState&),
               (override));
-  MOCK_METHOD(void, OnDegradedRecoverabilityChanged, (bool), (override));
+  MOCK_METHOD(void, OnDegradedRecoverabilityChanged, (), (override));
 };
 
 class TrustedVaultDegradedRecoverabilityHandlerTest : public ::testing::Test {
@@ -207,6 +207,7 @@ TEST_F(TrustedVaultDegradedRecoverabilityHandlerTest,
         std::move(callback).Run(TrustedVaultRecoverabilityStatus::kDegraded);
         return std::make_unique<TrustedVaultConnection::Request>();
       });
+  EXPECT_CALL(delegate_, OnDegradedRecoverabilityChanged).Times(0);
   EXPECT_CALL(delegate_,
               WriteDegradedRecoverabilityState(DegradedRecoverabilityStateEq(
                   degraded_recoverability_state)));
@@ -231,6 +232,7 @@ TEST_F(
         std::move(callback).Run(TrustedVaultRecoverabilityStatus::kNotDegraded);
         return std::make_unique<TrustedVaultConnection::Request>();
       });
+  EXPECT_CALL(delegate_, OnDegradedRecoverabilityChanged);
   EXPECT_CALL(delegate_,
               WriteDegradedRecoverabilityState(DegradedRecoverabilityStateEq(
                   degraded_recoverability_state)));
