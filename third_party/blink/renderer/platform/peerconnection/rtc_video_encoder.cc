@@ -562,9 +562,9 @@ class RTCVideoEncoder::Impl
   // the frame is successfully created; false otherwise.
   bool CreateBlackGpuMemoryBufferFrame(const gfx::Size& natural_size);
 
-  // Notify that an input frame is finished for encoding.  |index| is the index
+  // Notify that an input frame is finished for encoding. |index| is the index
   // of the completed frame in |input_buffers_|.
-  void EncodeFrameFinished(int index);
+  void InputBufferReleased(int index);
 
   // Checks if the frame size is different than hardware accelerator
   // requirements.
@@ -842,7 +842,7 @@ void RTCVideoEncoder::Impl::Enqueue(const webrtc::VideoFrame* input_frame,
   // If there are no free input and output buffers, drop the frame to avoid a
   // deadlock. If there is a free input buffer and |use_native_input_| is false,
   // EncodeOneFrame will run and unblock Encode(). If there are no free input
-  // buffers but there is a free output buffer, EncodeFrameFinished will be
+  // buffers but there is a free output buffer, InputBufferReleased() will be
   // called later to unblock Encode().
   //
   // The caller of Encode() holds a webrtc lock. The deadlock happens when:
@@ -1292,7 +1292,7 @@ void RTCVideoEncoder::Impl::EncodeOneFrame() {
   DCHECK(input_next_frame_);
   DCHECK(!input_buffers_free_.IsEmpty());
 
-  // EncodeOneFrame() may re-enter EncodeFrameFinished() if VEA::Encode() fails,
+  // EncodeOneFrame() may re-enter InputBufferReleased() if VEA::Encode() fails,
   // we receive a VEA::NotifyError(), and the media::VideoFrame we pass to
   // Encode() gets destroyed early.  Handle this by resetting our
   // input_next_frame_* state before we hand off the VideoFrame to the VEA.
@@ -1305,7 +1305,6 @@ void RTCVideoEncoder::Impl::EncodeOneFrame() {
     return;
   }
 
-  const int index = input_buffers_free_.back();
   scoped_refptr<media::VideoFrame> frame;
   rtc::scoped_refptr<webrtc::VideoFrameBuffer> buffer =
       next_frame->video_frame_buffer();
@@ -1378,6 +1377,7 @@ void RTCVideoEncoder::Impl::EncodeOneFrame() {
         return;
       }
     } else {
+      const int index = input_buffers_free_.back();
       if (!input_buffers_[index]) {
         const size_t input_frame_buffer_size =
             media::VideoFrame::AllocationSize(media::PIXEL_FORMAT_I420,
@@ -1434,11 +1434,13 @@ void RTCVideoEncoder::Impl::EncodeOneFrame() {
       // |frame| becomes STORAGE_SHMEM. Writing the buffer is not permitted
       // after here.
       frame->BackWithSharedMemory(&region);
+
+      input_buffers_free_.pop_back();
+      frame->AddDestructionObserver(media::BindToCurrentLoop(
+          WTF::Bind(&RTCVideoEncoder::Impl::InputBufferReleased,
+                    scoped_refptr<RTCVideoEncoder::Impl>(this), index)));
     }
   }
-  frame->AddDestructionObserver(media::BindToCurrentLoop(
-      WTF::Bind(&RTCVideoEncoder::Impl::EncodeFrameFinished,
-                scoped_refptr<RTCVideoEncoder::Impl>(this), index)));
   if (!failed_timestamp_match_) {
     DCHECK(std::find_if(pending_frames_.begin(), pending_frames_.end(),
                         [&frame](const PendingFrame& entry) {
@@ -1449,7 +1451,6 @@ void RTCVideoEncoder::Impl::EncodeOneFrame() {
                                  ActiveSpatialResolutions());
   }
   video_encoder_->Encode(frame, next_frame_keyframe);
-  input_buffers_free_.pop_back();
   async_encode_event_.SetAndReset(WEBRTC_VIDEO_CODEC_OK);
 }
 
@@ -1461,11 +1462,6 @@ void RTCVideoEncoder::Impl::EncodeOneFrameWithNativeInput() {
   DCHECK(input_buffers_.IsEmpty() && input_buffers_free_.IsEmpty());
   DCHECK(input_next_frame_);
 
-  // EncodeOneFrameWithNativeInput() may re-enter EncodeFrameFinished() if
-  // VEA::Encode() fails, we receive a VEA::NotifyError(), and the
-  // media::VideoFrame we pass to Encode() gets destroyed early.  Handle this by
-  // resetting our input_next_frame_* state before we hand off the VideoFrame to
-  // the VEA.
   const webrtc::VideoFrame* next_frame = input_next_frame_;
   const bool next_frame_keyframe = input_next_frame_keyframe_;
   input_next_frame_ = nullptr;
@@ -1506,10 +1502,6 @@ void RTCVideoEncoder::Impl::EncodeOneFrameWithNativeInput() {
     return;
   }
 
-  constexpr int kDummyIndex = -1;
-  frame->AddDestructionObserver(media::BindToCurrentLoop(
-      WTF::Bind(&RTCVideoEncoder::Impl::EncodeFrameFinished,
-                scoped_refptr<RTCVideoEncoder::Impl>(this), kDummyIndex)));
   if (!failed_timestamp_match_) {
     DCHECK(std::find_if(pending_frames_.begin(), pending_frames_.end(),
                         [&frame](const PendingFrame& entry) {
@@ -1550,19 +1542,14 @@ bool RTCVideoEncoder::Impl::CreateBlackGpuMemoryBufferFrame(
   return true;
 }
 
-void RTCVideoEncoder::Impl::EncodeFrameFinished(int index) {
-  DVLOG(3) << "Impl::EncodeFrameFinished(): index=" << index;
+void RTCVideoEncoder::Impl::InputBufferReleased(int index) {
+  DVLOG(3) << "Impl::InputBufferReleased(): index=" << index;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(!use_native_input_);
 
   // Destroy() against this has been called. Don't proceed the frame completion.
   if (!video_encoder_)
     return;
-
-  if (use_native_input_) {
-    if (input_next_frame_)
-      EncodeOneFrameWithNativeInput();
-    return;
-  }
 
   DCHECK_GE(index, 0);
   DCHECK_LT(index, static_cast<int>(input_buffers_.size()));
