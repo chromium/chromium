@@ -4,7 +4,6 @@
 
 #include "ash/public/cpp/tab_cluster/undirected_graph.h"
 
-#include "ash/public/cpp/tab_cluster/undirected_graph.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

@@ -8,7 +8,6 @@
 
 #include "ash/public/cpp/autotest_private_api_utils.h"
 #include "ash/test/ash_test_base.h"
-#include "ash/window_user_data.h"
 #include "ui/aura/window.h"
 #include "ui/compositor/layer_type.h"
 
