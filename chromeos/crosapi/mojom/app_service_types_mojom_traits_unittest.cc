@@ -1175,15 +1175,13 @@ TEST(AppServiceTypesMojomTraitsTest, PreferredAppChanges) {
           input, output));
 
   EXPECT_EQ(input->added_filters.size(), output->added_filters.size());
-  for (const auto& added_filters : input->added_filters) {
-    EXPECT_TRUE(IsEqual(added_filters.second,
-                        output->added_filters[added_filters.first]));
+  for (const auto& filter : input->added_filters) {
+    EXPECT_TRUE(IsEqual(filter.second, output->added_filters[filter.first]));
   }
 
   EXPECT_EQ(input->removed_filters.size(), output->removed_filters.size());
-  for (const auto& removed_filters : input->removed_filters) {
-    EXPECT_TRUE(IsEqual(removed_filters.second,
-                        output->removed_filters[removed_filters.first]));
+  for (const auto& filter : input->removed_filters) {
+    EXPECT_TRUE(IsEqual(filter.second, output->removed_filters[filter.first]));
   }
 }
 

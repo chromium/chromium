@@ -954,8 +954,8 @@ mojom::ManagedSubjectAltNameMatchListPtr GetManagedSubjectAltNameMatchList(
 
   if (value->is_list()) {
     std::vector<mojom::SubjectAltNamePtr> active;
-    for (const base::Value& value : value->GetListDeprecated())
-      active.push_back(GetSubjectAltName(&value));
+    for (const base::Value& e : value->GetListDeprecated())
+      active.push_back(GetSubjectAltName(&e));
     result->active_value = std::move(active);
     return result;
   }
@@ -1120,8 +1120,8 @@ mojom::ManagedApnListPtr GetManagedApnList(const base::Value* value) {
   if (value->is_list()) {
     auto result = mojom::ManagedApnList::New();
     std::vector<mojom::ApnPropertiesPtr> active;
-    for (const base::Value& value : value->GetListDeprecated())
-      active.push_back(GetApnProperties(&value));
+    for (const base::Value& e : value->GetListDeprecated())
+      active.push_back(GetApnProperties(&e));
     result->active_value = std::move(active);
     return result;
   } else if (value->is_dict()) {
@@ -1445,8 +1445,8 @@ mojom::ManagedWireGuardPeerListPtr GetManagedWireGuardPeerList(
     return result;
   if (value->is_list()) {
     std::vector<mojom::WireGuardPeerPropertiesPtr> active;
-    for (const base::Value& value : value->GetListDeprecated())
-      active.push_back(GetWireGuardPeerProperties(&value));
+    for (const base::Value& e : value->GetListDeprecated())
+      active.push_back(GetWireGuardPeerProperties(&e));
     result->active_value = std::move(active);
     return result;
   }
