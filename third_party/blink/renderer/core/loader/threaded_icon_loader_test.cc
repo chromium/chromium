@@ -27,6 +27,7 @@ constexpr char kIconLoaderBaseUrl[] = "http://test.com/";
 constexpr char kIconLoaderBaseDir[] = "notifications/";
 constexpr char kIconLoaderIcon100x100[] = "100x100.png";
 constexpr char kIconLoaderInvalidIcon[] = "file.txt";
+constexpr char kIconLoaderSVG100x100[] = "100x100.svg";
 
 class ThreadedIconLoaderTest : public PageTestBase {
  public:
@@ -42,10 +43,11 @@ class ThreadedIconLoaderTest : public PageTestBase {
 
   // Registers a mocked url. When fetched, |fileName| will be loaded from the
   // test data directory.
-  KURL RegisterMockedURL(const String& file_name) {
+  KURL RegisterMockedURL(const String& file_name,
+                         const String& mime_type = "image/png") {
     return url_test_helpers::RegisterMockedURLLoadFromBase(
         kIconLoaderBaseUrl, test::CoreTestDataPath(kIconLoaderBaseDir),
-        file_name, "image/png");
+        file_name, mime_type);
   }
 
   std::pair<SkBitmap, double> LoadIcon(
@@ -151,6 +153,29 @@ TEST_F(ThreadedIconLoaderTest, ResizeFailed) {
   EXPECT_EQ(icon.width(), 100);
   EXPECT_EQ(icon.height(), 100);
   EXPECT_EQ(resize_scale, 1.0);
+}
+
+TEST_F(ThreadedIconLoaderTest, LoadSVG) {
+  auto result =
+      LoadIcon(RegisterMockedURL(kIconLoaderSVG100x100, "image/svg+xml"));
+  const SkBitmap& icon = result.first;
+  double resize_scale = result.second;
+
+  ASSERT_FALSE(icon.isNull());
+  EXPECT_FALSE(icon.drawsNothing());
+  EXPECT_EQ(icon.width(), 100);
+  EXPECT_EQ(icon.height(), 100);
+  EXPECT_EQ(resize_scale, 1.0);
+}
+
+TEST_F(ThreadedIconLoaderTest, InvalidSVGReturnsNullIcon) {
+  auto result =
+      LoadIcon(RegisterMockedURL(kIconLoaderInvalidIcon, "image/svg+xml"));
+  const SkBitmap& icon = result.first;
+  double resize_scale = result.second;
+
+  ASSERT_TRUE(icon.isNull());
+  EXPECT_EQ(resize_scale, -1.0);
 }
 
 }  // namespace

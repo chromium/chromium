@@ -21,6 +21,8 @@ class ResourceRequestHead;
 
 // Utility class for loading, decoding, and potentially rescaling an icon on a
 // background thread. Note that icons are only downscaled and never upscaled.
+// Warning! If the response image type is "image/svg+xml", the process will
+// happen on the main thread.
 class CORE_EXPORT ThreadedIconLoader final
     : public GarbageCollected<ThreadedIconLoader>,
       public ThreadableLoaderClient {
@@ -43,6 +45,7 @@ class CORE_EXPORT ThreadedIconLoader final
   void Stop();
 
   // ThreadableLoaderClient interface.
+  void DidReceiveResponse(uint64_t, const ResourceResponse& response) override;
   void DidReceiveData(const char* data, unsigned length) override;
   void DidFinishLoading(uint64_t resource_identifier) override;
   void DidFail(uint64_t, const ResourceError& error) override;
@@ -58,6 +61,8 @@ class CORE_EXPORT ThreadedIconLoader final
   // Data received from |threadable_loader_|. Will be invalidated when decoding
   // of the image data starts.
   scoped_refptr<SharedBuffer> data_;
+
+  String response_mime_type_;
 
   absl::optional<gfx::Size> resize_dimensions_;
 
