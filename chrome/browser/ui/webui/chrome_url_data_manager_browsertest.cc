@@ -337,6 +337,8 @@ static constexpr const char* const kChromeUrls[] = {
 #if !BUILDFLAG(IS_MAC)
     "chrome://sandbox",
     "chrome://nacl",
+#endif
+#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_CHROMEOS_LACROS)
     // TODO(https://crbug.com/1219651): this test is flaky on mac.
     "chrome://bluetooth-internals",
 #endif

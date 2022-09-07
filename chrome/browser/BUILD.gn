@@ -1902,7 +1902,6 @@ static_library("browser") {
     # TODO(crbug.com/1335199): break this dep when favicon is in its own target
     "//chrome/browser/share",
     "//chrome/browser/ui",
-    "//chrome/browser/ui/webui/bluetooth_internals",
     "//chrome/browser/storage_access_api:permissions",
     "//chrome/browser/safe_browsing",
     "//chrome/browser/safe_browsing:verdict_cache_manager_factory",
@@ -1912,6 +1911,11 @@ static_library("browser") {
     # TODO(crbug.com/1030821): Eliminate usages of browser.h from Media Router.
     "//chrome/browser/media/router",
   ]
+
+  if (!is_chromeos_lacros) {
+    allow_circular_includes_from +=
+        [ "//chrome/browser/ui/webui/bluetooth_internals" ]
+  }
 
   public_deps = [
     "//base",
@@ -2013,7 +2017,6 @@ static_library("browser") {
     "//chrome/browser/ui/color:mixers",
     "//chrome/browser/ui/webui:configs",
     "//chrome/browser/ui/webui/app_service_internals:mojo_bindings",
-    "//chrome/browser/ui/webui/bluetooth_internals",
     "//chrome/browser/ui/webui/bluetooth_internals:mojo_bindings",
     "//chrome/browser/ui/webui/feed:mojo_bindings",
     "//chrome/browser/ui/webui/internals/user_education:mojo_bindings",
@@ -5643,6 +5646,8 @@ static_library("browser") {
 
     # component builds are not compatible on device.
     assert(!is_chromeos_device || !is_component_build)
+  } else {
+    deps += [ "//chrome/browser/ui/webui/bluetooth_internals" ]
   }
 
   if (is_chromeos) {
