@@ -699,13 +699,7 @@ StandaloneTrustedVaultBackend::MaybeRegisterDevice(
   AbandonConnectionRequest();
   // |this| outlives |connection_| and |ongoing_connection_request_|, so it's
   // safe to use base::Unretained() here.
-  if (per_user_vault->vault_key().empty()) {
-    ongoing_connection_request_ = connection_->RegisterDeviceWithoutKeys(
-        *primary_account_, key_pair->public_key(),
-        base::BindOnce(
-            &StandaloneTrustedVaultBackend::OnDeviceRegisteredWithoutKeys,
-            base::Unretained(this)));
-  } else {
+  if (HasNonConstantKey(*per_user_vault)) {
     ongoing_connection_request_ = connection_->RegisterAuthenticationFactor(
         *primary_account_, GetAllVaultKeys(*per_user_vault),
         per_user_vault->last_vault_key_version(), key_pair->public_key(),
@@ -713,6 +707,12 @@ StandaloneTrustedVaultBackend::MaybeRegisterDevice(
         /*authentication_factor_type_hint=*/absl::nullopt,
         base::BindOnce(&StandaloneTrustedVaultBackend::OnDeviceRegistered,
                        base::Unretained(this)));
+  } else {
+    ongoing_connection_request_ = connection_->RegisterDeviceWithoutKeys(
+        *primary_account_, key_pair->public_key(),
+        base::BindOnce(
+            &StandaloneTrustedVaultBackend::OnDeviceRegisteredWithoutKeys,
+            base::Unretained(this)));
   }
 
   DCHECK(ongoing_connection_request_);
@@ -791,12 +791,12 @@ void StandaloneTrustedVaultBackend::OnDeviceRegisteredWithoutKeys(
     case TrustedVaultRegistrationStatus::kSuccess:
     case TrustedVaultRegistrationStatus::kAlreadyRegistered:
       // This method can be called only if device registration was triggered
-      // while no local keys available. Detected server-side key should be
-      // stored upon successful completion (or if device was already registered,
-      // e.g. previous response wasn't handled properly), but |vault_key|
-      // emptiness still needs to be checked before that - there might be
-      // StoreKeys() call during handling the request.
-      if (per_user_vault->vault_key().empty()) {
+      // while no local non-constant keys available. Detected server-side key
+      // should be stored upon successful completion (or if device was already
+      // registered, e.g. previous response wasn't handled properly), but
+      // absence of non-constant keys still needs to be checked before that -
+      // there might be StoreKeys() call during handling the request.
+      if (!HasNonConstantKey(*per_user_vault)) {
         AssignBytesToProtoString(
             vault_key_and_version.key,
             per_user_vault->add_vault_key()->mutable_key_material());
