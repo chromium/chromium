@@ -637,7 +637,7 @@ enum class FormatConversionChar : uint8_t {
   c, s,                    // text
   d, i, o, u, x, X,        // int
   f, F, e, E, g, G, a, A,  // float
-  n, p                     // misc
+  n, p, v                  // misc
 };
 // clang-format on
 
@@ -757,6 +757,7 @@ enum class FormatConversionCharSet : uint64_t {
   // misc
   n = str_format_internal::FormatConversionCharToConvInt('n'),
   p = str_format_internal::FormatConversionCharToConvInt('p'),
+  v = str_format_internal::FormatConversionCharToConvInt('v'),
 
   // Used for width/precision '*' specification.
   kStar = static_cast<uint64_t>(

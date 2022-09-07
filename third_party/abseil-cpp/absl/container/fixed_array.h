@@ -471,6 +471,9 @@ class FixedArray {
       return n <= inline_elements;
     }
 
+#ifdef ABSL_HAVE_ADDRESS_SANITIZER
+    ABSL_ATTRIBUTE_NOINLINE
+#endif  // ABSL_HAVE_ADDRESS_SANITIZER
     StorageElement* InitializeData() {
       if (UsingInlinedStorage(size())) {
         InlinedStorage::AnnotateConstruct(size());

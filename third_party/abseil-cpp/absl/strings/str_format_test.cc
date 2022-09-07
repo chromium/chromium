@@ -84,6 +84,11 @@ TEST_F(FormatEntryPointTest, StringFormat) {
   EXPECT_EQ("=123=", StrFormat(view, 123));
 }
 
+TEST_F(FormatEntryPointTest, StringFormatV) {
+  std::string hello = "hello";
+  EXPECT_EQ("hello", StrFormat("%v", hello));
+}
+
 TEST_F(FormatEntryPointTest, AppendFormat) {
   std::string s;
   std::string& r = StrAppendFormat(&s, "%d", 123);
@@ -165,6 +170,21 @@ TEST_F(FormatEntryPointTest, FormatCountCaptureExample) {
       s);
 }
 
+TEST_F(FormatEntryPointTest, FormatCountCaptureExampleWithV) {
+  int n;
+  std::string s;
+  std::string a1 = "(1,1)";
+  std::string a2 = "(1,2)";
+  std::string a3 = "(2,2)";
+  StrAppendFormat(&s, "%v: %n%v\n", a1, FormatCountCapture(&n), a2);
+  StrAppendFormat(&s, "%*s%v\n", n, "", a3);
+  EXPECT_EQ(7, n);
+  EXPECT_EQ(
+      "(1,1): (1,2)\n"
+      "       (2,2)\n",
+      s);
+}
+
 TEST_F(FormatEntryPointTest, Stream) {
   const std::string formats[] = {
     "",
@@ -189,6 +209,26 @@ TEST_F(FormatEntryPointTest, Stream) {
         << fmt_result;
     EXPECT_EQ(buf.c_str(), oss.str());
   }
+}
+
+TEST_F(FormatEntryPointTest, StreamWithV) {
+  const std::string format = "%d %u %c %v %f %g";
+
+  const std::string format_for_buf = "%d %u %c %s %f %g";
+
+  std::string buf(4096, '\0');
+  const auto parsed =
+      ParsedFormat<'d', 'u', 'c', 'v', 'f', 'g'>::NewAllowIgnored(format);
+  std::ostringstream oss;
+  oss << StreamFormat(*parsed, 123, 3, 49,
+                      absl::string_view("multistreaming!!!"), 1.01, 1.01);
+  int fmt_result =
+      snprintf(&*buf.begin(), buf.size(), format_for_buf.c_str(),  //
+               123, 3, 49, "multistreaming!!!", 1.01, 1.01);
+  ASSERT_TRUE(oss) << format;
+  ASSERT_TRUE(fmt_result >= 0 && static_cast<size_t>(fmt_result) < buf.size())
+      << fmt_result;
+  EXPECT_EQ(buf.c_str(), oss.str());
 }
 
 TEST_F(FormatEntryPointTest, StreamOk) {
@@ -249,6 +289,12 @@ TEST_F(FormatEntryPointTest, FormatStreamed) {
   EXPECT_EQ("123", StrFormat("%s", FormatStreamed(StreamFormat("%d", 123))));
 }
 
+TEST_F(FormatEntryPointTest, FormatStreamedWithV) {
+  EXPECT_EQ("123", StrFormat("%v", FormatStreamed(123)));
+  EXPECT_EQ("X", StrFormat("%v", FormatStreamed(streamed_test::X())));
+  EXPECT_EQ("123", StrFormat("%v", FormatStreamed(StreamFormat("%d", 123))));
+}
+
 // Helper class that creates a temporary file and exposes a FILE* to it.
 // It will close the file on destruction.
 class TempFile {
@@ -280,6 +326,14 @@ TEST_F(FormatEntryPointTest, FPrintF) {
   TempFile tmp;
   int result =
       FPrintF(tmp.file(), "STRING: %s NUMBER: %010d", std::string("ABC"), -19);
+  EXPECT_EQ(result, 30);
+  EXPECT_EQ(tmp.ReadFile(), "STRING: ABC NUMBER: -000000019");
+}
+
+TEST_F(FormatEntryPointTest, FPrintFWithV) {
+  TempFile tmp;
+  int result =
+      FPrintF(tmp.file(), "STRING: %v NUMBER: %010d", std::string("ABC"), -19);
   EXPECT_EQ(result, 30);
   EXPECT_EQ(tmp.ReadFile(), "STRING: ABC NUMBER: -000000019");
 }
@@ -318,6 +372,23 @@ TEST_F(FormatEntryPointTest, PrintF) {
   EXPECT_EQ(result, 30);
   EXPECT_EQ(tmp.ReadFile(), "STRING: ABC NUMBER: -000000019");
 }
+
+TEST_F(FormatEntryPointTest, PrintFWithV) {
+  int stdout_tmp = dup(STDOUT_FILENO);
+
+  TempFile tmp;
+  std::fflush(stdout);
+  dup2(fileno(tmp.file()), STDOUT_FILENO);
+
+  int result = PrintF("STRING: %v NUMBER: %010d", std::string("ABC"), -19);
+
+  std::fflush(stdout);
+  dup2(stdout_tmp, STDOUT_FILENO);
+  close(stdout_tmp);
+
+  EXPECT_EQ(result, 30);
+  EXPECT_EQ(tmp.ReadFile(), "STRING: ABC NUMBER: -000000019");
+}
 #endif  // __GLIBC__
 
 TEST_F(FormatEntryPointTest, SNPrintF) {
@@ -347,9 +418,41 @@ TEST_F(FormatEntryPointTest, SNPrintF) {
   EXPECT_EQ(result, 37);
 }
 
+TEST_F(FormatEntryPointTest, SNPrintFWithV) {
+  char buffer[16];
+  int result =
+      SNPrintF(buffer, sizeof(buffer), "STRING: %v", std::string("ABC"));
+  EXPECT_EQ(result, 11);
+  EXPECT_EQ(std::string(buffer), "STRING: ABC");
+
+  result = SNPrintF(buffer, sizeof(buffer), "NUMBER: %d", 123456);
+  EXPECT_EQ(result, 14);
+  EXPECT_EQ(std::string(buffer), "NUMBER: 123456");
+
+  result = SNPrintF(buffer, sizeof(buffer), "NUMBER: %d", 1234567);
+  EXPECT_EQ(result, 15);
+  EXPECT_EQ(std::string(buffer), "NUMBER: 1234567");
+
+  result = SNPrintF(buffer, sizeof(buffer), "NUMBER: %d", 12345678);
+  EXPECT_EQ(result, 16);
+  EXPECT_EQ(std::string(buffer), "NUMBER: 1234567");
+
+  result = SNPrintF(buffer, sizeof(buffer), "NUMBER: %d", 123456789);
+  EXPECT_EQ(result, 17);
+  EXPECT_EQ(std::string(buffer), "NUMBER: 1234567");
+
+  std::string size = "size";
+
+  result = SNPrintF(nullptr, 0, "Just checking the %v of the output.", size);
+  EXPECT_EQ(result, 37);
+}
+
 TEST(StrFormat, BehavesAsDocumented) {
   std::string s = absl::StrFormat("%s, %d!", "Hello", 123);
   EXPECT_EQ("Hello, 123!", s);
+  std::string hello = "Hello";
+  std::string s2 = absl::StrFormat("%v, %d!", hello, 123);
+  EXPECT_EQ("Hello, 123!", s2);
   // The format of a replacement is
   // '%'[position][flags][width['.'precision]][length_modifier][format]
   EXPECT_EQ(absl::StrFormat("%1$+3.2Lf", 1.1), "+1.10");
@@ -364,9 +467,13 @@ TEST(StrFormat, BehavesAsDocumented) {
   //     "s" - string       Eg: "C" -> "C", std::string("C++") -> "C++"
   //           Formats std::string, char*, string_view, and Cord.
   EXPECT_EQ(StrFormat("%s", "C"), "C");
+  EXPECT_EQ(StrFormat("%v", std::string("C")), "C");
   EXPECT_EQ(StrFormat("%s", std::string("C++")), "C++");
+  EXPECT_EQ(StrFormat("%v", std::string("C++")), "C++");
   EXPECT_EQ(StrFormat("%s", string_view("view")), "view");
+  EXPECT_EQ(StrFormat("%v", string_view("view")), "view");
   EXPECT_EQ(StrFormat("%s", absl::Cord("cord")), "cord");
+  EXPECT_EQ(StrFormat("%v", absl::Cord("cord")), "cord");
   // Integral Conversion
   //     These format integral types: char, int, long, uint64_t, etc.
   EXPECT_EQ(StrFormat("%d", char{10}), "10");
@@ -490,6 +597,15 @@ TEST_F(ParsedFormatTest, SimpleChecked) {
             SummarizeParsedFormat(ParsedFormat<'s', '*', 'd'>("%s %.*d")));
 }
 
+TEST_F(ParsedFormatTest, SimpleCheckedWithV) {
+  EXPECT_EQ("[ABC]{d:1$d}[DEF]",
+            SummarizeParsedFormat(ParsedFormat<'d'>("ABC%dDEF")));
+  EXPECT_EQ("{v:1$v}[FFF]{d:2$d}[ZZZ]{f:3$f}",
+            SummarizeParsedFormat(ParsedFormat<'v', 'd', 'f'>("%vFFF%dZZZ%f")));
+  EXPECT_EQ("{v:1$v}[ ]{.*d:3$.2$*d}",
+            SummarizeParsedFormat(ParsedFormat<'v', '*', 'd'>("%v %.*d")));
+}
+
 TEST_F(ParsedFormatTest, SimpleUncheckedCorrect) {
   auto f = ParsedFormat<'d'>::New("ABC%dDEF");
   ASSERT_TRUE(f);
@@ -520,6 +636,23 @@ TEST_F(ParsedFormatTest, SimpleUncheckedCorrect) {
             SummarizeParsedFormat(*dollar));
 }
 
+TEST_F(ParsedFormatTest, SimpleUncheckedCorrectWithV) {
+  auto f = ParsedFormat<'d'>::New("ABC%dDEF");
+  ASSERT_TRUE(f);
+  EXPECT_EQ("[ABC]{d:1$d}[DEF]", SummarizeParsedFormat(*f));
+
+  std::string format = "%vFFF%dZZZ%f";
+  auto f2 = ParsedFormat<'v', 'd', 'f'>::New(format);
+
+  ASSERT_TRUE(f2);
+  EXPECT_EQ("{v:1$v}[FFF]{d:2$d}[ZZZ]{f:3$f}", SummarizeParsedFormat(*f2));
+
+  f2 = ParsedFormat<'v', 'd', 'f'>::New("%v %d %f");
+
+  ASSERT_TRUE(f2);
+  EXPECT_EQ("{v:1$v}[ ]{d:2$d}[ ]{f:3$f}", SummarizeParsedFormat(*f2));
+}
+
 TEST_F(ParsedFormatTest, SimpleUncheckedIgnoredArgs) {
   EXPECT_FALSE((ParsedFormat<'d', 's'>::New("ABC")));
   EXPECT_FALSE((ParsedFormat<'d', 's'>::New("%dABC")));
@@ -547,6 +680,15 @@ TEST_F(ParsedFormatTest, SimpleUncheckedIncorrect) {
 
   std::string format = "%sFFF%dZZZ%f";
   EXPECT_FALSE((ParsedFormat<'s', 'd', 'g'>::New(format)));
+}
+
+TEST_F(ParsedFormatTest, SimpleUncheckedIncorrectWithV) {
+  EXPECT_FALSE(ParsedFormat<'d'>::New(""));
+
+  EXPECT_FALSE(ParsedFormat<'d'>::New("ABC%dDEF%d"));
+
+  std::string format = "%vFFF%dZZZ%f";
+  EXPECT_FALSE((ParsedFormat<'v', 'd', 'g'>::New(format)));
 }
 
 #if defined(__cpp_nontype_template_parameter_auto)
@@ -595,6 +737,23 @@ TEST_F(ParsedFormatTest, ExtendedTyping) {
                          's'>::New("%s%s");
   ASSERT_TRUE(v4);
 }
+
+TEST_F(ParsedFormatTest, ExtendedTypingWithV) {
+  EXPECT_FALSE(ParsedFormat<FormatConversionCharSet::d>::New(""));
+  ASSERT_TRUE(ParsedFormat<absl::FormatConversionCharSet::d>::New("%d"));
+  auto v1 = ParsedFormat<'d', absl::FormatConversionCharSet::v>::New("%d%v");
+  ASSERT_TRUE(v1);
+  auto v2 = ParsedFormat<absl::FormatConversionCharSet::d, 'v'>::New("%d%v");
+  ASSERT_TRUE(v2);
+  auto v3 = ParsedFormat<absl::FormatConversionCharSet::d |
+                             absl::FormatConversionCharSet::v,
+                         'v'>::New("%d%v");
+  ASSERT_TRUE(v3);
+  auto v4 = ParsedFormat<absl::FormatConversionCharSet::d |
+                             absl::FormatConversionCharSet::v,
+                         'v'>::New("%v%v");
+  ASSERT_TRUE(v4);
+}
 #endif
 
 TEST_F(ParsedFormatTest, UncheckedCorrect) {
@@ -636,6 +795,28 @@ TEST_F(ParsedFormatTest, UncheckedCorrect) {
   ASSERT_TRUE(dollar);
   EXPECT_EQ("{2$s:2$s}[ ]{1$d:1$d}[ ]{1$d:1$d}",
             SummarizeParsedFormat(*dollar));
+}
+
+TEST_F(ParsedFormatTest, UncheckedCorrectWithV) {
+  auto f =
+      ExtendedParsedFormat<absl::FormatConversionCharSet::d>::New("ABC%dDEF");
+  ASSERT_TRUE(f);
+  EXPECT_EQ("[ABC]{d:1$d}[DEF]", SummarizeParsedFormat(*f));
+
+  std::string format = "%vFFF%dZZZ%f";
+  auto f2 = ExtendedParsedFormat<
+      absl::FormatConversionCharSet::v, absl::FormatConversionCharSet::d,
+      absl::FormatConversionCharSet::kFloating>::New(format);
+
+  ASSERT_TRUE(f2);
+  EXPECT_EQ("{v:1$v}[FFF]{d:2$d}[ZZZ]{f:3$f}", SummarizeParsedFormat(*f2));
+
+  f2 = ExtendedParsedFormat<
+      absl::FormatConversionCharSet::v, absl::FormatConversionCharSet::d,
+      absl::FormatConversionCharSet::kFloating>::New("%v %d %f");
+
+  ASSERT_TRUE(f2);
+  EXPECT_EQ("{v:1$v}[ ]{d:2$d}[ ]{f:3$f}", SummarizeParsedFormat(*f2));
 }
 
 TEST_F(ParsedFormatTest, UncheckedIgnoredArgs) {
@@ -691,6 +872,19 @@ TEST_F(ParsedFormatTest, UncheckedIncorrect) {
                             absl::FormatConversionCharSet::g>::New(format)));
 }
 
+TEST_F(ParsedFormatTest, UncheckedIncorrectWithV) {
+  EXPECT_FALSE(ExtendedParsedFormat<absl::FormatConversionCharSet::d>::New(""));
+
+  EXPECT_FALSE(ExtendedParsedFormat<absl::FormatConversionCharSet::d>::New(
+      "ABC%dDEF%d"));
+
+  std::string format = "%vFFF%dZZZ%f";
+  EXPECT_FALSE(
+      (ExtendedParsedFormat<absl::FormatConversionCharSet::v,
+                            absl::FormatConversionCharSet::d,
+                            absl::FormatConversionCharSet::g>::New(format)));
+}
+
 TEST_F(ParsedFormatTest, RegressionMixPositional) {
   EXPECT_FALSE(
       (ExtendedParsedFormat<absl::FormatConversionCharSet::d,
@@ -710,9 +904,20 @@ TEST_F(FormatWrapperTest, ConstexprStringFormat) {
   EXPECT_EQ(WrappedFormat("%s there", "hello"), "hello there");
 }
 
+TEST_F(FormatWrapperTest, ConstexprStringFormatWithV) {
+  std::string hello = "hello";
+  EXPECT_EQ(WrappedFormat("%v there", hello), "hello there");
+}
+
 TEST_F(FormatWrapperTest, ParsedFormat) {
   ParsedFormat<'s'> format("%s there");
   EXPECT_EQ(WrappedFormat(format, "hello"), "hello there");
+}
+
+TEST_F(FormatWrapperTest, ParsedFormatWithV) {
+  std::string hello = "hello";
+  ParsedFormat<'v'> format("%v there");
+  EXPECT_EQ(WrappedFormat(format, hello), "hello there");
 }
 
 }  // namespace

@@ -493,7 +493,8 @@ struct SynchWaitParams {
         cvmu(cvmu_arg),
         thread(thread_arg),
         cv_word(cv_word_arg),
-        contention_start_cycles(base_internal::CycleClock::Now()) {}
+        contention_start_cycles(base_internal::CycleClock::Now()),
+        should_submit_contention_data(false) {}
 
   const Mutex::MuHow how;  // How this thread needs to wait.
   const Condition *cond;  // The condition that this thread is waiting for.
@@ -511,6 +512,7 @@ struct SynchWaitParams {
 
   int64_t contention_start_cycles;  // Time (in cycles) when this thread started
                                     // to contend for the mutex.
+  bool should_submit_contention_data;
 };
 
 struct SynchLocksHeld {
@@ -2348,6 +2350,7 @@ ABSL_ATTRIBUTE_NOINLINE void Mutex::UnlockSlow(SynchWaitParams *waitp) {
       if (!wake_list->cond_waiter) {
         wait_cycles += (now - wake_list->waitp->contention_start_cycles);
         wake_list->waitp->contention_start_cycles = now;
+        wake_list->waitp->should_submit_contention_data = true;
       }
       wake_list = Wakeup(wake_list);              // wake waiters
     } while (wake_list != kPerThreadSynchNull);

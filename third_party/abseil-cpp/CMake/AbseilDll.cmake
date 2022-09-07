@@ -544,6 +544,7 @@ function(absl_make_dll)
       NOMINMAX
     INTERFACE
       ${ABSL_CC_LIB_DEFINES}
+      ABSL_CONSUME_DLL
   )
   install(TARGETS abseil_dll EXPORT ${PROJECT_NAME}Targets
         RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}

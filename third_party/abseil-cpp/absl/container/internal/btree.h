@@ -1242,7 +1242,7 @@ class btree {
     // MSVC has constexpr code generations bugs here.
     EmptyNodeType() : parent(this) {}
 #else
-    constexpr EmptyNodeType(node_type *p) : parent(p) {}
+    explicit constexpr EmptyNodeType(node_type *p) : parent(p) {}
 #endif
   };
 

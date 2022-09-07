@@ -222,6 +222,7 @@ cc_test(
     copts = ABSL_TEST_COPTS,
     linkopts = ABSL_DEFAULT_LINKOPTS,
     tags = [
+        "no_test:os:ios",
         "no_test_ios",
         "no_test_wasm",
     ],
@@ -347,6 +348,7 @@ cc_test(
     copts = ABSL_TEST_COPTS,
     linkopts = ABSL_DEFAULT_LINKOPTS,
     tags = [
+        "no_test:os:ios",
         "no_test_ios",
         "no_test_wasm",
     ],
@@ -413,6 +415,7 @@ cc_test(
     linkopts = ABSL_DEFAULT_LINKOPTS,
     linkstatic = 1,
     tags = [
+        "no_test:os:ios",
         "no_test_ios",
         "no_test_wasm",
     ],

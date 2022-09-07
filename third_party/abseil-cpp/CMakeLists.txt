@@ -46,6 +46,11 @@ if (POLICY CMP0091)
   cmake_policy(SET CMP0091 NEW)
 endif (POLICY CMP0091)
 
+# try_compile() honors the CMAKE_CXX_STANDARD value
+if (POLICY CMP0067)
+  cmake_policy(SET CMP0067 NEW)
+endif (POLICY CMP0067)
+
 project(absl LANGUAGES CXX)
 include(CTest)
 
@@ -229,4 +234,25 @@ if(ABSL_ENABLE_INSTALL)
       PATTERN "copts" EXCLUDE
       PATTERN "testdata" EXCLUDE
     )
+
+  file(READ "absl/base/options.h" ABSL_INTERNAL_OPTIONS_H_CONTENTS)
+  if (ABSL_INTERNAL_AT_LEAST_CXX17)
+    string(REGEX REPLACE
+      "#define ABSL_OPTION_USE_STD_([^ ]*) 2"
+      "#define ABSL_OPTION_USE_STD_\\1 1"
+      ABSL_INTERNAL_OPTIONS_H_PINNED
+      "${ABSL_INTERNAL_OPTIONS_H_CONTENTS}")
+  else()
+    string(REGEX REPLACE
+      "#define ABSL_OPTION_USE_STD_([^ ]*) 2"
+      "#define ABSL_OPTION_USE_STD_\\1 0"
+      ABSL_INTERNAL_OPTIONS_H_PINNED
+      "${ABSL_INTERNAL_OPTIONS_H_CONTENTS}")
+  endif()
+  file(WRITE "${CMAKE_BINARY_DIR}/options-pinned.h" "${ABSL_INTERNAL_OPTIONS_H_PINNED}")
+
+  install(FILES "${CMAKE_BINARY_DIR}/options-pinned.h"
+         DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/absl/base
+         RENAME "options.h")
+
 endif()  # ABSL_ENABLE_INSTALL

@@ -110,8 +110,8 @@ constexpr FormatConversionCharSet ExtractCharSet(ArgConvertResult<C>) {
   return C;
 }
 
-using StringConvertResult =
-    ArgConvertResult<FormatConversionCharSetInternal::s>;
+using StringConvertResult = ArgConvertResult<FormatConversionCharSetUnion(
+    FormatConversionCharSetInternal::s, FormatConversionCharSetInternal::v)>;
 ArgConvertResult<FormatConversionCharSetInternal::p> FormatConvertImpl(
     VoidPtr v, FormatConversionSpecImpl conv, FormatSinkImpl* sink);
 

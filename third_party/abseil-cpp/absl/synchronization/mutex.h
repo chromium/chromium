@@ -988,7 +988,7 @@ inline Condition::Condition(const T *object,
       method_(reinterpret_cast<InternalMethodType>(method)),
       arg_(reinterpret_cast<void *>(const_cast<T *>(object))) {}
 
-// Register a hook for profiling support.
+// Register hooks for profiling support.
 //
 // The function pointer registered here will be called whenever a mutex is
 // contended.  The callback is given the cycles for which waiting happened (as

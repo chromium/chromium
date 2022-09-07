@@ -86,7 +86,7 @@
 //   }
 //
 // Using an optional flag in this manner avoids common workarounds for
-// indicating such an unset flag (such as using sentinal values to indicate this
+// indicating such an unset flag (such as using sentinel values to indicate this
 // state).
 //
 // An optional flag also allows a developer to pass a flag in an "unset"

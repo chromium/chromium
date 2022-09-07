@@ -140,8 +140,9 @@ time_zone local_time_zone() {
   if (CFStringRef tz_name = CFTimeZoneGetName(tz_default)) {
     CFStringEncoding encoding = kCFStringEncodingUTF8;
     CFIndex length = CFStringGetLength(tz_name);
-    buffer.resize(CFStringGetMaximumSizeForEncoding(length, encoding) + 1);
-    if (CFStringGetCString(tz_name, &buffer[0], buffer.size(), encoding)) {
+    CFIndex max_size = CFStringGetMaximumSizeForEncoding(length, encoding) + 1;
+    buffer.resize(static_cast<size_t>(max_size));
+    if (CFStringGetCString(tz_name, &buffer[0], max_size, encoding)) {
       zone = &buffer[0];
     }
   }

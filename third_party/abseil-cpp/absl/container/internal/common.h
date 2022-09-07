@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef ABSL_CONTAINER_INTERNAL_CONTAINER_H_
-#define ABSL_CONTAINER_INTERNAL_CONTAINER_H_
+#ifndef ABSL_CONTAINER_INTERNAL_COMMON_H_
+#define ABSL_CONTAINER_INTERNAL_COMMON_H_
 
 #include <cassert>
 #include <type_traits>
@@ -204,4 +204,4 @@ struct InsertReturnType {
 ABSL_NAMESPACE_END
 }  // namespace absl
 
-#endif  // ABSL_CONTAINER_INTERNAL_CONTAINER_H_
+#endif  // ABSL_CONTAINER_INTERNAL_COMMON_H_

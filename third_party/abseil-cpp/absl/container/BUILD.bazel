@@ -96,8 +96,9 @@ cc_test(
     ],
 )
 
-cc_test(
+cc_binary(
     name = "fixed_array_benchmark",
+    testonly = 1,
     srcs = ["fixed_array_benchmark.cc"],
     copts = ABSL_TEST_COPTS + ["$(STACK_FRAME_UNLIMITED)"],
     linkopts = ABSL_DEFAULT_LINKOPTS,
@@ -166,8 +167,9 @@ cc_test(
     ],
 )
 
-cc_test(
+cc_binary(
     name = "inlined_vector_benchmark",
+    testonly = 1,
     srcs = ["inlined_vector_benchmark.cc"],
     copts = ABSL_TEST_COPTS,
     linkopts = ABSL_DEFAULT_LINKOPTS,
@@ -944,6 +946,7 @@ cc_test(
     linkopts = ABSL_DEFAULT_LINKOPTS,
     shard_count = 10,
     tags = [
+        "no_test:os:ios",
         "no_test_ios",
         "no_test_wasm",
     ],
@@ -958,7 +961,6 @@ cc_test(
         "//absl/flags:flag",
         "//absl/hash:hash_testing",
         "//absl/memory",
-        "//absl/meta:type_traits",
         "//absl/strings",
         "//absl/types:compare",
         "@com_google_googletest//:gtest_main",

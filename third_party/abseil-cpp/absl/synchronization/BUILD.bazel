@@ -259,6 +259,7 @@ cc_test(
     srcs = ["notification_test.cc"],
     copts = ABSL_TEST_COPTS,
     linkopts = ABSL_DEFAULT_LINKOPTS,
+    tags = ["no_test_lexan"],
     deps = [
         ":synchronization",
         "//absl/time",

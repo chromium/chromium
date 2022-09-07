@@ -24,7 +24,7 @@ absl_cc_library(
     "internal/hash.h"
   COPTS
     ${ABSL_DEFAULT_COPTS}
-    DEPS
+  DEPS
     absl::city
     absl::config
     absl::core_headers
@@ -55,6 +55,7 @@ absl_cc_library(
     absl::variant
     GTest::gmock
   TESTONLY
+  PUBLIC
 )
 
 absl_cc_test(

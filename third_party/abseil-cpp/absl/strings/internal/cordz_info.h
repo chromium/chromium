@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef ABSL_STRINGS_CORDZ_INFO_H_
-#define ABSL_STRINGS_CORDZ_INFO_H_
+#ifndef ABSL_STRINGS_INTERNAL_CORDZ_INFO_H_
+#define ABSL_STRINGS_INTERNAL_CORDZ_INFO_H_
 
 #include <atomic>
 #include <cstdint>
@@ -295,4 +295,4 @@ inline CordRep* CordzInfo::RefCordRep() const ABSL_LOCKS_EXCLUDED(mutex_) {
 ABSL_NAMESPACE_END
 }  // namespace absl
 
-#endif  // ABSL_STRINGS_CORDZ_INFO_H_
+#endif  // ABSL_STRINGS_INTERNAL_CORDZ_INFO_H_

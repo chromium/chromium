@@ -56,7 +56,7 @@ ABSL_CONST_INIT const ConvTag kTags[256] = {
     CC::X,  {},    {},    {},    {},    {},     {},    {},     // XYZ[\]^_
     {},     CC::a, {},    CC::c, CC::d, CC::e,  CC::f, CC::g,  // `abcdefg
     LM::h,  CC::i, LM::j, {},    LM::l, {},     CC::n, CC::o,  // hijklmno
-    CC::p,  LM::q, {},    CC::s, LM::t, CC::u,  {},    {},     // pqrstuvw
+    CC::p,  LM::q, {},    CC::s, LM::t, CC::u,  CC::v, {},     // pqrstuvw
     CC::x,  {},    LM::z, {},    {},    {},     {},    {},     // xyz{|}!
     {},     {},    {},    {},    {},    {},     {},    {},     // 80-87
     {},     {},    {},    {},    {},    {},     {},    {},     // 88-8f

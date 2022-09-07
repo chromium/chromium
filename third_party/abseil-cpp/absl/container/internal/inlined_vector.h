@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef ABSL_CONTAINER_INTERNAL_INLINED_VECTOR_INTERNAL_H_
-#define ABSL_CONTAINER_INTERNAL_INLINED_VECTOR_INTERNAL_H_
+#ifndef ABSL_CONTAINER_INTERNAL_INLINED_VECTOR_H_
+#define ABSL_CONTAINER_INTERNAL_INLINED_VECTOR_H_
 
 #include <algorithm>
 #include <cstddef>
@@ -950,4 +950,4 @@ auto Storage<T, N, A>::Swap(Storage* other_storage_ptr) -> void {
 ABSL_NAMESPACE_END
 }  // namespace absl
 
-#endif  // ABSL_CONTAINER_INTERNAL_INLINED_VECTOR_INTERNAL_H_
+#endif  // ABSL_CONTAINER_INTERNAL_INLINED_VECTOR_H_

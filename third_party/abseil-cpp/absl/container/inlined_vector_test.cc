@@ -255,6 +255,7 @@ TEST(IntVec, Hardened) {
 #if !defined(NDEBUG) || ABSL_OPTION_HARDENED
   EXPECT_DEATH_IF_SUPPORTED(v[10], "");
   EXPECT_DEATH_IF_SUPPORTED(v[-1], "");
+  EXPECT_DEATH_IF_SUPPORTED(v.resize(v.max_size() + 1), "");
 #endif
 }
 

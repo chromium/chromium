@@ -81,7 +81,6 @@ absl_cc_test(
     absl::raw_logging_internal
     absl::strings
     absl::test_instance_tracker
-    absl::type_traits
     GTest::gmock_main
 )
 
