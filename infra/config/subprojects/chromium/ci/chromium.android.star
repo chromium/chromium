@@ -67,7 +67,7 @@ ci.builder(
     ),
     # Higher build timeout since dbg ASAN builds can take a while on a clobber
     # build.
-    execution_timeout = 4 * time.hour,
+    execution_timeout = 5 * time.hour,
     tree_closing = True,
 )
 
