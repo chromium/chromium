@@ -818,6 +818,25 @@ TEST_F(AutocorrectManagerTest,
 }
 
 TEST_F(AutocorrectManagerTest,
+       InsertingCharsDoesNotRecordsMetricsWhenSetRangeFails) {
+  // Disable autocorrect.
+  mock_ime_input_context_handler_.set_autocorrect_enabled(false);
+
+  manager_.HandleAutocorrect(gfx::Range(0, 3), u"teh", u"the");
+
+  manager_.OnSurroundingTextChanged(u"the ", 4, 4);
+  manager_.OnSurroundingTextChanged(u"the a", 5, 5);
+
+  mock_ime_input_context_handler_.SetAutocorrectRange(gfx::Range(),
+                                                      base::DoNothing());
+  manager_.OnSurroundingTextChanged(u" the b", 6, 6);
+  ExpectAutocorrectHistograms(histogram_tester_, /*visible_vk=*/false,
+                              /*window_shown=*/0, /*underlined=*/0,
+                              /*reverted=*/0, /*accepted=*/0,
+                              /*cleared_underline=*/0);
+}
+
+TEST_F(AutocorrectManagerTest,
        FirstOnSurroundingCallDoesNotRecordMetricsForEmptyAutocorrectRange) {
   manager_.HandleAutocorrect(gfx::Range(0, 3), u"teh", u"the");
 
@@ -1092,6 +1111,18 @@ TEST_F(AutocorrectManagerTest,
 }
 
 TEST_F(AutocorrectManagerTest,
+       HandleAutocorrectDoesNotRecordMetricsWhenSetRangeFails) {
+  // Disable autocorrect.
+  mock_ime_input_context_handler_.set_autocorrect_enabled(false);
+
+  manager_.HandleAutocorrect(gfx::Range(0, 3), u"teh", u"the");
+  ExpectAutocorrectHistograms(histogram_tester_, /*visible_vk=*/false,
+                              /*window_shown=*/0, /*underlined=*/0,
+                              /*reverted=*/0, /*accepted=*/0,
+                              /*cleared_underline=*/0);
+}
+
+TEST_F(AutocorrectManagerTest,
        HandleAutocorrectRecordsMetricsWhenAcceptingPendingAutocorrect) {
   // Create a pending autocorrect range.
   manager_.HandleAutocorrect(gfx::Range(0, 3), u"teh", u"the");
@@ -1103,6 +1134,29 @@ TEST_F(AutocorrectManagerTest,
                               /*window_shown=*/0, /*underlined=*/2,
                               /*reverted=*/0, /*accepted=*/1,
                               /*cleared_underline=*/0);
+}
+
+TEST_F(AutocorrectManagerTest,
+       HandleAutocorrectRecordsMetricsWithPendingRangeAndFailedSetRange) {
+  // Enable Autocorrect.
+  mock_ime_input_context_handler_.set_autocorrect_enabled(true);
+
+  // Create a pending autocorrect range.
+  manager_.HandleAutocorrect(gfx::Range(0, 3), u"teh", u"the");
+
+  // Disable autocorrect.
+  mock_ime_input_context_handler_.set_autocorrect_enabled(false);
+
+  // Create a new autocorrect range.
+  manager_.HandleAutocorrect(gfx::Range(4, 7), u"cn", u"can");
+
+  // This case should not happen in practice, but the expected result
+  // is counting the first autocorrect as rejected given there is no way
+  // to know if it was accepted.
+  ExpectAutocorrectHistograms(histogram_tester_, /*visible_vk=*/false,
+                              /*window_shown=*/0, /*underlined=*/1,
+                              /*reverted=*/0, /*accepted=*/0,
+                              /*cleared_underline=*/1);
 }
 
 TEST_F(AutocorrectManagerTest,

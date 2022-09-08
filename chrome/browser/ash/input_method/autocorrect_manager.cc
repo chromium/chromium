@@ -77,21 +77,35 @@ void AutocorrectManager::HandleAutocorrect(const gfx::Range autocorrect_range,
     return;
   }
 
-  in_diacritical_autocorrect_session_ =
-      IsCurrentInputMethodExperimentalMultilingual() &&
-      diacritics_insensitive_string_comparator_.Equal(original_text,
-                                                      current_text);
-
   if (pending_autocorrect_.has_value()) {
     AcceptOrClearPendingAutocorrect();
   }
 
-  input_context->SetAutocorrectRange(autocorrect_range,
-                                     base::DoNothing());  // show underline
+  input_context->SetAutocorrectRange(
+      autocorrect_range,
+      base::BindOnce(&AutocorrectManager::ProcessSetAutocorrectRangeDone,
+                     weak_ptr_factory_.GetWeakPtr(), autocorrect_range,
+                     original_text, current_text));  // show underline
+}
+
+void AutocorrectManager::ProcessSetAutocorrectRangeDone(
+    const gfx::Range& autocorrect_range,
+    const std::u16string& original_text,
+    const std::u16string& current_text,
+    bool set_range_success) {
+  if (!set_range_success) {
+    // TODO(b/161490813): record metrics for failed set range calls.
+    return;
+  }
 
   if (autocorrect_range.is_empty()) {
     return;
   }
+
+  in_diacritical_autocorrect_session_ =
+      IsCurrentInputMethodExperimentalMultilingual() &&
+      diacritics_insensitive_string_comparator_.Equal(original_text,
+                                                      current_text);
 
   bool virtual_keyboard_visible =
       ChromeKeyboardControllerClient::HasInstance() &&

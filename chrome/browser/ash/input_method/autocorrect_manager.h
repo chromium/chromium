@@ -105,6 +105,16 @@ class AutocorrectManager {
   // Highlights undo button of undo window if it is visible.
   void HighlightUndoButton();
 
+  // Processes the result of a set autocorrect range call. An unsuccessful
+  // result could mean that autocorrect was not supported by the text input
+  // client, so the autocorrect suggestion can be ignored. Otherwise, the
+  // autocorrect suggestion will be set as pending and its relevant
+  // interactions and metrics will be managed here.
+  void ProcessSetAutocorrectRangeDone(const gfx::Range& autocorrect_range,
+                                      const std::u16string& original_text,
+                                      const std::u16string& current_text,
+                                      bool set_range_success);
+
   struct PendingAutocorrectState {
     explicit PendingAutocorrectState(
         const std::u16string& original_text,
@@ -163,6 +173,8 @@ class AutocorrectManager {
   bool in_diacritical_autocorrect_session_ = false;
 
   bool disabled_by_rule_ = false;
+
+  base::WeakPtrFactory<AutocorrectManager> weak_ptr_factory_{this};
 };
 
 }  // namespace input_method
