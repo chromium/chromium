@@ -186,7 +186,7 @@ java_prebuilt("com_google_errorprone_error_prone_annotation_java") {
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
 java_prebuilt("com_google_errorprone_error_prone_annotations_java") {
-  jar_path = "libs/com_google_errorprone_error_prone_annotations/error_prone_annotations-2.11.0.jar"
+  jar_path = "libs/com_google_errorprone_error_prone_annotations/error_prone_annotations-2.14.0.jar"
   output_name = "com_google_errorprone_error_prone_annotations"
   supports_android = true
 
@@ -567,7 +567,7 @@ java_prebuilt("net_ltgt_gradle_incap_incap_java") {
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
 java_prebuilt("org_checkerframework_checker_qual_java") {
-  jar_path = "libs/org_checkerframework_checker_qual/checker-qual-3.12.0.jar"
+  jar_path = "libs/org_checkerframework_checker_qual/checker-qual-3.22.1.jar"
   output_name = "org_checkerframework_checker_qual"
   supports_android = true
 
@@ -951,15 +951,17 @@ if (!limit_android_deps) {
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   android_aar_prebuilt(
       "com_google_android_apps_common_testing_accessibility_framework_accessibility_test_framework_java") {
-    aar_path = "libs/com_google_android_apps_common_testing_accessibility_framework_accessibility_test_framework/accessibility-test-framework-3.1.2.aar"
+    aar_path = "libs/com_google_android_apps_common_testing_accessibility_framework_accessibility_test_framework/accessibility-test-framework-4.0.0.aar"
     info_path = "libs/com_google_android_apps_common_testing_accessibility_framework_accessibility_test_framework/com_google_android_accessibility_test_framework.info"
     testonly = true
     deps = [
+      ":com_google_errorprone_error_prone_annotations_java",
       ":com_google_guava_guava_android_java",
-      ":com_google_protobuf_protobuf_lite_java",
+      ":com_google_protobuf_protobuf_javalite_java",
       ":org_checkerframework_checker_qual_java",
       ":org_jsoup_jsoup_java",
       "//third_party/androidx:androidx_core_core_java",
+      "//third_party/androidx:androidx_test_services_storage_java",
       "//third_party/hamcrest:hamcrest_core_java",
       "//third_party/hamcrest:hamcrest_library_java",
       material_design_target,
@@ -1424,7 +1426,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   java_prebuilt("org_jsoup_jsoup_java") {
-    jar_path = "libs/org_jsoup_jsoup/jsoup-1.14.3.jar"
+    jar_path = "libs/org_jsoup_jsoup/jsoup-1.15.1.jar"
     output_name = "org_jsoup_jsoup"
     supports_android = true
     testonly = true
@@ -2078,21 +2080,6 @@ if (!limit_android_deps) {
       "//third_party/androidx:*",
     ]
     deps = [ ":google_play_services_basement_java" ]
-  }
-
-  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-  java_prebuilt("com_google_protobuf_protobuf_lite_java") {
-    jar_path = "libs/com_google_protobuf_protobuf_lite/protobuf-lite-3.0.1.jar"
-    output_name = "com_google_protobuf_protobuf_lite"
-    supports_android = true
-
-    # To remove visibility constraint, add this dependency to
-    # //third_party/android_deps/build.gradle.
-    visibility = [
-      ":*",
-      "//third_party/androidx:*",
-    ]
-    testonly = true
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.

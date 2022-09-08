@@ -29,6 +29,9 @@ android_java_prebuilt("espresso_contrib_java") {
   enable_bytecode_checks = false
   deps = [
     ":espresso_core_java",
+
+    # TODO: Replace with third_party/android_deps:
+    # com_google_android_apps_common_testing_accessibility_framework_accessibility_test_framework_java
     "//third_party/accessibility_test_framework:accessibility_test_framework_java",
     "//third_party/android_deps:guava_android_java",
     "//third_party/android_deps:material_design_java",

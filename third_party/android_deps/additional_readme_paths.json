@@ -106,7 +106,6 @@
     "libs/com_google_j2objc_j2objc_annotations",
     "libs/com_google_protobuf_protobuf_java",
     "libs/com_google_protobuf_protobuf_javalite",
-    "libs/com_google_protobuf_protobuf_lite",
     "libs/com_googlecode_java_diff_utils_diffutils",
     "libs/com_squareup_javapoet",
     "libs/com_squareup_javawriter",
