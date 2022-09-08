@@ -385,7 +385,7 @@ IN_PROC_BROWSER_TEST_F(ChromeMimeHandlerViewTest,
   ASSERT_TRUE(alert->is_before_unload_dialog());
   alert->view()->AcceptAppModalDialog();
 
-  EXPECT_TRUE(GetGuestViewManager()->DeprecatedWaitForSingleGuestCreated());
+  EXPECT_TRUE(GetGuestViewManager()->WaitForSingleGuestViewCreated());
 }
 
 IN_PROC_BROWSER_TEST_F(ChromeMimeHandlerViewTest, PostMessage) {
