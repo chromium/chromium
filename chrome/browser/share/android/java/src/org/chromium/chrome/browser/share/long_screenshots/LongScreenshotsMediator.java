@@ -76,6 +76,12 @@ public class LongScreenshotsMediator implements LongScreenshotsEntry.EntryListen
     // Distance for each auto-scroll-at-edge step.
     private static final int EDGE_DRAG_STEP_DP = 5;
 
+    // Enforce a maximum displayed image size to avoid too-large-[software]-bitmap
+    // errors in ImageView/Scrollview pair.
+    // Images above this will be downsampled.
+    // 100MB/(24-bit ARGB888) = 3.3e7
+    private static final long DOWNSCALE_AREA_THRESHOLD_PIXELS = 33000000;
+
     // Experimental flag feature variations for autoscrolling.
     private static final String AUTOSCROLL_EXPERIMENT_PARAM_NAME = "autoscroll";
     private int mAutoScrollExperimentArm;
@@ -111,7 +117,22 @@ public class LongScreenshotsMediator implements LongScreenshotsEntry.EntryListen
                     @Override
                     public void onResult(@EntryStatus int status) {
                         if (status == EntryStatus.BITMAP_GENERATED) {
-                            showAreaSelectionDialog(entry.getBitmap());
+                            Bitmap entryBitmap = entry.getBitmap();
+                            long bitmapArea = entryBitmap.getWidth() * entryBitmap.getHeight();
+                            // Scale down the bitmap if passing it to ImageView.setImageBitmap()
+                            // would throw a too-large error.
+                            // TODO(skare): We could include this logic inside the generator and
+                            // reuse mScaleFactor there.
+                            if (bitmapArea > DOWNSCALE_AREA_THRESHOLD_PIXELS) {
+                                double oversizeRatio =
+                                        (1.0 * bitmapArea / DOWNSCALE_AREA_THRESHOLD_PIXELS);
+                                double scale = Math.sqrt(oversizeRatio);
+                                showAreaSelectionDialog(Bitmap.createScaledBitmap(entryBitmap,
+                                        (int) (Math.round(entryBitmap.getWidth() / scale)),
+                                        (int) (Math.round(entryBitmap.getHeight() / scale)), true));
+                            } else {
+                                showAreaSelectionDialog(entryBitmap);
+                            }
                             return;
                         }
 
