@@ -57,7 +57,7 @@
     position: relative;
   }
 
-  :host(:not([data-category='dismiss']):not([data-category='learn-more'])) {
+  :host(:not([data-category='dismiss']):not([data-category='extra-button'])) {
     width: 36px;
   }
 
@@ -65,7 +65,7 @@
     display: none;
   }
 
-  :host([data-category='learn-more']) #icon {
+  :host([data-category='extra-button']) #icon {
     display: none;
   }
 
@@ -73,7 +73,7 @@
     display: none;
   }
 
-  #learn-more {
+  #extra-button {
     display: none;
   }
 
@@ -81,10 +81,10 @@
     display: unset;
   }
 
-  :host([data-category='learn-more']) #learn-more {
+  :host([data-category='extra-button']) #extra-button {
     display: unset;
   }
 </style>
 <cr-button id='dismiss'>$i18n{DRIVE_WELCOME_DISMISS}</cr-button>
-<cr-button id='learn-more'>$i18n{LEARN_MORE_LABEL}</cr-button>
+<cr-button id='extra-button'></cr-button>
 <cr-icon-button id='icon'></cr-icon-button>

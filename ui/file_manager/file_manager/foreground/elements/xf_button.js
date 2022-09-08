@@ -61,6 +61,15 @@ export class PanelButton extends HTMLElement {
       }
     }
   }
+
+  /**
+   * When using the extra button, the text can be programmatically set
+   * @param {string} text The text to use on the extra button.
+   */
+  setExtraButtonText(text) {
+    const extraButton = this.shadowRoot.querySelector('#extra-button');
+    extraButton.innerText = text;
+  }
 }
 
 window.customElements.define('xf-button', PanelButton);

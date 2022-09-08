@@ -51,6 +51,17 @@ export const ProgressItemType = {
 Object.freeze(ProgressItemType);
 
 /**
+ * Visual signals can have an additional button that, when clicked, performs
+ * some arbitrary action. The `text` defines the button text to show and the
+ * `callback` defines the arbitrary action.
+ * @typedef {{
+ *   text: string,
+ *   callback: !function(),
+ * }}
+ */
+export let ProgressItemExtraButton;
+
+/**
  * Item of the progress center.
  */
 export class ProgressCenterItem {
@@ -135,11 +146,34 @@ export class ProgressCenterItem {
     this.remainingTime;
 
     /**
-     * Link to be opened when users click the "Learn more" button.
-     * The "Learn more" button won't be displayed if this is falsy.
-     * @type {?string}
+     * Contains the text and callback on an extra button when the progress
+     * center item is either in COMPLETED or ERROR state.
+     * @type {!Map<!ProgressItemState, !ProgressItemExtraButton>}
      */
-    this.learnMoreLink;
+    this.extraButton = new Map();
+  }
+
+  /**
+   * Sets the extra button text and callback. Use this to add an additional
+   * button with configurable functionality.
+   * @param {string} text Text to use for the button.
+   * @param {!ProgressItemState} state Which state to show the button,
+   *     currently only `ProgressItemState.COMPLETED` and
+   *     `ProgressItemState.ERROR` are supported.
+   * @param {!function()} callback The callback to invoke when the button is
+   *     pressed.
+   */
+  setExtraButton(state, text, callback) {
+    if (!text || !callback) {
+      console.warn('Text and callback must be supplied');
+      return;
+    }
+    if (this.extraButton.has(state)) {
+      console.warn('Extra button already defined for state:', state);
+      return;
+    }
+    const extraButton = {text, callback};
+    this.extraButton.set(state, extraButton);
   }
 
   /**

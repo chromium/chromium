@@ -5,6 +5,7 @@
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
+import {waitUntil} from '../../common/js/test_error_reporting.js';
 import {util} from '../../common/js/util.js';
 
 import {DisplayPanel} from './xf_display_panel.js';
@@ -142,7 +143,7 @@ export async function testDisplayPanelChangingPanelTypes(done) {
 
   // Check dismiss signal from the panel from a click.
   /** @type {!HTMLElement} */
-  let dismiss = assert(panelItem.secondaryButton);
+  let dismiss = assert(panelItem.primaryButton);
   dismiss.click();
   assertEquals(
       signal, 'dismiss', 'Expected signal name "dismiss". Got ' + signal);
@@ -485,6 +486,46 @@ export async function testFilesDisplayPanelTransferDetailsSummary(done) {
   // Confirm the panel container is no longer hidden.
   assertFalse(panelContainer.hasAttribute('hidden'));
   assertEquals('expanded', summaryPanelItem.getAttribute('data-category'));
+
+  done();
+}
+
+/**
+ * Tests that the extra-button appears when the value is in the dataset and
+ * sends the appropriate signal on click.
+ */
+export async function testExtraButtonCanBeAddedAndRespondsToAction(done) {
+  // Get the host display panel container element.
+  /** @type {!DisplayPanel|!Element} */
+  const displayPanel = assert(document.querySelector('#test-xf-display-panel'));
+  const panelItem = displayPanel.addPanelItem('testpanel');
+  panelItem.dataset.extraButtonText = 'Extra button';
+  panelItem.panelType = panelItem.panelTypeDone;
+
+  // Setup the panel item signal (click) callback.
+  /** @type {?string} */
+  let signal = null;
+  panelItem.signalCallback = (name) => {
+    assert(typeof name === 'string');
+    signal = name;
+  };
+
+  /** @type {!HTMLElement} */
+  const extraButton = assert(panelItem.primaryButton);
+  extraButton.click();
+  await waitUntil(() => !!signal);
+  assertEquals(
+      signal, 'extra-button',
+      'Expected signal name "extra-button". Got ' + signal);
+  signal = null;
+
+  // Check dismiss signal from the panel from a click.
+  /** @type {!HTMLElement} */
+  const dismiss = assert(panelItem.secondaryButton);
+  dismiss.click();
+  await waitUntil(() => !!signal);
+  assertEquals(
+      signal, 'dismiss', 'Expected signal name "dismiss". Got ' + signal);
 
   done();
 }

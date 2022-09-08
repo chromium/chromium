@@ -7,7 +7,7 @@ import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_t
 import {AsyncUtil} from '../../common/js/async_util.js';
 import {ProgressCenterItem, ProgressItemState, ProgressItemType} from '../../common/js/progress_center_common.js';
 import {getFilesAppIconURL, toFilesAppURL} from '../../common/js/url_constants.js';
-import {str, strf} from '../../common/js/util.js';
+import {str, strf, util} from '../../common/js/util.js';
 import {xfm} from '../../common/js/xfm.js';
 import {DriveSyncHandler} from '../../externs/background/drive_sync_handler.js';
 import {ProgressCenter} from '../../externs/background/progress_center.js';
@@ -356,7 +356,9 @@ export class DriveSyncHandlerImpl extends EventTarget {
           break;
         case 'no_server_space':
           item.message = strf('SYNC_NO_SERVER_SPACE');
-          item.learnMoreLink = str('GOOGLE_DRIVE_MANAGE_STORAGE_URL');
+          item.setExtraButton(
+              ProgressItemState.ERROR, str('LEARN_MORE_LABEL'),
+              () => util.visitURL(str('GOOGLE_DRIVE_MANAGE_STORAGE_URL')));
 
           // This error will reappear every time sync is retried, so we use
           // a fixed ID to avoid spamming the user.
@@ -365,7 +367,9 @@ export class DriveSyncHandlerImpl extends EventTarget {
           break;
         case 'no_server_space_organization':
           item.message = strf('SYNC_NO_SERVER_SPACE_ORGANIZATION');
-          item.learnMoreLink = str('GOOGLE_DRIVE_MANAGE_STORAGE_URL');
+          item.setExtraButton(
+              ProgressItemState.ERROR, str('LEARN_MORE_LABEL'),
+              () => util.visitURL(str('GOOGLE_DRIVE_MANAGE_STORAGE_URL')));
 
           // This error will reappear every time sync is retried, so we use
           // a fixed ID to avoid spamming the user.

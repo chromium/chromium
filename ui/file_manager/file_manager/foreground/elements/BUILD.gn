@@ -214,6 +214,7 @@ js_unittest("files_xf_elements_unittest") {
   deps = [
     ":xf_display_panel",
     "//chrome/test/data/webui:chai_assert",
+    "//ui/file_manager/file_manager/common/js:test_error_reporting",
     "//ui/file_manager/file_manager/common/js:util",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:load_time_data.m",
