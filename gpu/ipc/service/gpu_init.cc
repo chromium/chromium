@@ -4,6 +4,7 @@
 
 #include "gpu/ipc/service/gpu_init.h"
 
+#include <cstdlib>
 #include <string>
 
 #include "base/base_paths.h"
@@ -740,6 +741,16 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
       gl_use_swiftshader_ = true;
     }
   }
+#if BUILDFLAG(IS_LINUX) || \
+    (BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_CHROMEOS_DEVICE))
+  if (!gl_disabled && !gl_use_swiftshader_ && std::getenv("RUNNING_UNDER_RR")) {
+    // https://rr-project.org/ is a Linux-only record-and-replay debugger that
+    // is unhappy when things like GPU drivers write directly into the
+    // process's address space.  Using swiftshader helps ensure that doesn't
+    // happen and keeps Chrome and linux-chromeos usable with rr.
+    gl_use_swiftshader_ = true;
+  }
+#endif
   if (gl_use_swiftshader_ ||
       gl::IsSoftwareGLImplementation(gl::GetGLImplementationParts())) {
     gpu_info_.software_rendering = true;
@@ -871,6 +882,17 @@ void GpuInit::InitializeInProcess(base::CommandLine* command_line,
     return;
   }
   bool gl_disabled = gl::GetGLImplementation() == gl::kGLImplementationDisabled;
+
+#if BUILDFLAG(IS_LINUX) || \
+    (BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_CHROMEOS_DEVICE))
+  if (!gl_disabled && !gl_use_swiftshader_ && std::getenv("RUNNING_UNDER_RR")) {
+    // https://rr-project.org/ is a Linux-only record-and-replay debugger that
+    // is unhappy when things like GPU drivers write directly into the
+    // process's address space.  Using swiftshader helps ensure that doesn't
+    // happen and keeps Chrome and linux-chromeos usable with rr.
+    gl_use_swiftshader_ = true;
+  }
+#endif
 
   if (!gl_disabled && !gl_use_swiftshader_) {
     CollectContextGraphicsInfo(&gpu_info_);
