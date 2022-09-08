@@ -2086,39 +2086,42 @@ bool TestRecipeReplayer::GetBoundingRectOfTargetElement(
   }
 
   // Parse the bounding rect string to extract the element coordinates.
-  std::istringstream rect_stream(rect_str);
-  std::string token;
-  if (!std::getline(rect_stream, token, ',')) {
+  std::vector<base::StringPiece> rect_components = base::SplitStringPiece(
+      rect_str, ",", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
+  if (rect_components.size() != 4) {
+    ADD_FAILURE() << "Wrong number of components in `" << rect_str << "`!";
+    return false;
+  }
+
+  int x = 0;
+  if (!base::StringToInt(rect_components[0], &x)) {
     ADD_FAILURE() << "Failed to extract target element's x coordinate from "
-                  << "the string `" << rect_str << "`!";
+                  << "the string `" << rect_str[0] << "`!";
     return false;
   }
-
-  output_rect->set_x(std::stoi(token));
-
-  if (!std::getline(rect_stream, token, ',')) {
+  int y = 0;
+  if (!base::StringToInt(rect_components[1], &y)) {
     ADD_FAILURE() << "Failed to extract target element's y coordinate from "
-                  << "the string `" << rect_str << "`!";
+                  << "the string `" << rect_str[1] << "`!";
     return false;
   }
-
-  output_rect->set_y(std::stoi(token));
-
-  if (!std::getline(rect_stream, token, ',')) {
+  int width = 0;
+  if (!base::StringToInt(rect_components[2], &width)) {
     ADD_FAILURE() << "Failed to extract target element's width from "
-                  << "the string `" << rect_str << "`!";
+                  << "the string `" << rect_str[2] << "`!";
     return false;
   }
-
-  output_rect->set_width(std::stoi(token));
-
-  if (!std::getline(rect_stream, token, ',')) {
+  int height = 0;
+  if (!base::StringToInt(rect_components[3], &height)) {
     ADD_FAILURE() << "Failed to extract target element's height from "
-                  << "the string `" << rect_str << "`!";
+                  << "the string `" << rect_str[3] << "`!";
     return false;
   }
 
-  output_rect->set_height(std::stoi(token));
+  output_rect->set_x(x);
+  output_rect->set_y(y);
+  output_rect->set_width(width);
+  output_rect->set_height(height);
 
   return true;
 }
