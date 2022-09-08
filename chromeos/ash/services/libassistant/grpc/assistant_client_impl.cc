@@ -12,6 +12,7 @@
 #include "base/check.h"
 #include "base/containers/flat_set.h"
 #include "base/notreached.h"
+#include "base/system/sys_info.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "chromeos/ash/services/assistant/public/cpp/features.h"
 #include "chromeos/ash/services/libassistant/callback_utils.h"
@@ -24,6 +25,7 @@
 #include "chromeos/assistant/internal/internal_constants.h"
 #include "chromeos/assistant/internal/internal_util.h"
 #include "chromeos/assistant/internal/libassistant/shared_headers.h"
+#include "chromeos/assistant/internal/libassistant_util.h"
 #include "chromeos/assistant/internal/proto/shared/proto/v2/alarm_timer_interface.pb.h"
 #include "chromeos/assistant/internal/proto/shared/proto/v2/audio_utils_interface.pb.h"
 #include "chromeos/assistant/internal/proto/shared/proto/v2/bootup_settings_interface.pb.h"
@@ -448,13 +450,14 @@ std::unique_ptr<AssistantClient> AssistantClient::Create(
     std::unique_ptr<assistant_client::AssistantManager> assistant_manager,
     assistant_client::AssistantManagerInternal* assistant_manager_internal) {
   if (chromeos::assistant::features::IsLibAssistantV2Enabled()) {
+    const bool is_chromeos_device = base::SysInfo::IsRunningOnChromeOS();
     // Note that we should *not* depend on |assistant_manager_internal| for V2,
     // so |assistant_manager_internal| will be nullptr after the migration has
     // done.
     return std::make_unique<AssistantClientImpl>(
         std::move(assistant_manager), assistant_manager_internal,
-        assistant::kLibassistantServiceAddress,
-        assistant::kAssistantServiceAddress);
+        assistant::GetLibassistantServiceAddress(is_chromeos_device),
+        assistant::GetAssistantServiceAddress(is_chromeos_device));
   }
 
   return std::make_unique<AssistantClientV1>(std::move(assistant_manager),
