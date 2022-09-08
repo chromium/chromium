@@ -5424,10 +5424,6 @@ const char kFilesSinglePartitionFormatName[] =
 const char kFilesSinglePartitionFormatDescription[] =
     "Enable partitioning of removable disks into single partition.";
 
-const char kFilesSWAName[] = "Enable Files App SWA.";
-const char kFilesSWADescription[] =
-    "Enable the SWA version of the file manager.";
-
 const char kFilesTrashName[] = "Enable Files Trash.";
 const char kFilesTrashDescription[] =
     "Enable trash for My files volume in Files App.";

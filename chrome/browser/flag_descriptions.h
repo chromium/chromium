@@ -3094,9 +3094,6 @@ extern const char kFilesExtractArchiveDescription[];
 extern const char kFilesSinglePartitionFormatName[];
 extern const char kFilesSinglePartitionFormatDescription[];
 
-extern const char kFilesSWAName[];
-extern const char kFilesSWADescription[];
-
 extern const char kFilesTrashName[];
 extern const char kFilesTrashDescription[];
 

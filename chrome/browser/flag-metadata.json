@@ -3564,11 +3564,6 @@
     "expiry_milestone": 104
   },
   {
-    "name": "files-swa",
-    "owners": [ "majewski", "simmonsjosh@google.com" ],
-    "expiry_milestone": 112
-  },
-  {
     "name": "files-trash",
     "owners": [ "benreich", "joelhockey", "noel", "simmonsjosh@google.com" ],
     "expiry_milestone": 115
