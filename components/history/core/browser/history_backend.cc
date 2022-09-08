@@ -1908,19 +1908,21 @@ std::vector<ClusterVisit> HistoryBackend::ToClusterVisits(
     bool include_duplicates) {
   auto annotated_visits = ToAnnotatedVisits(visit_ids);
   std::vector<ClusterVisit> cluster_visits;
-  base::ranges::transform(
-      annotated_visits, std::back_inserter(cluster_visits),
-      [&](const auto& annotated_visit) {
-        ClusterVisit cluster_visit =
-            db_->GetClusterVisit(annotated_visit.visit_row.visit_id);
-        cluster_visit.annotated_visit = annotated_visit;
-        if (include_duplicates) {
-          cluster_visit.duplicate_visits = ToDuplicateClusterVisits(
-              db_->GetDuplicateClusterVisitIdsForClusterVisit(
-                  annotated_visit.visit_row.visit_id));
-        }
-        return cluster_visit;
-      });
+  base::ranges::for_each(annotated_visits, [&](const auto& annotated_visit) {
+    ClusterVisit cluster_visit =
+        db_->GetClusterVisit(annotated_visit.visit_row.visit_id);
+    // `cluster_visit` should be valid in the normal flow, but DB corruption can
+    // happen.
+    if (cluster_visit.annotated_visit.visit_row.visit_id == kInvalidVisitID)
+      return;
+    cluster_visit.annotated_visit = annotated_visit;
+    if (include_duplicates) {
+      cluster_visit.duplicate_visits = ToDuplicateClusterVisits(
+          db_->GetDuplicateClusterVisitIdsForClusterVisit(
+              annotated_visit.visit_row.visit_id));
+    }
+    cluster_visits.push_back(cluster_visit);
+  });
   return cluster_visits;
 }
 
@@ -1945,6 +1947,9 @@ base::Time HistoryBackend::FindMostRecentClusteredTime() {
     return base::Time::Min();
   const auto clusters =
       GetMostRecentClusters(base::Time::Min(), base::Time::Max(), 1, false);
+  // TODO(manukh): If the most recent cluster is invalid (due to DB corruption),
+  //  `GetMostRecentClusters()` will return no clusters. We should handle this
+  //  case and not assume we've exhausted history.
   return clusters.empty() ? base::Time::Min()
                           : clusters[0]
                                 .GetMostRecentVisit()
@@ -1973,10 +1978,15 @@ std::vector<Cluster> HistoryBackend::GetMostRecentClusters(
   const auto cluster_ids = db_->GetMostRecentClusterIds(
       inclusive_min_time, exclusive_max_time, max_clusters);
   std::vector<Cluster> clusters;
-  base::ranges::transform(
-      cluster_ids, std::back_inserter(clusters), [&](const auto& cluster_id) {
-        return GetCluster(cluster_id, include_keywords_and_duplicates);
-      });
+  base::ranges::for_each(cluster_ids, [&](const auto& cluster_id) {
+    const auto cluster =
+        GetCluster(cluster_id, include_keywords_and_duplicates);
+    // `cluster` should be valid in the normal flow, but DB corruption can
+    // happen. `GetCluster()` returning a cluster_id` of 0 indicates an invalid
+    // cluster.
+    if (cluster.cluster_id > 0)
+      clusters.push_back(cluster);
+  });
   return clusters;
 }
 
@@ -1986,9 +1996,15 @@ Cluster HistoryBackend::GetCluster(int64_t cluster_id,
   if (!db_)
     return {};
 
+  const auto cluster_visits = ToClusterVisits(
+      db_->GetVisitIdsInCluster(cluster_id), include_keywords_and_duplicates);
+  // `cluster_visits` shouldn't be empty in the normal flow, but DB corruption
+  // can happen.
+  if (cluster_visits.empty())
+    return {};
+
   Cluster cluster = db_->GetCluster(cluster_id);
-  cluster.visits = ToClusterVisits(db_->GetVisitIdsInCluster(cluster_id),
-                                   include_keywords_and_duplicates);
+  cluster.visits = cluster_visits;
   if (include_keywords_and_duplicates)
     cluster.keyword_to_data_map = db_->GetClusterKeywords(cluster_id);
   return cluster;

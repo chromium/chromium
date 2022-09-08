@@ -456,6 +456,7 @@ void VisitAnnotationsDatabase::UpdateContextAnnotationsForVisit(
 bool VisitAnnotationsDatabase::GetContextAnnotationsForVisit(
     VisitID visit_id,
     VisitContextAnnotations* out_context_annotations) {
+  DCHECK_GT(visit_id, 0);
   DCHECK(out_context_annotations);
 
   sql::Statement statement(GetDB().GetCachedStatement(
@@ -613,6 +614,7 @@ void VisitAnnotationsDatabase::AddClusters(
     // Insert each visit into 'clusters_and_visits'.
     base::ranges::for_each(cluster.visits, [&](const auto& cluster_visit) {
       const auto visit_id = cluster_visit.annotated_visit.visit_row.visit_id;
+      DCHECK_GT(visit_id, 0);
       clusters_and_visits_statement.Reset(true);
       clusters_and_visits_statement.BindInt64(0, cluster_id);
       clusters_and_visits_statement.BindInt64(1, visit_id);
@@ -634,6 +636,7 @@ void VisitAnnotationsDatabase::AddClusters(
       // Insert each `ClusterVisit`'s duplicate visits into
       // 'cluster_visit_duplicates_statement'.
       for (const auto& duplicate_visit : cluster_visit.duplicate_visits) {
+        DCHECK_GT(duplicate_visit.visit_id, 0);
         cluster_visit_duplicates_statement.Reset(true);
         cluster_visit_duplicates_statement.BindInt64(0, visit_id);
         cluster_visit_duplicates_statement.BindInt64(1,
@@ -668,6 +671,7 @@ void VisitAnnotationsDatabase::AddClusters(
 }
 
 Cluster VisitAnnotationsDatabase::GetCluster(int64_t cluster_id) {
+  DCHECK_GT(cluster_id, 0);
   sql::Statement statement(GetDB().GetCachedStatement(
       SQL_FROM_HERE,
       "SELECT" HISTORY_CLUSTER_ROW_FIELDS "FROM clusters WHERE cluster_id=?"));
@@ -742,6 +746,7 @@ std::vector<VisitID> VisitAnnotationsDatabase::GetVisitIdsInCluster(
 }
 
 ClusterVisit VisitAnnotationsDatabase::GetClusterVisit(VisitID visit_id) {
+  DCHECK_GT(visit_id, 0);
   sql::Statement statement(GetDB().GetCachedStatement(
       SQL_FROM_HERE, "SELECT" HISTORY_CLUSTER_VISIT_ROW_FIELDS
                      "FROM clusters_and_visits WHERE visit_id=?"));
