@@ -177,71 +177,82 @@ struct VectorTypeOperations {
   static void Move(T* const src,
                    T* const src_end,
                    T* const dst,
-                   bool has_inline_buffer = true) {
-    if constexpr (VectorTraits<T>::kCanMoveWithMemcpy) {
-      if (!LIKELY(src && dst))
-        return;
-
-      size_t bytes = reinterpret_cast<const char*>(src_end) -
-                     reinterpret_cast<const char*>(src);
-      if constexpr (Allocator::kIsGarbageCollected &&
-                    IsTraceableInCollectionTrait<VectorTraits<T>>::value)
-        AtomicWriteMemcpy(dst, src, bytes);
-      else
-        memcpy(dst, src, bytes);
-
-      if (has_inline_buffer)
-        ConstructTraits::NotifyNewElements(dst, src_end - src);
-    } else {
-      for (T *s = src, *d = dst; s != src_end; ++s, ++d) {
-        T* newly_created = ConstructTraits::Construct(d, std::move(*s));
-        if (has_inline_buffer)
-          ConstructTraits::NotifyNewElement(newly_created);
-        s->~T();
+                   VectorOperationOrigin origin) {
+    if (!LIKELY(src && dst))
+      return;
+    if constexpr (!VectorTraits<T>::kCanMoveWithMemcpy) {
+      if (origin == VectorOperationOrigin::kConstruction) {
+        for (T *s = src, *d = dst; s != src_end; ++s, ++d) {
+          ConstructTraits::Construct(d, std::move(*s));
+          s->~T();
+        }
+      } else {
+        for (T *s = src, *d = dst; s != src_end; ++s, ++d) {
+          ConstructTraits::ConstructAndNotifyElement(d, std::move(*s));
+          s->~T();
+        }
       }
+    } else if constexpr (Allocator::kIsGarbageCollected &&
+                         IsTraceableInCollectionTrait<VectorTraits<T>>::value) {
+      static_assert(VectorTraits<T>::kCanMoveWithMemcpy);
+      AtomicWriteMemcpy(dst, src,
+                        reinterpret_cast<const char*>(src_end) -
+                            reinterpret_cast<const char*>(src));
+      if (origin != VectorOperationOrigin::kConstruction) {
+        ConstructTraits::NotifyNewElements(dst, src_end - src);
+      }
+    } else {
+      static_assert(VectorTraits<T>::kCanMoveWithMemcpy);
+      memcpy(dst, src,
+             reinterpret_cast<const char*>(src_end) -
+                 reinterpret_cast<const char*>(src));
     }
   }
 
   static void MoveOverlapping(T* const src,
                               T* const src_end,
                               T* const dst,
-                              bool has_inline_buffer = true) {
-    if constexpr (VectorTraits<T>::kCanMoveWithMemcpy) {
-      if (!LIKELY(src && dst))
-        return;
-
-      if constexpr (Allocator::kIsGarbageCollected &&
-                    IsTraceableInCollectionTrait<VectorTraits<T>>::value) {
-        if (dst < src) {
-          for (T *s = src, *d = dst; s < src_end; ++s, ++d)
-            AtomicWriteMemcpy<sizeof(T), alignof(T)>(d, s);
-        } else if (dst > src) {
-          T* s = src_end - 1;
-          T* d = dst + (s - src);
-          for (; s >= src; --s, --d)
-            AtomicWriteMemcpy<sizeof(T), alignof(T)>(d, s);
-        }
-      } else {
-        memmove(dst, src,
-                reinterpret_cast<const char*>(src_end) -
-                    reinterpret_cast<const char*>(src));
-      }
-
-      if (has_inline_buffer)
-        ConstructTraits::NotifyNewElements(dst, src_end - src);
-    } else {
+                              VectorOperationOrigin origin) {
+    if (!LIKELY(src && dst))
+      return;
+    if constexpr (!VectorTraits<T>::kCanMoveWithMemcpy) {
       if (dst < src) {
-        Move(src, src_end, dst, has_inline_buffer);
+        Move(src, src_end, dst, origin);
       } else if (dst > src) {
         T* s = src_end - 1;
         T* d = dst + (s - src);
-        for (; s >= src; --s, --d) {
-          T* newly_created = ConstructTraits::Construct(d, std::move(*s));
-          if (has_inline_buffer)
-            ConstructTraits::NotifyNewElement(newly_created);
-          s->~T();
+        if (origin == VectorOperationOrigin::kConstruction) {
+          for (; s >= src; --s, --d) {
+            ConstructTraits::Construct(d, std::move(*s));
+            s->~T();
+          }
+        } else {
+          for (; s >= src; --s, --d) {
+            ConstructTraits::ConstructAndNotifyElement(d, std::move(*s));
+            s->~T();
+          }
         }
       }
+    } else if constexpr (Allocator::kIsGarbageCollected &&
+                         IsTraceableInCollectionTrait<VectorTraits<T>>::value) {
+      static_assert(VectorTraits<T>::kCanMoveWithMemcpy);
+      if (dst < src) {
+        for (T *s = src, *d = dst; s < src_end; ++s, ++d)
+          AtomicWriteMemcpy<sizeof(T), alignof(T)>(d, s);
+      } else if (dst > src) {
+        T* s = src_end - 1;
+        T* d = dst + (s - src);
+        for (; s >= src; --s, --d)
+          AtomicWriteMemcpy<sizeof(T), alignof(T)>(d, s);
+      }
+      if (origin != VectorOperationOrigin::kConstruction) {
+        ConstructTraits::NotifyNewElements(dst, src_end - src);
+      }
+    } else {
+      static_assert(VectorTraits<T>::kCanMoveWithMemcpy);
+      memmove(dst, src,
+              reinterpret_cast<const char*>(src_end) -
+                  reinterpret_cast<const char*>(src));
     }
   }
 
@@ -250,6 +261,7 @@ struct VectorTypeOperations {
       std::swap_ranges(src, src_end, dst);
     } else if constexpr (Allocator::kIsGarbageCollected &&
                          IsTraceableInCollectionTrait<VectorTraits<T>>::value) {
+      static_assert(VectorTraits<T>::kCanMoveWithMemcpy);
       constexpr size_t boundary = std::max(alignof(T), sizeof(size_t));
       alignas(boundary) char buf[sizeof(T)];
       for (T *s = src, *d = dst; s < src_end; ++s, ++d) {
@@ -257,26 +269,34 @@ struct VectorTypeOperations {
         AtomicWriteMemcpy<sizeof(T), alignof(T)>(d, s);
         AtomicWriteMemcpy<sizeof(T), alignof(T)>(s, buf);
       }
+      const size_t len = src_end - src;
+      ConstructTraits::NotifyNewElements(src, len);
+      ConstructTraits::NotifyNewElements(dst, len);
     } else {
+      static_assert(VectorTraits<T>::kCanMoveWithMemcpy);
       std::swap_ranges(reinterpret_cast<char*>(src),
                        reinterpret_cast<char*>(src_end),
                        reinterpret_cast<char*>(dst));
     }
-
-    const size_t len = src_end - src;
-    ConstructTraits::NotifyNewElements(src, len);
-    ConstructTraits::NotifyNewElements(dst, len);
   }
 
-  static void Copy(const T* src, const T* src_end, T* dst) {
+  static void Copy(const T* src,
+                   const T* src_end,
+                   T* dst,
+                   VectorOperationOrigin origin) {
     if constexpr (!VectorTraits<T>::kCanCopyWithMemcpy) {
       std::copy(src, src_end, dst);
     } else if constexpr (Allocator::kIsGarbageCollected &&
                          IsTraceableInCollectionTrait<VectorTraits<T>>::value) {
+      static_assert(VectorTraits<T>::kCanCopyWithMemcpy);
       AtomicWriteMemcpy(dst, src,
                         reinterpret_cast<const char*>(src_end) -
                             reinterpret_cast<const char*>(src));
+      if (origin != VectorOperationOrigin::kConstruction) {
+        ConstructTraits::NotifyNewElements(dst, src_end - src);
+      }
     } else {
+      static_assert(VectorTraits<T>::kCanCopyWithMemcpy);
       memcpy(dst, src,
              reinterpret_cast<const char*>(src_end) -
                  reinterpret_cast<const char*>(src));
@@ -284,12 +304,20 @@ struct VectorTypeOperations {
   }
 
   template <typename U>
-  static void UninitializedCopy(const U* src, const U* src_end, T* dst) {
+  static void UninitializedCopy(const U* src,
+                                const U* src_end,
+                                T* dst,
+                                VectorOperationOrigin origin) {
+    if (!LIKELY(dst && src))
+      return;
     if constexpr (std::is_same_v<T, U> && VectorTraits<T>::kCanCopyWithMemcpy) {
-      if (!LIKELY(dst && src))
-        return;
-      Copy(src, src_end, dst);
-      ConstructTraits::NotifyNewElements(dst, src_end - src);
+      Copy(src, src_end, dst, origin);
+    } else if (origin == VectorOperationOrigin::kConstruction) {
+      while (src != src_end) {
+        ConstructTraits::Construct(dst, *src);
+        ++dst;
+        ++src;
+      }
     } else {
       while (src != src_end) {
         ConstructTraits::ConstructAndNotifyElement(dst, *src);
@@ -299,10 +327,22 @@ struct VectorTypeOperations {
     }
   }
 
-  static void UninitializedFill(T* dst, T* dst_end, const T& val) {
+  static void UninitializedFill(T* dst,
+                                T* dst_end,
+                                const T& val,
+                                VectorOperationOrigin origin) {
+    if (!LIKELY(dst))
+      return;
     if constexpr (VectorTraits<T>::kCanFillWithMemset) {
       static_assert(sizeof(T) == sizeof(char), "size of type should be one");
+      static_assert(!Allocator::kIsGarbageCollected,
+                    "memset is unsupported for garbage-collected vectors.");
       memset(dst, val, dst_end - dst);
+    } else if (origin == VectorOperationOrigin::kConstruction) {
+      while (dst != dst_end) {
+        ConstructTraits::Construct(dst, T(val));
+        ++dst;
+      }
     } else {
       while (dst != dst_end) {
         ConstructTraits::ConstructAndNotifyElement(dst, T(val));
@@ -823,14 +863,16 @@ class VectorBuffer : protected VectorBufferBase<T, Allocator> {
         // Move from ours to theirs.
         TypeOperations::Move(this_source_begin + section_begin,
                              this_source_begin + section_end,
-                             this_destination_begin + section_begin);
+                             this_destination_begin + section_begin,
+                             VectorOperationOrigin::kRegularModification);
         Base::ClearUnusedSlots(this_source_begin + section_begin,
                                this_source_begin + section_end);
       } else if (other_occupied) {
         // Move from theirs to ours.
         TypeOperations::Move(other_source_begin + section_begin,
                              other_source_begin + section_end,
-                             other_destination_begin + section_begin);
+                             other_destination_begin + section_begin,
+                             VectorOperationOrigin::kRegularModification);
         Base::ClearUnusedSlots(other_source_begin + section_begin,
                                other_source_begin + section_end);
       } else {
@@ -1411,7 +1453,8 @@ inline Vector<T, inlineCapacity, Allocator>::Vector(wtf_size_t size,
 
   ANNOTATE_NEW_BUFFER(begin(), capacity(), size);
   size_ = size;
-  TypeOperations::UninitializedFill(begin(), end(), val);
+  TypeOperations::UninitializedFill(begin(), end(), val,
+                                    VectorOperationOrigin::kConstruction);
 }
 
 template <typename T, wtf_size_t inlineCapacity, typename Allocator>
@@ -1419,7 +1462,8 @@ Vector<T, inlineCapacity, Allocator>::Vector(const Vector& other)
     : Base(other.capacity()) {
   ANNOTATE_NEW_BUFFER(begin(), capacity(), other.size());
   size_ = other.size();
-  TypeOperations::UninitializedCopy(other.begin(), other.end(), begin());
+  TypeOperations::UninitializedCopy(other.begin(), other.end(), begin(),
+                                    VectorOperationOrigin::kConstruction);
 }
 
 template <typename T, wtf_size_t inlineCapacity, typename Allocator>
@@ -1429,7 +1473,8 @@ Vector<T, inlineCapacity, Allocator>::Vector(
     : Base(other.capacity()) {
   ANNOTATE_NEW_BUFFER(begin(), capacity(), other.size());
   size_ = other.size();
-  TypeOperations::UninitializedCopy(other.begin(), other.end(), begin());
+  TypeOperations::UninitializedCopy(other.begin(), other.end(), begin(),
+                                    VectorOperationOrigin::kConstruction);
 }
 
 template <typename T, wtf_size_t inlineCapacity, typename Allocator>
@@ -1448,8 +1493,11 @@ operator=(const Vector<T, inlineCapacity, Allocator>& other) {
 
   MARKING_AWARE_ANNOTATE_CHANGE_SIZE(Allocator, begin(), capacity(), size_,
                                      other.size());
-  TypeOperations::Copy(other.begin(), other.begin() + size(), begin());
-  TypeOperations::UninitializedCopy(other.begin() + size(), other.end(), end());
+  TypeOperations::Copy(other.begin(), other.begin() + size(), begin(),
+                       VectorOperationOrigin::kRegularModification);
+  TypeOperations::UninitializedCopy(
+      other.begin() + size(), other.end(), end(),
+      VectorOperationOrigin::kRegularModification);
   size_ = other.size();
 
   return *this;
@@ -1478,8 +1526,11 @@ operator=(const Vector<T, otherCapacity, Allocator>& other) {
 
   MARKING_AWARE_ANNOTATE_CHANGE_SIZE(Allocator, begin(), capacity(), size_,
                                      other.size());
-  TypeOperations::Copy(other.begin(), other.begin() + size(), begin());
-  TypeOperations::UninitializedCopy(other.begin() + size(), other.end(), end());
+  TypeOperations::Copy(other.begin(), other.begin() + size(), begin(),
+                       VectorOperationOrigin::kRegularModification);
+  TypeOperations::UninitializedCopy(
+      other.begin() + size(), other.end(), end(),
+      VectorOperationOrigin::kRegularModification);
   size_ = other.size();
 
   return *this;
@@ -1514,7 +1565,8 @@ Vector<T, inlineCapacity, Allocator>::Vector(std::initializer_list<T> elements)
     : Base(base::checked_cast<wtf_size_t>(elements.size())) {
   ANNOTATE_NEW_BUFFER(begin(), capacity(), elements.size());
   size_ = static_cast<wtf_size_t>(elements.size());
-  TypeOperations::UninitializedCopy(elements.begin(), elements.end(), begin());
+  TypeOperations::UninitializedCopy(elements.begin(), elements.end(), begin(),
+                                    VectorOperationOrigin::kConstruction);
 }
 
 template <typename T, wtf_size_t inlineCapacity, typename Allocator>
@@ -1531,9 +1583,11 @@ operator=(std::initializer_list<T> elements) {
 
   MARKING_AWARE_ANNOTATE_CHANGE_SIZE(Allocator, begin(), capacity(), size_,
                                      input_size);
-  TypeOperations::Copy(elements.begin(), elements.begin() + size_, begin());
-  TypeOperations::UninitializedCopy(elements.begin() + size_, elements.end(),
-                                    end());
+  TypeOperations::Copy(elements.begin(), elements.begin() + size_, begin(),
+                       VectorOperationOrigin::kRegularModification);
+  TypeOperations::UninitializedCopy(
+      elements.begin() + size_, elements.end(), end(),
+      VectorOperationOrigin::kRegularModification);
   size_ = input_size;
 
   return *this;
@@ -1586,7 +1640,9 @@ Vector<T, inlineCapacity, Allocator>::Fill(const T& val, wtf_size_t new_size) {
   MARKING_AWARE_ANNOTATE_CHANGE_SIZE(Allocator, begin(), capacity(), size_,
                                      new_size);
   std::fill(begin(), end(), val);
-  TypeOperations::UninitializedFill(end(), begin() + new_size, val);
+  TypeOperations::UninitializedFill(
+      end(), begin() + new_size, val,
+      VectorOperationOrigin::kRegularModification);
   size_ = new_size;
 }
 
@@ -1819,7 +1875,9 @@ void Vector<T, inlineCapacity, Allocator>::Append(const U* data,
   T* dest = end();
   MARKING_AWARE_ANNOTATE_CHANGE_SIZE(Allocator, begin(), capacity(), size_,
                                      new_size);
-  TypeOperations::UninitializedCopy(data, &data[data_size], dest);
+  TypeOperations::UninitializedCopy(
+      data, &data[data_size], dest,
+      VectorOperationOrigin::kRegularModification);
   size_ = new_size;
 }
 
@@ -1885,7 +1943,8 @@ inline void Vector<T, inlineCapacity, Allocator>::insert(wtf_size_t position,
   MARKING_AWARE_ANNOTATE_CHANGE_SIZE(Allocator, begin(), capacity(), size_,
                                      size_ + 1);
   T* spot = begin() + position;
-  TypeOperations::MoveOverlapping(spot, end(), spot + 1);
+  TypeOperations::MoveOverlapping(spot, end(), spot + 1,
+                                  VectorOperationOrigin::kRegularModification);
   ConstructTraits<T, VectorTraits<T>, Allocator>::ConstructAndNotifyElement(
       spot, std::forward<U>(*data));
   ++size_;
@@ -1907,8 +1966,11 @@ void Vector<T, inlineCapacity, Allocator>::insert(wtf_size_t position,
   MARKING_AWARE_ANNOTATE_CHANGE_SIZE(Allocator, begin(), capacity(), size_,
                                      new_size);
   T* spot = begin() + position;
-  TypeOperations::MoveOverlapping(spot, end(), spot + data_size);
-  TypeOperations::UninitializedCopy(data, &data[data_size], spot);
+  TypeOperations::MoveOverlapping(spot, end(), spot + data_size,
+                                  VectorOperationOrigin::kRegularModification);
+  TypeOperations::UninitializedCopy(
+      data, &data[data_size], spot,
+      VectorOperationOrigin::kRegularModification);
   size_ = new_size;
 }
 
@@ -1959,7 +2021,8 @@ inline void Vector<T, inlineCapacity, Allocator>::EraseAt(wtf_size_t position) {
   CHECK_LT(position, size());
   T* spot = begin() + position;
   spot->~T();
-  TypeOperations::MoveOverlapping(spot + 1, end(), spot);
+  TypeOperations::MoveOverlapping(spot + 1, end(), spot,
+                                  VectorOperationOrigin::kRegularModification);
   ClearUnusedSlots(end() - 1, end());
   MARKING_AWARE_ANNOTATE_CHANGE_SIZE(Allocator, begin(), capacity(), size_,
                                      size_ - 1);
@@ -1995,7 +2058,8 @@ inline void Vector<T, inlineCapacity, Allocator>::EraseAt(wtf_size_t position,
   T* begin_spot = begin() + position;
   T* end_spot = begin_spot + length;
   TypeOperations::Destruct(begin_spot, end_spot);
-  TypeOperations::MoveOverlapping(end_spot, end(), begin_spot);
+  TypeOperations::MoveOverlapping(end_spot, end(), begin_spot,
+                                  VectorOperationOrigin::kRegularModification);
   ClearUnusedSlots(end() - length, end());
   MARKING_AWARE_ANNOTATE_CHANGE_SIZE(Allocator, begin(), capacity(), size_,
                                      size_ - length);
@@ -2119,7 +2183,8 @@ void Vector<T, inlineCapacity, Allocator>::ReallocateBuffer(
     const wtf_size_t old_capacity = capacity();
 #endif
     Base::ResetBufferPointer();
-    TypeOperations::Move(old_begin, old_end, begin());
+    TypeOperations::Move(old_begin, old_end, begin(),
+                         VectorOperationOrigin::kRegularModification);
     ClearUnusedSlots(old_begin, old_end);
     ANNOTATE_DELETE_BUFFER(old_begin, old_capacity, size_);
     Base::DeallocateBuffer(old_begin);
@@ -2132,7 +2197,8 @@ void Vector<T, inlineCapacity, Allocator>::ReallocateBuffer(
   // If there was a new out-of-line buffer allocated, there is no need in
   // calling write barriers for entries in that backing store as it is still
   // white.
-  TypeOperations::Move(begin(), end(), temp_buffer.Buffer(), HasInlineBuffer());
+  TypeOperations::Move(begin(), end(), temp_buffer.Buffer(),
+                       VectorOperationOrigin::kConstruction);
   ClearUnusedSlots(begin(), end());
   ANNOTATE_DELETE_BUFFER(begin(), capacity(), size_);
   Base::DeallocateBuffer(begin());

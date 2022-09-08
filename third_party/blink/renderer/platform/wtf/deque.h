@@ -355,13 +355,15 @@ inline Deque<T, inlineCapacity, Allocator>::Deque(const Deque& other)
   const T* other_buffer = other.buffer_.Buffer();
   if (start_ <= end_) {
     TypeOperations::UninitializedCopy(
-        other_buffer + start_, other_buffer + end_, buffer_.Buffer() + start_);
+        other_buffer + start_, other_buffer + end_, buffer_.Buffer() + start_,
+        VectorOperationOrigin::kConstruction);
   } else {
     TypeOperations::UninitializedCopy(other_buffer, other_buffer + end_,
-                                      buffer_.Buffer());
-    TypeOperations::UninitializedCopy(other_buffer + start_,
-                                      other_buffer + buffer_.capacity(),
-                                      buffer_.Buffer() + start_);
+                                      buffer_.Buffer(),
+                                      VectorOperationOrigin::kConstruction);
+    TypeOperations::UninitializedCopy(
+        other_buffer + start_, other_buffer + buffer_.capacity(),
+        buffer_.Buffer() + start_, VectorOperationOrigin::kConstruction);
   }
 }
 
@@ -484,9 +486,10 @@ void Deque<T, inlineCapacity, Allocator>::ExpandCapacity() {
       // No adjustments to be done.
     } else {
       wtf_size_t new_start = buffer_.capacity() - (old_capacity - start_);
-      TypeOperations::MoveOverlapping(old_buffer + start_,
-                                      old_buffer + old_capacity,
-                                      buffer_.Buffer() + new_start);
+      TypeOperations::MoveOverlapping(
+          old_buffer + start_, old_buffer + old_capacity,
+          buffer_.Buffer() + new_start,
+          VectorOperationOrigin::kRegularModification);
       buffer_.ClearUnusedSlots(old_buffer + start_,
                                old_buffer + std::min(old_capacity, new_start));
       start_ = new_start;
@@ -497,14 +500,17 @@ void Deque<T, inlineCapacity, Allocator>::ExpandCapacity() {
                          VectorOperationOrigin::kRegularModification);
   if (start_ <= end_) {
     TypeOperations::Move(old_buffer + start_, old_buffer + end_,
-                         buffer_.Buffer() + start_);
+                         buffer_.Buffer() + start_,
+                         VectorOperationOrigin::kRegularModification);
     buffer_.ClearUnusedSlots(old_buffer + start_, old_buffer + end_);
   } else {
-    TypeOperations::Move(old_buffer, old_buffer + end_, buffer_.Buffer());
+    TypeOperations::Move(old_buffer, old_buffer + end_, buffer_.Buffer(),
+                         VectorOperationOrigin::kRegularModification);
     buffer_.ClearUnusedSlots(old_buffer, old_buffer + end_);
     wtf_size_t new_start = buffer_.capacity() - (old_capacity - start_);
     TypeOperations::Move(old_buffer + start_, old_buffer + old_capacity,
-                         buffer_.Buffer() + new_start);
+                         buffer_.Buffer() + new_start,
+                         VectorOperationOrigin::kRegularModification);
     buffer_.ClearUnusedSlots(old_buffer + start_, old_buffer + old_capacity);
     start_ = new_start;
   }
@@ -622,13 +628,15 @@ inline void Deque<T, inlineCapacity, Allocator>::erase(wtf_size_t position) {
   // Find which segment of the circular buffer contained the remove element,
   // and only move elements in that part.
   if (position >= start_) {
-    TypeOperations::MoveOverlapping(buffer + start_, buffer + position,
-                                    buffer + start_ + 1);
+    TypeOperations::MoveOverlapping(
+        buffer + start_, buffer + position, buffer + start_ + 1,
+        VectorOperationOrigin::kRegularModification);
     buffer_.ClearUnusedSlots(buffer + start_, buffer + start_ + 1);
     start_ = (start_ + 1) % buffer_.capacity();
   } else {
-    TypeOperations::MoveOverlapping(buffer + position + 1, buffer + end_,
-                                    buffer + position);
+    TypeOperations::MoveOverlapping(
+        buffer + position + 1, buffer + end_, buffer + position,
+        VectorOperationOrigin::kRegularModification);
     buffer_.ClearUnusedSlots(buffer + end_ - 1, buffer + end_);
     end_ = (end_ - 1 + buffer_.capacity()) % buffer_.capacity();
   }
