@@ -381,7 +381,7 @@ const base::Feature kCrosPrivacyHubFuture{"CrosPrivacyHubFuture",
 // with a button to close desk and windows and a button to combine desks (the
 // legacy behavior).
 const base::Feature kDesksCloseAll{"DesksCloseAll",
-                                   base::FEATURE_DISABLED_BY_DEFAULT};
+                                   base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enables contextual nudges for gesture education.
 const base::Feature kContextualNudges{"ContextualNudges",
