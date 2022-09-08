@@ -1599,34 +1599,30 @@ IN_PROC_BROWSER_TEST_F(WebViewImeInteractiveTest, CompositionRangeUpdates) {
   // Flush any pending events to make sure we start with a clean slate.
   content::RunAllPendingInMessageLoop();
 
-  content::WebContents* guest_web_contents =
-      GetGuestViewManager()->DeprecatedGetLastGuestCreated();
+  guest_view::GuestViewBase* guest_view =
+      GetGuestViewManager()->GetLastGuestViewCreated();
 
   // Click the <input> element inside the <webview>. In its focus handle, the
   // <input> inside the <webview> initializes its value to "A B X D".
   ExtensionTestMessageListener focus_listener("WebViewImeTest.InputFocused");
   content::WebContents* embedder_web_contents =
-      guest_view::GuestViewBase::FromWebContents(guest_web_contents)
-          ->embedder_web_contents();
+      guest_view->embedder_web_contents();
 
-  // Event routing in OOPIF and non-OOPIF <webview> is different. With OOPIF,
-  // input is directly routed to the guest process as opposed to the non OOPIF
-  // mode where input is always sent to the embedder process first (then hops
-  // back to the browser and then to the guest).
-  content::WebContents* target_web_contents = guest_web_contents;
-  WaitForHitTestData(guest_web_contents);
+  WaitForHitTestData(guest_view->GetGuestMainFrame());
 
   // The guest page has a large input box and (50, 50) lies inside the box.
-  content::SimulateMouseClickAt(target_web_contents, 0,
-                                blink::WebMouseEvent::Button::kLeft,
-                                gfx::Point(50, 50));
+  content::SimulateMouseClickAt(
+      embedder_web_contents, 0, blink::WebMouseEvent::Button::kLeft,
+      guest_view->GetGuestMainFrame()
+          ->GetView()
+          ->TransformPointToRootCoordSpace(gfx::Point(50, 50)));
   EXPECT_TRUE(focus_listener.WaitUntilSatisfied());
 
   // Clear the string as it already contains some text. Then verify the text in
   // the <input> is empty.
   std::string value;
   ASSERT_TRUE(ExecuteScriptAndExtractString(
-      guest_web_contents,
+      guest_view->GetGuestMainFrame(),
       "var input = document.querySelector('input');"
       "input.value = '';"
       "window.domAutomationController.send("
@@ -1638,8 +1634,8 @@ IN_PROC_BROWSER_TEST_F(WebViewImeInteractiveTest, CompositionRangeUpdates) {
   // range information.
   CompositionRangeUpdateObserver observer(embedder_web_contents);
   content::SendImeSetCompositionTextToWidget(
-      target_web_contents->GetRenderWidgetHostView()->GetRenderWidgetHost(),
-      u"ABC", std::vector<ui::ImeTextSpan>(), gfx::Range::InvalidRange(), 0, 3);
+      guest_view->GetGuestMainFrame()->GetRenderWidgetHost(), u"ABC",
+      std::vector<ui::ImeTextSpan>(), gfx::Range::InvalidRange(), 0, 3);
   observer.WaitForCompositionRangeLength(3U);
 }
 
