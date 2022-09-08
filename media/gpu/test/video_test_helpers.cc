@@ -491,7 +491,7 @@ scoped_refptr<VideoFrame> AlignedDataHelper::GetNextFrame() {
     base::ReadOnlySharedMemoryMapping mapping = shmem_region.Map();
     uint8_t* buf = const_cast<uint8_t*>(mapping.GetMemoryAs<uint8_t>());
     uint8_t* data[3] = {};
-    for (size_t i = 0; layout_->planes().size(); i++)
+    for (size_t i = 0; i < layout_->planes().size(); i++)
       data[i] = buf + layout_->planes()[i].offset;
 
     auto frame = media::VideoFrame::WrapExternalYuvDataWithLayout(
