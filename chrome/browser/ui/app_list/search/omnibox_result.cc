@@ -69,14 +69,12 @@ ash::SearchResultTags TagsForTextWithMatchTags(
 OmniboxResult::OmniboxResult(Profile* profile,
                              AppListControllerDelegate* list_controller,
                              crosapi::mojom::SearchResultPtr search_result,
-                             const std::u16string& query,
-                             bool is_zero_suggestion)
+                             const std::u16string& query)
     : consumer_receiver_(this, std::move(search_result->receiver)),
       profile_(profile),
       list_controller_(list_controller),
       search_result_(std::move(search_result)),
       query_(query),
-      is_zero_suggestion_(is_zero_suggestion),
       contents_(search_result_->contents.value_or(u"")),
       description_(search_result_->description.value_or(u"")) {
   SetDisplayType(DisplayType::kList);
@@ -112,12 +110,8 @@ OmniboxResult::OmniboxResult(Profile* profile,
   UpdateIcon();
   UpdateTitleAndDetails();
 
-  if (is_zero_suggestion_) {
-    DCHECK(!ash::features::IsProductivityLauncherEnabled());
-    InitializeButtonActions({ash::SearchResultActionType::kRemove,
-                             ash::SearchResultActionType::kAppend});
-  } else if (crosapi::OptionalBoolIsTrue(search_result_->is_omnibox_search) &&
-             ash::features::IsProductivityLauncherEnabled()) {
+  if (crosapi::OptionalBoolIsTrue(search_result_->is_omnibox_search) &&
+      ash::features::IsProductivityLauncherEnabled()) {
     InitializeButtonActions({ash::SearchResultActionType::kRemove});
   }
 

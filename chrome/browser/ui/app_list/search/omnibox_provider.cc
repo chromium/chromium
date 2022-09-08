@@ -119,25 +119,8 @@ void OmniboxProvider::Start(const std::u16string& query) {
       AutocompleteInput(query, metrics::OmniboxEventProto::CHROMEOS_APP_LIST,
                         ChromeAutocompleteSchemeClassifier(profile_));
 
-  // Sets the |from_omnibox_focus| flag to enable ZeroSuggestProvider to process
-  // the requests from app_list.
-  if (input_.text().empty()) {
-    input_.set_focus_type(metrics::OmniboxFocusType::INTERACTION_FOCUS);
-    is_zero_state_input_ = true;
-  } else {
-    is_zero_state_input_ = false;
-  }
-
   query_start_time_ = base::TimeTicks::Now();
   controller_->Start(input_);
-}
-
-void OmniboxProvider::StartZeroState() {
-  // Do not perform zero-state queries in the productivity launcher, because
-  // Omnibox is not shown in zero-state.
-  if (!app_list_features::IsCategoricalSearchEnabled()) {
-    Start(std::u16string());
-  }
 }
 
 ash::AppListSearchResultType OmniboxProvider::ResultType() const {
@@ -155,10 +138,9 @@ void OmniboxProvider::PopulateFromACResult(const AutocompleteResult& result) {
     // Do not return a match in any of these cases:
     // - The URL is invalid.
     // - The URL points to Drive Web and is not an open tab. The Drive search
-    //   and zero-state providers surface Drive results.
-    // - The URL points to a local file. The Local file search and zero-state
-    //   providers handle local file results, even if they've been opened in the
-    //   browser.
+    //   provider surfaces Drive results.
+    // - The URL points to a local file. The Local file search provider handles
+    //   local file results, even if they've been opened in the browser.
     const bool is_drive = IsDriveUrl(match.destination_url) &&
                           match.type != AutocompleteMatchType::OPEN_TAB;
     if (!match.destination_url.is_valid() || is_drive ||
@@ -180,9 +162,8 @@ void OmniboxProvider::PopulateFromACResult(const AutocompleteResult& result) {
           crosapi::CreateResult(
               match, controller_.get(), &favicon_cache_,
               BookmarkModelFactory::GetForBrowserContext(profile_), input_),
-          last_query_, is_zero_state_input_));
-    } else if (!is_zero_state_input_ &&
-               !ShouldFilterAnswer(match, last_query_)) {
+          last_query_));
+    } else if (!ShouldFilterAnswer(match, last_query_)) {
       new_results.emplace_back(std::make_unique<OmniboxAnswerResult>(
           profile_, list_controller_,
           crosapi::CreateAnswerResult(match, controller_.get(), last_query_,
@@ -207,17 +188,10 @@ void OmniboxProvider::OnResultChanged(AutocompleteController* controller,
   DCHECK(controller == controller_.get());
 
   // Record the query latency.
-  RecordQueryLatencyHistogram();
+  base::TimeDelta query_latency = base::TimeTicks::Now() - query_start_time_;
+  UMA_HISTOGRAM_TIMES("Apps.AppList.OmniboxProvider.QueryTime", query_latency);
 
   PopulateFromACResult(controller_->result());
-}
-
-void OmniboxProvider::RecordQueryLatencyHistogram() {
-  if (!is_zero_state_input_) {
-    base::TimeDelta query_latency = base::TimeTicks::Now() - query_start_time_;
-    UMA_HISTOGRAM_TIMES("Apps.AppList.OmniboxProvider.QueryTime",
-                        query_latency);
-  }
 }
 
 }  // namespace app_list

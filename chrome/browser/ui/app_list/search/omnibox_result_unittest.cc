@@ -224,8 +224,7 @@ class OmniboxResultTest : public testing::Test {
         profile_.get(), app_list_controller_delegate_.get(),
         crosapi::CreateResult(match, /*controller=*/nullptr,
                               favicon_cache_.get(), bookmark_model_, input_),
-        /*query=*/kFullQuery,
-        /*is_zero_suggestion=*/false);
+        /*query=*/kFullQuery);
   }
 
   const GURL& GetLastOpenedUrl() const {

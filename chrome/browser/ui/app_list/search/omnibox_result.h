@@ -30,8 +30,7 @@ class OmniboxResult : public ChromeSearchResult,
   OmniboxResult(Profile* profile,
                 AppListControllerDelegate* list_controller,
                 crosapi::mojom::SearchResultPtr search_result,
-                const std::u16string& query,
-                bool is_zero_suggestion);
+                const std::u16string& query);
   ~OmniboxResult() override;
 
   OmniboxResult(const OmniboxResult&) = delete;
@@ -84,7 +83,6 @@ class OmniboxResult : public ChromeSearchResult,
   AppListControllerDelegate* const list_controller_;
   crosapi::mojom::SearchResultPtr search_result_;
   const std::u16string query_;
-  const bool is_zero_suggestion_;
   std::unique_ptr<BitmapFetcher> bitmap_fetcher_;
   // Whether this omnibox result uses a generic backup icon.
   bool uses_generic_icon_ = false;

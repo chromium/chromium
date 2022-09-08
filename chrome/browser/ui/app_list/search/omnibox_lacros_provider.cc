@@ -125,8 +125,7 @@ void OmniboxLacrosProvider::OnResultsReceived(
     } else if (!crosapi::OptionalBoolIsTrue(search_result->is_answer)) {
       // Omnibox result.
       list_results.emplace_back(std::make_unique<OmniboxResult>(
-          profile_, list_controller_, std::move(search_result), last_query_,
-          /*is_zero_suggestion=*/false));
+          profile_, list_controller_, std::move(search_result), last_query_));
     } else if (!ShouldFilterAnswer(search_result, last_query_)) {
       // Answer result.
       new_results.emplace_back(std::make_unique<OmniboxAnswerResult>(
