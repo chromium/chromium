@@ -333,6 +333,7 @@ android_resources("java_resources") {
     "java/res/layout/url_action_container.xml",
     "java/res/values/colors.xml",
     "java/res/values/dimens.xml",
+    "java/res/values/drawables.xml",
     "java/res/values/ids.xml",
     "java/res/values/styles.xml",
   ]

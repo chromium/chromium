@@ -4,12 +4,16 @@
 
 package org.chromium.chrome.browser.omnibox.suggestions.carousel;
 
+import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.IntDef;
+import androidx.appcompat.content.res.AppCompatResources;
 
+import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
@@ -58,14 +62,22 @@ public class BaseCarouselSuggestionItemViewBuilder {
      * @return A TileView element for the individual URL suggestion.
      */
     private static TileView createTileView(ViewGroup parent) {
-        TileView tile = (TileView) LayoutInflater.from(parent.getContext())
-                                .inflate(R.layout.suggestions_tile_view, parent, false);
+        Context context = parent.getContext();
+        TileView tile = (TileView) LayoutInflater.from(context).inflate(
+                R.layout.suggestions_tile_view, parent, false);
         tile.setClickable(true);
 
-        Drawable background =
-                OmniboxResourceProvider.resolveAttributeToDrawable(parent.getContext(),
-                        BrandedColorScheme.LIGHT_BRANDED_THEME, R.attr.selectableItemBackground);
-        tile.setBackgroundDrawable(background);
+        Drawable background = OmniboxResourceProvider.resolveAttributeToDrawable(
+                context, BrandedColorScheme.APP_DEFAULT, R.attr.selectableItemBackground);
+        tile.setBackground(background);
+
+        // Update the background color of the solid circle around the icon (typically a favicon).
+        if (OmniboxFeatures.shouldShowModernizeVisualUpdate(context)) {
+            Drawable modernizedBackground = AppCompatResources.getDrawable(
+                    context, R.drawable.tile_view_icon_background_modern_updated);
+            View iconBackground = tile.findViewById(R.id.tile_view_icon_background);
+            iconBackground.setBackground(modernizedBackground);
+        }
         return tile;
     }
 }
