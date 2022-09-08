@@ -434,6 +434,7 @@ crbug.com/1345777 [ android ] Pixel_VideoStreamFromWebGLAlphaCanvas [ Skip ]
 
 # Skip on M105
 crbug.com/1351914 [ linux skia-renderer-vulkan ] Pixel_VulkanSwiftShader_WebGPUWebGLTexImage2D [ Skip ]
+crbug.com/1349676 [ mac no-asan release intel-0x3e9b ] Pixel_WebGPUCanvasDisableOneCopyCapture [ Skip ]
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
