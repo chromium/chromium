@@ -93,7 +93,7 @@ def launch_dbus(env): # pylint: disable=inconsistent-return-statements
 # TODO(crbug.com/949194): Encourage setting flags to False.
 def run_executable(
     cmd, env, stdoutfile=None, use_openbox=True, use_xcompmgr=True,
-    xvfb_whd=None):
+    xvfb_whd=None, cwd=None):
   """Runs an executable within Weston or Xvfb on Linux or normally on other
      platforms.
 
@@ -112,6 +112,7 @@ def run_executable(
     use_xcompmgr: A flag to use xcompmgr process.
       Some tests need a compositing wm to make use of transparent visuals.
     xvfb_whd: WxHxD to pass to xvfb or DEFAULT_XVFB_WHD if None
+    cwd: Current working directory.
 
   Returns:
     the exit code of the specified commandline, or 1 on failure.
@@ -140,13 +141,14 @@ def run_executable(
 
   if sys.platform.startswith('linux') and use_xvfb:
     return _run_with_xvfb(cmd, env, stdoutfile, use_openbox, use_xcompmgr,
-      xvfb_whd or DEFAULT_XVFB_WHD)
+      xvfb_whd or DEFAULT_XVFB_WHD, cwd)
   if use_weston:
-    return _run_with_weston(cmd, env, stdoutfile)
-  return test_env.run_executable(cmd, env, stdoutfile)
+    return _run_with_weston(cmd, env, stdoutfile, cwd)
+  return test_env.run_executable(cmd, env, stdoutfile, cwd)
 
 
-def _run_with_xvfb(cmd, env, stdoutfile, use_openbox, use_xcompmgr, xvfb_whd):
+def _run_with_xvfb(cmd, env, stdoutfile, use_openbox,
+                   use_xcompmgr, xvfb_whd, cwd):
   openbox_proc = None
   openbox_ready = MutableBoolean()
   def set_openbox_ready(*_):
@@ -237,7 +239,7 @@ def _run_with_xvfb(cmd, env, stdoutfile, use_openbox, use_xcompmgr, xvfb_whd):
       xcompmgr_proc = subprocess.Popen(
           'xcompmgr', stderr=subprocess.STDOUT, env=env)
 
-    return test_env.run_executable(cmd, env, stdoutfile)
+    return test_env.run_executable(cmd, env, stdoutfile, cwd)
   except OSError as e:
     print('Failed to start Xvfb or Openbox: %s\n' % str(e), file=sys.stderr)
     return 1
@@ -257,7 +259,7 @@ def _run_with_xvfb(cmd, env, stdoutfile, use_openbox, use_xcompmgr, xvfb_whd):
 
 
 # TODO(https://crbug.com/1060466): Write tests.
-def _run_with_weston(cmd, env, stdoutfile):
+def _run_with_weston(cmd, env, stdoutfile, cwd):
   weston_proc = None
 
   try:
@@ -279,7 +281,7 @@ def _run_with_weston(cmd, env, stdoutfile):
     # TODO(https://1178788): find a better solution.
     if not os.path.isfile("./weston"):
       print('Weston is not available. Starting without Wayland compositor')
-      return test_env.run_executable(cmd, env, stdoutfile)
+      return test_env.run_executable(cmd, env, stdoutfile, cwd)
 
     # Set $XDG_RUNTIME_DIR if it is not set.
     _set_xdg_runtime_dir(env)
@@ -328,7 +330,7 @@ def _run_with_weston(cmd, env, stdoutfile):
     if weston_proc_display is None:
       raise _WestonProcessError('Failed to start Weston.')
     env['WAYLAND_DISPLAY'] = weston_proc_display
-    return test_env.run_executable(cmd, env, stdoutfile)
+    return test_env.run_executable(cmd, env, stdoutfile, cwd)
   except OSError as e:
     print('Failed to start Weston: %s\n' % str(e), file=sys.stderr)
     return 1

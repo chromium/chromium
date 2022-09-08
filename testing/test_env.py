@@ -303,7 +303,7 @@ def forward_signals(procs):
     signal.signal(signal.SIGINT, _sig_handler)
 
 
-def run_executable(cmd, env, stdoutfile=None):
+def run_executable(cmd, env, stdoutfile=None, cwd=None):
   """Runs an executable with:
     - CHROME_HEADLESS set to indicate that the test is running on a
       bot and shouldn't do anything interactive like show modal dialogs.
@@ -382,12 +382,15 @@ def run_executable(cmd, env, stdoutfile=None):
   try:
     if stdoutfile:
       # Write to stdoutfile and poll to produce terminal output.
-      return run_command_with_output(cmd, env=env, stdoutfile=stdoutfile)
+      return run_command_with_output(cmd,
+                                     env=env,
+                                     stdoutfile=stdoutfile,
+                                     cwd=cwd)
     if use_symbolization_script:
       # See above comment regarding offline symbolization.
       # Need to pipe to the symbolizer script.
       p1 = _popen(cmd, env=env, stdout=subprocess.PIPE,
-                  stderr=sys.stdout)
+                  cwd=cwd, stderr=sys.stdout)
       p2 = _popen(
           get_sanitizer_symbolize_command(executable_path=cmd[0]),
           env=env, stdin=p1.stdout)
@@ -398,7 +401,7 @@ def run_executable(cmd, env, stdoutfile=None):
       # Also feed the out-of-band JSON output to the symbolizer script.
       symbolize_snippets_in_json(cmd, env)
       return p1.returncode
-    return run_command(cmd, env=env, log=False)
+    return run_command(cmd, env=env, cwd=cwd, log=False)
   except OSError:
     print('Failed to start %s' % cmd, file=sys.stderr)
     raise

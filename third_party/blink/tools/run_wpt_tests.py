@@ -224,7 +224,7 @@ class WPTAdapter(wpt_common.BaseWptScriptAdapter):
                 common.run_command(clone_cmd)
 
             self._create_extra_run_info()
-            return super().run_test()
+            return super().run_test(self.path_finder.web_tests_dir())
 
     def _create_extra_run_info(self):
         run_info = {

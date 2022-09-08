@@ -453,7 +453,7 @@ class BaseIsolatedScriptArgsAdapter(object):
   def do_post_test_run_tasks(self):
     pass
 
-  def run_test(self):
+  def run_test(self, cwd=None):
     self.parse_args()
     cmd = self.generate_isolated_script_cmd()
 
@@ -472,9 +472,9 @@ class BaseIsolatedScriptArgsAdapter(object):
           ' '.join(cmd), env))
       sys.stdout.flush()
       if self.options.xvfb and sys.platform.startswith('linux'):
-        exit_code = xvfb.run_executable(cmd, env)
+        exit_code = xvfb.run_executable(cmd, env, cwd=cwd)
       else:
-        exit_code = test_env.run_command(cmd, env=env, log=False)
+        exit_code = test_env.run_command(cmd, env=env, cwd=cwd, log=False)
       print('Command returned exit code %d' % exit_code)
       sys.stdout.flush()
       self.do_post_test_run_tasks()
