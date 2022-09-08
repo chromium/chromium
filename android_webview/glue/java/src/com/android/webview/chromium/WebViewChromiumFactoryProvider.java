@@ -4,6 +4,7 @@
 
 package com.android.webview.chromium;
 
+import android.app.Application;
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.Intent;
@@ -146,7 +147,7 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
         return mRunQueue;
     }
 
-    // We have a 4 second timeout to try to detect deadlocks to detect and aid in debuggin
+    // We have a 4 second timeout to try to detect deadlocks to detect and aid in debugging
     // deadlocks.
     // Do not call this method while on the UI thread!
     /* package */ void runVoidTaskOnUiThreadBlocking(Runnable r) {
@@ -311,12 +312,13 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
 
             mAwInit = createAwInit();
             mWebViewDelegate = webViewDelegate;
-            Context ctx = webViewDelegate.getApplication().getApplicationContext();
+            Application application = webViewDelegate.getApplication();
+            Context ctx = application.getApplicationContext();
 
             // If the application context is DE, but we have credentials, use a CE context instead
             try (ScopedSysTraceEvent e2 = ScopedSysTraceEvent.scoped(
                          "WebViewChromiumFactoryProvider.checkStorage")) {
-                checkStorageIsNotDeviceProtected(webViewDelegate.getApplication());
+                checkStorageIsNotDeviceProtected(application);
             } catch (IllegalArgumentException e) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                     if (!GlueApiHelperForN.isUserUnlocked(ctx)) {
@@ -359,6 +361,8 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
 
             mAwInit.setUpResourcesOnBackgroundThread(packageId, ctx);
 
+            AndroidXProcessGlobalConfig.extractConfigFromApp(application.getClassLoader());
+
             try (ScopedSysTraceEvent e2 = ScopedSysTraceEvent.scoped(
                          "WebViewChromiumFactoryProvider.initCommandLine")) {
                 // This may take ~20 ms only on userdebug devices.
@@ -396,7 +400,7 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
             boolean isAppDebuggable = (applicationFlags & ApplicationInfo.FLAG_DEBUGGABLE) != 0;
             boolean isOsDebuggable = BuildInfo.isDebugAndroid();
             // Enable logging JS console messages in system logs only if the app is debuggable or
-            // it's a debugable android build.
+            // it's a debuggable android build.
             if (isAppDebuggable || isOsDebuggable) {
                 CommandLine cl = CommandLine.getInstance();
                 cl.appendSwitch(AwSwitches.WEBVIEW_LOG_JS_CONSOLE_MESSAGES);
@@ -433,14 +437,17 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
             BuildInfo.setBrowserPackageInfo(packageInfo);
             BuildInfo.setFirebaseAppId(
                     FirebaseConfig.getFirebaseAppIdForPackage(packageInfo.packageName));
-
+            AndroidXProcessGlobalConfig androidXConfig = AndroidXProcessGlobalConfig.getConfig();
             try (StrictModeContext ignored = StrictModeContext.allowDiskWrites()) {
                 try (ScopedSysTraceEvent e2 = ScopedSysTraceEvent.scoped(
                              "WebViewChromiumFactoryProvider.loadChromiumLibrary")) {
-                    String dataDirectorySuffix = null;
+                    String dataDirectorySuffix;
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
                         dataDirectorySuffix =
                                 GlueApiHelperForP.getDataDirectorySuffix(webViewDelegate);
+                    } else {
+                        // Try the AndroidX library version
+                        dataDirectorySuffix = androidXConfig.getDataDirectorySuffixOrNull();
                     }
                     AwBrowserProcess.loadLibrary(dataDirectorySuffix);
                 }
