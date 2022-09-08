@@ -92,7 +92,7 @@ Dispatcher::Type DataPipeConsumerDispatcher::GetType() const {
 }
 
 MojoResult DataPipeConsumerDispatcher::Close() {
-  base::AutoLock lock(lock_);
+  recordreplay::AutoLockMaybeEventsDisallowed lock(lock_);
   DVLOG(1) << "Closing data pipe consumer " << pipe_id_;
   return CloseNoLock();
 }
@@ -440,7 +440,7 @@ DataPipeConsumerDispatcher::DataPipeConsumerDispatcher(
       node_controller_(node_controller),
       control_port_(control_port),
       pipe_id_(pipe_id),
-      lock_("DataPipeConsumerDispatcher.pipe_id_"),
+      lock_("DataPipeConsumerDispatcher.lock_"),
       watchers_(this),
       shared_ring_buffer_(std::move(shared_ring_buffer)) {}
 
