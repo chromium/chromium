@@ -57,15 +57,13 @@ class DragSourceWin
   void set_data(const OSExchangeData* data) { data_ = data; }
 
  protected:
-  virtual void OnDragSourceCancel() {}
   virtual void OnDragSourceDrop();
-  virtual void OnDragSourceMove() {}
 
  private:
   // Set to true if we want to cancel the drag operation.
-  bool cancel_drag_;
+  bool cancel_drag_ = false;
 
-  raw_ptr<const OSExchangeData> data_;
+  raw_ptr<const OSExchangeData> data_ = nullptr;
 };
 
 }  // namespace ui

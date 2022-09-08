@@ -12,24 +12,17 @@ Microsoft::WRL::ComPtr<DragSourceWin> DragSourceWin::Create() {
   return Microsoft::WRL::Make<DragSourceWin>();
 }
 
-DragSourceWin::DragSourceWin() : cancel_drag_(false), data_(nullptr) {
-}
+DragSourceWin::DragSourceWin() = default;
 
 HRESULT DragSourceWin::QueryContinueDrag(BOOL escape_pressed, DWORD key_state) {
-  if (cancel_drag_)
+  if (cancel_drag_ || escape_pressed)
     return DRAGDROP_S_CANCEL;
-
-  if (escape_pressed) {
-    OnDragSourceCancel();
-    return DRAGDROP_S_CANCEL;
-  }
 
   if (!(key_state & MK_LBUTTON) && !(key_state & MK_RBUTTON)) {
     OnDragSourceDrop();
     return DRAGDROP_S_DROP;
   }
 
-  OnDragSourceMove();
   return S_OK;
 }
 
