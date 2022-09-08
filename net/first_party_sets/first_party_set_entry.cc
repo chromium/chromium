@@ -25,8 +25,13 @@ FirstPartySetEntry::FirstPartySetEntry(
     SiteType site_type,
     absl::optional<FirstPartySetEntry::SiteIndex> site_index)
     : primary_(primary), site_type_(site_type), site_index_(site_index) {
-  if (site_type_ == SiteType::kPrimary) {
-    DCHECK(!site_index_.has_value());
+  switch (site_type_) {
+    case SiteType::kPrimary:
+    case SiteType::kService:
+      DCHECK(!site_index_.has_value());
+      break;
+    case SiteType::kAssociated:
+      break;
   }
 }
 
