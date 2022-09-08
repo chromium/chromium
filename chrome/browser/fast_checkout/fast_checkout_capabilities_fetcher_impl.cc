@@ -26,7 +26,7 @@ using CapabilitiesInfo =
 
 namespace {
 
-constexpr uint32_t kFastCheckoutHashPrefixSize = 15u;
+constexpr uint32_t kFastCheckoutHashPrefixSize = 10u;
 constexpr char kFastCheckoutIntent[] = "CHROME_FAST_CHECKOUT";
 constexpr char kUmaKeyCacheStateIsTriggerFormSupported[] =
     "Autofill.FastCheckout.CapabilitiesFetcher."

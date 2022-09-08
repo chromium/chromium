@@ -34,7 +34,7 @@ using CacheStateForIsTriggerFormSupported =
     FastCheckoutCapabilitiesFetcherImpl::CacheStateForIsTriggerFormSupported;
 using testing::_;
 
-constexpr uint32_t kHashPrefixSize = 15u;
+constexpr uint32_t kHashPrefixSize = 10u;
 constexpr char kIntent[] = "CHROME_FAST_CHECKOUT";
 constexpr char kUmaKeyCacheStateIsTriggerFormSupported[] =
     "Autofill.FastCheckout.CapabilitiesFetcher."
