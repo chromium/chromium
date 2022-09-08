@@ -1811,7 +1811,7 @@ bool AttributionStorageSql::HasCapacityForStoringSource(
     const std::string& serialized_origin) {
   static constexpr char kCountSourcesSql[] =
       // clang-format off
-      "SELECT COUNT(source_origin)FROM sources "
+      "SELECT COUNT(*)FROM sources "
       DCHECK_SQL_INDEXED_BY("sources_by_origin")
       "WHERE source_origin=?";  // clang-format on
 
