@@ -4615,6 +4615,29 @@
             ]
         }
     ],
+    "GoogleLensDesktopInstructionChipImprovements": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledInstructionChipImprovements_20220831",
+                    "params": {
+                        "use-alt-chip-string": "false",
+                        "use-selection-icon-with-image": "false"
+                    },
+                    "enable_features": [
+                        "LensInstructionChipImprovements"
+                    ]
+                }
+            ]
+        }
+    ],
     "GoogleLensDesktopRegionSearchPdf": [
         {
             "platforms": [
