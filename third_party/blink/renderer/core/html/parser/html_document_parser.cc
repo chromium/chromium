@@ -546,10 +546,12 @@ HTMLDocumentParser::HTMLDocumentParser(Document& document,
 
   // Report metrics for async document parsing or forced synchronous parsing.
   // The document must be outermost main frame to meet UKM requirements, and
-  // must have a high resolution clock for high quality data.
+  // must have a high resolution clock for high quality data. Additionally, only
+  // report metrics for http urls, which excludes things such as the ntp.
   if (sync_policy == kAllowDeferredParsing &&
       document.IsInOutermostMainFrame() &&
-      base::TimeTicks::IsHighResolution()) {
+      base::TimeTicks::IsHighResolution() &&
+      document.Url().ProtocolIsInHTTPFamily()) {
     metrics_reporter_ = std::make_unique<HTMLParserMetrics>(
         document.UkmSourceID(), document.UkmRecorder());
   }
