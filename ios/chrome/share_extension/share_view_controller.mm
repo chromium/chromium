@@ -20,7 +20,7 @@
 #endif
 
 // Type for completion handler to fetch the components of the share items.
-// |idResponse| type depends on the element beeing fetched.
+// `idResponse` type depends on the element beeing fetched.
 using ItemBlock = void (^)(id idResponse, NSError* error);
 
 namespace {
@@ -51,9 +51,9 @@ const CGFloat kMediumAlpha = 0.5;
 @property(nonatomic, weak) ShareExtensionView* shareView;
 @property(nonatomic, assign) app_group::ShareExtensionItemType itemType;
 
-// Creates a files in |app_group::ShareExtensionItemsFolder()| containing a
+// Creates a files in `app_group::ShareExtensionItemsFolder()` containing a
 // serialized NSDictionary.
-// If |cancel| is true, |actionType| is ignored.
+// If `cancel` is true, `actionType` is ignored.
 - (void)queueActionItemURL:(NSURL*)URL
                      title:(NSString*)title
                     action:(app_group::ShareExtensionItemType)actionType
@@ -213,7 +213,7 @@ const CGFloat kMediumAlpha = 0.5;
                                                       views:views]];
   }
 
-  // |self.shareView| must be as large as possible and in the center of the
+  // `self.shareView` must be as large as possible and in the center of the
   // screen.
   [self.shareView
       setContentCompressionResistancePriority:UILayoutPriorityDefaultHigh

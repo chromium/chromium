@@ -62,7 +62,7 @@ const CGFloat kButtonFontSize = 17;
 @property(nonatomic, weak) id<ShareExtensionViewActionTarget> target;
 
 // Track if a button has been pressed. All button pressing will have no effect
-// if |dismissed| is YES.
+// if `dismissed` is YES.
 @property(nonatomic, assign) BOOL dismissed;
 
 @end
@@ -138,13 +138,13 @@ const CGFloat kButtonFontSize = 17;
 // Returns a view containing the shared items (title, URL, screenshot). This
 // method will set the ivars.
 - (UIView*)sharedItemView {
-  // Title label. Text will be filled by |setTitle:| when available.
+  // Title label. Text will be filled by `setTitle:` when available.
   _titleLabel = [[UILabel alloc] initWithFrame:CGRectZero];
   _titleLabel.font = [UIFont boldSystemFontOfSize:16];
   _titleLabel.translatesAutoresizingMaskIntoConstraints = NO;
   _titleLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
 
-  // URL label. Text will be filled by |setURL:| when available.
+  // URL label. Text will be filled by `setURL:` when available.
   _URLLabel = [[UILabel alloc] initWithFrame:CGRectZero];
   _URLLabel.translatesAutoresizingMaskIntoConstraints = NO;
   _URLLabel.numberOfLines = 3;
@@ -152,7 +152,7 @@ const CGFloat kButtonFontSize = 17;
   _URLLabel.font = [UIFont systemFontOfSize:12];
   _URLLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
 
-  // Screenshot view. Image will be filled by |setScreenshot:| when available.
+  // Screenshot view. Image will be filled by `setScreenshot:` when available.
   _screenshotView = [[UIImageView alloc] initWithFrame:CGRectZero];
   [_screenshotView setTranslatesAutoresizingMaskIntoConstraints:NO];
   NSLayoutConstraint* imageWidthConstraint =
@@ -166,7 +166,7 @@ const CGFloat kButtonFontSize = 17;
   [_screenshotView setContentMode:UIViewContentModeScaleAspectFill];
   [_screenshotView setClipsToBounds:YES];
 
-  // |_screenshotView| should take as much space as needed. Lower compression
+  // `_screenshotView` should take as much space as needed. Lower compression
   // resistance of the other elements.
   [_titleLabel
       setContentCompressionResistancePriority:UILayoutPriorityDefaultLow
@@ -242,8 +242,8 @@ const CGFloat kButtonFontSize = 17;
   return divider;
 }
 
-// Returns a button containing title |title| and action |selector| on
-// |self.target|.
+// Returns a button containing title `title` and action `selector` on
+// `self.target`.
 - (UIButton*)buttonWithTitle:(NSString*)title selector:(SEL)selector {
   UIButton* button = [[ShareExtensionButton alloc] initWithFrame:CGRectZero];
   [button setTitle:title forState:UIControlStateNormal];
@@ -326,7 +326,7 @@ const CGFloat kButtonFontSize = 17;
   [self.target shareExtensionViewDidSelectOpenInChrome:sender];
 }
 
-// Animates the button |sender| by replacing its string to "Added", then call
+// Animates the button `sender` by replacing its string to "Added", then call
 // completion.
 - (void)animateButtonPressed:(UIButton*)sender
               withCompletion:(void (^)(void))completion {

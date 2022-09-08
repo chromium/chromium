@@ -32,20 +32,20 @@
 // adding item to reading list.
 @interface ShareExtensionView : UIView
 
-// Creates a ShareExtensionView with the |delegate|. Designated
+// Creates a ShareExtensionView with the `delegate`. Designated
 // initializer.
 - (instancetype)initWithActionTarget:(id<ShareExtensionViewActionTarget>)target
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)initWithFrame:(CGRect)frame NS_UNAVAILABLE;
 - (instancetype)initWithCoder:(NSCoder*)aDecoder NS_UNAVAILABLE;
 
-// Sets the |URL| displayed in the share view.
+// Sets the `URL` displayed in the share view.
 - (void)setURL:(NSURL*)URL;
 
-// Sets the |title| displayed in the share view.
+// Sets the `title` displayed in the share view.
 - (void)setTitle:(NSString*)title;
 
-// Sets the |screenshot| displayed in the share view.
+// Sets the `screenshot` displayed in the share view.
 - (void)setScreenshot:(UIImage*)screenshot;
 
 @end
