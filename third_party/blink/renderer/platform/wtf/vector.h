@@ -26,6 +26,7 @@
 #include <algorithm>
 #include <initializer_list>
 #include <iterator>
+#include <type_traits>
 #include <utility>
 
 #include "base/check_op.h"
@@ -123,6 +124,27 @@ struct VectorElementComparer<std::unique_ptr<T>> {
   static bool CompareElement(const std::unique_ptr<T>& left, const U& right) {
     return left.get() == right;
   }
+};
+
+// `VectorOperationOrigin` tracks the origin of a vector operation. This is
+// needed for the Vector specialization of `HeapAllocator` which is used for
+// garbage-collected objects.
+//
+// The general idea is that during construction of a Vector write barriers can
+// be omitted as objects are allocated unmarked and the GC would thus still
+// process such objects. Conservative GC is unaffected and would find the
+// objects through the stack scan.
+//
+// This usually applies to storage in the object itself, i.e., inline capacity.
+// For Vector it even applies to out-of-line backings as long as those also omit
+// the write barrier as they only are referred to from the Vector itself.
+enum class VectorOperationOrigin {
+  // A regular modification that's always safe.
+  kRegularModification,
+  // A modification from a constructor that's only safe when being in
+  // construction and also requires that the backing stores is modified (set)
+  // with the same origin.
+  kConstruction,
 };
 
 // A collection of all the traits used by Vector. This is basically an
@@ -323,20 +345,11 @@ class VectorBufferBase {
   VectorBufferBase(VectorBufferBase&&) = default;
   VectorBufferBase& operator=(VectorBufferBase&&) = default;
 
-  void AllocateBufferNoBarrier(wtf_size_t new_capacity) {
-    DCHECK(new_capacity);
-    DCHECK_LE(new_capacity,
-              Allocator::template MaxElementCountInBackingStore<T>());
-    size_t size_to_allocate = AllocationSize(new_capacity);
-    AsAtomicPtr(&buffer_)->store(
-        Allocator::template AllocateVectorBacking<T>(size_to_allocate),
-        std::memory_order_relaxed);
-    capacity_ = static_cast<wtf_size_t>(size_to_allocate / sizeof(T));
-  }
-
-  void AllocateBuffer(wtf_size_t new_capacity) {
+  void AllocateBuffer(wtf_size_t new_capacity, VectorOperationOrigin origin) {
     AllocateBufferNoBarrier(new_capacity);
-    Allocator::BackingWriteBarrier(&buffer_);
+    if (origin != VectorOperationOrigin::kConstruction) {
+      Allocator::BackingWriteBarrier(&buffer_);
+    }
   }
 
   size_t AllocationSize(size_t capacity) const {
@@ -346,14 +359,6 @@ class VectorBufferBase {
   T* Buffer() { return buffer_; }
   const T* Buffer() const { return buffer_; }
   wtf_size_t capacity() const { return capacity_; }
-
-  static constexpr bool NeedsToClearUnusedSlots() {
-    // Tracing and finalization access all slots of a vector backing. In case
-    // there's work to be done there unused slots should be cleared.
-    return Allocator::kIsGarbageCollected &&
-           (IsTraceableInCollectionTrait<VectorTraits<T>>::value ||
-            VectorTraits<T>::kNeedsDestruction);
-  }
 
   void ClearUnusedSlots(T* from, T* to) {
     if constexpr (NeedsToClearUnusedSlots()) {
@@ -375,9 +380,10 @@ class VectorBufferBase {
 #endif
   }
 
-  void MoveBufferInto(VectorBufferBase& other) {
-    AsAtomicPtr(&other.buffer_)->store(buffer_, std::memory_order_relaxed);
-    other.capacity_ = capacity_;
+  void AcquireBuffer(VectorBufferBase&& other) {
+    AsAtomicPtr(&buffer_)->store(other.buffer_, std::memory_order_relaxed);
+    Allocator::BackingWriteBarrier(&buffer_);
+    capacity_ = other.capacity_;
   }
 
   // |end| is exclusive, a la STL.
@@ -395,7 +401,7 @@ class VectorBufferBase {
  protected:
   static VectorBufferBase AllocateTemporaryBuffer(wtf_size_t capacity) {
     VectorBufferBase buffer;
-    buffer.AllocateBufferNoBarrier(capacity);
+    buffer.AllocateBuffer(capacity, VectorOperationOrigin::kConstruction);
     return buffer;
   }
 
@@ -418,6 +424,26 @@ class VectorBufferBase {
   T* buffer_;
   wtf_size_t capacity_;
   wtf_size_t size_;
+
+ private:
+  static constexpr bool NeedsToClearUnusedSlots() {
+    // Tracing and finalization access all slots of a vector backing. In case
+    // there's work to be done there unused slots should be cleared.
+    return Allocator::kIsGarbageCollected &&
+           (IsTraceableInCollectionTrait<VectorTraits<T>>::value ||
+            VectorTraits<T>::kNeedsDestruction);
+  }
+
+  void AllocateBufferNoBarrier(wtf_size_t new_capacity) {
+    DCHECK(new_capacity);
+    DCHECK_LE(new_capacity,
+              Allocator::template MaxElementCountInBackingStore<T>());
+    size_t size_to_allocate = AllocationSize(new_capacity);
+    AsAtomicPtr(&buffer_)->store(
+        Allocator::template AllocateVectorBacking<T>(size_to_allocate),
+        std::memory_order_relaxed);
+    capacity_ = static_cast<wtf_size_t>(size_to_allocate / sizeof(T));
+  }
 };
 
 template <typename T,
@@ -438,8 +464,9 @@ class VectorBuffer<T, 0, Allocator> : protected VectorBufferBase<T, Allocator> {
   explicit VectorBuffer(wtf_size_t capacity) {
     // Calling malloc(0) might take a lock and may actually do an allocation
     // on some systems.
-    if (capacity)
-      AllocateBuffer(capacity);
+    if (capacity) {
+      AllocateBuffer(capacity, VectorOperationOrigin::kConstruction);
+    }
   }
 
   explicit VectorBuffer(HashTableDeletedValueType value) : Base(value) {}
@@ -550,8 +577,9 @@ class VectorBuffer : protected VectorBufferBase<T, Allocator> {
   explicit VectorBuffer(wtf_size_t capacity)
       : Base(InlineBuffer(), inlineCapacity) {
     InitInlinedBuffer();
-    if (capacity > inlineCapacity)
-      Base::AllocateBuffer(capacity);
+    if (capacity > inlineCapacity) {
+      Base::AllocateBuffer(capacity, VectorOperationOrigin::kConstruction);
+    }
   }
 
   VectorBuffer(const VectorBuffer&) = delete;
@@ -614,12 +642,13 @@ class VectorBuffer : protected VectorBufferBase<T, Allocator> {
     capacity_ = inlineCapacity;
   }
 
-  void AllocateBuffer(wtf_size_t new_capacity) {
+  void AllocateBuffer(wtf_size_t new_capacity, VectorOperationOrigin origin) {
     // FIXME: This should DCHECK(!buffer_) to catch misuse/leaks.
-    if (new_capacity > inlineCapacity)
-      Base::AllocateBuffer(new_capacity);
-    else
+    if (new_capacity > inlineCapacity) {
+      Base::AllocateBuffer(new_capacity, origin);
+    } else {
       ResetBufferPointer();
+    }
   }
 
   size_t AllocationSize(size_t capacity) const {
@@ -1655,7 +1684,8 @@ void Vector<T, inlineCapacity, Allocator>::ReserveCapacity(
   if (UNLIKELY(new_capacity <= capacity()))
     return;
   if (!data()) {
-    Base::AllocateBuffer(new_capacity);
+    Base::AllocateBuffer(new_capacity,
+                         VectorOperationOrigin::kRegularModification);
     return;
   }
 
@@ -1697,7 +1727,11 @@ inline void Vector<T, inlineCapacity, Allocator>::ReserveInitialCapacity(
   DCHECK(capacity() == INLINE_CAPACITY);
   if (initial_capacity > INLINE_CAPACITY) {
     ANNOTATE_DELETE_BUFFER(begin(), capacity(), size_);
-    Base::AllocateBuffer(initial_capacity);
+    // The following uses `kRegularModification` as it's not guaranteed that the
+    // Vector has not been published to the object graph after finishing the
+    // constructor.
+    Base::AllocateBuffer(initial_capacity,
+                         VectorOperationOrigin::kRegularModification);
     MARKING_AWARE_ANNOTATE_NEW_BUFFER(Allocator, begin(), capacity(), size_);
   }
 }
@@ -2092,18 +2126,17 @@ void Vector<T, inlineCapacity, Allocator>::ReallocateBuffer(
     return;
   }
   // Shrinking/resizing to out-of-line buffer.
-  VectorBufferBase<T, Allocator> buffer =
+  VectorBufferBase<T, Allocator> temp_buffer =
       Base::AllocateTemporaryBuffer(new_capacity);
-  ANNOTATE_NEW_BUFFER(buffer.Buffer(), buffer.capacity(), size_);
+  ANNOTATE_NEW_BUFFER(temp_buffer.Buffer(), temp_buffer.capacity(), size_);
   // If there was a new out-of-line buffer allocated, there is no need in
   // calling write barriers for entries in that backing store as it is still
   // white.
-  TypeOperations::Move(begin(), end(), buffer.Buffer(), HasInlineBuffer());
+  TypeOperations::Move(begin(), end(), temp_buffer.Buffer(), HasInlineBuffer());
   ClearUnusedSlots(begin(), end());
   ANNOTATE_DELETE_BUFFER(begin(), capacity(), size_);
   Base::DeallocateBuffer(begin());
-  buffer.MoveBufferInto(*this);
-  Allocator::BackingWriteBarrier(Base::BufferSlot());
+  Base::AcquireBuffer(std::move(temp_buffer));
 }
 
 }  // namespace WTF

@@ -493,7 +493,8 @@ void Deque<T, inlineCapacity, Allocator>::ExpandCapacity() {
     }
     return;
   }
-  buffer_.AllocateBuffer(new_capacity);
+  buffer_.AllocateBuffer(new_capacity,
+                         VectorOperationOrigin::kRegularModification);
   if (start_ <= end_) {
     TypeOperations::Move(old_buffer + start_, old_buffer + end_,
                          buffer_.Buffer() + start_);
