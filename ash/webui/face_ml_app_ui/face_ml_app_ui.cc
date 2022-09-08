@@ -56,6 +56,27 @@ FaceMLAppUI::FaceMLAppUI(content::WebUI* web_ui)
 
 FaceMLAppUI::~FaceMLAppUI() = default;
 
+void FaceMLAppUI::BindInterface(
+    mojo::PendingReceiver<mojom::face_ml_app::PageHandlerFactory> factory) {
+  if (face_ml_page_factory_.is_bound()) {
+    face_ml_page_factory_.reset();
+  }
+  face_ml_page_factory_.Bind(std::move(factory));
+}
+
+void FaceMLAppUI::CreatePageHandler(
+    mojo::PendingReceiver<mojom::face_ml_app::PageHandler> handler,
+    mojo::PendingRemote<mojom::face_ml_app::Page> page) {
+  DCHECK(page.is_valid());
+  face_ml_page_handler_->BindInterface(std::move(handler), std::move(page));
+}
+
+void FaceMLAppUI::WebUIPrimaryPageChanged(content::Page& page) {
+  // Create a new page handler for each document load. This avoids sharing
+  // states when WebUIController is reused for same-origin navigations.
+  face_ml_page_handler_ = std::make_unique<FaceMLPageHandler>();
+}
+
 WEB_UI_CONTROLLER_TYPE_IMPL(FaceMLAppUI)
 
 }  // namespace ash

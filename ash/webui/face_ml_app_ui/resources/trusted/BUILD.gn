@@ -12,7 +12,10 @@ ts_library("trusted_ts") {
   root_dir = "."
   out_dir = "$target_gen_dir/tsc"
 
-  in_files = [ "main.ts" ]
+  in_files = [
+    "main.ts",
+    "page_handler.ts",
+  ]
 
   tsconfig_base = "../../tsconfig_base.json"
   composite = true
@@ -21,6 +24,8 @@ ts_library("trusted_ts") {
   # imports.
   path_mappings =
       [ "/*|" + rebase_path("$root_gen_dir/mojom-webui/*", target_gen_dir) ]
+
+  deps = [ "../../mojom:mojom_ts" ]
 }
 
 generate_grd("trusted_grd") {
@@ -39,5 +44,10 @@ generate_grd("trusted_grd") {
   manifest_files =
       filter_include(get_target_outputs(":trusted_ts"), [ "*.manifest" ])
 
-  deps = [ ":trusted_ts" ]
+  grdp_files = [ "$target_gen_dir/../../mojom/trusted_webui_resources.grdp" ]
+
+  deps = [
+    ":trusted_ts",
+    "../../mojom:trusted_webui_grdp",
+  ]
 }
