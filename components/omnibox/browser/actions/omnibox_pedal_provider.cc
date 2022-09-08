@@ -267,8 +267,8 @@ void OmniboxPedalProvider::LoadPedalConcepts() {
   // The locale is a two-letter language code, possibly followed by a dash and
   // country code. English locales include "en", "en-US", and "en-GB" while
   // non-English locales never start with "en".
-  const bool locale_is_english =
-      base::i18n::GetConfiguredLocale().substr(0, 2) == "en";
+  const std::string locale = base::i18n::GetConfiguredLocale();
+  const std::string language_code = locale.substr(0, 2);
 
   // Load concept data then parse to base::Value in order to construct Pedals.
   std::string uncompressed_data =
@@ -287,7 +287,12 @@ void OmniboxPedalProvider::LoadPedalConcepts() {
   // to sanity check input since it is trusted and used for vector reserve.
   DCHECK_LE(max_tokens_, kMaximumMaxTokens);
 
-  if (concept_data->FindKey("tokenize_each_character")->GetBool()) {
+  // According to the pedals localization data, only a few languages
+  // were set to tokenize each character, so those are checked directly here
+  // to eliminate the need for JSON data. Note, zh-CN was set to tokenize
+  // each character but zh-TW was not so the full locale is checked for that
+  // exceptional case.
+  if (language_code == "ja" || (language_code == "zh" && locale != "zh-TW")) {
     tokenize_characters_ = u"";
   } else {
     tokenize_characters_ = u" -";
@@ -345,7 +350,7 @@ void OmniboxPedalProvider::LoadPedalConcepts() {
     pedal->AddVerbatimSequence(std::move(verbatim_sequence));
 
     std::vector<OmniboxPedal::SynonymGroupSpec> specs =
-        pedal->SpecifySynonymGroups(locale_is_english);
+        pedal->SpecifySynonymGroups(language_code == "en");
     // `specs` will be empty for any pedals not yet processed by l10n because
     // the appropriate string names won't be defined. In such cases, we fall
     // back to loading from JSON to robustly handle partial presence of data.
