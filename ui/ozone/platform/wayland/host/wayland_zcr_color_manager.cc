@@ -27,7 +27,6 @@ void WaylandZcrColorManager::Instantiate(WaylandConnection* connection,
                                          const std::string& interface,
                                          uint32_t version) {
   DCHECK_EQ(interface, kInterfaceName);
-
   if (connection->zcr_color_manager_)
     return;
 

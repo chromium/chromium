@@ -398,4 +398,12 @@ bool IsWaylandScreenCoordinatesEnabled() {
   return base::FeatureList::IsEnabled(kWaylandScreenCoordinatesEnabled);
 }
 
+// Enables chrome color management wayland protocol for lacros.
+const base::Feature kLacrosColorManagement{"LacrosColorManagement",
+                                           base::FEATURE_DISABLED_BY_DEFAULT};
+
+bool IsLacrosColorManagementEnabled() {
+  return base::FeatureList::IsEnabled(kLacrosColorManagement);
+}
+
 }  // namespace features

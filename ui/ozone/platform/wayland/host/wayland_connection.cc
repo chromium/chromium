@@ -22,6 +22,7 @@
 #include "base/strings/string_util.h"
 #include "base/task/current_thread.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/events/devices/input_device.h"
 #include "ui/events/ozone/layout/keyboard_layout_engine_manager.h"
@@ -186,8 +187,10 @@ bool WaylandConnection::Initialize() {
                               &WaylandShm::Instantiate);
   RegisterGlobalObjectFactory(WaylandZAuraShell::kInterfaceName,
                               &WaylandZAuraShell::Instantiate);
-  RegisterGlobalObjectFactory(WaylandZcrColorManager::kInterfaceName,
-                              &WaylandZcrColorManager::Instantiate);
+  if (features::IsLacrosColorManagementEnabled()) {
+    RegisterGlobalObjectFactory(WaylandZcrColorManager::kInterfaceName,
+                                &WaylandZcrColorManager::Instantiate);
+  }
   RegisterGlobalObjectFactory(WaylandZcrCursorShapes::kInterfaceName,
                               &WaylandZcrCursorShapes::Instantiate);
   RegisterGlobalObjectFactory(WaylandZcrTouchpadHaptics::kInterfaceName,

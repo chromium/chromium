@@ -6233,6 +6233,11 @@ const char kKioskEnableAppServiceDescription[] =
     "Uses App Service to install web apps and launch both Chrome apps and web "
     "apps in Kiosk sessions.";
 
+const char kLacrosColorManagementName[] = "Enable Chrome Color Management.";
+const char kLacrosColorManagementDescription[] =
+    "Uses chrome-color-management wayland protocol to manage color spaces "
+    "for lacros.";
+
 const char kLinkCapturingAutoDisplayIntentPickerName[] =
     "Enable auto-display of intent picker bubble";
 const char kLinkCapturingAutoDisplayIntentPickerDescription[] =

@@ -56481,6 +56481,7 @@ from previous Chrome versions.
   <int value="-1927968708" label="OmniboxPedalsAndroidBatch1:disabled"/>
   <int value="-1927080237" label="Vulkan:enabled"/>
   <int value="-1926236767" label="DynamicColorButtonsAndroid:enabled"/>
+  <int value="-1926142124" label="LacrosColorManagement:disabled"/>
   <int value="-1926124919" label="WebViewOriginTrials:enabled"/>
   <int value="-1925453192" label="BlockInsecurePrivateNetworkRequests:enabled"/>
   <int value="-1925214028"
@@ -60953,6 +60954,7 @@ from previous Chrome versions.
   <int value="804958673" label="LensCameraAssistedSearch:enabled"/>
   <int value="805882800" label="SafetyCheckChromeCleanerChild:disabled"/>
   <int value="806035639" label="EnableNeuralPalmDetectionFilter:disabled"/>
+  <int value="806063284" label="LacrosColorManagement:enabled"/>
   <int value="806334184" label="AndroidSpellChecker:enabled"/>
   <int value="806783713" label="DesktopPWAsTabStripLinkCapturing:enabled"/>
   <int value="807447752" label="ChromeMemex:disabled"/>

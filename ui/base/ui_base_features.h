@@ -210,6 +210,11 @@ extern const base::Feature kWaylandScreenCoordinatesEnabled;
 COMPONENT_EXPORT(UI_BASE_FEATURES)
 bool IsWaylandScreenCoordinatesEnabled();
 
+COMPONENT_EXPORT(UI_BASE_FEATURES)
+extern const base::Feature kLacrosColorManagement;
+COMPONENT_EXPORT(UI_BASE_FEATURES)
+bool IsLacrosColorManagementEnabled();
+
 }  // namespace features
 
 #endif  // UI_BASE_UI_BASE_FEATURES_H_

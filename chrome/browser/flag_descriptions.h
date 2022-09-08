@@ -3572,6 +3572,9 @@ extern const char kIntentChipAppIconDescription[];
 extern const char kKioskEnableAppServiceName[];
 extern const char kKioskEnableAppServiceDescription[];
 
+extern const char kLacrosColorManagementName[];
+extern const char kLacrosColorManagementDescription[];
+
 extern const char kLinkCapturingAutoDisplayIntentPickerName[];
 extern const char kLinkCapturingAutoDisplayIntentPickerDescription[];
 

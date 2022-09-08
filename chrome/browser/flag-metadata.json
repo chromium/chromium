@@ -4130,6 +4130,12 @@
     "expiry_milestone": 130
   },
   {
+    "name": "lacros-color-management",
+    "owners": [ "mrfemi", "jshargo" ],
+    // This flag is used for chrome color management
+    "expiry_milestone": 120
+  },
+  {
     "name": "lacros-merge-icu-data-file",
     "owners": [ "andreaorru", "hidehiko", "lacros-team@google.com" ],
     "expiry_milestone": 130
