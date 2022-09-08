@@ -61,7 +61,6 @@ void NetworkPortalDetectorMixin::SimulateNoNetwork() {
   SetShillDefaultNetwork("", "",
                          NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_OFFLINE);
   network_portal_detector_->SetDefaultNetworkForTesting("");
-  network_portal_detector_->NotifyObserversForTesting();
 }
 
 void NetworkPortalDetectorMixin::SimulateDefaultNetworkState(
@@ -99,7 +98,6 @@ void NetworkPortalDetectorMixin::SimulateDefaultNetworkState(
 
   network_portal_detector_->SetDetectionResultsForTesting(
       default_network_guid, status, response_code);
-  network_portal_detector_->NotifyObserversForTesting();
 }
 
 void NetworkPortalDetectorMixin::SetUpOnMainThread() {

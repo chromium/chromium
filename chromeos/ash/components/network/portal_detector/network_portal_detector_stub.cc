@@ -10,16 +10,6 @@ NetworkPortalDetectorStub::NetworkPortalDetectorStub() = default;
 
 NetworkPortalDetectorStub::~NetworkPortalDetectorStub() = default;
 
-void NetworkPortalDetectorStub::AddObserver(Observer* observer) {}
-
-void NetworkPortalDetectorStub::AddAndFireObserver(Observer* observer) {
-  if (observer)
-    observer->OnPortalDetectionCompleted(nullptr,
-                                         CAPTIVE_PORTAL_STATUS_UNKNOWN);
-}
-
-void NetworkPortalDetectorStub::RemoveObserver(Observer* observer) {}
-
 NetworkPortalDetector::CaptivePortalStatus
 NetworkPortalDetectorStub::GetCaptivePortalStatus() {
   return CAPTIVE_PORTAL_STATUS_UNKNOWN;

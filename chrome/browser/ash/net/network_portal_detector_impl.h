@@ -14,7 +14,6 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
@@ -39,9 +38,17 @@ namespace ash {
 
 class NetworkState;
 
-// This class handles all notifications about network changes from
-// NetworkStateHandler and delegates portal detection for the default
-// network to captive_portal::CaptivePortalService.
+// This class does the following:
+// 1. Provides an interface to enable captive portal detection (once the
+//    EULA is accepted).
+// 2. Provides an interface to start portal detection.
+//    Currently this is Chrome only, TODO(b/207088236): Trigger Shill detection.
+// 3. Observes the NetworkStateHandler class and triggers Chrome captive portal
+//    detection (captive_portal::CaptivePortalService) when the Shill state
+//    changes (if required) then updates NetworkStateHandler accordingly.
+// It also maintains a separate CaptivePortalStatus for historical reasons.
+// The status reflects the combined Shill + Chrome detection results
+// (as does NetworkState::GetPortalState()).
 class NetworkPortalDetectorImpl : public NetworkPortalDetector,
                                   public NetworkStateHandlerObserver,
                                   public content::NotificationObserver {
@@ -56,9 +63,6 @@ class NetworkPortalDetectorImpl : public NetworkPortalDetector,
   ~NetworkPortalDetectorImpl() override;
 
   // NetworkPortalDetector implementation:
-  void AddObserver(Observer* observer) override;
-  void AddAndFireObserver(Observer* observer) override;
-  void RemoveObserver(Observer* observer) override;
   CaptivePortalStatus GetCaptivePortalStatus() override;
   bool IsEnabled() override;
   void Enable() override;
@@ -158,7 +162,6 @@ class NetworkPortalDetectorImpl : public NetworkPortalDetector,
   int response_code_for_testing_ = -1;
 
   State state_ = STATE_IDLE;
-  base::ObserverList<Observer>::Unchecked observers_;
 
   base::CancelableOnceClosure attempt_task_;
   base::CancelableOnceClosure attempt_timeout_task_;

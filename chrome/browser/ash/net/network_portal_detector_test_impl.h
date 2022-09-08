@@ -11,10 +11,11 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/observer_list.h"
 #include "chromeos/ash/components/network/portal_detector/network_portal_detector.h"
 
 namespace ash {
+
+class NetworkState;
 
 class NetworkPortalDetectorTestImpl : public NetworkPortalDetector {
  public:
@@ -30,15 +31,11 @@ class NetworkPortalDetectorTestImpl : public NetworkPortalDetector {
   void SetDetectionResultsForTesting(const std::string& guid,
                                      CaptivePortalStatus status,
                                      int response_code);
-  void NotifyObserversForTesting();
 
   // Returns the GUID of the network the detector considers to be default.
   std::string GetDefaultNetworkGuid() const;
 
   // NetworkPortalDetector implementation:
-  void AddObserver(Observer* observer) override;
-  void AddAndFireObserver(Observer* observer) override;
-  void RemoveObserver(Observer* observer) override;
   CaptivePortalStatus GetCaptivePortalStatus() override;
   bool IsEnabled() override;
   void Enable() override;
@@ -49,12 +46,8 @@ class NetworkPortalDetectorTestImpl : public NetworkPortalDetector {
   }
 
  private:
-  base::ObserverList<Observer>::Unchecked observers_;
   std::unique_ptr<NetworkState> default_network_;
   std::map<std::string, CaptivePortalStatus> portal_status_map_;
-
-  // Set when StartPortalDetection() is called - it will be reset when observers
-  // are notified using NotifyObserversForTesting().
   bool portal_detection_in_progress_ = false;
 };
 

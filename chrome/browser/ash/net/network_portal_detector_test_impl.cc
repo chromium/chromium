@@ -14,10 +14,7 @@ namespace ash {
 
 NetworkPortalDetectorTestImpl::NetworkPortalDetectorTestImpl() = default;
 
-NetworkPortalDetectorTestImpl::~NetworkPortalDetectorTestImpl() {
-  for (auto& observer : observers_)
-    observer.OnShutdown();
-}
+NetworkPortalDetectorTestImpl::~NetworkPortalDetectorTestImpl() = default;
 
 void NetworkPortalDetectorTestImpl::SetDefaultNetworkForTesting(
     const std::string& guid) {
@@ -40,45 +37,11 @@ void NetworkPortalDetectorTestImpl::SetDetectionResultsForTesting(
     portal_status_map_[guid] = status;
 }
 
-void NetworkPortalDetectorTestImpl::NotifyObserversForTesting() {
-  const std::string& guid = default_network_->guid();
-  CaptivePortalStatus status = CAPTIVE_PORTAL_STATUS_UNKNOWN;
-  if (default_network_ && portal_status_map_.count(guid))
-    status = portal_status_map_[guid];
-  portal_detection_in_progress_ = false;
-  for (auto& observer : observers_)
-    observer.OnPortalDetectionCompleted(default_network_.get(), status);
-}
-
 std::string NetworkPortalDetectorTestImpl::GetDefaultNetworkGuid() const {
   if (!default_network_)
     return "";
 
   return default_network_->guid();
-}
-
-void NetworkPortalDetectorTestImpl::AddObserver(Observer* observer) {
-  if (observer && !observers_.HasObserver(observer))
-    observers_.AddObserver(observer);
-}
-
-void NetworkPortalDetectorTestImpl::AddAndFireObserver(Observer* observer) {
-  AddObserver(observer);
-  if (!observer)
-    return;
-  if (!default_network_ ||
-      !portal_status_map_.count(default_network_->guid())) {
-    observer->OnPortalDetectionCompleted(default_network_.get(),
-                                         CAPTIVE_PORTAL_STATUS_UNKNOWN);
-  } else {
-    observer->OnPortalDetectionCompleted(
-        default_network_.get(), portal_status_map_[default_network_->guid()]);
-  }
-}
-
-void NetworkPortalDetectorTestImpl::RemoveObserver(Observer* observer) {
-  if (observer)
-    observers_.RemoveObserver(observer);
 }
 
 NetworkPortalDetector::CaptivePortalStatus

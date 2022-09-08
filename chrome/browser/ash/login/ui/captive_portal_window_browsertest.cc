@@ -214,7 +214,6 @@ IN_PROC_BROWSER_TEST_F(CaptivePortalWindowCtorDtorTest,
   // Ensure that error_screen->ShowCaptivePortal() succeeds.
   ErrorScreen* error_screen = oobe->GetErrorScreen();
   ASSERT_TRUE(error_screen);
-  network_portal_detector()->NotifyObserversForTesting();
   OobeScreenWaiter(ErrorScreenView::kScreenId).Wait();
   error_screen->ShowCaptivePortal();
 }
