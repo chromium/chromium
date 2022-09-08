@@ -25,6 +25,8 @@ source_set("persistence") {
       "win_key_persistence_delegate.h",
     ]
     deps += [ "//chrome/installer/util:with_no_strings" ]
+
+    friend = [ ":unit_tests" ]
   }
 
   if (is_mac) {
@@ -90,6 +92,17 @@ source_set("unit_tests") {
     "//components/policy/proto",
     "//testing/gtest",
   ]
+
+  if (is_win) {
+    sources = [ "win_key_persistence_delegate_unittest.cc" ]
+
+    deps += [
+      "//base/test:test_support",
+      "//chrome/install_static:install_static_util",
+      "//chrome/installer/util:with_no_strings",
+      "//crypto:test_support",
+    ]
+  }
 
   if (is_linux) {
     sources = [ "linux_key_persistence_delegate_unittest.cc" ]

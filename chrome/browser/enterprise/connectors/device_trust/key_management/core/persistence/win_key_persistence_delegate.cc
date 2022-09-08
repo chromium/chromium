@@ -7,7 +7,7 @@
 #include <string>
 #include <utility>
 
-#include "base/win/registry.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/ec_signing_key.h"
 #include "chrome/installer/util/install_util.h"
 #include "crypto/unexportable_key.h"
@@ -16,6 +16,57 @@ using BPKUR = enterprise_management::BrowserPublicKeyUploadRequest;
 using BPKUP = enterprise_management::BrowserPublicKeyUploadResponse;
 
 namespace enterprise_connectors {
+
+namespace {
+
+base::span<const crypto::SignatureVerifier::SignatureAlgorithm>&
+GetTestAcceptableAlgorithmStorage() {
+  static base::span<const crypto::SignatureVerifier::SignatureAlgorithm>
+      storage;
+  return storage;
+}
+
+// Returns the acceptable signature algorithms used for generating a signing
+// key. Uses the `trust_level` to determine which algorithms are acceptable for
+// the key.
+base::span<const crypto::SignatureVerifier::SignatureAlgorithm>
+GetAcceptableAlgorithms(KeyPersistenceDelegate::KeyTrustLevel trust_level) {
+  auto& test_instance = GetTestAcceptableAlgorithmStorage();
+  if (!test_instance.empty())
+    return std::move(test_instance);
+
+  auto acceptable_algorithms = {
+      crypto::SignatureVerifier::ECDSA_SHA256,
+      crypto::SignatureVerifier::RSA_PKCS1_SHA256,
+  };
+
+  if (trust_level == BPKUR::CHROME_BROWSER_HW_KEY) {
+    acceptable_algorithms = {
+        // This is a temporary fix to bug b/240187326 where The unexportable key
+        // when given the span of acceptable algorithms fails to create a TPM
+        // key using the ECDSA_SHA256 algorithm but works for the RSA algorithm.
+        crypto::SignatureVerifier::RSA_PKCS1_SHA256,
+    };
+  }
+  return acceptable_algorithms;
+}
+
+// Creates the unexportable signing key given the key `trust_level`.
+std::unique_ptr<crypto::UnexportableSigningKey> CreateSigningKey(
+    KeyPersistenceDelegate::KeyTrustLevel trust_level) {
+  std::unique_ptr<crypto::UnexportableKeyProvider> provider;
+
+  if (trust_level == BPKUR::CHROME_BROWSER_HW_KEY) {
+    provider = crypto::GetUnexportableKeyProvider();
+  } else if (trust_level == BPKUR::CHROME_BROWSER_OS_KEY) {
+    provider = std::make_unique<ECSigningKeyProvider>();
+  }
+  return provider ? provider->GenerateSigningKeySlowly(
+                        GetAcceptableAlgorithms(trust_level))
+                  : nullptr;
+}
+
+}  // namespace
 
 WinKeyPersistenceDelegate::~WinKeyPersistenceDelegate() = default;
 
@@ -93,31 +144,30 @@ std::unique_ptr<SigningKeyPair> WinKeyPersistenceDelegate::LoadKeyPair() {
 }
 
 std::unique_ptr<SigningKeyPair> WinKeyPersistenceDelegate::CreateKeyPair() {
-  auto acceptable_algorithms = {
-      // This a temporary fix to bug b/240187326 where The unexportable key when
-      // given the span of acceptable algorithms fails to create a TPM key using
-      // the ECDSA_SHA256 algorithm but works for the RSA algorithm.
-      crypto::SignatureVerifier::RSA_PKCS1_SHA256,
-  };
-
-  auto provider = crypto::GetUnexportableKeyProvider();
+  // Attempt to create a TPM signing key.
   KeyPersistenceDelegate::KeyTrustLevel trust_level =
       BPKUR::CHROME_BROWSER_HW_KEY;
-  if (!provider) {
-    acceptable_algorithms = {
-        crypto::SignatureVerifier::ECDSA_SHA256,
-        crypto::SignatureVerifier::RSA_PKCS1_SHA256,
-    };
-    provider = std::make_unique<ECSigningKeyProvider>();
+  auto signing_key = CreateSigningKey(trust_level);
+
+  // Fallback to an OS signing key when a TPM key cannot be created.
+  if (!signing_key) {
     trust_level = BPKUR::CHROME_BROWSER_OS_KEY;
+    signing_key = CreateSigningKey(trust_level);
   }
 
-  auto signing_key = provider->GenerateSigningKeySlowly(acceptable_algorithms);
   if (!signing_key) {
     return nullptr;
   }
 
   return std::make_unique<SigningKeyPair>(std::move(signing_key), trust_level);
+}
+
+// static
+void WinKeyPersistenceDelegate::SetAcceptableKeyAlgorithmForTesting(
+    base::span<const crypto::SignatureVerifier::SignatureAlgorithm>
+        acceptable_algorithms) {
+  auto& storage = GetTestAcceptableAlgorithmStorage();
+  storage = std::move(acceptable_algorithms);
 }
 
 }  // namespace enterprise_connectors
