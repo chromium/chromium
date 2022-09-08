@@ -8,14 +8,13 @@
 #import <Foundation/Foundation.h>
 
 #import "ios/chrome/browser/ui/promos_manager/promo_protocol.h"
-#import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
+#import "ios/chrome/browser/ui/promos_manager/standard_promo_action_handler.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_view_controller.h"
 
 // StandardPromoViewProvider enables feature teams to simply and easily
 // construct a promo, `viewController`, for display by implementing
 // StandardPromoViewController's titles, buttons, images, and handlers.
-@protocol
-    StandardPromoViewProvider <PromoProtocol, ConfirmationAlertActionHandler>
+@protocol StandardPromoViewProvider <PromoProtocol, StandardPromoActionHandler>
 
 @required
 
