@@ -9,7 +9,7 @@
 
 #import "ios/chrome/common/credential_provider/credential.h"
 
-// Credential that can be archived. |serviceIdentifier| must be unique between
+// Credential that can be archived. `serviceIdentifier` must be unique between
 // credentials, as it is used for equality.
 //
 // Credentials are immutable and don't hold state, and because of this the

@@ -13,7 +13,7 @@
 // Credentials.
 @interface ASPasswordCredentialIdentity (Credential)
 
-// Create instance from |credential| data.
+// Create instance from `credential` data.
 - (instancetype)initWithCredential:(id<Credential>)credential;
 
 @end
