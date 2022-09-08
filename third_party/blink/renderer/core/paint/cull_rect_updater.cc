@@ -441,6 +441,8 @@ bool CullRectUpdater::ShouldProactivelyUpdate(const Context& context,
 void CullRectUpdater::PaintPropertiesChanged(
     const LayoutObject& object,
     const PaintPropertiesChangeInfo& properties_changed) {
+  DCHECK(RuntimeEnabledFeatures::ScrollUpdateOptimizationsEnabled());
+
   // We don't need to update cull rect for kChangedOnlyCompositedValues (except
   // for some paint translation changes, see below) because we expect no repaint
   // or PAC update for performance.
@@ -451,6 +453,19 @@ void CullRectUpdater::PaintPropertiesChanged(
             PaintPropertyChangeType::kChangedOnlyCompositedValues);
   DCHECK_NE(properties_changed.scroll_changed,
             PaintPropertyChangeType::kChangedOnlyCompositedValues);
+
+  bool should_use_infinite_cull_rect = false;
+  if (object.HasLayer()) {
+    bool subtree_should_use_infinite_cull_rect = false;
+    should_use_infinite_cull_rect =
+        ShouldUseInfiniteCullRect(*To<LayoutBoxModelObject>(object).Layer(),
+                                  subtree_should_use_infinite_cull_rect);
+    if (should_use_infinite_cull_rect &&
+        object.FirstFragment().GetCullRect().IsInfinite() &&
+        object.FirstFragment().GetContentsCullRect().IsInfinite()) {
+      return;
+    }
+  }
 
   // Cull rects depend on transforms, clip rects, scroll contents sizes and
   // scroll offsets.
@@ -467,12 +482,9 @@ void CullRectUpdater::PaintPropertiesChanged(
     // For cases that the transform change can be directly updated, we should
     // use infinite cull rect or rect expanded for composied scroll (in case of
     // not scrolled enough) to avoid cull rect change and repaint.
-    bool subtree_should_use_infinite_cull_rect = false;
     DCHECK(properties_changed.transform_changed !=
                PaintPropertyChangeType::kChangedOnlyCompositedValues ||
-           object.IsSVGChild() ||
-           ShouldUseInfiniteCullRect(*To<LayoutBoxModelObject>(object).Layer(),
-                                     subtree_should_use_infinite_cull_rect) ||
+           object.IsSVGChild() || should_use_infinite_cull_rect ||
            !HasScrolledEnough(object));
     return;
   }

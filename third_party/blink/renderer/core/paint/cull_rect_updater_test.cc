@@ -710,10 +710,16 @@ TEST_P(CullRectUpdateOnPaintPropertyChangeTest, PixelMovingFilter) {
 }
 
 TEST_P(CullRectUpdateOnPaintPropertyChangeTest, Transform) {
+  // We use infinite cull rect for small layers with non-composited transforms,
+  // so don't need to update cull rect on non-composited transform change.
   TestTargetChange("transform: translateX(10px)", "transform: translateX(20px)",
-                   false, true, false);
+                   false, false, false);
   TestTargetChange("transform: translateX(10px)", "", true, true, true);
   TestTargetChange("", "transform: translateX(10px)", true, true, true);
+  // We don't use infinite cull rect for layers with composited transforms.
+  TestTargetChange("will-change: transform; transform: translateX(10px)",
+                   "will-change: transform; transform: translateX(20px)", false,
+                   true, false);
   TestTargetChange("will-change: transform; transform: translateX(10px)",
                    "will-change: transform", false, true, false);
   TestTargetChange("will-change: transform",
