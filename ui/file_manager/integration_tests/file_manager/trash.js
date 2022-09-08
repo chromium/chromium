@@ -147,7 +147,7 @@ testcase.trashPermanentlyDelete = async () => {
 };
 
 /**
- * Delete files then restore via toast 'Undo'.
+ * Delete files then restore via progress center panel button 'Undo'.
  */
 testcase.trashRestoreFromToast = async () => {
   const appId = await setupAndWaitUntilReady(
@@ -162,9 +162,14 @@ testcase.trashRestoreFromToast = async () => {
   await remoteCall.waitForElementLost(
       appId, '#file-list [file-name="hello.txt"]');
 
-  // Wait for the undo toast and click undo.
-  await remoteCall.waitAndClickElement(
-      appId, ['#toast', '#action:not([hidden])']);
+  // Wait for the a success progress panel item to appear.
+  await remoteCall.waitForElement(
+      appId, ['#progress-panel', 'xf-panel-item[status="success"]']);
+
+  // Press the "Undo"" button on the success feedback panel.
+  chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
+      'fakeMouseClick', appId,
+      [['#progress-panel', 'xf-panel-item', 'xf-button#primary-action']]));
 
   // Wait for file to reappear in list.
   await remoteCall.waitForElement(appId, '#file-list [file-name="hello.txt"]');
@@ -723,9 +728,8 @@ testcase.trashEnsureOldEntriesArePeriodicallyRemoved = async () => {
 };
 
 /**
- * Tests that dragging and dropping on the Trash root actually
- * trashes the item and it appears in Trash after drop
- * completed.
+ * Tests that dragging and dropping out of the Trash root restore files to the
+ * location that was requested (i.e. the drop target).
  */
 testcase.trashDragDropOutOfTrashPerformsRestoration = async () => {
   const appId = await setupAndWaitUntilReady(
@@ -802,4 +806,36 @@ testcase.trashCopyShouldBeDisabledCutShouldBeEnabled = async () => {
   await remoteCall.waitForElement(
       appId,
       contextMenuSelector + ' [command="#copy"][disabled]:not([hidden])');
+};
+
+/**
+ * Tests that the "Moving to trash" visual signal that is shown whilst a trash
+ * operation is in progress, does not contain the "Undo" button.
+ */
+testcase.trashRestorationDialogInProgressDoesntShowUndo = async () => {
+  const appId = await setupAndWaitUntilReady(
+      RootPath.DOWNLOADS, BASIC_LOCAL_ENTRY_SET, []);
+
+  // Tell the progress center to never finish the operation which leaves the in
+  // progress visual signal visible.
+  await remoteCall.callRemoteTestUtil(
+      'progressCenterNeverNotifyCompleted', appId, []);
+
+  // Select hello.txt and send it to the Trash.
+  await remoteCall.waitAndClickElement(
+      appId, '#file-list [file-name="hello.txt"]');
+  await remoteCall.waitAndClickElement(appId, '#move-to-trash-button');
+  await remoteCall.waitForElementLost(
+      appId, '#file-list [file-name="hello.txt"]');
+
+  // A feedback panel item should be created to indicate the item is being sent
+  // to the trash with only a secondary action.
+  const cancelButton = await remoteCall.waitForElement(
+      appId,
+      ['#progress-panel', 'xf-panel-item', 'xf-button#secondary-action']);
+  await remoteCall.waitForElementLost(
+      appId, ['#progress-panel', 'xf-panel-item', 'xf-button#primary-action']);
+
+  // Ensure the secondary action is of the category cancel.
+  chrome.test.assertEq(cancelButton.attributes['data-category'], 'cancel');
 };

@@ -1288,7 +1288,9 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
             .EnableTrash(),
         TestCase("trashEnsureOldEntriesArePeriodicallyRemoved").EnableTrash(),
         TestCase("trashDragDropOutOfTrashPerformsRestoration").EnableTrash(),
-        TestCase("trashCopyShouldBeDisabledCutShouldBeEnabled").EnableTrash()));
+        TestCase("trashCopyShouldBeDisabledCutShouldBeEnabled").EnableTrash(),
+        TestCase("trashRestorationDialogInProgressDoesntShowUndo")
+            .EnableTrash()));
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     AndroidPhotos, /* android_photos.js */

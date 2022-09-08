@@ -105,6 +105,10 @@ std::u16string GetIOTaskMessage(Profile* profile,
       multiple_file_message_id =
           IDS_FILE_BROWSER_RESTORE_FROM_TRASH_ITEMS_REMAINING;
       break;
+    case OperationType::kTrash:
+      single_file_message_id = IDS_FILE_BROWSER_MOVE_TO_TRASH_FILE_NAME;
+      multiple_file_message_id = IDS_FILE_BROWSER_MOVE_TO_TRASH_ITEMS_REMAINING;
+      break;
     default:
       NOTREACHED();
       return u"Unknown operation type";

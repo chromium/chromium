@@ -70,20 +70,6 @@ export class FileOperationHandler {
    * @private
    */
   onIOTaskProgressStatus_(event) {
-    if (event.type === chrome.fileManagerPrivate.IOTaskType.TRASH) {
-      if (event.state === chrome.fileManagerPrivate.IOTaskState.SUCCESS) {
-        this.showRestoreTrashToast_(event);
-        return;
-      }
-      // Trash operations occur intra filesystem and so to avoid a flash on the
-      // UI with progress then the undo toast, do not show any visual signals
-      // for anything other than an error, cancelled and success.
-      if (event.state === chrome.fileManagerPrivate.IOTaskState.QUEUED ||
-          event.state === chrome.fileManagerPrivate.IOTaskState.IN_PROGRESS) {
-        return;
-      }
-    }
-
     const taskId = String(event.taskId);
     let newItem = false;
     /** @type {ProgressCenterItem} */
@@ -126,6 +112,17 @@ export class FileOperationHandler {
           item.state = ProgressItemState.COMPLETED;
           item.progressValue = item.progressMax;
           item.remainingTime = event.remainingSeconds;
+          if (item.type === ProgressItemType.TRASH) {
+            const infoEntries =
+                event.outputs.filter(o => o.name.endsWith('.trashinfo'));
+            item.setExtraButton(
+                ProgressItemState.COMPLETED, str('UNDO_DELETE_ACTION_LABEL'),
+                () => {
+                  startIOTask(
+                      chrome.fileManagerPrivate.IOTaskType.RESTORE, infoEntries,
+                      /*params=*/ {});
+                });
+          }
         } else if (
             event.state === chrome.fileManagerPrivate.IOTaskState.CANCELLED) {
           item.state = ProgressItemState.CANCELED;

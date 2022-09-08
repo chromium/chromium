@@ -78,6 +78,9 @@ export class ProgressCenterPanel {
           if (item.type === ProgressItemType.DELETE) {
             return strf('DELETE_FILE_NAME', source);
           }
+          if (item.type === ProgressItemType.TRASH) {
+            return strf('MOVE_TO_TRASH_FILE_NAME', source);
+          }
           if (item.type === ProgressItemType.RESTORE_TO_DESTINATION) {
             return strf('RESTORE_FROM_TRASH_FILE_NAME', source);
           }
@@ -96,6 +99,9 @@ export class ProgressCenterPanel {
         }
         if (item.type === ProgressItemType.DELETE) {
           return strf('DELETE_ITEMS_REMAINING', count);
+        }
+        if (item.type === ProgressItemType.TRASH) {
+          return strf('MOVE_TO_TRASH_ITEMS_REMAINING', count);
         }
         if (item.type === ProgressItemType.RESTORE_TO_DESTINATION) {
           return strf('RESTORE_FROM_TRASH_ITEMS_REMAINING', count);
@@ -172,6 +178,11 @@ export class ProgressCenterPanel {
           if (item.type === ProgressItemType.DELETE) {
             return strf('DELETE_FILE_NAME', source);
           }
+          if (item.type === ProgressItemType.TRASH) {
+            return item.state == ProgressItemState.PROGRESSING ?
+                strf('MOVE_TO_TRASH_FILE_NAME', source) :
+                strf('UNDO_DELETE_ONE', source);
+          }
           if (item.type === ProgressItemType.RESTORE_TO_DESTINATION) {
             return strf('RESTORE_FROM_TRASH_FILE_NAME', source);
           }
@@ -199,6 +210,11 @@ export class ProgressCenterPanel {
         }
         if (item.type === ProgressItemType.DELETE) {
           return strf('DELETE_ITEMS_REMAINING', count);
+        }
+        if (item.type === ProgressItemType.TRASH) {
+          return item.state == ProgressItemState.PROGRESSING ?
+              strf('MOVE_TO_TRASH_ITEMS_REMAINING', count) :
+              strf('UNDO_DELETE_SOME', count);
         }
         if (item.type === ProgressItemType.RESTORE_TO_DESTINATION) {
           return strf('RESTORE_FROM_TRASH_ITEMS_REMAINING', count);

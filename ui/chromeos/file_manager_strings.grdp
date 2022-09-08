@@ -894,10 +894,16 @@
    Are you sure you want to delete <ph name="NUMBER_OF_ITEMS">$1<ex>3</ex></ph> items?
  </message>
  <message name="IDS_FILE_BROWSER_UNDO_DELETE_ONE" desc="Confirm to a user that they have deleted a single file and offer to undo">
-   <ph name="FILE_NAME">$1<ex>file.txt</ex></ph> deleted
+   <ph name="FILE_NAME">$1<ex>file.txt</ex></ph> moved to Trash
  </message>
  <message name="IDS_FILE_BROWSER_UNDO_DELETE_SOME" desc="Confirm to a user that they have deleted multiple files and offer to undo">
-   <ph name="NUMBER_OF_ITEMS">$1<ex>3</ex></ph> items deleted
+   <ph name="NUMBER_OF_ITEMS">$1<ex>3</ex></ph> items moved to Trash
+ </message>
+ <message name="IDS_FILE_BROWSER_MOVE_TO_TRASH_FILE_NAME" desc="Showing progress that a single item is being moved to trash.">
+   Moving <ph name="FILE_NAME">$1<ex>file.txt</ex></ph> to the Trash
+ </message>
+ <message name="IDS_FILE_BROWSER_MOVE_TO_TRASH_ITEMS_REMAINING" desc="Showing progress that multiple items are being moved to trash.">
+   Moving <ph name="NUMBER_OF_ITEMS">$1<ex>3</ex></ph> items to the Trash
  </message>
  <message name="IDS_FILE_BROWSER_UNDO_DELETE_ACTION_LABEL" desc="Undo label shown on toast to undo delete operation">
    Undo
