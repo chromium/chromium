@@ -9,6 +9,8 @@ assert(is_chromeos_ash)
 
 source_set("string_matching") {
   sources = [
+    "acronym_matcher.cc",
+    "acronym_matcher.h",
     "diacritic_utils.cc",
     "diacritic_utils.h",
     "fuzzy_tokenized_string_match.cc",
@@ -42,6 +44,7 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
+    "acronym_matcher_unittest.cc",
     "diacritic_utils_unittest.cc",
     "fuzzy_tokenized_string_match_unittest.cc",
     "prefix_matcher_unittest.cc",
