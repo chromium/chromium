@@ -45,6 +45,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
 #include "ui/base/pointer/touch_ui_controller.h"
+#include "ui/views/test/views_test_utils.h"
 
 class LocationBarViewBrowserTest : public InProcessBrowserTest {
  public:
@@ -156,7 +157,7 @@ IN_PROC_BROWSER_TEST_F(TouchLocationBarViewBrowserTest, OmniboxViewViewsSize) {
       child->SetVisible(false);
   }
 
-  GetLocationBarView()->Layout();
+  views::test::RunScheduledLayout(GetLocationBarView());
   // Check |omnibox_view_views| is not wider than the LocationBarView with its
   // rounded ends removed.
   EXPECT_LE(omnibox_view_views->width(),

@@ -59,17 +59,6 @@ class InfoBarViewTest : public BrowserWithTestWindowTest {
   InfoBarContainerView infobar_container_view_;
 };
 
-// Regression test for crbug.com/834728 .
-TEST_F(InfoBarViewTest, LayoutOnHiddenInfoBar) {
-  // Calling Layout() on an infobar inside a container should not crash.
-  InfoBarView* infobar = TestInfoBarDelegate::Create(infobar_manager());
-  ASSERT_TRUE(infobar);
-  infobar->Layout();
-  // Neither should calling it on an infobar not in a container.
-  DetachContainer();
-  infobar->Layout();
-}
-
 TEST_F(InfoBarViewTest, AlertAccessibleEvent) {
   views::test::AXEventCounter counter(views::AXEventManager::Get());
   EXPECT_EQ(0, counter.GetCount(ax::mojom::Event::kAlert));
