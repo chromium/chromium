@@ -37,7 +37,10 @@ specific releases by specifying a prefix like
 [linux-debug/asan-linux-debug-83](https://commondatastorage.googleapis.com/chromium-browser-asan/index.html?prefix=linux-debug/asan-linux-debug-83).
 This is useful for finding a build for a specific revision, since filenames are of
 the form `asan-<platform>-<buildtype>-<revision>` (but not every revision has an
-archived ASan build).
+archived ASan build). The
+[get_asan_chrome](https://source.chromium.org/chromium/chromium/src/+/main:tools/get_asan_chrome/get_asan_chrome.py)
+helper script is a handy way to download builds; its --help flag provides
+usage instructions.
 
 ## Build tests with ASan
 

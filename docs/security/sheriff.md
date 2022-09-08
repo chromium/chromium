@@ -253,6 +253,10 @@ Tips for reproducing bugs:
   [ThreadSanitizer](https://www.chromium.org/developers/testing/threadsanitizer-tsan-v2),
   and
   [UndefinedBehaviorSanitizer](https://www.chromium.org/developers/testing/undefinedbehaviorsanitizer).
+* The [get_asan_chrome](https://source.chromium.org/chromium/chromium/src/+/main:tools/get_asan_chrome/get_asan_chrome.py)
+  helper script is a handy way to download ASAN Chrome. The --help flag
+  provides usage instructions, e.g. to fetch builds for various versions and
+  platforms.
 * If you run into issues with a reproducible ClusterFuzz test case (like
   missing symbols, or if anything else seems off), try uploading the test case
   again using a different job type with a more mature tool (e.g. ASan on Linux).
