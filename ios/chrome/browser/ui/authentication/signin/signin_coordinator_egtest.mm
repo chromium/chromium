@@ -24,6 +24,7 @@
 #import "ios/chrome/browser/ui/bookmarks/bookmark_earl_grey.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_earl_grey_ui.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
+#import "ios/chrome/browser/ui/elements/elements_constants.h"
 #import "ios/chrome/browser/ui/recent_tabs/recent_tabs_constants.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_constants.h"
 #import "ios/chrome/browser/ui/settings/settings_table_view_controller_constants.h"
@@ -181,6 +182,9 @@ void ExpectSyncConsentHistogram(
   if ([self
           isRunningTest:@selector(testUserSignedOutWhenClearingBrowsingData)]) {
     config.features_disabled.push_back(switches::kEnableCbdSignOut);
+  } else if ([self isRunningTest:@selector
+                   (testUserSignedInWhenClearingBrowsingData)]) {
+    config.features_enabled.push_back(switches::kEnableCbdSignOut);
   }
   return config;
 }
@@ -1046,10 +1050,9 @@ void ExpectSyncConsentHistogram(
   [SigninEarlGreyUI verifySigninPromoNotVisible];
 }
 
-// Tests that a user in the `ConsentLevel::kSignin` state will be signed out
-// after clearing their browsing history.
-- (void)testUserSignedOutWhenClearingBrowsingData {
-  FakeChromeIdentity* fakeIdentity = [FakeChromeIdentity fakeIdentity1];
+// Sign-in without sync. Clear browsing data.
+- (void)signInOpenCBDAndClearDataWithFakeIdentity:
+    (FakeChromeIdentity*)fakeIdentity {
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity enableSync:NO];
 
@@ -1061,7 +1064,29 @@ void ExpectSyncConsentHistogram(
   [ChromeEarlGreyUI tapClearBrowsingDataMenuButton:ClearBrowsingDataButton()];
   [[EarlGrey selectElementWithMatcher:ConfirmClearBrowsingDataButton()]
       performAction:grey_tap()];
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kActivityOverlayViewAccessibilityIdentifier)]
+      assertWithMatcher:grey_nil()];
+  [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
+      performAction:grey_tap()];
+}
 
+// Tests that a user in the `ConsentLevel::kSignin` state will be signed out
+// after clearing their browsing history if |kEnableCbdSignOut| feature is
+// enabled.
+- (void)testUserSignedInWhenClearingBrowsingData {
+  FakeChromeIdentity* fakeIdentity = [FakeChromeIdentity fakeIdentity1];
+  [self signInOpenCBDAndClearDataWithFakeIdentity:fakeIdentity];
+  [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
+}
+
+// Tests that a user in the `ConsentLevel::kSignin` state will be signed out
+// after clearing their browsing history if |kEnableCbdSignOut| feature is
+// disabled.
+- (void)testUserSignedOutWhenClearingBrowsingData {
+  FakeChromeIdentity* fakeIdentity = [FakeChromeIdentity fakeIdentity1];
+  [self signInOpenCBDAndClearDataWithFakeIdentity:fakeIdentity];
   [SigninEarlGrey verifySignedOut];
 }
 
