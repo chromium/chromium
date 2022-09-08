@@ -13,6 +13,9 @@ const std::string kImpressionPromoKey = "promo";
 const std::string kImpressionDayKey = "day";
 const int kNumDaysImpressionHistoryStored = 365;
 
+// Prefix used when stringifying promos.
+const std::string kPromoStringifyPrefix = "promos_manager::Promo::";
+
 // WARNING - PLEASE READ: Sadly, we cannot switch over strings in C++, so be
 // very careful when updating this method to ensure all enums are accounted for.
 absl::optional<Promo> PromoForName(std::string promo) {
@@ -31,17 +34,21 @@ absl::optional<Promo> PromoForName(std::string promo) {
   return absl::nullopt;
 }
 
-std::string NameForPromo(Promo promo) {
+std::string ShortNameForPromo(Promo promo) {
   switch (promo) {
     case promos_manager::Promo::Test:
-      return "promos_manager::Promo::Test";
+      return "Test";
     case promos_manager::Promo::DefaultBrowser:
-      return "promos_manager::Promo::DefaultBrowser";
+      return "DefaultBrowser";
     case promos_manager::Promo::AppStoreRating:
-      return "promos_manager::Promo::AppStoreRating";
+      return "AppStoreRating";
     case promos_manager::Promo::CredentialProviderExtension:
-      return "promos_manager::Promo::CredentialProviderExtension";
+      return "CredentialProviderExtension";
   }
+}
+
+std::string NameForPromo(Promo promo) {
+  return kPromoStringifyPrefix + ShortNameForPromo(promo);
 }
 
 }  // namespace promos_manager
