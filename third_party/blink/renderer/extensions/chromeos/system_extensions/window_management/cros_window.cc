@@ -66,6 +66,10 @@ void CrosWindow::Trace(Visitor* visitor) const {
   ScriptWrappable::Trace(visitor);
 }
 
+void CrosWindow::Update(mojom::blink::CrosWindowInfoPtr window_info_ptr) {
+  window_ = std::move(window_info_ptr);
+}
+
 String CrosWindow::appId() {
   return window_->app_id;
 }
