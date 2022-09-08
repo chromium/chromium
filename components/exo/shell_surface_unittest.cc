@@ -2424,7 +2424,7 @@ struct ShellSurfaceCallbacks {
                        const gfx::Vector2d& origin_offset) {
     configure_state.emplace();
     *configure_state = {bounds, state_type, resizing, activated};
-    return serial++;
+    return ++serial;
   }
   void OnOriginChange(const gfx::Point& origin_) { origin = origin_; }
   void Reset() {
@@ -2433,10 +2433,25 @@ struct ShellSurfaceCallbacks {
   }
   absl::optional<ConfigureState> configure_state;
   absl::optional<gfx::Point> origin;
-  int32_t serial = 1;
+  int32_t serial = 0;
 };
 
 }  // namespace
+
+TEST_F(ShellSurfaceTest, DragWithHTCLIENT) {
+  std::unique_ptr<ShellSurface> shell_surface =
+      test::ShellSurfaceBuilder({64, 64}).BuildShellSurface();
+  ShellSurfaceCallbacks callbacks;
+  shell_surface->set_configure_callback(base::BindRepeating(
+      &ShellSurfaceCallbacks::OnConfigure, base::Unretained(&callbacks)));
+  ash::WindowState::Get(shell_surface->GetWidget()->GetNativeWindow())
+      ->CreateDragDetails(gfx::PointF(0, 0), HTCLIENT,
+                          ::wm::WINDOW_MOVE_SOURCE_TOUCH);
+
+  shell_surface->GetWidget()->SetBounds(gfx::Rect(0, 0, 80, 80));
+  shell_surface->AcknowledgeConfigure(callbacks.serial);
+  shell_surface->root_surface()->Commit();
+}
 
 TEST_F(ShellSurfaceTest, ScreenCoordinates) {
   auto shell_surface = test::ShellSurfaceBuilder({20, 20}).BuildShellSurface();

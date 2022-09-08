@@ -52,6 +52,12 @@ gfx::Rect GetClientBoundsInScreen(views::Widget* widget) {
   return window_bounds;
 }
 
+// HTCLIENT can be used to drag the window in specific scenario.
+// (e.g. Drag from shelf)
+bool IsMoveComponent(int resize_component) {
+  return resize_component == HTCAPTION || resize_component == HTCLIENT;
+}
+
 }  // namespace
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -147,7 +153,6 @@ void ShellSurface::AcknowledgeConfigure(uint32_t serial) {
     // Add the config offset to the accumulated offset that will be applied when
     // Commit() is called.
     pending_origin_offset_ += config->origin_offset;
-
     // Set the resize direction that will be applied when Commit() is called.
     pending_resize_component_ = config->resize_component;
 
@@ -351,7 +356,7 @@ absl::optional<gfx::Rect> ShellSurface::GetWidgetBounds() const {
 
   if (movement_disabled_) {
     new_widget_bounds.set_origin(origin_);
-  } else if (resize_component_ == HTCAPTION) {
+  } else if (IsMoveComponent(resize_component_)) {
     // Preserve widget position.
     new_widget_bounds.set_origin(widget_->GetWindowBoundsInScreen().origin());
   } else {
@@ -367,13 +372,13 @@ absl::optional<gfx::Rect> ShellSurface::GetWidgetBounds() const {
 }
 
 gfx::Point ShellSurface::GetSurfaceOrigin() const {
-  DCHECK(!movement_disabled_ || resize_component_ == HTCAPTION);
-
+  DCHECK(!movement_disabled_ || IsMoveComponent(resize_component_));
   gfx::Rect visible_bounds = GetVisibleBounds();
   gfx::Rect client_bounds = GetClientViewBounds();
 
   switch (resize_component_) {
     case HTCAPTION:
+    case HTCLIENT:
       return gfx::Point() + origin_offset_ - visible_bounds.OffsetFromOrigin();
     case HTBOTTOM:
     case HTRIGHT:
@@ -392,7 +397,7 @@ gfx::Point ShellSurface::GetSurfaceOrigin() const {
                         client_bounds.height() - visible_bounds.height()) -
              visible_bounds.OffsetFromOrigin();
     default:
-      NOTREACHED();
+      NOTREACHED() << "Unsupported component:" << resize_component_;
       return gfx::Point();
   }
 }
@@ -669,6 +674,7 @@ void ShellSurface::Configure(bool ends_drag) {
   // If surface is being resized, save the resize direction.
   if (window_state && window_state->is_dragged() && !ends_drag)
     resize_component = window_state->drag_details()->window_component;
+
   uint32_t serial = 0;
 
   if (!configure_callback_.is_null()) {
@@ -759,9 +765,8 @@ void ShellSurface::AttemptToStartDrag(int component) {
 }
 
 void ShellSurface::EndDrag() {
-  if (resize_component_ != HTCAPTION) {
+  if (!IsMoveComponent(resize_component_))
     Configure(/*ends_drag=*/true);
-  }
 }
 
 }  // namespace exo
