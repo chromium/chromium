@@ -42,6 +42,8 @@ source_set("crosapi") {
     "authentication_ash.h",
     "automation_ash.cc",
     "automation_ash.h",
+    "browser_action.cc",
+    "browser_action.h",
     "browser_data_migrator.cc",
     "browser_data_migrator.h",
     "browser_data_migrator_util.cc",

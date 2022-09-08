@@ -5,16 +5,21 @@
 #include "chrome/browser/ash/crosapi/browser_manager.h"
 
 #include "ash/constants/ash_features.h"
+#include "ash/public/cpp/shelf_model.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/crosapi/browser_loader.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/component_updater/fake_cros_component_manager.h"
+#include "chrome/browser/lacros/browser_service_lacros.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/crosapi/mojom/crosapi.mojom-test-utils.h"
+#include "chromeos/crosapi/mojom/crosapi.mojom.h"
 #include "components/account_id/account_id.h"
 #include "components/component_updater/mock_component_updater_service.h"
 #include "components/session_manager/core/session_manager.h"
@@ -36,35 +41,60 @@ namespace {
 constexpr char kSampleLacrosPath[] =
     "/run/imageloader-lacros-dogfood-dev/97.0.4676/";
 
+class MockBrowserService : public mojom::BrowserServiceInterceptorForTesting {
+ public:
+  BrowserService* GetForwardingInterface() override {
+    NOTREACHED();
+    return nullptr;
+  }
+
+  MOCK_METHOD(void,
+              NewWindow,
+              (bool incognito,
+               bool should_trigger_session_restore,
+               NewWindowCallback callback),
+              (override));
+  MOCK_METHOD(void, OpenForFullRestore, (bool skip_crash_restore), (override));
+  MOCK_METHOD(void, UpdateKeepAlive, (bool enabled), (override));
+};
+
 class BrowserManagerFake : public BrowserManager {
  public:
   BrowserManagerFake(std::unique_ptr<BrowserLoader> browser_loader,
                      component_updater::ComponentUpdateService* update_service)
       : BrowserManager(std::move(browser_loader), update_service) {}
+
   ~BrowserManagerFake() override = default;
 
   // BrowserManager:
-  void Start(
-      browser_util::InitialBrowserAction initial_browser_action) override {
+  void Start() override {
     ++start_count_;
-    initial_browser_action_ = initial_browser_action.action;
-    SetState(State::STARTING);
+    BrowserManager::Start();
   }
 
   int start_count() const { return start_count_; }
 
-  mojom::InitialBrowserAction initial_browser_action() const {
-    return initial_browser_action_;
+  void SetStatePublic(State state) { SetState(state); }
+
+  void SimulateLacrosTermination() {
+    SetStatePublic(State::TERMINATING);
+    if (browser_service_.has_value())
+      OnBrowserServiceDisconnected(*crosapi_id_, browser_service_->mojo_id);
+    OnLacrosChromeTerminated();
   }
 
-  void SetStatePublic(State state) { SetState(state); }
+  void SimulateLacrosStart(mojom::BrowserService* browser_service) {
+    crosapi_id_ = CrosapiId::FromUnsafeValue(42);  // Dummy value.
+    SetStatePublic(State::STARTING);
+    OnBrowserServiceConnected(*crosapi_id_,
+                              mojo::RemoteSetElementId::FromUnsafeValue(42),
+                              browser_service, 42);
+  }
 
   // Make the State enum publicly available.
   using BrowserManager::State;
 
- private:
   int start_count_ = 0;
-  mojom::InitialBrowserAction initial_browser_action_;
 };
 
 }  // namespace
@@ -105,6 +135,14 @@ class BrowserManagerTest : public testing::Test {
         std::make_unique<testing::NiceMock<MockComponentUpdateService>>();
     fake_browser_manager_ = std::make_unique<BrowserManagerFake>(
         std::move(browser_loader), component_update_service_.get());
+
+    shelf_model_ = std::make_unique<ash::ShelfModel>();
+    shelf_controller_ = std::make_unique<ChromeShelfController>(
+        &testing_profile_, shelf_model_.get(), /*shelf_item_factory=*/nullptr);
+    shelf_controller_->Init();
+
+    EXPECT_CALL(mock_browser_service_, NewWindow(_, _, _)).Times(0);
+    EXPECT_CALL(mock_browser_service_, OpenForFullRestore(_)).Times(0);
   }
 
   void AddRegularUser(const std::string& email) {
@@ -130,6 +168,9 @@ class BrowserManagerTest : public testing::Test {
   std::unique_ptr<MockComponentUpdateService> component_update_service_;
   std::unique_ptr<BrowserManagerFake> fake_browser_manager_;
   ScopedTestingLocalState local_state_;
+  std::unique_ptr<ash::ShelfModel> shelf_model_;
+  std::unique_ptr<ChromeShelfController> shelf_controller_;
+  MockBrowserService mock_browser_service_;
 
  private:
   base::test::ScopedFeatureList feature_list_;
@@ -156,7 +197,7 @@ TEST_F(BrowserManagerTest, LacrosKeepAlive) {
         std::move(callback).Run(base::FilePath("/run/lacros"),
                                 browser_util::LacrosSelection::kRootfs);
       });
-  fake_browser_manager_->InitializeAndStart();
+  fake_browser_manager_->InitializeAndStartIfNeeded();
   EXPECT_EQ(fake_browser_manager_->start_count(), 0);
 
   fake_browser_manager_->SetStatePublic(State::UNAVAILABLE);
@@ -167,17 +208,17 @@ TEST_F(BrowserManagerTest, LacrosKeepAlive) {
       fake_browser_manager_->KeepAlive(BrowserManager::Feature::kTestOnly);
   EXPECT_EQ(fake_browser_manager_->start_count(), 0);
 
-  // Once the state becomes STOPPED, then Lacros should start.
-  fake_browser_manager_->SetStatePublic(State::STOPPED);
+  // On termination, KeepAlive should start Lacros.
+  fake_browser_manager_->SimulateLacrosTermination();
   EXPECT_EQ(fake_browser_manager_->start_count(), 1);
 
   // Repeating the process starts Lacros again.
-  fake_browser_manager_->SetStatePublic(State::STOPPED);
+  fake_browser_manager_->SimulateLacrosTermination();
   EXPECT_EQ(fake_browser_manager_->start_count(), 2);
 
   // Once the ScopedKeepAlive is destroyed, this should no longer happen.
   keep_alive.reset();
-  fake_browser_manager_->SetStatePublic(State::STOPPED);
+  fake_browser_manager_->SimulateLacrosTermination();
   EXPECT_EQ(fake_browser_manager_->start_count(), 2);
 }
 
@@ -197,7 +238,7 @@ TEST_F(BrowserManagerTest, LacrosKeepAliveReloadsWhenUpdateAvailable) {
         std::move(callback).Run(base::FilePath("/run/lacros"),
                                 browser_util::LacrosSelection::kRootfs);
       });
-  fake_browser_manager_->InitializeAndStart();
+  fake_browser_manager_->InitializeAndStartIfNeeded();
 
   using State = BrowserManagerFake::State;
   EXPECT_EQ(fake_browser_manager_->start_count(), 0);
@@ -222,10 +263,11 @@ TEST_F(BrowserManagerTest, LacrosKeepAliveReloadsWhenUpdateAvailable) {
                                 browser_util::LacrosSelection::kStateful);
       });
 
-  // Once the state becomes STOPPED, then Lacros should start. Since there is
-  // an update, it should first load the updated image.
-  fake_browser_manager_->SetStatePublic(State::STOPPED);
-  EXPECT_EQ(fake_browser_manager_->start_count(), 1);
+  // On simulated termination, KeepAlive restarts Lacros. Since there is an
+  // update, it should first load the updated image.
+  EXPECT_EQ(fake_browser_manager_->start_count(), 0);
+  fake_browser_manager_->SimulateLacrosTermination();
+  EXPECT_GE(fake_browser_manager_->start_count(), 1);
 }
 
 TEST_F(BrowserManagerTest, NewWindowReloadsWhenUpdateAvailable) {
@@ -244,7 +286,7 @@ TEST_F(BrowserManagerTest, NewWindowReloadsWhenUpdateAvailable) {
         std::move(callback).Run(base::FilePath("/run/lacros"),
                                 browser_util::LacrosSelection::kRootfs);
       });
-  fake_browser_manager_->InitializeAndStart();
+  fake_browser_manager_->InitializeAndStartIfNeeded();
 
   // Set the state of the browser manager as stopped, which would match the
   // state after the browser mounted an image, ran, and was terminated.
@@ -258,16 +300,20 @@ TEST_F(BrowserManagerTest, NewWindowReloadsWhenUpdateAvailable) {
       ->OnEvent(UpdateClient::Observer::Events::COMPONENT_UPDATED,
                 lacros_component_id);
 
-  EXPECT_CALL(*browser_loader_, Load(_))
-      .WillOnce([](BrowserLoader::LoadCompletionCallback callback) {
-        std::move(callback).Run(base::FilePath(kSampleLacrosPath),
-                                browser_util::LacrosSelection::kStateful);
-      });
-  fake_browser_manager_->NewWindow(/*incongnito=*/false,
+  EXPECT_EQ(fake_browser_manager_->start_count(), 0);
+  EXPECT_CALL(*browser_loader_, Load(_));
+  EXPECT_CALL(mock_browser_service_, NewWindow(_, _, _))
+      .Times(1)
+      .RetiresOnSaturation();
+  fake_browser_manager_->NewWindow(/*incognito=*/false,
                                    /*should_trigger_session_restore=*/false);
+  EXPECT_EQ(fake_browser_manager_->start_count(), 1);
+  fake_browser_manager_->SimulateLacrosStart(&mock_browser_service_);
 }
 
 TEST_F(BrowserManagerTest, LacrosKeepAliveDoesNotBlockRestart) {
+  EXPECT_CALL(mock_browser_service_, UpdateKeepAlive(_)).Times(0);
+
   AddRegularUser("user@test.com");
   browser_util::SetProfileMigrationCompletedForUser(
       local_state_.Get(),
@@ -288,7 +334,7 @@ TEST_F(BrowserManagerTest, LacrosKeepAliveDoesNotBlockRestart) {
         std::move(callback).Run(base::FilePath("/run/lacros"),
                                 browser_util::LacrosSelection::kRootfs);
       });
-  fake_browser_manager_->InitializeAndStart();
+  fake_browser_manager_->InitializeAndStartIfNeeded();
   EXPECT_EQ(fake_browser_manager_->start_count(), 0);
 
   fake_browser_manager_->SetStatePublic(State::UNAVAILABLE);
@@ -301,37 +347,40 @@ TEST_F(BrowserManagerTest, LacrosKeepAliveDoesNotBlockRestart) {
 
   // Simulate a Lacros termination, keep alive should launch Lacros in a
   // windowless state.
-  auto simulate_lacros_termination = [&]() {
-    fake_browser_manager_->SetStatePublic(State::TERMINATING);
-    fake_browser_manager_->OnLacrosChromeTerminated();
-  };
-  simulate_lacros_termination();
+  fake_browser_manager_->SimulateLacrosTermination();
   EXPECT_EQ(fake_browser_manager_->start_count(), 1);
-  EXPECT_EQ(fake_browser_manager_->initial_browser_action(),
-            mojom::InitialBrowserAction::kDoNotOpenWindow);
+  EXPECT_CALL(mock_browser_service_, UpdateKeepAlive(_))
+      .Times(1)
+      .RetiresOnSaturation();
+  fake_browser_manager_->SimulateLacrosStart(&mock_browser_service_);
 
   // Terminating again causes keep alive to again start Lacros in a windowless
   // state.
-  simulate_lacros_termination();
+  fake_browser_manager_->SimulateLacrosTermination();
   EXPECT_EQ(fake_browser_manager_->start_count(), 2);
-  EXPECT_EQ(fake_browser_manager_->initial_browser_action(),
-            mojom::InitialBrowserAction::kDoNotOpenWindow);
+  EXPECT_CALL(mock_browser_service_, UpdateKeepAlive(_))
+      .Times(1)
+      .RetiresOnSaturation();
+  fake_browser_manager_->SimulateLacrosStart(&mock_browser_service_);
 
   // Request a relaunch. Keep alive should not start Lacros in a windowless
   // state but Lacros should instead start with the kRestoreLastSession action.
   fake_browser_manager_->set_relaunch_requested_for_testing(true);
-  simulate_lacros_termination();
+  fake_browser_manager_->SimulateLacrosTermination();
   EXPECT_EQ(fake_browser_manager_->start_count(), 3);
-  EXPECT_EQ(fake_browser_manager_->initial_browser_action(),
-            mojom::InitialBrowserAction::kRestoreLastSession);
+  EXPECT_CALL(mock_browser_service_, UpdateKeepAlive(_))
+      .Times(1)
+      .RetiresOnSaturation();
+  EXPECT_CALL(mock_browser_service_, OpenForFullRestore(_))
+      .Times(1)
+      .RetiresOnSaturation();
+  fake_browser_manager_->SimulateLacrosStart(&mock_browser_service_);
 
   // Resetting the relaunch requested bit should cause keep alive to start
   // Lacros in a windowless state.
   fake_browser_manager_->set_relaunch_requested_for_testing(false);
-  simulate_lacros_termination();
+  fake_browser_manager_->SimulateLacrosTermination();
   EXPECT_EQ(fake_browser_manager_->start_count(), 4);
-  EXPECT_EQ(fake_browser_manager_->initial_browser_action(),
-            mojom::InitialBrowserAction::kDoNotOpenWindow);
 }
 
 }  // namespace crosapi
