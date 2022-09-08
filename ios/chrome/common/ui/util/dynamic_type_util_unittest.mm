@@ -31,7 +31,7 @@ class CommonDynamicTypeUtilTest : public PlatformTest {
   }
 };
 
-// Tests that |PreferredFontForTextStyleWithMaxCategory| works well with various
+// Tests that `PreferredFontForTextStyleWithMaxCategory` works well with various
 // input scenarios.
 TEST_F(CommonDynamicTypeUtilTest, PreferredFontSize) {
   // Use normal category as maxmium category.

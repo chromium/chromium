@@ -7,8 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
-// Returns an UIFont* calculated by |style| and
-// min(|currentCategory|,|maxCategory|).
+// Returns an UIFont* calculated by `style` and
+// min(`currentCategory`,`maxCategory`).
 UIFont* PreferredFontForTextStyleWithMaxCategory(
     UIFontTextStyle style,
     UIContentSizeCategory currentCategory,

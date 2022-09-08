@@ -42,7 +42,7 @@ UIImage* ResizeImage(UIImage* image,
 }
 
 UIImage* ResizeImageForSearchByImage(UIImage* image) {
-  // Check |image|.
+  // Check `image`.
   if (!image) {
     return nil;
   }
