@@ -9,8 +9,8 @@
  */
 import '../cr_actionable_row_style.css.js';
 import '../cr_icon_button/cr_icon_button.js';
-import '../icons.m.js';
-import '../shared_vars_css.m.js';
+import '../cr_shared_vars.css.js';
+import '../icons.html.js';
 
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 

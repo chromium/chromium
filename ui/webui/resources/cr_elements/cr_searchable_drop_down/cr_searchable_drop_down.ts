@@ -16,9 +16,9 @@
  */
 import '../cr_input/cr_input.js';
 import '../cr_hidden_style.css.js';
-import '../icons.m.js';
+import '../icons.html.js';
 import '../cr_shared_style.css.js';
-import '../shared_vars_css.m.js';
+import '../cr_shared_vars.css.js';
 import '//resources/polymer/v3_0/iron-dropdown/iron-dropdown.js';
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '//resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';

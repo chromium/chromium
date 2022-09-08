@@ -4,9 +4,9 @@
 
 import '../cr_icon_button/cr_icon_button.js';
 import '../cr_icons.css.js';
-import '../icons.m.js';
+import '../icons.html.js';
 import '../cr_shared_style.css.js';
-import '../shared_vars_css.m.js';
+import '../cr_shared_vars.css.js';
 import '//resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 
 import {DomIf, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';

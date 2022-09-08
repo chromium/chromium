@@ -48,24 +48,24 @@ generate_grd("build_grd") {
 
   if (include_polymer) {
     public_deps += [
+      ":build_ts_alias_grdp",
       "cr_components:build_grdp",
       "cr_components/app_management:build_grdp",
       "cr_components/customize_themes:build_grdp",
       "cr_components/help_bubble:build_grdp",
       "cr_components/most_visited:build_grdp",
-      "cr_elements:build_grdp",
       "js/browser_command:build_grdp",
       "//third_party/polymer/v3_0:build_grdp",
     ]
     grdp_files += [
       "$root_gen_dir/third_party/polymer/v3_0/polymer_3_0_resources.grdp",
-      "$root_gen_dir/ui/webui/resources/cr_components/app_management/resources.grdp",
-      "$root_gen_dir/ui/webui/resources/cr_components/cr_components_resources.grdp",
-      "$root_gen_dir/ui/webui/resources/cr_components/customize_themes/resources.grdp",
-      "$root_gen_dir/ui/webui/resources/cr_components/help_bubble/resources.grdp",
-      "$root_gen_dir/ui/webui/resources/cr_components/most_visited/resources.grdp",
-      "$root_gen_dir/ui/webui/resources/cr_elements/cr_elements_resources.grdp",
-      "$root_gen_dir/ui/webui/resources/js/browser_command/resources.grdp",
+      "$target_gen_dir/cr_components/app_management/resources.grdp",
+      "$target_gen_dir/cr_components/cr_components_resources.grdp",
+      "$target_gen_dir/cr_components/customize_themes/resources.grdp",
+      "$target_gen_dir/cr_components/help_bubble/resources.grdp",
+      "$target_gen_dir/cr_components/most_visited/resources.grdp",
+      "$target_gen_dir/js/browser_command/resources.grdp",
+      "$target_gen_dir/resources_alias_ts.grdp",
     ]
 
     if (use_nss_certs) {
@@ -83,6 +83,7 @@ generate_grd("build_grd") {
   if (is_chromeos_ash) {
     public_deps += [
       ":build_cros_styles_grdp",
+      "cr_elements:build_grdp",
       "js/cr/ui:build_grdp",
       "//ash/webui/common/resources:build_grdp",
       "//ash/webui/common/resources:build_html_css_wrapper_files_grdp",
@@ -96,6 +97,7 @@ generate_grd("build_grd") {
       "$root_gen_dir/chromeos/ash/components/cros_elements/cros_elements_resources.grdp",
       "$root_gen_dir/third_party/material_web_components/material_web_components_resources.grdp",
       "$root_gen_dir/third_party/web-animations-js/web_animations_resources.grdp",
+      "$root_gen_dir/ui/webui/resources/cr_elements/cr_elements_resources.grdp",
       "$root_gen_dir/ui/webui/resources/cros_styles_resources.grdp",
       "$root_gen_dir/ui/webui/resources/js/cr/ui/resources.grdp",
     ]
@@ -258,25 +260,18 @@ if (is_chromeos_ash) {
   ]
 }
 
-if (include_polymer) {
+if (include_polymer && is_chromeos_ash) {
   generate_definitions_js_files += [
-    "cr_elements/icons.m.js",
-    "cr_elements/shared_vars_css.m.js",
+    "cr_components/chromeos/bluetooth/bluetooth_icons.js",
+    "cr_components/chromeos/bluetooth/bluetooth_metrics_utils.js",
+    "cr_components/chromeos/bluetooth/bluetooth_types.js",
+    "cr_components/chromeos/bluetooth/bluetooth_utils.js",
+    "cr_components/chromeos/bluetooth/cros_bluetooth_config.js",
+    "cr_components/chromeos/quick_unlock/lock_screen_constants.js",
+    "cr_components/chromeos/quick_unlock/pin_keyboard_icon.js",
+    "cr_components/chromeos/quick_unlock/setup_pin_keyboard.js",
+    "cr_elements/chromeos/cros_color_overrides.m.js",
   ]
-
-  if (is_chromeos_ash) {
-    generate_definitions_js_files += [
-      "cr_components/chromeos/bluetooth/bluetooth_icons.js",
-      "cr_components/chromeos/bluetooth/bluetooth_metrics_utils.js",
-      "cr_components/chromeos/bluetooth/bluetooth_types.js",
-      "cr_components/chromeos/bluetooth/bluetooth_utils.js",
-      "cr_components/chromeos/bluetooth/cros_bluetooth_config.js",
-      "cr_components/chromeos/quick_unlock/lock_screen_constants.js",
-      "cr_components/chromeos/quick_unlock/pin_keyboard_icon.js",
-      "cr_components/chromeos/quick_unlock/setup_pin_keyboard.js",
-      "cr_elements/chromeos/cros_color_overrides.m.js",
-    ]
-  }
 }
 
 if (is_ios) {
@@ -349,6 +344,34 @@ generate_grd("build_ts_grdp") {
   public_deps = [ ":library" ]
   manifest_files =
       filter_include(get_target_outputs(":library"), [ "*.manifest" ])
+}
+
+# Adding a few aliases so that the following URL pairs:
+#  - cr_elements/shared_vars_css.m.js (old name)
+#  - cr_elements/cr_shared_vars.css.js (new name)
+#
+#  - cr_elements/icons.m.js (old name)
+#  - cr_elements/icons.html.js (new name)
+#
+#  point to the same file, to make it easier to check-in the Polymer3 version of
+#  the code.
+#
+# TODO(crbug.com/1184053): Remove aliases when all references to the old name
+# have been updated.
+generate_grd("build_ts_alias_grdp") {
+  grd_prefix = "webui"
+  out_grd = "$target_gen_dir/resources_alias_ts.grdp"
+  public_deps = [ ":library" ]
+
+  input_files_base_dir = rebase_path(target_gen_dir, root_build_dir)
+  input_files = [
+    "preprocessed/cr_elements/cr_shared_vars.css.js",
+    "preprocessed/cr_elements/icons.html.js",
+  ]
+  resource_path_rewrites = [
+    "preprocessed/cr_elements/cr_shared_vars.css.js|cr_elements/shared_vars_css.m.js",
+    "preprocessed/cr_elements/icons.html.js|cr_elements/icons.m.js",
+  ]
 }
 
 ts_definitions("generate_definitions") {
