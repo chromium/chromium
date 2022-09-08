@@ -426,8 +426,8 @@ IN_PROC_BROWSER_TEST_F(PageImplTest, SameSiteSameRenderFrameHostNavigation) {
             main_rfh_a1.get() != main_rfh_a2.get());
   PageImpl& page_a2 = main_rfh_a2.get()->GetPage();
 
-  if (IsSameSiteBackForwardCacheEnabled()) {
-    // 3a) With same-site bfcache enabled, both Page objects should be in
+  if (IsBackForwardCacheEnabled()) {
+    // 3a) With back/forward cache enabled, both Page objects should be in
     // existence at the same time.
     EXPECT_TRUE(page_a1);
     EXPECT_NE(page_a1.get(), &page_a2);

@@ -1954,11 +1954,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void DidCommitPageActivation(NavigationRequest* committing_navigation_request,
                                mojom::DidCommitProvisionalLoadParamsPtr params);
 
-  // Whether there's any "unload" event handlers registered on this
-  // RenderFrameHost or subframes that share the same SiteInstance as this
-  // RenderFrameHost.
-  bool UnloadHandlerExistsInSameSiteInstanceSubtree();
-
   bool has_unload_handler() const { return has_unload_handler_; }
 
   bool has_committed_any_navigation() const {

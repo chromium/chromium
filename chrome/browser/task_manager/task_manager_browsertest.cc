@@ -1473,8 +1473,7 @@ class PrerenderTaskBrowserTest : public TaskManagerBrowserTest {
         /*enabled_features=*/
         {
             {features::kBackForwardCache,
-             {{"enable_same_site", "true"},
-              {"TimeToLiveInBackForwardCacheInSeconds", "3600"}}},
+             {{"TimeToLiveInBackForwardCacheInSeconds", "3600"}}},
             {features::kOmniboxTriggerForPrerender2, {}},
         },
         /*disabled_features=*/{});

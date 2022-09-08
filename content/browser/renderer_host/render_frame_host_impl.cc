@@ -6684,24 +6684,6 @@ bool RenderFrameHostImpl::GetSuddenTerminationDisablerState(
   }
 }
 
-bool RenderFrameHostImpl::UnloadHandlerExistsInSameSiteInstanceSubtree() {
-  DCHECK(!GetParent());
-  bool result = false;
-  ForEachRenderFrameHostWithAction(
-      [this, &result](RenderFrameHostImpl* rfhi) -> FrameIterationAction {
-        // If we aren't from the same page ignore unload handlers.
-        if (&rfhi->GetPage() != &GetPage())
-          return FrameIterationAction::kSkipChildren;
-        if (rfhi->GetSiteInstance() == GetSiteInstance() &&
-            rfhi->has_unload_handler_) {
-          result = true;
-          return FrameIterationAction::kStop;
-        }
-        return FrameIterationAction::kContinue;
-      });
-  return result;
-}
-
 void RenderFrameHostImpl::DidDispatchDOMContentLoadedEvent() {
   document_associated_data_->dom_content_loaded = true;
 

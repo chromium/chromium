@@ -476,9 +476,9 @@ TEST_F(BackFwdMenuModelTest, ChapterStops) {
   EXPECT_EQ(32u, back_model->GetIndexOfNextChapterStop(31, true));
   EXPECT_FALSE(back_model->GetIndexOfNextChapterStop(32, true).has_value());
 
-  if (content::BackForwardCache::IsSameSiteBackForwardCacheFeatureEnabled()) {
+  if (content::BackForwardCache::IsBackForwardCacheFeatureEnabled()) {
     // The case below currently fails on the linux-bfcache-rel bot with
-    // same-site bfcache enabled, so return early.
+    // back/forward cache enabled, so return early.
     // TODO(https://crbug.com/1232883): re-enable this test.
     return;
   }

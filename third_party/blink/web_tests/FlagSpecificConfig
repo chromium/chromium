@@ -16,10 +16,6 @@
     "args": ["--disable-site-isolation-trials"]
   },
   {
-    "name": "enable-back-forward-cache-same-site",
-    "args": ["--enable-features=BackForwardCache:enable_same_site/true"]
-  },
-  {
     "name": "enable-blink-heap-concurrent-marking",
     "args": ["--enable-features=BlinkHeapConcurrentMarking"]
   },

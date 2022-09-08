@@ -3504,10 +3504,7 @@ class ServiceWorkerBackForwardCacheAndKeepActiveFreezingBrowserTest
     feature_list_.InitWithFeaturesAndParameters(
         {{{features::kBackForwardCache,
            {{"TimeToLiveInBackForwardCacheInSeconds", "3600"},
-            {"enable_same_site", "true"},
-            {"process_binding_strength", "NORMAL"}}}}
-
-        },
+            {"process_binding_strength", "NORMAL"}}}}},
         {features::kBackForwardCacheMemoryControls});
   }
 
@@ -3749,7 +3746,7 @@ class ServiceWorkerBackForwardCacheBrowserTest
  protected:
   ServiceWorkerBackForwardCacheBrowserTest() {
     feature_list_.InitAndEnableFeatureWithParameters(
-        features::kBackForwardCache, {{"enable_same_site", "true"}});
+        features::kBackForwardCache, {});
   }
 
   RenderFrameHostImpl* current_frame_host() {

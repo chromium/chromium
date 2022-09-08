@@ -1128,8 +1128,7 @@ class ChromePasswordProtectionServiceDeferActivationBrowserTest
                 GetWebContents,
             base::Unretained(this))) {
     std::vector<base::test::ScopedFeatureList::FeatureAndParams>
-        additional_features = {
-            {features::kBackForwardCache, {{"enable_same_site", "true"}}}};
+        additional_features = {{features::kBackForwardCache, {}}};
     scoped_feature_list_.InitWithFeaturesAndParameters(
         content::DefaultEnabledBackForwardCacheParametersForTests(
             additional_features),

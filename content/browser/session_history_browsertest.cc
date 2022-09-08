@@ -341,8 +341,7 @@ IN_PROC_BROWSER_TEST_F(SessionHistoryTest, CrossFrameFormBackForward) {
   // set to "form". If not, the page will be reloaded from scratch, setting the
   // title to "bot1" again.
   GoBack();
-  EXPECT_EQ(IsSameSiteBackForwardCacheEnabled() ? "form" : "bot1",
-            GetTabTitle());
+  EXPECT_EQ(IsBackForwardCacheEnabled() ? "form" : "bot1", GetTabTitle());
   EXPECT_EQ(frames, GetTabURL());
 
   // Submit the form in the "fbot" iframe again . This submits to /echotitle

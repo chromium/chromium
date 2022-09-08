@@ -2393,21 +2393,13 @@ const FeatureEntry::FeatureVariation kRequestDesktopSiteForTabletsVariations[] =
       std::size(kRequestDesktopSiteForTablets1920), nullptr}};
 #endif  // BUILDFLAG(IS_ANDROID)
 
-// TODO(crbug.com/991082,1015377): Remove after proper support for back-forward
+// TODO(crbug.com/991082,1015377): Remove after proper support for back/forward
 // cache is implemented.
 const FeatureEntry::FeatureParam kBackForwardCache_ForceCaching[] = {
     {"TimeToLiveInBackForwardCacheInSeconds", "300"},
-    {"should_ignore_blocklists", "true"},
-    {"enable_same_site", "true"}};
-
-// With this, back-forward cache will be enabled on eligible pages when doing
-// same-site navigations (instead of only cross-site navigations).
-const FeatureEntry::FeatureParam kBackForwardCache_SameSite[] = {
-    {"enable_same_site", "true"}};
+    {"should_ignore_blocklists", "true"}};
 
 const FeatureEntry::FeatureVariation kBackForwardCacheVariations[] = {
-    {"same-site support (experimental)", kBackForwardCache_SameSite,
-     std::size(kBackForwardCache_SameSite), nullptr},
     {"force caching all pages (experimental)", kBackForwardCache_ForceCaching,
      std::size(kBackForwardCache_ForceCaching), nullptr},
 };

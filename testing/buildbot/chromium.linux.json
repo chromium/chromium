@@ -7994,8 +7994,7 @@
         "args": [
           "--num-retries=3",
           "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json",
-          "--git-revision=${got_revision}",
-          "--flag-specific=enable-back-forward-cache-same-site"
+          "--git-revision=${got_revision}"
         ],
         "check_flakiness_for_new_tests": false,
         "isolate_name": "blink_web_tests",
@@ -8032,7 +8031,6 @@
           "--num-retries=3",
           "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json",
           "--git-revision=${got_revision}",
-          "--flag-specific=enable-back-forward-cache-same-site",
           "--ignore-tests=external/wpt/html/browsers/browsing-the-web/back-forward-cache/events.html"
         ],
         "check_flakiness_for_new_tests": false,
