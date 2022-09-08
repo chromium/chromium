@@ -51,11 +51,11 @@ class ContentAutofillRouter;
 //
 // Events in AutofillDriver and mojom::AutofillDriver are passed on to
 // ContentAutofillRouter, which has one instance per WebContents. The naming
-// pattern is that for all of these events, there are three functions:
+// pattern is that for all of these events, there are two functions:
 //
 //   1. ReturnType ContentAutofillDriver::f(Args...)
-//   2. ReturnType ContentAutofillRouter::f(ContentAutofillDriver*, Args...)
-//   3. ReturnType ContentAutofillDriver::fImpl(Args...)
+//   2. ReturnType ContentAutofillRouter::f(ContentAutofillDriver*, Args...,
+//                                          Callback)
 //
 // The first function calls the second, and the second calls the third, perhaps
 // for a different ContentAutofillDriver.
@@ -90,14 +90,23 @@ class ContentAutofillRouter;
 //     FieldGlobalId{.host_frame = ABC, .renderer_id = 34},
 //     FieldGlobalId{.host_frame = DEF, .renderer_id = 56},
 //     FieldGlobalId{.host_frame = DEF, .renderer_id = 78}
-//   }).
+//   }, callback).
 // The router splits the groups the fields by their host frame token and routes
 // the calls to the respective frame's drivers:
-//   abc_driver->SendFieldsEligibleForManualFillingToRendererImpl({
+//   callback(abc_driver, {
 //     FieldRendererId{.renderer_id = 12},
 //     FieldRendererId{.renderer_id = 34},
 //   });
-//   def_driver->SendFieldsEligibleForManualFillingToRendererImpl({
+//   callback(def_driver, {
+//     FieldRendererId{.renderer_id = 56},
+//     FieldRendererId{.renderer_id = 78}
+//   });
+// These callbacks call the agents in the renderer processes:
+//   abc_agent->SetFieldsEligibleForManualFilling({
+//     FieldRendererId{.renderer_id = 12},
+//     FieldRendererId{.renderer_id = 34},
+//   });
+//   def_agent->SetFieldsEligibleForManualFilling({
 //     FieldRendererId{.renderer_id = 56},
 //     FieldRendererId{.renderer_id = 78}
 //   });
@@ -146,8 +155,7 @@ class ContentAutofillDriver : public AutofillDriver,
 
   // AutofillDriver functions called by the browser.
   // These events are forwarded to ContentAutofillRouter.
-  // Their implementations (*Impl()) call into the renderer via
-  // mojom::AutofillAgent.
+  // Their callbacks call into the renderer via mojom::AutofillAgent.
   std::vector<FieldGlobalId> FillOrPreviewForm(
       int query_id,
       mojom::RendererFormDataAction action,
@@ -173,32 +181,11 @@ class ContentAutofillDriver : public AutofillDriver,
   void SendFieldsEligibleForManualFillingToRenderer(
       const std::vector<FieldGlobalId>& fields) override;
 
-  // Implementations of the AutofillDriver functions called by the browser.
-  // These functions are called by ContentAutofillRouter.
-  void FillOrPreviewFormImpl(int query_id,
-                             mojom::RendererFormDataAction action,
-                             const FormData& data);
-  void SendAutofillTypePredictionsToRendererImpl(
-      const std::vector<FormDataPredictions>& forms);
-  void RendererShouldAcceptDataListSuggestionImpl(const FieldRendererId& field,
-                                                  const std::u16string& value);
-  void RendererShouldClearFilledSectionImpl();
-  void RendererShouldClearPreviewedFormImpl();
-  void RendererShouldFillFieldWithValueImpl(const FieldRendererId& field,
-                                            const std::u16string& value);
-  void RendererShouldPreviewFieldWithValueImpl(const FieldRendererId& field,
-                                               const std::u16string& value);
-  void RendererShouldSetSuggestionAvailabilityImpl(
-      const FieldRendererId& field,
-      const mojom::AutofillState state);
-  void SendFieldsEligibleForManualFillingToRendererImpl(
-      const std::vector<FieldRendererId>& fields);
-
   void ProbablyFormSubmitted();
 
   // mojom::AutofillDriver functions called by the renderer.
   // These events are forwarded to ContentAutofillRouter.
-  // Their implementations (*Impl()) call into AutofillManager.
+  // Their callbacks call into AutofillManager.
   //
   // We do not expect to receive Autofill related messages from a prerendered
   // page, so we will validate calls accordingly. If we receive an unexpected
@@ -209,7 +196,7 @@ class ContentAutofillDriver : public AutofillDriver,
                  const std::vector<FormRendererId>& removed_forms) override;
   void FormSubmitted(const FormData& form,
                      bool known_success,
-                     mojom::SubmissionSource source) override;
+                     mojom::SubmissionSource submission_source) override;
   void TextFieldDidChange(const FormData& form,
                           const FormFieldData& field,
                           const gfx::RectF& bounding_box,
@@ -242,44 +229,6 @@ class ContentAutofillDriver : public AutofillDriver,
       const FormFieldData& field,
       const std::u16string& old_value) override;
 
-  // Implementations of the mojom::AutofillDriver functions called by the
-  // renderer. These functions are called by ContentAutofillRouter.
-  void SetFormToBeProbablySubmittedImpl(const absl::optional<FormData>& form);
-  void FormsSeenImpl(const std::vector<FormData>& updated_forms,
-                     const std::vector<FormGlobalId>& removed_forms);
-  void FormSubmittedImpl(const FormData& form,
-                         bool known_success,
-                         mojom::SubmissionSource source);
-  void TextFieldDidChangeImpl(const FormData& form,
-                              const FormFieldData& field,
-                              const gfx::RectF& bounding_box,
-                              base::TimeTicks timestamp);
-  void TextFieldDidScrollImpl(const FormData& form,
-                              const FormFieldData& field,
-                              const gfx::RectF& bounding_box);
-  void SelectControlDidChangeImpl(const FormData& form,
-                                  const FormFieldData& field,
-                                  const gfx::RectF& bounding_box);
-  void AskForValuesToFillImpl(const FormData& form,
-                              const FormFieldData& field,
-                              const gfx::RectF& bounding_box,
-                              int32_t query_id,
-                              bool autoselect_first_suggestion,
-                              FormElementWasClicked form_element_was_clicked);
-  void HidePopupImpl();
-  void FocusNoLongerOnFormImpl(bool had_interacted_form);
-  void FocusOnFormFieldImpl(const FormData& form,
-                            const FormFieldData& field,
-                            const gfx::RectF& bounding_box);
-  void DidFillAutofillFormDataImpl(const FormData& form,
-                                   base::TimeTicks timestamp);
-  void DidPreviewAutofillFormDataImpl();
-  void DidEndTextFieldEditingImpl();
-  void SelectFieldOptionsDidChangeImpl(const FormData& form);
-  void JavaScriptChangedAutofilledValueImpl(const FormData& form,
-                                            const FormFieldData& field,
-                                            const std::u16string& old_value);
-
   // Triggers filling of |fill_data| into |raw_form| and |raw_field|. This event
   // is called only by Autofill Assistant on the browser side and provides the
   // |fill_data| itself. This is different from the usual Autofill flow, where
@@ -292,11 +241,6 @@ class ContentAutofillDriver : public AutofillDriver,
       const AutofillableData& fill_data,
       const FormData& raw_form,
       const FormFieldData& raw_field,
-      const autofill_assistant::AutofillAssistantIntent intent);
-  void FillFormForAssistantImpl(
-      const AutofillableData& fill_data,
-      const FormData& form,
-      const FormFieldData& fiel,
       const autofill_assistant::AutofillAssistantIntent intent);
 
   // Transform bounding box coordinates to real viewport coordinates. In the
@@ -343,9 +287,10 @@ class ContentAutofillDriver : public AutofillDriver,
   void SetKeyPressHandler(
       const content::RenderWidgetHost::KeyPressEventCallback& handler);
   void UnsetKeyPressHandler();
-  void SetKeyPressHandlerImpl(
-      const content::RenderWidgetHost::KeyPressEventCallback& handler);
-  void UnsetKeyPressHandlerImpl();
+
+  // Callbacks that are called also in other functions by ContentAutofillRouter.
+  void FocusNoLongerOnFormCallback(bool had_interacted_form);
+  void UnsetKeyPressHandlerCallback();
 
  private:
   friend class ContentAutofillDriverTestApi;

@@ -176,7 +176,7 @@ void ContentAutofillDriverFactory::RenderFrameDeleted(
   if (is_iframe && router_.last_queried_source() == driver) {
     DCHECK(!render_frame_host->IsInLifecycleState(
         content::RenderFrameHost::LifecycleState::kPrerendering));
-    router_.HidePopup(driver);
+    driver->HidePopup();
   }
 
   driver_map_.erase(it);
