@@ -22,6 +22,7 @@
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/buildflags.h"
 #import "chrome/browser/chrome_browser_application_mac.h"
+#include "chrome/browser/chrome_for_testing/buildflags.h"
 #include "chrome/browser/first_run/first_run.h"
 #include "chrome/browser/mac/install_from_dmg.h"
 #import "chrome/browser/mac/keystone_glue.h"
@@ -79,6 +80,7 @@ void ChromeBrowserMainPartsMac::PreCreateMainMessageLoop() {
   // point (needed to load the nib).
   CHECK(ui::ResourceBundle::HasSharedInstance());
 
+#if !BUILDFLAG(GOOGLE_CHROME_FOR_TESTING_BRANDING)
 #if BUILDFLAG(ENABLE_CHROMIUM_UPDATER)
   InstallUpdaterAndRegisterBrowser();
 #else
@@ -107,6 +109,7 @@ void ChromeBrowserMainPartsMac::PreCreateMainMessageLoop() {
       exit(0);
     }
   }
+#endif  // !BUILDFLAG(GOOGLE_CHROME_FOR_TESTING_BRANDING)
 
   // Create the app delegate. This object is intentionally leaked as a global
   // singleton. It is accessed through -[NSApp delegate].
