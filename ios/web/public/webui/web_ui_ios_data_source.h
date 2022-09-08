@@ -27,7 +27,7 @@ class WebUIIOSDataSource : public base::SupportsUserData {
 
   static WebUIIOSDataSource* Create(const std::string& source_name);
 
-  // Adds a WebUIIOS data source to |browser_state|.
+  // Adds a WebUIIOS data source to `browser_state`.
   static void Add(BrowserState* browser_state, WebUIIOSDataSource* source);
 
   // Adds a string keyed to its name to our dictionary.
@@ -37,7 +37,7 @@ class WebUIIOSDataSource : public base::SupportsUserData {
   // Adds a string keyed to its name to our dictionary.
   virtual void AddString(const std::string& name, const std::string& value) = 0;
 
-  // Adds a localized string with resource |ids| keyed to its name to our
+  // Adds a localized string with resource `ids` keyed to its name to our
   // dictionary.
   virtual void AddLocalizedString(const std::string& name, int ids) = 0;
 

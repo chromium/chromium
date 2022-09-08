@@ -26,7 +26,7 @@ class BrowserState;
 // notify.
 class URLDataSourceIOS {
  public:
-  // Adds a URL data source to |browser_state|.
+  // Adds a URL data source to `browser_state`.
   static void Add(BrowserState* browser_state, URLDataSourceIOS* source);
 
   virtual ~URLDataSourceIOS() {}
@@ -45,8 +45,8 @@ class URLDataSourceIOS {
   typedef base::OnceCallback<void(scoped_refptr<base::RefCountedMemory>)>
       GotDataCallback;
 
-  // Called by URLDataSourceIOS to request data at |path|. The string parameter
-  // is the path of the request. The child class should run |callback| when the
+  // Called by URLDataSourceIOS to request data at `path`. The string parameter
+  // is the path of the request. The child class should run `callback` when the
   // data is available or if the request could not be satisfied. This can be
   // called either in this callback or asynchronously with the response.
   virtual void StartDataRequest(const std::string& path,

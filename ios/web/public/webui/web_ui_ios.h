@@ -25,7 +25,7 @@ class WebUIIOSMessageHandler;
 class WebUIIOS {
  public:
   // Returns JavaScript code that, when executed, calls the function specified
-  // by |function_name| with the arguments specified in |arg_list|.
+  // by `function_name` with the arguments specified in `arg_list`.
   static std::u16string GetJavascriptCall(
       base::StringPiece function_name,
       base::span<const base::ValueView> arg_list);
@@ -38,7 +38,7 @@ class WebUIIOS {
   virtual void SetController(
       std::unique_ptr<WebUIIOSController> controller) = 0;
 
-  // Takes ownership of |handler|, which will be destroyed when the WebUIIOS is.
+  // Takes ownership of `handler`, which will be destroyed when the WebUIIOS is.
   virtual void AddMessageHandler(
       std::unique_ptr<WebUIIOSMessageHandler> handler) = 0;
 
