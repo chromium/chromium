@@ -1874,6 +1874,8 @@ static_library("test_support") {
     "../ash/child_accounts/time_limits/app_time_limits_policy_builder.h",
     "../ash/crostini/ansible/ansible_management_test_helper.cc",
     "../ash/crostini/ansible/ansible_management_test_helper.h",
+    "../ash/crostini/ansible/mock_ansible_management_service.cc",
+    "../ash/crostini/ansible/mock_ansible_management_service.h",
     "../ash/crostini/crostini_test_helper.cc",
     "../ash/crostini/crostini_test_helper.h",
     "../ash/crostini/crostini_test_util.cc",

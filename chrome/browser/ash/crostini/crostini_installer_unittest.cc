@@ -231,8 +231,19 @@ TEST_F(CrostiniInstallerTest, InstallFlow) {
 }
 
 TEST_F(CrostiniInstallerTest, InstallFlowWithAnsibleInfra) {
+  MockAnsibleManagementService* mock_ansible_management_service =
+      AnsibleManagementTestHelper::SetUpMockAnsibleManagementService(
+          profile_.get());
   AnsibleManagementTestHelper test_helper(profile_.get());
   test_helper.SetUpAnsibleInfra();
+
+  EXPECT_CALL(*mock_ansible_management_service, ConfigureContainer).Times(1);
+  ON_CALL(*mock_ansible_management_service, ConfigureContainer)
+      .WillByDefault([](const guest_os::GuestId& conatiner_id,
+                        base::FilePath playbook,
+                        base::OnceCallback<void(bool success)> callback) {
+        std::move(callback).Run(true);
+      });
 
   double last_progress = 0.0;
   auto greater_equal_last_progress = Truly(
@@ -248,9 +259,6 @@ TEST_F(CrostiniInstallerTest, InstallFlowWithAnsibleInfra) {
       .After(expectation_set);
 
   Install();
-
-  task_environment_.RunUntilIdle();
-  test_helper.SendSucceededApplySignal();
 
   task_environment_.RunUntilIdle();
   histogram_tester_.ExpectUniqueSample(
@@ -357,11 +365,19 @@ TEST_F(CrostiniInstallerTest, InstallerError) {
 }
 
 TEST_F(CrostiniInstallerTest, InstallerErrorWhileConfiguring) {
+  MockAnsibleManagementService* mock_ansible_management_service =
+      AnsibleManagementTestHelper::SetUpMockAnsibleManagementService(
+          profile_.get());
   AnsibleManagementTestHelper test_helper(profile_.get());
   test_helper.SetUpAnsibleInfra();
-  test_helper.SetUpAnsibleInstallation(
-      vm_tools::cicerone::InstallLinuxPackageResponse::FAILED);
 
+  EXPECT_CALL(*mock_ansible_management_service, ConfigureContainer).Times(1);
+  ON_CALL(*mock_ansible_management_service, ConfigureContainer)
+      .WillByDefault([](const guest_os::GuestId& container_id,
+                        base::FilePath playbook,
+                        base::OnceCallback<void(bool success)> callback) {
+        std::move(callback).Run(false);
+      });
   Expectation expect_progresses =
       EXPECT_CALL(mock_callbacks_, OnProgress(_, _)).Times(AnyNumber());
   // |OnProgress()| should not happens after |OnFinished()|

@@ -36,4 +36,13 @@ KeyedService* AnsibleManagementServiceFactory::BuildServiceInstanceFor(
   return new AnsibleManagementService(profile);
 }
 
+KeyedService* AnsibleManagementServiceFactory::SetTestingFactoryAndUse(
+    content::BrowserContext* context,
+    TestingFactory testing_factory) {
+  KeyedService* mock_ansible_management_service =
+      ProfileKeyedServiceFactory::SetTestingFactoryAndUse(
+          context, std::move(testing_factory));
+  return mock_ansible_management_service;
+}
+
 }  // namespace crostini

@@ -2326,21 +2326,17 @@ TEST_F(CrostiniManagerTest, StartLxdSuccess) {
   run_loop()->Run();
 }
 
-class CrostiniManagerAnsibleInfraTest
-    : public CrostiniManagerRestartTest,
-      public AnsibleManagementService::Observer {
+class CrostiniManagerAnsibleInfraTest : public CrostiniManagerRestartTest {
  public:
   void SetUp() override {
     CrostiniManagerTest::SetUp();
+    mock_ansible_management_service_ =
+        AnsibleManagementTestHelper::SetUpMockAnsibleManagementService(
+            profile_.get());
     ansible_management_test_helper_ =
         std::make_unique<AnsibleManagementTestHelper>(profile_.get());
     ansible_management_test_helper_->SetUpAnsibleInfra();
     SetUpViewsEnvironmentForTesting();
-    AnsibleManagementService::GetForProfile(profile_.get())->AddObserver(this);
-
-    // Set sensible default values.
-    is_install_ansible_success_ = true;
-    is_apply_ansible_success_ = true;
   }
 
   void TearDown() override {
@@ -2351,112 +2347,30 @@ class CrostiniManagerAnsibleInfraTest
     TearDownViewsEnvironmentForTesting();
 
     ansible_management_test_helper_.reset();
-    AnsibleManagementService::GetForProfile(profile_.get())
-        ->RemoveObserver(this);
     CrostiniManagerTest::TearDown();
   }
 
-  // AnsibleManagementService::Observer
-  void OnAnsibleSoftwareConfigurationStarted(
-      const guest_os::GuestId& container_id) override {}
-  void OnAnsibleSoftwareConfigurationFinished(
-      const guest_os::GuestId& container_id,
-      bool success) override {}
-  void OnAnsibleSoftwareInstall(
-      const guest_os::GuestId& container_id) override {
-    if (is_install_ansible_success_) {
-      ansible_management_test_helper_->SendSucceededInstallSignal();
-    } else {
-      ansible_management_test_helper_->SendFailedInstallSignal();
-    }
-  }
-  void OnApplyAnsiblePlaybook(const guest_os::GuestId& container_id) override {
-    if (is_apply_ansible_success_) {
-      ansible_management_test_helper_->SendSucceededApplySignal();
-    } else {
-      ansible_management_test_helper_->SendFailedApplySignal();
-    }
-  }
-
  protected:
-  void SetInstallAnsibleStatus(bool status) {
-    is_install_ansible_success_ = status;
-  }
-  void SetApplyAnsibleStatus(bool status) {
-    is_apply_ansible_success_ = status;
+  MockAnsibleManagementService* mock_ansible_management_service() {
+    return mock_ansible_management_service_;
   }
 
   std::unique_ptr<AnsibleManagementTestHelper> ansible_management_test_helper_;
-
-  bool is_install_ansible_success_;
-  bool is_apply_ansible_success_;
+  MockAnsibleManagementService* mock_ansible_management_service_;
 };
 
-TEST_F(CrostiniManagerAnsibleInfraTest, StartContainerAnsibleInstallFailure) {
-  ansible_management_test_helper_->SetUpAnsibleInstallation(
-      vm_tools::cicerone::InstallLinuxPackageResponse::FAILED);
+TEST_F(CrostiniManagerAnsibleInfraTest, StartContainerFailure) {
+  EXPECT_CALL(*mock_ansible_management_service(), ConfigureContainer).Times(1);
+  ON_CALL(*mock_ansible_management_service(), ConfigureContainer)
+      .WillByDefault([](const guest_os::GuestId& container_id,
+                        base::FilePath playbook,
+                        base::OnceCallback<void(bool success)> callback) {
+        std::move(callback).Run(false);
+      });
 
   CrostiniManager::RestartOptions ansible_restart;
   ansible_restart.ansible_playbook = profile_->GetPrefs()->GetFilePath(
       prefs::kCrostiniAnsiblePlaybookFilePath);
-
-  crostini_manager()->RestartCrostiniWithOptions(
-      DefaultContainerId(), std::move(ansible_restart),
-      base::BindOnce(&ExpectCrostiniResult, run_loop()->QuitClosure(),
-                     CrostiniResult::CONTAINER_CONFIGURATION_FAILED),
-      this);
-
-  run_loop()->Run();
-}
-
-TEST_F(CrostiniManagerAnsibleInfraTest, StartContainerInstallSignalFailure) {
-  ansible_management_test_helper_->SetUpAnsibleInstallation(
-      vm_tools::cicerone::InstallLinuxPackageResponse::STARTED);
-  SetInstallAnsibleStatus(false);
-
-  CrostiniManager::RestartOptions ansible_restart;
-  ansible_restart.ansible_playbook = profile_->GetPrefs()->GetFilePath(
-      prefs::kCrostiniAnsiblePlaybookFilePath);
-
-  crostini_manager()->RestartCrostiniWithOptions(
-      DefaultContainerId(), std::move(ansible_restart),
-      base::BindOnce(&ExpectCrostiniResult, run_loop()->QuitClosure(),
-                     CrostiniResult::CONTAINER_CONFIGURATION_FAILED),
-      this);
-
-  run_loop()->Run();
-}
-
-TEST_F(CrostiniManagerAnsibleInfraTest, StartContainerApplyFailure) {
-  ansible_management_test_helper_->SetUpAnsibleInstallation(
-      vm_tools::cicerone::InstallLinuxPackageResponse::STARTED);
-  ansible_management_test_helper_->SetUpPlaybookApplication(
-      vm_tools::cicerone::ApplyAnsiblePlaybookResponse::FAILED);
-
-  CrostiniManager::RestartOptions ansible_restart;
-  ansible_restart.ansible_playbook = profile_->GetPrefs()->GetFilePath(
-      prefs::kCrostiniAnsiblePlaybookFilePath);
-
-  crostini_manager()->RestartCrostiniWithOptions(
-      DefaultContainerId(), std::move(ansible_restart),
-      base::BindOnce(&ExpectCrostiniResult, run_loop()->QuitClosure(),
-                     CrostiniResult::CONTAINER_CONFIGURATION_FAILED),
-      this);
-
-  run_loop()->Run();
-}
-
-TEST_F(CrostiniManagerAnsibleInfraTest, StartContainerApplySignalFailure) {
-  ansible_management_test_helper_->SetUpAnsibleInstallation(
-      vm_tools::cicerone::InstallLinuxPackageResponse::STARTED);
-  ansible_management_test_helper_->SetUpPlaybookApplication(
-      vm_tools::cicerone::ApplyAnsiblePlaybookResponse::STARTED);
-
-  CrostiniManager::RestartOptions ansible_restart;
-  ansible_restart.ansible_playbook = profile_->GetPrefs()->GetFilePath(
-      prefs::kCrostiniAnsiblePlaybookFilePath);
-
-  SetApplyAnsibleStatus(false);
 
   crostini_manager()->RestartCrostiniWithOptions(
       DefaultContainerId(), std::move(ansible_restart),
@@ -2468,10 +2382,13 @@ TEST_F(CrostiniManagerAnsibleInfraTest, StartContainerApplySignalFailure) {
 }
 
 TEST_F(CrostiniManagerAnsibleInfraTest, StartContainerSuccess) {
-  ansible_management_test_helper_->SetUpAnsibleInstallation(
-      vm_tools::cicerone::InstallLinuxPackageResponse::STARTED);
-  ansible_management_test_helper_->SetUpPlaybookApplication(
-      vm_tools::cicerone::ApplyAnsiblePlaybookResponse::STARTED);
+  EXPECT_CALL(*mock_ansible_management_service(), ConfigureContainer).Times(1);
+  ON_CALL(*mock_ansible_management_service(), ConfigureContainer)
+      .WillByDefault([](const guest_os::GuestId& container_id,
+                        base::FilePath playbook,
+                        base::OnceCallback<void(bool success)> callback) {
+        std::move(callback).Run(true);
+      });
 
   CrostiniManager::RestartOptions ansible_restart;
   ansible_restart.ansible_playbook = profile_->GetPrefs()->GetFilePath(

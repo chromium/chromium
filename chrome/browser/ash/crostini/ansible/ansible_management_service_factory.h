@@ -24,6 +24,9 @@ class AnsibleManagementServiceFactory : public ProfileKeyedServiceFactory {
   AnsibleManagementServiceFactory& operator=(
       const AnsibleManagementServiceFactory&) = delete;
 
+  KeyedService* SetTestingFactoryAndUse(content::BrowserContext* context,
+                                        TestingFactory testing_factory);
+
  private:
   friend class base::NoDestructor<AnsibleManagementServiceFactory>;
 

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_CROSTINI_ANSIBLE_ANSIBLE_MANAGEMENT_TEST_HELPER_H_
 
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/ash/crostini/ansible/mock_ansible_management_service.h"
 #include "chromeos/ash/components/dbus/cicerone/cicerone_service.pb.h"
 #include "chromeos/ash/components/dbus/cicerone/fake_cicerone_client.h"
 
@@ -19,6 +20,10 @@ namespace crostini {
 class AnsibleManagementTestHelper {
  public:
   explicit AnsibleManagementTestHelper(Profile* profile);
+
+  // Sets up and returns a mock instance of AnsibleManagementService.
+  static MockAnsibleManagementService* SetUpMockAnsibleManagementService(
+      Profile* profile);
 
   void SetUpAnsiblePlaybookPreference();
   void SetUpAnsibleInfra();

@@ -65,9 +65,10 @@ class AnsibleManagementService : public KeyedService,
   ~AnsibleManagementService() override;
 
   // Preconfigures a container with a specified Ansible playbook.
-  void ConfigureContainer(const guest_os::GuestId& container_id,
-                          base::FilePath playbook,
-                          base::OnceCallback<void(bool success)> callback);
+  virtual void ConfigureContainer(
+      const guest_os::GuestId& container_id,
+      base::FilePath playbook,
+      base::OnceCallback<void(bool success)> callback);
 
   // LinuxPackageOperationProgressObserver:
   void OnInstallLinuxPackageProgress(const guest_os::GuestId& container_id,
@@ -78,11 +79,15 @@ class AnsibleManagementService : public KeyedService,
                                   UninstallPackageProgressStatus status,
                                   int progress_percent) override;
 
-  void OnApplyAnsiblePlaybookProgress(
+  virtual void OnApplyAnsiblePlaybookProgress(
       const vm_tools::cicerone::ApplyAnsiblePlaybookProgressSignal& signal);
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
+
+  // Sets up and returns a mock instance of AnsibleManagementService.
+  static AnsibleManagementService* SetUpMockAnsibleManagementServiceForTesting(
+      Profile* profile);
 
  private:
   void OnInstallAnsibleInContainer(const guest_os::GuestId& container_id,
