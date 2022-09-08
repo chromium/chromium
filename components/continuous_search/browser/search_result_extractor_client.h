@@ -26,7 +26,7 @@ class SearchResultExtractorClient {
   // Whether to start in test mode which skips some validation checks for
   // testing with non-SRP urls. DO NOT SET OUTSIDE TESTS.
   explicit SearchResultExtractorClient(bool test_mode = false);
-  virtual ~SearchResultExtractorClient();
+  ~SearchResultExtractorClient();
 
   SearchResultExtractorClient(const SearchResultExtractorClient&) = delete;
   SearchResultExtractorClient& operator=(const SearchResultExtractorClient&) =
@@ -40,10 +40,9 @@ class SearchResultExtractorClient {
   // Results are returned to `callback`. `result_types` is list of result types
   // to extract. The extraction will fail and no results will be generated if
   // any of the types (except mojom::ResultType::kAds) cannot be extracted.
-  // Virtualized for testing.
-  virtual void RequestData(content::WebContents* web_contents,
-                           const std::vector<mojom::ResultType>& result_types,
-                           RequestDataCallback callback);
+  void RequestData(content::WebContents* web_contents,
+                   const std::vector<mojom::ResultType>& result_types,
+                   RequestDataCallback callback);
 
  private:
   // Adapter for the callback passed to `RequestData()` that handles additional

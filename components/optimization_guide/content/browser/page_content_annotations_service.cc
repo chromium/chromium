@@ -2,9 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/optimization_guide/core/page_content_annotations_service.h"
-
-#include <memory>
+#include "components/optimization_guide/content/browser/page_content_annotations_service.h"
 
 #include "base/barrier_closure.h"
 #include "base/callback_helpers.h"
@@ -16,6 +14,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/leveldb_proto/public/proto_database_provider.h"
+#include "components/optimization_guide/content/browser/page_content_annotations_validator.h"
 #include "components/optimization_guide/core/entity_metadata.h"
 #include "components/optimization_guide/core/local_page_entities_metadata_provider.h"
 #include "components/optimization_guide/core/noisy_metrics_recorder.h"
@@ -24,13 +23,17 @@
 #include "components/optimization_guide/core/optimization_guide_logger.h"
 #include "components/optimization_guide/core/optimization_guide_model_provider.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
-#include "components/optimization_guide/core/page_content_annotations_model_manager.h"
-#include "components/optimization_guide/core/page_content_annotations_validator.h"
+#include "content/public/browser/navigation_entry.h"
+#include "content/public/browser/web_contents.h"
 #include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_source.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+#include "components/optimization_guide/content/browser/page_content_annotations_model_manager.h"
+#endif
 
 namespace optimization_guide {
 
@@ -119,25 +122,23 @@ PageContentAnnotationsService::PageContentAnnotationsService(
           features::MaxContentAnnotationRequestsCached()),
       annotated_text_cache_(features::MaxVisitAnnotationCacheSize()),
       optimization_guide_logger_(optimization_guide_logger) {
+  DCHECK(optimization_guide_model_provider);
   DCHECK(history_service);
   history_service_ = history_service;
-
-  auto model_manager =
-      std::make_unique<optimization_guide::PageContentAnnotationsModelManager>(
-          optimization_guide_model_provider);
-  entity_metadata_provider_ = model_manager->GetEntityMetadataProvider();
-  annotator_ = std::move(model_manager);
-
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+  model_manager_ = std::make_unique<PageContentAnnotationsModelManager>(
+      optimization_guide_model_provider);
+  annotator_ = model_manager_.get();
+
   if (features::ShouldExecutePageVisibilityModelOnPageContent(
           application_locale)) {
-    annotator_->RequestAndNotifyWhenModelAvailable(
+    model_manager_->RequestAndNotifyWhenModelAvailable(
         AnnotationType::kContentVisibility, base::DoNothing());
     annotation_types_to_execute_.push_back(AnnotationType::kContentVisibility);
   }
   if (features::ShouldExecutePageEntitiesModelOnPageContent(
           application_locale)) {
-    annotator_->RequestAndNotifyWhenModelAvailable(
+    model_manager_->RequestAndNotifyWhenModelAvailable(
         AnnotationType::kPageEntities, base::DoNothing());
     annotation_types_to_execute_.push_back(AnnotationType::kPageEntities);
   }
@@ -150,8 +151,8 @@ PageContentAnnotationsService::PageContentAnnotationsService(
         database_provider, database_dir, background_task_runner);
   }
 
-  validator_ = PageContentAnnotationsValidator::MaybeCreateAndStartTimer(
-      annotator_.get());
+  validator_ =
+      PageContentAnnotationsValidator::MaybeCreateAndStartTimer(annotator_);
 }
 
 PageContentAnnotationsService::~PageContentAnnotationsService() = default;
@@ -177,8 +178,8 @@ void PageContentAnnotationsService::Annotate(const HistoryVisit& visit) {
     // We have annotations the text for this visit, so return that immediately
     // rather than re-executing the model.
     //
-    // TODO(crbug.com/1291275): If the model was updated, the cached value
-    // could be stale so we should invalidate the cache on model updates.
+    // TODO(crbug.com/1291275): If the model was updated, the cached value could
+    // be stale so we should invalidate the cache on model updates.
     OnPageContentAnnotated(visit, it->second);
     base::UmaHistogramBoolean(
         "OptimizationGuide.PageContentAnnotations.AnnotateVisitResultCached",
@@ -332,8 +333,8 @@ void PageContentAnnotationsService::OnBatchVisitsAnnotated(
 #endif
 
 void PageContentAnnotationsService::OverridePageContentAnnotatorForTesting(
-    std::unique_ptr<PageContentAnnotator> annotator) {
-  annotator_ = std::move(annotator);
+    PageContentAnnotator* annotator) {
+  annotator_ = annotator;
 }
 
 void PageContentAnnotationsService::BatchAnnotate(
@@ -377,6 +378,15 @@ void PageContentAnnotationsService::PersistSearchMetadata(
                           search_metadata.normalized_url,
                           search_metadata.search_terms),
            PageContentAnnotationsType::kSearchMetadata);
+}
+
+void PageContentAnnotationsService::ExtractRelatedSearches(
+    const HistoryVisit& visit,
+    content::WebContents* web_contents) {
+  search_result_extractor_client_.RequestData(
+      web_contents, {continuous_search::mojom::ResultType::kRelatedSearches},
+      base::BindOnce(&PageContentAnnotationsService::OnRelatedSearchesExtracted,
+                     weak_ptr_factory_.GetWeakPtr(), visit));
 }
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
@@ -424,7 +434,7 @@ void PageContentAnnotationsService::OnPageContentAnnotated(
 }
 #endif
 
-void PageContentAnnotationsService::PersistRelatedSearches(
+void PageContentAnnotationsService::OnRelatedSearchesExtracted(
     const HistoryVisit& visit,
     continuous_search::SearchResultExtractorClientStatus status,
     continuous_search::mojom::CategoryResultsPtr results) {
@@ -534,13 +544,12 @@ void PageContentAnnotationsService::GetMetadataForEntityId(
         entity_id, std::move(callback));
     return;
   }
-  if (!entity_metadata_provider_) {
-    std::move(callback).Run(absl::nullopt);
-    return;
-  }
 
-  entity_metadata_provider_->GetMetadataForEntityId(entity_id,
-                                                    std::move(callback));
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+  model_manager_->GetMetadataForEntityId(entity_id, std::move(callback));
+#else
+  std::move(callback).Run(absl::nullopt);
+#endif
 }
 
 void PageContentAnnotationsService::PersistRemotePageEntities(
@@ -598,6 +607,16 @@ void PageContentAnnotationsService::OnEntityMetadataRetrieved(
         << " Weight=" << base::NumberToString(weight) << ". "
         << entity_metadata->ToHumanReadableString();
   }
+}
+
+// static
+HistoryVisit PageContentAnnotationsService::CreateHistoryVisitFromWebContents(
+    content::WebContents* web_contents,
+    int64_t navigation_id) {
+  HistoryVisit visit(
+      web_contents->GetController().GetLastCommittedEntry()->GetTimestamp(),
+      web_contents->GetLastCommittedURL(), navigation_id);
+  return visit;
 }
 
 HistoryVisit::HistoryVisit() = default;

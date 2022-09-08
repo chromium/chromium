@@ -2,10 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_OPTIMIZATION_GUIDE_CORE_PAGE_CONTENT_ANNOTATIONS_SERVICE_H_
-#define COMPONENTS_OPTIMIZATION_GUIDE_CORE_PAGE_CONTENT_ANNOTATIONS_SERVICE_H_
+#ifndef COMPONENTS_OPTIMIZATION_GUIDE_CONTENT_BROWSER_PAGE_CONTENT_ANNOTATIONS_SERVICE_H_
+#define COMPONENTS_OPTIMIZATION_GUIDE_CONTENT_BROWSER_PAGE_CONTENT_ANNOTATIONS_SERVICE_H_
 
-#include <memory>
 #include <string>
 #include <vector>
 
@@ -26,16 +25,20 @@
 #include "components/history/core/browser/history_types.h"
 #include "components/history/core/browser/url_row.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/optimization_guide/content/browser/page_content_annotator.h"
 #include "components/optimization_guide/core/entity_metadata_provider.h"
 #include "components/optimization_guide/core/model_info.h"
 #include "components/optimization_guide/core/page_content_annotations_common.h"
-#include "components/optimization_guide/core/page_content_annotator.h"
 #include "components/optimization_guide/machine_learning_tflite_buildflags.h"
 #include "components/optimization_guide/proto/page_entities_metadata.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 class OptimizationGuideLogger;
+
+namespace content {
+class WebContents;
+}  // namespace content
 
 namespace history {
 class HistoryService;
@@ -49,6 +52,7 @@ namespace optimization_guide {
 
 class LocalPageEntitiesMetadataProvider;
 class OptimizationGuideModelProvider;
+class PageContentAnnotationsModelManager;
 class PageContentAnnotationsServiceBrowserTest;
 class PageContentAnnotationsValidator;
 class PageContentAnnotationsWebContentsObserver;
@@ -138,8 +142,7 @@ class PageContentAnnotationsService : public KeyedService,
 
   // Overrides the PageContentAnnotator for testing. See
   // test_page_content_annotator.h for an implementation designed for testing.
-  void OverridePageContentAnnotatorForTesting(
-      std::unique_ptr<PageContentAnnotator> annotator);
+  void OverridePageContentAnnotatorForTesting(PageContentAnnotator* annotator);
 
   OptimizationGuideLogger* optimization_guide_logger() const {
     return optimization_guide_logger_;
@@ -158,7 +161,7 @@ class PageContentAnnotationsService : public KeyedService,
   // batch is already running, or if there batch queue is not full.
   bool MaybeStartAnnotateVisitBatch();
 
-  // Runs the page annotation models available to |annotator_| on all the
+  // Runs the page annotation models available to |model_manager_| on all the
   // visits within |current_visit_annotation_batch_|.
   void AnnotateVisitBatch();
 
@@ -180,10 +183,14 @@ class PageContentAnnotationsService : public KeyedService,
           std::vector<absl::optional<history::VisitContentModelAnnotations>>>
           merged_annotation_outputs);
 
+  std::unique_ptr<PageContentAnnotationsModelManager> model_manager_;
+
 #endif
 
-  // The annotator to use for requests to |BatchAnnotate| and |Annotate|.
-  std::unique_ptr<PageContentAnnotator> annotator_;
+  // The annotator to use for requests to |BatchAnnotate| and |Annotate|. In
+  // prod, this is simply |model_manager_.get()| but is set as a separate
+  // pointer here in order to be override-able for testing.
+  raw_ptr<PageContentAnnotator> annotator_;
 
   // Requests to annotate |text|, which is associated with |web_contents|.
   //
@@ -197,13 +204,26 @@ class PageContentAnnotationsService : public KeyedService,
   // Virtualized for testing.
   virtual void Annotate(const HistoryVisit& visit);
 
+  // Creates a HistoryVisit based on the current state of |web_contents|.
+  static HistoryVisit CreateHistoryVisitFromWebContents(
+      content::WebContents* web_contents,
+      int64_t navigation_id);
+
   // Persist |search_metadata| for |visit| in |history_service_|.
   virtual void PersistSearchMetadata(const HistoryVisit& visit,
                                      const SearchMetadata& search_metadata);
 
-  // Persists the related searches that are extracted in |results| for |visit|.
+  // Requests |search_result_extractor_client_| to extract related searches from
+  // the Google SRP DOM associated with |web_contents|.
+  //
+  // Once finished, it will store the related searches in History Service.
+  //
   // Virtualized for testing.
-  virtual void PersistRelatedSearches(
+  virtual void ExtractRelatedSearches(const HistoryVisit& visit,
+                                      content::WebContents* web_contents);
+
+  // Callback invoked when related searches have been extracted for |visit|.
+  void OnRelatedSearchesExtracted(
       const HistoryVisit& visit,
       continuous_search::SearchResultExtractorClientStatus status,
       continuous_search::mojom::CategoryResultsPtr results);
@@ -248,7 +268,7 @@ class PageContentAnnotationsService : public KeyedService,
                     PageContentAnnotationsType annotation_type,
                     history::QueryURLResult url_result);
 
-  // A metadata-only provider for page entities (as opposed to |annotator_|
+  // A metadata-only provider for page entities (as opposed to |model_manager_|
   // which does both entity model execution and metadata providing) that uses a
   // local database to provide the metadata for a given entity id. This is only
   // non-null and initialized when its feature flag is enabled.
@@ -260,6 +280,10 @@ class PageContentAnnotationsService : public KeyedService,
   raw_ptr<history::HistoryService> history_service_;
   // The task tracker to keep track of tasks to query |history_service|.
   base::CancelableTaskTracker history_service_task_tracker_;
+  // The client of continuous_search::mojom::SearchResultExtractor interface
+  // used for extracting data from the main frame of Google SRP |web_contents|.
+  continuous_search::SearchResultExtractorClient
+      search_result_extractor_client_;
   // A LRU Cache keeping track of the visits that have been requested for
   // annotation. If the requested visit is in this cache, the models will not be
   // requested for another annotation on the same visit.
@@ -287,9 +311,6 @@ class PageContentAnnotationsService : public KeyedService,
   // are set.
   std::unique_ptr<PageContentAnnotationsValidator> validator_;
 
-  // Provides metadata for the page entities.
-  EntityMetadataProvider* entity_metadata_provider_;
-
   OptimizationGuideLogger* optimization_guide_logger_ = nullptr;
 
   base::WeakPtrFactory<PageContentAnnotationsService> weak_ptr_factory_{this};
@@ -297,4 +318,4 @@ class PageContentAnnotationsService : public KeyedService,
 
 }  // namespace optimization_guide
 
-#endif  // COMPONENTS_OPTIMIZATION_GUIDE_CORE_PAGE_CONTENT_ANNOTATIONS_SERVICE_H_
+#endif  // COMPONENTS_OPTIMIZATION_GUIDE_CONTENT_BROWSER_PAGE_CONTENT_ANNOTATIONS_SERVICE_H_

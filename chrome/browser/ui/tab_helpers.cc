@@ -47,7 +47,7 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/optimization_guide/optimization_guide_web_contents_observer.h"
-#include "chrome/browser/optimization_guide/page_content_annotations_web_contents_observer.h"
+#include "chrome/browser/optimization_guide/page_content_annotations_service_factory.h"
 #include "chrome/browser/page_load_metrics/page_load_metrics_initialize.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/performance_hints/performance_hints_features.h"
@@ -68,6 +68,7 @@
 #include "chrome/browser/safe_browsing/tailored_security/tailored_security_service_factory.h"
 #include "chrome/browser/safe_browsing/tailored_security/tailored_security_url_observer.h"
 #include "chrome/browser/safe_browsing/trigger_creator.h"
+#include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/segmentation_platform/segmentation_platform_service_factory.h"
 #include "chrome/browser/sessions/session_tab_helper_factory.h"
 #include "chrome/browser/ssl/chrome_security_blocking_page_factory.h"
@@ -122,6 +123,7 @@
 #include "components/javascript_dialogs/tab_modal_dialog_manager.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
 #include "components/offline_pages/buildflags/buildflags.h"
+#include "components/optimization_guide/content/browser/page_content_annotations_web_contents_observer.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/page_info/core/features.h"
 #include "components/password_manager/core/browser/password_manager.h"
@@ -368,8 +370,18 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
   NavigationPredictorPreconnectClient::CreateForWebContents(web_contents);
   if (optimization_guide::features::IsOptimizationHintsEnabled())
     OptimizationGuideWebContentsObserver::CreateForWebContents(web_contents);
-  optimization_guide::PageContentAnnotationsWebContentsObserver::
-      MaybeCreateForWebContents(web_contents);
+  optimization_guide::PageContentAnnotationsService*
+      page_content_annotations_service =
+          PageContentAnnotationsServiceFactory::GetForProfile(profile);
+  if (page_content_annotations_service) {
+    optimization_guide::PageContentAnnotationsWebContentsObserver::
+        CreateForWebContents(
+            web_contents, page_content_annotations_service,
+            TemplateURLServiceFactory::GetForProfile(profile),
+            OptimizationGuideKeyedServiceFactory::GetForProfile(profile),
+            prerender::NoStatePrefetchManagerFactory::GetForBrowserContext(
+                profile));
+  }
   OutOfMemoryReporter::CreateForWebContents(web_contents);
   chrome::InitializePageLoadMetricsForWebContents(web_contents);
   if (auto* pm_registry =

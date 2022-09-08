@@ -16,11 +16,11 @@
 #include "components/browsing_topics/epoch_topics.h"
 #include "components/browsing_topics/test_util.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
+#include "components/optimization_guide/content/browser/page_content_annotations_service.h"
+#include "components/optimization_guide/content/browser/test_page_content_annotator.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
-#include "components/optimization_guide/core/page_content_annotations_service.h"
 #include "components/optimization_guide/core/test_model_info_builder.h"
 #include "components/optimization_guide/core/test_optimization_guide_model_provider.h"
-#include "components/optimization_guide/core/test_page_content_annotator.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
@@ -387,38 +387,28 @@ class BrowsingTopicsInternalsBrowserTest
         HistoryServiceFactory::GetForProfile(
             profile, ServiceAccessType::IMPLICIT_ACCESS);
 
-    DCHECK(
-        !base::Contains(optimization_guide_page_content_annotators_, profile));
+    DCHECK(!base::Contains(optimization_guide_model_providers_, profile));
+    optimization_guide_model_providers_.emplace(
+        profile, std::make_unique<
+                     optimization_guide::TestOptimizationGuideModelProvider>());
 
-    auto test_page_content_annotator =
-        std::make_unique<optimization_guide::TestPageContentAnnotator>();
-    optimization_guide_page_content_annotators_.emplace(
-        profile, test_page_content_annotator.get());
     auto page_content_annotations_service =
         std::make_unique<optimization_guide::PageContentAnnotationsService>(
-            "en-US",
-            /*optimization_guide_model_provider=*/nullptr, history_service,
-            /*database_provider=*/nullptr, base::FilePath(),
-            /*optimization_guide_logger=*/nullptr,
-            /*background_task_runner=*/nullptr);
+            "en-US", optimization_guide_model_providers_.at(profile).get(),
+            history_service, nullptr, base::FilePath(), nullptr, nullptr);
+
     page_content_annotations_service->OverridePageContentAnnotatorForTesting(
-        std::move(test_page_content_annotator));
+        &test_page_content_annotator_);
+
     return page_content_annotations_service;
   }
 
-  void UsePageTopics(
-      const absl::optional<optimization_guide::ModelInfo>& model_info,
-      const base::flat_map<std::string,
-                           std::vector<optimization_guide::WeightedIdentifier>>&
-          topics_by_input) {
-    Profile* profile =
-        Profile::FromBrowserContext(web_contents()->GetBrowserContext());
-    return optimization_guide_page_content_annotators_[profile]->UsePageTopics(
-        model_info, topics_by_input);
-  }
+  std::map<
+      Profile*,
+      std::unique_ptr<optimization_guide::TestOptimizationGuideModelProvider>>
+      optimization_guide_model_providers_;
 
-  std::map<Profile*, optimization_guide::TestPageContentAnnotator*>
-      optimization_guide_page_content_annotators_;
+  optimization_guide::TestPageContentAnnotator test_page_content_annotator_;
 
   base::CallbackListSubscription subscription_;
 
@@ -642,7 +632,7 @@ IN_PROC_BROWSER_TEST_F(BrowsingTopicsInternalsBrowserTest,
           NewOverrideStatusMessage("Failed to get the topics state."));
 
   // Configure the (mock) model.
-  UsePageTopics(absl::nullopt, {});
+  test_page_content_annotator_.UsePageTopics(absl::nullopt, {});
 
   EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(),
                                            GURL(kBrowsingTopicsInternalsUrl)));
@@ -658,13 +648,14 @@ IN_PROC_BROWSER_TEST_F(BrowsingTopicsInternalsBrowserTest, ClassifierTab) {
           NewOverrideStatusMessage("Failed to get the topics state."));
 
   // Configure the (mock) model.
-  UsePageTopics(*optimization_guide::TestModelInfoBuilder()
-                     .SetVersion(1)
-                     .SetModelFilePath(base::FilePath::FromASCII(
-                         "/test_path/test_model.tflite"))
-                     .Build(),
-                {{"foo2.com", TopicsWithUniformWeight({3, 4, 5}, 0.1)},
-                 {"foo1.com", TopicsWithUniformWeight({1, 2}, 0.1)}});
+  test_page_content_annotator_.UsePageTopics(
+      *optimization_guide::TestModelInfoBuilder()
+           .SetVersion(1)
+           .SetModelFilePath(
+               base::FilePath::FromASCII("/test_path/test_model.tflite"))
+           .Build(),
+      {{"foo2.com", TopicsWithUniformWeight({3, 4, 5}, 0.1)},
+       {"foo1.com", TopicsWithUniformWeight({1, 2}, 0.1)}});
 
   EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(),
                                            GURL(kBrowsingTopicsInternalsUrl)));
@@ -699,13 +690,14 @@ IN_PROC_BROWSER_TEST_F(BrowsingTopicsInternalsBrowserTest,
           NewOverrideStatusMessage("Failed to get the topics state."));
 
   // Configure the (mock) model.
-  UsePageTopics(*optimization_guide::TestModelInfoBuilder()
-                     .SetVersion(1)
-                     .SetModelFilePath(base::FilePath::FromASCII(
-                         "/test_path/test_model.tflite"))
-                     .Build(),
-                {{"foo2.com", TopicsWithUniformWeight({3, 4, 5}, 0.1)},
-                 {"foo1.com", TopicsWithUniformWeight({1, 2}, 0.1)}});
+  test_page_content_annotator_.UsePageTopics(
+      *optimization_guide::TestModelInfoBuilder()
+           .SetVersion(1)
+           .SetModelFilePath(
+               base::FilePath::FromASCII("/test_path/test_model.tflite"))
+           .Build(),
+      {{"foo2.com", TopicsWithUniformWeight({3, 4, 5}, 0.1)},
+       {"foo1.com", TopicsWithUniformWeight({1, 2}, 0.1)}});
 
   EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(),
                                            GURL(kBrowsingTopicsInternalsUrl)));

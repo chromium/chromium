@@ -19,14 +19,14 @@
 #include "components/history/core/browser/history_database.h"
 #include "components/history/core/browser/history_db_task.h"
 #include "components/history/core/browser/history_service.h"
+#include "components/optimization_guide/content/browser/page_content_annotations_service.h"
+#include "components/optimization_guide/content/browser/test_page_content_annotator.h"
 #include "components/optimization_guide/core/execution_status.h"
 #include "components/optimization_guide/core/optimization_guide_enums.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/optimization_guide/core/optimization_guide_test_util.h"
-#include "components/optimization_guide/core/page_content_annotations_service.h"
 #include "components/optimization_guide/core/test_model_info_builder.h"
-#include "components/optimization_guide/core/test_page_content_annotator.h"
 #include "components/optimization_guide/machine_learning_tflite_buildflags.h"
 #include "components/optimization_guide/proto/page_entities_metadata.pb.h"
 #include "components/optimization_guide/proto/page_topics_model_metadata.pb.h"
@@ -923,12 +923,7 @@ class PageContentAnnotationsServiceBatchVisitTest
         PageContentAnnotationsServiceFactory::GetForProfile(
             browser()->profile());
 
-    auto test_page_content_annotator =
-        std::make_unique<optimization_guide::TestPageContentAnnotator>();
-    test_page_content_annotator_ = test_page_content_annotator.get();
-    service->OverridePageContentAnnotatorForTesting(
-        std::move(test_page_content_annotator));
-    test_page_content_annotator_->UsePageEntities(
+    annotator_.UsePageEntities(
         /*model_info=*/absl::nullopt,
         {
             {
@@ -950,11 +945,12 @@ class PageContentAnnotationsServiceBatchVisitTest
                 },
             },
         });
+    service->OverridePageContentAnnotatorForTesting(&annotator_);
   }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-  raw_ptr<TestPageContentAnnotator> test_page_content_annotator_;
+  TestPageContentAnnotator annotator_;
 };
 
 IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceBatchVisitTest,

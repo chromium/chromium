@@ -519,7 +519,6 @@ static_library("ui") {
     "//components/onc",
     "//components/optimization_guide/content/browser",
     "//components/optimization_guide/core",
-    "//components/optimization_guide/core:page_content_annotations",
     "//components/optimization_guide/optimization_guide_internals/resources",
     "//components/optimization_guide/optimization_guide_internals/webui",
     "//components/optimization_guide/optimization_guide_internals/webui:mojo_bindings",

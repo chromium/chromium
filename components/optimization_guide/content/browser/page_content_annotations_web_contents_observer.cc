@@ -2,25 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/optimization_guide/page_content_annotations_web_contents_observer.h"
+#include "components/optimization_guide/content/browser/page_content_annotations_web_contents_observer.h"
 
 #include "base/bind.h"
 #include "base/i18n/case_conversion.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
-#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
-#include "chrome/browser/optimization_guide/page_content_annotations_service_factory.h"
-#include "chrome/browser/preloading/prefetch/no_state_prefetch/no_state_prefetch_manager_factory.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "components/google/core/common/google_util.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
 #include "components/optimization_guide/content/browser/optimization_guide_decider.h"
+#include "components/optimization_guide/content/browser/page_content_annotations_service.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_logger.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
-#include "components/optimization_guide/core/page_content_annotations_service.h"
 #include "components/optimization_guide/proto/page_entities_metadata.pb.h"
 #include "components/search_engines/template_url_service.h"
 #include "content/public/browser/navigation_entry.h"
@@ -93,16 +87,6 @@ absl::optional<SearchMetadata> ExtractSearchMetadata(
       base::i18n::ToLower(base::CollapseWhitespace(search_terms, false))};
 }
 
-// Creates a HistoryVisit based on the current state of |web_contents|.
-HistoryVisit CreateHistoryVisitFromWebContents(
-    content::WebContents* web_contents,
-    int64_t navigation_id) {
-  HistoryVisit visit(
-      web_contents->GetController().GetLastCommittedEntry()->GetTimestamp(),
-      web_contents->GetLastCommittedURL(), navigation_id);
-  return visit;
-}
-
 // Data scoped to a single page. PageData has the same lifetime as the page's
 // main document. Contains information for whether we annotated the title for
 // the page yet.
@@ -132,23 +116,6 @@ PAGE_USER_DATA_KEY_IMPL(PageData);
 
 }  // namespace
 
-// static
-void PageContentAnnotationsWebContentsObserver::MaybeCreateForWebContents(
-    content::WebContents* web_contents) {
-  Profile* profile =
-      Profile::FromBrowserContext(web_contents->GetBrowserContext());
-  if (auto* page_content_annotations_service =
-          PageContentAnnotationsServiceFactory::GetForProfile(profile)) {
-    optimization_guide::PageContentAnnotationsWebContentsObserver::
-        CreateForWebContents(
-            web_contents, page_content_annotations_service,
-            TemplateURLServiceFactory::GetForProfile(profile),
-            OptimizationGuideKeyedServiceFactory::GetForProfile(profile),
-            prerender::NoStatePrefetchManagerFactory::GetForBrowserContext(
-                profile));
-  }
-}
-
 PageContentAnnotationsWebContentsObserver::
     PageContentAnnotationsWebContentsObserver(
         content::WebContents* web_contents,
@@ -164,9 +131,7 @@ PageContentAnnotationsWebContentsObserver::
           page_content_annotations_service_->optimization_guide_logger()),
       template_url_service_(template_url_service),
       optimization_guide_decider_(optimization_guide_decider),
-      no_state_prefetch_manager_(no_state_prefetch_manager),
-      search_result_extractor_client_(
-          std::make_unique<continuous_search::SearchResultExtractorClient>()) {
+      no_state_prefetch_manager_(no_state_prefetch_manager) {
   DCHECK(page_content_annotations_service_);
 
   if (FetchRemoteMetadataEnabled() && optimization_guide_decider_) {
@@ -205,9 +170,9 @@ void PageContentAnnotationsWebContentsObserver::DidFinishNavigation(
       PageData::GetOrCreateForPage(web_contents()->GetPrimaryPage());
   page_data->set_navigation_id(navigation_handle->GetNavigationId());
 
-  optimization_guide::HistoryVisit history_visit =
-      CreateHistoryVisitFromWebContents(web_contents(),
-                                        navigation_handle->GetNavigationId());
+  optimization_guide::HistoryVisit history_visit = optimization_guide::
+      PageContentAnnotationsService::CreateHistoryVisitFromWebContents(
+          web_contents(), navigation_handle->GetNavigationId());
   if (FetchRemoteMetadataEnabled() && optimization_guide_decider_) {
     optimization_guide_decider_->CanApplyOptimizationAsync(
         navigation_handle, proto::PAGE_ENTITIES,
@@ -287,9 +252,9 @@ void PageContentAnnotationsWebContentsObserver::TitleWasSet(
     return;
 
   page_data->set_annotation_was_requested();
-  optimization_guide::HistoryVisit history_visit =
-      CreateHistoryVisitFromWebContents(web_contents(),
-                                        page_data->navigation_id());
+  optimization_guide::HistoryVisit history_visit = optimization_guide::
+      PageContentAnnotationsService::CreateHistoryVisitFromWebContents(
+          web_contents(), page_data->navigation_id());
   history_visit.text_to_annotate =
       base::UTF16ToUTF8(entry->GetTitleForDisplay());
   page_content_annotations_service_->Annotate(history_visit);
@@ -307,28 +272,16 @@ void PageContentAnnotationsWebContentsObserver::
   if (!page_data)
     return;
 
-  optimization_guide::HistoryVisit history_visit =
-      CreateHistoryVisitFromWebContents(web_contents(),
-                                        page_data->navigation_id());
+  optimization_guide::HistoryVisit history_visit = optimization_guide::
+      PageContentAnnotationsService::CreateHistoryVisitFromWebContents(
+          web_contents(), page_data->navigation_id());
   bool is_google_search_url =
       google_util::IsGoogleSearchUrl(web_contents()->GetLastCommittedURL());
   if (is_google_search_url &&
       optimization_guide::features::ShouldExtractRelatedSearches()) {
-    search_result_extractor_client_->RequestData(
-        web_contents(),
-        {continuous_search::mojom::ResultType::kRelatedSearches},
-        base::BindOnce(
-            &PageContentAnnotationsWebContentsObserver::PersistRelatedSearches,
-            weak_ptr_factory_.GetWeakPtr(), history_visit));
+    page_content_annotations_service_->ExtractRelatedSearches(history_visit,
+                                                              web_contents());
   }
-}
-
-void PageContentAnnotationsWebContentsObserver::PersistRelatedSearches(
-    const HistoryVisit& visit,
-    continuous_search::SearchResultExtractorClientStatus status,
-    continuous_search::mojom::CategoryResultsPtr results) {
-  page_content_annotations_service_->PersistRelatedSearches(visit, status,
-                                                            std::move(results));
 }
 
 void PageContentAnnotationsWebContentsObserver::OnRemotePageMetadataReceived(

@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD - style license that can be
 # found in the LICENSE file.
 
-import("//build/buildflag_header.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 
 if (is_android) {
@@ -259,40 +258,6 @@ static_library("core") {
   }
 }
 
-static_library("page_content_annotations") {
-  if (!is_ios) {
-    sources = [
-      "page_content_annotations_service.cc",
-      "page_content_annotations_service.h",
-      "page_content_annotations_validator.cc",
-      "page_content_annotations_validator.h",
-      "page_content_annotator.h",
-    ]
-    if (build_with_tflite_lib) {
-      sources += [
-        "page_content_annotations_model_manager.cc",
-        "page_content_annotations_model_manager.h",
-      ]
-    }
-    public_deps = [
-      ":core",
-      "//components/leveldb_proto",
-      "//components/optimization_guide:machine_learning_tflite_buildflags",
-      "//components/optimization_guide:optimization_guide_buildflags",
-    ]
-    deps = [
-      "//components/continuous_search/browser",
-      "//components/continuous_search/common/public/mojom",
-      "//components/history/core/browser",
-      "//components/keyed_service/core",
-      "//components/optimization_guide/proto:optimization_guide_proto",
-      "//net",
-      "//services/metrics/public/cpp:metrics_cpp",
-      "//services/metrics/public/cpp:ukm_builders",
-    ]
-  }
-}
-
 static_library("prediction") {
   sources = [
     "prediction_manager.cc",
@@ -340,8 +305,6 @@ static_library("test_support") {
     "test_model_info_builder.h",
     "test_optimization_guide_model_provider.cc",
     "test_optimization_guide_model_provider.h",
-    "test_page_content_annotator.cc",
-    "test_page_content_annotator.h",
   ]
   if (build_with_tflite_lib) {
     sources += [
@@ -354,7 +317,6 @@ static_library("test_support") {
   deps = [
     ":bloomfilter",
     ":core",
-    ":page_content_annotations",
     "//base",
     "//components/leveldb_proto",
     "//components/optimization_guide/proto:optimization_guide_proto",
@@ -437,18 +399,12 @@ source_set("unit_tests") {
         "page_entities_model_executor_impl_unittest.cc",
       ]
     }
-
-    # crbug.com/1279884 Flaky on CrOS
-    if (!is_chromeos && !is_ios) {
-      sources += [ "page_content_annotations_model_manager_unittest.cc" ]
-    }
   }
 
   deps = [
     ":bloomfilter",
     ":core",
     ":entities",
-    ":page_content_annotations",
     ":prediction",
     ":test_support",
     ":unit_tests_bundle_data",
@@ -474,7 +430,6 @@ source_set("unit_tests") {
     "//url:url",
   ]
   if (!is_ios) {
-    sources += [ "page_content_annotations_validator_unittest.cc" ]
     deps += [ "//components/services/unzip/content" ]
   }
   if (build_with_tflite_lib) {

@@ -19,10 +19,10 @@
 #include "components/history/core/browser/history_database_params.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/test/test_history_database.h"
-#include "components/optimization_guide/core/page_content_annotations_service.h"
+#include "components/optimization_guide/content/browser/page_content_annotations_service.h"
+#include "components/optimization_guide/content/browser/test_page_content_annotator.h"
 #include "components/optimization_guide/core/test_model_info_builder.h"
 #include "components/optimization_guide/core/test_optimization_guide_model_provider.h"
-#include "components/optimization_guide/core/test_page_content_annotator.h"
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "components/privacy_sandbox/privacy_sandbox_settings.h"
 #include "components/privacy_sandbox/privacy_sandbox_test_util.h"
@@ -187,19 +187,16 @@ class BrowsingTopicsServiceImplTest
     history_service_->Init(
         history::TestHistoryDatabaseParamsForPath(temp_dir_.GetPath()));
 
-    auto test_page_content_annotator =
-        std::make_unique<optimization_guide::TestPageContentAnnotator>();
-    test_page_content_annotator_ = test_page_content_annotator.get();
+    optimization_guide_model_provider_ = std::make_unique<
+        optimization_guide::TestOptimizationGuideModelProvider>();
     page_content_annotations_service_ =
         std::make_unique<optimization_guide::PageContentAnnotationsService>(
-            "en-US",
-            /*optimization_guide_model_provider=*/nullptr,
-            history_service_.get(),
-            /*database_provider=*/nullptr, base::FilePath(),
-            /*optimization_guide_logger=*/nullptr,
-            /*background_task_runner=*/nullptr);
+            "en-US", optimization_guide_model_provider_.get(),
+            history_service_.get(), nullptr, base::FilePath(), nullptr,
+            nullptr);
+
     page_content_annotations_service_->OverridePageContentAnnotatorForTesting(
-        std::move(test_page_content_annotator));
+        &test_page_content_annotator_);
 
     task_environment()->RunUntilIdle();
   }
@@ -298,8 +295,7 @@ class BrowsingTopicsServiceImplTest
   std::unique_ptr<optimization_guide::PageContentAnnotationsService>
       page_content_annotations_service_;
 
-  raw_ptr<optimization_guide::TestPageContentAnnotator>
-      test_page_content_annotator_;
+  optimization_guide::TestPageContentAnnotator test_page_content_annotator_;
 
   std::unique_ptr<TesterBrowsingTopicsService> browsing_topics_service_;
 };

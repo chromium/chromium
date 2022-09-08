@@ -23,10 +23,10 @@
 #include "components/browsing_topics/test_util.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
-#include "components/optimization_guide/core/page_content_annotations_service.h"
+#include "components/optimization_guide/content/browser/page_content_annotations_service.h"
+#include "components/optimization_guide/content/browser/test_page_content_annotator.h"
 #include "components/optimization_guide/core/test_model_info_builder.h"
 #include "components/optimization_guide/core/test_optimization_guide_model_provider.h"
-#include "components/optimization_guide/core/test_page_content_annotator.h"
 #include "components/privacy_sandbox/privacy_sandbox_settings.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/browsing_topics_site_data_manager.h"
@@ -358,22 +358,19 @@ class BrowsingTopicsBrowserTest : public BrowsingTopicsBrowserTestBase {
         HistoryServiceFactory::GetForProfile(
             profile, ServiceAccessType::IMPLICIT_ACCESS);
 
-    DCHECK(
-        !base::Contains(optimization_guide_page_content_annotators_, profile));
+    DCHECK(!base::Contains(optimization_guide_model_providers_, profile));
+    optimization_guide_model_providers_.emplace(
+        profile, std::make_unique<
+                     optimization_guide::TestOptimizationGuideModelProvider>());
 
-    auto test_page_content_annotator =
-        std::make_unique<optimization_guide::TestPageContentAnnotator>();
-    optimization_guide_page_content_annotators_.emplace(
-        profile, test_page_content_annotator.get());
     auto page_content_annotations_service =
         std::make_unique<optimization_guide::PageContentAnnotationsService>(
-            "en-US",
-            /*optimization_guide_model_provider=*/nullptr, history_service,
-            /*database_provider=*/nullptr, base::FilePath(),
-            /*optimization_guide_logger=*/nullptr,
-            /*background_task_runner=*/nullptr);
+            "en-US", optimization_guide_model_providers_.at(profile).get(),
+            history_service, nullptr, base::FilePath(), nullptr, nullptr);
+
     page_content_annotations_service->OverridePageContentAnnotatorForTesting(
-        std::move(test_page_content_annotator));
+        &test_page_content_annotator_);
+
     return page_content_annotations_service;
   }
 
@@ -382,7 +379,7 @@ class BrowsingTopicsBrowserTest : public BrowsingTopicsBrowserTestBase {
       content::BrowsingTopicsSiteDataManager* site_data_manager,
       const base::FilePath& profile_path) {
     // Configure the (mock) model.
-    UsePageTopics(
+    test_page_content_annotator_.UsePageTopics(
         *optimization_guide::TestModelInfoBuilder().SetVersion(1).Build(),
         {{"foo6.com", TopicsAndWeight({1, 2, 3, 4, 5, 6}, 0.1)},
          {"foo5.com", TopicsAndWeight({2, 3, 4, 5, 6}, 0.1)},
@@ -468,28 +465,21 @@ class BrowsingTopicsBrowserTest : public BrowsingTopicsBrowserTestBase {
         calculation_finish_waiters_.at(profile)->QuitClosure());
   }
 
-  void UsePageTopics(
-      const absl::optional<optimization_guide::ModelInfo>& model_info,
-      const base::flat_map<std::string,
-                           std::vector<optimization_guide::WeightedIdentifier>>&
-          topics_by_input) {
-    // Set up the annotators in all the profiles.
-    for (const auto kv : optimization_guide_page_content_annotators_) {
-      kv.second->UsePageTopics(model_info, topics_by_input);
-    }
-  }
-
   content::test::FencedFrameTestHelper fenced_frame_test_helper_;
 
   content::test::PrerenderTestHelper prerender_helper_;
 
   base::test::ScopedFeatureList scoped_feature_list_;
 
+  std::map<
+      Profile*,
+      std::unique_ptr<optimization_guide::TestOptimizationGuideModelProvider>>
+      optimization_guide_model_providers_;
+
   std::map<Profile*, std::unique_ptr<base::RunLoop>>
       calculation_finish_waiters_;
 
-  std::map<Profile*, optimization_guide::TestPageContentAnnotator*>
-      optimization_guide_page_content_annotators_;
+  optimization_guide::TestPageContentAnnotator test_page_content_annotator_;
 
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> ukm_recorder_;
 
@@ -565,7 +555,7 @@ IN_PROC_BROWSER_TEST_F(BrowsingTopicsBrowserTest, CalculationResultUkm) {
 
   // The number of entries should equal the number of profiles, which could be
   // greater than 1 on some platform.
-  EXPECT_EQ(optimization_guide_page_content_annotators_.size(), entries.size());
+  EXPECT_EQ(optimization_guide_model_providers_.size(), entries.size());
 
   for (auto* entry : entries) {
     ukm_recorder_->ExpectEntryMetric(

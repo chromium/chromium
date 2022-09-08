@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/optimization_guide/core/page_content_annotations_validator.h"
+#include "components/optimization_guide/content/browser/page_content_annotations_validator.h"
 
 #include "base/bind.h"
 #include "base/callback.h"
@@ -15,10 +15,10 @@
 #include "base/strings/stringprintf.h"
 #include "base/task/thread_pool.h"
 #include "base/time/default_tick_clock.h"
+#include "components/optimization_guide/content/browser/page_content_annotator.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/optimization_guide/core/page_content_annotations_common.h"
-#include "components/optimization_guide/core/page_content_annotator.h"
 
 namespace optimization_guide {
 

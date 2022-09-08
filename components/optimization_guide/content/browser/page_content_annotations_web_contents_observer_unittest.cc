@@ -2,21 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/optimization_guide/page_content_annotations_web_contents_observer.h"
+#include "components/optimization_guide/content/browser/page_content_annotations_web_contents_observer.h"
 
 #include "base/command_line.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
-#include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/google/core/common/google_switches.h"
 #include "components/history/core/browser/history_service.h"
+#include "components/optimization_guide/content/browser/page_content_annotations_service.h"
 #include "components/optimization_guide/content/browser/test_optimization_guide_decider.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
-#include "components/optimization_guide/core/page_content_annotations_service.h"
 #include "components/optimization_guide/core/test_optimization_guide_model_provider.h"
-#include "components/optimization_guide/core/test_page_content_annotator.h"
 #include "components/optimization_guide/proto/page_entities_metadata.pb.h"
 #include "components/search_engines/template_url_service.h"
 #include "content/public/test/mock_navigation_handle.h"
@@ -40,53 +38,28 @@ const TemplateURLService::Initializer kTemplateURLData[] = {
 };
 const char16_t kDefaultTemplateURLKeyword[] = u"default-engine.com";
 
-class TestSearchResultExtractorClient
-    : public continuous_search::SearchResultExtractorClient {
- public:
-  content::WebContents* last_request_web_contents() const {
-    return last_request_web_contents_;
-  }
-
- private:
-  void RequestData(
-      content::WebContents* web_contents,
-      const std::vector<continuous_search::mojom::ResultType>& result_types,
-      RequestDataCallback callback) override {
-    last_request_web_contents_ = web_contents;
-    std::move(callback).Run(
-        continuous_search::SearchResultExtractorClientStatus::kSuccess,
-        /*results=*/nullptr);
-  }
-  content::WebContents* last_request_web_contents_;
-};
-
 class FakePageContentAnnotationsService : public PageContentAnnotationsService {
  public:
   explicit FakePageContentAnnotationsService(
       OptimizationGuideModelProvider* optimization_guide_model_provider,
       history::HistoryService* history_service)
-      : PageContentAnnotationsService(
-            "en-US",
-            /*optimization_guide_keyed_service=*/nullptr,
-            history_service,
-            /*database_provider=*/nullptr,
-            base::FilePath(),
-            /*optimization_guide_logger=*/nullptr,
-            /*background_task_runner=*/nullptr) {
-    OverridePageContentAnnotatorForTesting(
-        std::make_unique<TestPageContentAnnotator>());
-  }
+      : PageContentAnnotationsService("en-US",
+                                      optimization_guide_model_provider,
+                                      history_service,
+                                      nullptr,
+                                      base::FilePath(),
+                                      nullptr,
+                                      nullptr) {}
   ~FakePageContentAnnotationsService() override = default;
 
   void Annotate(const HistoryVisit& visit) override {
     last_annotation_request_.emplace(visit);
   }
 
-  void PersistRelatedSearches(
-      const HistoryVisit& visit,
-      continuous_search::SearchResultExtractorClientStatus status,
-      continuous_search::mojom::CategoryResultsPtr results) override {
-    last_related_searches_extraction_visit_ = visit;
+  void ExtractRelatedSearches(const HistoryVisit& visit,
+                              content::WebContents* web_contents) override {
+    last_related_searches_extraction_request_.emplace(
+        std::make_pair(visit, web_contents));
   }
 
   absl::optional<HistoryVisit> last_annotation_request() const {
@@ -95,6 +68,11 @@ class FakePageContentAnnotationsService : public PageContentAnnotationsService {
 
   void ClearLastAnnotationRequest() {
     last_annotation_request_ = absl::nullopt;
+  }
+
+  absl::optional<std::pair<HistoryVisit, content::WebContents*>>
+  last_related_searches_extraction_request() const {
+    return last_related_searches_extraction_request_;
   }
 
   void PersistRemotePageEntities(
@@ -131,13 +109,10 @@ class FakePageContentAnnotationsService : public PageContentAnnotationsService {
     return last_page_metadata_;
   }
 
-  absl::optional<HistoryVisit> last_related_searches_extraction_visit() const {
-    return last_related_searches_extraction_visit_;
-  }
-
  private:
   absl::optional<HistoryVisit> last_annotation_request_;
-  absl::optional<HistoryVisit> last_related_searches_extraction_visit_;
+  absl::optional<std::pair<HistoryVisit, content::WebContents*>>
+      last_related_searches_extraction_request_;
   absl::optional<
       std::pair<HistoryVisit,
                 std::vector<history::VisitContentModelAnnotations::Category>>>
@@ -216,7 +191,7 @@ class FakeOptimizationGuideDecider : public TestOptimizationGuideDecider {
 };
 
 class PageContentAnnotationsWebContentsObserverTest
-    : public ChromeRenderViewHostTestHarness {
+    : public content::RenderViewHostTestHarness {
  public:
   PageContentAnnotationsWebContentsObserverTest() {
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
@@ -251,13 +226,6 @@ class PageContentAnnotationsWebContentsObserverTest
         template_url_service_.get(), optimization_guide_decider_.get(),
         /*no_state_prefetch_manager=*/nullptr);
 
-    auto test_search_result_extractor_client =
-        std::make_unique<TestSearchResultExtractorClient>();
-    test_search_result_extractor_client_ =
-        test_search_result_extractor_client.get();
-    helper()->SetSearchResultExtractorClientForTesting(
-        std::move(test_search_result_extractor_client));
-
     // Overwrite Google base URL.
     base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
         ::switches::kGoogleBaseURL, "http://default-engine.com/");
@@ -289,10 +257,6 @@ class PageContentAnnotationsWebContentsObserverTest
     template_url_service_->set_loaded(loaded);
   }
 
-  TestSearchResultExtractorClient* test_search_result_extractor_client() const {
-    return test_search_result_extractor_client_;
-  }
-
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<TestOptimizationGuideModelProvider>
@@ -303,7 +267,6 @@ class PageContentAnnotationsWebContentsObserverTest
   std::unique_ptr<TemplateURLService> template_url_service_;
   raw_ptr<TemplateURL> template_url_;
   std::unique_ptr<FakeOptimizationGuideDecider> optimization_guide_decider_;
-  raw_ptr<TestSearchResultExtractorClient> test_search_result_extractor_client_;
 };
 
 TEST_F(PageContentAnnotationsWebContentsObserverTest, DoesNotRegisterType) {
@@ -426,17 +389,16 @@ TEST_F(PageContentAnnotationsWebContentsObserverTest,
   content::NavigationSimulator::NavigateAndCommitFromBrowser(
       web_contents(), GURL("http://www.foo.com/search?q=a"));
 
-  EXPECT_FALSE(service()->last_related_searches_extraction_visit().has_value());
-  EXPECT_FALSE(
-      test_search_result_extractor_client()->last_request_web_contents());
+  absl::optional<std::pair<HistoryVisit, content::WebContents*>> last_request =
+      service()->last_related_searches_extraction_request();
+  EXPECT_FALSE(last_request.has_value());
 
   // Navigate to Google SRP and commit.
   // No request should be sent since extracting related searches is disabled.
   content::NavigationSimulator::NavigateAndCommitFromBrowser(
       web_contents(), GURL("http://default-engine.com/search?q=a"));
-  EXPECT_FALSE(service()->last_related_searches_extraction_visit().has_value());
-  EXPECT_FALSE(
-      test_search_result_extractor_client()->last_request_web_contents());
+  last_request = service()->last_related_searches_extraction_request();
+  EXPECT_FALSE(last_request.has_value());
 }
 
 class PageContentAnnotationsWebContentsObserverRelatedSearchesTest
@@ -458,19 +420,19 @@ TEST_F(PageContentAnnotationsWebContentsObserverRelatedSearchesTest,
   content::NavigationSimulator::NavigateAndCommitFromBrowser(
       web_contents(), GURL("http://www.foo.com/search?q=a"));
 
-  EXPECT_FALSE(service()->last_related_searches_extraction_visit().has_value());
-  EXPECT_FALSE(
-      test_search_result_extractor_client()->last_request_web_contents());
+  absl::optional<std::pair<HistoryVisit, content::WebContents*>> last_request =
+      service()->last_related_searches_extraction_request();
+  EXPECT_FALSE(last_request.has_value());
 
   // Navigate to Google SRP and commit.
   // Expect a request to be sent since extracting related searches is enabled.
   content::NavigationSimulator::NavigateAndCommitFromBrowser(
       web_contents(), GURL("http://default-engine.com/search?q=a"));
-  auto last_visit = service()->last_related_searches_extraction_visit();
-  EXPECT_TRUE(last_visit.has_value());
-  EXPECT_EQ(last_visit->url, GURL("http://default-engine.com/search?q=a"));
-  EXPECT_EQ(test_search_result_extractor_client()->last_request_web_contents(),
-            web_contents());
+  last_request = service()->last_related_searches_extraction_request();
+  EXPECT_TRUE(last_request.has_value());
+  EXPECT_EQ(last_request->first.url,
+            GURL("http://default-engine.com/search?q=a"));
+  EXPECT_EQ(last_request->second, web_contents());
 }
 
 class

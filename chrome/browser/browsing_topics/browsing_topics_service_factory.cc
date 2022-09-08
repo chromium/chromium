@@ -12,7 +12,7 @@
 #include "components/browsing_topics/browsing_topics_service_impl.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/keyed_service/core/service_access_type.h"
-#include "components/optimization_guide/core/page_content_annotations_service.h"
+#include "components/optimization_guide/content/browser/page_content_annotations_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_settings.h"
 #include "content/public/browser/browsing_topics_site_data_manager.h"
 #include "content/public/browser/storage_partition.h"

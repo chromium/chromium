@@ -10,6 +10,13 @@ import("//components/optimization_guide/features.gni")
 static_library("browser") {
   sources = [
     "optimization_guide_decider.h",
+    "page_content_annotations_service.cc",
+    "page_content_annotations_service.h",
+    "page_content_annotations_validator.cc",
+    "page_content_annotations_validator.h",
+    "page_content_annotations_web_contents_observer.cc",
+    "page_content_annotations_web_contents_observer.h",
+    "page_content_annotator.h",
     "page_text_dump_result.cc",
     "page_text_dump_result.h",
     "page_text_observer.cc",
@@ -17,14 +24,26 @@ static_library("browser") {
     "salient_image_retriever.cc",
     "salient_image_retriever.h",
   ]
+  if (build_with_tflite_lib) {
+    sources += [
+      "page_content_annotations_model_manager.cc",
+      "page_content_annotations_model_manager.h",
+    ]
+  }
+
   public_deps = [
     "//base",
+    "//components/continuous_search/browser",
+    "//components/continuous_search/common/public/mojom",
     "//components/google/core/common",
+    "//components/history/core/browser",
+    "//components/keyed_service/core",
     "//components/no_state_prefetch/browser",
+    "//components/optimization_guide:machine_learning_tflite_buildflags",
+    "//components/optimization_guide:optimization_guide_buildflags",
     "//components/optimization_guide/content/mojom:mojo_interfaces",
     "//components/optimization_guide/core",
     "//components/optimization_guide/core:entities",
-    "//components/optimization_guide/core:page_content_annotations",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/search_engines",
     "//content/public/browser",
@@ -48,6 +67,8 @@ static_library("test_support") {
   sources = [
     "test_optimization_guide_decider.cc",
     "test_optimization_guide_decider.h",
+    "test_page_content_annotator.cc",
+    "test_page_content_annotator.h",
   ]
   deps = [
     ":browser",
@@ -59,10 +80,16 @@ static_library("test_support") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "page_content_annotations_validator_unittest.cc",
+    "page_content_annotations_web_contents_observer_unittest.cc",
     "page_text_dump_result_unittest.cc",
     "page_text_observer_unittest.cc",
   ]
 
+  # crbug.com/1279884 Flaky on CrOS
+  if (!is_chromeos && build_with_tflite_lib) {
+    sources += [ "page_content_annotations_model_manager_unittest.cc" ]
+  }
   deps = [
     ":browser",
     ":test_support",
