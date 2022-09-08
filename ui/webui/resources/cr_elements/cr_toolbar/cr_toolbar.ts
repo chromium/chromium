@@ -5,8 +5,8 @@
 import '../cr_icon_button/cr_icon_button.js';
 import '../cr_icons.css.js';
 import '../cr_hidden_style.css.js';
-import '../cr_shared_vars.css.js';
-import '../icons.html.js';
+import '../icons.m.js';
+import '../shared_vars_css.m.js';
 import '//resources/polymer/v3_0/iron-media-query/iron-media-query.js';
 import './cr_toolbar_search_field.js';
 

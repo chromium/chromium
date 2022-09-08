@@ -20,7 +20,7 @@
  *     available space
  */
 import '../cr_hidden_style.css.js';
-import '../cr_shared_vars.css.js';
+import '../shared_vars_css.m.js';
 
 import {DomRepeatEvent, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 

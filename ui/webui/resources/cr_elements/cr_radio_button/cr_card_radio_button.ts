@@ -9,8 +9,8 @@
  */
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import './cr_radio_button_style.css.js';
-import '../cr_shared_vars.css.js';
-import '../icons.html.js';
+import '../icons.m.js';
+import '../shared_vars_css.m.js';
 
 import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {PaperRippleBehavior} from 'chrome://resources/polymer/v3_0/paper-behaviors/paper-ripple-behavior.js';

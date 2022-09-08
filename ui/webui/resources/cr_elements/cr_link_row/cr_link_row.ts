@@ -12,9 +12,9 @@
 import '../cr_actionable_row_style.css.js';
 import '../cr_icon_button/cr_icon_button.js';
 import '../cr_hidden_style.css.js';
-import '../icons.html.js';
+import '../icons.m.js';
 import '../cr_shared_style.css.js';
-import '../cr_shared_vars.css.js';
+import '../shared_vars_css.m.js';
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
