@@ -43,6 +43,10 @@ extern const base::FeatureParam<base::TimeDelta>
 
 // The default state of the high-efficiency mode pref
 extern const base::FeatureParam<bool> kHighEfficiencyModeDefaultState;
+
+// The number of tabs at which the user may be prompted to enable high
+// efficiency mode.
+extern const base::FeatureParam<int> kHighEfficiencyModePromoTabCountThreshold;
 #endif
 
 // Policy that evicts the BFCache of pages that become non visible or the

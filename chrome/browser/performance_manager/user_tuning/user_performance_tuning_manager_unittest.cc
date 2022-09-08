@@ -78,7 +78,7 @@ class UserPerformanceTuningManagerTest : public testing::Test {
           }) {
     feature_list_.InitWithFeaturesAndParameters(features_and_params, {});
     manager_.reset(new UserPerformanceTuningManager(
-        &local_state_,
+        &local_state_, nullptr,
         std::make_unique<FakeFrameThrottlingDelegate>(&throttling_enabled_),
         std::make_unique<FakeHighEfficiencyModeToggleDelegate>()));
     manager()->Start();

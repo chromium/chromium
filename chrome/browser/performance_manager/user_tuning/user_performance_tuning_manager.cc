@@ -12,6 +12,8 @@
 #include "components/performance_manager/public/performance_manager.h"
 #include "components/performance_manager/public/user_tuning/prefs.h"
 #include "components/prefs/pref_service.h"
+#include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/frame_rate_throttling.h"
 
 namespace performance_manager::user_tuning {
@@ -99,8 +101,23 @@ bool UserPerformanceTuningManager::IsBatterySaverActive() const {
   return battery_saver_mode_enabled_;
 }
 
+UserPerformanceTuningManager::UserPerformanceTuningReceiverImpl::
+    ~UserPerformanceTuningReceiverImpl() = default;
+
+void UserPerformanceTuningManager::UserPerformanceTuningReceiverImpl::
+    NotifyTabCountThresholdReached() {
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce([]() {
+        // Hitting this CHECK would mean this task is running after
+        // PostMainMessageLoopRun, which shouldn't happen.
+        CHECK(g_user_performance_tuning_manager);
+        GetInstance()->NotifyTabCountThresholdReached();
+      }));
+}
+
 UserPerformanceTuningManager::UserPerformanceTuningManager(
     PrefService* local_state,
+    std::unique_ptr<UserPerformanceTuningNotifier> notifier,
     std::unique_ptr<FrameThrottlingDelegate> frame_throttling_delegate,
     std::unique_ptr<HighEfficiencyModeToggleDelegate>
         high_efficiency_mode_toggle_delegate)
@@ -114,6 +131,11 @@ UserPerformanceTuningManager::UserPerformanceTuningManager(
               : std::make_unique<HighEfficiencyModeToggleDelegateImpl>()) {
   DCHECK(!g_user_performance_tuning_manager);
   g_user_performance_tuning_manager = this;
+
+  if (notifier) {
+    performance_manager::PerformanceManager::PassToGraph(FROM_HERE,
+                                                         std::move(notifier));
+  }
 
   if (base::FeatureList::IsEnabled(
           performance_manager::features::kHighEfficiencyModeAvailable)) {
@@ -204,6 +226,12 @@ void UserPerformanceTuningManager::UpdateBatterySaverModeState() {
 
   for (auto& obs : observers_) {
     obs.OnBatterySaverModeChanged(battery_saver_mode_enabled_);
+  }
+}
+
+void UserPerformanceTuningManager::NotifyTabCountThresholdReached() {
+  for (auto& obs : observers_) {
+    obs.OnTabCountThresholdReached();
   }
 }
 

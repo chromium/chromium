@@ -297,8 +297,10 @@ class PageNodeImpl
       EmbeddingType::kInvalid;
 
   // The type of the page.
-  ObservedProperty::NotifiesOnlyOnChanges<PageType,
-                                          &PageNodeObserver::OnTypeChanged>
+  ObservedProperty::NotifiesOnlyOnChangesWithPreviousValue<
+      PageType,
+      PageType,
+      &PageNodeObserver::OnTypeChanged>
       type_ GUARDED_BY_CONTEXT(sequence_checker_){PageType::kUnknown};
 
   // Whether or not the page is visible. Driven by browser instrumentation.

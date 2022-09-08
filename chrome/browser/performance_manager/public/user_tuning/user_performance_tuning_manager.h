@@ -8,6 +8,7 @@
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/power_monitor/power_observer.h"
+#include "chrome/browser/performance_manager/user_tuning/user_performance_tuning_notifier.h"
 #include "components/prefs/pref_change_registrar.h"
 
 class ChromeBrowserMainExtraPartsPerformanceManager;
@@ -105,8 +106,20 @@ class UserPerformanceTuningManager : public base::PowerStateObserver {
   friend class UserPerformanceTuningManagerTest;
   friend class TestUserPerformanceTuningManagerEnvironment;
 
+  // An implementation of UserPerformanceTuningNotifier::Receiver that
+  // forwards the notifications to the UserPerformanceTuningManager on the Main
+  // Thread.
+  class UserPerformanceTuningReceiverImpl
+      : public UserPerformanceTuningNotifier::Receiver {
+   public:
+    ~UserPerformanceTuningReceiverImpl() override;
+
+    void NotifyTabCountThresholdReached() override;
+  };
+
   explicit UserPerformanceTuningManager(
       PrefService* local_state,
+      std::unique_ptr<UserPerformanceTuningNotifier> notifier = nullptr,
       std::unique_ptr<FrameThrottlingDelegate> frame_throttling_delegate =
           nullptr,
       std::unique_ptr<HighEfficiencyModeToggleDelegate>
@@ -118,6 +131,8 @@ class UserPerformanceTuningManager : public base::PowerStateObserver {
   void OnBatterySaverModePrefChanged();
 
   void UpdateBatterySaverModeState();
+
+  void NotifyTabCountThresholdReached();
 
   // base::PowerStateObserver:
   void OnPowerStateChange(bool on_battery_power) override;

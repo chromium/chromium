@@ -263,7 +263,8 @@ class PageNodeObserver {
       EmbeddingType previous_embedder_type) = 0;
 
   // Invoked when the GetType property changes.
-  virtual void OnTypeChanged(const PageNode* page_node) = 0;
+  virtual void OnTypeChanged(const PageNode* page_node,
+                             PageType previous_type) = 0;
 
   // Invoked when the IsVisible property changes.
   virtual void OnIsVisibleChanged(const PageNode* page_node) = 0;
@@ -343,7 +344,8 @@ class PageNode::ObserverDefaultImpl : public PageNodeObserver {
       const PageNode* page_node,
       const FrameNode* previous_embedder,
       EmbeddingType previous_embedding_type) override {}
-  void OnTypeChanged(const PageNode* page_node) override {}
+  void OnTypeChanged(const PageNode* page_node,
+                     PageType previous_type) override {}
   void OnIsVisibleChanged(const PageNode* page_node) override {}
   void OnIsAudibleChanged(const PageNode* page_node) override {}
   void OnLoadingStateChanged(const PageNode* page_node,

@@ -69,7 +69,8 @@ void HighEfficiencyModePolicy::OnIsVisibleChanged(const PageNode* page_node) {
   }
 }
 
-void HighEfficiencyModePolicy::OnTypeChanged(const PageNode* page_node) {
+void HighEfficiencyModePolicy::OnTypeChanged(const PageNode* page_node,
+                                             PageType previous_type) {
   if (page_node->GetType() != PageType::kTab) {
     RemoveActiveTimer(page_node);
   } else if (!page_node->IsVisible()) {

@@ -23,7 +23,7 @@ void TestUserPerformanceTuningManagerEnvironment::SetUp(
   base::PowerMonitor::Initialize(std::move(source));
 
   manager_.reset(new user_tuning::UserPerformanceTuningManager(
-      local_state,
+      local_state, nullptr,
       std::make_unique<FakeFrameThrottlingDelegate>(&throttling_enabled_),
       std::make_unique<FakeHighEfficiencyModeToggleDelegate>()));
   manager_->Start();

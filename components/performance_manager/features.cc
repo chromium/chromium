@@ -31,8 +31,15 @@ const base::Feature kBatterySaverModeAvailable{
 const base::FeatureParam<base::TimeDelta> kHighEfficiencyModeTimeBeforeDiscard{
     &kHighEfficiencyModeAvailable, "time_before_discard", base::Hours(2)};
 
-extern const base::FeatureParam<bool> kHighEfficiencyModeDefaultState{
+const base::FeatureParam<bool> kHighEfficiencyModeDefaultState{
     &kHighEfficiencyModeAvailable, "default_state", false};
+
+// 10 tabs is the 70th percentile of tab counts based on UMA data.
+const base::FeatureParam<int> kHighEfficiencyModePromoTabCountThreshold{
+    &kHighEfficiencyModeAvailable,
+    "tab_count_threshold",
+    10,
+};
 #endif
 
 const base::Feature kBFCachePerformanceManagerPolicy{

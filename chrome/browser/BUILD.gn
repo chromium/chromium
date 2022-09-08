@@ -4062,6 +4062,8 @@ static_library("browser") {
       "performance_manager/user_tuning/profile_discard_opt_out_list_helper.cc",
       "performance_manager/user_tuning/profile_discard_opt_out_list_helper.h",
       "performance_manager/user_tuning/user_performance_tuning_manager.cc",
+      "performance_manager/user_tuning/user_performance_tuning_notifier.cc",
+      "performance_manager/user_tuning/user_performance_tuning_notifier.h",
       "permissions/attestation_permission_request.cc",
       "permissions/attestation_permission_request.h",
       "policy/browsing_history_policy_handler.cc",

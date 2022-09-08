@@ -58,6 +58,7 @@
 #include "chrome/browser/performance_manager/policies/page_freezing_policy.h"
 #include "chrome/browser/performance_manager/policies/urgent_page_discarding_policy.h"
 #include "chrome/browser/performance_manager/public/user_tuning/user_performance_tuning_manager.h"
+#include "chrome/browser/performance_manager/user_tuning/user_performance_tuning_notifier.h"
 #include "chrome/browser/tab_contents/form_interaction_tab_helper.h"
 #include "components/performance_manager/graph/policies/bfcache_policy.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
@@ -204,10 +205,19 @@ void ChromeBrowserMainExtraPartsPerformanceManager::PostCreateThreads() {
     // Create the UserPerformanceTuningManager here so that early UI code can
     // register observers, but only start it in PreMainMessageLoopRun because it
     // requires the HostFrameSinkManager to exist.
-    user_performance_tuning_manager_ = std::unique_ptr<
-        performance_manager::user_tuning::UserPerformanceTuningManager>(
+    int tab_count_threshold =
+        performance_manager::features::kHighEfficiencyModePromoTabCountThreshold
+            .Get();
+    DCHECK_GT(tab_count_threshold, 0);
+    user_performance_tuning_manager_ = base::WrapUnique(
         new performance_manager::user_tuning::UserPerformanceTuningManager(
-            g_browser_process->local_state()));
+            g_browser_process->local_state(),
+            std::make_unique<performance_manager::user_tuning::
+                                 UserPerformanceTuningNotifier>(
+                base::WrapUnique(new performance_manager::user_tuning::
+                                     UserPerformanceTuningManager::
+                                         UserPerformanceTuningReceiverImpl),
+                static_cast<size_t>(tab_count_threshold))));
   }
 #endif
 

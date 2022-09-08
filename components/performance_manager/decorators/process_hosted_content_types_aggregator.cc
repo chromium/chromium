@@ -33,7 +33,8 @@ void ProcessHostedContentTypesAggregator::OnTakenFromGraph(Graph* graph) {
 }
 
 void ProcessHostedContentTypesAggregator::OnTypeChanged(
-    const PageNode* page_node) {
+    const PageNode* page_node,
+    PageType previous_type) {
   if (page_node->GetType() == PageType::kExtension) {
     // `PageType::kExtension` should be set early on the `PageNode`, before it
     // has the opportunity to create more than one main frame or any subframe.
