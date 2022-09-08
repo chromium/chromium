@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/web_applications/web_app_tabbed_utils.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/feed/feed_feature_list.h"
 #include "components/reading_list/features/reading_list_switches.h"
@@ -102,6 +103,10 @@ void TabMenuModel::Build(TabStripModel* tab_strip, int index) {
               l10n_util::GetPluralStringFUTF16(
                   IDS_TAB_CXMENU_MOVE_TABS_TO_NEW_WINDOW, num_tabs));
     }
+  }
+
+  if (tab_strip->delegate()->IsForWebApp()) {
+    AddItemWithStringId(TabStripModel::CommandCopyURL, IDS_COPY_URL);
   }
 
   AddSeparator(ui::NORMAL_SEPARATOR);

@@ -1330,6 +1330,10 @@ bool TabStripModel::IsContextMenuCommandEnabled(
       return !profile->IsIncognitoProfile();
     }
 
+    case CommandCopyURL:
+      DCHECK(delegate()->IsForWebApp());
+      return true;
+
     default:
       NOTREACHED();
   }
@@ -1521,6 +1525,12 @@ void TabStripModel::ExecuteContextMenuCommand(int context_index,
     case CommandUnfollowSite: {
       base::RecordAction(UserMetricsAction("DesktopFeed.UnfollowSite"));
       UnfollowSites(GetIndicesForCommand(context_index));
+      break;
+    }
+
+    case CommandCopyURL: {
+      base::RecordAction(UserMetricsAction("TabContextMenu_CopyURL"));
+      delegate()->CopyURL(GetWebContentsAt(context_index));
       break;
     }
 

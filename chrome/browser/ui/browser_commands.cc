@@ -1684,12 +1684,9 @@ bool IsDebuggerAttachedToCurrentTab(Browser* browser) {
                   : false;
 }
 
-void CopyURL(Browser* browser) {
+void CopyURL(content::WebContents* web_contents) {
   ui::ScopedClipboardWriter scw(ui::ClipboardBuffer::kCopyPaste);
-  scw.WriteText(base::UTF8ToUTF16(browser->tab_strip_model()
-                                      ->GetActiveWebContents()
-                                      ->GetVisibleURL()
-                                      .spec()));
+  scw.WriteText(base::UTF8ToUTF16(web_contents->GetVisibleURL().spec()));
 }
 
 Browser* OpenInChrome(Browser* hosted_app_browser) {

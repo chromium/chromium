@@ -227,7 +227,7 @@ void SetAndroidOsForTabletSite(content::WebContents* current_tab);
 void ToggleFullscreenMode(Browser* browser);
 void ClearCache(Browser* browser);
 bool IsDebuggerAttachedToCurrentTab(Browser* browser);
-void CopyURL(Browser* browser);
+void CopyURL(content::WebContents* web_contents);
 // Moves the WebContents of a hosted app Browser to a tabbed Browser. Returns
 // the tabbed Browser.
 Browser* OpenInChrome(Browser* hosted_app_browser);

@@ -115,3 +115,5 @@ void TestTabStripModelDelegate::UnfollowSite(
 bool TestTabStripModelDelegate::IsForWebApp() {
   return false;
 }
+
+void TestTabStripModelDelegate::CopyURL(content::WebContents* web_contents) {}

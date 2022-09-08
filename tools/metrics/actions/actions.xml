@@ -31878,6 +31878,12 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
+<action name="TabContextMenu_CopyURL">
+  <owner>loubrett@google.com</owner>
+  <owner>desktop-pwas-team@google.com</owner>
+  <description>User selected Copy URL from tab context menu.</description>
+</action>
+
 <action name="TabContextMenu_Duplicate">
   <owner>tbergquist@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>

@@ -275,18 +275,20 @@ TEST_F(TabMenuModelTest, TabbedWebApp) {
 
   // When adding/removing a menu item, either update this count and add it to
   // the list below or disable it for tabbed web apps.
-  EXPECT_EQ(model.GetItemCount(), 9u);
+  EXPECT_EQ(model.GetItemCount(), 10u);
 
   EXPECT_TRUE(model.GetIndexOfCommandId(TabStripModel::CommandNewTabToRight)
                   .has_value());
-  EXPECT_EQ(model.GetTypeAt(1), ui::MenuModel::TYPE_SEPARATOR);
+  EXPECT_TRUE(
+      model.GetIndexOfCommandId(TabStripModel::CommandCopyURL).has_value());
+  EXPECT_EQ(model.GetTypeAt(2), ui::MenuModel::TYPE_SEPARATOR);
   EXPECT_TRUE(
       model.GetIndexOfCommandId(TabStripModel::CommandReload).has_value());
   EXPECT_TRUE(
       model.GetIndexOfCommandId(TabStripModel::CommandDuplicate).has_value());
   EXPECT_TRUE(model.GetIndexOfCommandId(TabStripModel::CommandToggleSiteMuted)
                   .has_value());
-  EXPECT_EQ(model.GetTypeAt(5), ui::MenuModel::TYPE_SEPARATOR);
+  EXPECT_EQ(model.GetTypeAt(6), ui::MenuModel::TYPE_SEPARATOR);
   EXPECT_TRUE(
       model.GetIndexOfCommandId(TabStripModel::CommandCloseTab).has_value());
   EXPECT_TRUE(model.GetIndexOfCommandId(TabStripModel::CommandCloseOtherTabs)
@@ -309,16 +311,18 @@ TEST_F(TabMenuModelTest, TabbedWebAppHomeTab) {
 
   // When adding/removing a menu item, either update this count and add it to
   // the list below or disable it for tabbed web apps.
-  EXPECT_EQ(model.GetItemCount(), 7u);
+  EXPECT_EQ(model.GetItemCount(), 8u);
 
   EXPECT_TRUE(model.GetIndexOfCommandId(TabStripModel::CommandNewTabToRight)
                   .has_value());
-  EXPECT_EQ(model.GetTypeAt(1), ui::MenuModel::TYPE_SEPARATOR);
+  EXPECT_TRUE(
+      model.GetIndexOfCommandId(TabStripModel::CommandCopyURL).has_value());
+  EXPECT_EQ(model.GetTypeAt(2), ui::MenuModel::TYPE_SEPARATOR);
   EXPECT_TRUE(
       model.GetIndexOfCommandId(TabStripModel::CommandReload).has_value());
   EXPECT_TRUE(model.GetIndexOfCommandId(TabStripModel::CommandToggleSiteMuted)
                   .has_value());
-  EXPECT_EQ(model.GetTypeAt(4), ui::MenuModel::TYPE_SEPARATOR);
+  EXPECT_EQ(model.GetTypeAt(5), ui::MenuModel::TYPE_SEPARATOR);
   EXPECT_TRUE(model.GetIndexOfCommandId(TabStripModel::CommandCloseOtherTabs)
                   .has_value());
   EXPECT_TRUE(model.GetIndexOfCommandId(TabStripModel::CommandCloseTabsToRight)
