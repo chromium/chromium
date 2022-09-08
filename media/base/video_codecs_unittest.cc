@@ -4,6 +4,7 @@
 
 #include <set>
 
+#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "media/base/video_codecs.h"
 #include "media/base/video_color_space.h"

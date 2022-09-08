@@ -23,8 +23,7 @@
 #include "base/android/build_info.h"
 #endif
 
-namespace media {
-namespace internal {
+namespace media::internal {
 
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
 // TODO(https://crbug.com/1117275): Remove conditioning of kUsePropCodecs when
@@ -211,18 +210,18 @@ TEST(MimeUtilTest, SplitAndStripCodecs) {
       {",", 2, {"", ""}, {"", ""}},
   };
 
-  for (size_t i = 0; i < std::size(tests); ++i) {
+  for (const auto& test : tests) {
     std::vector<std::string> codecs_out;
 
-    SplitCodecs(tests[i].original, &codecs_out);
-    ASSERT_EQ(tests[i].expected_size, codecs_out.size());
-    for (size_t j = 0; j < tests[i].expected_size; ++j)
-      EXPECT_EQ(tests[i].split_results[j], codecs_out[j]);
+    SplitCodecs(test.original, &codecs_out);
+    ASSERT_EQ(test.expected_size, codecs_out.size());
+    for (size_t j = 0; j < test.expected_size; ++j)
+      EXPECT_EQ(test.split_results[j], codecs_out[j]);
 
     StripCodecs(&codecs_out);
-    ASSERT_EQ(tests[i].expected_size, codecs_out.size());
-    for (size_t j = 0; j < tests[i].expected_size; ++j)
-      EXPECT_EQ(tests[i].strip_results[j], codecs_out[j]);
+    ASSERT_EQ(test.expected_size, codecs_out.size());
+    for (size_t j = 0; j < test.expected_size; ++j)
+      EXPECT_EQ(test.strip_results[j], codecs_out[j]);
   }
 }
 
@@ -726,5 +725,4 @@ TEST(IsCodecSupportedOnAndroidTest, AndroidHLSAAC) {
   // platform support).
 }
 
-}  // namespace internal
-}  // namespace media
+}  // namespace media::internal

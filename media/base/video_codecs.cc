@@ -7,6 +7,7 @@
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -204,7 +205,7 @@ std::string BuildH264MimeSuffix(media::VideoCodecProfile profile,
   return base::StringPrintf(".%s%04x", profile_str.c_str(), level);
 }
 
-bool ParseNewStyleVp9CodecID(const std::string& codec_id,
+bool ParseNewStyleVp9CodecID(base::StringPiece codec_id,
                              VideoCodecProfile* profile,
                              uint8_t* level_idc,
                              VideoColorSpace* color_space) {
@@ -342,7 +343,7 @@ bool ParseNewStyleVp9CodecID(const std::string& codec_id,
   return true;
 }
 
-bool ParseLegacyVp9CodecID(const std::string& codec_id,
+bool ParseLegacyVp9CodecID(base::StringPiece codec_id,
                            VideoCodecProfile* profile,
                            uint8_t* level_idc) {
   if (codec_id == "vp9" || codec_id == "vp9.0") {
@@ -358,7 +359,7 @@ bool ParseLegacyVp9CodecID(const std::string& codec_id,
 }
 
 #if BUILDFLAG(ENABLE_AV1_DECODER)
-bool ParseAv1CodecId(const std::string& codec_id,
+bool ParseAv1CodecId(base::StringPiece codec_id,
                      VideoCodecProfile* profile,
                      uint8_t* level_idc,
                      VideoColorSpace* color_space) {
@@ -560,7 +561,7 @@ bool ParseAv1CodecId(const std::string& codec_id,
 }
 #endif  // BUILDFLAG(ENABLE_AV1_DECODER)
 
-bool ParseAVCCodecId(const std::string& codec_id,
+bool ParseAVCCodecId(base::StringPiece codec_id,
                      VideoCodecProfile* profile,
                      uint8_t* level_idc) {
   // Make sure we have avc1.xxxxxx or avc3.xxxxxx , where xxxxxx are hex digits
@@ -659,7 +660,7 @@ static char IntToHex(int i) {
   return kHexString[i];
 }
 
-std::string TranslateLegacyAvc1CodecIds(const std::string& codec_id) {
+std::string TranslateLegacyAvc1CodecIds(base::StringPiece codec_id) {
   // Special handling for old, pre-RFC 6381 format avc1 strings, which are still
   // being used by some HLS apps to preserve backward compatibility with older
   // iOS devices. The old format was avc1.<profile>.<level>
@@ -696,14 +697,14 @@ std::string TranslateLegacyAvc1CodecIds(const std::string& codec_id) {
   }
 
   // This is not a valid legacy avc1 codec id - return the original codec id.
-  return codec_id;
+  return std::string(codec_id);
 }
 #endif
 
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC)
 // The specification for HEVC codec id strings can be found in ISO IEC 14496-15
 // dated 2012 or newer in the Annex E.3
-bool ParseHEVCCodecId(const std::string& codec_id,
+bool ParseHEVCCodecId(base::StringPiece codec_id,
                       VideoCodecProfile* profile,
                       uint8_t* level_idc) {
   if (!base::StartsWith(codec_id, "hev1.", base::CompareCase::SENSITIVE) &&
@@ -861,12 +862,12 @@ bool ParseHEVCCodecId(const std::string& codec_id,
 #endif
 
 #if BUILDFLAG(ENABLE_PLATFORM_DOLBY_VISION)
-bool IsDolbyVisionAVCCodecId(const std::string& codec_id) {
+bool IsDolbyVisionAVCCodecId(base::StringPiece codec_id) {
   return base::StartsWith(codec_id, "dva1.", base::CompareCase::SENSITIVE) ||
          base::StartsWith(codec_id, "dvav.", base::CompareCase::SENSITIVE);
 }
 
-bool IsDolbyVisionHEVCCodecId(const std::string& codec_id) {
+bool IsDolbyVisionHEVCCodecId(base::StringPiece codec_id) {
   return base::StartsWith(codec_id, "dvh1.", base::CompareCase::SENSITIVE) ||
          base::StartsWith(codec_id, "dvhe.", base::CompareCase::SENSITIVE);
 }
@@ -874,7 +875,7 @@ bool IsDolbyVisionHEVCCodecId(const std::string& codec_id) {
 // The specification for Dolby Vision codec id strings can be found in Dolby
 // Vision streams within the MPEG-DASH format:
 // https://professional.dolby.com/siteassets/content-creation/dolby-vision-for-content-creators/dolbyvisioninmpegdashspecification_v2_0_public_20190107.pdf
-bool ParseDolbyVisionCodecId(const std::string& codec_id,
+bool ParseDolbyVisionCodecId(base::StringPiece codec_id,
                              VideoCodecProfile* profile,
                              uint8_t* level_idc) {
   if (!IsDolbyVisionAVCCodecId(codec_id) &&
@@ -966,7 +967,7 @@ bool ParseDolbyVisionCodecId(const std::string& codec_id,
 }
 #endif
 
-VideoCodec StringToVideoCodec(const std::string& codec_id) {
+VideoCodec StringToVideoCodec(base::StringPiece codec_id) {
   VideoCodec codec = VideoCodec::kUnknown;
   VideoCodecProfile profile = VIDEO_CODEC_PROFILE_UNKNOWN;
   uint8_t level = 0;
@@ -975,7 +976,7 @@ VideoCodec StringToVideoCodec(const std::string& codec_id) {
   return codec;
 }
 
-void ParseCodec(const std::string& codec_id,
+void ParseCodec(base::StringPiece codec_id,
                 VideoCodec& codec,
                 VideoCodecProfile& profile,
                 uint8_t& level,

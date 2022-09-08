@@ -12,6 +12,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/pattern.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
@@ -41,7 +42,7 @@
 
 namespace media {
 
-typedef bool (*CodecIDValidatorFunction)(const std::string& codecs_id,
+typedef bool (*CodecIDValidatorFunction)(base::StringPiece codecs_id,
                                          MediaLog* media_log);
 
 struct CodecInfo {
@@ -120,7 +121,7 @@ static StreamParser* BuildWebMParser(base::span<const std::string> codecs,
 }
 
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
-static int GetMP4AudioObjectType(const std::string& codec_id,
+static int GetMP4AudioObjectType(base::StringPiece codec_id,
                                  MediaLog* media_log) {
   // From RFC 6381 section 3.3 (ISO Base Media File Format Name Space):
   // When the first element of a ['codecs' parameter value] is 'mp4a' ...,
@@ -150,7 +151,7 @@ constexpr int kAACSBRObjectType = 5;
 constexpr int kAACPSObjectType = 29;
 constexpr int kAACXHEObjectType = 42;
 
-bool ValidateMP4ACodecID(const std::string& codec_id, MediaLog* media_log) {
+bool ValidateMP4ACodecID(base::StringPiece codec_id, MediaLog* media_log) {
   int audio_object_type = GetMP4AudioObjectType(codec_id, media_log);
   if (audio_object_type == kAACLCObjectType ||
       audio_object_type == kAACSBRObjectType ||
@@ -481,7 +482,7 @@ static bool VerifyCodec(const CodecInfo* codec_info,
 // The value of each of |factory_function|, |audio_codecs| and |video_codecs| is
 // not updated if it was nullptr initially.
 static SupportsType CheckTypeAndCodecs(
-    const std::string& type,
+    base::StringPiece type,
     base::span<const std::string> codecs,
     MediaLog* media_log,
     ParserFactoryFunction* factory_function,
@@ -562,7 +563,7 @@ static SupportsType CheckTypeAndCodecs(
 
 // static
 SupportsType StreamParserFactory::IsTypeSupported(
-    const std::string& type,
+    base::StringPiece type,
     base::span<const std::string> codecs) {
   // TODO(wolenetz): Questionable MediaLog usage, http://crbug.com/712310
   NullMediaLog media_log;
@@ -572,7 +573,7 @@ SupportsType StreamParserFactory::IsTypeSupported(
 
 // static
 std::unique_ptr<StreamParser> StreamParserFactory::Create(
-    const std::string& type,
+    base::StringPiece type,
     base::span<const std::string> codecs,
     MediaLog* media_log) {
   std::unique_ptr<StreamParser> stream_parser;

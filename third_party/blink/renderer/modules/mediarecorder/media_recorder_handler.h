@@ -134,7 +134,7 @@ class MODULES_EXPORT MediaRecorderHandler final
   // Set to true if there is no MIME type configured upon Initialize()
   // and the video track's source supports encoded output, giving
   // this class the freedom to provide whatever it chooses to produce.
-  bool passthrough_enabled_;
+  bool passthrough_enabled_ = false;
 
   // Sanitized video and audio bitrate settings passed on initialize().
   uint32_t video_bits_per_second_{0};
@@ -159,7 +159,7 @@ class MODULES_EXPORT MediaRecorderHandler final
   absl::optional<media::VideoCodec> last_seen_codec_;
 
   bool invalidated_ = false;
-  bool recording_;
+  bool recording_ = false;
   // The MediaStream being recorded.
   Member<MediaStreamDescriptor> media_stream_;
   HeapVector<Member<MediaStreamComponent>> video_tracks_;

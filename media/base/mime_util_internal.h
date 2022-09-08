@@ -10,15 +10,14 @@
 
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/strings/string_piece_forward.h"
 #include "build/build_config.h"
 #include "media/base/media_export.h"
 #include "media/base/mime_util.h"
 #include "media/base/video_codecs.h"
 #include "media/base/video_color_space.h"
 
-namespace media {
-
-namespace internal {
+namespace media::internal {
 
 // Internal utility class for handling mime types.  Should only be invoked by
 // tests and the functions within mime_util.cc -- NOT for direct use by others.
@@ -79,23 +78,23 @@ class MEDIA_EXPORT MimeUtil {
   };
 
   // See mime_util.h for more information on these methods.
-  bool IsSupportedMediaMimeType(const std::string& mime_type) const;
-  void SplitCodecs(const std::string& codecs,
+  bool IsSupportedMediaMimeType(base::StringPiece mime_type) const;
+  void SplitCodecs(base::StringPiece codecs,
                    std::vector<std::string>* codecs_out) const;
   void StripCodecs(std::vector<std::string>* codecs) const;
   bool ParseVideoCodecString(
-      const std::string& mime_type,  // fixme, make optional
-      const std::string& codec_id,
+      base::StringPiece mime_type,  // fixme, make optional
+      base::StringPiece codec_id,
       bool* out_is_ambiguous,
       VideoCodec* out_codec,
       VideoCodecProfile* out_profile,
       uint8_t* out_level,
       VideoColorSpace* out_color_space) const;
-  bool ParseAudioCodecString(const std::string& mime_type,
-                             const std::string& codec_id,
+  bool ParseAudioCodecString(base::StringPiece mime_type,
+                             base::StringPiece codec_id,
                              bool* out_is_ambiguous,
                              AudioCodec* out_codec) const;
-  SupportsType IsSupportedMediaFormat(const std::string& mime_type,
+  SupportsType IsSupportedMediaFormat(base::StringPiece mime_type,
                                       const std::vector<std::string>& codecs,
                                       bool is_encrypted) const;
 
@@ -105,7 +104,7 @@ class MEDIA_EXPORT MimeUtil {
   // |platform_info| describes the availability of various platform features;
   // see PlatformInfo for more details.
   static bool IsCodecSupportedOnAndroid(Codec codec,
-                                        const std::string& mime_type_lower_case,
+                                        base::StringPiece mime_type_lower_case,
                                         bool is_encrypted,
                                         VideoCodecProfile video_profile,
                                         const PlatformInfo& platform_info);
@@ -121,8 +120,7 @@ class MEDIA_EXPORT MimeUtil {
   void AddSupportedMediaFormats();
 
   // Adds |mime_type| with the specified codecs to |media_format_map_|.
-  void AddContainerWithCodecs(const std::string& mime_type,
-                              const CodecSet& codecs_list);
+  void AddContainerWithCodecs(std::string mime_type, CodecSet codecs_list);
 
   // Returns SupportsType::kSupported if all codec IDs in |codecs| are
   // unambiguous and are supported in |mime_type_lower_case|. kMaybeSupported is
@@ -133,7 +131,7 @@ class MEDIA_EXPORT MimeUtil {
   // encrypted blocks.
   SupportsType AreSupportedCodecs(
       const std::vector<ParsedCodecResult>& parsed_codecs,
-      const std::string& mime_type_lower_case,
+      base::StringPiece mime_type_lower_case,
       bool is_encrypted) const;
 
   // Parse the combination of |mime_type_lower_case| and |codecs|. Returns true
@@ -142,7 +140,7 @@ class MEDIA_EXPORT MimeUtil {
   //  - invalid/unrecognized codec strings and mime_types
   //  - invalid combinations of codec strings and mime_types (e.g. H264 in WebM)
   // See comment for ParseCodecHelper().
-  bool ParseCodecStrings(const std::string& mime_type_lower_case,
+  bool ParseCodecStrings(base::StringPiece mime_type_lower_case,
                          const std::vector<std::string>& codecs,
                          std::vector<ParsedCodecResult>* out_results) const;
 
@@ -167,8 +165,8 @@ class MEDIA_EXPORT MimeUtil {
   // |out_result|'s |video_color_space| will report the codec strings color
   // space when provided. Most codec strings do not yet describe color, so this
   // will often be set to the default of REC709.
-  bool ParseCodecHelper(const std::string& mime_type_lower_case,
-                        const std::string& codec_id,
+  bool ParseCodecHelper(base::StringPiece mime_type_lower_case,
+                        base::StringPiece codec_id,
                         ParsedCodecResult* out_result) const;
 
   // Returns kSupported if |codec| when platform supports codec contained in
@@ -179,7 +177,7 @@ class MEDIA_EXPORT MimeUtil {
   // blocks.
   // TODO(chcunningham): Make this method return a bool. Platform support should
   // always be knowable for a fully specified codec.
-  SupportsType IsCodecSupported(const std::string& mime_type_lower_case,
+  SupportsType IsCodecSupported(base::StringPiece mime_type_lower_case,
                                 Codec codec,
                                 VideoCodecProfile video_profile,
                                 uint8_t video_level,
@@ -192,7 +190,7 @@ class MEDIA_EXPORT MimeUtil {
   // Returns true and sets |*default_codec| if |mime_type_lower_case| has a
   // default codec associated with it. Returns false otherwise and the value of
   // |*default_codec| is undefined.
-  bool GetDefaultCodec(const std::string& mime_type_lower_case,
+  bool GetDefaultCodec(base::StringPiece mime_type_lower_case,
                        Codec* default_codec) const;
 
 #if BUILDFLAG(IS_ANDROID)
@@ -204,7 +202,6 @@ class MEDIA_EXPORT MimeUtil {
   MediaFormatMappings media_format_map_;
 };
 
-}  // namespace internal
-}  // namespace media
+}  // namespace media::internal
 
 #endif  // MEDIA_BASE_MIME_UTIL_INTERNAL_H_

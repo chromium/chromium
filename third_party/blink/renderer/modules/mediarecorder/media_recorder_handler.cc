@@ -143,12 +143,8 @@ AudioTrackRecorder::CodecId AudioStringToCodecId(const String& codecs) {
 
 MediaRecorderHandler::MediaRecorderHandler(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner)
-    : passthrough_enabled_(false),
-      video_bits_per_second_(0),
-      audio_bits_per_second_(0),
-      video_codec_profile_(VideoTrackRecorder::CodecId::kLast),
+    : video_codec_profile_(VideoTrackRecorder::CodecId::kLast),
       audio_codec_id_(AudioTrackRecorder::CodecId::kLast),
-      recording_(false),
       recorder_(nullptr),
       task_runner_(std::move(task_runner)) {}
 
