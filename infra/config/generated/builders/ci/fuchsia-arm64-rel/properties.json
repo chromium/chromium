@@ -6,12 +6,12 @@
           {
             "builder_id": {
               "bucket": "ci",
-              "builder": "fuchsia-arm64-cast",
+              "builder": "fuchsia-arm64-rel",
               "project": "chromium"
             },
             "builder_spec": {
-              "build_gs_bucket": "chromium-linux-archive",
-              "builder_group": "chromium.fuchsia",
+              "build_gs_bucket": "chromium-fyi-archive",
+              "builder_group": "chromium.fuchsia.fyi",
               "execution_mode": "COMPILE_AND_TEST",
               "legacy_chromium_config": {
                 "apply_configs": [
@@ -19,15 +19,21 @@
                 ],
                 "build_config": "Release",
                 "config": "chromium",
+                "target_arch": "arm",
                 "target_bits": 64,
                 "target_platform": "fuchsia"
               },
               "legacy_gclient_config": {
                 "apply_configs": [
-                  "fuchsia_arm64"
+                  "fuchsia_arm64",
+                  "fuchsia_arm64_host"
                 ],
                 "config": "chromium"
-              }
+              },
+              "legacy_test_results_config": {
+                "config": "staging_server"
+              },
+              "run_tests_serially": true
             }
           }
         ]
@@ -35,17 +41,13 @@
       "builder_ids": [
         {
           "bucket": "ci",
-          "builder": "fuchsia-arm64-cast",
+          "builder": "fuchsia-arm64-rel",
           "project": "chromium"
         }
       ],
       "mirroring_builder_group_and_names": [
         {
-          "builder": "fuchsia-arm64-cast",
-          "group": "tryserver.chromium.fuchsia"
-        },
-        {
-          "builder": "fuchsia-arm64-cast-receiver-rel",
+          "builder": "fuchsia-arm64-rel",
           "group": "tryserver.chromium.fuchsia"
         }
       ]
@@ -53,7 +55,6 @@
   },
   "$build/goma": {
     "enable_ats": true,
-    "jobs": 500,
     "rpc_extra_params": "?prod",
     "server_host": "goma.chromium.org",
     "use_luci_auth": true
@@ -65,9 +66,9 @@
       "v.test_suite"
     ]
   },
-  "builder_group": "chromium.fuchsia",
+  "builder_group": "chromium.fuchsia.fyi",
   "recipe": "chromium",
   "sheriff_rotations": [
-    "chromium"
+    "fuchsia"
   ]
 }

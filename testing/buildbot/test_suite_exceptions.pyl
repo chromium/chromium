@@ -441,6 +441,24 @@
           'shards': 1,
         },
       },
+      'fuchsia-x64-cast-receiver-rel': {
+        'args': [
+          '--platform=fuchsia',
+          '--jobs=1',
+        ],
+        'swarming': {
+          'shards': 1,
+        },
+      },
+      'fuchsia-x64-rel': {
+        'args': [
+          '--platform=fuchsia',
+          '--jobs=1',
+        ],
+        'swarming': {
+          'shards': 1,
+        },
+      },
       'linux-autofill-assistant': {
         'args': [
           '--release',
@@ -734,6 +752,24 @@
       'fuchsia-fyi-x64-rel': {
         'args': [
           '--platform=fuchsia',
+        ],
+        'swarming': {
+          'shards': 1,
+        },
+      },
+      'fuchsia-x64-cast-receiver-rel': {
+        'args': [
+          '--platform=fuchsia',
+          '--jobs=1',
+        ],
+        'swarming': {
+          'shards': 1,
+        },
+      },
+      'fuchsia-x64-rel': {
+        'args': [
+          '--platform=fuchsia',
+          '--jobs=1',
         ],
         'swarming': {
           'shards': 1,
@@ -2658,6 +2694,8 @@
     'remove_from': [
       # TODO(crbug.com/1201887): Remove once tests are stable.
       'Fuchsia x64',
+      'fuchsia-x64-cast-receiver-rel',
+      'fuchsia-x64-rel',
     ],
   },
   'mojo_test_apk': {
@@ -3088,7 +3126,10 @@
       },
     },
     'remove_from': [
-      'Fuchsia x64',  # https://crbug.com/1302427
+      # TODO(https://crbug.com/1302427): Remove once tests pass.
+      'Fuchsia x64',
+      'fuchsia-x64-cast-receiver-rel',
+      'fuchsia-x64-rel',
     ],
     'replacements': {
       # The V8 builders pass the V8 revision for ${got_revision}, so instead
@@ -3176,7 +3217,10 @@
       },
     },
     'remove_from': [
-      'Fuchsia x64',  # https://crbug.com/1302427
+      # TODO(https://crbug.com/1302427): Remove once tests pass.
+      'Fuchsia x64',
+      'fuchsia-x64-cast-receiver-rel',
+      'fuchsia-x64-rel',
     ],
   },
   'services_unittests': {
