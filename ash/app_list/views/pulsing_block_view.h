@@ -42,9 +42,6 @@ class PulsingBlockView : public views::View {
  private:
   void OnStartDelayTimer();
 
-  // views::View overrides:
-  void OnPaint(gfx::Canvas* canvas) override;
-
   base::OneShotTimer start_delay_timer_;
 
   views::View* background_color_view_ = nullptr;
