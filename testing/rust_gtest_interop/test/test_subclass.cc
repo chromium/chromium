@@ -8,10 +8,10 @@ namespace rust_gtest_interop {
 
 TestSubclass::TestSubclass() = default;
 
-RUST_GTEST_TEST_SUITE_FACTORY(TestSubclass);
+RUST_GTEST_TEST_SUITE_FACTORY(TestSubclass)
 
 TestSubclassWithCustomTemplate::TestSubclassWithCustomTemplate() = default;
 
-RUST_CUSTOM_TEMPLATE_TEST_SUITE_FACTORY(TestSubclassWithCustomTemplate);
+RUST_CUSTOM_TEMPLATE_TEST_SUITE_FACTORY(TestSubclassWithCustomTemplate)
 
 }  // namespace rust_gtest_interop
