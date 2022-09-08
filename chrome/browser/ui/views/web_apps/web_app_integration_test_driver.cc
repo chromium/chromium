@@ -511,11 +511,13 @@ AppManagementPageHandler CreateAppManagementPageHandler(Profile* profile) {
 #endif
 
 void ActivateBrowserAndWait(Browser* browser) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
   DCHECK(browser);
   DCHECK(browser->window());
   auto waiter = ui_test_utils::BrowserActivationWaiter(browser);
   browser->window()->Activate();
   waiter.WaitForActivation();
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 }
 
 }  // anonymous namespace
