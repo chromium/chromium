@@ -35,9 +35,6 @@ ASH_PUBLIC_EXPORT extern const base::Feature kEnableAppReinstallZeroState;
 // Enables hashed recording of a app list launches.
 ASH_PUBLIC_EXPORT extern const base::Feature kEnableAppListLaunchRecording;
 
-// Enables using the fuzzy search algorithm for app search provider.
-ASH_PUBLIC_EXPORT extern const base::Feature kEnableFuzzyAppSearch;
-
 // Enables using exact string search for non latin locales.
 ASH_PUBLIC_EXPORT extern const base::Feature kEnableExactMatchForNonLatinLocale;
 
@@ -71,7 +68,6 @@ ASH_PUBLIC_EXPORT bool IsZeroStateAppsRankerEnabled();
 ASH_PUBLIC_EXPORT bool IsZeroStateMixedTypesRankerEnabled();
 ASH_PUBLIC_EXPORT bool IsAppReinstallZeroStateEnabled();
 ASH_PUBLIC_EXPORT bool IsAppListLaunchRecordingEnabled();
-ASH_PUBLIC_EXPORT bool IsFuzzyAppSearchEnabled();
 ASH_PUBLIC_EXPORT bool IsExactMatchForNonLatinLocaleEnabled();
 ASH_PUBLIC_EXPORT bool IsForceShowContinueSectionEnabled();
 ASH_PUBLIC_EXPORT bool IsAggregatedMlSearchRankingEnabled();

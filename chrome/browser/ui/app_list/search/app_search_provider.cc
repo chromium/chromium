@@ -573,9 +573,8 @@ void AppSearchProvider::UpdateQueriedResults() {
 
   const TokenizedString query_terms(query_);
   const bool use_exact_match =
-      (!app_list_features::IsFuzzyAppSearchEnabled()) ||
-      (app_list_features::IsExactMatchForNonLatinLocaleEnabled() &&
-       IsNonLatinLocale(base::i18n::GetConfiguredLocale()));
+      app_list_features::IsExactMatchForNonLatinLocaleEnabled() &&
+      IsNonLatinLocale(base::i18n::GetConfiguredLocale());
 
   for (auto& app : apps_) {
     if (!app->searchable())

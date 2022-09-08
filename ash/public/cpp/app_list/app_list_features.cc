@@ -20,8 +20,6 @@ const base::Feature kEnableAppReinstallZeroState{
     "EnableAppReinstallZeroState", base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kEnableAppListLaunchRecording{
     "EnableAppListLaunchRecording", base::FEATURE_DISABLED_BY_DEFAULT};
-const base::Feature kEnableFuzzyAppSearch{"EnableFuzzyAppSearch",
-                                          base::FEATURE_ENABLED_BY_DEFAULT};
 const base::Feature kEnableExactMatchForNonLatinLocale{
     "EnableExactMatchForNonLatinLocale", base::FEATURE_ENABLED_BY_DEFAULT};
 const base::Feature kCategoricalSearch{"CategoricalSearch",
@@ -54,10 +52,6 @@ bool IsZeroStateMixedTypesRankerEnabled() {
 
 bool IsAppReinstallZeroStateEnabled() {
   return base::FeatureList::IsEnabled(kEnableAppReinstallZeroState);
-}
-
-bool IsFuzzyAppSearchEnabled() {
-  return base::FeatureList::IsEnabled(kEnableFuzzyAppSearch);
 }
 
 bool IsExactMatchForNonLatinLocaleEnabled() {
