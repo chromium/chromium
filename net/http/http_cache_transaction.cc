@@ -13,6 +13,7 @@
 #include <algorithm>
 #include <memory>
 #include <string>
+#include <type_traits>
 #include <utility>
 
 #include "base/auto_reset.h"
@@ -52,6 +53,7 @@
 #include "net/http/http_log_util.h"
 #include "net/http/http_network_session.h"
 #include "net/http/http_request_info.h"
+#include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
 #include "net/http/http_util.h"
 #include "net/http/webfonts_histogram.h"
@@ -2956,6 +2958,77 @@ int HttpCache::Transaction::RestartNetworkRequestWithAuth(
   return rv;
 }
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class PrefetchReuseState : uint8_t {
+  kNone = 0,
+
+  // Bit 0 represents if it's reused first time
+  kFirstReuse = 1 << 0,
+
+  // Bit 1 represents if it's reused within the time window
+  kReusedWithinTimeWindow = 1 << 1,
+
+  // Bit 2-3 represents the freshness based on cache headers
+  kFresh = 0 << 2,
+  kAlwaysValidate = 1 << 2,
+  kExpired = 2 << 2,
+  kStale = 3 << 2,
+
+  // histograms require a named max value
+  kBitMaskForAllAttributes = kStale | kReusedWithinTimeWindow | kFirstReuse,
+  kMaxValue = kBitMaskForAllAttributes
+};
+
+namespace {
+std::underlying_type<PrefetchReuseState>::type to_underlying(
+    PrefetchReuseState state) {
+  DCHECK_LE(PrefetchReuseState::kNone, state);
+  DCHECK_LE(state, PrefetchReuseState::kMaxValue);
+
+  return static_cast<std::underlying_type<PrefetchReuseState>::type>(state);
+}
+
+PrefetchReuseState to_reuse_state(
+    std::underlying_type<PrefetchReuseState>::type value) {
+  PrefetchReuseState state = static_cast<PrefetchReuseState>(value);
+  DCHECK_LE(PrefetchReuseState::kNone, state);
+  DCHECK_LE(state, PrefetchReuseState::kMaxValue);
+  return state;
+}
+}  // namespace
+
+PrefetchReuseState ComputePrefetchReuseState(ValidationType type,
+                                             bool first_reuse,
+                                             bool reused_within_time_window,
+                                             bool validate_flag) {
+  std::underlying_type<PrefetchReuseState>::type reuse_state =
+      to_underlying(PrefetchReuseState::kNone);
+
+  if (first_reuse)
+    reuse_state |= to_underlying(PrefetchReuseState::kFirstReuse);
+
+  if (reused_within_time_window)
+    reuse_state |= to_underlying(PrefetchReuseState::kReusedWithinTimeWindow);
+
+  if (validate_flag)
+    reuse_state |= to_underlying(PrefetchReuseState::kAlwaysValidate);
+  else {
+    switch (type) {
+      case VALIDATION_SYNCHRONOUS:
+        reuse_state |= to_underlying(PrefetchReuseState::kExpired);
+        break;
+      case VALIDATION_ASYNCHRONOUS:
+        reuse_state |= to_underlying(PrefetchReuseState::kStale);
+        break;
+      case VALIDATION_NONE:
+        reuse_state |= to_underlying(PrefetchReuseState::kFresh);
+        break;
+    }
+  }
+  return to_reuse_state(reuse_state);
+}
+
 ValidationType HttpCache::Transaction::RequiresValidation() {
   // TODO(darin): need to do more work here:
   //  - make sure we have a matching request method
@@ -2973,29 +3046,48 @@ ValidationType HttpCache::Transaction::RequiresValidation() {
   if (effective_load_flags_ & LOAD_SKIP_CACHE_VALIDATION)
     return VALIDATION_NONE;
 
-  base::TimeDelta response_time_in_cache =
-      cache_->clock_->Now() - response_.response_time;
-  if (response_.unused_since_prefetch &&
-      !(effective_load_flags_ & LOAD_PREFETCH) &&
-      (response_time_in_cache < base::Minutes(kPrefetchReuseMins)) &&
-      (response_time_in_cache >= base::TimeDelta())) {
-    // The first use of a resource after prefetch within a short window skips
-    // validation.
-    return VALIDATION_NONE;
-  }
-
-  if (effective_load_flags_ & LOAD_VALIDATE_CACHE) {
-    validation_cause_ = VALIDATION_CAUSE_VALIDATE_FLAG;
-    return VALIDATION_SYNCHRONOUS;
-  }
-
   if (method_ == "PUT" || method_ == "DELETE" || method_ == "PATCH")
     return VALIDATION_SYNCHRONOUS;
 
+  bool validate_flag = effective_load_flags_ & LOAD_VALIDATE_CACHE;
+
   ValidationType validation_required_by_headers =
-      response_.headers->RequiresValidation(response_.request_time,
-                                            response_.response_time,
-                                            cache_->clock_->Now());
+      validate_flag ? VALIDATION_SYNCHRONOUS
+                    : response_.headers->RequiresValidation(
+                          response_.request_time, response_.response_time,
+                          cache_->clock_->Now());
+
+  base::TimeDelta response_time_in_cache =
+      cache_->clock_->Now() - response_.response_time;
+
+  if (!(effective_load_flags_ & LOAD_PREFETCH) &&
+      (response_time_in_cache >= base::TimeDelta())) {
+    bool reused_within_time_window =
+        response_time_in_cache < base::Minutes(kPrefetchReuseMins);
+    bool first_reuse = response_.unused_since_prefetch;
+
+    base::UmaHistogramLongTimes("HttpCache.PrefetchReuseTime",
+                                response_time_in_cache);
+    if (first_reuse) {
+      base::UmaHistogramLongTimes("HttpCache.PrefetchFirstReuseTime",
+                                  response_time_in_cache);
+    }
+
+    base::UmaHistogramEnumeration(
+        "HttpCache.PrefetchReuseState",
+        ComputePrefetchReuseState(validation_required_by_headers, first_reuse,
+                                  reused_within_time_window, validate_flag));
+    // The first use of a resource after prefetch within a short window skips
+    // validation.
+    if (first_reuse && reused_within_time_window) {
+      return VALIDATION_NONE;
+    }
+  }
+
+  if (validate_flag) {
+    validation_cause_ = VALIDATION_CAUSE_VALIDATE_FLAG;
+    return VALIDATION_SYNCHRONOUS;
+  }
 
   if (validation_required_by_headers != VALIDATION_NONE) {
     HttpResponseHeaders::FreshnessLifetimes lifetimes =
