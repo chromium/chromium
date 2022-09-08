@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <algorithm>
+#include <iterator>
 #include <list>
 #include <map>
 #include <memory>
@@ -18,6 +19,7 @@
 #include "base/feature_list.h"
 #include "base/guid.h"
 #include "base/memory/raw_ptr.h"
+#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -346,6 +348,16 @@ std::unique_ptr<FormStructure> ConstructThirdProfileFormStructure() {
       GetThirdProfileTypeValuePairs());
 }
 
+// Constructs a FormStructure with two address sections by concatenating
+// the default profile and second profile form structures.
+std::unique_ptr<FormStructure> ConstructShippingAndBillingFormStructure() {
+  TypeValuePairs a = GetDefaultProfileTypeValuePairs();
+  TypeValuePairs b = GetSecondProfileTypeValuePairs();
+  a.reserve(a.size() + b.size());
+  base::ranges::move(b, std::back_inserter(a));
+  return ConstructFormStructureFromTypeValuePairs(a);
+}
+
 // Same as `ConstructDefaultFormStructure()` but for credit cards.
 std::unique_ptr<FormStructure> ConstructDefaultCreditCardFormStructure() {
   return ConstructFormStructureFromTypeValuePairs(
@@ -560,7 +572,7 @@ class FormDataImporterTestBase {
 
     EXPECT_EQ(extraction_successful,
               form_data_importer_->ImportAddressProfiles(
-                  form, address_profile_import_candidates));
+                  form, address_profile_import_candidates) > 0);
 
     if (!extraction_successful) {
       EXPECT_FALSE(form_data_importer_->ProcessAddressProfileImportCandidates(
@@ -1468,25 +1480,10 @@ TEST_P(FormDataImporterTest,
 }
 
 TEST_P(FormDataImporterTest, ImportAddressProfiles_TwoValidProfilesSameForm) {
-  AutofillProfile default_profile = ConstructDefaultProfile();
-  AutofillProfile alternative_profile = ConstructSecondProfile();
-
-  // Get the type value pairs that correspond to the first profile.
-  TypeValuePairs profile_type_value_pairs = GetDefaultProfileTypeValuePairs();
-  TypeValuePairs second_profile_type_value_pairs =
-      GetSecondProfileTypeValuePairs();
-
-  // Now combine the two vectors and construct the single FormStructure that
-  // holds both profiles.
-  profile_type_value_pairs.insert(profile_type_value_pairs.end(),
-                                  second_profile_type_value_pairs.begin(),
-                                  second_profile_type_value_pairs.end());
-
   std::unique_ptr<FormStructure> form_structure =
-      ConstructFormStructureFromTypeValuePairs(profile_type_value_pairs);
-
+      ConstructShippingAndBillingFormStructure();
   ImportAddressProfilesAndVerifyExpectation(
-      *form_structure, {default_profile, alternative_profile});
+      *form_structure, {ConstructDefaultProfile(), ConstructSecondProfile()});
 }
 
 TEST_P(FormDataImporterTest,
@@ -4482,7 +4479,8 @@ TEST_P(FormDataImporterTest, MultiStepImportDeleteOnBrowsingHistoryCleared) {
   ImportAddressProfilesAndVerifyExpectation(*form_structure, {});
 }
 
-// Tests that the FormAssociator is correctly integrated in FormDataImporter.
+// Tests that the FormAssociator is correctly integrated in FormDataImporter and
+// that multiple address form in the same form are associated with each other.
 // The functionality itself is tested in form_data_importer_utils_unittest.cc.
 TEST_P(FormDataImporterTest, FormAssociator) {
   base::test::ScopedFeatureList form_association_feature;
@@ -4490,7 +4488,8 @@ TEST_P(FormDataImporterTest, FormAssociator) {
       features::kAutofillAssociateForms);
 
   std::unique_ptr<FormStructure> form_structure =
-      ConstructDefaultProfileFormStructure();
+      ConstructShippingAndBillingFormStructure();
+  FormSignature form_signature = form_structure->form_signature();
   // Don't use `ImportAddressProfileAndVerifyImportOfDefaultProfile()`, as this
   // function assumes we know it's an address form already. Form associations
   // are tracked in `ImportFormData()` instead.
@@ -4499,12 +4498,13 @@ TEST_P(FormDataImporterTest, FormAssociator) {
       /*credit_card_autofill_enabled=*/false,
       /*should_return_local_card=*/false, nullptr, nullptr));
 
-  auto associations = form_data_importer_->GetFormAssociations(
-      form_structure->form_signature());
+  absl::optional<FormStructure::FormAssociations> associations =
+      form_data_importer_->GetFormAssociations(form_signature);
+  // Expect the same form signature for the two most recent address form, as
+  // `form_structure` consists of two sections.
   EXPECT_TRUE(associations);
-  EXPECT_EQ(associations->last_address_form_submitted,
-            form_structure->form_signature());
-  EXPECT_FALSE(associations->second_last_address_form_submitted);
+  EXPECT_EQ(associations->last_address_form_submitted, form_signature);
+  EXPECT_EQ(associations->second_last_address_form_submitted, form_signature);
   EXPECT_FALSE(associations->last_credit_card_form_submitted);
 }
 

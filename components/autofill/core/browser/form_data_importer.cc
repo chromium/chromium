@@ -363,12 +363,12 @@ bool FormDataImporter::ImportFormData(
     std::vector<AddressProfileImportCandidate>&
         address_profile_import_candidates,
     absl::optional<std::string>* imported_upi_id) {
-  // We try the same |form| for both credit card and address import/update.
-  // - ImportCreditCard may update an existing card, or fill
-  //   |imported_credit_card| with an extracted card. See .h for details of
-  //   |should_return_local_card|.
-  // Reset |imported_credit_card_record_type_| every time we import data from
-  // form no matter whether ImportCreditCard() is called or not.
+  // We try the same `form` for both credit card and address import/update.
+  // - `ImportCreditCard()` may update an existing card, or fill
+  //   `imported_credit_card` with an extracted card. See .h for details of
+  //   `should_return_local_card`.
+  // Reset `imported_credit_card_record_type_` every time we import data from
+  // form no matter whether `ImportCreditCard()` is called or not.
   imported_credit_card_record_type_ = ImportedCreditCardRecordType::NO_CARD;
   bool cc_import = false;
   if (credit_card_autofill_enabled) {
@@ -376,23 +376,23 @@ bool FormDataImporter::ImportFormData(
                                  imported_credit_card);
     *imported_upi_id = ImportUpiId(submitted_form);
   }
-  // - ImportAddressProfiles may eventually save or update one or more address
-  //   profiles.
-  bool address_import = false;
+  // - `ImportAddressProfiles()` collects all importable profiles, but currently
+  //   at most one import prompt is shown.
+  size_t num_complete_address_profiles = 0;
 
   // Only import addresses if enabled.
   if (profile_autofill_enabled &&
       !base::FeatureList::IsEnabled(features::kAutofillDisableAddressImport)) {
-    address_import = ImportAddressProfiles(submitted_form,
-                                           address_profile_import_candidates);
+    num_complete_address_profiles = ImportAddressProfiles(
+        submitted_form, address_profile_import_candidates);
   }
 
   if (base::FeatureList::IsEnabled(features::kAutofillAssociateForms)) {
     auto origin = url::Origin::Create(submitted_form.source_url());
     FormSignature form_signature = submitted_form.form_signature();
-    // TODO(crbug.com/1347795): Associate multiple sections within a single form
-    // with each other.
-    if (address_import) {
+    // If multiple complete address profiles were extracted, this most likely
+    // corresponds to billing and shipping sections within the same form.
+    for (size_t i = 0; i < num_complete_address_profiles; i++) {
       form_associator_.TrackFormAssociations(
           origin, form_signature, FormAssociator::FormType::kAddressForm);
     }
@@ -402,14 +402,16 @@ bool FormDataImporter::ImportFormData(
     }
   }
 
-  if (cc_import || address_import || imported_upi_id->has_value())
+  if (cc_import || num_complete_address_profiles > 0 ||
+      imported_upi_id->has_value()) {
     return true;
+  }
 
   personal_data_manager_->MarkObserversInsufficientFormDataForImport();
   return false;
 }
 
-bool FormDataImporter::ImportAddressProfiles(
+size_t FormDataImporter::ImportAddressProfiles(
     const FormStructure& form,
     std::vector<AddressProfileImportCandidate>& import_candidates) {
   // Create a buffer to collect logging output for the autofill-internals.
@@ -480,7 +482,7 @@ bool FormDataImporter::ImportAddressProfiles(
   // Write log buffer to autofill-internals.
   LOG_AF(log_manager) << std::move(import_log_buffer);
 
-  return num_complete_profiles > 0;
+  return num_complete_profiles;
 }
 
 bool FormDataImporter::ImportAddressProfileForSection(

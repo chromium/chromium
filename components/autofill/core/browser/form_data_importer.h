@@ -151,13 +151,12 @@ class FormDataImporter : public PersonalDataManagerObserver {
     ProfileImportMetadata import_metadata;
   };
 
-  // Scans the given |form| for importable Autofill data. If the form includes
-  // sufficient address data for a new profile, it is immediately imported and
-  // this function returns true. This function also returns true in cases where
-  // FormDataImporter::ImportCreditCard() returns true, please refer to the
-  // comment above that function for more details. If the form contains UPI data
-  // and |credit_card_autofill_enabled| is true, the UPI ID will be stored into
-  // |imported_upi_id| and this function will also return true.
+  // Scans the given `form` for importable Autofill data and stores it in the
+  // function's out parameters. The function returns true if at least one piece
+  // of importable address or credit card information was found.
+  // If the form contains UPI data and `credit_card_autofill_enabled` is true,
+  // the UPI ID will be stored into `imported_upi_id`. In this case, the
+  // function will return true as well.
   bool ImportFormData(const FormStructure& form,
                       bool profile_autofill_enabled,
                       bool credit_card_autofill_enabled,
@@ -167,12 +166,13 @@ class FormDataImporter : public PersonalDataManagerObserver {
                           address_profile_import_candidates,
                       absl::optional<std::string>* imported_upi_id);
 
-  // Go through the |form| fields and attempt to extract and import valid
-  // address profiles. Returns true on extraction success of at least one
-  // profile. There are many reasons that extraction may fail (see
-  // implementation).  The function returns true if at least one complete
-  // address profile was found.
-  bool ImportAddressProfiles(
+  // Attempts to construct AddressProfileImportCandidates by extracting values
+  // from the fields in the `form`'s sections. Extraction can fail if the
+  // fields' values don't pass validation. Apart from complete address profiles,
+  // partial profiles for silent updates are extracted. All are stored in
+  // `import_candidates`.
+  // The function returns the number of _complete_ extracted profiles.
+  size_t ImportAddressProfiles(
       const FormStructure& form,
       std::vector<AddressProfileImportCandidate>& import_candidates);
 
