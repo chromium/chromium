@@ -37,6 +37,9 @@ class TailoredSecurityServiceBannerRequestConfig
   // The name of the icon image.
   NSString* icon_image_name() const { return icon_image_name_; }
 
+  // The badge of the infobar.
+  bool has_badge() const { return has_badge_; }
+
  private:
   OVERLAY_USER_DATA_SETUP(TailoredSecurityServiceBannerRequestConfig);
   explicit TailoredSecurityServiceBannerRequestConfig(
