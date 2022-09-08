@@ -118,7 +118,6 @@ TEST_F(LayoutViewTest, NamedPages) {
   EXPECT_EQ(mapper->NamedPageAtIndex(8), "yksi");
   EXPECT_EQ(mapper->NamedPageAtIndex(9), "yksi");
   EXPECT_EQ(mapper->NamedPageAtIndex(100), "yksi");
-  EXPECT_EQ(mapper->LastPageName(), "yksi");
 }
 
 struct HitTestConfig {
