@@ -61,10 +61,10 @@
 #include "components/messages/android/messages_feature.h"
 #include "components/permissions/permission_request_manager.h"
 #else
-#include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/hats/hats_service.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/browser/ui/permission_bubble/permission_prompt.h"
+#include "components/vector_icons/vector_icons.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -287,7 +287,7 @@ permissions::IconId ChromePermissionsClient::GetOverrideIconId(
 #if BUILDFLAG(IS_CHROMEOS)
   // TODO(xhwang): fix this icon, see crbug.com/446263.
   if (request_type == permissions::RequestType::kProtectedMediaIdentifier)
-    return kProductIcon;
+    return vector_icons::kProductIcon;
 #endif
   return PermissionsClient::GetOverrideIconId(request_type);
 }

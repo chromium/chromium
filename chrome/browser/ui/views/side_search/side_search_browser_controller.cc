@@ -417,7 +417,7 @@ SideSearchBrowserController::CreateToolbarButton() {
                               kSideSearchButtonElementId);
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  toolbar_button->SetVectorIcon(kGoogleGLogoMonochromeIcon);
+  toolbar_button->SetVectorIcon(vector_icons::kGoogleGLogoMonochromeIcon);
 #else
   toolbar_button->SetVectorIcon(kWebIcon);
 #endif
