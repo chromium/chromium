@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/views/bubble_anchor_util_views.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "chrome/browser/ui/views/chrome_widget_sublevel.h"
 #include "chrome/browser/ui/views/title_origin_label.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
@@ -47,6 +48,7 @@
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/style/platform_style.h"
 #include "ui/views/view_class_properties.h"
+#include "ui/views/views_features.h"
 #include "ui/views/widget/widget.h"
 
 namespace {
@@ -316,6 +318,10 @@ void PermissionPromptBubbleView::Show() {
   UpdateAnchorPosition();
 
   views::Widget* widget = views::BubbleDialogDelegateView::CreateBubble(this);
+
+  if (base::FeatureList::IsEnabled(views::features::kWidgetLayering))
+    widget->SetZOrderSublevel(ChromeWidgetSublevel::kSublevelSecurity);
+
   // If a browser window (or popup) other than the bubble parent has focus,
   // don't take focus.
   if (browser_->window()->IsActive())
