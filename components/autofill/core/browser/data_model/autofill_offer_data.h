@@ -157,7 +157,7 @@ class AutofillOfferData {
 
   // The specific type of offer, which informs decisions made by other classes,
   // such as UI rendering or metrics.
-  OfferType offer_type_;
+  OfferType offer_type_ = OfferType::UNKNOWN;
 
   // The unique server ID for this offer data.
   int64_t offer_id_;

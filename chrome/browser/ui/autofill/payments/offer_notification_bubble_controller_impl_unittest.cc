@@ -201,7 +201,7 @@ TEST_F(OfferNotificationBubbleControllerImplTest,
       /*eligible_instrument_ids=*/{123});
   ShowBubble(&offer);
 
-  EXPECT_EQ(&offer, controller()->GetOffer());
+  EXPECT_TRUE(*controller()->GetOffer() == offer);
 }
 
 TEST_F(OfferNotificationBubbleControllerImplTest,
