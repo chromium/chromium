@@ -4314,6 +4314,7 @@ if (is_android) {
     proguard_configs = [
       "android/proguard/chromium_apk.flags",
       "android/proguard/chromium_code.flags",
+      "android/proguard/remove_logging.flags",
     ]
   }
 

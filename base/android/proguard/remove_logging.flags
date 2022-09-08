@@ -1,0 +1,45 @@
+# Copyright 2022 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+
+# Remove Log.d(), Log.v(), and all isLoggable() (which is generally used
+# only with Level.DEBUG and Level.VERBOSE).
+-assumenosideeffects class android.util.Log {
+  static int d(...);
+  static int v(...);
+  static boolean isLoggable(...) return false;
+}
+
+# Makes try-with-resources less inefficient. Saved 3.8kb when added.
+-assumenosideeffects class java.lang.Throwable {
+  void addSuppressed(...);
+}
+
+# Remove all logging calls via JDK Loggers. They are generally from
+# unused parts of third-party libraries.
+-assumenosideeffects class java.util.logging.Logger {
+    void finest(...);
+    void finer(...);
+    void fine(...);
+    void info(...);
+    void warning(...);
+    void severe(...);
+    void throwing(...);
+    void log(...);
+    void logp(...);
+    static java.util.logging.Logger getLogger(...) return _NONNULL_;
+    boolean isLoggable(...) return false;
+}
+
+# Remove accesses to Level.<thing> that go unused.
+-assumenosideeffects class java.util.logging.Level {
+  <fields>;
+  # Flogger uses Level objects, so do not set a return value for intValue().
+  int intValue();
+}
+
+# Remove fields of type Logger.
+-assumenosideeffects class * {
+  java.util.logging.Logger * return _NONNULL_;
+}

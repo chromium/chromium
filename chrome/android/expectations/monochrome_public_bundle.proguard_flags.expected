@@ -163,18 +163,6 @@
     public static **[] values();
 }
 
-# Allows Proguard freedom in removing these log related calls.
--assumenosideeffects class android.util.Log {
-  static int d(...);
-  static int v(...);
-  static boolean isLoggable(...);
-}
-
-# Makes try-with-resources less inefficient. Saved 3.8kb when added.
--assumenosideeffects class java.lang.Throwable {
-  void addSuppressed(...);
-}
-
 # This is to workaround crbug.com/1204690 - an old GMS app version crashes when
 # ObjectWrapper contains > 1 fields, and this prevents R8 from inserting a
 # synthetic field.
@@ -859,6 +847,53 @@
 # rule, fields may be removed that would cause runtime failures.
 -keepclassmembers class * extends com.google.android.gms.internal.vision.zzjb {
   <fields>;
+}
+
+# File: ../../base/android/proguard/remove_logging.flags
+# Copyright 2022 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+
+# Remove Log.d(), Log.v(), and all isLoggable() (which is generally used
+# only with Level.DEBUG and Level.VERBOSE).
+-assumenosideeffects class android.util.Log {
+  static int d(...);
+  static int v(...);
+  static boolean isLoggable(...) return false;
+}
+
+# Makes try-with-resources less inefficient. Saved 3.8kb when added.
+-assumenosideeffects class java.lang.Throwable {
+  void addSuppressed(...);
+}
+
+# Remove all logging calls via JDK Loggers. They are generally from
+# unused parts of third-party libraries.
+-assumenosideeffects class java.util.logging.Logger {
+    void finest(...);
+    void finer(...);
+    void fine(...);
+    void info(...);
+    void warning(...);
+    void severe(...);
+    void throwing(...);
+    void log(...);
+    void logp(...);
+    static java.util.logging.Logger getLogger(...) return _NONNULL_;
+    boolean isLoggable(...) return false;
+}
+
+# Remove accesses to Level.<thing> that go unused.
+-assumenosideeffects class java.util.logging.Level {
+  <fields>;
+  # Flogger uses Level objects, so do not set a return value for intValue().
+  int intValue();
+}
+
+# Remove fields of type Logger.
+-assumenosideeffects class * {
+  java.util.logging.Logger * return _NONNULL_;
 }
 
 # File: ../../third_party/android_deps/libs/org_jetbrains_kotlinx_kotlinx_coroutines_android/kotlinx-coroutines-android-1.6.1.jar:META-INF/com.android.tools/r8-from-1.6.0/coroutines.pro
