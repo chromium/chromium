@@ -1539,6 +1539,7 @@ public class CustomTabActivityTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "see crbug.com/1361534")
     public void testLaunchIncognitoURL() throws Exception {
         Intent intent = createMinimalCustomTabIntent();
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
