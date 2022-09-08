@@ -337,16 +337,6 @@ function addPeerConnection(data) {
   const deprecationNotices = document.createElement('ul');
   if (data.rtcConfiguration) {
     deprecationNotices.className = 'peerconnection-deprecations';
-    if (data.rtcConfiguration.indexOf('extmapAllowMixed: false') !== -1) {
-      // Hard deprecation, setting "false" will no longer work.
-      appendChildWithText(deprecationNotices, 'li',
-        'Note: The RTCPeerConnection offerAllowExtmapMixed ' +
-        'option is a non-standard feature. This feature will be removed ' +
-        'in M93 (Canary: July 15, 2021; Stable: August 24, 2021). For ' +
-        'interoperability with legacy WebRTC versions that throw errors ' +
-        'when attempting to parse the a=extmap-allow-mixed line in the ' +
-        'SDP remove the line from the SDP during signalling.');
-    }
   }
   if (data.constraints) {
     if (data.constraints.indexOf('enableDtlsSrtp:') !== -1) {
