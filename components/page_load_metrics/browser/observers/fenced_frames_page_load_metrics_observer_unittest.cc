@@ -102,10 +102,6 @@ TEST_F(FencedFramesPageLoadMetricsObserverTest, Foreground) {
   tester()->histogram_tester().ExpectTotalCount(
       ::internal::kHistogramFencedFramesNavigationToFirstContentfulPaint, 1);
   tester()->histogram_tester().ExpectTotalCount(
-      ::internal::
-          kHistogramFencedFramesNavigationToFirstContentfulPaintBackground,
-      0);
-  tester()->histogram_tester().ExpectTotalCount(
       ::internal::kHistogramFencedFramesNavigationToLargestContentfulPaint2, 1);
   tester()->histogram_tester().ExpectTotalCount(
       ::internal::kHistogramFencedFramesFirstInputDelay4, 1);
@@ -147,10 +143,6 @@ TEST_F(FencedFramesPageLoadMetricsObserverTest, Background) {
       ::internal::kHistogramFencedFramesNavigationToFirstImagePaint, 0);
   tester()->histogram_tester().ExpectTotalCount(
       ::internal::kHistogramFencedFramesNavigationToFirstContentfulPaint, 0);
-  tester()->histogram_tester().ExpectTotalCount(
-      ::internal::
-          kHistogramFencedFramesNavigationToFirstContentfulPaintBackground,
-      1);
   tester()->histogram_tester().ExpectTotalCount(
       ::internal::kHistogramFencedFramesNavigationToLargestContentfulPaint2, 0);
   tester()->histogram_tester().ExpectTotalCount(

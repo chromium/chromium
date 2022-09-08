@@ -618,9 +618,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Clients.FencedFrames.InteractiveTiming.FirstInputDelay4"
-    units="ms" expires_after="2022-10-01">
-  <owner>toyoshim@chromium.org</owner>
-  <owner>mparch-dev@chromium.org</owner>
+    units="ms" expires_after="2023-06-01">
+  <owner>lbrady@google.com</owner>
+  <owner>shivanisha@chromium.org</owner>
+  <owner>dom@chromium.org</owner>
   <summary>
     Measures First Input Delay, the duration between the hardware timestamp and
     the start of event processing on the main thread for the first meaningful
@@ -645,9 +646,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Clients.FencedFrames.LayoutInstability.CumulativeShiftScore.MainFrame"
-    units="scorex10" expires_after="2022-10-01">
-  <owner>toyoshim@chromium.org</owner>
-  <owner>mparch-dev@chromium.org</owner>
+    units="scorex10" expires_after="2023-06-01">
+  <owner>lbrady@google.com</owner>
+  <owner>shivanisha@chromium.org</owner>
+  <owner>dom@chromium.org</owner>
   <summary>
     Measures the cumulative layout shift score (bit.ly/lsm-explainer) that has
     occurred in the FencedFrames page's main frame. Recorded at the end of the
@@ -669,23 +671,11 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="PageLoad.Clients.FencedFrames.PaintTiming.NavigationToFirstContentfulPaint.Background"
-    units="ms" expires_after="2022-10-01">
-  <owner>toyoshim@chromium.org</owner>
-  <owner>mparch-dev@chromium.org</owner>
-  <summary>
-    The time from navigation start to first &quot;contentful&quot; paint. This
-    metric include FencedFrames' page loads that haven't kept running in
-    foreground. Recorded iff the page loads or the event happens in the
-    background.
-  </summary>
-</histogram>
-
-<histogram
     name="PageLoad.Clients.FencedFrames.PaintTiming.NavigationToFirstImagePaint"
-    units="ms" expires_after="2022-10-01">
-  <owner>toyoshim@chromium.org</owner>
-  <owner>mparch-dev@chromium.org</owner>
+    units="ms" expires_after="2023-06-01">
+  <owner>lbrady@google.com</owner>
+  <owner>shivanisha@chromium.org</owner>
+  <owner>dom@chromium.org</owner>
   <summary>
     Measures the time from navigation timing's navigation start to the time the
     first image is painted, for FencedFrames' main frame documents. For images

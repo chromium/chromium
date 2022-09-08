@@ -13,8 +13,6 @@ namespace internal {
 extern const char kHistogramFencedFramesNavigationToFirstPaint[];
 extern const char kHistogramFencedFramesNavigationToFirstImagePaint[];
 extern const char kHistogramFencedFramesNavigationToFirstContentfulPaint[];
-extern const char
-    kHistogramFencedFramesNavigationToFirstContentfulPaintBackground[];
 extern const char kHistogramFencedFramesNavigationToLargestContentfulPaint2[];
 extern const char kHistogramFencedFramesFirstInputDelay4[];
 extern const char kHistogramFencedFramesCumulativeShiftScore[];

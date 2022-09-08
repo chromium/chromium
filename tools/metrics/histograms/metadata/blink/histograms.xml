@@ -2851,9 +2851,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.UseCounter.FencedFrames.PermissionsPolicy.Allow2"
-    enum="FeaturePolicyFeature" expires_after="2022-10-01">
-  <owner>toyoshim@chromium.org</owner>
-  <owner>mparc-dev@chromium.org</owner>
+    enum="FeaturePolicyFeature" expires_after="2023-06-01">
+  <owner>lbrady@google.com</owner>
+  <owner>shivanisha@chromium.org</owner>
+  <owner>dom@chromium.org</owner>
   <summary>
     Similar to Blink.UseCounter.PermissionsPolicy.Allow2, this counts the use of
     a specific permissions policy feature via the &quot;allow&quot; attribute on
@@ -2863,9 +2864,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.UseCounter.FencedFrames.PermissionsPolicy.Header2"
-    enum="FeaturePolicyFeature" expires_after="2022-10-01">
-  <owner>toyoshim@chromium.org</owner>
-  <owner>mparc-dev@chromium.org</owner>
+    enum="FeaturePolicyFeature" expires_after="2023-06-01">
+  <owner>lbrady@google.com</owner>
+  <owner>shivanisha@chromium.org</owner>
+  <owner>dom@chromium.org</owner>
   <summary>
     Similar to Blink.UseCounter.PermissionsPolicy.Header2, this counts the use
     of a specific permissions policy feature via both &quot;Feature-Policy&quot;
@@ -2877,9 +2879,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Blink.UseCounter.FencedFrames.PermissionsPolicy.Violation.Enforce"
-    enum="FeaturePolicyFeature" expires_after="2022-10-01">
-  <owner>toyoshim@chromium.org</owner>
-  <owner>mparc-dev@chromium.org</owner>
+    enum="FeaturePolicyFeature" expires_after="2023-06-01">
+  <owner>lbrady@google.com</owner>
+  <owner>shivanisha@chromium.org</owner>
+  <owner>dom@chromium.org</owner>
   <summary>
     Similar to Blink.UseCounter.PermissionsPolicy.Violation.Enforce, this counts
     the actual enforced permissions policy violation. The metrics is triggered
@@ -2890,9 +2893,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.UseCounter.FencedFrames.UserAgentOverride"
-    enum="UserAgentOverride" expires_after="2022-10-01">
-  <owner>toyoshim@chromium.org</owner>
-  <owner>mparc-dev@chromium.org</owner>
+    enum="UserAgentOverride" expires_after="2023-06-01">
+  <owner>lbrady@google.com</owner>
+  <owner>shivanisha@chromium.org</owner>
+  <owner>dom@chromium.org</owner>
   <summary>
     Similar to Blink.UseCounter.UserAgentOverride, this measures how often a
     User-Agent string is overridden, how often that override contains the

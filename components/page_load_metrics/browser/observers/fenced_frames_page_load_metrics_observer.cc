@@ -17,9 +17,6 @@ const char kHistogramFencedFramesNavigationToFirstImagePaint[] =
 const char kHistogramFencedFramesNavigationToFirstContentfulPaint[] =
     "PageLoad.Clients.FencedFrames.PaintTiming."
     "NavigationToFirstContentfulPaint";
-const char kHistogramFencedFramesNavigationToFirstContentfulPaintBackground[] =
-    "PageLoad.Clients.FencedFrames.PaintTiming."
-    "NavigationToFirstContentfulPaint.Background";
 const char kHistogramFencedFramesNavigationToLargestContentfulPaint2[] =
     "PageLoad.Clients.FencedFrames.PaintTiming."
     "NavigationToLargestContentfulPaint2";
@@ -85,11 +82,6 @@ void FencedFramesPageLoadMetricsObserver::OnFirstContentfulPaintInPage(
           timing.paint_timing->first_contentful_paint, GetDelegate())) {
     PAGE_LOAD_HISTOGRAM(
         internal::kHistogramFencedFramesNavigationToFirstContentfulPaint,
-        timing.paint_timing->first_contentful_paint.value());
-  } else {
-    PAGE_LOAD_HISTOGRAM(
-        internal::
-            kHistogramFencedFramesNavigationToFirstContentfulPaintBackground,
         timing.paint_timing->first_contentful_paint.value());
   }
 }
