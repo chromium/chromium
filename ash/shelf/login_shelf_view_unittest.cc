@@ -1169,8 +1169,9 @@ TEST_P(LoginShelfViewWithShutdownConfirmationTest,
   EXPECT_TRUE(IsShutdownConfirmationVisible());
   EXPECT_FALSE(Shell::Get()->lock_state_controller()->ShutdownRequested());
 
-  histograms().ExpectUniqueSample(kShelfShutdownConfirmationActionHistogramName,
-                                  ShelfShutdownConfirmationBubble::kOpened, 1);
+  histograms().ExpectUniqueSample(
+      kShelfShutdownConfirmationActionHistogramName,
+      ShelfShutdownConfirmationBubble::BubbleAction::kOpened, 1);
   histograms().ExpectTotalCount(kShelfShutdownConfirmationActionHistogramName,
                                 1);
   histograms().ExpectTotalCount(kCancelActionDurationHistogramName, 0);
@@ -1196,8 +1197,9 @@ TEST_P(LoginShelfViewWithShutdownConfirmationTest,
   EXPECT_TRUE(IsShutdownConfirmationVisible());
   EXPECT_FALSE(Shell::Get()->lock_state_controller()->ShutdownRequested());
 
-  histograms().ExpectUniqueSample(kShelfShutdownConfirmationActionHistogramName,
-                                  ShelfShutdownConfirmationBubble::kOpened, 1);
+  histograms().ExpectUniqueSample(
+      kShelfShutdownConfirmationActionHistogramName,
+      ShelfShutdownConfirmationBubble::BubbleAction::kOpened, 1);
   histograms().ExpectTotalCount(kShelfShutdownConfirmationActionHistogramName,
                                 1);
   histograms().ExpectTotalCount(kCancelActionDurationHistogramName, 0);
@@ -1220,8 +1222,9 @@ TEST_P(LoginShelfViewWithShutdownConfirmationTest,
   EXPECT_TRUE(IsShutdownConfirmationVisible());
   EXPECT_FALSE(Shell::Get()->lock_state_controller()->ShutdownRequested());
 
-  histograms().ExpectUniqueSample(kShelfShutdownConfirmationActionHistogramName,
-                                  ShelfShutdownConfirmationBubble::kOpened, 1);
+  histograms().ExpectUniqueSample(
+      kShelfShutdownConfirmationActionHistogramName,
+      ShelfShutdownConfirmationBubble::BubbleAction::kOpened, 1);
   histograms().ExpectTotalCount(kShelfShutdownConfirmationActionHistogramName,
                                 1);
   histograms().ExpectTotalCount(kCancelActionDurationHistogramName, 0);
@@ -1242,8 +1245,9 @@ TEST_P(LoginShelfViewWithShutdownConfirmationTest,
   Click(LoginShelfView::kShutdown);
   EXPECT_TRUE(IsShutdownConfirmationVisible());
   EXPECT_FALSE(Shell::Get()->lock_state_controller()->ShutdownRequested());
-  histograms().ExpectBucketCount(kShelfShutdownConfirmationActionHistogramName,
-                                 ShelfShutdownConfirmationBubble::kOpened, 1);
+  histograms().ExpectBucketCount(
+      kShelfShutdownConfirmationActionHistogramName,
+      ShelfShutdownConfirmationBubble::BubbleAction::kOpened, 1);
   histograms().ExpectTotalCount(kShelfShutdownConfirmationActionHistogramName,
                                 1);
 
@@ -1251,9 +1255,9 @@ TEST_P(LoginShelfViewWithShutdownConfirmationTest,
   CancelShutdown();
   EXPECT_FALSE(IsShutdownConfirmationVisible());
   EXPECT_FALSE(Shell::Get()->lock_state_controller()->ShutdownRequested());
-  histograms().ExpectBucketCount(kShelfShutdownConfirmationActionHistogramName,
-                                 ShelfShutdownConfirmationBubble::kCancelled,
-                                 1);
+  histograms().ExpectBucketCount(
+      kShelfShutdownConfirmationActionHistogramName,
+      ShelfShutdownConfirmationBubble::BubbleAction::kCancelled, 1);
   histograms().ExpectTotalCount(kShelfShutdownConfirmationActionHistogramName,
                                 2);
   histograms().ExpectTotalCount(kCancelActionDurationHistogramName, 1);
@@ -1264,8 +1268,9 @@ TEST_P(LoginShelfViewWithShutdownConfirmationTest,
   Click(LoginShelfView::kShutdown);
   EXPECT_TRUE(IsShutdownConfirmationVisible());
   EXPECT_FALSE(Shell::Get()->lock_state_controller()->ShutdownRequested());
-  histograms().ExpectBucketCount(kShelfShutdownConfirmationActionHistogramName,
-                                 ShelfShutdownConfirmationBubble::kOpened, 2);
+  histograms().ExpectBucketCount(
+      kShelfShutdownConfirmationActionHistogramName,
+      ShelfShutdownConfirmationBubble::BubbleAction::kOpened, 2);
   histograms().ExpectTotalCount(kShelfShutdownConfirmationActionHistogramName,
                                 3);
   histograms().ExpectTotalCount(kCancelActionDurationHistogramName, 1);
@@ -1287,8 +1292,9 @@ TEST_P(LoginShelfViewWithShutdownConfirmationTest,
   Click(LoginShelfView::kShutdown);
   EXPECT_TRUE(IsShutdownConfirmationVisible());
   EXPECT_FALSE(Shell::Get()->lock_state_controller()->ShutdownRequested());
-  histograms().ExpectBucketCount(kShelfShutdownConfirmationActionHistogramName,
-                                 ShelfShutdownConfirmationBubble::kOpened, 1);
+  histograms().ExpectBucketCount(
+      kShelfShutdownConfirmationActionHistogramName,
+      ShelfShutdownConfirmationBubble::BubbleAction::kOpened, 1);
   histograms().ExpectTotalCount(kShelfShutdownConfirmationActionHistogramName,
                                 1);
 
@@ -1296,9 +1302,9 @@ TEST_P(LoginShelfViewWithShutdownConfirmationTest,
   ConfirmShutdown();
   EXPECT_FALSE(IsShutdownConfirmationVisible());
   EXPECT_TRUE(Shell::Get()->lock_state_controller()->ShutdownRequested());
-  histograms().ExpectBucketCount(kShelfShutdownConfirmationActionHistogramName,
-                                 ShelfShutdownConfirmationBubble::kConfirmed,
-                                 1);
+  histograms().ExpectBucketCount(
+      kShelfShutdownConfirmationActionHistogramName,
+      ShelfShutdownConfirmationBubble::BubbleAction::kConfirmed, 1);
   histograms().ExpectTotalCount(kShelfShutdownConfirmationActionHistogramName,
                                 2);
   histograms().ExpectTotalCount(kCancelActionDurationHistogramName, 0);
@@ -1317,8 +1323,9 @@ TEST_P(LoginShelfViewWithShutdownConfirmationTest, ShouldCloseAfterInactive) {
   Click(LoginShelfView::kShutdown);
   EXPECT_TRUE(IsShutdownConfirmationVisible());
   EXPECT_FALSE(Shell::Get()->lock_state_controller()->ShutdownRequested());
-  histograms().ExpectBucketCount(kShelfShutdownConfirmationActionHistogramName,
-                                 ShelfShutdownConfirmationBubble::kOpened, 1);
+  histograms().ExpectBucketCount(
+      kShelfShutdownConfirmationActionHistogramName,
+      ShelfShutdownConfirmationBubble::BubbleAction::kOpened, 1);
   histograms().ExpectTotalCount(kShelfShutdownConfirmationActionHistogramName,
                                 1);
 
@@ -1327,9 +1334,9 @@ TEST_P(LoginShelfViewWithShutdownConfirmationTest, ShouldCloseAfterInactive) {
   // Shutdown confirmation is inactive and disappeared.
   EXPECT_FALSE(IsShutdownConfirmationVisible());
   EXPECT_FALSE(Shell::Get()->lock_state_controller()->ShutdownRequested());
-  histograms().ExpectBucketCount(kShelfShutdownConfirmationActionHistogramName,
-                                 ShelfShutdownConfirmationBubble::kDismissed,
-                                 1);
+  histograms().ExpectBucketCount(
+      kShelfShutdownConfirmationActionHistogramName,
+      ShelfShutdownConfirmationBubble::BubbleAction::kDismissed, 1);
   histograms().ExpectTotalCount(kShelfShutdownConfirmationActionHistogramName,
                                 2);
   histograms().ExpectTotalCount(kCancelActionDurationHistogramName, 0);
@@ -1349,8 +1356,9 @@ TEST_P(LoginShelfViewWithShutdownConfirmationTest,
   Click(LoginShelfView::kShutdown);
   EXPECT_TRUE(IsShutdownConfirmationVisible());
   EXPECT_FALSE(Shell::Get()->lock_state_controller()->ShutdownRequested());
-  histograms().ExpectBucketCount(kShelfShutdownConfirmationActionHistogramName,
-                                 ShelfShutdownConfirmationBubble::kOpened, 1);
+  histograms().ExpectBucketCount(
+      kShelfShutdownConfirmationActionHistogramName,
+      ShelfShutdownConfirmationBubble::BubbleAction::kOpened, 1);
   histograms().ExpectTotalCount(kShelfShutdownConfirmationActionHistogramName,
                                 1);
 
@@ -1358,9 +1366,9 @@ TEST_P(LoginShelfViewWithShutdownConfirmationTest,
   CancelShutdown();
   EXPECT_FALSE(IsShutdownConfirmationVisible());
   EXPECT_FALSE(Shell::Get()->lock_state_controller()->ShutdownRequested());
-  histograms().ExpectBucketCount(kShelfShutdownConfirmationActionHistogramName,
-                                 ShelfShutdownConfirmationBubble::kCancelled,
-                                 1);
+  histograms().ExpectBucketCount(
+      kShelfShutdownConfirmationActionHistogramName,
+      ShelfShutdownConfirmationBubble::BubbleAction::kCancelled, 1);
   histograms().ExpectTotalCount(kShelfShutdownConfirmationActionHistogramName,
                                 2);
   histograms().ExpectTotalCount(kCancelActionDurationHistogramName, 1);
@@ -1371,8 +1379,9 @@ TEST_P(LoginShelfViewWithShutdownConfirmationTest,
   Click(LoginShelfView::kShutdown);
   EXPECT_TRUE(IsShutdownConfirmationVisible());
   EXPECT_FALSE(Shell::Get()->lock_state_controller()->ShutdownRequested());
-  histograms().ExpectBucketCount(kShelfShutdownConfirmationActionHistogramName,
-                                 ShelfShutdownConfirmationBubble::kOpened, 2);
+  histograms().ExpectBucketCount(
+      kShelfShutdownConfirmationActionHistogramName,
+      ShelfShutdownConfirmationBubble::BubbleAction::kOpened, 2);
   histograms().ExpectTotalCount(kShelfShutdownConfirmationActionHistogramName,
                                 3);
   histograms().ExpectTotalCount(kCancelActionDurationHistogramName, 1);
@@ -1383,9 +1392,9 @@ TEST_P(LoginShelfViewWithShutdownConfirmationTest,
   ConfirmShutdown();
   EXPECT_FALSE(IsShutdownConfirmationVisible());
   EXPECT_TRUE(Shell::Get()->lock_state_controller()->ShutdownRequested());
-  histograms().ExpectBucketCount(kShelfShutdownConfirmationActionHistogramName,
-                                 ShelfShutdownConfirmationBubble::kConfirmed,
-                                 1);
+  histograms().ExpectBucketCount(
+      kShelfShutdownConfirmationActionHistogramName,
+      ShelfShutdownConfirmationBubble::BubbleAction::kConfirmed, 1);
   histograms().ExpectTotalCount(kShelfShutdownConfirmationActionHistogramName,
                                 4);
   histograms().ExpectTotalCount(kCancelActionDurationHistogramName, 1);

@@ -66,14 +66,13 @@ constexpr char kActionDurationHistogramPrefix[] =
 std::string BubbleActionSuffix(
     ShelfShutdownConfirmationBubble::BubbleAction action) {
   switch (action) {
-    case ShelfShutdownConfirmationBubble::kCancelled:
+    case ShelfShutdownConfirmationBubble::BubbleAction::kCancelled:
       return "Cancel";
-    case ShelfShutdownConfirmationBubble::kConfirmed:
+    case ShelfShutdownConfirmationBubble::BubbleAction::kConfirmed:
       return "Confirm";
-    case ShelfShutdownConfirmationBubble::kDismissed:
+    case ShelfShutdownConfirmationBubble::BubbleAction::kDismissed:
       return "Dismiss";
-    case ShelfShutdownConfirmationBubble::kOpened:
-    case ShelfShutdownConfirmationBubble::kMaxValue:
+    case ShelfShutdownConfirmationBubble::BubbleAction::kOpened:
       NOTREACHED();
       return "";
   }
@@ -170,8 +169,9 @@ ShelfShutdownConfirmationBubble::ShelfShutdownConfirmationBubble(
   GetBubbleFrameView()->SetBackgroundColor(GetBackgroundColor());
   GetWidget()->Show();
 
-  base::UmaHistogramEnumeration(kActionHistogramName,
-                                ShelfShutdownConfirmationBubble::kOpened);
+  base::UmaHistogramEnumeration(
+      kActionHistogramName,
+      ShelfShutdownConfirmationBubble::BubbleAction::kOpened);
 }
 
 ShelfShutdownConfirmationBubble::~ShelfShutdownConfirmationBubble() {
@@ -225,15 +225,18 @@ void ShelfShutdownConfirmationBubble::OnConfirmed() {
 void ShelfShutdownConfirmationBubble::OnClosed() {
   switch (dialog_result_) {
     case DialogResult::kCancelled:
-      ReportBubbleAction(ShelfShutdownConfirmationBubble::kCancelled);
+      ReportBubbleAction(
+          ShelfShutdownConfirmationBubble::BubbleAction::kCancelled);
       std::move(cancel_callback_).Run();
       break;
     case DialogResult::kConfirmed:
-      ReportBubbleAction(ShelfShutdownConfirmationBubble::kConfirmed);
+      ReportBubbleAction(
+          ShelfShutdownConfirmationBubble::BubbleAction::kConfirmed);
       std::move(confirm_callback_).Run();
       break;
     case DialogResult::kNone:
-      ReportBubbleAction(ShelfShutdownConfirmationBubble::kDismissed);
+      ReportBubbleAction(
+          ShelfShutdownConfirmationBubble::BubbleAction::kDismissed);
       break;
   }
 }

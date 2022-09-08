@@ -35,12 +35,12 @@ class ASH_EXPORT ShelfShutdownConfirmationBubble : public ShelfBubble {
   // Enum used for UMA. Do NOT reorder or remove entry. Don't forget to
   // update ShutdownConfirmationBubbleAction enum in enums.xml when adding new
   // entries.
-  enum BubbleAction {
+  enum class BubbleAction {
     kOpened = 0,
     kCancelled = 1,
     kConfirmed = 2,
     kDismissed = 3,
-    kMaxValue
+    kMaxValue = kDismissed
   };
 
   ShelfShutdownConfirmationBubble(views::View* anchor,
