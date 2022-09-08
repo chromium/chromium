@@ -35,6 +35,10 @@ content::WebUIDataSource* CreateFaceMLAppUntrustedDataSource() {
   // E.g. allow <img>, <audio>, <video> to load blob: and data: URLs.
   // and allow framing blob: URLs for browsable content.
 
+  source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::TrustedTypes,
+      "trusted-types lit-html polymer_resin;");
+
   return source;
 }
 
