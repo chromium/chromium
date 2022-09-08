@@ -3502,6 +3502,25 @@
             ]
         }
     ],
+    "DesktopNtpMiddleSlotPromoDismissal": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "MiddleSlotPromoDismissal",
+                    "enable_features": [
+                        "NtpMiddleSlotPromoDismissal"
+                    ]
+                }
+            ]
+        }
+    ],
     "DesktopNtpModules": [
         {
             "platforms": [
