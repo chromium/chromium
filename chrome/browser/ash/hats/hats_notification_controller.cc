@@ -26,7 +26,6 @@
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/network/network_handler.h"
@@ -38,10 +37,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/version_info/version_info.h"
 #include "content/public/browser/browser_thread.h"
-#include "google_apis/gaia/gaia_auth_util.h"
-#include "net/traffic_annotation/network_traffic_annotation.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/base/resource/resource_bundle.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_types.h"
 #include "ui/strings/grit/ui_strings.h"
@@ -56,9 +52,6 @@ const char kNotifierHats[] = "ash.hats";
 // Minimum amount of time before the notification is displayed again after a
 // user has interacted with it.
 constexpr base::TimeDelta kHatsThreshold = base::Days(60);
-
-// The threshold for a Googler is less.
-constexpr base::TimeDelta kHatsGooglerThreshold = base::Days(30);
 
 // TODO(jackshira): Migrate this to a manager class.
 // Delimiters used to join the separate device info elements into a single
@@ -220,14 +213,12 @@ bool HatsNotificationController::ShouldShowSurveyToProfile(
                                           ->browser_policy_connector_ash()
                                           ->IsDeviceEnterpriseManaged();
 
-  // Do not show survey if this is a non dogfood enterprise enrolled device.
-  if (is_enterprise_enrolled &&
-      !gaia::IsGoogleInternalAccountEmail(profile->GetProfileUserName()))
+  // Do not show survey to enterprise users.
+  if (is_enterprise_enrolled)
     return false;
 
-  // In an enterprise enrolled device, the user can never be the owner, hence
-  // only check for ownership on a non enrolled device.
-  if (!is_enterprise_enrolled && !ProfileHelper::IsOwnerProfile(profile))
+  // Do not show survey to non-owners.
+  if (!ProfileHelper::IsOwnerProfile(profile))
     return false;
 
   // Call finch helper only after all the profile checks are complete.
@@ -235,10 +226,8 @@ bool HatsNotificationController::ShouldShowSurveyToProfile(
   if (!hats_finch_helper.IsDeviceSelectedForCurrentCycle())
     return false;
 
-  const base::TimeDelta threshold_time =
-      gaia::IsGoogleInternalAccountEmail(profile->GetProfileUserName())
-          ? kHatsGooglerThreshold
-          : kHatsThreshold;
+  const base::TimeDelta threshold_time = kHatsThreshold;
+
   // Do not show survey to user if user has interacted with HaTS within the past
   // |threshold_time| time delta.
   if (DidShowSurveyToProfileRecently(profile, threshold_time)) {
