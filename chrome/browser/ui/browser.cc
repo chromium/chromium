@@ -1655,7 +1655,9 @@ void Browser::AddNewContents(
   // On the Mac, the convention is to turn popups into new tabs when in browser
   // fullscreen mode. Only worry about user-initiated fullscreen as showing a
   // popup in HTML5 fullscreen would have kicked the page out of fullscreen.
-  if (disposition == WindowOpenDisposition::NEW_POPUP &&
+  // However if this Browser is for an app, we don't want to turn popups into
+  // new tabs. Popups should open as new app windows instead.
+  if (!app_controller_ && disposition == WindowOpenDisposition::NEW_POPUP &&
       fullscreen_controller->IsFullscreenForBrowser()) {
     disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
   }
