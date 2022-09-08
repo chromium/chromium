@@ -207,9 +207,6 @@ class WebApps : public apps::PublisherBase,
 
   const raw_ptr<WebAppProvider> provider_;
 
-  // app_service_ is owned by the object that owns this object.
-  raw_ptr<apps::mojom::AppService> app_service_;
-
   // Specifies whether the web app registry becomes ready.
   bool is_ready_ = false;
 
