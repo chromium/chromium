@@ -55,7 +55,7 @@ const char kNotifierHats[] = "ash.hats";
 
 // Minimum amount of time before the notification is displayed again after a
 // user has interacted with it.
-constexpr base::TimeDelta kHatsThreshold = base::Days(90);
+constexpr base::TimeDelta kHatsThreshold = base::Days(60);
 
 // The threshold for a Googler is less.
 constexpr base::TimeDelta kHatsGooglerThreshold = base::Days(30);
