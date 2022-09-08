@@ -5334,7 +5334,7 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, AutoResizeMessages) {
   // Helper function as this test requires inspecting a number of content::
   // internal objects.
   EXPECT_TRUE(content::TestGuestAutoresize(GetEmbedderWebContents(),
-                                           GetGuestWebContents()));
+                                           GetGuestRenderFrameHost()));
 }
 
 // Test that a guest sees the synthetic wheel events of a touchpad pinch.

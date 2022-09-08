@@ -2053,7 +2053,7 @@ void EnsureCookiesFlushed(BrowserContext* browser_context);
 // Performs a simple auto-resize flow and ensures that the embedder gets a
 // single response messages back from the guest, with the expected values.
 bool TestGuestAutoresize(WebContents* embedder_web_contents,
-                         WebContents* guest_web_contents);
+                         RenderFrameHost* guest_main_frame);
 
 // Class to intercept SynchronizeVisualProperties method. This allows the
 // message to continue to the target child so that processing can be verified by

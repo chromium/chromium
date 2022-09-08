@@ -3942,18 +3942,13 @@ void EnsureCookiesFlushed(BrowserContext* browser_context) {
 }
 
 bool TestGuestAutoresize(WebContents* embedder_web_contents,
-                         WebContents* guest_web_contents) {
-  FrameTreeNode* guest_main_frame_node =
-      static_cast<WebContentsImpl*>(guest_web_contents)
-          ->GetPrimaryFrameTree()
-          .root();
+                         RenderFrameHost* guest_main_frame) {
   RenderFrameProxyHost* subframe_proxy_host =
-      guest_main_frame_node->render_manager()->GetProxyToOuterDelegate();
-
-  RenderWidgetHost* guest_rwh =
-      guest_web_contents->GetRenderWidgetHostView()->GetRenderWidgetHost();
-  RenderWidgetHostImpl* guest_rwh_impl =
-      static_cast<RenderWidgetHostImpl*>(guest_rwh);
+      FrameTreeNode::From(guest_main_frame)
+          ->render_manager()
+          ->GetProxyToOuterDelegate();
+  RenderWidgetHostImpl* guest_rwh_impl = static_cast<RenderWidgetHostImpl*>(
+      guest_main_frame->GetRenderWidgetHost());
 
   auto interceptor = std::make_unique<SynchronizeVisualPropertiesInterceptor>(
       subframe_proxy_host);
