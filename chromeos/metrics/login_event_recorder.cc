@@ -217,25 +217,27 @@ LoginEventRecorder::Stats LoginEventRecorder::Stats::DeserializeFromString(
   if (source.empty())
     return Stats();
 
-  std::unique_ptr<base::Value> value = base::JSONReader::ReadDeprecated(source);
-  base::DictionaryValue* dictionary;
-  if (!value || !value->GetAsDictionary(&dictionary)) {
+  absl::optional<base::Value> maybe_value = base::JSONReader::Read(source);
+  if (!maybe_value || !maybe_value->is_dict()) {
     LOG(ERROR) << "LoginEventRecorder::Stats::DeserializeFromString(): not a "
                   "dictionary: '"
                << source << "'";
     return Stats();
   }
 
-  Stats result;
-  if (!dictionary->GetString(kUptime, &result.uptime_) ||
-      !dictionary->GetString(kDisk, &result.disk_)) {
+  auto* uptime = maybe_value->GetDict().FindString(kUptime);
+  auto* disk = maybe_value->GetDict().FindString(kDisk);
+  if (!uptime || !disk) {
     LOG(ERROR)
         << "LoginEventRecorder::Stats::DeserializeFromString(): format error: '"
         << source << "'";
     return Stats();
   }
 
-  return result;
+  Stats stats;
+  stats.uptime_ = *uptime;
+  stats.disk_ = *disk;
+  return stats;
 }
 
 bool LoginEventRecorder::Stats::UptimeDouble(double* result) const {

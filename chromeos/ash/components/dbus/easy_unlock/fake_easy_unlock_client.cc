@@ -30,14 +30,10 @@ int ExtractKeyPairIndexFromKey(const std::string& key,
   if (!json_value)
     return -1;
 
-  base::DictionaryValue* json_dictionary = NULL;
-  if (!json_value->GetAsDictionary(&json_dictionary))
+  if (!json_value->is_dict())
     return -1;
 
-  int key_pair_index = -1;
-  if (!json_dictionary->GetInteger(key_type, &key_pair_index))
-    return -1;
-  return key_pair_index;
+  return json_value->GetDict().FindInt(key_type).value_or(-1);
 }
 
 }  // namespace
