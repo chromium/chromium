@@ -110,9 +110,12 @@ template <typename Algorithm, typename Callback>
 NOINLINE void CreateAlgorithmAndRun(const NGLayoutAlgorithmParams& params,
                                     const Callback& callback) {
   // https://linear.app/replay/issue/RUN-546
-  recordreplay::Assert("CreateAlgorithmAndRun Start");
+  recordreplay::Assert("CreateAlgorithmAndRun Start %d",
+                       recordreplay::PointerId(params.node.GetLayoutBox()));
+
   Algorithm algorithm(params);
   callback(&algorithm);
+
   // https://linear.app/replay/issue/RUN-546
   recordreplay::Assert("CreateAlgorithmAndRun Done");
 }
@@ -388,7 +391,9 @@ scoped_refptr<const NGLayoutResult> NGBlockNode::Layout(
     const NGConstraintSpace& constraint_space,
     const NGBlockBreakToken* break_token,
     const NGEarlyBreak* early_break) const {
-  recordreplay::Assert("NGBlockNode::Layout Start");
+  // https://linear.app/replay/issue/RUN-546
+  recordreplay::Assert("NGBlockNode::Layout Start %d",
+                       recordreplay::PointerId(GetLayoutBox()));
 
   // Use the old layout code and synthesize a fragment.
   if (!CanUseNewLayout())
@@ -413,6 +418,11 @@ scoped_refptr<const NGLayoutResult> NGBlockNode::Layout(
   scoped_refptr<const NGLayoutResult> layout_result =
       box_->CachedLayoutResult(constraint_space, break_token, early_break,
                                &fragment_geometry, &cache_status);
+
+  // https://linear.app/replay/issue/RUN-546
+  recordreplay::Assert("NGBlockNode::Layout #2 %d %d",
+                       !!layout_result, (int)cache_status);
+
   if (UNLIKELY(DevtoolsReadonlyLayoutScope::InDevtoolsLayout())) {
     DCHECK_EQ(cache_status, NGLayoutCacheStatus::kHit);
     DCHECK(!box_->NeedsLayoutOverflowRecalc());
@@ -446,6 +456,9 @@ scoped_refptr<const NGLayoutResult> NGBlockNode::Layout(
       return layout_result;
   }
 
+  // https://linear.app/replay/issue/RUN-546
+  recordreplay::Assert("NGBlockNode::Layout #3");
+
   if (!fragment_geometry) {
     fragment_geometry =
         CalculateInitialFragmentGeometry(constraint_space, *this);
@@ -467,6 +480,10 @@ scoped_refptr<const NGLayoutResult> NGBlockNode::Layout(
       layout_result =
           box_->CachedLayoutResult(constraint_space, break_token, early_break,
                                    &fragment_geometry, &cache_status);
+
+      // https://linear.app/replay/issue/RUN-546
+      recordreplay::Assert("NGBlockNode::Layout #8 %d %d",
+                           !!layout_result, (int)cache_status);
     }
   }
 
@@ -488,12 +505,16 @@ scoped_refptr<const NGLayoutResult> NGBlockNode::Layout(
     scoped_refptr<const NGLayoutResult> previous_result = layout_result;
 #endif
 
+    // https://linear.app/replay/issue/RUN-546
+    recordreplay::Assert("NGBlockNode::Layout #10");
+
     // A child may have changed size while performing "simplified" layout (it
     // may have gained or removed scrollbars, changing its size). In these
     // cases "simplified" layout will return a null layout-result, indicating
     // we need to perform a full layout.
-    recordreplay::Assert("NGBlockNode::Layout #10");
     layout_result = RunSimplifiedLayout(params, *layout_result);
+
+    // https://linear.app/replay/issue/RUN-546
     recordreplay::Assert("NGBlockNode::Layout #11");
 
 #if DCHECK_IS_ON()
@@ -550,6 +571,9 @@ scoped_refptr<const NGLayoutResult> NGBlockNode::Layout(
     // message.
     box_->SetNeedsLayout(layout_invalidation_reason::kScrollbarChanged,
                          kMarkOnlyThis);
+
+    // https://linear.app/replay/issue/RUN-546
+    recordreplay::Assert("NGBlockNode::Layout #20");
 
     fragment_geometry =
         CalculateInitialFragmentGeometry(constraint_space, *this);

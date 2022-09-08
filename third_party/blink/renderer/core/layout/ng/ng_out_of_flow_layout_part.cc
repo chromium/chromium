@@ -1191,7 +1191,9 @@ scoped_refptr<const NGLayoutResult> NGOutOfFlowLayoutPart::GenerateFragment(
     const NGConstraintSpace* fragmentainer_constraint_space,
     bool should_use_fixed_block_size) {
   // https://linear.app/replay/issue/RUN-546
-  recordreplay::Assert("NGOutOfFlowLayoutPart::GenerateFragment Start");
+  recordreplay::Assert("NGOutOfFlowLayoutPart::GenerateFragment Start %d",
+                       recordreplay::PointerId(node.GetLayoutBox()));
+
   const auto& style = node.Style();
 
   LayoutUnit inline_size = node_dimensions.size.inline_size;

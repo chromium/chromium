@@ -792,10 +792,6 @@ function createProtocolScope(scopeId) {
   };
 }
 
-} catch (e) {
-  log(`Error: Initialization exception ${e}`);
-}
-
 ///////////////////////////////////////////////////////////////////////////////
 // sourcemap.js
 ///////////////////////////////////////////////////////////////////////////////
@@ -979,6 +975,10 @@ function collectUnresolvedSourceMapResources(mapText, mapURL) {
   return {
     sources: unresolvedSources,
   };
+}
+
+} catch (e) {
+  log(`Error: Initialization exception ${e}`);
 }
 
 })();
