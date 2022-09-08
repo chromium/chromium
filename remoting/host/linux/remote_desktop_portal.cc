@@ -42,8 +42,8 @@ RemoteDesktopPortal::RemoteDesktopPortal(
     webrtc::ScreenCastPortal::PortalNotifier* notifier)
     : notifier_(notifier) {
   screencast_portal_ = std::make_unique<webrtc::ScreenCastPortal>(
-      webrtc::ScreenCastPortal::CaptureSourceType::kScreen, this,
-      OnScreenCastPortalProxyRequested, OnSourcesRequestResponseSignal, this);
+      webrtc::CaptureType::kScreen, this, OnScreenCastPortalProxyRequested,
+      OnSourcesRequestResponseSignal, this);
   DETACH_FROM_SEQUENCE(sequence_checker_);
 }
 
