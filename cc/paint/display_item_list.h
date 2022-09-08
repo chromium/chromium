@@ -27,18 +27,14 @@
 
 class SkCanvas;
 
-namespace gpu {
-namespace raster {
+namespace gpu::raster {
 class RasterImplementation;
 class RasterImplementationGLES;
-}  // namespace raster
-}  // namespace gpu
+}  // namespace gpu::raster
 
-namespace base {
-namespace trace_event {
+namespace base::trace_event {
 class TracedValue;
-}
-}
+}  // namespace base::trace_event
 
 namespace cc {
 

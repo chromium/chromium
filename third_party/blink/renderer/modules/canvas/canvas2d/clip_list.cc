@@ -10,7 +10,7 @@
 
 namespace blink {
 
-ClipList::ClipList(const ClipList& other) : clip_list_(other.clip_list_) {}
+ClipList::ClipList(const ClipList& other) = default;
 
 void ClipList::ClipPath(const SkPath& path,
                         AntiAliasingMode anti_aliasing_mode,

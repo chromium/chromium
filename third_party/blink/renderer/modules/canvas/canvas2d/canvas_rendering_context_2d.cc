@@ -97,7 +97,7 @@ class CanvasRenderingContext2DAutoRestoreSkCanvas {
  public:
   explicit CanvasRenderingContext2DAutoRestoreSkCanvas(
       CanvasRenderingContext2D* context)
-      : context_(context), save_count_(0) {
+      : context_(context) {
     DCHECK(context_);
     cc::PaintCanvas* c = context_->GetOrCreatePaintCanvas();
     if (c) {
@@ -114,7 +114,7 @@ class CanvasRenderingContext2DAutoRestoreSkCanvas {
 
  private:
   CanvasRenderingContext2D* context_;
-  int save_count_;
+  int save_count_ = 0;
 };
 
 CanvasRenderingContext* CanvasRenderingContext2D::Factory::Create(
@@ -1167,7 +1167,8 @@ void CanvasRenderingContext2D::DrawFocusRing(const Path& path,
   SkColor color = LayoutTheme::GetTheme().FocusRingColor(color_scheme).Rgb();
   const int kFocusRingWidth = 5;
   DrawPlatformFocusRing(path.GetSkPath(), GetPaintCanvas(), color,
-                        /*width=*/kFocusRingWidth, /*radius=*/kFocusRingWidth);
+                        /*width=*/kFocusRingWidth,
+                        /*corner_radius=*/kFocusRingWidth);
 
   // We need to add focusRingWidth to dirtyRect.
   StrokeData stroke_data;

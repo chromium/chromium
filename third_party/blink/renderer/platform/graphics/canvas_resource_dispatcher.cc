@@ -78,7 +78,6 @@ CanvasResourceDispatcher::CanvasResourceDispatcher(
     : frame_sink_id_(viz::FrameSinkId(client_id, sink_id)),
       size_(size),
       change_size_for_next_commit_(false),
-      needs_begin_frame_(false),
       placeholder_canvas_id_(canvas_id),
       num_unreclaimed_frames_posted_(0),
       client_(client),
@@ -315,7 +314,7 @@ bool CanvasResourceDispatcher::PrepareFrame(
   quad->SetAll(sqs, bounds, bounds, needs_blending, resource_id,
                canvas_resource_size, kPremultipliedAlpha, uv_top_left,
                uv_bottom_right, SkColors::kTransparent, vertex_opacity,
-               yflipped, nearest_neighbor, /*secure_output_only=*/false,
+               yflipped, nearest_neighbor, /*secure_output=*/false,
                gfx::ProtectedVideoType::kClear);
 
   frame->render_pass_list.push_back(std::move(pass));

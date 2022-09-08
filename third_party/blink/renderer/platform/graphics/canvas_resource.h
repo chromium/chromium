@@ -38,13 +38,11 @@ class GpuMemoryBuffer;
 
 }  // namespace gfx
 
-namespace gpu {
-namespace raster {
+namespace gpu::raster {
 
 class RasterInterface;
 
-}  // namespace raster
-}  // namespace gpu
+}  // namespace gpu::raster
 
 namespace viz {
 

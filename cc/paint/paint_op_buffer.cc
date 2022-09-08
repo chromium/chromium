@@ -390,7 +390,7 @@ PlaybackParams::PlaybackParams(ImageProvider* image_provider,
       custom_callback(custom_callback),
       did_draw_op_callback(did_draw_op_callback) {}
 
-PlaybackParams::~PlaybackParams() {}
+PlaybackParams::~PlaybackParams() = default;
 
 PlaybackParams::PlaybackParams(const PlaybackParams& other) = default;
 PlaybackParams& PlaybackParams::operator=(const PlaybackParams& other) =
@@ -2779,8 +2779,7 @@ DrawImageOp::DrawImageOp(const PaintImage& image, SkScalar left, SkScalar top)
     : PaintOpWithFlags(kType, PaintFlags()),
       image(image),
       left(left),
-      top(top),
-      sampling(SkSamplingOptions()) {}
+      top(top) {}
 
 DrawImageOp::DrawImageOp(const PaintImage& image,
                          SkScalar left,
@@ -2809,7 +2808,6 @@ DrawImageRectOp::DrawImageRectOp(const PaintImage& image,
       image(image),
       src(src),
       dst(dst),
-      sampling(SkSamplingOptions()),
       constraint(constraint) {}
 
 DrawImageRectOp::DrawImageRectOp(const PaintImage& image,

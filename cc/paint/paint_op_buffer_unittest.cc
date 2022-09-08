@@ -1429,8 +1429,8 @@ void PushConcatOps(PaintOpBuffer* buffer) {
 }
 
 void PushCustomDataOps(PaintOpBuffer* buffer) {
-  for (size_t i = 0; i < test_ids.size(); ++i)
-    buffer->push<CustomDataOp>(test_ids[i]);
+  for (uint32_t test_id : test_ids)
+    buffer->push<CustomDataOp>(test_id);
   ValidateOps<CustomDataOp>(buffer);
 }
 
@@ -1705,8 +1705,8 @@ void PushRestoreOps(PaintOpBuffer* buffer) {
 }
 
 void PushRotateOps(PaintOpBuffer* buffer) {
-  for (size_t i = 0; i < test_floats.size(); ++i)
-    buffer->push<RotateOp>(test_floats[i]);
+  for (float test_float : test_floats)
+    buffer->push<RotateOp>(test_float);
   ValidateOps<RotateOp>(buffer);
 }
 
@@ -1759,8 +1759,8 @@ void PushTranslateOps(PaintOpBuffer* buffer) {
 }
 
 void PushSetNodeIdOps(PaintOpBuffer* buffer) {
-  for (size_t i = 0; i < test_ids.size(); i++)
-    buffer->push<SetNodeIdOp>(static_cast<int>(test_ids[i]));
+  for (uint32_t test_id : test_ids)
+    buffer->push<SetNodeIdOp>(static_cast<int>(test_id));
   ValidateOps<SetNodeIdOp>(buffer);
 }
 
@@ -2668,8 +2668,8 @@ TEST(PaintOpBufferTest, ValidateSkBlendMode) {
       static_cast<SkBlendMode>(static_cast<uint8_t>(~0)),
   };
 
-  for (size_t i = 0; i < std::size(bad_modes_for_draw_color); ++i) {
-    buffer.push<DrawColorOp>(SkColors::kMagenta, bad_modes_for_draw_color[i]);
+  for (SkBlendMode blend_mode : bad_modes_for_draw_color) {
+    buffer.push<DrawColorOp>(SkColors::kMagenta, blend_mode);
   }
 
   for (size_t i = 0; i < std::size(bad_modes_for_flags); ++i) {
