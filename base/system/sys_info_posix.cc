@@ -128,14 +128,14 @@ bool GetDiskSpaceInfo(const base::FilePath& path,
     *available_bytes =
         zero_size_means_unlimited
             ? std::numeric_limits<int64_t>::max()
-            : base::checked_cast<int64_t>(stats.f_bavail * stats.f_frsize);
+            : base::saturated_cast<int64_t>(stats.f_bavail * stats.f_frsize);
   }
 
   if (total_bytes) {
     *total_bytes =
         zero_size_means_unlimited
             ? std::numeric_limits<int64_t>::max()
-            : base::checked_cast<int64_t>(stats.f_blocks * stats.f_frsize);
+            : base::saturated_cast<int64_t>(stats.f_blocks * stats.f_frsize);
   }
   return true;
 }
