@@ -58,7 +58,7 @@ extern NSString* const kSolidPrimaryColor;
 // standard buttons and controls.
 extern NSString* const kBlueColor;
 // Lighter blue color sometimes used as background for buttons or views where
-// the main content is |kBlueColor| (e.g the background of the collections
+// the main content is `kBlueColor` (e.g the background of the collections
 // shortcuts on the NTP).
 extern NSString* const kBlueHaloColor;
 
