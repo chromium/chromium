@@ -1800,7 +1800,7 @@
   {
     "name": "enable-commerce-hint-android",
     "owners": [ "chrome-shopping@google.com" ],
-    "expiry_milestone": 106
+    "expiry_milestone": 108
   },
   {
     "name": "enable-commerce-merchant-viewer",
