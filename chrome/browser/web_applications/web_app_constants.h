@@ -144,6 +144,12 @@ enum class ExternalInstallSource {
   // type because Kiosk apps are bound to their profiles. They will never be
   // uninstalled in Kiosk sessions.
   kKiosk = 5,
+
+  // Installed into a special lock screen app profile when the user selects a
+  // lock-screen-capable app to be used on the lock screen.
+  // The corresponding ExternallyManagedAppManager::SynchronizeInstalledApps
+  // call site is in ash::AppManagerImpl::AddAppToLockScreenProfile.
+  kExternalLockScreen = 6,
 };
 
 // Icon size in pixels.

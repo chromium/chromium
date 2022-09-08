@@ -246,6 +246,7 @@ apps::mojom::InstallSource ConvertInstallSourceToMojom(
       return apps::mojom::InstallSource::kPlayStore;
     case webapps::WebappInstallSource::INTERNAL_DEFAULT:
     case webapps::WebappInstallSource::EXTERNAL_DEFAULT:
+    case webapps::WebappInstallSource::EXTERNAL_LOCK_SCREEN:
     case webapps::WebappInstallSource::SYSTEM_DEFAULT:
       return apps::mojom::InstallSource::kSystem;
     case webapps::WebappInstallSource::SYNC:

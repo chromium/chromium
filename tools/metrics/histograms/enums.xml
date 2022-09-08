@@ -101625,6 +101625,8 @@ others/histograms.xml -->
              from another app"/>
   <int value="20" label="Rich install UI in WebLayer"/>
   <int value="21" label="Installed by Kiosk on Chrome OS"/>
+  <int value="22" label="Isolated app installation for development"/>
+  <int value="23" label="Lock screen app infrastructure"/>
 </enum>
 
 <enum name="WebAppLauncherLaunchResult">
@@ -101703,6 +101705,7 @@ others/histograms.xml -->
   <int value="15" label="SubApps API"/>
   <int value="16" label="Incomplete uninstall cleanup on startup."/>
   <int value="17" label="Sub apps uninstall kicked off by parent app"/>
+  <int value="18" label="Lock screen app infrastructure"/>
 </enum>
 
 <enum name="WebAppUrlHandlingDialogState">

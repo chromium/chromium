@@ -79,6 +79,8 @@ std::string ConvertUninstallSourceToStringType(
       return "Startup Cleanup";
     case webapps::WebappUninstallSource::kParentUninstall:
       return "Parent App Uninstalled";
+    case webapps::WebappUninstallSource::kExternalLockScreen:
+      return "External Lock Screen";
   }
 }
 

@@ -27,7 +27,6 @@ bool InstallableMetrics::IsReportableInstallSource(WebappInstallSource source) {
   switch (source) {
     case WebappInstallSource::AMBIENT_BADGE_BROWSER_TAB:
     case WebappInstallSource::AMBIENT_BADGE_CUSTOM_TAB:
-    case WebappInstallSource::RICH_INSTALL_UI_WEBLAYER:
     case WebappInstallSource::API_BROWSER_TAB:
     case WebappInstallSource::API_CUSTOM_TAB:
     case WebappInstallSource::ARC:
@@ -36,12 +35,14 @@ bool InstallableMetrics::IsReportableInstallSource(WebappInstallSource source) {
     case WebappInstallSource::CHROME_SERVICE:
     case WebappInstallSource::DEVTOOLS:
     case WebappInstallSource::EXTERNAL_DEFAULT:
+    case WebappInstallSource::EXTERNAL_LOCK_SCREEN:
     case WebappInstallSource::EXTERNAL_POLICY:
     case WebappInstallSource::INTERNAL_DEFAULT:
     case WebappInstallSource::MENU_BROWSER_TAB:
     case WebappInstallSource::MENU_CREATE_SHORTCUT:
     case WebappInstallSource::MENU_CUSTOM_TAB:
     case WebappInstallSource::OMNIBOX_INSTALL_ICON:
+    case WebappInstallSource::RICH_INSTALL_UI_WEBLAYER:
     case WebappInstallSource::SYSTEM_DEFAULT:
     case WebappInstallSource::KIOSK:
       return true;

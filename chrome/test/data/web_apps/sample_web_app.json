@@ -143,7 +143,7 @@
       "launch_type": "kSingleClient",
       "name": "24621151604 file"
    } ],
-   "install_source_for_metrics": 1,
+   "install_source_for_metrics": 5,
    "install_time": "1970-02-04 02:14:21.221 UTC",
    "is_from_sync_and_pending_installation": true,
    "is_generated_icon": false,

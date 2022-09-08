@@ -821,37 +821,30 @@ webapps::WebappInstallSource ConvertExternalInstallSourceToInstallSource(
       return webapps::WebappInstallSource::ARC;
     case ExternalInstallSource::kKiosk:
       return webapps::WebappInstallSource::KIOSK;
-    default:
-      NOTREACHED();
-      return webapps::WebappInstallSource::SYNC;
+    case ExternalInstallSource::kExternalLockScreen:
+      return webapps::WebappInstallSource::EXTERNAL_LOCK_SCREEN;
   }
 }
 
 webapps::WebappUninstallSource ConvertExternalInstallSourceToUninstallSource(
     ExternalInstallSource external_install_source) {
-  webapps::WebappUninstallSource uninstall_source;
   switch (external_install_source) {
     case ExternalInstallSource::kInternalDefault:
-      uninstall_source = webapps::WebappUninstallSource::kInternalPreinstalled;
-      break;
+      return webapps::WebappUninstallSource::kInternalPreinstalled;
     case ExternalInstallSource::kExternalDefault:
-      uninstall_source = webapps::WebappUninstallSource::kExternalPreinstalled;
-      break;
+      return webapps::WebappUninstallSource::kExternalPreinstalled;
     case ExternalInstallSource::kExternalPolicy:
-      uninstall_source = webapps::WebappUninstallSource::kExternalPolicy;
-      break;
+      return webapps::WebappUninstallSource::kExternalPolicy;
     case ExternalInstallSource::kSystemInstalled:
-      uninstall_source = webapps::WebappUninstallSource::kSystemPreinstalled;
-      break;
+      return webapps::WebappUninstallSource::kSystemPreinstalled;
     case ExternalInstallSource::kArc:
-      uninstall_source = webapps::WebappUninstallSource::kArc;
-      break;
+      return webapps::WebappUninstallSource::kArc;
     case ExternalInstallSource::kKiosk:
       NOTREACHED() << "Kiosk apps should not be uninstalled";
-      uninstall_source = webapps::WebappUninstallSource::kUnknown;
+      return webapps::WebappUninstallSource::kUnknown;
+    case ExternalInstallSource::kExternalLockScreen:
+      return webapps::WebappUninstallSource::kExternalLockScreen;
   }
-
-  return uninstall_source;
 }
 
 WebAppManagement::Type ConvertInstallSurfaceToWebAppSource(
@@ -887,6 +880,7 @@ WebAppManagement::Type ConvertInstallSurfaceToWebAppSource(
     case webapps::WebappInstallSource::KIOSK:
       return WebAppManagement::kKiosk;
 
+    case webapps::WebappInstallSource::EXTERNAL_LOCK_SCREEN:
     case webapps::WebappInstallSource::SYSTEM_DEFAULT:
       return WebAppManagement::kSystem;
 

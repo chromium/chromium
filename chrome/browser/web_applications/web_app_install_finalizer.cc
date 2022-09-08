@@ -81,6 +81,7 @@ bool ShouldInstallOverwriteUserDisplayMode(
     case InstallSource::ISOLATED_APP_DEV_INSTALL:
     case InstallSource::EXTERNAL_DEFAULT:
     case InstallSource::EXTERNAL_POLICY:
+    case InstallSource::EXTERNAL_LOCK_SCREEN:
     case InstallSource::SYSTEM_DEFAULT:
     case InstallSource::SYNC:
     case InstallSource::SUB_APP:

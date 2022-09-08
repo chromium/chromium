@@ -111,6 +111,9 @@ enum class WebappInstallSource {
   // Isolated app installation for development.
   ISOLATED_APP_DEV_INSTALL = 22,
 
+  // Lock screen app infrastructure installing to the lock screen app profile.
+  EXTERNAL_LOCK_SCREEN = 23,
+
   // Add any new values above this one.
   COUNT,
 };
@@ -175,8 +178,12 @@ enum class WebappUninstallSource {
   // are being removed because of the removal of the parent app.
   kParentUninstall = 17,
 
+  // Lock screen app infrastructure uninstalling from the lock screen app
+  // profile.
+  kExternalLockScreen = 18,
+
   // Add any new values above this one.
-  kMaxValue = kParentUninstall,
+  kMaxValue = kExternalLockScreen,
 };
 
 // This is the result of the promotability check that is recorded in the
