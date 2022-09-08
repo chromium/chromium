@@ -13,6 +13,7 @@
 #include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/notreached.h"
+#include "base/ranges/algorithm.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_event_dispatcher.h"
 #include "ui/aura/window_targeter.h"
@@ -123,11 +124,10 @@ void AshWindowTreeHostUnified::OnBoundsChanged(const BoundsChange& change) {
 }
 
 void AshWindowTreeHostUnified::OnWindowDestroying(aura::Window* window) {
-  auto iter =
-      std::find_if(mirroring_hosts_.begin(), mirroring_hosts_.end(),
-                   [window](AshWindowTreeHost* ash_host) {
-                     return ash_host->AsWindowTreeHost()->window() == window;
-                   });
+  auto iter = base::ranges::find(
+      mirroring_hosts_, window, [](AshWindowTreeHost* ash_host) {
+        return ash_host->AsWindowTreeHost()->window();
+      });
   DCHECK(iter != mirroring_hosts_.end());
   window->RemoveObserver(this);
   mirroring_hosts_.erase(iter);

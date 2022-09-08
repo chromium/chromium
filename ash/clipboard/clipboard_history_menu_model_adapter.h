@@ -94,6 +94,8 @@ class ASH_EXPORT ClipboardHistoryMenuModelAdapter : views::MenuModelAdapter {
  private:
   class ScopedA11yIgnore;
 
+  using ItemViewsByCommandId = std::map<int, ClipboardHistoryItemView*>;
+
   ClipboardHistoryMenuModelAdapter(
       std::unique_ptr<ui::SimpleMenuModel> model,
       base::RepeatingClosure menu_closed_callback,
@@ -138,7 +140,7 @@ class ASH_EXPORT ClipboardHistoryMenuModelAdapter : views::MenuModelAdapter {
 
   // Stores mappings between command ids and history item view pointers.
   // It updates synchronously when a item is removed.
-  std::map<int, ClipboardHistoryItemView*> item_views_by_command_id_;
+  ItemViewsByCommandId item_views_by_command_id_;
 
   const ClipboardHistory* const clipboard_history_;
 

@@ -23,6 +23,7 @@
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
+#include "base/ranges/algorithm.h"
 #include "base/test/scoped_feature_list.h"
 #include "ui/compositor/layer.h"
 #include "ui/events/base_event_utils.h"
@@ -71,8 +72,8 @@ class AppListMainViewTest : public AshTestBase,
   AppListItemView* GetItemViewAtPointInGrid(AppsGridView* grid_view,
                                             const gfx::Point& point) {
     const auto& entries = grid_view->view_model()->entries();
-    const auto iter = std::find_if(
-        entries.begin(), entries.end(), [&point](const auto& entry) {
+    const auto iter =
+        base::ranges::find_if(entries, [&point](const auto& entry) {
           return entry.view->bounds().Contains(point);
         });
     return iter == entries.end() ? nullptr

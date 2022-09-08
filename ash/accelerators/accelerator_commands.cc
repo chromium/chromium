@@ -31,6 +31,7 @@
 #include "ash/wm/window_util.h"
 #include "ash/wm/wm_event.h"
 #include "base/metrics/user_metrics.h"
+#include "base/ranges/algorithm.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/ui/base/window_properties.h"
@@ -200,11 +201,8 @@ void ShiftPrimaryDisplay() {
   const display::Displays& active_display_list =
       display_manager->active_display_list();
 
-  auto primary_display_iter =
-      std::find_if(active_display_list.begin(), active_display_list.end(),
-                   [id = primary_display_id](const display::Display& display) {
-                     return display.id() == id;
-                   });
+  auto primary_display_iter = base::ranges::find(
+      active_display_list, primary_display_id, &display::Display::id);
 
   DCHECK(primary_display_iter != active_display_list.end());
 

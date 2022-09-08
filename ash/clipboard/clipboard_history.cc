@@ -10,6 +10,7 @@
 #include "ash/clipboard/scoped_clipboard_history_pause_impl.h"
 #include "base/bind.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/ranges/algorithm.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/token.h"
 #include "ui/base/clipboard/clipboard.h"
@@ -54,8 +55,7 @@ bool ClipboardHistory::IsEmpty() const {
 }
 
 void ClipboardHistory::RemoveItemForId(const base::UnguessableToken& id) {
-  auto iter = std::find_if(history_list_.cbegin(), history_list_.cend(),
-                           [&id](const auto& item) { return item.id() == id; });
+  auto iter = base::ranges::find(history_list_, id, &ClipboardHistoryItem::id);
 
   // It is possible that the item specified by `id` has been removed. For
   // example, `history_list_` has reached its maximum capacity. while the
@@ -211,8 +211,8 @@ void ClipboardHistory::MaybeCommitData(ui::ClipboardData data,
   if (!clipboard_history_util::IsSupported(data))
     return;
 
-  auto iter = std::find_if(history_list_.begin(), history_list_.end(),
-                           [&data](auto& item) { return item.data() == data; });
+  auto iter =
+      base::ranges::find(history_list_, data, &ClipboardHistoryItem::data);
   bool is_duplicate = iter != history_list_.cend();
   if (is_duplicate) {
     // If `data` already exists in `history_list_` then move its corresponding
@@ -248,10 +248,7 @@ const base::Token& ClipboardHistory::Pause(PauseBehavior pause_behavior) {
 }
 
 void ClipboardHistory::Resume(const base::Token& pause_id) {
-  auto pause_it = std::find_if(pauses_.begin(), pauses_.end(),
-                               [&pause_id](const auto& pause_info) {
-                                 return pause_info.pause_id == pause_id;
-                               });
+  auto pause_it = base::ranges::find(pauses_, pause_id, &PauseInfo::pause_id);
   DCHECK(pause_it != pauses_.end());
   pauses_.erase(pause_it);
 }

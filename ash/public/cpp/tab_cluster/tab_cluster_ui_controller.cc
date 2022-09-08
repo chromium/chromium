@@ -5,7 +5,8 @@
 #include "ash/public/cpp/tab_cluster/tab_cluster_ui_controller.h"
 
 #include "ash/public/cpp/tab_cluster/tab_cluster_ui_item.h"
-#include "base/containers/unique_ptr_adapters.h"
+#include "base/containers/contains.h"
+#include "base/ranges/algorithm.h"
 
 namespace ash {
 
@@ -23,17 +24,16 @@ TabClusterUIItem* TabClusterUIController::AddTabItem(
 }
 
 void TabClusterUIController::UpdateTabItem(TabClusterUIItem* tab_item) {
-  DCHECK(std::find_if(tab_items_.begin(), tab_items_.end(),
-                      base::MatchesUniquePtr(tab_item)) != tab_items_.end());
+  DCHECK(base::Contains(tab_items_, tab_item,
+                        &std::unique_ptr<TabClusterUIItem>::get));
   for (auto& observer : observers_)
     observer.OnTabItemUpdated(tab_item);
 }
 
 void TabClusterUIController::RemoveTabItem(TabClusterUIItem* tab_item) {
-  auto end_iter = tab_items_.end();
-  auto iter = std::find_if(tab_items_.begin(), end_iter,
-                           base::MatchesUniquePtr(tab_item));
-  DCHECK(iter != end_iter);
+  auto iter = base::ranges::find(tab_items_, tab_item,
+                                 &std::unique_ptr<TabClusterUIItem>::get);
+  DCHECK(iter != tab_items_.end());
   // Since observer may need to use item values, notify observer before removing
   // from item list.
   for (auto& observer : observers_)

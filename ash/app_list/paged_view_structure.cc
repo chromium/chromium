@@ -14,6 +14,7 @@
 #include "ash/constants/ash_features.h"
 #include "base/check_op.h"
 #include "base/containers/contains.h"
+#include "base/ranges/algorithm.h"
 #include "ui/views/view_model.h"
 
 namespace ash {
@@ -189,7 +190,7 @@ void PagedViewStructure::Move(AppListItemView* view,
 
 void PagedViewStructure::Remove(AppListItemView* view) {
   for (auto& page : pages_) {
-    auto iter = std::find(page.begin(), page.end(), view);
+    auto iter = base::ranges::find(page, view);
     if (iter != page.end()) {
       page.erase(iter);
       break;
@@ -334,12 +335,7 @@ int PagedViewStructure::GetTargetModelIndexForMove(
     // Skip the item view to be moved in the page if found.
     // Decrement |target_model_index| if |moved_view| is in this page because it
     // is represented by a placeholder.
-    auto it =
-        std::find_if(page.begin(), page.end(), [&](AppListItemView* item_view) {
-          return item_view->item() == moved_item;
-        });
-
-    if (it != page.end())
+    if (base::Contains(page, moved_item, &AppListItemView::item))
       --target_model_index;
   }
 

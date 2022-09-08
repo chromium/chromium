@@ -11,6 +11,7 @@
 #include "ash/wm/window_util.h"
 #include "base/bind.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/ranges/algorithm.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_types.h"
@@ -153,12 +154,9 @@ void ClipboardHistoryMenuModelAdapter::SelectMenuItemWithCommandId(
 
 void ClipboardHistoryMenuModelAdapter::SelectMenuItemHoveredByMouse() {
   // Find the menu item hovered by mouse.
-  auto iter =
-      std::find_if(item_views_by_command_id_.cbegin(),
-                   item_views_by_command_id_.cend(), [](const auto& iterator) {
-                     const views::View* item_view = iterator.second;
-                     return item_view->IsMouseHovered();
-                   });
+  auto iter = base::ranges::find_if(item_views_by_command_id_,
+                                    &views::View::IsMouseHovered,
+                                    &ItemViewsByCommandId::value_type::second);
 
   if (iter == item_views_by_command_id_.cend()) {
     // If no item is hovered by mouse, cancel the selection on the child menu

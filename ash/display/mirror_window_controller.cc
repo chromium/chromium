@@ -16,6 +16,7 @@
 #include "ash/host/root_window_transformer.h"
 #include "ash/root_window_settings.h"
 #include "ash/shell.h"
+#include "base/containers/contains.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/viz/common/surfaces/surface_id.h"
@@ -291,10 +292,8 @@ void MirrorWindowController::UpdateWindow(
   if (mirroring_host_info_map_.size() > display_info_list.size()) {
     for (MirroringHostInfoMap::iterator iter = mirroring_host_info_map_.begin();
          iter != mirroring_host_info_map_.end();) {
-      if (std::find_if(display_info_list.begin(), display_info_list.end(),
-                       [iter](const display::ManagedDisplayInfo& info) {
-                         return info.id() == iter->first;
-                       }) == display_info_list.end()) {
+      if (!base::Contains(display_info_list, iter->first,
+                          &display::ManagedDisplayInfo::id)) {
         CloseAndDeleteHost(iter->second, true);
         iter = mirroring_host_info_map_.erase(iter);
       } else {

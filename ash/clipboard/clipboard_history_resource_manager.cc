@@ -16,6 +16,7 @@
 #include "base/containers/cxx20_erase.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
+#include "base/ranges/algorithm.h"
 #include "base/stl_util.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_util.h"
@@ -225,19 +226,16 @@ void ClipboardHistoryResourceManager::CacheImageModel(
 std::vector<ClipboardHistoryResourceManager::CachedImageModel>::const_iterator
 ClipboardHistoryResourceManager::FindCachedImageModelForId(
     const base::UnguessableToken& id) const {
-  return std::find_if(cached_image_models_.cbegin(),
-                      cached_image_models_.cend(),
-                      [&](const auto& cached_image_model) {
-                        return cached_image_model.id == id;
-                      });
+  return base::ranges::find(
+      cached_image_models_, id,
+      &ClipboardHistoryResourceManager::CachedImageModel::id);
 }
 
 std::vector<ClipboardHistoryResourceManager::CachedImageModel>::const_iterator
 ClipboardHistoryResourceManager::FindCachedImageModelForItem(
     const ClipboardHistoryItem& item) const {
-  return std::find_if(
-      cached_image_models_.cbegin(), cached_image_models_.cend(),
-      [&](const auto& cached_image_model) {
+  return base::ranges::find_if(
+      cached_image_models_, [&](const auto& cached_image_model) {
         return base::Contains(cached_image_model.clipboard_history_item_ids,
                               item.id());
       });
@@ -267,7 +265,7 @@ void ClipboardHistoryResourceManager::OnClipboardHistoryItemAdded(
   const auto& items = clipboard_history_->GetItems();
 
   // See if we have an |existing| item that will render the same as |item|.
-  auto it = std::find_if(items.begin(), items.end(), [&](const auto& existing) {
+  auto it = base::ranges::find_if(items, [&](const auto& existing) {
     return &existing != &item &&
            !(existing.data().format() &
              static_cast<int>(ui::ClipboardInternalFormat::kPng)) &&

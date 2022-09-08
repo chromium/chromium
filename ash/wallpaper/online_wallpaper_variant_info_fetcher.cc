@@ -4,8 +4,6 @@
 
 #include "ash/wallpaper/online_wallpaper_variant_info_fetcher.h"
 
-#include <algorithm>
-
 #include "ash/public/cpp/wallpaper/online_wallpaper_params.h"
 #include "ash/public/cpp/wallpaper/online_wallpaper_variant.h"
 #include "ash/public/cpp/wallpaper/wallpaper_controller_client.h"
@@ -14,6 +12,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/logging.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_piece.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 
@@ -43,8 +42,8 @@ bool IsSuitableOnlineWallpaperVariant(const OnlineWallpaperVariant& variant,
 const OnlineWallpaperVariant* FirstValidVariant(
     const std::vector<OnlineWallpaperVariant>& variants,
     ColorMode mode) {
-  const auto iter = std::find_if(
-      variants.begin(), variants.end(), [mode](const auto& variant) {
+  const auto iter =
+      base::ranges::find_if(variants, [mode](const auto& variant) {
         return IsSuitableOnlineWallpaperVariant(variant, mode);
       });
   if (iter != variants.end())
@@ -71,10 +70,8 @@ class VariantMatches {
       ColorMode mode,
       const std::vector<backdrop::Image>& images) {
     // Find the exact image in the |images| collection.
-    auto image_iter = std::find_if(images.begin(), images.end(),
-                                   [asset_id](const backdrop::Image& image) {
-                                     return asset_id == image.asset_id();
-                                   });
+    auto image_iter =
+        base::ranges::find(images, asset_id, &backdrop::Image::asset_id);
 
     if (image_iter == images.end())
       return absl::nullopt;

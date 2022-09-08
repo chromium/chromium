@@ -41,6 +41,7 @@
 #include "base/cxx17_backports.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
+#include "base/ranges/algorithm.h"
 #include "ui/aura/window.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -2786,10 +2787,9 @@ AppListItemView* AppsGridView::GetViewDisplayedAtSlotOnCurrentPage(
   tile_rect.Offset(CalculateTransitionOffset(GetSelectedPage()));
 
   const auto& entries = view_model_.entries();
-  const auto iter =
-      std::find_if(entries.begin(), entries.end(), [&](const auto& entry) {
-        return entry.view->bounds() == tile_rect && entry.view != drag_view_;
-      });
+  const auto iter = base::ranges::find_if(entries, [&](const auto& entry) {
+    return entry.view->bounds() == tile_rect && entry.view != drag_view_;
+  });
   return iter == entries.end() ? nullptr
                                : static_cast<AppListItemView*>(iter->view);
 }
@@ -3010,10 +3010,9 @@ bool AppsGridView::IsValidReorderTargetIndex(const GridIndex& index) const {
 
 size_t AppsGridView::GetModelIndexOfItem(const AppListItem* item) const {
   const auto& entries = view_model_.entries();
-  const auto iter =
-      std::find_if(entries.begin(), entries.end(), [item](const auto& entry) {
-        return static_cast<AppListItemView*>(entry.view)->item() == item;
-      });
+  const auto iter = base::ranges::find(entries, item, [](const auto& entry) {
+    return static_cast<AppListItemView*>(entry.view)->item();
+  });
   return static_cast<size_t>(std::distance(entries.begin(), iter));
 }
 

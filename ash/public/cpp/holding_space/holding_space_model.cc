@@ -206,11 +206,7 @@ void HoldingSpaceModel::InitializeOrRemoveItem(const std::string& id,
     return;
   }
 
-  auto item_it = std::find_if(
-      items_.begin(), items_.end(),
-      [&id](const std::unique_ptr<HoldingSpaceItem>& item) -> bool {
-        return id == item->id();
-      });
+  auto item_it = base::ranges::find(items_, id, &HoldingSpaceItem::id);
   DCHECK(item_it != items_.end());
 
   HoldingSpaceItem* item = item_it->get();
@@ -225,11 +221,7 @@ void HoldingSpaceModel::InitializeOrRemoveItem(const std::string& id,
 
 std::unique_ptr<HoldingSpaceModel::ScopedItemUpdate>
 HoldingSpaceModel::UpdateItem(const std::string& id) {
-  auto item_it =
-      std::find_if(items_.begin(), items_.end(),
-                   [&id](const std::unique_ptr<HoldingSpaceItem>& item) {
-                     return item->id() == id;
-                   });
+  auto item_it = base::ranges::find(items_, id, &HoldingSpaceItem::id);
   DCHECK(item_it != items_.end());
   return base::WrapUnique(new ScopedItemUpdate(this, item_it->get()));
 }
@@ -284,11 +276,7 @@ void HoldingSpaceModel::RemoveAll() {
 
 const HoldingSpaceItem* HoldingSpaceModel::GetItem(
     const std::string& id) const {
-  auto item_it = std::find_if(
-      items_.begin(), items_.end(),
-      [&id](const std::unique_ptr<HoldingSpaceItem>& item) -> bool {
-        return item->id() == id;
-      });
+  auto item_it = base::ranges::find(items_, id, &HoldingSpaceItem::id);
 
   if (item_it == items_.end())
     return nullptr;
@@ -298,8 +286,8 @@ const HoldingSpaceItem* HoldingSpaceModel::GetItem(
 const HoldingSpaceItem* HoldingSpaceModel::GetItem(
     HoldingSpaceItem::Type type,
     const base::FilePath& file_path) const {
-  auto item_it = std::find_if(
-      items_.begin(), items_.end(),
+  auto item_it = base::ranges::find_if(
+      items_,
       [&type, &file_path](const std::unique_ptr<HoldingSpaceItem>& item) {
         return item->type() == type && item->file_path() == file_path;
       });

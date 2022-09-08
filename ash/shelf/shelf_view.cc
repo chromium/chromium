@@ -4,7 +4,6 @@
 
 #include "ash/shelf/shelf_view.h"
 
-#include <algorithm>
 #include <memory>
 #include <utility>
 
@@ -2503,12 +2502,8 @@ void ShelfView::OnBoundsAnimatorDone(views::BoundsAnimator* animator) {
       // previously hidden status can be shown again. Since the button itself
       // might have gone away or changed locations we check that the button
       // is still in the shelf and show its status again.
-      const auto& entries = view_model_->entries();
-      const auto iter = std::find_if(
-          entries.begin(), entries.end(), [this](const auto& entry) {
-            return entry.view == snap_back_from_rip_off_view_;
-          });
-      if (iter != entries.end())
+      if (base::Contains(view_model_->entries(), snap_back_from_rip_off_view_,
+                         &views::ViewModelBase::Entry::view))
         snap_back_from_rip_off_view_->ClearState(ShelfAppButton::STATE_HIDDEN);
 
       snap_back_from_rip_off_view_ = nullptr;

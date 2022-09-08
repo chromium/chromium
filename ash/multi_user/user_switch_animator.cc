@@ -15,6 +15,7 @@
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/window_positioner.h"
 #include "base/bind.h"
+#include "base/ranges/algorithm.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_observer.h"
@@ -74,9 +75,7 @@ class MaximizedWindowAnimationWatcher : public ui::ImplicitAnimationObserver {
 // any, and if it exists in |window_list|) will be the last window in the list.
 void PutMruWindowLast(std::vector<aura::Window*>* window_list) {
   DCHECK(window_list);
-  auto it = std::find_if(
-      window_list->begin(), window_list->end(),
-      [](aura::Window* window) { return wm::IsActiveWindow(window); });
+  auto it = base::ranges::find_if(*window_list, &wm::IsActiveWindow);
   if (it == window_list->end())
     return;
   // Move the active window to the end of the list.

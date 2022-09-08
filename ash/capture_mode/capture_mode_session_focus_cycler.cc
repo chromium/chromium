@@ -26,6 +26,7 @@
 #include "ash/wm/window_state.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/ranges/algorithm.h"
 #include "chromeos/ui/base/chromeos_ui_constants.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -777,10 +778,9 @@ bool CaptureModeSessionFocusCycler::FindFocusedViewAndUpdateFocusIndex(
     return true;
 
   const size_t current_focus_index =
-      std::find_if(views.begin(), views.end(),
-                   [](CaptureModeSessionFocusCycler::HighlightableView* item) {
-                     return item->has_focus();
-                   }) -
+      base::ranges::find(
+          views, true,
+          &CaptureModeSessionFocusCycler::HighlightableView::has_focus) -
       views.begin();
 
   // If current focused view doesn't exist, return false;

@@ -66,6 +66,7 @@
 #include "base/bind.h"
 #include "base/callback_forward.h"
 #include "base/callback_helpers.h"
+#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/memory/weak_ptr.h"
@@ -6562,12 +6563,9 @@ TEST_F(CaptureModeSettingsTest,
 
   std::vector<CaptureModeSessionFocusCycler::HighlightableView*>
       highlightable_items = settings_menu->GetHighlightableItems();
-  EXPECT_TRUE(
-      std::find_if(highlightable_items.begin(), highlightable_items.end(),
-                   [custom_folder_view](
-                       CaptureModeSessionFocusCycler::HighlightableView* item) {
-                     return item->GetView() == custom_folder_view;
-                   }) == highlightable_items.end());
+  EXPECT_FALSE(base::Contains(
+      highlightable_items, custom_folder_view,
+      &CaptureModeSessionFocusCycler::HighlightableView::GetView));
 
   // Tab five times to focus the default `Downloads` option.
   SendKey(ui::VKEY_TAB, event_generator, /*shift_down=*/false, /*count=*/5);
