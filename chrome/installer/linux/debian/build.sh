@@ -118,12 +118,17 @@ do_package() {
   if [ -f "${DEB_CONTROL}" ]; then
     gen_control
   fi
+  log_cmd fakeroot dpkg-deb -Znone -b "${STAGEDIR}" "${TMPFILEDIR}"
+  local PACKAGEFILE="${PACKAGE}-${CHANNEL}_${VERSIONFULL}_${ARCHITECTURE}.deb"
   if [ ${IS_OFFICIAL_BUILD} -ne 0 ]; then
-    local COMPRESSION_OPTS="-Zxz -z9"
-  else
-    local COMPRESSION_OPTS="-Znone"
+    ar -x "${TMPFILEDIR}/${PACKAGEFILE}" --output "${TMPFILEDIR}"
+    xz -z9 -T0 --lzma2='dict=256MiB' "${TMPFILEDIR}/data.tar"
+    xz -z0 "${TMPFILEDIR}/control.tar"
+    ar -d "${TMPFILEDIR}/${PACKAGEFILE}" control.tar data.tar
+    ar -r "${TMPFILEDIR}/${PACKAGEFILE}" "${TMPFILEDIR}/control.tar.xz" \
+      "${TMPFILEDIR}/data.tar.xz"
   fi
-  log_cmd fakeroot dpkg-deb ${COMPRESSION_OPTS} -b "${STAGEDIR}" .
+  mv "${TMPFILEDIR}/${PACKAGEFILE}" .
   verify_package "$DEPENDS"
 }
 
