@@ -6,10 +6,7 @@
 
 #include <memory>
 
-#include "ash/constants/ash_features.h"
-#include "base/feature_list.h"
 #include "base/files/file_path.h"
-#include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/shell_dialogs/select_file_policy.h"
 #include "ui/shell_dialogs/selected_file_info.h"
@@ -24,9 +21,7 @@ const SelectFileDialogExtension::RoutingID kDefaultRoutingID =
 // Must be a class so it can be a friend of SelectFileDialogExtension.
 class SelectFileDialogExtensionTest : public ::testing::Test {
  public:
-  SelectFileDialogExtensionTest() {
-    feature_list_.InitAndEnableFeature(ash::features::kFilesSWA);
-  }
+  SelectFileDialogExtensionTest() = default;
   SelectFileDialogExtensionTest(const SelectFileDialogExtensionTest&) = delete;
   SelectFileDialogExtensionTest& operator=(
       const SelectFileDialogExtensionTest&) = delete;
@@ -41,9 +36,6 @@ class SelectFileDialogExtensionTest : public ::testing::Test {
     EXPECT_TRUE(SelectFileDialogExtension::PendingExists(kDefaultRoutingID));
     return dialog;
   }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 // Test listener for a SelectFileDialog.

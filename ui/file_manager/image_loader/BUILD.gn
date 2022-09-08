@@ -14,7 +14,7 @@ js_type_check("closure_compile_jsmodules") {
                     "js_module_root=gen/ui/file_manager/",
                     "js_module_root=" +
                         rebase_path("//ui/file_manager/", root_build_dir),
-                    "browser_resolver_prefix_replacements=\"chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/=./file_manager/\"",
+                    "browser_resolver_prefix_replacements=\"chrome://file-manager/=./file_manager/\"",
                   ]
   deps = [
     ":background",
@@ -166,7 +166,7 @@ js_test_type_check("js_test_type_check") {
                         rebase_path("//ui/file_manager/", root_build_dir),
                     "js_module_root=./gen/ui/file_manager/",
                     "browser_resolver_prefix_replacements=\"chrome://webui-test/=./\"",
-                    "browser_resolver_prefix_replacements=\"chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/=./file_manager/\"",
+                    "browser_resolver_prefix_replacements=\"chrome://file-manager/=./file_manager/\"",
                   ]
 }
 
@@ -212,7 +212,7 @@ optimize_webui("build") {
   js_out_files = [ "background.rollup.js" ]
 
   external_paths = [
-    "chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj|$files_app_path",
+    "chrome://file-manager|$files_app_path",
     "chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp|$image_loader_path",
   ]
 

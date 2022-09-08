@@ -4,29 +4,23 @@
 
 #include "chrome/browser/ash/file_manager/file_manager_jstest_base.h"
 
-#include "base/files/file_util.h"
+#include "ash/webui/file_manager/resource_loader.h"
+#include "ash/webui/file_manager/resources/grit/file_manager_swa_resources_map.h"
+#include "ash/webui/file_manager/url_constants.h"
 #include "base/lazy_instance.h"
-#include "base/memory/ref_counted_memory.h"
 #include "base/path_service.h"
-#include "base/task/task_traits.h"
-#include "base/task/thread_pool.h"
-#include "base/threading/thread_restrictions.h"
 #include "chrome/browser/ash/file_manager/file_manager_test_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/webui/test_data_source.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "content/public/browser/url_data_source.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui_controller.h"
-#include "content/public/common/url_constants.h"
+#include "content/public/browser/web_ui_data_source.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/scoped_web_ui_controller_factory_registration.h"
-#include "net/base/filename_util.h"
-#include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "ui/base/resource/resource_bundle.h"
-
+#include "ui/file_manager/grit/file_manager_gen_resources_map.h"
+#include "ui/file_manager/grit/file_manager_resources_map.h"
 namespace {
 
 // WebUIProvider to attach the URLDataSource for the test URL during tests.
@@ -44,6 +38,24 @@ class TestWebUIProvider
 
   std::unique_ptr<content::WebUIController> NewWebUI(content::WebUI* web_ui,
                                                      const GURL& url) override {
+    // Add a data source to serve all the chrome://file-manager files for Image
+    // Loader.
+    auto* profile = Profile::FromWebUI(web_ui);
+    content::WebUIDataSource* files_swa_source =
+        content::WebUIDataSource::Create(
+            ash::file_manager::kChromeUIFileManagerHost);
+
+    files_swa_source->AddResourcePaths(base::make_span(
+        kFileManagerSwaResources, kFileManagerSwaResourcesSize));
+
+    ash::file_manager::AddFilesAppResources(
+        files_swa_source, kFileManagerResources, kFileManagerResourcesSize);
+    ash::file_manager::AddFilesAppResources(files_swa_source,
+                                            kFileManagerGenResources,
+                                            kFileManagerGenResourcesSize);
+
+    content::WebUIDataSource::Add(profile, files_swa_source);
+
     return std::make_unique<content::WebUIController>(web_ui);
   }
 
@@ -52,15 +64,19 @@ class TestWebUIProvider
     // generated HTML to run see js_test_gen_html.py.
     source->OverrideContentSecurityPolicy(
         network::mojom::CSPDirectiveName::ScriptSrc,
-        "script-src chrome://resources chrome://webui-test "
-        "'self' chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj "
-        "chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp ");
+        "script-src chrome://resources chrome://webui-test " +
+            std::string(ash::file_manager::kChromeUIFileManagerURL) +
+            " "
+            "'self' chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj "
+            "chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp ; ");
 
     source->OverrideContentSecurityPolicy(
         network::mojom::CSPDirectiveName::ScriptSrcElem,
-        "script-src chrome://resources chrome://webui-test "
-        "'self' chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj "
-        "chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp ; ");
+        "script-src chrome://resources chrome://webui-test " +
+            std::string(ash::file_manager::kChromeUIFileManagerURL) +
+            " "
+            "'self' chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj "
+            "chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp ; ");
 
     // TODO(crbug.com/1098685): Trusted Type remaining WebUI.
     source->DisableTrustedTypesCSP();

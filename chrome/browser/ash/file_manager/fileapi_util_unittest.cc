@@ -104,10 +104,6 @@ class TempFileSystem {
 
 class FileManagerFileAPIUtilTest : public ::testing::Test {
  public:
-  FileManagerFileAPIUtilTest() {
-    feature_list_.InitAndEnableFeature(chromeos::features::kFilesSWA);
-  }
-
   // Carries information on how to create a FileSystemURL for a given file name.
   // For !valid orders we create a test URL. Otherwise, we use temp file system.
   struct FileSystemURLOrder {

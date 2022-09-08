@@ -1021,8 +1021,7 @@ void AddFileManagerFeatureStrings(const std::string& locale,
             crostini::CrostiniFeatures::Get()->IsEnabled(profile));
   dict->Set("PLUGIN_VM_ENABLED",
             plugin_vm::PluginVmFeatures::Get()->IsEnabled(profile));
-  dict->Set("FILES_SWA",
-            base::FeatureList::IsEnabled(chromeos::features::kFilesSWA));
+  dict->Set("FILES_SWA", true);
   dict->Set("FILES_TRASH_ENABLED",
             base::FeatureList::IsEnabled(chromeos::features::kFilesTrash));
   dict->Set("DRIVE_DSS_PIN_ENABLED",

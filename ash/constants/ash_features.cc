@@ -2055,7 +2055,7 @@ bool IsFileManagerFuseBoxDebugEnabled() {
 }
 
 bool IsFileManagerSwaEnabled() {
-  return base::FeatureList::IsEnabled(kFilesSWA);
+  return true;
 }
 
 bool IsFilesWebDriveOfficeEnabled() {

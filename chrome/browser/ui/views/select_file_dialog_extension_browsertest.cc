@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/keyboard/keyboard_switches.h"
 #include "ash/public/cpp/style/dark_light_mode_controller.h"
@@ -181,11 +180,6 @@ class BaseSelectFileDialogExtensionBrowserTest
 
     // Must run after our setup because it actually runs the test.
     extensions::ExtensionBrowserTest::SetUp();
-  }
-
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    feature_list_.InitWithFeatures({chromeos::features::kFilesSWA}, {});
-    extensions::ExtensionBrowserTest::SetUpCommandLine(command_line);
   }
 
   void SetUpOnMainThread() override {
@@ -677,9 +671,7 @@ INSTANTIATE_TEST_SUITE_P(SystemWebApp,
 class SelectFileDialogExtensionDarkLightModeEnabledTest
     : public BaseSelectFileDialogExtensionBrowserTest {
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    feature_list_.InitWithFeatures(
-        {chromeos::features::kFilesSWA, chromeos::features::kDarkLightMode},
-        {});
+    feature_list_.InitWithFeatures({chromeos::features::kDarkLightMode}, {});
     extensions::ExtensionBrowserTest::SetUpCommandLine(command_line);
   }
 };

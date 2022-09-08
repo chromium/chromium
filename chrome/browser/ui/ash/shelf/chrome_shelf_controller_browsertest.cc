@@ -1385,16 +1385,15 @@ IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTest, LaunchApp) {
 // The Browsertest verifying FilesManager's features.
 class FilesManagerExtensionTest : public ShelfPlatformAppBrowserTest {
  public:
-  void SetUp() override {
-    scoped_feature_list_.InitAndDisableFeature(ash::features::kFilesSWA);
-    ShelfPlatformAppBrowserTest::SetUp();
-  }
+  void SetUp() override { ShelfPlatformAppBrowserTest::SetUp(); }
 
   void SetUpOnMainThread() override {
     ShelfPlatformAppBrowserTest::SetUpOnMainThread();
     CHECK(profile());
 
     file_manager::test::AddDefaultComponentExtensionsOnMainThread(profile());
+    ash::SystemWebAppManager::GetForTest(profile())
+        ->InstallSystemAppsForTesting();
   }
 
  private:
@@ -1404,35 +1403,9 @@ class FilesManagerExtensionTest : public ShelfPlatformAppBrowserTest {
 // Verifies that FilesManager's first shelf context menu item is "New window"
 // (see https://crbug.com/1102781).
 IN_PROC_BROWSER_TEST_F(FilesManagerExtensionTest, VerifyFirstItem) {
-  const auto* extension =
-      extensions::ExtensionRegistryFactory::GetForBrowserContext(profile())
-          ->GetExtensionById(extension_misc::kFilesManagerAppId,
-                             extensions::ExtensionRegistry::ENABLED);
-  EXPECT_TRUE(extension);
-
-  // Hacky way to configure FileManager's "New window" menu option.
   const std::string top_level_item_label("New window");
-  {
-    extensions::MenuItem::Type type = extensions::MenuItem::NORMAL;
 
-    // |contexts| must contain MenuItem::LAUNCHER. Otherwise the menu item will
-    // be ignored by AppServiceShelfContextMenu.
-    extensions::MenuItem::ContextList contexts(extensions::MenuItem::LAUNCHER);
-
-    extensions::MenuItem::Id id(
-        /*incognite=*/false,
-        extensions::MenuItem::ExtensionKey(extension->id()));
-    std::unique_ptr<extensions::MenuItem> top_item =
-        std::make_unique<extensions::MenuItem>(
-            id, top_level_item_label, /*checked=*/false, /*visible=*/true,
-            /*enabled=*/true, type, contexts);
-    extensions::MenuManager::Get(profile())->AddContextItem(
-        extension, std::move(top_item));
-    apps::AppServiceProxyFactory::GetForProfile(profile())
-        ->FlushMojoCallsForTesting();
-  }
-
-  CreateAppShortcutItem(ash::ShelfID(extension->id()));
+  CreateAppShortcutItem(ash::ShelfID(file_manager::kFileManagerSwaAppId));
 
   const int item_count = shelf_model()->item_count();
   ash::ShelfItem item = shelf_model()->items()[item_count - 1];
@@ -3082,13 +3055,7 @@ IN_PROC_BROWSER_TEST_P(PerDeskShelfAppBrowserTest, AppMenus) {
 // The Browsertest verifying Files System Web App features.
 class FilesSystemWebAppPinnedTest : public ShelfPlatformAppBrowserTest {
  public:
-  void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(ash::features::kFilesSWA);
-    ShelfPlatformAppBrowserTest::SetUp();
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
+  void SetUp() override { ShelfPlatformAppBrowserTest::SetUp(); }
 };
 
 IN_PROC_BROWSER_TEST_F(FilesSystemWebAppPinnedTest, EnterpriseMigration) {

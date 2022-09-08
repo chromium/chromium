@@ -5,14 +5,12 @@
 #include "chrome/browser/chromeos/extensions/file_manager/system_notification_manager.h"
 
 #include "ash/components/arc/arc_prefs.h"
-#include "ash/constants/ash_features.h"
 #include "ash/webui/file_manager/url_constants.h"
 #include "base/files/file.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/file_manager/copy_or_move_io_task.h"
 #include "chrome/browser/ash/file_manager/fake_disk_mount_manager.h"
 #include "chrome/browser/ash/file_manager/io_task.h"
@@ -157,8 +155,6 @@ class SystemNotificationManagerTest
     notification_platform_bridge = bridge.get();
     notification_display_service_
         ->SetNotificationPlatformBridgeDelegatorForTesting(std::move(bridge));
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndEnableFeature(chromeos::features::kFilesSWA);
     notification_manager_ =
         std::make_unique<SystemNotificationManager>(profile_);
     device_event_router_ = std::make_unique<DeviceEventRouterImpl>(
@@ -1075,8 +1071,6 @@ TEST_F(SystemNotificationManagerTest, DeviceFailUnknownReadOnlyNamed) {
 }
 
 TEST_F(SystemNotificationManagerTest, TestCopyEvents) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(ash::features::kFilesSWA);
   SystemNotificationManager notification_manager(nullptr);
   file_manager_private::CopyOrMoveProgressStatus status;
 
