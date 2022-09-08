@@ -56,6 +56,13 @@ bool ShouldShowUserEmail(ash::LoginStatus status) {
   }
 }
 
+bool AreDevicesEqual(const ash::quick_pair::Device& device_1,
+                     const ash::quick_pair::Device& device_2) {
+  return device_1.metadata_id == device_2.metadata_id &&
+         device_1.ble_address == device_2.ble_address &&
+         device_1.protocol == device_2.protocol;
+}
+
 }  // namespace
 
 namespace ash {
@@ -91,6 +98,19 @@ FastPairPresenterImpl::~FastPairPresenterImpl() = default;
 
 void FastPairPresenterImpl::ShowDiscovery(scoped_refptr<Device> device,
                                           DiscoveryCallback callback) {
+  DCHECK(device);
+
+  // If we are already showing a discovery notification for a device in the
+  // same protocol, don't show one again. This prevents notification cycling
+  // for every advertisement for some devices in the subsequent pairing
+  // protocol.
+  if (device_with_discovery_notification_showing_ &&
+      AreDevicesEqual(*device, *device_with_discovery_notification_showing_)) {
+    callback.Run(DiscoveryAction::kAlreadyDisplaying);
+    return;
+  }
+
+  device_with_discovery_notification_showing_ = device;
   const auto metadata_id = device->metadata_id;
   FastPairRepository::Get()->GetDeviceMetadata(
       metadata_id, base::BindRepeating(
@@ -240,11 +260,13 @@ void FastPairPresenterImpl::ShowUserDiscoveryNotification(
 }
 
 void FastPairPresenterImpl::OnDiscoveryClicked(DiscoveryCallback callback) {
+  device_with_discovery_notification_showing_.reset();
   callback.Run(DiscoveryAction::kPairToDevice);
 }
 
 void FastPairPresenterImpl::OnDiscoveryDismissed(DiscoveryCallback callback,
                                                  bool user_dismissed) {
+  device_with_discovery_notification_showing_.reset();
   callback.Run(user_dismissed ? DiscoveryAction::kDismissedByUser
                               : DiscoveryAction::kDismissed);
 }

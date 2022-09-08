@@ -164,7 +164,9 @@ void Mediator::OnFastPairEnabledChanged(bool is_enabled) {
 
 void Mediator::OnDeviceFound(scoped_refptr<Device> device) {
   QP_LOG(INFO) << __func__ << ": " << device;
-  // On discovery, download and decode device images.
+  // On discovery, download and decode device images. TODO (b/244472452):
+  // remove logic that is executed for every advertisement even if no
+  // notification is shown.
   ui_broker_->ShowDiscovery(device);
   fast_pair_repository_->FetchDeviceImages(device);
 }
@@ -246,6 +248,7 @@ void Mediator::OnDiscoveryAction(scoped_refptr<Device> device,
     case DiscoveryAction::kDismissedByUser:
     case DiscoveryAction::kDismissed:
     case DiscoveryAction::kLearnMore:
+    case DiscoveryAction::kAlreadyDisplaying:
       break;
   }
 }
