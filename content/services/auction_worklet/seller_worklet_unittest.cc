@@ -150,6 +150,20 @@ class TestScoreAdClient : public mojom::ScoreAdClient {
              std::move(pa_requests), errors);
   }
 
+  static ScoreAdCompleteCallback ScoreAdNeverInvokedCallback() {
+    return base::BindOnce([](double score,
+                             mojom::ComponentAuctionModifiedBidParamsPtr
+                                 component_auction_modified_bid_params,
+                             uint32_t scoring_signals_data_version,
+                             bool has_scoring_signals_data_version,
+                             const absl::optional<GURL>& debug_loss_report_url,
+                             const absl::optional<GURL>& debug_win_report_url,
+                             PrivateAggregationRequests pa_requests,
+                             const std::vector<std::string>& errors) {
+      ADD_FAILURE() << "Callback should not be invoked";
+    });
+  }
+
  private:
   ScoreAdCompleteCallback score_ad_complete_callback_;
 };
@@ -376,17 +390,7 @@ class SellerWorkletTest : public testing::Test {
         seller_timeout_,
         /*trace_id=*/1,
         TestScoreAdClient::Create(
-            base::BindOnce([](double score,
-                              mojom::ComponentAuctionModifiedBidParamsPtr
-                                  component_auction_modified_bid_params,
-                              uint32_t scoring_signals_data_version,
-                              bool has_scoring_signals_data_version,
-                              const absl::optional<GURL>& debug_loss_report_url,
-                              const absl::optional<GURL>& debug_win_report_url,
-                              PrivateAggregationRequests pa_requests,
-                              const std::vector<std::string>& errors) {
-              ADD_FAILURE() << "This should not be invoked";
-            })));
+            TestScoreAdClient::ScoreAdNeverInvokedCallback()));
   }
 
   // Loads and runs a scode_ad() script, expecting the supplied result.
@@ -2421,19 +2425,8 @@ TEST_F(SellerWorkletTest, DeleteBeforeScoreAdCallback) {
       seller_timeout_,
       /*trace_id=*/1,
       TestScoreAdClient::Create(
-          base::BindOnce(
-              [](double score,
-                 mojom::ComponentAuctionModifiedBidParamsPtr
-                     component_auction_modified_bid_params,
-                 uint32_t scoring_signals_data_version,
-                 bool has_scoring_signals_data_version,
-                 const absl::optional<GURL>& debug_loss_report_url,
-                 const absl::optional<GURL>& debug_win_report_url,
-                 PrivateAggregationRequests pa_requests,
-                 const std::vector<std::string>& errors) {
-                ADD_FAILURE()
-                    << "Callback should not be invoked since worklet deleted";
-              })));
+          // Callback should not be invoked since worklet deleted
+          TestScoreAdClient::ScoreAdNeverInvokedCallback()));
   base::RunLoop().RunUntilIdle();
   seller_worklet.reset();
   event_handle->Signal();
@@ -3009,6 +3002,99 @@ TEST_F(SellerWorkletTest, UnloadWhilePaused) {
   worklet.reset();
 
   // This won't terminate if the V8 thread is still blocked in debugger.
+  task_environment_.RunUntilIdle();
+}
+
+// Test that cancelling the worklet before it runs but after the execution was
+// queued actually cancels the execution. This is done by trying to run a
+// while(true) {} script with a timeout that's bigger than the test timeout, so
+// if it doesn't get cancelled the *test* will timeout.
+TEST_F(SellerWorkletTest, Cancelation) {
+  seller_timeout_ = base::Days(360);
+  AddJavascriptResponse(&url_loader_factory_, decision_logic_url_,
+                        "while(true) {}");
+  mojo::Remote<mojom::SellerWorklet> seller_worklet = CreateWorklet();
+  // Let the script load.
+  task_environment_.RunUntilIdle();
+
+  // Now we no longer need it for parsing JS, wedge the V8 thread so we get a
+  // chance to cancel the script *before* it actually tries running.
+  base::WaitableEvent* event_handle = WedgeV8Thread(v8_helper_.get());
+
+  TestScoreAdClient client(TestScoreAdClient::ScoreAdNeverInvokedCallback());
+  mojo::Receiver<mojom::ScoreAdClient> client_receiver(&client);
+
+  seller_worklet->ScoreAd(
+      ad_metadata_, bid_, auction_ad_config_non_shared_params_,
+      browser_signals_other_seller_.Clone(),
+      browser_signal_interest_group_owner_, browser_signal_render_url_,
+      browser_signal_ad_components_, browser_signal_bidding_duration_msecs_,
+      seller_timeout_,
+      /*trace_id=*/1, client_receiver.BindNewPipeAndPassRemote());
+
+  // Cancel and then unwedge.
+  client_receiver.reset();
+  base::RunLoop().RunUntilIdle();
+  event_handle->Signal();
+
+  // Make sure cancellation happens before ~SellerWorklet.
+  task_environment_.RunUntilIdle();
+}
+
+// Test that queued tasks get cancelled at worklet destruction.
+TEST_F(SellerWorkletTest, CancelationDtor) {
+  seller_timeout_ = base::Days(360);
+
+  // ReportResult timeout isn't configurable the way scoreAd is.
+  v8_helper_->v8_runner()->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          [](scoped_refptr<AuctionV8Helper> v8_helper) {
+            v8_helper->set_script_timeout_for_testing(base::Days(360));
+          },
+          v8_helper_));
+
+  AddJavascriptResponse(&url_loader_factory_, decision_logic_url_,
+                        "while(true) {}");
+  mojo::Remote<mojom::SellerWorklet> seller_worklet = CreateWorklet();
+  // Let the script load.
+  task_environment_.RunUntilIdle();
+
+  // Now we no longer need it for parsing JS, wedge the V8 thread so we get a
+  // chance to cancel the script *before* it actually tries running.
+  base::WaitableEvent* event_handle = WedgeV8Thread(v8_helper_.get());
+
+  RunScoreAdOnWorkletExpectingCallbackNeverInvoked(seller_worklet.get());
+  RunReportResultExpectingCallbackNeverInvoked(seller_worklet.get());
+
+  // Destroy the worklet, then unwedge.
+  seller_worklet.reset();
+  base::RunLoop().RunUntilIdle();
+  event_handle->Signal();
+}
+
+// Test that cancelling execution before the script is fetched doesn't run it.
+TEST_F(SellerWorkletTest, CancelBeforeFetch) {
+  seller_timeout_ = base::Days(360);
+
+  mojo::Remote<mojom::SellerWorklet> seller_worklet = CreateWorklet();
+  TestScoreAdClient client(TestScoreAdClient::ScoreAdNeverInvokedCallback());
+  mojo::Receiver<mojom::ScoreAdClient> client_receiver(&client);
+
+  seller_worklet->ScoreAd(
+      ad_metadata_, bid_, auction_ad_config_non_shared_params_,
+      browser_signals_other_seller_.Clone(),
+      browser_signal_interest_group_owner_, browser_signal_render_url_,
+      browser_signal_ad_components_, browser_signal_bidding_duration_msecs_,
+      seller_timeout_,
+      /*trace_id=*/1, client_receiver.BindNewPipeAndPassRemote());
+  task_environment_.RunUntilIdle();
+  // Cancel and then make the script available.
+  client_receiver.reset();
+  AddJavascriptResponse(&url_loader_factory_, decision_logic_url_,
+                        "while (true) {}");
+
+  // Make sure cancellation happens before ~SellerWorklet.
   task_environment_.RunUntilIdle();
 }
 

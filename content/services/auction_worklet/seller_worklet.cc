@@ -18,6 +18,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
+#include "base/task/bind_post_task.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
@@ -347,6 +348,13 @@ void SellerWorklet::ScoreAd(
   score_ad_task->trace_id = trace_id;
   score_ad_task->score_ad_client.Bind(std::move(score_ad_client));
 
+  // Deleting `score_ad_task` will destroy `score_ad_client` and thus
+  // abort this callback, so it's safe to use Unretained(this) and
+  // `generate_bid_task` here.
+  score_ad_task->score_ad_client.set_disconnect_handler(
+      base::BindOnce(&SellerWorklet::OnScoreAdClientDestroyed,
+                     base::Unretained(this), score_ad_task));
+
   // If `trusted_signals_request_manager_` exists, there's a trusted scoring
   // signals URL which needs to be fetched before the auction can be run.
   if (trusted_signals_request_manager_) {
@@ -484,10 +492,15 @@ void SellerWorklet::V8State::ScoreAd(
     uint32_t browser_signal_bidding_duration_msecs,
     const absl::optional<base::TimeDelta> seller_timeout,
     uint64_t trace_id,
+    base::ScopedClosureRunner cleanup_score_ad_task,
     ScoreAdCallbackInternal callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(v8_sequence_checker_);
 
   TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "post_v8_task", trace_id);
+
+  // Don't need to run `cleanup_score_ad_task` if this method is invoked;
+  // it's bound to the closure to clean things up if this method got cancelled.
+  cleanup_score_ad_task.ReplaceClosure(base::OnceClosure());
 
   AuctionV8Helper::FullIsolateScope isolate_scope(v8_helper_.get());
   v8::Isolate* isolate = v8_helper_->isolate();
@@ -1012,6 +1025,21 @@ void SellerWorklet::OnTrustedScoringSignalsDownloaded(
   ScoreAdIfReady(task);
 }
 
+void SellerWorklet::OnScoreAdClientDestroyed(ScoreAdTaskList::iterator task) {
+  // If the task hasn't finished loading trusted signals or loading the code,
+  // it also hasn't posted the iterator off-thread, so we can just remove the
+  // object and have it cancel everything else.
+  if (task->trusted_scoring_signals_request || !IsCodeReady()) {
+    score_ad_tasks_.erase(task);
+  } else {
+    // Otherwise, there should be a pending V8 call. Try to cancel that, but if
+    // it already started, it will just run and throw out the results thanks to
+    // the closed client pipe.
+    DCHECK_NE(task->task_id, base::CancelableTaskTracker::kBadTaskId);
+    cancelable_task_tracker_.TryCancel(task->task_id);
+  }
+}
+
 void SellerWorklet::ScoreAdIfReady(ScoreAdTaskList::iterator task) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(user_sequence_checker_);
 
@@ -1022,8 +1050,18 @@ void SellerWorklet::ScoreAdIfReady(ScoreAdTaskList::iterator task) {
                                   task->trace_id);
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("fledge", "post_v8_task", task->trace_id);
 
-  v8_runner_->PostTask(
-      FROM_HERE,
+  // Normally the PostTask below will eventually get `task` cleaned up once it
+  // posts back to DeliverScoreAdCallbackOnUserThread with its results, but that
+  // won't happen if it gets cancelled. To deal with that, a ScopedClosureRunner
+  // is passed to ask for `task` to get cleaned up in case the V8State::ScoreAd
+  // closure gets destroyed without running.
+  base::OnceClosure cleanup_score_ad_task = base::BindPostTask(
+      base::SequencedTaskRunnerHandle::Get(),
+      base::BindOnce(&SellerWorklet::CleanUpScoreAdTaskOnUserThread,
+                     weak_ptr_factory_.GetWeakPtr(), task));
+
+  task->task_id = cancelable_task_tracker_.PostTask(
+      v8_runner_.get(), FROM_HERE,
       base::BindOnce(
           &SellerWorklet::V8State::ScoreAd, base::Unretained(v8_state_.get()),
           task->ad_metadata_json, task->bid,
@@ -1035,6 +1073,7 @@ void SellerWorklet::ScoreAdIfReady(ScoreAdTaskList::iterator task) {
           std::move(task->browser_signal_ad_components),
           task->browser_signal_bidding_duration_msecs,
           std::move(task->seller_timeout), task->trace_id,
+          base::ScopedClosureRunner(std::move(cleanup_score_ad_task)),
           base::BindOnce(&SellerWorklet::DeliverScoreAdCallbackOnUserThread,
                          weak_ptr_factory_.GetWeakPtr(), task)));
 }
@@ -1070,6 +1109,12 @@ void SellerWorklet::DeliverScoreAdCallbackOnUserThread(
   score_ad_tasks_.erase(task);
 }
 
+void SellerWorklet::CleanUpScoreAdTaskOnUserThread(
+    ScoreAdTaskList::iterator task) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(user_sequence_checker_);
+  score_ad_tasks_.erase(task);
+}
+
 void SellerWorklet::RunReportResult(ReportResultTaskList::iterator task) {
   DCHECK(IsCodeReady());
 
@@ -1077,8 +1122,8 @@ void SellerWorklet::RunReportResult(ReportResultTaskList::iterator task) {
                                   task->trace_id);
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("fledge", "post_v8_task", task->trace_id);
 
-  v8_runner_->PostTask(
-      FROM_HERE,
+  cancelable_task_tracker_.PostTask(
+      v8_runner_.get(), FROM_HERE,
       base::BindOnce(
           &SellerWorklet::V8State::ReportResult,
           base::Unretained(v8_state_.get()),

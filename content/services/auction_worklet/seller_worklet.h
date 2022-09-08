@@ -13,9 +13,11 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/callback_helpers.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
+#include "base/task/cancelable_task_tracker.h"
 #include "base/time/time.h"
 #include "content/common/content_export.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
@@ -124,6 +126,9 @@ class CONTENT_EXPORT SellerWorklet : public mojom::SellerWorklet {
     ScoreAdTask();
     ~ScoreAdTask();
 
+    base::CancelableTaskTracker::TaskId task_id =
+        base::CancelableTaskTracker::kBadTaskId;
+
     // These fields all correspond to the arguments of ScoreAd(). They're
     // std::move()ed when calling out to V8State to run Javascript, so are not
     // safe to access after that happens.
@@ -227,6 +232,7 @@ class CONTENT_EXPORT SellerWorklet : public mojom::SellerWorklet {
         uint32_t browser_signal_bidding_duration_msecs,
         const absl::optional<base::TimeDelta> seller_timeout,
         uint64_t trace_id,
+        base::ScopedClosureRunner cleanup_score_ad_task,
         ScoreAdCallbackInternal callback);
 
     void ReportResult(
@@ -315,6 +321,10 @@ class CONTENT_EXPORT SellerWorklet : public mojom::SellerWorklet {
       scoped_refptr<TrustedSignals::Result> result,
       absl::optional<std::string> error_msg);
 
+  // Invoked when the ScoreAdClient associated with `task` is destroyed.
+  // Cancels bid generation.
+  void OnScoreAdClientDestroyed(ScoreAdTaskList::iterator task);
+
   // Checks if the script has been loaded successfully, and the
   // TrustedSignals load has finished, if needed (successfully or not). If so,
   // calls scoreAd().
@@ -330,6 +340,11 @@ class CONTENT_EXPORT SellerWorklet : public mojom::SellerWorklet {
       absl::optional<GURL> debug_win_report_url,
       PrivateAggregationRequests pa_requests,
       std::vector<std::string> errors);
+
+  // Removes `task` from `score_ad_tasks_` only. Used in case where the
+  // V8 work for task was cancelled only (via the `cleanup_score_ad_task`
+  // parameter getting destroyed.)
+  void CleanUpScoreAdTaskOnUserThread(ScoreAdTaskList::iterator task);
 
   // Runs the specified queued ReportWinTask. All code must already be loaded by
   // the time this is invoked.
@@ -379,6 +394,8 @@ class CONTENT_EXPORT SellerWorklet : public mojom::SellerWorklet {
 
   // Error that occurred while loading the worklet script, if any.
   absl::optional<std::string> load_script_error_msg_;
+
+  base::CancelableTaskTracker cancelable_task_tracker_;
 
   SEQUENCE_CHECKER(user_sequence_checker_);
 
