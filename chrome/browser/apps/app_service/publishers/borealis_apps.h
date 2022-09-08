@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/apps/app_service/app_icon/icon_key_util.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_forward.h"
@@ -58,6 +59,16 @@ class BorealisApps
  private:
   friend class PublisherHost;
 
+  // Helper method for dispatching to the provided |callback| once we
+  // have queried whether borealis is allowed not installed.
+  void CallWithBorealisAllowed(base::OnceCallback<void(bool)> callback);
+
+  // Called after determining whether borealis is |allowed| and |enabled|, this
+  // method sets up the "special" (i.e. non-vm, non-anonymous) apps used by
+  // borealis, such as its installer.
+  void SetUpSpecialApps(bool allowed);
+  void SetUpSpecialAppsMojom(bool allowed);
+
   // Helper method to get the registry used by this profile
   guest_os::GuestOsRegistryService* Registry();
 
@@ -72,6 +83,14 @@ class BorealisApps
       bool new_icon_key);
 
   void Initialize();
+
+  // Called by the pref registry when one of borealis' global permissions (mic,
+  // camera, etc) change.
+  void OnPermissionChanged();
+
+  // Called by the pref registry when borealis' installation pref changes (i.e
+  // for install and uninstall.
+  void OnInstallChanged();
 
   // apps::AppPublisher overrides.
   void LoadIcon(const std::string& app_id,
@@ -122,7 +141,6 @@ class BorealisApps
       const std::vector<std::string>& updated_apps,
       const std::vector<std::string>& removed_apps,
       const std::vector<std::string>& inserted_apps) override;
-  void OnPermissionChanged();
 
   // borealis::BorealisWindowManager::AnonymousAppObserver overrides.
   void OnAnonymousAppAdded(const std::string& shelf_app_id,
@@ -142,6 +160,8 @@ class BorealisApps
       anonymous_app_observation_{this};
 
   PrefChangeRegistrar pref_registrar_;
+
+  base::WeakPtrFactory<BorealisApps> weak_factory_{this};
 };
 
 }  // namespace apps

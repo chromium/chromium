@@ -48,84 +48,30 @@ const char* PermissionToPrefName(apps::PermissionType permission) {
   return nullptr;
 }
 
-void SetAppAllowed(apps::mojom::App* app,
-                   bool allowed,
-                   bool partially_hidden = false) {
-  app->readiness = allowed ? apps::mojom::Readiness::kReady
-                           : apps::mojom::Readiness::kDisabledByPolicy;
+// Helper method to set up an apps visibility in all the major UI surfaces.
+void InitializeApp(apps::App& app, bool visible) {
+  app.recommendable = visible;
+  app.searchable = visible;
+  app.show_in_launcher = visible;
+  app.show_in_shelf = visible;
+  app.show_in_search = visible;
+  app.show_in_management = visible;
+  app.handles_intents = visible;
+}
 
-  const apps::mojom::OptionalBool opt_allowed =
-      allowed ? apps::mojom::OptionalBool::kTrue
+// As above, for mojom-based apps.
+void InitializeAppMojom(apps::mojom::App* app, bool visible) {
+  const apps::mojom::OptionalBool opt_visible =
+      visible ? apps::mojom::OptionalBool::kTrue
               : apps::mojom::OptionalBool::kFalse;
-  const apps::mojom::OptionalBool opt_partial_allowed =
-      allowed && !partially_hidden ? apps::mojom::OptionalBool::kTrue
-                                   : apps::mojom::OptionalBool::kFalse;
 
-  app->recommendable = opt_allowed;
-  app->searchable = opt_allowed;
-  app->show_in_launcher = opt_partial_allowed;
-  app->show_in_shelf = opt_allowed;
-  app->show_in_search = opt_partial_allowed;
-  app->show_in_management = opt_partial_allowed;
-  app->handles_intents = opt_allowed;
-}
-
-void SetAppAllowed(bool allowed,
-                   apps::App& app,
-                   bool partially_hidden = false) {
-  app.readiness =
-      allowed ? apps::Readiness::kReady : apps::Readiness::kDisabledByPolicy;
-
-  app.recommendable = allowed;
-  app.searchable = allowed;
-  app.show_in_launcher = allowed && !partially_hidden;
-  app.show_in_shelf = allowed;
-  app.show_in_search = allowed && !partially_hidden;
-  app.show_in_management = allowed && !partially_hidden;
-  app.handles_intents = allowed;
-}
-
-apps::AppPtr CreateBorealisLauncher(Profile* profile, bool allowed) {
-  auto app = apps::AppPublisher::MakeApp(
-      apps::AppType::kBorealis, borealis::kInstallerAppId,
-      allowed ? apps::Readiness::kReady : apps::Readiness::kDisabledByPolicy,
-      l10n_util::GetStringUTF8(IDS_BOREALIS_APP_NAME),
-      apps::InstallReason::kDefault, apps::InstallSource::kUnknown);
-
-  app->icon_key =
-      apps::IconKey(apps::IconKey::kDoesNotChangeOverTime,
-                    IDR_LOGO_BOREALIS_DEFAULT_192, apps::IconEffects::kNone);
-
-  SetAppAllowed(allowed, *app, /*partially_hidden=*/true);
-
-  app->allow_uninstall =
-      borealis::BorealisService::GetForProfile(profile)->Features().IsEnabled();
-
-  // TODO(crbug.com/1253250): Add other fields for the App struct.
-  return app;
-}
-
-apps::mojom::AppPtr GetBorealisLauncher(Profile* profile, bool allowed) {
-  apps::mojom::AppPtr app = apps::PublisherBase::MakeApp(
-      apps::mojom::AppType::kBorealis, borealis::kInstallerAppId,
-      allowed ? apps::mojom::Readiness::kReady
-              : apps::mojom::Readiness::kDisabledByPolicy,
-      l10n_util::GetStringUTF8(IDS_BOREALIS_APP_NAME),
-      apps::mojom::InstallReason::kDefault);
-
-  app->icon_key = apps::mojom::IconKey::New(
-      apps::mojom::IconKey::kDoesNotChangeOverTime,
-      IDR_LOGO_BOREALIS_DEFAULT_192, apps::IconEffects::kNone);
-
-  SetAppAllowed(app.get(), allowed, /*partially_hidden=*/true);
-
-  app->allow_uninstall = (borealis::BorealisService::GetForProfile(profile)
-                              ->Features()
-                              .IsEnabled())
-                             ? apps::mojom::OptionalBool::kTrue
-                             : apps::mojom::OptionalBool::kFalse;
-
-  return app;
+  app->recommendable = opt_visible;
+  app->searchable = opt_visible;
+  app->show_in_launcher = opt_visible;
+  app->show_in_shelf = opt_visible;
+  app->show_in_search = opt_visible;
+  app->show_in_management = opt_visible;
+  app->handles_intents = opt_visible;
 }
 
 // TODO(crbug.com/1253250): Remove and use CreatePermissions.
@@ -153,18 +99,6 @@ apps::Permissions CreatePermissions(Profile* profile) {
   return permissions;
 }
 
-bool IsBorealisLauncherAllowed(Profile* profile) {
-  // TODO(b/217653546): The installer "app" was a short-term solution anyway.
-  // Once insert_coin is a thing it should never be shown.
-  return borealis::BorealisService::GetForProfile(profile)
-                 ->Features()
-                 .MightBeAllowed() ==
-             borealis::BorealisFeatures::AllowStatus::kAllowed &&
-         !borealis::BorealisService::GetForProfile(profile)
-              ->Features()
-              .IsEnabled();
-}
-
 }  // namespace
 
 namespace apps {
@@ -182,8 +116,12 @@ BorealisApps::BorealisApps(AppServiceProxy* proxy)
     pref_registrar_.Add(
         info.pref_name,
         base::BindRepeating(&apps::BorealisApps::OnPermissionChanged,
-                            base::Unretained(this)));
+                            weak_factory_.GetWeakPtr()));
   }
+
+  pref_registrar_.Add(borealis::prefs::kBorealisInstalledOnDevice,
+                      base::BindRepeating(&BorealisApps::OnInstallChanged,
+                                          weak_factory_.GetWeakPtr()));
 
   // TODO(b/170264723): When uninstalling borealis is completed, ensure that we
   // remove the apps from the apps service.
@@ -191,6 +129,75 @@ BorealisApps::BorealisApps(AppServiceProxy* proxy)
 
 BorealisApps::~BorealisApps() {
   Registry()->RemoveObserver(this);
+  pref_registrar_.RemoveAll();
+}
+
+void BorealisApps::CallWithBorealisAllowed(
+    base::OnceCallback<void(bool)> callback) {
+  borealis::BorealisService::GetForProfile(profile_)->Features().IsAllowed(
+      base::BindOnce(
+          [](base::OnceCallback<void(bool)> callback,
+             borealis::BorealisFeatures::AllowStatus allow_status) {
+            std::move(callback).Run(
+                allow_status ==
+                borealis::BorealisFeatures::AllowStatus::kAllowed);
+          },
+          std::move(callback)));
+}
+
+void BorealisApps::SetUpSpecialApps(bool allowed) {
+  // The special apps are only shown if borealis isn't installed and it can be.
+  bool installed = borealis::BorealisService::GetForProfile(profile_)
+                       ->Features()
+                       .IsEnabled();
+  bool shown = allowed && !installed;
+
+  auto app = apps::AppPublisher::MakeApp(
+      apps::AppType::kBorealis, borealis::kInstallerAppId,
+      shown ? apps::Readiness::kReady : apps::Readiness::kDisabledByPolicy,
+      l10n_util::GetStringUTF8(IDS_BOREALIS_APP_NAME),
+      apps::InstallReason::kDefault, apps::InstallSource::kUnknown);
+  InitializeApp(*app, shown);
+
+  app->icon_key =
+      apps::IconKey(apps::IconKey::kDoesNotChangeOverTime,
+                    IDR_LOGO_BOREALIS_DEFAULT_192, apps::IconEffects::kNone);
+
+  // The installer is not uninstallable, or shown in manager/launcher.
+  app->show_in_launcher = false;
+  app->show_in_management = false;
+  app->allow_uninstall = false;
+
+  // TODO(crbug.com/1253250): Add other fields for the App struct.
+  AppPublisher::Publish(std::move(app));
+}
+
+void BorealisApps::SetUpSpecialAppsMojom(bool allowed) {
+  // The special apps are only shown if borealis isn't installed and it can be.
+  bool installed = borealis::BorealisService::GetForProfile(profile_)
+                       ->Features()
+                       .IsEnabled();
+  bool shown = allowed && !installed;
+
+  apps::mojom::AppPtr app = apps::PublisherBase::MakeApp(
+      apps::mojom::AppType::kBorealis, borealis::kInstallerAppId,
+      shown ? apps::mojom::Readiness::kReady
+            : apps::mojom::Readiness::kDisabledByPolicy,
+      l10n_util::GetStringUTF8(IDS_BOREALIS_APP_NAME),
+      apps::mojom::InstallReason::kDefault);
+  InitializeAppMojom(app.get(), shown);
+
+  app->icon_key = apps::mojom::IconKey::New(
+      apps::mojom::IconKey::kDoesNotChangeOverTime,
+      IDR_LOGO_BOREALIS_DEFAULT_192, apps::IconEffects::kNone);
+
+  // The installer is not uninstallable, or shown in manager/launcher.
+  app->show_in_launcher = apps::mojom::OptionalBool::kFalse;
+  app->show_in_management = apps::mojom::OptionalBool::kFalse;
+  app->allow_uninstall = apps::mojom::OptionalBool::kFalse;
+
+  // TODO(crbug.com/1253250): Add other fields for the App struct.
+  PublisherBase::Publish(std::move(app), subscribers_);
 }
 
 guest_os::GuestOsRegistryService* BorealisApps::Registry() {
@@ -213,9 +220,12 @@ AppPtr BorealisApps::CreateApp(
   // it can't be converted.
   DCHECK_NE(registration.app_id(), borealis::kInstallerAppId);
 
+  bool shown = !registration.NoDisplay();
   auto app = AppPublisher::MakeApp(
-      AppType::kBorealis, registration.app_id(), Readiness::kReady,
+      AppType::kBorealis, registration.app_id(),
+      shown ? apps::Readiness::kReady : apps::Readiness::kDisabledByPolicy,
       registration.Name(), InstallReason::kUser, InstallSource::kUnknown);
+  InitializeApp(*app, shown);
 
   const std::string& executable_file_name = registration.ExecutableFileName();
   if (!executable_file_name.empty()) {
@@ -238,8 +248,6 @@ AppPtr BorealisApps::CreateApp(
     app->permissions = CreatePermissions(profile_);
   }
 
-  SetAppAllowed(!registration.NoDisplay(), *app);
-
   // TODO(crbug.com/1253250): Add other fields for the App struct.
   return app;
 }
@@ -254,10 +262,13 @@ apps::mojom::AppPtr BorealisApps::Convert(
   // it can't be converted.
   DCHECK_NE(registration.app_id(), borealis::kInstallerAppId);
 
+  bool shown = !registration.NoDisplay();
   apps::mojom::AppPtr app = PublisherBase::MakeApp(
       apps::mojom::AppType::kBorealis, registration.app_id(),
-      apps::mojom::Readiness::kReady, registration.Name(),
-      apps::mojom::InstallReason::kUser);
+      shown ? apps::mojom::Readiness::kReady
+            : apps::mojom::Readiness::kDisabledByPolicy,
+      registration.Name(), apps::mojom::InstallReason::kUser);
+  InitializeAppMojom(app.get(), shown);
 
   const std::string& executable_file_name = registration.ExecutableFileName();
   if (!executable_file_name.empty()) {
@@ -280,7 +291,6 @@ apps::mojom::AppPtr BorealisApps::Convert(
     PopulatePermissions(app.get(), profile_);
   }
 
-  SetAppAllowed(app.get(), !registration.NoDisplay());
   return app;
 }
 
@@ -291,9 +301,6 @@ void BorealisApps::Initialize() {
   RegisterPublisher(AppType::kBorealis);
 
   std::vector<AppPtr> apps;
-  apps.push_back(
-      CreateBorealisLauncher(profile_, IsBorealisLauncherAllowed(profile_)));
-
   for (const auto& pair :
        Registry()->GetRegisteredApps(guest_os::VmType::BOREALIS)) {
     const guest_os::GuestOsRegistryService::Registration& registration =
@@ -302,6 +309,9 @@ void BorealisApps::Initialize() {
   }
   AppPublisher::Publish(std::move(apps), AppType::kBorealis,
                         /*should_notify_initialized=*/true);
+
+  CallWithBorealisAllowed(base::BindOnce(&BorealisApps::SetUpSpecialApps,
+                                         weak_factory_.GetWeakPtr()));
 }
 
 void BorealisApps::LoadIcon(const std::string& app_id,
@@ -376,9 +386,6 @@ void BorealisApps::Connect(
     mojo::PendingRemote<apps::mojom::Subscriber> subscriber_remote,
     apps::mojom::ConnectOptionsPtr opts) {
   std::vector<apps::mojom::AppPtr> apps;
-  apps.push_back(
-      GetBorealisLauncher(profile_, IsBorealisLauncherAllowed(profile_)));
-
   for (const auto& pair :
        Registry()->GetRegisteredApps(guest_os::VmType::BOREALIS)) {
     const guest_os::GuestOsRegistryService::Registration& registration =
@@ -391,6 +398,9 @@ void BorealisApps::Connect(
   subscriber->OnApps(std::move(apps), apps::mojom::AppType::kBorealis,
                      true /* should_notify_initialized */);
   subscribers_.Add(std::move(subscriber));
+
+  CallWithBorealisAllowed(base::BindOnce(&BorealisApps::SetUpSpecialAppsMojom,
+                                         weak_factory_.GetWeakPtr()));
 }
 
 void BorealisApps::Launch(const std::string& app_id,
@@ -476,35 +486,34 @@ void BorealisApps::OnPermissionChanged() {
   AppPublisher::Publish(std::move(app));
 }
 
+void BorealisApps::OnInstallChanged() {
+  CallWithBorealisAllowed(base::BindOnce(&BorealisApps::SetUpSpecialApps,
+                                         weak_factory_.GetWeakPtr()));
+  CallWithBorealisAllowed(base::BindOnce(&BorealisApps::SetUpSpecialAppsMojom,
+                                         weak_factory_.GetWeakPtr()));
+}
+
 void BorealisApps::OnAnonymousAppAdded(const std::string& shelf_app_id,
                                        const std::string& shelf_app_name) {
   apps::mojom::AppPtr mojom_app = apps::PublisherBase::MakeApp(
       apps::mojom::AppType::kBorealis, shelf_app_id,
       apps::mojom::Readiness::kReady, shelf_app_name,
       apps::mojom::InstallReason::kUser);
+  InitializeAppMojom(mojom_app.get(), /*visible=*/false);
 
   mojom_app->icon_key = apps::mojom::IconKey::New(
       apps::mojom::IconKey::kDoesNotChangeOverTime,
       IDR_LOGO_BOREALIS_DEFAULT_192, apps::IconEffects::kNone);
-  mojom_app->recommendable = apps::mojom::OptionalBool::kFalse;
-  mojom_app->searchable = apps::mojom::OptionalBool::kFalse;
-  mojom_app->show_in_launcher = apps::mojom::OptionalBool::kFalse;
-  mojom_app->show_in_shelf = apps::mojom::OptionalBool::kTrue;
-  mojom_app->show_in_search = apps::mojom::OptionalBool::kFalse;
 
   PublisherBase::Publish(std::move(mojom_app), subscribers_);
 
   auto app = AppPublisher::MakeApp(
       AppType::kBorealis, shelf_app_id, Readiness::kReady, shelf_app_name,
       InstallReason::kUser, InstallSource::kUnknown);
+  InitializeApp(*app, /*visible=*/false);
 
   app->icon_key = IconKey(IconKey::kDoesNotChangeOverTime,
                           IDR_LOGO_BOREALIS_DEFAULT_192, IconEffects::kNone);
-  app->recommendable = false;
-  app->searchable = false;
-  app->show_in_launcher = false;
-  app->show_in_shelf = true;
-  app->show_in_search = false;
 
   AppPublisher::Publish(std::move(app));
 }

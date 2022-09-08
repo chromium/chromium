@@ -69,9 +69,6 @@ class BorealisInstallerTest : public testing::Test,
 
  protected:
   void SetUp() override {
-    scoped_allowance_ =
-        std::make_unique<ScopedAllowBorealis>(&profile_, /*also_enable=*/false);
-
     test_features_ = std::make_unique<BorealisFeatures>(&profile_);
     test_context_manager_ =
         std::make_unique<NiceMock<BorealisContextManagerMock>>();
@@ -83,6 +80,9 @@ class BorealisInstallerTest : public testing::Test,
     fake_service_->SetWindowManagerForTesting(test_window_manager_.get());
     fake_service_->SetDiskManagerDispatcherForTesting(
         test_disk_dispatcher_.get());
+
+    scoped_allowance_ =
+        std::make_unique<ScopedAllowBorealis>(&profile_, /*also_enable=*/false);
 
     installer_impl_ = std::make_unique<BorealisInstallerImpl>(&profile_);
     installer_ = installer_impl_.get();
@@ -139,13 +139,13 @@ class BorealisInstallerTest : public testing::Test,
   content::BrowserTaskEnvironment task_environment_;
   base::HistogramTester histogram_tester_;
   TestingProfile profile_;
-  std::unique_ptr<ScopedAllowBorealis> scoped_allowance_;
   std::unique_ptr<BorealisContext> ctx_;
   std::unique_ptr<BorealisFeatures> test_features_;
   std::unique_ptr<BorealisContextManagerMock> test_context_manager_;
   std::unique_ptr<BorealisWindowManager> test_window_manager_;
   std::unique_ptr<BorealisDiskManagerDispatcher> test_disk_dispatcher_;
   BorealisServiceFake* fake_service_;
+  std::unique_ptr<ScopedAllowBorealis> scoped_allowance_;
   std::unique_ptr<BorealisInstallerImpl> installer_impl_;
   BorealisInstaller* installer_;
   std::unique_ptr<MockObserver> observer_;
