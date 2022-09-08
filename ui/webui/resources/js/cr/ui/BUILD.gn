@@ -10,21 +10,15 @@ import("//ui/webui/resources/tools/generate_grd.gni")
 import("../../cr.gni")
 
 preprocess_folder = "$root_gen_dir/ui/webui/resources/preprocessed/js/cr/ui"
-preprocess_src_manifest = "preprocessed_src_manifest.json"
-
-generate_grd("build_grdp") {
-  grd_prefix = "webui_js_cr_ui"
-  out_grd = "$target_gen_dir/resources.grdp"
-  public_deps = [ ":preprocess" ]
-  manifest_files = [ "$target_gen_dir/$preprocess_src_manifest" ]
-  resource_path_prefix = "js/cr/ui"
+if (is_chromeos_ash) {
+  preprocess_src_manifest = "preprocessed_src_manifest.json"
 }
 
 group("preprocess") {
-  public_deps = [
-    ":preprocess_src",
-    ":preprocess_src_ts",
-  ]
+  public_deps = [ ":preprocess_src_ts" ]
+  if (is_chromeos_ash) {
+    public_deps += [ ":preprocess_src" ]
+  }
 }
 
 # TS files are passed to a separate target so that they are not listed in the
@@ -49,43 +43,31 @@ preprocess_if_expr("preprocess_src_ts") {
   }
 }
 
-preprocess_if_expr("preprocess_src") {
-  in_folder = "./"
-  out_folder = "$preprocess_folder"
-  out_manifest = "$target_gen_dir/$preprocess_src_manifest"
-
-  # This file is deprecated, and included on non-CrOS builds only for the old
-  # NTP (chrome://apps) page.
-  # TODO (rbpotter): Get rid of this by forking command.js, which includes this
-  # version only for closure compiler, which is not needed on non-CrOS.
-  in_files = [ "keyboard_shortcut_list_js.js" ]
-
-  if (!is_android) {
-    in_files += [
-      # The files below are deprecated, and are included on non-CrOS builds only
-      # for the old NTP (chrome://apps) page.
-      "command.js",
-      "context_menu_handler.js",
-      "menu_button.js",
-      "menu_item.js",
-      "menu.js",
-      "position_util.js",
-    ]
+# JS files for Chrome OS only.
+if (is_chromeos_ash) {
+  generate_grd("build_grdp") {
+    grd_prefix = "webui_js_cr_ui"
+    out_grd = "$target_gen_dir/resources.grdp"
+    public_deps = [ ":preprocess_src" ]
+    manifest_files = [ "$target_gen_dir/$preprocess_src_manifest" ]
+    resource_path_prefix = "js/cr/ui"
   }
 
-  if (is_chromeos_ash) {
-    in_files += [
+  preprocess_if_expr("preprocess_src") {
+    in_folder = "./"
+    out_folder = "$preprocess_folder"
+    out_manifest = "$target_gen_dir/$preprocess_src_manifest"
+
+    in_files = [
       "focus_without_ink_js.js",
       "focus_row_behavior.js",
       "focus_row_js.js",
+      "keyboard_shortcut_list_js.js",
       "store_client.js",
       "store.js",
     ]
   }
-}
 
-# Closure compiler targets, for Chrome OS only.
-if (is_chromeos_ash) {
   group("closure_compile") {
     deps = [ ":ui_resources_modules" ]
   }
@@ -93,40 +75,12 @@ if (is_chromeos_ash) {
   js_type_check("ui_resources_modules") {
     is_polymer3 = true
     deps = [
-      ":command",
-      ":context_menu_handler",
       ":focus_row_behavior",
       ":focus_row_js",
+      ":focus_without_ink_js",
       ":keyboard_shortcut_list_js",
-      ":menu",
-      ":menu_button",
-      ":menu_item",
-      ":position_util",
       ":store",
       ":store_client",
-    ]
-  }
-
-  js_library("command") {
-    deps = [
-      ":keyboard_shortcut_list_js",
-      "../:ui.m",
-      "../..:assert.m",
-      "../..:cr.m",
-    ]
-  }
-
-  js_library("context_menu_handler") {
-    deps = [
-      ":menu",
-      ":menu_button",
-      ":menu_item",
-      ":position_util",
-      "..:event_target.m",
-      "../:ui.m",
-      "../..:assert.m",
-      "../..:cr.m",
-      "../..:event_tracker.m",
     ]
   }
 
@@ -155,40 +109,6 @@ if (is_chromeos_ash) {
   }
 
   js_library("keyboard_shortcut_list_js") {
-  }
-
-  js_library("menu") {
-    deps = [
-      ":menu_item",
-      "../:ui.m",
-      "../..:assert.m",
-      "../..:cr.m",
-    ]
-  }
-
-  js_library("menu_button") {
-    deps = [
-      ":menu",
-      ":menu_item",
-      ":position_util",
-      "../:ui.m",
-      "../..:assert.m",
-      "../..:cr.m",
-      "../..:event_tracker.m",
-    ]
-  }
-
-  js_library("menu_item") {
-    deps = [
-      ":command",
-      "../:ui.m",
-      "../..:assert.m",
-      "../..:cr.m",
-      "../..:load_time_data.m",
-    ]
-  }
-
-  js_library("position_util") {
   }
 
   js_library("store") {

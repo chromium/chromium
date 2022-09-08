@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {dispatchSimpleEvent} from 'chrome://resources/js/cr.m.js';
-import {AnchorType, positionPopupAroundElement} from 'chrome://resources/js/cr/ui/position_util.js';
+import {AnchorType, positionPopupAroundElement} from './position_util.js';
 
 import {ArrayDataModel} from '../../../common/js/array_data_model.js';
 

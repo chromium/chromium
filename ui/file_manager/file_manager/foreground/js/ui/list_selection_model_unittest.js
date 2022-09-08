@@ -22,7 +22,7 @@ function createSelectionModel(len, dependentLeadItem) {
   return sm;
 }
 
-function testAdjust1() {
+export function testAdjust1() {
   const sm = createSelectionModel(200);
 
   sm.leadIndex = sm.anchorIndex = sm.selectedIndex = 100;
@@ -33,7 +33,7 @@ function testAdjust1() {
   assertEquals(90, sm.selectedIndex);
 }
 
-function testAdjust2() {
+export function testAdjust2() {
   const sm = createSelectionModel(200);
 
   sm.leadIndex = sm.anchorIndex = sm.selectedIndex = 50;
@@ -44,7 +44,7 @@ function testAdjust2() {
   assertEquals(50, sm.selectedIndex);
 }
 
-function testAdjust3() {
+export function testAdjust3() {
   const sm = createSelectionModel(200);
 
   sm.leadIndex = sm.anchorIndex = sm.selectedIndex = 100;
@@ -55,7 +55,7 @@ function testAdjust3() {
   assertEquals(110, sm.selectedIndex);
 }
 
-function testAdjust4() {
+export function testAdjust4() {
   const sm = createSelectionModel(200);
 
   sm.leadIndex = sm.anchorIndex = 100;
@@ -68,7 +68,7 @@ function testAdjust4() {
   assertArrayEquals(range(95, 105), sm.selectedIndexes);
 }
 
-function testAdjust5() {
+export function testAdjust5() {
   const sm = createSelectionModel(100);
 
   sm.leadIndex = sm.anchorIndex = sm.selectedIndex = 99;
@@ -80,7 +80,7 @@ function testAdjust5() {
   assertArrayEquals([98], sm.selectedIndexes);
 }
 
-function testAdjust6() {
+export function testAdjust6() {
   const sm = createSelectionModel(200);
 
   sm.leadIndex = sm.anchorIndex = 105;
@@ -94,7 +94,7 @@ function testAdjust6() {
   assertArrayEquals(range(100, 105), sm.selectedIndexes);
 }
 
-function testAdjust7() {
+export function testAdjust7() {
   const sm = createSelectionModel(1);
 
   sm.leadIndex = sm.anchorIndex = sm.selectedIndex = 0;
@@ -106,7 +106,7 @@ function testAdjust7() {
   assertArrayEquals([10], sm.selectedIndexes);
 }
 
-function testAdjust8() {
+export function testAdjust8() {
   const sm = createSelectionModel(100);
 
   sm.leadIndex = sm.anchorIndex = 50;
@@ -119,7 +119,7 @@ function testAdjust8() {
   assertArrayEquals(range(0, 19), sm.selectedIndexes);
 }
 
-function testAdjust9() {
+export function testAdjust9() {
   const sm = createSelectionModel(10);
 
   sm.leadIndex = sm.anchorIndex = 5;
@@ -133,7 +133,7 @@ function testAdjust9() {
   assertArrayEquals([], sm.selectedIndexes);
 }
 
-function testAdjust10() {
+export function testAdjust10() {
   const sm = createSelectionModel(10);
 
   sm.leadIndex = sm.anchorIndex = 5;
@@ -146,7 +146,7 @@ function testAdjust10() {
   assertArrayEquals([5], sm.selectedIndexes);
 }
 
-function testAdjust11() {
+export function testAdjust11() {
   const sm = createSelectionModel(20);
 
   sm.leadIndex = sm.anchorIndex = 10;
@@ -159,7 +159,7 @@ function testAdjust11() {
   assertArrayEquals(range(0, 4), sm.selectedIndexes);
 }
 
-function testAdjust12() {
+export function testAdjust12() {
   const sm = createSelectionModel(20, true);
 
   sm.selectAll();
@@ -172,7 +172,7 @@ function testAdjust12() {
   assertArrayEquals(range(0, 4), sm.selectedIndexes);
 }
 
-function testAdjust13() {
+export function testAdjust13() {
   const sm = createSelectionModel(20, true);
 
   sm.selectAll();
@@ -185,7 +185,7 @@ function testAdjust13() {
   assertArrayEquals(range(0, 14), sm.selectedIndexes);
 }
 
-function testAdjust14() {
+export function testAdjust14() {
   const sm = createSelectionModel(5, true);
 
   sm.selectedIndexes = [2, 3];
@@ -198,7 +198,7 @@ function testAdjust14() {
   assertArrayEquals(range(2, 2), sm.selectedIndexes);
 }
 
-function testAdjust15() {
+export function testAdjust15() {
   const sm = createSelectionModel(7, true);
 
   sm.selectedIndexes = [1, 3, 5];
@@ -213,7 +213,7 @@ function testAdjust15() {
   assertArrayEquals(range(3, 3), sm.selectedIndexes);
 }
 
-function testAdjust16() {
+export function testAdjust16() {
   const sm = createSelectionModel(7, true);
 
   sm.selectedIndexes = [1, 3, 5];
@@ -228,7 +228,7 @@ function testAdjust16() {
   assertArrayEquals(range(3, 3), sm.selectedIndexes);
 }
 
-function testAdjust17() {
+export function testAdjust17() {
   const sm = createSelectionModel(7, true);
 
   sm.selectedIndexes = [1, 3, 5];
@@ -243,7 +243,7 @@ function testAdjust17() {
   assertArrayEquals(range(3, 3), sm.selectedIndexes);
 }
 
-function testLeadAndAnchor1() {
+export function testLeadAndAnchor1() {
   const sm = createSelectionModel(20, true);
 
   sm.selectAll();
@@ -253,7 +253,7 @@ function testLeadAndAnchor1() {
   assertEquals(10, sm.anchorIndex, 'anchor');
 }
 
-function testLeadAndAnchor2() {
+export function testLeadAndAnchor2() {
   const sm = createSelectionModel(20, true);
 
   sm.leadIndex = sm.anchorIndex = 10;
@@ -263,7 +263,7 @@ function testLeadAndAnchor2() {
   assertEquals(0, sm.anchorIndex, 'anchor');
 }
 
-function testSelectAll() {
+export function testSelectAll() {
   const sm = createSelectionModel(10);
 
   let changes = null;
@@ -279,7 +279,7 @@ function testSelectAll() {
   }));
 }
 
-function testSelectAllOnEmptyList() {
+export function testSelectAllOnEmptyList() {
   const sm = createSelectionModel(0);
 
   let changes = null;

@@ -4,8 +4,8 @@
 
 import {assert, assertInstanceof} from 'chrome://resources/js/assert.m.js';
 import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
-import {contextMenuHandler} from 'chrome://resources/js/cr/ui/context_menu_handler.js';
-import {Menu} from 'chrome://resources/js/cr/ui/menu.js';
+import {contextMenuHandler} from './ui/context_menu_handler.js';
+import {Menu} from './ui/menu.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
 import {ArrayDataModel} from '../../common/js/array_data_model.js';

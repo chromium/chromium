@@ -132,43 +132,83 @@ js_library("action_model_ui") {
 
 js_library("actions_submenu") {
   deps = [
+    ":command",
+    ":menu",
+    ":menu_item",
     "//ui/file_manager/file_manager/common/js:util",
     "//ui/file_manager/file_manager/foreground/js:actions_model",
-    "//ui/webui/resources/js/cr/ui:command",
-    "//ui/webui/resources/js/cr/ui:menu",
-    "//ui/webui/resources/js/cr/ui:menu_item",
   ]
 }
 
 js_unittest("actions_submenu_unittest") {
   deps = [
     ":actions_submenu",
+    ":menu",
     "//chrome/test/data/webui:chai_assert",
     "//ui/file_manager/file_manager/common/js:util",
     "//ui/file_manager/file_manager/foreground/js:mock_actions_model",
     "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js/cr/ui:menu",
   ]
 }
 
 js_library("combobutton") {
   deps = [
     ":files_menu",
+    ":menu_item",
     ":multi_menu_button",
     "//ui/file_manager/file_manager/common/js:util",
     "//ui/webui/resources/js/cr:ui.m",
-    "//ui/webui/resources/js/cr/ui:menu_item",
   ]
 
   externs_list = [ "//ui/file_manager/file_manager/externs/paper_elements.js" ]
 }
 
-js_library("commandbutton") {
+js_library("command") {
   deps = [
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:cr.m",
+    "//ui/webui/resources/js/cr/:ui.m",
+    "//ui/webui/resources/js/cr/ui:keyboard_shortcut_list_js",
+  ]
+}
+
+js_unittest("command_unittest") {
+  deps = [
+    ":command",
+    "//chrome/test/data/webui:chai_assert",
     "//ui/webui/resources/js/cr:ui.m",
-    "//ui/webui/resources/js/cr/ui:command",
+  ]
+}
+
+js_library("commandbutton") {
+  deps = [
+    ":command",
+    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:cr.m",
+    "//ui/webui/resources/js/cr:ui.m",
+  ]
+}
+
+js_library("context_menu_handler") {
+  deps = [
+    ":menu",
+    ":menu_button",
+    ":menu_item",
+    ":position_util",
+    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:cr.m",
+    "//ui/webui/resources/js:event_tracker.m",
+    "//ui/webui/resources/js/cr:event_target.m",
+    "//ui/webui/resources/js/cr:ui.m",
+  ]
+}
+
+js_unittest("context_menu_handler_unittest") {
+  deps = [
+    ":context_menu_handler",
+    ":menu",
+    "//chrome/test/data/webui:chai_assert",
+    "//ui/webui/resources/js/cr:ui.m",
   ]
 }
 
@@ -198,6 +238,9 @@ js_library("dialogs") {
 
 js_library("directory_tree") {
   deps = [
+    ":command",
+    ":context_menu_handler",
+    ":menu",
     ":tree",
     "//ui/file_manager/file_manager/common/js:file_type",
     "//ui/file_manager/file_manager/common/js:files_app_entry_types",
@@ -216,9 +259,6 @@ js_library("directory_tree") {
     "//ui/file_manager/file_manager/foreground/js/metadata:metadata_model",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:cr.m",
-    "//ui/webui/resources/js/cr/ui:command",
-    "//ui/webui/resources/js/cr/ui:context_menu_handler",
-    "//ui/webui/resources/js/cr/ui:menu",
   ]
   visibility +=
       [ "//ui/file_manager/file_manager/externs:command_handler_deps" ]
@@ -333,6 +373,7 @@ js_library("file_manager_ui") {
     ":action_model_ui",
     ":actions_submenu",
     ":combobutton",
+    ":context_menu_handler",
     ":default_task_dialog",
     ":dialog_footer",
     ":dialogs",
@@ -346,6 +387,8 @@ js_library("file_manager_ui") {
     ":import_crostini_image_dialog",
     ":install_linux_package_dialog",
     ":list_container",
+    ":menu",
+    ":menu_item",
     ":multi_menu",
     ":multi_menu_button",
     ":progress_center_panel",
@@ -364,9 +407,6 @@ js_library("file_manager_ui") {
     "//ui/file_manager/file_manager/foreground/js:providers_model",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js/cr:ui.m",
-    "//ui/webui/resources/js/cr/ui:context_menu_handler",
-    "//ui/webui/resources/js/cr/ui:menu",
-    "//ui/webui/resources/js/cr/ui:menu_item",
   ]
 
   externs_list = [
@@ -491,9 +531,9 @@ js_library("files_confirm_dialog") {
 
 js_library("files_menu") {
   deps = [
+    ":menu",
+    ":menu_item",
     "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js/cr/ui:menu",
-    "//ui/webui/resources/js/cr/ui:menu_item",
   ]
   externs_list = [ "//ui/file_manager/file_manager/externs/paper_elements.js" ]
 }
@@ -634,39 +674,99 @@ js_library("list_single_selection_model_unittest") {
   ]
 }
 
+js_library("menu") {
+  deps = [
+    ":menu_item",
+    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:cr.m",
+    "//ui/webui/resources/js/cr:ui.m",
+  ]
+}
+
+js_unittest("menu_unittest") {
+  deps = [
+    ":command",
+    ":menu",
+    ":menu_item",
+    "//chrome/test/data/webui:chai_assert",
+    "//ui/webui/resources/js/cr:ui.m",
+  ]
+}
+
+js_library("menu_button") {
+  deps = [
+    ":menu",
+    ":menu_item",
+    ":position_util",
+    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:cr.m",
+    "//ui/webui/resources/js:event_tracker.m",
+    "//ui/webui/resources/js/cr:ui.m",
+  ]
+}
+
+js_unittest("menu_button_unittest") {
+  deps = [
+    ":menu",
+    ":menu_button",
+    "//chrome/test/data/webui:chai_assert",
+    "//ui/webui/resources/js/cr:ui.m",
+  ]
+}
+
+js_library("menu_item") {
+  deps = [
+    ":command",
+    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:cr.m",
+    "//ui/webui/resources/js:load_time_data.m",
+    "//ui/webui/resources/js/cr:ui.m",
+  ]
+}
+
 js_library("multi_menu") {
   deps = [
+    ":menu",
+    ":menu_item",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:event_tracker.m",
     "//ui/webui/resources/js/cr:ui.m",
-    "//ui/webui/resources/js/cr/ui:menu",
-    "//ui/webui/resources/js/cr/ui:menu_item",
   ]
 }
 
 js_library("multi_menu_button") {
   deps = [
+    ":menu",
+    ":menu_button",
+    ":menu_item",
     ":multi_menu",
+    ":position_util",
     "//ui/file_manager/file_manager/common/js:util",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:event_tracker.m",
     "//ui/webui/resources/js/cr:ui.m",
-    "//ui/webui/resources/js/cr/ui:menu",
-    "//ui/webui/resources/js/cr/ui:menu_button",
-    "//ui/webui/resources/js/cr/ui:menu_item",
-    "//ui/webui/resources/js/cr/ui:position_util",
   ]
 }
 
 js_unittest("multi_menu_unittest") {
   deps = [
+    ":command",
+    ":menu",
     ":multi_menu_button",
     "//chrome/test/data/webui:chai_assert",
     "//ui/file_manager/file_manager/common/js:util",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js/cr:ui.m",
-    "//ui/webui/resources/js/cr/ui:command",
-    "//ui/webui/resources/js/cr/ui:menu",
+  ]
+}
+
+js_library("position_util") {
+}
+
+js_unittest("position_util_unittest") {
+  deps = [
+    ":position_util",
+    "//chrome/test/data/webui:chai_assert",
   ]
 }
 
@@ -683,11 +783,11 @@ js_library("progress_center_panel") {
 js_library("providers_menu") {
   deps = [
     ":files_menu",
+    ":menu",
     "//ui/file_manager/file_manager/common/js:util",
     "//ui/file_manager/file_manager/foreground/js:providers_model",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js/cr:ui.m",
-    "//ui/webui/resources/js/cr/ui:menu",
   ]
 }
 
@@ -731,15 +831,17 @@ js_library("autocomplete_list") {
     ":list",
     ":list_item",
     ":list_single_selection_model",
+    ":position_util",
     "//ui/file_manager/file_manager/common/js:array_data_model",
     "//ui/webui/resources/js:cr.m",
-    "//ui/webui/resources/js/cr/ui:position_util",
   ]
 }
 
 js_test_type_check("js_test_type_check") {
   deps = [
     ":actions_submenu_unittest",
+    ":command_unittest",
+    ":context_menu_handler_unittest",
     ":directory_tree_unittest",
     ":file_grid_unittest",
     ":file_list_selection_model_unittest",
@@ -753,7 +855,10 @@ js_test_type_check("js_test_type_check") {
     ":list_selection_model_unittest",
     ":list_single_selection_model_unittest",
     ":list_unittest",
+    ":menu_button_unittest",
+    ":menu_unittest",
     ":multi_menu_unittest",
+    ":position_util_unittest",
     ":splitter_unittest",
   ]
   is_polymer3 = true

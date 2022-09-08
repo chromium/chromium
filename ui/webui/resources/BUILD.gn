@@ -21,7 +21,6 @@ generate_grd("build_grd") {
     "html:build_grdp",
     "images:build_grdp",
     "js:build_grdp",
-    "js/cr/ui:build_grdp",
     "js/metrics_reporter:build_grdp",
     "//third_party/jstemplate:build_grdp",
   ]
@@ -29,7 +28,6 @@ generate_grd("build_grd") {
     "$target_gen_dir/css/resources.grdp",
     "$target_gen_dir/html/resources.grdp",
     "$target_gen_dir/images/resources.grdp",
-    "$target_gen_dir/js/cr/ui/resources.grdp",
     "$target_gen_dir/js/metrics_reporter/resources.grdp",
     "$target_gen_dir/js/resources.grdp",
     "$target_gen_dir/resources_ts.grdp",
@@ -85,6 +83,7 @@ generate_grd("build_grd") {
   if (is_chromeos_ash) {
     public_deps += [
       ":build_cros_styles_grdp",
+      "js/cr/ui:build_grdp",
       "//ash/webui/common/resources:build_grdp",
       "//ash/webui/common/resources:build_html_css_wrapper_files_grdp",
       "//chromeos/ash/components/cros_elements:build_grdp",
@@ -98,6 +97,7 @@ generate_grd("build_grd") {
       "$root_gen_dir/third_party/material_web_components/material_web_components_resources.grdp",
       "$root_gen_dir/third_party/web-animations-js/web_animations_resources.grdp",
       "$root_gen_dir/ui/webui/resources/cros_styles_resources.grdp",
+      "$root_gen_dir/ui/webui/resources/js/cr/ui/resources.grdp",
     ]
   }
 
@@ -164,14 +164,6 @@ checked_in_dts_files = [
   "js/static_types.d.ts",
   "js/web_ui_listener_behavior.m.d.ts",
 ]
-
-if (is_chromeos_ash || is_fuchsia || is_linux || is_mac || is_win) {
-  checked_in_dts_files += [
-    "js/cr/ui/context_menu_handler.d.ts",
-    "js/cr/ui/menu_button.d.ts",
-    "js/cr/ui/menu_item.d.ts",
-  ]
-}
 
 if (is_chromeos_ash) {
   checked_in_dts_files += [
@@ -256,19 +248,11 @@ generate_definitions_js_files = [
   "js/util.m.js",
 ]
 
-if (is_chromeos_ash || is_fuchsia || is_linux || is_mac || is_win) {
-  generate_definitions_js_files += [
-    "js/cr/ui/keyboard_shortcut_list_js.js",
-    "js/cr/ui/menu.js",
-    "js/cr/ui/command.js",
-    "js/cr/ui/position_util.js",
-  ]
-}
-
 if (is_chromeos_ash) {
   generate_definitions_js_files += [
     "js/cr/ui/focus_row_js.js",
     "js/cr/ui/focus_without_ink_js.js",
+    "js/cr/ui/keyboard_shortcut_list_js.js",
     "js/cr/ui/store_client.js",
     "js/cr/ui/store.js",
   ]

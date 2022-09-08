@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Command} from 'chrome://resources/js/cr/ui/command.js';
-import {Menu} from 'chrome://resources/js/cr/ui/menu.js';
-import {MenuItem} from 'chrome://resources/js/cr/ui/menu_item.js';
+import {Command} from './command.js';
+import {Menu} from './menu.js';
+import {MenuItem} from './menu_item.js';
 
 import {util} from '../../../common/js/util.js';
 import {ActionsModel} from '../actions_model.js';

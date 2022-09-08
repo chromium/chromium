@@ -4,19 +4,19 @@
 
 // clang-format off
 import {decorate} from 'chrome://resources/js/cr/ui.m.js';
-import {Command} from 'chrome://resources/js/cr/ui/command.js';
+import {Command} from './command.js';
 
-import {assertEquals, assertFalse, assertTrue} from '../../../chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 // clang-format on
 
-function setUp() {
+export function setUp() {
   const cmd = document.createElement('command');
   cmd.setAttribute('shortcut', 'n|Ctrl');
   document.body.appendChild(cmd);
 }
 
-function testCommandDefaultPrevented() {
+export function testCommandDefaultPrevented() {
   let calls = 0;
   document.addEventListener('canExecute', function(e) {
     ++calls;
@@ -43,7 +43,7 @@ function createEvent(key, code, keyCode) {
   };
 }
 
-function testShortcuts() {
+export function testShortcuts() {
   decorate('command', Command);
   const cmd = /** @type {!Command} */ (document.querySelector('command'));
   // US keyboard - qwerty-N should work.
@@ -55,9 +55,3 @@ function testShortcuts() {
   // RU keyboard - qwerty-N (Cyrillic Te) should work.
   assertTrue(cmd.matchesEvent(createEvent('т', 'KeyN', 0x4e)));
 }
-
-Object.assign(window, {
-  setUp,
-  testCommandDefaultPrevented,
-  testShortcuts,
-});

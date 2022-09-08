@@ -6,8 +6,8 @@ import './webui_command_extender.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {Command} from 'chrome://resources/js/cr/ui/command.js';
-import {contextMenuHandler} from 'chrome://resources/js/cr/ui/context_menu_handler.js';
+import {Command} from './ui/command.js';
+import {contextMenuHandler} from './ui/context_menu_handler.js';
 
 import {getHoldingSpaceState, startIOTask} from '../../common/js/api.js';
 import {DialogType} from '../../common/js/dialog_type.js';

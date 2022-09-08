@@ -61,26 +61,6 @@ IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, I18nProcessCssTest) {
   LoadTestUrl("i18n_process_css_test.html");
 }
 
-IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, MenuModuleTest) {
-  LoadTestUrl("?module=js/cr/ui/menu_test.js");
-}
-
 IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, MockTimerTest) {
   LoadTestUrl("?module=mock_timer_test.js");
-}
-
-IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, PositionUtilModuleTest) {
-  LoadTestUrl("?module=js/cr/ui/position_util_test.js");
-}
-
-IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, CommandModuleTest) {
-  LoadTestUrl("?module=js/cr/ui/command_test.js");
-}
-
-IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, ContextMenuHandlerModuleTest) {
-  LoadTestUrl("?module=js/cr/ui/context_menu_handler_test.js");
-}
-
-IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, MenuButtonModuleTest) {
-  LoadTestUrl("?module=js/cr/ui/menu_button_test.js");
 }

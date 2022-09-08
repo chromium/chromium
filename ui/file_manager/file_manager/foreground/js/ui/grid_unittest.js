@@ -13,7 +13,7 @@ import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 /**
  * @suppress {visibility} Allow test to reach to private properties.
  */
-function testGetColumnCount() {
+export function testGetColumnCount() {
   const g = Grid.prototype;
   g.measured_ = {
     height: 8,

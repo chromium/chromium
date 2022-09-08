@@ -4,14 +4,14 @@
 
 // clang-format off
 import {decorate} from 'chrome://resources/js/cr/ui.m.js';
-import {contextMenuHandler} from 'chrome://resources/js/cr/ui/context_menu_handler.js';
-import {Menu} from 'chrome://resources/js/cr/ui/menu.js';
+import {contextMenuHandler} from './context_menu_handler.js';
+import {Menu} from './menu.js';
 
-import {assertEquals} from '../../../chai_assert.js';
+import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 
 // clang-format on
 
-function testShowAndHideEvents() {
+export function testShowAndHideEvents() {
   // Keep original Date.now not to affect other code.
   const originalDateNow = Date.now;
 
@@ -73,7 +73,3 @@ function testShowAndHideEvents() {
 
   Date.now = originalDateNow;
 }
-
-Object.assign(window, {
-  testShowAndHideEvents,
-});

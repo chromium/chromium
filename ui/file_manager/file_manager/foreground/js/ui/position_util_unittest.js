@@ -3,9 +3,9 @@
 // found in the LICENSE file.
 
 // clang-format off
-import {AnchorType, positionPopupAroundElement, positionPopupAtPoint} from 'chrome://resources/js/cr/ui/position_util.js';
+import {AnchorType, positionPopupAroundElement, positionPopupAtPoint} from './position_util.js';
 
-import {assertEquals} from '../../../chai_assert.js';
+import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 // clang-format on
 
 /** @type {!HTMLElement} */
@@ -41,7 +41,7 @@ function MockRect(w, h) {
   this.bottom = this.top + h;
 }
 
-function setUp() {
+export function setUp() {
   document.body.innerHTML = `
     <style>
       html, body {
@@ -84,12 +84,12 @@ function setUp() {
   };
 }
 
-function tearDown() {
+export function tearDown() {
   document.documentElement.dir = 'ltr';
   anchorParent.getBoundingClientRect = oldGetBoundingClientRect;
 }
 
-function testAbovePrimary() {
+export function testAbovePrimary() {
   positionPopupAroundElement(anchor, popup, AnchorType.ABOVE);
 
   assertEquals('auto', popup.style.top);
@@ -101,7 +101,7 @@ function testAbovePrimary() {
   assertEquals('auto', popup.style.bottom);
 }
 
-function testBelowPrimary() {
+export function testBelowPrimary() {
   // ensure enough below
   anchor.style.top = '90px';
 
@@ -118,7 +118,7 @@ function testBelowPrimary() {
   assertEquals('100px', popup.style.bottom);
 }
 
-function testBeforePrimary() {
+export function testBeforePrimary() {
   positionPopupAroundElement(anchor, popup, AnchorType.BEFORE);
 
   assertEquals('auto', popup.style.left);
@@ -130,7 +130,7 @@ function testBeforePrimary() {
   assertEquals('auto', popup.style.right);
 }
 
-function testBeforePrimaryRtl() {
+export function testBeforePrimaryRtl() {
   document.documentElement.dir = 'rtl';
 
   positionPopupAroundElement(anchor, popup, AnchorType.AFTER);
@@ -145,7 +145,7 @@ function testBeforePrimaryRtl() {
   assertEquals('auto', popup.style.right);
 }
 
-function testAfterPrimary() {
+export function testAfterPrimary() {
   // ensure enough to the right
   anchor.style.left = '90px';
 
@@ -162,7 +162,7 @@ function testAfterPrimary() {
   assertEquals('100px', popup.style.right);
 }
 
-function testAfterPrimaryRtl() {
+export function testAfterPrimaryRtl() {
   document.documentElement.dir = 'rtl';
 
   positionPopupAroundElement(anchor, popup, AnchorType.AFTER);
@@ -178,7 +178,7 @@ function testAfterPrimaryRtl() {
   assertEquals('auto', popup.style.right);
 }
 
-function testAboveSecondary() {
+export function testAboveSecondary() {
   positionPopupAroundElement(anchor, popup, AnchorType.ABOVE);
 
   assertEquals('100px', popup.style.left);
@@ -192,7 +192,7 @@ function testAboveSecondary() {
   assertEquals('80px', popup.style.right);
 }
 
-function testAboveSecondaryRtl() {
+export function testAboveSecondaryRtl() {
   document.documentElement.dir = 'rtl';
 
   positionPopupAroundElement(anchor, popup, AnchorType.ABOVE);
@@ -208,7 +208,7 @@ function testAboveSecondaryRtl() {
   assertEquals('auto', popup.style.right);
 }
 
-function testAboveSecondarySwappedAlign() {
+export function testAboveSecondarySwappedAlign() {
   positionPopupAroundElement(anchor, popup, AnchorType.ABOVE, true);
 
   assertEquals('auto', popup.style.left);
@@ -222,7 +222,7 @@ function testAboveSecondarySwappedAlign() {
   assertEquals('auto', popup.style.right);
 }
 
-function testBelowSecondary() {
+export function testBelowSecondary() {
   positionPopupAroundElement(anchor, popup, AnchorType.BELOW);
 
   assertEquals('100px', popup.style.left);
@@ -236,7 +236,7 @@ function testBelowSecondary() {
   assertEquals('80px', popup.style.right);
 }
 
-function testBelowSecondaryRtl() {
+export function testBelowSecondaryRtl() {
   document.documentElement.dir = 'rtl';
 
   positionPopupAroundElement(anchor, popup, AnchorType.BELOW);
@@ -252,7 +252,7 @@ function testBelowSecondaryRtl() {
   assertEquals('auto', popup.style.right);
 }
 
-function testBelowSecondarySwappedAlign() {
+export function testBelowSecondarySwappedAlign() {
   positionPopupAroundElement(anchor, popup, AnchorType.BELOW, true);
 
   assertEquals('auto', popup.style.left);
@@ -266,7 +266,7 @@ function testBelowSecondarySwappedAlign() {
   assertEquals('auto', popup.style.right);
 }
 
-function testBeforeSecondary() {
+export function testBeforeSecondary() {
   positionPopupAroundElement(anchor, popup, AnchorType.BEFORE);
 
   assertEquals('100px', popup.style.top);
@@ -280,7 +280,7 @@ function testBeforeSecondary() {
   assertEquals('80px', popup.style.bottom);
 }
 
-function testAfterSecondary() {
+export function testAfterSecondary() {
   positionPopupAroundElement(anchor, popup, AnchorType.AFTER);
 
   assertEquals('100px', popup.style.top);
@@ -294,7 +294,7 @@ function testAfterSecondary() {
   assertEquals('80px', popup.style.bottom);
 }
 
-function testPositionAtPoint() {
+export function testPositionAtPoint() {
   positionPopupAtPoint(100, 100, popup);
 
   assertEquals('100px', popup.style.left);
@@ -316,23 +316,3 @@ function testPositionAtPoint() {
   assertEquals('50px', popup.style.right);
   assertEquals('50px', popup.style.bottom);
 }
-
-Object.assign(window, {
-  setUp,
-  tearDown,
-  testAbovePrimary,
-  testBelowPrimary,
-  testBeforePrimary,
-  testBeforePrimaryRtl,
-  testAfterPrimary,
-  testAfterPrimaryRtl,
-  testAboveSecondary,
-  testAboveSecondaryRtl,
-  testAboveSecondarySwappedAlign,
-  testBelowSecondary,
-  testBelowSecondaryRtl,
-  testBelowSecondarySwappedAlign,
-  testBeforeSecondary,
-  testAfterSecondary,
-  testPositionAtPoint,
-});

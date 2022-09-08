@@ -4,14 +4,14 @@
 
 // clang-format off
 import {decorate} from 'chrome://resources/js/cr/ui.m.js';
-import {Menu} from 'chrome://resources/js/cr/ui/menu.js';
-import {MenuButton} from 'chrome://resources/js/cr/ui/menu_button.js';
+import {Menu} from './menu.js';
+import {MenuButton} from './menu_button.js';
 
-import {assertEquals, assertFalse, assertTrue} from '../../../chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 // clang-format on
 
-function testMenuShowAndHideEvents() {
+export function testMenuShowAndHideEvents() {
   let menu = document.createElement('div');
   decorate(menu, Menu);
   menu = /** @type {!Menu} */ (menu);
@@ -62,7 +62,7 @@ function testMenuShowAndHideEvents() {
   assertFalse(menuButton.classList.contains('using-mouse'));
 }
 
-function testFocusMoves() {
+export function testFocusMoves() {
   let menu = document.createElement('div');
   const otherButton = document.createElement('button');
   decorate(menu, Menu);
@@ -114,8 +114,3 @@ function testFocusMoves() {
   // Focus should be still on the menu button.
   assertEquals(menuButton, document.activeElement);
 }
-
-Object.assign(window, {
-  testMenuShowAndHideEvents,
-  testFocusMoves,
-});

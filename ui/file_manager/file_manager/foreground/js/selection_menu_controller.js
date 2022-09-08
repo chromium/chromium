@@ -4,7 +4,7 @@
 
 import '../elements/files_toggle_ripple.js';
 
-import {Menu} from 'chrome://resources/js/cr/ui/menu.js';
+import {Menu} from './ui/menu.js';
 
 import {util} from '../../common/js/util.js';
 import {FilesTooltip} from '../elements/files_tooltip.js';

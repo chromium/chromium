@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
-import {Command} from 'chrome://resources/js/cr/ui/command.js';
+import {Command} from './ui/command.js';
 
 import {getDisallowedTransfers, startIOTask} from '../../common/js/api.js';
 import {FileType} from '../../common/js/file_type.js';

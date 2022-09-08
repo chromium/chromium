@@ -8,14 +8,14 @@ import {ArrayDataModel} from './array_data_model.js';
 import {assertArrayEquals, assertEquals} from 'chrome://webui-test/chai_assert.js';
 // clang-format on
 
-function testSlice() {
+export function testSlice() {
   const m = new ArrayDataModel([0, 1, 2]);
   assertArrayEquals([0, 1, 2], m.slice());
   assertArrayEquals([1, 2], m.slice(1));
   assertArrayEquals([1], m.slice(1, 2));
 }
 
-function testPush() {
+export function testPush() {
   const m = new ArrayDataModel([0, 1, 2]);
 
   let count = 0;
@@ -33,7 +33,7 @@ function testPush() {
   assertEquals(1, count, 'The splice event should only fire once');
 }
 
-function testSplice() {
+export function testSplice() {
   function compare(array, args) {
     const m = new ArrayDataModel(array.slice());
     const expected = array.slice();
@@ -52,7 +52,7 @@ function testSplice() {
   compare([1, 2, 3], [5, 3, 1, 2, 3]);
 }
 
-function testPermutation() {
+export function testPermutation() {
   function doTest(sourceArray, spliceArgs) {
     const m = new ArrayDataModel(sourceArray.slice());
     let permutation;
@@ -79,7 +79,7 @@ function testPermutation() {
   doTest([1, 2, 3], [0, 3, 1, 2, 3]);
 }
 
-function testUpdateIndexes() {
+export function testUpdateIndexes() {
   const m = new ArrayDataModel([1, 2, 3]);
   const changedIndexes = [];
   m.addEventListener('change', function(event) {
@@ -89,7 +89,7 @@ function testUpdateIndexes() {
   assertArrayEquals([0, 1, 2], changedIndexes);
 }
 
-function testReplaceItem() {
+export function testReplaceItem() {
   const m = new ArrayDataModel([1, 2, 3]);
   let permutation = null;
   let changeIndex;

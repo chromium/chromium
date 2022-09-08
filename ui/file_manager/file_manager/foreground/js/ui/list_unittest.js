@@ -13,7 +13,7 @@ import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 
 // clang-format on
 
-function testClearPinnedItem() {
+export function testClearPinnedItem() {
   const list = document.createElement('ul');
   list.style.position = 'absolute';
   list.style.width = '800px';
@@ -35,7 +35,7 @@ function testClearPinnedItem() {
   assertEquals('Item B', list.querySelectorAll('li')[0].textContent);
 }
 
-function testClickOutsideListItem() {
+export function testClickOutsideListItem() {
   const list = document.createElement('ul');
   list.style.position = 'absolute';
   list.style.width = '800px';
