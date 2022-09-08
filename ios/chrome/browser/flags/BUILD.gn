@@ -79,6 +79,7 @@ source_set("flags") {
     "//ios/chrome/browser/ui/popup_menu/public:features",
     "//ios/chrome/browser/ui/start_surface:feature_flags",
     "//ios/chrome/browser/ui/toolbar_container:feature_flags",
+    "//ios/chrome/browser/ui/whats_new:feature_flags",
     "//ios/chrome/browser/web:feature_flags",
     "//ios/components/security_interstitials/https_only_mode:feature",
     "//ios/public/provider/chrome/browser/app_utils:app_utils_api",

@@ -717,6 +717,10 @@ extern const char kWebPageAlternativeTextZoomDescription[];
 extern const char kWebPageTextZoomIPadName[];
 extern const char kWebPageTextZoomIPadDescription[];
 
+// Title and description for the flag to enable What's New.
+extern const char kWhatsNewIOSName[];
+extern const char kWhatsNewIOSDescription[];
+
 // Please add names and descriptions above in alphabetical order.
 
 }  // namespace flag_descriptions

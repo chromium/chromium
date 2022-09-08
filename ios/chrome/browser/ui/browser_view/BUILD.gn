@@ -183,6 +183,8 @@ source_set("browser_view") {
     "//ios/chrome/browser/ui/util:url_with_title",
     "//ios/chrome/browser/ui/voice",
     "//ios/chrome/browser/ui/webui",
+    "//ios/chrome/browser/ui/whats_new:feature_flags",
+    "//ios/chrome/browser/ui/whats_new:whats_new",
     "//ios/chrome/browser/upgrade",
     "//ios/chrome/browser/url_loading",
     "//ios/chrome/browser/voice:voice",

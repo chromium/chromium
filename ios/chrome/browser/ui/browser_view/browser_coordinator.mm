@@ -141,6 +141,8 @@
 #import "ios/chrome/browser/ui/voice/text_to_speech_playback_controller.h"
 #import "ios/chrome/browser/ui/voice/text_to_speech_playback_controller_factory.h"
 #import "ios/chrome/browser/ui/webui/net_export_coordinator.h"
+#import "ios/chrome/browser/ui/whats_new/feature_flags.h"
+#import "ios/chrome/browser/ui/whats_new/whats_new_coordinator.h"
 #import "ios/chrome/browser/url_loading/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/url_loading_params.h"
 #import "ios/chrome/browser/web/annotations/annotations_tab_helper.h"
@@ -355,6 +357,10 @@ const char kChromeAppStoreUrl[] = "https://apps.apple.com/app/id535886823";
 
 // The coordinator used for the Text Fragments feature.
 @property(nonatomic, strong) TextFragmentsCoordinator* textFragmentsCoordinator;
+
+// The coordinator used for What's New feature.
+@property(nonatomic, strong) WhatsNewCoordinator* whatsNewCoordinator;
+
 @end
 
 @implementation BrowserCoordinator {
@@ -886,6 +892,8 @@ const char kChromeAppStoreUrl[] = "https://apps.apple.com/app/id535886823";
 
   /* RepostFormCoordinator is created and started by a delegate method */
 
+  /* WhatsNewCoordinator is created and started by a BrowserCommand */
+
   // TODO(crbug.com/1298934): Should start when the Sad Tab UI appears.
   self.sadTabCoordinator =
       [[SadTabCoordinator alloc] initWithBaseViewController:self.viewController
@@ -1046,6 +1054,9 @@ const char kChromeAppStoreUrl[] = "https://apps.apple.com/app/id535886823";
 
   [_sendTabToSelfCoordinator stop];
   _sendTabToSelfCoordinator = nil;
+
+  [self.whatsNewCoordinator stop];
+  self.whatsNewCoordinator = nil;
 }
 
 // Starts mediators owned by this coordinator.
@@ -1343,6 +1354,17 @@ const char kChromeAppStoreUrl[] = "https://apps.apple.com/app/id535886823";
       [snapshotView removeFromSuperview];
     });
   }
+}
+
+- (void)showWhatsNew {
+  if (!base::FeatureList::IsEnabled(kWhatsNewIOS)) {
+    return;
+  }
+
+  self.whatsNewCoordinator = [[WhatsNewCoordinator alloc]
+      initWithBaseViewController:self.viewController
+                         browser:self.browser];
+  [self.whatsNewCoordinator start];
 }
 
 #pragma mark - DefaultPromoCommands

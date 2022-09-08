@@ -795,6 +795,10 @@ const char kWebPageTextZoomIPadName[] = "Enable text zoom on iPad";
 const char kWebPageTextZoomIPadDescription[] =
     "When enabled, text zoom works again on iPad";
 
+const char kWhatsNewIOSName[] = "Enable What's New.";
+const char kWhatsNewIOSDescription[] =
+    "When enabled, What's New will display new features and chrome tips.";
+
 // Please insert your name/description above in alphabetical order.
 
 }  // namespace flag_descriptions

@@ -1,0 +1,13 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef IOS_CHROME_BROWSER_UI_WHATS_NEW_FEATURE_FLAGS_H_
+#define IOS_CHROME_BROWSER_UI_WHATS_NEW_FEATURE_FLAGS_H_
+
+#include "base/feature_list.h"
+
+// Feature to enable What's New feature.
+extern const base::Feature kWhatsNewIOS;
+
+#endif  // IOS_CHROME_BROWSER_UI_WHATS_NEW_FEATURE_FLAGS_H_

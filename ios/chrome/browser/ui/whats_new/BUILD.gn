@@ -1,0 +1,27 @@
+# Copyright 2022 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("whats_new") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "whats_new_coordinator.h",
+    "whats_new_coordinator.mm",
+    "whats_new_table_view_controller.h",
+    "whats_new_table_view_controller.mm",
+  ]
+  deps = [
+    "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
+    "//ios/chrome/browser/ui/table_view:table_view",
+    "//ios/chrome/browser/ui/table_view:utils",
+  ]
+}
+
+source_set("feature_flags") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "feature_flags.h",
+    "feature_flags.mm",
+  ]
+  deps = [ "//base" ]
+}

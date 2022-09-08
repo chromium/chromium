@@ -91,6 +91,7 @@
 #import "ios/chrome/browser/ui/start_surface/start_surface_features.h"
 #import "ios/chrome/browser/ui/toolbar_container/toolbar_container_features.h"
 #include "ios/chrome/browser/ui/ui_feature_flags.h"
+#import "ios/chrome/browser/ui/whats_new/feature_flags.h"
 #include "ios/chrome/browser/web/features.h"
 #include "ios/chrome/grit/ios_strings.h"
 #include "ios/components/security_interstitials/https_only_mode/feature.h"
@@ -1234,6 +1235,9 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(kEnableOpenInDownload,
                                     kOpenInDownloadVariations,
                                     "EnableOpenInDownload")},
+    {"whats-new-ios", flag_descriptions::kWhatsNewIOSName,
+     flag_descriptions::kWhatsNewIOSDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kWhatsNewIOS)},
     {"ios-autofill-branding", flag_descriptions::kAutofillBrandingIOSName,
      flag_descriptions::kAutofillBrandingIOSDescription, flags_ui::kOsIos,
      FEATURE_WITH_PARAMS_VALUE_TYPE(autofill::features::kAutofillBrandingIOS,
