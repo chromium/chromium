@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "remoting/host/chromeos/ash_display_util.h"
 
 #include "base/test/test_future.h"
@@ -61,11 +62,21 @@ class ScopedFakeAshDisplayUtil : public AshDisplayUtil {
   void TakeScreenshotOfDisplay(DisplayId display_id,
                                ScreenshotCallback callback) override;
 
+  void CreateVideoCapturer(
+      mojo::PendingReceiver<viz::mojom::FrameSinkVideoCapturer> video_capturer)
+      override;
+
+  viz::FrameSinkId GetFrameSinkId(DisplayId source_display_id) override;
+
+  void SetVideoCapturerReceiver(
+      mojo::Receiver<viz::mojom::FrameSinkVideoCapturer>* receiver);
+
  private:
   display::Display& AddDisplay(display::Display new_display);
 
   DisplayId primary_display_id_ = -1;
   std::vector<display::Display> displays_;
+  mojo::Receiver<viz::mojom::FrameSinkVideoCapturer>* receiver_ = nullptr;
 
   base::test::TestFuture<ScreenshotRequest> screenshot_request_;
 };

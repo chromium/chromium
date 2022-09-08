@@ -25,7 +25,10 @@
 #include "third_party/webrtc/modules/desktop_capture/desktop_region.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "base/feature_list.h"
 #include "remoting/host/chromeos/aura_desktop_capturer.h"
+#include "remoting/host/chromeos/features.h"
+#include "remoting/host/chromeos/frame_sink_desktop_capturer.h"
 #endif
 
 #if defined(REMOTING_USE_WAYLAND)
@@ -85,8 +88,13 @@ void DesktopCapturerProxy::Core::CreateCapturer(
   DCHECK(!capturer_);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  capturer_ = std::make_unique<webrtc::DesktopCapturerDifferWrapper>(
-      std::make_unique<AuraDesktopCapturer>());
+  if (base::FeatureList::IsEnabled(
+          remoting::features::kEnableFrameSinkDesktopCapturerInCrd)) {
+    capturer_ = std::make_unique<FrameSinkDesktopCapturer>();
+  } else {
+    capturer_ = std::make_unique<webrtc::DesktopCapturerDifferWrapper>(
+        std::make_unique<AuraDesktopCapturer>());
+  }
 #elif defined(REMOTING_USE_WAYLAND)
   if (options.allow_pipewire() && DesktopCapturer::IsRunningUnderWayland()) {
     capturer_ = std::make_unique<WaylandDesktopCapturer>(options);

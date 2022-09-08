@@ -8,10 +8,14 @@ source_set("chromeos") {
   sources = [
     "ash_display_util.cc",
     "ash_display_util.h",
+    "ash_mojom_video_consumer.cc",
+    "ash_mojom_video_consumer.h",
     "aura_desktop_capturer.cc",
     "aura_desktop_capturer.h",
     "clipboard_aura.cc",
     "clipboard_aura.h",
+    "frame_sink_desktop_capturer.cc",
+    "frame_sink_desktop_capturer.h",
     "message_box.cc",
     "message_box.h",
     "mouse_cursor_monitor_aura.cc",
@@ -26,6 +30,7 @@ source_set("chromeos") {
     "//ash",
     "//build:chromeos_buildflags",
     "//cc",
+    "//components/viz/host",
     "//gpu/command_buffer/common",
     "//remoting/protocol",
     "//skia",
@@ -115,6 +120,7 @@ source_set("unit_tests") {
   sources = [
     "aura_desktop_capturer_unittest.cc",
     "clipboard_aura_unittest.cc",
+    "frame_sink_desktop_capturer_unittest.cc",
     "scoped_fake_ash_display_util.cc",
     "scoped_fake_ash_display_util.h",
   ]
@@ -125,6 +131,7 @@ source_set("unit_tests") {
     ":chromeos",
     ":features",
     "//base/test:test_support",
+    "//components/viz/service",
     "//remoting/host:common",
     "//remoting/host:test_support",
     "//remoting/proto",

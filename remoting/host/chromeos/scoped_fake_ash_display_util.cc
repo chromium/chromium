@@ -3,6 +3,10 @@
 // found in the LICENSE file.
 
 #include "remoting/host/chromeos/scoped_fake_ash_display_util.h"
+
+#include "base/check.h"
+#include "components/viz/common/surfaces/frame_sink_id.h"
+#include "components/viz/host/client_frame_sink_video_capturer.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/display/manager/managed_display_info.h"
 
@@ -107,6 +111,23 @@ void ScopedFakeAshDisplayUtil::TakeScreenshotOfDisplay(
     ScreenshotCallback callback) {
   screenshot_request_.SetValue(
       ScreenshotRequest{display_id, std::move(callback)});
+}
+
+void ScopedFakeAshDisplayUtil::CreateVideoCapturer(
+    mojo::PendingReceiver<viz::mojom::FrameSinkVideoCapturer> video_capturer) {
+  DCHECK(receiver_) << "Your test must call SetVideoCapturerReceiver() first";
+
+  receiver_->Bind(std::move(video_capturer));
+}
+
+viz::FrameSinkId ScopedFakeAshDisplayUtil::GetFrameSinkId(
+    DisplayId source_display_id) {
+  return viz::FrameSinkId(source_display_id, source_display_id);
+}
+
+void ScopedFakeAshDisplayUtil::SetVideoCapturerReceiver(
+    mojo::Receiver<viz::mojom::FrameSinkVideoCapturer>* receiver) {
+  receiver_ = receiver;
 }
 
 }  // namespace test

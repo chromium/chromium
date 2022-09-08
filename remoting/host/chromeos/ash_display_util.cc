@@ -7,7 +7,10 @@
 #include "ash/shell.h"
 #include "base/no_destructor.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
+#include "components/viz/host/host_frame_sink_manager.h"
 #include "remoting/base/constants.h"
+#include "ui/aura/env.h"
+#include "ui/compositor/compositor.h"
 #include "ui/compositor/layer.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/screen.h"
@@ -67,6 +70,24 @@ class DefaultAshDisplayUtil : public AshDisplayUtil {
 
     request->set_area(gfx::Rect(root_window->bounds().size()));
     root_window->layer()->RequestCopyOfOutput(std::move(request));
+  }
+
+  void CreateVideoCapturer(
+      mojo::PendingReceiver<viz::mojom::FrameSinkVideoCapturer> video_capturer)
+      override {
+    aura::Env::GetInstance()
+        ->context_factory()
+        ->GetHostFrameSinkManager()
+        ->CreateVideoCapturer(std::move(video_capturer));
+  }
+
+  viz::FrameSinkId GetFrameSinkId(DisplayId source_display_id) override {
+    aura::Window* window =
+        ash::Shell::GetRootWindowForDisplayId(source_display_id);
+
+    DCHECK(window) << "No window exists for the source_display_id: "
+                   << source_display_id;
+    return window->GetFrameSinkId();
   }
 
  private:

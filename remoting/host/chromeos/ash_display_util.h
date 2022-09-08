@@ -9,10 +9,18 @@
 #include <vector>
 
 #include "base/callback_forward.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/display/display.h"
 
 class SkBitmap;
+
+namespace viz {
+class FrameSinkId;
+namespace mojom {
+class FrameSinkVideoCapturer;
+}  // namespace mojom
+}  // namespace viz
 
 namespace remoting {
 
@@ -44,6 +52,12 @@ class AshDisplayUtil {
   using ScreenshotCallback = base::OnceCallback<void(absl::optional<SkBitmap>)>;
   virtual void TakeScreenshotOfDisplay(DisplayId display_id,
                                        ScreenshotCallback callback) = 0;
+
+  virtual void CreateVideoCapturer(
+      mojo::PendingReceiver<viz::mojom::FrameSinkVideoCapturer>
+          video_capturer) = 0;
+
+  virtual viz::FrameSinkId GetFrameSinkId(DisplayId source_display_id) = 0;
 };
 
 }  // namespace remoting
