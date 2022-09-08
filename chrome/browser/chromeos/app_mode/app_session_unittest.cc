@@ -142,6 +142,13 @@ class AppSessionTestMockTime : public AppSessionTest {
 };
 
 TEST_F(AppSessionTest, WebKioskTracksBrowserCreation) {
+  {
+    base::Value::Dict value;
+    value.Set(kKioskSessionStartTime, base::TimeToValue(base::Time::Now()));
+
+    local_state()->SetDict(prefs::kKioskMetrics, std::move(value));
+  }
+
   StartWebKioskSession();
   histogram()->ExpectBucketCount(kKioskSessionStateHistogram,
                                  KioskSessionState::kWebStarted, 1);

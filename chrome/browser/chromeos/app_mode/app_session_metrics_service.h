@@ -112,8 +112,6 @@ class AppSessionMetricsService {
 
   void ClearStartTime();
 
-  void RecordPreviousKioskSessionStopped(const base::Time& start_time) const;
-
   void RecordPreviousKioskSessionCrashed(const base::Time& start_time) const;
 
   void OnPreviousKioskSessionResult(const base::Time& start_time,

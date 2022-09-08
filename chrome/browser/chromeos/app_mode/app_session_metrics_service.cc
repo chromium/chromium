@@ -186,14 +186,6 @@ void AppSessionMetricsService::RecordKioskSessionStopped() {
                              kKioskSessionDurationInDaysNormalHistogram);
 }
 
-void AppSessionMetricsService::RecordPreviousKioskSessionStopped(
-    const base::Time& start_time) const {
-  RecordKioskSessionState(KioskSessionState::kStopped);
-  RecordKioskSessionDuration(kKioskSessionDurationNormalHistogram,
-                             kKioskSessionDurationInDaysNormalHistogram,
-                             start_time);
-}
-
 void AppSessionMetricsService::RecordKioskSessionCrashed() {
   if (!IsKioskSessionRunning())
     return;
@@ -349,11 +341,11 @@ void AppSessionMetricsService::OnPreviousKioskSessionResult(
     bool crashed) const {
   if (crashed) {
     RecordPreviousKioskSessionCrashed(start_time);
-  } else {
-    // Previous session is successfully stopped, but due to a race condition not
-    // cleared local_state correctly.
-    RecordPreviousKioskSessionStopped(start_time);
+    return;
   }
+  // Previous session is successfully stopped, but due to a race condition not
+  // cleared local_state correctly.
+  // Respective UMA metrics were emitted during the previous session.
 }
 
 size_t AppSessionMetricsService::RetrieveLastDaySessionCount(
