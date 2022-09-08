@@ -71,6 +71,7 @@ class DesktopResizerX11 : public DesktopResizer {
   x11::Window root_;
   ScreenResources resources_;
   bool has_randr_;
+  bool is_virtual_session_;
 };
 
 }  // namespace remoting

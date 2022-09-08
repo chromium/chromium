@@ -105,7 +105,8 @@ DesktopResizerX11::DesktopResizerX11()
     : connection_(x11::Connection::Get()),
       randr_(&connection_->randr()),
       screen_(&connection_->default_screen()),
-      root_(screen_->root) {
+      root_(screen_->root),
+      is_virtual_session_(IsVirtualSession(connection_)) {
   has_randr_ = randr_->present();
   if (!has_randr_)
     return;
@@ -136,7 +137,7 @@ std::list<ScreenResolution> DesktopResizerX11::GetSupportedResolutions(
     const ScreenResolution& preferred,
     webrtc::ScreenId screen_id) {
   std::list<ScreenResolution> result;
-  if (!has_randr_)
+  if (!has_randr_ || !is_virtual_session_)
     return result;
 
   // Clamp the specified size to something valid for the X server.
@@ -159,7 +160,7 @@ std::list<ScreenResolution> DesktopResizerX11::GetSupportedResolutions(
 
 void DesktopResizerX11::SetResolution(const ScreenResolution& resolution,
                                       webrtc::ScreenId screen_id) {
-  if (!has_randr_)
+  if (!has_randr_ || !is_virtual_session_)
     return;
 
   // Ignore X errors encountered while resizing the display. We might hit an
