@@ -1993,12 +1993,14 @@ bool AttributionStorageSql::LazyInit(DbCreationPolicy creation_policy) {
       return false;
     }
     if (!db_->Open(path_to_database_)) {
+      DLOG(ERROR) << "Failed to open Conversion database";
       HandleInitializationFailure(InitStatus::kFailedToOpenDbFile);
       return false;
     }
   }
 
   if (!InitializeSchema(db_init_status_ == DbStatus::kDeferringCreation)) {
+    DLOG(ERROR) << "Failed to initialize schema for Conversion database";
     HandleInitializationFailure(InitStatus::kFailedToInitializeSchema);
     return false;
   }
