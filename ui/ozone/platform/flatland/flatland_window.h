@@ -30,6 +30,7 @@
 namespace ui {
 
 class FlatlandWindowManager;
+class ScenicWindowDelegate;
 
 class COMPONENT_EXPORT(OZONE) FlatlandWindow : public PlatformWindow,
                                                public InputEventSink {
@@ -39,7 +40,7 @@ class COMPONENT_EXPORT(OZONE) FlatlandWindow : public PlatformWindow,
   // ViewrefPair will be associated with this window's View, and used to
   // identify it when calling out to other services (e.g. the SemanticsManager).
   FlatlandWindow(FlatlandWindowManager* window_manager,
-                 PlatformWindowDelegate* delegate,
+                 PlatformWindowDelegate* platform_window_delegate,
                  PlatformWindowInitProperties properties);
   ~FlatlandWindow() override;
   FlatlandWindow(const FlatlandWindow&) = delete;
@@ -109,7 +110,8 @@ class COMPONENT_EXPORT(OZONE) FlatlandWindow : public PlatformWindow,
   void OnViewControllerDisconnected(zx_status_t status);
 
   FlatlandWindowManager* const manager_;
-  PlatformWindowDelegate* const window_delegate_;
+  PlatformWindowDelegate* const platform_window_delegate_;
+  ScenicWindowDelegate* const scenic_window_delegate_;
   gfx::AcceleratedWidget const window_id_;
 
   fuchsia::ui::input3::KeyboardPtr keyboard_service_;
@@ -138,6 +140,9 @@ class COMPONENT_EXPORT(OZONE) FlatlandWindow : public PlatformWindow,
   // Protocol for watching focus changes.
   fuchsia::ui::views::ViewRefFocusedPtr view_ref_focused_;
 
+  // Flatland View size in logical pixels.
+  absl::optional<gfx::Size> logical_size_;
+
   // The scale between logical pixels and physical pixels, set based on the
   // fuchsia::ui::composition::LayoutInfo. It's used to calculate dimensions of
   // the view in physical pixels in UpdateSize(). This value doesn't affect the
@@ -152,8 +157,6 @@ class COMPONENT_EXPORT(OZONE) FlatlandWindow : public PlatformWindow,
   // |PlatformWindowInitProperties.bounds.size()| value until
   // |parent_viewport_watcher_| is bound and returns OnGetLayout().
   gfx::Rect bounds_;
-
-  absl::optional<fuchsia::math::SizeU> view_properties_;
 
   // False if the View for this window is detached from the View tree, in which
   // case it is definitely not visible.
