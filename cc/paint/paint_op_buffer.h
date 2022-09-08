@@ -33,6 +33,7 @@
 #include "cc/paint/skottie_text_property_value.h"
 #include "cc/paint/skottie_wrapper.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "third_party/skia/include/core/SkRRect.h"
@@ -1378,46 +1379,39 @@ class CC_PAINT_EXPORT PaintOpBuffer : public SkRefCnt {
     CompositeIterator(CompositeIterator&& other);
 
     PaintOp* get() const {
-      return using_offsets_ ? offset_iter_->get() : iter_->get();
+      return absl::visit([](const auto& iter) { return iter.get(); }, iter_);
     }
     PaintOp* operator->() const { return get(); }
     PaintOp& operator*() const { return *get(); }
     CompositeIterator begin() const {
-      return using_offsets_ ? CompositeIterator(offset_iter_->begin())
-                            : CompositeIterator(iter_->begin());
+      return absl::holds_alternative<Iterator>(iter_)
+                 ? CompositeIterator(absl::get<Iterator>(iter_).begin())
+                 : CompositeIterator(absl::get<OffsetIterator>(iter_).begin());
     }
     CompositeIterator end() const {
-      return using_offsets_ ? CompositeIterator(offset_iter_->end())
-                            : CompositeIterator(iter_->end());
+      return absl::holds_alternative<Iterator>(iter_)
+                 ? CompositeIterator(absl::get<Iterator>(iter_).end())
+                 : CompositeIterator(absl::get<OffsetIterator>(iter_).end());
     }
     bool operator==(const CompositeIterator& other) const {
-      if (using_offsets_ != other.using_offsets_)
-        return false;
-      return using_offsets_ ? (*offset_iter_ == *other.offset_iter_)
-                            : (*iter_ == *other.iter_);
+      return iter_ == other.iter_;
     }
     bool operator!=(const CompositeIterator& other) const {
       return !(*this == other);
     }
     CompositeIterator& operator++() {
-      if (using_offsets_)
-        ++*offset_iter_;
-      else
-        ++*iter_;
+      absl::visit([](auto& iter) { ++iter; }, iter_);
       return *this;
     }
     explicit operator bool() const {
-      return using_offsets_ ? !!*offset_iter_ : !!*iter_;
+      return absl::visit([](const auto& iter) { return !!iter; }, iter_);
     }
 
    private:
-    explicit CompositeIterator(OffsetIterator offset_iter)
-        : using_offsets_(true), offset_iter_(std::move(offset_iter)) {}
+    explicit CompositeIterator(OffsetIterator iter) : iter_(std::move(iter)) {}
     explicit CompositeIterator(Iterator iter) : iter_(std::move(iter)) {}
 
-    bool using_offsets_ = false;
-    absl::optional<OffsetIterator> offset_iter_;
-    absl::optional<Iterator> iter_;
+    absl::variant<Iterator, OffsetIterator> iter_;
   };
 
   class CC_PAINT_EXPORT PlaybackFoldingIterator {

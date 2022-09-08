@@ -4335,4 +4335,35 @@ TEST(IteratorTest, CompositeOffsetEqualityTest) {
   EXPECT_FALSE(iter1 == ++iter2);
 }
 
+TEST(IteratorTest, CompositeOffsetMixedTypeEqualityTest) {
+  PaintOpBuffer buffer;
+  std::vector<size_t> offsets = {0, 4};
+  PaintOpBuffer::CompositeIterator iter(&buffer, /*offsets=*/nullptr);
+  PaintOpBuffer::CompositeIterator offset_iter(&buffer, &offsets);
+
+  EXPECT_TRUE(iter == iter);
+  EXPECT_TRUE(offset_iter == offset_iter);
+  EXPECT_FALSE(iter == offset_iter);
+}
+
+TEST(IteratorTest, CompositeOffsetBoolCheck) {
+  PaintOpBuffer buffer;
+  size_t offset = 0;
+  offset += buffer.push<SaveOp>().skip;
+  offset += buffer.push<RestoreOp>().skip;
+  buffer.push<NoopOp>();
+
+  PaintOpBuffer::CompositeIterator iter(&buffer, /*offsets=*/nullptr);
+  EXPECT_TRUE(iter);
+  EXPECT_TRUE(++iter);
+  EXPECT_TRUE(++iter);
+  EXPECT_FALSE(++iter);
+
+  std::vector<size_t> offsets = {0, offset};
+  PaintOpBuffer::CompositeIterator offset_iter(&buffer, &offsets);
+  EXPECT_TRUE(offset_iter);
+  EXPECT_TRUE(++offset_iter);
+  EXPECT_FALSE(++offset_iter);
+}
+
 }  // namespace cc

@@ -24,6 +24,7 @@
 #include "cc/paint/paint_record.h"
 #include "cc/paint/scoped_raster_flags.h"
 #include "cc/paint/skottie_serialization_history.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/skia/include/core/SkAnnotation.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
@@ -2893,12 +2894,14 @@ DrawTextBlobOp::~DrawTextBlobOp() = default;
 PaintOpBuffer::CompositeIterator::CompositeIterator(
     const PaintOpBuffer* buffer,
     const std::vector<size_t>* offsets)
-    : using_offsets_(!!offsets) {
+    : iter_(offsets == nullptr ? absl::variant<Iterator, OffsetIterator>(
+                                     absl::in_place_type<Iterator>,
+                                     buffer)
+                               : absl::variant<Iterator, OffsetIterator>(
+                                     absl::in_place_type<OffsetIterator>,
+                                     buffer,
+                                     offsets)) {
   DCHECK(!buffer->are_ops_destroyed());
-  if (using_offsets_)
-    offset_iter_.emplace(buffer, offsets);
-  else
-    iter_.emplace(buffer);
 }
 
 PaintOpBuffer::CompositeIterator::CompositeIterator(
