@@ -47,39 +47,6 @@ struct HttpRequestInfo;
 struct LoadTimingInfo;
 class SSLPrivateKey;
 
-// An enum representing a caller of WriterAboutToBeRemovedFromEntry.
-enum class WriterAboutToBeRemovedFromEntryCaller : uint8_t {
-  // It is not called.
-  kNone,
-
-  // Called by HttpCacheWriters::RemoveIdleWriters.
-  kRemoveIdleWriters,
-
-  // Called by HttpCacheWriters::RemoveTransaction.
-  kRemoveTransaction,
-
-  // Called by HttpCacheWriters::OnNetworkReadFailure.
-  kOnNetworkReadFailure,
-
-  // Called by HttpCacheWriters::OnDataReceived,
-  kOnDataReceived,
-
-  // Called by HttpCacheWriters::CompleteWaitingForReadTransactions,
-  kCompleteWaitingForReadTransactions,
-};
-
-// An enum representing a caller of WriteModeTransactionAboutToBecomeReader.
-enum class WriteModeTransactionAboutToBecomeReaderCaller : uint8_t {
-  // It is not called.
-  kNone,
-
-  // Called by HttpCache::WritersDoneWritingToEntry.
-  kWritersDoneWritingToEntry,
-
-  // Called by ProcessDoneHeadersQueue.
-  kProcessDoneHeadersQueue,
-};
-
 // This is the transaction that is returned by the HttpCache transaction
 // factory.
 class NET_EXPORT_PRIVATE HttpCache::Transaction : public HttpTransaction {
@@ -220,18 +187,11 @@ class NET_EXPORT_PRIVATE HttpCache::Transaction : public HttpTransaction {
 
   // Invoked when this writer transaction is about to be removed from entry.
   // If result is an error code, a future Read should fail with |result|.
-  void WriterAboutToBeRemovedFromEntry(
-      int result,
-      WriterAboutToBeRemovedFromEntryCaller caller);
+  void WriterAboutToBeRemovedFromEntry(int result);
 
   // Invoked when this transaction is about to become a reader because the cache
   // entry has finished writing.
-  void WriteModeTransactionAboutToBecomeReader(
-      WriteModeTransactionAboutToBecomeReaderCaller caller);
-
-  void set_being_removed_as_writer(bool value) {
-    being_removed_as_writer_ = value;
-  }
+  void WriteModeTransactionAboutToBecomeReader();
 
   // True if the passed checksum calculated from the response matches the
   // expected value from the HttpRequestInfo. Consumes `checksum`.
@@ -355,32 +315,6 @@ class NET_EXPORT_PRIVATE HttpCache::Transaction : public HttpTransaction {
     // with this entry (unless we are ignoring them thanks to a loadflag),
     // i.e. it's expired and has nothing that permits validations.
     HINT_UNUSABLE_PER_CACHING_HEADERS = (1 << 0),
-  };
-
-  // An enum representing the state of this transaction. This is for debugging.
-  enum class TransactionState : uint8_t {
-    // Unknown state.
-    kUnknown,
-    // This transaction is directly talking to the network.
-    kNetwork,
-    // This transaction is held by a cache entry as a writer.
-    kAsWriter,
-    // This transaction is held by a cache entry as a reader.
-    kAsReader,
-  };
-
-  // An enum representing the last DoCacheReadData[Complete] call information.
-  enum class DoCacheReadDataLastCall : uint8_t {
-    // Neither DoCacheReadData nor DoCacheReadDataComplete were called.
-    kNone,
-
-    // DoCacheReadData was called (and that was newer than any
-    // DoCacheReadDataComplete calls).
-    kDoCacheReadData,
-
-    // DoCacheReadDataComplete was called (and that was newer than any
-    // DoCacheReadData calls).
-    kDoCacheReadDataComplete,
   };
 
   // Runs the state transition loop. Resets and calls |callback_| on exit,
@@ -674,8 +608,6 @@ class NET_EXPORT_PRIVATE HttpCache::Transaction : public HttpTransaction {
   // forwarded might need to set these headers again to avoid being blocked.
   void UpdateSecurityHeadersBeforeForwarding();
 
-  static const char* ToString(TransactionState state);
-
   State next_state_{STATE_NONE};
 
   // Used for tracing.
@@ -807,20 +739,6 @@ class NET_EXPORT_PRIVATE HttpCache::Transaction : public HttpTransaction {
 
   // True if the Transaction is currently processing the DoLoop.
   bool in_do_loop_ = false;
-
-  // The transaction state at TransitionToReadingState. This is for debugging.
-  TransactionState transaction_state_at_transition_to_reading_state_ =
-      TransactionState::kUnknown;
-  DoCacheReadDataLastCall do_cache_read_data_last_call_ =
-      DoCacheReadDataLastCall::kNone;
-  WriterAboutToBeRemovedFromEntryCaller
-      writer_about_to_be_removed_from_entry_caller_ =
-          WriterAboutToBeRemovedFromEntryCaller::kNone;
-  WriteModeTransactionAboutToBecomeReaderCaller
-      write_mode_transaction_about_to_become_reader_caller_ =
-          WriteModeTransactionAboutToBecomeReaderCaller::kNone;
-  bool has_called_done_with_entry_since_last_do_cache_read_data_ = false;
-  bool being_removed_as_writer_ = false;
 
   base::WeakPtrFactory<Transaction> weak_factory_{this};
 };

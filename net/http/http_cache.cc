@@ -984,9 +984,9 @@ void HttpCache::WritersDoneWritingToEntry(ActiveEntry* entry,
   // have valid contents.
   // - let them continue by invoking their callback since entry is
   // successfully written.
-  CHECK(entry->writers);
-  CHECK(entry->writers->IsEmpty());
-  CHECK(success || make_readers.empty());
+  DCHECK(entry->writers);
+  DCHECK(entry->writers->IsEmpty());
+  DCHECK(success || make_readers.empty());
 
   entry->writers_done_writing_to_entry_history = absl::make_optional(success);
 
@@ -1004,10 +1004,7 @@ void HttpCache::WritersDoneWritingToEntry(ActiveEntry* entry,
   if (success) {
     // Add any idle writers to readers.
     for (auto* reader : make_readers) {
-      reader->WriteModeTransactionAboutToBecomeReader(
-          WriteModeTransactionAboutToBecomeReaderCaller::
-              kWritersDoneWritingToEntry);
-      reader->set_being_removed_as_writer(false);
+      reader->WriteModeTransactionAboutToBecomeReader();
       entry->readers.insert(reader);
     }
     // Reset writers here so that WriteModeTransactionAboutToBecomeReader can
@@ -1179,9 +1176,7 @@ void HttpCache::ProcessDoneHeadersQueue(ActiveEntry* entry) {
         // writing to the cache, it would have been added to writers in
         // DoneWithResponseHeaders, thus no writers here signify the response
         // was completely written).
-        transaction->WriteModeTransactionAboutToBecomeReader(
-            WriteModeTransactionAboutToBecomeReaderCaller::
-                kProcessDoneHeadersQueue);
+        transaction->WriteModeTransactionAboutToBecomeReader();
         auto return_val = entry->readers.insert(transaction);
         DCHECK(return_val.second);
       }
