@@ -4,8 +4,7 @@
 
 #include "chromeos/ash/services/bluetooth_config/system_properties_provider.h"
 
-namespace chromeos {
-namespace bluetooth_config {
+namespace ash::bluetooth_config {
 
 SystemPropertiesProvider::SystemPropertiesProvider() = default;
 
@@ -43,5 +42,4 @@ void SystemPropertiesProvider::NotifyObserver(
   observer->OnPropertiesUpdated(std::move(properties));
 }
 
-}  // namespace bluetooth_config
-}  // namespace chromeos
+}  // namespace ash::bluetooth_config

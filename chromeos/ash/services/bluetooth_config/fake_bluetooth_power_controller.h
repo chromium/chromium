@@ -8,8 +8,7 @@
 #include "chromeos/ash/services/bluetooth_config/adapter_state_controller.h"
 #include "chromeos/ash/services/bluetooth_config/bluetooth_power_controller.h"
 
-namespace chromeos {
-namespace bluetooth_config {
+namespace ash::bluetooth_config {
 
 class FakeBluetoothPowerController : public BluetoothPowerController {
  public:
@@ -34,7 +33,6 @@ class FakeBluetoothPowerController : public BluetoothPowerController {
   AdapterStateController* adapter_state_controller_;
 };
 
-}  // namespace bluetooth_config
-}  // namespace chromeos
+}  // namespace ash::bluetooth_config
 
 #endif  // CHROMEOS_ASH_SERVICES_BLUETOOTH_CONFIG_FAKE_BLUETOOTH_POWER_CONTROLLER_H_

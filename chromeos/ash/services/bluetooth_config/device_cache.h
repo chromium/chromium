@@ -11,8 +11,7 @@
 #include "base/observer_list_types.h"
 #include "chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom.h"
 
-namespace chromeos {
-namespace bluetooth_config {
+namespace ash::bluetooth_config {
 
 class AdapterStateController;
 
@@ -80,7 +79,6 @@ class DeviceCache {
   base::ObserverList<Observer> observers_;
 };
 
-}  // namespace bluetooth_config
-}  // namespace chromeos
+}  // namespace ash::bluetooth_config
 
 #endif  // CHROMEOS_ASH_SERVICES_BLUETOOTH_CONFIG_DEVICE_CACHE_H_

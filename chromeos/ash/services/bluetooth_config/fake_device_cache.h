@@ -7,8 +7,7 @@
 
 #include "chromeos/ash/services/bluetooth_config/device_cache.h"
 
-namespace chromeos {
-namespace bluetooth_config {
+namespace ash::bluetooth_config {
 
 class FakeDeviceCache : public DeviceCache {
  public:
@@ -34,7 +33,6 @@ class FakeDeviceCache : public DeviceCache {
   std::vector<mojom::BluetoothDevicePropertiesPtr> unpaired_devices_;
 };
 
-}  // namespace bluetooth_config
-}  // namespace chromeos
+}  // namespace ash::bluetooth_config
 
 #endif  // CHROMEOS_ASH_SERVICES_BLUETOOTH_CONFIG_FAKE_DEVICE_CACHE_H_

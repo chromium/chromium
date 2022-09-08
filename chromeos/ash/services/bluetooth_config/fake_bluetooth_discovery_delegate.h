@@ -10,8 +10,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
-namespace chromeos {
-namespace bluetooth_config {
+namespace ash::bluetooth_config {
 
 class FakeBluetoothDiscoveryDelegate
     : public mojom::BluetoothDiscoveryDelegate {
@@ -61,7 +60,6 @@ class FakeBluetoothDiscoveryDelegate
   mojo::Receiver<mojom::BluetoothDiscoveryDelegate> receiver_{this};
 };
 
-}  // namespace bluetooth_config
-}  // namespace chromeos
+}  // namespace ash::bluetooth_config
 
 #endif  // CHROMEOS_ASH_SERVICES_BLUETOOTH_CONFIG_FAKE_BLUETOOTH_DISCOVERY_DELEGATE_H_

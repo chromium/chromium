@@ -140,7 +140,7 @@ class MediatorTest : public AshTestBase {
   }
 
  protected:
-  chromeos::bluetooth_config::FakeDiscoverySessionManager*
+  bluetooth_config::FakeDiscoverySessionManager*
   fake_discovery_session_manager() {
     return ash_test_helper()
         ->bluetooth_config_test_helper()
@@ -155,8 +155,7 @@ class MediatorTest : public AshTestBase {
   MockPairerBroker* mock_pairer_broker_;
   MockUIBroker* mock_ui_broker_;
   MockFastPairRepository* mock_fast_pair_repository_;
-  chromeos::bluetooth_config::FakeAdapterStateController
-      fake_adapter_state_controller_;
+  bluetooth_config::FakeAdapterStateController fake_adapter_state_controller_;
   std::unique_ptr<MockQuickPairBrowserDelegate> browser_delegate_;
   TestingPrefServiceSimple pref_service_;
   std::unique_ptr<Mediator> mediator_;
@@ -524,7 +523,7 @@ TEST_F(MediatorTest, PairingFailedAction_Dismissed) {
 
 TEST_F(MediatorTest, FastPairBluetoothConfigDelegate) {
   feature_status_tracker_->SetIsFastPairEnabled(true);
-  chromeos::bluetooth_config::FastPairDelegate* delegate =
+  bluetooth_config::FastPairDelegate* delegate =
       mediator_->GetFastPairDelegate();
   delegate->SetDeviceNameManager(nullptr);
   delegate->SetAdapterStateController(nullptr);
@@ -539,17 +538,17 @@ TEST_F(MediatorTest,
   FastPairHandshakeLookup::GetInstance()->Create(adapter_, device_,
                                                  base::DoNothing());
 
-  chromeos::bluetooth_config::FastPairDelegate* delegate =
+  bluetooth_config::FastPairDelegate* delegate =
       mediator_->GetFastPairDelegate();
   delegate->SetDeviceNameManager(nullptr);
 
   // Mediator should not observe changes to the adapter state before the
   // AdapterStateController is set and the observation is created.
   fake_adapter_state_controller_.SetSystemState(
-      chromeos::bluetooth_config::mojom::BluetoothSystemState::kDisabling);
+      bluetooth_config::mojom::BluetoothSystemState::kDisabling);
   EXPECT_TRUE(FastPairHandshakeLookup::GetInstance()->Get(device_));
   fake_adapter_state_controller_.SetSystemState(
-      chromeos::bluetooth_config::mojom::BluetoothSystemState::kEnabled);
+      bluetooth_config::mojom::BluetoothSystemState::kEnabled);
   EXPECT_TRUE(FastPairHandshakeLookup::GetInstance()->Get(device_));
 
   // After the AdapterStateController is set, we should be notified and
@@ -563,7 +562,7 @@ TEST_F(MediatorTest,
   EXPECT_CALL(*mock_pairer_broker_, StopPairing);
   EXPECT_CALL(*mock_ui_broker_, RemoveNotifications);
   fake_adapter_state_controller_.SetSystemState(
-      chromeos::bluetooth_config::mojom::BluetoothSystemState::kDisabling);
+      bluetooth_config::mojom::BluetoothSystemState::kDisabling);
   EXPECT_FALSE(FastPairHandshakeLookup::GetInstance()->Get(device_));
 
   delegate->SetAdapterStateController(nullptr);

@@ -31,19 +31,19 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
+
 namespace {
 
-const char kDeviceId[] = "/device/id";
+using bluetooth_config::FakeDeviceOperationHandler;
+using bluetooth_config::ScopedBluetoothConfigTestHelper;
+using bluetooth_config::mojom::AudioOutputCapability;
+using bluetooth_config::mojom::BluetoothDeviceProperties;
+using bluetooth_config::mojom::BluetoothSystemState;
+using bluetooth_config::mojom::DeviceConnectionState;
+using bluetooth_config::mojom::PairedBluetoothDeviceProperties;
+using bluetooth_config::mojom::PairedBluetoothDevicePropertiesPtr;
 
-using chromeos::bluetooth_config::AdapterStateController;
-using chromeos::bluetooth_config::FakeDeviceOperationHandler;
-using chromeos::bluetooth_config::ScopedBluetoothConfigTestHelper;
-using chromeos::bluetooth_config::mojom::AudioOutputCapability;
-using chromeos::bluetooth_config::mojom::BluetoothDeviceProperties;
-using chromeos::bluetooth_config::mojom::BluetoothSystemState;
-using chromeos::bluetooth_config::mojom::DeviceConnectionState;
-using chromeos::bluetooth_config::mojom::PairedBluetoothDeviceProperties;
-using chromeos::bluetooth_config::mojom::PairedBluetoothDevicePropertiesPtr;
+const char kDeviceId[] = "/device/id";
 
 class FakeBluetoothDetailedViewFactory : public BluetoothDetailedView::Factory {
  public:

@@ -4,8 +4,7 @@
 
 #include "chromeos/ash/services/bluetooth_config/fake_device_name_manager.h"
 
-namespace chromeos {
-namespace bluetooth_config {
+namespace ash::bluetooth_config {
 
 FakeDeviceNameManager::FakeDeviceNameManager() = default;
 
@@ -32,5 +31,4 @@ void FakeDeviceNameManager::RemoveDeviceNickname(const std::string& device_id) {
   NotifyDeviceNicknameChanged(device_id, /*nickname=*/absl::nullopt);
 }
 
-}  // namespace bluetooth_config
-}  // namespace chromeos
+}  // namespace ash::bluetooth_config

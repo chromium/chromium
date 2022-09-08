@@ -13,8 +13,7 @@
 
 class PrefService;
 
-namespace chromeos {
-namespace bluetooth_config {
+namespace ash::bluetooth_config {
 
 // Manages saving and retrieving nicknames for Bluetooth devices. This nickname
 // is local to only the device and is visible to all users of the device.
@@ -63,7 +62,6 @@ class DeviceNameManager {
   base::ObserverList<Observer> observers_;
 };
 
-}  // namespace bluetooth_config
-}  // namespace chromeos
+}  // namespace ash::bluetooth_config
 
 #endif  // CHROMEOS_ASH_SERVICES_BLUETOOTH_CONFIG_DEVICE_NAME_MANAGER_H_

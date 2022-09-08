@@ -13,8 +13,7 @@ namespace device {
 class BluetoothAdapter;
 }  // namespace device
 
-namespace chromeos {
-namespace bluetooth_config {
+namespace ash::bluetooth_config {
 
 class AdapterStateController;
 class BluetoothDeviceStatusNotifier;
@@ -68,7 +67,6 @@ class Initializer {
   Initializer() = default;
 };
 
-}  // namespace bluetooth_config
-}  // namespace chromeos
+}  // namespace ash::bluetooth_config
 
 #endif  // CHROMEOS_ASH_SERVICES_BLUETOOTH_CONFIG_INITIALIZER_H_

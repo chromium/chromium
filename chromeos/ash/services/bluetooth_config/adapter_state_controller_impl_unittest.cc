@@ -15,8 +15,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
-namespace bluetooth_config {
+namespace ash::bluetooth_config {
+
 namespace {
 
 class FakeObserver : public AdapterStateController::Observer {
@@ -411,5 +411,4 @@ TEST_F(AdapterStateControllerImplTest,
       "Bluetooth.ChromeOS.PoweredState.Enable.Result", true, 0);
 }
 
-}  // namespace bluetooth_config
-}  // namespace chromeos
+}  // namespace ash::bluetooth_config

@@ -4,8 +4,7 @@
 
 #include "chromeos/ash/services/bluetooth_config/fake_bluetooth_device_status_notifier.h"
 
-namespace chromeos {
-namespace bluetooth_config {
+namespace ash::bluetooth_config {
 
 FakeBluetoothDeviceStatusNotifier::FakeBluetoothDeviceStatusNotifier() =
     default;
@@ -28,5 +27,4 @@ void FakeBluetoothDeviceStatusNotifier::SetDisconnectedDevice(
   NotifyDeviceNewlyDisconnected(device);
 }
 
-}  // namespace bluetooth_config
-}  // namespace chromeos
+}  // namespace ash::bluetooth_config

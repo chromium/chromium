@@ -7,8 +7,7 @@
 
 #include "chromeos/ash/services/bluetooth_config/initializer.h"
 
-namespace chromeos {
-namespace bluetooth_config {
+namespace ash::bluetooth_config {
 
 // Concrete Initializer implementation.
 class InitializerImpl : public Initializer {
@@ -49,7 +48,6 @@ class InitializerImpl : public Initializer {
       FastPairDelegate* fast_pair_delegate) override;
 };
 
-}  // namespace bluetooth_config
-}  // namespace chromeos
+}  // namespace ash::bluetooth_config
 
 #endif  // CHROMEOS_ASH_SERVICES_BLUETOOTH_CONFIG_INITIALIZER_IMPL_H_

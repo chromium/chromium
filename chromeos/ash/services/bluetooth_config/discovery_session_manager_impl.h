@@ -21,8 +21,7 @@ namespace device {
 class BluetoothDiscoverySession;
 }  // namespace device
 
-namespace chromeos {
-namespace bluetooth_config {
+namespace ash::bluetooth_config {
 
 // DiscoverySessionManager which uses BluetoothAdapter to start and stop
 // discovery sessions.
@@ -70,7 +69,6 @@ class DiscoverySessionManagerImpl : public DiscoverySessionManager,
   base::WeakPtrFactory<DiscoverySessionManagerImpl> weak_ptr_factory_{this};
 };
 
-}  // namespace bluetooth_config
-}  // namespace chromeos
+}  // namespace ash::bluetooth_config
 
 #endif  // CHROMEOS_ASH_SERVICES_BLUETOOTH_CONFIG_DISCOVERY_SESSION_MANAGER_IMPL_H_

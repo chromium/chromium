@@ -80,8 +80,8 @@ class FastPairRepositoryImpl : public FastPairRepository,
   void FetchDeviceImages(scoped_refptr<Device> device) override;
   bool PersistDeviceImages(scoped_refptr<Device> device) override;
   bool EvictDeviceImages(const device::BluetoothDevice* device) override;
-  absl::optional<chromeos::bluetooth_config::DeviceImageInfo>
-  GetImagesForDevice(const std::string& device_id) override;
+  absl::optional<bluetooth_config::DeviceImageInfo> GetImagesForDevice(
+      const std::string& device_id) override;
   void CheckOptInStatus(CheckOptInStatusCallback callback) override;
   void UpdateOptInStatus(nearby::fastpair::OptInStatus opt_in_status,
                          UpdateOptInStatusCallback callback) override;

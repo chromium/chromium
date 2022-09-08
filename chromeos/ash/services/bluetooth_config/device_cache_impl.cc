@@ -11,8 +11,7 @@
 #include "components/device_event_log/device_event_log.h"
 #include "device/bluetooth/chromeos/bluetooth_utils.h"
 
-namespace chromeos {
-namespace bluetooth_config {
+namespace ash::bluetooth_config {
 
 DeviceCacheImpl::UnpairedDevice::UnpairedDevice(
     const device::BluetoothDevice* device,
@@ -336,5 +335,4 @@ DeviceCacheImpl::GeneratePairedBluetoothDeviceProperties(
   return properties;
 }
 
-}  // namespace bluetooth_config
-}  // namespace chromeos
+}  // namespace ash::bluetooth_config

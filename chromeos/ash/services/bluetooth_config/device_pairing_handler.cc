@@ -12,8 +12,7 @@
 #include "device/bluetooth/bluetooth_common.h"
 #include "device/bluetooth/chromeos/bluetooth_utils.h"
 
-namespace chromeos {
-namespace bluetooth_config {
+namespace ash::bluetooth_config {
 
 namespace {
 
@@ -215,5 +214,4 @@ void DevicePairingHandler::FlushForTesting() {
   receiver_.FlushForTesting();  // IN-TEST
 }
 
-}  // namespace bluetooth_config
-}  // namespace chromeos
+}  // namespace ash::bluetooth_config

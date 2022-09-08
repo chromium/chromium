@@ -13,8 +13,7 @@
 #include "base/timer/timer.h"
 #include "chromeos/ash/services/bluetooth_config/device_cache.h"
 
-namespace chromeos {
-namespace bluetooth_config {
+namespace ash::bluetooth_config {
 
 // Concrete DiscoveredDevicesProvider implementation that batches discovered
 // devices list updates. If the device list has changed, this implementation
@@ -57,7 +56,6 @@ class DiscoveredDevicesProviderImpl : public DiscoveredDevicesProvider,
   base::WeakPtrFactory<DiscoveredDevicesProviderImpl> weak_ptr_factory_{this};
 };
 
-}  // namespace bluetooth_config
-}  // namespace chromeos
+}  // namespace ash::bluetooth_config
 
 #endif  // CHROMEOS_ASH_SERVICES_BLUETOOTH_CONFIG_DISCOVERED_DEVICES_PROVIDER_IMPL_H_

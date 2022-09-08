@@ -18,8 +18,8 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
-namespace bluetooth_config {
+namespace ash::bluetooth_config {
+
 namespace {
 
 mojom::PairedBluetoothDevicePropertiesPtr GenerateStubPairedDeviceProperties() {
@@ -221,5 +221,4 @@ TEST_F(SystemPropertiesProviderImplTest, DisconnectToStopObserving) {
   EXPECT_EQ(1u, observer->received_properties_list().size());
 }
 
-}  // namespace bluetooth_config
-}  // namespace chromeos
+}  // namespace ash::bluetooth_config

@@ -11,8 +11,7 @@ namespace device {
 class BluetoothDevice;
 }  // namespace device
 
-namespace chromeos {
-namespace bluetooth_config {
+namespace ash::bluetooth_config {
 
 class FastPairDelegate;
 
@@ -22,7 +21,6 @@ mojom::BluetoothDevicePropertiesPtr GenerateBluetoothDeviceMojoProperties(
     const device::BluetoothDevice* device,
     FastPairDelegate* fast_pair_delegate);
 
-}  // namespace bluetooth_config
-}  // namespace chromeos
+}  // namespace ash::bluetooth_config
 
 #endif  // CHROMEOS_ASH_SERVICES_BLUETOOTH_CONFIG_DEVICE_CONVERSION_UTIL_H_

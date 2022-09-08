@@ -16,9 +16,10 @@
 #include "ui/views/view.h"
 
 namespace ash {
+
 namespace {
 
-using chromeos::bluetooth_config::mojom::PairedBluetoothDevicePropertiesPtr;
+using bluetooth_config::mojom::PairedBluetoothDevicePropertiesPtr;
 
 // Helper function to remove |*view| from its view hierarchy, delete the view,
 // and reset the value of |*view| to be |nullptr|.

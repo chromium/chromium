@@ -12,8 +12,7 @@
 
 class PrefRegistrySimple;
 
-namespace chromeos {
-namespace bluetooth_config {
+namespace ash::bluetooth_config {
 
 // Concrete DeviceNameManager implementation that saves entries into Prefs.
 class DeviceNameManagerImpl : public DeviceNameManager {
@@ -41,7 +40,6 @@ class DeviceNameManagerImpl : public DeviceNameManager {
   PrefService* local_state_ = nullptr;
 };
 
-}  // namespace bluetooth_config
-}  // namespace chromeos
+}  // namespace ash::bluetooth_config
 
 #endif  // CHROMEOS_ASH_SERVICES_BLUETOOTH_CONFIG_DEVICE_NAME_MANAGER_IMPL_H_

@@ -15,8 +15,7 @@
 #include "chromeos/ash/services/bluetooth_config/fast_pair_delegate.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 
-namespace chromeos {
-namespace bluetooth_config {
+namespace ash::bluetooth_config {
 
 InitializerImpl::InitializerImpl() = default;
 
@@ -87,5 +86,4 @@ InitializerImpl::CreateDeviceOperationHandler(
       device_name_manager, fast_pair_delegate);
 }
 
-}  // namespace bluetooth_config
-}  // namespace chromeos
+}  // namespace ash::bluetooth_config

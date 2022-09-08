@@ -16,8 +16,7 @@
 #include "components/device_event_log/device_event_log.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 
-namespace chromeos {
-namespace bluetooth_config {
+namespace ash::bluetooth_config {
 
 CrosBluetoothConfig::CrosBluetoothConfig(
     Initializer& initializer,
@@ -139,5 +138,4 @@ void CrosBluetoothConfig::SetDeviceNickname(const std::string& device_id,
   device_name_manager_->SetDeviceNickname(device_id, nickname);
 }
 
-}  // namespace bluetooth_config
-}  // namespace chromeos
+}  // namespace ash::bluetooth_config

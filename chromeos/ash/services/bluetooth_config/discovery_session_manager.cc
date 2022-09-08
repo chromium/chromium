@@ -3,12 +3,11 @@
 // found in the LICENSE file.
 
 #include "chromeos/ash/services/bluetooth_config/discovery_session_manager.h"
-#include "components/device_event_log/device_event_log.h"
 
 #include "base/bind.h"
+#include "components/device_event_log/device_event_log.h"
 
-namespace chromeos {
-namespace bluetooth_config {
+namespace ash::bluetooth_config {
 
 DiscoverySessionManager::DiscoverySessionManager(
     AdapterStateController* adapter_state_controller,
@@ -146,5 +145,4 @@ void DiscoverySessionManager::FlushForTesting() {
   delegates_.FlushForTesting();  // IN-TEST
 }
 
-}  // namespace bluetooth_config
-}  // namespace chromeos
+}  // namespace ash::bluetooth_config

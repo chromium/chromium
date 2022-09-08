@@ -6,8 +6,7 @@
 #include "chromeos/ash/services/bluetooth_config/public/cpp/cros_bluetooth_config_util.h"
 #include "components/device_event_log/device_event_log.h"
 
-namespace chromeos {
-namespace bluetooth_config {
+namespace ash::bluetooth_config {
 
 BluetoothDeviceStatusNotifier::BluetoothDeviceStatusNotifier() = default;
 
@@ -50,5 +49,4 @@ void BluetoothDeviceStatusNotifier::FlushForTesting() {
   observers_.FlushForTesting();  // IN-TEST
 }
 
-}  // namespace bluetooth_config
-}  // namespace chromeos
+}  // namespace ash::bluetooth_config

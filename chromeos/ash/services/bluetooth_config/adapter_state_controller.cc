@@ -4,8 +4,7 @@
 
 #include "chromeos/ash/services/bluetooth_config/adapter_state_controller.h"
 
-namespace chromeos {
-namespace bluetooth_config {
+namespace ash::bluetooth_config {
 
 AdapterStateController::AdapterStateController() = default;
 
@@ -24,5 +23,4 @@ void AdapterStateController::NotifyAdapterStateChanged() {
     observer.OnAdapterStateChanged();
 }
 
-}  // namespace bluetooth_config
-}  // namespace chromeos
+}  // namespace ash::bluetooth_config

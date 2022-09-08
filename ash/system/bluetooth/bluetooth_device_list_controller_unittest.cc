@@ -22,12 +22,12 @@
 #include "ui/views/controls/separator.h"
 
 namespace ash {
+
 namespace {
 
-using chromeos::bluetooth_config::mojom::BluetoothDeviceProperties;
-using chromeos::bluetooth_config::mojom::DeviceConnectionState;
-using chromeos::bluetooth_config::mojom::PairedBluetoothDeviceProperties;
-using chromeos::bluetooth_config::mojom::PairedBluetoothDevicePropertiesPtr;
+using bluetooth_config::mojom::BluetoothDeviceProperties;
+using bluetooth_config::mojom::PairedBluetoothDeviceProperties;
+using bluetooth_config::mojom::PairedBluetoothDevicePropertiesPtr;
 
 const char kDeviceId1[] = "/device/id/1";
 const char kDeviceId2[] = "/device/id/2";

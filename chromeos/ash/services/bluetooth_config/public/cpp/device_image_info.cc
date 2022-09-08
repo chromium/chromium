@@ -7,8 +7,7 @@
 #include "base/values.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
-namespace bluetooth_config {
+namespace ash::bluetooth_config {
 
 namespace {
 
@@ -71,5 +70,4 @@ base::Value DeviceImageInfo::ToDictionaryValue() const {
   return dictionary;
 }
 
-}  // namespace bluetooth_config
-}  // namespace chromeos
+}  // namespace ash::bluetooth_config

@@ -12,8 +12,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
-namespace chromeos {
-namespace bluetooth_config {
+namespace ash::bluetooth_config {
 
 class FakeSystemPropertiesObserver : public mojom::SystemPropertiesObserver {
  public:
@@ -42,7 +41,6 @@ class FakeSystemPropertiesObserver : public mojom::SystemPropertiesObserver {
   mojo::Receiver<mojom::SystemPropertiesObserver> receiver_{this};
 };
 
-}  // namespace bluetooth_config
-}  // namespace chromeos
+}  // namespace ash::bluetooth_config
 
 #endif  // CHROMEOS_ASH_SERVICES_BLUETOOTH_CONFIG_FAKE_SYSTEM_PROPERTIES_OBSERVER_H_

@@ -7,8 +7,7 @@
 #include "base/run_loop.h"
 #include "chromeos/ash/services/bluetooth_config/public/cpp/cros_bluetooth_config_util.h"
 
-namespace chromeos {
-namespace bluetooth_config {
+namespace ash::bluetooth_config {
 
 FakeAdapterStateController::FakeAdapterStateController() = default;
 
@@ -40,5 +39,4 @@ void FakeAdapterStateController::SetBluetoothEnabledState(bool enabled) {
                          : mojom::BluetoothSystemState::kDisabling);
 }
 
-}  // namespace bluetooth_config
-}  // namespace chromeos
+}  // namespace ash::bluetooth_config

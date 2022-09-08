@@ -12,8 +12,8 @@
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user_manager.h"
 
-namespace chromeos {
-namespace bluetooth_config {
+namespace ash::bluetooth_config {
+
 namespace {
 
 // Decides whether to apply Bluetooth setting based on user type.
@@ -34,7 +34,7 @@ void BluetoothPowerControllerImpl::RegisterLocalStatePrefs(
     PrefRegistrySimple* registry) {
   // If this flag is off, this pref is registered by
   // ash::BluetoothPowerController.
-  if (ash::features::IsBluetoothRevampEnabled()) {
+  if (features::IsBluetoothRevampEnabled()) {
     registry->RegisterBooleanPref(prefs::kSystemBluetoothAdapterEnabled,
                                   /*default_value=*/false);
   }
@@ -45,7 +45,7 @@ void BluetoothPowerControllerImpl::RegisterProfilePrefs(
     PrefRegistrySimple* registry) {
   // If this flag is off, this pref is registered by
   // ash::BluetoothPowerController.
-  if (ash::features::IsBluetoothRevampEnabled()) {
+  if (features::IsBluetoothRevampEnabled()) {
     registry->RegisterBooleanPref(prefs::kUserBluetoothAdapterEnabled,
                                   /*default_value=*/false);
   }
@@ -64,14 +64,13 @@ void BluetoothPowerControllerImpl::SetBluetoothEnabledState(bool enabled) {
     BLUETOOTH_LOG(EVENT) << "Saving Bluetooth power state of " << enabled
                          << " to user prefs.";
 
-    primary_profile_prefs_->SetBoolean(ash::prefs::kUserBluetoothAdapterEnabled,
+    primary_profile_prefs_->SetBoolean(prefs::kUserBluetoothAdapterEnabled,
                                        enabled);
   } else if (local_state_) {
     BLUETOOTH_LOG(EVENT) << "Saving Bluetooth power state of " << enabled
                          << " to local state.";
 
-    local_state_->SetBoolean(ash::prefs::kSystemBluetoothAdapterEnabled,
-                             enabled);
+    local_state_->SetBoolean(prefs::kSystemBluetoothAdapterEnabled, enabled);
   } else {
     BLUETOOTH_LOG(ERROR)
         << "SetBluetoothEnabledState() called before preferences were set";
@@ -162,7 +161,7 @@ void BluetoothPowerControllerImpl::ApplyBluetoothLocalStatePref() {
     // powered on. Save this state to prefs.
     BLUETOOTH_LOG(EVENT) << "No local state pref has been set, saving"
                          << "Bluetooth power state of enabled to local state";
-    local_state_->SetBoolean(ash::prefs::kSystemBluetoothAdapterEnabled, true);
+    local_state_->SetBoolean(prefs::kSystemBluetoothAdapterEnabled, true);
     return;
   }
 
@@ -261,5 +260,4 @@ void BluetoothPowerControllerImpl::SaveCurrentPowerStateToPrefs(
                         adapter_state_controller_->GetAdapterState()));
 }
 
-}  // namespace bluetooth_config
-}  // namespace chromeos
+}  // namespace ash::bluetooth_config

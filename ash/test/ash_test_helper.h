@@ -154,7 +154,7 @@ class AshTestHelper : public aura::test::AuraTestHelper {
     return ambient_ash_test_helper_.get();
   }
 
-  chromeos::bluetooth_config::ScopedBluetoothConfigTestHelper*
+  bluetooth_config::ScopedBluetoothConfigTestHelper*
   bluetooth_config_test_helper() {
     return &scoped_bluetooth_config_test_helper_;
   }
@@ -197,7 +197,7 @@ class AshTestHelper : public aura::test::AuraTestHelper {
   // Used only for pixel tests.
   std::unique_ptr<AshTestUiStabilizer> ui_stabilizer_;
 
-  chromeos::bluetooth_config::ScopedBluetoothConfigTestHelper
+  bluetooth_config::ScopedBluetoothConfigTestHelper
       scoped_bluetooth_config_test_helper_;
 
   // InputMethodManager is not owned by this class. It is stored in a

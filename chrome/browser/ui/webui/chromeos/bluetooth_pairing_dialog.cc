@@ -170,8 +170,8 @@ BluetoothPairingDialogUI::BluetoothPairingDialogUI(content::WebUI* web_ui)
 BluetoothPairingDialogUI::~BluetoothPairingDialogUI() = default;
 
 void BluetoothPairingDialogUI::BindInterface(
-    mojo::PendingReceiver<
-        chromeos::bluetooth_config::mojom::CrosBluetoothConfig> receiver) {
+    mojo::PendingReceiver<ash::bluetooth_config::mojom::CrosBluetoothConfig>
+        receiver) {
   DCHECK(features::IsBluetoothRevampEnabled());
   ash::GetBluetoothConfigService(std::move(receiver));
 }

@@ -4,8 +4,7 @@
 
 #include "chromeos/ash/services/bluetooth_config/device_name_manager.h"
 
-namespace chromeos {
-namespace bluetooth_config {
+namespace ash::bluetooth_config {
 
 DeviceNameManager::DeviceNameManager() = default;
 
@@ -26,5 +25,4 @@ void DeviceNameManager::NotifyDeviceNicknameChanged(
     observer.OnDeviceNicknameChanged(device_id, nickname);
 }
 
-}  // namespace bluetooth_config
-}  // namespace chromeos
+}  // namespace ash::bluetooth_config

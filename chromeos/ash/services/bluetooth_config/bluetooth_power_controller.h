@@ -7,8 +7,7 @@
 
 class PrefService;
 
-namespace chromeos {
-namespace bluetooth_config {
+namespace ash::bluetooth_config {
 
 // Sets the Bluetooth power state and saves the state to prefs. Also initializes
 // the Bluetooth power state during system startup and user session startup.
@@ -39,7 +38,6 @@ class BluetoothPowerController {
                         PrefService* local_state) = 0;
 };
 
-}  // namespace bluetooth_config
-}  // namespace chromeos
+}  // namespace ash::bluetooth_config
 
 #endif  // CHROMEOS_ASH_SERVICES_BLUETOOTH_CONFIG_BLUETOOTH_POWER_CONTROLLER_H_

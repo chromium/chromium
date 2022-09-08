@@ -7,8 +7,7 @@
 #include "base/bind.h"
 #include "base/run_loop.h"
 
-namespace chromeos {
-namespace bluetooth_config {
+namespace ash::bluetooth_config {
 
 FakeDevicePairingDelegate::FakeDevicePairingDelegate() = default;
 
@@ -115,5 +114,4 @@ void FakeDevicePairingDelegate::InvokePendingAuthorizePairingCallback(
   base::RunLoop().RunUntilIdle();
 }
 
-}  // namespace bluetooth_config
-}  // namespace chromeos
+}  // namespace ash::bluetooth_config

@@ -24,23 +24,21 @@
 #include "ui/views/view.h"
 
 namespace ash {
+
 namespace {
 
-using base::UserMetricsAction;
-
-using chromeos::network_config::NetworkTypeMatchesType;
-
-using chromeos::network_config::mojom::ActivationStateType;
-using chromeos::network_config::mojom::CellularStateProperties;
-using chromeos::network_config::mojom::ConnectionStateType;
-using chromeos::network_config::mojom::DeviceStateProperties;
-using chromeos::network_config::mojom::DeviceStateType;
-using chromeos::network_config::mojom::NetworkStateProperties;
-using chromeos::network_config::mojom::NetworkStatePropertiesPtr;
-using chromeos::network_config::mojom::NetworkType;
-
-using chromeos::bluetooth_config::mojom::BluetoothSystemPropertiesPtr;
-using chromeos::bluetooth_config::mojom::BluetoothSystemState;
+using ::base::UserMetricsAction;
+using bluetooth_config::mojom::BluetoothSystemPropertiesPtr;
+using bluetooth_config::mojom::BluetoothSystemState;
+using ::chromeos::network_config::NetworkTypeMatchesType;
+using ::chromeos::network_config::mojom::ActivationStateType;
+using ::chromeos::network_config::mojom::CellularStateProperties;
+using ::chromeos::network_config::mojom::ConnectionStateType;
+using ::chromeos::network_config::mojom::DeviceStateProperties;
+using ::chromeos::network_config::mojom::DeviceStateType;
+using ::chromeos::network_config::mojom::NetworkStateProperties;
+using ::chromeos::network_config::mojom::NetworkStatePropertiesPtr;
+using ::chromeos::network_config::mojom::NetworkType;
 
 void LogUserNetworkEvent(const NetworkStateProperties& network) {
   auto* const logger = ml::UserSettingsEventLogger::Get();

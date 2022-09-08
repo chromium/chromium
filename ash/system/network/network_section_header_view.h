@@ -141,7 +141,7 @@ class MobileSectionHeaderView : public NetworkSectionHeaderView,
 
   // CrosBluetoothConfig remote that is only bound if the Bluetooth
   // Revamp flag is enabled.
-  mojo::Remote<chromeos::bluetooth_config::mojom::CrosBluetoothConfig>
+  mojo::Remote<bluetooth_config::mojom::CrosBluetoothConfig>
       remote_cros_bluetooth_config_;
 
   base::WeakPtrFactory<MobileSectionHeaderView> weak_ptr_factory_{this};

@@ -10,7 +10,8 @@
 #include "device/bluetooth/bluetooth_device.h"
 #include "device/bluetooth/chromeos/bluetooth_utils.h"
 
-namespace chromeos {
+namespace ash::bluetooth_config {
+
 namespace {
 
 device::ConnectionFailureReason GetConnectionFailureReason(
@@ -38,7 +39,6 @@ device::ConnectionFailureReason GetConnectionFailureReason(
 }
 
 }  // namespace
-namespace bluetooth_config {
 
 DeviceOperationHandlerImpl::DeviceOperationHandlerImpl(
     AdapterStateController* adapter_state_controller,
@@ -179,5 +179,4 @@ void DeviceOperationHandlerImpl::OnDeviceConnect(
   HandleFinishedOperation(!error_code.has_value());
 }
 
-}  // namespace bluetooth_config
-}  // namespace chromeos
+}  // namespace ash::bluetooth_config

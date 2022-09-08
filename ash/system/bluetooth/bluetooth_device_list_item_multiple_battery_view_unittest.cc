@@ -20,12 +20,12 @@
 #include "ui/views/widget/widget.h"
 
 namespace ash {
+
 namespace {
 
-using chromeos::bluetooth_config::mojom::BatteryProperties;
-using chromeos::bluetooth_config::mojom::BatteryPropertiesPtr;
-using chromeos::bluetooth_config::mojom::DeviceBatteryInfo;
-using chromeos::bluetooth_config::mojom::DeviceBatteryInfoPtr;
+using bluetooth_config::mojom::BatteryProperties;
+using bluetooth_config::mojom::DeviceBatteryInfo;
+using bluetooth_config::mojom::DeviceBatteryInfoPtr;
 
 DeviceBatteryInfoPtr CreateBatteryInfo(
     absl::optional<uint8_t> left_battery_percentage,

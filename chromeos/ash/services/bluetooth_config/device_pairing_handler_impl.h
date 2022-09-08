@@ -13,8 +13,7 @@
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "device/bluetooth/bluetooth_device.h"
 
-namespace chromeos {
-namespace bluetooth_config {
+namespace ash::bluetooth_config {
 
 // Concrete DevicePairingHandler implementation. Handles requests to pair to a
 // Bluetooth device, serving as the device's PairingDelegate. This class relays
@@ -99,7 +98,6 @@ class DevicePairingHandlerImpl
   base::WeakPtrFactory<DevicePairingHandlerImpl> weak_ptr_factory_{this};
 };
 
-}  // namespace bluetooth_config
-}  // namespace chromeos
+}  // namespace ash::bluetooth_config
 
 #endif  // CHROMEOS_ASH_SERVICES_BLUETOOTH_CONFIG_DEVICE_PAIRING_HANDLER_IMPL_H_

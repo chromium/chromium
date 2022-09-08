@@ -218,7 +218,7 @@ void OSSettingsUI::BindInterface(
 }
 
 void OSSettingsUI::BindInterface(
-    mojo::PendingReceiver<bluetooth_config::mojom::CrosBluetoothConfig>
+    mojo::PendingReceiver<ash::bluetooth_config::mojom::CrosBluetoothConfig>
         receiver) {
   DCHECK(features::IsBluetoothRevampEnabled());
   ash::GetBluetoothConfigService(std::move(receiver));

@@ -6,11 +6,12 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
-namespace bluetooth_config {
+namespace ash::bluetooth_config {
 
 namespace {
+
 const std::u16string kTestPublicName = u"Public Name";
+
 }  // namespace
 
 TEST(CrosBluetoothConfigUtilTest, GetPairedDeviceNameNoNickname) {
@@ -32,5 +33,4 @@ TEST(CrosBluetoothConfigUtilTest, GetPairedDeviceNameNickname) {
   EXPECT_EQ(GetPairedDeviceName(properties), u"Nickname 🟣");
 }
 
-}  // namespace bluetooth_config
-}  // namespace chromeos
+}  // namespace ash::bluetooth_config

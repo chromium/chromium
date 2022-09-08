@@ -67,7 +67,7 @@ class DeviceActions : public ash::AndroidIntentHelper,
   base::ObserverList<ash::assistant::AppListEventSubscriber>
       app_list_subscribers_;
 
-  mojo::Remote<chromeos::bluetooth_config::mojom::CrosBluetoothConfig>
+  mojo::Remote<ash::bluetooth_config::mojom::CrosBluetoothConfig>
       remote_cros_bluetooth_config_;
 };
 

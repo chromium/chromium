@@ -10,8 +10,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 
-namespace chromeos {
-namespace bluetooth_config {
+namespace ash::bluetooth_config {
 
 // Provides system Bluetooth properties, including Bluetooth availability and
 // on/off state.
@@ -52,7 +51,6 @@ class SystemPropertiesProvider {
   mojo::RemoteSet<mojom::SystemPropertiesObserver> observers_;
 };
 
-}  // namespace bluetooth_config
-}  // namespace chromeos
+}  // namespace ash::bluetooth_config
 
 #endif  // CHROMEOS_ASH_SERVICES_BLUETOOTH_CONFIG_SYSTEM_PROPERTIES_PROVIDER_H_

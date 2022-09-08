@@ -38,8 +38,8 @@ class ASH_EXPORT BluetoothDetailedView {
     virtual void OnToggleClicked(bool new_state) = 0;
     virtual void OnPairNewDeviceRequested() = 0;
     virtual void OnDeviceListItemSelected(
-        const chromeos::bluetooth_config::mojom::
-            PairedBluetoothDevicePropertiesPtr& device) = 0;
+        const bluetooth_config::mojom::PairedBluetoothDevicePropertiesPtr&
+            device) = 0;
   };
 
   class Factory {

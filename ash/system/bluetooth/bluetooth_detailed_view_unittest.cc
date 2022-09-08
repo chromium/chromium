@@ -33,13 +33,14 @@ class View;
 }  // namespace views
 
 namespace ash {
+
 namespace {
 
-const std::string kDeviceId = "/device/id";
+using bluetooth_config::mojom::BluetoothDeviceProperties;
+using bluetooth_config::mojom::PairedBluetoothDeviceProperties;
+using bluetooth_config::mojom::PairedBluetoothDevicePropertiesPtr;
 
-using chromeos::bluetooth_config::mojom::BluetoothDeviceProperties;
-using chromeos::bluetooth_config::mojom::PairedBluetoothDeviceProperties;
-using chromeos::bluetooth_config::mojom::PairedBluetoothDevicePropertiesPtr;
+const std::string kDeviceId = "/device/id";
 
 class FakeBluetoothDetailedViewDelegate
     : public BluetoothDetailedView::Delegate {

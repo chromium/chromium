@@ -47,8 +47,8 @@ class Mediator final
       public UIBroker::Observer,
       public RetroactivePairingDetector::Observer,
       public FastPairBluetoothConfigDelegate::Observer,
-      public chromeos::bluetooth_config::AdapterStateController::Observer,
-      public chromeos::bluetooth_config::mojom::DiscoverySessionStatusObserver {
+      public bluetooth_config::AdapterStateController::Observer,
+      public bluetooth_config::mojom::DiscoverySessionStatusObserver {
  public:
   class Factory {
    public:
@@ -76,7 +76,7 @@ class Mediator final
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
   static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 
-  chromeos::bluetooth_config::FastPairDelegate* GetFastPairDelegate();
+  bluetooth_config::FastPairDelegate* GetFastPairDelegate();
 
   // FeatureStatusTracker::Observer
   void OnFastPairEnabledChanged(bool is_enabled) override;
@@ -106,14 +106,13 @@ class Mediator final
   void OnRetroactivePairFound(scoped_refptr<Device> device) override;
 
   // FastPairBluetoothConfigDelegate::Observer
-  void OnAdapterStateControllerChanged(
-      chromeos::bluetooth_config::AdapterStateController*
-          adapter_state_controller) override;
+  void OnAdapterStateControllerChanged(bluetooth_config::AdapterStateController*
+                                           adapter_state_controller) override;
 
-  // chromeos::bluetooth_config::AdapterStateController::Observer
+  // bluetooth_config::AdapterStateController::Observer
   void OnAdapterStateChanged() override;
 
-  // chromeos::bluetooth_config::mojom::DiscoverySessionStatusObserver
+  // bluetooth_config::mojom::DiscoverySessionStatusObserver
   void OnHasAtLeastOneDiscoverySessionChanged(
       bool has_at_least_one_discovery_session) override;
 
@@ -150,14 +149,12 @@ class Mediator final
   base::ScopedObservation<FastPairBluetoothConfigDelegate,
                           FastPairBluetoothConfigDelegate::Observer>
       config_delegate_observation_{this};
-  base::ScopedObservation<
-      chromeos::bluetooth_config::AdapterStateController,
-      chromeos::bluetooth_config::AdapterStateController::Observer>
+  base::ScopedObservation<bluetooth_config::AdapterStateController,
+                          bluetooth_config::AdapterStateController::Observer>
       adapter_state_controller_observation_{this};
-  mojo::Remote<chromeos::bluetooth_config::mojom::CrosBluetoothConfig>
+  mojo::Remote<bluetooth_config::mojom::CrosBluetoothConfig>
       remote_cros_bluetooth_config_;
-  mojo::Receiver<
-      chromeos::bluetooth_config::mojom::DiscoverySessionStatusObserver>
+  mojo::Receiver<bluetooth_config::mojom::DiscoverySessionStatusObserver>
       cros_discovery_session_observer_receiver_{this};
   base::WeakPtrFactory<Mediator> weak_ptr_factory_{this};
 };

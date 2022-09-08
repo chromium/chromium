@@ -8,8 +8,7 @@
 #include "chromeos/ash/services/bluetooth_config/bluetooth_device_status_notifier.h"
 #include "chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom.h"
 
-namespace chromeos {
-namespace bluetooth_config {
+namespace ash::bluetooth_config {
 
 // Fake BluetoothDeviceStatusNotifier implementation.
 class FakeBluetoothDeviceStatusNotifier : public BluetoothDeviceStatusNotifier {
@@ -27,7 +26,6 @@ class FakeBluetoothDeviceStatusNotifier : public BluetoothDeviceStatusNotifier {
       const mojom::PairedBluetoothDevicePropertiesPtr& device);
 };
 
-}  // namespace bluetooth_config
-}  // namespace chromeos
+}  // namespace ash::bluetooth_config
 
 #endif  // CHROMEOS_ASH_SERVICES_BLUETOOTH_CONFIG_FAKE_BLUETOOTH_DEVICE_STATUS_NOTIFIER_H_

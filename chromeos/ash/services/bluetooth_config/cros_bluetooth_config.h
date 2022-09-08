@@ -18,8 +18,7 @@ class BluetoothAdapter;
 
 class PrefService;
 
-namespace chromeos {
-namespace bluetooth_config {
+namespace ash::bluetooth_config {
 
 class AdapterStateController;
 class BluetoothDeviceStatusNotifier;
@@ -88,7 +87,6 @@ class CrosBluetoothConfig : public mojom::CrosBluetoothConfig {
   FastPairDelegate* fast_pair_delegate_ = nullptr;
 };
 
-}  // namespace bluetooth_config
-}  // namespace chromeos
+}  // namespace ash::bluetooth_config
 
 #endif  // CHROMEOS_ASH_SERVICES_BLUETOOTH_CONFIG_CROS_BLUETOOTH_CONFIG_H_

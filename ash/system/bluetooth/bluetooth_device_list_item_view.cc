@@ -28,20 +28,19 @@
 #include "ui/views/controls/label.h"
 
 namespace ash {
+
 namespace {
 
-using chromeos::bluetooth_config::GetPairedDeviceName;
-using chromeos::bluetooth_config::mojom::BatteryPropertiesPtr;
-using chromeos::bluetooth_config::mojom::DeviceBatteryInfoPtr;
-using chromeos::bluetooth_config::mojom::DeviceConnectionState;
-using chromeos::bluetooth_config::mojom::DeviceType;
-using chromeos::bluetooth_config::mojom::PairedBluetoothDevicePropertiesPtr;
+using bluetooth_config::GetPairedDeviceName;
+using bluetooth_config::mojom::BatteryPropertiesPtr;
+using bluetooth_config::mojom::DeviceBatteryInfoPtr;
+using bluetooth_config::mojom::DeviceConnectionState;
+using bluetooth_config::mojom::DeviceType;
+using bluetooth_config::mojom::PairedBluetoothDevicePropertiesPtr;
 
 constexpr int kEnterpriseManagedIconSizeDip = 20;
 
-bool HasMultipleBatteryInfos(
-    const chromeos::bluetooth_config::mojom::DeviceBatteryInfoPtr&
-        battery_info) {
+bool HasMultipleBatteryInfos(const DeviceBatteryInfoPtr& battery_info) {
   DCHECK(battery_info);
   return battery_info->left_bud_info || battery_info->case_info ||
          battery_info->right_bud_info;

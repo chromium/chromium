@@ -18,8 +18,7 @@ namespace ash {
 // process. We declare this function in //ash to ensure that clients do not have
 // any direct dependencies on the implementation.
 ASH_PUBLIC_EXPORT void GetBluetoothConfigService(
-    mojo::PendingReceiver<
-        chromeos::bluetooth_config::mojom::CrosBluetoothConfig>
+    mojo::PendingReceiver<bluetooth_config::mojom::CrosBluetoothConfig>
         pending_receiver);
 
 }  // namespace ash

@@ -9,8 +9,7 @@
 #include "chromeos/ash/services/bluetooth_config/discovery_session_manager.h"
 #include "chromeos/ash/services/bluetooth_config/fake_device_pairing_handler.h"
 
-namespace chromeos {
-namespace bluetooth_config {
+namespace ash::bluetooth_config {
 
 class FakeDiscoverySessionManager : public DiscoverySessionManager {
  public:
@@ -42,7 +41,6 @@ class FakeDiscoverySessionManager : public DiscoverySessionManager {
   std::vector<FakeDevicePairingHandler*> device_pairing_handlers_;
 };
 
-}  // namespace bluetooth_config
-}  // namespace chromeos
+}  // namespace ash::bluetooth_config
 
 #endif  // CHROMEOS_ASH_SERVICES_BLUETOOTH_CONFIG_FAKE_DISCOVERY_SESSION_MANAGER_H_

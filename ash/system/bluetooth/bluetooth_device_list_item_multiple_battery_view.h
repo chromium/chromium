@@ -27,8 +27,7 @@ class ASH_EXPORT BluetoothDeviceListItemMultipleBatteryView
 
   // Update the battery icon and text to reflect |battery_properties|.
   void UpdateBatteryInfo(
-      const chromeos::bluetooth_config::mojom::DeviceBatteryInfoPtr&
-          battery_info);
+      const bluetooth_config::mojom::DeviceBatteryInfoPtr& battery_info);
 
  private:
   BluetoothDeviceListItemBatteryView* left_bud_battery_view_ = nullptr;

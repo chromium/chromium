@@ -20,7 +20,13 @@
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/gfx/image/image_unittest_util.h"
 
+namespace ash::quick_pair {
+
 namespace {
+
+using ::base::test::RunOnceCallback;
+using bluetooth_config::DeviceImageInfo;
+using ::testing::_;
 
 constexpr char kTestModelId[] = "ABC123";
 constexpr char kTestLeftBudUrl[] = "left_bud";
@@ -28,14 +34,6 @@ constexpr char kTestRightBudUrl[] = "right_bud";
 constexpr char kTestCaseUrl[] = "case";
 
 }  // namespace
-
-namespace ash {
-namespace quick_pair {
-
-using ::base::test::RunOnceCallback;
-using chromeos::bluetooth_config::DeviceImageInfo;
-using ::testing::_;
-using ::testing::Return;
 
 class DeviceImageStoreTest : public AshTestBase {
  public:
@@ -316,5 +314,4 @@ TEST_F(DeviceImageStoreTest, LoadPersistedImagesFromPrefs) {
   EXPECT_EQ(case_image, webui::GetBitmapDataUrl(test_image_.AsBitmap()));
 }
 
-}  // namespace quick_pair
-}  // namespace ash
+}  // namespace ash::quick_pair

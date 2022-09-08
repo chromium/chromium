@@ -11,8 +11,7 @@
 
 class PrefService;
 
-namespace chromeos {
-namespace bluetooth_config {
+namespace ash::bluetooth_config {
 
 class FastPairDelegate;
 class Initializer;
@@ -39,7 +38,6 @@ void OverrideInProcessInstanceForTesting(
     Initializer* initializer,
     FastPairDelegate* fast_pair_delegate = nullptr);
 
-}  // namespace bluetooth_config
-}  // namespace chromeos
+}  // namespace ash::bluetooth_config
 
 #endif  // CHROMEOS_ASH_SERVICES_BLUETOOTH_CONFIG_IN_PROCESS_INSTANCE_H_

@@ -18,14 +18,12 @@
 #include "ui/base/l10n/l10n_util.h"
 
 namespace ash {
-namespace {
-using chromeos::bluetooth_config::GetPairedDeviceName;
-using chromeos::bluetooth_config::mojom::BluetoothModificationState;
-using chromeos::bluetooth_config::mojom::BluetoothSystemPropertiesPtr;
-using chromeos::bluetooth_config::mojom::BluetoothSystemState;
-using chromeos::bluetooth_config::mojom::DeviceConnectionState;
-using chromeos::bluetooth_config::mojom::PairedBluetoothDeviceProperties;
-}  // namespace
+
+using bluetooth_config::GetPairedDeviceName;
+using bluetooth_config::mojom::BluetoothModificationState;
+using bluetooth_config::mojom::BluetoothSystemPropertiesPtr;
+using bluetooth_config::mojom::BluetoothSystemState;
+using bluetooth_config::mojom::DeviceConnectionState;
 
 BluetoothFeaturePodController::BluetoothFeaturePodController(
     UnifiedSystemTrayController* tray_controller)
@@ -71,7 +69,7 @@ SystemTrayItemUmaType BluetoothFeaturePodController::GetUmaType() const {
 BluetoothFeaturePodController::BluetoothDeviceNameAndBatteryInfo::
     BluetoothDeviceNameAndBatteryInfo(
         const std::u16string& device_name,
-        chromeos::bluetooth_config::mojom::DeviceBatteryInfoPtr battery_info)
+        bluetooth_config::mojom::DeviceBatteryInfoPtr battery_info)
     : device_name(device_name), battery_info(std::move(battery_info)) {}
 
 BluetoothFeaturePodController::BluetoothDeviceNameAndBatteryInfo::
@@ -192,8 +190,7 @@ void BluetoothFeaturePodController::UpdateButtonStateIfExists() {
   button_->SetEnabled(modification_state_ ==
                       BluetoothModificationState::kCanModifyBluetooth);
   button_->SetToggled(
-      ::chromeos::bluetooth_config::IsBluetoothEnabledOrEnabling(
-          system_state_));
+      bluetooth_config::IsBluetoothEnabledOrEnabling(system_state_));
   button_->SetVisible(true);
 
   button_->SetVectorIcon(ComputeButtonIcon());

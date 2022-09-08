@@ -31,7 +31,7 @@ class UnifiedSystemTrayController;
 // detailed view into Bluetooth state changes.
 class ASH_EXPORT BluetoothDetailedViewController
     : public DetailedViewController,
-      public chromeos::bluetooth_config::mojom::SystemPropertiesObserver,
+      public bluetooth_config::mojom::SystemPropertiesObserver,
       public BluetoothDetailedView::Delegate {
  public:
   explicit BluetoothDetailedViewController(
@@ -43,25 +43,24 @@ class ASH_EXPORT BluetoothDetailedViewController
   ~BluetoothDetailedViewController() override;
 
  protected:
-  using PairedBluetoothDevicePropertiesPtrs = std::vector<
-      chromeos::bluetooth_config::mojom::PairedBluetoothDevicePropertiesPtr>;
+  using PairedBluetoothDevicePropertiesPtrs =
+      std::vector<bluetooth_config::mojom::PairedBluetoothDevicePropertiesPtr>;
 
  private:
   // DetailedViewControllerBase:
   views::View* CreateView() override;
   std::u16string GetAccessibleName() const override;
 
-  // chromeos::bluetooth_config::mojom::SystemPropertiesObserver:
-  void OnPropertiesUpdated(
-      chromeos::bluetooth_config::mojom::BluetoothSystemPropertiesPtr
-          properties) override;
+  // bluetooth_config::mojom::SystemPropertiesObserver:
+  void OnPropertiesUpdated(bluetooth_config::mojom::BluetoothSystemPropertiesPtr
+                               properties) override;
 
   // BluetoothDetailedView::Delegate:
   void OnToggleClicked(bool new_state) override;
   void OnPairNewDeviceRequested() override;
   void OnDeviceListItemSelected(
-      const chromeos::bluetooth_config::mojom::
-          PairedBluetoothDevicePropertiesPtr& device) override;
+      const bluetooth_config::mojom::PairedBluetoothDevicePropertiesPtr& device)
+      override;
 
   // Used to update |view_| and |device_list_controller_| when the cached
   // Bluetooth state has changed.
@@ -69,13 +68,13 @@ class ASH_EXPORT BluetoothDetailedViewController
 
   const std::unique_ptr<DetailedViewDelegate> detailed_view_delegate_;
 
-  mojo::Remote<chromeos::bluetooth_config::mojom::CrosBluetoothConfig>
+  mojo::Remote<bluetooth_config::mojom::CrosBluetoothConfig>
       remote_cros_bluetooth_config_;
-  mojo::Receiver<chromeos::bluetooth_config::mojom::SystemPropertiesObserver>
+  mojo::Receiver<bluetooth_config::mojom::SystemPropertiesObserver>
       cros_system_properties_observer_receiver_{this};
 
-  chromeos::bluetooth_config::mojom::BluetoothSystemState system_state_ =
-      chromeos::bluetooth_config::mojom::BluetoothSystemState::kUnavailable;
+  bluetooth_config::mojom::BluetoothSystemState system_state_ =
+      bluetooth_config::mojom::BluetoothSystemState::kUnavailable;
   BluetoothDetailedView* view_ = nullptr;
   std::unique_ptr<BluetoothDeviceListController> device_list_controller_;
   PairedBluetoothDevicePropertiesPtrs connected_devices_;

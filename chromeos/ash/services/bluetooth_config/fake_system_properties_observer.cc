@@ -8,8 +8,7 @@
 
 #include "base/run_loop.h"
 
-namespace chromeos {
-namespace bluetooth_config {
+namespace ash::bluetooth_config {
 
 FakeSystemPropertiesObserver::FakeSystemPropertiesObserver() = default;
 
@@ -32,5 +31,4 @@ void FakeSystemPropertiesObserver::OnPropertiesUpdated(
   received_properties_list_.push_back(std::move(properties));
 }
 
-}  // namespace bluetooth_config
-}  // namespace chromeos
+}  // namespace ash::bluetooth_config

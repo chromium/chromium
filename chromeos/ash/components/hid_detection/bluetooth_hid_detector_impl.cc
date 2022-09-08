@@ -9,12 +9,13 @@
 #include "hid_detection_utils.h"
 
 namespace ash::hid_detection {
+
 namespace {
 
-using chromeos::bluetooth_config::mojom::BluetoothDevicePropertiesPtr;
-using chromeos::bluetooth_config::mojom::BluetoothSystemState;
-using chromeos::bluetooth_config::mojom::DeviceType;
-using chromeos::bluetooth_config::mojom::KeyEnteredHandler;
+using bluetooth_config::mojom::BluetoothDevicePropertiesPtr;
+using bluetooth_config::mojom::BluetoothSystemState;
+using bluetooth_config::mojom::DeviceType;
+using bluetooth_config::mojom::KeyEnteredHandler;
 
 // Returns the BluetoothHidType corresponding with |device|'s device type, or
 // absl::nullopt if |device| is not a HID.
@@ -141,8 +142,7 @@ void BluetoothHidDetectorImpl::PerformStopBluetoothHidDetection(
 }
 
 void BluetoothHidDetectorImpl::OnPropertiesUpdated(
-    chromeos::bluetooth_config::mojom::BluetoothSystemPropertiesPtr
-        properties) {
+    bluetooth_config::mojom::BluetoothSystemPropertiesPtr properties) {
   switch (state_) {
     case kNotStarted:
       NOTREACHED() << "SystemPropertiesObserver should not be bound while in "
@@ -196,7 +196,7 @@ void BluetoothHidDetectorImpl::OnPropertiesUpdated(
 }
 
 void BluetoothHidDetectorImpl::OnBluetoothDiscoveryStarted(
-    mojo::PendingRemote<chromeos::bluetooth_config::mojom::DevicePairingHandler>
+    mojo::PendingRemote<bluetooth_config::mojom::DevicePairingHandler>
         handler) {
   HID_LOG(EVENT) << "Bluetooth discovery started.";
   DCHECK(!device_pairing_handler_remote_);
@@ -369,7 +369,7 @@ void BluetoothHidDetectorImpl::ProcessQueue() {
 
 void BluetoothHidDetectorImpl::OnPairDevice(
     std::unique_ptr<base::ElapsedTimer> metrics_timer,
-    chromeos::bluetooth_config::mojom::PairingResult pairing_result) {
+    bluetooth_config::mojom::PairingResult pairing_result) {
   DCHECK(current_pairing_device_)
       << "OnPairDevice() called with no |current_pairing_device_|";
 
@@ -379,8 +379,7 @@ void BluetoothHidDetectorImpl::OnPairDevice(
                  << "] devices still in queue.";
 
   const bool success =
-      pairing_result ==
-      chromeos::bluetooth_config::mojom::PairingResult::kSuccess;
+      pairing_result == bluetooth_config::mojom::PairingResult::kSuccess;
   hid_detection::RecordBluetoothPairingResult(success,
                                               metrics_timer->Elapsed());
 
@@ -423,8 +422,7 @@ void BluetoothHidDetectorImpl::ResetDiscoveryState() {
   current_pairing_device_.reset();
   current_pairing_state_.reset();
   current_pairing_timer_.Stop();
-  queue_ = std::make_unique<base::queue<
-      chromeos::bluetooth_config::mojom::BluetoothDevicePropertiesPtr>>();
+  queue_ = std::make_unique<base::queue<BluetoothDevicePropertiesPtr>>();
   queued_device_ids_.clear();
 
   // Inform the client that no device is currently pairing.
@@ -433,8 +431,7 @@ void BluetoothHidDetectorImpl::ResetDiscoveryState() {
 
 void BluetoothHidDetectorImpl::RequirePairingCode(
     const std::string& code,
-    mojo::PendingReceiver<chromeos::bluetooth_config::mojom::KeyEnteredHandler>
-        handler) {
+    mojo::PendingReceiver<KeyEnteredHandler> handler) {
   DCHECK(!current_pairing_state_) << "RequirePairingCode() called "
                                   << "with |current_pairing_state_| already "
                                   << "initialized";

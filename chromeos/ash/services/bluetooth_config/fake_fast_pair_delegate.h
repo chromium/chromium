@@ -10,8 +10,7 @@
 #include "chromeos/ash/services/bluetooth_config/fast_pair_delegate.h"
 #include "chromeos/ash/services/bluetooth_config/public/cpp/device_image_info.h"
 
-namespace chromeos {
-namespace bluetooth_config {
+namespace ash::bluetooth_config {
 
 class AdapterStateController;
 class DeviceNameManager;
@@ -39,8 +38,7 @@ class FakeFastPairDelegate : public FastPairDelegate {
       const std::string& device_id) override;
   void ForgetDevice(const std::string& mac_address) override;
   void SetAdapterStateController(
-      chromeos::bluetooth_config::AdapterStateController*
-          adapter_state_controller) override;
+      AdapterStateController* adapter_state_controller) override;
   void SetDeviceNameManager(DeviceNameManager* device_name_manager) override;
 
  private:
@@ -50,7 +48,6 @@ class FakeFastPairDelegate : public FastPairDelegate {
   DeviceNameManager* device_name_manager_ = nullptr;
 };
 
-}  // namespace bluetooth_config
-}  // namespace chromeos
+}  // namespace ash::bluetooth_config
 
 #endif  // CHROMEOS_ASH_SERVICES_BLUETOOTH_CONFIG_FAKE_FAST_PAIR_DELEGATE_H_

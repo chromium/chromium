@@ -4,8 +4,7 @@
 
 #include "chromeos/ash/services/bluetooth_config/fake_device_operation_handler.h"
 
-namespace chromeos {
-namespace bluetooth_config {
+namespace ash::bluetooth_config {
 
 FakeDeviceOperationHandler::FakeDeviceOperationHandler(
     AdapterStateController* adapter_state_controller)
@@ -32,5 +31,4 @@ device::BluetoothDevice* FakeDeviceOperationHandler::FindDevice(
   return nullptr;
 }
 
-}  // namespace bluetooth_config
-}  // namespace chromeos
+}  // namespace ash::bluetooth_config

@@ -31,23 +31,22 @@
 #include "ui/views/controls/separator.h"
 
 namespace ash {
+
 namespace {
 
-using chromeos::network_config::NetworkTypeMatchesType;
-using chromeos::network_config::StateIsConnected;
-
-using chromeos::network_config::mojom::DeviceStateProperties;
-using chromeos::network_config::mojom::DeviceStateType;
-using chromeos::network_config::mojom::FilterType;
-using chromeos::network_config::mojom::GlobalPolicy;
-using chromeos::network_config::mojom::NetworkFilter;
-using chromeos::network_config::mojom::NetworkStateProperties;
-using chromeos::network_config::mojom::NetworkStatePropertiesPtr;
-using chromeos::network_config::mojom::NetworkType;
-using chromeos::network_config::mojom::ProxyMode;
-
-using chromeos::bluetooth_config::mojom::BluetoothSystemPropertiesPtr;
-using chromeos::bluetooth_config::mojom::BluetoothSystemState;
+using bluetooth_config::mojom::BluetoothSystemPropertiesPtr;
+using bluetooth_config::mojom::BluetoothSystemState;
+using ::chromeos::network_config::NetworkTypeMatchesType;
+using ::chromeos::network_config::StateIsConnected;
+using ::chromeos::network_config::mojom::DeviceStateProperties;
+using ::chromeos::network_config::mojom::DeviceStateType;
+using ::chromeos::network_config::mojom::FilterType;
+using ::chromeos::network_config::mojom::GlobalPolicy;
+using ::chromeos::network_config::mojom::NetworkFilter;
+using ::chromeos::network_config::mojom::NetworkStateProperties;
+using ::chromeos::network_config::mojom::NetworkStatePropertiesPtr;
+using ::chromeos::network_config::mojom::NetworkType;
+using ::chromeos::network_config::mojom::ProxyMode;
 
 // Delay between scan requests.
 constexpr int kRequestScanDelaySeconds = 10;

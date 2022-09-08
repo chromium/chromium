@@ -9,8 +9,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 
-namespace chromeos {
-namespace bluetooth_config {
+namespace ash::bluetooth_config {
 
 // Notifiers all listeners of changes in discovery session status.
 class DiscoverySessionStatusNotifier {
@@ -36,7 +35,6 @@ class DiscoverySessionStatusNotifier {
   mojo::RemoteSet<mojom::DiscoverySessionStatusObserver> observers_;
 };
 
-}  // namespace bluetooth_config
-}  // namespace chromeos
+}  // namespace ash::bluetooth_config
 
 #endif  // CHROMEOS_ASH_SERVICES_BLUETOOTH_CONFIG_DISCOVERY_SESSION_STATUS_NOTIFIER_H_

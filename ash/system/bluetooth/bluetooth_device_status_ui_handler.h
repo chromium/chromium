@@ -17,7 +17,7 @@ namespace ash {
 // paired, a device is disconnected or connected. It shows a toast when these
 // events occur.
 class ASH_EXPORT BluetoothDeviceStatusUiHandler
-    : public chromeos::bluetooth_config::mojom::BluetoothDeviceStatusObserver {
+    : public bluetooth_config::mojom::BluetoothDeviceStatusObserver {
  public:
   BluetoothDeviceStatusUiHandler();
   BluetoothDeviceStatusUiHandler(const BluetoothDeviceStatusUiHandler&) =
@@ -27,31 +27,30 @@ class ASH_EXPORT BluetoothDeviceStatusUiHandler
   ~BluetoothDeviceStatusUiHandler() override;
 
  private:
-  // chromeos::bluetooth_config::mojom::BluetoothDeviceStatusObserver:
+  // bluetooth_config::mojom::BluetoothDeviceStatusObserver:
   void OnDevicePaired(
-      chromeos::bluetooth_config::mojom::PairedBluetoothDevicePropertiesPtr
-          device) override;
+      bluetooth_config::mojom::PairedBluetoothDevicePropertiesPtr device)
+      override;
   void OnDeviceConnected(
-      chromeos::bluetooth_config::mojom::PairedBluetoothDevicePropertiesPtr
-          device) override;
+      bluetooth_config::mojom::PairedBluetoothDevicePropertiesPtr device)
+      override;
   void OnDeviceDisconnected(
-      chromeos::bluetooth_config::mojom::PairedBluetoothDevicePropertiesPtr
-          device) override;
+      bluetooth_config::mojom::PairedBluetoothDevicePropertiesPtr device)
+      override;
 
   virtual void ShowToast(const ash::ToastData& toast_data);
 
   // Returns a string which represents a toast id. Id is created from a
   // constant string prefix concatenated to |paired_device_properties| id.
   std::string GetToastId(
-      const chromeos::bluetooth_config::mojom::PairedBluetoothDeviceProperties*
+      const bluetooth_config::mojom::PairedBluetoothDeviceProperties*
           paired_device_properties);
 
   void BindToCrosBluetoothConfig();
 
-  mojo::Remote<chromeos::bluetooth_config::mojom::CrosBluetoothConfig>
+  mojo::Remote<bluetooth_config::mojom::CrosBluetoothConfig>
       remote_cros_bluetooth_config_;
-  mojo::Receiver<
-      chromeos::bluetooth_config::mojom::BluetoothDeviceStatusObserver>
+  mojo::Receiver<bluetooth_config::mojom::BluetoothDeviceStatusObserver>
       cros_bluetooth_device_status_observer_receiver_{this};
 
   base::WeakPtrFactory<BluetoothDeviceStatusUiHandler> weak_ptr_factory_{this};

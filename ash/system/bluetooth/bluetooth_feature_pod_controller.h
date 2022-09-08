@@ -25,7 +25,7 @@ class UnifiedSystemTrayController;
 // detailed page with a Bluetooth device list.
 class ASH_EXPORT BluetoothFeaturePodController
     : public FeaturePodControllerBase,
-      public chromeos::bluetooth_config::mojom::SystemPropertiesObserver {
+      public bluetooth_config::mojom::SystemPropertiesObserver {
  public:
   explicit BluetoothFeaturePodController(
       UnifiedSystemTrayController* tray_controller);
@@ -45,11 +45,11 @@ class ASH_EXPORT BluetoothFeaturePodController
   struct BluetoothDeviceNameAndBatteryInfo {
     BluetoothDeviceNameAndBatteryInfo(
         const std::u16string& device_name,
-        chromeos::bluetooth_config::mojom::DeviceBatteryInfoPtr battery_info);
+        bluetooth_config::mojom::DeviceBatteryInfoPtr battery_info);
     ~BluetoothDeviceNameAndBatteryInfo();
 
     const std::u16string device_name;
-    const chromeos::bluetooth_config::mojom::DeviceBatteryInfoPtr battery_info;
+    const bluetooth_config::mojom::DeviceBatteryInfoPtr battery_info;
   };
 
   bool DoesFirstConnectedDeviceHaveBatteryInfo() const;
@@ -63,23 +63,22 @@ class ASH_EXPORT BluetoothFeaturePodController
   // Updates |button_| state to reflect the cached Bluetooth state.
   void UpdateButtonStateIfExists();
 
-  // chromeos::bluetooth_config::mojom::SystemPropertiesObserver
-  void OnPropertiesUpdated(
-      chromeos::bluetooth_config::mojom::BluetoothSystemPropertiesPtr
-          properties) override;
+  // bluetooth_config::mojom::SystemPropertiesObserver
+  void OnPropertiesUpdated(bluetooth_config::mojom::BluetoothSystemPropertiesPtr
+                               properties) override;
 
-  mojo::Remote<chromeos::bluetooth_config::mojom::CrosBluetoothConfig>
+  mojo::Remote<bluetooth_config::mojom::CrosBluetoothConfig>
       remote_cros_bluetooth_config_;
-  mojo::Receiver<chromeos::bluetooth_config::mojom::SystemPropertiesObserver>
+  mojo::Receiver<bluetooth_config::mojom::SystemPropertiesObserver>
       cros_system_properties_observer_receiver_{this};
 
   size_t connected_device_count_ = 0;
   absl::optional<BluetoothDeviceNameAndBatteryInfo> first_connected_device_;
-  chromeos::bluetooth_config::mojom::BluetoothModificationState
-      modification_state_ = chromeos::bluetooth_config::mojom::
-          BluetoothModificationState::kCannotModifyBluetooth;
-  chromeos::bluetooth_config::mojom::BluetoothSystemState system_state_ =
-      chromeos::bluetooth_config::mojom::BluetoothSystemState::kUnavailable;
+  bluetooth_config::mojom::BluetoothModificationState modification_state_ =
+      bluetooth_config::mojom::BluetoothModificationState::
+          kCannotModifyBluetooth;
+  bluetooth_config::mojom::BluetoothSystemState system_state_ =
+      bluetooth_config::mojom::BluetoothSystemState::kUnavailable;
   FeaturePodButton* button_ = nullptr;
   UnifiedSystemTrayController* tray_controller_;
 };

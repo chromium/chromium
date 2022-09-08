@@ -23,8 +23,8 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
-namespace bluetooth_config {
+namespace ash::bluetooth_config {
+
 namespace {
 
 const uint32_t kTestBluetoothClass = 1337u;
@@ -68,7 +68,7 @@ class BluetoothDeviceStatusNotifierImplTest : public testing::Test {
 
   // testing::Test:
   void SetUp() override {
-    PowerManagerClient::InitializeFake();
+    chromeos::PowerManagerClient::InitializeFake();
 
     mock_adapter_ =
         base::MakeRefCounted<testing::NiceMock<device::MockBluetoothAdapter>>();
@@ -78,14 +78,15 @@ class BluetoothDeviceStatusNotifierImplTest : public testing::Test {
 
     device_status_notifier_ =
         std::make_unique<BluetoothDeviceStatusNotifierImpl>(
-            mock_adapter_, &fake_device_cache_, FakePowerManagerClient::Get());
+            mock_adapter_, &fake_device_cache_,
+            chromeos::FakePowerManagerClient::Get());
   }
 
   void TearDown() override {
     // Destroy |device_status_notifier_| before the fake power manager client in
     // order to remove observers correctly.
     device_status_notifier_.reset();
-    PowerManagerClient::Shutdown();
+    chromeos::PowerManagerClient::Shutdown();
   }
 
   // Pass in a list of ids because MockBluetoothDevice appends "-Identifier"
@@ -106,7 +107,7 @@ class BluetoothDeviceStatusNotifierImplTest : public testing::Test {
     base::flat_set<device::BluetoothUUID> uuid_set;
 
     if (includes_nearby_uuids) {
-      uuid_set.insert(ash::nearby::GetNearbyClientUuids().front());
+      uuid_set.insert(nearby::GetNearbyClientUuids().front());
     } else {
       uuid_set.insert({device::BluetoothUUID(kNonNearbyUuid)});
     }
@@ -337,7 +338,7 @@ TEST_F(BluetoothDeviceStatusNotifierImplTest,
   ASSERT_EQ(1u, observer->paired_device_properties_list().size());
 
   // Simulate device being suspended from lid closing.
-  FakePowerManagerClient::Get()->SendSuspendImminent(
+  chromeos::FakePowerManagerClient::Get()->SendSuspendImminent(
       power_manager::SuspendImminent::LID_CLOSED);
 
   // Update device from connected to disconnected. Observers should not be
@@ -382,11 +383,12 @@ TEST_F(BluetoothDeviceStatusNotifierImplTest,
   ASSERT_EQ(1u, observer->paired_device_properties_list().size());
 
   // Simulate Chromebook being suspended from lid closing.
-  FakePowerManagerClient::Get()->SendSuspendImminent(
+  chromeos::FakePowerManagerClient::Get()->SendSuspendImminent(
       power_manager::SuspendImminent::LID_CLOSED);
 
   // Simulate Chromebook being awakened.
-  FakePowerManagerClient::Get()->SendSuspendDone(base::Milliseconds(1000));
+  chromeos::FakePowerManagerClient::Get()->SendSuspendDone(
+      base::Milliseconds(1000));
 
   // Update device from connected to disconnected. Observers should not be
   // notified.
@@ -430,11 +432,12 @@ TEST_F(BluetoothDeviceStatusNotifierImplTest,
   ASSERT_EQ(1u, observer->paired_device_properties_list().size());
 
   // Simulate Chromebook being suspended from lid closing.
-  FakePowerManagerClient::Get()->SendSuspendImminent(
+  chromeos::FakePowerManagerClient::Get()->SendSuspendImminent(
       power_manager::SuspendImminent::LID_CLOSED);
 
   // Simulate Chromebook being awakened.
-  FakePowerManagerClient::Get()->SendSuspendDone(base::Milliseconds(1000));
+  chromeos::FakePowerManagerClient::Get()->SendSuspendDone(
+      base::Milliseconds(1000));
 
   // Simulate the suspend cooldown passing.
   FastForwardBy(GetSuspendCooldownTimeoutSeconds());
@@ -483,18 +486,19 @@ TEST_F(BluetoothDeviceStatusNotifierImplTest,
   ASSERT_EQ(1u, observer->paired_device_properties_list().size());
 
   // Simulate Chromebook being suspended from lid closing.
-  FakePowerManagerClient::Get()->SendSuspendImminent(
+  chromeos::FakePowerManagerClient::Get()->SendSuspendImminent(
       power_manager::SuspendImminent::LID_CLOSED);
 
   // Simulate Chromebook being awakened.
-  FakePowerManagerClient::Get()->SendSuspendDone(base::Milliseconds(1000));
+  chromeos::FakePowerManagerClient::Get()->SendSuspendDone(
+      base::Milliseconds(1000));
 
   // Simulate |seconds_forward| seconds passing.
   int seconds_forward = 1;
   FastForwardBy(seconds_forward);
 
   // Simulate Chromebook being suspended from lid closing again.
-  FakePowerManagerClient::Get()->SendSuspendImminent(
+  chromeos::FakePowerManagerClient::Get()->SendSuspendImminent(
       power_manager::SuspendImminent::LID_CLOSED);
 
   // Simulate suspend cooldown time passing. This is where the first timer
@@ -555,5 +559,4 @@ TEST_F(BluetoothDeviceStatusNotifierImplTest, NearbyDevicePaired) {
   ASSERT_EQ(0u, observer->paired_device_properties_list().size());
 }
 
-}  // namespace bluetooth_config
-}  // namespace chromeos
+}  // namespace ash::bluetooth_config

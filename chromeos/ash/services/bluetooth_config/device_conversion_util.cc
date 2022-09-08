@@ -15,8 +15,8 @@
 #include "device/bluetooth/string_util_icu.h"
 #include "url/gurl.h"
 
-namespace chromeos {
-namespace bluetooth_config {
+namespace ash::bluetooth_config {
+
 namespace {
 
 // Returns the DeviceType associated with |device|. Note that BluetoothDevice
@@ -237,5 +237,4 @@ mojom::BluetoothDevicePropertiesPtr GenerateBluetoothDeviceMojoProperties(
   return properties;
 }
 
-}  // namespace bluetooth_config
-}  // namespace chromeos
+}  // namespace ash::bluetooth_config

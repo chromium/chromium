@@ -4,8 +4,7 @@
 
 #include "chromeos/ash/services/bluetooth_config/fake_discovered_devices_provider.h"
 
-namespace chromeos {
-namespace bluetooth_config {
+namespace ash::bluetooth_config {
 
 FakeDiscoveredDevicesProvider::FakeDiscoveredDevicesProvider() = default;
 
@@ -25,5 +24,4 @@ FakeDiscoveredDevicesProvider::GetDiscoveredDevices() const {
   return discovered_devices;
 }
 
-}  // namespace bluetooth_config
-}  // namespace chromeos
+}  // namespace ash::bluetooth_config

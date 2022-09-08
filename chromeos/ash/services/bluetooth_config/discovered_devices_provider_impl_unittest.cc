@@ -14,8 +14,8 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
-namespace bluetooth_config {
+namespace ash::bluetooth_config {
+
 namespace {
 
 using DiscoveredDevicesList = std::vector<mojom::BluetoothDevicePropertiesPtr>;
@@ -363,5 +363,4 @@ TEST_F(DiscoveredDevicesProviderImplTest, RemoveUnpairedDevices) {
   AssertNumEventsAndDeviceList(/*num_observer_events=*/9u, {});
 }
 
-}  // namespace bluetooth_config
-}  // namespace chromeos
+}  // namespace ash::bluetooth_config

@@ -21,18 +21,19 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash::hid_detection {
+
 namespace {
 
-using ash::hid_detection::BluetoothHidDetector;
-using chromeos::bluetooth_config::FakeDevicePairingHandler;
-using chromeos::bluetooth_config::mojom::BluetoothDeviceProperties;
-using chromeos::bluetooth_config::mojom::BluetoothDevicePropertiesPtr;
-using chromeos::bluetooth_config::mojom::BluetoothSystemState;
-using chromeos::bluetooth_config::mojom::DeviceType;
-using chromeos::bluetooth_config::mojom::PairedBluetoothDeviceProperties;
-using chromeos::bluetooth_config::mojom::PairedBluetoothDevicePropertiesPtr;
+using ::ash::hid_detection::BluetoothHidDetector;
 using BluetoothHidMetadata = BluetoothHidDetector::BluetoothHidMetadata;
 using BluetoothHidType = BluetoothHidDetector::BluetoothHidType;
+using bluetooth_config::FakeDevicePairingHandler;
+using bluetooth_config::mojom::BluetoothDeviceProperties;
+using bluetooth_config::mojom::BluetoothDevicePropertiesPtr;
+using bluetooth_config::mojom::BluetoothSystemState;
+using bluetooth_config::mojom::DeviceType;
+using bluetooth_config::mojom::PairedBluetoothDeviceProperties;
+using bluetooth_config::mojom::PairedBluetoothDevicePropertiesPtr;
 
 const char kTestPinCode[] = "123456";
 const uint32_t kTestPasskey = 123456;
@@ -186,8 +187,7 @@ class BluetoothHidDetectorImplTest : public testing::Test {
   }
 
   void AssertBluetoothHidDetectionStatus(
-      absl::optional<BluetoothHidDetector::BluetoothHidMetadata>
-          current_pairing_device,
+      absl::optional<BluetoothHidMetadata> current_pairing_device,
       absl::optional<BluetoothHidPairingState> pairing_state) {
     EXPECT_EQ(
         current_pairing_device.has_value(),
@@ -268,7 +268,7 @@ class BluetoothHidDetectorImplTest : public testing::Test {
   // detection is stopped in TearDown().
   std::vector<std::unique_ptr<FakeBluetoothHidDetectorDelegate>> delegates_;
 
-  chromeos::bluetooth_config::ScopedBluetoothConfigTestHelper
+  bluetooth_config::ScopedBluetoothConfigTestHelper
       scoped_bluetooth_config_test_helper_;
 
   std::unique_ptr<hid_detection::BluetoothHidDetectorImpl>

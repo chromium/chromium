@@ -21,8 +21,8 @@ class BluetoothDetailedView;
 // instances of implementations of this class.
 class ASH_EXPORT BluetoothDeviceListController {
  public:
-  using PairedBluetoothDevicePropertiesPtrs = std::vector<
-      chromeos::bluetooth_config::mojom::PairedBluetoothDevicePropertiesPtr>;
+  using PairedBluetoothDevicePropertiesPtrs =
+      std::vector<bluetooth_config::mojom::PairedBluetoothDevicePropertiesPtr>;
 
   class Factory {
    public:

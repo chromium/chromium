@@ -8,8 +8,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
-namespace bluetooth_config {
+namespace ash::bluetooth_config {
 
 namespace {
 
@@ -61,5 +60,4 @@ TEST(DeviceImageInfoTest, FromDictionaryValueInvalid) {
   EXPECT_FALSE(DeviceImageInfo::FromDictionaryValue(not_a_dict));
 }
 
-}  // namespace bluetooth_config
-}  // namespace chromeos
+}  // namespace ash::bluetooth_config

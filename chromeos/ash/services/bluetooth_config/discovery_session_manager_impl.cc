@@ -10,8 +10,8 @@
 #include "device/bluetooth/bluetooth_discovery_session.h"
 #include "device/bluetooth/floss/floss_features.h"
 
-namespace chromeos {
-namespace bluetooth_config {
+namespace ash::bluetooth_config {
+
 namespace {
 
 const char kDiscoveryClientName[] = "CrosBluetoothConfig API";
@@ -135,5 +135,4 @@ void DiscoverySessionManagerImpl::DestroyDiscoverySession() {
   NotifyDiscoveryStoppedAndClearActiveClients();
 }
 
-}  // namespace bluetooth_config
-}  // namespace chromeos
+}  // namespace ash::bluetooth_config

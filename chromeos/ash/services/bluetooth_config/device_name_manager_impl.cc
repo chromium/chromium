@@ -11,8 +11,8 @@
 #include "components/prefs/scoped_user_pref_update.h"
 #include "device/bluetooth/chromeos/bluetooth_utils.h"
 
-namespace chromeos {
-namespace bluetooth_config {
+namespace ash::bluetooth_config {
+
 namespace {
 
 const char kDeviceIdToNicknameMapPrefName[] =
@@ -135,5 +135,4 @@ bool DeviceNameManagerImpl::DoesDeviceExist(
   return false;
 }
 
-}  // namespace bluetooth_config
-}  // namespace chromeos
+}  // namespace ash::bluetooth_config

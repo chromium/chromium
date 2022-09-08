@@ -4,8 +4,7 @@
 
 #include "chromeos/ash/services/bluetooth_config/fake_fast_pair_delegate.h"
 
-namespace chromeos {
-namespace bluetooth_config {
+namespace ash::bluetooth_config {
 
 FakeFastPairDelegate::FakeFastPairDelegate() = default;
 
@@ -17,8 +16,7 @@ void FakeFastPairDelegate::SetDeviceImageInfo(const std::string& device_id,
 }
 
 void FakeFastPairDelegate::SetAdapterStateController(
-    chromeos::bluetooth_config::AdapterStateController*
-        adapter_state_controller) {
+    AdapterStateController* adapter_state_controller) {
   adapter_state_controller_ = adapter_state_controller;
 }
 
@@ -39,5 +37,4 @@ void FakeFastPairDelegate::ForgetDevice(const std::string& mac_address) {
   forgotten_device_addresses_.push_back(mac_address);
 }
 
-}  // namespace bluetooth_config
-}  // namespace chromeos
+}  // namespace ash::bluetooth_config

@@ -85,8 +85,8 @@ class DeviceImageStore {
 
   // Returns a DeviceImageInfo of device images belonging to |model_id|, if
   // found.
-  absl::optional<chromeos::bluetooth_config::DeviceImageInfo>
-  GetImagesForDeviceModel(const std::string& model_id);
+  absl::optional<bluetooth_config::DeviceImageInfo> GetImagesForDeviceModel(
+      const std::string& model_id);
 
  private:
   // Loads device images stored in prefs to model_id_to_images_.
@@ -94,7 +94,7 @@ class DeviceImageStore {
 
   // Returns true if |images| contains at least one image, false otherwise.
   bool DeviceImageInfoHasImages(
-      const chromeos::bluetooth_config::DeviceImageInfo& images) const;
+      const bluetooth_config::DeviceImageInfo& images) const;
 
   // Wrapper around a call to FastPairImageDecoder's DecodeImage. Downloads
   // and decodes the image at |image_url|, then passes the |model_id|,
@@ -115,7 +115,7 @@ class DeviceImageStore {
                          gfx::Image image);
 
   // Maps from model IDs to images stored in DeviceImageInfo.
-  base::flat_map<std::string, chromeos::bluetooth_config::DeviceImageInfo>
+  base::flat_map<std::string, bluetooth_config::DeviceImageInfo>
       model_id_to_images_;
   // Used to lazily load images from prefs.
   bool loaded_images_from_prefs_ = false;

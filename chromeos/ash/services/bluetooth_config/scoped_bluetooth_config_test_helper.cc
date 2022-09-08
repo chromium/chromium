@@ -16,8 +16,7 @@
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "device/bluetooth/dbus/bluez_dbus_manager.h"
 
-namespace chromeos {
-namespace bluetooth_config {
+namespace ash::bluetooth_config {
 
 ScopedBluetoothConfigTestHelper::ScopedBluetoothConfigTestHelper() {
   if (!bluez::BluezDBusManager::IsInitialized())
@@ -112,5 +111,4 @@ ScopedBluetoothConfigTestHelper::CreateDeviceOperationHandler(
   return fake_device_operation_handler;
 }
 
-}  // namespace bluetooth_config
-}  // namespace chromeos
+}  // namespace ash::bluetooth_config

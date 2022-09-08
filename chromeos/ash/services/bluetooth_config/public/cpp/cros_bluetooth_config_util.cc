@@ -6,8 +6,7 @@
 
 #include "base/strings/utf_string_conversions.h"
 
-namespace chromeos {
-namespace bluetooth_config {
+namespace ash::bluetooth_config {
 
 bool IsBluetoothEnabledOrEnabling(
     const mojom::BluetoothSystemState system_state) {
@@ -22,5 +21,4 @@ std::u16string GetPairedDeviceName(
   return paired_device_properties->device_properties->public_name;
 }
 
-}  // namespace bluetooth_config
-}  // namespace chromeos
+}  // namespace ash::bluetooth_config

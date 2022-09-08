@@ -8,8 +8,7 @@
 #include "components/device_event_log/device_event_log.h"
 #include "device/bluetooth/chromeos/bluetooth_utils.h"
 
-namespace chromeos {
-namespace bluetooth_config {
+namespace ash::bluetooth_config {
 
 AdapterStateControllerImpl::AdapterStateControllerImpl(
     scoped_refptr<device::BluetoothAdapter> bluetooth_adapter)
@@ -177,5 +176,4 @@ std::ostream& operator<<(
   return stream;
 }
 
-}  // namespace bluetooth_config
-}  // namespace chromeos
+}  // namespace ash::bluetooth_config

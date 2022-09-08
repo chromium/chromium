@@ -11,8 +11,7 @@
 
 class PrefService;
 
-namespace chromeos {
-namespace bluetooth_config {
+namespace ash::bluetooth_config {
 
 class FakeDeviceNameManager : public DeviceNameManager {
  public:
@@ -31,7 +30,6 @@ class FakeDeviceNameManager : public DeviceNameManager {
   base::flat_map<std::string, std::string> device_id_to_nickname_map_;
 };
 
-}  // namespace bluetooth_config
-}  // namespace chromeos
+}  // namespace ash::bluetooth_config
 
 #endif  // CHROMEOS_ASH_SERVICES_BLUETOOTH_CONFIG_FAKE_DEVICE_NAME_MANAGER_H_

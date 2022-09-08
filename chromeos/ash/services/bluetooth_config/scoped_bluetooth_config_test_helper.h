@@ -9,8 +9,7 @@
 
 #include "components/session_manager/core/session_manager.h"
 
-namespace chromeos {
-namespace bluetooth_config {
+namespace ash::bluetooth_config {
 
 class FakeAdapterStateController;
 class FakeBluetoothDeviceStatusNotifier;
@@ -108,7 +107,6 @@ class ScopedBluetoothConfigTestHelper : public Initializer {
   session_manager::SessionManager session_manager_;
 };
 
-}  // namespace bluetooth_config
-}  // namespace chromeos
+}  // namespace ash::bluetooth_config
 
 #endif  // CHROMEOS_ASH_SERVICES_BLUETOOTH_CONFIG_SCOPED_BLUETOOTH_CONFIG_TEST_HELPER_H_

@@ -20,8 +20,7 @@ namespace device {
 class BluetoothDevice;
 }  // namespace device
 
-namespace chromeos {
-namespace bluetooth_config {
+namespace ash::bluetooth_config {
 
 // Concrete BluetoothDeviceStatusNotifier implementation. Uses DeviceCache to
 // observe for device list changes in order to notify when a device is newly
@@ -34,7 +33,7 @@ class BluetoothDeviceStatusNotifierImpl
   BluetoothDeviceStatusNotifierImpl(
       scoped_refptr<device::BluetoothAdapter> bluetooth_adapter,
       DeviceCache* device_cache,
-      PowerManagerClient* power_manager_client);
+      chromeos::PowerManagerClient* power_manager_client);
   ~BluetoothDeviceStatusNotifierImpl() override;
 
  private:
@@ -86,11 +85,11 @@ class BluetoothDeviceStatusNotifierImpl
   base::ScopedObservation<DeviceCache, DeviceCache::Observer>
       device_cache_observation_{this};
 
-  base::ScopedObservation<PowerManagerClient, PowerManagerClient::Observer>
+  base::ScopedObservation<chromeos::PowerManagerClient,
+                          chromeos::PowerManagerClient::Observer>
       power_manager_client_observation_{this};
 };
 
-}  // namespace bluetooth_config
-}  // namespace chromeos
+}  // namespace ash::bluetooth_config
 
 #endif  // CHROMEOS_ASH_SERVICES_BLUETOOTH_CONFIG_BLUETOOTH_DEVICE_STATUS_NOTIFIER_IMPL_H_

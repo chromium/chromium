@@ -8,8 +8,7 @@
 #include "chromeos/ash/services/bluetooth_config/adapter_state_controller.h"
 #include "chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom.h"
 
-namespace chromeos {
-namespace bluetooth_config {
+namespace ash::bluetooth_config {
 
 // Fake AdapterStateController implementation.
 class FakeAdapterStateController : public AdapterStateController {
@@ -30,7 +29,6 @@ class FakeAdapterStateController : public AdapterStateController {
       mojom::BluetoothSystemState::kEnabled;
 };
 
-}  // namespace bluetooth_config
-}  // namespace chromeos
+}  // namespace ash::bluetooth_config
 
 #endif  // CHROMEOS_ASH_SERVICES_BLUETOOTH_CONFIG_FAKE_ADAPTER_STATE_CONTROLLER_H_

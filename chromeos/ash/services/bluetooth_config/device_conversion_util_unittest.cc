@@ -15,8 +15,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
-namespace chromeos {
-namespace bluetooth_config {
+namespace ash::bluetooth_config {
 
 namespace {
 
@@ -330,5 +329,4 @@ TEST_F(DeviceConversionUtilTest, TestConversion_AudioOutputCapableUUIDs) {
   }
 }
 
-}  // namespace bluetooth_config
-}  // namespace chromeos
+}  // namespace ash::bluetooth_config

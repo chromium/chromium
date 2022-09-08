@@ -15,8 +15,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 
-namespace chromeos {
-namespace bluetooth_config {
+namespace ash::bluetooth_config {
 
 // Handles requests to start discovery sessions, which are used to initiate
 // pairing of new devices. Clients invoke StartDiscovery() to begin the flow and
@@ -105,7 +104,6 @@ class DiscoverySessionManager : public AdapterStateController::Observer,
   base::WeakPtrFactory<DiscoverySessionManager> weak_ptr_factory_{this};
 };
 
-}  // namespace bluetooth_config
-}  // namespace chromeos
+}  // namespace ash::bluetooth_config
 
 #endif  // CHROMEOS_ASH_SERVICES_BLUETOOTH_CONFIG_DISCOVERY_SESSION_MANAGER_H_

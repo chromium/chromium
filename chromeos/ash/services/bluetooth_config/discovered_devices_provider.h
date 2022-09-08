@@ -11,8 +11,7 @@
 #include "base/observer_list_types.h"
 #include "chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom.h"
 
-namespace chromeos {
-namespace bluetooth_config {
+namespace ash::bluetooth_config {
 
 // Provides clients with the list of unpaired devices found during a discovery
 // session.
@@ -45,7 +44,6 @@ class DiscoveredDevicesProvider {
   base::ObserverList<Observer> observers_;
 };
 
-}  // namespace bluetooth_config
-}  // namespace chromeos
+}  // namespace ash::bluetooth_config
 
 #endif  // CHROMEOS_ASH_SERVICES_BLUETOOTH_CONFIG_DISCOVERED_DEVICES_PROVIDER_H_

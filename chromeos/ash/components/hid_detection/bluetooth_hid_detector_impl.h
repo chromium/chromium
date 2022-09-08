@@ -21,10 +21,10 @@ namespace ash::hid_detection {
 // Concrete BluetoothHidDetector implementation that uses CrosBluetoothConfig.
 class BluetoothHidDetectorImpl
     : public BluetoothHidDetector,
-      public chromeos::bluetooth_config::mojom::SystemPropertiesObserver,
-      public chromeos::bluetooth_config::mojom::BluetoothDiscoveryDelegate,
-      public chromeos::bluetooth_config::mojom::DevicePairingDelegate,
-      public chromeos::bluetooth_config::mojom::KeyEnteredHandler {
+      public bluetooth_config::mojom::SystemPropertiesObserver,
+      public bluetooth_config::mojom::BluetoothDiscoveryDelegate,
+      public bluetooth_config::mojom::DevicePairingDelegate,
+      public bluetooth_config::mojom::KeyEnteredHandler {
  public:
   BluetoothHidDetectorImpl();
   ~BluetoothHidDetectorImpl() override;
@@ -64,49 +64,44 @@ class BluetoothHidDetectorImpl
       InputDevicesStatus input_devices_status) override;
   void PerformStopBluetoothHidDetection(bool is_using_bluetooth) override;
 
-  // chromeos::bluetooth_config::mojom::SystemPropertiesObserver
-  void OnPropertiesUpdated(
-      chromeos::bluetooth_config::mojom::BluetoothSystemPropertiesPtr
-          properties) override;
+  // bluetooth_config::mojom::SystemPropertiesObserver
+  void OnPropertiesUpdated(bluetooth_config::mojom::BluetoothSystemPropertiesPtr
+                               properties) override;
 
-  // chromeos::bluetooth_config::mojom::BluetoothDiscoveryDelegate
+  // bluetooth_config::mojom::BluetoothDiscoveryDelegate
   void OnBluetoothDiscoveryStarted(
-      mojo::PendingRemote<
-          chromeos::bluetooth_config::mojom::DevicePairingHandler> handler)
-      override;
+      mojo::PendingRemote<bluetooth_config::mojom::DevicePairingHandler>
+          handler) override;
   void OnBluetoothDiscoveryStopped() override;
   void OnDiscoveredDevicesListChanged(
-      std::vector<
-          chromeos::bluetooth_config::mojom::BluetoothDevicePropertiesPtr>
+      std::vector<bluetooth_config::mojom::BluetoothDevicePropertiesPtr>
           discovered_devices) override;
 
-  // chromeos::bluetooth_config::mojom::DevicePairingDelegate
+  // bluetooth_config::mojom::DevicePairingDelegate
   void RequestPinCode(RequestPinCodeCallback callback) override;
   void RequestPasskey(RequestPasskeyCallback callback) override;
-  void DisplayPinCode(const std::string& pin_code,
-                      mojo::PendingReceiver<
-                          chromeos::bluetooth_config::mojom::KeyEnteredHandler>
-                          handler) override;
-  void DisplayPasskey(const std::string& passkey,
-                      mojo::PendingReceiver<
-                          chromeos::bluetooth_config::mojom::KeyEnteredHandler>
-                          handler) override;
+  void DisplayPinCode(
+      const std::string& pin_code,
+      mojo::PendingReceiver<bluetooth_config::mojom::KeyEnteredHandler> handler)
+      override;
+  void DisplayPasskey(
+      const std::string& passkey,
+      mojo::PendingReceiver<bluetooth_config::mojom::KeyEnteredHandler> handler)
+      override;
   void ConfirmPasskey(const std::string& passkey,
                       ConfirmPasskeyCallback callback) override;
   void AuthorizePairing(AuthorizePairingCallback callback) override;
 
-  // chromeos::bluetooth_config::mojom::KeyEnteredHandler
+  // bluetooth_config::mojom::KeyEnteredHandler
   void HandleKeyEntered(uint8_t num_keys_entered) override;
 
   bool IsHidTypeMissing(BluetoothHidDetector::BluetoothHidType hid_type);
   bool ShouldAttemptToPairWithDevice(
-      const chromeos::bluetooth_config::mojom::BluetoothDevicePropertiesPtr&
-          device);
+      const bluetooth_config::mojom::BluetoothDevicePropertiesPtr& device);
 
   void ProcessQueue();
-  void OnPairDevice(
-      std::unique_ptr<base::ElapsedTimer> pairing_timer,
-      chromeos::bluetooth_config::mojom::PairingResult pairing_result);
+  void OnPairDevice(std::unique_ptr<base::ElapsedTimer> pairing_timer,
+                    bluetooth_config::mojom::PairingResult pairing_result);
 
   // Removes any state related to the current pairing device. This will cancel
   // pairing with the device if there is an ongoing pairing.
@@ -119,21 +114,20 @@ class BluetoothHidDetectorImpl
   // authorization is required.
   void RequirePairingCode(
       const std::string& code,
-      mojo::PendingReceiver<
-          chromeos::bluetooth_config::mojom::KeyEnteredHandler> handler);
+      mojo::PendingReceiver<bluetooth_config::mojom::KeyEnteredHandler>
+          handler);
 
   // Map that contains the ids of the devices in |queue_|.
   base::flat_set<std::string> queued_device_ids_;
 
   // The queue of devices that will be attempted to be paired with.
-  std::unique_ptr<base::queue<
-      chromeos::bluetooth_config::mojom::BluetoothDevicePropertiesPtr>>
-      queue_ = std::make_unique<base::queue<
-          chromeos::bluetooth_config::mojom::BluetoothDevicePropertiesPtr>>();
+  std::unique_ptr<
+      base::queue<bluetooth_config::mojom::BluetoothDevicePropertiesPtr>>
+      queue_ = std::make_unique<
+          base::queue<bluetooth_config::mojom::BluetoothDevicePropertiesPtr>>();
 
   // The device currently being paired with.
-  absl::optional<
-      chromeos::bluetooth_config::mojom::BluetoothDevicePropertiesPtr>
+  absl::optional<bluetooth_config::mojom::BluetoothDevicePropertiesPtr>
       current_pairing_device_;
 
   // If defined, indicates that the current pairing requires an authorization
@@ -153,17 +147,17 @@ class BluetoothHidDetectorImpl
   // time a HID detection session is started.
   size_t num_pairing_attempts_ = 0;
 
-  mojo::Remote<chromeos::bluetooth_config::mojom::CrosBluetoothConfig>
+  mojo::Remote<bluetooth_config::mojom::CrosBluetoothConfig>
       cros_bluetooth_config_remote_;
-  mojo::Receiver<chromeos::bluetooth_config::mojom::SystemPropertiesObserver>
+  mojo::Receiver<bluetooth_config::mojom::SystemPropertiesObserver>
       system_properties_observer_receiver_{this};
-  mojo::Receiver<chromeos::bluetooth_config::mojom::BluetoothDiscoveryDelegate>
+  mojo::Receiver<bluetooth_config::mojom::BluetoothDiscoveryDelegate>
       bluetooth_discovery_delegate_receiver_{this};
-  mojo::Remote<chromeos::bluetooth_config::mojom::DevicePairingHandler>
+  mojo::Remote<bluetooth_config::mojom::DevicePairingHandler>
       device_pairing_handler_remote_;
-  mojo::Receiver<chromeos::bluetooth_config::mojom::DevicePairingDelegate>
+  mojo::Receiver<bluetooth_config::mojom::DevicePairingDelegate>
       device_pairing_delegate_receiver_{this};
-  mojo::Receiver<chromeos::bluetooth_config::mojom::KeyEnteredHandler>
+  mojo::Receiver<bluetooth_config::mojom::KeyEnteredHandler>
       key_entered_handler_receiver_{this};
 
   base::WeakPtrFactory<BluetoothHidDetectorImpl> weak_ptr_factory_{this};

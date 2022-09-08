@@ -19,10 +19,6 @@
 #include "ui/views/widget/widget.h"
 
 namespace ash {
-namespace {
-using chromeos::bluetooth_config::mojom::BatteryProperties;
-using chromeos::bluetooth_config::mojom::BatteryPropertiesPtr;
-}  // namespace
 
 class BluetoothDeviceListItemBatteryViewTest : public AshTestBase {
  public:

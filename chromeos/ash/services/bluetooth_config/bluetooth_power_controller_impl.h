@@ -13,8 +13,7 @@
 
 class PrefRegistrySimple;
 
-namespace chromeos {
-namespace bluetooth_config {
+namespace ash::bluetooth_config {
 
 // Concrete BluetoothPowerController implementation that uses prefs to save and
 // apply the Bluetooth power state.
@@ -77,7 +76,6 @@ class BluetoothPowerControllerImpl : public BluetoothPowerController,
       adapter_state_controller_observation_{this};
 };
 
-}  // namespace bluetooth_config
-}  // namespace chromeos
+}  // namespace ash::bluetooth_config
 
 #endif  // CHROMEOS_ASH_SERVICES_BLUETOOTH_CONFIG_BLUETOOTH_POWER_CONTROLLER_IMPL_H_

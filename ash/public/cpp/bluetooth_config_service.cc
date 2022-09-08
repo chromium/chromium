@@ -9,9 +9,9 @@
 namespace ash {
 
 void GetBluetoothConfigService(
-    mojo::PendingReceiver<
-        chromeos::bluetooth_config::mojom::CrosBluetoothConfig> receiver) {
-  chromeos::bluetooth_config::BindToInProcessInstance(std::move(receiver));
+    mojo::PendingReceiver<bluetooth_config::mojom::CrosBluetoothConfig>
+        receiver) {
+  bluetooth_config::BindToInProcessInstance(std::move(receiver));
 }
 
 }  // namespace ash

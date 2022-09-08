@@ -7,8 +7,7 @@
 
 #include "chromeos/ash/services/bluetooth_config/discovered_devices_provider.h"
 
-namespace chromeos {
-namespace bluetooth_config {
+namespace ash::bluetooth_config {
 
 class FakeDiscoveredDevicesProvider : public DiscoveredDevicesProvider {
  public:
@@ -26,7 +25,6 @@ class FakeDiscoveredDevicesProvider : public DiscoveredDevicesProvider {
   std::vector<mojom::BluetoothDevicePropertiesPtr> discovered_devices_;
 };
 
-}  // namespace bluetooth_config
-}  // namespace chromeos
+}  // namespace ash::bluetooth_config
 
 #endif  // CHROMEOS_ASH_SERVICES_BLUETOOTH_CONFIG_FAKE_DISCOVERED_DEVICES_PROVIDER_H_

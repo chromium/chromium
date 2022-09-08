@@ -29,8 +29,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
-namespace bluetooth_config {
+namespace ash::bluetooth_config {
 
 // Tests initialization and bindings in for CrosBluetoothConfig. Note that this
 // test is not meant to be exhaustive of the API, since these details are tested
@@ -44,7 +43,7 @@ class CrosBluetoothConfigTest : public testing::Test {
 
   // testing::Test:
   void SetUp() override {
-    feature_list_.InitAndEnableFeature(ash::features::kBluetoothRevamp);
+    feature_list_.InitAndEnableFeature(features::kBluetoothRevamp);
 
     DeviceNameManagerImpl::RegisterLocalStatePrefs(
         test_pref_service_.registry());
@@ -56,7 +55,7 @@ class CrosBluetoothConfigTest : public testing::Test {
     scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
         std::move(fake_user_manager));
 
-    PowerManagerClient::InitializeFake();
+    chromeos::PowerManagerClient::InitializeFake();
 
     mock_adapter_ =
         base::MakeRefCounted<testing::NiceMock<device::MockBluetoothAdapter>>();
@@ -76,7 +75,7 @@ class CrosBluetoothConfigTest : public testing::Test {
     // Destroy |cros_bluetooth_config_| before the fake power manager client in
     // order to remove observers correctly.
     cros_bluetooth_config_.reset();
-    PowerManagerClient::Shutdown();
+    chromeos::PowerManagerClient::Shutdown();
   }
 
   mojo::Remote<mojom::CrosBluetoothConfig> BindToInterface() {
@@ -177,5 +176,4 @@ TEST_F(CrosBluetoothConfigTest, CallDiscoverySessionStatusApiFunction) {
   base::RunLoop().RunUntilIdle();
 }
 
-}  // namespace bluetooth_config
-}  // namespace chromeos
+}  // namespace ash::bluetooth_config

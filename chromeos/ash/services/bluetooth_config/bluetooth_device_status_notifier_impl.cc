@@ -15,8 +15,7 @@
 #include "device/bluetooth/bluetooth_device.h"
 #include "device/bluetooth/public/cpp/bluetooth_uuid.h"
 
-namespace chromeos {
-namespace bluetooth_config {
+namespace ash::bluetooth_config {
 
 // static
 const base::TimeDelta
@@ -26,7 +25,7 @@ const base::TimeDelta
 BluetoothDeviceStatusNotifierImpl::BluetoothDeviceStatusNotifierImpl(
     scoped_refptr<device::BluetoothAdapter> bluetooth_adapter,
     DeviceCache* device_cache,
-    PowerManagerClient* power_manager_client)
+    chromeos::PowerManagerClient* power_manager_client)
     : bluetooth_adapter_(std::move(bluetooth_adapter)),
       device_cache_(device_cache),
       power_manager_client_(power_manager_client) {
@@ -165,5 +164,4 @@ device::BluetoothDevice* BluetoothDeviceStatusNotifierImpl::FindDevice(
   return nullptr;
 }
 
-}  // namespace bluetooth_config
-}  // namespace chromeos
+}  // namespace ash::bluetooth_config

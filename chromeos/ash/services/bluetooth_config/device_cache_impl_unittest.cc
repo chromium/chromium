@@ -20,8 +20,8 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
-namespace bluetooth_config {
+namespace ash::bluetooth_config {
+
 namespace {
 
 using PairedDeviceList = std::vector<mojom::PairedBluetoothDevicePropertiesPtr>;
@@ -827,5 +827,4 @@ TEST_F(DeviceCacheImplTest, UnpairedDeviceImageInfo) {
   EXPECT_TRUE(unpaired_list[0]->image_info);
 }
 
-}  // namespace bluetooth_config
-}  // namespace chromeos
+}  // namespace ash::bluetooth_config

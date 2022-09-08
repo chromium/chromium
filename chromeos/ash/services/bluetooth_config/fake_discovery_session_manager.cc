@@ -4,8 +4,7 @@
 
 #include "chromeos/ash/services/bluetooth_config/fake_discovery_session_manager.h"
 
-namespace chromeos {
-namespace bluetooth_config {
+namespace ash::bluetooth_config {
 
 FakeDiscoverySessionManager::FakeDiscoverySessionManager(
     AdapterStateController* adapter_state_controller,
@@ -52,5 +51,4 @@ FakeDiscoverySessionManager::CreateDevicePairingHandler(
   return fake_device_pairing_handler;
 }
 
-}  // namespace bluetooth_config
-}  // namespace chromeos
+}  // namespace ash::bluetooth_config

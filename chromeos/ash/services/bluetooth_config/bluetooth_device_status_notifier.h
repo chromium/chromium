@@ -9,8 +9,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 
-namespace chromeos {
-namespace bluetooth_config {
+namespace ash::bluetooth_config {
 
 // Notifiers all listeners of changes in devices status.
 // Status changes includes a newly paired device, connection and
@@ -53,7 +52,6 @@ class BluetoothDeviceStatusNotifier {
   mojo::RemoteSet<mojom::BluetoothDeviceStatusObserver> observers_;
 };
 
-}  // namespace bluetooth_config
-}  // namespace chromeos
+}  // namespace ash::bluetooth_config
 
 #endif  // CHROMEOS_ASH_SERVICES_BLUETOOTH_CONFIG_BLUETOOTH_DEVICE_STATUS_NOTIFIER_H_

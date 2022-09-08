@@ -10,8 +10,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
-namespace chromeos {
-namespace bluetooth_config {
+namespace ash::bluetooth_config {
 
 class FakeDiscoverySessionStatusObserver
     : public mojom::DiscoverySessionStatusObserver {
@@ -46,7 +45,6 @@ class FakeDiscoverySessionStatusObserver
   mojo::Receiver<mojom::DiscoverySessionStatusObserver> receiver_{this};
 };
 
-}  // namespace bluetooth_config
-}  // namespace chromeos
+}  // namespace ash::bluetooth_config
 
 #endif  // CHROMEOS_ASH_SERVICES_BLUETOOTH_CONFIG_FAKE_DISCOVERY_SESSION_STATUS_OBSERVER_H_

@@ -7,8 +7,8 @@
 #include "chromeos/ash/services/bluetooth_config/device_conversion_util.h"
 #include "components/device_event_log/device_event_log.h"
 
-namespace chromeos {
-namespace bluetooth_config {
+namespace ash::bluetooth_config {
+
 namespace {
 
 DevicePairingHandlerImpl::Factory* g_test_factory = nullptr;
@@ -351,5 +351,4 @@ device::BluetoothDevice* DevicePairingHandlerImpl::FindDevice(
   return nullptr;
 }
 
-}  // namespace bluetooth_config
-}  // namespace chromeos
+}  // namespace ash::bluetooth_config

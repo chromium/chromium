@@ -8,8 +8,7 @@
 
 #include "base/run_loop.h"
 
-namespace chromeos {
-namespace bluetooth_config {
+namespace ash::bluetooth_config {
 
 FakeBluetoothDeviceStatusObserver::FakeBluetoothDeviceStatusObserver() =
     default;
@@ -44,5 +43,4 @@ void FakeBluetoothDeviceStatusObserver::OnDeviceDisconnected(
   disconnected_device_properties_list_.push_back(std::move(device));
 }
 
-}  // namespace bluetooth_config
-}  // namespace chromeos
+}  // namespace ash::bluetooth_config

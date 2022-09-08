@@ -19,11 +19,10 @@
 #include "ui/views/view.h"
 
 namespace ash {
-namespace {
-using chromeos::bluetooth_config::IsBluetoothEnabledOrEnabling;
-using chromeos::bluetooth_config::mojom::AudioOutputCapability;
-using chromeos::bluetooth_config::mojom::DeviceConnectionState;
-}  // namespace
+
+using bluetooth_config::IsBluetoothEnabledOrEnabling;
+using bluetooth_config::mojom::AudioOutputCapability;
+using bluetooth_config::mojom::DeviceConnectionState;
 
 BluetoothDetailedViewController::BluetoothDetailedViewController(
     UnifiedSystemTrayController* tray_controller)
@@ -65,8 +64,7 @@ std::u16string BluetoothDetailedViewController::GetAccessibleName() const {
 }
 
 void BluetoothDetailedViewController::OnPropertiesUpdated(
-    chromeos::bluetooth_config::mojom::BluetoothSystemPropertiesPtr
-        properties) {
+    bluetooth_config::mojom::BluetoothSystemPropertiesPtr properties) {
   const bool has_bluetooth_enabled_state_changed =
       system_state_ != properties->system_state;
   system_state_ = properties->system_state;
@@ -102,8 +100,7 @@ void BluetoothDetailedViewController::OnPairNewDeviceRequested() {
 }
 
 void BluetoothDetailedViewController::OnDeviceListItemSelected(
-    const chromeos::bluetooth_config::mojom::PairedBluetoothDevicePropertiesPtr&
-        device) {
+    const bluetooth_config::mojom::PairedBluetoothDevicePropertiesPtr& device) {
   // When CloseBubble() is called |device| will be deleted so we need to make a
   // copy of the device ID that was selected.
   const std::string device_id = device->device_properties->id;

@@ -6,8 +6,7 @@
 
 #include <algorithm>
 
-namespace chromeos {
-namespace bluetooth_config {
+namespace ash::bluetooth_config {
 
 // static
 const base::TimeDelta DiscoveredDevicesProviderImpl::kNotificationDelay =
@@ -110,5 +109,4 @@ void DiscoveredDevicesProviderImpl::SortDiscoveredDevicesAndNotify() {
   NotifyDiscoveredDevicesListChanged();
 }
 
-}  // namespace bluetooth_config
-}  // namespace chromeos
+}  // namespace ash::bluetooth_config

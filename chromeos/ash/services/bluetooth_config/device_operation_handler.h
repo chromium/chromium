@@ -14,8 +14,7 @@
 #include "device/bluetooth/bluetooth_common.h"
 #include "device/bluetooth/bluetooth_device.h"
 
-namespace chromeos {
-namespace bluetooth_config {
+namespace ash::bluetooth_config {
 
 // Manages device-specific operations, such as connecting or disconnecting to a
 // device. Operations are performed sequentially, queueing requests that occur
@@ -126,7 +125,6 @@ class DeviceOperationHandler : public AdapterStateController::Observer {
   base::WeakPtrFactory<DeviceOperationHandler> weak_ptr_factory_{this};
 };
 
-}  // namespace bluetooth_config
-}  // namespace chromeos
+}  // namespace ash::bluetooth_config
 
 #endif  // CHROMEOS_ASH_SERVICES_BLUETOOTH_CONFIG_DEVICE_OPERATION_HANDLER_H_

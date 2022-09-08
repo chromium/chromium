@@ -11,8 +11,7 @@
 #include "chromeos/ash/services/bluetooth_config/system_properties_provider.h"
 #include "components/session_manager/core/session_manager_observer.h"
 
-namespace chromeos {
-namespace bluetooth_config {
+namespace ash::bluetooth_config {
 
 // SystemPropertiesProvider implementation which uses AdapterStateController as
 // the source of properties.
@@ -54,7 +53,6 @@ class SystemPropertiesProviderImpl
       device_cache_observation_{this};
 };
 
-}  // namespace bluetooth_config
-}  // namespace chromeos
+}  // namespace ash::bluetooth_config
 
 #endif  // CHROMEOS_ASH_SERVICES_BLUETOOTH_CONFIG_SYSTEM_PROPERTIES_PROVIDER_IMPL_H_

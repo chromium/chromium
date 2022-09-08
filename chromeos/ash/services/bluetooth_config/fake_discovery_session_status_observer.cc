@@ -8,8 +8,7 @@
 
 #include "base/run_loop.h"
 
-namespace chromeos {
-namespace bluetooth_config {
+namespace ash::bluetooth_config {
 
 FakeDiscoverySessionStatusObserver::FakeDiscoverySessionStatusObserver() =
     default;
@@ -35,5 +34,4 @@ void FakeDiscoverySessionStatusObserver::OnHasAtLeastOneDiscoverySessionChanged(
   num_discovery_session_changed_calls_++;
 }
 
-}  // namespace bluetooth_config
-}  // namespace chromeos
+}  // namespace ash::bluetooth_config

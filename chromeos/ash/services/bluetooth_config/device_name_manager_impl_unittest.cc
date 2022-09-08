@@ -13,8 +13,8 @@
 #include "device/bluetooth/test/mock_bluetooth_adapter.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
-namespace bluetooth_config {
+namespace ash::bluetooth_config {
+
 namespace {
 
 using NiceMockDevice =
@@ -241,5 +241,4 @@ TEST_F(DeviceNameManagerImplTest, RemoveThenSetThenRemove) {
   EXPECT_FALSE(manager->GetDeviceNickname(device_id));
 }
 
-}  // namespace bluetooth_config
-}  // namespace chromeos
+}  // namespace ash::bluetooth_config

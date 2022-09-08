@@ -20,7 +20,7 @@ namespace ash {
 namespace quick_pair {
 
 // Alias DeviceImageInfo for convenience.
-using chromeos::bluetooth_config::DeviceImageInfo;
+using bluetooth_config::DeviceImageInfo;
 
 // static
 constexpr char DeviceImageStore::kDeviceImageStorePref[];
@@ -123,8 +123,8 @@ bool DeviceImageStore::EvictDeviceImages(const std::string& model_id) {
   return true;
 }
 
-absl::optional<chromeos::bluetooth_config::DeviceImageInfo>
-DeviceImageStore::GetImagesForDeviceModel(const std::string& model_id) {
+absl::optional<DeviceImageInfo> DeviceImageStore::GetImagesForDeviceModel(
+    const std::string& model_id) {
   // Lazily load saved images from prefs the first time we get an image.
   if (!loaded_images_from_prefs_) {
     loaded_images_from_prefs_ = true;

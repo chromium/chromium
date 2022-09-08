@@ -11,8 +11,7 @@
 #include "chromeos/ash/services/bluetooth_config/adapter_state_controller.h"
 #include "chromeos/ash/services/bluetooth_config/device_operation_handler.h"
 
-namespace chromeos {
-namespace bluetooth_config {
+namespace ash::bluetooth_config {
 
 class FakeDeviceOperationHandler : public DeviceOperationHandler {
  public:
@@ -48,7 +47,6 @@ class FakeDeviceOperationHandler : public DeviceOperationHandler {
   std::string last_perform_connect_device_id_;
 };
 
-}  // namespace bluetooth_config
-}  // namespace chromeos
+}  // namespace ash::bluetooth_config
 
 #endif  // CHROMEOS_ASH_SERVICES_BLUETOOTH_CONFIG_FAKE_DEVICE_OPERATION_HANDLER_H_

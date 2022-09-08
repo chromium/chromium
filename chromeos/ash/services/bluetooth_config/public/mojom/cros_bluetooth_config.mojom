@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-module chromeos.bluetooth_config.mojom;
+module ash.bluetooth_config.mojom;
 
 import "mojo/public/mojom/base/string16.mojom";
 import "url/mojom/url.mojom";

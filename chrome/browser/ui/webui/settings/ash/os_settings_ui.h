@@ -115,7 +115,7 @@ class OSSettingsUI : public ui::MojoWebUIController {
   // Instantiates implementor of the mojom::CrosBluetoothConfig mojo interface
   // passing the pending receiver that will be internally bound.
   void BindInterface(
-      mojo::PendingReceiver<bluetooth_config::mojom::CrosBluetoothConfig>
+      mojo::PendingReceiver<ash::bluetooth_config::mojom::CrosBluetoothConfig>
           receiver);
 
   // Binds to the cros authentication factor editing services.

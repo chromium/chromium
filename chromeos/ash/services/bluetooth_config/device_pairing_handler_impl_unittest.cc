@@ -20,8 +20,8 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
-namespace bluetooth_config {
+namespace ash::bluetooth_config {
+
 namespace {
 
 using NiceMockDevice =
@@ -1015,5 +1015,4 @@ TEST_F(DevicePairingHandlerImplTest, PairAuthAuthorizePairing) {
                                 /*transport_name=*/"Classic");
 }
 
-}  // namespace bluetooth_config
-}  // namespace chromeos
+}  // namespace ash::bluetooth_config

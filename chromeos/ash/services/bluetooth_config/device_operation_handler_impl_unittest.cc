@@ -18,8 +18,8 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
-namespace bluetooth_config {
+namespace ash::bluetooth_config {
+
 namespace {
 
 using NiceMockDevice =
@@ -29,6 +29,7 @@ const uint32_t kTestBluetoothClass = 1337u;
 const char kTestBluetoothName[] = "testName";
 const char kTestBluetoothNickname[] = "testNickname";
 const base::TimeDelta kTestDuration = base::Milliseconds(1000);
+
 }  // namespace
 
 class DeviceOperationHandlerImplTest : public testing::Test {
@@ -531,5 +532,4 @@ TEST_F(DeviceOperationHandlerImplTest, OperationCompletesAfterTimeout) {
                                  /*transport_name=*/"Classic");
 }
 
-}  // namespace bluetooth_config
-}  // namespace chromeos
+}  // namespace ash::bluetooth_config

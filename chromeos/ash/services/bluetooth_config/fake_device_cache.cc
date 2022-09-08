@@ -4,8 +4,7 @@
 
 #include "chromeos/ash/services/bluetooth_config/fake_device_cache.h"
 
-namespace chromeos {
-namespace bluetooth_config {
+namespace ash::bluetooth_config {
 
 FakeDeviceCache::FakeDeviceCache(
     AdapterStateController* adapter_state_controller)
@@ -41,5 +40,4 @@ FakeDeviceCache::PerformGetUnpairedDevices() const {
   return unpaired_devices;
 }
 
-}  // namespace bluetooth_config
-}  // namespace chromeos
+}  // namespace ash::bluetooth_config

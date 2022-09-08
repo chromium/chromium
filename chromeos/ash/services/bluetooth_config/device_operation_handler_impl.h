@@ -14,8 +14,7 @@
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "device/bluetooth/bluetooth_device.h"
 
-namespace chromeos {
-namespace bluetooth_config {
+namespace ash::bluetooth_config {
 
 // Concrete DeviceOperationHandler implementation that calls
 // device::BluetoothDevice methods.
@@ -56,7 +55,6 @@ class DeviceOperationHandlerImpl : public DeviceOperationHandler {
   base::WeakPtrFactory<DeviceOperationHandlerImpl> weak_ptr_factory_{this};
 };
 
-}  // namespace bluetooth_config
-}  // namespace chromeos
+}  // namespace ash::bluetooth_config
 
 #endif  // CHROMEOS_ASH_SERVICES_BLUETOOTH_CONFIG_DEVICE_OPERATION_HANDLER_IMPL_H_

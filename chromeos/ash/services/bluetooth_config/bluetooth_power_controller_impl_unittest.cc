@@ -16,8 +16,8 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
-namespace bluetooth_config {
+namespace ash::bluetooth_config {
+
 namespace {
 
 constexpr char kUser1Email[] = "user1@bluetooth";
@@ -35,7 +35,7 @@ class BluetoothPowerControllerImplTest : public testing::Test {
 
   // testing::Test:
   void SetUp() override {
-    feature_list_.InitAndEnableFeature(ash::features::kBluetoothRevamp);
+    feature_list_.InitAndEnableFeature(features::kBluetoothRevamp);
 
     BluetoothPowerControllerImpl::RegisterLocalStatePrefs(
         local_state()->registry());
@@ -413,5 +413,4 @@ TEST_F(BluetoothPowerControllerImplTest,
   EXPECT_TRUE(local_state()->GetBoolean(prefs::kSystemBluetoothAdapterEnabled));
 }
 
-}  // namespace bluetooth_config
-}  // namespace chromeos
+}  // namespace ash::bluetooth_config

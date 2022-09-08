@@ -7,8 +7,7 @@
 
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
-namespace bluetooth_config {
+namespace ash::bluetooth_config {
 
 class AdapterStateController;
 class DeviceImageInfo;
@@ -29,7 +28,6 @@ class FastPairDelegate {
   virtual void SetDeviceNameManager(DeviceNameManager* device_name_manager) = 0;
 };
 
-}  // namespace bluetooth_config
-}  // namespace chromeos
+}  // namespace ash::bluetooth_config
 
 #endif  // CHROMEOS_ASH_SERVICES_BLUETOOTH_CONFIG_FAST_PAIR_DELEGATE_H_

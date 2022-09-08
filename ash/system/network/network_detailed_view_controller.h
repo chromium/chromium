@@ -32,7 +32,7 @@ namespace ash {
 class ASH_EXPORT NetworkDetailedViewController
     : public DetailedViewController,
       public NetworkDetailedNetworkView::Delegate,
-      public chromeos::bluetooth_config::mojom::SystemPropertiesObserver {
+      public bluetooth_config::mojom::SystemPropertiesObserver {
  public:
   explicit NetworkDetailedViewController(
       UnifiedSystemTrayController* tray_controller);
@@ -55,10 +55,9 @@ class ASH_EXPORT NetworkDetailedViewController
   void OnMobileToggleClicked(bool new_state) override;
   void OnWifiToggleClicked(bool new_state) override;
 
-  // chromeos::bluetooth_config::mojom::SystemPropertiesObserver:
-  void OnPropertiesUpdated(
-      chromeos::bluetooth_config::mojom::BluetoothSystemPropertiesPtr
-          properties) override;
+  // bluetooth_config::mojom::SystemPropertiesObserver:
+  void OnPropertiesUpdated(bluetooth_config::mojom::BluetoothSystemPropertiesPtr
+                               properties) override;
 
   TrayNetworkStateModel* const model_;
 
@@ -66,14 +65,13 @@ class ASH_EXPORT NetworkDetailedViewController
 
   bool waiting_to_initialize_bluetooth_ = false;
 
-  mojo::Remote<chromeos::bluetooth_config::mojom::CrosBluetoothConfig>
+  mojo::Remote<bluetooth_config::mojom::CrosBluetoothConfig>
       remote_cros_bluetooth_config_;
-  mojo::Receiver<chromeos::bluetooth_config::mojom::SystemPropertiesObserver>
+  mojo::Receiver<bluetooth_config::mojom::SystemPropertiesObserver>
       cros_system_properties_observer_receiver_{this};
 
-  chromeos::bluetooth_config::mojom::BluetoothSystemState
-      bluetooth_system_state_ =
-          chromeos::bluetooth_config::mojom::BluetoothSystemState::kUnavailable;
+  bluetooth_config::mojom::BluetoothSystemState bluetooth_system_state_ =
+      bluetooth_config::mojom::BluetoothSystemState::kUnavailable;
 
   NetworkDetailedNetworkView* network_detailed_view_ = nullptr;
   std::unique_ptr<NetworkListViewController> network_list_view_controller_;

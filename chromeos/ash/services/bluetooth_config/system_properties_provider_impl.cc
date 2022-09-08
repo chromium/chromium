@@ -7,8 +7,7 @@
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/user_manager.h"
 
-namespace chromeos {
-namespace bluetooth_config {
+namespace ash::bluetooth_config {
 
 SystemPropertiesProviderImpl::SystemPropertiesProviderImpl(
     AdapterStateController* adapter_state_controller,
@@ -73,5 +72,4 @@ SystemPropertiesProviderImpl::ComputeModificationState() const {
              : mojom::BluetoothModificationState::kCannotModifyBluetooth;
 }
 
-}  // namespace bluetooth_config
-}  // namespace chromeos
+}  // namespace ash::bluetooth_config

@@ -4,8 +4,7 @@
 
 #include "chromeos/ash/services/bluetooth_config/discovered_devices_provider.h"
 
-namespace chromeos {
-namespace bluetooth_config {
+namespace ash::bluetooth_config {
 
 DiscoveredDevicesProvider::DiscoveredDevicesProvider() = default;
 
@@ -24,5 +23,4 @@ void DiscoveredDevicesProvider::NotifyDiscoveredDevicesListChanged() {
     observer.OnDiscoveredDevicesListChanged();
 }
 
-}  // namespace bluetooth_config
-}  // namespace chromeos
+}  // namespace ash::bluetooth_config

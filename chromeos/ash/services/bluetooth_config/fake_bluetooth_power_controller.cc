@@ -4,8 +4,7 @@
 
 #include "chromeos/ash/services/bluetooth_config/fake_bluetooth_power_controller.h"
 
-namespace chromeos {
-namespace bluetooth_config {
+namespace ash::bluetooth_config {
 
 FakeBluetoothPowerController::FakeBluetoothPowerController(
     AdapterStateController* adapter_state_controller)
@@ -31,5 +30,4 @@ void FakeBluetoothPowerController::SetBluetoothHidDetectionInactive(
   adapter_state_controller_->SetBluetoothEnabledState(last_enabled_);
 }
 
-}  // namespace bluetooth_config
-}  // namespace chromeos
+}  // namespace ash::bluetooth_config

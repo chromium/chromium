@@ -66,8 +66,8 @@ class BluetoothPairingDialogUI : public ui::MojoWebDialogUI {
   // Instantiates implementor of the mojom::CrosBluetoothConfig mojo interface
   // passing the pending receiver that will be internally bound.
   void BindInterface(
-      mojo::PendingReceiver<
-          chromeos::bluetooth_config::mojom::CrosBluetoothConfig> receiver);
+      mojo::PendingReceiver<ash::bluetooth_config::mojom::CrosBluetoothConfig>
+          receiver);
 
  private:
   WEB_UI_CONTROLLER_TYPE_DECL();

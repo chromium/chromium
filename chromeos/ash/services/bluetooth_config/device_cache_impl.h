@@ -14,8 +14,7 @@
 #include "chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 
-namespace chromeos {
-namespace bluetooth_config {
+namespace ash::bluetooth_config {
 
 // Concrete DeviceCache implementation. When this class is created, it uses
 // BluetoothAdapter to fetch an initial list of devices; then, it observes
@@ -157,7 +156,6 @@ class DeviceCacheImpl : public DeviceCache,
       device_name_manager_observation_{this};
 };
 
-}  // namespace bluetooth_config
-}  // namespace chromeos
+}  // namespace ash::bluetooth_config
 
 #endif  // CHROMEOS_ASH_SERVICES_BLUETOOTH_CONFIG_DEVICE_CACHE_IMPL_H_

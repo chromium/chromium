@@ -14,8 +14,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
-namespace chromeos {
-namespace bluetooth_config {
+namespace ash::bluetooth_config {
 
 // Handles requests to pair to a Bluetooth device. This handler can be reused to
 // pair to more than one device. Only one device should be attempted to be
@@ -110,7 +109,6 @@ class DevicePairingHandler : public mojom::DevicePairingHandler,
   base::WeakPtrFactory<DevicePairingHandler> weak_ptr_factory_{this};
 };
 
-}  // namespace bluetooth_config
-}  // namespace chromeos
+}  // namespace ash::bluetooth_config
 
 #endif  // CHROMEOS_ASH_SERVICES_BLUETOOTH_CONFIG_DEVICE_PAIRING_HANDLER_H_

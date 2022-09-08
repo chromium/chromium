@@ -8,8 +8,7 @@
 #include "chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
-namespace chromeos {
-namespace bluetooth_config {
+namespace ash::bluetooth_config {
 
 class FakeKeyEnteredHandler : public mojom::KeyEnteredHandler {
  public:
@@ -34,7 +33,6 @@ class FakeKeyEnteredHandler : public mojom::KeyEnteredHandler {
   mojo::Receiver<mojom::KeyEnteredHandler> receiver_{this};
 };
 
-}  // namespace bluetooth_config
-}  // namespace chromeos
+}  // namespace ash::bluetooth_config
 
 #endif  // CHROMEOS_ASH_SERVICES_BLUETOOTH_CONFIG_FAKE_KEY_ENTERED_HANDLER_H_

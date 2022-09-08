@@ -7,8 +7,7 @@
 #include "base/run_loop.h"
 #include "chromeos/ash/services/bluetooth_config/device_conversion_util.h"
 
-namespace chromeos {
-namespace bluetooth_config {
+namespace ash::bluetooth_config {
 
 FakeDevicePairingHandler::FakeDevicePairingHandler(
     mojo::PendingReceiver<mojom::DevicePairingHandler> pending_receiver,
@@ -112,5 +111,4 @@ void FakeDevicePairingHandler::OnConfirmPairing(bool confirmed) {
   base::RunLoop().RunUntilIdle();
 }
 
-}  // namespace bluetooth_config
-}  // namespace chromeos
+}  // namespace ash::bluetooth_config

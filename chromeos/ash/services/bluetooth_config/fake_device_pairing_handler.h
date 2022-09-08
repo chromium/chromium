@@ -7,8 +7,7 @@
 
 #include "chromeos/ash/services/bluetooth_config/device_pairing_handler.h"
 
-namespace chromeos {
-namespace bluetooth_config {
+namespace ash::bluetooth_config {
 
 class FakeDevicePairingHandler : public DevicePairingHandler {
  public:
@@ -57,7 +56,6 @@ class FakeDevicePairingHandler : public DevicePairingHandler {
   FetchDeviceCallback fetch_device_callback_;
 };
 
-}  // namespace bluetooth_config
-}  // namespace chromeos
+}  // namespace ash::bluetooth_config
 
 #endif  // CHROMEOS_ASH_SERVICES_BLUETOOTH_CONFIG_FAKE_DEVICE_PAIRING_HANDLER_H_

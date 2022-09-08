@@ -29,17 +29,17 @@
 #include "chromeos/ash/services/bluetooth_config/scoped_bluetooth_config_test_helper.h"
 #include "ui/base/l10n/l10n_util.h"
 
-using chromeos::bluetooth_config::ScopedBluetoothConfigTestHelper;
-using chromeos::bluetooth_config::mojom::BatteryProperties;
-using chromeos::bluetooth_config::mojom::BluetoothDeviceProperties;
-using chromeos::bluetooth_config::mojom::BluetoothSystemState;
-using chromeos::bluetooth_config::mojom::DeviceBatteryInfo;
-using chromeos::bluetooth_config::mojom::DeviceBatteryInfoPtr;
-using chromeos::bluetooth_config::mojom::DeviceConnectionState;
-using chromeos::bluetooth_config::mojom::PairedBluetoothDeviceProperties;
-using chromeos::bluetooth_config::mojom::PairedBluetoothDevicePropertiesPtr;
-
 namespace ash {
+
+using bluetooth_config::ScopedBluetoothConfigTestHelper;
+using bluetooth_config::mojom::BatteryProperties;
+using bluetooth_config::mojom::BluetoothDeviceProperties;
+using bluetooth_config::mojom::BluetoothSystemState;
+using bluetooth_config::mojom::DeviceBatteryInfo;
+using bluetooth_config::mojom::DeviceBatteryInfoPtr;
+using bluetooth_config::mojom::DeviceConnectionState;
+using bluetooth_config::mojom::PairedBluetoothDeviceProperties;
+using bluetooth_config::mojom::PairedBluetoothDevicePropertiesPtr;
 
 // The values used to configure a Bluetooth device and validate that the
 // nickname, public name, and battery information is displayed correctly.
@@ -161,7 +161,7 @@ class BluetoothFeaturePodControllerTest : public AshTestBase {
     return feature_pod_button_->label_button_;
   }
 
-  chromeos::bluetooth_config::FakeDeviceCache* fake_device_cache() {
+  bluetooth_config::FakeDeviceCache* fake_device_cache() {
     return bluetooth_config_test_helper()->fake_device_cache();
   }
 
@@ -441,7 +441,7 @@ TEST_F(BluetoothFeaturePodControllerTest,
 
   // The lock screen is one of multiple session states where Bluetooth cannot be
   // modified. For more information see
-  // chromeos::bluetooth_config::SystemPropertiesProvider.
+  // `bluetooth_config::SystemPropertiesProvider`.
   LockScreen();
 
   EXPECT_FALSE(feature_pod_button_->GetEnabled());

@@ -1235,7 +1235,7 @@ void PopulateChromeWebUIFrameBinders(
 
   if (ash::features::IsBluetoothRevampEnabled()) {
     RegisterWebUIControllerInterfaceBinder<
-        chromeos::bluetooth_config::mojom::CrosBluetoothConfig,
+        ash::bluetooth_config::mojom::CrosBluetoothConfig,
         chromeos::BluetoothPairingDialogUI, chromeos::settings::OSSettingsUI>(
         map);
   }

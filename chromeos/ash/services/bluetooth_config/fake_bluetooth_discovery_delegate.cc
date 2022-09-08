@@ -7,8 +7,7 @@
 #include "base/bind.h"
 #include "base/run_loop.h"
 
-namespace chromeos {
-namespace bluetooth_config {
+namespace ash::bluetooth_config {
 
 FakeBluetoothDiscoveryDelegate::FakeBluetoothDiscoveryDelegate() = default;
 
@@ -52,5 +51,4 @@ void FakeBluetoothDiscoveryDelegate::OnDisconnected() {
   receiver_.reset();
 }
 
-}  // namespace bluetooth_config
-}  // namespace chromeos
+}  // namespace ash::bluetooth_config
