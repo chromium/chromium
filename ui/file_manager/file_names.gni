@@ -316,6 +316,7 @@ generated_js_files = [
   "file_manager/foreground/js/ui/banners/educational_banner.js",
   "file_manager/foreground/js/ui/banners/holding_space_welcome_banner.js",
   "file_manager/foreground/js/ui/banners/invalid_usb_filesystem_banner.js",
+  "file_manager/foreground/js/ui/banners/dlp_restricted_banner.js",
   "file_manager/foreground/js/ui/banners/local_disk_low_space_banner.js",
   "file_manager/foreground/js/ui/banners/photos_welcome_banner.js",
   "file_manager/foreground/js/ui/banners/shared_with_crostini_pluginvm_banner.js",

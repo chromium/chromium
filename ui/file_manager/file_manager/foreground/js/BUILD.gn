@@ -201,6 +201,7 @@ js_library("banner_controller") {
   deps = [
     ":constants",
     ":directory_model",
+    "ui/banners:dlp_restricted_banner",
     "ui/banners:drive_low_individual_space_banner",
     "ui/banners:drive_out_of_individual_space_banner",
     "ui/banners:drive_out_of_organization_space_banner",
