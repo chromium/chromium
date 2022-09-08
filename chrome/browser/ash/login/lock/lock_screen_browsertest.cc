@@ -5,12 +5,14 @@
 #include "ash/components/settings/cros_settings_names.h"
 #include "ash/public/cpp/login_screen_test_api.h"
 #include "base/containers/contains.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/login/lock/screen_locker_tester.h"
 #include "chrome/browser/ash/login/login_manager_test.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/login/ui/user_adding_screen.h"
 #include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -42,14 +44,21 @@ class LockScreenBaseTest : public LoginManagerTest {
 class LockScreenInputsTest : public LockScreenBaseTest {
  public:
   LockScreenInputsTest() {
+    // The test is flaky when the darklight mode is enabled.
+    // https://crbug.com/1334877
+    scoped_feature_list_.InitAndDisableFeature(
+        chromeos::features::kDarkLightMode);
+
     login_manager_.AppendRegularUsers(2);
     user_input_methods_.push_back("xkb:fr::fra");
     user_input_methods_.push_back("xkb:de::ger");
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// The test is flaky: https://crbug.com/1334877
-IN_PROC_BROWSER_TEST_F(LockScreenInputsTest, DISABLED_CheckIMESwitches) {
+IN_PROC_BROWSER_TEST_F(LockScreenInputsTest, CheckIMESwitches) {
   const auto& users = login_manager_.users();
   LoginUser(users[0].account_id);
   scoped_refptr<input_method::InputMethodManager::State> ime_states[2] = {
