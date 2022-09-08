@@ -1,1 +1,4 @@
 file://chromeos/LACROS_OWNERS
+
+per-file browser_data_back_migrator.cc=janagrill@google.com,vsavu@google.com
+per-file browser_data_back_migrator.h=janagrill@google.com,vsavu@google.com

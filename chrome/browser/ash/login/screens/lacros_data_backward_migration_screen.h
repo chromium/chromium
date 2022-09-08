@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_LOGIN_SCREENS_LACROS_DATA_BACKWARD_MIGRATION_SCREEN_H_
 
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/ash/crosapi/browser_data_back_migrator.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 // TODO(https://crbug.com/1164001): move to forward declaration.
 #include "chrome/browser/ui/webui/chromeos/login/lacros_data_backward_migration_screen_handler.h"
@@ -29,7 +30,13 @@ class LacrosDataBackwardMigrationScreen : public BaseScreen {
   void ShowImpl() override;
   void HideImpl() override;
 
+  // Called when migration is completed.
+  void OnMigrated(BrowserDataBackMigrator::Result result);
+
   base::WeakPtr<LacrosDataBackwardMigrationScreenView> view_;
+  std::unique_ptr<BrowserDataBackMigrator> migrator_;
+
+  base::WeakPtrFactory<LacrosDataBackwardMigrationScreen> weak_factory_{this};
 };
 
 }  // namespace ash
