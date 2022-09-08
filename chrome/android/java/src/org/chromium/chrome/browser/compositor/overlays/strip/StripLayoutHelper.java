@@ -2362,6 +2362,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
     @VisibleForTesting
     public void testSetScrollOffset(float offset) {
         mScrollOffset = offset;
+        updateStrip();
     }
 
     /**

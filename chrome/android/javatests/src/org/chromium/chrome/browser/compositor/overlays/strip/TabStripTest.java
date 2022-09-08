@@ -538,7 +538,6 @@ public class TabStripTest {
     @LargeTest
     @Restriction(UiRestriction.RESTRICTION_TYPE_TABLET)
     @Feature({"TabStrip"})
-    @DisabledTest(message = "https://crbug.com/1360472")
     public void testSwitchStripStackersWithIncognito() throws Exception {
         // Open an incognito tab to switch to the incognito model.
         sActivityTestRule.newIncognitoTabFromMenu();
@@ -546,7 +545,7 @@ public class TabStripTest {
         // Open enough regular tabs to cause the tabs to cascade or the strip to scroll depending
         // on which stacker is being used.
         ChromeTabUtils.newTabsFromMenu(
-                InstrumentationRegistry.getInstrumentation(), sActivityTestRule.getActivity(), 10);
+                InstrumentationRegistry.getInstrumentation(), sActivityTestRule.getActivity(), 20);
 
         // Switch to the ScrollingStripStacker.
         setShouldCascadeTabsAndCheckTabStrips(false);
@@ -555,7 +554,7 @@ public class TabStripTest {
         assertSetTabStripScrollOffset(0);
         TabModel model = sActivityTestRule.getActivity().getTabModelSelector().getModel(false);
         StripLayoutTab tab = TabStripUtils.findStripLayoutTab(
-                sActivityTestRule.getActivity(), false, model.getTabAt(10).getId());
+                sActivityTestRule.getActivity(), false, model.getTabAt(20).getId());
         assertTabVisibility(false, tab);
 
         // Create visibility callback helper.
@@ -596,7 +595,7 @@ public class TabStripTest {
         // Open enough regular tabs to cause the tabs to cascade or the strip to scroll depending
         // on which stacker is being used.
         ChromeTabUtils.newTabsFromMenu(
-                InstrumentationRegistry.getInstrumentation(), sActivityTestRule.getActivity(), 10);
+                InstrumentationRegistry.getInstrumentation(), sActivityTestRule.getActivity(), 20);
 
         // Switch to the ScrollingStripStacker.
         setShouldCascadeTabsAndCheckTabStrips(false);
@@ -614,12 +613,11 @@ public class TabStripTest {
     @LargeTest
     @Restriction(UiRestriction.RESTRICTION_TYPE_TABLET)
     @Feature({"TabStrip"})
-    @DisabledTest(message = "https://crbug.com/1360472")
     public void testSwitchStripStackersWithFirstTabSelected() throws Exception {
         // Open enough regular tabs to cause the tabs to cascade or the strip to scroll depending
         // on which stacker is being used.
         ChromeTabUtils.newTabsFromMenu(
-                InstrumentationRegistry.getInstrumentation(), sActivityTestRule.getActivity(), 10);
+                InstrumentationRegistry.getInstrumentation(), sActivityTestRule.getActivity(), 20);
 
         // Select the first tab by setting the index directly. It may not be visible, so don't
         // try to tap on it.
@@ -1181,7 +1179,7 @@ public class TabStripTest {
     private void assertSetTabStripScrollOffset(final int scrollOffset) throws ExecutionException {
         final StripLayoutHelper strip =
                 TabStripUtils.getActiveStripLayoutHelper(sActivityTestRule.getActivity());
-        TestThreadUtils.runOnUiThreadBlocking(() -> { strip.setScrollOffset(scrollOffset); });
+        TestThreadUtils.runOnUiThreadBlocking(() -> { strip.testSetScrollOffset(scrollOffset); });
 
         Assert.assertEquals(
                 "Tab strip scroll incorrect.", scrollOffset, strip.getScrollOffset(), 0);
