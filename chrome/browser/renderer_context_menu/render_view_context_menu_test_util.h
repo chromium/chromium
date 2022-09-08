@@ -53,6 +53,12 @@ class TestRenderViewContextMenu : public RenderViewContextMenu {
       const GURL& link_url,
       const GURL& frame_url);
 
+  static std::unique_ptr<TestRenderViewContextMenu> Create(
+      content::RenderFrameHost* render_frame_host,
+      const GURL& page_url,
+      const GURL& link_url,
+      const GURL& frame_url);
+
   // Returns true if the command specified by |command_id| is present
   // in the menu.
   // A list of command ids can be found in chrome/app/chrome_command_ids.h.
