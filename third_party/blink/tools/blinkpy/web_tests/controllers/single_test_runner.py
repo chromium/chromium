@@ -101,7 +101,9 @@ class SingleTestRunner(object):
 
         args = self._port.args_for_test(self._test_name)
         test_name = self._port.name_for_test(self._test_name)
-        return DriverInput(test_name, self._timeout_ms, image_hash, args)
+        wpt_print_mode = self._port.is_wpt_print_reftest(self._test_name)
+        return DriverInput(test_name, self._timeout_ms, image_hash,
+                           wpt_print_mode, args)
 
     def run(self):
         # WPT crash tests do not have baselines, so even when re-baselining we
@@ -682,17 +684,18 @@ class SingleTestRunner(object):
         expected_output = None
         reference_test_names = []
         reftest_failures = []
+        wpt_print_mode = self._port.is_wpt_print_reftest(self._test_name)
         args = self._port.args_for_test(self._test_name)
         # sort self._reference_files to put mismatch tests first
         for expectation, reference_filename in sorted(self._reference_files):
             reference_test_name = self._port.relative_test_filename(
                 reference_filename)
             reference_test_names.append(reference_test_name)
-            driver_input = DriverInput(
-                reference_test_name,
-                self._timeout_ms,
-                image_hash=test_output.image_hash,
-                args=args)
+            driver_input = DriverInput(reference_test_name,
+                                       self._timeout_ms,
+                                       image_hash=test_output.image_hash,
+                                       wpt_print_mode=wpt_print_mode,
+                                       args=args)
             expected_output = self._driver.run_test(driver_input)
             total_test_time += expected_output.test_time
             reftest_failures = self._compare_output_with_reference(

@@ -207,7 +207,12 @@ class MockDRT(object):
         else:
             test_name = self._port.relative_test_filename(uri)
 
-        return DriverInput(test_name, 0, checksum, args=[])
+        return DriverInput(
+            test_name,
+            0,
+            checksum,
+            wpt_print_mode=self._port.is_wpt_print_reftest(test_name),
+            args=[])
 
     def output_for_test(self, test_input, is_reftest):
         port = self._port
