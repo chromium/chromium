@@ -507,7 +507,8 @@ IN_PROC_BROWSER_TEST_F(SigninInterceptFirstRunExperienceDialogBrowserTest,
   policy::PolicyMap policy_map;
   policy_map.Set(policy::key::kBrowserThemeColor,
                  policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
-                 policy::POLICY_SOURCE_CLOUD, base::Value("#000000"), nullptr);
+                 policy::POLICY_SOURCE_CLOUD, base::Value("#000000"),
+                 /*external_data_fetcher=*/nullptr);
   UpdateChromePolicy(policy_map);
 
   controller()->ShowModalInterceptFirstRunExperienceDialog(
@@ -659,6 +660,42 @@ IN_PROC_BROWSER_TEST_F(SigninInterceptFirstRunExperienceDialogBrowserTest,
                         DialogEvent::kProfileCustomizationClickDone});
 }
 
+// Tests the case when promotional tabs are disabled by policy. The FRE dialog
+// should skip the sync confirmation.
+IN_PROC_BROWSER_TEST_F(SigninInterceptFirstRunExperienceDialogBrowserTest,
+                       PromotionalTabsDisabled) {
+  SignIn(kEnterpriseEmail);
+  policy::PolicyMap policy_map;
+  policy_map.Set(policy::key::kPromotionalTabsEnabled,
+                 policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+                 policy::POLICY_SOURCE_CLOUD, base::Value(false),
+                 /*external_data_fetcher=*/nullptr);
+  UpdateChromePolicy(policy_map);
+  content::TestNavigationObserver profile_customization_observer(
+      kProfileCustomizationUrl);
+  profile_customization_observer.StartWatchingNewWebContents();
+
+  // Sync confirmation is skipped.
+  controller()->ShowModalInterceptFirstRunExperienceDialog(
+      account_id(), /* is_forced_intercept = */ false);
+  EXPECT_TRUE(controller()->ShowsModalDialog());
+  profile_customization_observer.Wait();
+  EXPECT_EQ(
+      dialog()->GetModalDialogWebContentsForTesting()->GetLastCommittedURL(),
+      kProfileCustomizationUrl);
+  // Sync consent should not be granted since the user hasn't seen any consent
+  // UI.
+  ExpectPrimaryAccountWithExactConsentLevel(signin::ConsentLevel::kSignin);
+
+  SimulateProfileCustomizationDoneButtonClicked();
+  EXPECT_FALSE(controller()->ShowsModalDialog());
+  EXPECT_TRUE(ProfileSwitchPromoHasBeenShown());
+  ExpectRecordedEvents({DialogEvent::kStart,
+                        DialogEvent::kShowProfileCustomization,
+                        DialogEvent::kProfileCustomizationClickDone});
+  ExpectSigninHistogramsRecorded();
+}
+
 // Tests the case when the user went through the forced intercept dialog and the
 // account has a profile color policy. Tests that the FRE dialog exits
 // immediately and displays the profile switch IPH.
@@ -668,7 +705,8 @@ IN_PROC_BROWSER_TEST_F(SigninInterceptFirstRunExperienceDialogBrowserTest,
   policy::PolicyMap policy_map;
   policy_map.Set(policy::key::kBrowserThemeColor,
                  policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
-                 policy::POLICY_SOURCE_CLOUD, base::Value("#000000"), nullptr);
+                 policy::POLICY_SOURCE_CLOUD, base::Value("#000000"),
+                 /*external_data_fetcher=*/nullptr);
   UpdateChromePolicy(policy_map);
 
   controller()->ShowModalInterceptFirstRunExperienceDialog(
