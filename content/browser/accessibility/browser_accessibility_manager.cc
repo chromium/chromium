@@ -221,13 +221,6 @@ bool BrowserAccessibilityManager::never_suppress_or_delay_events_for_testing_ =
 bool BrowserAccessibilityManager::is_fail_fast_mode_ = false;
 
 // static
-absl::optional<int32_t> BrowserAccessibilityManager::last_focused_node_id_ = {};
-
-// static
-absl::optional<ui::AXTreeID>
-    BrowserAccessibilityManager::last_focused_node_tree_id_ = {};
-
-// static
 ui::AXTreeUpdate BrowserAccessibilityManager::GetEmptyDocument() {
   ui::AXNodeData empty_document;
   empty_document.id = 1;
@@ -268,10 +261,10 @@ void BrowserAccessibilityManager::FireFocusEventsIfNeeded() {
   if (user_is_navigating_away_)
     return;
 
-  BrowserAccessibility* last_focused_node = GetLastFocusedNode();
-  if (focus != last_focused_node)
+  ui::AXNode* last_focused_node = GetLastFocusedNode();
+  if (focus != GetFromAXNode(last_focused_node))
     FireFocusEvent(focus);
-  SetLastFocusedNode(focus);
+  SetLastFocusedNode(focus->node());
 }
 
 bool BrowserAccessibilityManager::CanFireEvents() const {
@@ -1594,7 +1587,7 @@ void BrowserAccessibilityManager::OnNodeWillBeDeleted(ui::AXTree* tree,
                                                       ui::AXNode* node) {
   DCHECK(node);
   if (BrowserAccessibility* wrapper = GetFromAXNode(node)) {
-    if (wrapper == GetLastFocusedNode())
+    if (node == GetLastFocusedNode())
       SetLastFocusedNode(nullptr);
 
     // We fire these here, immediately, to ensure we can send platform
@@ -1804,33 +1797,6 @@ bool BrowserAccessibilityManager::IsRootTree() const {
   DCHECK(!is_root_tree || GetParentTreeID() == ui::AXTreeIDUnknown())
       << "Root tree has parent tree id of: " << GetParentTreeID();
   return is_root_tree;
-}
-
-// static
-void BrowserAccessibilityManager::SetLastFocusedNode(
-    BrowserAccessibility* node) {
-  if (node) {
-    DCHECK(node->manager());
-    last_focused_node_id_ = node->GetId();
-    last_focused_node_tree_id_ = node->manager()->ax_tree_id();
-    DCHECK(last_focused_node_tree_id_);
-    DCHECK(last_focused_node_tree_id_ != ui::AXTreeIDUnknown());
-  } else {
-    last_focused_node_id_.reset();
-    last_focused_node_tree_id_.reset();
-  }
-}
-
-// static
-BrowserAccessibility* BrowserAccessibilityManager::GetLastFocusedNode() {
-  if (last_focused_node_id_) {
-    DCHECK(last_focused_node_tree_id_);
-    DCHECK(last_focused_node_tree_id_ != ui::AXTreeIDUnknown());
-    if (BrowserAccessibilityManager* last_focused_manager =
-            FromID(last_focused_node_tree_id_.value()))
-      return last_focused_manager->GetFromID(last_focused_node_id_.value());
-  }
-  return nullptr;
 }
 
 ui::AXTreeUpdate BrowserAccessibilityManager::SnapshotAXTreeForTesting() {

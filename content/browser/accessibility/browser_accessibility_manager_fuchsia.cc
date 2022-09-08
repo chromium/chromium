@@ -97,7 +97,7 @@ void BrowserAccessibilityManagerFuchsia::FireFocusEvent(
       ToBrowserAccessibilityFuchsia(node);
 
   BrowserAccessibilityFuchsia* old_focus_fuchsia =
-      ToBrowserAccessibilityFuchsia(GetLastFocusedNode());
+      ToBrowserAccessibilityFuchsia(GetFromAXNode(GetLastFocusedNode()));
 
   if (old_focus_fuchsia)
     old_focus_fuchsia->OnDataChanged();

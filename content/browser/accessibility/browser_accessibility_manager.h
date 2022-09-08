@@ -375,9 +375,6 @@ class CONTENT_EXPORT BrowserAccessibilityManager
   // descendants.
   BrowserAccessibility* GetFocusFromThisOrDescendantFrame() const;
 
-  // Return the last known node that had focus, without searching.
-  static BrowserAccessibility* GetLastFocusedNode();
-
   // Given a node, returns a descendant of that node if the node has an active
   // descendant, otherwise returns the node itself. The node does not need to be
   // focused.
@@ -576,8 +573,6 @@ class CONTENT_EXPORT BrowserAccessibilityManager
 
   bool ShouldFireEventForNode(BrowserAccessibility* node) const;
 
-  static void SetLastFocusedNode(BrowserAccessibility* node);
-
   // The object that can perform actions on our behalf.
   raw_ptr<BrowserAccessibilityDelegate> delegate_;
 
@@ -649,15 +644,6 @@ class CONTENT_EXPORT BrowserAccessibilityManager
     return event_generator_;
   }
   ui::AXEventGenerator& event_generator() { return event_generator_; }
-
-  // Stores the id of the last focused node across all frames, as well as the id
-  // of the tree that contains it, so that when focus might have changed we can
-  // figure out whether we need to fire a focus event.
-  //
-  // NOTE: Don't use or modify these properties directly, use the
-  // SetLastFocusedNode and GetLastFocusedNode methods instead.
-  static absl::optional<int32_t> last_focused_node_id_;
-  static absl::optional<ui::AXTreeID> last_focused_node_tree_id_;
 
   // A flag to ensure that accessibility fatal errors crash immediately.
   static bool is_fail_fast_mode_;

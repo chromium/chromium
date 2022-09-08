@@ -99,10 +99,24 @@ class AX_EXPORT AXTreeManager : public AXTreeObserver {
   // the default removal of the manager in `~AXTreeManager` occurs too late.
   void RemoveFromMap();
 
+  // Return the last node that had focus, no searching.
+  static AXNode* GetLastFocusedNode();
+
+  static void SetLastFocusedNode(AXNode* node);
+
   AXTreeID ax_tree_id_;
   std::unique_ptr<AXTree> ax_tree_;
 
   AXEventGenerator event_generator_;
+
+  // Stores the id of the last focused node, as well as the id
+  // of the tree that contains it, so that when focus might have changed we can
+  // figure out whether we need to fire a focus event.
+  //
+  // NOTE: Don't use or modify these properties directly, use the
+  // SetLastFocusedNode and GetLastFocusedNode methods instead.
+  static absl::optional<AXNodeID> last_focused_node_id_;
+  static absl::optional<AXTreeID> last_focused_node_tree_id_;
 
  private:
   friend class TestAXTreeManager;

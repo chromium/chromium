@@ -486,7 +486,7 @@ NSDictionary* BrowserAccessibilityManagerMac::
   BrowserAccessibility* focus_object = GetFocus();
   DCHECK(focus_object);
 
-  if (focus_object != GetLastFocusedNode()) {
+  if (focus_object != GetFromAXNode(GetLastFocusedNode())) {
     [user_info setObject:@(ui::AXTextStateChangeTypeSelectionMove)
                   forKey:ui::NSAccessibilityTextStateChangeTypeKey];
   } else {

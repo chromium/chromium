@@ -98,11 +98,47 @@ void AXTreeManager::WillBeRemovedFromMap() {
   ax_tree_->NotifyTreeManagerWillBeRemoved(ax_tree_id_);
 }
 
+// static
+absl::optional<AXNodeID> AXTreeManager::last_focused_node_id_ = {};
+
+// static
+absl::optional<AXTreeID> AXTreeManager::last_focused_node_tree_id_ = {};
+
+// static
+void AXTreeManager::SetLastFocusedNode(AXNode* node) {
+  if (node) {
+    DCHECK(node->GetManager());
+    last_focused_node_id_ = node->id();
+    last_focused_node_tree_id_ = node->GetManager()->GetTreeID();
+    DCHECK(last_focused_node_tree_id_);
+    DCHECK(last_focused_node_tree_id_ != ui::AXTreeIDUnknown());
+  } else {
+    last_focused_node_id_.reset();
+    last_focused_node_tree_id_.reset();
+  }
+}
+
+// static
+AXNode* AXTreeManager::GetLastFocusedNode() {
+  if (last_focused_node_id_) {
+    DCHECK(last_focused_node_tree_id_);
+    DCHECK(last_focused_node_tree_id_ != ui::AXTreeIDUnknown());
+    if (AXTreeManager* last_focused_manager =
+            FromID(last_focused_node_tree_id_.value())) {
+      return last_focused_manager->GetNode(last_focused_node_id_.value());
+    }
+  }
+  return nullptr;
+}
+
 AXTreeManager::~AXTreeManager() {
   // Stop observing so we don't get a callback for every node being deleted.
   event_generator_.ReleaseTree();
   if (ax_tree_)
     GetMap().RemoveTreeManager(ax_tree_id_);
+
+  if (last_focused_node_tree_id_ && ax_tree_id_ == *last_focused_node_tree_id_)
+    SetLastFocusedNode(nullptr);
 }
 
 void AXTreeManager::OnTreeDataChanged(AXTree* tree,
