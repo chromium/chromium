@@ -102,7 +102,7 @@ class ServiceWorkerStorageControlImpl
       int64_t registration_id,
       const blink::StorageKey& key,
       blink::mojom::ServiceWorkerFetchHandlerType fetch_handler_type,
-      UpdateNavigationPreloadHeaderCallback callback) override;
+      UpdateFetchHandlerTypeCallback callback) override;
   void GetNewRegistrationId(GetNewRegistrationIdCallback callback) override;
   void GetNewVersionId(GetNewVersionIdCallback callback) override;
   void GetNewResourceId(GetNewResourceIdCallback callback) override;

@@ -251,7 +251,7 @@ void ServiceWorkerStorageControlImpl::UpdateFetchHandlerType(
     int64_t registration_id,
     const blink::StorageKey& key,
     blink::mojom::ServiceWorkerFetchHandlerType type,
-    UpdateLastUpdateCheckTimeCallback callback) {
+    UpdateFetchHandlerTypeCallback callback) {
   storage_->UpdateFetchHandlerType(registration_id, key, type,
                                    std::move(callback));
 }
