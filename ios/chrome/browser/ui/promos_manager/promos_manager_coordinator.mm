@@ -17,14 +17,19 @@
 #import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
 #import "ios/chrome/browser/ui/promos_manager/promos_manager_mediator.h"
 #import "ios/chrome/browser/ui/promos_manager/promos_manager_scene_agent.h"
+#import "ios/chrome/browser/ui/promos_manager/standard_promo_action_handler.h"
 #import "ios/chrome/browser/ui/promos_manager/standard_promo_display_handler.h"
 #import "ios/chrome/browser/ui/promos_manager/standard_promo_view_provider.h"
+#import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
-@interface PromosManagerCoordinator () <PromosManagerCommands> {
+@interface PromosManagerCoordinator () <
+    PromosManagerCommands,
+    ConfirmationAlertActionHandler,
+    UIAdaptivePresentationControllerDelegate> {
   // Promos that conform to the StandardPromoDisplayHandler protocol.
   base::small_map<
       std::map<promos_manager::Promo, id<StandardPromoDisplayHandler>>>
@@ -38,6 +43,9 @@
 
 // A mediator that observes when it's a good time to display a promo.
 @property(nonatomic, strong) PromosManagerMediator* mediator;
+
+// The current StandardPromoViewProvider, if any.
+@property(nonatomic, weak) id<StandardPromoViewProvider> provider;
 
 @end
 
@@ -90,12 +98,73 @@
   } else if (provider_it != _viewProviderPromos.end()) {
     id<StandardPromoViewProvider> provider = provider_it->second;
 
+    provider.viewController.presentationController.delegate = self;
+    provider.viewController.actionHandler = self;
+    self.provider = provider;
+
     [self.baseViewController presentViewController:provider.viewController
                                           animated:YES
                                         completion:nil];
   } else {
     NOTREACHED();
   }
+}
+
+#pragma mark - ConfirmationAlertActionHandler
+
+- (void)confirmationAlertPrimaryAction {
+  DCHECK(self.provider);
+
+  if (![self.provider respondsToSelector:@selector(standardPromoPrimaryAction)])
+    return;
+
+  [self.provider standardPromoPrimaryAction];
+}
+
+- (void)confirmationAlertSecondaryAction {
+  DCHECK(self.provider);
+
+  if (![self.provider
+          respondsToSelector:@selector(standardPromoSecondaryAction)])
+    return;
+
+  [self.provider standardPromoSecondaryAction];
+}
+
+- (void)confirmationAlertTertiaryAction {
+  DCHECK(self.provider);
+
+  if (![self.provider
+          respondsToSelector:@selector(standardPromoTertiaryAction)])
+    return;
+
+  [self.provider standardPromoTertiaryAction];
+}
+
+- (void)confirmationAlertLearnMoreAction {
+  DCHECK(self.provider);
+
+  if (![self.provider
+          respondsToSelector:@selector(standardPromoLearnMoreAction)])
+    return;
+
+  [self.provider standardPromoLearnMoreAction];
+}
+
+- (void)confirmationAlertDismissAction {
+  DCHECK(self.provider);
+
+  if (![self.provider respondsToSelector:@selector(standardPromoDismissAction)])
+    return;
+
+  [self.provider standardPromoDismissAction];
+}
+
+#pragma mark - UIAdaptivePresentationControllerDelegate
+
+- (void)presentationControllerDidDismiss:
+    (UIPresentationController*)presentationController {
+  [self confirmationAlertDismissAction];
 }
 
 #pragma mark - Private
