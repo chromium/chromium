@@ -15,6 +15,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
+#include "base/strings/safe_sprintf.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
 #include "base/test/scoped_feature_list.h"
@@ -25,6 +26,7 @@
 #include "components/download/public/common/download_file_factory.h"
 #include "components/download/public/common/download_file_impl.h"
 #include "components/download/public/common/download_task_runner.h"
+#include "content/browser/devtools/protocol/browser_handler.h"
 #include "content/browser/devtools/protocol/devtools_download_manager_delegate.h"
 #include "content/browser/devtools/protocol/devtools_protocol_test_support.h"
 #include "content/browser/devtools/render_frame_devtools_agent_host.h"
@@ -595,6 +597,34 @@ class CaptureScreenshotTest : public DevToolsProtocolTest {
                               device_scale_factor, max_collor_diff));
   }
 
+  void SetDefaultBackgroundColorOverride(int r, int g, int b, float a) {
+    auto params = base::Value::Dict();
+    base::Value::Dict color;
+    color.Set("r", r);
+    color.Set("g", g);
+    color.Set("b", b);
+    color.Set("a", a);
+    params.Set("color", std::move(color));
+    SendCommandSync("Emulation.setDefaultBackgroundColorOverride",
+                    std::move(params));
+  }
+
+  void SetDeviceMetricsOverride(int width,
+                                int height,
+                                float device_scale_factor,
+                                bool mobile,
+                                absl::optional<bool> fitWindow) {
+    auto params = base::Value::Dict();
+    params.Set("width", width);
+    params.Set("height", height);
+    params.Set("deviceScaleFactor", device_scale_factor);
+    params.Set("mobile", mobile);
+    if (fitWindow.has_value()) {
+      params.Set("fitWindow", fitWindow.value());
+    }
+    SendCommandSync("Emulation.setDeviceMetricsOverride", std::move(params));
+  }
+
   // Takes a screenshot of a colored box that is positioned inside the frame.
   void PlaceAndCaptureBox(const gfx::Size& frame_size,
                           const gfx::Size& box_size,
@@ -626,13 +656,8 @@ class CaptureScreenshotTest : public DevToolsProtocolTest {
     // Force frame size: The offset of the blue box within the frame shouldn't
     // change during screenshotting. This verifies that the page doesn't observe
     // a change in frame size as a side effect of screenshotting.
-
-    params = base::Value::Dict();
-    params.Set("width", frame_size.width());
-    params.Set("height", frame_size.height());
-    params.Set("deviceScaleFactor", device_scale_factor);
-    params.Set("mobile", false);
-    SendCommandSync("Emulation.setDeviceMetricsOverride", std::move(params));
+    SetDeviceMetricsOverride(frame_size.width(), frame_size.height(),
+                             device_scale_factor, false, absl::nullopt);
 
     // Resize frame to scaled blue box size.
     gfx::RectF clip;
@@ -656,8 +681,8 @@ class CaptureScreenshotTest : public DevToolsProtocolTest {
     }
 
     CaptureScreenshotAndCompareTo(expected_bitmap, ScreenshotEncoding::PNG,
-                                  true, device_scale_factor, clip,
-                                  screenshot_scale);
+                                  /*from_surface=*/true, device_scale_factor,
+                                  clip, screenshot_scale);
 
     // Reset for next screenshot.
     SendCommandSync("Emulation.clearDeviceMetricsOverride");
@@ -691,14 +716,13 @@ IN_PROC_BROWSER_TEST_F(CaptureScreenshotTest,
           ->GetCompositorViewportPixelSize();
 
   // Make a page a bit bigger than the view to force scrollbars to be shown.
-  float content_height = window_size.height() + 10;
-  float content_width = window_size.width() + 10;
-
+  int content_height = window_size.height() + 10;
+  int content_width = window_size.width() + 10;
   shell()->LoadURL(
-      GURL("data:text/html,<body "
-           "style='background:%23123456;height:" +
-           base::NumberToString(content_height) +
-           "px;width:" + base::NumberToString(content_width) + "px'></body>"));
+      GURL(base::StringPrintf("data:text/html,"
+                              R"(<body style='background:%%23123456;height:%dpx;
+      width:%dpx'></body>)",
+                              content_height, content_width)));
 
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
   Attach();
@@ -713,8 +737,10 @@ IN_PROC_BROWSER_TEST_F(CaptureScreenshotTest,
 
   // Verify there are no scrollbars on the screenshot.
   CaptureScreenshotAndCompareTo(
-      expected_bitmap, ScreenshotEncoding::PNG, true, device_scale_factor,
-      gfx::RectF(0, 0, content_width, content_height), 1, true);
+      expected_bitmap, ScreenshotEncoding::PNG, /*from_surface=*/true,
+      device_scale_factor,
+      /*clip=*/gfx::RectF(0, 0, content_width, content_height),
+      /*clip_scale=*/1, true);
 }
 
 // ChromeOS and Android has fading out scrollbars, which makes the test flacky.
@@ -765,8 +791,10 @@ IN_PROC_BROWSER_TEST_F(
   // scrollbar magic happened, and verify it looks the same, meaning the
   // internal scrollbars are rendered.
   CaptureScreenshotAndCompareTo(
-      *expected_bitmap, ScreenshotEncoding::PNG, true, device_scale_factor,
-      gfx::RectF(0, 0, view_size.width(), view_size.height()), 1, true);
+      *expected_bitmap, ScreenshotEncoding::PNG, /*from_surface=*/true,
+      device_scale_factor,
+      /*clip=*/gfx::RectF(0, 0, view_size.width(), view_size.height()),
+      /*clip_scale=*/1, /*capture_beyond_viewport=*/true);
 }
 
 // ChromeOS and Android don't support software compositing.
@@ -807,12 +835,10 @@ IN_PROC_BROWSER_TEST_F(NoGPUCaptureScreenshotTest, MAYBE_LargeScreenshot) {
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
   Attach();
 
-  auto params = base::Value::Dict();
-  params.Set("width", 1280);
-  params.Set("height", 8440);
-  params.Set("deviceScaleFactor", 1);
-  params.Set("mobile", false);
-  SendCommandSync("Emulation.setDeviceMetricsOverride", std::move(params));
+  SetDeviceMetricsOverride(/*width=*/1280, /*height=*/8440,
+                           /*device_scale_factor=*/1,
+                           /*mobile=*/false,
+                           /*fitWindow=*/absl::nullopt);
   auto bitmap = CaptureScreenshot(ScreenshotEncoding::PNG, true,
                                   gfx::RectF(0, 0, 1280, 8440), 1);
   SendCommandSync("Emulation.clearDeviceMetricsOverride");
@@ -863,16 +889,8 @@ IN_PROC_BROWSER_TEST_F(CaptureScreenshotTest,
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
   Attach();
 
-  // Override background to blue.
-  base::Value::Dict color;
-  color.Set("r", 0x00);
-  color.Set("g", 0x00);
-  color.Set("b", 0xff);
-  color.Set("a", 1.0);
-  base::Value::Dict params;
-  params.Set("color", std::move(color));
-  SendCommandSync("Emulation.setDefaultBackgroundColorOverride",
-                  std::move(params));
+  SetDefaultBackgroundColorOverride(/*r=*/0x00, /*g=*/0x00, /*b=*/0xff,
+                                    /*a=*/1.0);
 
   SkBitmap expected_bitmap;
   // We compare against the actual physical backing size rather than the
@@ -883,13 +901,15 @@ IN_PROC_BROWSER_TEST_F(CaptureScreenshotTest,
                             ->GetCompositorViewportPixelSize();
   expected_bitmap.allocN32Pixels(view_size.width(), view_size.height());
   expected_bitmap.eraseColor(SkColorSetRGB(0x00, 0x00, 0xff));
-  CaptureScreenshotAndCompareTo(expected_bitmap, ScreenshotEncoding::PNG, true);
+  CaptureScreenshotAndCompareTo(expected_bitmap, ScreenshotEncoding::PNG,
+                                /*from_surface=*/true);
 
   // Tests that resetting Emulation.setDefaultBackgroundColorOverride
   // clears the background color override.
   SendCommandSync("Emulation.setDefaultBackgroundColorOverride");
   expected_bitmap.eraseColor(SK_ColorWHITE);
-  CaptureScreenshotAndCompareTo(expected_bitmap, ScreenshotEncoding::PNG, true);
+  CaptureScreenshotAndCompareTo(expected_bitmap, ScreenshotEncoding::PNG,
+                                /*from_surface=*/true);
 }
 
 // Verifies that setDefaultBackgroundColor and captureScreenshot support a fully
@@ -904,18 +924,7 @@ IN_PROC_BROWSER_TEST_F(CaptureScreenshotTest, TransparentScreenshots) {
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
   Attach();
 
-  auto params = base::Value::Dict();
-  {
-    // Override background to fully transparent.
-    base::Value::Dict color;
-    color.Set("r", 0);
-    color.Set("g", 0);
-    color.Set("b", 0);
-    color.Set("a", 0);
-    params.Set("color", std::move(color));
-  }
-  SendCommandSync("Emulation.setDefaultBackgroundColorOverride",
-                  std::move(params));
+  SetDefaultBackgroundColorOverride(/*r=*/0, /*g=*/0, /*b=*/0, /*a=*/0);
 
   SkBitmap expected_bitmap;
   // We compare against the actual physical backing size rather than the
@@ -926,55 +935,134 @@ IN_PROC_BROWSER_TEST_F(CaptureScreenshotTest, TransparentScreenshots) {
                             ->GetCompositorViewportPixelSize();
   expected_bitmap.allocN32Pixels(view_size.width(), view_size.height());
   expected_bitmap.eraseColor(SK_ColorTRANSPARENT);
-  CaptureScreenshotAndCompareTo(expected_bitmap, ScreenshotEncoding::PNG, true);
+  CaptureScreenshotAndCompareTo(expected_bitmap, ScreenshotEncoding::PNG,
+                                /*from_surface=*/true);
 
-#if !BUILDFLAG(IS_ANDROID)
   float device_scale_factor =
       display::Screen::GetScreen()->GetPrimaryDisplay().device_scale_factor();
+  gfx::RectF clip;
+  clip.SetRect(0, 0, view_size.width(), view_size.height());
+  CaptureScreenshotAndCompareTo(expected_bitmap, ScreenshotEncoding::PNG,
+                                /*from_surface=*/true, device_scale_factor,
+                                clip, /*clip_scale=*/1,
+                                /*capture_beyond_viewport=*/true);
+
+#if !BUILDFLAG(IS_ANDROID)
 
   // Check that device emulation does not affect the transparency.
-  params = base::Value::Dict();
-  params.Set("width", view_size.width());
-  params.Set("height", view_size.height());
-  params.Set("deviceScaleFactor", 0);
-  params.Set("mobile", false);
-  params.Set("fitWindow", false);
-  SendCommandSync("Emulation.setDeviceMetricsOverride", std::move(params));
-  CaptureScreenshotAndCompareTo(expected_bitmap, ScreenshotEncoding::PNG, true,
-                                device_scale_factor);
+  SetDeviceMetricsOverride(view_size.width(), view_size.height(),
+                           /*device_scale_factor=*/0,
+                           /*mobile=*/false,
+                           /*fitWindow=*/false);
+  CaptureScreenshotAndCompareTo(expected_bitmap, ScreenshotEncoding::PNG,
+                                /*from_surface=*/true, device_scale_factor);
+
+  CaptureScreenshotAndCompareTo(
+      expected_bitmap, ScreenshotEncoding::PNG, /*from_surface=*/true,
+      device_scale_factor,
+      /*clip=*/gfx::RectF(0, 0, view_size.width(), view_size.height()),
+      /*clip_scale=*/1,
+      /*capture_beyond_viewport=*/true);
+
   SendCommandSync("Emulation.clearDeviceMetricsOverride");
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-  {
-    // Override background to a semi-transparent color.
-    base::Value::Dict color;
-    color.Set("r", 255);
-    color.Set("g", 0);
-    color.Set("b", 0);
-    color.Set("a", 1.0 / 255 * 16);
-    params = base::Value::Dict();
-    params.Set("color", std::move(color));
-  }
-  SendCommandSync("Emulation.setDefaultBackgroundColorOverride",
-                  std::move(params));
+  SetDefaultBackgroundColorOverride(/*r=*/255, /*g=*/0, /*b=*/0,
+                                    /*a=*/1.0 / 255 * 16);
 
   expected_bitmap.eraseColor(SkColorSetARGB(16, 255, 0, 0));
-  CaptureScreenshotAndCompareTo(expected_bitmap, ScreenshotEncoding::PNG, true);
+  CaptureScreenshotAndCompareTo(expected_bitmap, ScreenshotEncoding::PNG,
+                                /*from_surface=*/true);
+  // Check for beyond-viewport with clip
+  CaptureScreenshotAndCompareTo(
+      expected_bitmap, ScreenshotEncoding::PNG, /*from_surface=*/true,
+      device_scale_factor,
+      /*clip=*/gfx::RectF(0, 0, view_size.width(), view_size.height()),
+      /*clip_scale=*/1,
+      /*capture_beyond_viewport=*/true);
 
 #if !BUILDFLAG(IS_ANDROID)
   // Check that device emulation does not affect the transparency.
-  params = base::Value::Dict();
-  params.Set("width", view_size.width());
-  params.Set("height", view_size.height());
-  params.Set("deviceScaleFactor", 0);
-  params.Set("mobile", false);
-  params.Set("fitWindow", false);
-  SendCommandSync("Emulation.setDeviceMetricsOverride", std::move(params));
-  CaptureScreenshotAndCompareTo(expected_bitmap, ScreenshotEncoding::PNG, true,
-                                device_scale_factor);
+
+  SetDeviceMetricsOverride(view_size.width(), view_size.height(),
+                           /*device_scale_factor=*/0, /*mobile=*/false,
+                           /*fitWindow=*/false);
+
+  CaptureScreenshotAndCompareTo(expected_bitmap, ScreenshotEncoding::PNG,
+                                /*from_surface=*/true, device_scale_factor);
+  CaptureScreenshotAndCompareTo(
+      expected_bitmap, ScreenshotEncoding::PNG, /*from_surface=*/true,
+      device_scale_factor,
+      /*clip=*/gfx::RectF(0, 0, view_size.width(), view_size.height()),
+      /*clip_scale=*/1, /*capture_beyond_viewport=*/true);
+
   SendCommandSync("Emulation.clearDeviceMetricsOverride");
 #endif  // !BUILDFLAG(IS_ANDROID)
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+// Verifies that CaptureScreenshotsBeyondViewport supports emulation with the
+// use of setDeviceMetricsOverride and setDefaultBackgroundColorOverride
+IN_PROC_BROWSER_TEST_F(CaptureScreenshotTest,
+                       CaptureScreenshotBeyondViewport_Emulation) {
+  // TODO(crbug.com/653637) This test fails consistently on low-end Android
+  // devices.
+  if (base::SysInfo::IsLowEndDevice())
+    return;
+
+  // Load dummy page before getting the window size.
+  shell()->LoadURL(GURL("data:text/html,"));
+
+  // We compare against the actual physical backing size rather than the
+  // view size, because the view size is stored adjusted for DPI and only in
+  // integer precision.
+  gfx::Size window_size =
+      static_cast<RenderWidgetHostViewBase*>(
+          shell()->web_contents()->GetRenderWidgetHostView())
+          ->GetCompositorViewportPixelSize();
+
+  // Make a page a bigger than the view to have fullpage behaviour.
+  int content_height = window_size.height() + 100;
+  int content_width = window_size.width() + 100;
+
+  shell()->LoadURL(
+      GURL(base::StringPrintf("data:text/html,"
+                              R"(<body style='background:%%23123456;height:%dpx;
+      width:%dpx'></body>)",
+                              content_height, content_width)));
+
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  Attach();
+
+  SetDefaultBackgroundColorOverride(/*r=*/0x12, /*g=*/0x34, /*b=*/0x56,
+                                    /*a=*/1.0);
+
+  SkBitmap expected_bitmap;
+  expected_bitmap.allocN32Pixels(content_width, content_height);
+  expected_bitmap.eraseColor(SkColorSetRGB(0x12, 0x34, 0x56));
+
+  float device_scale_factor =
+      display::Screen::GetScreen()->GetPrimaryDisplay().device_scale_factor();
+
+  // Check device emulation.
+  // Additionally checks if emulation doesnt affect color change
+  SetDeviceMetricsOverride(content_width, content_height,
+                           /*device_scale_factor=*/0, /*mobile=*/false,
+                           /*fitWindow=*/false);
+  // Test for no Clip
+  CaptureScreenshotAndCompareTo(
+      expected_bitmap, ScreenshotEncoding::PNG, /*from_surface=*/true,
+      device_scale_factor, /*clip=*/gfx::RectF(),
+      /*clip_scale=*/0, /*capture_beyond_viewport=*/true);
+  // Test for Clip
+  CaptureScreenshotAndCompareTo(
+      expected_bitmap, ScreenshotEncoding::PNG, /*from_surface=*/true,
+      device_scale_factor,
+      /*clip=*/gfx::RectF(0, 0, content_width, content_height),
+      /*clip_scale=*/0, /*capture_beyond_viewport=*/true);
+  SendCommandSync("Emulation.clearDeviceMetricsOverride");
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 IN_PROC_BROWSER_TEST_F(CaptureScreenshotTest,
                        OnlyScreenshotsFromSurfaceWhenUnsafeNotAllowed) {
