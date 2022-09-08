@@ -26,6 +26,7 @@
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/scripting_permissions_modifier.h"
 #include "chrome/browser/extensions/shared_module_service.h"
+#include "chrome/browser/extensions/site_permissions_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/extensions/extension_icon_source.h"
 #include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
@@ -749,6 +750,11 @@ void ExtensionInfoGenerator::CreateExtensionInfoHelper(
     info->views = InspectableViewsFinder(profile).
                       GetViewsForExtension(extension, is_enabled);
   }
+
+  // Show access requests in toolbar.
+  info->show_access_requests_in_toolbar =
+      SitePermissionsHelper(profile).ShowAccessRequestsInToolbar(
+          extension.id());
 
   // The icon.
   ExtensionResource icon =

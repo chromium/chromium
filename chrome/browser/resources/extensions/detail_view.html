@@ -89,6 +89,12 @@
     width: 18px;
   }
 
+  .link-icon-button {
+    --iron-icon-height: var(--cr-icon-size);
+    --iron-icon-width: var(--cr-icon-size);
+    margin-inline-start: 6px;
+  }
+
   #allowlist-warning {
     flex: 1;
   }
@@ -109,6 +115,17 @@
   extensions-toggle-row {
     box-sizing: border-box;
     padding: var(--cr-section-vertical-padding) var(--cr-section-padding);
+  }
+
+  #show-access-requests-toggle {
+    margin-inline-start: var(--cr-section-indent-width);
+    min-height: var(--cr-section-min-height);
+    padding: 0;
+  }
+
+  #access-toggle-and-link {
+    color: var(--cr-primary-text-color);
+    display: flex;
   }
 
   #load-path {
@@ -348,6 +365,22 @@
                 delegate="[[delegate]]"
                 item-id="[[data.id]]">
             </extensions-host-permissions-toggle-list>
+          </template>
+          <template is="dom-if" if="[[showEnableAccessRequestsToggle_(
+                data.*, enableEnhancedSiteControls)]]">
+            <extensions-toggle-row id="show-access-requests-toggle"
+                          checked="[[data.showAccessRequestsInToolbar]]"
+                          class="hr"
+                          on-change="onShowAccessRequestsChange_">
+              <div id="access-toggle-and-link">
+                <span>$i18n{itemShowAccessRequestsInToolbar}</span>
+                <a class="link-icon-button" aria-label="$i18n{learnMore}"
+                    href="$i18n{showAccessRequestsInToolbarLearnMoreLink}"
+                    target="_blank">
+                  <iron-icon icon="cr:help-outline"></iron-icon>
+                </a>
+              </div>
+            </extensions-toggle-row>
           </template>
         </div>
       </div>

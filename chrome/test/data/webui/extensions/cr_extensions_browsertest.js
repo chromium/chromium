@@ -307,6 +307,11 @@ TEST_F('CrExtensionsDetailViewTest', 'InspectableViewSortOrder', function() {
       extension_detail_view_tests.TestNames.InspectableViewSortOrder);
 });
 
+TEST_F('CrExtensionsDetailViewTest', 'ShowAccessRequestsInToolbar', function() {
+  this.runMochaTest(
+      extension_detail_view_tests.TestNames.ShowAccessRequestsInToolbar);
+});
+
 ////////////////////////////////////////////////////////////////////////////////
 // Extension Item List Tests
 

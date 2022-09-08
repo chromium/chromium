@@ -26,6 +26,7 @@ const extension_detail_view_tests = {
     NoSiteAccessWithEnhancedSiteControls:
         'no site access with enhanced site controls',
     InspectableViewSortOrder: 'inspectable view sort order',
+    ShowAccessRequestsInToolbar: 'show access requests in toolbar',
   },
 };
 
@@ -560,5 +561,39 @@ suite(extension_detail_view_tests.suiteName, function() {
         assertDeepEquals(
             ['service worker', 'background page', 'popup.html'],
             orderedListItems);
+      });
+
+  test(
+      assert(extension_detail_view_tests.TestNames.ShowAccessRequestsInToolbar),
+      function() {
+        const testIsVisible = isChildVisible.bind(null, item);
+
+        const allSitesPermissions = {
+          simplePermissions: [],
+          runtimeHostPermissions: {
+            hosts: [{granted: false, host: '<all_urls>'}],
+            hasAllHosts: true,
+            hostAccess: chrome.developerPrivate.HostAccess.ON_CLICK,
+          },
+        };
+        item.set('data.permissions', allSitesPermissions);
+        item.set('data.showAccessRequestsInToolbar', true);
+        flush();
+
+        assertFalse(testIsVisible('#show-access-requests-toggle'));
+
+        item.enableEnhancedSiteControls = true;
+        flush();
+
+        assertTrue(testIsVisible('#show-access-requests-toggle'));
+        assertTrue(item.shadowRoot!
+                       .querySelector<ExtensionsToggleRowElement>(
+                           '#show-access-requests-toggle')!.checked);
+
+        mockDelegate.testClickingCalls(
+            item.shadowRoot!
+                .querySelector<ExtensionsToggleRowElement>(
+                    '#show-access-requests-toggle')!.getLabel(),
+            'setShowAccessRequestsInToolbar', [extensionData.id, false]);
       });
 });

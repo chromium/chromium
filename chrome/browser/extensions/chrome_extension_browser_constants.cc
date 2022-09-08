@@ -14,4 +14,12 @@ const char kRuntimeHostPermissionsHelpURL[] =
 const char kExtensionsSitePermissionsURL[] =
     "chrome://extensions/sitePermissions";
 
+// The link to the help article for click to script, which contains info on
+// enabling extensions to request access to the current site through the
+// toolbar.
+// TODO(crbug.com/1353587): This link is likely temporary, and may need to be
+// replaced later.
+const char kShowAccessRequestsInToolbarHelpURL[] =
+    "https://support.google.com/chrome_webstore/answer/2664769";
+
 }  // namespace chrome_extension_constants

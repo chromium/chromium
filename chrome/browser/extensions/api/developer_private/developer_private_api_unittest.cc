@@ -24,6 +24,7 @@
 #include "chrome/browser/extensions/permissions_test_util.h"
 #include "chrome/browser/extensions/permissions_updater.h"
 #include "chrome/browser/extensions/scripting_permissions_modifier.h"
+#include "chrome/browser/extensions/site_permissions_helper.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/extensions/api/developer_private.h"
 #include "chrome/common/pref_names.h"
@@ -250,7 +251,8 @@ class DeveloperPrivateApiUnitTest : public ExtensionServiceTestWithInstall {
   // Tests modifying the extension's configuration.
   void TestExtensionPrefSetting(const base::RepeatingCallback<bool()>& has_pref,
                                 const std::string& key,
-                                const std::string& extension_id);
+                                const std::string& extension_id,
+                                bool expected_default_value);
 
   testing::AssertionResult TestPackExtensionFunction(
       const base::ListValue& args,
@@ -342,11 +344,12 @@ const Extension* DeveloperPrivateApiUnitTest::LoadSimpleExtension() {
 void DeveloperPrivateApiUnitTest::TestExtensionPrefSetting(
     const base::RepeatingCallback<bool()>& has_pref,
     const std::string& key,
-    const std::string& extension_id) {
+    const std::string& extension_id,
+    bool expected_default_value) {
   scoped_refptr<ExtensionFunction> function(
       new api::DeveloperPrivateUpdateExtensionConfigurationFunction());
 
-  EXPECT_FALSE(has_pref.Run()) << key;
+  EXPECT_EQ(expected_default_value, has_pref.Run()) << key;
 
   {
     base::Value::Dict parameters;
@@ -503,11 +506,17 @@ TEST_F(DeveloperPrivateApiUnitTest,
   TestExtensionPrefSetting(
       base::BindRepeating(&HasPrefsPermission, &util::IsIncognitoEnabled,
                           profile(), id),
-      "incognitoAccess", id);
+      "incognitoAccess", id, /*expected_default_value=*/false);
   TestExtensionPrefSetting(
       base::BindRepeating(&HasPrefsPermission, &util::AllowFileAccess,
                           profile(), id),
-      "fileAccess", id);
+      "fileAccess", id, /*expected_default_value=*/false);
+
+  SitePermissionsHelper helper(profile());
+  TestExtensionPrefSetting(
+      base::BindRepeating(&SitePermissionsHelper::ShowAccessRequestsInToolbar,
+                          base::Unretained(&helper), id),
+      "showAccessRequestsInToolbar", id, /*expected_default_value=*/true);
 }
 
 // Test developerPrivate.reload.

@@ -256,6 +256,7 @@ namespace developerPrivate {
     ExtensionView[] views;
     DOMString webStoreUrl;
     boolean showSafeBrowsingAllowlistWarning;
+    boolean showAccessRequestsInToolbar;
   };
 
   dictionary ProfileInfo {
@@ -314,6 +315,7 @@ namespace developerPrivate {
     boolean? incognitoAccess;
     boolean? errorCollection;
     HostAccess? hostAccess;
+    boolean? showAccessRequestsInToolbar;
   };
 
   dictionary ProfileConfigurationUpdate {

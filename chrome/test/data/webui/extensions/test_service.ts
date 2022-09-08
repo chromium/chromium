@@ -61,6 +61,7 @@ export class TestService extends TestBrowserProxy implements ServiceInterface {
       'setItemHostAccess',
       'setProfileInDevMode',
       'setShortcutHandlingSuspended',
+      'setShowAccessRequestsInToolbar',
       'shouldIgnoreUpdate',
       'showInFolder',
       'showItemOptionsPage',
@@ -343,5 +344,9 @@ export class TestService extends TestBrowserProxy implements ServiceInterface {
   getUserAndExtensionSitesByEtld() {
     this.methodCalled('getUserAndExtensionSitesByEtld');
     return Promise.resolve(this.siteGroups!);
+  }
+
+  setShowAccessRequestsInToolbar(id: string, showRequests: boolean) {
+    this.methodCalled('setShowAccessRequestsInToolbar', id, showRequests);
   }
 }

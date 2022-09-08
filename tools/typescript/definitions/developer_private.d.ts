@@ -243,6 +243,7 @@ declare global {
         views: ExtensionView[],
         webStoreUrl: string,
         showSafeBrowsingAllowlistWarning: boolean,
+        showAccessRequestsInToolbar: boolean,
       };
 
       export type ProfileInfo = {
@@ -259,6 +260,7 @@ declare global {
         incognitoAccess?: boolean,
         errorCollection?: boolean,
         hostAccess?: HostAccess,
+        showAccessRequestsInToolbar?: boolean,
       };
 
       export type ProfileConfigurationUpdate = {

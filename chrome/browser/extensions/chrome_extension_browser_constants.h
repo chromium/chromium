@@ -11,6 +11,7 @@ namespace chrome_extension_constants {
 
 extern const char kRuntimeHostPermissionsHelpURL[];
 extern const char kExtensionsSitePermissionsURL[];
+extern const char kShowAccessRequestsInToolbarHelpURL[];
 
 }  // namespace chrome_extension_constants
 

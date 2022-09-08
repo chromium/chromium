@@ -762,6 +762,9 @@ Permissions you've already given to websites and apps may apply to this account.
       </if>
 
       <!-- chrome://settings/extensions page -->
+      <message name="IDS_EXTENSIONS_ITEM_SHOW_ACCESS_REQUESTS_IN_TOOLBAR" desc="The label on the toggle to allow the extension to show site access requests in the toolbar.">
+        Allow extension to show access requests in the Chrome toolbar
+      </message>
       <message name="IDS_EXTENSIONS_INCOGNITO_WARNING" desc="Warns the user that Chrome cannot prevent extensions from recording history in Incognito mode. Displayed in extensions management UI after an extension is selected to be run in Incognito mode.">
         Warning: Google Chrome cannot prevent extensions from recording your browsing history. To disable this extension in Incognito mode, unselect this option.
       </message>

@@ -39,6 +39,7 @@
 #include "chrome/browser/extensions/permissions_updater.h"
 #include "chrome/browser/extensions/scripting_permissions_modifier.h"
 #include "chrome/browser/extensions/shared_module_service.h"
+#include "chrome/browser/extensions/site_permissions_helper.h"
 #include "chrome/browser/extensions/unpacked_installer.h"
 #include "chrome/browser/extensions/updater/extension_updater.h"
 #include "chrome/browser/extensions/webstore_reinstaller.h"
@@ -1095,6 +1096,11 @@ DeveloperPrivateUpdateExtensionConfigurationFunction::Run() {
       case developer::HOST_ACCESS_NONE:
         NOTREACHED();
     }
+  }
+  if (update.show_access_requests_in_toolbar) {
+    SitePermissionsHelper(Profile::FromBrowserContext(browser_context()))
+        .SetShowAccessRequestsInToolbar(
+            extension->id(), *update.show_access_requests_in_toolbar);
   }
 
   return RespondNow(NoArguments());

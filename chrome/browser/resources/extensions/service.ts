@@ -504,6 +504,13 @@ export class Service implements ServiceInterface {
     return chrome.developerPrivate.onUserSiteSettingsChanged;
   }
 
+  setShowAccessRequestsInToolbar(id: string, showRequests: boolean) {
+    chrome.developerPrivate.updateExtensionConfiguration({
+      extensionId: id,
+      showAccessRequestsInToolbar: showRequests,
+    });
+  }
+
   static getInstance(): ServiceInterface {
     return instance || (instance = new Service());
   }

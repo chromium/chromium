@@ -324,7 +324,8 @@ chrome.developerPrivate.Permissions;
  *   version: string,
  *   views: !Array<!chrome.developerPrivate.ExtensionView>,
  *   webStoreUrl: string,
- *   showSafeBrowsingAllowlistWarning: boolean
+ *   showSafeBrowsingAllowlistWarning: boolean,
+ *   showAccessRequestsInToolbar: boolean
  * }}
  */
 chrome.developerPrivate.ExtensionInfo;
@@ -387,7 +388,8 @@ chrome.developerPrivate.GetExtensionsInfoOptions;
  *   fileAccess: (boolean|undefined),
  *   incognitoAccess: (boolean|undefined),
  *   errorCollection: (boolean|undefined),
- *   hostAccess: (!chrome.developerPrivate.HostAccess|undefined)
+ *   hostAccess: (!chrome.developerPrivate.HostAccess|undefined),
+ *   showAccessRequestsInToolbar: (boolean|undefined)
  * }}
  */
 chrome.developerPrivate.ExtensionConfigurationUpdate;

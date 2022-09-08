@@ -54,6 +54,7 @@ namespace extensions {
 namespace util {
 
 namespace {
+
 // Returns |extension_id|. See note below.
 std::string ReloadExtensionIfEnabled(const std::string& extension_id,
                                      content::BrowserContext* context) {

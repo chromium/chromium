@@ -27,6 +27,7 @@ import './toggle_row.js';
 import {CrLinkRowElement} from 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import {CrToggleElement} from 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
 import {CrTooltipIconElement} from 'chrome://resources/cr_elements/policy/cr_tooltip_icon.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
 import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {afterNextRender, DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -334,6 +335,19 @@ export class ExtensionsDetailViewElement extends
   private showHostPermissionsToggleList_(): boolean {
     return this.hasRuntimeHostPermissions_() &&
         !this.data.permissions.runtimeHostPermissions!.hasAllHosts;
+  }
+
+  private showEnableAccessRequestsToggle_(): boolean {
+    return this.showSiteAccessContent_() && this.enableEnhancedSiteControls;
+  }
+
+  private onShowAccessRequestsChange_() {
+    const showAccessRequestsToggle =
+        this.shadowRoot!.querySelector<ExtensionsToggleRowElement>(
+            '#show-access-requests-toggle');
+    assert(showAccessRequestsToggle);
+    this.delegate.setShowAccessRequestsInToolbar(
+        this.data.id, showAccessRequestsToggle.checked);
   }
 
   private showReloadButton_(): boolean {

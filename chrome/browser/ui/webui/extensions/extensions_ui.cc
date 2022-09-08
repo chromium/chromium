@@ -203,6 +203,8 @@ content::WebUIDataSource* CreateExtensionsSource(Profile* profile,
     {"itemPermissionsAndSiteAccessEmpty",
      IDS_EXTENSIONS_ITEM_PERMISSIONS_AND_SITE_ACCESS_EMPTY},
     {"itemRemoveExtension", IDS_EXTENSIONS_ITEM_REMOVE_EXTENSION},
+    {"itemShowAccessRequestsInToolbar",
+     IDS_EXTENSIONS_ITEM_SHOW_ACCESS_REQUESTS_IN_TOOLBAR},
     {"itemSiteAccess", IDS_EXTENSIONS_ITEM_SITE_ACCESS},
     {"itemSiteAccessAddHost", IDS_EXTENSIONS_ITEM_SITE_ACCESS_ADD_HOST},
     {"itemSiteAccessEmpty", IDS_EXTENSIONS_ITEM_SITE_ACCESS_EMPTY},
@@ -373,6 +375,9 @@ content::WebUIDataSource* CreateExtensionsSource(Profile* profile,
   source->AddBoolean(kEnableEnhancedSiteControls,
                      base::FeatureList::IsEnabled(
                          extensions_features::kExtensionsMenuAccessControl));
+  source->AddString(
+      "showAccessRequestsInToolbarLearnMoreLink",
+      chrome_extension_constants::kShowAccessRequestsInToolbarHelpURL);
 
   return source;
 }
