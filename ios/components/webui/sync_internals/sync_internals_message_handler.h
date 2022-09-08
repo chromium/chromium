@@ -47,7 +47,7 @@ class SyncInternalsMessageHandler : public web::WebUIIOSMessageHandler,
   // Fires an event to send the initial state of the "include specifics" flag.
   void HandleRequestIncludeSpecificsInitialState(const base::Value::List& args);
 
-  // Handler for getAllNodes message.  Needs a |request_id| argument.
+  // Handler for getAllNodes message.  Needs a `request_id` argument.
   void HandleGetAllNodes(const base::Value::List& args);
 
   // Handler for setting internal state of if specifics should be included in
