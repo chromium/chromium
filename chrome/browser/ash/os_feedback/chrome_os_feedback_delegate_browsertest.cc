@@ -71,6 +71,7 @@ using testing::_;
 constexpr char kExtraDiagnosticsKey[] = "EXTRA_DIAGNOSTICS";
 constexpr char kFakeExtraDiagnosticsValue[] =
     "Failed to connect to wifi network.";
+constexpr char kFakeCategoryTag[] = "FakeCategoryTag";
 constexpr char kPageUrl[] = "https://www.google.com/?q=123";
 constexpr char kSignedInUserEmail[] = "test_user_email@gmail.com";
 constexpr char kFeedbackUserConsentKey[] = "feedbackUserCtlConsent";
@@ -371,6 +372,56 @@ IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest,
   EXPECT_EQ(kFakeExtraDiagnosticsValue, extra_diagnostics->second);
   // Verify category_tag is marked as BluetoothReportWithLogs in the report.
   EXPECT_EQ(kFeedbackCategoryTag, feedback_data->category_tag());
+}
+
+// Test that feedback params and data are populated with correct data before
+// passed to SendFeedback method of the feedback service.
+// - System logs and histograms are included.
+// - Screenshot is included.
+// - Consent granted.
+// - Non-empty extra_diagnostics provided.
+// - sentBluetoothLog flag is set false.
+// - category_tag is set to a fake value.
+// - User is logged in with internal google account.
+IN_PROC_BROWSER_TEST_F(
+    ChromeOsFeedbackDelegateTest,
+    FeedbackDataPopulatedIncludeSysLogsAndScreenshotAndFakeCategoryTag) {
+  ReportPtr report = Report::New();
+  report->feedback_context = FeedbackContext::New();
+  report->description = kDescription;
+  report->include_screenshot = true;
+  report->contact_user_consent_granted = true;
+  report->feedback_context->extra_diagnostics = kFakeExtraDiagnosticsValue;
+  report->send_bluetooth_logs = false;
+  report->feedback_context->category_tag = kFakeCategoryTag;
+  report->include_system_logs_and_histograms = true;
+  report->feedback_context->is_internal_account = true;
+  const FeedbackParams expected_params{/*is_internal_email=*/true,
+                                       /*load_system_info=*/true,
+                                       /*send_tab_titles=*/false,
+                                       /*send_histograms=*/true,
+                                       /*send_bluetooth_logs=*/false};
+
+  scoped_refptr<FeedbackData> feedback_data;
+  RunSendReport(std::move(report), expected_params, feedback_data);
+
+  EXPECT_EQ("", feedback_data->user_email());
+  EXPECT_EQ("", feedback_data->page_url());
+  EXPECT_EQ(base::UTF16ToUTF8(kDescription), feedback_data->description());
+  // Verify screenshot is added to feedback data.
+  EXPECT_GT(feedback_data->image().size(), 0);
+  // Verify consent data appended to sys_info map.
+  auto consent_granted =
+      feedback_data->sys_info()->find(kFeedbackUserConsentKey);
+  EXPECT_NE(feedback_data->sys_info()->end(), consent_granted);
+  EXPECT_EQ(kFeedbackUserConsentKey, consent_granted->first);
+  EXPECT_EQ(kFeedbackUserConsentGrantedValue, consent_granted->second);
+  auto extra_diagnostics =
+      feedback_data->sys_info()->find(kExtraDiagnosticsKey);
+  EXPECT_EQ(kExtraDiagnosticsKey, extra_diagnostics->first);
+  EXPECT_EQ(kFakeExtraDiagnosticsValue, extra_diagnostics->second);
+  // Verify category_tag is marked as a fake category tag in the report.
+  EXPECT_EQ(kFakeCategoryTag, feedback_data->category_tag());
 }
 
 // Test that feedback params and data are populated with correct data before

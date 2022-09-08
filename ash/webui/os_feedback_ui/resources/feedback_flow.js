@@ -44,6 +44,7 @@ export const FeedbackFlowState = {
 export const AdditionalContextQueryParam = {
   DESCRIPTION_TEMPLATE: 'description_template',
   EXTRA_DIAGNOSTICS: 'extra_diagnostics',
+  CATEGORY_TAG: 'category_tag',
 };
 
 /**
@@ -306,6 +307,9 @@ export class FeedbackFlowElement extends PolymerElement {
         descriptionTemplate && descriptionTemplate.length > 0 ?
         decodeURIComponent(descriptionTemplate) :
         '';
+    const categoryTag = params.get(AdditionalContextQueryParam.CATEGORY_TAG);
+    this.feedbackContext_.categoryTag =
+        categoryTag ? decodeURIComponent(categoryTag) : '';
   }
 
   /**

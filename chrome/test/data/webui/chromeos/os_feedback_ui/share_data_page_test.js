@@ -594,6 +594,49 @@ export function shareDataPageTestSuite() {
   });
 
   /**
+   * Test that when feedback context contains category_tag matching value
+   * is set on report.
+   */
+  test('AdditionalContext_CategoryTag', async () => {
+    await initializePage();
+    page.feedbackContext = fakeFeedbackContext;
+
+    // Uncheck the bluetooth logs checkbox.
+    const bluetoothLogsCheckbox = getElement('#bluetoothLogsCheckbox');
+    assertTrue(!!bluetoothLogsCheckbox);
+    bluetoothLogsCheckbox.checked = false;
+    assertFalse(bluetoothLogsCheckbox.checked);
+
+    const reportWithoutCategoryTag = (await clickSendAndWait(page)).report;
+    assertFalse(!!reportWithoutCategoryTag.feedbackContext.categoryTag);
+
+    page.reEnableSendReportButton();
+    const fakeFeedbackContextWithCategoryTag =
+        /** @type {!FeedbackContext} */ ({categoryTag: 'some category tag'});
+    page.feedbackContext = fakeFeedbackContextWithCategoryTag;
+    await flushTasks();
+
+    const reportWithCategoryTag = (await clickSendAndWait(page)).report;
+    assertEquals(
+        fakeFeedbackContextWithCategoryTag.categoryTag,
+        reportWithCategoryTag.feedbackContext.categoryTag);
+
+    // Check the bluetooth logs checkbox. The category tag
+    // should be BluetoothReportWithLogs, not the tag from url.
+    page.reEnableSendReportButton();
+    bluetoothLogsCheckbox.checked = true;
+    assertTrue(bluetoothLogsCheckbox.checked);
+    assertTrue(isVisible(bluetoothLogsCheckbox));
+    await flushTasks();
+
+    const reportWithCategoryTagAndBluetoothFlag =
+        (await clickSendAndWait(page)).report;
+    assertEquals(
+        'BluetoothReportWithLogs',
+        reportWithCategoryTagAndBluetoothFlag.feedbackContext.categoryTag);
+  });
+
+  /**
    * Test that openMetricsDialog and recordPreSubmitAction are called when
    * #histogramsLink ("metrics") link is clicked.
    */

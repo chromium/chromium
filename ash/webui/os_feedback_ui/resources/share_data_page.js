@@ -282,6 +282,10 @@ export class ShareDataPageElement extends ShareDataPageElementBase {
           this.feedbackContext.extraDiagnostics;
     }
 
+    if (this.feedbackContext.categoryTag) {
+      report.feedbackContext.categoryTag = this.feedbackContext.categoryTag;
+    }
+
     if (!this.getElement_('#bluetoothCheckboxContainer').hidden &&
         this.getElement_('#bluetoothLogsCheckbox').checked) {
       report.feedbackContext.categoryTag = 'BluetoothReportWithLogs';

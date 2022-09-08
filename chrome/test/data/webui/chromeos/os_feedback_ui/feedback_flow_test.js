@@ -471,7 +471,8 @@ export function FeedbackFlowTestSuite() {
     assertEquals(1, feedbackServiceProvider.getFeedbackContextCallCount());
   });
 
-  // Test that the extra diagnostics gets set when query parameter is non-empty.
+  // Test that the extra diagnostics and category tag get set
+  // when query parameter is non-empty.
   test(
       'AdditionalContextParametersProvidedInUrl_FeedbackContext_Matches',
       async () => {
@@ -483,6 +484,8 @@ export function FeedbackFlowTestSuite() {
         queryParams.set(
             AdditionalContextQueryParam.DESCRIPTION_TEMPLATE,
             description_template);
+        const category_tag = 'some%20category%20tag';
+        queryParams.set(AdditionalContextQueryParam.CATEGORY_TAG, category_tag);
         // Replace current querystring with the new one.
         window.history.replaceState(null, '', '?' + queryParams.toString());
         await initializePage();
@@ -497,6 +500,8 @@ export function FeedbackFlowTestSuite() {
             feedbackContext.extraDiagnostics);
         assertEquals(
             decodeURIComponent(description_template), descriptionElement.value);
+        assertEquals(
+            decodeURIComponent(category_tag), feedbackContext.categoryTag);
       });
 
   // Test that the extra diagnostics gets set when query parameter is empty.
@@ -518,6 +523,7 @@ export function FeedbackFlowTestSuite() {
         assertEquals(fakeFeedbackContext.email, feedbackContext.email);
         assertEquals('', feedbackContext.extraDiagnostics);
         assertEquals('', descriptionElement.value);
+        assertEquals('', feedbackContext.categoryTag);
       });
 
   /**

@@ -94,6 +94,7 @@ IN_PROC_BROWSER_TEST_F(ShowFeedbackPageBrowserTest,
 // Test that when parameters appended include:
 // - `extra_diagnostics` string.
 // - `description_template` string.
+// - `category_tag` string.
 IN_PROC_BROWSER_TEST_F(ShowFeedbackPageBrowserTest,
                        OsFeedbackAdditionalContextAddedToUrl) {
   ash::SystemWebAppManager::GetForTest(browser()->profile())
@@ -101,11 +102,14 @@ IN_PROC_BROWSER_TEST_F(ShowFeedbackPageBrowserTest,
   std::string unused;
   const std::string extra_diagnostics = "extra diagnostics param";
   const std::string description_template = "Q1: Question one?";
+  const std::string category_tag = "category tag param";
   GURL expected_url(base::StrCat(
       {ash::kChromeUIOSFeedbackUrl, "/?extra_diagnostics=",
        base::EscapeQueryParamValue(extra_diagnostics, /*use_plus=*/false),
        "&description_template=",
-       base::EscapeQueryParamValue(description_template, /*use_plus=*/false)}));
+       base::EscapeQueryParamValue(description_template, /*use_plus=*/false),
+       "&category_tag=",
+       base::EscapeQueryParamValue(category_tag, /*use_plus=*/false)}));
   content::TestNavigationObserver navigation_observer(expected_url);
   navigation_observer.StartWatchingNewWebContents();
 
@@ -114,7 +118,7 @@ IN_PROC_BROWSER_TEST_F(ShowFeedbackPageBrowserTest,
   chrome::ShowFeedbackPage(browser(), chrome::kFeedbackSourceBrowserCommand,
                            /*description_template=*/description_template,
                            /*description_placeholder_text=*/unused,
-                           /*category_tag=*/unused,
+                           /*category_tag=*/category_tag,
                            /*extra_diagnostics=*/extra_diagnostics);
   navigation_observer.Wait();
 
