@@ -161,7 +161,7 @@ void SkiaGLImageRepresentation::EndReadAccess() {
 
 void SkiaGLImageRepresentation::CheckContext() {
 #if DCHECK_IS_ON()
-  DCHECK(gl::GLContext::GetCurrent() == context_);
+  DCHECK_EQ(gl::GLContext::GetCurrent(), context_);
 #endif
 }
 
