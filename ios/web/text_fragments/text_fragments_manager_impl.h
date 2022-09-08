@@ -37,9 +37,9 @@ class TextFragmentsManagerImpl : public TextFragmentsManager,
   void RemoveHighlights() override;
   void RegisterDelegate(id<TextFragmentsDelegate> delegate) override;
 
-  // Invokes post-processing hooks such as metrics logging. |fragment_count|
+  // Invokes post-processing hooks such as metrics logging. `fragment_count`
   // is the number of text fragments that were searched for in the page text;
-  // |success_count| is the number of these that were actually found and
+  // `success_count` is the number of these that were actually found and
   // highlighted.
   void OnProcessingComplete(int success_count, int fragment_count);
 
@@ -65,7 +65,7 @@ class TextFragmentsManagerImpl : public TextFragmentsManager,
  private:
   friend class web::WebStateUserData<TextFragmentsManagerImpl>;
 
-  // Stores the params obtained by |ProcessTextFragments| for later execution,
+  // Stores the params obtained by `ProcessTextFragments` for later execution,
   // in case a main WebFrame is not immediately available.
   struct TextFragmentProcessingParams {
     base::Value parsed_fragments;
@@ -74,7 +74,7 @@ class TextFragmentsManagerImpl : public TextFragmentsManager,
   };
 
   // Checks the WebState's destination URL for Text Fragments. Uses the
-  // |context| and |referrer| to analyze the current navigation scenario.
+  // `context` and `referrer` to analyze the current navigation scenario.
   // If the URL and navigation state indicate that a highlight should occur,
   // returns the needed params to complete highlighting. Otherwise, returns
   // empty.

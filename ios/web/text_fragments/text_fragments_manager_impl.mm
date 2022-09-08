@@ -192,7 +192,7 @@ void TextFragmentsManagerImpl::DoHighlight() {
 }
 
 // Returns false if fragments highlighting is not allowed in the current
-// |context|.
+// `context`.
 bool TextFragmentsManagerImpl::AreTextFragmentsAllowed(
     const web::NavigationContext* context) {
   if (!web_state_ || web_state_->HasOpener()) {
