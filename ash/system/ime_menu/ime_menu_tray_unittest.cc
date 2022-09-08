@@ -325,6 +325,11 @@ TEST_F(ImeMenuTrayTest, TestAccelerator) {
 }
 
 TEST_F(ImeMenuTrayTest, ShowingEmojiKeysetHidesBubble) {
+  // Setup the callback required by ui::ShowEmojiPanel() to a dummy one.
+  // The ui::ShowEmojiPanel() call in ShowKeyboardWithKeyset will fail
+  // without this callback.
+  ui::SetShowEmojiKeyboardCallback(base::DoNothing());
+
   Shell::Get()->ime_controller()->ShowImeMenuOnShelf(true);
   ASSERT_TRUE(IsVisible());
   ASSERT_FALSE(IsTrayBackgroundActive());
@@ -381,11 +386,11 @@ TEST_F(ImeMenuTrayTest, TapEmojiButton) {
   ASSERT_TRUE(emoji_button);
   emoji_button->OnGestureEvent(&tap);
 
+  // The menu should be hidden.
+  EXPECT_FALSE(IsBubbleShown());
+
   // The callback should have been called.
   EXPECT_EQ(callCount, 1);
-
-  // Cleanup.
-  ui::SetShowEmojiKeyboardCallback(base::DoNothing());
 }
 
 TEST_F(ImeMenuTrayTest, ShouldShowBottomButtons) {
