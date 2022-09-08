@@ -53,7 +53,8 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) MockIMEInputContextHandler
   gfx::Range GetAutocorrectRange() override;
   gfx::Rect GetAutocorrectCharacterBounds() override;
   gfx::Rect GetTextFieldBounds() override;
-  bool SetAutocorrectRange(const gfx::Range& range) override;
+  void SetAutocorrectRange(const gfx::Range& range,
+                           SetAutocorrectRangeDoneCallback callback) override;
   bool ClearGrammarFragments(const gfx::Range& range) override;
   absl::optional<GrammarFragment> GetGrammarFragmentAtCursor() override;
   bool AddGrammarFragments(
@@ -97,6 +98,13 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) MockIMEInputContextHandler
     return last_delete_surrounding_text_arg_;
   }
 
+  void set_autocorrect_enabled(bool enabled) {
+    autocorrect_enabled_ = enabled;
+    if (!enabled) {
+      autocorrect_range_ = gfx::Range();
+    }
+  }
+
   const std::vector<ui::KeyEvent>& sent_key_events() const {
     return sent_key_events_;
   }
@@ -114,6 +122,7 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) MockIMEInputContextHandler
   UpdateCompositionTextArg last_update_composition_arg_;
   DeleteSurroundingTextArg last_delete_surrounding_text_arg_;
   gfx::Range autocorrect_range_;
+  bool autocorrect_enabled_ = true;
   std::vector<GrammarFragment> grammar_fragments_;
   gfx::Range cursor_range_;
 };

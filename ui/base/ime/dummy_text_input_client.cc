@@ -23,7 +23,8 @@ DummyTextInputClient::DummyTextInputClient(TextInputType text_input_type,
                                            TextInputMode text_input_mode)
     : text_input_type_(text_input_type),
       text_input_mode_(text_input_mode),
-      insert_char_count_(0) {}
+      insert_char_count_(0),
+      autocorrect_enabled_(true) {}
 
 DummyTextInputClient::~DummyTextInputClient() {
 }
@@ -176,8 +177,10 @@ gfx::Rect DummyTextInputClient::GetAutocorrectCharacterBounds() const {
 
 bool DummyTextInputClient::SetAutocorrectRange(
     const gfx::Range& range) {
-  autocorrect_range_ = range;
-  return true;
+  if (autocorrect_enabled_) {
+    autocorrect_range_ = range;
+  }
+  return autocorrect_enabled_;
 }
 
 absl::optional<GrammarFragment>

@@ -9,6 +9,7 @@
 
 #include <string>
 
+#include "base/callback.h"
 #include "base/component_export.h"
 #include "ui/base/ime/composition_text.h"
 #include "ui/base/ime/input_method.h"
@@ -26,6 +27,8 @@ struct SurroundingTextInfo {
 // indices/ranges relative to those strings should be UTF-16 code units.
 class COMPONENT_EXPORT(UI_BASE_IME_ASH) IMEInputContextHandlerInterface {
  public:
+  using SetAutocorrectRangeDoneCallback = base::OnceCallback<void(bool)>;
+
   // Called when the engine commit a text.
   virtual void CommitText(
       const std::u16string& text,
@@ -46,8 +49,13 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) IMEInputContextHandlerInterface {
   virtual gfx::Range GetAutocorrectRange() = 0;
   virtual gfx::Rect GetAutocorrectCharacterBounds() = 0;
   virtual gfx::Rect GetTextFieldBounds() = 0;
+
   // Sets the autocorrect range to be `range`.
-  virtual bool SetAutocorrectRange(const gfx::Range& range) = 0;
+  // Actual implementation must call |callback| and notify if the autocorrect
+  // range is set successfully.
+  virtual void SetAutocorrectRange(
+      const gfx::Range& range,
+      SetAutocorrectRangeDoneCallback callback) = 0;
   virtual absl::optional<GrammarFragment> GetGrammarFragmentAtCursor() = 0;
   virtual bool ClearGrammarFragments(const gfx::Range& range) = 0;
   virtual bool AddGrammarFragments(

@@ -10,6 +10,7 @@
 #include <memory>
 #include <set>
 
+#include "base/callback.h"
 #include "base/callback_forward.h"
 #include "base/component_export.h"
 #include "base/memory/weak_ptr.h"
@@ -70,7 +71,8 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) InputMethodAsh
   gfx::Range GetAutocorrectRange() override;
   gfx::Rect GetAutocorrectCharacterBounds() override;
   gfx::Rect GetTextFieldBounds() override;
-  bool SetAutocorrectRange(const gfx::Range& range) override;
+  void SetAutocorrectRange(const gfx::Range& range,
+                           SetAutocorrectRangeDoneCallback callback) override;
   absl::optional<GrammarFragment> GetGrammarFragmentAtCursor() override;
   bool ClearGrammarFragments(const gfx::Range& range) override;
   bool AddGrammarFragments(
@@ -124,6 +126,15 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) InputMethodAsh
     // Where the cursor should be placed in |text|.
     // 0 <= |cursor| <= |text.length()|.
     size_t cursor = 0;
+  };
+
+  struct PendingAutocorrectRange {
+    PendingAutocorrectRange(const gfx::Range& range,
+                            SetAutocorrectRangeDoneCallback callback);
+    ~PendingAutocorrectRange();
+
+    gfx::Range range;
+    SetAutocorrectRangeDoneCallback callback;
   };
 
   // Checks the availability of focused text input client and update focus
@@ -213,7 +224,7 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) InputMethodAsh
   // Indicates whether there is a pending SetCompositionRange operation.
   absl::optional<PendingSetCompositionRange> pending_composition_range_;
 
-  absl::optional<gfx::Range> pending_autocorrect_range_;
+  std::unique_ptr<PendingAutocorrectRange> pending_autocorrect_range_;
 
   // An object to compose a character from a sequence of key presses
   // including dead key etc.

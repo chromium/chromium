@@ -1140,7 +1140,13 @@ bool InputMethodEngine::SetAutocorrectRange(const gfx::Range& range) {
       ui::IMEBridge::Get()->GetInputContextHandler();
   if (!input_context)
     return false;
-  return input_context->SetAutocorrectRange(range);
+
+  // TODO(b/161490813): Remove SetAutocorrectRange from |InputMethodEngine|.
+  //    The only way to set autocorrect range must be through
+  //    |AutocorrectManager|, otherwise it can conflict with
+  //    |AutocorrectManager| functionalities.
+  input_context->SetAutocorrectRange(range, base::DoNothing());
+  return true;
 }
 
 void InputMethodEngine::CommitTextToInputContext(int context_id,

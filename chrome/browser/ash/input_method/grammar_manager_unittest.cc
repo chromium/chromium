@@ -317,7 +317,8 @@ TEST_F(GrammarManagerTest, DoesntShowGrammarSuggestionWhenUndoWindowIsShown) {
   manager.OnFocus(1);
   manager.OnSurroundingTextChanged(u"", 0, 0);
   manager.OnSurroundingTextChanged(u"There is error.", 0, 0);
-  mock_ime_input_context_handler_.SetAutocorrectRange(gfx::Range(9, 14));
+  mock_ime_input_context_handler_.SetAutocorrectRange(gfx::Range(9, 14),
+                                                      base::DoNothing());
   task_environment_.FastForwardBy(base::Milliseconds(2500));
 
   auto grammar_fragments =

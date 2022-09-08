@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/input_method/autocorrect_manager.h"
 
 #include "ash/constants/ash_features.h"
+#include "base/callback_helpers.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
@@ -85,7 +86,8 @@ void AutocorrectManager::HandleAutocorrect(const gfx::Range autocorrect_range,
     AcceptOrClearPendingAutocorrect();
   }
 
-  input_context->SetAutocorrectRange(autocorrect_range);  // show underline
+  input_context->SetAutocorrectRange(autocorrect_range,
+                                     base::DoNothing());  // show underline
 
   if (autocorrect_range.is_empty()) {
     return;
@@ -235,7 +237,7 @@ void AutocorrectManager::ProcessTextFieldChange() {
   // Clear autocorrect range if any.
   if (input_context) {
     HideUndoWindow();
-    input_context->SetAutocorrectRange(gfx::Range());
+    input_context->SetAutocorrectRange(gfx::Range(), base::DoNothing());
   }
 
   if (pending_autocorrect_.has_value()) {
@@ -397,7 +399,8 @@ void AutocorrectManager::AcceptOrClearPendingAutocorrect() {
   // Non-empty autocorrect range means that the user has not modified
   // autocorrect suggestion to invalidate it. So, it is considered as accepted.
   if (input_context && !input_context->GetAutocorrectRange().is_empty()) {
-    input_context->SetAutocorrectRange(gfx::Range()); // clear underline
+    input_context->SetAutocorrectRange(gfx::Range(),
+                                       base::DoNothing());  // clear underline
     LogAssistiveAutocorrectAction(
       AutocorrectActions::kUserAcceptedAutocorrect);
   } else {

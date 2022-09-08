@@ -68,9 +68,14 @@ gfx::Rect MockIMEInputContextHandler::GetTextFieldBounds() {
   return gfx::Rect();
 }
 
-bool MockIMEInputContextHandler::SetAutocorrectRange(const gfx::Range& range) {
-  autocorrect_range_ = range;
-  return true;
+void MockIMEInputContextHandler::SetAutocorrectRange(
+    const gfx::Range& range,
+    SetAutocorrectRangeDoneCallback callback) {
+  if (autocorrect_enabled_) {
+    autocorrect_range_ = range;
+  }
+
+  std::move(callback).Run(autocorrect_enabled_);
 }
 
 absl::optional<GrammarFragment>
@@ -125,6 +130,7 @@ void MockIMEInputContextHandler::Reset() {
   set_selection_range_call_count_ = 0;
   update_preedit_text_call_count_ = 0;
   delete_surrounding_text_call_count_ = 0;
+  autocorrect_enabled_ = true;
   last_commit_text_.clear();
   sent_key_events_.clear();
 }

@@ -11,6 +11,8 @@
 #include <queue>
 #include <string>
 
+#include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/i18n/char_iterator.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
@@ -324,10 +326,9 @@ class InputMethodAshTest : public ImeKeyEventDispatcher,
     // valid in the text. Change to use FakeTextInputClient instead of
     // DummyTextInputClient so that the text contents can be queried accurately.
     if (!inserted_text_.empty() || inserted_char_ != 0) {
-      DummyTextInputClient::SetAutocorrectRange(range);
-      return true;
+      return DummyTextInputClient::SetAutocorrectRange(range);
     }
-    return false;
+    return range.is_empty();
   }
 
   bool HasNativeEvent() const { return dispatched_key_event_.HasNativeEvent(); }
@@ -347,6 +348,8 @@ class InputMethodAshTest : public ImeKeyEventDispatcher,
     input_mode_ = TEXT_INPUT_MODE_DEFAULT;
     can_compose_inline_ = true;
     caret_bounds_ = gfx::Rect();
+
+    set_autocorrect_enabled(true);
   }
 
  protected:
@@ -435,7 +438,7 @@ TEST_F(InputMethodAshTest, OnWillChangeFocusedClientClearAutocorrectRange) {
   input_method_ash_->CommitText(
       u"hello",
       TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
-  input_method_ash_->SetAutocorrectRange(gfx::Range(0, 5));
+  input_method_ash_->SetAutocorrectRange(gfx::Range(0, 5), base::DoNothing());
   EXPECT_EQ(gfx::Range(0, 5), this->GetAutocorrectRange());
 
   input_method_ash_->SetFocusedTextInputClient(nullptr);
@@ -990,6 +993,50 @@ TEST_F(InputMethodAshTest, ConfirmCompositionText_SetCompositionRange) {
   EXPECT_TRUE(composition_text_.text.empty());
 }
 
+TEST_F(InputMethodAshTest, SetAutocorrectRange_SuccessfulSet) {
+  input_type_ = TEXT_INPUT_TYPE_TEXT;
+  input_method_ash_->OnTextInputTypeChanged(this);
+
+  InsertText(u"a",
+             TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
+
+  bool callback_called = false;
+  bool callback_result = false;
+
+  input_method_ash_->SetAutocorrectRange(
+      gfx::Range(0, 1), base::BindOnce(
+                            [](bool* called, bool* result, bool success) {
+                              *called = true;
+                              *result = success;
+                            },
+                            &callback_called, &callback_result));
+
+  EXPECT_TRUE(callback_called);
+  EXPECT_TRUE(callback_result);
+  EXPECT_EQ(gfx::Range(0, 1), GetAutocorrectRange());
+}
+
+TEST_F(InputMethodAshTest, SetAutocorrectRange_FailedSet) {
+  input_type_ = TEXT_INPUT_TYPE_TEXT;
+  input_method_ash_->OnTextInputTypeChanged(this);
+
+  bool callback_called = false;
+  bool callback_result = false;
+
+  // Set range on empty text must fail.
+  input_method_ash_->SetAutocorrectRange(
+      gfx::Range(0, 1), base::BindOnce(
+                            [](bool* called, bool* result, bool success) {
+                              *called = true;
+                              *result = success;
+                            },
+                            &callback_called, &callback_result));
+
+  EXPECT_TRUE(callback_called);
+  EXPECT_FALSE(callback_result);
+  EXPECT_TRUE(GetAutocorrectRange().is_empty());
+}
+
 class InputMethodAshKeyEventTest : public InputMethodAshTest {
  public:
   InputMethodAshKeyEventTest() = default;
@@ -1216,11 +1263,25 @@ TEST_F(InputMethodAshKeyEventTest, SetAutocorrectRangeRunsAfterKeyEvent) {
 
   ui::KeyEvent event(ui::ET_KEY_PRESSED, ui::VKEY_A, ui::EF_NONE);
   input_method_ash_->DispatchKeyEvent(&event);
-  input_method_ash_->SetAutocorrectRange(gfx::Range(0, 1));
+
+  bool callback_called = false;
+  bool callback_result = false;
+
+  input_method_ash_->SetAutocorrectRange(
+      gfx::Range(0, 1), base::BindOnce(
+                            [](bool* called, bool* result, bool success) {
+                              *called = true;
+                              *result = success;
+                            },
+                            &callback_called, &callback_result));
+  EXPECT_FALSE(callback_called);
+
   std::move(mock_ime_engine_handler_->last_passed_callback())
       .Run(ui::ime::KeyEventHandledState::kHandledByIME);
 
   EXPECT_EQ(gfx::Range(0, 1), GetAutocorrectRange());
+  EXPECT_TRUE(callback_called);
+  EXPECT_TRUE(callback_result);
 }
 
 TEST_F(InputMethodAshKeyEventTest, SetAutocorrectRangeRunsAfterCommitText) {
@@ -1231,12 +1292,96 @@ TEST_F(InputMethodAshKeyEventTest, SetAutocorrectRangeRunsAfterCommitText) {
 
   input_method_ash_->CommitText(
       u"a", TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
-  input_method_ash_->SetAutocorrectRange(gfx::Range(0, 1));
+
+  bool callback_called = false;
+  input_method_ash_->SetAutocorrectRange(
+      gfx::Range(0, 1),
+      base::BindOnce([](bool* called, bool result) { *called = true; },
+                     (&callback_called)));
+  EXPECT_FALSE(callback_called);
+
   std::move(mock_ime_engine_handler_->last_passed_callback())
       .Run(ui::ime::KeyEventHandledState::kHandledByIME);
 
   EXPECT_EQ(L'a', inserted_char_);
+  EXPECT_TRUE(callback_called);
   EXPECT_EQ(gfx::Range(0, 1), GetAutocorrectRange());
+}
+
+TEST_F(InputMethodAshKeyEventTest,
+       SetAutocorrectRangeCallsCallbackOnFailureAfterKeyEvent) {
+  input_type_ = TEXT_INPUT_TYPE_TEXT;
+  input_method_ash_->OnTextInputTypeChanged(this);
+  input_method_ash_->CommitText(
+      u"a", TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
+
+  // Disable autocorrect range to make it return false.
+  set_autocorrect_enabled(false);
+
+  ui::KeyEvent event(ui::ET_KEY_PRESSED, ui::VKEY_A, ui::EF_NONE);
+  input_method_ash_->DispatchKeyEvent(&event);
+
+  bool callback_called = false;
+  bool callback_result = false;
+
+  input_method_ash_->SetAutocorrectRange(
+      gfx::Range(0, 1), base::BindOnce(
+                            [](bool* called, bool* result, bool success) {
+                              *called = true;
+                              *result = success;
+                            },
+                            &callback_called, &callback_result));
+  EXPECT_FALSE(callback_called);
+
+  std::move(mock_ime_engine_handler_->last_passed_callback())
+      .Run(ui::ime::KeyEventHandledState::kHandledByIME);
+
+  EXPECT_EQ(gfx::Range(), GetAutocorrectRange());
+  EXPECT_TRUE(callback_called);
+  EXPECT_FALSE(callback_result);
+}
+
+TEST_F(
+    InputMethodAshKeyEventTest,
+    LatestSetAutocorrectRangeOverridesPreviousRequestsWhileHandlingKeyEvent) {
+  input_type_ = TEXT_INPUT_TYPE_TEXT;
+  input_method_ash_->OnTextInputTypeChanged(this);
+  input_method_ash_->CommitText(
+      u"a", TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
+
+  ui::KeyEvent event(ui::ET_KEY_PRESSED, ui::VKEY_A, ui::EF_NONE);
+  input_method_ash_->DispatchKeyEvent(&event);
+
+  bool first_set_callback_called = false;
+  bool first_set_callback_result = false;
+  bool second_set_callback_called = false;
+  bool second_set_callback_result = false;
+
+  auto set_range_callback = [](bool* called, bool* result, bool success) {
+    *called = true;
+    *result = success;
+  };
+
+  input_method_ash_->SetAutocorrectRange(
+      gfx::Range(0, 1),
+      base::BindOnce(set_range_callback, &first_set_callback_called,
+                     &first_set_callback_result));
+  EXPECT_FALSE(first_set_callback_called);
+
+  // Override first call.
+  input_method_ash_->SetAutocorrectRange(
+      gfx::Range(0, 1),
+      base::BindOnce(set_range_callback, &second_set_callback_called,
+                     &second_set_callback_result));
+  EXPECT_FALSE(second_set_callback_called);
+  EXPECT_TRUE(first_set_callback_called);
+  EXPECT_FALSE(first_set_callback_result);
+
+  std::move(mock_ime_engine_handler_->last_passed_callback())
+      .Run(ui::ime::KeyEventHandledState::kHandledByIME);
+
+  EXPECT_EQ(gfx::Range(0, 1), GetAutocorrectRange());
+  EXPECT_TRUE(second_set_callback_result);
 }
 
 TEST_F(InputMethodAshKeyEventTest,

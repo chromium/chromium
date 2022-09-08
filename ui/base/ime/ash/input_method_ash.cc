@@ -70,6 +70,13 @@ InputMethodAsh::PendingSetCompositionRange::PendingSetCompositionRange(
 InputMethodAsh::PendingSetCompositionRange::~PendingSetCompositionRange() =
     default;
 
+InputMethodAsh::PendingAutocorrectRange::PendingAutocorrectRange(
+    const gfx::Range& range,
+    IMEInputContextHandlerInterface::SetAutocorrectRangeDoneCallback callback)
+    : range(range), callback(std::move(callback)) {}
+
+InputMethodAsh::PendingAutocorrectRange::~PendingAutocorrectRange() = default;
+
 ui::EventDispatchDetails InputMethodAsh::DispatchKeyEvent(ui::KeyEvent* event) {
   DCHECK(!(event->flags() & ui::EF_IS_SYNTHESIZED));
 
@@ -450,17 +457,26 @@ gfx::Rect InputMethodAsh::GetTextFieldBounds() {
   return control_bounds ? *control_bounds : gfx::Rect();
 }
 
-bool InputMethodAsh::SetAutocorrectRange(const gfx::Range& range) {
-  if (IsTextInputTypeNone())
-    return false;
+void InputMethodAsh::SetAutocorrectRange(
+    const gfx::Range& range,
+    SetAutocorrectRangeDoneCallback callback) {
+  if (IsTextInputTypeNone()) {
+    std::move(callback).Run(false);
+    return;
+  }
 
   // If we have pending key events, then delay the operation until
   // |ProcessKeyEventPostIME|. Otherwise, process it immediately.
   if (handling_key_event_) {
-    pending_autocorrect_range_ = range;
-    return true;
+    if (pending_autocorrect_range_) {
+      std::move(pending_autocorrect_range_->callback).Run(false);
+    }
+
+    pending_autocorrect_range_ =
+        std::make_unique<InputMethodAsh::PendingAutocorrectRange>(
+            range, std::move(callback));
   } else {
-    return GetTextInputClient()->SetAutocorrectRange(range);
+    std::move(callback).Run(GetTextInputClient()->SetAutocorrectRange(range));
   }
 }
 
@@ -712,7 +728,8 @@ void InputMethodAsh::MaybeProcessPendingInputMethodResult(ui::KeyEvent* event,
   }
 
   if (pending_autocorrect_range_) {
-    client->SetAutocorrectRange(*pending_autocorrect_range_);
+    std::move(pending_autocorrect_range_->callback)
+        .Run(client->SetAutocorrectRange(pending_autocorrect_range_->range));
     pending_autocorrect_range_.reset();
   }
 
