@@ -31,9 +31,17 @@ void PendingInvalidations::ScheduleInvalidationSetsForNode(
 
   if (node.GetStyleChangeType() < kSubtreeStyleChange) {
     for (auto& invalidation_set : invalidation_lists.descendants) {
+      // https://linear.app/replay/issue/RUN-556
+      recordreplay::Assert("PendingInvalidations::ScheduleInvalidationSetsForNode #4");
+
       if (invalidation_set->WholeSubtreeInvalid()) {
         auto* shadow_root = DynamicTo<ShadowRoot>(node);
         auto* subtree_root = shadow_root ? &shadow_root->host() : &node;
+
+        // https://linear.app/replay/issue/RUN-556
+        recordreplay::Assert("PendingInvalidations::ScheduleInvalidationSetsForNode #5 %d %d",
+                             !!shadow_root, recordreplay::PointerId(subtree_root));
+
         subtree_root->SetNeedsStyleRecalc(
             kSubtreeStyleChange, StyleChangeReasonForTracing::Create(
                                      style_change_reason::kStyleInvalidator));
@@ -42,6 +50,10 @@ void PendingInvalidations::ScheduleInvalidationSetsForNode(
       }
 
       if (invalidation_set->InvalidatesSelf() && node.IsElementNode()) {
+        // https://linear.app/replay/issue/RUN-556
+        recordreplay::Assert("PendingInvalidations::ScheduleInvalidationSetsForNode #6 %d",
+                             recordreplay::PointerId(&node));
+
         node.SetNeedsStyleRecalc(kLocalStyleChange,
                                  StyleChangeReasonForTracing::Create(
                                      style_change_reason::kStyleInvalidator));
