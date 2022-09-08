@@ -273,12 +273,7 @@ void SafeBrowsingTabHelper::PolicyDecider::HandleMainFrameResponsePolicy(
   // When there's a server redirect, a ShouldAllowRequest call sometimes
   // doesn't happen for the target of the redirection. This seems to be fixed
   // in trunk WebKit.
-  if (pending_main_frame_redirect_chain_.empty()) {
-    // Only check that the hosts match, since a ServiceWorker that handles a
-    // request can set a different URL in the response that it produces, without
-    // triggering a redirect.
-    DCHECK_EQ(pending_main_frame_query_->url.host(), url.host());
-  } else {
+  if (!pending_main_frame_redirect_chain_.empty()) {
     bool matching_hosts = pending_main_frame_query_->url.host() == url.host();
     UMA_HISTOGRAM_BOOLEAN(
         "IOS.SafeBrowsing.RedirectedRequestResponseHostsMatch", matching_hosts);
