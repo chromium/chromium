@@ -80,3 +80,18 @@
   public int getMinApkVersion();
   public boolean requiresSignIn();
 }
+
+# Remove calls to String.format() where the result goes unused. This can mask
+# exceptions if the parameters to String.format() are invalid, but such cases
+# are generally programming bugs anyways.
+# Not using the return value generally occurs due to logging being stripped.
+-assumenosideeffects class java.lang.String {
+  static java.lang.String format(...);
+}
+
+# Allows R8 to remove static field accesses to library APIs when the results
+# are unused (E.g. tell it that it's okay to not trigger <clinit>).
+# Not using the return value generally occurs due to logging being stripped.
+-assumenosideeffects class android.**, java.** {
+  static <fields>;
+}
