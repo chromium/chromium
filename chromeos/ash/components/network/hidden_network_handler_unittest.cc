@@ -7,6 +7,7 @@
 #include "ash/constants/ash_features.h"
 #include "base/callback.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -150,11 +151,24 @@ class HiddenNetworkHandlerTest : public ::testing::Test {
               network_configuration_observer_.get()->total_removed_count());
   }
 
+  void ExpectHistogramCount(int bucket, int frequency, int total, int sum) {
+    histogram_tester.ExpectBucketCount("Network.Ash.WiFi.Hidden.RemovalAttempt",
+                                       bucket, frequency);
+    histogram_tester.ExpectTotalCount("Network.Ash.WiFi.Hidden.RemovalAttempt",
+                                      total);
+    EXPECT_EQ(
+        histogram_tester.GetTotalSum("Network.Ash.WiFi.Hidden.RemovalAttempt"),
+        sum);
+  }
+
   void ErrorCallback(const std::string& error_name) {
     ADD_FAILURE() << "Unexpected error: " << error_name;
   }
 
   base::test::TaskEnvironment* task_environment() { return &task_environment_; }
+
+ protected:
+  base::HistogramTester histogram_tester;
 
  private:
   base::test::TaskEnvironment task_environment_{
@@ -178,6 +192,29 @@ TEST_F(HiddenNetworkHandlerTest, MeetsAllCriteriaToRemove) {
   base::RunLoop().RunUntilIdle();
   ExpectNetworksRemoved(/*service_path=*/path,
                         /*total_removed_count=*/1);
+  ExpectHistogramCount(/*bucket=*/1,
+                       /*frequency=*/1,
+                       /*total=*/16,
+                       /*sum=*/1);
+}
+
+TEST_F(HiddenNetworkHandlerTest, RemoveTwoNetworks) {
+  MaybeRegisterAndInitializePrefs();
+
+  const std::string path1 = CreateWiFiNetwork(
+      /*hidden=*/true, /*add_to_profile=*/true, /*guid=*/kWiFiGuid1);
+  const std::string path2 = CreateWiFiNetwork(
+      /*hidden=*/true, /*add_to_profile=*/true, /*guid=*/kWiFiGuid2);
+  ExpectNetworksRemoved(/*service_path=*/"", /*total_removed_count=*/0u);
+
+  task_environment()->FastForwardBy(kTwoWeeks);
+  base::RunLoop().RunUntilIdle();
+  ExpectNetworksRemoved(/*service_path=*/path2,
+                        /*total_removed_count=*/2);
+  ExpectHistogramCount(/*bucket=*/2,
+                       /*frequency=*/1,
+                       /*total=*/16,
+                       /*sum=*/2);
 }
 
 TEST_F(HiddenNetworkHandlerTest, ChecksForNetworksToRemoveDaily) {
@@ -203,12 +240,24 @@ TEST_F(HiddenNetworkHandlerTest, ChecksForNetworksToRemoveDaily) {
 
   task_environment()->FastForwardBy(kTimeSinceFirstNetworkWasCreated);
   ExpectNetworksRemoved(/*service_path=*/path1, /*total_removed_count=*/1);
+  ExpectHistogramCount(/*bucket=*/1,
+                       /*frequency=*/1,
+                       /*total=*/16,
+                       /*sum=*/1);
 
   task_environment()->FastForwardBy(base::Days(1));
   ExpectNetworksRemoved(/*service_path=*/path2, /*total_removed_count=*/2);
+  ExpectHistogramCount(/*bucket=*/1,
+                       /*frequency=*/2,
+                       /*total=*/17,
+                       /*sum=*/2);
 
   task_environment()->FastForwardBy(base::Days(1));
   ExpectNetworksRemoved(/*service_path=*/path3, /*total_removed_count=*/3);
+  ExpectHistogramCount(/*bucket=*/1,
+                       /*frequency=*/3,
+                       /*total=*/18,
+                       /*sum=*/3);
 }
 
 TEST_F(HiddenNetworkHandlerTest, NetworksAreCheckedWhenPrefsAreInitialized) {
@@ -230,6 +279,10 @@ TEST_F(HiddenNetworkHandlerTest, NetworksAreCheckedWhenPrefsAreInitialized) {
   base::RunLoop().RunUntilIdle();
   ExpectNetworksRemoved(/*service_path=*/path,
                         /*total_removed_count=*/1);
+  ExpectHistogramCount(/*bucket=*/1,
+                       /*frequency=*/1,
+                       /*total=*/2,
+                       /*sum=*/1);
 }
 
 TEST_F(HiddenNetworkHandlerTest, LessThanTwoWeeks) {
@@ -240,6 +293,10 @@ TEST_F(HiddenNetworkHandlerTest, LessThanTwoWeeks) {
   task_environment()->FastForwardBy(kTwoWeeks - base::Hours(5));
   base::RunLoop().RunUntilIdle();
   ExpectNetworksRemoved(/*service_path=*/"", /*total_removed_count=*/0u);
+  ExpectHistogramCount(/*bucket=*/1,
+                       /*frequency=*/0,
+                       /*total=*/15,
+                       /*sum=*/0);
 }
 
 TEST_F(HiddenNetworkHandlerTest, OnlyRemovesNetworksInCurrentProfile) {
@@ -250,6 +307,10 @@ TEST_F(HiddenNetworkHandlerTest, OnlyRemovesNetworksInCurrentProfile) {
   task_environment()->FastForwardBy(kTwoWeeks);
   base::RunLoop().RunUntilIdle();
   ExpectNetworksRemoved(/*service_path=*/"", /*total_removed_count=*/0u);
+  ExpectHistogramCount(/*bucket=*/1,
+                       /*frequency=*/0,
+                       /*total=*/16,
+                       /*sum=*/0);
 }
 
 TEST_F(HiddenNetworkHandlerTest, ConnectedNetworkNotRemoved) {
@@ -260,6 +321,10 @@ TEST_F(HiddenNetworkHandlerTest, ConnectedNetworkNotRemoved) {
   ConnectToNetwork(path);
   task_environment()->FastForwardBy(kTwoWeeks);
   ExpectNetworksRemoved(/*service_path=*/"", /*total_removed_count=*/0u);
+  ExpectHistogramCount(/*bucket=*/1,
+                       /*frequency=*/0,
+                       /*total=*/16,
+                       /*sum=*/0);
 }
 
 TEST_F(HiddenNetworkHandlerTest, ManagedNetworkNotRemoved) {
@@ -269,6 +334,10 @@ TEST_F(HiddenNetworkHandlerTest, ManagedNetworkNotRemoved) {
   MakeNetworkManaged(path);
   task_environment()->FastForwardBy(kTwoWeeks);
   ExpectNetworksRemoved(/*service_path=*/"", /*total_removed_count=*/0u);
+  ExpectHistogramCount(/*bucket=*/1,
+                       /*frequency=*/0,
+                       /*total=*/16,
+                       /*sum=*/0);
 }
 
 TEST_F(HiddenNetworkHandlerTest, UnhiddenNetworkNotRemoved) {
@@ -278,6 +347,10 @@ TEST_F(HiddenNetworkHandlerTest, UnhiddenNetworkNotRemoved) {
   ExpectNetworksRemoved(/*service_path=*/"", /*total_removed_count=*/0u);
   task_environment()->FastForwardBy(kTwoWeeks);
   ExpectNetworksRemoved(/*service_path=*/"", /*total_removed_count=*/0u);
+  ExpectHistogramCount(/*bucket=*/1,
+                       /*frequency=*/0,
+                       /*total=*/16,
+                       /*sum=*/0);
 }
 
 }  // namespace ash

@@ -5,6 +5,7 @@
 #include "chromeos/ash/components/network/hidden_network_handler.h"
 
 #include "ash/constants/ash_features.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/timer/timer.h"
 #include "chromeos/ash/components/network/network_configuration_handler.h"
 #include "chromeos/ash/components/network/network_handler.h"
@@ -63,6 +64,7 @@ void HiddenNetworkHandler::CleanHiddenNetworks() {
                                                /*configured_only=*/true,
                                                /*visible_only=*/false,
                                                /*limit=*/0, &state_list);
+  size_t remove_network_attempts = 0;
 
   for (const NetworkState* state : state_list) {
     if (!state->hidden_ssid() || state->IsManagedByPolicy())
@@ -89,7 +91,12 @@ void HiddenNetworkHandler::CleanHiddenNetworks() {
         state->path(), /*remove_confirmer=*/absl::nullopt,
         base::BindOnce(&OnRemoveConfigurationSuccess, state->guid()),
         base::BindOnce(&OnRemoveConfigurationFailure, state->guid()));
+
+    remove_network_attempts++;
   }
+
+  base::UmaHistogramCounts100("Network.Ash.WiFi.Hidden.RemovalAttempt",
+                              remove_network_attempts);
 }
 
 }  // namespace ash
