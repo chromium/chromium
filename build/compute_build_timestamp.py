@@ -116,9 +116,21 @@ def main():
   # builds are typically added to symbol servers and Windows symbol servers
   # use the link timestamp as the prime differentiator, but for unofficial
   # builds we do lots of quantization to avoid churn.
-  if args.build_type != 'official':
+  offset = 0
+  if args.build_type == 'official':
+    if os.name == 'nt':
+      version_path = os.path.join(THIS_DIR, os.pardir, 'chrome', 'VERSION')
+      with open(version_path) as f:
+        patch_line = f.readlines()[3].strip()
+        # Use the patch number as an offset to the build date so that multiple
+        # versions with different patch numbers built from the same source code
+        # will get different build_date values. This is critical for Windows
+        # symbol servers, to avoid collisions.
+        assert patch_line.startswith('PATCH=')
+        offset = int(patch_line[6:])
+  else:
     build_date = GetUnofficialBuildDate(build_date)
-  print(int(calendar.timegm(build_date.utctimetuple())))
+  print(offset + int(calendar.timegm(build_date.utctimetuple())))
   return 0
 
 
