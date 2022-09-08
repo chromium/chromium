@@ -1341,6 +1341,7 @@ void Node::SetNeedsStyleRecalc(StyleChangeType change_type,
   DCHECK(change_type != kNoStyleChange);
   DCHECK(IsElementNode() || IsTextNode());
 
+  // https://linear.app/replay/issue/RUN-556
   recordreplay::Assert("Node::SetNeedsStyleRecalc Start %d",
                        recordreplay::PointerId(this));
 
@@ -1357,6 +1358,7 @@ void Node::SetNeedsStyleRecalc(StyleChangeType change_type,
 
   StyleChangeType existing_change_type = GetStyleChangeType();
   if (change_type > existing_change_type) {
+    // https://linear.app/replay/issue/RUN-556
     recordreplay::Assert("Node::SetNeedsStyleRecalc #5 %d %d",
                          recordreplay::PointerId(this), (int)change_type);
     SetStyleChange(change_type);

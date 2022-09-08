@@ -1190,6 +1190,7 @@ scoped_refptr<const NGLayoutResult> NGOutOfFlowLayoutPart::GenerateFragment(
     const NGBlockBreakToken* break_token,
     const NGConstraintSpace* fragmentainer_constraint_space,
     bool should_use_fixed_block_size) {
+  // https://linear.app/replay/issue/RUN-546
   recordreplay::Assert("NGOutOfFlowLayoutPart::GenerateFragment Start");
   const auto& style = node.Style();
 

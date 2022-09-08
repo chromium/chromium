@@ -109,9 +109,11 @@ inline wtf_size_t FragmentIndex(const NGBlockBreakToken* incoming_break_token) {
 template <typename Algorithm, typename Callback>
 NOINLINE void CreateAlgorithmAndRun(const NGLayoutAlgorithmParams& params,
                                     const Callback& callback) {
+  // https://linear.app/replay/issue/RUN-546
   recordreplay::Assert("CreateAlgorithmAndRun Start");
   Algorithm algorithm(params);
   callback(&algorithm);
+  // https://linear.app/replay/issue/RUN-546
   recordreplay::Assert("CreateAlgorithmAndRun Done");
 }
 

@@ -179,6 +179,7 @@ void WaitableEvent::Wait() {
 }
 
 bool WaitableEvent::TimedWait(const TimeDelta& wait_delta) {
+  // https://linear.app/replay/issue/RUN-548
   recordreplay::Assert("WaitableEvent::TimedWait Start %lu %ld",
                        recordreplay::PointerId(this), wait_delta.ToInternalValue());
 

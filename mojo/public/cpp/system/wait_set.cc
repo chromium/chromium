@@ -138,6 +138,7 @@ class WaitSet::State : public base::RefCountedThreadSafe<State> {
             Handle* ready_handles,
             MojoResult* ready_results,
             MojoHandleSignalsState* signals_states) {
+    // https://linear.app/replay/issue/RUN-551
     recordreplay::Assert("WaitSet::State::Wait Start");
 
     DCHECK(trap_handle_.is_valid());
@@ -147,6 +148,7 @@ class WaitSet::State : public base::RefCountedThreadSafe<State> {
     {
       base::AutoLock lock(lock_);
       if (ready_handles_.empty()) {
+        // https://linear.app/replay/issue/RUN-551
         recordreplay::Assert("WaitSet::State::Wait #1");
         // No handles are currently in the ready set. Make sure the event is
         // reset and try to arm the watcher.
@@ -176,6 +178,7 @@ class WaitSet::State : public base::RefCountedThreadSafe<State> {
             const auto& event = blocking_events.container()[i];
             auto it = contexts_.find(event.trigger_context);
             DCHECK(it != contexts_.end());
+            // https://linear.app/replay/issue/RUN-551
             recordreplay::Assert("WaitSet::State::Wait #2 %u %u %d",
                                  it->second->handle().value(), event.result, event.signals_state);
             ready_handles_[it->second->handle()] = {event.result,

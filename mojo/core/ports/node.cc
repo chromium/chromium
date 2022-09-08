@@ -785,19 +785,19 @@ int Node::OnObserveProxyAck(std::unique_ptr<ObserveProxyAckEvent> event) {
 }
 
 int Node::OnObserveClosure(std::unique_ptr<ObserveClosureEvent> event) {
-  // https://github.com/RecordReplay/backend/issues/3976
+  // https://linear.app/replay/issue/RUN-549
   recordreplay::Assert("Node::OnObserveClosure Start %lu %lu",
                        event->port_name().v1, event->port_name().v2);
 
   // OK if the port doesn't exist, as it may have been closed already.
   PortRef port_ref;
   if (GetPort(event->port_name(), &port_ref) != OK) {
-    // https://github.com/RecordReplay/backend/issues/3976
+    // https://linear.app/replay/issue/RUN-549
     recordreplay::Assert("Node::OnObserveClosure #1");
     return OK;
   }
 
-  // https://github.com/RecordReplay/backend/issues/3976
+  // https://linear.app/replay/issue/RUN-549
   recordreplay::Assert("Node::OnObserveClosure #2");
 
   // This message tells the port that it should no longer expect more messages

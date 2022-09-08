@@ -1196,6 +1196,7 @@ void PeerConnectionTracker::TrackSessionDescriptionCallback(
   }
   update_type = update_type + callback_type;
 
+  // https://linear.app/replay/issue/RUN-547
   recordreplay::Assert("PeerConnectionTracker::TrackSessionDescriptionCallback %d %lu %lu",
                        id, update_type.length(), value.length());
 
