@@ -9383,6 +9383,22 @@
             ]
         }
     ],
+    "StartAssistantAudioDecoderOnDemandStudy": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "StartAssistantAudioDecoderOnDemand"
+                    ]
+                }
+            ]
+        }
+    ],
     "StartSurface": [
         {
             "platforms": [
