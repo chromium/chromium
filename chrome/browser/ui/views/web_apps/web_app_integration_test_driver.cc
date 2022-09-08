@@ -28,6 +28,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/apps/app_service/app_icon/app_icon_source.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/intent_helper/intent_picker_features.h"
 #include "chrome/browser/banners/test_app_banner_manager_desktop.h"
@@ -1789,6 +1790,39 @@ void WebAppIntegrationTestDriver::CheckAppListEmpty() {
       GetStateForProfile(after_state_change_action_state_.get(), profile());
   ASSERT_TRUE(state.has_value());
   EXPECT_TRUE(state->apps.empty());
+  AfterStateCheckAction();
+}
+
+void WebAppIntegrationTestDriver::CheckAppInListIconCorrect(Site site) {
+  BeforeStateCheckAction(__FUNCTION__);
+  GURL icon_url =
+      apps::AppIconSource::GetIconURL(active_app_id_, icon_size::k128);
+  SkBitmap icon_bitmap;
+  base::RunLoop run_loop;
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  NavigateTabbedBrowserToSite(icon_url, NavigationMode::kNewTab);
+
+  web_contents->DownloadImage(
+      icon_url, false, gfx::Size(), 0, false,
+      base::BindLambdaForTesting([&](int id, int http_status_code,
+                                     const GURL& image_url,
+                                     const std::vector<SkBitmap>& bitmaps,
+                                     const std::vector<gfx::Size>& sizes) {
+        EXPECT_EQ(200, http_status_code);
+        ASSERT_EQ(bitmaps.size(), 1u);
+        icon_bitmap = bitmaps[0];
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+
+  SkColor expected_color = GetSiteConfiguration(site).icon_color;
+  // Compare the center pixel color instead of top left corner
+  // The app list icon has a filter that changes the color at the corner.
+  EXPECT_TRUE(expected_color ==
+              icon_bitmap.getColor(icon_size::k128 / 2, icon_size::k128 / 2));
+  chrome::CloseTab(browser());
   AfterStateCheckAction();
 }
 

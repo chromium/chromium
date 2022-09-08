@@ -263,6 +263,7 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
 
   // State Check Actions:
   void CheckAppListEmpty();
+  void CheckAppInListIconCorrect(Site site);
   void CheckAppInListNotLocallyInstalled(Site site);
   void CheckAppInListWindowed(Site site);
   void CheckAppInListTabbed(Site site);

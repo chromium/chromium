@@ -133,6 +133,11 @@ IN_PROC_BROWSER_TEST_F(WebAppIntegration,
   helper_.CheckLaunchIconShown();
 }
 
+IN_PROC_BROWSER_TEST_F(WebAppIntegration, CheckAppInListIconCorrect) {
+  helper_.InstallMenuOption(InstallableSite::kStandalone);
+  helper_.CheckAppInListIconCorrect(Site::kStandalone);
+}
+
 // Generated tests:
 
 IN_PROC_BROWSER_TEST_F(
