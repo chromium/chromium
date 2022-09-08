@@ -5,6 +5,7 @@
 #include "chrome/browser/prefetch/prefetch_prefs.h"
 
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/battery/battery_saver.h"
 #include "chrome/browser/prefetch/pref_names.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -156,4 +157,44 @@ TEST(PrefetchPrefsTest, IsSomePreloadingEnabledIgnoringFinch) {
       prefs::kNetworkPredictionOptions,
       static_cast<int>(prefetch::NetworkPredictionOptions::kExtended));
   EXPECT_TRUE(prefetch::IsSomePreloadingEnabledIgnoringFinch(prefs));
+}
+
+class PrefetchPrefsWithBatterySaverTest : public ::testing::Test {
+ public:
+  PrefetchPrefsWithBatterySaverTest() = default;
+  ~PrefetchPrefsWithBatterySaverTest() override = default;
+
+  void TearDown() override { battery::ResetIsBatterySaverEnabledForTesting(); }
+};
+
+TEST_F(PrefetchPrefsWithBatterySaverTest,
+       IsSomePreloadingEnabledIgnoringFinch) {
+  TestingPrefServiceSimple prefs;
+  prefs.registry()->RegisterIntegerPref(
+      prefs::kNetworkPredictionOptions,
+      static_cast<int>(prefetch::NetworkPredictionOptions::kDefault));
+
+  battery::OverrideIsBatterySaverEnabledForTesting(false);
+  EXPECT_TRUE(prefetch::IsSomePreloadingEnabledIgnoringFinch(prefs));
+
+  battery::OverrideIsBatterySaverEnabledForTesting(true);
+  EXPECT_FALSE(prefetch::IsSomePreloadingEnabledIgnoringFinch(prefs));
+}
+
+TEST_F(PrefetchPrefsWithBatterySaverTest, IsSomePreloadingEnabled) {
+  TestingPrefServiceSimple prefs;
+  prefs.registry()->RegisterIntegerPref(
+      prefs::kNetworkPredictionOptions,
+      static_cast<int>(prefetch::NetworkPredictionOptions::kDefault));
+
+  prefs.SetInteger(
+      prefs::kNetworkPredictionOptions,
+      static_cast<int>(prefetch::NetworkPredictionOptions::kStandard));
+  EXPECT_TRUE(prefetch::IsSomePreloadingEnabled(prefs));
+
+  battery::OverrideIsBatterySaverEnabledForTesting(false);
+  EXPECT_TRUE(prefetch::IsSomePreloadingEnabled(prefs));
+
+  battery::OverrideIsBatterySaverEnabledForTesting(true);
+  EXPECT_FALSE(prefetch::IsSomePreloadingEnabled(prefs));
 }

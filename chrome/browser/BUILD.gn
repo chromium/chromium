@@ -217,6 +217,8 @@ static_library("browser") {
     "bad_message.h",
     "battery/battery_metrics.cc",
     "battery/battery_metrics.h",
+    "battery/battery_saver.cc",
+    "battery/battery_saver.h",
     "bitmap_fetcher/bitmap_fetcher.cc",
     "bitmap_fetcher/bitmap_fetcher.h",
     "bitmap_fetcher/bitmap_fetcher_delegate.h",
