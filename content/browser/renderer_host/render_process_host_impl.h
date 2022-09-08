@@ -696,6 +696,11 @@ class CONTENT_EXPORT RenderProcessHostImpl
   }
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  void ReinitializeLogging(uint32_t logging_dest,
+                           base::ScopedFD log_file_descriptor) override;
+#endif
+
   size_t keep_alive_ref_count() const { return keep_alive_ref_count_; }
   size_t worker_ref_count() const { return worker_ref_count_; }
 

@@ -27,7 +27,7 @@
 namespace IPC {
 class Channel;
 class MessageFilter;
-}
+}  // namespace IPC
 
 namespace content {
 class ChildProcessHostDelegate;
@@ -35,10 +35,9 @@ class ChildProcessHostDelegate;
 // Provides common functionality for hosting a child process and processing IPC
 // messages between the host and the child process. Users are responsible
 // for the actual launching and terminating of the child processes.
-class CONTENT_EXPORT ChildProcessHostImpl
-    : public ChildProcessHost,
-      public IPC::Listener,
-      public mojom::ChildProcessHost {
+class CONTENT_EXPORT ChildProcessHostImpl : public ChildProcessHost,
+                                            public IPC::Listener,
+                                            public mojom::ChildProcessHost {
  public:
   ChildProcessHostImpl(const ChildProcessHostImpl&) = delete;
   ChildProcessHostImpl& operator=(const ChildProcessHostImpl&) = delete;
@@ -78,6 +77,11 @@ class CONTENT_EXPORT ChildProcessHostImpl
   bool IsChannelOpening() override;
   void AddFilter(IPC::MessageFilter* filter) override;
   void BindReceiver(mojo::GenericPendingReceiver receiver) override;
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  void ReinitializeLogging(uint32_t logging_dest,
+                           base::ScopedFD log_file_descriptor) override;
+#endif
 
 // TODO(crbug.com/1328879): Remove this method when fixing the bug.
 #if BUILDFLAG(IS_CASTOS) || BUILDFLAG(IS_CAST_ANDROID)
@@ -130,7 +134,7 @@ class CONTENT_EXPORT ChildProcessHostImpl
   // Holds all the IPC message filters.  Since this object lives on the IO
   // thread, we don't have a IPC::ChannelProxy and so we manage filters
   // manually.
-  std::vector<scoped_refptr<IPC::MessageFilter> > filters_;
+  std::vector<scoped_refptr<IPC::MessageFilter>> filters_;
 };
 
 }  // namespace content

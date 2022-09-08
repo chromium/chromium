@@ -138,9 +138,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
 
   // mojom::NetworkService implementation:
   void SetParams(mojom::NetworkServiceParamsPtr params) override;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  void ReinitializeLogging(mojom::LoggingSettingsPtr settings) override;
-#endif
   void StartNetLog(base::File file,
                    net::NetLogCaptureMode capture_mode,
                    base::Value::Dict constants) override;

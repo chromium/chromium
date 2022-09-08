@@ -12,6 +12,7 @@
 #include "base/clang_profiling_buildflags.h"
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
+#include "build/chromeos_buildflags.h"
 #include "content/common/content_export.h"
 #include "ipc/ipc_sender.h"
 #include "mojo/public/cpp/bindings/generic_pending_receiver.h"
@@ -27,7 +28,7 @@
 namespace base {
 class File;
 class FilePath;
-}
+}  // namespace base
 
 namespace IPC {
 class MessageFilter;
@@ -177,6 +178,14 @@ class CONTENT_EXPORT ChildProcessHost : public IPC::Sender {
   //   2. IO thread, ContentClient::BindChildProcessInterface.
   //   3. Main thread, ChildThreadImpl::BindReceiver (virtual).
   virtual void BindReceiver(mojo::GenericPendingReceiver receiver) = 0;
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Reinitializes the child process's logging with the given settings. This
+  // is needed on Chrome OS, which switches to a log file in the user's home
+  // directory once they log in.
+  virtual void ReinitializeLogging(uint32_t logging_dest,
+                                   base::ScopedFD log_file_descriptor) = 0;
+#endif
 
 // TODO(crbug.com/1328879): Remove this method when fixing the bug.
 #if BUILDFLAG(IS_CASTOS) || BUILDFLAG(IS_CAST_ANDROID)

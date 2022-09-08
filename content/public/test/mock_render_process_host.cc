@@ -14,11 +14,13 @@
 #include "base/lazy_instance.h"
 #include "base/location.h"
 #include "base/no_destructor.h"
+#include "base/notreached.h"
 #include "base/process/process_handle.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/browser/process_lock.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
@@ -326,11 +328,9 @@ void MockRenderProcessHost::Cleanup() {
   }
 }
 
-void MockRenderProcessHost::AddPendingView() {
-}
+void MockRenderProcessHost::AddPendingView() {}
 
-void MockRenderProcessHost::RemovePendingView() {
-}
+void MockRenderProcessHost::RemovePendingView() {}
 
 void MockRenderProcessHost::AddPriorityClient(
     RenderProcessHostPriorityClient* priority_client) {
@@ -359,8 +359,7 @@ ChildProcessImportance MockRenderProcessHost::GetEffectiveImportance() {
 void MockRenderProcessHost::DumpProcessStack() {}
 #endif
 
-void MockRenderProcessHost::SetSuddenTerminationAllowed(bool allowed) {
-}
+void MockRenderProcessHost::SetSuddenTerminationAllowed(bool allowed) {}
 
 bool MockRenderProcessHost::SuddenTerminationAllowed() {
   return true;
@@ -379,8 +378,7 @@ IPC::ChannelProxy* MockRenderProcessHost::GetChannel() {
   return nullptr;
 }
 
-void MockRenderProcessHost::AddFilter(BrowserMessageFilter* filter) {
-}
+void MockRenderProcessHost::AddFilter(BrowserMessageFilter* filter) {}
 
 base::TimeDelta MockRenderProcessHost::GetChildProcessIdleTime() {
   return base::Milliseconds(0);
@@ -553,13 +551,20 @@ void MockRenderProcessHost::WriteIntoTrace(
   proto->set_id(GetID());
 }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+void MockRenderProcessHost::ReinitializeLogging(
+    uint32_t logging_dest,
+    base::ScopedFD log_file_descriptor) {
+  NOTIMPLEMENTED();
+}
+#endif  // IS_CHROMEOS_ASH
+
 void MockRenderProcessHost::FilterURL(bool empty_allowed, GURL* url) {
   RenderProcessHostImpl::FilterURL(this, empty_allowed, url);
 }
 
 void MockRenderProcessHost::EnableAudioDebugRecordings(
-    const base::FilePath& file) {
-}
+    const base::FilePath& file) {}
 
 void MockRenderProcessHost::DisableAudioDebugRecordings() {}
 
@@ -593,8 +598,7 @@ void MockRenderProcessHost::OverrideRendererInterfaceForTesting(
 
 MockRenderProcessHostFactory::MockRenderProcessHostFactory() = default;
 
-MockRenderProcessHostFactory::~MockRenderProcessHostFactory() {
-}
+MockRenderProcessHostFactory::~MockRenderProcessHostFactory() {}
 
 RenderProcessHost* MockRenderProcessHostFactory::CreateRenderProcessHost(
     BrowserContext* browser_context,

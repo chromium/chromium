@@ -125,14 +125,6 @@ struct NetworkServiceParams {
   bool first_party_sets_enabled;
 };
 
-// Information about how logging should be configured.
-// Corresponds to logging::LoggingSettings.
-[EnableIf=is_chromeos_ash]
-struct LoggingSettings {
-  uint32 logging_dest;
-  handle<platform> log_file_descriptor;
-};
-
 // Configuration settings for SCT Auditing.
 [EnableIf=is_ct_supported]
 struct SCTAuditingConfiguration {
@@ -172,12 +164,6 @@ struct SCTAuditingConfiguration {
 interface NetworkService {
   // Sets the parameters and initializes the service.
   SetParams(NetworkServiceParams params);
-
-  // Reinitializes the Network Service's logging with the given settings. This
-  // is needed on Chrome OS, which switches to a log file in the user's home
-  // directory once they log in.
-  [EnableIf=is_chromeos_ash]
-  ReinitializeLogging(LoggingSettings settings);
 
   // Starts observing the NetLog event stream and writing entries to |file|.
   // |constants| is a legend used for decoding constant values in the log; it

@@ -117,7 +117,7 @@ base::LazyInstance<base::ThreadLocalPointer<ChildThreadImpl>>::DestructorAtExit
 // plugins), PluginThread has EnsureTerminateMessageFilter.
 #if BUILDFLAG(IS_POSIX)
 
-#if defined(ADDRESS_SANITIZER) || defined(LEAK_SANITIZER) || \
+#if defined(ADDRESS_SANITIZER) || defined(LEAK_SANITIZER) ||  \
     defined(MEMORY_SANITIZER) || defined(THREAD_SANITIZER) || \
     defined(UNDEFINED_SANITIZER)
 // A thread delegate that waits for |duration| and then exits the process
@@ -404,6 +404,21 @@ class ChildThreadImpl::IOThreadState
   void SetPseudonymizationSalt(uint32_t salt) override {
     content::SetPseudonymizationSalt(salt);
   }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  void ReinitializeLogging(mojom::LoggingSettingsPtr settings) override {
+    logging::LoggingSettings logging_settings;
+    logging_settings.logging_dest = settings->logging_dest;
+    base::ScopedFD log_file_descriptor = settings->log_file_descriptor.TakeFD();
+    logging_settings.log_file = fdopen(log_file_descriptor.release(), "a");
+    if (!logging_settings.log_file) {
+      LOG(ERROR) << "Failed to open new log file handle";
+      return;
+    }
+    if (!logging::InitLogging(logging_settings))
+      LOG(ERROR) << "Unable to reinitialize logging";
+  }
+#endif
 
   const scoped_refptr<base::SequencedTaskRunner> main_thread_task_runner_;
   const base::WeakPtr<ChildThreadImpl> weak_main_thread_;
@@ -812,11 +827,11 @@ const mojo::Remote<mojom::FontCacheWin>& ChildThreadImpl::GetFontCacheWin() {
 #endif
 
 void ChildThreadImpl::RecordAction(const base::UserMetricsAction& action) {
-    NOTREACHED();
+  NOTREACHED();
 }
 
 void ChildThreadImpl::RecordComputedAction(const std::string& action) {
-    NOTREACHED();
+  NOTREACHED();
 }
 
 void ChildThreadImpl::BindHostReceiver(mojo::GenericPendingReceiver receiver) {
