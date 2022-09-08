@@ -524,6 +524,27 @@ class PLATFORM_EXPORT TransformationMatrix {
     matrix_[c][3] = v.s3;
   }
 
+  // VectorExt4<integral_type> is the result type of Double4 operations that
+  // would produce bool results if they were original scalar operators, e.g.
+  //   auto result = double4_a == double4_b;
+  // A zero value of a component of |result| means false, otherwise true.
+  // This function checks whether all 4 components in |result| are true.
+  template <typename T>
+  static T All(VectorExt4<T> v) {
+    return v.s0 & v.s1 & v.s2 & v.s3;
+  }
+
+  ALWAYS_INLINE static double Sum(Double4 v) {
+    return v.s0 + v.s1 + v.s2 + v.s3;
+  }
+
+  ALWAYS_INLINE static bool InverseWithDouble4Cols(
+      Double4& c0,
+      Double4& c1,
+      Double4& c2,
+      Double4& c3,
+      bool check_invertibility_only = false);
+
   Matrix4 matrix_;
 };
 

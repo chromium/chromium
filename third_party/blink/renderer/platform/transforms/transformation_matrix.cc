@@ -57,71 +57,6 @@ namespace blink {
 
 using gfx::Quaternion;
 
-typedef double Vector4[4];
-typedef double Vector3[3];
-
-// Perform a decomposition on the passed matrix, return false if unsuccessful
-// From Graphics Gems: unmatrix.c
-
-// Transpose rotation portion of matrix a, return b
-static void TransposeMatrix4(const TransformationMatrix::Matrix4& a,
-                             TransformationMatrix::Matrix4& b) {
-  for (int i = 0; i < 4; i++)
-    for (int j = 0; j < 4; j++)
-      b[i][j] = a[j][i];
-}
-
-// Multiply a homogeneous point by a matrix and return the transformed point
-static void V4MulPointByMatrix(const Vector4 p,
-                               const TransformationMatrix::Matrix4& m,
-                               Vector4 result) {
-  result[0] =
-      (p[0] * m[0][0]) + (p[1] * m[1][0]) + (p[2] * m[2][0]) + (p[3] * m[3][0]);
-  result[1] =
-      (p[0] * m[0][1]) + (p[1] * m[1][1]) + (p[2] * m[2][1]) + (p[3] * m[3][1]);
-  result[2] =
-      (p[0] * m[0][2]) + (p[1] * m[1][2]) + (p[2] * m[2][2]) + (p[3] * m[3][2]);
-  result[3] =
-      (p[0] * m[0][3]) + (p[1] * m[1][3]) + (p[2] * m[2][3]) + (p[3] * m[3][3]);
-}
-
-static double V3Length(Vector3 a) {
-  return std::sqrt((a[0] * a[0]) + (a[1] * a[1]) + (a[2] * a[2]));
-}
-
-static void V3Scale(Vector3 v, double desired_length) {
-  double len = V3Length(v);
-  if (len != 0) {
-    double l = desired_length / len;
-    v[0] *= l;
-    v[1] *= l;
-    v[2] *= l;
-  }
-}
-
-static double V3Dot(const Vector3 a, const Vector3 b) {
-  return (a[0] * b[0]) + (a[1] * b[1]) + (a[2] * b[2]);
-}
-
-// Make a linear combination of two vectors and return the result.
-// result = (a * ascl) + (b * bscl)
-static void V3Combine(const Vector3 a,
-                      const Vector3 b,
-                      Vector3 result,
-                      double ascl,
-                      double bscl) {
-  result[0] = (ascl * a[0]) + (bscl * b[0]);
-  result[1] = (ascl * a[1]) + (bscl * b[1]);
-  result[2] = (ascl * a[2]) + (bscl * b[2]);
-}
-
-// Return the cross product result = a cross b */
-static void V3Cross(const Vector3 a, const Vector3 b, Vector3 result) {
-  result[0] = (a[1] * b[2]) - (a[2] * b[1]);
-  result[1] = (a[2] * b[0]) - (a[0] * b[2]);
-  result[2] = (a[0] * b[1]) - (a[1] * b[0]);
-}
-
 // TODO(crbug/937296): This implementation is virtually identical to the
 // implementation in ui/gfx/geometry/transform_util with the main difference
 // being the representation of the underlying matrix. These implementations
@@ -140,59 +75,40 @@ bool TransformationMatrix::Decompose(DecomposedType& result) const {
 
   // https://www.w3.org/TR/css-transforms-2/#decomposing-a-3d-matrix.
 
-  TransformationMatrix::Matrix4 local_matrix;
-  memcpy(&local_matrix, &matrix_, sizeof(TransformationMatrix::Matrix4));
+  Double4 c0 = Col(0);
+  Double4 c1 = Col(1);
+  Double4 c2 = Col(2);
+  Double4 c3 = Col(3);
 
   // Normalize the matrix.
-  if (local_matrix[3][3] == 0)
+  if (!std::isnormal(c3.s3))
     return false;
 
-  int i, j;
-  for (i = 0; i < 4; i++)
-    for (j = 0; j < 4; j++)
-      local_matrix[i][j] /= local_matrix[3][3];
+  Double4 inv_w = 1.0 / c3.s3;
+  c0 *= inv_w;
+  c1 *= inv_w;
+  c2 *= inv_w;
+  c3 *= inv_w;
 
-  // perspective is used to solve for perspective, but it also provides
-  // an easy way to test for singularity of the upper 3x3 component.
-  TransformationMatrix perspective;
-  perspective.SetMatrix(local_matrix);
-  for (i = 0; i < 3; i++)
-    perspective.matrix_[i][3] = 0;
-  perspective.matrix_[3][3] = 1;
+  Double4 perspective = {c0.s3, c1.s3, c2.s3, 1.0};
+  // Clear the perspective partition.
+  c0.s3 = c1.s3 = c2.s3 = 0;
+  c3.s3 = 1;
 
-  TransformationMatrix inverse_perspective;
-  if (!perspective.InternalInverse(&inverse_perspective))
+  Double4 inverse_c0 = c0;
+  Double4 inverse_c1 = c1;
+  Double4 inverse_c2 = c2;
+  Double4 inverse_c3 = c3;
+  if (!InverseWithDouble4Cols(inverse_c0, inverse_c1, inverse_c2, inverse_c3))
     return false;
 
-  // First, isolate perspective.  This is the messiest.
-  if (local_matrix[0][3] != 0 || local_matrix[1][3] != 0 ||
-      local_matrix[2][3] != 0) {
-    // rightHandSide is the right hand side of the equation.
-    Vector4 right_hand_side;
-    right_hand_side[0] = local_matrix[0][3];
-    right_hand_side[1] = local_matrix[1][3];
-    right_hand_side[2] = local_matrix[2][3];
-    right_hand_side[3] = local_matrix[3][3];
-
-    // Solve the equation by inverting perspective and multiplying
-    // right_hand_side by the inverse.  (This is the easiest way, not
-    // necessarily the best.)
-    Matrix4 transposed_inverse_perspective_matrix;
-    TransposeMatrix4(inverse_perspective.matrix_,
-                     transposed_inverse_perspective_matrix);
-
-    Vector4 perspective_point;
-    V4MulPointByMatrix(right_hand_side, transposed_inverse_perspective_matrix,
-                       perspective_point);
-
-    result.perspective_x = perspective_point[0];
-    result.perspective_y = perspective_point[1];
-    result.perspective_z = perspective_point[2];
-    result.perspective_w = perspective_point[3];
-
-    // Clear the perspective partition
-    local_matrix[0][3] = local_matrix[1][3] = local_matrix[2][3] = 0;
-    local_matrix[3][3] = 1;
+  // First, isolate perspective.
+  if (!All(perspective == Double4{0, 0, 0, 1})) {
+    // Solve the equation by multiplying perspective by the inverse.
+    result.perspective_x = Sum(perspective * inverse_c0);
+    result.perspective_y = Sum(perspective * inverse_c1);
+    result.perspective_z = Sum(perspective * inverse_c2);
+    result.perspective_w = Sum(perspective * inverse_c3);
   } else {
     // No perspective.
     result.perspective_x = result.perspective_y = result.perspective_z = 0;
@@ -200,69 +116,72 @@ bool TransformationMatrix::Decompose(DecomposedType& result) const {
   }
 
   // Next take care of translation (easy).
-  result.translate_x = local_matrix[3][0];
-  local_matrix[3][0] = 0;
-  result.translate_y = local_matrix[3][1];
-  local_matrix[3][1] = 0;
-  result.translate_z = local_matrix[3][2];
-  local_matrix[3][2] = 0;
+  result.translate_x = c3.s0;
+  c3.s0 = 0;
+  result.translate_y = c3.s1;
+  c3.s1 = 0;
+  result.translate_z = c3.s2;
+  c3.s2 = 0;
 
-  // Vector4 type and functions need to be added to the common set.
   // Note: Deviating from the spec in terms of variable naming. The matrix is
   // stored on column major order and not row major. Using the variable 'row'
   // instead of 'column' in the spec pseudocode has been the source of
   // confusion, specifically in sorting out rotations.
-  Vector3 column[3], pdum3;
 
-  // Now get scale and shear.
-  for (i = 0; i < 3; i++) {
-    column[i][0] = local_matrix[i][0];
-    column[i][1] = local_matrix[i][1];
-    column[i][2] = local_matrix[i][2];
-  }
+  // From now on, only the first 3 components of the Double4 column is used.
+  auto sum3 = [](Double4 c) -> double { return c.s0 + c.s1 + c.s2; };
+  auto extract_scale = [&sum3](Double4& c, double& scale) -> bool {
+    scale = std::sqrt(sum3(c * c));
+    if (!std::isnormal(scale))
+      return false;
+    c *= 1.0 / scale;
+    return true;
+  };
 
   // Compute X scale factor and normalize the first column.
-  result.scale_x = V3Length(column[0]);
-  V3Scale(column[0], 1.0);
+  if (!extract_scale(c0, result.scale_x))
+    return false;
 
   // Compute XY shear factor and make 2nd row orthogonal to 1st.
-  result.skew_xy = V3Dot(column[0], column[1]);
-  V3Combine(column[1], column[0], column[1], 1.0, -result.skew_xy);
+  result.skew_xy = sum3(c0 * c1);
+  c1 -= c0 * result.skew_xy;
 
   // Now, compute Y scale and normalize 2nd column.
-  result.scale_y = V3Length(column[1]);
-  V3Scale(column[1], 1.0);
+  if (!extract_scale(c1, result.scale_y))
+    return false;
+
   result.skew_xy /= result.scale_y;
 
   // Compute XZ and YZ shears, and orthogonalize the 3rd column.
-  result.skew_xz = V3Dot(column[0], column[2]);
-  V3Combine(column[2], column[0], column[2], 1.0, -result.skew_xz);
-  result.skew_yz = V3Dot(column[1], column[2]);
-  V3Combine(column[2], column[1], column[2], 1.0, -result.skew_yz);
+  result.skew_xz = sum3(c0 * c2);
+  c2 -= c0 * result.skew_xz;
+  result.skew_yz = sum3(c1 * c2);
+  c2 -= c1 * result.skew_yz;
 
   // Next, get Z scale and normalize the 3rd column.
-  result.scale_z = V3Length(column[2]);
-  V3Scale(column[2], 1.0);
+  if (!extract_scale(c2, result.scale_z))
+    return false;
+
   result.skew_xz /= result.scale_z;
   result.skew_yz /= result.scale_z;
 
   // At this point, the matrix (in column[]) is orthonormal.
   // Check for a coordinate system flip.  If the determinant
   // is -1, then negate the matrix and the scaling factors.
-  V3Cross(column[1], column[2], pdum3);
-  if (V3Dot(column[0], pdum3) < 0) {
+  auto cross3 = [](Double4 a, Double4 b) -> Double4 {
+    return a.s1203 * b.s2013 - a.s2013 * b.s1203;
+  };
+  Double4 pdum3 = cross3(c1, c2);
+  if (sum3(c0 * pdum3) < 0) {
     // Note that flipping only one of the 3 scaling factors would also flip
     // the sign of the determinant. By flipping all 3, we turn a 2D matrix
     // interpolation into a 3D interpolation.
     result.scale_x *= -1;
     result.scale_y *= -1;
     result.scale_z *= -1;
-
-    for (i = 0; i < 3; i++) {
-      column[i][0] *= -1;
-      column[i][1] *= -1;
-      column[i][2] *= -1;
-    }
+    c0 *= -1;
+    c1 *= -1;
+    c2 *= -1;
   }
 
   // Lastly, compute the quaternions.
@@ -299,7 +218,7 @@ bool TransformationMatrix::Decompose(DecomposedType& result) const {
 
   double r, s, t, x, y, z, w;
 
-  t = column[0][0] + column[1][1] + column[2][2];  // trace of Q
+  t = c0.s0 + c1.s1 + c2.s2;  // trace of Q
 
   // https://en.wikipedia.org/wiki/Rotation_matrix#Quaternion
   if (1 + t > 0.001) {
@@ -308,33 +227,33 @@ bool TransformationMatrix::Decompose(DecomposedType& result) const {
     r = std::sqrt(1.0 + t);
     s = 0.5 / r;
     w = 0.5 * r;
-    x = (column[1][2] - column[2][1]) * s;
-    y = (column[2][0] - column[0][2]) * s;
-    z = (column[0][1] - column[1][0]) * s;
-  } else if (column[0][0] > column[1][1] && column[0][0] > column[2][2]) {
+    x = (c1.s2 - c2.s1) * s;
+    y = (c2.s0 - c0.s2) * s;
+    z = (c0.s1 - c1.s0) * s;
+  } else if (c0.s0 > c1.s1 && c0.s0 > c2.s2) {
     // Q_xx is largest.
-    r = std::sqrt(1.0 + column[0][0] - column[1][1] - column[2][2]);
+    r = std::sqrt(1.0 + c0.s0 - c1.s1 - c2.s2);
     s = 0.5 / r;
     x = 0.5 * r;
-    y = (column[1][0] - column[0][1]) * s;
-    z = (column[2][0] + column[0][2]) * s;
-    w = (column[1][2] - column[2][1]) * s;
-  } else if (column[1][1] > column[2][2]) {
+    y = (c1.s0 - c0.s1) * s;
+    z = (c2.s0 + c0.s2) * s;
+    w = (c1.s2 - c2.s1) * s;
+  } else if (c1.s1 > c2.s2) {
     // Q_yy is largest.
-    r = std::sqrt(1.0 - column[0][0] + column[1][1] - column[2][2]);
+    r = std::sqrt(1.0 - c0.s0 + c1.s1 - c2.s2);
     s = 0.5 / r;
-    x = (column[1][0] + column[0][1]) * s;
+    x = (c1.s0 + c0.s1) * s;
     y = 0.5 * r;
-    z = (column[2][1] + column[1][2]) * s;
-    w = (column[2][0] - column[0][2]) * s;
+    z = (c2.s1 + c1.s2) * s;
+    w = (c2.s0 - c0.s2) * s;
   } else {
     // Q_zz is largest.
-    r = std::sqrt(1.0 - column[0][0] - column[1][1] + column[2][2]);
+    r = std::sqrt(1.0 - c0.s0 - c1.s1 + c2.s2);
     s = 0.5 / r;
-    x = (column[2][0] + column[0][2]) * s;
-    y = (column[2][1] + column[1][2]) * s;
+    x = (c2.s0 + c0.s2) * s;
+    y = (c2.s1 + c1.s2) * s;
     z = 0.5 * r;
-    w = (column[0][1] - column[1][0]) * s;
+    w = (c0.s1 - c1.s0) * s;
   }
 
   result.quaternion_x = x;
@@ -1078,6 +997,24 @@ bool TransformationMatrix::InternalInverse(TransformationMatrix* result) const {
   Double4 c2 = Col(2);
   Double4 c3 = Col(3);
 
+  bool check_invertiblility_only = !result;
+  bool invertible =
+      InverseWithDouble4Cols(c0, c1, c2, c3, check_invertiblility_only);
+  if (invertible && result) {
+    result->SetCol(0, c0);
+    result->SetCol(1, c1);
+    result->SetCol(2, c2);
+    result->SetCol(3, c3);
+  }
+  return invertible;
+}
+
+bool TransformationMatrix::InverseWithDouble4Cols(
+    Double4& c0,
+    Double4& c1,
+    Double4& c2,
+    Double4& c3,
+    bool check_invertiblility_only) {
   // Note that r1 and r3 have components 2/3 and 0/1 swapped.
   Double4 r0 = {c0.s0, c1.s0, c2.s0, c3.s0};
   Double4 r1 = {c2.s1, c3.s1, c0.s1, c1.s1};
@@ -1116,7 +1053,7 @@ bool TransformationMatrix::InternalInverse(TransformationMatrix* result) const {
   det += swap_in_pairs(det);
   if (!std::isnormal(det.x))
     return false;
-  if (!result)
+  if (check_invertiblility_only)
     return true;
 
   c2 = swap_hi_lo(r0 * t - c2);
@@ -1150,12 +1087,6 @@ bool TransformationMatrix::InternalInverse(TransformationMatrix* result) const {
   c1 *= det;
   c2 *= det;
   c3 *= det;
-
-  DCHECK(result);
-  result->SetCol(0, c0);
-  result->SetCol(1, c1);
-  result->SetCol(2, c2);
-  result->SetCol(3, c3);
   return true;
 }
 
