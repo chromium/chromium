@@ -237,7 +237,9 @@ void NavigationApi::InitializeForNewWindow(
   if (commit_reason != CommitReason::kRegular ||
       (current.Url() == BlankURL() && !IsBackForwardLoadType(load_type)) ||
       (current.Url().IsAboutSrcdocURL() && !IsBackForwardLoadType(load_type))) {
-    if (previous && !previous->entries_.IsEmpty()) {
+    if (previous && !previous->entries_.IsEmpty() &&
+        GetSupplementable()->GetSecurityOrigin()->IsSameOriginWith(
+            previous->GetSupplementable()->GetSecurityOrigin())) {
       DCHECK(entries_.IsEmpty());
       entries_.ReserveCapacity(previous->entries_.size());
       for (wtf_size_t i = 0; i < previous->entries_.size(); i++) {
