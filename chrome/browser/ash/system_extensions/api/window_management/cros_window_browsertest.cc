@@ -27,6 +27,8 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/web_applications/test/app_registration_waiter.h"
+#include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/user_manager/user.h"
@@ -427,6 +429,35 @@ IN_PROC_BROWSER_TEST_F(CrosWindowManagementBrowserTest, CrosWindowFocusMulti) {
 
 IN_PROC_BROWSER_TEST_F(CrosWindowManagementBrowserTest, CrosWindowClose) {
   RunTest("cros_window_close.js");
+}
+
+IN_PROC_BROWSER_TEST_F(CrosWindowManagementBrowserTest, CrosWindowWebAppTab) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  const GURL start_url = embedded_test_server()->GetURL("/web_apps/basic.html");
+
+  // Install sample web app to open in tabbed mode.
+  auto web_app_info = std::make_unique<WebAppInstallInfo>();
+  web_app_info->start_url = start_url;
+  web_app_info->user_display_mode = web_app::UserDisplayMode::kBrowser;
+  const web_app::AppId app_id = web_app::test::InstallWebApp(
+      browser()->profile(), std::move(web_app_info));
+  web_app::AppRegistrationWaiter(browser()->profile(), app_id).Await();
+
+  // Launch app through App Service proxy and wait for open.
+  auto* const proxy =
+      apps::AppServiceProxyFactory::GetForProfile(browser()->profile());
+
+  ui_test_utils::TabAddedWaiter waiter(browser());
+  proxy->Launch(app_id,
+                /*event_flags=*/0, apps::LaunchSource::kFromAppListGrid);
+  waiter.Wait();
+
+  // Unfocus the web app.
+  chrome::SelectPreviousTab(browser());
+
+  // Run test which calls .getWindows().
+  RunTest("cros_window_web_app_tab.js");
 }
 
 IN_PROC_BROWSER_TEST_F(CrosWindowManagementBrowserTest,
