@@ -46,7 +46,8 @@ std::unique_ptr<TestRunner> LowILRealRunner() {
   auto runner = std::make_unique<TestRunner>(
       JobLevel::kLockdown, USER_INTERACTIVE, USER_INTERACTIVE);
   runner->SetTimeout(INFINITE);
-  runner->GetPolicy()->SetAlternateDesktop(true);
+  runner->GetPolicy()->CreateAlternateDesktop(Desktop::kAlternateWinstation);
+  runner->GetPolicy()->GetConfig()->SetDesktop(Desktop::kAlternateWinstation);
   runner->GetPolicy()->GetConfig()->SetIntegrityLevel(INTEGRITY_LEVEL_LOW);
   return runner;
 }

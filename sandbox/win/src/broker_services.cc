@@ -522,7 +522,7 @@ ResultCode BrokerServicesBase::SpawnTarget(const wchar_t* exe_path,
 
   // We don't want any child processes causing the IDC_APPSTARTING cursor.
   startup_info->UpdateFlags(STARTF_FORCEOFFFEEDBACK);
-  startup_info->SetDesktop(policy_base->GetAlternateDesktop());
+  startup_info->SetDesktop(policy_base->GetDesktopName());
   startup_info->SetMitigations(config_base->GetProcessMitigations());
 
   if (base::win::GetVersion() >= base::win::Version::WIN10_TH2 &&

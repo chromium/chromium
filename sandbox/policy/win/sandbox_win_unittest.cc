@@ -122,6 +122,7 @@ class TestTargetConfig : public TargetConfig {
   scoped_refptr<AppContainerBase> GetAppContainerBase() {
     return app_container_;
   }
+  void SetDesktop(Desktop desktop) override {}
 
  private:
   std::vector<std::wstring> blocklisted_dlls_;
@@ -133,14 +134,11 @@ class TestTargetPolicy : public TargetPolicy {
   ~TestTargetPolicy() override {}
   // TargetPolicy:
   TargetConfig* GetConfig() override { return &config_; }
-  ResultCode SetAlternateDesktop(bool alternate_winstation) override {
+  std::wstring GetDesktopName() override { return std::wstring(); }
+  ResultCode CreateAlternateDesktop(Desktop desktop) override {
     return SBOX_ALL_OK;
   }
-  std::wstring GetAlternateDesktop() const override { return std::wstring(); }
-  ResultCode CreateAlternateDesktop(bool alternate_winstation) override {
-    return SBOX_ALL_OK;
-  }
-  void DestroyAlternateDesktop() override {}
+  void DestroyDesktops() override {}
   ResultCode SetStdoutHandle(HANDLE handle) override { return SBOX_ALL_OK; }
   ResultCode SetStderrHandle(HANDLE handle) override { return SBOX_ALL_OK; }
   void AddHandleToShare(HANDLE handle) override {}

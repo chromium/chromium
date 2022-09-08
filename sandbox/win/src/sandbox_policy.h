@@ -18,6 +18,16 @@ namespace sandbox {
 
 class AppContainer;
 
+// Desktop used to launch child, controls GetDesktop().
+enum class Desktop {
+  // Child is launched without changing the desktop.
+  kDefault,
+  // Child is launched using the alternate desktop.
+  kAlternateDesktop,
+  // Child is launched using the anternate desktop and window station.
+  kAlternateWinstation,
+};
+
 // Windows subsystems that can have specific rules.
 // Note: The process subsystem  (kProcess) does not evaluate the request
 // exactly like the CreateProcess API does. See the comment at the top of
@@ -225,6 +235,11 @@ class [[clang::lto_visibility_public]] TargetConfig {
   // Disconnect the target from CSRSS when TargetServices::LowerToken() is
   // called inside the target.
   virtual ResultCode SetDisconnectCsrss() = 0;
+
+  // Specifies the desktop on which the application is going to run. The
+  // requested alternate desktop must have been created via the TargetPolicy
+  // interface before any processes are spawned.
+  virtual void SetDesktop(Desktop desktop) = 0;
 };
 
 // We need [[clang::lto_visibility_public]] because instances of this class are
@@ -236,22 +251,6 @@ class [[clang::lto_visibility_public]] TargetPolicy {
 
   // Fetches the backing TargetConfig for this policy.
   virtual TargetConfig* GetConfig() = 0;
-
-  // Specifies the desktop on which the application is going to run. If the
-  // desktop does not exist, it will be created. If alternate_winstation is
-  // set to true, the desktop will be created on an alternate window station.
-  virtual ResultCode SetAlternateDesktop(bool alternate_winstation) = 0;
-
-  // Returns the name of the alternate desktop used. If an alternate window
-  // station is specified, the name is prepended by the window station name,
-  // followed by a backslash.
-  virtual std::wstring GetAlternateDesktop() const = 0;
-
-  // Precreates the desktop and window station, if any.
-  virtual ResultCode CreateAlternateDesktop(bool alternate_winstation) = 0;
-
-  // Destroys the desktop and windows station.
-  virtual void DestroyAlternateDesktop() = 0;
 
   // Set the handles the target process should inherit for stdout and
   // stderr.  The handles the caller passes must remain valid for the
@@ -269,6 +268,19 @@ class [[clang::lto_visibility_public]] TargetPolicy {
   // lockdown tokens. The token the caller passes must remain valid for the
   // lifetime of the policy object.
   virtual void SetEffectiveToken(HANDLE token) = 0;
+
+  // Returns the name of the alternate desktop used. If an alternate window
+  // station is specified, the name is prepended by the window station name,
+  // followed by a backslash.
+  virtual std::wstring GetDesktopName() = 0;
+
+  // Precreates the desktop (for kAlternateDesktop & kAlternateWinstation) and
+  // window station (for kAlternateWindowstation). Should be called before any
+  // target is launched with an alternate desktop.
+  virtual ResultCode CreateAlternateDesktop(Desktop desktop) = 0;
+
+  // Destroys all desktops and window stations.
+  virtual void DestroyDesktops() = 0;
 };
 
 }  // namespace sandbox

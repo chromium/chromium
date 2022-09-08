@@ -158,7 +158,8 @@ TEST(ValidationSuite, TestRegistry) {
 
 std::unique_ptr<TestRunner> DesktopRunner() {
   auto runner = std::make_unique<TestRunner>();
-  runner->GetPolicy()->SetAlternateDesktop(true);
+  runner->GetPolicy()->CreateAlternateDesktop(Desktop::kAlternateWinstation);
+  runner->GetPolicy()->GetConfig()->SetDesktop(Desktop::kAlternateWinstation);
   runner->GetPolicy()->GetConfig()->SetIntegrityLevel(INTEGRITY_LEVEL_LOW);
   return runner;
 }
@@ -183,9 +184,12 @@ TEST(ValidationSuite, TestAlternateDesktop) {
   TestRunner runner;
   wchar_t command[1024] = {0};
   runner.SetTimeout(3600000);
-  runner.GetPolicy()->SetAlternateDesktop(true);
+  runner.GetPolicy()->CreateAlternateDesktop(Desktop::kAlternateWinstation);
+  runner.GetPolicy()->GetConfig()->SetDesktop(Desktop::kAlternateWinstation);
   runner.GetPolicy()->GetConfig()->SetIntegrityLevel(INTEGRITY_LEVEL_LOW);
-  std::wstring desktop_name = runner.GetPolicy()->GetAlternateDesktop();
+  // Ensure the desktop is created.
+  runner.GetPolicy()->CreateAlternateDesktop(Desktop::kAlternateWinstation);
+  std::wstring desktop_name = runner.GetPolicy()->GetDesktopName();
   desktop_name = desktop_name.substr(desktop_name.find('\\') + 1);
   wsprintf(command, L"OpenAlternateDesktop %lS", desktop_name.c_str());
   EXPECT_EQ(SBOX_TEST_DENIED, runner.RunTest(command));
@@ -193,7 +197,8 @@ TEST(ValidationSuite, TestAlternateDesktop) {
 
 std::unique_ptr<TestRunner> AlternateDesktopLocalWinstationRunner() {
   auto runner = std::make_unique<TestRunner>();
-  runner->GetPolicy()->SetAlternateDesktop(false);
+  runner->GetPolicy()->CreateAlternateDesktop(Desktop::kAlternateDesktop);
+  runner->GetPolicy()->GetConfig()->SetDesktop(Desktop::kAlternateDesktop);
   runner->GetPolicy()->GetConfig()->SetIntegrityLevel(INTEGRITY_LEVEL_LOW);
   return runner;
 }

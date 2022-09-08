@@ -30,7 +30,7 @@ namespace {
 //
 //  integrity_level_(sandbox::INTEGRITY_LEVEL_LOW),
 //  delayed_integrity_level_(sandbox::INTEGRITY_LEVEL_UNTRUSTED),
-bool AudioPreSpawnTarget(sandbox::TargetPolicy* policy) {
+bool AudioPreSpawnTarget(sandbox::TargetConfig* config) {
   // Audio process privilege requirements:
   //  - Lockdown level of USER_NON_ADMIN
   //  - Delayed integrity level of INTEGRITY_LEVEL_LOW
@@ -48,11 +48,7 @@ bool AudioPreSpawnTarget(sandbox::TargetPolicy* policy) {
   // https://cs.chromium.org/chromium/src/media/audio/win/audio_low_latency_input_win.cc
   // Use USER_RESTRICTED_NON_ADMIN over USER_NON_ADMIN to prevent failures when
   // AppLocker and similar application whitelisting solutions are in place.
-  policy->SetAlternateDesktop(true);
-
-  sandbox::TargetConfig* config = policy->GetConfig();
-  if (config->IsConfigured())
-    return true;
+  DCHECK(!config->IsConfigured());
 
   // Custom default policy allowing audio drivers to read device properties
   // (https://crbug.com/883326).
@@ -61,6 +57,7 @@ bool AudioPreSpawnTarget(sandbox::TargetPolicy* policy) {
   config->SetDelayedIntegrityLevel(sandbox::INTEGRITY_LEVEL_LOW);
   config->SetTokenLevel(sandbox::USER_RESTRICTED_SAME_ACCESS,
                         sandbox::USER_RESTRICTED_NON_ADMIN);
+  config->SetDesktop(sandbox::Desktop::kAlternateWinstation);
 
   return true;
 }
@@ -115,18 +112,15 @@ std::string UtilityAppContainerId(base::CommandLine& cmd_line) {
   return base::WideToUTF8(cmd_line.GetProgram().value());
 }
 
-bool IconReaderPreSpawnTarget(sandbox::TargetPolicy* policy) {
-  policy->SetAlternateDesktop(true);
-
-  auto* config = policy->GetConfig();
-  if (config->IsConfigured())
-    return true;
+bool IconReaderPreSpawnTarget(sandbox::TargetConfig* config) {
+  DCHECK(!config->IsConfigured());
 
   config->SetTokenLevel(sandbox::USER_RESTRICTED_SAME_ACCESS,
                         sandbox::USER_LOCKDOWN);
   config->SetDelayedIntegrityLevel(sandbox::INTEGRITY_LEVEL_UNTRUSTED);
   config->SetIntegrityLevel(sandbox::INTEGRITY_LEVEL_LOW);
   config->SetLockdownDefaultDacl();
+  config->SetDesktop(sandbox::Desktop::kAlternateWinstation);
 
   sandbox::MitigationFlags flags = config->GetDelayedProcessMitigations();
   flags |= sandbox::MITIGATION_DYNAMIC_CODE_DISABLE;
@@ -228,20 +222,18 @@ bool UtilitySandboxedProcessLauncherDelegate::ShouldLaunchElevated() {
 
 bool UtilitySandboxedProcessLauncherDelegate::PreSpawnTarget(
     sandbox::TargetPolicy* policy) {
-  if (sandbox_type_ == sandbox::mojom::Sandbox::kAudio) {
-    if (!AudioPreSpawnTarget(policy))
-      return false;
-  }
-
-  if (sandbox_type_ == sandbox::mojom::Sandbox::kIconReader) {
-    if (!IconReaderPreSpawnTarget(policy))
-      return false;
-  }
-
   sandbox::TargetConfig* config = policy->GetConfig();
   if (!config->IsConfigured()) {
+    if (sandbox_type_ == sandbox::mojom::Sandbox::kAudio) {
+      if (!AudioPreSpawnTarget(config))
+        return false;
+    }
     if (sandbox_type_ == sandbox::mojom::Sandbox::kNetwork) {
       if (!NetworkPreSpawnTarget(config))
+        return false;
+    }
+    if (sandbox_type_ == sandbox::mojom::Sandbox::kIconReader) {
+      if (!IconReaderPreSpawnTarget(config))
         return false;
     }
 

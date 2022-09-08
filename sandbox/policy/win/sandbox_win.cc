@@ -410,18 +410,7 @@ ResultCode AddDefaultConfigForSandboxedProcess(TargetConfig* config) {
   if (result != SBOX_ALL_OK)
     return result;
 
-  return SBOX_ALL_OK;
-}
-
-ResultCode AddDefaultPolicyForSandboxedProcess(TargetPolicy* policy) {
-  ResultCode result = policy->SetAlternateDesktop(true);
-  if (result != SBOX_ALL_OK) {
-    // We ignore the result of setting the alternate desktop, however log
-    // a launch warning.
-    LogLaunchWarning(result, ::GetLastError());
-    DLOG(WARNING) << "Failed to apply desktop security to the renderer";
-  }
-
+  config->SetDesktop(Desktop::kAlternateWinstation);
   return SBOX_ALL_OK;
 }
 
@@ -1123,12 +1112,6 @@ ResultCode SandboxWin::GeneratePolicyForSandboxedProcess(
   if (!policy->GetConfig()->IsConfigured()) {
     ResultCode result = GenerateConfigForSandboxedProcess(
         cmd_line, process_type, delegate, policy->GetConfig());
-    if (result != SBOX_ALL_OK)
-      return result;
-  }
-
-  if (!delegate->DisableDefaultPolicy()) {
-    ResultCode result = AddDefaultPolicyForSandboxedProcess(policy);
     if (result != SBOX_ALL_OK)
       return result;
   }

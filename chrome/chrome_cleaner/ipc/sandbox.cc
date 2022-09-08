@@ -57,21 +57,11 @@ std::unique_ptr<sandbox::TargetPolicy> GetSandboxPolicy(
     sandbox::BrokerServices* sandbox_broker_services) {
   auto policy = sandbox_broker_services->CreatePolicy();
 
-#ifdef NDEBUG
-  // Chromium ignores failures on this function but logs a warning. Do the same
-  // here.
-  // https://chromium.googlesource.com/chromium/src/+/b6a4ff86c730756a73d63cc882ef818fb7818a53/content/common/sandbox_win.cc#420
-  // TODO(crbug.com/893740): SetAlternateDesktop can cause DCHECK's in unit
-  // tests if called more than once. Until we get to the bottom of why, it's
-  // only enabled in release builds.
-  sandbox::ResultCode result = policy->SetAlternateDesktop(true);
-  LOG_IF(WARNING, result != sandbox::SBOX_ALL_OK)
-      << "Failed to apply desktop security";
-#endif
-
   sandbox::TargetConfig* config = policy->GetConfig();
   if (config->IsConfigured())
     return policy;
+
+  config->SetDesktop(sandbox::Desktop::kAlternateWinstation);
 
   sandbox::ResultCode sandbox_result = config->SetTokenLevel(
       sandbox::USER_RESTRICTED_SAME_ACCESS, sandbox::USER_LOCKDOWN);
@@ -137,6 +127,20 @@ std::unique_ptr<sandbox::TargetPolicy> GetSandboxPolicy(
   // not be cleaned up yet when we call LowerToken.
 
   return policy;
+}
+
+// One-time actions to call on the broker.
+sandbox::ResultCode InitializeSandboxBroker(sandbox::BrokerServices* broker) {
+  sandbox::ResultCode result = broker->Init();
+  if (result != sandbox::SBOX_ALL_OK)
+    return result;
+  result = broker->CreatePolicy()->CreateAlternateDesktop(
+      sandbox::Desktop::kAlternateWinstation);
+  // Matches Chrome behavior. Silently ignore failures unless we're
+  // in a bad state.
+  if (result == sandbox::SBOX_ERROR_FAILED_TO_SWITCH_BACK_WINSTATION)
+    return result;
+  return sandbox::SBOX_ALL_OK;
 }
 
 }  // namespace
@@ -239,7 +243,7 @@ ResultCode StartSandboxTarget(const base::CommandLine& sandbox_command_line,
   // Make init_result static so broker services will only be initialized once.
   // Otherwise, it could be initialized multiple times during tests.
   static const sandbox::ResultCode init_result =
-      sandbox_broker_services->Init();
+      InitializeSandboxBroker(sandbox_broker_services);
   if (init_result != sandbox::SBOX_ALL_OK) {
     LOG(FATAL) << "Failed to initialize sandbox BrokerServices: "
                << init_result;

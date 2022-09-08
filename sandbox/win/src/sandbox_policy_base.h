@@ -33,7 +33,6 @@
 namespace sandbox {
 
 class BrokerServicesBase;
-enum class Desktop;
 class Dispatcher;
 class LowLevelPolicy;
 class PolicyDiagnostic;
@@ -82,6 +81,7 @@ class ConfigBase final : public TargetConfig {
   ResultCode AddKernelObjectToClose(const wchar_t* handle_type,
                                     const wchar_t* handle_name) override;
   ResultCode SetDisconnectCsrss() override;
+  void SetDesktop(Desktop desktop) override;
 
  private:
   // Can call Freeze()
@@ -121,6 +121,7 @@ class ConfigBase final : public TargetConfig {
   bool is_csrss_connected() { return is_csrss_connected_; }
   size_t memory_limit() { return memory_limit_; }
   uint32_t ui_exceptions() { return ui_exceptions_; }
+  Desktop desktop() { return desktop_; }
   // nullptr if no objects have been added via AddKernelObjectToClose().
   HandleCloser* handle_closer() { return handle_closer_.get(); }
 
@@ -137,6 +138,7 @@ class ConfigBase final : public TargetConfig {
   bool is_csrss_connected_;
   size_t memory_limit_;
   uint32_t ui_exceptions_;
+  Desktop desktop_;
 
   // Object in charge of generating the low level policy. Will be reset() when
   // Freeze() is called.
@@ -164,10 +166,9 @@ class PolicyBase final : public TargetPolicy {
 
   // TargetPolicy:
   TargetConfig* GetConfig() override;
-  ResultCode SetAlternateDesktop(bool alternate_winstation) override;
-  std::wstring GetAlternateDesktop() const override;
-  ResultCode CreateAlternateDesktop(bool alternate_winstation) override;
-  void DestroyAlternateDesktop() override;
+  std::wstring GetDesktopName() override;
+  ResultCode CreateAlternateDesktop(Desktop desktop) override;
+  void DestroyDesktops() override;
   ResultCode SetStdoutHandle(HANDLE handle) override;
   ResultCode SetStderrHandle(HANDLE handle) override;
   void AddHandleToShare(HANDLE handle) override;
@@ -245,7 +246,6 @@ class PolicyBase final : public TargetPolicy {
   // The policy takes ownership of a target as it is applied to it.
   std::unique_ptr<TargetProcess> target_;
   // The user-defined global policy settings.
-  Desktop desktop_;
   HANDLE stdout_handle_;
   HANDLE stderr_handle_;
   std::unique_ptr<Dispatcher> dispatcher_;
