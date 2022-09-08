@@ -4,11 +4,15 @@
 
 #include "chrome/browser/ui/web_applications/test/web_app_navigation_browsertest.h"
 
+#include <vector>
+
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/run_loop.h"
 #include "base/strings/escape.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/bind.h"
 #include "chrome/browser/profiles/profile_io_data.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -17,8 +21,15 @@
 #include "chrome/browser/web_applications/test/app_registry_cache_waiter.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
+#include "chrome/browser/web_applications/web_app.h"
+#include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/services/app_service/public/cpp/app_types.h"
+#include "components/webapps/browser/installable/installable_metrics.h"
+#include "components/webapps/browser/uninstall_result_code.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_switches.h"
@@ -220,10 +231,37 @@ void WebAppNavigationBrowserTest::SetUpOnMainThread() {
   host_resolver()->AddRule("*", "127.0.0.1");
   // By default, all SSL cert checks are valid. Can be overridden in tests.
   cert_verifier_.mock_cert_verifier()->set_default_result(net::OK);
+  profile_ = browser()->profile();
+}
+
+void WebAppNavigationBrowserTest::TearDownOnMainThread() {
+  auto* const provider = WebAppProvider::GetForWebApps(profile());
+  const WebAppRegistrar& registrar = provider->registrar();
+  std::vector<AppId> app_ids = registrar.GetAppIds();
+  for (const auto& app_id : app_ids) {
+    if (!registrar.IsInstalled(app_id)) {
+      continue;
+    }
+    const WebApp* app = registrar.GetAppById(app_id);
+    DCHECK(app->CanUserUninstallWebApp());
+    AppRegistrationWaiter app_registration_waiter(
+        profile(), app_id, apps::Readiness::kUninstalledByUser);
+    base::RunLoop run_loop;
+    provider->install_finalizer().UninstallWebApp(
+        app_id, webapps::WebappUninstallSource::kAppsPage,
+        base::BindLambdaForTesting([&](webapps::UninstallResultCode code) {
+          EXPECT_EQ(code, webapps::UninstallResultCode::kSuccess);
+          run_loop.Quit();
+        }));
+    run_loop.Run();
+    app_registration_waiter.Await();
+  }
+
+  InProcessBrowserTest::TearDownOnMainThread();
 }
 
 Profile* WebAppNavigationBrowserTest::profile() {
-  return browser()->profile();
+  return profile_;
 }
 
 void WebAppNavigationBrowserTest::InstallTestWebApp() {
