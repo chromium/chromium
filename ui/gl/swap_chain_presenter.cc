@@ -18,6 +18,7 @@
 #include "media/base/win/mf_helpers.h"
 #include "ui/gfx/color_space_win.h"
 #include "ui/gfx/geometry/rect_conversions.h"
+#include "ui/gfx/geometry/size_conversions.h"
 #include "ui/gl/dc_layer_tree.h"
 #include "ui/gl/direct_composition_support.h"
 #include "ui/gl/gl_image_d3d.h"
@@ -258,9 +259,6 @@ bool IsWithinMargin(int i, int j) {
 
 SwapChainPresenter::PresentationHistory::PresentationHistory() = default;
 SwapChainPresenter::PresentationHistory::~PresentationHistory() = default;
-
-SwapChainPresenter::VisualInfo::VisualInfo() = default;
-SwapChainPresenter::VisualInfo::~VisualInfo() = default;
 
 void SwapChainPresenter::PresentationHistory::AddSample(
     DXGI_FRAME_PRESENTATION_MODE mode) {
@@ -675,6 +673,8 @@ gfx::Size SwapChainPresenter::CalculateSwapChainSize(
   if (swap_chain_size.IsEmpty())
     return gfx::Size();
   gfx::RectF bounds(params.quad_rect);
+  if (bounds.IsEmpty())
+    return gfx::Size();
   params.transform.TransformRect(&bounds);
   gfx::Rect overlay_onscreen_rect = gfx::ToEnclosingRect(bounds);
 
@@ -727,80 +727,14 @@ gfx::Size SwapChainPresenter::CalculateSwapChainSize(
   return swap_chain_size;
 }
 
-void SwapChainPresenter::UpdateVisuals(const ui::DCRendererLayerParams& params,
-                                       const gfx::Size& swap_chain_size,
-                                       const gfx::Transform& transform,
-                                       const gfx::Rect& clip_rect) {
-  if (!content_visual_) {
-    DCHECK(!clip_visual_);
-    dcomp_device_->CreateVisual(&clip_visual_);
-    DCHECK(clip_visual_);
-    dcomp_device_->CreateVisual(&content_visual_);
-    DCHECK(content_visual_);
-    clip_visual_->AddVisual(content_visual_.Get(), FALSE, nullptr);
-    layer_tree_->SetNeedsRebuildVisualTree();
-  }
-
-  // Visual offset is applied before transform so it behaves similar to how the
-  // compositor uses transform to map quad rect in layer space to target space.
-  gfx::Point offset = params.quad_rect.origin();
-
-  if (visual_info_.offset != offset || visual_info_.transform != transform) {
-    visual_info_.offset = offset;
-    visual_info_.transform = transform;
-    layer_tree_->SetNeedsRebuildVisualTree();
-
-    content_visual_->SetOffsetX(offset.x());
-    content_visual_->SetOffsetY(offset.y());
-
-    Microsoft::WRL::ComPtr<IDCompositionMatrixTransform> dcomp_transform;
-    dcomp_device_->CreateMatrixTransform(&dcomp_transform);
-    DCHECK(dcomp_transform);
-    // D2D_MATRIX_3x2_F is row-major.
-    D2D_MATRIX_3X2_F d2d_matrix = {
-        {{transform.matrix().rc(0, 0), transform.matrix().rc(1, 0),
-          transform.matrix().rc(0, 1), transform.matrix().rc(1, 1),
-          transform.matrix().rc(0, 3), transform.matrix().rc(1, 3)}}};
-    dcomp_transform->SetMatrix(d2d_matrix);
-    content_visual_->SetTransform(dcomp_transform.Get());
-  }
-
-  if (visual_info_.clip_rect.has_value() != params.clip_rect.has_value() ||
-      visual_info_.clip_rect != clip_rect) {
-    if (params.clip_rect.has_value()) {
-      visual_info_.clip_rect = clip_rect;
-    }
-    layer_tree_->SetNeedsRebuildVisualTree();
-    // DirectComposition clips happen in the pre-transform visual space, while
-    // cc/ clips happen post-transform. So the clip needs to go on a separate
-    // parent visual that's untransformed.
-    if (params.clip_rect.has_value()) {
-      Microsoft::WRL::ComPtr<IDCompositionRectangleClip> clip;
-      dcomp_device_->CreateRectangleClip(&clip);
-      DCHECK(clip);
-      clip->SetLeft(clip_rect.x());
-      clip->SetRight(clip_rect.right());
-      clip->SetBottom(clip_rect.bottom());
-      clip->SetTop(clip_rect.y());
-      clip_visual_->SetClip(clip.Get());
-    } else {
-      clip_visual_->SetClip(nullptr);
-    }
-  }
-
-  if (visual_info_.z_order != params.z_order) {
-    visual_info_.z_order = params.z_order;
-    layer_tree_->SetNeedsRebuildVisualTree();
-  }
-}
-
 bool SwapChainPresenter::TryPresentToDecodeSwapChain(
     Microsoft::WRL::ComPtr<ID3D11Texture2D> texture,
     unsigned array_slice,
     const gfx::ColorSpace& color_space,
     const gfx::Rect& content_rect,
     const gfx::Size& swap_chain_size,
-    DXGI_FORMAT swap_chain_format) {
+    DXGI_FORMAT swap_chain_format,
+    const gfx::Transform& transform_to_root) {
   if (ShouldUseVideoProcessorScaling())
     return false;
 
@@ -833,7 +767,7 @@ bool SwapChainPresenter::TryPresentToDecodeSwapChain(
     // rotation using video processor instead of via direct composition.  Also
     // check for skew and any downscaling specified to direct composition.
     bool compatible_transform =
-        visual_info_.transform.IsPositiveScaleOrTranslation();
+        transform_to_root.IsPositiveScaleOrTranslation();
 
     // Downscaled video isn't promoted to hardware overlays.  We prefer to
     // blit into the smaller size so that it can be promoted to a hardware
@@ -960,8 +894,7 @@ bool SwapChainPresenter::PresentToDecodeSwapChain(
     }
     DCHECK(decode_surface_);
 
-    content_visual_->SetContent(decode_surface_.Get());
-    layer_tree_->SetNeedsRebuildVisualTree();
+    content_ = decode_surface_.Get();
   }
 
   RECT source_rect = content_rect.ToRECT();
@@ -1006,7 +939,13 @@ bool SwapChainPresenter::PresentToDecodeSwapChain(
   return true;
 }
 
-bool SwapChainPresenter::PresentToSwapChain(ui::DCRendererLayerParams& params) {
+bool SwapChainPresenter::PresentToSwapChain(
+    const ui::DCRendererLayerParams& params,
+    gfx::Transform* transform,
+    gfx::Rect* clip_rect) {
+  *transform = params.transform;
+  *clip_rect = params.clip_rect.value_or(gfx::Rect());
+
   if (GLImageDCOMPSurface::FromGLImage(
           params.images[kYPlaneImageIndex].get()) != nullptr) {
     return PresentDCOMPSurface(params);
@@ -1064,16 +1003,14 @@ bool SwapChainPresenter::PresentToSwapChain(ui::DCRendererLayerParams& params) {
     image_type = "software video frame";
   }
 
-  gfx::Transform transform = params.transform;
-  gfx::Rect clip_rect = params.clip_rect.value_or(gfx::Rect());
   gfx::Size swap_chain_size;
   if (swap_chain_image) {
     swap_chain_size = swap_chain_image->GetSize();
     // |transform| now scales from |swap_chain_size| to on screen bounds.
     UpdateSwapChainTransform(params.quad_rect.size(), swap_chain_size,
-                             &transform);
+                             transform);
   } else {
-    swap_chain_size = CalculateSwapChainSize(params, &transform, &clip_rect);
+    swap_chain_size = CalculateSwapChainSize(params, transform, clip_rect);
   }
 
   TRACE_EVENT2("gpu", "SwapChainPresenter::PresentToSwapChain", "image_type",
@@ -1103,24 +1040,19 @@ bool SwapChainPresenter::PresentToSwapChain(ui::DCRendererLayerParams& params) {
     swap_chain_size_ = swap_chain_size;
     if (swap_chain_) {
       ReleaseSwapChainResources();
-      content_visual_->SetContent(nullptr);
-      layer_tree_->SetNeedsRebuildVisualTree();
     }
     return true;
   }
-
-  UpdateVisuals(params, swap_chain_size, transform, clip_rect);
 
   // Swap chain image already has a swap chain that's presented by the client
   // e.g. for webgl/canvas low-latency/desynchronized mode.
   if (swap_chain_image) {
     DCHECK(swap_chain_image->swap_chain());
-    content_visual_->SetContent(swap_chain_image->swap_chain().Get());
     if (last_presented_images_ != params.images) {
       ReleaseSwapChainResources();
       last_presented_images_ = params.images;
-      layer_tree_->SetNeedsRebuildVisualTree();
     }
+    content_ = swap_chain_image->swap_chain().Get();
     return true;
   }
 
@@ -1142,7 +1074,7 @@ bool SwapChainPresenter::PresentToSwapChain(ui::DCRendererLayerParams& params) {
 
   if (TryPresentToDecodeSwapChain(input_texture, input_level, input_color_space,
                                   params.content_rect, swap_chain_size,
-                                  swap_chain_format)) {
+                                  swap_chain_format, params.transform)) {
     last_presented_images_ = params.images;
     return true;
   }
@@ -1155,8 +1087,7 @@ bool SwapChainPresenter::PresentToSwapChain(ui::DCRendererLayerParams& params) {
       ReleaseSwapChainResources();
       return false;
     }
-    content_visual_->SetContent(swap_chain_.Get());
-    layer_tree_->SetNeedsRebuildVisualTree();
+    content_ = swap_chain_.Get();
   }
 
   if (input_texture) {
@@ -1343,77 +1274,25 @@ bool SwapChainPresenter::PresentDCOMPSurface(
 
   // TODO(crbug.com/999747): Call UpdateVisuals() here.
 
-  if (!content_visual_) {
-    DCHECK(!clip_visual_);
-    dcomp_device_->CreateVisual(&clip_visual_);
-    DCHECK(clip_visual_);
-    dcomp_device_->CreateVisual(&content_visual_);
-    DCHECK(content_visual_);
-    clip_visual_->AddVisual(content_visual_.Get(), FALSE, nullptr);
-  }
-
-  // Set the transform to identity on the visual in case it has retained other
-  // transforms; this can be the case when switching to MediaFoundation (MF)
-  // content from non-MF content. The transform is identity because scaling is
-  // done independently by the MF video renderer.
-  content_visual_->SetTransform(nullptr);
-
   // This visual's content was a different DC surface.
   if (dcomp_surface_handle_ != image_dcomp_surface->GetSurfaceHandle()) {
     DVLOG(2) << "Update visual's content. " << __func__ << "(" << this << ")";
 
     Microsoft::WRL::ComPtr<IDCompositionSurface> texture_dc_surface =
         image_dcomp_surface->CreateSurfaceForDevice(dcomp_device_.Get());
-    content_visual_->SetContent(texture_dc_surface.Get());
+    content_ = texture_dc_surface.Get();
     // Don't take ownership of handle as the GLImageDCOMPSurface instance
     // manages it
     dcomp_surface_handle_ = image_dcomp_surface->GetSurfaceHandle();
   }
 
-  // Check for transform / offset changes
-  gfx::Point offset(params.quad_rect.x(), params.quad_rect.y());
-  if (visual_info_.transform != transform || visual_info_.offset != offset) {
-    visual_info_.transform = transform;
-    visual_info_.offset = offset;
-
-    // Make sure the same transform is applied to the offset as that of video.
-    // Otherwise, video content will be off-centered.
-    transform.TransformPoint(&offset);
-    content_visual_->SetOffsetX(offset.x());
-    content_visual_->SetOffsetY(offset.y());
-  }
-
-  if (visual_info_.clip_rect.value_or(gfx::Rect()) !=
-      params.clip_rect.value_or(gfx::Rect())) {
-    visual_info_.clip_rect = params.clip_rect;
-    // DirectComposition clips happen in the pre-transform visual space, while
-    // cc/ clips happen post-transform. So the clip needs to go on a separate
-    // parent visual that's untransformed.
-    if (params.clip_rect) {
-      Microsoft::WRL::ComPtr<IDCompositionRectangleClip> clip;
-      dcomp_device_->CreateRectangleClip(&clip);
-      DCHECK(clip);
-      clip->SetLeft(params.clip_rect->x());
-      clip->SetRight(params.clip_rect->right());
-      clip->SetBottom(params.clip_rect->bottom());
-      clip->SetTop(params.clip_rect->y());
-      clip_visual_->SetClip(clip.Get());
-    } else {
-      clip_visual_->SetClip(nullptr);
-    }
-  }
-
-  // Ensures DCOMP video layer to be visible.
-  layer_tree_->SetNeedsRebuildVisualTree();
   return true;
 }
 
 void SwapChainPresenter::ReleaseDCOMPSurfaceResourcesIfNeeded() {
   if (dcomp_surface_handle_ != INVALID_HANDLE_VALUE) {
     dcomp_surface_handle_ = INVALID_HANDLE_VALUE;
-    if (content_visual_)
-      content_visual_->SetContent(nullptr);
-    layer_tree_->SetNeedsRebuildVisualTree();
+    content_.Reset();
   }
 }
 
@@ -1597,6 +1476,7 @@ void SwapChainPresenter::ReleaseSwapChainResources() {
   decode_resource_.Reset();
   swap_chain_handle_.Close();
   staging_texture_.Reset();
+  content_.Reset();
 }
 
 bool SwapChainPresenter::ReallocateSwapChain(

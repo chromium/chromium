@@ -175,9 +175,109 @@ void DCLayerTree::GetSwapChainVisualInfoForTesting(size_t index,
                                                    gfx::Point* offset,
                                                    gfx::Rect* clip_rect) const {
   if (index < video_swap_chains_.size()) {
-    video_swap_chains_[index]->GetSwapChainVisualInfoForTesting(  // IN-TEST
-        transform, offset, clip_rect);
+    video_swap_chains_[index]
+        ->visual_subtree()
+        .GetSwapChainVisualInfoForTesting(  // IN-TEST
+            transform, offset, clip_rect);
   }
+}
+
+DCLayerTree::VisualSubtree::VisualSubtree() = default;
+DCLayerTree::VisualSubtree::~VisualSubtree() = default;
+DCLayerTree::VisualSubtree::VisualSubtree(DCLayerTree::VisualSubtree&& other) =
+    default;
+DCLayerTree::VisualSubtree& DCLayerTree::VisualSubtree::operator=(
+    DCLayerTree::VisualSubtree&& other) = default;
+
+bool DCLayerTree::VisualSubtree::Update(
+    IDCompositionDevice2* dcomp_device,
+    Microsoft::WRL::ComPtr<IUnknown> dcomp_visual_content,
+    const gfx::Vector2d& quad_rect_offset,
+    const gfx::Transform& quad_to_root_transform,
+    const absl::optional<gfx::Rect>& clip_rect_in_root) {
+  bool needs_commit = false;
+
+  // Methods that update the visual tree can only fail with OOM. We'll assert
+  // success in this function to aid in debugging.
+  HRESULT hr = S_OK;
+
+  if (!clip_visual_) {
+    needs_commit = true;
+
+    // All the visual are created together on the first |Update|.
+    DCHECK(!content_visual_);
+    hr = dcomp_device->CreateVisual(&clip_visual_);
+    CHECK_EQ(hr, S_OK);
+    hr = dcomp_device->CreateVisual(&content_visual_);
+    CHECK_EQ(hr, S_OK);
+    hr = clip_visual_->AddVisual(content_visual_.Get(), FALSE, nullptr);
+    CHECK_EQ(hr, S_OK);
+  }
+
+  if (clip_rect_ != clip_rect_in_root) {
+    clip_rect_ = clip_rect_in_root;
+    needs_commit = true;
+
+    if (clip_rect_.has_value()) {
+      // DirectComposition clips happen in the pre-transform visual space, while
+      // cc/ clips happen post-transform. So the clip needs to go on a separate
+      // parent visual that's untransformed.
+      gfx::Rect clip_rect = clip_rect_.value();
+      hr = clip_visual_->SetClip(D2D1::RectF(
+          clip_rect.x(), clip_rect.y(), clip_rect.right(), clip_rect.bottom()));
+      CHECK_EQ(hr, S_OK);
+    } else {
+      hr = clip_visual_->SetClip(nullptr);
+      CHECK_EQ(hr, S_OK);
+    }
+  }
+
+  if (offset_ != quad_rect_offset) {
+    offset_ = quad_rect_offset;
+    needs_commit = true;
+
+    // Visual offset is applied before transform so it behaves similar to how
+    // the compositor uses transform to map quad rect in layer space to target
+    // space.
+    hr = content_visual_->SetOffsetX(offset_.x());
+    CHECK_EQ(hr, S_OK);
+    hr = content_visual_->SetOffsetY(offset_.y());
+    CHECK_EQ(hr, S_OK);
+  }
+
+  if (transform_ != quad_to_root_transform) {
+    transform_ = quad_to_root_transform;
+    needs_commit = true;
+
+    DCHECK(transform_.IsFlat());
+    gfx::Matrix44 transform = transform_.matrix();
+    D2D_MATRIX_3X2_F matrix =
+        // D2D_MATRIX_3x2_F is row-major.
+        D2D1::Matrix3x2F(transform.rc(0, 0), transform.rc(1, 0),  //
+                         transform.rc(0, 1), transform.rc(1, 1),  //
+                         transform.rc(0, 3), transform.rc(1, 3));
+    hr = content_visual_->SetTransform(matrix);
+    CHECK_EQ(hr, S_OK);
+  }
+
+  if (dcomp_visual_content_ != dcomp_visual_content) {
+    dcomp_visual_content_ = std::move(dcomp_visual_content);
+    needs_commit = true;
+
+    hr = content_visual_->SetContent(dcomp_visual_content_.Get());
+    CHECK_EQ(hr, S_OK);
+  }
+
+  return needs_commit;
+}
+
+void DCLayerTree::VisualSubtree::GetSwapChainVisualInfoForTesting(
+    gfx::Transform* transform,
+    gfx::Point* offset,
+    gfx::Rect* clip_rect) const {
+  *transform = transform_;
+  *offset = gfx::Point() + offset_;
+  *clip_rect = clip_rect_.value_or(gfx::Rect());
 }
 
 bool DCLayerTree::CommitAndClearPendingOverlays(
@@ -239,20 +339,42 @@ bool DCLayerTree::CommitAndClearPendingOverlays(
     needs_rebuild_visual_tree_ = true;
   }
 
-  // Present to each swap chain.
+  // Present to each swap chain and update its visual subtree.
   for (size_t i = 0; i < overlays.size(); ++i) {
     auto& video_swap_chain = video_swap_chains_[i];
-    if (!video_swap_chain->PresentToSwapChain(*overlays[i])) {
+
+    gfx::Transform transform;
+    gfx::Rect clip_rect;
+    if (!video_swap_chain->PresentToSwapChain(*overlays[i], &transform,
+                                              &clip_rect)) {
       DLOG(ERROR) << "PresentToSwapChain failed";
       return false;
     }
+
+    if (video_swap_chain->visual_subtree().z_order() != overlays[i]->z_order) {
+      video_swap_chain->visual_subtree().set_z_order(overlays[i]->z_order);
+
+      // Z-order is a property of the root visual's child list, not any property
+      // on the subtree's nodes. If it changes, we need to rebuild the tree.
+      needs_rebuild_visual_tree_ = true;
+    }
+
+    // We don't need to set |needs_rebuild_visual_tree_| here since that is only
+    // needed when the root visual's children need to be reordered. |Update|
+    // only affects the subtree for each child, so only a commit is needed in
+    // this case.
+    needs_commit |= video_swap_chain->visual_subtree().Update(
+        dcomp_device_.Get(), video_swap_chain->content(),
+        overlays[i]->quad_rect.OffsetFromOrigin(), transform,
+        overlays[i]->clip_rect.has_value()
+            ? absl::optional<gfx::Rect>(clip_rect)
+            : absl::nullopt);
   }
 
-  // Rebuild visual tree and commit if any visual changed.
-  // Note: needs_rebuild_visual_tree_ might be set in this function and in
-  // SetNeedsRebuildVisualTree() during video_swap_chain->PresentToSwapChain().
-  // Can also be set in DCLayerTree::SetDelegatedInkTrailStartPoint to add a
-  // delegated ink visual into the tree.
+  // Rebuild root visual's child list.
+  // Note: needs_rebuild_visual_tree_ might be set in this function and can also
+  // be set in DCLayerTree::SetDelegatedInkTrailStartPoint to add a delegated
+  // ink visual into the root surface's visual.
   if (needs_rebuild_visual_tree_) {
     TRACE_EVENT0(
         "gpu", "DCLayerTree::CommitAndClearPendingOverlays::ReBuildVisualTree");
@@ -262,11 +384,11 @@ bool DCLayerTree::CommitAndClearPendingOverlays(
     // Add layers with negative z-order first.
     size_t i = 0;
     for (; i < overlays.size() && overlays[i]->z_order < 0; ++i) {
-      IDCompositionVisual2* visual = video_swap_chains_[i]->visual().Get();
       // We call AddVisual with insertAbove FALSE and referenceVisual nullptr
       // which is equivalent to saying that the visual should be below no other
       // visual, or in other words it should be above all other visuals.
-      dcomp_root_visual_->AddVisual(visual, FALSE, nullptr);
+      dcomp_root_visual_->AddVisual(
+          video_swap_chains_[i]->visual_subtree().visual(), FALSE, nullptr);
     }
 
     // Add root surface visual at z-order 0.
@@ -277,8 +399,8 @@ bool DCLayerTree::CommitAndClearPendingOverlays(
       // There shouldn't be a layer with z-order 0.  Otherwise, we can't tell
       // its order with respect to root surface.
       DCHECK_GT(overlays[i]->z_order, 0);
-      IDCompositionVisual2* visual = video_swap_chains_[i]->visual().Get();
-      dcomp_root_visual_->AddVisual(visual, FALSE, nullptr);
+      dcomp_root_visual_->AddVisual(
+          video_swap_chains_[i]->visual_subtree().visual(), FALSE, nullptr);
     }
 
     // Only add the ink visual to the tree if it has already been initialized.
