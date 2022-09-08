@@ -983,7 +983,8 @@ class AutofillMetrics {
                           AutofillFormSubmittedState state,
                           const base::TimeTicks& form_parsed_timestamp,
                           FormSignature form_signature,
-                          const FormInteractionCounts& form_interaction_counts);
+                          const FormInteractionCounts& form_interaction_counts,
+                          autofill_assistant::AutofillAssistantIntent intent);
     void LogKeyMetrics(const DenseSet<FormType>& form_types,
                        bool data_to_fill_available,
                        bool suggestions_shown,
@@ -1428,7 +1429,8 @@ class AutofillMetrics {
       const base::TimeTicks& form_parsed_timestamp,
       FormSignature form_signature,
       FormInteractionsUkmLogger* form_interactions_ukm_logger,
-      const FormInteractionCounts& form_interaction_counts);
+      const FormInteractionCounts& form_interaction_counts,
+      const autofill_assistant::AutofillAssistantIntent intent);
 
   // Logs if every non-empty field in a submitted form was filled by Autofill.
   // If |is_address| an address was filled, otherwise it was a credit card.

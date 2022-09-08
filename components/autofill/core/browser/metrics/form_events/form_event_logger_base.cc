@@ -470,4 +470,9 @@ void FormEventLoggerBase::LogImpactOfHeuristicsThreshold(
       !has_logged_edited_autofilled_field_);
 }
 
+autofill_assistant::AutofillAssistantIntent
+FormEventLoggerBase::autofill_assistant_intent() const {
+  return intent_;
+}
+
 }  // namespace autofill

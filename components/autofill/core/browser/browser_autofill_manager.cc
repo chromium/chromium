@@ -1779,10 +1779,19 @@ void BrowserAutofillManager::UploadFormDataAsyncCallback(
   if (submitted_form->ShouldRunHeuristics() ||
       submitted_form->ShouldRunHeuristicsForSingleFieldForms() ||
       submitted_form->ShouldBeQueried()) {
+    autofill_assistant::AutofillAssistantIntent intent =
+        autofill_assistant::AutofillAssistantIntent::UNDEFINED_INTENT;
+    if (submitted_form->field_count() > 0) {
+      const AutofillField* autofill_field = submitted_form->field(0);
+      auto* logger = GetEventFormLogger(autofill_field->Type().group());
+      if (logger)
+        intent = logger->autofill_assistant_intent();
+    }
+
     submitted_form->LogQualityMetrics(
         submitted_form->form_parsed_timestamp(), interaction_time,
         submission_time, form_interactions_ukm_logger(), did_show_suggestions_,
-        observed_submission, form_interactions_counter_->GetCounts());
+        observed_submission, form_interactions_counter_->GetCounts(), intent);
   }
   if (submitted_form->ShouldBeUploaded())
     UploadFormData(*submitted_form, observed_submission);

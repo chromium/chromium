@@ -1938,7 +1938,8 @@ void AutofillMetrics::LogAutofillFormSubmittedState(
     const base::TimeTicks& form_parsed_timestamp,
     FormSignature form_signature,
     AutofillMetrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
-    const FormInteractionCounts& form_interaction_counts) {
+    const FormInteractionCounts& form_interaction_counts,
+    const autofill_assistant::AutofillAssistantIntent intent) {
   UMA_HISTOGRAM_ENUMERATION("Autofill.FormSubmittedState", state,
                             AUTOFILL_FORM_SUBMITTED_STATE_ENUM_SIZE);
 
@@ -1974,7 +1975,7 @@ void AutofillMetrics::LogAutofillFormSubmittedState(
   }
   form_interactions_ukm_logger->LogFormSubmitted(
       is_for_credit_card, has_upi_vpa_field, form_types, state,
-      form_parsed_timestamp, form_signature, form_interaction_counts);
+      form_parsed_timestamp, form_signature, form_interaction_counts, intent);
 }
 
 // static
@@ -2628,7 +2629,8 @@ void AutofillMetrics::FormInteractionsUkmLogger::LogFormSubmitted(
     AutofillFormSubmittedState state,
     const base::TimeTicks& form_parsed_timestamp,
     FormSignature form_signature,
-    const FormInteractionCounts& form_interaction_counts) {
+    const FormInteractionCounts& form_interaction_counts,
+    autofill_assistant::AutofillAssistantIntent intent) {
   if (!CanLog())
     return;
 
@@ -2652,6 +2654,9 @@ void AutofillMetrics::FormInteractionsUkmLogger::LogFormSubmitted(
   else
     builder.SetMillisecondsSinceFormParsed(
         MillisecondsSinceFormParsed(form_parsed_timestamp));
+
+  if (intent != autofill_assistant::AutofillAssistantIntent::UNDEFINED_INTENT)
+    builder.SetAutofillAssistantIntent(static_cast<int64_t>(intent));
 
   builder.Record(ukm_recorder_);
 }

@@ -81,6 +81,8 @@ class FormEventLoggerBase {
 
   void Log(FormEvent event, const FormStructure& form) const;
 
+  autofill_assistant::AutofillAssistantIntent autofill_assistant_intent() const;
+
  protected:
   virtual ~FormEventLoggerBase();
 

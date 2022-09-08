@@ -1950,6 +1950,12 @@ be describing additional metrics about the same event.
       Number of Autocomplete fills invoked by the user on the current form.
     </summary>
   </metric>
+  <metric name="AutofillAssistantIntent" enum="AutofillAssistantIntent">
+    <summary>
+      Describes the trigger source that invoked Autofill. Only recorded if
+      AutofillAssistantIntent was not undefined.
+    </summary>
+  </metric>
   <metric name="AutofillFills">
     <summary>
       Number of Autofill fills invoked by the user on the current form.
