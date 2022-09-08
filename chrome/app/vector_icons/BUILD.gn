@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/config/chromeos/ui_mode.gni")
+import("//build/util/branding.gni")
 import("//components/vector_icons/vector_icons.gni")
 import("//device/vr/buildflags/buildflags.gni")
 import("//ui/webui/webui_features.gni")
@@ -12,6 +13,7 @@ aggregate_vector_icons("chrome_vector_icons") {
 
   # Keep sorted alphabetically.
   sources = [
+    "${branding_path_component}/product.icon",
     "account_box.icon",
     "account_child.icon",
     "account_child_circle.icon",
@@ -257,6 +259,23 @@ aggregate_vector_icons("chrome_vector_icons") {
 
   if (enable_webui_tab_strip) {
     sources += [ "new_tab_toolbar_button.icon" ]
+  }
+
+  if (is_chrome_branded) {
+    sources += [
+      "google_chrome/assistant.icon",
+      "google_chrome/google_calendar.icon",
+      "google_chrome/google_g_logo.icon",
+      "google_chrome/google_g_logo_monochrome.icon",
+      "google_chrome/google_keep_note.icon",
+      "google_chrome/google_lens_full_logo.icon",
+      "google_chrome/google_lens_full_logo_dark.icon",
+      "google_chrome/google_lens_logo.icon",
+      "google_chrome/google_password_manager.icon",
+      "google_chrome/google_pay_logo.icon",
+      "google_chrome/google_sites.icon",
+      "google_chrome/google_super_g.icon",
+    ]
   }
 }
 

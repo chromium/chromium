@@ -62,6 +62,10 @@
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/resources/grit/webui_generated_resources.h"
 
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#include "chrome/app/vector_icons/vector_icons.h"
+#endif
+
 namespace {
 
 constexpr char kSearchIconResourceName[] = "search.svg";
@@ -414,16 +418,16 @@ std::string RealboxHandler::PedalVectorIconToResourceName(
     return kDriveSlidesIconResourceName;
   }
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  if (icon.name == vector_icons::kGoogleCalendarIcon.name) {
+  if (icon.name == kGoogleCalendarIcon.name) {
     return kGoogleCalendarIconResourceName;
   }
-  if (icon.name == vector_icons::kGoogleKeepNoteIcon.name) {
+  if (icon.name == kGoogleKeepNoteIcon.name) {
     return kGoogleKeepNoteIconResourceName;
   }
-  if (icon.name == vector_icons::kGoogleSitesIcon.name) {
+  if (icon.name == kGoogleSitesIcon.name) {
     return kGoogleSitesIconResourceName;
   }
-  if (icon.name == vector_icons::kGoogleSuperGIcon.name) {
+  if (icon.name == kGoogleSuperGIcon.name) {
     return kGoogleGTransparentIconResourceName;
   }
 #endif

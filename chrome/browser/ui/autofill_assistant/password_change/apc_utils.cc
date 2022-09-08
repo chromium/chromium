@@ -5,16 +5,16 @@
 #include "chrome/browser/ui/autofill_assistant/password_change/apc_utils.h"
 
 #include "build/branding_buildflags.h"
+#include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/autofill_assistant/password_change/vector_icons/vector_icons.h"
 #include "components/autofill_assistant/browser/public/password_change/proto/actions.pb.h"
-#include "components/vector_icons/vector_icons.h"
 
 const gfx::VectorIcon& GetAssistantIconOrFallback() {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  return vector_icons::kAssistantIcon;
+  return kAssistantIcon;
 #else
   // Only developer builds will ever use this branch.
-  return vector_icons::kProductIcon;
+  return kProductIcon;
 #endif
 }
 
