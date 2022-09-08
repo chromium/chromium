@@ -4,6 +4,8 @@
 
 module help_bubble.mojom;
 
+import "mojo/public/mojom/base/time.mojom";
+
 // Contains IPC calls that allow the HelpBubbleFactory system to connect to
 // the HelpBubbleMixin and HelpBubbleElement component.
 //
@@ -33,6 +35,16 @@ enum HelpBubbleArrowPosition {
   RIGHT_BOTTOM,
 };
 
+// Reason for dismissing a help bubble
+enum HelpBubbleClosedReason {
+  // page navigated away, anchor disappeared, etc.
+  kPageChanged,
+  // user dismissed via button or close-icon
+  kDismissedByUser,
+  // timeout reached
+  kTimedOut,
+};
+
 // Simplified version of user_education::HelpBubbleButtonParams.
 struct HelpBubbleButtonParams {
   string text;
@@ -59,6 +71,9 @@ struct HelpBubbleParams {
   bool force_close_button = false;
   Progress? progress;
   array<HelpBubbleButtonParams> buttons;
+
+  // Auto-dismiss timeout as TimeDelta
+  mojo_base.mojom.TimeDelta? timeout;
 };
 
 // Used by the controller to bootstrap IPC. Any WebUIController can implement
@@ -94,9 +109,9 @@ interface HelpBubbleHandler {
   HelpBubbleButtonPressed(string native_identifier, uint8 button_index);
 
   // Called when the help bubble anchored to `native_identifier` is closed,
-  // either because the element it is associated with goes away, or because the
-  // user canceled it (e.g. pressed the [x] button).
-  HelpBubbleClosed(string native_identifier, bool by_user);
+  // either because the element it is associated with goes away, the user
+  // canceled it (e.g. pressed the [x] button), or the timeout was reached.
+  HelpBubbleClosed(string native_identifier, HelpBubbleClosedReason reason);
 };
 
 // Represents WebUI component that can display help bubbles. The implementing UI

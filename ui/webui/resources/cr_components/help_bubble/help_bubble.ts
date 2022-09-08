@@ -27,11 +27,16 @@ const ANCHOR_HIGHLIGHT_CLASS = 'help-anchor-highlight';
 const ACTION_BUTTON_ID_PREFIX = 'action-button-';
 
 export const HELP_BUBBLE_DISMISSED_EVENT = 'help-bubble-dismissed';
+export const HELP_BUBBLE_TIMED_OUT_EVENT = 'help-bubble-timed-out';
 
 export type HelpBubbleDismissedEvent = CustomEvent<{
   anchorId: string,
   fromActionButton: boolean,
   buttonIndex?: number,
+}>;
+
+export type HelpBubbleTimedOutEvent = CustomEvent<{
+  anchorId: string,
 }>;
 
 export interface HelpBubbleElement {
@@ -81,6 +86,8 @@ export class HelpBubbleElement extends PolymerElement {
   progress: Progress|null = null;
   infoIcon: string|null = null;
   forceCloseButton: boolean;
+  timeoutMs: number|null = null;
+  timeoutTimerId: number|null = null;
 
   /**
    * HTMLElement corresponding to |this.anchorId|.
@@ -117,6 +124,17 @@ export class HelpBubbleElement extends PolymerElement {
     this.removeAttribute('aria-hidden');
     this.updatePosition_();
     this.setAnchorHighlight_(true);
+
+    if (this.timeoutMs !== null) {
+      const timedOutCallback = () => {
+        this.dispatchEvent(new CustomEvent(HELP_BUBBLE_TIMED_OUT_EVENT, {
+          detail: {
+            anchorId: this.anchorId,
+          },
+        }));
+      };
+      this.timeoutTimerId = setTimeout(timedOutCallback, this.timeoutMs);
+    }
   }
 
   /**
@@ -132,6 +150,10 @@ export class HelpBubbleElement extends PolymerElement {
     this.setAttribute('aria-hidden', 'true');
     this.setAnchorHighlight_(false);
     this.anchorElement_ = null;
+    if (this.timeoutTimerId !== null) {
+      clearInterval(this.timeoutTimerId);
+      this.timeoutTimerId = null;
+    }
   }
 
   /**
@@ -418,5 +440,6 @@ declare global {
   }
   interface HTMLElementEventMap {
     [HELP_BUBBLE_DISMISSED_EVENT]: HelpBubbleDismissedEvent;
+    [HELP_BUBBLE_TIMED_OUT_EVENT]: HelpBubbleTimedOutEvent;
   }
 }

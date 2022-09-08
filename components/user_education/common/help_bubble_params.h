@@ -18,6 +18,10 @@
 
 namespace user_education {
 
+// The amount of time the promo should stay onscreen.
+constexpr base::TimeDelta kDefaultTimeoutWithoutButtons = base::Seconds(10);
+constexpr base::TimeDelta kDefaultTimeoutWithButtons = base::Seconds(0);
+
 // Mirrors most values of views::BubbleBorder::Arrow.
 // All values except kNone show a visible arrow between the bubble and the
 // anchor element.

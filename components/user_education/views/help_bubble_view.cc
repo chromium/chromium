@@ -68,10 +68,6 @@ namespace user_education {
 
 namespace {
 
-// The amount of time the promo should stay onscreen.
-constexpr base::TimeDelta kDefaultTimeoutWithoutButtons = base::Seconds(10);
-constexpr base::TimeDelta kDefaultTimeoutWithButtons = base::Seconds(0);
-
 // Maximum width of the bubble. Longer strings will cause wrapping.
 constexpr int kBubbleMaxWidthDip = 340;
 
