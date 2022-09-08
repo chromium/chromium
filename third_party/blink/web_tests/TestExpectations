@@ -3311,6 +3311,9 @@ crbug.com/626703 external/wpt/css/css-text-decor/text-decoration-skip-spaces-003
 crbug.com/626703 external/wpt/css/css-text-decor/text-decoration-skip-spaces-004.html [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 external/wpt/css/css-flexbox/flex-item-transferred-sizes-padding-border-sizing.html [ Failure ]
+crbug.com/626703 external/wpt/css/css-flexbox/flex-item-transferred-sizes-padding-content-sizing.html [ Failure ]
+crbug.com/626703 external/wpt/page-visibility/visibility-state-entry.tentative.html [ Skip Timeout ]
 crbug.com/626703 external/wpt/css/filter-effects/filter-invalid.html [ Failure ]
 crbug.com/626703 external/wpt/mathml/relations/css-styling/mathvariant-double-struck-font-style-font-weight.html [ Failure ]
 crbug.com/626703 virtual/scalefactor200/external/wpt/css/filter-effects/filter-invalid.html [ Failure ]

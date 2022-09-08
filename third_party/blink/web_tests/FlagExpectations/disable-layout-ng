@@ -11,6 +11,9 @@
 # Tests that fail in legacy but pass in NG
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 external/wpt/css/css-flexbox/flex-item-transferred-sizes-padding-border-sizing.html [ Failure ]
+crbug.com/626703 external/wpt/css/css-flexbox/flex-item-transferred-sizes-padding-content-sizing.html [ Failure ]
+crbug.com/626703 external/wpt/page-visibility/visibility-state-entry.tentative.html [ Timeout ]
 crbug.com/626703 external/wpt/css/filter-effects/filter-invalid.html [ Failure ]
 crbug.com/626703 virtual/scalefactor200/external/wpt/css/filter-effects/filter-invalid.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-sizing/svg-intrinsic-size-001.html [ Failure ]
