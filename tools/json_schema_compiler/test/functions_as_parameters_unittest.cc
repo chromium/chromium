@@ -18,14 +18,14 @@ TEST(JsonSchemaCompilerFunctionsAsParametersTest, PopulateRequiredFunction) {
   // The expectation is that if any value is set for the function, then
   // the function is "present".
   {
-    base::DictionaryValue empty_value;
+    base::Value empty_value;
     FunctionType out;
     EXPECT_FALSE(FunctionType::Populate(empty_value, &out));
   }
   {
-    base::DictionaryValue value;
-    base::DictionaryValue function_dict;
-    value.SetKey("event_callback", function_dict.Clone());
+    base::Value value(base::Value::Type::DICTIONARY);
+    value.GetDict().Set("event_callback", base::Value::Dict());
+
     FunctionType out;
     ASSERT_TRUE(FunctionType::Populate(value, &out));
     EXPECT_TRUE(out.event_callback.DictEmpty());
@@ -34,20 +34,18 @@ TEST(JsonSchemaCompilerFunctionsAsParametersTest, PopulateRequiredFunction) {
 
 TEST(JsonSchemaCompilerFunctionsAsParametersTest, RequiredFunctionToValue) {
   {
-    base::DictionaryValue value;
-    base::DictionaryValue function_dict;
-    value.SetKey("event_callback", function_dict.Clone());
+    base::Value value(base::Value::Type::DICTIONARY);
+    value.GetDict().Set("event_callback", base::Value::Dict());
 
     FunctionType out;
     ASSERT_TRUE(FunctionType::Populate(value, &out));
     EXPECT_EQ(value, *out.ToValue());
   }
   {
-    base::DictionaryValue value;
-    base::DictionaryValue expected_value;
-    base::DictionaryValue function_dict;
-    value.SetKey("event_callback", function_dict.Clone());
-    expected_value.SetKey("event_callback", function_dict.Clone());
+    base::Value value(base::Value::Type::DICTIONARY);
+    base::Value expected_value(base::Value::Type::DICTIONARY);
+    value.GetDict().Set("event_callback", base::Value::Dict());
+    expected_value.GetDict().Set("event_callback", base::Value::Dict());
 
     FunctionType out;
     ASSERT_TRUE(FunctionType::Populate(value, &out));
@@ -57,23 +55,23 @@ TEST(JsonSchemaCompilerFunctionsAsParametersTest, RequiredFunctionToValue) {
 
 TEST(JsonSchemaCompilerFunctionsAsParametersTest, PopulateOptionalFunction) {
   {
-    base::DictionaryValue empty_value;
+    base::Value empty_dictionary(base::Value::Type::DICTIONARY);
     OptionalFunctionType out;
-    ASSERT_TRUE(OptionalFunctionType::Populate(empty_value, &out));
+    ASSERT_TRUE(OptionalFunctionType::Populate(empty_dictionary, &out));
     EXPECT_FALSE(out.event_callback.get());
   }
   {
-    base::DictionaryValue value;
-    base::DictionaryValue function_value;
-    value.SetKey("event_callback", function_value.Clone());
+    base::Value value(base::Value::Type::DICTIONARY);
+    value.GetDict().Set("event_callback", base::Value::Dict());
+
     OptionalFunctionType out;
     ASSERT_TRUE(OptionalFunctionType::Populate(value, &out));
     EXPECT_TRUE(out.event_callback.get());
   }
   {
-    base::DictionaryValue value;
-    base::DictionaryValue function_value;
-    value.SetKey("event_callback", function_value.Clone());
+    base::Value value(base::Value::Type::DICTIONARY);
+    value.GetDict().Set("event_callback", base::Value::Dict());
+
     OptionalFunctionType out;
     ASSERT_TRUE(OptionalFunctionType::Populate(value, &out));
     EXPECT_TRUE(out.event_callback.get());
@@ -82,16 +80,15 @@ TEST(JsonSchemaCompilerFunctionsAsParametersTest, PopulateOptionalFunction) {
 
 TEST(JsonSchemaCompilerFunctionsAsParametersTest, OptionalFunctionToValue) {
   {
-    base::DictionaryValue empty_value;
+    base::Value empty_value(base::Value::Type::DICTIONARY);
     OptionalFunctionType out;
     ASSERT_TRUE(OptionalFunctionType::Populate(empty_value, &out));
     // event_callback should not be set in the return from ToValue.
     EXPECT_EQ(empty_value, *out.ToValue());
   }
   {
-    base::DictionaryValue value;
-    base::DictionaryValue function_value;
-    value.SetKey("event_callback", function_value.Clone());
+    base::Value value(base::Value::Type::DICTIONARY);
+    value.GetDict().Set("event_callback", base::Value::Dict());
 
     OptionalFunctionType out;
     ASSERT_TRUE(OptionalFunctionType::Populate(value, &out));
