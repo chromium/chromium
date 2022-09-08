@@ -1018,6 +1018,15 @@ bool IsAXSetter(SEL selector) {
   if (_node->HasStringAttribute(ax::mojom::StringAttribute::kAutoComplete))
     [axAttributes addObject:NSAccessibilityAutocompleteValueAttribute];
 
+  // AriaBrailleLabel.
+  if (_node->HasStringAttribute(ax::mojom::StringAttribute::kAriaBrailleLabel))
+    [axAttributes addObject:NSAccessibilityBrailleLabelAttribute];
+
+  // AriaBrailleRoleDescription.
+  if (_node->HasStringAttribute(
+          ax::mojom::StringAttribute::kAriaBrailleRoleDescription))
+    [axAttributes addObject:NSAccessibilityBrailleRoleDescription];
+
   // Details.
   if (_node->HasIntListAttribute(ax::mojom::IntListAttribute::kDetailsIds)) {
     [axAttributes addObject:NSAccessibilityDetailsElementsAttribute];
@@ -1242,6 +1251,22 @@ bool IsAXSetter(SEL selector) {
     return nil;
 
   return [self getStringAttribute:ax::mojom::StringAttribute::kAutoComplete];
+}
+
+- (NSString*)AXBrailleLabel {
+  if (![self instanceActive])
+    return nil;
+
+  return
+      [self getStringAttribute:ax::mojom::StringAttribute::kAriaBrailleLabel];
+}
+
+- (NSString*)AXBrailleRoleDescription {
+  if (![self instanceActive])
+    return nil;
+
+  return [self getStringAttribute:ax::mojom::StringAttribute::
+                                      kAriaBrailleRoleDescription];
 }
 
 - (id)AXBlockQuoteLevel {

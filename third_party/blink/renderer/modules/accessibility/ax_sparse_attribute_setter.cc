@@ -53,6 +53,14 @@ void SetStringAttribute(ax::mojom::blink::StringAttribute attribute,
   node_data->AddStringAttribute(attribute, value.Utf8());
 }
 
+void SetNotEmptyStringAttribute(ax::mojom::blink::StringAttribute attribute,
+                                AXObject* object,
+                                ui::AXNodeData* node_data,
+                                const AtomicString& value) {
+  if (value.length() != 0)
+    SetStringAttribute(attribute, object, node_data, value);
+}
+
 void SetObjectAttribute(ax::mojom::blink::IntAttribute attribute,
                         QualifiedName qualified_name,
                         AXObject* object,
@@ -114,6 +122,16 @@ AXSparseAttributeSetterMap& GetAXSparseAttributeSetterMap() {
         WTF::BindRepeating(&SetObjectAttribute,
                            ax::mojom::blink::IntAttribute::kActivedescendantId,
                            html_names::kAriaActivedescendantAttr));
+    ax_sparse_setter_map.Set(
+        html_names::kAriaBraillelabelAttr,
+        WTF::BindRepeating(
+            &SetStringAttribute,
+            ax::mojom::blink::StringAttribute::kAriaBrailleLabel));
+    ax_sparse_setter_map.Set(
+        html_names::kAriaBrailleroledescriptionAttr,
+        WTF::BindRepeating(
+            &SetNotEmptyStringAttribute,
+            ax::mojom::blink::StringAttribute::kAriaBrailleRoleDescription));
     ax_sparse_setter_map.Set(
         html_names::kAriaBusyAttr,
         WTF::BindRepeating(&SetBoolAttribute,
@@ -193,6 +211,13 @@ void AXNodeDataAOMPropertyClient::AddStringProperty(AOMStringProperty property,
                                                     const String& value) {
   ax::mojom::blink::StringAttribute attribute;
   switch (property) {
+    case AOMStringProperty::kAriaBrailleLabel:
+      attribute = ax::mojom::blink::StringAttribute::kAriaBrailleLabel;
+      break;
+    case AOMStringProperty::kAriaBrailleRoleDescription:
+      attribute =
+          ax::mojom::blink::StringAttribute::kAriaBrailleRoleDescription;
+      break;
     case AOMStringProperty::kKeyShortcuts:
       attribute = ax::mojom::blink::StringAttribute::kKeyShortcuts;
       break;

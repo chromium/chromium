@@ -31,6 +31,8 @@ namespace http://www.w3.org/1999/xhtml
     property appendChild
     property ariaAtomic
     property ariaAutoComplete
+    property ariaBrailleLabel
+    property ariaBrailleRoleDescription
     property ariaBusy
     property ariaChecked
     property ariaColCount
@@ -1217,6 +1219,8 @@ namespace http://www.w3.org/2000/svg
     property appendChild
     property ariaAtomic
     property ariaAutoComplete
+    property ariaBrailleLabel
+    property ariaBrailleRoleDescription
     property ariaBusy
     property ariaChecked
     property ariaColCount

@@ -2214,6 +2214,8 @@ interface Element : Node
     getter ariaActiveDescendantElement
     getter ariaAtomic
     getter ariaAutoComplete
+    getter ariaBrailleLabel
+    getter ariaBrailleRoleDescription
     getter ariaBusy
     getter ariaChecked
     getter ariaColCount
@@ -2366,6 +2368,8 @@ interface Element : Node
     setter ariaActiveDescendantElement
     setter ariaAtomic
     setter ariaAutoComplete
+    setter ariaBrailleLabel
+    setter ariaBrailleRoleDescription
     setter ariaBusy
     setter ariaChecked
     setter ariaColCount
@@ -2440,6 +2444,8 @@ interface ElementInternals
     getter ariaActiveDescendantElement
     getter ariaAtomic
     getter ariaAutoComplete
+    getter ariaBrailleLabel
+    getter ariaBrailleRoleDescription
     getter ariaBusy
     getter ariaChecked
     getter ariaColCount
@@ -2501,6 +2507,8 @@ interface ElementInternals
     setter ariaActiveDescendantElement
     setter ariaAtomic
     setter ariaAutoComplete
+    setter ariaBrailleLabel
+    setter ariaBrailleRoleDescription
     setter ariaBusy
     setter ariaChecked
     setter ariaColCount

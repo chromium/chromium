@@ -602,6 +602,8 @@ void AccessibilityTreeFormatterAuraLinux::AddProperties(
 const char* const ATK_OBJECT_ATTRIBUTES[] = {
     "atomic",
     "autocomplete",
+    "braillelabel",
+    "brailleroledescription",
     "busy",
     "checkable",
     "class",

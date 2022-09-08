@@ -4272,8 +4272,7 @@ bool DoesUndoRolePresentation(const AtomicString& name) {
       HashSet<AtomicString>, aria_global_properties,
       ({
         "ARIA-ATOMIC",
-        // TODO(accessibility/ARIA 1.3) Add (and test in aria-global.html)
-        // "ARIA-BRAILLEROLEDESCRIPTION",
+        "ARIA-BRAILLEROLEDESCRIPTION",
         "ARIA-BUSY",
         "ARIA-CONTROLS",
         "ARIA-CURRENT",

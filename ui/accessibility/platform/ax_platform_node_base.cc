@@ -1255,9 +1255,13 @@ void AXPlatformNodeBase::ComputeAttributes(PlatformAttributeList* attributes) {
     AddAttributeToList("description-from", from, attributes);
   }
 
+  AddAttributeToList(ax::mojom::StringAttribute::kAriaBrailleLabel,
+                     "braillelabel", attributes);
+  AddAttributeToList(ax::mojom::StringAttribute::kAriaBrailleRoleDescription,
+                     "brailleroledescription", attributes);
+
   AddAttributeToList(ax::mojom::StringAttribute::kKeyShortcuts, "keyshortcuts",
                      attributes);
-
   AddAttributeToList(ax::mojom::IntAttribute::kHierarchicalLevel, "level",
                      attributes);
   AddAttributeToList(ax::mojom::IntAttribute::kSetSize, "setsize", attributes);

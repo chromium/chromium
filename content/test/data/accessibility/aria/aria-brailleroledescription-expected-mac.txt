@@ -1,0 +1,4 @@
+AXWebArea
+++AXCheckBox AXBrailleRoleDescription='aria braille role description' AXValue=0
+++AXCheckBox AXValue=0
+++AXCheckBox AXValue=0

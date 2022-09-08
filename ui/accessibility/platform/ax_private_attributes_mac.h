@@ -36,6 +36,11 @@ AX_EXPORT constexpr NSString* const NSAccessibilityARIASetSizeAttribute =
     @"AXARIASetSize";
 AX_EXPORT constexpr NSString* const NSAccessibilityAutocompleteValueAttribute =
     @"AXAutocompleteValue";
+AX_EXPORT constexpr NSString* const NSAccessibilityBrailleLabelAttribute =
+    @"AXBrailleLabel";
+AX_EXPORT constexpr NSString* const NSAccessibilityBrailleRoleDescription =
+    @"AXBrailleRoleDescription";
+
 AX_EXPORT constexpr NSString* const NSAccessibilityBlockQuoteLevelAttribute =
     @"AXBlockQuoteLevel";
 AX_EXPORT constexpr NSString* const NSAccessibilityChromeAXNodeIdAttribute =

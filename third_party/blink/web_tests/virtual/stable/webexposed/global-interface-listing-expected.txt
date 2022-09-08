@@ -1791,6 +1791,8 @@ interface Element : Node
     attribute @@unscopables
     getter ariaAtomic
     getter ariaAutoComplete
+    getter ariaBrailleLabel
+    getter ariaBrailleRoleDescription
     getter ariaBusy
     getter ariaChecked
     getter ariaColCount
@@ -1924,6 +1926,8 @@ interface Element : Node
     method webkitRequestFullscreen
     setter ariaAtomic
     setter ariaAutoComplete
+    setter ariaBrailleLabel
+    setter ariaBrailleRoleDescription
     setter ariaBusy
     setter ariaChecked
     setter ariaColCount
@@ -1984,6 +1988,8 @@ interface ElementInternals
     attribute @@toStringTag
     getter ariaAtomic
     getter ariaAutoComplete
+    getter ariaBrailleLabel
+    getter ariaBrailleRoleDescription
     getter ariaBusy
     getter ariaChecked
     getter ariaColCount
@@ -2036,6 +2042,8 @@ interface ElementInternals
     method setValidity
     setter ariaAtomic
     setter ariaAutoComplete
+    setter ariaBrailleLabel
+    setter ariaBrailleRoleDescription
     setter ariaBusy
     setter ariaChecked
     setter ariaColCount

@@ -55,6 +55,8 @@ enum class AXUIntAttribute {
 };
 
 enum class AXStringAttribute {
+  kAriaBrailleLabel,
+  kAriaBrailleRoleDescription,
   kAriaKeyShortcuts,
   kAriaRoleDescription,
   // TODO(bebeaudr): kAriaVirtualContent is currently a string attribute to

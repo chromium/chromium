@@ -608,6 +608,16 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityAriaBlockquote) {
   RunAriaTest(FILE_PATH_LITERAL("aria-blockquote.html"));
 }
 
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityAriaBrailleLabel) {
+  RunAriaTest(FILE_PATH_LITERAL("aria-braillelabel.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityAriaBrailleRoleDescription) {
+  RunAriaTest(FILE_PATH_LITERAL("aria-brailleroledescription.html"));
+}
+
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityAriaBusy) {
   RunAriaTest(FILE_PATH_LITERAL("aria-busy.html"));
 }

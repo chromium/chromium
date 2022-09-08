@@ -25,6 +25,10 @@ QualifiedName GetCorrespondingARIAAttribute(AOMStringProperty property) {
   switch (property) {
     case AOMStringProperty::kAutocomplete:
       return html_names::kAriaAutocompleteAttr;
+    case AOMStringProperty::kAriaBrailleLabel:
+      return html_names::kAriaBraillelabelAttr;
+    case AOMStringProperty::kAriaBrailleRoleDescription:
+      return html_names::kAriaBrailleroledescriptionAttr;
     case AOMStringProperty::kChecked:
       return html_names::kAriaCheckedAttr;
     case AOMStringProperty::kCurrent:
@@ -519,6 +523,26 @@ absl::optional<bool> AccessibleNode::busy() const {
 void AccessibleNode::setBusy(absl::optional<bool> value) {
   SetBooleanProperty(AOMBooleanProperty::kBusy, value);
   NotifyAttributeChanged(html_names::kAriaBusyAttr);
+}
+
+AtomicString AccessibleNode::brailleLabel() const {
+  return GetProperty(AOMStringProperty::kAriaBrailleLabel);
+}
+
+void AccessibleNode::setBrailleLabel(const AtomicString& braille_label) {
+  SetStringProperty(AOMStringProperty::kAriaBrailleLabel, braille_label);
+  NotifyAttributeChanged(html_names::kAriaBraillelabelAttr);
+}
+
+AtomicString AccessibleNode::brailleRoleDescription() const {
+  return GetProperty(AOMStringProperty::kAriaBrailleRoleDescription);
+}
+
+void AccessibleNode::setBrailleRoleDescription(
+    const AtomicString& braille_role_description) {
+  SetStringProperty(AOMStringProperty::kAriaBrailleRoleDescription,
+                    braille_role_description);
+  NotifyAttributeChanged(html_names::kAriaBrailleroledescriptionAttr);
 }
 
 AtomicString AccessibleNode::checked() const {
@@ -1037,6 +1061,8 @@ bool AccessibleNode::IsStringTokenProperty(AOMStringProperty property) {
     case AOMStringProperty::kRelevant:
     case AOMStringProperty::kSort:
       return true;
+    case AOMStringProperty::kAriaBrailleLabel:
+    case AOMStringProperty::kAriaBrailleRoleDescription:
     case AOMStringProperty::kDescription:
     case AOMStringProperty::kKeyShortcuts:
     case AOMStringProperty::kLabel:
