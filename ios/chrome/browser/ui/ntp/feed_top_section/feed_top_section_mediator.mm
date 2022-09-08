@@ -133,14 +133,6 @@
   }
 }
 
-- (void)signinDidFinish {
-  [self updateShouldShowSigninPromo];
-  if (self.shouldShowSigninPromo) {
-    [self.consumer
-        updateSigninPromoWithConfigurator:[self signinPromoConfigurator]];
-  }
-}
-
 - (void)signinPromoViewMediatorCloseButtonWasTapped:
     (SigninPromoViewMediator*)mediator {
   self.shouldShowSigninPromo = NO;

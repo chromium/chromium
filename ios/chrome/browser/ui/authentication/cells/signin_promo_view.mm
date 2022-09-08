@@ -273,9 +273,16 @@ constexpr CGFloat kNonProfileImageHeightWidth = 56.0;
 }
 
 - (NSString*)accessibilityLabel {
-  return [NSString
-      stringWithFormat:@"%@ %@", self.textLabel.text,
-                       [self.primaryButton titleForState:UIControlStateNormal]];
+  return self.titleLabel.hidden
+             ? [NSString
+                   stringWithFormat:@"%@ %@", self.textLabel.text,
+                                    [self.primaryButton
+                                        titleForState:UIControlStateNormal]]
+             : [NSString
+                   stringWithFormat:@"%@. %@ %@", self.titleLabel.text,
+                                    self.textLabel.text,
+                                    [self.primaryButton
+                                        titleForState:UIControlStateNormal]];
 }
 
 - (BOOL)accessibilityActivate {
