@@ -89,7 +89,6 @@ std::string ReadUserLogFile(const base::FilePath& log_file_path) {
 std::string ReadUserLogFilePattern(
     const base::FilePath& log_file_path_pattern) {
   base::FilePath log_file_dir = log_file_path_pattern.DirName();
-  LOG(ERROR) << log_file_dir.value();
   base::FileEnumerator file_enumerator(
       log_file_dir, /*recursive=*/false, base::FileEnumerator::FILES,
       log_file_path_pattern.BaseName().value());
