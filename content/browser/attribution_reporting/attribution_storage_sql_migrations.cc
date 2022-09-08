@@ -202,6 +202,28 @@ bool MigrateToVersion35(sql::Database* db, sql::MetaTable* meta_table) {
   return transaction.Commit();
 }
 
+bool MigrateToVersion36(sql::Database* db, sql::MetaTable* meta_table) {
+  // Wrap each migration in its own transaction. See comment in
+  // `MigrateToVersion34`.
+  sql::Transaction transaction(db);
+  if (!transaction.Begin())
+    return false;
+
+  static constexpr char kDropOldIndexSql[] = "DROP INDEX sources_by_origin";
+  if (!db->Execute(kDropOldIndexSql))
+    return false;
+
+  static constexpr char kCreateNewIndexSql[] =
+      "CREATE INDEX IF NOT EXISTS active_sources_by_source_origin "
+      "ON sources(source_origin)"
+      "WHERE event_level_active=1 OR aggregatable_active=1";
+  if (!db->Execute(kCreateNewIndexSql))
+    return false;
+
+  meta_table->SetVersionNumber(36);
+  return transaction.Commit();
+}
+
 }  // namespace
 
 bool UpgradeAttributionStorageSqlSchema(sql::Database* db,
@@ -217,6 +239,10 @@ bool UpgradeAttributionStorageSqlSchema(sql::Database* db,
   }
   if (meta_table->GetVersionNumber() == 34) {
     if (!MigrateToVersion35(db, meta_table))
+      return false;
+  }
+  if (meta_table->GetVersionNumber() == 35) {
+    if (!MigrateToVersion36(db, meta_table))
       return false;
   }
   // Add similar if () blocks for new versions here.

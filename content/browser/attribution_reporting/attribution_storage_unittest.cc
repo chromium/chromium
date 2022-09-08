@@ -515,15 +515,38 @@ TEST_F(AttributionStorageTest, GetAttributionReportsMultipleTimes_SameResult) {
 
 TEST_F(AttributionStorageTest, MaxImpressionsPerOrigin_LimitsStorage) {
   delegate()->set_max_sources_per_origin(2);
-  storage()->StoreSource(SourceBuilder().SetSourceEventId(3).Build());
-  storage()->StoreSource(SourceBuilder().SetSourceEventId(5).Build());
-  EXPECT_EQ(storage()
+  delegate()->set_max_attributions_per_source(1);
+
+  ASSERT_EQ(storage()
+                ->StoreSource(SourceBuilder().SetSourceEventId(3).Build())
+                .status,
+            StorableSource::Result::kSuccess);
+
+  // Force the source to be deactivated.
+  ASSERT_EQ(AttributionTrigger::EventLevelResult::kSuccess,
+            MaybeCreateAndStoreEventLevelReport(DefaultTrigger()));
+
+  ASSERT_EQ(storage()
+                ->StoreSource(SourceBuilder().SetSourceEventId(5).Build())
+                .status,
+            StorableSource::Result::kSuccess);
+
+  ASSERT_THAT(storage()->GetActiveSources(), ElementsAre(SourceEventIdIs(5u)));
+
+  // There's still room for this source, as the limit applies only to active
+  // sources.
+  ASSERT_EQ(storage()
+                ->StoreSource(SourceBuilder().SetSourceEventId(6).Build())
+                .status,
+            StorableSource::Result::kSuccess);
+
+  ASSERT_EQ(storage()
                 ->StoreSource(SourceBuilder().SetSourceEventId(7).Build())
                 .status,
             StorableSource::Result::kInsufficientSourceCapacity);
 
-  EXPECT_THAT(storage()->GetActiveSources(),
-              ElementsAre(SourceEventIdIs(3u), SourceEventIdIs(5u)));
+  ASSERT_THAT(storage()->GetActiveSources(),
+              ElementsAre(SourceEventIdIs(5u), SourceEventIdIs(6u)));
 }
 
 TEST_F(AttributionStorageTest, MaxImpressionsPerOrigin_PerOriginNotSite) {

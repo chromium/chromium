@@ -59,11 +59,11 @@
 namespace content {
 
 // Version number of the database.
-const int AttributionStorageSql::kCurrentVersionNumber = 35;
+const int AttributionStorageSql::kCurrentVersionNumber = 36;
 
 // Earliest version which can use a |kCurrentVersionNumber| database
 // without failing.
-const int AttributionStorageSql::kCompatibleVersionNumber = 35;
+const int AttributionStorageSql::kCompatibleVersionNumber = 36;
 
 // Latest version of the database that cannot be upgraded to
 // |kCurrentVersionNumber| without razing the database.
@@ -1812,8 +1812,9 @@ bool AttributionStorageSql::HasCapacityForStoringSource(
   static constexpr char kCountSourcesSql[] =
       // clang-format off
       "SELECT COUNT(*)FROM sources "
-      DCHECK_SQL_INDEXED_BY("sources_by_origin")
-      "WHERE source_origin=?";  // clang-format on
+      DCHECK_SQL_INDEXED_BY("active_sources_by_source_origin")
+      "WHERE source_origin=? "
+      "AND(event_level_active=1 OR aggregatable_active=1)";  // clang-format on
 
   sql::Statement statement(
       db_->GetCachedStatement(SQL_FROM_HERE, kCountSourcesSql));
@@ -2128,10 +2129,11 @@ bool AttributionStorageSql::CreateSchema() {
   if (!db_->Execute(kImpressionExpiryIndexSql))
     return false;
 
-  // Optimizes counting sources by source origin.
+  // Optimizes counting active sources by source origin.
   static constexpr char kImpressionOriginIndexSql[] =
-      "CREATE INDEX IF NOT EXISTS sources_by_origin "
-      "ON sources(source_origin)";
+      "CREATE INDEX IF NOT EXISTS active_sources_by_source_origin "
+      "ON sources(source_origin)"
+      "WHERE event_level_active=1 OR aggregatable_active=1";
   if (!db_->Execute(kImpressionOriginIndexSql))
     return false;
 
