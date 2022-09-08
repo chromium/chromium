@@ -361,17 +361,17 @@ TEST_F(PromoServiceTest, UndoBlocklistPromo) {
   promo.promo_log_url = GURL("https://www.google.com/log_url?id=42");
   promo.promo_id = "42";
 
-  ASSERT_EQ(0u, prefs()->GetDictionary(prefs::kNtpPromoBlocklist)->DictSize());
+  ASSERT_TRUE(prefs()->GetValueDict(prefs::kNtpPromoBlocklist).empty());
 
   service()->BlocklistPromo("42");
 
-  const auto* blocklist = prefs()->GetDictionary(prefs::kNtpPromoBlocklist);
-  ASSERT_EQ(1u, blocklist->DictSize());
-  ASSERT_TRUE(blocklist->FindKey("42"));
+  const auto& blocklist = prefs()->GetValueDict(prefs::kNtpPromoBlocklist);
+  ASSERT_EQ(1u, blocklist.size());
+  ASSERT_TRUE(blocklist.contains("42"));
 
   service()->UndoBlocklistPromo("42");
 
-  ASSERT_EQ(0u, prefs()->GetDictionary(prefs::kNtpPromoBlocklist)->DictSize());
+  ASSERT_TRUE(prefs()->GetValueDict(prefs::kNtpPromoBlocklist).empty());
 }
 
 TEST_F(PromoServiceTest, ReturnFakeData) {
