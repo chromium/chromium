@@ -4,6 +4,21 @@
 
 import("//build/config/ios/asset_catalog.gni")
 
+imageset("fullcolor_branding_icon") {
+  sources = [
+    "fullcolor_branding_icon.imageset/Contents.json",
+    "fullcolor_branding_icon.imageset/fullcolor_branding_icon.png",
+  ]
+}
+
+imageset("monotone_branding_icon") {
+  sources = [
+    "monotone_branding_icon.imageset/Contents.json",
+    "monotone_branding_icon.imageset/monotone_branding_icon_dark.png",
+    "monotone_branding_icon.imageset/monotone_branding_icon_light.png",
+  ]
+}
+
 imageset("password_suggestion_icon") {
   sources = [
     "password_suggestion_icon.imageset/Contents.json",

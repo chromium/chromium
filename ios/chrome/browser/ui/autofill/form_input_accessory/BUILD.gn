@@ -2,6 +2,14 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/ios/asset_catalog.gni")
+
+declare_args() {
+  # Name of the target that define the autofill fullcolor branding icon to use.
+  ios_image_autofill_branding_icon_fullcolor =
+      "//ios/chrome/browser/ui/autofill/resources:fullcolor_branding_icon"
+}
+
 source_set("form_input_accessory") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
@@ -43,6 +51,7 @@ source_set("form_input_accessory") {
     "//ios/chrome/browser/ui/alert_coordinator",
     "//ios/chrome/browser/ui/autofill/manual_fill",
     "//ios/chrome/browser/ui/autofill/manual_fill:manual_fill_ui",
+    "//ios/chrome/browser/ui/autofill/resources:monotone_branding_icon",
     "//ios/chrome/browser/ui/autofill/resources:password_suggestion_icon",
     "//ios/chrome/browser/ui/bubble",
     "//ios/chrome/browser/ui/bubble:features",
@@ -63,6 +72,7 @@ source_set("form_input_accessory") {
     "//ios/web/public/deprecated",
     "//ios/web/public/js_messaging",
     "//ui/base",
+    ios_image_autofill_branding_icon_fullcolor,
   ]
   frameworks = [ "UIKit.framework" ]
 }
