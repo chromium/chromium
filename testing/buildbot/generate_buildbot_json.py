@@ -754,24 +754,6 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
           'script': '//testing/trigger_scripts/chromeos_device_trigger.py',
         }
 
-  def add_logdog_butler_cipd_package(self, tester_config, result):
-    if not tester_config.get('skip_cipd_packages', False):
-      cipd_packages = result['swarming'].get('cipd_packages', [])
-      already_added = len([
-          package for package in cipd_packages
-          if package.get('cipd_package', "").find('logdog/butler') > 0
-      ]) > 0
-      if not already_added:
-        cipd_packages.append({
-            'cipd_package':
-            'infra/tools/luci/logdog/butler/${platform}',
-            'location':
-            'bin',
-            'revision':
-            'git_revision:ff387eadf445b24c935f1cf7d6ddd279f8a6b04c',
-        })
-        result['swarming']['cipd_packages'] = cipd_packages
-
   def add_android_presentation_args(self, tester_config, test_name, result):
     args = result.get('args', [])
     bucket = tester_config.get('results_bucket', 'chromium-result-details')
@@ -824,7 +806,6 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
         # isolated scripts in test_results_presentation.py merge script
         self.add_android_presentation_args(tester_config, test_name, result)
         result['args'] = result.get('args', []) + ['--recover-devices']
-      self.add_logdog_butler_cipd_package(tester_config, result)
 
     result = self.update_and_cleanup_test(
         result, test_name, tester_name, tester_config, waterfall)
@@ -861,7 +842,6 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
         # TODO(https://crbug.com/1137998) make Android presentation work with
         # isolated scripts in test_results_presentation.py merge script
         self.add_android_presentation_args(tester_config, test_name, result)
-      self.add_logdog_butler_cipd_package(tester_config, result)
     result = self.update_and_cleanup_test(
         result, test_name, tester_name, tester_config, waterfall)
     self.add_common_test_properties(result, tester_config)

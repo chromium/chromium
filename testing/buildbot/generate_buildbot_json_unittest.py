@@ -1599,14 +1599,6 @@ ISOLATED_SCRIPT_OUTPUT_ANDROID = """\
         "name": "foo_test",
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "cipd_packages": [
-            {
-              "cipd_package": "infra/tools/luci/logdog/butler/${platform}",
-              "location": "bin",
-              "revision": \
-"git_revision:ff387eadf445b24c935f1cf7d6ddd279f8a6b04c"
-            }
-          ],
           "output_links": [
             {
               "link": [
@@ -1734,13 +1726,6 @@ GPU_TELEMETRY_TEST_OUTPUT_ANDROID = """\
         "should_retry_with_patch": false,
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "cipd_packages": [
-            {
-              "cipd_package": "infra/tools/luci/logdog/butler/${platform}",
-              "location": "bin",
-              "revision": "git_revision:ff387eadf445b24c935f1cf7d6ddd279f8a6b04c"
-            }
-          ],
           "dimension_sets": [
             {
               "device_type": "bullhead"
@@ -1779,13 +1764,6 @@ GPU_TELEMETRY_TEST_OUTPUT_ANDROID_WEBVIEW = """\
         "should_retry_with_patch": false,
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "cipd_packages": [
-            {
-              "cipd_package": "infra/tools/luci/logdog/butler/${platform}",
-              "location": "bin",
-              "revision": "git_revision:ff387eadf445b24c935f1cf7d6ddd279f8a6b04c"
-            }
-          ],
           "dimension_sets": [
             {
               "device_type": "bullhead"
@@ -2100,14 +2078,6 @@ ANDROID_WATERFALL_OUTPUT = """\
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "cipd_packages": [
-            {
-              "cipd_package": "infra/tools/luci/logdog/butler/${platform}",
-              "location": "bin",
-              "revision": \
-"git_revision:ff387eadf445b24c935f1cf7d6ddd279f8a6b04c"
-            }
-          ],
           "dimension_sets": [
             {
               "device_os": "KTU84P",
@@ -2146,14 +2116,6 @@ ANDROID_WATERFALL_OUTPUT = """\
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "cipd_packages": [
-            {
-              "cipd_package": "infra/tools/luci/logdog/butler/${platform}",
-              "location": "bin",
-              "revision": \
-"git_revision:ff387eadf445b24c935f1cf7d6ddd279f8a6b04c"
-            }
-          ],
           "dimension_sets": [
             {
               "device_os": "LMY41U",
@@ -4444,14 +4406,6 @@ TEST_QUERY_BOTS_OUTPUT = {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "cipd_packages": [
-            {
-              "cipd_package": "infra/tools/luci/logdog/butler/${platform}",
-              "location": "bin",
-              "revision":
-              "git_revision:ff387eadf445b24c935f1cf7d6ddd279f8a6b04c"
-            }
-          ],
           "dimension_sets":[
             {
               "device_os": "LMY41U",
@@ -4479,14 +4433,6 @@ TEST_QUERY_BOTS_OUTPUT = {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "swarming": {
-          "cipd_packages": [
-            {
-              "cipd_package": "infra/tools/luci/logdog/butler/${platform}",
-              "location": "bin",
-              "revision":
-              "git_revision:ff387eadf445b24c935f1cf7d6ddd279f8a6b04c"
-            }
-          ],
           "dimension_sets": [
             {
               "device_os": "KTU84P",
@@ -4537,13 +4483,6 @@ TEST_QUERY_BOTS_TESTS_OUTPUT = {
         "script": "//testing/merge_scripts/standard_gtest_merge.py"
       },
       "swarming": {
-        "cipd_packages": [
-          {
-            "cipd_package": "infra/tools/luci/logdog/butler/${platform}",
-            "location": "bin",
-            "revision": "git_revision:ff387eadf445b24c935f1cf7d6ddd279f8a6b04c"
-          }
-        ],
         "dimension_sets": [
           {
             "device_os": "LMY41U",
@@ -4569,13 +4508,6 @@ TEST_QUERY_BOTS_TESTS_OUTPUT = {
         "script": "//testing/merge_scripts/standard_gtest_merge.py"
       },
       "swarming": {
-        "cipd_packages": [
-          {
-            "cipd_package": "infra/tools/luci/logdog/butler/${platform}",
-            "location": "bin",
-            "revision": "git_revision:ff387eadf445b24c935f1cf7d6ddd279f8a6b04c"
-          }
-        ],
         "dimension_sets": [
           {
             "device_os": "KTU84P",
@@ -4614,13 +4546,6 @@ TEST_QUERY_BOT_OUTPUT = {
         "script": "//testing/merge_scripts/standard_gtest_merge.py"
       },
       "swarming": {
-        "cipd_packages": [
-          {
-            "cipd_package": "infra/tools/luci/logdog/butler/${platform}",
-            "location": "bin",
-            "revision": "git_revision:ff387eadf445b24c935f1cf7d6ddd279f8a6b04c"
-          }
-        ],
         "dimension_sets": [
           {
             "device_os": "KTU84P",
@@ -4655,13 +4580,6 @@ TEST_QUERY_BOT_TESTS_OUTPUT = [
       "script": "//testing/merge_scripts/standard_gtest_merge.py"
     },
     "swarming": {
-      "cipd_packages": [
-        {
-          "cipd_package": "infra/tools/luci/logdog/butler/${platform}",
-          "location": "bin",
-          "revision": "git_revision:ff387eadf445b24c935f1cf7d6ddd279f8a6b04c"
-        }
-      ],
       "dimension_sets": [
         {
           "device_os": "LMY41U",
