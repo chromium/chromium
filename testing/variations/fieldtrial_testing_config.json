@@ -4548,7 +4548,7 @@
             ],
             "experiments": [
                 {
-                    "name": "EnableSearchPageString_20220707",
+                    "name": "EnableSearchPageString_20220901",
                     "params": {
                         "enable-lens-fullscreen-search": "false",
                         "use-google-as-visual-search-provider": "false",
@@ -4559,7 +4559,18 @@
                     ]
                 },
                 {
-                    "name": "EnableSearchAnyPartOfThePageString_20220707",
+                    "name": "EnableNoLensAttributionAndSearchInsideImageString_20220901",
+                    "params": {
+                        "enable-lens-fullscreen-search": "false",
+                        "use-google-as-visual-search-provider": "true",
+                        "use-menu-item-alt-text-3": "true"
+                    },
+                    "enable_features": [
+                        "LensSearchOptimizations"
+                    ]
+                },
+                {
+                    "name": "EnableSearchAnyPartOfThePageString_20220901",
                     "params": {
                         "enable-lens-fullscreen-search": "false",
                         "use-google-as-visual-search-provider": "false",
@@ -4570,7 +4581,7 @@
                     ]
                 },
                 {
-                    "name": "EnableNoLensAttribution_20220707",
+                    "name": "EnableNoLensAttribution_20220901",
                     "params": {
                         "enable-lens-fullscreen-search": "false",
                         "use-google-as-visual-search-provider": "true"
@@ -4580,7 +4591,7 @@
                     ]
                 },
                 {
-                    "name": "EnableNoLensAttributionAndSearchPageString_20220707",
+                    "name": "EnableNoLensAttributionAndSearchPageString_20220901",
                     "params": {
                         "enable-lens-fullscreen-search": "false",
                         "use-google-as-visual-search-provider": "true",
@@ -4591,7 +4602,7 @@
                     ]
                 },
                 {
-                    "name": "EnableNoLensAttributionAndSearchAnyPartOfThePageString_20220707",
+                    "name": "EnableNoLensAttributionAndSearchAnyPartOfThePageString_20220901",
                     "params": {
                         "enable-lens-fullscreen-search": "false",
                         "use-google-as-visual-search-provider": "true",
