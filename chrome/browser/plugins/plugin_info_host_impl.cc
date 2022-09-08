@@ -219,15 +219,6 @@ void PluginInfoHostImpl::Context::DecidePluginStatus(
     return;
   }
 
-// This block is separate from the outdated check, because the deprecated UI
-// must take precedence over any content setting or HTML5 by Default.
-#if BUILDFLAG(ENABLE_PLUGINS)
-  if (security_status == PluginMetadata::SECURITY_STATUS_DEPRECATED) {
-    *status = chrome::mojom::PluginStatus::kDeprecated;
-    return;
-  }
-#endif
-
   ContentSetting plugin_setting = CONTENT_SETTING_DEFAULT;
   bool uses_default_content_setting = true;
   bool is_managed = false;
@@ -239,19 +230,6 @@ void PluginInfoHostImpl::Context::DecidePluginStatus(
       &is_managed);
 
   DCHECK(plugin_setting != CONTENT_SETTING_DEFAULT);
-
-#if BUILDFLAG(ENABLE_PLUGINS)
-  // Check if the plugin is outdated.
-  if (security_status == PluginMetadata::SECURITY_STATUS_OUT_OF_DATE &&
-      !allow_outdated_plugins_.GetValue()) {
-    if (allow_outdated_plugins_.IsManaged()) {
-      *status = chrome::mojom::PluginStatus::kOutdatedDisallowed;
-    } else {
-      *status = chrome::mojom::PluginStatus::kOutdatedBlocked;
-    }
-    return;
-  }
-#endif  // BUILDFLAG(ENABLE_PLUGINS)
 
   // Check if the plugin is crashing too much.
   if (PluginService::GetInstance()->IsPluginUnstable(plugin.path) &&

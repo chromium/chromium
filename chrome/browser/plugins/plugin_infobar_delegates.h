@@ -23,6 +23,7 @@ class ContentInfoBarManager;
 }
 
 // Infobar that's shown when a plugin is out of date or deprecated.
+// TODO(crbug.com/1064647): Remove this and related dead code.
 class OutdatedPluginInfoBarDelegate : public ConfirmInfoBarDelegate,
                                       public WeakPluginInstallerObserver {
  public:

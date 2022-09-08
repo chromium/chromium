@@ -120,11 +120,6 @@ ChromePluginPlaceholder::~ChromePluginPlaceholder() {
   }
 }
 
-mojo::PendingRemote<chrome::mojom::PluginRenderer>
-ChromePluginPlaceholder::BindPluginRenderer() {
-  return plugin_renderer_receiver_.BindNewPipeAndPassRemote();
-}
-
 // TODO(bauerb): Move this method to NonLoadablePluginPlaceholder?
 // static
 ChromePluginPlaceholder* ChromePluginPlaceholder::CreateLoadableMissingPlugin(
@@ -196,23 +191,6 @@ void ChromePluginPlaceholder::ForEach(
 
 void ChromePluginPlaceholder::SetStatus(chrome::mojom::PluginStatus status) {
   status_ = status;
-}
-
-void ChromePluginPlaceholder::FinishedDownloading() {
-  SetMessage(l10n_util::GetStringFUTF16(IDS_PLUGIN_UPDATING, plugin_name_));
-}
-
-void ChromePluginPlaceholder::UpdateDownloading() {
-  SetMessage(l10n_util::GetStringFUTF16(IDS_PLUGIN_DOWNLOADING, plugin_name_));
-}
-
-void ChromePluginPlaceholder::UpdateSuccess() {
-  PluginListChanged();
-}
-
-void ChromePluginPlaceholder::UpdateFailure() {
-  SetMessage(l10n_util::GetStringFUTF16(IDS_PLUGIN_DOWNLOAD_ERROR_SHORT,
-                                        plugin_name_));
 }
 
 void ChromePluginPlaceholder::SetIsPrerendering(bool is_prerendering) {

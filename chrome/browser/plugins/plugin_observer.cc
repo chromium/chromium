@@ -13,10 +13,6 @@
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/infobars/simple_alert_infobar_creator.h"
-#include "chrome/browser/plugins/plugin_finder.h"
-#include "chrome/browser/plugins/plugin_infobar_delegates.h"
-#include "chrome/browser/plugins/plugin_installer.h"
-#include "chrome/browser/plugins/plugin_installer_observer.h"
 #include "chrome/browser/plugins/plugin_observer_common.h"
 #include "chrome/browser/plugins/reload_plugin_infobar_delegate.h"
 #include "chrome/common/buildflags.h"
@@ -47,31 +43,6 @@ using content::PluginService;
 
 // PluginObserver -------------------------------------------------------------
 
-class PluginObserver::PluginPlaceholderHost : public PluginInstallerObserver {
- public:
-  PluginPlaceholderHost(
-      PluginObserver* observer,
-      std::u16string plugin_name,
-      PluginInstaller* installer,
-      mojo::PendingRemote<chrome::mojom::PluginRenderer> plugin_renderer_remote)
-      : PluginInstallerObserver(installer),
-        observer_(observer),
-        plugin_renderer_remote_(std::move(plugin_renderer_remote)) {
-    plugin_renderer_remote_.set_disconnect_handler(
-        base::BindOnce(&PluginObserver::RemovePluginPlaceholderHost,
-                       base::Unretained(observer_), this));
-    DCHECK(installer);
-  }
-
-  void DownloadFinished() override {
-    plugin_renderer_remote_->FinishedDownloading();
-  }
-
- private:
-  raw_ptr<PluginObserver> observer_;
-  mojo::Remote<chrome::mojom::PluginRenderer> plugin_renderer_remote_;
-};
-
 void PluginObserver::BindPluginHost(
     mojo::PendingAssociatedReceiver<chrome::mojom::PluginHost> receiver,
     content::RenderFrameHost* rfh) {
@@ -89,8 +60,7 @@ PluginObserver::PluginObserver(content::WebContents* web_contents)
       content::WebContentsUserData<PluginObserver>(*web_contents),
       plugin_host_receivers_(web_contents, this) {}
 
-PluginObserver::~PluginObserver() {
-}
+PluginObserver::~PluginObserver() = default;
 
 void PluginObserver::PluginCrashed(const base::FilePath& plugin_path,
                                    base::ProcessId plugin_pid) {
@@ -151,32 +121,6 @@ void PluginObserver::CreatePluginObserverInfoBar(
       &kExtensionCrashedIcon,
       l10n_util::GetStringFUTF16(IDS_PLUGIN_INITIALIZATION_ERROR_PROMPT,
                                  plugin_name));
-}
-
-void PluginObserver::BlockedOutdatedPlugin(
-    mojo::PendingRemote<chrome::mojom::PluginRenderer> plugin_renderer,
-    const std::string& identifier) {
-  PluginFinder* finder = PluginFinder::GetInstance();
-  // Find plugin to update.
-  PluginInstaller* installer = nullptr;
-  std::unique_ptr<PluginMetadata> plugin;
-  if (finder->FindPluginWithIdentifier(identifier, &installer, &plugin)) {
-    auto plugin_placeholder = std::make_unique<PluginPlaceholderHost>(
-        this, plugin->name(), installer, std::move(plugin_renderer));
-    plugin_placeholders_[plugin_placeholder.get()] =
-        std::move(plugin_placeholder);
-
-    OutdatedPluginInfoBarDelegate::Create(
-        infobars::ContentInfoBarManager::FromWebContents(web_contents()),
-        installer, std::move(plugin));
-  } else {
-    NOTREACHED();
-  }
-}
-
-void PluginObserver::RemovePluginPlaceholderHost(
-    PluginPlaceholderHost* placeholder) {
-  plugin_placeholders_.erase(placeholder);
 }
 
 void PluginObserver::CouldNotLoadPlugin(const base::FilePath& plugin_path) {

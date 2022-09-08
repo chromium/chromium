@@ -6048,28 +6048,13 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_PLUGIN_BLOCKED_BY_POLICY" desc="The placeholder text for a plugin blocked by enterprise policy.">
         <ph name="PLUGIN_NAME">$1<ex>Flash</ex></ph> is blocked by enterprise policy
       </message>
-      <message name="IDS_PLUGIN_BLOCKED_NO_LOADING" desc="The placeholder text for a blocked plugin that cannot be manually loaded by the user.">
-        <ph name="PLUGIN_NAME">$1<ex>Flash</ex></ph> is blocked
-      </message>
       <if expr="chromeos_ash">
         <message name="IDS_NACL_PLUGIN_BLOCKED" desc="The placeholder text for a blocked plugin.">
           This plugin is not supported on this device
         </message>
       </if>
-      <message name="IDS_PLUGIN_OUTDATED" desc="The placeholder text for an outdated plugin.">
-        <ph name="PLUGIN_NAME">$1<ex>Flash</ex></ph> is out of date
-      </message>
       <message name="IDS_PLUGIN_NOT_AUTHORIZED" desc="The placeholder text for a plugin that requires user permission to run.">
         <ph name="PLUGIN_NAME">$1<ex>Java</ex></ph> needs your permission to run
-      </message>
-      <message name="IDS_PLUGIN_DOWNLOADING" desc="The placeholder text when downloading a missing plugin.">
-        Downloading <ph name="PLUGIN_NAME">$1<ex>Realplayer</ex></ph>...
-      </message>
-      <message name="IDS_PLUGIN_DOWNLOAD_ERROR" desc="The placeholder text when there was an error download a missing plugin.">
-        There was an error (<ph name="ERROR">$1<ex>net::ERR_TOO_MANY_GOATS</ex></ph>) while downloading the plugin
-      </message>
-      <message name="IDS_PLUGIN_DOWNLOAD_ERROR_SHORT" desc="The placeholder text when there was an error download a missing plugin.">
-        <ph name="PLUGIN_NAME">$1<ex>Realplayer</ex></ph> download failed
       </message>
       <message name="IDS_PLUGIN_UPDATING" desc="The placeholder text when updating an out-of-date plugin.">
         When <ph name="PLUGIN_NAME">$1<ex>Realplayer</ex></ph> finishes updating, reload the page to activate it

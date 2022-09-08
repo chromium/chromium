@@ -1123,37 +1123,6 @@ WebPlugin* ChromeContentRendererClient::CreatePlugin(
             l10n_util::GetStringFUTF16(IDS_PLUGIN_DISABLED, group_name));
         break;
       }
-      case chrome::mojom::PluginStatus::kOutdatedBlocked: {
-        placeholder = create_blocked_plugin(
-            IDR_BLOCKED_PLUGIN_HTML,
-            l10n_util::GetStringFUTF16(IDS_PLUGIN_OUTDATED, group_name));
-        placeholder->AllowLoading();
-        mojo::AssociatedRemote<chrome::mojom::PluginHost> plugin_host;
-        render_frame->GetRemoteAssociatedInterfaces()->GetInterface(
-            plugin_host.BindNewEndpointAndPassReceiver());
-        plugin_host->BlockedOutdatedPlugin(placeholder->BindPluginRenderer(),
-                                           identifier);
-        break;
-      }
-      case chrome::mojom::PluginStatus::kOutdatedDisallowed: {
-        placeholder = create_blocked_plugin(
-            IDR_BLOCKED_PLUGIN_HTML,
-            l10n_util::GetStringFUTF16(IDS_PLUGIN_OUTDATED, group_name));
-        break;
-      }
-      case chrome::mojom::PluginStatus::kDeprecated: {
-        // kDeprecatedPlugins act similarly to kOutdatedBlocked ones, but do
-        // not allow for loading. They still show an infobar.
-        placeholder = create_blocked_plugin(
-            IDR_BLOCKED_PLUGIN_HTML,
-            l10n_util::GetStringFUTF16(IDS_PLUGIN_DEPRECATED, group_name));
-        mojo::AssociatedRemote<chrome::mojom::PluginHost> plugin_host;
-        render_frame->GetRemoteAssociatedInterfaces()->GetInterface(
-            plugin_host.BindNewEndpointAndPassReceiver());
-        plugin_host->BlockedOutdatedPlugin(placeholder->BindPluginRenderer(),
-                                           identifier);
-        break;
-      }
       case chrome::mojom::PluginStatus::kUnauthorized: {
         placeholder = create_blocked_plugin(
             IDR_BLOCKED_PLUGIN_HTML,
@@ -1182,14 +1151,6 @@ WebPlugin* ChromeContentRendererClient::CreatePlugin(
                                        group_name));
         RenderThread::Get()->RecordAction(
             UserMetricsAction("Plugin_BlockedByPolicy"));
-        content_settings_agent->DidBlockContentType(content_type);
-        break;
-      }
-      case chrome::mojom::PluginStatus::kBlockedNoLoading: {
-        placeholder = create_blocked_plugin(
-            IDR_BLOCKED_PLUGIN_HTML,
-            l10n_util::GetStringFUTF16(IDS_PLUGIN_BLOCKED_NO_LOADING,
-                                       group_name));
         content_settings_agent->DidBlockContentType(content_type);
         break;
       }

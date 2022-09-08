@@ -23,15 +23,9 @@ struct WebPluginInfo;
 class PluginMetadata {
  public:
   // Security status of the plugin.
-  // TODO(crbug.com/1064647): Remove unused security statuses.
   enum SecurityStatus {
-    SECURITY_STATUS_UP_TO_DATE,
-    SECURITY_STATUS_OUT_OF_DATE,
     SECURITY_STATUS_REQUIRES_AUTHORIZATION,
     SECURITY_STATUS_FULLY_TRUSTED,
-    // Similar to SECURITY_STATUS_OUT_OF_DATE, but with no hope of updating and
-    // running. This is distinct to allow for separate UI treatment.
-    SECURITY_STATUS_DEPRECATED,
   };
 
   // TODO(crbug.com/1064647): Remove after deleting
