@@ -110,7 +110,18 @@ class Deobfuscator:
               'deobfuscator: Close() called by another thread during join().')
           return lines
         if reader_thread.is_alive():
-          logging.error('deobfuscator: Timed out.')
+          logging.error('deobfuscator: Timed out after %f seconds with input:',
+                        timeout)
+          # We are seeing timeouts but don't know why. Hopefully seeing the
+          # lines that cause timeouts can make it obvious what the deobfuscator
+          # is struggling with.
+          for l in lines:
+            logging.error(l)
+          logging.error('deobfuscator: End of timed out input.')
+          logging.error('deobfuscator: Timed out output was:')
+          for l in out_lines:
+            logging.error(l)
+          logging.error('deobfuscator: End of timed out output.')
           self.Close()
           return lines
         return out_lines
