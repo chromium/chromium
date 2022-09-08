@@ -206,8 +206,8 @@ void DispatchSyncOnMainThread(void (^block)(void)) {
                          "'%s.result', %s: value}); }",
                          command.c_str(), kMessageResultKey.c_str());
 
-  // Construct a script that calls the given |function| with
-  // |scriptCompletionHandler| as an argument.
+  // Construct a script that calls the given `function` with
+  // `scriptCompletionHandler` as an argument.
   std::string scriptFunctionWithCompletionHandler = base::StringPrintf(
       "(%s).call(null, %s)", base::SysNSStringToUTF8(function).c_str(),
       scriptCompletionHandler.c_str());
@@ -219,8 +219,8 @@ void DispatchSyncOnMainThread(void (^block)(void)) {
                             /*sender_frame*/ web::WebFrame*) {
         const base::Value* result = value.FindKey(kMessageResultKey);
 
-        // |result| will be null when the computed result in JavaScript is
-        // |undefined|. This happens, for example, when injecting a script that
+        // `result` will be null when the computed result in JavaScript is
+        // `undefined`. This happens, for example, when injecting a script that
         // performs some action (like setting the document's title) but doesn't
         // return any value.
         if (result)

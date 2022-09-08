@@ -516,13 +516,13 @@ base::Value CWTRequestHandler::ExecuteScript(const base::Value* script,
 
   NSString* function_to_execute;
   if (is_async_function) {
-    // The provided |script| is a function body that already calls its last
+    // The provided `script` is a function body that already calls its last
     // argument with the result of its computation.
     function_to_execute =
         [NSString stringWithFormat:@"function f(completionHandler) { %s }",
                                    script->GetString().c_str()];
   } else {
-    // The provided |script| directly computes a result. Convert to a function
+    // The provided `script` directly computes a result. Convert to a function
     // that calls a completion handler with the result of its computation.
     NSString* input_function = [NSString
         stringWithFormat:@"() => { %s }", script->GetString().c_str()];
