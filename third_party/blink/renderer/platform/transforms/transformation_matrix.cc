@@ -460,15 +460,8 @@ gfx::QuadF TransformationMatrix::MapQuad(const gfx::QuadF& q) const {
 
 TransformationMatrix& TransformationMatrix::ScaleNonUniform(double sx,
                                                             double sy) {
-  matrix_[0][0] *= sx;
-  matrix_[0][1] *= sx;
-  matrix_[0][2] *= sx;
-  matrix_[0][3] *= sx;
-
-  matrix_[1][0] *= sy;
-  matrix_[1][1] *= sy;
-  matrix_[1][2] *= sy;
-  matrix_[1][3] *= sy;
+  SetCol(0, Col(0) * sx);
+  SetCol(1, Col(1) * sy);
   return *this;
 }
 
@@ -477,10 +470,7 @@ TransformationMatrix& TransformationMatrix::Scale3d(double sx,
                                                     double sz) {
   ScaleNonUniform(sx, sy);
 
-  matrix_[2][0] *= sz;
-  matrix_[2][1] *= sz;
-  matrix_[2][2] *= sz;
-  matrix_[2][3] *= sz;
+  SetCol(2, Col(2) * sz);
   return *this;
 }
 
@@ -517,44 +507,20 @@ TransformationMatrix& TransformationMatrix::Rotate3d(double x,
   // Since we've already normalized the vector we don't need to check that the
   // other two dimensions are zero
   if (x == 1.0) {
-    mat.matrix_[0][0] = 1.0;
-    mat.matrix_[0][1] = 0.0;
-    mat.matrix_[0][2] = 0.0;
-    mat.matrix_[1][0] = 0.0;
     mat.matrix_[1][1] = cos_theta;
     mat.matrix_[1][2] = sin_theta;
-    mat.matrix_[2][0] = 0.0;
     mat.matrix_[2][1] = -sin_theta;
     mat.matrix_[2][2] = cos_theta;
-    mat.matrix_[0][3] = mat.matrix_[1][3] = mat.matrix_[2][3] = 0.0;
-    mat.matrix_[3][0] = mat.matrix_[3][1] = mat.matrix_[3][2] = 0.0;
-    mat.matrix_[3][3] = 1.0;
   } else if (y == 1.0) {
     mat.matrix_[0][0] = cos_theta;
-    mat.matrix_[0][1] = 0.0;
     mat.matrix_[0][2] = -sin_theta;
-    mat.matrix_[1][0] = 0.0;
-    mat.matrix_[1][1] = 1.0;
-    mat.matrix_[1][2] = 0.0;
     mat.matrix_[2][0] = sin_theta;
-    mat.matrix_[2][1] = 0.0;
     mat.matrix_[2][2] = cos_theta;
-    mat.matrix_[0][3] = mat.matrix_[1][3] = mat.matrix_[2][3] = 0.0;
-    mat.matrix_[3][0] = mat.matrix_[3][1] = mat.matrix_[3][2] = 0.0;
-    mat.matrix_[3][3] = 1.0;
   } else if (z == 1.0) {
     mat.matrix_[0][0] = cos_theta;
     mat.matrix_[0][1] = sin_theta;
-    mat.matrix_[0][2] = 0.0;
     mat.matrix_[1][0] = -sin_theta;
     mat.matrix_[1][1] = cos_theta;
-    mat.matrix_[1][2] = 0.0;
-    mat.matrix_[2][0] = 0.0;
-    mat.matrix_[2][1] = 0.0;
-    mat.matrix_[2][2] = 1.0;
-    mat.matrix_[0][3] = mat.matrix_[1][3] = mat.matrix_[2][3] = 0.0;
-    mat.matrix_[3][0] = mat.matrix_[3][1] = mat.matrix_[3][2] = 0.0;
-    mat.matrix_[3][3] = 1.0;
   } else {
     // This case is the rotation about an arbitrary unit vector.
     //
@@ -574,9 +540,6 @@ TransformationMatrix& TransformationMatrix::Rotate3d(double x,
     mat.matrix_[2][0] = x * z * one_minus_cos_theta + y * sin_theta;
     mat.matrix_[2][1] = y * z * one_minus_cos_theta - x * sin_theta;
     mat.matrix_[2][2] = cos_theta + z * z * one_minus_cos_theta;
-    mat.matrix_[0][3] = mat.matrix_[1][3] = mat.matrix_[2][3] = 0.0;
-    mat.matrix_[3][0] = mat.matrix_[3][1] = mat.matrix_[3][2] = 0.0;
-    mat.matrix_[3][3] = 1.0;
   }
   Multiply(mat);
   return *this;
@@ -597,74 +560,44 @@ TransformationMatrix& TransformationMatrix::Rotate3d(double rx,
 
   mat.matrix_[0][0] = cos_theta;
   mat.matrix_[0][1] = sin_theta;
-  mat.matrix_[0][2] = 0.0;
   mat.matrix_[1][0] = -sin_theta;
   mat.matrix_[1][1] = cos_theta;
-  mat.matrix_[1][2] = 0.0;
-  mat.matrix_[2][0] = 0.0;
-  mat.matrix_[2][1] = 0.0;
-  mat.matrix_[2][2] = 1.0;
-  mat.matrix_[0][3] = mat.matrix_[1][3] = mat.matrix_[2][3] = 0.0;
-  mat.matrix_[3][0] = mat.matrix_[3][1] = mat.matrix_[3][2] = 0.0;
-  mat.matrix_[3][3] = 1.0;
 
-  TransformationMatrix rmat(mat);
-
+  TransformationMatrix mat_y;
   sin_theta = std::sin(ry);
   cos_theta = std::cos(ry);
 
-  mat.matrix_[0][0] = cos_theta;
-  mat.matrix_[0][1] = 0.0;
-  mat.matrix_[0][2] = -sin_theta;
-  mat.matrix_[1][0] = 0.0;
-  mat.matrix_[1][1] = 1.0;
-  mat.matrix_[1][2] = 0.0;
-  mat.matrix_[2][0] = sin_theta;
-  mat.matrix_[2][1] = 0.0;
-  mat.matrix_[2][2] = cos_theta;
-  mat.matrix_[0][3] = mat.matrix_[1][3] = mat.matrix_[2][3] = 0.0;
-  mat.matrix_[3][0] = mat.matrix_[3][1] = mat.matrix_[3][2] = 0.0;
-  mat.matrix_[3][3] = 1.0;
+  mat_y.matrix_[0][0] = cos_theta;
+  mat_y.matrix_[0][2] = -sin_theta;
+  mat_y.matrix_[2][0] = sin_theta;
+  mat_y.matrix_[2][2] = cos_theta;
 
-  rmat.Multiply(mat);
+  mat.Multiply(mat_y);
 
+  TransformationMatrix mat_x;
   sin_theta = std::sin(rx);
   cos_theta = std::cos(rx);
 
-  mat.matrix_[0][0] = 1.0;
-  mat.matrix_[0][1] = 0.0;
-  mat.matrix_[0][2] = 0.0;
-  mat.matrix_[1][0] = 0.0;
-  mat.matrix_[1][1] = cos_theta;
-  mat.matrix_[1][2] = sin_theta;
-  mat.matrix_[2][0] = 0.0;
-  mat.matrix_[2][1] = -sin_theta;
-  mat.matrix_[2][2] = cos_theta;
-  mat.matrix_[0][3] = mat.matrix_[1][3] = mat.matrix_[2][3] = 0.0;
-  mat.matrix_[3][0] = mat.matrix_[3][1] = mat.matrix_[3][2] = 0.0;
-  mat.matrix_[3][3] = 1.0;
+  mat_x.matrix_[1][1] = cos_theta;
+  mat_x.matrix_[1][2] = sin_theta;
+  mat_x.matrix_[2][1] = -sin_theta;
+  mat_x.matrix_[2][2] = cos_theta;
 
-  rmat.Multiply(mat);
+  mat.Multiply(mat_x);
 
-  Multiply(rmat);
+  Multiply(mat);
   return *this;
 }
 
 TransformationMatrix& TransformationMatrix::Translate(double tx, double ty) {
-  matrix_[3][0] += tx * matrix_[0][0] + ty * matrix_[1][0];
-  matrix_[3][1] += tx * matrix_[0][1] + ty * matrix_[1][1];
-  matrix_[3][2] += tx * matrix_[0][2] + ty * matrix_[1][2];
-  matrix_[3][3] += tx * matrix_[0][3] + ty * matrix_[1][3];
+  SetCol(3, tx * Col(0) + ty * Col(1) + Col(3));
   return *this;
 }
 
 TransformationMatrix& TransformationMatrix::Translate3d(double tx,
                                                         double ty,
                                                         double tz) {
-  matrix_[3][0] += tx * matrix_[0][0] + ty * matrix_[1][0] + tz * matrix_[2][0];
-  matrix_[3][1] += tx * matrix_[0][1] + ty * matrix_[1][1] + tz * matrix_[2][1];
-  matrix_[3][2] += tx * matrix_[0][2] + ty * matrix_[1][2] + tz * matrix_[2][2];
-  matrix_[3][3] += tx * matrix_[0][3] + ty * matrix_[1][3] + tz * matrix_[2][3];
+  SetCol(3, tx * Col(0) + ty * Col(1) + tz * Col(2) + Col(3));
   return *this;
 }
 
@@ -705,9 +638,10 @@ TransformationMatrix& TransformationMatrix::Skew(double sx, double sy) {
   sy = Deg2rad(sy);
 
   TransformationMatrix mat;
-  mat.matrix_[0][1] =
-      std::tan(sy);  // note that the y shear goes in the first row
-  mat.matrix_[1][0] = std::tan(sx);  // and the x shear in the second row
+  // Note that the y shear goes in the first row.
+  mat.matrix_[0][1] = std::tan(sy);
+  // And the x shear in the second row.
+  mat.matrix_[1][0] = std::tan(sx);
 
   Multiply(mat);
   return *this;
@@ -978,7 +912,7 @@ gfx::QuadF TransformationMatrix::InternalMapQuad(const gfx::QuadF& q) const {
 bool TransformationMatrix::InternalInverse(TransformationMatrix* result) const {
   if (IsIdentityOrTranslation()) {
     // Identity matrix.
-    if (matrix_[3][0] == 0 && matrix_[3][1] == 0 && matrix_[3][2] == 0) {
+    if (All(Col(3) == Double4{0, 0, 0, 1})) {
       if (result)
         result->MakeIdentity();
       return true;
@@ -1124,18 +1058,6 @@ void TransformationMatrix::FlattenTo2d() {
 static inline void BlendFloat(double& from, double to, double progress) {
   if (from != to)
     from = from + (to - from) * progress;
-}
-
-bool TransformationMatrix::Is2dTransform() const {
-  if (!IsFlat())
-    return false;
-
-  // Check perspective.
-  if (matrix_[0][3] != 0 || matrix_[1][3] != 0 || matrix_[2][3] != 0 ||
-      matrix_[3][3] != 1)
-    return false;
-
-  return true;
 }
 
 void TransformationMatrix::Blend(const TransformationMatrix& from,

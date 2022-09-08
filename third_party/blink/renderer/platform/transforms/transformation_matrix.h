@@ -194,12 +194,9 @@ class PLATFORM_EXPORT TransformationMatrix {
   }
 
   bool IsIdentity() const {
-    return matrix_[0][0] == 1 && matrix_[0][1] == 0 && matrix_[0][2] == 0 &&
-           matrix_[0][3] == 0 && matrix_[1][0] == 0 && matrix_[1][1] == 1 &&
-           matrix_[1][2] == 0 && matrix_[1][3] == 0 && matrix_[2][0] == 0 &&
-           matrix_[2][1] == 0 && matrix_[2][2] == 1 && matrix_[2][3] == 0 &&
-           matrix_[3][0] == 0 && matrix_[3][1] == 0 && matrix_[3][2] == 0 &&
-           matrix_[3][3] == 1;
+    return All(
+        (Col(0) == Double4{1, 0, 0, 0}) & (Col(1) == Double4{0, 1, 0, 0}) &
+        (Col(2) == Double4{0, 0, 1, 0}) & (Col(3) == Double4{0, 0, 0, 1}));
   }
 
   // Map a 3D point through the transform, returning a 3D point.
@@ -377,10 +374,8 @@ class PLATFORM_EXPORT TransformationMatrix {
   void Blend(const TransformationMatrix& from, double progress);
   void Blend2D(const TransformationMatrix& from, double progress);
 
-  bool IsAffine() const {
-    return M13() == 0 && M14() == 0 && M23() == 0 && M24() == 0 && M31() == 0 &&
-           M32() == 0 && M33() == 1 && M34() == 0 && M43() == 0 && M44() == 1;
-  }
+  bool IsAffine() const { return IsFlat() && !HasPerspective(); }
+  bool Is2dTransform() const { return IsAffine(); }
 
   // Throw away the non-affine parts of the matrix (lossy!)
   void MakeAffine();
@@ -393,22 +388,8 @@ class PLATFORM_EXPORT TransformationMatrix {
   void FlattenTo2d();
 
   bool operator==(const TransformationMatrix& m2) const {
-    return matrix_[0][0] == m2.matrix_[0][0] &&
-           matrix_[0][1] == m2.matrix_[0][1] &&
-           matrix_[0][2] == m2.matrix_[0][2] &&
-           matrix_[0][3] == m2.matrix_[0][3] &&
-           matrix_[1][0] == m2.matrix_[1][0] &&
-           matrix_[1][1] == m2.matrix_[1][1] &&
-           matrix_[1][2] == m2.matrix_[1][2] &&
-           matrix_[1][3] == m2.matrix_[1][3] &&
-           matrix_[2][0] == m2.matrix_[2][0] &&
-           matrix_[2][1] == m2.matrix_[2][1] &&
-           matrix_[2][2] == m2.matrix_[2][2] &&
-           matrix_[2][3] == m2.matrix_[2][3] &&
-           matrix_[3][0] == m2.matrix_[3][0] &&
-           matrix_[3][1] == m2.matrix_[3][1] &&
-           matrix_[3][2] == m2.matrix_[3][2] &&
-           matrix_[3][3] == m2.matrix_[3][3];
+    return All((Col(0) == m2.Col(0)) & (Col(1) == m2.Col(1)) &
+               (Col(2) == m2.Col(2)) & (Col(3) == m2.Col(3)));
   }
 
   bool operator!=(const TransformationMatrix& other) const {
@@ -429,15 +410,13 @@ class PLATFORM_EXPORT TransformationMatrix {
 
   bool IsFlat() const {
     return matrix_[0][2] == 0.f && matrix_[1][2] == 0.f &&
-           matrix_[2][0] == 0.f && matrix_[2][1] == 0.f &&
-           matrix_[2][2] == 1.f && matrix_[2][3] == 0.f && matrix_[3][2] == 0.f;
+           All(Col(2) == Double4{0, 0, 1, 0}) && matrix_[3][2] == 0.f;
   }
 
   bool IsIdentityOrTranslation() const {
-    return matrix_[0][0] == 1 && matrix_[0][1] == 0 && matrix_[0][2] == 0 &&
-           matrix_[0][3] == 0 && matrix_[1][0] == 0 && matrix_[1][1] == 1 &&
-           matrix_[1][2] == 0 && matrix_[1][3] == 0 && matrix_[2][0] == 0 &&
-           matrix_[2][1] == 0 && matrix_[2][2] == 1 && matrix_[2][3] == 0 &&
+    return All((Col(0) == Double4{1, 0, 0, 0}) &
+               (Col(1) == Double4{0, 1, 0, 0}) &
+               (Col(2) == Double4{0, 0, 1, 0})) &&
            matrix_[3][3] == 1;
   }
 
@@ -448,13 +427,11 @@ class PLATFORM_EXPORT TransformationMatrix {
   bool Is2DProportionalUpscaleAndOr2DTranslation() const {
     if (matrix_[0][0] < 1 || matrix_[0][0] != matrix_[1][1])
       return false;
-    return matrix_[0][1] == 0 && matrix_[0][2] == 0 && matrix_[0][3] == 0 &&
-           matrix_[1][0] == 0 && matrix_[1][2] == 0 && matrix_[1][3] == 0 &&
-           matrix_[2][0] == 0 && matrix_[2][1] == 0 && matrix_[2][2] == 1 &&
-           matrix_[2][3] == 0 && matrix_[3][2] == 0 && matrix_[3][3] == 1;
+    return All((Col(0) == Double4{matrix_[0][0], 0, 0, 0}) &
+               (Col(1) == Double4{0, matrix_[1][1], 0, 0}) &
+               (Col(2) == Double4{0, 0, 1, 0})) &&
+           matrix_[3][2] == 0 && matrix_[3][3] == 1;
   }
-
-  bool Is2dTransform() const;
 
   bool IsInteger2DTranslation() const;
 
@@ -463,8 +440,8 @@ class PLATFORM_EXPORT TransformationMatrix {
   bool Preserves2dAxisAlignment() const;
 
   bool HasPerspective() const {
-    return matrix_[0][3] != 0 || matrix_[1][3] != 0 || matrix_[2][3] != 0 ||
-           matrix_[3][3] != 1;
+    return !All(Double4{matrix_[0][3], matrix_[1][3], matrix_[2][3],
+                        matrix_[3][3]} == Double4{0, 0, 0, 1});
   }
 
   // If this transformation is identity or 2D translation, returns the
