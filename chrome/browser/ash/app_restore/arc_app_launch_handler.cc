@@ -642,13 +642,13 @@ void ArcAppLaunchHandler::LaunchApp(const std::string& app_id,
       proxy->LaunchAppWithIntent(app_id, data_it->second->event_flag.value(),
                                  data_it->second->intent->Clone(),
                                  apps::LaunchSource::kFromFullRestore,
-                                 std::move(window_info));
+                                 std::move(window_info), base::DoNothing());
     } else {
       proxy->LaunchAppWithIntent(
           app_id, data_it->second->event_flag.value(),
           apps::ConvertIntentToMojomIntent(data_it->second->intent),
           apps::mojom::LaunchSource::kFromFullRestore,
-          ConvertWindowInfoToMojomWindowInfo(window_info));
+          ConvertWindowInfoToMojomWindowInfo(window_info), {});
     }
   } else {
     if (base::FeatureList::IsEnabled(apps::kAppServiceLaunchWithoutMojom)) {

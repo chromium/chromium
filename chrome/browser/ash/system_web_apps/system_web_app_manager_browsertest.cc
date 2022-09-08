@@ -230,7 +230,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerBrowserTest,
   proxy->LaunchAppWithIntent(
       GetManager().GetAppIdForSystemApp(GetMockAppType()).value(), ui::EF_NONE,
       std::move(intent), apps::mojom::LaunchSource::kFromAppListGrid,
-      apps::MakeWindowInfo(display::kDefaultDisplayId));
+      apps::MakeWindowInfo(display::kDefaultDisplayId), {});
   navigation_observer.Wait();
 
   histograms.ExpectTotalCount("Apps.DefaultAppLaunch.FromAppListGrid", 1);

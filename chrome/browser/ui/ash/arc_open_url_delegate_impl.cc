@@ -477,10 +477,11 @@ void ArcOpenUrlDelegateImpl::OpenAppWithIntent(
 
   if (base::FeatureList::IsEnabled(apps::kAppServiceLaunchWithoutMojom)) {
     proxy->LaunchAppWithIntent(app_id, event_flags, std::move(intent),
-                               apps::LaunchSource::kFromArc);
+                               apps::LaunchSource::kFromArc, nullptr,
+                               base::DoNothing());
   } else {
-    proxy->LaunchAppWithIntent(app_id, event_flags,
-                               apps::ConvertIntentToMojomIntent(intent),
-                               apps::mojom::LaunchSource::kFromArc);
+    proxy->LaunchAppWithIntent(
+        app_id, event_flags, apps::ConvertIntentToMojomIntent(intent),
+        apps::mojom::LaunchSource::kFromArc, nullptr, {});
   }
 }

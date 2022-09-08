@@ -69,7 +69,7 @@ IN_PROC_BROWSER_TEST_F(WebAppsBrowserTest, LaunchWithIntent) {
   apps::AppServiceProxyFactory::GetForProfile(profile)->LaunchAppWithIntent(
       app_id, event_flags, apps::ConvertIntentToMojomIntent(intent),
       apps::mojom::LaunchSource::kFromSharesheet,
-      apps::MakeWindowInfo(display::kDefaultDisplayId));
+      apps::MakeWindowInfo(display::kDefaultDisplayId), {});
   run_loop.Run();
 }
 
@@ -104,7 +104,7 @@ IN_PROC_BROWSER_TEST_F(WebAppsBrowserTest, IntentWithoutFiles) {
   apps::AppServiceProxyFactory::GetForProfile(profile)->LaunchAppWithIntent(
       app_id, event_flags, apps::ConvertIntentToMojomIntent(intent),
       apps::mojom::LaunchSource::kFromSharesheet,
-      apps::MakeWindowInfo(display::kDefaultDisplayId));
+      apps::MakeWindowInfo(display::kDefaultDisplayId), {});
   run_loop.Run();
 }
 

@@ -119,6 +119,19 @@ class AppServiceProxyAsh : public AppServiceProxyBase,
   void SetArcIsRegistered();
 
   // apps::AppServiceProxyBase overrides:
+  void LaunchAppWithIntent(const std::string& app_id,
+                           int32_t event_flags,
+                           IntentPtr intent,
+                           LaunchSource launch_source,
+                           WindowInfoPtr window_info,
+                           base::OnceCallback<void(bool)> callback) override;
+  void LaunchAppWithIntent(
+      const std::string& app_id,
+      int32_t event_flags,
+      apps::mojom::IntentPtr intent,
+      apps::mojom::LaunchSource launch_source,
+      apps::mojom::WindowInfoPtr window_info,
+      apps::mojom::Publisher::LaunchAppWithIntentCallback callback) override;
   void FlushMojoCallsForTesting() override;
 
   void ReInitializeCrostiniForTesting();

@@ -302,6 +302,32 @@ void AppServiceProxyAsh::SetArcIsRegistered() {
   }
 }
 
+void AppServiceProxyAsh::LaunchAppWithIntent(
+    const std::string& app_id,
+    int32_t event_flags,
+    IntentPtr intent,
+    LaunchSource launch_source,
+    WindowInfoPtr window_info,
+    base::OnceCallback<void(bool)> callback) {
+  // TODO(1359312): Apply DLP checks if possible
+  AppServiceProxyBase::LaunchAppWithIntent(
+      app_id, event_flags, std::move(intent), launch_source,
+      std::move(window_info), std::move(callback));
+}
+
+void AppServiceProxyAsh::LaunchAppWithIntent(
+    const std::string& app_id,
+    int32_t event_flags,
+    apps::mojom::IntentPtr intent,
+    apps::mojom::LaunchSource launch_source,
+    apps::mojom::WindowInfoPtr window_info,
+    apps::mojom::Publisher::LaunchAppWithIntentCallback callback) {
+  // TODO(1359312): Apply DLP checks if possible
+  AppServiceProxyBase::LaunchAppWithIntent(
+      app_id, event_flags, std::move(intent), launch_source,
+      std::move(window_info), std::move(callback));
+}
+
 void AppServiceProxyAsh::FlushMojoCallsForTesting() {
   app_service_mojom_impl_->FlushMojoCallsForTesting();
 

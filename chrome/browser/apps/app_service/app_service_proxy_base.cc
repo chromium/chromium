@@ -498,7 +498,7 @@ void AppServiceProxyBase::LaunchAppWithUrl(
     apps::mojom::LaunchSource launch_source,
     apps::mojom::WindowInfoPtr window_info) {
   LaunchAppWithIntent(app_id, event_flags, apps_util::CreateIntentFromUrl(url),
-                      launch_source, std::move(window_info));
+                      launch_source, std::move(window_info), {});
 }
 
 void AppServiceProxyBase::LaunchAppWithParams(AppLaunchParams&& params,

@@ -398,7 +398,8 @@ void SharesheetService::LaunchApp(const std::u16string& target_name,
         apps::GetEventFlags(WindowOpenDisposition::NEW_WINDOW,
                             /*prefer_container=*/true),
         std::move(intent), apps::LaunchSource::kFromSharesheet,
-        std::make_unique<apps::WindowInfo>(display::kDefaultDisplayId));
+        std::make_unique<apps::WindowInfo>(display::kDefaultDisplayId),
+        base::DoNothing());
   } else {
     app_service_proxy_->LaunchAppWithIntent(
         base::UTF16ToUTF8(target_name),
@@ -406,7 +407,7 @@ void SharesheetService::LaunchApp(const std::u16string& target_name,
                             /*prefer_container=*/true),
         apps::ConvertIntentToMojomIntent(intent),
         apps::mojom::LaunchSource::kFromSharesheet,
-        apps::MakeWindowInfo(display::kDefaultDisplayId));
+        apps::MakeWindowInfo(display::kDefaultDisplayId), {});
   }
 }
 

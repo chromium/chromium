@@ -150,14 +150,17 @@ class AppServiceProxyLacros : public KeyedService,
                            int32_t event_flags,
                            IntentPtr intent,
                            LaunchSource launch_source,
-                           WindowInfoPtr window_info = nullptr);
+                           WindowInfoPtr window_info,
+                           base::OnceCallback<void(bool)> callback);
   // TODO(crbug.com/1253250): Will be removed soon. Please use the non mojom
   // interface.
-  void LaunchAppWithIntent(const std::string& app_id,
-                           int32_t event_flags,
-                           apps::mojom::IntentPtr intent,
-                           apps::mojom::LaunchSource launch_source,
-                           apps::mojom::WindowInfoPtr window_info = nullptr);
+  void LaunchAppWithIntent(
+      const std::string& app_id,
+      int32_t event_flags,
+      apps::mojom::IntentPtr intent,
+      apps::mojom::LaunchSource launch_source,
+      apps::mojom::WindowInfoPtr window_info,
+      apps::mojom::Publisher::LaunchAppWithIntentCallback callback);
 
   // Launches an app for the given |app_id|, passing |url| to the app.
   // |event_flags| provides additional context about the action which launch the

@@ -218,12 +218,12 @@ NoteTakingHelper::LaunchResult LaunchWebAppInternal(const std::string& app_id,
     if (base::FeatureList::IsEnabled(apps::kAppServiceLaunchWithoutMojom)) {
       apps::AppServiceProxyFactory::GetForProfile(profile)->LaunchAppWithIntent(
           app_id, ui::EF_NONE, apps_util::CreateCreateNoteIntent(),
-          apps::LaunchSource::kFromShelf);
+          apps::LaunchSource::kFromShelf, nullptr, base::DoNothing());
     } else {
       apps::AppServiceProxyFactory::GetForProfile(profile)->LaunchAppWithIntent(
           app_id, ui::EF_NONE,
           apps::ConvertIntentToMojomIntent(apps_util::CreateCreateNoteIntent()),
-          apps::mojom::LaunchSource::kFromShelf);
+          apps::mojom::LaunchSource::kFromShelf, nullptr, {});
     }
   } else {
     if (base::FeatureList::IsEnabled(apps::kAppServiceLaunchWithoutMojom)) {
