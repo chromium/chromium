@@ -5,6 +5,7 @@
 #include "base/base_switches.h"
 #include "base/cfi_buildflags.h"
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/process/launch.h"
@@ -81,6 +82,14 @@ class LaunchAsMojoClientBrowserTest : public ContentBrowserTest {
     command_line.AppendSwitchASCII(switches::kUseANGLE,
                                    gl::kANGLEImplementationSwiftShaderName);
 #endif
+
+    const auto& current_command_line = *base::CommandLine::ForCurrentProcess();
+    command_line.AppendSwitchASCII(
+        switches::kEnableFeatures,
+        current_command_line.GetSwitchValueASCII(switches::kEnableFeatures));
+    command_line.AppendSwitchASCII(
+        switches::kDisableFeatures,
+        current_command_line.GetSwitchValueASCII(switches::kDisableFeatures));
     return command_line;
   }
 

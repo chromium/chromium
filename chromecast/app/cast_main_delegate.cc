@@ -34,6 +34,7 @@
 #include "chromecast/utility/cast_content_utility_client.h"
 #include "components/crash/core/app/crash_reporter_client.h"
 #include "components/crash/core/common/crash_key.h"
+#include "content/public/app/initialize_mojo_core.h"
 #include "content/public/browser/browser_main_runner.h"
 #include "content/public/common/content_switches.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
@@ -237,6 +238,10 @@ bool CastMainDelegate::ShouldCreateFeatureList(InvokedIn invoked_in) {
   return absl::holds_alternative<InvokedInChildProcess>(invoked_in);
 }
 
+bool CastMainDelegate::ShouldInitializeMojo(InvokedIn invoked_in) {
+  return ShouldCreateFeatureList(invoked_in);
+}
+
 absl::optional<int> CastMainDelegate::PostEarlyInitialization(
     InvokedIn invoked_in) {
   if (ShouldCreateFeatureList(invoked_in)) {
@@ -283,6 +288,8 @@ absl::optional<int> CastMainDelegate::PostEarlyInitialization(
   ProcessType process_type = use_browser_config ? ProcessType::kCastBrowser
                                                 : ProcessType::kCastService;
   cast_feature_list_creator_->CreatePrefServiceAndFeatureList(process_type);
+
+  content::InitializeMojoCore();
 
   return absl::nullopt;
 }

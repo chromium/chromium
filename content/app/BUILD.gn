@@ -22,6 +22,7 @@ content_app_deps = [
   "//content/public/common:common_sources",
   "//crypto",
   "//mojo/core/embedder",
+  "//mojo/public/cpp/platform",
   "//ppapi/buildflags",
   "//services/tracing/public/cpp",
   "//ui/base",
@@ -98,6 +99,7 @@ source_set("app") {
 
   sources = [
     "content_main.cc",
+    "initialize_mojo_core.cc",
     "mojo/mojo_init.cc",
     "mojo/mojo_init.h",
     "mojo_ipc_support.cc",

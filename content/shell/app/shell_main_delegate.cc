@@ -21,6 +21,7 @@
 #include "build/build_config.h"
 #include "components/crash/core/common/crash_key.h"
 #include "content/common/content_constants_internal.h"
+#include "content/public/app/initialize_mojo_core.h"
 #include "content/public/browser/browser_main_runner.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/main_function_params.h"
@@ -187,6 +188,10 @@ bool ShellMainDelegate::ShouldCreateFeatureList(InvokedIn invoked_in) {
   return absl::holds_alternative<InvokedInChildProcess>(invoked_in);
 }
 
+bool ShellMainDelegate::ShouldInitializeMojo(InvokedIn invoked_in) {
+  return ShouldCreateFeatureList(invoked_in);
+}
+
 void ShellMainDelegate::PreSandboxStartup() {
 #if defined(ARCH_CPU_ARM_FAMILY) && \
     (BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS))
@@ -343,6 +348,9 @@ absl::optional<int> ShellMainDelegate::PostEarlyInitialization(
   if (!ShouldCreateFeatureList(invoked_in)) {
     // Apply field trial testing configuration since content did not.
     browser_client_->CreateFeatureListAndFieldTrials();
+  }
+  if (!ShouldInitializeMojo(invoked_in)) {
+    InitializeMojoCore();
   }
   return absl::nullopt;
 }

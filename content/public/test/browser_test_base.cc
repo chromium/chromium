@@ -602,8 +602,6 @@ void BrowserTestBase::SetUp() {
   absl::optional<int> startup_error = delegate->BasicStartupComplete();
   ASSERT_FALSE(startup_error.has_value());
 
-  InitializeMojo();
-
   // We can only setup startup tracing after mojo is initialized above.
   tracing::EnableStartupTracingIfNeeded();
 

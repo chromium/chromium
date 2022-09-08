@@ -28,6 +28,7 @@
 #include "base/lazy_instance.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/memory/shared_memory_hooks.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/histogram_base.h"
 #include "base/path_service.h"
@@ -71,6 +72,7 @@
 #include "content/common/url_schemes.h"
 #include "content/gpu/in_process_gpu_thread.h"
 #include "content/public/app/content_main_delegate.h"
+#include "content/public/app/initialize_mojo_core.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/tracing_delegate.h"
 #include "content/public/common/content_client.h"
@@ -91,6 +93,7 @@
 #include "media/base/media.h"
 #include "media/media_buildflags.h"
 #include "mojo/core/embedder/embedder.h"
+#include "mojo/public/cpp/base/shared_memory_utils.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
 #include "mojo/public/cpp/system/dynamic_library_support.h"
@@ -312,8 +315,20 @@ pid_t LaunchZygoteHelper(base::CommandLine* cmd_line,
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   // Create the file descriptor for Cros startup data and pass it.
   // This FD will be used to obtain BrowserInitParams in Zygote process.
+  // Note that this requires Mojo, but Mojo cannot be fully initialized this
+  // due to dependencies on base::FeatureList. So we also temporarily initialize
+  // Mojo and then shut it down immediately after preparing the FD. This is
+  // inexpensive, an the features which control Mojo behavior aren't relevant
+  // for this operation.
+  //
+  // TODO(https://crbug.com/1299283): This will need to be changed before
+  // MojoIpcz experimentation can happen on Lacros, as it results in
+  // inconsistent MojoIpcz feature status across Mojo initializations.
+  mojo::core::Init();
   base::ScopedFD cros_startup_fd =
       chromeos::BrowserInitParams::CreateStartupData();
+  mojo::core::ShutDown();
+
   if (cros_startup_fd.is_valid()) {
     constexpr int kStartupDataFD =
         kCrosStartupDataDescriptor + base::GlobalDescriptors::kBaseDescriptor;
@@ -634,15 +649,18 @@ int NO_STACK_PROTECTOR RunZygote(ContentMainDelegate* delegate) {
   main_params.zygote_child = true;
 
   if (delegate->ShouldCreateFeatureList(
-          ContentMainDelegate::InvokedInChildProcess()))
+          ContentMainDelegate::InvokedInChildProcess())) {
     InitializeFieldTrialAndFeatureList();
+  }
+  if (delegate->ShouldInitializeMojo(
+          ContentMainDelegate::InvokedInChildProcess())) {
+    InitializeMojoCore();
+  }
   delegate->PostEarlyInitialization(
       ContentMainDelegate::InvokedInChildProcess());
 
   internal::PartitionAllocSupport::Get()->ReconfigureAfterFeatureListInit(
       process_type);
-
-  mojo::core::InitFeatures();
 
   for (size_t i = 0; i < std::size(kMainFunctions); ++i) {
     if (process_type == kMainFunctions[i].name)
@@ -1013,6 +1031,7 @@ int NO_STACK_PROTECTOR ContentMainRunnerImpl::Run() {
       base::CommandLine::ForCurrentProcess();
   std::string process_type =
       command_line->GetSwitchValueASCII(switches::kProcessType);
+
   // Run this logic on all child processes.
   if (!process_type.empty()) {
     if (process_type != switches::kZygoteProcess) {
@@ -1020,15 +1039,18 @@ int NO_STACK_PROTECTOR ContentMainRunnerImpl::Run() {
       // has been updated.
       CreateChildThreadPool(process_type);
       if (delegate_->ShouldCreateFeatureList(
-              ContentMainDelegate::InvokedInChildProcess()))
+              ContentMainDelegate::InvokedInChildProcess())) {
         InitializeFieldTrialAndFeatureList();
+      }
+      if (delegate_->ShouldInitializeMojo(
+              ContentMainDelegate::InvokedInChildProcess())) {
+        InitializeMojoCore();
+      }
       delegate_->PostEarlyInitialization(
           ContentMainDelegate::InvokedInChildProcess());
 
       internal::PartitionAllocSupport::Get()->ReconfigureAfterFeatureListInit(
           process_type);
-
-      mojo::core::InitFeatures();
     }
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
@@ -1089,7 +1111,10 @@ int ContentMainRunnerImpl::RunBrowser(MainFunctionParams main_params,
           SetUpFieldTrialsAndFeatureList().release();
       ANNOTATE_LEAKING_OBJECT_PTR(leaked_field_trial_list);
       std::ignore = leaked_field_trial_list;
-      mojo::core::InitFeatures();
+    }
+
+    if (delegate_->ShouldInitializeMojo(invoked_in_browser)) {
+      InitializeMojoCore();
     }
 
     // Create and start the ThreadPool early to allow the rest of the startup

@@ -73,6 +73,10 @@ bool ContentMainDelegate::ShouldCreateFeatureList(InvokedIn invoked_in) {
   return true;
 }
 
+bool ContentMainDelegate::ShouldInitializeMojo(InvokedIn invoked_in) {
+  return true;
+}
+
 variations::VariationsIdsProvider*
 ContentMainDelegate::CreateVariationsIdsProvider() {
   return nullptr;

@@ -23,6 +23,7 @@
 #include "components/startup_metric_utils/browser/startup_metric_utils.h"
 #include "components/translate/core/common/translate_util.h"
 #include "components/variations/variations_ids_provider.h"
+#include "content/public/app/initialize_mojo_core.h"
 #include "content/public/browser/browser_main_runner.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
@@ -250,6 +251,10 @@ bool ContentMainDelegateImpl::ShouldCreateFeatureList(InvokedIn invoked_in) {
 #endif
 }
 
+bool ContentMainDelegateImpl::ShouldInitializeMojo(InvokedIn invoked_in) {
+  return ShouldCreateFeatureList(invoked_in);
+}
+
 variations::VariationsIdsProvider*
 ContentMainDelegateImpl::CreateVariationsIdsProvider() {
   // As the embedder supplies the set of ids, the signed-in state does not make
@@ -304,8 +309,14 @@ void ContentMainDelegateImpl::PreSandboxStartup() {
 
 absl::optional<int> ContentMainDelegateImpl::PostEarlyInitialization(
     InvokedIn invoked_in) {
-  if (absl::holds_alternative<InvokedInBrowserProcess>(invoked_in))
+  if (absl::holds_alternative<InvokedInBrowserProcess>(invoked_in)) {
     browser_client_->CreateFeatureListAndFieldTrials();
+  }
+  if (!ShouldInitializeMojo(invoked_in)) {
+    // Since we've told Content not to initialize Mojo on its own, we must do it
+    // here manually.
+    content::InitializeMojoCore();
+  }
   return absl::nullopt;
 }
 

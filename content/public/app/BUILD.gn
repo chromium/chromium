@@ -32,6 +32,7 @@ public_app_shared_sources = [
   "content_main_delegate.cc",
   "content_main_delegate.h",
   "content_main_runner.h",
+  "initialize_mojo_core.h",
 ]
 
 if (is_win) {

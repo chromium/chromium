@@ -26,6 +26,7 @@
 #include "content/test/test_blink_web_unit_test_support.h"
 #include "content/test/test_content_browser_client.h"
 #include "content/test/test_content_client.h"
+#include "mojo/core/embedder/embedder.h"
 #include "services/network/test/test_network_connection_tracker.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/web/blink.h"
@@ -140,6 +141,7 @@ UnitTestTestSuite::UnitTestTestSuite(
   // Do this here even though TestBlinkWebUnitTestSupport calls it since a
   // multi process unit test won't get to create TestBlinkWebUnitTestSupport.
   // This is safe to call multiple times.
+  mojo::core::InitFeatures();
   InitializeMojo();
 
 #if BUILDFLAG(IS_FUCHSIA)

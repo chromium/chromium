@@ -70,6 +70,7 @@
 #include "components/services/heap_profiling/public/cpp/profiling_client.h"
 #include "components/startup_metric_utils/browser/startup_metric_utils.h"
 #include "components/version_info/version_info.h"
+#include "content/public/app/initialize_mojo_core.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_constants.h"
 #include "content/public/common/content_paths.h"
@@ -699,7 +700,19 @@ absl::optional<int> ChromeMainDelegate::PostEarlyInitialization(
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
   // Initialize D-Bus for Lacros.
   chromeos::LacrosInitializeDBus();
+#endif
 
+  // The DBus initialization above is needed for FeatureList creation here;
+  // features are needed for Mojo initialization; and Mojo initialization is
+  // needed for LacrosService initialization below.
+  ChromeFeatureListCreator* chrome_feature_list_creator =
+      chrome_content_browser_client_->startup_data()
+          ->chrome_feature_list_creator();
+  chrome_feature_list_creator->CreateFeatureList();
+
+  content::InitializeMojoCore();
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
   // LacrosService instance needs the sequence of the main thread,
   // and needs to be created earlier than incoming Mojo invitation handling.
   // This also needs ThreadPool sequences to post some tasks internally.
@@ -736,12 +749,8 @@ absl::optional<int> ChromeMainDelegate::PostEarlyInitialization(
       }
     }
   }
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
-  ChromeFeatureListCreator* chrome_feature_list_creator =
-      chrome_content_browser_client_->startup_data()
-          ->chrome_feature_list_creator();
-  chrome_feature_list_creator->CreateFeatureList();
   CommonEarlyInitialization();
 
   // Initializes the resource bundle and determines the locale.
@@ -789,6 +798,10 @@ bool ChromeMainDelegate::ShouldCreateFeatureList(InvokedIn invoked_in) {
   // In the browser process Chrome creates the FeatureList, so content should
   // not.
   return absl::holds_alternative<InvokedInChildProcess>(invoked_in);
+}
+
+bool ChromeMainDelegate::ShouldInitializeMojo(InvokedIn invoked_in) {
+  return ShouldCreateFeatureList(invoked_in);
 }
 
 void ChromeMainDelegate::CommonEarlyInitialization() {

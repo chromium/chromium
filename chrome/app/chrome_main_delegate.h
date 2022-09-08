@@ -69,6 +69,7 @@ class ChromeMainDelegate : public content::ContentMainDelegate {
   absl::optional<int> PreBrowserMain() override;
   absl::optional<int> PostEarlyInitialization(InvokedIn invoked_in) override;
   bool ShouldCreateFeatureList(InvokedIn invoked_in) override;
+  bool ShouldInitializeMojo(InvokedIn invoked_in) override;
 #if BUILDFLAG(IS_WIN)
   bool ShouldHandleConsoleControlEvents() override;
 #endif

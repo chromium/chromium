@@ -34,6 +34,7 @@ class ShellMainDelegate : public ContentMainDelegate {
   // ContentMainDelegate implementation:
   absl::optional<int> BasicStartupComplete() override;
   bool ShouldCreateFeatureList(InvokedIn invoked_in) override;
+  bool ShouldInitializeMojo(InvokedIn invoked_in) override;
   void PreSandboxStartup() override;
   absl::variant<int, MainFunctionParams> RunProcess(
       const std::string& process_type,

@@ -30,6 +30,7 @@ class ContentMainDelegateImpl : public content::ContentMainDelegate {
   // ContentMainDelegate implementation:
   absl::optional<int> BasicStartupComplete() override;
   bool ShouldCreateFeatureList(InvokedIn invoked_in) override;
+  bool ShouldInitializeMojo(InvokedIn invoked_in) override;
   variations::VariationsIdsProvider* CreateVariationsIdsProvider() override;
   void PreSandboxStartup() override;
   absl::optional<int> PostEarlyInitialization(InvokedIn invoked_in) override;
