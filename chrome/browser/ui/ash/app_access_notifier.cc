@@ -40,8 +40,10 @@ apps::AppCapabilityAccessCache* GetAppCapabilityAccessCache(
 
 apps::AppRegistryCache* GetActiveUserAppRegistryCache() {
   Profile* profile = ProfileManager::GetActiveUserProfile();
-  if (!profile)
+  if (!profile ||
+      !apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile)) {
     return nullptr;
+  }
 
   apps::AppServiceProxy* proxy =
       apps::AppServiceProxyFactory::GetForProfile(profile);
@@ -77,8 +79,11 @@ void LaunchApp(const std::string& app_id) {
 // Launch the native settings page of the app with `app_id`.
 void LaunchAppSettings(const std::string& app_id) {
   Profile* profile = ProfileManager::GetActiveUserProfile();
-  if (!profile)
+  if (!profile ||
+      !apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile)) {
     return;
+  }
+
   apps::AppServiceProxyFactory::GetForProfile(profile)->OpenNativeSettings(
       app_id);
 }
