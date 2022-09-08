@@ -300,6 +300,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kTabGroupsContinuationAndroid,
     &kTabGroupsUiImprovementsAndroid,
     &kTabGroupsForTablets,
+    &kDiscoverFeedMultiColumn,
     &kTabGridLayoutAndroid,
     &kTabReparenting,
     &kTabSelectionEditorV2,
@@ -864,6 +865,9 @@ const base::Feature kTabSelectionEditorV2{"TabSelectionEditorV2",
 
 const base::Feature kTabStripImprovements{"TabStripImprovements",
                                           base::FEATURE_ENABLED_BY_DEFAULT};
+
+const base::Feature kDiscoverFeedMultiColumn{"DiscoverFeedMultiColumn",
+                                             base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kTabSwitcherOnReturn{"TabSwitcherOnReturn",
                                          base::FEATURE_DISABLED_BY_DEFAULT};

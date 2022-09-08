@@ -6145,6 +6145,11 @@ const FeatureEntry kFeatureEntries[] = {
                                     kTabStripImprovementsTabWidthVariations,
                                     "TabStripImprovementsAndroid")},
 
+    {"enable-discover-multi-column",
+     flag_descriptions::kDiscoverFeedMultiColumnAndroidName,
+     flag_descriptions::kDiscoverFeedMultiColumnAndroidDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kDiscoverFeedMultiColumn)},
+
     {"enable-conditional-tabstrip",
      flag_descriptions::kConditionalTabStripAndroidName,
      flag_descriptions::kConditionalTabStripAndroidDescription, kOsAndroid,

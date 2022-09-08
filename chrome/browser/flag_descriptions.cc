@@ -4027,6 +4027,12 @@ const char kTabStripImprovementsAndroidName[] =
 const char kTabStripImprovementsAndroidDescription[] =
     "Enables scrollable tab strip with tab group indicators.";
 
+const char kDiscoverFeedMultiColumnAndroidName[] =
+    "Multi-column Discover feed Android.";
+const char kDiscoverFeedMultiColumnAndroidDescription[] =
+    "Enabled single or multi-column Discover feed based on screen width on "
+    "Android.";
+
 const char kTouchDragAndContextMenuName[] =
     "Simultaneous touch drag and context menu";
 const char kTouchDragAndContextMenuDescription[] =

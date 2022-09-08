@@ -56342,6 +56342,7 @@ from previous Chrome versions.
   <int value="-2009172938" label="DragToPinTabs:disabled"/>
   <int value="-2008272679" label="disable-webrtc-hw-encoding"/>
   <int value="-2007947679" label="OmniboxMostVisitedTilesOnSrp:disabled"/>
+  <int value="-2007377632" label="DiscoverFeedMultiColumn:enabled"/>
   <int value="-2005089558" label="BackgroundVideoTrackOptimization:disabled"/>
   <int value="-2004882388" label="AutofillPruneSuggestions:enabled"/>
   <int value="-2004231189" label="AppNotificationStatusMessaging:disabled"/>
@@ -61997,6 +61998,7 @@ from previous Chrome versions.
   <int value="1451146739"
       label="CellularBypassESimInstallationConnectivityCheck:disabled"/>
   <int value="1452546183" label="PwaPersistentNotification:enabled"/>
+  <int value="1453393588" label="DiscoverFeedMultiColumn:disabled"/>
   <int value="1454006695" label="BlinkHeapUnifiedGarbageCollection:disabled"/>
   <int value="1454028829" label="EnhancedProtectionPromoCard:disabled"/>
   <int value="1454143461" label="CaptureThumbnailOnNavigatingAway:disabled"/>
