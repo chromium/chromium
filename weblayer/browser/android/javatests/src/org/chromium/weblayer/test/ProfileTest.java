@@ -17,6 +17,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.CallbackHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.weblayer.Callback;
 import org.chromium.weblayer.CookieManager;
@@ -144,6 +145,7 @@ public class ProfileTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "see crbug.com/1359894")
     public void testEnumerateAllProfileNames() throws Exception {
         final String profileName = "TestEnumerateAllProfileNames";
         final InstrumentationActivity activity = mActivityTestRule.launchWithProfile(profileName);
@@ -182,6 +184,7 @@ public class ProfileTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "see crbug.com/1359894")
     public void testReuseProfile() throws Exception {
         final String profileName = "ReusedProfile";
         final Uri uri = Uri.parse("https://foo.bar");
