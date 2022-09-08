@@ -1624,7 +1624,6 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
         'mac10.14-blink-rel-dummy',
         'mac10.15-blink-rel-dummy',
         'mac11.0-blink-rel-dummy',
-        'mac11.0.arm64-blink-rel-dummy',
     ]
 
   def get_internal_waterfalls(self):
