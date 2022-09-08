@@ -701,12 +701,6 @@
     ]
   },
   {
-    "prefix": "weakrefs",
-    "platforms": ["Linux", "Mac", "Win"],
-    "bases": [ "js/weakrefs" ],
-    "args": [ "--js-flags=--harmony-weak-refs" ]
-  },
-  {
     "prefix": "offsetparent-old-behavior",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [

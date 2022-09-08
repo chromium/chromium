@@ -1713,10 +1713,6 @@ crbug.com/1085129 virtual/force-eager/external/wpt/measure-memory/idlharness.win
 crbug.com/1207146 virtual/force-eager/external/wpt/measure-memory/service-worker.https.any.serviceworker.html [ Skip ]
 crbug.com/1207146 virtual/force-eager/external/wpt/measure-memory/shared-worker.https.any.sharedworker.html [ Skip ]
 
-# WeakRefs are under development and run in a virtual test suite
-crbug.com/1016767 js/weakrefs/* [ Skip ]
-virtual/weakrefs/js/weakrefs/* [ Pass ]
-
 # The Wasm code cache test requires access to V8 internals, so only the
 # virtual test should be run.
 http/tests/wasm/caching/code-cache.html [ Skip ]
