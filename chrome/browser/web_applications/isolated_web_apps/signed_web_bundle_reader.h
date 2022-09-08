@@ -149,17 +149,15 @@ class SignedWebBundleReader {
       IntegrityBlockReadResultCallback integrity_block_result_callback,
       ReadErrorCallback read_error_callback);
 
-  void ReadIntegrityBlock(
+  void OnFileOpened(
       IntegrityBlockReadResultCallback integrity_block_result_callback,
-      ReadErrorCallback read_error_callback);
+      ReadErrorCallback read_error_callback,
+      std::unique_ptr<base::File> file);
 
-  void OpenFile(
+  void OnFileDuplicated(
       IntegrityBlockReadResultCallback integrity_block_result_callback,
-      ReadErrorCallback read_error_callback);
-
-  void SetFile(IntegrityBlockReadResultCallback integrity_block_result_callback,
-               ReadErrorCallback read_error_callback,
-               base::File file);
+      ReadErrorCallback read_error_callback,
+      base::File file);
 
   void OnIntegrityBlockParsed(
       IntegrityBlockReadResultCallback integrity_block_result_callback,

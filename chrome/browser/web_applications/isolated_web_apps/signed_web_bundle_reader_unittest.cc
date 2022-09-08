@@ -356,20 +356,38 @@ TEST_F(SignedWebBundleReaderTest, ReadResponseWithParserDisconnect) {
   EXPECT_FALSE(parse_error.has_value());
   EXPECT_EQ(reader->GetState(), SignedWebBundleReader::State::kInitialized);
 
-  SimulateAndWaitForParserDisconnect(*reader.get());
-
   network::ResourceRequest resource_request;
   resource_request.url = metadata_->primary_url;
 
-  auto response = ReadAndFulfillResponse(
-      *reader.get(), resource_request,
-      metadata_->requests[metadata_->primary_url]->Clone(), response_->Clone());
-  EXPECT_TRUE(response.has_value()) << response.error()->message;
-  EXPECT_EQ((*response)->response_code, 200);
-  EXPECT_EQ((*response)->payload_offset, response_->payload_offset);
-  EXPECT_EQ((*response)->payload_length, response_->payload_length);
+  SimulateAndWaitForParserDisconnect(*reader.get());
+  {
+    auto response = ReadAndFulfillResponse(
+        *reader.get(), resource_request,
+        metadata_->requests[metadata_->primary_url]->Clone(),
+        response_->Clone());
+    EXPECT_TRUE(response.has_value()) << response.error()->message;
+    EXPECT_EQ((*response)->response_code, 200);
+    EXPECT_EQ((*response)->payload_offset, response_->payload_offset);
+    EXPECT_EQ((*response)->payload_length, response_->payload_length);
+  }
 
   EXPECT_EQ(parser_factory_->GetParserCreationCount(), 2);
+
+  // Simulate another disconnect to verify that the reader can recover from
+  // multiple disconnects over the course of its lifetime.
+  SimulateAndWaitForParserDisconnect(*reader.get());
+  {
+    auto response = ReadAndFulfillResponse(
+        *reader.get(), resource_request,
+        metadata_->requests[metadata_->primary_url]->Clone(),
+        response_->Clone());
+    EXPECT_TRUE(response.has_value()) << response.error()->message;
+    EXPECT_EQ((*response)->response_code, 200);
+    EXPECT_EQ((*response)->payload_offset, response_->payload_offset);
+    EXPECT_EQ((*response)->payload_length, response_->payload_length);
+  }
+
+  EXPECT_EQ(parser_factory_->GetParserCreationCount(), 3);
 }
 
 TEST_F(SignedWebBundleReaderTest,

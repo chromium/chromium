@@ -401,7 +401,7 @@ IN_PROC_BROWSER_TEST_F(WebBundleTrustableFileNotFoundBrowserTest,
       ExpectNavigationFailureAndReturnConsoleMessage(shell()->web_contents(),
                                                      test_data_url());
 
-  EXPECT_EQ("Failed to read metadata of Web Bundle file: FILE_ERROR_FAILED",
+  EXPECT_EQ("Failed to read metadata of Web Bundle file: FILE_ERROR_NOT_FOUND",
             console_message);
 }
 }  // namespace content

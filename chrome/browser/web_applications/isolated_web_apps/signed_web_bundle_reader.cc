@@ -13,6 +13,8 @@
 #include "base/check_op.h"
 #include "base/memory/ptr_util.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom.h"
 #include "mojo/public/cpp/system/data_pipe_producer.h"
@@ -47,47 +49,54 @@ SignedWebBundleReader::CreateAndStartReading(
 void SignedWebBundleReader::Initialize(
     IntegrityBlockReadResultCallback integrity_block_result_callback,
     ReadErrorCallback read_error_callback) {
-  CHECK_EQ(state_, State::kInitializing);
-
-  parser_ = std::make_unique<data_decoder::SafeWebBundleParser>();
-  file_ = base::MakeRefCounted<web_package::SharedFile>(base::BindOnce(
-      [](const base::FilePath& file_path) -> std::unique_ptr<base::File> {
-        return std::make_unique<base::File>(
-            file_path, base::File::FLAG_OPEN | base::File::FLAG_READ);
-      },
-      web_bundle_path_));
-
-  ReadIntegrityBlock(std::move(integrity_block_result_callback),
-                     std::move(read_error_callback));
-}
-
-void SignedWebBundleReader::ReadIntegrityBlock(
-    IntegrityBlockReadResultCallback integrity_block_result_callback,
-    ReadErrorCallback read_error_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK_EQ(state_, State::kInitializing);
 
+  parser_ = std::make_unique<data_decoder::SafeWebBundleParser>();
+
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock()},
+      base::BindOnce(
+          [](const base::FilePath& file_path) -> std::unique_ptr<base::File> {
+            return std::make_unique<base::File>(
+                file_path, base::File::FLAG_OPEN | base::File::FLAG_READ);
+          },
+          web_bundle_path_),
+      base::BindOnce(&SignedWebBundleReader::OnFileOpened,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     std::move(integrity_block_result_callback),
+                     std::move(read_error_callback)));
+}
+
+void SignedWebBundleReader::OnFileOpened(
+    IntegrityBlockReadResultCallback integrity_block_result_callback,
+    ReadErrorCallback read_error_callback,
+    std::unique_ptr<base::File> file) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK_EQ(state_, State::kInitializing);
+
+  if (!file->IsValid()) {
+    FulfillWithError(
+        std::move(read_error_callback),
+        web_package::mojom::BundleIntegrityBlockParseError::New(
+            web_package::mojom::BundleParseErrorType::kParserInternalError,
+            base::File::ErrorToString(file->error_details())));
+    return;
+  }
+
+  file_ = base::MakeRefCounted<web_package::SharedFile>(std::move(file));
   file_->DuplicateFile(base::BindOnce(
-      &SignedWebBundleReader::SetFile, weak_ptr_factory_.GetWeakPtr(),
+      &SignedWebBundleReader::OnFileDuplicated, weak_ptr_factory_.GetWeakPtr(),
       std::move(integrity_block_result_callback),
       std::move(read_error_callback)));
 }
 
-void SignedWebBundleReader::SetFile(
+void SignedWebBundleReader::OnFileDuplicated(
     IntegrityBlockReadResultCallback integrity_block_result_callback,
     ReadErrorCallback read_error_callback,
     base::File file) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK_EQ(state_, State::kInitializing);
-
-  if (!file.IsValid()) {
-    FulfillWithError(
-        std::move(read_error_callback),
-        web_package::mojom::BundleIntegrityBlockParseError::New(
-            web_package::mojom::BundleParseErrorType::kParserInternalError,
-            "Unable to open file."));
-    return;
-  }
 
   base::File::Error error = parser_->OpenFile(std::move(file));
   if (error != base::File::FILE_OK) {

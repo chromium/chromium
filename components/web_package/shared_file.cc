@@ -13,23 +13,19 @@
 
 namespace web_package {
 
-SharedFile::SharedFile(
-    base::OnceCallback<std::unique_ptr<base::File>()> open_file_callback) {
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::MayBlock()}, std::move(open_file_callback),
-      base::BindOnce(&SharedFile::SetFile, base::RetainedRef(this)));
-}
+SharedFile::SharedFile(std::unique_ptr<base::File> file)
+    : task_runner_(
+          base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()})),
+      file_(std::move(file)) {}
 
 void SharedFile::DuplicateFile(base::OnceCallback<void(base::File)> callback) {
-  // Basically this interface expects this method is called at most once. Have
-  // a DCHECK for the case that does not work for a clear reason, just in case.
-  // The call site also have another DCHECK for external callers not to cause
-  // such problematic cases.
-  DCHECK(duplicate_callback_.is_null());
-  duplicate_callback_ = std::move(callback);
-
-  if (file_)
-    SetFile(std::move(file_));
+  DCHECK(file_);
+  task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(
+          [](base::File* file) -> base::File { return file->Duplicate(); },
+          file_.get()),
+      std::move(callback));
 }
 
 base::File* SharedFile::operator->() {
@@ -38,26 +34,13 @@ base::File* SharedFile::operator->() {
 }
 
 SharedFile::~SharedFile() {
-  // Move the last reference to |file_| that leads an internal blocking call
+  // Move the last reference to `file_` whose destructor leads to blocking call
   // that is not permitted here.
-  base::ThreadPool::PostTask(
-      FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
-      base::BindOnce([](std::unique_ptr<base::File> file) {},
-                     std::move(file_)));
-}
-
-void SharedFile::SetFile(std::unique_ptr<base::File> file) {
-  file_ = std::move(file);
-
-  if (duplicate_callback_.is_null())
-    return;
-
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::MayBlock()},
-      base::BindOnce(
-          [](base::File* file) -> base::File { return file->Duplicate(); },
-          file_.get()),
-      std::move(duplicate_callback_));
+  // It is important that this runs on the same `base::SequencedTaskRunner` that
+  // the callback scheduled in `DuplicateFile` runs on. Otherwise deleting the
+  // file might lead to a UAF inside the file duplication callback if that one
+  // happened to run after the deletion of the file.
+  task_runner_->DeleteSoon(FROM_HERE, std::move(file_));
 }
 
 std::unique_ptr<SharedFile::SharedFileDataSource> SharedFile::CreateDataSource(

@@ -9,25 +9,27 @@
 
 #include "base/callback.h"
 #include "base/files/file.h"
-#include "base/files/file_path.h"
 #include "base/memory/ref_counted.h"
+#include "base/task/sequenced_task_runner.h"
 #include "mojo/public/cpp/system/data_pipe_producer.h"
 
 namespace web_package {
 
-// A simple wrapper class to share a single base::File instance among multiple
-// SharedFileDataSource instances.
+// A simple wrapper class to share a single `base::File` instance among multiple
+// `SharedFile::SharedFileDataSource` instances.
 class SharedFile final : public base::RefCountedThreadSafe<SharedFile> {
  public:
-  // The callback passed to the constructor will run on a thread that allows
-  // blocking disk IO.
-  explicit SharedFile(
-      base::OnceCallback<std::unique_ptr<base::File>()> open_file_callback);
+  // The file passed to this method must have been opened for reading.
+  explicit SharedFile(std::unique_ptr<base::File> file);
 
   SharedFile(const SharedFile&) = delete;
   SharedFile& operator=(const SharedFile&) = delete;
 
+  // Duplicate the underlying `base::File`. This is only needed for APIs that
+  // require a `base::File` and cannot use a `SharedFile`.
   void DuplicateFile(base::OnceCallback<void(base::File)> callback);
+
+  // Allow access to the underlying instance of `base::File`.
   base::File* operator->();
 
   class SharedFileDataSource final : public mojo::DataPipeProducer::DataSource {
@@ -42,8 +44,8 @@ class SharedFile final : public base::RefCountedThreadSafe<SharedFile> {
     ~SharedFileDataSource() override;
 
    private:
-    // Implements mojo::DataPipeProducer::DataSource. Following methods are
-    // called on a blockable sequenced task runner.
+    // Implements `mojo::DataPipeProducer::DataSource`. The following methods
+    // are called on a blockable sequenced task runner.
     uint64_t GetLength() const override;
     ReadResult Read(uint64_t offset, base::span<char> buffer) override;
 
@@ -60,11 +62,8 @@ class SharedFile final : public base::RefCountedThreadSafe<SharedFile> {
   friend class base::RefCountedThreadSafe<SharedFile>;
   ~SharedFile();
 
-  void SetFile(std::unique_ptr<base::File> file);
-
-  base::FilePath file_path_;
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
   std::unique_ptr<base::File> file_;
-  base::OnceCallback<void(base::File)> duplicate_callback_;
 };
 
 }  // namespace web_package

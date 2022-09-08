@@ -20,11 +20,7 @@ namespace content {
 
 WebBundleReader::WebBundleReader(std::unique_ptr<WebBundleSource> source)
     : source_(std::move(source)),
-      parser_(std::make_unique<data_decoder::SafeWebBundleParser>()),
-      file_(base::MakeRefCounted<web_package::SharedFile>(base::BindOnce(
-          [](std::unique_ptr<WebBundleSource> source)
-              -> std::unique_ptr<base::File> { return source->OpenFile(); },
-          source_->Clone()))) {
+      parser_(std::make_unique<data_decoder::SafeWebBundleParser>()) {
   DCHECK(source_->is_trusted_file() || source_->is_file());
 }
 
@@ -56,8 +52,15 @@ void WebBundleReader::ReadMetadata(MetadataCallback callback) {
 
   if (!blob_data_source_) {
     DCHECK(source_->is_trusted_file() || source_->is_file());
-    file_->DuplicateFile(base::BindOnce(&WebBundleReader::ReadMetadataInternal,
-                                        this, std::move(callback)));
+
+    base::ThreadPool::PostTaskAndReplyWithResult(
+        FROM_HERE, {base::MayBlock()},
+        base::BindOnce(
+            [](std::unique_ptr<WebBundleSource> source)
+                -> std::unique_ptr<base::File> { return source->OpenFile(); },
+            source_->Clone()),
+        base::BindOnce(&WebBundleReader::OnFileOpened, this,
+                       std::move(callback)));
     return;
   }
   DCHECK(source_->is_network());
@@ -224,8 +227,28 @@ const WebBundleSource& WebBundleReader::source() const {
   return *source_;
 }
 
-void WebBundleReader::ReadMetadataInternal(MetadataCallback callback,
-                                           base::File file) {
+void WebBundleReader::OnFileOpened(MetadataCallback callback,
+                                   std::unique_ptr<base::File> file) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(source_->is_trusted_file() || source_->is_file());
+  if (!file->IsValid()) {
+    GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            std::move(callback),
+            web_package::mojom::BundleMetadataParseError::New(
+                web_package::mojom::BundleParseErrorType::kParserInternalError,
+                base::File::ErrorToString(file->error_details()))));
+    return;
+  }
+  file_ = base::MakeRefCounted<web_package::SharedFile>(std::move(file));
+  file_->DuplicateFile(base::BindOnce(&WebBundleReader::OnFileDuplicated, this,
+                                      std::move(callback)));
+}
+
+void WebBundleReader::OnFileDuplicated(MetadataCallback callback,
+                                       base::File file) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(source_->is_trusted_file() || source_->is_file());
   base::File::Error error = parser_->OpenFile(std::move(file));
   if (base::File::FILE_OK != error) {
