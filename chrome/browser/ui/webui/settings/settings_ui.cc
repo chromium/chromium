@@ -82,6 +82,10 @@
 #include "crypto/crypto_buildflags.h"
 #include "printing/buildflags/buildflags.h"
 
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#include "chrome/grit/chrome_unscaled_resources.h"
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+
 #if BUILDFLAG(IS_WIN)
 #include "chrome/browser/safe_browsing/chrome_cleaner/chrome_cleaner_controller_win.h"
 #include "chrome/browser/safe_browsing/chrome_cleaner/srt_field_trial_win.h"
@@ -298,6 +302,11 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
       "enableAutomaticPasswordChangeInSettings",
       base::FeatureList::IsEnabled(
           password_manager::features::kPasswordChangeInSettings));
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  html_source->AddResourcePath("images/google_assistant.svg",
+                               IDR_ASSISTANT_LOGO_MONOCHROME);
+#endif
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   html_source->AddBoolean(

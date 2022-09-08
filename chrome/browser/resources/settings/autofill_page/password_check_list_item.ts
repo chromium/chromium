@@ -129,12 +129,20 @@ export class PasswordCheckListItemElement extends
   private onChangePasswordClick_() {
     this.fire_('change-password-clicked', {id: this.item.id});
 
-    assert(this.item.changePasswordUrl);
-    OpenWindowProxyImpl.getInstance().openURL(this.item.changePasswordUrl);
-    PasswordManagerImpl.getInstance().recordChangePasswordFlowStarted(
-        this.item, /*is_manual_flow=*/ true);
-    PasswordManagerImpl.getInstance().recordPasswordCheckInteraction(
-        PasswordCheckInteraction.CHANGE_PASSWORD);
+    if (this.item.hasStartableScript) {
+      // TODO(crbug.com/1340073): Consider removing element on receiving result.
+      this.passwordManager_.startAutomatedPasswordChange(this.item);
+    } else {
+      assert(this.item.changePasswordUrl);
+      OpenWindowProxyImpl.getInstance().openURL(this.item.changePasswordUrl);
+    }
+
+    this.passwordManager_.recordPasswordCheckInteraction(
+        this.item.hasStartableScript ?
+            PasswordCheckInteraction.CHANGE_PASSWORD_AUTOMATICALLY :
+            PasswordCheckInteraction.CHANGE_PASSWORD);
+    this.passwordManager_.recordChangePasswordFlowStarted(
+        this.item, /*is_manual_flow=*/ !this.item.hasStartableScript);
   }
 
   private onMoreClick_(event: Event) {
@@ -165,6 +173,10 @@ export class PasswordCheckListItemElement extends
     }
     // Weak CTA, non-white-icon.
     return 'icon-weak-cta';
+  }
+
+  private getIconName_(): string {
+    return this.item.hasStartableScript ? '' : 'cr:open-in-new';
   }
 
   private computePassword_(): string {

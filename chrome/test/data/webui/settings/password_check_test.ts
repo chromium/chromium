@@ -535,14 +535,80 @@ suite('PasswordsCheckSection', function() {
         /*url*/ 'one.com', /*username*/ 'test4',
         /*type*/ CompromiseType.LEAKED);
     const passwordCheckListItem = createLeakedPasswordItem(password);
-    passwordCheckListItem.shadowRoot!
-        .querySelector<HTMLElement>('#changePasswordButton')!.click();
+    const button = passwordCheckListItem.shadowRoot!.querySelector<HTMLElement>(
+        '#changePasswordButton');
+    assertTrue(!!button);
+    button.click();
 
     const url = await testOpenWindowProxy.whenCalled('openURL');
     const interaction =
         await passwordManager.whenCalled('recordPasswordCheckInteraction');
     assertEquals('http://one.com/', url);
     assertEquals(PasswordCheckInteraction.CHANGE_PASSWORD, interaction);
+  });
+
+  // Verify that a click on "Change password" starts an Automatic Password
+  // Change flow.
+  test(
+      'changePasswordOpensAutomaticPasswordChangeAndRecordsAction',
+      async function() {
+        const password = makeCompromisedCredential(
+            /*url*/ 'one.com', /*username*/ 'test4',
+            /*type*/ CompromiseType.LEAKED);
+        password.hasStartableScript = true;
+        const passwordCheckListItem = createLeakedPasswordItem(password);
+        const button =
+            passwordCheckListItem.shadowRoot!.querySelector<HTMLElement>(
+                '#changePasswordButton');
+        assertTrue(!!button);
+        button.click();
+
+        const credentialApc =
+            await passwordManager.whenCalled('startAutomatedPasswordChange');
+        assertEquals(credentialApc, password);
+        const interaction =
+            await passwordManager.whenCalled('recordPasswordCheckInteraction');
+        assertEquals(
+            PasswordCheckInteraction.CHANGE_PASSWORD_AUTOMATICALLY,
+            interaction);
+      });
+
+  // Verify that elements without a startable script have the correct icon.
+  test('iconIsCorrectForPasswordWithoutScript', async function() {
+    const password = makeCompromisedCredential(
+        /*url*/ 'one.com', /*username*/ 'test4',
+        /*type*/ CompromiseType.LEAKED);
+    password.hasStartableScript = false;
+    const passwordCheckListItem = createLeakedPasswordItem(password);
+
+    const manualChangeIcon =
+        passwordCheckListItem.shadowRoot!.querySelector<HTMLElement>(
+            '#change-password-link-icon');
+    assertTrue(!!manualChangeIcon);
+
+    const automatedChangeIcon =
+        passwordCheckListItem.shadowRoot!.querySelector<HTMLElement>(
+            '#change-password-automatically-icon');
+    assertFalse(!!automatedChangeIcon);
+  });
+
+  // Verify that elements with a startable script have the correct icon.
+  test('iconIsCorrectForPasswordWithScript', async function() {
+    const password = makeCompromisedCredential(
+        /*url*/ 'one.com', /*username*/ 'test4',
+        /*type*/ CompromiseType.LEAKED);
+    password.hasStartableScript = true;
+    const passwordCheckListItem = createLeakedPasswordItem(password);
+
+    const manualChangeIcon =
+        passwordCheckListItem.shadowRoot!.querySelector<HTMLElement>(
+            '#change-password-link-icon');
+    assertFalse(!!manualChangeIcon);
+
+    const automatedChangeIcon =
+        passwordCheckListItem.shadowRoot!.querySelector<HTMLElement>(
+            '#change-password-automatically-icon');
+    assertTrue(!!automatedChangeIcon);
   });
 
   // Verify that for a leaked password the More Actions menu opens when the
