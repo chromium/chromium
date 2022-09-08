@@ -7542,6 +7542,15 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_SHARED_HIGHLIGHTING_PROMO" desc="The title of in-product-help message encouraging users to interact with the highlight">
         To create a highlight like this one, select any text and right-click.
       </message>
+      <message name="IDS_BATTERY_SAVER_MODE_PROMO_TITLE" desc="The title for the battery saver mode in-product promo bubble.">
+        Battery Saver is on
+      </message>
+      <message name="IDS_BATTERY_SAVER_MODE_PROMO_TEXT" desc="The text shown for the battery saver mode in-product promo bubble.">
+        You can control when Battery Saver turns on in settings
+      </message>
+      <message name="IDS_BATTERY_SAVER_MODE_PROMO_ACTION_TEXT" desc="The custom action button text for the battery saver mode in-product promo bubble.">
+        Settings
+      </message>
 
       <!-- User Education Tutorial Strings -->
       <if expr="use_titlecase">

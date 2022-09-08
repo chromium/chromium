@@ -47,6 +47,8 @@ const char kFocusHelpBubbleAcceleratorPressed[] =
 const char kFocusHelpBubbleAcceleratorPromoRead[] =
     "focus_help_bubble_accelerator_promo_read";
 
+const char kBatterySaverDialogShown[] = "battery_saver_info_shown";
+
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
 

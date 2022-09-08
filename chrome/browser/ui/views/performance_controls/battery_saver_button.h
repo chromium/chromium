@@ -50,10 +50,15 @@ class BatterySaverButton : public ToolbarButton,
   // Handles press events from the button
   void OnClicked();
 
+  void OnFeatureEngagementInitialized(bool);
+  void MaybeShowFeaturePromo();
+  void CloseFeaturePromo();
+
  private:
   const raw_ptr<BrowserView> browser_view_;
   BatterySaverButtonController controller_;
   raw_ptr<views::BubbleDialogModelHost> bubble_ = nullptr;
+  base::WeakPtrFactory<BatterySaverButton> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PERFORMANCE_CONTROLS_BATTERY_SAVER_BUTTON_H_

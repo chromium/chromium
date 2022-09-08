@@ -125,6 +125,19 @@ absl::optional<FeatureConfig> GetClientSideFeatureConfig(
     return config;
   }
 
+  if (kIPHBatterySaverModeFeature.name == feature->name) {
+    // Show promo once a year when the battery saver toolbar icon is visible.
+    absl::optional<FeatureConfig> config = FeatureConfig();
+    config->valid = true;
+    config->availability = Comparator(ANY, 0);
+    config->session_rate = Comparator(ANY, 0);
+    config->trigger = EventConfig("battery_saver_info_triggered",
+                                  Comparator(EQUAL, 0), 360, 360);
+    config->used =
+        EventConfig("battery_saver_info_shown", Comparator(EQUAL, 0), 360, 360);
+    return config;
+  }
+
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS)
 

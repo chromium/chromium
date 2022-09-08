@@ -25,6 +25,8 @@ const base::Feature kIPHDummyFeature{"IPH_Dummy",
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
+const base::Feature kIPHBatterySaverModeFeature{
+    "IPH_BatterySaverMode", base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kIPHDesktopSharedHighlightingFeature{
     "IPH_DesktopSharedHighlighting", base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kIPHDesktopTabGroupsNewGroupFeature{

@@ -76,6 +76,9 @@ extern const char kFocusHelpBubbleAcceleratorPressed[];
 // the user.
 extern const char kFocusHelpBubbleAcceleratorPromoRead[];
 
+// The user has opened the battery saver bubble dialog
+extern const char kBatterySaverDialogShown[];
+
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
 

@@ -6,6 +6,7 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/performance_manager/test_support/test_user_performance_tuning_manager_environment.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
@@ -16,6 +17,7 @@
 #include "components/prefs/testing_pref_service.h"
 #include "ui/events/event_utils.h"
 #include "ui/views/bubble/bubble_dialog_model_host.h"
+#include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/test/button_test_api.h"
 #include "ui/views/test/widget_test.h"
 
@@ -129,6 +131,20 @@ TEST_F(BatterySaverButtonTest, DismissBubbleWhenModeDeactivatedTest) {
   EXPECT_FALSE(battery_saver_button->IsBubbleShowing());
   destroyed_waiter.Wait();
   EXPECT_FALSE(battery_saver_button->GetVisible());
+}
+
+// Check if the element identifier is set correctly by the battery saver
+// toolbar button
+TEST_F(BatterySaverButtonTest, ElementIdentifierTest) {
+  const views::View* battery_saver_button_view =
+      browser_view()->toolbar()->battery_saver_button();
+  EXPECT_NE(battery_saver_button_view, nullptr);
+
+  const views::View* matched_view =
+      views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
+          kBatterySaverButtonElementId, browser_view()->GetElementContext());
+
+  EXPECT_EQ(battery_saver_button_view, matched_view);
 }
 
 class BatterySaverButtonNoExperimentsAvailableTest
