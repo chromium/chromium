@@ -383,7 +383,8 @@ class ContentAutofillDriverTest : public content::RenderViewHostTestHarness,
     std::vector<FormData> augmented_forms;
     EXPECT_CALL(*driver_->mock_browser_autofill_manager(), ShouldParseForms(_))
         .WillOnce(DoAll(SaveArg<0>(&augmented_forms), Return(false)));
-    driver_->FormsSeen(/*updated_forms=*/{form}, /*removed_forms=*/{});
+    driver_->renderer_events().FormsSeen(/*updated_forms=*/{form},
+                                         /*removed_forms=*/{});
     return augmented_forms.front();
   }
 
@@ -538,9 +539,9 @@ TEST_P(ContentAutofillDriverTest, FormDataSentToRenderer_FillForm) {
   }
   base::RunLoop run_loop;
   fake_agent_.SetQuitLoopClosure(run_loop.QuitClosure());
-  driver_->FillOrPreviewForm(input_page_id,
-                             mojom::RendererFormDataAction::kFill,
-                             input_form_data, triggered_origin, {});
+  driver_->browser_events().FillOrPreviewForm(
+      input_page_id, mojom::RendererFormDataAction::kFill, input_form_data,
+      triggered_origin, {});
 
   run_loop.RunUntilIdle();
 
@@ -568,9 +569,9 @@ TEST_P(ContentAutofillDriverTest, FormDataSentToRenderer_PreviewForm) {
                                    &FormFieldData::value));
   base::RunLoop run_loop;
   fake_agent_.SetQuitLoopClosure(run_loop.QuitClosure());
-  driver_->FillOrPreviewForm(input_page_id,
-                             mojom::RendererFormDataAction::kPreview,
-                             input_form_data, triggered_origin, {});
+  driver_->browser_events().FillOrPreviewForm(
+      input_page_id, mojom::RendererFormDataAction::kPreview, input_form_data,
+      triggered_origin, {});
 
   run_loop.RunUntilIdle();
 
@@ -595,7 +596,8 @@ TEST_P(ContentAutofillDriverTest, TypePredictionsSentToRendererWhenEnabled) {
   std::vector<FormData> augmented_forms;
   EXPECT_CALL(*driver_->mock_browser_autofill_manager(), ShouldParseForms(_))
       .WillOnce(DoAll(SaveArg<0>(&augmented_forms), Return(false)));
-  driver_->FormsSeen(/*updated_forms=*/{form}, /*removed_forms=*/{});
+  driver_->renderer_events().FormsSeen(/*updated_forms=*/{form},
+                                       /*removed_forms=*/{});
 
   ContentAutofillDriverTestApi(driver_.get())
       .SetFrameAndFormMetaData(form, nullptr);
@@ -609,7 +611,8 @@ TEST_P(ContentAutofillDriverTest, TypePredictionsSentToRendererWhenEnabled) {
 
   base::RunLoop run_loop;
   fake_agent_.SetQuitLoopClosure(run_loop.QuitClosure());
-  driver_->SendAutofillTypePredictionsToRenderer(form_structures);
+  driver_->browser_events().SendAutofillTypePredictionsToRenderer(
+      form_structures);
   run_loop.RunUntilIdle();
 
   std::vector<FormDataPredictions> output_type_predictions;
@@ -625,7 +628,8 @@ TEST_P(ContentAutofillDriverTest, AcceptDataListSuggestion) {
 
   base::RunLoop run_loop;
   fake_agent_.SetQuitLoopClosure(run_loop.QuitClosure());
-  driver_->RendererShouldAcceptDataListSuggestion(field, input_value);
+  driver_->browser_events().RendererShouldAcceptDataListSuggestion(field,
+                                                                   input_value);
   run_loop.RunUntilIdle();
 
   EXPECT_TRUE(
@@ -637,7 +641,7 @@ TEST_P(ContentAutofillDriverTest, ClearFilledSectionSentToRenderer) {
   SeeAddressFormData();
   base::RunLoop run_loop;
   fake_agent_.SetQuitLoopClosure(run_loop.QuitClosure());
-  driver_->RendererShouldClearFilledSection();
+  driver_->browser_events().RendererShouldClearFilledSection();
   run_loop.RunUntilIdle();
 
   EXPECT_TRUE(fake_agent_.GetCalledClearSection());
@@ -647,7 +651,7 @@ TEST_P(ContentAutofillDriverTest, ClearPreviewedFormSentToRenderer) {
   SeeAddressFormData();
   base::RunLoop run_loop;
   fake_agent_.SetQuitLoopClosure(run_loop.QuitClosure());
-  driver_->RendererShouldClearPreviewedForm();
+  driver_->browser_events().RendererShouldClearPreviewedForm();
   run_loop.RunUntilIdle();
 
   EXPECT_TRUE(fake_agent_.GetCalledClearPreviewedForm());
@@ -660,7 +664,8 @@ TEST_P(ContentAutofillDriverTest, FillFieldWithValue) {
 
   base::RunLoop run_loop;
   fake_agent_.SetQuitLoopClosure(run_loop.QuitClosure());
-  driver_->RendererShouldFillFieldWithValue(field, input_value);
+  driver_->browser_events().RendererShouldFillFieldWithValue(field,
+                                                             input_value);
   run_loop.RunUntilIdle();
 
   EXPECT_TRUE(fake_agent_.GetString16FillFieldWithValue(field, &output_value));
@@ -674,7 +679,8 @@ TEST_P(ContentAutofillDriverTest, PreviewFieldWithValue) {
 
   base::RunLoop run_loop;
   fake_agent_.SetQuitLoopClosure(run_loop.QuitClosure());
-  driver_->RendererShouldPreviewFieldWithValue(field, input_value);
+  driver_->browser_events().RendererShouldPreviewFieldWithValue(field,
+                                                                input_value);
   run_loop.RunUntilIdle();
 
   EXPECT_TRUE(

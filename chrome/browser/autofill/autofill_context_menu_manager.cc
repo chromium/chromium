@@ -167,7 +167,7 @@ void AutofillContextMenuManager::ExecuteCommand(CommandId command_id) {
     return;
   }
 
-  content_autofill_driver_->RendererShouldFillFieldWithValue(
+  content_autofill_driver_->browser_events().RendererShouldFillFieldWithValue(
       {LocalFrameToken(render_frame_host_->GetFrameToken().value()),
        FieldRendererId(params_.field_renderer_id.value())},
       it->second.fill_value);

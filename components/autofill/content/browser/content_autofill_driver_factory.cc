@@ -176,7 +176,7 @@ void ContentAutofillDriverFactory::RenderFrameDeleted(
   if (is_iframe && router_.last_queried_source() == driver) {
     DCHECK(!render_frame_host->IsInLifecycleState(
         content::RenderFrameHost::LifecycleState::kPrerendering));
-    driver->HidePopup();
+    driver->renderer_events().HidePopup();
   }
 
   driver_map_.erase(it);
@@ -196,7 +196,7 @@ void ContentAutofillDriverFactory::DidStartNavigation(
         content::RenderFrameHost::FromID(id);
     if (render_frame_host) {
       if (auto* driver = DriverForFrame(render_frame_host))
-        driver->ProbablyFormSubmitted();
+        driver->ProbablyFormSubmitted({});
     }
   }
 }

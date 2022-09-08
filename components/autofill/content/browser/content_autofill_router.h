@@ -30,9 +30,9 @@ class ContentAutofillDriver;
 // ContentAutofillRouter routes events between ContentAutofillDriver objects in
 // order to handle frame-transcending forms.
 //
-// A *frame-transcending* form is a form whose logical fields live in different
-// frames. For example, credit card forms often have the credit card number
-// field in an iframe hosted by a payment service provider.
+// A *frame-transcending* form is a form whose fields live in different frames.
+// For example, credit card forms often have the credit card number field in an
+// iframe hosted by a payment service provider.
 //
 // A frame-transcending form therefore consists of multiple *renderer forms*.
 // ContentAutofillRouter *flattens* these forms into a single *browser form*,

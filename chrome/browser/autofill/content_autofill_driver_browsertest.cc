@@ -283,7 +283,8 @@ IN_PROC_BROWSER_TEST_F(ContentAutofillDriverPrerenderBrowserTest,
   // method will be called upon navigation.
   ContentAutofillDriverFactory::FromWebContents(web_contents())
       ->DriverForFrame(web_contents()->GetPrimaryMainFrame())
-      ->SetFormToBeProbablySubmitted(absl::make_optional<FormData>());
+      ->renderer_events()
+      .SetFormToBeProbablySubmitted(absl::make_optional<FormData>());
 
   base::HistogramTester histogram_tester;
 
