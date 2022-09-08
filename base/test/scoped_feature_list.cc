@@ -364,7 +364,7 @@ void ScopedFeatureList::InitWithNullFeatureAndFieldTrialLists() {
   DCHECK(!init_called_);
 
   // Back up the current field trial parameters to be restored in Reset().
-  original_params_ = FieldTrialList::AllParamsToString(&HexEncodeString);
+  original_params_ = FieldTrialList::AllParamsToString(true, &HexEncodeString);
 
   // Back up the current field trial list, to be restored in Reset().
   original_field_trial_list_ = FieldTrialList::BackupInstanceForTesting();
@@ -506,7 +506,7 @@ void ScopedFeatureList::InitWithMergedFeatures(
 
   std::vector<FieldTrial::State> all_states =
       FieldTrialList::GetAllFieldTrialStates(PassKey());
-  original_params_ = FieldTrialList::AllParamsToString(&HexEncodeString);
+  original_params_ = FieldTrialList::AllParamsToString(true, &HexEncodeString);
 
   std::vector<ScopedFeatureList::FeatureWithStudyGroup>
       parsed_current_enabled_features;

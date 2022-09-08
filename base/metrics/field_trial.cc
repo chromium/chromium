@@ -188,7 +188,7 @@ void AddFeatureAndFieldTrialFlags(CommandLine* cmd_line) {
     cmd_line->AppendSwitchASCII(switches::kDisableFeatures, disabled_features);
 
   std::string field_trial_states;
-  FieldTrialList::AllStatesToString(&field_trial_states);
+  FieldTrialList::AllStatesToString(&field_trial_states, false);
   if (!field_trial_states.empty()) {
     cmd_line->AppendSwitchASCII(switches::kForceFieldTrials,
                                 field_trial_states);
@@ -280,6 +280,23 @@ bool FieldTrial::FieldTrialEntry::ReadStringPair(
   return true;
 }
 
+void FieldTrial::Disable() {
+  // Group choice has already been reported to observers so we can't disable
+  // the study.
+  DCHECK(!group_reported_);
+  enable_field_trial_ = false;
+
+  // In case we are disabled after initialization, we need to switch
+  // the trial to the default group.
+  if (group_ != kNotFinalized) {
+    // Only reset when not already the default group, because in case we were
+    // forced to the default group, the group number may not be
+    // kDefaultGroupNumber, so we should keep it as is.
+    if (group_name_ != default_group_name_)
+      SetGroupChoice(default_group_name_, kDefaultGroupNumber);
+  }
+}
+
 void FieldTrial::AppendGroup(const std::string& name,
                              Probability group_probability) {
   // When the group choice was previously forced, we only need to return the
@@ -303,7 +320,7 @@ void FieldTrial::AppendGroup(const std::string& name,
   DCHECK_LE(group_probability, divisor_);
   DCHECK_GE(group_probability, 0);
 
-  if (enable_benchmarking_)
+  if (enable_benchmarking_ || !enable_field_trial_)
     group_probability = 0;
 
   accumulated_group_probability_ += group_probability;
@@ -376,6 +393,7 @@ FieldTrial::FieldTrial(StringPiece trial_name,
       accumulated_group_probability_(0),
       next_group_number_(kDefaultGroupNumber + 1),
       group_(kNotFinalized),
+      enable_field_trial_(true),
       forced_(false),
       group_reported_(false),
       trial_registered_(false),
@@ -422,7 +440,7 @@ void FieldTrial::FinalizeGroupChoiceImpl(bool is_locked) {
 }
 
 bool FieldTrial::GetActiveGroup(ActiveGroup* active_group) const {
-  if (!group_reported_)
+  if (!group_reported_ || !enable_field_trial_)
     return false;
   DCHECK_NE(group_, kNotFinalized);
   active_group->trial_name = trial_name_;
@@ -430,11 +448,15 @@ bool FieldTrial::GetActiveGroup(ActiveGroup* active_group) const {
   return true;
 }
 
-void FieldTrial::GetStateWhileLocked(PickleState* field_trial_state) {
+bool FieldTrial::GetStateWhileLocked(PickleState* field_trial_state,
+                                     bool include_disabled) {
+  if (!include_disabled && !enable_field_trial_)
+    return false;
   FinalizeGroupChoiceImpl(true);
   field_trial_state->trial_name = &trial_name_;
   field_trial_state->group_name = &group_name_;
   field_trial_state->activated = group_reported_;
+  return true;
 }
 
 //------------------------------------------------------------------------------
@@ -548,7 +570,8 @@ std::vector<FieldTrial::State> FieldTrialList::GetAllFieldTrialStates(
   AutoLock auto_lock(global_->lock_);
   for (const auto& registered : global_->registered_) {
     FieldTrial::PickleState trial;
-    registered.second->GetStateWhileLocked(&trial);
+    if (!registered.second->GetStateWhileLocked(&trial, true))
+      continue;
     DCHECK_EQ(std::string::npos,
               trial.trial_name->find(kPersistentStringSeparator));
     DCHECK_EQ(std::string::npos,
@@ -563,14 +586,16 @@ std::vector<FieldTrial::State> FieldTrialList::GetAllFieldTrialStates(
 }
 
 // static
-void FieldTrialList::AllStatesToString(std::string* output) {
+void FieldTrialList::AllStatesToString(std::string* output,
+                                       bool include_disabled) {
   if (!global_)
     return;
   AutoLock auto_lock(global_->lock_);
 
   for (const auto& registered : global_->registered_) {
     FieldTrial::PickleState trial;
-    registered.second->GetStateWhileLocked(&trial);
+    if (!registered.second->GetStateWhileLocked(&trial, include_disabled))
+      continue;
     DCHECK_EQ(std::string::npos,
               trial.trial_name->find(kPersistentStringSeparator));
     DCHECK_EQ(std::string::npos,
@@ -585,13 +610,15 @@ void FieldTrialList::AllStatesToString(std::string* output) {
 }
 
 // static
-std::string FieldTrialList::AllParamsToString(EscapeDataFunc encode_data_func) {
+std::string FieldTrialList::AllParamsToString(bool include_disabled,
+                                              EscapeDataFunc encode_data_func) {
   FieldTrialParamAssociator* params_associator =
       FieldTrialParamAssociator::GetInstance();
   std::string output;
   for (const auto& registered : GetRegisteredTrials()) {
     FieldTrial::PickleState trial;
-    registered.second->GetStateWhileLocked(&trial);
+    if (!registered.second->GetStateWhileLocked(&trial, include_disabled))
+      continue;
     DCHECK_EQ(std::string::npos,
               trial.trial_name->find(kPersistentStringSeparator));
     DCHECK_EQ(std::string::npos,
@@ -891,6 +918,9 @@ void FieldTrialList::NotifyFieldTrialGroupSelection(FieldTrial* field_trial) {
     if (field_trial->group_reported_)
       return;
     field_trial->group_reported_ = true;
+
+    if (!field_trial->enable_field_trial_)
+      return;
 
     ++global_->num_ongoing_notify_field_trial_group_selection_calls_;
 
@@ -1339,7 +1369,8 @@ void FieldTrialList::AddToAllocatorWhileLocked(
     return;
 
   FieldTrial::PickleState trial_state;
-  field_trial->GetStateWhileLocked(&trial_state);
+  if (!field_trial->GetStateWhileLocked(&trial_state, false))
+    return;
 
   // Or if we've already added it. We must check after GetState since it can
   // also add to the allocator.

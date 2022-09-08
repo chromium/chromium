@@ -64,7 +64,8 @@ void CreateTrialFromStudyFuzzer(const Study& study) {
   base::MockEntropyProvider mock_low_entropy_provider(0.9);
 
   ProcessedStudy processed_study;
-  if (processed_study.Init(&study)) {
+  const bool is_expired = internal::IsStudyExpired(study, base::Time::Now());
+  if (processed_study.Init(&study, is_expired)) {
     VariationsSeedProcessor().CreateTrialFromStudy(
         processed_study, override_callback.callback(),
         &mock_low_entropy_provider, &feature_list);
