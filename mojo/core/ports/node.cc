@@ -256,24 +256,20 @@ int Node::GetUserData(const PortRef& port_ref,
 }
 
 int Node::ClosePort(const PortRef& port_ref) {
+  // The set of pors on a node should be the same when recording vs. replaying,
+  // so we refuse to close ports when events are disallowed and the calling
+  // code runs at non-deterministic points. This will cause ports to leak.
+  if (recordreplay::AreEventsDisallowed()) {
+    return OK;
+  }
+
   std::vector<std::unique_ptr<UserMessageEvent>> undelivered_messages;
   NodeName peer_node_name;
   PortName peer_port_name;
   uint64_t last_sequence_num = 0;
   bool was_initialized = false;
   {
-    // Avoid warnings when closing ports when events are disallowed by
-    // passing through events in this case.
-    // See also AutoLockMaybeEventsDisallowed.
-    if (recordreplay::AreEventsDisallowed()) {
-      recordreplay::BeginPassThroughEvents();
-    }
-
     SinglePortLocker locker(&port_ref);
-
-    if (recordreplay::AreEventsDisallowed()) {
-      recordreplay::EndPassThroughEvents();
-    }
 
     auto* port = locker.port();
     switch (port->state) {
