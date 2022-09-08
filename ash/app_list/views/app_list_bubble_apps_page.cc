@@ -351,6 +351,12 @@ void AppListBubbleAppsPage::AnimateShowLauncher(bool is_side_shelf) {
   // Use a special cleanup callback to show the gradient mask at the end of the
   // animation. No need to use SlideViewIntoPosition() because this view always
   // has a layer.
+
+  // Set up fade in/fade out gradients at top/bottom of scroll view.
+  gradient_helper_ = std::make_unique<ScrollViewGradientHelper>(
+      scroll_view_, kScrollViewGradientSize);
+  gradient_helper_->UpdateGradientMask();
+
   StartSlideInAnimation(
       scrollable_apps_grid_view_, vertical_offset, slide_duration, tween_type,
       base::BindRepeating(&AppListBubbleAppsPage::OnAppsGridViewAnimationEnded,
@@ -576,7 +582,7 @@ bool AppListBubbleAppsPage::MaybeScrollToShowToast() {
 void AppListBubbleAppsPage::Layout() {
   views::View::Layout();
   if (gradient_helper_)
-    gradient_helper_->UpdateGradientZone();
+    gradient_helper_->UpdateGradientMask();
 }
 
 void AppListBubbleAppsPage::VisibilityChanged(views::View* starting_from,
@@ -743,18 +749,6 @@ void AppListBubbleAppsPage::DestroyLayerForView(views::View* view) {
 }
 
 void AppListBubbleAppsPage::OnAppsGridViewAnimationEnded() {
-  // If the window is destroyed during an animation the animation will end, but
-  // there's no need to build the gradient mask layer.
-  if (GetWidget()->GetNativeWindow()->is_destroying())
-    return;
-
-  // Set up fade in/fade out gradients at top/bottom of scroll view. Wait until
-  // the end of the show animation because the animation performs better without
-  // the gradient mask layer.
-  gradient_helper_ = std::make_unique<ScrollViewGradientHelper>(
-      scroll_view_, kScrollViewGradientSize);
-  gradient_helper_->UpdateGradientZone();
-
   // Show the scroll bar for keyboard-driven scroll position changes.
   scroll_bar_->SetShowOnThumbBoundsChanged(true);
 }

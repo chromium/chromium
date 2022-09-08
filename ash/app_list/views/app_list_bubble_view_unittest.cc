@@ -391,28 +391,6 @@ TEST_F(AppListBubbleViewTest, ShowAnimationCreatesAndDestroysLayers) {
   EXPECT_TRUE(apps_grid_view->layer());
 }
 
-TEST_F(AppListBubbleViewTest, ShowAnimationDestroysAndRestoresGradientMask) {
-  // Enable animations.
-  ui::ScopedAnimationDurationScaleMode duration(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
-
-  // Show an app list with enough apps to fill the page and trigger a gradient
-  // at the bottom.
-  AddAppItems(50);
-  ShowAppList();
-
-  // Gradient mask layer is suppressed during show animation for performance.
-  auto* scroll_view = GetAppsPage()->scroll_view();
-  EXPECT_FALSE(scroll_view->layer()->layer_mask_layer());
-
-  // Finish the animation.
-  auto* apps_grid_view = GetAppsGridView();
-  LayerAnimationStoppedWaiter().Wait(apps_grid_view->layer());
-
-  // Gradient mask layer is restored.
-  EXPECT_TRUE(scroll_view->layer()->layer_mask_layer());
-}
-
 TEST_F(AppListBubbleViewTest, ShowAnimationDestroysAndRestoresShadow) {
   // Enable animations.
   ui::ScopedAnimationDurationScaleMode duration(
@@ -1455,6 +1433,39 @@ TEST_F(AppListBubbleViewTest, ScrollInFolderHeaderScrollsFolder) {
   EXPECT_GT(final_scroll_offset, initial_scroll_offset);
 }
 
+gfx::Rect GetStartFadeRect(const gfx::LinearGradient& gradient_mask,
+                           gfx::Rect layer_bounds) {
+  // Vertical gradient from top to bottom.
+  EXPECT_EQ(gradient_mask.angle(), -90);
+
+  // No top gradient
+  if (!cc::MathUtil::IsWithinEpsilon(gradient_mask.steps()[0].fraction, 0.f))
+    return gfx::Rect();
+
+  float fade_height = gradient_mask.steps()[1].fraction * layer_bounds.height();
+  return gfx::Rect(layer_bounds.origin(),
+                   gfx::Size(layer_bounds.width(), fade_height));
+}
+
+gfx::Rect GetEndFadeRect(const gfx::LinearGradient& gradient_mask,
+                         gfx::Rect layer_bounds) {
+  // Vertical gradient from top to bottom.
+  EXPECT_EQ(gradient_mask.angle(), -90);
+
+  // No bottom gradient
+  if (!cc::MathUtil::IsWithinEpsilon(
+          gradient_mask.steps()[gradient_mask.step_count() - 1].fraction,
+          1.f)) {
+    return gfx::Rect();
+  }
+
+  float fade_height =
+      (1.f - gradient_mask.steps()[gradient_mask.step_count() - 2].fraction) *
+      layer_bounds.height();
+  float fade_y = layer_bounds.bottom() - fade_height;
+  return gfx::Rect(layer_bounds.x(), fade_y, layer_bounds.width(), fade_height);
+}
+
 TEST_F(AppListBubbleViewTest, AutoScrollToFitViewOnFocus) {
   // Show an app list with enough apps to fill the page and trigger a gradient
   // at the bottom.
@@ -1463,7 +1474,7 @@ TEST_F(AppListBubbleViewTest, AutoScrollToFitViewOnFocus) {
 
   // Scroll view gradient mask layer is created.
   auto* scroll_view = GetAppsPage()->scroll_view();
-  EXPECT_TRUE(scroll_view->layer()->layer_mask_layer());
+  EXPECT_FALSE(scroll_view->layer()->gradient_mask().IsEmpty());
   const int rows = base::ClampFloor(50.0 / GetAppsGridView()->cols());
 
   // Focus the first item on the last row.
@@ -1474,11 +1485,12 @@ TEST_F(AppListBubbleViewTest, AutoScrollToFitViewOnFocus) {
                                   ->GetFocusManager()
                                   ->GetFocusedView()
                                   ->GetBoundsInScreen();
-  GradientLayerDelegate* gradient_layer =
-      GetAppsPage()->gradient_helper_for_test()->gradient_layer_for_test();
+  const gfx::LinearGradient& gradient_mask =
+      GetAppsPage()->gradient_helper_for_test()->gradient_mask_for_test();
   gfx::Rect gradient_mask_bounds_start =
-      gradient_layer->start_fade_zone_bounds();
-  gfx::Rect gradient_mask_bounds_end = gradient_layer->end_fade_zone_bounds();
+      GetStartFadeRect(gradient_mask, scroll_view->GetVisibleRect());
+  gfx::Rect gradient_mask_bounds_end =
+      GetEndFadeRect(gradient_mask, scroll_view->GetVisibleRect());
   views::View::ConvertRectToScreen(scroll_view, &gradient_mask_bounds_start);
   views::View::ConvertRectToScreen(scroll_view, &gradient_mask_bounds_end);
 
@@ -1496,8 +1508,10 @@ TEST_F(AppListBubbleViewTest, AutoScrollToFitViewOnFocus) {
                         ->GetFocusManager()
                         ->GetFocusedView()
                         ->GetBoundsInScreen();
-  gradient_mask_bounds_start = gradient_layer->start_fade_zone_bounds();
-  gradient_mask_bounds_end = gradient_layer->end_fade_zone_bounds();
+  gradient_mask_bounds_start =
+      GetStartFadeRect(gradient_mask, scroll_view->GetVisibleRect());
+  gradient_mask_bounds_end =
+      GetEndFadeRect(gradient_mask, scroll_view->GetVisibleRect());
   views::View::ConvertRectToScreen(scroll_view, &gradient_mask_bounds_start);
   views::View::ConvertRectToScreen(scroll_view, &gradient_mask_bounds_end);
 

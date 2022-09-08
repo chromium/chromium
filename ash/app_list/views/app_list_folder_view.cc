@@ -921,7 +921,7 @@ void AppListFolderView::Layout() {
   views::View::Layout();
 
   if (gradient_helper_)
-    gradient_helper_->UpdateGradientZone();
+    gradient_helper_->UpdateGradientMask();
 
   // Position page switcher independently of the layout manager, as its
   // position does not fit with vertical layout alignment (it's expected to

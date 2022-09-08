@@ -611,7 +611,7 @@ void SavedDeskLibraryView::Layout() {
   no_items_label_->SetVisible(total_saved_desks == 0);
 
   scroll_view_->SetBoundsRect({0, 0, width(), height()});
-  scroll_view_gradient_helper_->UpdateGradientZone();
+  scroll_view_gradient_helper_->UpdateGradientMask();
 }
 
 void SavedDeskLibraryView::OnKeyEvent(ui::KeyEvent* event) {
