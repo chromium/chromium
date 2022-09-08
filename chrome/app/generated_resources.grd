@@ -13614,6 +13614,9 @@ Please help our engineers fix this problem. Tell us what happened right before y
     </if>
     <!-- High Efficiency Chip strings -->
     <if expr="not is_android">
+      <message name="IDS_HIGH_EFFICIENCY_CHIP_LABEL" desc="Label for a page action chip that highlights that the Memory Saver setting is enabled">
+        Memory Saver is on
+      </message>
       <message name="IDS_HIGH_EFFICIENCY_CHIP_ACCNAME" desc="Tooltip text for a page action chip that highlights that the Memory Saver setting is enabled">
         Memory Saver is on
       </message>

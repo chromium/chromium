@@ -113,10 +113,10 @@ void PageActionIconController::Init(const PageActionIconParams& params,
                       params.page_action_icon_delegate));
         break;
       case PageActionIconType::kHighEfficiency:
-        add_page_action_icon(
-            type, std::make_unique<HighEfficiencyChipView>(
-                      params.command_updater, params.icon_label_bubble_delegate,
-                      params.page_action_icon_delegate));
+        add_page_action_icon(type, std::make_unique<HighEfficiencyChipView>(
+                                       params.command_updater, params.browser,
+                                       params.icon_label_bubble_delegate,
+                                       params.page_action_icon_delegate));
         break;
       case PageActionIconType::kIntentPicker:
         add_page_action_icon(

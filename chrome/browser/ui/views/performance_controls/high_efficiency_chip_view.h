@@ -16,6 +16,7 @@ class HighEfficiencyChipView : public PageActionIconView {
   METADATA_HEADER(HighEfficiencyChipView);
   HighEfficiencyChipView(
       CommandUpdater* command_updater,
+      Browser* browser,
       IconLabelBubbleView::Delegate* icon_label_bubble_delegate,
       PageActionIconView::Delegate* page_action_icon_delegate);
   HighEfficiencyChipView(const HighEfficiencyChipView&) = delete;
@@ -30,6 +31,9 @@ class HighEfficiencyChipView : public PageActionIconView {
   const gfx::VectorIcon& GetVectorIcon() const override;
   std::u16string GetTextForTooltipAndAccessibleName() const override;
   bool IsBubbleShowing() const override;
+
+ private:
+  const raw_ptr<Browser> browser_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PERFORMANCE_CONTROLS_HIGH_EFFICIENCY_CHIP_VIEW_H_

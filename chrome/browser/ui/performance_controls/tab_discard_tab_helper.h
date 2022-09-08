@@ -26,6 +26,12 @@ class TabDiscardTabHelper
   // Returns whether the chip associated with a discarded tab should be shown.
   bool IsChipVisible() const;
 
+  // Returns whether the chip associated with a discarded tab should animate in.
+  bool ShouldIconAnimate() const;
+
+  // Indicates that the chip has been animated for the current discard.
+  void SetWasAnimated();
+
   // content::WebContentsObserver
   void DidStartNavigation(
       content::NavigationHandle* navigation_handle) override;
@@ -34,6 +40,7 @@ class TabDiscardTabHelper
   friend class content::WebContentsUserData<TabDiscardTabHelper>;
   explicit TabDiscardTabHelper(content::WebContents* contents);
   bool was_discarded_ = false;
+  bool was_animated_ = false;
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
 

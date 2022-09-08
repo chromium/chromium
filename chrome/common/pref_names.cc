@@ -3573,4 +3573,11 @@ const char kSCTAuditingHashdanceReportCount[] =
 const char kConsumerAutoUpdateToggle[] = "settings.consumer_auto_update_toggle";
 #endif
 
+#if !BUILDFLAG(IS_ANDROID)
+// An integer count of how many times the user has seen the high efficiency mode
+// page action chip in the expanded size.
+const char kHighEfficiencyChipExpandedCount[] =
+    "high_efficiency.chip_expanded_count";
+#endif
+
 }  // namespace prefs
