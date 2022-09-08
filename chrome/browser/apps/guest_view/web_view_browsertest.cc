@@ -5614,33 +5614,34 @@ INSTANTIATE_TEST_SUITE_P(WebViewTests,
 // and does not result in a renderer kill.  See https://crbug.com/1197674.
 IN_PROC_BROWSER_TEST_P(WebstoreWebViewTest, NoRendererKillWithChromeWebStore) {
   LoadAppWithGuest("web_view/simple");
-  content::WebContents* guest = GetGuestWebContents();
+  content::RenderFrameHost* guest = GetGuestRenderFrameHost();
   ASSERT_TRUE(guest);
 
   // Navigate <webview> to a Chrome Web Store URL.  This should result in an
   // error and shouldn't lead to a renderer kill.
   const GURL webstore_url =
       https_server()->GetURL("chrome.foo.com", "/frame_tree/simple.htm");
+
   content::TestNavigationObserver error_observer(
-      guest, content::MessageLoopRunner::QuitMode::IMMEDIATE,
+      webstore_url, content::MessageLoopRunner::QuitMode::IMMEDIATE,
       /*ignore_uncommitted_navigations=*/false);
+  error_observer.WatchExistingWebContents();
   EXPECT_TRUE(
       ExecuteScript(guest, "location.href = '" + webstore_url.spec() + "';"));
   error_observer.Wait();
   EXPECT_FALSE(error_observer.last_navigation_succeeded());
   EXPECT_EQ(net::ERR_BLOCKED_BY_CLIENT, error_observer.last_net_error_code());
 
-  content::RenderFrameHost* guest_rfh = guest->GetPrimaryMainFrame();
-  EXPECT_TRUE(guest_rfh->IsRenderFrameLive());
+  guest = GetGuestRenderFrameHost();
+  EXPECT_TRUE(guest->IsRenderFrameLive());
 
   // Double-check that after the attempted navigation the <webview> is not
   // considered an extension process and does not have privileged webstore
   // APIs.
   auto* process_map = extensions::ProcessMap::Get(guest->GetBrowserContext());
-  EXPECT_FALSE(process_map->Contains(guest_rfh->GetProcess()->GetID()));
-  EXPECT_TRUE(
-      process_map->GetExtensionsInProcess(guest_rfh->GetProcess()->GetID())
-          .empty());
+  EXPECT_FALSE(process_map->Contains(guest->GetProcess()->GetID()));
+  EXPECT_TRUE(process_map->GetExtensionsInProcess(guest->GetProcess()->GetID())
+                  .empty());
   EXPECT_EQ(false, content::EvalJs(guest, "!!chrome.webstorePrivate"));
   EXPECT_EQ(false, content::EvalJs(guest, "!!chrome.dashboardPrivate"));
 }
