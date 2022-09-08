@@ -7,6 +7,7 @@ source_set("promos") {
   sources = [
     "promo_protocol.h",
     "promos_manager_scene_availability_observer.h",
+    "standard_promo_action_handler.h",
     "standard_promo_display_handler.h",
     "standard_promo_view_provider.h",
   ]
