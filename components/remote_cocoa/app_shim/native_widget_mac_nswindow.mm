@@ -145,7 +145,6 @@ void OrderChildWindow(NSWindow* child_window,
   BOOL _willUpdateRestorableState;
   BOOL _isEnforcingNeverMadeVisible;
   BOOL _preventKeyWindow;
-  BOOL _isAddingChildWindow;
   BOOL _isTooltip;
 }
 @synthesize bridgedNativeWidgetId = _bridgedNativeWidgetId;
@@ -163,7 +162,6 @@ void OrderChildWindow(NSWindow* child_window,
                                    defer:deferCreation])) {
     _commandDispatcher.reset([[CommandDispatcher alloc] initWithOwner:self]);
   }
-  _isAddingChildWindow = NO;
   return self;
 }
 
@@ -180,7 +178,6 @@ void OrderChildWindow(NSWindow* child_window,
 }
 
 - (void)addChildWindow:(NSWindow*)childWin ordered:(NSWindowOrderingMode)place {
-  base::AutoReset<BOOL> isAddingChildWindow(&_isAddingChildWindow, YES);
   // Attaching a window to be a child window resets the window level, so
   // restore the window level afterwards.
   NSInteger level = childWin.level;
@@ -401,41 +398,36 @@ void OrderChildWindow(NSWindow* child_window,
   [super sendEvent:event];
 }
 
-// Override window order functions to
-// 1. Intercept other visibility changes
-//    This is needed in addition to the -[NSWindow display] override because
-//    Cocoa hardly ever calls display, and reports -[NSWindow isVisible]
-//    incorrectly when ordering in a window for the first time.
-// 2. Handle child windows
-//    -[NSWindow orderWindow] does not work for child windows. To order
-//    children, we need to detach them from thier parent and re-attach them
-//    in our desire order.
-- (void)orderWindow:(NSWindowOrderingMode)orderingMode
-         relativeTo:(NSInteger)otherWindowNumber {
+- (void)reallyOrderWindow:(NSWindowOrderingMode)orderingMode
+               relativeTo:(NSInteger)otherWindowNumber {
   NativeWidgetMacNSWindow* parent =
       static_cast<NativeWidgetMacNSWindow*>([self parentWindow]);
-  // Cocoa will call -[NSWindow orderWindow] during -[NSWindow addChildWindow].
-  // To prevent re-entrancy, skip re-parenting if adding children.
-  if (parent && parent->_isAddingChildWindow) {
-    [super orderWindow:orderingMode relativeTo:otherWindowNumber];
-    [[self viewsNSWindowDelegate] onWindowOrderChanged:nil];
+
+  // This is not a child window. No need to patch.
+  if (!parent) {
+    [self orderWindow:orderingMode relativeTo:otherWindowNumber];
     return;
   }
 
   // `otherWindow` is nil if `otherWindowNumber` is 0. In this case, place
   // `self` at the top / bottom, depending on `orderingMode`.
   NSWindow* otherWindow = [NSApp windowWithWindowNumber:otherWindowNumber];
-
-  // For unknown reason chrome will freeze during startup without this line.
-  [super orderWindow:orderingMode relativeTo:otherWindowNumber];
-
-  // During shutdown the parent may have changed at this point, so reacquire
-  // `parent`.
-  parent = static_cast<NativeWidgetMacNSWindow*>([self parentWindow]);
-  if (parent && (otherWindow == nullptr ||
-                 parent == [otherWindow parentWindow] || parent == otherWindow))
+  if (otherWindow == nullptr || parent == [otherWindow parentWindow] ||
+      parent == otherWindow)
     OrderChildWindow(self, otherWindow, orderingMode);
 
+  [[self viewsNSWindowDelegate] onWindowOrderChanged:nil];
+}
+
+// Override window order functions to intercept other visibility changes. This
+// is needed in addition to the -[NSWindow display] override because Cocoa
+// hardly ever calls display, and reports -[NSWindow isVisible] incorrectly
+// when ordering in a window for the first time.
+// Note that this methods has no effect for children windows. Use
+// -reallyOrderWindow:relativeTo: instead.
+- (void)orderWindow:(NSWindowOrderingMode)orderingMode
+         relativeTo:(NSInteger)otherWindowNumber {
+  [super orderWindow:orderingMode relativeTo:otherWindowNumber];
   [[self viewsNSWindowDelegate] onWindowOrderChanged:nil];
 }
 
