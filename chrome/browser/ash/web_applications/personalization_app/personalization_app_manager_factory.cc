@@ -48,8 +48,8 @@ PersonalizationAppManagerFactory::GetInstance() {
 PersonalizationAppManagerFactory::PersonalizationAppManagerFactory()
     : ProfileKeyedServiceFactory("PersonalizationAppManager",
                                  BuildProfileSelections()) {
-  DependsOn(::chromeos::local_search_service::LocalSearchServiceProxyFactory::
-                GetInstance());
+  DependsOn(
+      local_search_service::LocalSearchServiceProxyFactory::GetInstance());
 }
 
 PersonalizationAppManagerFactory::~PersonalizationAppManagerFactory() = default;
@@ -58,7 +58,7 @@ KeyedService* PersonalizationAppManagerFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   DCHECK(CanSeeWallpaperOrPersonalizationApp(
       Profile::FromBrowserContext(context)));
-  auto* local_search_service_proxy = ::chromeos::local_search_service::
+  auto* local_search_service_proxy = local_search_service::
       LocalSearchServiceProxyFactory::GetForBrowserContext(context);
   DCHECK(local_search_service_proxy);
 

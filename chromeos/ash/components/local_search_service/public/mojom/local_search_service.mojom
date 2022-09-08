@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-module chromeos.local_search_service.mojom;
+module ash.local_search_service.mojom;
 
 import "chromeos/ash/components/local_search_service/public/mojom/index.mojom";
 import "chromeos/ash/components/local_search_service/public/mojom/types.mojom";

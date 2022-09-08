@@ -11,14 +11,12 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/browser/browser_context.h"
 
-// TODO(https://crbug.com/1164001): move forward declaration to ash.
-namespace chromeos {
+namespace ash {
+
 namespace local_search_service {
 class LocalSearchServiceProxy;
-}  // namespace local_search_service
-}  // namespace chromeos
+}
 
-namespace ash {
 namespace personalization_app {
 
 enum class HatsSurveyType {
@@ -37,7 +35,7 @@ class PersonalizationAppManager : public KeyedService {
  public:
   static std::unique_ptr<PersonalizationAppManager> Create(
       content::BrowserContext* context,
-      ::chromeos::local_search_service::LocalSearchServiceProxy&
+      local_search_service::LocalSearchServiceProxy&
           local_search_service_proxy);
 
   ~PersonalizationAppManager() override = default;

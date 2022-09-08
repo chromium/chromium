@@ -9,10 +9,10 @@
 #include "chromeos/ash/components/local_search_service/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
-namespace local_search_service {
+namespace ash::local_search_service {
 
 namespace {
+
 // This is (data-id, content-ids).
 using ResultWithIds = std::pair<std::string, std::vector<std::string>>;
 
@@ -438,5 +438,4 @@ TEST_F(InvertedIndexSearchTest, UpdateDocumentsTest) {
               /*expected_number_positions=*/1);
 }
 
-}  // namespace local_search_service
-}  // namespace chromeos
+}  // namespace ash::local_search_service

@@ -111,15 +111,13 @@ void HelpAppUI::BindInterface(
 }
 
 void HelpAppUI::BindInterface(
-    mojo::PendingReceiver<chromeos::local_search_service::mojom::Index>
-        index_receiver) {
+    mojo::PendingReceiver<local_search_service::mojom::Index> index_receiver) {
   if (base::FeatureList::IsEnabled(features::kEnableLocalSearchService)) {
-    auto* const factory = chromeos::local_search_service::
-        LocalSearchServiceProxyFactory::GetForBrowserContext(
-            web_ui()->GetWebContents()->GetBrowserContext());
+    auto* const factory = local_search_service::LocalSearchServiceProxyFactory::
+        GetForBrowserContext(web_ui()->GetWebContents()->GetBrowserContext());
     factory->SetLocalState(delegate_->GetLocalState());
-    factory->GetIndex(chromeos::local_search_service::IndexId::kHelpApp,
-                      chromeos::local_search_service::Backend::kInvertedIndex,
+    factory->GetIndex(local_search_service::IndexId::kHelpApp,
+                      local_search_service::Backend::kInvertedIndex,
                       std::move(index_receiver));
   }
 }

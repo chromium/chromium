@@ -21,11 +21,7 @@
 #include "chromeos/ash/components/string_matching/tokenized_string.h"
 #include "third_party/icu/source/i18n/unicode/translit.h"
 
-namespace chromeos {
-namespace local_search_service {
-
-// TODO(https://crbug.com/1164001): remove after migrating to namespace ash.
-namespace string_matching = ::ash::string_matching;
+namespace ash::local_search_service {
 
 float ExactPrefixMatchScore(const std::u16string& query,
                             const std::u16string& text) {
@@ -64,5 +60,4 @@ bool CompareResults(const Result& r1, const Result& r2) {
   return r1.score > r2.score;
 }
 
-}  // namespace local_search_service
-}  // namespace chromeos
+}  // namespace ash::local_search_service

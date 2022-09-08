@@ -59,7 +59,7 @@ class SearchTagRegistry {
   void NotifyRegistryAdded();
 
   // Index used by the LocalSearchService for string matching.
-  mojo::Remote<chromeos::local_search_service::mojom::Index> index_remote_;
+  mojo::Remote<local_search_service::mojom::Index> index_remote_;
 
   // In-memory cache of all results which have been added to the
   // LocalSearchService. Contents are kept in sync with |index_remote_|.

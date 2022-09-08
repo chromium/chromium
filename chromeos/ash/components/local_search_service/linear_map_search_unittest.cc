@@ -16,8 +16,7 @@
 #include "chromeos/ash/components/local_search_service/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
-namespace local_search_service {
+namespace ash::local_search_service {
 
 namespace {
 
@@ -281,5 +280,4 @@ TEST_F(LinearMapSearchTest, UpdateDocuments) {
   GetSizeAndCheckResults(index_.get(), 1u);
 }
 
-}  // namespace local_search_service
-}  // namespace chromeos
+}  // namespace ash::local_search_service

@@ -15,8 +15,7 @@
 class PrefRegistrySimple;
 class PrefService;
 
-namespace chromeos {
-namespace local_search_service {
+namespace ash::local_search_service {
 
 // SearchMetricsReporter logs daily search requests to UMA.
 class SearchMetricsReporter : public mojom::SearchMetricsReporter {
@@ -75,7 +74,6 @@ class SearchMetricsReporter : public mojom::SearchMetricsReporter {
       receivers_;
 };
 
-}  // namespace local_search_service
-}  // namespace chromeos
+}  // namespace ash::local_search_service
 
 #endif  // CHROMEOS_ASH_COMPONENTS_LOCAL_SEARCH_SERVICE_SEARCH_METRICS_REPORTER_H_

@@ -16,8 +16,7 @@
 #include "base/task/thread_pool.h"
 #include "chromeos/ash/components/local_search_service/search_utils.h"
 
-namespace chromeos {
-namespace local_search_service {
+namespace ash::local_search_service {
 
 namespace {
 
@@ -164,6 +163,7 @@ std::pair<DocumentStateVariables, TfidfCache> ClearData(
                       std::move(terms_to_be_updated)),
       std::move(tfidf_cache));
 }
+
 }  // namespace
 
 InvertedIndex::InvertedIndex() {
@@ -367,5 +367,4 @@ void InvertedIndex::OnDataCleared(
   std::move(callback).Run();
 }
 
-}  // namespace local_search_service
-}  // namespace chromeos
+}  // namespace ash::local_search_service

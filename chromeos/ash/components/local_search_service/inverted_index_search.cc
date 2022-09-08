@@ -22,12 +22,11 @@
 #include "chromeos/ash/components/string_matching/tokenized_string.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
-namespace local_search_service {
+namespace ash::local_search_service {
 
 namespace {
 
-using ::ash::string_matching::TokenizedString;
+using string_matching::TokenizedString;
 using ExtractedContent =
     std::vector<std::pair<std::string, std::vector<Token>>>;
 
@@ -214,5 +213,4 @@ void InvertedIndexSearch::FinalizeUpdateDocuments(
   inverted_index_->UpdateDocuments(documents, std::move(callback));
 }
 
-}  // namespace local_search_service
-}  // namespace chromeos
+}  // namespace ash::local_search_service

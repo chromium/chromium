@@ -7,8 +7,7 @@
 #include "chromeos/ash/components/local_search_service/public/mojom/local_search_service.mojom.h"
 #include "content/public/browser/service_process_host.h"
 
-namespace chromeos {
-namespace local_search_service {
+namespace ash::local_search_service {
 
 OopLocalSearchServiceProvider::OopLocalSearchServiceProvider() {
   LocalSearchServiceProvider::Set(this);
@@ -26,5 +25,4 @@ void OopLocalSearchServiceProvider::BindLocalSearchService(
                                .Pass());
 }
 
-}  // namespace local_search_service
-}  // namespace chromeos
+}  // namespace ash::local_search_service

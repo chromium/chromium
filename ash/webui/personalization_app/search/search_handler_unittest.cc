@@ -165,7 +165,7 @@ class PersonalizationAppSearchHandlerTest : public AshTestBase {
     AshTestBase::SetUp();
 
     local_search_service_proxy_ =
-        std::make_unique<::ash::local_search_service::LocalSearchServiceProxy>(
+        std::make_unique<local_search_service::LocalSearchServiceProxy>(
             /*for_testing=*/true);
     test_pref_service_ = std::make_unique<TestingPrefServiceSimple>();
     test_pref_service_->registry()->RegisterBooleanPref(
@@ -182,9 +182,8 @@ class PersonalizationAppSearchHandlerTest : public AshTestBase {
 
   std::vector<mojom::SearchResultPtr> SimulateSearchCompleted(
       uint32_t max_num_results,
-      ::chromeos::local_search_service::ResponseStatus response_status,
-      const absl::optional<
-          std::vector<::chromeos::local_search_service::Result>>&
+      local_search_service::ResponseStatus response_status,
+      const absl::optional<std::vector<local_search_service::Result>>&
           local_search_service_results) {
     std::vector<mojom::SearchResultPtr> result;
     base::RunLoop loop;
@@ -230,7 +229,7 @@ class PersonalizationAppSearchHandlerTest : public AshTestBase {
 
   // Remove all existing search concepts saved in the registry.
   void ClearSearchTagRegistry() {
-    ::chromeos::local_search_service::mojom::IndexAsyncWaiter(
+    local_search_service::mojom::IndexAsyncWaiter(
         search_tag_registry()->index_remote_.get())
         .ClearIndex();
     search_tag_registry()->result_id_to_search_concept_.clear();
@@ -238,7 +237,7 @@ class PersonalizationAppSearchHandlerTest : public AshTestBase {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-  std::unique_ptr<::chromeos::local_search_service::LocalSearchServiceProxy>
+  std::unique_ptr<local_search_service::LocalSearchServiceProxy>
       local_search_service_proxy_;
   std::unique_ptr<TestingPrefServiceSimple> test_pref_service_;
   std::unique_ptr<SearchHandler> search_handler_;
@@ -443,9 +442,9 @@ TEST_F(PersonalizationAppSearchHandlerTest, SortsAndTruncatesResults) {
 
   // Scores that correspond to each of the |test_search_concepts|.
   std::vector<double> scores = {0.33, 0.5, 0.1, 0.99};
-  std::vector<::chromeos::local_search_service::Result> fake_local_results;
+  std::vector<local_search_service::Result> fake_local_results;
   for (size_t i = 0; i < scores.size(); i++) {
-    std::vector<::chromeos::local_search_service::Position> positions;
+    std::vector<local_search_service::Position> positions;
     positions.emplace_back(/*content_id=*/base::NumberToString(
                                test_search_concepts.at(i).message_id),
                            /*start=*/0, /*length=*/0);
@@ -457,7 +456,7 @@ TEST_F(PersonalizationAppSearchHandlerTest, SortsAndTruncatesResults) {
   constexpr size_t maxNumResults = 2;
   auto results = SimulateSearchCompleted(
       /*max_num_results=*/maxNumResults,
-      ::chromeos::local_search_service::ResponseStatus::kSuccess,
+      local_search_service::ResponseStatus::kSuccess,
       absl::make_optional(fake_local_results));
 
   // Capped at |maxNumResults|.

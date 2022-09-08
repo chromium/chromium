@@ -17,14 +17,13 @@ namespace ash::string_matching {
 class TokenizedString;
 }
 
-namespace chromeos {
-namespace local_search_service {
+namespace ash::local_search_service {
 
 // A map from key to a vector of (tag-id, tokenized tag).
-typedef std::map<std::string,
-                 std::vector<std::pair<
-                     std::string,
-                     std::unique_ptr<ash::string_matching::TokenizedString>>>>
+typedef std::map<
+    std::string,
+    std::vector<std::pair<std::string,
+                          std::unique_ptr<string_matching::TokenizedString>>>>
     KeyToTagVector;
 
 // An implementation of Index.
@@ -61,7 +60,6 @@ class LinearMapSearch : public Index {
   KeyToTagVector data_;
 };
 
-}  // namespace local_search_service
-}  // namespace chromeos
+}  // namespace ash::local_search_service
 
 #endif  // CHROMEOS_ASH_COMPONENTS_LOCAL_SEARCH_SERVICE_LINEAR_MAP_SEARCH_H_
