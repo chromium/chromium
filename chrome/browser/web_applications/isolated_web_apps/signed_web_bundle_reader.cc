@@ -334,6 +334,10 @@ void SignedWebBundleReader::ReadResponseBody(
           .Then(std::move(callback)));
 }
 
+base::WeakPtr<SignedWebBundleReader> SignedWebBundleReader::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 void SignedWebBundleReader::SetParserDisconnectCallbackForTesting(
     base::RepeatingClosure callback) {
   parser_disconnect_callback_for_testing_ = std::move(callback);

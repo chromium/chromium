@@ -132,6 +132,8 @@ class SignedWebBundleReader {
                         mojo::ScopedDataPipeProducerHandle producer_handle,
                         ReadResponseBodyCallback callback);
 
+  base::WeakPtr<SignedWebBundleReader> AsWeakPtr();
+
   // Can be used in tests to set a callback that will be called if the
   // underlying `SafeWebBundleParser` disconnects.
   void SetParserDisconnectCallbackForTesting(base::RepeatingClosure callback);

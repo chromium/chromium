@@ -12,6 +12,25 @@
 
 namespace web_app {
 
+mojo::ScopedDataPipeConsumerHandle ReadResponseBody(
+    uint32_t response_length,
+    base::OnceCallback<void(mojo::ScopedDataPipeProducerHandle producer_handle,
+                            base::OnceCallback<void(net::Error net_error)>)>
+        read_response_body_callback,
+    base::OnceCallback<void(net::Error)> on_response_read_callback) {
+  mojo::ScopedDataPipeProducerHandle producer;
+  mojo::ScopedDataPipeConsumerHandle consumer;
+  MojoCreateDataPipeOptions options;
+  options.struct_size = sizeof(MojoCreateDataPipeOptions);
+  options.element_num_bytes = 1;
+  options.capacity_num_bytes = response_length + 1;
+  EXPECT_EQ(MOJO_RESULT_OK, mojo::CreateDataPipe(&options, producer, consumer));
+
+  std::move(read_response_body_callback)
+      .Run(std::move(producer), std::move(on_response_read_callback));
+  return consumer;
+}
+
 std::string ReadAndFulfillResponseBody(
     SignedWebBundleReader& reader,
     web_package::mojom::BundleResponsePtr response) {
@@ -29,23 +48,16 @@ std::string ReadAndFulfillResponseBody(
     base::OnceCallback<void(mojo::ScopedDataPipeProducerHandle producer_handle,
                             base::OnceCallback<void(net::Error net_error)>)>
         read_response_body_callback) {
-  mojo::ScopedDataPipeProducerHandle producer;
-  mojo::ScopedDataPipeConsumerHandle consumer;
-  MojoCreateDataPipeOptions options;
-  options.struct_size = sizeof(MojoCreateDataPipeOptions);
-  options.element_num_bytes = 1;
-  options.capacity_num_bytes = response_length + 1;
-  EXPECT_EQ(MOJO_RESULT_OK, mojo::CreateDataPipe(&options, producer, consumer));
-
   base::test::TestFuture<net::Error> error_future;
-  std::move(read_response_body_callback)
-      .Run(std::move(producer), error_future.GetCallback());
+  mojo::ScopedDataPipeConsumerHandle consumer =
+      ReadResponseBody(response_length, std::move(read_response_body_callback),
+                       error_future.GetCallback());
   EXPECT_EQ(net::OK, error_future.Get());
 
   std::vector<char> buffer(response_length);
   uint32_t bytes_read = buffer.size();
   MojoResult read_result =
-      consumer->ReadData(buffer.data(), &bytes_read, /*flags=*/0);
+      consumer->ReadData(buffer.data(), &bytes_read, MOJO_READ_DATA_FLAG_NONE);
   EXPECT_EQ(MOJO_RESULT_OK, read_result);
   EXPECT_EQ(buffer.size(), bytes_read);
   return std::string(buffer.data(), bytes_read);
