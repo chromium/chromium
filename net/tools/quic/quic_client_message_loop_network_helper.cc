@@ -53,7 +53,7 @@ bool QuicClientMessageLooplNetworkHelper::CreateUDPSocketAndBind(
     client_address_ =
         quic::QuicSocketAddress(bind_to_address, client_->local_port());
   } else if (server_address.host().address_family() ==
-             quic::IpAddressFamily::IP_V4) {
+             quiche::IpAddressFamily::IP_V4) {
     client_address_ =
         quic::QuicSocketAddress(quic::QuicIpAddress::Any4(), bind_to_port);
   } else {
