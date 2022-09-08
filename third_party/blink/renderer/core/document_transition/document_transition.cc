@@ -8,6 +8,7 @@
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "cc/document_transition/document_transition_request.h"
+#include "cc/trees/layer_tree_host.h"
 #include "cc/trees/paint_holding_reason.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
@@ -236,6 +237,16 @@ bool DocumentTransition::InitiateTransition(
           WrapCrossThreadWeakPersistent(this), last_prepare_sequence_id_)));
 
   NotifyHasChangesToCommit();
+
+  // We need to ensure paint holding is disabled since we rely on commits to
+  // send directives to the compositor and initiate pause of rendering after one
+  // frame.
+  if (document_->GetFrame()->IsLocalRoot()) {
+    document_->GetPage()->GetChromeClient().StopDeferringCommits(
+        *document_->GetFrame(),
+        cc::PaintHoldingCommitTrigger::kDocumentTransition);
+  }
+  document_->GetPage()->GetChromeClient().RegisterForCommitObservation(this);
   return true;
 }
 
@@ -275,9 +286,6 @@ void DocumentTransition::NotifyCaptureFinished(uint32_t sequence_id) {
   if (style_tracker_)
     style_tracker_->CaptureResolved();
 
-  // Defer commits before resolving the promise to ensure any updates made in
-  // the callback are deferred.
-  StartDeferringCommits();
   if (!capture_resolved_callback_) {
     state_ = State::kCaptured;
     NotifyPostCaptureCallbackResolved(/*success=*/true);
@@ -340,7 +348,7 @@ void DocumentTransition::NotifyPostCaptureCallbackResolved(bool success) {
   DCHECK(prepare_promise_resolver_);
   DCHECK(!capture_resolved_callback_);
 
-  StopDeferringCommits();
+  ResumeRendering();
 
   if (!success) {
     CancelPendingTransition(kAbortedFromCallback);
@@ -511,55 +519,54 @@ String DocumentTransition::UAStyleSheet() const {
   return style_tracker_->UAStyleSheet();
 }
 
-void DocumentTransition::StartDeferringCommits() {
-  DCHECK(!deferring_commits_);
+void DocumentTransition::WillCommitCompositorFrame() {
+  // There should only be 1 commit when we're in the capturing phase and
+  // rendering is paused immediately after it finishes.
+  if (state_ == State::kCapturing)
+    PauseRendering();
+}
+
+void DocumentTransition::PauseRendering() {
+  DCHECK(!rendering_paused_scope_);
 
   if (!document_->GetPage() || !document_->View())
     return;
 
-  // Don't do paint holding if it could already be in progress for first
-  // contentful paint.
-  if (document_->View()->WillDoPaintHoldingForFCP())
-    return;
+  auto& client = document_->GetPage()->GetChromeClient();
+  rendering_paused_scope_ = client.PauseRendering(*document_->GetFrame());
+  DCHECK(rendering_paused_scope_);
+  client.UnregisterFromCommitObservation(this);
 
   // Based on the viz side timeout to hold snapshots for 5 seconds.
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(
-      "blink", "DocumentTransition::DeferringCommits", this);
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("blink",
+                                    "DocumentTransition::PauseRendering", this);
   constexpr base::TimeDelta kTimeout = base::Seconds(4);
-  auto& client = document_->GetPage()->GetChromeClient();
-  deferring_commits_ =
-      client.StartDeferringCommits(*document_->GetFrame(), kTimeout,
-                                   cc::PaintHoldingReason::kDocumentTransition);
-  DCHECK(deferring_commits_);
-  client.RegisterForDeferredCommitObservation(this);
+  document_->GetTaskRunner(TaskType::kInternalFrameLifecycleControl)
+      ->PostDelayedTask(
+          FROM_HERE,
+          WTF::Bind(&DocumentTransition::OnRenderingPausedTimeout,
+                    WrapWeakPersistent(this), last_prepare_sequence_id_),
+          kTimeout);
 }
 
-void DocumentTransition::WillStopDeferringCommits(
-    cc::PaintHoldingCommitTrigger trigger) {
-  // We don't expect to have any other triggers here, since we only register for
-  // the time we start deferring commits.
-  DCHECK(trigger == cc::PaintHoldingCommitTrigger::kDocumentTransition ||
-         trigger == cc::PaintHoldingCommitTrigger::kTimeoutDocumentTransition);
-  if (trigger == cc::PaintHoldingCommitTrigger::kTimeoutDocumentTransition)
-    CancelPendingTransition(kAbortedFromCallbackTimeout);
-  document_->GetPage()
-      ->GetChromeClient()
-      .UnregisterFromDeferredCommitObservation(this);
+void DocumentTransition::OnRenderingPausedTimeout(uint32_t sequence_id) {
+  if (last_prepare_sequence_id_ != sequence_id)
+    return;
+
+  if (!rendering_paused_scope_)
+    return;
+
+  CancelPendingTransition(kAbortedFromCallbackTimeout);
+  ResumeRendering();
 }
 
-void DocumentTransition::StopDeferringCommits() {
-  if (!deferring_commits_)
+void DocumentTransition::ResumeRendering() {
+  if (!rendering_paused_scope_)
     return;
 
-  TRACE_EVENT_NESTABLE_ASYNC_END0("blink",
-                                  "DocumentTransition::DeferringCommits", this);
-  deferring_commits_ = false;
-  if (!document_ || !document_->GetPage())
-    return;
-
-  document_->GetPage()->GetChromeClient().StopDeferringCommits(
-      *document_->GetFrame(),
-      cc::PaintHoldingCommitTrigger::kDocumentTransition);
+  TRACE_EVENT_NESTABLE_ASYNC_END0("blink", "DocumentTransition::PauseRendering",
+                                  this);
+  rendering_paused_scope_.reset();
 }
 
 void DocumentTransition::CancelPendingTransition(const char* abort_message) {
@@ -580,7 +587,7 @@ void DocumentTransition::ResetTransitionState(bool abort_style_tracker) {
     pending_request_.reset();
   }
   style_tracker_ = nullptr;
-  StopDeferringCommits();
+  ResumeRendering();
   state_ = State::kIdle;
 }
 

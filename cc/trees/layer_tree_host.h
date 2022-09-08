@@ -106,6 +106,17 @@ class CC_EXPORT ScopedDeferMainFrameUpdate {
   base::WeakPtr<LayerTreeHost> host_;
 };
 
+// Returned from LayerTreeHost::PauseRendering. Automatically un-pauses on
+// destruction.
+class CC_EXPORT ScopedPauseRendering {
+ public:
+  explicit ScopedPauseRendering(LayerTreeHost* host);
+  ~ScopedPauseRendering();
+
+ private:
+  base::WeakPtr<LayerTreeHost> host_;
+};
+
 class CC_EXPORT LayerTreeHost : public MutatorHostClient {
  public:
   struct CC_EXPORT InitParams {
@@ -296,6 +307,14 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
   // StopDeferringCommits is called.
   std::unique_ptr<ScopedDeferMainFrameUpdate> DeferMainFrameUpdate();
 
+  // Prevents the compositor from rendering updates. As opposed to
+  // DeferMainFrameUpdate() which only pauses main frames, this pauses both main
+  // and impl frames to ensure no visual updates are presented.
+  //
+  // Note that this ensures any previously committed or in progress (if called
+  // during the main frame) updates are presented before rendering is paused.
+  [[nodiscard]] std::unique_ptr<ScopedPauseRendering> PauseRendering();
+
   // Returns whether main frame updates are deferred. See conditions above.
   bool MainFrameUpdatesAreDeferred() const;
 
@@ -315,6 +334,9 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
 
   // Returns true if commits are currently deferred.
   bool IsDeferringCommits() const;
+
+  // Returns true if rendering is currently paused.
+  bool IsRenderingPaused() const;
 
   // Notification that the proxy started or stopped deferring commits.
   void OnDeferCommitsChanged(bool defer_status,
@@ -907,6 +929,7 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
   friend class LayerTreeHostSerializationTest;
   friend class LayerTreeTest;
   friend class ScopedDeferMainFrameUpdate;
+  friend class ScopedPauseRendering;
 
   // This is the number of consecutive frames in which we want the content to be
   // free of slow-paths before toggling the flag.
@@ -935,6 +958,7 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
   void WaitForCommitCompletion(bool for_protected_sequence) const;
 
   void UpdateDeferMainFrameUpdateInternal();
+  void UpdatePauseRenderingInternal();
 
   // Preemptively applies the scroll offset and delta before sending it to the
   // client. This lets the client skip a commit if the value does not change.
@@ -989,6 +1013,7 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
   bool is_pinch_gesture_active_from_impl_ = false;
 
   uint32_t defer_main_frame_update_count_ = 0;
+  uint32_t pause_rendering_count_ = 0;
 
   gfx::Rect visual_device_viewport_intersection_rect_;
 
@@ -1040,10 +1065,7 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
 
   bool syncing_deltas_for_test_ = false;
 
-  // Used to vend weak pointers to LayerTreeHost to ScopedDeferMainFrameUpdate
-  // objects.
-  base::WeakPtrFactory<LayerTreeHost> defer_main_frame_update_weak_ptr_factory_{
-      this};
+  base::WeakPtrFactory<LayerTreeHost> weak_ptr_factory_{this};
 };
 
 }  // namespace cc

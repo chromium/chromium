@@ -42,7 +42,7 @@ class CORE_EXPORT DocumentTransition
       public ActiveScriptWrappable<DocumentTransition>,
       public ExecutionContextLifecycleObserver,
       public LocalFrameView::LifecycleNotificationObserver,
-      public ChromeClient::DeferredCommitObserver {
+      public ChromeClient::CommitObserver {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -124,11 +124,16 @@ class CORE_EXPORT DocumentTransition
   // LifecycleNotificationObserver overrides.
   void WillStartLifecycleUpdate(const LocalFrameView&) override;
 
+  // CommitObserver overrides.
+  void WillCommitCompositorFrame() override;
+
   // Return non-root transitioning elements.
   VectorOf<Element> GetTransitioningElements() const {
     return style_tracker_ ? style_tracker_->GetTransitioningElements()
                           : VectorOf<Element>{};
   }
+
+  bool IsIdle() const { return state_ == State::kIdle; }
 
  private:
   friend class DocumentTransitionTest;
@@ -165,12 +170,12 @@ class CORE_EXPORT DocumentTransition
   // start phase of the animation can be initiated.
   void NotifyPostCaptureCallbackResolved(bool success);
 
-  // Used to defer visual updates between transition prepare finishing and
+  // Used to defer visual updates between transition prepare dispatching and
   // transition start to allow the page to set up the final scene
   // asynchronously.
-  void StartDeferringCommits();
-  void StopDeferringCommits();
-  void WillStopDeferringCommits(cc::PaintHoldingCommitTrigger) final;
+  void PauseRendering();
+  void OnRenderingPausedTimeout(uint32_t sequence_id);
+  void ResumeRendering();
 
   // Allow canceling a transition until it reaches start().
   void CancelPendingTransition(const char* abort_message);
@@ -226,7 +231,7 @@ class CORE_EXPORT DocumentTransition
   // It's unique among other local documents.
   uint32_t document_tag_ = 0u;
 
-  bool deferring_commits_ = false;
+  std::unique_ptr<cc::ScopedPauseRendering> rendering_paused_scope_;
 
   // Set only for tests.
   bool disable_end_transition_ = false;

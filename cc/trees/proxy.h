@@ -60,6 +60,9 @@ class CC_EXPORT Proxy {
   // reset. It is only supported when using a scheduler.
   virtual void SetDeferMainFrameUpdate(bool defer_main_frame_update) = 0;
 
+  // Pauses all main and impl-side rendering.
+  virtual void SetPauseRendering(bool pause_rendering) = 0;
+
   // Defers commits until at most the given |timeout| period has passed,
   // but continues to update the document lifecycle in
   // LayerTreeHost::BeginMainFrameUpdate. If multiple calls are made when

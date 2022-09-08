@@ -533,6 +533,10 @@ bool SchedulerStateMachine::CouldSendBeginMainFrame() const {
   if (defer_begin_main_frame_)
     return false;
 
+  // Do not send begin main frames if we want to pause rendering.
+  if (pause_rendering_)
+    return false;
+
   return true;
 }
 
@@ -726,6 +730,9 @@ SchedulerStateMachine::Action SchedulerStateMachine::NextAction() const {
 }
 
 bool SchedulerStateMachine::ShouldPerformImplSideInvalidation() const {
+  if (pause_rendering_)
+    return false;
+
   if (begin_frame_is_animate_only_)
     return false;
 
@@ -1101,6 +1108,31 @@ bool SchedulerStateMachine::BeginFrameNeededForVideo() const {
 }
 
 bool SchedulerStateMachine::BeginFrameNeeded() const {
+  // If we shouldn't subscribe to BeginFrames it implies BeginFrames are not
+  // needed.
+  if (!ShouldSubscribeToBeginFrames())
+    return false;
+
+  if (!pause_rendering_)
+    return true;
+
+  // Drain any in-flight main frame updates before pausing impl frames.
+  if (begin_main_frame_state_ != BeginMainFrameState::IDLE)
+    return true;
+
+  // If a pending tree exists, activate and draw before pausing impl frames.
+  if (has_pending_tree_)
+    return true;
+
+  // If a newly activated tree hasn't been drawn yet, draw it before pausing
+  // impl frames.
+  if (active_tree_needs_first_draw_)
+    return true;
+
+  return false;
+}
+
+bool SchedulerStateMachine::ShouldSubscribeToBeginFrames() const {
   // We can't handle BeginFrames when output surface isn't initialized.
   // TODO(brianderson): Support output surface creation inside a BeginFrame.
   if (!HasInitializedLayerTreeFrameSink())
@@ -1130,6 +1162,10 @@ void SchedulerStateMachine::SetVideoNeedsBeginFrames(
 void SchedulerStateMachine::SetDeferBeginMainFrame(
     bool defer_begin_main_frame) {
   defer_begin_main_frame_ = defer_begin_main_frame;
+}
+
+void SchedulerStateMachine::SetPauseRendering(bool pause_rendering) {
+  pause_rendering_ = pause_rendering;
 }
 
 // These are the cases where we require a BeginFrame message to make progress

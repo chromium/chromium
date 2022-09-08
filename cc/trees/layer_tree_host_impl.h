@@ -149,6 +149,8 @@ class LayerTreeHostImplClient {
   // Called when a requested image decode completes.
   virtual void NotifyImageDecodeRequestFinished() = 0;
 
+  virtual void NotifyTransitionRequestFinished(uint32_t sequence_id) = 0;
+
   // Called when a presentation time is requested. |frame_token| identifies
   // the frame that was presented. |callbacks| holds both impl side and main
   // side callbacks to be called.
@@ -827,9 +829,6 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   // Returns mutator events to be handled by BeginMainFrame.
   std::unique_ptr<MutatorEvents> TakeMutatorEvents();
 
-  // Returns all of the transition request sequence ids that were finished.
-  std::vector<uint32_t> TakeFinishedTransitionRequestSequenceIds();
-
   void ClearHistory();
   size_t CommitDurationSampleCountForTesting() const;
   void ClearCaches();
@@ -1310,8 +1309,6 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   // When enabled, calculates which frame sinks can be throttled based on
   // some pre-defined criteria.
   ThrottleDecider throttle_decider_;
-
-  std::vector<uint32_t> finished_transition_request_sequence_ids_;
 
   bool downsample_metrics_ = true;
   base::MetricsSubSampler metrics_subsampler_;

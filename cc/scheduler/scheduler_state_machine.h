@@ -176,6 +176,12 @@ class CC_EXPORT SchedulerStateMachine {
   // to make progress.
   bool BeginFrameNeeded() const;
 
+  // Indicates whether the compositor should continue to receive BeginFrame
+  // notifications. This is different from BeginFrameNeeded() for cases where we
+  // temporarily stop drawing. Unsubscribing and re-subscribing to BeginFrame
+  // notifications creates unnecessary overhead.
+  bool ShouldSubscribeToBeginFrames() const;
+
   // Indicates that the system has entered and left a BeginImplFrame callback.
   // The scheduler will not draw more than once in a given BeginImplFrame
   // callback nor send more than one BeginMainFrame message.
@@ -328,6 +334,7 @@ class CC_EXPORT SchedulerStateMachine {
   bool CouldSendBeginMainFrame() const;
 
   void SetDeferBeginMainFrame(bool defer_begin_main_frame);
+  void SetPauseRendering(bool pause_rendering);
 
   void SetVideoNeedsBeginFrames(bool video_needs_begin_frames);
   bool video_needs_begin_frames() const { return video_needs_begin_frames_; }
@@ -470,6 +477,7 @@ class CC_EXPORT SchedulerStateMachine {
   bool critical_begin_main_frame_to_activate_is_fast_ = true;
   bool main_thread_missed_last_deadline_ = false;
   bool defer_begin_main_frame_ = false;
+  bool pause_rendering_ = false;
   bool video_needs_begin_frames_ = false;
   bool last_commit_had_no_updates_ = false;
   bool active_tree_is_ready_to_draw_ = true;

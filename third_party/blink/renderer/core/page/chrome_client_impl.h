@@ -75,18 +75,16 @@ class CORE_EXPORT ChromeClientImpl final : public ChromeClient {
   void TakeFocus(mojom::blink::FocusType) override;
   void SetKeyboardFocusURL(Element* new_focus_element) override;
   void BeginLifecycleUpdates(LocalFrame& main_frame) override;
-  void RegisterForDeferredCommitObservation(DeferredCommitObserver*) override;
-  void UnregisterFromDeferredCommitObservation(
-      DeferredCommitObserver*) override;
-  void OnDeferCommitsChanged(
-      bool defer_status,
-      cc::PaintHoldingReason reason,
-      absl::optional<cc::PaintHoldingCommitTrigger> trigger) override;
+  void RegisterForCommitObservation(CommitObserver*) override;
+  void UnregisterFromCommitObservation(CommitObserver*) override;
+  void WillCommitCompositorFrame() override;
   bool StartDeferringCommits(LocalFrame& main_frame,
                              base::TimeDelta timeout,
                              cc::PaintHoldingReason reason) override;
   void StopDeferringCommits(LocalFrame& main_frame,
                             cc::PaintHoldingCommitTrigger) override;
+  std::unique_ptr<cc::ScopedPauseRendering> PauseRendering(
+      LocalFrame&) override;
   void StartDragging(LocalFrame*,
                      const WebDragData&,
                      DragOperationsMask,
@@ -336,7 +334,7 @@ class CORE_EXPORT ChromeClientImpl final : public ChromeClient {
   Member<ExternalDateTimeChooser> external_date_time_chooser_;
   bool did_request_non_empty_tool_tip_;
   absl::optional<bool> before_unload_confirm_panel_result_for_testing_;
-  HeapHashSet<WeakMember<DeferredCommitObserver>> deferred_commit_observers_;
+  HeapHashSet<WeakMember<CommitObserver>> commit_observers_;
 
   FRIEND_TEST_ALL_PREFIXES(FileChooserQueueTest, DerefQueuedChooser);
 };

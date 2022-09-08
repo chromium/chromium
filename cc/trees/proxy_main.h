@@ -74,6 +74,7 @@ class CC_EXPORT ProxyMain : public Proxy {
                                   base::TimeTicks first_scroll_timestamp);
   void ReportEventLatency(
       std::vector<EventLatencyTracker::LatencyData> latencies);
+  void NotifyTransitionRequestFinished(uint32_t sequence_id);
 
   CommitPipelineStage max_requested_pipeline_stage() const {
     return max_requested_pipeline_stage_;
@@ -99,6 +100,7 @@ class CC_EXPORT ProxyMain : public Proxy {
       const viz::LocalSurfaceId& target_local_surface_id) override;
   bool RequestedAnimatePending() override;
   void SetDeferMainFrameUpdate(bool defer_main_frame_update) override;
+  void SetPauseRendering(bool pause_rendering) override;
   bool StartDeferringCommits(base::TimeDelta timeout,
                              PaintHoldingReason reason) override;
   void StopDeferringCommits(PaintHoldingCommitTrigger) override;
@@ -164,6 +166,8 @@ class CC_EXPORT ProxyMain : public Proxy {
   // of the setting for paint_holding_reason_.
   bool defer_main_frame_update_;
   absl::optional<PaintHoldingReason> paint_holding_reason_;
+
+  bool pause_rendering_;
 
   // Only used when defer_commits_ is active and must be set in such cases.
   base::TimeTicks commits_restart_time_;

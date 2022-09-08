@@ -113,13 +113,11 @@ class CORE_EXPORT EmptyChromeClient : public ChromeClient {
   void SetOverscrollBehavior(LocalFrame& frame,
                              const cc::OverscrollBehavior&) override {}
   void BeginLifecycleUpdates(LocalFrame& main_frame) override {}
-  void RegisterForDeferredCommitObservation(DeferredCommitObserver*) override {}
-  void UnregisterFromDeferredCommitObservation(
-      DeferredCommitObserver*) override {}
-  void OnDeferCommitsChanged(
-      bool,
-      cc::PaintHoldingReason,
-      absl::optional<cc::PaintHoldingCommitTrigger>) override {}
+  void RegisterForCommitObservation(CommitObserver*) override {}
+  void UnregisterFromCommitObservation(CommitObserver*) override {}
+  void WillCommitCompositorFrame() override {}
+  std::unique_ptr<cc::ScopedPauseRendering> PauseRendering(
+      LocalFrame&) override;
   bool StartDeferringCommits(LocalFrame& main_frame,
                              base::TimeDelta timeout,
                              cc::PaintHoldingReason reason) override;

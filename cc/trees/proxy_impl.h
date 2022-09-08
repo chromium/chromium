@@ -57,6 +57,7 @@ class CC_EXPORT ProxyImpl : public LayerTreeHostImplClient,
   void InitializePaintWorkletLayerPainterOnImpl(
       std::unique_ptr<PaintWorkletLayerPainter> painter);
   void SetDeferBeginMainFrameFromMain(bool defer_begin_main_frame);
+  void SetPauseRendering(bool pause_rendering);
   void SetNeedsRedrawOnImpl(const gfx::Rect& damage_rect);
   void SetNeedsCommitOnImpl();
   void SetTargetLocalSurfaceIdOnImpl(
@@ -119,6 +120,7 @@ class CC_EXPORT ProxyImpl : public LayerTreeHostImplClient,
                                    bool skip_draw) override;
   void NeedsImplSideInvalidation(bool needs_first_draw_on_activation) override;
   void NotifyImageDecodeRequestFinished() override;
+  void NotifyTransitionRequestFinished(uint32_t sequence_id) override;
   void DidPresentCompositorFrameOnImplThread(
       uint32_t frame_token,
       PresentationTimeCallbackBuffer::PendingCallbacks activated,

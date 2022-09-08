@@ -6,8 +6,12 @@
       'The test verifies functionality of querying style information for document-transition pseudo elements');
 
   await session.evaluateAsync(`
-     new Promise(resolve => {
-       document.createDocumentTransition().start(resolve);
+     new Promise( async (resolve) => {
+       // Wait for the promise below and query style to ensure all
+       // pseudo-elements are generated before using the devtools API.
+       await document.createDocumentTransition().prepare();
+       window.getComputedStyle(document.documentElement, "::page-transition-incoming-image(root)").background;
+       resolve();
      });
   `);
 

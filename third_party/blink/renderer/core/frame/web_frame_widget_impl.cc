@@ -1422,14 +1422,6 @@ void WebFrameWidgetImpl::UpdateLifecycle(WebLifecycleUpdate requested_update,
   }
 }
 
-void WebFrameWidgetImpl::OnDeferCommitsChanged(
-    bool defer_status,
-    cc::PaintHoldingReason reason,
-    absl::optional<cc::PaintHoldingCommitTrigger> trigger) {
-  GetPage()->GetChromeClient().OnDeferCommitsChanged(defer_status, reason,
-                                                     trigger);
-}
-
 void WebFrameWidgetImpl::DidCompletePageScaleAnimation() {
   // Page scale animations only happen on the main frame.
   DCHECK(ForMainFrame());
@@ -1732,6 +1724,12 @@ void WebFrameWidgetImpl::StopDeferringCommits(
   if (!View()->does_composite())
     return;
   widget_base_->LayerTreeHost()->StopDeferringCommits(triggger);
+}
+
+std::unique_ptr<cc::ScopedPauseRendering> WebFrameWidgetImpl::PauseRendering() {
+  if (!View()->does_composite())
+    return nullptr;
+  return widget_base_->LayerTreeHost()->PauseRendering();
 }
 
 std::unique_ptr<cc::ScopedDeferMainFrameUpdate>
@@ -2165,6 +2163,7 @@ void WebFrameWidgetImpl::BeginCommitCompositorFrame() {
   } else {
     commit_compositor_frame_start_time_.emplace(base::TimeTicks::Now());
   }
+  GetPage()->GetChromeClient().WillCommitCompositorFrame();
   probe::LayerTreePainted(LocalRootImpl()->GetFrame());
   if (ForTopMostMainFrame()) {
     Document* doc = local_root_->GetFrame()->GetDocument();

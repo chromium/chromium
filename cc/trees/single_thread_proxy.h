@@ -59,6 +59,7 @@ class CC_EXPORT SingleThreadProxy : public Proxy,
       const viz::LocalSurfaceId& target_local_surface_id) override;
   bool RequestedAnimatePending() override;
   void SetDeferMainFrameUpdate(bool defer_main_frame_update) override;
+  void SetPauseRendering(bool pause_rendering) override;
   bool StartDeferringCommits(base::TimeDelta timeout,
                              PaintHoldingReason reason) override;
   void StopDeferringCommits(PaintHoldingCommitTrigger) override;
@@ -132,6 +133,7 @@ class CC_EXPORT SingleThreadProxy : public Proxy,
                                    bool skip_draw) override;
   void NeedsImplSideInvalidation(bool needs_first_draw_on_activation) override;
   void NotifyImageDecodeRequestFinished() override;
+  void NotifyTransitionRequestFinished(uint32_t sequence_id) override;
   void DidPresentCompositorFrameOnImplThread(
       uint32_t frame_token,
       PresentationTimeCallbackBuffer::PendingCallbacks callbacks,
@@ -207,6 +209,7 @@ class CC_EXPORT SingleThreadProxy : public Proxy,
 #endif
   bool inside_draw_;
   bool defer_main_frame_update_;
+  bool pause_rendering_;
   absl::optional<PaintHoldingReason> paint_holding_reason_;
   bool did_apply_compositor_deltas_ = false;
   bool animate_requested_;

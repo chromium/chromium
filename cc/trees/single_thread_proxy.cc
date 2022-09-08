@@ -61,6 +61,7 @@ SingleThreadProxy::SingleThreadProxy(LayerTreeHost* layer_tree_host,
 #endif
       inside_draw_(false),
       defer_main_frame_update_(false),
+      pause_rendering_(false),
       animate_requested_(false),
       update_layers_requested_(false),
       commit_requested_(false),
@@ -253,13 +254,6 @@ void SingleThreadProxy::DoPostCommit() {
   DebugScopedSetImplThread impl(task_runner_provider_);
   host_impl_->CommitComplete();
 
-  std::vector<uint32_t> ids =
-      host_impl_->TakeFinishedTransitionRequestSequenceIds();
-  {
-    DebugScopedSetMainThread main(task_runner_provider_);
-    layer_tree_host_->NotifyTransitionRequestsFinished(ids);
-  }
-
   // Commit goes directly to the active tree, but we need to synchronously
   // "activate" the tree still during commit to satisfy any potential
   // SetNextCommitWaitsForActivation calls.  Unfortunately, the tree
@@ -348,6 +342,29 @@ void SingleThreadProxy::SetDeferMainFrameUpdate(bool defer_main_frame_update) {
   // The scheduler needs to know that it should not issue BeginMainFrame.
   DebugScopedSetImplThread impl(task_runner_provider_);
   scheduler_on_impl_thread_->SetDeferBeginMainFrame(defer_main_frame_update_);
+}
+
+void SingleThreadProxy::SetPauseRendering(bool pause_rendering) {
+  DCHECK(task_runner_provider_->IsMainThread());
+  // Pause updates only makes sense if there's a scheduler. In synchronous mode,
+  // the client controls when a frame is produced.
+  if (!scheduler_on_impl_thread_)
+    return;
+  if (pause_rendering_ == pause_rendering)
+    return;
+
+  pause_rendering_ = pause_rendering;
+  if (pause_rendering_) {
+    TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(
+        "cc", "SingleThreadProxy::SetPauseRendering", TRACE_ID_LOCAL(this));
+  } else {
+    TRACE_EVENT_NESTABLE_ASYNC_END0(
+        "cc", "SingleThreadProxy::SetPauseRendering", TRACE_ID_LOCAL(this));
+  }
+
+  // The scheduler needs to know that it should not issue BeginFrame.
+  DebugScopedSetImplThread impl(task_runner_provider_);
+  scheduler_on_impl_thread_->SetPauseRendering(pause_rendering_);
 }
 
 bool SingleThreadProxy::StartDeferringCommits(base::TimeDelta timeout,
@@ -628,13 +645,19 @@ void SingleThreadProxy::NotifyImageDecodeRequestFinished() {
   // If we don't have a scheduler, then just issue the callbacks here.
   // Otherwise, schedule a commit.
   if (!scheduler_on_impl_thread_) {
-    auto sequence_ids = host_impl_->TakeFinishedTransitionRequestSequenceIds();
     DebugScopedSetMainThread main_thread(task_runner_provider_);
     IssueImageDecodeFinishedCallbacks();
-    layer_tree_host_->NotifyTransitionRequestsFinished(sequence_ids);
   } else {
     SetNeedsCommitOnImplThread();
   }
+}
+
+void SingleThreadProxy::NotifyTransitionRequestFinished(uint32_t sequence_id) {
+  DCHECK(!task_runner_provider_->HasImplThread() ||
+         task_runner_provider_->IsImplThread());
+
+  DebugScopedSetMainThread main_thread(task_runner_provider_);
+  layer_tree_host_->NotifyTransitionRequestsFinished({sequence_id});
 }
 
 void SingleThreadProxy::DidPresentCompositorFrameOnImplThread(

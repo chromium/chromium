@@ -295,6 +295,7 @@ class LayerTreeHostImplTest : public testing::Test,
       const base::flat_set<viz::FrameSinkId>& ids) override {}
   void ClearHistory() override {}
   size_t CommitDurationSampleCountForTesting() const override { return 0; }
+  void NotifyTransitionRequestFinished(uint32_t sequence_id) override {}
   void set_reduce_memory_result(bool reduce_memory_result) {
     reduce_memory_result_ = reduce_memory_result;
   }

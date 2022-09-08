@@ -659,14 +659,17 @@ TEST_P(DocumentTransitionTest, StartPromiseIsResolved) {
                         exception_state));
   EXPECT_EQ(GetState(transition), State::kCapturing);
 
-  // Visual updates are allows during capture phase.
-  EXPECT_FALSE(LayerTreeHost()->IsDeferringCommits());
+  UpdateAllLifecyclePhasesForTest();
+  GetDocument().GetPage()->GetChromeClient().WillCommitCompositorFrame();
+
+  // Visual updates paused during capture phase.
+  EXPECT_TRUE(LayerTreeHost()->IsRenderingPaused());
 
   UpdateAllLifecyclePhasesAndFinishDirectives();
   EXPECT_EQ(GetState(transition), State::kCaptured);
 
   // Visual updates are stalled between captured and start.
-  EXPECT_TRUE(LayerTreeHost()->IsDeferringCommits());
+  EXPECT_TRUE(LayerTreeHost()->IsRenderingPaused());
 
   test::RunPendingTasks();
   EXPECT_EQ(GetState(transition), State::kStarted);
@@ -674,7 +677,7 @@ TEST_P(DocumentTransitionTest, StartPromiseIsResolved) {
   FinishTransition();
 
   // Visual updates are restored on start.
-  EXPECT_FALSE(LayerTreeHost()->IsDeferringCommits());
+  EXPECT_FALSE(LayerTreeHost()->IsRenderingPaused());
 
   start_tester.WaitUntilSettled();
   EXPECT_TRUE(start_tester.IsFulfilled());

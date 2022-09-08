@@ -208,6 +208,11 @@ void ProxyImpl::SetDeferBeginMainFrameFromMain(bool defer_begin_main_frame) {
     scheduler_->SetDeferBeginMainFrame(ShouldDeferBeginMainFrame());
 }
 
+void ProxyImpl::SetPauseRendering(bool pause_rendering) {
+  DCHECK(IsImplThread());
+  scheduler_->SetPauseRendering(pause_rendering);
+}
+
 void ProxyImpl::SetDeferBeginMainFrameFromImpl(bool defer_begin_main_frame) {
   // This is a request from the impl thread to defer BeginMainFrame.
   DCHECK(IsImplThread());
@@ -615,6 +620,13 @@ void ProxyImpl::NotifyImageDecodeRequestFinished() {
   SetNeedsCommitOnImplThread();
 }
 
+void ProxyImpl::NotifyTransitionRequestFinished(uint32_t sequence_id) {
+  DCHECK(IsImplThread());
+  MainThreadTaskRunner()->PostTask(
+      FROM_HERE, base::BindOnce(&ProxyMain::NotifyTransitionRequestFinished,
+                                proxy_main_weak_ptr_, sequence_id));
+}
+
 void ProxyImpl::DidPresentCompositorFrameOnImplThread(
     uint32_t frame_token,
     PresentationTimeCallbackBuffer::PendingCallbacks activated,
@@ -712,8 +724,6 @@ void ProxyImpl::ScheduledActionSendBeginMainFrame(
                        : nullptr);
   begin_main_frame_state->completed_image_decode_requests =
       host_impl_->TakeCompletedImageDecodeRequests();
-  begin_main_frame_state->finished_transition_request_sequence_ids =
-      host_impl_->TakeFinishedTransitionRequestSequenceIds();
   begin_main_frame_state->mutator_events = host_impl_->TakeMutatorEvents();
   begin_main_frame_state->active_sequence_trackers =
       host_impl_->FrameSequenceTrackerActiveTypes();

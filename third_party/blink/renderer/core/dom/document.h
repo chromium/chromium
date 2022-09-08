@@ -1735,9 +1735,7 @@ class CORE_EXPORT Document : public ContainerNode,
 
   // Deferred compositor commits are disallowed by default, and are only allowed
   // for same-origin navigations to an html document fetched with http.
-  bool DeferredCompositorCommitIsAllowed() const {
-    return deferred_compositor_commit_is_allowed_;
-  }
+  bool DeferredCompositorCommitIsAllowed() const;
   void SetDeferredCompositorCommitIsAllowed(bool new_value) {
     deferred_compositor_commit_is_allowed_ = new_value;
   }

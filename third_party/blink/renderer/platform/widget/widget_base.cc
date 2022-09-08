@@ -548,7 +548,6 @@ void WidgetBase::OnDeferCommitsChanged(
   // The input handler wants to know about the commit status for metric purposes
   // and to enable/disable input.
   widget_input_handler_manager_->OnDeferCommitsChanged(defer, reason);
-  client_->OnDeferCommitsChanged(defer, reason, trigger);
 }
 
 void WidgetBase::DidBeginMainFrame() {

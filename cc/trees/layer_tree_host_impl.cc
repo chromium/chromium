@@ -2239,8 +2239,7 @@ void LayerTreeHostImpl::OnDraw(const gfx::Transform& transform,
 
 void LayerTreeHostImpl::OnCompositorFrameTransitionDirectiveProcessed(
     uint32_t sequence_id) {
-  finished_transition_request_sequence_ids_.push_back(sequence_id);
-  SetNeedsCommit();
+  client_->NotifyTransitionRequestFinished(sequence_id);
 }
 
 void LayerTreeHostImpl::ReportEventLatency(
@@ -3706,13 +3705,6 @@ std::unique_ptr<MutatorEvents> LayerTreeHostImpl::TakeMutatorEvents() {
   std::swap(events, mutator_events_);
   mutator_host_->TakeTimeUpdatedEvents(events.get());
   return events;
-}
-
-std::vector<uint32_t>
-LayerTreeHostImpl::TakeFinishedTransitionRequestSequenceIds() {
-  std::vector<uint32_t> result;
-  result.swap(finished_transition_request_sequence_ids_);
-  return result;
 }
 
 void LayerTreeHostImpl::ClearHistory() {

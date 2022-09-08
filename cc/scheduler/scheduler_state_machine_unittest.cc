@@ -3119,5 +3119,82 @@ TEST(SchedulerStateMachineTest, TestFullPipelineModeDoesntBlockAfterCommit) {
   EXPECT_ACTION_UPDATE_STATE(SchedulerStateMachine::Action::DRAW_IF_POSSIBLE);
 }
 
+TEST(SchedulerStateMachineTest,
+     PauseRenderingSuppressesCommitsAndInvalidations) {
+  SchedulerSettings settings;
+  StateMachine state(settings);
+  SET_UP_STATE(state);
+
+  // Set up a main frame in a state where we're waiting for a commit.
+  state.SetNeedsBeginMainFrame();
+  state.IssueNextBeginImplFrame();
+  EXPECT_ACTION_UPDATE_STATE(
+      SchedulerStateMachine::Action::SEND_BEGIN_MAIN_FRAME);
+
+  // Main thread sends a notification to pause rendering before this frame
+  // commits.
+  state.SetPauseRendering(true);
+
+  // Finish the impl frame before the main thread responds.
+  state.OnBeginImplFrameDeadline();
+
+  // We're still subscribed to BeginFrames since the pending commit needs to be
+  // activated and drawn.
+  EXPECT_TRUE(state.ShouldSubscribeToBeginFrames());
+  EXPECT_TRUE(state.BeginFrameNeeded());
+
+  // Now the main thread responds which triggers commit.
+  state.NotifyReadyToCommit();
+  EXPECT_ACTION_UPDATE_STATE(SchedulerStateMachine::Action::COMMIT);
+  EXPECT_ACTION_UPDATE_STATE(SchedulerStateMachine::Action::POST_COMMIT);
+
+  // The frame finishes before we're ready to activate, should still remain
+  // subscribed to BeginFrames for activation.
+  state.OnBeginImplFrameDeadline();
+  EXPECT_TRUE(state.ShouldSubscribeToBeginFrames());
+  EXPECT_TRUE(state.BeginFrameNeeded());
+
+  // Trigger activation. We should still remain subscribed to BeginFrames for
+  // draw.
+  state.NotifyReadyToActivate();
+  EXPECT_ACTION_UPDATE_STATE(SchedulerStateMachine::Action::ACTIVATE_SYNC_TREE);
+  EXPECT_TRUE(state.ShouldSubscribeToBeginFrames());
+  EXPECT_TRUE(state.BeginFrameNeeded());
+  EXPECT_ACTION_UPDATE_STATE(SchedulerStateMachine::Action::DRAW_IF_POSSIBLE);
+  EXPECT_ACTION_UPDATE_STATE(SchedulerStateMachine::Action::NONE);
+  state.OnBeginImplFrameDeadline();
+
+  // Request main frame. These are suppressed because rendering is paused.
+  state.SetNeedsBeginMainFrame();
+  state.IssueNextBeginImplFrame();
+  EXPECT_ACTION_UPDATE_STATE(SchedulerStateMachine::Action::NONE);
+  state.OnBeginImplFrameDeadline();
+
+  // Request an impl-side invalidation and start a new frame. The invalidations
+  // are paused to avoid new updates which have to be drained through the
+  // pipeline.
+  state.SetNeedsImplSideInvalidation(true);
+  state.IssueNextBeginImplFrame();
+  EXPECT_ACTION_UPDATE_STATE(SchedulerStateMachine::Action::NONE);
+
+  // Now that the last commit has been drawn, we shouldn't need BeginFrames
+  // anymore.
+  EXPECT_TRUE(state.ShouldSubscribeToBeginFrames());
+  EXPECT_FALSE(state.BeginFrameNeeded());
+
+  // Unpause rendering. This should send the suppressed BeginMainFrame and
+  // trigger impl-side invalidation.
+  state.SetPauseRendering(false);
+  EXPECT_TRUE(state.ShouldSubscribeToBeginFrames());
+  EXPECT_TRUE(state.BeginFrameNeeded());
+
+  state.IssueNextBeginImplFrame();
+  state.set_should_defer_invalidation_for_fast_main_frame(false);
+  EXPECT_ACTION_UPDATE_STATE(
+      SchedulerStateMachine::Action::SEND_BEGIN_MAIN_FRAME);
+  EXPECT_ACTION_UPDATE_STATE(
+      SchedulerStateMachine::Action::PERFORM_IMPL_SIDE_INVALIDATION);
+}
+
 }  // namespace
 }  // namespace cc

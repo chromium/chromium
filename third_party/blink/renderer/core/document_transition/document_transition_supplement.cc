@@ -18,7 +18,7 @@ const char DocumentTransitionSupplement::kSupplementName[] =
 
 // static
 DocumentTransitionSupplement* DocumentTransitionSupplement::FromIfExists(
-    Document& document) {
+    const Document& document) {
   return Supplement<Document>::From<DocumentTransitionSupplement>(document);
 }
 

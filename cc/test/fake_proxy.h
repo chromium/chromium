@@ -57,6 +57,7 @@ class FakeProxy : public Proxy {
   void SetRenderFrameObserver(
       std::unique_ptr<RenderFrameMetadataObserver> observer) override {}
   double GetPercentDroppedFrames() const override;
+  void SetPauseRendering(bool pause_rendering) override {}
 
  private:
   raw_ptr<LayerTreeHost> layer_tree_host_;

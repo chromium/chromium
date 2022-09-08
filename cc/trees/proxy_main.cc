@@ -44,7 +44,8 @@ ProxyMain::ProxyMain(LayerTreeHost* layer_tree_host,
       final_pipeline_stage_(NO_PIPELINE_STAGE),
       deferred_final_pipeline_stage_(NO_PIPELINE_STAGE),
       started_(false),
-      defer_main_frame_update_(false) {
+      defer_main_frame_update_(false),
+      pause_rendering_(false) {
   TRACE_EVENT0("cc", "ProxyMain::ProxyMain");
   DCHECK(task_runner_provider_);
   DCHECK(IsMainThread());
@@ -154,9 +155,6 @@ void ProxyMain::BeginMainFrame(
   layer_tree_host_->ImageDecodesFinished(
       std::move(begin_main_frame_state->completed_image_decode_requests));
 
-  layer_tree_host_->NotifyTransitionRequestsFinished(std::move(
-      begin_main_frame_state->finished_transition_request_sequence_ids));
-
   // Visibility check needs to happen before setting
   // max_requested_pipeline_stage_. Otherwise a requested commit could get lost
   // after tab becomes visible again.
@@ -188,7 +186,7 @@ void ProxyMain::BeginMainFrame(
   max_requested_pipeline_stage_ = NO_PIPELINE_STAGE;
 
   // If main frame updates and commits are deferred, skip the entire pipeline.
-  if (defer_main_frame_update_) {
+  if (defer_main_frame_update_ || pause_rendering_) {
     TRACE_EVENT_INSTANT0("cc", "EarlyOut_DeferCommit",
                          TRACE_EVENT_SCOPE_THREAD);
     TRACE_EVENT_WITH_FLOW1("viz,benchmark",
@@ -487,6 +485,10 @@ void ProxyMain::ReportEventLatency(
   layer_tree_host_->ReportEventLatency(std::move(latencies));
 }
 
+void ProxyMain::NotifyTransitionRequestFinished(uint32_t sequence_id) {
+  layer_tree_host_->NotifyTransitionRequestsFinished({sequence_id});
+}
+
 bool ProxyMain::IsStarted() const {
   DCHECK(IsMainThread());
   return started_;
@@ -590,6 +592,27 @@ void ProxyMain::SetDeferMainFrameUpdate(bool defer_main_frame_update) {
       FROM_HERE, base::BindOnce(&ProxyImpl::SetDeferBeginMainFrameFromMain,
                                 base::Unretained(proxy_impl_.get()),
                                 defer_main_frame_update));
+}
+
+void ProxyMain::SetPauseRendering(bool pause_rendering) {
+  DCHECK(IsMainThread());
+  if (pause_rendering_ == pause_rendering)
+    return;
+
+  pause_rendering_ = pause_rendering;
+  if (pause_rendering_) {
+    TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("cc", "ProxyMain::SetPauseRendering",
+                                      TRACE_ID_LOCAL(this));
+  } else {
+    TRACE_EVENT_NESTABLE_ASYNC_END0("cc", "ProxyMain::SetPauseRendering",
+                                    TRACE_ID_LOCAL(this));
+  }
+
+  // The impl thread needs to know that it should not issue BeginFrames.
+  ImplThreadTaskRunner()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&ProxyImpl::SetPauseRendering,
+                     base::Unretained(proxy_impl_.get()), pause_rendering_));
 }
 
 bool ProxyMain::StartDeferringCommits(base::TimeDelta timeout,

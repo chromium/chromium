@@ -185,7 +185,7 @@ ChromeClientImpl::~ChromeClientImpl() {
 void ChromeClientImpl::Trace(Visitor* visitor) const {
   visitor->Trace(popup_opening_observers_);
   visitor->Trace(external_date_time_chooser_);
-  visitor->Trace(deferred_commit_observers_);
+  visitor->Trace(commit_observers_);
   ChromeClient::Trace(visitor);
 }
 
@@ -1047,29 +1047,32 @@ void ChromeClientImpl::BeginLifecycleUpdates(LocalFrame& main_frame) {
   web_view_->StopDeferringMainFrameUpdate();
 }
 
-void ChromeClientImpl::RegisterForDeferredCommitObservation(
-    DeferredCommitObserver* observer) {
-  deferred_commit_observers_.insert(observer);
+void ChromeClientImpl::RegisterForCommitObservation(CommitObserver* observer) {
+  commit_observers_.insert(observer);
 }
 
-void ChromeClientImpl::UnregisterFromDeferredCommitObservation(
-    DeferredCommitObserver* observer) {
-  deferred_commit_observers_.erase(observer);
+void ChromeClientImpl::UnregisterFromCommitObservation(
+    CommitObserver* observer) {
+  commit_observers_.erase(observer);
 }
 
-void ChromeClientImpl::OnDeferCommitsChanged(
-    bool defer_status,
-    cc::PaintHoldingReason reason,
-    absl::optional<cc::PaintHoldingCommitTrigger> trigger) {
-  DCHECK(defer_status || trigger);
+void ChromeClientImpl::WillCommitCompositorFrame() {
   // Make a copy since callbacks may modify the set as we're iterating it.
-  auto observers = deferred_commit_observers_;
-  for (auto& observer : observers) {
-    if (defer_status)
-      observer->WillStartDeferringCommits(reason);
-    else
-      observer->WillStopDeferringCommits(*trigger);
-  }
+  auto observers = commit_observers_;
+  for (auto& observer : observers)
+    observer->WillCommitCompositorFrame();
+}
+
+std::unique_ptr<cc::ScopedPauseRendering> ChromeClientImpl::PauseRendering(
+    LocalFrame& frame) {
+  // If |frame| corresponds to an iframe this implies a transition in an iframe
+  // will pause rendering for the all ancestor frames (including the main frame)
+  // hosted in this process.
+  // TODO(khushalsagar): We need to switch to a different render-blocking
+  // mechanism for nested frames.
+  return WebLocalFrameImpl::FromFrame(frame)
+      ->FrameWidgetImpl()
+      ->PauseRendering();
 }
 
 bool ChromeClientImpl::StartDeferringCommits(LocalFrame& main_frame,

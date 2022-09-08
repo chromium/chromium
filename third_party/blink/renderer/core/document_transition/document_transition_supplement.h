@@ -22,7 +22,7 @@ class CORE_EXPORT DocumentTransitionSupplement
 
   // Supplement functionality.
   static DocumentTransitionSupplement* From(Document&);
-  static DocumentTransitionSupplement* FromIfExists(Document&);
+  static DocumentTransitionSupplement* FromIfExists(const Document&);
 
   static DocumentTransition* EnsureDocumentTransition(Document&);
 

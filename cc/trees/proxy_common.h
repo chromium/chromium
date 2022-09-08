@@ -30,7 +30,6 @@ struct CC_EXPORT BeginMainFrameAndCommitState {
   // Bit encoding of the FrameSequenceTrackerType for active trackers
   ActiveFrameSequenceTrackers active_sequence_trackers = 0;
   bool evicted_ui_resources = false;
-  std::vector<uint32_t> finished_transition_request_sequence_ids;
   uint64_t trace_id = 0;
 };
 

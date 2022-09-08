@@ -75,6 +75,11 @@ DateTimeChooser* EmptyChromeClient::OpenDateTimeChooser(
   return nullptr;
 }
 
+std::unique_ptr<cc::ScopedPauseRendering> EmptyChromeClient::PauseRendering(
+    LocalFrame&) {
+  return nullptr;
+}
+
 void EmptyChromeClient::OpenTextDataListChooser(HTMLInputElement&) {}
 
 void EmptyChromeClient::OpenFileChooser(LocalFrame*,
