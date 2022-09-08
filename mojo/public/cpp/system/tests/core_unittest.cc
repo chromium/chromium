@@ -148,7 +148,6 @@ TEST(CoreCppTest, Basic) {
                              MOJO_READ_MESSAGE_FLAG_NONE));
 
     // Basic tests of waiting and closing.
-    MojoHandle hv0 = kInvalidHandleValue;
     {
       ScopedMessagePipeHandle h0;
       ScopedMessagePipeHandle h1;
@@ -159,10 +158,6 @@ TEST(CoreCppTest, Basic) {
       EXPECT_TRUE(h0.get().is_valid());
       EXPECT_TRUE(h1.get().is_valid());
       EXPECT_NE(h0.get().value(), h1.get().value());
-      // Save the handle values, so we can check that things got closed
-      // correctly.
-      hv0 = h0.get().value();
-      MojoHandle hv1 = h1.get().value();
       MojoHandleSignalsState state = h0->QuerySignalsState();
 
       EXPECT_EQ(MOJO_HANDLE_SIGNAL_WRITABLE, state.satisfied_signals);
@@ -190,10 +185,6 @@ TEST(CoreCppTest, Basic) {
       Close(std::move(h1));
       EXPECT_FALSE(h1.get().is_valid());
 
-      // Make sure |h1| is closed.
-      EXPECT_EQ(MOJO_RESULT_INVALID_ARGUMENT,
-                Wait(Handle(hv1), ~MOJO_HANDLE_SIGNAL_NONE));
-
       EXPECT_EQ(MOJO_RESULT_FAILED_PRECONDITION,
                 Wait(h0.get(), MOJO_HANDLE_SIGNAL_READABLE, &state));
 
@@ -201,9 +192,6 @@ TEST(CoreCppTest, Basic) {
       EXPECT_FALSE(state.satisfiable_signals & MOJO_HANDLE_SIGNAL_WRITABLE);
       EXPECT_FALSE(state.satisfiable_signals & MOJO_HANDLE_SIGNAL_READABLE);
     }
-    // |hv0| should have been closed when |h0| went out of scope, so this close
-    // should fail.
-    EXPECT_EQ(MOJO_RESULT_INVALID_ARGUMENT, MojoClose(hv0));
 
     // Actually test writing/reading messages.
     {
@@ -249,8 +237,6 @@ TEST(CoreCppTest, Basic) {
       EXPECT_EQ(MOJO_RESULT_OK,
                 WriteMessageRaw(h1.get(), kHello, kHelloSize - 1, handles,
                                 handles_count, MOJO_WRITE_MESSAGE_FLAG_NONE));
-      // |handles[0]| should actually be invalid now.
-      EXPECT_EQ(MOJO_RESULT_INVALID_ARGUMENT, MojoClose(handles[0]));
 
       // Read "hello" and the sent handle.
       EXPECT_EQ(MOJO_RESULT_OK,
@@ -266,9 +252,7 @@ TEST(CoreCppTest, Basic) {
       EXPECT_NE(kInvalidHandleValue, read_handles[0]->value());
 
       // Read from the sent/received handle.
-      mp.handle1.reset(MessagePipeHandle(read_handles[0]->value()));
-      // Save |handles[0]| to check that it gets properly closed.
-      hv0 = read_handles[0].release().value();
+      mp.handle1.reset(MessagePipeHandle(read_handles[0].release().value()));
 
       EXPECT_EQ(MOJO_RESULT_OK,
                 Wait(mp.handle1.get(), MOJO_HANDLE_SIGNAL_READABLE, &state));
@@ -282,7 +266,6 @@ TEST(CoreCppTest, Basic) {
       EXPECT_EQ(kWorld, std::string(bytes.begin(), bytes.end()));
       EXPECT_TRUE(read_handles.empty());
     }
-    EXPECT_EQ(MOJO_RESULT_INVALID_ARGUMENT, MojoClose(hv0));
   }
 }
 
@@ -321,8 +304,6 @@ TEST(CoreCppTest, TearDownWithMessagesEnqueued) {
     EXPECT_EQ(MOJO_RESULT_OK,
               WriteMessageRaw(h1.get(), kHello, kHelloSize, &h3_value, 1,
                               MOJO_WRITE_MESSAGE_FLAG_NONE));
-    // |h3_value| should actually be invalid now.
-    EXPECT_EQ(MOJO_RESULT_INVALID_ARGUMENT, MojoClose(h3_value));
 
     EXPECT_EQ(MOJO_RESULT_OK, MojoClose(h0.release().value()));
     EXPECT_EQ(MOJO_RESULT_OK, MojoClose(h1.release().value()));
@@ -363,8 +344,6 @@ TEST(CoreCppTest, TearDownWithMessagesEnqueued) {
     EXPECT_EQ(MOJO_RESULT_OK,
               WriteMessageRaw(h1.get(), kHello, kHelloSize, &h3_value, 1,
                               MOJO_WRITE_MESSAGE_FLAG_NONE));
-    // |h3_value| should actually be invalid now.
-    EXPECT_EQ(MOJO_RESULT_INVALID_ARGUMENT, MojoClose(h3_value));
 
     EXPECT_EQ(MOJO_RESULT_OK, MojoClose(h2.release().value()));
     EXPECT_EQ(MOJO_RESULT_OK, MojoClose(h0.release().value()));

@@ -7,10 +7,12 @@
 #include <utility>
 
 #include "base/base_paths.h"
+#include "base/base_switches.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/string_piece.h"
@@ -19,6 +21,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_timeouts.h"
 #include "build/build_config.h"
+#include "mojo/core/embedder/embedder.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "mojo/public/cpp/system/platform_handle.h"
@@ -107,6 +110,14 @@ class InvitationCppTest : public testing::Test,
       }
 #endif  //  !BUILDFLAG(IS_FUCHSIA)
     }
+
+    std::string enable_features;
+    std::string disable_features;
+    base::FeatureList::GetInstance()->GetCommandLineFeatureOverrides(
+        &enable_features, &disable_features);
+    command_line.AppendSwitchASCII(switches::kEnableFeatures, enable_features);
+    command_line.AppendSwitchASCII(switches::kDisableFeatures,
+                                   disable_features);
 
     child_process_ = base::SpawnMultiProcessTestChild(
         test_client_name, command_line, launch_options);
@@ -237,6 +248,12 @@ DEFINE_TEST_CLIENT(CppSendClient) {
 }
 
 TEST_P(InvitationCppTest, SendIsolated) {
+  if (mojo::core::IsMojoIpczEnabled()) {
+    // TODO(http://crbug.com/1299283): Enable this test with MojoIpcz once
+    // support for isolated connections is implemented.
+    GTEST_SKIP() << "MojoIpcz does not yet support isolated invitations.";
+  }
+
   ScopedMessagePipeHandle pipe;
   LaunchChildTestClient("CppSendIsolatedClient", &pipe, 1,
                         InvitationType::kIsolated, GetParam());
@@ -267,6 +284,12 @@ DEFINE_TEST_CLIENT(CppSendWithMultiplePipesClient) {
 }
 
 TEST(InvitationCppTest_NoParam, SendIsolatedInvitationWithDuplicateName) {
+  if (mojo::core::IsMojoIpczEnabled()) {
+    // TODO(http://crbug.com/1299283): Enable this test with MojoIpcz once
+    // support for isolated connections is implemented.
+    GTEST_SKIP() << "MojoIpcz does not yet support isolated invitations.";
+  }
+
   base::test::TaskEnvironment task_environment;
   PlatformChannel channel1;
   PlatformChannel channel2;

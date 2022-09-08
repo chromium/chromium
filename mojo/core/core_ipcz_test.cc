@@ -11,6 +11,7 @@
 #include "base/strings/string_piece.h"
 #include "base/synchronization/waitable_event.h"
 #include "build/build_config.h"
+#include "mojo/core/embedder/embedder.h"
 #include "mojo/core/ipcz_api.h"
 #include "mojo/core/ipcz_driver/transport.h"
 #include "mojo/core/test/mojo_test_base.h"
@@ -43,7 +44,11 @@ class CoreIpczTest : public test::MojoTestBase {
   explicit CoreIpczTest(decltype(kForClient))
       : CoreIpczTest(/*is_broker=*/false) {}
 
-  ~CoreIpczTest() override { DestroyIpczNodeForProcess(); }
+  ~CoreIpczTest() override {
+    if (!IsMojoIpczEnabled()) {
+      DestroyIpczNodeForProcess();
+    }
+  }
 
   MojoMessageHandle CreateMessage(base::StringPiece contents,
                                   base::span<MojoHandle> handles = {}) {
@@ -195,7 +200,11 @@ class CoreIpczTest : public test::MojoTestBase {
 
  private:
   explicit CoreIpczTest(bool is_broker) {
-    CHECK(InitializeIpczNodeForProcess({.is_broker = is_broker}));
+    // If MojoIpcz is enabled, there's no need for the fixture to try to
+    // initialize it again.
+    if (!IsMojoIpczEnabled()) {
+      CHECK(InitializeIpczNodeForProcess({.is_broker = is_broker}));
+    }
   }
 
   const MojoSystemThunks2* const mojo_{GetMojoIpczImpl()};
@@ -754,6 +763,13 @@ DEFINE_TEST_CLIENT_TEST_WITH_PIPE(InvitationSingleAttachmentClient,
 }
 
 TEST_F(CoreIpczTest, InvitationSingleAttachment) {
+  if (IsMojoIpczEnabled()) {
+    GTEST_SKIP() << "This is does not work with the MojoIpcz feature enabled, "
+                 << "since its setup conflicts with normal Mojo initialization "
+                 << "in that case. It is also redundant in that case since "
+                 << "various invitation unittests cover the same code paths.";
+  }
+
   RunTestClientWithController(
       "InvitationSingleAttachmentClient", [&](ClientController& c) {
         InvitationDetails details;
@@ -799,6 +815,13 @@ DEFINE_TEST_CLIENT_TEST_WITH_PIPE(InvitationMultipleAttachmentsClient,
 }
 
 TEST_F(CoreIpczTest, InvitationMultipleAttachments) {
+  if (IsMojoIpczEnabled()) {
+    GTEST_SKIP() << "This is does not work with the MojoIpcz feature enabled, "
+                 << "since its setup conflicts with normal Mojo initialization "
+                 << "in that case. It is also redundant in that case since "
+                 << "various invitation unittests cover the same code paths.";
+  }
+
   RunTestClientWithController(
       "InvitationMultipleAttachmentsClient", [&](ClientController& c) {
         InvitationDetails details;
@@ -867,6 +890,13 @@ DEFINE_TEST_CLIENT_TEST_WITH_PIPE(DataPipeTransferClient,
 }
 
 TEST_F(CoreIpczTest, DataPipeTransfer) {
+  if (IsMojoIpczEnabled()) {
+    GTEST_SKIP() << "This is does not work with the MojoIpcz feature enabled, "
+                 << "since its setup conflicts with normal Mojo initialization "
+                 << "in that case. It is also redundant in that case since "
+                 << "various invitation unittests cover the same code paths.";
+  }
+
   RunTestClientWithController(
       "DataPipeTransferClient", [&](ClientController& c) {
         InvitationDetails details;

@@ -25,6 +25,7 @@ source_set("tests") {
   deps = [
     "//base",
     "//base/test:test_support",
+    "//mojo/core/embedder",
     "//mojo/core/test:test_support",
     "//mojo/public/c/system/tests",
     "//mojo/public/cpp/platform",

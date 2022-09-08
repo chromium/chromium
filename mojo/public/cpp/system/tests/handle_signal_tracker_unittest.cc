@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
+#include "mojo/core/embedder/embedder.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "mojo/public/cpp/system/wait.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -40,6 +41,10 @@ class HandleSignalTrackerTest : public testing::Test {
 };
 
 TEST_F(HandleSignalTrackerTest, StartsWithCorrectState) {
+  if (mojo::core::IsMojoIpczEnabled()) {
+    GTEST_SKIP() << "HandleSignalTracker is not supported by MojoIpcz.";
+  }
+
   MessagePipe pipe;
   {
     HandleSignalTracker tracker(pipe.handle0.get(),
@@ -60,6 +65,10 @@ TEST_F(HandleSignalTrackerTest, StartsWithCorrectState) {
 }
 
 TEST_F(HandleSignalTrackerTest, BasicTracking) {
+  if (mojo::core::IsMojoIpczEnabled()) {
+    GTEST_SKIP() << "HandleSignalTracker is not supported by MojoIpcz.";
+  }
+
   MessagePipe pipe;
   HandleSignalTracker tracker(pipe.handle0.get(), MOJO_HANDLE_SIGNAL_READABLE);
   EXPECT_FALSE(tracker.last_known_state().readable());
@@ -77,6 +86,10 @@ TEST_F(HandleSignalTrackerTest, BasicTracking) {
 }
 
 TEST_F(HandleSignalTrackerTest, DoesntUpdateOnIrrelevantChanges) {
+  if (mojo::core::IsMojoIpczEnabled()) {
+    GTEST_SKIP() << "HandleSignalTracker is not supported by MojoIpcz.";
+  }
+
   MessagePipe pipe;
   HandleSignalTracker readable_tracker(pipe.handle0.get(),
                                        MOJO_HANDLE_SIGNAL_READABLE);

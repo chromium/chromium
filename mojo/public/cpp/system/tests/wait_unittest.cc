@@ -216,9 +216,6 @@ TEST_F(WaitManyTest, Basic) {
   EXPECT_EQ(kTestMessage1, ReadMessage(p.handle1));
   p.handle0.reset();
 
-  // handles[0] is invalid.
-  EXPECT_EQ(MOJO_RESULT_INVALID_ARGUMENT,
-            WaitMany(handles, signals, 2, &result_index, hss));
   handles[0] = handles[1];
   EXPECT_EQ(MOJO_RESULT_FAILED_PRECONDITION,
             WaitMany(handles, signals, 1, &result_index, hss));

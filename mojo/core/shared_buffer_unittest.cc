@@ -11,6 +11,8 @@
 #include "base/strings/string_piece.h"
 #include "build/build_config.h"
 #include "mojo/core/core.h"
+#include "mojo/core/embedder/embedder.h"
+#include "mojo/core/ipcz_driver/shared_buffer.h"
 #include "mojo/core/shared_buffer_dispatcher.h"
 #include "mojo/core/test/mojo_test_base.h"
 #include "mojo/public/c/system/types.h"
@@ -220,6 +222,13 @@ DEFINE_TEST_CLIENT_TEST_WITH_PIPE(ReceiveAndEditBufferParent,
 #define MAYBE_PassHandleBetweenCousins PassHandleBetweenCousins
 #endif
 TEST_F(SharedBufferTest, MAYBE_PassHandleBetweenCousins) {
+  if (IsMojoIpczEnabled()) {
+    // TODO(https://crbug.com/1299283): This test relies on Mojo invitations
+    // between non-broker nodes, which is not currently supported by MojoIpcz.
+    GTEST_SKIP() << "Invitations between non-brokers are not yet supported "
+                 << "by MojoIpcz.";
+  }
+
   const std::string message = "hello";
 
   // Spawn two children who will each spawn their own child. Make sure the
@@ -257,17 +266,23 @@ DEFINE_TEST_CLIENT_TEST_WITH_PIPE(ReadAndMapWriteSharedBuffer,
   ExpectBufferContents(b, 0, "hello");
 
   // Extract the shared memory handle and verify that it is read-only.
-  auto* dispatcher =
-      static_cast<SharedBufferDispatcher*>(Core::Get()->GetDispatcher(b).get());
-  base::subtle::PlatformSharedMemoryRegion& region =
-      dispatcher->GetRegionForTesting();
-  EXPECT_EQ(region.GetMode(),
-            base::subtle::PlatformSharedMemoryRegion::Mode::kReadOnly);
+  if (IsMojoIpczEnabled()) {
+    auto buffer = ipcz_driver::SharedBuffer::Unbox(b);
+    EXPECT_EQ(buffer->region().GetMode(),
+              base::subtle::PlatformSharedMemoryRegion::Mode::kReadOnly);
+  } else {
+    auto* dispatcher = static_cast<SharedBufferDispatcher*>(
+        Core::Get()->GetDispatcher(b).get());
+    base::subtle::PlatformSharedMemoryRegion& region =
+        dispatcher->GetRegionForTesting();
+    EXPECT_EQ(region.GetMode(),
+              base::subtle::PlatformSharedMemoryRegion::Mode::kReadOnly);
+    EXPECT_EQ(MOJO_RESULT_OK, MojoClose(b));
+  }
 
   WriteMessage(h, "ok");
   EXPECT_EQ("quit", ReadMessage(h));
   EXPECT_EQ(MOJO_RESULT_OK, MojoClose(h));
-  EXPECT_EQ(MOJO_RESULT_OK, MojoClose(b));
 }
 
 TEST_F(SharedBufferTest, CreateAndPassReadOnlyBuffer) {
@@ -310,16 +325,22 @@ TEST_F(SharedBufferTest, CreateAndPassFromChildReadOnlyBuffer) {
     ExpectBufferContents(b, 0, "hello");
 
     // Extract the shared memory handle and verify that it is read-only.
-    auto* dispatcher = static_cast<SharedBufferDispatcher*>(
-        Core::Get()->GetDispatcher(b).get());
-    base::subtle::PlatformSharedMemoryRegion& region =
-        dispatcher->GetRegionForTesting();
-    EXPECT_EQ(region.GetMode(),
-              base::subtle::PlatformSharedMemoryRegion::Mode::kReadOnly);
+    if (IsMojoIpczEnabled()) {
+      auto buffer = ipcz_driver::SharedBuffer::Unbox(b);
+      EXPECT_EQ(buffer->region().GetMode(),
+                base::subtle::PlatformSharedMemoryRegion::Mode::kReadOnly);
+    } else {
+      auto* dispatcher = static_cast<SharedBufferDispatcher*>(
+          Core::Get()->GetDispatcher(b).get());
+      base::subtle::PlatformSharedMemoryRegion& region =
+          dispatcher->GetRegionForTesting();
+      EXPECT_EQ(region.GetMode(),
+                base::subtle::PlatformSharedMemoryRegion::Mode::kReadOnly);
+      EXPECT_EQ(MOJO_RESULT_OK, MojoClose(b));
+    }
 
     EXPECT_EQ("ok", ReadMessage(h));
     WriteMessage(h, "quit");
-    EXPECT_EQ(MOJO_RESULT_OK, MojoClose(b));
   });
 }
 

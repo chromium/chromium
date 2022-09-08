@@ -14,6 +14,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
 #include "mojo/core/ipcz_api.h"
+#include "mojo/core/system_impl_export.h"
 #include "mojo/public/cpp/platform/platform_handle.h"
 #include "third_party/ipcz/include/ipcz/ipcz.h"
 
@@ -22,7 +23,8 @@ namespace mojo::core::ipcz_driver {
 class Transport;
 
 // Common base class for objects managed by Mojo's ipcz driver.
-class ObjectBase : public base::RefCountedThreadSafe<ObjectBase> {
+class MOJO_SYSTEM_IMPL_EXPORT ObjectBase
+    : public base::RefCountedThreadSafe<ObjectBase> {
  public:
   REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE();
 

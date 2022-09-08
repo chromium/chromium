@@ -17,6 +17,7 @@ source_set("tests") {
   ]
 
   deps = [
+    "//mojo/core/embedder",
     "//mojo/public/c/system",
     "//mojo/public/cpp/system",
     "//testing/gtest",

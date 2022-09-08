@@ -9,6 +9,7 @@
 #include <stdint.h>
 #include <string.h>
 
+#include "mojo/core/embedder/embedder.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "mojo/public/cpp/system/wait.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -93,33 +94,40 @@ TEST(CoreAPITest, BasicMessagePipe) {
   MojoMessageHandle message;
   EXPECT_EQ(MOJO_RESULT_SHOULD_WAIT, MojoReadMessage(h0, nullptr, &message));
 
-  // Write to |h1|.
-  const uintptr_t kTestMessageContext = 1234;
-  EXPECT_EQ(MOJO_RESULT_OK, MojoCreateMessage(nullptr, &message));
-  EXPECT_EQ(MOJO_RESULT_OK, MojoSetMessageContext(message, kTestMessageContext,
-                                                  nullptr, nullptr, nullptr));
-  EXPECT_EQ(MOJO_RESULT_OK, MojoWriteMessage(h1, message, nullptr));
+  if (!mojo::core::IsMojoIpczEnabled()) {
+    // This whole block relies on lazy serialization to work, but MojoIpcz does
+    // not support lazy serialization.
 
-  // |h0| should be readable.
-  size_t result_index = 1;
-  MojoHandleSignalsState states[1];
-  sig = MOJO_HANDLE_SIGNAL_READABLE;
-  Handle handle0(h0);
-  EXPECT_EQ(MOJO_RESULT_OK,
-            mojo::WaitMany(&handle0, &sig, 1, &result_index, states));
+    // Write to |h1|.
+    const uintptr_t kTestMessageContext = 1234;
+    EXPECT_EQ(MOJO_RESULT_OK, MojoCreateMessage(nullptr, &message));
+    EXPECT_EQ(MOJO_RESULT_OK,
+              MojoSetMessageContext(message, kTestMessageContext, nullptr,
+                                    nullptr, nullptr));
+    EXPECT_EQ(MOJO_RESULT_OK, MojoWriteMessage(h1, message, nullptr));
 
-  EXPECT_EQ(0u, result_index);
-  EXPECT_EQ(kSignalReadadableWritable, states[0].satisfied_signals);
-  EXPECT_EQ(kSignalAll, states[0].satisfiable_signals);
+    // |h0| should be readable.
+    size_t result_index = 1;
+    MojoHandleSignalsState states[1];
+    sig = MOJO_HANDLE_SIGNAL_READABLE;
+    Handle handle0(h0);
+    EXPECT_EQ(MOJO_RESULT_OK,
+              mojo::WaitMany(&handle0, &sig, 1, &result_index, states));
 
-  // Read from |h0|.
-  EXPECT_EQ(MOJO_RESULT_OK, MojoReadMessage(h0, nullptr, &message));
-  uintptr_t context;
-  EXPECT_EQ(MOJO_RESULT_OK, MojoGetMessageContext(message, nullptr, &context));
-  EXPECT_EQ(MOJO_RESULT_OK,
-            MojoSetMessageContext(message, 0, nullptr, nullptr, nullptr));
-  EXPECT_EQ(MOJO_RESULT_OK, MojoDestroyMessage(message));
-  EXPECT_EQ(kTestMessageContext, context);
+    EXPECT_EQ(0u, result_index);
+    EXPECT_EQ(kSignalReadadableWritable, states[0].satisfied_signals);
+    EXPECT_EQ(kSignalAll, states[0].satisfiable_signals);
+
+    // Read from |h0|.
+    EXPECT_EQ(MOJO_RESULT_OK, MojoReadMessage(h0, nullptr, &message));
+    uintptr_t context;
+    EXPECT_EQ(MOJO_RESULT_OK,
+              MojoGetMessageContext(message, nullptr, &context));
+    EXPECT_EQ(MOJO_RESULT_OK,
+              MojoSetMessageContext(message, 0, nullptr, nullptr, nullptr));
+    EXPECT_EQ(MOJO_RESULT_OK, MojoDestroyMessage(message));
+    EXPECT_EQ(kTestMessageContext, context);
+  }
 
   // |h0| should no longer be readable.
   EXPECT_EQ(MOJO_RESULT_OK, MojoQueryHandleSignalsState(h0, &state));
@@ -230,18 +238,26 @@ TEST(CoreAPITest, BasicDataPipe) {
   EXPECT_EQ(MOJO_RESULT_OK, mojo::Wait(mojo::Handle(hc),
                                        MOJO_HANDLE_SIGNAL_PEER_CLOSED, &state));
 
-  EXPECT_EQ(MOJO_HANDLE_SIGNAL_READABLE | MOJO_HANDLE_SIGNAL_PEER_CLOSED,
-            state.satisfied_signals);
-  EXPECT_EQ(MOJO_HANDLE_SIGNAL_READABLE | MOJO_HANDLE_SIGNAL_PEER_CLOSED,
-            state.satisfiable_signals);
+  EXPECT_TRUE(state.satisfied_signals & MOJO_HANDLE_SIGNAL_READABLE);
+  EXPECT_TRUE(state.satisfied_signals & MOJO_HANDLE_SIGNAL_PEER_CLOSED);
+  EXPECT_TRUE(state.satisfiable_signals & MOJO_HANDLE_SIGNAL_READABLE);
+  EXPECT_TRUE(state.satisfiable_signals & MOJO_HANDLE_SIGNAL_PEER_CLOSED);
 
-  // Do a two-phase read from |hc|.
-  read_pointer = nullptr;
-  EXPECT_EQ(MOJO_RESULT_OK,
-            MojoBeginReadData(hc, nullptr, &read_pointer, &buffer_size));
-  ASSERT_LE(buffer_size, sizeof(buffer) - 1);
-  memcpy(&buffer[1], read_pointer, buffer_size);
-  EXPECT_EQ(MOJO_RESULT_OK, MojoEndReadData(hc, buffer_size, nullptr));
+  // Do two-phase reads from |hc| until drained.
+  size_t read_offset = 1;
+  for (;;) {
+    read_pointer = nullptr;
+    const MojoResult result =
+        MojoBeginReadData(hc, nullptr, &read_pointer, &buffer_size);
+    if (result == MOJO_RESULT_FAILED_PRECONDITION) {
+      break;
+    }
+    ASSERT_EQ(result, MOJO_RESULT_OK);
+    ASSERT_LE(buffer_size, sizeof(buffer) - 1);
+    memcpy(&buffer[read_offset], read_pointer, buffer_size);
+    EXPECT_EQ(MOJO_RESULT_OK, MojoEndReadData(hc, buffer_size, nullptr));
+    read_offset += buffer_size;
+  }
   EXPECT_STREQ("hello world", buffer);
 
   // |hc| should no longer be readable.

@@ -22,6 +22,7 @@
 #include "base/strings/string_split.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
+#include "mojo/core/embedder/embedder.h"
 #include "mojo/core/handle_signals_state.h"
 #include "mojo/core/test/mojo_test_base.h"
 #include "mojo/core/test/test_utils.h"
@@ -122,6 +123,19 @@ class MultiprocessMessagePipeTestWithPeerSupport
   void SetUp() override {
     test::MojoTestBase::SetUp();
     set_launch_type(GetParam());
+
+    const bool is_peer_launch =
+        GetParam() == test::MojoTestBase::LaunchType::PEER;
+#if BUILDFLAG(IS_FUCHSIA)
+    const bool is_named_peer_launch = false;
+#else
+    const bool is_named_peer_launch =
+        GetParam() == test::MojoTestBase::LaunchType::NAMED_PEER;
+#endif
+    if (is_peer_launch || is_named_peer_launch) {
+      GTEST_SKIP() << "Skipping peer connection tests because mojo-ipcz does "
+                   << "not yet implement isolated connections.";
+    }
   }
 };
 
@@ -927,10 +941,9 @@ TEST_P(MultiprocessMessagePipeTestWithPeerSupport, PingPongPipe) {
       WriteMessageWithHandles(h, "", &p1, 1);
     }
     ReadMessageWithHandles(h, &p0, 1);
+    EXPECT_EQ("bye", ReadMessage(p0));
     WriteMessage(h, "quit");
   });
-
-  EXPECT_EQ("bye", ReadMessage(p0));
 
   // We should still be able to observe peer closure from the other end.
   EXPECT_EQ(MOJO_RESULT_OK, WaitForSignals(p0, MOJO_HANDLE_SIGNAL_PEER_CLOSED));
@@ -1334,6 +1347,7 @@ TEST_P(MultiprocessMessagePipeTestWithPeerSupport,
   // always be able to read the message received on that pipe.
   RunTestClient("SpotaneouslyDyingProcess", [&](MojoHandle child) {
     MojoHandle receiver;
+    VerifyEcho(child, "!");
     EXPECT_EQ("receiver", ReadMessageWithHandles(child, &receiver, 1));
     EXPECT_EQ("ok", ReadMessage(receiver));
     EXPECT_EQ(MOJO_RESULT_OK, MojoClose(receiver));
@@ -1347,12 +1361,16 @@ DEFINE_TEST_CLIENT_TEST_WITH_PIPE(SpotaneouslyDyingProcess,
   MojoHandle receiver;
   CreateMessagePipe(&sender, &receiver);
 
+  VerifyEcho(parent, "!");
   WriteMessageWithHandles(parent, "receiver", &receiver, 1);
 
-  // Wait for the pipe to actually appear as remote. Before this happens, it's
-  // possible for message transmission to be deferred to the IO thread, and
-  // sudden termination might preempt that work.
-  WaitForSignals(sender, MOJO_HANDLE_SIGNAL_PEER_REMOTE);
+  if (!IsMojoIpczEnabled()) {
+    // Wait for the pipe to actually appear as remote. Before this happens, it's
+    // possible for message transmission to be deferred to the IO thread, and
+    // sudden termination might preempt that work. Note that this is unnecessary
+    // (and PEER_REMOTE signals are unsupported anyway) with MojoIpcz.
+    WaitForSignals(sender, MOJO_HANDLE_SIGNAL_PEER_REMOTE);
+  }
 
   WriteMessage(sender, "ok");
   MojoClose(sender);
