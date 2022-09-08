@@ -172,16 +172,16 @@ GaiaScreenHandler::GaiaScreenMode GetGaiaScreenMode(const std::string& email) {
   if (authentication_behavior ==
       em::LoginAuthenticationBehaviorProto::SAML_INTERSTITIAL) {
     if (email.empty())
-      return GaiaScreenHandler::GAIA_SCREEN_MODE_SAML_INTERSTITIAL;
+      return GaiaScreenHandler::GAIA_SCREEN_MODE_SAML_REDIRECT;
 
     // If there's a populated email, we must check first that this user is using
-    // SAML in order to decide whether to show the interstitial page.
+    // SAML in order to decide whether to do the redirect.
     const user_manager::User* user = user_manager::UserManager::Get()->FindUser(
         user_manager::known_user::GetAccountId(email, std::string() /* id */,
                                                AccountType::UNKNOWN));
 
     if (user && user->using_saml())
-      return GaiaScreenHandler::GAIA_SCREEN_MODE_SAML_INTERSTITIAL;
+      return GaiaScreenHandler::GAIA_SCREEN_MODE_SAML_REDIRECT;
   }
 
   return GaiaScreenHandler::GAIA_SCREEN_MODE_DEFAULT;
@@ -609,9 +609,7 @@ void GaiaScreenHandler::DeclareLocalizedValues(
                IDS_LOGIN_SAML_INTERSTITIAL_CHANGE_ACCOUNT_LINK_TEXT);
   builder->Add("samlInterstitialNextBtn",
                IDS_LOGIN_SAML_INTERSTITIAL_NEXT_BUTTON_TEXT);
-  builder->Add("samlNotice", features::IsRedirectToDefaultIdPEnabled()
-                                 ? IDS_LOGIN_SAML_NOTICE_SHORT
-                                 : IDS_LOGIN_SAML_NOTICE);
+  builder->Add("samlNotice", IDS_LOGIN_SAML_NOTICE_SHORT);
   builder->Add("samlNoticeWithVideo", IDS_LOGIN_SAML_NOTICE_WITH_VIDEO);
   builder->Add("samlChangeProviderMessage",
                IDS_LOGIN_SAML_CHANGE_PROVIDER_MESSAGE);
@@ -635,11 +633,6 @@ void GaiaScreenHandler::DeclareLocalizedValues(
                IDS_SAML_SECURITY_TOKEN_PIN_DIALOG_TITLE);
   builder->Add("securityTokenPinDialogSubtitle",
                IDS_SAML_SECURITY_TOKEN_PIN_DIALOG_SUBTITLE);
-}
-
-void GaiaScreenHandler::GetAdditionalParameters(base::Value::Dict* dict) {
-  dict->Set("isRedirectToDefaultIdPEnabled",
-            base::Value(features::IsRedirectToDefaultIdPEnabled()));
 }
 
 void GaiaScreenHandler::InitializeDeprecated() {

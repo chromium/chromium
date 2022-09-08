@@ -126,7 +126,6 @@ void GaiaScreen::OnUserAction(const base::Value::List& args) {
   } else if (action_id == kUserActionStartEnrollment) {
     exit_callback_.Run(Result::ENTERPRISE_ENROLL);
   } else if (action_id == kUserActionReloadDefault) {
-    DCHECK(features::IsRedirectToDefaultIdPEnabled());
     Reset();
     LoadOnline(EmptyAccountId());
   } else if (action_id == kUserActionRetry) {

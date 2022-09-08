@@ -363,8 +363,6 @@ OobeScreenId PrefToScreenId(const std::string& pref_value) {
 }
 
 bool IsGaiaPageDefaultsToSAML() {
-  if (!features::IsRedirectToDefaultIdPEnabled())
-    return false;
   int authentication_behavior = 0;
   bool authentication_behavior_set = CrosSettings::Get()->GetInteger(
       kLoginAuthenticationBehavior, &authentication_behavior);

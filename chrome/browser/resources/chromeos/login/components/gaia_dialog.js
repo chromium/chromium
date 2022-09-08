@@ -179,20 +179,9 @@ class GaiaDialog extends GaiaDialogBase {
         computed: 'showOverlay_(navigationEnabled, isSamlSsoVisible)',
       },
 
-      /**
-       * Whether the redirect to default IdP without interstitial step is
-       * enabled.
-       * @private {boolean}
-       */
-      flagRedirectToDefaultIdPEnabled_: {
-        type: Boolean,
-        value: loadTimeData.getBoolean('isRedirectToDefaultIdPEnabled'),
-      },
-
       isSamlBackButtonHidden_: {
         type: Boolean,
-        computed: 'isSamlBackButtonHidden(isDefaultSsoProvider, isClosable,' +
-            'flagRedirectToDefaultIdPEnabled_)',
+        computed: 'isSamlBackButtonHidden(isDefaultSsoProvider, isClosable)',
       },
     };
   }
@@ -474,14 +463,10 @@ class GaiaDialog extends GaiaDialogBase {
    * Whether the back button on SAML screen is hidden.
    * @param {boolean} isDefaultSsoProvider - whether it is default SAML page.
    * @param {boolean} isClosable - whether the form can be closed.
-   * @param {boolean} flagRedirectToDefaultIdPEnabled - whether redirect to
-   *     default IdP is enabled.
    * @private
    */
-  isSamlBackButtonHidden(
-      isDefaultSsoProvider, isClosable, flagRedirectToDefaultIdPEnabled) {
-    return !flagRedirectToDefaultIdPEnabled ||
-        isDefaultSsoProvider && !isClosable;
+  isSamlBackButtonHidden(isDefaultSsoProvider, isClosable) {
+    return isDefaultSsoProvider && !isClosable;
   }
 
   /**

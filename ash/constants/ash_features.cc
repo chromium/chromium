@@ -1376,10 +1376,6 @@ const base::Feature kQuickUnlockPinAutosubmit{"QuickUnlockPinAutosubmit",
 const base::Feature kQuickUnlockPinAutosubmitBackfill{
     "QuickUnlockPinAutosubmitBackfill", base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Enables redirect to default IdP without interstitial step.
-const base::Feature kRedirectToDefaultIdP{"RedirectToDefaultIdP",
-                                          base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Enables or disables Release Notes notifications on non-stable ChromeOS
 // channels. Used for testing.
 const base::Feature kReleaseNotesNotificationAllChannels{
@@ -2445,10 +2441,6 @@ bool IsQuickDimEnabled() {
 
 bool IsQuickSettingsNetworkRevampEnabled() {
   return base::FeatureList::IsEnabled(kQuickSettingsNetworkRevamp);
-}
-
-bool IsRedirectToDefaultIdPEnabled() {
-  return base::FeatureList::IsEnabled(kRedirectToDefaultIdP);
 }
 
 bool IsReleaseTrackUiEnabled() {

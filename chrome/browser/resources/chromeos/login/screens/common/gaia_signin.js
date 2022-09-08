@@ -29,8 +29,8 @@ const VIDEO_LOGIN_TIMEOUT = 180 * 1000;
  * @enum {number}
  */
 const ScreenAuthMode = {
-  DEFAULT: 0,            // Default GAIA login flow.
-  SAML_INTERSTITIAL: 1,  // Interstitial page before SAML redirection.
+  DEFAULT: 0,        // Default GAIA login flow.
+  SAML_REDIRECT: 1,  // SAML redirection.
 };
 
 /**
@@ -42,14 +42,12 @@ const DialogMode = {
   LOADING: 'loading',
   PIN_DIALOG: 'pin',
   GAIA_ALLOWLIST_ERROR: 'allowlist-error',
-  SAML_INTERSTITIAL: 'saml-interstitial',
 };
 
 /**
  * Steps that could be the first one in the flow.
  */
-const POSSIBLE_FIRST_SIGNIN_STEPS =
-    [DialogMode.GAIA, DialogMode.LOADING, DialogMode.SAML_INTERSTITIAL];
+const POSSIBLE_FIRST_SIGNIN_STEPS = [DialogMode.GAIA, DialogMode.LOADING];
 
 /**
  * @constructor
@@ -74,15 +72,6 @@ class GaiaSigninElement extends GaiaSigninElementBase {
 
   static get properties() {
     return {
-      /**
-       * Current mode of this screen.
-       * @private
-       */
-      screenMode_: {
-        type: Number,
-        value: ScreenAuthMode.DEFAULT,
-      },
-
       /**
        * Whether the screen contents are currently being loaded.
        * @private
@@ -142,15 +131,6 @@ class GaiaSigninElement extends GaiaSigninElementBase {
       usedSaml_: {
         type: Boolean,
         value: false,
-      },
-
-      /**
-       * Management domain or admin displayed on SAML interstitial page.
-       * @private
-       */
-      samlInterstitialDomainManager_: {
-        type: String,
-        value: null,
       },
 
       /**
@@ -264,16 +244,6 @@ class GaiaSigninElement extends GaiaSigninElementBase {
       },
 
       /**
-       * Whether the redirect to default IdP without interstitial step is
-       * enabled.
-       * @private {boolean}
-       */
-      flagRedirectToDefaultIdPEnabled_: {
-        type: Boolean,
-        value: loadTimeData.getBoolean('isRedirectToDefaultIdPEnabled'),
-      },
-
-      /**
        * @private {string}
        */
       allowlistError_: {
@@ -360,7 +330,7 @@ class GaiaSigninElement extends GaiaSigninElementBase {
 
   static get observers() {
     return [
-      'refreshDialogStep_(isShown_, screenMode_, pinDialogParameters_,' +
+      'refreshDialogStep_(isShown_, pinDialogParameters_,' +
           'isLoadingUiShown_, isAllowlistErrorShown_)',
     ];
   }
@@ -553,37 +523,21 @@ class GaiaSigninElement extends GaiaSigninElementBase {
     cr.ui.login.invokePolymerMethod(this.$.pinDialog, 'onBeforeShow');
   }
 
-  /**
-   * @return {!Element}
-   * @private
-   */
+  /** @private */
   getSigninFrame_() {
     return this.$['signin-frame-dialog'].getFrame();
   }
 
   /** @private */
-  getActiveFrame_() {
-    if (this.flagRedirectToDefaultIdPEnabled_) {
-      return this.getSigninFrame_();
-    }
-    switch (this.screenMode_) {
-      case ScreenAuthMode.DEFAULT:
-        return this.getSigninFrame_();
-      case ScreenAuthMode.SAML_INTERSTITIAL:
-        return this.$['saml-interstitial'];
-    }
-  }
-
-  /** @private */
-  focusActiveFrame_() {
-    const activeFrame = this.getActiveFrame_();
-    Polymer.RenderStatus.afterNextRender(this, () => activeFrame.focus());
+  focusSigninFrame_() {
+    const signinFrame = this.getSigninFrame_();
+    Polymer.RenderStatus.afterNextRender(this, () => signinFrame.focus());
   }
 
   /** Event handler that is invoked after the screen is shown. */
   onAfterShow() {
     if (!this.isLoadingUiShown_) {
-      this.focusActiveFrame_();
+      this.focusSigninFrame_();
     }
   }
 
@@ -601,21 +555,8 @@ class GaiaSigninElement extends GaiaSigninElementBase {
    * @suppress {missingProperties}
    */
   loadAuthExtension(data) {
-    // Redirect the webview to the blank page in order to stop the SAML IdP
-    // page from working in a background (see crbug.com/613245).
-    if (this.screenMode_ == ScreenAuthMode.DEFAULT &&
-        data.screenMode != ScreenAuthMode.DEFAULT) {
-      this.authenticator_.resetWebview();
-    }
-
     this.authenticator_.setWebviewPartition(data.webviewPartitionName);
 
-    // `screenMode_` is not used when `flagRedirectToDefaultIdPEnabled_` is true
-    // and will be removed after RedirectToDefaultIdP will be enabled by
-    // default.
-    if (!this.flagRedirectToDefaultIdPEnabled_) {
-      this.screenMode_ = data.screenMode;
-    }
     this.authCompleted_ = false;
     this.navigationButtonsHidden_ = false;
 
@@ -634,8 +575,8 @@ class GaiaSigninElement extends GaiaSigninElementBase {
     });
 
     this.isDefaultSsoProviderConfigured_ =
-        data.screenMode == ScreenAuthMode.SAML_INTERSTITIAL;
-    params.doSamlRedirect = data.screenMode == ScreenAuthMode.SAML_INTERSTITIAL;
+        data.screenMode == ScreenAuthMode.SAML_REDIRECT;
+    params.doSamlRedirect = data.screenMode == ScreenAuthMode.SAML_REDIRECT;
     params.menuEnterpriseEnrollment =
         !(data.enterpriseManagedDevice || data.hasDeviceOwner);
     params.isFirstUser = !(data.enterpriseManagedDevice || data.hasDeviceOwner);
@@ -643,19 +584,7 @@ class GaiaSigninElement extends GaiaSigninElementBase {
 
     this.authenticatorParams_ = params;
 
-    if (this.flagRedirectToDefaultIdPEnabled_) {
-      this.loadAuthenticator_(params.doSamlRedirect);
-    } else {
-      switch (this.screenMode_) {
-        case ScreenAuthMode.DEFAULT:
-          this.loadAuthenticator_(false /* doSamlRedirect */);
-          break;
-        case ScreenAuthMode.SAML_INTERSTITIAL:
-          this.samlInterstitialDomainManager_ = data.enterpriseDomainManager;
-          this.loadingFrameContents_ = false;
-          break;
-      }
-    }
+    this.loadAuthenticator_(params.doSamlRedirect);
     chrome.send('authExtensionLoaded');
   }
 
@@ -909,9 +838,6 @@ class GaiaSigninElement extends GaiaSigninElementBase {
    * Reloads extension frame.
    */
   doReload() {
-    if (this.screenMode_ != ScreenAuthMode.DEFAULT) {
-      return;
-    }
     this.authenticator_.reload();
     this.loadingFrameContents_ = true;
     this.isAllowlistErrorShown_ = false;
@@ -920,12 +846,9 @@ class GaiaSigninElement extends GaiaSigninElementBase {
   }
 
   /**
-   * Called when user canceled signin.
-   *
-   * If `flagRedirectToDefaultIdPEnabled_`:
-   * If it is default SAML page we try to close the page. If SAML page was
-   * derived from GAIA we return to configured default page (GAIA or default
-   * SAML page).
+   * Called when user canceled signin. If it is default SAML page we try to
+   * close the page. If SAML page was derived from GAIA we return to configured
+   * default page (GAIA or default SAML page).
    */
   cancel(isBackClicked = false) {
     this.clearVideoTimer_();
@@ -936,14 +859,12 @@ class GaiaSigninElement extends GaiaSigninElementBase {
       return;
     }
 
-    if (this.flagRedirectToDefaultIdPEnabled_) {
-      // If user goes back from the derived SAML page or GAIA page that is shown
-      // to change SSO provider we need to reload default authenticator.
-      if ((this.isSamlSsoVisible_ || this.isDefaultSsoProviderConfigured_) &&
-          !this.isDefaultSsoProvider_) {
-        this.userActed('reloadDefault');
-        return;
-      }
+    // If user goes back from the derived SAML page or GAIA page that is shown
+    // to change SSO provider we need to reload default authenticator.
+    if ((this.isSamlSsoVisible_ || this.isDefaultSsoProviderConfigured_) &&
+        !this.isDefaultSsoProvider_) {
+      this.userActed('reloadDefault');
+      return;
     }
     this.userActed(isBackClicked ? 'back' : 'cancel');
   }
@@ -996,12 +917,9 @@ class GaiaSigninElement extends GaiaSigninElementBase {
       this.allowlistError_ = 'allowlistErrorConsumer';
     }
 
-    // To make animations correct, we need to make sure Gaia is completely
-    // reloaded. Otherwise ChromeOS overlays hide and Gaia page is shown
-    // somewhere in the middle of animations.
-    if (this.screenMode_ == ScreenAuthMode.DEFAULT) {
-      this.authenticator_.resetWebview();
-    }
+    // Reset the state when allowlist error is shown to prevent any loading
+    // glitches during the retry.
+    this.reset();
 
     this.$['gaia-allowlist-error'].submitButton.focus();
     this.isAllowlistErrorShown_ = true;
@@ -1089,14 +1007,12 @@ class GaiaSigninElement extends GaiaSigninElementBase {
   /**
    * Updates current UI step based on internal state.
    * @param {boolean} isScreenShown
-   * @param {number} mode
    * @param {OobeTypes.SecurityTokenPinDialogParameters} pinParams
    * @param {boolean} isLoading
    * @param {boolean} isAllowlistError
    * @private
    */
-  refreshDialogStep_(
-      isScreenShown, mode, pinParams, isLoading, isAllowlistError) {
+  refreshDialogStep_(isScreenShown, pinParams, isLoading, isAllowlistError) {
     if (!isScreenShown) {
       return;
     }
@@ -1112,30 +1028,10 @@ class GaiaSigninElement extends GaiaSigninElementBase {
       this.setUIStep(DialogMode.GAIA_ALLOWLIST_ERROR);
       return;
     }
-    switch (mode) {
-      case ScreenAuthMode.DEFAULT:
-        this.setUIStep(DialogMode.GAIA);
-        break;
-      case ScreenAuthMode.SAML_INTERSTITIAL:
-        this.setUIStep(DialogMode.SAML_INTERSTITIAL);
-        break;
-    }
+    this.setUIStep(DialogMode.GAIA);
   }
 
   /**
-   * Invoked when "Next" button is pressed on SAML Interstitial screen.
-   * @param {!CustomEvent} e
-   * @private
-   */
-  onSamlInterstitialNext_(e) {
-    this.screenMode_ = ScreenAuthMode.DEFAULT;
-    this.loadAuthenticator_(true /* doSamlRedirect */);
-  }
-
-  /**
-   * Invoked when "Change account" link is pressed on SAML Interstitial screen.
-   *
-   * If flagRedirectToDefaultIdPEnabled_:
    * Invoked when "Enter Google Account info" button is pressed on SAML screen.
    * @param {!CustomEvent} e
    * @private
@@ -1145,7 +1041,6 @@ class GaiaSigninElement extends GaiaSigninElementBase {
     // field of the auth params.
     this.videoEnabled_ = false;
     this.authenticatorParams_.email = '';
-    this.screenMode_ = ScreenAuthMode.DEFAULT;
     this.loadAuthenticator_(false /* doSamlRedirect */);
   }
 

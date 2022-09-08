@@ -109,8 +109,8 @@ class GaiaScreenHandler : public BaseScreenHandler,
     // Default Gaia authentication will be used.
     GAIA_SCREEN_MODE_DEFAULT = 0,
 
-    // An interstitial page will be used before SAML redirection.
-    GAIA_SCREEN_MODE_SAML_INTERSTITIAL = 1,
+    // SAML authentication will be used by default.
+    GAIA_SCREEN_MODE_SAML_REDIRECT = 1,
   };
 
   enum FrameState {
@@ -188,7 +188,6 @@ class GaiaScreenHandler : public BaseScreenHandler,
   // BaseScreenHandler implementation:
   void DeclareLocalizedValues(
       ::login::LocalizedValuesBuilder* builder) override;
-  void GetAdditionalParameters(base::Value::Dict* dict) override;
   void InitializeDeprecated() override;
 
   // WebUIMessageHandler implementation:
