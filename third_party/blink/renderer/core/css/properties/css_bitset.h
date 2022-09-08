@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_PROPERTIES_CSS_BITSET_H_
 
 #include <algorithm>
+#include <array>
 #include <cstring>
 #include <initializer_list>
 
@@ -41,13 +42,14 @@ class CORE_EXPORT CSSBitsetBase {
       Set(id);
   }
 
-  void operator=(const CSSBitsetBase& o) {
-    std::memcpy(chunks_, o.chunks_, sizeof(chunks_));
-  }
+  // This exists really only for generated code to be able to create global
+  // (const) objects without requiring global constructors.
+  explicit constexpr CSSBitsetBase(const std::array<uint64_t, kChunks>& chunks)
+      : chunks_{chunks} {}
 
-  bool operator==(const CSSBitsetBase& o) const {
-    return std::memcmp(chunks_, o.chunks_, sizeof(chunks_)) == 0;
-  }
+  CSSBitsetBase& operator=(const CSSBitsetBase& o) = default;
+
+  bool operator==(const CSSBitsetBase& o) const { return chunks_ == o.chunks_; }
   bool operator!=(const CSSBitsetBase& o) const { return !(*this == o); }
 
   inline void Set(CSSPropertyID id) {
@@ -76,7 +78,7 @@ class CORE_EXPORT CSSBitsetBase {
     return false;
   }
 
-  inline void Reset() { std::memset(chunks_, 0, sizeof(chunks_)); }
+  inline void Reset() { std::memset(chunks_.data(), 0, sizeof(chunks_)); }
 
   // Yields the CSSPropertyIDs which are set.
   class Iterator {
@@ -136,11 +138,11 @@ class CORE_EXPORT CSSBitsetBase {
     uint64_t chunk_ = 0;
   };
 
-  Iterator begin() const { return Iterator(chunks_, 0, 0); }
-  Iterator end() const { return Iterator(chunks_, kChunks, kBits); }
+  Iterator begin() const { return Iterator(chunks_.data(), 0, 0); }
+  Iterator end() const { return Iterator(chunks_.data(), kChunks, kBits); }
 
  private:
-  uint64_t chunks_[kChunks];
+  std::array<uint64_t, kChunks> chunks_;
 };
 
 using CSSBitset = CSSBitsetBase<kNumCSSPropertyIDs>;
