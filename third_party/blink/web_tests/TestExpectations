@@ -5400,6 +5400,13 @@ crbug.com/1173956 http/tests/xsl/xslt-transform-with-javascript-disabled.html [ 
 crbug.com/893480 external/wpt/uievents/interface/keyboard-accesskey-click-event.html [ Timeout ]
 
 
+# No support for Drag-and-Drop handlers being called.
+crbug.com/1353435 external/wpt/html/editing/dnd/images/006.html [ Timeout ]
+crbug.com/1353435 external/wpt/html/editing/dnd/images/007.html [ Timeout ]
+crbug.com/1353435 external/wpt/html/editing/dnd/images/008.html [ Timeout ]
+crbug.com/1353435 external/wpt/html/editing/dnd/images/009.html [ Timeout ]
+crbug.com/1353435 external/wpt/html/editing/dnd/images/010.html [ Timeout ]
+
 # Sheriff 2021-02-11
 crbug.com/1177573 http/tests/inspector-protocol/animation/animation-pause.js [ Failure Pass ]
 crbug.com/1177573 http/tests/inspector-protocol/animation/animation-pause-infinite.js [ Failure Pass ]
