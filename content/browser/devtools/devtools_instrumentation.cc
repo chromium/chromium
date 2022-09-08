@@ -27,8 +27,10 @@
 #include "content/browser/devtools/protocol/tracing_handler.h"
 #include "content/browser/devtools/render_frame_devtools_agent_host.h"
 #include "content/browser/devtools/service_worker_devtools_agent_host.h"
+#include "content/browser/devtools/web_contents_devtools_agent_host.h"
 #include "content/browser/devtools/worker_devtools_agent_host.h"
 #include "content/browser/devtools/worker_devtools_manager.h"
+#include "content/browser/portal/portal.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
@@ -1057,11 +1059,16 @@ bool HandleCertificateError(WebContents* web_contents,
 
 namespace {
 void UpdatePortals(RenderFrameHostImpl* render_frame_host_impl) {
-  auto* agent_host = static_cast<RenderFrameDevToolsAgentHost*>(
-      RenderFrameDevToolsAgentHost::GetFor(
-          render_frame_host_impl->frame_tree_node()));
-  if (agent_host)
+  if (auto* agent_host = static_cast<RenderFrameDevToolsAgentHost*>(
+          RenderFrameDevToolsAgentHost::GetFor(
+              render_frame_host_impl->frame_tree_node()))) {
     agent_host->UpdatePortals();
+  }
+  if (auto* agent_host = WebContentsDevToolsAgentHost::GetFor(
+          WebContentsImpl::FromFrameTreeNode(
+              render_frame_host_impl->frame_tree_node()))) {
+    agent_host->PortalUpdated();
+  }
 }
 }  // namespace
 
@@ -1073,8 +1080,12 @@ void PortalDetached(RenderFrameHostImpl* render_frame_host_impl) {
   UpdatePortals(render_frame_host_impl);
 }
 
-void PortalActivated(RenderFrameHostImpl* render_frame_host_impl) {
-  UpdatePortals(render_frame_host_impl);
+void PortalActivated(Portal& portal) {
+  WebContents* host_contents = portal.GetPortalHostContents();
+  UpdatePortals(reinterpret_cast<RenderFrameHostImpl*>(
+      host_contents->GetPrimaryMainFrame()));
+  if (auto* host = WebContentsDevToolsAgentHost::GetFor(host_contents))
+    host->PortalActivated(portal);
 }
 
 void FencedFrameCreated(

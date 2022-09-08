@@ -241,7 +241,7 @@ bool ServiceWorkerDevToolsAgentHost::AttachSession(DevToolsSession* session,
 
   auto* target_handler = session->CreateAndAddHandler<protocol::TargetHandler>(
       protocol::TargetHandler::AccessMode::kAutoAttachOnly, GetId(),
-      auto_attacher_.get(), session->GetRootSession());
+      auto_attacher_.get(), session);
   DCHECK(target_handler);
   target_handler->DisableAutoAttachOfServiceWorkers();
 

@@ -134,7 +134,7 @@ bool WorkerDevToolsAgentHost::AttachSession(DevToolsSession* session,
   session->CreateAndAddHandler<protocol::IOHandler>(GetIOContext());
   session->CreateAndAddHandler<protocol::TargetHandler>(
       protocol::TargetHandler::AccessMode::kAutoAttachOnly, GetId(),
-      auto_attacher_.get(), session->GetRootSession());
+      auto_attacher_.get(), session);
   session->CreateAndAddHandler<protocol::NetworkHandler>(
       GetId(), devtools_worker_token_, GetIOContext(), base::DoNothing(),
       session->GetClient()->MayReadLocalFiles());

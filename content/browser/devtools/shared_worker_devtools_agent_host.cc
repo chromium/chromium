@@ -100,7 +100,7 @@ bool SharedWorkerDevToolsAgentHost::AttachSession(DevToolsSession* session,
   session->CreateAndAddHandler<protocol::SchemaHandler>();
   session->CreateAndAddHandler<protocol::TargetHandler>(
       protocol::TargetHandler::AccessMode::kAutoAttachOnly, GetId(),
-      auto_attacher_.get(), session->GetRootSession());
+      auto_attacher_.get(), session);
   return true;
 }
 

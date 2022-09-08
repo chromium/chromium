@@ -366,6 +366,11 @@ TestRunner.Session = class {
     return session;
   }
 
+  async attachChild(targetId) {
+    const {sessionId} = (await this.protocol.Target.attachToTarget({targetId, flatten: true})).result;
+    return this.createChild(sessionId);
+  }
+
   async sendCommand(method, params) {
     var requestId = ++this._requestId;
     if (this._testRunner._dumpInspectorProtocolMessages)

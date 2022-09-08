@@ -402,9 +402,15 @@ class TargetHandler::Session : public DevToolsAgentHostClient {
     DevToolsAgentHostImpl* agent_host_impl =
         static_cast<DevToolsAgentHostImpl*>(agent_host);
     if (flatten_protocol) {
+      using Mode = DevToolsSession::Mode;
+      const Mode mode =
+          agent_host_impl->GetSessionMode() == Mode::kSupportsTabTarget
+              ? Mode::kSupportsTabTarget
+              : handler->session_mode_;
+
       DevToolsSession* devtools_session =
           handler->root_session_->AttachChildSession(id, agent_host_impl,
-                                                     session);
+                                                     session, mode);
       if (waiting_for_debugger && devtools_session) {
         devtools_session->SetRuntimeResumeCallback(base::BindOnce(
             &Session::ResumeIfThrottled, base::Unretained(session)));
@@ -648,12 +654,13 @@ class TargetHandler::TargetFilter {
 TargetHandler::TargetHandler(AccessMode access_mode,
                              const std::string& owner_target_id,
                              TargetAutoAttacher* auto_attacher,
-                             DevToolsSession* root_session)
+                             DevToolsSession* session)
     : DevToolsDomainHandler(Target::Metainfo::domainName),
-      auto_attacher_(auto_attacher),
       access_mode_(access_mode),
       owner_target_id_(owner_target_id),
-      root_session_(root_session) {}
+      session_mode_(session->session_mode()),
+      root_session_(session->GetRootSession()),
+      auto_attacher_(auto_attacher) {}
 
 TargetHandler::~TargetHandler() = default;
 
@@ -809,11 +816,17 @@ void TargetHandler::SetAttachedTargetsOfType(
     const base::flat_set<scoped_refptr<DevToolsAgentHost>>& new_hosts,
     const std::string& type) {
   DCHECK(!type.empty());
+  // Ignore page targets coming from frame auto-attachers when client has
+  // opted into supporting the tab targets. These are portals and are now
+  // reported via the tab target.
+  if (!auto_attach_portals_ && type == DevToolsAgentHost::kTypePage) {
+    DCHECK(source == auto_attacher_);
+    return;
+  }
   auto old_sessions = auto_attached_sessions_;
   for (auto& entry : old_sessions) {
     scoped_refptr<DevToolsAgentHost> host(entry.first);
-    bool matches_type = type.empty() || host->GetType() == type;
-    if (matches_type &&
+    if (host->GetType() == type &&
         entry.second->auto_attacher_id_ ==
             reinterpret_cast<uintptr_t>(source) &&
         new_hosts.find(host) == new_hosts.end()) {
@@ -860,6 +873,11 @@ bool TargetHandler::ShouldThrottlePopups() const {
 
 void TargetHandler::DisableAutoAttachOfServiceWorkers() {
   auto_attach_service_workers_ = false;
+}
+
+void TargetHandler::DisableAutoAttachOfPortals() {
+  DCHECK(access_mode_ != AccessMode::kBrowser);
+  auto_attach_portals_ = false;
 }
 
 Response TargetHandler::FindSession(Maybe<std::string> session_id,

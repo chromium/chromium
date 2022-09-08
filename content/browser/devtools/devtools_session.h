@@ -52,8 +52,20 @@ class DevToolsSession : public protocol::FrontendChannel,
                         public DevToolsExternalAgentProxy,
                         public content::DevToolsAgentHostClientChannel {
  public:
-  DevToolsSession(DevToolsAgentHostClient* client,
-                  const std::string& session_id);
+  // For sessions attached to the Tab target, the mode is set to TabTarget.
+  // For other sessions, the mode is inherited from the parent.
+  // This is used as an indication that the client has opted in into using
+  // tab targets and lets backend use the new logic of target discovery:
+  //  - auto-attach on frame targets will not auto-attach subframes (these
+  //      will be instead attached to the Tab targets)
+  //  - certain features that depend on MPArch support will not be disabled
+  //      (BFCache, Prerender)
+  enum class Mode {
+    kSupportsTabTarget,
+    kDoesNotSupportTabTarget,
+  };
+  // For root sessions (see also private constructor for children).
+  DevToolsSession(DevToolsAgentHostClient* client, Mode mode);
   ~DevToolsSession() override;
 
   void SetAgentHost(DevToolsAgentHostImpl* agent_host);
@@ -98,9 +110,11 @@ class DevToolsSession : public protocol::FrontendChannel,
 
   DevToolsSession* AttachChildSession(const std::string& session_id,
                                       DevToolsAgentHostImpl* agent_host,
-                                      DevToolsAgentHostClient* client);
+                                      DevToolsAgentHostClient* client,
+                                      Mode mode);
   void DetachChildSession(const std::string& session_id);
   bool HasChildSession(const std::string& session_id);
+  Mode session_mode() const { return mode_; }
 
  private:
   struct PendingMessage {
@@ -118,6 +132,12 @@ class DevToolsSession : public protocol::FrontendChannel,
                    crdtp::span<uint8_t> payload);
     ~PendingMessage();
   };
+
+  // For child sessions.
+  DevToolsSession(DevToolsAgentHostClient* client,
+                  const std::string& session_id,
+                  DevToolsSession* parent,
+                  Mode mode);
 
   void MojoConnectionDestroyed();
   void DispatchToAgent(const PendingMessage& message);
@@ -177,15 +197,20 @@ class DevToolsSession : public protocol::FrontendChannel,
   }
   void AddHandler(std::unique_ptr<protocol::DevToolsDomainHandler> handler);
 
+  DevToolsAgentHostClient* const client_;
+  DevToolsSession* const root_session_ = nullptr;
+  const std::string session_id_;  // empty if this is the root session.
+  const Mode mode_;
+
   mojo::AssociatedReceiver<blink::mojom::DevToolsSessionHost> receiver_{this};
   mojo::AssociatedRemote<blink::mojom::DevToolsSession> session_;
   mojo::Remote<blink::mojom::DevToolsSession> io_session_;
   bool use_io_session_{false};
   DevToolsAgentHostImpl* agent_host_ = nullptr;
-  DevToolsAgentHostClient* client_;
   bool browser_only_ = false;
   HandlersMap handlers_;
-  std::unique_ptr<protocol::UberDispatcher> dispatcher_;
+  std::unique_ptr<protocol::UberDispatcher> dispatcher_{
+      new protocol::UberDispatcher(this)};
 
   bool suspended_sending_messages_to_agent_ = false;
 
@@ -200,8 +225,6 @@ class DevToolsSession : public protocol::FrontendChannel,
   // |session_state_cookie_| is nullptr before first attach.
   blink::mojom::DevToolsSessionStatePtr session_state_cookie_;
 
-  DevToolsSession* root_session_ = nullptr;
-  std::string session_id_;  // empty if this is the root session.
   base::flat_map<std::string, DevToolsSession*> child_sessions_;
   base::OnceClosure runtime_resume_;
   DevToolsExternalAgentProxyDelegate* proxy_delegate_ = nullptr;

@@ -183,7 +183,7 @@ bool BrowserDevToolsAgentHost::AttachSession(DevToolsSession* session,
   session->SetBrowserOnly(true);
   session->CreateAndAddHandler<protocol::TargetHandler>(
       protocol::TargetHandler::AccessMode::kBrowser, GetId(),
-      auto_attacher_.get(), session->GetRootSession());
+      auto_attacher_.get(), session);
   if (only_discovery_)
     return true;
 

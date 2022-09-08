@@ -84,11 +84,20 @@ DevToolsSession::PendingMessage::PendingMessage(int call_id,
 
 DevToolsSession::PendingMessage::~PendingMessage() = default;
 
+DevToolsSession::DevToolsSession(DevToolsAgentHostClient* client, Mode mode)
+    : client_(client), mode_(mode) {}
+
 DevToolsSession::DevToolsSession(DevToolsAgentHostClient* client,
-                                 const std::string& session_id)
+                                 const std::string& session_id,
+                                 DevToolsSession* parent,
+                                 Mode mode)
     : client_(client),
-      dispatcher_(new protocol::UberDispatcher(this)),
-      session_id_(session_id) {}
+      root_session_(parent->GetRootSession()),
+      session_id_(session_id),
+      mode_(mode) {
+  DCHECK(root_session_);
+  DCHECK(!session_id_.empty());
+}
 
 DevToolsSession::~DevToolsSession() {
   if (proxy_delegate_)
@@ -551,11 +560,12 @@ void DevToolsSession::ApplySessionStateUpdates(
 DevToolsSession* DevToolsSession::AttachChildSession(
     const std::string& session_id,
     DevToolsAgentHostImpl* agent_host,
-    DevToolsAgentHostClient* client) {
+    DevToolsAgentHostClient* client,
+    Mode mode) {
   DCHECK(!agent_host->SessionByClient(client));
   DCHECK(!root_session_);
-  auto session = std::make_unique<DevToolsSession>(client, session_id);
-  session->root_session_ = this;
+  std::unique_ptr<DevToolsSession> session(
+      new DevToolsSession(client, session_id, this, mode));
   DevToolsSession* session_ptr = session.get();
   // If attach did not succeed, |session| is already destroyed.
   if (!agent_host->AttachInternal(std::move(session)))

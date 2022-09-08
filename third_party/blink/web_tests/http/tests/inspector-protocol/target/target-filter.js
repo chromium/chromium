@@ -3,7 +3,7 @@
 
   function normalizeTargets(targets) {
     return targets.sort(
-        (a, b) => `${a.type}\n{a.url}`.localeCompare(`${b.type}\n{b.url}`));
+        (a, b) => `${a.type}\n${a.url}`.localeCompare(`${b.type}\n${b.url}`));
   }
   const allTargetsCreated = await session.evaluateAsync(`
     Promise.all([

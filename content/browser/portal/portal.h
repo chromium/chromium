@@ -117,9 +117,9 @@ class CONTENT_EXPORT Portal : public blink::mojom::Portal,
   base::UnguessableToken GetDevToolsFrameToken() const;
 
   // Returns the Portal's WebContents.
-  WebContentsImpl* GetPortalContents();
+  WebContentsImpl* GetPortalContents() const;
   // Returns the WebContents that hosts this portal.
-  WebContentsImpl* GetPortalHostContents();
+  WebContentsImpl* GetPortalHostContents() const;
 
   RenderFrameHostImpl* owner_render_frame_host() {
     return owner_render_frame_host_;
@@ -193,15 +193,13 @@ class CONTENT_EXPORT Portal : public blink::mojom::Portal,
     std::unique_ptr<WebContents> owned_contents_;
   };
 
-  void SetPortalContents(std::unique_ptr<WebContents> web_contents);
-
   std::pair<bool, blink::mojom::PortalActivateResult> CanActivate();
   void ActivateImpl(blink::TransferableMessage data,
                     base::TimeTicks activation_time,
                     uint64_t trace_id,
                     ActivateCallback callback);
 
-  raw_ptr<RenderFrameHostImpl> owner_render_frame_host_;
+  const raw_ptr<RenderFrameHostImpl> owner_render_frame_host_;
 
   // Uniquely identifies the portal, this token is used by the browser process
   // to reference this portal when communicating with the renderer.

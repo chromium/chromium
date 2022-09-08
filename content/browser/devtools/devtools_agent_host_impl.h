@@ -80,6 +80,8 @@ class CONTENT_EXPORT DevToolsAgentHostImpl : public DevToolsAgentHost {
   virtual NetworkLoaderFactoryParamsAndInfo
   CreateNetworkFactoryParamsForDevTools();
 
+  virtual DevToolsSession::Mode GetSessionMode();
+
   bool Inspect();
 
   template <typename Handler>
