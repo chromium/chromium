@@ -40,8 +40,8 @@ public class SigninChecker implements AccountTrackerService.Observer {
     private int mNumOfChildAccountChecksDone;
 
     /**
-     * Please use SigninHelperProvider to get {@link SigninChecker} instance instead of creating it
-     * manually.
+     * Please use {@link SigninCheckerProvider} to get {@link SigninChecker} instance instead of
+     * creating it manually.
      */
     public SigninChecker(SigninManager signinManager, AccountTrackerService accountTrackerService) {
         mSigninManager = signinManager;
@@ -201,7 +201,7 @@ public class SigninChecker implements AccountTrackerService.Observer {
      * and updates state accordingly.
      */
     public void onMainActivityStart() {
-        try (TraceEvent ignored = TraceEvent.scoped("SigninHelper.onMainActivityStart")) {
+        try (TraceEvent ignored = TraceEvent.scoped("SigninChecker.onMainActivityStart")) {
             validateAccountSettings();
         }
     }
