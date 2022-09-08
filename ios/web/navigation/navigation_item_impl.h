@@ -95,27 +95,27 @@ class NavigationItemImpl : public web::NavigationItem {
   void SetPostData(NSData* post_data);
   NSData* GetPostData() const;
 
-  // Removes the header for |key| from |http_request_headers_|.
+  // Removes the header for `key` from `http_request_headers_`.
   void RemoveHttpRequestHeaderForKey(NSString* key);
 
-  // Removes all http headers from |http_request_headers_|.
+  // Removes all http headers from `http_request_headers_`.
   void ResetHttpRequestHeaders();
 
   // Once a navigation item is committed, we should no longer track
   // non-persisted state, as documented on the members below.
   void ResetForCommit();
 
-  // Returns the title string to be used for a page with |url| if that page
+  // Returns the title string to be used for a page with `url` if that page
   // doesn't specify a title.
   static std::u16string GetDisplayTitleForURL(const GURL& url);
 
   // Used only by NavigationManagerImpl.  SetUntrusted() is only used for
-  // Visible or LastCommitted NavigationItems where the |url_| may be incorrect
+  // Visible or LastCommitted NavigationItems where the `url_` may be incorrect
   // due to timining problems or bugs in WKWebView.
   void SetUntrusted();
   bool IsUntrusted();
 
-  // Restores the state of the |other| navigation item in this item.
+  // Restores the state of the `other` navigation item in this item.
   void RestoreStateFromItem(NavigationItem* other);
 
 #ifndef NDEBUG
@@ -150,11 +150,11 @@ class NavigationItemImpl : public web::NavigationItem {
 
   // The navigation initiation type of the item.  This decides whether the URL
   // should be displayed before the navigation commits.  It is cleared in
-  // |ResetForCommit| and not persisted.
+  // `ResetForCommit` and not persisted.
   web::NavigationInitiationType navigation_initiation_type_;
 
-  // Used only by NavigationManagerImpl.  |is_untrusted_| is only |true| for
-  // Visible or LastCommitted NavigationItems where the |url_| may be incorrect
+  // Used only by NavigationManagerImpl.  `is_untrusted_` is only `true` for
+  // Visible or LastCommitted NavigationItems where the `url_` may be incorrect
   // due to timining problems or bugs in WKWebView.
   bool is_untrusted_;
 

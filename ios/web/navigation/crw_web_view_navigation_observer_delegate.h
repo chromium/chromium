@@ -27,13 +27,13 @@ class NavigationContextImpl;
                 forContext:(web::NavigationContextImpl*)context;
 
 // Called when the web page has changed document and/or URL, and so the page
-// navigation should be reported. |context| contains information about the
+// navigation should be reported. `context` contains information about the
 // navigation that triggered the document/URL change.
 - (void)navigationObserver:(CRWWebViewNavigationObserver*)navigationObserver
     didChangePageWithContext:(web::NavigationContextImpl*)context;
 
 // Notifies the delegate that the webView has started a new navigation to
-// |webViewURL| and whether it |isSameDocumentNavigation|.
+// `webViewURL` and whether it `isSameDocumentNavigation`.
 - (void)navigationObserver:(CRWWebViewNavigationObserver*)navigationObserver
                 didLoadNewURL:(const GURL&)webViewURL
     forSameDocumentNavigation:(BOOL)isSameDocumentNavigation;

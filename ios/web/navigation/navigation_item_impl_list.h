@@ -20,13 +20,13 @@ typedef std::vector<NavigationItemImpl*> NavigationItemImplList;
 typedef std::vector<std::unique_ptr<NavigationItemImpl>>
     ScopedNavigationItemImplList;
 
-// Creates a ScopedNavigationItemImplList from |scoped_item_list|.  Ownership
-// of the NavigationItems in |scoped_item_list| is transferred to the returned
+// Creates a ScopedNavigationItemImplList from `scoped_item_list`.  Ownership
+// of the NavigationItems in `scoped_item_list` is transferred to the returned
 // value.
 ScopedNavigationItemImplList CreateScopedNavigationItemImplList(
     ScopedNavigationItemList scoped_item_list);
 
-// Creates a NavigationItemList from |scoped_item_list|.
+// Creates a NavigationItemList from `scoped_item_list`.
 NavigationItemList CreateNavigationItemList(
     const ScopedNavigationItemImplList& scoped_item_list);
 

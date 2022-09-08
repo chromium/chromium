@@ -20,13 +20,13 @@ class NavigationItemImpl;
 // additional navigation states needed by the embedder.
 @interface CRWNavigationItemHolder : NSObject
 
-// Returns the CRWNavigationItemHolder object associated with |item|. Creates an
-// empty holder if none currently exists for |item|.
+// Returns the CRWNavigationItemHolder object associated with `item`. Creates an
+// empty holder if none currently exists for `item`.
 + (instancetype)holderForBackForwardListItem:(WKBackForwardListItem*)item;
 
 - (instancetype)init NS_UNAVAILABLE;
 
-// Designated init method that associates the new instance with |item|.
+// Designated init method that associates the new instance with `item`.
 - (instancetype)initWithBackForwardListItem:(WKBackForwardListItem*)item;
 
 // Returns the NavigationItemImpl stored in this instance.

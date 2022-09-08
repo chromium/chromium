@@ -72,7 +72,7 @@ class WindowLocationTest : public web::WebIntTest {
   // The URL of the window.location test page.
   const GURL& window_location_url() { return window_location_url_; }
 
-  // Executes JavaScript on the window.location test page to use |url| as the
+  // Executes JavaScript on the window.location test page to use `url` as the
   // parameter for the window.location calls executed by tapping the buttons on
   // the page.
   void SetWindowLocationUrl(const GURL& url) {
@@ -89,7 +89,7 @@ class WindowLocationTest : public web::WebIntTest {
   }
 
   // Executes JavaScript on the window.location test page and returns whether
-  // |kOnLoadText| is visible.
+  // `kOnLoadText` is visible.
   bool IsOnLoadTextVisible() {
     std::unique_ptr<base::Value> text_visible =
         web::test::ExecuteJavaScript(web_state(), kOnLoadCheckScript);
@@ -133,7 +133,7 @@ TEST_F(WindowLocationTest, Assign) {
                                                    kWindowLocationAssignID));
   }));
 
-  // Verify that |sample_url| was loaded and that |about_blank_item| was pruned.
+  // Verify that `sample_url` was loaded and that `about_blank_item` was pruned.
   EXPECT_EQ(sample_url, navigation_manager()->GetLastCommittedItem()->GetURL());
   EXPECT_EQ(NSNotFound, GetIndexOfNavigationItem(about_blank_item));
 }
@@ -161,7 +161,7 @@ TEST_F(WindowLocationTest, Replace) {
                                                    kWindowLocationReplaceID));
   }));
 
-  // Verify that |sample_url| was loaded and that |about_blank_item| was pruned.
+  // Verify that `sample_url` was loaded and that `about_blank_item` was pruned.
   web::NavigationItem* current_item =
       navigation_manager()->GetLastCommittedItem();
   EXPECT_EQ(sample_url, current_item->GetURL());
@@ -177,7 +177,7 @@ TEST_F(WindowLocationTest, WindowLocationReload) {
                                                    kWindowLocationReloadID));
   }));
 
-  // Verify that |kOnLoadText| is displayed and that no additional
+  // Verify that `kOnLoadText` is displayed and that no additional
   // NavigationItems are added.
   EXPECT_TRUE(IsOnLoadTextVisible());
   EXPECT_EQ(1, navigation_manager()->GetItemCount());
@@ -205,7 +205,7 @@ TEST_F(WindowLocationTest, WindowLocationSetToDOMString) {
         web_state(), kWindowLocationSetToDOMStringID));
   }));
 
-  // Verify that |sample_url| was loaded and that |about_blank_item| was pruned.
+  // Verify that `sample_url` was loaded and that `about_blank_item` was pruned.
   EXPECT_EQ(sample_url, navigation_manager()->GetLastCommittedItem()->GetURL());
   EXPECT_EQ(NSNotFound, GetIndexOfNavigationItem(about_blank_item));
 }

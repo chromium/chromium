@@ -27,7 +27,7 @@ TEST_F(WKNavigationActionPolicyUtilTest, AllowNavigationActionPolicy) {
 }
 
 // Tests GetAllowNavigationActionPolicy for off the record browsing mode with
-// the |kBlockUniversalLinksInOffTheRecordMode| feature disabled.
+// the `kBlockUniversalLinksInOffTheRecordMode` feature disabled.
 TEST_F(WKNavigationActionPolicyUtilTest,
        AllowNavigationActionPolicyForOffTheRecord) {
   base::test::ScopedFeatureList feature_list;
@@ -39,7 +39,7 @@ TEST_F(WKNavigationActionPolicyUtilTest,
 }
 
 // Tests GetAllowNavigationActionPolicy for off the record browsing mode with
-// the |kBlockUniversalLinksInOffTheRecordMode| feature enabled.
+// the `kBlockUniversalLinksInOffTheRecordMode` feature enabled.
 TEST_F(WKNavigationActionPolicyUtilTest, BlockUniversalLinksForOffTheRecord) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(

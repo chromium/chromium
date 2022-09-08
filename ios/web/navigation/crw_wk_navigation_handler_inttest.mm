@@ -121,7 +121,7 @@ class CRWKNavigationHandlerIntTest : public WebIntTest {
     scoped_observer.Observe(web_state());
     web_state()->GetNavigationManager()->LoadURLWithParams(params);
 
-    // Need to use a pointer to |observer| as the block wants to capture it by
+    // Need to use a pointer to `observer` as the block wants to capture it by
     // value (even if marked with __block) which would not work.
     FailedWebStateObserver* observer_ptr = &observer;
     EXPECT_TRUE(

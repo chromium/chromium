@@ -22,7 +22,7 @@ class SessionRestoreJavaScriptFeature : public base::SupportsUserData::Data,
                                         public JavaScriptFeature {
  public:
   // Returns the SessionRestoreJavaScriptFeature associated with
-  // |browser_state|, creating one if necessary. |browser_state| must not be
+  // `browser_state`, creating one if necessary. `browser_state` must not be
   // null.
   static SessionRestoreJavaScriptFeature* FromBrowserState(
       BrowserState* browser_state);

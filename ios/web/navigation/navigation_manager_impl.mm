@@ -202,9 +202,9 @@ void NavigationManagerImpl::AddPendingItem(
   if (!web_view_cache_.IsAttachedToWebView())
     return;
 
-  // AddPendingItem is called no later than |didCommitNavigation|. The only time
+  // AddPendingItem is called no later than `didCommitNavigation`. The only time
   // when all three of WKWebView's URL, the pending URL and WKBackForwardList's
-  // current item URL are identical before |didCommitNavigation| is when the
+  // current item URL are identical before `didCommitNavigation` is when the
   // in-progress navigation is a back-forward navigation. In this case, current
   // item has already been updated to point to the new location in back-forward
   // history, so pending item index should be set to the current item index.
@@ -253,7 +253,7 @@ void NavigationManagerImpl::AddPendingItem(
       !is_form_post) {
     pending_item_index_ = web_view_cache_.GetCurrentItemIndex();
 
-    // If |currentItem| is not already associated with a NavigationItemImpl,
+    // If `currentItem` is not already associated with a NavigationItemImpl,
     // associate the newly created item with it. Otherwise, discard the new item
     // since it will be a duplicate.
     NavigationItemImpl* current_item =
@@ -293,9 +293,9 @@ void NavigationManagerImpl::CommitPendingItem() {
     id<CRWWebViewNavigationProxy> proxy =
         delegate_->GetWebViewNavigationProxy();
 
-    // If WKBackForwardList exists but |currentItem| is nil at this point, it is
+    // If WKBackForwardList exists but `currentItem` is nil at this point, it is
     // because the current navigation is an empty window open navigation.
-    // If |currentItem| is not nil, it is the last committed item in the
+    // If `currentItem` is not nil, it is the last committed item in the
     // WKWebView.
     if (proxy.backForwardList && !proxy.backForwardList.currentItem) {
       // WKWebView's URL should be about:blank for empty window open item.
@@ -343,9 +343,9 @@ void NavigationManagerImpl::CommitPendingItem(
 
   id<CRWWebViewNavigationProxy> proxy = delegate_->GetWebViewNavigationProxy();
 
-  // If WKBackForwardList exists but |currentItem| is nil at this point, it is
+  // If WKBackForwardList exists but `currentItem` is nil at this point, it is
   // because the current navigation is an empty window open navigation.
-  // If |currentItem| is not nil, it is the last committed item in the
+  // If `currentItem` is not nil, it is the last committed item in the
   // WKWebView.
   if (proxy.backForwardList && !proxy.backForwardList.currentItem) {
     // There should be no back-forward history for empty window open item.
@@ -361,7 +361,7 @@ void NavigationManagerImpl::CommitPendingItem(
     if (item_url == net::GURLWithNSURL(back_forward_list.currentItem.URL)) {
       SetNavigationItemInWKItem(back_forward_list.currentItem, std::move(item));
     } else {
-      // Sometimes |currentItem.URL| is not updated correctly while the webView
+      // Sometimes `currentItem.URL` is not updated correctly while the webView
       // URL is correctly updated. This is a bug in WKWebView. Check to see if
       // the next or previous item matches, and update that item instead. If
       // nothing matches, still update the the currentItem.
@@ -375,7 +375,7 @@ void NavigationManagerImpl::CommitPendingItem(
                                   std::move(item));
       } else {
         // Otherwise default here. This can happen when restoring an NTP, since
-        // |back_forward_list.currentItem.URL| doesn't get updated when going
+        // `back_forward_list.currentItem.URL` doesn't get updated when going
         // from a file:// scheme to about:// scheme.
         SetNavigationItemInWKItem(back_forward_list.currentItem,
                                   std::move(item));
@@ -526,7 +526,7 @@ void NavigationManagerImpl::GoToIndex(int index,
 
   if (!web_view_cache_.IsAttachedToWebView()) {
     // GoToIndex from detached mode is equivalent to restoring history with
-    // |last_committed_item_index| updated to |index|.
+    // `last_committed_item_index` updated to `index`.
     Restore(index, web_view_cache_.ReleaseCachedItems());
     DCHECK(web_view_cache_.IsAttachedToWebView());
     return;
@@ -859,7 +859,7 @@ void NavigationManagerImpl::ReloadWithUserAgentType(
   if (!item_to_reload)
     return;
 
-  // |reloadURL| will be empty if a page was open by DOM.
+  // `reloadURL` will be empty if a page was open by DOM.
   GURL reload_url(item_to_reload->GetOriginalRequestURL());
   if (reload_url.is_empty()) {
     reload_url = item_to_reload->GetVirtualURL();
@@ -1000,7 +1000,7 @@ NavigationManagerImpl::GetLastCommittedItemInCurrentOrRestoredSession() const {
 
 int NavigationManagerImpl::GetLastCommittedItemIndexInCurrentOrRestoredSession()
     const {
-  // WKBackForwardList's |currentItem| is usually the last committed item,
+  // WKBackForwardList's `currentItem` is usually the last committed item,
   // except two cases:
   // 1) when the pending navigation is a back-forward navigation, in which
   //    case it is actually the pending item. As a workaround, fall back to
@@ -1020,7 +1020,7 @@ NavigationItemImpl* NavigationManagerImpl::GetNavigationItemImplAtIndex(
     // Return nullptr for index != 0 instead of letting the code fall through
     // (which in most cases will return null anyways because wk_item should be
     // nil) for the slim chance that WKBackForwardList has been updated for a
-    // new navigation but WKWebView has not triggered the |didCommitNavigation:|
+    // new navigation but WKWebView has not triggered the `didCommitNavigation:`
     // callback. NavigationItem for the new wk_item should not be returned until
     // after DidCommitPendingItem() is called.
     return index == 0 ? empty_window_open_item_.get() : nullptr;
@@ -1050,7 +1050,7 @@ void NavigationManagerImpl::RestoreItemsState(
             cache_index, true /* create_if_missing */);
     NavigationItem* restore_item = items_restored[index].get();
 
-    // |cached_item| appears to be nil sometimes, perhaps due to a mismatch in
+    // `cached_item` appears to be nil sometimes, perhaps due to a mismatch in
     // WKWebView's backForwardList.  Returning early here may break some restore
     // state features, but should not put the user in a broken state.
     if (!cached_item || !restore_item) {
@@ -1107,8 +1107,8 @@ void NavigationManagerImpl::UnsafeRestore(
   // This pending item will become the first item in the restored history.
   params.virtual_url = items[first_index]->GetVirtualURL();
 
-  // Grab the title of the first item before |restored_visible_item_| (which may
-  // or may not be the first index) is moved out of |items| below.
+  // Grab the title of the first item before `restored_visible_item_` (which may
+  // or may not be the first index) is moved out of `items` below.
   const std::u16string& firstTitle = items[first_index]->GetTitle();
 
   // Ordering is important. Cache the visible item of the restored session
@@ -1158,7 +1158,7 @@ void NavigationManagerImpl::RewriteItemURLIfNecessary(
   GURL url = item->GetURL();
   if (web::BrowserURLRewriter::GetInstance()->RewriteURLIfNecessary(
           &url, browser_state_)) {
-    // |url| must be set first for -SetVirtualURL to not no-op.
+    // `url` must be set first for -SetVirtualURL to not no-op.
     GURL virtual_url = item->GetURL();
     item->SetURL(url);
     item->SetVirtualURL(virtual_url);
@@ -1237,8 +1237,8 @@ bool NavigationManagerImpl::CanTrustLastCommittedItem(
   if (!web_view_cache_.IsAttachedToWebView())
     return true;
 
-  // Only compare origins, as any mismatch between |web_view_url| and
-  // |last_committed_url| with the same origin are safe to return as
+  // Only compare origins, as any mismatch between `web_view_url` and
+  // `last_committed_url` with the same origin are safe to return as
   // visible.
   GURL web_view_url = web_view_cache_.GetVisibleWebViewURL();
   GURL last_committed_url = last_committed_item->GetURL();
@@ -1251,7 +1251,7 @@ bool NavigationManagerImpl::CanTrustLastCommittedItem(
   // last committed item.  As a result, any calls to
   // -CanTrustLastCommittedItem during a call to WKWebView
   // -goToBackForwardListItem are wrapped in the
-  // |going_to_back_forward_list_item_| flag. This flag is set and immediately
+  // `going_to_back_forward_list_item_` flag. This flag is set and immediately
   // unset because the the mismatch between URL and last_committed_item is
   // expected.
   if (going_to_back_forward_list_item_)
@@ -1299,7 +1299,7 @@ void NavigationManagerImpl::WKWebViewCache::DetachFromWebView() {
     for (size_t index = 0; index < GetBackForwardListItemCount(); index++) {
       cached_items_[index].reset(new NavigationItemImpl(
           *GetNavigationItemImplAtIndex(index, true /* create_if_missing */)));
-      // Don't put restore URL's into |cached_items|, extract them first.
+      // Don't put restore URL's into `cached_items`, extract them first.
       GURL url = cached_items_[index]->GetURL();
       if (wk_navigation_util::IsRestoreSessionUrl(url)) {
         GURL extracted_url;

@@ -50,7 +50,7 @@ namespace {
 // NavigationManagerTest fixture. Scheme will be changed to kTestWebUIScheme.
 const char kSchemeToRewrite[] = "navigationmanagerschemetorewrite";
 
-// Replaces |kSchemeToRewrite| scheme with |kTestWebUIScheme|.
+// Replaces `kSchemeToRewrite` scheme with `kTestWebUIScheme`.
 bool UrlRewriter(GURL* url, BrowserState* browser_state) {
   if (url->scheme() == kSchemeToRewrite) {
     GURL::Replacements scheme_replacements;
@@ -65,7 +65,7 @@ bool UrlRewriter(GURL* url, BrowserState* browser_state) {
 // installed into NavigationManager by a test case.
 const char kRewrittenQueryParam[] = "navigationmanagerrewrittenquery";
 
-// Appends |kRewrittenQueryParam| to |url|.
+// Appends `kRewrittenQueryParam` to `url`.
 bool AppendingUrlRewriter(GURL* url, BrowserState* browser_state) {
   GURL::Replacements query_replacements;
   query_replacements.SetQueryStr(kRewrittenQueryParam);
@@ -137,7 +137,7 @@ class NavigationManagerTest : public PlatformTest {
     manager_->SetBrowserState(&browser_state_);
   }
 
-  // Returns the value of the "#session=" URL hash component from |url|.
+  // Returns the value of the "#session=" URL hash component from `url`.
   static std::string ExtractRestoredSession(const GURL& url) {
     std::string decoded = base::UnescapeBinaryURLComponent(url.ref());
     return decoded.substr(
@@ -952,7 +952,7 @@ TEST_F(NavigationManagerTest, AddSameUrlPendingItem) {
   EXPECT_EQ(1, navigation_manager()->GetItemCount());
 }
 
-// Tests that calling |Reload| with web::ReloadType::NORMAL is no-op when there
+// Tests that calling `Reload` with web::ReloadType::NORMAL is no-op when there
 // are no pending or committed items.
 TEST_F(NavigationManagerTest, ReloadEmptyWithNormalType) {
   ASSERT_FALSE(navigation_manager()->GetPendingItem());
@@ -966,7 +966,7 @@ TEST_F(NavigationManagerTest, ReloadEmptyWithNormalType) {
   ASSERT_FALSE(navigation_manager()->GetLastCommittedItem());
 }
 
-// Tests that calling |Reload| with web::ReloadType::NORMAL leaves the url of
+// Tests that calling `Reload` with web::ReloadType::NORMAL leaves the url of
 // the renderer initiated pending item unchanged when there is one.
 TEST_F(NavigationManagerTest, ReloadRendererPendingItemWithNormalType) {
   GURL url_before_reload = GURL("http://www.url.com");
@@ -984,7 +984,7 @@ TEST_F(NavigationManagerTest, ReloadRendererPendingItemWithNormalType) {
             navigation_manager()->GetPendingItem()->GetURL());
 }
 
-// Tests that calling |Reload| with web::ReloadType::NORMAL leaves the url of
+// Tests that calling `Reload` with web::ReloadType::NORMAL leaves the url of
 // the user initiated pending item unchanged when there is one.
 TEST_F(NavigationManagerTest, ReloadUserPendingItemWithNormalType) {
   GURL url_before_reload = GURL("http://www.url.com");
@@ -1002,7 +1002,7 @@ TEST_F(NavigationManagerTest, ReloadUserPendingItemWithNormalType) {
             navigation_manager()->GetPendingItem()->GetURL());
 }
 
-// Tests that calling |Reload| with web::ReloadType::NORMAL leaves the url of
+// Tests that calling `Reload` with web::ReloadType::NORMAL leaves the url of
 // the last committed item unchanged when there is no pending item.
 TEST_F(NavigationManagerTest, ReloadLastCommittedItemWithNormalType) {
   navigation_manager()->AddPendingItem(
@@ -1033,7 +1033,7 @@ TEST_F(NavigationManagerTest, ReloadLastCommittedItemWithNormalType) {
             navigation_manager()->GetLastCommittedItem()->GetURL());
 }
 
-// Tests that calling |Reload| with web::ReloadType::NORMAL leaves the url of
+// Tests that calling `Reload` with web::ReloadType::NORMAL leaves the url of
 // the last committed item unchanged when there is no pending item, but there
 // forward items after last committed item.
 TEST_F(NavigationManagerTest,
@@ -1080,7 +1080,7 @@ TEST_F(NavigationManagerTest,
             navigation_manager()->GetLastCommittedItem()->GetURL());
 }
 
-// Tests that calling |Reload| with web::ReloadType::ORIGINAL_REQUEST_URL is
+// Tests that calling `Reload` with web::ReloadType::ORIGINAL_REQUEST_URL is
 // no-op when there are no pending or committed items.
 TEST_F(NavigationManagerTest, ReloadEmptyWithOriginalType) {
   ASSERT_FALSE(navigation_manager()->GetPendingItem());
@@ -1094,7 +1094,7 @@ TEST_F(NavigationManagerTest, ReloadEmptyWithOriginalType) {
   ASSERT_FALSE(navigation_manager()->GetLastCommittedItem());
 }
 
-// Tests that calling |Reload| with web::ReloadType::ORIGINAL_REQUEST_URL
+// Tests that calling `Reload` with web::ReloadType::ORIGINAL_REQUEST_URL
 // changes the renderer initiated pending item's url to its original request url
 // when there is one.
 TEST_F(NavigationManagerTest, ReloadRendererPendingItemWithOriginalType) {
@@ -1116,7 +1116,7 @@ TEST_F(NavigationManagerTest, ReloadRendererPendingItemWithOriginalType) {
             navigation_manager()->GetPendingItem()->GetURL());
 }
 
-// Tests that calling |Reload| with web::ReloadType::ORIGINAL_REQUEST_URL
+// Tests that calling `Reload` with web::ReloadType::ORIGINAL_REQUEST_URL
 // changes the user initiated pending item's url to its original request url
 // when there is one.
 TEST_F(NavigationManagerTest, ReloadUserPendingItemWithOriginalType) {
@@ -1138,7 +1138,7 @@ TEST_F(NavigationManagerTest, ReloadUserPendingItemWithOriginalType) {
             navigation_manager()->GetPendingItem()->GetURL());
 }
 
-// Tests that calling |Reload| with web::ReloadType::ORIGINAL_REQUEST_URL
+// Tests that calling `Reload` with web::ReloadType::ORIGINAL_REQUEST_URL
 // changes the last committed item's url to its original request url when there
 // is no pending item.
 TEST_F(NavigationManagerTest, ReloadLastCommittedItemWithOriginalType) {
@@ -1173,7 +1173,7 @@ TEST_F(NavigationManagerTest, ReloadLastCommittedItemWithOriginalType) {
             navigation_manager()->GetLastCommittedItem()->GetURL());
 }
 
-// Tests that calling |Reload| with web::ReloadType::ORIGINAL_REQUEST_URL
+// Tests that calling `Reload` with web::ReloadType::ORIGINAL_REQUEST_URL
 // changes the last committed item's url to its original request url when there
 // is no pending item, but there are forward items after last committed item.
 TEST_F(NavigationManagerTest,
@@ -1723,7 +1723,7 @@ TEST_F(NavigationManagerTest, VisibleItemDefaultsToLastCommittedItem) {
             navigation_manager()->GetVisibleItem()->GetURL().spec());
 }
 
-// Tests that |extra_headers| and |post_data| from WebLoadParams are added to
+// Tests that `extra_headers` and `post_data` from WebLoadParams are added to
 // the new navigation item if they are present.
 TEST_F(NavigationManagerTest, LoadURLWithParamsWithExtraHeadersAndPostData) {
   NavigationManager::WebLoadParams params(GURL("http://www.url.com/0"));

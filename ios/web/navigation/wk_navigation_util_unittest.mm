@@ -44,7 +44,7 @@ void CreateTestNavigationItems(
   }
 }
 
-// Extracts session dictionary from |restore_session_url|.
+// Extracts session dictionary from `restore_session_url`.
 base::JSONReader::Result ExtractSessionDict(GURL restore_session_url) {
   NSString* fragment = net::NSURLWithGURL(restore_session_url).fragment;
   NSString* encoded_session =
@@ -212,7 +212,7 @@ TEST_F(WKNavigationUtilTest, CreateRestoreSessionUrlForLargeSession) {
 }
 
 // Verifies that large session can be stored in NSURL and that extra items
-// are trimmed from the right side of |last_committed_item_index|.
+// are trimmed from the right side of `last_committed_item_index`.
 TEST_F(WKNavigationUtilTest, CreateRestoreSessionUrlForExtraLargeForwardList) {
   // Create restore session URL with large number of items that exceeds
   // kMaxSessionSize.
@@ -257,7 +257,7 @@ TEST_F(WKNavigationUtilTest, CreateRestoreSessionUrlForExtraLargeForwardList) {
 }
 
 // Verifies that large session can be stored in NSURL and that extra items
-// are trimmed from the left side of |last_committed_item_index|.
+// are trimmed from the left side of `last_committed_item_index`.
 TEST_F(WKNavigationUtilTest, CreateRestoreSessionUrlForExtraLargeBackList) {
   // Create restore session URL with large number of items that exceeds
   // kMaxSessionSize.
@@ -302,7 +302,7 @@ TEST_F(WKNavigationUtilTest, CreateRestoreSessionUrlForExtraLargeBackList) {
 }
 
 // Verifies that large session can be stored in NSURL and that extra items
-// are trimmed from the left and right sides of |last_committed_item_index|.
+// are trimmed from the left and right sides of `last_committed_item_index`.
 TEST_F(WKNavigationUtilTest,
        CreateRestoreSessionUrlForExtraLargeBackAndForwardList) {
   // Create restore session URL with large number of items that exceeds

@@ -17,12 +17,12 @@ namespace web {
 // in general).
 class TimeSmoother {
  public:
-  // Returns |t| with possibly some time added on.
+  // Returns `t` with possibly some time added on.
   base::Time GetSmoothedTime(base::Time t);
 
  private:
-  // |low_water_mark_| is the first time in a sequence of adjusted
-  // times and |high_water_mark_| is the last.
+  // `low_water_mark_` is the first time in a sequence of adjusted
+  // times and `high_water_mark_` is the last.
   base::Time low_water_mark_;
   base::Time high_water_mark_;
 };

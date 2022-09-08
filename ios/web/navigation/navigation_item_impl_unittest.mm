@@ -86,7 +86,7 @@ TEST_F(NavigationItemTest, Copy) {
   NSString* state1 = @"state1";
   [mutableState setString:state1];
 
-  // Check that changes occurred in |item_|, but not in |copy|.
+  // Check that changes occurred in `item_`, but not in `copy`.
   EXPECT_NSEQ([postData1 dataUsingEncoding:NSUTF8StringEncoding],
               item_->GetPostData());
   EXPECT_NSEQ(state1, item_->GetSerializedStateObject());
@@ -98,7 +98,7 @@ TEST_F(NavigationItemTest, Copy) {
   copy.AddHttpRequestHeaders(@{});
 }
 
-// Tests whether |NavigationItem::AddHttpRequestHeaders()| adds the passed
+// Tests whether `NavigationItem::AddHttpRequestHeaders()` adds the passed
 // headers to the item's request http headers.
 TEST_F(NavigationItemTest, AddHttpRequestHeaders) {
   EXPECT_NSEQ(@{kHTTPHeaderKey1 : kHTTPHeaderValue1},
@@ -116,7 +116,7 @@ TEST_F(NavigationItemTest, AddHttpRequestHeaders) {
   EXPECT_NSEQ(expected, item_->GetHttpRequestHeaders());
 }
 
-// Tests whether |NavigationItem::AddHttpRequestHeaders()| removes the header
+// Tests whether `NavigationItem::AddHttpRequestHeaders()` removes the header
 // value associated with the passed key from the item's request http headers.
 TEST_F(NavigationItemTest, RemoveHttpRequestHeaderForKey) {
   NSDictionary* httpHeaders = @{

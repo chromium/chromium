@@ -17,7 +17,7 @@
 
 // Holds a pair of state and creation order index.
 @interface CRWWKNavigationsStateRecord : NSObject {
-  // Backs up |context| property.
+  // Backs up `context` property.
   std::unique_ptr<web::NavigationContextImpl> _context;
 }
 // Navigation state.
@@ -142,7 +142,7 @@
            // didFinishNavigation can be called before didCommitNvigation.
            (record.state == web::WKNavigationState::FINISHED &&
             state == web::WKNavigationState::COMMITTED) ||
-           // |navigation| can be nil for same-document navigations.
+           // `navigation` can be nil for same-document navigations.
            !navigation);
     record.state = state;
   }
@@ -272,7 +272,7 @@
   }
 
   if (*outNavigation == _nullNavigation) {
-    // |_nullNavigation| is a key for storing null navigations.
+    // `_nullNavigation` is a key for storing null navigations.
     *outNavigation = nil;
   }
 }

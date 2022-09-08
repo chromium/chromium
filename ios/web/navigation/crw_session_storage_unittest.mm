@@ -28,7 +28,7 @@
 
 namespace {
 
-// Checks for equality between the item storages in |items1| and |items2|.
+// Checks for equality between the item storages in `items1` and `items2`.
 BOOL ItemStorageListsAreEqual(NSArray* items1, NSArray* items2) {
   __block BOOL items_are_equal = items1.count == items2.count;
   if (!items_are_equal)
@@ -41,7 +41,7 @@ BOOL ItemStorageListsAreEqual(NSArray* items1, NSArray* items2) {
   return items_are_equal;
 }
 
-// Checks for equality between |session1| and |session2|.
+// Checks for equality between `session1` and `session2`.
 BOOL SessionStoragesAreEqual(CRWSessionStorage* session1,
                              CRWSessionStorage* session2) {
   // Check the rest of the properties.
@@ -69,7 +69,7 @@ CRWSessionUserData* SessionUserDataFromDictionary(
 class CRWSessionStorageTest : public PlatformTest {
  protected:
   CRWSessionStorageTest() : session_storage_([[CRWSessionStorage alloc] init]) {
-    // Set up |session_storage_|.
+    // Set up `session_storage_`.
     session_storage_.hasOpener = YES;
     session_storage_.lastCommittedItemIndex = 4;
     session_storage_.userAgentType = web::UserAgentType::DESKTOP;

@@ -11,7 +11,7 @@
 
 namespace web {
 
-// Returns whether |item1| is equivalent to |item2|.
+// Returns whether `item1` is equivalent to `item2`.
 BOOL ItemStoragesAreEqual(CRWNavigationItemStorage* item1,
                           CRWNavigationItemStorage* item2);
 }

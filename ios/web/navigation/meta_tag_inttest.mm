@@ -64,7 +64,7 @@ class MetaTagTest : public WebTestWithWebState,
 };
 
 // Tests that if a page contains <meta HTTP-EQUIV='REFRESH' content='time;url'>,
-// the page will redirect to |url| after |time| seconds.
+// the page will redirect to `url` after `time` seconds.
 TEST_P(MetaTagTest, HttpEquivRefresh) {
   const GURL origin_url = server_.GetURL(kOriginRelativeUrl);
   const GURL destination_url = server_.GetURL(kDestinationRelativeUrl);

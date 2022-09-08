@@ -39,7 +39,7 @@ class CRWErrorPageHelperIntTest : public WebIntTest {
     EXPECT_TRUE(server_.Start()) << "Server didn't start";
   }
 
-  // Returns an error page helper initialized with |url| as the url of the
+  // Returns an error page helper initialized with `url` as the url of the
   // failing page (original page).
   CRWErrorPageHelper* HelperForUrl(const std::string& url) {
     NSString* url_string = base::SysUTF8ToNSString(url);

@@ -171,7 +171,7 @@ using web::wk_navigation_util::IsRestoreSessionUrl;
 
   // For failed navigations, WKWebView will sometimes revert to the previous URL
   // before committing the current navigation or resetting the web view's
-  // |isLoading| property to NO.  If this is the first navigation for the web
+  // `isLoading` property to NO.  If this is the first navigation for the web
   // view, this will result in an empty URL.
   BOOL navigationWasCommitted = self.navigationHandler.navigationState !=
                                 web::WKNavigationState::REQUESTED;
@@ -182,7 +182,7 @@ using web::wk_navigation_util::IsRestoreSessionUrl;
 
   if (!navigationWasCommitted &&
       !self.navigationHandler.pendingNavigationInfo.cancelled) {
-    // A fast back-forward navigation does not call |didCommitNavigation:|, so
+    // A fast back-forward navigation does not call `didCommitNavigation:`, so
     // signal page change explicitly.
     DCHECK_EQ(self.documentURL.DeprecatedGetOriginAsURL(),
               webViewURL.DeprecatedGetOriginAsURL());
@@ -243,12 +243,12 @@ using web::wk_navigation_util::IsRestoreSessionUrl;
   //    the URL reverts to the previous URL without triggering a new navigation.
   // 4) When the user is reloading an error page.
   //
-  // If |isLoading| is NO, then it must be case 2, 3, or 4. If the last
+  // If `isLoading` is NO, then it must be case 2, 3, or 4. If the last
   // committed URL (_documentURL) matches the current URL, assume that it is
   // case 3. If the URL does not match, assume it is a non-document-changing
   // URL change, and handle accordingly.
   //
-  // If |isLoading| is YES, then it could either be case 1, or it could be case
+  // If `isLoading` is YES, then it could either be case 1, or it could be case
   // 2 on a page that hasn't finished loading yet. If it's possible that it
   // could be a same-page navigation (in which case there may not be any other
   // callback about the URL having changed), then check the actual page URL via
@@ -280,7 +280,7 @@ using web::wk_navigation_util::IsRestoreSessionUrl;
     // self.webView.URL,
     //    but not currentItem.URL to be updated. NavigationItem URL should be
     //    synced to self.webView.URL.
-    // This needs to be done before |URLDidChangeWithoutDocumentChange| so any
+    // This needs to be done before `URLDidChangeWithoutDocumentChange` so any
     // WebStateObserver callbacks will see the updated URL.
     // TODO(crbug.com/809287) use currentItem.URL instead of self.webView.URL to
     // update NavigationItem URL.
@@ -370,9 +370,9 @@ using web::wk_navigation_util::IsRestoreSessionUrl;
 
 #pragma mark - Private
 
-// Returns YES if a KVO change to |newURL| could be a 'navigation' within the
+// Returns YES if a KVO change to `newURL` could be a 'navigation' within the
 // document (hash change, pushState/replaceState, etc.). This should only be
-// used in the context of a URL KVO callback firing, and only if |isLoading| is
+// used in the context of a URL KVO callback firing, and only if `isLoading` is
 // YES for the web view (since if it's not, no guesswork is needed).
 - (BOOL)isKVOChangePotentialSameDocumentNavigationToURL:(const GURL&)newURL {
   // If the origin changes, it can't be same-document.

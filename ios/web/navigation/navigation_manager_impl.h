@@ -140,11 +140,11 @@ class NavigationManagerImpl : public NavigationManager {
 
   // Adds a new item with the given url, referrer, navigation type, initiation
   // type and user agent override option, making it the pending item. If pending
-  // item is the same as the current item, this does nothing. |referrer| may be
+  // item is the same as the current item, this does nothing. `referrer` may be
   // nil if there isn't one. The item starts out as pending, and will be lost
-  // unless |-commitPendingItem| is called.
-  // |is_post_navigation| is true if the navigation is using a POST HTTP method.
-  // |https_upgrade_type| indicates the type of the HTTPS upgrade applied on
+  // unless `-commitPendingItem` is called.
+  // `is_post_navigation` is true if the navigation is using a POST HTTP method.
+  // `https_upgrade_type` indicates the type of the HTTPS upgrade applied on
   // this navigation.
   void AddPendingItem(const GURL& url,
                       const web::Referrer& referrer,
@@ -157,7 +157,7 @@ class NavigationManagerImpl : public NavigationManager {
   // TODO(crbug.com/936933): Remove this method.
   void CommitPendingItem();
 
-  // Commits given pending |item| stored outside of navigation manager
+  // Commits given pending `item` stored outside of navigation manager
   // (normally in NavigationContext). It is possible to have additional pending
   // items owned by navigation manager and/or outside of navigation manager.
   void CommitPendingItem(std::unique_ptr<NavigationItemImpl> item);
@@ -174,7 +174,7 @@ class NavigationManagerImpl : public NavigationManager {
   void SetPendingItem(std::unique_ptr<web::NavigationItemImpl> item);
 
   // Returns the navigation index that differs from the current item (or pending
-  // item if it exists) by the specified |offset|, skipping redirect navigation
+  // item if it exists) by the specified `offset`, skipping redirect navigation
   // items. The index returned is not guaranteed to be valid.
   // TODO(crbug.com/661316): Make this method private once navigation code is
   // moved from CRWWebController to NavigationManagerImpl.
@@ -185,7 +185,7 @@ class NavigationManagerImpl : public NavigationManager {
   void SetPendingItemIndex(int index);
 
   // Set ShouldSkipSerialization to true for the next pending item, provided it
-  // matches |url|.  Applies the workaround for crbug.com/997182
+  // matches `url`.  Applies the workaround for crbug.com/997182
   void SetWKWebViewNextPendingUrlNotSerializable(const GURL& url);
 
   // Returns true if URL was restored via the native WKWebView API.
@@ -284,7 +284,7 @@ class NavigationManagerImpl : public NavigationManager {
     // Returns true if the navigation manager is attached to a WKWebView.
     bool IsAttachedToWebView() const;
 
-    // Caches NavigationItems from the WKWebView in |this| and changes state to
+    // Caches NavigationItems from the WKWebView in `this` and changes state to
     // detached.
     void DetachFromWebView();
 
@@ -300,8 +300,8 @@ class NavigationManagerImpl : public NavigationManager {
     // Returns the number of items in the back-forward history.
     size_t GetBackForwardListItemCount() const;
 
-    // Returns the absolute index of WKBackForwardList's |currentItem| or -1 if
-    // |currentItem| is nil. If navigation manager is in detached mode, returns
+    // Returns the absolute index of WKBackForwardList's `currentItem` or -1 if
+    // `currentItem` is nil. If navigation manager is in detached mode, returns
     // the cached value of this property captured at the last call of
     // DetachFromWebView().
     int GetCurrentItemIndex() const;
@@ -311,14 +311,14 @@ class NavigationManagerImpl : public NavigationManager {
     GURL GetVisibleWebViewURL() const;
 
     // Returns the NavigationItem associated with the WKBackForwardListItem at
-    // |index|. If |create_if_missing| is true and the WKBackForwardListItem
+    // `index`. If `create_if_missing` is true and the WKBackForwardListItem
     // does not have an associated NavigationItem, creates a new one and returns
     // it to the caller.
     NavigationItemImpl* GetNavigationItemImplAtIndex(
         size_t index,
         bool create_if_missing) const;
 
-    // Returns the WKBackForwardListItem at |index|. Must only be called when
+    // Returns the WKBackForwardListItem at `index`. Must only be called when
     // IsAttachedToWebView() is true.
     WKBackForwardListItem* GetWKItemAtIndex(size_t index) const;
 
@@ -336,8 +336,8 @@ class NavigationManagerImpl : public NavigationManager {
     kForwardList,
   };
 
-  // Restores the state of the |items_restored| in the navigation items
-  // associated with the WKBackForwardList. |back_list| is used to specify if
+  // Restores the state of the `items_restored` in the navigation items
+  // associated with the WKBackForwardList. `back_list` is used to specify if
   // the items passed are the list containing the back list or the forward list.
   void RestoreItemsState(
       RestoreItemListType list_type,
@@ -347,21 +347,21 @@ class NavigationManagerImpl : public NavigationManager {
   // differs from Restore() in that it doesn't reset the current navigation
   // history to empty before restoring. It simply appends the restored session
   // after the current item, effectively replacing only the forward history.
-  // |last_committed_item_index| is the 0-based index into |items| that the web
+  // `last_committed_item_index` is the 0-based index into `items` that the web
   // view should be navigated to at the end of the restoration.
   void UnsafeRestore(int last_committed_item_index,
                      std::vector<std::unique_ptr<NavigationItem>> items);
 
-  // Must be called by subclasses before restoring |item_count| navigation
+  // Must be called by subclasses before restoring `item_count` navigation
   // items.
   void WillRestore(size_t item_count);
 
   // Some app-specific URLs need to be rewritten to about: scheme.
   void RewriteItemURLIfNecessary(NavigationItem* item) const;
 
-  // Creates a NavigationItem using the given properties, where |previous_url|
+  // Creates a NavigationItem using the given properties, where `previous_url`
   // is the URL of the navigation just prior to the current one. If
-  // |url_rewriters| is not nullptr, apply them before applying the permanent
+  // `url_rewriters` is not nullptr, apply them before applying the permanent
   // URL rewriters from BrowserState.
   std::unique_ptr<NavigationItemImpl> CreateNavigationItemWithRewriters(
       const GURL& url,
@@ -376,7 +376,7 @@ class NavigationManagerImpl : public NavigationManager {
   // request.
   NavigationItem* GetLastCommittedItemWithUserAgentType() const;
 
-  // Returns true if |last_committed_item| matches WKWebView.URL when expected.
+  // Returns true if `last_committed_item` matches WKWebView.URL when expected.
   // WKWebView is more aggressive than Chromium is in updating the committed
   // URL, and there are cases where, even though WKWebView's URL has updated,
   // Chromium still wants to display last committed.  Normally this is managed
@@ -399,7 +399,7 @@ class NavigationManagerImpl : public NavigationManager {
   // The BrowserState that is associated with this instance.
   BrowserState* browser_state_;
 
-  // List of transient url rewriters added by |AddTransientURLRewriter()|.
+  // List of transient url rewriters added by `AddTransientURLRewriter()`.
   std::vector<BrowserURLRewriter::URLRewriter> transient_url_rewriters_;
 
   // The pending main frame navigation item. This is nullptr if there is no
@@ -448,7 +448,7 @@ class NavigationManagerImpl : public NavigationManager {
   bool going_to_back_forward_list_item_ = false;
 
   // Set to an URL when the next created pending item should set
-  // ShouldSkipSerialization to true, provided it matches |url|.
+  // ShouldSkipSerialization to true, provided it matches `url`.
   GURL next_pending_url_should_skip_serialization_;
 
   // Non null during the session restoration. Created when session restoration
@@ -457,7 +457,7 @@ class NavigationManagerImpl : public NavigationManager {
   std::unique_ptr<base::ElapsedTimer> restoration_timer_;
 
   // The active navigation entry in the restored session. GetVisibleItem()
-  // returns this item in the window between |is_restore_session_in_progress_|
+  // returns this item in the window between `is_restore_session_in_progress_`
   // becomes true until the first post-restore navigation is finished, so that
   // clients of this navigation manager gets sane values for visible title and
   // URL.

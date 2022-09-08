@@ -88,7 +88,7 @@ TEST_F(CRWErrorPageHelperTest, FailedNavigationURLFromErrorPageFileURLCorrect) {
   EXPECT_TRUE([CRWErrorPageHelper isErrorPageFileURL:url]);
 }
 
-// Tests that the extract failed navigation URL is empty if the |url| query
+// Tests that the extract failed navigation URL is empty if the `url` query
 // isn't present in the page URL.
 TEST_F(CRWErrorPageHelperTest, FailedNavigationURLFromErrorPageFileURLNoQuery) {
   std::string expected_url = "http://expected-url.com";

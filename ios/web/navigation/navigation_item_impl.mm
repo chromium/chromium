@@ -314,7 +314,7 @@ void NavigationItemImpl::ResetForCommit() {
 
 void NavigationItemImpl::RestoreStateFromItem(NavigationItem* other) {
   // Restore the UserAgent type in any case, as if the URLs are different it
-  // might mean that |this| is a next navigation. The page display state and the
+  // might mean that `this` is a next navigation. The page display state and the
   // virtual URL only make sense if it is the same item. The other headers might
   // not make sense after creating a new navigation to the page.
   if (other->GetUserAgentType() != UserAgentType::NONE) {

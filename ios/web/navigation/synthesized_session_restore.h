@@ -17,7 +17,7 @@ class WebState;
 
 // Class used to generate an NSData blob similar to what WKWebView uses in
 // -interactionState. This can be used to use native restore when the otherwise
-// cached |interactionState| is unavailable (for example, tab syncing).
+// cached `interactionState` is unavailable (for example, tab syncing).
 // See
 // https://github.com/WebKit/WebKit/blob/674bd0ec/Source/WebKit/UIProcess/mac/LegacySessionStateCoding.cpp
 // for the basis of this implementation.

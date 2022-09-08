@@ -26,7 +26,7 @@ NSBundle* BundleForHTMLFiles() {
   return [NSBundle bundleForClass:CRWErrorPageHelper.class];
 }
 
-// Escapes HTML characters in |text|.
+// Escapes HTML characters in `text`.
 NSString* EscapeHTMLCharacters(NSString* text) {
   return base::SysUTF8ToNSString(
       base::EscapeForHTML(base::SysNSStringToUTF8(text)));
@@ -160,11 +160,11 @@ NSString* InjectedErrorPageFilePath() {
 }
 
 - (BOOL)isErrorPageFileURLForFailedNavigationURL:(NSURL*)URL {
-  // Check that |URL| is a file URL of error page.
+  // Check that `URL` is a file URL of error page.
   if (!URL.fileURL || ![URL.path isEqualToString:self.errorPageFileURL.path]) {
     return NO;
   }
-  // Check that |URL| has the same failed URL as |self|.
+  // Check that `URL` has the same failed URL as `self`.
   NSURLComponents* URLComponents = [NSURLComponents componentsWithURL:URL
                                               resolvingAgainstBaseURL:NO];
   NSURL* failedNavigationURL = nil;

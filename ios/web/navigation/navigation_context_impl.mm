@@ -191,7 +191,7 @@ std::unique_ptr<NavigationItemImpl> NavigationContextImpl::ReleaseItem() {
 void NavigationContextImpl::SetItem(std::unique_ptr<NavigationItemImpl> item) {
   DCHECK(!item_);
   if (item) {
-    // |item| can be null for same-docuemnt navigations and reloads, where
+    // `item` can be null for same-docuemnt navigations and reloads, where
     // navigation item is committed and should not be stored in
     // NavigationContext.
     DCHECK_EQ(GetNavigationItemUniqueID(), item->GetUniqueID());
