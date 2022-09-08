@@ -55,6 +55,11 @@ class IOSPasswordManagerDriver
   bool IsInPrimaryMainFrame() const override;
   bool CanShowAutofillUi() const override;
   const GURL& GetLastCommittedURL() const override;
+  // In some cases the web frame might not exist anymore (when the frame is
+  // deleted by the webpage straight after form submission, but the driver is
+  // still alive). So only use this getter when you are sure that the frame
+  // still exists.
+  web::WebFrame* web_frame() { return web_frame_; }
 
  private:
   // The constructor below is private so that no one uses it while trying to

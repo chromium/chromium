@@ -23,10 +23,15 @@ IOSPasswordManagerDriver::IOSPasswordManagerDriver(
     password_manager::PasswordManager* password_manager,
     web::WebFrame* web_frame,
     int driver_id)
-    : bridge_(bridge), password_manager_(password_manager), id_(driver_id) {
+    : bridge_(bridge),
+      password_manager_(password_manager),
+      web_frame_(web_frame),
+      id_(driver_id) {
   password_generation_helper_ =
       std::make_unique<password_manager::PasswordGenerationFrameHelper>(
           password_manager_->GetClient(), this);
+
+  // Cache this value early, so that it can be accessed after frame deletion.
   is_in_main_frame_ = web_frame->IsMainFrame();
 }
 
@@ -38,7 +43,7 @@ int IOSPasswordManagerDriver::GetId() const {
 
 void IOSPasswordManagerDriver::SetPasswordFillData(
     const autofill::PasswordFormFillData& form_data) {
-  [bridge_ fillPasswordForm:form_data completionHandler:nil];
+  [bridge_ fillPasswordForm:form_data inFrame:web_frame_ completionHandler:nil];
 }
 
 void IOSPasswordManagerDriver::InformNoSavedCredentials(

@@ -12,6 +12,10 @@ struct PasswordFormFillData;
 struct PasswordFormGenerationData;
 }  // namespace autofill
 
+namespace web {
+class WebFrame;
+}  // namespace web
+
 class GURL;
 
 // C++ to ObjC bridge for methods of PasswordManagerDriver.
@@ -24,6 +28,7 @@ class GURL;
 // |completionHandler| with YES if a form field has been filled, NO otherwise.
 // |completionHandler| can be nil.
 - (void)fillPasswordForm:(const autofill::PasswordFormFillData&)formData
+                 inFrame:(web::WebFrame*)frame
        completionHandler:(void (^)(BOOL))completionHandler;
 
 // Informs delegate that there are no saved credentials for the current page.

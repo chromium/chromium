@@ -57,6 +57,7 @@ class WebFrame;
 - (NSArray<FormSuggestion*>*)
     retrieveSuggestionsWithFormID:(autofill::FormRendererId)formIdentifier
                   fieldIdentifier:(autofill::FieldRendererId)fieldIdentifier
+                          inFrame:(web::WebFrame*)frame
                         fieldType:(NSString*)fieldType;
 
 // Checks if suggestions are available for the field.
@@ -74,8 +75,9 @@ class WebFrame;
 // Retrieves password form fill data for |username| for use in
 // |PasswordFormHelper|'s
 // -fillPasswordFormWithFillData:completionHandler:.
-- (std::unique_ptr<password_manager::FillData>)passwordFillDataForUsername:
-    (NSString*)username;
+- (std::unique_ptr<password_manager::FillData>)
+    passwordFillDataForUsername:(NSString*)username
+                        inFrame:(web::WebFrame*)frame;
 
 // The following methods should be called to maintain the correct state along
 // with password forms.
@@ -89,7 +91,8 @@ class WebFrame;
 // This method should be called in password controller's
 // -fillPasswordForm:completionHandler:.
 - (void)processWithPasswordFormFillData:
-    (const autofill::PasswordFormFillData&)formData;
+            (const autofill::PasswordFormFillData&)formData
+                                inFrame:(web::WebFrame*)frame;
 
 // Processes field for which no saved credentials are available.
 // Triggers callback for -checkIfSuggestionsAvailableForForm... if needed.

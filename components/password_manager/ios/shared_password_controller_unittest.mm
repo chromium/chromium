@@ -348,16 +348,17 @@ TEST_F(SharedPasswordControllerTest, ReturnsNoSuggestionsIfNoneAreAvailable) {
                   type:@"focus"
             typedValue:@""
                frameID:kTestFrameID];
-  [[[suggestion_helper_ expect] andReturn:@[]]
-      retrieveSuggestionsWithFormID:form_query.uniqueFormID
-                    fieldIdentifier:form_query.uniqueFieldID
-                          fieldType:form_query.fieldType];
-
   auto web_frame =
       web::FakeWebFrame::Create(SysNSStringToUTF8(kTestFrameID),
                                 /*is_main_frame=*/false, GURL::EmptyGURL());
   web::WebFrame* frame = web_frame.get();
   web_frames_manager_->AddWebFrame(std::move(web_frame));
+
+  [[[suggestion_helper_ expect] andReturn:@[]]
+      retrieveSuggestionsWithFormID:form_query.uniqueFormID
+                    fieldIdentifier:form_query.uniqueFieldID
+                            inFrame:frame
+                          fieldType:form_query.fieldType];
 
   OCMExpect([driver_helper_ PasswordManagerDriver:frame]);
   EXPECT_CALL(password_generation_helper_, IsGenerationEnabled(true))
@@ -393,15 +394,18 @@ TEST_F(SharedPasswordControllerTest, ReturnsSuggestionsIfAvailable) {
                                      icon:@"icon"
                                identifier:0
                            requiresReauth:NO];
-  [[[suggestion_helper_ expect] andReturn:@[ suggestion ]]
-      retrieveSuggestionsWithFormID:form_query.uniqueFormID
-                    fieldIdentifier:form_query.uniqueFieldID
-                          fieldType:form_query.fieldType];
+
   auto web_frame =
       web::FakeWebFrame::Create(SysNSStringToUTF8(kTestFrameID),
                                 /*is_main_frame=*/false, GURL::EmptyGURL());
   web::WebFrame* frame = web_frame.get();
   web_frames_manager_->AddWebFrame(std::move(web_frame));
+
+  [[[suggestion_helper_ expect] andReturn:@[ suggestion ]]
+      retrieveSuggestionsWithFormID:form_query.uniqueFormID
+                    fieldIdentifier:form_query.uniqueFieldID
+                            inFrame:frame
+                          fieldType:form_query.fieldType];
 
   OCMExpect([driver_helper_ PasswordManagerDriver:frame]);
   EXPECT_CALL(password_generation_helper_, IsGenerationEnabled(true))
@@ -433,9 +437,17 @@ TEST_F(SharedPasswordControllerTest,
                   type:@"focus"
             typedValue:@""
                frameID:kTestFrameID];
+
+  auto web_frame =
+      web::FakeWebFrame::Create(SysNSStringToUTF8(kTestFrameID),
+                                /*is_main_frame=*/false, GURL::EmptyGURL());
+  web::WebFrame* frame = web_frame.get();
+  web_frames_manager_->AddWebFrame(std::move(web_frame));
+
   [[[suggestion_helper_ expect] andReturn:@[]]
       retrieveSuggestionsWithFormID:form_query.uniqueFormID
                     fieldIdentifier:form_query.uniqueFieldID
+                            inFrame:frame
                           fieldType:form_query.fieldType];
 
   autofill::PasswordFormGenerationData form_generation_data = {
@@ -443,11 +455,6 @@ TEST_F(SharedPasswordControllerTest,
       form_query.uniqueFieldID};
   [controller_ formEligibleForGenerationFound:form_generation_data];
   __block BOOL completion_was_called = NO;
-  auto web_frame =
-      web::FakeWebFrame::Create(SysNSStringToUTF8(kTestFrameID),
-                                /*is_main_frame=*/false, GURL::EmptyGURL());
-  web::WebFrame* frame = web_frame.get();
-  web_frames_manager_->AddWebFrame(std::move(web_frame));
 
   OCMExpect([driver_helper_ PasswordManagerDriver:frame]);
   EXPECT_CALL(password_generation_helper_, IsGenerationEnabled(true))
@@ -839,7 +846,9 @@ TEST_F(SharedPasswordControllerTestWithRealSuggestionHelper,
   OCMExpect([form_helper_ fillPasswordForm:form_fill_data
                                    inFrame:frame
                          completionHandler:nil]);
-  [controller_ fillPasswordForm:form_fill_data completionHandler:nil];
+  [controller_ fillPasswordForm:form_fill_data
+                        inFrame:frame
+              completionHandler:nil];
   // Check that completion handler was called.
   EXPECT_TRUE(completion_was_called);
 }
@@ -926,7 +935,9 @@ TEST_F(SharedPasswordControllerTestWithRealSuggestionHelper,
   OCMExpect([form_helper_ fillPasswordForm:form_fill_data
                                    inFrame:frame
                          completionHandler:nil]);
-  [controller_ fillPasswordForm:form_fill_data completionHandler:nil];
+  [controller_ fillPasswordForm:form_fill_data
+                        inFrame:frame
+              completionHandler:nil];
 
   // Check that completion handler was called for the second form query.
   EXPECT_FALSE(completion_was_called1);

@@ -32,8 +32,10 @@ typedef void (^PasswordSuggestionsAvailableCompletion)(
     const password_manager::AccountSelectFillData* __nullable);
 
 @implementation PasswordSuggestionHelper {
-  // The C++ interface to cache and retrieve password suggestions.
-  AccountSelectFillData _fillData;
+  // The value of the map is a C++ interface to cache and retrieve password
+  // suggestions. The interfaces are grouped by the frame of the form.
+  base::flat_map<web::WebFrame*, std::unique_ptr<AccountSelectFillData>>
+      _fillDataMap;
 
   // YES indicates that extracted password form has been sent to the password
   // manager.
@@ -61,15 +63,18 @@ typedef void (^PasswordSuggestionsAvailableCompletion)(
 - (NSArray<FormSuggestion*>*)
     retrieveSuggestionsWithFormID:(FormRendererId)formIdentifier
                   fieldIdentifier:(FieldRendererId)fieldIdentifier
+                          inFrame:(web::WebFrame*)frame
                         fieldType:(NSString*)fieldType {
+  AccountSelectFillData* fillData = [self getFillDataFromFrame:frame];
+
   BOOL isPasswordField = [fieldType isEqual:kPasswordFieldType];
 
   NSMutableArray<FormSuggestion*>* results = [NSMutableArray array];
 
-  if (_fillData.IsSuggestionsAvailable(formIdentifier, fieldIdentifier,
-                                       isPasswordField)) {
+  if (fillData && fillData->IsSuggestionsAvailable(
+                      formIdentifier, fieldIdentifier, isPasswordField)) {
     std::vector<password_manager::UsernameAndRealm> usernameAndRealms =
-        _fillData.RetrieveSuggestions(formIdentifier, fieldIdentifier,
+        fillData->RetrieveSuggestions(formIdentifier, fieldIdentifier,
                                       isPasswordField);
 
     for (const auto& usernameAndRealm : usernameAndRealms) {
@@ -135,28 +140,42 @@ typedef void (^PasswordSuggestionsAvailableCompletion)(
     return;
   }
 
-  completion(_fillData.IsSuggestionsAvailable(
-      formQuery.uniqueFormID, formQuery.uniqueFieldID, isPasswordField));
+  AccountSelectFillData* fillData = [self getFillDataFromFrame:frame];
+
+  completion(fillData && fillData->IsSuggestionsAvailable(
+                             formQuery.uniqueFormID, formQuery.uniqueFieldID,
+                             isPasswordField));
 }
 
-- (std::unique_ptr<password_manager::FillData>)passwordFillDataForUsername:
-    (NSString*)username {
-  return _fillData.GetFillData(SysNSStringToUTF16(username));
+- (std::unique_ptr<password_manager::FillData>)
+    passwordFillDataForUsername:(NSString*)username
+                        inFrame:(web::WebFrame*)frame {
+  AccountSelectFillData* fillData = [self getFillDataFromFrame:frame];
+  return fillData ? fillData->GetFillData(SysNSStringToUTF16(username))
+                  : nullptr;
 }
 
 - (void)resetForNewPage {
-  _fillData.Reset();
+  _fillDataMap.clear();
   _sentPasswordFormToPasswordManager = NO;
   _processedPasswordSuggestions = NO;
   _suggestionsAvailableCompletion = nil;
 }
 
-- (void)processWithPasswordFormFillData:(const PasswordFormFillData&)formData {
-  _fillData.Add(formData);
+- (void)processWithPasswordFormFillData:(const PasswordFormFillData&)formData
+                                inFrame:(web::WebFrame*)frame {
+  AccountSelectFillData* fillData = [self getFillDataFromFrame:frame];
+  if (!fillData) {
+    auto it = _fillDataMap.insert(
+        std::make_pair(frame, std::make_unique<AccountSelectFillData>()));
+    fillData = it.first->second.get();
+  }
+
+  fillData->Add(formData);
   _processedPasswordSuggestions = YES;
 
   if (_suggestionsAvailableCompletion) {
-    _suggestionsAvailableCompletion(&_fillData);
+    _suggestionsAvailableCompletion(fillData);
     _suggestionsAvailableCompletion = nil;
   }
 }
@@ -176,6 +195,16 @@ typedef void (^PasswordSuggestionsAvailableCompletion)(
 
 - (void)updateStateOnPasswordFormExtracted {
   _sentPasswordFormToPasswordManager = YES;
+}
+
+#pragma mark - Private methods
+
+- (AccountSelectFillData*)getFillDataFromFrame:(web::WebFrame*)frame {
+  auto it = _fillDataMap.find(frame);
+  if (it == _fillDataMap.end()) {
+    return nullptr;
+  }
+  return it->second.get();
 }
 
 @end
