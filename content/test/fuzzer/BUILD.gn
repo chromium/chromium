@@ -317,21 +317,6 @@ fuzzer_test("first_party_set_parser_json_fuzzer") {
   ]
 }
 
-fuzzer_test("first_party_set_parser_map_fuzzer") {
-  sources = [
-    "../../browser/first_party_sets/test/first_party_set_parser_map_fuzzer.cc",
-  ]
-  deps = [
-    ":first_party_set_parser_fuzzer_support",
-    ":firstpartysets_proto",
-    "//third_party/libprotobuf-mutator",
-  ]
-}
-
-proto_library("firstpartysets_proto") {
-  sources = [ "../../browser/first_party_sets/test/first_party_set_parser_map_fuzzer.proto" ]
-}
-
 mojolpm_fuzzer_test("media_stream_dispatcher_host_mojolpm_fuzzer") {
   sources = [ "media_stream_dispatcher_host_mojolpm_fuzzer.cc" ]
 

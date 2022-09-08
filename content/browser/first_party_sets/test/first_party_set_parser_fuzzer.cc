@@ -8,40 +8,12 @@
 #include <memory>
 #include <sstream>
 
-#include "net/base/schemeful_site.h"
-#include "net/first_party_sets/first_party_set_entry.h"
-
 namespace content {
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   std::string string_input(reinterpret_cast<const char*>(data), size);
   std::istringstream stream(string_input);
   FirstPartySetParser::ParseSetsFromStream(stream);
-
-  // We deserialize -> serialize -> deserialize the input and make sure the
-  // outcomes from the two deserialization matches.
-  FirstPartySetParser::SetsMap deserialized =
-      FirstPartySetParser::DeserializeFirstPartySets(string_input);
-  std::string serialized_input =
-      FirstPartySetParser::SerializeFirstPartySets(deserialized);
-  // The inputs that have hosts contain more than one "." will cause
-  // SchemefulSite to consider the registrable domain to start with the last
-  // "." during the first deserialization; those hosts that start with '.'
-  // are serialized again and then result in empty registrable domain during the
-  // second deserialization.
-  //
-  // We don't run the fuzzer on inputs that are lossy due to URL parsing instead
-  // of the FirstPartySetsParser.
-  for (const auto& pair : deserialized) {
-    if (base::StartsWith(pair.first.GetInternalOriginForTesting().host(),
-                         ".") ||
-        base::StartsWith(
-            pair.second.primary().GetInternalOriginForTesting().host(), ".")) {
-      return 0;
-    }
-  }
-  CHECK(deserialized ==
-        FirstPartySetParser::DeserializeFirstPartySets(serialized_input));
 
   return 0;
 }

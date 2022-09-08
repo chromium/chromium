@@ -7,8 +7,6 @@
 #include <stdlib.h>
 #include <iostream>
 
-#include "net/base/schemeful_site.h"
-#include "net/first_party_sets/first_party_set_entry.h"
 #include "testing/libfuzzer/proto/json.pb.h"
 #include "testing/libfuzzer/proto/json_proto_converter.h"
 #include "testing/libfuzzer/proto/lpm_interface.h"
@@ -24,31 +22,6 @@ DEFINE_PROTO_FUZZER(const json_proto::JsonValue& json_value) {
 
   std::istringstream stream(native_input);
   FirstPartySetParser::ParseSetsFromStream(stream);
-
-  // We deserialize -> serialize -> deserialize the input and make sure the
-  // outcomes from the two deserialization matches.
-  FirstPartySetParser::SetsMap deserialized =
-      FirstPartySetParser::DeserializeFirstPartySets(native_input);
-  std::string serialized_input =
-      FirstPartySetParser::SerializeFirstPartySets(deserialized);
-  // The inputs that have hosts contain more than one "." will cause
-  // SchemefulSite to consider the registrable domain to start with the last
-  // "." during the first deserialization; those hosts that start with '.'
-  // are then serialized and result in empty registrable domain during the
-  // second deserialization.
-  //
-  // We don't run the fuzzer on inputs that are lossy due to URL parsing instead
-  // of the FirstPartySetsParser.
-  for (const auto& pair : deserialized) {
-    if (base::StartsWith(pair.first.GetInternalOriginForTesting().host(),
-                         ".") ||
-        base::StartsWith(
-            pair.second.primary().GetInternalOriginForTesting().host(), ".")) {
-      return;
-    }
-  }
-  CHECK(deserialized ==
-        FirstPartySetParser::DeserializeFirstPartySets(serialized_input));
 }
 
 }  // namespace content
