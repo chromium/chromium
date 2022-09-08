@@ -95,6 +95,11 @@ export class WebuiGalleryAppElement extends PolymerElement {
               src: 'cr_toggle_demo.html',
             },
             {
+              name: 'Toolbar',
+              path: 'toolbar',
+              src: 'cr_toolbar/cr_toolbar_demo.html',
+            },
+            {
               name: 'Tree, non-Polymer',
               path: 'tree',
               src: 'cr_tree/cr_tree_demo.html',

@@ -72,6 +72,7 @@ generate_grd("build_grd") {
     "demos/cr_tab_box/cr_tab_box_demo.html",
     "demos/cr_tabs/cr_tabs_demo.html",
     "demos/cr_toast/cr_toast_demo.html",
+    "demos/cr_toolbar/cr_toolbar_demo.html",
     "demos/cr_tree/cr_tree_demo.html",
     "demos/cr_toggle_demo.html",
     "webui_gallery.html",
