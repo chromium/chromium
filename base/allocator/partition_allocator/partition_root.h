@@ -514,11 +514,14 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
                                              uintptr_t slot_start);
 
   PA_ALWAYS_INLINE static size_t GetUsableSize(void* ptr);
+  PA_ALWAYS_INLINE PageAccessibilityConfiguration GetPageAccessibility() const;
 
   PA_ALWAYS_INLINE size_t
   AllocationCapacityFromSlotStart(uintptr_t slot_start) const;
   PA_ALWAYS_INLINE size_t
   AllocationCapacityFromRequestedSize(size_t size) const;
+
+  PA_ALWAYS_INLINE bool IsMemoryTaggingEnabled() const;
 
   // Frees memory from this partition, if possible, by decommitting pages or
   // even entire slot spans. |flags| is an OR of base::PartitionPurgeFlags.
@@ -629,7 +632,10 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
     // If quarantine is enabled and the tag overflows, move the containing slot
     // to quarantine, to prevent the attacker from exploiting a pointer that has
     // an old tag.
-    return internal::HasOverflowTag(object);
+    if (PA_LIKELY(IsMemoryTaggingEnabled()))
+      return internal::HasOverflowTag(object);
+    // Default behaviour if MTE is not enabled for this PartitionRoot.
+    return true;
 #else
     return true;
 #endif
@@ -1136,6 +1142,21 @@ PA_ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeWithFlags(
   FreeNoHooks(object);
 }
 
+// Returns whether MTE is supported for this partition root. Because MTE stores
+// tagging information in the high bits of the pointer, it causes issues with
+// components like V8's ArrayBuffers which use custom pointer representations.
+// All custom representations encountered so far rely on a caged memory address
+// area / configurable pool, so we use that as a proxy.
+template <bool thread_safe>
+PA_ALWAYS_INLINE bool PartitionRoot<thread_safe>::IsMemoryTaggingEnabled()
+    const {
+#if defined(PA_HAS_MEMORY_TAGGING)
+  return !flags.use_configurable_pool;
+#else
+  return false;
+#endif
+}
+
 // static
 template <bool thread_safe>
 PA_ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeNoHooks(void* object) {
@@ -1179,12 +1200,14 @@ PA_ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeNoHooks(void* object) {
   PA_DCHECK(slot_span == SlotSpan::FromSlotStart(slot_start));
 
 #if defined(PA_HAS_MEMORY_TAGGING)
-  const size_t slot_size = slot_span->bucket->slot_size;
-  if (PA_LIKELY(slot_size <= internal::kMaxMemoryTaggingSize)) {
-    internal::TagMemoryRangeIncrement(slot_start, slot_size);
-    // Incrementing the MTE-tag in the memory range invalidates the |object|'s
-    // tag, so it must be retagged.
-    object = internal::TagPtr(object);
+  if (PA_LIKELY(root->IsMemoryTaggingEnabled())) {
+    const size_t slot_size = slot_span->bucket->slot_size;
+    if (PA_LIKELY(slot_size <= internal::kMaxMemoryTaggingSize)) {
+      internal::TagMemoryRangeIncrement(slot_start, slot_size);
+      // Incrementing the MTE-tag in the memory range invalidates the |object|'s
+      // tag, so it must be retagged.
+      object = internal::TagPtr(object);
+    }
   }
 #else
   // We are going to read from |*slot_span| in all branches, but haven't done it
@@ -1583,14 +1606,12 @@ PA_ALWAYS_INLINE void PartitionRoot<thread_safe>::RecommitSystemPagesForData(
     PageAccessibilityDisposition accessibility_disposition) {
   internal::ScopedSyscallTimer timer{this};
 
-  bool ok = TryRecommitSystemPages(
-      address, length, PageAccessibilityConfiguration::kReadWriteTagged,
-      accessibility_disposition);
+  bool ok = TryRecommitSystemPages(address, length, GetPageAccessibility(),
+                                   accessibility_disposition);
   if (PA_UNLIKELY(!ok)) {
     // Decommit some memory and retry. The alternative is crashing.
     DecommitEmptySlotSpans();
-    RecommitSystemPages(address, length,
-                        PageAccessibilityConfiguration::kReadWriteTagged,
+    RecommitSystemPages(address, length, GetPageAccessibility(),
                         accessibility_disposition);
   }
 
@@ -1603,18 +1624,16 @@ PA_ALWAYS_INLINE bool PartitionRoot<thread_safe>::TryRecommitSystemPagesForData(
     size_t length,
     PageAccessibilityDisposition accessibility_disposition) {
   internal::ScopedSyscallTimer timer{this};
-  bool ok = TryRecommitSystemPages(
-      address, length, PageAccessibilityConfiguration::kReadWriteTagged,
-      accessibility_disposition);
+  bool ok = TryRecommitSystemPages(address, length, GetPageAccessibility(),
+                                   accessibility_disposition);
 #if defined(PA_COMMIT_CHARGE_IS_LIMITED)
   if (PA_UNLIKELY(!ok)) {
     {
       ::partition_alloc::internal::ScopedGuard guard(lock_);
       DecommitEmptySlotSpans();
     }
-    ok = TryRecommitSystemPages(
-        address, length, PageAccessibilityConfiguration::kReadWriteTagged,
-        accessibility_disposition);
+    ok = TryRecommitSystemPages(address, length, GetPageAccessibility(),
+                                accessibility_disposition);
   }
 #endif  // defined(PA_COMMIT_CHARGE_IS_LIMITED)
 
@@ -1643,6 +1662,19 @@ PA_ALWAYS_INLINE size_t PartitionRoot<thread_safe>::GetUsableSize(void* ptr) {
   auto* slot_span = SlotSpan::FromObjectInnerPtr(ptr);
   auto* root = FromSlotSpan(slot_span);
   return slot_span->GetUsableSize(root);
+}
+
+// Returns the page configuration to use when mapping slot spans for a given
+// partition root. ReadWriteTagged is used on MTE-enabled systems for
+// PartitionRoots supporting it.
+template <bool thread_safe>
+PA_ALWAYS_INLINE PageAccessibilityConfiguration
+PartitionRoot<thread_safe>::GetPageAccessibility() const {
+#if defined(PA_HAS_MEMORY_TAGGING)
+  if (IsMemoryTaggingEnabled())
+    return PageAccessibilityConfiguration::kReadWriteTagged;
+#endif
+  return PageAccessibilityConfiguration::kReadWrite;
 }
 
 // Return the capacity of the underlying slot (adjusted for extras). This

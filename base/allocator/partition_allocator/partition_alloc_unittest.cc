@@ -2240,7 +2240,7 @@ TEST_P(PartitionAllocDeathTest, DirectMapGuardPages) {
   }
 }
 
-#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_ANDROID)) && defined(ARCH_CPU_ARM64)
+#if defined(PA_HAS_MEMORY_TAGGING)
 TEST_P(PartitionAllocTest, MTEProtectsFreedPtr) {
   // This test checks that Arm's memory tagging extension is correctly
   // protecting freed pointers. Writes to a freed pointer should cause a crash.
@@ -2272,7 +2272,7 @@ TEST_P(PartitionAllocTest, MTEProtectsFreedPtr) {
       },
       testing::KilledBySignal(SIGSEGV), "");
 }
-#endif
+#endif  // defined(PA_HAS_MEMORY_TAGGING)
 
 // These tests rely on precise layout. They handle cookie, not ref-count.
 #if !BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) && \
@@ -4435,7 +4435,11 @@ TEST_P(PartitionAllocTest, ConfigurablePool) {
       const size_t size = kTestSizes[base::RandGenerator(kTestSizesCount)];
       allocations[i] = root->Alloc(size, nullptr);
       EXPECT_NE(nullptr, allocations[i]);
-      uintptr_t allocation_base = UntagPtr(allocations[i]);
+      // We don't Untag allocations here because MTE is disabled for
+      // configurable pools used by V8.
+      // https://bugs.chromium.org/p/v8/issues/detail?id=13117
+      uintptr_t allocation_base = reinterpret_cast<uintptr_t>(allocations[i]);
+      EXPECT_EQ(allocation_base, UntagPtr(allocations[i]));
       EXPECT_TRUE(allocation_base >= pool_base &&
                   allocation_base < pool_base + pool_size);
     }

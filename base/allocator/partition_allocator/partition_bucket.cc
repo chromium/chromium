@@ -943,7 +943,8 @@ PartitionBucket<thread_safe>::ProvisionMoreSlotsAndAllocOne(
         PageAccessibilityDisposition::kRequireUpdate);
   }
 
-  if (PA_LIKELY(slot_size <= kMaxMemoryTaggingSize)) {
+  if (PA_LIKELY(slot_size <= kMaxMemoryTaggingSize &&
+                root->IsMemoryTaggingEnabled())) {
     // Ensure the MTE-tag of the memory pointed by |return_slot| is unguessable.
     TagMemoryRangeRandomly(return_slot, slot_size);
   }
