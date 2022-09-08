@@ -12,6 +12,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/glanceables/glanceables_controller.h"
 #include "ash/glanceables/glanceables_restore_view.h"
+#include "ash/glanceables/glanceables_up_next_event_item_view.h"
 #include "ash/glanceables/glanceables_up_next_view.h"
 #include "ash/glanceables/glanceables_util.h"
 #include "ash/glanceables/glanceables_view.h"
@@ -19,6 +20,7 @@
 #include "ash/glanceables/glanceables_welcome_label.h"
 #include "ash/glanceables/test_glanceables_delegate.h"
 #include "ash/public/cpp/ambient/fake_ambient_backend_controller_impl.h"
+#include "ash/public/cpp/test/test_system_tray_client.h"
 #include "ash/shell.h"
 #include "ash/style/pill_button.h"
 #include "ash/system/model/system_tray_model.h"
@@ -43,7 +45,9 @@
 #include "google_apis/common/api_error_codes.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/base/accelerators/accelerator.h"
 #include "ui/compositor/layer.h"
+#include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/events/test/test_event.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/image/image_skia.h"
@@ -128,9 +132,16 @@ class GlanceablesTest : public AshTestBase {
     return controller_->view_->up_next_view_;
   }
 
-  std::vector<std::tuple<views::Label*, views::Label*>>
-  GetEventsListItemsViews() {
-    return GetUpNextView()->events_list_items_views_;
+  std::vector<GlanceablesUpNextEventItemView*> GetEventItemViews() {
+    return GetUpNextView()->event_item_views_;
+  }
+
+  views::Label* GetEventTitleLabelAt(size_t index) {
+    return GetEventItemViews().at(index)->event_title_label_;
+  }
+
+  views::Label* GetEventTimeLabelAt(size_t index) {
+    return GetEventItemViews().at(index)->event_time_label_;
   }
 
   views::Label* GetNoEventsLabel() { return GetUpNextView()->no_events_label_; }
@@ -248,15 +259,15 @@ TEST_F(GlanceablesTest, UpNextViewRendersCorrectly) {
   SimulateCalendarEventsFetched();
 
   // Events list contains rendered event items inside.
-  const auto& items = GetEventsListItemsViews();
+  const auto& items = GetEventItemViews();
   EXPECT_EQ(items.size(), 2u);
 
-  EXPECT_EQ(std::get<0>(items[0])->GetText(),
+  EXPECT_EQ(GetEventTitleLabelAt(0)->GetText(),
             u"Ongoing event, started in the past");
-  EXPECT_EQ(std::get<1>(items[0])->GetText(), u"10:00 AM – 2:00 PM");
+  EXPECT_EQ(GetEventTimeLabelAt(0)->GetText(), u"10:00 AM – 2:00 PM");
 
-  EXPECT_EQ(std::get<0>(items[1])->GetText(), u"Future event, later today");
-  EXPECT_EQ(std::get<1>(items[1])->GetText(), u"9:30 – 10:30 PM");
+  EXPECT_EQ(GetEventTitleLabelAt(1)->GetText(), u"Future event, later today");
+  EXPECT_EQ(GetEventTimeLabelAt(1)->GetText(), u"9:30 – 10:30 PM");
 }
 
 TEST_F(GlanceablesTest, UpNextViewRendersCorrectlyIn24HrClockFormat) {
@@ -274,15 +285,15 @@ TEST_F(GlanceablesTest, UpNextViewRendersCorrectlyIn24HrClockFormat) {
   SimulateCalendarEventsFetched();
 
   // Events list contains rendered event items inside.
-  const auto& items = GetEventsListItemsViews();
+  const auto& items = GetEventItemViews();
   EXPECT_EQ(items.size(), 2u);
 
-  EXPECT_EQ(std::get<0>(items[0])->GetText(),
+  EXPECT_EQ(GetEventTitleLabelAt(0)->GetText(),
             u"Ongoing event, started in the past");
-  EXPECT_EQ(std::get<1>(items[0])->GetText(), u"10:00 – 14:00");
+  EXPECT_EQ(GetEventTimeLabelAt(0)->GetText(), u"10:00 – 14:00");
 
-  EXPECT_EQ(std::get<0>(items[1])->GetText(), u"Future event, later today");
-  EXPECT_EQ(std::get<1>(items[1])->GetText(), u"21:30 – 22:30");
+  EXPECT_EQ(GetEventTitleLabelAt(1)->GetText(), u"Future event, later today");
+  EXPECT_EQ(GetEventTimeLabelAt(1)->GetText(), u"21:30 – 22:30");
 }
 
 TEST_F(GlanceablesTest, UpNextViewShowsNoEventsLabel) {
@@ -300,9 +311,28 @@ TEST_F(GlanceablesTest, UpNextViewShowsNoEventsLabel) {
   controller_->CreateUi();
   SimulateCalendarEventsFetched();
 
-  EXPECT_EQ(GetEventsListItemsViews().size(), 0u);
+  EXPECT_EQ(GetEventItemViews().size(), 0u);
   EXPECT_TRUE(GetNoEventsLabel());
   EXPECT_EQ(GetNoEventsLabel()->GetText(), u"No events today");
+}
+
+TEST_F(GlanceablesTest, UpNextViewOpensCalendarEvent) {
+  ash::system::ScopedTimezoneSettings timezone_settings(u"GMT");
+  base::subtle::ScopedTimeClockOverrides time_override(
+      []() {
+        base::Time now;
+        EXPECT_TRUE(base::Time::FromString("10 Jan 2022 13:00 GMT", &now));
+        return now;
+      },
+      nullptr, nullptr);
+
+  controller_->CreateUi();
+  SimulateCalendarEventsFetched();
+
+  EXPECT_EQ(GetSystemTrayClient()->show_calendar_event_count(), 0);
+  GetEventItemViews()[1]->AcceleratorPressed(
+      ui::Accelerator(ui::KeyboardCode::VKEY_SPACE, 0));
+  EXPECT_EQ(GetSystemTrayClient()->show_calendar_event_count(), 1);
 }
 
 TEST_F(GlanceablesTest, RestoreViewRendersScreenshot) {

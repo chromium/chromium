@@ -531,6 +531,8 @@ component("ash") {
     "glanceables/glanceables_delegate.h",
     "glanceables/glanceables_restore_view.cc",
     "glanceables/glanceables_restore_view.h",
+    "glanceables/glanceables_up_next_event_item_view.cc",
+    "glanceables/glanceables_up_next_event_item_view.h",
     "glanceables/glanceables_up_next_view.cc",
     "glanceables/glanceables_up_next_view.h",
     "glanceables/glanceables_util.cc",

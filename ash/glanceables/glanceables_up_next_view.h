@@ -10,10 +10,12 @@
 
 #include "ash/ash_export.h"
 #include "ash/system/time/calendar_model.h"
-#include "base/time/time.h"
-#include "google_apis/calendar/calendar_api_response_types.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
+
+namespace base {
+class Time;
+}  // namespace base
 
 namespace google_apis::calendar {
 class EventList;
@@ -26,6 +28,7 @@ class Label;
 namespace ash {
 
 class CalendarModel;
+class GlanceablesUpNextEventItemView;
 
 // "Up next" section with today's calendar events.
 class ASH_EXPORT GlanceablesUpNextView : public views::View,
@@ -47,15 +50,11 @@ class ASH_EXPORT GlanceablesUpNextView : public views::View,
  private:
   friend class GlanceablesTest;
 
-  void CreateEventsListItemView(
-      const google_apis::calendar::CalendarEvent& event);
   void CreateEventsListView(const SingleDayEventList& events);
   void AddNoEventsLabel();
 
   CalendarModel* calendar_model_ = nullptr;
-  views::View* events_list_view_ = nullptr;
-  std::vector<std::tuple<views::Label*, views::Label*>>
-      events_list_items_views_;
+  std::vector<GlanceablesUpNextEventItemView*> event_item_views_;
   views::Label* no_events_label_ = nullptr;
 };
 

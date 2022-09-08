@@ -8,12 +8,11 @@
 #include <string>
 #include <tuple>
 
+#include "ash/glanceables/glanceables_up_next_event_item_view.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/system/model/clock_model.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/time/calendar_utils.h"
-#include "base/i18n/time_formatting.h"
 #include "base/time/time.h"
 #include "google_apis/calendar/calendar_api_response_types.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -29,26 +28,6 @@
 #include "ui/views/view.h"
 
 namespace ash {
-namespace {
-
-using ::google_apis::calendar::CalendarEvent;
-using ::google_apis::calendar::EventList;
-
-std::u16string GetFormattedEventTimeInterval(const CalendarEvent& event) {
-  const base::Time& event_start_time = event.start_time().date_time();
-  const base::Time& event_end_time = event.end_time().date_time();
-  bool use_12_hour_clock =
-      Shell::Get()->system_tray_model()->clock()->hour_clock_type() ==
-      base::k12HourClock;
-  if (use_12_hour_clock) {
-    return calendar_utils::FormatTwelveHourClockTimeInterval(event_start_time,
-                                                             event_end_time);
-  }
-  return calendar_utils::FormatTwentyFourHourClockTimeInterval(event_start_time,
-                                                               event_end_time);
-}
-
-}  // namespace
 
 // TODO(crbug.com/1353495): file-level todo list:
 // - update existing `CalendarModel` and `CalendarEventFetch` to support 1-day
@@ -76,7 +55,7 @@ GlanceablesUpNextView::~GlanceablesUpNextView() {
 void GlanceablesUpNextView::OnEventsFetched(
     const CalendarModel::FetchingStatus status,
     const base::Time start_time,
-    const EventList* fetched_events) {
+    const google_apis::calendar::EventList* fetched_events) {
   calendar_model_->RemoveObserver(this);
 
   const base::Time now = base::Time::Now();
@@ -99,41 +78,19 @@ void GlanceablesUpNextView::OnEventsFetched(
     AddNoEventsLabel();
 }
 
-void GlanceablesUpNextView::CreateEventsListItemView(
-    const CalendarEvent& event) {
-  auto* item = events_list_view_->AddChildView(std::make_unique<views::View>());
-  auto* layout = item->SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kHorizontal, gfx::Insets(), 10));
-
-  auto* event_title_label = item->AddChildView(
-      std::make_unique<views::Label>(base::UTF8ToUTF16(event.summary())));
-  event_title_label->SetAutoColorReadabilityEnabled(false);
-  event_title_label->SetEnabledColor(SK_ColorWHITE);
-  event_title_label->SetHorizontalAlignment(
-      gfx::HorizontalAlignment::ALIGN_LEFT);
-
-  auto* event_time_label = item->AddChildView(
-      std::make_unique<views::Label>(GetFormattedEventTimeInterval(event)));
-  event_time_label->SetAutoColorReadabilityEnabled(false);
-  event_time_label->SetEnabledColor(SK_ColorWHITE);
-
-  events_list_items_views_.emplace_back(event_title_label, event_time_label);
-
-  layout->SetFlexForView(event_title_label, 1);
-  layout->SetFlexForView(event_time_label, 0, true);
-}
-
 void GlanceablesUpNextView::CreateEventsListView(
     const SingleDayEventList& events) {
-  events_list_view_ = AddChildView(std::make_unique<views::View>());
-  events_list_view_->SetPreferredSize(gfx::Size(300, 150));
+  auto* events_list_view = AddChildView(std::make_unique<views::View>());
+  events_list_view->SetPreferredSize(gfx::Size(300, 150));
   auto* events_list_layout =
-      events_list_view_->SetLayoutManager(std::make_unique<views::BoxLayout>(
+      events_list_view->SetLayoutManager(std::make_unique<views::BoxLayout>(
           views::BoxLayout::Orientation::kVertical));
   events_list_layout->set_between_child_spacing(4);
 
-  for (const auto& event : events)
-    CreateEventsListItemView(event);
+  for (const auto& event : events) {
+    event_item_views_.push_back(events_list_view->AddChildView(
+        std::make_unique<GlanceablesUpNextEventItemView>(event)));
+  }
 }
 
 void GlanceablesUpNextView::AddNoEventsLabel() {

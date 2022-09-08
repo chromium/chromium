@@ -118,7 +118,9 @@ void TestSystemTrayClient::ShowCalendarEvent(
     const absl::optional<GURL>& event_url,
     const base::Time& date,
     bool& opened_pwa,
-    GURL& final_event_url) {}
+    GURL& final_event_url) {
+  show_calendar_event_count_++;
+}
 
 void TestSystemTrayClient::ShowChannelInfoAdditionalDetails() {}
 
