@@ -1,13 +1,13 @@
 <style include="shared-style cr-nav-menu-item-style">
-  :host {
-    display: flex;
-    flex-direction: column;
+  cr-menu-selector {
+    box-sizing: border-box;
+    display: block;
     height: 100%;
-    overflow-x: hidden;
-    overflow-y: auto;
+    overflow: auto;
+    overscroll-behavior: contain;
+    padding-top: 8px;
     width: var(--side-bar-width);
   }
-
 </style>
 <cr-menu-selector>
   <iron-selector id="menu" selectable=".page-item" attr-for-selected="path"

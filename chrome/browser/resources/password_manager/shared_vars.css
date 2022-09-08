@@ -10,6 +10,12 @@
 
 html {
   --card-max-width: 960px;
-  --side-bar-width: 256px;
+  --side-bar-width: 250px;
   --toolbar-height: 56px;
+  /* Centered cards has a max-width of var(--cr-centered-card-max-width)
+   * and a width of a certain percentage. Therefore, to make room for the
+   * cards to be at their max width, the flex-basis of the content needs to be
+   * whatever value the percentage of would equal to the max width. */
+  --password-manager-main-basis: calc(var(--cr-centered-card-max-width) /
+      var(--cr-centered-card-width-percentage));
 }

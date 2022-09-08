@@ -8,3 +8,9 @@
  * #import=chrome://resources/cr_elements/cr_hidden_style.css.js
  * #import=chrome://resources/cr_elements/shared_vars_css.m.js
  * #css_wrapper_metadata_end */
+
+.card {
+  background-color: var(--cr-card-background-color);
+  border-radius: var(--cr-card-border-radius);
+  box-shadow: var(--cr-card-shadow);
+}

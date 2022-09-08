@@ -1,22 +1,15 @@
 <style include="shared-style">
-  :host {
-    display: flex;
-    position: relative;
-  }
-
-  /* General toolbar layout. */
-
+   /* General toolbar layout. */
   cr-toolbar {
-    --cr-toolbar-center-basis: var(--card-max-width);
-    --cr-toolbar-left-spacer-width: var(--side-bar-width);
-    --cr-toolbar-field-margin: var(--side-bar-width);
+    min-height: 56px;
+    --cr-toolbar-center-basis: var(--password-manager-main-basis);
     --cr-toolbar-header-white-space: nowrap;
-    flex: 1;
   }
 </style>
-<cr-toolbar id="mainToolbar" disable-right-content-grow
+<cr-toolbar id="mainToolbar"
     page-name="$i18n{title}" clear-label="$i18n{clearSearch}"
     search-prompt="$i18n{searchPrompt}"
-    autofocus autofocus on-search-changed="onSearchChanged_">
+    autofocus on-search-changed="onSearchChanged_"
+    role="banner">
   <cr-icon-button iron-icon="cr:help-outline"></cr-icon-button>
 </cr-toolbar>
