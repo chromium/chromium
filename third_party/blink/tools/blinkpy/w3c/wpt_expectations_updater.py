@@ -314,7 +314,7 @@ class WPTExpectationsUpdater(object):
 
     def get_latest_try_jobs(self, exclude_flag_specific):
         """Returns the latest finished try jobs as Build objects."""
-        builder_names = self.get_try_bots()
+        builder_names = self._get_try_bots()
         if exclude_flag_specific:
             all_flag_specific = self.host.builders.all_flag_specific_try_builder_names("*")
             builder_names = [b for b in builder_names if b not in all_flag_specific]
@@ -856,7 +856,7 @@ class WPTExpectationsUpdater(object):
         """Returns a list of Port objects for all try builders."""
         return [
             self.host.port_factory.get_from_builder_name(name)
-            for name in self.get_try_bots()
+            for name in self._get_try_bots()
         ]
 
     def simplify_specifiers(self, specifiers, specifier_macros):
@@ -900,7 +900,7 @@ class WPTExpectationsUpdater(object):
 
     def _platform_specifiers_covered_by_try_bots(self):
         all_platform_specifiers = set()
-        for builder_name in self.get_try_bots():
+        for builder_name in self._get_try_bots():
             all_platform_specifiers.add(
                 self.host.builders.platform_specifier_for_builder(
                     builder_name).lower())
@@ -1311,8 +1311,6 @@ class WPTExpectationsUpdater(object):
         return self.finder.is_webdriver_test_path(test_name)
 
     @memoized
-    def get_try_bots(self):
-        builders = set(self.host.builders.filter_builders(is_try=True))
-        return sorted(
-            builders -
-            set([x for x, _ in self.host.builders.try_bots_with_cq_mirror()]))
+    def _get_try_bots(self):
+        return self.host.builders.filter_builders(
+            is_try=True, exclude_specifiers={'android'})
