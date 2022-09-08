@@ -15,7 +15,7 @@
 <translation id="1010498023906173788">ይህ ትር ከተከታታይ ወደብ ጋር ተገናኝቷል።</translation>
 <translation id="1010833424573920260">{NUM_PAGES,plural, =1{ገጽ ምላሽ አይሰጥም}one{ገጾች ምላሽ አይሰጡም}other{ገጾች ምላሽ አይሰጡም}}</translation>
 <translation id="1011355516189274711">የጽሑፍ-ወደ-ንግግር ድምጽ መጠን</translation>
-<translation id="1012794136286421601">የእርስዎ የሰነዶች፣ ሉሆች፣ ተንሸራታቾች እና ስዕሎች ፋይሎች በመመሳሰል ላይ ናቸው። መስመር ላይ ወይም ከመስመር ውጪ እንዲደርሱባቸው የGoogle Drive መተግበሪያውን ይክፈቱ።</translation>
+<translation id="1012794136286421601">የእርስዎ የሰነዶች፣ ሉሆች፣ ተንሸራታቾች እና ስዕሎች ፋይሎች በመመሳሰል ላይ ናቸው። መስመር ላይ ወይም ከመስመር ውጭ እንዲደርሱባቸው የGoogle Drive መተግበሪያውን ይክፈቱ።</translation>
 <translation id="1012876632442809908">USB-C መሣሪያ (የፊት ወደብ)</translation>
 <translation id="1015041505466489552">TrackPoint</translation>
 <translation id="1015318665228971643">የአቃፊ ስም አርትዕ ያድርጉ</translation>
@@ -361,7 +361,7 @@
 <translation id="1347975661240122359">ባትሪው <ph name="BATTERY_LEVEL" />% ሲደርስ ዝማኔ ይጀምራል።</translation>
 <translation id="1348966090521113558">የመዳፊት የተደራሽነት ቅንብሮች</translation>
 <translation id="1353275871123211385">እንደ የመተግበሪያ ማጽደቅ እና የማያ ገጽ ጊዜ ገደቦች ያሉ የወላጅ መቆጣጠሪያዎችን ለመጠቀም አንድ ልጅ በወላጅ የሚተዳደር የGoogle መለያ ሊኖረው ይገባል። የትምህርት ቤት መለያ በኋላ ላይ እንደ Google Classroom ላሉ መሣሪያዎች ሊታከል ይችላል።</translation>
-<translation id="135389172849514421">ከመስመር ውጪ ይሰራል</translation>
+<translation id="135389172849514421">ከመስመር ውጭ ይሰራል</translation>
 <translation id="1353980523955420967">PPDን ማግኘት አልተቻለም። የእርስዎ Chromebook መስመር ላይ መሆኑን ያረጋግጡና እንደገና ይሞክሩ።</translation>
 <translation id="1354045473509304750"><ph name="HOST" /> የእርስዎን ካሜራ እንዲጠቀም እና እንዲያንቀሳቅስ መፍቀዱን ይቀጥሉ</translation>
 <translation id="1355088139103479645">ሁሉም ውሂብ ይሰረዝ?</translation>
@@ -3316,7 +3316,7 @@
 <translation id="4110485659976215879">ማስጠንቀቂያን ወደነበረበት መልስ</translation>
 <translation id="4110490973560452005">ውርድ ተጠናቅቋል፦ <ph name="FILE_NAME" />። የውርዶች አሞሌ አካባቢውን ለመቀየር Shift+F6 ይጫኑ።</translation>
 <translation id="4110686435123617899"><ph name="TITLE" /> <ph name="DESC" />ን አልበም ይምረጡ</translation>
-<translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (ከመስመር ውጪ)</translation>
+<translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (ከመስመር ውጭ)</translation>
 <translation id="4114524937989710624">በGoogle Drive ውስጥ ወደ በጣም የቅርብ ጊዜ እንቅስቃሴዎ በቀላሉ እንዲመለሱ የሚያግዙ የተጠቆሙ ፋይሎችን እየተመለከቱ ነው።
         <ph name="BREAK" />
         <ph name="BREAK" />
@@ -3408,7 +3408,7 @@
 <translation id="421182450098841253">&amp;የዕልባቶች አሞሌን አሳይ</translation>
 <translation id="4211851069413100178">የአጠቃቀም እና የምርመራ ውሂብ ይላኩ። የምርመራ፣ የመሣሪያ እና የመተግበሪያ አጠቃቀም ውሂብ በራስ-ሰር ወደ በራስ-ሰር ወደ Google በመላክ የAndroid ተሞክሮዎ እንዲሻሻል ያግዙ። ይህ የስርዓት እና የመተግበሪያ እርጋታን እና ሌሎች ማሻሻያዎችን ያግዛል። አንዳንድ ውሑድ ውሂብ እንዲሁም የGoogle መተግበሪያዎችን እና እንደ የAndroid ገንቢዎች ያሉ አጋሮችን ያግዛሉ። ይህ <ph name="BEGIN_LINK1" />ቅንብር<ph name="END_LINK1" /> በባለቤቱ ተፈጻሚ ይደረጋል። ባለቤቱ የዚህ መሣሪያ የምርመራ እና የአጠቃቀም ለGoogle ለመላክ ሊመርጥ ይችላሉ። የእርስዎ የተጨማሪ ድር እና መተግበሪያ እንቅስቃሴ ቅንብር በርቶ ከሆነ ይህ ውሂብ በGoogle መለያዎ ላይ ሊቀመጥ ይችላል። <ph name="BEGIN_LINK2" />የበለጠ ለመረዳት<ph name="END_LINK2" /></translation>
 <translation id="4211904048067111541">በAndroid መተግበሪያዎች መጠቀም አቁም</translation>
-<translation id="42126664696688958">ወደ ውጪ ላክ</translation>
+<translation id="42126664696688958">ወደ ውጭ ላክ</translation>
 <translation id="42137655013211669">የዚህ መርጃ መዳረሻ በአገልጋዩ ተከልክሏል።</translation>
 <translation id="4217558091331485702">ከመክፈት በፊት ይቃኙ</translation>
 <translation id="4217571870635786043">በቃል ማስጻፍ</translation>
@@ -4496,7 +4496,7 @@
 <translation id="5294097441441645251">በንዑስ ሆሄ ቁምፊ ወይም የስር መስመር መጀመር አለበት</translation>
 <translation id="5294618183559481278">ከመሣሪያዎ ፊት ለፊት ሰዎችን ለማግኘት የእርስዎ <ph name="DEVICE_TYPE" /> አብሮገነብ ዳሳሽዎ ይጠቀማል። ሁሉም ውሂብ ወዲያውኑ በመሣሪያዎ ላይ ይሰናዳል እንዲሁም ከዚያ ይሰረዛል። የዳሳሽ ውሂብ ወደ Google በጭራሽ አይላክም። <ph name="LINK_BEGIN" />የበለጠ ለመረዳት<ph name="LINK_END" /></translation>
 <translation id="5297082477358294722">የይለፍ ቃል ተቀምጧል። የተቀመጡ የይለፍ ቃላትን በእርስዎ <ph name="SAVED_PASSWORDS_STORE" /> ይመልከቱ እና ያስተዳድሩ።</translation>
-<translation id="5297946558563358707">ሌላ ሰው የእርስዎን ማያ ገጽን ሲመለከት የግላዊነት አይን አዶ በማያ ገጽዎ ታችኛው ክፍል በስተቀኝ በኩል ያሳዩ</translation>
+<translation id="5297946558563358707">ሌላ ሰው የእርስዎን ማያ ገጽን ሲመለከት የግላዊነት ዓይን አዶ በማያ ገጽዎ ታችኛው ክፍል በስተቀኝ በኩል ያሳዩ</translation>
 <translation id="5298219193514155779">ገጽታ የተፈጠረው በ</translation>
 <translation id="5299109548848736476">አትከታተል</translation>
 <translation id="5299558715747014286">የእርስዎን የትር ቡድኖችን ይመልከቱ እና ያቀናብሩ</translation>
@@ -4592,7 +4592,7 @@
 <translation id="5397378439569041789">ለኪዮስክ ወይም ለምልክት ቁንቋ መሳሪያ ይመዝገቡ</translation>
 <translation id="5397794290049113714">እርስዎ</translation>
 <translation id="5398497406011404839">የተደበቁ እልባቶች</translation>
-<translation id="5398572795982417028">ከወሰን ውጪ ያለ ገጽ ማጣቀሻ፣ ገደቡ <ph name="MAXIMUM_PAGE" /> ነው</translation>
+<translation id="5398572795982417028">ከወሰን ውጭ ያለ ገጽ ማጣቀሻ፣ ገደቡ <ph name="MAXIMUM_PAGE" /> ነው</translation>
 <translation id="5401426944298678474">ጣቢያን አትከተል</translation>
 <translation id="5401851137404501592">ለመቀጠል <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> የእርስዎን ስም፣ ኢሜይል አድራሻ እና የመገለጫ ሥዕል ለዚህ ጣቢያ ያጋራል።</translation>
 <translation id="5402367795255837559">ብሬይል</translation>
@@ -4645,7 +4645,7 @@
 <translation id="5449588825071916739">ለሁሉም ትሮች ዕልባት አብጅ</translation>
 <translation id="5449716055534515760">&amp;መስኮት ዝጋ</translation>
 <translation id="5452446625764825792">አሁን የስልክዎን የቅርብ ጊዜ ፎቶዎች፣ ሚዲያ እና መተግበሪያዎች መመልከት ይችላሉ</translation>
-<translation id="5452976525201205853"><ph name="LANGUAGE" /> (ከመስመር ውጪ ይሰራል)</translation>
+<translation id="5452976525201205853"><ph name="LANGUAGE" /> (ከመስመር ውጭ ይሰራል)</translation>
 <translation id="5454166040603940656">ከ<ph name="PROVIDER" /> ጋር</translation>
 <translation id="545484289444831485">ተጨማሪ የፍለጋ ውጤቶችን ይመልከቱ</translation>
 <translation id="5455603387986949153">የChromeOS Flex መሣሪያ እና የክፍለ-አካል መለያ ቁጥሮችን ያንብቡ።</translation>
@@ -5490,7 +5490,7 @@
 <translation id="6278428485366576908">ገጽታ</translation>
 <translation id="6278776436938569440">አካባቢ ይቀይሩ</translation>
 <translation id="6279183038361895380">የእርስዎን ጠቋሚ ለማሳየት |<ph name="ACCELERATOR" />| ይጫኑ</translation>
-<translation id="6279595948631688299">የተመረጠውን የዕውቅና ማረጋገጫ ወደ ውጪ ላክ...</translation>
+<translation id="6279595948631688299">የተመረጠውን የዕውቅና ማረጋገጫ ወደ ውጭ ላክ...</translation>
 <translation id="6280215091796946657">በተለየ መለያ ይግቡ</translation>
 <translation id="6280912520669706465">ኤአርሲ</translation>
 <translation id="6282180787514676874">{COUNT,plural, =1{ከ1 የወረቀት ሉህ ገደብ ይበልጣል}one{ከ{COUNT} የወረቀት ሉህ ገደብ ይበልጣል}other{ከ{COUNT} የወረቀት ሉህ ገደብ ይበልጣል}}</translation>
@@ -7591,7 +7591,7 @@ nil</translation>
 <translation id="8293206222192510085">እልባት ያክሉ</translation>
 <translation id="8294431847097064396">ምንጭ</translation>
 <translation id="8298429963694909221">አሁን በእርስዎ <ph name="DEVICE_TYPE" /> ላይ ከእርስዎ ስልክ ማሳወቂያዎችን መቀበል ይችላሉ። በእርስዎ <ph name="DEVICE_TYPE" /> ላይ ማሳወቂያዎችን ማሰናበት እንዲሁም በስልክዎ ላይ ያሰናብታቸዋል። ስልክዎ በአቅራቢያ እንዳለ እንዲሁም ብሉቱዝ እና Wi-Fi እንደበራ ያረጋግጡ።</translation>
-<translation id="8299319456683969623">በአሁኑ ጊዜ ከመስመር ውጪ ነዎት።</translation>
+<translation id="8299319456683969623">በአሁኑ ጊዜ ከመስመር ውጭ ነዎት።</translation>
 <translation id="8300011035382349091">የዚህ ትር ዕልባትን አርትዕ</translation>
 <translation id="8300374739238450534">የእኩለሌሊት ሰማያዊ</translation>
 <translation id="8303616404642252802">{COUNT,plural, =1{አድራሻ}one{# አድራሻዎች}other{# አድራሻዎች}}</translation>
@@ -8566,7 +8566,7 @@ nil</translation>
 <translation id="978146274692397928">የመጀመሪያ ስርዓተ ነጥብ ስፋት ሙሉ ነው</translation>
 <translation id="97905529126098460">ይህ መስኮት ስረዛ ከተጠናቀቀ በኋላ ይዘጋል።</translation>
 <translation id="980731642137034229">የእርምጃ ምናሌ አዝራር</translation>
-<translation id="981121421437150478">ከመስመር ውጪ</translation>
+<translation id="981121421437150478">ከመስመር ውጭ</translation>
 <translation id="982684081337630214">በGoogle Family Link መተግበሪያቸው እና በfamilies.google.com ላይ የማጽደቅ ጥያቄ ለወላጆችዎ ተልኳል። ከወላጆችዎ አንዱ ጥያቄውን ካጸደቀ ማሳወቂያ ያገኛሉ።</translation>
 <translation id="983511809958454316">ይህ ባህሪ በቪአር ውስጥ አይደገፍም</translation>
 <translation id="984275831282074731">የመክፈያ ዘዴዎች</translation>

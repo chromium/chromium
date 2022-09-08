@@ -54,7 +54,7 @@
 <translation id="3423542133075182604">የደህንነት ቁልፍ በርቀት የመጠቀም ሂደት</translation>
 <translation id="3581045510967524389">ከአውታረ መረቡ ጋር መገናኘት አልተቻለም። እባክዎ መሥሪያዎ መስመር ላይ መሆኑን ያረጋግጡ።</translation>
 <translation id="3596628256176442606">ይህ አገልግሎት ከChromoting ደንበኞች ገቢ ግንኙነቶችን ያነቃል።</translation>
-<translation id="369442766917958684">ከመስመር ውጪ።</translation>
+<translation id="369442766917958684">ከመስመር ውጭ።</translation>
 <translation id="3695446226812920698">እንዴት እንደሆነ ይወቁ</translation>
 <translation id="3776024066357219166">የChrome የርቀት ዴስክቶፕ ክፍለ-ጊዜው ተጠናቅቋል።</translation>
 <translation id="3858860766373142691">ስም</translation>
@@ -93,7 +93,7 @@
 <translation id="4974476491460646149">የ<ph name="HOSTNAME" /> ግንኙነት ተዘግቷል</translation>
 <translation id="4985296110227979402">በመጀመሪያ ኮምፒውተርዎን ለርቀት መዳረሻ ማዋቀር አለብዎት</translation>
 <translation id="4987330545941822761">Chrome የርቀት ዴስክቶፕ ዩአርኤሎችን በአካባቢው ለመክፈት አሳሹን መወሰን አይችልም። እባክዎን ከዚህ በታች ካለው ዝርዝር ውስጥ ይምረጡ።</translation>
-<translation id="5064360042339518108"><ph name="HOSTNAME" /> (ከመስመር ውጪ)</translation>
+<translation id="5064360042339518108"><ph name="HOSTNAME" /> (ከመስመር ውጭ)</translation>
 <translation id="507204348399810022">ከ<ph name="HOSTNAME" /> ጋር ያሉ የርቀት ግንኙነቶችን ማሰናከል ይፈልጋሉ?</translation>
 <translation id="5170982930780719864">ልክ ያልሆነ የአስተናጋጅ መታወቂያ።</translation>
 <translation id="5204575267916639804">ተደጋጋሚ ጥያቄዎች</translation>
@@ -138,7 +138,7 @@
 <translation id="7067321367069083429">ማያ ገጽ እንደ ማያንካ ይሆናል</translation>
 <translation id="7116737094673640201">እንኳን ወደ Chrome የርቀት ዴስክቶፕ በደህና መጡ</translation>
 <translation id="7144878232160441200">እንደገና ሞክር</translation>
-<translation id="7312846573060934304">አስተናጋጅ ከመስመር ውጪ ነው።</translation>
+<translation id="7312846573060934304">አስተናጋጅ ከመስመር ውጭ ነው።</translation>
 <translation id="7319983568955948908">ማጋራት አቁም</translation>
 <translation id="7359298090707901886">የተመረጠው አሳሽ በአካባቢያዊ ማሽን ላይ ዩአርኤልዎችን ለመክፈት ጥቅም ላይ ሊውል አይችልም።</translation>
 <translation id="7401733114166276557">Chrome የርቀት ዴስክቶፕ</translation>
@@ -190,7 +190,7 @@
 <translation id="916856682307586697">ነባሪውን XSession አስጀምር</translation>
 <translation id="9187628920394877737">ለ<ph name="PRODUCT_NAME" /> የ«ማያ ገጽ ቀረጻ» ፈቃዱን ይስጡ</translation>
 <translation id="9213184081240281106">ልክ ያልሆነ የአስተናጋጅ ውቅር።</translation>
-<translation id="981121421437150478">ከመስመር ውጪ</translation>
+<translation id="981121421437150478">ከመስመር ውጭ</translation>
 <translation id="985602178874221306">የChromium ደራሲዎች</translation>
 <translation id="992215271654996353"><ph name="HOSTNAME" /> (መስመር ላይ የነበረበት <ph name="DATE_OR_TIME" /> መጨረሻ ጊዜ)</translation>
 </translationbundle>

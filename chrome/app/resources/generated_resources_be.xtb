@@ -851,7 +851,7 @@
 <translation id="1794051631868188691">Ніколі не паказваць: <ph name="MERCHANT" /></translation>
 <translation id="1794791083288629568">Адправіць водгук, каб дапамагчы нам вырашыць гэту праблему.</translation>
 <translation id="1795214765651529549">Выкарыстоўваць класічную тэму</translation>
-<translation id="1796105431091975902">Выберыце сцэнарый Ansible, які трэба дадаць</translation>
+<translation id="1796105431091975902">Выберыце Ansible Playbook, які трэба дадаць</translation>
 <translation id="1796588414813960292">Функцыі, для якіх патрэбны гук, не будуць працаваць</translation>
 <translation id="1797117170091578105">Гуляйце, выкарыстоўваючы клавіятуру Chromebook. Клавішы можна наладзіць такім чынам, каб яны выконвалі канкрэтныя дзеянні.</translation>
 <translation id="1800502858278951817">Ні адно пашырэнне не запытвала дазвол чытаць і змяняць сайт <ph name="SITE_NAME" /></translation>
@@ -3083,7 +3083,7 @@
 <translation id="389901847090970821">Выбар клавіятуры</translation>
 <translation id="3900966090527141178">Экспарт пароляў</translation>
 <translation id="3903187154317825986">Убудаваная клавіятура</translation>
-<translation id="3903191712482985591">Дадайце сцэнарый</translation>
+<translation id="3903191712482985591">Дадайце Playbook</translation>
 <translation id="3904326018476041253">Службы геалакацыі</translation>
 <translation id="3904849010307028014">У залежнасці ад характару вашага ўзаемадзеяння з сайтам (напрыклад, пры рэгулярным уваходзе ва ўліковы запіс), ён можа выдаць вашаму браўзеру токен даверу. Пазней, калі іншыя сайты, якія вы наведваеце, будуць знаходзіць сапраўдны токен даверу, яны з большай імавернасцю распазнаюць вас як чалавека, а не бота.</translation>
 <translation id="3905761538810670789">Выправіць праграму</translation>
@@ -5021,7 +5021,7 @@
 <translation id="5827733057563115968">Прагназаванне наступнага слова</translation>
 <translation id="5828545842856466741">Дадаць профіль...</translation>
 <translation id="5828633471261496623">Ідзе друк...</translation>
-<translation id="5828797982387013521">Выбраць дапаможнік</translation>
+<translation id="5828797982387013521">Выбраць Playbook</translation>
 <translation id="5830205393314753525">Не ўдалося адкрыць праграму "<ph name="APP_NAME" />"</translation>
 <translation id="5830720307094128296">Захаваць старонку &amp;як...</translation>
 <translation id="5832813618714645810">Профілі</translation>
@@ -7661,7 +7661,7 @@
 <translation id="8379991678458444070">Дадаўшы гэту ўкладку ў закладкі, вы будзеце мець да яе хуткі доступ</translation>
 <translation id="8380266723152870797">Назва акна</translation>
 <translation id="8380941800586852976">Небяспечна</translation>
-<translation id="8382715499079447151">Рэжым абароненага прагляду</translation>
+<translation id="8382715499079447151">Абаронены прагляд</translation>
 <translation id="8382913212082956454">Скапіраваць &amp;адрас электроннай пошты</translation>
 <translation id="8383266303049437646"><ph name="BEGIN_PARAGRAPH1" />Паспрабуйце знайсці і выправіць непаладку наступным чынам:
     <ph name="BEGIN_LIST" />
