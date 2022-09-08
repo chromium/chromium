@@ -105,8 +105,8 @@ size_t BrowserStateInfoCache::GetIndexOfBrowserStateWithPath(
 
 std::u16string BrowserStateInfoCache::GetUserNameOfBrowserStateAtIndex(
     size_t index) const {
-  const base::Value* value = GetInfoForBrowserStateAtIndex(index);
-  const std::string* user_name = value->FindStringKey(kUserNameKey);
+  const base::Value::Dict* value = GetInfoForBrowserStateAtIndex(index);
+  const std::string* user_name = value->FindString(kUserNameKey);
   return user_name ? base::ASCIIToUTF16(*user_name) : std::u16string();
 }
 
@@ -117,8 +117,8 @@ base::FilePath BrowserStateInfoCache::GetPathOfBrowserStateAtIndex(
 
 std::string BrowserStateInfoCache::GetGAIAIdOfBrowserStateAtIndex(
     size_t index) const {
-  const base::Value* value = GetInfoForBrowserStateAtIndex(index);
-  const std::string* gaia_id = value->FindStringKey(kGAIAIdKey);
+  const base::Value::Dict* value = GetInfoForBrowserStateAtIndex(index);
+  const std::string* gaia_id = value->FindString(kGAIAIdKey);
   return gaia_id ? *gaia_id : std::string();
 }
 
@@ -134,7 +134,7 @@ bool BrowserStateInfoCache::BrowserStateIsAuthenticatedAtIndex(
 
 bool BrowserStateInfoCache::BrowserStateIsAuthErrorAtIndex(size_t index) const {
   return GetInfoForBrowserStateAtIndex(index)
-      ->FindBoolPath(kIsAuthErrorKey)
+      ->FindBool(kIsAuthErrorKey)
       .value_or(false);
 }
 
@@ -148,9 +148,9 @@ void BrowserStateInfoCache::SetAuthInfoOfBrowserStateAtIndex(
     return;
   }
 
-  base::Value info = GetInfoForBrowserStateAtIndex(index)->Clone();
-  info.SetKey(kGAIAIdKey, base::Value(gaia_id));
-  info.SetKey(kUserNameKey, base::Value(user_name));
+  base::Value::Dict info = GetInfoForBrowserStateAtIndex(index)->Clone();
+  info.Set(kGAIAIdKey, base::Value(gaia_id));
+  info.Set(kUserNameKey, base::Value(user_name));
   SetInfoForBrowserStateAtIndex(index, std::move(info));
 }
 
@@ -159,8 +159,8 @@ void BrowserStateInfoCache::SetBrowserStateIsAuthErrorAtIndex(size_t index,
   if (value == BrowserStateIsAuthErrorAtIndex(index))
     return;
 
-  base::Value info = GetInfoForBrowserStateAtIndex(index)->Clone();
-  info.SetKey(kIsAuthErrorKey, base::Value(value));
+  base::Value::Dict info = GetInfoForBrowserStateAtIndex(index)->Clone();
+  info.Set(kIsAuthErrorKey, base::Value(value));
   SetInfoForBrowserStateAtIndex(index, std::move(info));
 }
 
@@ -173,18 +173,18 @@ void BrowserStateInfoCache::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(prefs::kBrowserStateInfoCache);
 }
 
-const base::Value* BrowserStateInfoCache::GetInfoForBrowserStateAtIndex(
+const base::Value::Dict* BrowserStateInfoCache::GetInfoForBrowserStateAtIndex(
     size_t index) const {
   DCHECK_LT(index, GetNumberOfBrowserStates());
-  return prefs_->GetDictionary(prefs::kBrowserStateInfoCache)
-      ->FindDictKey(sorted_keys_[index]);
+  return prefs_->GetValueDict(prefs::kBrowserStateInfoCache)
+      .FindDict(sorted_keys_[index]);
 }
 
-void BrowserStateInfoCache::SetInfoForBrowserStateAtIndex(size_t index,
-                                                          base::Value info) {
+void BrowserStateInfoCache::SetInfoForBrowserStateAtIndex(
+    size_t index,
+    base::Value::Dict info) {
   DictionaryPrefUpdate update(prefs_, prefs::kBrowserStateInfoCache);
-  base::Value* cache = update.Get();
-  cache->SetKey(sorted_keys_[index], std::move(info));
+  update->GetDict().Set(sorted_keys_[index], std::move(info));
 }
 
 std::string BrowserStateInfoCache::CacheKeyFromBrowserStatePath(
