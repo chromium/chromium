@@ -32,6 +32,8 @@ class AnnotationsJavaScriptFeature : public JavaScriptFeature {
                                    base::Value& annotations);
   // Triggers the JS decoration removal code.
   virtual void RemoveDecorations(WebState* web_state);
+  // Triggers the JS highlight removal code.
+  virtual void RemoveHighlight(WebState* web_state);
 
  protected:
   // JavaScriptFeature:

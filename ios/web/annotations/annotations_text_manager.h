@@ -44,6 +44,9 @@ class AnnotationsTextManager : public WebStateUserData<AnnotationsTextManager>,
   // before the page is navigated away from (i.e. at user's request).
   void RemoveDecorations();
 
+  // Removes any highlight added by a tap.
+  void RemoveHighlight();
+
   // JS callback methods.
   void OnTextExtracted(WebState* web_state, const std::string& text);
   void OnDecorated(WebState* web_state, int successes, int annotations);

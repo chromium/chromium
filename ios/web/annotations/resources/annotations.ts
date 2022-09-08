@@ -72,6 +72,10 @@ class Section {
 const NON_TEXT_NODE_NAMES = new Set(
     ['SCRIPT', 'NOSCRIPT', 'STYLE', 'EMBED', 'OBJECT', 'TEXTAREA', 'IFRAME']);
 
+// TODO(crbug.com/1350973): dark mode
+const highlightTextColor = "#000";
+const highlightBackgroundColor = "rgba(20,111,225,0.25)";
+
 /**
  * Callback for processing a node during DOM traversal
  * @param node - Node or Element containing text or newline.
@@ -221,6 +225,21 @@ function removeDecorations(): void {
   decorations = [];
 }
 
+/**
+ * Removes any highlight on all annotations.
+ */
+ function removeHighlight(): void {
+  for (let decoration of decorations) {
+    for (let replacement of decoration.replacements) {
+      if (!(replacement instanceof HTMLElement)) {
+        continue;
+      }
+      replacement.style.color = "";
+      replacement.style.background = "";
+    }
+  }
+}
+
 // Mark: Private helper functions
 
 /**
@@ -329,8 +348,9 @@ function getPageText(maxChars: number): string {
 function handleClick(event: Event) {
   const annotation = event.currentTarget as HTMLElement;
 
-  let startNode: Element|null = null;
-  let endNode: Element|null = null;
+  // Using webkit edit selection kills a second tapping on the element and also
+  // causes a merge with the edit menu in some circumstance.
+  // Using custom highlight instead.
   for (let decoration of decorations) {
     for (let replacement of decoration.replacements) {
       if (!(replacement instanceof HTMLElement)) {
@@ -338,16 +358,10 @@ function handleClick(event: Event) {
       }
       if (replacement.tagName === 'CHROME_ANNOTATION' &&
           replacement.dataset['index'] === annotation.dataset['index']) {
-        if (!startNode) {
-          startNode = replacement;
-        }
-        endNode = replacement;
+        replacement.style.color = highlightTextColor;
+        replacement.style.backgroundColor = highlightBackgroundColor;
       }
     }
-  }
-  if (startNode && endNode) {
-    document.getSelection()?.setBaseAndExtent(
-        startNode, /*anchorOffset=*/ 0, endNode, /*focusOffset=*/ 1);
   }
 
   sendWebKitMessage('annotations', {
@@ -438,4 +452,5 @@ gCrWeb.annotations = {
   extractText,
   decorateAnnotations,
   removeDecorations,
+  removeHighlight,
 };

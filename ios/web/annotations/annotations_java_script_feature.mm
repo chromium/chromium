@@ -81,6 +81,16 @@ void AnnotationsJavaScriptFeature::RemoveDecorations(WebState* web_state) {
   CallJavaScriptFunction(frame, "annotations.removeDecorations", {});
 }
 
+void AnnotationsJavaScriptFeature::RemoveHighlight(WebState* web_state) {
+  DCHECK(web_state);
+  auto* frame = web::GetMainFrame(web_state);
+  if (!frame) {
+    return;
+  }
+
+  CallJavaScriptFunction(frame, "annotations.removeHighlight", {});
+}
+
 void AnnotationsJavaScriptFeature::ScriptMessageReceived(
     WebState* web_state,
     const ScriptMessage& script_message) {

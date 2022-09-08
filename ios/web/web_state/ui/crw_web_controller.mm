@@ -1124,6 +1124,7 @@ typedef void (^ViewportStateCompletion)(const web::PageViewportState*);
     _userInteractionState.SetLastUserInteraction(
         std::make_unique<web::UserInteractionEvent>(mainDocumentURL));
     [self hideMenu];
+    [self hideHighlight];
   }
 }
 
@@ -1137,6 +1138,13 @@ typedef void (^ViewportStateCompletion)(const web::PageViewportState*);
 // Hides the context menu.
 - (void)hideMenu {
   [[UIMenuController sharedMenuController] hideMenu];
+}
+
+// Hides highlights triggered by custom context menu.
+- (void)hideHighlight {
+  if (base::FeatureList::IsEnabled(web::features::kEnableWebPageAnnotations)) {
+    web::AnnotationsTextManager::FromWebState(_webStateImpl)->RemoveHighlight();
+  }
 }
 
 #pragma mark - ** Private Methods **
