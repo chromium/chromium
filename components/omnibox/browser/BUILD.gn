@@ -58,6 +58,8 @@ aggregate_vector_icons("omnibox_vector_icons") {
     "offline_pin.icon",
     "page.icon",
     "pedal.icon",
+    "price_tracking_disabled.icon",
+    "price_tracking_enabled_filled.icon",
     "product.icon",
     "share.icon",
     "star.icon",
