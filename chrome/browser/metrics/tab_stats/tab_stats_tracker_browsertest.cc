@@ -86,33 +86,6 @@ void EnsureTabStatsMatchExpectations(const TabsStats& expected,
 
 }  // namespace
 
-class MockTabStatsTrackerDelegate : public TabStatsTrackerDelegate {
- public:
-  MockTabStatsTrackerDelegate() = default;
-  ~MockTabStatsTrackerDelegate() override = default;
-
-#if BUILDFLAG(IS_WIN)
-  OcclusionStatusMap CallComputeNativeWindowOcclusionStatus(
-      std::vector<aura::WindowTreeHost*> hosts) override {
-    // Checking that the hosts are not nullptr, because of a bug where nullptr
-    // was being passed in addition to the desired aura::WindowTreeHost
-    // pointers, causing a crash when dereferenced. Crash bug found at:
-    // crbug.com/837541
-    for (aura::WindowTreeHost* host : hosts)
-      DCHECK(host);
-
-    return mock_occlusion_results_;
-  }
-
-  void SetMockOcclusionResults(OcclusionStatusMap mock_occlusion_results) {
-    mock_occlusion_results_ = mock_occlusion_results;
-  }
-
- private:
-  OcclusionStatusMap mock_occlusion_results_;
-#endif
-};
-
 class TabStatsTrackerBrowserTest : public InProcessBrowserTest {
  public:
   TabStatsTrackerBrowserTest() = default;
@@ -283,88 +256,6 @@ IN_PROC_BROWSER_TEST_F(TabStatsTrackerBrowserTest,
   tab_stats_tracker_->OnInterval(kValidLongInterval, interval_map);
   EXPECT_EQ(0U, interval_map->size());
 }
-
-#if BUILDFLAG(IS_WIN)
-IN_PROC_BROWSER_TEST_F(TabStatsTrackerBrowserTest,
-                       TestCalculateAndRecordNativeWindowVisibilities) {
-  std::unique_ptr<MockTabStatsTrackerDelegate> mock_delegate =
-      std::make_unique<MockTabStatsTrackerDelegate>();
-
-  // Maintaining this reference to |mock_delegate| is safe because the
-  // TabStatsTracker will outlive this test class.
-  MockTabStatsTrackerDelegate* mock_delegate_raw = mock_delegate.get();
-  tab_stats_tracker_->SetDelegateForTesting(std::move(mock_delegate));
-
-  TabStatsTrackerDelegate::OcclusionStatusMap mock_occlusion_results;
-
-  mock_delegate_raw->SetMockOcclusionResults(mock_occlusion_results);
-
-  tab_stats_tracker_->CalculateAndRecordNativeWindowVisibilities();
-
-  // There should be 1 entry for each zero window bucket.
-  histogram_tester_.ExpectBucketCount("Windows.NativeWindowVisibility.Occluded",
-                                      0, 1);
-  histogram_tester_.ExpectBucketCount("Windows.NativeWindowVisibility.Visible",
-                                      0, 1);
-  histogram_tester_.ExpectBucketCount("Windows.NativeWindowVisibility.Hidden",
-                                      0, 1);
-
-  // There should be no entries in the 1 window bucket.
-  histogram_tester_.ExpectBucketCount("Windows.NativeWindowVisibility.Occluded",
-                                      1, 0);
-  histogram_tester_.ExpectBucketCount("Windows.NativeWindowVisibility.Visible",
-                                      1, 0);
-  histogram_tester_.ExpectBucketCount("Windows.NativeWindowVisibility.Hidden",
-                                      1, 0);
-
-  // Create a browser for each aura::Window::OcclusionState.
-  mock_occlusion_results[CreateBrowser(browser()->profile())
-                             ->window()
-                             ->GetNativeWindow()
-                             ->GetHost()] =
-      aura::Window::OcclusionState::HIDDEN;
-  mock_occlusion_results[CreateBrowser(browser()->profile())
-                             ->window()
-                             ->GetNativeWindow()
-                             ->GetHost()] =
-      aura::Window::OcclusionState::VISIBLE;
-  mock_occlusion_results[CreateBrowser(browser()->profile())
-                             ->window()
-                             ->GetNativeWindow()
-                             ->GetHost()] =
-      aura::Window::OcclusionState::OCCLUDED;
-
-  mock_delegate_raw->SetMockOcclusionResults(mock_occlusion_results);
-
-  // There should now be 1 entry for each 1 window bucket.
-  tab_stats_tracker_->CalculateAndRecordNativeWindowVisibilities();
-  histogram_tester_.ExpectBucketCount("Windows.NativeWindowVisibility.Occluded",
-                                      1, 1);
-  histogram_tester_.ExpectBucketCount("Windows.NativeWindowVisibility.Visible",
-                                      1, 1);
-  histogram_tester_.ExpectBucketCount("Windows.NativeWindowVisibility.Hidden",
-                                      1, 1);
-
-  mock_occlusion_results.clear();
-
-  // Create 5 aura::Window::OcclusionState browsers.
-  for (int count = 0; count < 5; count++) {
-    mock_occlusion_results[CreateBrowser(browser()->profile())
-                               ->window()
-                               ->GetNativeWindow()
-                               ->GetHost()] =
-        aura::Window::OcclusionState::OCCLUDED;
-  }
-
-  mock_delegate_raw->SetMockOcclusionResults(mock_occlusion_results);
-  tab_stats_tracker_->CalculateAndRecordNativeWindowVisibilities();
-
-  // There should be 1 entry in the 5 window occluded bucket.
-  histogram_tester_.ExpectBucketCount("Windows.NativeWindowVisibility.Occluded",
-                                      5, 1);
-}
-
-#endif  // BUILDFLAG(IS_WIN)
 
 namespace {
 

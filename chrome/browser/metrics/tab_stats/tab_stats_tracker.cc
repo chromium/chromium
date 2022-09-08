@@ -64,11 +64,6 @@ constexpr base::TimeDelta kTabUsageReportingIntervals[] = {
     base::Seconds(30), base::Minutes(1), base::Minutes(10),
     base::Hours(1),    base::Hours(5),   base::Hours(12)};
 
-#if BUILDFLAG(IS_WIN)
-const base::TimeDelta kNativeWindowOcclusionCalculationInterval =
-    base::Minutes(10);
-#endif
-
 // The interval at which the heartbeat tab metrics should be reported.
 const base::TimeDelta kTabsHeartbeatReportingInterval = base::Minutes(5);
 
@@ -146,7 +141,6 @@ const TabStatsDataStore::TabsStats& TabStatsTracker::tab_stats() const {
 
 TabStatsTracker::TabStatsTracker(PrefService* pref_service)
     : reporting_delegate_(std::make_unique<UmaStatsReportingDelegate>()),
-      delegate_(std::make_unique<TabStatsTrackerDelegate>()),
       tab_stats_data_store_(std::make_unique<TabStatsDataStore>(pref_service)),
       daily_event_(
           std::make_unique<DailyEvent>(pref_service,
@@ -199,15 +193,6 @@ TabStatsTracker::TabStatsTracker(PrefService* pref_service)
                             base::Unretained(this), interval, interval_map));
     usage_interval_timers_.push_back(std::move(timer));
   }
-
-// The native window occlusion calculation is specific to Windows.
-#if BUILDFLAG(IS_WIN)
-  native_window_occlusion_timer_.Start(
-      FROM_HERE, kNativeWindowOcclusionCalculationInterval,
-      base::BindRepeating(
-          &TabStatsTracker::CalculateAndRecordNativeWindowVisibilities,
-          base::Unretained(this)));
-#endif
 
   heartbeat_timer_.Start(FROM_HERE, kTabsHeartbeatReportingInterval,
                          base::BindRepeating(&TabStatsTracker::OnHeartbeatEvent,
@@ -268,11 +253,6 @@ void TabStatsTracker::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(::prefs::kTabStatsDiscardsUrgent, 0);
   registry->RegisterIntegerPref(::prefs::kTabStatsReloadsExternal, 0);
   registry->RegisterIntegerPref(::prefs::kTabStatsReloadsUrgent, 0);
-}
-
-void TabStatsTracker::SetDelegateForTesting(
-    std::unique_ptr<TabStatsTrackerDelegate> new_delegate) {
-  delegate_ = std::move(new_delegate);
 }
 
 void TabStatsTracker::TabStatsDailyObserver::OnDailyEvent(

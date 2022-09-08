@@ -25,15 +25,6 @@ component("aura_extra") {
     "//ui/gfx",
     "//ui/gfx/geometry",
   ]
-
-  if (is_win) {
-    sources += [
-      "window_occlusion_impl_win.cc",
-      "window_occlusion_impl_win.h",
-      "window_occlusion_win.cc",
-      "window_occlusion_win.h",
-    ]
-  }
 }
 
 source_set("tests") {
@@ -51,8 +42,4 @@ source_set("tests") {
     "//ui/gfx/geometry",
     "//ui/platform_window",
   ]
-
-  if (is_win) {
-    sources += [ "window_occlusion_impl_unittest_win.cc" ]
-  }
 }
