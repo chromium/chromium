@@ -12249,8 +12249,6 @@ void RenderFrameHostImpl::SendCommitNavigation(
     // is just an optimization, so it is fine for it to be null in the case
     // where these don't match.
 
-    absl::optional<url::Origin> isolation_info_frame_origin =
-        navigation_request->isolation_info_for_subresources().frame_origin();
     if (net::IsolationInfo::IsFrameSiteEnabled() &&
         common_params->url.SchemeIsHTTPOrHTTPS() &&
         !origin_to_commit.opaque() &&

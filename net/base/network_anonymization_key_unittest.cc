@@ -204,7 +204,8 @@ TEST_P(NetworkAnonymizationKeyTest, Getters) {
   // includes when `kEnableCrossSiteFlagNetworkAnonymizationKey` or
   // `kEnableDoubleKeyNetworkAnonymizationKey` are enabled.
   if (IsDoubleKeyEnabled() || IsCrossSiteFlagEnabled()) {
-    EXPECT_EQ(key.GetFrameSite(), absl::nullopt);
+    EXPECT_DEATH_IF_SUPPORTED(key.GetFrameSite(), "");
+    EXPECT_EQ(key.GetFrameSiteForTesting(), absl::nullopt);
   } else {
     EXPECT_EQ(key.GetFrameSite(), kTestSiteB);
   }

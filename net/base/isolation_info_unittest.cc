@@ -7,6 +7,7 @@
 #include <iostream>
 #include "base/test/scoped_feature_list.h"
 #include "base/unguessable_token.h"
+#include "isolation_info.h"
 #include "net/base/features.h"
 #include "net/base/network_anonymization_key.h"
 #include "net/base/network_isolation_key.h"
@@ -145,8 +146,10 @@ void DuplicateAndCompare(const IsolationInfo& isolation_info) {
   absl::optional<IsolationInfo> duplicate_isolation_info =
       IsolationInfo::CreateIfConsistent(
           isolation_info.request_type(), isolation_info.top_frame_origin(),
-          isolation_info.frame_origin(), isolation_info.site_for_cookies(),
-          isolation_info.party_context(),
+          net::IsolationInfo::IsFrameSiteEnabled()
+              ? isolation_info.frame_origin()
+              : absl::nullopt,
+          isolation_info.site_for_cookies(), isolation_info.party_context(),
           isolation_info.nonce().has_value() ? &isolation_info.nonce().value()
                                              : nullptr);
 
@@ -190,19 +193,29 @@ TEST_P(IsolationInfoTest, CreateNetworkAnonymizationKeyForIsolationInfo) {
       !IsDoubleKeyAndCrossSiteBitNetworkAnonymizationKeyEnabled() &&
       IsDoubleKeyIsolationInfoEnabled()) {
     // Double-keyed IsolationInfo + double-keyed NetworkAnonymizationKey case.
-    EXPECT_EQ(nak.GetFrameSite(), absl::nullopt);
-    EXPECT_EQ(isolation_info.frame_origin(), absl::nullopt);
-    EXPECT_EQ(isolation_info.network_anonymization_key().GetFrameSite(),
-              absl::nullopt);
+    EXPECT_DEATH_IF_SUPPORTED(nak.GetFrameSite(), "");
+    EXPECT_EQ(absl::nullopt, nak.GetFrameSiteForTesting());
+    EXPECT_EQ(kOrigin1, isolation_info.top_frame_origin());
+    EXPECT_DEATH_IF_SUPPORTED(isolation_info.frame_origin(), "");
+    EXPECT_EQ(absl::nullopt, isolation_info.frame_origin_for_testing());
+    EXPECT_DEATH_IF_SUPPORTED(
+        isolation_info.network_anonymization_key().GetFrameSite(), "");
+    EXPECT_EQ(
+        absl::nullopt,
+        isolation_info.network_anonymization_key().GetFrameSiteForTesting());
     EXPECT_DEATH_IF_SUPPORTED(
         isolation_info.network_anonymization_key().GetIsCrossSite(), "");
   } else if (!IsDoubleKeyIsolationInfoEnabled() &&
              !IsDoubleKeyAndCrossSiteBitNetworkAnonymizationKeyEnabled() &&
              IsDoubleKeyNetworkAnonymizationKeyEnabled()) {
     // Triple-keyed IsolationInfo + double-keyed NetworkAnonymizationKey case.
-    EXPECT_EQ(nak.GetFrameSite(), absl::nullopt);
-    EXPECT_EQ(isolation_info.network_anonymization_key().GetFrameSite(),
-              absl::nullopt);
+    EXPECT_DEATH_IF_SUPPORTED(nak.GetFrameSite(), "");
+    EXPECT_EQ(absl::nullopt, nak.GetFrameSiteForTesting());
+    EXPECT_DEATH_IF_SUPPORTED(
+        isolation_info.network_anonymization_key().GetFrameSite(), "");
+    EXPECT_EQ(
+        absl::nullopt,
+        isolation_info.network_anonymization_key().GetFrameSiteForTesting());
     EXPECT_EQ(isolation_info.frame_origin(), kOrigin2);
     EXPECT_DEATH_IF_SUPPORTED(
         isolation_info.network_anonymization_key().GetIsCrossSite(), "");
@@ -221,9 +234,13 @@ TEST_P(IsolationInfoTest, CreateNetworkAnonymizationKeyForIsolationInfo) {
              !IsDoubleKeyNetworkAnonymizationKeyEnabled()) {
     // Triple-keyed IsolationInfo + double-keyed + cross site bit
     // NetworkAnonymizationKey case.
-    EXPECT_EQ(nak.GetFrameSite(), absl::nullopt);
-    EXPECT_EQ(isolation_info.network_anonymization_key().GetFrameSite(),
-              absl::nullopt);
+    EXPECT_DEATH_IF_SUPPORTED(nak.GetFrameSite(), "");
+    EXPECT_EQ(absl::nullopt, nak.GetFrameSiteForTesting());
+    EXPECT_DEATH_IF_SUPPORTED(
+        isolation_info.network_anonymization_key().GetFrameSite(), "");
+    EXPECT_EQ(
+        absl::nullopt,
+        isolation_info.network_anonymization_key().GetFrameSiteForTesting());
     EXPECT_EQ(isolation_info.frame_origin(), kOrigin2);
     EXPECT_EQ(isolation_info.network_anonymization_key().GetIsCrossSite(),
               true);
@@ -246,7 +263,9 @@ TEST_P(IsolationInfoTest, CreateDoubleKey) {
     EXPECT_EQ(IsolationInfo::RequestType::kMainFrame,
               double_key_isolation_info.request_type());
     EXPECT_EQ(kOrigin1, double_key_isolation_info.top_frame_origin());
-    EXPECT_EQ(absl::nullopt, double_key_isolation_info.frame_origin());
+    EXPECT_DEATH_IF_SUPPORTED(double_key_isolation_info.frame_origin(), "");
+    EXPECT_EQ(absl::nullopt,
+              double_key_isolation_info.frame_origin_for_testing());
     EXPECT_EQ(
         "https://foo.test https://foo.test",
         double_key_isolation_info.network_isolation_key().ToCacheKeyString());
@@ -255,8 +274,6 @@ TEST_P(IsolationInfoTest, CreateDoubleKey) {
 
     // When double keying is enabled Create and CreateDoubleKey should
     // create the same key.
-    EXPECT_EQ(isolation_info.frame_origin(),
-              double_key_isolation_info.frame_origin());
     EXPECT_EQ(isolation_info.top_frame_origin(),
               double_key_isolation_info.top_frame_origin());
     EXPECT_EQ(isolation_info.request_type(),
@@ -286,10 +303,10 @@ TEST_P(IsolationInfoTest, RequestTypeMainFrame) {
   EXPECT_EQ(kOrigin1, isolation_info.top_frame_origin());
 
   if (IsDoubleKeyIsolationInfoEnabled()) {
-    EXPECT_EQ(absl::nullopt, isolation_info.frame_origin());
+    EXPECT_DEATH_IF_SUPPORTED(isolation_info.frame_origin(), "");
+    EXPECT_EQ(absl::nullopt, isolation_info.frame_origin_for_testing());
     EXPECT_EQ("https://foo.test https://foo.test",
               isolation_info.network_isolation_key().ToCacheKeyString());
-
   } else {
     EXPECT_EQ(kOrigin1, isolation_info.frame_origin());
     EXPECT_EQ("https://foo.test https://foo.test",
@@ -310,7 +327,9 @@ TEST_P(IsolationInfoTest, RequestTypeMainFrame) {
             redirected_isolation_info.request_type());
   EXPECT_EQ(kOrigin3, redirected_isolation_info.top_frame_origin());
   if (IsDoubleKeyIsolationInfoEnabled()) {
-    EXPECT_EQ(absl::nullopt, redirected_isolation_info.frame_origin());
+    EXPECT_DEATH_IF_SUPPORTED(redirected_isolation_info.frame_origin(), "");
+    EXPECT_EQ(absl::nullopt,
+              redirected_isolation_info.frame_origin_for_testing());
   } else {
     EXPECT_EQ(kOrigin3, redirected_isolation_info.frame_origin());
   }
@@ -340,7 +359,8 @@ TEST_P(IsolationInfoTest, RequestTypeSubFrame) {
             isolation_info.request_type());
   EXPECT_EQ(kOrigin1, isolation_info.top_frame_origin());
   if (IsDoubleKeyIsolationInfoEnabled()) {
-    EXPECT_EQ(absl::nullopt, isolation_info.frame_origin());
+    EXPECT_DEATH_IF_SUPPORTED(isolation_info.frame_origin(), "");
+    EXPECT_EQ(absl::nullopt, isolation_info.frame_origin_for_testing());
     EXPECT_EQ("https://foo.test https://foo.test",
               isolation_info.network_isolation_key().ToCacheKeyString());
   } else {
@@ -364,7 +384,9 @@ TEST_P(IsolationInfoTest, RequestTypeSubFrame) {
   EXPECT_EQ(kOrigin1, redirected_isolation_info.top_frame_origin());
 
   if (IsDoubleKeyIsolationInfoEnabled()) {
-    EXPECT_EQ(absl::nullopt, redirected_isolation_info.frame_origin());
+    EXPECT_DEATH_IF_SUPPORTED(redirected_isolation_info.frame_origin(), "");
+    EXPECT_EQ(absl::nullopt,
+              redirected_isolation_info.frame_origin_for_testing());
     EXPECT_EQ(
         "https://foo.test https://foo.test",
         redirected_isolation_info.network_isolation_key().ToCacheKeyString());
@@ -391,7 +413,8 @@ TEST_P(IsolationInfoTest, RequestTypeMainFrameWithNonce) {
             isolation_info.request_type());
   EXPECT_EQ(kOrigin1, isolation_info.top_frame_origin());
   if (IsDoubleKeyIsolationInfoEnabled()) {
-    EXPECT_EQ(absl::nullopt, isolation_info.frame_origin());
+    EXPECT_DEATH_IF_SUPPORTED(isolation_info.frame_origin(), "");
+    EXPECT_EQ(absl::nullopt, isolation_info.frame_origin_for_testing());
   } else {
     EXPECT_EQ(kOrigin1, isolation_info.frame_origin());
   }
@@ -412,7 +435,9 @@ TEST_P(IsolationInfoTest, RequestTypeMainFrameWithNonce) {
             redirected_isolation_info.request_type());
   EXPECT_EQ(kOrigin3, redirected_isolation_info.top_frame_origin());
   if (IsDoubleKeyIsolationInfoEnabled()) {
-    EXPECT_EQ(absl::nullopt, redirected_isolation_info.frame_origin());
+    EXPECT_DEATH_IF_SUPPORTED(redirected_isolation_info.frame_origin(), "");
+    EXPECT_EQ(absl::nullopt,
+              redirected_isolation_info.frame_origin_for_testing());
   } else {
     EXPECT_EQ(kOrigin3, redirected_isolation_info.frame_origin());
   }
@@ -436,7 +461,8 @@ TEST_P(IsolationInfoTest, RequestTypeSubFrameWithNonce) {
             isolation_info.request_type());
   EXPECT_EQ(kOrigin1, isolation_info.top_frame_origin());
   if (IsDoubleKeyIsolationInfoEnabled()) {
-    EXPECT_EQ(absl::nullopt, isolation_info.frame_origin());
+    EXPECT_DEATH_IF_SUPPORTED(isolation_info.frame_origin(), "");
+    EXPECT_EQ(absl::nullopt, isolation_info.frame_origin_for_testing());
   } else {
     EXPECT_EQ(kOrigin2, isolation_info.frame_origin());
   }
@@ -457,7 +483,9 @@ TEST_P(IsolationInfoTest, RequestTypeSubFrameWithNonce) {
             redirected_isolation_info.request_type());
   EXPECT_EQ(kOrigin1, redirected_isolation_info.top_frame_origin());
   if (IsDoubleKeyIsolationInfoEnabled()) {
-    EXPECT_EQ(absl::nullopt, redirected_isolation_info.frame_origin());
+    EXPECT_DEATH_IF_SUPPORTED(redirected_isolation_info.frame_origin(), "");
+    EXPECT_EQ(absl::nullopt,
+              redirected_isolation_info.frame_origin_for_testing());
   } else {
     EXPECT_EQ(kOrigin3, redirected_isolation_info.frame_origin());
   }
@@ -478,7 +506,8 @@ TEST_P(IsolationInfoTest, RequestTypeOther) {
   EXPECT_EQ(IsolationInfo::RequestType::kOther, isolation_info.request_type());
   EXPECT_FALSE(isolation_info.top_frame_origin());
   if (IsDoubleKeyIsolationInfoEnabled()) {
-    EXPECT_FALSE(isolation_info.frame_origin());
+    EXPECT_DEATH_IF_SUPPORTED(isolation_info.frame_origin(), "");
+    EXPECT_FALSE(isolation_info.frame_origin_for_testing());
   } else {
     EXPECT_FALSE(isolation_info.frame_origin());
   }
@@ -501,7 +530,8 @@ TEST_P(IsolationInfoTest, RequestTypeOtherWithSiteForCookies) {
   EXPECT_EQ(IsolationInfo::RequestType::kOther, isolation_info.request_type());
   EXPECT_EQ(kOrigin1, isolation_info.top_frame_origin());
   if (IsDoubleKeyIsolationInfoEnabled()) {
-    EXPECT_EQ(absl::nullopt, isolation_info.frame_origin());
+    EXPECT_DEATH_IF_SUPPORTED(isolation_info.frame_origin(), "");
+    EXPECT_EQ(absl::nullopt, isolation_info.frame_origin_for_testing());
     EXPECT_EQ("https://foo.test https://foo.test",
               isolation_info.network_isolation_key().ToCacheKeyString());
   } else {
@@ -532,7 +562,8 @@ TEST_P(IsolationInfoTest, RequestTypeOtherWithEmptySiteForCookies) {
   EXPECT_EQ(IsolationInfo::RequestType::kOther, isolation_info.request_type());
   EXPECT_EQ(kOrigin1, isolation_info.top_frame_origin());
   if (IsDoubleKeyIsolationInfoEnabled()) {
-    EXPECT_EQ(absl::nullopt, isolation_info.frame_origin());
+    EXPECT_DEATH_IF_SUPPORTED(isolation_info.frame_origin(), "");
+    EXPECT_EQ(absl::nullopt, isolation_info.frame_origin_for_testing());
     EXPECT_EQ("https://foo.test https://foo.test",
               isolation_info.network_isolation_key().ToCacheKeyString());
   } else {
@@ -558,7 +589,8 @@ TEST_P(IsolationInfoTest, CreateTransient) {
   EXPECT_EQ(IsolationInfo::RequestType::kOther, isolation_info.request_type());
   EXPECT_TRUE(isolation_info.top_frame_origin()->opaque());
   if (IsDoubleKeyIsolationInfoEnabled()) {
-    EXPECT_FALSE(isolation_info.frame_origin().has_value());
+    EXPECT_DEATH_IF_SUPPORTED(isolation_info.frame_origin(), "");
+    EXPECT_FALSE(isolation_info.frame_origin_for_testing().has_value());
   } else {
     EXPECT_TRUE(isolation_info.frame_origin()->opaque());
   }
@@ -581,7 +613,8 @@ TEST_P(IsolationInfoTest, CreateForInternalRequest) {
   EXPECT_EQ(IsolationInfo::RequestType::kOther, isolation_info.request_type());
   EXPECT_EQ(kOrigin1, isolation_info.top_frame_origin());
   if (IsDoubleKeyIsolationInfoEnabled()) {
-    EXPECT_EQ(absl::nullopt, isolation_info.frame_origin());
+    EXPECT_DEATH_IF_SUPPORTED(isolation_info.frame_origin(), "");
+    EXPECT_EQ(absl::nullopt, isolation_info.frame_origin_for_testing());
     EXPECT_EQ("https://foo.test https://foo.test",
               isolation_info.network_isolation_key().ToCacheKeyString());
   } else {
@@ -612,7 +645,8 @@ TEST_P(IsolationInfoTest, CreatePartialUpdateTopFrame) {
             isolation_info.request_type());
   EXPECT_EQ(kSite1, isolation_info.top_frame_origin());
   if (IsDoubleKeyIsolationInfoEnabled()) {
-    EXPECT_EQ(absl::nullopt, isolation_info.frame_origin());
+    EXPECT_DEATH_IF_SUPPORTED(isolation_info.frame_origin(), "");
+    EXPECT_EQ(absl::nullopt, isolation_info.frame_origin_for_testing());
   } else {
     EXPECT_EQ(kSite1, isolation_info.frame_origin());
   }
@@ -633,7 +667,8 @@ TEST_P(IsolationInfoTest, CreatePartialUpdateFrameOnly) {
             isolation_info.request_type());
   EXPECT_EQ(kSite1, isolation_info.top_frame_origin());
   if (IsDoubleKeyIsolationInfoEnabled()) {
-    EXPECT_EQ(absl::nullopt, isolation_info.frame_origin());
+    EXPECT_DEATH_IF_SUPPORTED(isolation_info.frame_origin(), "");
+    EXPECT_EQ(absl::nullopt, isolation_info.frame_origin_for_testing());
   } else {
     EXPECT_EQ(kSite2, isolation_info.frame_origin());
   }
@@ -653,7 +688,8 @@ TEST_P(IsolationInfoTest, CreatePartialUpdateNothing) {
   EXPECT_EQ(IsolationInfo::RequestType::kOther, isolation_info.request_type());
   EXPECT_EQ(kSite1, isolation_info.top_frame_origin());
   if (IsDoubleKeyIsolationInfoEnabled()) {
-    EXPECT_EQ(absl::nullopt, isolation_info.frame_origin());
+    EXPECT_DEATH_IF_SUPPORTED(isolation_info.frame_origin(), "");
+    EXPECT_EQ(absl::nullopt, isolation_info.frame_origin_for_testing());
   } else {
     EXPECT_EQ(kSite2, isolation_info.frame_origin());
   }
@@ -676,8 +712,10 @@ TEST_P(IsolationInfoTest, CreatePartialTransient) {
             isolation_info.network_anonymization_key().GetTopFrameSite());
 
   if (IsDoubleKeyIsolationInfoEnabled()) {
-    EXPECT_EQ(kNIK.GetFrameSite(), absl::nullopt);
-    EXPECT_EQ(isolation_info.frame_origin(), absl::nullopt);
+    EXPECT_DEATH_IF_SUPPORTED(kNIK.GetFrameSite(), "");
+    EXPECT_EQ(kNIK.GetFrameSiteForTesting(), absl::nullopt);
+    EXPECT_DEATH_IF_SUPPORTED(isolation_info.frame_origin(), "");
+    EXPECT_EQ(isolation_info.frame_origin_for_testing(), absl::nullopt);
   } else {
     EXPECT_EQ(kNIK.GetFrameSite(),
               SchemefulSite(*isolation_info.frame_origin()));
@@ -695,7 +733,8 @@ TEST_P(IsolationInfoTest, CreatePartialEmpty) {
   EXPECT_EQ(IsolationInfo::RequestType::kOther, isolation_info.request_type());
   EXPECT_FALSE(isolation_info.top_frame_origin());
   if (IsDoubleKeyIsolationInfoEnabled()) {
-    EXPECT_FALSE(isolation_info.frame_origin());
+    EXPECT_DEATH_IF_SUPPORTED(isolation_info.frame_origin(), "");
+    EXPECT_FALSE(isolation_info.frame_origin_for_testing());
   } else {
     EXPECT_FALSE(isolation_info.frame_origin());
   }
@@ -724,7 +763,8 @@ TEST_P(IsolationInfoTest, CustomSchemeRequestTypeOther) {
   EXPECT_EQ(IsolationInfo::RequestType::kOther, isolation_info.request_type());
   EXPECT_EQ(kCustomOrigin, isolation_info.top_frame_origin());
   if (IsDoubleKeyIsolationInfoEnabled()) {
-    EXPECT_EQ(absl::nullopt, isolation_info.frame_origin());
+    EXPECT_DEATH_IF_SUPPORTED(isolation_info.frame_origin(), "");
+    EXPECT_EQ(absl::nullopt, isolation_info.frame_origin_for_testing());
     EXPECT_EQ("foo://a.foo.com foo://a.foo.com",
               isolation_info.network_isolation_key().ToCacheKeyString());
   } else {

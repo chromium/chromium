@@ -111,13 +111,17 @@ class NET_EXPORT NetworkAnonymizationKey {
   bool IsTransient() const;
 
   // Getters for the top frame, frame site, nonce and is cross site flag.
-  // TODO @brgoldstein: create feature flags to wrap these properties so that
-  // the key can be modified for experimentation.
   const absl::optional<SchemefulSite>& GetTopFrameSite() const {
     return top_frame_site_;
   }
 
-  const absl::optional<SchemefulSite>& GetFrameSite() const {
+  const absl::optional<SchemefulSite>& GetFrameSite() const;
+
+  // Do not use outside of testing. Returns the `frame_site_` if neither
+  // `kEnableCrossSiteFlagNetworkAnonymizationKey` or
+  // `kEnableDoubleKeyNetworkAnonymizationKey` are enabled. Else it
+  // returns nullopt.
+  const absl::optional<SchemefulSite>& GetFrameSiteForTesting() const {
     return frame_site_;
   }
 

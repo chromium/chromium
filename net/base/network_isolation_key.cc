@@ -205,8 +205,8 @@ bool NetworkIsolationKey::FromValue(
 }
 
 const absl::optional<SchemefulSite>& NetworkIsolationKey::GetFrameSite() const {
-  // TODO: @brgoldstein, add CHECK that
-  // `kForceIsolationInfoFrameOriginToTopLevelFrame` is not enabled.
+  // Frame site will be empty if double-keying is enabled.
+  CHECK(NetworkIsolationKey::IsFrameSiteEnabled());
   return frame_site_;
 }
 

@@ -80,6 +80,13 @@ bool NetworkAnonymizationKey::GetIsCrossSite() const {
   return is_cross_site_.value();
 }
 
+const absl::optional<SchemefulSite>& NetworkAnonymizationKey::GetFrameSite()
+    const {
+  // Frame site will be empty if double-keying is enabled.
+  CHECK(NetworkAnonymizationKey::IsFrameSiteEnabled());
+  return frame_site_;
+}
+
 bool NetworkAnonymizationKey::IsFrameSiteEnabled() {
   return !base::FeatureList::IsEnabled(
              net::features::kEnableDoubleKeyNetworkAnonymizationKey) &&

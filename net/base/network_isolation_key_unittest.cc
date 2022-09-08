@@ -419,7 +419,7 @@ TEST_P(NetworkIsolationKeyTest, CreateWithNewFrameSite) {
   net::NetworkIsolationKey key(site_a, site_b);
   NetworkIsolationKey key_c = key.CreateWithNewFrameSite(site_c);
   if (ForceIsolationInfoFrameOriginToTopLevelFrameEnabled()) {
-    EXPECT_EQ(absl::nullopt, key_c.GetFrameSite());
+    EXPECT_DEATH_IF_SUPPORTED(key_c.GetFrameSite(), "");
   } else {
     EXPECT_EQ(site_c, key_c.GetFrameSite());
   }
@@ -479,12 +479,7 @@ TEST(NetworkIsolationKeyFeatureShiftTest, ValueRoundTripDoubleToTriple) {
   NetworkIsolationKey created_double_key(
       SchemefulSite(GURL("https://foo.test/")),
       SchemefulSite(GURL("https://bar.test/")));
-  EXPECT_EQ(absl::nullopt, created_double_key.GetFrameSite());
-
-  // Assert the triple key still has the frame_site it was created with when
-  // frame site was enabled.
-  EXPECT_EQ(SchemefulSite(GURL("https://bar.test/")),
-            created_triple_key.GetFrameSite());
+  EXPECT_DEATH_IF_SUPPORTED(created_double_key.GetFrameSite(), "");
 
   // Test round trip of key created when frame site was disabled.
   base::Value created_double_key_value;

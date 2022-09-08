@@ -16,7 +16,8 @@ bool StructTraits<network::mojom::NetworkIsolationKeyDataView,
   absl::optional<net::SchemefulSite> top_frame_site, frame_site;
 
   if (!data.ReadTopFrameSite(&top_frame_site) ||
-      !data.ReadFrameSite(&frame_site)) {
+      (net::NetworkIsolationKey::IsFrameSiteEnabled() &&
+       !data.ReadFrameSite(&frame_site))) {
     return false;
   }
 

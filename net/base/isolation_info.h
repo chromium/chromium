@@ -202,6 +202,11 @@ class NET_EXPORT IsolationInfo {
   //          policy. It MUST NEVER be used for any kind of SECURITY check.
   const SiteForCookies& site_for_cookies() const { return site_for_cookies_; }
 
+  // Do not use outside of testing. Returns the `frame_origin_` if
+  // `kForceIsolationInfoFrameOriginToTopLevelFrame` is disabled. Else it
+  // returns the `top_frame_origin_` value.
+  const absl::optional<url::Origin>& frame_origin_for_testing() const;
+
   // Return |party_context| which exclude the top frame origin and the frame
   // origin.
   // TODO(mmenke): Make this function PartyContextForTesting() after switching

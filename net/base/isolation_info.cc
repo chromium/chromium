@@ -240,8 +240,13 @@ IsolationInfo IsolationInfo::CreateForRedirect(
 }
 
 const absl::optional<url::Origin>& IsolationInfo::frame_origin() const {
-  // TODO: @brgoldstein, add CHECK that
-  // `kForceIsolationInfoFrameOriginToTopLevelFrame` is not enabled.
+  // Frame origin will be empty if double-keying is enabled.
+  CHECK(IsolationInfo::IsFrameSiteEnabled());
+  return frame_origin_;
+}
+
+const absl::optional<url::Origin>& IsolationInfo::frame_origin_for_testing()
+    const {
   return frame_origin_;
 }
 

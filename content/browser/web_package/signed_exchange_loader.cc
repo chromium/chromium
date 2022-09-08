@@ -155,8 +155,7 @@ void SignedExchangeLoader::OnStartLoadingResponseBody(
       outer_request_.throttling_profile_id,
       (outer_request_.trusted_params &&
        !outer_request_.trusted_params->isolation_info.IsEmpty())
-          ? outer_request_.trusted_params->isolation_info.frame_origin()
-                    .has_value()
+          ? net::IsolationInfo::IsFrameSiteEnabled()
                 ? net::IsolationInfo::Create(
                       net::IsolationInfo::RequestType::kOther,
                       *outer_request_.trusted_params->isolation_info
