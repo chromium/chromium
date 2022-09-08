@@ -182,8 +182,6 @@ MojoResult WatcherDispatcher::WatchDispatcher(
 }
 
 MojoResult WatcherDispatcher::CancelWatch(uintptr_t context) {
-  recordreplay::Assert("WatcherDispatcher::CancelWatch %lu", recordreplay::PointerId(this));
-
   // We may remove the last stored ref to the Watch below, so we retain
   // a reference on the stack.
   scoped_refptr<Watch> watch;
