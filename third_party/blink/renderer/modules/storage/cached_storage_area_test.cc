@@ -886,10 +886,9 @@ TEST_F(CachedStorageAreaTest, RecoveryWhenNoLocalDOMWindowPresent) {
       CachedStorageAreaTest::kPageUrl, local_dom_window);
   StorageController::DomStorageConnection connection;
   std::ignore = connection.dom_storage_remote.BindNewPipeAndPassReceiver();
-  auto task_runner = scheduler::GetSingleThreadTaskRunnerForTesting();
-  StorageController controller(std::move(connection), task_runner, 100);
-  auto* sessionStorage =
-      MakeGarbageCollected<StorageNamespace>(&controller, "foo");
+  StorageController controller(std::move(connection), 100);
+  auto* sessionStorage = MakeGarbageCollected<StorageNamespace>(
+      *local_dom_window->GetFrame()->GetPage(), &controller, "foo");
 
   // When no local DOM window is present this shouldn't fatal, just not bind
   auto cached_area = base::MakeRefCounted<CachedStorageArea>(

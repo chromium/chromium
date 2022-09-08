@@ -72,7 +72,7 @@ class MODULES_EXPORT StorageNamespace final
   // Creates a namespace for LocalStorage.
   StorageNamespace(StorageController*);
   // Creates a namespace for SessionStorage.
-  StorageNamespace(StorageController*, const String& namespace_id);
+  StorageNamespace(Page& page, StorageController*, const String& namespace_id);
 
   // |storage_area| is ignored here if a cached namespace already exists.
   scoped_refptr<CachedStorageArea> GetCachedArea(
@@ -127,6 +127,7 @@ class MODULES_EXPORT StorageNamespace final
   // Lives globally.
   StorageController* controller_;
   String namespace_id_;
+  scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   // `StorageNamespace` is a per-Page object and doesn't have any
   // `ExecutionContext`.
   HeapMojoRemote<mojom::blink::SessionStorageNamespace> namespace_{nullptr};

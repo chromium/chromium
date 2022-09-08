@@ -48,11 +48,13 @@ const char StorageNamespace::kSupplementName[] = "SessionStorageNamespace";
 
 StorageNamespace::StorageNamespace(StorageController* controller)
     : Supplement(nullptr), controller_(controller) {}
-StorageNamespace::StorageNamespace(StorageController* controller,
+StorageNamespace::StorageNamespace(Page& page,
+                                   StorageController* controller,
                                    const String& namespace_id)
-    : Supplement(nullptr),
+    : Supplement(page),
       controller_(controller),
-      namespace_id_(namespace_id) {}
+      namespace_id_(namespace_id),
+      task_runner_(page.GetAgentGroupScheduler().DefaultTaskRunner()) {}
 
 // static
 void StorageNamespace::ProvideSessionStorageNamespaceTo(
@@ -62,7 +64,7 @@ void StorageNamespace::ProvideSessionStorageNamespaceTo(
     return;
   auto* ss_namespace =
       StorageController::GetInstance()->CreateSessionStorageNamespace(
-          String(namespace_id.data(), namespace_id.length()));
+          page, String(namespace_id.data(), namespace_id.length()));
   if (!ss_namespace)
     return;
   ProvideTo(page, ss_namespace);
@@ -240,8 +242,7 @@ void StorageNamespace::EnsureConnected() {
   if (namespace_.is_bound())
     return;
   controller_->dom_storage()->BindSessionStorageNamespace(
-      namespace_id_,
-      namespace_.BindNewPipeAndPassReceiver(controller_->TaskRunner()));
+      namespace_id_, namespace_.BindNewPipeAndPassReceiver(task_runner_));
 }
 
 }  // namespace blink

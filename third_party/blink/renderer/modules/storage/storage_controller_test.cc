@@ -96,9 +96,7 @@ TEST(StorageControllerTest, CacheLimit) {
           },
           connection.dom_storage_remote.BindNewPipeAndPassReceiver()));
 
-  StorageController controller(std::move(connection),
-                               scheduler::GetSingleThreadTaskRunnerForTesting(),
-                               kTestCacheLimit);
+  StorageController controller(std::move(connection), kTestCacheLimit);
 
   test::ScopedMockedURLLoad scoped_mocked_url_load(
       kPageUrl, test::CoreTestDataPath("foo.html"));
@@ -189,10 +187,12 @@ TEST(StorageControllerTest, CacheLimitSessionStorage) {
           std::move(mock_dom_storage),
           connection.dom_storage_remote.BindNewPipeAndPassReceiver()));
 
-  StorageController controller(std::move(connection), nullptr, kTestCacheLimit);
+  StorageController controller(std::move(connection), kTestCacheLimit);
 
-  StorageNamespace* ns1 = controller.CreateSessionStorageNamespace(kNamespace1);
-  StorageNamespace* ns2 = controller.CreateSessionStorageNamespace(kNamespace2);
+  StorageNamespace* ns1 = controller.CreateSessionStorageNamespace(
+      *local_dom_window_root->GetFrame()->GetPage(), kNamespace1);
+  StorageNamespace* ns2 = controller.CreateSessionStorageNamespace(
+      *local_dom_window_root->GetFrame()->GetPage(), kNamespace2);
 
   test::ScopedMockedURLLoad scoped_mocked_url_load(
       kPageUrl, test::CoreTestDataPath("foo.html"));

@@ -42,13 +42,11 @@ StorageController::DomStorageConnection GetDomStorageConnection() {
 
 // static
 StorageController* StorageController::GetInstance() {
-  DEFINE_STATIC_LOCAL(
-      StorageController, gCachedStorageAreaController,
-      (GetDomStorageConnection(),
-       Thread::MainThread()->Scheduler()->DeprecatedDefaultTaskRunner(),
-       base::SysInfo::IsLowEndDevice()
-           ? kStorageControllerTotalCacheLimitInBytesLowEnd
-           : kStorageControllerTotalCacheLimitInBytes));
+  DEFINE_STATIC_LOCAL(StorageController, gCachedStorageAreaController,
+                      (GetDomStorageConnection(),
+                       base::SysInfo::IsLowEndDevice()
+                           ? kStorageControllerTotalCacheLimitInBytesLowEnd
+                           : kStorageControllerTotalCacheLimitInBytes));
   return &gCachedStorageAreaController;
 }
 
@@ -68,12 +66,9 @@ bool StorageController::CanAccessStorageArea(LocalFrame* frame,
   return true;
 }
 
-StorageController::StorageController(
-    DomStorageConnection connection,
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner,
-    size_t total_cache_limit)
-    : task_runner_(std::move(task_runner)),
-      namespaces_(MakeGarbageCollected<
+StorageController::StorageController(DomStorageConnection connection,
+                                     size_t total_cache_limit)
+    : namespaces_(MakeGarbageCollected<
                   HeapHashMap<String, WeakMember<StorageNamespace>>>()),
       total_cache_limit_(total_cache_limit),
       dom_storage_remote_(std::move(connection.dom_storage_remote)) {
@@ -83,6 +78,7 @@ StorageController::StorageController(
 }
 
 StorageNamespace* StorageController::CreateSessionStorageNamespace(
+    Page& page,
     const String& namespace_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // There is an edge case where a user closes a tab that has other tabs in the
@@ -92,7 +88,7 @@ StorageNamespace* StorageController::CreateSessionStorageNamespace(
   if (it != namespaces_->end())
     return it->value;
   StorageNamespace* ns =
-      MakeGarbageCollected<StorageNamespace>(this, namespace_id);
+      MakeGarbageCollected<StorageNamespace>(page, this, namespace_id);
   namespaces_->insert(namespace_id, ns);
   return ns;
 }
