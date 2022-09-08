@@ -490,7 +490,8 @@ public final class ReturnToChromeUtil {
         // Checks whether to show the Start surface / grid Tab switcher due to feature flag
         // TAB_SWITCHER_ON_RETURN_MS.
         long lastBackgroundedTimeMillis = inactivityTracker.getLastBackgroundedTimeMs();
-        boolean tabSwitcherOnReturn = IntentUtils.isMainIntentFromLauncher(intent)
+        boolean tabSwitcherOnReturn = !DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)
+                && IntentUtils.isMainIntentFromLauncher(intent)
                 && ReturnToChromeUtil.shouldShowTabSwitcher(lastBackgroundedTimeMillis);
 
         // If the overview page won't be shown on startup, stops here.
