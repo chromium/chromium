@@ -480,6 +480,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Apps.AppList.DriveZeroStateProvider.Status"
     enum="DriveZeroStateProviderStatus" expires_after="2023-02-12">
+  <obsolete>
+    Deprecated September 2022, now that it's replaced by
+    Ash.Search.DriveFileSuggestDataValidation.Status
+  </obsolete>
   <owner>tby@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
   <owner>wrong@chromium.org</owner>

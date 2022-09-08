@@ -26,6 +26,7 @@
 class Profile;
 
 namespace app_list {
+struct FileSuggestData;
 class FileSuggestKeyedService;
 class SearchController;
 
@@ -61,11 +62,13 @@ class ZeroStateDriveProvider : public SearchProvider,
   bool ShouldBlockZeroState() const override;
 
  private:
-  void OnFilePathsLocated(
-      absl::optional<std::vector<drivefs::mojom::FilePathOrErrorPtr>> paths);
+  // Called when file suggestion data are fetched from the service.
+  void OnSuggestFileDataFetched(
+      absl::optional<std::vector<FileSuggestData>> suggest_results);
 
-  void SetSearchResults(
-      std::vector<absl::optional<base::FilePath>> filtered_paths);
+  // Builds the search results from the filtered file suggestion data and
+  // publishes the results.
+  void SetSearchResults(std::vector<FileSuggestData> filtered_results);
 
   std::unique_ptr<FileResult> MakeListResult(
       const base::FilePath& filepath,
@@ -88,11 +91,6 @@ class ZeroStateDriveProvider : public SearchProvider,
 
   const base::raw_ptr<FileSuggestKeyedService> file_suggest_service_;
   base::CallbackListSubscription item_suggest_subscription_;
-
-  // The most recent results retrieved from |item_suggested_cache_|. This is
-  // updated on a call to Start and is used only to store the results until
-  // OnFilePathsLocated has finished.
-  absl::optional<ItemSuggestCache::Results> cache_results_;
 
   const base::Time construction_time_;
   base::TimeTicks query_start_time_;

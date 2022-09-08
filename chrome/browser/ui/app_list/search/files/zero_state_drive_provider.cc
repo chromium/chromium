@@ -27,9 +27,9 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/search/files/file_suggest_keyed_service.h"
 #include "chrome/browser/ui/app_list/search/files/file_suggest_keyed_service_factory.h"
+#include "chrome/browser/ui/app_list/search/files/file_suggest_util.h"
 #include "chrome/browser/ui/app_list/search/ranking/util.h"
 #include "chrome/browser/ui/app_list/search/search_controller.h"
-#include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
 #include "chromeos/dbus/power_manager/idle.pb.h"
 #include "components/drive/drive_pref_names.h"
 #include "components/drive/file_errors.h"
@@ -43,6 +43,8 @@
 namespace app_list {
 namespace {
 
+using SuggestResults = std::vector<FileSuggestData>;
+
 constexpr char kSchema[] = "zero_state_drive://";
 
 // How long to wait before making the first request for results from the
@@ -54,41 +56,9 @@ constexpr base::TimeDelta kFirstUpdateDelay = base::Seconds(10);
 // results returned.
 constexpr size_t kShortDelayQuota = 3u;
 
-// Outcome of a call to DriverZeroStateProvider::StartZeroState. These values
-// persist to logs. Entries should not be renumbered and numeric values should
-// never be reused.
-enum class Status {
-  kOk = 0,
-  kDriveFSNotMounted = 1,
-  kNoResults = 2,
-  kPathLocationFailed = 3,
-  kAllFilesErrored = 4,
-  kDriveDisabled = 5,
-  kMaxValue = kDriveDisabled,
-};
-
-void LogStatus(Status status) {
-  base::UmaHistogramEnumeration("Apps.AppList.DriveZeroStateProvider.Status",
-                                status);
-}
-
 void LogLatency(base::TimeDelta latency) {
   base::UmaHistogramTimes("Apps.AppList.DriveZeroStateProvider.Latency",
                           latency);
-}
-
-void SetUseLongDelay(Profile* profile, bool use_long_delay) {
-  profile->GetPrefs()->SetBoolean(
-      chromeos::prefs::kLauncherUseLongContinueDelay, use_long_delay);
-}
-
-// Given an absolute path representing a file in the user's Drive, returns a
-// reparented version of the path within the user's drive fs mount.
-base::FilePath ReparentToDriveMount(
-    const base::FilePath& path,
-    const drive::DriveIntegrationService* drive_service) {
-  DCHECK(!path.IsAbsolute());
-  return drive_service->GetMountPointPath().Append(path.value());
 }
 
 // TODO(crbug.com/1258415): This exists to reroute results depending on which
@@ -103,29 +73,28 @@ bool IsDriveDisabled(Profile* profile) {
   return profile->GetPrefs()->GetBoolean(drive::prefs::kDisableDrive);
 }
 
-// Filters out files that exceed the max last modified time. Files that are
-// filtered out are replaced by absl::nullopt, because the length and order of
-// the return vector must remain consistent with |cache_results_|.
-std::vector<absl::optional<base::FilePath>> FilterPathsByTime(
-    std::vector<absl::optional<base::FilePath>> paths,
+// Filters out the files that exceed the max last modified time.
+SuggestResults FilterSuggestDataArrayByTime(
+    SuggestResults suggest_results,
     const base::TimeDelta& max_last_modified_time) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
 
-  std::vector<absl::optional<base::FilePath>> filtered_paths;
+  SuggestResults filtered_results;
   const base::Time now = base::Time::Now();
-  for (const auto& path : paths) {
+  for (const auto& suggest_result : suggest_results) {
     base::File::Info info;
-    if (path && base::PathExists(path.value()) &&
-        base::GetFileInfo(path.value(), &info) &&
-        (now - info.last_modified <= max_last_modified_time)) {
-      filtered_paths.push_back(path);
-    } else {
-      filtered_paths.push_back(absl::nullopt);
+    const auto& path = suggest_result.file_path;
+    if (!base::PathExists(path) || !base::GetFileInfo(path, &info) ||
+        now - info.last_modified > max_last_modified_time) {
+      // Filter out this suggestion data.
+      continue;
     }
+
+    filtered_results.push_back(suggest_result);
   }
 
-  return filtered_paths;
+  return filtered_results;
 }
 
 }  // namespace
@@ -253,116 +222,55 @@ void ZeroStateDriveProvider::StartZeroState() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   ClearResultsSilently();
 
-  // Exit if drive fs isn't mounted, as we launch results via drive fs.
-  if (!drive_service_ || !drive_service_->IsMounted()) {
-    LogStatus(Status::kDriveFSNotMounted);
-    return;
-  } else if (IsDriveDisabled(profile_)) {
-    LogStatus(Status::kDriveDisabled);
-    return;
-  }
-
   query_start_time_ = base::TimeTicks::Now();
 
   // Cancel any in-flight queries for this provider.
   weak_factory_.InvalidateWeakPtrs();
 
-  // Get the most recent results from the cache.
-  cache_results_ = file_suggest_service_->GetSuggestData(
-      FileSuggestKeyedService::SuggestDataType::kItemSuggest);
-  if (!cache_results_) {
-    LogStatus(Status::kNoResults);
-    return;
-  } else if (cache_results_->results.empty()) {
-    LogStatus(Status::kNoResults);
-    // An empty but non-null value indicates that the cache was updated
-    // successfully, and no results were returned.
-    SetUseLongDelay(profile_, true);
-    return;
-  }
-
-  std::vector<std::string> item_ids;
-  for (const auto& result : cache_results_->results) {
-    item_ids.push_back(result.id);
-  }
-
-  drive_service_->LocateFilesByItemIds(
-      item_ids, base::BindOnce(&ZeroStateDriveProvider::OnFilePathsLocated,
-                               weak_factory_.GetWeakPtr()));
+  file_suggest_service_->GetSuggestFileData(
+      FileSuggestKeyedService::SuggestDataType::kItemSuggest,
+      base::BindOnce(&ZeroStateDriveProvider::OnSuggestFileDataFetched,
+                     weak_factory_.GetWeakPtr()));
 }
 
-void ZeroStateDriveProvider::OnFilePathsLocated(
-    absl::optional<std::vector<drivefs::mojom::FilePathOrErrorPtr>> paths) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!paths) {
-    LogStatus(Status::kPathLocationFailed);
+void ZeroStateDriveProvider::OnSuggestFileDataFetched(
+    absl::optional<SuggestResults> suggest_results) {
+  // Fail to fetch the suggest data, so return early.
+  if (!suggest_results)
     return;
-  }
-
-  bool all_files_errored = true;
-  std::vector<absl::optional<base::FilePath>> filepaths;
-  for (const auto& path_or_error : paths.value()) {
-    if (path_or_error->is_path()) {
-      all_files_errored = false;
-      filepaths.push_back(
-          ReparentToDriveMount(path_or_error->get_path(), drive_service_));
-    } else {
-      // The length and order of |filepaths| must remain consistent with
-      // |cache_results_|.
-      filepaths.push_back(absl::nullopt);
-    }
-  }
-
-  // We expect some files to error sometimes, but we're mainly interested in
-  // when all of the files error at once. This also keeps the bucket proportion
-  // of the status metric meaningful.
-  if (all_files_errored) {
-    LogStatus(Status::kAllFilesErrored);
-    return;
-  }
 
   task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
-      base::BindOnce(&FilterPathsByTime, filepaths, max_last_modified_time_),
+      base::BindOnce(&FilterSuggestDataArrayByTime, *suggest_results,
+                     max_last_modified_time_),
       base::BindOnce(&ZeroStateDriveProvider::SetSearchResults,
                      weak_factory_.GetWeakPtr()));
 }
 
-void ZeroStateDriveProvider::SetSearchResults(
-    std::vector<absl::optional<base::FilePath>> paths) {
+void ZeroStateDriveProvider::SetSearchResults(SuggestResults filtered_results) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(cache_results_);
-  DCHECK_EQ(cache_results_->results.size(), paths.size());
-  const auto& cache_results = cache_results_->results;
 
   // Assign scores to results by simply using their position in the results
   // list. The order of results from the ItemSuggest API is significant:
   // the first is better than the second, etc. Resulting scores are in [0, 1].
-  const double total_items = static_cast<double>(paths.size());
+  const double total_items = static_cast<double>(filtered_results.size());
   int item_index = 0;
   SearchProvider::Results provider_results;
-  for (int i = 0; i < static_cast<int>(paths.size()); ++i) {
-    const auto& path = paths[i];
-    if (!path)
-      continue;
-
-    double score = 1.0 - (item_index / total_items);
+  for (const auto& filtered_data : filtered_results) {
+    const double score = 1.0 - (item_index / total_items);
     ++item_index;
 
     provider_results.emplace_back(MakeListResult(
-        path.value(), cache_results[i].prediction_reason, score));
+        filtered_data.file_path, filtered_data.prediction_reason, score));
   }
-
-  cache_results_.reset();
 
   // If there aren't enough results, use a long delay and vice versa. Note that
   // the delay is only updated if cache results are non-null, indicating that
   // the cache has been updated.
-  SetUseLongDelay(profile_, provider_results.size() < kShortDelayQuota);
+  SetUseLongDelayInDriveSuggestQuery(
+      profile_, provider_results.size() < kShortDelayQuota);
 
   SwapResults(&provider_results);
-
-  LogStatus(Status::kOk);
   LogLatency(base::TimeTicks::Now() - query_start_time_);
 }
 
@@ -386,8 +294,10 @@ void ZeroStateDriveProvider::OnCacheUpdated() {
 }
 
 void ZeroStateDriveProvider::MaybeUpdateCache() {
-  if (base::Time::Now() - kFirstUpdateDelay > construction_time_)
-    file_suggest_service_->MaybeUpdateItemSuggestCache();
+  if (base::Time::Now() - kFirstUpdateDelay > construction_time_) {
+    file_suggest_service_->MaybeUpdateItemSuggestCache(
+        base::PassKey<ZeroStateDriveProvider>());
+  }
 }
 
 }  // namespace app_list

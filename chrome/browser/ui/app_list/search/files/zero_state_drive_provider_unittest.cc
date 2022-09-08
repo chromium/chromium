@@ -31,7 +31,10 @@ class TestFileSuggestKeyedService : public FileSuggestKeyedService {
   ~TestFileSuggestKeyedService() override = default;
 
   // FileSuggestKeyedService:
-  void MaybeUpdateItemSuggestCache() override { update_count_++; }
+  void MaybeUpdateItemSuggestCache(
+      base::PassKey<ZeroStateDriveProvider>) override {
+    update_count_++;
+  }
 
   int update_count_ = 0;
 };

@@ -3584,6 +3584,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.Search.DriveFileSuggestDataValidation.Status"
+    enum="DriveFileSuggestDataValidationStatus" expires_after="2023-02-12">
+  <owner>wrong@chromium.org</owner>
+  <owner>andrewxu@chromium.org</owner>
+  <summary>
+    The outcome of drive file suggestion data validation. Recorded once per
+    validation.
+  </summary>
+</histogram>
+
 <histogram name="Ash.SearchModelUpdateTime.{TabletOrClamshell}" units="ms"
     expires_after="2022-12-01">
   <owner>yulunwu@google.com</owner>

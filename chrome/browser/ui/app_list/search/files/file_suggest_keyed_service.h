@@ -5,11 +5,22 @@
 #ifndef CHROME_BROWSER_UI_APP_LIST_SEARCH_FILES_FILE_SUGGEST_KEYED_SERVICE_H_
 #define CHROME_BROWSER_UI_APP_LIST_SEARCH_FILES_FILE_SUGGEST_KEYED_SERVICE_H_
 
+#include <vector>
+
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/app_list/search/files/item_suggest_cache.h"
+#include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+namespace drive {
+class DriveIntegrationService;
+}  // namespace drive
+
 namespace app_list {
+enum class DriveSuggestValidationStatus;
+struct FileSuggestData;
+class ZeroStateDriveProvider;
 
 // The keyed service that queries for the file suggestions (for both the drive
 // files and local files) and exposes those data to consumers such as app list.
@@ -17,6 +28,9 @@ namespace app_list {
 // than leaving it under the app list directory.
 class FileSuggestKeyedService : public KeyedService {
  public:
+  using GetSuggestDataCallback =
+      base::OnceCallback<void(absl::optional<std::vector<FileSuggestData>>)>;
+
   // The types of the managed suggestion data.
   enum class SuggestDataType {
     // The drive files' suggestion data.
@@ -28,16 +42,21 @@ class FileSuggestKeyedService : public KeyedService {
   FileSuggestKeyedService& operator=(const FileSuggestKeyedService&) = delete;
   ~FileSuggestKeyedService() override;
 
-  absl::optional<ItemSuggestCache::Results> GetSuggestData(
-      SuggestDataType type);
+  // Queries for the suggested files of the specified type and returns the
+  // suggested file data, including file paths and suggestion reasons, through
+  // the callback.
+  void GetSuggestFileData(SuggestDataType type,
+                          GetSuggestDataCallback callback);
 
-  // Requests to update the data in `item_suggest_cache_`. Overridden for tests.
+  // Requests to update the data in `item_suggest_cache_`. Only used by the zero
+  // state drive provider. Overridden for tests.
   // TODO(https://crbug.com/1356347): Now the app list relies on this service to
   // fetch the drive suggestion data. Meanwhile, this service relies on the app
   // list to trigger the item cache update. This cyclic dependency could be
   // confusing. The service should update the data cache by its own without
   // depending on the app list code.
-  virtual void MaybeUpdateItemSuggestCache();
+  virtual void MaybeUpdateItemSuggestCache(
+      base::PassKey<ZeroStateDriveProvider>);
 
   // Registers a callback to be run whenever data in `item_suggest_cache_`
   // updated.
@@ -45,8 +64,36 @@ class FileSuggestKeyedService : public KeyedService {
       ItemSuggestCache::OnResultsCallback callback);
 
  private:
-  // The drive client that fetches/exposes the drive file suggestions.
+  // Handles `GetSuggestFileData()` for drive files.
+  void GetDriveSuggestFileData(GetSuggestDataCallback callback);
+
+  // Called when locating drive files through the drive service is completed.
+  // Returns the location result through `paths`. `raw_suggest_results` is the
+  // file suggestion data before validation.
+  void OnDriveFilePathsLocated(
+      std::vector<ItemSuggestCache::Result> raw_suggest_results,
+      absl::optional<std::vector<drivefs::mojom::FilePathOrErrorPtr>> paths);
+
+  // Ends the validation on drive suggestion file paths and publishes the
+  // result.
+  void EndDriveFilePathValidation(
+      const absl::optional<std::vector<FileSuggestData>>& suggest_results,
+      DriveSuggestValidationStatus validation_status);
+
+  const base::raw_ptr<Profile> profile_;
+  const base::raw_ptr<drive::DriveIntegrationService> drive_service_;
+
+  // The drive client from which the raw suggest data (i.e. the data before
+  // validation) is fetched.
   std::unique_ptr<ItemSuggestCache> item_suggest_cache_;
+
+  // The callbacks that run when the drive suggest results are ready.
+  // Use a callback list to handle the edge case that multiple data consumers
+  // wait for the drive suggest results.
+  base::OnceCallbackList<GetSuggestDataCallback::RunType>
+      on_drive_results_ready_callback_list_;
+
+  base::WeakPtrFactory<FileSuggestKeyedService> weak_factory_{this};
 };
 
 }  // namespace app_list

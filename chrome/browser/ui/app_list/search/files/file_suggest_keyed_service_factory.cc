@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/app_list/search/files/file_suggest_keyed_service_factory.h"
 
+#include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/search/files/file_suggest_keyed_service.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
@@ -19,7 +20,9 @@ FileSuggestKeyedServiceFactory* FileSuggestKeyedServiceFactory::GetInstance() {
 FileSuggestKeyedServiceFactory::FileSuggestKeyedServiceFactory()
     : BrowserContextKeyedServiceFactory(
           "FileSuggestKeyedService",
-          BrowserContextDependencyManager::GetInstance()) {}
+          BrowserContextDependencyManager::GetInstance()) {
+  DependsOn(drive::DriveIntegrationServiceFactory::GetInstance());
+}
 
 FileSuggestKeyedServiceFactory::~FileSuggestKeyedServiceFactory() = default;
 

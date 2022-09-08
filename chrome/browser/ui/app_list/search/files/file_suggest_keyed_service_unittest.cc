@@ -4,7 +4,9 @@
 
 #include <memory>
 
+#include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ui/app_list/search/files/file_suggest_keyed_service.h"
+#include "chrome/browser/ui/app_list/search/files/file_suggest_util.h"
 #include "chrome/browser/ui/app_list/search/files/item_suggest_cache.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/test/browser_task_environment.h"
@@ -26,10 +28,17 @@ class FileSuggestKeyedServiceTest : public testing::Test {
 };
 
 TEST_F(FileSuggestKeyedServiceTest, GetSuggestData) {
-  absl::optional<ItemSuggestCache::Results> results =
-      file_suggest_service_->GetSuggestData(
-          FileSuggestKeyedService::SuggestDataType::kItemSuggest);
-  EXPECT_FALSE(results.has_value());
+  base::HistogramTester tester;
+  file_suggest_service_->GetSuggestFileData(
+      FileSuggestKeyedService::SuggestDataType::kItemSuggest,
+      base::BindOnce(
+          [](absl::optional<std::vector<FileSuggestData>> suggest_data) {
+            EXPECT_FALSE(suggest_data.has_value());
+          }));
+  tester.ExpectBucketCount(
+      "Ash.Search.DriveFileSuggestDataValidation.Status",
+      /*sample=*/DriveSuggestValidationStatus::kDriveFSNotMounted,
+      /*expected_count=*/1);
 }
 
 }  // namespace app_list
