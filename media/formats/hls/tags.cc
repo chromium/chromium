@@ -606,7 +606,7 @@ ParseStatus::Or<XMediaTag> XMediaTag::Parse(
   }
 
   // Parse the 'AUTOSELECT' attribute
-  bool autoselect = false;
+  bool autoselect = is_default;
   if (map.HasValue(XMediaTagAttribute::kAutoselect)) {
     if (map.GetValue(XMediaTagAttribute::kAutoselect).Str() == "YES") {
       autoselect = true;

@@ -730,7 +730,7 @@ TEST(HlsTagsTest, ParseXMediaTag) {
   EXPECT_EQ(result.tag.name.Str(), "name");
   EXPECT_EQ(result.tag.stable_rendition_id, absl::nullopt);
   EXPECT_EQ(result.tag.is_default, true);
-  EXPECT_EQ(result.tag.autoselect, false);
+  EXPECT_EQ(result.tag.autoselect, true);  // DEFAULT=YES implies AUTOSELECT=YES
   EXPECT_EQ(result.tag.forced, false);
   EXPECT_EQ(result.tag.instream_id, absl::nullopt);
   EXPECT_EQ(result.tag.characteristics.size(), 0u);
