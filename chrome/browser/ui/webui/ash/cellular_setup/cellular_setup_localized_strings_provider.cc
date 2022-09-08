@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/chromeos/cellular_setup/cellular_setup_localized_strings_provider.h"
+#include "chrome/browser/ui/webui/ash/cellular_setup/cellular_setup_localized_strings_provider.h"
 
 #include <vector>
 
@@ -19,8 +19,7 @@
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/base/webui/web_ui_util.h"
 
-namespace chromeos {
-namespace cellular_setup {
+namespace ash::cellular_setup {
 namespace {
 
 constexpr webui::LocalizedString kLocalizedStringsWithoutPlaceholders[] = {
@@ -107,8 +106,8 @@ struct NamedResourceId {
 
 const std::vector<const NamedBoolean>& GetBooleanValues() {
   static const base::NoDestructor<std::vector<const NamedBoolean>> named_bools(
-      {{"useSecondEuicc", base::FeatureList::IsEnabled(
-                              chromeos::features::kCellularUseSecondEuicc)}});
+      {{"useSecondEuicc",
+        base::FeatureList::IsEnabled(features::kCellularUseSecondEuicc)}});
   return *named_bools;
 }
 
@@ -147,5 +146,4 @@ void AddNonStringLoadTimeDataToDict(base::Value::Dict* dict) {
     dict->SetByDottedPath(entry.name, entry.value);
 }
 
-}  // namespace cellular_setup
-}  // namespace chromeos
+}  // namespace ash::cellular_setup

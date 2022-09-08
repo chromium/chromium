@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_CHROMEOS_CELLULAR_SETUP_CELLULAR_SETUP_LOCALIZED_STRINGS_PROVIDER_H_
-#define CHROME_BROWSER_UI_WEBUI_CHROMEOS_CELLULAR_SETUP_CELLULAR_SETUP_LOCALIZED_STRINGS_PROVIDER_H_
+#ifndef CHROME_BROWSER_UI_WEBUI_ASH_CELLULAR_SETUP_CELLULAR_SETUP_LOCALIZED_STRINGS_PROVIDER_H_
+#define CHROME_BROWSER_UI_WEBUI_ASH_CELLULAR_SETUP_CELLULAR_SETUP_LOCALIZED_STRINGS_PROVIDER_H_
 
 #include "base/values.h"
 
@@ -15,8 +15,7 @@ namespace content {
 class WebUIDataSource;
 }  // namespace content
 
-namespace chromeos {
-namespace cellular_setup {
+namespace ash::cellular_setup {
 
 // Adds the strings needed for the cellular setup flow to |html_source|.
 void AddLocalizedStrings(content::WebUIDataSource* html_source);
@@ -30,7 +29,14 @@ void AddNonStringLoadTimeData(content::WebUIDataSource* html_source);
 // Same as AddNonStringLoadTimeData() but for a Value::Dict.
 void AddNonStringLoadTimeDataToDict(base::Value::Dict* dict);
 
-}  // namespace cellular_setup
-}  // namespace chromeos
+}  // namespace ash::cellular_setup
 
-#endif  // CHROME_BROWSER_UI_WEBUI_CHROMEOS_CELLULAR_SETUP_CELLULAR_SETUP_LOCALIZED_STRINGS_PROVIDER_H_
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos::cellular_setup {
+using ::ash::cellular_setup::AddLocalizedStrings;
+using ::ash::cellular_setup::AddLocalizedValuesToBuilder;
+using ::ash::cellular_setup::AddNonStringLoadTimeData;
+using ::ash::cellular_setup::AddNonStringLoadTimeDataToDict;
+}  // namespace chromeos::cellular_setup
+
+#endif  // CHROME_BROWSER_UI_WEBUI_ASH_CELLULAR_SETUP_CELLULAR_SETUP_LOCALIZED_STRINGS_PROVIDER_H_

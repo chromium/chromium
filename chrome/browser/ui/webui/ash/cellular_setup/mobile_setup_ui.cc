@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/chromeos/cellular_setup/mobile_setup_ui.h"
+#include "chrome/browser/ui/webui/ash/cellular_setup/mobile_setup_ui.h"
 
 #include <stddef.h>
 
@@ -44,9 +44,7 @@
 #include "ui/chromeos/devicetype_utils.h"
 #include "url/gurl.h"
 
-namespace chromeos {
-
-namespace cellular_setup {
+namespace ash::cellular_setup {
 
 namespace {
 
@@ -70,44 +68,42 @@ const char16_t kNoCellularDeviceError[] =
 const char16_t kNoCellularServiceError[] =
     u"$1 is unable to connect at this time due to insufficient coverage.";
 
-bool ActivationErrorRequiresCarrier(
-    ash::MobileActivator::ActivationError error) {
-  return error == ash::MobileActivator::ActivationError::kActivationFailed;
+bool ActivationErrorRequiresCarrier(MobileActivator::ActivationError error) {
+  return error == MobileActivator::ActivationError::kActivationFailed;
 }
 
-std::u16string GetActivationErrorMessage(
-    ash::MobileActivator::ActivationError error,
-    const std::string& carrier) {
+std::u16string GetActivationErrorMessage(MobileActivator::ActivationError error,
+                                         const std::string& carrier) {
   // If the activation error message requires the carrier name, and none was
   // provider, fallback to kNoCellularServiceError.
   if (carrier.empty() && ActivationErrorRequiresCarrier(error)) {
     CHECK(!ActivationErrorRequiresCarrier(
-        ash::MobileActivator::ActivationError::kNoCellularService));
+        MobileActivator::ActivationError::kNoCellularService));
     return GetActivationErrorMessage(
-        ash::MobileActivator::ActivationError::kNoCellularService, carrier);
+        MobileActivator::ActivationError::kNoCellularService, carrier);
   }
 
   switch (error) {
-    case ash::MobileActivator::ActivationError::kNone:
+    case MobileActivator::ActivationError::kNone:
       return std::u16string();
-    case ash::MobileActivator::ActivationError::kActivationFailed: {
+    case MobileActivator::ActivationError::kActivationFailed: {
       return base::ReplaceStringPlaceholders(
           kDefaultActivationError,
           std::vector<std::u16string>(
               {ui::GetChromeOSDeviceName(), base::UTF8ToUTF16(carrier)}),
           nullptr);
     }
-    case ash::MobileActivator::ActivationError::kCellularDisabled:
+    case MobileActivator::ActivationError::kCellularDisabled:
       return kCellularDisabledError;
-    case ash::MobileActivator::ActivationError::kNoCellularDevice:
+    case MobileActivator::ActivationError::kNoCellularDevice:
       return kNoCellularDeviceError;
-    case ash::MobileActivator::ActivationError::kNoCellularService:
+    case MobileActivator::ActivationError::kNoCellularService:
       return base::ReplaceStringPlaceholders(
           kNoCellularServiceError, ui::GetChromeOSDeviceName(), nullptr);
   }
   NOTREACHED() << "Unexpected activation error";
   return GetActivationErrorMessage(
-      ash::MobileActivator::ActivationError::kActivationFailed, carrier);
+      MobileActivator::ActivationError::kActivationFailed, carrier);
 }
 
 void DataRequestFailed(const std::string& service_path,
@@ -196,7 +192,7 @@ class MobileSetupUIHTMLSource : public content::URLDataSource {
 
 // The handler for Javascript messages related to the "register" view.
 class MobileSetupHandler : public content::WebUIMessageHandler,
-                           public ash::MobileActivator::Observer,
+                           public MobileActivator::Observer,
                            public NetworkStateHandlerObserver {
  public:
   MobileSetupHandler();
@@ -210,11 +206,11 @@ class MobileSetupHandler : public content::WebUIMessageHandler,
   void RegisterMessages() override;
   void OnJavascriptDisallowed() override;
 
-  // ash::MobileActivator::Observer.
+  // MobileActivator::Observer.
   void OnActivationStateChanged(
       const NetworkState* network,
-      ash::MobileActivator::PlanActivationState new_state,
-      ash::MobileActivator::ActivationError error) override;
+      MobileActivator::PlanActivationState new_state,
+      MobileActivator::ActivationError error) override;
 
  private:
   enum Type {
@@ -253,8 +249,7 @@ class MobileSetupHandler : public content::WebUIMessageHandler,
   // Initial value is true.
   bool lte_portal_reachable_;
 
-  base::ScopedObservation<chromeos::NetworkStateHandler,
-                          chromeos::NetworkStateHandlerObserver>
+  base::ScopedObservation<NetworkStateHandler, NetworkStateHandlerObserver>
       network_state_handler_observer_{this};
 
   base::WeakPtrFactory<MobileSetupHandler> weak_ptr_factory_{this};
@@ -354,8 +349,8 @@ MobileSetupHandler::~MobileSetupHandler() {
 
 void MobileSetupHandler::OnActivationStateChanged(
     const NetworkState* network,
-    ash::MobileActivator::PlanActivationState state,
-    ash::MobileActivator::ActivationError error) {
+    MobileActivator::PlanActivationState state,
+    MobileActivator::ActivationError error) {
   DCHECK_EQ(TYPE_ACTIVATION, type_);
   if (!web_ui())
     return;
@@ -389,8 +384,8 @@ void MobileSetupHandler::Reset() {
   active_ = false;
 
   if (type_ == TYPE_ACTIVATION) {
-    ash::MobileActivator::GetInstance()->RemoveObserver(this);
-    ash::MobileActivator::GetInstance()->TerminateActivation();
+    MobileActivator::GetInstance()->RemoveObserver(this);
+    MobileActivator::GetInstance()->TerminateActivation();
   } else if (type_ == TYPE_PORTAL_LTE) {
     network_state_handler_observer_.Reset();
   }
@@ -519,6 +514,4 @@ MobileSetupUI::MobileSetupUI(content::WebUI* web_ui) : ui::WebDialogUI(web_ui) {
 
 MobileSetupUI::~MobileSetupUI() = default;
 
-}  // namespace cellular_setup
-
-}  // namespace chromeos
+}  // namespace ash::cellular_setup

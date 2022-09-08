@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_CHROMEOS_CELLULAR_SETUP_MOBILE_SETUP_DIALOG_H_
-#define CHROME_BROWSER_UI_WEBUI_CHROMEOS_CELLULAR_SETUP_MOBILE_SETUP_DIALOG_H_
+#ifndef CHROME_BROWSER_UI_WEBUI_ASH_CELLULAR_SETUP_MOBILE_SETUP_DIALOG_H_
+#define CHROME_BROWSER_UI_WEBUI_ASH_CELLULAR_SETUP_MOBILE_SETUP_DIALOG_H_
 
 #include "chrome/browser/ui/ash/network/network_connect_delegate_chromeos.h"
 #include "chrome/browser/ui/webui/chromeos/system_web_dialog_delegate.h"
-// TODO(https://crbug.com/1164001): move to forward declaration
-#include "chromeos/ash/components/network/network_state.h"
 
-namespace chromeos {
+namespace ash {
+
+class NetworkState;
 
 namespace cellular_setup {
 
@@ -38,6 +38,6 @@ class MobileSetupDialog : public SystemWebDialogDelegate {
 
 }  // namespace cellular_setup
 
-}  // namespace chromeos
+}  // namespace ash
 
-#endif  // CHROME_BROWSER_UI_WEBUI_CHROMEOS_CELLULAR_SETUP_MOBILE_SETUP_DIALOG_H_
+#endif  // CHROME_BROWSER_UI_WEBUI_ASH_CELLULAR_SETUP_MOBILE_SETUP_DIALOG_H_

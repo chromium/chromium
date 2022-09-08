@@ -251,9 +251,9 @@
 #include "chrome/browser/ui/webui/ash/arc_graphics_tracing/arc_graphics_tracing_ui.h"
 #include "chrome/browser/ui/webui/ash/arc_power_control/arc_power_control_ui.h"
 #include "chrome/browser/ui/webui/ash/audio/audio_ui.h"
+#include "chrome/browser/ui/webui/ash/cellular_setup/mobile_setup_ui.h"
 #include "chrome/browser/ui/webui/chromeos/assistant_optin/assistant_optin_ui.h"
 #include "chrome/browser/ui/webui/chromeos/bluetooth_pairing_dialog.h"
-#include "chrome/browser/ui/webui/chromeos/cellular_setup/mobile_setup_ui.h"
 #include "chrome/browser/ui/webui/chromeos/certificate_manager_dialog_ui.h"
 #include "chrome/browser/ui/webui/chromeos/cloud_upload/cloud_upload_ui.h"
 #include "chrome/browser/ui/webui/chromeos/crostini_installer/crostini_installer_ui.h"
@@ -1009,7 +1009,7 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
     return &NewWebUI<chromeos::ManageMirrorSyncUI>;
   }
   if (url.host_piece() == chrome::kChromeUIMobileSetupHost)
-    return &NewWebUI<chromeos::cellular_setup::MobileSetupUI>;
+    return &NewWebUI<ash::cellular_setup::MobileSetupUI>;
   if (url.host_piece() == chrome::kChromeUIMultiDeviceInternalsHost)
     return &NewWebUI<chromeos::MultideviceInternalsUI>;
   if (url.host_piece() == chrome::kChromeUIMultiDeviceSetupHost)

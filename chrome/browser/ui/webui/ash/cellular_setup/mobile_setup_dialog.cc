@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/chromeos/cellular_setup/mobile_setup_dialog.h"
+#include "chrome/browser/ui/webui/ash/cellular_setup/mobile_setup_dialog.h"
 
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/mobile/mobile_activator.h"
@@ -19,9 +19,7 @@
 #include "ui/views/widget/widget.h"
 #include "ui/web_dialogs/web_dialog_delegate.h"
 
-namespace chromeos {
-
-namespace cellular_setup {
+namespace ash::cellular_setup {
 
 namespace {
 
@@ -46,10 +44,9 @@ void MobileSetupDialog::ShowByNetworkId(const std::string& network_id) {
     dialog_instance->dialog_window()->Focus();
     return;
   }
-  const chromeos::NetworkState* network =
-      chromeos::NetworkHandler::Get()
-          ->network_state_handler()
-          ->GetNetworkStateFromGuid(network_id);
+  const NetworkState* network =
+      NetworkHandler::Get()->network_state_handler()->GetNetworkStateFromGuid(
+          network_id);
   if (!network) {
     NET_LOG(ERROR) << "MobileSetupDialog: Network ID not found: " << network_id;
     return;
@@ -84,8 +81,7 @@ void MobileSetupDialog::OnCloseContents(content::WebContents* source,
   // crash. Note: IsTryingToQuit can be cancelled on other platforms by the
   // onbeforeunload handler, except on ChromeOS. So IsTryingToQuit is the
   // appropriate check to use here.
-  bool running_activation =
-      ash::MobileActivator::GetInstance()->RunningActivation();
+  bool running_activation = MobileActivator::GetInstance()->RunningActivation();
   NET_LOG(EVENT) << "Closing MobileSetupDialog. Activation running = "
                  << running_activation;
   if (!dialog_window() || !running_activation ||
@@ -99,6 +95,4 @@ void MobileSetupDialog::OnCloseContents(content::WebContents* source,
       l10n_util::GetStringUTF16(IDS_MOBILE_CANCEL_ACTIVATION));
 }
 
-}  // namespace cellular_setup
-
-}  // namespace chromeos
+}  // namespace ash::cellular_setup
