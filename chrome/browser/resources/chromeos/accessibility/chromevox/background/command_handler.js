@@ -698,9 +698,6 @@ export class CommandHandler extends CommandHandlerInterface {
       case 'readLinkURL':
         this.readLinkURL_(node);
         return false;
-      case 'logLanguageInformationForCurrentNode':
-        this.logLanguageInformationForCurrentNode_(node);
-        return false;
       default:
         return true;
     }
@@ -1412,28 +1409,6 @@ export class CommandHandler extends CommandHandlerInterface {
 
     return !CommandStore.CMD_ALLOWLIST[command] ||
         !CommandStore.CMD_ALLOWLIST[command].denySignedOut;
-  }
-
-  logLanguageInformationForCurrentNode_(node) {
-    if (!this.languageLoggingEnabled_) {
-      return false;
-    }
-
-    const outString = `
-      Language information for node
-      Name: ${node.name}
-      Detected language: ${node.detectedLanguage || 'None'}
-      Author language: ${node.language || 'None'}
-      `;
-    new Output()
-        .withString(outString)
-        .withQueueMode(QueueMode.CATEGORY_FLUSH)
-        .go();
-    const annotation = node.languageAnnotationForStringAttribute('name');
-    const logString = outString.concat(`Language spans:
-        ${JSON.stringify(annotation)}`);
-    console.error(logString);
-    LogStore.getInstance().writeTextLog(logString, LogType.TEXT);
   }
 
   /**

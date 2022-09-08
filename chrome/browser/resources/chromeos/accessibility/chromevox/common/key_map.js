@@ -811,10 +811,6 @@ KeyMap.BINDINGS_ = [
     },
   },
   {
-    command: 'logLanguageInformationForCurrentNode',
-    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.P, KeyCode.L]}},
-  },
-  {
     command: 'copy',
     sequence:
         {cvoxModifier: true, keys: {keyCode: [KeyCode.C], ctrlKey: [true]}},
