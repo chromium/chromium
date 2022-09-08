@@ -10,8 +10,8 @@
 
 namespace web {
 
-// Extracts the favicon url out of |favicons| and put them into
-// the |out_parameter|. The |page_origin| is used to get the default favicon.ico
+// Extracts the favicon url out of `favicons` and put them into
+// the `out_parameter`. The `page_origin` is used to get the default favicon.ico
 // at the root of the page if there is none in the message. The message is
 // structured as containing a list of favicons containing the href, rel and
 // sizes attributes of the favicons. Returns whether the extraction was
