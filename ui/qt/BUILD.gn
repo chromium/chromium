@@ -26,7 +26,6 @@ config("qt_internal_config") {
   libs = [ "stdc++" ]
 
   configs = [
-    ":qt5_config",
     "//build/config/linux:runtime_library",
     "//build/config/posix:runtime_library",
   ]
@@ -62,7 +61,10 @@ shared_library("qt5_shim") {
   deps = [ ":qt_interface" ]
 
   configs -= [ "//build/config/compiler:runtime_library" ]
-  configs += [ ":qt_internal_config" ]
+  configs += [
+    ":qt_internal_config",
+    ":qt5_config",
+  ]
 
   public = []
   sources = [
