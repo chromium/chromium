@@ -23,13 +23,13 @@ namespace blink {
 // e.g. CSS declarations which apply to an element).
 //
 // The bitset can store a configurable amount of bits for testing purposes,
-// (though not more than numCSSProperties).
+// (though not more than kNumCSSPropertyIDs).
 template <size_t kBits>
 class CORE_EXPORT CSSBitsetBase {
  public:
   static_assert(
-      kBits <= kNumCSSProperties,
-      "Bit count must not exceed numCSSProperties, as each bit position must "
+      kBits <= kNumCSSPropertyIDs,
+      "Bit count must not exceed kNumCSSPropertyIDs, as each bit position must "
       "be representable as a CSSPropertyID");
 
   static const size_t kChunks = (kBits + 63) / 64;
@@ -108,7 +108,7 @@ class CORE_EXPORT CSSBitsetBase {
     }
 
     inline CSSPropertyID operator*() const {
-      DCHECK_LT(index_, static_cast<size_t>(kNumCSSProperties));
+      DCHECK_LE(index_, static_cast<size_t>(kLastCSSProperty));
       return static_cast<CSSPropertyID>(index_);
     }
 
@@ -143,7 +143,7 @@ class CORE_EXPORT CSSBitsetBase {
   uint64_t chunks_[kChunks];
 };
 
-using CSSBitset = CSSBitsetBase<kNumCSSProperties>;
+using CSSBitset = CSSBitsetBase<kNumCSSPropertyIDs>;
 
 }  // namespace blink
 

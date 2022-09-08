@@ -265,7 +265,7 @@ TEST(CSSBitsetTest, Iterator) {
   actual.Set(CSSPropertyID::kWidth);
   actual.Set(CSSPropertyID::kVariable);
 
-  std::bitset<kNumCSSProperties> expected;
+  std::bitset<kNumCSSPropertyIDs> expected;
   expected.set(static_cast<size_t>(CSSPropertyID::kHeight));
   expected.set(static_cast<size_t>(CSSPropertyID::kWidth));
   expected.set(static_cast<size_t>(CSSPropertyID::kVariable));
