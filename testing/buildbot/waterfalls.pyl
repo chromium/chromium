@@ -724,6 +724,19 @@
           'gtest_tests': 'android_12_emulator_gtests',
         }
       },
+      'android-12l-x64-dbg-tests': {
+        'mixins': [
+          '12l-x64-emulator',
+          'emulator-8-cores',
+          'has_native_resultdb_integration',
+          'linux-bionic',
+          'x86-64',
+        ],
+        'os_type': 'android',
+        'test_suites': {
+          'gtest_tests': 'android_12l_emulator_gtests',
+        }
+      },
       'android-arm64-proguard-rel': {
         'additional_compile_targets': [
           'all',

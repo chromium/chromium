@@ -6251,6 +6251,21 @@
       'webview_ui_instrumentation_tests': {},
     },
 
+    'android_12l_emulator_gtests': {
+      'android_emulator_specific_chrome_public_tests': {},
+      'android_monochrome_smoke_tests': {},
+      'android_smoke_tests': {},
+      'android_specific_chromium_gtests': {},  # Already includes gl_gtests.
+      'chromium_gtests': {},
+      'chromium_gtests_for_devices_with_graphical_output': {},
+      'linux_flavor_specific_chromium_gtests': {},
+      'system_webview_shell_instrumentation_tests': {}, # Not an experimental test
+      'weblayer_android_gtests': {},
+      'weblayer_gtests': {},
+      'webview_ui_instrumentation_tests': {},
+    },
+
+
     'android_weblayer_x86_10_gtests': {
       'weblayer_instrumentation_tests': {
         'variants': [

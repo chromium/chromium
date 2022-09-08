@@ -195,6 +195,29 @@
       ]
     },
   },
+  '12l-x64-emulator': {
+    '$mixin_append': {
+      'args': [
+        '--avd-config=../../tools/android/avd/proto/generic_android32_foldable.textpb',
+      ],
+    },
+    'swarming': {
+      # soft affinity so that bots with caches will be picked first
+      'optional_dimensions': {
+        '60': [
+          {
+            'caches': 'generic_android32_foldable',
+          }
+        ],
+      },
+      'named_caches': [
+        {
+          'name': 'generic_android32_foldable',
+          'path': '.android_emulator/generic_android32_foldable',
+        },
+      ]
+    },
+  },
   'android_r': {
     'swarming': {
       'dimensions': {
