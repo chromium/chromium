@@ -78,6 +78,10 @@ const base::Feature kVirtioBlkDataConfigOverride{
 const base::FeatureParam<bool> kVirtioBlkDataConfigUseLvm{
     &kVirtioBlkDataConfigOverride, "use_lvm", false};
 
+// Indicates whether LVM application containers feature is supported.
+const base::Feature kLvmApplicationContainers{
+    "ArcLvmApplicationContainers", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Controls experimental file picker feature for ARC.
 const base::Feature kFilePickerExperimentFeature{
     "ArcFilePickerExperiment", base::FEATURE_ENABLED_BY_DEFAULT};

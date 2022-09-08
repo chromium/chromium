@@ -35,6 +35,7 @@ extern const base::FeatureParam<int> kGuestZramSwappiness;
 extern const base::Feature kLockGuestMemory;
 extern const base::Feature kLogdConfig;
 extern const base::FeatureParam<int> kLogdConfigSize;
+extern const base::Feature kLvmApplicationContainers;
 extern const base::Feature kKeyboardShortcutHelperIntegrationFeature;
 extern const base::Feature kNativeBridgeToggleFeature;
 extern const base::Feature kOutOfProcessVideoDecoding;

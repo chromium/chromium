@@ -1633,12 +1633,38 @@ TEST_F(ArcVmClientAdapterTest, VirtioBlkForData_CreateDiskImageStatusExists) {
       base::Contains(req.params(), "androidboot.arcvm_virtio_blk_data=1"));
 }
 
-TEST_F(ArcVmClientAdapterTest, VirtioBlkForData_UseLvm) {
+TEST_F(ArcVmClientAdapterTest, VirtioBlkForData_LvmSupported) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{arc::kEnableVirtioBlkForData,
+                            arc::kLvmApplicationContainers},
+      /*disabled_features=*/{});
+
+  StartMiniArcWithParams(true, GetPopulatedStartParams());
+  EXPECT_GE(GetTestConciergeClient()->start_arc_vm_call_count(), 1);
+
+  // CreateDiskImage() should NOT be called.
+  EXPECT_EQ(GetTestConciergeClient()->create_disk_image_call_count(), 0);
+
+  // StartArcVmRequest should contain the LVM-provided disk path.
+  const std::string expected_lvm_disk_path =
+      base::StringPrintf("/dev/mapper/vm/dmcrypt-%s-arcvm",
+                         std::string(kUserIdHash).substr(0, 8).c_str());
+  auto req = GetTestConciergeClient()->start_arc_vm_request();
+  EXPECT_TRUE(HasDiskImage(req, expected_lvm_disk_path));
+  EXPECT_TRUE(
+      base::Contains(req.params(), "androidboot.arcvm_virtio_blk_data=1"));
+}
+
+TEST_F(ArcVmClientAdapterTest, VirtioBlkForData_OverrideUseLvm) {
+  // ArcVirtioBlkDataConfigOverride:use_lvm/true should override
+  // ArcLvmApplicationContainers flag.
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeaturesAndParameters(
-      {{arc::kEnableVirtioBlkForData, {{}}},
-       {arc::kVirtioBlkDataConfigOverride, {{"use_lvm", "true"}}}},
-      {});
+      /*enabled_features=*/{{arc::kEnableVirtioBlkForData, {{}}},
+                            {arc::kVirtioBlkDataConfigOverride,
+                             {{"use_lvm", "true"}}}},
+      /*disabled_features=*/{arc::kLvmApplicationContainers});
 
   StartMiniArcWithParams(true, GetPopulatedStartParams());
   EXPECT_GE(GetTestConciergeClient()->start_arc_vm_call_count(), 1);
