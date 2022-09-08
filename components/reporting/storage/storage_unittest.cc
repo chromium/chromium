@@ -301,10 +301,13 @@ class StorageTest
 
     void DoEncounterSeqId(int64_t uploader_id,
                           Priority priority,
-                          int64_t sequencing_id) {
+                          int64_t sequencing_id,
+                          int64_t generation_id) {
       DCHECK_CALLED_ON_VALID_SEQUENCE(scoped_checker_);
       upload_progress_.append("SeqId: ")
           .append(base::NumberToString(sequencing_id))
+          .append("/")
+          .append(base::NumberToString(generation_id))
           .append("\n");
       mock_upload_->EncounterSeqId(uploader_id, priority, sequencing_id);
     }
@@ -312,12 +315,15 @@ class StorageTest
     void DoUploadRecord(int64_t uploader_id,
                         Priority priority,
                         int64_t sequencing_id,
+                        int64_t generation_id,
                         base::StringPiece data,
                         base::OnceCallback<void(bool)> processed_cb) {
-      DoEncounterSeqId(uploader_id, priority, sequencing_id);
+      DoEncounterSeqId(uploader_id, priority, sequencing_id, generation_id);
       DCHECK_CALLED_ON_VALID_SEQUENCE(scoped_checker_);
       upload_progress_.append("Record: ")
           .append(base::NumberToString(sequencing_id))
+          .append("/")
+          .append(base::NumberToString(generation_id))
           .append(" '")
           .append(data.data(), data.size())
           .append("'\n");
@@ -329,11 +335,14 @@ class StorageTest
     void DoUploadRecordFailure(int64_t uploader_id,
                                Priority priority,
                                int64_t sequencing_id,
+                               int64_t generation_id,
                                Status status,
                                base::OnceCallback<void(bool)> processed_cb) {
       DCHECK_CALLED_ON_VALID_SEQUENCE(scoped_checker_);
       upload_progress_.append("Failure: ")
           .append(base::NumberToString(sequencing_id))
+          .append("/")
+          .append(base::NumberToString(generation_id))
           .append(" '")
           .append(status.ToString())
           .append("'\n");
@@ -345,16 +354,20 @@ class StorageTest
     void DoUploadGap(int64_t uploader_id,
                      Priority priority,
                      int64_t sequencing_id,
+                     int64_t generation_id,
                      uint64_t count,
                      base::OnceCallback<void(bool)> processed_cb) {
       DCHECK_CALLED_ON_VALID_SEQUENCE(scoped_checker_);
       for (uint64_t c = 0; c < count; ++c) {
         DoEncounterSeqId(uploader_id, priority,
-                         sequencing_id + static_cast<int64_t>(c));
+                         sequencing_id + static_cast<int64_t>(c),
+                         generation_id);
       }
       upload_progress_.append("Gap: ")
           .append(base::NumberToString(sequencing_id))
-          .append("(")
+          .append("/")
+          .append(base::NumberToString(generation_id))
+          .append(" (")
           .append(base::NumberToString(count))
           .append(")\n");
       std::move(processed_cb)
@@ -526,6 +539,7 @@ class StorageTest
 
     explicit TestUploader(StorageTest* self)
         : uploader_id_(next_uploader_id.fetch_add(1)),
+          last_upload_generation_id_(&self->last_upload_generation_id_),
           last_record_digest_map_(&self->last_record_digest_map_),
           mock_upload_(&self->mock_upload_),
           sequence_bound_upload_(self->main_task_runner_, &self->mock_upload_),
@@ -589,6 +603,7 @@ class StorageTest
             .AsyncCall(&SequenceBoundUpload::DoUploadRecordFailure)
             .WithArgs(uploader_id_, sequence_information.priority(),
                       sequence_information.sequencing_id(),
+                      sequence_information.generation_id(),
                       Status(error::DATA_LOSS,
                              base::StrCat(
                                  {"Generation id mismatch, expected=",
@@ -601,6 +616,9 @@ class StorageTest
       }
       if (!generation_id_.has_value()) {
         generation_id_ = sequence_information.generation_id();
+        last_upload_generation_id_->emplace(
+            sequence_information.priority(),
+            sequence_information.generation_id());
       }
 
       last_record_digest_map_->emplace(
@@ -611,7 +629,8 @@ class StorageTest
 
       sequence_bound_upload_.AsyncCall(&SequenceBoundUpload::DoUploadGap)
           .WithArgs(uploader_id_, sequence_information.priority(),
-                    sequence_information.sequencing_id(), count,
+                    sequence_information.sequencing_id(),
+                    sequence_information.generation_id(), count,
                     std::move(processed_cb));
     }
 
@@ -633,6 +652,7 @@ class StorageTest
             .AsyncCall(&SequenceBoundUpload::DoUploadRecordFailure)
             .WithArgs(uploader_id_, sequence_information.priority(),
                       sequence_information.sequencing_id(),
+                      sequence_information.generation_id(),
                       Status(error::DATA_LOSS,
                              base::StrCat(
                                  {"Generation id mismatch, expected=",
@@ -645,6 +665,9 @@ class StorageTest
       }
       if (!generation_id_.has_value()) {
         generation_id_ = sequence_information.generation_id();
+        last_upload_generation_id_->emplace(
+            sequence_information.priority(),
+            sequence_information.generation_id());
       }
 
       // Verify digest and its match.
@@ -658,6 +681,7 @@ class StorageTest
               .AsyncCall(&SequenceBoundUpload::DoUploadRecordFailure)
               .WithArgs(uploader_id_, sequence_information.priority(),
                         sequence_information.sequencing_id(),
+                        sequence_information.generation_id(),
                         Status(error::DATA_LOSS, "Record digest mismatch"),
                         std::move(processed_cb));
           return;
@@ -675,6 +699,7 @@ class StorageTest
                 .WithArgs(
                     uploader_id_, sequence_information.priority(),
                     sequence_information.sequencing_id(),
+                    sequence_information.generation_id(),
                     Status(error::DATA_LOSS, "Last record digest mismatch"),
                     std::move(processed_cb));
             return;
@@ -690,6 +715,7 @@ class StorageTest
       sequence_bound_upload_.AsyncCall(&SequenceBoundUpload::DoUploadRecord)
           .WithArgs(uploader_id_, sequence_information.priority(),
                     sequence_information.sequencing_id(),
+                    sequence_information.generation_id(),
                     wrapped_record.record().data(), std::move(processed_cb));
     }
 
@@ -702,6 +728,7 @@ class StorageTest
     const int64_t uploader_id_;
 
     absl::optional<int64_t> generation_id_;
+    base::flat_map<Priority, int64_t>* const last_upload_generation_id_;
     const raw_ptr<LastRecordDigestMap> last_record_digest_map_;
 
     const raw_ptr<const MockUpload> mock_upload_;
@@ -849,15 +876,18 @@ class StorageTest
   }
 
   void ConfirmOrDie(Priority priority,
-                    absl::optional<std::int64_t> sequencing_id,
+                    int64_t sequencing_id,
                     bool force = false) {
-    test::TestEvent<Status> c;
+    auto generation_it = last_upload_generation_id_.find(priority);
+    ASSERT_NE(generation_it, last_upload_generation_id_.end()) << priority;
     LOG(ERROR) << "Confirm priority=" << priority << " force=" << force
-               << " seq="
-               << (sequencing_id.has_value()
-                       ? base::NumberToString(sequencing_id.value())
-                       : "null");
-    storage_->Confirm(priority, sequencing_id, force, c.cb());
+               << " seq=" << sequencing_id << " gen=" << generation_it->second;
+    SequenceInformation seq_info;
+    seq_info.set_sequencing_id(sequencing_id);
+    seq_info.set_generation_id(generation_it->second);
+    seq_info.set_priority(priority);
+    test::TestEvent<Status> c;
+    storage_->Confirm(std::move(seq_info), force, c.cb());
     const Status c_result = c.result();
     ASSERT_OK(c_result) << c_result;
   }
@@ -930,6 +960,7 @@ class StorageTest
   TestStorageOptions options_;
   scoped_refptr<test::Decryptor> decryptor_;
   scoped_refptr<Storage> storage_;
+  base::flat_map<Priority, int64_t> last_upload_generation_id_;
   SignedEncryptionInfo signed_encryption_key_;
   bool expect_to_need_key_{false};
   std::atomic<bool> key_delivery_failure_{false};
@@ -1253,6 +1284,45 @@ TEST_P(StorageTest, WriteAndRepeatedlyUploadWithConfirmations) {
         .RetiresOnSaturation();
     task_environment_.FastForwardBy(base::Seconds(1));
   }
+}
+
+TEST_P(StorageTest, WriteAndUploadWithBadConfirmation) {
+  CreateTestStorageOrDie(BuildTestStorageOptions());
+
+  WriteStringOrDie(FAST_BATCH, kData[0]);
+  WriteStringOrDie(FAST_BATCH, kData[1]);
+  WriteStringOrDie(FAST_BATCH, kData[2]);
+
+  {
+    // Set uploader expectations.
+    test::TestCallbackAutoWaiter waiter;
+    EXPECT_CALL(set_mock_uploader_expectations_,
+                Call(Eq(UploaderInterface::UploadReason::PERIODIC)))
+        .WillOnce(
+            Invoke([&waiter, this](UploaderInterface::UploadReason reason) {
+              return TestUploader::SetUp(FAST_BATCH, &waiter, this)
+                  .Required(0, kData[0])
+                  .Required(1, kData[1])
+                  .Required(2, kData[2])
+                  .Complete();
+            }))
+        .RetiresOnSaturation();
+
+    // Forward time to trigger upload
+    task_environment_.FastForwardBy(base::Seconds(1));
+  }
+
+  // Confirm #0 with bad generation.
+  test::TestEvent<Status> c;
+  SequenceInformation seq_info;
+  seq_info.set_priority(FAST_BATCH);
+  seq_info.set_sequencing_id(/*sequencing_id=*/0);
+  // Do not set generation!
+  LOG(ERROR) << "Bad confirm priority=" << seq_info.priority()
+             << " seq=" << seq_info.sequencing_id();
+  storage_->Confirm(std::move(seq_info), /*force=*/false, c.cb());
+  const Status c_result = c.result();
+  ASSERT_FALSE(c_result.ok()) << c_result;
 }
 
 TEST_P(StorageTest, WriteAndRepeatedlySecurityUpload) {
@@ -1667,7 +1737,7 @@ TEST_P(StorageTest, ForceConfirm) {
   }
 
   // Now force confirm #0 and forward time again.
-  ConfirmOrDie(FAST_BATCH, /*sequencing_id=*/absl::nullopt, /*force=*/true);
+  ConfirmOrDie(FAST_BATCH, /*sequencing_id=*/-1, /*force=*/true);
   // Set uploader expectations: #0 and #1 could be returned as Gaps
   {
     test::TestCallbackAutoWaiter waiter;

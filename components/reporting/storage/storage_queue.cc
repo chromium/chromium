@@ -1586,13 +1586,13 @@ StorageQueue::CollectFilesForUpload(int64_t sequencing_id) const {
 
 class StorageQueue::ConfirmContext : public TaskRunnerContext<Status> {
  public:
-  ConfirmContext(absl::optional<int64_t> sequencing_id,
+  ConfirmContext(SequenceInformation sequence_information,
                  bool force,
                  base::OnceCallback<void(Status)> end_callback,
                  scoped_refptr<StorageQueue> storage_queue)
       : TaskRunnerContext<Status>(std::move(end_callback),
                                   storage_queue->sequenced_task_runner_),
-        sequencing_id_(sequencing_id),
+        sequence_information_(std::move(sequence_information)),
         force_(force),
         storage_queue_(storage_queue) {
     DCHECK(storage_queue.get());
@@ -1605,29 +1605,41 @@ class StorageQueue::ConfirmContext : public TaskRunnerContext<Status> {
   void OnStart() override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(
         storage_queue_->storage_queue_sequence_checker_);
+    if (sequence_information_.generation_id() !=
+        storage_queue_->generation_id_) {
+      Response(Status(
+          error::FAILED_PRECONDITION,
+          base::StrCat(
+              {"Generation mismatch - ",
+               base::NumberToString(sequence_information_.generation_id()),
+               ", expected=",
+               base::NumberToString(storage_queue_->generation_id_)})));
+      return;
+    }
     if (force_) {
       storage_queue_->first_unconfirmed_sequencing_id_ =
-          sequencing_id_.has_value() ? (sequencing_id_.value() + 1) : 0;
+          sequence_information_.sequencing_id() + 1;
       Response(Status::StatusOK());
     } else {
-      Response(sequencing_id_.has_value()
-                   ? storage_queue_->RemoveConfirmedData(sequencing_id_.value())
-                   : Status::StatusOK());
+      Response(storage_queue_->RemoveConfirmedData(
+          sequence_information_.sequencing_id()));
     }
   }
 
-  // Confirmed sequencing id.
-  absl::optional<int64_t> sequencing_id_;
+  // Confirmed sequencing information.
+  const SequenceInformation sequence_information_;
 
-  bool force_;
+  // Force-confirm flag.
+  const bool force_;
 
-  scoped_refptr<StorageQueue> storage_queue_;
+  const scoped_refptr<StorageQueue> storage_queue_;
 };
 
-void StorageQueue::Confirm(absl::optional<int64_t> sequencing_id,
+void StorageQueue::Confirm(SequenceInformation sequence_information,
                            bool force,
                            base::OnceCallback<void(Status)> completion_cb) {
-  Start<ConfirmContext>(sequencing_id, force, std::move(completion_cb), this);
+  Start<ConfirmContext>(std::move(sequence_information), force,
+                        std::move(completion_cb), this);
 }
 
 Status StorageQueue::RemoveConfirmedData(int64_t sequencing_id) {

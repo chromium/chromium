@@ -41,13 +41,11 @@ void StorageModule::Flush(Priority priority, FlushCallback callback) {
 
 void StorageModule::ReportSuccess(SequenceInformation sequence_information,
                                   bool force) {
-  storage_->Confirm(
-      sequence_information.priority(), sequence_information.sequencing_id(),
-      force, base::BindOnce([](Status status) {
-        if (!status.ok()) {
-          LOG(ERROR) << "Unable to confirm record deletion: " << status;
-        }
-      }));
+  storage_->Confirm(std::move(sequence_information), force,
+                    base::BindOnce([](Status status) {
+                      LOG_IF(ERROR, !status.ok())
+                          << "Unable to confirm record deletion: " << status;
+                    }));
 }
 
 void StorageModule::UpdateEncryptionKey(

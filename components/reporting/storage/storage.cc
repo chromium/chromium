@@ -650,15 +650,16 @@ void Storage::Write(Priority priority,
   queue->Write(std::move(record), std::move(completion_cb));
 }
 
-void Storage::Confirm(Priority priority,
-                      absl::optional<int64_t> seq_number,
+void Storage::Confirm(SequenceInformation sequence_information,
                       bool force,
                       base::OnceCallback<void(Status)> completion_cb) {
   // Note: queues_ never change after initialization is finished, so there is
   // no need to protect or serialize access to it.
   ASSIGN_OR_ONCE_CALLBACK_AND_RETURN(scoped_refptr<StorageQueue> queue,
-                                     completion_cb, GetQueue(priority));
-  queue->Confirm(seq_number, force, std::move(completion_cb));
+                                     completion_cb,
+                                     GetQueue(sequence_information.priority()));
+  queue->Confirm(std::move(sequence_information), force,
+                 std::move(completion_cb));
 }
 
 Status Storage::Flush(Priority priority) {
@@ -711,7 +712,8 @@ void Storage::UpdateEncryptionKey(SignedEncryptionInfo signed_encryption_key) {
           std::move(signed_encryption_key), base::WrapRefCounted(this)));
 }
 
-StatusOr<scoped_refptr<StorageQueue>> Storage::GetQueue(Priority priority) {
+StatusOr<scoped_refptr<StorageQueue>> Storage::GetQueue(
+    Priority priority) const {
   auto it = queues_.find(priority);
   if (it == queues_.end()) {
     return Status(
@@ -720,5 +722,4 @@ StatusOr<scoped_refptr<StorageQueue>> Storage::GetQueue(Priority priority) {
   }
   return it->second;
 }
-
 }  // namespace reporting

@@ -66,6 +66,9 @@ class StorageQueue : public base::RefCountedDeleteOnSequence<StorageQueue> {
       base::OnceCallback<void(StatusOr<scoped_refptr<StorageQueue>>)>
           completion_cb);
 
+  StorageQueue(const StorageQueue& other) = delete;
+  StorageQueue& operator=(const StorageQueue& other) = delete;
+
   // Wraps and serializes Record (taking ownership of it), encrypts and writes
   // the resulting blob into the StorageQueue (the last file of it) with the
   // next sequencing id assigned. The write is a non-blocking operation -
@@ -76,14 +79,19 @@ class StorageQueue : public base::RefCountedDeleteOnSequence<StorageQueue> {
   // WriteMetadata, DeleteOutdatedMetadata.
   void Write(Record record, base::OnceCallback<void(Status)> completion_cb);
 
-  // Confirms acceptance of the records up to |sequencing_id| (inclusively).
-  // All records with sequencing ids <= this one can be removed from
-  // the StorageQueue, and can no longer be uploaded.
-  // If |force| is false (which is used in most cases), |sequencing_id| is
-  // only accepted if no higher ids were confirmed before; otherwise it is
-  // accepted unconditionally.
+  // Confirms acceptance of the records up to
+  // |sequence_information.sequencing_id()| (inclusively), if the
+  // |sequence_information.generation_id()| matches. All records with sequencing
+  // ids <= this one can be removed from the Storage, and can no longer be
+  // uploaded. In order to reset to the very first record (seq_id=0)
+  // |sequence_information.sequencing_id()| should be set to -1.
+  // If |force| is false (which is used in most cases),
+  // |sequence_information.sequencing_id()| is only accepted if no higher ids
+  // were confirmed before; otherwise it is accepted unconditionally.
+  // |sequence_information.priority()| is ignored - should have been used
+  // by Storage when selecting the queue.
   // Helper methods: RemoveConfirmedData.
-  void Confirm(absl::optional<int64_t> sequencing_id,
+  void Confirm(SequenceInformation sequence_information,
                bool force,
                base::OnceCallback<void(Status)> completion_cb);
 
@@ -117,9 +125,6 @@ class StorageQueue : public base::RefCountedDeleteOnSequence<StorageQueue> {
 
   // Access queue options.
   const QueueOptions& options() const { return options_; }
-
-  StorageQueue(const StorageQueue& other) = delete;
-  StorageQueue& operator=(const StorageQueue& other) = delete;
 
  protected:
   virtual ~StorageQueue();
