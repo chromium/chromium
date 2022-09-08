@@ -436,7 +436,7 @@ export class BookmarksCommandManagerElement extends
         itemIds, 'BookmarkManager.CommandExecuted', command);
   }
 
-  handleKeyEvent(e: Event, itemIds: Set<string>): boolean {
+  handleKeyEvent(e: KeyboardEvent, itemIds: Set<string>): boolean {
     for (const commandTuple of this.shortcuts_) {
       const command = commandTuple[0] as Command;
       const shortcut = commandTuple[1] as KeyboardShortcutList;
@@ -800,7 +800,7 @@ export class BookmarksCommandManagerElement extends
     this.closeCommandMenu();
   }
 
-  private onKeydown_(e: Event) {
+  private onKeydown_(e: KeyboardEvent) {
     const path = e.composedPath();
     if ((path[0] as HTMLElement).tagName === 'INPUT') {
       return;

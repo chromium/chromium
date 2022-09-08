@@ -391,7 +391,8 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
 
   private onFocusConfigChange_() {
     this.focusConfig.set(this.getSyncAdvancedPageRoute_().path, () => {
-      const toFocus = this.shadowRoot!.querySelector('#sync-advanced-row');
+      const toFocus =
+          this.shadowRoot!.querySelector<HTMLElement>('#sync-advanced-row');
       assert(toFocus);
       focusWithoutInk(toFocus);
     });

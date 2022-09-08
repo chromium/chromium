@@ -123,7 +123,7 @@ export class AppManagementFileHandlingItemElement extends
 
   private onDialogClose_(): void {
     this.showOverflowDialog = false;
-    const toFocus = this.shadowRoot!.querySelector('#type-list');
+    const toFocus = this.shadowRoot!.querySelector<HTMLElement>('#type-list');
     assert(toFocus);
     focusWithoutInk(toFocus);
   }

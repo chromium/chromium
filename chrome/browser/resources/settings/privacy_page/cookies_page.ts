@@ -180,7 +180,8 @@ export class SettingsCookiesPageElement extends SettingsCookiesPageElementBase {
             routes.SITE_SETTINGS_ALL :
             routes.SITE_SETTINGS_SITE_DATA);
     const selectSiteDataLinkRow = () => {
-      const toFocus = this.shadowRoot!.querySelector('#site-data-trigger');
+      const toFocus =
+          this.shadowRoot!.querySelector<HTMLElement>('#site-data-trigger');
       assert(toFocus);
       focusWithoutInk(toFocus);
     };

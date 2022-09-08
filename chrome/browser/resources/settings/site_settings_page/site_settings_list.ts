@@ -96,7 +96,8 @@ class SettingsSiteSettingsListElement extends
     // elements residing in this element's Shadow DOM.
     for (const item of this.categoryList) {
       this.focusConfig.set(item.route.path, () => microTask.run(() => {
-        const toFocus = this.shadowRoot!.querySelector(`#${item.id}`);
+        const toFocus =
+            this.shadowRoot!.querySelector<HTMLElement>(`#${item.id}`);
         assert(!!toFocus);
         focusWithoutInk(toFocus);
       }));

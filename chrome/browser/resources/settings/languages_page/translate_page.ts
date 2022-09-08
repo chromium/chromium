@@ -129,7 +129,8 @@ export class SettingsTranslatePageElement extends
   private onAlwaysTranslateDialogClose_() {
     this.showAddAlwaysTranslateDialog_ = false;
     this.addLanguagesDialogLanguages_ = null;
-    const toFocus = this.shadowRoot!.querySelector('#addAlwaysTranslate');
+    const toFocus =
+        this.shadowRoot!.querySelector<HTMLElement>('#addAlwaysTranslate');
     assert(toFocus);
     focusWithoutInk(toFocus);
   }
@@ -177,7 +178,8 @@ export class SettingsTranslatePageElement extends
   private onNeverTranslateDialogClose_() {
     this.showAddNeverTranslateDialog_ = false;
     this.addLanguagesDialogLanguages_ = null;
-    const toFocus = this.shadowRoot!.querySelector('#addNeverTranslate');
+    const toFocus =
+        this.shadowRoot!.querySelector<HTMLElement>('#addNeverTranslate');
     assert(toFocus);
     focusWithoutInk(toFocus);
   }

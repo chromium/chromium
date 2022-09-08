@@ -165,7 +165,7 @@ if (is_chromeos_ash) {
       "//ui/webui/resources/js:assert.m",
       "//ui/webui/resources/js:cr.m",
       "//ui/webui/resources/js:util.m",
-      "//ui/webui/resources/js/cr/ui:keyboard_shortcut_list",
+      "//ui/webui/resources/js/cr/ui:keyboard_shortcut_list_js",
     ]
   }
 }

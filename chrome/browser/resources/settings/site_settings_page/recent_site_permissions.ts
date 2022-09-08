@@ -376,12 +376,13 @@ export class SettingsRecentSitePermissionsElement extends
       const icon = this.shadowRoot!.querySelector<CrTooltipIconElement>(
           `#incognitoInfoIcon_${index}`);
       assert(!!icon);
-      const toFocus = icon.getFocusableElement();
+      const toFocus = icon.getFocusableElement() as HTMLElement;
       assert(!!toFocus);
       focusWithoutInk(toFocus);
     } else {
       const toFocus =
-          this.shadowRoot!.querySelector(`#siteEntryButton_${index}`);
+          this.shadowRoot!.querySelector<HTMLElement>(
+              `#siteEntryButton_${index}`);
       assert(!!toFocus);
       focusWithoutInk(toFocus);
     }

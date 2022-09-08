@@ -191,8 +191,8 @@ export class SiteDataElement extends SiteDataElementBase {
     ironList.focusItem(index);
     const siteToSelect = this.sites[index].site.replace(/[.]/g, '\\.');
     const button =
-        this.$$(`#siteItem_${siteToSelect}`)!.shadowRoot!.querySelector(
-            '.subpage-arrow');
+        this.$$(`#siteItem_${siteToSelect}`)!.shadowRoot!
+            .querySelector<HTMLElement>('.subpage-arrow');
     assert(button);
     focusWithoutInk(button);
   }

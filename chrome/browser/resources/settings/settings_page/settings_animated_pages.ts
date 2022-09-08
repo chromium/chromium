@@ -157,7 +157,7 @@ class SettingsAnimatedPagesElement extends SettingsAnimatedPagesElementBase {
             assert(element);
             pathConfig = element;
           }
-          focusWithoutInk(pathConfig as Element);
+          focusWithoutInk(pathConfig as HTMLElement);
         };
       }
       handler();

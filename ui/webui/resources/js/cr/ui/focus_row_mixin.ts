@@ -141,7 +141,7 @@ export const FocusRowMixin = dedupingMixin(
         ironListTabIndex: number;
         listBlurred: boolean;
 
-        private firstControl_: Element|null = null;
+        private firstControl_: HTMLElement|null = null;
         private controlObservers_: MutationObserver[] = [];
         private boundOnFirstControlKeydown_:
             ((e: Event) => void)|null = null;

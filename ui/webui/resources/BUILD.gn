@@ -249,7 +249,6 @@ generate_definitions_js_files = [
   "js/cr/event_target.m.js",
   "js/cr.m.js",
   "js/cr/ui.m.js",
-  "js/cr/ui/keyboard_shortcut_list.js",
   "js/event_tracker.m.js",
   "js/load_time_data.m.js",
   "js/plural_string_proxy.js",
@@ -259,6 +258,7 @@ generate_definitions_js_files = [
 
 if (is_chromeos_ash || is_fuchsia || is_linux || is_mac || is_win) {
   generate_definitions_js_files += [
+    "js/cr/ui/keyboard_shortcut_list_js.js",
     "js/cr/ui/menu.js",
     "js/cr/ui/command.js",
     "js/cr/ui/position_util.js",
@@ -268,6 +268,7 @@ if (is_chromeos_ash || is_fuchsia || is_linux || is_mac || is_win) {
 if (is_chromeos_ash) {
   generate_definitions_js_files += [
     "js/cr/ui/focus_row_js.js",
+    "js/cr/ui/focus_without_ink_js.js",
     "js/cr/ui/store_client.js",
     "js/cr/ui/store.js",
   ]
@@ -294,10 +295,6 @@ if (include_polymer) {
   }
 }
 
-if (!is_android) {
-  generate_definitions_js_files += [ "js/cr/ui/focus_without_ink.js" ]
-}
-
 if (is_ios) {
   generate_definitions_js_files += [ "js/ios/web_ui.js" ]
 }
@@ -315,6 +312,7 @@ ts_library("library") {
                "js/cr/ui/focus_grid.ts",
                "js/cr/ui/focus_row.ts",
                "js/cr/ui/focus_outline_manager.ts",
+               "js/cr/ui/keyboard_shortcut_list.ts",
                "js/cr/ui/store_ts.ts",
              ]
 
@@ -327,6 +325,7 @@ ts_library("library") {
       "cr_components/managed_footnote/managed_footnote.html.ts",
       "cr_components/managed_footnote/managed_footnote.ts",
       "js/cr/ui/focus_row_mixin.ts",
+      "js/cr/ui/focus_without_ink.ts",
       "js/i18n_mixin.ts",
       "js/list_property_update_mixin.ts",
       "js/search_highlight_utils.ts",

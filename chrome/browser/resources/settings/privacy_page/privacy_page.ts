@@ -353,7 +353,8 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
     setTimeout(() => {
       // Focus after a timeout to ensure any a11y messages get read before
       // screen readers read out the newly focused element.
-      const toFocus = this.shadowRoot!.querySelector('#clearBrowsingData');
+      const toFocus =
+          this.shadowRoot!.querySelector<HTMLElement>('#clearBrowsingData');
       assert(toFocus);
       focusWithoutInk(toFocus);
     });
@@ -361,7 +362,8 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
 
   private onPrivacyGuideDialogClosed_() {
     Router.getInstance().navigateToPreviousRoute();
-    const toFocus = this.shadowRoot!.querySelector('#privacyGuideLinkRow');
+    const toFocus =
+        this.shadowRoot!.querySelector<HTMLElement>('#privacyGuideLinkRow');
     assert(toFocus);
     focusWithoutInk(toFocus);
   }

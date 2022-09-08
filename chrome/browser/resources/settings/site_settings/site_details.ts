@@ -332,13 +332,15 @@ export class SiteDetailsElement extends SiteDetailsElementBase {
   }
 
   private onResetSettingsDialogClosed_() {
-    const toFocus = this.shadowRoot!.querySelector('#resetSettingsButton');
+    const toFocus =
+        this.shadowRoot!.querySelector<HTMLElement>('#resetSettingsButton');
     assert(toFocus);
     focusWithoutInk(toFocus);
   }
 
   private onClearStorageDialogClosed_() {
-    const toFocus = this.shadowRoot!.querySelector('#clearStorage');
+    const toFocus =
+        this.shadowRoot!.querySelector<HTMLElement>('#clearStorage');
     assert(toFocus);
     focusWithoutInk(toFocus);
   }

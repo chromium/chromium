@@ -37,11 +37,15 @@ preprocess_if_expr("preprocess_src_ts") {
     "focus_grid.ts",
     "focus_outline_manager.ts",
     "focus_row.ts",
+    "keyboard_shortcut_list.ts",
     "store_ts.ts",
   ]
 
   if (include_polymer) {
-    in_files += [ "focus_row_mixin.ts" ]
+    in_files += [
+      "focus_row_mixin.ts",
+      "focus_without_ink.ts",
+    ]
   }
 }
 
@@ -50,12 +54,14 @@ preprocess_if_expr("preprocess_src") {
   out_folder = "$preprocess_folder"
   out_manifest = "$target_gen_dir/$preprocess_src_manifest"
 
-  in_files = [ "keyboard_shortcut_list.js" ]
+  # This file is deprecated, and included on non-CrOS builds only for the old
+  # NTP (chrome://apps) page.
+  # TODO (rbpotter): Get rid of this by forking command.js, which includes this
+  # version only for closure compiler, which is not needed on non-CrOS.
+  in_files = [ "keyboard_shortcut_list_js.js" ]
 
   if (!is_android) {
     in_files += [
-      "focus_without_ink.js",
-
       # The files below are deprecated, and are included on non-CrOS builds only
       # for the old NTP (chrome://apps) page.
       "command.js",
@@ -69,6 +75,7 @@ preprocess_if_expr("preprocess_src") {
 
   if (is_chromeos_ash) {
     in_files += [
+      "focus_without_ink_js.js",
       "focus_row_behavior.js",
       "focus_row_js.js",
       "store_client.js",
@@ -77,20 +84,20 @@ preprocess_if_expr("preprocess_src") {
   }
 }
 
-group("closure_compile") {
-  deps = [ ":ui_resources_modules" ]
-}
+# Closure compiler targets, for Chrome OS only.
+if (is_chromeos_ash) {
+  group("closure_compile") {
+    deps = [ ":ui_resources_modules" ]
+  }
 
-js_type_check("ui_resources_modules") {
-  is_polymer3 = true
-  deps = [ ":focus_without_ink" ]
-  if (is_chromeos_ash) {
-    deps += [
+  js_type_check("ui_resources_modules") {
+    is_polymer3 = true
+    deps = [
       ":command",
       ":context_menu_handler",
       ":focus_row_behavior",
       ":focus_row_js",
-      ":keyboard_shortcut_list",
+      ":keyboard_shortcut_list_js",
       ":menu",
       ":menu_button",
       ":menu_item",
@@ -99,12 +106,10 @@ js_type_check("ui_resources_modules") {
       ":store_client",
     ]
   }
-}
 
-if (is_chromeos_ash) {
   js_library("command") {
     deps = [
-      ":keyboard_shortcut_list",
+      ":keyboard_shortcut_list_js",
       "../:ui.m",
       "../..:assert.m",
       "../..:cr.m",
@@ -136,22 +141,20 @@ if (is_chromeos_ash) {
   js_library("focus_row_behavior") {
     deps = [
       ":focus_row_js",
-      ":focus_without_ink",
+      ":focus_without_ink_js",
       "../..:assert.m",
       "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     ]
   }
-}
 
-js_library("focus_without_ink") {
-  deps = [
-    "../..:assert.m",
-    "../..:cr.m",
-  ]
-}
+  js_library("focus_without_ink_js") {
+    deps = [
+      "../..:assert.m",
+      "../..:cr.m",
+    ]
+  }
 
-if (is_chromeos_ash) {
-  js_library("keyboard_shortcut_list") {
+  js_library("keyboard_shortcut_list_js") {
   }
 
   js_library("menu") {

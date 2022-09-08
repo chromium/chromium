@@ -9,7 +9,7 @@
 // clang-format off
 import {afterNextRender} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {focusWithoutInk} from './focus_without_ink.js';
+import {focusWithoutInk} from './focus_without_ink_js.js';
 import {FocusRow, FocusRowDelegate} from './focus_row_js.js';
 // clang-format on
 

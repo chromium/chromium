@@ -23,7 +23,7 @@
 // clang-format off
 import {assert} from '../../assert.m.js';
 import {define as crUiDefine} from '../ui.m.js';
-import {KeyboardShortcutList} from './keyboard_shortcut_list.js';
+import {KeyboardShortcutList} from './keyboard_shortcut_list_js.js';
 import {dispatchPropertyChange, getPropertyDescriptor, PropertyKind} from '../../cr.m.js';
 import {MenuItem} from './menu_item.js';
 // clang-format on

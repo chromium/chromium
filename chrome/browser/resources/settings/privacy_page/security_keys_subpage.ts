@@ -97,7 +97,8 @@ class SecurityKeysSubpageElement extends PolymerElement {
   private onCredentialManagementDialogClosed_() {
     this.showCredentialManagementDialog_ = false;
     const toFocus =
-        this.shadowRoot!.querySelector('#credentialManagementButton');
+        this.shadowRoot!.querySelector<HTMLElement>(
+            '#credentialManagementButton');
     assert(toFocus);
     focusWithoutInk(toFocus);
   }
@@ -117,7 +118,8 @@ class SecurityKeysSubpageElement extends PolymerElement {
 
   private onBioEnrollDialogClosed_() {
     this.showBioEnrollDialog_ = false;
-    const toFocus = this.shadowRoot!.querySelector('#bioEnrollButton');
+    const toFocus =
+        this.shadowRoot!.querySelector<HTMLElement>('#bioEnrollButton');
     assert(toFocus);
     focusWithoutInk(toFocus);
   }

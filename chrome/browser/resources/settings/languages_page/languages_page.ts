@@ -277,7 +277,8 @@ export class SettingsLanguagesPageElement extends
     }
     flush();
     this.isChangeInProgress_ = false;
-    const restartButton = this.shadowRoot!.querySelector('#restartButton');
+    const restartButton =
+        this.shadowRoot!.querySelector<HTMLElement>('#restartButton');
     if (!restartButton) {
       return;
     }

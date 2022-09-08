@@ -430,7 +430,7 @@ export class SettingsSiteSettingsPageElement extends PolymerElement {
     // only fire once.
     assert(!oldConfig);
     this.focusConfig.set(routes.SITE_SETTINGS_ALL.path, () => {
-      const allSites = this.shadowRoot!.querySelector('#allSites');
+      const allSites = this.shadowRoot!.querySelector<HTMLElement>('#allSites');
       assert(!!allSites);
       focusWithoutInk(allSites);
     });

@@ -195,7 +195,8 @@ export class SettingsSecurityPageElement extends
     // <if expr="use_nss_certs">
     if (routes.CERTIFICATES) {
       this.focusConfig.set(routes.CERTIFICATES.path, () => {
-        const toFocus = this.shadowRoot!.querySelector('#manageCertificates');
+        const toFocus =
+            this.shadowRoot!.querySelector<HTMLElement>('#manageCertificates');
         assert(toFocus);
         focusWithoutInk(toFocus);
       });
@@ -205,7 +206,8 @@ export class SettingsSecurityPageElement extends
     if (routes.SECURITY_KEYS) {
       this.focusConfig.set(routes.SECURITY_KEYS.path, () => {
         const toFocus =
-            this.shadowRoot!.querySelector('#security-keys-subpage-trigger');
+            this.shadowRoot!.querySelector<HTMLElement>(
+                '#security-keys-subpage-trigger');
         assert(toFocus);
         focusWithoutInk(toFocus);
       });

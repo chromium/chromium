@@ -137,8 +137,10 @@ export class SettingsDownloadsPageElement extends
           // status gets announced by screen reader.
           afterNextRender(this, () => {
             const button = this.connectionAccountInfo_.linked ?
-                this.shadowRoot!.querySelector('#unlinkAccountButton') :
-                this.shadowRoot!.querySelector('#linkAccountButton');
+                this.shadowRoot!.querySelector<HTMLElement>(
+                    '#unlinkAccountButton') :
+                this.shadowRoot!.querySelector<HTMLElement>(
+                    '#linkAccountButton');
             focusWithoutInk(button!);
           });
         });
