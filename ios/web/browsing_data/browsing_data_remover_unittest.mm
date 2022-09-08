@@ -60,7 +60,7 @@ namespace {
 }
 
 // Checks that the cookies data store has cookies or not, depending on
-// |should_have_cookies|.
+// `should_have_cookies`.
 [[nodiscard]] bool HasCookies(bool should_have_cookies) {
   __block bool has_cookies = false;
   __block bool completion_called = false;
@@ -78,7 +78,7 @@ namespace {
   return completed && (has_cookies == should_have_cookies);
 }
 
-// Removes the |types| from the data remover associated with |browser_state|.
+// Removes the `types` from the data remover associated with `browser_state`.
 // Returns whether the completion block of the clear browsing data has been
 // called.
 [[nodiscard]] bool RemoveCookies(web::BrowserState* browser_state,

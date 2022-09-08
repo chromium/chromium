@@ -26,13 +26,13 @@ class BrowsingDataRemover : public base::SupportsUserData::Data {
   explicit BrowsingDataRemover(web::BrowserState* browser_state);
   ~BrowsingDataRemover() override;
 
-  // Returns the BrowsingDataRemover associated with |browser_state.|
+  // Returns the BrowsingDataRemover associated with `browser_state.|
   // Lazily creates one if an BrowsingDataRemover is not already associated with
-  // the |browser_state|. |browser_state| cannot be a nullptr.
+  // the `browser_state`. `browser_state` cannot be a nullptr.
   static BrowsingDataRemover* FromBrowserState(BrowserState* browser_state);
 
-  // Clears the browsing data. |modified_since| is the data since which all data
-  // is removed. |closure| is called when the browsing data have been cleared.
+  // Clears the browsing data. `modified_since` is the data since which all data
+  // is removed. `closure` is called when the browsing data have been cleared.
   void ClearBrowsingData(ClearBrowsingDataMask types,
                          base::Time modified_since,
                          base::OnceClosure closure);

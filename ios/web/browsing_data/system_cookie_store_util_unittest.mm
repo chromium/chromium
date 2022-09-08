@@ -28,7 +28,7 @@ namespace web {
 
 namespace {
 
-// Checks if |system_cookie| was set in WKHTTPCookieStore |cookie_store|.
+// Checks if `system_cookie` was set in WKHTTPCookieStore `cookie_store`.
 bool IsCookieSetInWKCookieStore(NSHTTPCookie* system_cookie,
                                 NSURL* url,
                                 WKHTTPCookieStore* cookie_store) {
@@ -53,7 +53,7 @@ bool IsCookieSetInWKCookieStore(NSHTTPCookie* system_cookie,
   return is_set;
 }
 
-// Sets |cookie| in SystemCookieStore |store| , and wait until set callback
+// Sets `cookie` in SystemCookieStore `store` , and wait until set callback
 // is finished.
 bool SetCookieInCookieStore(NSHTTPCookie* cookie,
                             net::SystemCookieStore* store) {

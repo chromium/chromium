@@ -121,7 +121,7 @@ void BrowsingDataRemover::ClearBrowsingData(ClearBrowsingDataMask types,
     };
   }
 
-  // TODO(crbug.com/661630): |dummy_web_view_| is created to allow
+  // TODO(crbug.com/661630): `dummy_web_view_` is created to allow
   // the -[WKWebsiteDataStore removeDataOfTypes:] API to access the cookiestore
   // and clear cookies. This is a workaround for
   // https://bugs.webkit.org/show_bug.cgi?id=149078. Remove this
