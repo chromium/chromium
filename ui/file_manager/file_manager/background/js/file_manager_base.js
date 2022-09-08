@@ -6,34 +6,24 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
 import {resolveIsolatedEntries} from '../../common/js/api.js';
 import {FilesAppState} from '../../common/js/files_app_state.js';
-import {importer} from '../../common/js/importer_common.js';
 import {metrics} from '../../common/js/metrics.js';
 import {str, util} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {xfm} from '../../common/js/xfm.js';
 import {Crostini} from '../../externs/background/crostini.js';
 import {DriveSyncHandler} from '../../externs/background/drive_sync_handler.js';
-import {duplicateFinderInterfaces} from '../../externs/background/duplicate_finder.js';
 import {FileManagerBaseInterface} from '../../externs/background/file_manager_base.js';
 import {FileOperationManager} from '../../externs/background/file_operation_manager.js';
-import {importerHistoryInterfaces} from '../../externs/background/import_history.js';
-import {mediaImportInterfaces} from '../../externs/background/media_import_handler.js';
-import {mediaScannerInterfaces} from '../../externs/background/media_scanner.js';
 import {ProgressCenter} from '../../externs/background/progress_center.js';
 import {VolumeInfo} from '../../externs/volume_info.js';
 import {VolumeManager} from '../../externs/volume_manager.js';
 
 import {CrostiniImpl} from './crostini.js';
-import {DeviceHandler} from './device_handler.js';
 import {DriveSyncHandlerImpl} from './drive_sync_handler.js';
-import {duplicateFinder} from './duplicate_finder.js';
 import {FileOperationHandler} from './file_operation_handler.js';
 import {FileOperationManagerImpl} from './file_operation_manager.js';
 import {fileOperationUtil} from './file_operation_util.js';
-import {importerHistory} from './import_history.js';
 import {FILES_ID_PATTERN, launcher, LaunchType, nextFileManagerWindowID} from './launcher.js';
-import {mediaImport} from './media_import_handler.js';
-import {mediaScanner} from './media_scanner.js';
 import {MountMetrics} from './mount_metrics.js';
 import {ProgressCenterImpl} from './progress_center.js';
 import {volumeManagerFactory} from './volume_manager_factory.js';
@@ -94,60 +84,16 @@ export class FileManagerBase {
     this.fileOperationManager = null;
 
     /**
-     * Class providing loading of import history, used in
-     * cloud import.
-     *
-     * @type {!importerHistoryInterfaces.HistoryLoader}
-     */
-    this.historyLoader =
-        new importerHistory.SynchronizedHistoryLoader(importer.getHistoryFiles);
-
-    /**
      * Event handler for progress center.
      * @private {FileOperationHandler}
      */
     this.fileOperationHandler_ = null;
 
     /**
-     * Event handler for C++ sides notifications.
-     * @private {!DeviceHandler}
-     */
-    this.deviceHandler_ = new DeviceHandler(this.progressCenter);
-
-    // Handle device navigation requests.
-    this.deviceHandler_.addEventListener(
-        DeviceHandler.VOLUME_NAVIGATION_REQUESTED,
-        this.handleViewEvent_.bind(this));
-
-    /**
      * Drive sync handler.
      * @type {!DriveSyncHandler}
      */
     this.driveSyncHandler = new DriveSyncHandlerImpl(this.progressCenter);
-
-    /**
-     * @type {!duplicateFinderInterfaces.DispositionChecker.CheckerFunction}
-     */
-    this.dispositionChecker_ =
-        duplicateFinder.DispositionCheckerImpl.createChecker(
-            this.historyLoader);
-
-    /**
-     * Provides support for scanning media devices as part of Cloud Import.
-     * @type {!mediaScannerInterfaces.MediaScanner}
-     */
-    this.mediaScanner = new mediaScanner.DefaultMediaScanner(
-        importerHistory.createMetadataHashcode, this.dispositionChecker_,
-        mediaScanner.DefaultDirectoryWatcher.create);
-
-    /**
-     * Handles importing of user media (e.g. photos, videos) from removable
-     * devices.
-     * @type {!mediaImportInterfaces.MediaImportHandler}
-     */
-    this.mediaImportHandler = new mediaImport.MediaImportHandlerImpl(
-        this.progressCenter, this.historyLoader, this.dispositionChecker_,
-        this.driveSyncHandler);
 
     /** @type {!Crostini} */
     this.crostini = new CrostiniImpl();
@@ -337,17 +283,16 @@ export class FileManagerBase {
           if (event.devicePath) {
             const volume = volumeManager.findByDevicePath(event.devicePath);
             if (volume) {
-              this.navigateToVolumeRoot_(volume, event.filePath);
+              this.navigateToVolumeRoot_(volume);
             } else {
               console.warn(
                   `Got view event with invalid volume id: ${event.devicePath}`);
             }
           } else if (event.volumeId) {
             if (event.type === VolumeManagerCommon.VOLUME_ALREADY_MOUNTED) {
-              this.navigateToVolumeInFocusedWindowWhenReady_(
-                  event.volumeId, event.filePath);
+              this.navigateToVolumeInFocusedWindowWhenReady_(event.volumeId);
             } else {
-              this.navigateToVolumeWhenReady_(event.volumeId, event.filePath);
+              this.navigateToVolumeWhenReady_(event.volumeId);
             }
           } else {
             console.warn('Got view event with no actionable destination.');

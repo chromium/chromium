@@ -376,7 +376,7 @@ testcase.fileDisplayUsbPartitionSort = async () => {
 
   // Sort by type in ascending order.
   await remoteCall.callRemoteTestUtil(
-      'fakeMouseClick', appId, ['.table-header-cell:nth-of-type(4)']);
+      'fakeMouseClick', appId, ['.table-header-cell:nth-of-type(3)']);
   const iconSortedAsc =
       '.table-header-cell .sorted [iron-icon="files16:arrow_up_small"]';
   await remoteCall.waitForElement(appId, iconSortedAsc);
@@ -392,7 +392,7 @@ testcase.fileDisplayUsbPartitionSort = async () => {
 
   // Sort by type in descending order.
   await remoteCall.callRemoteTestUtil(
-      'fakeMouseClick', appId, ['.table-header-cell:nth-of-type(4)']);
+      'fakeMouseClick', appId, ['.table-header-cell:nth-of-type(3)']);
   const iconSortedDesc =
       '.table-header-cell .sorted [iron-icon="files16:arrow_down_small"]';
   await remoteCall.waitForElement(appId, iconSortedDesc);

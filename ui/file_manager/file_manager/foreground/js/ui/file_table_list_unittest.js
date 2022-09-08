@@ -8,7 +8,6 @@ import {assertArrayEquals, assertEquals, assertFalse, assertTrue} from 'chrome:/
 import {MockVolumeManager} from '../../../background/js/mock_volume_manager.js';
 import {FakeEntryImpl} from '../../../common/js/files_app_entry_types.js';
 import {VolumeManagerCommon} from '../../../common/js/volume_manager_types.js';
-import {importerHistoryInterfaces} from '../../../externs/background/import_history.js';
 import {FileListModel} from '../file_list_model.js';
 import {MetadataModel} from '../metadata/metadata_model.js';
 import {MockMetadataModel} from '../metadata/mock_metadata.js';
@@ -23,9 +22,6 @@ let volumeManager;
 
 /** @type {!MetadataModel} */
 let metadataModel;
-
-/** @type {!importerHistoryInterfaces.HistoryLoader} */
-let historyLoader;
 
 /** @type {!HTMLElement} */
 let element;
@@ -42,11 +38,6 @@ export function setUp() {
   // Setup mock components.
   volumeManager = new MockVolumeManager();
   metadataModel = new MockMetadataModel({});
-  historyLoader = /** @type {!importerHistoryInterfaces.HistoryLoader} */ ({
-    getHistory: () => {
-      return Promise.resolve();
-    },
-  });
 
   const a11Messages = [];
   a11y = /** @type {!A11yAnnounce} */ ({
@@ -117,8 +108,7 @@ function ctrlAndKey(keyName, code) {
 export function testMultipleSelectionWithKeyboard() {
   // Render the FileTable on |element|.
   const fullPage = true;
-  FileTable.decorate(
-      element, metadataModel, volumeManager, historyLoader, a11y, fullPage);
+  FileTable.decorate(element, metadataModel, volumeManager, a11y, fullPage);
 
   // Overwrite the selectionModel of the FileTable class (since events
   // would be handled by cr.ui.ListSelectionModel otherwise).
@@ -248,8 +238,7 @@ export function testMultipleSelectionWithKeyboard() {
 export function testKeyboardOperations() {
   // Render the FileTable on |element|.
   const fullPage = true;
-  FileTable.decorate(
-      element, metadataModel, volumeManager, historyLoader, a11y, fullPage);
+  FileTable.decorate(element, metadataModel, volumeManager, a11y, fullPage);
 
   // Overwrite the selectionModel of the FileTable class (since events
   // would be handled by cr.ui.ListSelectionModel otherwise).
@@ -333,8 +322,7 @@ const GROUP_HEADING_HEIGHT = 20;
  * @return {!FileTableList}
  */
 function setupFileTableList() {
-  FileTable.decorate(
-      element, metadataModel, volumeManager, historyLoader, a11y, true);
+  FileTable.decorate(element, metadataModel, volumeManager, a11y, true);
 
   // Add 10 fake files.
   const entries = [];

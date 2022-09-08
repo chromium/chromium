@@ -146,7 +146,7 @@ testcase.sortColumns = async () => {
 
   // Click the 'Type' column header and check the list.
   await remoteCall.callRemoteTestUtil(
-      'fakeMouseClick', appId, ['.table-header-cell:nth-of-type(4)']);
+      'fakeMouseClick', appId, ['.table-header-cell:nth-of-type(3)']);
   await remoteCall.waitForElement(appId, iconSortedAsc);
   await remoteCall.waitForFiles(appId, TYPE_ASC, {orderCheck: true});
 
@@ -157,7 +157,7 @@ testcase.sortColumns = async () => {
 
   // Click the 'Type' column header again and check the list.
   await remoteCall.callRemoteTestUtil(
-      'fakeMouseClick', appId, ['.table-header-cell:nth-of-type(4)']);
+      'fakeMouseClick', appId, ['.table-header-cell:nth-of-type(3)']);
   await remoteCall.waitForElement(appId, iconSortedDesc);
   await remoteCall.waitForFiles(appId, TYPE_DESC, {orderCheck: true});
 
@@ -174,7 +174,7 @@ testcase.sortColumns = async () => {
 
   // Click the 'Date modified' column header and check the list.
   await remoteCall.callRemoteTestUtil(
-      'fakeMouseClick', appId, ['.table-header-cell:nth-of-type(5)']);
+      'fakeMouseClick', appId, ['.table-header-cell:nth-of-type(4)']);
   await remoteCall.waitForElement(appId, iconSortedDesc);
   await remoteCall.waitForFiles(appId, DATE_DESC, {orderCheck: true});
 
@@ -185,7 +185,7 @@ testcase.sortColumns = async () => {
 
   // Click the 'Date modified' column header again and check the list.
   await remoteCall.callRemoteTestUtil(
-      'fakeMouseClick', appId, ['.table-header-cell:nth-of-type(5)']);
+      'fakeMouseClick', appId, ['.table-header-cell:nth-of-type(4)']);
   await remoteCall.waitForElement(appId, iconSortedAsc);
   await remoteCall.waitForFiles(appId, DATE_ASC, {orderCheck: true});
 

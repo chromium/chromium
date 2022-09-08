@@ -9,7 +9,6 @@ import {MockVolumeManager} from '../../../background/js/mock_volume_manager.js';
 import {FakeEntryImpl} from '../../../common/js/files_app_entry_types.js';
 import {installMockChrome} from '../../../common/js/mock_chrome.js';
 import {VolumeManagerCommon} from '../../../common/js/volume_manager_types.js';
-import {importerHistoryInterfaces} from '../../../externs/background/import_history.js';
 import {FileListModel, GROUP_BY_FIELD_DIRECTORY, GROUP_BY_FIELD_MODIFICATION_TIME} from '../file_list_model.js';
 import {MetadataModel} from '../metadata/metadata_model.js';
 import {MockMetadataModel} from '../metadata/mock_metadata.js';
@@ -23,9 +22,6 @@ let volumeManager;
 
 /** @type {!MetadataModel} */
 let metadataModel;
-
-/** @type {!importerHistoryInterfaces.HistoryLoader} */
-let historyLoader;
 
 /** @type {!HTMLElement} */
 let element;
@@ -80,11 +76,6 @@ export function setUp() {
   // Setup mock components.
   volumeManager = new MockVolumeManager();
   metadataModel = new MockMetadataModel({});
-  historyLoader = /** @type {!importerHistoryInterfaces.HistoryLoader} */ ({
-    getHistory: () => {
-      return Promise.resolve();
-    },
-  });
 
   const a11Messages = [];
   a11y = /** @type {!A11yAnnounce} */ ({
@@ -109,7 +100,7 @@ const ITEM_MARGIN_LEFT = 10;
  * @return {!FileGrid}
  */
 function setupFileGrid() {
-  FileGrid.decorate(element, metadataModel, volumeManager, historyLoader, a11y);
+  FileGrid.decorate(element, metadataModel, volumeManager, a11y);
 
   // Add 10 fake files.
   const entries = [];

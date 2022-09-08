@@ -7,9 +7,7 @@ import {dispatchSimpleEvent} from 'chrome://resources/js/cr.m.js';
 
 import {AsyncUtil} from '../../../common/js/async_util.js';
 import {FileType} from '../../../common/js/file_type.js';
-import {importer} from '../../../common/js/importer_common.js';
 import {str, strf, util} from '../../../common/js/util.js';
-import {importerHistoryInterfaces} from '../../../externs/background/import_history.js';
 import {FilesAppEntry} from '../../../externs/files_app_entry_interfaces.js';
 import {VolumeManager} from '../../../externs/volume_manager.js';
 import {FilesTooltip} from '../../elements/files_tooltip.js';
@@ -394,12 +392,6 @@ export class FileTable extends Table {
     /** @private {boolean} */
     this.useModificationByMeTime_ = false;
 
-    /** @private {?importerHistoryInterfaces.HistoryLoader} */
-    this.historyLoader_ = null;
-
-    /** @private {boolean} */
-    this.importStatusVisible_ = false;
-
     /** @private {?VolumeManager} */
     this.volumeManager_ = null;
 
@@ -420,7 +412,6 @@ export class FileTable extends Table {
    * @param {!Element} self Table to decorate.
    * @param {!MetadataModel} metadataModel To retrieve metadata.
    * @param {!VolumeManager} volumeManager To retrieve volume info.
-   * @param {!importerHistoryInterfaces.HistoryLoader} historyLoader
    * @param {!A11yAnnounce} a11y FileManagerUI to be able to announce a11y
    *     messages.
    * @param {boolean} fullPage True if it's full page File Manager, False if a
@@ -428,15 +419,13 @@ export class FileTable extends Table {
    * @suppress {checkPrototypalTypes} Closure was failing because the signature
    * of this decorate() doesn't match the base class.
    */
-  static decorate(
-      self, metadataModel, volumeManager, historyLoader, a11y, fullPage) {
+  static decorate(self, metadataModel, volumeManager, a11y, fullPage) {
     Table.decorate(self);
     self.__proto__ = FileTable.prototype;
     FileTableList.decorate(self.list);
     self.list.setOnMergeItems(self.updateHighPriorityRange_.bind(self));
     self.metadataModel_ = metadataModel;
     self.volumeManager_ = volumeManager;
-    self.historyLoader_ = historyLoader;
     self.a11y = a11y;
 
     // Force the list's ending spacer to be tall enough to allow overscroll.
@@ -457,19 +446,6 @@ export class FileTable extends Table {
     /** @private {function(!Event)} */
     self.onThumbnailLoadedBound_ = self.onThumbnailLoaded_.bind(self);
 
-    /**
-     * Reflects the visibility of import status in the UI.  Assumption: import
-     * status is only enabled in import-eligible locations.  See
-     * ImportController#onDirectoryChanged.  For this reason, the code in this
-     * class checks if import status is visible, and if so, assumes that all
-     * the files are in an import-eligible location.
-     * TODO(kenobi): Clean this up once import status is queryable from
-     * metadata.
-     *
-     * @private {boolean}
-     */
-    self.importStatusVisible_ = true;
-
     /** @private {boolean} */
     self.useModificationByMeTime_ = false;
 
@@ -484,12 +460,6 @@ export class FileTable extends Table {
     sizeColumn.defaultOrder = 'desc';
     sizeColumn.headerRenderFunction = renderHeader_;
 
-    const statusColumn =
-        new TableColumn('status', str('STATUS_COLUMN_LABEL'), 60, true);
-    statusColumn.renderFunction = self.renderStatus_.bind(self);
-    statusColumn.visible = self.importStatusVisible_;
-    statusColumn.headerRenderFunction = renderHeader_;
-
     const typeColumn =
         new TableColumn('type', str('TYPE_COLUMN_LABEL'), fullPage ? 110 : 110);
     typeColumn.renderFunction = self.renderType_.bind(self);
@@ -501,8 +471,7 @@ export class FileTable extends Table {
     modTimeColumn.defaultOrder = 'desc';
     modTimeColumn.headerRenderFunction = renderHeader_;
 
-    const columns =
-        [nameColumn, sizeColumn, statusColumn, typeColumn, modTimeColumn];
+    const columns = [nameColumn, sizeColumn, typeColumn, modTimeColumn];
 
     const columnModel = new FileTableColumnModel(columns);
 
@@ -700,18 +669,6 @@ export class FileTable extends Table {
   }
 
   /**
-   * Sets the visibility of the cloud import status column.
-   * @param {boolean} visible
-   */
-  setImportStatusVisible(visible) {
-    if (this.importStatusVisible_ != visible) {
-      this.importStatusVisible_ = visible;
-      this.columnModel.setVisible(this.columnModel.indexOf('status'), visible);
-      this.relayout();
-    }
-  }
-
-  /**
    * Sets date and time format.
    * @param {boolean} use12hourClock True if 12 hours clock, False if 24 hours.
    */
@@ -896,83 +853,6 @@ export class FileTable extends Table {
   }
 
   /**
-   * Render the Status column of the detail table.
-   *
-   * @param {Entry} entry The Entry object to render.
-   * @param {string} columnId The id of the column to be rendered.
-   * @param {Table} table The table doing the rendering.
-   * @return {!HTMLDivElement} Created element.
-   * @private
-   */
-  renderStatus_(entry, columnId, table) {
-    const div =
-        /** @type {!HTMLDivElement} */ (
-            this.ownerDocument.createElement('div'));
-    div.className = 'status status-icon';
-    if (entry) {
-      this.updateStatus_(div, entry);
-    }
-
-    return div;
-  }
-
-  /**
-   * Returns the status of the entry w.r.t. the given import destination.
-   * @param {Entry} entry
-   * @param {!importer.Destination} destination
-   * @return {!Promise<string>} The import status - will be 'imported',
-   *     'copied', or 'unknown'.
-   */
-  getImportStatus_(entry, destination) {
-    // If import status is not visible, early out because there's no point
-    // retrieving it.
-    if (!this.importStatusVisible_ || !importer.isEligibleType(entry)) {
-      // Our import history doesn't deal with directories.
-      // TODO(kenobi): May need to revisit this if the above assumption changes.
-      return Promise.resolve('unknown');
-    }
-    // For the compiler.
-    const fileEntry = /** @type {!FileEntry} */ (entry);
-
-    return this.historyLoader_.getHistory()
-        .then(
-            /** @param {!importerHistoryInterfaces.ImportHistory} history */
-            history => {
-              return Promise.all([
-                history.wasImported(fileEntry, destination),
-                history.wasCopied(fileEntry, destination),
-              ]);
-            })
-        .then(
-            /** @param {!Array<boolean>} status */
-            status => {
-              if (status[0]) {
-                return 'imported';
-              } else if (status[1]) {
-                return 'copied';
-              } else {
-                return 'unknown';
-              }
-            });
-  }
-
-  /**
-   * Render the status icon of the detail table.
-   *
-   * @param {HTMLDivElement} div
-   * @param {Entry} entry The Entry object to render.
-   * @private
-   */
-  updateStatus_(div, entry) {
-    this.getImportStatus_(entry, importer.Destination.GOOGLE_DRIVE)
-        .then(
-            /** @param {string} status */
-            status => {
-              div.setAttribute('file-status-icon', status);
-            });
-  }
-
-  /**
    * Render the Type column of the detail table.
    *
    * @param {Entry} entry The Entry object to render.
@@ -1049,8 +929,6 @@ export class FileTable extends Table {
         /** @type {!HTMLDivElement} */ (item.querySelector('.date')), entry);
     this.updateSize_(
         /** @type {!HTMLDivElement} */ (item.querySelector('.size')), entry);
-    this.updateStatus_(
-        /** @type {!HTMLDivElement} */ (item.querySelector('.status')), entry);
   }
 
   /**
@@ -1096,10 +974,6 @@ export class FileTable extends Table {
                   'pinned',
                 ])[0],
             util.isTeamDriveRoot(entry));
-      });
-    } else if (type === 'import-history') {
-      forEachCell('.table-row-cell > .status', function(item, entry, unused) {
-        this.updateStatus_(item, entry);
       });
     }
   }

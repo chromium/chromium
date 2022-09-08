@@ -5,7 +5,6 @@
 import 'chrome://resources/cr_elements/cr_input/cr_input.js';
 
 import {decorate} from 'chrome://resources/js/cr/ui.m.js';
-import {Command} from './ui/command.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import {MockVolumeManager} from '../../background/js/mock_volume_manager.js';
@@ -15,7 +14,6 @@ import {MockDirectoryEntry, MockFileEntry, MockFileSystem} from '../../common/js
 import {util} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {FileOperationManager} from '../../externs/background/file_operation_manager.js';
-import {importerHistoryInterfaces} from '../../externs/background/import_history.js';
 import {ProgressCenter} from '../../externs/background/progress_center.js';
 import {VolumeManager} from '../../externs/volume_manager.js';
 import {FilesToast} from '../elements/files_toast.js';
@@ -27,6 +25,7 @@ import {FileTransferController} from './file_transfer_controller.js';
 import {MockMetadataModel} from './metadata/mock_metadata.js';
 import {createFakeDirectoryModel} from './mock_directory_model.js';
 import {A11yAnnounce} from './ui/a11y_announce.js';
+import {Command} from './ui/command.js';
 import {DirectoryTree} from './ui/directory_tree.js';
 import {FileGrid} from './ui/file_grid.js';
 import {FileTable} from './ui/file_table.js';
@@ -135,14 +134,6 @@ export function setUp() {
   // Fake FileSelectionHandler.
   selectionHandler = new FakeFileSelectionHandler();
 
-  // Fake HistoryLoader.
-  const historyLoader =
-      /** @type {!importerHistoryInterfaces.HistoryLoader} */ ({
-        getHistory: () => {
-          return Promise.resolve();
-        },
-      });
-
   // Fake A11yAnnounce.
   const a11Messages = [];
   const a11y = /** @type {!A11yAnnounce} */ ({
@@ -155,15 +146,14 @@ export function setUp() {
   const table =
       /** @type {!FileTable} */ (util.queryRequiredElement('#detail-table'));
   FileTable.decorate(
-      table, metadataModel, volumeManager, historyLoader, a11y,
-      true /* fullPage */);
+      table, metadataModel, volumeManager, a11y, true /* fullPage */);
   const dataModel = new FileListModel(metadataModel);
   table.list.dataModel = dataModel;
 
   // Setup FileGrid.
   const grid =
       /** @type {!FileGrid} */ (util.queryRequiredElement('#file-grid'));
-  FileGrid.decorate(grid, metadataModel, volumeManager, historyLoader, a11y);
+  FileGrid.decorate(grid, metadataModel, volumeManager, a11y);
 
   // Setup the ListContainer and its dependencies
   listContainer = new ListContainer(

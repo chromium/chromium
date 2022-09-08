@@ -22,16 +22,11 @@ group("closure_compile") {
 group("js_modules") {
   deps = [
     ":crostini",
-    ":device_handler",
     ":drive_sync_handler",
-    ":duplicate_finder",
     ":file_manager_base",
     ":file_operation_handler",
     ":file_operation_manager",
     ":file_operation_util",
-    ":import_history",
-    ":media_import_handler",
-    ":media_scanner",
     ":metrics_start",
     ":progress_center",
     ":test_util",
@@ -47,25 +42,19 @@ js_type_check("closure_compile_jsmodules") {
     ":app_window_wrapper",
     ":app_windows",
     ":crostini",
-    ":device_handler",
     ":drive_sync_handler",
-    ":duplicate_finder",
     ":entry_location_impl",
     ":file_manager_base",
     ":file_operation_handler",
     ":file_operation_manager",
     ":file_operation_util",
-    ":import_history",
     ":launcher",
-    ":media_import_handler",
-    ":media_scanner",
     ":metadata_proxy",
     ":metrics_start",
     ":mock_progress_center",
     ":mount_metrics",
     ":progress_center",
     ":runtime_loaded_test_util",
-    ":task_queue",
     ":test_util_base",
     ":trash",
     ":volume_info_impl",
@@ -91,11 +80,9 @@ js_type_check("test_support_modules_type_check") {
     ":mock_crostini",
     ":mock_drive_sync_handler",
     ":mock_file_operation_manager",
-    ":mock_media_scanner",
     ":mock_progress_center",
     ":mock_volume_manager",
     ":runtime_loaded_test_util",
-    ":test_import_history",
   ]
   closure_flags =
       strict_error_checking_closure_args + [
@@ -124,21 +111,15 @@ js_library("app_windows") {
 js_library("file_manager_base") {
   deps = [
     ":crostini",
-    ":device_handler",
     ":drive_sync_handler",
-    ":duplicate_finder",
     ":file_operation_handler",
     ":file_operation_manager",
     ":file_operation_util",
-    ":import_history",
     ":launcher",
-    ":media_import_handler",
-    ":media_scanner",
     ":mount_metrics",
     ":progress_center",
     ":volume_manager_factory",
     "//ui/file_manager/file_manager/common/js:files_app_state",
-    "//ui/file_manager/file_manager/common/js:importer_common",
     "//ui/file_manager/file_manager/common/js:metrics",
     "//ui/file_manager/file_manager/common/js:url_constants",
     "//ui/file_manager/file_manager/common/js:util",
@@ -147,12 +128,8 @@ js_library("file_manager_base") {
     "//ui/file_manager/file_manager/externs:volume_manager",
     "//ui/file_manager/file_manager/externs/background:crostini",
     "//ui/file_manager/file_manager/externs/background:drive_sync_handler",
-    "//ui/file_manager/file_manager/externs/background:duplicate_finder",
     "//ui/file_manager/file_manager/externs/background:file_manager_base",
     "//ui/file_manager/file_manager/externs/background:file_operation_manager",
-    "//ui/file_manager/file_manager/externs/background:import_history",
-    "//ui/file_manager/file_manager/externs/background:media_import_handler",
-    "//ui/file_manager/file_manager/externs/background:media_scanner",
     "//ui/file_manager/file_manager/externs/background:progress_center",
   ]
 }
@@ -207,40 +184,6 @@ js_unittest("crostini_unittest") {
   ]
 }
 
-js_library("device_handler") {
-  deps = [
-    ":volume_manager_factory",
-    "//ui/file_manager/file_manager/common/js:async_util",
-    "//ui/file_manager/file_manager/common/js:importer_common",
-    "//ui/file_manager/file_manager/common/js:metrics",
-    "//ui/file_manager/file_manager/common/js:progress_center_common",
-    "//ui/file_manager/file_manager/common/js:url_constants",
-    "//ui/file_manager/file_manager/common/js:util",
-    "//ui/file_manager/file_manager/externs:volume_info",
-    "//ui/file_manager/file_manager/externs:volume_manager",
-    "//ui/file_manager/file_manager/externs/background:progress_center",
-    "//ui/webui/resources/js/cr:event_target.m",
-  ]
-}
-
-js_unittest("device_handler_unittest") {
-  deps = [
-    ":device_handler",
-    ":mock_progress_center",
-    ":mock_volume_manager",
-    "//chrome/test/data/webui:chai_assert",
-    "//ui/file_manager/file_manager/common/js:importer_common",
-    "//ui/file_manager/file_manager/common/js:metrics",
-    "//ui/file_manager/file_manager/common/js:mock_chrome",
-    "//ui/file_manager/file_manager/common/js:mock_entry",
-    "//ui/file_manager/file_manager/common/js:test_error_reporting",
-    "//ui/file_manager/file_manager/common/js:util",
-    "//ui/file_manager/file_manager/common/js:volume_manager_types",
-    "//ui/file_manager/file_manager/externs:volume_info",
-    "//ui/webui/resources/js:load_time_data.m",
-  ]
-}
-
 js_library("mock_drive_sync_handler") {
   deps = [
     "//ui/file_manager/file_manager/externs:drive_dialog_controller",
@@ -275,36 +218,6 @@ js_unittest("drive_sync_handler_unittest") {
     "//ui/file_manager/file_manager/common/js:progress_center_common",
     "//ui/file_manager/file_manager/common/js:url_constants",
     "//ui/webui/resources/js:load_time_data.m",
-  ]
-}
-
-js_library("duplicate_finder") {
-  deps = [
-    ":import_history",
-    ":volume_manager_factory",
-    "//ui/file_manager/file_manager/common/js:importer_common",
-    "//ui/file_manager/file_manager/common/js:lru_cache",
-    "//ui/file_manager/file_manager/common/js:metrics",
-    "//ui/file_manager/file_manager/common/js:volume_manager_types",
-    "//ui/file_manager/file_manager/externs:volume_manager",
-    "//ui/file_manager/file_manager/externs/background:duplicate_finder",
-    "//ui/file_manager/file_manager/externs/background:import_history",
-  ]
-}
-
-js_unittest("duplicate_finder_unittest") {
-  deps = [
-    ":duplicate_finder",
-    ":mock_volume_manager",
-    ":test_import_history",
-    "//chrome/test/data/webui:chai_assert",
-    "//ui/file_manager/file_manager/common/js:importer_common",
-    "//ui/file_manager/file_manager/common/js:mock_chrome",
-    "//ui/file_manager/file_manager/common/js:mock_entry",
-    "//ui/file_manager/file_manager/common/js:test_error_reporting",
-    "//ui/file_manager/file_manager/common/js:volume_manager_types",
-    "//ui/file_manager/file_manager/externs:volume_info",
-    "//ui/file_manager/file_manager/externs/background:duplicate_finder",
   ]
 }
 
@@ -422,119 +335,12 @@ js_library("metrics_start") {
   deps = [ "//ui/file_manager/file_manager/common/js:metrics" ]
 }
 
-js_library("import_history") {
-  deps = [
-    ":metadata_proxy",
-    "//ui/file_manager/file_manager/common/js:importer_common",
-    "//ui/file_manager/file_manager/common/js:util",
-    "//ui/file_manager/file_manager/externs/background:import_history",
-    "//ui/webui/resources/js:assert.m",
-  ]
-}
-
-js_unittest("import_history_unittest") {
-  deps = [
-    ":import_history",
-    "//chrome/test/data/webui:chai_assert",
-    "//ui/file_manager/file_manager/common/js:importer_common",
-    "//ui/file_manager/file_manager/common/js:mock_chrome",
-    "//ui/file_manager/file_manager/common/js:mock_entry",
-    "//ui/file_manager/file_manager/common/js:test_error_reporting",
-    "//ui/file_manager/file_manager/common/js:test_importer_common",
-    "//ui/file_manager/file_manager/common/js:unittest_util",
-    "//ui/file_manager/file_manager/externs/background:import_history",
-  ]
-}
-
 js_library("launcher") {
   deps = [
     ":app_window_wrapper",
     "//ui/file_manager/file_manager/common/js:api",
     "//ui/file_manager/file_manager/common/js:files_app_state",
     "//ui/file_manager/file_manager/common/js:util",
-  ]
-}
-
-js_library("media_import_handler") {
-  deps = [
-    ":file_operation_util",
-    ":task_queue",
-    "//ui/file_manager/file_manager/common/js:async_util",
-    "//ui/file_manager/file_manager/common/js:importer_common",
-    "//ui/file_manager/file_manager/common/js:metrics",
-    "//ui/file_manager/file_manager/common/js:progress_center_common",
-    "//ui/file_manager/file_manager/common/js:util",
-    "//ui/file_manager/file_manager/common/js:xfm",
-    "//ui/file_manager/file_manager/externs/background:drive_sync_handler",
-    "//ui/file_manager/file_manager/externs/background:duplicate_finder",
-    "//ui/file_manager/file_manager/externs/background:import_history",
-    "//ui/file_manager/file_manager/externs/background:media_import_handler",
-    "//ui/file_manager/file_manager/externs/background:media_scanner",
-    "//ui/file_manager/file_manager/externs/background:progress_center",
-    "//ui/file_manager/file_manager/externs/background:task_queue",
-    "//ui/webui/resources/js:assert.m",
-  ]
-}
-
-js_unittest("media_import_handler_unittest") {
-  deps = [
-    ":file_operation_util",
-    ":media_import_handler",
-    ":mock_drive_sync_handler",
-    ":mock_media_scanner",
-    ":mock_progress_center",
-    ":mock_volume_manager",
-    ":test_import_history",
-    "//chrome/test/data/webui:chai_assert",
-    "//ui/file_manager/file_manager/common/js:importer_common",
-    "//ui/file_manager/file_manager/common/js:mock_chrome",
-    "//ui/file_manager/file_manager/common/js:mock_entry",
-    "//ui/file_manager/file_manager/common/js:test_error_reporting",
-    "//ui/file_manager/file_manager/common/js:test_importer_common",
-    "//ui/file_manager/file_manager/common/js:volume_manager_types",
-    "//ui/file_manager/file_manager/externs:volume_info",
-    "//ui/file_manager/file_manager/externs/background:duplicate_finder",
-    "//ui/file_manager/file_manager/externs/background:import_history",
-    "//ui/file_manager/file_manager/externs/background:media_import_handler",
-  ]
-}
-
-js_library("mock_media_scanner") {
-  deps = [
-    ":media_scanner",
-    "//chrome/test/data/webui:chai_assert",
-    "//ui/file_manager/file_manager/common/js:importer_common",
-    "//ui/file_manager/file_manager/externs/background:media_scanner",
-  ]
-  visibility += [
-    "//ui/file_manager/file_manager/foreground/js:import_controller_unittest",
-  ]
-}
-
-js_library("media_scanner") {
-  deps = [
-    ":file_operation_util",
-    ":metadata_proxy",
-    "//ui/file_manager/file_manager/common/js:importer_common",
-    "//ui/file_manager/file_manager/externs/background:media_scanner",
-    "//ui/webui/resources/js:assert.m",
-  ]
-  visibility += [
-    "//ui/file_manager/file_manager/foreground/js:import_controller_unittest",
-  ]
-}
-
-js_unittest("media_scanner_unittest") {
-  deps = [
-    ":file_operation_util",
-    ":media_scanner",
-    ":mock_media_scanner",
-    ":test_import_history",
-    "//chrome/test/data/webui:chai_assert",
-    "//ui/file_manager/file_manager/common/js:importer_common",
-    "//ui/file_manager/file_manager/common/js:test_error_reporting",
-    "//ui/file_manager/file_manager/common/js:unittest_util",
-    "//ui/file_manager/file_manager/externs/background:media_scanner",
   ]
 }
 
@@ -586,7 +392,6 @@ js_library("runtime_loaded_test_util") {
     ":file_operation_util",
     ":volume_manager_factory",
     "//ui/file_manager/file_manager/common/js:error_counter",
-    "//ui/file_manager/file_manager/common/js:importer_common",
     "//ui/file_manager/file_manager/common/js:metrics",
     "//ui/file_manager/file_manager/common/js:progress_center_common",
     "//ui/file_manager/file_manager/common/js:volume_manager_types",
@@ -611,23 +416,6 @@ js_library("volume_info_impl") {
   ]
 }
 
-js_unittest("task_queue_unittest") {
-  deps = [
-    ":task_queue",
-    "//chrome/test/data/webui:chai_assert",
-    "//ui/file_manager/file_manager/common/js:importer_common",
-    "//ui/file_manager/file_manager/common/js:test_error_reporting",
-    "//ui/file_manager/file_manager/externs/background:task_queue",
-  ]
-}
-
-js_library("task_queue") {
-  deps = [
-    "//ui/file_manager/file_manager/common/js:importer_common",
-    "//ui/file_manager/file_manager/externs/background:task_queue",
-  ]
-}
-
 js_library("test_util_base") {
   visibility += related_apps
   deps = [
@@ -649,14 +437,6 @@ js_library("test_util") {
     "//ui/file_manager/file_manager/common/js:files_app_state",
     "//ui/file_manager/file_manager/common/js:progress_center_common",
     "//ui/file_manager/file_manager/common/js:util",
-  ]
-}
-
-js_library("test_import_history") {
-  deps = [
-    ":import_history",
-    "//chrome/test/data/webui:chai_assert",
-    "//ui/file_manager/file_manager/common/js:importer_common",
   ]
 }
 
@@ -760,17 +540,11 @@ js_library("volume_manager_util") {
 js_test_type_check("js_test_type_check") {
   deps = [
     ":crostini_unittest",
-    ":device_handler_unittest",
     ":drive_sync_handler_unittest",
-    ":duplicate_finder_unittest",
     ":file_operation_handler_unittest",
     ":file_operation_manager_unittest",
-    ":import_history_unittest",
-    ":media_import_handler_unittest",
-    ":media_scanner_unittest",
     ":metadata_proxy_unittest",
     ":mount_metrics_unittest",
-    ":task_queue_unittest",
     ":trash_unittest",
     ":volume_manager_unittest",
   ]

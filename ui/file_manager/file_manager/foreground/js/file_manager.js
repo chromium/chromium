@@ -4,8 +4,6 @@
 
 import {assert, assertInstanceof} from 'chrome://resources/js/assert.m.js';
 import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
-import {contextMenuHandler} from './ui/context_menu_handler.js';
-import {Menu} from './ui/menu.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
 import {ArrayDataModel} from '../../common/js/array_data_model.js';
@@ -20,9 +18,6 @@ import {AllowedPaths, VolumeManagerCommon} from '../../common/js/volume_manager_
 import {Crostini} from '../../externs/background/crostini.js';
 import {FileManagerBaseInterface} from '../../externs/background/file_manager_base.js';
 import {FileOperationManager} from '../../externs/background/file_operation_manager.js';
-import {importerHistoryInterfaces} from '../../externs/background/import_history.js';
-import {mediaImportInterfaces} from '../../externs/background/media_import_handler.js';
-import {mediaScannerInterfaces} from '../../externs/background/media_scanner.js';
 import {ProgressCenter} from '../../externs/background/progress_center.js';
 import {BackgroundWindow} from '../../externs/background_window.js';
 import {CommandHandlerDeps} from '../../externs/command_handler_deps.js';
@@ -33,7 +28,6 @@ import {ActionsController} from './actions_controller.js';
 import {AndroidAppListModel} from './android_app_list_model.js';
 import {AppStateController} from './app_state_controller.js';
 import {BannerController} from './banner_controller.js';
-import {ColumnVisibilityController} from './column_visibility_controller.js';
 import {crossoverSearchUtils} from './crossover_search_utils.js';
 import {CrostiniController} from './crostini_controller.js';
 import {DialogActionController} from './dialog_action_controller.js';
@@ -51,7 +45,6 @@ import {FileTypeFiltersController} from './file_type_filters_controller.js';
 import {FolderShortcutsDataModel} from './folder_shortcuts_data_model.js';
 import {GearMenuController} from './gear_menu_controller.js';
 import {GuestOsController} from './guest_os_controller.js';
-import {importer} from './import_controller.js';
 import {LastModifiedController} from './last_modified_controller.js';
 import {LaunchParam} from './launch_param.js';
 import {ListThumbnailLoader} from './list_thumbnail_loader.js';
@@ -76,6 +69,7 @@ import {TaskController} from './task_controller.js';
 import {ToolbarController} from './toolbar_controller.js';
 import {A11yAnnounce} from './ui/a11y_announce.js';
 import {CommandButton} from './ui/commandbutton.js';
+import {contextMenuHandler} from './ui/context_menu_handler.js';
 import {DirectoryTree} from './ui/directory_tree.js';
 import {FileGrid} from './ui/file_grid.js';
 import {FileListSelectionModel} from './ui/file_list_selection_model.js';
@@ -83,6 +77,7 @@ import {FileManagerUI} from './ui/file_manager_ui.js';
 import {FileMetadataFormatter} from './ui/file_metadata_formatter.js';
 import {FileTable} from './ui/file_table.js';
 import {List} from './ui/list.js';
+import {Menu} from './ui/menu.js';
 
 /**
  * FileManager constructor.
@@ -105,9 +100,6 @@ export class FileManager extends EventTarget {
      */
     this.volumeManager_;
 
-    /** @private {?importerHistoryInterfaces.HistoryLoader} */
-    this.historyLoader_ = null;
-
     /** @private {?Crostini} */
     this.crostini_ = null;
 
@@ -116,33 +108,6 @@ export class FileManager extends EventTarget {
 
     /** @private {?GuestOsController} */
     this.guestOsController_ = null;
-
-    /**
-     * ImportHistory. Non-null only once history observer is added in
-     * {@code addHistoryObserver}.
-     * @private {?importerHistoryInterfaces.ImportHistory}
-     */
-    this.importHistory_ = null;
-
-    /**
-     * Bound observer for use with {@code
-     * importerHistoryInterfaces.ImportHistory.Observer}. The instance is bound
-     * once here as {@code ImportHistory.removeObserver} uses object equivilency
-     * to remove observers.
-     *
-     * @private
-     *     @const {function(!importerHistoryInterfaces.ImportHistory.ChangedEvent)}
-     */
-    this.onHistoryChangedBound_ = this.onHistoryChanged_.bind(this);
-
-    /** @private {?mediaScannerInterfaces.MediaScanner} */
-    this.mediaScanner_ = null;
-
-    /** @private {?importer.ImportController} */
-    this.importController_ = null;
-
-    /** @private {?mediaImportInterfaces.ImportRunner} */
-    this.mediaImportHandler_ = null;
 
     /** @private {?MetadataModel} */
     this.metadataModel_ = null;
@@ -336,9 +301,6 @@ export class FileManager extends EventTarget {
 
     /** @private {?TaskController} */
     this.taskController_ = null;
-
-    /** @private {ColumnVisibilityController} */
-    this.columnVisibilityController_ = null;
 
     /** @private {?QuickViewUma} */
     this.quickViewUma_ = null;
@@ -555,31 +517,10 @@ export class FileManager extends EventTarget {
   }
 
   /**
-   * @return {importer.ImportController}
-   */
-  get importController() {
-    return this.importController_;
-  }
-
-  /**
-   * @return {importerHistoryInterfaces.HistoryLoader}
-   */
-  get historyLoader() {
-    return this.historyLoader_;
-  }
-
-  /**
    * @return {Crostini}
    */
   get crostini() {
     return this.crostini_;
-  }
-
-  /**
-   * @return {mediaImportInterfaces.ImportRunner}
-   */
-  get mediaImportHandler() {
-    return this.mediaImportHandler_;
   }
 
   /**
@@ -749,14 +690,6 @@ export class FileManager extends EventTarget {
         fileListSelectionModel, assert(this.quickViewUma_),
         metadataBoxController, this.dialogType, assert(this.volumeManager_),
         this.dialogDom_);
-
-    if (this.dialogType === DialogType.FULL_PAGE) {
-      this.importController_ = new importer.ImportController(
-          new importer.RuntimeControllerEnvironment(
-              this, assert(this.selectionHandler_)),
-          assert(this.mediaScanner_), assert(this.mediaImportHandler_),
-          new importer.RuntimeCommandWidget());
-    }
 
     assert(this.fileFilter_);
     assert(this.namingController_);
@@ -1014,9 +947,6 @@ export class FileManager extends EventTarget {
     if (window.isSWA) {
       this.fileOperationManager_.setFileManager(this);
     }
-    this.mediaImportHandler_ = this.fileBrowserBackground_.mediaImportHandler;
-    this.mediaScanner_ = this.fileBrowserBackground_.mediaScanner;
-    this.historyLoader_ = this.fileBrowserBackground_.historyLoader;
     this.crostini_ = this.fileBrowserBackground_.crostini;
 
     metrics.recordInterval('Load.InitBackgroundPage');
@@ -1094,7 +1024,6 @@ export class FileManager extends EventTarget {
   initAdditionalUI_() {
     assert(this.metadataModel_);
     assert(this.volumeManager_);
-    assert(this.historyLoader_);
     assert(this.dialogDom_);
     assert(this.ui_);
 
@@ -1104,15 +1033,13 @@ export class FileManager extends EventTarget {
 
     const table = util.queryRequiredElement('.detail-table', dom);
     FileTable.decorate(
-        table, this.metadataModel_, this.volumeManager_, this.historyLoader_,
+        table, this.metadataModel_, this.volumeManager_,
         /** @type {!A11yAnnounce} */ (this.ui_),
         this.dialogType == DialogType.FULL_PAGE);
     const grid = util.queryRequiredElement('.thumbnail-grid', dom);
     FileGrid.decorate(
-        grid, this.metadataModel_, this.volumeManager_, this.historyLoader_,
+        grid, this.metadataModel_, this.volumeManager_,
         /** @type {!A11yAnnounce} */ (this.ui_));
-
-    this.addHistoryObserver_();
 
     this.ui_.initAdditionalUI(
         assertInstanceof(table, FileTable), assertInstanceof(grid, FileGrid),
@@ -1122,12 +1049,6 @@ export class FileManager extends EventTarget {
     this.progressCenter.addPanel(this.ui_.progressCenterPanel);
 
     util.addIsFocusedMethod();
-
-    // The cwd is not known at this point.  Hide the import status column before
-    // redrawing, to avoid ugly flashing in the UI, caused when the first redraw
-    // has a visible status column, and then the cwd is later discovered to be
-    // not an import-eligible location.
-    this.ui_.listContainer.table.setImportStatusVisible(false);
 
     // Arrange the file list.
     this.ui_.listContainer.table.normalizeColumns();
@@ -1141,50 +1062,6 @@ export class FileManager extends EventTarget {
    */
   initUIFocus_() {
     this.ui_.initUIFocus();
-  }
-
-  /**
-   * One-time initialization of import history observer. Provides
-   * the glue that updates the UI when history changes.
-   *
-   * @private
-   */
-  addHistoryObserver_() {
-    // If, and only if history is ever fully loaded (it may not be),
-    // we want to update grid/list view when it changes.
-    this.historyLoader_.addHistoryLoadedListener(
-        /**
-         * @param {!importerHistoryInterfaces.ImportHistory} history
-         * @this {FileManager}
-         */
-        history => {
-          this.importHistory_ = history;
-          history.addObserver(this.onHistoryChangedBound_);
-        });
-  }
-
-  /**
-   * Handles events when import history changed.
-   *
-   * @param {!importerHistoryInterfaces.ImportHistory.ChangedEvent} event
-   * @private
-   */
-  onHistoryChanged_(event) {
-    // Ignore any entry that isn't an immediate child of the
-    // current directory.
-    util.isChildEntry(event.entry, this.getCurrentDirectoryEntry())
-        .then(
-            /**
-             * @param {boolean} isChild
-             */
-            isChild => {
-              if (isChild) {
-                this.ui_.listContainer.grid.updateListItemsMetadata(
-                    'import-history', [event.entry]);
-                this.ui_.listContainer.table.updateListItemsMetadata(
-                    'import-history', [event.entry]);
-              }
-            });
   }
 
   /**
@@ -1242,11 +1119,6 @@ export class FileManager extends EventTarget {
         this.directoryModel_.getFileListSelection();
 
     this.appStateController_.initialize(this.ui_, this.directoryModel_);
-
-    if (this.dialogType === DialogType.FULL_PAGE) {
-      this.columnVisibilityController_ = new ColumnVisibilityController(
-          this.ui_, this.directoryModel_, this.volumeManager_);
-    }
 
     // Create metadata update controller.
     this.metadataUpdateController_ = new MetadataUpdateController(
@@ -1652,10 +1524,6 @@ export class FileManager extends EventTarget {
    * @private
    */
   onUnload_() {
-    if (this.importHistory_) {
-      this.importHistory_.removeObserver(this.onHistoryChangedBound_);
-    }
-
     if (this.directoryModel_) {
       this.directoryModel_.dispose();
     }

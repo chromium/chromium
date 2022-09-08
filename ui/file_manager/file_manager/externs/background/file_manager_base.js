@@ -8,9 +8,6 @@ import {VolumeManager} from '../volume_manager.js';
 import {Crostini} from './crostini.js';
 import {DriveSyncHandler} from './drive_sync_handler.js';
 import {FileOperationManager} from './file_operation_manager.js';
-import {importerHistoryInterfaces} from './import_history.js';
-import {mediaImportInterfaces} from './media_import_handler.js';
-import {mediaScannerInterfaces} from './media_scanner.js';
 import {ProgressCenter} from './progress_center.js';
 
 /** @typedef {function(!Array<string>):!Promise} */
@@ -44,21 +41,6 @@ export class FileManagerBaseInterface {
      * @type {FileOperationManager}
      */
     this.fileOperationManager;
-
-    /**
-     * @type {!mediaImportInterfaces.ImportRunner}
-     */
-    this.mediaImportHandler;
-
-    /**
-     * @type {!mediaScannerInterfaces.MediaScanner}
-     */
-    this.mediaScanner;
-
-    /**
-     * @type {!importerHistoryInterfaces.HistoryLoader}
-     */
-    this.historyLoader;
 
     /**
      * @type {!Crostini}

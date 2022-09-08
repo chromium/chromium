@@ -8,26 +8,14 @@ group("js_modules") {
   deps = [
     ":crostini",
     ":drive_sync_handler",
-    ":duplicate_finder",
     ":file_manager_base",
     ":file_operation_manager",
-    ":import_history",
-    ":media_import_handler",
-    ":media_scanner",
     ":progress_center",
-    ":task_queue",
   ]
 }
 
 js_library("drive_sync_handler") {
   deps = [ "..:drive_dialog_controller" ]
-}
-
-js_library("duplicate_finder") {
-  deps = [
-    ":import_history",
-    "//ui/file_manager/file_manager/common/js:importer_common",
-  ]
 }
 
 js_library("crostini") {
@@ -39,9 +27,6 @@ js_library("file_manager_base") {
     ":crostini",
     ":drive_sync_handler",
     ":file_operation_manager",
-    ":import_history",
-    ":media_import_handler",
-    ":media_scanner",
     ":progress_center",
     "..:volume_manager",
     "//ui/file_manager/file_manager/common/js:files_app_state",
@@ -55,33 +40,9 @@ js_library("file_operation_manager") {
   ]
 }
 
-js_library("import_history") {
-  deps = [ "//ui/file_manager/file_manager/common/js:importer_common" ]
-}
-
-js_library("media_import_handler") {
-  deps = [
-    ":drive_sync_handler",
-    ":duplicate_finder",
-    ":import_history",
-    ":media_scanner",
-    ":progress_center",
-    ":task_queue",
-    "//ui/file_manager/file_manager/common/js:importer_common",
-  ]
-}
-
-js_library("media_scanner") {
-  deps = [ "//ui/file_manager/file_manager/common/js:importer_common" ]
-}
-
 js_library("progress_center") {
   deps = [
     "..:progress_center_panel",
     "//ui/file_manager/file_manager/common/js:progress_center_common",
   ]
-}
-
-js_library("task_queue") {
-  deps = [ "//ui/file_manager/file_manager/common/js:importer_common" ]
 }
