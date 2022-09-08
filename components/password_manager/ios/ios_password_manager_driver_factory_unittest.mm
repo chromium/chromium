@@ -76,8 +76,27 @@ TEST_F(IOSPasswordManagerDriverFactoryTest, CreateFactoryAndDriver) {
   ASSERT_EQ(driver_created->GetId(), 0);
 
   auto retainable_driver =
-      IOSPasswordManagerDriverFactory::GetRetainableDriver(frame);
+      IOSPasswordManagerDriverFactory::GetRetainableDriver(&web_state_, frame);
   ASSERT_TRUE(retainable_driver != nullptr);
   // The retainable version of the driver should exist.
   ASSERT_EQ(retainable_driver.get(), driver_created);
+}
+
+// Tests that a driver is created inside GetRetainableDriver method if the
+// driver didn't exits before.
+TEST_F(IOSPasswordManagerDriverFactoryTest,
+       CreateDriverFromGetRetainableDriver) {
+  IOSPasswordManagerDriverFactory::CreateForWebState(
+      password_controller_, password_manager_.get(), &web_state_);
+
+  auto web_frame = web::FakeWebFrame::CreateMainWebFrame(GURL::EmptyGURL());
+  web::FakeWebFrame* frame = web_frame.get();
+  web_frames_manager_->AddWebFrame(std::move(web_frame));
+
+  auto retainable_driver =
+      IOSPasswordManagerDriverFactory::GetRetainableDriver(&web_state_, frame);
+  ASSERT_TRUE(retainable_driver != nullptr);
+
+  // If everything worked, the driver should exist and have an id equal to 0.
+  ASSERT_EQ(retainable_driver.get()->GetId(), 0);
 }

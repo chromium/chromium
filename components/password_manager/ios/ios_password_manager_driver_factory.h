@@ -41,7 +41,8 @@ class IOSPasswordManagerDriverFactory
   // Gets a retainable driver object which will still exist after the frame is
   // destroyed.
   static scoped_refptr<IOSPasswordManagerDriver> GetRetainableDriver(
-      web::WebFrame* frame);
+      web::WebState* web_state,
+      web::WebFrame* web_frame);
 
  private:
   friend class web::WebStateUserData<IOSPasswordManagerDriverFactory>;

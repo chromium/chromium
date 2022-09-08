@@ -883,7 +883,7 @@ NSString* const kSuggestionSuffix = @" ••••••••";
   // TODO(crbug.com/1344776): Add a test with two password forms
   if (params.type == "input" || params.type == "change") {
     _lastSubmittedPasswordManagerDriver =
-        IOSPasswordManagerDriverFactory::GetRetainableDriver(frame);
+        IOSPasswordManagerDriverFactory::GetRetainableDriver(_webState, frame);
   }
 
   if (params.type == "focus") {

@@ -51,8 +51,13 @@ IOSPasswordManagerDriverFactory::~IOSPasswordManagerDriverFactory() = default;
 
 // static
 scoped_refptr<IOSPasswordManagerDriver>
-IOSPasswordManagerDriverFactory::GetRetainableDriver(web::WebFrame* frame) {
-  return IOSPasswordManagerWebFrameDriverHelper::FromWebFrame(frame)
+IOSPasswordManagerDriverFactory::GetRetainableDriver(web::WebState* web_state,
+                                                     web::WebFrame* web_frame) {
+  if (!IOSPasswordManagerWebFrameDriverHelper::FromWebFrame(web_frame)) {
+    IOSPasswordManagerDriverFactory::FromWebStateAndWebFrame(web_state,
+                                                             web_frame);
+  }
+  return IOSPasswordManagerWebFrameDriverHelper::FromWebFrame(web_frame)
       ->RetainableDriver();
 }
 
