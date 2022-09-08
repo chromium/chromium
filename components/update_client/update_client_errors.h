@@ -68,6 +68,9 @@ enum class UnpackerError {
   kDeltaPatchProcessFailure = 15,
   kDeltaMissingExistingFile = 16,
   // kFingerprintWriteFailed = 17,    // Deprecated. Don't use.
+  kPuffinMissingPreviousCrx = 18,
+  kFailedToAddToCache = 19,
+  kFailedToCreateCacheDir = 20,
 };
 
 // These errors are returned with the |kInstall| error category and

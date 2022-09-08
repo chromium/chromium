@@ -180,6 +180,8 @@ static_library("update_client") {
   if (enable_puffin_patches) {
     include_dirs = [ "//third_party/puffin/src/include" ]
     sources += [
+      "crx_cache.cc",
+      "crx_cache.h",
       "puffin_component_unpacker.cc",
       "puffin_component_unpacker.h",
       "puffin_patcher.cc",
@@ -302,6 +304,7 @@ source_set("unit_tests") {
   # we should remove the enable_puffin_patches flag.
   if (enable_puffin_patches) {
     sources += [
+      "crx_cache_unittest.cc",
       "puffin_component_unpacker_unittest.cc",
       "puffin_patcher_unittest.cc",
     ]
