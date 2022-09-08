@@ -40,12 +40,14 @@ StreamingRuntimeApplication::StreamingRuntimeApplication(
     cast::common::ApplicationConfig app_config,
     CastWebService* web_service,
     scoped_refptr<base::SequencedTaskRunner> task_runner,
-    cast_receiver::ApplicationClient& application_client)
+    cast_receiver::ApplicationClient& application_client,
+    RuntimeApplicationPlatform::Factory runtime_application_factory)
     : RuntimeApplicationBase(std::move(cast_session_id),
                              std::move(app_config),
                              mojom::RendererType::MOJO_RENDERER,
                              web_service,
-                             std::move(task_runner)),
+                             std::move(task_runner),
+                             std::move(runtime_application_factory)),
       application_client_(application_client) {}
 
 StreamingRuntimeApplication::~StreamingRuntimeApplication() {

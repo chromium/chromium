@@ -8,6 +8,7 @@
 #include "base/memory/raw_ref.h"
 #include "chromecast/browser/cast_web_contents.h"
 #include "chromecast/cast_core/runtime/browser/runtime_application_base.h"
+#include "chromecast/cast_core/runtime/browser/runtime_application_platform.h"
 #include "chromecast/cast_core/runtime/browser/streaming_receiver_session_client.h"
 #include "components/cast_streaming/browser/public/network_context_getter.h"
 
@@ -30,7 +31,8 @@ class StreamingRuntimeApplication final
       cast::common::ApplicationConfig app_config,
       CastWebService* web_service,
       scoped_refptr<base::SequencedTaskRunner> task_runner,
-      cast_receiver::ApplicationClient& application_client);
+      cast_receiver::ApplicationClient& application_client,
+      RuntimeApplicationPlatform::Factory runtime_application_factory);
   ~StreamingRuntimeApplication() override;
 
  private:

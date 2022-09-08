@@ -22,12 +22,14 @@ WebRuntimeApplication::WebRuntimeApplication(
     std::string cast_session_id,
     cast::common::ApplicationConfig config,
     CastWebService* web_service,
-    scoped_refptr<base::SequencedTaskRunner> task_runner)
+    scoped_refptr<base::SequencedTaskRunner> task_runner,
+    RuntimeApplicationPlatform::Factory runtime_application_factory)
     : RuntimeApplicationBase(std::move(cast_session_id),
                              std::move(config),
                              mojom::RendererType::MOJO_RENDERER,
                              web_service,
-                             std::move(task_runner)),
+                             std::move(task_runner),
+                             std::move(runtime_application_factory)),
       app_url_(GetAppConfig().cast_web_app_config().url()) {}
 
 WebRuntimeApplication::~WebRuntimeApplication() {

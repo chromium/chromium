@@ -7,6 +7,7 @@
 
 #include "chromecast/cast_core/runtime/browser/bindings_manager_web_runtime.h"
 #include "chromecast/cast_core/runtime/browser/runtime_application_base.h"
+#include "chromecast/cast_core/runtime/browser/runtime_application_platform.h"
 #include "components/cast_receiver/browser/page_state_observer.h"
 #include "content/public/browser/web_contents_observer.h"
 
@@ -20,10 +21,12 @@ class WebRuntimeApplication final : public RuntimeApplicationBase,
                                     public cast_receiver::PageStateObserver {
  public:
   // |web_service| is expected to exist for the lifetime of this instance.
-  WebRuntimeApplication(std::string cast_session_id,
-                        cast::common::ApplicationConfig app_config,
-                        CastWebService* web_service,
-                        scoped_refptr<base::SequencedTaskRunner> task_runner);
+  WebRuntimeApplication(
+      std::string cast_session_id,
+      cast::common::ApplicationConfig app_config,
+      CastWebService* web_service,
+      scoped_refptr<base::SequencedTaskRunner> task_runner,
+      RuntimeApplicationPlatform::Factory runtime_application_factory);
   ~WebRuntimeApplication() override;
 
  private:

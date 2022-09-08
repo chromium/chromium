@@ -33,11 +33,13 @@ class RuntimeApplicationBase : public RuntimeApplication,
 
  protected:
   // |web_service| is expected to exist for the lifetime of this instance.
-  RuntimeApplicationBase(std::string cast_session_id,
-                         cast::common::ApplicationConfig app_config,
-                         mojom::RendererType renderer_type_used,
-                         CastWebService* web_service,
-                         scoped_refptr<base::SequencedTaskRunner> task_runner);
+  RuntimeApplicationBase(
+      std::string cast_session_id,
+      cast::common::ApplicationConfig app_config,
+      mojom::RendererType renderer_type_used,
+      CastWebService* web_service,
+      scoped_refptr<base::SequencedTaskRunner> task_runner,
+      RuntimeApplicationPlatform::Factory runtime_application_factory);
 
   // Stops the running application. Must be called before destruction of any
   // instance of the implementing object.

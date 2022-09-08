@@ -20,14 +20,6 @@
 
 namespace chromecast {
 
-std::unique_ptr<RuntimeApplicationPlatform> RuntimeApplicationPlatform::Create(
-    scoped_refptr<base::SequencedTaskRunner> task_runner,
-    std::string session_id,
-    Client& client) {
-  return std::make_unique<RuntimeApplicationPlatformGrpc>(
-      std::move(task_runner), std::move(session_id), client);
-}
-
 RuntimeApplicationPlatformGrpc::RuntimeApplicationPlatformGrpc(
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     std::string session_id,

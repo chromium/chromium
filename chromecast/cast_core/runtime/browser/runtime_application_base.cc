@@ -12,6 +12,7 @@
 #include "chromecast/browser/cast_web_service.h"
 #include "chromecast/browser/cast_web_view_factory.h"
 #include "chromecast/browser/visibility_types.h"
+#include "chromecast/cast_core/runtime/browser/runtime_application_platform.h"
 #include "chromecast/cast_core/runtime/browser/url_rewrite/url_request_rewrite_type_converters.h"
 #include "chromecast/common/feature_constants.h"
 
@@ -37,10 +38,10 @@ RuntimeApplicationBase::RuntimeApplicationBase(
     cast::common::ApplicationConfig app_config,
     mojom::RendererType renderer_type_used,
     CastWebService* web_service,
-    scoped_refptr<base::SequencedTaskRunner> task_runner)
-    : platform_(RuntimeApplicationPlatform::Create(task_runner,
-                                                   cast_session_id,
-                                                   *this)),
+    scoped_refptr<base::SequencedTaskRunner> task_runner,
+    RuntimeApplicationPlatform::Factory runtime_application_factory)
+    : platform_(std::move(runtime_application_factory)
+                    .Run(task_runner, cast_session_id, *this)),
       cast_session_id_(std::move(cast_session_id)),
       app_config_(std::move(app_config)),
       web_service_(web_service),

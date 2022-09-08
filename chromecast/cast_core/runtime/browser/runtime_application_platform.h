@@ -57,10 +57,11 @@ class RuntimeApplicationPlatform {
     virtual bool IsApplicationRunning() = 0;
   };
 
-  static std::unique_ptr<RuntimeApplicationPlatform> Create(
-      scoped_refptr<base::SequencedTaskRunner> task_runner,
-      std::string session_id,
-      Client& client);
+  using Factory =
+      base::OnceCallback<std::unique_ptr<RuntimeApplicationPlatform>(
+          scoped_refptr<base::SequencedTaskRunner>,
+          std::string,
+          Client&)>;
 
   virtual ~RuntimeApplicationPlatform() = default;
 
