@@ -10,16 +10,6 @@ source_set("browser_updater_client") {
     "browser_updater_client_util.h",
   ]
 
-  if (is_mac) {
-    sources += [
-      "browser_updater_client_mac.h",
-      "browser_updater_client_mac.mm",
-      "browser_updater_client_util_mac.mm",
-      "browser_updater_helper_client_mac.h",
-      "browser_updater_helper_client_mac.mm",
-    ]
-  }
-
   deps = [
     "//base",
     "//chrome/browser:buildflags",
@@ -28,6 +18,21 @@ source_set("browser_updater_client") {
     "//chrome/updater:browser_sources",
     "//components/version_info",
   ]
+
+  if (is_mac) {
+    sources += [
+      "browser_updater_client_mac.h",
+      "browser_updater_client_mac.mm",
+      "browser_updater_client_util_mac.mm",
+      "browser_updater_helper_client_mac.h",
+      "browser_updater_helper_client_mac.mm",
+    ]
+
+    deps += [
+      "//chrome/browser/google",
+      "//chrome/common:channel_info",
+    ]
+  }
 
   frameworks = [ "OpenDirectory.framework" ]
 }

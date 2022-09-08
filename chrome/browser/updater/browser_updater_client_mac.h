@@ -33,9 +33,7 @@ class BrowserUpdaterClientMac : public BrowserUpdaterClient {
   SEQUENCE_CHECKER(sequence_checker_);
 
   // BrowserUpdaterClient.
-  void BeginRegister(const std::string& brand_code,
-                     const std::string& tag,
-                     const std::string& version,
+  void BeginRegister(const std::string& version,
                      updater::UpdateService::Callback callback) override;
   void BeginUpdateCheck(
       updater::UpdateService::StateChangeCallback state_change,

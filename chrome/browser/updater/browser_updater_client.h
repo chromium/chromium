@@ -54,9 +54,7 @@ class BrowserUpdaterClient
 
   // Helper method for Register() to be implemented by each platform to initiate
   // the registration. Runs in the thread pool.
-  virtual void BeginRegister(const std::string& brand_code,
-                             const std::string& tag,
-                             const std::string& version,
+  virtual void BeginRegister(const std::string& version,
                              updater::UpdateService::Callback callback) = 0;
 
   // Helper method for CheckForUpdate() to be implemented by each platform to

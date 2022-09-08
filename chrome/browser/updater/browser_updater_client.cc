@@ -25,7 +25,7 @@ void BrowserUpdaterClient::Register() {
   base::ThreadPool::PostTask(
       FROM_HERE, {base::MayBlock()},
       base::BindOnce(
-          &BrowserUpdaterClient::BeginRegister, this, "", "",
+          &BrowserUpdaterClient::BeginRegister, this,
           version_info::GetVersionNumber(),
           base::BindPostTask(
               base::SequencedTaskRunnerHandle::Get(),

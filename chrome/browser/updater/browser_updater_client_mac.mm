@@ -18,11 +18,14 @@
 #include "base/strings/strcat.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/task/thread_pool.h"
+#include "chrome/browser/google/google_brand.h"
 #include "chrome/browser/updater/browser_updater_client_util.h"
+#include "chrome/common/channel_info.h"
 #import "chrome/updater/app/server/mac/update_service_wrappers.h"
 #import "chrome/updater/mac/xpc_service_names.h"
 #include "chrome/updater/update_service.h"
 #include "chrome/updater/updater_scope.h"
+#include "components/version_info/version_info.h"
 
 @interface CRUUpdateClientOnDemandImpl () {
   base::scoped_nsobject<NSXPCConnection> _xpcConnection;
@@ -33,6 +36,15 @@ namespace {
 
 NSString* GetAppIdForUpdaterAsNSString() {
   return base::SysUTF8ToNSString(base::mac::BaseBundleID());
+}
+
+std::string GetTag() {
+  std::string contents;
+  base::ReadFileToString(
+      base::mac::OuterBundlePath().Append(".want_full_installer"), &contents);
+  return base::StrCat(
+      {chrome::GetChannelName(chrome::WithExtendedStable(true)),
+       contents == version_info::GetVersionNumber() ? "-full" : ""});
 }
 
 }  // namespace
@@ -189,6 +201,10 @@ NSString* GetAppIdForUpdaterAsNSString() {
   NOTIMPLEMENTED();
 }
 
+- (void)fetchPoliciesWithReply:(void (^)(int))reply {
+  NOTIMPLEMENTED();
+}
+
 @end
 
 BrowserUpdaterClientMac::BrowserUpdaterClientMac(updater::UpdaterScope scope)
@@ -215,11 +231,12 @@ void BrowserUpdaterClientMac::BeginGetUpdaterVersion(
 }
 
 void BrowserUpdaterClientMac::BeginRegister(
-    const std::string& brand_code,
-    const std::string& tag,
     const std::string& version,
     updater::UpdateService::Callback callback) {
   __block updater::UpdateService::Callback block_callback = std::move(callback);
+
+  std::string brand_code;
+  google_brand::GetBrand(&brand_code);
 
   auto reply = ^(int error) {
     std::move(block_callback)
@@ -229,7 +246,7 @@ void BrowserUpdaterClientMac::BeginRegister(
   [client_ registerForUpdatesWithAppId:GetAppIdForUpdaterAsNSString()
                              brandCode:base::SysUTF8ToNSString(brand_code)
                              brandPath:@""
-                                   tag:base::SysUTF8ToNSString(tag)
+                                   tag:base::SysUTF8ToNSString(GetTag())
                                version:base::SysUTF8ToNSString(version)
                   existenceCheckerPath:base::mac::FilePathToNSString(
                                            base::mac::OuterBundlePath())
