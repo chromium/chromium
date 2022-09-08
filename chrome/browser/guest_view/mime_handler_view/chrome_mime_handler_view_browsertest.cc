@@ -690,7 +690,7 @@ IN_PROC_BROWSER_TEST_F(ChromeMimeHandlerViewTest,
       "data:text/html, <iframe src='data:application/pdf,foo' "
       "style='display:none'></iframe>,foo2");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), data_url));
-  ASSERT_TRUE(GetGuestViewManager()->DeprecatedWaitForSingleGuestCreated());
+  ASSERT_TRUE(GetGuestViewManager()->WaitForSingleGuestViewCreated());
 }
 
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
