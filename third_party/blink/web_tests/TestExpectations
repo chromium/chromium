@@ -1688,6 +1688,27 @@ crbug.com/1356256 fast/table/percent-widths-float.html [ Failure Pass ]
 
 # TablesNG ends
 
+### With LayoutNGView enabled:
+
+crbug.com/1294155 external/wpt/css/css-break/flexbox/flex-container-fragmentation-008.html [ Failure ]
+crbug.com/1294155 external/wpt/css/css-break/flexbox/single-line-column-flex-fragmentation-029.html [ Failure ]
+crbug.com/1294155 external/wpt/css/css-contain/container-queries/top-layer-dialog-backdrop.html [ Crash Failure ]
+crbug.com/1294155 external/wpt/css/css-writing-modes/sizing-orthog-htb-in-vrl-001.xht [ Failure ]
+crbug.com/1294155 external/wpt/css/css-writing-modes/sizing-orthog-htb-in-vrl-004.xht [ Failure ]
+crbug.com/1294155 paint/invalidation/outline/outline-change-vertical-rl.html [ Failure ]
+crbug.com/1294155 paint/invalidation/svg/relative-sized-document-scrollbars.svg [ Failure ]
+crbug.com/1294155 printing/fixed-positioned-overflow-scroll.html [ Failure ]
+crbug.com/1294155 printing/multi-page-background.html [ Failure ]
+crbug.com/1294155 printing/page-orientation-propagated.html [ Failure ]
+crbug.com/1294155 [ Win ] printing/vertical-rl.html [ Failure ]
+crbug.com/1294155 scrollbars/scrollbars-on-positioned-content.html [ Failure ]
+crbug.com/1294155 svg/custom/mixed-percent-size-zoom.svg [ Failure ]
+crbug.com/1294155 svg/custom/percent-size-zoom.svg [ Failure ]
+crbug.com/1294155 [ Linux ] svg/text/caret-in-svg-text.xhtml [ Failure ]
+crbug.com/1294155 [ Win ] svg/text/caret-in-svg-text.xhtml [ Failure ]
+crbug.com/1294155 svg/zoom/page/zoom-coords-viewattr-01-b.svg [ Failure ]
+crbug.com/1294155 svg/zoom/page/zoom-foreign-content.svg [ Failure ]
+
 # ====== LayoutNG-only failures until here ======
 
 # ====== MathMLCore-only tests from here ======

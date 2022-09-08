@@ -1322,6 +1322,7 @@
     {
       name: "LayoutNGView",
       implied_by: ["LayoutNGPrinting"],
+      status: "test",
     },
     {
       // crbug.com/1335309
