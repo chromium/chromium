@@ -196,6 +196,8 @@ class RenderViewContextMenu
   // language and returns the language name in its same locale.
   std::u16string GetTargetLanguageDisplayName() const;
 
+  bool IsInProgressiveWebApp() const;
+
   void AppendDeveloperItems();
   void AppendDevtoolsForUnpackedExtensions();
   void AppendLinkItems();

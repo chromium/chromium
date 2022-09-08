@@ -925,6 +925,11 @@ void RenderViewContextMenu::WriteURLToClipboard(const GURL& url) {
   scw.WriteText(FormatURLForClipboard(url));
 }
 
+bool RenderViewContextMenu::IsInProgressiveWebApp() const {
+  const Browser* browser = GetBrowser();
+  return browser && (browser->is_type_app() || browser->is_type_app_popup());
+}
+
 void RenderViewContextMenu::InitMenu() {
   RenderViewContextMenuBase::InitMenu();
 
@@ -948,7 +953,8 @@ void RenderViewContextMenu::InitMenu() {
     AppendImageItems();
 
   if (content_type_->SupportsGroup(
-          ContextMenuContentType::ITEM_GROUP_SEARCHWEBFORIMAGE)) {
+          ContextMenuContentType::ITEM_GROUP_SEARCHWEBFORIMAGE) &&
+      !IsInProgressiveWebApp()) {
     if (base::FeatureList::IsEnabled(lens::features::kLensStandalone) &&
         search::DefaultSearchProviderIsGoogle(GetProfile())) {
       AppendSearchLensForImageItems();
@@ -1392,9 +1398,7 @@ void RenderViewContextMenu::AppendDevtoolsForUnpackedExtensions() {
 
 void RenderViewContextMenu::AppendLinkItems() {
   if (!params_.link_url.is_empty()) {
-    const Browser* browser = GetBrowser();
-    const bool in_app =
-        browser && (browser->is_type_app() || browser->is_type_app_popup());
+    const bool in_app = IsInProgressiveWebApp();
 
     bool show_open_in_new_window = true;
     bool show_open_link_off_the_record = true;
@@ -3245,9 +3249,6 @@ bool RenderViewContextMenu::IsQRCodeGeneratorEnabled() const {
 
 bool RenderViewContextMenu::IsRegionSearchEnabled() const {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  const Browser* browser = GetBrowser();
-  const bool in_app =
-      browser && (browser->is_type_app() || browser->is_type_app_popup());
   TemplateURLService* service =
       TemplateURLServiceFactory::GetForProfile(GetProfile());
   if (!service)
@@ -3266,7 +3267,7 @@ bool RenderViewContextMenu::IsRegionSearchEnabled() const {
   return base::FeatureList::IsEnabled(lens::features::kLensStandalone) &&
          provider_supports_image_search &&
          !GetDocumentURL(params_).SchemeIs(content::kChromeUIScheme) &&
-         !in_app &&
+         !IsInProgressiveWebApp() &&
          GetPrefs(browser_context_)
              ->GetBoolean(prefs::kLensRegionSearchEnabled);
 #else

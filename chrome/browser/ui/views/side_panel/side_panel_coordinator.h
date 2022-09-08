@@ -86,6 +86,8 @@ class SidePanelCoordinator final : public SidePanelRegistryObserver,
   views::View* GetContentView() const;
   SidePanelEntry* GetEntryForId(SidePanelEntry::Id entry_id);
 
+  void SetSidePanelButtonTooltipText(std::u16string tooltip_text);
+
   // Creates header and SidePanelEntry content container within the side panel.
   void InitializeSidePanel();
 
