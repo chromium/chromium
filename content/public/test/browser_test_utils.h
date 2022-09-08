@@ -345,6 +345,10 @@ void SimulateGesturePinchSequence(WebContents* web_contents,
                                   blink::WebGestureDevice source_device);
 
 // Sends a simple, three-event (Begin/Update/End) gesture scroll.
+void SimulateGestureScrollSequence(RenderWidgetHost* render_widget_host,
+                                   const gfx::Point& point,
+                                   const gfx::Vector2dF& delta);
+
 void SimulateGestureScrollSequence(WebContents* web_contents,
                                    const gfx::Point& point,
                                    const gfx::Vector2dF& delta);

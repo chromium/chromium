@@ -4997,17 +4997,16 @@ IN_PROC_BROWSER_TEST_P(WebViewGuestScrollTouchTest,
   content::RenderFrameSubmissionObserver embedder_frame_observer(
       embedder_contents);
 
-  std::vector<content::WebContents*> guest_web_contents_list;
+  std::vector<content::RenderFrameHost*> guest_rfh_list;
   GetGuestViewManager()->WaitForNumGuestsCreated(1u);
-  GetGuestViewManager()->DeprecatedGetGuestWebContentsList(
-      &guest_web_contents_list);
-  ASSERT_EQ(1u, guest_web_contents_list.size());
+  GetGuestViewManager()->GetGuestRenderFrameHostList(&guest_rfh_list);
+  ASSERT_EQ(1u, guest_rfh_list.size());
 
-  content::WebContents* guest_contents = guest_web_contents_list[0];
-  content::RenderFrameSubmissionObserver guest_frame_observer(guest_contents);
+  content::RenderFrameHost* guest_frame = guest_rfh_list[0];
+  content::RenderFrameSubmissionObserver guest_frame_observer(guest_frame);
 
   gfx::Rect embedder_rect = embedder_contents->GetContainerBounds();
-  gfx::Rect guest_rect = guest_contents->GetContainerBounds();
+  gfx::Rect guest_rect = guest_frame->GetView()->GetViewBounds();
 
   guest_rect.set_x(guest_rect.x() - embedder_rect.x());
   guest_rect.set_y(guest_rect.y() - embedder_rect.y());
@@ -5041,12 +5040,12 @@ IN_PROC_BROWSER_TEST_P(WebViewGuestScrollTouchTest,
   // Send scroll gesture to guest and verify embedder scrolls.
   // Perform a scroll gesture of the same magnitude, but in the opposite
   // direction and centered over the GuestView this time.
-  guest_rect = guest_contents->GetContainerBounds();
+  guest_rect = guest_frame->GetView()->GetViewBounds();
   {
     gfx::Point guest_scroll_location(guest_rect.width() / 2,
                                      guest_rect.height() / 2);
 
-    content::SimulateGestureScrollSequence(guest_contents,
+    content::SimulateGestureScrollSequence(guest_frame->GetRenderWidgetHost(),
                                            guest_scroll_location,
                                            gfx::Vector2dF(0, gesture_distance));
 
