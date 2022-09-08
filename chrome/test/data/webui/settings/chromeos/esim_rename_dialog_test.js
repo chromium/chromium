@@ -4,7 +4,7 @@
 
 import 'chrome://os-settings/chromeos/os_settings.js';
 
-import {setESimManagerRemoteForTesting} from 'chrome://resources/cr_components/chromeos/cellular_setup/mojo_interface_provider.m.js';
+import {setESimManagerRemoteForTesting} from 'chrome://resources/cr_components/chromeos/cellular_setup/mojo_interface_provider.js';
 import {MojoInterfaceProviderImpl} from 'chrome://resources/cr_components/chromeos/network/mojo_interface_provider.js';
 import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';

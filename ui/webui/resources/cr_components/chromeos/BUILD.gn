@@ -22,7 +22,7 @@ group("closure_compile") {
 group("polymer3_elements") {
   public_deps = [
     "bluetooth:polymer3_elements",
-    "cellular_setup:polymer3_elements",
+    "cellular_setup:web_components",
     "multidevice_setup:web_components",
     "network:web_components",
     "network_health:web_components",

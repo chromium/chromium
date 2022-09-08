@@ -7,7 +7,17 @@
  * Page in eSIM Setup flow that displays a choice of available eSIM Profiles.
  */
 
+import '//resources/cr_elements/cr_shared_style.css.js';
+import '//resources/polymer/v3_0/iron-list/iron-list.js';
+import './base_page.js';
+import './profile_discovery_list_item.js';
+
+import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {I18nBehavior} from '../../../js/i18n_behavior.m.js';
+
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'profile-discovery-list-page',
 
   behaviors: [I18nBehavior],

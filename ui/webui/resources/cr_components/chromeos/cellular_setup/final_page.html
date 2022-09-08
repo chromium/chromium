@@ -1,39 +1,28 @@
-<link rel="import" href="../../../html/polymer.html">
+<style>
+  [slot='page-body'] {
+    background-image: url(chrome://resources/cr_components/chromeos/cellular_setup/final_page_success.svg);
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-size: contain;
+    height: 242px;
+  }
 
-<link rel="import" href="../../../html/i18n_behavior.html">
-<link rel="import" href="base_page.html">
-<link rel="import" href="cellular_setup_delegate.html">
+  .error[slot='page-body'] {
+      background-image: url(chrome://resources/cr_components/chromeos/cellular_setup/error.svg);
+      background-size: contain;
+  }
 
-<dom-module id="final-page">
-  <template>
-    <style>
-      [slot='page-body'] {
-        background-image: url(chrome://resources/cr_components/chromeos/cellular_setup/final_page_success.svg);
-        background-position: center center;
-        background-repeat: no-repeat;
-        background-size: contain;
-        height: 242px;
-      }
+  @media(prefers-color-scheme: dark) {
+    [slot='page-body'] {
+      background-image: url(chrome://resources/cr_components/chromeos/cellular_setup/final_page_success_dark.svg);
+    }
 
-      .error[slot='page-body'] {
-          background-image: url(chrome://resources/cr_components/chromeos/cellular_setup/error.svg);
-          background-size: contain;
-      }
-
-      @media(prefers-color-scheme: dark) {
-        [slot='page-body'] {
-          background-image: url(chrome://resources/cr_components/chromeos/cellular_setup/final_page_success_dark.svg);
-        }
-
-        .error[slot='page-body'] {
-            background-image: url(chrome://resources/cr_components/chromeos/cellular_setup/error_dark.svg);
-        }
-      }
-    </style>
-    <base-page title="[[getTitle_(showError)]]"
-        message="[[getMessage_(showError)]]">
-      <div class$="[[getPageBodyClass_(showError)]]" slot="page-body"></div>
-    </base-page>
-  </template>
-  <script src="final_page.js"></script>
-</dom-module>
+    .error[slot='page-body'] {
+        background-image: url(chrome://resources/cr_components/chromeos/cellular_setup/error_dark.svg);
+    }
+  }
+</style>
+<base-page title="[[getTitle_(showError)]]"
+    message="[[getMessage_(showError)]]">
+  <div class$="[[getPageBodyClass_(showError)]]" slot="page-body"></div>
+</base-page>

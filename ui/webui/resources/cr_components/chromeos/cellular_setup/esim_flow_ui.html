@@ -1,65 +1,41 @@
-<link rel="import" href="chrome://resources/cr_components/chromeos/network/cellular_utils.html">
-<link rel="import" href="chrome://resources/cr_components/chromeos/network/mojo_interface_provider.html">
-<link rel="import" href="chrome://resources/cr_components/chromeos/network/network_listener_behavior.html">
-<link rel="import" href="chrome://resources/html/assert.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/iron-pages/iron-pages.html">
-<link rel="import" href="../../../html/polymer.html">
-<link rel="import" href="../../../html/i18n_behavior.html">
-<link rel="import" href="mojo_interface_provider.html">
-<link rel="import" href="esim_manager_utils.html">
-<link rel="import" href="subflow_behavior.html">
-<link rel="import" href="cellular_types.html">
-<link rel="import" href="cellular_setup_delegate.html">
-<link rel="import" href="setup_loading_page.html">
-<link rel="import" href="activation_code_page.html">
-<link rel="import" href="activation_verification_page.html">
-<link rel="import" href="final_page.html">
-<link rel="import" href="profile_discovery_list_page.html">
-<link rel="import" href="confirmation_code_page.html">
-
-<dom-module id="esim-flow-ui">
-  <template>
-    <style include="iron-flex">
-      :host {
-        align-content: space-between;
-        display: flex;
-        flex: 1 1 auto;
-        flex-direction: column;
-      }
-    </style>
-    <iron-pages attr-for-selected="id"
-        selected="[[selectedESimPageName_]]">
-      <setup-loading-page id="profileLoadingPage"
-          loading-message="[[getLoadingMessage_(hasHadActiveCellularNetwork_)]]">
-      </setup-loading-page>
-      <profile-discovery-list-page id="profileDiscoveryPage"
-          pending-profiles="[[pendingProfiles_]]"
-          selected-profile="{{selectedProfile_}}"
-          show-busy="[[shouldShowSubpageBusy_(state_)]]">
-      </profile-discovery-list-page>
-      <activation-code-page id="activationCodePage"
-          is-from-qr-code="{{isActivationCodeFromQrCode_}}"
-          activation-code="{{activationCode_}}"
-          show-error="{{showError_}}"
-          show-busy="[[shouldShowSubpageBusy_(state_)]]">
-      </activation-code-page>
-      <setup-loading-page id="activationVerificationPage"
-          loading-message="[[i18n('verifyingActivationCode')]]">
-      </setup-loading-page>
-      <confirmation-code-page id="confirmationCodePage"
-          confirmation-code="{{confirmationCode_}}"
-          profile="[[selectedProfile_]]"
-          show-error="{{showError_}}"
-          show-busy="[[shouldShowSubpageBusy_(state_)]]">
-      </confirmation-code-page>
-      <final-page
-          id="finalPage"
-          delegate="[[delegate]]"
-          show-error="[[showError_]]"
-          message="[[i18n('eSimFinalPageMessage')]]"
-          error-message="[[i18n('eSimFinalPageErrorMessage')]]">
-      </final-page>
-    </iron-pages>
-  </template>
-  <script src="esim_flow_ui.js"></script>
-</dom-module>
+<style include="iron-flex">
+  :host {
+    align-content: space-between;
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+  }
+</style>
+<iron-pages attr-for-selected="id"
+    selected="[[selectedESimPageName_]]">
+  <setup-loading-page id="profileLoadingPage"
+      loading-message="[[getLoadingMessage_(hasHadActiveCellularNetwork_)]]">
+  </setup-loading-page>
+  <profile-discovery-list-page id="profileDiscoveryPage"
+      pending-profiles="[[pendingProfiles_]]"
+      selected-profile="{{selectedProfile_}}"
+      show-busy="[[shouldShowSubpageBusy_(state_)]]">
+  </profile-discovery-list-page>
+  <activation-code-page id="activationCodePage"
+      is-from-qr-code="{{isActivationCodeFromQrCode_}}"
+      activation-code="{{activationCode_}}"
+      show-error="{{showError_}}"
+      show-busy="[[shouldShowSubpageBusy_(state_)]]">
+  </activation-code-page>
+  <setup-loading-page id="activationVerificationPage"
+      loading-message="[[i18n('verifyingActivationCode')]]">
+  </setup-loading-page>
+  <confirmation-code-page id="confirmationCodePage"
+      confirmation-code="{{confirmationCode_}}"
+      profile="[[selectedProfile_]]"
+      show-error="{{showError_}}"
+      show-busy="[[shouldShowSubpageBusy_(state_)]]">
+  </confirmation-code-page>
+  <final-page
+      id="finalPage"
+      delegate="[[delegate]]"
+      show-error="[[showError_]]"
+      message="[[i18n('eSimFinalPageMessage')]]"
+      error-message="[[i18n('eSimFinalPageErrorMessage')]]">
+  </final-page>
+</iron-pages>

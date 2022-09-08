@@ -8,7 +8,7 @@
  * settings.
  */
 
-import 'chrome://resources/cr_components/chromeos/cellular_setup/cellular_setup_icons.m.js';
+import 'chrome://resources/cr_components/chromeos/cellular_setup/cellular_setup_icons.js';
 import 'chrome://resources/cr_components/chromeos/network/sim_lock_dialogs.js';
 import 'chrome://resources/cr_elements/cr_expand_button/cr_expand_button.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
@@ -30,8 +30,8 @@ import './network_summary.js';
 import './esim_rename_dialog.js';
 import './esim_remove_profile_dialog.js';
 
-import {CellularSetupPageName} from 'chrome://resources/cr_components/chromeos/cellular_setup/cellular_types.m.js';
-import {getNumESimProfiles} from 'chrome://resources/cr_components/chromeos/cellular_setup/esim_manager_utils.m.js';
+import {CellularSetupPageName} from 'chrome://resources/cr_components/chromeos/cellular_setup/cellular_types.js';
+import {getNumESimProfiles} from 'chrome://resources/cr_components/chromeos/cellular_setup/esim_manager_utils.js';
 import {hasActiveCellularNetwork, isConnectedToNonCellularNetwork} from 'chrome://resources/cr_components/chromeos/network/cellular_utils.js';
 import {MojoInterfaceProvider, MojoInterfaceProviderImpl} from 'chrome://resources/cr_components/chromeos/network/mojo_interface_provider.js';
 import {NetworkListenerBehavior, NetworkListenerBehaviorInterface} from 'chrome://resources/cr_components/chromeos/network/network_listener_behavior.js';

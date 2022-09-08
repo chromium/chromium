@@ -9,7 +9,7 @@
  */
 import './os_powerwash_dialog.js';
 
-import {getEuicc, getNonPendingESimProfiles} from 'chrome://resources/cr_components/chromeos/cellular_setup/esim_manager_utils.m.js';
+import {getEuicc, getNonPendingESimProfiles} from 'chrome://resources/cr_components/chromeos/cellular_setup/esim_manager_utils.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink_js.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';

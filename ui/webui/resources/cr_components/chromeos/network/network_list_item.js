@@ -16,8 +16,8 @@ import '../../../cr_elements/cr_shared_style.css.js';
 import '../../../cr_elements/shared_vars_css.m.js';
 import './network_icon.js';
 
-import {CellularSetupPageName} from '//resources/cr_components/chromeos/cellular_setup/cellular_types.m.js';
-import {getESimProfileProperties} from '//resources/cr_components/chromeos/cellular_setup/esim_manager_utils.m.js';
+import {CellularSetupPageName} from '//resources/cr_components/chromeos/cellular_setup/cellular_types.js';
+import {getESimProfileProperties} from '//resources/cr_components/chromeos/cellular_setup/esim_manager_utils.js';
 import {assert} from '//resources/js/assert.m.js';
 import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 

@@ -8,13 +8,27 @@
  * error state that displays a message for errors that may happen during this
  * step.
  */
+import './base_page.js';
+import '../../../cr_elements/cr_hidden_style.css.js';
+import '//resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
+import '//resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
+
+import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {assert} from '../../../js/assert.m.js';
+import {I18nBehavior} from '../../../js/i18n_behavior.m.js';
+
+import {CellularSetupDelegate} from './cellular_setup_delegate.js';
+import {postDeviceDataToWebview} from './webview_post_util.js';
+
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'provisioning-page',
 
   behaviors: [I18nBehavior],
 
   properties: {
-    /** @type {!cellular_setup.CellularSetupDelegate} */
+    /** @type {!CellularSetupDelegate} */
     delegate: Object,
 
     /**
@@ -142,7 +156,7 @@ Polymer({
     // carrier portals require a POST request instead. If data is provided for a
     // POST request body, use a utility function to load the webview.
     if (this.cellularMetadata.paymentPostData) {
-      webviewPost.util.postDeviceDataToWebview(
+      postDeviceDataToWebview(
           portalWebview, this.cellularMetadata.paymentUrl.url,
           this.cellularMetadata.paymentPostData);
       return;

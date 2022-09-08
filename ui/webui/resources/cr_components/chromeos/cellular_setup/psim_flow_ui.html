@@ -1,51 +1,32 @@
-<link rel="import" href="../../../html/polymer.html">
+<style>
+  :host {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+  }
 
-<link rel="import" href="../../../html/i18n_behavior.html">
-<link rel="import" href="mojo_interface_provider.html">
-<link rel="import" href="setup_loading_page.html">
-<link rel="import" href="provisioning_page.html">
-<link rel="import" href="final_page.html">
-<link rel="import" href="subflow_behavior.html">
-<link rel="import" href="cellular_types.html">
-<link rel="import" href="cellular_setup_delegate.html">
-<link rel="import" href="chrome://resources/html/assert.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/iron-pages/iron-pages.html">
-
-
-<dom-module id="psim-flow-ui">
-  <template>
-    <style>
-      :host {
-        display: flex;
-        flex: 1 1 auto;
-        flex-direction: column;
-      }
-
-      iron-pages {
-        height: 400px;
-      }
-    </style>
-    <iron-pages attr-for-selected="id"
-        selected="[[selectedPSimPageName_]]"
-        selected-item="{{selectedPage_}}">
-      <setup-loading-page id="simDetectPage"
-          loading-title="[[getLoadingTitle_(state_)]]"
-          loading-message="[[getLoadingMessage_(state_)]]"
-          is-sim-detect-error="[[isSimDetectError_(state_)]]">
-      </setup-loading-page>
-      <provisioning-page id="provisioningPage"
-          delegate="[[delegate]]" show-error="{{showError_}}"
-          cellular-metadata="[[cellularMetadata_]]"
-          on-carrier-portal-loaded="onCarrierPortalLoaded_"
-          on-carrier-portal-result="onCarrierPortalResult_">
-      </provisioning-page>
-      <final-page id="finalPage"
-          delegate="[[delegate]]"
-          show-error="[[showError_]]"
-          message="[[i18n('pSimfinalPageMessage')]]"
-          error-message="[[i18n('finalPageErrorMessage')]]">
-      </final-page>
-    </iron-pages>
-  </template>
-  <script src="psim_flow_ui.js"></script>
-</dom-module>
+  iron-pages {
+    height: 400px;
+  }
+</style>
+<iron-pages attr-for-selected="id"
+    selected="[[selectedPSimPageName_]]"
+    selected-item="{{selectedPage_}}">
+  <setup-loading-page id="simDetectPage"
+      loading-title="[[getLoadingTitle_(state_)]]"
+      loading-message="[[getLoadingMessage_(state_)]]"
+      is-sim-detect-error="[[isSimDetectError_(state_)]]">
+  </setup-loading-page>
+  <provisioning-page id="provisioningPage"
+      delegate="[[delegate]]" show-error="{{showError_}}"
+      cellular-metadata="[[cellularMetadata_]]"
+      on-carrier-portal-loaded="onCarrierPortalLoaded_"
+      on-carrier-portal-result="onCarrierPortalResult_">
+  </provisioning-page>
+  <final-page id="finalPage"
+      delegate="[[delegate]]"
+      show-error="[[showError_]]"
+      message="[[i18n('pSimfinalPageMessage')]]"
+      error-message="[[i18n('finalPageErrorMessage')]]">
+  </final-page>
+</iron-pages>

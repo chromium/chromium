@@ -3,7 +3,16 @@
 // found in the LICENSE file.
 
 /** Base template with elements common to all Cellular Setup flow sub-pages. */
+import '../../../cr_elements/shared_vars_css.m.js';
+import '//resources/cr_components/chromeos/cellular_setup/cellular_setup_icons.js';
+import '//resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
+
+import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {I18nBehavior} from '../../../js/i18n_behavior.m.js';
+
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'base-page',
 
   behaviors: [I18nBehavior],

@@ -1,76 +1,61 @@
-<link rel="import" href="chrome://resources/html/polymer.html">
+<style include="iron-flex iron-positioning">
+  #details {
+    align-items: center;
+    display: flex;
+    flex: auto;
+    min-height: var(--cr-section-two-line-min-height);
+  }
 
-<link rel="import" href="chrome://resources/cr_elements/shared_vars_css.html">
-<link rel="import" href="chrome://resources/html/i18n_behavior.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/iron-flex-layout/iron-flex-layout-classes.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/iron-media-query/iron-media-query.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-spinner/paper-spinner-lite.html">
-<link rel="import" href="cellular_setup_icons.html">
+  #profileImage {
+    margin-inline-end: 16px;
+  }
 
-<dom-module id="profile-discovery-list-item">
-  <template>
-    <style include="iron-flex iron-positioning">
-      #details {
-        align-items: center;
-        display: flex;
-        flex: auto;
-        min-height: var(--cr-section-two-line-min-height);
-      }
+  #profileTitleLabel {
+    color: var(--cros-text-color-primary);
+  }
 
-      #profileImage {
-        margin-inline-end: 16px;
-      }
+  .icon {
+    margin-inline-end: 8px;
+    padding-inline-end: var(--cr-section-padding);
+  }
 
-      #profileTitleLabel {
-        color: var(--cros-text-color-primary);
-      }
+  #checkmark {
+    --iron-icon-fill-color: var(--cros-icon-color-prominent);
+  }
 
-      .icon {
-        margin-inline-end: 8px;
-        padding-inline-end: var(--cr-section-padding);
-      }
-
-      #checkmark {
-        --iron-icon-fill-color: var(--cros-icon-color-prominent);
-      }
-
-      paper-spinner-lite {
-        height: 16px;
-        vertical-align: middle;
-        width: 16px;
-      }
-    </style>
-    <div class="two-line no-padding" selectable>
-      <div class="flex layout horizontal center link-wrapper">
-        <div id="details">
-          <iron-media-query query="(prefers-color-scheme: dark)"
-              query-matches="{{isDarkModeActive_}}">
-          </iron-media-query>
-          <img id="profileImage" src="[[getProfileImage_(isDarkModeActive_)]]">
-          <!-- The item's aria properties are set in profile_discovery_list_page. -->
-          <div class="flex settings-box-text">
-            <div id="profileTitleLabel">
-              [[getProfileName_(profileProperties_)]]
-            </div>
-            <div id="profileProviderLabel">
-              [[getProfileProvider_(profileProperties_)]]
-            </div>
-          </div>
+  paper-spinner-lite {
+    height: 16px;
+    vertical-align: middle;
+    width: 16px;
+  }
+</style>
+<div class="two-line no-padding" selectable>
+  <div class="flex layout horizontal center link-wrapper">
+    <div id="details">
+      <iron-media-query query="(prefers-color-scheme: dark)"
+          query-matches="{{isDarkModeActive_}}">
+      </iron-media-query>
+      <img id="profileImage" src="[[getProfileImage_(isDarkModeActive_)]]">
+      <!-- The item's aria properties are set in profile_discovery_list_page. -->
+      <div class="flex settings-box-text">
+        <div id="profileTitleLabel">
+          [[getProfileName_(profileProperties_)]]
         </div>
-        <div class="icon"
-            hidden$="[[!selected]]">
-          <iron-icon id="checkmark"
-              icon="cellular-setup:checked"
-              tabindex="-1"
-              hidden$="[[showLoadingIndicator]]">
-          </iron-icon>
-          <paper-spinner-lite active
-              hidden$="[[!showLoadingIndicator]]">
-          </paper-spinner-lite>
+        <div id="profileProviderLabel">
+          [[getProfileProvider_(profileProperties_)]]
         </div>
       </div>
     </div>
-  </template>
-  <script src="profile_discovery_list_item.js"></script>
-</dom-module>
+    <div class="icon"
+        hidden$="[[!selected]]">
+      <iron-icon id="checkmark"
+          icon="cellular-setup:checked"
+          tabindex="-1"
+          hidden$="[[showLoadingIndicator]]">
+      </iron-icon>
+      <paper-spinner-lite active
+          hidden$="[[!showLoadingIndicator]]">
+      </paper-spinner-lite>
+    </div>
+  </div>
+</div>

@@ -3,6 +3,23 @@
 // found in the LICENSE file.
 
 /**
+ * @fileoverview Page in eSIM Setup flow that accepts activation code.
+ * User has option for manual entry or scan a QR code.
+ */
+import '//resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
+import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
+import '//resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
+import '../../../cr_elements/cr_input/cr_input.js';
+import './base_page.js';
+import './cellular_setup_icons.js';
+
+import {focusWithoutInk} from '//resources/js/cr/ui/focus_without_ink_js.js';
+import {loadTimeData} from '//resources/js/load_time_data.m.js';
+import {afterNextRender, html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {I18nBehavior} from '../../../js/i18n_behavior.m.js';
+
+/**
  * @type {!number}
  * @private
  */
@@ -45,11 +62,8 @@ const QR_CODE_FORMAT = 'qr_code';
  */
 const ACTIVATION_CODE_PREFIX = 'LPA:1$';
 
-/**
- * Page in eSIM Setup flow that accepts activation code. User has option for
- * manual entry or scan a QR code.
- */
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'activation-code-page',
 
   behaviors: [I18nBehavior],
@@ -491,8 +505,8 @@ Polymer({
     if (this.showError) {
       if (this.state_ === PageState.MANUAL_ENTRY) {
         this.state_ = PageState.MANUAL_ENTRY_INSTALL_FAILURE;
-        Polymer.RenderStatus.afterNextRender(this, () => {
-          cr.ui.focusWithoutInk(this.$.activationCode);
+        afterNextRender(this, () => {
+          focusWithoutInk(this.$.activationCode);
         });
       } else if (this.state_ === PageState.SCANNING_SUCCESS) {
         this.state_ = PageState.SCANNING_INSTALL_FAILURE;
@@ -517,7 +531,7 @@ Polymer({
 
       // Wait for the video element to be hidden by isUiElementHidden() before
       // stopping the stream or the user will see a flash.
-      Polymer.RenderStatus.afterNextRender(this, () => {
+      afterNextRender(this, () => {
         this.stopStream_(this.stream_);
       });
     }

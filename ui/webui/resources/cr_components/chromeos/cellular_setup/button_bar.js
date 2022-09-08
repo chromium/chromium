@@ -3,7 +3,20 @@
 // found in the LICENSE file.
 
 /** Element containing navigation buttons for the Cellular Setup flow. */
+import '../../../cr_elements/cr_button/cr_button.js';
+import '../../../cr_elements/cr_shared_style.css.js';
+import '../../../cr_elements/shared_vars_css.m.js';
+
+import {assert, assertNotReached} from '//resources/js/assert.m.js';
+import {focusWithoutInk} from '//resources/js/cr/ui/focus_without_ink_js.js';
+import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {I18nBehavior} from '../../../js/i18n_behavior.m.js';
+
+import {Button, ButtonBarState, ButtonState, CellularSetupPageName} from './cellular_types.js';
+
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'button-bar',
 
   behaviors: [
@@ -13,7 +26,7 @@ Polymer({
   properties: {
     /**
      * Sets the states of all buttons
-     * @type {!cellularSetup.ButtonBarState}
+     * @type {!ButtonBarState}
      */
     buttonState: {
       type: Object,
@@ -21,11 +34,11 @@ Polymer({
     },
 
     /**
-     * @type {!cellularSetup.Button}
+     * @type {!Button}
      */
     Button: {
       type: Object,
-      value: cellularSetup.Button,
+      value: Button,
     },
 
     forwardButtonLabel: {
@@ -35,23 +48,23 @@ Polymer({
   },
 
   /**
-   * @param {!cellularSetup.Button} buttonName
+   * @param {!Button} buttonName
    * @return {boolean}
    * @private
    */
   isButtonHidden_(buttonName) {
     const state = this.getButtonBarState_(buttonName);
-    return state === cellularSetup.ButtonState.HIDDEN;
+    return state === ButtonState.HIDDEN;
   },
 
   /**
-   * @param {!cellularSetup.Button} buttonName
+   * @param {!Button} buttonName
    * @return {boolean}
    * @private
    */
   isButtonDisabled_(buttonName) {
     const state = this.getButtonBarState_(buttonName);
-    return state === cellularSetup.ButtonState.DISABLED;
+    return state === ButtonState.DISABLED;
   },
 
   focusDefaultButton() {
@@ -60,7 +73,7 @@ Polymer({
     for (let i = buttons.length - 1; i >= 0; i--) {
       const button = buttons.item(i);
       if (!button.disabled && !button.hidden) {
-        cr.ui.focusWithoutInk(button);
+        focusWithoutInk(button);
         return;
       }
     }
@@ -82,22 +95,22 @@ Polymer({
   },
 
   /**
-   * @param {!cellularSetup.Button} button
-   * @returns {!cellularSetup.ButtonState|undefined}
+   * @param {!Button} button
+   * @returns {!ButtonState|undefined}
    * @private
    */
   getButtonBarState_(button) {
     assert(this.buttonState);
     switch (button) {
-      case cellularSetup.Button.BACKWARD:
+      case Button.BACKWARD:
         return this.buttonState.backward;
-      case cellularSetup.Button.CANCEL:
+      case Button.CANCEL:
         return this.buttonState.cancel;
-      case cellularSetup.Button.FORWARD:
+      case Button.FORWARD:
         return this.buttonState.forward;
       default:
         assertNotReached();
-        return cellularSetup.ButtonState.ENABLED;
+        return ButtonState.ENABLED;
     }
   },
 });

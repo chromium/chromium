@@ -1,46 +1,30 @@
-<link rel="import" href="../../../html/polymer.html">
-
-<link rel="import" href="button_bar.html">
-<link rel="import" href="psim_flow_ui.html">
-<link rel="import" href="esim_flow_ui.html">
-<link rel="import" href="cellular_types.html">
-<link rel="import" href="cellular_setup_delegate.html">
-<link rel="import" href="../../../html/i18n_behavior.html">
-<link rel="import" href="chrome://resources/cr_components/chromeos/network/cellular_utils.html">
-<link rel="import" href="chrome://resources/cr_components/chromeos/network/mojo_interface_provider.html">
-
-<dom-module id="cellular-setup">
-  <template>
-    <iron-pages
-        attr-for-selected="id"
-        selected="[[currentPageName]]"
-        selected-item="{{currentPage_}}">
-      <template is="dom-if"
-          if="[[shouldShowPsimFlow_(currentPageName)]]" restamp>
-        <psim-flow-ui
-            button-state="{{buttonState_}}"
-            name-of-carrier-pending-setup="{{flowTitle}}"
-            delegate="[[delegate]]"
-            id="psim-flow-ui"
-            forward-button-label="{{forwardButtonLabel_}}">
-        </psim-flow-ui>
-      </template>
-      <template is="dom-if"
-          if="[[shouldShowEsimFlow_(currentPageName)]]" restamp>
-        <esim-flow-ui
-            button-state="{{buttonState_}}"
-            delegate="[[delegate]]"
-            id="esim-flow-ui"
-            header="{{flowHeader}}"
-            forward-button-label="{{forwardButtonLabel_}}">
-        </esim-flow-ui>
-      </template>
-    </iron-pages>
-    <button-bar
-        id="buttonBar"
-        button-state="[[buttonState_]]"
-        forward-button-label="[[forwardButtonLabel_]]">
-    </button-bar>
+<iron-pages
+    attr-for-selected="id"
+    selected="[[currentPageName]]"
+    selected-item="{{currentPage_}}">
+  <template is="dom-if"
+      if="[[shouldShowPsimFlow_(currentPageName)]]" restamp>
+    <psim-flow-ui
+        button-state="{{buttonState_}}"
+        name-of-carrier-pending-setup="{{flowTitle}}"
+        delegate="[[delegate]]"
+        id="psim-flow-ui"
+        forward-button-label="{{forwardButtonLabel_}}">
+    </psim-flow-ui>
   </template>
-  <script src="cellular_setup.js"></script>
-</dom-module>
+  <template is="dom-if"
+      if="[[shouldShowEsimFlow_(currentPageName)]]" restamp>
+    <esim-flow-ui
+        button-state="{{buttonState_}}"
+        delegate="[[delegate]]"
+        id="esim-flow-ui"
+        header="{{flowHeader}}"
+        forward-button-label="{{forwardButtonLabel_}}">
+    </esim-flow-ui>
+  </template>
+</iron-pages>
+<button-bar
+    id="buttonBar"
+    button-state="[[buttonState_]]"
+    forward-button-label="[[forwardButtonLabel_]]">
+</button-bar>

@@ -7,7 +7,7 @@
  * states
  */
 
-import 'chrome://resources/cr_components/chromeos/cellular_setup/cellular_eid_dialog.m.js';
+import 'chrome://resources/cr_components/chromeos/cellular_setup/cellular_eid_dialog.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_icons.css.js';
 import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
@@ -18,9 +18,9 @@ import '../os_settings_icons_css.js';
 import './esim_install_error_dialog.js';
 import 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 
-import {Button, CellularSetupPageName} from 'chrome://resources/cr_components/chromeos/cellular_setup/cellular_types.m.js';
-import {ESimManagerListenerBehavior, ESimManagerListenerBehaviorInterface} from 'chrome://resources/cr_components/chromeos/cellular_setup/esim_manager_listener_behavior.m.js';
-import {getEuicc, getPendingESimProfiles} from 'chrome://resources/cr_components/chromeos/cellular_setup/esim_manager_utils.m.js';
+import {CellularSetupPageName} from 'chrome://resources/cr_components/chromeos/cellular_setup/cellular_types.js';
+import {ESimManagerListenerBehavior, ESimManagerListenerBehaviorInterface} from 'chrome://resources/cr_components/chromeos/cellular_setup/esim_manager_listener_behavior.js';
+import {getEuicc, getPendingESimProfiles} from 'chrome://resources/cr_components/chromeos/cellular_setup/esim_manager_utils.js';
 import {getSimSlotCount} from 'chrome://resources/cr_components/chromeos/network/cellular_utils.js';
 import {MojoInterfaceProvider, MojoInterfaceProviderImpl} from 'chrome://resources/cr_components/chromeos/network/mojo_interface_provider.js';
 import {NetworkList} from 'chrome://resources/cr_components/chromeos/network/network_list_types.js';

@@ -1,58 +1,41 @@
-<link rel="import" href="../../../html/polymer.html">
+<style include="iron-flex cr-hidden-style">
+  paper-spinner-lite {
+    height: 32px;
+    width: 32px;
+  }
 
-<link rel="import" href="base_page.html">
-<link rel="import" href="webview_post_util.html">
-<link rel="import" href="cellular_setup_delegate.html">
-<link rel="import" href="../../../html/i18n_behavior.html">
-<link rel="import" href="../../../html/load_time_data.html">
-<link rel="import" href="../../../html/assert.html">
-<link rel="import" href="../../../cr_elements/cr_hidden_style.css.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/iron-flex-layout/iron-flex-layout-classes.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-spinner/paper-spinner-lite.html">
+  #portalContainer {
+    height: 100%;
+    width: 100%;
+  }
 
-<dom-module id="provisioning-page">
-  <template>
-    <style include="iron-flex cr-hidden-style">
-      paper-spinner-lite {
-        height: 32px;
-        width: 32px;
-      }
+  #error-icon-container {
+    background-image: url(chrome://resources/cr_components/chromeos/cellular_setup/error.svg);
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-size: contain;
+    height: 100%;
+    width: 100%;
+  }
 
-      #portalContainer {
-        height: 100%;
-        width: 100%;
-      }
-
-      #error-icon-container {
-        background-image: url(chrome://resources/cr_components/chromeos/cellular_setup/error.svg);
-        background-position: center center;
-        background-repeat: no-repeat;
-        background-size: contain;
-        height: 100%;
-        width: 100%;
-      }
-
-      @media(prefers-color-scheme: dark) {
-        #error-icon-container {
-          background-image: url(chrome://resources/cr_components/chromeos/cellular_setup/error_dark.svg);
-        }
-      }
-    </style>
-    <base-page title="[[getPageTitle_(
-                            showError, carrierName_, hasCarrierPortalLoaded_)]]"
-        message="[[getPageMessage_(showError)]]">
-      <div slot="page-body" class="layout horizontal center-center">
-        <paper-spinner-lite active
-            hidden$="[[!shouldShowSpinner_(
-                           showError, hasCarrierPortalLoaded_)]]">
-        </paper-spinner-lite>
-        <div id="portalContainer"
-            hidden$="[[!shouldShowPortal_(
-                           showError, hasCarrierPortalLoaded_)]]">
-        </div>
-        <div id="error-icon-container" hidden$="[[!showError]]"></div>
-      </div>
-    </base-page>
-  </template>
-  <script src="provisioning_page.js"></script>
-</dom-module>
+  @media(prefers-color-scheme: dark) {
+    #error-icon-container {
+      background-image: url(chrome://resources/cr_components/chromeos/cellular_setup/error_dark.svg);
+    }
+  }
+</style>
+<base-page title="[[getPageTitle_(
+                        showError, carrierName_, hasCarrierPortalLoaded_)]]"
+    message="[[getPageMessage_(showError)]]">
+  <div slot="page-body" class="layout horizontal center-center">
+    <paper-spinner-lite active
+        hidden$="[[!shouldShowSpinner_(
+                        showError, hasCarrierPortalLoaded_)]]">
+    </paper-spinner-lite>
+    <div id="portalContainer"
+        hidden$="[[!shouldShowPortal_(
+                        showError, hasCarrierPortalLoaded_)]]">
+    </div>
+    <div id="error-icon-container" hidden$="[[!showError]]"></div>
+  </div>
+</base-page>

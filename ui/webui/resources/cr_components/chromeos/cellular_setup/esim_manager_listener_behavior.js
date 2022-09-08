@@ -2,21 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// #import {observeESimManager} from './mojo_interface_provider.m.js';
-
 /**
  * @fileoverview Polymer behavior for observing ESimManagerObserver
  * events.
  */
 
+import {observeESimManager} from './mojo_interface_provider.js';
+
 /** @polymerBehavior */
-/* #export */ const ESimManagerListenerBehavior = {
+export const ESimManagerListenerBehavior = {
   /** @private {?ash.cellularSetup.mojom.ESimManagerObserver} */
   observer_: null,
 
   /** @override */
   attached() {
-    cellular_setup.observeESimManager(this);
+    observeESimManager(this);
   },
 
   // ESimManagerObserver methods. Override these in the implementation.
@@ -40,7 +40,7 @@
 };
 
 /** @interface */
-/* #export */ class ESimManagerListenerBehaviorInterface {
+export class ESimManagerListenerBehaviorInterface {
   onAvailableEuiccListChanged() {}
 
   /**

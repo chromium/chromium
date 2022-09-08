@@ -6,13 +6,25 @@
  * @fileoverview Root element for the cellular setup flow. This element wraps
  * the psim setup flow, esim setup flow, and setup flow selection page.
  */
+import './button_bar.js';
+import './psim_flow_ui.js';
+import './esim_flow_ui.js';
+
+import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {I18nBehavior} from '../../../js/i18n_behavior.m.js';
+
+import {CellularSetupDelegate} from './cellular_setup_delegate.js';
+import {ButtonBarState, CellularSetupPageName} from './cellular_types.js';
+
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'cellular-setup',
 
   behaviors: [I18nBehavior],
 
   properties: {
-    /** @type {!cellular_setup.CellularSetupDelegate} */
+    /** @type {!CellularSetupDelegate} */
     delegate: Object,
 
     /**
@@ -37,13 +49,13 @@ Polymer({
 
     /**
      * Name of the currently displayed sub-page.
-     * @private {!cellularSetup.CellularSetupPageName|null}
+     * @private {!CellularSetupPageName|null}
      */
     currentPageName: String,
 
     /**
      * Current user selected setup flow page name.
-     * @private {!cellularSetup.CellularSetupPageName|null}
+     * @private {!CellularSetupPageName|null}
      */
     selectedFlow_: {
       type: String,
@@ -52,7 +64,7 @@ Polymer({
 
     /**
      * Button bar button state.
-     * @private {!cellularSetup.ButtonBarState}
+     * @private {!ButtonBarState}
      */
     buttonState_: {
       type: Object,
@@ -91,7 +103,7 @@ Polymer({
   attached() {
     // By default eSIM flow is selected.
     if (!this.currentPageName) {
-      this.currentPageName = cellularSetup.CellularSetupPageName.ESIM_FLOW_UI;
+      this.currentPageName = CellularSetupPageName.ESIM_FLOW_UI;
     }
   },
 
@@ -132,7 +144,7 @@ Polymer({
    * @private
    */
   shouldShowPsimFlow_(currentPage) {
-    return currentPage === cellularSetup.CellularSetupPageName.PSIM_FLOW_UI;
+    return currentPage === CellularSetupPageName.PSIM_FLOW_UI;
   },
 
   /**
@@ -140,6 +152,6 @@ Polymer({
    * @private
    */
   shouldShowEsimFlow_(currentPage) {
-    return currentPage === cellularSetup.CellularSetupPageName.ESIM_FLOW_UI;
+    return currentPage === CellularSetupPageName.ESIM_FLOW_UI;
   },
 });

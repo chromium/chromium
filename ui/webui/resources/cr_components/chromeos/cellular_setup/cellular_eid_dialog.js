@@ -5,6 +5,13 @@
 /**
  * @fileoverview Polymer element for displaying cellular EID and QR code
  */
+import '//resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
+import '//resources/cr_elements/cr_dialog/cr_dialog.js';
+import '//resources/cr_elements/cr_shared_style.css.js';
+import '//resources/cr_elements/shared_vars_css.m.js';
+
+import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
+import {flush, html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 // The size of each tile in pixels.
 const QR_CODE_TILE_SIZE = 5;
@@ -12,6 +19,7 @@ const QR_CODE_TILE_SIZE = 5;
 const QR_CODE_FILL_STYLE = '#000000';
 
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'cellular-eid-dialog',
 
   behaviors: [
@@ -62,7 +70,7 @@ Polymer({
       return;
     }
     this.canvasSize_ = response.qrCode.size * QR_CODE_TILE_SIZE;
-    Polymer.dom.flush();
+    flush();
     const context = this.getCanvasContext_();
     context.clearRect(0, 0, this.canvasSize_, this.canvasSize_);
     context.fillStyle = QR_CODE_FILL_STYLE;

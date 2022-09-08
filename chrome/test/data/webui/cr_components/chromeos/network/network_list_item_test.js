@@ -10,8 +10,8 @@ import 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/ne
 import 'chrome://resources/mojo/mojo/public/mojom/base/time.mojom-lite.js';
 import 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-lite.js';
 
-import {CellularSetupPageName} from 'chrome://resources/cr_components/chromeos/cellular_setup/cellular_types.m.js';
-import {setESimManagerRemoteForTesting} from 'chrome://resources/cr_components/chromeos/cellular_setup/mojo_interface_provider.m.js';
+import {CellularSetupPageName} from 'chrome://resources/cr_components/chromeos/cellular_setup/cellular_types.js';
+import {setESimManagerRemoteForTesting} from 'chrome://resources/cr_components/chromeos/cellular_setup/mojo_interface_provider.js';
 import {MojoInterfaceProviderImpl} from 'chrome://resources/cr_components/chromeos/network/mojo_interface_provider.js';
 import {NetworkList} from 'chrome://resources/cr_components/chromeos/network/network_list_types.js';
 import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.js';
