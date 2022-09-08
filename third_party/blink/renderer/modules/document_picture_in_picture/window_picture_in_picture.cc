@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/modules/picture_in_picture/window_picture_in_picture.h"
+#include "third_party/blink/renderer/modules/document_picture_in_picture/window_picture_in_picture.h"
 
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"

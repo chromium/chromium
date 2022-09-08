@@ -84,6 +84,7 @@ component("modules") {
     "//third_party/blink/renderer/modules/device_orientation",
     "//third_party/blink/renderer/modules/device_posture",
     "//third_party/blink/renderer/modules/document_metadata",
+    "//third_party/blink/renderer/modules/document_picture_in_picture",
     "//third_party/blink/renderer/modules/donottrack",
     "//third_party/blink/renderer/modules/encoding",
     "//third_party/blink/renderer/modules/encryptedmedia",

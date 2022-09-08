@@ -1,0 +1,5 @@
+include_rules = [
+    "-third_party/blink/renderer/modules",
+    "+third_party/blink/renderer/modules/document_picture_in_picture",
+    "+third_party/blink/renderer/modules/picture_in_picture",
+]
