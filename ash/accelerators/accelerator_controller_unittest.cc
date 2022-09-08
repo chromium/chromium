@@ -1436,6 +1436,34 @@ TEST_P(GlobalAcceleratorsToggleProductivityLauncher, ToggleLauncher) {
   GetAppListTestHelper()->CheckVisibility(false);
 }
 
+TEST_P(GlobalAcceleratorsToggleProductivityLauncher,
+       PreventProcessingShortcuts) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kProductivityLauncher);
+
+  // Set Controller to block all shortcuts and try to toggle the productivity
+  // launcher
+  controller_->SetPreventProcessingAccelerators(true);
+
+  EXPECT_FALSE(
+      ProcessInController(ui::Accelerator(key_, ui::EF_NONE, key_state_)));
+  base::RunLoop().RunUntilIdle();
+  GetAppListTestHelper()->CheckVisibility(false);
+
+  // Allow all shortcuts and redo the test
+  controller_->SetPreventProcessingAccelerators(false);
+
+  EXPECT_TRUE(
+      ProcessInController(ui::Accelerator(key_, ui::EF_NONE, key_state_)));
+  base::RunLoop().RunUntilIdle();
+  GetAppListTestHelper()->CheckVisibility(true);
+
+  EXPECT_TRUE(
+      ProcessInController(ui::Accelerator(key_, ui::EF_NONE, key_state_)));
+  base::RunLoop().RunUntilIdle();
+  GetAppListTestHelper()->CheckVisibility(false);
+}
+
 TEST_F(AcceleratorControllerTest, GlobalAcceleratorsToggleAppListFullscreen) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(features::kProductivityLauncher);

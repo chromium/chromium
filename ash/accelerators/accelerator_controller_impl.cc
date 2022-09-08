@@ -2453,6 +2453,9 @@ bool AcceleratorControllerImpl::ShouldActionConsumeKeyEvent(
 AcceleratorControllerImpl::AcceleratorProcessingRestriction
 AcceleratorControllerImpl::GetAcceleratorProcessingRestriction(
     int action) const {
+  if (ShouldPreventProcessingAccelerators()) {
+    return RESTRICTION_PREVENT_PROCESSING;
+  }
   if (Shell::Get()->screen_pinning_controller()->IsPinned() &&
       !base::Contains(actions_allowed_in_pinned_mode_, action)) {
     return RESTRICTION_PREVENT_PROCESSING_AND_PROPAGATION;
@@ -2666,6 +2669,15 @@ void AcceleratorControllerImpl::StartTabletModeVolumeAdjustTimer(
   tablet_mode_volume_adjust_timer_.Start(
       FROM_HERE, kVolumeAdjustTimeout, this,
       &AcceleratorControllerImpl::UpdateTabletModeVolumeAdjustHistogram);
+}
+
+void AcceleratorControllerImpl::SetPreventProcessingAccelerators(
+    bool prevent_processing_accelerators) {
+  prevent_processing_accelerators_ = prevent_processing_accelerators;
+}
+
+bool AcceleratorControllerImpl::ShouldPreventProcessingAccelerators() const {
+  return prevent_processing_accelerators_;
 }
 
 }  // namespace ash
