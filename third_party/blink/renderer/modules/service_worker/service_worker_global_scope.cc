@@ -283,7 +283,9 @@ void ServiceWorkerGlobalScope::FetchAndRunClassicScript(
     const v8_inspector::V8StackTraceId& stack_id) {
   DCHECK(!IsContextPaused());
 
-  SetPolicyContainer(std::move(policy_container));
+  // policy_container_host could be null for registration restored from old DB
+  if (policy_container)
+    SetPolicyContainer(std::move(policy_container));
 
   if (installed_scripts_manager_) {
     // This service worker is installed. Load and run the installed script.
