@@ -13,7 +13,7 @@
 
 namespace {
 
-// Number of log files to keep in the |kPendingLogFileDirectory|. Any older file
+// Number of log files to keep in the `kPendingLogFileDirectory`. Any older file
 // may be deleted.
 const int kMaxFileNumber = 100;
 

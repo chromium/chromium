@@ -52,7 +52,7 @@ extern const char kChromeAppGroupCommandPreference[];
 extern const char kChromeAppGroupCommandAppPreference[];
 
 // The key in kChromeAppGroupCommandPreference containing the command requested
-// by |kChromeAppGroupCommandAppPreference|.
+// by `kChromeAppGroupCommandAppPreference`.
 extern const char kChromeAppGroupCommandCommandPreference[];
 
 // The command to open a URL. Parameter must contain the URL.
@@ -80,7 +80,7 @@ extern const char kChromeAppGroupIncognitoSearchCommand[];
 extern const char kChromeAppGroupQRScannerCommand[];
 
 // The key in kChromeAppGroupCommandPreference containing a NSDate at which
-// |kChromeAppGroupCommandAppPreference| issued the command.
+// `kChromeAppGroupCommandAppPreference` issued the command.
 extern const char kChromeAppGroupCommandTimePreference[];
 
 // The key in kChromeAppGroupCommandPreference containing the text use for the
@@ -117,11 +117,11 @@ extern NSString* const kShareItemDate;
 extern NSString* const kShareItemCancel;
 extern NSString* const kShareItemType;
 
-// The value used by Chrome Share extension in |kShareItemSource|.
+// The value used by Chrome Share extension in `kShareItemSource`.
 extern NSString* const kShareItemSourceShareExtension;
 
 // The values used by Chrome extensions in
-// |kChromeAppGroupCommandAppPreference|.
+// `kChromeAppGroupCommandAppPreference`.
 extern NSString* const kOpenCommandSourceTodayExtension;
 extern NSString* const kOpenCommandSourceContentExtension;
 extern NSString* const kOpenCommandSourceSearchExtension;
@@ -177,7 +177,7 @@ NSUserDefaults* GetGroupUserDefaults();
 // [NSUserDefaults standardUserDefaults].
 NSUserDefaults* GetCommonGroupUserDefaults();
 
-// The application name of |application|.
+// The application name of `application`.
 NSString* ApplicationName(AppGroupApplications application);
 
 }  // namespace app_group
