@@ -145,6 +145,9 @@ class GPU_GLES2_EXPORT SharedImageBacking {
   // if they support `SHARED_IMAGE_USAGE_CPU_UPLOAD`.
   virtual bool UploadFromMemory(const SkPixmap& pixmap);
 
+  // Reads back pixels from GPU texture into memory in `pixmap`.
+  virtual bool ReadbackToMemory(SkPixmap& pixmap);
+
   // Copy from the backing's GPU texture to its GpuMemoryBuffer if present. This
   // is needed on Windows where the renderer process can only create shared
   // memory GMBs and an explicit copy is needed. Returns true on success.

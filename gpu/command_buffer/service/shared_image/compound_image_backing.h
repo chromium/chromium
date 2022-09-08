@@ -79,6 +79,7 @@ class GPU_GLES2_EXPORT CompoundImageBacking : public SharedImageBacking {
   // SharedImageBacking implementation.
   SharedImageBackingType GetType() const override;
   void Update(std::unique_ptr<gfx::GpuFence> in_fence) override;
+  bool CopyToGpuMemoryBuffer() override;
   gfx::Rect ClearedRect() const override;
   void SetClearedRect(const gfx::Rect& cleared_rect) override;
 
@@ -127,9 +128,9 @@ class GPU_GLES2_EXPORT CompoundImageBacking : public SharedImageBacking {
   base::WeakPtr<SharedImageBackingFactory> gpu_backing_factory_;
   std::unique_ptr<SharedImageBacking> gpu_backing_;
 
-  // This will be true when shared memory backing has newer pixels than GPU
-  // backing.
-  bool shm_has_update_ = false;
+  // Keeps track of if shared memory or GPU backing has latest pixels.
+  bool shm_has_latest_content_ = true;
+  bool gpu_has_latest_content_ = false;
 };
 
 }  // namespace gpu

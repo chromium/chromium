@@ -38,13 +38,14 @@ bool IsValidSharedMemoryBufferFormat(const gfx::Size& size,
     DLOG(ERROR) << "Invalid image size for format.";
     return false;
   }
-  if (gfx::NumberOfPlanesForLinearBufferFormat(buffer_format) != 1) {
-    DLOG(ERROR) << "Invalid image format.";
-    return false;
-  }
-  if (plane != gfx::BufferPlane::DEFAULT) {
-    DLOG(ERROR) << "Invalid plane " << gfx::BufferPlaneToString(plane);
-    return false;
+  switch (plane) {
+    case gfx::BufferPlane::DEFAULT:
+    case gfx::BufferPlane::Y:
+    case gfx::BufferPlane::UV:
+      break;
+    default:
+      DLOG(ERROR) << "Invalid plane " << gfx::BufferPlaneToString(plane);
+      return false;
   }
 
   return true;
@@ -293,22 +294,29 @@ std::unique_ptr<SharedImageBacking> CompoundImageBacking::CreateSharedMemory(
   if (!IsValidSharedMemoryBufferFormat(size, buffer_format, plane))
     return nullptr;
 
-  viz::ResourceFormat format = viz::GetResourceFormat(buffer_format);
+  const gfx::Size plane_size = GetPlaneSize(plane, size);
+  const viz::ResourceFormat plane_format =
+      viz::GetResourceFormat(GetPlaneBufferFormat(plane, buffer_format));
+
+  const size_t plane_index = plane == gfx::BufferPlane::UV ? 1 : 0;
+  handle.offset +=
+      gfx::BufferOffsetForBufferFormat(size, buffer_format, plane_index);
+
   SharedMemoryRegionWrapper shm_wrapper;
-  if (!shm_wrapper.Initialize(handle, size, format)) {
+  if (!shm_wrapper.Initialize(handle, plane_size, plane_format)) {
     DLOG(ERROR) << "Failed to create SharedMemoryRegionWrapper";
     return nullptr;
   }
 
   auto shm_backing = std::make_unique<SharedMemoryImageBacking>(
-      mailbox, format, size, color_space, surface_origin, alpha_type,
-      SHARED_IMAGE_USAGE_CPU_WRITE, std::move(shm_wrapper));
+      mailbox, plane_format, plane_size, color_space, surface_origin,
+      alpha_type, SHARED_IMAGE_USAGE_CPU_WRITE, std::move(shm_wrapper));
   shm_backing->SetNotRefCounted();
 
   return std::make_unique<CompoundImageBacking>(
-      mailbox, format, size, color_space, surface_origin, alpha_type, usage,
-      surface_handle, allow_shm_overlays, std::move(shm_backing),
-      gpu_backing_factory->GetWeakPtr());
+      mailbox, plane_format, plane_size, color_space, surface_origin,
+      alpha_type, usage, surface_handle, allow_shm_overlays,
+      std::move(shm_backing), gpu_backing_factory->GetWeakPtr());
 }
 
 CompoundImageBacking::CompoundImageBacking(
@@ -338,11 +346,6 @@ CompoundImageBacking::CompoundImageBacking(
       gpu_backing_factory_(std::move(gpu_backing_factory)) {
   DCHECK(shm_backing_);
   DCHECK_EQ(size, shm_backing_->size());
-
-  // First access will write pixels from shared memory backing to GPU backing
-  // clearing it.
-  shm_has_update_ = true;
-  SetClearedRect(gfx::Rect(size));
 }
 
 CompoundImageBacking::~CompoundImageBacking() = default;
@@ -355,7 +358,13 @@ void CompoundImageBacking::NotifyBeginAccess(SharedImageAccessStream stream,
   // TODO(kylechar): Keep track of access to the compound backing as we
   // only want to update a backing if it's not currently being accessed.
 
-  if (shm_has_update_ && stream != SharedImageAccessStream::kMemory) {
+  if (stream == SharedImageAccessStream::kMemory) {
+    DCHECK_EQ(mode, RepresentationAccessMode::kRead);
+    return;
+  }
+
+  if (!gpu_has_latest_content_) {
+    DCHECK(shm_has_latest_content_);
     DCHECK(gpu_backing_);
 
     auto& wrapper = static_cast<SharedMemoryImageBacking*>(shm_backing_.get())
@@ -366,10 +375,15 @@ void CompoundImageBacking::NotifyBeginAccess(SharedImageAccessStream stream,
                     wrapper.GetStride());
 
     if (gpu_backing_->UploadFromMemory(pixmap)) {
-      shm_has_update_ = false;
+      gpu_has_latest_content_ = true;
     } else {
       DLOG(ERROR) << "Failed to upload from shared memory to GPU backing";
     }
+  }
+
+  if (mode == RepresentationAccessMode::kWrite) {
+    // On GPU write access set shared memory contents as stale.
+    shm_has_latest_content_ = false;
   }
 }
 
@@ -379,7 +393,29 @@ SharedImageBackingType CompoundImageBacking::GetType() const {
 
 void CompoundImageBacking::Update(std::unique_ptr<gfx::GpuFence> in_fence) {
   DCHECK(!in_fence);
-  shm_has_update_ = true;
+  shm_has_latest_content_ = true;
+  gpu_has_latest_content_ = false;
+}
+
+bool CompoundImageBacking::CopyToGpuMemoryBuffer() {
+  // TODO(crbug.com/1293509): Return early if `shm_has_latest_content_` is true
+  // since shared memory should already be up to date. Just need to verify GL
+  // isn't modifying the texture without acquiring write access first.
+
+  auto& wrapper = static_cast<SharedMemoryImageBacking*>(shm_backing_.get())
+                      ->shared_memory_wrapper();
+  DCHECK(wrapper.IsValid());
+
+  SkPixmap pixmap(shm_backing_->AsSkImageInfo(), wrapper.GetMemory(),
+                  wrapper.GetStride());
+
+  if (!gpu_backing_->ReadbackToMemory(pixmap)) {
+    DLOG(ERROR) << "Failed to copy from GPU backing to shared memory";
+    return false;
+  }
+
+  shm_has_latest_content_ = true;
+  return true;
 }
 
 gfx::Rect CompoundImageBacking::ClearedRect() const {
