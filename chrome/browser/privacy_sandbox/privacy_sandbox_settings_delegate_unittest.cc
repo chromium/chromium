@@ -28,8 +28,6 @@ class PrivacySandboxSettingsDelegateTest : public testing::Test {
         CreateProfileForIdentityTestEnvironment();
     adapter_ =
         std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile_.get());
-    identity_test_env()->MakePrimaryAccountAvailable(
-        kTestEmail, signin::ConsentLevel::kSignin);
     delegate_ =
         std::make_unique<PrivacySandboxSettingsDelegate>(profile_.get());
   }
@@ -64,9 +62,14 @@ class PrivacySandboxSettingsDelegateTest : public testing::Test {
   std::unique_ptr<PrivacySandboxSettingsDelegate> delegate_;
 };
 
-TEST_F(PrivacySandboxSettingsDelegateTest, CapabilityRestriction) {
+TEST_F(PrivacySandboxSettingsDelegateTest,
+       CapabilityRestrictionForSignedInUser) {
   feature_list()->InitAndEnableFeature(
       privacy_sandbox::kPrivacySandboxSettings3);
+  // Sign the user in.
+  identity_test_env()->MakePrimaryAccountAvailable(
+      kTestEmail, signin::ConsentLevel::kSignin);
+
   // Initially the account capability will be in an unknown state, which
   // should be interpreted as no restriction.
   EXPECT_FALSE(delegate()->IsPrivacySandboxRestricted());
@@ -87,23 +90,11 @@ TEST_F(PrivacySandboxSettingsDelegateTest, CapabilityRestriction) {
   EXPECT_FALSE(delegate()->IsPrivacySandboxRestricted());
 }
 
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-TEST_F(PrivacySandboxSettingsDelegateTest, SupervisedUser) {
-  // The sandbox should always be restricted for supervised users.
-  profile()->SetIsSupervisedProfile();
+TEST_F(PrivacySandboxSettingsDelegateTest,
+       CapabilityRestrictionForSignedOutUser) {
   feature_list()->InitAndEnableFeature(
       privacy_sandbox::kPrivacySandboxSettings3);
-  EXPECT_TRUE(delegate()->IsPrivacySandboxRestricted());
-
-  // The capability should not override profile supervision.
-  SetPrivacySandboxAccountCapability(kTestEmail, true);
-  EXPECT_TRUE(delegate()->IsPrivacySandboxRestricted());
-
-  // If the Privacy Sandbox Settings 3 feature is disabled, the supervised
-  // user restriction should not apply.
-  feature_list()->Reset();
-  feature_list()->InitAndDisableFeature(
-      privacy_sandbox::kPrivacySandboxSettings3);
+  // If the user is not signed in to Chrome then we don't use any age signal and
+  // don't restrict the feature.
   EXPECT_FALSE(delegate()->IsPrivacySandboxRestricted());
 }
-#endif

@@ -7,9 +7,7 @@
 #include "base/feature_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "components/prefs/pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
-#include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/tribool.h"
 
@@ -18,8 +16,12 @@ namespace {
 bool PrivacySandboxRestrictedByAcccountCapability(Profile* profile) {
   auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
 
-  if (!identity_manager)
+  if (!identity_manager ||
+      !identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
+    // The user isn't signed in so we can't apply any capabilties-based
+    // restrictions.
     return false;
+  }
 
   const auto core_account_info =
       identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
@@ -42,10 +44,9 @@ PrivacySandboxSettingsDelegate::~PrivacySandboxSettingsDelegate() = default;
 
 bool PrivacySandboxSettingsDelegate::IsPrivacySandboxRestricted() {
   // When the Privacy Sandbox 3 feature is enabled, the Sandbox is restricted
-  // for Child users.
+  // based on account capabilities.
   if (base::FeatureList::IsEnabled(privacy_sandbox::kPrivacySandboxSettings3)) {
-    return profile_->IsChild() ||
-           PrivacySandboxRestrictedByAcccountCapability(profile_);
+    return PrivacySandboxRestrictedByAcccountCapability(profile_);
   }
   // No restrictions apply otherwise.
   return false;
