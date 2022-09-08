@@ -8,32 +8,40 @@ import static org.junit.Assert.assertEquals;
 
 import androidx.test.filters.SmallTest;
 
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseJUnit4ClassRunner;
+import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.url.GURL;
 
 import java.util.HashMap;
+import java.util.concurrent.ExecutionException;
 
 /**
  * Tests of the CrowButtonDelegateImpl.
  * Requires native for GURL and canonicalization tests.
  */
 @RunWith(BaseJUnit4ClassRunner.class)
+@Batch(Batch.PER_CLASS)
 public class CrowButtonDelegateImplTest {
     @Rule
     public final ChromeBrowserTestRule mBrowserTestRule = new ChromeBrowserTestRule();
 
-    private final CrowButtonDelegateImpl mCrowButtonDelegate = new CrowButtonDelegateImpl();
+    private CrowButtonDelegateImpl mCrowButtonDelegate;
+
+    @Before
+    public void setUp() throws ExecutionException {
+        mCrowButtonDelegate = TestThreadUtils.runOnUiThreadBlocking(CrowButtonDelegateImpl::new);
+    }
 
     @Test
     @SmallTest
     public void testBuildServerUrl() {
-        CrowButtonDelegateImpl delegate = new CrowButtonDelegateImpl();
-
         final GURL serverUrl = new GURL("https://www.foo.com/v1/api?q=hi");
         // No query string, http rather than https.
         final GURL serverUrlWithoutQueryString = new GURL("http://www.foo.com/v1/api");
@@ -43,39 +51,39 @@ public class CrowButtonDelegateImplTest {
         boolean isFollowing = false;
 
         assertEquals("",
-                delegate.buildServerUrlInternal(
+                mCrowButtonDelegate.buildServerUrlInternal(
                         GURL.emptyGURL(), shareUrl1, shareUrl1, "", allowMetrics, isFollowing));
 
         // Baseline/common case.
         assertEquals(
                 "https://www.foo.com/v1/api?q=hi&pageUrl=https%3A%2F%2Ftestsitewearesharing.com%2Fblog%2Fentry&entry=menu&relCanonUrl=https%3A%2F%2Ftestsitewearesharing.com%2Fblog%2Fentry&publicationId=pubId1&metrics=true",
-                delegate.buildServerUrlInternal(
+                mCrowButtonDelegate.buildServerUrlInternal(
                         serverUrl, shareUrl1, shareUrl1, "pubId1", allowMetrics, isFollowing));
 
         // Sending a URL with urlparams of its own.
         assertEquals(
                 "https://www.foo.com/v1/api?q=hi&pageUrl=https%3A%2F%2Ftestsitewearesharing.com%2F%3Fblog%3D1%26entry%3D2&entry=menu&relCanonUrl=https%3A%2F%2Ftestsitewearesharing.com%2F%3Fblog%3D1%26entry%3D2&publicationId=pubId2&metrics=true",
-                delegate.buildServerUrlInternal(
+                mCrowButtonDelegate.buildServerUrlInternal(
                         serverUrl, shareUrl2, shareUrl2, "pubId2", allowMetrics, isFollowing));
 
         // Empty canonical URL is ok, passes as empty param.
         assertEquals(
                 "https://www.foo.com/v1/api?q=hi&pageUrl=https%3A%2F%2Ftestsitewearesharing.com%2Fblog%2Fentry&entry=menu&relCanonUrl=&publicationId=pubId1&metrics=true",
-                delegate.buildServerUrlInternal(serverUrl, shareUrl1, GURL.emptyGURL(), "pubId1",
-                        allowMetrics, isFollowing));
+                mCrowButtonDelegate.buildServerUrlInternal(serverUrl, shareUrl1, GURL.emptyGURL(),
+                        "pubId1", allowMetrics, isFollowing));
 
         // Experimental URL can be passed with an empty set of params.
         assertEquals(
                 "http://www.foo.com/v1/api?pageUrl=https%3A%2F%2Ftestsitewearesharing.com%2Fblog%2Fentry&entry=menu&relCanonUrl=https%3A%2F%2Ftestsitewearesharing.com%2Fblog%2Fentry&publicationId=pubId1&metrics=true",
-                delegate.buildServerUrlInternal(serverUrlWithoutQueryString, shareUrl1, shareUrl1,
-                        "pubId1", allowMetrics, isFollowing));
+                mCrowButtonDelegate.buildServerUrlInternal(serverUrlWithoutQueryString, shareUrl1,
+                        shareUrl1, "pubId1", allowMetrics, isFollowing));
 
         // Metrics off and already following should be reflected.
         allowMetrics = false;
         isFollowing = true;
         assertEquals(
                 "https://www.foo.com/v1/api?q=hi&pageUrl=https%3A%2F%2Ftestsitewearesharing.com%2Fblog%2Fentry&entry=menu&relCanonUrl=https%3A%2F%2Ftestsitewearesharing.com%2Fblog%2Fentry&publicationId=pubId1&metrics=false&following=true",
-                delegate.buildServerUrlInternal(
+                mCrowButtonDelegate.buildServerUrlInternal(
                         serverUrl, shareUrl1, shareUrl1, "pubId1", allowMetrics, isFollowing));
     }
 

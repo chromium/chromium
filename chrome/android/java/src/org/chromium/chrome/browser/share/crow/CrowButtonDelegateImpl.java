@@ -11,8 +11,11 @@ import androidx.annotation.VisibleForTesting;
 import androidx.browser.customtabs.CustomTabsIntent;
 
 import org.chromium.base.Callback;
+import org.chromium.base.LocaleUtils;
+import org.chromium.chrome.browser.ChromeActivitySessionTracker;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.language.AppLocaleUtils;
 import org.chromium.chrome.browser.optimization_guide.OptimizationGuideBridgeFactory;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -33,6 +36,8 @@ import java.util.HashMap;
 public class CrowButtonDelegateImpl implements CrowButtonDelegate {
     /** Domain to ID map, populated on first read. */
     private HashMap<String, String> mDomainIdMap;
+    // Tracker used to get the latest country of the user.
+    private final ChromeActivitySessionTracker mChromeActivitySessionTracker;
 
     private static final String APP_MENU_BUTTON_TEXT_PARAM = "AppMenuButtonText";
     private static final String DEBUG_SERVER_URL_PARAM = "DebugServerURL";
@@ -44,7 +49,9 @@ public class CrowButtonDelegateImpl implements CrowButtonDelegate {
     private static final String TAG = "CrowButton";
 
     /** Constructs a new {@link CrowButtonDelegateImpl}. */
-    public CrowButtonDelegateImpl() {}
+    public CrowButtonDelegateImpl() {
+        mChromeActivitySessionTracker = ChromeActivitySessionTracker.getInstance();
+    }
 
     // Lazy initialization of OptimizationGuideBridgeFactory
     private static class OptimizationGuideBridgeFactoryHolder {
@@ -118,8 +125,23 @@ public class CrowButtonDelegateImpl implements CrowButtonDelegate {
         }
     }
 
+    /**
+     * Returns true if the user is in the US using en-US, and false otherwise.
+     *
+     * <p>This should match how Finch gates features by locale and country. See
+     * VariationsService::GetLatestCountry() and language::GetApplicationLocale().
+     */
+    private boolean isEnabledForLocaleAndCountry() {
+        String country = mChromeActivitySessionTracker.getVariationsLatestCountry();
+        String locale = AppLocaleUtils.getAppLanguagePref();
+        if (locale == null) {
+            locale = LocaleUtils.getDefaultLocaleString();
+        }
+        return country != null && country.equals("us") && locale.equals("en-US");
+    }
+
     public boolean isCrowEnabled() {
-        return ChromeFeatureList.isInitialized()
+        return isEnabledForLocaleAndCountry() && ChromeFeatureList.isInitialized()
                 && ChromeFeatureList.isEnabled(ChromeFeatureList.SHARE_CROW_BUTTON);
     }
 
