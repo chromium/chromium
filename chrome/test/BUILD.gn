@@ -2690,6 +2690,7 @@ if (!is_android) {
         "../browser/web_applications/app_service/lacros_web_apps_controller_browsertest.cc",
       ]
       deps += [
+        ":lacros_test_support_ui",
         "//chromeos/crosapi/mojom",
         "//chromeos/lacros",
         "//chromeos/lacros:test_support",
@@ -4636,6 +4637,8 @@ if (is_chromeos_lacros) {
     testonly = true
 
     sources = [
+      "../browser/lacros/account_manager/fake_account_manager_ui_dialog_waiter.cc",
+      "../browser/lacros/account_manager/fake_account_manager_ui_dialog_waiter.h",
       "../browser/lacros/browser_test_util.cc",
       "../browser/lacros/browser_test_util.h",
     ]
@@ -4644,6 +4647,7 @@ if (is_chromeos_lacros) {
       "//chrome/browser",
       "//chromeos/lacros",
       "//chromeos/lacros:test_support",
+      "//components/account_manager_core:test_support",
       "//ui/platform_window",
       "//ui/views",
     ]

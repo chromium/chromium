@@ -87,9 +87,9 @@
 #include "ui/views/test/widget_test.h"
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chrome/browser/lacros/account_manager/fake_account_manager_ui_dialog_waiter.h"
 #include "chrome/browser/signin/signin_ui_delegate_impl_lacros.h"
 #include "components/account_manager_core/chromeos/account_manager_facade_factory.h"
-#include "components/account_manager_core/chromeos/fake_account_manager_ui.h"
 #endif
 
 namespace {
@@ -138,29 +138,6 @@ Profile* CreateAdditionalProfile() {
 std::unique_ptr<KeyedService> CreateTestTracker(content::BrowserContext*) {
   return feature_engagement::CreateTestTracker();
 }
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-class FakeAccountManagerUITestObserver : public FakeAccountManagerUI::Observer {
- public:
-  explicit FakeAccountManagerUITestObserver(
-      FakeAccountManagerUI* account_manager_ui)
-      : account_manager_ui_(account_manager_ui) {
-    scoped_observation_.Observe(account_manager_ui_.get());
-  }
-  ~FakeAccountManagerUITestObserver() override = default;
-
-  void WaitForReauthAccountDialogShown() { reauth_run_loop_.Run(); }
-
-  // FakeAccountManagerUI::Observer:
-  void OnReauthAccountDialogShown() override { reauth_run_loop_.Quit(); }
-
- private:
-  raw_ptr<FakeAccountManagerUI> account_manager_ui_;
-  base::RunLoop reauth_run_loop_;
-  base::ScopedObservation<FakeAccountManagerUI, FakeAccountManagerUI::Observer>
-      scoped_observation_{this};
-};
-#endif
 
 }  // namespace
 
@@ -625,11 +602,12 @@ class ProfileMenuViewSyncErrorButtonTest : public ProfileMenuViewTestBase,
 IN_PROC_BROWSER_TEST_F(ProfileMenuViewSyncErrorButtonTest, OpenReauthDialog) {
   FakeAccountManagerUI* account_manager_ui = GetFakeAccountManagerUI();
   ASSERT_TRUE(account_manager_ui);
-  FakeAccountManagerUITestObserver observer(account_manager_ui);
+  FakeAccountManagerUIDialogWaiter dialog_waiter(
+      account_manager_ui, FakeAccountManagerUIDialogWaiter::Event::kReauth);
 
   ASSERT_TRUE(Reauth());
 
-  observer.WaitForReauthAccountDialogShown();
+  dialog_waiter.Wait();
   EXPECT_TRUE(account_manager_ui->IsDialogShown());
   EXPECT_EQ(1,
             account_manager_ui->show_account_reauthentication_dialog_calls());
@@ -729,12 +707,13 @@ class ProfileMenuViewSigninErrorButtonTest : public ProfileMenuViewTestBase,
 IN_PROC_BROWSER_TEST_F(ProfileMenuViewSigninErrorButtonTest, OpenReauthDialog) {
   FakeAccountManagerUI* account_manager_ui = GetFakeAccountManagerUI();
   ASSERT_TRUE(account_manager_ui);
-  FakeAccountManagerUITestObserver observer(account_manager_ui);
+  FakeAccountManagerUIDialogWaiter dialog_waiter(
+      account_manager_ui, FakeAccountManagerUIDialogWaiter::Event::kReauth);
 
   ClickTurnOnSync();
 
   // Reauth is shown first.
-  observer.WaitForReauthAccountDialogShown();
+  dialog_waiter.Wait();
   EXPECT_TRUE(account_manager_ui->IsDialogShown());
   EXPECT_EQ(1,
             account_manager_ui->show_account_reauthentication_dialog_calls());

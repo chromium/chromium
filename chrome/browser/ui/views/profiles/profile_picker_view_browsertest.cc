@@ -105,11 +105,11 @@
 #include "components/policy/core/common/management/management_service.h"
 #include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chrome/browser/lacros/account_manager/fake_account_manager_ui_dialog_waiter.h"
 #include "chrome/browser/ui/startup/lacros_first_run_service.h"
 #include "components/account_manager_core/chromeos/account_manager.h"
 #include "components/account_manager_core/chromeos/account_manager_facade_factory.h"
 #include "components/account_manager_core/chromeos/account_manager_mojo_service.h"
-#include "components/account_manager_core/chromeos/fake_account_manager_ui.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 namespace {
@@ -145,30 +145,6 @@ GURL GetSyncConfirmationURL() {
   return AppendSyncConfirmationQueryParams(GURL("chrome://sync-confirmation/"),
                                            SyncConfirmationStyle::kWindow);
 }
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-
-class FakeAccountManagerUIAddAccountDialogWaiter
-    : public FakeAccountManagerUI::Observer {
- public:
-  explicit FakeAccountManagerUIAddAccountDialogWaiter(
-      FakeAccountManagerUI* account_manager_ui) {
-    scoped_observation_.Observe(account_manager_ui);
-  }
-  ~FakeAccountManagerUIAddAccountDialogWaiter() override = default;
-
-  void Wait() { run_loop_.Run(); }
-
-  // FakeAccountManagerUI::Observer:
-  void OnAddAccountDialogShown() override { run_loop_.Quit(); }
-
- private:
-  base::RunLoop run_loop_;
-  base::ScopedObservation<FakeAccountManagerUI, FakeAccountManagerUI::Observer>
-      scoped_observation_{this};
-};
-
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 class BrowserAddedWaiter : public BrowserListObserver {
  public:
@@ -449,7 +425,9 @@ class ProfilePickerCreationFlowBrowserTest : public ProfilePickerTestBase {
 
     // Wait for the Ash UI to show up.
     FakeAccountManagerUI* fake_ui = GetFakeAccountManagerUI();
-    FakeAccountManagerUIAddAccountDialogWaiter(fake_ui).Wait();
+    FakeAccountManagerUIDialogWaiter(
+        fake_ui, FakeAccountManagerUIDialogWaiter::Event::kAddAccount)
+        .Wait();
 
     // Fake the OS account addition.
     account_manager::AccountKey kAccountKey{
