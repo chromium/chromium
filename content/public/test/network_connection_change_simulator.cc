@@ -18,7 +18,6 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "net/base/network_change_notifier_posix.h"
-#include "services/network/public/mojom/network_service.mojom.h"
 #endif
 
 namespace content {

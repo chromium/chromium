@@ -20,10 +20,6 @@
 #include "content/public/browser/devtools_frontend_host.h"
 #include "content/public/browser/web_contents_observer.h"
 
-#if !BUILDFLAG(IS_ANDROID)
-#include "content/public/browser/devtools_frontend_host.h"
-#endif
-
 namespace content {
 
 class NavigationHandle;

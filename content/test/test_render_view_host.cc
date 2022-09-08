@@ -30,7 +30,6 @@
 #include "content/public/common/page_visibility_state.h"
 #include "content/test/test_page_broadcast.h"
 #include "content/test/test_render_frame_host.h"
-#include "content/test/test_render_view_host.h"
 #include "content/test/test_web_contents.h"
 #include "media/base/video_frame.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
