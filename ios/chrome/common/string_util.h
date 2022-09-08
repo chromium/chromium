@@ -39,8 +39,8 @@ struct StringWithTags {
 
 // Parses a string with an embedded link inside, delineated by "BEGIN_LINK" and
 // "END_LINK". Returns an attributed string with the text set as the parsed
-// string with given |text_attributes| and the link range with
-// |link_attributes|. The function asserts that there is one link.
+// string with given `text_attributes` and the link range with
+// `link_attributes`. The function asserts that there is one link.
 NSAttributedString* AttributedStringFromStringWithLink(
     NSString* text,
     NSDictionary* text_attributes,
@@ -51,15 +51,15 @@ NSAttributedString* AttributedStringFromStringWithLink(
 // ranges for text contained inside the tag delimiters.
 StringWithTags ParseStringWithLinks(NSString* text);
 
-// Parses a string with an embedded tag inside, delineated by |begin_tag| and
-// |end_tag|. Returns the string without the delimiters. The function asserts
+// Parses a string with an embedded tag inside, delineated by `begin_tag` and
+// `end_tag`. Returns the string without the delimiters. The function asserts
 // that there is at most one tag.
 StringWithTag ParseStringWithTag(NSString* text,
                                  NSString* begin_tag,
                                  NSString* end_tag);
 
-// Parses a string with embedded tags inside, delineated by |begin_tag| and
-// |end_tag|. Returns the string without the delimiters and a list of all ranges
+// Parses a string with embedded tags inside, delineated by `begin_tag` and
+// `end_tag`. Returns the string without the delimiters and a list of all ranges
 // for text contained inside the tag delimiters.
 StringWithTags ParseStringWithTags(NSString* text,
                                    NSString* begin_tag,
@@ -70,7 +70,7 @@ StringWithTags ParseStringWithTags(NSString* text,
 NSCharacterSet* GraphicCharactersSet();
 
 // Cleans an NSString by collapsing whitespace and removing leading and trailing
-// spaces. If |removeGraphicChars| is true, unicode graphic characters will also
+// spaces. If `removeGraphicChars` is true, unicode graphic characters will also
 // be removed from the string.
 NSString* CleanNSStringForDisplay(NSString* dirty, BOOL removeGraphicChars);
 
@@ -78,8 +78,8 @@ NSString* CleanNSStringForDisplay(NSString* dirty, BOOL removeGraphicChars);
 std::string CleanStringForDisplay(const std::string& dirty,
                                   BOOL removeGraphicChars);
 
-// Find the longest leading substring of |string| that, when rendered with
-// |attributes|, will fit on a single line inside |targetWidth|. If |trailing|
+// Find the longest leading substring of `string` that, when rendered with
+// `attributes`, will fit on a single line inside `targetWidth`. If `trailing`
 // is YES, then find the trailing (instead of leading) substring.
 NSString* SubstringOfWidth(NSString* string,
                            NSDictionary* attributes,
@@ -87,7 +87,7 @@ NSString* SubstringOfWidth(NSString* string,
                            BOOL trailing);
 
 // Returns the bound of an attributed string with NSRange
-// |characterRange| in the |textView|.
+// `characterRange` in the `textView`.
 CGRect TextViewLinkBound(UITextView* textView, NSRange characterRange);
 
 // Parses a string with an embedded bold part inside, delineated by

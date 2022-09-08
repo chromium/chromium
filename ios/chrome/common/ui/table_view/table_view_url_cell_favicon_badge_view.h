@@ -8,7 +8,7 @@
 #import <UIKit/UIKit.h>
 
 // View used to display the favicon badge image.  This class automatically
-// updates |hidden| to YES when its |image| is set to nil, rather than the
+// updates `hidden` to YES when its `image` is set to nil, rather than the
 // default UIImageView behavior which applies a default highlight to the view
 // for nil images.
 @interface TableViewURLCellFaviconBadgeView : UIImageView

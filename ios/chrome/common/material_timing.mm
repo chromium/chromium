@@ -12,7 +12,7 @@ namespace {
 
 UIViewAnimationOptions AnimationOptionsForceLinearTiming(
     UIViewAnimationOptions options) {
-  // Remove any non-linear timing options from |options|. They should be
+  // Remove any non-linear timing options from `options`. They should be
   // ignored.
   options &=
       ~(UIViewAnimationOptionCurveEaseInOut | UIViewAnimationOptionCurveEaseIn |

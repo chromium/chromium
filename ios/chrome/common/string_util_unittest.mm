@@ -72,7 +72,7 @@ TEST_F(StringUtilTest, AttributedStringFromStringWithLink) {
     EXPECT_TRUE(NSEqualRanges(test_case.expectedTextRange, textRange));
     EXPECT_NSEQ(test_case.textAttributes, resultTextAttributes);
 
-    // Text at index |expectedRange.location| has link attributes applied.
+    // Text at index `expectedRange.location` has link attributes applied.
     NSRange linkRange;
     NSDictionary* resultLinkAttributes =
         [result attributesAtIndex:test_case.expectedLinkRange.location

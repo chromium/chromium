@@ -16,13 +16,13 @@ constexpr char kPasscodeArticleURL[] = "https://support.apple.com/HT204060";
 @interface ReauthenticationModule () <SuccessfulReauthTimeAccessor>
 
 // Date kept to decide if last auth can be reused when
-// |lastSuccessfulReauthTime| is |self|.
+// `lastSuccessfulReauthTime` is `self`.
 @property(nonatomic, strong) NSDate* lastSuccessfulReauthTime;
 
 @end
 
 @implementation ReauthenticationModule {
-  // Block that creates a new |LAContext| object everytime one is required,
+  // Block that creates a new `LAContext` object everytime one is required,
   // meant to make testing with a mock object possible.
   LAContext* (^_createLAContext)(void);
 

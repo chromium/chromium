@@ -81,16 +81,16 @@ StringWithTags ParseStringWithTags(NSString* text,
 
   NSRange text_range{0, text.length};
   do {
-    // Find the next |begin_tag| in |text_range|.
+    // Find the next `begin_tag` in `text_range`.
     const NSRange begin_range = [text rangeOfString:begin_tag
                                             options:NSRegularExpressionSearch
                                               range:text_range];
 
-    // If no |begin_tag| is found, then there is no substitutions remainining.
+    // If no `begin_tag` is found, then there is no substitutions remainining.
     if (begin_range.length == 0)
       break;
 
-    // Find the next |end_tag| after the recently found |begin_tag|.
+    // Find the next `end_tag` after the recently found `begin_tag`.
     const NSUInteger after_begin_pos = NSMaxRange(begin_range);
     const NSRange after_begin_range{
         after_begin_pos,
@@ -99,7 +99,7 @@ StringWithTags ParseStringWithTags(NSString* text,
                                           options:NSRegularExpressionSearch
                                             range:after_begin_range];
 
-    // If no |end_tag| is found, then there is no substitutions remaining.
+    // If no `end_tag` is found, then there is no substitutions remaining.
     if (end_range.length == 0)
       break;
 

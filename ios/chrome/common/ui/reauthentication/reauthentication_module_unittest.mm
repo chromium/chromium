@@ -19,7 +19,7 @@
 @interface TestingSuccessfulReauthTimeAccessor
     : NSObject <SuccessfulReauthTimeAccessor> {
   // Object storing the time of a fake previous successful re-authentication
-  // to be used by the |ReauthenticationModule|.
+  // to be used by the `ReauthenticationModule`.
   NSDate* _successfulReauthTime;
 }
 

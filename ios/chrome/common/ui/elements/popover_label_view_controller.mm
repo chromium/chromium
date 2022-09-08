@@ -142,7 +142,7 @@ constexpr CGFloat kIconSize = 16;
 
   [_scrollView addSubview:textView];
 
-  // Only create secondary TextView when |secondaryAttributedString| is not nil
+  // Only create secondary TextView when `secondaryAttributedString` is not nil
   // or empty. Set the constraint accordingly.
   if (self.secondaryAttributedString.length) {
     UITextView* secondaryTextView = CreateUITextViewWithTextKit1();
@@ -323,14 +323,14 @@ constexpr CGFloat kIconSize = 16;
 // Updates the preferred content size according to the presenting view size and
 // the layout size of the view.
 - (void)updatePreferredContentSize {
-  // Expected width of the |self.scrollView|.
+  // Expected width of the `self.scrollView`.
   CGFloat width =
       self.presentingViewController.view.bounds.size.width * kWidthProportion;
   // Cap max width at 300pt.
   if (width > kMaxWidth) {
     width = kMaxWidth;
   }
-  // |scrollView| is used here instead of |self.view|, because |self.view|
+  // `scrollView` is used here instead of `self.view`, because `self.view`
   // includes arrow size during calculation although it's being added to the
   // result size anyway.
   CGSize size =

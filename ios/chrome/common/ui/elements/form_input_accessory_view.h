@@ -38,13 +38,13 @@ extern NSString* const kFormInputAccessoryViewAccessibilityID;
 // The leading view.
 @property(nonatomic, readonly, weak) UIView* leadingView;
 
-// Sets up the view with the given |leadingView|. Navigation controls are shown
-// on the trailing side and use |delegate| for actions.
+// Sets up the view with the given `leadingView`. Navigation controls are shown
+// on the trailing side and use `delegate` for actions.
 - (void)setUpWithLeadingView:(UIView*)leadingView
           navigationDelegate:(id<FormInputAccessoryViewDelegate>)delegate;
 
-// Sets up the view with the given |leadingView|. Navigation controls are
-// replaced with |customTrailingView|.
+// Sets up the view with the given `leadingView`. Navigation controls are
+// replaced with `customTrailingView`.
 - (void)setUpWithLeadingView:(UIView*)leadingView
           customTrailingView:(UIView*)customTrailingView;
 

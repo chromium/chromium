@@ -67,7 +67,7 @@ constexpr CGFloat kLearnMoreButtonSide = 40;
 @property(nonatomic, assign) BOOL canUpdateViewsOnScroll;
 
 // Whether the image is currently being calculated; used to prevent infinite
-// recursions caused by |viewDidLayoutSubviews|.
+// recursions caused by `viewDidLayoutSubviews`.
 @property(nonatomic, assign) BOOL calculatingImageSize;
 
 // Vertical constraints for buttons; used to reset top anchors when the number
@@ -311,12 +311,12 @@ constexpr CGFloat kLearnMoreButtonSide = 40;
 - (void)viewWillAppear:(BOOL)animated {
   [super viewWillAppear:animated];
 
-  // Reset |didReachBottom| to make sure that its value is correctly updated
+  // Reset `didReachBottom` to make sure that its value is correctly updated
   // to reflect the scrolling state when the view reappears and is refreshed
   // (e.g., when getting back from a full screen view that was hidding this
   // view controller underneath).
   //
-  // Set |didReachBottom| to YES when |scrollToEndMandatory| is NO, since the
+  // Set `didReachBottom` to YES when `scrollToEndMandatory` is NO, since the
   // screen can already be considered as fully scrolled when scrolling to the
   // end isn't mandatory.
   self.didReachBottom = !self.scrollToEndMandatory;
@@ -329,7 +329,7 @@ constexpr CGFloat kLearnMoreButtonSide = 40;
 
     // At this point, the scroll view has computed its content height. If
     // scrolling to the end is needed, and the entire content is already
-    // fully visible (scrolled), set |didReachBottom| to YES. Otherwise, replace
+    // fully visible (scrolled), set `didReachBottom` to YES. Otherwise, replace
     // the primary button's label with the read more label to indicate that more
     // scrolling is required.
     self.scrollViewBottomOffsetY = self.scrollView.contentSize.height -
@@ -349,7 +349,7 @@ constexpr CGFloat kLearnMoreButtonSide = 40;
 - (void)viewDidLayoutSubviews {
   [super viewDidLayoutSubviews];
 
-  // Prevents potential recursive calls to |viewDidLayoutSubviews|.
+  // Prevents potential recursive calls to `viewDidLayoutSubviews`.
   if (self.calculatingImageSize) {
     return;
   }
@@ -503,7 +503,7 @@ constexpr CGFloat kLearnMoreButtonSide = 40;
     _primaryActionButton.pointerStyleProvider =
         CreateOpaqueButtonPointerStyleProvider();
 
-    // Use |primaryActionString| even if scrolling to the end is mandatory
+    // Use `primaryActionString` even if scrolling to the end is mandatory
     // because at the viewDidLoad stage, the scroll view hasn't computed its
     // content height, so there is no way to knOow if scrolling is needed. This
     // label will be updated at the viewDidAppear stage if necessary.
@@ -699,8 +699,8 @@ constexpr CGFloat kLearnMoreButtonSide = 40;
   return newSize;
 }
 
-// Returns a new UIImage which is |sourceImage| resized to |newSize|. Returns
-// |currentImage| if it is already at the correct size.
+// Returns a new UIImage which is `sourceImage` resized to `newSize`. Returns
+// `currentImage` if it is already at the correct size.
 - (UIImage*)scaleBannerWithCurrentImage:(UIImage*)currentImage
                                  toSize:(CGSize)newSize {
   UIUserInterfaceStyle currentStyle =
@@ -774,7 +774,7 @@ constexpr CGFloat kLearnMoreButtonSide = 40;
       [[NSMutableAttributedString alloc] initWithString:self.readMoreString
                                              attributes:textAttributes];
 
-  // Use |ceilf()| when calculating the icon's bounds to ensure the
+  // Use `ceilf()` when calculating the icon's bounds to ensure the
   // button's content height does not shrink by fractional points, as the
   // attributed string's actual height is slightly smaller than the
   // assigned height.
@@ -841,7 +841,7 @@ constexpr CGFloat kLearnMoreButtonSide = 40;
 
 // If scrolling to the end of the content is mandatory, this method updates the
 // action buttons based on whether the scroll view is currently scrolled to the
-// end. If the scroll view has scrolled to the end, also sets |didReachBottom|.
+// end. If the scroll view has scrolled to the end, also sets `didReachBottom`.
 // It also updates the separator visibility based on scroll position.
 - (void)updateViewsOnScrollViewUpdate {
   if (!self.canUpdateViewsOnScroll) {
@@ -971,7 +971,7 @@ constexpr CGFloat kLearnMoreButtonSide = 40;
   }
 }
 
-// Helper that returns whether the |traitCollection| has a regular vertical
+// Helper that returns whether the `traitCollection` has a regular vertical
 // and regular horizontal size class.
 // Copied from "ios/chrome/browser/ui/util/uikit_ui_util.mm"
 - (bool)isRegularXRegularSizeClass:(UITraitCollection*)traitCollection {
@@ -1029,10 +1029,10 @@ constexpr CGFloat kLearnMoreButtonSide = 40;
 }
 
 - (void)textViewDidChangeSelection:(UITextView*)textView {
-  // Always force the |selectedTextRange| to |nil| to prevent users from
-  // selecting text. Setting the |selectable| property to |NO| doesn't help
+  // Always force the `selectedTextRange` to `nil` to prevent users from
+  // selecting text. Setting the `selectable` property to `NO` doesn't help
   // since it makes links inside the text view untappable. Another solution is
-  // to subclass |UITextView| and override |canBecomeFirstResponder| to return
+  // to subclass `UITextView` and override `canBecomeFirstResponder` to return
   // NO, but that workaround only works on iOS 13.5+. This is the simplest
   // approach that works well on iOS 12, 13 & 14.
   textView.selectedTextRange = nil;

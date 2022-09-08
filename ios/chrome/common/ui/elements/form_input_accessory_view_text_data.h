@@ -7,7 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
-// A simple data class to provide |FormInputAcccessoryView| with any necessary
+// A simple data class to provide `FormInputAcccessoryView` with any necessary
 // localized text data. This allows it to be used more easily in the main app
 // and extensions.
 @interface FormInputAccessoryViewTextData : NSObject

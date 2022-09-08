@@ -11,8 +11,8 @@
 
 @interface ReauthenticationModule (ForTesting)
 
-// Allows the replacement of the |LAContext| objects used by
-// |ReauthenticationModule| with a mock to facilitate testing.
+// Allows the replacement of the `LAContext` objects used by
+// `ReauthenticationModule` with a mock to facilitate testing.
 - (void)setCreateLAContext:(LAContext* (^)(void))createLAContext;
 
 @end

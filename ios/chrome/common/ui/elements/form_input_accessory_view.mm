@@ -64,7 +64,7 @@ NSString* const kFormInputAccessoryViewAccessibilityID =
 
 #pragma mark - Public
 
-// Override |intrinsicContentSize| so Auto Layout hugs the content of this view.
+// Override `intrinsicContentSize` so Auto Layout hugs the content of this view.
 - (CGSize)intrinsicContentSize {
   return CGSizeZero;
 }
@@ -108,10 +108,10 @@ NSString* const kFormInputAccessoryViewAccessibilityID =
   [self.delegate formInputAccessoryViewDidTapPreviousButton:self];
 }
 
-// Sets up the view with the given |leadingView|. If |delegate| is not nil,
-// navigation controls are shown on the right and use |delegate| for actions.
-// Else navigation controls are replaced with |customTrailingView|. If none of
-// |delegate| and |customTrailingView| is set, leadingView will take all the
+// Sets up the view with the given `leadingView`. If `delegate` is not nil,
+// navigation controls are shown on the right and use `delegate` for actions.
+// Else navigation controls are replaced with `customTrailingView`. If none of
+// `delegate` and `customTrailingView` is set, leadingView will take all the
 // space.
 - (void)setUpWithLeadingView:(UIView*)leadingView
           customTrailingView:(UIView*)customTrailingView
