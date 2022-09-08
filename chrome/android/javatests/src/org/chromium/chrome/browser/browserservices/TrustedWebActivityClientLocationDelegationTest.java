@@ -76,7 +76,7 @@ public class TrustedWebActivityClientLocationDelegationTest {
                 (app, settingValue) -> locationPermission.notifyCalled();
 
         PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT,
-                () -> mClient.checkLocationPermission(ORIGIN, callback));
+                () -> mClient.checkLocationPermission(SCOPE.toString(), callback));
         locationPermission.waitForFirst();
     }
 
@@ -102,8 +102,8 @@ public class TrustedWebActivityClientLocationDelegationTest {
         };
         PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT,
                 ()
-                        -> mClient.startListeningLocationUpdates(
-                                ORIGIN, false /* highAccuracy */, locationUpdateCallback));
+                        -> mClient.startListeningLocationUpdates(SCOPE.toString(),
+                                false /* highAccuracy */, locationUpdateCallback));
         locationUpdate.waitForFirst();
     }
 
@@ -128,8 +128,8 @@ public class TrustedWebActivityClientLocationDelegationTest {
         };
         PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT,
                 ()
-                        -> mClient.startListeningLocationUpdates(
-                                otherOrigin, false /* highAccuracy */, locationUpdateCallback));
+                        -> mClient.startListeningLocationUpdates(otherOrigin.toString(),
+                                false /* highAccuracy */, locationUpdateCallback));
         locationError.waitForFirst();
     }
 }

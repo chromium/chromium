@@ -175,7 +175,7 @@ public class WebappDisclosureControllerTest {
     }
 
     private void setVerificationStatus(@VerificationStatus int status) {
-        VerificationState state = new VerificationState(SCOPE, status);
+        VerificationState state = new VerificationState(SCOPE, SCOPE, status);
         doReturn(state).when(mCurrentPageVerifier).getState();
 
         for (Runnable observer : mVerificationObserverCaptor.getAllValues()) {

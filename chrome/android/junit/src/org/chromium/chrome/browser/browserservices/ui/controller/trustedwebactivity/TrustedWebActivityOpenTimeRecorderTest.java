@@ -216,7 +216,8 @@ public class TrustedWebActivityOpenTimeRecorderTest {
     }
 
     private void setVerificationStatus(@VerificationStatus int status) {
-        VerificationState newState = new VerificationState("www.example.com", status);
+        VerificationState newState =
+                new VerificationState("www.example.com", "www.example.com", status);
         when(mCurrentPageVerifier.getState()).thenReturn(newState);
         for (Runnable observer : mVerificationObserverCaptor.getAllValues()) {
             observer.run();

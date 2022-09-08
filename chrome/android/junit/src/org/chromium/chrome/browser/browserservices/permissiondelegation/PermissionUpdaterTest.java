@@ -38,6 +38,7 @@ import org.chromium.components.embedder_support.util.Origin;
 @Config(manifest = Config.NONE)
 public class PermissionUpdaterTest {
     private static final Origin ORIGIN = Origin.create("https://www.website.com");
+    private static final String URL = "https://www.website.com";
     private static final String PACKAGE_NAME = "com.package.name";
     private static final String OTHER_PACKAGE_NAME = "com.other.package.name";
 
@@ -68,7 +69,7 @@ public class PermissionUpdaterTest {
     @Test
     @Feature("TrustedWebActivities")
     public void doesntRegister_whenClientDoesntHandleIntents() {
-        mPermissionUpdater.onOriginVerified(ORIGIN, PACKAGE_NAME);
+        mPermissionUpdater.onOriginVerified(ORIGIN, URL, PACKAGE_NAME);
 
         verifyPermissionNotUpdated();
     }
@@ -78,7 +79,7 @@ public class PermissionUpdaterTest {
     public void doesntRegister_whenOtherClientHandlesIntent() {
         installBrowsableIntentHandler(ORIGIN, "com.package.other");
 
-        mPermissionUpdater.onOriginVerified(ORIGIN, PACKAGE_NAME);
+        mPermissionUpdater.onOriginVerified(ORIGIN, URL, PACKAGE_NAME);
 
         verifyPermissionNotUpdated();
     }
@@ -88,7 +89,7 @@ public class PermissionUpdaterTest {
     public void doesRegister_whenClientHandleIntentCorrectly() {
         installBrowsableIntentHandler(ORIGIN, PACKAGE_NAME);
 
-        mPermissionUpdater.onOriginVerified(ORIGIN, PACKAGE_NAME);
+        mPermissionUpdater.onOriginVerified(ORIGIN, URL, PACKAGE_NAME);
 
         verifyPermissionWillUpdate();
     }
@@ -106,11 +107,13 @@ public class PermissionUpdaterTest {
 
     private void verifyPermissionNotUpdated() {
         verify(mPermissionManager, never()).addDelegateApp(any(), anyString());
-        verify(mNotificationsPermissionUpdater, never()).onOriginVerified(any(), anyString());
+        verify(mNotificationsPermissionUpdater, never())
+                .onOriginVerified(any(), any(), anyString());
     }
 
     private void verifyPermissionWillUpdate() {
         verify(mPermissionManager).addDelegateApp(eq(ORIGIN), eq(PACKAGE_NAME));
-        verify(mNotificationsPermissionUpdater).onOriginVerified(eq(ORIGIN), eq(PACKAGE_NAME));
+        verify(mNotificationsPermissionUpdater)
+                .onOriginVerified(eq(ORIGIN), eq(URL), eq(PACKAGE_NAME));
     }
 }
