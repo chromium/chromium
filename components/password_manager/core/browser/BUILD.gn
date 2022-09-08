@@ -531,6 +531,8 @@ static_library("test_support") {
     "mock_password_scripts_fetcher.h",
     "mock_password_store_backend.cc",
     "mock_password_store_backend.h",
+    "mock_password_store_consumer.cc",
+    "mock_password_store_consumer.h",
     "mock_password_store_interface.cc",
     "mock_password_store_interface.h",
     "mock_password_sync_metadata_store.cc",
