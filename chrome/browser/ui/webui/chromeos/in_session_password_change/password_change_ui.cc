@@ -100,6 +100,8 @@ PasswordChangeUI::PasswordChangeUI(content::WebUI* web_ui)
                           IDR_PASSWORD_CHANGE_AUTHENTICATOR_JS);
   source->AddResourcePath("webview_saml_injected.js",
                           IDR_GAIA_AUTH_WEBVIEW_SAML_INJECTED_JS);
+  source->AddResourcePath("okta_detect_success_injected.js",
+                          IDR_GAIA_AUTH_OKTA_DETECT_SUCCESS_INJECTED_JS);
   source->AddResourcePath("password_change.js", IDR_PASSWORD_CHANGE_JS);
 
   content::WebUIDataSource::Add(profile, source);

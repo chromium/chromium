@@ -1,0 +1,23 @@
+# Copyright 2022 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//ui/webui/resources/tools/generate_grd.gni")
+
+# Creates the necessary GRDP file with local test files and the core
+# files from c/b/r/gaia_auth_host.
+generate_grd("build_grdp") {
+  grd_prefix = "gaia_auth_host"
+  out_grd = "$target_gen_dir/resources.grdp"
+
+  # All files are served with the prefix "gaia_auth_host/..."
+  resource_path_prefix = "gaia_auth_host"
+
+  # Add local test files.
+  input_files_base_dir = rebase_path(".", "//")
+  input_files = [ "password_change_authenticator_test.js" ]
+
+  # Add the core files from c/b/r/gaia_auth_host as well.
+  deps = [ "//chrome/browser/resources/gaia_auth_host:preprocess_gen_js_files" ]
+  manifest_files = [ "$root_gen_dir/chrome/browser/resources/gaia_auth_host/gaia_auth_host_manifest.json" ]
+}

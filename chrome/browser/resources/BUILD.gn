@@ -320,33 +320,3 @@ repack("dev_ui_paks") {
     deps += [ "//chrome/browser/resources/webapks:resources" ]
   }
 }
-
-# Some targets in this file are depended on independent of include_js_tests,
-# so this file gets loaded even if !include_js_tests. Since js2gtest()s don't
-# compile in some scenarios when include_js_tests is false, and since this
-# file is loaded even when it's false, we need to make sure the js2gtest()
-# target only exists in this file when it works. (In contrast, most other
-# BUILD.gn files containing js2gtest()s contain nothing else and hence are only
-# loaded when include_js_tests is true.)
-if (!is_android && include_js_tests) {
-  js2gtest("resources_unitjs_tests") {
-    test_type = "webui"
-    sources = [ "gaia_auth_host/password_change_authenticator_test.unitjs" ]
-
-    # This has to be a gen_include, so it doesn't collide with other js2gtests
-    gen_include_files = [ "//ui/webui/resources/js/cr.js" ]
-
-    # But these have to be extra_js_files, since it uses a native object
-    # EventTarget, which doesn't work at compile time.
-    extra_js_files = [
-      "//ui/webui/resources/js/cr/event_target.js",
-      "gaia_auth_host/password_change_authenticator.js",
-    ]
-    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-  }
-
-  source_set("browser_tests_js") {
-    testonly = true
-    deps = [ ":resources_unitjs_tests" ]
-  }
-}

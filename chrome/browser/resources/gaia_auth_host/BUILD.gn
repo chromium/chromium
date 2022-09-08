@@ -8,26 +8,41 @@ import("//chrome/test/base/js2gtest.gni")
 import("//chrome/test/include_js_tests.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/grit_rule.gni")
+import("//tools/grit/preprocess_if_expr.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 import("//ui/webui/resources/tools/js_modulizer.gni")
 
 grd_prefix = "gaia_auth_host"
+manifest_file = "gaia_auth_host_manifest.json"
+
 generate_grd("build_grd") {
   out_grd = "$target_gen_dir/resources.grd"
+  deps = [ ":preprocess_gen_js_files" ]
 
   # Resources are expected to be registered with paths like:
   # gaia_auth_host/resource_name.js
-  input_files_base_dir =
-      rebase_path("$root_gen_dir/chrome/browser/resources", root_build_dir)
-  input_files = [
-    "gaia_auth_host/authenticator.m.js",
-    "gaia_auth_host/channel.m.js",
-    "gaia_auth_host/post_message_channel.m.js",
-    "gaia_auth_host/saml_handler.m.js",
-    "gaia_auth_host/saml_password_attributes.m.js",
-    "gaia_auth_host/saml_timestamps.m.js",
-    "gaia_auth_host/saml_username_autofill.m.js",
-    "gaia_auth_host/webview_event_manager.m.js",
+  resource_path_prefix = "gaia_auth_host"
+
+  manifest_files = [ "$target_gen_dir/$manifest_file" ]
+}
+
+preprocess_if_expr("preprocess_gen_js_files") {
+  defines = chrome_grit_defines
+  deps = [ ":modulize" ]
+  in_folder = target_gen_dir
+  out_folder = "$target_gen_dir/gaia_auth_host_preprocessed"
+  out_manifest = "$target_gen_dir/$manifest_file"
+
+  in_files = [
+    "authenticator.m.js",
+    "channel.m.js",
+    "password_change_authenticator.m.js",
+    "post_message_channel.m.js",
+    "saml_handler.m.js",
+    "saml_password_attributes.m.js",
+    "saml_timestamps.m.js",
+    "saml_username_autofill.m.js",
+    "webview_event_manager.m.js",
   ]
 }
 
@@ -37,10 +52,7 @@ grit("resources") {
   # These arguments are needed since the grd is generated at build time.
   enable_input_discovery_for_gn_analyze = false
   source = "$target_gen_dir/resources.grd"
-  deps = [
-    ":build_grd",
-    ":modulize",
-  ]
+  deps = [ ":build_grd" ]
   outputs = [
     "grit/gaia_auth_host_resources.h",
     "grit/gaia_auth_host_resources_map.cc",
@@ -90,6 +102,7 @@ js_type_check("closure_compile") {
   deps = [
     ":authenticator.m",
     ":channel.m",
+    ":password_change_authenticator.m",
     ":post_message_channel.m",
     ":saml_handler.m",
     ":saml_password_attributes.m",
@@ -166,10 +179,26 @@ js_library("authenticator.m") {
   extra_deps = [ ":modulize" ]
 }
 
+js_library("password_change_authenticator.m") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/gaia_auth_host/password_change_authenticator.m.js" ]
+  deps = [
+    ":saml_handler.m",
+    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:util.m",
+    "//ui/webui/resources/js/cr:event_target.m",
+  ]
+  externs_list = [
+    "$externs_path/chrome_extensions.js",
+    "$externs_path/webview_tag.js",
+  ]
+  extra_deps = [ ":modulize" ]
+}
+
 js_modulizer("modulize") {
   input_files = [
     "authenticator.js",
     "channel.js",
+    "password_change_authenticator.js",
     "post_message_channel.js",
     "saml_handler.js",
     "saml_password_attributes.js",

@@ -204,6 +204,9 @@ WebRequestEventInterface.prototype.onBeforeSendHeaders;
 /** @type {!WebRequestEvent} */
 WebRequestEventInterface.prototype.onCompleted;
 
+/** @type {!WebRequestEvent} */
+WebRequestEventInterface.prototype.onBeforeRedirect;
+
 /** @type {!WebRequestOnErrorOccurredEvent} */
 WebRequestEventInterface.prototype.onErrorOccurred;
 

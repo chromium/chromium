@@ -2703,7 +2703,6 @@ if (!is_android) {
 
     if (include_js_tests) {
       deps += [
-        "//chrome/browser/resources:browser_tests_js",
         "//chrome/test/data/webui:browser_tests_js_mojo_webui",
         "//chrome/test/data/webui:browser_tests_js_webui",
       ]
