@@ -5095,6 +5095,21 @@
             ]
         }
     ],
+    "IOSBackgroundRefresh": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20220908",
+                    "enable_features": [
+                        "EnableFeedBackgroundRefresh"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSBookmarkString": [
         {
             "platforms": [
