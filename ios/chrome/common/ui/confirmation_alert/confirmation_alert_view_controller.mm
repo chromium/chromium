@@ -477,7 +477,7 @@ const CGFloat kFaviconBadgeSideLength = 24;
 }
 
 // Helper to create the image view enclosed in a frame with a shadow and a
-// corner badge with a green checkmark. |self.imageView| is set in this method.
+// corner badge with a green checkmark. `self.imageView` is set in this method.
 - (UIView*)createImageContainerViewWithShadowAndBadge {
   UIImageView* faviconBadgeView = [[UIImageView alloc] init];
   faviconBadgeView.translatesAutoresizingMaskIntoConstraints = NO;

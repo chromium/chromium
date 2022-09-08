@@ -21,7 +21,7 @@ extern NSString* const kConfirmationAlertSecondaryActionAccessibilityIdentifier;
 // in a scroll view for cases when the content doesn't fit in the screen.
 // The view controller can have up to three action buttons, which are position
 // in the bottom. They are arranged, from top to bottom,
-// |primaryActionString|, |secondaryActionString|, |tertiaryActionString|.
+// `primaryActionString`, `secondaryActionString`, `tertiaryActionString`.
 // Setting those properties will make those buttons be added to the view
 // controller.
 @interface ConfirmationAlertViewController : UIViewController
