@@ -210,9 +210,7 @@ void EncryptedReportingUploadProvider::UploadHelper::UpdateUploadClient(
     const auto result = upload_client_->EnqueueUpload(
         need_encryption_key, std::move(records), std::move(scoped_reservation),
         report_successful_upload_cb_, encryption_key_attached_cb_);
-    if (!result.ok()) {
-      LOG(ERROR) << "Upload failed, error=" << result;
-    }
+    LOG_IF(ERROR, !result.ok()) << "Upload failed, error=" << result;
   }
 }
 

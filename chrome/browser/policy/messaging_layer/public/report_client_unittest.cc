@@ -446,21 +446,15 @@ TEST_P(ReportClientTest, SpeculativelyEnqueueMessageAndUpload) {
 
   if (StorageSelector::is_uploader_required() &&
       !StorageSelector::is_use_missive()) {
-    // Note: there does not seem to be another way to define the expectations
-    // A+B for encrypted case and just B for non-encrypted.
     if (is_encryption_enabled()) {
       EXPECT_CALL(mock_client_,
                   UploadEncryptedReport(
                       IsEncryptionKeyRequestUploadRequestValid(), _, _))
           .WillOnce(WithArgs<0, 2>(Invoke(GetEncryptionKeyInvocation())));
-      EXPECT_CALL(mock_client_,
-                  UploadEncryptedReport(IsDataUploadRequestValid(), _, _))
-          .WillOnce(WithArgs<0, 2>(Invoke(GetVerifyDataInvocation())));
-    } else {
-      EXPECT_CALL(mock_client_,
-                  UploadEncryptedReport(IsDataUploadRequestValid(), _, _))
-          .WillOnce(WithArgs<0, 2>(Invoke(GetVerifyDataInvocation())));
     }
+    EXPECT_CALL(mock_client_,
+                UploadEncryptedReport(IsDataUploadRequestValid(), _, _))
+        .WillOnce(WithArgs<0, 2>(Invoke(GetVerifyDataInvocation())));
   }
 
   // Trigger upload.

@@ -64,12 +64,21 @@ void ReportingClient::CreateLocalStorageModule(
     base::OnceCallback<void(StatusOr<scoped_refptr<StorageModuleInterface>>)>
         cb) {
   LOG(WARNING) << "Store reporting data locally";
+  DCHECK(!StorageSelector::is_use_missive())
+      << "Can only be used in local mode";
   StorageModule::Create(
       StorageOptions()
           .set_directory(local_reporting_path)
           .set_signature_verification_public_key(verification_key),
       std::move(async_start_upload_cb), EncryptionModule::Create(),
       CompressionModule::Create(512, compression_algorithm), std::move(cb));
+}
+
+// static
+StorageModule* ReportingClient::GetLocalStorageModule() {
+  DCHECK(!StorageSelector::is_use_missive())
+      << "Can only be used in local mode";
+  return static_cast<StorageModule*>(GetInstance()->storage().get());
 }
 
 // Uploader is passed to Storage in order to upload messages using the
@@ -362,20 +371,21 @@ void ReportingClient::DeliverAsyncStartUploader(
 // static
 std::unique_ptr<EncryptedReportingUploadProvider>
 ReportingClient::CreateLocalUploadProvider() {
-  // Note: load storage() inside the callbacks, because at this moment storage()
-  // may be not yet created and stored in the client.
+  // Note: access local storage inside the callbacks, because it may be not yet
+  // stored in the client at the moment EncryptedReportingUploadProvider
+  // is instantiated.
   return std::make_unique<EncryptedReportingUploadProvider>(
       base::BindPostTask(
           sequenced_task_runner(),
           base::BindRepeating(
               [](SequenceInformation sequence_information, bool force) {
-                GetInstance()->storage()->ReportSuccess(
+                GetLocalStorageModule()->ReportSuccess(
                     std::move(sequence_information), force);
               })),
       base::BindPostTask(
           sequenced_task_runner(),
           base::BindRepeating([](SignedEncryptionInfo signed_encryption_key) {
-            GetInstance()->storage()->UpdateEncryptionKey(
+            GetLocalStorageModule()->UpdateEncryptionKey(
                 std::move(signed_encryption_key));
           })));
 }

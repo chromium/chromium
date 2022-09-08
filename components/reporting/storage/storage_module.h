@@ -53,12 +53,14 @@ class StorageModule : public StorageModuleInterface {
   // If |force| is false (which is used in most cases), |sequence_information|
   // only affects Storage if no higher sequencing was confirmed before;
   // otherwise it is accepted unconditionally.
-  void ReportSuccess(SequenceInformation sequence_information,
-                     bool force) override;
+  // Declared virtual for testing purposes.
+  virtual void ReportSuccess(SequenceInformation sequence_information,
+                             bool force);
 
   // If the server attached signed encryption key to the response, it needs to
   // be paased here.
-  void UpdateEncryptionKey(SignedEncryptionInfo signed_encryption_key) override;
+  // Declared virtual for testing purposes.
+  virtual void UpdateEncryptionKey(SignedEncryptionInfo signed_encryption_key);
 
  protected:
   // Constructor can only be called by |Create| factory method.

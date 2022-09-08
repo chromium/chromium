@@ -45,16 +45,4 @@ void MissiveStorageModule::AddRecord(Priority priority,
 void MissiveStorageModule::Flush(Priority priority, FlushCallback callback) {
   delegate_->Flush(priority, std::move(callback));
 }
-
-void MissiveStorageModule::ReportSuccess(
-    SequenceInformation sequence_information,
-    bool force) {
-  delegate_->ReportSuccess(sequence_information, force);
-}
-
-void MissiveStorageModule::UpdateEncryptionKey(
-    SignedEncryptionInfo signed_encryption_info) {
-  delegate_->UpdateEncryptionKey(signed_encryption_info);
-}
-
 }  // namespace reporting

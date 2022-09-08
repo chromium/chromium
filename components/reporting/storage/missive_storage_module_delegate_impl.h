@@ -34,17 +34,10 @@ class MissiveStorageModuleDelegateImpl
   void Flush(Priority priority,
              MissiveStorageModule::FlushCallback callback) override;
 
-  void ReportSuccess(const SequenceInformation& sequence_information,
-                     bool force) override;
-
-  void UpdateEncryptionKey(
-      const SignedEncryptionInfo& signed_encryption_key) override;
-
  private:
   const AddRecordCallback add_record_;
   const FlushCallback flush_;
 };
 
 }  // namespace reporting
-
 #endif  // COMPONENTS_REPORTING_STORAGE_MISSIVE_STORAGE_MODULE_DELEGATE_IMPL_H_

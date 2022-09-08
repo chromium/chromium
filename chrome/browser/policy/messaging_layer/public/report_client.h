@@ -16,6 +16,7 @@
 #include "components/reporting/client/report_queue_configuration.h"
 #include "components/reporting/client/report_queue_provider.h"
 #include "components/reporting/proto/synced/record.pb.h"
+#include "components/reporting/storage/storage_module.h"
 #include "components/reporting/storage/storage_module_interface.h"
 #include "components/reporting/storage/storage_uploader_interface.h"
 #include "components/reporting/util/statusor.h"
@@ -28,10 +29,6 @@ namespace reporting {
 
 class ReportingClient : public ReportQueueProvider {
  public:
-  using CreateReportQueueResponse = StatusOr<std::unique_ptr<ReportQueue>>;
-  using CreateReportQueueCallback =
-      base::OnceCallback<void(CreateReportQueueResponse)>;
-
   // RAII class for testing ReportingClient - substitutes reporting files
   // location, signature verification public key and a cloud policy client
   // builder to return given client. Resets client when destructed.
@@ -56,6 +53,18 @@ class ReportingClient : public ReportQueueProvider {
   // class.
   static ReportingClient* GetInstance();
 
+  // Configures the report queue config with an appropriate DM token after its
+  // retrieval for downstream processing, and triggers the corresponding
+  // completion callback with the updated config.
+  void ConfigureReportQueue(
+      std::unique_ptr<ReportQueueConfiguration> report_queue_config,
+      ReportQueueProvider::ReportQueueConfiguredCallback completion_cb)
+      override;
+
+  //
+  // Everything below is used in Local storage case only.
+  //
+
   static void CreateLocalStorageModule(
       const base::FilePath& local_reporting_path,
       base::StringPiece verification_key,
@@ -64,8 +73,7 @@ class ReportingClient : public ReportQueueProvider {
       base::OnceCallback<void(StatusOr<scoped_refptr<StorageModuleInterface>>)>
           cb);
 
-  void OnInitState(bool reporting_client_configured);
-  void OnInitializationComplete(Status init_status);
+  static StorageModule* GetLocalStorageModule();
 
   static void AsyncStartUploader(
       UploaderInterface::UploadReason reason,
@@ -77,14 +85,6 @@ class ReportingClient : public ReportQueueProvider {
 
   // Returns upload provider for the client in case of local storage.
   std::unique_ptr<EncryptedReportingUploadProvider> CreateLocalUploadProvider();
-
-  // Configures the report queue config with an appropriate DM token after its
-  // retrieval for downstream processing, and triggers the corresponding
-  // completion callback with the updated config.
-  void ConfigureReportQueue(
-      std::unique_ptr<ReportQueueConfiguration> report_queue_config,
-      ReportQueueProvider::ReportQueueConfiguredCallback completion_cb)
-      override;
 
   // Upload provider (if enabled).
   std::unique_ptr<EncryptedReportingUploadProvider> upload_provider_;

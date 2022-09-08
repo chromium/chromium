@@ -35,6 +35,10 @@ void StorageModule::AddRecord(Priority priority,
   storage_->Write(priority, std::move(record), std::move(callback));
 }
 
+void StorageModule::Flush(Priority priority, FlushCallback callback) {
+  std::move(callback).Run(storage_->Flush(priority));
+}
+
 void StorageModule::ReportSuccess(SequenceInformation sequence_information,
                                   bool force) {
   storage_->Confirm(
@@ -44,10 +48,6 @@ void StorageModule::ReportSuccess(SequenceInformation sequence_information,
           LOG(ERROR) << "Unable to confirm record deletion: " << status;
         }
       }));
-}
-
-void StorageModule::Flush(Priority priority, FlushCallback callback) {
-  std::move(callback).Run(storage_->Flush(priority));
 }
 
 void StorageModule::UpdateEncryptionKey(
