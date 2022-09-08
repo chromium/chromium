@@ -237,21 +237,19 @@ base::Value::List List(std::vector<overflow_menu::Destination>& ranking) {
   if (!self.prefService)
     return;
 
-  const base::Value::Dict* history =
-      self.prefService
-          ->GetDictionary(prefs::kOverflowMenuDestinationUsageHistory)
-          ->GetIfDict();
+  const base::Value::Dict& history = self.prefService->GetValueDict(
+      prefs::kOverflowMenuDestinationUsageHistory);
   const std::string path = base::NumberToString(TodaysDay()) + "." +
                            overflow_menu::StringNameForDestination(destination);
 
-  int numClicks = history->FindIntByDottedPath(path).value_or(0) + 1;
+  int numClicks = history.FindIntByDottedPath(path).value_or(0) + 1;
 
   DictionaryPrefUpdate update(self.prefService,
                               prefs::kOverflowMenuDestinationUsageHistory);
   update->SetIntPath(path, numClicks);
 
   // User's very first time using Smart Sorting.
-  if (history->size() == 0)
+  if (history.size() == 0)
     [self injectDefaultNumClicksForAllDestinations];
 
   // Calculate new ranking and store to prefs; Calculate the new ranking
@@ -277,16 +275,14 @@ base::Value::List List(std::vector<overflow_menu::Destination>& ranking) {
   std::string today = base::NumberToString(TodaysDay());
   DictionaryPrefUpdate update(self.prefService,
                               prefs::kOverflowMenuDestinationUsageHistory);
-  const base::Value::Dict* history =
-      self.prefService
-          ->GetDictionary(prefs::kOverflowMenuDestinationUsageHistory)
-          ->GetIfDict();
+  const base::Value::Dict& history = self.prefService->GetValueDict(
+      prefs::kOverflowMenuDestinationUsageHistory);
 
   for (overflow_menu::Destination destination : kDefaultRanking) {
     const std::string path =
         today + "." + overflow_menu::StringNameForDestination(destination);
-    update->SetIntPath(path, history->FindIntByDottedPath(path).value_or(0) +
-                                 defaultNumClicks);
+    update->SetIntPath(
+        path, history.FindIntByDottedPath(path).value_or(0) + defaultNumClicks);
   }
 }
 
@@ -294,16 +290,12 @@ base::Value::List List(std::vector<overflow_menu::Destination>& ranking) {
 // saves back to prefs. Returns true if expired usage data was found/removed,
 // false otherwise.
 - (void)deleteExpiredData {
-  const base::Value* pref = self.prefService->GetDictionary(
+  const base::Value::Dict& history = self.prefService->GetValueDict(
       prefs::kOverflowMenuDestinationUsageHistory);
-  const base::Value::Dict* history = pref->GetIfDict();
 
-  if (!history)
-    return;
+  base::Value::Dict prunedHistory = history.Clone();
 
-  base::Value::Dict prunedHistory = history->Clone();
-
-  for (auto&& [day, dayHistory] : *history) {
+  for (auto&& [day, dayHistory] : history) {
     // Skip over entry corresponding to previous ranking.
     if (day == kRankingKey)
       continue;
@@ -318,14 +310,10 @@ base::Value::List List(std::vector<overflow_menu::Destination>& ranking) {
 
 // Fetches the current ranking saved in prefs and returns it.
 - (const base::Value::List*)fetchCurrentRanking {
-  const base::Value* pref = self.prefService->GetDictionary(
+  const base::Value::Dict& history = self.prefService->GetValueDict(
       prefs::kOverflowMenuDestinationUsageHistory);
-  const base::Value::Dict* history = pref->GetIfDict();
 
-  if (!history)
-    return nullptr;
-
-  return history->FindList(kRankingKey);
+  return history.FindList(kRankingKey);
 }
 
 // Fetches the current ranking stored in Chrome Prefs and returns a sorted list
@@ -362,16 +350,12 @@ base::Value::List List(std::vector<overflow_menu::Destination>& ranking) {
 // (int). Only usage data within previous `window` days will be included in the
 // returned result.
 - (base::Value::Dict)flattenedHistoryWithinWindow:(int)window {
-  const base::Value* pref = self.prefService->GetDictionary(
+  const base::Value::Dict& history = self.prefService->GetValueDict(
       prefs::kOverflowMenuDestinationUsageHistory);
-  const base::Value::Dict* history = pref->GetIfDict();
 
   base::Value::Dict flatHistory;
 
-  if (!history)
-    return flatHistory;
-
-  for (auto&& [day, dayHistory] : *history) {
+  for (auto&& [day, dayHistory] : history) {
     // Skip over entry corresponding to previous ranking.
     if (day == kRankingKey) {
       continue;
