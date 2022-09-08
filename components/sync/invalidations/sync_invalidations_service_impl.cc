@@ -13,7 +13,6 @@ namespace syncer {
 
 namespace {
 
-// TODO(crbug.com/1082115): change to real sync sender id: 8181035976.
 constexpr char kSenderId[] = "361488507004";
 constexpr char kApplicationId[] = "com.google.chrome.sync.invalidations";
 
