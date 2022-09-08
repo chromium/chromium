@@ -78,6 +78,9 @@ class FakeAutocompleteProviderClient : public MockAutocompleteProviderClient {
     history_clusters_service_ = service;
   }
 
+  // There should be no reason to set this unless the tested provider actually
+  // uses the AutocompleteProviderClient's InMemoryURLIndex, like the
+  // HistoryQuickProvider does.
   void set_in_memory_url_index(std::unique_ptr<InMemoryURLIndex> index) {
     in_memory_url_index_ = std::move(index);
   }

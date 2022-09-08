@@ -13,7 +13,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/strings/stringprintf.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/task/task_runner_util.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -43,13 +42,7 @@ void InitializeSchemeAllowlist(SchemeSet* allowlist,
   allowlist->insert(std::string(url::kMailToScheme));
 }
 
-// Restore/SaveCacheObserver ---------------------------------------------------
-
-InMemoryURLIndex::RestoreCacheObserver::~RestoreCacheObserver() {
-}
-
-InMemoryURLIndex::SaveCacheObserver::~SaveCacheObserver() {
-}
+InMemoryURLIndex::RestoreCacheObserver::~RestoreCacheObserver() = default;
 
 // RebuildPrivateDataFromHistoryDBTask -----------------------------------------
 
@@ -92,16 +85,9 @@ InMemoryURLIndex::InMemoryURLIndex(bookmarks::BookmarkModel* bookmark_model,
     : bookmark_model_(bookmark_model),
       history_service_(history_service),
       template_url_service_(template_url_service),
-      history_dir_(history_dir),
       private_data_(new URLIndexPrivateData),
-      restore_cache_observer_(nullptr),
-      save_cache_observer_(nullptr),
       task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
-          {base::MayBlock(), base::TaskPriority::BEST_EFFORT})),
-      shutdown_(false),
-      restored_(false),
-      needs_to_be_cached_(false),
-      listen_to_history_service_loaded_(false) {
+          {base::MayBlock(), base::TaskPriority::BEST_EFFORT})) {
   InitializeSchemeAllowlist(&scheme_allowlist_, client_schemes_to_allowlist);
   // TODO(mrossetti): Register for language change notifications.
   if (history_service_)
@@ -115,26 +101,23 @@ InMemoryURLIndex::~InMemoryURLIndex() {
   base::trace_event::MemoryDumpManager::GetInstance()->UnregisterDumpProvider(
       this);
 
-  // If there was a history directory (which there won't be for some unit tests)
-  // then insure that the cache has already been saved.
-  DCHECK(history_dir_.empty() || !needs_to_be_cached_);
   DCHECK(!history_service_);
   DCHECK(shutdown_);
 }
 
 void InMemoryURLIndex::Init() {
-  PostRestoreFromCacheFileTask();
+  if (!history_service_)
+    return;
+
+  if (history_service_->backend_loaded()) {
+    ScheduleRebuildFromHistory();
+  } else {
+    listen_to_history_service_loaded_ = true;
+  }
 }
 
 void InMemoryURLIndex::ClearPrivateData() {
   private_data_->Clear();
-}
-
-bool InMemoryURLIndex::GetCacheFilePath(base::FilePath* file_path) {
-  if (history_dir_.empty())
-    return false;
-  *file_path = history_dir_.Append(FILE_PATH_LITERAL("History Provider Cache"));
-  return true;
 }
 
 // Querying --------------------------------------------------------------------
@@ -158,16 +141,16 @@ void InMemoryURLIndex::OnURLVisited(history::HistoryService* history_service,
                                     const history::URLRow& url_row,
                                     const history::VisitRow& new_visit) {
   DCHECK_EQ(history_service_, history_service);
-  needs_to_be_cached_ |= private_data_->UpdateURL(
-      history_service_, url_row, scheme_allowlist_, &private_data_tracker_);
+  private_data_->UpdateURL(history_service_, url_row, scheme_allowlist_,
+                           &private_data_tracker_);
 }
 
 void InMemoryURLIndex::OnURLsModified(history::HistoryService* history_service,
                                       const history::URLRows& changed_urls) {
   DCHECK_EQ(history_service_, history_service);
   for (const auto& row : changed_urls) {
-    needs_to_be_cached_ |= private_data_->UpdateURL(
-        history_service_, row, scheme_allowlist_, &private_data_tracker_);
+    private_data_->UpdateURL(history_service_, row, scheme_allowlist_,
+                             &private_data_tracker_);
   }
 }
 
@@ -176,28 +159,10 @@ void InMemoryURLIndex::OnURLsDeleted(
     const history::DeletionInfo& deletion_info) {
   if (deletion_info.IsAllHistory()) {
     ClearPrivateData();
-    needs_to_be_cached_ = true;
   } else {
     for (const auto& row : deletion_info.deleted_rows())
-      needs_to_be_cached_ |= private_data_->DeleteURL(row.url());
+      private_data_->DeleteURL(row.url());
   }
-  // If we made changes, destroy the previous cache.  Otherwise, if we go
-  // through an unclean shutdown (and therefore fail to write a new cache file),
-  // when Chrome restarts and we restore from the previous cache, we'll end up
-  // searching over URLs that may be deleted.  This would be wrong, and
-  // surprising to the user who bothered to delete some URLs from their
-  // history.  In this situation, deleting the cache is a better solution than
-  // writing a new cache (after deleting the URLs from the in-memory structure)
-  // because deleting the cache forces it to be rebuilt from history upon
-  // startup.  If we instead write a new, updated cache then at the time of next
-  // startup (after an unclean shutdown) we will not rebuild the in-memory data
-  // structures from history but rather use the cache.  This solution is
-  // mediocre because this cache may not have the most-recently-visited URLs
-  // in it (URLs visited after user deleted some URLs from history), which
-  // would be odd and confusing.  It's better to force a rebuild.
-  base::FilePath path;
-  if (needs_to_be_cached_ && GetCacheFilePath(&path))
-    task_runner_->PostTask(FROM_HERE, base::GetDeleteFileCallback(path));
 }
 
 void InMemoryURLIndex::OnHistoryServiceLoaded(
@@ -227,57 +192,6 @@ bool InMemoryURLIndex::OnMemoryDump(
   return true;
 }
 
-// Restoring from Cache --------------------------------------------------------
-
-void InMemoryURLIndex::PostRestoreFromCacheFileTask() {
-  DCHECK(thread_checker_.CalledOnValidThread());
-  TRACE_EVENT0("omnibox", "InMemoryURLIndex::PostRestoreFromCacheFileTask");
-
-  if (base::FeatureList::IsEnabled(
-          omnibox::kHistoryQuickProviderAblateInMemoryURLIndexCacheFile)) {
-    // To short circuit the cache, pretend we've failed to load it.
-    OnCacheLoadDone(nullptr);
-    return;
-  }
-
-  base::FilePath path;
-  if (!GetCacheFilePath(&path) || shutdown_) {
-    restored_ = true;
-    if (restore_cache_observer_)
-      restore_cache_observer_->OnCacheRestoreFinished(false);
-    return;
-  }
-
-  base::PostTaskAndReplyWithResult(
-      task_runner_.get(), FROM_HERE,
-      base::BindOnce(&URLIndexPrivateData::RestoreFromFile, path),
-      base::BindOnce(&InMemoryURLIndex::OnCacheLoadDone, AsWeakPtr()));
-}
-
-void InMemoryURLIndex::OnCacheLoadDone(
-    scoped_refptr<URLIndexPrivateData> private_data) {
-  if (private_data.get() && !private_data->Empty()) {
-    private_data_tracker_.TryCancelAll();
-    private_data_ = private_data;
-    restored_ = true;
-    if (restore_cache_observer_)
-      restore_cache_observer_->OnCacheRestoreFinished(true);
-  } else if (history_service_) {
-    // When unable to restore from the cache file delete the cache file, if
-    // it exists, and then rebuild from the history database if it's available,
-    // otherwise wait until the history database loaded and then rebuild.
-    base::FilePath path;
-    if (!GetCacheFilePath(&path) || shutdown_)
-      return;
-    task_runner_->PostTask(FROM_HERE, base::GetDeleteFileCallback(path));
-    if (history_service_->backend_loaded()) {
-      ScheduleRebuildFromHistory();
-    } else {
-      listen_to_history_service_loaded_ = true;
-    }
-  }
-}
-
 // Cleanup ---------------------------------------------------------------------
 
 void InMemoryURLIndex::Shutdown() {
@@ -285,22 +199,9 @@ void InMemoryURLIndex::Shutdown() {
     history_service_observation_.Reset();
     history_service_ = nullptr;
   }
-  cache_reader_tracker_.TryCancelAll();
   shutdown_ = true;
-  base::FilePath path;
-  if (!GetCacheFilePath(&path))
-    return;
   private_data_tracker_.TryCancelAll();
 
-  if (!base::FeatureList::IsEnabled(
-          omnibox::kHistoryQuickProviderAblateInMemoryURLIndexCacheFile)) {
-    task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            base::IgnoreResult(
-                &URLIndexPrivateData::WritePrivateDataToCacheFileTask),
-            private_data_, path));
-  }
 #ifndef LEAK_SANITIZER
   // Intentionally create and then leak a scoped_refptr to private_data_. This
   // permanently raises the reference count so that the URLIndexPrivateData
@@ -310,7 +211,6 @@ void InMemoryURLIndex::Shutdown() {
   base::NoDestructor<scoped_refptr<URLIndexPrivateData>> leak_reference(
       private_data_);
 #endif
-  needs_to_be_cached_ = false;
 }
 
 // Restoring from the History DB -----------------------------------------------
@@ -325,7 +225,7 @@ void InMemoryURLIndex::ScheduleRebuildFromHistory() {
       std::unique_ptr<history::HistoryDBTask>(
           new InMemoryURLIndex::RebuildPrivateDataFromHistoryDBTask(
               this, scheme_allowlist_)),
-      &cache_reader_tracker_);
+      &private_data_tracker_);
 }
 
 void InMemoryURLIndex::DoneRebuildingPrivateDataFromHistoryDB(
@@ -338,11 +238,8 @@ void InMemoryURLIndex::DoneRebuildingPrivateDataFromHistoryDB(
   if (succeeded) {
     private_data_tracker_.TryCancelAll();
     private_data_ = private_data;
-    PostSaveToCacheFileTask();  // Cache the newly rebuilt index.
   } else {
-    private_data_->Clear();  // Dump the old private data.
-    // There is no need to do anything with the cache file as it was deleted
-    // when the rebuild from the history operation was kicked off.
+    private_data_->Clear();
   }
   restored_ = true;
   if (restore_cache_observer_)
@@ -354,38 +251,4 @@ void InMemoryURLIndex::RebuildFromHistory(
   private_data_tracker_.TryCancelAll();
   private_data_ =
       URLIndexPrivateData::RebuildFromHistory(history_db, scheme_allowlist_);
-}
-
-// Saving to Cache -------------------------------------------------------------
-
-void InMemoryURLIndex::PostSaveToCacheFileTask() {
-  if (base::FeatureList::IsEnabled(
-          omnibox::kHistoryQuickProviderAblateInMemoryURLIndexCacheFile)) {
-    return;
-  }
-
-  base::FilePath path;
-  if (!GetCacheFilePath(&path))
-    return;
-  // If there is anything in our private data then make a copy of it and tell
-  // it to save itself to a file.
-  if (private_data_.get() && !private_data_->Empty()) {
-    // Note that ownership of the copy of our private data is passed to the
-    // completion closure below.
-    scoped_refptr<URLIndexPrivateData> private_data_copy =
-        private_data_->Duplicate();
-    base::PostTaskAndReplyWithResult(
-        task_runner_.get(), FROM_HERE,
-        base::BindOnce(&URLIndexPrivateData::WritePrivateDataToCacheFileTask,
-                       private_data_copy, path),
-        base::BindOnce(&InMemoryURLIndex::OnCacheSaveDone, AsWeakPtr()));
-  } else {
-    // If there is no data in our index then delete any existing cache file.
-    task_runner_->PostTask(FROM_HERE, base::GetDeleteFileCallback(path));
-  }
-}
-
-void InMemoryURLIndex::OnCacheSaveDone(bool succeeded) {
-  if (save_cache_observer_)
-    save_cache_observer_->OnCacheSaveFinished(succeeded);
 }

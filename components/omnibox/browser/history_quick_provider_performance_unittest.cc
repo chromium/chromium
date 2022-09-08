@@ -121,6 +121,9 @@ void HQPPerfTestOnePopularURL::SetUp() {
       client_->GetBookmarkModel(), client_->GetHistoryService(), nullptr,
       history_dir_.GetPath(), SchemeSet()));
   client_->GetInMemoryURLIndex()->Init();
+  // First make sure the automatic initialization completes to avoid a race
+  // between that and our manual indexing below.
+  BlockUntilInMemoryURLIndexIsRefreshed(client_->GetInMemoryURLIndex());
 
   ASSERT_TRUE(client_->GetHistoryService());
   ASSERT_NO_FATAL_FAILURE(PrepareData());
@@ -155,7 +158,6 @@ void HQPPerfTestOnePopularURL::PrepareData() {
   InMemoryURLIndex* url_index = client_->GetInMemoryURLIndex();
   url_index->RebuildFromHistory(
       client_->GetHistoryService()->history_backend_->db());
-  BlockUntilInMemoryURLIndexIsRefreshed(url_index);
 
   // History index refresh creates rebuilt tasks to run on history thread.
   // Block here to make sure that all of them are complete.

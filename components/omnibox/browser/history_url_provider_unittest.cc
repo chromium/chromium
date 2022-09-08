@@ -290,10 +290,6 @@ bool HistoryURLProviderTest::SetUpImpl(bool create_history_db) {
   client_->set_history_service(
       history::CreateHistoryService(history_dir_.GetPath(), create_history_db));
   client_->set_bookmark_model(bookmarks::TestBookmarkClient::CreateModel());
-  client_->set_in_memory_url_index(std::make_unique<InMemoryURLIndex>(
-      client_->GetBookmarkModel(), client_->GetHistoryService(), nullptr,
-      history_dir_.GetPath(), SchemeSet()));
-  client_->GetInMemoryURLIndex()->Init();
   client_->set_template_url_service(
       std::make_unique<TemplateURLService>(nullptr, 0));
   if (!client_->GetHistoryService())

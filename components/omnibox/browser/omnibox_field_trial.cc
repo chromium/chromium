@@ -486,15 +486,9 @@ int OmniboxFieldTrial::MaxNumHQPUrlsIndexedAtStartup() {
 #endif
 
   if (base::SysInfo::IsLowEndDevice()) {
-    return variations::GetVariationParamByFeatureAsInt(
-        omnibox::kHistoryQuickProviderAblateInMemoryURLIndexCacheFile,
-        kMaxNumHQPUrlsIndexedAtStartupOnLowEndDevicesParam,
-        kDefaultOnLowEndDevices);
+    return kDefaultOnLowEndDevices;
   } else {
-    return variations::GetVariationParamByFeatureAsInt(
-        omnibox::kHistoryQuickProviderAblateInMemoryURLIndexCacheFile,
-        kMaxNumHQPUrlsIndexedAtStartupOnNonLowEndDevicesParam,
-        kDefaultOnNonLowEndDevices);
+    return kDefaultOnNonLowEndDevices;
   }
 }
 

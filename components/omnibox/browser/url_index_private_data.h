@@ -17,7 +17,6 @@
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "components/history/core/browser/history_service.h"
-#include "components/omnibox/browser/in_memory_url_index_cache.pb.h"
 #include "components/omnibox/browser/in_memory_url_index_types.h"
 #include "components/omnibox/browser/scored_history_match.h"
 
@@ -28,17 +27,10 @@ namespace bookmarks {
 class BookmarkModel;
 }
 
-namespace in_memory_url_index {
-class InMemoryURLIndexCacheItem;
-}
-
 namespace history {
 class HistoryDatabase;
 class InMemoryURLIndex;
 }
-
-// Current version of the cache file.
-static const int kCurrentCacheFileVersion = 5;
 
 // A structure private to InMemoryURLIndex describing its internal data and
 // providing for restoring, rebuilding and updating that internal data. As
@@ -114,24 +106,12 @@ class URLIndexPrivateData
   // was actually updated.
   bool DeleteURL(const GURL& url);
 
-  // Constructs a new object by restoring its contents from the cache file
-  // at |path|. Returns the new URLIndexPrivateData which on success will
-  // contain the restored data but upon failure will be empty.
-  // This function should be run on the the file thread.
-  static scoped_refptr<URLIndexPrivateData> RestoreFromFile(
-      const base::FilePath& path);
-
   // Constructs a new object by rebuilding its contents from the history
   // database in |history_db|. Returns the new URLIndexPrivateData which on
   // success will contain the rebuilt data but upon failure will be empty.
   static scoped_refptr<URLIndexPrivateData> RebuildFromHistory(
       history::HistoryDatabase* history_db,
       const std::set<std::string>& scheme_allowlist);
-
-  // Writes |private_data| as a cache file to |file_path| and returns success.
-  static bool WritePrivateDataToCacheFileTask(
-      scoped_refptr<URLIndexPrivateData> private_data,
-      const base::FilePath& file_path);
 
   // Creates a copy of ourself.
   scoped_refptr<URLIndexPrivateData> Duplicate() const;
@@ -153,14 +133,11 @@ class URLIndexPrivateData
 
   friend class ::HistoryQuickProviderTest;
   friend class InMemoryURLIndexTest;
-  FRIEND_TEST_ALL_PREFIXES(InMemoryURLIndexTest, CacheSaveRestore);
   FRIEND_TEST_ALL_PREFIXES(InMemoryURLIndexTest, CalculateWordStartsOffsets);
   FRIEND_TEST_ALL_PREFIXES(InMemoryURLIndexTest,
                            CalculateWordStartsOffsetsUnderscore);
   FRIEND_TEST_ALL_PREFIXES(InMemoryURLIndexTest, HugeResultSet);
   FRIEND_TEST_ALL_PREFIXES(InMemoryURLIndexTest, ReadVisitsFromHistory);
-  FRIEND_TEST_ALL_PREFIXES(InMemoryURLIndexDisabledTest,
-                           RebuildFromHistoryIfCacheOld);
   FRIEND_TEST_ALL_PREFIXES(InMemoryURLIndexTest, Scoring);
   FRIEND_TEST_ALL_PREFIXES(InMemoryURLIndexTest, TitleSearch);
   FRIEND_TEST_ALL_PREFIXES(InMemoryURLIndexTest, TrimHistoryIds);
@@ -288,42 +265,6 @@ class URLIndexPrivateData
   // Clears |used_| for each item in the search term cache.
   void ResetSearchTermCache();
 
-  // Caches the index private data and writes the cache file to the profile
-  // directory.  Called by WritePrivateDataToCacheFileTask.
-  bool SaveToFile(const base::FilePath& file_path);
-
-  // Encode a data structure into the protobuf |cache|.
-  void SavePrivateData(
-      in_memory_url_index::InMemoryURLIndexCacheItem* cache) const;
-  void SaveWordList(
-      in_memory_url_index::InMemoryURLIndexCacheItem* cache) const;
-  void SaveWordMap(in_memory_url_index::InMemoryURLIndexCacheItem* cache) const;
-  void SaveCharWordMap(
-      in_memory_url_index::InMemoryURLIndexCacheItem* cache) const;
-  void SaveWordIDHistoryMap(
-      in_memory_url_index::InMemoryURLIndexCacheItem* cache) const;
-  void SaveHistoryInfoMap(
-      in_memory_url_index::InMemoryURLIndexCacheItem* cache) const;
-  void SaveWordStartsMap(
-      in_memory_url_index::InMemoryURLIndexCacheItem* cache) const;
-
-  // Decode a data structure from the protobuf |cache|. Return false if there
-  // is any kind of failure.
-  bool RestorePrivateData(
-      const in_memory_url_index::InMemoryURLIndexCacheItem& cache);
-  bool RestoreWordList(
-      const in_memory_url_index::InMemoryURLIndexCacheItem& cache);
-  bool RestoreWordMap(
-      const in_memory_url_index::InMemoryURLIndexCacheItem& cache);
-  bool RestoreCharWordMap(
-      const in_memory_url_index::InMemoryURLIndexCacheItem& cache);
-  bool RestoreWordIDHistoryMap(
-      const in_memory_url_index::InMemoryURLIndexCacheItem& cache);
-  bool RestoreHistoryInfoMap(
-      const in_memory_url_index::InMemoryURLIndexCacheItem& cache);
-  bool RestoreWordStartsMap(
-      const in_memory_url_index::InMemoryURLIndexCacheItem& cache);
-
   // Determines if |gurl| has a allowlisted scheme and returns true if so.
   static bool URLSchemeIsAllowlisted(const GURL& gurl,
                                      const std::set<std::string>& allowlist);
@@ -336,16 +277,6 @@ class URLIndexPrivateData
 
   // Cache of search terms.
   SearchTermCacheMap search_term_cache_;
-
-  // Start of data members that are cached -------------------------------------
-
-  // The version of the cache file most recently used to restore this instance
-  // of the private data. If the private data was rebuilt from the history
-  // database this will be 0.
-  int restored_cache_version_;
-
-  // The last time the data was rebuilt from the history database.
-  base::Time last_time_rebuilt_from_history_;
 
   // A list of all of indexed words. The index of a word in this list is the
   // ID of the word in the word_map_. It reduces the memory overhead by
@@ -386,13 +317,6 @@ class URLIndexPrivateData
   // A one-to-one mapping from HistoryID to the word starts detected in each
   // item's URL and page title.
   WordStartsMap word_starts_map_;
-
-  // End of data members that are cached ---------------------------------------
-
-  // For unit testing only. Specifies the version of the cache file to be saved.
-  // Used only for testing upgrading of an older version of the cache upon
-  // restore.
-  int saved_cache_version_;
 };
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_URL_INDEX_PRIVATE_DATA_H_

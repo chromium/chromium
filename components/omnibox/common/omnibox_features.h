@@ -62,7 +62,6 @@ extern const base::Feature kOnDeviceHeadProviderNonIncognito;
 
 // Provider-specific - These features change the behavior of specific providers.
 extern const base::Feature kOmniboxExperimentalSuggestScoring;
-extern const base::Feature kHistoryQuickProviderAblateInMemoryURLIndexCacheFile;
 extern const base::Feature kDisableCGIParamMatching;
 extern const base::Feature kShortBookmarkSuggestions;
 extern const base::Feature kShortBookmarkSuggestionsByTotalInputLength;

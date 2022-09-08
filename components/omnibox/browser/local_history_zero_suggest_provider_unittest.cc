@@ -87,10 +87,6 @@ class LocalHistoryZeroSuggestProviderTest
     client_->set_history_service(
         history::CreateHistoryService(history_dir_.GetPath(), true));
     client_->set_bookmark_model(bookmarks::TestBookmarkClient::CreateModel());
-    client_->set_in_memory_url_index(std::make_unique<InMemoryURLIndex>(
-        client_->GetBookmarkModel(), client_->GetHistoryService(), nullptr,
-        history_dir_.GetPath(), SchemeSet()));
-    client_->GetInMemoryURLIndex()->Init();
 
     provider_ = base::WrapRefCounted(
         LocalHistoryZeroSuggestProvider::Create(client_.get(), this));

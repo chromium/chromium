@@ -8,7 +8,6 @@ import("//components/vector_icons/vector_icons.gni")
 import("//device/vr/buildflags/buildflags.gni")
 import("//extensions/buildflags/buildflags.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
-import("//third_party/protobuf/proto_library.gni")
 
 if (is_android) {
   import("//build/config/android/rules.gni")
@@ -260,7 +259,6 @@ static_library("browser") {
     "//url",
   ]
   deps = [
-    ":in_memory_url_index_cache_proto",
     "//components/bookmarks/browser",
     "//components/component_updater",
     "//components/dom_distiller/core:core",
@@ -506,10 +504,6 @@ if (is_android) {
       "android/java/src/org/chromium/components/omnibox/action/OmniboxPedal.java",
     ]
   }
-}
-
-proto_library("in_memory_url_index_cache_proto") {
-  sources = [ "in_memory_url_index_cache.proto" ]
 }
 
 static_library("test_support") {
