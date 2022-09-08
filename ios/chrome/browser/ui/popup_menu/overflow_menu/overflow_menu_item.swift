@@ -13,20 +13,12 @@ import SwiftUI
   /// The user-visible name of the item.
   @Published public var name: String
 
-  /// The base data used to load the image for SwiftUI, either a `UImage` or
-  /// a `String`.
-  /// Note that SwiftUI has a bug regarding `Image`s generated from `UIImage`s
-  /// in Dark Mode. The image color will not adjust.
-  @Published public var storedImage: ImageType
+  /// The base `UIImage` used to load the image for SwiftUI.
+  @Published public var storedImage: UIImage
 
   /// The SwiftUI `Image` for the action icon.
   public var image: Image {
-    switch storedImage {
-    case .uiImage(let uiImage):
-      return Image(uiImage: uiImage)
-    case .name(let name):
-      return Image(name)
-    }
+    return Image(uiImage: storedImage)
   }
 
   /// The accessibility identifier for this item.
@@ -39,7 +31,7 @@ import SwiftUI
   @Published public var handler: () -> Void
 
   public init(
-    name: String, image: ImageType, accessibilityIdentifier: String, enterpriseDisabled: Bool,
+    name: String, image: UIImage, accessibilityIdentifier: String, enterpriseDisabled: Bool,
     handler: @escaping () -> Void
   ) {
     self.name = name
@@ -49,35 +41,6 @@ import SwiftUI
     self.handler = handler
   }
 
-  public convenience init(
-    name: String, uiImage: UIImage, accessibilityIdentifier: String, enterpriseDisabled: Bool,
-    handler: @escaping () -> Void
-  ) {
-    self.init(
-      name: name, image: .uiImage(uiImage), accessibilityIdentifier: accessibilityIdentifier,
-      enterpriseDisabled: enterpriseDisabled, handler: handler)
-  }
-
-  public convenience init(
-    name: String, imageName: String, accessibilityIdentifier: String, enterpriseDisabled: Bool,
-    handler: @escaping () -> Void
-  ) {
-    self.init(
-      name: name, image: .name(imageName), accessibilityIdentifier: accessibilityIdentifier,
-      enterpriseDisabled: enterpriseDisabled, handler: handler)
-  }
-
-  /// Objective-C-exposed method to change `storedImage`, as Objective-C cannot
-  /// view enums with stored values.
-  @objc(setStordUIImage:) public func setStoredImage(uiImage: UIImage) {
-    storedImage = .uiImage(uiImage)
-  }
-
-  /// Objective-C-exposed method to change `storedImage`, as Objective-C cannot
-  /// view enums with stored values.
-  @objc(setStoredImageName:) public func setStoredImage(name: String) {
-    storedImage = .name(name)
-  }
 }
 
 // MARK: - Identifiable

@@ -98,9 +98,10 @@ OverflowMenuAction* CreateOverflowMenuAction(int nameID,
                                              NSString* imageName,
                                              NSString* accessibilityID,
                                              Handler handler) {
+  DCHECK(!UseSymbols());
   NSString* name = l10n_util::GetNSString(nameID);
   return [[OverflowMenuAction alloc] initWithName:name
-                                          uiImage:[UIImage imageNamed:imageName]
+                                            image:[UIImage imageNamed:imageName]
                           accessibilityIdentifier:accessibilityID
                                enterpriseDisabled:NO
                                           handler:handler];
@@ -123,7 +124,7 @@ OverflowMenuAction* CreateOverflowMenuAction(int nameID,
           imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
 
   return [[OverflowMenuAction alloc] initWithName:name
-                                          uiImage:symbolImage
+                                            image:symbolImage
                           accessibilityIdentifier:accessibilityID
                                enterpriseDisabled:NO
                                           handler:handler];
@@ -137,7 +138,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
   NSString* link = l10n_util::GetNSString(linkID);
   return [[OverflowMenuFooter alloc] initWithName:name
                                              link:link
-                                        imageName:imageName
+                                            image:[UIImage imageNamed:imageName]
                           accessibilityIdentifier:kTextMenuEnterpriseInfo
                                           handler:handler];
 }
@@ -577,7 +578,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
 
       OverflowMenuAction* action =
           [[OverflowMenuAction alloc] initWithName:name
-                                           uiImage:symbolImage
+                                             image:symbolImage
                            accessibilityIdentifier:kToolsMenuFollow
                                 enterpriseDisabled:NO
                                            handler:^{
@@ -703,7 +704,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
 
       OverflowMenuAction* action = [[OverflowMenuAction alloc]
                      initWithName:name
-                          uiImage:[UIImage
+                            image:[UIImage
                                       imageNamed:@"overflow_menu_action_follow"]
           accessibilityIdentifier:kToolsMenuFollow
                enterpriseDisabled:NO
@@ -846,7 +847,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
 
   OverflowMenuDestination* result = [[OverflowMenuDestination alloc]
                  initWithName:name
-                      uiImage:[UIImage imageNamed:imageName]
+                        image:[UIImage imageNamed:imageName]
       accessibilityIdentifier:accessibilityID
            enterpriseDisabled:NO
                       handler:handlerWithMetrics];
@@ -1243,7 +1244,8 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
     __weak __typeof(self) weakSelf = self;
     self.followAction.name = l10n_util::GetNSStringF(
         IDS_IOS_TOOLS_MENU_UNFOLLOW, base::SysNSStringToUTF16(domainName));
-    self.followAction.storedImageName = @"overflow_menu_action_unfollow";
+    self.followAction.storedImage =
+        [UIImage imageNamed:@"overflow_menu_action_unfollow"];
     self.followAction.handler = ^{
       [weakSelf unfollowWebPage:webPageURLs];
     };
@@ -1251,7 +1253,8 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
     __weak __typeof(self) weakSelf = self;
     self.followAction.name = l10n_util::GetNSStringF(
         IDS_IOS_TOOLS_MENU_FOLLOW, base::SysNSStringToUTF16(domainName));
-    self.followAction.storedImageName = @"overflow_menu_action_follow";
+    self.followAction.storedImage =
+        [UIImage imageNamed:@"overflow_menu_action_follow"];
     self.followAction.handler = ^{
       [weakSelf followWebPage:webPageURLs];
     };
