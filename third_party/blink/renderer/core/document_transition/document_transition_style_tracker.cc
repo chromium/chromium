@@ -720,7 +720,12 @@ void DocumentTransitionStyleTracker::RunPostPrePaintSteps() {
       continue;
     }
 
-    const float device_pixel_ratio = document_->DevicePixelRatio();
+    // Use the document element's effective zoom, since that's what the parent
+    // effective zoom would be.
+    const float device_pixel_ratio = document_->documentElement()
+                                         ->GetLayoutObject()
+                                         ->StyleRef()
+                                         .EffectiveZoom();
     TransformationMatrix viewport_matrix =
         layout_object->LocalToAbsoluteTransform();
     viewport_matrix.Zoom(1.0 / device_pixel_ratio);
@@ -1104,7 +1109,12 @@ const String& DocumentTransitionStyleTracker::UAStyleSheet() {
       add_plus_lighter(root_tag);
   }
 
-  float device_pixel_ratio = document_->DevicePixelRatio();
+  // Use the document element's effective zoom, since that's what the parent
+  // effective zoom would be.
+  float device_pixel_ratio = document_->documentElement()
+                                 ->GetLayoutObject()
+                                 ->StyleRef()
+                                 .EffectiveZoom();
   for (auto& entry : element_data_map_) {
     const auto& document_transition_tag = entry.key.GetString();
     auto& element_data = entry.value;
