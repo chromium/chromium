@@ -43,9 +43,9 @@ GetNoRoundTripScriptsByHashPrefixResponseProto::MatchInfo CreateExampleMatch(
   script->set_path(path);
   match.set_domain(domain);
   auto* routine_script = match.add_routine_scripts();
-  auto* autobot_response = routine_script->mutable_autobot_response();
+  auto* action_response = routine_script->mutable_action_response();
   routine_script->set_script_path(path);
-  autobot_response->add_actions()->set_action_delay_ms(action_delay);
+  action_response->add_actions()->set_action_delay_ms(action_delay);
 
   return match;
 }
@@ -121,9 +121,9 @@ TEST_F(NoRoundTripServiceTest, CallsEndpointAndPopulatesStore) {
   EXPECT_EQ(local_script_store->GetDomain(), kFakeUrl);
   ASSERT_EQ(local_script_store->GetRoutines().size(), 1ul);
   auto routine_script = local_script_store->GetRoutines()[0];
-  auto autobot_response = routine_script.autobot_response();
-  ASSERT_EQ(autobot_response.actions().size(), 1);
-  auto action = autobot_response.actions()[0];
+  auto action_response = routine_script.action_response();
+  ASSERT_EQ(action_response.actions().size(), 1);
+  auto action = action_response.actions()[0];
   EXPECT_EQ(action.action_delay_ms(), 37);
   EXPECT_EQ(routine_script.script_path(), path);
   ASSERT_EQ(local_script_store->GetSupportsSiteResponse().scripts().size(), 1);
@@ -188,9 +188,9 @@ TEST_F(NoRoundTripServiceTest, SelectsRightMatchWhenMultipleAreReturned) {
   EXPECT_EQ(local_script_store->GetDomain(), kFakeUrl);
   ASSERT_THAT(local_script_store->GetRoutines(), Not(IsEmpty()));
   auto routine_script = local_script_store->GetRoutines()[0];
-  auto autobot_response = routine_script.autobot_response();
-  ASSERT_THAT(autobot_response.actions(), Not(IsEmpty()));
-  auto action = autobot_response.actions()[0];
+  auto action_response = routine_script.action_response();
+  ASSERT_THAT(action_response.actions(), Not(IsEmpty()));
+  auto action = action_response.actions()[0];
   EXPECT_EQ(action.action_delay_ms(), 42);
   EXPECT_EQ(routine_script.script_path(), script_path);
   ASSERT_THAT(local_script_store->GetSupportsSiteResponse().scripts(),
@@ -297,12 +297,12 @@ TEST_F(NoRoundTripServiceTest, WithExistingPathGetActionsSucceeds) {
   GetNoRoundTripScriptsByHashPrefixResponseProto_MatchInfo_RoutineScript
       routine;
   routine.set_script_path("script_path");
-  routine.mutable_autobot_response()->set_run_id(0);
+  routine.mutable_action_response()->set_run_id(0);
   routines_.push_back(routine);
 
   EXPECT_CALL(
       mock_response_callback_,
-      Run(net::HTTP_OK, routine.autobot_response().SerializeAsString(), _));
+      Run(net::HTTP_OK, routine.action_response().SerializeAsString(), _));
 
   GetService().GetActions("script_path", GURL(kFakeUrl), TriggerContext(), "",
                           "", mock_response_callback_.Get());
@@ -313,7 +313,7 @@ TEST_F(NoRoundTripServiceTest, GetActionsFailsGivenWrongPath) {
   GetNoRoundTripScriptsByHashPrefixResponseProto_MatchInfo_RoutineScript
       routine;
   routine.set_script_path("not_relevant_for_test");
-  routine.mutable_autobot_response()->set_run_id(0);
+  routine.mutable_action_response()->set_run_id(0);
   routines_.push_back(routine);
 
   EXPECT_CALL(mock_response_callback_,

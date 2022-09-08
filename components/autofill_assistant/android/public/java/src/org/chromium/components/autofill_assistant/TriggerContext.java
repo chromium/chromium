@@ -103,8 +103,9 @@ public class TriggerContext {
 
     /**
      * Special bool parameter that MUST be present in all intents. It allows the caller to either
-     * request immediate start of autobot (if set to true), or a delayed start using trigger scripts
-     * (if set to false). If this is set to false, the trigger script parameter must be set
+     * request immediate start of AutofillAssistant (if set to true), or a delayed start using
+     * trigger scripts (if set to false). If this is set to false, the trigger script parameter must
+     * be set
      * (@code{PARAMETER_REQUEST_TRIGGER_SCRIPT}.
      */
     public static final String PARAMETER_START_IMMEDIATELY = "START_IMMEDIATELY";

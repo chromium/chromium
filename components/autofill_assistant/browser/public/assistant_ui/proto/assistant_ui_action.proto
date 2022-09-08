@@ -11,7 +11,7 @@ option java_multiple_files = true;
 package autofill_assistant.assistant_ui;
 
 message AssistantUiAction {
-  message AutobotUiConfiguration {
+  message AutofillAssistantUiConfiguration {
     optional bool hide_ui = 1;
   }
 
@@ -27,9 +27,9 @@ message AssistantUiAction {
     optional int32 timeout_ms = 2;
   }
 
-  // This is an encoded AutobotUiState.
+  // This is an encoded AutofillAssistantUiState.
   optional bytes update_ui = 1;
-  optional AutobotUiConfiguration configuration = 2;
+  optional AutofillAssistantUiConfiguration configuration = 2;
 
   oneof continue_mode {
     ContinueImmediately continue_immediately = 3;

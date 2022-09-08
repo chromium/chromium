@@ -300,7 +300,7 @@ message GetNoRoundTripScriptsByHashPrefixResponseProto {
       // The set of actions to execute. If the last executed action is not a
       // stop action or a stop action inside a JS flow action the script will
       // fail.
-      optional ActionsResponseProto autobot_response = 2;
+      optional ActionsResponseProto action_response = 2;
     }
 
     // The domain for the script
@@ -3212,7 +3212,7 @@ message SaveSubmittedPasswordProto {
     // If the same password was used and therefore the credential is still
     // insecure, the action succeeds to avoid script termination.
     // Instead it returns a result flagging the re-use of the
-    // password so that the Autobot flow can try again.
+    // password so that the AutofillAssistant flow can try again.
     optional bool used_same_password = 1;
     // If the new credential is still leaked, return a result flag that states
     // this. The flow can choose to react to this, e.g. prompting the user

@@ -164,10 +164,10 @@ void NoRoundTripService::GetActions(
     }
 
     const std::string get_actions_response =
-        routine.autobot_response().SerializeAsString();
+        routine.action_response().SerializeAsString();
     const ServiceRequestSender::ResponseInfo response_info{
         .encoded_body_length =
-            static_cast<int64_t>(routine.autobot_response().ByteSizeLong())};
+            static_cast<int64_t>(routine.action_response().ByteSizeLong())};
 
     std::move(callback).Run(net::HTTP_OK, get_actions_response, response_info);
     return;

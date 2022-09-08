@@ -557,8 +557,8 @@ int ToJavaBottomSheetState(BottomSheetState state) {
     case BottomSheetState::COLLAPSED:
       return 1;
     case BottomSheetState::UNDEFINED:
-      // The current assumption is that Autobot always starts with the bottom
-      // sheet expanded.
+      // The current assumption is that AutofillAssistant always starts with the
+      // bottom sheet expanded.
     case BottomSheetState::EXPANDED:
       return 2;
     default:

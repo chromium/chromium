@@ -87,8 +87,6 @@ class AutofillAssistant {
   // number of leading bits of the domain url hashes. CityHash64 should be used
   // to calculate the hashes and only the leading |hash_prefix_length| bits
   // should be sent.
-  // |intent| should contain the string representation of the enum:
-  // https://source.corp.google.com/piper///depot/google3/quality/genie/autobot/dev/proto/script/intent.proto
   virtual void GetCapabilitiesByHashPrefix(
       uint32_t hash_prefix_length,
       const std::vector<uint64_t>& hash_prefix,
