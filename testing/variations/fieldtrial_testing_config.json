@@ -6433,6 +6433,21 @@
             ]
         }
     ],
+    "NeuralPalmRejectionModelForRedrix": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20220622",
+                    "enable_features": [
+                        "EnableNeuralPalmDetectionFilter"
+                    ]
+                }
+            ]
+        }
+    ],
     "NewEvSignalsEnabled": [
         {
             "platforms": [
