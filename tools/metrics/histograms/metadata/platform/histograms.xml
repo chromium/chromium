@@ -1294,7 +1294,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Platform.SwapInDaily" units="pages" expires_after="2023-02-26">
   <owner>asavery@chromium.org</owner>
-  <owner>chromeos-storage@google.com</owner>
+  <owner>chromeos-memory@google.com</owner>
   <summary>Number of pages swapped IN over a day, sampled daily.</summary>
 </histogram>
 
@@ -1319,7 +1319,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Platform.SwapOutDaily" units="pages"
     expires_after="2023-02-26">
   <owner>asavery@chromium.org</owner>
-  <owner>chromeos-storage@google.com</owner>
+  <owner>chromeos-memory@google.com</owner>
   <summary>Number of pages swapped OUT over a day, sampled daily.</summary>
 </histogram>
 
