@@ -1,6 +1,0 @@
-# We are in the process of moving generic baselines to the test folders.
-# Temporary blocking change to this folder to avoid merge conflict.
-# This should take less than 4 hours.
-
-set noparent
-file://third_party/blink/web_tests/BASELINE_OWNERS
