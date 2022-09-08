@@ -63,7 +63,6 @@ class GPU_GLES2_EXPORT SharedImageFactory {
                          GrSurfaceOrigin surface_origin,
                          SkAlphaType alpha_type,
                          gpu::SurfaceHandle surface_handle,
-
                          uint32_t usage);
   bool CreateSharedImage(const Mailbox& mailbox,
                          viz::ResourceFormat format,

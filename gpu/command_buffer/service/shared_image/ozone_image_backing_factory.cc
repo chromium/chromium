@@ -214,7 +214,7 @@ bool OzoneImageBackingFactory::IsSupported(
   constexpr uint32_t kPrimaryPlaneUsageFlags = SHARED_IMAGE_USAGE_DISPLAY |
                                                SHARED_IMAGE_USAGE_SCANOUT |
                                                SHARED_IMAGE_USAGE_RASTER;
-  if (usage != kPrimaryPlaneUsageFlags || gmb_type != gfx::NATIVE_PIXMAP) {
+  if (usage != kPrimaryPlaneUsageFlags || gmb_type != gfx::EMPTY_BUFFER) {
     return false;
   }
 #endif

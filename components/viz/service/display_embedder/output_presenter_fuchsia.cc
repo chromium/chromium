@@ -10,24 +10,16 @@
 #include <vector>
 
 #include "base/feature_list.h"
-#include "base/trace_event/trace_event.h"
 #include "components/viz/common/features.h"
 #include "components/viz/common/gpu/vulkan_context_provider.h"
+#include "components/viz/common/resources/resource_format_utils.h"
 #include "components/viz/service/display_embedder/skia_output_surface_dependency.h"
 #include "gpu/command_buffer/service/external_semaphore.h"
-#include "gpu/command_buffer/service/shared_context_state.h"
-#include "gpu/ipc/common/gpu_client_ids.h"
-#include "gpu/vulkan/vulkan_device_queue.h"
-#include "gpu/vulkan/vulkan_function_pointers.h"
-#include "gpu/vulkan/vulkan_implementation.h"
-#include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/gpu_fence_handle.h"
 #include "ui/gfx/overlay_plane_data.h"
 #include "ui/ozone/public/overlay_plane.h"
-#include "ui/ozone/public/ozone_platform.h"
 #include "ui/ozone/public/platform_window_surface.h"
-#include "ui/ozone/public/surface_factory_ozone.h"
 
 namespace viz {
 
@@ -236,31 +228,13 @@ OutputPresenterFuchsia::AllocateImages(gfx::ColorSpace color_space,
   std::vector<std::unique_ptr<OutputPresenter::Image>> images;
   images.reserve(num_images);
 
-  auto* surface_factory =
-      ui::OzonePlatform::GetInstance()->GetSurfaceFactoryOzone();
-
-  VkDevice vk_device = dependency_->GetVulkanContextProvider()
-                           ->GetDeviceQueue()
-                           ->GetVulkanDevice();
-
   // Create an image for each buffer in the collection.
   for (size_t i = 0; i < num_images; ++i) {
-    auto pixmap = surface_factory->CreateNativePixmap(
-        dependency_->GetSurfaceHandle(), vk_device, frame_size_, buffer_format_,
-        gfx::BufferUsage::SCANOUT);
-    if (!pixmap)
-      return {};
-
-    gfx::GpuMemoryBufferHandle gmb_handle;
-    gmb_handle.type = gfx::GpuMemoryBufferType::NATIVE_PIXMAP;
-    gmb_handle.native_pixmap_handle = pixmap->ExportHandle();
-
     auto mailbox = gpu::Mailbox::GenerateForSharedImage();
     if (!shared_image_factory_->CreateSharedImage(
-            mailbox, gpu::kDisplayCompositorClientId, std::move(gmb_handle),
-            buffer_format_, gfx::BufferPlane::DEFAULT, gpu::kNullSurfaceHandle,
-            frame_size_, color_space, kTopLeft_GrSurfaceOrigin,
-            kPremul_SkAlphaType, image_usage)) {
+            mailbox, GetResourceFormat(buffer_format_), frame_size_,
+            color_space, kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
+            dependency_->GetSurfaceHandle(), image_usage)) {
       return {};
     }
 
