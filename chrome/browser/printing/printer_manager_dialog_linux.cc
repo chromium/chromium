@@ -78,6 +78,7 @@ void DetectAndOpenPrinterConfigDialog() {
     case base::nix::DESKTOP_ENVIRONMENT_DEEPIN:
     case base::nix::DESKTOP_ENVIRONMENT_GNOME:
     case base::nix::DESKTOP_ENVIRONMENT_UKUI:
+    case base::nix::DESKTOP_ENVIRONMENT_LXQT:
     case base::nix::DESKTOP_ENVIRONMENT_OTHER:
       opened = OpenPrinterConfigDialog(kSystemConfigPrinterCommand) ||
                OpenPrinterConfigDialog(kGnomeControlCenterPrintersCommand);

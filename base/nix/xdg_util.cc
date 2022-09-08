@@ -94,6 +94,8 @@ DesktopEnvironment GetDesktopEnvironment(Environment* env) {
         return DESKTOP_ENVIRONMENT_XFCE;
       if (value == "UKUI")
         return DESKTOP_ENVIRONMENT_UKUI;
+      if (value == "LXQt")
+        return DESKTOP_ENVIRONMENT_LXQT;
     }
   }
 
@@ -157,6 +159,8 @@ const char* GetDesktopEnvironmentName(DesktopEnvironment env) {
       return "XFCE";
     case DESKTOP_ENVIRONMENT_UKUI:
       return "UKUI";
+    case DESKTOP_ENVIRONMENT_LXQT:
+      return "LXQT";
   }
   return nullptr;
 }

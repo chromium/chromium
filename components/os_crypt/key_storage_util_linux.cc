@@ -68,6 +68,7 @@ SelectedLinuxBackend SelectBackend(const std::string& type,
       return SelectedLinuxBackend::GNOME_ANY;
     // KDE3 didn't use DBus, which our KWallet store uses.
     case base::nix::DESKTOP_ENVIRONMENT_KDE3:
+    case base::nix::DESKTOP_ENVIRONMENT_LXQT:
     case base::nix::DESKTOP_ENVIRONMENT_OTHER:
       return SelectedLinuxBackend::BASIC_TEXT;
   }

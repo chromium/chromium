@@ -107,6 +107,7 @@ SystemTheme GetDefaultSystemTheme() {
     case base::nix::DESKTOP_ENVIRONMENT_KDE5:
     case base::nix::DESKTOP_ENVIRONMENT_UKUI:
     case base::nix::DESKTOP_ENVIRONMENT_DEEPIN:
+    case base::nix::DESKTOP_ENVIRONMENT_LXQT:
       return SystemTheme::kQt;
     case base::nix::DESKTOP_ENVIRONMENT_OTHER:
       return SystemTheme::kDefault;

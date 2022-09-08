@@ -65,6 +65,7 @@ enum DesktopEnvironment {
   DESKTOP_ENVIRONMENT_UKUI,
   DESKTOP_ENVIRONMENT_UNITY,
   DESKTOP_ENVIRONMENT_XFCE,
+  DESKTOP_ENVIRONMENT_LXQT,
 };
 
 // Return an entry from the DesktopEnvironment enum with a best guess

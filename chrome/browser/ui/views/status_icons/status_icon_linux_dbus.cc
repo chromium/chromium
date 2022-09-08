@@ -158,6 +158,7 @@ bool ShouldWriteIconToFile() {
     case base::nix::DESKTOP_ENVIRONMENT_UKUI:
     case base::nix::DESKTOP_ENVIRONMENT_UNITY:
     case base::nix::DESKTOP_ENVIRONMENT_XFCE:
+    case base::nix::DESKTOP_ENVIRONMENT_LXQT:
       return false;
   }
   NOTREACHED();

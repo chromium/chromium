@@ -134,6 +134,7 @@ bool DetectAndStartProxyConfigUtil() {
       break;
 
     case base::nix::DESKTOP_ENVIRONMENT_XFCE:
+    case base::nix::DESKTOP_ENVIRONMENT_LXQT:
     case base::nix::DESKTOP_ENVIRONMENT_OTHER:
       break;
   }
