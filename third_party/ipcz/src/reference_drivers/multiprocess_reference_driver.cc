@@ -334,6 +334,13 @@ IpczResult IPCZ_API Transmit(IpczDriverHandle driver_transport,
                  absl::MakeSpan(handles, num_handles));
 }
 
+IpczResult IPCZ_API ReportBadTransportActivity(IpczDriverHandle transport,
+                                               uintptr_t context,
+                                               uint32_t flags,
+                                               const void* options) {
+  return IPCZ_RESULT_OK;
+}
+
 IpczResult IPCZ_API AllocateSharedMemory(size_t num_bytes,
                                          uint32_t flags,
                                          const void* options,
@@ -397,6 +404,7 @@ const IpczDriver kMultiprocessReferenceDriver = {
     ActivateTransport,
     DeactivateTransport,
     Transmit,
+    ReportBadTransportActivity,
     AllocateSharedMemory,
     GetSharedMemoryInfo,
     DuplicateSharedMemory,

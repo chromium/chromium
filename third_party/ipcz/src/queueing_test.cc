@@ -123,8 +123,8 @@ MULTINODE_TEST_NODE(QueueingTestNode, TwoPhaseQueueingClient) {
   // The producer should only have been able to put 3 out of its 4 bytes.
   EXPECT_EQ("ipc",
             std::string_view(reinterpret_cast<const char*>(data), num_bytes));
-  EXPECT_EQ(IPCZ_RESULT_OK,
-            ipcz().EndGet(b, num_bytes, 0, IPCZ_NO_FLAGS, nullptr, nullptr));
+  EXPECT_EQ(IPCZ_RESULT_OK, ipcz().EndGet(b, num_bytes, 0, IPCZ_NO_FLAGS,
+                                          nullptr, nullptr, nullptr));
 
   Close(b);
 }
@@ -174,8 +174,8 @@ MULTINODE_TEST_NODE(QueueingTestNode, TwoPhaseFeedbackClient) {
 
   EXPECT_EQ("hello?",
             std::string_view(reinterpret_cast<const char*>(data), num_bytes));
-  EXPECT_EQ(IPCZ_RESULT_OK,
-            ipcz().EndGet(b, num_bytes, 0, IPCZ_NO_FLAGS, nullptr, nullptr));
+  EXPECT_EQ(IPCZ_RESULT_OK, ipcz().EndGet(b, num_bytes, 0, IPCZ_NO_FLAGS,
+                                          nullptr, nullptr, nullptr));
   Close(b);
 }
 
@@ -214,7 +214,7 @@ MULTINODE_TEST_NODE(QueueingTestNode, RemoteQueueFeedbackStressTestClient) {
       EXPECT_EQ(std::string_view(static_cast<const char*>(data), num_bytes),
                 std::string(num_bytes, '!'));
       EXPECT_EQ(IPCZ_RESULT_OK, ipcz().EndGet(b, num_bytes, 0, IPCZ_NO_FLAGS,
-                                              nullptr, nullptr));
+                                              nullptr, nullptr, nullptr));
       continue;
     }
 

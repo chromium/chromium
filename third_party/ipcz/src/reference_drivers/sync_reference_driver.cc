@@ -379,6 +379,7 @@ const IpczDriver kSyncReferenceDriver = {
     ActivateTransport,
     DeactivateTransport,
     Transmit,
+    kSingleProcessReferenceDriverBase.ReportBadTransportActivity,
     kSingleProcessReferenceDriverBase.AllocateSharedMemory,
     kSingleProcessReferenceDriverBase.GetSharedMemoryInfo,
     kSingleProcessReferenceDriverBase.DuplicateSharedMemory,

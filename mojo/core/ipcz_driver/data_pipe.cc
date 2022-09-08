@@ -38,7 +38,8 @@ IpczResult EndReadDataImpl(IpczHandle portal,
                            size_t element_size,
                            size_t num_bytes_consumed) {
   if (num_bytes_consumed == 0) {
-    return GetIpczAPI().EndGet(portal, 0, 0, IPCZ_NO_FLAGS, nullptr, nullptr);
+    return GetIpczAPI().EndGet(portal, 0, 0, IPCZ_NO_FLAGS, nullptr, nullptr,
+                               nullptr);
   }
 
   IpczResult result;
@@ -46,7 +47,7 @@ IpczResult EndReadDataImpl(IpczHandle portal,
     result = IPCZ_RESULT_INVALID_ARGUMENT;
   } else {
     result = GetIpczAPI().EndGet(portal, num_bytes_consumed, 0, IPCZ_NO_FLAGS,
-                                 nullptr, nullptr);
+                                 nullptr, nullptr, nullptr);
     if (result == IPCZ_RESULT_OUT_OF_RANGE) {
       // Mojo expects a different result in this case.
       result = IPCZ_RESULT_INVALID_ARGUMENT;
@@ -56,7 +57,8 @@ IpczResult EndReadDataImpl(IpczHandle portal,
   if (result != IPCZ_RESULT_OK) {
     // Unlike with ipcz, Mojo's two-phase operations are expected to terminate
     // in all failure modes.
-    GetIpczAPI().EndGet(portal, 0, 0, IPCZ_END_GET_ABORT, nullptr, nullptr);
+    GetIpczAPI().EndGet(portal, 0, 0, IPCZ_END_GET_ABORT, nullptr, nullptr,
+                        nullptr);
   }
   return result;
 }

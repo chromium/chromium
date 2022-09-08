@@ -5,6 +5,7 @@
 #include "mojo/core/ipcz_driver/invitation.h"
 
 #include <algorithm>
+#include <cstdint>
 
 #include "mojo/core/ipcz_api.h"
 #include "mojo/core/ipcz_driver/transport.h"
@@ -16,6 +17,8 @@
 namespace mojo::core::ipcz_driver {
 
 namespace {
+
+MojoDefaultProcessErrorHandler g_default_process_error_handler = nullptr;
 
 // The Mojo attach/extract APIs originally took arbitrary string values to
 // identify pipe attachments, and there are still application using that
@@ -59,7 +62,10 @@ size_t GetAttachmentIndex(base::span<const uint8_t> name) {
 IpczDriverHandle CreateTransportForMojoEndpoint(
     Transport::Destination destination,
     const MojoInvitationTransportEndpoint& endpoint,
-    base::Process remote_process = base::Process()) {
+    bool leak_channel_on_shutdown,
+    base::Process remote_process = base::Process(),
+    MojoProcessErrorHandler error_handler = nullptr,
+    uintptr_t error_handler_context = 0) {
   CHECK_EQ(endpoint.num_platform_handles, 1u);
   auto handle =
       PlatformHandle::FromMojoPlatformHandle(&endpoint.platform_handles[0]);
@@ -75,6 +81,8 @@ IpczDriverHandle CreateTransportForMojoEndpoint(
   }
   auto transport = base::MakeRefCounted<Transport>(
       destination, std::move(channel_endpoint), std::move(remote_process));
+  transport->SetErrorHandler(error_handler, error_handler_context);
+  transport->set_leak_channel_on_shutdown(leak_channel_on_shutdown);
   return ObjectBase::ReleaseAsHandle(std::move(transport));
 }
 
@@ -84,6 +92,27 @@ Invitation::Invitation() = default;
 
 Invitation::~Invitation() {
   Close();
+}
+
+// static
+void Invitation::SetDefaultProcessErrorHandler(
+    MojoDefaultProcessErrorHandler handler) {
+  g_default_process_error_handler = handler;
+}
+
+// static
+void Invitation::InvokeDefaultProcessErrorHandler(const std::string& error) {
+  if (!g_default_process_error_handler) {
+    return;
+  }
+
+  const MojoProcessErrorDetails details{
+      .struct_size = sizeof(details),
+      .error_message_length = base::checked_cast<uint32_t>(error.size()),
+      .error_message = error.c_str(),
+      .flags = MOJO_PROCESS_ERROR_FLAG_NONE,
+  };
+  g_default_process_error_handler(&details);
 }
 
 MojoResult Invitation::Attach(base::span<const uint8_t> name,
@@ -141,7 +170,6 @@ MojoResult Invitation::Send(
     }
   }
 
-  // TODO: Support process error handler hooks and NotifyBadMessage.
   // TODO: Support isolated connections.
   const bool is_isolated =
       options && (options->flags & MOJO_SEND_INVITATION_FLAG_ISOLATED) != 0;
@@ -161,7 +189,9 @@ MojoResult Invitation::Send(
   }
 
   IpczDriverHandle transport = CreateTransportForMojoEndpoint(
-      Transport::kToNonBroker, *transport_endpoint, std::move(remote_process));
+      Transport::kToNonBroker, *transport_endpoint,
+      /*leak_channel_on_shutdown=*/false, std::move(remote_process),
+      error_handler, error_handler_context);
   if (transport == IPCZ_INVALID_DRIVER_HANDLE) {
     return MOJO_RESULT_INVALID_ARGUMENT;
   }
@@ -197,6 +227,20 @@ MojoHandle Invitation::Accept(
     return MOJO_RESULT_INVALID_ARGUMENT;
   }
 
+  // Chromium's browser process may distinguish between normal child process
+  // termination and a child process crash, based on the state of its Mojo
+  // connection to the child process. This flag is implemented to allow child
+  // processes to leak their transport so that it can stay alive right up until
+  // normal process termination.
+  bool leak_transport = false;
+  if (options) {
+    if (options->struct_size < sizeof(*options)) {
+      return MOJO_RESULT_INVALID_ARGUMENT;
+    }
+    leak_transport =
+        (options->flags & MOJO_ACCEPT_INVITATION_FLAG_LEAK_TRANSPORT_ENDPOINT);
+  }
+
   auto invitation = base::MakeRefCounted<Invitation>();
 
   const IpczNodeOptions& config = GetIpczNodeOptions();
@@ -217,8 +261,8 @@ MojoHandle Invitation::Accept(
   // not have a peer on the sending node anyway) will be cleaned up when the
   // Invitation itself is destroyed.
   IpczHandle portals[kMaxAttachments];
-  IpczDriverHandle transport =
-      CreateTransportForMojoEndpoint(Transport::kToBroker, *transport_endpoint);
+  IpczDriverHandle transport = CreateTransportForMojoEndpoint(
+      Transport::kToBroker, *transport_endpoint, leak_transport);
   if (transport == IPCZ_INVALID_DRIVER_HANDLE) {
     return IPCZ_INVALID_DRIVER_HANDLE;
   }

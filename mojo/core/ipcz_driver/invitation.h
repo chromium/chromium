@@ -6,6 +6,7 @@
 #define MOJO_CORE_IPCZ_DRIVER_INVITATION_H_
 
 #include <cstdint>
+#include <string>
 
 #include "base/containers/span.h"
 #include "base/containers/stack_container.h"
@@ -31,6 +32,10 @@ class Invitation : public Object<Invitation> {
   explicit Invitation();
 
   static Type object_type() { return kInvitation; }
+
+  static void SetDefaultProcessErrorHandler(
+      MojoDefaultProcessErrorHandler handler);
+  static void InvokeDefaultProcessErrorHandler(const std::string& error);
 
   // Attaches a new pipe to this invitation using the given `name`. Returns
   // the attached pipe's peer in `handle` if successful.

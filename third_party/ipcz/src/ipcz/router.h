@@ -150,7 +150,8 @@ class Router : public RefCounted {
                                   void* data,
                                   size_t* num_bytes,
                                   IpczHandle* handles,
-                                  size_t* num_handles);
+                                  size_t* num_handles,
+                                  IpczHandle* validator);
 
   // Begins a two-phase retrieval of the next available inbound parcel.
   IpczResult BeginGetNextIncomingParcel(const void** data,
@@ -161,7 +162,8 @@ class Router : public RefCounted {
   // consuming some (possibly all) bytes and handles from that parcel. Once a
   // parcel is fully consumed, it's removed from the inbound queue.
   IpczResult CommitGetNextIncomingParcel(size_t num_data_bytes_consumed,
-                                         absl::Span<IpczHandle> handles);
+                                         absl::Span<IpczHandle> handles,
+                                         IpczHandle* validator);
 
   // Attempts to install a new trap on this Router, to invoke `handler` as soon
   // as one or more conditions in `conditions` is met. This method effectively

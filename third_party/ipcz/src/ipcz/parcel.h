@@ -21,6 +21,7 @@
 
 namespace ipcz {
 
+class NodeLink;
 class NodeLinkMemory;
 
 // Represents a parcel queued within a portal, either for inbound retrieval or
@@ -63,6 +64,11 @@ class Parcel {
   // FragmentHeader at the start describing the data which follows. Otherwise
   // this returns false.
   bool AdoptDataFragment(Ref<NodeLinkMemory> memory, const Fragment& fragment);
+
+  void set_remote_source(Ref<NodeLink> source) {
+    remote_source_ = std::move(source);
+  }
+  const Ref<NodeLink>& remote_source() const { return remote_source_; }
 
   absl::Span<uint8_t> data_view() { return data_view_; }
   absl::Span<const uint8_t> data_view() const { return data_view_; }
@@ -122,6 +128,10 @@ class Parcel {
   };
 
   SequenceNumber sequence_number_{0};
+
+  // If this Parcel was received from a remote node, this tracks the NodeLink
+  // which received it.
+  Ref<NodeLink> remote_source_;
 
   // A copy of the parcel's data, owned by the Parcel itself. Used only if
   // `data_fragment_` is null.

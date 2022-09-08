@@ -21,6 +21,7 @@
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/strings/strcat.h"
 #include "base/synchronization/lock.h"
 #include "base/time/time.h"
 #include "mojo/core/ipcz_api.h"
@@ -50,7 +51,7 @@ class MojoMessage {
 
   MojoMessage() = default;
   MojoMessage(std::vector<uint8_t> data, std::vector<IpczHandle> handles) {
-    SetContents(std::move(data), std::move(handles));
+    SetContents(std::move(data), std::move(handles), IPCZ_INVALID_HANDLE);
   }
 
   ~MojoMessage() {
@@ -58,6 +59,10 @@ class MojoMessage {
       if (handle != IPCZ_INVALID_HANDLE) {
         GetIpczAPI().Close(handle, IPCZ_NO_FLAGS, nullptr);
       }
+    }
+
+    if (validator_ != IPCZ_INVALID_HANDLE) {
+      GetIpczAPI().Close(validator_, IPCZ_NO_FLAGS, nullptr);
     }
 
     if (destructor_) {
@@ -81,7 +86,11 @@ class MojoMessage {
   std::vector<IpczHandle>& handles() { return handles_; }
   uintptr_t context() const { return context_; }
 
-  bool SetContents(std::vector<uint8_t> data, std::vector<IpczHandle> handles) {
+  IpczHandle validator() const { return validator_; }
+
+  bool SetContents(std::vector<uint8_t> data,
+                   std::vector<IpczHandle> handles,
+                   IpczHandle validator) {
     const size_t size = data.size();
     if (size >= kMinBufferSize) {
       data_storage_ = std::move(data);
@@ -90,6 +99,7 @@ class MojoMessage {
       std::copy(data.begin(), data.end(), data_storage_.begin());
     }
 
+    validator_ = validator;
     data_ = base::make_span(data_storage_).first(size);
     size_committed_ = true;
     if (handles.empty()) {
@@ -251,6 +261,7 @@ class MojoMessage {
   }
 
  private:
+  IpczHandle validator_ = IPCZ_INVALID_HANDLE;
   std::vector<uint8_t> data_storage_;
   base::span<uint8_t> data_;
   std::vector<IpczHandle> handles_;
@@ -455,12 +466,13 @@ MojoResult MojoReadMessageIpcz(MojoHandle message_pipe_handle,
   std::vector<MojoHandle> handles;
   size_t num_bytes = 0;
   size_t num_handles = 0;
+  IpczHandle validator;
   IpczResult result =
       GetIpczAPI().Get(message_pipe_handle, IPCZ_NO_FLAGS, nullptr, nullptr,
-                       &num_bytes, nullptr, &num_handles);
+                       &num_bytes, nullptr, &num_handles, &validator);
   if (result == IPCZ_RESULT_OK) {
     auto new_message = std::make_unique<MojoMessage>();
-    new_message->SetContents({}, {});
+    new_message->SetContents({}, {}, validator);
     *message = new_message.release()->handle();
     return MOJO_RESULT_OK;
   }
@@ -473,13 +485,13 @@ MojoResult MojoReadMessageIpcz(MojoHandle message_pipe_handle,
   handles.resize(num_handles);
   result =
       GetIpczAPI().Get(message_pipe_handle, IPCZ_NO_FLAGS, nullptr, data.data(),
-                       &num_bytes, handles.data(), &num_handles);
+                       &num_bytes, handles.data(), &num_handles, &validator);
   if (result != IPCZ_RESULT_OK) {
     return GetMojoReadResultForIpczGet(result);
   }
 
   auto m = std::make_unique<MojoMessage>();
-  if (!m->SetContents(std::move(data), std::move(handles))) {
+  if (!m->SetContents(std::move(data), std::move(handles), validator)) {
     return MOJO_RESULT_INVALID_ARGUMENT;
   }
 
@@ -596,11 +608,38 @@ MojoResult MojoGetMessageContextIpcz(
 }
 
 MojoResult MojoNotifyBadMessageIpcz(
-    MojoMessageHandle message,
+    MojoMessageHandle message_handle,
     const char* error,
     uint32_t error_num_bytes,
     const MojoNotifyBadMessageOptions* options) {
-  return MOJO_RESULT_UNIMPLEMENTED;
+  auto* message = MojoMessage::FromHandle(message_handle);
+  if (!message) {
+    return MOJO_RESULT_INVALID_ARGUMENT;
+  }
+
+  const std::string error_string(error, error_num_bytes);
+  if (message->validator() != IPCZ_INVALID_HANDLE) {
+    // Mojo prefixes bad message reports with this string if they're for
+    // messages from a remote node. We duplicate it here since many tests expect
+    // observation of prefixed error messages.
+    const char kPrefix[] = "Received bad user message: ";
+    auto prefixed_error_message =
+        std::make_unique<std::string>(base::StrCat({kPrefix, error_string}));
+    const IpczResult result = GetIpczAPI().Reject(
+        message->validator(),
+        reinterpret_cast<uintptr_t>(prefixed_error_message.get()),
+        IPCZ_NO_FLAGS, nullptr);
+    if (result == IPCZ_RESULT_OK) {
+      // Ownership taken by driver.
+      std::ignore = prefixed_error_message.release();
+      return IPCZ_RESULT_OK;
+    }
+    DCHECK_EQ(result, IPCZ_RESULT_FAILED_PRECONDITION);
+  }
+
+  // The parcel was not from a remote node in this case.
+  ipcz_driver::Invitation::InvokeDefaultProcessErrorHandler(error_string);
+  return MOJO_RESULT_OK;
 }
 
 MojoResult MojoCreateDataPipeIpcz(const MojoCreateDataPipeOptions* options,
@@ -1062,7 +1101,8 @@ MojoResult MojoShutdownIpcz(const MojoShutdownOptions* options) {
 MojoResult MojoSetDefaultProcessErrorHandlerIpcz(
     MojoDefaultProcessErrorHandler handler,
     const MojoSetDefaultProcessErrorHandlerOptions* options) {
-  return MOJO_RESULT_UNIMPLEMENTED;
+  ipcz_driver::Invitation::SetDefaultProcessErrorHandler(handler);
+  return MOJO_RESULT_OK;
 }
 
 }  // extern "C"

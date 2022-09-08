@@ -138,6 +138,7 @@ ipcz_source_set("reference_drivers") {
 
   public = [
     "reference_drivers/async_reference_driver.h",
+    "reference_drivers/single_process_reference_driver_base.h",
     "reference_drivers/sync_reference_driver.h",
   ]
 
@@ -148,7 +149,6 @@ ipcz_source_set("reference_drivers") {
     "reference_drivers/random.cc",
     "reference_drivers/random.h",
     "reference_drivers/single_process_reference_driver_base.cc",
-    "reference_drivers/single_process_reference_driver_base.h",
     "reference_drivers/sync_reference_driver.cc",
   ]
 
@@ -241,6 +241,7 @@ ipcz_source_set("impl") {
     "ipcz/sequenced_queue.h",
     "ipcz/sublink_id.h",
     "ipcz/test_messages.h",
+    "ipcz/validator.h",
   ]
   sources = [
     "ipcz/api_object.cc",
@@ -296,6 +297,7 @@ ipcz_source_set("impl") {
     "ipcz/trap_event_dispatcher.h",
     "ipcz/trap_set.cc",
     "ipcz/trap_set.h",
+    "ipcz/validator.cc",
   ]
   public_deps = [
     ":ipcz_header",

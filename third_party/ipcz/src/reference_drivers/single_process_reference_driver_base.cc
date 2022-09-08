@@ -55,6 +55,12 @@ class InProcessMapping : public ObjectImpl<InProcessMapping, Object::kMapping> {
   const Ref<InProcessMemory> memory_;
 };
 
+BadTransportActivityCallback& GetBadTransportActivityCallback() {
+  static BadTransportActivityCallback* callback =
+      new BadTransportActivityCallback();
+  return *callback;
+}
+
 IpczResult IPCZ_API Close(IpczDriverHandle handle,
                           uint32_t flags,
                           const void* options) {
@@ -107,6 +113,17 @@ IpczResult IPCZ_API Deserialize(const void* data,
   ABSL_ASSERT(num_bytes == 0);
   ABSL_ASSERT(num_handles == 1);
   *driver_handle = handles[0];
+  return IPCZ_RESULT_OK;
+}
+
+IpczResult IPCZ_API ReportBadTransportActivity(IpczDriverHandle transport,
+                                               uintptr_t context,
+                                               uint32_t flags,
+                                               const void* options) {
+  auto& callback = GetBadTransportActivityCallback();
+  if (callback) {
+    callback(transport, context);
+  }
   return IPCZ_RESULT_OK;
 }
 
@@ -177,11 +194,16 @@ const IpczDriver kSingleProcessReferenceDriverBase = {
     nullptr,
     nullptr,
     nullptr,
+    ReportBadTransportActivity,
     AllocateSharedMemory,
     GetSharedMemoryInfo,
     DuplicateSharedMemory,
     MapSharedMemory,
     GenerateRandomBytes,
 };
+
+void SetBadTransportActivityCallback(BadTransportActivityCallback callback) {
+  GetBadTransportActivityCallback() = std::move(callback);
+}
 
 }  // namespace ipcz::reference_drivers

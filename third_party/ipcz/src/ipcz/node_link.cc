@@ -915,6 +915,8 @@ bool NodeLink::AcceptCompleteParcel(SublinkId for_sublink, Parcel& parcel) {
              << for_sublink;
     return true;
   }
+
+  parcel.set_remote_source(WrapRefCounted(this));
   const LinkType link_type = sublink->router_link->GetType();
   if (link_type.is_outward()) {
     DVLOG(4) << "Accepting inbound " << parcel.Describe() << " at "

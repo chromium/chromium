@@ -13,6 +13,7 @@
 #include "ipcz/node_link_memory.h"
 #include "ipcz/portal.h"
 #include "ipcz/router.h"
+#include "ipcz/validator.h"
 #include "util/ref_counted.h"
 
 extern "C" {
@@ -215,12 +216,13 @@ IpczResult Get(IpczHandle portal_handle,
                void* data,
                size_t* num_bytes,
                IpczHandle* handles,
-               size_t* num_handles) {
+               size_t* num_handles,
+               IpczHandle* validator) {
   ipcz::Portal* portal = ipcz::Portal::FromHandle(portal_handle);
   if (!portal) {
     return IPCZ_RESULT_INVALID_ARGUMENT;
   }
-  return portal->Get(flags, data, num_bytes, handles, num_handles);
+  return portal->Get(flags, data, num_bytes, handles, num_handles, validator);
 }
 
 IpczResult BeginGet(IpczHandle portal_handle,
@@ -242,7 +244,8 @@ IpczResult EndGet(IpczHandle portal_handle,
                   size_t num_handles,
                   IpczEndGetFlags flags,
                   const void* options,
-                  IpczHandle* handles) {
+                  IpczHandle* handles,
+                  IpczHandle* validator) {
   ipcz::Portal* portal = ipcz::Portal::FromHandle(portal_handle);
   if (!portal) {
     return IPCZ_RESULT_INVALID_ARGUMENT;
@@ -256,7 +259,7 @@ IpczResult EndGet(IpczHandle portal_handle,
   }
 
   return portal->CommitGet(num_bytes_consumed,
-                           absl::MakeSpan(handles, num_handles));
+                           absl::MakeSpan(handles, num_handles), validator);
 }
 
 IpczResult Trap(IpczHandle portal_handle,
@@ -279,6 +282,18 @@ IpczResult Trap(IpczHandle portal_handle,
 
   return portal->router()->Trap(*conditions, handler, context,
                                 satisfied_condition_flags, status);
+}
+
+IpczResult Reject(IpczHandle validator_handle,
+                  uintptr_t context,
+                  uint32_t flags,
+                  const void* options) {
+  ipcz::Validator* validator = ipcz::Validator::FromHandle(validator_handle);
+  if (!validator) {
+    return IPCZ_RESULT_INVALID_ARGUMENT;
+  }
+
+  return validator->Reject(context);
 }
 
 IpczResult Box(IpczHandle node_handle,
@@ -334,6 +349,7 @@ constexpr IpczAPI kCurrentAPI = {
     BeginGet,
     EndGet,
     Trap,
+    Reject,
     Box,
     Unbox,
 };

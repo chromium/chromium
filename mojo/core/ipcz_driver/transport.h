@@ -18,6 +18,7 @@
 #include "mojo/core/channel.h"
 #include "mojo/core/ipcz_driver/object.h"
 #include "mojo/core/system_impl_export.h"
+#include "mojo/public/c/system/invitation.h"
 #include "mojo/public/cpp/platform/platform_channel_endpoint.h"
 #include "mojo/public/cpp/platform/platform_handle.h"
 #include "third_party/ipcz/include/ipcz/ipcz.h"
@@ -59,12 +60,25 @@ class MOJO_SYSTEM_IMPL_EXPORT Transport : public Object<Transport>,
     remote_process_ = std::move(process);
   }
 
+  void set_leak_channel_on_shutdown(bool leak) {
+    leak_channel_on_shutdown_ = leak;
+  }
+
+  void SetErrorHandler(MojoProcessErrorHandler handler, uintptr_t context) {
+    error_handler_ = handler;
+    error_handler_context_ = context;
+  }
+
   // Takes ownership of the Transport's underlying channel endpoint, effectively
   // invalidating the transport. May only be called on a Transport which has not
   // yet been activated, and only when the channel endpoint is not a server.
   PlatformChannelEndpoint TakeEndpoint() {
     return std::move(absl::get<PlatformChannelEndpoint>(inactive_endpoint_));
   }
+
+  // Handles reports of bad activity from ipcz, resulting from parcel rejection
+  // by the application.
+  void ReportBadActivity(const std::string& error_message);
 
   // Activates this transport by creating and starting the underlying Channel
   // instance.
@@ -146,6 +160,9 @@ class MOJO_SYSTEM_IMPL_EXPORT Transport : public Object<Transport>,
 
   const Destination destination_;
   base::Process remote_process_;
+  MojoProcessErrorHandler error_handler_ = nullptr;
+  uintptr_t error_handler_context_ = 0;
+  bool leak_channel_on_shutdown_ = false;
 
   // The channel endpoint which will be used by this Transport to construct and
   // start its underlying Channel instance once activated. Not guarded by a lock

@@ -16,6 +16,7 @@
 #include "ipcz/remote_router_link.h"
 #include "ipcz/sequence_number.h"
 #include "ipcz/trap_event_dispatcher.h"
+#include "ipcz/validator.h"
 #include "third_party/abseil-cpp/absl/base/macros.h"
 #include "third_party/abseil-cpp/absl/container/inlined_vector.h"
 #include "third_party/abseil-cpp/absl/synchronization/mutex.h"
@@ -427,9 +428,11 @@ IpczResult Router::GetNextInboundParcel(IpczGetFlags flags,
                                         void* data,
                                         size_t* num_bytes,
                                         IpczHandle* handles,
-                                        size_t* num_handles) {
+                                        size_t* num_handles,
+                                        IpczHandle* validator) {
   TrapEventDispatcher dispatcher;
   Ref<RouterLink> link_to_notify;
+  Ref<NodeLink> remote_source;
   {
     absl::MutexLock lock(&mutex_);
     if (inbound_parcels_.IsSequenceFullyConsumed()) {
@@ -461,6 +464,10 @@ IpczResult Router::GetNextInboundParcel(IpczGetFlags flags,
       return IPCZ_RESULT_RESOURCE_EXHAUSTED;
     }
 
+    if (validator) {
+      remote_source = p.remote_source();
+    }
+
     memcpy(data, p.data_view().data(), data_size);
     const bool ok = inbound_parcels_.Consume(
         data_size, absl::MakeSpan(handles, handles_size));
@@ -481,6 +488,12 @@ IpczResult Router::GetNextInboundParcel(IpczGetFlags flags,
   if (link_to_notify) {
     link_to_notify->SnapshotPeerQueueState();
   }
+
+  if (validator) {
+    *validator = Validator::ReleaseAsHandle(
+        MakeRefCounted<Validator>(std::move(remote_source)));
+  }
+
   return IPCZ_RESULT_OK;
 }
 
@@ -515,8 +528,10 @@ IpczResult Router::BeginGetNextIncomingParcel(const void** data,
 }
 
 IpczResult Router::CommitGetNextIncomingParcel(size_t num_data_bytes_consumed,
-                                               absl::Span<IpczHandle> handles) {
+                                               absl::Span<IpczHandle> handles,
+                                               IpczHandle* validator) {
   Ref<RouterLink> link_to_notify;
+  Ref<NodeLink> remote_source;
   TrapEventDispatcher dispatcher;
   {
     absl::MutexLock lock(&mutex_);
@@ -531,6 +546,10 @@ IpczResult Router::CommitGetNextIncomingParcel(size_t num_data_bytes_consumed,
     if (num_data_bytes_consumed > p.data_size() ||
         handles.size() > p.num_objects()) {
       return IPCZ_RESULT_OUT_OF_RANGE;
+    }
+
+    if (validator) {
+      remote_source = p.remote_source();
     }
 
     const bool ok = inbound_parcels_.Consume(num_data_bytes_consumed, handles);
@@ -550,6 +569,11 @@ IpczResult Router::CommitGetNextIncomingParcel(size_t num_data_bytes_consumed,
 
   if (link_to_notify) {
     link_to_notify->SnapshotPeerQueueState();
+  }
+
+  if (validator) {
+    *validator = Validator::ReleaseAsHandle(
+        MakeRefCounted<Validator>(std::move(remote_source)));
   }
 
   return IPCZ_RESULT_OK;

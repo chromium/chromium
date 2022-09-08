@@ -103,8 +103,9 @@ IpczResult TestBase::Get(IpczHandle portal,
   size_t num_bytes = 0;
   IpczHandle* handle_storage = handles.empty() ? nullptr : handles.data();
   size_t num_handles = handles.size();
-  IpczResult result = ipcz().Get(portal, IPCZ_NO_FLAGS, nullptr, nullptr,
-                                 &num_bytes, handle_storage, &num_handles);
+  IpczResult result =
+      ipcz().Get(portal, IPCZ_NO_FLAGS, nullptr, nullptr, &num_bytes,
+                 handle_storage, &num_handles, nullptr);
   if (result != IPCZ_RESULT_RESOURCE_EXHAUSTED) {
     return result;
   }
@@ -116,7 +117,7 @@ IpczResult TestBase::Get(IpczHandle portal,
   }
 
   return ipcz().Get(portal, IPCZ_NO_FLAGS, nullptr, data_storage, &num_bytes,
-                    handle_storage, &num_handles);
+                    handle_storage, &num_handles, nullptr);
 }
 
 IpczResult TestBase::Trap(IpczHandle portal,

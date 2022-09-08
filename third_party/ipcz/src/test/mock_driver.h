@@ -68,6 +68,9 @@ class MockDriver {
                uint32_t,
                const void*));
   MOCK_METHOD(IpczResult,
+              ReportBadTransportActivity,
+              (IpczDriverHandle, uintptr_t, uint32_t, const void*));
+  MOCK_METHOD(IpczResult,
               AllocateSharedMemory,
               (size_t, uint32_t, const void*, IpczDriverHandle*));
   MOCK_METHOD(IpczResult,

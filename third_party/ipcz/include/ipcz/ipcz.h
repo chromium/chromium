@@ -437,6 +437,18 @@ struct IPCZ_ALIGN(8) IpczDriver {
                                  uint32_t flags,                          // in
                                  const void* options);                    // in
 
+  // The ipcz Reject() API can be used by an application to reject a specific
+  // parcel received from a portal. If the parcel in question came from a
+  // remote node, ipcz invokes ReportBadTransportActivity() to notify the driver
+  // about the `transport` which delivered the rejected parcel.
+  //
+  // `context` is an opaque value passed by the application to the Reject() call
+  // which elicited this invocation.
+  IpczResult(IPCZ_API* ReportBadTransportActivity)(IpczDriverHandle transport,
+                                                   uintptr_t context,
+                                                   uint32_t flags,
+                                                   const void* options);
+
   // Allocates a shared memory region and returns a driver handle in
   // `driver_memory` which can be used to reference it in other calls to the
   // driver.
@@ -1225,6 +1237,11 @@ struct IPCZ_ALIGN(8) IpczAPI {
   // (`num_bytes` and `num_handles`) are still updated as specified in the
   // IPCZ_RESULT_OK details below.
   //
+  // If this call succeeds and `validator` is non-null, it's populated with a
+  // new validator handle which the application can use to report
+  // application-level validation failures regarding this specific transaction.
+  // See Reject().
+  //
   // `options` is ignored and must be null.
   //
   // Returns:
@@ -1258,13 +1275,14 @@ struct IPCZ_ALIGN(8) IpczAPI {
   //
   //    IPCZ_RESULT_ALREADY_EXISTS if there is a two-phase get operation in
   //        progress on `portal`.
-  IpczResult(IPCZ_API* Get)(IpczHandle portal,     // in
-                            IpczGetFlags flags,    // in
-                            const void* options,   // in
-                            void* data,            // out
-                            size_t* num_bytes,     // in/out
-                            IpczHandle* handles,   // out
-                            size_t* num_handles);  // in/out
+  IpczResult(IPCZ_API* Get)(IpczHandle portal,       // in
+                            IpczGetFlags flags,      // in
+                            const void* options,     // in
+                            void* data,              // out
+                            size_t* num_bytes,       // in/out
+                            IpczHandle* handles,     // out
+                            size_t* num_handles,     // in/out
+                            IpczHandle* validator);  // out
 
   // Begins a two-phase get operation on `portal` to retrieve data and handles.
   // While a two-phase get operation is in progress on a portal, all other get
@@ -1337,6 +1355,11 @@ struct IPCZ_ALIGN(8) IpczAPI {
   // operation in progress on `portal`, all other arguments are ignored and the
   // pending operation is cancelled without consuming any data from the portal.
   //
+  // If this call succeeds (without IPCZ_END_GET_ABORT specified) and
+  // `validator` is non-null, it's populated with a new validator handle which
+  // the application can use to report application-level validation failures
+  // regarding this specific transaction. See Reject().
+  //
   // `options` is unused and must be null.
   //
   // Returns:
@@ -1360,7 +1383,8 @@ struct IPCZ_ALIGN(8) IpczAPI {
                                size_t num_handles,         // in
                                IpczEndGetFlags flags,      // in
                                const void* options,        // in
-                               IpczHandle* handles);       // out
+                               IpczHandle* handles,        // out
+                               IpczHandle* validator);     // out
 
   // Attempts to install a trap to catch interesting changes to a portal's
   // state. The condition(s) to observe are specified in `conditions`.
@@ -1417,6 +1441,34 @@ struct IPCZ_ALIGN(8) IpczAPI {
       const void* options,                                // in
       IpczTrapConditionFlags* satisfied_condition_flags,  // out
       struct IpczPortalStatus* status);                   // out
+
+  // Reports an application-level validation failure to ipcz, in reference to
+  // a specific `validator` returned by a previous call to Get() or EndGet().
+  // ipcz propagates this rejection to the driver via
+  // ReportBadTransportActivity(), if and only if the associated parcel did in
+  // fact come from a remote node.
+  //
+  // `context` is an opaque handle which, on success, is passed to the driver
+  // when issuing a corresponding ReportBadTransportActivity() invocation.
+  //
+  // `flags` is ignored and must be 0.
+  //
+  // `options` is ignored and must be null.
+  //
+  // Returns:
+  //
+  //    IPCZ_RESULT_OK if the driver was successfully notified about this
+  //        rejection via ReportBadTransportActivity().
+  //
+  //    IPCZ_RESULT_INVALID_ARGUMENT if `validator` is not a valid validator
+  //        handle previously returned by Get() or EndGet().
+  //
+  //    IPCZ_RESULT_FAILED_PRECONDITION if `validator` is associated with a
+  //        parcel that did not come from another node.
+  IpczResult(IPCZ_API* Reject)(IpczHandle validator,
+                               uintptr_t context,
+                               uint32_t flags,
+                               const void* options);
 
   // Boxes an object managed by a node's driver and returns a new IpczHandle to
   // reference the box. If the driver is able to serialize the boxed object, the

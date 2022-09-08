@@ -24,6 +24,7 @@ class APIObject : public RefCounted {
     kPortal,
     kBox,
     kTransport,
+    kValidator,
   };
 
   explicit APIObject(ObjectType type);

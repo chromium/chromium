@@ -11,6 +11,7 @@
 #include <string>
 #include <utility>
 
+#include "ipcz/node_link.h"
 #include "ipcz/node_link_memory.h"
 #include "third_party/abseil-cpp/absl/base/macros.h"
 #include "third_party/abseil-cpp/absl/types/span.h"
@@ -26,6 +27,7 @@ Parcel::Parcel(SequenceNumber sequence_number)
 // to explicitly clear the data and object views of the moved-from Parcel.
 Parcel::Parcel(Parcel&& other)
     : sequence_number_(other.sequence_number_),
+      remote_source_(std::move(other.remote_source_)),
       inlined_data_(std::move(other.inlined_data_)),
       data_fragment_(std::exchange(other.data_fragment_, {})),
       data_fragment_memory_(
@@ -36,6 +38,7 @@ Parcel::Parcel(Parcel&& other)
 
 Parcel& Parcel::operator=(Parcel&& other) {
   sequence_number_ = other.sequence_number_;
+  remote_source_ = std::move(other.remote_source_);
   inlined_data_ = std::move(other.inlined_data_);
   data_fragment_ = std::exchange(other.data_fragment_, {});
   data_fragment_memory_ = std::move(other.data_fragment_memory_);
@@ -72,7 +75,7 @@ void Parcel::AllocateData(size_t num_bytes,
   ABSL_ASSERT(data_view_.empty());
 
   Fragment fragment;
-  if (memory) {
+  if (memory && num_bytes > 0) {
     const size_t requested_fragment_size = num_bytes + sizeof(FragmentHeader);
     if (allow_partial) {
       fragment = memory->AllocateFragmentBestEffort(requested_fragment_size);

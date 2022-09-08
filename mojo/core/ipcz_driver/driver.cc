@@ -153,6 +153,22 @@ IpczResult IPCZ_API Transmit(IpczDriverHandle transport_handle,
   return IPCZ_RESULT_OK;
 }
 
+IpczResult IPCZ_API
+ReportBadTransportActivity(IpczDriverHandle transport_handle,
+                           uintptr_t context,
+                           uint32_t flags,
+                           const void* options) {
+  Transport* transport = Transport::FromHandle(transport_handle);
+  if (!transport) {
+    return IPCZ_RESULT_INVALID_ARGUMENT;
+  }
+
+  std::unique_ptr<std::string> error_message(
+      reinterpret_cast<std::string*>(context));
+  transport->ReportBadActivity(*error_message);
+  return IPCZ_RESULT_OK;
+}
+
 IpczResult IPCZ_API AllocateSharedMemory(size_t num_bytes,
                                          uint32_t flags,
                                          const void* options,
@@ -239,6 +255,7 @@ const IpczDriver kDriver = {
     ActivateTransport,
     DeactivateTransport,
     Transmit,
+    ReportBadTransportActivity,
     AllocateSharedMemory,
     GetSharedMemoryInfo,
     DuplicateSharedMemory,
