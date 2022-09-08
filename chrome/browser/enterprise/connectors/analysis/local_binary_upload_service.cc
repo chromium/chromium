@@ -190,6 +190,10 @@ void DoLocalContentAnalysis(
     sdk_request.set_text_content(std::move(data.contents));
   } else if (!data.path.empty()) {
     sdk_request.set_file_path(data.path.AsUTF8Unsafe());
+  } else if (data.page.IsValid()) {
+    auto mapping = data.page.Map();
+    sdk_request.mutable_text_content()->assign(mapping.GetMemoryAs<char>(),
+                                               mapping.size());
   } else {
     NOTREACHED();
   }
