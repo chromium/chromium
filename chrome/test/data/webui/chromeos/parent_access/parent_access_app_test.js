@@ -28,7 +28,7 @@ suite(parent_access_app_tests.suiteName, function() {
 
   test(parent_access_app_tests.TestNames.TestShowAfterFlow, function() {
     assertEquals(parentAccessApp.currentScreen_, Screens.ONLINE_FLOW);
-    parentAccessApp.fire('show-after');
+    parentAccessApp.dispatchEvent(new CustomEvent('show-after'));
     assertEquals(parentAccessApp.currentScreen_, Screens.AFTER_FLOW);
   });
 });

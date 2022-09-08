@@ -7,7 +7,8 @@ import './parent_access_ui.mojom-lite.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {WebviewManager} from 'chrome://resources/js/webview_manager.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
 import {ParentAccessController} from './parent_access_controller.js';
 
 const parentAccessUIHandler =
@@ -25,9 +26,21 @@ const ALLOWED_HOSTS = [
   'google.com',
 ];
 
-Polymer({
-  is: 'parent-access-ui',
-  _template: html`{__html_template__}`,
+class ParentAccessUi extends PolymerElement {
+  constructor() {
+    super();
+    this.webview_manager_ = null;
+    this.server = null;
+  }
+
+  static get is() {
+    return 'parent-access-ui';
+  }
+
+  static get template() {
+    return html`{__html_template__}`;
+  }
+
   /**
    * Returns whether the provided request should be allowed.
    * @param {string} url Request that is issued by the webview.
@@ -50,7 +63,7 @@ Polymer({
             requestUrl.host.endsWith(allowedHost));
 
     return requestIsHttps && requestIsInAllowedHosts;
-  },
+  }
 
   /**
    * Returns whether the provided request should receive auth headers.
@@ -66,14 +79,15 @@ Polymer({
     // broadly that strictly necessary for the widget to function, thereby
     // minimizing the attack surface for the token.
     return requestUrl.host === webviewUrl.host;
-  },
+  }
 
   /** @override */
   ready() {
+    super.ready();
     this.configureUi().then(
         () => {/* success */},
         origin => {/* TODO(b/200187536): show error page. */});
-  },
+  }
 
   async configureUi() {
     /**
@@ -165,5 +179,6 @@ Polymer({
           break;
       }
     }
-  },
-});
+  }
+}
+customElements.define(ParentAccessUi.is, ParentAccessUi);
