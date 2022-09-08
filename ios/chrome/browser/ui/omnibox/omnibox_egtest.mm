@@ -901,8 +901,7 @@ void FocusFakebox() {
 // fied, Select button should be hidden & SelectAll button should be displayed.
 // If the selected text is the entire omnibox field, select & SelectAll button
 // should be hidden.
-// TODO(crbug.com/1358818): Disabled due to flakiness. Re-enabled when fixed.
-- (void)DISABLED_testSelection {
+- (void)testSelection {
 // TODO(crbug.com/1209342): test failing on ipad device
 #if !TARGET_IPHONE_SIMULATOR
   if ([ChromeEarlGrey isIPadIdiom]) {
