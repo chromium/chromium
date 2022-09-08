@@ -519,7 +519,6 @@ void SystemDataProvider::OnBatteryChargeStatusUpdated(
 
   if (!power_supply_properties.has_value()) {
     LOG(ERROR) << "Null response from power_manager_client::GetLastStatus.";
-    // TODO(wenyu): Add unit test to below emit behavior.
     EmitBatteryDataError(metrics::DataError::kNoData);
     NotifyBatteryChargeStatusObservers(battery_charge_status);
     return;

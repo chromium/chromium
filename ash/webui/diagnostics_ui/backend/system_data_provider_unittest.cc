@@ -1683,4 +1683,28 @@ TEST_F(SystemDataProviderTest, RecordBatteryDataError_HasBatteryInfoMismatch) {
                                      /*expected_expectation_not_met_error=*/1);
 }
 
+// Validate expected metric NoData error triggered when battery charge status
+// returns null.
+TEST_F(SystemDataProviderTest, RecordBatteryDataError_ChargeStatusNull) {
+  base::HistogramTester histogram_tester;
+  VerifyBatteryDataErrorBucketCounts(histogram_tester,
+                                     /*expected_no_data_error=*/0,
+                                     /*expected_not_a_number_error=*/0,
+                                     /*expected_expectation_not_met_error=*/0);
+
+  absl::nullopt_t props = absl::nullopt;
+  chromeos::FakePowerManagerClient::Get()->UpdatePowerProperties(props);
+
+  // Registering as an observer should trigger one update.
+  FakeBatteryChargeStatusObserver charge_status_observer;
+  system_data_provider_->ObserveBatteryChargeStatus(
+      charge_status_observer.receiver.BindNewPipeAndPassRemote());
+  base::RunLoop().RunUntilIdle();
+
+  VerifyBatteryDataErrorBucketCounts(histogram_tester,
+                                     /*expected_no_data_error=*/1,
+                                     /*expected_not_a_number_error=*/0,
+                                     /*expected_expectation_not_met_error=*/0);
+}
+
 }  // namespace ash::diagnostics

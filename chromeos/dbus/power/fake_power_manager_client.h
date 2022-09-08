@@ -184,7 +184,7 @@ class COMPONENT_EXPORT(DBUS_POWER) FakePowerManagerClient
 
   // Updates |props_| and notifies observers of its changes.
   void UpdatePowerProperties(
-      const power_manager::PowerSupplyProperties& power_props);
+      absl::optional<power_manager::PowerSupplyProperties> power_props);
 
   // The PowerAPI requests system wake lock asynchronously. Test can run a
   // RunLoop and set the quit closure by this function to make sure the wake

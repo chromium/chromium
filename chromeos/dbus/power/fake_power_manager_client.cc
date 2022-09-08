@@ -498,9 +498,12 @@ void FakePowerManagerClient::SetInactivityDelays(
 }
 
 void FakePowerManagerClient::UpdatePowerProperties(
-    const power_manager::PowerSupplyProperties& power_props) {
+    absl::optional<power_manager::PowerSupplyProperties> power_props) {
   props_ = power_props;
-  NotifyObservers();
+  // Only notify observer when power supply properties are available.
+  if (props_.has_value()) {
+    NotifyObservers();
+  }
 }
 
 void FakePowerManagerClient::NotifyObservers() {
