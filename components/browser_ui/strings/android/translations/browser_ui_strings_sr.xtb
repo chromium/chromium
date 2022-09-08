@@ -30,6 +30,7 @@
 <translation id="1717218214683051432">Сензори покрета</translation>
 <translation id="1743802530341753419">Питај пре него што дозволиш сајтовима да се повезују са уређајем (препоручено)</translation>
 <translation id="1779089405699405702">Декодер слика</translation>
+<translation id="1785415724048343560">Препоручује се за најбољи доживљај</translation>
 <translation id="1818308510395330587">Да бисте дозволили да <ph name="APP_NAME" /> користи ПР, укључите и камеру у <ph name="BEGIN_LINK" />Android подешавањима<ph name="END_LINK" />.</translation>
 <translation id="1864927262126810325">Извор: <ph name="SOURCE_NAME" /></translation>
 <translation id="1887786770086287077">Приступ локацији је искључен за овај уређај. Укључите га у <ph name="BEGIN_LINK" />Android подешавањима<ph name="END_LINK" />.</translation>
@@ -169,6 +170,7 @@
 <translation id="4751476147751820511">Сензори за покрет или светло</translation>
 <translation id="4811450222531576619">Сазнајте више о њеном извору и теми</translation>
 <translation id="4836046166855586901">Питај када сајт жели да зна када активно користим овај уређај</translation>
+<translation id="483914009762354899">Уврсти све сајтове у оквиру овог домена</translation>
 <translation id="4883854917563148705">Подешавања којима се управља не могу да се ресетују</translation>
 <translation id="4887024562049524730">Пре него што дозволите сајтовима да користе уређај и податке виртуелне реалности приказује се упит (препоручено)</translation>
 <translation id="4962975101802056554">Опозовите све дозволе за уређај</translation>

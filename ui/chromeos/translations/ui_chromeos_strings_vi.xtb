@@ -177,7 +177,6 @@
 <translation id="2500392669976258912">Tiếng Gujarati (phiên âm)</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2517472476991765520">Quét</translation>
-<translation id="2534155362429831547">Đã xóa <ph name="NUMBER_OF_ITEMS" /> mục</translation>
 <translation id="2534460670861217804">Proxy HTTP bảo mật</translation>
 <translation id="2541377937973966830">Nội dung trong thư mục này đang ở chế độ chỉ có thể đọc. Vì thế, một số hoạt động sẽ không được hỗ trợ.</translation>
 <translation id="2542049655219295786">Bảng Google</translation>
@@ -402,7 +401,6 @@
 <translation id="4527800702232535228">Thư mục này được chia sẻ với Parallels Desktop</translation>
 <translation id="4552678318981539154">Mua thêm dung lượng lưu trữ</translation>
 <translation id="4552759165874948005">Mạng <ph name="NETWORK_TYPE" />, cường độ tín hiệu <ph name="SIGNAL_STRENGTH" />%</translation>
-<translation id="4559318885353833501">Đã xóa <ph name="FILE_NAME" /></translation>
 <translation id="4559767610552730302">Hiệu ứng Bokeh</translation>
 <translation id="4572815280350369984">Tệp <ph name="FILE_TYPE" /></translation>
 <translation id="457386861538956877">Thêm...</translation>

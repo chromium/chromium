@@ -484,6 +484,7 @@
 <translation id="145432137617179457">Језици за проверу правописа</translation>
 <translation id="1455119378540982311">Унапред одређене величине прозора</translation>
 <translation id="146000042969587795">Овај оквир је блокиран јер садржи неки небезбедан садржај.</translation>
+<translation id="1461041542809785877">Учинак</translation>
 <translation id="146219525117638703">ONC стање</translation>
 <translation id="146220085323579959">Веза са интернетом је прекинута. Проверите интернет везу и покушајте поново.</translation>
 <translation id="1462850958694534228">Прегледајте ажурирање иконе</translation>
@@ -1018,6 +1019,7 @@
 <translation id="1931152874660185993">Није инсталирана ниједна компонента.</translation>
 <translation id="1931410639376954712">Инсталира се <ph name="DEVICE_OS" /></translation>
 <translation id="1932098463447129402">Не пре</translation>
+<translation id="1933489278505808700">Дозвољено је читање и измена</translation>
 <translation id="1935303383381416800">Дозвољено им је да виде вашу локацију</translation>
 <translation id="1936157145127842922">Прикажи у директоријуму</translation>
 <translation id="1936931585862840749">Наведите број примерака за штампање (1–<ph name="MAX_COPIES" />).</translation>
@@ -1785,6 +1787,7 @@
 <translation id="2637400434494156704">Нетачан PIN. Имате још један покушај.</translation>
 <translation id="2638286699381354126">Ажурирај...</translation>
 <translation id="2638662041295312666">Слика за пријављивање</translation>
+<translation id="2640299212685523844">Користи GTK</translation>
 <translation id="264083724974021997">Повежите са телефоном – дијалог</translation>
 <translation id="2642111877055905627">Фудбалска лопта</translation>
 <translation id="2643698698624765890">Управљајте додацима кликом на ставку Додаци у менију Прозор.</translation>
@@ -1946,6 +1949,7 @@
 <translation id="2783829359200813069">Изаберите типове шифровања</translation>
 <translation id="2783952358106015700">Користите безбедносни кључ у апликацији <ph name="APP_NAME" /></translation>
 <translation id="2785873697295365461">Дескриптори датотека</translation>
+<translation id="2785975315093449168">GTK</translation>
 <translation id="2787022501752539710">Задржи локалне податке прегледања (обележиваче, лозинке, историју итд)</translation>
 <translation id="2787354132612937472">–</translation>
 <translation id="2788135150614412178">+</translation>
@@ -2084,6 +2088,7 @@
 <translation id="2902312830803030883">Још радњи</translation>
 <translation id="2903457445916429186">Отворите изабране ставке</translation>
 <translation id="2903882649406874750">Никад не дозвољавај да <ph name="HOST" /> приступа сензорима</translation>
+<translation id="2904845070985032877">Паузирај анимације</translation>
 <translation id="2907619724991574506">URL-ови за покретање</translation>
 <translation id="2907798539022650680">Повезивање са „<ph name="NAME" />“ није успело: <ph name="DETAILS" />
     Порука сервера: <ph name="SERVER_MSG" /></translation>
@@ -2909,6 +2914,7 @@
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">Ви и Google</translation>
 <translation id="3722108462506185496">Грешка при покретању услуге виртуелне машине. Пробајте поново.</translation>
+<translation id="3726965532284929944">QT</translation>
 <translation id="3727144509609414201">Доступне WiFi мреже</translation>
 <translation id="3727187387656390258">Испитај искачући прозор</translation>
 <translation id="372722114124766626">Само једном</translation>
@@ -2988,6 +2994,7 @@
 <translation id="3793588272211751505">{NUM_DAYS,plural, =1{Chrome није пронашао штетан софтвер на рачунару • Проверено пре 1 дан}one{Chrome није пронашао штетан софтвер на рачунару • Проверено пре {NUM_DAYS} дан}few{Chrome није пронашао штетан софтвер на рачунару • Проверено пре {NUM_DAYS} дана}other{Chrome није пронашао штетан софтвер на рачунару • Проверено пре {NUM_DAYS} дана}}</translation>
 <translation id="379500251094592809">Да бисте користили Дељење у близини, уверите се да су оба уређаја откључана, близу један другом и да је укључен Bluetooth. Ако делите са Chromebook-ом, који није у контактима, уверите се да му је укључена Видљивост у близини (отворите област статуса тако што ћете изабрати време, па укључите Видљивост у близини) <ph name="LINK_BEGIN" />Сазнајте више<ph name="LINK_END" /></translation>
 <translation id="379509625511193653">Искључено</translation>
+<translation id="3795766489237825963">Пусти анимације</translation>
 <translation id="3796648294839530037">Омиљене мреже:</translation>
 <translation id="3797739167230984533">Организација <ph name="BEGIN_LINK" />управља уређајем <ph name="DEVICE_TYPE" /><ph name="END_LINK" /></translation>
 <translation id="3797900183766075808">&amp;Претражи „<ph name="SEARCH_TERMS" />“ на претраживачу <ph name="SEARCH_ENGINE" /></translation>
@@ -3406,6 +3413,7 @@
 <translation id="4181602000363099176">20x</translation>
 <translation id="4181841719683918333">Језици</translation>
 <translation id="4184803915913850597">HID уређај (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
+<translation id="4186749321808907788"><ph name="QUERY_NAME" /> – <ph name="DEFAULT_SEARCH_ENGINE_NAME" /> претрага</translation>
 <translation id="4187424053537113647">Подешава се <ph name="APP_NAME" />…</translation>
 <translation id="4190828427319282529">Истицање фокуса тастатуре</translation>
 <translation id="4193836101014293726">Брисање овог профила није успело</translation>
@@ -3536,6 +3544,7 @@
 <translation id="4310132194679586591">Изаберите апликацију на уређају да бисте отворили овај линк</translation>
 <translation id="4310139701823742692">Формат датотеке је погрешан. Проверите PPD датотеку и пробајте поново.</translation>
 <translation id="431076611119798497">&amp;Детаљи</translation>
+<translation id="4311284648179069796">Читање и измена нису дозвољене</translation>
 <translation id="4312701113286993760">{COUNT,plural, =1{1 Google налог}one{<ph name="EXTRA_ACCOUNTS" /> Google налог}few{<ph name="EXTRA_ACCOUNTS" /> Google налога}other{<ph name="EXTRA_ACCOUNTS" /> Google налога}}</translation>
 <translation id="4312866146174492540">Блокирај (подразумевано)</translation>
 <translation id="4314497418046265427">Будите продуктивнији када повежете телефон и <ph name="DEVICE_TYPE" /></translation>
@@ -3726,6 +3735,7 @@
 <translation id="4504940961672722399">Користите овај додатак кликом на ову икону или притиском на <ph name="EXTENSION_SHORTCUT" />.</translation>
 <translation id="450552327874992444">Реч је већ додата</translation>
 <translation id="4507128560633489176">Подаци су обрисани.</translation>
+<translation id="4507373251891673233">Блокирали сте све додатке са <ph name="HOST" /></translation>
 <translation id="450867954911715010">Подешавања приступачности</translation>
 <translation id="4508765956121923607">Прикажи и&amp;звор</translation>
 <translation id="4509421746503122514">Поново покрените ради ажурирања</translation>
@@ -3999,6 +4009,7 @@
 <translation id="4763408175235639573">Следећи колачићи су постављени док сте гледали ову страницу</translation>
 <translation id="4765524037138975789">{MONTHS,plural, =1{Овај уређај ће бити сачуван 1 месец и можете да се повежете без кода следећи пут. То је подесио администратор.}one{Овај уређај ће бити сачуван {MONTHS} месец и можете да се повежете без кода следећи пут. То је подесио администратор.}few{Овај уређај ће бити сачуван {MONTHS} месеца и можете да се повежете без кода следећи пут. То је подесио администратор.}other{Овај уређај ће бити сачуван {MONTHS} месеци и можете да се повежете без кода следећи пут. То је подесио администратор.}}</translation>
 <translation id="4765582662863429759">Дозвољава да Android Messages преноси SMS-ове са телефона на Chromebook</translation>
+<translation id="4766598565665644999">Сви додаци могу да читају и мењају <ph name="HOST" /></translation>
 <translation id="4768332406694066911">Имате сертификате следећих организација који вас идентификују</translation>
 <translation id="4770119228883592393">Затражена је дозвола. Притисните ⌘ + Option + стрелицу надоле да бисте одговорили</translation>
 <translation id="4773112038801431077">Надоградите Linux</translation>
@@ -4416,6 +4427,7 @@
 <translation id="5190926251776387065">Активирај порт</translation>
 <translation id="5191094172448199359">Унети PIN-ови се не подударају</translation>
 <translation id="5191251636205085390">Сазнајте више о новим технологијама чији је циљ да замене колачиће трећих страна и управљајте њима</translation>
+<translation id="519185197579575131">Користи QT</translation>
 <translation id="5192062846343383368">Отворите апликацију Family Link да бисте видели подешавања надзора</translation>
 <translation id="5193988420012215838">Копирано је у привремену меморију</translation>
 <translation id="5194256020863090856">Ово утиче само на прозоре без архивирања</translation>
@@ -5172,6 +5184,7 @@
     <ph name="LINE_BREAK" />
     Tа слика ће се приказивати на Chromebook екрану за пријављивање и закључаном екрану.</translation>
 <translation id="5925147183566400388">Показивач изјаве о пракси издавања сертификата</translation>
+<translation id="5927232971138258197">Овај додатак може да чита и мења <ph name="HOST" /></translation>
 <translation id="592740088639760830">Заустави овај контејнер</translation>
 <translation id="592880897588170157">Преузмите PDF датотеке да се не би аутоматски отварале у Chrome-у</translation>
 <translation id="592919310198008711">Када кликнем на додатак</translation>
@@ -5353,6 +5366,7 @@
 <translation id="6087960857463881712">Задовољно лице</translation>
 <translation id="608912389580139775">Да бисте додали ову страницу на листу за читање, кликните на икону обележивача</translation>
 <translation id="6091761513005122595">Дељена датотека је учитана.</translation>
+<translation id="6093803049406781019">Брисање профила</translation>
 <translation id="6093888419484831006">Отказивање ажурирања...</translation>
 <translation id="6095541101974653012">Одјављени сте.</translation>
 <translation id="6095984072944024315">−</translation>
@@ -6281,6 +6295,7 @@
 <translation id="6973611239564315524">Доступна је надоградња на Debian 10 (Buster)</translation>
 <translation id="69739764870135975">Ако вам је Google и подразумевани претраживач, видећете боље, контекстуално релевантне предлоге</translation>
 <translation id="697508444536771064">Искључи Linux</translation>
+<translation id="6975361011348772931">Траже се дозволе за читање и измену</translation>
 <translation id="6978121630131642226">Претраживачи</translation>
 <translation id="6979044105893951891">Покретање и напуштање сесија госта којима се управља</translation>
 <translation id="6979158407327259162">Google диск</translation>
@@ -7278,6 +7293,7 @@
 <translation id="793531125873261495">Грешка при преузимању виртуелне машине. Пробајте поново.</translation>
 <translation id="7935451262452051102"><ph name="PERCENT" />% је завршено</translation>
 <translation id="7939062555109487992">Напредне опције</translation>
+<translation id="7939073735115504773">Кликните на икону овог додатка да бисте читали и мењали <ph name="HOST" /></translation>
 <translation id="7939328347457537652">Управљајте сертификатима уређаја</translation>
 <translation id="7939412583708276221">Ипак задржи</translation>
 <translation id="7941179291434537290">Спремност за привезивање:</translation>

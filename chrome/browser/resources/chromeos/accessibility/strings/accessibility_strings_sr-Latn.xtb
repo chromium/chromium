@@ -140,6 +140,7 @@
 <translation id="1834891354138622109">Kolona</translation>
 <translation id="1846771122725914429">Bluetooth Brajev ekran</translation>
 <translation id="1852018405765032699">Ako dodirnete ekran pomoću četiri prsta, možete da otvarate i zatvarate ChromeVox menije. Ti meniji sadrže korisne informacije o komandama i prečicama. Kada otvorite menije, možete da prevlačite pomoću jednog prsta da biste se kretali kroz stavke i da dvaput dodirnete da biste aktivirali stavke. Da biste nastavili, dodirnite ekran pomoću četiri prsta.</translation>
+<translation id="1864430479908918647">Pritisnite taster za pretragu + taster za razmak</translation>
 <translation id="1865601187525349519">Kraj teksta</translation>
 <translation id="1876229593313240038">doc</translation>
 <translation id="1902396333223336119">Ćelija</translation>
@@ -528,6 +529,7 @@
 <translation id="4479068155583208887">Zatvorenocrvena</translation>
 <translation id="4482330759234983253">Prethodna tabela</translation>
 <translation id="4491109536499578614">Slika</translation>
+<translation id="4507332368061453500">Dugi klik na aktuelnu stavku</translation>
 <translation id="4511186779140817916">Belobraon</translation>
 <translation id="451510441928265982">Nema prethodnog zaglavlja 2. nivoa</translation>
 <translation id="4515799157838123044">Bleđi sadržaj u pozadini</translation>
@@ -777,6 +779,7 @@
 <translation id="6236061028292614533">Sledeće zaglavlje</translation>
 <translation id="6254901459154107917">Sledeća izmenljiva oblast za tekst</translation>
 <translation id="6259464875943891919">Izašli ste iz kontejnera <ph name="TYPE" />.</translation>
+<translation id="6280088282605782512">Dvaput dodirnite</translation>
 <translation id="6282062888058716985">navigacija</translation>
 <translation id="6295699829709583154">Osnovni tasteri: taster za pretragu</translation>
 <translation id="6305702903308659374">Reprodukuj pri normalnoj jačini zvuka čak i ako ChromeVox govori</translation>
@@ -980,6 +983,7 @@
 <translation id="7731785449856576010">Nema vidžeta za sledeću medijsku datoteku</translation>
 <translation id="7735498529470878067">Istraživanje dodirom može da vam pomogne da brzo steknete predstavu o tome šta se nalazi na ekranu.</translation>
 <translation id="773906353055481349">Pritisnite taster za pretragu + Ctrl + Alt i strelice da biste se kretali kroz ćelije</translation>
+<translation id="7746976083433980639">Od <ph name="ACTION" /> do <ph name="LABEL" /></translation>
 <translation id="7763537600611320912">Preuzimanje je započeto <ph name="FILE_NAME" /></translation>
 <translation id="7768784765476638775">Izaberite za govor</translation>
 <translation id="7776293189010177726">Otvara ChromeVox menije</translation>

@@ -177,7 +177,6 @@
 <translation id="2500392669976258912">গুজরাতি ফোনেটিক</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2517472476991765520">স্ক্যান করুন</translation>
-<translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" />টি আইটেম মোছা হয়েছে</translation>
 <translation id="2534460670861217804">সুরক্ষিত HTTP প্রক্সী</translation>
 <translation id="2541377937973966830">এই ফোল্ডারের কন্টেন্ট 'রিড-ওনলি' মোডে রয়েছে। কিছু অ্যাক্টিভিটি এখানে কাজ করবে না।</translation>
 <translation id="2542049655219295786">Google টেবিল</translation>
@@ -280,6 +279,7 @@
 <translation id="3414856743105198592">সরানোযোগ্য মিডিয়া বিন্যাস করা সমস্ত ডেটা মুছে দিতে চলেছে৷ আপনি কি চালিয়ে যেতে চান?</translation>
 <translation id="3437801641691368414">যে সময় তৈরি করা হয়েছে</translation>
 <translation id="343907260260897561">ইনস্ট্যান্ট ক্যামেরা</translation>
+<translation id="3452106565701029351">ঝটপট অ্যাক্সেসযোগ্য ফাইল থেকে আনপিন করুন</translation>
 <translation id="3455931012307786678">এস্তোনিয়ান</translation>
 <translation id="3466147780910026086">আপনার মিডিয়া ডিভাইস স্ক্যান করা হচ্ছে...</translation>
 <translation id="3468522857997926824"><ph name="BEGIN_LINK" />Google ড্রাইভ<ph name="END_LINK" /> এ <ph name="FILE_COUNT" />টি ফটো ব্যাকআপ নেওয়া হয়েছে</translation>
@@ -402,7 +402,6 @@
 <translation id="4527800702232535228">এই ফোল্ডার Parallels Desktop-এর সাথে শেয়ার করা হয়েছে</translation>
 <translation id="4552678318981539154">আরও সঞ্চয়স্থান কিনুন</translation>
 <translation id="4552759165874948005"><ph name="NETWORK_TYPE" /> নেটওয়ার্ক, সিগন্যাল:<ph name="SIGNAL_STRENGTH" />%</translation>
-<translation id="4559318885353833501"><ph name="FILE_NAME" /> মুছে ফেলা হয়েছে</translation>
 <translation id="4559767610552730302">বোকে</translation>
 <translation id="4572815280350369984"><ph name="FILE_TYPE" /> ফাইল</translation>
 <translation id="457386861538956877">আরও...</translation>
@@ -691,6 +690,7 @@
 <translation id="6915678159055240887">ক্রোমবাক্স</translation>
 <translation id="6918340160281024199">মার্কিন ওয়ার্কম্যান</translation>
 <translation id="6930242544192836755">সময়কাল</translation>
+<translation id="6931302001003657424">ঝটপট অ্যাক্সেসযোগ্য ফাইল থেকে পিন করুন</translation>
 <translation id="6934241953272494177">আপনার মিডিয়া ডিভাইস স্ক্যান করা হচ্ছে...
     <ph name="LINE_BREAK1" />
     <ph name="FILE_COUNT" />টি পাওয়া যায়</translation>

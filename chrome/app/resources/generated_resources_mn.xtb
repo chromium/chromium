@@ -485,6 +485,7 @@
 <translation id="145432137617179457">Зөв бичгийн алдаа шалгах хэлнүүд</translation>
 <translation id="1455119378540982311">Урьдчилан тохируулсан цонхны хэмжээнүүд</translation>
 <translation id="146000042969587795">Аюултай агуулгыг агуулж байгаа учраас энэ хүрээ хаагдсан байна.</translation>
+<translation id="1461041542809785877">Хүчин чадал</translation>
 <translation id="146219525117638703">ONC Төлөв</translation>
 <translation id="146220085323579959">Интернэт салсан байна. Интернетийн холболтоо шалгаад дахин хандана уу.</translation>
 <translation id="1462850958694534228">Дүрс тэмдгийн шинэчлэлтийг шалгах</translation>
@@ -1027,6 +1028,7 @@
 <translation id="1931152874660185993">Ямар ч бүрэлдэхүүн хэсэг суугдаагүй байна.</translation>
 <translation id="1931410639376954712"><ph name="DEVICE_OS" />-г суулгаж байна</translation>
 <translation id="1932098463447129402">Өмнө нь биш</translation>
+<translation id="1933489278505808700">Унших, өөрчлөхийг зөвшөөрсөн</translation>
 <translation id="1935303383381416800">Таны байршлыг харахыг зөвшөөрсөн</translation>
 <translation id="1936157145127842922">Хавтсан дотор харуулах</translation>
 <translation id="1936931585862840749">Тоо ашиглан хэдэн хувь хэвлэхийг заана уу (1-ээс <ph name="MAX_COPIES" /> хүртэл).</translation>
@@ -3547,6 +3549,7 @@
 <translation id="4310132194679586591">Энэ холбоосыг нээхийн тулд төхөөрөмж дээрээ апп сонгоно уу</translation>
 <translation id="4310139701823742692">Файлын формат буруу байна. PPD файлыг шалгаад дахин оролдоно уу.</translation>
 <translation id="431076611119798497">Дэлгэрэнгүй мэдээлэл</translation>
+<translation id="4311284648179069796">Унших, өөрчлөхийг зөвшөөрөөгүй</translation>
 <translation id="4312701113286993760">{COUNT,plural, =1{1 Google Бүртгэл}other{<ph name="EXTRA_ACCOUNTS" /> Google Бүртгэл}}</translation>
 <translation id="4312866146174492540">Блоклох (өгөгдмөл)</translation>
 <translation id="4314497418046265427">Утсаа өөрийн <ph name="DEVICE_TYPE" />-д холбосон үедээ илүү бүтээлч байгаарай</translation>
@@ -3738,6 +3741,7 @@
 <translation id="4504940961672722399">Энэ дүрс дээр дарж эсвэл <ph name="EXTENSION_SHORTCUT" />  дээр дарж энэ өргөтгөлийг ашиглана уу.</translation>
 <translation id="450552327874992444">Үгийг аль хэдийн нэмсэн</translation>
 <translation id="4507128560633489176">Өгөгдлийг арилгасан.</translation>
+<translation id="4507373251891673233">Та бүх өргөтгөлийг <ph name="HOST" />-с блоклосон</translation>
 <translation id="450867954911715010">Хандалтын тохиргоо</translation>
 <translation id="4508765956121923607">Эх үүсвэрийг харах</translation>
 <translation id="4509421746503122514">Шинэчлэхийн тулд дахин эхлүүлнэ үү</translation>
@@ -4011,6 +4015,7 @@
 <translation id="4763408175235639573">Таныг энэ хуудсыг харахад дараах күүкийг тохируулсан</translation>
 <translation id="4765524037138975789">{MONTHS,plural, =1{Энэ төхөөрөмжийг 1 сарын турш хадгалах бөгөөд та дараагийн удаа кодгүйгээр холбогдох боломжтой. Үүнийг танай администратор тохируулсан.}other{Энэ төхөөрөмжийг {MONTHS} сарын турш хадгалах бөгөөд та дараагийн удаа кодгүйгээр холбогдох боломжтой. Үүнийг танай администратор тохируулсан.}}</translation>
 <translation id="4765582662863429759">Андройд Мессежийг таны утаснаас таны Chromebook-д мессеж илгээхийг зөвшөөрдөг</translation>
+<translation id="4766598565665644999">Бүх өргөтгөлүүд <ph name="HOST" />-г унших, өөрчлөх боломжтой</translation>
 <translation id="4768332406694066911">Танд эдгээр байгууллагаас таныг тодорхойлох сертификат байна</translation>
 <translation id="4770119228883592393">Зөвшөөрлийн хүсэлт тавьсан. Хариу өгөхийн тулд ⌘ + Сонголт + Доош сумыг дарна уу</translation>
 <translation id="4773112038801431077">Linux-г сайжруулах</translation>
@@ -5184,6 +5189,7 @@
     <ph name="LINE_BREAK" />
     Энэ зураг Chromebook-н нэвтрэх дэлгэц болон түгжигдсэн дэлгэцэд харагдах болно.</translation>
 <translation id="5925147183566400388">Certification Practice Statement Pointer</translation>
+<translation id="5927232971138258197">Энэ өргөтгөл нь <ph name="HOST" />-г унших, өөрчлөх боломжтой</translation>
 <translation id="592740088639760830">Энэ контейнерыг зогсоох</translation>
 <translation id="592880897588170157">PDF файлыг автоматаар Chrome-д нээхийн оронд татна уу</translation>
 <translation id="592919310198008711">Намайг өргөтгөлийг товших үед</translation>
@@ -6289,6 +6295,7 @@
 <translation id="6973611239564315524">Debian 10 (Buster) руу дэвшүүлэх боломжтой байна</translation>
 <translation id="69739764870135975">Хэрэв Google нь таны өгөгдмөл хайлтын систем бол та хам сэдэвтэй холбоотой илүү сайн зөвлөмжүүдийг харах болно</translation>
 <translation id="697508444536771064">Linux-г унтраах</translation>
+<translation id="6975361011348772931">Унших, өөрчлөх хүсэлт тавьсан</translation>
 <translation id="6978121630131642226">Хайлтын систем</translation>
 <translation id="6979044105893951891">Эхлүүлээд, удирдлагатай зочны сургалтаас гарах</translation>
 <translation id="6979158407327259162">Google Drive</translation>
@@ -7286,6 +7293,7 @@
 <translation id="793531125873261495">Виртуал машиныг татаж авахад алдаа гарлаа. Дахин оролдоно уу.</translation>
 <translation id="7935451262452051102"><ph name="PERCENT" />%-ийг гүйцэтгэсэн</translation>
 <translation id="7939062555109487992">Дэвшилтэт сонголт</translation>
+<translation id="7939073735115504773"><ph name="HOST" />-г-унших, өөрчлөхийн тулд энэ өргөтгөлийн дүрс дээр товшино уу</translation>
 <translation id="7939328347457537652">Төхөөрөмжийн гэрчилгээг удирдах</translation>
 <translation id="7939412583708276221">Ямар ч байсан үргэлжлүүлнэ үү</translation>
 <translation id="7941179291434537290">Модем болгох явцын бэлэн байдал:</translation>

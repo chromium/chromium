@@ -2,9 +2,11 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="lt">
 <translation id="1068168522143272502">Adresų ir mokėjimo parinkčių, kuriuos reikia pateikti atsiskaitant, sąrašas atidarytas iki pusės ekrano aukščio.</translation>
+<translation id="248973266728004341">Pridėti naują kredito kortelę</translation>
 <translation id="2501278716633472235">Grįžti</translation>
 <translation id="312532069930005172">Atidaryti automatinio pildymo profilio nustatymus</translation>
 <translation id="4401440167302712543">Atsiskaitant automatiškai užpildyti siuntimo ir mokėjimo informaciją</translation>
+<translation id="4526274353008646337">Pridėti naują adresą</translation>
 <translation id="567079066552447069">Adresų ir mokėjimo parinkčių, kuriuos reikia pateikti atsiskaitant, sąrašas uždarytas.</translation>
 <translation id="780301667611848630">Ačiū, ne</translation>
 <translation id="8264703973415044493">Adresų ir mokėjimo parinkčių, kuriuos reikia pateikti atsiskaitant, sąrašas atidarytas per visą ekrano aukštį.</translation>
@@ -12,5 +14,6 @@
 <translation id="884264119367021077">Siuntimo adresas</translation>
 <translation id="8873105120914375071">Atsiskaityti greičiau?</translation>
 <translation id="9032876013752408138">Automatinis informacijos pildymas</translation>
+<translation id="9130271303738808219">Atidaryti kredito kortelės nustatymus</translation>
 <translation id="984275831282074731">Mokėjimo metodai</translation>
 </translationbundle>

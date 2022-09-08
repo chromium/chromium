@@ -2996,6 +2996,11 @@ Falls die Richtlinie nicht festgelegt wird, bleibt die Varianten-Seed-URL unver�
 <translation id="3989829840000169163">Alte Erweiterungspunkte des Browsers blockieren</translation>
 <translation id="3990391739475801018">Der Energiesparmodus wird deaktiviert.</translation>
 <translation id="3994043824457743421">Information im mittleren Slot auf der Seite „Neuer Tab“ anzeigen</translation>
+<translation id="3996325823532867220">Diese Richtlinie wird nicht mehr unterstützt. Die zugehörige Richtlinie <ph name="CHROME_ROOT_STORE_ENABLED_POLICY_NAME" /> wird jedoch möglicherweise auf bestimmten Plattformen unterstützt.
+
+      Wenn diese Einstellung aktiviert ist, verifiziert <ph name="PRODUCT_NAME" /> Serverzertifikate anhand der integrierten Zertifikatsprüfung.
+      Ist sie deaktiviert, verifiziert <ph name="PRODUCT_NAME" /> Serverzertifikate anhand der von der Plattform bereitgestellten Legacy-Zertifikatsprüfung, es sei denn <ph name="CHROME_ROOT_STORE_ENABLED_POLICY_NAME" /> ist aktiviert.
+      Wenn diese Einstellung nicht konfiguriert ist, wird die integrierte oder die Legacy-Zertifikatsprüfung verwendet.</translation>
 <translation id="3997519162482760140">URLs, denen auf SAML-Log-in-Seiten Zugriff auf Videoaufnahmegeräte gestattet wird</translation>
 <translation id="4004523942550416237">Ablauf „Voice Match mit Google Assistant“ bei der Ersteinrichtung nicht anzeigen</translation>
 <translation id="4007646377576030214"> Beachte, dass diese Richtlinie ab M87 veraltet ist und in M89 entfernt wird. Verwende stattdessen <ph name="MANAGED_GUEST_SESSION_PRIVACY_WARNINGS_POLICY_NAME" /> zum Konfigurieren der Datenschutzwarnungen verwalteter Gastsitzungen.

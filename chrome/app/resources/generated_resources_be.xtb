@@ -106,6 +106,7 @@
 <translation id="1094607894174825014">Аперацыі чытання або запісу былі запытаны з недапушчальным зрухам на прыладзе "<ph name="DEVICE_NAME" />".</translation>
 <translation id="1095761715416917775">Падбайце аб тым, каб не страціць доступ да сінхранізаваных даных</translation>
 <translation id="109647177154844434">Пры выдаленні праграмы Parallels Desktop будзе выдалены вобраз Windows, у тым ліку праграмы, налады і даныя сістэмы. Сапраўды працягнуць?</translation>
+<translation id="1097016918605049747">Перакласці старонку не ўдалося</translation>
 <translation id="1097658378307015415">Перш чым увайсці ва ўліковы запіс, увайдзіце ў рэжыме госця, каб актываваць сетку <ph name="NETWORK_ID" /></translation>
 <translation id="1099383081182863812">Ці бачыце вы прыладу Chromecast у <ph name="BEGIN_LINK" />праграме Google Home<ph name="END_LINK" />?</translation>
 <translation id="1099962274138857708">Відарыс скапіраваны з прылады "<ph name="DEVICE_NAME" />"</translation>
@@ -329,7 +330,7 @@
 <translation id="1307165550267142340">PIN-код створаны</translation>
 <translation id="1307431692088049276">Не пытаць мяне зноў</translation>
 <translation id="1307559529304613120">Памылка.  Сістэме не ўдалося захаваць доўгатэрміновы маркер доступу API для гэтай прылады.</translation>
-<translation id="1312811472299082263">Стварыце кантэйнер на аснове сцэнарыя Ansible ці рэзервовага файла Crostini</translation>
+<translation id="1312811472299082263">Стварыце кантэйнер на аснове Ansible Playbook ці рэзервовага файла Crostini</translation>
 <translation id="1313405956111467313">Аўтаматычная канфігурацыя проксі-сервера</translation>
 <translation id="131364520783682672">Caps Lock</translation>
 <translation id="1313660246522271310">Будзе выкананы выхад з усіх сайтаў, у тым ліку на адкрытых укладках</translation>
@@ -681,6 +682,7 @@
 <translation id="1632756664321977232">Інструмент "Абрэзка"</translation>
 <translation id="163309982320328737">Пачатковая шырыня сімвалаў – поўная</translation>
 <translation id="1633947793238301227">Выключыць Памочніка Google</translation>
+<translation id="1634224622052500893">Знойдзена сетка Wi-Fi</translation>
 <translation id="1634783886312010422">Вы ўжо змянілі гэты пароль на сайце <ph name="WEBSITE" />?</translation>
 <translation id="1636212173818785548">ОК</translation>
 <translation id="163712950892155760"><ph name="BEGIN_PARAGRAPH1" />Даныя праграм – гэта любыя даныя, якія захоўваюцца праграмай (у залежнасці ад налад распрацоўшчыка), у тым ліку кантакты, паведамленні і фота. Рэзервовыя копіі даных не будуць улічвацца ў квоце сховішча на Дыску.<ph name="END_PARAGRAPH1" />
@@ -783,6 +785,7 @@
 <translation id="1730917990259790240"><ph name="BEGIN_PARAGRAPH1" />Каб выдаліць праграмы, перайдзіце ў раздзел "Налады &gt; Крама Google Play &gt; Кіраванне параметрамі Android" і адкрыйце "Праграмы" або "Менеджар праграм". Там націсніце на значок праграмы, якую трэба выдаліць (каб знайсці патрэбную праграму, магчыма, трэба будзе прагартаць экран управа або ўлева). Затым націсніце "Выдаліць" ("Адключыць" або "Выключыць").<ph name="END_PARAGRAPH1" /></translation>
 <translation id="1730989807608739928">Прагартаць у бок апошняй укладкі</translation>
 <translation id="1731911755844941020">Ідзе адпраўка запыту...</translation>
+<translation id="1732445923934584865">Папрасіць асабіста</translation>
 <translation id="1733383495376208985">Зашыфраваць сінхранізаваныя даныя з дапамогай <ph name="BEGIN_LINK" />фразы-пароля<ph name="END_LINK" />. Шыфраванне не распаўсюджваецца на спосабы аплаты і адрасы з Google Pay.</translation>
 <translation id="1734212868489994726">Светла-блакітны</translation>
 <translation id="1734230530703461088">Не ўдалося загрузіць пашырэнні за адведзены ліміт часу. Звярніцеся да адміністратара.</translation>
@@ -1308,6 +1311,7 @@
 <translation id="2203088913459920044">У назве можна выкарыстоўваць літары, лічбы і спецыяльныя сімвалы</translation>
 <translation id="220321590587754225">Не ўдалося падключыцца. Паўтарыце спробу.</translation>
 <translation id="2204034823255629767">Прагляд і змяненне таго, што вы набіраеце</translation>
+<translation id="2204387456724731099">Перакласці вылучаны тэкст не ўдалося</translation>
 <translation id="220858061631308971">Увядзіце гэты PIN-код на прыладзе "<ph name="DEVICE_NAME" />":</translation>
 <translation id="2210462644007531147">Не ўдалося завяршыць усталяванне</translation>
 <translation id="2212565012507486665">Дазволіць файлы cookie</translation>
@@ -2014,6 +2018,7 @@
 <translation id="2839032553903800133">Апавяшчэнні заблакіраваны</translation>
 <translation id="2841013758207633010">Час</translation>
 <translation id="2841837950101800123">Пастаўшчык</translation>
+<translation id="2842013086666334835">Увайдзіце ў сетку "<ph name="NETWORK_ID" />"</translation>
 <translation id="2843560154284403323">Каб завяршыць наладку Linux, абнавіце Chrome OS і паўтарыце спробу.</translation>
 <translation id="2844169650293029770">Прылада USB-C (пярэдні порт злева)</translation>
 <translation id="2844809857160214557">Прагляд заданняў друку і кіраванне імі</translation>
@@ -2114,6 +2119,7 @@
 <translation id="2927017729816812676">Сховішча кэша</translation>
 <translation id="2928795416630981206">Дазволена адсочваць становішча камеры</translation>
 <translation id="2931157624143513983">Дапасаваць да меж вобласці друку</translation>
+<translation id="2931342457001070961">Мікрафон не падключаны</translation>
 <translation id="2932085390869194046">Прапанаваць пароль...</translation>
 <translation id="2932483646085333864">Каб пачаць сінхранізацыю, выйдзіце з уліковага запісу, а потым увайдзіце зноў</translation>
 <translation id="2932883381142163287">Паскардзіцца на парушэнне</translation>
@@ -2129,7 +2135,7 @@
 <translation id="2942279350258725020">Паведамленні Android</translation>
 <translation id="2942560570858569904">Чаканне...</translation>
 <translation id="2942581856830209953">Наладзіць гэту старонку</translation>
-<translation id="2943268899142471972">Выберыце сцэнарый Ansible ці рэзервовы файл Crostini</translation>
+<translation id="2943268899142471972">Выберыце Ansible Playbook ці рэзервовы файл Crostini</translation>
 <translation id="2944060181911631861">Адпраўка даных пра выкарыстанне і дыягностыку. Дапамажыце палепшыць функцыянальнасць прылады Android шляхам аўтаматычнай адпраўкі ў Google даных пра дыягностыку, выкарыстанне прылады і праграм. Яны будуць карысныя для паляпшэння стабільнасці сістэмы і праграм і для іншых удасканаленняў. Некаторыя згрупаваныя даныя таксама будуць карысныя для праграм і партнёраў Google, напрыклад распрацоўшчыкаў Android. Калі налада "Дадатковыя дзеянні ў інтэрнэце і праграмах" уключана, адпаведныя даныя могуць захоўвацца ва Уліковым запісе Google. <ph name="BEGIN_LINK1" />Даведацца больш<ph name="END_LINK1" /></translation>
 <translation id="2946054015403765210">Перайсці да файлаў</translation>
 <translation id="2946119680249604491">Дадаць падключэнне</translation>
@@ -2177,6 +2183,7 @@
 <translation id="2996286169319737844">Даныя зашыфраваны з дапамогай фразы-пароля для сінхранізацыі. Шыфраванне не распаўсюджваецца на спосабы аплаты і адрасы з Google Pay.</translation>
 <translation id="2996722619877761919">Карашок па доўгім краі</translation>
 <translation id="2996932914629936323">З усіх сінхранізаваных прылад будзе выдалена гісторыя</translation>
+<translation id="2998267783395280091">Знойдзена сетка</translation>
 <translation id="3000378525979847272">Дазволена: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /></translation>
 <translation id="3000461861112256445">Монафанія</translation>
 <translation id="3001144475369593262">Уліковыя запісы дзіцяці</translation>
@@ -2328,6 +2335,7 @@
 <translation id="3142562627629111859">Новая група</translation>
 <translation id="3143515551205905069">Скасаваць сінхранізацыю</translation>
 <translation id="3143754809889689516">Прайграць з пачатку</translation>
+<translation id="3143937294861726703">Эканомiя памяці ўключана</translation>
 <translation id="3144647712221361880">Адкрыць спасылку як</translation>
 <translation id="3149510190863420837">Праграмы Chrome</translation>
 <translation id="3150693969729403281">Запусціць праверку бяспекі</translation>
@@ -5128,6 +5136,7 @@
 <translation id="5884474295213649357">Гэта ўкладка падключана да прылады USB.</translation>
 <translation id="5885314688092915589">Гэтым профілем будзе кіраваць ваша арганізацыя</translation>
 <translation id="5886009770935151472">Палец 1</translation>
+<translation id="5886384907280980632">Выключыць</translation>
 <translation id="5889282057229379085">Максімальная колькасць прамежкавых ЦС: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5891688036610113830">Прыярытэтныя сеткі Wi-Fi</translation>
 <translation id="5895138241574237353">Перазапусціць</translation>
@@ -5228,6 +5237,7 @@
 <translation id="5975792506968920132">Працэнт зараду акумулятара</translation>
 <translation id="5976160379964388480">Іншыя</translation>
 <translation id="5978277834170881274">&amp;Выкарыстоўваць базавую праверку правапісу</translation>
+<translation id="5978395054855988504">Рэжым эканоміі зараду ўключаны</translation>
 <translation id="5978493744931296692">Адміністратар адключыў іншыя профілі</translation>
 <translation id="5979084224081478209">Праверыць паролі</translation>
 <translation id="5979156418378918004">{NUM_EXTENSIONS,plural, =1{Вы зноў уключылі адно патэнцыйна шкоднае пашырэнне}one{Вы зноў уключылі {NUM_EXTENSIONS} патэнцыйна шкоднае пашырэнне}few{Вы зноў уключылі {NUM_EXTENSIONS} патэнцыйна шкодныя пашырэнні}many{Вы зноў уключылі {NUM_EXTENSIONS} патэнцыйна шкодных пашырэнняў}other{Вы зноў уключылі {NUM_EXTENSIONS} патэнцыйна шкоднага пашырэння}}</translation>
@@ -7743,7 +7753,7 @@
 <translation id="8379991678458444070">Дадаўшы гэту ўкладку ў закладкі, вы будзеце мець да яе хуткі доступ</translation>
 <translation id="8380266723152870797">Назва акна</translation>
 <translation id="8380941800586852976">Небяспечна</translation>
-<translation id="8382715499079447151">Рэжым абароненага прагляду</translation>
+<translation id="8382715499079447151">Абаронены прагляд</translation>
 <translation id="8382913212082956454">Скапіраваць &amp;адрас электроннай пошты</translation>
 <translation id="8383266303049437646"><ph name="BEGIN_PARAGRAPH1" />Паспрабуйце знайсці і выправіць непаладку наступным чынам:
     <ph name="BEGIN_LIST" />
@@ -8440,6 +8450,7 @@
 <translation id="9048745018038487540">Выбраць усе шрыфты</translation>
 <translation id="9050666287014529139">Фраза-пароль</translation>
 <translation id="9052404922357793350">Працягнуць блакіроўку</translation>
+<translation id="90528604757378587">Дзеянні ў фонавым рэжыме і работа некаторых візуальных эфектаў (напрыклад, плаўнага прагортвання) могуць быць абмежаваны.</translation>
 <translation id="9053563360605707198">Друк на абодвух баках</translation>
 <translation id="9055636786322918818">Уключыць шыфраванне RC4. Выкарыстанне гэтага параметра павялічвае рызыкі з-за небяспечнасці шыфраў RC4.</translation>
 <translation id="9056810968620647706">Супадзенняў не знойдзена.</translation>

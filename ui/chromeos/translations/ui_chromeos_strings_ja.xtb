@@ -177,7 +177,6 @@
 <translation id="2500392669976258912">グジャラト語（表音）</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2517472476991765520">スキャン</translation>
-<translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" />件の項目を削除しました</translation>
 <translation id="2534460670861217804">保護された HTTP プロキシ</translation>
 <translation id="2541377937973966830">このフォルダのコンテンツは読み取り専用です。一部の操作は行えません。</translation>
 <translation id="2542049655219295786">Google Table</translation>
@@ -313,6 +312,7 @@
 <translation id="3689865792480713551"><ph name="ACTIVITY_DESCRIPTION" /> をキャンセルします。</translation>
 <translation id="3690128548376345212">ネットワーク <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />、<ph name="NETWORK_NAME" />、未有効化、<ph name="CONNECTION_STATUS" />、電波強度 <ph name="SIGNAL_STRENGTH" />%、詳細</translation>
 <translation id="3691184985318546178">シンハラ語</translation>
+<translation id="3722341589402358578">エラーが発生しました。一部のアイテムはゴミ箱に移されていない可能性があります。</translation>
 <translation id="3726463242007121105">ファイルシステムがサポートされていないため、このデバイスを開くことはできません。</translation>
 <translation id="3727148787322499904">この設定を変更すると、共有しているすべてのネットワークに影響します</translation>
 <translation id="3737576078404241332">サイドバーから削除</translation>
@@ -401,7 +401,6 @@
 <translation id="4527800702232535228">このフォルダは Parallels Desktop と共有されています</translation>
 <translation id="4552678318981539154">追加ストレージを購入</translation>
 <translation id="4552759165874948005"><ph name="NETWORK_TYPE" /> ネットワーク、信号強度 <ph name="SIGNAL_STRENGTH" />%</translation>
-<translation id="4559318885353833501"><ph name="FILE_NAME" />を削除しました</translation>
 <translation id="4559767610552730302">ピンぼけ</translation>
 <translation id="4572815280350369984"><ph name="FILE_TYPE" /> ファイル</translation>
 <translation id="457386861538956877">その他...</translation>

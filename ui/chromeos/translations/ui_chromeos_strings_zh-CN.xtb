@@ -177,7 +177,6 @@
 <translation id="2500392669976258912">古吉拉特语注音</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2517472476991765520">扫描</translation>
-<translation id="2534155362429831547">删除了 <ph name="NUMBER_OF_ITEMS" /> 项</translation>
 <translation id="2534460670861217804">安全的 HTTP 代理</translation>
 <translation id="2541377937973966830">此文件夹中的内容都是处于只读状态，所以不支持某些活动。</translation>
 <translation id="2542049655219295786">Google 表格</translation>
@@ -402,7 +401,6 @@
 <translation id="4527800702232535228">已与 Parallels Desktop 共享此文件夹</translation>
 <translation id="4552678318981539154">购买更多存储空间</translation>
 <translation id="4552759165874948005">“<ph name="NETWORK_TYPE" />”类型的网络，信号强度为 <ph name="SIGNAL_STRENGTH" />%</translation>
-<translation id="4559318885353833501">已删除 <ph name="FILE_NAME" /></translation>
 <translation id="4559767610552730302">焦外成像</translation>
 <translation id="4572815280350369984"><ph name="FILE_TYPE" /> 文件</translation>
 <translation id="457386861538956877">更多...</translation>

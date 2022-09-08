@@ -749,6 +749,7 @@
 <translation id="5283198616748585639">Додај 1 мин</translation>
 <translation id="528468243742722775">Заврши</translation>
 <translation id="5286194356314741248">Скенирање</translation>
+<translation id="5293671101077843611">Нема догађаја данас</translation>
 <translation id="5297423144044956168">Није пронађен ниједан мобилни уређај</translation>
 <translation id="5297704307811127955">Искључено</translation>
 <translation id="5300589172476337783">Прикажи</translation>
@@ -911,7 +912,6 @@
 <translation id="6137566720514957455">Отвара налог за уклањање за корисника <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6141988275892716286">Потврдите преузимање</translation>
 <translation id="6154006699632741460">Периферни уређај није подржан</translation>
-<translation id="6156262341071374681">Проширите на све апликације</translation>
 <translation id="615957422585914272">Прикажи тастатуру на екрану</translation>
 <translation id="6165508094623778733">Сазнајте више</translation>
 <translation id="6166852626429024716">Претражујте уређај, апликације, подешавања, веб...</translation>

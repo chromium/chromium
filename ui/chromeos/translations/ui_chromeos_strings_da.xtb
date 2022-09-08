@@ -177,7 +177,6 @@
 <translation id="2500392669976258912">Gujarati fonetisk</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2517472476991765520">Scan</translation>
-<translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> elementer blev slettet</translation>
 <translation id="2534460670861217804">Sikker HTTP-proxy</translation>
 <translation id="2541377937973966830">Indholdet i denne mappe er skrivebeskyttet. Det er ikke alle aktiviteter, der understøttes.</translation>
 <translation id="2542049655219295786">Google-tabel</translation>
@@ -280,6 +279,7 @@
 <translation id="3414856743105198592">Formatering af de flytbare medier kommer til at slette alle data. Vil du fortsætte?</translation>
 <translation id="3437801641691368414">Oprettelsestidspunkt</translation>
 <translation id="343907260260897561">Polaroidkamera</translation>
+<translation id="3452106565701029351">Frigør fra Genvej til foretrukne filer</translation>
 <translation id="3455931012307786678">Estisk</translation>
 <translation id="3466147780910026086">Din medieenhed scannes...</translation>
 <translation id="3468522857997926824"><ph name="FILE_COUNT" /> billeder blev sikkerhedskopieret til <ph name="BEGIN_LINK" />Google Drev<ph name="END_LINK" /></translation>
@@ -402,7 +402,6 @@
 <translation id="4527800702232535228">Denne mappe er delt med Parallels Desktop</translation>
 <translation id="4552678318981539154">Køb mere lagerplads</translation>
 <translation id="4552759165874948005"><ph name="NETWORK_TYPE" />-netværk, signalstyrke <ph name="SIGNAL_STRENGTH" /> %</translation>
-<translation id="4559318885353833501"><ph name="FILE_NAME" /> er slettet</translation>
 <translation id="4559767610552730302">Bokeh</translation>
 <translation id="4572815280350369984"><ph name="FILE_TYPE" />-fil</translation>
 <translation id="457386861538956877">Flere...</translation>
@@ -692,6 +691,7 @@
 <translation id="6915678159055240887">Chromebox</translation>
 <translation id="6918340160281024199">Amerikansk Workman</translation>
 <translation id="6930242544192836755">Varighed</translation>
+<translation id="6931302001003657424">Fastgør til Genvej til foretrukne filer</translation>
 <translation id="6934241953272494177">Scanner din medienhed...
     <ph name="LINE_BREAK1" />
     Der blev fundet <ph name="FILE_COUNT" /></translation>

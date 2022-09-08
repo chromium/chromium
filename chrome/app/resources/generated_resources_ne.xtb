@@ -481,6 +481,7 @@
 <translation id="145432137617179457">हिज्जे जाँचको सुविधा उपलब्ध भएका भाषाहरू</translation>
 <translation id="1455119378540982311">विन्डोको डिफल्ट आकार</translation>
 <translation id="146000042969587795">यो फ्रेम ब्लक भएको थियो किनकी यसले केही असुरक्षित सामग्री समावेश गर्छ।</translation>
+<translation id="1461041542809785877">प्रदर्शन</translation>
 <translation id="146219525117638703">ONC अवस्था</translation>
 <translation id="146220085323579959">इन्टरनेट विच्छेद भयो। कृपया तपाइँको इन्टरनेट जाँच्नुहोस् र पुन: प्रयास गर्नुहोस्।</translation>
 <translation id="1462850958694534228">परिवर्तन गरिएको आइकनको समीक्षा गर्नुहोस्</translation>
@@ -1784,6 +1785,7 @@
 <translation id="2637400434494156704">PIN मिलेन। तपाईं अब एक पटक मात्र प्रयास गर्न सक्नुहुन्छ।</translation>
 <translation id="2638286699381354126">अपडेट गर्नुहोस्...</translation>
 <translation id="2638662041295312666">प्रोफाइल फोटो</translation>
+<translation id="2640299212685523844">GTK प्रयोग गरियोस्</translation>
 <translation id="264083724974021997">आफ्नो फोनमा जोडिनुहोस् - संवाद</translation>
 <translation id="2642111877055905627">सकर बल</translation>
 <translation id="2643698698624765890">तपाइँका विस्तारहरू विन्डोस मेनुमा क्लिक गरेर व्यवस्थापन गर्नुहोस्।</translation>
@@ -1945,6 +1947,7 @@
 <translation id="2783829359200813069">इन्क्रिप्सनका प्रकारहरू चयन गर्नुहोस्</translation>
 <translation id="2783952358106015700"><ph name="APP_NAME" /> मार्फत आफ्नो सुरक्षा साँचो प्रयोग गर्नुहोस्</translation>
 <translation id="2785873697295365461">फाइल डेस्क्रिप्टरहरू</translation>
+<translation id="2785975315093449168">GTK</translation>
 <translation id="2787022501752539710">लोकल ब्राउजिङ डेटा (बुकमार्क, पासवर्ड, इतिहास आदि) सेभ गरियोस्</translation>
 <translation id="2787354132612937472">—</translation>
 <translation id="2788135150614412178">+</translation>
@@ -2083,6 +2086,7 @@
 <translation id="2902312830803030883">थप कारबाहीहरू</translation>
 <translation id="2903457445916429186">चयन गरिएका वस्तुहरू खोल्नुहोस्</translation>
 <translation id="2903882649406874750"><ph name="HOST" /> लाई सेन्सरहरूमाथि पहुँच राख्न दिनबाट सधै रोक्नुहोस्‌</translation>
+<translation id="2904845070985032877">एनिमेसनहरू पज गर्नुहोस्</translation>
 <translation id="2907619724991574506">सुरुवात युआरएलहरू</translation>
 <translation id="2907798539022650680">'<ph name="NAME" />'मा जडान गर्न सकिएन
         <ph name="DETAILS" />
@@ -2909,6 +2913,7 @@
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">तपाईं र Google</translation>
 <translation id="3722108462506185496">भर्चुअल मेसिन सेवा सुरु गर्ने क्रममा त्रुटि भयो। कृपया फेरि प्रयास गर्नुहोस्।</translation>
+<translation id="3726965532284929944">QT</translation>
 <translation id="3727144509609414201">उपलब्ध WiFi नेटवर्कहरू</translation>
 <translation id="3727187387656390258">पपअप निरीक्षण गर्नुहोस्</translation>
 <translation id="372722114124766626">एक पटक मात्र</translation>
@@ -2988,6 +2993,7 @@
 <translation id="3793588272211751505">{NUM_DAYS,plural, =1{Chrome ले तपाईंको कम्प्युटरमा कुनै हानिकारक सफ्टवेयर भेट्टाएन • १ दिनअघि जाँच गरिएको}other{Chrome ले तपाईंको कम्प्युटरमा कुनै हानिकारक सफ्टवेयर भेट्टाएन • {NUM_DAYS} दिनअघि जाँच गरिएको}}</translation>
 <translation id="379500251094592809">नजिकैका डिभाइससँग सेयर गर्ने सुविधा प्रयोग गर्न दुइटै डिभाइस अनलक गरिएका छन्, एकअर्काको नजिकै छन् र दुवैको ब्लुटुथ अन गरिएको छ भन्ने कुरा सुनिश्चित गर्नुहोस्। तपाईं आफ्ना सम्पर्क ठेगानाहरूको सूचीमा नभएको कुनै Chromebook सँग सेयर गर्दै हुनुहुन्छ भने त्यसमा 'नजिकैका यन्त्रमा फेला पर्ने' सुविधा अन गरिएको छ भन्ने कुरा सुनिश्चित गर्नुहोस् (समय चयन गरेर वस्तुस्थिति क्षेत्र खोल्नुहोस् र त्यसपछि 'नजिकैका यन्त्रमा फेला पर्ने' सुविधा अन गर्नुहोस्) <ph name="LINK_BEGIN" />थप जान्नुहोस्<ph name="LINK_END" /></translation>
 <translation id="379509625511193653">निष्क्रिय छ</translation>
+<translation id="3795766489237825963">एनिमेसनहरू प्ले गर्नुहोस्</translation>
 <translation id="3796648294839530037">मन पर्ने नेटवर्क:</translation>
 <translation id="3797739167230984533">तपाईंको सङ्गठनले तपाईंको <ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> को व्यवस्थापन गर्छ<ph name="END_LINK" /></translation>
 <translation id="3797900183766075808">'<ph name="SEARCH_TERMS" />' का लागि <ph name="SEARCH_ENGINE" /> खोज्नुहोस्</translation>
@@ -3405,6 +3411,7 @@
 <translation id="4181602000363099176">२० गुणा</translation>
 <translation id="4181841719683918333">भाषाहरू</translation>
 <translation id="4184803915913850597">HID डिभाइस (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
+<translation id="4186749321808907788"><ph name="QUERY_NAME" /> - <ph name="DEFAULT_SEARCH_ENGINE_NAME" /> Search</translation>
 <translation id="4187424053537113647"><ph name="APP_NAME" /> सेटअप गर्दै...</translation>
 <translation id="4190828427319282529">किबोर्डको फोकस हाइलाइट गरियोस्</translation>
 <translation id="4193836101014293726">यो प्रोफाइल मेटाउन सकिएन</translation>
@@ -4418,6 +4425,7 @@
 <translation id="5190926251776387065">पोर्ट अन गर्नुहोस्</translation>
 <translation id="5191094172448199359">तपाईंले हाल्नुभएका PIN हरू मेल खाँदैनन्</translation>
 <translation id="5191251636205085390">तेस्रो पक्षीय कुकीहरूलाई प्रतिस्थापन गर्ने प्रविधिका बारेमा जानकारी प्राप्त गर्नुहोस् र तिनलाई नियन्त्रण गर्ने तरिका सिक्नुहोस्</translation>
+<translation id="519185197579575131">QT प्रयोग गरियोस्</translation>
 <translation id="5192062846343383368">आफ्नो सुपरिवेक्षणका सेटिङहरू हेर्न Family Link एप खोल्नुहोस्</translation>
 <translation id="5193988420012215838">तपाईंको क्लिपबोर्डमा प्रतिलिपि गरियो</translation>
 <translation id="5194256020863090856">यो कार्य गर्दा इन्कोग्निटो विन्डोका डेटा मात्र मेटाइन्छ</translation>

@@ -140,6 +140,7 @@
 <translation id="1834891354138622109">Coluna</translation>
 <translation id="1846771122725914429">Ecrã em braille Bluetooth</translation>
 <translation id="1852018405765032699">Tocar no ecrã com quatro dedos irá abrir e fechar os menus do ChromeVox. Estes menus contêm informações úteis sobre comandos e atalhos. Assim que os menus estiverem abertos, pode deslizar rapidamente com um dedo para navegar pelos itens e tocar duas vezes para ativar os mesmos. Para continuar, toque no ecrã com quatro dedos.</translation>
+<translation id="1864430479908918647">Prima Pesquisar + Espaço</translation>
 <translation id="1865601187525349519">Fim do texto</translation>
 <translation id="1876229593313240038">doc</translation>
 <translation id="1902396333223336119">Célula</translation>
@@ -778,6 +779,7 @@
 <translation id="6236061028292614533">Título seguinte</translation>
 <translation id="6254901459154107917">Área de texto editável seguinte</translation>
 <translation id="6259464875943891919">Saiu de <ph name="TYPE" />.</translation>
+<translation id="6280088282605782512">Tocar duas vezes</translation>
 <translation id="6282062888058716985">nav</translation>
 <translation id="6295699829709583154">Teclas essenciais: pesquisa</translation>
 <translation id="6305702903308659374">Reproduzir num volume normal mesmo se o ChromeVox estiver a falar</translation>
@@ -981,6 +983,7 @@
 <translation id="7731785449856576010">Não existe nenhum widget multimédia seguinte.</translation>
 <translation id="7735498529470878067">Explorar através do toque pode ajudar a obter rapidamente uma ideia do que está no ecrã.</translation>
 <translation id="773906353055481349">Prima Pesquisar + Ctrl + Alt com as setas para navegar por célula.</translation>
+<translation id="7746976083433980639"><ph name="ACTION" /> a <ph name="LABEL" /></translation>
 <translation id="7763537600611320912">A transferência de <ph name="FILE_NAME" /> foi iniciada</translation>
 <translation id="7768784765476638775">Selecionar para ativar voz</translation>
 <translation id="7776293189010177726">Abrir menus do ChromeVox</translation>

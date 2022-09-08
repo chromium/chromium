@@ -485,6 +485,7 @@
 <translation id="145432137617179457">맞춤법 검사 언어</translation>
 <translation id="1455119378540982311">미리 설정된 창 크기</translation>
 <translation id="146000042969587795">안전하지 않은 콘텐츠가 포함되어 이 프레임을 차단했습니다.</translation>
+<translation id="1461041542809785877">성능</translation>
 <translation id="146219525117638703">ONC 상태</translation>
 <translation id="146220085323579959">인터넷 연결이 끊겼습니다. 인터넷 연결을 확인한 뒤 다시 시도해 주세요.</translation>
 <translation id="1462850958694534228">아이콘 업데이트 검토</translation>
@@ -1031,6 +1032,7 @@
 <translation id="1931152874660185993">설치된 구성요소가 없습니다.</translation>
 <translation id="1931410639376954712"><ph name="DEVICE_OS" /> 설치 중</translation>
 <translation id="1932098463447129402">시작:</translation>
+<translation id="1933489278505808700">읽고 변경할 수 있도록 허용됨</translation>
 <translation id="1935303383381416800">사용자 위치 확인이 허용됨</translation>
 <translation id="1936157145127842922">폴더 열기</translation>
 <translation id="1936931585862840749">숫자로 인쇄 부수를 표시하세요(1부터 <ph name="MAX_COPIES" />까지).</translation>
@@ -1802,6 +1804,7 @@
 <translation id="2637400434494156704">잘못된 PIN입니다. 앞으로 1번 더 시도할 수 있습니다.</translation>
 <translation id="2638286699381354126">업데이트...</translation>
 <translation id="2638662041295312666">로그인 이미지</translation>
+<translation id="2640299212685523844">GTK 사용</translation>
 <translation id="264083724974021997">휴대전화에 연결 - 대화상자</translation>
 <translation id="2642111877055905627">축구공</translation>
 <translation id="2643698698624765890">창 메뉴에서 확장 프로그램을 클릭하여 확장 프로그램을 관리할 수 있습니다.</translation>
@@ -1963,6 +1966,7 @@
 <translation id="2783829359200813069">암호화 유형 선택</translation>
 <translation id="2783952358106015700"><ph name="APP_NAME" /> 앱에서 보안 키 사용</translation>
 <translation id="2785873697295365461">파일 설명자</translation>
+<translation id="2785975315093449168">GTK</translation>
 <translation id="2787022501752539710">로컬 인터넷 사용 기록(북마크, 비밀번호, 방문 기록 등) 유지</translation>
 <translation id="2787354132612937472">—</translation>
 <translation id="2788135150614412178">+</translation>
@@ -2101,6 +2105,7 @@
 <translation id="2902312830803030883">추가 작업</translation>
 <translation id="2903457445916429186">선택한 항목 열기</translation>
 <translation id="2903882649406874750">항상 <ph name="HOST" />의 센서 액세스 차단</translation>
+<translation id="2904845070985032877">애니메이션 일시중지</translation>
 <translation id="2907619724991574506">시작 URL</translation>
 <translation id="2907798539022650680">'<ph name="NAME" />'에 연결하지 못함: <ph name="DETAILS" />
     서버 메시지: <ph name="SERVER_MSG" /></translation>
@@ -2926,6 +2931,7 @@
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">나와 Google의 관계</translation>
 <translation id="3722108462506185496">가상 머신 서비스를 시작하지 못했습니다. 다시 시도해 주세요.</translation>
+<translation id="3726965532284929944">QT</translation>
 <translation id="3727144509609414201">사용 가능한 Wi-Fi 네트워크</translation>
 <translation id="3727187387656390258">팝업 검사</translation>
 <translation id="372722114124766626">한 번만</translation>
@@ -3005,6 +3011,7 @@
 <translation id="3793588272211751505">{NUM_DAYS,plural, =1{Chrome이 컴퓨터에서 유해 소프트웨어를 발견하지 못함 • 1일 전 확인}other{Chrome이 컴퓨터에서 유해 소프트웨어를 발견하지 못함 • {NUM_DAYS}일 전 확인}}</translation>
 <translation id="379500251094592809">Nearby Share를 사용하려면 두 기기가 모두 잠금 해제되어 있고 서로 가까이에 있으며 블루투스가 켜져 있어야 합니다. 연락처에 없는 Chromebook과 공유하려면 Nearby 전체 공개가 사용 설정되어 있는지 확인하세요. 시간을 선택하여 상태 영역을 열고 Nearby 전체 공개를 사용 설정하면 됩니다. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="379509625511193653">사용 안함</translation>
+<translation id="3795766489237825963">애니메이션 재생</translation>
 <translation id="3796648294839530037">자주 이용하는 네트워크:</translation>
 <translation id="3797739167230984533">조직에서 <ph name="BEGIN_LINK" />관리하는 <ph name="DEVICE_TYPE" /><ph name="END_LINK" />입니다.</translation>
 <translation id="3797900183766075808"><ph name="SEARCH_ENGINE" />에서 '<ph name="SEARCH_TERMS" />' 검색(&amp;S)</translation>
@@ -3421,6 +3428,7 @@
 <translation id="4181602000363099176">20배</translation>
 <translation id="4181841719683918333">언어</translation>
 <translation id="4184803915913850597">HID 기기(<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
+<translation id="4186749321808907788"><ph name="QUERY_NAME" />: <ph name="DEFAULT_SEARCH_ENGINE_NAME" /> 검색</translation>
 <translation id="4187424053537113647"><ph name="APP_NAME" /> 설정 중…</translation>
 <translation id="4190828427319282529">키보드 포커스 강조표시</translation>
 <translation id="4193836101014293726">프로필을 삭제할 수 없습니다</translation>
@@ -3551,6 +3559,7 @@
 <translation id="4310132194679586591">기기에서 이 링크를 여는 데 사용할 앱을 선택합니다</translation>
 <translation id="4310139701823742692">파일 형식이 잘못되었습니다. PPD 파일을 확인하고 다시 시도하세요.</translation>
 <translation id="431076611119798497">세부정보(&amp;D)</translation>
+<translation id="4311284648179069796">읽고 변경할 수 없음</translation>
 <translation id="4312701113286993760">{COUNT,plural, =1{Google 계정 1개}other{Google 계정 <ph name="EXTRA_ACCOUNTS" />개}}</translation>
 <translation id="4312866146174492540">차단(기본값)</translation>
 <translation id="4314497418046265427">휴대전화를 <ph name="DEVICE_TYPE" /> 기기와 연결하여 생산성 향상</translation>
@@ -3742,6 +3751,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4504940961672722399">아이콘을 클릭하거나 <ph name="EXTENSION_SHORTCUT" />을(를) 눌러 확장 프로그램을 사용합니다.</translation>
 <translation id="450552327874992444">이미 추가된 단어입니다.</translation>
 <translation id="4507128560633489176">데이터가 지워졌습니다.</translation>
+<translation id="4507373251891673233"><ph name="HOST" />의 모든 확장 프로그램을 차단했습니다.</translation>
 <translation id="450867954911715010">접근성 설정</translation>
 <translation id="4508765956121923607">소스 보기(&amp;O)</translation>
 <translation id="4509421746503122514">다시 실행하여 업데이트하세요.</translation>
@@ -4015,6 +4025,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4763408175235639573">페이지를 열었을 때 다음 쿠키가 설정됨</translation>
 <translation id="4765524037138975789">{MONTHS,plural, =1{기기는 한 달 동안 저장되며 다음번 연결 시 코드가 필요하지 않습니다. 이는 관리자가 설정한 규칙입니다.}other{기기는 {MONTHS}개월 동안 저장되며 다음번 연결 시 코드가 필요하지 않습니다. 이는 관리자가 설정한 규칙입니다.}}</translation>
 <translation id="4765582662863429759">Android 메시지가 휴대전화의 문자 메시지를 Chromebook으로 전달하도록 허용합니다.</translation>
+<translation id="4766598565665644999">모든 확장 프로그램이 <ph name="HOST" />을 읽고 변경할 수 있습니다.</translation>
 <translation id="4768332406694066911">다음 기관에 사용자의 신원을 확인하는 인증서가 있습니다.</translation>
 <translation id="4770119228883592393">권한 요청됨, ⌘ 키와 Option 키와 아래쪽 화살표 키를 눌러 응답</translation>
 <translation id="4773112038801431077">Linux 업그레이드</translation>
@@ -4432,6 +4443,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5190926251776387065">포트 활성화</translation>
 <translation id="5191094172448199359">입력한 PIN이 일치하지 않음</translation>
 <translation id="5191251636205085390">타사 쿠키를 대체하는 것을 목표로 하는 새로운 기술을 알아보고 관리하세요.</translation>
+<translation id="519185197579575131">QT 사용</translation>
 <translation id="5192062846343383368">Family Link 앱을 열어 감독 설정을 확인합니다.</translation>
 <translation id="5193988420012215838">클립보드에 복사됨</translation>
 <translation id="5194256020863090856">이 작업은 시크릿 창에만 영향을 줍니다.</translation>
@@ -5188,6 +5200,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
     <ph name="LINE_BREAK" />
     이 사진이 Chromebook 로그인 화면과 잠금 화면에 표시됩니다.</translation>
 <translation id="5925147183566400388">인증 업무 준칙 URI</translation>
+<translation id="5927232971138258197">이 확장 프로그램은 <ph name="HOST" />을 읽고 변경할 수 있습니다.</translation>
 <translation id="592740088639760830">컨테이너 중단</translation>
 <translation id="592880897588170157">Chrome에서 PDF 파일을 자동으로 여는 대신 다운로드</translation>
 <translation id="592919310198008711">확장 프로그램을 클릭할 경우</translation>
@@ -5369,6 +5382,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6087960857463881712">멋진 얼굴</translation>
 <translation id="608912389580139775">읽기 목록에 이 페이지를 추가하려면 북마크 아이콘을 클릭하세요.</translation>
 <translation id="6091761513005122595">공유가 성공적으로 마운트되었습니다.</translation>
+<translation id="6093803049406781019">프로필 삭제</translation>
 <translation id="6093888419484831006">업데이트를 취소하는 중...</translation>
 <translation id="6095541101974653012">로그아웃됨</translation>
 <translation id="6095984072944024315">−</translation>
@@ -6293,6 +6307,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6973611239564315524">Debian 10(Buster)으로 업그레이드할 수 있습니다.</translation>
 <translation id="69739764870135975">Google이 기본 검색엔진이기도 하면 더 정확하고 관련성 높은 제안을 볼 수 있습니다.</translation>
 <translation id="697508444536771064">Linux 종료</translation>
+<translation id="6975361011348772931">읽기 및 변경 요청됨</translation>
 <translation id="6978121630131642226">검색엔진</translation>
 <translation id="6979044105893951891">관리 게스트 세션 실행 및 종료</translation>
 <translation id="6979158407327259162">Google Drive</translation>
@@ -7292,6 +7307,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="793531125873261495">가상 머신을 다운로드하는 중 문제가 발생했습니다. 다시 시도해 주세요.</translation>
 <translation id="7935451262452051102"><ph name="PERCENT" />% 완료됨</translation>
 <translation id="7939062555109487992">고급 옵션</translation>
+<translation id="7939073735115504773"><ph name="HOST" />을 읽고 변경하려면 이 확장 프로그램의 아이콘을 클릭하세요.</translation>
 <translation id="7939328347457537652">기기 인증서 관리</translation>
 <translation id="7939412583708276221">계속 다운로드</translation>
 <translation id="7941179291434537290">테더링 준비:</translation>

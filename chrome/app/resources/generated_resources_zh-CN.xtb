@@ -106,6 +106,7 @@
 <translation id="1094607894174825014">有人使用无效偏移值在“<ph name="DEVICE_NAME" />”上请求了读取或写入操作。</translation>
 <translation id="1095761715416917775">确保您可以随时访问自己的同步数据</translation>
 <translation id="109647177154844434">卸载 Parallels Desktop 会删除您的 Windows 映像，包括其所有应用、设置和数据。确定要继续吗？</translation>
+<translation id="1097016918605049747">无法翻译此网页</translation>
 <translation id="1097658378307015415">登录前，请先以访客身份进入，以便激活“<ph name="NETWORK_ID" />”网络。</translation>
 <translation id="1099383081182863812">您能在 <ph name="BEGIN_LINK" />Google Home 应用<ph name="END_LINK" />中看到自己的 Chromecast 吗？</translation>
 <translation id="1099962274138857708">从“<ph name="DEVICE_NAME" />”复制的图片</translation>
@@ -479,6 +480,7 @@
 <translation id="145432137617179457">支持“拼写检查”功能的语言</translation>
 <translation id="1455119378540982311">预设窗口大小</translation>
 <translation id="146000042969587795">此框架因含某些不安全内容而被拦截。</translation>
+<translation id="1461041542809785877">效果</translation>
 <translation id="146219525117638703">ONC 状态</translation>
 <translation id="146220085323579959">互联网连接已断开。请检查您的互联网连接并重试。</translation>
 <translation id="1462850958694534228">查看图标更新</translation>
@@ -776,6 +778,7 @@
 <translation id="1730917990259790240"><ph name="BEGIN_PARAGRAPH1" />要想卸载应用，请依次转到“设置”&gt;“Google Play 商店”&gt;“管理 Android 偏好设置”&gt;“应用”或“应用管理器”，点按您要卸载的应用（您可能需要左右滑动才能找到相应的应用），然后点按“卸载”或“停用”。<ph name="END_PARAGRAPH1" /></translation>
 <translation id="1730989807608739928">滚动至最后一个标签页</translation>
 <translation id="1731911755844941020">正在发送请求...</translation>
+<translation id="1732445923934584865">改为当面询问</translation>
 <translation id="1733383495376208985">使用您自己的<ph name="BEGIN_LINK" />同步密码<ph name="END_LINK" />加密已同步的数据。这并不包括 Google Pay 中的付款方式和地址。</translation>
 <translation id="1734212868489994726">浅蓝色</translation>
 <translation id="1734230530703461088">未能在时限内加载扩展程序。请与您的管理员联系。</translation>
@@ -1300,6 +1303,7 @@
 <translation id="2203088913459920044">名称可以使用字母、数字和特殊字符</translation>
 <translation id="220321590587754225">无法连接。请重试。</translation>
 <translation id="2204034823255629767">读取和更改您输入的任何内容</translation>
+<translation id="2204387456724731099">无法翻译所选内容</translation>
 <translation id="220858061631308971">请在“<ph name="DEVICE_NAME" />”上输入此 PIN 码：</translation>
 <translation id="2210462644007531147">无法完成安装</translation>
 <translation id="2212565012507486665">允许使用 Cookie</translation>
@@ -5121,6 +5125,7 @@
 <translation id="5884474295213649357">此标签页已连接到 USB 设备。</translation>
 <translation id="5885314688092915589">贵组织将管理这份资料</translation>
 <translation id="5886009770935151472">手指 1</translation>
+<translation id="5886384907280980632">立即关闭</translation>
 <translation id="5889282057229379085">中级 CA 证书数目的上限为：<ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5891688036610113830">首选的 WLAN 网络</translation>
 <translation id="5895138241574237353">重新启动</translation>
@@ -5221,6 +5226,7 @@
 <translation id="5975792506968920132">电池充电百分比</translation>
 <translation id="5976160379964388480">其他</translation>
 <translation id="5978277834170881274">使用基本拼写检查(&amp;U)</translation>
+<translation id="5978395054855988504">省电模式已开启</translation>
 <translation id="5978493744931296692">您的管理员已停用其他个人资料</translation>
 <translation id="5979084224081478209">检查密码</translation>
 <translation id="5979156418378918004">{NUM_EXTENSIONS,plural, =1{您重新开启了 1 个可能有害的扩展程序}other{您重新开启了 {NUM_EXTENSIONS} 个可能有害的扩展程序}}</translation>
@@ -5340,6 +5346,7 @@
 <translation id="6087960857463881712">酷炫表情</translation>
 <translation id="608912389580139775">若要将此网页添加到您的阅读清单中，请点击“书签”图标</translation>
 <translation id="6091761513005122595">已成功装载共享资源。</translation>
+<translation id="6093803049406781019">删除个人资料</translation>
 <translation id="6093888419484831006">正在取消更新...</translation>
 <translation id="6095541101974653012">您已退出帐号。</translation>
 <translation id="6095984072944024315">−</translation>
@@ -8427,6 +8434,7 @@
 <translation id="9048745018038487540">选择所有字体</translation>
 <translation id="9050666287014529139">密码</translation>
 <translation id="9052404922357793350">继续拦截</translation>
+<translation id="90528604757378587">后台活动和某些视觉效果（例如流畅滚动）可能会受到限制。</translation>
 <translation id="9053563360605707198">双面打印</translation>
 <translation id="9055636786322918818">强制执行 RC4 加密。选中此选项会令您面临更大的风险，因为 RC4 加密不安全。</translation>
 <translation id="9056810968620647706">未找到匹配项。</translation>

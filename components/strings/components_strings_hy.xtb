@@ -1108,6 +1108,7 @@
 <translation id="3906954721959377182">Պլանշետ</translation>
 <translation id="3909477809443608991"><ph name="URL" />-ն ուզում է նվագարկել պաշտպանված բովանդակությունը։ Google-ը կստուգի ձեր սարքը, և այն կարող է հասանելի դառնալ այս կայքին։</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
+<translation id="3923112503730743940">Oufuku Hagaki (բացիկ)</translation>
 <translation id="3927932062596804919">Մերժել</translation>
 <translation id="393316646445601645">Ինտերնետ և հեռահաղորդակցություն</translation>
 <translation id="3939773374150895049">Օգտագործե՞լ WebAuthn՝ CVC-ի փոխարեն</translation>
@@ -1136,6 +1137,7 @@
 <translation id="4009243425692662128">Ձեր տպած էջերի բովանդակությունը վերլուծության նպատակով ուղարկվում է Google Cloud կամ երրորդ կողմերի։ Օրինակ՝ կարող է ստուգվել գաղտնի տվյալների առկայությունը։</translation>
 <translation id="4010758435855888356">Թույլատրե՞լ հիշողության օգտագործումը</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{{COUNT}-էջանոց PDF փաստաթուղթ}one{{COUNT}-էջանոց PDF փաստաթուղթ}other{{COUNT}-էջանոց PDF փաստաթուղթ}}</translation>
+<translation id="4022639246993848966">3,5x5</translation>
 <translation id="4023431997072828269">Քանի որ այս ձևը ոչ ապահով կապ է օգտագործում, ձեր տեղեկությունները տեսանելի կլինեն բոլորին։</translation>
 <translation id="4025913568718019429">«Կառավարել Google-ի գաղտնիության կարգավորումները» կոճակ։ Սեղմեք Enter՝ ձեր Google հաշվի գաղտնիության կարգավորումները բացելու համար։</translation>
 <translation id="4030383055268325496">&amp;Հետարկել հավելումը</translation>

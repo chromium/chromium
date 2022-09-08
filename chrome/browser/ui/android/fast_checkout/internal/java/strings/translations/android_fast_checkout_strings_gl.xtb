@@ -2,9 +2,11 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="gl">
 <translation id="1068168522143272502">A lista de enderezos e opcións de pago que se deben completar nos fluxos de tramitación de compras está aberta a media pantalla.</translation>
+<translation id="248973266728004341">Engadir nova tarxeta de crédito</translation>
 <translation id="2501278716633472235">Ir atrás</translation>
 <translation id="312532069930005172">Abrir configuración do perfil de Autocompletar</translation>
 <translation id="4401440167302712543">Completa automaticamente a información de envío e de pago cando vaias pagar</translation>
+<translation id="4526274353008646337">Engadir enderezo novo</translation>
 <translation id="567079066552447069">A lista de enderezos e opcións de pago que se deben completar nos fluxos de tramitación de compras está pechada.</translation>
 <translation id="780301667611848630">Non, grazas</translation>
 <translation id="8264703973415044493">A lista de enderezos e opcións de pago que se deben completar nos fluxos de tramitación de compras está aberta a pantalla completa.</translation>
@@ -12,5 +14,6 @@
 <translation id="884264119367021077">Enderezo de envío</translation>
 <translation id="8873105120914375071">Queres pagar máis rápido?</translation>
 <translation id="9032876013752408138">Completar automaticamente a información</translation>
+<translation id="9130271303738808219">Abrir configuración da tarxeta de crédito</translation>
 <translation id="984275831282074731">Métodos de pago</translation>
 </translationbundle>

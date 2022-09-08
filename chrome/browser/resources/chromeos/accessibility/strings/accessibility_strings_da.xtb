@@ -140,6 +140,7 @@
 <translation id="1834891354138622109">Kolonne</translation>
 <translation id="1846771122725914429">Brailleskærm via Bluetooth</translation>
 <translation id="1852018405765032699">Du kan lukke ChromeVox-menuerne ved at trykke på skærmen med fire fingre. Disse menuer indeholder nyttige oplysninger om kommandoer og genveje. Når du har åbnet menuerne, kan du stryge med én finger for at navigere mellem elementer og trykke to gange for interagere med elementer. Tryk på skærmen med fire fingre for at fortsætte.</translation>
+<translation id="1864430479908918647">Tryk på søgetasten+mellemrumstasten</translation>
 <translation id="1865601187525349519">Slutning af ​​tekst</translation>
 <translation id="1876229593313240038">dok</translation>
 <translation id="1902396333223336119">Celle</translation>
@@ -777,6 +778,7 @@
 <translation id="6236061028292614533">Næste overskrift</translation>
 <translation id="6254901459154107917">Næste tekstområde, som kan redigeres</translation>
 <translation id="6259464875943891919"><ph name="TYPE" /> er afsluttet.</translation>
+<translation id="6280088282605782512">Tryk to gange</translation>
 <translation id="6282062888058716985">nav</translation>
 <translation id="6295699829709583154">Vigtige taster: Søgetasten</translation>
 <translation id="6305702903308659374">Afspil ved normal lydstyrke, selvom ChromeVox taler</translation>
@@ -980,6 +982,7 @@
 <translation id="7731785449856576010">Der er ikke flere mediewidgets</translation>
 <translation id="7735498529470878067">Tryk for at høre kan hjælpe dig med hurtigt at få en fornemmelse af, hvad der foregår på skærmen.</translation>
 <translation id="773906353055481349">Tryk på søgetasten+Ctrl+Alt og pilene for at navigere efter celle</translation>
+<translation id="7746976083433980639"><ph name="ACTION" /> til <ph name="LABEL" /></translation>
 <translation id="7763537600611320912">Download af <ph name="FILE_NAME" /> er påbegyndt</translation>
 <translation id="7768784765476638775">Tekstoplæsning</translation>
 <translation id="7776293189010177726">Åbn ChromeVox-menuer</translation>

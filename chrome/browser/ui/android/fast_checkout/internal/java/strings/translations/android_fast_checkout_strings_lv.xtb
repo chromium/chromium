@@ -2,9 +2,11 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="lv">
 <translation id="1068168522143272502">Saraksts ar adresēm un norēķinu iespējām, kas jāaizpilda norēķinu plūsmās, ir atvērts pusekrāna augstumā.</translation>
+<translation id="248973266728004341">Pievienojiet jaunu kredītkarti</translation>
 <translation id="2501278716633472235">Doties atpakaļ</translation>
 <translation id="312532069930005172">Atvērt automātiskās aizpildes profila iestatījumus</translation>
 <translation id="4401440167302712543">Automātiski aizpildiet piegādes un maksājumu informāciju norēķināšanās laikā.</translation>
+<translation id="4526274353008646337">Pievienojiet jaunu adresi</translation>
 <translation id="567079066552447069">Saraksts ar adresēm un norēķinu iespējām, kas jāaizpilda norēķinu plūsmās, ir aizvērts.</translation>
 <translation id="780301667611848630">Nē, paldies</translation>
 <translation id="8264703973415044493">Saraksts ar adresēm un norēķinu iespējām, kas jāaizpilda norēķinu plūsmās, ir atvērts pilna ekrāna augstumā.</translation>
@@ -12,5 +14,6 @@
 <translation id="884264119367021077">Piegādes adrese</translation>
 <translation id="8873105120914375071">Vai vēlaties norēķināties ātrāk?</translation>
 <translation id="9032876013752408138">Automātiski aizpildīt informāciju</translation>
+<translation id="9130271303738808219">Atvērt kredītkartes iestatījumus</translation>
 <translation id="984275831282074731">Maksājumu veidi</translation>
 </translationbundle>
