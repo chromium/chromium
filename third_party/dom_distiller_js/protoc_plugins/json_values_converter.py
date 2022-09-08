@@ -235,7 +235,8 @@ def SetBinaryStdio():
 
 
 def ReadRequestFromStdin():
-  data = sys.stdin.read()
+  stream = sys.stdin if sys.version_info[0] < 3 else sys.stdin.buffer
+  data = stream.read()
   return plugin_protos.PluginRequestFromString(data)
 
 

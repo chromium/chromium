@@ -54,6 +54,7 @@ src/google/protobuf/util/**/*.pb.h
 *.egg-info
 *_pb2.py
 !python/google/protobuf/descriptor_pb2.py
+!python/google/protobuf/compiler/plugin_pb2.py
 python/**/*.egg
 python/.eggs/
 python/.tox

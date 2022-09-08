@@ -20,13 +20,9 @@ sys.path.insert(
 sys.path.insert(
     1, os.path.join(SRC_DIR, 'third_party', 'protobuf', 'third_party', 'six'))
 from google.protobuf.descriptor_pb2 import FieldDescriptorProto
+from google.protobuf.compiler import plugin_pb2
 
 from . import types
-
-sys.path.insert(
-    1, os.path.join(SRC_DIR,
-                    'third_party', 'dom_distiller_js', 'dist', 'python'))
-import plugin_pb2
 
 
 class PluginRequest(object):
@@ -62,8 +58,9 @@ class PluginResponse(object):
     self.proto.error += err + '\n'
 
   def WriteToStdout(self):
-    sys.stdout.write(self.proto.SerializeToString())
-    sys.stdout.flush()
+    stream = sys.stdout if sys.version_info[0] < 3 else sys.stdout.buffer
+    stream.write(self.proto.SerializeToString())
+    stream.flush()
 
 
 class ProtoFile(object):

@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/python.gni")
 import("//third_party/protobuf/proto_library.gni")
 
 group("proto") {
@@ -51,18 +50,22 @@ proto_library("json_values_converter_test_proto") {
   generator_plugin_options = "output_dir=:"
 }
 
-# TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
-python2_action("json_values_converter_tests") {
+action("json_values_converter_tests") {
   _stamp = "$target_gen_dir/json_values_converter_tests.stamp"
+  _actual_file = "$target_gen_dir/test_sample_json_converter.h"
+  _golden_file = "test_sample_json_converter.h.golden"
   deps = [ ":json_values_converter_test_proto" ]
-  inputs = [ "test_sample_json_converter.h.golden" ]
+  inputs = [
+    _actual_file,
+    _golden_file,
+  ]
   outputs = [ _stamp ]
 
   script = "protoc_plugins/json_values_converter_tests.py"
   args = [
     "--stamp",
     rebase_path(_stamp, root_build_dir),
-    rebase_path("$target_gen_dir/test_sample_json_converter.h", root_build_dir),
-    rebase_path("test_sample_json_converter.h.golden", root_build_dir),
+    rebase_path(_actual_file, root_build_dir),
+    rebase_path(_golden_file, root_build_dir),
   ]
 }

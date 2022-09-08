@@ -31,8 +31,8 @@ Steps used to create the current version:
    For future releases, it will be worth looking into which patches still need
    to be applied. In case of conflict, update those patches accordingly and save
    them back in place (i.e. in patches directory).
-8. Generate descriptor_pb2.py using the script "gen_extra_chromium_files" in
-the same directory as this file.
+8. Generate descriptor_pb2.py using the script "gen_extra_chromium_files.py" in
+   the same directory as this file.
 
 9. Add an __init__.py to protobuf/ that adds third_party/six/ to Python path.
 10. Update this file (README.chromium).
