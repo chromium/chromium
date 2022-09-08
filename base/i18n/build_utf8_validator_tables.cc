@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -52,7 +52,7 @@ const char kHelpText[] =
     "Usage: build_utf8_validator_tables [ --help ] [ --output=<file> ]\n";
 
 const char kProlog[] =
-    "// Copyright 2013 The Chromium Authors. All rights reserved.\n"
+    "// Copyright 2013 The Chromium Authors\n"
     "// Use of this source code is governed by a BSD-style license that can "
     "be\n"
     "// found in the LICENSE file.\n"
