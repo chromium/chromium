@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 """Definitions of builders in the tryserver.blink builder group."""
 
-load("//lib/builders.star", "goma", "os")
+load("//lib/builders.star", "goma", "os", "reclient")
 load("//lib/builder_config.star", "builder_config")
 load("//lib/branches.star", "branches")
 load("//lib/try.star", "try_")
@@ -60,6 +60,7 @@ try_.builder(
         retry_failed_shards = False,
     ),
     goma_backend = goma.backend.RBE_PROD,
+    reclient_instance = reclient.instance.DEFAULT_UNTRUSTED,
     main_list_view = "try",
     os = os.LINUX_DEFAULT,
     tryjob = try_.job(

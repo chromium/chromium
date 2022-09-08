@@ -423,8 +423,8 @@
       "pdf_enable_xfa": true,
       "proprietary_codecs": true,
       "symbol_level": 0,
-      "use_goma": true,
-      "use_libfuzzer": true
+      "use_libfuzzer": true,
+      "use_remoteexec": true
     }
   },
   "linux-mbi-mode-per-render-process-host-rel": {
@@ -542,7 +542,7 @@
       "symbol_level": 0,
       "use_bundled_weston": true,
       "use_dummy_lastchange": true,
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "linux-wayland-rel-reclient": {

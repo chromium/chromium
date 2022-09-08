@@ -873,7 +873,7 @@
       # cause them to produce different baselines than the release
       # waterfall bots, and run_web_tests.py can't handle that (by design).
       'linux-blink-optional-highdpi-rel': 'release_bot_blink_minimal_symbols',
-      'linux-blink-rel': 'release_bot_blink_minimal_symbols',
+      'linux-blink-rel': 'release_bot_blink_minimal_symbols_reclient',
       'mac10.13-blink-rel': 'release_bot_blink_minimal_symbols_no_nacl',
       'mac10.14-blink-rel': 'release_bot_blink_minimal_symbols_no_nacl',
       'mac10.15-blink-rel': 'release_bot_blink_minimal_symbols_no_nacl',
@@ -1039,7 +1039,7 @@
       'android-angle-chromium-try': 'gpu_tests_android_release_trybot_arm64_fastbuild',
       'fuchsia-angle-try': 'angle_deqp_release_trybot_fuchsia',
       'ios-angle-try-intel': 'angle_deqp_release_trybot_ios',
-      'linux-angle-chromium-try': 'gpu_tests_release_trybot',
+      'linux-angle-chromium-try': 'gpu_tests_release_trybot_reclient',
       'mac-angle-chromium-try': 'gpu_tests_release_trybot',
       'win-angle-chromium-x64-try': 'gpu_tests_release_trybot',
       'win-angle-chromium-x86-try': 'gpu_tests_release_trybot_x86',
@@ -1159,7 +1159,7 @@
       'linux-lacros-fyi-rel': 'lacros_on_linux_release_trybot',
       'linux-lacros-version-skew-fyi': 'lacros_on_linux_release_not_build_ash_bot',
       'linux-layout-tests-edit-ng': 'release_trybot',
-      'linux-libfuzzer-asan-rel': 'libfuzzer_asan_release_trybot',
+      'linux-libfuzzer-asan-rel': 'libfuzzer_asan_release_trybot_reclient',
       'linux-mbi-mode-per-render-process-host-rel': 'gpu_tests_release_trybot_mbi_mode_per_render_process_host',
       'linux-mbi-mode-per-site-instance-rel': 'gpu_tests_release_trybot_mbi_mode_per_site_instance',
       'linux-perfetto-rel': 'perfetto_release_trybot',
@@ -1168,7 +1168,7 @@
       'linux-rel-ml': 'gpu_tests_release_trybot_no_symbols_use_dummy_lastchange_do_typecheck',
       'linux-rel-warmed': 'gpu_tests_release_trybot_no_symbols_use_dummy_lastchange_code_coverage',
       'linux-viz-rel': 'release_trybot',
-      'linux-wayland-rel': 'gpu_tests_wayland_release_trybot_no_symbols_use_dummy_lastchange_code_coverage',
+      'linux-wayland-rel': 'gpu_tests_wayland_release_trybot_no_symbols_use_dummy_lastchange_code_coverage_reclient',
       'linux-wayland-rel-reclient': 'gpu_tests_wayland_release_trybot_no_symbols_use_dummy_lastchange_code_coverage_reclient',
       'linux-webkit-msan-rel': 'msan_release_bot',
       'linux-wpt-content-shell-fyi-rel': 'release_trybot',
@@ -2865,6 +2865,10 @@
       'gpu_tests', 'release_trybot_minimal_symbols', 'v8_pointer_compression',
     ],
 
+    'gpu_tests_release_trybot_reclient': [
+      'gpu_tests', 'release_trybot_reclient',
+    ],
+
     'gpu_tests_release_trybot_resource_allowlisting': [
       'gpu_tests', 'release_trybot', 'resource_allowlisting',
     ],
@@ -2896,11 +2900,6 @@
 
     'gpu_tests_wayland_release_bot_reclient': [
       'gpu_tests', 'release_bot_reclient', 'linux_wayland', 'ozone_headless',
-    ],
-
-    'gpu_tests_wayland_release_trybot_no_symbols_use_dummy_lastchange_code_coverage': [
-      'gpu_tests', 'release_trybot', 'no_symbols', 'use_dummy_lastchange',
-      'linux_wayland', 'ozone_headless', 'remoting_use_wayland',
     ],
 
     'gpu_tests_wayland_release_trybot_no_symbols_use_dummy_lastchange_code_coverage_reclient': [
@@ -3079,8 +3078,8 @@
       'libfuzzer', 'asan', 'shared_release_bot_reclient', 'chromeos_codecs', 'pdf_xfa', 'disable_nacl', 'optimize_for_fuzzing', 'x86_host', 'v8_simulate_arm', 'disable_seed_corpus',
     ],
 
-    'libfuzzer_asan_release_trybot': [
-      'libfuzzer', 'asan', 'shared_release_trybot', 'chromeos_codecs', 'pdf_xfa', 'disable_nacl', 'optimize_for_fuzzing', 'mojo_fuzzer', 'skip_generate_fuzzer_owners',
+    'libfuzzer_asan_release_trybot_reclient': [
+      'libfuzzer', 'asan', 'shared_release_trybot_reclient', 'chromeos_codecs', 'pdf_xfa', 'disable_nacl', 'optimize_for_fuzzing', 'mojo_fuzzer', 'skip_generate_fuzzer_owners',
     ],
 
     # Meant for local development of fuzzers where no reclient/goma is needed.
@@ -3390,6 +3389,10 @@
       'release_bot_blink',
       'minimal_symbols',
       'disable_nacl',
+    ],
+
+    'release_bot_blink_minimal_symbols_reclient': [
+      'release_bot_blink_reclient', 'minimal_symbols',
     ],
 
     'release_bot_blink_reclient': [
@@ -4601,6 +4604,10 @@
 
     'shared_release_trybot': {
       'mixins': ['shared_release_bot', 'no_symbols', 'dcheck_always_on'],
+    },
+
+    'shared_release_trybot_reclient': {
+      'mixins': ['shared_release_bot_reclient', 'no_symbols', 'dcheck_always_on'],
     },
 
     'skip_generate_fuzzer_owners': {
