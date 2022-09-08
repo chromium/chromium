@@ -9881,11 +9881,11 @@
             ],
             "experiments": [
                 {
-                    "name": "20x500x2",
+                    "name": "20x500x3",
                     "params": {
                         "default-parser-budget": "20ms",
                         "long-parser-budget": "500ms",
-                        "num-yields-with-default-budget": "2"
+                        "num-yields-with-default-budget": "3"
                     },
                     "enable_features": [
                         "TimedHTMLParserBudget"
