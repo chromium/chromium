@@ -27,7 +27,7 @@
 #include "content/public/browser/first_party_sets_handler.h"
 #include "net/base/schemeful_site.h"
 #include "net/first_party_sets/first_party_set_entry.h"
-#include "services/network/public/mojom/first_party_sets.mojom.h"
+#include "net/first_party_sets/public_sets.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
@@ -43,8 +43,7 @@ class CONTENT_EXPORT FirstPartySetsHandlerImpl : public FirstPartySetsHandler {
  public:
   using FlattenedSets =
       base::flat_map<net::SchemefulSite, net::FirstPartySetEntry>;
-  using SetsReadyOnceCallback =
-      base::OnceCallback<void(network::mojom::PublicFirstPartySetsPtr)>;
+  using SetsReadyOnceCallback = base::OnceCallback<void(net::PublicSets)>;
   using PolicyCustomization = FirstPartySetsHandler::PolicyCustomization;
 
   static FirstPartySetsHandlerImpl* GetInstance();
@@ -77,7 +76,7 @@ class CONTENT_EXPORT FirstPartySetsHandlerImpl : public FirstPartySetsHandler {
   // data is not ready yet.
   //
   // Must not be called if First-Party Sets is disabled.
-  [[nodiscard]] absl::optional<network::mojom::PublicFirstPartySetsPtr> GetSets(
+  [[nodiscard]] absl::optional<net::PublicSets> GetSets(
       SetsReadyOnceCallback callback);
 
   // FirstPartySetsHandler
@@ -107,7 +106,7 @@ class CONTENT_EXPORT FirstPartySetsHandlerImpl : public FirstPartySetsHandler {
   // to update the browser's list of First-Party Sets to respect a profile's
   // setting for the per-profile FirstPartySetsOverrides policy.
   static PolicyCustomization ComputeEnterpriseCustomizations(
-      const network::mojom::PublicFirstPartySetsPtr& public_sets,
+      const net::PublicSets& public_sets,
       const FirstPartySetParser::ParsedPolicySetLists& policy);
 
  private:
@@ -117,7 +116,7 @@ class CONTENT_EXPORT FirstPartySetsHandlerImpl : public FirstPartySetsHandler {
                             bool embedder_will_provide_public_sets);
 
   // Sets the public First-Party Sets data. Must be called exactly once.
-  void SetCompleteSets(network::mojom::PublicFirstPartySetsPtr public_sets);
+  void SetCompleteSets(net::PublicSets public_sets);
 
   // Sets `db_helper_`, which will initialize the underlying First-Party Sets
   // database under `user_data_dir`. Must be called exactly once.
@@ -126,10 +125,11 @@ class CONTENT_EXPORT FirstPartySetsHandlerImpl : public FirstPartySetsHandler {
   // Invokes any pending queries.
   void InvokePendingQueries();
 
-  // Returns the list of public First-Party Sets.
+  // Returns the list of public First-Party Sets. This clones the underlying
+  // data.
   //
   // Must be called after the list has been initialized.
-  network::mojom::PublicFirstPartySetsPtr GetSetsSync() const;
+  net::PublicSets GetSetsSync() const;
 
   // TODO(shuuran@chromium.org): Implement the code to clear site state.
   void ClearSiteDataOnChangedSets() const;
@@ -144,8 +144,8 @@ class CONTENT_EXPORT FirstPartySetsHandlerImpl : public FirstPartySetsHandler {
 
   // The public First-Party Sets, after parsing and validation.
   //
-  // This is nullptr until all of the required inputs have been received.
-  network::mojom::PublicFirstPartySetsPtr public_sets_
+  // This is nullopt until all of the required inputs have been received.
+  absl::optional<net::PublicSets> public_sets_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   bool enabled_ GUARDED_BY_CONTEXT(sequence_checker_);

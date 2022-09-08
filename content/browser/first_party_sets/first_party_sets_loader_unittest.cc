@@ -21,7 +21,7 @@
 #include "content/browser/first_party_sets/local_set_declaration.h"
 #include "net/base/schemeful_site.h"
 #include "net/first_party_sets/first_party_set_entry.h"
-#include "services/network/public/mojom/first_party_sets.mojom.h"
+#include "net/first_party_sets/public_sets.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -45,9 +45,9 @@ MATCHER_P(SerializesTo, want, "") {
 }
 
 MATCHER_P(PublicSetsAre, sets_matcher, "") {
-  const network::mojom::PublicFirstPartySetsPtr& public_sets = arg;
+  const net::PublicSets& public_sets = arg;
   const base::flat_map<net::SchemefulSite, net::FirstPartySetEntry>& sets =
-      public_sets->sets;
+      public_sets.entries();
   return testing::ExplainMatchResult(sets_matcher, sets, result_listener);
 }
 
@@ -70,13 +70,11 @@ class FirstPartySetsLoaderTest : public ::testing::Test {
 
   FirstPartySetsLoader& loader() { return loader_; }
 
-  network::mojom::PublicFirstPartySetsPtr WaitAndGetResult() {
-    return future_.Take();
-  }
+  net::PublicSets WaitAndGetResult() { return future_.Take(); }
 
  private:
   base::test::TaskEnvironment env_;
-  base::test::TestFuture<network::mojom::PublicFirstPartySetsPtr> future_;
+  base::test::TestFuture<net::PublicSets> future_;
   FirstPartySetsLoader loader_;
 };
 

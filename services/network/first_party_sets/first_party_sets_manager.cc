@@ -24,8 +24,8 @@
 #include "net/base/schemeful_site.h"
 #include "net/first_party_sets/first_party_set_entry.h"
 #include "net/first_party_sets/first_party_set_metadata.h"
+#include "net/first_party_sets/public_sets.h"
 #include "net/first_party_sets/same_party_context.h"
-#include "services/network/public/mojom/first_party_sets.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace network {
@@ -45,7 +45,7 @@ FirstPartySetsManager::FirstPartySetsManager(bool enabled)
           enabled ? std::make_unique<base::circular_deque<base::OnceClosure>>()
                   : nullptr) {
   if (!enabled)
-    SetCompleteSets(mojom::PublicFirstPartySets::New());
+    SetCompleteSets(net::PublicSets());
 }
 
 FirstPartySetsManager::~FirstPartySetsManager() {
@@ -154,29 +154,9 @@ absl::optional<net::FirstPartySetEntry> FirstPartySetsManager::FindEntry(
   DCHECK(sets_.has_value());
   const base::ElapsedTimer timer;
 
-  net::SchemefulSite normalized_site = site;
-  normalized_site.ConvertWebSocketToHttp();
-
-  absl::optional<net::FirstPartySetEntry> entry;
-
-  if (is_enabled()) {
-    // Check if `normalized_site` can be found in the customizations first.
-    // If not, fall back to look up in `sets_`.
-    if (const auto customizations_it =
-            fps_context_config.customizations().find(normalized_site);
-        customizations_it != fps_context_config.customizations().end()) {
-      entry = customizations_it->second;
-    } else {
-      const auto canonical_it = aliases_.find(normalized_site);
-      const net::SchemefulSite& canonical_site = canonical_it == aliases_.end()
-                                                     ? normalized_site
-                                                     : canonical_it->second;
-      if (const auto sets_it = sets_->find(canonical_site);
-          sets_it != sets_->end()) {
-        entry = sets_it->second;
-      }
-    }
-  }
+  absl::optional<net::FirstPartySetEntry> entry =
+      is_enabled() ? sets_->FindEntry(site, &fps_context_config)
+                   : absl::nullopt;
 
   UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
       "Cookie.FirstPartySets.FindOwner.Latency", timer.Elapsed(),
@@ -260,13 +240,11 @@ void FirstPartySetsManager::InvokePendingQueries() {
   pending_queries_ = nullptr;
 }
 
-void FirstPartySetsManager::SetCompleteSets(
-    mojom::PublicFirstPartySetsPtr public_sets) {
+void FirstPartySetsManager::SetCompleteSets(net::PublicSets public_sets) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (sets_.has_value())
     return;
-  sets_ = std::move(public_sets->sets);
-  aliases_ = std::move(public_sets->aliases);
+  sets_ = std::move(public_sets);
   InvokePendingQueries();
 }
 

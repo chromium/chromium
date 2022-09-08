@@ -4,11 +4,13 @@
 
 #include "services/network/public/cpp/first_party_sets_mojom_traits.h"
 
+#include "base/containers/flat_map.h"
 #include "base/test/gtest_util.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "net/base/schemeful_site.h"
 #include "net/first_party_sets/first_party_set_entry.h"
 #include "net/first_party_sets/first_party_set_metadata.h"
+#include "net/first_party_sets/public_sets.h"
 #include "services/network/public/mojom/first_party_sets.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -113,6 +115,33 @@ TEST(FirstPartySetsTraitsTest, Roundtrips_FirstPartySetMetadata) {
   EXPECT_EQ(round_tripped.top_frame_entry(), top_frame_entry);
 
   EXPECT_EQ(round_tripped, make_metadata());
+}
+
+TEST(FirstPartySetsTraitsTest, RoundTrips_PublicFirstPartySets) {
+  net::SchemefulSite a(GURL("https://a.test"));
+  net::SchemefulSite b(GURL("https://b.test"));
+  net::SchemefulSite b_cctld(GURL("https://b.cctld"));
+  net::SchemefulSite c(GURL("https://c.test"));
+
+  const net::PublicSets original(
+      {
+          {a,
+           net::FirstPartySetEntry(a, net::SiteType::kPrimary, absl::nullopt)},
+          {b, net::FirstPartySetEntry(a, net::SiteType::kAssociated, 0)},
+          {c,
+           net::FirstPartySetEntry(a, net::SiteType::kService, absl::nullopt)},
+      },
+      {{b_cctld, b}});
+
+  net::PublicSets round_tripped;
+
+  EXPECT_TRUE(
+      mojo::test::SerializeAndDeserialize<network::mojom::PublicFirstPartySets>(
+          original, round_tripped));
+
+  EXPECT_EQ(original, round_tripped);
+  EXPECT_FALSE(round_tripped.entries().empty());
+  EXPECT_FALSE(round_tripped.aliases().empty());
 }
 
 }  // namespace

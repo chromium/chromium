@@ -6,6 +6,7 @@
 
 #include <iterator>
 #include <set>
+#include <sstream>
 #include <utility>
 #include <vector>
 
@@ -21,7 +22,7 @@
 #include "content/browser/first_party_sets/local_set_declaration.h"
 #include "net/base/schemeful_site.h"
 #include "net/first_party_sets/first_party_set_entry.h"
-#include "services/network/public/mojom/first_party_sets.mojom.h"
+#include "net/first_party_sets/public_sets.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
@@ -156,11 +157,8 @@ void FirstPartySetsLoader::MaybeFinishLoading() {
   if (!HasAllInputs())
     return;
   ApplyManuallySpecifiedSet();
-  network::mojom::PublicFirstPartySetsPtr public_sets =
-      network::mojom::PublicFirstPartySets::New();
-  public_sets->sets = std::move(sets_);
-  public_sets->aliases = std::move(aliases_);
-  std::move(on_load_complete_).Run(std::move(public_sets));
+  std::move(on_load_complete_)
+      .Run(net::PublicSets(std::move(sets_), std::move(aliases_)));
 }
 
 bool FirstPartySetsLoader::HasAllInputs() const {

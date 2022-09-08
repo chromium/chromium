@@ -5,10 +5,12 @@
 #ifndef SERVICES_NETWORK_PUBLIC_CPP_FIRST_PARTY_SETS_MOJOM_TRAITS_H_
 #define SERVICES_NETWORK_PUBLIC_CPP_FIRST_PARTY_SETS_MOJOM_TRAITS_H_
 
+#include "base/containers/flat_map.h"
 #include "mojo/public/cpp/bindings/enum_traits.h"
 #include "net/base/schemeful_site.h"
 #include "net/first_party_sets/first_party_set_entry.h"
 #include "net/first_party_sets/first_party_set_metadata.h"
+#include "net/first_party_sets/public_sets.h"
 #include "net/first_party_sets/same_party_context.h"
 #include "services/network/public/mojom/first_party_sets.mojom-shared.h"
 
@@ -99,6 +101,24 @@ struct COMPONENT_EXPORT(FIRST_PARTY_SETS_MOJOM_TRAITS)
 
   static bool Read(network::mojom::FirstPartySetMetadataDataView metadata,
                    net::FirstPartySetMetadata* out);
+};
+
+template <>
+struct COMPONENT_EXPORT(FIRST_PARTY_SETS_MOJOM_TRAITS)
+    StructTraits<network::mojom::PublicFirstPartySetsDataView,
+                 net::PublicSets> {
+  static const base::flat_map<net::SchemefulSite, net::FirstPartySetEntry>&
+  sets(const net::PublicSets& p) {
+    return p.entries();
+  }
+
+  static const base::flat_map<net::SchemefulSite, net::SchemefulSite>& aliases(
+      const net::PublicSets& p) {
+    return p.aliases();
+  }
+
+  static bool Read(network::mojom::PublicFirstPartySetsDataView public_sets,
+                   net::PublicSets* out_public_sets);
 };
 
 }  // namespace mojo

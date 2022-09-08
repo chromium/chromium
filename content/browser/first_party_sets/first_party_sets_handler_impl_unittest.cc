@@ -18,7 +18,7 @@
 #include "content/public/browser/first_party_sets_handler.h"
 #include "net/base/schemeful_site.h"
 #include "net/first_party_sets/first_party_set_entry.h"
-#include "services/network/public/mojom/first_party_sets.mojom.h"
+#include "net/first_party_sets/public_sets.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -45,9 +45,9 @@ MATCHER_P(SerializesTo, want, "") {
 }
 
 MATCHER_P(PublicSetsAre, sets_matcher, "") {
-  const network::mojom::PublicFirstPartySetsPtr& public_sets = arg;
+  const net::PublicSets& public_sets = arg;
   const base::flat_map<net::SchemefulSite, net::FirstPartySetEntry>& sets =
-      public_sets->sets;
+      public_sets.entries();
   return testing::ExplainMatchResult(sets_matcher, sets, result_listener);
 }
 
@@ -107,20 +107,13 @@ FirstPartySetParser::ParsedPolicySetLists MakeParsedPolicyFromMap(
   return result;
 }
 
-network::mojom::PublicFirstPartySetsPtr GetSetsAndWait() {
-  base::test::TestFuture<network::mojom::PublicFirstPartySetsPtr> future;
-  absl::optional<network::mojom::PublicFirstPartySetsPtr> result =
+net::PublicSets GetSetsAndWait() {
+  base::test::TestFuture<net::PublicSets> future;
+  absl::optional<net::PublicSets> result =
       FirstPartySetsHandlerImpl::GetInstance()->GetSets(future.GetCallback());
   return result.has_value() ? std::move(result).value() : future.Take();
 }
 
-network::mojom::PublicFirstPartySetsPtr MakePublicFirstPartySets(
-    FlattenedSets sets) {
-  network::mojom::PublicFirstPartySetsPtr public_sets =
-      network::mojom::PublicFirstPartySets::New();
-  public_sets->sets = std::move(sets);
-  return public_sets;
-}
 }  // namespace
 
 TEST(FirstPartySetsHandlerImpl, ValidateEnterprisePolicy_ValidPolicy) {
@@ -365,7 +358,7 @@ TEST_F(FirstPartySetsHandlerImplEnabledTest,
       ->SetEmbedderWillProvidePublicSetsForTesting(true);
 
   // Call GetSets before the sets are ready, and before Init has been called.
-  base::test::TestFuture<network::mojom::PublicFirstPartySetsPtr> future;
+  base::test::TestFuture<net::PublicSets> future;
   EXPECT_EQ(
       FirstPartySetsHandlerImpl::GetInstance()->GetSets(future.GetCallback()),
       absl::nullopt);
@@ -526,20 +519,25 @@ TEST_F(FirstPartySetsHandlerGetCustomizationForPolicyTest,
 }
 
 TEST(FirstPartySetsProfilePolicyCustomizations, EmptyPolicySetLists) {
-  EXPECT_THAT(
-      FirstPartySetsHandlerImpl::ComputeEnterpriseCustomizations(
-          MakePublicFirstPartySets(MakeFlattenedSetsFromMap(
-              {{"https://primary1.test", {"https://associatedsite1.test"}}})),
-          MakeParsedPolicyFromMap({}, {})),
-      FirstPartySetsHandlerImpl::PolicyCustomization());
+  EXPECT_THAT(FirstPartySetsHandlerImpl::ComputeEnterpriseCustomizations(
+                  net::PublicSets(
+                      /*entries=*/MakeFlattenedSetsFromMap(
+                          {{"https://primary1.test",
+                            {"https://associatedsite1.test"}}}),
+                      /*aliases=*/{}),
+                  MakeParsedPolicyFromMap({}, {})),
+              FirstPartySetsHandlerImpl::PolicyCustomization());
 }
 
 TEST(FirstPartySetsProfilePolicyCustomizations,
      Replacements_NoIntersection_NoRemoval) {
   PolicyCustomization customization =
       FirstPartySetsHandlerImpl::ComputeEnterpriseCustomizations(
-          MakePublicFirstPartySets(MakeFlattenedSetsFromMap(
-              {{"https://primary1.test", {"https://associatedsite1.test"}}})),
+          net::PublicSets(
+              /*entries=*/MakeFlattenedSetsFromMap(
+                  {{"https://primary1.test",
+                    {"https://associatedsite1.test"}}}),
+              /*aliases=*/{}),
           MakeParsedPolicyFromMap(
               /*replacements=*/{{"https://primary2.test",
                                  {"https://associatedsite2.test"}}},
@@ -562,10 +560,12 @@ TEST(FirstPartySetsProfilePolicyCustomizations,
      Replacements_ReplacesExistingAssociatedSite_RemovedFromFormerSet) {
   PolicyCustomization customization =
       FirstPartySetsHandlerImpl::ComputeEnterpriseCustomizations(
-          MakePublicFirstPartySets(
-              MakeFlattenedSetsFromMap({{"https://primary1.test",
-                                         {"https://associatedsite1a.test",
-                                          "https://associatedsite1b.test"}}})),
+          net::PublicSets(
+              /*entries=*/MakeFlattenedSetsFromMap(
+                  {{"https://primary1.test",
+                    {"https://associatedsite1a.test",
+                     "https://associatedsite1b.test"}}}),
+              /*aliases=*/{}),
           MakeParsedPolicyFromMap(
               /*replacements=*/{{"https://primary2.test",
                                  {"https://associatedsite1b.test"}}},
@@ -588,10 +588,12 @@ TEST(FirstPartySetsProfilePolicyCustomizations,
      Replacements_ReplacesExistingPrimary_RemovesFormerAssociatedSites) {
   PolicyCustomization customization =
       FirstPartySetsHandlerImpl::ComputeEnterpriseCustomizations(
-          MakePublicFirstPartySets(
-              MakeFlattenedSetsFromMap({{"https://primary1.test",
-                                         {"https://associatedsite1a.test",
-                                          "https://associatedsite1b.test"}}})),
+          net::PublicSets(
+              /*entries=*/MakeFlattenedSetsFromMap(
+                  {{"https://primary1.test",
+                    {"https://associatedsite1a.test",
+                     "https://associatedsite1b.test"}}}),
+              /*aliases=*/{}),
           MakeParsedPolicyFromMap(
               /*replacements=*/{{"https://primary1.test",
                                  {"https://associatedsite2.test"}}},
@@ -617,8 +619,11 @@ TEST(FirstPartySetsProfilePolicyCustomizations,
      Replacements_ReplacesExistingAssociatedSite_RemovesSingletons) {
   PolicyCustomization customization =
       FirstPartySetsHandlerImpl::ComputeEnterpriseCustomizations(
-          MakePublicFirstPartySets(MakeFlattenedSetsFromMap(
-              {{"https://primary1.test", {"https://associatedsite1.test"}}})),
+          net::PublicSets(
+              /*entries=*/MakeFlattenedSetsFromMap(
+                  {{"https://primary1.test",
+                    {"https://associatedsite1.test"}}}),
+              /*aliases=*/{}),
           MakeParsedPolicyFromMap(
               /*replacements=*/{{"https://primary3.test",
                                  {"https://associatedsite1.test"}}},
@@ -642,8 +647,11 @@ TEST(FirstPartySetsProfilePolicyCustomizations,
      Additions_NoIntersection_AddsWithoutUpdating) {
   PolicyCustomization customization =
       FirstPartySetsHandlerImpl::ComputeEnterpriseCustomizations(
-          MakePublicFirstPartySets(MakeFlattenedSetsFromMap(
-              {{"https://primary1.test", {"https://associatedsite1.test"}}})),
+          net::PublicSets(
+              /*entries=*/MakeFlattenedSetsFromMap(
+                  {{"https://primary1.test",
+                    {"https://associatedsite1.test"}}}),
+              /*aliases=*/{}),
           MakeParsedPolicyFromMap(
               /*replacements=*/{},
               /*additions=*/{{"https://primary2.test",
@@ -668,8 +676,11 @@ TEST(
     Additions_PolicyPrimaryIsExistingAssociatedSite_PolicySetAbsorbsExistingSet) {
   PolicyCustomization customization =
       FirstPartySetsHandlerImpl::ComputeEnterpriseCustomizations(
-          MakePublicFirstPartySets(MakeFlattenedSetsFromMap(
-              {{"https://primary1.test", {"https://associatedsite2.test"}}})),
+          net::PublicSets(
+              /*entries=*/MakeFlattenedSetsFromMap(
+                  {{"https://primary1.test",
+                    {"https://associatedsite2.test"}}}),
+              /*aliases=*/{}),
           MakeParsedPolicyFromMap(
               /*replacements=*/{},
               /*additions=*/{{"https://associatedsite2.test",
@@ -704,10 +715,12 @@ TEST(
     Additions_PolicyPrimaryIsExistingPrimary_PolicySetAbsorbsExistingAssociatedSites) {
   PolicyCustomization customization =
       FirstPartySetsHandlerImpl::ComputeEnterpriseCustomizations(
-          MakePublicFirstPartySets(
-              MakeFlattenedSetsFromMap({{"https://primary1.test",
-                                         {"https://associatedsite1.test",
-                                          "https://associatedsite3.test"}}})),
+          net::PublicSets(
+              /*entries=*/MakeFlattenedSetsFromMap(
+                  {{"https://primary1.test",
+                    {"https://associatedsite1.test",
+                     "https://associatedsite3.test"}}}),
+              /*aliases=*/{}),
           MakeParsedPolicyFromMap(
               /*replacements=*/{},
               /*additions=*/{{"https://primary1.test",
@@ -748,8 +761,10 @@ TEST(FirstPartySetsProfilePolicyCustomizations,
   // sets are unaffected.
   EXPECT_THAT(
       FirstPartySetsHandlerImpl::ComputeEnterpriseCustomizations(
-          MakePublicFirstPartySets(MakeFlattenedSetsFromMap(
-              {{"https://primary1.test", {"https://primary2.test"}}})),
+          net::PublicSets(
+              /*entries=*/MakeFlattenedSetsFromMap(
+                  {{"https://primary1.test", {"https://primary2.test"}}}),
+              /*aliases=*/{}),
           FirstPartySetParser::ParsedPolicySetLists(
               /*replacement_list=*/{},
               {
@@ -825,8 +840,10 @@ TEST(FirstPartySetsProfilePolicyCustomizations,
   // sets are unaffected.
   EXPECT_THAT(
       FirstPartySetsHandlerImpl::ComputeEnterpriseCustomizations(
-          MakePublicFirstPartySets(MakeFlattenedSetsFromMap(
-              {{"https://primary2.test", {"https://primary1.test"}}})),
+          net::PublicSets(
+              /*entries=*/MakeFlattenedSetsFromMap(
+                  {{"https://primary2.test", {"https://primary1.test"}}}),
+              /*aliases=*/{}),
           FirstPartySetParser::ParsedPolicySetLists(
               /*replacement_list=*/{},
               {
@@ -891,10 +908,12 @@ TEST(FirstPartySetsProfilePolicyCustomizations,
      ReplacementsAndAdditions_SetListsOverlapWithSameExistingSet) {
   PolicyCustomization customization =
       FirstPartySetsHandlerImpl::ComputeEnterpriseCustomizations(
-          MakePublicFirstPartySets(
-              MakeFlattenedSetsFromMap({{"https://primary1.test",
-                                         {"https://associatedsite1.test",
-                                          "https://associatedsite2.test"}}})),
+          net::PublicSets(
+              /*entries=*/MakeFlattenedSetsFromMap(
+                  {{"https://primary1.test",
+                    {"https://associatedsite1.test",
+                     "https://associatedsite2.test"}}}),
+              /*aliases=*/{}),
           MakeParsedPolicyFromMap(
               /*replacements=*/{{"https://primary0.test",
                                  {"https://associatedsite1.test"}}},

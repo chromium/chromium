@@ -13,7 +13,7 @@
 #include "content/browser/first_party_sets/first_party_set_parser.h"
 #include "content/browser/first_party_sets/local_set_declaration.h"
 #include "content/common/content_export.h"
-#include "services/network/public/mojom/first_party_sets.mojom-forward.h"
+#include "net/first_party_sets/public_sets.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
@@ -25,8 +25,7 @@ namespace content {
 // `SetManuallySpecifiedSet`.
 class CONTENT_EXPORT FirstPartySetsLoader {
  public:
-  using LoadCompleteOnceCallback =
-      base::OnceCallback<void(network::mojom::PublicFirstPartySetsPtr)>;
+  using LoadCompleteOnceCallback = base::OnceCallback<void(net::PublicSets)>;
   using FlattenedSets = FirstPartySetParser::SetsMap;
   using SingleSet = FirstPartySetParser::SingleSet;
 

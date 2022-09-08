@@ -52,6 +52,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "net/base/features.h"
+#include "net/first_party_sets/public_sets.h"
 #include "net/log/net_log_util.h"
 #include "sandbox/policy/features.h"
 #include "services/cert_verifier/cert_verifier_service_factory.h"
@@ -621,13 +622,11 @@ network::mojom::NetworkService* GetNetworkService() {
       }
 
       if (FirstPartySetsHandlerImpl::GetInstance()->IsEnabled()) {
-        if (absl::optional<network::mojom::PublicFirstPartySetsPtr> sets =
+        if (absl::optional<net::PublicSets> sets =
                 FirstPartySetsHandlerImpl::GetInstance()->GetSets(
-                    base::BindOnce(
-                        [](network::mojom::PublicFirstPartySetsPtr sets) {
-                          GetNetworkService()->SetFirstPartySets(
-                              std::move(sets));
-                        }));
+                    base::BindOnce([](net::PublicSets sets) {
+                      GetNetworkService()->SetFirstPartySets(std::move(sets));
+                    }));
             sets.has_value()) {
           g_network_service_remote->get()->SetFirstPartySets(
               std::move(sets.value()));

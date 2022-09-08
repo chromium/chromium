@@ -29,7 +29,7 @@
 #include "content/public/common/content_client.h"
 #include "net/base/schemeful_site.h"
 #include "net/first_party_sets/first_party_set_entry.h"
-#include "services/network/public/mojom/first_party_sets.mojom.h"
+#include "net/first_party_sets/public_sets.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
@@ -74,19 +74,20 @@ void UpdateCustomizationMap(
 void AddIfPolicySetOverlaps(
     const net::SchemefulSite& site,
     size_t policy_set_index,
-    const FlattenedSets& existing_sets,
+    const net::PublicSets& existing_sets,
     base::flat_map<net::SchemefulSite, base::flat_set<size_t>>&
         policy_set_overlaps) {
   // Check `site` for membership in `existing_sets`.
-  if (auto it = existing_sets.find(site); it != existing_sets.end()) {
+  if (auto entry = existing_sets.FindEntry(site, /*config=*/nullptr);
+      entry.has_value()) {
     // Add the index of `site`'s policy set to the list of policy set indices
     // that also overlap with site_owner.
-    policy_set_overlaps[it->second.primary()].insert(policy_set_index);
+    policy_set_overlaps[entry->primary()].insert(policy_set_index);
   }
 }
 
 std::vector<SingleSet> NormalizeAdditionSets(
-    const network::mojom::PublicFirstPartySetsPtr& public_sets,
+    const net::PublicSets& public_sets,
     const std::vector<SingleSet>& addition_sets) {
   // Create a mapping from an owner site in `existing_sets` to all policy sets
   // that intersect with the set that it owns.
@@ -94,7 +95,7 @@ std::vector<SingleSet> NormalizeAdditionSets(
       policy_set_overlaps;
   for (size_t set_idx = 0; set_idx < addition_sets.size(); set_idx++) {
     for (const auto& site_and_entry : addition_sets[set_idx]) {
-      AddIfPolicySetOverlaps(site_and_entry.first, set_idx, public_sets->sets,
+      AddIfPolicySetOverlaps(site_and_entry.first, set_idx, public_sets,
                              policy_set_overlaps);
     }
   }
@@ -174,7 +175,7 @@ void FirstPartySetsHandlerImpl::GetCustomizationForPolicy(
         callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   PolicyCustomization customization;
-  if (!public_sets_.is_null()) {
+  if (public_sets_.has_value()) {
     std::move(callback).Run(GetCustomizationForPolicyInternal(policy));
     return;
   }
@@ -191,7 +192,7 @@ void FirstPartySetsHandlerImpl::GetCustomizationForPolicy(
 
 FirstPartySetsHandlerImpl::PolicyCustomization
 FirstPartySetsHandlerImpl::ComputeEnterpriseCustomizations(
-    const network::mojom::PublicFirstPartySetsPtr& public_sets,
+    const net::PublicSets& public_sets,
     const FirstPartySetParser::ParsedPolicySetLists& policy) {
   // Maps a site to its new entry if it has one.
   base::flat_map<net::SchemefulSite, absl::optional<net::FirstPartySetEntry>>
@@ -216,10 +217,11 @@ FirstPartySetsHandlerImpl::ComputeEnterpriseCustomizations(
   base::flat_map<net::SchemefulSite, net::FirstPartySetEntry>
       addition_intersected_owners;
   for (const auto& [new_member, new_entry] : flattened_additions) {
-    if (const auto entry = public_sets->sets.find(new_member);
-        entry != public_sets->sets.end()) {
+    if (const auto entry =
+            public_sets.FindEntry(new_member, /*config=*/nullptr);
+        entry.has_value()) {
       // Found an overlap with the existing list of sets.
-      addition_intersected_owners.emplace(entry->second.primary(), new_entry);
+      addition_intersected_owners.emplace(entry->primary(), new_entry);
     }
   }
 
@@ -229,13 +231,12 @@ FirstPartySetsHandlerImpl::ComputeEnterpriseCustomizations(
   for (const auto& [member, set_entry] : flattened_replacements) {
     if (member == set_entry.primary())
       continue;
-    if (auto entry = public_sets->sets.find(member);
-        entry != public_sets->sets.end() && entry->second.primary() != member) {
-      const net::FirstPartySetEntry& existing_entry = entry->second;
-      if (!addition_intersected_owners.contains(existing_entry.primary()) &&
-          !flattened_additions.contains(existing_entry.primary()) &&
-          !flattened_replacements.contains(existing_entry.primary())) {
-        potential_singletons[existing_entry.primary()].insert(member);
+    if (auto existing_entry = public_sets.FindEntry(member, /*config=*/nullptr);
+        existing_entry.has_value() && existing_entry->primary() != member) {
+      if (!addition_intersected_owners.contains(existing_entry->primary()) &&
+          !flattened_additions.contains(existing_entry->primary()) &&
+          !flattened_replacements.contains(existing_entry->primary())) {
+        potential_singletons[existing_entry->primary()].insert(member);
       }
     }
   }
@@ -245,8 +246,8 @@ FirstPartySetsHandlerImpl::ComputeEnterpriseCustomizations(
   // that those members are involved in).
   base::flat_set<net::SchemefulSite> replaced_existing_owners;
   for (const auto& [site, unused_owner] : flattened_replacements) {
-    if (const auto entry = public_sets->sets.find(site);
-        entry != public_sets->sets.end() && entry->second.primary() == site) {
+    if (const auto entry = public_sets.FindEntry(site, /*config=*/nullptr);
+        entry.has_value() && entry->primary() == site) {
       // Site was an owner in the existing sets.
       bool inserted = replaced_existing_owners.emplace(site).second;
       DCHECK(inserted);
@@ -256,7 +257,7 @@ FirstPartySetsHandlerImpl::ComputeEnterpriseCustomizations(
   // Find out which potential singletons are actually singletons; delete
   // members whose owners left; and reparent the sets that intersected with
   // an addition set.
-  for (const auto& [member, set_entry] : public_sets->sets) {
+  for (const auto& [member, set_entry] : public_sets.entries()) {
     // Reparent all sites in any intersecting addition sets.
     if (auto entry = addition_intersected_owners.find(set_entry.primary());
         entry != addition_intersected_owners.end() &&
@@ -311,11 +312,11 @@ FirstPartySetsHandlerImpl::FirstPartySetsHandlerImpl(
 
 FirstPartySetsHandlerImpl::~FirstPartySetsHandlerImpl() = default;
 
-absl::optional<network::mojom::PublicFirstPartySetsPtr>
-FirstPartySetsHandlerImpl::GetSets(SetsReadyOnceCallback callback) {
+absl::optional<net::PublicSets> FirstPartySetsHandlerImpl::GetSets(
+    SetsReadyOnceCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(IsEnabled());
-  if (!public_sets_.is_null())
+  if (public_sets_.has_value())
     return public_sets_->Clone();
 
   if (!callback.is_null()) {
@@ -343,7 +344,7 @@ void FirstPartySetsHandlerImpl::Init(const base::FilePath& user_data_dir,
       sets_loader_->SetComponentSets(base::File());
     }
   } else {
-    SetCompleteSets(network::mojom::PublicFirstPartySets::New());
+    SetCompleteSets(net::PublicSets());
   }
 }
 
@@ -374,7 +375,7 @@ void FirstPartySetsHandlerImpl::ResetForTesting() {
                      // this is a static singleton.
                      base::Unretained(this)));
   on_sets_ready_callbacks_.clear();
-  public_sets_ = nullptr;
+  public_sets_ = absl::nullopt;
   db_helper_.Reset();
 }
 
@@ -388,11 +389,9 @@ void FirstPartySetsHandlerImpl::GetPersistedPublicSetsForTesting(
       .Then(std::move(callback));
 }
 
-void FirstPartySetsHandlerImpl::SetCompleteSets(
-    network::mojom::PublicFirstPartySetsPtr public_sets) {
+void FirstPartySetsHandlerImpl::SetCompleteSets(net::PublicSets public_sets) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(public_sets_.is_null());
-  DCHECK(!public_sets.is_null());
+  DCHECK(!public_sets_.has_value());
   public_sets_ = std::move(public_sets);
 
     ClearSiteDataOnChangedSets();
@@ -427,22 +426,21 @@ void FirstPartySetsHandlerImpl::InvokePendingQueries() {
   on_sets_ready_callbacks_.shrink_to_fit();
 }
 
-network::mojom::PublicFirstPartySetsPtr FirstPartySetsHandlerImpl::GetSetsSync()
-    const {
+net::PublicSets FirstPartySetsHandlerImpl::GetSetsSync() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!public_sets_.is_null());
+  DCHECK(public_sets_.has_value());
   return public_sets_->Clone();
 }
 
 void FirstPartySetsHandlerImpl::ClearSiteDataOnChangedSets() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!public_sets_.is_null());
+  DCHECK(public_sets_.has_value());
 
   if (!db_helper_.is_null()) {
     // TODO(shuuran@chromium.org): Implement site state clearing.
     db_helper_
         .AsyncCall(&FirstPartySetsHandlerDatabaseHelper::PersistPublicSets)
-        .WithArgs(public_sets_->sets);
+        .WithArgs(public_sets_->entries());
   }
 }
 
@@ -457,7 +455,7 @@ FirstPartySetsHandlerImpl::GetCustomizationForPolicyInternal(
   // Provide empty customization if the policy is malformed.
   return parsed_policy.has_value()
              ? FirstPartySetsHandlerImpl::ComputeEnterpriseCustomizations(
-                   public_sets_, parsed_policy.value())
+                   public_sets_.value(), parsed_policy.value())
              : FirstPartySetsHandlerImpl::PolicyCustomization();
 }
 

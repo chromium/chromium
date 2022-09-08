@@ -53,9 +53,8 @@ struct FirstPartySetMetadata {
   FirstPartySetEntry? top_frame_entry;
 };
 
-// This struct holds all of the info associated with the public First-Party
-// Sets, after they've been parsed. This is suitable for plumbing from the
-// browser process to the network service.
+// This struct must match the class fields defined in
+// //net/first_party_sets/public_sets.h.
 struct PublicFirstPartySets {
   // The mapping from site to FPS entry.
   map<SchemefulSite, FirstPartySetEntry> sets;
