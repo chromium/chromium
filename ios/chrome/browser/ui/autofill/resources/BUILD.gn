@@ -7,15 +7,18 @@ import("//build/config/ios/asset_catalog.gni")
 imageset("fullcolor_branding_icon") {
   sources = [
     "fullcolor_branding_icon.imageset/Contents.json",
-    "fullcolor_branding_icon.imageset/fullcolor_branding_icon.png",
+    "fullcolor_branding_icon.imageset/fullcolor_branding_icon@2x.png",
+    "fullcolor_branding_icon.imageset/fullcolor_branding_icon@3x.png",
   ]
 }
 
 imageset("monotone_branding_icon") {
   sources = [
     "monotone_branding_icon.imageset/Contents.json",
-    "monotone_branding_icon.imageset/monotone_branding_icon_dark.png",
-    "monotone_branding_icon.imageset/monotone_branding_icon_light.png",
+    "monotone_branding_icon.imageset/monotone_branding_icon_dark@2x.png",
+    "monotone_branding_icon.imageset/monotone_branding_icon_dark@3x.png",
+    "monotone_branding_icon.imageset/monotone_branding_icon_light@2x.png",
+    "monotone_branding_icon.imageset/monotone_branding_icon_light@3x.png",
   ]
 }
 

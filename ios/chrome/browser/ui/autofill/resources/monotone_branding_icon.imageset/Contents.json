@@ -1,8 +1,9 @@
 {
     "images" : [
         {
-            "filename" : "monotone_branding_icon_light.png",
-            "idiom" : "universal"
+            "filename" : "monotone_branding_icon_light@2x.png",
+            "idiom" : "universal",
+            "scale" : "2x"
         },
         {
             "appearances" : [
@@ -11,8 +12,25 @@
                     "value" : "dark"
                 }
             ],
-            "filename" : "monotone_branding_icon_dark.png",
-            "idiom" : "universal"
+            "filename" : "monotone_branding_icon_dark@2x.png",
+            "idiom" : "universal",
+            "scale" : "2x"
+        },
+        {
+            "filename" : "monotone_branding_icon_light@3x.png",
+            "idiom" : "universal",
+            "scale" : "3x"
+        },
+        {
+            "appearances" : [
+                {
+                    "appearance" : "luminosity",
+                    "value" : "dark"
+                }
+            ],
+            "filename" : "monotone_branding_icon_dark@3x.png",
+            "idiom" : "universal",
+            "scale" : "3x"
         }
     ],
     "info" : {
