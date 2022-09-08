@@ -9,6 +9,8 @@
 #include "base/bind.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/strings/string_piece.h"
+#include "base/task/single_thread_task_runner.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "components/cast/message_port/fuchsia/message_port_fuchsia.h"
 
 namespace {
@@ -51,13 +53,17 @@ void ApiBindingsClient::AttachToFrame(
   DCHECK(!frame_) << "AttachToFrame() was called twice.";
   DCHECK(frame);
   DCHECK(connector);
-  DCHECK(bindings_)
-      << "AttachToFrame() was called before bindings were received.";
 
   if (!bindings_service_) {
-    std::move(on_error_callback).Run();
+    base::ThreadTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE, base::BindOnce(&ApiBindingsClient::CallOnErrorCallback,
+                                  weak_ptr_factory_.GetWeakPtr(),
+                                  std::move(on_error_callback)));
     return;
   }
+
+  DCHECK(bindings_)
+      << "AttachToFrame() was called before bindings were received.";
 
   connector_ = connector;
   frame_ = frame;
@@ -112,4 +118,9 @@ void ApiBindingsClient::OnBindingsReceived(
   bindings_ = std::move(bindings);
   bindings_service_.set_error_handler(nullptr);
   std::move(on_initialization_complete_).Run();
+}
+
+void ApiBindingsClient::CallOnErrorCallback(
+    base::OnceClosure on_error_callback) {
+  std::move(on_error_callback).Run();
 }

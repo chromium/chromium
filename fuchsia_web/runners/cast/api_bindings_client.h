@@ -8,6 +8,7 @@
 #include <fuchsia/web/cpp/fidl.h>
 #include <vector>
 
+#include "base/memory/weak_ptr.h"
 #include "components/cast/message_port/message_port.h"
 #include "components/cast/named_message_port_connector/named_message_port_connector.h"
 #include "fuchsia_web/runners/cast/fidl/fidl/chromium/cast/cpp/fidl.h"
@@ -31,9 +32,9 @@ class ApiBindingsClient {
   ~ApiBindingsClient();
 
   // Injects APIs and handles channel connections on |frame|.
-  // |on_error_callback| is invoked in the event of an unrecoverable error (e.g.
-  // lost connection to the Agent). The callback must remain valid for the
-  // entire lifetime of |this|.
+  // |on_error_callback| is invoked asynchronusly in the event of an
+  // unrecoverable error (e.g. lost connection to the Agent). The callback must
+  // remain valid for the entire lifetime of |this|.
   void AttachToFrame(fuchsia::web::Frame* frame,
                      cast_api_bindings::NamedMessagePortConnector* connector,
                      base::OnceClosure on_error_callback);
@@ -56,11 +57,16 @@ class ApiBindingsClient {
   // Called when ApiBindings::GetAll() has responded.
   void OnBindingsReceived(std::vector<chromium::cast::ApiBinding> bindings);
 
+  // Used by AttachToFrame() to invoke `on_error_callback` asynchronously.
+  void CallOnErrorCallback(base::OnceClosure on_error_callback);
+
   absl::optional<std::vector<chromium::cast::ApiBinding>> bindings_;
   fuchsia::web::Frame* frame_ = nullptr;
   cast_api_bindings::NamedMessagePortConnector* connector_ = nullptr;
   chromium::cast::ApiBindingsPtr bindings_service_;
   base::OnceClosure on_initialization_complete_;
+
+  base::WeakPtrFactory<ApiBindingsClient> weak_ptr_factory_{this};
 };
 
 #endif  // FUCHSIA_WEB_RUNNERS_CAST_API_BINDINGS_CLIENT_H_
