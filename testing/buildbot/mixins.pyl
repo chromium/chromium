@@ -454,16 +454,6 @@
       },
     },
   },
-  'emulator-8-cores-n2d': {
-    'swarming': {
-      'dimensions': {
-        'device_os': None,
-        'device_type': None,
-        'pool': 'chromium.tests.avd',
-        'machine_type': 'n2d-standard-8',
-      },
-    },
-  },
   'femu-additional-ram': {
     '$mixin_append': {
       'args': [

@@ -1265,21 +1265,6 @@
         'use_swarming': True,
         'os_type': 'android',
       },
-      # TODO(crbug.com/1359516): Remove the builder once done with evaluation.
-      'android-pie-x86-fyi-rel-n2d': {
-        'mixins': [
-          'has_native_resultdb_integration',
-          'pie-x86-emulator',
-          'emulator-8-cores-n2d',
-          'linux-bionic',
-          'x86-64',
-        ],
-        'os_type': 'android',
-        'test_suites': {
-          'gtest_tests': 'android_pie_rel_emulator_gtests',
-          'scripts': 'chromium_android_scripts',
-        }
-      },
       # A builder for early prototype of test-reviver in Clank.
       # TODO(crbug.com/1348392): Remove this builder once we have a way to reuse
       # the built binaries or a formal solution for test-reviver.
