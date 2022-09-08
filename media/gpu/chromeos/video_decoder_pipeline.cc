@@ -199,11 +199,12 @@ std::unique_ptr<VideoDecoder> VideoDecoderPipeline::Create(
     create_decoder_function_cb =
         base::BindOnce(&OOPVideoDecoder::Create, std::move(oop_video_decoder));
   } else {
-    create_decoder_function_cb =
 #if BUILDFLAG(USE_VAAPI)
-        base::BindOnce(&VaapiVideoDecoder::Create);
-#elif BUILDFLAG(USE_V4L2_CODEC)
-        base::BindOnce(&V4L2VideoDecoder::Create);
+    create_decoder_function_cb = base::BindOnce(&VaapiVideoDecoder::Create);
+#elif BUILDFLAG(USE_V4L2_CODEC) && BUILDFLAG(IS_CHROMEOS_ASH)
+    create_decoder_function_cb = base::BindOnce(&V4L2VideoDecoder::Create);
+#else
+    return nullptr;
 #endif
   }
 

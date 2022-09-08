@@ -18,7 +18,8 @@ declare_args() {
 
   # Indicates if Video4Linux2 codec is used. This is used for all CrOS
   # platforms which have v4l2 hardware encoder / decoder.
-  use_v4l2_codec = false
+  use_v4l2_codec =
+      is_chromeos_lacros && (target_cpu == "arm" || target_cpu == "arm64")
 
   # Indicates if Video4Linux2 AML encoder is used. This is used for AML
   # platforms which have v4l2 hardware encoder
