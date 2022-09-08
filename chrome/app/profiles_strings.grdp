@@ -522,19 +522,31 @@
     </message>
 
     <!-- Enterprise profile welcome screen -->
-    <message name="IDS_ENTERPRISE_PROFILE_WELCOME_TITLE" desc="Title of the enteprise profile welcome screen. It is part of the profile creation flow, shown after sign-in to enterprise users.">
+    <message name="IDS_ENTERPRISE_PROFILE_WELCOME_TITLE" desc="Title of the enterprise profile welcome screen. It is part of the profile creation flow, shown after sign-in to enterprise users.">
       Welcome to your new profile
     </message>
     <message name="IDS_ENTERPRISE_PROFILE_WELCOME_ACCOUNT_MANAGED_BY" desc="Subtitle of the enteprise profile welcome screen, informing that the account is managed by an administrator.">
       This account is managed by <ph name="PROFILE_NAME">$1<ex>example.com</ex></ph>
     </message>
-    <message name="IDS_ENTERPRISE_PROFILE_WELCOME_ACCOUNT_EMAIL_MANAGED_BY" desc="Subtitle of the enteprise profile welcome screen for a signin interception, informing that the account is managed by an administrator.">
+    <message name="IDS_ENTERPRISE_PROFILE_WELCOME_PROFILE_MANAGED_STRICT_SEPARATION" desc="Subtitle of the enterprise profile welcome screen for a signin interception, informing that the profile is managed by an administrator and requires a new profile for other managed accounts.">
+      This profile is managed by <ph name="PROFILE_MANAGER">$1<ex>example.com</ex></ph> and requires you to create a separate profile for the account <ph name="USER_EMAIL_ADDRESS">$2<ex>john.doe@example.com</ex></ph>
+    </message>
+    <message name="IDS_ENTERPRISE_PROFILE_WELCOME_PROFILE_MANAGED_SEPARATION" desc="Subtitle of the enterprise profile welcome screen for a signin interception, informing that the profile is managed by an administrator and the new account that is trying to signin is required to have a new profile by its administrator.">
+      This profile is managed by <ph name="PROFILE_MANAGER">$1<ex>example.com</ex></ph>. A new profile is required for account <ph name="USER_EMAIL_ADDRESS">$2<ex>john.doe@example.com</ex></ph> by <ph name="ACCOUNT_MANAGER">$3<ex>example2.com</ex></ph>
+    </message>
+    <message name="IDS_ENTERPRISE_PROFILE_WELCOME_PROFILE_SEPARATION_DEVICE_MANAGED" desc="Subtitle of the enterprise profile welcome screen for a signin interception, informing that the device is managed by an administrator that requires a new profile for managed accounts.">
+      This device is managed. A new profile is required for account <ph name="USER_EMAIL_ADDRESS">$1<ex>john.doe@example.com</ex></ph> by your device administrator
+    </message>
+    <message name="IDS_ENTERPRISE_PROFILE_WELCOME_PROFILE_SEPARATION_DEVICE_MANAGED_BY" desc="Subtitle of the enterprise profile welcome screen for a signin interception, informing that the device is managed by an administrator that requires a new profile for managed accounts.">
+      This device is managed by <ph name="DEVICE_MANAGER">$1<ex>example.com</ex></ph>. A new profile is required for account <ph name="USER_EMAIL_ADDRESS">$2<ex>john.doe@example.com</ex></ph> by <ph name="DEVICE_MANAGER">$1<ex>example.com</ex></ph>
+    </message>
+    <message name="IDS_ENTERPRISE_PROFILE_WELCOME_ACCOUNT_EMAIL_MANAGED_BY" desc="Subtitle of the enterprise profile welcome screen for a signin interception, informing that the account is managed by an administrator.">
       This account (<ph name="USER_EMAIL_ADDRESS">$1<ex>john.doe@example.com</ex></ph>) is managed by <ph name="PROFILE_NAME">$2<ex>example.com</ex></ph>
     </message>
-    <message name="IDS_ENTERPRISE_PROFILE_WELCOME_DEVICE_MANAGED_BY" desc="Subtitle of the enteprise profile welcome screen, informing that the device is managed by an administrator.">
+    <message name="IDS_ENTERPRISE_PROFILE_WELCOME_DEVICE_MANAGED_BY" desc="Subtitle of the enterprise profile welcome screen, informing that the device is managed by an administrator.">
       Your device is managed by <ph name="PROFILE_NAME">$1<ex>example.com</ex></ph>
     </message>
-    <message name="IDS_ENTERPRISE_PROFILE_WELCOME_DEVICE_MANAGED" desc="Subtitle of the enteprise profile welcome screen, informing that the device is managed.">
+    <message name="IDS_ENTERPRISE_PROFILE_WELCOME_DEVICE_MANAGED" desc="Subtitle of the enterprise profile welcome screen, informing that the device is managed.">
       Your device is managed by your organization
     </message>
     <message name="IDS_ENTERPRISE_PROFILE_WELCOME_MANAGED_DESCRIPTION_WITH_SYNC" desc="Disclaimer when creating a profile with a managed account (when sync is enabled by the administrator).">
@@ -543,10 +555,10 @@
     <message name="IDS_ENTERPRISE_PROFILE_WELCOME_MANAGED_DESCRIPTION_WITHOUT_SYNC" desc="Disclaimer when creating a profile with a managed account (when sync is disabled by the administrator).">
       You’re adding a managed profile to this browser. Your administrator has control over the profile and can access its data.
     </message>
-    <message name="IDS_ENTERPRISE_WELCOME_PROFILE_REQUIRED_TITLE" desc="Title of the enteprise profile welcome screen when a profile is required. It is shown after a user signs into a managed account outside of the profile creation flow.">
+    <message name="IDS_ENTERPRISE_WELCOME_PROFILE_REQUIRED_TITLE" desc="Title of the enterprise profile welcome screen when a profile is required. It is shown after a user signs into a managed account outside of the profile creation flow.">
       Your organization requires a profile
     </message>
-    <message name="IDS_ENTERPRISE_WELCOME_PROFILE_WILL_BE_MANAGED_TITLE" desc="Title of the enteprise profile welcome screen when a managed profile will be created. It is shown after a user signs into a managed account outside of the profile creation flow.">
+    <message name="IDS_ENTERPRISE_WELCOME_PROFILE_WILL_BE_MANAGED_TITLE" desc="Title of the enterprise profile welcome screen when a managed profile will be created. It is shown after a user signs into a managed account outside of the profile creation flow.">
       Your organization will manage this profile
     </message>
     <message name="IDS_ENTERPRISE_PROFILE_WELCOME_CREATE_PROFILE_BUTTON" desc="Label of the proceed button on the enterprise profile welcome screen when a user signed in an enterprise account outside of the profile creation flow. The label informs the user that a profile will be created.">

@@ -14,6 +14,9 @@
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_attributes_entry.h"
+#include "chrome/browser/profiles/profile_attributes_storage.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/management/management_ui_handler.h"
 #include "chrome/grit/generated_resources.h"
@@ -21,6 +24,7 @@
 #include "components/policy/core/common/cloud/machine_level_user_cloud_policy_manager.h"
 #include "components/policy/core/common/management/management_service.h"
 #include "components/policy/proto/device_management_backend.pb.h"
+#include "components/signin/public/identity_manager/account_info.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -51,6 +55,16 @@ const policy::CloudPolicyManager* GetUserCloudPolicyManager(Profile* profile) {
 }
 
 absl::optional<std::string> GetEnterpriseAccountDomain(Profile* profile) {
+  if (g_browser_process->profile_manager()) {
+    ProfileAttributesEntry* entry =
+        g_browser_process->profile_manager()
+            ->GetProfileAttributesStorage()
+            .GetProfileAttributesWithPath(profile->GetPath());
+    if (entry && !entry->GetHostedDomain().empty() &&
+        entry->GetHostedDomain() != kNoHostedDomainFound)
+      return entry->GetHostedDomain();
+  }
+
   const std::string domain =
       enterprise_util::GetDomainFromEmail(profile->GetProfileUserName());
   // Heuristic for most common consumer Google domains -- these are not managed.

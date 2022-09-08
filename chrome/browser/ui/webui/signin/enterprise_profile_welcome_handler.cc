@@ -4,6 +4,9 @@
 
 #include "chrome/browser/ui/webui/signin/enterprise_profile_welcome_handler.h"
 
+#include <string>
+#include <vector>
+
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/metrics/histogram_functions.h"
@@ -17,6 +20,7 @@
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/managed_ui.h"
 #include "chrome/browser/ui/signin/profile_colors_util.h"
@@ -44,12 +48,12 @@ namespace {
 const int kAvatarSize = 100;
 
 std::string GetManagedAccountTitle(ProfileAttributesEntry* entry,
-                                   const std::string& fallback_domain_name) {
+                                   const std::string& account_domain_name) {
   DCHECK(entry);
   if (entry->GetHostedDomain() == kNoHostedDomainFound)
     return std::string();
   const std::string domain_name = entry->GetHostedDomain().empty()
-                                      ? fallback_domain_name
+                                      ? account_domain_name
                                       : entry->GetHostedDomain();
   return l10n_util::GetStringFUTF8(
       IDS_ENTERPRISE_PROFILE_WELCOME_ACCOUNT_MANAGED_BY,
@@ -57,30 +61,79 @@ std::string GetManagedAccountTitle(ProfileAttributesEntry* entry,
 }
 
 std::string GetManagedAccountTitleWithEmail(
+    Profile* profile,
     ProfileAttributesEntry* entry,
-    const std::string& fallback_domain_name,
+    const std::string& account_domain_name,
     const std::u16string& email) {
+  DCHECK(profile);
   DCHECK(entry);
   DCHECK(!email.empty());
+
+#if !BUILDFLAG(IS_CHROMEOS)
+  absl::optional<std::string> account_manager =
+      chrome::GetAccountManagerIdentity(profile);
+  auto profile_separation_state =
+      signin_util::GetProfileSeparationPolicyState(profile);
+  if (profile_separation_state.Empty()) {
+    // The profile is managed but does not enforce profile separation. The
+    // intercepted account requires it.
+    if (account_manager && !account_manager->empty()) {
+      return l10n_util::GetStringFUTF8(
+          IDS_ENTERPRISE_PROFILE_WELCOME_PROFILE_MANAGED_SEPARATION,
+          base::UTF8ToUTF16(*account_manager), email,
+          base::UTF8ToUTF16(account_domain_name));
+    }
+    // The profile is not managed. The intercepted account requires profile
+    // separation.
+    return l10n_util::GetStringFUTF8(
+        IDS_ENTERPRISE_PROFILE_WELCOME_ACCOUNT_EMAIL_MANAGED_BY, email,
+        base::UTF8ToUTF16(account_domain_name));
+  } else if (profile_separation_state.Has(
+                 signin_util::ProfileSeparationPolicyState::
+                     kEnforcedOnMachineLevel)) {
+    // The device is managed and requires profile separation.
+    absl::optional<std::string> device_manager =
+        chrome::GetDeviceManagerIdentity();
+    if (device_manager && !device_manager->empty()) {
+      return l10n_util::GetStringFUTF8(
+          IDS_ENTERPRISE_PROFILE_WELCOME_PROFILE_SEPARATION_DEVICE_MANAGED_BY,
+          base::UTF8ToUTF16(*device_manager), email);
+    } else {
+      return l10n_util::GetStringFUTF8(
+          IDS_ENTERPRISE_PROFILE_WELCOME_PROFILE_SEPARATION_DEVICE_MANAGED,
+          email);
+    }
+  } else {
+    DCHECK(profile_separation_state.Has(
+        signin_util::ProfileSeparationPolicyState::kStrict));
+    // The profile is managed and requires profile separation.
+    DCHECK(account_manager);
+    DCHECK(!account_manager->empty());
+    return l10n_util::GetStringFUTF8(
+        IDS_ENTERPRISE_PROFILE_WELCOME_PROFILE_MANAGED_STRICT_SEPARATION,
+        base::UTF8ToUTF16(*account_manager), email);
+  }
+#else
   if (entry->GetHostedDomain() == kNoHostedDomainFound)
     return std::string();
   const std::string domain_name = entry->GetHostedDomain().empty()
-                                      ? fallback_domain_name
+                                      ? account_domain_name
                                       : entry->GetHostedDomain();
   return l10n_util::GetStringFUTF8(
       IDS_ENTERPRISE_PROFILE_WELCOME_ACCOUNT_EMAIL_MANAGED_BY, email,
       base::UTF8ToUTF16(domain_name));
+#endif  //  !BUILDFLAG(IS_CHROMEOS)
 }
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 std::string GetLacrosFirstRunManagedAccountInfo(
     ProfileAttributesEntry* entry,
-    const std::string& fallback_domain_name) {
+    const std::string& account_domain_name) {
   DCHECK(entry);
   if (entry->GetHostedDomain() == kNoHostedDomainFound)
     return std::string();
   const std::string domain_name = entry->GetHostedDomain().empty()
-                                      ? fallback_domain_name
+                                      ? account_domain_name
                                       : entry->GetHostedDomain();
   return l10n_util::GetStringFUTF8(
       IDS_PRIMARY_PROFILE_FIRST_RUN_SESSION_MANAGED_BY_DESCRIPTION,
@@ -298,7 +351,8 @@ base::Value::Dict EnterpriseProfileWelcomeHandler::GetProfileInfoValue() {
               ? IDS_ENTERPRISE_WELCOME_PROFILE_REQUIRED_TITLE
               : IDS_ENTERPRISE_WELCOME_PROFILE_WILL_BE_MANAGED_TITLE);
       dict.Set("showEnterpriseBadge", false);
-      subtitle = GetManagedAccountTitleWithEmail(entry, domain_name_, email_);
+      subtitle = GetManagedAccountTitleWithEmail(Profile::FromWebUI(web_ui()),
+                                                 entry, domain_name_, email_);
       enterprise_info = l10n_util::GetStringUTF8(
           IDS_ENTERPRISE_PROFILE_WELCOME_MANAGED_DESCRIPTION_WITH_SYNC);
       dict.Set("proceedLabel",

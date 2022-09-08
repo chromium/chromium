@@ -9,8 +9,12 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_attributes_entry.h"
+#include "chrome/browser/profiles/profile_attributes_storage.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/management/management_service.h"
@@ -78,6 +82,11 @@ IN_PROC_BROWSER_TEST_F(ManagedUiTest, DoNotDisplayManagedUiForAChild) {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
 IN_PROC_BROWSER_TEST_F(ManagedUiTest, GetManagedUiMenuItemLabel) {
+  // Simulate a managed profile.
+  policy::ScopedManagementServiceOverrideForTesting browser_management(
+      policy::ManagementServiceFactory::GetForProfile(browser()->profile()),
+      policy::EnterpriseManagementAuthority::CLOUD);
+
   TestingProfile::Builder builder;
   auto profile = builder.Build();
 
@@ -85,14 +94,29 @@ IN_PROC_BROWSER_TEST_F(ManagedUiTest, GetManagedUiMenuItemLabel) {
   builder_with_domain.SetProfileName("foobar@example.com");
   builder_with_domain.OverridePolicyConnectorIsManagedForTesting(true);
   auto profile_with_domain = builder_with_domain.Build();
+
+  auto* profile_with_hosted_domain = browser()->profile();
+  ProfileAttributesEntry* entry =
+      g_browser_process->profile_manager()
+          ->GetProfileAttributesStorage()
+          .GetProfileAttributesWithPath(profile_with_hosted_domain->GetPath());
+  ASSERT_TRUE(entry);
+  entry->SetHostedDomain("hosteddomain.com");
 
   EXPECT_EQ(u"Managed by your organization",
             chrome::GetManagedUiMenuItemLabel(profile.get()));
   EXPECT_EQ(u"Managed by example.com",
             chrome::GetManagedUiMenuItemLabel(profile_with_domain.get()));
+  EXPECT_EQ(u"Managed by hosteddomain.com",
+            chrome::GetManagedUiMenuItemLabel(profile_with_hosted_domain));
 }
 
 IN_PROC_BROWSER_TEST_F(ManagedUiTest, GetManagedUiWebUILabel) {
+  // Simulate a managed profile.
+  policy::ScopedManagementServiceOverrideForTesting browser_management(
+      policy::ManagementServiceFactory::GetForProfile(browser()->profile()),
+      policy::EnterpriseManagementAuthority::CLOUD);
+
   TestingProfile::Builder builder;
   auto profile = builder.Build();
 
@@ -100,6 +124,14 @@ IN_PROC_BROWSER_TEST_F(ManagedUiTest, GetManagedUiWebUILabel) {
   builder_with_domain.SetProfileName("foobar@example.com");
   builder_with_domain.OverridePolicyConnectorIsManagedForTesting(true);
   auto profile_with_domain = builder_with_domain.Build();
+
+  auto* profile_with_hosted_domain = browser()->profile();
+  ProfileAttributesEntry* entry =
+      g_browser_process->profile_manager()
+          ->GetProfileAttributesStorage()
+          .GetProfileAttributesWithPath(profile_with_hosted_domain->GetPath());
+  ASSERT_TRUE(entry);
+  entry->SetHostedDomain("hosteddomain.com");
 
   EXPECT_EQ(
       u"Your <a href=\"chrome://management\">browser is managed</a> by your "
@@ -109,6 +141,10 @@ IN_PROC_BROWSER_TEST_F(ManagedUiTest, GetManagedUiWebUILabel) {
       u"Your <a href=\"chrome://management\">browser is managed</a> by "
       u"example.com",
       chrome::GetManagedUiWebUILabel(profile_with_domain.get()));
+  EXPECT_EQ(
+      u"Your <a href=\"chrome://management\">browser is managed</a> by "
+      u"hosteddomain.com",
+      chrome::GetManagedUiWebUILabel(profile_with_hosted_domain));
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

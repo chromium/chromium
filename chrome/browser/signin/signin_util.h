@@ -7,16 +7,32 @@
 
 #include <string>
 
+#include "base/containers/enum_set.h"
 #include "base/files/file_path.h"
 #include "base/supports_user_data.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/identity_manager/tribool.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
 
 namespace signin_util {
+
+enum class ProfileSeparationPolicyState {
+  kEnforcedByExistingProfile,
+  kEnforcedByInterceptedAccount,
+  kStrict,
+  kEnforcedOnMachineLevel,
+  kKeepsBrowsingData,
+  kMaxValue = kKeepsBrowsingData
+};
+
+using ProfileSeparationPolicyStateSet =
+    base::EnumSet<ProfileSeparationPolicyState,
+                  ProfileSeparationPolicyState::kEnforcedByExistingProfile,
+                  ProfileSeparationPolicyState::kMaxValue>;
 
 // This class is used by cloud policy to indicate signout is disallowed for
 // cloud-managed enterprise accounts. Signout would require profile destruction
@@ -88,10 +104,25 @@ void EnsureUserSignoutAllowedIsInitializedForProfile(Profile* profile);
 
 #if !BUILDFLAG(IS_ANDROID)
 #if !BUILDFLAG(IS_CHROMEOS)
-// Returns true if profile separation is enforced by policy.
+// Returns the state of profile separation on any account that would signin
+// inside `profile`. Returns an empty set if profile separation is not enforced
+// on accounts that will sign in the content area of `profile`.
+ProfileSeparationPolicyStateSet GetProfileSeparationPolicyState(
+    Profile* profile,
+    const absl::optional<std::string>& intercepted_account_level_policy_value =
+        absl::nullopt);
+
+// Returns true if profile separation must be enforced on an account signing in
+// the content area of `profile` by the ManagedAccountsSigninRestriction policy
+// for `profile` or if the value of 'intercepted_account_level_policy_value'
+// enforces profile separation for an intercepted account.
+// `intercepted_account_level_policy_value` has a value only in the case of an
+// account interception. This is used mainly in DiceWebSigninInterceptor to
+// determine if an intercepted account requires a new profile.
 bool ProfileSeparationEnforcedByPolicy(
     Profile* profile,
-    const std::string& intercepted_account_level_policy_value);
+    const absl::optional<std::string>& intercepted_account_level_policy_value =
+        absl::nullopt);
 
 bool ProfileSeparationAllowsKeepingUnmanagedBrowsingDataInManagedProfile(
     Profile* profile,
