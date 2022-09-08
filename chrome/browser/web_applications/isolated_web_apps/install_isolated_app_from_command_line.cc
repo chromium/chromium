@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/barrier_closure.h"
 #include "base/bind.h"
 #include "base/callback_forward.h"
 #include "base/callback_helpers.h"
@@ -25,7 +26,7 @@ namespace web_app {
 
 namespace {
 
-base::RepeatingCallback<void(GURL url)>
+base::RepeatingCallback<void(GURL url, base::OnceCallback<void()> callback)>
 CreateProductionInstallApplicationFromUrl(Profile& profile) {
   WebAppProvider* provider = WebAppProvider::GetForWebApps(&profile);
 
@@ -38,11 +39,15 @@ CreateProductionInstallApplicationFromUrl(Profile& profile) {
   }
 
   return base::BindRepeating(
-      [](WebAppProvider& provider, GURL url) {
+      [](WebAppProvider& provider, GURL url,
+         base::OnceCallback<void()> callback) {
+        DCHECK(!callback.is_null());
+
         provider.on_registry_ready().Post(
             FROM_HERE,
             base::BindOnce(
-                [](WebAppProvider& provider, GURL url) {
+                [](WebAppProvider& provider, GURL url,
+                   base::OnceCallback<void()> callback) {
                   std::unique_ptr<WebAppUrlLoader> url_loader =
                       std::make_unique<WebAppUrlLoader>();
 
@@ -51,7 +56,7 @@ CreateProductionInstallApplicationFromUrl(Profile& profile) {
                   base::OnceCallback<void(
                       base::expected<InstallIsolatedAppCommandSuccess,
                                      InstallIsolatedAppCommandError>)>
-                      callback = base::BindOnce(
+                      install_isolated_app_callback = base::BindOnce(
                           [](std::unique_ptr<WebAppUrlLoader> url_loader,
                              base::expected<InstallIsolatedAppCommandSuccess,
                                             InstallIsolatedAppCommandError>
@@ -67,9 +72,10 @@ CreateProductionInstallApplicationFromUrl(Profile& profile) {
                   provider.command_manager().ScheduleCommand(
                       std::make_unique<InstallIsolatedAppCommand>(
                           url, url_loader_ref, provider.install_finalizer(),
-                          std::move(callback)));
+                          std::move(install_isolated_app_callback)
+                              .Then(std::move(callback))));
                 },
-                std::ref(provider), url));
+                std::ref(provider), url, std::move(callback)));
       },
       std::ref(*provider));
 }
@@ -97,16 +103,27 @@ std::vector<GURL> GetAppsToInstallFromCommandLine(
 
 void MaybeInstallAppFromCommandLine(
     const base::CommandLine& command_line,
-    base::RepeatingCallback<void(GURL url)> install_application_from_url) {
-  for (const GURL& url : GetAppsToInstallFromCommandLine(command_line)) {
-    install_application_from_url.Run(url);
+    base::RepeatingCallback<void(GURL url, base::OnceCallback<void()> callback)>
+        install_application_from_url,
+    base::OnceCallback<void()> done) {
+  DCHECK(!done.is_null());
+
+  const std::vector<GURL> apps_to_install =
+      GetAppsToInstallFromCommandLine(command_line);
+  auto barrier = base::BarrierClosure(apps_to_install.size(), std::move(done));
+
+  for (const GURL& url : apps_to_install) {
+    install_application_from_url.Run(url, barrier);
   }
 }
 
 void MaybeInstallAppFromCommandLine(const base::CommandLine& command_line,
-                                    Profile& profile) {
+                                    Profile& profile,
+                                    base::OnceCallback<void()> done) {
+  DCHECK(!done.is_null());
   MaybeInstallAppFromCommandLine(
-      command_line, CreateProductionInstallApplicationFromUrl(profile));
+      command_line, CreateProductionInstallApplicationFromUrl(profile),
+      std::move(done));
 }
 
 }  // namespace web_app

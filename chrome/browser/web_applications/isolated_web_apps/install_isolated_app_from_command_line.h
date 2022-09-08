@@ -8,6 +8,9 @@
 #include <string>
 #include <vector>
 
+#include "base/callback.h"
+#include "base/callback_helpers.h"
+
 namespace base {
 class CommandLine;
 }
@@ -20,8 +23,10 @@ namespace web_app {
 std::vector<GURL> GetAppsToInstallFromCommandLine(
     const base::CommandLine& command_line);
 
-void MaybeInstallAppFromCommandLine(const base::CommandLine& command_line,
-                                    Profile& profile);
+void MaybeInstallAppFromCommandLine(
+    const base::CommandLine& command_line,
+    Profile& profile,
+    base::OnceCallback<void()> done = base::DoNothing());
 
 }  // namespace web_app
 
