@@ -39,6 +39,7 @@ extern const base::Feature kWebAuthnGoogleCorpRemoteDesktopClientPrivilege{
 extern const base::Feature kWebAuthPasskeysUI{
     "WebAuthenticationPasskeysUI", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// TODO(1358719): Resolve all i18n TODOs before default enabling.
 extern const base::Feature kWebAuthnNewDiscoverableCredentialsUi{
     "WebAuthenticationNewDiscoverableCredentialsUi",
     base::FEATURE_DISABLED_BY_DEFAULT};

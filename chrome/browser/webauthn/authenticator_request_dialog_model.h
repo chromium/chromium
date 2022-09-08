@@ -131,6 +131,8 @@ class AuthenticatorRequestDialogModel {
     // Attestation permission requests.
     kAttestationPermissionRequest,
     kEnterpriseAttestationPermissionRequest,
+
+    kCreatePasskey,
   };
 
   // Implemented by the dialog to observe this model and show the UI panels
@@ -331,6 +333,9 @@ class AuthenticatorRequestDialogModel {
   // Hides the modal Chrome UI dialog and shows the native Windows WebAuthn
   // UI instead.
   void HideDialogAndDispatchToNativeWindowsApi();
+
+  // Proceeds straight to the platform authenticator prompt.
+  void HideDialogAndDispatchToPlatformAuthenticator();
 
   // Called when an attempt to contact a phone failed.
   void OnPhoneContactFailed(const std::string& name);
@@ -600,6 +605,13 @@ class AuthenticatorRequestDialogModel {
   }
   const std::string& relying_party_id() const { return relying_party_id_; }
 
+  void set_user_entity(device::PublicKeyCredentialUserEntity user_entity) {
+    user_entity_ = std::move(user_entity);
+  }
+  const device::PublicKeyCredentialUserEntity& user_entity() const {
+    return user_entity_;
+  }
+
   bool offer_try_again_in_ui() const { return offer_try_again_in_ui_; }
 
   base::WeakPtr<AuthenticatorRequestDialogModel> GetWeakPtr();
@@ -677,11 +689,6 @@ class AuthenticatorRequestDialogModel {
   // meaningful on Windows, but the parameter exists on all platforms to avoid
   // too much #ifdef soup.
   void PopulateMechanisms(bool prefer_native_api);
-
-  // Proceeds straight to the platform authenticator prompt.
-  //
-  // Valid action when at all steps.
-  void HideDialogAndDispatchToPlatformAuthenticator();
 
   // Identifier for the RenderFrameHost of the frame that initiated the current
   // request.
@@ -782,6 +789,10 @@ class AuthenticatorRequestDialogModel {
   base::RepeatingCallback<void(size_t)> contact_phone_callback_;
 
   absl::optional<std::string> cable_qr_string_;
+
+  // For MakeCredential requests, the PublicKeyCredentialUserEntity associated
+  // with the request.
+  device::PublicKeyCredentialUserEntity user_entity_;
 
   base::WeakPtrFactory<AuthenticatorRequestDialogModel> weak_factory_{this};
 };

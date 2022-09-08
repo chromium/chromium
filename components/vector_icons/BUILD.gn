@@ -92,6 +92,7 @@ aggregate_vector_icons("components_vector_icons") {
     "open_in_new.icon",
     "page_info_content_paste.icon",
     "palette.icon",
+    "passkey.icon",
     "pause.icon",
     "photo.icon",
     "play_arrow.icon",

@@ -567,4 +567,28 @@ class AuthenticatorQRSheetModel : public AuthenticatorSheetModelBase {
   std::u16string GetStepDescription() const override;
 };
 
+class AuthenticatorCreatePasskeySheetModel
+    : public AuthenticatorSheetModelBase {
+ public:
+  explicit AuthenticatorCreatePasskeySheetModel(
+      AuthenticatorRequestDialogModel* dialog_model);
+  ~AuthenticatorCreatePasskeySheetModel() override;
+
+  std::u16string GetUserNameForDisplay() const;
+
+ private:
+  // AuthenticatorSheetModelBase:
+  const gfx::VectorIcon& GetStepIllustration(
+      ImageColorScheme color_scheme) const override;
+  std::u16string GetStepTitle() const override;
+  std::u16string GetStepDescription() const override;
+  bool IsAcceptButtonVisible() const override;
+  bool IsAcceptButtonEnabled() const override;
+  void OnAccept() override;
+  std::u16string GetAcceptButtonLabel() const override;
+  ui::MenuModel* GetOtherMechanismsMenuModel() override;
+
+  std::unique_ptr<OtherMechanismsMenuModel> other_mechanisms_menu_model_;
+};
+
 #endif  // CHROME_BROWSER_UI_WEBAUTHN_SHEET_MODELS_H_

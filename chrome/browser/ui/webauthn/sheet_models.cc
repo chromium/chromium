@@ -14,7 +14,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
-#include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/app/vector_icons/vector_icons.h"
@@ -1332,4 +1331,72 @@ std::u16string AuthenticatorQRSheetModel::GetStepTitle() const {
 
 std::u16string AuthenticatorQRSheetModel::GetStepDescription() const {
   return l10n_util::GetStringUTF16(IDS_BROWSER_SHARING_QR_CODE_DIALOG_TOOLTIP);
+}
+
+// AuthenticatorCreatePasskeySheetModel
+// --------------------------------------------------
+
+AuthenticatorCreatePasskeySheetModel::AuthenticatorCreatePasskeySheetModel(
+    AuthenticatorRequestDialogModel* dialog_model)
+    : AuthenticatorSheetModelBase(dialog_model),
+      other_mechanisms_menu_model_(
+          std::make_unique<OtherMechanismsMenuModel>(dialog_model)) {}
+
+AuthenticatorCreatePasskeySheetModel::~AuthenticatorCreatePasskeySheetModel() =
+    default;
+
+std::u16string AuthenticatorCreatePasskeySheetModel::GetUserNameForDisplay()
+    const {
+  if (!dialog_model()->user_entity().name) {
+    // TODO(1358719): i18n
+    return u"Unknown user";
+  }
+  return base::UTF8ToUTF16(*dialog_model()->user_entity().name);
+}
+
+const gfx::VectorIcon&
+AuthenticatorCreatePasskeySheetModel::GetStepIllustration(
+    ImageColorScheme color_scheme) const {
+  return color_scheme == ImageColorScheme::kDark ? kWebauthnWelcomeDarkIcon
+                                                 : kWebauthnWelcomeIcon;
+}
+
+std::u16string AuthenticatorCreatePasskeySheetModel::GetStepTitle() const {
+  // TODO(1358719): i18n
+  return u"Create a passkey";
+}
+
+std::u16string AuthenticatorCreatePasskeySheetModel::GetStepDescription()
+    const {
+  if (dialog_model()->transport_availability()->is_off_the_record_context) {
+    // TODO(1358719): i18n
+    return u"This passkey will be used for " +
+           GetRelyingPartyIdString(dialog_model()) +
+           u". It will be stored after you exit incognito mode.";
+  }
+  // TODO(1358719): i18n
+  return u"This passkey will be used for " +
+         GetRelyingPartyIdString(dialog_model());
+}
+
+bool AuthenticatorCreatePasskeySheetModel::IsAcceptButtonVisible() const {
+  return true;
+}
+
+bool AuthenticatorCreatePasskeySheetModel::IsAcceptButtonEnabled() const {
+  return true;
+}
+
+std::u16string AuthenticatorCreatePasskeySheetModel::GetAcceptButtonLabel()
+    const {
+  return l10n_util::GetStringUTF16(IDS_WEBAUTHN_CONTINUE);
+}
+
+void AuthenticatorCreatePasskeySheetModel::OnAccept() {
+  dialog_model()->HideDialogAndDispatchToPlatformAuthenticator();
+}
+
+ui::MenuModel*
+AuthenticatorCreatePasskeySheetModel::GetOtherMechanismsMenuModel() {
+  return other_mechanisms_menu_model_.get();
 }

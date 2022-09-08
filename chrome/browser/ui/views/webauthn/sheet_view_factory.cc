@@ -20,8 +20,17 @@
 #include "chrome/browser/ui/webauthn/sheet_models.h"
 #include "chrome/browser/ui/webauthn/transport_hover_list_model.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
+#include "components/vector_icons/vector_icons.h"
 #include "device/fido/features.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/gfx/text_constants.h"
+#include "ui/views/border.h"
+#include "ui/views/controls/image_view.h"
+#include "ui/views/controls/label.h"
+#include "ui/views/layout/flex_layout.h"
+#include "ui/views/layout/layout_types.h"
+#include "ui/views/style/typography.h"
 
 namespace {
 
@@ -67,6 +76,74 @@ class AuthenticatorMechanismSelectorSheetView
                               std::make_unique<TransportHoverListModel>(
                                   model->dialog_model()->mechanisms())),
                           AutoFocus::kYes);
+  }
+};
+
+// A rounded rectangle visualizing user information for a passkey.
+class PasskeyPillView : public views::View {
+  METADATA_HEADER(PasskeyPillView);
+
+ public:
+  explicit PasskeyPillView(const std::u16string& username) {
+    constexpr size_t kVerticalMargin = 14, kHorizontalMargin = 24,
+                     kPillHeight = 63;
+
+    auto* layout = SetLayoutManager(std::make_unique<views::FlexLayout>());
+    layout->SetOrientation(views::LayoutOrientation::kHorizontal);
+    layout->SetMainAxisAlignment(views::LayoutAlignment::kStart);
+    layout->SetCrossAxisAlignment(views::LayoutAlignment::kCenter);
+    layout->SetMinimumCrossAxisSize(kPillHeight);
+
+    // Force 16px margin between icon and label.
+    layout->SetDefault(views::kMarginsKey, gfx::Insets::VH(0, 16));
+    layout->SetInteriorMargin(
+        gfx::Insets::VH(kVerticalMargin, kHorizontalMargin));
+    layout->SetCollapseMargins(true);
+
+    AddChildView(
+        std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
+            vector_icons::kPasskeyIcon, ui::kColorAccent,
+            /*icon_size=*/24)));
+
+    auto* label = AddChildView(std::make_unique<views::Label>(
+        username, views::style::CONTEXT_DIALOG_BODY_TEXT));
+
+    // Make the username label elide with appropriate behavior.
+    label->SetProperty(
+        views::kFlexBehaviorKey,
+        views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero));
+    label->SetElideBehavior(gfx::ELIDE_EMAIL);
+
+    SetBorder(views::CreateThemedRoundedRectBorder(
+        /*thickness=*/1, /*corner_radius=*/16, ui::kColorSeparator));
+  }
+};
+
+BEGIN_METADATA(PasskeyPillView, views::View)
+END_METADATA
+
+class AuthenticatorCreatePasskeySheetView
+    : public AuthenticatorRequestSheetView {
+ public:
+  explicit AuthenticatorCreatePasskeySheetView(
+      std::unique_ptr<AuthenticatorCreatePasskeySheetModel> model)
+      : AuthenticatorRequestSheetView(std::move(model)) {}
+
+  AuthenticatorCreatePasskeySheetView(
+      const AuthenticatorCreatePasskeySheetView&) = delete;
+  AuthenticatorCreatePasskeySheetView& operator=(
+      const AuthenticatorCreatePasskeySheetView&) = delete;
+
+ private:
+  // AuthenticatorRequestSheetView:
+  std::pair<std::unique_ptr<views::View>,
+            AuthenticatorRequestSheetView::AutoFocus>
+  BuildStepSpecificContent() override {
+    return std::make_pair(
+        std::make_unique<PasskeyPillView>(
+            static_cast<AuthenticatorCreatePasskeySheetModel*>(model())
+                ->GetUserNameForDisplay()),
+        AutoFocus::kNo);
   }
 };
 
@@ -233,6 +310,10 @@ std::unique_ptr<AuthenticatorRequestSheetView> CreateSheetViewForCurrentStepOf(
       sheet_view = std::make_unique<AuthenticatorRequestSheetView>(
           std::make_unique<EnterpriseAttestationPermissionRequestSheetModel>(
               dialog_model));
+      break;
+    case Step::kCreatePasskey:
+      sheet_view = std::make_unique<AuthenticatorCreatePasskeySheetView>(
+          std::make_unique<AuthenticatorCreatePasskeySheetModel>(dialog_model));
       break;
     case Step::kNotStarted:
     case Step::kConditionalMediation:

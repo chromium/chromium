@@ -14,6 +14,7 @@
 #include "content/browser/webauth/authenticator_environment_impl.h"
 #include "device/fido/features.h"
 #include "device/fido/fido_discovery_factory.h"
+#include "device/fido/public_key_credential_user_entity.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "device/fido/win/webauthn_api.h"
@@ -190,6 +191,9 @@ bool AuthenticatorRequestClientDelegate::IsVirtualEnvironmentEnabled() {
 
 void AuthenticatorRequestClientDelegate::SetConditionalRequest(
     bool is_conditional) {}
+
+void AuthenticatorRequestClientDelegate::SetUserEntityForMakeCredentialRequest(
+    const device::PublicKeyCredentialUserEntity&) {}
 
 void AuthenticatorRequestClientDelegate::OnTransportAvailabilityEnumerated(
     device::FidoRequestHandlerBase::TransportAvailabilityInfo data) {}

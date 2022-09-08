@@ -644,6 +644,7 @@ void AuthenticatorCommon::MakeCredential(
     relying_party_id_ = *rp_id_override;
   }
   request_delegate_->SetRelyingPartyId(relying_party_id_);
+  request_delegate_->SetUserEntityForMakeCredentialRequest(options->user);
 
   device::fido_filter::MaybeInitialize();
   switch (device::fido_filter::Evaluate(

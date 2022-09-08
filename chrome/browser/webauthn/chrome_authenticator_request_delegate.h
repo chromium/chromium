@@ -172,6 +172,8 @@ class ChromeAuthenticatorRequestDelegate
   void DisableUI() override;
   bool IsWebAuthnUIEnabled() override;
   void SetConditionalRequest(bool is_conditional) override;
+  void SetUserEntityForMakeCredentialRequest(
+      const device::PublicKeyCredentialUserEntity& user_entity) override;
 
   // device::FidoRequestHandlerBase::Observer:
   void OnTransportAvailabilityEnumerated(

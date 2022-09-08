@@ -18,6 +18,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "build/build_config.h"
+#include "build/buildflag.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/password_manager/chrome_webauthn_credentials_delegate.h"
 #include "chrome/browser/password_manager/chrome_webauthn_credentials_delegate_factory.h"
@@ -121,6 +122,12 @@ constexpr const gfx::VectorIcon* GetTransportIcon(
       return nullptr;
   }
 }
+
+// Whether to show Step::kCreatePasskey, which prompts the user before platform
+// authenticator dispatch during MakeCredential. This is currently only shown on
+// MacOS, because that is the only desktop platform authenticator without a
+// "native" WebAuthn UI.
+constexpr bool kShowCreatePlatformPasskeyStep = BUILDFLAG(IS_MAC);
 
 }  // namespace
 
@@ -393,14 +400,25 @@ void AuthenticatorRequestDialogModel::StartPlatformAuthenticatorFlow() {
   }
 
   if (transport_availability_.request_type ==
-          device::FidoRequestType::kMakeCredential &&
-      transport_availability_.is_off_the_record_context) {
-    after_off_the_record_interstitial_ =
-        base::BindOnce(&AuthenticatorRequestDialogModel::
-                           HideDialogAndDispatchToPlatformAuthenticator,
-                       weak_factory_.GetWeakPtr());
-    SetCurrentStep(Step::kOffTheRecordInterstitial);
-    return;
+      device::FidoRequestType::kMakeCredential) {
+    if (kShowCreatePlatformPasskeyStep &&
+        base::FeatureList::IsEnabled(
+            device::kWebAuthnNewDiscoverableCredentialsUi)) {
+      SetCurrentStep(Step::kCreatePasskey);
+      return;
+    }
+
+    if (transport_availability_.is_off_the_record_context) {
+      // Step::kCreatePasskey incorporates an incognito warning if
+      // applicable, so the OTR interstitial step only needs to show in the
+      // "old" UI.
+      after_off_the_record_interstitial_ =
+          base::BindOnce(&AuthenticatorRequestDialogModel::
+                             HideDialogAndDispatchToPlatformAuthenticator,
+                         weak_factory_.GetWeakPtr());
+      SetCurrentStep(Step::kOffTheRecordInterstitial);
+      return;
+    }
   }
 
   HideDialogAndDispatchToPlatformAuthenticator();
@@ -893,6 +911,7 @@ void AuthenticatorRequestDialogModel::StartGuidedFlowForTransport(
          current_step() == Step::kCableActivate ||
          current_step() == Step::kAndroidAccessory ||
          current_step() == Step::kConditionalMediation ||
+         current_step() == Step::kCreatePasskey ||
          current_step() == Step::kNotStarted);
   switch (transport) {
     case AuthenticatorTransport::kUsbHumanInterfaceDevice:
@@ -1046,12 +1065,16 @@ void AuthenticatorRequestDialogModel::PopulateMechanisms(
   // immediately, if this is a getAssertion.
   absl::optional<AuthenticatorTransport> priority_transport;
 
+  const bool show_create_passkey_step =
+      !is_get_assertion && kShowCreatePlatformPasskeyStep &&
+      base::FeatureList::IsEnabled(
+          device::kWebAuthnNewDiscoverableCredentialsUi);
   if (base::Contains(transport_availability_.available_transports,
                      AuthenticatorTransport::kInternal) &&
-      is_get_assertion &&
-      transport_availability_.has_platform_authenticator_credential ==
-          device::FidoRequestHandlerBase::RecognizedCredential::
-              kHasRecognizedCredential) {
+      (transport_availability_.has_platform_authenticator_credential ==
+           device::FidoRequestHandlerBase::RecognizedCredential::
+               kHasRecognizedCredential ||
+       show_create_passkey_step)) {
     priority_transport = AuthenticatorTransport::kInternal;
   }
 
@@ -1155,9 +1178,7 @@ void AuthenticatorRequestDialogModel::PopulateMechanisms(
         base::BindRepeating(
             &AuthenticatorRequestDialogModel::StartGuidedFlowForTransport,
             base::Unretained(this), transport, mechanisms_.size()),
-        transport_availability_.request_type ==
-                device::FidoRequestType::kGetAssertion &&
-            priority_transport.has_value() && *priority_transport == transport);
+        priority_transport.has_value() && *priority_transport == transport);
   }
 
   if (base::Contains(transport_availability_.available_transports, kCable)) {

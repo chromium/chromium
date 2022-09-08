@@ -823,6 +823,11 @@ void ChromeAuthenticatorRequestDelegate::SetConditionalRequest(
   is_conditional_ = is_conditional;
 }
 
+void ChromeAuthenticatorRequestDelegate::SetUserEntityForMakeCredentialRequest(
+    const device::PublicKeyCredentialUserEntity& user_entity) {
+  dialog_model()->set_user_entity(user_entity);
+}
+
 void ChromeAuthenticatorRequestDelegate::OnTransportAvailabilityEnumerated(
     device::FidoRequestHandlerBase::TransportAvailabilityInfo data) {
   if (g_observer) {

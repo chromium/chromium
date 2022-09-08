@@ -17,6 +17,7 @@
 #include "device/fido/cable/cable_discovery_data.h"
 #include "device/fido/fido_request_handler_base.h"
 #include "device/fido/fido_transport_protocol.h"
+#include "device/fido/public_key_credential_user_entity.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -311,6 +312,10 @@ class CONTENT_EXPORT AuthenticatorRequestClientDelegate
   // Set to true to enable a mode where a prominent UI is only show for
   // discoverable platform credentials.
   virtual void SetConditionalRequest(bool is_conditional);
+
+  // Optionally configures the user entity passed for a makeCredential request.
+  virtual void SetUserEntityForMakeCredentialRequest(
+      const device::PublicKeyCredentialUserEntity& user_entity);
 
   // device::FidoRequestHandlerBase::Observer:
   void OnTransportAvailabilityEnumerated(

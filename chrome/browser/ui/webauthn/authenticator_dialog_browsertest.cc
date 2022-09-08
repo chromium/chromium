@@ -264,6 +264,9 @@ class AuthenticatorDialogTest : public DialogBrowserTest {
           ExperimentServerLinkTitle::UNLOCK_YOUR_PHONE;
       model_->SetCurrentStepForTesting(
           AuthenticatorRequestDialogModel::Step::kCableActivate);
+    } else if (name == "create_passkey") {
+      model_->SetCurrentStepForTesting(
+          AuthenticatorRequestDialogModel::Step::kCreatePasskey);
     }
 #if BUILDFLAG(IS_MAC)
     else if (name == "ble_permission_mac") {
@@ -290,6 +293,7 @@ class AuthenticatorDialogTest : public DialogBrowserTest {
     EXP_SHEET(ARM_5)
     EXP_SHEET(ARM_6)
 #undef EXP_SHEET
+
     model_->StartFlow(std::move(transport_availability),
                       /*use_location_bar_bubble=*/false,
                       /*prefer_native_api=*/false);
@@ -488,3 +492,7 @@ IN_PROC_BROWSER_TEST_F(AuthenticatorDialogTest, InvokeUi_ble_permission_mac) {
   ShowAndVerifyUi();
 }
 #endif
+
+IN_PROC_BROWSER_TEST_F(AuthenticatorDialogTest, InvokeUi_create_passkey) {
+  ShowAndVerifyUi();
+}
