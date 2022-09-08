@@ -6047,10 +6047,15 @@ TEST_P(PaintPropertyTreeBuilderTest, RepeatingFixedPositionInPagedMedia) {
     auto* properties = fragment.PaintProperties();
     ASSERT_TRUE(properties);
     ASSERT_TRUE(properties->PaintOffsetTranslation());
-    EXPECT_EQ(gfx::Vector2dF(20, 400 * i - 180),
-              properties->PaintOffsetTranslation()->Translation2D());
+    if (RuntimeEnabledFeatures::LayoutNGPrintingEnabled()) {
+      EXPECT_EQ(gfx::Vector2dF(20, 20 + 400 * i),
+                properties->PaintOffsetTranslation()->Translation2D());
+    } else {
+      EXPECT_EQ(gfx::Vector2dF(20, 400 * i - 180),
+                properties->PaintOffsetTranslation()->Translation2D());
+      EXPECT_EQ(LayoutUnit(400 * i), fragment.LogicalTopInFlowThread());
+    }
     EXPECT_EQ(PhysicalOffset(), fragment.PaintOffset());
-    EXPECT_EQ(LayoutUnit(400 * i), fragment.LogicalTopInFlowThread());
   }
 
   EXPECT_FALSE(fixed_child->IsFixedPositionObjectInPagedMedia());
@@ -6059,11 +6064,15 @@ TEST_P(PaintPropertyTreeBuilderTest, RepeatingFixedPositionInPagedMedia) {
     const auto& fragment = FragmentAt(fixed_child, i);
     EXPECT_EQ(FragmentAt(fixed, i).PaintOffset() + PhysicalOffset(0, 10),
               fragment.PaintOffset());
-    EXPECT_EQ(LayoutUnit(i * 400), fragment.LogicalTopInFlowThread());
+    if (!RuntimeEnabledFeatures::LayoutNGPrintingEnabled())
+      EXPECT_EQ(LayoutUnit(i * 400), fragment.LogicalTopInFlowThread());
   }
 
   EXPECT_FALSE(normal->IsFixedPositionObjectInPagedMedia());
-  EXPECT_EQ(1u, NumFragments(normal));
+  if (RuntimeEnabledFeatures::LayoutNGPrintingEnabled())
+    EXPECT_EQ(3u, NumFragments(normal));
+  else
+    EXPECT_EQ(1u, NumFragments(normal));
 
   GetFrame().EndPrinting();
   UpdateAllLifecyclePhasesForTest();
@@ -6109,10 +6118,15 @@ TEST_P(PaintPropertyTreeBuilderTest,
   for (int i = 0; i < 3; i++) {
     const auto& fragment = FragmentAt(fixed, i);
     EXPECT_EQ(PhysicalOffset(), fragment.PaintOffset());
-    EXPECT_EQ(LayoutUnit(i * 400), fragment.LogicalTopInFlowThread());
     const auto* properties = fragment.PaintProperties();
-    EXPECT_EQ(gfx::Vector2dF(20, -180 + i * 400),
-              properties->PaintOffsetTranslation()->Translation2D());
+    if (RuntimeEnabledFeatures::LayoutNGPrintingEnabled()) {
+      EXPECT_EQ(gfx::Vector2dF(20, 20 + i * 400),
+                properties->PaintOffsetTranslation()->Translation2D());
+    } else {
+      EXPECT_EQ(gfx::Vector2dF(20, -180 + i * 400),
+                properties->PaintOffsetTranslation()->Translation2D());
+      EXPECT_EQ(LayoutUnit(i * 400), fragment.LogicalTopInFlowThread());
+    }
     EXPECT_EQ(gfx::Vector2dF(10, 0), properties->Transform()->Translation2D());
     EXPECT_EQ(properties->PaintOffsetTranslation(),
               properties->Transform()->Parent());
@@ -6122,7 +6136,8 @@ TEST_P(PaintPropertyTreeBuilderTest,
   for (int i = 0; i < 3; i++) {
     const auto& fragment = FragmentAt(fixed_child, i);
     EXPECT_EQ(PhysicalOffset(0, 10), fragment.PaintOffset());
-    EXPECT_EQ(LayoutUnit(i * 400), fragment.LogicalTopInFlowThread());
+    if (!RuntimeEnabledFeatures::LayoutNGPrintingEnabled())
+      EXPECT_EQ(LayoutUnit(i * 400), fragment.LogicalTopInFlowThread());
     EXPECT_EQ(FragmentAt(fixed, i).PaintProperties()->Transform(),
               &fragment.LocalBorderBoxProperties().Transform());
   }
