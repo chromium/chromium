@@ -147,12 +147,6 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<base::TimeDelta>
 // Enables the Prerender2 feature: https://crbug.com/1126305
 // But see comments in the .cc file also.
 BLINK_COMMON_EXPORT extern const base::Feature kPrerender2;
-
-// Enables the multiple prerendering in a sequential way:
-// https://crbug.com/1355151
-BLINK_COMMON_EXPORT extern const base::Feature
-    kPrerender2SequentialPrerendering;
-
 // The number of prerenderings that can run concurrently. This only applies for
 // prerenderings triggered by speculation rules.
 BLINK_COMMON_EXPORT extern const char
