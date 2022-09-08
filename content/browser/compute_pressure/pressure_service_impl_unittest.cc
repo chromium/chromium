@@ -406,4 +406,50 @@ TEST_F(PressureServiceImplTest, InsecureOrigin) {
             bad_message_observer.WaitForBadMessage());
 }
 
+// Allows callers to run a custom callback before running
+// FakePressureManager::AddClient().
+class InterceptingFakePressureManager : public device::FakePressureManager {
+ public:
+  explicit InterceptingFakePressureManager(
+      base::OnceClosure interception_callback)
+      : interception_callback_(std::move(interception_callback)) {}
+
+  void AddClient(mojo::PendingRemote<device::mojom::PressureClient> client,
+                 AddClientCallback callback) override {
+    std::move(interception_callback_).Run();
+    device::FakePressureManager::AddClient(std::move(client),
+                                           std::move(callback));
+  }
+
+ private:
+  base::OnceClosure interception_callback_;
+};
+
+// Test for https://crbug.com/1355662: destroying PressureServiceImplTest
+// between calling PressureServiceImpl::BindObserver() and its |remote_|
+// invoking the callback it receives does not crash.
+TEST_F(PressureServiceImplTest, DestructionOrderWithOngoingCallback) {
+  auto intercepting_fake_pressure_manager =
+      std::make_unique<InterceptingFakePressureManager>(
+          base::BindLambdaForTesting([&]() {
+            // Delete the current WebContents and consequently trigger
+            // PressureServiceImpl's destruction between calling
+            // PressureServiceImpl::BindObserver() and its |remote_|
+            // invoking the callback it receives.
+            DeleteContents();
+          }));
+  pressure_manager_overrider_->set_fake_pressure_manager(
+      std::move(intercepting_fake_pressure_manager));
+
+  base::RunLoop run_loop;
+  pressure_service_.set_disconnect_handler(run_loop.QuitClosure());
+  FakePressureObserver observer;
+  pressure_service_->BindObserver(
+      observer.BindNewPipeAndPassRemote(),
+      base::BindOnce([](blink::mojom::PressureStatus) {
+        ADD_FAILURE() << "Reached BindObserver callback unexpectedly";
+      }));
+  run_loop.Run();
+}
+
 }  // namespace content

@@ -95,15 +95,18 @@ class CONTENT_EXPORT PressureServiceImpl
   // Stored to implement rate-limiting.
   base::Time last_reported_timestamp_ GUARDED_BY_CONTEXT(sequence_checker_);
 
-  mojo::Remote<blink::mojom::PressureObserver> observer_
-      GUARDED_BY_CONTEXT(sequence_checker_);
-  mojo::Receiver<blink::mojom::PressureService> GUARDED_BY_CONTEXT(
-      sequence_checker_) receiver_{this};
-
+  // Callback from |receiver_| is passed to |remote_| and the Receiver
+  // should be destroyed first so that the callback is invalidated before
+  // being discarded.
   mojo::Remote<device::mojom::PressureManager> remote_
       GUARDED_BY_CONTEXT(sequence_checker_);
   mojo::Receiver<device::mojom::PressureClient> GUARDED_BY_CONTEXT(
       sequence_checker_) client_{this};
+
+  mojo::Remote<blink::mojom::PressureObserver> observer_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+  mojo::Receiver<blink::mojom::PressureService> GUARDED_BY_CONTEXT(
+      sequence_checker_) receiver_{this};
 
   friend DocumentUserData;
   DOCUMENT_USER_DATA_KEY_DECL();
