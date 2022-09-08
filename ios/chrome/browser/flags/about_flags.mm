@@ -357,12 +357,13 @@ const FeatureEntry::FeatureVariation kStartSurfaceVariations[] = {
 const FeatureEntry::FeatureParam kModuleRefreshMinimizeSpacing[] = {
     {kContentSuggestionsUIModuleRefreshMinimizeSpacingParam, "true"}};
 const FeatureEntry::FeatureParam kModuleRefreshNoHeaders[] = {
+    {kContentSuggestionsUIModuleRefreshMinimizeSpacingParam, "true"},
     {kContentSuggestionsUIModuleRefreshRemoveHeadersParam, "true"}};
 
 const FeatureEntry::FeatureVariation kModuleRefreshVariations[] = {
     {"Enabled with minimized spacing", kModuleRefreshMinimizeSpacing,
      std::size(kModuleRefreshMinimizeSpacing), nullptr},
-    {"Enabled with no headers", kModuleRefreshNoHeaders,
+    {"Enabled with no headers and minimized spacing", kModuleRefreshNoHeaders,
      std::size(kModuleRefreshNoHeaders), nullptr},
 };
 

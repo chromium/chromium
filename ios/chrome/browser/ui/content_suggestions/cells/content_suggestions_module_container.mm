@@ -77,12 +77,12 @@ const float kTrendingQueriesContentHeight = 103;
     self.backgroundColor =
         [UIColor colorNamed:kGroupedSecondaryBackgroundColor];
 
-      self.layer.shadowColor = [UIColor blackColor].CGColor;
-          self.layer.shadowRadius = kShadowRadius;
-          self.layer.shadowOpacity = kShadowOpacity;
-      // Render shadow as bitmap to improve snapshot render layout performance.
-      self.layer.shouldRasterize = YES;
-      self.layer.rasterizationScale = UIScreen.mainScreen.scale;
+    self.layer.shadowColor = [UIColor blackColor].CGColor;
+    self.layer.shadowRadius = kShadowRadius;
+    self.layer.shadowOpacity = kShadowOpacity;
+    // Render shadow as bitmap to improve snapshot render layout performance.
+    self.layer.shouldRasterize = YES;
+    self.layer.rasterizationScale = UIScreen.mainScreen.scale;
 
     contentView.translatesAutoresizingMaskIntoConstraints = NO;
     [self addSubview:contentView];
@@ -103,9 +103,8 @@ const float kTrendingQueriesContentHeight = 103;
         [self.title.leadingAnchor
             constraintEqualToAnchor:self.leadingAnchor
                            constant:kContentHorizontalInset],
-        [self.topAnchor
-            constraintEqualToAnchor:self.title.topAnchor
-                           constant:-[self titleTopInset]],
+        [self.topAnchor constraintEqualToAnchor:self.title.topAnchor
+                                       constant:-[self titleTopInset]],
         // Ensures placeholder for title is visible.
         [self.title.widthAnchor
             constraintGreaterThanOrEqualToConstant:kTitleMinimumWidth],
@@ -118,26 +117,24 @@ const float kTrendingQueriesContentHeight = 103;
         [contentView.trailingAnchor
             constraintEqualToAnchor:self.trailingAnchor
                            constant:-kContentHorizontalInset],
-        [contentView.bottomAnchor
-            constraintEqualToAnchor:self.bottomAnchor],
+        [contentView.bottomAnchor constraintEqualToAnchor:self.bottomAnchor],
         [contentView.topAnchor constraintEqualToAnchor:self.title.bottomAnchor
                                               constant:[self titleSpacing]],
       ]];
     } else {
       CGFloat horizontalInsets =
-          ShouldRemoveHeadersForModuleRefresh() ? kContentHorizontalInset : 0;
+          (ShouldRemoveHeadersForModuleRefresh() &&
+           self.type != ContentSuggestionsModuleTypeReturnToRecentTab)
+              ? kContentHorizontalInset
+              : 0;
       [NSLayoutConstraint activateConstraints:@[
-        [contentView.leadingAnchor
-            constraintEqualToAnchor:self.leadingAnchor
-                           constant:horizontalInsets],
-        [contentView.trailingAnchor
-            constraintEqualToAnchor:self.trailingAnchor
-                           constant:-horizontalInsets],
-        [contentView.bottomAnchor
-            constraintEqualToAnchor:self.bottomAnchor],
-        [contentView.topAnchor
-            constraintEqualToAnchor:self.topAnchor
-                           constant:[self titleTopInset]],
+        [contentView.leadingAnchor constraintEqualToAnchor:self.leadingAnchor
+                                                  constant:horizontalInsets],
+        [contentView.trailingAnchor constraintEqualToAnchor:self.trailingAnchor
+                                                   constant:-horizontalInsets],
+        [contentView.bottomAnchor constraintEqualToAnchor:self.bottomAnchor],
+        [contentView.topAnchor constraintEqualToAnchor:self.topAnchor
+                                              constant:[self titleTopInset]],
       ]];
     }
     // Height constraint must be flexible since on launch before the Feed
@@ -225,30 +222,27 @@ const float kTrendingQueriesContentHeight = 103;
 // ShouldRemoveHeadersForModuleRefresh() is YES where there are no headers for
 // modules.
 - (CGFloat)titleTopInset {
-  if (ShouldMinimizeSpacingForModuleRefresh()) {
+  if (ShouldRemoveHeadersForModuleRefresh() ||
+      ShouldMinimizeSpacingForModuleRefresh()) {
     return self.type == ContentSuggestionsModuleTypeReturnToRecentTab
                ? 0
                : kTitleShortenedTopInset;
-  } else if (ShouldRemoveHeadersForModuleRefresh() &&
-             self.type != ContentSuggestionsModuleTypeTrendingQueries) {
-    return self.type == ContentSuggestionsModuleTypeReturnToRecentTab
-               ? 0
-               : kTitleTopInset;
-  } else {
-    return kTitleTopInset;
   }
+  return kTitleTopInset;
 }
 
 // Returns the spacing between the module and title and the content.
 - (CGFloat)titleSpacing {
+  // Order matters here since if there is no title shown, then there cannot be a
+  // need for spacing between the title and module contents.
+  if (ShouldRemoveHeadersForModuleRefresh() &&
+      self.type != ContentSuggestionsModuleTypeTrendingQueries) {
+    return 0;
+  }
   if (ShouldMinimizeSpacingForModuleRefresh()) {
     return kContentTitleShortenedVerticalSpacing;
-  } else if (ShouldRemoveHeadersForModuleRefresh() &&
-             self.type != ContentSuggestionsModuleTypeTrendingQueries) {
-    return 0;
-  } else {
-    return kContentTitleVerticalSpacing;
   }
+  return kContentTitleVerticalSpacing;
 }
 
 @end

@@ -628,8 +628,13 @@ CGFloat ModuleVerticalSpacing() {
   if (IsContentSuggestionsUIModuleRefreshEnabled() &&
       IsTrendingQueriesModuleEnabled() &&
       [self.trendingQueriesModuleContainer superview]) {
-    height += [self.trendingQueriesModuleContainer calculateIntrinsicHeight] +
-              ModuleVerticalSpacing();
+    height += [self.trendingQueriesModuleContainer calculateIntrinsicHeight];
+    // Only skip bottom spacing if minimizing spacing and Trending Queries is
+    // the last module.
+    if (!ShouldMinimizeSpacingForModuleRefresh() ||
+        !ShouldHideShortcutsForTrendingQueries()) {
+      height += ModuleVerticalSpacing();
+    }
   }
   if ([self.shortcutsViews count] > 0) {
     if (IsContentSuggestionsUIModuleRefreshEnabled()) {
