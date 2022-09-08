@@ -152,7 +152,7 @@ void AppListTestHelper::CheckState(AppListViewState state) {
 
 void AppListTestHelper::AddAppItems(int num_apps) {
   AddAppItemsWithColorAndName(num_apps, IconColorType::kNotSet,
-                              /*set_name=*/false);
+                              /*set_name=*/true);
 }
 
 void AppListTestHelper::AddAppItemsWithColorAndName(int num_apps,

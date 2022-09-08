@@ -171,10 +171,13 @@ class AppListControllerImplTest : public AshTestBase {
   void PopulateItem(int num) {
     AppListModel* const model = GetAppListModel();
     for (int i = 0; i < num; i++) {
-      std::unique_ptr<AppListItem> item(new AppListItem(
+      AppListItem* item = model->AddItem(std::make_unique<AppListItem>(
           "app_id" +
           base::UTF16ToUTF8(base::FormatNumber(populated_item_count_))));
-      model->AddItem(std::move(item));
+      // Give each item a name so that the accessibility paint checks pass.
+      // (Focusable items should have accessible names.)
+      model->SetItemName(item, item->id());
+
       ++populated_item_count_;
     }
   }
@@ -633,6 +636,10 @@ TEST_F(AppListControllerImplTestWithNotificationBadging,
   AppListItem* app = model->AddItem(std::make_unique<AppListItem>("app_1"));
   model->AddItemToFolder(std::make_unique<AppListItem>("app_2"), folder_id);
 
+  // Give this item a name so that the accessibility paint checks pass.
+  // (Focusable items should have accessible names.)
+  GetAppListModel()->SetItemName(app, app->id());
+
   ShowAppListNow(AppListViewState::kFullscreenAllApps);
 
   test::AppsGridViewTestApi apps_grid_view_test_api(GetAppsGridView());
@@ -664,7 +671,12 @@ TEST_F(AppListControllerImplTest, DragItemFromAppsGridView) {
   // Add icons with the same app id to Shelf and AppsGridView respectively.
   ShelfViewTestAPI shelf_view_test_api(shelf->GetShelfViewForTesting());
   std::string app_id = shelf_view_test_api.AddItem(TYPE_PINNED_APP).app_id;
-  GetAppListModel()->AddItem(std::make_unique<AppListItem>(app_id));
+  AppListItem* item =
+      GetAppListModel()->AddItem(std::make_unique<AppListItem>(app_id));
+
+  // Give each item a name so that the accessibility paint checks pass.
+  // (Focusable items should have accessible names.)
+  GetAppListModel()->SetItemName(item, item->id());
 
   AppsGridView* apps_grid_view = GetAppsGridView();
   views::test::RunScheduledLayout(apps_grid_view);

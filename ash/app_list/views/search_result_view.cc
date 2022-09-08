@@ -41,7 +41,6 @@
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/paint_vector_icon.h"
-#include "ui/views/accessibility/accessibility_paint_checks.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/image_view.h"
@@ -286,10 +285,6 @@ SearchResultView::SearchResultView(
   // result views as needed.
   SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
 
-  // TODO(crbug.com/1218186): Remove this, this is in place temporarily to be
-  // able to submit accessibility checks, but this focusable View needs to
-  // add a name so that the screen reader knows what to announce.
-  SetProperty(views::kSkipAccessibilityPaintChecks, true);
   SetCallback(base::BindRepeating(&SearchResultView::OnButtonPressed,
                                   base::Unretained(this)));
 
@@ -1188,6 +1183,16 @@ void SearchResultView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   // ChromeVox. see details in crbug.com/924776.
   node_data->role = ax::mojom::Role::kListBoxOption;
   node_data->SetDefaultActionVerb(ax::mojom::DefaultActionVerb::kClick);
+
+  // It is possible for the view to be visible but lack a result. When this
+  // happens, GetAccessibleName() will return an empty string. Because the
+  // focusable state is set in the constructor and not updated when the
+  // result is removed, the accessibility paint checks will fail.
+  if (!result()) {
+    node_data->SetNameExplicitlyEmpty();
+    return;
+  }
+
   node_data->SetName(GetAccessibleName());
 }
 

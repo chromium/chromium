@@ -26,7 +26,6 @@
 #include "ui/color/color_id.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
-#include "ui/views/accessibility/accessibility_paint_checks.h"
 #include "ui/views/animation/flood_fill_ink_drop_ripple.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_impl.h"
@@ -70,10 +69,6 @@ SearchResultSuggestionChipView::SearchResultSuggestionChipView(
                             : ui::kColorAshAppListFocusRingCompat),
       view_delegate_(view_delegate) {
   SetFocusBehavior(FocusBehavior::ALWAYS);
-  // TODO(crbug.com/1218186): Remove this, this is in place temporarily to be
-  // able to submit accessibility checks, but this focusable View needs to
-  // add a name so that the screen reader knows what to announce.
-  SetProperty(views::kSkipAccessibilityPaintChecks, true);
   SetCallback(
       base::BindRepeating(&SearchResultSuggestionChipView::OnButtonPressed,
                           base::Unretained(this)));
@@ -225,7 +220,9 @@ void SearchResultSuggestionChipView::UpdateSuggestionChipView() {
   SetIcon(result()->chip_icon());
   SetText(result()->title());
 
-  std::u16string accessible_name = result()->title();
+  std::u16string accessible_name = result()->accessible_name().empty()
+                                       ? result()->title()
+                                       : result()->accessible_name();
   if (result()->id() == kInternalAppIdContinueReading) {
     accessible_name = l10n_util::GetStringFUTF16(
         IDS_APP_LIST_CONTINUE_READING_ACCESSIBILE_NAME, accessible_name);

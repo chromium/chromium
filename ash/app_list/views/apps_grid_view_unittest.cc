@@ -293,8 +293,12 @@ class AppsGridViewTest : public AshTestBase, views::WidgetObserver {
     // Populate some suggested apps.
     search_model_ = std::make_unique<SearchModel>();
     for (size_t i = 0; i < kNumOfSuggestedApps; ++i) {
-      search_model_->results()->Add(
-          std::make_unique<TestSuggestedSearchResult>());
+      auto search_result = std::make_unique<TestSuggestedSearchResult>();
+      // Give each item a name so that the accessibility paint checks pass.
+      // (Focusable items should have accessible names.)
+      search_result->SetAccessibleName(
+          base::UTF8ToUTF16(base::StringPrintf("item %zu", i)));
+      search_model_->results()->Add(std::move(search_result));
     }
 
     // Replace the model before the app list views are created, because some

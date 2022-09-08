@@ -124,6 +124,12 @@ class AppListMetricsTest : public AshTestBase {
     for (size_t i = 0; i < 4; i++) {
       auto search_result = std::make_unique<SearchResult>();
       search_result->set_display_type(SearchResultDisplayType::kTile);
+
+      // Give each item a name so that the accessibility paint checks pass.
+      // (Focusable items should have accessible names.)
+      search_result->SetAccessibleName(
+          base::UTF8ToUTF16(base::StringPrintf("item %zu", i)));
+
       search_model_->results()->Add(std::move(search_result));
     }
     GetAppListTestHelper()->WaitUntilIdle();
@@ -158,6 +164,12 @@ class AppListMetricsTest : public AshTestBase {
       auto search_result_chip = std::make_unique<SearchResult>();
       search_result_chip->set_display_type(SearchResultDisplayType::kChip);
       search_result_chip->set_is_recommendation(true);
+
+      // Give each item a name so that the accessibility paint checks pass.
+      // (Focusable items should have accessible names.)
+      search_result_chip->SetAccessibleName(
+          base::UTF8ToUTF16(base::StringPrintf("item %zu", i)));
+
       search_model_->results()->Add(std::move(search_result_chip));
     }
     GetAppListTestHelper()->WaitUntilIdle();
@@ -180,13 +192,16 @@ class AppListMetricsTest : public AshTestBase {
     PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN);
   }
 
-  void PopulateAndLaunchAppInGrid() {
+  void PopulateAndLaunchAppInGrid(int num = 4) {
     // Populate apps in the root app grid.
     AppListModel* model = AppListModelProvider::Get()->model();
-    model->AddItem(std::make_unique<AppListItem>("item 0"));
-    model->AddItem(std::make_unique<AppListItem>("item 1"));
-    model->AddItem(std::make_unique<AppListItem>("item 2"));
-    model->AddItem(std::make_unique<AppListItem>("item 3"));
+    for (int i = 0; i < num; i++) {
+      AppListItem* item = model->AddItem(
+          std::make_unique<AppListItem>(base::StringPrintf("item %d", i)));
+      // Give each item a name so that the accessibility paint checks pass.
+      // (Focusable items should have accessible names.)
+      model->SetItemName(item, item->id());
+    }
 
     AppListView::TestApi test_api(
         Shell::Get()->app_list_controller()->fullscreen_presenter()->GetView());

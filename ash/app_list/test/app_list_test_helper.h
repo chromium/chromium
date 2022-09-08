@@ -116,7 +116,8 @@ class AppListTestHelper {
   void WaitForFolderAnimation();
 
   // Adds `num_apps` to the app list model. These app items have transparent
-  // icons and their names are not set.
+  // icons. Their names are set so that the accessibility paint checker tests
+  // pass (focusable views are expected to have accessible names).
   void AddAppItems(int num_apps);
 
   // Similar to `AddAppItems()` but provides the options to set item icon colors

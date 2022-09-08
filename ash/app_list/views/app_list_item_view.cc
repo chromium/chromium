@@ -44,7 +44,6 @@
 #include "ui/gfx/image/canvas_image_source.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/shadow_value.h"
-#include "ui/views/accessibility/accessibility_paint_checks.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
@@ -276,10 +275,6 @@ AppListItemView::AppListItemView(const AppListConfig* app_list_config,
       view_delegate_(view_delegate),
       context_(context) {
   DCHECK(app_list_config_);
-  // TODO(crbug.com/1218186): Remove this, this is in place temporarily to be
-  // able to submit accessibility checks. This crashes if fetching a11y node
-  // data during paint because message_view_ is null.
-  SetProperty(views::kSkipAccessibilityPaintChecks, true);
   DCHECK(grid_delegate_);
   DCHECK(view_delegate_);
   SetFocusBehavior(FocusBehavior::ALWAYS);
@@ -616,11 +611,18 @@ void AppListItemView::SetItemName(const std::u16string& display_name,
 }
 
 void AppListItemView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  if (!item_weak_)
-    return;
-
+  // When this item is being removed, there will still be an accessible object
+  // in the accessibility tree until it is destroyed. Populating AXNodeData
+  // with the information from the button makes it possible for assistive
+  // technologies to obtain the name and role/type of the control along with
+  // relevant states such as disabled. It is also necessary to pass the
+  // accessibility paint checks: items that claim to be focusable must have
+  // a valid role.
   DCHECK(node_data);
   Button::GetAccessibleNodeData(node_data);
+
+  if (!item_weak_)
+    return;
 
   auto app_status = item_weak_->app_status();
   switch (app_status) {

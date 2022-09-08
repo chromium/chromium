@@ -156,6 +156,10 @@ std::unique_ptr<TestSearchResult> CreateOmniboxSuggestionResult(
                                        u"Remove", true /*visible_on_hover*/));
   suggestion_result->SetActions(actions);
 
+  // Give this item a name so that the accessibility paint checks pass.
+  // (Focusable items should have accessible names.)
+  suggestion_result->SetAccessibleName(base::UTF8ToUTF16(result_id));
+
   return suggestion_result;
 }
 
@@ -3773,11 +3777,17 @@ TEST_F(AppListPresenterNonBubbleTest, SearchClearedOnModelChange) {
   SearchModel* search_model = GetSearchModel();
   auto test_result = std::make_unique<TestSearchResult>();
   test_result->set_result_id("test");
+  // Give this item a name so that the accessibility paint checks pass.
+  // (Focusable items should have accessible names.)
+  test_result->SetAccessibleName(u"test");
   test_result->set_display_type(SearchResultDisplayType::kList);
   search_model->results()->Add(std::move(test_result));
 
   auto test_tile_result = std::make_unique<TestSearchResult>();
   test_tile_result->set_result_id("test_tile");
+  // Give this item a name so that the accessibility paint checks pass.
+  // (Focusable items should have accessible names.)
+  test_tile_result->SetAccessibleName(u"test_tile");
   test_tile_result->set_display_type(SearchResultDisplayType::kTile);
   search_model->results()->Add(std::move(test_tile_result));
 
@@ -3968,8 +3978,13 @@ TEST_P(AppListPresenterTest, ShouldNotCrashOnItemClickAfterMonitorDisconnect) {
   // Set up two displays.
   UpdateDisplay("1024x768,1200x900");
   AppListModel* model = GetAppListModel();
-  model->AddItem(std::make_unique<AppListItem>("item 0"));
-  model->AddItem(std::make_unique<AppListItem>("item 1"));
+  AppListItem* item0 = model->AddItem(std::make_unique<AppListItem>("item 0"));
+  AppListItem* item1 = model->AddItem(std::make_unique<AppListItem>("item 1"));
+
+  // Give each item a name so that the accessibility paint checks pass.
+  // (Focusable items should have accessible names.)
+  model->SetItemName(item0, item0->id());
+  model->SetItemName(item1, item1->id());
 
   // Open and close app list on secondary display.
   AppListTestHelper* helper = GetAppListTestHelper();
@@ -3988,6 +4003,7 @@ TEST_P(AppListPresenterTest, ShouldNotCrashOnItemClickAfterMonitorDisconnect) {
 
   // Click on an item.
   AppListItemView* item_view = apps_grid_view()->GetItemViewAt(0);
+  EXPECT_EQ(item_view->GetAccessibleName(), base::UTF8ToUTF16(item0->id()));
   LeftClickOn(item_view);
 
   // No crash. No use-after-free detected by ASAN.
