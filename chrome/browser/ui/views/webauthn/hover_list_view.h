@@ -40,8 +40,7 @@ class WebAuthnHoverButton;
 //  |       | Item 3 description   | > |
 //  +----------------------------------+
 //
-class HoverListView : public views::View,
-                      public HoverListModel::Observer {
+class HoverListView : public views::View {
  public:
   METADATA_HEADER(HoverListView);
   explicit HoverListView(std::unique_ptr<HoverListModel> model);
@@ -60,25 +59,14 @@ class HoverListView : public views::View,
                           std::u16string item_description,
                           int item_tag);
   void CreateAndAppendPlaceholderItem();
-  void AddListItemView(int item_tag);
-  void RemoveListItemView(int item_tag);
-  void RemoveListItemView(ListItemViews list_item);
   views::Button& GetTopListItemView() const;
   int GetPreferredViewHeight() const;
 
   // views::View:
   void RequestFocus() override;
 
-  // HoverListModel::Observer:
-  void OnListItemAdded(int item_tag) override;
-  void OnListItemRemoved(int removed_item_view_tag) override;
-  void OnListItemChanged(int changed_list_item_tag,
-                         HoverListModel::ListItemChangeType type) override;
-
   std::unique_ptr<HoverListModel> model_;
   std::map<int, ListItemViews> tags_to_list_item_views_;
-  std::vector<WebAuthnHoverButton*> throbber_views_;
-  absl::optional<ListItemViews> placeholder_list_item_view_;
   raw_ptr<views::ScrollView> scroll_view_;
   raw_ptr<views::View> item_container_;
   // is_two_line_list_, if true, indicates that list items should be sized so

@@ -12,22 +12,6 @@ TransportHoverListModel::TransportHoverListModel(
 
 TransportHoverListModel::~TransportHoverListModel() = default;
 
-bool TransportHoverListModel::ShouldShowPlaceholderForEmptyList() const {
-  return false;
-}
-
-std::u16string TransportHoverListModel::GetPlaceholderText() const {
-  return std::u16string();
-}
-
-const gfx::VectorIcon* TransportHoverListModel::GetPlaceholderIcon() const {
-  return &gfx::kNoneIcon;
-}
-
-std::vector<int> TransportHoverListModel::GetThrobberTags() const {
-  return {};
-}
-
 std::vector<int> TransportHoverListModel::GetButtonTags() const {
   std::vector<int> tag_list(mechanisms_.size());
   for (size_t i = 0; i < mechanisms_.size(); i++) {

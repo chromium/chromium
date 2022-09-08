@@ -34,10 +34,6 @@ class AccountHoverListModel : public HoverListModel {
   ~AccountHoverListModel() override;
 
   // HoverListModel:
-  bool ShouldShowPlaceholderForEmptyList() const override;
-  std::u16string GetPlaceholderText() const override;
-  const gfx::VectorIcon* GetPlaceholderIcon() const override;
-  std::vector<int> GetThrobberTags() const override;
   std::vector<int> GetButtonTags() const override;
   std::u16string GetItemText(int item_tag) const override;
   std::u16string GetDescriptionText(int item_tag) const override;

@@ -19,22 +19,6 @@ AccountHoverListModel::AccountHoverListModel(
 
 AccountHoverListModel::~AccountHoverListModel() = default;
 
-bool AccountHoverListModel::ShouldShowPlaceholderForEmptyList() const {
-  return false;
-}
-
-std::u16string AccountHoverListModel::GetPlaceholderText() const {
-  return std::u16string();
-}
-
-const gfx::VectorIcon* AccountHoverListModel::GetPlaceholderIcon() const {
-  return &kUserAccountAvatarIcon;
-}
-
-std::vector<int> AccountHoverListModel::GetThrobberTags() const {
-  return {};
-}
-
 std::vector<int> AccountHoverListModel::GetButtonTags() const {
   std::vector<int> tag_list(creds_->size());
   for (size_t i = 0; i < creds_->size(); ++i)
