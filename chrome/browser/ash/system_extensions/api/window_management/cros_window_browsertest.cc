@@ -472,14 +472,8 @@ IN_PROC_BROWSER_TEST_F(CrosWindowManagementBrowserTest, CrosWindowEventIdl) {
   RunTest("cros_window_event_idl.js");
 }
 
-IN_PROC_BROWSER_TEST_F(CrosWindowExtensionBrowserTest, StartEvent) {
-  // TODO(b/230811571): Rather than using the console to wait for the
-  // observer to get called, we should add support for running async functions
-  // to content::ServiceWorkerContext::ExecuteScriptForTest.
-  auto sw_console_observer = GetConsoleObserver();
-  InstallSystemExtension();
-  EXPECT_EQ(u"start event fired",
-            sw_console_observer.WaitAndGetNextConsoleMessage());
+IN_PROC_BROWSER_TEST_F(CrosWindowManagementBrowserTest, StartEvent) {
+  RunTest("cros_start_event.js");
 }
 
 IN_PROC_BROWSER_TEST_F(CrosWindowExtensionBrowserTest, CloseEvent) {
