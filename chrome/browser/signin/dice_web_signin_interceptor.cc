@@ -543,10 +543,15 @@ void DiceWebSigninInterceptor::OnInterceptionReadyToBeProcessed(
       return;
     } else {
       interception_type = SigninInterceptionType::kEnterpriseForced;
-      show_link_data_option = signin_util::
-          ProfileSeparationAllowsKeepingUnmanagedBrowsingDataInManagedProfile(
-              profile_,
-              intercepted_account_level_policy_value_.value_or(std::string()));
+      auto primary_account_id =
+          identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
+      show_link_data_option =
+          (primary_account_id.empty() ||
+           primary_account_id == info.account_id) &&
+          signin_util::
+              ProfileSeparationAllowsKeepingUnmanagedBrowsingDataInManagedProfile(
+                  profile_, intercepted_account_level_policy_value_.value_or(
+                                std::string()));
       RecordSigninInterceptionHeuristicOutcome(
           SigninInterceptionHeuristicOutcome::kInterceptEnterpriseForced);
     }
