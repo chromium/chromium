@@ -1932,20 +1932,6 @@ AutotestPrivateIsArcProvisionedFunction::Run() {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-// AutotestPrivateIsLacrosPrimaryBrowserFunction
-///////////////////////////////////////////////////////////////////////////////
-
-AutotestPrivateIsLacrosPrimaryBrowserFunction::
-    ~AutotestPrivateIsLacrosPrimaryBrowserFunction() = default;
-
-ExtensionFunction::ResponseAction
-AutotestPrivateIsLacrosPrimaryBrowserFunction::Run() {
-  DVLOG(1) << "AutotestPrivateIsLacrosPrimaryBrowserFunction";
-  return RespondNow(
-      WithArguments(crosapi::browser_util::IsLacrosPrimaryBrowser()));
-}
-
-///////////////////////////////////////////////////////////////////////////////
 // AutotestPrivateGetLacrosInfoFunction
 ///////////////////////////////////////////////////////////////////////////////
 

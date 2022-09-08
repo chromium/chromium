@@ -265,8 +265,6 @@ namespace autotestPrivate {
 
   callback IsArcPackageListInitialRefreshedCallback = void (boolean refreshed);
 
-  callback IsLacrosPrimaryBrowserCallback = void (boolean primary);
-
   // A mapping of crosapi::BrowserManager::State
   enum LacrosState {
     NotInitialized,
@@ -860,13 +858,6 @@ namespace autotestPrivate {
     // [deprecated="Use getArcState()"]
     [supportsPromises] static void isArcProvisioned(
         IsArcProvisionedCallback callback);
-
-    // Returns true if Lacros is the primary browser. This includes the case
-    // where Lacros is the only browser.
-    // NOTE: Because the answer depends on the policy, this function should
-    // be used only after profile initialization.
-    [supportsPromises] static void isLacrosPrimaryBrowser(
-        IsLacrosPrimaryBrowserCallback callback);
 
     // Gets various information about the state of lacros on the system.
     [supportsPromises] static void getLacrosInfo(
