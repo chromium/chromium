@@ -9,6 +9,7 @@ import android.app.Activity;
 import android.app.ActivityManager.RecentTaskInfo;
 import android.app.Notification;
 import android.app.SearchManager;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -371,11 +372,20 @@ public class LaunchIntentDispatcher implements IntentHandler.IntentHandlerDelega
         }
         maybePrefetchDnsInBackground();
 
+        // Strip EXTRA_CALLING_ACTIVITY_PACKAGE if present on the original intent so that it
+        // cannot be spoofed by CCT client apps.
+        IntentUtils.safeRemoveExtra(mIntent, IntentHandler.EXTRA_CALLING_ACTIVITY_PACKAGE);
+
         // Create and fire a launch intent.
         Intent launchIntent = createCustomTabActivityIntent(mActivity, mIntent);
         Uri extraReferrer = mActivity.getReferrer();
         if (extraReferrer != null) {
             launchIntent.putExtra(IntentHandler.EXTRA_ACTIVITY_REFERRER, extraReferrer.toString());
+        }
+        ComponentName callingActivity = mActivity.getCallingActivity();
+        if (callingActivity != null) {
+            launchIntent.putExtra(
+                    IntentHandler.EXTRA_CALLING_ACTIVITY_PACKAGE, callingActivity.getPackageName());
         }
 
         // Allow disk writes during startActivity() to avoid strict mode violations on some

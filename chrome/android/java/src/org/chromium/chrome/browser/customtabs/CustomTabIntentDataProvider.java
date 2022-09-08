@@ -653,7 +653,15 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
     @Override
     @Nullable
     public String getClientPackageName() {
-        return CustomTabsConnection.getInstance().getClientPackageNameForSession(mSession);
+        String packageNameForSession =
+                CustomTabsConnection.getInstance().getClientPackageNameForSession(mSession);
+        if (!TextUtils.isEmpty(packageNameForSession)) return packageNameForSession;
+
+        String packageNameFromIntent = IntentUtils.safeGetStringExtra(
+                mIntent, IntentHandler.EXTRA_CALLING_ACTIVITY_PACKAGE);
+        if (!TextUtils.isEmpty(packageNameFromIntent)) return packageNameFromIntent;
+
+        return null;
     }
 
     @Override

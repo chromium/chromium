@@ -16,7 +16,9 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import static org.chromium.base.test.util.Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE;
 import static org.chromium.chrome.browser.customtabs.CustomTabsTestUtils.createTestBitmap;
@@ -68,7 +70,11 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mockito;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
@@ -196,12 +202,18 @@ public class CustomTabActivityTest {
     @Rule
     public CustomTabActivityTestRule mCustomTabActivityTestRule = new CustomTabActivityTestRule();
 
+    @Rule
+    public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     private static int sIdToIncrement = 1;
 
     private String mTestPage;
     private String mTestPage2;
     private EmbeddedTestServer mTestServer;
     private CustomTabsConnection mConnectionToCleanup;
+
+    @Captor
+    ArgumentCaptor<Intent> mIntentCaptor;
 
     private class CustomTabsExtraCallbackHelper<T> extends CallbackHelper {
         private T mValue;
@@ -2121,6 +2133,43 @@ public class CustomTabActivityTest {
             int result = LaunchIntentDispatcher.dispatch(activity, intent);
             assertEquals(LaunchIntentDispatcher.Action.FINISH_ACTIVITY, result);
             verify(activity, never()).startActivity(any(), any());
+        });
+    }
+
+    @Test
+    @SmallTest
+    public void testCallingActivityExtra() {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            Intent intent = createMinimalCustomTabIntent();
+            intent.putExtra(IntentHandler.EXTRA_CALLING_ACTIVITY_PACKAGE, "spoofed");
+            Activity activity = Mockito.mock(Activity.class);
+
+            ComponentName component = new ComponentName("com.foo.bar", "className");
+            when(activity.getCallingActivity()).thenReturn(component);
+
+            LaunchIntentDispatcher.dispatch(activity, intent);
+            verify(activity, times(1)).startActivity(mIntentCaptor.capture(), any());
+
+            Assert.assertEquals("Calling activity package incorrect.", "com.foo.bar",
+                    mIntentCaptor.getValue().getStringExtra(
+                            IntentHandler.EXTRA_CALLING_ACTIVITY_PACKAGE));
+        });
+    }
+
+    @Test
+    @SmallTest
+    public void testCallingActivityExtra_NotSet() {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            Intent intent = createMinimalCustomTabIntent();
+            intent.putExtra(IntentHandler.EXTRA_CALLING_ACTIVITY_PACKAGE, "spoofed");
+            Activity activity = Mockito.mock(Activity.class);
+
+            LaunchIntentDispatcher.dispatch(activity, intent);
+            verify(activity, times(1)).startActivity(mIntentCaptor.capture(), any());
+
+            Assert.assertNull("Calling activity package shouldn't be set.",
+                    mIntentCaptor.getValue().getStringExtra(
+                            IntentHandler.EXTRA_CALLING_ACTIVITY_PACKAGE));
         });
     }
 }

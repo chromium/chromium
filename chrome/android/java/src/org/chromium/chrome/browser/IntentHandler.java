@@ -153,6 +153,12 @@ public class IntentHandler {
             "org.chromium.chrome.browser.activity_referrer";
 
     /**
+     * Intent extra used to deliver the package name of original #getCallingActivity if present.
+     */
+    public static final String EXTRA_CALLING_ACTIVITY_PACKAGE =
+            "org.chromium.chrome.browser.calling_activity_package";
+
+    /**
      * A referrer id used for Chrome to Chrome referrer passing.
      */
     public static final String EXTRA_REFERRER_ID = "org.chromium.chrome.browser.referrer_id";
