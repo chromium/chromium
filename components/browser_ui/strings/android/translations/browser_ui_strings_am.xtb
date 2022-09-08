@@ -343,7 +343,7 @@
 <translation id="8444433999583714703"><ph name="APP_NAME" /> የእርስዎን መገኛ አካባቢ እንዲደርስበት ለማድረግ፣ በተጨማሪ በ <ph name="BEGIN_LINK" />Android ቅንብሮች<ph name="END_LINK" /> ውስጥ መገኛ አካባቢን ያብሩ።</translation>
 <translation id="8447861592752582886">የመሣሪያ ፈቃድ ሻር</translation>
 <translation id="8451050538944905715">{NUM_SELECTED,plural, =1{በጥቅም ላይ ያለ 1 ኩኪ}one{# ጥቅም ላይ የዋሉ ኩኪዎች}other{# ጥቅም ላይ የዋሉ ኩኪዎች}}</translation>
-<translation id="8487700953926739672">ከመስመር ውጪ ይገኛል</translation>
+<translation id="8487700953926739672">ከመስመር ውጭ ይገኛል</translation>
 <translation id="848952951823693243">ሁልጊዜ የሞባይል ጣቢያን ጠይቅ</translation>
 <translation id="8499083585497694743">የማይክሮፎን ድምፀ-ከል አንሳ</translation>
 <translation id="851751545965956758">ጣቢያዎች ከመሣሪያዎች ጋር እንዳይገናኙ አግድ</translation>

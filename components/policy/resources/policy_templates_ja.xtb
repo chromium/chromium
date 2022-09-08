@@ -2857,6 +2857,7 @@
       <ph name="MS_WIN_NAME" /> では、この機能は <ph name="MS_AD_NAME" /> ドメインに追加されたインスタンス、Windows 10 Pro で実行されているインスタンス、<ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> に登録されているインスタンスでのみ使用できます。<ph name="MAC_OS_NAME" /> では、MDM を介して管理されるインスタンスまたは MCX を介してドメインに追加されたインスタンスでのみこの機能を使用できます。</translation>
 <translation id="4043796890723386527">ユーザーに <ph name="LACROS_NAME" /> ブラウザでの予備のプロフィールの作成と使用、およびゲストモードの使用を許可しない</translation>
 <translation id="4051723201852944592">ウィンドウ オクルージョンを有効にします</translation>
+<translation id="4052529125939620019">起動時に CryptoToken コンポーネント拡張機能を読み込む</translation>
 <translation id="4053157306171963473">デバイスのアクティビティ時間の報告を無効にする</translation>
 <translation id="4056910949759281379">SPDY プロトコルを無効にする</translation>
 <translation id="4061107397839125009">このポリシーでは、通知の表示を許可しないサイトの URL パターンリストを指定できます。
@@ -4196,6 +4197,7 @@
       注: キャッシュは再起動またはログアウトすると削除されます。</translation>
 <translation id="5717973246079053225">管理対象プロファイルのクラウド レポートを無効にする</translation>
 <translation id="572155275267014074">Android 設定</translation>
+<translation id="5722577409367087850">拡張機能を読み込む</translation>
 <translation id="5728154254076636808"><ph name="PRODUCT_NAME" /> プロフィール データのローミング コピーを作成できるようにする</translation>
 <translation id="5729308727912841256">Kerberos パスワードです。プレースホルダ「<ph name="PASSWORD_PLACEHOLDER" />」はログイン パスワードに置き換えられます。</translation>
 <translation id="5732972008943405952">初回実行時にデフォルトのブラウザから自動入力フォームのデータをインポートする</translation>
@@ -4852,6 +4854,7 @@
 <translation id="6440051664870270040">移動と同時にポップアップを表示することをサイトに許可する</translation>
 <translation id="6447948611083700881">バックアップと復元が無効</translation>
 <translation id="6449476513004303784">証明書の管理をユーザーに許可しない</translation>
+<translation id="6452882999388592166">有効に設定すると、起動時に組み込みの CryptoToken コンポーネント拡張機能が読み込まれます。無効に設定するか未設定のままにした場合、ブラウザの起動時に CryptoToken は読み込まれません。このポリシーは、M106 での CryptoToken 削除の副作用である、「chrome.runtime」が定義されていないため動作しないサイトに一時的に対応するためのものです。ウェブサイトは、「chrome.runtime」が無条件に定義されている状態を前提としないよう設定する必要があります。</translation>
 <translation id="6453641799812499182">新しい <ph name="CORS" /> の実装で <ph name="CORS" /> チェックの緩和措置を有効にする</translation>
 <translation id="645425387487868471"><ph name="PRODUCT_NAME" /> への強制ログインを有効にする</translation>
 <translation id="6455842857207956758">パスワード同期トークンの値を監視し、パスワードが更新されていて同期する必要がある場合にユーザーをオンラインの再認証フローに送って、複数の Chrome デバイス間で SAML パスワードを同期できるようにします。
@@ -7438,6 +7441,7 @@
       このポリシーを false に設定した場合、<ph name="DEVICE_USER_ALLOWLIST_POLICY_NAME" />　に登録されているユーザーのみログインできます。
 
       このポリシーを true に設定するか、未設定のままにした場合、すべてのユーザーがログインできます。</translation>
+<translation id="966425658642788645">デフォルトの動作を適用する</translation>
 <translation id="971677226939413180">ユーザーは「画像として印刷する」オプションを選択できない。</translation>
 <translation id="974349541138387272">希望の DNS-over-HTTPS リゾルバの URI テンプレートを指定する</translation>
 <translation id="979467274961593903">リモート デバッグの使用を許可しない</translation>
