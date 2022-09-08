@@ -144,7 +144,7 @@ IN_PROC_BROWSER_TEST_F(BrowserDataMigratorCopyMigrateOnSignIn,
   EXPECT_EQ(FakeSessionManagerClient::Get()
                 ->request_browser_data_migration_mode_value(),
             "copy");
-};
+}
 
 // Check that migration marked as completed for a new user and thus migration is
 // not triggered from signin flow.
@@ -216,7 +216,7 @@ IN_PROC_BROWSER_TEST_F(BrowserDataMigratorMoveMigrateOnSignInByPolicy,
   EXPECT_EQ(FakeSessionManagerClient::Get()
                 ->request_browser_data_migration_mode_value(),
             "move");
-};
+}
 
 class BrowserDataMigratorMoveMigrateOnSignInByFeature
     : public BrowserDataMigratorOnSignIn {
@@ -258,7 +258,7 @@ IN_PROC_BROWSER_TEST_F(BrowserDataMigratorMoveMigrateOnSignInByFeature,
   EXPECT_EQ(FakeSessionManagerClient::Get()
                 ->request_browser_data_migration_mode_value(),
             "move");
-};
+}
 
 class BrowserDataMigratorResumeOnSignIn : public BrowserDataMigratorOnSignIn,
                                           public LocalStateMixin::Delegate {

@@ -30,7 +30,7 @@ class MmapedBuffer : public base::RefCounted<MmapedBuffer> {
     const size_t length;
     size_t bytes_used;
 
-    MmapedPlane(void* start, size_t len) : start_addr(start), length(len){};
+    MmapedPlane(void* start, size_t len) : start_addr(start), length(len) {}
 
     void CopyIn(const uint8_t* frame_data, size_t frame_size) {
       LOG_ASSERT(frame_size < length)

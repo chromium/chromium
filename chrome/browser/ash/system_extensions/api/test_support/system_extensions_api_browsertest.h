@@ -11,7 +11,7 @@
 
 namespace content {
 class ScopedContentBrowserClientSetting;
-};
+}
 
 namespace ash {
 

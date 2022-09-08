@@ -179,7 +179,7 @@ void DataCollector::BindSensorService(
     LOG(ERROR) << "Failed to bind SensorHalClient via Healthd data collector.";
     sensor_service_pending_receiver_.reset();
   }
-};
+}
 
 void DataCollector::SetUpChannel(
     mojo::PendingRemote<chromeos::sensors::mojom::SensorService>
