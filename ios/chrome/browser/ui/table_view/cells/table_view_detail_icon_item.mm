@@ -45,16 +45,10 @@ constexpr CGFloat kChromeTableViewTwoLinesCellHeight = 58.f;
   cell.textLabel.text = self.text;
   [cell setDetailText:self.detailText];
 
-  if (self.symbolView) {
-    [cell setSymbolView:self.symbolView];
-  } else {
-    // Update the icon image, if one is present.
-    UIImage* iconImage = nil;
-    if ([self.iconImageName length]) {
-      iconImage = [UIImage imageNamed:self.iconImageName];
-      [cell setIconImage:iconImage];
-    }
-  }
+  [cell setIconImage:self.iconImage
+            tintColor:self.iconTintColor
+      backgroundColor:self.iconBackgroundColor
+         cornerRadius:self.iconCornerRadius];
   [cell setTextLayoutConstraintAxis:self.textLayoutConstraintAxis];
 }
 
@@ -79,8 +73,6 @@ constexpr CGFloat kChromeTableViewTwoLinesCellHeight = 58.f;
 @end
 
 @implementation TableViewDetailIconCell {
-  UIView* _iconContainerView;
-  UIView* _symbolView;
   UIImageView* _iconImageView;
   NSLayoutConstraint* _iconHiddenConstraint;
   NSLayoutConstraint* _iconVisibleConstraint;
@@ -95,18 +87,12 @@ constexpr CGFloat kChromeTableViewTwoLinesCellHeight = 58.f;
   if (self) {
     self.isAccessibilityElement = YES;
     UIView* contentView = self.contentView;
-    _iconContainerView = [[UIView alloc] init];
-    _iconContainerView.hidden = YES;
-    _iconContainerView.translatesAutoresizingMaskIntoConstraints = NO;
-    _iconContainerView.autoresizesSubviews = YES;
-    _iconContainerView.clipsToBounds = YES;
-    [contentView addSubview:_iconContainerView];
 
     _iconImageView = [[UIImageView alloc] init];
-    _iconImageView.translatesAutoresizingMaskIntoConstraints = YES;
-    _iconImageView.autoresizingMask =
-        UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-    [_iconContainerView addSubview:_iconImageView];
+    _iconImageView.translatesAutoresizingMaskIntoConstraints = NO;
+    _iconImageView.contentMode = UIViewContentModeCenter;
+    _iconImageView.hidden = YES;
+    [contentView addSubview:_iconImageView];
 
     _textLabel = [[UILabel alloc] init];
     _textLabel.translatesAutoresizingMaskIntoConstraints = NO;
@@ -126,7 +112,7 @@ constexpr CGFloat kChromeTableViewTwoLinesCellHeight = 58.f;
         constraintEqualToAnchor:contentView.leadingAnchor
                        constant:kTableViewHorizontalSpacing];
     _iconVisibleConstraint = [_textStackView.leadingAnchor
-        constraintEqualToAnchor:_iconContainerView.trailingAnchor
+        constraintEqualToAnchor:_iconImageView.trailingAnchor
                        constant:kTableViewImagePadding];
 
     _minimumCellHeightConstraint = [contentView.heightAnchor
@@ -139,15 +125,15 @@ constexpr CGFloat kChromeTableViewTwoLinesCellHeight = 58.f;
     _minimumCellHeightConstraint.active = YES;
 
     [NSLayoutConstraint activateConstraints:@[
-      // Icon container.
-      [_iconContainerView.leadingAnchor
+      // Icon.
+      [_iconImageView.leadingAnchor
           constraintEqualToAnchor:contentView.leadingAnchor
                          constant:kTableViewHorizontalSpacing],
-      [_iconContainerView.widthAnchor
+      [_iconImageView.widthAnchor
           constraintEqualToConstant:kTableViewIconImageSize],
-      [_iconContainerView.heightAnchor
-          constraintEqualToAnchor:_iconContainerView.widthAnchor],
-      [_iconContainerView.centerYAnchor
+      [_iconImageView.heightAnchor
+          constraintEqualToAnchor:_iconImageView.widthAnchor],
+      [_iconImageView.centerYAnchor
           constraintEqualToAnchor:contentView.centerYAnchor],
 
       // Text labels.
@@ -173,35 +159,25 @@ constexpr CGFloat kChromeTableViewTwoLinesCellHeight = 58.f;
   return self;
 }
 
-- (void)setSymbolView:(UIView*)symbolView {
-  [_symbolView removeFromSuperview];
-  _symbolView = nil;
-
-  _symbolView = symbolView;
-  _symbolView.autoresizingMask =
-      UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-  _symbolView.frame = _iconContainerView.bounds;
-  [_iconContainerView addSubview:_symbolView];
-
-  BOOL hidden = (symbolView == nil);
-  _iconContainerView.hidden = hidden;
-  if (hidden) {
-    _iconVisibleConstraint.active = NO;
-    _iconHiddenConstraint.active = YES;
-  } else {
-    _iconHiddenConstraint.active = NO;
-    _iconVisibleConstraint.active = YES;
-  }
-}
-
-- (void)setIconImage:(UIImage*)image {
+- (void)setIconImage:(UIImage*)image
+           tintColor:(UIColor*)tintColor
+     backgroundColor:(UIColor*)backgroundColor
+        cornerRadius:(CGFloat)cornerRadius {
   if (image == nil && _iconImageView.image == nil) {
     return;
   }
+
+  if (tintColor) {
+    image = [image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+  }
+
   _iconImageView.image = image;
+  _iconImageView.tintColor = tintColor;
+  _iconImageView.backgroundColor = backgroundColor;
+  _iconImageView.layer.cornerRadius = cornerRadius;
 
   BOOL hidden = (image == nil);
-  _iconContainerView.hidden = hidden;
+  _iconImageView.hidden = hidden;
   if (hidden) {
     _iconVisibleConstraint.active = NO;
     _iconHiddenConstraint.active = YES;
@@ -276,8 +252,7 @@ constexpr CGFloat kChromeTableViewTwoLinesCellHeight = 58.f;
   [super prepareForReuse];
 
   [self setTextLayoutConstraintAxis:UILayoutConstraintAxisHorizontal];
-  [self setIconImage:nil];
-  [self setSymbolView:nil];
+  [self setIconImage:nil tintColor:nil backgroundColor:nil cornerRadius:0];
   [self setDetailText:nil];
 }
 

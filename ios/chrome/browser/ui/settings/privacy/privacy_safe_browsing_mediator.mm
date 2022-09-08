@@ -218,11 +218,11 @@ typedef NS_ENUM(NSInteger, ItemType) {
       configurationWithPointSize:kSymbolImagePointSize
                           weight:UIImageSymbolWeightSemibold
                            scale:UIImageSymbolScaleMedium];
-  infoButtonItem.image =
+  infoButtonItem.iconImage =
       DefaultSymbolWithConfiguration(kCheckmarkSymbol, configuration);
-  infoButtonItem.tintColor = [self shouldItemTypeHaveCheckmark:type]
-                                 ? [UIColor colorNamed:kBlueColor]
-                                 : [UIColor clearColor];
+  infoButtonItem.iconTintColor = [self shouldItemTypeHaveCheckmark:type]
+                                     ? [UIColor colorNamed:kBlueColor]
+                                     : [UIColor clearColor];
   infoButtonItem.accessibilityIdentifier = accessibilityIdentifier;
   infoButtonItem.accessibilityDelegate = self;
 
@@ -258,9 +258,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
     TableViewInfoButtonItem* infoButtonItem =
         base::mac::ObjCCast<TableViewInfoButtonItem>(item);
     ItemType type = static_cast<ItemType>(item.type);
-    infoButtonItem.tintColor = [self shouldItemTypeHaveCheckmark:type]
-                                   ? [UIColor colorNamed:kBlueColor]
-                                   : [UIColor clearColor];
+    infoButtonItem.iconTintColor = [self shouldItemTypeHaveCheckmark:type]
+                                       ? [UIColor colorNamed:kBlueColor]
+                                       : [UIColor clearColor];
   }
 
   if (notifyConsumer) {

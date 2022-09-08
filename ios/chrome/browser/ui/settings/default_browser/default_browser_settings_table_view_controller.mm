@@ -89,7 +89,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
       [[TableViewDetailIconItem alloc] initWithType:ItemTypeOpenSettingsStep];
   openSettingsStepItem.text =
       l10n_util::GetNSString(IDS_IOS_SETTINGS_OPEN_SETTINGS_STEP);
-  openSettingsStepItem.iconImageName = kSettingsImageName;
+  openSettingsStepItem.iconImage = [UIImage imageNamed:kSettingsImageName];
   [self.tableViewModel addItem:openSettingsStepItem
        toSectionWithIdentifier:SectionIdentifierSteps];
 
@@ -98,7 +98,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
           initWithType:ItemTypeTapDefaultBrowserAppStep];
   tapDefaultBrowserAppStepItem.text =
       l10n_util::GetNSString(IDS_IOS_SETTINGS_TAP_DEFAULT_BROWSER_APP_STEP);
-  tapDefaultBrowserAppStepItem.iconImageName = kSettingsImageName;
+  tapDefaultBrowserAppStepItem.iconImage =
+      [UIImage imageNamed:kSettingsImageName];
   [self.tableViewModel addItem:tapDefaultBrowserAppStepItem
        toSectionWithIdentifier:SectionIdentifierSteps];
 
@@ -106,7 +107,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
       [[TableViewDetailIconItem alloc] initWithType:ItemTypeSelectChromeStep];
   selectChromeStepItem.text =
       l10n_util::GetNSString(IDS_IOS_SETTINGS_SELECT_CHROME_STEP);
-  selectChromeStepItem.iconImageName = kSelectChromeStepImageName;
+  selectChromeStepItem.iconImage =
+      [UIImage imageNamed:kSelectChromeStepImageName];
   [self.tableViewModel addItem:selectChromeStepItem
        toSectionWithIdentifier:SectionIdentifierSteps];
 

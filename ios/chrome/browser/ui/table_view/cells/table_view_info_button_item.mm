@@ -52,11 +52,10 @@
   cell.isButtonSelectedForVoiceOver = self.accessibilityActivationPointOnButton;
   cell.selectionStyle = UITableViewCellSelectionStyleNone;
 
-  if (self.symbolView) {
-    [cell setSymbolView:self.symbolView];
-  } else {
-    [cell setIconImage:self.image withTintColor:self.tintColor];
-  }
+  [cell setIconImage:self.iconImage
+            tintColor:self.iconTintColor
+      backgroundColor:self.iconBackgroundColor
+         cornerRadius:self.iconCornerRadius];
 
   // Updates if the cells UI button should be hidden.
   [cell hideUIButton:self.infoButtonIsHidden];

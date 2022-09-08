@@ -313,7 +313,7 @@ const char kSyncSettingsURL[] = "settings://open_sync";
   itemDisabled.statusText = l10n_util::GetNSString(IDS_IOS_SETTING_OFF);
   itemDisabled.accessibilityIdentifier =
       kSettingsIncognitoInterstitialDisabledId;
-  itemDisabled.tintColor = [UIColor colorNamed:kGrey300Color];
+  itemDisabled.iconTintColor = [UIColor colorNamed:kGrey300Color];
   itemDisabled.textColor = [UIColor colorNamed:kTextSecondaryColor];
   return itemDisabled;
 }
@@ -397,7 +397,7 @@ const char kSyncSettingsURL[] = "settings://open_sync";
   itemDisabled.text =
       l10n_util::GetNSString(IDS_IOS_INCOGNITO_REAUTH_SETTING_NAME);
   itemDisabled.statusText = l10n_util::GetNSString(IDS_IOS_SETTING_OFF);
-  itemDisabled.tintColor = [UIColor colorNamed:kGrey300Color];
+  itemDisabled.iconTintColor = [UIColor colorNamed:kGrey300Color];
   itemDisabled.textColor = [UIColor colorNamed:kTextSecondaryColor];
   return itemDisabled;
 }

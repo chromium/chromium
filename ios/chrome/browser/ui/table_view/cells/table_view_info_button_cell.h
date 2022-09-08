@@ -43,14 +43,14 @@
 // the center, will be used.
 @property(nonatomic, assign) BOOL isButtonSelectedForVoiceOver;
 
-// Sets the icon `image` and tint `color` for it that should be displayed at the
-// leading edge of the cell. If set to nil, the icon will be hidden and the
-// remaining content will expand to fill the full width of the cell.
-- (void)setIconImage:(UIImage*)image withTintColor:(UIColor*)color;
-
-// Sets the leading `symbolImageView` icon. If set to nil, the icon will be
-// hidden and the text labels will expand to fill the full width of the cell.
-- (void)setSymbolView:(UIView*)symbolImageView;
+// Sets the `image` that should be displayed at the leading edge of the cell
+// with a `tintColor`. If set to nil, the icon will be hidden and the remaining
+// content will expand to fill the full width of the cell. The image view will
+// be configured with a `backgroundColor` and a `cornerRadius`.
+- (void)setIconImage:(UIImage*)image
+           tintColor:(UIColor*)tintColor
+     backgroundColor:(UIColor*)backgroundColor
+        cornerRadius:(CGFloat)cornerRadius;
 
 // Updates the padding constraints based on how many vertical text labels are
 // shown. The padding will be updated only if `hasDetailText` is YES.

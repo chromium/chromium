@@ -268,7 +268,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   managedItem.statusText = status ? l10n_util::GetNSString(IDS_IOS_SETTING_ON)
                                   : l10n_util::GetNSString(IDS_IOS_SETTING_OFF);
   if (!status) {
-    managedItem.tintColor = [UIColor colorNamed:kGrey300Color];
+    managedItem.iconTintColor = [UIColor colorNamed:kGrey300Color];
 
     // This item is not controllable, then set the color opacity to 40%.
     managedItem.textColor =

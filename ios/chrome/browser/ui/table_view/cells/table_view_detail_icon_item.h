@@ -12,11 +12,17 @@
 // TableViewDetailIconItem is a model class that uses TableViewDetailIconCell.
 @interface TableViewDetailIconItem : TableViewItem
 
-// The filename for the leading icon.  If empty, no icon will be shown.
-@property(nonatomic, copy) NSString* iconImageName;
+// The leading icon.  If empty, no icon will be shown.
+@property(nonatomic, copy) UIImage* iconImage;
 
-// The symbol leading icon. If empty, no icon will be shown.
-@property(nonatomic, strong) UIView* symbolView;
+// The background color of the icon.
+@property(nonatomic, strong) UIColor* iconBackgroundColor;
+
+// The corner radius of the UIImage view.
+@property(nonatomic, assign) CGFloat iconCornerRadius;
+
+// The tint color of the icon.
+@property(nonatomic, strong) UIColor* iconTintColor;
 
 // The main text string.
 @property(nonatomic, copy) NSString* text;
@@ -48,14 +54,14 @@
 @property(nonatomic, readwrite, assign)
     UILayoutConstraintAxis textLayoutConstraintAxis;
 
-// Sets the image that should be displayed at the leading edge of the cell. If
-// set to nil, the icon will be hidden and the text labels will expand to fill
-// the full width of the cell.
-- (void)setIconImage:(UIImage*)image;
-
-// Sets the leading `symbolImageView` icon. If set to nil, the icon will be
-// hidden and the text labels will expand to fill the full width of the cell.
-- (void)setSymbolView:(UIView*)symbolImageView;
+// Sets the `image` that should be displayed at the leading edge of the cell
+// with a `tintColor`. If set to nil, the icon will be hidden and the text
+// labels will expand to fill the full width of the cell. The image view will be
+// configured with a `backgroundColor` and a `cornerRadius`.
+- (void)setIconImage:(UIImage*)image
+           tintColor:(UIColor*)tintColor
+     backgroundColor:(UIColor*)backgroundColor
+        cornerRadius:(CGFloat)cornerRadius;
 
 // Sets the detail text. `detailText` can be nil (or empty) to hide the detail
 // text.

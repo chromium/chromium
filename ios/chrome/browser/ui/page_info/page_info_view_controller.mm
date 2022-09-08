@@ -125,7 +125,8 @@ float kTitleLabelMinimumScaleFactor = 0.7f;
       [[TableViewDetailIconItem alloc] initWithType:ItemTypeSecurityHeader];
   securityHeader.text = l10n_util::GetNSString(IDS_IOS_PAGE_INFO_SITE_SECURITY);
   securityHeader.detailText = self.pageInfoSecurityDescription.status;
-  securityHeader.iconImageName = self.pageInfoSecurityDescription.iconImageName;
+  securityHeader.iconImage =
+      [UIImage imageNamed:self.pageInfoSecurityDescription.iconImageName];
   [self.tableViewModel addItem:securityHeader
        toSectionWithIdentifier:SectionIdentifierSecurityContent];
 

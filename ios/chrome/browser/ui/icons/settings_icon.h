@@ -17,8 +17,8 @@ extern NSString* const kDefaultBrowserSymbol;
 extern NSString* const kPrivacySecuritySymbol;
 extern NSString* const kDiscoverSymbol;
 
-// The size of the symbol image displayed in the Settings root screen.
-extern const CGFloat kSettingsRootSymbolImagePointSize;
+// The corner radius of the colorful background of the settings icons.
+extern const CGFloat kSettingsIconBackgroundCornerRadius;
 
 // Returns a SF symbol named `symbol_name` configured for the Settings root
 // screen.

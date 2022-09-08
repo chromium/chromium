@@ -60,19 +60,6 @@ source_set("item_icons") {
   frameworks = [ "UIKit.framework" ]
 }
 
-source_set("custom_symbols") {
-  configs += [ "//build/config/compiler:enable_arc" ]
-  sources = [
-    "custom_symbol.h",
-    "custom_symbol.mm",
-  ]
-  deps = [
-    "//ios/chrome/common/ui/table_view:cells_constants",
-    "//ios/chrome/common/ui/util:image_util",
-  ]
-  frameworks = [ "UIKit.framework" ]
-}
-
 source_set("settings_icons") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
