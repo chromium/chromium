@@ -155,6 +155,18 @@ void TestControllerAsh::ClickWindow(const std::string& window_id) {
   }
 }
 
+void TestControllerAsh::ConnectToNetwork(const std::string& service_path) {
+  ash::ShillServiceClient::Get()->Connect(
+      dbus::ObjectPath(service_path), base::DoNothing(),
+      ash::ShillServiceClient::ErrorCallback());
+}
+
+void TestControllerAsh::DisconnectFromNetwork(const std::string& service_path) {
+  ash::ShillServiceClient::Get()->Disconnect(
+      dbus::ObjectPath(service_path), base::DoNothing(),
+      ash::ShillServiceClient::ErrorCallback());
+}
+
 void TestControllerAsh::DoesItemExistInShelf(
     const std::string& item_id,
     DoesItemExistInShelfCallback callback) {
