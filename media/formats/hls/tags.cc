@@ -128,6 +128,7 @@ constexpr base::StringPiece GetAttributeName(XMediaTagAttribute attribute) {
 // Attributes expected in `EXT-X-STREAM-INF` tag contents.
 // These must remain sorted alphabetically.
 enum class XStreamInfTagAttribute {
+  kAudio,
   kAverageBandwidth,
   kBandwidth,
   kCodecs,
@@ -140,6 +141,8 @@ enum class XStreamInfTagAttribute {
 
 constexpr base::StringPiece GetAttributeName(XStreamInfTagAttribute attribute) {
   switch (attribute) {
+    case XStreamInfTagAttribute::kAudio:
+      return "AUDIO";
     case XStreamInfTagAttribute::kAverageBandwidth:
       return "AVERAGE-BANDWIDTH";
     case XStreamInfTagAttribute::kBandwidth:
@@ -826,6 +829,18 @@ ParseStatus::Or<XStreamInfTag> XStreamInfTag::Parse(
           .AddCause(std::move(frame_rate).error());
     }
     out.frame_rate = std::move(frame_rate).value();
+  }
+
+  // Extract the 'AUDIO' attribute
+  if (map.HasValue(XStreamInfTagAttribute::kAudio)) {
+    auto audio =
+        types::ParseQuotedString(map.GetValue(XStreamInfTagAttribute::kAudio),
+                                 variable_dict, sub_buffer);
+    if (audio.has_error()) {
+      return ParseStatus(ParseStatusCode::kMalformedTag)
+          .AddCause(std::move(audio).error());
+    }
+    out.audio = std::move(audio).value();
   }
 
   return out;

@@ -11,6 +11,7 @@
 #include "base/time/time.h"
 #include "media/base/media_export.h"
 #include "media/formats/hls/parse_status.h"
+#include "media/formats/hls/source_string.h"
 #include "media/formats/hls/tag_name.h"
 #include "media/formats/hls/types.h"
 #include "media/formats/hls/variable_dictionary.h"
@@ -185,6 +186,10 @@ struct MEDIA_EXPORT XStreamInfTag {
 
   // This describes the maximum framerate for all video in this variant stream.
   absl::optional<types::DecimalFloatingPoint> frame_rate;
+
+  // The id of an audio rendition group that should be used when playing this
+  // variant.
+  absl::optional<ResolvedSourceString> audio;
 };
 
 // Represents the contents of the #EXTINF tag

@@ -1179,6 +1179,25 @@ TEST(HlsTagsTest, ParseXStreamInfTag) {
                            sub_buffer, ParseStatusCode::kMalformedTag);
   ErrorTest<XStreamInfTag>(R"(BANDWIDTH=1010,FRAME-RATE=30.0.0)", variable_dict,
                            sub_buffer, ParseStatusCode::kMalformedTag);
+
+  // "AUDIO" must be a valid quoted-string
+  ErrorTest<XStreamInfTag>(R"(BANDWIDTH=1010,AUDIO=1)", variable_dict,
+                           sub_buffer, ParseStatusCode::kMalformedTag);
+  ErrorTest<XStreamInfTag>(R"(BANDWIDTH=1010,AUDIO="")", variable_dict,
+                           sub_buffer, ParseStatusCode::kMalformedTag);
+  ErrorTest<XStreamInfTag>(R"(BANDWIDTH=1010,AUDIO=stereo)", variable_dict,
+                           sub_buffer, ParseStatusCode::kMalformedTag);
+
+  // "AUDIO" is subject to variable substitution
+  result = OkTest<XStreamInfTag>(R"(BANDWIDTH=1010,AUDIO="{$FOO}{$BAR}")",
+                                 variable_dict, sub_buffer);
+  EXPECT_EQ(result.tag.bandwidth, 1010u);
+  EXPECT_EQ(result.tag.average_bandwidth, absl::nullopt);
+  EXPECT_EQ(result.tag.score, absl::nullopt);
+  EXPECT_EQ(result.tag.codecs, absl::nullopt);
+  EXPECT_EQ(result.tag.resolution, absl::nullopt);
+  ASSERT_TRUE(result.tag.audio.has_value());
+  EXPECT_EQ(result.tag.audio->Str(), "barbaz");
 }
 
 TEST(HlsTagsTest, ParseInfTag) {
