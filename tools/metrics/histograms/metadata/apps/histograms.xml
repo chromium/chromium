@@ -321,10 +321,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppList.AppSearchProvider.QueryTime" units="ms"
-    expires_after="2022-12-24">
+    expires_after="2023-06-24">
+  <owner>wrong@chromium.org</owner>
   <owner>tbarzic@chromium.org</owner>
-  <owner>jennyz@chromium.org</owner>
-  <owner>newcomer@chromium.org</owner>
   <summary>
     The time between sending a non-empty query to AppSearchProvider and
     receiving results back.
@@ -583,9 +582,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Apps.AppList.HelpAppProvider.ListSearchResultState"
     enum="HelpAppProviderListSearchResultState" expires_after="2022-10-19">
+  <owner>wrong@chromium.org</owner>
   <owner>tby@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
-  <owner>wrong@chromium.org</owner>
   <owner>zufeng@google.com</owner>
   <summary>
     The end result of list searches by the provider for the help app in the CrOS
@@ -597,9 +596,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Apps.AppList.HelpAppProvider.QueryTime" units="ms"
     expires_after="2022-10-19">
+  <owner>wrong@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
   <owner>tby@chromium.org</owner>
-  <owner>wrong@chromium.org</owner>
   <owner>zufeng@google.com</owner>
   <summary>
     The latency of a search in the HelpAppProvider. Recorded each time a search
@@ -610,9 +609,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Apps.AppList.ItemSuggestCache.ResponseSize" units="bytes"
     expires_after="2023-02-26">
+  <owner>wrong@chromium.org</owner>
   <owner>tby@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
-  <owner>wrong@chromium.org</owner>
   <summary>
     Records the size of a response from the ItemSuggest API. Reported once per
     successful response. Will not be reported if the response exceeds the
@@ -622,9 +621,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Apps.AppList.ItemSuggestCache.Status"
     enum="ItemSuggestCacheStatus" expires_after="2023-02-19">
+  <owner>wrong@chromium.org</owner>
   <owner>tby@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
-  <owner>wrong@chromium.org</owner>
   <summary>
     Records the outcome of a call to ItemSuggest. Reported once per call to
     UpdateCache that passes the minimum time between udpates check.
@@ -633,9 +632,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Apps.AppList.ItemSuggestCache.UpdateCacheLatency" units="ms"
     expires_after="2023-02-26">
+  <owner>wrong@chromium.org</owner>
   <owner>tby@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
-  <owner>wrong@chromium.org</owner>
   <summary>
     Records the latency from the start of a call to UpdateCache to the time when
     results are finalised. Reported once each time results are successfully
@@ -655,17 +654,6 @@ chromium-metrics-reviews@google.com.
     the user does not launch any results.
   </summary>
   <token key="TabletOrClamshell" variants="TabletOrClamshellMode"/>
-</histogram>
-
-<histogram name="Apps.AppList.LauncherSearchProvider.QueryTime" units="ms"
-    expires_after="2022-12-31">
-  <owner>tbarzic@chromium.org</owner>
-  <owner>jennyz@chromium.org</owner>
-  <owner>newcomer@chromium.org</owner>
-  <summary>
-    The time between sending a non-empty query and receiving results back from
-    the extension which performs the file search.
-  </summary>
 </histogram>
 
 <histogram name="Apps.AppList.NumberOfApps" units="count"
@@ -726,10 +714,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppList.OmniboxProvider.QueryTime" units="ms"
-    expires_after="2022-10-04">
+    expires_after="2023-06-04">
+  <owner>wrong@chromium.org</owner>
   <owner>tbarzic@chromium.org</owner>
-  <owner>jennyz@chromium.org</owner>
-  <owner>newcomer@chromium.org</owner>
   <summary>
     The time between sending an non-empty query and receiving search results
     back from OmniboxProvider which queries chrome AutocompelteController's
@@ -737,20 +724,9 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Apps.AppList.OmniboxProvider.ZeroStateLatency" units="ms"
-    expires_after="2021-08-29">
-  <owner>jennyz@chromium.org</owner>
-  <owner>newcomer@chromium.org</owner>
-  <summary>
-    The time between sending an empty query and receiving zero state
-    recommendations back from OmniboxProvider which queries chrome
-    ZeroStateProvider and gets recent queries back from Google Autocomplete
-    server.
-  </summary>
-</histogram>
-
 <histogram name="Apps.AppList.OsSettingsProvider.Error"
     enum="OsSettingsProviderError" expires_after="2023-02-24">
+  <owner>wrong@chromium.org</owner>
   <owner>tby@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
   <summary>
@@ -762,6 +738,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Apps.AppList.OsSettingsProvider.QueryTime" units="ms"
     expires_after="2023-02-10">
+  <owner>wrong@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
   <owner>tby@chromium.org</owner>
   <summary>

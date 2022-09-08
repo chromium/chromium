@@ -213,11 +213,8 @@ void OmniboxProvider::OnResultChanged(AutocompleteController* controller,
 }
 
 void OmniboxProvider::RecordQueryLatencyHistogram() {
-  base::TimeDelta query_latency = base::TimeTicks::Now() - query_start_time_;
-  if (is_zero_state_input_) {
-    UMA_HISTOGRAM_TIMES("Apps.AppList.OmniboxProvider.ZeroStateLatency",
-                        query_latency);
-  } else {
+  if (!is_zero_state_input_) {
+    base::TimeDelta query_latency = base::TimeTicks::Now() - query_start_time_;
     UMA_HISTOGRAM_TIMES("Apps.AppList.OmniboxProvider.QueryTime",
                         query_latency);
   }
