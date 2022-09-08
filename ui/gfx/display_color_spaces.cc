@@ -6,11 +6,22 @@
 
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "third_party/skia/include/core/SkColorSpace.h"
 
 namespace gfx {
 
 namespace {
+
+// TODO(https://crbug.com/skia/13721): Add these operators to Skia source.
+bool operator==(const SkColorSpacePrimaries& a,
+                const SkColorSpacePrimaries& b) {
+  return a.fRX == b.fRX && a.fRY == b.fRY && a.fGX == b.fGX && a.fGY == b.fGY &&
+         a.fBX == b.fBX && a.fBY == b.fBY && a.fWX == b.fWX && a.fWY == b.fWY;
+}
+
+bool operator!=(const SkColorSpacePrimaries& a,
+                const SkColorSpacePrimaries& b) {
+  return !(a == b);
+}
 
 const ContentColorUsage kAllColorUsages[] = {
     ContentColorUsage::kSRGB,
@@ -127,6 +138,10 @@ SkColorSpacePrimaries DisplayColorSpaces::GetPrimaries() const {
   return GetRasterColorSpace().GetColorSpacePrimaries();
 }
 
+void DisplayColorSpaces::SetPrimaries(const SkColorSpacePrimaries& primaries) {
+  // TODO(https://crbug.com/1274220): Store `primaries` in `primaries_`.
+}
+
 ColorSpace DisplayColorSpaces::GetScreenInfoColorSpace() const {
   return GetOutputColorSpace(ContentColorUsage::kHDR, false /* needs_alpha */);
 }
@@ -197,6 +212,8 @@ bool DisplayColorSpaces::operator==(const DisplayColorSpaces& other) const {
     if (buffer_formats_[i] != other.buffer_formats_[i])
       return false;
   }
+  if (primaries_ != other.primaries_)
+    return false;
   if (sdr_max_luminance_nits_ != other.sdr_max_luminance_nits_)
     return false;
   if (hdr_max_luminance_relative_ != other.hdr_max_luminance_relative_)

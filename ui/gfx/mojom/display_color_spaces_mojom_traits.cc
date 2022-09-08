@@ -4,6 +4,8 @@
 
 #include "ui/gfx/mojom/display_color_spaces_mojom_traits.h"
 
+#include "skia/public/mojom/skcolorspace_primaries_mojom_traits.h"
+
 namespace mojo {
 
 // static
@@ -67,6 +69,11 @@ bool StructTraits<
   base::span<gfx::ColorSpace> color_spaces(out->color_spaces_);
   if (!input.ReadColorSpaces(&color_spaces))
     return false;
+
+  SkColorSpacePrimaries primaries = {0.f};
+  if (!input.ReadPrimaries(&primaries))
+    return false;
+  out->SetPrimaries(primaries);
 
   out->SetSDRMaxLuminanceNits(input.sdr_max_luminance_nits());
   out->SetHDRMaxLuminanceRelative(input.hdr_max_luminance_relative());

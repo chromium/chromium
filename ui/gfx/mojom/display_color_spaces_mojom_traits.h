@@ -6,6 +6,7 @@
 #define UI_GFX_MOJOM_DISPLAY_COLOR_SPACES_MOJOM_TRAITS_H_
 
 #include "base/containers/span.h"
+#include "third_party/skia/include/core/SkColorSpace.h"
 #include "ui/gfx/display_color_spaces.h"
 #include "ui/gfx/mojom/buffer_types_mojom_traits.h"
 #include "ui/gfx/mojom/color_space_mojom_traits.h"
@@ -30,6 +31,9 @@ struct COMPONENT_EXPORT(GFX_SHARED_MOJOM_TRAITS)
       const gfx::DisplayColorSpaces& input);
   static base::span<const gfx::BufferFormat> buffer_formats(
       const gfx::DisplayColorSpaces& input);
+  static SkColorSpacePrimaries primaries(const gfx::DisplayColorSpaces& input) {
+    return input.GetPrimaries();
+  }
   static float sdr_max_luminance_nits(const gfx::DisplayColorSpaces& input) {
     return input.GetSDRMaxLuminanceNits();
   }

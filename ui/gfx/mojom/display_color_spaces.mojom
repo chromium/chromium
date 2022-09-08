@@ -4,6 +4,7 @@
 
 module gfx.mojom;
 
+import "skia/public/mojom/skcolorspace_primaries.mojom";
 import "ui/gfx/mojom/buffer_types.mojom";
 import "ui/gfx/mojom/color_space.mojom";
 import "ui/gfx/mojom/hdr_static_metadata.mojom";
@@ -15,7 +16,6 @@ enum ContentColorUsage {
   kHDR,
 };
 
-
 // See the typemapped class gfx::DisplayColorSpaces.
 struct DisplayColorSpaces {
   // The arrays of length 6 correspond to the 6 configurations in the
@@ -23,6 +23,9 @@ struct DisplayColorSpaces {
   // corresponds to the order in gfx::DisplayColorSpaces.
   array<ColorSpace, 6> color_spaces;
   array<BufferFormat, 6> buffer_formats;
+
+  // The primaries of the display.
+  skia.mojom.SkColorSpacePrimaries primaries;
 
   // The maximum SDR luminance, in nits.
   float sdr_max_luminance_nits;

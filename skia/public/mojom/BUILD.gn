@@ -36,6 +36,7 @@ mojom("mojom") {
     "image_info.mojom",
     "skcolor.mojom",
     "skcolor4f.mojom",
+    "skcolorspace_primaries.mojom",
     "surface_origin.mojom",
     "tile_mode.mojom",
   ]
@@ -106,6 +107,16 @@ mojom("mojom") {
         },
       ]
       traits_headers = [ "skcolor4f_mojom_traits.h" ]
+      traits_public_deps = [ "//skia" ]
+    },
+    {
+      types = [
+        {
+          mojom = "skia.mojom.SkColorSpacePrimaries"
+          cpp = "::SkColorSpacePrimaries"
+        },
+      ]
+      traits_headers = [ "skcolorspace_primaries_mojom_traits.h" ]
       traits_public_deps = [ "//skia" ]
     },
     {
