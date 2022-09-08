@@ -8,7 +8,6 @@
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/notreached.h"
-#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -62,13 +61,9 @@ void ChromeRLZTrackerDelegate::RegisterProfilePrefs(
     // possible to manually override the Preferences file on Chrome OS: the file
     // is already loaded into memory by the time you modify it and any changes
     // made get overwritten by Chrome.
-    int parsed_delay_from_switch = 0;
-    if (base::StringToInt(
-        base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-            ash::switches::kRlzPingDelay),
-        &parsed_delay_from_switch) {
-      rlz_ping_delay_seconds = parsed_delay_from_switch;
-    }
+    rlz_ping_delay_seconds =
+        std::stoi(base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+            ash::switches::kRlzPingDelay));
   } else {
     rlz_ping_delay_seconds = 24 * 3600;
   }
