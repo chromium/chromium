@@ -135,7 +135,7 @@ source_set("browser_agent") {
     "//ios/chrome/browser/prefs:pref_names",
     "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/follow",
-    "//ios/chrome/browser/ui/ntp:metrics",
+    "//ios/chrome/browser/ui/ntp/metrics",
     "//ui/base",
   ]
 }

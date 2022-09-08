@@ -18,7 +18,7 @@ source_set("feed_management") {
     "//ios/chrome/browser/net:crurl",
     "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
     "//ios/chrome/browser/ui/follow",
-    "//ios/chrome/browser/ui/ntp:metrics",
+    "//ios/chrome/browser/ui/ntp/metrics",
     "//ios/chrome/browser/ui/table_view",
   ]
   public_deps = [ ":navigation_delegate" ]
@@ -81,8 +81,8 @@ source_set("follow_management_ui") {
     "//ios/chrome/app/strings:ios_strings_grit",
     "//ios/chrome/browser/net:crurl",
     "//ios/chrome/browser/ui/follow",
-    "//ios/chrome/browser/ui/ntp:metrics",
     "//ios/chrome/browser/ui/ntp/feed_management:navigation_delegate",
+    "//ios/chrome/browser/ui/ntp/metrics",
     "//ios/chrome/browser/ui/table_view",
     "//ios/chrome/common/ui/favicon",
     "//ui/base",

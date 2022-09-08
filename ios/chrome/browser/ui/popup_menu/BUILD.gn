@@ -92,7 +92,7 @@ source_set("popup_menu") {
     "//ios/chrome/browser/ui/list_model",
     "//ios/chrome/browser/ui/main:layout_guide_scene_agent",
     "//ios/chrome/browser/ui/main:scene_state_header",
-    "//ios/chrome/browser/ui/ntp:metrics",
+    "//ios/chrome/browser/ui/ntp/metrics",
     "//ios/chrome/browser/ui/popup_menu:metrics_protocols",
     "//ios/chrome/browser/ui/popup_menu/cells",
     "//ios/chrome/browser/ui/popup_menu/overflow_menu",

@@ -13,8 +13,8 @@
 #import "ios/chrome/browser/ui/content_suggestions/identifier/content_suggestions_section_information.h"
 #import "ios/chrome/browser/ui/favicon/favicon_attributes_provider.h"
 #import "ios/chrome/browser/ui/favicon/favicon_attributes_with_payload.h"
-#include "ios/chrome/browser/ui/ntp/metrics.h"
-#include "ui/gfx/image/image.h"
+#import "ios/chrome/browser/ui/ntp/metrics/metrics.h"
+#import "ui/gfx/image/image.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

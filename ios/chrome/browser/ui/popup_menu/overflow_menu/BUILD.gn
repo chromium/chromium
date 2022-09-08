@@ -91,7 +91,7 @@ source_set("overflow_menu") {
     "//ios/chrome/browser/ui/follow",
     "//ios/chrome/browser/ui/icons:action_icons",
     "//ios/chrome/browser/ui/icons:symbols",
-    "//ios/chrome/browser/ui/ntp:metrics",
+    "//ios/chrome/browser/ui/ntp/metrics",
     "//ios/chrome/browser/ui/popup_menu:constants",
     "//ios/chrome/browser/ui/popup_menu:metrics_protocols",
     "//ios/chrome/browser/ui/popup_menu/overflow_menu/destination_usage_history",

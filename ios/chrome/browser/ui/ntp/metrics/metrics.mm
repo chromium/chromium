@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/ntp/metrics.h"
+#import "ios/chrome/browser/ui/ntp/metrics/metrics.h"
 
-#include "base/mac/foundation_util.h"
-#include "components/favicon_base/favicon_types.h"
-#include "components/ntp_tiles/metrics.h"
-#include "components/ntp_tiles/ntp_tile_impression.h"
-#include "components/ntp_tiles/tile_visual_type.h"
+#import "base/mac/foundation_util.h"
+#import "components/favicon_base/favicon_types.h"
+#import "components/ntp_tiles/metrics.h"
+#import "components/ntp_tiles/ntp_tile_impression.h"
+#import "components/ntp_tiles/tile_visual_type.h"
 #import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/ui/favicon/favicon_attributes_with_payload.h"
 

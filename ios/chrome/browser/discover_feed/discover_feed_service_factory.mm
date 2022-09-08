@@ -12,7 +12,7 @@
 #include "ios/chrome/browser/discover_feed/discover_feed_service.h"
 #include "ios/chrome/browser/signin/authentication_service_factory.h"
 #include "ios/chrome/browser/signin/identity_manager_factory.h"
-#include "ios/chrome/browser/ui/ntp/feed_metrics_recorder.h"
+#import "ios/chrome/browser/ui/ntp/metrics/feed_metrics_recorder.h"
 #include "ios/public/provider/chrome/browser/discover_feed/discover_feed_api.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

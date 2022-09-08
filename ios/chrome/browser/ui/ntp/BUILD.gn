@@ -93,9 +93,9 @@ source_set("coordinator") {
     "//ios/chrome/browser/ui/follow",
     "//ios/chrome/browser/ui/main:scene_state_header",
     "//ios/chrome/browser/ui/main:scene_state_observer",
-    "//ios/chrome/browser/ui/ntp:metrics",
     "//ios/chrome/browser/ui/ntp/feed_management",
     "//ios/chrome/browser/ui/ntp/feed_top_section",
+    "//ios/chrome/browser/ui/ntp/metrics",
     "//ios/chrome/browser/ui/overscroll_actions",
     "//ios/chrome/browser/ui/settings/utils",
     "//ios/chrome/browser/ui/util",
@@ -137,8 +137,6 @@ source_set("ntp_internal") {
     "incognito_view.mm",
     "incognito_view_controller.h",
     "incognito_view_controller.mm",
-    "metrics.h",
-    "metrics.mm",
     "new_tab_page_url_loader_delegate.h",
     "new_tab_page_view_controller.h",
     "new_tab_page_view_controller.mm",
@@ -151,7 +149,6 @@ source_set("ntp_internal") {
   ]
   deps = [
     ":logo",
-    ":metrics",
     ":ntp",
     "resources:fake_omnibox_bottom_gradient_color",
     "resources:fake_omnibox_top_gradient_color",
@@ -209,6 +206,7 @@ source_set("ntp_internal") {
     "//ios/chrome/browser/ui/gestures",
     "//ios/chrome/browser/ui/icons:symbols",
     "//ios/chrome/browser/ui/ntp/feed_top_section",
+    "//ios/chrome/browser/ui/ntp/metrics",
     "//ios/chrome/browser/ui/overscroll_actions",
     "//ios/chrome/browser/ui/settings/cells",
     "//ios/chrome/browser/ui/thumb_strip:public",
@@ -240,28 +238,10 @@ source_set("ntp_internal") {
   ]
 }
 
-source_set("metrics") {
-  configs += [ "//build/config/compiler:enable_arc" ]
-  sources = [
-    "feed_metrics_recorder.h",
-    "feed_metrics_recorder.mm",
-    "feed_session_recorder.h",
-    "feed_session_recorder.mm",
-  ]
-  deps = [
-    ":ntp",
-    "//base",
-    "//components/feed/core/v2/public:common",
-    "//ios/chrome/browser/discover_feed:constants",
-    "//ios/chrome/browser/ui/content_suggestions:metrics",
-  ]
-}
-
 source_set("unit_tests") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
-    "feed_session_recorder_unittest.mm",
     "new_tab_page_coordinator_unittest.mm",
     "notification_promo_whats_new_unittest.mm",
     "ntp_tile_saver_unittest.mm",
@@ -269,7 +249,6 @@ source_set("unit_tests") {
   deps = [
     ":coordinator",
     ":feature_flags",
-    ":metrics",
     ":ntp",
     ":ntp_internal",
     "//base",

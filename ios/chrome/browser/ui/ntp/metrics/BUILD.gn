@@ -1,0 +1,47 @@
+# Copyright 2022 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("metrics") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "feed_metrics_constants.h",
+    "feed_metrics_constants.mm",
+    "feed_metrics_recorder.h",
+    "feed_metrics_recorder.mm",
+    "feed_session_recorder.h",
+    "feed_session_recorder.mm",
+    "metrics.h",
+    "metrics.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/favicon_base",
+    "//components/feed/core/v2/public:common",
+    "//components/ntp_tiles",
+    "//ios/chrome/browser",
+    "//ios/chrome/browser/discover_feed:constants",
+    "//ios/chrome/browser/ui/content_suggestions:metrics",
+    "//ios/chrome/browser/ui/favicon",
+    "//ios/chrome/browser/ui/ntp",
+    "//ios/chrome/common/ui/favicon",
+    "//url",
+  ]
+}
+
+source_set("unit_tests") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  testonly = true
+  sources = [ "feed_session_recorder_unittest.mm" ]
+  deps = [
+    ":metrics",
+    "//base",
+    "//base/test:test_support",
+    "//ios/chrome/test:test_support",
+    "//ios/web/public/test",
+    "//testing/gtest",
+    "//third_party/ocmock",
+    "//ui/base",
+    "//ui/base:test_support",
+  ]
+}

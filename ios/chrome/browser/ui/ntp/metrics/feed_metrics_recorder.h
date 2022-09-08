@@ -2,76 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_NTP_FEED_METRICS_RECORDER_H_
-#define IOS_CHROME_BROWSER_UI_NTP_FEED_METRICS_RECORDER_H_
+#ifndef IOS_CHROME_BROWSER_UI_NTP_METRICS_FEED_METRICS_RECORDER_H_
+#define IOS_CHROME_BROWSER_UI_NTP_METRICS_FEED_METRICS_RECORDER_H_
 
 #import <UIKit/UIKit.h>
 
 #import "ios/chrome/browser/discover_feed/feed_constants.h"
+#import "ios/chrome/browser/ui/ntp/metrics/feed_metrics_constants.h"
 
 @protocol FeedControlDelegate;
 @protocol NewTabPageFollowDelegate;
-
-// DO NOT CHANGE. Values are from enums.xml representing what could be broken in
-// the NTP view hierarchy. These values are persisted to logs. Entries should
-// not be renumbered and numeric values should never be reused.
-enum class BrokenNTPHierarchyRelationship {
-  kContentSuggestionsParent = 0,
-  kELMCollectionParent = 1,
-  kDiscoverFeedParent = 2,
-  kDiscoverFeedWrapperParent = 3,
-  kContentSuggestionsReset = 4,
-  kFeedHeaderParent = 5,
-  kContentSuggestionsHeaderParent = 6,
-
-  // Change this to match max value.
-  kMaxValue = 6,
-};
-
-// Enum class contains values indicating the type of follow request. Ex.
-// kFollowRequestFollow means the user has sent a request to follow a website.
-enum class FollowRequestType {
-  kFollowRequestFollow = 0,
-  kFollowRequestUnfollow = 1,
-
-  // Change this to match max value.
-  kMaxValue = kFollowRequestUnfollow,
-};
-
-// Enum class contains values indicating the type of follow confirmation type.
-// Ex. kFollowSucceedSnackbarShown means a confirmation is shown after the user
-// has successfully followed a website.
-enum class FollowConfirmationType {
-  kFollowSucceedSnackbarShown = 0,
-  kFollowErrorSnackbarShown = 1,
-  kUnfollowSucceedSnackbarShown = 2,
-  kUnfollowErrorSnackbarShown = 3,
-
-  // Change this to match max value.
-  kMaxValue = kUnfollowErrorSnackbarShown,
-};
-
-// Enum class contains values indicating the type of snackbar action button.
-enum class FollowSnackbarActionType {
-  kSnackbarActionGoToFeed = 0,
-  kSnackbarActionUndo = 1,
-  kSnackbarActionRetryFollow = 2,
-  kSnackbarActionRetryUnfollow = 3,
-
-  // Change this to match max value.
-  kMaxValue = kSnackbarActionRetryUnfollow,
-};
-
-// Enum class for the times when we log the user's follow count.
-// To be kept in sync with the ContentSuggestions.Feed.WebFeed.FollowCount
-// variants.
-typedef NS_ENUM(NSInteger, FollowCountLogReason) {
-  FollowCountLogReasonContentShown = 0,
-  FollowCountLogReasonNoContentShown,
-  FollowCountLogReasonAfterFollow,
-  FollowCountLogReasonAfterUnfollow,
-  FollowCountLogReasonEngaged
-};
 
 namespace base {
 class Time;
@@ -79,6 +19,15 @@ class Time;
 
 // Records different metrics for the NTP feeds.
 @interface FeedMetricsRecorder : NSObject
+
+// Delegate to get the currently selected feed.
+@property(nonatomic, weak) id<FeedControlDelegate> feedControlDelegate;
+
+// Delegate for getting information relating to Following.
+@property(nonatomic, weak) id<NewTabPageFollowDelegate> followDelegate;
+
+// Whether or not the feed is currently being shown on the Start Surface.
+@property(nonatomic, assign) BOOL isShownOnStartSurface;
 
 // Record metrics for when the user has scrolled `scrollDistance` in the Feed.
 - (void)recordFeedScrolled:(int)scrollDistance;
@@ -286,15 +235,6 @@ class Time;
 // are able to follow a website.
 - (void)recordFollowRecommendationIPHShown;
 
-// Delegate to get the currently selected feed.
-@property(nonatomic, weak) id<FeedControlDelegate> feedControlDelegate;
-
-// Delegate for getting information relating to Following.
-@property(nonatomic, weak) id<NewTabPageFollowDelegate> followDelegate;
-
-// Whether or not the feed is currently being shown on the Start Surface.
-@property(nonatomic, assign) BOOL isShownOnStartSurface;
-
 @end
 
-#endif  // IOS_CHROME_BROWSER_UI_NTP_FEED_METRICS_RECORDER_H_
+#endif  // IOS_CHROME_BROWSER_UI_NTP_METRICS_FEED_METRICS_RECORDER_H_
