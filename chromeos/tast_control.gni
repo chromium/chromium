@@ -249,6 +249,9 @@ tast_disabled_tests_from_chrome_all = [
 
   # https://crbug.com/1360969
   "launcher.SearchBuiltInApps.productivity_launcher_tablet_mode",
+
+  # https://crbug.com/1361078
+  "shelf.HotseatSmoke",
 ]
 
 # To create filters to be used on specific builders add them like this:
