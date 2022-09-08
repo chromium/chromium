@@ -141,9 +141,6 @@ tast_disabled_tests_from_chrome_all = [
   "policy.DefaultJavaScriptSetting",
   "policy.CookiesBlockedForUrls",
 
-  # https://crbug.com/1312965
-  "policy.AllowDinosaurEasterEggEnrolled",
-
   # https://crbug.com/1312908
   "policy.DefaultNotificationsSetting",
 
