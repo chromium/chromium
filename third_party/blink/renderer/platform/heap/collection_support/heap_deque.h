@@ -29,15 +29,27 @@ class HeapDeque final : public GarbageCollected<HeapDeque<T>>,
 
   HeapDeque(wtf_size_t size, const T& val)
       : Deque<T, 0, HeapAllocator>(size, val) {
+    CheckType();
+  }
+
+  HeapDeque(const HeapDeque<T>& other) : Deque<T, 0, HeapAllocator>(other) {
+    CheckType();
   }
 
   HeapDeque& operator=(const HeapDeque& other) {
-    HeapDeque<T> copy(other);
-    Deque<T, 0, HeapAllocator>::Swap(copy);
+    Deque<T, 0, HeapAllocator>::operator=(other);
     return *this;
   }
 
-  HeapDeque(const HeapDeque<T>& other) : Deque<T, 0, HeapAllocator>(other) {}
+  HeapDeque(HeapDeque&& other) noexcept
+      : Deque<T, 0, HeapAllocator>(std::move(other)) {
+    CheckType();
+  }
+
+  HeapDeque& operator=(HeapDeque&& other) noexcept {
+    Deque<T, 0, HeapAllocator>::operator=(std::move(other));
+    return *this;
+  }
 
   void Trace(Visitor* visitor) const {
     Deque<T, 0, HeapAllocator>::Trace(visitor);

@@ -256,7 +256,10 @@ struct VectorTypeOperations {
     }
   }
 
-  static void Swap(T* const src, T* const src_end, T* const dst) {
+  static void Swap(T* const src,
+                   T* const src_end,
+                   T* const dst,
+                   VectorOperationOrigin src_origin) {
     if constexpr (!VectorTraits<T>::kCanMoveWithMemcpy) {
       std::swap_ranges(src, src_end, dst);
     } else if constexpr (Allocator::kIsGarbageCollected &&
@@ -270,7 +273,9 @@ struct VectorTypeOperations {
         AtomicWriteMemcpy<sizeof(T), alignof(T)>(s, buf);
       }
       const size_t len = src_end - src;
-      ConstructTraits::NotifyNewElements(src, len);
+      if (src_origin != VectorOperationOrigin::kConstruction) {
+        ConstructTraits::NotifyNewElements(src, len);
+      }
       ConstructTraits::NotifyNewElements(dst, len);
     } else {
       static_assert(VectorTraits<T>::kCanMoveWithMemcpy);
@@ -461,6 +466,16 @@ class VectorBufferBase {
     return AsAtomicPtr(&buffer_)->load(std::memory_order_relaxed);
   }
 
+  void SwapBuffers(VectorBufferBase& other, VectorOperationOrigin this_origin) {
+    AtomicWriteSwap(buffer_, other.buffer_);
+    std::swap(capacity_, other.capacity_);
+    std::swap(size_, other.size_);
+    if (this_origin != VectorOperationOrigin::kConstruction) {
+      Allocator::BackingWriteBarrier(&buffer_);
+    }
+    Allocator::BackingWriteBarrier(&other.buffer_);
+  }
+
   T* buffer_;
   wtf_size_t capacity_;
   wtf_size_t size_;
@@ -557,14 +572,9 @@ class VectorBuffer<T, 0, Allocator> : protected VectorBufferBase<T, Allocator> {
   // They are irrelevant in this case.
   void SwapVectorBuffer(VectorBuffer<T, 0, Allocator>& other,
                         OffsetRange this_hole,
-                        OffsetRange other_hole) {
-    static_assert(VectorTraits<T>::kCanSwapUsingCopyOrMove,
-                  "Cannot swap using copy or move.");
-    AtomicWriteSwap(buffer_, other.buffer_);
-    std::swap(capacity_, other.capacity_);
-    std::swap(size_, other.size_);
-    Allocator::BackingWriteBarrier(&buffer_);
-    Allocator::BackingWriteBarrier(&other.buffer_);
+                        OffsetRange other_hole,
+                        VectorOperationOrigin this_origin) {
+    Base::SwapBuffers(other, this_origin);
   }
 
   using Base::AllocateBuffer;
@@ -713,20 +723,15 @@ class VectorBuffer : protected VectorBufferBase<T, Allocator> {
   // applies for |other.buffer_| and |otherHole|.
   void SwapVectorBuffer(VectorBuffer<T, inlineCapacity, Allocator>& other,
                         OffsetRange this_hole,
-                        OffsetRange other_hole) {
+                        OffsetRange other_hole,
+                        VectorOperationOrigin this_origin) {
     using TypeOperations = VectorTypeOperations<T, Allocator>;
 
     static_assert(VectorTraits<T>::kCanSwapUsingCopyOrMove,
                   "Cannot swap using copy or move.");
 
     if (Buffer() != InlineBuffer() && other.Buffer() != other.InlineBuffer()) {
-      // The easiest case: both buffers are non-inline. We just need to swap the
-      // pointers.
-      AtomicWriteSwap(buffer_, other.buffer_);
-      std::swap(capacity_, other.capacity_);
-      std::swap(size_, other.size_);
-      Allocator::BackingWriteBarrier(&buffer_);
-      Allocator::BackingWriteBarrier(&other.buffer_);
+      Base::SwapBuffers(other, this_origin);
       return;
     }
 
@@ -789,7 +794,9 @@ class VectorBuffer : protected VectorBufferBase<T, Allocator> {
       std::swap(size_, other.size_);
       MARKING_AWARE_ANNOTATE_NEW_BUFFER(Allocator, other.buffer_,
                                         inlineCapacity, other.size_);
-      Allocator::BackingWriteBarrier(&buffer_);
+      if (this_origin != VectorOperationOrigin::kConstruction) {
+        Allocator::BackingWriteBarrier(&buffer_);
+      }
     } else if (!this_source_begin &&
                other_source_begin) {  // Their buffer is inline, ours is not.
       DCHECK_NE(Buffer(), InlineBuffer());
@@ -858,7 +865,7 @@ class VectorBuffer : protected VectorBufferBase<T, Allocator> {
         DCHECK_EQ(other_destination_begin, this_source_begin);
         TypeOperations::Swap(this_source_begin + section_begin,
                              this_source_begin + section_end,
-                             other_source_begin + section_begin);
+                             other_source_begin + section_begin, this_origin);
       } else if (this_occupied) {
         // Move from ours to theirs.
         TypeOperations::Move(this_source_begin + section_begin,
@@ -872,7 +879,7 @@ class VectorBuffer : protected VectorBufferBase<T, Allocator> {
         TypeOperations::Move(other_source_begin + section_begin,
                              other_source_begin + section_end,
                              other_destination_begin + section_begin,
-                             VectorOperationOrigin::kRegularModification);
+                             this_origin);
         Base::ClearUnusedSlots(other_source_begin + section_begin,
                                other_source_begin + section_end);
       } else {
@@ -1325,7 +1332,8 @@ class Vector
 
   // Swap two vectors quickly.
   void swap(Vector& other) {
-    Base::SwapVectorBuffer(other, OffsetRange(), OffsetRange());
+    Base::SwapVectorBuffer(other, OffsetRange(), OffsetRange(),
+                           VectorOperationOrigin::kRegularModification);
   }
 
   // Reverse the contents.
@@ -1393,6 +1401,10 @@ class Vector
   }
 
   void ReallocateBuffer(wtf_size_t);
+
+  void SwapForMove(Vector&& other, VectorOperationOrigin this_origin) {
+    Base::SwapVectorBuffer(other, OffsetRange(), OffsetRange(), this_origin);
+  }
 
   using Base::AllocateBuffer;
   using Base::AllocationSize;
@@ -1542,7 +1554,7 @@ Vector<T, inlineCapacity, Allocator>::Vector(
   size_ = 0;
   // It's a little weird to implement a move constructor using swap but this
   // way we don't have to add a move constructor to VectorBuffer.
-  swap(other);
+  SwapForMove(std::move(other), VectorOperationOrigin::kConstruction);
 }
 
 template <typename T, wtf_size_t inlineCapacity, typename Allocator>
@@ -1556,7 +1568,7 @@ Vector<T, inlineCapacity, Allocator>::operator=(
   // garbage-collected case this allows for freeing the backing
   // right away without introducing GC pressure.
   clear();
-  swap(other);
+  SwapForMove(std::move(other), VectorOperationOrigin::kRegularModification);
   return *this;
 }
 

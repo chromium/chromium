@@ -196,6 +196,9 @@ class Deque
   void ExpandCapacityIfNeeded();
   void ExpandCapacity();
 
+  void SwapForMove(Deque&&, VectorOperationOrigin this_origin);
+  void SwapImpl(Deque&, VectorOperationOrigin this_origin);
+
   BackingBuffer buffer_;
   wtf_size_t start_;
   wtf_size_t end_;
@@ -370,7 +373,7 @@ inline Deque<T, inlineCapacity, Allocator>::Deque(const Deque& other)
 template <typename T, wtf_size_t inlineCapacity, typename Allocator>
 inline Deque<T, inlineCapacity, Allocator>&
 Deque<T, inlineCapacity, Allocator>::operator=(const Deque& other) {
-  Deque<T> copy(other);
+  Deque copy(other);
   Swap(copy);
   return *this;
 }
@@ -378,13 +381,13 @@ Deque<T, inlineCapacity, Allocator>::operator=(const Deque& other) {
 template <typename T, wtf_size_t inlineCapacity, typename Allocator>
 inline Deque<T, inlineCapacity, Allocator>::Deque(Deque&& other)
     : start_(0), end_(0) {
-  Swap(other);
+  SwapForMove(std::move(other), VectorOperationOrigin::kConstruction);
 }
 
 template <typename T, wtf_size_t inlineCapacity, typename Allocator>
 inline Deque<T, inlineCapacity, Allocator>&
 Deque<T, inlineCapacity, Allocator>::operator=(Deque&& other) {
-  Swap(other);
+  SwapForMove(std::move(other), VectorOperationOrigin::kRegularModification);
   return *this;
 }
 
@@ -425,6 +428,20 @@ inline void Deque<T, inlineCapacity, Allocator>::Finalize() {
 
 template <typename T, wtf_size_t inlineCapacity, typename Allocator>
 inline void Deque<T, inlineCapacity, Allocator>::Swap(Deque& other) {
+  return SwapImpl(other, VectorOperationOrigin::kRegularModification);
+}
+
+template <typename T, wtf_size_t inlineCapacity, typename Allocator>
+inline void Deque<T, inlineCapacity, Allocator>::SwapForMove(
+    Deque&& other,
+    VectorOperationOrigin this_origin) {
+  return SwapImpl(other, this_origin);
+}
+
+template <typename T, wtf_size_t inlineCapacity, typename Allocator>
+inline void Deque<T, inlineCapacity, Allocator>::SwapImpl(
+    Deque& other,
+    VectorOperationOrigin this_origin) {
   typename BackingBuffer::OffsetRange this_hole;
   if (start_ <= end_) {
     buffer_.SetSize(end_);
@@ -446,7 +463,7 @@ inline void Deque<T, inlineCapacity, Allocator>::Swap(Deque& other) {
     other_hole.end = other.start_;
   }
 
-  buffer_.SwapVectorBuffer(other.buffer_, this_hole, other_hole);
+  buffer_.SwapVectorBuffer(other.buffer_, this_hole, other_hole, this_origin);
 
   std::swap(start_, other.start_);
   std::swap(end_, other.end_);
