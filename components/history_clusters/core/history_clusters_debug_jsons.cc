@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/json/json_writer.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "components/history_clusters/core/history_clusters_util.h"
@@ -19,28 +20,28 @@ std::string GetDebugJSONForVisits(
   base::Value::List debug_visits_list;
   for (auto& visit : visits) {
     base::Value::Dict debug_visit;
-    debug_visit.Set("visitId", static_cast<int>(visit.visit_row.visit_id));
+    debug_visit.Set("visitId", base::NumberToString(visit.visit_row.visit_id));
     debug_visit.Set(
         "url", visit.content_annotations.search_normalized_url.is_empty()
                    ? visit.url_row.url().spec()
                    : visit.content_annotations.search_normalized_url.spec());
     debug_visit.Set("title", visit.url_row.title());
     debug_visit.Set(
-        "foreground_time_secs",
-        static_cast<int>(visit.visit_row.visit_duration.InSeconds()));
-    debug_visit.Set(
-        "navigationTimeMs",
-        static_cast<int>(visit.visit_row.visit_time.ToDeltaSinceWindowsEpoch()
-                             .InMilliseconds()));
+        "foregroundTimeSecs",
+        base::NumberToString(visit.visit_row.visit_duration.InSeconds()));
+    debug_visit.Set("navigationTimeMs",
+                    base::NumberToString(
+                        visit.visit_row.visit_time.ToDeltaSinceWindowsEpoch()
+                            .InMilliseconds()));
     debug_visit.Set("pageEndReason", visit.context_annotations.page_end_reason);
     debug_visit.Set("pageTransition",
-                    static_cast<int>(visit.visit_row.transition));
+                    base::NumberToString(visit.visit_row.transition));
     debug_visit.Set(
         "referringVisitId",
-        static_cast<int>(visit.referring_visit_of_redirect_chain_start));
+        base::NumberToString(visit.referring_visit_of_redirect_chain_start));
     debug_visit.Set(
         "openerVisitId",
-        static_cast<int>(visit.opener_visit_of_redirect_chain_start));
+        base::NumberToString(visit.opener_visit_of_redirect_chain_start));
     debug_visit.Set("searchTerms", visit.content_annotations.search_terms);
     debug_visit.Set(
         "urlForDeduping",
