@@ -1,5 +1,5 @@
 # File: ../../third_party/androidx/androidx_fragment.flags
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -15,7 +15,7 @@
 }
 
 # File: ../../third_party/androidx/androidx_mediarouter.flags
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -26,7 +26,7 @@
 }
 
 # File: ../../build/android/chromium_annotations.flags
-# Copyright 2022 The Chromium Authors. All rights reserved.
+# Copyright 2022 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -98,7 +98,7 @@
 }
 
 # File: ../../base/android/proguard/chromium_apk.flags
-# Copyright 2016 The Chromium Authors. All rights reserved.
+# Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -194,7 +194,7 @@
 }
 
 # File: ../../base/android/proguard/chromium_code.flags
-# Copyright 2016 The Chromium Authors. All rights reserved.
+# Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -253,7 +253,7 @@
 }
 
 # File: ../../build/android/dcheck_is_off.flags
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -267,7 +267,7 @@
 }
 
 # File: ../../chrome/android/proguard/main.flags
-# Copyright 2016 The Chromium Authors. All rights reserved.
+# Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -312,7 +312,7 @@
 }
 
 # File: ../../third_party/android_deps/material_design.flags
-# Copyright 2021 The Chromium Authors. All rights reserved.
+# Copyright 2021 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -364,7 +364,7 @@
 -dontwarn com.google.protobuf.nano.NanoEnumValue
 
 # File: ../../android_webview/support_library/boundary_interfaces/proguard.flags
-# Copyright 2018 The Chromium Authors. All rights reserved.
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -375,7 +375,7 @@
 -keep public class org.chromium.support_lib_boundary.* { public *; }
 
 # File: ../../android_webview/nonembedded/java/proguard.flags
-# Copyright 2016 The Chromium Authors. All rights reserved.
+# Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -444,7 +444,7 @@
 }
 
 # File: ../../chrome/android/features/start_surface/proguard.flags
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
