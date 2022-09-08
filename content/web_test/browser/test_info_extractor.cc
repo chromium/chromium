@@ -69,13 +69,22 @@ void ConnectStdinSocket(const std::string& host_and_port) {
 std::unique_ptr<TestInfo> GetTestInfoFromWebTestName(
     const std::string& test_name,
     bool protocol_mode) {
-  // A test name is formatted like file:///path/to/test'pixelhash
+  // A test name is formatted like file:///path/to/test['pixelhash['print]]
   std::string path_or_url = test_name;
   std::string::size_type separator_position = path_or_url.find('\'');
   std::string expected_pixel_hash;
+  bool wpt_print_mode = false;
   if (separator_position != std::string::npos) {
     expected_pixel_hash = path_or_url.substr(separator_position + 1);
     path_or_url.erase(separator_position);
+
+    separator_position = expected_pixel_hash.find('\'');
+
+    if (separator_position != std::string::npos) {
+      wpt_print_mode =
+          expected_pixel_hash.substr(separator_position + 1) == "print";
+      expected_pixel_hash.erase(separator_position);
+    }
   }
 
   GURL test_url(path_or_url);
@@ -110,7 +119,8 @@ std::unique_ptr<TestInfo> GetTestInfoFromWebTestName(
     base::GetCurrentDirectory(&current_working_directory);
 
   return std::make_unique<TestInfo>(test_url, expected_pixel_hash,
-                                    current_working_directory, protocol_mode);
+                                    current_working_directory, wpt_print_mode,
+                                    protocol_mode);
 }
 
 }  // namespace
@@ -118,10 +128,12 @@ std::unique_ptr<TestInfo> GetTestInfoFromWebTestName(
 TestInfo::TestInfo(const GURL& url,
                    const std::string& expected_pixel_hash,
                    const base::FilePath& current_working_directory,
+                   bool wpt_print_mode,
                    bool protocol_mode)
     : url(url),
       expected_pixel_hash(expected_pixel_hash),
       current_working_directory(current_working_directory),
+      wpt_print_mode(wpt_print_mode),
       protocol_mode(protocol_mode) {}
 
 TestInfo::~TestInfo() {}

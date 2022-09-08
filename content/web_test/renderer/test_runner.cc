@@ -2948,6 +2948,11 @@ void TestRunner::SetMainWindowAndTestConfiguration(
   if (!test_config_.protocol_mode)
     SetShouldDumpAsLayout(true);
 
+  if (test_config_.wpt_print_mode) {
+    SetPrinting();
+    SetPrintingSize(kWPTPrintWidth, kWPTPrintHeight);
+  }
+
   // For http/tests/loading/, which is served via httpd and becomes /loading/.
   if (spec.find("/loading/") != std::string::npos)
     SetShouldDumpFrameLoadCallbacks(true);

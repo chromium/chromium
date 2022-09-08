@@ -29,6 +29,9 @@ struct WebTestRunTestConfiguration {
   // The expected MD5 hash of the pixel results.
   string expected_pixel_hash;
 
+  // Whether the test is supposed to run as a WPT print reftest.
+  bool wpt_print_mode;
+
   // Whether the test is running in protocol mode.
   // See TestInfo::protocol_mode in browser/web_test/test_info_extractor.h.
   bool protocol_mode;

@@ -532,6 +532,7 @@ bool WebTestControlHost::PrepareForWebTest(const TestInfo& test_info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   current_working_directory_ = test_info.current_working_directory;
   expected_pixel_hash_ = test_info.expected_pixel_hash;
+  wpt_print_mode_ = test_info.wpt_print_mode;
   bool is_devtools_js_test = false;
   test_url_ = WebTestDevToolsBindings::MapTestURLIfNeeded(test_info.url,
                                                           &is_devtools_js_test);
@@ -1201,6 +1202,7 @@ void WebTestControlHost::HandleNewRenderFrameHost(RenderFrameHost* frame) {
         base::CommandLine::ForCurrentProcess()->HasSwitch(
             switches::kAllowExternalPages);
     params->expected_pixel_hash = expected_pixel_hash_;
+    params->wpt_print_mode = wpt_print_mode_;
     params->protocol_mode = protocol_mode_;
 
     GetWebTestRenderFrameRemote(frame)->SetTestConfiguration(std::move(params),

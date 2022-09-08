@@ -344,6 +344,7 @@ class WebTestControlHost : public WebContentsObserver,
   // Per test config.
   std::string expected_pixel_hash_;
   GURL test_url_;
+  bool wpt_print_mode_;
   bool protocol_mode_ = false;
 
   // Stores the default test-adapted WebPreferences which is then used to fully
