@@ -130,7 +130,7 @@ class ChromeMimeHandlerViewTest : public extensions::ExtensionApiTest {
     if (!catcher.GetNextResult())
       FAIL() << catcher.message();
 
-    ASSERT_TRUE(GetGuestViewManager()->DeprecatedWaitForSingleGuestCreated());
+    ASSERT_TRUE(GetGuestViewManager()->WaitForSingleGuestViewCreated());
     ASSERT_TRUE(GetEmbedderWebContents());
   }
 
