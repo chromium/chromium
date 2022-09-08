@@ -302,4 +302,27 @@ suite('emoji-picker-extension', () => {
         () => leftChevron.style.display === 'flex' &&
             rightChevron.style.display === 'flex');
   });
+
+  test(
+      'Clicking on a category during search clears search and scrolls to the' +
+          'correct location',
+      async () => {
+        const emojiCategoryButton = findInEmojiPicker(
+            'emoji-search', 'emoji-category-button', 'cr-icon-button');
+        const emoticonCategoryButton = findInEmojiPicker(
+            'emoji-search', 'emoji-category-button:last-of-type',
+            'cr-icon-button');
+        const emojiGroups = findInEmojiPicker('#groups');
+        emoticonCategoryButton.click();
+        const targetScroll = emojiGroups.scrollTop;
+        emojiCategoryButton.click();
+
+        findInEmojiPicker('emoji-search').setSearchQuery('face');
+        await waitForCondition(
+            () => findInEmojiPicker('emoji-search', 'emoji-group'));
+        emoticonCategoryButton.click();
+
+        await waitForCondition(() => emojiGroups.scrollTop === targetScroll);
+        assertFalse(findInEmojiPicker('emoji-search').searchNotEmpty());
+      });
 });

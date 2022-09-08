@@ -984,7 +984,14 @@ export class EmojiPicker extends PolymerElement {
   onCategoryButtonClick(newCategoryName) {
     this.set('category', newCategoryName);
     this.set('pagination', 1);
-    this.scrollToGroup(this.emojiGroupTabs[0].groupId);
+    if (this.$['search-container'].searchNotEmpty()) {
+      this.$['search-container'].setSearchQuery('');
+      afterNextRender(this, () => {
+        this.scrollToGroup(this.emojiGroupTabs[0].groupId);
+      });
+    } else {
+      this.scrollToGroup(this.emojiGroupTabs[0].groupId);
+    }
   }
 
   /**
