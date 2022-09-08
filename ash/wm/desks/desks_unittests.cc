@@ -181,10 +181,12 @@ void CloseDeskFromMiniView(const DeskMiniView* desk_mini_view,
   const gfx::Point mini_view_center =
       desk_mini_view->GetBoundsInScreen().CenterPoint();
   event_generator->MoveMouseTo(mini_view_center);
-  EXPECT_TRUE(desk_mini_view->close_desk_button()->GetVisible());
+  const CloseButton* close_button =
+      GetCloseDeskButtonForMiniView(desk_mini_view);
+  EXPECT_TRUE(close_button->GetVisible());
+
   // Move to the center of the close button and click.
-  event_generator->MoveMouseTo(
-      desk_mini_view->close_desk_button()->GetBoundsInScreen().CenterPoint());
+  event_generator->MoveMouseTo(close_button->GetBoundsInScreen().CenterPoint());
   event_generator->ClickLeftButton();
 }
 
@@ -581,19 +583,17 @@ TEST_F(DesksTest, DesksBarViewDeskCreation) {
   EXPECT_FALSE(new_desk_button->GetEnabled());
   EXPECT_EQ(views::Button::STATE_DISABLED, new_desk_button->GetState());
 
-  // Hover over one of the mini_views, and expect that the close button
+  // Hover over one of the mini_views, and expect that the desk action interface
   // becomes visible.
   const auto* mini_view = desks_bar_view->mini_views().front();
-  EXPECT_FALSE(mini_view->close_desk_button()->GetVisible());
+  EXPECT_FALSE(GetDeskActionVisibilityForMiniView(mini_view));
   const gfx::Point mini_view_center =
       mini_view->GetBoundsInScreen().CenterPoint();
   event_generator->MoveMouseTo(mini_view_center);
-  EXPECT_TRUE(mini_view->close_desk_button()->GetVisible());
+  EXPECT_TRUE(GetDeskActionVisibilityForMiniView(mini_view));
 
   // Use the close button to close the desk.
-  event_generator->MoveMouseTo(
-      mini_view->close_desk_button()->GetBoundsInScreen().CenterPoint());
-  event_generator->ClickLeftButton();
+  CloseDeskFromMiniView(mini_view, event_generator);
 
   // The new desk button is now enabled again.
   EXPECT_EQ(desks_util::kMaxNumberOfDesks - 1, controller->desks().size());
@@ -1157,7 +1157,7 @@ TEST_F(DesksTest, ActivateDeskFromOverview) {
     EXPECT_EQ(0, controller->GetActiveDeskIndex());
     auto* mini_view = desks_bar_view->mini_views().back();
     EXPECT_EQ(desk_4, mini_view->desk());
-    EXPECT_FALSE(mini_view->close_desk_button()->GetVisible());
+    EXPECT_FALSE(GetDeskActionVisibilityForMiniView(mini_view));
     DeskSwitchAnimationWaiter waiter;
     ClickOnView(mini_view, event_generator);
     waiter.Wait();
@@ -3185,6 +3185,11 @@ TEST_F(TabletModeDesksTest, RestoringUnsnappableWindowsInSplitView) {
 }
 
 TEST_F(DesksTest, MiniViewsTouchGestures) {
+  // TODO(crbug.com/1361138): Figure out how to accommodate the context menu in
+  // CloseAll.
+  base::test::ScopedFeatureList desks_close_all_disabler;
+  desks_close_all_disabler.InitAndDisableFeature(features::kDesksCloseAll);
+
   auto* controller = DesksController::Get();
   NewDesk();
   NewDesk();
@@ -3201,31 +3206,33 @@ TEST_F(DesksTest, MiniViewsTouchGestures) {
   auto* desk_2_mini_view = desks_bar_view->mini_views()[1];
   auto* desk_3_mini_view = desks_bar_view->mini_views()[2];
 
-  // Long gesture tapping on one mini_view shows its close button, and hides
-  // those of other mini_views.
+  // Long gesture tapping on one mini_view shows its desk action interface, and
+  // hides those of other mini_views.
   auto* event_generator = GetEventGenerator();
   LongGestureTap(desk_1_mini_view->GetBoundsInScreen().CenterPoint(),
                  event_generator);
-  EXPECT_TRUE(desk_1_mini_view->close_desk_button()->GetVisible());
-  EXPECT_FALSE(desk_2_mini_view->close_desk_button()->GetVisible());
-  EXPECT_FALSE(desk_3_mini_view->close_desk_button()->GetVisible());
+  EXPECT_TRUE(GetDeskActionVisibilityForMiniView(desk_1_mini_view));
+  EXPECT_FALSE(GetDeskActionVisibilityForMiniView(desk_2_mini_view));
+  EXPECT_FALSE(GetDeskActionVisibilityForMiniView(desk_3_mini_view));
   LongGestureTap(desk_2_mini_view->GetBoundsInScreen().CenterPoint(),
                  event_generator);
-  EXPECT_FALSE(desk_1_mini_view->close_desk_button()->GetVisible());
-  EXPECT_TRUE(desk_2_mini_view->close_desk_button()->GetVisible());
-  EXPECT_FALSE(desk_3_mini_view->close_desk_button()->GetVisible());
+  EXPECT_FALSE(GetDeskActionVisibilityForMiniView(desk_1_mini_view));
+  EXPECT_TRUE(GetDeskActionVisibilityForMiniView(desk_2_mini_view));
+  EXPECT_FALSE(GetDeskActionVisibilityForMiniView(desk_3_mini_view));
 
-  // Tapping on the visible close button, closes the desk rather than switches
-  // to that desk.
-  GestureTapOnView(desk_2_mini_view->close_desk_button(), event_generator);
+  // Tapping on the visible close button closes the desk rather than
+  // switches to that desk.
+  GestureTapOnView(GetCloseDeskButtonForMiniView(desk_2_mini_view),
+                   event_generator);
   ASSERT_EQ(2u, controller->desks().size());
   ASSERT_EQ(2u, desks_bar_view->mini_views().size());
   EXPECT_TRUE(overview_controller->InOverviewSession());
 
-  // Tapping on the invisible close button should not result in closing that
-  // desk; rather activating that desk.
-  EXPECT_FALSE(desk_1_mini_view->close_desk_button()->GetVisible());
-  GestureTapOnView(desk_1_mini_view->close_desk_button(), event_generator);
+  // Tapping on the invisible close button should not result in closing
+  // that desk; rather activating that desk.
+  EXPECT_FALSE(GetDeskActionVisibilityForMiniView(desk_1_mini_view));
+  GestureTapOnView(GetCloseDeskButtonForMiniView(desk_1_mini_view),
+                   event_generator);
   ASSERT_EQ(2u, controller->desks().size());
   EXPECT_FALSE(overview_controller->InOverviewSession());
   EXPECT_TRUE(controller->desks()[0]->is_active());
@@ -5578,6 +5585,11 @@ TEST_F(DesksTest, ReorderDesksByMouse) {
 }
 
 TEST_F(DesksTest, ReorderDesksByGesture) {
+  // TODO(crbug.com/1361138): Figure out how to accommodate the context menu in
+  // CloseAll.
+  base::test::ScopedFeatureList desks_close_all_disabler;
+  desks_close_all_disabler.InitAndDisableFeature(features::kDesksCloseAll);
+
   auto* desks_controller = DesksController::Get();
 
   EnterOverview();
@@ -5730,6 +5742,11 @@ TEST_F(DesksTest, ReorderDesksByKeyboard) {
 
 // Test reordering desks in RTL mode.
 TEST_F(DesksTest, ReorderDesksInRTLMode) {
+  // TODO(crbug.com/1361138): Figure out how to accommodate the context menu in
+  // CloseAll.
+  base::test::ScopedFeatureList desks_close_all_disabler;
+  desks_close_all_disabler.InitAndDisableFeature(features::kDesksCloseAll);
+
   // Turn on RTL mode.
   const bool default_rtl = base::i18n::IsRTL();
   base::i18n::SetRTLForTesting(true);
@@ -6230,6 +6247,9 @@ TEST_F(DesksTest, PrimaryUserHasUsedDesksRecently) {
 // Tests that a desk's close button is visible in tablet mode after long
 // pressing on the desk's preview.
 TEST_F(DesksTest, CloseButtonShowsAfterLongPressInTabletMode) {
+  base::test::ScopedFeatureList desks_close_all_disabler;
+  desks_close_all_disabler.InitAndDisableFeature(features::kDesksCloseAll);
+
   TabletModeControllerTestApi().EnterTabletMode();
 
   NewDesk();
@@ -7587,7 +7607,7 @@ TEST_F(DesksCloseAllTest, HideCombineDesksOptionWhenNoWindowsOnDesk) {
   // We need to hover over the desk preview to properly check the combine desks
   // button's visibility.
   DeskMiniView* mini_view = GetPrimaryRootDesksBarView()->mini_views()[0];
-  CloseButton* combine_desks_button =
+  const CloseButton* combine_desks_button =
       mini_view->desk_action_view()->combine_desks_button();
   gfx::Point desk_preview_view_center =
       mini_view->desk_preview()->GetBoundsInScreen().CenterPoint();
@@ -7609,6 +7629,9 @@ TEST_F(DesksCloseAllTest, HideCombineDesksOptionWhenNoWindowsOnDesk) {
   EnterOverview();
   ASSERT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
   mini_view = GetPrimaryRootDesksBarView()->mini_views()[0];
+
+  // Closing and reopening overview will invalidate the
+  // `combine_desks_button` object, so we need to get another one.
   combine_desks_button = mini_view->desk_action_view()->combine_desks_button();
   desk_preview_view_center =
       mini_view->desk_preview()->GetBoundsInScreen().CenterPoint();
@@ -7848,9 +7871,9 @@ TEST_F(DesksCloseAllTest, CombineDesksTooltipIsUpdatedOnUserActions) {
   DeskMiniView* mini_view_2 = desks_bar_view->mini_views()[1];
   DeskNameView* desk_name_view_1 = mini_view_1->desk_name_view();
   DeskNameView* desk_name_view_2 = mini_view_2->desk_name_view();
-  CloseButton* combine_desks_button_1 =
+  const CloseButton* combine_desks_button_1 =
       mini_view_1->desk_action_view()->combine_desks_button();
-  CloseButton* combine_desks_button_2 =
+  const CloseButton* combine_desks_button_2 =
       mini_view_2->desk_action_view()->combine_desks_button();
 
   const std::u16string tooltip_prefix = u"Combine with ";

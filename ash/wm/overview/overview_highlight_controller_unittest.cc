@@ -892,9 +892,10 @@ TEST_P(DesksOverviewHighlightControllerTest, ZeroStateOfDesksBar) {
   auto* event_generator = GetEventGenerator();
   auto* mini_view = desks_bar_view->mini_views()[1];
   event_generator->MoveMouseTo(mini_view->GetBoundsInScreen().CenterPoint());
-  EXPECT_TRUE(mini_view->close_desk_button()->GetVisible());
-  event_generator->MoveMouseTo(
-      mini_view->close_desk_button()->GetBoundsInScreen().CenterPoint());
+  EXPECT_TRUE(GetDeskActionVisibilityForMiniView(mini_view));
+  event_generator->MoveMouseTo(GetCloseDeskButtonForMiniView(mini_view)
+                                   ->GetBoundsInScreen()
+                                   .CenterPoint());
   event_generator->ClickLeftButton();
   EXPECT_TRUE(desks_bar_view->IsZeroState());
 
@@ -976,9 +977,10 @@ TEST_P(DesksOverviewHighlightControllerTest, SwitchingToZeroStateWhileTabbing) {
   auto* event_generator = GetEventGenerator();
   auto* mini_view = desks_bar_view->mini_views()[1];
   event_generator->MoveMouseTo(mini_view->GetBoundsInScreen().CenterPoint());
-  ASSERT_TRUE(mini_view->close_desk_button()->GetVisible());
-  event_generator->MoveMouseTo(
-      mini_view->close_desk_button()->GetBoundsInScreen().CenterPoint());
+  ASSERT_TRUE(GetDeskActionVisibilityForMiniView(mini_view));
+  event_generator->MoveMouseTo(GetCloseDeskButtonForMiniView(mini_view)
+                                   ->GetBoundsInScreen()
+                                   .CenterPoint());
   event_generator->ClickLeftButton();
   ASSERT_TRUE(desks_bar_view->IsZeroState());
 

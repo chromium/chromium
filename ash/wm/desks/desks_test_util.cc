@@ -5,9 +5,12 @@
 #include "ash/wm/desks/desks_test_util.h"
 
 #include "ash/shell.h"
+#include "ash/style/close_button.h"
 #include "ash/wm/desks/desk.h"
+#include "ash/wm/desks/desk_action_view.h"
 #include "ash/wm/desks/desk_animation_base.h"
 #include "ash/wm/desks/desk_animation_impl.h"
+#include "ash/wm/desks/desk_mini_view.h"
 #include "ash/wm/desks/desks_bar_view.h"
 #include "ash/wm/desks/desks_histogram_enums.h"
 #include "ash/wm/desks/root_window_desk_switch_animator_test_api.h"
@@ -167,6 +170,27 @@ const DesksBarView* GetPrimaryRootDesksBarView() {
   return overview_controller->overview_session()
       ->GetGridWithRootWindow(root_window)
       ->desks_bar_view();
+}
+
+const CloseButton* GetCloseDeskButtonForMiniView(
+    const DeskMiniView* mini_view) {
+  if (features::IsDesksCloseAllEnabled()) {
+    // When there are no windows on the desk, the `combine_desks_button` is not
+    // visible, so we need to use the `close_all_button`
+    const DeskActionView* desk_action_view = mini_view->desk_action_view();
+    return desk_action_view->combine_desks_button()->GetVisible()
+               ? desk_action_view->combine_desks_button()
+               : desk_action_view->close_all_button();
+  }
+
+  return mini_view->close_desk_button();
+}
+
+bool GetDeskActionVisibilityForMiniView(const DeskMiniView* mini_view) {
+  if (features::IsDesksCloseAllEnabled())
+    return mini_view->desk_action_view()->GetVisible();
+
+  return mini_view->close_desk_button()->GetVisible();
 }
 
 }  // namespace ash

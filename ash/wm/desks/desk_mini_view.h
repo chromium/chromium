@@ -57,6 +57,7 @@ class ASH_EXPORT DeskMiniView : public views::View,
 
   const CloseButton* close_desk_button() const { return close_desk_button_; }
 
+  const DeskActionView* desk_action_view() const { return desk_action_view_; }
   DeskActionView* desk_action_view() { return desk_action_view_; }
 
   DesksBarView* owner_bar() { return owner_bar_; }
