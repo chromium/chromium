@@ -201,6 +201,7 @@ crbug.com/1340081 [ linux release amd-0x7340 renderer-skia-vulkan ] TraceTest_Re
 crbug.com/1340081 [ linux release amd-0x7340 renderer-skia-vulkan ] TraceTest_WebGL* [ RetryOnFailure ]
 crbug.com/1340081 [ linux release amd-0x7340 renderer-skia-vulkan ] TraceTest_Video_* [ RetryOnFailure ]
 crbug.com/1340081 [ linux release amd-0x7340 renderer-skia-vulkan ] TraceTest_Canvas2DTabSwitch [ RetryOnFailure ]
+crbug.com/1340081 [ linux release amd-0x7340 renderer-skia-vulkan ] TraceTest_RepeatedWebGLTo2D [ RetryOnFailure ]
 
 # WebGL's accelerated canvas capture is currently only supported on Win, Mac, ChromeOS.
 crbug.com/1345777 [ android ] WebGLCanvasCaptureTraceTest_VideoStreamFromWebGLCanvas* [ Skip ]
