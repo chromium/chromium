@@ -149,6 +149,11 @@ MessageView* MessagePopupCollection::GetMessageViewForNotificationId(
     const std::string& notification_id) {
   auto it = std::find_if(
       popup_items_.begin(), popup_items_.end(), [&](const auto& child) {
+        auto* widget = child.popup->GetWidget();
+        // Do not return popups that are in the process of closing, but have not
+        // yet been removed from `popup_items_`.
+        if (!widget || widget->IsClosed())
+          return false;
         return child.popup->message_view()->notification_id() ==
                notification_id;
       });

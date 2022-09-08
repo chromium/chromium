@@ -677,7 +677,12 @@ void AshNotificationView::AnimateSingleToGroup(
         auto* parent_notification =
             message_center::MessageCenter::Get()->FindNotificationById(
                 parent_id);
-        if (!parent_notification)
+        auto* child_notification =
+            message_center::MessageCenter::Get()->FindNotificationById(
+                notification_id);
+        // The child and parent notifications are not guaranteed to exist. If
+        // they were deleted avoid the animation cleanup.
+        if (!parent_notification || !child_notification)
           return;
 
         grouping_controller->ConvertFromSingleToGroupNotificationAfterAnimation(
