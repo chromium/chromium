@@ -15,7 +15,6 @@ import androidx.test.core.content.pm.PackageInfoBuilder;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Shadows;
@@ -28,8 +27,6 @@ import org.robolectric.shadows.ShadowPausedAsyncTask;
 import org.robolectric.shadows.ShadowSystemClock;
 
 import org.chromium.base.ContextUtils;
-import org.chromium.base.FakeTimeTestRule;
-import org.chromium.base.TimeUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.task.AsyncTask;
@@ -57,9 +54,6 @@ public class BrandingCheckerUnitTest {
     private static final long PACKAGE_1_BRANDING_SHOWN_SINCE_START = 2;
     private static final long PACKAGE_2_BRANDING_SHOWN_SINCE_START = 5;
 
-    @Rule
-    public FakeTimeTestRule mFakeTimeRule = new FakeTimeTestRule();
-
     TestBrandingStorage mStorage = new TestBrandingStorage();
     private Context mContext;
     long mStartTime;
@@ -67,8 +61,7 @@ public class BrandingCheckerUnitTest {
     @Before
     public void setup() {
         mContext = ContextUtils.getApplicationContext();
-        mStartTime = TimeUtils.currentTimeMillis();
-        SystemClock.setCurrentTimeMillis(mStartTime);
+        mStartTime = SystemClock.elapsedRealtime();
 
         mStorage.put(PACKAGE_1, PACKAGE_1_BRANDING_SHOWN_SINCE_START + mStartTime);
         mStorage.put(PACKAGE_2, PACKAGE_2_BRANDING_SHOWN_SINCE_START + mStartTime);
@@ -90,7 +83,6 @@ public class BrandingCheckerUnitTest {
 
     @After
     public void tearDown() {
-        mFakeTimeRule.resetTimes();
         UmaRecorderHolder.resetForTesting();
         ShadowPackageManager.reset();
         ShadowSystemClock.reset();
@@ -214,7 +206,6 @@ public class BrandingCheckerUnitTest {
 
     private void advanceTimeMs(long increments) {
         ShadowSystemClock.advanceBy(increments, TimeUnit.MILLISECONDS);
-        mFakeTimeRule.advanceMillis(increments);
     }
 
     private void assertHistogramRecorded(

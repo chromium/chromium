@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.customtabs.features.branding;
 
 import android.content.Context;
+import android.os.SystemClock;
 
 import androidx.annotation.MainThread;
 import androidx.annotation.NonNull;
@@ -13,7 +14,6 @@ import androidx.annotation.WorkerThread;
 
 import org.chromium.base.Callback;
 import org.chromium.base.PackageUtils;
-import org.chromium.base.TimeUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.AsyncTask;
 
@@ -85,7 +85,7 @@ class BrandingChecker extends AsyncTask<Integer> {
     protected @Nullable @BrandingDecision Integer doInBackground() {
         @BrandingDecision
         Integer brandingDecision = null;
-        long startTime = TimeUtils.currentTimeMillis();
+        long startTime = SystemClock.elapsedRealtime();
         mIsPackageValid = PackageUtils.isPackageInstalled(mContext, mPackageName);
         if (mIsPackageValid) {
             long timeLastBranding = mStorage.get(mPackageName);
@@ -93,7 +93,7 @@ class BrandingChecker extends AsyncTask<Integer> {
         }
 
         RecordHistogram.recordTimesHistogram("CustomTabs.Branding.BrandingCheckDuration",
-                TimeUtils.currentTimeMillis() - startTime);
+                SystemClock.elapsedRealtime() - startTime);
         RecordHistogram.recordBooleanHistogram(
                 "CustomTabs.Branding.IsPackageNameValid", mIsPackageValid);
 
@@ -124,7 +124,7 @@ class BrandingChecker extends AsyncTask<Integer> {
     }
 
     private void onTaskFinished(@BrandingDecision Integer brandingDecision) {
-        long taskFinishedTime = TimeUtils.currentTimeMillis();
+        long taskFinishedTime = SystemClock.elapsedRealtime();
         if (brandingDecision == null) {
             brandingDecision = mDefaultBrandingDecision;
         }
