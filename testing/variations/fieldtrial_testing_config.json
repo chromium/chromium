@@ -3916,6 +3916,25 @@
             ]
         }
     ],
+    "DmTokenDeletion": [
+        {
+            "platforms": [
+                "android",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "DmTokenDeletion"
+                    ]
+                }
+            ]
+        }
+    ],
     "DnsOverHttpsCox": [
         {
             "platforms": [
