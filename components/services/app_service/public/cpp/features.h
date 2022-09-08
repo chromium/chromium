@@ -24,6 +24,8 @@ COMPONENT_EXPORT(APP_TYPES)
 extern const base::Feature kAppServiceGetMenuWithoutMojom;
 COMPONENT_EXPORT(APP_TYPES)
 extern const base::Feature kAppServiceCapabilityAccessWithoutMojom;
+COMPONENT_EXPORT(APP_TYPES)
+extern const base::Feature kStopMojomAppService;
 
 }  // namespace apps
 
