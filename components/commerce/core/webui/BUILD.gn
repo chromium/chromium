@@ -13,6 +13,7 @@ source_set("webui") {
     "../mojom:mojo_bindings",
     "//base",
     "//components/bookmarks/browser",
+    "//components/commerce/core:feature_list",
     "//components/commerce/core:shopping_service",
     "//components/payments/core",
     "//components/power_bookmarks/core",

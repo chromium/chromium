@@ -15,6 +15,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/bookmarks/browser/bookmark_node.h"
+#include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/price_tracking_utils.h"
 #include "components/commerce/core/shopping_service.h"
 #include "components/payments/core/currency_formatter.h"
@@ -43,6 +44,10 @@ ShoppingListHandler::~ShoppingListHandler() = default;
 
 void ShoppingListHandler::GetAllPriceTrackedBookmarkProductInfo(
     GetAllPriceTrackedBookmarkProductInfoCallback callback) {
+  if (!base::FeatureList::IsEnabled(kShoppingList)) {
+    std::move(callback).Run({});
+    return;
+  }
   std::vector<const bookmarks::BookmarkNode*> bookmarks =
       GetAllPriceTrackedBookmarks(bookmark_model_);
 
