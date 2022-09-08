@@ -23,6 +23,7 @@
 #include "chrome/browser/browser_process_platform_part_ash.h"
 #include "chrome/browser/extensions/chrome_extension_function_details.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/attestation/attestation_flow_adaptive.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
@@ -579,8 +580,10 @@ void TpmChallengeKeySubtleImpl::StartSignChallengeStep(
       (will_register_key_ && key_type_ == KEY_DEVICE) ? key_name_
                                                       : std::string();
 
+  const std::string username = GetUsernameForAttestationClient();
+  const bool is_machine_challenge = username.empty();
   ::attestation::SignEnterpriseChallengeRequest request;
-  request.set_username(GetUsernameForAttestationClient());
+  request.set_username(username);
   request.set_key_label(key_name_for_challenge);
   request.set_key_name_for_spkac(key_name_for_spkac);
   request.set_domain(GetEmail());
@@ -591,6 +594,11 @@ void TpmChallengeKeySubtleImpl::StartSignChallengeStep(
   if (signals_.has_value()) {
     request.set_device_trust_signals_json(signals_.value());
   }
+  // Request to include the customer ID in the challenge response when:
+  // * the request is a machine challenge
+  // * the request is a user challenge and this is a kiosk session.
+  request.set_include_customer_id(is_machine_challenge ||
+                                  profiles::IsKioskSession());
   AttestationClient::Get()->SignEnterpriseChallenge(
       request, base::BindOnce(&TpmChallengeKeySubtleImpl::SignChallengeCallback,
                               weak_factory_.GetWeakPtr()));

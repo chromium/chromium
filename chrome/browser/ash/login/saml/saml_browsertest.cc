@@ -279,6 +279,7 @@ class SamlTestBase : public OobeBaseTest {
     sign_enterprise_challenge_request.set_key_label(
         attestation::kEnterpriseMachineKey);
     sign_enterprise_challenge_request.set_device_id("device_id");
+    sign_enterprise_challenge_request.set_include_customer_id(true);
     AttestationClient::Get()
         ->GetTestInterface()
         ->AllowlistSignEnterpriseChallengeKey(
