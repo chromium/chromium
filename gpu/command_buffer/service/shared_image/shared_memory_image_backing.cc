@@ -26,6 +26,7 @@
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gl/gl_image_memory.h"
 
 namespace gpu {
 namespace {
@@ -54,6 +55,27 @@ class MemoryImageRepresentationImpl : public MemoryImageRepresentation {
   SharedMemoryImageBacking* shared_image_shared_memory() {
     return static_cast<SharedMemoryImageBacking*>(backing());
   }
+};
+
+class OverlayImageRepresentationImpl : public OverlayImageRepresentation {
+ public:
+  OverlayImageRepresentationImpl(SharedImageManager* manager,
+                                 SharedImageBacking* backing,
+                                 MemoryTypeTracker* tracker,
+                                 scoped_refptr<gl::GLImage> gl_image)
+      : OverlayImageRepresentation(manager, backing, tracker),
+        gl_image_(std::move(gl_image)) {}
+
+  ~OverlayImageRepresentationImpl() override = default;
+
+ private:
+  bool BeginReadAccess(gfx::GpuFenceHandle& acquire_fence) override {
+    return true;
+  }
+  void EndReadAccess(gfx::GpuFenceHandle release_fence) override {}
+  gl::GLImage* GetGLImage() override { return gl_image_.get(); }
+
+  scoped_refptr<gl::GLImage> gl_image_;
 };
 
 }  // namespace
@@ -117,8 +139,19 @@ std::unique_ptr<SkiaImageRepresentation> SharedMemoryImageBacking::ProduceSkia(
 std::unique_ptr<OverlayImageRepresentation>
 SharedMemoryImageBacking::ProduceOverlay(SharedImageManager* manager,
                                          MemoryTypeTracker* tracker) {
-  NOTIMPLEMENTED_LOG_ONCE();
-  return nullptr;
+  if (!shared_memory_wrapper_.IsValid())
+    return nullptr;
+
+  auto gl_image = base::MakeRefCounted<gl::GLImageMemory>(size());
+  if (!gl_image->Initialize(shared_memory_wrapper_.GetMemory(),
+                            viz::BufferFormat(format()),
+                            shared_memory_wrapper_.GetStride(),
+                            /*disable_pbo_upload=*/true)) {
+    DLOG(ERROR) << "Failed to initialize GLImageMemory";
+    return nullptr;
+  }
+  return std::make_unique<OverlayImageRepresentationImpl>(
+      manager, this, tracker, std::move(gl_image));
 }
 
 std::unique_ptr<VaapiImageRepresentation>

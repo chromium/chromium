@@ -19,6 +19,7 @@
 #include "third_party/skia/include/gpu/GrBackendSemaphore.h"
 #include "third_party/skia/include/gpu/GrTypes.h"
 #include "ui/gfx/buffer_types.h"
+#include "ui/gl/gl_image.h"
 
 namespace gpu {
 namespace {
@@ -112,7 +113,8 @@ class CompoundImageBackingTest : public testing::Test {
   }
 
   // Create a compound backing containing shared memory + GPU backing.
-  std::unique_ptr<SharedImageBacking> CreateCompoundBacking() {
+  std::unique_ptr<SharedImageBacking> CreateCompoundBacking(
+      bool allow_shm_overlays = false) {
     constexpr gfx::Size size(100, 100);
     constexpr gfx::BufferFormat buffer_format = gfx::BufferFormat::RGBA_8888;
     constexpr gfx::BufferUsage buffer_usage =
@@ -124,9 +126,10 @@ class CompoundImageBackingTest : public testing::Test {
             buffer_usage);
 
     return CompoundImageBacking::CreateSharedMemory(
-        &test_factory_, Mailbox::GenerateForSharedImage(), std::move(handle),
-        buffer_format, gfx::BufferPlane::DEFAULT, kNullSurfaceHandle, size,
-        gfx::ColorSpace(), kBottomLeft_GrSurfaceOrigin, kOpaque_SkAlphaType,
+        &test_factory_, allow_shm_overlays, Mailbox::GenerateForSharedImage(),
+        std::move(handle), buffer_format, gfx::BufferPlane::DEFAULT,
+        kNullSurfaceHandle, size, gfx::ColorSpace(),
+        kBottomLeft_GrSurfaceOrigin, kOpaque_SkAlphaType,
         SHARED_IMAGE_USAGE_DISPLAY);
   }
 
@@ -233,6 +236,23 @@ TEST_F(CompoundImageBackingTest, UploadOnAccess) {
   compound_backing->Update(nullptr);
   skia_rep->BeginScopedReadAccess(&begin_semaphores, &end_semaphores);
   EXPECT_TRUE(gpu_backing->GetUploadFromMemoryCalledAndReset());
+}
+
+TEST_F(CompoundImageBackingTest, NoUploadOnOverlayMemoryAccess) {
+  auto backing = CreateCompoundBacking(/*allow_shm_overlays=*/true);
+  auto* compound_backing = static_cast<CompoundImageBacking*>(backing.get());
+
+  auto factory_rep = manager_.Register(std::move(backing), &tracker_);
+
+  auto overlay_rep =
+      manager_.ProduceOverlay(compound_backing->mailbox(), &tracker_);
+  auto access = overlay_rep->BeginScopedReadAccess(/*needs_gl_image=*/true);
+
+  // This should produce a GLImageMemory but there will still be no GPU backing.
+  auto* gl_image = access->gl_image();
+  ASSERT_TRUE(gl_image);
+  EXPECT_EQ(gl_image->GetType(), gl::GLImage::Type::MEMORY);
+  EXPECT_FALSE(HasGpuBacking(compound_backing));
 }
 
 TEST_F(CompoundImageBackingTest, LazyAllocationFailsCreate) {
