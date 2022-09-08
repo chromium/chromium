@@ -771,16 +771,6 @@ css_properties("make_core_generated_cssom_types") {
   ]
 }
 
-css_properties("make_core_generated_known_exposed_properties") {
-  script = "../build/scripts/core/css/properties/make_known_exposed_properties.py"
-  other_inputs = [
-    "../build/scripts/core/css/properties/templates/known_exposed_properties.cc.tmpl",
-  ]
-  outputs = [
-    "$blink_core_output_dir/known_exposed_properties.cc",
-  ]
-}
-
 code_generator("make_core_generated_css_value_keywords") {
   script = "../build/scripts/core/css/make_css_value_keywords.py"
   json_inputs = [ "css/css_value_keywords.json5" ]
@@ -1160,7 +1150,6 @@ targets_generating_sources = [
   ":make_core_generated_html_tokenizer_names",
   ":make_core_generated_input_type_names",
   ":make_core_generated_keywords",
-  ":make_core_generated_known_exposed_properties",
   ":make_core_generated_mathml_element_type_helpers",
   ":make_core_generated_mathml_names",
   ":make_core_generated_media_feature_names",
