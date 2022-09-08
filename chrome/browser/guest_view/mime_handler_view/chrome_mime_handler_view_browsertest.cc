@@ -653,26 +653,21 @@ IN_PROC_BROWSER_TEST_F(ChromeMimeHandlerViewTest, RejectPointLock) {
                                    1 /* world_id */));
 }
 
-// Flaky (https://crbug.com/1033009)
 IN_PROC_BROWSER_TEST_F(ChromeMimeHandlerViewTest,
-                       DISABLED_GuestDevToolsReloadsEmbedder) {
+                       GuestDevToolsReloadsEmbedder) {
   GURL data_url("data:application/pdf,foo");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), data_url));
   auto* embedder_web_contents =
       browser()->tab_strip_model()->GetWebContentsAt(0);
-  auto* guest_web_contents =
-      GetGuestViewManager()->DeprecatedWaitForSingleGuestCreated();
-  EXPECT_NE(embedder_web_contents, guest_web_contents);
-  while (guest_web_contents->IsLoading()) {
-    base::RunLoop run_loop;
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-        FROM_HERE, run_loop.QuitClosure(), TestTimeouts::tiny_timeout());
-    run_loop.Run();
-  }
+  auto* guest_view = GetGuestViewManager()->WaitForSingleGuestViewCreated();
+  ASSERT_TRUE(guest_view);
+  EXPECT_NE(embedder_web_contents->GetPrimaryMainFrame(),
+            guest_view->GetGuestMainFrame());
+  TestMimeHandlerViewGuest::WaitForGuestLoadStartThenStop(guest_view);
 
   // Load DevTools.
   scoped_refptr<content::DevToolsAgentHost> devtools_agent_host =
-      content::DevToolsAgentHost::GetOrCreateFor(guest_web_contents);
+      content::DevToolsAgentHost::GetOrCreateFor(guest_view->web_contents());
   StubDevToolsAgentHostClient devtools_agent_host_client;
   devtools_agent_host->AttachClient(&devtools_agent_host_client);
 
