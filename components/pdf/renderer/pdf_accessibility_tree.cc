@@ -373,7 +373,7 @@ ax::mojom::Role GetRoleForButtonType(chrome_pdf::ButtonType button_type) {
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 class PdfOcrService {
  public:
-  using AnnotationCallback = base::OnceCallback<void(const ui::AXTreeUpdate&)>;
+  using AnnotationCallback = base::OnceCallback<void(const ui::AXTreeID&)>;
 
   PdfOcrService() = default;
   PdfOcrService(const PdfOcrService&) = delete;
@@ -1174,9 +1174,10 @@ class PdfAccessibilityTreeBuilder {
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   void OnOcrDataReceived(ui::AXNodeData* image_node,
-                         const ui::AXTreeUpdate& tree_update) {
-    VLOG(1) << "OCR data received: " << tree_update.nodes.size();
+                         const ui::AXTreeID& ax_tree_id) {
+    VLOG(1) << "OCR data received: " << ax_tree_id.ToString();
     // TODO(https://crbug.com/1278249): Apply received data.
+    NOTIMPLEMENTED();
   }
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 

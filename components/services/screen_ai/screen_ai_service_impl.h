@@ -9,12 +9,13 @@
 #include "base/files/file_path.h"
 #include "base/scoped_native_library.h"
 #include "components/services/screen_ai/public/mojom/screen_ai_service.mojom.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
-
+#include "mojo/public/cpp/bindings/remote_set.h"
 namespace screen_ai {
 
-using AnnotationCallback = base::OnceCallback<void(const ui::AXTreeUpdate&)>;
+using AnnotationCallback = base::OnceCallback<void(const ui::AXTreeID&)>;
 using ContentExtractionCallback =
     base::OnceCallback<void(const std::vector<int32_t>&)>;
 
@@ -35,24 +36,28 @@ class ScreenAIService : public mojom::ScreenAIService,
  private:
   base::ScopedNativeLibrary library_;
 
-  // mojom::ScreenAIAnnotator
+  // mojom::ScreenAIAnnotator:
   void Annotate(const SkBitmap& image, AnnotationCallback callback) override;
 
-  // mojom::Screen2xMainContentExtractor
+  // mojom::Screen2xMainContentExtractor:
   void ExtractMainContent(const ui::AXTreeUpdate& snapshot,
                           ContentExtractionCallback callback) override;
 
-  // mojom::ScreenAIService
+  // mojom::ScreenAIService:
   void BindAnnotator(
       mojo::PendingReceiver<mojom::ScreenAIAnnotator> annotator) override;
 
-  // mojom::ScreenAIService
+  // mojom::ScreenAIService:
+  void BindAnnotatorClient(mojo::PendingRemote<mojom::ScreenAIAnnotatorClient>
+                               annotator_client) override;
+
+  // mojom::ScreenAIService:
   void BindMainContentExtractor(
       mojo::PendingReceiver<mojom::Screen2xMainContentExtractor>
           main_content_extractor) override;
 
   // Initializes the pipelines.
-  // |models_folder| is a null terminated string pointing to the folder that
+  // `models_folder` is a null terminated string pointing to the folder that
   // includes model files.
   typedef bool (*InitFunction)(bool /*init_visual_annotations*/,
                                bool /*init_main_content_extraction*/,
@@ -61,8 +66,8 @@ class ScreenAIService : public mojom::ScreenAIService,
   InitFunction init_function_;
 
   // Sends the given bitmap to ScreenAI pipeline and returns visual annotations.
-  // The annoations will be returned as a serialized VisualAnnotation proto.
-  // |serialized_visual_annotation| will be allocated for the output and the
+  // The annotations will be returned as a serialized VisualAnnotation proto.
+  // `serialized_visual_annotation` will be allocated for the output and the
   // ownership of the buffer will be passed to the caller function.
   typedef bool (*AnnotateFunction)(
       const SkBitmap& /*bitmap*/,
@@ -73,7 +78,7 @@ class ScreenAIService : public mojom::ScreenAIService,
   // Passes the given accessibility tree proto to Screen2x pipeline and returns
   // the main content ids.
   // The input is in form of a serialized ViewHierarchy proto.
-  // |content_node_ids| will be allocated for the outputs and the ownership of
+  // `content_node_ids` will be allocated for the outputs and the ownership of
   // the array will be passed to the caller function.
   typedef bool (*ExtractMainContentFunction)(
       const char* /*serialized_view_hierarchy*/,
@@ -86,6 +91,9 @@ class ScreenAIService : public mojom::ScreenAIService,
 
   // The set of receivers used to receive messages from annotators.
   mojo::ReceiverSet<mojom::ScreenAIAnnotator> screen_ai_annotators_;
+
+  // The set of clients that can receive annotator update messages.
+  mojo::RemoteSet<mojom::ScreenAIAnnotatorClient> screen_ai_annotator_clients_;
 
   // The set of receivers used to receive messages from main content extractors.
   mojo::ReceiverSet<mojom::Screen2xMainContentExtractor>

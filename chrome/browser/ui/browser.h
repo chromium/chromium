@@ -1153,6 +1153,12 @@ class Browser : public TabStripModelObserver,
       const content::StoragePartitionConfig& partition_config,
       content::SessionStorageNamespace* session_storage_namespace);
 
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+  // Creates ScreenAI annotator if accessibility settings imply that the
+  // service is needed.
+  void CreateScreenAIAnnotatorIfNeeded();
+#endif
+
   // Data members /////////////////////////////////////////////////////////////
 
   PrefChangeRegistrar profile_pref_registrar_;

@@ -7,6 +7,7 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/process/process.h"
+#include "base/strings/string_util.h"
 #include "components/services/screen_ai/proto/proto_convertor.h"
 #include "components/services/screen_ai/public/cpp/utilities.h"
 #include "components/services/screen_ai/screen_ai_ax_tree_serializer.h"
@@ -32,6 +33,16 @@ base::FilePath GetLibraryFilePath() {
   StoreComponentBinaryPath(library_path);
 
   return library_path;
+}
+
+std::string MakeString(const char* content, uint32_t length) {
+  DCHECK(content);
+  DCHECK(length);
+
+  std::string output;
+  memcpy(base::WriteInto(&output, length + 1), content, length);
+  output[length] = 0;
+  return output;
 }
 
 }  // namespace
@@ -71,6 +82,13 @@ void ScreenAIService::BindAnnotator(
   screen_ai_annotators_.Add(this, std::move(annotator));
 }
 
+void ScreenAIService::BindAnnotatorClient(
+    mojo::PendingRemote<mojom::ScreenAIAnnotatorClient> annotator_client) {
+  mojo::Remote<mojom::ScreenAIAnnotatorClient> remote(
+      std::move(annotator_client));
+  screen_ai_annotator_clients_.Add(std::move(remote));
+}
+
 void ScreenAIService::BindMainContentExtractor(
     mojo::PendingReceiver<mojom::Screen2xMainContentExtractor>
         main_content_extractor) {
@@ -80,6 +98,8 @@ void ScreenAIService::BindMainContentExtractor(
 
 void ScreenAIService::Annotate(const SkBitmap& image,
                                AnnotationCallback callback) {
+  DCHECK(screen_ai_annotator_clients_.size());
+
   ui::AXTreeUpdate update;
 
   VLOG(2) << "Screen AI library starting to process " << image.width() << "x"
@@ -89,27 +109,33 @@ void ScreenAIService::Annotate(const SkBitmap& image,
   uint32_t annotation_proto_length = 0;
   // TODO(https://crbug.com/1278249): Consider adding a signature that
   // verifies the data integrity and source.
-  if (annotate_function_(image, annotation_proto, annotation_proto_length)) {
-    DCHECK(annotation_proto);
-    std::string proto_as_string;
-    proto_as_string.resize(annotation_proto_length);
-    memcpy(static_cast<void*>(proto_as_string.data()), annotation_proto,
-           annotation_proto_length);
-    delete annotation_proto;
-    gfx::Rect image_rect(image.width(), image.height());
-    update =
-        ScreenAIVisualAnnotationToAXTreeUpdate(proto_as_string, image_rect);
-    // TODO(nektar): Get the parent tree ID from the calling process (i.e.
-    // browser or renderer).
-    ScreenAIAXTreeSerializer serializer(
-        /* parent_tree_id */ ui::AXTreeID::CreateNewAXTreeID(),
-        std::move(update.nodes));
-    update = serializer.Serialize();
-  } else {
+  if (!annotate_function_(image, annotation_proto, annotation_proto_length)) {
+    std::move(callback).Run(ui::AXTreeID());
     VLOG(1) << "Screen AI library could not process snapshot.";
+    return;
   }
 
-  std::move(callback).Run(update);
+  // TODO(https://crbug.com/1278249): Create an AXTreeSource and send the ID
+  // back to the caller.
+  std::move(callback).Run(ui::AXTreeID());
+
+  std::string proto_as_string =
+      MakeString(annotation_proto, annotation_proto_length);
+  delete annotation_proto;
+
+  gfx::Rect image_rect(image.width(), image.height());
+  update = ScreenAIVisualAnnotationToAXTreeUpdate(proto_as_string, image_rect);
+  // TODO(nektar): Get the parent tree ID from the calling process (i.e.
+  // browser or renderer).
+  ScreenAIAXTreeSerializer serializer(
+      /* parent_tree_id */ ui::AXTreeID::CreateNewAXTreeID(),
+      std::move(update.nodes));
+  update = serializer.Serialize();
+
+  // ScreenAI service is created per profile and all clients are in the same
+  // browser process. As the updates are passed to global AXTreeManager, it is
+  // enough to sent it to only one client.
+  // TODO(https://crbug.com/1278249): Call [client]::HandleAXTreeUpdate(update);
 }
 
 void ScreenAIService::ExtractMainContent(const ui::AXTreeUpdate& snapshot,
