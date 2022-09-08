@@ -7,6 +7,7 @@
 #include <memory>
 #include "base/memory/raw_ref.h"
 #include "chrome/browser/ui/layout_constants.h"
+#include "chrome/browser/ui/tabs/tab_renderer_data.h"
 #include "chrome/browser/ui/views/tabs/fake_base_tab_strip_controller.h"
 #include "chrome/browser/ui/views/tabs/fake_tab_slot_controller.h"
 #include "chrome/browser/ui/views/tabs/tab_drag_context.h"
@@ -134,9 +135,9 @@ class CompoundTabContainerTest : public ChromeViewsTestBase {
 
  protected:
   Tab* AddTab(int model_index,
+              TabPinned pinned,
               absl::optional<tab_groups::TabGroupId> group = absl::nullopt,
-              TabActive active = TabActive::kInactive,
-              TabPinned pinned = TabPinned::kUnpinned) {
+              TabActive active = TabActive::kInactive) {
     Tab* tab = tab_container_->AddTab(
         std::make_unique<Tab>(tab_slot_controller_.get()), model_index, pinned);
     tab_strip_controller_->AddTab(model_index, active == TabActive::kActive);
@@ -149,6 +150,10 @@ class CompoundTabContainerTest : public ChromeViewsTestBase {
                      // TabContainerTest
       AddTabToGroup(model_index, group.value());
     }
+
+    TabRendererData tab_data = tab->data();
+    tab_data.pinned = pinned == TabPinned::kPinned;
+    tab->SetData(tab_data);
 
     return tab;
   }
@@ -184,8 +189,7 @@ class CompoundTabContainerTest : public ChromeViewsTestBase {
 
 TEST_F(CompoundTabContainerTest, PinnedTabReparents) {
   // Start with one tab, initially pinned.
-  Tab* const tab =
-      AddTab(0, absl::nullopt, TabActive::kInactive, TabPinned::kPinned);
+  Tab* const tab = AddTab(0, TabPinned::kPinned);
   TabContainer* const pinned_container =
       views::AsViewClass<TabContainer>(tab->parent());
   ASSERT_NE(pinned_container, nullptr);
@@ -200,4 +204,57 @@ TEST_F(CompoundTabContainerTest, PinnedTabReparents) {
   // Re-pin the tab and it should move back.
   tab_container_->SetTabPinned(0, TabPinned::kPinned);
   EXPECT_EQ(tab->parent(), pinned_container);
+}
+
+TEST_F(CompoundTabContainerTest, MoveTabsWithinContainers) {
+  // Start with two tabs each pinned and unpinned.
+  const Tab* const tab0 = AddTab(0, TabPinned::kPinned);
+  const Tab* const tab1 = AddTab(1, TabPinned::kPinned);
+  const Tab* const tab2 = AddTab(2, TabPinned::kUnpinned);
+  const Tab* const tab3 = AddTab(3, TabPinned::kUnpinned);
+
+  // Swap each pair.
+  tab_container_->MoveTab(0, 1);
+  EXPECT_EQ(tab_container_->GetTabAtModelIndex(0), tab1);
+  EXPECT_EQ(tab_container_->GetTabAtModelIndex(1), tab0);
+
+  tab_container_->MoveTab(2, 3);
+  EXPECT_EQ(tab_container_->GetTabAtModelIndex(2), tab3);
+  EXPECT_EQ(tab_container_->GetTabAtModelIndex(3), tab2);
+
+  // And back again.
+  tab_container_->MoveTab(1, 0);
+  EXPECT_EQ(tab_container_->GetTabAtModelIndex(0), tab0);
+  EXPECT_EQ(tab_container_->GetTabAtModelIndex(1), tab1);
+
+  tab_container_->MoveTab(3, 2);
+  EXPECT_EQ(tab_container_->GetTabAtModelIndex(2), tab2);
+  EXPECT_EQ(tab_container_->GetTabAtModelIndex(3), tab3);
+}
+
+TEST_F(CompoundTabContainerTest, MoveTabBetweenContainers) {
+  // Start with one pinned tab and two unpinned tabs.
+  const views::View* const pinned_container =
+      AddTab(0, TabPinned::kPinned)->parent();
+  const views::View* const unpinned_container =
+      AddTab(1, TabPinned::kUnpinned)->parent();
+  Tab* const moving_tab = AddTab(2, TabPinned::kUnpinned);
+  TabRendererData moving_tab_data = moving_tab->data();
+
+  // Pin `moving_tab` as part of a move.
+  moving_tab_data.pinned = true;
+  moving_tab->SetData(moving_tab_data);
+  tab_container_->MoveTab(2, 1);
+  // It should be pinned and at index 1.
+  EXPECT_EQ(moving_tab->parent(), pinned_container);
+  EXPECT_EQ(tab_container_->GetTabAtModelIndex(1), moving_tab);
+
+  // Move it to index 0, then unpin it as part of another move.
+  tab_container_->MoveTab(1, 0);
+  moving_tab_data.pinned = false;
+  moving_tab->SetData(moving_tab_data);
+  tab_container_->MoveTab(0, 1);
+  // It should be unpinned and at index 1.
+  EXPECT_EQ(moving_tab->parent(), unpinned_container);
+  EXPECT_EQ(tab_container_->GetTabAtModelIndex(1), moving_tab);
 }

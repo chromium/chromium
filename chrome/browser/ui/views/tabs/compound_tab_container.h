@@ -17,6 +17,8 @@ class TabDragContextBase;
 
 // Composes two TabContainers into one, keeping the pinned tabs in one container
 // and the unpinned tabs in the other.
+// Indices in the public and private API are all in overall indices, unless
+// specifically noted otherwise as being relative to a specific container.
 class CompoundTabContainer : public TabContainer {
  public:
   METADATA_HEADER(CompoundTabContainer);
@@ -98,6 +100,11 @@ class CompoundTabContainer : public TabContainer {
 
  private:
   int NumPinnedTabs() const;
+
+  // Moves the tab at `from_model_index` from whichever TabContainer currently
+  // holds it into the other TabContainer, inserting it into that container at
+  // the index that corresponds to `to_model_index`.
+  void TransferTabBetweenContainers(int from_model_index, int to_model_index);
 
   TabContainer* GetTabContainerAt(gfx::Point point_in_local_coords);
 

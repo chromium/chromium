@@ -209,8 +209,23 @@ Tab* CompoundTabContainer::AddTab(std::unique_ptr<Tab> tab,
 }
 
 void CompoundTabContainer::MoveTab(int from_model_index, int to_model_index) {
-  // TODO(crbug.com/1346023): Impl
-  NOTREACHED();
+  const bool prev_pinned = from_model_index < NumPinnedTabs();
+  // The tab's TabData has already been updated at this point to reflect its
+  // next pinned status. Consistency with `to_model_index` is verified below.
+  const bool next_pinned = GetTabAtModelIndex(from_model_index)->data().pinned;
+
+  // If the tab was pinned/unpinned as part of this move, we will need to
+  // transfer it between our TabContainers.
+  if (prev_pinned != next_pinned) {
+    TransferTabBetweenContainers(from_model_index, to_model_index);
+  } else if (prev_pinned) {
+    CHECK(to_model_index < NumPinnedTabs());
+    pinned_tab_container_->MoveTab(from_model_index, to_model_index);
+  } else {  // !prev_pinned
+    CHECK(to_model_index >= NumPinnedTabs());
+    unpinned_tab_container_->MoveTab(from_model_index - NumPinnedTabs(),
+                                     to_model_index - NumPinnedTabs());
+  }
 }
 
 void CompoundTabContainer::RemoveTab(int index, bool was_active) {
@@ -223,18 +238,16 @@ void CompoundTabContainer::RemoveTab(int index, bool was_active) {
 }
 
 void CompoundTabContainer::SetTabPinned(int model_index, TabPinned pinned) {
-  if (pinned == TabPinned::kPinned) {
-    CHECK_EQ(model_index, NumPinnedTabs());
-    std::unique_ptr<Tab> tab = unpinned_tab_container_->TransferTabOut(0);
-    pinned_tab_container_->AddTab(std::move(tab), model_index, pinned);
-  } else {
-    CHECK_EQ(model_index, NumPinnedTabs() - 1);
-    std::unique_ptr<Tab> tab =
-        pinned_tab_container_->TransferTabOut(model_index);
-    unpinned_tab_container_->AddTab(std::move(tab), 0, pinned);
-  }
-
-  Layout();
+  // This method does not support reorders, so the tab must already be at a
+  // location that can hold either a pinned or an unpinned tab, i.e. the border
+  // between the pinned and unpinned subsets.
+  CHECK_EQ(model_index,
+           pinned == TabPinned::kPinned ? NumPinnedTabs() : NumPinnedTabs() - 1)
+      << "Cannot " << (pinned == TabPinned::kPinned ? "pin" : "unpin")
+      << " the tab at model index " << model_index << " when there are "
+      << NumPinnedTabs() << " pinned tabs without moving that tab."
+      << " Use MoveTab to move and (un)pin a tab at the same time.";
+  TransferTabBetweenContainers(model_index, model_index);
 }
 
 void CompoundTabContainer::SetActiveTab(
@@ -519,6 +532,45 @@ void CompoundTabContainer::HandleDragExited() {
 
 int CompoundTabContainer::NumPinnedTabs() const {
   return pinned_tab_container_->GetTabCount();
+}
+
+void CompoundTabContainer::TransferTabBetweenContainers(int from_model_index,
+                                                        int to_model_index) {
+  const bool prev_pinned = from_model_index < NumPinnedTabs();
+  const bool next_pinned = !prev_pinned;
+
+  const int before_num_pinned_tabs = NumPinnedTabs();
+  const int after_num_pinned_tabs =
+      before_num_pinned_tabs + (next_pinned ? 1 : -1);
+
+  if (next_pinned) {
+    // We are going from `unpinned_tab_container_` to `pinned_tab_container_`.
+    // Indices must be valid for those containers. If `from_model_index` ==
+    // `to_model_index`, we're pinning the first unpinned tab.
+    CHECK_GE(from_model_index, before_num_pinned_tabs);
+    CHECK_LT(to_model_index, after_num_pinned_tabs);
+
+    std::unique_ptr<Tab> tab = unpinned_tab_container_->TransferTabOut(
+        from_model_index - before_num_pinned_tabs);
+    pinned_tab_container_->AddTab(std::move(tab), to_model_index,
+                                  TabPinned::kPinned);
+  } else {
+    // We are going from `pinned_tab_container_` to `unpinned_tab_container_`.
+    // Indices must be valid for those containers. If `from_model_index` ==
+    // `to_model_index`, we're unpinning the last pinned tab.
+    CHECK_LT(from_model_index, before_num_pinned_tabs);
+    CHECK_GE(to_model_index, after_num_pinned_tabs);
+
+    std::unique_ptr<Tab> tab =
+        pinned_tab_container_->TransferTabOut(from_model_index);
+    unpinned_tab_container_->AddTab(std::move(tab),
+                                    to_model_index - after_num_pinned_tabs,
+                                    TabPinned::kUnpinned);
+  }
+
+  // TODO(crbug.com/1346023): Remove this jank-reducing band-aid when handoff is
+  // properly animated.
+  Layout();
 }
 
 TabContainer* CompoundTabContainer::GetTabContainerAt(
