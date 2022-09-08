@@ -13,6 +13,7 @@
 #include "base/syslog_logging.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/network/mojo_key_network_delegate.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/installer/key_rotation_manager.h"
+#include "chrome/browser/enterprise/connectors/device_trust/key_management/installer/metrics_util.h"
 #include "chrome/browser/enterprise/connectors/device_trust/prefs.h"
 #include "chrome/common/channel_info.h"
 #include "components/prefs/pref_service.h"
@@ -49,7 +50,7 @@ void OnKeyRotated(PrefService* local_prefs,
     SYSLOG(ERROR) << "Device trust key rotation failed. Conflict "
                      "with the key that exists on the server.";
     local_prefs->SetBoolean(kDeviceTrustDisableKeyCreationPref, true);
-    std::move(callback).Run(KeyRotationCommand::Status::FAILED);
+    std::move(callback).Run(KeyRotationCommand::Status::FAILED_KEY_CONFLICT);
     return;
   }
 
@@ -87,7 +88,8 @@ void MacKeyRotationCommand::Trigger(const KeyRotationCommand::Params& params,
   if (!client_->VerifySecureEnclaveSupported()) {
     SYSLOG(ERROR) << "Device trust key rotation failed. The secure enclave is "
                      "not supported.";
-    std::move(callback).Run(KeyRotationCommand::Status::FAILED);
+    local_prefs_->SetBoolean(kDeviceTrustDisableKeyCreationPref, true);
+    std::move(callback).Run(KeyRotationCommand::Status::FAILED_OS_RESTRICTION);
     return;
   }
 

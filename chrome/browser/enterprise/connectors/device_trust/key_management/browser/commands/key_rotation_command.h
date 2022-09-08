@@ -21,6 +21,8 @@ class KeyRotationCommand {
     SUCCEEDED,
     FAILED,
     TIMED_OUT,
+    FAILED_KEY_CONFLICT,
+    FAILED_OS_RESTRICTION,
   };
 
   // Trigger completion callback.  The single argument is the status of the

@@ -6311,6 +6311,8 @@ static_library("browser") {
       "enterprise/connectors/device_trust/browser/mac_device_trust_connector_service.cc",
       "enterprise/connectors/device_trust/browser/mac_device_trust_connector_service.h",
     ]
+
+    deps += [ "//chrome/browser/enterprise/connectors/device_trust/key_management/core/mac" ]
   }
 
   if (is_linux || is_win || is_mac) {

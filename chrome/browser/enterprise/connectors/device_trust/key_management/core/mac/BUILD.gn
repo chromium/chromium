@@ -4,12 +4,14 @@
 
 source_set("mac") {
   public = [
+    "metrics_util.h",
     "secure_enclave_client.h",
     "secure_enclave_helper.h",
     "secure_enclave_signing_key.h",
   ]
 
   sources = [
+    "metrics_util.cc",
     "secure_enclave_client.cc",
     "secure_enclave_client_impl.h",
     "secure_enclave_client_impl.mm",
@@ -69,6 +71,7 @@ source_set("unit_tests") {
     ":mac",
     ":test_support",
     "//base",
+    "//base/test:test_support",
     "//chrome/browser/enterprise/connectors/device_trust/key_management/core:constants",
     "//testing/gmock",
     "//testing/gtest",

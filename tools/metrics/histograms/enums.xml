@@ -28928,6 +28928,8 @@ Called by update_document_policy_enum.py.-->
   <int value="0" label="Succeeded"/>
   <int value="1" label="Failed"/>
   <int value="2" label="Timed Out"/>
+  <int value="3" label="Failed Key Conflict"/>
+  <int value="4" label="Failed OS Restriction"/>
 </enum>
 
 <enum name="DTKeyTrustLevel">
@@ -28960,6 +28962,22 @@ Called by update_document_policy_enum.py.-->
 <enum name="DTOrigin">
   <int value="0" label="In session"/>
   <int value="1" label="On login screen"/>
+</enum>
+
+<enum name="DTSecureEnclaveOperationStatus">
+  <int value="0" label="Unable to create a key in the Secure Enclave"/>
+  <int value="1" label="Unable to copy the Secure Enclave key reference"/>
+  <int value="2"
+      label="Unable to copy the Secure Enclave key reference from the data
+             protection keychain"/>
+  <int value="3" label="Unable to delete the Secure Enclave key."/>
+  <int value="4"
+      label="Unable to delete the Secure Enclave key from the data protection
+             keychain"/>
+  <int value="5" label="Unable to update the Secure Enclave key label"/>
+  <int value="6"
+      label="Unable to update the Secure Enclave key label in the data
+             protection keychain"/>
 </enum>
 
 <enum name="DumpOutcome">

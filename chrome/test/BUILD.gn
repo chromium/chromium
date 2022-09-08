@@ -8381,6 +8381,7 @@ test("unit_tests") {
       "../browser/enterprise/connectors/device_trust:features",
       "../browser/enterprise/connectors/device_trust:prefs",
       "../browser/enterprise/connectors/device_trust/key_management/browser:test_support",
+      "../browser/enterprise/connectors/device_trust/key_management/core/mac",
     ]
   }
 

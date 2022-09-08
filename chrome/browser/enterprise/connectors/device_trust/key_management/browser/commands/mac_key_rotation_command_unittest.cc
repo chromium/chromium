@@ -15,6 +15,7 @@
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence/mock_key_persistence_delegate.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence/scoped_key_persistence_delegate_factory.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/installer/key_rotation_manager.h"
+#include "chrome/browser/enterprise/connectors/device_trust/key_management/installer/metrics_util.h"
 #include "chrome/browser/enterprise/connectors/device_trust/prefs.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -98,8 +99,8 @@ TEST_F(MacKeyRotationCommandTest, RotateFailure_SecureEnclaveUnsupported) {
 
   base::test::TestFuture<KeyRotationCommand::Status> future;
   rotation_command_->Trigger(params, future.GetCallback());
-  EXPECT_EQ(KeyRotationCommand::Status::FAILED, future.Get());
-  EXPECT_FALSE(local_prefs_.GetBoolean(kDeviceTrustDisableKeyCreationPref));
+  EXPECT_EQ(KeyRotationCommand::Status::FAILED_OS_RESTRICTION, future.Get());
+  EXPECT_TRUE(local_prefs_.GetBoolean(kDeviceTrustDisableKeyCreationPref));
 }
 
 // Tests a failed key rotation due to an invalid command to rotate.
@@ -172,7 +173,7 @@ TEST_F(MacKeyRotationCommandTest, RotateFailure_InvalidSignatureFailure) {
 
   base::test::TestFuture<KeyRotationCommand::Status> future;
   rotation_command_->Trigger(params, future.GetCallback());
-  EXPECT_EQ(KeyRotationCommand::Status::FAILED, future.Get());
+  EXPECT_EQ(KeyRotationCommand::Status::FAILED_KEY_CONFLICT, future.Get());
   EXPECT_TRUE(local_prefs_.GetBoolean(kDeviceTrustDisableKeyCreationPref));
 }
 

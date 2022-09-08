@@ -17,6 +17,7 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/enterprise/connectors/device_trust/key_management/core/mac/metrics_util.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/mac/secure_enclave_helper.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/shared_command_constants.h"
 #include "third_party/boringssl/src/include/openssl/digest.h"
@@ -28,6 +29,51 @@
 namespace enterprise_connectors {
 
 namespace {
+
+// Enum for the operation being performed on the Secure Enclave key. This is
+// used for recording the key operation status.
+enum Operation {
+  CREATE,
+  COPY,
+  DELETE,
+  UPDATE,
+};
+
+// Logs a SecureEnclaveOperationStatus metric for the type of `operation` being
+// performed and the key storage `type`.
+void LogKeyOperationFailure(Operation operation,
+                            SecureEnclaveClient::KeyType type) {
+  SecureEnclaveOperationStatus status;
+  bool data_protection_keychain = false;
+  if (@available(macOS 10.15, *))
+    data_protection_keychain = true;
+
+  switch (operation) {
+    case Operation::CREATE:
+      status = SecureEnclaveOperationStatus::kCreateSecureKeyFailed;
+      break;
+    case Operation::COPY:
+      status = data_protection_keychain
+                   ? SecureEnclaveOperationStatus::
+                         kCopySecureKeyRefDataProtectionKeychainFailed
+                   : SecureEnclaveOperationStatus::kCopySecureKeyRefFailed;
+      break;
+    case Operation::DELETE:
+      status = data_protection_keychain
+                   ? SecureEnclaveOperationStatus::
+                         kDeleteSecureKeyDataProtectionKeychainFailed
+                   : SecureEnclaveOperationStatus::kDeleteSecureKeyFailed;
+      break;
+    case Operation::UPDATE:
+      status = data_protection_keychain
+                   ? SecureEnclaveOperationStatus::
+                         kUpdateSecureKeyLabelDataProtectionKeychainFailed
+                   : SecureEnclaveOperationStatus::kUpdateSecureKeyLabelFailed;
+      break;
+  }
+
+  RecordKeyOperationStatus(status, type);
+}
 
 // Returns the key label based on the key `type` if the key type is not
 // supported an empty string is returned.
@@ -120,12 +166,20 @@ base::ScopedCFTypeRef<SecKeyRef> SecureEnclaveClientImpl::CreatePermanentKey() {
   // Deletes a permanent Secure Enclave key if it exists from a previous
   // key rotation.
   DeleteKey(KeyType::kPermanent);
-  return helper_->CreateSecureKey(attributes);
+  auto key = helper_->CreateSecureKey(attributes);
+  if (!key)
+    LogKeyOperationFailure(Operation::CREATE, KeyType::kPermanent);
+
+  return key;
 }
 
 base::ScopedCFTypeRef<SecKeyRef> SecureEnclaveClientImpl::CopyStoredKey(
     KeyType type) {
-  return helper_->CopyKey(CreateQueryForKey(type));
+  auto key_ref = helper_->CopyKey(CreateQueryForKey(type));
+  if (!key_ref)
+    LogKeyOperationFailure(Operation::COPY, type);
+
+  return key_ref;
 }
 
 bool SecureEnclaveClientImpl::UpdateStoredKeyLabel(KeyType current_key_type,
@@ -144,18 +198,28 @@ bool SecureEnclaveClientImpl::UpdateStoredKeyLabel(KeyType current_key_type,
   CFDictionarySetValue(attributes_to_update, kSecAttrLabel,
                        base::SysUTF8ToCFStringRef(label));
 
-  return helper_->Update(CreateQueryForKey(current_key_type),
-                         attributes_to_update);
+  bool success = helper_->Update(CreateQueryForKey(current_key_type),
+                                 attributes_to_update);
+  if (!success)
+    LogKeyOperationFailure(Operation::UPDATE, current_key_type);
+
+  return success;
 }
 
 bool SecureEnclaveClientImpl::DeleteKey(KeyType type) {
-  return helper_->Delete(CreateQueryForKey(type));
+  bool success = helper_->Delete(CreateQueryForKey(type));
+  if (!success)
+    LogKeyOperationFailure(Operation::DELETE, type);
+
+  return success;
 }
 
 bool SecureEnclaveClientImpl::GetStoredKeyLabel(KeyType type,
                                                 std::vector<uint8_t>& output) {
-  if (!helper_->CopyKey(CreateQueryForKey(type)))
+  if (!helper_->CopyKey(CreateQueryForKey(type))) {
+    LogKeyOperationFailure(Operation::COPY, type);
     return false;
+  }
 
   auto label = GetLabelFromKeyType(type);
   output.assign(label.begin(), label.end());
