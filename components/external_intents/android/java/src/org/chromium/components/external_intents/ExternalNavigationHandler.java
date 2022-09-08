@@ -947,8 +947,10 @@ public class ExternalNavigationHandler {
      * See RedirectHandler#NAVIGATION_CHAIN_TIMEOUT_MILLIS for details. We don't want an unattended
      * page to redirect to an app.
      */
-    private boolean isNavigationChainExpired(ExternalNavigationParams params) {
+    private boolean isNavigationChainExpired(ExternalNavigationParams params, Intent targetIntent,
+            QueryIntentActivitiesSupplier resolvingInfos) {
         if (RedirectHandler.isRefactoringEnabled()) return false;
+        if (mDelegate.isIntentForTrustedCallingApp(targetIntent, resolvingInfos)) return false;
         if (params.getRedirectHandler() != null
                 && params.getRedirectHandler().isNavigationChainExpired()) {
             if (DEBUG) {
@@ -975,18 +977,6 @@ public class ExternalNavigationHandler {
         if (handler == null) return false;
         RedirectHandler.InitialNavigationState initialState = handler.getInitialNavigationState();
 
-        // See RedirectHandler#NAVIGATION_CHAIN_TIMEOUT_MILLIS for details. We don't want an
-        // unattended page to redirect to an app.
-        if (handler.isNavigationChainExpired()) {
-            if (DEBUG) {
-                Log.i(TAG,
-                        "Navigation chain expired "
-                                + "(a page waited more than %d seconds to redirect).",
-                        RedirectHandler.NAVIGATION_CHAIN_TIMEOUT_MILLIS);
-            }
-            return true;
-        }
-
         // If a navigation chain has used the history API to go back/forward external navigation is
         // probably not expected or desirable.
         if (handler.navigationChainUsedBackOrForward()) {
@@ -1010,6 +1000,18 @@ public class ExternalNavigationHandler {
         // If the intent targets the calling app, we can bypass the gesture requirements and any
         // signals from the initial intent that suggested the intent wanted to stay in Chrome.
         if (mDelegate.isIntentForTrustedCallingApp(targetIntent, resolvingInfos)) return false;
+
+        // See RedirectHandler#NAVIGATION_CHAIN_TIMEOUT_MILLIS for details. We don't want an
+        // unattended page to redirect to an app.
+        if (handler.isNavigationChainExpired()) {
+            if (DEBUG) {
+                Log.i(TAG,
+                        "Navigation chain expired "
+                                + "(a page waited more than %d seconds to redirect).",
+                        RedirectHandler.NAVIGATION_CHAIN_TIMEOUT_MILLIS);
+            }
+            return true;
+        }
 
         // If an intent targeted Chrome explicitly, we assume the app wanted to launch Chrome and
         // not another app.
@@ -1605,7 +1607,8 @@ public class ExternalNavigationHandler {
         boolean intentMatchesNonDefaultWebApk =
                 intentMatchesNonDefaultWebApk(params, resolvingInfos);
 
-        boolean requiresPromptForExternalIntent = isNavigationChainExpired(params)
+        boolean requiresPromptForExternalIntent =
+                isNavigationChainExpired(params, targetIntent, resolvingInfos)
                 || redirectShouldStayInApp(params, isExternalProtocol, targetIntent, resolvingInfos)
                 || navigationChainBlocksExternalNavigation(
                         params, targetIntent, resolvingInfos, isExternalProtocol)
