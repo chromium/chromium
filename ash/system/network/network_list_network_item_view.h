@@ -6,7 +6,6 @@
 #define ASH_SYSTEM_NETWORK_NETWORK_LIST_NETWORK_ITEM_VIEW_H_
 
 #include "ash/ash_export.h"
-#include "ash/system/network/network_icon_animation_observer.h"
 #include "ash/system/network/network_info.h"
 #include "ash/system/network/network_list_item_view.h"
 #include "ash/system/tray/hover_highlight_view.h"
@@ -21,9 +20,7 @@ class ViewClickListener;
 // This class encapsulates the logic of configuring the view shown for a single
 // network (Mobile, Wifi and Ethernet) in the detailed Network page within the
 // quick settings.
-class ASH_EXPORT NetworkListNetworkItemView
-    : public NetworkListItemView,
-      public network_icon::AnimationObserver {
+class ASH_EXPORT NetworkListNetworkItemView : public NetworkListItemView {
  public:
   METADATA_HEADER(NetworkListNetworkItemView);
 
@@ -40,9 +37,6 @@ class ASH_EXPORT NetworkListNetworkItemView
 
  private:
   friend class NetworkListNetworkItemViewTest;
-
-  // network_icon::AnimationObserver:
-  void NetworkIconChanged() override;
 
   void SetupCellularSubtext();
   void SetupNetworkSubtext();
