@@ -19,7 +19,6 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
-#include "base/check_is_test.h"
 #include "base/command_line.h"
 #include "base/environment.h"
 #include "base/files/file.h"
@@ -45,7 +44,7 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
-#include "chrome/browser/ash/crosapi/browser_action.h"
+#include "chrome/browser/ash/app_restore/full_restore_service.h"
 #include "chrome/browser/ash/crosapi/browser_data_migrator.h"
 #include "chrome/browser/ash/crosapi/browser_data_migrator_util.h"
 #include "chrome/browser/ash/crosapi/browser_loader.h"
@@ -65,6 +64,7 @@
 #include "chrome/browser/browser_process_platform_part_ash.h"
 #include "chrome/browser/component_updater/cros_component_manager.h"
 #include "chrome/browser/notifications/system_notification_helper.h"
+#include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
@@ -369,6 +369,23 @@ bool GetLaunchOnLoginPref() {
       browser_util::kLaunchOnLoginPref);
 }
 
+// Returns the initial browser action. No browser will be opened in the
+// following circumstances:
+// 1. Lacros-chrome is initialized in the web Kiosk session
+// 2. Full restore is responsible for restoring/launching Lacros.
+browser_util::InitialBrowserAction GetInitialBrowserAction() {
+  if (user_manager::UserManager::Get()->IsLoggedInAsGuest()) {
+    return browser_util::InitialBrowserAction(
+        mojom::InitialBrowserAction::kOpenNewTabPageWindow);
+  }
+
+  return browser_util::InitialBrowserAction(
+      user_manager::UserManager::Get()->IsLoggedInAsWebKioskApp() ||
+              ash::full_restore::MaybeCreateFullRestoreServiceForLacros()
+          ? mojom::InitialBrowserAction::kDoNotOpenWindow
+          : mojom::InitialBrowserAction::kUseStartupPreference);
+}
+
 bool IsKeepAliveDisabledForTesting() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
       ash::switches::kDisableLacrosKeepAliveForTesting);
@@ -379,7 +396,56 @@ bool IsLoginLacrosOpeningDisabledForTesting() {
       ash::switches::kDisableLoginLacrosOpening);
 }
 
+ui::mojom::WindowShowState ConvertWindowShowState(ui::WindowShowState state) {
+  switch (state) {
+    case ui::SHOW_STATE_DEFAULT:
+      return ui::mojom::WindowShowState::SHOW_STATE_DEFAULT;
+    case ui::SHOW_STATE_NORMAL:
+      return ui::mojom::WindowShowState::SHOW_STATE_NORMAL;
+    case ui::SHOW_STATE_MINIMIZED:
+      return ui::mojom::WindowShowState::SHOW_STATE_MINIMIZED;
+    case ui::SHOW_STATE_MAXIMIZED:
+      return ui::mojom::WindowShowState::SHOW_STATE_MAXIMIZED;
+    case ui::SHOW_STATE_INACTIVE:
+      return ui::mojom::WindowShowState::SHOW_STATE_INACTIVE;
+    case ui::SHOW_STATE_FULLSCREEN:
+      return ui::mojom::WindowShowState::SHOW_STATE_FULLSCREEN;
+    case ui::SHOW_STATE_END:
+      NOTREACHED();
+      return ui::mojom::WindowShowState::SHOW_STATE_DEFAULT;
+  }
+}
+
+crosapi::mojom::OpenUrlParams_SwitchToTabPathBehavior ConvertPathBehavior(
+    NavigateParams::PathBehavior path_behavior) {
+  switch (path_behavior) {
+    case NavigateParams::RESPECT:
+      return crosapi::mojom::OpenUrlParams_SwitchToTabPathBehavior::kRespect;
+    case NavigateParams::IGNORE_AND_NAVIGATE:
+      return crosapi::mojom::OpenUrlParams_SwitchToTabPathBehavior::kIgnore;
+  }
+}
+
 }  // namespace
+
+BrowserManager::RestoreFromDeskTemplate::RestoreFromDeskTemplate(
+    const std::vector<GURL>& urls,
+    const gfx::Rect& bounds,
+    ui::WindowShowState show_state,
+    int32_t active_tab_index,
+    const std::string& app_name,
+    int32_t restore_window_id)
+    : urls(urls),
+      bounds(bounds),
+      show_state(show_state),
+      active_tab_index(active_tab_index),
+      app_name(app_name),
+      restore_window_id(restore_window_id) {}
+
+BrowserManager::RestoreFromDeskTemplate::RestoreFromDeskTemplate(
+    RestoreFromDeskTemplate&&) = default;
+
+BrowserManager::RestoreFromDeskTemplate::~RestoreFromDeskTemplate() = default;
 
 // To be sure the lacros is running with neutral thread type.
 class LacrosThreadTypeDelegate : public base::LaunchOptions::PreExecDelegate {
@@ -421,13 +487,12 @@ BrowserManager::BrowserManager(
   if (session_manager::SessionManager::Get())
     session_manager::SessionManager::Get()->AddObserver(this);
 
+  // CrosapiManager may not be initialized on unit testing.
   if (CrosapiManager::IsInitialized()) {
     CrosapiManager::Get()
         ->crosapi_ash()
         ->browser_service_host_ash()
         ->AddObserver(this);
-  } else {
-    CHECK_IS_TEST();
   }
 
   std::string socket_path =
@@ -470,73 +535,217 @@ bool BrowserManager::IsRunningOrWillRun() const {
          state_ == State::CREATING_LOG_FILE || state_ == State::TERMINATING;
 }
 
+void BrowserManager::DisableAutoLaunchForTesting() {
+  disable_autolaunch_for_testing_ = true;
+}
+
 void BrowserManager::NewWindow(bool incognito,
                                bool should_trigger_session_restore) {
-  PerformOrEnqueue(
-      BrowserAction::NewWindow(incognito, should_trigger_session_restore));
+  if (incognito) {
+    Profile* profile = ProfileManager::GetPrimaryUserProfile();
+    if (!profile || !IncognitoModePrefs::IsIncognitoAllowed(profile))
+      return;
+  }
+
+  // If `should_trigger_session_restore` is set to true the new lacros window
+  // should be treated like the start of a new session. Ensure this is the case
+  // by deferring to the browser startup preferences. Otherwise we open the
+  // window with the default NTP.
+  // Incognito's default behavior is to open to a NTP regardless of session
+  // restore settings so the same browser action is used regardless of the value
+  // of `should_trigger_session_restore`.
+  constexpr mojom::InitialBrowserAction kBrowserActions[2][2] = {
+      {mojom::InitialBrowserAction::kOpenNewTabPageWindow,
+       mojom::InitialBrowserAction::kUseStartupPreference},
+      {mojom::InitialBrowserAction::kOpenIncognitoWindow,
+       mojom::InitialBrowserAction::kOpenIncognitoWindow}};
+
+  auto result = MaybeStart(browser_util::InitialBrowserAction(
+      kBrowserActions[incognito][should_trigger_session_restore]));
+
+  if (result != MaybeStartResult::kRunning)
+    return;
+
+  if (!browser_service_.has_value()) {
+    LOG(ERROR) << "BrowserService was disconnected";
+    return;
+  }
+  browser_service_->service->NewWindow(
+      incognito, should_trigger_session_restore, base::DoNothing());
 }
 
 void BrowserManager::OpenForFullRestore(bool skip_crash_restore) {
-  PerformOrEnqueue(BrowserAction::OpenForFullRestore(skip_crash_restore));
+  if (!browser_service_) {
+    LOG(ERROR) << "BrowserService is disconnected, cannot perform Full Restore";
+    return;
+  }
+  browser_service_->service->OpenForFullRestore(skip_crash_restore);
+}
+
+bool BrowserManager::NewWindowForDetachingTabSupported() const {
+  return browser_service_.has_value() &&
+         browser_service_->interface_version >=
+             crosapi::mojom::BrowserService::
+                 kNewWindowForDetachingTabMinVersion;
 }
 
 void BrowserManager::NewWindowForDetachingTab(
     const std::u16string& tab_id_str,
     const std::u16string& group_id_str,
     NewWindowForDetachingTabCallback callback) {
-  PerformOrEnqueue(BrowserAction::NewWindowForDetachingTab(
-      tab_id_str, group_id_str, std::move(callback)));
+  // Chrome OS uses different user model where clicking the chrome icon always
+  // opens a new tab page, and it doesn't matter whether lacros is launching
+  // for the first time or not.
+  auto result = MaybeStart(browser_util::InitialBrowserAction(
+      mojom::InitialBrowserAction::kOpenNewTabPageWindow));
+  if (result != MaybeStartResult::kRunning) {
+    std::move(callback).Run(mojom::CreationResult::kBrowserNotRunning,
+                            std::string() /*new_window*/);
+    return;
+  }
+
+  if (!browser_service_.has_value()) {
+    std::move(callback).Run(mojom::CreationResult::kServiceDisconnected,
+                            std::string() /*new_window*/);
+    return;
+  }
+
+  if (!NewWindowForDetachingTabSupported()) {
+    std::move(callback).Run(mojom::CreationResult::kUnsupported,
+                            std::string() /*new_window*/);
+    return;
+  }
+  browser_service_->service->NewWindowForDetachingTab(tab_id_str, group_id_str,
+                                                      std::move(callback));
+}
+
+bool BrowserManager::NewFullscreenWindowSupported() const {
+  return browser_service_.has_value() &&
+         browser_service_->interface_version >=
+             crosapi::mojom::BrowserService::kNewFullscreenWindowMinVersion;
 }
 
 void BrowserManager::NewFullscreenWindow(const GURL& url,
                                          NewFullscreenWindowCallback callback) {
-  PerformOrEnqueue(
-      BrowserAction::NewFullscreenWindow(url, std::move(callback)));
+  auto result = MaybeStart(browser_util::InitialBrowserAction(
+      mojom::InitialBrowserAction::kDoNotOpenWindow));
+  if (result != MaybeStartResult::kRunning) {
+    std::move(callback).Run(mojom::CreationResult::kBrowserNotRunning);
+    return;
+  }
+
+  if (!browser_service_.has_value()) {
+    LOG(ERROR) << "BrowserService was disconnected";
+    std::move(callback).Run(mojom::CreationResult::kServiceDisconnected);
+    return;
+  }
+
+  if (!NewFullscreenWindowSupported()) {
+    std::move(callback).Run(mojom::CreationResult::kUnsupported);
+    return;
+  }
+  browser_service_->service->NewFullscreenWindow(url, std::move(callback));
 }
 
 void BrowserManager::NewGuestWindow() {
-  PerformOrEnqueue(BrowserAction::NewGuestWindow());
+  auto result = MaybeStart(browser_util::InitialBrowserAction(
+      mojom::InitialBrowserAction::kOpenGuestWindow));
+  if (result != MaybeStartResult::kRunning)
+    return;
+
+  if (!browser_service_.has_value()) {
+    LOG(ERROR) << "BrowserService was disconnected";
+    return;
+  }
+
+  if (!NewFullscreenWindowSupported())
+    return;
+
+  browser_service_->service->NewGuestWindow(base::DoNothing());
 }
 
 void BrowserManager::NewTab(bool should_trigger_session_restore) {
-  PerformOrEnqueue(BrowserAction::NewTab(should_trigger_session_restore));
+  auto result = MaybeStart(browser_util::InitialBrowserAction(
+      should_trigger_session_restore
+          ? mojom::InitialBrowserAction::kUseStartupPreference
+          : mojom::InitialBrowserAction::kOpenNewTabPageWindow));
+  if (result != MaybeStartResult::kRunning)
+    return;
+  if (!browser_service_.has_value()) {
+    LOG(ERROR) << "BrowserService was disconnected";
+    return;
+  }
+  browser_service_->service->NewTab(should_trigger_session_restore,
+                                    base::DoNothing());
 }
 
 void BrowserManager::OpenUrl(
     const GURL& url,
     crosapi::mojom::OpenUrlFrom from,
     crosapi::mojom::OpenUrlParams::WindowOpenDisposition disposition) {
-  PerformOrEnqueue(
-      BrowserAction::OpenUrl(url, disposition, from, NavigateParams::RESPECT));
+  OpenUrlImpl(url, disposition, from, NavigateParams::RESPECT);
 }
 
 void BrowserManager::SwitchToTab(const GURL& url,
                                  NavigateParams::PathBehavior path_behavior) {
-  PerformOrEnqueue(BrowserAction::OpenUrl(
+  OpenUrlImpl(
       url, crosapi::mojom::OpenUrlParams::WindowOpenDisposition::kSwitchToTab,
-      crosapi::mojom::OpenUrlFrom::kUnspecified, path_behavior));
+      crosapi::mojom::OpenUrlFrom::kUnspecified, path_behavior);
 }
 
 void BrowserManager::RestoreTab() {
-  PerformOrEnqueue(BrowserAction::RestoreTab());
+  auto result = MaybeStart(browser_util::InitialBrowserAction(
+      mojom::InitialBrowserAction::kRestoreLastSession));
+  if (result != MaybeStartResult::kRunning)
+    return;
+
+  if (!browser_service_.has_value()) {
+    LOG(ERROR) << "BrowserService was disconnected";
+    return;
+  }
+  browser_service_->service->RestoreTab(base::DoNothing());
+}
+
+bool BrowserManager::HandleTabScrubbingSupported() const {
+  return browser_service_.has_value() &&
+         browser_service_->interface_version >=
+             crosapi::mojom::BrowserService::kHandleTabScrubbingMinVersion;
 }
 
 void BrowserManager::HandleTabScrubbing(float x_offset) {
-  PerformOrEnqueue(BrowserAction::HandleTabScrubbing(x_offset));
+  // If Lacros isn't running, bail out.
+  if (!IsRunning())
+    return;
+
+  if (!browser_service_.has_value())
+    return;
+
+  if (!HandleTabScrubbingSupported())
+    return;
+
+  browser_service_->service->HandleTabScrubbing(x_offset);
 }
 
 void BrowserManager::CreateBrowserWithRestoredData(
     const std::vector<GURL>& urls,
     const gfx::Rect& bounds,
-    ui::WindowShowState show_state,
+    const ui::WindowShowState show_state,
     int32_t active_tab_index,
     const std::string& app_name,
     int32_t restore_window_id) {
-  PerformOrEnqueue(BrowserAction::CreateBrowserWithRestoredData(
-      urls, bounds, show_state, active_tab_index, app_name, restore_window_id));
+  auto result = MaybeStart(browser_util::InitialBrowserAction(
+      mojom::InitialBrowserAction::kDoNotOpenWindow));
+  // The service will not be available, return immediately.
+  if (result == MaybeStartResult::kNotStarted)
+    return;
+
+  windows_to_restore_.emplace_back(urls, bounds, show_state, active_tab_index,
+                                   app_name, restore_window_id);
+  if (result == MaybeStartResult::kRunning)
+    RestoreWindowsFromTemplate();
 }
 
-void BrowserManager::InitializeAndStartIfNeeded() {
+void BrowserManager::InitializeAndStart() {
   DCHECK_EQ(state_, State::NOT_INITIALIZED);
 
   // Ensure this isn't run multiple times.
@@ -558,19 +767,11 @@ void BrowserManager::InitializeAndStartIfNeeded() {
 
   // Must be checked after user session start because it depends on user type.
   if (is_lacros_enabled) {
-    // Start Lacros automatically on login, if
-    // 1) Lacros was opened in the previous session; or
-    // 2) Lacros is the primary web browser.
-    //    This can be suppressed via commandline flag for testing.
-    if (GetLaunchOnLoginPref() || (browser_util::IsLacrosPrimaryBrowser() &&
-                                   !IsLoginLacrosOpeningDisabledForTesting())) {
-      pending_actions_.Push(BrowserAction::GetActionForSessionStart());
-    }
-
     component_update_observation_.Observe(component_update_service_);
     SetState(State::MOUNTING);
     browser_loader_->Load(base::BindOnce(&BrowserManager::OnLoadComplete,
-                                         weak_factory_.GetWeakPtr()));
+                                         weak_factory_.GetWeakPtr(),
+                                         GetInitialBrowserAction()));
   } else {
     SetState(State::UNAVAILABLE);
     browser_loader_->Unload();
@@ -591,8 +792,6 @@ bool BrowserManager::GetFeedbackDataSupported() const {
              crosapi::mojom::BrowserService::kGetFeedbackDataMinVersion;
 }
 
-// TODO(neis): Create BrowserAction also for this and others, perhaps even
-// UpdateKeepAlive.
 void BrowserManager::GetFeedbackData(GetFeedbackDataCallback callback) {
   DCHECK(GetFeedbackDataSupported());
   browser_service_->service->GetFeedbackData(std::move(callback));
@@ -643,28 +842,26 @@ void BrowserManager::Shutdown() {
   // `shutdown_requested_` has been set.
   UpdateKeepAliveInBrowserIfNecessary(false);
   shutdown_requested_ = true;
-  pending_actions_.Clear();
 
   // The lacros-chrome process may have already been terminated as the result of
-  // a previous mojo pipe disconnection in `OnMojoDisconnected()` and not yet
-  // restarted. If, on the other hand, it is still valid, terminate it now.
-  if (lacros_process_.IsValid()) {
-    LOG(WARNING) << "Ash-chrome shutdown initiated. Terminating lacros-chrome";
-    lacros_process_.Terminate(/*exit_code=*/0, /*wait=*/false);
+  // a previous mojo pipe disconnection in `OnMojoDisconnected()` and has not
+  // yet been restarted. Ensure the lacros process is still valid before
+  // proceeding.
+  if (!lacros_process_.IsValid())
+    return;
 
-    // Synchronously post a shutdown blocking task that waits for lacros-chrome
-    // to cleanly exit. Terminate() will eventually result in a callback into
-    // OnMojoDisconnected(), however this resolves asynchronously and there is a
-    // risk that ash exits before this is called. The 3s timeout aligns with the
-    // timeout set by session_manager.
-    HandleLacrosChromeTermination(base::Seconds(3));
-  }
-}
+  // Signal the lacros process to terminate. We then immediately call into
+  // HandleLacrosChromeTermination() to synchronously post a shutdown blocking
+  // task that waits for lacros-chrome to cleanly exit. Terminate() will
+  // eventually result in a callback into OnMojoDisconnected(), however this
+  // resolves asynchronously and there is a risk that ash exits before this is
+  // called.
+  LOG(WARNING) << "Ash-chrome shutdown initiated. Terminating lacros-chrome";
+  lacros_process_.Terminate(/*exit_code=*/0, /*wait=*/false);
 
-void BrowserManager::set_relaunch_requested_for_testing(
-    bool relaunch_requested) {
-  CHECK_IS_TEST();
-  relaunch_requested_ = relaunch_requested;
+  // Wait 3s for lacros-chrome to terminate to align with the timeout set by
+  // session_manager.
+  HandleLacrosChromeTermination(base::Seconds(3));
 }
 
 void BrowserManager::SetState(State state) {
@@ -678,6 +875,8 @@ void BrowserManager::SetState(State state) {
     }
     observer.OnStateChanged();
   }
+
+  LaunchForKeepAliveIfNecessary();
 }
 
 BrowserManager::ScopedKeepAlive::~ScopedKeepAlive() {
@@ -711,22 +910,87 @@ BrowserManager::BrowserServiceInfo::operator=(const BrowserServiceInfo&) =
     default;
 BrowserManager::BrowserServiceInfo::~BrowserServiceInfo() = default;
 
-void BrowserManager::Start() {
-  DCHECK_EQ(state_, State::STOPPED);
-  DCHECK(!shutdown_requested_);
+BrowserManager::MaybeStartResult BrowserManager::MaybeStart(
+    browser_util::InitialBrowserAction initial_browser_action) {
+  if (!browser_util::IsLacrosEnabled())
+    return MaybeStartResult::kNotStarted;
+
+  if (disable_autolaunch_for_testing_)
+    return MaybeStartResult::kNotStarted;
+
+  if (!browser_util::IsLacrosAllowedToLaunch()) {
+    std::unique_ptr<message_center::Notification> notification =
+        ash::CreateSystemNotification(
+            message_center::NOTIFICATION_TYPE_SIMPLE,
+            kLacrosCannotLaunchNotificationID,
+            /*title=*/std::u16string(),
+            l10n_util::GetStringUTF16(
+                IDS_LACROS_CANNOT_LAUNCH_MULTI_SIGNIN_MESSAGE),
+            /* display_source= */ std::u16string(), GURL(),
+            message_center::NotifierId(
+                message_center::NotifierType::SYSTEM_COMPONENT,
+                kLacrosLauncherNotifierID,
+                ash::NotificationCatalogName::kLacrosCannotLaunch),
+            message_center::RichNotificationData(),
+            base::MakeRefCounted<
+                message_center::HandleNotificationClickDelegate>(
+                base::RepeatingClosure()),
+            gfx::kNoneIcon,
+            message_center::SystemNotificationWarningLevel::NORMAL);
+
+    SystemNotificationHelper::GetInstance()->Display(*notification);
+    return MaybeStartResult::kNotStarted;
+  }
+
+  if (!IsReady()) {
+    LOG(WARNING) << "lacros component image not yet available";
+    return MaybeStartResult::kNotStarted;
+  }
   DCHECK(!lacros_path_.empty());
   DCHECK(lacros_selection_.has_value());
 
-  if (update_available_) {
-    update_available_ = false;
-    SetState(State::MOUNTING);
-    lacros_path_ = base::FilePath();
-    lacros_selection_ = absl::nullopt;
-    // OnLoadComplete will call Start again.
-    browser_loader_->Load(base::BindOnce(&BrowserManager::OnLoadComplete,
-                                         weak_factory_.GetWeakPtr()));
-    return;
+  if (shutdown_requested_) {
+    LOG(WARNING) << "lacros-chrome is preparing for system shutdown";
+    return MaybeStartResult::kNotStarted;
   }
+
+  if (state_ == State::TERMINATING) {
+    LOG(WARNING) << "lacros-chrome is terminating, so cannot start now";
+    return MaybeStartResult::kNotStarted;
+  }
+
+  if (state_ == State::CREATING_LOG_FILE || state_ == State::STARTING) {
+    LOG(WARNING) << "lacros-chrome is in the process of launching";
+    return MaybeStartResult::kStarting;
+  }
+
+  // If lacros-chrome is not running, launch it.
+  if (state_ == State::STOPPED) {
+    // If an update is available, load the most up-to-date installed version and
+    // let the load complete callback start the browser.
+    if (update_available_) {
+      update_available_ = false;
+
+      SetState(State::MOUNTING);
+      lacros_path_ = base::FilePath();
+      lacros_selection_ = absl::nullopt;
+      browser_loader_->Load(base::BindOnce(&BrowserManager::OnLoadComplete,
+                                           weak_factory_.GetWeakPtr(),
+                                           std::move(initial_browser_action)));
+    } else {
+      Start(std::move(initial_browser_action));
+    }
+    return MaybeStartResult::kStarting;
+  }
+
+  return MaybeStartResult::kRunning;
+}
+
+void BrowserManager::Start(
+    browser_util::InitialBrowserAction initial_browser_action) {
+  DCHECK_EQ(state_, State::STOPPED);
+  DCHECK(!lacros_path_.empty());
+  DCHECK(!shutdown_requested_);
 
   // Ensure we're not trying to open a window before the shelf is initialized.
   // Kiosk sessions don't need this check because they don't enable the shelf.
@@ -743,18 +1007,22 @@ void BrowserManager::Start() {
       base::BindOnce(&DoLacrosBackgroundWorkPreLaunch, lacros_path_,
                      is_initial_lacros_launch_after_reboot_),
       base::BindOnce(&BrowserManager::StartWithLogFile,
-                     weak_factory_.GetWeakPtr()));
+                     weak_factory_.GetWeakPtr(),
+                     std::move(initial_browser_action)));
 
   // Set false to prepare for the next Lacros launch.
   is_initial_lacros_launch_after_reboot_ = false;
 }
 
-void BrowserManager::StartWithLogFile(LaunchParamsFromBackground params) {
+void BrowserManager::StartWithLogFile(
+    browser_util::InitialBrowserAction initial_browser_action,
+    LaunchParamsFromBackground params) {
   DCHECK_EQ(state_, State::CREATING_LOG_FILE);
 
-  // Shutdown() might have been called after Start() posted the StartWithLogFile
-  // task, so we need to check `shutdown_requested_` again.
   if (shutdown_requested_) {
+    // StartWithLogFile() may have been posted before Shutdown() has been
+    // signalled by the system. Ensure that we do not start lacros-chrome in
+    // this case.
     LOG(ERROR) << "Start attempted after Shutdown() called.";
     SetState(State::STOPPED);
     return;
@@ -873,9 +1141,7 @@ void BrowserManager::StartWithLogFile(LaunchParamsFromBackground params) {
   }
 
   base::ScopedFD startup_fd = browser_util::CreateStartupData(
-      environment_provider_.get(),
-      browser_util::InitialBrowserAction(
-          mojom::InitialBrowserAction::kDoNotOpenWindow),
+      environment_provider_.get(), std::move(initial_browser_action),
       !keep_alive_features_.empty(), lacros_selection_);
   if (startup_fd.is_valid()) {
     // Hardcoded to use FD 3 to make the ash-chrome's behavior more predictable.
@@ -936,8 +1202,7 @@ void BrowserManager::StartWithLogFile(LaunchParamsFromBackground params) {
   lacros_process_ = base::LaunchProcess(command_line, options);
   if (!lacros_process_.IsValid()) {
     LOG(ERROR) << "Failed to launch lacros-chrome";
-    // We give up, as this is most likely a permanent problem.
-    SetState(State::UNAVAILABLE);
+    SetState(State::STOPPED);
     return;
   }
   SetState(State::STARTING);
@@ -977,12 +1242,9 @@ void BrowserManager::OnBrowserServiceConnected(
   // So, send it to lacros-chrome to update to fill the possible gap.
   UpdateKeepAliveInBrowserIfNecessary(!keep_alive_features_.empty());
 
-  while (!pending_actions_.IsEmpty()) {
-    pending_actions_.Pop()->Perform(
-        {browser_service_.value().service,
-         browser_service_.value().interface_version});
-    DCHECK_EQ(state_, State::RUNNING);
-  }
+  // We may have some windows pending to be restored from the desk template.
+  // Now is the time to create them.
+  RestoreWindowsFromTemplate();
 }
 
 void BrowserManager::OnBrowserServiceDisconnected(
@@ -1045,19 +1307,19 @@ void BrowserManager::HandleLacrosChromeTermination(base::TimeDelta timeout) {
 void BrowserManager::OnLacrosChromeTerminated() {
   DCHECK_EQ(state_, State::TERMINATING);
   LOG(WARNING) << "Lacros-chrome is terminated";
-  is_terminated_ = true;
   SetState(State::STOPPED);
-
   // TODO(https://crbug.com/1109366): Restart lacros-chrome if it exits
   // abnormally (e.g. crashes). For now, assume the user meant to close it.
   // Relaunch lacros-chrome if it was closed due to ash shutting down.
   // Note that this only matters for side-by-side lacros.
   SetLaunchOnLoginPref(shutdown_requested_);
 
-  if (relaunch_requested_)
-    pending_actions_.Push(
-        BrowserAction::OpenForFullRestore(/*skip_crash_restore=*/true));
-  StartIfNeeded();
+  is_terminated_ = true;
+
+  if (!shutdown_requested_ && relaunch_requested_) {
+    MaybeStart(browser_util::InitialBrowserAction(
+        mojom::InitialBrowserAction::kRestoreLastSession));
+  }
 }
 
 void BrowserManager::OnSessionStateChanged() {
@@ -1070,32 +1332,7 @@ void BrowserManager::OnSessionStateChanged() {
     return;
   }
 
-  // Launch Lacros if appropriate.
-  if (browser_util::IsLacrosEnabled()) {
-    if (!browser_util::IsLacrosAllowedToLaunch()) {
-      std::unique_ptr<message_center::Notification> notification =
-          ash::CreateSystemNotification(
-              message_center::NOTIFICATION_TYPE_SIMPLE,
-              kLacrosCannotLaunchNotificationID,
-              /*title=*/std::u16string(),
-              l10n_util::GetStringUTF16(
-                  IDS_LACROS_CANNOT_LAUNCH_MULTI_SIGNIN_MESSAGE),
-              /* display_source= */ std::u16string(), GURL(),
-              message_center::NotifierId(
-                  message_center::NotifierType::SYSTEM_COMPONENT,
-                  kLacrosLauncherNotifierID,
-                  ash::NotificationCatalogName::kLacrosCannotLaunch),
-              message_center::RichNotificationData(),
-              base::MakeRefCounted<
-                  message_center::HandleNotificationClickDelegate>(
-                  base::RepeatingClosure()),
-              gfx::kNoneIcon,
-              message_center::SystemNotificationWarningLevel::NORMAL);
-      SystemNotificationHelper::GetInstance()->Display(*notification);
-    } else {
-      InitializeAndStartIfNeeded();
-    }
-  }
+  InitializeAndStart();
 
   // If "Go to files" on the migration error page was clicked, launch it here.
   Profile* profile = ProfileManager::GetPrimaryUserProfile();
@@ -1170,31 +1407,32 @@ void BrowserManager::OnEvent(Events event, const std::string& id) {
   }
 }
 
-void BrowserManager::OnLoadComplete(const base::FilePath& path,
-                                    LacrosSelection selection) {
-  if (shutdown_requested_) {
-    LOG(ERROR) << "Load completed after Shutdown() called.";
-    return;
-  }
+void BrowserManager::OnLoadComplete(
+    browser_util::InitialBrowserAction initial_browser_action,
+    const base::FilePath& path,
+    LacrosSelection selection) {
   DCHECK_EQ(state_, State::MOUNTING);
 
   lacros_path_ = path;
   lacros_selection_ = absl::optional<LacrosSelection>(selection);
-  const bool success = !path.empty();
-  SetState(success ? State::STOPPED : State::UNAVAILABLE);
+  SetState(path.empty() ? State::UNAVAILABLE : State::STOPPED);
+
   // TODO(crbug.com/1266010): In the event the load operation failed, we should
   // launch the last successfully loaded image.
+  const bool success = !path.empty();
   for (auto& observer : observers_) {
     observer.OnLoadComplete(success);
   }
 
-  StartIfNeeded();
-}
-
-void BrowserManager::StartIfNeeded() {
-  if (state_ == State::STOPPED && !shutdown_requested_)
-    if (!pending_actions_.IsEmpty() || IsKeepAliveEnabled())
-      Start();
+  // Start Lacros browser automatically on login, if
+  // 1) Lacros was opened in the previous session.
+  // 2) Lacros is the primary web browser.
+  //    This can be suppressed on commandline flag for testing.
+  if (state_ == State::STOPPED && !shutdown_requested_ &&
+      (GetLaunchOnLoginPref() || (browser_util::IsLacrosPrimaryBrowser() &&
+                                  !IsLoginLacrosOpeningDisabledForTesting()))) {
+    MaybeStart(std::move(initial_browser_action));
+  }
 }
 
 void BrowserManager::PrepareLacrosPolicies() {
@@ -1270,8 +1508,6 @@ LaunchParamsFromBackground::LaunchParamsFromBackground(
 LaunchParamsFromBackground::~LaunchParamsFromBackground() = default;
 
 void BrowserManager::StartKeepAlive(Feature feature) {
-  DCHECK(browser_util::IsLacrosEnabled());
-
   if (IsKeepAliveDisabledForTesting())
     return;
 
@@ -1280,19 +1516,33 @@ void BrowserManager::StartKeepAlive(Feature feature) {
 
   keep_alive_features_.insert(feature);
   // If this is first KeepAlive instance, update the keep-alive in the browser.
-  if (keep_alive_features_.size() == 1)
+  if (keep_alive_features_.size() == 1) {
+    // If browser is not running, we have to launch it.
+    LaunchForKeepAliveIfNecessary();
     UpdateKeepAliveInBrowserIfNecessary(true);
-  StartIfNeeded();
+  }
 }
 
 void BrowserManager::StopKeepAlive(Feature feature) {
   keep_alive_features_.erase(feature);
-  if (!IsKeepAliveEnabled())
+  if (keep_alive_features_.empty())
     UpdateKeepAliveInBrowserIfNecessary(false);
 }
 
 bool BrowserManager::IsKeepAliveEnabled() const {
   return !keep_alive_features_.empty();
+}
+
+void BrowserManager::LaunchForKeepAliveIfNecessary() {
+  // KeepAlive should not start lacros in a windowless state if a relaunch has
+  // been requested. Lacros restart will instead be handled in
+  // `OnLacrosChromeTerminated()`.
+  if (state_ == State::STOPPED && !shutdown_requested_ &&
+      !keep_alive_features_.empty() && !relaunch_requested_) {
+    CHECK(browser_util::IsLacrosEnabled());
+    MaybeStart(browser_util::InitialBrowserAction(
+        mojom::InitialBrowserAction::kDoNotOpenWindow));
+  }
 }
 
 void BrowserManager::UpdateKeepAliveInBrowserIfNecessary(bool enabled) {
@@ -1304,6 +1554,11 @@ void BrowserManager::UpdateKeepAliveInBrowserIfNecessary(bool enabled) {
     return;
   }
   browser_service_->service->UpdateKeepAlive(enabled);
+}
+
+bool BrowserManager::IsReady() const {
+  return state_ != State::NOT_INITIALIZED && state_ != State::MOUNTING &&
+         state_ != State::UNAVAILABLE;
 }
 
 void BrowserManager::RecordLacrosLaunchMode() {
@@ -1364,51 +1619,60 @@ void BrowserManager::RecordLacrosLaunchMode() {
                             lacros_mode_and_source);
 }
 
-void BrowserManager::PerformOrEnqueue(std::unique_ptr<BrowserAction> action) {
-  if (shutdown_requested_) {
-    LOG(WARNING) << "lacros-chrome is preparing for system shutdown";
-    action->Cancel(mojom::CreationResult::kBrowserNotRunning);
+void BrowserManager::OpenUrlImpl(
+    const GURL& url,
+    crosapi::mojom::OpenUrlParams::WindowOpenDisposition disposition,
+    crosapi::mojom::OpenUrlFrom from,
+    NavigateParams::PathBehavior path_behavior) {
+  auto result = MaybeStart(browser_util::InitialBrowserAction(
+      mojom::InitialBrowserAction::kOpenWindowWithUrls, {url}, from));
+  if (result != MaybeStartResult::kRunning)
+    return;
+
+  if (!browser_service_.has_value()) {
+    LOG(ERROR) << "BrowserService was disconnected";
+    return;
+  }
+  if (browser_service_->interface_version <
+      mojom::BrowserService::kOpenUrlMinVersion) {
+    LOG(ERROR) << "BrowserService does not support OpenUrl";
     return;
   }
 
-  switch (state_) {
-    case State::UNAVAILABLE:
-      LOG(ERROR) << "lacros unavailable";
-      action->Cancel(mojom::CreationResult::kBrowserNotRunning);
-      return;
+  using OpenUrlParams = crosapi::mojom::OpenUrlParams;
+  auto params = OpenUrlParams::New();
+  params->disposition = disposition;
+  params->from = from;
+  params->path_behavior = ConvertPathBehavior(path_behavior);
+  browser_service_->service->OpenUrl(url, std::move(params), base::DoNothing());
+}
 
-    case State::NOT_INITIALIZED:
-    case State::MOUNTING:
-      LOG(WARNING) << "lacros component image not yet available";
-      pending_actions_.PushOrCancel(std::move(action));
-      return;
-    case State::TERMINATING:
-      LOG(WARNING) << "lacros-chrome is terminating, so cannot start now";
-      pending_actions_.PushOrCancel(std::move(action));
-      return;
-    case State::CREATING_LOG_FILE:
-    case State::STARTING:
-      LOG(WARNING) << "lacros-chrome is in the process of launching";
-      pending_actions_.PushOrCancel(std::move(action));
-      return;
+bool BrowserManager::IsNewGuestWindowSupported() const {
+  return browser_service_.has_value() &&
+         browser_service_->interface_version >=
+             crosapi::mojom::BrowserService::kNewGuestWindowMinVersion;
+}
 
-    case State::STOPPED:
-      DCHECK(!IsKeepAliveEnabled());
-      DCHECK(pending_actions_.IsEmpty());
-      pending_actions_.PushOrCancel(std::move(action));
-      StartIfNeeded();
-      return;
-
-    case State::RUNNING:
-      if (!browser_service_.has_value()) {
-        LOG(ERROR) << "BrowserService was disconnected";
-        action->Cancel(mojom::CreationResult::kServiceDisconnected);
-        return;
-      }
-      action->Perform(
-          {browser_service_->service, browser_service_->interface_version});
-      return;
+void BrowserManager::RestoreWindowsFromTemplate() {
+  if (!browser_service_.has_value()) {
+    LOG(ERROR) << "BrowserService was disconnected";
+    return;
   }
+
+  for (const auto& data : windows_to_restore_) {
+    crosapi::mojom::DeskTemplateStatePtr additional_state =
+        crosapi::mojom::DeskTemplateState::New(data.urls, data.active_tab_index,
+                                               data.app_name,
+                                               data.restore_window_id);
+    crosapi::CrosapiManager::Get()
+        ->crosapi_ash()
+        ->desk_template_ash()
+        ->CreateBrowserWithRestoredData(data.bounds,
+                                        ConvertWindowShowState(data.show_state),
+                                        std::move(additional_state));
+  }
+
+  windows_to_restore_.clear();
 }
 
 }  // namespace crosapi

@@ -470,7 +470,7 @@ void KioskLaunchController::OnAppPrepared() {
     StartTimerToWaitForExtensions();
 
     // Initialize and start Lacros for preparing force-installed extensions.
-    crosapi::BrowserManager::Get()->InitializeAndStartIfNeeded();
+    crosapi::BrowserManager::Get()->InitializeAndStart();
     return;
   }
 
