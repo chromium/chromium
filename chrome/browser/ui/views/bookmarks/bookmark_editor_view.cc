@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/logging.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
@@ -512,9 +513,8 @@ void BookmarkEditorView::ApplyNameChangesAndCreateNewFolders(
     } else {
       // Existing node, reset the title (BookmarkModel ignores changes if the
       // title is the same).
-      const auto i = std::find_if(
-          bb_node->children().cbegin(), bb_node->children().cend(),
-          [&child_b_node](const auto& node) {
+      const auto i = base::ranges::find_if(
+          bb_node->children(), [&child_b_node](const auto& node) {
             return node->is_folder() && node->id() == child_b_node->value;
           });
       DCHECK(i != bb_node->children().cend());

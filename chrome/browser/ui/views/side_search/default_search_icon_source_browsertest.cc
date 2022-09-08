@@ -2,10 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/views/side_search/default_search_icon_source.h"
+
+#include "base/ranges/algorithm.h"
 #include "base/test/bind.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/views/side_search/default_search_icon_source.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/search_test_utils.h"
 #include "components/search_engines/template_url.h"
@@ -28,11 +30,10 @@ class DefaultSearchIconBrowserTest : public InProcessBrowserTest {
 
     TemplateURLService::TemplateURLVector template_urls =
         template_url_service->GetTemplateURLs();
-    auto iter =
-        std::find_if(template_urls.begin(), template_urls.end(),
-                     [&](const TemplateURL* template_url) {
-                       return current_default_template_url != template_url;
-                     });
+    auto iter = base::ranges::find_if(
+        template_urls, [&](const TemplateURL* template_url) {
+          return current_default_template_url != template_url;
+        });
 
     ASSERT_NE(template_urls.end(), iter);
     template_url_service->SetUserSelectedDefaultSearchProvider(*iter);

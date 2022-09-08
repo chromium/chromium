@@ -4,9 +4,8 @@
 
 #include "chrome/browser/ui/views/side_panel/side_panel_combobox_model.h"
 
-#include <algorithm>
-
 #include "base/containers/cxx20_erase.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/base/models/combobox_model_observer.h"
 #include "ui/views/style/typography.h"
@@ -62,9 +61,7 @@ void SidePanelComboboxModel::RemoveItems(
     const std::vector<std::unique_ptr<SidePanelEntry>>& entries) {
   for (auto const& current_entry : entries) {
     SidePanelEntry::Key key = current_entry.get()->key();
-    auto position =
-        std::find_if(entries_.begin(), entries_.end(),
-                     [key](auto entry) { return entry.key == key; });
+    auto position = base::ranges::find(entries_, key, &Item::key);
     if (position != entries_.end())
       entries_.erase(position);
   }

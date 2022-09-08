@@ -11,6 +11,7 @@
 #include "base/compiler_specific.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
+#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
@@ -1392,10 +1393,9 @@ class BookmarkBarViewTest13 : public BookmarkBarViewEventTestBase {
 
     // Find the first separator.
     views::SubmenuView* submenu = menu->GetSubmenu();
-    const auto i = std::find_if(
-        submenu->children().begin(), submenu->children().end(),
-        [](const auto* child) {
-          return child->GetID() != views::MenuItemView::kMenuItemViewID;
+    const auto i =
+        base::ranges::find_if_not(submenu->children(), [](const auto* child) {
+          return child->GetID() == views::MenuItemView::kMenuItemViewID;
         });
     ASSERT_FALSE(i == submenu->children().end());
 

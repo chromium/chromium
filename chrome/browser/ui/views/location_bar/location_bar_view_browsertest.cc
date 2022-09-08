@@ -8,6 +8,7 @@
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/path_service.h"
+#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -268,12 +269,9 @@ class LocationBarViewGeolocationBackForwardCacheBrowserTest
       ContentSettingImageModel::ImageType image_type) {
     LocationBarView* location_bar_view =
         BrowserView::GetBrowserViewForBrowser(browser())->GetLocationBarView();
-    return **std::find_if(
-        location_bar_view->GetContentSettingViewsForTest().begin(),
-        location_bar_view->GetContentSettingViewsForTest().end(),
-        [image_type](ContentSettingImageView* view) {
-          return view->GetTypeForTesting() == image_type;
-        });
+    return **base::ranges::find(
+        location_bar_view->GetContentSettingViewsForTest(), image_type,
+        &ContentSettingImageView::GetTypeForTesting);
   }
 
  private:

@@ -106,6 +106,7 @@ class TabSharingUIViews : public TabSharingUI,
 #endif
 
  private:
+  using InfoBars = std::map<content::WebContents*, infobars::InfoBar*>;
   friend class TabSharingUIViewsBrowserTest;
 
   // Used to identify |TabSharingUIViews| instances to
@@ -161,7 +162,7 @@ class TabSharingUIViews : public TabSharingUI,
   static CaptureSessionId next_capture_session_id_;
   const CaptureSessionId capture_session_id_;
 
-  std::map<content::WebContents*, infobars::InfoBar*> infobars_;
+  InfoBars infobars_;
   std::map<content::WebContents*, std::unique_ptr<SameOriginObserver>>
       same_origin_observers_;
   const content::GlobalRenderFrameHostId capturer_;

@@ -4,11 +4,11 @@
 
 #include "chrome/browser/ui/views/desktop_capture/desktop_media_picker_views_test_api.h"
 
+#include "base/ranges/algorithm.h"
 #include "chrome/browser/ui/views/desktop_capture/desktop_media_list_controller.h"
 #include "chrome/browser/ui/views/desktop_capture/desktop_media_list_view.h"
 #include "chrome/browser/ui/views/desktop_capture/desktop_media_picker_views.h"
 #include "chrome/browser/ui/views/desktop_capture/desktop_media_tab_list.h"
-
 #include "ui/events/base_event_utils.h"
 #include "ui/views/controls/button/checkbox.h"
 #include "ui/views/controls/tabbed_pane/tabbed_pane.h"
@@ -94,10 +94,9 @@ void DesktopMediaPickerViewsTestApi::DoubleTapSourceAtIndex(size_t index) {
 void DesktopMediaPickerViewsTestApi::SelectTabForSourceType(
     DesktopMediaList::Type source_type) {
   const auto& categories = picker_->dialog_->categories_;
-  const auto i = std::find_if(categories.cbegin(), categories.cend(),
-                              [source_type](const auto& category) {
-                                return category.type == source_type;
-                              });
+  const auto i = base::ranges::find(
+      categories, source_type,
+      &DesktopMediaPickerDialogView::DisplaySurfaceCategory::type);
   DCHECK(i != categories.cend());
   if (picker_->dialog_->tabbed_pane_) {
     picker_->dialog_->tabbed_pane_->SelectTabAt(

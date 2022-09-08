@@ -7,6 +7,7 @@
 #include "base/containers/cxx20_erase.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/observer_list.h"
+#include "base/ranges/algorithm.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_registry_observer.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/common/extension_id.h"
@@ -33,11 +34,7 @@ SidePanelRegistry* SidePanelRegistry::Get(content::WebContents* web_contents) {
 
 SidePanelEntry* SidePanelRegistry::GetEntryForKey(
     const SidePanelEntry::Key& entry_key) {
-  auto it =
-      std::find_if(entries_.begin(), entries_.end(),
-                   [entry_key](const std::unique_ptr<SidePanelEntry>& entry) {
-                     return entry.get()->key() == entry_key;
-                   });
+  auto it = base::ranges::find(entries_, entry_key, &SidePanelEntry::key);
   return it == entries_.end() ? nullptr : it->get();
 }
 

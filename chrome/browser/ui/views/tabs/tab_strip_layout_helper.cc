@@ -4,12 +4,12 @@
 
 #include "chrome/browser/ui/views/tabs/tab_strip_layout_helper.h"
 
-#include <algorithm>
 #include <memory>
 #include <set>
 #include <utility>
 
 #include "base/memory/raw_ptr.h"
+#include "base/ranges/algorithm.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_style.h"
@@ -120,10 +120,9 @@ void TabStripLayoutHelper::RemoveTabAt(int model_index, Tab* tab) {
 }
 
 void TabStripLayoutHelper::OnTabDestroyed(Tab* tab) {
-  auto it =
-      std::find_if(slots_.begin(), slots_.end(), [tab](const TabSlot& slot) {
-        return slot.type == ViewType::kTab && slot.view == tab;
-      });
+  auto it = base::ranges::find_if(slots_, [tab](const TabSlot& slot) {
+    return slot.type == ViewType::kTab && slot.view == tab;
+  });
   if (it != slots_.end())
     slots_.erase(it);
 }

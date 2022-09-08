@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
@@ -138,11 +139,9 @@ bool ShouldShowRequest(permissions::PermissionPrompt::Delegate& delegate,
                        permissions::RequestType type) {
   if (type == permissions::RequestType::kCameraStream) {
     // Hide camera request if camera PTZ request is present as well.
-    auto requests = delegate.Requests();
-    return std::find_if(requests.begin(), requests.end(), [](auto* request) {
-             return request->request_type() ==
-                    permissions::RequestType::kCameraPanTiltZoom;
-           }) == requests.end();
+    return !base::Contains(delegate.Requests(),
+                           permissions::RequestType::kCameraPanTiltZoom,
+                           &permissions::PermissionRequest::request_type);
   }
   return true;
 }

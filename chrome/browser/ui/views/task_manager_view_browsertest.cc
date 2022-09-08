@@ -5,6 +5,7 @@
 #include <stddef.h>
 
 #include "base/callback.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/pattern.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
@@ -100,11 +101,8 @@ class TaskManagerViewTest : public InProcessBrowserTest {
   // Looks up a tab based on its tab ID.
   content::WebContents* FindWebContentsByTabId(SessionID tab_id) {
     auto& all_tabs = AllTabContentses();
-    auto tab_id_matches = [tab_id](content::WebContents* web_contents) {
-      return sessions::SessionTabHelper::IdForTab(web_contents) == tab_id;
-    };
-    auto it = std::find_if(all_tabs.begin(), all_tabs.end(), tab_id_matches);
-
+    auto it = base::ranges::find(all_tabs, tab_id,
+                                 &sessions::SessionTabHelper::IdForTab);
     return (it == all_tabs.end()) ? nullptr : *it;
   }
 

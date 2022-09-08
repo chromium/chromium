@@ -4,11 +4,11 @@
 
 #include "chrome/browser/ui/views/desktop_capture/desktop_media_list_view.h"
 
-#include <algorithm>
 #include <string>
 #include <utility>
 
 #include "base/cxx17_backports.h"
+#include "base/ranges/algorithm.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/media/webrtc/desktop_media_list.h"
 #include "chrome/browser/media/webrtc/window_icon_util.h"
@@ -254,9 +254,9 @@ void DesktopMediaListView::SetStyle(DesktopMediaSourceViewStyle* style) {
 }
 
 DesktopMediaSourceView* DesktopMediaListView::GetSelectedView() {
-  const auto i = std::find_if(
-      children().cbegin(), children().cend(),
-      [](View* v) { return AsDesktopMediaSourceView(v)->GetSelected(); });
+  const auto i =
+      base::ranges::find_if(children(), &DesktopMediaSourceView::GetSelected,
+                            &AsDesktopMediaSourceView);
   return (i == children().cend()) ? nullptr : AsDesktopMediaSourceView(*i);
 }
 

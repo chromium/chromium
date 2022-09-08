@@ -5,7 +5,9 @@
 #include "chrome/browser/ui/views/tabs/tab_container_impl.h"
 
 #include <memory>
+
 #include "base/memory/raw_ref.h"
+#include "base/ranges/algorithm.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/tabs/fake_base_tab_strip_controller.h"
@@ -694,10 +696,9 @@ TEST_F(TabContainerTest, GroupHeaderMovesOnRegrouping) {
   tab_container_->CompleteAnimationAndLayout();
 
   std::vector<TabGroupViews*> views = ListGroupViews();
-  auto views_it =
-      std::find_if(views.begin(), views.end(), [&group1](TabGroupViews* view) {
-        return view->header()->group() == group1;
-      });
+  auto views_it = base::ranges::find(views, group1, [](TabGroupViews* view) {
+    return view->header()->group();
+  });
   ASSERT_TRUE(views_it != views.end());
   TabGroupViews* group1_views = *views_it;
 

@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/memory/ptr_util.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -268,10 +269,8 @@ void TabSharingUIViews::TabChangedAt(WebContents* contents,
 
 void TabSharingUIViews::OnInfoBarRemoved(infobars::InfoBar* infobar,
                                          bool animate) {
-  auto infobars_entry = std::find_if(infobars_.begin(), infobars_.end(),
-                                     [infobar](const auto& infobars_entry) {
-                                       return infobars_entry.second == infobar;
-                                     });
+  auto infobars_entry =
+      base::ranges::find(infobars_, infobar, &InfoBars::value_type::second);
   if (infobars_entry == infobars_.end())
     return;
 

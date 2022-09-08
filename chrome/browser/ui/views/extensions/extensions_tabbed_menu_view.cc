@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/views/extensions/extensions_tabbed_menu_view.h"
 
-#include <algorithm>
 #include <memory>
 #include <string>
 
@@ -13,6 +12,7 @@
 #include "base/feature_list.h"
 #include "base/i18n/case_conversion.h"
 #include "base/notreached.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -163,12 +163,12 @@ size_t FindIndex(views::View* parent_view,
                  const std::u16string extension_name) {
   const auto& children = parent_view->children();
   return static_cast<size_t>(
-      std::find_if(children.begin(), children.end(),
-                   [extension_name](views::View* v) {
-                     return base::i18n::ToLower(extension_name) <=
-                            base::i18n::ToLower(
-                                GetMenuItemViewController(v)->GetActionName());
-                   }) -
+      base::ranges::lower_bound(
+          children, base::i18n::ToLower(extension_name), {},
+          [](views::View* v) {
+            return base::i18n::ToLower(
+                GetMenuItemViewController(v)->GetActionName());
+          }) -
       children.begin());
 }
 

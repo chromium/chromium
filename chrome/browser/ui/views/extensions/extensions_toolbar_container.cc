@@ -5,11 +5,13 @@
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
 
 #include <memory>
+
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/cxx17_backports.h"
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
+#include "base/ranges/algorithm.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -224,10 +226,8 @@ void ExtensionsToolbarContainer::ShowWidgetForExtension(
 views::Widget*
 ExtensionsToolbarContainer::GetAnchoredWidgetForExtensionForTesting(
     const std::string& extension_id) {
-  auto iter = std::find_if(anchored_widgets_.begin(), anchored_widgets_.end(),
-                           [extension_id](const auto& info) {
-                             return info.extension_id == extension_id;
-                           });
+  auto iter = base::ranges::find(anchored_widgets_, extension_id,
+                                 &AnchoredWidget::extension_id);
   return iter == anchored_widgets_.end() ? nullptr : iter->widget.get();
 }
 
@@ -315,9 +315,8 @@ void ExtensionsToolbarContainer::UpdateIconVisibility(
 
 void ExtensionsToolbarContainer::AnchorAndShowWidgetImmediately(
     views::Widget* widget) {
-  auto iter = std::find_if(
-      anchored_widgets_.begin(), anchored_widgets_.end(),
-      [widget](const auto& info) { return info.widget == widget; });
+  auto iter =
+      base::ranges::find(anchored_widgets_, widget, &AnchoredWidget::widget);
 
   if (iter == anchored_widgets_.end()) {
     // This should mean that the Widget destructed before we got to showing it.
@@ -520,9 +519,8 @@ void ExtensionsToolbarContainer::OnToolbarActionRemoved(
   // could be handled inside the model and be invisible to the container when
   // permissions are unchanged.
 
-  auto iter = std::find_if(
-      actions_.begin(), actions_.end(),
-      [action_id](const auto& item) { return item->GetId() == action_id; });
+  auto iter = base::ranges::find(actions_, action_id,
+                                 &ToolbarActionViewController::GetId);
   DCHECK(iter != actions_.end());
   // Ensure the action outlives the UI element to perform any cleanup.
   std::unique_ptr<ToolbarActionViewController> controller = std::move(*iter);
@@ -646,11 +644,9 @@ void ExtensionsToolbarContainer::WriteDragDataForView(
     ui::OSExchangeData* data) {
   DCHECK(data);
 
-  auto it = std::find_if(model_->pinned_action_ids().cbegin(),
-                         model_->pinned_action_ids().cend(),
-                         [this, sender](const std::string& action_id) {
-                           return GetViewForId(action_id) == sender;
-                         });
+  auto it = base::ranges::find(
+      model_->pinned_action_ids(), sender,
+      [this](const std::string& action_id) { return GetViewForId(action_id); });
   DCHECK(it != model_->pinned_action_ids().cend());
 
   size_t index = it - model_->pinned_action_ids().cbegin();
@@ -680,11 +676,9 @@ bool ExtensionsToolbarContainer::CanStartDragForView(View* sender,
     return false;
 
   // Only pinned extensions should be draggable.
-  auto it = std::find_if(model_->pinned_action_ids().cbegin(),
-                         model_->pinned_action_ids().cend(),
-                         [this, sender](const std::string& action_id) {
-                           return GetViewForId(action_id) == sender;
-                         });
+  auto it = base::ranges::find(
+      model_->pinned_action_ids(), sender,
+      [this](const std::string& action_id) { return GetViewForId(action_id); });
   if (it == model_->pinned_action_ids().cend())
     return false;
 
@@ -779,9 +773,8 @@ views::View::DropCallback ExtensionsToolbarContainer::GetDropCallback(
 }
 
 void ExtensionsToolbarContainer::OnWidgetDestroying(views::Widget* widget) {
-  auto iter = std::find_if(
-      anchored_widgets_.begin(), anchored_widgets_.end(),
-      [widget](const auto& info) { return info.widget == widget; });
+  auto iter =
+      base::ranges::find(anchored_widgets_, widget, &AnchoredWidget::widget);
   DCHECK(iter != anchored_widgets_.end());
   iter->widget->RemoveObserver(this);
   const std::string extension_id = std::move(iter->extension_id);
@@ -808,11 +801,9 @@ gfx::ImageSkia ExtensionsToolbarContainer::GetExtensionIcon(
 void ExtensionsToolbarContainer::SetExtensionIconVisibility(
     ToolbarActionsModel::ActionId id,
     bool visible) {
-  auto it = std::find_if(model_->pinned_action_ids().cbegin(),
-                         model_->pinned_action_ids().cend(),
-                         [this, id](const std::string& action_id) {
-                           return GetViewForId(action_id) == GetViewForId(id);
-                         });
+  auto it = base::ranges::find(
+      model_->pinned_action_ids(), GetViewForId(id),
+      [this](const std::string& action_id) { return GetViewForId(action_id); });
   if (it == model_->pinned_action_ids().cend())
     return;
 

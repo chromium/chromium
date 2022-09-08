@@ -6,6 +6,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
+#include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
@@ -209,15 +210,14 @@ class SettingsOverriddenDialogViewBrowserTest : public DialogBrowserTest {
 
     TemplateURLService::TemplateURLVector template_urls =
         template_url_service->GetTemplateURLs();
-    auto iter =
-        std::find_if(template_urls.begin(), template_urls.end(),
-                     [template_url_service, new_search_shows_in_default_list](
-                         const TemplateURL* turl) {
-                       return !turl->HasGoogleBaseURLs(
-                                  template_url_service->search_terms_data()) &&
-                              template_url_service->ShowInDefaultList(turl) ==
-                                  new_search_shows_in_default_list;
-                     });
+    auto iter = base::ranges::find_if(
+        template_urls, [template_url_service, new_search_shows_in_default_list](
+                           const TemplateURL* turl) {
+          return !turl->HasGoogleBaseURLs(
+                     template_url_service->search_terms_data()) &&
+                 template_url_service->ShowInDefaultList(turl) ==
+                     new_search_shows_in_default_list;
+        });
     ASSERT_TRUE(iter != template_urls.end());
 
     template_url_service->SetUserSelectedDefaultSearchProvider(*iter);

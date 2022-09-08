@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <algorithm>
 #include <string>
 #include <vector>
 
 #include "base/bind.h"
 #include "base/feature_list.h"
+#include "base/ranges/algorithm.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -104,8 +104,7 @@ class FeaturePromoDialogTest : public DialogBrowserTest {
     std::vector<const base::Feature*> iph_features =
         feature_engagement::GetAllFeatures();
     auto feature_it =
-        std::find_if(iph_features.begin(), iph_features.end(),
-                     [&](const base::Feature* f) { return f->name == name; });
+        base::ranges::find(iph_features, name, &base::Feature::name);
     ASSERT_NE(feature_it, iph_features.end());
     const base::Feature& feature = **feature_it;
 

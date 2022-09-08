@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/notreached.h"
+#include "base/ranges/algorithm.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
@@ -145,11 +146,8 @@ void PresentationReceiverWindowView::Init() {
   DCHECK(result);
 #else
   const auto accelerators = GetAcceleratorList();
-  const auto fullscreen_accelerator =
-      std::find_if(accelerators.begin(), accelerators.end(),
-                   [](const AcceleratorMapping& accelerator) {
-                     return accelerator.command_id == IDC_FULLSCREEN;
-                   });
+  const auto fullscreen_accelerator = base::ranges::find(
+      accelerators, IDC_FULLSCREEN, &AcceleratorMapping::command_id);
   DCHECK(fullscreen_accelerator != accelerators.end());
   fullscreen_accelerator_ = ui::Accelerator(fullscreen_accelerator->keycode,
                                             fullscreen_accelerator->modifiers);
