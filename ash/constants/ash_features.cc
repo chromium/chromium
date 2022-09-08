@@ -1088,6 +1088,10 @@ const base::Feature kMacAddressRandomization{"MacAddressRandomization",
 const base::Feature kManagedDeviceUIRedesign{"ManagedDeviceUIRedesign",
                                              base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Enables the custom color picker and recent colors UI in the media app.
+const base::Feature kMediaAppCustomColors{"MediaAppCustomColors",
+                                          base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Within the ChromeOS media app, reveals the button to edit the current image
 // in Photos.
 const base::Feature kMediaAppPhotosIntegrationImage{

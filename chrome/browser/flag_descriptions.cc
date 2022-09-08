@@ -5672,6 +5672,10 @@ const char kLockScreenNotificationName[] = "Lock screen notification";
 const char kLockScreenNotificationDescription[] =
     "Enable notifications on the lock screen.";
 
+const char kMediaAppCustomColorsName[] = "Media App Custom Colors";
+const char kMediaAppCustomColorsDescription[] =
+    "Within Gallery, enable the custom color chooser and recent colors.";
+
 const char kMediaAppPhotosIntegrationImageName[] =
     "Media App Photos Integration (Image)";
 const char kMediaAppPhotosIntegrationImageDescription[] =

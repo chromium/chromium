@@ -4310,6 +4310,11 @@
     "expiry_milestone": 111
   },
   {
+    "name": "media-app-custom-colors",
+    "owners": [ "//ash/webui/media_app_ui/OWNERS" ],
+    "expiry_milestone": 120
+  },
+  {
     "name": "media-app-photos-integration-image",
     "owners": [ "//ash/webui/media_app_ui/OWNERS" ],
     "expiry_milestone": 107

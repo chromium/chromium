@@ -58389,6 +58389,7 @@ from previous Chrome versions.
   <int value="-775952696" label="FeedStamp:enabled"/>
   <int value="-775321548" label="UseNewDoodleApi:disabled"/>
   <int value="-773238824" label="AutoplayWhitelistSettings:disabled"/>
+  <int value="-772787642" label="MediaAppCustomColors:disabled"/>
   <int value="-772679248" label="MojoVideoEncodeAccelerator:enabled"/>
   <int value="-772608284" label="MyFilesVolume:enabled"/>
   <int value="-772040705" label="ChromeWhatsNewInMainMenuNewBadge:disabled"/>
@@ -58590,6 +58591,7 @@ from previous Chrome versions.
   <int value="-657808907" label="CopyLinkToText:disabled"/>
   <int value="-657656374" label="AppListBubble:disabled"/>
   <int value="-656743717" label="HelpAppDiscoverTab:enabled"/>
+  <int value="-655608107" label="MediaAppCustomColors:enabled"/>
   <int value="-654705905" label="ShortcutCustomizationApp:enabled"/>
   <int value="-654196854" label="PasswordsKeyboardAccessory:enabled"/>
   <int value="-653616608" label="MacSyscallSandbox:disabled"/>

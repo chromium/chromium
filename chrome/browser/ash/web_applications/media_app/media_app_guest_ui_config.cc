@@ -73,6 +73,10 @@ void ChromeMediaAppGuestUIDelegate::PopulateLoadTimeData(
   source->AddBoolean("photosIntegrationVideo",
                      base::FeatureList::IsEnabled(
                          chromeos::features::kMediaAppPhotosIntegrationVideo));
+  bool enable_color_picker_improvements =
+      base::FeatureList::IsEnabled(chromeos::features::kMediaAppCustomColors);
+  source->AddBoolean("recentColorPalette", enable_color_picker_improvements);
+  source->AddBoolean("customColorSelector", enable_color_picker_improvements);
   source->AddBoolean("flagsMenu", channel != version_info::Channel::BETA &&
                                       channel != version_info::Channel::STABLE);
   source->AddBoolean("isDevChannel", channel == version_info::Channel::DEV);
