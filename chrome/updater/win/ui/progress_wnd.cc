@@ -498,8 +498,8 @@ CompletionCodes ProgressWnd::GetBundleOverallCompletionCode(
 
   return info.apps_info.empty()
              ? kCompletionCodesActionPriority[0]
-             : std::max_element(
-                   info.apps_info.begin(), info.apps_info.end(),
+             : base::ranges::max_element(
+                   info.apps_info,
                    [](const auto& app_info1, const auto& app_info2) {
                      return GetPriority(app_info1.completion_code) <
                             GetPriority(app_info2.completion_code);

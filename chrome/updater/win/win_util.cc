@@ -30,6 +30,7 @@
 #include "base/path_service.h"
 #include "base/process/process.h"
 #include "base/process/process_iterator.h"
+#include "base/ranges/algorithm.h"
 #include "base/scoped_native_library.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
@@ -620,9 +621,8 @@ std::string GetUACState() {
 
 std::wstring GetServiceName(bool is_internal_service) {
   std::wstring service_name = GetServiceDisplayName(is_internal_service);
-  service_name.erase(
-      std::remove_if(service_name.begin(), service_name.end(), isspace),
-      service_name.end());
+  service_name.erase(base::ranges::remove_if(service_name, isspace),
+                     service_name.end());
   return service_name;
 }
 

@@ -8,7 +8,6 @@
 
 #include <regstr.h>
 
-#include <algorithm>
 #include <iostream>
 #include <memory>
 #include <string>
@@ -1088,11 +1087,11 @@ void ExpectLegacyAppCommandWebSucceeds(UpdaterScope scope,
 
   std::vector<base::win::ScopedVariant> variant_params;
   variant_params.reserve(kMaxParameters);
-  std::transform(parameters.begin(), parameters.end(),
-                 std::back_inserter(variant_params), [](const auto& param) {
-                   return base::win::ScopedVariant(
-                       base::UTF8ToWide(param.GetString()).c_str());
-                 });
+  base::ranges::transform(parameters, std::back_inserter(variant_params),
+                          [](const auto& param) {
+                            return base::win::ScopedVariant(
+                                base::UTF8ToWide(param.GetString()).c_str());
+                          });
   for (size_t i = parameters.size(); i < kMaxParameters; ++i)
     variant_params.emplace_back(base::win::ScopedVariant::kEmptyVariant);
 

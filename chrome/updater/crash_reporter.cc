@@ -4,7 +4,6 @@
 
 #include "chrome/updater/crash_reporter.h"
 
-#include <algorithm>
 #include <iterator>
 #include <map>
 #include <memory>
@@ -16,6 +15,7 @@
 #include "base/logging.h"
 #include "base/no_destructor.h"
 #include "base/path_service.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -51,9 +51,10 @@ std::vector<std::string> MakeCrashHandlerArgs(UpdaterScope updater_scope) {
   // which must be skipped.
 #if BUILDFLAG(IS_WIN)
   std::vector<std::string> args;
-  std::transform(++command_line.argv().begin(), command_line.argv().end(),
-                 std::back_inserter(args),
-                 [](const auto& arg) { return base::WideToUTF8(arg); });
+  base::ranges::transform(
+      ++command_line.argv().begin(), command_line.argv().end(),
+      std::back_inserter(args),
+      [](const auto& arg) { return base::WideToUTF8(arg); });
 
   return args;
 #else

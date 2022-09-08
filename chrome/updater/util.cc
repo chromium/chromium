@@ -284,8 +284,7 @@ bool PathOwnedByUser(const base::FilePath& path) {
 
 std::wstring GetTaskNamePrefix(UpdaterScope scope) {
   std::wstring task_name = GetTaskDisplayName(scope);
-  task_name.erase(std::remove_if(task_name.begin(), task_name.end(), isspace),
-                  task_name.end());
+  task_name.erase(base::ranges::remove_if(task_name, isspace), task_name.end());
   return task_name;
 }
 
