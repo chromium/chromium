@@ -43,16 +43,11 @@ double BitsToOpenEndedUnitInterval(uint64_t bits) {
   // We try to get maximum precision by masking out as many bits as will fit
   // in the target type's mantissa, and raising it to an appropriate power to
   // produce output in the range [0, 1).  For IEEE 754 doubles, the mantissa
-  // is expected to accommodate 53 bits.
-
+  // is expected to accommodate 53 bits (including the implied bit).
   static_assert(std::numeric_limits<double>::radix == 2,
                 "otherwise use scalbn");
-  static const int kBits = std::numeric_limits<double>::digits;
-  uint64_t random_bits = bits & ((UINT64_C(1) << kBits) - 1);
-  double result = ldexp(static_cast<double>(random_bits), -1 * kBits);
-  DCHECK_GE(result, 0.0);
-  DCHECK_LT(result, 1.0);
-  return result;
+  constexpr int kBits = std::numeric_limits<double>::digits;
+  return ldexp(bits & ((UINT64_C(1) << kBits) - 1u), -kBits);
 }
 
 uint64_t RandGenerator(uint64_t range) {
