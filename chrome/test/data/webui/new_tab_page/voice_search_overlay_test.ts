@@ -343,25 +343,20 @@ suite('NewTabPageVoiceSearchOverlayTest', () => {
     assertTrue(mockSpeechRecognition.abortCalled);
   });
 
-  ([
-    ['#retryLink', Action.TRY_AGAIN_LINK],
-    ['#micButton', Action.TRY_AGAIN_MIC_BUTTON],
-  ] as Array<[string, Action]>)
-      .forEach(([id, action]) => {
-        test(`clicking '${id}' starts voice search if in retry state`, () => {
-          // Arrange.
-          mockSpeechRecognition.onnomatch!();
-          mockSpeechRecognition.startCalled = false;
+  test(`clicking '#retryLink' starts voice search if in retry state`, () => {
+    // Arrange.
+    mockSpeechRecognition.onnomatch!();
+    mockSpeechRecognition.startCalled = false;
 
-          // Act.
-          $$<HTMLElement>(voiceSearchOverlay, id)!.click();
+    // Act.
+    $$<HTMLElement>(voiceSearchOverlay, '#retryLink')!.click();
 
-          // Assert.
-          assertTrue(mockSpeechRecognition.startCalled);
-          assertEquals(1, metrics.count('NewTabPage.VoiceActions'));
-          assertEquals(1, metrics.count('NewTabPage.VoiceActions', action));
-        });
-      });
+    // Assert.
+    assertTrue(mockSpeechRecognition.startCalled);
+    assertEquals(1, metrics.count('NewTabPage.VoiceActions'));
+    assertEquals(
+        1, metrics.count('NewTabPage.VoiceActions', Action.TRY_AGAIN_LINK));
+  });
 
   [' ', 'Enter'].forEach(key => {
     test(`'${key}' submits query if result`, () => {

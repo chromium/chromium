@@ -144,14 +144,18 @@
     width: var(--mic-button-size);
   }
 
-  #micButton {
+  #micIconContainer {
+    align-items: center;
+    border: 1px solid var(--color-new-tab-page-mic-border-color);
     border-radius: 50%;
+    display: flex;
     height: var(--mic-button-size);
+    justify-content: center;
     transition: background-color 200ms ease-in-out;
     width: var(--mic-button-size);
   }
 
-  .receiving #micButton {
+  .receiving #micIconContainer {
     background-color: var(--receiving-audio-color);
     border-color: var(--receiving-audio-color);
   }
@@ -160,7 +164,7 @@
     -webkit-mask-image: url(icons/mic.svg);
     -webkit-mask-repeat: no-repeat;
     -webkit-mask-size: 100%;
-    background-color: var(--color-new-tab-page-border);
+    background-color: var(--color-new-tab-page-mic-icon-color);
     height: 80px;
     transition: background-color 200ms ease-in-out;
     width: 80px;
@@ -226,9 +230,9 @@
         <div id="micVolumeCutout">
         </div>
       </div>
-      <cr-button id="micButton" on-click="onMicClick_">
+      <div id="micIconContainer">
         <div id="micIcon"></div>
-      </cr-button>
+      </div>
     </div>
   </div>
   <cr-icon-button id="closeButton" class="icon-clear" title="$i18n{close}">

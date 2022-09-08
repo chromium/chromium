@@ -4,7 +4,6 @@
 
 import 'chrome://resources/polymer/v3_0/iron-pages/iron-pages.js';
 import 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
-import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -92,7 +91,7 @@ export enum Action {
   QUERY_SUBMITTED = 3,
   SUPPORT_LINK_CLICKED = 4,
   TRY_AGAIN_LINK = 5,
-  TRY_AGAIN_MIC_BUTTON = 6,
+  TRY_AGAIN_MIC_BUTTON = 6,  // Deprecated.
 }
 
 /**
@@ -309,17 +308,6 @@ export class VoiceSearchOverlayElement extends PolymerElement {
     e.stopPropagation();
     this.start();
     recordVoiceAction(Action.TRY_AGAIN_LINK);
-  }
-
-  private onMicClick_(e: Event) {
-    if (this.state_ !== State.ERROR_RECEIVED ||
-        this.error_ !== Error.NO_MATCH) {
-      return;
-    }
-    // Otherwise, we close the overlay.
-    e.stopPropagation();
-    this.start();
-    recordVoiceAction(Action.TRY_AGAIN_MIC_BUTTON);
   }
 
   private resetIdleTimer_() {

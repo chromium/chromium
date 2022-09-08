@@ -70982,7 +70982,11 @@ Called by update_net_trust_anchors.py.-->
   <int value="3" label="Submitted voice query"/>
   <int value="4" label="Clicked on support link in error message"/>
   <int value="5" label="Retried by clicking Try Again link"/>
-  <int value="6" label="Retried by clicking microphone button"/>
+  <int value="6" label="Retried by clicking microphone button">
+    <obsolete>
+      Deprecated as of 09/2022.
+    </obsolete>
+  </int>
 </enum>
 
 <enum name="NewTabPageVoiceError">

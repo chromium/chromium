@@ -150,6 +150,8 @@
   E_CPONLY(kColorNewTabPageLogo) \
   E_CPONLY(kColorNewTabPageLogoUnthemedDark) \
   E_CPONLY(kColorNewTabPageLogoUnthemedLight) \
+  E_CPONLY(kColorNewTabPageMicBorderColor) \
+  E_CPONLY(kColorNewTabPageMicIconColor) \
   E_CPONLY(kColorNewTabPageMostVisitedTileBackground) \
   E_CPONLY(kColorNewTabPageMostVisitedTileBackgroundUnthemed) \
   E_CPONLY(kColorNewTabPageModuleIconContainerBackground) \
