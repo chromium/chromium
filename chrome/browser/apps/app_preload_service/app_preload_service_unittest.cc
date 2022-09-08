@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/apps/app_preload_service/app_preload_service.h"
+#include <algorithm>
+#include <memory>
 
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/apps/app_preload_service/app_preload_service_factory.h"
@@ -13,6 +15,13 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using testing::ElementsAre;
+
+namespace {
+
+static constexpr char kFirstLoginFlowCompletedKey[] =
+    "first_login_flow_completed";
+
+}  // namespace
 
 namespace apps {
 
@@ -56,6 +65,23 @@ TEST_F(AppPreloadServiceTest, ServiceAccessPerProfile) {
 
   // We expect a different service in the Guest Session profile.
   EXPECT_NE(guest_service, service);
+}
+
+TEST_F(AppPreloadServiceTest, FirstLoginPrefSet) {
+  TestingProfile::Builder profile_builder;
+  auto profile = profile_builder.Build();
+  auto* service = AppPreloadService::Get(profile.get());
+
+  auto flow_completed =
+      service->GetStateManager().FindBool(kFirstLoginFlowCompletedKey);
+
+  // We expect that the key has been set after the profile has been created.
+  // This is because the service is run on profile creation and it checks
+  // that the first login flow has been completed.
+  // Since we're creating a new profile with no saved state, we don't need
+  // to check for the the absence of the key.
+  EXPECT_NE(flow_completed, absl::nullopt);
+  EXPECT_TRUE(flow_completed.value());
 }
 
 }  // namespace apps

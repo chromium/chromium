@@ -7,7 +7,15 @@
 
 #include "components/keyed_service/core/keyed_service.h"
 
+#include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
+#include "base/values.h"
+
 class Profile;
+
+namespace user_prefs {
+class PrefRegistrySyncable;
+}  // namespace user_prefs
 
 namespace apps {
 
@@ -17,6 +25,25 @@ class AppPreloadService : public KeyedService {
   AppPreloadService(const AppPreloadService&) = delete;
   AppPreloadService& operator=(const AppPreloadService&) = delete;
   ~AppPreloadService() override;
+
+  static AppPreloadService* Get(Profile* profile);
+
+  // Registers prefs used for state management of the App Preload Service.
+  static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
+
+  // This function begins the process to get a list of apps from the back end
+  // service, processes the list and installs the app list. This call should
+  // only be used the first time a profile is created on the device as this call
+  // installs a set of default and OEM apps.
+  void StartAppInstallationForFirstLogin();
+
+ private:
+  friend class AppPreloadServiceTest;
+  FRIEND_TEST_ALL_PREFIXES(AppPreloadServiceTest, FirstLoginPrefSet);
+
+  const base::Value::Dict& GetStateManager() const;
+
+  raw_ptr<Profile> profile_;
 };
 
 }  // namespace apps

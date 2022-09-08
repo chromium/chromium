@@ -5,7 +5,6 @@
 #include "chrome/browser/apps/app_preload_service/app_preload_service_factory.h"
 
 #include "chrome/browser/apps/app_preload_service/app_preload_service.h"
-#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_features.h"
 
@@ -47,6 +46,10 @@ KeyedService* AppPreloadServiceFactory::BuildServiceInstanceFor(
     return nullptr;
   }
   return new AppPreloadService(profile);
+}
+
+bool AppPreloadServiceFactory::ServiceIsCreatedWithBrowserContext() const {
+  return true;
 }
 
 }  // namespace apps
