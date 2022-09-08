@@ -5,6 +5,9 @@
 #ifndef MEDIA_FORMATS_HLS_MULTIVARIANT_PLAYLIST_TEST_BUILDER_H_
 #define MEDIA_FORMATS_HLS_MULTIVARIANT_PLAYLIST_TEST_BUILDER_H_
 
+#include <string>
+#include <vector>
+
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/location.h"
@@ -107,7 +110,7 @@ inline void HasScore(absl::optional<types::DecimalFloatingPoint> score,
 
 // Checks the value of `GetCodecs` on the latest variant against the given
 // value.
-inline void HasCodecs(absl::optional<base::StringPiece> codecs,
+inline void HasCodecs(absl::optional<std::vector<std::string>> codecs,
                       const base::Location& from,
                       const VariantStream& variant) {
   EXPECT_EQ(variant.GetCodecs(), codecs) << from.ToString();

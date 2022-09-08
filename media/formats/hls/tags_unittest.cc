@@ -4,9 +4,11 @@
 
 #include "media/formats/hls/tags.h"
 
+#include <array>
 #include <utility>
 
 #include "base/location.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "media/formats/hls/items.h"
@@ -1081,7 +1083,9 @@ TEST(HlsTagsTest, ParseXStreamInfTag) {
   EXPECT_EQ(result.tag.bandwidth, 1010u);
   EXPECT_EQ(result.tag.average_bandwidth, 1000u);
   EXPECT_DOUBLE_EQ(result.tag.score.value(), 12.2);
-  EXPECT_EQ(result.tag.codecs, "foo,bar");
+  ASSERT_TRUE(result.tag.codecs.has_value());
+  EXPECT_TRUE(
+      base::ranges::equal(result.tag.codecs.value(), std::array{"foo", "bar"}));
   EXPECT_EQ(result.tag.resolution, absl::nullopt);
   EXPECT_EQ(result.tag.frame_rate, absl::nullopt);
 
@@ -1157,7 +1161,9 @@ TEST(HlsTagsTest, ParseXStreamInfTag) {
   EXPECT_EQ(result.tag.bandwidth, 1010u);
   EXPECT_EQ(result.tag.average_bandwidth, absl::nullopt);
   EXPECT_EQ(result.tag.score, absl::nullopt);
-  EXPECT_EQ(result.tag.codecs, "bar,baz");
+  ASSERT_TRUE(result.tag.codecs.has_value());
+  EXPECT_TRUE(
+      base::ranges::equal(result.tag.codecs.value(), std::array{"bar", "baz"}));
   EXPECT_EQ(result.tag.resolution, absl::nullopt);
 
   // "RESOLUTION" must be a valid decimal-resolution

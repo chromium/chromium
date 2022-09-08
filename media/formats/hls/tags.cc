@@ -7,8 +7,10 @@
 #include <cstddef>
 #include <type_traits>
 #include <utility>
+
 #include "base/notreached.h"
 #include "base/time/time.h"
+#include "media/base/mime_util.h"
 #include "media/formats/hls/items.h"
 #include "media/formats/hls/parse_status.h"
 #include "media/formats/hls/variable_dictionary.h"
@@ -788,14 +790,18 @@ ParseStatus::Or<XStreamInfTag> XStreamInfTag::Parse(
 
   // Extract the 'CODECS' attribute
   if (map.HasValue(XStreamInfTagAttribute::kCodecs)) {
-    auto codecs =
+    auto codecs_string =
         types::ParseQuotedString(map.GetValue(XStreamInfTagAttribute::kCodecs),
                                  variable_dict, sub_buffer);
-    if (codecs.has_error()) {
+    if (codecs_string.has_error()) {
       return ParseStatus(ParseStatusCode::kMalformedTag)
-          .AddCause(std::move(codecs).error());
+          .AddCause(std::move(codecs_string).error());
     }
-    out.codecs = std::string{std::move(codecs).value().Str()};
+
+    // Split the list of codecs
+    std::vector<std::string> codecs;
+    SplitCodecs(std::move(codecs_string).value().Str(), &codecs);
+    out.codecs = std::move(codecs);
   }
 
   // Extract the 'RESOLUTION' attribute
