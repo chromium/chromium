@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/containers/adapters.h"
 #include "base/feature_list.h"
 #include "base/i18n/rtl.h"
@@ -67,7 +68,6 @@
 #include "chrome/browser/ui/views/page_action/page_action_icon_params.h"
 #include "chrome/browser/ui/views/page_info/page_info_bubble_view.h"
 #include "chrome/browser/ui/views/passwords/manage_passwords_icon_views.h"
-#include "chrome/browser/ui/views/permissions/permission_chip.h"
 #include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_icon_view.h"
 #include "chrome/browser/ui/views/sharing_hub/sharing_hub_icon_view.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
@@ -603,9 +603,11 @@ void LocationBarView::Layout() {
   // label/chip.
   const double kLeadingDecorationMaxFraction = 0.5;
 
-  if (chip_ && chip_->GetVisible() && !ShouldShowKeywordBubble()) {
+  if (chip_controller_ && chip_controller_->IsPermissionPromptChipVisible() &&
+      !ShouldShowKeywordBubble()) {
     leading_decorations.AddDecoration(vertical_padding, location_height, false,
-                                      0, edge_padding, chip_);
+                                      0, edge_padding,
+                                      chip_controller_->chip());
   }
 
   if (ShouldShowKeywordBubble()) {
@@ -813,12 +815,8 @@ bool LocationBarView::ActivateFirstInactiveBubbleForAccessibility() {
       ->ActivateFirstInactiveBubbleForAccessibility();
 }
 
-bool LocationBarView::IsChipActive() {
-  return chip_ && chip_->IsActive();
-}
-
 void LocationBarView::CreateChip() {
-  DCHECK(!chip_);
+  DCHECK(!chip_controller_);
 
   if (!browser_)
     return;
@@ -826,13 +824,10 @@ void LocationBarView::CreateChip() {
   if (web_app::AppBrowserController::IsWebApp(browser_))
     return;
 
-  chip_ = AddChildViewAt(std::make_unique<PermissionChip>(), 0);
-}
-
-void LocationBarView::FinalizeChip() {
-  DCHECK(chip_);
-  chip_->Finalize();
-  InvalidateLayout();
+  chip_controller_ = std::make_unique<ChipController>(
+      browser_, AddChildViewAt(std::make_unique<OmniboxChipButton>(
+                                   OmniboxChipButton::PressedCallback()),
+                               0));
 }
 
 void LocationBarView::UpdateWithoutTabRestore() {
@@ -1420,14 +1415,14 @@ ui::ImageModel LocationBarView::GetLocationIcon(
 }
 
 void LocationBarView::UpdateChipVisibility() {
-  if (!IsChipActive()) {
+  if (!chip_controller_ || !chip_controller_->IsPermissionPromptChipVisible()) {
     return;
   }
 
   if (IsEditingOrEmpty()) {
     // If a user starts typing, a permission request should be ignored and the
     // chip finalized.
-    chip_->Finalize();
+    chip_controller_->FinalizeChip();
   }
 }
 

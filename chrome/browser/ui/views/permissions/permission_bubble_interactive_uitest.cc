@@ -13,7 +13,6 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/permissions/permission_chip.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
@@ -113,8 +112,9 @@ class PermissionBubbleInteractiveUITest : public InProcessBrowserTest {
     BrowserView* browser_view =
         BrowserView::GetBrowserViewForBrowser(browser());
     LocationBarView* lbv = browser_view->toolbar()->location_bar();
-    if (lbv->IsChipActive() && !lbv->chip()->IsBubbleShowing()) {
-      views::test::ButtonTestApi(lbv->chip()->button())
+    if (lbv->chip_controller()->IsPermissionPromptChipVisible() &&
+        !lbv->chip_controller()->IsBubbleShowing()) {
+      views::test::ButtonTestApi(lbv->chip_controller()->chip())
           .NotifyClick(ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::Point(),
                                       gfx::Point(), ui::EventTimeForNow(),
                                       ui::EF_LEFT_MOUSE_BUTTON, 0));

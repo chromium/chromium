@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/permissions/permission_chip.h"
-
 #include "base/ranges/algorithm.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/permissions/quiet_notification_permission_ui_config.h"
@@ -17,6 +15,7 @@
 #include "chrome/browser/ui/views/content_setting_bubble_contents.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/location_bar/omnibox_chip_theme.h"
+#include "chrome/browser/ui/views/permissions/chip_controller.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -31,6 +30,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/test/browser_test.h"
 #include "net/dns/mock_host_resolver.h"
+#include "permission_prompt_chip.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/views/test/ax_event_counter.h"
 #include "ui/views/test/button_test_api.h"
@@ -96,36 +96,50 @@ class PermissionChipInteractiveTest : public InProcessBrowserTest {
     base::RunLoop().RunUntilIdle();
   }
 
-  PermissionChip* GetChip() {
+  OmniboxChipButton* GetChip() {
     BrowserView* browser_view =
         BrowserView::GetBrowserViewForBrowser(browser());
     LocationBarView* lbv = browser_view->toolbar()->location_bar();
 
-    return lbv->chip();
+    return lbv->chip_controller()->chip();
   }
 
-  void ClickOnChip(PermissionChip* chip) {
+  ChipController* GetChipController() {
+    BrowserView* browser_view =
+        BrowserView::GetBrowserViewForBrowser(browser());
+    LocationBarView* lbv = browser_view->toolbar()->location_bar();
+
+    return lbv->chip_controller();
+  }
+
+  PermissionPromptChip* GetPermissionPromptChip() {
+    return static_cast<PermissionPromptChip*>(
+        test_api_->manager()->view_for_testing());
+  }
+
+  void ClickOnChip(OmniboxChipButton* chip) {
     ASSERT_TRUE(chip != nullptr);
-    ASSERT_TRUE(chip->IsActive());
-    ASSERT_TRUE(!chip->IsBubbleShowing());
-    views::test::ButtonTestApi(chip->button())
-        .NotifyClick(ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::Point(),
-                                    gfx::Point(), ui::EventTimeForNow(),
-                                    ui::EF_LEFT_MOUSE_BUTTON, 0));
+    ASSERT_TRUE(chip->GetVisible());
+    ASSERT_FALSE(GetChipController()->GetPromptBubbleWidget());
+    views::test::ButtonTestApi(chip).NotifyClick(
+        ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
+                       ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON, 0));
     base::RunLoop().RunUntilIdle();
   }
 
   void ExpectQuietAbusiveChip() {
     // PermissionChip lifetime is bound to a permission prompt view.
     ASSERT_TRUE(test_api_->manager()->view_for_testing());
-    // The quiet chip will be shown even if the chip experiment is disabled.
-    PermissionChip* chip = GetChip();
-    ASSERT_TRUE(chip);
 
-    EXPECT_FALSE(chip->should_expand_for_testing());
-    EXPECT_FALSE(chip->get_chip_button_for_testing()->is_animating());
-    EXPECT_EQ(OmniboxChipTheme::kLowVisibility,
-              chip->get_chip_button_for_testing()->get_theme_for_testing());
+    // The quiet chip will be shown even if the chip experiment is disabled.
+    OmniboxChipButton* chip_ = GetChip();
+    ASSERT_TRUE(chip_);
+
+    EXPECT_FALSE(GetPermissionPromptChip()
+                     ->get_chip_controller_for_testing()
+                     ->should_expand_for_testing());
+    EXPECT_FALSE(chip_->is_animating());
+    EXPECT_EQ(OmniboxChipTheme::kLowVisibility, chip_->get_theme_for_testing());
   }
 
   void ExpectQuietChip() {
@@ -133,27 +147,30 @@ class PermissionChipInteractiveTest : public InProcessBrowserTest {
     ASSERT_TRUE(test_api_->manager()->view_for_testing());
 
     // The quiet chip will be shown even if the chip experiment is disabled.
-    PermissionChip* chip = GetChip();
-    ASSERT_TRUE(chip);
+    OmniboxChipButton* chip_ = GetChip();
+    ASSERT_TRUE(chip_);
 
-    EXPECT_TRUE(chip->should_expand_for_testing());
-    EXPECT_TRUE(chip->get_chip_button_for_testing()->is_animating());
-    EXPECT_EQ(OmniboxChipTheme::kLowVisibility,
-              chip->get_chip_button_for_testing()->get_theme_for_testing());
+    EXPECT_TRUE(GetPermissionPromptChip()
+                    ->get_chip_controller_for_testing()
+                    ->should_expand_for_testing());
+    EXPECT_TRUE(chip_->is_animating());
+    EXPECT_EQ(OmniboxChipTheme::kLowVisibility, chip_->get_theme_for_testing());
   }
 
   void ExpectNormalChip() {
     // PermissionChip lifetime is bound to a permission prompt view.
     ASSERT_TRUE(test_api_->manager()->view_for_testing());
-    PermissionChip* chip = GetChip();
-    ASSERT_TRUE(chip);
+    OmniboxChipButton* chip_ = GetChip();
+    ASSERT_TRUE(chip_);
 
-    EXPECT_TRUE(chip->should_expand_for_testing());
-    EXPECT_TRUE(chip->get_chip_button_for_testing()->is_animating());
+    EXPECT_TRUE(GetPermissionPromptChip()
+                    ->get_chip_controller_for_testing()
+                    ->should_expand_for_testing());
+    EXPECT_TRUE(chip_->is_animating());
     // TODO(crbug.com/1232460): Verify that OmniboxChipButton::is_animating is
     // true. Right now the value is flaky.
     EXPECT_EQ(OmniboxChipTheme::kNormalVisibility,
-              chip->get_chip_button_for_testing()->get_theme_for_testing());
+              chip_->get_theme_for_testing());
   }
 
   ContentSettingImageView& GetContentSettingImageView(
@@ -504,7 +521,8 @@ IN_PROC_BROWSER_TEST_F(QuietChipAutoPopupBubbleInteractiveTest,
 
     ClickOnChip(GetChip());
 
-    views::View* bubble_view = GetChip()->get_prompt_bubble_view_for_testing();
+    views::View* bubble_view =
+        GetChipController()->get_prompt_bubble_view_for_testing();
     ContentSettingBubbleContents* permission_prompt_bubble =
         static_cast<ContentSettingBubbleContents*>(bubble_view);
 
@@ -697,7 +715,8 @@ IN_PROC_BROWSER_TEST_F(QuietChipAutoPopupBubbleInteractiveTest,
 
     ClickOnChip(GetChip());
 
-    views::View* bubble_view = GetChip()->get_prompt_bubble_view_for_testing();
+    views::View* bubble_view =
+        GetChipController()->get_prompt_bubble_view_for_testing();
     ContentSettingBubbleContents* permission_prompt_bubble =
         static_cast<ContentSettingBubbleContents*>(bubble_view);
 
@@ -955,7 +974,8 @@ IN_PROC_BROWSER_TEST_F(QuietChipPermissionPromptBubbleViewInteractiveTest,
   ContentSettingImageView& quiet_ui_icon = GetContentSettingImageView(
       ContentSettingImageModel::ImageType::NOTIFICATIONS_QUIET_PROMPT);
   EXPECT_FALSE(quiet_ui_icon.GetVisible());
-  EXPECT_FALSE(GetChip()->IsActive());
+  EXPECT_FALSE(GetChip()->GetVisible() &&
+               GetChipController()->IsPermissionPromptChipVisible());
 
   RequestPermission(permissions::RequestType::kGeolocation);
 
@@ -984,7 +1004,8 @@ IN_PROC_BROWSER_TEST_F(QuietChipPermissionPromptBubbleViewInteractiveTest,
     ContentSettingImageView& quiet_ui_icon = GetContentSettingImageView(
         ContentSettingImageModel::ImageType::NOTIFICATIONS_QUIET_PROMPT);
     EXPECT_FALSE(quiet_ui_icon.GetVisible());
-    EXPECT_FALSE(GetChip()->IsActive());
+    EXPECT_FALSE(GetChip()->GetVisible() &&
+                 GetChipController()->IsPermissionPromptChipVisible());
 
     RequestPermission(permissions::RequestType::kGeolocation);
 
@@ -1014,7 +1035,8 @@ IN_PROC_BROWSER_TEST_F(QuietChipPermissionPromptBubbleViewInteractiveTest,
     ContentSettingImageView& quiet_ui_icon = GetContentSettingImageView(
         ContentSettingImageModel::ImageType::NOTIFICATIONS_QUIET_PROMPT);
     EXPECT_FALSE(quiet_ui_icon.GetVisible());
-    EXPECT_FALSE(GetChip()->IsActive());
+    EXPECT_FALSE(GetChip()->GetVisible() &&
+                 GetChipController()->IsPermissionPromptChipVisible());
 
     RequestPermission(permissions::RequestType::kGeolocation);
 

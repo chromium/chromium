@@ -5,13 +5,18 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_OMNIBOX_CHIP_BUTTON_H_
 #define CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_OMNIBOX_CHIP_BUTTON_H_
 
+#include "base/check_is_test.h"
+#include "chrome/browser/ui/content_settings/content_setting_bubble_model.h"
+#include "chrome/browser/ui/views/content_setting_bubble_contents.h"
 #include "chrome/browser/ui/views/location_bar/omnibox_chip_theme.h"
+#include "chrome/browser/ui/views/permissions/permission_prompt_bubble_view.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/gfx/animation/slide_animation.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/controls/button/md_text_button.h"
+#include "ui/views/view_tracker.h"
 
 // UI component for chip button located in the omnibox. A button with an icon
 // and text, with rounded corners.
@@ -22,6 +27,8 @@ class OmniboxChipButton : public views::MdTextButton {
   OmniboxChipButton(const OmniboxChipButton& button) = delete;
   OmniboxChipButton& operator=(const OmniboxChipButton& button) = delete;
   ~OmniboxChipButton() override;
+
+  void VisibilityChanged(views::View* starting_from, bool is_visible) override;
 
   void AnimateCollapse();
   void AnimateExpand();
@@ -48,7 +55,9 @@ class OmniboxChipButton : public views::MdTextButton {
 
   void SetChipIcon(const gfx::VectorIcon& icon);
 
-  void Finalize();
+  void SetVisibilityChangedCallback(base::RepeatingCallback<void()> callback) {
+    visibility_changed_callback_ = callback;
+  }
 
   OmniboxChipTheme get_theme_for_testing() { return theme_; }
 
@@ -78,6 +87,8 @@ class OmniboxChipButton : public views::MdTextButton {
   raw_ptr<const gfx::VectorIcon> icon_ = &gfx::kNoneIcon;
 
   base::RepeatingCallback<void()> expand_animation_ended_callback_;
+
+  base::RepeatingCallback<void()> visibility_changed_callback_;
 
   bool force_expanded_for_testing_ = false;
 };

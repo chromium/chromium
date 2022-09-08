@@ -25,6 +25,7 @@
 #include "chrome/browser/ui/views/location_bar/content_setting_image_view.h"
 #include "chrome/browser/ui/views/location_bar/location_icon_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
+#include "chrome/browser/ui/views/permissions/chip_controller.h"
 #include "components/accuracy_tips/accuracy_service.h"
 #include "components/permissions/permission_prompt.h"
 #include "components/security_state/core/security_state.h"
@@ -49,7 +50,6 @@ class OmniboxPopupView;
 class OmniboxViewViews;
 class PageActionIconController;
 class PageActionIconContainerView;
-class PermissionChip;
 class Profile;
 class SelectedKeywordView;
 
@@ -172,16 +172,11 @@ class LocationBarView : public LocationBar,
   // accessibility.
   bool ActivateFirstInactiveBubbleForAccessibility();
 
-  PermissionChip* chip() { return chip_; }
-
-  // Returns true if the permission chip exists, fully initialized and visible.
-  bool IsChipActive();
-
   // Adds chip into the LocationBarView in the first position.
   void CreateChip();
 
-  // Removes previously displayed PermissionChip.
-  void FinalizeChip();
+  // Controls the chip in the LocationBarView
+  ChipController* chip_controller() { return chip_controller_.get(); }
 
   IntentChipButton* intent_chip() { return intent_chip_; }
 
@@ -410,8 +405,9 @@ class LocationBarView : public LocationBar,
   // Our delegate.
   raw_ptr<Delegate> delegate_;
 
-  // A view that contains a chip button that shows a permission request.
-  raw_ptr<PermissionChip> chip_ = nullptr;
+  // A controller for a view that contains a chip button which is used for
+  // permission information and requests.
+  std::unique_ptr<ChipController> chip_controller_ = nullptr;
 
   // An icon to the left of the edit field: the HTTPS lock, blank page icon,
   // search icon, EV HTTPS bubble, etc.

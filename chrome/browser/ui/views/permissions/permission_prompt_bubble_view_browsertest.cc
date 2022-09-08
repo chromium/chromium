@@ -24,7 +24,9 @@
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/permissions/permission_chip.h"
+#include "chrome/browser/ui/views/permissions/chip_controller.h"
+#include "chrome/browser/ui/views/permissions/permission_prompt_bubble_view.h"
+#include "chrome/browser/ui/views/permissions/permission_prompt_chip.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
@@ -126,9 +128,9 @@ class PermissionPromptBubbleViewBrowserTest
     }
     base::RunLoop().RunUntilIdle();
 
-    PermissionChip* chip = GetChip();
-    if (chip->IsActive()) {
-      views::test::ButtonTestApi(chip->button())
+    ChipController* chip_controller = GetChipController();
+    if (chip_controller->IsPermissionPromptChipVisible()) {
+      views::test::ButtonTestApi(chip_controller->chip())
           .NotifyClick(ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::Point(),
                                       gfx::Point(), ui::EventTimeForNow(),
                                       ui::EF_LEFT_MOUSE_BUTTON, 0));
@@ -145,10 +147,10 @@ class PermissionPromptBubbleViewBrowserTest
         ->GetPrimaryMainFrame();
   }
 
-  PermissionChip* GetChip() {
+  ChipController* GetChipController() {
     BrowserView* browser_view =
         BrowserView::GetBrowserViewForBrowser(browser());
-    return browser_view->toolbar()->location_bar()->chip();
+    return browser_view->toolbar()->location_bar()->chip_controller();
   }
 
   ContentSettingImageView& GetContentSettingImageView(
@@ -249,10 +251,12 @@ IN_PROC_BROWSER_TEST_P(PermissionPromptBubbleViewBrowserTest,
   EXPECT_EQ(0, counter.GetCount(ax::mojom::Event::kAlert));
   ShowUi("geolocation");
 
-  PermissionChip* chip = GetChip();
+  ChipController* chip_controller = GetChipController();
+
   // If chip UI is used, two notifications will be announced: one that
   // permission was requested and second when bubble is opened.
-  if (chip->IsActive() && !chip->should_start_open_for_testing()) {
+  if (chip_controller->IsPermissionPromptChipVisible() &&
+      !chip_controller->should_start_open_for_testing()) {
     EXPECT_EQ(2, counter.GetCount(ax::mojom::Event::kAlert));
   } else {
     EXPECT_EQ(1, counter.GetCount(ax::mojom::Event::kAlert));

@@ -52,6 +52,13 @@ OmniboxChipButton::OmniboxChipButton(PressedCallback callback)
 
 OmniboxChipButton::~OmniboxChipButton() = default;
 
+void OmniboxChipButton::VisibilityChanged(views::View* starting_from,
+                                          bool is_visible) {
+  if (visibility_changed_callback_) {
+    visibility_changed_callback_.Run();
+  }
+}
+
 void OmniboxChipButton::AnimateCollapse() {
   constexpr auto kAnimationDuration = base::Milliseconds(250);
   animation_->SetSlideDuration(kAnimationDuration);
@@ -175,14 +182,6 @@ void OmniboxChipButton::SetChipIcon(const gfx::VectorIcon& icon) {
   icon_ = &icon;
 
   UpdateIconAndColors();
-}
-
-void OmniboxChipButton::Finalize() {
-  icon_ = (gfx::VectorIcon*)&gfx::kNoneIcon;
-
-  // It is possible that a chip gets finalized while the animation was in
-  // progress.
-  animation_->Stop();
 }
 
 BEGIN_METADATA(OmniboxChipButton, views::MdTextButton)

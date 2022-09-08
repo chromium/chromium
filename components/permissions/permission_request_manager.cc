@@ -142,6 +142,9 @@ PermissionRequestManager::~PermissionRequestManager() {
   DCHECK(!IsRequestInProgress());
   DCHECK(duplicate_requests_.empty());
   DCHECK(pending_permission_requests_.IsEmpty());
+
+  for (Observer& observer : observer_list_)
+    observer.OnPermissionRequestManagerDestructed();
 }
 
 void PermissionRequestManager::AddRequest(

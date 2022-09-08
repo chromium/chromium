@@ -46,7 +46,8 @@ void PermissionPromptBubble::OnWidgetDestroying(views::Widget* widget) {
 void PermissionPromptBubble::UpdateAnchor() {
   bool was_browser_changed = UpdateBrowser();
   LocationBarView* lbv = GetLocationBarView();
-  DCHECK(!lbv->IsChipActive());
+  DCHECK(!lbv->chip_controller() ||
+         !lbv->chip_controller()->IsPermissionPromptChipVisible());
   // TODO(crbug.com/1175231): Investigate why prompt_bubble_ can be null
   // here. Early return is preventing the crash from happening but we still
   // don't know the reason why it is null here and cannot reproduce it.

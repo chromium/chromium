@@ -19,7 +19,6 @@ enum SecurityLevel;
 }
 
 // Use a LocationIconView to display an icon on the leading side of the edit
-// field. It shows the user's current action (while the user is editing), or the
 // page security status (after navigation has completed), or extension name (if
 // the URL is a chrome-extension:// URL).
 class LocationIconView : public IconLabelBubbleView {

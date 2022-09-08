@@ -80,6 +80,8 @@ class PermissionRequestManager
     // visible).
     virtual void OnRequestsFinalized() {}
 
+    virtual void OnPermissionRequestManagerDestructed() {}
+
    protected:
     virtual ~Observer() = default;
   };

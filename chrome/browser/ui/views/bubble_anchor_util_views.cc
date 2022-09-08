@@ -10,7 +10,6 @@
 #include "chrome/browser/ui/views/frame/picture_in_picture_browser_frame_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/location_bar/location_icon_view.h"
-#include "chrome/browser/ui/views/permissions/permission_chip.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "components/permissions/features.h"
 
@@ -59,9 +58,12 @@ AnchorConfiguration GetPageInfoAnchorConfiguration(Browser* browser,
 AnchorConfiguration GetPermissionPromptBubbleAnchorConfiguration(
     Browser* browser) {
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
-  if (browser_view->GetLocationBarView()->IsChipActive()) {
+  if (browser_view->GetLocationBarView()->chip_controller() &&
+      browser_view->GetLocationBarView()
+          ->chip_controller()
+          ->IsPermissionPromptChipVisible()) {
     return {browser_view->GetLocationBarView(),
-            browser_view->GetLocationBarView()->chip()->button(),
+            browser_view->GetLocationBarView()->chip_controller()->chip(),
             views::BubbleBorder::TOP_LEFT};
   }
   return GetPageInfoAnchorConfiguration(browser);
