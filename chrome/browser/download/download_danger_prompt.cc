@@ -29,29 +29,17 @@ const char kDownloadDangerPromptPrefix[] = "Download.DownloadDangerPrompt";
 void DownloadDangerPrompt::SendSafeBrowsingDownloadReport(
     ClientSafeBrowsingReportRequest::ReportType report_type,
     bool did_proceed,
-    const download::DownloadItem& download) {
-  safe_browsing::SafeBrowsingService* sb_service =
-      g_browser_process->safe_browsing_service();
-  Profile* profile = Profile::FromBrowserContext(
-      content::DownloadItemUtils::GetBrowserContext(&download));
-  auto report = std::make_unique<ClientSafeBrowsingReportRequest>();
-  report->set_type(report_type);
+    download::DownloadItem* download) {
   ClientDownloadResponse::Verdict download_verdict =
       safe_browsing::DownloadDangerTypeToDownloadResponseVerdict(
-          download.GetDangerType());
+          download->GetDangerType());
   if (download_verdict == ClientDownloadResponse::SAFE) {
     // Don't send report if the verdict is SAFE.
     return;
   }
-  report->set_download_verdict(download_verdict);
-  report->set_url(download.GetURL().spec());
-  report->set_did_proceed(did_proceed);
-  std::string token =
-      safe_browsing::DownloadProtectionService::GetDownloadPingToken(&download);
-  if (!token.empty())
-    report->set_token(token);
-
-  sb_service->SendDownloadReport(profile, std::move(report));
+  g_browser_process->safe_browsing_service()->SendDownloadReport(
+      download, report_type, did_proceed,
+      /*show_download_in_folder=*/absl::nullopt);
 }
 
 void DownloadDangerPrompt::RecordDownloadDangerPrompt(

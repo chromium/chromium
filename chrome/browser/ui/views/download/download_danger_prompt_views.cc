@@ -277,7 +277,7 @@ void DownloadDangerPromptViews::RunDone(Action action) {
             show_context_
                 ? ClientSafeBrowsingReportRequest::DANGEROUS_DOWNLOAD_BY_API
                 : ClientSafeBrowsingReportRequest::DANGEROUS_DOWNLOAD_RECOVERY;
-        SendSafeBrowsingDownloadReport(report_type, accept, *download_);
+        SendSafeBrowsingDownloadReport(report_type, accept, download_);
       }
     }
     download_->RemoveObserver(this);

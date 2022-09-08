@@ -818,26 +818,13 @@ void DownloadItemModel::ExecuteCommand(DownloadCommands* download_commands,
                download::IsDownloadBubbleEnabled(profile()));
         safe_browsing::SafeBrowsingService* sb_service =
             g_browser_process->safe_browsing_service();
-        // Compiles the dangerous download warning report.
-        auto report =
-            std::make_unique<safe_browsing::ClientSafeBrowsingReportRequest>();
-        report->set_type(safe_browsing::ClientSafeBrowsingReportRequest::
-                             DANGEROUS_DOWNLOAD_WARNING);
-        report->set_download_verdict(
-            safe_browsing::DownloadDangerTypeToDownloadResponseVerdict(
-                GetDangerType()));
-        report->set_url(GetURL().spec());
-        report->set_did_proceed(true);
-        std::string token =
-            safe_browsing::DownloadProtectionService::GetDownloadPingToken(
-                download_);
         if (sb_service) {
-          if (!token.empty())
-            report->set_token(token);
-
-          ReportThreatDetailsResult result =
-              sb_service->SendDownloadReport(profile(), std::move(report));
-          DCHECK(result == ReportThreatDetailsResult::SUCCESS);
+          bool is_successful = sb_service->SendDownloadReport(
+              download_,
+              safe_browsing::ClientSafeBrowsingReportRequest::
+                  DANGEROUS_DOWNLOAD_WARNING,
+              /*did_proceed=*/true, /*show_download_in_folder=*/absl::nullopt);
+          DCHECK(is_successful);
         }
       }
 #endif

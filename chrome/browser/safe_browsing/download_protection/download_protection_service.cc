@@ -458,7 +458,7 @@ std::string DownloadProtectionService::GetDownloadPingToken(
 }
 
 void DownloadProtectionService::MaybeSendDangerousDownloadOpenedReport(
-    const download::DownloadItem* item,
+    download::DownloadItem* item,
     bool show_download_in_folder) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   std::string token = GetDownloadPingToken(item);
@@ -481,21 +481,12 @@ void DownloadProtectionService::MaybeSendDangerousDownloadOpenedReport(
   if (sb_service_ &&
       !token.empty() &&  // Only dangerous downloads have token stored.
       profile && (IsExtendedReportingEnabled(*profile->GetPrefs()))) {
-    auto report = std::make_unique<ClientSafeBrowsingReportRequest>();
-    report->set_url(item->GetURL().spec());
-    report->set_type(
-        ClientSafeBrowsingReportRequest::DANGEROUS_DOWNLOAD_OPENED);
-    report->set_token(token);
-    report->set_show_download_in_folder(show_download_in_folder);
     // If the download is opened, it indicates the user has bypassed the warning
-    // and decided to proceed.
-    report->set_did_proceed(true);
-    report->set_download_verdict(
-        DownloadDangerTypeToDownloadResponseVerdict(item->GetDangerType()));
-
-    ReportThreatDetailsResult result =
-        sb_service_->SendDownloadReport(profile, std::move(report));
-    DCHECK(result == ReportThreatDetailsResult::SUCCESS);
+    // and decided to proceed, so setting did_proceed to true.
+    bool is_successful = sb_service_->SendDownloadReport(
+        item, ClientSafeBrowsingReportRequest::DANGEROUS_DOWNLOAD_OPENED,
+        /*did_proceed=*/true, show_download_in_folder);
+    DCHECK(is_successful);
   }
 }
 

@@ -184,9 +184,8 @@ class DownloadProtectionService {
   // (1) it is a dangerous download.
   // (2) user is NOT in incognito mode.
   // (3) user is opted-in for extended reporting.
-  void MaybeSendDangerousDownloadOpenedReport(
-      const download::DownloadItem* item,
-      bool show_download_in_folder);
+  void MaybeSendDangerousDownloadOpenedReport(download::DownloadItem* item,
+                                              bool show_download_in_folder);
 
   // Called to trigger a bypass event report for |download|. This is used when
   // the async scan verdict is received for a file that was already opened by

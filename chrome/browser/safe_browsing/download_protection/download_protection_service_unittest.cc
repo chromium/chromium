@@ -201,12 +201,24 @@ class FakeSafeBrowsingService : public TestSafeBrowsingService {
     return it->second;
   }
 
-  PingManager::ReportThreatDetailsResult SendDownloadReport(
-      Profile* profile,
-      std::unique_ptr<ClientSafeBrowsingReportRequest> report) override {
+  bool SendDownloadReport(
+      download::DownloadItem* download,
+      ClientSafeBrowsingReportRequest::ReportType report_type,
+      bool did_proceed,
+      absl::optional<bool> show_download_in_folder) override {
+    auto report = std::make_unique<ClientSafeBrowsingReportRequest>();
+    report->set_type(report_type);
+    report->set_download_verdict(
+        DownloadDangerTypeToDownloadResponseVerdict(download->GetDangerType()));
+    report->set_url(download->GetURL().spec());
+    report->set_did_proceed(did_proceed);
+    EXPECT_TRUE(show_download_in_folder.has_value());
+    report->set_show_download_in_folder(show_download_in_folder.value());
+    report->set_token(
+        DownloadProtectionService::GetDownloadPingToken(download));
     report->SerializeToString(&latest_report_);
     download_report_count_++;
-    return PingManager::ReportThreatDetailsResult::SUCCESS;
+    return true;
   }
 
   network::TestURLLoaderFactory* GetTestURLLoaderFactory(Profile* profile) {

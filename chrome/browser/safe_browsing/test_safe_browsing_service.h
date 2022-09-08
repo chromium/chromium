@@ -86,9 +86,13 @@ class TestSafeBrowsingService : public SafeBrowsingService,
   // SafeBrowsingService overrides
   ~TestSafeBrowsingService() override;
   SafeBrowsingUIManager* CreateUIManager() override;
-  PingManager::ReportThreatDetailsResult SendDownloadReport(
-      Profile* profile,
-      std::unique_ptr<ClientSafeBrowsingReportRequest> report) override;
+#if BUILDFLAG(FULL_SAFE_BROWSING)
+  bool SendDownloadReport(
+      download::DownloadItem* download,
+      ClientSafeBrowsingReportRequest::ReportType report_type,
+      bool did_proceed,
+      absl::optional<bool> show_download_in_folder) override;
+#endif
 
   // ServicesDelegate::ServicesCreator:
   bool CanCreateDatabaseManager() override;
