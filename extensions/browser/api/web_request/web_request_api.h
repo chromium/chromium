@@ -316,9 +316,11 @@ class ExtensionWebRequestEventRouter {
     RequestFilter();
     ~RequestFilter();
 
-    // TODO(devlin): Make these a move constructor/operator.
-    RequestFilter(const RequestFilter& other);
-    RequestFilter& operator=(const RequestFilter& other);
+    RequestFilter(const RequestFilter&) = delete;
+    RequestFilter& operator=(const RequestFilter&) = delete;
+
+    RequestFilter(RequestFilter&& other);
+    RequestFilter& operator=(RequestFilter&& other);
 
     // Returns false if there was an error initializing. If it is a user error,
     // an error message is provided, otherwise the error is internal (and
@@ -496,7 +498,7 @@ class ExtensionWebRequestEventRouter {
                         events::HistogramValue histogram_value,
                         const std::string& event_name,
                         const std::string& sub_event_name,
-                        const RequestFilter& filter,
+                        RequestFilter filter,
                         int extra_info_spec,
                         int render_process_id,
                         int web_view_instance_id,

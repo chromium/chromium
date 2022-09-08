@@ -1068,20 +1068,10 @@ ExtensionWebRequestEventRouter::RequestFilter::RequestFilter()
 ExtensionWebRequestEventRouter::RequestFilter::~RequestFilter() = default;
 
 ExtensionWebRequestEventRouter::RequestFilter::RequestFilter(
-    const RequestFilter& other)
-    : urls(other.urls.Clone()),
-      types(other.types),
-      tab_id(other.tab_id),
-      window_id(other.window_id) {}
+    RequestFilter&& other) = default;
 ExtensionWebRequestEventRouter::RequestFilter&
 ExtensionWebRequestEventRouter::RequestFilter::operator=(
-    const RequestFilter& other) {
-  urls = other.urls.Clone();
-  types = other.types;
-  tab_id = other.tab_id;
-  window_id = other.window_id;
-  return *this;
-}
+    RequestFilter&& other) = default;
 
 ExtensionWebRequestEventRouter::BrowserContextData::BrowserContextData() =
     default;
@@ -1762,7 +1752,7 @@ bool ExtensionWebRequestEventRouter::AddEventListener(
     events::HistogramValue histogram_value,
     const std::string& event_name,
     const std::string& sub_event_name,
-    const RequestFilter& filter,
+    RequestFilter filter,
     int extra_info_spec,
     int render_process_id,
     int web_view_instance_id,
@@ -1785,7 +1775,7 @@ bool ExtensionWebRequestEventRouter::AddEventListener(
   std::unique_ptr<EventListener> listener(new EventListener(id));
   listener->extension_name = extension_name;
   listener->histogram_value = histogram_value;
-  listener->filter = filter;
+  listener->filter = std::move(filter);
   listener->extra_info_spec = extra_info_spec;
   if (web_view_instance_id) {
     base::RecordAction(
@@ -2890,8 +2880,9 @@ WebRequestInternalAddEventListenerFunction::Run() {
       ExtensionWebRequestEventRouter::GetInstance()->AddEventListener(
           browser_context(), extension_id_safe(), extension_name,
           GetEventHistogramValue(event_name), event_name, sub_event_name,
-          filter, extra_info_spec, render_process_id, web_view_instance_id,
-          worker_thread_id(), service_worker_version_id());
+          std::move(filter), extra_info_spec, render_process_id,
+          web_view_instance_id, worker_thread_id(),
+          service_worker_version_id());
   EXTENSION_FUNCTION_VALIDATE(success);
 
   helpers::ClearCacheOnNavigation();
