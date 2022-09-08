@@ -108,3 +108,13 @@ void WebAuthnBrowserBridge::OnCredentialsDetailsListReceived(
           &OnWebAuthnCredentialSelected,
           base::android::ScopedJavaGlobalRef<jobject>(env, jcallback)));
 }
+
+void WebAuthnBrowserBridge::CancelRequest(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& jframe_host) const {
+  auto* client = components::WebAuthnClientAndroid::GetClient();
+  auto* render_frame_host =
+      content::RenderFrameHost::FromJavaRenderFrameHost(jframe_host);
+  DCHECK(render_frame_host);
+  client->CancelWebAuthnRequest(render_frame_host);
+}
