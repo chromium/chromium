@@ -462,40 +462,9 @@ TEST_F(FormSuggestionControllerTest, SelectingSuggestionShouldNotifyDelegate) {
   EXPECT_NSEQ(suggestions[0], [provider suggestion]);
 }
 
-// Tests that the password suggestion IPH is not shown, but the event logged,
-// when the feature is not enabled,
-TEST_F(FormSuggestionControllerTest, PasswordSuggestionNoFeatureNoIPH) {
-  // Disable the feature flag for password suggestion IPH.
-  scoped_feature_list_.InitAndDisableFeature(kBubbleRichIPH);
-
-  NSArray* suggestions = @[
-    [FormSuggestion suggestionWithValue:@"foo"
-                     displayDescription:nil
-                                   icon:@""
-                             identifier:0
-                         requiresReauth:NO],
-  ];
-  TestSuggestionProvider* provider =
-      [[TestSuggestionProvider alloc] initWithSuggestions:suggestions];
-  provider.type = SuggestionProviderTypePassword;
-  SetUpController(@[ provider ]);
-  GURL url("http://foo.com");
-  fake_web_state_.SetCurrentURL(url);
-  auto main_frame = web::FakeWebFrame::CreateMainWebFrame(url);
-  autofill::FormActivityParams params;
-
-  [[mock_handler_ reject] showPasswordSuggestionIPHIfNeeded];
-  OCMExpect([mock_handler_ notifyPasswordSuggestionsShown]);
-  test_form_activity_tab_helper_.FormActivityRegistered(main_frame.get(),
-                                                        params);
-  [mock_handler_ verify];
-}
-
-// Tests that the password suggestion IPH is enabled when suggesting a password.
+// Tests that the password suggestion IPH is triggered when suggesting a
+// password.
 TEST_F(FormSuggestionControllerTest, PasswordSuggestionIPH) {
-  // Enable the feature flag for password suggestion IPH.
-  scoped_feature_list_.InitAndEnableFeature(kBubbleRichIPH);
-
   NSArray* suggestions = @[
     [FormSuggestion suggestionWithValue:@"foo"
                      displayDescription:nil
@@ -513,18 +482,14 @@ TEST_F(FormSuggestionControllerTest, PasswordSuggestionIPH) {
   autofill::FormActivityParams params;
 
   OCMExpect([mock_handler_ showPasswordSuggestionIPHIfNeeded]);
-  [[mock_handler_ reject] notifyPasswordSuggestionsShown];
   test_form_activity_tab_helper_.FormActivityRegistered(main_frame.get(),
                                                         params);
   [mock_handler_ verify];
 }
 
-// Tests that the password suggestion iph is disabled when not suggesting a
+// Tests that the password suggestion IPH is not triggered when not suggesting a
 // password.
 TEST_F(FormSuggestionControllerTest, NonPasswordSuggestionNoIPH) {
-  // Enable the feature flag for password suggestion iph.
-  scoped_feature_list_.InitAndEnableFeature(kBubbleRichIPH);
-
   NSArray* suggestions = @[
     [FormSuggestion suggestionWithValue:@"foo"
                      displayDescription:nil
@@ -541,7 +506,6 @@ TEST_F(FormSuggestionControllerTest, NonPasswordSuggestionNoIPH) {
   autofill::FormActivityParams params;
 
   [[mock_handler_ reject] showPasswordSuggestionIPHIfNeeded];
-  [[mock_handler_ reject] notifyPasswordSuggestionsShown];
   test_form_activity_tab_helper_.FormActivityRegistered(main_frame.get(),
                                                         params);
 }

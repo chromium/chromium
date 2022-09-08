@@ -80,7 +80,6 @@ const CGFloat kIPHVerticalOffset = -5;
 
 // Returns BubbleViewType param from kBubbleRichIPH feature flag.
 BubbleViewType BubbleTypeFromFeature() {
-  DCHECK(base::FeatureList::IsEnabled(kBubbleRichIPH));
   std::string bubbleTypeName = base::GetFieldTrialParamValueByFeature(
       kBubbleRichIPH, kBubbleRichIPHParameterName);
   if (bubbleTypeName == kBubbleRichIPHParameterExplicitDismissal) {
@@ -341,7 +340,6 @@ BubbleViewType BubbleTypeFromFeature() {
 }
 
 - (void)showPasswordSuggestionIPHIfNeeded {
-  DCHECK(base::FeatureList::IsEnabled(kBubbleRichIPH));
   if (self.bubblePresenter) {
     // Already showing a bubble.
     return;
@@ -351,6 +349,7 @@ BubbleViewType BubbleTypeFromFeature() {
   base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE, base::BindOnce(^{
         [weakSelf tryPresentingBubble];
+        [weakSelf notifyPasswordSuggestionsShown];
       }),
       kPasswordSuggestionHighlightDelay);
 }
@@ -656,6 +655,17 @@ BubbleViewType BubbleTypeFromFeature() {
   const base::Feature& feature =
       feature_engagement::kIPHPasswordSuggestionsFeature;
   if (!tracker || !tracker->ShouldTriggerHelpUI(feature)) {
+    return;
+  }
+
+  // Return if the user shouldn't see an IPH.
+  // This is done after ShouldTriggerHelpUI so that metrics regarding IPH are
+  // logged similarly for experimental groups and for the control group.
+  if (!base::FeatureList::IsEnabled(kBubbleRichIPH)) {
+    // Immediately mark the IPH as dismissed. It is required everytime
+    // ShouldTriggerHelpUI returns `true`.
+    [self IPHDidDismissWithSnoozeAction:feature_engagement::Tracker::
+                                            SnoozeAction::DISMISSED];
     return;
   }
 

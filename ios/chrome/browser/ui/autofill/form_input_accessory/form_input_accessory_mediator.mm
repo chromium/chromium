@@ -528,11 +528,7 @@ const base::Feature kFormInputKeyboardReloadInputViews{
       LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeMadeForIOS);
     }
     if (provider.type == SuggestionProviderTypePassword) {
-      if (base::FeatureList::IsEnabled(kBubbleRichIPH)) {
-        [self.handler showPasswordSuggestionIPHIfNeeded];
-      } else {
-        [self.handler notifyPasswordSuggestionsShown];
-      }
+      [self.handler showPasswordSuggestionIPHIfNeeded];
     }
   }
 }
