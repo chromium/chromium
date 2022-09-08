@@ -205,9 +205,11 @@ void ExtendedDragSource::Drag(Surface* dragged_surface,
   dragged_window_holder_ =
       std::make_unique<DraggedWindowHolder>(dragged_surface, drag_offset, this);
 
-  // Drag process will be started once OnDragStarted gets called, unless a
-  // OnToplevelWindowDragStarted() got called for a visible window being dragged
-  // prior to this call.
+  // Drag process will be started once OnToplevelWindowDragStarted() gets
+  // called, unless it is called (raced) prior to this one. In this case, we
+  // trigger the dragging here.
+  //
+  // TODO(https://crrev.com/1360884: Unify where tab-dragging is initiated.
   if (pending_drag_start_ &&
       dragged_window_holder_->toplevel_window() == drag_source_window_) {
     StartDrag(dragged_window_holder_->toplevel_window());
