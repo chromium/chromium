@@ -1972,10 +1972,6 @@ crbug.com/1158554 external/wpt/css/css-conditional/at-supports-046.html [ Failur
 crbug.com/1255685 external/wpt/css/css-conditional/at-supports-font-format-001.html [ Failure ]
 crbug.com/1255685 external/wpt/css/css-conditional/at-supports-font-tech-001.html [ Failure ]
 
-
-# @container / contain:inline-size
-crbug.com/1294155 external/wpt/css/css-contain/container-queries/canvas-as-container-004.html [ Failure ]
-
 # CSS Scrollbars
 crbug.com/891944 external/wpt/css/css-scrollbars/textarea-scrollbar-width-none.html [ Failure ]
 crbug.com/891944 external/wpt/css/css-scrollbars/transparent-on-root.html [ Failure ]
