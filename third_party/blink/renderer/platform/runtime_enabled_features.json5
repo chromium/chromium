@@ -1270,7 +1270,6 @@
     },
     {
       name: "LayoutNGBlockFragmentation",
-      implied_by: ["LayoutNGPrinting"],
       status: "stable",
     },
     {
@@ -1306,6 +1305,7 @@
     },
     {
       name: "LayoutNGPrinting",
+      depends_on: ["LayoutNG","LayoutNGBlockFragmentation","LayoutNGView"],
     },
     {
       name: "LayoutNGSubgrid",
@@ -1321,7 +1321,6 @@
     },
     {
       name: "LayoutNGView",
-      implied_by: ["LayoutNGPrinting"],
       status: "test",
     },
     {
