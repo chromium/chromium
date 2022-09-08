@@ -66,6 +66,10 @@
               <span id="cookies" hidden$="[[!siteGroup.numCookies]]">
                 &middot; [[cookieString_]]
               </span>
+              <span id="fpsMembership"
+                  hidden$="[[!isFpsMember_(siteGroup.fpsOwner)]]">
+                &middot; [[fpsMembershipLabel_]]
+              </span>
             </div>
           </div>
           <cr-icon-button id="expandIcon" class="icon-expand-more"

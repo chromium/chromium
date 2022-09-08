@@ -50,6 +50,14 @@ export interface LocalDataBrowserProxy {
   getNumCookiesString(numCookies: number): Promise<string>;
 
   /**
+   * Gets display string for FPS information of owner and member count.
+   * @param fpsNumMembers The number of members in the first party set.
+   * @param fpsOwner The eTLD+1 for the first party set owner.
+   */
+  getFpsMembershipLabel(fpsNumMembers: number, fpsOwner: string):
+      Promise<string>;
+
+  /**
    * Reloads all local data.
    * TODO(dschuyler): rename function to reload().
    */
@@ -92,6 +100,10 @@ export class LocalDataBrowserProxyImpl implements LocalDataBrowserProxy {
 
   getNumCookiesString(numCookies: number) {
     return sendWithPromise('localData.getNumCookiesString', numCookies);
+  }
+
+  getFpsMembershipLabel(fpsNumMembers: number, fpsOwner: string) {
+    return sendWithPromise('getFpsMembershipLabel', fpsNumMembers, fpsOwner);
   }
 
   reloadCookies() {

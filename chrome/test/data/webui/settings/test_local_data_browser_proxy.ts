@@ -27,6 +27,7 @@ export class TestLocalDataBrowserProxy extends TestBrowserProxy implements
       'removeSite',
       'getCookieDetails',
       'getNumCookiesString',
+      'getFpsMembershipLabel',
       'reloadCookies',
       'removeCookie',
       'removeAllThirdPartyCookies',
@@ -79,6 +80,16 @@ export class TestLocalDataBrowserProxy extends TestBrowserProxy implements
     this.methodCalled('getNumCookiesString', numCookies);
     return Promise.resolve(
         `${numCookies} ` + (numCookies === 1 ? 'cookie' : 'cookies'));
+  }
+
+  getFpsMembershipLabel(fpsNumMembers: number, fpsOwner: string) {
+    this.methodCalled('getFpsMembershipLabel', fpsNumMembers, fpsOwner);
+    return Promise.resolve([
+      'Allowed for',
+      `${fpsNumMembers}`,
+      `${fpsOwner}`,
+      (fpsNumMembers === 1 ? 'site' : 'sites'),
+    ].join(' '));
   }
 
   reloadCookies() {

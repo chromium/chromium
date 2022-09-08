@@ -501,6 +501,7 @@ export class AllSitesElement extends AllSitesElementBase {
       hasInstalledPWA: siteGroupToUpdate.hasInstalledPWA,
       numCookies: siteGroupToUpdate.numCookies,
       fpsOwner: siteGroupToUpdate.fpsOwner,
+      fpsNumMembers: siteGroupToUpdate.fpsNumMembers,
       origins: [],
     };
 
@@ -534,6 +535,9 @@ export class AllSitesElement extends AllSitesElementBase {
       siteGroupToUpdate.origins.forEach(originEntry => {
         this.resetPermissionsForOrigin_(originEntry.origin);
       });
+      if (updatedSiteGroup.fpsOwner) {
+        this.decrementFpsNumMembers_(updatedSiteGroup.fpsOwner);
+      }
     }
 
     this.updateSiteGroup_(index, updatedSiteGroup);
@@ -845,6 +849,20 @@ export class AllSitesElement extends AllSitesElementBase {
   }
 
   /**
+   * Decrements the number of fps members for a given owner eTLD+1 by 1.
+   * @param fpsOwner The first party set owner.
+   */
+  private decrementFpsNumMembers_(fpsOwner: string) {
+    this.filteredList_.forEach((siteGroup, index) => {
+      if (siteGroup.fpsOwner === fpsOwner) {
+        this.set(
+            'filteredList_.' + index + '.fpsNumMembers',
+            siteGroup.fpsNumMembers! - 1);
+      }
+    });
+  }
+
+  /**
    * Resets all permission settings for a single origin.
    */
   private resetPermissionsForOrigin_(origin: string) {
@@ -865,6 +883,7 @@ export class AllSitesElement extends AllSitesElementBase {
       hasInstalledPWA: false,
       numCookies: siteGroupToUpdate.numCookies,
       fpsOwner: siteGroupToUpdate.fpsOwner,
+      fpsNumMembers: siteGroupToUpdate.fpsNumMembers,
       origins: [],
     };
 
@@ -939,6 +958,7 @@ export class AllSitesElement extends AllSitesElementBase {
       hasInstalledPWA: siteGroupToUpdate.hasInstalledPWA,
       numCookies: 0,
       fpsOwner: siteGroupToUpdate.fpsOwner,
+      fpsNumMembers: siteGroupToUpdate.fpsNumMembers,
       origins: [],
     };
 
@@ -971,6 +991,7 @@ export class AllSitesElement extends AllSitesElementBase {
       hasInstalledPWA: false,
       numCookies: 0,
       fpsOwner: siteGroupToUpdate.fpsOwner,
+      fpsNumMembers: siteGroupToUpdate.fpsNumMembers,
       origins: [],
     };
 

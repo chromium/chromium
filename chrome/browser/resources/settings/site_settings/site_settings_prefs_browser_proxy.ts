@@ -65,6 +65,7 @@ export interface SiteGroup {
   numCookies: number;
   origins: OriginInfo[];
   fpsOwner?: string;
+  fpsNumMembers?: number;
   hasInstalledPWA: boolean;
 }
 

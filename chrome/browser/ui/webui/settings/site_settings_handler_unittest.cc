@@ -143,11 +143,17 @@ void ValidateSitesWithFps(
     if (first_party_sets.count(schemeful_site)) {
       // Ensure that the `fpsOwner` is set correctly and aligned with
       // |first_party_sets| mapping of site group owners.
-      ASSERT_EQ(first_party_sets[schemeful_site].GetURL().host(),
-                *site_group.GetDict().FindString("fpsOwner"));
+      std::string owner_etldplus1 =
+          first_party_sets[schemeful_site].GetURL().host();
+      ASSERT_EQ(owner_etldplus1, *site_group.GetDict().FindString("fpsOwner"));
+      if (owner_etldplus1 == "google.com") {
+        ASSERT_EQ(2, *site_group.GetDict().FindInt("fpsNumMembers"));
+      }
     } else {
-      // The site doesn't have `fpsOwner` set, `FindString` should return null.
+      // The site is not part of a FPS therefore doesn't have `fpsOwner` or
+      // `fpsNumMembers` set. `FindString` and `FindInt` should return null.
       ASSERT_FALSE(site_group.GetDict().FindString("fpsOwner"));
+      ASSERT_FALSE(site_group.GetDict().FindInt("fpsNumMembers"));
     }
   }
 }
@@ -2962,6 +2968,20 @@ TEST_F(SiteSettingsHandlerTest, CookieSettingDescription) {
       ContentSettingsType::COOKIES, ContentSetting::CONTENT_SETTING_BLOCK);
   expected_call_index += kContentSettingListenerIndex;
   ValidateCookieSettingUpdate(kBlocked(2), expected_call_index);
+}
+
+TEST_F(SiteSettingsHandlerTest, HandleGetFpsMembershipLabel) {
+  base::Value::List args;
+  args.Append("getFpsMembershipLabel");
+  args.Append(5);
+  args.Append("google.com");
+  handler()->HandleGetFpsMembershipLabel(args);
+  const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
+
+  EXPECT_EQ("cr.webUIResponse", data.function_name());
+  EXPECT_EQ("getFpsMembershipLabel", data.arg1()->GetString());
+  ASSERT_TRUE(data.arg2()->GetBool());
+  EXPECT_EQ("Allowed for 5 google.com sites", data.arg3()->GetString());
 }
 
 TEST_F(SiteSettingsHandlerTest, HandleGetFormattedBytes) {

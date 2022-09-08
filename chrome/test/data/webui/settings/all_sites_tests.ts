@@ -1423,6 +1423,28 @@ suite('AllSites_EnableFirstPartySets', function() {
     },
   ];
 
+  /**
+   * Example first party set site groups.
+   */
+  const TEST_FPS_SITE_GROUPS: SiteGroup[] = [
+    {
+      etldPlus1: 'google.com',
+      origins: [createOriginInfo('https://google.com')],
+      numCookies: 0,
+      fpsOwner: 'google.com',
+      fpsNumMembers: 2,
+      hasInstalledPWA: false,
+    },
+    {
+      etldPlus1: 'youtube.com',
+      origins: [createOriginInfo('https://youtube.com')],
+      numCookies: 0,
+      fpsOwner: 'google.com',
+      fpsNumMembers: 2,
+      hasInstalledPWA: false,
+    },
+  ];
+
   let testElement: AllSitesElement;
 
   /**
@@ -1474,7 +1496,7 @@ suite('AllSites_EnableFirstPartySets', function() {
     flush();
     const siteEntries =
         testElement.$.listContainer.querySelectorAll('site-entry');
-    assertEquals(1, siteEntries.length);
+    assertTrue(siteEntries.length >= 1);
     const overflowMenuButton =
         siteEntries[0]!.shadowRoot!.querySelector<HTMLElement>(
             '#fpsOverflowMenuButton')!;
@@ -1528,7 +1550,9 @@ suite('AllSites_EnableFirstPartySets', function() {
     testElement.siteGroupMap.set(
         siteGroup.etldPlus1, JSON.parse(JSON.stringify(siteGroup)));
     testElement.forceListUpdateForTesting();
+    assertEquals(testElement.$.allSitesList.items!.length, 1);
     removeSiteViaOverflowMenu('action-button');
+    assertEquals(testElement.$.allSitesList.items!.length, 0);
   });
 
   test(
@@ -1616,4 +1640,32 @@ suite('AllSites_EnableFirstPartySets', function() {
         testElement.shadowRoot!.querySelectorAll('site-entry[hidden]'));
     assertEquals(3, siteEntries.length - hiddenSiteEntries.length);
   });
+
+  test(
+      'site entry first party set information updated on site deletion',
+      async function() {
+        TEST_FPS_SITE_GROUPS.forEach(siteGroup => {
+          testElement.siteGroupMap.set(
+              siteGroup.etldPlus1, JSON.parse(JSON.stringify(siteGroup)));
+        });
+        testElement.forceListUpdateForTesting();
+        flush();
+        let siteEntries =
+            testElement.$.listContainer.querySelectorAll('site-entry');
+        assertEquals(testElement.$.allSitesList.items!.length, 2);
+        await localDataBrowserProxy.whenCalled('getFpsMembershipLabel');
+        assertEquals(
+            '· Allowed for 2 google.com sites',
+            siteEntries[1]!.$.fpsMembership.innerText.trim());
+
+        // Remove first site group.
+        removeSiteViaOverflowMenu('action-button');
+        siteEntries =
+            testElement.$.listContainer.querySelectorAll('site-entry');
+        assertEquals(testElement.$.allSitesList.items!.length, 1);
+        await localDataBrowserProxy.whenCalled('getFpsMembershipLabel');
+        assertEquals(
+            '· Allowed for 1 google.com site',
+            siteEntries[1]!.$.fpsMembership.innerText.trim());
+      });
 });

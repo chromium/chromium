@@ -40,6 +40,7 @@ export interface SiteEntryElement {
     expandIcon: CrIconButtonElement,
     collapseParent: HTMLElement,
     cookies: HTMLElement,
+    fpsMembership: HTMLElement,
     displayName: HTMLElement,
     originList: CrLazyRenderElement<IronCollapseElement>,
     toggleButton: HTMLElement,
@@ -80,11 +81,11 @@ export class SiteEntryElement extends SiteEntryElementBase {
       cookieString_: String,
 
       /**
-       * Whether First Party Sets are enabled.
+       * The first party set info for a site including owner and members count.
        */
-      enableFirstPartySetsUI_: {
-        type: Boolean,
-        value: () => loadTimeData.getBoolean('firstPartySetsUIEnabled'),
+      fpsMembershipLabel_: {
+        type: String,
+        value: '',
       },
 
       /**
@@ -135,10 +136,16 @@ export class SiteEntryElement extends SiteEntryElementBase {
     };
   }
 
+  static get observers() {
+    return [
+      'updateFpsMembershipLabel_(siteGroup.fpsNumMembers, siteGroup.fpsOwner)',
+    ];
+  }
+
   siteGroup: SiteGroup;
   private displayName_: string;
   private cookieString_: string;
-  private enableFirstPartySetsUI_: boolean;
+  private fpsMembershipLabel_: string;
   listIndex: number;
   private overallUsageString_: string;
   private originUsages_: string[];
@@ -314,8 +321,7 @@ export class SiteEntryElement extends SiteEntryElementBase {
 
 
   private isFpsMember_(): boolean {
-    return this.enableFirstPartySetsUI_ &&
-        this.siteGroup.fpsOwner !== undefined;
+    return this.siteGroup.fpsOwner !== undefined;
   }
 
   /**
@@ -326,6 +332,22 @@ export class SiteEntryElement extends SiteEntryElementBase {
       return Promise.resolve('');
     }
     return this.localDataBrowserProxy_.getNumCookiesString(numCookies);
+  }
+
+  /**
+   * Updates the display string for FPS information of owner and member count.
+   * @param fpsNumMembers The number of members in the first party set.
+   * @param fpsOwner The eTLD+1 for the first party set owner.
+   */
+  private updateFpsMembershipLabel_() {
+    if (!this.siteGroup.fpsOwner) {
+      this.fpsMembershipLabel_ = '';
+    } else {
+      this.localDataBrowserProxy_
+          .getFpsMembershipLabel(
+              this.siteGroup.fpsNumMembers!, this.siteGroup.fpsOwner!)
+          .then(label => this.fpsMembershipLabel_ = label);
+    }
   }
 
   /**
