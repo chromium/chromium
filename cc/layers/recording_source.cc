@@ -50,12 +50,14 @@ void RecordingSource::FinishDisplayItemListUpdate() {
   display_list_->GenerateDiscardableImagesMetadata();
 }
 
-void RecordingSource::SetNeedsDisplayRect(const gfx::Rect& layer_rect) {
-  // https://linear.app/replay/issue/RUN-467
-  recordreplay::Assert("RecordingSource::SetNeedsDisplayRect %d %d %d %d %d %d",
-                       layer_rect.x(), layer_rect.y(),
-                       layer_rect.width(), layer_rect.height(),
-                       size_.width(), size_.height());
+void RecordingSource::SetNeedsDisplayRect(const gfx::Rect& base_layer_rect) {
+  // Sometimes there can be off-by-one differences in how invalidated rects
+  // are computed between recording and replaying. It's not clear how this
+  // happens, and for now we paper over this by forcing the rects to have
+  // the same contents when replaying.
+  gfx::Rect layer_rect = base_layer_rect;
+  recordreplay::RecordReplayBytes("RecordingSource::SetNeedsDisplayRect",
+                                  &layer_rect, sizeof(layer_rect));
 
   if (!layer_rect.IsEmpty()) {
     // Clamp invalidation to the layer bounds.
