@@ -5602,27 +5602,6 @@
             ]
         }
     ],
-    "InMemoryCache": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "EnableBoth",
-                    "enable_features": [
-                        "InMemoryCodeCache",
-                        "NetworkServiceMemoryCache"
-                    ]
-                }
-            ]
-        }
-    ],
     "IncludeBackgroundSVGInLCP": [
         {
             "platforms": [
@@ -6443,6 +6422,33 @@
                     },
                     "enable_features": [
                         "NuxOnboarding"
+                    ]
+                }
+            ]
+        }
+    ],
+    "NetworkServiceMemoryCacheAndCodeCache": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "EnableBoth",
+                    "enable_features": [
+                        "InMemoryCodeCache",
+                        "NetworkServiceMemoryCache"
+                    ]
+                },
+                {
+                    "name": "NetworkServiceMemoryCacheEnabled",
+                    "enable_features": [
+                        "NetworkServiceMemoryCache"
                     ]
                 }
             ]
