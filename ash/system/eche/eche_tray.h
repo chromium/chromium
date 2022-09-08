@@ -105,7 +105,7 @@ class ASH_EXPORT EcheTray : public TrayBackgroundView,
 
   // KeyboardControllerObserver:
   void OnKeyboardUIDestroyed() override;
-  void OnKeyboardVisibilityChanged(bool visible) override;
+  void OnKeyboardHidden(bool is_temporary_hide) override;
 
   // Sets the url that will be passed to the webview.
   // Setting a new value will cause the current bubble be destroyed.

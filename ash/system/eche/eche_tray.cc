@@ -319,8 +319,8 @@ void EcheTray::OnKeyboardUIDestroyed() {
   UpdateBubbleBounds();
 }
 
-void EcheTray::OnKeyboardVisibilityChanged(bool visible) {
-  if (visible || !IsBubbleVisible())
+void EcheTray::OnKeyboardHidden(bool is_temporary_hide) {
+  if (!IsBubbleVisible())
     return;
   UpdateBubbleBounds();
 }
