@@ -3434,7 +3434,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Conversions.AggregatableReport.TimeFromTriggerToReportAssembly"
-    units="hours" expires_after="2023-01-28">
+    units="minutes" expires_after="2023-01-28">
   <owner>linnan@chromium.org</owner>
   <owner>johnidel@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
