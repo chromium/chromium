@@ -2252,6 +2252,15 @@ IN_PROC_BROWSER_TEST_P(FencedFrameParameterizedBrowserTest,
     EXPECT_TRUE(console_observer.messages().empty());
   }
 
+  content::FetchHistogramsFromChildProcesses();
+  histogram_tester.ExpectTotalCount(
+      "Blink.FencedFrame.CreationOrNavigationOutcome", 1);
+  // Fenced frame creation succeeded (opaque ads mode)
+  histogram_tester.ExpectBucketCount(
+      "Blink.FencedFrame.CreationOrNavigationOutcome", 1, 1);
+  // Fenced frame navigation succeeded, no response header opted-in error
+  histogram_tester.ExpectBucketCount(
+      "Blink.FencedFrame.CreationOrNavigationOutcome", 7, 0);
   histogram_tester.ExpectBucketCount(
       "Navigation.BrowserMappedUrnUuidInIframeOrFencedFrame", 0, 1);
   EXPECT_EQ(
@@ -2988,6 +2997,7 @@ IN_PROC_BROWSER_TEST_P(FencedFrameParameterizedBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(FencedFrameParameterizedBrowserTest,
                        CheckFencedFrameNotNavigatedWithoutOptIn) {
+  base::HistogramTester histogram_tester;
   GURL main_url = https_server()->GetURL("b.test", "/hello.html");
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
   // It is safe to obtain the root frame tree node here, as it doesn't change.
@@ -3028,10 +3038,21 @@ IN_PROC_BROWSER_TEST_P(FencedFrameParameterizedBrowserTest,
       console_observer.GetMessageAt(0),
       "Supports-Loading-Mode HTTP response header 'fenced-frame' is required "
       "to load the fenced frame root and its nested iframes.");
+  content::FetchHistogramsFromChildProcesses();
+  histogram_tester.ExpectTotalCount(
+      "Blink.FencedFrame.CreationOrNavigationOutcome", 2);
+  // Fenced frame creation succeeded (opaque ads mode)
+  histogram_tester.ExpectBucketCount(
+      "Blink.FencedFrame.CreationOrNavigationOutcome", 1, 1);
+  // Fenced frame navigation failed (Supports-Loading-Mode response header
+  // 'fenced-frame' not opted-in)
+  histogram_tester.ExpectBucketCount(
+      "Blink.FencedFrame.CreationOrNavigationOutcome", 7, 1);
 }
 
 IN_PROC_BROWSER_TEST_P(FencedFrameParameterizedBrowserTest,
                        CheckNestedIframeNotNavigatedWithoutOptIn) {
+  base::HistogramTester histogram_tester;
   GURL main_url = https_server()->GetURL("b.test", "/hello.html");
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
   // It is safe to obtain the root frame tree node here, as it doesn't change.
@@ -3077,6 +3098,16 @@ IN_PROC_BROWSER_TEST_P(FencedFrameParameterizedBrowserTest,
       console_observer.GetMessageAt(0),
       "Supports-Loading-Mode HTTP response header 'fenced-frame' is required "
       "to load the fenced frame root and its nested iframes.");
+  content::FetchHistogramsFromChildProcesses();
+  histogram_tester.ExpectTotalCount(
+      "Blink.FencedFrame.CreationOrNavigationOutcome", 2);
+  // Fenced frame creation succeeded (default mode)
+  histogram_tester.ExpectBucketCount(
+      "Blink.FencedFrame.CreationOrNavigationOutcome", 0, 1);
+  // Fenced frame navigation failed (Supports-Loading-Mode response header
+  // 'fenced-frame' not opted-in)
+  histogram_tester.ExpectBucketCount(
+      "Blink.FencedFrame.CreationOrNavigationOutcome", 7, 1);
 }
 
 IN_PROC_BROWSER_TEST_P(FencedFrameParameterizedBrowserTest,

@@ -113,7 +113,8 @@ class CORE_EXPORT HTMLFencedFrameElement : public HTMLFrameOwnerElement {
     kInsecureContext = 4,
     kIncompatibleURLDefault = 5,
     kIncompatibleURLOpaque = 6,
-    kMaxValue = kIncompatibleURLOpaque
+    kResponseHeaderNotOptIn = 7,
+    kMaxValue = kResponseHeaderNotOptIn
   };
 
   // Web-exposed API that returns whether an opaque-ads fenced frame would be

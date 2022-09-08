@@ -42012,6 +42012,9 @@ Called by update_permissions_policy_enum.py.-->
   <int value="4" label="Load in an insecure context"/>
   <int value="5" label="URL is incompatible with mode=default"/>
   <int value="6" label="URL is incompatible with mode=opaque ads"/>
+  <int value="7"
+      label="Supports-Loading-Mode response header 'fenced-frame' not
+             opted-in"/>
 </enum>
 
 <enum name="FetchFailedReasonOrResourceRequestBlockedReason">
