@@ -43,12 +43,6 @@ TestUkmRecorder::TestUkmRecorder() {
 
 TestUkmRecorder::~TestUkmRecorder() {}
 
-bool TestUkmRecorder::ShouldRestrictToWhitelistedSourceIds() const {
-  // In tests, we want to record all source ids (not just those that are
-  // whitelisted).
-  return false;
-}
-
 void TestUkmRecorder::AddEntry(mojom::UkmEntryPtr entry) {
   const bool should_run_callback =
       on_add_entry_ && entry && entry_hash_to_wait_for_ == entry->event_hash;

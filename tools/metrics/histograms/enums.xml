@@ -97661,7 +97661,7 @@ Full version information for the fingerprint enum values:
   <int value="0" label="Not dropped"/>
   <int value="1" label="Recording disabled"/>
   <int value="2" label="Max hit"/>
-  <int value="3" label="Not whitelisted"/>
+  <int value="3" label="Not whitelisted (Deprecated)"/>
   <int value="4" label="Unsupported URL scheme"/>
   <int value="5" label="Sampled out"/>
   <int value="6" label="Extension URLs disabled"/>
