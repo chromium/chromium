@@ -384,8 +384,10 @@ void WilcoDtcSupportdBridge::HandleEvent(WilcoDtcSupportdEvent event) {
     case WilcoDtcSupportdEvent::kLowPowerCharger:
       notification_controller_->ShowLowPowerChargerNotification();
       return;
+    case WilcoDtcSupportdEvent::kUnmappedEnumField:
+      LOG(ERROR) << "Get unrecognized event: " << event;
+      return;
   }
-  LOG(ERROR) << "Unrecognized event " << event << " event";
 }
 
 void WilcoDtcSupportdBridge::GetCrosHealthdDiagnosticsService(

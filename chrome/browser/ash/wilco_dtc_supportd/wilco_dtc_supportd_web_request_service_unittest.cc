@@ -178,16 +178,10 @@ TEST_F(WilcoDtcSupportdWebRequestServiceTest, HttpMethodInvalid) {
   std::unique_ptr<WebRequestResult> request_result;
   base::RunLoop run_loop;
 
-  const auto kInvalidHttpMethod =
-      static_cast<chromeos::wilco_dtc_supportd::mojom::
-                      WilcoDtcSupportdWebRequestHttpMethod>(
-          static_cast<int>(
-              chromeos::wilco_dtc_supportd::mojom::
-                  WilcoDtcSupportdWebRequestHttpMethod::kMaxValue) +
-          1);
-
-  StartWebRequest(kInvalidHttpMethod, kFakeUrl, {} /* headers */,
-                  kFakeRequestBody, &request_result, &run_loop);
+  StartWebRequest(chromeos::wilco_dtc_supportd::mojom::
+                      WilcoDtcSupportdWebRequestHttpMethod::kUnmappedEnumField,
+                  kFakeUrl, {} /* headers */, kFakeRequestBody, &request_result,
+                  &run_loop);
   // The test fails with a network error on the same thread.
   ASSERT_TRUE(request_result);
   EXPECT_EQ(request_result->status,

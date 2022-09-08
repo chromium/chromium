@@ -57,8 +57,10 @@ std::string GetHttpMethod(
     case chromeos::wilco_dtc_supportd::mojom::
         WilcoDtcSupportdWebRequestHttpMethod::kPatch:
       return "PATCH";
+    case chromeos::wilco_dtc_supportd::mojom::
+        WilcoDtcSupportdWebRequestHttpMethod::kUnmappedEnumField:
+      return "";
   }
-  return "";
 }
 
 // Returns true in case of non-error 2xx HTTP status code.
