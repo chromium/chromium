@@ -102,6 +102,11 @@ export class PasswordListItemElement extends PasswordListItemElementBase {
                                     super.focus();
   }
 
+  override ready() {
+    super.ready();
+    this.addEventListener('click', this.onRowClick_);
+  }
+
   private computeShouldShowSubpageButton_(): boolean {
     return !this.shouldHideActionButtons && this.isPasswordViewPageEnabled_;
   }
