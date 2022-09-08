@@ -11,7 +11,7 @@
 
 // Implementation of StoreKitLauncher that whenever openAppStore with productID
 // is called, launchedProductID will be set to that productID. Users need to
-// reset |launchedProductID| between uses.
+// reset `launchedProductID` between uses.
 @interface FakeStoreKitLauncher : NSObject<StoreKitLauncher>
 // This string will have the product id that store kit with launched for, if
 // openAppStore was called with string ID.

@@ -13,7 +13,7 @@ namespace web {
 class WebState;
 }  // namespace web
 
-// PassKitTabHelperDelegate which collects all passes into |passes| array.
+// PassKitTabHelperDelegate which collects all passes into `passes` array.
 @interface FakePassKitTabHelperDelegate : NSObject<PassKitTabHelperDelegate>
 
 - (instancetype)initWithWebState:(web::WebState*)webState

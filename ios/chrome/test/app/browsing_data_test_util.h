@@ -20,7 +20,7 @@ namespace chrome_test_util {
 // Clears browsing data and returns whether clearing was successful or timed
 // out.
 // TODO(crbug.com/1016960): The method will time out if it's called from
-// EarlGrey2 with |off_the_record| = true.
+// EarlGrey2 with `off_the_record` = true.
 [[nodiscard]] bool ClearAllBrowsingData(bool off_the_record);
 
 // Clears all the default WKWebsiteDataStore data including the WK back/forward

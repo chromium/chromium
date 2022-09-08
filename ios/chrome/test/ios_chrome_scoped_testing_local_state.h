@@ -7,7 +7,7 @@
 
 #include "components/prefs/testing_pref_service.h"
 
-// Helper class to temporarily set up a |local_state| in the global
+// Helper class to temporarily set up a `local_state` in the global
 // TestingApplicationContext.
 class IOSChromeScopedTestingLocalState {
  public:

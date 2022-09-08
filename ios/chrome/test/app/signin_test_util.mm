@@ -89,7 +89,7 @@ void SignOutAndClearIdentities() {
     browser_state->GetPrefs()->ClearPref(prefs::kGoogleServicesLastAccountId);
     browser_state->GetPrefs()->ClearPref(prefs::kGoogleServicesLastUsername);
 
-    // |SignOutAndClearIdentities()| is called during shutdown. Commit all pref
+    // `SignOutAndClearIdentities()` is called during shutdown. Commit all pref
     // changes to ensure that clearing the last signed in account is saved on
     // disk in case Chrome crashes during shutdown.
     browser_state->GetPrefs()->CommitPendingWrite();

@@ -10,11 +10,11 @@
 
 namespace chrome_test_util {
 
-// Loads |url| in the current WebState with transition of type
+// Loads `url` in the current WebState with transition of type
 // ui::PAGE_TRANSITION_TYPED.
 void LoadUrl(const GURL& url);
 
-// Loads |url| in the current WebState with transition of type
+// Loads `url` in the current WebState with transition of type
 // ui::PAGE_TRANSITION_TYPED in window given windowNumber.
 void LoadUrlInWindowWithNumber(const GURL& url, int window_number);
 

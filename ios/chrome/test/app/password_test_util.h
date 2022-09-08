@@ -16,7 +16,7 @@
 @property(nonatomic, assign) BOOL canAttempt;
 
 // Indicates whether (mock) authentication should succeed or not. Setting
-// |shouldSucceed| to any value sets |canAttempt| to YES.
+// `shouldSucceed` to any value sets `canAttempt` to YES.
 @property(nonatomic, assign) ReauthenticationResult expectedResult;
 
 @end

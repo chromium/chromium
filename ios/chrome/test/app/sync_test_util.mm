@@ -58,7 +58,7 @@ fake_server::FakeServer* gSyncFakeServer = nullptr;
 NSString* const kSyncTestErrorDomain = @"SyncTestDomain";
 
 // Overrides the network callback of the current SyncServiceImpl with
-// |create_http_post_provider_factory_cb|.
+// `create_http_post_provider_factory_cb`.
 void OverrideSyncNetwork(const syncer::CreateHttpPostProviderFactory&
                              create_http_post_provider_factory_cb) {
   ChromeBrowserState* browser_state =
@@ -70,7 +70,7 @@ void OverrideSyncNetwork(const syncer::CreateHttpPostProviderFactory&
   service->OverrideNetworkForTest(create_http_post_provider_factory_cb);
 }
 
-// Returns a bookmark server entity based on |title| and |url|.
+// Returns a bookmark server entity based on `title` and `url`.
 std::unique_ptr<syncer::LoopbackServerEntity> CreateBookmarkServerEntity(
     const std::string& title,
     const GURL& url) {
@@ -222,7 +222,7 @@ bool VerifySyncInvalidationFieldsPopulated() {
     if (entity.specifics().device_info().cache_guid() == cache_guid) {
       const sync_pb::InvalidationSpecificFields& invalidation_fields =
           entity.specifics().device_info().invalidation_fields();
-      // TODO(crbug.com/1187481): check if |instance_id_token| is present once
+      // TODO(crbug.com/1187481): check if `instance_id_token` is present once
       // fixed.
       return !invalidation_fields.interested_data_type_ids().empty();
     }

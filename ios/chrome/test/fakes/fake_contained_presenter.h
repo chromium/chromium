@@ -11,7 +11,7 @@
 
 // ContainedPresenter used for testing.
 @interface FakeContainedPresenter : NSObject<ContainedPresenter>
-// YES if |presentAnimated:| was called with YES.
+// YES if `presentAnimated:` was called with YES.
 @property(nonatomic, assign) BOOL lastPresentationWasAnimated;
 @end
 

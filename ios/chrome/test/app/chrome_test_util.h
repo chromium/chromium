@@ -54,7 +54,7 @@ HandlerForActiveBrowser();
 // Removes all presented infobars.
 void RemoveAllInfoBars();
 
-// Dismisses all presented views and modal dialogs. |completion| is invoked when
+// Dismisses all presented views and modal dialogs. `completion` is invoked when
 // all the views are dismissed.
 void ClearPresentedState(ProceduralBlock completion);
 

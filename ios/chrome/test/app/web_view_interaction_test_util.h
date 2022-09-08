@@ -11,23 +11,23 @@
 
 namespace chrome_test_util {
 
-// Attempts to tap the element with |element_id| in the current WebState
+// Attempts to tap the element with `element_id` in the current WebState
 // using a JavaScript click() event. Returns a bool indicating if the tap
 // was successful.
 [[nodiscard]] bool TapWebViewElementWithId(const std::string& element_id);
 
-// Attempts to tap the element with |element_id| within window.frames[0] of the
+// Attempts to tap the element with `element_id` within window.frames[0] of the
 // current WebState using a JavaScript click() event. This only works on
 // same-origin iframes. Returns a bool indicating if the tap was successful.
 [[nodiscard]] bool TapWebViewElementWithIdInIframe(
     const std::string& element_id);
 
-// Attempts to tap the element with |element_id| in the current WebState
-// using a JavaScript click() event. |error| can be nil.
+// Attempts to tap the element with `element_id` in the current WebState
+// using a JavaScript click() event. `error` can be nil.
 bool TapWebViewElementWithId(const std::string& element_id,
                              NSError* __autoreleasing* error);
 
-// Attemps to submit form with |form_id| in the current WebState.
+// Attempts to submit form with `form_id` in the current WebState.
 void SubmitWebViewFormWithId(const std::string& form_id);
 
 }  //  namespace chrome_test_util

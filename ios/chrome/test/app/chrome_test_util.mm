@@ -77,8 +77,8 @@
 @end
 
 namespace {
-// Returns the original ChromeBrowserState if |incognito| is false. If
-// |ingonito| is true, returns an off-the-record ChromeBrowserState.
+// Returns the original ChromeBrowserState if `incognito` is false. If
+// `incognito` is true, returns an off-the-record ChromeBrowserState.
 ChromeBrowserState* GetBrowserState(bool incognito) {
   std::vector<ChromeBrowserState*> browser_states =
       GetApplicationContext()

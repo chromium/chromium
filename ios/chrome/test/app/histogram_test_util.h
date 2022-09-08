@@ -44,8 +44,8 @@ class HistogramTester {
   // We know the exact number of samples in a bucket, and that no other bucket
   // should have samples. Measures the diff from the snapshot taken when this
   // object was constructed.
-  // Returns true if the bucket contains |expected_count| samples and no other
-  // buckets have samples. If not, call |failure_block| with a descriptive text
+  // Returns true if the bucket contains `expected_count` samples and no other
+  // buckets have samples. If not, call `failure_block` with a descriptive text
   // of the error.
   BOOL ExpectUniqueSample(const std::string& name,
                           base::HistogramBase::Sample sample,
@@ -55,8 +55,8 @@ class HistogramTester {
   // We know the exact number of samples in a bucket, but other buckets may
   // have samples as well. Measures the diff from the snapshot taken when this
   // object was constructed.
-  // Returns true if the bucket contains |expected_count| samples. If not, call
-  // |failure_block| with a descriptive text of the error.
+  // Returns true if the bucket contains `expected_count` samples. If not, call
+  // `failure_block` with a descriptive text of the error.
   BOOL ExpectBucketCount(const std::string& name,
                          base::HistogramBase::Sample sample,
                          base::HistogramBase::Count expected_count,
@@ -65,8 +65,8 @@ class HistogramTester {
   // We don't know the values of the samples, but we know how many there are.
   // This measures the diff from the snapshot taken when this object was
   // constructed.
-  // Returns true if the histogram contains |count| samples. If not, call
-  // |failure_block| with a descriptive text of the error.
+  // Returns true if the histogram contains `count` samples. If not, call
+  // `failure_block` with a descriptive text of the error.
   BOOL ExpectTotalCount(const std::string& name,
                         base::HistogramBase::Count count,
                         FailureBlock failure_block) const;
@@ -74,7 +74,7 @@ class HistogramTester {
   // Returns a list of all of the buckets recorded since creation of this
   // object, as vector<Bucket>, where a Bucket represents the min boundary of
   // the bucket and the count of samples recorded to that bucket since creation.
-  // If there is not histogram named |name|, return an empty vector.
+  // If there is not histogram named `name`, return an empty vector.
   std::vector<Bucket> GetAllSamples(const std::string& name) const;
 
   // Returns a modified HistogramSamples containing only what has been logged
@@ -84,18 +84,18 @@ class HistogramTester {
       const std::string& histogram_name) const;
 
  private:
-  // Verifies and asserts that value in the |sample| bucket matches the
-  // |expected_count|. The bucket's current value is determined from |samples|
-  // and is modified based on the snapshot stored for histogram |name|.
+  // Verifies and asserts that value in the `sample` bucket matches the
+  // `expected_count`. The bucket's current value is determined from `samples`
+  // and is modified based on the snapshot stored for histogram `name`.
   BOOL CheckBucketCount(const std::string& name,
                         base::HistogramBase::Sample sample,
                         base::Histogram::Count expected_count,
                         const base::HistogramSamples& samples,
                         FailureBlock failure_block) const;
 
-  // Verifies that the total number of values recorded for the histogram |name|
-  // is |expected_count|. This is checked against |samples| minus the snapshot
-  // that was taken for |name|.
+  // Verifies that the total number of values recorded for the histogram `name`
+  // is `expected_count`. This is checked against `samples` minus the snapshot
+  // that was taken for `name`.
   BOOL CheckTotalCount(const std::string& name,
                        base::Histogram::Count expected_count,
                        const base::HistogramSamples& samples,

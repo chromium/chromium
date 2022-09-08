@@ -17,7 +17,7 @@
     : NSObject <OverscrollActionsControllerDelegate>
 
 // The OverscrollAction parameter that was used to call
-// |overscrollActionsController:didTriggerAction:| with.
+// `overscrollActionsController:didTriggerAction:` with.
 @property(nonatomic, assign) OverscrollAction selectedAction;
 
 // The header view, acts as the superview for overscrollActionsView.

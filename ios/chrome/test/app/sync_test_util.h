@@ -19,15 +19,15 @@ class Time;
 namespace chrome_test_util {
 
 // Whether or not the fake sync server has already been setup by
-// |SetUpFakeSyncServer()|.
+// `SetUpFakeSyncServer()`.
 bool IsFakeSyncServerSetUp();
 
 // Sets up a fake sync server to be used by the SyncServiceImpl. Must only be
-// called if |IsFakeSyncServerSetUp()| returns false.
+// called if `IsFakeSyncServerSetUp()` returns false.
 void SetUpFakeSyncServer();
 
 // Tears down the fake sync server used by the SyncServiceImpl and restores the
-// real one. Must only be called if |IsFakeSyncServerSetUp()| is true.
+// real one. Must only be called if `IsFakeSyncServerSetUp()` is true.
 void TearDownFakeSyncServer();
 
 // Starts the sync server. The server should not be running when calling this.
@@ -36,20 +36,20 @@ void StartSync();
 // Stops the sync server. The server should be running when calling this.
 void StopSync();
 
-// Triggers a sync cycle for a |type|.
+// Triggers a sync cycle for a `type`.
 void TriggerSyncCycle(syncer::ModelType type);
 
-// Gets the number of entities of the given |type|.
+// Gets the number of entities of the given `type`.
 int GetNumberOfSyncEntities(syncer::ModelType type);
 
-// Verifies that |count| entities of the given |type| and |name| exist on the
+// Verifies that `count` entities of the given `type` and `name` exist on the
 // sync FakeServer. Folders are not included in this count.
 BOOL VerifyNumberOfSyncEntitiesWithName(syncer::ModelType type,
                                         std::string name,
                                         size_t count,
                                         NSError** error);
 
-// Injects a bookmark into the fake sync server with |url| and |title|.
+// Injects a bookmark into the fake sync server with `url` and `title`.
 void AddBookmarkToFakeSyncServer(std::string url, std::string title);
 
 // Injects a legacy bookmark into the fake sync server. The legacy bookmark
@@ -64,16 +64,16 @@ void AddUserDemographicsToSyncServer(
     int birth_year,
     metrics::UserDemographicsProto::Gender gender);
 
-// Injects an autofill profile into the fake sync server with |guid| and
-// |full_name|.
+// Injects an autofill profile into the fake sync server with `guid` and
+// `full_name`.
 void AddAutofillProfileToFakeSyncServer(std::string guid,
                                         std::string full_name);
 
-// Deletes an autofill profile from the fake sync server with |guid|, if it
+// Deletes an autofill profile from the fake sync server with `guid`, if it
 // exists. If it doesn't exist, nothing is done.
 void DeleteAutofillProfileFromFakeSyncServer(std::string guid);
 
-// Clears the autofill profile for the given |guid|.
+// Clears the autofill profile for the given `guid`.
 void ClearAutofillProfile(std::string guid);
 
 // Clears fake sync server data if the server is running, otherwise does
@@ -91,13 +91,13 @@ std::string GetSyncCacheGuid();
 // invalidation fields.
 bool VerifySyncInvalidationFieldsPopulated();
 
-// Returns true if there is an autofilll profile with the corresponding |guid|
-// and |full_name|.
+// Returns true if there is an autofilll profile with the corresponding `guid`
+// and `full_name`.
 bool IsAutofillProfilePresent(std::string guid, std::string full_name);
 
-// Verifies the sessions hierarchy on the Sync FakeServer. |expected_urls| is
+// Verifies the sessions hierarchy on the Sync FakeServer. `expected_urls` is
 // the collection of URLs that are to be expected for a single window. On
-// failure, returns NO and |error| is set and includes a message. See the
+// failure, returns NO and `error` is set and includes a message. See the
 // SessionsHierarchy class for documentation regarding the verification.
 BOOL VerifySessionsOnSyncServer(const std::multiset<std::string>& expected_urls,
                                 NSError** error);
@@ -112,7 +112,7 @@ void AddTypedURLToFakeSyncServer(const std::string& url);
 void AddDeviceInfoToFakeSyncServer(const std::string& device_name,
                                    base::Time last_updated_timestamp);
 
-// Returns YES if the provided |url| is present (or not) if |expected_present|
+// Returns YES if the provided `url` is present (or not) if `expected_present`
 // is YES (or NO).
 BOOL IsTypedUrlPresentOnClient(const GURL& url,
                                BOOL expect_present,

@@ -24,7 +24,7 @@ void OpenNewTab();
 // Returns the opened URL.
 NSURL* SimulateExternalAppURLOpening();
 
-// Simulates opening |URL| from another application.
+// Simulates opening `URL` from another application.
 void SimulateExternalAppURLOpeningWithURL(NSURL* URL);
 
 // Simulates opening the add account sign-in flow from the web.
@@ -49,7 +49,7 @@ NSString* GetCurrentTabTitle();
 NSString* GetNextTabTitle();
 
 // Gets the WebState with the given index in the current mode (incognito or
-// normal). Returns nullptr if less than |index| + 1 tabs are open.
+// normal). Returns nullptr if less than `index` + 1 tabs are open.
 web::WebState* GetWebStateAtIndexInCurrentMode(int index);
 
 // Closes current tab.
