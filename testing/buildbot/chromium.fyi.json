@@ -90846,6 +90846,28 @@
       },
       {
         "args": [
+          "--enable-features=PartitionAllocDanglingPtr:mode/crash,PartitionAllocBackupRefPtr:enabled-processes/non-renderer"
+        ],
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "dangling_pointer_detection_content_browsertests",
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "cpu": "x86-64",
+              "os": "Ubuntu-18.04"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "content_browsertests",
+        "test_id_prefix": "ninja://content/test:content_browsertests/"
+      },
+      {
+        "args": [
           "--enable-features=PartitionAllocBackupRefPtr:enabled-processes/non-renderer"
         ],
         "merge": {

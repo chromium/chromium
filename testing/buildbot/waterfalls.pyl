@@ -3553,7 +3553,7 @@
       },
       'linux-backuprefptr-x64-fyi-rel': {
         'test_suites': {
-          'gtest_tests': 'chromium_linux_gtests',
+          'gtest_tests': 'chromium_linux_and_dangling_pointer_detection_gtests',
         },
         'mixins': [
           'linux-bionic',

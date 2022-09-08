@@ -3533,19 +3533,19 @@
     ],
 
     'release_trybot_backuprefptr_arm64_reclient': [
-      'release_trybot_minimal_symbols_reclient', 'backuprefptr', 'android', 'arm64',
+      'release_trybot_minimal_symbols_reclient', 'backuprefptr', 'android', 'arm64', 'enable_dangling_raw_ptr_checks',
     ],
 
     'release_trybot_backuprefptr_arm_reclient': [
-      'release_trybot_minimal_symbols_reclient', 'backuprefptr', 'android', 'arm',
+      'release_trybot_minimal_symbols_reclient', 'backuprefptr', 'android', 'arm', 'enable_dangling_raw_ptr_checks',
     ],
 
     'release_trybot_backuprefptr_x64_reclient': [
-      'release_trybot_minimal_symbols_reclient', 'backuprefptr', 'x64',
+      'release_trybot_minimal_symbols_reclient', 'backuprefptr', 'x64', 'enable_dangling_raw_ptr_checks',
     ],
 
     'release_trybot_backuprefptr_x86_reclient': [
-      'release_trybot_minimal_symbols_reclient', 'backuprefptr', 'x86',
+      'release_trybot_minimal_symbols_reclient', 'backuprefptr', 'x86', 'enable_dangling_raw_ptr_checks',
     ],
 
     'release_trybot_blink': [
@@ -4101,6 +4101,14 @@
 
     'enable_blink_heap_verification': {
       'gn_args': 'cppgc_enable_verify_heap=true',
+    },
+
+    # Enables dangling raw pointer detection.
+    # This configuration will silently deactivate the ref count cookie in:
+    # https://crsrc.org/c/base/allocator/partition_allocator/partition_alloc_config.h;l=208-216;drc=2d195004c75699bdd87c69cdb7e8d293249dcfdd
+    'enable_dangling_raw_ptr_checks': {
+      'gn_args': 'enable_dangling_raw_ptr_checks=true',
+      'mixins': ["dcheck_always_on"],
     },
 
     'enable_rust': {
