@@ -18,6 +18,7 @@
 #include <tuple>
 
 #include "base/allocator/buildflags.h"
+#include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
 #include "base/debug/activity_tracker.h"
 #include "base/lazy_instance.h"
 #include "base/logging.h"
@@ -43,7 +44,7 @@
 #include <sys/resource.h>
 #endif
 
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && BUILDFLAG(STARSCAN)
 #include "base/allocator/partition_allocator/starscan/pcscan.h"
 #include "base/allocator/partition_allocator/starscan/stack/stack.h"
 #endif
@@ -77,7 +78,7 @@ void* ThreadFunc(void* params) {
       base::DisallowSingleton();
 
 #if !BUILDFLAG(IS_NACL)
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && BUILDFLAG(STARSCAN)
     partition_alloc::internal::PCScan::NotifyThreadCreated(
         partition_alloc::internal::GetStackPointer());
 #endif
@@ -104,7 +105,8 @@ void* ThreadFunc(void* params) {
       PlatformThread::CurrentHandle().platform_handle(),
       PlatformThread::CurrentId());
 
-#if !BUILDFLAG(IS_NACL) && BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#if !BUILDFLAG(IS_NACL) && BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && \
+    BUILDFLAG(STARSCAN)
   partition_alloc::internal::PCScan::NotifyThreadDestroyed();
 #endif
 

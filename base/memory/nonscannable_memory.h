@@ -16,8 +16,11 @@
 
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 #include "base/allocator/partition_allocator/partition_alloc.h"
+#include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
+#if BUILDFLAG(STARSCAN)
 #include "base/allocator/partition_allocator/starscan/metadata_allocator.h"
-#endif
+#endif  // BUILDFLAG(STARSCAN)
+#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
 // This file contains allocation/deallocation functions for memory that doesn't
 // need to be scanned by PCScan. Such memory should only contain "data" objects,
@@ -45,9 +48,13 @@ class BASE_EXPORT NonScannableAllocatorImpl final {
   // Returns PartitionRoot corresponding to the allocator, or nullptr if the
   // allocator is not enabled.
   partition_alloc::ThreadSafePartitionRoot* root() {
+#if BUILDFLAG(STARSCAN)
     if (!allocator_.get())
       return nullptr;
     return allocator_->root();
+#else
+    return nullptr;
+#endif  // BUILDFLAG(STARSCAN)
   }
 
   void NotifyPCScanEnabled();
@@ -59,10 +66,12 @@ class BASE_EXPORT NonScannableAllocatorImpl final {
   NonScannableAllocatorImpl();
   ~NonScannableAllocatorImpl();
 
+#if BUILDFLAG(STARSCAN)
   std::unique_ptr<partition_alloc::PartitionAllocator,
                   partition_alloc::internal::PCScanMetadataDeleter>
       allocator_;
   std::atomic_bool pcscan_enabled_{false};
+#endif  // BUILDFLAG(STARSCAN)
 };
 
 extern template class NonScannableAllocatorImpl<true>;
