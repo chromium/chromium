@@ -23,7 +23,7 @@ class FakeWKConfigurationProviderObserver
   void ResetLastCreatedWKConfig();
 
  private:
-  // Sets the |last_created_wk_config| with |new_config|.
+  // Sets the `last_created_wk_config` with `new_config`.
   void DidCreateNewConfiguration(
       WKWebViewConfigurationProvider* config_provider,
       WKWebViewConfiguration* new_config) override;

@@ -10,7 +10,7 @@
 // Used to simulate methods in NativeTaskBridge
 @interface FakeNativeTaskBridge : DownloadNativeTaskBridge
 
-// Called in |_startDownloadBlock| in DownloadNativeTaskBridge to check if the
+// Called in `_startDownloadBlock` in DownloadNativeTaskBridge to check if the
 // block was called.
 @property(nonatomic, readwrite) BOOL calledStartDownloadBlock;
 

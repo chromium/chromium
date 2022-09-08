@@ -24,15 +24,15 @@ TestWebThread::TestWebThread(
 
 TestWebThread::~TestWebThread() {
   // The upcoming WebThreadImpl::ResetGlobalsForTesting() call requires that
-  // |identifier_| completed its shutdown phase.
+  // `identifier_` completed its shutdown phase.
   real_thread_.reset();
   fake_thread_.reset();
 
-  // Resets WebThreadImpl's globals so that |identifier_| is no longer
+  // Resets WebThreadImpl's globals so that `identifier_` is no longer
   // bound. This is fine since the underlying MessageLoop has already been
   // flushed and deleted above. In the case of an externally provided
   // MessageLoop however, this means that TaskRunners obtained through
-  // |WebThreadImpl::GetTaskRunnerForThread(identifier_)| will no longer
+  // `WebThreadImpl::GetTaskRunnerForThread(identifier_)` will no longer
   // recognize their WebThreadImpl for RunsTasksInCurrentSequence(). This
   // happens most often when such verifications are made from
   // MessageLoop::DestructionObservers. Callers that care to work around that

@@ -43,7 +43,7 @@ TEST_F(WebTestFixtureTest, FailsOnRenderCrash) {
                        "Renderer process died unexpectedly");
 }
 
-// Tests that |SetIgnoreRenderProcessCrashesDuringTesting()| properly ignores
+// Tests that `SetIgnoreRenderProcessCrashesDuringTesting()` properly ignores
 // intentional render process crashes.
 TEST_F(WebTestFixtureTest, SucceedsOnRenderCrash) {
   SetIgnoreRenderProcessCrashesDuringTesting(true);

@@ -23,7 +23,7 @@ class FakeWebFrameImpl : public FakeWebFrame, public WebFrameInternal {
                    GURL security_origin);
 
   // Returns the JavaScriptContentWorld parameter value received in the last
-  // call to |CallJavaScriptFunctionInContentWorld|.
+  // call to `CallJavaScriptFunctionInContentWorld`.
   JavaScriptContentWorld* last_received_content_world();
 
   // WebFrame:
@@ -64,20 +64,20 @@ class FakeWebFrameImpl : public FakeWebFrame, public WebFrameInternal {
       base::RepeatingClosure callback) override;
 
   // WebFrameInternal:
-  // If |CanCallJavaScriptFunction()| is true, the JavaScript call which would
-  // be executed by a real WebFrame will be added to |java_script_calls_|.
-  // Returns the value of |CanCallJavaScriptFunction()|. |content_world| is
-  // stored to |last_received_content_world_|.
+  // If `CanCallJavaScriptFunction()` is true, the JavaScript call which would
+  // be executed by a real WebFrame will be added to `java_script_calls_`.
+  // Returns the value of `CanCallJavaScriptFunction()`. `content_world` is
+  // stored to `last_received_content_world_`.
   bool CallJavaScriptFunctionInContentWorld(
       const std::string& name,
       const std::vector<base::Value>& parameters,
       JavaScriptContentWorld* content_world) override;
-  // If |CanCallJavaScriptFunction()| is true, the JavaScript call which would
-  // be executed by a real WebFrame will be added to |java_script_calls_|.
-  // Returns the value of |CanCallJavaScriptFunction()|.
-  // |callback| will be executed with the value passed in to
+  // If `CanCallJavaScriptFunction()` is true, the JavaScript call which would
+  // be executed by a real WebFrame will be added to `java_script_calls_`.
+  // Returns the value of `CanCallJavaScriptFunction()`.
+  // `callback` will be executed with the value passed in to
   // AddJsResultForFunctionCall() or null if no such result has been added.
-  // |content_world| is stored to |last_received_content_world_|.
+  // `content_world` is stored to `last_received_content_world_`.
   bool CallJavaScriptFunctionInContentWorld(
       const std::string& name,
       const std::vector<base::Value>& parameters,
@@ -89,7 +89,7 @@ class FakeWebFrameImpl : public FakeWebFrame, public WebFrameInternal {
 
  private:
   // Map holding values to be passed in CallJavaScriptFunction() callback. Keyed
-  // by JavaScript function |name| expected to be passed into
+  // by JavaScript function `name` expected to be passed into
   // CallJavaScriptFunction().
   std::map<std::string, base::Value*> result_map_;
   // Map holding values to be passed in ExecuteJavaScript() callback. Keyed by

@@ -11,7 +11,7 @@
 namespace web {
 namespace test {
 
-// Synchronously executes |script| in |content_world| and returns result.
+// Synchronously executes `script` in `content_world` and returns result.
 // NOTE: Generally, tests should not deal with raw WKContentWorlds. Instead,
 // prefer specifying the associated JavaScriptFeature instance using
 // WebTestWithWebState::ExecuteJavaScriptForFeature.

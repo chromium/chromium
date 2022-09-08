@@ -37,30 +37,30 @@ class WebIntTest : public WebTest {
     return web_state()->GetNavigationManager();
   }
 
-  // Returns the last committed NavigationItem in |navigation_manager|.
+  // Returns the last committed NavigationItem in `navigation_manager`.
   NavigationItem* GetLastCommittedItem() {
     return navigation_manager()->GetLastCommittedItem();
   }
 
-  // Executes |block| and waits until |url| is successfully loaded in
-  // |web_state_|.
+  // Executes `block` and waits until `url` is successfully loaded in
+  // `web_state_`.
   [[nodiscard]] bool ExecuteBlockAndWaitForLoad(const GURL& url,
                                                 ProceduralBlock block);
 
-  // Navigates |web_state_| to |url| and waits for the page to be loaded.
+  // Navigates `web_state_` to `url` and waits for the page to be loaded.
   [[nodiscard]] bool LoadUrl(const GURL& url);
 
-  // Navigates |web_state_| using |params| and waits for the page to be loaded.
+  // Navigates `web_state_` using `params` and waits for the page to be loaded.
   [[nodiscard]] bool LoadWithParams(
       const NavigationManager::WebLoadParams& params);
 
-  // Synchronously removes data from |data_store|.
-  // |websiteDataTypes| is from the constants defined in
+  // Synchronously removes data from `data_store`.
+  // `websiteDataTypes` is from the constants defined in
   // "WebKit/WKWebsiteDataRecord".
   void RemoveWKWebViewCreatedData(WKWebsiteDataStore* data_store,
                                   NSSet* websiteDataTypes);
 
-  // Returns the index of |item| in the |navigation_manager|'s session history,
+  // Returns the index of `item` in the `navigation_manager`'s session history,
   // or NSNotFound if it is not present.
   NSInteger GetIndexOfNavigationItem(const web::NavigationItem* item);
 
