@@ -1170,7 +1170,7 @@ deps = {
   # Tools used when building Chrome for Chrome OS. This affects both the Simple
   # Chrome workflow, as well as the chromeos-chrome ebuild.
   'src/third_party/chromite': {
-      'url': Var('chromium_git') + '/chromiumos/chromite.git' + '@' + '1c328f7b11925760ae4f59a9ad9f34cc20cabb9e',
+      'url': Var('chromium_git') + '/chromiumos/chromite.git' + '@' + '71245c4c03c4d9b2acfbfa199d8865800a8d0045',
       'condition': 'checkout_chromeos',
   },
 
@@ -4554,6 +4554,7 @@ hooks = [
       '--log-level=warning',
       '--cache-dir=src/build/cros_cache/',
       '--use-external-config',
+      '--use-new-public-bucket',
       '--boards={cros_boards_with_qemu_images}',
       '--download-vm',
     ],
@@ -4572,6 +4573,7 @@ hooks = [
       '--log-level=warning',
       '--cache-dir=src/build/cros_cache/',
       '--use-external-config',
+      '--use-new-public-bucket',
       '--boards={cros_boards}',
     ],
   },
@@ -4624,6 +4626,7 @@ hooks = [
       '--log-level=warning',
       '--cache-dir=src/build/cros_cache/',
       '--use-external-config',
+      '--use-new-public-bucket',
       '--boards={cros_boards_with_qemu_images}',
       '--is-lacros',
       '--version={lacros_sdk_version}',
@@ -4643,6 +4646,7 @@ hooks = [
       '--log-level=warning',
       '--cache-dir=src/build/cros_cache/',
       '--use-external-config',
+      '--use-new-public-bucket',
       '--boards={cros_boards}',
       '--is-lacros',
       '--version={lacros_sdk_version}',
