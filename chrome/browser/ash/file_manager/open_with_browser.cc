@@ -27,6 +27,7 @@
 #include "components/drive/file_system_core_util.h"
 #include "content/public/browser/browser_thread.h"
 #include "net/base/filename_util.h"
+#include "net/base/url_util.h"
 #include "pdf/buildflags.h"
 #include "storage/browser/file_system/file_system_url.h"
 
@@ -64,6 +65,7 @@ void OpenNewTab(const GURL& url) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   if (!ash::NewWindowDelegate::GetPrimary()) {
+    LOG(ERROR) << "Failed to get window delegate";
     return;
   }
   ash::NewWindowDelegate::GetPrimary()->OpenUrl(
@@ -113,10 +115,8 @@ void OpenHostedOfficeFile(const base::FilePath& file_path,
   if (error != drive::FILE_ERROR_OK)
     return;
   GURL hosted_url(metadata->alternate_url);
-  if (!hosted_url.is_valid())
-    return;
 
-  OpenNewTab(hosted_url);
+  OpenNewTabForHostedOfficeFile(hosted_url);
 }
 
 }  // namespace
@@ -187,6 +187,18 @@ bool OpenFileWithBrowser(Profile* profile,
   // Failed to open the file of unknown type.
   LOG(WARNING) << "Unknown file type: " << file_path.value();
   return false;
+}
+
+void OpenNewTabForHostedOfficeFile(const GURL& url) {
+  GURL url_with_query_param =
+      net::AppendOrReplaceQueryParameter(url, "cros_files", "true");
+
+  if (!url_with_query_param.is_valid()) {
+    LOG(ERROR) << "Invalid URL";
+    return;
+  }
+
+  OpenNewTab(url_with_query_param);
 }
 
 }  // namespace util

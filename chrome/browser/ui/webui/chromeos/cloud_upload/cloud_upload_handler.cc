@@ -36,7 +36,7 @@ storage::FileSystemURL FilePathToFileSystemURL(
 // Runs the callback provided to `CloudUploadHandler::UploadToCloud`.
 void UploadToCloudDone(scoped_refptr<CloudUploadHandler> cloud_upload_handler,
                        CloudUploadHandler::UploadCallback callback,
-                       GURL hosted_url) {
+                       const GURL& hosted_url) {
   std::move(callback).Run(hosted_url);
 }
 

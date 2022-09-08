@@ -37,7 +37,7 @@ class CloudUploadHandler
       public drivefs::DriveFsHostObserver,
       public base::RefCounted<CloudUploadHandler> {
  public:
-  using UploadCallback = base::OnceCallback<void(GURL)>;
+  using UploadCallback = base::OnceCallback<void(const GURL&)>;
 
   // Generates the upload destination path.
   static base::FilePath GenerateUploadFolderPath(Profile* profile);

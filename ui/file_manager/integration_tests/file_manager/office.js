@@ -165,9 +165,11 @@ testcase.openOfficeWordFile = async () => {
       'openFile', appId, [ENTRIES.smallDocxHosted.nameText]));
 
   // Check that the Word file's alternate URL has been opened in a browser
-  // window.
+  // window. The query parameter is concatenated to the URL as office files
+  // opened from drive have this query parameter added
+  // (https://crrev.com/c/3867338).
   await remoteCall.waitForLastOpenedBrowserTabUrl(
-      ENTRIES.smallDocxHosted.alternateUrl);
+      ENTRIES.smallDocxHosted.alternateUrl.concat('&cros_files=true'));
 
   // Assert that a UMA sample has been reported for executing Web Drive Office
   // from Drive and Online.
