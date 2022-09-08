@@ -6,7 +6,6 @@
   "PATTERN_SOURCE_DUMMY": {
     "en": [
       {
-        "pattern_identifier": "legacy",
         "positive_pattern": "legacy",
         "positive_score": 0.0,
         "negative_pattern": null,
@@ -18,7 +17,6 @@
   "ADDRESS_HOME_STREET_NAME": {
     "en" : [
       {
-        "pattern_identifier": "en_street_name",
         "positive_pattern": "street",
         "positive_score": 1.1,
         "negative_pattern": null,
@@ -28,7 +26,6 @@
     ],
     "de" : [
       {
-        "pattern_identifier": "de_street_name",
         "positive_pattern": "stra(ss|ß)e",
         "positive_score": 1.1,
         "negative_pattern": null,
@@ -38,7 +35,6 @@
     ],
     "es" : [
       {
-        "pattern_identifier": "es_street_name",
         "positive_pattern": "calle",
         "positive_score": 1.1,
         "negative_pattern": null,
@@ -48,7 +44,6 @@
     ],
     "ru" : [
       {
-        "pattern_identifier": "ru_street_name",
         "positive_pattern": "улица|название.?улицы",
         "positive_score": 1.1,
         "negative_pattern": null,
@@ -58,7 +53,6 @@
     ],
     "pt" : [
       {
-        "pattern_identifier": "pt_street_name",
         "positive_pattern": "rua|avenida|((?<!do |de )endereço)",
         "positive_score": 1.1,
         "negative_pattern": null,
@@ -70,7 +64,6 @@
   "ADDRESS_HOME_APT_NUM": {
     "en": [
       {
-        "pattern_identifier": "en_apartment_number",
         "positive_pattern": "apartment",
         "positive_score": 1.1,
         "negative_pattern": null,
@@ -80,7 +73,6 @@
 	],
     "es": [
       {
-        "pattern_identifier": "es_apartment_number",
         "positive_pattern": "interior|número.*apartamento",
         "positive_score": 1.1,
         "negative_pattern": null,
@@ -90,7 +82,6 @@
 	],
     "de": [
       {
-        "pattern_identifier": "de_apartment_number",
         "positive_pattern": "wohnung",
         "positive_score": 1.1,
         "negative_pattern": null,
@@ -100,7 +91,6 @@
 	],
     "ru": [
       {
-        "pattern_identifier": "ru_apartment_number",
         "positive_pattern": "квартир",
         "positive_score": 1.1,
         "negative_pattern": null,
@@ -110,7 +100,6 @@
 	],
     "it": [
       {
-        "pattern_identifier": "it_apartment_number",
         "positive_pattern": "numero.*appartamento",
         "positive_score": 1.1,
         "negative_pattern": null,
@@ -120,7 +109,6 @@
 	],
     "fr": [
       {
-        "pattern_identifier": "fr_apartment_number",
         "positive_pattern": "numéro.*appartement",
         "positive_score": 1.1,
         "negative_pattern": null,
@@ -132,7 +120,6 @@
   "ADDRESS_HOME_HOUSE_NUMBER":{
     "en": [
       {
-        "pattern_identifier": "en_house_number",
         "positive_pattern": "(house.?|street.?|^)(number|no\\.?$)",
         "positive_score": 1.1,
         "negative_pattern": null,
@@ -142,7 +129,6 @@
     ],
     "de": [
       {
-        "pattern_identifier": "de_house_number",
         "positive_pattern": "(haus|^)(nummer|nr)",
         "positive_score": 1.1,
         "negative_pattern": null,
@@ -152,7 +138,6 @@
     ],
     "pt": [
       {
-        "pattern_identifier": "pt_house_number",
         "positive_pattern": "^\\*?.?número(.?\\*?$| da residência)",
         "positive_score": 1.1,
         "negative_pattern": null,
@@ -162,7 +147,6 @@
     ],
     "es": [
       {
-        "pattern_identifier": "es_house_number",
         "positive_pattern": "n(u|ú)mero.*apartamento|exterior",
         "positive_score": 1.1,
         "negative_pattern": null,
@@ -172,7 +156,6 @@
 	],
     "ru": [
       {
-        "pattern_identifier": "ru_house_number",
         "positive_pattern": "дом|номер.?дома",
         "positive_score": 1.1,
         "negative_pattern": null,
@@ -184,7 +167,6 @@
   "ATTENTION_IGNORED": {
     "en": [
       {
-        "pattern_identifier": "en_attention_ignored_preserving",
         "positive_pattern": "attention|attn",
         "positive_score": 1.1,
         "negative_pattern": null,
@@ -196,7 +178,6 @@
   "REGION_IGNORED": {
     "en": [
       {
-        "pattern_identifier": "en_region_ignored_preserving",
         "positive_pattern": "province|region|other",
         "positive_score": 1.1,
         "negative_pattern": null,
@@ -206,7 +187,6 @@
     ],
     "es": [
       {
-        "pattern_identifier": "es_region_ignored_preserving",
         "positive_pattern": "provincia",
         "positive_score": 1.1,
         "negative_pattern": null,
@@ -216,7 +196,6 @@
     ],
     "pt": [
       {
-        "pattern_identifier": "pt_region_ignored_preserving",
         "positive_pattern": "bairro|suburb",
         "positive_score": 1.1,
         "negative_pattern": null,
@@ -228,7 +207,6 @@
   "ADDRESS_NAME_IGNORED": {
     "en": [
       {
-        "pattern_identifier": "en_address_name_ignored_preserving",
         "positive_pattern": "address.*nickname|address.*label",
         "positive_score": 1.1,
         "negative_pattern": null,
@@ -238,7 +216,6 @@
     ],
     "tr": [
       {
-        "pattern_identifier": "tr_address_name_ignored_preserving",
         "positive_pattern": "adres ([İi]sim|başlığı|adı)",
         "positive_score": 1.1,
         "negative_pattern": null,
@@ -248,7 +225,6 @@
     ],
     "pt": [
       {
-        "pattern_identifier": "pt_address_name_ignored_preserving",
         "positive_pattern": "identificação do endereço",
         "positive_score": 1.1,
         "negative_pattern": null,
@@ -258,7 +234,6 @@
     ],
     "id": [
       {
-        "pattern_identifier": "id_address_name_ignored_preserving",
         "positive_pattern": "(label|judul|nama) alamat",
         "positive_score": 1.1,
         "negative_pattern": null,
@@ -270,7 +245,6 @@
   "COMPANY_NAME": {
     "en": [
       {
-        "pattern_identifier": "en_company_preserving",
         "positive_pattern": "company|business|organization|organisation",
         "positive_score": 1.1,
         "negative_pattern": null,
@@ -280,7 +254,6 @@
     ],
     "de": [
       {
-        "pattern_identifier": "de_company_preserving",
         "positive_pattern": "(?<!con)firma|firmenname",
         "positive_score": 1.1,
         "negative_pattern": null,
@@ -290,7 +263,6 @@
     ],
     "es": [
       {
-        "pattern_identifier": "es_company_preserving",
         "positive_pattern": "empresa",
         "positive_score": 1.1,
         "negative_pattern": null,
@@ -300,7 +272,6 @@
     ],
     "fr": [
       {
-        "pattern_identifier": "fr_company_preserving",
         "positive_pattern": "societe|société",
         "positive_score": 1.1,
         "negative_pattern": null,
@@ -310,7 +281,6 @@
     ],
     "it": [
       {
-        "pattern_identifier": "it_company_preserving",
         "positive_pattern": "ragione.?sociale",
         "positive_score": 1.1,
         "negative_pattern": null,
@@ -320,7 +290,6 @@
     ],
     "ja": [
       {
-        "pattern_identifier": "ja_company_preserving",
         "positive_pattern": "会社",
         "positive_score": 1.1,
         "negative_pattern": null,
@@ -330,7 +299,6 @@
     ],
     "ru": [
       {
-        "pattern_identifier": "ru_company_preserving",
         "positive_pattern": "название.?компании",
         "positive_score": 1.1,
         "negative_pattern": null,
@@ -340,7 +308,6 @@
     ],
     "zh-CN": [
       {
-        "pattern_identifier": "zh_company_preserving",
         "positive_pattern": "单位|公司",
         "positive_score": 1.1,
         "negative_pattern": null,
@@ -350,7 +317,6 @@
     ],
     "fa": [
       {
-        "pattern_identifier": "fa_company_preserving",
         "positive_pattern": "شرکت",
         "positive_score": 1.1,
         "negative_pattern": null,
@@ -360,7 +326,6 @@
     ],
     "ko": [
       {
-        "pattern_identifier": "ko_company_preserving",
         "positive_pattern": "회사|직장",
         "positive_score": 1.1,
         "negative_pattern": null,
@@ -370,7 +335,6 @@
     ],
     "id": [
       {
-        "pattern_identifier": "id_company_preserving",
         "positive_pattern": "(nama.?)?perusahaan",
         "positive_score": 1.1,
         "negative_pattern": null,
@@ -382,7 +346,6 @@
   "ADDRESS_LINE_1": {
     "en": [
       {
-        "pattern_identifier": "en_address_line_1_preserving",
         "positive_pattern": "^address$|address[_-]?line(one)?|address1|addr1|street|(?:shipping|billing)address$|house.?name",
         "positive_score": 1.1,
         "negative_pattern": null,
@@ -390,7 +353,6 @@
         "match_field_input_types": ["TEXT", "SEARCH"]
       },
       {
-        "pattern_identifier": "en_address_line_1_label_preserving",
         "positive_pattern": "(^\\W*address)|(address\\W*$)|(?:shipping|billing|mailing|pick.?up|drop.?off|delivery|sender|postal|recipient|home|work|office|school|business|mail)[\\s\\-]+address|address\\s+(of|for|to|from)|street.*(house|building|apartment|floor)|(house|building|apartment|floor).*street",
         "positive_score": 1.1,
         "negative_pattern": null,
@@ -400,7 +362,6 @@
     ],
     "de": [
       {
-        "pattern_identifier": "de_address_line_1_preserving",
         "positive_pattern": "strasse|straße",
         "positive_score": 1.1,
         "negative_pattern": null,
@@ -410,7 +371,6 @@
     ],
     "es": [
       {
-        "pattern_identifier": "es_address_line_1_preserving",
         "positive_pattern": "direccion|dirección",
         "positive_score": 1.1,
         "negative_pattern": null,
@@ -420,7 +380,6 @@
     ],
     "fr": [
       {
-        "pattern_identifier": "fr_address_line_1_preserving",
         "positive_pattern": "adresse",
         "positive_score": 1.1,
         "negative_pattern": null,
@@ -428,7 +387,6 @@
         "match_field_input_types": ["TEXT", "SEARCH"]
       },
       {
-        "pattern_identifier": "fr_address_line_1_label_preserving",
         "positive_pattern": "adresse",
         "positive_score": 1.1,
         "negative_pattern": null,
@@ -438,7 +396,6 @@
     ],
     "it": [
       {
-        "pattern_identifier": "it_address_line_1_preserving",
         "positive_pattern": "indirizzo",
         "positive_score": 1.1,
         "negative_pattern": null,
@@ -446,7 +403,6 @@
         "match_field_input_types": ["TEXT", "SEARCH"]
       },
       {
-        "pattern_identifier": "it_address_line_1_label_preserving",
         "positive_pattern": "indirizzo",
         "positive_score": 1.1,
         "negative_pattern": null,
@@ -456,7 +412,6 @@
     ],
     "ja": [
       {
-        "pattern_identifier": "ja_address_line_1_preserving",
         "positive_pattern": "^住所$|住所1",
         "positive_score": 1.1,
         "negative_pattern": null,
@@ -464,7 +419,6 @@
         "match_field_input_types": ["TEXT", "SEARCH"]
       },
       {
-        "pattern_identifier": "ja_address_line_1_label_preserving",
         "positive_pattern": "住所",
         "positive_score": 1.1,
         "negative_pattern": null,
@@ -474,7 +428,6 @@
     ],
     "pt": [
       {
-        "pattern_identifier": "pt_address_line_1_preserving",
         "positive_pattern": "morada|((?<!do |de )endereço)",
         "positive_score": 1.1,
         "negative_pattern": null,
@@ -484,7 +437,6 @@
     ],
     "ru": [
       {
-        "pattern_identifier": "ru_address_line_1_preserving",
         "positive_pattern": "Адрес",
         "positive_score": 1.1,
         "negative_pattern": null,
@@ -492,7 +444,6 @@
         "match_field_input_types": ["TEXT", "SEARCH"]
       },
       {
-        "pattern_identifier": "ru_address_line_1_label_preserving",
         "positive_pattern": "улиц.*(дом|корпус|квартир|этаж)|(дом|корпус|квартир|этаж).*улиц",
         "positive_score": 1.1,
         "negative_pattern": null,
@@ -502,7 +453,6 @@
     ],
     "zh-CN": [
       {
-        "pattern_identifier": "zh_address_line_1_preserving",
         "positive_pattern": "地址",
         "positive_score": 1.1,
         "negative_pattern": null,
@@ -512,7 +462,6 @@
     ],
     "tr": [
       {
-        "pattern_identifier": "tr_address_line_1_preserving",
         "positive_pattern": "(\\b|_)adres(?! tarifi)(\\b|_)",
         "positive_score": 1.1,
         "negative_pattern": null,
@@ -520,7 +469,6 @@
         "match_field_input_types": ["TEXT", "SEARCH"]
       },
       {
-        "pattern_identifier": "tr_address_line_1_label_preserving",
         "positive_pattern": "(\\b|_)adres(?! tarifi)(\\b|_)|(sokak|cadde).*(apartman|bina|daire|mahalle)|(apartman|bina|daire|mahalle).*(sokak|cadde)",
         "positive_score": 1.1,
         "negative_pattern": null,
@@ -530,7 +478,6 @@
     ],
     "ko": [
       {
-        "pattern_identifier": "ko_address_line_1_preserving",
         "positive_pattern": "^주소.?$|주소.?1",
         "positive_score": 1.1,
         "negative_pattern": null,
@@ -539,7 +486,6 @@
       }
     ,
       {
-        "pattern_identifier": "ko_address_line_1_label_preserving",
         "positive_pattern": "주소",
         "positive_score": 1.1,
         "negative_pattern": null,
@@ -549,7 +495,6 @@
     ],
     "id": [
       {
-        "pattern_identifier": "id_address_line_1_preserving",
         "positive_pattern": "^alamat",
         "positive_score": 1.1,
         "negative_pattern": null,
@@ -558,7 +503,6 @@
       }
     ,
       {
-        "pattern_identifier": "id_address_line_1_label_preserving",
         "positive_pattern": "^alamat",
         "positive_score": 1.1,
         "negative_pattern": null,
@@ -570,7 +514,6 @@
   "ADDRESS_LINE_2": {
     "en": [
       {
-        "pattern_identifier": "en_address_line_2_preserving",
         "positive_pattern": "address[_-]?line(2|two)|address2|addr2|street|suite|unit",
         "positive_score": 1.1,
         "negative_pattern": null,
@@ -578,7 +521,6 @@
         "match_field_input_types": ["TEXT"]
       },
       {
-        "pattern_identifier": "en_address_line_2_label_preserving",
         "positive_pattern": "address|line",
         "positive_score": 1.1,
         "negative_pattern": null,
@@ -588,7 +530,6 @@
     ],
     "de": [
       {
-        "pattern_identifier": "de_address_line_2_preserving",
         "positive_pattern": "adresszusatz|ergänzende.?angaben",
         "positive_score": 1.1,
         "negative_pattern": null,
@@ -598,7 +539,6 @@
     ],
     "es": [
       {
-        "pattern_identifier": "es_address_line_2_preserving",
         "positive_pattern": "direccion2|colonia|adicional",
         "positive_score": 1.1,
         "negative_pattern": null,
@@ -608,7 +548,6 @@
     ],
     "fr": [
       {
-        "pattern_identifier": "fr_address_line_2_preserving",
         "positive_pattern": "addresssuppl|complementnom|appartement",
         "positive_score": 1.1,
         "negative_pattern": null,
@@ -616,7 +555,6 @@
         "match_field_input_types": ["TEXT"]
       },
       {
-        "pattern_identifier": "fr_address_line_2_label_preserving",
         "positive_pattern": "adresse",
         "positive_score": 1.1,
         "negative_pattern": null,
@@ -626,7 +564,6 @@
     ],
     "it": [
       {
-        "pattern_identifier": "it_address_line_2_preserving",
         "positive_pattern": "indirizzo2",
         "positive_score": 1.1,
         "negative_pattern": null,
@@ -634,7 +571,6 @@
         "match_field_input_types": ["TEXT"]
       },
       {
-        "pattern_identifier": "it_address_line_2_label_preserving",
         "positive_pattern": "indirizzo",
         "positive_score": 1.1,
         "negative_pattern": null,
@@ -644,7 +580,6 @@
     ],
     "ja": [
       {
-        "pattern_identifier": "ja_address_line_2_preserving",
         "positive_pattern": "住所2",
         "positive_score": 1.1,
         "negative_pattern": null,
@@ -654,7 +589,6 @@
     ],
     "pt": [
       {
-        "pattern_identifier": "pt_address_line_2_preserving",
         "positive_pattern": "complemento|addrcomplement",
         "positive_score": 1.1,
         "negative_pattern": null,
@@ -664,7 +598,6 @@
     ],
     "ru": [
       {
-        "pattern_identifier": "ru_address_line_2_preserving",
         "positive_pattern": "Улица",
         "positive_score": 1.1,
         "negative_pattern": null,
@@ -674,7 +607,6 @@
     ],
     "zh-CN": [
       {
-        "pattern_identifier": "zh_address_line_2_preserving",
         "positive_pattern": "地址2",
         "positive_score": 1.1,
         "negative_pattern": null,
@@ -682,7 +614,6 @@
         "match_field_input_types": ["TEXT"]
       },
       {
-        "pattern_identifier": "zh_address_line_2_label_preserving",
         "positive_pattern": "地址",
         "positive_score": 1.1,
         "negative_pattern": null,
@@ -692,7 +623,6 @@
     ],
     "ko": [
       {
-        "pattern_identifier": "ko_address_line_2_preserving",
         "positive_pattern": "주소.?2",
         "positive_score": 1.1,
         "negative_pattern": null,
@@ -700,7 +630,6 @@
         "match_field_input_types": ["TEXT"]
       },
       {
-        "pattern_identifier": "ko_address_line_2_label_preserving",
         "positive_pattern": "주소",
         "positive_score": 1.1,
         "negative_pattern": null,
@@ -712,7 +641,6 @@
   "ADDRESS_LINE_EXTRA": {
     "en": [
       {
-        "pattern_identifier": "en_address_line_extra_preserving",
         "positive_pattern": "address.*line[3-9]|address[3-9]|addr[3-9]|street|line[3-9]",
         "positive_score": 1.1,
         "negative_pattern": null,
@@ -722,7 +650,6 @@
     ],
     "es": [
       {
-        "pattern_identifier": "es_address_line_extra_preserving",
         "positive_pattern": "municipio",
         "positive_score": 1.1,
         "negative_pattern": null,
@@ -732,7 +659,6 @@
     ],
     "fr": [
       {
-        "pattern_identifier": "fr_address_line_extra_preserving",
         "positive_pattern": "batiment|residence",
         "positive_score": 1.1,
         "negative_pattern": null,
@@ -742,7 +668,6 @@
     ],
     "it": [
       {
-        "pattern_identifier": "it_address_line_extra_preserving",
         "positive_pattern": "indirizzo[3-9]",
         "positive_score": 1.1,
         "negative_pattern": null,
@@ -754,7 +679,6 @@
   "ADDRESS_LOOKUP": {
     "en": [
       {
-        "pattern_identifier": "en_address_lookup_preserving",
         "positive_pattern": "lookup",
         "positive_score": 1.1,
         "negative_pattern": null,
@@ -766,7 +690,6 @@
   "COUNTRY": {
     "en": [
       {
-        "pattern_identifier": "en_country_preserving",
         "positive_pattern": "country|countries",
         "positive_score": 1.1,
         "negative_pattern": null,
@@ -776,7 +699,6 @@
     ],
     "es": [
       {
-        "pattern_identifier": "es_country_preserving",
         "positive_pattern": "país|pais",
         "positive_score": 1.1,
         "negative_pattern": null,
@@ -786,7 +708,6 @@
     ],
     "de": [
       {
-        "pattern_identifier": "de_country_preserving",
         "positive_pattern": "(\\b|_)land(\\b|_)(?!.*(mark.*))",
         "positive_score": 1.1,
         "negative_pattern": null,
@@ -796,7 +717,6 @@
     ],
     "ja": [
       {
-        "pattern_identifier": "ja_country_preserving",
         "positive_pattern": "(?<!(入|出))国",
         "positive_score": 1.1,
         "negative_pattern": null,
@@ -806,7 +726,6 @@
     ],
     "zh-CN": [
       {
-        "pattern_identifier": "zh_country_preserving",
         "positive_pattern": "国家",
         "positive_score": 1.1,
         "negative_pattern": null,
@@ -816,7 +735,6 @@
     ],
     "ko": [
       {
-        "pattern_identifier": "ko_country_preserving",
         "positive_pattern": "국가|나라",
         "positive_score": 1.1,
         "negative_pattern": null,
@@ -826,7 +744,6 @@
     ],
     "tr": [
       {
-        "pattern_identifier": "tr_country_preserving",
         "positive_pattern": "(\\b|_)(ülke|ulce|ulke)(\\b|_)",
         "positive_score": 1.1,
         "negative_pattern": null,
@@ -836,7 +753,6 @@
     ],
     "fa": [
       {
-        "pattern_identifier": "fa_country_preserving",
         "positive_pattern": "کشور",
         "positive_score": 1.1,
         "negative_pattern": null,
@@ -846,7 +762,6 @@
     ],
     "id": [
       {
-        "pattern_identifier": "id_country_preserving",
         "positive_pattern": "negara",
         "positive_score": 1.1,
         "negative_pattern": null,
@@ -858,7 +773,6 @@
   "COUNTRY_LOCATION": {
     "en": [
       {
-        "pattern_identifier": "en_country_location_preserving",
         "positive_pattern": "location",
         "positive_score": 1.1,
         "negative_pattern": null,
@@ -870,7 +784,6 @@
   "ZIP_CODE": {
     "en": [
       {
-        "pattern_identifier": "en_zip_code_preserving",
         "positive_pattern": "zip|postal|post.*code|pcode|pin.?code",
         "positive_score": 1.1,
         "negative_pattern": "\\.zip\\b",
@@ -879,7 +792,6 @@
         "match_field_input_types": ["TEXT", "TELEPHONE", "NUMBER"]
       },
       {
-        "pattern_identifier": "en_zip_code_preserving",
         "positive_pattern": "address\\.zip",
         "positive_score": 1.1,
         "negative_pattern": null,
@@ -890,7 +802,6 @@
     ],
     "de": [
       {
-        "pattern_identifier": "de_zip_code_preserving",
         "positive_pattern": "postleitzahl",
         "positive_score": 1.1,
         "negative_pattern": null,
@@ -900,7 +811,6 @@
     ],
     "es": [
       {
-        "pattern_identifier": "es_zip_code_preserving",
         "positive_pattern": "\\bcp\\b",
         "positive_score": 1.1,
         "negative_pattern": null,
@@ -910,7 +820,6 @@
     ],
     "fr": [
       {
-        "pattern_identifier": "fr_zip_code_preserving",
         "positive_pattern": "\\bcdp\\b",
         "positive_score": 1.1,
         "negative_pattern": null,
@@ -920,7 +829,6 @@
     ],
     "it": [
       {
-        "pattern_identifier": "it_zip_code_preserving",
         "positive_pattern": "\\bcap\\b",
         "positive_score": 1.1,
         "negative_pattern": null,
@@ -930,7 +838,6 @@
     ],
     "ja": [
       {
-        "pattern_identifier": "ja_zip_code_preserving",
         "positive_pattern": "郵便番号",
         "positive_score": 1.1,
         "negative_pattern": null,
@@ -940,7 +847,6 @@
     ],
     "pt": [
       {
-        "pattern_identifier": "pt_zip_code_preserving",
         "positive_pattern": "codigo|codpos|\\bcep\\b",
         "positive_score": 1.1,
         "negative_pattern": null,
@@ -950,7 +856,6 @@
     ],
     "ru": [
       {
-        "pattern_identifier": "ru_zip_code_preserving",
         "positive_pattern": "Почтовый.?Индекс",
         "positive_score": 1.1,
         "negative_pattern": null,
@@ -960,7 +865,6 @@
     ],
     "hi": [
       {
-        "pattern_identifier": "hi_zip_code_preserving",
         "positive_pattern": "पिन.?कोड",
         "positive_score": 1.1,
         "negative_pattern": null,
@@ -970,7 +874,6 @@
     ],
     "ml": [
       {
-        "pattern_identifier": "ml_zip_code_preserving",
         "positive_pattern": "പിന്‍കോഡ്",
         "positive_score": 1.1,
         "negative_pattern": null,
@@ -980,7 +883,6 @@
     ],
     "zh-CN": [
       {
-        "pattern_identifier": "zh_zip_code_preserving",
         "positive_pattern": "邮政编码|邮编",
         "positive_score": 1.1,
         "negative_pattern": null,
@@ -990,7 +892,6 @@
     ],
     "zh-TW": [
       {
-        "pattern_identifier": "zh_tw_zip_code_preserving",
         "positive_pattern": "郵遞區號",
         "positive_score": 1.1,
         "negative_pattern": null,
@@ -1000,7 +901,6 @@
     ],
     "tr": [
       {
-        "pattern_identifier": "tr_zip_code_preserving",
         "positive_pattern": "(\\b|_)posta kodu(\\b|_)",
         "positive_score": 1.1,
         "negative_pattern": null,
@@ -1010,7 +910,6 @@
     ],
     "ko": [
       {
-        "pattern_identifier": "ko_zip_code_preserving",
         "positive_pattern": "우편.?번호",
         "positive_score": 1.1,
         "negative_pattern": null,
@@ -1020,7 +919,6 @@
     ],
     "id": [
       {
-        "pattern_identifier": "id_zip_code_preserving",
         "positive_pattern": "kode.?pos",
         "positive_score": 1.1,
         "negative_pattern": null,
@@ -1032,7 +930,6 @@
   "ZIP_4": {
     "en": [
       {
-        "pattern_identifier": "en_zip_4_preserving",
         "positive_pattern": "zip|^-$|post2",
         "positive_score": 1.1,
         "negative_pattern": "\\.zip",
@@ -1043,7 +940,6 @@
     ],
     "pt": [
       {
-        "pattern_identifier": "pt_zip_4_preserving",
         "positive_pattern": "codpos2",
         "positive_score": 1.1,
         "negative_pattern": null,
@@ -1055,7 +951,6 @@
   "ADDRESS_HOME_DEPENDENT_LOCALITY": {
     "en": [
       {
-        "pattern_identifier": "en_dependent_locality_preserving",
         "positive_pattern": "neighbo(u)?rhood",
         "positive_score": 1.1,
         "negative_pattern": null,
@@ -1065,7 +960,6 @@
     ],
     "pt": [
       {
-        "pattern_identifier": "pt_dependent_locality_preserving",
         "positive_pattern": "bairro",
         "positive_score": 1.1,
         "negative_pattern": null,
@@ -1075,7 +969,6 @@
     ],
     "tr": [
       {
-        "pattern_identifier": "tr_dependent_locality_preserving",
         "positive_pattern": "mahalle|köy",
         "positive_score": 1.1,
         "negative_pattern": null,
@@ -1085,7 +978,6 @@
     ],
     "id": [
       {
-        "pattern_identifier": "id_dependent_locality_preserving",
         "positive_pattern": "kecamatan",
         "positive_score": 1.1,
         "negative_pattern": null,
@@ -1097,7 +989,6 @@
   "CITY": {
     "en": [
       {
-        "pattern_identifier": "en_city_preserving",
         "positive_pattern": "city|town|suburb",
         "positive_score": 1.1,
         "negative_pattern": null,
@@ -1107,7 +998,6 @@
     ],
     "de": [
       {
-        "pattern_identifier": "de_city_preserving",
         "positive_pattern": "\\bort\\b|stadt",
         "positive_score": 1.1,
         "negative_pattern": null,
@@ -1117,7 +1007,6 @@
     ],
     "es": [
       {
-        "pattern_identifier": "es_city_preserving",
         "positive_pattern": "ciudad|provincia|localidad|poblacion",
         "positive_score": 1.1,
         "negative_pattern": null,
@@ -1127,7 +1016,6 @@
     ],
     "fr": [
       {
-        "pattern_identifier": "fr_city_preserving",
         "positive_pattern": "ville|commune",
         "positive_score": 1.1,
         "negative_pattern": null,
@@ -1137,7 +1025,6 @@
     ],
     "it": [
       {
-        "pattern_identifier": "it_city_preserving",
         "positive_pattern": "localita",
         "positive_score": 1.1,
         "negative_pattern": null,
@@ -1147,7 +1034,6 @@
     ],
     "ja": [
       {
-        "pattern_identifier": "ja_city_preserving",
         "positive_pattern": "市区町村",
         "positive_score": 1.1,
         "negative_pattern": null,
@@ -1157,7 +1043,6 @@
     ],
     "pt": [
       {
-        "pattern_identifier": "pt_city_preserving",
         "positive_pattern": "cidade|município",
         "positive_score": 1.1,
         "negative_pattern": null,
@@ -1167,7 +1052,6 @@
     ],
     "ru": [
       {
-        "pattern_identifier": "ru_city_preserving",
         "positive_pattern": "Город|Насел(е|ё)нный.?пункт",
         "positive_score": 1.1,
         "negative_pattern": null,
@@ -1177,7 +1061,6 @@
     ],
     "zh-TW": [
       {
-        "pattern_identifier": "zh_city_preserving",
         "positive_pattern": "市|分區",
         "positive_score": 1.1,
         "negative_pattern": null,
@@ -1187,7 +1070,6 @@
     ],
     "fa": [
       {
-        "pattern_identifier": "fa_city_preserving",
         "positive_pattern": "شهر",
         "positive_score": 1.1,
         "negative_pattern": null,
@@ -1197,7 +1079,6 @@
     ],
     "hi": [
       {
-        "pattern_identifier": "hi_city_preserving",
         "positive_pattern": "शहर|ग्राम|गाँव",
         "positive_score": 1.1,
         "negative_pattern": null,
@@ -1207,7 +1088,6 @@
     ],
     "ml": [
       {
-        "pattern_identifier": "ml_city_preserving",
         "positive_pattern": "നഗരം|ഗ്രാമം",
         "positive_score": 1.1,
         "negative_pattern": null,
@@ -1217,7 +1097,6 @@
     ],
     "tr": [
       {
-        "pattern_identifier": "tr_city_preserving",
         "positive_pattern": "((\\b|_|\\*)([İii̇]l[cç]e(miz|niz)?)(\\b|_|\\*))",
         "positive_score": 1.1,
         "negative_pattern": null,
@@ -1227,7 +1106,6 @@
     ],
     "ko": [
       {
-        "pattern_identifier": "ko_city_preserving",
         "positive_pattern": "^시[^도·・]|시[·・]?군[·・]?구",
         "positive_score": 1.1,
         "negative_pattern": null,
@@ -1237,7 +1115,6 @@
     ],
     "id": [
       {
-        "pattern_identifier": "id_city_preserving",
         "positive_pattern": "kota|kabupaten",
         "positive_score": 1.1,
         "negative_pattern": null,
@@ -1249,7 +1126,6 @@
   "STATE": {
     "en": [
       {
-        "pattern_identifier": "en_state_preserving",
         "positive_pattern": "(?<!(united|hist|history).?)state|county|region|province|county|principality",
         "positive_score": 1.1,
         "negative_pattern": null,
@@ -1259,7 +1135,6 @@
     ],
     "ja": [
       {
-        "pattern_identifier": "ja_state_preserving",
         "positive_pattern": "都道府県",
         "positive_score": 1.1,
         "negative_pattern": null,
@@ -1269,7 +1144,6 @@
     ],
     "pt": [
       {
-        "pattern_identifier": "pt_state_preserving",
         "positive_pattern": "estado|provincia",
         "positive_score": 1.1,
         "negative_pattern": null,
@@ -1279,7 +1153,6 @@
     ],
     "ru": [
       {
-        "pattern_identifier": "ru_state_preserving",
         "positive_pattern": "область",
         "positive_score": 1.1,
         "negative_pattern": null,
@@ -1289,7 +1162,6 @@
     ],
     "zh-TW": [
       {
-        "pattern_identifier": "zh_state_preserving",
         "positive_pattern": "省|地區",
         "positive_score": 1.1,
         "negative_pattern": null,
@@ -1299,7 +1171,6 @@
     ],
     "ml": [
       {
-        "pattern_identifier": "ml_state_preserving",
         "positive_pattern": "സംസ്ഥാനം",
         "positive_score": 1.1,
         "negative_pattern": null,
@@ -1309,7 +1180,6 @@
     ],
     "fa": [
       {
-        "pattern_identifier": "fa_state_preserving",
         "positive_pattern": "استان",
         "positive_score": 1.1,
         "negative_pattern": null,
@@ -1319,7 +1189,6 @@
     ],
     "hi": [
       {
-        "pattern_identifier": "hi_state_preserving",
         "positive_pattern": "राज्य",
         "positive_score": 1.1,
         "negative_pattern": null,
@@ -1329,7 +1198,6 @@
     ],
     "tr": [
       {
-        "pattern_identifier": "tr_state_preserving",
         "positive_pattern": "((\\b|_|\\*)(eyalet|[şs]ehir|[İii̇]l(imiz)?|kent)(\\b|_|\\*))",
         "positive_score": 1.1,
         "negative_pattern": null,
@@ -1339,7 +1207,6 @@
     ],
     "ko": [
       {
-        "pattern_identifier": "ko_state_preserving",
         "positive_pattern": "^시[·・]?도",
         "positive_score": 1.1,
         "negative_pattern": null,
@@ -1349,7 +1216,6 @@
     ],
     "id": [
       {
-        "pattern_identifier": "id_state_preserving",
         "positive_pattern": "provinci",
         "positive_score": 1.1,
         "negative_pattern": null,
@@ -1361,7 +1227,6 @@
   "SEARCH_TERM": {
     "en": [
       {
-        "pattern_identifier": "en_search_term_preserving",
         "positive_pattern": "^q$|search|query|qry",
         "positive_score": 0.8,
         "negative_pattern": null,
@@ -1371,7 +1236,6 @@
     ],
     "de": [
       {
-        "pattern_identifier": "de_search_term_preserving",
         "positive_pattern": "suche.*",
         "positive_score": 0.8,
         "negative_pattern": null,
@@ -1381,7 +1245,6 @@
     ],
     "zh-CN": [
       {
-        "pattern_identifier": "zh_search_term_preserving",
         "positive_pattern": "搜索",
         "positive_score": 0.8,
         "negative_pattern": null,
@@ -1391,7 +1254,6 @@
     ],
     "ja": [
       {
-        "pattern_identifier": "ja_search_term_preserving",
         "positive_pattern": "探す|検索",
         "positive_score": 0.8,
         "negative_pattern": null,
@@ -1401,7 +1263,6 @@
     ],
     "fr": [
       {
-        "pattern_identifier": "fr_search_term_preserving",
         "positive_pattern": "recherch.*",
         "positive_score": 0.8,
         "negative_pattern": null,
@@ -1411,7 +1272,6 @@
     ],
     "pt": [
       {
-        "pattern_identifier": "pt_search_term_preserving",
         "positive_pattern": "busca",
         "positive_score": 0.8,
         "negative_pattern": null,
@@ -1421,7 +1281,6 @@
     ],
     "fa": [
       {
-        "pattern_identifier": "fa_search_term_preserving",
         "positive_pattern": "جستجو",
         "positive_score": 0.8,
         "negative_pattern": null,
@@ -1431,7 +1290,6 @@
     ],
     "ru": [
       {
-        "pattern_identifier": "ru_search_term_preserving",
         "positive_pattern": "искать|найти|поиск",
         "positive_score": 0.8,
         "negative_pattern": null,
@@ -1443,7 +1301,6 @@
   "PRICE": {
     "en": [
       {
-        "pattern_identifier": "en_price_preserving",
         "positive_pattern": "\\bprice\\b|\\brate\\b|\\bcost\\b",
         "positive_score": 0.95,
         "negative_pattern": null,
@@ -1453,7 +1310,6 @@
     ],
     "ar": [
       {
-        "pattern_identifier": "ar_price_preserving",
         "positive_pattern": "قیمة‎|سعر‎",
         "positive_score": 0.95,
         "negative_pattern": null,
@@ -1463,7 +1319,6 @@
     ],
     "fa": [
       {
-        "pattern_identifier": "fa_price_preserving",
         "positive_pattern": "قیمت",
         "positive_score": 0.95,
         "negative_pattern": null,
@@ -1473,7 +1328,6 @@
     ],
     "fr": [
       {
-        "pattern_identifier": "fr_price_preserving",
         "positive_pattern": "\\bprix\\b|\\bcoût\\b|\\bcout\\b|\\btarif\\b",
         "positive_score": 0.95,
         "negative_pattern": null,
@@ -1485,7 +1339,6 @@
   "NAME_ON_CARD": {
     "en": [
       {
-        "pattern_identifier": "en_name_on_card_preserving",
         "positive_pattern": "card.?(?:holder|owner)|name.*(\\b)?on(\\b)?.*card|(?:card|cc).?name|cc.?full.?name",
         "positive_score": 1.0,
         "negative_pattern": null,
@@ -1495,7 +1348,6 @@
     ],
     "de": [
       {
-        "pattern_identifier": "de_name_on_card_preserving",
         "positive_pattern": "karteninhaber",
         "positive_score": 1.0,
         "negative_pattern": null,
@@ -1505,7 +1357,6 @@
     ],
     "es": [
       {
-        "pattern_identifier": "es_name_on_card_preserving",
         "positive_pattern": "nombre.*tarjeta",
         "positive_score": 1.0,
         "negative_pattern": null,
@@ -1515,7 +1366,6 @@
     ],
     "fr": [
       {
-        "pattern_identifier": "fr_name_on_card_preserving",
         "positive_pattern": "nom.*carte",
         "positive_score": 1.0,
         "negative_pattern": null,
@@ -1525,7 +1375,6 @@
     ],
     "it": [
       {
-        "pattern_identifier": "it_name_on_card_preserving",
         "positive_pattern": "nome.*cart",
         "positive_score": 1.0,
         "negative_pattern": null,
@@ -1535,7 +1384,6 @@
     ],
     "ja": [
       {
-        "pattern_identifier": "ja_name_on_card_preserving",
         "positive_pattern": "名前",
         "positive_score": 1.0,
         "negative_pattern": null,
@@ -1545,7 +1393,6 @@
     ],
     "ru": [
       {
-        "pattern_identifier": "ru_name_on_card_preserving",
         "positive_pattern": "Имя.*карты",
         "positive_score": 1.0,
         "negative_pattern": null,
@@ -1555,7 +1402,6 @@
     ],
     "zh-CN": [
       {
-        "pattern_identifier": "zh_name_on_card_preserving",
         "positive_pattern": "信用卡开户名|开户名|持卡人姓名|持卡人姓名",
         "positive_score": 1.0,
         "negative_pattern": null,
@@ -1565,7 +1411,6 @@
     ],
     "id": [
       {
-        "pattern_identifier": "id_name_on_card_preserving",
         "positive_pattern": "nama.*kartu",
         "positive_score": 1.0,
         "negative_pattern": null,
@@ -1577,7 +1422,6 @@
   "NAME_ON_CARD_CONTEXTUAL": {
     "en": [
       {
-        "pattern_identifier": "en_name_on_card_contextual_preserving",
         "positive_pattern": "name",
         "positive_score": 1.0,
         "negative_pattern": null,
@@ -1589,7 +1433,6 @@
   "CREDIT_CARD_NUMBER": {
     "en": [
       {
-        "pattern_identifier": "en_card_number_preserving",
         "positive_pattern": "(add)?(?:card|cc|acct).?(?:number|#|no|num|field|pan)",
         "positive_score": 1.0,
         "negative_pattern": null,
@@ -1599,7 +1442,6 @@
     ],
     "de": [
       {
-        "pattern_identifier": "de_card_number_preserving",
         "positive_pattern": "(?<!telefon|haus|person|fødsels|kunden)nummer",
         "positive_score": 1.0,
         "negative_pattern": null,
@@ -1609,7 +1451,6 @@
     ],
     "ja": [
       {
-        "pattern_identifier": "ja_card_number_preserving",
         "positive_pattern": "カード番号",
         "positive_score": 1.0,
         "negative_pattern": null,
@@ -1619,7 +1460,6 @@
     ],
     "ru": [
       {
-        "pattern_identifier": "ru_card_number_preserving",
         "positive_pattern": "Номер.*карты",
         "positive_score": 1.0,
         "negative_pattern": null,
@@ -1629,7 +1469,6 @@
     ],
     "zh-CN": [
       {
-        "pattern_identifier": "zh_card_number_preserving",
         "positive_pattern": "信用卡号|信用卡号码",
         "positive_score": 1.0,
         "negative_pattern": null,
@@ -1639,7 +1478,6 @@
     ],
     "zh-TW": [
       {
-        "pattern_identifier": "zh_card_number_preserving",
         "positive_pattern": "信用卡卡號",
         "positive_score": 1.0,
         "negative_pattern": null,
@@ -1649,7 +1487,6 @@
     ],
     "ko": [
       {
-        "pattern_identifier": "ko_card_number_preserving",
         "positive_pattern": "카드",
         "positive_score": 1.0,
         "negative_pattern": null,
@@ -1659,7 +1496,6 @@
     ],
     "es": [
       {
-        "pattern_identifier": "es_card_number_preserving",
         "positive_pattern": "(numero|número|numéro)(?!.*(document|fono|phone|réservation))",
         "positive_score": 1.0,
         "negative_pattern": null,
@@ -1669,7 +1505,6 @@
     ],
     "pt": [
       {
-        "pattern_identifier": "pt_card_number_preserving",
         "positive_pattern": "(numero|número|numéro)(?!.*(document|fono|phone|réservation))",
         "positive_score": 1.0,
         "negative_pattern": null,
@@ -1679,7 +1514,6 @@
     ],
     "fr": [
       {
-        "pattern_identifier": "fr_card_number_preserving",
         "positive_pattern": "(numero|número|numéro)(?!.*(document|fono|phone|réservation))",
         "positive_score": 1.0,
         "negative_pattern": null,
@@ -1689,7 +1523,6 @@
     ],
     "id": [
       {
-        "pattern_identifier": "id_card_number_preserving",
         "positive_pattern": "no.*kartu",
         "positive_score": 1.0,
         "negative_pattern": null,
@@ -1701,7 +1534,6 @@
   "CREDIT_CARD_VERIFICATION_CODE": {
     "en": [
       {
-        "pattern_identifier": "en_card_cvc_preserving",
         "positive_pattern": "verification|card.?identification|security.?code|card.?code|security.?value|security.?number|card.?pin|c-v-v|(cvn|cvv|cvc|csc|cvd|cid|ccv)(field)?|\\bcid\\b",
         "positive_score": 1.0,
         "negative_pattern": null,
@@ -1713,7 +1545,6 @@
   "CREDIT_CARD_EXP_MONTH": {
     "en": [
       {
-        "pattern_identifier": "en_card_exp_month_preserving",
         "positive_pattern": "expir|exp.*mo|exp.*date|ccmonth|cardmonth|addmonth",
         "positive_score": 1.0,
         "negative_pattern": null,
@@ -1723,7 +1554,6 @@
     ],
     "de": [
       {
-        "pattern_identifier": "de_card_exp_month_preserving",
         "positive_pattern": "gueltig|gültig|monat",
         "positive_score": 1.0,
         "negative_pattern": null,
@@ -1733,7 +1563,6 @@
     ],
     "es": [
       {
-        "pattern_identifier": "es_card_exp_month_preserving",
         "positive_pattern": "fecha",
         "positive_score": 1.0,
         "negative_pattern": null,
@@ -1743,7 +1572,6 @@
     ],
     "fr": [
       {
-        "pattern_identifier": "fr_card_exp_month_preserving",
         "positive_pattern": "date.*exp",
         "positive_score": 1.0,
         "negative_pattern": null,
@@ -1753,7 +1581,6 @@
     ],
     "it": [
       {
-        "pattern_identifier": "it_card_exp_month_preserving",
         "positive_pattern": "scadenza",
         "positive_score": 1.0,
         "negative_pattern": null,
@@ -1763,7 +1590,6 @@
     ],
     "ja": [
       {
-        "pattern_identifier": "ja_card_exp_month_preserving",
         "positive_pattern": "有効期限",
         "positive_score": 1.0,
         "negative_pattern": null,
@@ -1773,7 +1599,6 @@
     ],
     "pt": [
       {
-        "pattern_identifier": "pt_card_exp_month_preserving",
         "positive_pattern": "validade",
         "positive_score": 1.0,
         "negative_pattern": null,
@@ -1783,7 +1608,6 @@
     ],
     "ru": [
       {
-        "pattern_identifier": "ru_card_exp_month_preserving",
         "positive_pattern": "Срок действия карты",
         "positive_score": 1.0,
         "negative_pattern": null,
@@ -1793,7 +1617,6 @@
     ],
     "zh-CN": [
       {
-        "pattern_identifier": "zh_card_exp_month_preserving",
         "positive_pattern": "月",
         "positive_score": 1.0,
         "negative_pattern": null,
@@ -1803,7 +1626,6 @@
     ],
     "id": [
       {
-        "pattern_identifier": "id_card_exp_month_preserving",
         "positive_pattern": "masa berlaku|berlaku hingga",
         "positive_score": 1.0,
         "negative_pattern": null,
@@ -1815,7 +1637,6 @@
   "CREDIT_CARD_EXP_YEAR": {
     "en": [
       {
-        "pattern_identifier": "en_card_exp_year_preserving",
         "positive_pattern": "exp|^/|(add)?year",
         "positive_score": 1.0,
         "negative_pattern": null,
@@ -1825,7 +1646,6 @@
     ],
     "de": [
       {
-        "pattern_identifier": "de_card_exp_year_preserving",
         "positive_pattern": "ablaufdatum|gueltig|gültig|jahr",
         "positive_score": 1.0,
         "negative_pattern": null,
@@ -1835,7 +1655,6 @@
     ],
     "es": [
       {
-        "pattern_identifier": "es_card_exp_year_preserving",
         "positive_pattern": "fecha",
         "positive_score": 1.0,
         "negative_pattern": null,
@@ -1845,7 +1664,6 @@
     ],
     "it": [
       {
-        "pattern_identifier": "it_card_exp_year_preserving",
         "positive_pattern": "scadenza",
         "positive_score": 1.0,
         "negative_pattern": null,
@@ -1855,7 +1673,6 @@
     ],
     "ja": [
       {
-        "pattern_identifier": "ja_card_exp_year_preserving",
         "positive_pattern": "有効期限",
         "positive_score": 1.0,
         "negative_pattern": null,
@@ -1865,7 +1682,6 @@
     ],
     "pt": [
       {
-        "pattern_identifier": "pt_card_exp_year_preserving",
         "positive_pattern": "validade",
         "positive_score": 1.0,
         "negative_pattern": null,
@@ -1875,7 +1691,6 @@
     ],
     "ru": [
       {
-        "pattern_identifier": "ru_card_exp_year_preserving",
         "positive_pattern": "Срок действия карты",
         "positive_score": 1.0,
         "negative_pattern": null,
@@ -1885,7 +1700,6 @@
     ],
     "zh-CN": [
       {
-        "pattern_identifier": "zh_card_exp_year_preserving",
         "positive_pattern": "年|有效期",
         "positive_score": 1.0,
         "negative_pattern": null,
@@ -1895,7 +1709,6 @@
     ],
     "id": [
       {
-        "pattern_identifier": "id_card_exp_date_preserving",
         "positive_pattern": "masa berlaku|berlaku hingga",
         "positive_score": 1.0,
         "negative_pattern": null,
@@ -1907,7 +1720,6 @@
   "CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR": {
     "en": [
       {
-        "pattern_identifier": "en_card_exp_date_2_digit_year_preserving",
         "positive_pattern": "(?:exp.*date[^y\\n\\r]*|mm\\s*[-/]?\\s*)yy(?:[^y]|$)",
         "positive_score": 1.0,
         "negative_pattern": null,
@@ -1919,7 +1731,6 @@
   "CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR": {
     "en": [
       {
-        "pattern_identifier": "en_card_exp_date_4_digit_year_preserving",
         "positive_pattern": "(?:exp.*date[^y\\n\\r]*|mm\\s*[-/]?\\s*)yyyy(?:[^y]|$)",
         "positive_score": 1.0,
         "negative_pattern": null,
@@ -1931,7 +1742,6 @@
   "CREDIT_CARD_EXP_DATE": {
     "en": [
       {
-        "pattern_identifier": "en_card_exp_date_preserving",
         "positive_pattern": "expir|exp.*date|^expfield$",
         "positive_score": 1.0,
         "negative_pattern": null,
@@ -1941,7 +1751,6 @@
     ],
     "de": [
       {
-        "pattern_identifier": "de_card_exp_date_preserving",
         "positive_pattern": "gueltig|gültig",
         "positive_score": 1.0,
         "negative_pattern": null,
@@ -1951,7 +1760,6 @@
     ],
     "es": [
       {
-        "pattern_identifier": "es_card_exp_date_preserving",
         "positive_pattern": "fecha",
         "positive_score": 1.0,
         "negative_pattern": null,
@@ -1961,7 +1769,6 @@
     ],
     "fr": [
       {
-        "pattern_identifier": "fr_card_exp_date_preserving",
         "positive_pattern": "date.*exp",
         "positive_score": 1.0,
         "negative_pattern": null,
@@ -1971,7 +1778,6 @@
     ],
     "it": [
       {
-        "pattern_identifier": "it_card_exp_date_preserving",
         "positive_pattern": "scadenza",
         "positive_score": 1.0,
         "negative_pattern": null,
@@ -1981,7 +1787,6 @@
     ],
     "ja": [
       {
-        "pattern_identifier": "ja_card_exp_date_preserving",
         "positive_pattern": "有効期限",
         "positive_score": 1.0,
         "negative_pattern": null,
@@ -1991,7 +1796,6 @@
     ],
     "pt": [
       {
-        "pattern_identifier": "pt_card_exp_date_preserving",
         "positive_pattern": "validade",
         "positive_score": 1.0,
         "negative_pattern": null,
@@ -2001,7 +1805,6 @@
     ],
     "ru": [
       {
-        "pattern_identifier": "ru_card_exp_date_preserving",
         "positive_pattern": "Срок действия карты",
         "positive_score": 1.0,
         "negative_pattern": null,
@@ -2013,7 +1816,6 @@
   "CREDIT_CARD_EXP_MONTH_BEFORE_YEAR": {
     "en": [
       {
-        "pattern_identifier": "en_card_exp_month_before_year_preserving",
         "positive_pattern": "^mm$",
         "positive_score": 1.0,
         "negative_pattern": null,
@@ -2025,7 +1827,6 @@
   "CREDIT_CARD_EXP_YEAR_AFTER_MONTH": {
     "en": [
       {
-        "pattern_identifier": "en_card_exp_year_after_month_preserving",
         "positive_pattern": "^(yy|yyyy)$",
         "positive_score": 1.0,
         "negative_pattern": null,
@@ -2037,7 +1838,6 @@
   "GIFT_CARD": {
     "en": [
       {
-        "pattern_identifier": "en_gift_card_preserving",
         "positive_pattern": "gift.?(card|cert)",
         "positive_score": 1.0,
         "negative_pattern": null,
@@ -2049,7 +1849,6 @@
   "DEBIT_GIFT_CARD": {
     "en": [
       {
-        "pattern_identifier": "en_debit_gift_card_preserving",
         "positive_pattern": "(?:visa|mastercard|discover|amex|american express).*gift.?card",
         "positive_score": 1.0,
         "negative_pattern": null,
@@ -2061,7 +1860,6 @@
   "DEBIT_CARD": {
     "en": [
       {
-        "pattern_identifier": "en_debit_card_preserving",
         "positive_pattern": "debit.*card",
         "positive_score": 1.0,
         "negative_pattern": null,
@@ -2073,7 +1871,6 @@
   "DAY": {
     "en": [
       {
-        "pattern_identifier": "en_day_preserving",
         "positive_pattern": "day",
         "positive_score": 1.0,
         "negative_pattern": null,
@@ -2085,7 +1882,6 @@
   "EMAIL_ADDRESS": {
     "en": [
       {
-        "pattern_identifier": "en_email_preserving",
         "positive_pattern": "e.?mail",
         "positive_score": 1.4,
         "negative_pattern": null,
@@ -2095,7 +1891,6 @@
     ],
     "fr": [
       {
-        "pattern_identifier": "fr_email_preserving",
         "positive_pattern": "courriel",
         "positive_score": 1.4,
         "negative_pattern": null,
@@ -2105,7 +1900,6 @@
     ],
     "es": [
       {
-        "pattern_identifier": "es_email_preserving",
         "positive_pattern": "correo.*electr(o|ó)nico",
         "positive_score": 1.4,
         "negative_pattern": null,
@@ -2115,7 +1909,6 @@
     ],
     "ja": [
       {
-        "pattern_identifier": "ja_email_preserving",
         "positive_pattern": "メールアドレス",
         "positive_score": 1.4,
         "negative_pattern": null,
@@ -2125,7 +1918,6 @@
     ],
     "ru": [
       {
-        "pattern_identifier": "ru_email_preserving",
         "positive_pattern": "Электронн(ая|ой).?Почт(а|ы)",
         "positive_score": 1.4,
         "negative_pattern": null,
@@ -2135,7 +1927,6 @@
     ],
     "zh-CN": [
       {
-        "pattern_identifier": "zh_email_preserving",
         "positive_pattern": "邮件|邮箱|電子郵件",
         "positive_score": 1.4,
         "negative_pattern": null,
@@ -2145,7 +1936,6 @@
     ],
     "zh-TW": [
       {
-        "pattern_identifier": "zh_email_preserving",
         "positive_pattern": "電郵地址|電子信箱",
         "positive_score": 1.4,
         "negative_pattern": null,
@@ -2155,7 +1945,6 @@
     ],
     "ml": [
       {
-        "pattern_identifier": "ml_email_preserving",
         "positive_pattern": "ഇ-മെയില്‍|ഇലക്ട്രോണിക്.?മെയിൽ",
         "positive_score": 1.4,
         "negative_pattern": null,
@@ -2165,7 +1954,6 @@
     ],
     "fa": [
       {
-        "pattern_identifier": "fa_email_preserving",
         "positive_pattern": "ایمیل|پست.*الکترونیک",
         "positive_score": 1.4,
         "negative_pattern": null,
@@ -2175,7 +1963,6 @@
     ],
     "hi": [
       {
-        "pattern_identifier": "hi_email_preserving",
         "positive_pattern": "ईमेल|इलॅक्ट्रॉनिक.?मेल",
         "positive_score": 1.4,
         "negative_pattern": null,
@@ -2185,7 +1972,6 @@
     ],
     "tr": [
       {
-        "pattern_identifier": "tr_email_preserving",
         "positive_pattern": "(\\b|_)eposta(\\b|_)",
         "positive_score": 1.4,
         "negative_pattern": null,
@@ -2195,7 +1981,6 @@
     ],
     "ko": [
       {
-        "pattern_identifier": "ko_email_preserving",
         "positive_pattern": "(?:이메일|전자.?우편|[Ee]-?mail)(.?주소)?",
         "positive_score": 1.4,
         "negative_pattern": null,
@@ -2207,7 +1992,6 @@
   "NAME_IGNORED": {
     "en": [
       {
-        "pattern_identifier": "en_name_ignored_preserving",
         "positive_pattern": "user.?name|user.?id|nickname|maiden name|title|prefix|suffix|mail",
         "positive_score": 0.9,
         "negative_pattern": null,
@@ -2217,7 +2001,6 @@
     ],
     "de": [
       {
-        "pattern_identifier": "de_name_ignored_preserving",
         "positive_pattern": "vollständiger.?name",
         "positive_score": 0.9,
         "negative_pattern": null,
@@ -2227,7 +2010,6 @@
     ],
     "zh-CN": [
       {
-        "pattern_identifier": "zh_name_ignored_preserving",
         "positive_pattern": "用户名",
         "positive_score": 0.9,
         "negative_pattern": null,
@@ -2237,7 +2019,6 @@
     ],
     "ko": [
       {
-        "pattern_identifier": "ko_name_ignored_preserving",
         "positive_pattern": "(?:사용자.?)?아이디|사용자.?ID",
         "positive_score": 0.9,
         "negative_pattern": null,
@@ -2249,7 +2030,6 @@
   "FULL_NAME": {
     "en": [
       {
-        "pattern_identifier": "en_full_name_preserving",
         "positive_pattern": "^name|full.?name|your.?name|customer.?name|bill.?name|ship.?name|name.*first.*last|firstandlastname|contact.?(name|person)",
         "positive_score": 0.9,
         "negative_pattern": null,
@@ -2259,7 +2039,6 @@
     ],
     "es": [
       {
-        "pattern_identifier": "es_full_name_preserving",
         "positive_pattern": "nombre.*y.*apellidos",
         "positive_score": 0.9,
         "negative_pattern": null,
@@ -2269,7 +2048,6 @@
     ],
     "fr": [
       {
-        "pattern_identifier": "fr_full_name_preserving",
         "positive_pattern": "^nom(?![a-zA-Z])",
         "positive_score": 0.9,
         "negative_pattern": null,
@@ -2279,7 +2057,6 @@
     ],
     "ja": [
       {
-        "pattern_identifier": "ja_full_name_preserving",
         "positive_pattern": "お名前|氏名",
         "positive_score": 0.9,
         "negative_pattern": null,
@@ -2289,7 +2066,6 @@
     ],
     "pt": [
       {
-        "pattern_identifier": "pt_full_name_preserving",
         "positive_pattern": "^nome",
         "positive_score": 0.9,
         "negative_pattern": null,
@@ -2299,7 +2075,6 @@
     ],
     "fa": [
       {
-        "pattern_identifier": "fa_full_name_preserving",
         "positive_pattern": "نام.*نام.*خانوادگی",
         "positive_score": 0.9,
         "negative_pattern": null,
@@ -2309,7 +2084,6 @@
     ],
     "zh-CN": [
       {
-        "pattern_identifier": "zh_full_name_preserving",
         "positive_pattern": "姓\\s*名",
         "positive_score": 0.9,
         "negative_pattern": null,
@@ -2319,7 +2093,6 @@
     ],
     "ru": [
       {
-        "pattern_identifier": "ru_full_name_preserving",
         "positive_pattern": "контактное.?лицо",
         "positive_score": 0.9,
         "negative_pattern": null,
@@ -2329,7 +2102,6 @@
     ],
     "tr": [
       {
-        "pattern_identifier": "tr_full_name_preserving",
         "positive_pattern": "(\\b|_|\\*)ad[ı]? soyad[ı]?(\\b|_|\\*)",
         "positive_score": 0.9,
         "negative_pattern": null,
@@ -2339,7 +2111,6 @@
     ],
     "ko": [
       {
-        "pattern_identifier": "ko_full_name_preserving",
         "positive_pattern": "성명",
         "positive_score": 0.9,
         "negative_pattern": null,
@@ -2349,7 +2120,6 @@
     ],
     "id": [
       {
-        "pattern_identifier": "id_full_name_preserving",
         "positive_pattern": "nama.?(lengkap|penerima|kamu)",
         "positive_score": 0.9,
         "negative_pattern": null,
@@ -2361,7 +2131,6 @@
   "NAME_GENERIC": {
     "en": [
       {
-        "pattern_identifier": "en_name_specific_preserving",
         "positive_pattern": "^name",
         "positive_score": 0.9,
         "negative_pattern": null,
@@ -2371,7 +2140,6 @@
     ],
     "fr": [
       {
-        "pattern_identifier": "fr_name_specific_preserving",
         "positive_pattern": "^nom",
         "positive_score": 0.9,
         "negative_pattern": null,
@@ -2381,7 +2149,6 @@
     ],
     "pt": [
       {
-        "pattern_identifier": "pt_name_specific_preserving",
         "positive_pattern": "^nome",
         "positive_score": 0.9,
         "negative_pattern": null,
@@ -2393,7 +2160,6 @@
   "FIRST_NAME": {
     "en": [
       {
-        "pattern_identifier": "en_first_name_preserving",
         "positive_pattern": "first.*name|initials|fname|first$|given.*name",
         "positive_score": 0.9,
         "negative_pattern": null,
@@ -2403,7 +2169,6 @@
     ],
     "de": [
       {
-        "pattern_identifier": "de_first_name_preserving",
         "positive_pattern": "vorname",
         "positive_score": 0.9,
         "negative_pattern": null,
@@ -2413,7 +2178,6 @@
     ],
     "es": [
       {
-        "pattern_identifier": "es_first_name_preserving",
         "positive_pattern": "nombre",
         "positive_score": 0.9,
         "negative_pattern": null,
@@ -2423,7 +2187,6 @@
     ],
     "fr": [
       {
-        "pattern_identifier": "fr_first_name_preserving",
         "positive_pattern": "forename|prénom|prenom",
         "positive_score": 0.9,
         "negative_pattern": null,
@@ -2433,7 +2196,6 @@
     ],
     "ja": [
       {
-        "pattern_identifier": "ja_first_name_preserving",
         "positive_pattern": "名",
         "positive_score": 0.9,
         "negative_pattern": null,
@@ -2443,7 +2205,6 @@
     ],
     "pt": [
       {
-        "pattern_identifier": "pt_first_name_preserving",
         "positive_pattern": "nome",
         "positive_score": 0.9,
         "negative_pattern": null,
@@ -2453,7 +2214,6 @@
     ],
     "ru": [
       {
-        "pattern_identifier": "ru_first_name_preserving",
         "positive_pattern": "Имя",
         "positive_score": 0.9,
         "negative_pattern": null,
@@ -2463,7 +2223,6 @@
     ],
     "fa": [
       {
-        "pattern_identifier": "fa_first_name_preserving",
         "positive_pattern": "نام",
         "positive_score": 0.9,
         "negative_pattern": null,
@@ -2473,7 +2232,6 @@
     ],
     "ko": [
       {
-        "pattern_identifier": "ko_first_name_preserving",
         "positive_pattern": "이름",
         "positive_score": 0.9,
         "negative_pattern": null,
@@ -2483,7 +2241,6 @@
     ],
     "ml": [
       {
-        "pattern_identifier": "ml_first_name_preserving",
         "positive_pattern": "പേര്",
         "positive_score": 0.9,
         "negative_pattern": null,
@@ -2493,7 +2250,6 @@
     ],
     "tr": [
       {
-        "pattern_identifier": "tr_first_name_preserving",
         "positive_pattern": "(\\b|_|\\*)(isim|ad|ad(i|ı|iniz|ınız)?)(\\b|_|\\*)",
         "positive_score": 0.9,
         "negative_pattern": null,
@@ -2503,7 +2259,6 @@
     ],
     "hi": [
       {
-        "pattern_identifier": "hi_first_name_preserving",
         "positive_pattern": "नाम",
         "positive_score": 0.9,
         "negative_pattern": null,
@@ -2513,7 +2268,6 @@
     ],
     "id": [
       {
-        "pattern_identifier": "id_first_name_preserving",
         "positive_pattern": "nama depan",
         "positive_score": 0.9,
         "negative_pattern": null,
@@ -2525,7 +2279,6 @@
   "MIDDLE_INITIAL": {
     "en": [
       {
-        "pattern_identifier": "en_middle_initial_preserving",
         "positive_pattern": "middle.*initial|m\\.i\\.|mi$|\\bmi\\b",
         "positive_score": 0.9,
         "negative_pattern": null,
@@ -2537,7 +2290,6 @@
   "MIDDLE_NAME": {
     "en": [
       {
-        "pattern_identifier": "en_middle_name_preserving",
         "positive_pattern": "middle.*name|mname|middle$",
         "positive_score": 0.9,
         "negative_pattern": null,
@@ -2549,7 +2301,6 @@
   "LAST_NAME": {
     "en": [
       {
-        "pattern_identifier": "en_last_name_preserving",
         "positive_pattern": "last.*name|lname|surname(?!\\d)|last$|secondname|family.*name",
         "positive_score": 0.9,
         "negative_pattern": null,
@@ -2559,7 +2310,6 @@
     ],
     "de": [
       {
-        "pattern_identifier": "de_last_name_preserving",
         "positive_pattern": "nachname",
         "positive_score": 0.9,
         "negative_pattern": null,
@@ -2569,7 +2319,6 @@
     ],
     "es": [
       {
-        "pattern_identifier": "es_last_name_preserving",
         "positive_pattern": "apellidos?",
         "positive_score": 0.9,
         "negative_pattern": null,
@@ -2579,7 +2328,6 @@
     ],
     "fr": [
       {
-        "pattern_identifier": "fr_last_name_preserving",
         "positive_pattern": "famille|^nom(?![a-zA-Z])",
         "positive_score": 0.9,
         "negative_pattern": null,
@@ -2589,7 +2337,6 @@
     ],
     "it": [
       {
-        "pattern_identifier": "it_last_name_preserving",
         "positive_pattern": "cognome",
         "positive_score": 0.9,
         "negative_pattern": null,
@@ -2599,7 +2346,6 @@
     ],
     "ja": [
       {
-        "pattern_identifier": "ja_last_name_preserving",
         "positive_pattern": "姓",
         "positive_score": 0.9,
         "negative_pattern": null,
@@ -2609,7 +2355,6 @@
     ],
     "pt": [
       {
-        "pattern_identifier": "pt_last_name_preserving",
         "positive_pattern": "apelidos|surename|sobrenome",
         "positive_score": 0.9,
         "negative_pattern": null,
@@ -2619,7 +2364,6 @@
     ],
     "ru": [
       {
-        "pattern_identifier": "ru_last_name_preserving",
         "positive_pattern": "Фамилия",
         "positive_score": 0.9,
         "negative_pattern": null,
@@ -2629,7 +2373,6 @@
     ],
     "fa": [
       {
-        "pattern_identifier": "fa_last_name_preserving",
         "positive_pattern": "نام.*خانوادگی",
         "positive_score": 0.9,
         "negative_pattern": null,
@@ -2639,7 +2382,6 @@
     ],
     "hi": [
       {
-        "pattern_identifier": "hi_last_name_preserving",
         "positive_pattern": "उपनाम",
         "positive_score": 0.9,
         "negative_pattern": null,
@@ -2649,7 +2391,6 @@
     ],
     "ml": [
       {
-        "pattern_identifier": "ml_last_name_preserving",
         "positive_pattern": "മറുപേര്",
         "positive_score": 0.9,
         "negative_pattern": null,
@@ -2659,7 +2400,6 @@
     ],
     "tr": [
       {
-        "pattern_identifier": "tr_last_name_preserving",
         "positive_pattern": "(\\b|_|\\*)(soyisim|soyad(i|ı|iniz|ınız)?)(\\b|_|\\*)",
         "positive_score": 0.9,
         "negative_pattern": null,
@@ -2669,7 +2409,6 @@
     ],
     "ko": [
       {
-        "pattern_identifier": "ko_last_name_preserving",
         "positive_pattern": "\\b성(?:[^명]|\\b)",
         "positive_score": 0.9,
         "negative_pattern": null,
@@ -2679,7 +2418,6 @@
     ],
     "id": [
       {
-        "pattern_identifier": "id_last_name_preserving",
         "positive_pattern": "nama belakang",
         "positive_score": 0.9,
         "negative_pattern": null,
@@ -2691,7 +2429,6 @@
   "LAST_NAME_FIRST": {
     "es": [
       {
-        "pattern_identifier": "es_last_name_first_preserving",
         "positive_pattern": "(primer.*apellido)|(apellido1)|(apellido.*paterno)|surname_?1|first(\\s|_)?surname",
         "positive_score": 0.9,
         "negative_pattern": null,
@@ -2703,7 +2440,6 @@
   "LAST_NAME_SECOND": {
     "es": [
       {
-        "pattern_identifier": "es_last_name_second_preserving",
         "positive_pattern": "(segund.*apellido)|(apellido2)|(apellido.*materno)|surname_?2|second(\\s|_)?surname",
         "positive_score": 0.9,
         "negative_pattern": null,
@@ -2715,7 +2451,6 @@
   "HONORIFIC_PREFIX": {
     "en": [
       {
-        "pattern_identifier": "en_honorific_prefix_preserving",
         "positive_pattern": "^title:?$|(salutation(?! and given name))",
         "positive_score": 0.9,
         "negative_pattern": null,
@@ -2725,7 +2460,6 @@
     ],
     "de": [
       {
-        "pattern_identifier": "de_honorific_prefix_preserving",
         "positive_pattern": "anrede|titel",
         "positive_score": 0.9,
         "negative_pattern": null,
@@ -2735,7 +2469,6 @@
     ],
     "es": [
       {
-        "pattern_identifier": "es_honorific_prefix_preserving",
         "positive_pattern": "tratamiento|encabezamiento",
         "positive_score": 0.9,
         "negative_pattern": null,
@@ -2745,7 +2478,6 @@
     ],
     "it": [
       {
-        "pattern_identifier": "it_honorific_prefix_preserving",
         "positive_pattern": "titolo",
         "positive_score": 0.9,
         "negative_pattern": null,
@@ -2755,7 +2487,6 @@
     ],
     "fr": [
       {
-        "pattern_identifier": "fr_honorific_prefix_preserving",
         "positive_pattern": "titre",
         "positive_score": 0.9,
         "negative_pattern": null,
@@ -2765,7 +2496,6 @@
     ],
     "ru": [
       {
-        "pattern_identifier": "ru_honorific_prefix_preserving",
         "positive_pattern": "обращение|звание",
         "positive_score": 0.9,
         "negative_pattern": null,
@@ -2775,7 +2505,6 @@
     ],
     "el": [
       {
-        "pattern_identifier": "el_honorific_prefix_preserving",
         "positive_pattern": "προσφώνηση",
         "positive_score": 0.9,
         "negative_pattern": null,
@@ -2785,7 +2514,6 @@
     ],
     "tr": [
       {
-        "pattern_identifier": "tr_honorific_prefix_preserving",
         "positive_pattern": "hitap",
         "positive_score": 0.9,
         "negative_pattern": null,
@@ -2797,7 +2525,6 @@
   "PHONE": {
     "en": [
       {
-        "pattern_identifier": "en_phone_preserving",
         "positive_pattern": "phone|mobile|contact.?number",
         "positive_score": 1.2,
         "negative_pattern": null,
@@ -2807,7 +2534,6 @@
     ],
     "de": [
       {
-        "pattern_identifier": "de_phone_preserving",
         "positive_pattern": "telefonnummer",
         "positive_score": 1.2,
         "negative_pattern": null,
@@ -2817,7 +2543,6 @@
     ],
     "es": [
       {
-        "pattern_identifier": "es_phone_preserving",
         "positive_pattern": "telefono|teléfono",
         "positive_score": 1.2,
         "negative_pattern": null,
@@ -2827,7 +2552,6 @@
     ],
     "fr": [
       {
-        "pattern_identifier": "fr_phone_preserving",
         "positive_pattern": "telfixe",
         "positive_score": 1.2,
         "negative_pattern": null,
@@ -2837,7 +2561,6 @@
     ],
     "ja": [
       {
-        "pattern_identifier": "ja_phone_preserving",
         "positive_pattern": "電話",
         "positive_score": 1.2,
         "negative_pattern": null,
@@ -2847,7 +2570,6 @@
     ],
     "pt": [
       {
-        "pattern_identifier": "pt_phone_preserving",
         "positive_pattern": "telefone|telemovel",
         "positive_score": 1.2,
         "negative_pattern": null,
@@ -2857,7 +2579,6 @@
     ],
     "ru": [
       {
-        "pattern_identifier": "ru_phone_preserving",
         "positive_pattern": "телефон",
         "positive_score": 1.2,
         "negative_pattern": null,
@@ -2867,7 +2588,6 @@
     ],
     "hi": [
       {
-        "pattern_identifier": "hi_phone_preserving",
         "positive_pattern": "मोबाइल",
         "positive_score": 1.2,
         "negative_pattern": null,
@@ -2877,7 +2597,6 @@
     ],
     "tr": [
       {
-        "pattern_identifier": "tr_phone_preserving",
         "positive_pattern": "(\\b|_|\\*)telefon(\\b|_|\\*)",
         "positive_score": 1.2,
         "negative_pattern": null,
@@ -2887,7 +2606,6 @@
     ],
     "zh-CN": [
       {
-        "pattern_identifier": "zh_phone_preserving",
         "positive_pattern": "电话",
         "positive_score": 1.2,
         "negative_pattern": null,
@@ -2897,7 +2615,6 @@
     ],
     "ml": [
       {
-        "pattern_identifier": "ml_phone_preserving",
         "positive_pattern": "മൊബൈല്‍",
         "positive_score": 1.2,
         "negative_pattern": null,
@@ -2907,7 +2624,6 @@
     ],
     "ko": [
       {
-        "pattern_identifier": "ko_phone_preserving",
         "positive_pattern": "(?:전화|핸드폰|휴대폰|휴대전화)(?:.?번호)?",
         "positive_score": 1.2,
         "negative_pattern": null,
@@ -2917,7 +2633,6 @@
     ],
     "id": [
       {
-        "pattern_identifier": "id_phone_preserving",
         "positive_pattern": "telepon|ponsel|(nomor|no\\.?).?(hp|handphone)",
         "positive_score": 1.2,
         "negative_pattern": null,
@@ -2929,7 +2644,6 @@
   "AUGMENTED_PHONE_COUNTRY_CODE": {
     "en": [
       {
-        "pattern_identifier": "en_augmented_phone_country_code_preserving",
         "positive_pattern": "^[^0-9+]*(?:\\+|00)\\s*([1-9]\\d{0,3})\\D*$",
         "positive_score": 1.3,
         "negative_pattern": null,
@@ -2941,7 +2655,6 @@
   "PHONE_COUNTRY_CODE": {
     "en": [
       {
-        "pattern_identifier": "en_phone_country_code_preserving",
         "positive_pattern": "country.*code|ccode|_cc|phone.*code|user.*phone.*code",
         "positive_score": 1.3,
         "negative_pattern": null,
@@ -2953,7 +2666,6 @@
   "PHONE_AREA_CODE_NO_TEXT": {
     "en": [
       {
-        "pattern_identifier": "en_phone_area_code_no_text_preserving",
         "positive_pattern": "^\\($",
         "positive_score": 1.3,
         "negative_pattern": null,
@@ -2965,7 +2677,6 @@
   "PHONE_AREA_CODE": {
     "en": [
       {
-        "pattern_identifier": "en_phone_area_code_preserving",
         "positive_pattern": "area.*code|acode|area",
         "positive_score": 1.3,
         "negative_pattern": null,
@@ -2975,7 +2686,6 @@
     ],
     "ko": [
       {
-        "pattern_identifier": "ko_phone_area_code_preserving",
         "positive_pattern": "지역.?번호",
         "positive_score": 1.3,
         "negative_pattern": null,
@@ -2987,7 +2697,6 @@
   "PHONE_PREFIX_SEPARATOR": {
     "en": [
       {
-        "pattern_identifier": "en_phone_prefix_separator_preserving",
         "positive_pattern": "^-$|^\\)$",
         "positive_score": 1.3,
         "negative_pattern": null,
@@ -2999,7 +2708,6 @@
   "PHONE_SUFFIX_SEPARATOR": {
     "en": [
       {
-        "pattern_identifier": "en_phone_suffix_separator_preserving",
         "positive_pattern": "^-$",
         "positive_score": 1.3,
         "negative_pattern": null,
@@ -3011,7 +2719,6 @@
   "PHONE_PREFIX": {
     "en": [
       {
-        "pattern_identifier": "en_phone_prefix_preserving",
         "positive_pattern": "prefix|exchange",
         "positive_score": 1.3,
         "negative_pattern": null,
@@ -3021,7 +2728,6 @@
     ],
     "fr": [
       {
-        "pattern_identifier": "fr_phone_prefix_preserving",
         "positive_pattern": "preselection",
         "positive_score": 1.3,
         "negative_pattern": null,
@@ -3031,7 +2737,6 @@
     ],
     "pt": [
       {
-        "pattern_identifier": "pt_phone_prefix_preserving",
         "positive_pattern": "ddd",
         "positive_score": 1.3,
         "negative_pattern": null,
@@ -3043,7 +2748,6 @@
   "PHONE_SUFFIX": {
     "en": [
       {
-        "pattern_identifier": "en_phone_suffix_preserving",
         "positive_pattern": "suffix",
         "positive_score": 1.3,
         "negative_pattern": null,
@@ -3055,7 +2759,6 @@
   "PHONE_EXTENSION": {
     "en": [
       {
-        "pattern_identifier": "en_phone_extension_preserving",
         "positive_pattern": "\\bext|ext\\b|extension",
         "positive_score": 1.3,
         "negative_pattern": null,
@@ -3065,7 +2768,6 @@
     ],
     "pt": [
       {
-        "pattern_identifier": "pt_phone_extension_preserving",
         "positive_pattern": "ramal",
         "positive_score": 1.3,
         "negative_pattern": null,
@@ -3077,7 +2779,6 @@
   "PASSPORT": {
     "en": [
       {
-        "pattern_identifier": "en_passport_preserving",
         "positive_pattern": "document.*number|passport",
         "positive_score": 1.2,
         "negative_pattern": null,
@@ -3087,7 +2788,6 @@
     ],
     "fr": [
       {
-        "pattern_identifier": "fr_passport_preserving",
         "positive_pattern": "passeport",
         "positive_score": 1.2,
         "negative_pattern": null,
@@ -3097,7 +2797,6 @@
     ],
     "es": [
       {
-        "pattern_identifier": "es_passport_preserving",
         "positive_pattern": "numero.*documento|pasaporte",
         "positive_score": 1.2,
         "negative_pattern": null,
@@ -3107,7 +2806,6 @@
     ],
     "ja": [
       {
-        "pattern_identifier": "ja_passport_preserving",
         "positive_pattern": "書類",
         "positive_score": 1.2,
         "negative_pattern": null,
@@ -3119,7 +2817,6 @@
   "TRAVEL_ORIGIN": {
     "en": [
       {
-        "pattern_identifier": "en_travel_origin_preserving",
         "positive_pattern": "point.*of.*entry|arrival",
         "positive_score": 1.2,
         "negative_pattern": null,
@@ -3129,7 +2826,6 @@
     ],
     "es": [
       {
-        "pattern_identifier": "es_travel_origin_preserving",
         "positive_pattern": "punto.*internaci(o|ó)n|fecha.*llegada",
         "positive_score": 1.2,
         "negative_pattern": null,
@@ -3139,7 +2835,6 @@
     ],
     "ja": [
       {
-        "pattern_identifier": "ja_travel_origin_preserving",
         "positive_pattern": "入国",
         "positive_score": 1.2,
         "negative_pattern": null,
@@ -3151,7 +2846,6 @@
   "TRAVEL_DESTINATION": {
     "en": [
       {
-        "pattern_identifier": "en_travel_destination_preserving",
         "positive_pattern": "departure",
         "positive_score": 1.2,
         "negative_pattern": null,
@@ -3161,7 +2855,6 @@
     ],
     "es": [
       {
-        "pattern_identifier": "es_travel_destination_preserving",
         "positive_pattern": "fecha.*salida|destino",
         "positive_score": 1.2,
         "negative_pattern": null,
@@ -3171,7 +2864,6 @@
     ],
     "ja": [
       {
-        "pattern_identifier": "ja_travel_destination_preserving",
         "positive_pattern": "出国",
         "positive_score": 1.2,
         "negative_pattern": null,
@@ -3183,7 +2875,6 @@
   "FLIGHT": {
     "en": [
       {
-        "pattern_identifier": "en_flight_preserving",
         "positive_pattern": "airline|flight",
         "positive_score": 1.2,
         "negative_pattern": null,
@@ -3193,7 +2884,6 @@
     ],
     "es": [
       {
-        "pattern_identifier": "es_flight_preserving",
         "positive_pattern": "aerol(i|í)nea|n(u|ú)mero.*vuelo",
         "positive_score": 1.2,
         "negative_pattern": null,
@@ -3203,7 +2893,6 @@
     ],
     "ja": [
       {
-        "pattern_identifier": "ja_flight_preserving",
         "positive_pattern": "便名|航空会社",
         "positive_score": 1.2,
         "negative_pattern": null,
@@ -3215,7 +2904,6 @@
   "UPI_VIRTUAL_PAYMENT_ADDRESS": {
     "en": [
       {
-        "pattern_identifier": "en_upi_virtual_payment_address_user@(IFSC/Aadhaar/Mobile/RuPay)_preserving",
         "positive_pattern": "^[\\w.+-_]+@(\\w+\\.ifsc\\.npci|aadhaar\\.npci|mobile\\.npci|rupay\\.npci)$",
         "positive_score": 0,
         "negative_pattern": null,
@@ -3223,7 +2911,6 @@
         "match_field_input_types": ["TEXT"]
       },
       {
-        "pattern_identifier": "en_upi_virtual_payment_address_user@(bank_list)_preserving",
         "positive_pattern": "^[\\w.+-_]+@(airtel|airtelpaymentsbank|albk|allahabadbank|allbank|andb|apb|apl|axis|axisbank|axisgo|bandhan|barodampay|birla|boi|cbin|cboi|centralbank|cmsidfc|cnrb|csbcash|csbpay|cub|dbs|dcb|dcbbank|denabank|dlb|eazypay|equitas|ezeepay|fbl|federal|finobank|hdfcbank|hsbc|icici|idbi|idbibank|idfc|idfcbank|idfcnetc|ikwik|imobile|indbank|indianbank|indianbk|indus|iob|jkb|jsb|jsbp|karb|karurvysyabank|kaypay|kbl|kbl052|kmb|kmbl|kotak|kvb|kvbank|lime|lvb|lvbank|mahb|obc|okaxis|okbizaxis|okhdfcbank|okicici|oksbi|paytm|payzapp|pingpay|pnb|pockets|psb|purz|rajgovhdfcbank|rbl|sbi|sc|scb|scbl|scmobile|sib|srcb|synd|syndbank|syndicate|tjsb|tjsp|ubi|uboi|uco|unionbank|unionbankofindia|united|upi|utbi|vijayabank|vijb|vjb|ybl|yesbank|yesbankltd)$",
         "positive_score": 0,
         "negative_pattern": null,
@@ -3235,7 +2922,6 @@
   "INTERNATIONAL_BANK_ACCOUNT_NUMBER": {
     "en": [
       {
-        "pattern_identifier": "en_international_bank_account_number_preserving",
         "positive_pattern": "^[a-zA-Z]{2}[0-9]{2}[a-zA-Z0-9]{4}[0-9]{7}([a-zA-Z0-9]?){0,16}$",
         "positive_score": 0,
         "negative_pattern": null,
@@ -3247,7 +2933,6 @@
   "VALIDATION_CREDIT_CARD_VERIFICATION_CODE": {
     "en": [
       {
-        "pattern_identifier": "en_credit_card_cvc_preserving",
         "positive_pattern": "^\\d{3,4}$",
         "positive_score": 0,
         "negative_pattern": null,
@@ -3259,7 +2944,6 @@
   "VALIDATION_CREDIT_CARD_EXP_YEAR": {
     "en": [
       {
-        "pattern_identifier": "en_credit_card_exp_year_preserving",
         "positive_pattern": "^[2][0][1-9][0-9]$",
         "positive_score": 0,
         "negative_pattern": null,
@@ -3271,7 +2955,6 @@
   "URL_SEARCH_ACTION": {
     "en": [
       {
-        "pattern_identifier": "en_url_search_action_preserving",
         "positive_pattern": "/search(/|((\\w*\\.\\w+)?$))",
         "positive_score": 0,
         "negative_pattern": null,
@@ -3283,7 +2966,6 @@
   "SOCIAL_SECURITY": {
     "en": [
       {
-        "pattern_identifier": "en_social_security_preserving",
         "positive_pattern": "ssn|social.?security.?(num(ber)?|#)*",
         "positive_score": 0,
         "negative_pattern": null,
@@ -3295,7 +2977,6 @@
   "ONE_TIME_PASSWORD": {
     "en": [
       {
-        "pattern_identifier": "en_one_time_password_preserving",
         "positive_pattern": "one.?time|sms.?(code|token|password|pwd|pass)",
         "positive_score": 0,
         "negative_pattern": null,
@@ -3307,7 +2988,6 @@
   "MERCHANT_PROMO_CODE": {
     "en": [
       {
-        "pattern_identifier": "en_merchant_promo_code_preserving",
         "positive_pattern": "(promo(tion|tional)?|gift|discount|coupon)[-_. ]*code",
         "positive_score": 0.85,
         "negative_pattern": null,
@@ -3319,7 +2999,6 @@
     "IBAN_VALUE": {
     "en": [
       {
-        "pattern_identifier": "en_iban_preserving",
         "positive_pattern": "(\\biban(\\b|_)|international bank account number)",
         "positive_score": 0.975,
         "negative_pattern": null,
