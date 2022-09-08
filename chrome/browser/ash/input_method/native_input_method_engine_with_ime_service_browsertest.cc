@@ -140,8 +140,9 @@ constexpr char kEngineIdVietnameseTelex[] = "vkd_vi_telex";
 
 }  // namespace
 
+// TODO(crbug.com/1361212): Test is flaky. Re-enable the test.
 IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineWithImeServiceTest,
-                       VietnameseTelex_SimpleTransform) {
+                       DISABLED_VietnameseTelex_SimpleTransform) {
   engine_->Enable(kEngineIdVietnameseTelex);
   engine_->FlushForTesting();
   EXPECT_TRUE(engine_->IsConnectedForTesting());
@@ -164,8 +165,9 @@ IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineWithImeServiceTest,
   SetFocus(nullptr);
 }
 
+// TODO(crbug.com/1361212): Test is flaky. Re-enable the test.
 IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineWithImeServiceTest,
-                       VietnameseTelex_Reset) {
+                       DISABLED_VietnameseTelex_Reset) {
   engine_->Enable(kEngineIdVietnameseTelex);
   engine_->FlushForTesting();
   EXPECT_TRUE(engine_->IsConnectedForTesting());
@@ -187,8 +189,9 @@ IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineWithImeServiceTest,
   SetFocus(nullptr);
 }
 
+// TODO(crbug.com/1361212): Test is flaky. Re-enable the test.
 IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineWithImeServiceTest,
-                       SwitchActiveController) {
+                       DISABLED_SwitchActiveController) {
   // Swap between two controllers.
   engine_->Enable(kEngineIdVietnameseTelex);
   engine_->FlushForTesting();
@@ -210,8 +213,9 @@ IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineWithImeServiceTest,
   SetFocus(nullptr);
 }
 
+// TODO(crbug.com/1361212): Test is flaky. Re-enable the test.
 IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineWithImeServiceTest,
-                       NoActiveController) {
+                       DISABLED_NoActiveController) {
   engine_->Enable(kEngineIdVietnameseTelex);
   engine_->FlushForTesting();
   engine_->Disable();
