@@ -107,7 +107,7 @@
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/externally_installed_web_app_prefs.h"
 #include "chrome/browser/web_applications/preinstalled_web_app_manager.h"
-#include "chrome/browser/web_applications/test/app_registration_waiter.h"
+#include "chrome/browser/web_applications/test/app_registry_cache_waiter.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
@@ -1123,7 +1123,7 @@ class ChromeShelfControllerTestBase : public BrowserWithTestWindowTest {
     web_app::AppId installed_app_id =
         web_app::test::InstallWebApp(profile(), std::move(web_app_info));
     ASSERT_EQ(installed_app_id, web_app_id);
-    web_app::AppRegistrationWaiter(profile(), web_app_id).Await();
+    web_app::AppReadinessWaiter(profile(), web_app_id).Await();
     app_service_test_.FlushMojoCalls();
   }
 

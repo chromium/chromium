@@ -14,7 +14,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
-#include "chrome/browser/web_applications/test/app_registration_waiter.h"
+#include "chrome/browser/web_applications/test/app_registry_cache_waiter.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
@@ -246,7 +246,7 @@ AppId WebAppNavigationBrowserTest::InstallTestWebApp(
 
   AppId app_id = test::InstallWebApp(profile(), std::move(web_app_info));
   DCHECK(!app_id.empty());
-  AppRegistrationWaiter(profile(), app_id).Await();
+  AppReadinessWaiter(profile(), app_id).Await();
   return app_id;
 }
 

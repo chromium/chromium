@@ -10,7 +10,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
-#include "chrome/browser/web_applications/test/app_registration_waiter.h"
+#include "chrome/browser/web_applications/test/app_registry_cache_waiter.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/context_menu_params.h"
@@ -55,7 +55,7 @@ IN_PROC_BROWSER_TEST_F(LaunchWebAppBrowserTest, OpenLinkInWebApp) {
 
   const GURL start_url("https://app.site.test/example/index");
   const AppId app_id = InstallPWA(start_url);
-  AppRegistrationWaiter(profile(), app_id).Await();
+  AppReadinessWaiter(profile(), app_id).Await();
 
   size_t num_browsers = chrome::GetBrowserCount(browser()->profile());
   const int num_tabs = browser()->tab_strip_model()->count();
@@ -89,8 +89,7 @@ IN_PROC_BROWSER_TEST_F(LaunchWebAppBrowserTest, OpenLinkInWebApp) {
                            ->GetLastCommittedURL());
 
   UninstallWebApp(app_id);
-  web_app::AppRegistrationWaiter(profile(), app_id,
-                                 apps::Readiness::kUninstalledByUser)
+  AppReadinessWaiter(profile(), app_id, apps::Readiness::kUninstalledByUser)
       .Await();
 }
 

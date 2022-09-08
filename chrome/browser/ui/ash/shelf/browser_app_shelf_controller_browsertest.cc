@@ -29,7 +29,7 @@
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller_test_util.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/web_applications/test/app_registration_waiter.h"
+#include "chrome/browser/web_applications/test/app_registry_cache_waiter.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_id.h"
@@ -230,7 +230,7 @@ class BrowserAppShelfControllerBrowserTest
     // Wait until the app is installed: app service publisher updates may arrive
     // out of order with the web app installation reply, so we wait until the
     // state of the app service is consistent.
-    web_app::AppRegistrationWaiter(browser()->profile(), app_id).Await();
+    web_app::AppReadinessWaiter(browser()->profile(), app_id).Await();
     EXPECT_EQ(AppServiceProxy()->AppRegistryCache().GetAppType(app_id),
               apps::AppType::kWeb);
 

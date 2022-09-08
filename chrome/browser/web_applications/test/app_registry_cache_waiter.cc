@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/web_applications/test/app_registration_waiter.h"
+#include "chrome/browser/web_applications/test/app_registry_cache_waiter.h"
 
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -38,9 +38,9 @@ void AppTypeInitializationWaiter::OnAppRegistryCacheWillBeDestroyed(
   Observe(nullptr);
 }
 
-AppRegistrationWaiter::AppRegistrationWaiter(Profile* profile,
-                                             const AppId& app_id,
-                                             apps::Readiness readiness)
+AppReadinessWaiter::AppReadinessWaiter(Profile* profile,
+                                       const std::string& app_id,
+                                       apps::Readiness readiness)
     : app_id_(app_id), readiness_(readiness) {
   apps::AppRegistryCache& cache =
       apps::AppServiceProxyFactory::GetForProfile(profile)->AppRegistryCache();
@@ -50,17 +50,17 @@ AppRegistrationWaiter::AppRegistrationWaiter(Profile* profile,
       run_loop_.Quit();
   });
 }
-AppRegistrationWaiter::~AppRegistrationWaiter() = default;
+AppReadinessWaiter::~AppReadinessWaiter() = default;
 
-void AppRegistrationWaiter::Await() {
+void AppReadinessWaiter::Await() {
   run_loop_.Run();
 }
 
-void AppRegistrationWaiter::OnAppUpdate(const apps::AppUpdate& update) {
+void AppReadinessWaiter::OnAppUpdate(const apps::AppUpdate& update) {
   if (update.AppId() == app_id_ && update.Readiness() == readiness_)
     run_loop_.Quit();
 }
-void AppRegistrationWaiter::OnAppRegistryCacheWillBeDestroyed(
+void AppReadinessWaiter::OnAppRegistryCacheWillBeDestroyed(
     apps::AppRegistryCache* cache) {
   Observe(nullptr);
 }

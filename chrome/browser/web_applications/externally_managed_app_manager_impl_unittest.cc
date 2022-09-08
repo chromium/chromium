@@ -22,12 +22,12 @@
 #include "chrome/browser/web_applications/externally_managed_app_install_task.h"
 #include "chrome/browser/web_applications/externally_managed_app_manager.h"
 #include "chrome/browser/web_applications/externally_managed_app_registration_task.h"
+#include "chrome/browser/web_applications/test/external_app_registration_waiter.h"
 #include "chrome/browser/web_applications/test/fake_install_finalizer.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/fake_web_app_ui_manager.h"
 #include "chrome/browser/web_applications/test/test_web_app_url_loader.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
-#include "chrome/browser/web_applications/test/web_app_registration_waiter.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
@@ -608,7 +608,7 @@ TEST_P(ExternallyManagedAppManagerImplTest, Install_Succeeds) {
   EXPECT_EQ(1u, install_run_count());
   EXPECT_EQ(GetInstallOptions(kFooWebAppUrl), last_install_options());
 
-  WebAppRegistrationWaiter(&externally_managed_app_manager_impl())
+  ExternalAppRegistrationWaiter(&externally_managed_app_manager_impl())
       .AwaitNextRegistration(kFooWebAppUrl, RegistrationResultCode::kSuccess);
   EXPECT_EQ(1U, registration_run_count());
   EXPECT_EQ(kFooWebAppUrl, last_registered_install_url());
@@ -656,9 +656,9 @@ TEST_P(ExternallyManagedAppManagerImplTest, Install_SerialCallsDifferentApps) {
     EXPECT_EQ(GetInstallOptions(kBarWebAppUrl), last_install_options());
   }
 
-  WebAppRegistrationWaiter(&externally_managed_app_manager_impl())
+  ExternalAppRegistrationWaiter(&externally_managed_app_manager_impl())
       .AwaitNextRegistration(kFooWebAppUrl, RegistrationResultCode::kSuccess);
-  WebAppRegistrationWaiter(&externally_managed_app_manager_impl())
+  ExternalAppRegistrationWaiter(&externally_managed_app_manager_impl())
       .AwaitNextRegistration(kBarWebAppUrl, RegistrationResultCode::kSuccess);
   EXPECT_EQ(3U, registration_run_count());
   EXPECT_EQ(kBarWebAppUrl, last_registered_install_url());
@@ -1355,11 +1355,11 @@ TEST_P(ExternallyManagedAppManagerImplTest,
             EXPECT_EQ(GetInstallOptions(kQuxWebAppUrl), last_install_options());
           }));
 
-  WebAppRegistrationWaiter(&externally_managed_app_manager_impl())
+  ExternalAppRegistrationWaiter(&externally_managed_app_manager_impl())
       .AwaitNextRegistration(kQuxWebAppUrl, RegistrationResultCode::kSuccess);
-  WebAppRegistrationWaiter(&externally_managed_app_manager_impl())
+  ExternalAppRegistrationWaiter(&externally_managed_app_manager_impl())
       .AwaitNextRegistration(kFooWebAppUrl, RegistrationResultCode::kSuccess);
-  WebAppRegistrationWaiter(&externally_managed_app_manager_impl())
+  ExternalAppRegistrationWaiter(&externally_managed_app_manager_impl())
       .AwaitNextRegistration(kBarWebAppUrl, RegistrationResultCode::kSuccess);
   EXPECT_EQ(3U, registration_run_count());
   EXPECT_EQ(kBarWebAppUrl, last_registered_install_url());

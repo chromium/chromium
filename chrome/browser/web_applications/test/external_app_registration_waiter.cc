@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/web_applications/test/web_app_registration_waiter.h"
+#include "chrome/browser/web_applications/test/external_app_registration_waiter.h"
 
 #include "base/test/bind.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace web_app {
 
-WebAppRegistrationWaiter::WebAppRegistrationWaiter(
+ExternalAppRegistrationWaiter::ExternalAppRegistrationWaiter(
     ExternallyManagedAppManager* manager)
     : manager_(manager) {
   manager_->SetRegistrationCallbackForTesting(base::BindLambdaForTesting(
@@ -25,11 +25,11 @@ WebAppRegistrationWaiter::WebAppRegistrationWaiter(
       complete_run_loop_.QuitClosure());
 }
 
-WebAppRegistrationWaiter::~WebAppRegistrationWaiter() {
+ExternalAppRegistrationWaiter::~ExternalAppRegistrationWaiter() {
   manager_->ClearRegistrationCallbackForTesting();
 }
 
-void WebAppRegistrationWaiter::AwaitNextRegistration(
+void ExternalAppRegistrationWaiter::AwaitNextRegistration(
     const GURL& install_url,
     RegistrationResultCode code) {
   install_url_ = install_url;
@@ -37,14 +37,14 @@ void WebAppRegistrationWaiter::AwaitNextRegistration(
   run_loop_.Run();
 }
 
-void WebAppRegistrationWaiter::AwaitNextNonFailedRegistration(
+void ExternalAppRegistrationWaiter::AwaitNextNonFailedRegistration(
     const GURL& install_url) {
   install_url_ = install_url;
   code_ = absl::nullopt;
   run_loop_.Run();
 }
 
-void WebAppRegistrationWaiter::AwaitRegistrationsComplete() {
+void ExternalAppRegistrationWaiter::AwaitRegistrationsComplete() {
   complete_run_loop_.Run();
 }
 

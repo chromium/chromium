@@ -2,11 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_WEB_APPLICATIONS_TEST_APP_REGISTRATION_WAITER_H_
-#define CHROME_BROWSER_WEB_APPLICATIONS_TEST_APP_REGISTRATION_WAITER_H_
+#ifndef CHROME_BROWSER_WEB_APPLICATIONS_TEST_APP_REGISTRY_CACHE_WAITER_H_
+#define CHROME_BROWSER_WEB_APPLICATIONS_TEST_APP_REGISTRY_CACHE_WAITER_H_
+
+#include <string>
 
 #include "base/run_loop.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/app_update.h"
@@ -33,12 +34,12 @@ class AppTypeInitializationWaiter : public apps::AppRegistryCache::Observer {
   base::RunLoop run_loop_;
 };
 
-class AppRegistrationWaiter : public apps::AppRegistryCache::Observer {
+class AppReadinessWaiter : public apps::AppRegistryCache::Observer {
  public:
-  AppRegistrationWaiter(Profile* profile,
-                        const AppId& app_id,
-                        apps::Readiness readiness = apps::Readiness::kReady);
-  ~AppRegistrationWaiter() override;
+  AppReadinessWaiter(Profile* profile,
+                     const std::string& app_id,
+                     apps::Readiness readiness = apps::Readiness::kReady);
+  ~AppReadinessWaiter() override;
 
   void Await();
 
@@ -48,11 +49,11 @@ class AppRegistrationWaiter : public apps::AppRegistryCache::Observer {
   void OnAppRegistryCacheWillBeDestroyed(
       apps::AppRegistryCache* cache) override;
 
-  const AppId app_id_;
+  const std::string app_id_;
   const apps::Readiness readiness_;
   base::RunLoop run_loop_;
 };
 
 }  // namespace web_app
 
-#endif  // CHROME_BROWSER_WEB_APPLICATIONS_TEST_APP_REGISTRATION_WAITER_H_
+#endif  // CHROME_BROWSER_WEB_APPLICATIONS_TEST_APP_REGISTRY_CACHE_WAITER_H_

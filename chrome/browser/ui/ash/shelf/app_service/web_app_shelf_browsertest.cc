@@ -1,4 +1,4 @@
-// Copyright 2022 The Chromium Authors.
+// Copyright 2022 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,7 +18,7 @@
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/web_applications/test/app_registration_waiter.h"
+#include "chrome/browser/web_applications/test/app_registry_cache_waiter.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
@@ -41,7 +41,7 @@ class WebAppShelfBrowserTest : public InProcessBrowserTest {
     web_app_info->user_display_mode = user_display_mode;
     const web_app::AppId app_id =
         web_app::test::InstallWebApp(profile(), std::move(web_app_info));
-    web_app::AppRegistrationWaiter(profile(), app_id).Await();
+    web_app::AppReadinessWaiter(profile(), app_id).Await();
     return app_id;
   }
 

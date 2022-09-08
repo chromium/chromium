@@ -30,7 +30,7 @@
 #include "chrome/browser/web_applications/preinstalled_app_install_features.h"
 #include "chrome/browser/web_applications/preinstalled_web_app_manager.h"
 #include "chrome/browser/web_applications/preinstalled_web_apps/preinstalled_web_apps.h"
-#include "chrome/browser/web_applications/test/app_registration_waiter.h"
+#include "chrome/browser/web_applications/test/app_registry_cache_waiter.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app.h"
@@ -134,10 +134,10 @@ class PreinstalledWebAppMigrationBrowserTest
 
       const WebApp* app = registrar.GetAppById(app_id);
       DCHECK(app->CanUserUninstallWebApp());
-      AppRegistrationWaiter app_registration_waiter(
+      AppReadinessWaiter app_readiness_waiter(
           profile(), app_id, apps::Readiness::kUninstalledByUser);
       web_app::test::UninstallWebApp(profile(), app_id);
-      app_registration_waiter.Await();
+      app_readiness_waiter.Await();
     }
 
     extensions::ExtensionBrowserTest::TearDownOnMainThread();
@@ -553,8 +553,8 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppMigratePlatformAppBrowserTest,
 
   // Install platform app to migrate.
   {
-    AppRegistrationWaiter extension_app_registration_waiter(profile(),
-                                                            kPlatformAppId);
+    AppReadinessWaiter extension_app_registration_waiter(profile(),
+                                                         kPlatformAppId);
     ASSERT_EQ(InstallExtension(
                   test_data_dir_.AppendASCII("platform_apps/app_window_2"), 1)
                   ->id(),

@@ -13,7 +13,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/test/web_app_navigation_browsertest.h"
 #include "chrome/browser/web_applications/app_service/lacros_web_apps_controller.h"
-#include "chrome/browser/web_applications/test/app_registration_waiter.h"
+#include "chrome/browser/web_applications/test/app_registry_cache_waiter.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chromeos/crosapi/mojom/app_service_types.mojom.h"
@@ -97,7 +97,7 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest, AppManagement) {
 
   InstallTestWebApp();
   const AppId app_id = test_web_app_id();
-  AppRegistrationWaiter(profile(), kOsSettingsAppId).Await();
+  AppReadinessWaiter(profile(), kOsSettingsAppId).Await();
 
   Browser* browser = OpenTestWebApp();
   content::WebContents* web_contents =

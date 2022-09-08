@@ -67,7 +67,7 @@
 #include "chrome/browser/web_applications/os_integration/web_app_shortcut.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_constants.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
-#include "chrome/browser/web_applications/test/app_registration_waiter.h"
+#include "chrome/browser/web_applications/test/app_registry_cache_waiter.h"
 #include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
@@ -694,7 +694,7 @@ void WebAppIntegrationTestDriver::TearDownOnMainThread() {
         UninstallPolicyAppById(app_id);
       if (provider->registrar().IsInstalled(app_id)) {
         DCHECK(app->CanUserUninstallWebApp());
-        AppRegistrationWaiter app_registration_waiter(
+        AppReadinessWaiter app_registration_waiter(
             profile, app_id, apps::Readiness::kUninstalledByUser);
         base::RunLoop run_loop;
         provider->install_finalizer().UninstallWebApp(
@@ -826,7 +826,7 @@ void WebAppIntegrationTestDriver::CreateShortcut(Site site,
     app_browser_ = browser_added_waiter.browser_added();
     ActivateBrowserAndWait(app_browser_);
   }
-  AppRegistrationWaiter(profile(), active_app_id_).Await();
+  AppReadinessWaiter(profile(), active_app_id_).Await();
   AfterStateChangeAction();
 }
 
@@ -844,7 +844,7 @@ void WebAppIntegrationTestDriver::InstallMenuOption(InstallableSite site) {
   app_browser_ = browser_added_waiter.browser_added();
   ActivateBrowserAndWait(app_browser_);
   chrome::SetAutoAcceptPWAInstallConfirmationForTesting(/*auto_accept=*/false);
-  AppRegistrationWaiter(profile(), active_app_id_).Await();
+  AppReadinessWaiter(profile(), active_app_id_).Await();
   AfterStateChangeAction();
 }
 
@@ -869,7 +869,7 @@ void WebAppIntegrationTestDriver::InstallLocally(Site site) {
   observer.BeginListening();
   handler.HandleInstallAppLocally(web_app_ids);
   observer.Wait();
-  AppRegistrationWaiter(profile(), app_id).Await();
+  AppReadinessWaiter(profile(), app_id).Await();
   AfterStateChangeAction();
 }
 #endif
@@ -907,7 +907,7 @@ void WebAppIntegrationTestDriver::InstallOmniboxIcon(InstallableSite site) {
   app_browser_ = browser_added_waiter.browser_added();
   ActivateBrowserAndWait(app_browser_);
   chrome::SetAutoAcceptPWAInstallConfirmationForTesting(false);
-  AppRegistrationWaiter(profile(), active_app_id_).Await();
+  AppReadinessWaiter(profile(), active_app_id_).Await();
   AfterStateChangeAction();
 }
 
@@ -1583,7 +1583,7 @@ void WebAppIntegrationTestDriver::UninstallFromList(Site site) {
   ASSERT_TRUE(provider()->registrar().GetAppById(app_id))
       << "No app installed for site: " << static_cast<int>(site);
 
-  AppRegistrationWaiter app_registration_waiter(
+  AppReadinessWaiter app_registration_waiter(
       profile(), app_id, apps::Readiness::kUninstalledByUser);
   WebAppTestUninstallObserver observer(profile());
   observer.BeginListening({app_id});
@@ -1636,7 +1636,7 @@ void WebAppIntegrationTestDriver::UninstallFromAppSettings(Site site) {
   ASSERT_TRUE(provider()->registrar().GetAppById(app_id))
       << "No app installed for site: " << static_cast<int>(site);
 
-  AppRegistrationWaiter app_registration_waiter(
+  AppReadinessWaiter app_registration_waiter(
       profile(), app_id, apps::Readiness::kUninstalledByUser);
   WebAppTestUninstallObserver uninstall_observer(profile());
   uninstall_observer.BeginListening({app_id});
@@ -1676,7 +1676,7 @@ void WebAppIntegrationTestDriver::UninstallFromMenu(Site site) {
   ASSERT_TRUE(provider()->registrar().GetAppById(app_id))
       << "No app installed for site: " << static_cast<int>(site);
 
-  AppRegistrationWaiter app_registration_waiter(
+  AppReadinessWaiter app_registration_waiter(
       profile(), app_id, apps::Readiness::kUninstalledByUser);
   WebAppTestUninstallObserver observer(profile());
   observer.BeginListening({app_id});
@@ -1715,7 +1715,7 @@ void WebAppIntegrationTestDriver::UninstallPolicyApp(Site site) {
                                      profile(), site);
   DCHECK(policy_app);
   base::RunLoop run_loop;
-  AppRegistrationWaiter app_registration_waiter(
+  AppReadinessWaiter app_registration_waiter(
       profile(), policy_app->id, apps::Readiness::kUninstalledByUser);
   WebAppInstallManagerObserverAdapter observer(profile());
   observer.SetWebAppUninstalledDelegate(
@@ -1759,7 +1759,7 @@ void WebAppIntegrationTestDriver::UninstallFromOs(Site site) {
   ASSERT_TRUE(provider()->registrar().GetAppById(app_id))
       << "No app installed for site: " << static_cast<int>(site);
 
-  AppRegistrationWaiter app_registration_waiter(
+  AppReadinessWaiter app_registration_waiter(
       profile(), app_id, apps::Readiness::kUninstalledByUser);
   WebAppTestUninstallObserver observer(profile());
   observer.BeginListening({app_id});
@@ -2638,7 +2638,7 @@ void WebAppIntegrationTestDriver::InstallPolicyAppInternal(
     update->GetList().Append(std::move(item));
   }
   active_app_id_ = observer.Wait();
-  AppRegistrationWaiter(profile(), active_app_id_).Await();
+  AppReadinessWaiter(profile(), active_app_id_).Await();
 }
 
 void WebAppIntegrationTestDriver::ApplyRunOnOsLoginPolicy(Site site,
@@ -2661,7 +2661,7 @@ void WebAppIntegrationTestDriver::ApplyRunOnOsLoginPolicy(Site site,
 
 void WebAppIntegrationTestDriver::UninstallPolicyAppById(const AppId& id) {
   base::RunLoop run_loop;
-  AppRegistrationWaiter app_registration_waiter(
+  AppReadinessWaiter app_registration_waiter(
       profile(), id, apps::Readiness::kUninstalledByUser);
   WebAppInstallManagerObserverAdapter observer(profile());
   observer.SetWebAppUninstalledDelegate(

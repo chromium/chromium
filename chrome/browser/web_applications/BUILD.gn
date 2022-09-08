@@ -423,8 +423,10 @@ source_set("web_applications_test_support") {
   testonly = true
 
   sources = [
-    "test/app_registration_waiter.cc",
-    "test/app_registration_waiter.h",
+    "test/app_registry_cache_waiter.cc",
+    "test/app_registry_cache_waiter.h",
+    "test/external_app_registration_waiter.cc",
+    "test/external_app_registration_waiter.h",
     "test/fake_data_retriever.cc",
     "test/fake_data_retriever.h",
     "test/fake_externally_managed_app_manager.cc",
@@ -465,8 +467,6 @@ source_set("web_applications_test_support") {
     "test/web_app_icon_waiter.h",
     "test/web_app_install_test_utils.cc",
     "test/web_app_install_test_utils.h",
-    "test/web_app_registration_waiter.cc",
-    "test/web_app_registration_waiter.h",
     "test/web_app_sync_test_utils.cc",
     "test/web_app_sync_test_utils.h",
     "test/web_app_test_observers.cc",

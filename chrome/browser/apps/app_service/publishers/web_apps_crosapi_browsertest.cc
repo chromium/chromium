@@ -16,7 +16,7 @@
 #include "chrome/browser/ash/crosapi/ash_requires_lacros_browsertestbase.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/views/apps/app_dialog/app_uninstall_dialog_view.h"
-#include "chrome/browser/web_applications/test/app_registration_waiter.h"
+#include "chrome/browser/web_applications/test/app_registry_cache_waiter.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/common/chrome_features.h"
 #include "chromeos/crosapi/mojom/test_controller.mojom-test-utils.h"
@@ -129,7 +129,7 @@ class WebAppsCrosapiBrowserTest
         GetStandaloneBrowserTestController());
     std::string app_id;
     waiter.InstallWebApp(start_url, mode, &app_id);
-    web_app::AppRegistrationWaiter(browser()->profile(), app_id).Await();
+    web_app::AppReadinessWaiter(browser()->profile(), app_id).Await();
     return app_id;
   }
 
@@ -236,8 +236,8 @@ IN_PROC_BROWSER_TEST_F(WebAppsCrosapiBrowserTest, Uninstall) {
   AppUninstallDialogView::GetActiveViewForTesting()->AcceptDialog();
   AppInstanceWaiter(AppServiceProxy()->InstanceRegistry(), app_id)
       .AwaitStopped();
-  web_app::AppRegistrationWaiter(profile(), app_id,
-                                 apps::Readiness::kUninstalledByUser)
+  web_app::AppReadinessWaiter(profile(), app_id,
+                              apps::Readiness::kUninstalledByUser)
       .Await();
   EXPECT_EQ(ash::ShelfModel::Get()->ItemIndexByAppID(app_id), -1);
 }

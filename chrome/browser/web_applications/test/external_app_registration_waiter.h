@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_WEB_APPLICATIONS_TEST_WEB_APP_REGISTRATION_WAITER_H_
-#define CHROME_BROWSER_WEB_APPLICATIONS_TEST_WEB_APP_REGISTRATION_WAITER_H_
+#ifndef CHROME_BROWSER_WEB_APPLICATIONS_TEST_EXTERNAL_APP_REGISTRATION_WAITER_H_
+#define CHROME_BROWSER_WEB_APPLICATIONS_TEST_EXTERNAL_APP_REGISTRATION_WAITER_H_
 
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
@@ -13,10 +13,11 @@
 
 namespace web_app {
 
-class WebAppRegistrationWaiter {
+// Awaits service worker registrations for externally-managed web app installs.
+class ExternalAppRegistrationWaiter {
  public:
-  explicit WebAppRegistrationWaiter(ExternallyManagedAppManager* manager);
-  ~WebAppRegistrationWaiter();
+  explicit ExternalAppRegistrationWaiter(ExternallyManagedAppManager* manager);
+  ~ExternalAppRegistrationWaiter();
 
   void AwaitNextRegistration(const GURL& install_url,
                              RegistrationResultCode code);
@@ -37,4 +38,4 @@ class WebAppRegistrationWaiter {
 
 }  // namespace web_app
 
-#endif  // CHROME_BROWSER_WEB_APPLICATIONS_TEST_WEB_APP_REGISTRATION_WAITER_H_
+#endif  // CHROME_BROWSER_WEB_APPLICATIONS_TEST_EXTERNAL_APP_REGISTRATION_WAITER_H_

@@ -16,9 +16,9 @@
 #include "chrome/browser/web_applications/external_install_options.h"
 #include "chrome/browser/web_applications/externally_managed_app_registration_task.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
+#include "chrome/browser/web_applications/test/external_app_registration_waiter.h"
 #include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
-#include "chrome/browser/web_applications/test/web_app_registration_waiter.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app.h"
@@ -459,7 +459,7 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerImplBrowserTest,
   InstallApp(std::move(install_options));
   EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall,
             result_code_.value());
-  WebAppRegistrationWaiter(&externally_managed_app_manager())
+  ExternalAppRegistrationWaiter(&externally_managed_app_manager())
       .AwaitNextRegistration(install_url, RegistrationResultCode::kSuccess);
   CheckServiceWorkerStatus(
       install_url,
@@ -481,7 +481,7 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerImplBrowserTest,
   InstallApp(std::move(install_options));
   EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall,
             result_code_.value());
-  WebAppRegistrationWaiter(&externally_managed_app_manager())
+  ExternalAppRegistrationWaiter(&externally_managed_app_manager())
       .AwaitNextRegistration(registration_url,
                              RegistrationResultCode::kSuccess);
   CheckServiceWorkerStatus(
@@ -501,7 +501,7 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerImplBrowserTest,
   ExternalInstallOptions install_options = CreateInstallOptions(install_url);
   install_options.bypass_service_worker_check = true;
   install_options.load_and_await_service_worker_registration = false;
-  WebAppRegistrationWaiter waiter(&externally_managed_app_manager());
+  ExternalAppRegistrationWaiter waiter(&externally_managed_app_manager());
   InstallApp(std::move(install_options));
   waiter.AwaitRegistrationsComplete();
 
@@ -525,7 +525,7 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerImplBrowserTest,
     InstallApp(std::move(install_options));
     EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall,
               result_code_.value());
-    WebAppRegistrationWaiter(&externally_managed_app_manager())
+    ExternalAppRegistrationWaiter(&externally_managed_app_manager())
         .AwaitNextNonFailedRegistration(install_url);
     CheckServiceWorkerStatus(
         embedded_test_server()->GetURL("/web_apps/basic.html"),
@@ -544,7 +544,7 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerImplBrowserTest,
     InstallApp(std::move(install_options));
     EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall,
               result_code_.value());
-    WebAppRegistrationWaiter(&externally_managed_app_manager())
+    ExternalAppRegistrationWaiter(&externally_managed_app_manager())
         .AwaitNextRegistration(install_url,
                                RegistrationResultCode::kAlreadyRegistered);
   }
@@ -612,7 +612,7 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerImplBrowserTest,
   InstallApp(std::move(install_options));
   EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall,
             result_code_.value());
-  WebAppRegistrationWaiter(&externally_managed_app_manager())
+  ExternalAppRegistrationWaiter(&externally_managed_app_manager())
       .AwaitNextRegistration(url, RegistrationResultCode::kTimeout);
 }
 
