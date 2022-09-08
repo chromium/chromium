@@ -1,4 +1,5 @@
 chrome_junit_test_java_sources = [
+  "java/src/org/chromium/chrome/browser/segmentation_platform/ContextualPageActionControllerTest.java",
   "java/src/org/chromium/chrome/browser/tab/TabFaviconTest.java",
   "junit/src/org/chromium/chrome/browser/AppIndexingUtilTest.java",
   "junit/src/org/chromium/chrome/browser/BackPressHelperUnitTest.java",
