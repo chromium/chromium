@@ -19,7 +19,7 @@ mojom("mojom") {
     {
       types = [
         {
-          mojom = "chromeos.settings.app_notification.mojom.Readiness"
+          mojom = "ash.settings.app_notification.mojom.Readiness"
           cpp = "::apps::Readiness"
         },
       ]

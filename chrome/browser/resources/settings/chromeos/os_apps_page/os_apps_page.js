@@ -44,22 +44,21 @@ import {AppManagementStoreClient, AppManagementStoreClientInterface} from './app
 import {getAppNotificationProvider} from './app_notifications_page/mojo_interface_provider.js';
 
 /**
- * @param {!chromeos.settings.appNotification.mojom.App} app
+ * @param {!ash.settings.appNotification.mojom.App} app
  * @return {boolean}
  */
 export function isAppInstalled(app) {
   switch (app.readiness) {
-    case chromeos.settings.appNotification.mojom.Readiness.kReady:
-    case chromeos.settings.appNotification.mojom.Readiness.kDisabledByBlocklist:
-    case chromeos.settings.appNotification.mojom.Readiness.kDisabledByPolicy:
-    case chromeos.settings.appNotification.mojom.Readiness.kDisabledByUser:
-    case chromeos.settings.appNotification.mojom.Readiness.kTerminated:
+    case ash.settings.appNotification.mojom.Readiness.kReady:
+    case ash.settings.appNotification.mojom.Readiness.kDisabledByBlocklist:
+    case ash.settings.appNotification.mojom.Readiness.kDisabledByPolicy:
+    case ash.settings.appNotification.mojom.Readiness.kDisabledByUser:
+    case ash.settings.appNotification.mojom.Readiness.kTerminated:
       return true;
-    case chromeos.settings.appNotification.mojom.Readiness.kUninstalledByUser:
-    case chromeos.settings.appNotification.mojom.Readiness
-        .kUninstalledByMigration:
-    case chromeos.settings.appNotification.mojom.Readiness.kRemoved:
-    case chromeos.settings.appNotification.mojom.Readiness.kUnknown:
+    case ash.settings.appNotification.mojom.Readiness.kUninstalledByUser:
+    case ash.settings.appNotification.mojom.Readiness.kUninstalledByMigration:
+    case ash.settings.appNotification.mojom.Readiness.kRemoved:
+    case ash.settings.appNotification.mojom.Readiness.kUnknown:
       return false;
   }
   assertNotReached();
@@ -236,21 +235,20 @@ class OsSettingsAppsPageElement extends OsSettingsAppsPageElementBase {
     });
 
     /**
-     * @private {!chromeos.settings.appNotification.mojom.AppNotificationsHandlerInterface}
+     * @private {!ash.settings.appNotification.mojom.AppNotificationsHandlerInterface}
      */
     this.mojoInterfaceProvider_ = getAppNotificationProvider();
 
     /**
-     * @private {!chromeos.settings.appNotification.mojom.AppNotificationsObserverReceiver}
+     * @private {!ash.settings.appNotification.mojom.AppNotificationsObserverReceiver}
      */
     this.appNotificationsObserverReceiver_ =
-        new chromeos.settings.appNotification.mojom
-            .AppNotificationsObserverReceiver(
-                /**
-                 * @type {!chromeos.settings.appNotification.mojom.
-                 * AppNotificationsObserverInterface}
-                 */
-                (this));
+        new ash.settings.appNotification.mojom.AppNotificationsObserverReceiver(
+            /**
+             * @type {!ash.settings.appNotification.mojom.
+             * AppNotificationsObserverInterface}
+             */
+            (this));
 
     this.mojoInterfaceProvider_.addObserver(
         this.appNotificationsObserverReceiver_.$.bindNewPipeAndPassRemote());
@@ -337,7 +335,7 @@ class OsSettingsAppsPageElement extends OsSettingsAppsPageElementBase {
         isKeyboardAction);
   }
 
-  /** Override chromeos.settings.appNotification.onNotificationAppChanged */
+  /** Override ash.settings.appNotification.onNotificationAppChanged */
   onNotificationAppChanged(updatedApp) {
     const foundIdx = this.appsWithNotifications_.findIndex(app => {
       return app.id === updatedApp.id;
@@ -357,7 +355,7 @@ class OsSettingsAppsPageElement extends OsSettingsAppsPageElementBase {
     this.splice('appsWithNotifications_', foundIdx, 1);
   }
 
-  /** Override chromeos.settings.appNotification.onQuietModeChanged */
+  /** Override ash.settings.appNotification.onQuietModeChanged */
   onQuietModeChanged(enabled) {
     this.isDndEnabled_ = enabled;
   }

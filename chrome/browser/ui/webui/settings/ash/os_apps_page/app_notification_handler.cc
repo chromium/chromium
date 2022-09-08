@@ -17,8 +17,7 @@
 #include "components/services/app_service/public/cpp/permission.h"
 #include "components/services/app_service/public/cpp/types_util.h"
 
-namespace chromeos {
-namespace settings {
+namespace ash::settings {
 
 namespace {
 app_notification::mojom::AppPtr CreateAppPtr(const apps::AppUpdate& update) {
@@ -151,5 +150,4 @@ void AppNotificationHandler::OnAppRegistryCacheWillBeDestroyed(
   Observe(nullptr);
 }
 
-}  // namespace settings
-}  // namespace chromeos
+}  // namespace ash::settings

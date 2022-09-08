@@ -96,7 +96,7 @@ export class AppNotificationsSubpage extends AppNotificationsSubpageBase {
     /**
      * Receiver responsible for observing app notification events.
      * @private {
-     *    ?chromeos.settings.appNotification.mojom.
+     *    ?ash.settings.appNotification.mojom.
      *    AppNotificationsObserverReceiver
      * }
      */
@@ -136,23 +136,22 @@ export class AppNotificationsSubpage extends AppNotificationsSubpageBase {
   /** @private */
   startObservingAppNotifications_() {
     this.appNotificationsObserverReceiver_ =
-        new chromeos.settings.appNotification.mojom
-            .AppNotificationsObserverReceiver(
-                /**
-                 * @type {!chromeos.settings.appNotification.mojom.
-                 * AppNotificationsObserverInterface}
-                 */
-                (this));
+        new ash.settings.appNotification.mojom.AppNotificationsObserverReceiver(
+            /**
+             * @type {!ash.settings.appNotification.mojom.
+             * AppNotificationsObserverInterface}
+             */
+            (this));
     this.mojoInterfaceProvider_.addObserver(
         this.appNotificationsObserverReceiver_.$.bindNewPipeAndPassRemote());
   }
 
-  /** Override chromeos.settings.appNotification.onQuietModeChanged */
+  /** Override ash.settings.appNotification.onQuietModeChanged */
   onQuietModeChanged(enabled) {
     this.isDndEnabled_ = enabled;
   }
 
-  /** Override chromeos.settings.appNotification.onNotificationAppChanged */
+  /** Override ash.settings.appNotification.onNotificationAppChanged */
   onNotificationAppChanged(updatedApp) {
     // Using Polymer mutation methods do not properly handle splice updates with
     // object that have deep properties. Create and assign a copy list instead.

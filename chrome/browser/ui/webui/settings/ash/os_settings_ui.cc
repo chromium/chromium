@@ -159,7 +159,8 @@ void OSSettingsUI::BindInterface(
 }
 
 void OSSettingsUI::BindInterface(
-    mojo::PendingReceiver<app_notification::mojom::AppNotificationsHandler>
+    mojo::PendingReceiver<
+        ash::settings::app_notification::mojom::AppNotificationsHandler>
         receiver) {
   OsSettingsManagerFactory::GetForProfile(Profile::FromWebUI(web_ui()))
       ->app_notification_handler()

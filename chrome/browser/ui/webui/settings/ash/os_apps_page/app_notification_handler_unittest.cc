@@ -21,12 +21,11 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
-namespace chromeos {
-namespace settings {
+namespace ash::settings {
 
 namespace {
 
-class FakeMessageCenterAsh : public ash::MessageCenterAsh {
+class FakeMessageCenterAsh : public MessageCenterAsh {
  public:
   FakeMessageCenterAsh() = default;
   ~FakeMessageCenterAsh() override = default;
@@ -98,7 +97,7 @@ class AppNotificationHandlerTest : public testing::Test {
   ~AppNotificationHandlerTest() override = default;
 
   void SetUp() override {
-    ash::MessageCenterAsh::SetForTesting(&message_center_ash_);
+    MessageCenterAsh::SetForTesting(&message_center_ash_);
     app_service_proxy_ =
         std::make_unique<apps::AppServiceProxy>(profile_.get());
     handler_ =
@@ -111,7 +110,7 @@ class AppNotificationHandlerTest : public testing::Test {
   void TearDown() override {
     handler_.reset();
     app_service_proxy_.reset();
-    ash::MessageCenterAsh::SetForTesting(nullptr);
+    MessageCenterAsh::SetForTesting(nullptr);
   }
 
  protected:
@@ -170,12 +169,12 @@ class AppNotificationHandlerTest : public testing::Test {
 // Tests for update of in_quiet_mode_ variable by MessageCenterAsh observer
 // OnQuietModeChange() after quiet mode state change between true and false.
 TEST_F(AppNotificationHandlerTest, TestOnQuietModeChanged) {
-  ash::MessageCenterAsh::Get()->SetQuietMode(true);
+  MessageCenterAsh::Get()->SetQuietMode(true);
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(observer()->is_quiet_mode());
   EXPECT_EQ(observer()->quiet_mode_changed(), 1);
 
-  ash::MessageCenterAsh::Get()->SetQuietMode(false);
+  MessageCenterAsh::Get()->SetQuietMode(false);
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(observer()->is_quiet_mode());
   EXPECT_EQ(observer()->quiet_mode_changed(), 2);
@@ -262,5 +261,4 @@ TEST_F(AppNotificationHandlerTest, TestAppListUpdated) {
                                    ->notification_permission->value->value));
 }
 
-}  // namespace settings
-}  // namespace chromeos
+}  // namespace ash::settings

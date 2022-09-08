@@ -13,7 +13,7 @@ namespace mojo {
 
 namespace {
 
-using Readiness = chromeos::settings::app_notification::mojom::Readiness;
+using Readiness = ash::settings::app_notification::mojom::Readiness;
 
 }  // namespace
 

@@ -24,14 +24,13 @@ TEST(AppTypeMojomTraitsTest, RoundTripReadiness) {
   for (auto readiness_in : kTestReadiness) {
     apps::Readiness readiness_out;
 
-    chromeos::settings::app_notification::mojom::Readiness
-        serialized_readiness = mojo::EnumTraits<
-            chromeos::settings::app_notification::mojom::Readiness,
-            apps::Readiness>::ToMojom(readiness_in);
-    ASSERT_TRUE((
-        mojo::EnumTraits<chromeos::settings::app_notification::mojom::Readiness,
-                         apps::Readiness>::FromMojom(serialized_readiness,
-                                                     &readiness_out)));
+    ash::settings::app_notification::mojom::Readiness serialized_readiness =
+        mojo::EnumTraits<ash::settings::app_notification::mojom::Readiness,
+                         apps::Readiness>::ToMojom(readiness_in);
+    ASSERT_TRUE(
+        (mojo::EnumTraits<ash::settings::app_notification::mojom::Readiness,
+                          apps::Readiness>::FromMojom(serialized_readiness,
+                                                      &readiness_out)));
     EXPECT_EQ(readiness_in, readiness_out);
   }
 }

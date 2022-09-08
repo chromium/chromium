@@ -20,6 +20,8 @@
 #include "chrome/browser/ash/kerberos/kerberos_credentials_manager.h"
 // TODO(https://crbug.com/1164001): forward declare when moved ash
 #include "chrome/browser/ash/printing/cups_printers_manager.h"
+// TODO(https://crbug.com/1164001): move to forward declaration
+#include "chrome/browser/ui/webui/settings/ash/os_apps_page/app_notification_handler.h"
 // TODO(https://crbug.com/1164001): forward declare when moved ash
 #include "chromeos/ash/components/local_search_service/public/cpp/local_search_service_proxy.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -48,7 +50,6 @@ class OsSettingsSections;
 class SearchHandler;
 class SearchTagRegistry;
 class SettingsUserActionTracker;
-class AppNotificationHandler;
 
 // Manager for the Chrome OS settings page. This class is implemented as a
 // KeyedService, so one instance of the class is intended to be active for the
